@@ -397,12 +397,10 @@ void RedrawTipWindow(void)
     FwinString->str = Tip.text;
     FwinString->x = 3;
     FwinString->y = Tip.th-4;
-#ifdef HAVE_XFT
-    if (FStatusFont->fftf.fftfont != NULL)
+    if (FftSupport && FStatusFont->fftf.fftfont != NULL)
       XClearArea(dpy, Tip.win, 0, 0, Tip.w, Tip.h, False);
-#endif
     FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
-    XRaiseWindow(dpy, Tip.win);  /*****************/
+    XRaiseWindow(dpy, Tip.win);
   }
 }
 

@@ -54,6 +54,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

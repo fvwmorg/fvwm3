@@ -33,6 +33,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -46,6 +47,7 @@
 #include "builtins.h"
 #include "libs/Colorset.h"
 #include "borders.h"
+#include "frame.h"
 #include "gnome.h"
 #include "ewmh.h"
 #include "icons.h"
@@ -295,7 +297,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_setup_frame)
 	{
-		ForceSetupFrame(
+		frame_force_setup_window(
 			t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
 			t->frame_g.height, True);
 		GNOME_SetWinArea(t);

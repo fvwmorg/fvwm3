@@ -40,6 +40,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include <libs/gravity.h>
 #include <stdio.h>
 #include "fvwm.h"
 #include "externs.h"
@@ -52,6 +53,7 @@
 #include "defaults.h"
 #include "icons.h"
 #include "borders.h"
+#include "frame.h"
 #include "focus.h"
 #include "colormaps.h"
 #include "stack.h"
@@ -883,7 +885,8 @@ void AutoPlaceIcon(FvwmWindow *t)
       new_x += Scr.MyDisplayWidth;
     if(new_y + t->frame_g.height <= 0)
       new_y += Scr.MyDisplayHeight;
-    SetupFrame(t, new_x, new_y, t->frame_g.width, t->frame_g.height, False);
+    frame_setup_window(
+	    t, new_x, new_y, t->frame_g.width, t->frame_g.height, False);
     t->Desk = Scr.CurrentDesk;
   }
   else if (IsRectangleOnThisPage(&(t->frame_g), t->Desk))

@@ -56,6 +56,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Grab.h"
+#include <libs/gravity.h>
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"

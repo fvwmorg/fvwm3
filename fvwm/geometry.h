@@ -19,9 +19,6 @@
 #define CS_ROUND_UP          0x01
 #define CS_UPDATE_MAX_DEFECT 0x02
 
-void gravity_get_offsets(int grav, int *xp,int *yp);
-void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff);
-void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff);
 void gravity_get_naked_geometry(
   int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
 void gravity_add_decoration(

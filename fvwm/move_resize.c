@@ -35,6 +35,7 @@
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -47,6 +48,7 @@
 #include "module_interface.h"
 #include "focus.h"
 #include "borders.h"
+#include "frame.h"
 #include "geometry.h"
 #include "gnome.h"
 #include "ewmh.h"
@@ -656,11 +658,12 @@ static Bool resize_move_window(F_CMD_ARGS)
 		 0, 0, 0);
   if (IS_SHADED(tmp_win))
   {
-    SetupFrame(tmp_win, FinalX, FinalY, FinalW, tmp_win->frame_g.height, False);
+    frame_setup_window(
+      tmp_win, FinalX, FinalY, FinalW, tmp_win->frame_g.height, False);
   }
   else
   {
-    SetupFrame(tmp_win, FinalX, FinalY, FinalW, FinalH, True);
+    frame_setup_window(tmp_win, FinalX, FinalY, FinalW, FinalH, True);
   }
   if (fWarp)
     XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
@@ -1086,7 +1089,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     {
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
-    SetupFrame(tmp_win, FinalX, FinalY,
+    frame_setup_window(tmp_win, FinalX, FinalY,
 	       tmp_win->frame_g.width, tmp_win->frame_g.height, True);
     if (fWarp & !do_animate)
       XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
@@ -1922,7 +1925,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	SendConfigureNotify(tmp_win, xl, yt, Width, Height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
         fvwm_msg(
-	  DBG, "SetupFrame","Sent ConfigureNotify (w %d, h %d)", Width, Height);
+	  DBG, "frame_setup_window","Sent ConfigureNotify (w %d, h %d)", Width, Height);
 #endif
       }
     }
@@ -2318,13 +2321,15 @@ static Bool resize_window(F_CMD_ARGS)
     tmp_win->frame_g = new_g;
     if (IS_SHADED(tmp_win))
     {
-      ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		      drag->width, tmp_win->frame_g.height, False);
+      frame_setup_window(
+	      tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, drag->width,
+	      tmp_win->frame_g.height, False);
     }
     else
     {
-      ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		      drag->width, drag->height, False);
+      frame_setup_window(
+	      tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, drag->width,
+	      drag->height, False);
     }
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
     update_absolute_geometry(tmp_win);
@@ -2735,7 +2740,7 @@ static Bool resize_window(F_CMD_ARGS)
     {
       new_g = *drag;
     }
-    SetupFrame(tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+    frame_setup_window(tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
     if (IS_SHADED(tmp_win))
     {
       tmp_win->normal_g.width = drag->width;
@@ -2879,7 +2884,7 @@ static void DoResize(
     }
     else
     {
-      SetupFrame(
+      frame_setup_window(
 	tmp_win, drag->x, drag->y, drag->width, drag->height, False);
     }
   }
@@ -3220,16 +3225,17 @@ static void MaximizeWidth(
 static void unmaximize_fvwm_window(
 	FvwmWindow *tmp_win)
 {
+	rectangle new_g;
+
 	SET_MAXIMIZED(tmp_win, 0);
-	get_relative_geometry(&tmp_win->frame_g, &tmp_win->normal_g);
+	get_relative_geometry(&new_g, &tmp_win->normal_g);
 	if (IS_SHADED(tmp_win))
 	{
-		get_shaded_geometry(
-			tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
+		get_shaded_geometry(tmp_win, &new_g, &new_g);
 	}
-	ForceSetupFrame(
-		tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		tmp_win->frame_g.width, tmp_win->frame_g.height, True);
+	frame_setup_window(
+		tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, True);
+	tmp_win->frame_g = new_g;
 	DrawDecorations(tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
 
 	return;
@@ -3250,7 +3256,7 @@ static void maximize_fvwm_window(
 	{
 		get_shaded_geometry(tmp_win, geometry, &tmp_win->max_g);
 	}
-	SetupFrame(
+	frame_setup_window(
 		tmp_win, geometry->x, geometry->y, geometry->width,
 		geometry->height, True);
 	DrawDecorations(

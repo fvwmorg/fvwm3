@@ -895,19 +895,19 @@ int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 }
 
 /**** for animation ****/
-int EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect)
+void EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect)
 {
   if (!IS_ICON_SUPPRESSED(fwin) ||
       (fwin->ewmh_icon_geometry.x == 0 &&
        fwin->ewmh_icon_geometry.y == 0 &&
        fwin->ewmh_icon_geometry.width == 0 &&
        fwin->ewmh_icon_geometry.height == 0))
-    return 0;
+    return;
   icon_rect->x = fwin->ewmh_icon_geometry.x;
   icon_rect->y = fwin->ewmh_icon_geometry.y;
   icon_rect->width = fwin->ewmh_icon_geometry.width;
   icon_rect->height = fwin->ewmh_icon_geometry.height;
-  return 1;
+  return;
 }
 
 int ewmh_WMStrut(EWMH_CMD_ARGS)

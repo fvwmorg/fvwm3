@@ -63,6 +63,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Flocale.h"
+#include "libs/gravity.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"

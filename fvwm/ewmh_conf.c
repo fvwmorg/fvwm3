@@ -89,7 +89,7 @@ Bool EWMH_BugOpts(char *opt, Bool toggle)
     }
     return True;
   }
-  
+
   return False;
 }
 
@@ -295,7 +295,7 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
 
 Bool EWMH_BugOpts(char *opt, Bool toggle)
 {
-  if (StrEqual(opt,"EWMHIconicStateWorkaround"))
+  if (StrEquals(opt,"EWMHIconicStateWorkaround"))
   {
     return True;
   }

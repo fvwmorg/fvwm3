@@ -32,14 +32,15 @@
 
 #define FftSupport 1
 #ifdef HAVE_XFT_UTF8
-#define  FftUtf8Support 1
+#define FftUtf8Support 1
 #else
-#define  FftUtf8Support 0
+#define FftUtf8Support 0
 #endif
 
 #else
 
 #define FftSupport 0
+#define FftUtf8Support 0
 
 #endif
 

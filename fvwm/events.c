@@ -66,6 +66,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -80,6 +81,7 @@
 #include "module_interface.h"
 #include "session.h"
 #include "borders.h"
+#include "frame.h"
 #include "colormaps.h"
 #include "add_window.h"
 #include "icccm2.h"
@@ -636,7 +638,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
 	get_relative_geometry(&new_g, &Tmp_win->normal_g);
 	if (IS_SHADED(Tmp_win))
 	  get_shaded_geometry(Tmp_win, &new_g, &new_g);
-	ForceSetupFrame(
+	frame_setup_window(
 	  Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
       }
       else
@@ -669,7 +671,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
 	  get_relative_geometry(&new_g, &Tmp_win->max_g);
 	  if (IS_SHADED(Tmp_win))
 	    get_shaded_geometry(Tmp_win, &new_g, &new_g);
-	  ForceSetupFrame(
+	  frame_setup_window(
 	    Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
 	}
 	else
@@ -848,8 +850,8 @@ void HandleExpose(void)
 	{
 		draw_parts = DRAW_BUTTONS;
 	}
-#ifdef HAVE_XFT
-	if (Tmp_win->title_font && Tmp_win->title_font->fftf.fftfont != NULL &&
+	if (FftSupport && Tmp_win->title_font &&
+	    Tmp_win->title_font->fftf.fftfont != NULL &&
 	    draw_parts == DRAW_TITLE)
 	{
 	  draw_clipped_decorations(
@@ -857,7 +859,6 @@ void HandleExpose(void)
 		Event.xany.window, NULL, CLEAR_ALL);
 	  return;
 	}
-#endif
 	draw_clipped_decorations(
 		Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True,
 		Event.xany.window, &r, CLEAR_ALL);
@@ -2482,7 +2483,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     {
       if (IS_SHADED(Tmp_win))
 	get_shaded_geometry(Tmp_win, &new_g, &new_g);
-      SetupFrame(
+      frame_setup_window(
 	Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
       /* make sure the window structure has the new position */
       update_absolute_geometry(Tmp_win);
@@ -2593,7 +2594,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
 
 #if 1
   /* This causes some ddd windows not to be drawn properly. Reverted back to
-   * the old method in SetupFrame. */
+   * the old method in frame_setup_window. */
   /* domivogt (15-Oct-1999): enabled this to work around buggy apps that
    * ask for a nonsense height and expect that they really get it. */
   if (do_send_event)
@@ -2674,7 +2675,7 @@ void HandleShapeNotify (void)
 			return;
 		}
 		Tmp_win->wShaped = sev->shaped;
-		SetShape(
+		frame_setup_shape(
 			Tmp_win, Tmp_win->frame_g.width,
 			Tmp_win->frame_g.height);
 	}

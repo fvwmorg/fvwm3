@@ -33,6 +33,7 @@
 #include <X11/Xmd.h>
 
 #include "libs/fvwmlib.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"

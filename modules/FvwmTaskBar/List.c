@@ -301,7 +301,7 @@ int IsItemIndexSticky(List *list, int i)
   Item *temp;
   for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
-  return IS_STICKY(temp);
+  return (IS_STICKY(temp) || (IS_ICONIFIED(temp) && IS_ICON_STICKY(temp)));
 }
 
 /******************************************************************************

@@ -1134,6 +1134,7 @@ void read_in_resources (char *file)
   char *option1;
   Binding *binding = NULL;
   Resolution r;
+  Reverse rv;
 
   if (!init_config_file (file))
     return;
@@ -1536,18 +1537,18 @@ void read_in_resources (char *file)
 	}
 	ConsoleDebug (CONFIG, "reverse: %s\n", p);
 	if (!strcasecmp (p, "none"))
-	  r = REVERSE_NONE;
+	  rv = REVERSE_NONE;
 	else if (!strcasecmp (p, "icon"))
-	  r = REVERSE_ICON;
+	  rv = REVERSE_ICON;
 	else if (!strcasecmp (p, "normal"))
-	  r = REVERSE_NORMAL;
+	  rv = REVERSE_NORMAL;
 	else {
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  ConsoleMessage ("What kind of reverse is this?\n");
 	  continue;
 	}
 
-	SET_MANAGER (manager, rev, r);
+	SET_MANAGER (manager, rev, rv);
       }
       else if (!strcasecmp (option1, "shape")) {
 	p = read_next_cmd (READ_ARG);

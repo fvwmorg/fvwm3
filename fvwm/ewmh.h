@@ -55,7 +55,7 @@ float EWMH_GetStrutIntersection(int x11, int y11, int x12, int y12,
 void EWMH_SetFrameStrut(FvwmWindow *fwin);
 void EWMH_SetAllowedActions(FvwmWindow *fwin);
 
-int EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect);
+void EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect);
 
 void EWMH_GetStyle(FvwmWindow *fwin, window_style *style);
 void EWMH_WindowInit(FvwmWindow *fwin);
@@ -74,7 +74,7 @@ void EWMH_ProcessPropertyNotify(FvwmWindow *fwin, XEvent *ev);
 
 /* ewmh_icon.c */
 void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
-int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size, 
+int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 			   Bool is_mini_icon);
 void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
 
@@ -116,7 +116,7 @@ void EWMH_SetDesktopNames(void);
 #define EWMH_GetStrutIntersection(x,y,z,t,u) 0
 #define EWMH_SetFrameStrut(x)
 #define EWMH_SetAllowedActions(x)
-#define EWMH_GetIconGeometry(x,y) 0
+#define EWMH_GetIconGeometry(x,y)
 
 #define EWMH_GetStyle(x,y)
 #define EWMH_WindowInit(x)
@@ -139,9 +139,9 @@ void EWMH_SetDesktopNames(void);
 
 /* ewmh_name.c */
 #define EWMH_SetVisibleName(x,y)
-#define EWMH_WMName(x,y,z)     0
-#define EWMH_WMIconName(x,y,z) 0
-#define EWMH_SetDesktopNames() 
+#define EWMH_WMName(x,y,z,t)     0
+#define EWMH_WMIconName(x,y,z,t) 0
+#define EWMH_SetDesktopNames()
 #endif
 
 #endif /* _EWMH_ */

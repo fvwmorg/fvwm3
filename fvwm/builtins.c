@@ -33,6 +33,7 @@
 #include "libs/setpgrp.h"
 #include "libs/FShape.h"
 #include "libs/Flocale.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "libs/Colorset.h"
@@ -46,6 +47,7 @@
 #include "builtins.h"
 #include "module_interface.h"
 #include "borders.h"
+#include "frame.h"
 #include "geometry.h"
 #include "events.h"
 #include "gnome.h"
@@ -1766,7 +1768,7 @@ void CMD_ChangeDecor(F_CMD_ARGS)
   apply_decor_change(tmp_win);
   extra_height = (HAS_TITLE(tmp_win) && old_height) ?
     (old_height - tmp_win->decor->title_height) : 0;
-  ForceSetupFrame(
+  frame_force_setup_window(
     tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
     tmp_win->frame_g.height - extra_height, True);
   DrawDecorations(

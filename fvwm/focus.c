@@ -32,6 +32,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -42,6 +43,7 @@
 #include "focus.h"
 #include "icons.h"
 #include "borders.h"
+#include "frame.h"
 #include "virtual.h"
 #include "stack.h"
 #include "geometry.h"
@@ -462,7 +464,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
 	(t->frame_g.y + t->frame_g.width < 0)||
 	(t->frame_g.x >Scr.MyDisplayWidth)||(t->frame_g.y>Scr.MyDisplayHeight))
     {
-      SetupFrame(t, 0, 0, t->frame_g.width, t->frame_g.height, False);
+      frame_setup_window(t, 0, 0, t->frame_g.width, t->frame_g.height, False);
       if (HAS_MOUSE_FOCUS(t) || HAS_SLOPPY_FOCUS(t))
       {
 	XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
@@ -566,7 +568,7 @@ static void warp_to_fvwm_window(
       t->frame_g.x >= Scr.MyDisplayWidth   ||
       t->frame_g.y >= Scr.MyDisplayHeight)
   {
-    SetupFrame(t, 0, 0, t->frame_g.width, t->frame_g.height, False);
+    frame_setup_window(t, 0, 0, t->frame_g.width, t->frame_g.height, False);
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
     SetPointerEventPosition(eventp, 2, 2);
   }

@@ -22,20 +22,6 @@
 /* ---------------------------- global definitions -------------------------- */
 
 #define MAX_TOKEN_LENGTH 1023
-typedef enum
-{
-	DIR_NONE = -1,
-	DIR_N = 0,
-	DIR_E = 1,
-	DIR_S = 2,
-	DIR_W = 3,
-	DIR_MAJOR_MASK = 3,
-	DIR_NE = 4,
-	DIR_SE = 5,
-	DIR_SW = 6,
-	DIR_NW = 7,
-	DIR_MASK = 7,
-} direction_type;
 
 /* ---------------------------- global macros ------------------------------- */
 
@@ -100,8 +86,6 @@ int GetTwoPercentArguments(
 	char *action, int *val1, int *val2, int *val1_unit, int *val2_unit);
 int ParseToggleArgument(
 	char *action, char **ret_action, int default_ret, char no_toggle);
-direction_type ParseDirectionArgument(
-	char *action, char **ret_action, direction_type default_ret);
 int XCmpToken(const char *s, const char **t);
 char *GetFileNameFromPath(char *path);
 

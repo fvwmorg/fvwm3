@@ -14,8 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
-#ifndef _BORDERS_H
-#define _BORDERS_H
+#ifndef FRAME_H
+#define FRAME_H
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -27,32 +27,40 @@
 
 typedef enum
 {
-	DRAW_FRAME    = 0x1,
-	DRAW_TITLE    = 0x2,
-	DRAW_BUTTONS  = 0x4,
-	DRAW_ALL      = 0x7
-} draw_window_parts;
+	RESIZE_MODE_RESIZE,
+	RESIZE_MODE_SHRINK,
+	RESIZE_MODE_SCROLL
+} resize_mode_type;
 
-typedef enum
+typedef struct
 {
-	CLEAR_NONE     = 0x0,
-	CLEAR_FRAME    = 0x1,
-	CLEAR_TITLE    = 0x2,
-	CLEAR_BUTTONS  = 0x4,
-	CLEAR_ALL      = 0x7
-} clear_window_parts;
+	int decor_grav;
+	int title_grav;
+	int lbutton_grav;
+	int rbutton_grav;
+	int parent_grav;
+	int client_grav;
+} decor_gravities_type;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- interface functions ------------------------- */
 
-int get_button_number(int context);
-void draw_clipped_decorations(
-	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, XRectangle *rclip, clear_window_parts clear_parts);
-void DrawDecorations(
-	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, clear_window_parts clear_parts);
-void RedrawDecorations(FvwmWindow *tmp_win);
+void frame_resize(
+	FvwmWindow *tmp_win, rectangle *start_g, rectangle *end_g,
+	resize_mode_type mode_x, resize_mode_type mode_y, int anim_steps);
+void frame_get_resize_decor_gravities(
+	decor_gravities_type *ret_grav, direction_type title_dir,
+	resize_mode_type mode_x, resize_mode_type mode_y);
+void frame_set_decor_gravities(
+	FvwmWindow *tmp_win, decor_gravities_type *grav);
+void frame_setup_window(
+	FvwmWindow *tmp_win, int x, int y, int w, int h,
+	Bool do_send_configure_notify);
+void frame_force_setup_window(
+	FvwmWindow *tmp_win, int x, int y, int w, int h,
+	Bool do_send_configure_notify);
+void frame_setup_shape(
+	FvwmWindow *tmp_win, int w, int h);
 
-#endif /* _BORDERS_H */
+#endif /* FRAME_H */

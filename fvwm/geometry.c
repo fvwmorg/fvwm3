@@ -21,6 +21,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -42,11 +43,6 @@
 
 /* ---------------------------- local types --------------------------------- */
 
-struct _gravity_offset
-{
-	int x, y;
-};
-
 /* ---------------------------- forward declarations ------------------------ */
 
 /* ---------------------------- local variables ----------------------------- */
@@ -56,71 +52,6 @@ struct _gravity_offset
 /* ---------------------------- local functions ----------------------------- */
 
 /* ---------------------------- interface functions ------------------------- */
-
-/************************************************************************
- *
- *  Procedure:
- *	gravity_get_offsets - map gravity to (x,y) offset signs for adding
- *		to x and y when window is mapped to get proper placement.
- *
- ************************************************************************/
-void gravity_get_offsets(int grav, int *xp,int *yp)
-{
-	static struct _gravity_offset gravity_offsets[11] =
-		{
-			{  0,  0 },	/* ForgetGravity */
-			{ -1, -1 },	/* NorthWestGravity */
-			{  0, -1 },	/* NorthGravity */
-			{  1, -1 },	/* NorthEastGravity */
-			{ -1,  0 },	/* WestGravity */
-			{  0,  0 },	/* CenterGravity */
-			{  1,  0 },	/* EastGravity */
-			{ -1,  1 },	/* SouthWestGravity */
-			{  0,  1 },	/* SouthGravity */
-			{  1,  1 },	/* SouthEastGravity */
-			{  0,  0 },	/* StaticGravity */
-		};
-
-	if (grav < ForgetGravity || grav > StaticGravity)
-	{
-		*xp = *yp = 0;
-	}
-	else
-	{
-		*xp = (int)gravity_offsets[grav].x;
-		*yp = (int)gravity_offsets[grav].y;
-	}
-
-	return;
-}
-
-/* Move a rectangle while taking gravity into account. */
-void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff)
-{
-	int xoff;
-	int yoff;
-
-	gravity_get_offsets(gravity, &xoff, &yoff);
-	rect->x -= xoff * xdiff;
-	rect->y -= yoff * ydiff;
-
-	return;
-}
-
-/* Resize rectangle while taking gravity into account. */
-void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff)
-{
-	int xoff;
-	int yoff;
-
-	gravity_get_offsets(gravity, &xoff, &yoff);
-	rect->x -= (wdiff * (xoff + 1)) / 2;
-	rect->width += wdiff;
-	rect->y -= (hdiff * (yoff + 1)) / 2;
-	rect->height += hdiff;
-
-	return;
-}
 
 /* Removes decorations from the source rectangle and moves it according to the
  * gravity specification. */
@@ -229,30 +160,6 @@ void get_title_geometry(
 	}
 
 	return;
-}
-
-int get_title_gravity(
-	FvwmWindow *tmp_win)
-{
-	int grav = NorthWestGravity;
-
-	switch (GET_TITLE_DIR(tmp_win))
-	{
-	case DIR_N:
-		grav = NorthWestGravity;
-		break;
-	case DIR_S:
-		grav = SouthEastGravity;
-		break;
-	case DIR_W:
-		grav = NorthWestGravity;
-		break;
-	case DIR_E:
-		grav = SouthEastGravity;
-		break;
-	}
-
-	return grav;
 }
 
 void get_title_gravity_factors(
@@ -398,7 +305,7 @@ void get_shaded_geometry(
 	case DIR_S:
 	case DIR_SW:
 	case DIR_SE:
-		small_g->y = big_g->y + big_height - small_g->height;
+		small_g->y = big_g->y + big_height - b.total_size.height;
 		/* fall through */
 	case DIR_N:
 	case DIR_NW:
@@ -413,7 +320,7 @@ void get_shaded_geometry(
 	case DIR_E:
 	case DIR_NE:
 	case DIR_SE:
-		small_g->x = big_g->x + big_width - small_g->width;
+		small_g->x = big_g->x + big_width - b.total_size.width;
 		/* fall through */
 	case DIR_W:
 	case DIR_NW:

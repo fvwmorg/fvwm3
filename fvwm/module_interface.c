@@ -42,6 +42,7 @@
 #include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "libs/queue.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

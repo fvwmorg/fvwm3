@@ -1,3 +1,37 @@
+2002-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWharf/icons.c (GetXPMData):
+	(GetXPMFile):
+	fixed compiler warnings
+
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	fixed a compiler warning
+
+	* FvwmConsole/FvwmConsoleC.c:
+	fixed a compiler warning
+
+2002-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/List.c (IsItemIndexSticky):
+	fixed handling of sticky icons in the task bar
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	fixed DeskOnly option in FvwmTaskBar: cause windows to be added twice
+	instead of being removed when moving to a hidden desk
+
+2002-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/ButtonArray.c (DoButton):
+	* FvwmTaskBar/Goodies.c (RedrawTipWindow):
+	* FvwmPager/x_pager.c (DrawGrid):
+	(do_label_window):
+	* FvwmIdent/FvwmIdent.c (RedrawWindow):
+	* FvwmIconMan/xmanager.c (draw_button):
+	* FvwmForm/FvwmForm.c (RedrawFrame):
+	(RedrawItem):
+	* FvwmButtons/draw.c (RedrawButton):
+	removed ifdefs from previous xft fixes
+
 2002-03-10  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWinList/ButtonArray.c (DoButton):
@@ -8,7 +42,7 @@
 	* FvwmIconMan/xmanager.c (draw_button):
 	* FvwmForm/FvwmForm.c (RedrawFrame):
 	(RedrawItem):
-	* FvwmButtons/draw.c (RedrawButton): 
+	* FvwmButtons/draw.c (RedrawButton):
 	Fixed Xft related compilation failure and warning
 
 2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>

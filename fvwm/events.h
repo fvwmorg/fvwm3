@@ -16,9 +16,10 @@
 #ifndef _EVENTS_
 #define _EVENTS_
 
-#define XEVMASK_FRAMEW  (SubstructureRedirectMask | VisibilityChangeMask)
+#define XEVMASK_FRAMEW  (SubstructureRedirectMask | VisibilityChangeMask| \
+                         EnterWindowMask | LeaveWindowMask)
 #define XEVMASK_DECORW  (ExposureMask | ButtonPressMask | ButtonReleaseMask | \
-			 KeyPressMask | EnterWindowMask | LeaveWindowMask)
+			 KeyPressMask)
 #define XEVMASK_TITLEW  (ButtonPressMask | ButtonReleaseMask | \
 			 ExposureMask | OwnerGrabButtonMask | \
 			 ButtonMotionMask | PointerMotionMask)

@@ -756,59 +756,6 @@ int ParseToggleArgument(
   return rc;
 }
 
-/* Parses the next token in action and returns
- *
- *   0 if it is N, North, Top or Up
- *   1 if it is E, East, Right or Right
- *   2 if it is S, South, Bottom or Down
- *   3 if it is E, West, Left or Left
- *   4 if it is NE, NorthEast, TopRight or UpRight
- *   5 if it is SE, SouthEast, BottomRight or DownRight
- *   6 if it is SW, SouthWest, BottomLeft or DownLeft
- *   7 if it is NW, NorthWest, TopLeft or UpLeft
- *   default_ret if no string matches.
- *
- * A pointer to the first character in action behind the token is returned
- * through ret_action in this case. ret_action may be NULL. If the token
- * matches none of these strings the default_ret value is returned and the
- * action itself is passed back in ret_action. */
-direction_type ParseDirectionArgument(
-	char *action, char **ret_action, direction_type default_ret)
-{
-	int index;
-	int rc;
-	char *next;
-	char *optlist[] = {
-		"N",  "North",     "Top",         "Up",
-		"E",  "East",      "Right",       "Right",
-		"S",  "South",     "Bottom",      "Down",
-		"W",  "West",      "Left",        "Left",
-		"NE", "NorthEast", "TopRight"     "UpRight",
-		"SE", "SouthEast", "BottomRight", "DownRight",
-		"SW", "SouthWest", "BottomLeft"   "DownLeft",
-		"NW", "NorthWest", "TopLeft",     "UpLeft",
-		NULL
-	};
-
-	next = GetNextTokenIndex(action, optlist, 0, &index);
-	if (index == -1)
-	{
-		/* nothing selected, use default and don't modify action */
-		rc = default_ret;
-		next = action;
-	}
-	else
-	{
-		rc = index / 4;
-	}
-	if (ret_action)
-	{
-		*ret_action = next;
-	}
-
-	return (direction_type)rc;
-}
-
 /* Strips the path from 'path' and returns the last component in a malloc'ed
  * area. */
 char *GetFileNameFromPath(char *path)

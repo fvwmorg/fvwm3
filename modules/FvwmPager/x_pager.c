@@ -1441,10 +1441,8 @@ void DrawGrid(int desk, int erase)
       XDrawLine(dpy,Desks[desk].w,Desks[desk].DashedGC,x1,y1,x2,y1);
     y += Scr.MyDisplayHeight;
   }
-#ifdef HAVE_XFT
-  if (Ffont->fftf.fftfont != NULL)
+  if (FftSupport && Ffont->fftf.fftfont != NULL)
     erase = True;
-#endif
   if(((Scr.CurrentDesk - desk1) == desk) && !ShapeLabels)
   {
     if(uselabel)
@@ -1476,13 +1474,13 @@ void DrawGrid(int desk, int erase)
     else
       FwinString->gc = Desks[desk].NormalGC;
     FwinString->x = (desk_w -w)/2;
-    FwinString->y = (LabelsBelow ? 
+    FwinString->y = (LabelsBelow ?
 		     desk_h + Ffont->ascent + 1 : Ffont->ascent + 1);
     if(desk == (Scr.CurrentDesk - desk1))
       FwinString->gc = Desks[desk].rvGC;
     else
       FwinString->gc = Desks[desk].NormalGC;
-    
+
     FlocaleDrawString(dpy, Ffont, FwinString, 0);
   }
   if (FShapesSupported)
@@ -2340,10 +2338,8 @@ static void do_label_window(PagerWindow *t, Window w)
   t->window_label = GetBalloonLabel(t, WindowLabelFormat);
   if (w != None)
   {
-#ifdef HAVE_XFT
-    if (FwindowFont != NULL && FwindowFont->fftf.fftfont != NULL)
+    if (FftSupport && FwindowFont != NULL && FwindowFont->fftf.fftfont != NULL)
       XClearWindow(dpy, w);
-#endif
     FwinString->str = t->window_label;
     FwinString->win = w;
     FwinString->gc = Scr.NormalGC;

@@ -376,12 +376,10 @@ void menuitem_paint(
 	/***************************************************************
 	 * Hilight the item.
 	 ***************************************************************/
-#ifdef HAVE_XFT
-	if (ST_PSTDFONT(ms)->fftf.fftfont != NULL)
+	if (FftSupport && ST_PSTDFONT(ms)->fftf.fftfont != NULL)
 	{
 		xft_redraw = True;
 	}
-#endif
 
 	/* Hilight or clear the background. */
 	if (is_item_selected && ST_DO_HILIGHT(ms))

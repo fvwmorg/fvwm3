@@ -14,8 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
-#ifndef _BORDERS_H
-#define _BORDERS_H
+#ifndef GRAVITY_H
+#define GRAVITY_H
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -27,32 +27,41 @@
 
 typedef enum
 {
-	DRAW_FRAME    = 0x1,
-	DRAW_TITLE    = 0x2,
-	DRAW_BUTTONS  = 0x4,
-	DRAW_ALL      = 0x7
-} draw_window_parts;
-
-typedef enum
-{
-	CLEAR_NONE     = 0x0,
-	CLEAR_FRAME    = 0x1,
-	CLEAR_TITLE    = 0x2,
-	CLEAR_BUTTONS  = 0x4,
-	CLEAR_ALL      = 0x7
-} clear_window_parts;
+	DIR_NONE = -1,
+	DIR_N = 0,
+	DIR_E = 1,
+	DIR_S = 2,
+	DIR_W = 3,
+	DIR_MAJOR_MASK = 3,
+	DIR_NE = 4,
+	DIR_SE = 5,
+	DIR_SW = 6,
+	DIR_NW = 7,
+	DIR_MASK = 7,
+} direction_type;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- interface functions ------------------------- */
 
-int get_button_number(int context);
-void draw_clipped_decorations(
-	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, XRectangle *rclip, clear_window_parts clear_parts);
-void DrawDecorations(
-	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, clear_window_parts clear_parts);
-void RedrawDecorations(FvwmWindow *tmp_win);
+void gravity_get_offsets(int grav, int *xp,int *yp);
+void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff);
+void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff);
+direction_type gravity_grav_to_dir(
+	int grav);
+int gravity_dir_to_grav(
+	direction_type dir);
+int gravity_combine_xy_grav(
+	int grav_x, int grav_y);
+void gravity_split_xy_grav(
+	int *ret_grav_x, int *ret_grav_y, int in_grav);
+int gravity_combine_xy_dir(
+	int dir_x, int dir_y);
+void gravity_split_xy_dir(
+	int *ret_dir_x, int *ret_dir_y, int in_dir);
+int gravity_dir_to_sign_one_axis(
+	direction_type dir);
+direction_type ParseDirectionArgument(
+	char *action, char **ret_action, direction_type default_ret);
 
-#endif /* _BORDERS_H */
+#endif /* GRAVITY_H */

@@ -1,19 +1,104 @@
+2002-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (get_menu_options):
+	fixed a compiler warning
+
+2002-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/bindings.c (ParseBinding):
+	fixed compiler warning
+
+	* fvwm/ewmh_events.c (EWMH_GetIconGeometry):
+	* fvwm/ewmh.h:
+	fixed compilation w/ --disable-ewmh
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	fixed parsing of conditions versus position of window list broken with
+	a recent "fix"
+
+2002-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Fft.h:
+	* libs/Fft.c (FftTextWidth):
+	(is_utf8_encoding):
+	(FftGetFontWidths):
+	(FftDrawString):
+	removed the HAVE_XFT_UTF8 ifdefs and fixed not setting FftUtf8Support
+	if HAVE_XFT was not set.
+
+	* fvwm/events.h (XEVMASK_DECORW):
+	select EnterNotify and LeaveNotify on frame instead of decor_w
+
+	* fvwm/add_window.c (setup_title_window):
+	(setup_button_windows):
+	(setup_resize_handle_windows):
+	frame window is the new parent of the title, button and handle windows
+	(setup_frame_stacking):
+	new stacking order of decoration windows
+
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/events.c (HandleExpose):
+	xft fixes
+
+	* fvwm/move_resize.c (unmaximize_fvwm_window):
+	don't force to redraw the frame
+
+	* libs/gravity.c (gravity_get_offsets):
+	(gravity_move):
+	(gravity_resize):
+	functions moved to gravity.c
+
 2002-03-10  olicha  <olivier.chapuis@free.fr>
 
 	* acconfig.h (HAVE_XFT_UTF8):
 	* configure.in:
-	* libs/Fft.c (is_utf8_encoding): 
-	(FftGetFontWidths): 
-	(FftDrawString): 
-	(FftTextWidth): 
+	* libs/Fft.c (is_utf8_encoding):
+	(FftGetFontWidths):
+	(FftDrawString):
+	(FftTextWidth):
 	Detected if Xft can handle utf8 string
 
 	* libs/Fft.h:
 	* fvwm/menuitem.c (menuitem_paint):
-	* fvwm/events.c (HandleExpose): 
+	* fvwm/events.c (HandleExpose):
 	Fixed Xft related compilation failure and warning
 
 2002-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c:
+	* fvwm/update.c:
+	* fvwm/move_resize.c:
+	* fvwm/icons.c:
+	* fvwm/focus.c:
+	* fvwm/events.c:
+	* fvwm/builtins.c:
+	* fvwm/add_window.c:
+	* fvwm/frame.c (frame_setup_window):
+	(frame_force_setup_window):
+	(frame_setup_shape):
+	SetupFrame renamed to frame_setup_window
+	ForceSetupFrame renamed to frame_force_setup_window
+	SetShape renamed to frame_setup_shape
+
+	* fvwm/windowshade.c:
+	moved most code to frame.c
+
+	* fvwm/frame.c (SetShape):
+	(SetupTitleBar):
+	(set_decor_gravity):
+	(ForceSetupFrame):
+	(SetupFrame):
+	functions moved to new file
+
+	(SetupTitleBar):
+	(frame_setup_title_bar):
+	renamed function
+
+	* libs/Parse.h:
+	direction code moved to gravity.[ch]
+
+	* fvwm/windowshade.c (CMD_WindowShade):
+	* fvwm/geometry.c (get_shaded_geometry):
 
 	* libs/FScreen.c (FScreenInit):
 	(FScreenUpdateEmulationMapState):

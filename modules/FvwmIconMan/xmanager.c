@@ -27,7 +27,7 @@ static char const rcsid[] =
   "$Id$";
 
 extern char *MyName;
-extern FlocaleWinString *FwinString; 
+extern FlocaleWinString *FwinString;
 
 /* button dirty bits: */
 #define ICON_STATE_CHANGED  1
@@ -1442,16 +1442,20 @@ static void draw_button (WinManager *man, int button, int force)
       FwinString->x = g.text_x;
       FwinString->y = g.text_base;
       FwinString->len = strlen(b->drawn_state.display_string);
-#ifdef HAVE_XFT
-      if (man->FButtonFont->fftf.fftfont != NULL)
+      if (FftSupport)
       {
-	while(
-         FwinString->len >= 0 &&
-	 FlocaleTextWidth(man->FButtonFont, FwinString->str, FwinString->len)
-	 > g.text_w)
-	  FwinString->len--;
+	if (man->FButtonFont->fftf.fftfont != NULL)
+	{
+	  while(
+	    FwinString->len >= 0 &&
+	    FlocaleTextWidth(man->FButtonFont, FwinString->str,
+			     FwinString->len)
+	    > g.text_w)
+	  {
+	    FwinString->len--;
+	  }
+	}
       }
-#endif
       FlocaleDrawString(
 	theDisplay, man->FButtonFont, FwinString, FWS_HAVE_LENGTH);
       XSetClipMask (theDisplay, man->hiContext[button_state], None);

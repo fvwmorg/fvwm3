@@ -316,7 +316,7 @@ int ParseBinding(
     }
   }
 
-  return AddBinding(
+  rc = AddBinding(
     dpy, pblist, type, STROKE_ARG((void *)stroke)
     button, keysym, key_string, modifier, context, (void *)action, NULL);
 

@@ -63,26 +63,23 @@ void init_fft(Display *dpy)
 static
 Bool is_utf8_encoding(FftFont *f)
 {
-	int i = 0;
-	FftPatternElt *e;
-#ifdef HAVE_XFT_UTF8
-	while(i < f->pattern->num)
+	if (FftUtf8Support)
 	{
-		e = &f->pattern->elts[i];
-		if (StrEquals(e->object, FFT_ENCODING))
+		int i = 0;
+		FftPatternElt *e;
+
+		while(i < f->pattern->num)
 		{
-			if (StrEquals(e->values->value.u.s, "iso10646-1"))
+			e = &f->pattern->elts[i];
+			if (StrEquals(e->object, FFT_ENCODING))
 			{
-				return True;
+				return (StrEquals(e->values->value.u.s,
+						  "iso10646-1")) ? True : False;
 			}
-			else
-			{
-				return False;
-			}
+			i++;
 		}
-		i++;
 	}
-#endif
+
 	return False;
 }
 
@@ -106,11 +103,9 @@ void FftGetFontWidths(
 	FGlyphInfo extents;
 
 	/* FIXME */
-	if (fftf->utf8)
+	if (FftUtf8Support && fftf->utf8)
 	{
-#ifdef HAVE_XFT_UTF8
 		FftTextExtentsUtf8(fftdpy, fftf->fftfont, "W", 1, &extents);
-#endif
 	}
 	else
 	{
@@ -185,13 +180,11 @@ void FftDrawString(
 	fft_fg.color.alpha = 0xffff;
 	fft_fg.pixel = xfg.pixel;
 
-	if (flf->utf8)
+	if (FftUtf8Support && flf->utf8)
 	{
-#ifdef HAVE_XFT_UTF8
 		FftDrawStringUtf8(
 			fftdraw, &fft_fg, flf->fftfont, x, y,
 			(unsigned char *) str, len);
-#endif
 	}
 	else
 	{
@@ -211,11 +204,9 @@ int FftTextWidth(FftFontType *fftf, char *str, int len)
 		return 0;
 	}
 	/* FIXME: calculations for vertical text needed */
-	if (fftf->utf8)
+	if (FftUtf8Support && fftf->utf8)
 	{
-#ifdef HAVE_XFT_UTF8 
 		FftTextExtentsUtf8(fftdpy, fftf->fftfont, str, len, &extents);
-#endif
 	}
 	else
 	{

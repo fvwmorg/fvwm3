@@ -36,6 +36,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "commands.h"
 #include "externs.h"

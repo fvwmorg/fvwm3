@@ -58,6 +58,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/FScreen.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -82,6 +83,7 @@
 #include "session.h"
 #include "move_resize.h"
 #include "borders.h"
+#include "frame.h"
 #include "colormaps.h"
 #include "decorations.h"
 
@@ -843,7 +845,7 @@ void setup_title_window(
 
 	tmp_win->title_w =
 		XCreateWindow(
-			dpy, tmp_win->decor_w, 0, 0, 1, 1, 0, CopyFromParent,
+			dpy, tmp_win->frame, 0, 0, 1, 1, 0, CopyFromParent,
 			InputOutput, CopyFromParent, valuemask, pattributes);
 	XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
 
@@ -890,7 +892,7 @@ void setup_button_windows(
     {
       tmp_win->button_w[i] =
 	XCreateWindow(
-	  dpy, tmp_win->decor_w, 0, 0, 1, 1, 0, CopyFromParent, InputOutput,
+	  dpy, tmp_win->frame, 0, 0, 1, 1, 0, CopyFromParent, InputOutput,
 	  CopyFromParent, valuemask, pattributes);
       XSaveContext(dpy, tmp_win->button_w[i], FvwmContext, (caddr_t) tmp_win);
     }
@@ -973,20 +975,20 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
   attributes.event_mask = XEVMASK_BORDERW;
   if (HAS_BORDER(tmp_win))
   {
-    /* Just dump the windows any old place and let SetupFrame take
+    /* Just dump the windows any old place and let frame_setup_window take
      * care of the mess */
     for(i = 0; i < 4; i++)
     {
       attributes.cursor = Scr.FvwmCursors[CRS_TOP_LEFT+i];
       tmp_win->corners[i] =
 	XCreateWindow(
-	  dpy, tmp_win->decor_w, 0, 0, tmp_win->corner_width,
+	  dpy, tmp_win->frame, 0, 0, tmp_win->corner_width,
 	  tmp_win->corner_width, 0, 0, InputOnly,
 	  DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
       attributes.cursor = Scr.FvwmCursors[CRS_TOP+i];
       tmp_win->sides[i] =
 	XCreateWindow(
-	  dpy, tmp_win->decor_w, 0, 0, 1, 1, 0, 0, InputOnly,
+	  dpy, tmp_win->frame, 0, 0, 1, 1, 0, 0, InputOnly,
 	  DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
       XSaveContext(dpy, tmp_win->sides[i], FvwmContext, (caddr_t) tmp_win);
       XSaveContext(dpy, tmp_win->corners[i], FvwmContext, (caddr_t) tmp_win);
@@ -1021,7 +1023,7 @@ static void resize_resize_handle_windows(FvwmWindow *tmp_win)
 		tmp_win->title_thickness + tmp_win->boundary_width;
         if (HAS_BORDER(tmp_win))
         {
-                /* Just dump the windows any old place and let SetupFrame take
+                /* Just dump the windows any old place and let frame_setup_window take
                  * care of the mess */
                 for (i = 0; i < 4; i++)
                 {
@@ -1049,16 +1051,33 @@ void change_resize_handle_windows(FvwmWindow *tmp_win)
 
 void setup_frame_stacking(FvwmWindow *tmp_win)
 {
-  int i;
+	int i;
 
-  XMapSubwindows(dpy, tmp_win->decor_w);
-  XLowerWindow(dpy, tmp_win->decor_w);
-  /* Must lower all four corners since they may overlap the (sibling) title */
-  for (i = 0; i < 4; i++)
-  {
-    if (tmp_win->corners[i] != None)
-      XLowerWindow(dpy, tmp_win->corners[i]);
-  }
+	XMapSubwindows(dpy, tmp_win->frame);
+	/* Stacking order (top to bottom):
+	 *  - Title and buttons
+	 *  - Parent window
+	 *  - Corner handles (invisible, overlap title bar)
+	 *  - Side handles (invisible)
+	 *  - decor window */
+	XLowerWindow(dpy, tmp_win->Parent);
+	for (i = 0; i < 4; i++)
+	{
+		if (tmp_win->corners[i] != None)
+		{
+			XLowerWindow(dpy, tmp_win->corners[i]);
+		}
+	}
+	for (i = 0; i < 4; i++)
+	{
+		if (tmp_win->corners[i] != None)
+		{
+			XLowerWindow(dpy, tmp_win->sides[i]);
+		}
+	}
+	XLowerWindow(dpy, tmp_win->decor_w);
+
+	return;
 }
 
 void setup_auxiliary_windows(
@@ -1634,9 +1653,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
   }
 
   /****** arrange the frame ******/
-  ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		  tmp_win->frame_g.width, tmp_win->frame_g.height,
-		  True);
+  frame_force_setup_window(
+	  tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+	  tmp_win->frame_g.width, tmp_win->frame_g.height, True);
 
   /****** grab keys and buttons ******/
   setup_key_and_button_grabs(tmp_win);
@@ -1728,7 +1747,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
     XLowerWindow(dpy, tmp_win->Parent);
     SET_SHADED(tmp_win, 1);
     SET_SHADED_DIR(tmp_win, do_shade);
-    SetupFrame(
+    frame_setup_window(
       tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
       tmp_win->frame_g.width, tmp_win->frame_g.height, False);
   }

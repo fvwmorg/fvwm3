@@ -73,6 +73,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
+#include "libs/gravity.h"
 
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"
@@ -625,9 +626,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  is_on_desk = True;
 	  is_changing_desk = False;
 	}
-	else if (!IsItemIndexSticky(&windows,i))
+	else
 	{
-	  is_on_desk = (DeskNumber != cfgpacket->desk);
+	  is_on_desk = (DeskNumber == cfgpacket->desk);
 	  is_changing_desk = (Desk != cfgpacket->desk);
 	}
 	UpdateItemIndexDesk(&windows, i, cfgpacket->desk);

@@ -1344,19 +1344,20 @@ void RedrawFrame ()
 {
   Item *item;
 
-#ifdef HAVE_XFT
   Bool clear = False;
-  item = root_item_ptr;
-  while(item != 0 && !clear)
+  if (FftSupport)
   {
-    if ((item->type == I_TEXT || item->type == I_CHOICE) &&
-	item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
-      clear = True;
-    item = item->header.next;
+    item = root_item_ptr;
+    while(item != 0 && !clear)
+    {
+      if ((item->type == I_TEXT || item->type == I_CHOICE) &&
+	  item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
+	clear = True;
+      item = item->header.next;
+    }
+    if (clear)
+      XClearWindow(dpy, CF.frame);
   }
-  if (clear)
-    XClearWindow(dpy, CF.frame);
-#endif
 
   for (item = root_item_ptr; item != 0;
        item = item->header.next) {      /* all items */
@@ -1594,15 +1595,16 @@ void RedrawItem (Item *item, int click)
     item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
       + item->header.dt_ptr->dt_Ffont->ascent;
     item->header.dt_ptr->dt_Fstr->len = item->button.len;
-#ifdef HAVE_XFT
-    if (item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
-      XClearArea(dpy, item->header.win,
-		 BOX_SPC + TEXT_SPC - 1, BOX_SPC,
-		 item->header.size_x
-		 - (2 * BOX_SPC) - 2 - TEXT_SPC,
-		 (item->header.size_y - 1)
-		 - 2 * BOX_SPC + 1, False);
-#endif
+    if (FftSupport)
+    {
+      if (item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
+	XClearArea(dpy, item->header.win,
+		   BOX_SPC + TEXT_SPC - 1, BOX_SPC,
+		   item->header.size_x
+		   - (2 * BOX_SPC) - 2 - TEXT_SPC,
+		   (item->header.size_y - 1)
+		   - 2 * BOX_SPC + 1, False);
+    }
     FlocaleDrawString(dpy,
                       item->header.dt_ptr->dt_Ffont,
                       item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);

@@ -24,7 +24,7 @@ char *getline();
 /******************************************/
 /*  close socket and exit */
 /******************************************/
-void sclose () {
+void sclose (int foo) {
   fclose(sp);
   exit(0);
 }
@@ -105,7 +105,7 @@ int main ( int argc, char *argv[]) {
 
 	}
 	kill( getppid(), SIGKILL );
-	sclose();
+	sclose(0);
   }
   while( fgets( data, MAX_MESSAGE_SIZE, sp )  ) {
 	/* get the response */

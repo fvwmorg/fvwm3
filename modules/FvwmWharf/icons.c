@@ -273,9 +273,12 @@ int GetXPMFile(int button,int ico)
     DrawOutline(Buttons[button].icons[ico].icon,BUTTONWIDTH,BUTTONHEIGHT);
   }
   return 1;
-#endif /* XPM */
-#endif
+#else
   return 0;
+#endif /* XPM */
+#else
+  return 0;
+#endif
 }
 
 /****************************************************************************
@@ -312,9 +315,12 @@ int GetXPMData(int button, char **data)
   DrawOutline(Buttons[button].icons[0].icon,BUTTONWIDTH,BUTTONHEIGHT);
 
   return 1;
-#endif /* XPM */
-#endif
+#else
   return 0;
+#endif /* XPM */
+#else
+  return 0;
+#endif
 }
 
 /*******************************************************************

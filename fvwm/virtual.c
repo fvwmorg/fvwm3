@@ -19,6 +19,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -35,6 +36,7 @@
 #include "ewmh.h"
 #include "move_resize.h"
 #include "borders.h"
+#include "frame.h"
 #include "geometry.h"
 #include "icons.h"
 #include "stack.h"
@@ -1042,8 +1044,9 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    move_icon_to_position(t);
 	    broadcast_icon_geometry(t, False);
 	  }
-	  SetupFrame(t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
-		     t->frame_g.width, t->frame_g.height, False);
+	  frame_setup_window(
+		  t, t->frame_g.x + deltax, t->frame_g.y + deltay,
+		  t->frame_g.width, t->frame_g.height, False);
 	}
       }
       /*  Bump to next win...	 */
@@ -1075,7 +1078,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    move_icon_to_position(t1);
 	    broadcast_icon_geometry(t1, False);
 	  }
-	  SetupFrame(
+	  frame_setup_window(
 	    t1, t1->frame_g.x + deltax, t1->frame_g.y + deltay,
 	    t1->frame_g.width, t1->frame_g.height, False);
 	}

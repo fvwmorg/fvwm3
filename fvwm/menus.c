@@ -54,6 +54,7 @@
 #include "defaults.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
+#include <libs/gravity.h>
 #include "geometry.h"
 
 /* ---------------------------- local definitions --------------------------- */
@@ -6865,6 +6866,7 @@ char *get_menu_options(
 	Bool fValidPosHints =
 		last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
 	Bool is_action_empty = False;
+	Bool once_more = True;
 
 	/* If this is set we may want to reverse the position hints, so don't
 	 * sum up the totals right now. This is useful for the SubmenusLeft
@@ -6886,7 +6888,7 @@ char *get_menu_options(
 	{
 		is_action_empty = True;
 	}
-	while (action != NULL && *action != 0)
+	while (action != NULL && *action != 0 && once_more)
 	{
 		/* ^ just to be able to jump to end of loop without 'goto' */
 		gflags = NoValue;
@@ -7241,7 +7243,7 @@ char *get_menu_options(
 			pops->pos_hints = last_saved_pos_hints.pos_hints;
 		}
 		/* we want to do this only once */
-		break;
+		once_more = False;
 	} /* while */
 	if (is_action_empty)
 	{

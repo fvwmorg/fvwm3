@@ -87,23 +87,21 @@ are calculated from the background color.
 .IP "*FvwmButtons: BoxSize \fIalgorithm\fP"
 This option specifies how serious FvwmButtons takes the Rows and Columns
 options (see below). It can be one of
-.I dumb,
-.I fixed
-or
-.I smart.
+.IR dumb ", " fixed " or " smart .
 
 If
 .I fixed
 is used and both Rows and Columns are specified and non-zero,
 FvwmButtons uses exactly the number of rows and columns specified.
-If the box is too small to accommodate all buttons the module will fail.
+If the box is too small to accommodate all buttons the module will
+fail.
 
 If
 .I smart
-is used FvwmButtons enlarges the box so
-all buttons have a chance to fit. The number of columns is increased to at
-least the width of the widest button and new rows are added until all buttons
-are placed. For the best tolerance of configuration of errors use the
+is used FvwmButtons enlarges the box so all buttons have a chance
+to fit. The number of columns is increased to at least the width
+of the widest button and new rows are added until all buttons are
+placed. For the best tolerance of configuration errors use the
 smart option.
 
 .I dumb
@@ -119,12 +117,11 @@ background.  Refer to the FvwmTheme man page
 for details about colorsets.
 
 .IP "*FvwmButtons: Columns \fIcolumns\fP"
-Specifies the number of columns of buttons to be created. If unspecified,
-the number of columns is set to the number of buttons requested,
-divided by the number of rows. If both the rows and columns are
-specified,
-but the number of buttons is more than the rows and columns allow
-for,  the columns specification is ignored
+Specifies the number of columns of buttons to be created. If
+unspecified, the number of columns is set to the number of buttons
+requested, divided by the number of rows. If both the rows and
+columns are specified, but the number of buttons is more than the
+rows and columns allow for, the columns specification is ignored
 unless the \fIBoxSize\fP option is \fIfixed\fP.
 
 .IP "*FvwmButtons: File \fIfilename\fP"
