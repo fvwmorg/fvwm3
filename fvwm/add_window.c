@@ -427,7 +427,7 @@ FvwmWindow *AddWindow(Window w)
 		0, 0);
 
   
-  valuemask = CWBorderPixel | CWCursor | CWEventMask;
+  valuemask = CWCursor | CWEventMask;
   if(Scr.d_depth < 2)
     {
       attributes.background_pixmap = Scr.light_gray_pixmap;
@@ -441,8 +441,6 @@ FvwmWindow *AddWindow(Window w)
       attributes.background_pixel = tmp_win->BackPixel;
       valuemask |= CWBackPixel;
     }
-
-  attributes.border_pixel = tmp_win->ShadowPixel;
 
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
   attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask |
@@ -497,25 +495,20 @@ FvwmWindow *AddWindow(Window w)
 		   (tmp_win->frame_height - 2*tmp_win->boundary_width -
 		    tmp_win->title_height),0, CopyFromParent,
 		   InputOutput,CopyFromParent, valuemask,&attributes);
-  valuemask = valuemask_save;
 
-  attributes.event_mask = (ButtonPressMask|ButtonReleaseMask|ExposureMask|
-			   EnterWindowMask|LeaveWindowMask);
+  /* create the resize handles */
+  /* sides and corners are input only */
+  /* title and buttons maybe one day */
+  /* not sure about having expose events here */
+  attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
+			   |EnterWindowMask|LeaveWindowMask);
   tmp_win->title_x = tmp_win->title_y = 0;
   tmp_win->title_w = 0;
-  tmp_win->title_width = tmp_win->frame_width - 2*tmp_win->corner_width - 3;
+  tmp_win->title_width = tmp_win->frame_width - 2 * tmp_win->boundary_width;
   if(tmp_win->title_width < 1)
     tmp_win->title_width = 1;
   if(tmp_win->flags & BORDER)
     {
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-      if (TexturePixmap) {
-	  TexturePixmapSave = attributes.background_pixmap;
-	  attributes.background_pixmap = TexturePixmap;
-	  valuemask_save = valuemask;
-	  valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
-      }
-#endif
       /* Just dump the windows any old place and left SetupFrame take
        * care of the mess */
       for(i=0;i<4;i++)
@@ -524,18 +517,19 @@ FvwmWindow *AddWindow(Window w)
 	  tmp_win->corners[i] =
 	    XCreateWindow (dpy, tmp_win->frame, 0,0,
 			   tmp_win->corner_width, tmp_win->corner_width,
-			   0, CopyFromParent,InputOutput,
-			   CopyFromParent,
-			   valuemask,
-			   &attributes);
+			   0, CopyFromParent, InputOnly, CopyFromParent,
+			   valuemask, &attributes);
+	  attributes.cursor = Scr.FvwmCursors[TOP+i];
+	  tmp_win->sides[i] =
+	    XCreateWindow (dpy, tmp_win->frame, 0, 0, tmp_win->boundary_width,
+			   tmp_win->boundary_width, 0, CopyFromParent,
+			   InputOnly, CopyFromParent, valuemask, &attributes);
 	}
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-      if (TexturePixmap) {
-	  attributes.background_pixmap = TexturePixmapSave;
-	  valuemask = valuemask_save;
-      }
-#endif
+
     }
+
+  /* restore valuemask to rmemeber background */
+  valuemask = valuemask_save;
 
   if (tmp_win->flags & TITLE)
     {
@@ -610,34 +604,6 @@ FvwmWindow *AddWindow(Window w)
 	  else
 	    tmp_win->right_w[i] = None;
 	}
-    }
-
-  if(tmp_win->flags & BORDER)
-    {
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-      if (TexturePixmap) {
-	  TexturePixmapSave = attributes.background_pixmap;
-	  attributes.background_pixmap = TexturePixmap;
-	  valuemask_save = valuemask;
-	  valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
-      }
-#endif
-      for(i=0;i<4;i++)
-	{
-	  attributes.cursor = Scr.FvwmCursors[TOP+i];
-	  tmp_win->sides[i] =
-	    XCreateWindow (dpy, tmp_win->frame, 0, 0, tmp_win->boundary_width,
-			   tmp_win->boundary_width, 0, CopyFromParent,
-			   InputOutput, CopyFromParent,
-			   valuemask,
-			   &attributes);
-	}
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-      if (TexturePixmap) {
-	  attributes.background_pixmap = TexturePixmapSave;
-	  valuemask = valuemask_save;
-      }
-#endif
     }
 
 

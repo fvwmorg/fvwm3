@@ -87,7 +87,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 {
   int y, i, x;
   GC ReliefGC,ShadowGC;
-  Pixel BorderColor,BackColor;
+  Pixel BackColor;
   Pixmap BackPixmap,TextColor;
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   Pixmap TexturePixmap = None;
@@ -97,16 +97,20 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   Bool NewColor = False;
   XSetWindowAttributes attributes;
   unsigned long valuemask;
-  static unsigned int corners[4];
   Window w;
-
-  corners[0] = TOP_HILITE | LEFT_HILITE;
-  corners[1] = TOP_HILITE | RIGHT_HILITE;
-  corners[2] = BOTTOM_HILITE | LEFT_HILITE;
-  corners[3] = BOTTOM_HILITE | RIGHT_HILITE;
+#ifdef BORDERSTYLE
+  int borderflags;
+#endif /* BORDERSTYLE */
 
   if(!t)
     return;
+
+/* get the border style bits */
+#ifdef BORDERSTYLE
+      borderflags = onoroff
+	  ? GetDecor(t,BorderStyle.active.style)
+	  : GetDecor(t,BorderStyle.inactive.style);
+#endif /* BORDERSTYLE */
 
   if (onoroff)
   {
@@ -141,7 +145,6 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     BackColor = GetDecor(t,HiColors.back);
     ReliefGC = GetDecor(t,HiReliefGC);
     ShadowGC = GetDecor(t,HiShadowGC);
-    BorderColor = GetDecor(t,HiRelief.back);
   }
   else
   {
@@ -174,7 +177,6 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     Globalgcv.foreground = t->ShadowPixel;
     XChangeGC(dpy,Scr.ScratchGC2,Globalgcm,&Globalgcv);
     ShadowGC = Scr.ScratchGC2;
-    BorderColor = t->ShadowPixel;
   }
 
   if(t->flags & ICONIFIED)
@@ -184,28 +186,16 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   }
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-  valuemask =
-      notex_valuemask =
-      CWBorderPixel;
-  attributes.border_pixel =
-      notex_attributes.border_pixel =
-      BorderColor;
-#else
-  valuemask = CWBorderPixel;
-  attributes.border_pixel = BorderColor;
-#endif
-
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   if (TexturePixmap)
   {
       attributes.background_pixmap = TexturePixmap;
-      valuemask |= CWBackPixmap;
+      valuemask = CWBackPixmap;
       if (Scr.d_depth < 2) {
 	  notex_attributes.background_pixmap = BackPixmap;
-	  notex_valuemask |= CWBackPixmap;
+	  notex_valuemask = CWBackPixmap;
       } else {
 	  notex_attributes.background_pixel = BackColor;
-	  notex_valuemask |= CWBackPixel;
+	  notex_valuemask = CWBackPixel;
       }
   }
   else
@@ -213,27 +203,22 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   if (Scr.d_depth < 2)
   {
       attributes.background_pixmap = BackPixmap;
-      valuemask |= CWBackPixmap;
+      valuemask = CWBackPixmap;
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
       notex_attributes.background_pixmap = BackPixmap;
-      notex_valuemask |= CWBackPixmap;
+      notex_valuemask = CWBackPixmap;
 #endif
   }
   else
   {
       attributes.background_pixel = BackColor;
-      valuemask |= CWBackPixel;
+      valuemask = CWBackPixel;
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
       notex_attributes.background_pixel = BackColor;
-      notex_valuemask |= CWBackPixel;
+      notex_valuemask = CWBackPixel;
 #endif
   }
 
-  if(t->flags & (TITLE|BORDER))
-  {
-    XSetWindowBorder(dpy,t->Parent,BorderColor);
-    XSetWindowBorder(dpy,t->frame,BorderColor);
-  }
   if(t->flags & TITLE)
   {
     ChangeWindowColor(t->title_w,valuemask);
@@ -288,14 +273,12 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 			RelieveWindow(t,t->left_w[i],0,0,
 				      t->title_height, t->title_height,
 				      (inverted ? ReliefGC : ShadowGC),
-				      (inverted ? ShadowGC : ReliefGC),
-				      BOTTOM_HILITE);
+				      (inverted ? ShadowGC : ReliefGC));
 		    else
 			RelieveWindow(t,t->left_w[i],0,0,
 				      t->title_height, t->title_height,
 				      (inverted ? ShadowGC : ReliefGC),
-				      (inverted ? ReliefGC : ShadowGC),
-				      BOTTOM_HILITE);
+				      (inverted ? ReliefGC : ShadowGC));
 		}
 	    }
 	}
@@ -351,14 +334,12 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 			RelieveWindow(t,t->right_w[i],0,0,
 				      t->title_height, t->title_height,
 				      (inverted ? ReliefGC : ShadowGC),
-				      (inverted ? ShadowGC : ReliefGC),
-				      BOTTOM_HILITE);
+				      (inverted ? ShadowGC : ReliefGC));
 		    else
 			RelieveWindow(t,t->right_w[i],0,0,
 				      t->title_height, t->title_height,
 				      (inverted ? ShadowGC : ReliefGC),
-				      (inverted ? ReliefGC : ShadowGC),
-				      BOTTOM_HILITE);
+				      (inverted ? ReliefGC : ShadowGC));
 		}
 	    }
 	}
@@ -367,112 +348,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
   }
 
-  if(t->flags & BORDER)
-  {
-    /* draw relief lines */
-    y = t->frame_height - 2*t->corner_width;
-    x = t->frame_width -  2*t->corner_width;
-
-    for(i=0;i<4;i++)
-    {
-      int vertical = i % 2;
-#ifdef BORDERSTYLE
-      int flags = onoroff
-	  ? GetDecor(t,BorderStyle.active.style)
-	  : GetDecor(t,BorderStyle.inactive.style);
-#endif /* BORDERSTYLE */
-
-      ChangeWindowColor(t->sides[i],valuemask);
-      if((flush_expose (t->sides[i]))||(expose_win == t->sides[i])||
-         (expose_win == None))
-      {
-        GC sgc,rgc;
-
-        sgc=ShadowGC;
-        rgc=ReliefGC;
-        if(!(t->flags & MWMButtons)&&(PressedW == t->sides[i]))
-        {
-          sgc = ReliefGC;
-          rgc = ShadowGC;
-        }
-        /* index    side
-         * 0        TOP
-         * 1        RIGHT
-         * 2        BOTTOM
-         * 3        LEFT
-         */
-
-#ifdef BORDERSTYLE
-        if (flags&HiddenHandles) {
-	    if (flags&NoInset)
-		RelieveWindowHH(t,t->sides[i],0,0,
-				((vertical)?t->boundary_width:x),
-				((vertical)?y:t->boundary_width),
-				rgc, sgc, vertical
-				? (i == 3 ? LEFT_HILITE : RIGHT_HILITE)
-				: (i ? BOTTOM_HILITE : TOP_HILITE),
-				(0x0001<<i)
-		    );
-	    else
-		RelieveWindowHH(t,t->sides[i],0,0,
-				((vertical)?t->boundary_width:x),
-				((vertical)?y:t->boundary_width),
-				rgc, sgc, vertical
-				? (LEFT_HILITE|RIGHT_HILITE)
-				: (TOP_HILITE|BOTTOM_HILITE),
-				(0x0001<<i)
-		    );
-        } else
-#endif /* BORDERSTYLE */
-	    RelieveWindow(t,t->sides[i],0,0,
-			  ((i%2)?t->boundary_width:x),
-			  ((i%2)?y:t->boundary_width),
-			  rgc, sgc, (0x0001<<i));
-      }
-      ChangeWindowColor(t->corners[i],valuemask);
-      if((flush_expose(t->corners[i]))||(expose_win==t->corners[i])||
-         (expose_win == None))
-      {
-        GC rgc,sgc;
-
-        rgc = ReliefGC;
-        sgc = ShadowGC;
-        if(!(t->flags & MWMButtons)&&(PressedW == t->corners[i]))
-        {
-          sgc = ReliefGC;
-          rgc = ShadowGC;
-        }
-#ifdef BORDERSTYLE
-        if (flags&HiddenHandles) {
-	    RelieveWindowHH(t,t->corners[i],0,0,t->corner_width,
-			    ((i/2)?t->corner_width:t->corner_width),
-			    rgc,sgc, corners[i], corners[i]);
-
-	    if (!(flags&NoInset)) {
-		if (t->boundary_width > 1)
-		    RelieveParts(t,i|HH_HILITE,
-				 ((i/2)?rgc:sgc),(vertical?rgc:sgc));
-		else
-		    RelieveParts(t,i|HH_HILITE,
-				 ((i/2)?sgc:sgc),(vertical?sgc:sgc));
-	    }
-         } else {
-#endif /* ! BORDERSTYLE */
-	     RelieveWindow(t,t->corners[i],0,0,t->corner_width,
-			   ((i/2)?t->corner_width:t->corner_width),
-			   rgc,sgc, corners[i]);
-
-	     if(t->boundary_width > 1)
-		 RelieveParts(t,i,((i/2)?rgc:sgc),(vertical?rgc:sgc));
-	     else
-		 RelieveParts(t,i,((i/2)?sgc:sgc),(vertical?sgc:sgc));
-#ifdef BORDERSTYLE
-         }
-#endif
-      }
-    }
-  }
-  else      /* no decorative border */
+  /* draw the border */
+  /* resize handles are input only so draw in the frame and it will show through */
   {
     /* for mono - put a black border on
      * for color, make it the color of the decoration background */
@@ -481,74 +358,194 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       flush_expose (t->frame);
       if(Scr.d_depth <2)
       {
-        XSetWindowBorder(dpy,t->frame,TextColor);
-        XSetWindowBorder(dpy,t->Parent,TextColor);
         XSetWindowBackgroundPixmap(dpy,t->frame,BackPixmap);
         XClearWindow(dpy,t->frame);
-        XSetWindowBackgroundPixmap(dpy,t->Parent,BackPixmap);
-        XClearWindow(dpy,t->Parent);
       }
       else
       {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
 	XSetWindowBackgroundPixmap(dpy,t->frame,TexturePixmap);
 #endif
-        XSetWindowBorder(dpy,t->frame,BorderColor);
         XClearWindow(dpy,t->frame);
-        XSetWindowBackground(dpy,t->Parent,BorderColor);
-        XSetWindowBorder(dpy,t->Parent,BorderColor);
-        XClearWindow(dpy,t->Parent);
-        XSetWindowBorder(dpy,t->w,BorderColor);
       }
     }
     else
     {
       GC rgc,sgc;
 
-      XSetWindowBorder(dpy,t->Parent,BorderColor);
-      XSetWindowBorder(dpy,t->frame,BorderColor);
-
-      rgc=ReliefGC;
-      sgc=ShadowGC;
-      if(!(t->flags & MWMButtons)&&(PressedW == t->frame))
-      {
+      /* change this after GSFR, won't depend on MWMButtons */
+      if(!(t->flags & MWMButtons)&&(PressedW == t->frame)) {
         sgc=ReliefGC;
         rgc=ShadowGC;
+      } else {
+        rgc=ReliefGC;
+        sgc=ShadowGC;
       }
       ChangeWindowColor(t->frame, valuemask);
       if((flush_expose(t->frame))||(expose_win == t->frame)||
          (expose_win == None))
       {
-        if(t->boundary_width > 2)
-        {
-          RelieveWindow(t,t->frame,t->boundary_width-1,
-                        t->boundary_width-1,
-                        t->frame_width-
-                        (t->boundary_width<<1)+2,
-                        t->frame_height-
-                        (t->boundary_width<<1)+2,
-                        sgc,rgc,
-                        TOP_HILITE|LEFT_HILITE|RIGHT_HILITE|
-                        BOTTOM_HILITE);
-          RelieveWindow(t,t->frame,0,0,t->frame_width,
-                        t->frame_height,rgc,sgc,
-                        TOP_HILITE|LEFT_HILITE|RIGHT_HILITE|
-                        BOTTOM_HILITE);
+        /* draw the outside relief */
+        if (t->flags & MWMBorders)
+          RelieveWindow(t,t->frame,0,0,t->frame_width,t->frame_height,rgc,sgc);
+        else { /* FVWMBorder style has an extra line of shadow on top and left */
+          RelieveWindow(t,t->frame,-1,-1,t->frame_width+3,t->frame_height+3,sgc,sgc);
+          RelieveWindow(t,t->frame,1,1,t->frame_width-1,t->frame_height-1,rgc,sgc);
         }
-        else
-        {
-          RelieveWindow(t,t->frame,0,0,t->frame_width,
-                        t->frame_height,rgc,rgc,
-                        TOP_HILITE|LEFT_HILITE|RIGHT_HILITE|
-                        BOTTOM_HILITE);
+        /* draw the inside relief for FvwmBorders 
+         * Motif & FVWM borders drawn later (over the handles) */
+        if(
+#ifdef BORDERSTYLE
+           !(borderflags & NoInset)
+#endif
+           && t->boundary_width > 2)
+        { /* draw the inside relief for FVWMBorder that is overwritten by handles */
+          if (!(t->flags & MWMBorders))
+            RelieveWindow(t,t->frame,t->boundary_width-2,t->boundary_width-2,
+                        t->frame_width-(t->boundary_width<<1)+5,
+                        t->frame_height-(t->boundary_width<<1)+5,
+                        sgc,rgc);
         }
-      }
-      else
-      {
-        XSetWindowBackground(dpy,t->Parent,BorderColor);
+      
+        /* draw the handles into the inset edge in case NoInset is set */
+        if ((t->flags & BORDER) && (t->boundary_width > 4))
+#ifdef BORDERSTYLE
+        if (!(borderflags & HiddenHandles))
+#endif BORDERSTYLE
+        {
+          XRectangle marks[8];
+          /* MWM border windows have thin 3d effects 
+           * FvwmBorders have 3 pixels top/left, 2 bot/right */
+          int hwidth = (t->flags & MWMBorders ? 0 : 1);
+          int hlength = t->boundary_width - (t->flags & MWMBorders ?
+#ifndef BORDERSTYLE
+          2
+#else
+          ((borderflags & NoInset) ? 3 : 2)
+#endif
+          :
+#ifndef BORDERSTYLE
+          4);
+#define fudge 0
+#else
+          ((borderflags & NoInset) ? 3 : 4));
+          int fudge = ((borderflags & NoInset)
+                        && !(borderflags & MWMBorders)) ? 1 : 0;
+#endif BORDERSTYLE
+
+          /* hilite marks */
+          i = 0;
+          /* top left */
+          marks[i].x = t->corner_width;
+          marks[i].y = hwidth + 1;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* top right */
+          marks[i].x = t->frame_width - t->corner_width;
+          marks[i].y = hwidth + 1;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* bot left */
+          marks[i].x = t->corner_width;
+          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* bot right */
+          marks[i].x = t->frame_width - t->corner_width;
+          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* left top */
+          marks[i].x = hwidth + 1;
+          marks[i].y = t->corner_width;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+          /* left bot */
+          marks[i].x = hwidth + 1;
+          marks[i].y = t->frame_height - t->corner_width;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+          /* right top */
+          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].y = t->corner_width;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+          /* right bot */
+          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].y = t->frame_height - t->corner_width;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+
+          XDrawRectangles(dpy, t->frame, rgc, marks, i);
+
+          /* shadow marks */
+          i = 0;
+          /* top left */
+          marks[i].x = t->corner_width - hwidth - 1;
+          marks[i].y = hwidth + 1;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* top right */
+          marks[i].x = t->frame_width - t->corner_width - hwidth - 1;
+          marks[i].y = hwidth +  1;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* bot left */
+          marks[i].x = t->corner_width - hwidth - 1;
+          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* bot right */
+          marks[i].x = t->frame_width - t->corner_width - hwidth - 1;
+          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].width = hwidth; marks[i++].height = hlength;
+          /* left top */
+          marks[i].x = hwidth + 1;
+          marks[i].y = t->corner_width - hwidth - 1;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+          /* left bot */
+          marks[i].x = hwidth + 1;
+          marks[i].y = t->frame_height - t->corner_width - hwidth - 1;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+          /* right top */
+          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].y = t->corner_width - hwidth - 1;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+          /* right bot */
+          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].y = t->frame_height - t->corner_width - hwidth - 1;
+          marks[i].width = hlength; marks[i++].height = hwidth;
+
+          XDrawRectangles(dpy, t->frame, sgc, marks, i);
+        }
+
+        /* draw the rest of the inset on top of the handles */
+        if(0 &&
+#ifdef BORDERSTYLE
+           !(borderflags & NoInset)
+#endif
+           && t->boundary_width > 2)
+        { /* draw the inside relief */
+          if (t->flags & MWMBorders) /* single pixel inside border */
+            RelieveWindow(t,t->frame,t->boundary_width-1,t->boundary_width-1,
+                        t->frame_width-(t->boundary_width<<1)+2,
+                        t->frame_height-(t->boundary_width<<1)+2,
+                        sgc,rgc);
+          else { /* 2 pixels + an extra shadow on bottom & right */
+            RelieveWindow(t,t->frame,t->boundary_width-2,t->boundary_width-2,
+                        t->frame_width-(t->boundary_width<<1)+5,
+                        t->frame_height-(t->boundary_width<<1)+5,
+                        sgc,rgc);
+            RelieveWindow(t,t->frame,t->boundary_width,t->boundary_width,
+                        t->frame_width-(t->boundary_width<<1)+1,
+                        t->frame_height-(t->boundary_width<<1)+1,
+                        sgc,sgc);
+          }
+        }
+      
+        /* now draw the pressed in part on top */
+        /* a bit hacky to draw twice but you should see the code it replaces
+           never mind the esoterics, feel the thin-ness */
+        /* undocumented dependancy on MWMbuttons !!!
+           MWMButtons style makes the border undepressable */
+        /* GSFR candidate
+        if(!(t->flags & MWMButtons))
+          case (PressedW) in
+            t->side[1] {
+        */
       }
     }
   }
+  
   /* Sync to make the border-color change look fast! */
   XSync(dpy,0);
 
@@ -727,7 +724,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   }
   else
   {
-    Forecolor =t->TextPixel;
+    Forecolor = t->TextPixel;
     BackColor = t->BackPixel;
     Globalgcv.foreground = t->ReliefPixel;
     Globalgcm = GCForeground;
@@ -796,10 +793,10 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   if(Scr.d_depth<2)
   {
     RelieveWindow(t,t->title_w,0,0,hor_off-2,t->title_height,
-                  ReliefGC, ShadowGC, BOTTOM_HILITE);
+                  ReliefGC, ShadowGC);
     RelieveWindow(t,t->title_w,hor_off+w+2,0,
                   t->title_width - w - hor_off-2,t->title_height,
-                  ReliefGC, ShadowGC, BOTTOM_HILITE);
+                  ReliefGC, ShadowGC);
     XFillRectangle(dpy,t->title_w,
                    (PressedW==t->title_w?ShadowGC:ReliefGC),
                    hor_off - 2, 0, w+4,t->title_height);
@@ -834,10 +831,10 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
       if (!(tb_style & FlatButton)) {
 	  if (tb_style & SunkButton)
 	      RelieveWindow(t,t->title_w,0,0,t->title_width,t->title_height,
-			    ShadowGC, ReliefGC, BOTTOM_HILITE);
+			    ShadowGC, ReliefGC);
 	  else
 	      RelieveWindow(t,t->title_w,0,0,t->title_width,t->title_height,
-			    ReliefGC, ShadowGC, BOTTOM_HILITE);
+			    ReliefGC, ShadowGC);
       }
 
       if(t->name != (char *)NULL)
@@ -865,382 +862,56 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
 }
 
-
-
-
 /****************************************************************************
  *
  *  Draws the relief pattern around a window
+ * Simplified by the Hippo
+ * Draws end points assuming CAP_NOT_LAST style in GC
  *
  ****************************************************************************/
 void RelieveWindow(FvwmWindow *t,Window win, int x,int y,int w,int h,
-		   GC ReliefGC, GC ShadowGC, int hilite)
+		   GC ReliefGC, GC ShadowGC)
 {
   XSegment seg[4];
   int i;
-  int edge;
-
-  edge = 0;
-  if((win == t->sides[0])||(win == t->sides[1])||
-     (win == t->sides[2])||(win == t->sides[3]))
-    edge = -1;
-  if(win == t->corners[0])
-    edge = 1;
-  if(win == t->corners[1])
-    edge = 2;
-  if(win == t->corners[2])
-    edge = 3;
-  if(win == t->corners[3])
-    edge = 4;
 
   i=0;
+  /* top */
   seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y;
-
+  seg[i].x2 = x+w;      seg[i++].y2 = y;
+  /* left */
   seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = x;        seg[i++].y2 = h+y-1;
-
-  if(((t->boundary_width > 2)||(edge == 0))&&
-     ((t->boundary_width > 3)||(edge < 1))&&
-     (!(t->flags & MWMBorders)||
-      (((edge==0)||(t->boundary_width > 3))&&(hilite & TOP_HILITE))))
-  {
+  seg[i].x2 = x;        seg[i++].y2 = y+h;
+  /* top inside */
+  if (h > 2) {
     seg[i].x1 = x+1;      seg[i].y1   = y+1;
-    seg[i].x2 = x+w-2;    seg[i++].y2 = y+1;
+    seg[i].x2 = x+w-1;    seg[i++].y2 = y+1;
   }
-  if(((t->boundary_width > 2)||(edge == 0))&&
-     ((t->boundary_width > 3)||(edge < 1))&&
-     (!(t->flags & MWMBorders)||
-      (((edge==0)||(t->boundary_width > 3))&&(hilite & LEFT_HILITE))))
-  {
+  /* left inside */
+  if (w > 2) {
     seg[i].x1 = x+1;      seg[i].y1   = y+1;
-    seg[i].x2 = x+1;      seg[i++].y2 = y+h-2;
+    seg[i].x2 = x+1;      seg[i++].y2 = y+h-1;
   }
   XDrawSegments(dpy, win, ReliefGC, seg, i);
 
   i=0;
+  /* bottom */
   seg[i].x1 = x;        seg[i].y1   = y+h-1;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y+h-1;
-
-  if(((t->boundary_width > 2)||(edge == 0))&&
-     (!(t->flags & MWMBorders)||
-      (((edge==0)||(t->boundary_width > 3))&&(hilite & BOTTOM_HILITE))))
-  {
-    seg[i].x1 = x+1;      seg[i].y1   = y+h-2;
-    seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
-  }
-
+  seg[i].x2 = x+w;      seg[i++].y2 = y+h-1;
+  /* right */
   seg[i].x1 = x+w-1;    seg[i].y1   = y;
-  seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-1;
-
-  if(((t->boundary_width > 2)||(edge == 0))&&
-     (!(t->flags & MWMBorders)||
-      (((edge==0)||(t->boundary_width > 3))&&(hilite & RIGHT_HILITE))))
-  {
+  seg[i].x2 = x+w-1;    seg[i++].y2 = y+h;
+  /* bottom inside */
+  if (h > 2) {
+    seg[i].x1 = x+1;      seg[i].y1   = y+h-2;
+    seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-2;
+  }
+  /* right inside */
+  if (w > 2) {
     seg[i].x1 = x+w-2;    seg[i].y1   = y+1;
-    seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
+    seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-1;
   }
   XDrawSegments(dpy, win, ShadowGC, seg, i);
-}
-
-#ifdef BORDERSTYLE
-/****************************************************************************
- *
- *  Draws the relief pattern around a window for HiddenHandle borders
- *
- *  (veliaa@rpi.edu)
- *
- ****************************************************************************/
-void RelieveWindowHH(FvwmWindow *t,Window win, int x,int y,int w,int h,
-		     GC ReliefGC, GC ShadowGC, int draw, int hilite)
-{
-    XSegment seg[4];
-    int i = 0;
-    int edge = 0, a = 0, b = 0;
-
-    if(win == t->sides[0]) {
-	edge = 5;
-	b = 1;
-    }
-    else if (win == t->sides[1]) {
-	a = 1;
-	edge = 6;
-    }
-    else if (win == t->sides[2]) {
-	edge = 7;
-	b = 1;
-    }
-    else if (win == t->sides[3]) {
-	edge = 8;
-	a = 1;
-    } else if (win == t->corners[0])
-	edge = 1;
-    else if (win == t->corners[1])
-	edge = 2;
-    else if (win == t->corners[2])
-	edge = 3;
-    else if (win == t->corners[3])
-	edge = 4;
-
-    if (draw & TOP_HILITE) {
-	seg[i].x1 = x;        seg[i].y1   = y;
-	seg[i].x2 = w+x-1;    seg[i++].y2 = y;
-
-	if(((t->boundary_width > 2)||(edge == 0))&&
-	   ((t->boundary_width > 3)||(edge < 1))&&
-	   (!(t->flags & MWMBorders)||
-	    (((edge==0)||(t->boundary_width > 3))&&(hilite & TOP_HILITE))))
-	{
-	    seg[i].x1 = x+((edge == 2)|| b ? 0 : 1);  seg[i].y1 = y+1;
-	    seg[i].x2 = x+w-1-((edge == 1)|| b ? 0 : 1);    seg[i++].y2 = y+1;
-	}
-    }
-
-    if (draw & LEFT_HILITE) {
-	seg[i].x1 = x;        seg[i].y1   = y;
-	seg[i].x2 = x;        seg[i++].y2 = h+y-1;
-
-	if(((t->boundary_width > 2)||(edge == 0))&&
-	   ((t->boundary_width > 3)||(edge < 1))&&
-	   (!(t->flags & MWMBorders)||
-	    (((edge==0)||(t->boundary_width > 3))&&(hilite & LEFT_HILITE))))
-	{
-	    seg[i].x1 = x+1;      seg[i].y1   = y+((edge == 3)|| a ? 0 : 1);
-	    seg[i].x2 = x+1;      seg[i++].y2 = y+h-1-((edge == 1)|| a ? 0 : 1);
-	}
-    }
-    XDrawSegments(dpy, win, ReliefGC, seg, i);
-
-    i=0;
-
-    if (draw & BOTTOM_HILITE) {
-	seg[i].x1 = x;        seg[i].y1   = y+h-1;
-	seg[i].x2 = w+x-1;    seg[i++].y2 = y+h-1;
-
-	if(((t->boundary_width > 2)||(edge == 0))&&
-	   (!(t->flags & MWMBorders)||
-	    (((edge==0)||(t->boundary_width > 3))&&(hilite & BOTTOM_HILITE))))
-	{
-	    seg[i].x1 = x+(b ||(edge == 4) ? 0 : 1);      seg[i].y1   = y+h-2;
-	    seg[i].x2 = x+w-((edge == 3) ? 0 : 1);    seg[i++].y2 = y+h-2;
-	}
-    }
-
-    if (draw & RIGHT_HILITE) {
-	seg[i].x1 = x+w-1;    seg[i].y1   = y;
-	seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-1;
-
-	if(((t->boundary_width > 2)||(edge == 0))&&
-	   (!(t->flags & MWMBorders)||
-	    (((edge==0)||(t->boundary_width > 3))&&(hilite & RIGHT_HILITE))))
-	{
-	    seg[i].x1 = x+w-2;    seg[i].y1   = y+(a ||(edge == 4) ? 0 : 1);
-	    seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-1-((edge == 2)|| a ? 0 : 1);
-	}
-    }
-    XDrawSegments(dpy, win, ShadowGC, seg, i);
-}
-#endif /* BORDERSTYLE */
-
-void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert)
-{
-  XSegment seg[2];
-  int n = 0, hh = i & HH_HILITE;
-  i &= FULL_HILITE;
-
-  if((t->flags & MWMBorders)||(t->boundary_width < 3))
-  {
-    switch(i)
-    {
-      case 0:
-        seg[0].x1 = t->boundary_width-1;
-        seg[0].x2 = t->corner_width;
-        seg[0].y1 = t->boundary_width-1;
-        seg[0].y2 = t->boundary_width-1;
-        n=1;
-        break;
-      case 1:
-        seg[0].x1 = 0;
-        seg[0].x2 = t->corner_width - t->boundary_width /* -1*/ ;
-        seg[0].y1 = t->boundary_width-1;
-        seg[0].y2 = t->boundary_width-1;
-        n=1;
-        break;
-      case 2:
-        seg[0].x1 = t->boundary_width-1;
-        seg[0].x2 = t->corner_width - (hh ? 1 : 2);
-        seg[0].y1 = t->corner_width - t->boundary_width;
-        seg[0].y2 = t->corner_width - t->boundary_width;
-        n=1;
-        break;
-      case 3:
-        seg[0].x1 = 0;
-        seg[0].x2 = t->corner_width - t->boundary_width;
-        seg[0].y1 = t->corner_width - t->boundary_width;
-        seg[0].y2 = t->corner_width - t->boundary_width;
-        n=1;
-        break;
-    }
-    XDrawSegments(dpy, t->corners[i], hor, seg, n);
-    switch(i)
-    {
-      case 0:
-        seg[0].y1 = t->boundary_width-1;
-        seg[0].y2 = t->corner_width;
-        seg[0].x1 = t->boundary_width-1;
-        seg[0].x2 = t->boundary_width-1;
-        n=1;
-        break;
-      case 1:
-        seg[0].y1 = t->boundary_width -1;
-        seg[0].y2 = t->corner_width - (hh ? 0 : 2);
-        seg[0].x1 = t->corner_width - t->boundary_width;
-        seg[0].x2 = t->corner_width - t->boundary_width;
-        n=1;
-        break;
-      case 2:
-        seg[0].y1 = 0;
-        seg[0].y2 = t->corner_width - t->boundary_width;
-        seg[0].x1 = t->boundary_width-1;
-        seg[0].x2 = t->boundary_width-1;
-        n=1;
-        break;
-      case 3:
-        seg[0].y1 = 0;
-        seg[0].y2 = t->corner_width - t->boundary_width;
-        seg[0].x1 = t->corner_width - t->boundary_width;
-        seg[0].x2 = t->corner_width - t->boundary_width;
-        n=1;
-        break;
-    }
-    XDrawSegments(dpy, t->corners[i], vert, seg, 1);
-  }
-  else
-  {
-    switch(i)
-    {
-      case 0:
-        seg[0].x1 = t->boundary_width-2;
-        seg[0].x2 = t->corner_width;
-        seg[0].y1 = t->boundary_width-2;
-        seg[0].y2 = t->boundary_width-2;
-
-        seg[1].x1 = t->boundary_width-2;
-        seg[1].x2 = t->corner_width;
-        seg[1].y1 = t->boundary_width-1;
-        seg[1].y2 = t->boundary_width-1;
-        n=2;
-        break;
-      case 1:
-        seg[0].x1 = (hh ? 0 : 1);
-        seg[0].x2 = t->corner_width - t->boundary_width;
-        seg[0].y1 = t->boundary_width-2;
-        seg[0].y2 = t->boundary_width-2;
-
-        seg[1].x1 = 0;
-        seg[1].x2 = t->corner_width - t->boundary_width-1;
-        seg[1].y1 = t->boundary_width-1;
-        seg[1].y2 = t->boundary_width-1;
-        n=2;
-        break;
-      case 2:
-        seg[0].x1 = t->boundary_width-1;
-        seg[0].x2 = t->corner_width - (hh ? 1 : 2);
-        seg[0].y1 = t->corner_width - t->boundary_width+1;
-        seg[0].y2 = t->corner_width - t->boundary_width+1;
-        n=1;
-        if(t->boundary_width > 3)
-        {
-          seg[1].x1 = t->boundary_width-2;
-          seg[1].x2 = t->corner_width - (hh ? 1 : 3);
-          seg[1].y1 = t->corner_width - t->boundary_width + 2;
-          seg[1].y2 = t->corner_width - t->boundary_width + 2;
-          n=2;
-        }
-        break;
-      case 3:
-        seg[0].x1 = 0;
-        seg[0].x2 = t->corner_width - t->boundary_width;
-        seg[0].y1 = t->corner_width - t->boundary_width+1;
-        seg[0].y2 = t->corner_width - t->boundary_width+1;
-        n=1;
-        if(t->boundary_width > 3)
-        {
-          seg[0].x2 = t->corner_width - t->boundary_width + 1;
-
-          seg[1].x1 = 0;
-          seg[1].x2 = t->corner_width - t->boundary_width + 1;
-          seg[1].y1 = t->corner_width - t->boundary_width + 2;
-          seg[1].y2 = t->corner_width - t->boundary_width + 2;
-          n=2;
-        }
-        break;
-    }
-    XDrawSegments(dpy, t->corners[i], hor, seg, n);
-    switch(i)
-    {
-      case 0:
-        seg[0].y1 = t->boundary_width-2;
-        seg[0].y2 = t->corner_width;
-        seg[0].x1 = t->boundary_width-2;
-        seg[0].x2 = t->boundary_width-2;
-
-        seg[1].y1 = t->boundary_width-2;
-        seg[1].y2 = t->corner_width;
-        seg[1].x1 = t->boundary_width-1;
-        seg[1].x2 = t->boundary_width-1;
-        n=2;
-        break;
-      case 1:
-        seg[0].y1 = t->boundary_width-1;
-        seg[0].y2 = t->corner_width - (hh ? 1 : 2);
-        seg[0].x1 = t->corner_width - t->boundary_width;
-        seg[0].x2 = t->corner_width - t->boundary_width;
-        n=1;
-        if(t->boundary_width > 3)
-        {
-          seg[1].y1 = t->boundary_width-2;
-          seg[1].y2 = t->corner_width - (hh ? 1 : 3);
-          seg[1].x1 = t->corner_width - t->boundary_width+1;
-          seg[1].x2 = t->corner_width - t->boundary_width+1;
-          n=2;
-        }
-        break;
-      case 2:
-        seg[0].y1 = (hh ? 0 : 1);
-        seg[0].y2 = t->corner_width - t->boundary_width+1;
-        seg[0].x1 = t->boundary_width-2;
-        seg[0].x2 = t->boundary_width-2;
-        n=1;
-
-        if(t->boundary_width > 3)
-        {
-          seg[1].y1 = 0;
-          seg[1].y2 = t->corner_width - t->boundary_width;
-          seg[1].x1 = t->boundary_width-1;
-          seg[1].x2 = t->boundary_width-1;
-        }
-        break;
-      case 3:
-        seg[0].y1 = 0;
-        seg[0].y2 = t->corner_width - t->boundary_width + 1;
-        seg[0].x1 = t->corner_width - t->boundary_width;
-        seg[0].x2 = t->corner_width - t->boundary_width;
-        n=1;
-
-        if(t->boundary_width > 3)
-        {
-          seg[0].y2 = t->corner_width - t->boundary_width + 2;
-          seg[1].y1 = 0;
-          seg[1].y2 = t->corner_width - t->boundary_width + 2;
-          seg[1].x1 = t->corner_width - t->boundary_width + 1;
-          seg[1].x2 = t->corner_width - t->boundary_width + 1;
-          n=2;
-        }
-        break;
-    }
-    XDrawSegments(dpy, t->corners[i], vert, seg, n);
-  }
 }
 
 #ifdef VECTOR_BUTTONS
@@ -1346,9 +1017,8 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
     if (tmp_win->flags & TITLE)
       tmp_win->title_height = GetDecor(tmp_win,TitleHeight);
 
-    tmp_win->title_width= w-
-      (left+right)*tmp_win->title_height
-      -2*tmp_win->boundary_width;
+    tmp_win->title_width = w - (left + right) * tmp_win->title_height
+                           - 2 * tmp_win->boundary_width;
 
 
     if(tmp_win->title_width < 1)
@@ -1493,7 +1163,6 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
   tmp_win->attr.width = w - 2*tmp_win->boundary_width;
   tmp_win->attr.height = h - tmp_win->title_height
     - 2*tmp_win->boundary_width;
-  /* may need to omit the -1 for shaped windows, next two lines*/
   cx = tmp_win->boundary_width;
   cy = tmp_win->title_height + tmp_win->boundary_width;
 

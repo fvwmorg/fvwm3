@@ -209,18 +209,7 @@ extern void       DrawIconWindow(FvwmWindow *);
 extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
 
 
-extern void RelieveWindow(FvwmWindow *, Window, int, int, int, int, GC, GC,
-			  int);
-extern void RelieveWindowHH(FvwmWindow *,Window, int,int,int,int, GC, GC, int,
-			    int);
-void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert);
-#define NO_HILITE     0x0000
-#define TOP_HILITE    0x0001
-#define RIGHT_HILITE  0x0002
-#define BOTTOM_HILITE 0x0004
-#define LEFT_HILITE   0x0008
-#define FULL_HILITE   0x000F
-#define HH_HILITE     0x0010
+extern void RelieveWindow(FvwmWindow *, Window, int, int, int, int, GC, GC);
 
 void Maximize(F_CMD_ARGS);
 #ifdef  WINDOWSHADE

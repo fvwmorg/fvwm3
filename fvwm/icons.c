@@ -132,8 +132,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 
   /* clip to fit on screen */
   attributes.background_pixel = Scr.StdColors.back;
-  valuemask =  CWBorderPixel | CWCursor | CWEventMask | CWBackPixel;
-  attributes.border_pixel = Scr.StdColors.fore;
+  valuemask =  CWCursor | CWEventMask | CWBackPixel;
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
 			   VisibilityChangeMask |
@@ -319,7 +318,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
   if((Tmp_win->iconPixmap != None)&&(!(Tmp_win->flags & SHAPED_ICON)))
     RelieveWindow(Tmp_win,Tmp_win->icon_pixmap_w,0,0,
 		  Tmp_win->icon_p_width, Tmp_win->icon_p_height,
-		  Relief,Shadow, FULL_HILITE);
+		  Relief,Shadow);
 
   /* need to locate the icon pixmap */
   if(Tmp_win->iconPixmap != None)
@@ -345,7 +344,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
 		   Scr.IconFont.y-3,
                    Tmp_win->icon_name, strlen(Tmp_win->icon_name));
       RelieveWindow(Tmp_win,Tmp_win->icon_w,0,0,Tmp_win->icon_w_width,
-                    ICON_HEIGHT,Relief,Shadow, FULL_HILITE);
+                    ICON_HEIGHT,Relief,Shadow);
     }
 }
 

@@ -799,7 +799,7 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 		      Scr.SizeStringWidth+ SIZE_HINDENT*2,
 		      Scr.StdFont.height + SIZE_VINDENT*2,
 		      Scr.StdReliefGC,
-		      Scr.StdShadowGC, FULL_HILITE);
+		      Scr.StdShadowGC);
 
     }
   else
