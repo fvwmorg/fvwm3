@@ -269,6 +269,16 @@ AM_PROG_LEX
 AC_PROG_YACC
 AC_PATH_PROG(PERL, perl)
 
+dnl We need at least perl 5.002 for FvwmConsoleC.pl.
+if test ! -z "$PERL"; then
+  AC_MSG_CHECKING(for perl 5.002 or better)
+  if ("$PERL" -e "require 5.002;") 2>/dev/null; then
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_WARN($PERL not found or too old)
+  fi
+fi
 
 dnl Checks for header files.
 AC_HEADER_STDC

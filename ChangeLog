@@ -1,3 +1,11 @@
+1999-09-24  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in (perl): Make sure we have perl 5.002 or better for
+	FvwmConsoleC.pl.  However, if we don't we just print a warning
+	right now; that'll probably get lost.  We _should_ refuse to build
+	FvwmConsole or something--but for the moment we don't even refuse
+	if we can't find perl itself!
+
 1999-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.c: -Wall fixes
