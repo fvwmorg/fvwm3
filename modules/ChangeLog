@@ -1,3 +1,8 @@
+2003-02-13  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/draw.c (RedrawButton):
+	Applied Remko Troncon negative frame fix
+
 2003-02-05  Jason Weber  <baboon@imonk.com>
 
 	* FvwmProxy/FvwmProxy.c:

@@ -206,7 +206,7 @@ void MakeButton(button_info *b)
 void RedrawButton(button_info *b, int draw, XEvent *pev)
 {
 	int i,j,k,BH,BW;
-	int f,x,y,px,py;
+	int f,of,x,y,px,py;
 	int ix,iy,iw,ih;
 	FlocaleFont *Ffont=buttonFont(b);
 	XGCValues gcv;
@@ -353,7 +353,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	}
 
 	/* ------------------------------------------------------------------ */
-
+	of = f;
 	f=abs(f);
 
 	if (draw == DRAW_CLEAN)
@@ -618,7 +618,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	}
 
 	/* relief */
-	RelieveButton(MyWindow,f,x,y,BW,BH,hc,sc,rev ^ rev_xor);
+	RelieveButton(MyWindow,of,x,y,BW,BH,hc,sc,rev ^ rev_xor);
 }
 
 /**
