@@ -40,6 +40,8 @@ extern int MiniIcons;
 extern int LabelsBelow;
 #ifdef SHAPE
 extern int ShapeLabels;
+#else
+#define ShapeLabels 0
 #endif
 extern int ShowBalloons, ShowPagerBalloons, ShowIconBalloons;
 extern char *BalloonFormatString;

@@ -433,7 +433,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     char key;
     /* if this is a letter set it to lower case */
     if (isupper(keychar))
-      (int)keychar = tolower((int)keychar) ;
+      keychar = tolower((int)keychar) ;
     /* Search menu for matching hotkey */
     for (mi = menu->first; mi; mi = mi->next) {
       key = tolower(mi->chHotkey);

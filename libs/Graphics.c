@@ -16,7 +16,7 @@
 void RelieveWindowGC(Display *dpy, Window win, int x,int y,int w,int h,
 		     GC ReliefGC, GC ShadowGC, int line_width)
 {
-  XSegment seg[line_width];
+  XSegment* seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);
   int i;
 
   /* left side, from 0 to the lesser of line_width & just over half w */

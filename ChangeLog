@@ -1,3 +1,10 @@
+Fri Mar 12 08:51:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Graphics.c (RelieveWindowGC): replaced dynamic array size
+	with explicit malloc() call.
+	* fvwm/menus.c (menuShortcuts): removed cast on lvalue.
+	Both problems noted by Fabien Villard.
+
 1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/functions.h: removed ONE_AND_A_HALF_CLICKS
