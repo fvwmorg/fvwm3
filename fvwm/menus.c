@@ -654,8 +654,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   static int y_start;
   static Bool has_mouse_moved = False;
 
-  DBUG("do_menu","called");
-
   pmret->rc = MENU_NOP;
   if (pmp->flags.is_sticky && !pmp->flags.is_submenu)
   {
@@ -1538,7 +1536,6 @@ static void MenuInteraction(
 
 	    if (do_fake_motion)
 	    {
-	      DBUG("MenuInteraction","Faking motion");
 	      /* fake a motion event, and set flags.do_popup_now */
 	      Event.type = MotionNotify;
 	      Event.xmotion.time = lastTimestamp;
@@ -1749,12 +1746,10 @@ static void MenuInteraction(
 	if (tmrMi == NULL)
 	  tmrMi = pmp->menu;
 	warp_pointer_to_item(tmrMi, mi, False);
-	/* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item);*/
       }
       if (pmret->rc == MENU_POPUP && mi && MI_IS_POPUP(mi))
       {
 	flags.do_popup_and_warp = True;
-	DBUG("MenuInteraction","flags.do_popup_and_warp = True");
 	break;
       }
       break;
@@ -2001,7 +1996,6 @@ static void MenuInteraction(
       }
       if (flags.do_popdown && !flags.do_popup)
       {
-	DBUG("MenuInteraction","Popping down");
 	/* popdown previous popup */
 	if (mrPopdown)
 	{
@@ -2016,7 +2010,6 @@ static void MenuInteraction(
       } /* if (flags.do_popdown && !flags.do_popup) */
       if (flags.do_popup)
       {
-	DBUG("MenuInteraction","Popping up");
 	if (!MR_IS_PAINTED(pmp->menu))
 	{
 	  /* draw the parent menu if it is not already drawn */
@@ -2237,7 +2230,6 @@ static void MenuInteraction(
 	  (tmi = find_entry(NULL, &tmrMi))  &&
 	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
       {
-	DBUG("MenuInteraction","Moving the popup menu back over");
 	animated_move_back(mrPopup, False);
       }
       /* now check whether we should animate the current real menu
@@ -2248,7 +2240,6 @@ static void MenuInteraction(
 	  MR_XANIMATION(pmp->menu) != 0 &&
 	  pointer_in_passive_item_area(x_offset, mrMi))
       {
-	DBUG("MenuInteraction","Moving the menu back over");
 	/* we have to see if we need menu to be moved */
 	animated_move_back(pmp->menu, True);
       }
@@ -2498,7 +2489,6 @@ static int pop_menu_up(
   unsigned int prev_width;
   unsigned int prev_height;
 
-  DBUG("pop_menu_up","called");
   mr = *pmenu;
   if (!mr || MR_WINDOW(mr) == None ||
       (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
@@ -2924,7 +2914,6 @@ static int pop_menu_up(
   if (do_warp_to_item)
   {
     /* also warp */
-    DBUG("pop_menu_up","Warping to item");
     MR_SELECTED_ITEM(mr) = NULL;
     warp_pointer_to_item(mr, MR_FIRST_ITEM(mr), True /* skip Title */);
     select_menu_item(mr, MR_SELECTED_ITEM(mr), True, fw);
@@ -2933,7 +2922,6 @@ static int pop_menu_up(
   {
     /* Warp pointer to middle of top line, since we don't
      * want the user to come up directly on an option */
-    DBUG("pop_menu_up","Warping to title");
     warp_pointer_to_title(mr);
   }
   return True;
@@ -3110,7 +3098,6 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     select_menu_item(*pmr, mi, False, (*pmp->pTmp_win));
   }
 
-  /* DBUG("pop_menu_down","popped down %s",MR_NAME(*pmr)); */
   if (MR_COPIES(*pmr) > 1)
   {
     /* delete this instance of the menu */
@@ -7454,7 +7441,6 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 
   if (!pops->flags.has_poshints && fValidPosHints)
   {
-    DBUG("GetMenuOptions","recycling position hints");
     pops->flags.has_poshints = 1;
     pops->pos_hints = last_saved_pos_hints.pos_hints;
     pops->pos_hints.is_relative = False;

@@ -4,6 +4,7 @@
 	fixed menus no longer popping up or down under certain circumstances
 	(MenuInteraction):
 	small performance enhancement for non animated menus
+	removed old debug statements
 
 2001-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
