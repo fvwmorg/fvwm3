@@ -1347,7 +1347,10 @@ omitted the side color option is switched off.
 you click on a menu item that opens a sub menu. With \fIPopupAsRootMenu\fP
 the original menu is closed before the sub menu appears, with
 \fIPopupAsSubmenu\fP it is not, so you can navigate back into the
-parent menu. Note that \fIPopupAsSubmenu\fP is the default.
+parent menu.  Furthermore, with \fIPopupAsSubmenu\fP the submenu is
+held open ('posted') regardless of where you move the mouse. Depending
+on your menu style this may simplify navigating through the menu.
+Note that \fIPopupAsSubmenu\fP is the default.
 
 \fIRemoveSubmenus\fP instructs fvwm to remove submenus when you move back
 into the parent menu. With \fIHoldSubmenus\fP the submenu remains visible.
