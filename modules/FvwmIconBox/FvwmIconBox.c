@@ -1657,7 +1657,6 @@ void ParseOptions(void)
     if (tmp[strlen(tmp)-1] == '\n') tmp[strlen(tmp) -1] = '\0';
     AnimCommand = (char *)safemalloc((strlen(tmp) + 1) * sizeof(char));
     strcpy(AnimCommand, tmp);
-    fprintf(stderr, "got an action %s__\n", AnimCommand);
 	} else if (strncasecmp(tline,CatString3("*",MyName,
 					      "SBWidth"),Clength+8)==0)
 	  bar_width = max(5,atoi(&tline[Clength+8]));

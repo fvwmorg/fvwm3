@@ -1,5 +1,9 @@
 1999-11-30  Brad Giaccio  <bgiaccio@psrw.com>
 
+	* FvwmIconBox/FvwmIconBox.c (process_message): let a print stament in
+
+1999-11-30  Brad Giaccio  <bgiaccio@psrw.com>
+
 	* FvwmWinList/FvwmWinList.1: fixed typo
 
 	* FvwmIconBox/FvwmIconBox.1:
