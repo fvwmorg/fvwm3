@@ -1,3 +1,15 @@
+Tue Mar  9 22:14:25 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
+
+	* extras: removed.  Copied former 'extra' modules FvwmCommand,
+	FvwmConsole, FvwmDebug, FvwmScript, FvwmTaskBar, and FvwmWharf to
+	the modules directory.  Removed the other extra modules FvwmConfig
+	(author's documentation says it is "braindead" and he "discourages
+	its use"), FvwmGoodStuff (obsoleted by FvwmButtons), FvwmPipe
+	(similar functionality is obtained using FvwmCommand), fvwmperl
+	and fvwmpython.
+
+	* extras/ChangeLog: added to end of modules/ChangeLog.
+
 Tue Mar  9 18:00:22 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 	* configure.in (readline): check for readline/history.h, rather
