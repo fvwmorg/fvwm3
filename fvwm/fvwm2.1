@@ -2555,8 +2555,7 @@ and down a quarter of a page.  Alternatively, the distance can be
 specified in pixels by appending a 'p' to the horizontal and/or vertical
 specification.  For example "CursorMove -10p -10p" means move ten
 pixels up and ten pixels left.  The CursorMove function should not be
-called from pop-up menus.  To simulate button presses you can use the
-\fIMouseClick\fP command.
+called from pop-up menus.
 
 .TP
 .B "FlipFocus" "[\fINoWarp\fP]"
@@ -2760,6 +2759,19 @@ machine ore very few bindings you should not ignore more than two
 modifiers. E.g. do not ignore scroll-lock if you have no problem with
 it. In the FAQ you will find a better solution of this problem.
 
+
+.TP
+.B "GnomeButton"
+Used in conjunction with Mouse to pass mouse button presses on the root
+window to a GNOME program (such as GMC).  The following example passes
+presses of mouse buttons 1 and 3 to such a program.
+
+.EX
+Mouse 1 R A GnomeButton
+Mouse 3 R A GnomeButton
+.EE
+
+
 .TP
 .B "Key" "\fIkeyname Context Modifiers Function\fP"
 Binds a keyboard key to a specified fvwm built-in function, or
@@ -2773,10 +2785,11 @@ window that has the keyboard focus.  That is not necessarily the
 same as the window the pointer is over (with SloppyFocus or
 ClickToFocus).  Note that key bindings with the R (root window)
 context do not work properly with SloppyFocus and ClickToFocus.
+If you encounter problems, use the \fIPointerKey\fP command instead.
 If you want to bind keys to a window with SloppyFocus or
 ClickToFocus that are supposed to work when the pointer is
-not over the window, fvwm assumes the pointer is over the side
-bars of the window (i.e. you have to use the 's' modifier).
+not over the window, fvwm assumes the pointer is over the client
+window (i.e. you have to use the 'w' modifier).
 
 The following example binds the built in window list to pop up when
 Alt-Ctrl-Shift-F11 is hit, no matter where the mouse pointer is:
@@ -2784,20 +2797,8 @@ Alt-Ctrl-Shift-F11 is hit, no matter where the mouse pointer is:
 Key F11 A SCM WindowList
 .EE
 
-Binding a key to a title-bar button will not cause that button to
-appear unless a mouse binding also exists.
-
-
-.TP
-.B "GnomeButton"
-Used in conjunction with Mouse to pass mouse button presses on the root
-window to a GNOME program (such as GMC).  The following example passes
-presses of mouse buttons 1 and 3 to such a program.
-
-.EX
-Mouse 1 R A GnomeButton
-Mouse 3 R A GnomeButton
-.EE
+Binding a key to a title-bar button will cause that button to
+appear.  Please refer to the \fIMouse\fP command for details.
 
 
 .TP
@@ -2836,6 +2837,22 @@ determines the number of buttons drawn on the left side of the title
 bar.  The highest even number determines the number or right side
 buttons which are drawn.  Actions can be bound to either mouse buttons
 or keyboard keys.
+
+
+.TP
+.B "PointerKey" "\fIkeyname Context Modifiers Function\fP"
+This command works exactly like the \fIKey\fP command.  The only
+difference is that the binding operates on the window under the
+pointer.  Normal key bindings operate on the focused window
+instead.  The \fIPointerKey\fP command can for example be used
+to bind keys to the root window if you are using SloppyFocus
+or ClickToFocus.
+
+Example:
+.EX
+Style * SloppyFocus
+PointerKey f1 a m Menu MainMenu
+.EE
 
 
 .TP

@@ -43,7 +43,7 @@ void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
   /* left side, from 0 to the lesser of line_width & just over half w */
   for (i = 0; (i < line_width) && (i <= w / 2); i++) {
     seg[i].x1 = x+i; seg[i].y1 = y+i;
-    seg[i].x2 = x+i; seg[i].y2 = y+h-i;
+    seg[i].x2 = x+i; seg[i].y2 = y+h-i-1;
   }
   XDrawSegments(dpy, d, ReliefGC, seg, i);
   /* bottom */
@@ -54,7 +54,7 @@ void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
   XDrawSegments(dpy, d, ShadowGC, seg, i);
   /* right */
   for (i = 0; (i < line_width) && (i <= w / 2); i++) {
-    seg[i].x1 = x+w-i; seg[i].y1 = y+h-i;
+    seg[i].x1 = x+w-i; seg[i].y1 = y+h-i-1;
     seg[i].x2 = x+w-i; seg[i].y2 = y+i;
   }
   XDrawSegments(dpy, d, ShadowGC, seg, i);

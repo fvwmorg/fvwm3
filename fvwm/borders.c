@@ -251,36 +251,35 @@ static enum ButtonState get_button_state(
   }
 }
 
-static const char ulgc[] = { 1, 0, 0, 2, 0, 2, 1, 1 };
-static const char brgc[] = { 1, 1, 2, 2, 0, 0, 0, 1 };
+static const char ulgc[] = { 1, 0, 0, -1, 2, 1, 1 };
+static const char brgc[] = { 1, 1, 2, -1, 0, 0, 1 };
 
 /* called twice by RedrawBorder */
 static void draw_frame_relief(
-  FvwmWindow *t, GC rgc, GC sgc, GC tgc, int w_dout, int w_hi, int w_trout,
-  int w_chi, int w_c, int w_trin, int w_shin, int w_din)
+  FvwmWindow *t, GC rgc, GC sgc, GC tgc, int w_dout, int w_hiout, int w_trout,
+  int w_c, int w_trin, int w_shin, int w_din)
 {
   int i;
   int offset = 0;
   int width = t->frame_g.width - 1;
   int height = t->frame_g.height - 1;
-  int w[8];
+  int w[7];
   GC gc[3];
 
   w[0] = w_dout;
-  w[1] = w_hi;
+  w[1] = w_hiout;
   w[2] = w_trout;
-  w[3] = w_chi;
-  w[4] = w_c;
-  w[5] = w_trin;
-  w[6] = w_shin;
-  w[7] = w_din;
+  w[3] = w_c;
+  w[4] = w_trin;
+  w[5] = w_shin;
+  w[6] = w_din;
   gc[0] = rgc;
   gc[1] = sgc;
   gc[2] = tgc;
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < 7; i++)
   {
-    if (i != 4 && w[i] > 0)
+    if (ulgc[i] != -1 && w[i] > 0)
     {
       RelieveRectangle(
 	dpy, t->decor_w, offset, offset, width, height, gc[(int)ulgc[i]],
@@ -308,15 +307,14 @@ static void RedrawBorder(
   DecorFaceStyle *borderstyle;
   Bool is_reversed = False;
   int w_dout;
-  int w_hi;
+  int w_hiout;
   int w_trout;
   int w_c;
-  int w_chi;
   int w_trin;
   int w_shin;
   int w_din;
   int sum;
-  int min;
+  int trim;
 
   if (tgc == None && !HAS_MWM_BORDER(t))
   {
@@ -396,56 +394,108 @@ static void RedrawBorder(
 
   if (HAS_MWM_BORDER(t))
   {
+    /* MWM borders look like this:
+     *
+     * HHCCCCS  from outside to inside on the left and top border
+     * SSCCCCH  from outside to inside on the bottom and right border
+     * |||||||
+     * |||||||__ w_shin       (inner shadow area)
+     * ||||||___ w_c          (transparent area)
+     * |||||____ w_c          (transparent area)
+     * ||||_____ w_c          (transparent area)
+     * |||______ w_c          (transparent area)
+     * ||_______ w_hiout      (outer hilight area)
+     * |________ w_hiout      (outer hilight area)
+     *
+     *
+     * C = original colour
+     * H = hilight
+     * S = shadow
+     */
     w_dout = 0;
-    w_hi = 2;
+    w_hiout = 2;
     w_trout = 0;
-    w_chi = 0;
     w_trin = 0;
     w_shin = 1;
     w_din = 0;
     sum = 3;
+    trim = sum - t->boundary_width + 1;
   }
   else
   {
+    /* Fvwm borders look like this:
+     *
+     * SHHCCSS  from outside to inside on the left and top border
+     * SSCCHHS  from outside to inside on the bottom and right border
+     * |||||||
+     * |||||||__ w_din        (inner dark area)
+     * ||||||___ w_shin       (inner shadow area)
+     * |||||____ w_trin       (inner transparent/shadow area)
+     * ||||_____ w_c          (transparent area)
+     * |||______ w_trout      (outer transparent/hilight area)
+     * ||_______ w_hiout      (outer hilight area)
+     * |________ w_dout       (outer dark area)
+     *
+     * C = original colour
+     * H = hilight
+     * S = shadow
+     *
+     * reduced to 5 pixels it looks like this:
+     *
+     * SHHCS
+     * SSCHS
+     * |||||
+     * |||||__ w_din        (inner dark area)
+     * ||||___ w_trin       (inner transparent/shadow area)
+     * |||____ w_trout      (outer transparent/hilight area)
+     * ||_____ w_hiout      (outer hilight area)
+     * |______ w_dout       (outer dark area)
+     */
     w_dout = 1;
-    w_hi = 1;
+    w_hiout = 1;
     w_trout = 1;
-    w_chi = 0;
     w_trin = 1;
     w_shin = 1;
     w_din = 1;
+    /* w_trout + w_trin counts only as one pixel of border because they let one
+     * pixel of the original colour shine through. */
     sum = 6;
+    trim = sum - t->boundary_width;
   }
   if (DFS_HAS_NO_INSET(*borderstyle))
   {
     w_shin = 0;
     sum--;
+    trim--;
   }
-  /* reduce size of relief visible. */
-  min = ((!IS_SHADED(t) || HAS_TITLE(t)) && t->boundary_width == 2) ? 0 : 1;
-  while (sum + min > t->boundary_width)
+  /* If the border is too thin to accomodate the standard look, we remove parts
+   * of the border so that at least one pixel of the original colour is
+   * visible. We make an exception for windows with a border width of 2,
+   * though. */
+  if ((!IS_SHADED(t) || HAS_TITLE(t)) && t->boundary_width == 2)
+    trim--;
+  if (trim < 0)
+    trim = 0;
+  for ( ; trim > 0; trim--)
   {
-    if (w_hi > 1)
-      w_hi--;
+    if (w_hiout > 1)
+      w_hiout--;
+    else if (w_shin > 0)
+      w_shin--;
+    else if (w_hiout > 0)
+      w_hiout--;
     else if (w_trout > 0)
     {
       w_trout = 0;
       w_trin = 0;
-      w_chi = 1;
+      w_din = 0;
+      w_hiout = 1;
     }
-    else if (w_shin > 0)
-      w_shin--;
-    else if (w_chi > 0)
-      w_chi--;
-    else if (w_din > 0)
-      w_din--;
-    else if (w_hi > 0)
-      w_hi--;
     sum--;
   }
   w_c = t->boundary_width - sum;
   draw_frame_relief(
-    t, rgc, sgc, tgc, w_dout, w_hi, w_trout, w_chi, w_c, w_trin, w_shin, w_din);
+    t, rgc, sgc, tgc, w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
 
   /*
    * draw the handle marks
@@ -565,7 +615,7 @@ static void RedrawBorder(
 
   /* a bit hacky to draw twice but you should see the code it replaces, never
    * mind the esoterics, feel the thin-ness */
-  if ((HAS_BORDER(t) || PressedW == t->decor_w || PressedW == t->decor_w) &&
+  if ((HAS_BORDER(t) || PressedW == t->decor_w || PressedW == t->frame) &&
       HAS_DEPRESSABLE_BORDER(t))
   {
     XRectangle r;
@@ -656,11 +706,8 @@ static void RedrawBorder(
 
     if (is_pressed == True)
     {
-      XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
-      XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
       draw_frame_relief(
-	t, rgc, sgc, tgc, w_dout, w_hi, w_trout, w_chi, w_c, w_trin, w_shin,
-	w_din);
+	t, sgc, rgc, tgc, w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
       XSetClipMask(dpy, sgc, None);
       XSetClipMask(dpy, rgc, None);
     }

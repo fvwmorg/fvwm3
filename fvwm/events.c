@@ -257,11 +257,37 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 {
   int Context,i;
 
+  Context = C_NO_CONTEXT;
+  if (e->type == KeyPress && e->xkey.window == Scr.Root &&
+      e->xkey.subwindow != None)
+  {
+    /* Translate root coordinates into subwindow coordinates.  Necessary for
+     * key bindings that work over unfocused windows. */
+    e->xkey.window = e->xkey.subwindow;
+    XTranslateCoordinates(
+      dpy, Scr.Root, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+      &(e->xkey.y), &(e->xkey.subwindow));
+    XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
+    Tmp_win = t;
+  }
   if(!t)
     return C_ROOT;
 
-  Context = C_NO_CONTEXT;
+  if (e->type == KeyPress && e->xkey.window == t->frame &&
+      e->xkey.subwindow == t->decor_w)
+  {
+    /* We can't get keyboard events on the decor_w directly beacause it is a
+     * sibling of the parent window which gets all keyboard input. So we have to
+     * grab keys on the frame and then translate the coordinates to find out in
+     * which subwindow of the decor_w the event occured. */
+    e->xkey.window = e->xkey.subwindow;
+    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
+			  &JunkX, &JunkY, &(e->xkey.subwindow));
+  }
+  *w= e->xany.window;
 
+  if (*w == Scr.NoFocusWin)
+    return C_ROOT;
   if (e->type == KeyPress && e->xkey.window == t->frame &&
       e->xkey.subwindow == t->decor_w)
   {
@@ -339,7 +365,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 void HandleFocusIn(void)
 {
   XEvent d;
-  Window w;
+  Window w = None;
   Window focus_w = None;
   Window focus_fw = None;
   Pixel fc = 0;
@@ -350,11 +376,21 @@ void HandleFocusIn(void)
 
   DBUG("HandleFocusIn","Routine Entered");
 
-  w= Event.xany.window;
+  /* This is a hack to make the PointerKey command work */
+  if (Event.xfocus.detail != NotifyPointer)
+  /**/
+    w= Event.xany.window;
   while(XCheckTypedEvent(dpy,FocusIn,&d))
   {
-    w = d.xany.window;
+    /* dito */
+    if (d.xfocus.detail != NotifyPointer)
+    /**/
+      w = d.xany.window;
   }
+  /* dito */
+  if (w == None)
+    return;
+  /**/
   if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
   {
     Tmp_win = NULL;
@@ -488,8 +524,15 @@ void HandleKeyPress(void)
   /* if we get here, no function key was bound to the key.  Send it
    * to the client if it was in a window we know about.
    */
-  if (Tmp_win && Event.xkey.window != Tmp_win->w)
+  if (Scr.Focus && Event.xkey.window != Scr.Focus->w)
   {
+
+    Event.xkey.window = Scr.Focus->w;
+    XSendEvent(dpy, Scr.Focus->w, False, KeyPressMask, &Event);
+  }
+  else if (Tmp_win && Event.xkey.window != Tmp_win->w)
+  {
+
     Event.xkey.window = Tmp_win->w;
     XSendEvent(dpy, Tmp_win->w, False, KeyPressMask, &Event);
   }

@@ -1,3 +1,11 @@
+1999-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	longer delay before forcing a colorset background on a swallowed window
+
+	* FvwmScroll/GrabWindow.c:
+	removed #define MAX_ICON_NAME_LEN; already in defaults.h
+
 1999-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTheme/FvwmTheme.c (parse_colorset):

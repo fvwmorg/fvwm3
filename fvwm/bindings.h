@@ -16,10 +16,12 @@
 #ifndef _BINDINGS_
 #define _BINDINGS_
 
-int ParseBinding(Display *dpy, Binding ** pblist, char *tline,
-		 BindingType type, int *nr_left_buttons,
-		 int *nr_right_buttons, unsigned char *buttons_grabbed);
+int ParseBinding(
+  Display *dpy, Binding **pblist, char *tline, BindingType type,
+  int *nr_left_buttons, int *nr_right_buttons, unsigned char *buttons_grabbed,
+  Bool do_ungrab_root);
 void key_binding(F_CMD_ARGS);
+void pointerkey_binding(F_CMD_ARGS);
 void mouse_binding(F_CMD_ARGS);
 STROKE_CODE(void stroke_binding(F_CMD_ARGS));
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);

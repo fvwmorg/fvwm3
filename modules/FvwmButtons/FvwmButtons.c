@@ -2631,7 +2631,8 @@ void swallow(unsigned long *body)
 	   * application may override out background. On the other hand it may
 	   * still override our background, but our chances are a bit better.
 	   */
-	  usleep(100000);
+	  XSync(Dpy, 0);
+	  usleep(250000);
 	  XSync(Dpy, 0);
 	  change_swallowed_window_colorset(b, True);
 	}

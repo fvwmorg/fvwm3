@@ -1,5 +1,29 @@
 1999-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm2.1 (Examples):
+	removed remnant of experimental 'MouseClick' command
+
+	* fvwm/functions.h (enum):
+	* fvwm/functions.c (func_config):
+	* fvwm/bindings.c (activate_binding):
+	(binding_cmd):
+	(pointerkey_binding):
+	(ParseBinding):
+	new command 'PointerKey'
+
+	* fvwm/bindings.c (activate_binding):
+	a small performance enhancement
+
+	* fvwm/borders.c (draw_frame_relief):
+	(RedrawBorder):
+	more work on fvwm borders
+
+	* libs/Graphics.c (RelieveRectangle):
+	fixed drawing top/right and bottom/left pixels
+
+	* fvwm/borders.c (RedrawBorder):
+	fixed drawing depressable borders
+
 	* fvwm/bindings.c (ParseBinding):
 	key and stroke bindings cause title buttons to appear too
 

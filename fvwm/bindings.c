@@ -29,7 +29,8 @@
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 
-static void activate_binding(Binding *binding, BindingType type, Bool do_grab);
+static void activate_binding(
+  Binding *binding, BindingType type, Bool do_grab, Bool do_grab_root);
 
 #define MODS_UNUSED_DEFAULT LockMask
 static int mods_unused = MODS_UNUSED_DEFAULT;
@@ -88,9 +89,10 @@ static void update_nr_buttons(
  *  Parses a mouse or key binding
  *
  ****************************************************************************/
-int ParseBinding(Display *dpy, Binding **pblist, char *tline,
-		 BindingType type, int *nr_left_buttons,
-		 int *nr_right_buttons, unsigned char *buttons_grabbed)
+int ParseBinding(
+  Display *dpy, Binding **pblist, char *tline, BindingType type,
+  int *nr_left_buttons, int *nr_right_buttons, unsigned char *buttons_grabbed,
+  Bool do_ungrab_root)
 {
   char *action, context[20], modifiers[20], *ptr, *token;
   char key[20] = "";
@@ -237,7 +239,7 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
 		       type))
       {
         /* we found it, unbind it */
-	activate_binding(b, type, False);
+	activate_binding(b, type, False, do_ungrab_root);
 	RemoveBinding(dpy, pblist, type, STROKE_ARG(stroke)
 		      button, keysym, mods, contexts);
 	is_binding_removed = True;
@@ -295,11 +297,22 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
 		    (void *)(stripcpy(action)), NULL);
 }
 
-static void activate_binding(Binding *binding, BindingType type, Bool do_grab)
+static void activate_binding(
+  Binding *binding, BindingType type, Bool do_grab, Bool do_grab_root)
 {
   FvwmWindow *t;
 
-  if (fFvwmInStartup == True || binding == NULL)
+  if (binding == NULL || binding->type != KEY_BINDING)
+    return;
+  if (do_grab_root)
+  {
+    /* necessary for key bindings that work over unfocused windows */
+    GrabWindowKey(
+      dpy, Scr.Root, binding,
+      C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT|C_ICON,
+      GetUnusedModifiers(), do_grab);
+  }
+  if (fFvwmInStartup == True)
     return;
 
   /* grab keys immediately */
@@ -323,34 +336,39 @@ static void activate_binding(Binding *binding, BindingType type, Bool do_grab)
   }
 }
 
-static void binding_cmd(F_CMD_ARGS, BindingType type)
+static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
 {
   Binding *b;
   int count;
 
   count = ParseBinding(dpy, &Scr.AllBindings, action, type,
 		       &Scr.nr_left_buttons, &Scr.nr_right_buttons,
-		       &Scr.buttons2grab);
+		       &Scr.buttons2grab, do_grab_root);
   for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
   {
-    activate_binding(b, type, True);
+    activate_binding(b, type, True, do_grab_root);
   }
 }
 
 void key_binding(F_CMD_ARGS)
 {
-  binding_cmd(F_PASS_ARGS, KEY_BINDING);
+  binding_cmd(F_PASS_ARGS, KEY_BINDING, False);
+}
+
+void pointerkey_binding(F_CMD_ARGS)
+{
+  binding_cmd(F_PASS_ARGS, KEY_BINDING, True);
 }
 
 void mouse_binding(F_CMD_ARGS)
 {
-  binding_cmd(F_PASS_ARGS, MOUSE_BINDING);
+  binding_cmd(F_PASS_ARGS, MOUSE_BINDING, False);
 }
 
 #ifdef HAVE_STROKE
 void stroke_binding(F_CMD_ARGS)
 {
-  binding_cmd(F_PASS_ARGS, STROKE_BINDING);
+  binding_cmd(F_PASS_ARGS, STROKE_BINDING, False);
 }
 #endif /* HAVE_STROKE */
 

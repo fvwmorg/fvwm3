@@ -153,6 +153,7 @@ enum
   F_OPAQUE,
   F_PICK,
   F_PIXMAP_PATH,
+  F_POINTERKEY,
   F_POPUP,
   F_PREV,
   F_QUIT,
