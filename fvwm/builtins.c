@@ -958,10 +958,8 @@ void SetHiColorset(F_CMD_ARGS)
   FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
-fprintf(stderr,"shcs\n");
   if (GetIntegerArguments(action, NULL, &cset, 1) != 1)
     return;
-fprintf(stderr,"got hcs=%d\n", cset);
   decor->HiColorset = cset;
   if (decor->HiColorset < 0)
     decor->HiColorset = -1;
@@ -3110,7 +3108,7 @@ void strokeFunc(F_CMD_ARGS)
   /* be ready to get a stroke sequence */
   stroke_init();
 
-  if (draw_motion) 
+  if (draw_motion)
   {
     MyXGrabServer(dpy);
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &x[0], &y[0],
@@ -3132,7 +3130,7 @@ void strokeFunc(F_CMD_ARGS)
       stroke_record(eventp->xmotion.x,eventp->xmotion.y);
       if (draw_motion)
       {
-	if ((x[i] != eventp->xmotion.x || y[i] != eventp->xmotion.y) && 
+	if ((x[i] != eventp->xmotion.x || y[i] != eventp->xmotion.y) &&
 	    i < MAX_DRAWING_LINES)
 	{
 	  i++;
@@ -3170,7 +3168,7 @@ void strokeFunc(F_CMD_ARGS)
     }
   }
 
-  if (draw_motion) 
+  if (draw_motion)
   {
     while (i > 0)
     {

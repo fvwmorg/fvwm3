@@ -831,17 +831,18 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       int gravy;
 
       gravity_get_offsets(tmp_win->hints.win_gravity, &gravx, &gravy);
-      /* Applications using North or West gravity seem to share a common bug:
-       * when the user requests '+0+0', they ask the WM for +0+0 and fail to
-       * take their border width into account (they should ask for '+bw+bw'
-       * instead.  But when the user requests '-0-0' placement, they properly
-       * apply their border width.  Thus we have to check specifically for
-       * South/East gravity here. */
-      final_g.x = tmp_win->attr.x + (gravx > 9) * tmp_win->old_bw;
-      final_g.y = tmp_win->attr.y + (gravy > 9) * tmp_win->old_bw;
-      final_g.x = tmp_win->attr.x + (gravx + 1) * tmp_win->old_bw;
-      final_g.y = tmp_win->attr.y + (gravy + 1) * tmp_win->old_bw;
-      /* don't care about the width/height, they are not used anyway */
+      final_g.x = tmp_win->attr.x + gravx * tmp_win->old_bw;
+      final_g.y = tmp_win->attr.y + gravy * tmp_win->old_bw;
+      /* Virtually all applications seem to share a common bug: they request
+       * the top left pixel of their *border* as their origin instead of the
+       * top left pixel of their client window, e.g. 'xterm -g +0+0' creates an
+       * xterm that tries to map at (0 0) although its border (width 1) would
+       * not be visible if it ran under plain X.  It should have tried to map
+       * at (1 1) instead.  This clearly violates the ICCCM, but trying to
+       * change this is like tilting at windmills.  So we have to add the
+       * border width here. */
+      final_g.x += tmp_win->old_bw;
+      final_g.y += tmp_win->old_bw;
       gravity_resize(
 	tmp_win->hints.win_gravity, &final_g,
 	2 * tmp_win->boundary_width,

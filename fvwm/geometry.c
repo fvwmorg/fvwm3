@@ -117,11 +117,6 @@ void gravity_get_naked_geometry(
   dest_g->y = orig_g->y + ((yoff + 1) * (orig_g->height - 1)) / 2;
   dest_g->width = orig_g->width - 2 * t->boundary_width;
   dest_g->height = orig_g->height - 2 * t->boundary_width - t->title_g.height;
-  if (use_uspos_format)
-  {
-    dest_g->x += (xoff > 0) * t->old_bw;
-    dest_g->y += (yoff > 0) * t->old_bw;
-  }
 
   return;
 }
