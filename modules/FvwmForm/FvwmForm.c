@@ -870,29 +870,38 @@ static void ct_Timeout(char *cp)
   }
   timer = item;
 
-  while (!isspace((unsigned char)*cp)) cp++; /* skip timeout */
-  while (isspace((unsigned char)*cp)) cp++; /* move up to command */
+  while (*cp && *cp != '\n' && !isspace((unsigned char)*cp)) cp++;
+							/* skip timeout */
+  while (*cp && *cp != '\n' && isspace((unsigned char)*cp)) cp++;
+							/* move up to command */
 
-  tmpbuf = safestrdup(cp);
-  tmpcp = tmpbuf;
-  while (!isspace((unsigned char)*tmpcp)) tmpcp++;
-  /* question */
-  /* This next piece assumes the command is one word, That no
-     good, treat it as a word or a quoted string. */
-  *tmpcp = '\0';                        /* cutoff command at first word */
-  /* question */
-  /* This pretends that there can be more than one command
-     per timeout, but I don't see how. */
-  item->timeout.timeout_array_size += TIMEOUT_COMMAND_EXPANSION;
-  item->timeout.commands =
-    (char **)saferealloc((void *)item->timeout.commands,
-			   sizeof(char *) *
-			   item->timeout.timeout_array_size);
-  item->timeout.commands[item->timeout.numcommands++] = safestrdup(tmpbuf);
-  free(tmpbuf);
+  if (!*cp || *cp == '\n') {
+    fprintf(stderr,"Improper arguments specified for FvwmForm Timeout.\n");
+    return;
+  }
 
-  while (!isspace((unsigned char)*cp)) cp++; /* move past command again */
-  while (isspace((unsigned char)*cp)) cp++; /* move up to start of text */
+  if (*cp == '\"') {
+    item->timeout.command = CopyQuotedString(++cp);
+    /* skip over the whole quoted string to continue parsing */
+    cp += strlen(item->timeout.command);
+  }
+  else {
+    tmpbuf = safestrdup(cp);
+    tmpcp = tmpbuf;
+    while (!isspace((unsigned char)*tmpcp)) tmpcp++;
+    *tmpcp = '\0';                        /* cutoff command at first word */
+    item->timeout.command = safestrdup(tmpbuf);
+    free(tmpbuf);
+    while (!isspace((unsigned char)*cp)) cp++; /* move past command again */
+  }
+
+  while (*cp && *cp != '\n' && isspace((unsigned char)*cp)) cp++;
+						/* move up to next arg */
+
+  if (!*cp || *cp == '\n') {
+    fprintf(stderr,"Improper arguments specified for FvwmForm Timeout.\n");
+    return;
+  }
 
   if (*cp == '\"') {
     item->timeout.text = CopyQuotedString(++cp);
@@ -2277,8 +2286,9 @@ TerminateHandler(int sig)
 static RETSIGTYPE
 TimerHandler(int sig)
 {
-  int k, dn;
+  int dn;
   char *sp;
+  char *parsed_command;
 
   timer->timeout.timeleft--;
   if (timer->timeout.timeleft <= 0) {
@@ -2288,19 +2298,15 @@ TimerHandler(int sig)
       /* hm, what can we do now? just ignore this situation. */
     }
 
-    for (k = 0; k < timer->timeout.numcommands; k++) {
-      char *parsed_command;
-      /* construct command */
-      parsed_command = ParseCommand(0, timer->timeout.commands[k],
-                                    '\0', &dn, &sp);
-      myfprintf((stderr, "Final command[%d]: [%s]\n", k, parsed_command));
+    /* construct command */
+    parsed_command = ParseCommand(0, timer->timeout.command, '\0', &dn, &sp);
+    myfprintf((stderr, "Final command: %s\n", parsed_command));
 
-      /* send command */
-      if ( parsed_command[0] == '!') {    /* If command starts with ! */
-        system(parsed_command+1);         /* Need synchronous execution */
-      } else {
-        SendText(Channel,parsed_command, ref);
-      }
+    /* send command */
+    if ( parsed_command[0] == '!') {    /* If command starts with ! */
+      system(parsed_command+1);         /* Need synchronous execution */
+    } else {
+      SendText(Channel,parsed_command, ref);
     }
 
     /* post-command */

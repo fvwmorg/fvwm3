@@ -140,14 +140,12 @@ typedef union _item {
     int button_array_size;              /* current size of next array */
     char **commands;    /* Fvwm command to execute */
   } button;
-  struct {
+  struct {		/* I_TIMEOUT */
     struct _head head;
     int timeleft;       /* seconds left on timer */
     int len;            /* text length */
     char *text;         /* text string */
-    int numcommands;	/* # of commands */
-    int timeout_array_size;  /* current size of next array */
-    char **commands;    /* Fvwm command(s) to execute */
+    char *command;    /* Fvwm command(s) to execute */
   } timeout;
 } Item;
 

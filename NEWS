@@ -3,6 +3,8 @@ _+_A HREF="#2.4.6"_-_2.4.6_+_/A_-_.
 
 Changes in alpha release 2.5.1 (not released yet)
 
+* FvwmForm can automatically run commands after a timeout interval.
+
 * New commands Schedule and Deschedule.
 
 * New command State.  New conditions State and !State.

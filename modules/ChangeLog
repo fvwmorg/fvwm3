@@ -1,3 +1,11 @@
+2002-03-21  Daniel Henninger  <daniel@ncsu.edu>
+
+	* FvwmForm/FvwmForm.c:
+	* FvwmForm/FvwmForm.h:
+	Took out pointless multiple Timeout command support.
+	Better line parsing error checking for Timeout.
+	Fixed command parsing to allow for quoted commands.
+
 2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWinList/FvwmWinList.c (main):
