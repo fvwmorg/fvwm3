@@ -1,7 +1,6 @@
 2001-07-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
-	* libs/Makefile.am:
 	s/XINERAMA/HAVE_XINERAMA/, now #ifdef'd xinerama code is finally ever
 	compiled in; fixed linking by adding -lXinerama; small corrections
 

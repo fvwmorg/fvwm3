@@ -13,6 +13,6 @@ libfvwm_a_SOURCES = ClientMsg.h Colorset.h Grab.h Module.h Parse.h Picture.h \
 	XError.c fvwmsignal.c GetFont.c Strings.c wild.c safemalloc.c \
 	Pointer.c debug.c Grab.c ClientMsg.c
 
-libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@ $(Xinerama_LIBS)
+libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
