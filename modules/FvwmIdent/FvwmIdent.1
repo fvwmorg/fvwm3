@@ -67,8 +67,14 @@ background. Switches off the Colorset option.
 .IP "*FvwmIdent: Font \fIfontname\fP"
 Tells the module to use \fIfontname\fP instead of fixed for text.
 
+.IP "*FvwmIdent: MinimalLayer \fIlayer\fP"
+FvwmIdent places its window on the layer of a target window. But not
+below the minimal layer. By default, the minimal layer is 4 just like
+the fvwm default layer. If \fIlayer\fP is 0, the layer of the target
+window is always used. If \fIlayer\fP is "default" or not specified,
+the default behaviour is restored. If \fIlayer\fP is "none", FvwmIdent
+is placed as a normal window even if the target window is above it.
 
 .SH AUTHOR
-Robert Nation and  and Nobutaka
-Suzuki (nobuta-s@is.aist-nara.ac.jp).
+Robert Nation and Nobutaka Suzuki (nobuta-s@is.aist-nara.ac.jp).
 

@@ -1,3 +1,10 @@
+2002-03-31  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIdent/FvwmIdent.1:
+	new configuration option MinimalLayer;
+	tried to improve parsing of other options
+
 2002-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (MoveWindow):

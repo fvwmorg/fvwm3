@@ -36,7 +36,7 @@ Changes in alpha release 2.5.1 (not released yet)
 * Bindings can be made to the separate parts of the window border
   with the new contexts '[', ']', '-', '_', '<', '^', '>' and 'v'.
 
-* New options for FvwmRearange: -maximize and -animate.
+* New parameters for FvwmRearange: -maximize and -animate.
 
 * New option StartCommand for FvwmTaskBar to allow placing the
   StartMenu correctly.
@@ -67,6 +67,11 @@ Changes in alpha release 2.5.1 (not released yet)
 
 * The DO_START_ICONIC flag is no longer supported in the module
   interface.
+
+* Added experimental bi-directional text support for some asian
+  charsets.
+
+* New option MinimalLayer for FvwmIdent to control window layer.
 
 Changes in alpha release 2.5.0 (27-Jan-2002)
 

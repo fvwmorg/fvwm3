@@ -55,6 +55,7 @@
 #include "libs/Colorset.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Flocale.h"
+#include "libs/Parse.h"
 #include "FvwmIdent.h"
 
 static RETSIGTYPE TerminateHandler(int);
@@ -102,6 +103,11 @@ static struct Item* itemlistRoot = NULL;
 static int max_col1, max_col2;
 static char id[15], desktop[10], swidth[10], sheight[10], borderw[10];
 static char geometry[30], mymin_aspect[11], max_aspect[11], layer[10];
+
+/* FIXME: default layer should be received from fvwm */
+#define default_layer 4
+static int minimal_layer = default_layer;
+static int my_layer = default_layer;
 
 /***********************************************************************
  *
@@ -216,33 +222,65 @@ int main(int argc, char **argv)
   InitGetConfigLine(fd,MyName);
   GetConfigLine(fd,&tline);
 
-  while(tline != (char *)0) {
-    if(strlen(tline)>1) {
-      if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0) {
-        CopyString(&font_string,&tline[Clength+4]);
+  while (tline != (char *)0)
+  {
+    if (strlen(tline) <= 1)
+    {
+      continue;
+    }
+    if (strncasecmp(tline, MyName, Clength) == 0)
+    {
+      tline += Clength;
+      if (strncasecmp(tline, "Font", 4) == 0)
+      {
+        CopyString(&font_string, &tline[4]);
       }
-      else if(strncasecmp(tline,CatString3(MyName,"Fore",""), Clength+4)==0) {
-        CopyString(&ForeColor,&tline[Clength+4]);
+      else if (strncasecmp(tline, "Fore", 4) == 0)
+      {
+        CopyString(&ForeColor, &tline[4]);
         colorset = -1;
       }
-      else if(strncasecmp(tline,CatString3(MyName, "Back",""), Clength+4)==0) {
-        CopyString(&BackColor,&tline[Clength+4]);
+      else if (strncasecmp(tline, "Back", 4) == 0)
+      {
+        CopyString(&BackColor, &tline[4]);
         colorset = -1;
       }
-      else if(strncasecmp(tline,CatString3(MyName,"Colorset",""),Clength+8)==0){
-        sscanf(&tline[Clength+8], "%d", &colorset);
+      else if (strncasecmp(tline, "Colorset", 8) == 0)
+      {
+        sscanf(&tline[8], "%d", &colorset);
         AllocColorset(colorset);
       }
-      else if(strncasecmp(tline, "Colorset", 8) == 0){
-        LoadColorset(&tline[8]);
-      }
-      else if(strncasecmp(tline, XINERAMA_CONFIG_STRING,
-			  sizeof(XINERAMA_CONFIG_STRING) - 1) == 0){
-	FScreenConfigureModule(
-	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
+      else if (strncasecmp(tline, "MinimalLayer", 12) == 0)
+      {
+        char *layer_str = PeekToken(&tline[12], NULL);
+        if (layer_str == NULL)
+        {
+          minimal_layer = default_layer;
+        }
+        else if (sscanf(layer_str, "%d", &minimal_layer) != 1)
+        {
+          if (strncasecmp(layer_str, "none", 4) == 0)
+          {
+            minimal_layer = -1;
+          }
+          else
+          {
+            minimal_layer = default_layer;
+          }
+        }
       }
     }
-    GetConfigLine(fd,&tline);
+    else if (strncasecmp(tline, "Colorset", 8) == 0)
+    {
+      LoadColorset(&tline[8]);
+    }
+    else if (strncasecmp(
+      tline, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
+    {
+      FScreenConfigureModule(
+        tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
+    }
+    GetConfigLine(fd, &tline);
   }
 
   if(app_win == 0)
@@ -253,7 +291,7 @@ int main(int argc, char **argv)
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-  SendInfo(fd,"Send_WindowList",0);
+  SendText(fd, "Send_WindowList", 0);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
@@ -366,6 +404,10 @@ void list_configure(unsigned long *body)
       target.ewmh_hint_desktop = cfgpacket->ewmh_hint_desktop;
       target.ewmh_window_type = cfgpacket->ewmh_window_type;
       found = 1;
+
+      my_layer = (int)target.layer;
+      if (my_layer < minimal_layer)
+        my_layer = minimal_layer;
     }
 }
 
@@ -611,7 +653,7 @@ void list_end(void)
 		fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
 		| M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
 		| M_END_CONFIG_INFO | M_SENDCONFIG);
-	      SendInfo(fd,"Send_WindowList",0);
+	      SendText(fd, "Send_WindowList", 0);
 	      XDestroyWindow(dpy, main_win);
 	      DestroyList();
 	      fvwmlib_get_target_window(dpy, screen, MyName, &app_win, True);
@@ -629,9 +671,12 @@ void list_end(void)
 	    exit(0);
 	  break;
 	case ReparentNotify:
-	  sprintf(buf, "Layer 0 %d", (int)target.layer);
-	  SendInfo(fd, buf, main_win);
-	  SendInfo(fd, "Raise", main_win);
+	  if (minimal_layer >= 0)
+	  {
+	    sprintf(buf, "Layer 0 %d", my_layer);
+	    SendText(fd, buf, main_win);
+	  }
+	  SendText(fd, "Raise", main_win);
 	  break;
 	case ConfigureNotify:
 	{
