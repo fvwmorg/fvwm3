@@ -1,7 +1,10 @@
 1999-04-10  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/gsfr.h (SET_FOCUS_MODE): 
+	(SETM_FOCUS_MODE): don't use !! for non-booleans.
+	
 	* fvwm/session.c (LoadWindowStates): 
-	(SaveWindowStates): Fix loading and saving of window flags.
+	(SaveWindowStates): fix loading and saving of window flags.
 
 1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
 

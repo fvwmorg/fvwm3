@@ -61,8 +61,8 @@
 #define SET_STICKY(fw,x)       (fw)->gsfr_flags.common.is_sticky = !!(x)
 #define SETM_STICKY(fw,x)      (fw)->gsfr_flag_mask.common.is_sticky = !!(x)
 #define GET_FOCUS_MODE(fw)     ((fw)->gsfr_flags.common.focus_mode)
-#define SET_FOCUS_MODE(fw,x)   (fw)->gsfr_flags.common.focus_mode = !!(x)
-#define SETM_FOCUS_MODE(fw,x)  (fw)->gsfr_flag_mask.common.focus_mode =!!(x)
+#define SET_FOCUS_MODE(fw,x)   (fw)->gsfr_flags.common.focus_mode = (x)
+#define SETM_FOCUS_MODE(fw,x)  (fw)->gsfr_flag_mask.common.focus_mode =(x)
 #define HAS_CLICK_FOCUS(fw)    \
           ((fw)->gsfr_flags.common.focus_mode == FOCUS_CLICK)
 #define HAS_MOUSE_FOCUS(fw)    \
