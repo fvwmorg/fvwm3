@@ -3735,6 +3735,8 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	unsigned int mask;
 	long evmask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
 		KeyPressMask|KeyReleaseMask;
+        unsigned int count;
+        int use_wait_cursor;
 
 	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 			  &JunkX, &JunkY, &mask) == False)
@@ -3746,9 +3748,12 @@ void WaitForButtonsUp(Bool do_handle_expose)
 		return;
 	}
 	if (do_handle_expose)
+        {
 		evmask |= ExposureMask;
-	GrabEm(CRS_WAIT, GRAB_NORMAL);
-	while (mask & (DEFAULT_ALL_BUTTONS_MASK))
+        }
+	GrabEm(None, GRAB_NORMAL);
+        for (count = 0, use_wait_cursor = 0; mask & (DEFAULT_ALL_BUTTONS_MASK);
+             count++)
 	{
 		/* handle expose events */
 		XAllowEvents(dpy, SyncPointer, CurrentTime);
@@ -3779,8 +3784,18 @@ void WaitForButtonsUp(Bool do_handle_expose)
 				 * okay here */
 			}
 		}
+                usleep(1);
+                if (use_wait_cursor == 0 && count == 20)
+                {
+                        GrabEm(CRS_WAIT, GRAB_NORMAL);
+                        use_wait_cursor = 1;
+                }
 	}
 	UngrabEm(GRAB_NORMAL);
+        if (use_wait_cursor)
+        {
+                UngrabEm(GRAB_NORMAL);
+        }
 
 	return;
 }
