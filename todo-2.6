@@ -1,0 +1,184 @@
+----- Summary ------------------------------------------------------------------
+
+Issues opened recently:
+Issues recently closed:
+                             open/closed
+A. Release stoping bugs:        1/0
+B. Normal bugs         :        8/0
+C. To be verified      :        23/0
+D. To be discussed     :        1/0
+E. To do               :        5/0
+F. Distribution issues :        4/1        
+G. Testing             :        5/0
+
+Total:                          47/0
+
+- When you add/close an item give dates
+
+----- TODO --------------------------------------------------------------------
+howto: Entries should look like this:
+
+  Secion.id ... description ... [id in the bug traking sys if any]
+            {comments}
+            [fvwm-workers which want to close the item]
+
+
+A. Release stoping bugs
+-----------------------
+
+  A.1 Fixed a core dump repoted by Mikhael
+      Ref: 2003-02-19 "Mikhael Goikhman"   core dump when freeing pixmap
+
+B. Normal Bugs
+--------------
+
+  B.1 emacs and maximmize [bug #991]
+      Ref.: 2003-02-21 "fvwm-bug@fvwm.org" Notification: incoming/991
+
+  B.2 FvwmPager and DesktopSize change
+      Ref.:  2003-02-09 "David Fries" pager display problems
+      [Olivier or Dominik?]
+
+  B.3 Fixed FvwmButtons if "*FvwmButtons: Pixmap none" is used.
+      Ref.: 2002-11-05 "Kingsly John" FvwmButtons and Transparency
+	    2002-12-19 "Andy Arbon"   FVWM: FvwmButtons problem
+      [Olivier]
+
+  B.4 Fvwm doesn't seem to render what Unicode terms as "combining" or
+      "composing" characters/marks/ligatures (eg. U+0308 or U+064E) correctly.
+      Ref.: 2003-02-12  "Nadim Shaikli" Composing characters within fvwm
+
+  B.5 The "titles" sometimes aren't shown when no items are available in a
+      FvwmIconMan
+      [Olivier]
+
+  B.6 Edge scrolling breaks on non-rectangular Xinerama display [#987,2003-02-11]
+      Maybe not a bug: a miss-feature
+
+  B.7 strange xawtv fullscreen handling [#973,2002-12-23]. Not a bug? Dominik?
+
+  B.8 Menu double-click action not working? [#955,2002-11-06]
+
+C. To be verified
+-----------------
+
+  C.1 FvwmIconMan "Resolution" option doesn't work correctly with
+      NumManagers > 1
+      Ref.: 2003-01-17 "Grzegorz Nieweglows" Bug in FvwmIconMan
+
+  C.2 StartOnScreen and Xinerama/SLS
+      Ref.: 2002-12-22 "Andy Arbon" FVWM: Possible bug in StartsOnScreen
+
+  C.3 Moving resizing certain applications with EWMH support (Mozilla,
+      konqueror). [#980,2003-01-16,#965,2002-12-02]. Dominik, Dorothy is
+      this fixed?
+
+  C.5 Gtk+-2 and window placement [#938,2.4,2002-10-18]
+
+  C.6 loss of focus unrecoverable [#926,2.4,2002-09-21]. Fixed?
+
+  C.7 MenuFace TiledPixmap Bug [#918,2.4,2002-08-23]. Fixed?
+
+  C.8 An afterimage remains when moving a window [#913,2.4,2002-08-09].
+      Not a bug?
+
+  C.9 Moving operation delayed together with XFree86 4.2.0 xtt module
+      [#903,2002-07-07] Not an fvwm bug?
+
+  C.10 moving XMMS window is too slow [#?,]
+
+  C.11 problem when resizing Aviplay movie window [#870,2002-04-05]
+
+  C.12 FvwmScript swallowexec doesn't work [#867,2.4,2002-04-01]
+
+  C.13 Pager too small about half the time [#861,2.4,2002-03-10]. Fixed?
+
+  C.14 Focus inconsistent when deiconfing under mouse [#833,2.4,2001-12-19].
+       Fixed?
+
+  C.15 Right mouse-click turn screen to black with xmgrace [#792,2.4,2001-10-10]
+       Not a fvwm Bug?
+
+  C.16 Redraw problem with nescape [#791,2.4,2001-10-10]. Not a fvwm Bug?
+
+  C.17 Double scroll with mouse wheel [#782,2.4,2001-09-18].
+       {Olivier: Cannot reproduce this with my touchpad wheel}
+
+  C.18 Persistant Windows in Pager [#773,2.4,2001-09-18].
+       {Olivier: Should be removed I think}
+
+  C.19 fvwm 2.4.0 on HP-UX breaks xterm etc. [#767,2.4,2001-08-23]
+       Fixed?
+
+  C.20 Erratic EdgeScroll behaviour [#766,2.4,2001-08-21]. Fixed?
+
+  C.21 Pager drawing problem [#762,2.4,2001-08-14].
+       {Dan: it is B.2}
+ 
+  C.22 Strange bug with the menus [#759,2.4,2001-08-12]. Similar to
+       C.7? Fixed?
+
+  C.23 Strange behaviour with XForms "sliderall" demo [#758,2.4,2001-08-12].
+       Fixed?
+
+  C.24 window appear/disapear in the Pager [#731,2.4,2001-07-04]. Fixed?
+
+D. To be discussed
+------------------
+
+  D.1 Make the distinction between FVWM and fvwm?
+
+
+E. To do
+--------
+
+  E.1 Complete this document
+
+  E.2 Added locale support to FvwmScript
+      [Olivier]
+
+  E.3 After F.1 try to find translator
+      [Olivier]
+
+  E.4 Move documentation from FvwmTheme.1 to fvwm.1 or create a separate
+      man page fvwm-colorsets.1 (I prefer fvwm.1).
+      [Mikhael]
+
+  E.5 Disable Tear-off Menu by default (add --enable-tear-off-menu
+      option to configure?)
+
+
+F. Distribution issues
+----------------------
+
+  F.1 Update the default config files, probably need discution ...
+
+  F.2 Update/complete  fvwm-convert-2.6
+
+  F.3 Check INSTALL.fvwm
+
+
+G. Testing
+----------
+
+  G.1 Update and run the purify script again
+
+  G.2 Test fvwm with GNOME2 and KDE3 [see in particular: #980]
+      [Olivier]
+
+  G.3 Test fvwm with the latest SUN and IBM java [#654,#664,#707,#714,#863,#954]
+
+  G.4 Make some placement test with Tk?
+
+  G.5 Is PositiveWrite module locking problem fixed? [e.g., #708]
+
+
+---- Closed recently ----------------------------------------------------------
+
+---- Postponed until after 2.6 ------------------------------------------------
+
+  F.4 Translate our documentation into "xml/docbook" format
+      [Olivier: do not have the time now, but if someone want to do it,
+       (s)he is welcome]
+
+---- Closed -------------------------------------------------------------------
