@@ -33,7 +33,6 @@ smr_SWITCH(extended-titlestyle, styled title-bars, on, EXTENDED_TITLESTYLE)
 smr_SWITCH(borderstyle, BorderStyle command, on, BORDERSTYLE)
 smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
 smr_SWITCH(windowshade, WindowShade function, on, WINDOWSHADE)
-smr_SWITCH(session, session management functionality, on, SESSION)
 smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 
 dnl FIXME: default value should be derived from computed path to X
@@ -269,6 +268,12 @@ else
 fi
 AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
+
+dnl Check the availability of SM
+dnl We don't have to add any extra libraries, since
+dnl -lSM -lICE are in X_PRE_LIBS when they exist.
+AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), , 
+             [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 extras/Makefile utils/Makefile docs/Makefile

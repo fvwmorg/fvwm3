@@ -118,7 +118,7 @@ void Loop(int *fd);
 void SendInfo(int *fd,char *message,unsigned long window);
 char *safemalloc(int length);
 void DeadPipe(int nonsense);
-void process_message(unsigned long type,unsigned long *body);
+void process_message(unsigned long *header,unsigned long *body);
 void ParseOptions(void);
 
 void list_add(unsigned long *body);
@@ -138,6 +138,7 @@ void list_icon_name(unsigned long *body);
 void list_class(unsigned long *body);
 void list_res_name(unsigned long *body);
 void list_mini_icon(unsigned long *body);
+void list_restack(unsigned long *body, unsigned long length);
 void list_end(void);
 int My_XNextEvent(Display *dpy, XEvent *event);
 

@@ -53,6 +53,7 @@ Existing packet types are listed in the file fvwm/module.h:
 #define <A href="#M_DEWINDOWSHADE">M_DEWINDOWSHADE</A>      (1&lt;&lt;25)
 #define <A href="#M_LOCKONSEND">M_LOCKONSEND</A>         (1&lt;&lt;26)
 #define <A href="#M_SENDCONFIG">M_SENDCONFIG</A>         (1&lt;&lt;27)
+#define <A href="#M_RESTACK">M_RESTACK</A>            (1&lt;&lt;28)
 </PRE></font>
 <P>
 Additional packet types will be defined in the future. The third entry
@@ -352,6 +353,12 @@ under <a href="mod_m2f_communication.html">Module to Fvwm communication</a>.
 <H2><A NAME="M_SENDCONFIG">M_SENDCONFIG</A></H2>
 This is a request sent from modules to fvwm and is described
 under <a href="mod_m2f_communication.html">Module to Fvwm communication</a>.
+<H2><A NAME="M_RESTACK">M_RESTACK</A></H2>
+This packet is sent when the stacking order changes.
+It contains a list of windows, each one being given by its
+three identifiers. The meaning is that the first window keeps its
+position in the stacking order and all subsequent windows are restacked
+below it (like XRestackWindows). 
 <P>
     <hr>
   </body>

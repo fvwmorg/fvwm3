@@ -64,6 +64,10 @@
 #endif /* SHAPE */
 #include "module.h"
 
+#ifndef XUrgencyHint
+#define XUrgencyHint            (1L << 8)
+#endif
+
 unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask |
 			  Mod2Mask| Mod3Mask| Mod4Mask| Mod5Mask);
 extern int menuFromFrameOrWindowOrTitlebar;
@@ -102,6 +106,7 @@ Window PressedW;
 typedef void (*PFEH)(void);
 PFEH EventHandlerJumpTable[LASTEvent];
 void  ResyncFvwmStackRing(void);
+void BroadcastRestack(FvwmWindow *,FvwmWindow *);
 
 /*
 ** Procedure:
@@ -1479,6 +1484,12 @@ void HandleConfigureRequest()
         */
         ResyncFvwmStackRing();
       }
+
+     /* 
+         Let the modules know that Tmp_win changed its place 
+         in the stacking order 
+      */
+     BroadcastRestack (Tmp_win->stack_prev, Tmp_win->stack_next);
   }
   }
 

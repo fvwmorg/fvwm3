@@ -42,7 +42,7 @@ SetupICCCM2 ()
   XClientMessageEvent ev;
   char win_sx[20];
 
-  sprintf (win_sx, "WIN_S%d", Scr.screen);
+  sprintf (win_sx, "WIN_S%ld", Scr.screen);
   _XA_WIN_SX =    XInternAtom (dpy, win_sx, False);
   _XA_MANAGER =   XInternAtom (dpy, "MANAGER", False);
   _XA_ATOM_PAIR = XInternAtom (dpy, "ATOM_PAIR", False);
@@ -55,8 +55,7 @@ SetupICCCM2 ()
   /* Check for a running ICCCM 2.0 compliant WM */
   running_wm_win = XGetSelectionOwner (dpy, _XA_WIN_SX);
   if (running_wm_win != None) {
-    fvwm_msg (DBG, "SetupICCCM2", 
-	      "another ICCCM 2.0 compliant WM is running");
+    DBUG("SetupICCCM2", "another ICCCM 2.0 compliant WM is running");
     
     /* We need to know when the old manager is gone.
        Thus we wait until it destroys running_wm_win. */
@@ -98,7 +97,7 @@ SetupICCCM2 ()
   if (running_wm_win != None) {
     /* Wait for the old wm to finish. */
     /* FIXME: need a timeout here. */
-    fvwm_msg (DBG, "SetupICCCM2", "waiting for WM to give up");
+    DBUG("SetupICCCM2", "waiting for WM to give up");
     do {
       XWindowEvent (dpy, running_wm_win, StructureNotifyMask, &xev);
     } while (xev.type != DestroyNotify);
@@ -111,7 +110,7 @@ SetupICCCM2 ()
 void 
 CloseICCCM2 ()
 {
-  fvwm_msg(DBG, "CloseICCCM2", "good luck, new wm");
+  DBUG("CloseICCCM2", "good luck, new wm");
   XSelectInput(dpy, Scr.Root, 0 );
   XSync(dpy, 0);
   XDestroyWindow (dpy, manager_win);

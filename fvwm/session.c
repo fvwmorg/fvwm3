@@ -71,8 +71,6 @@ char *duplicate(char *s)
 static int
 SaveGlobalState(FILE *f)
 {
-  int                 i, num, x, y;
-
   fprintf(f, "[GLOBAL]\n");
   fprintf(f, "  [DESKTOP] %i\n", Scr.CurrentDesk);
   fprintf(f, "  [VIEWPORT] %i %i %i %i\n", 
@@ -158,7 +156,7 @@ LoadGlobalState(char *filename)
              }
            else if (!strcmp(s1, "[STYLE]"))
              {
-               sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
+               sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
                Scr.go.ModifyUSP = i1;
                Scr.go.CaptureHonorsStartsOnPage = i2;
                Scr.go.RecaptureHonorsStartsOnPage = i3;
@@ -200,7 +198,6 @@ GetClientID (window)
     Atom actual_type;
     int actual_format;
     unsigned long nitems;
-    unsigned long nbytes;
     unsigned long bytes_after;
     unsigned char *prop = NULL;
 
@@ -236,7 +233,7 @@ SaveWindowStates(FILE *f)
   char **wm_command;
   int wm_command_count;
   FvwmWindow              *ewin;
-  int                 i, num, x, y, xmax, ymax;
+  int                 i, x, y, xmax, ymax;
 
   for (ewin=Scr.FvwmRoot.stack_next; ewin!=&Scr.FvwmRoot; ewin=ewin->stack_next) 
     {
@@ -452,7 +449,7 @@ LoadWindowStates(char *filename)
 
 /* This complicated logic is from twm, where it is explained */
 
-#define xstreq(a,b) (!a && !b) || (a && b && (strcmp(a,b)==0))
+#define xstreq(a,b) ((!a && !b) || (a && b && (strcmp(a,b)==0)))
 
 Bool matchWin(FvwmWindow *w, Match *m)
 {
@@ -825,8 +822,6 @@ SessionInit(char *previous_client_id)
   char                error_string_ret[4096] = "";
   static SmPointer    context;
   SmcCallbacks        callbacks;
-  char               *client_id = NULL;
-  IceConn             ice_conn;
   
   InstallIOErrorHandler();
 

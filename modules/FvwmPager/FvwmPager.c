@@ -253,7 +253,8 @@ int main(int argc, char **argv)
 		 M_CONFIG_INFO|
 		 M_END_CONFIG_INFO|
 		 M_MINI_ICON|
-		 M_END_WINDOWLIST);
+		 M_END_WINDOWLIST|
+		 M_RESTACK);
 #ifdef DEBUG
   fprintf(stderr,"[main]: calling ParseOptions\n");
 #endif
@@ -331,8 +332,10 @@ void Loop(int *fd)
  *	Process message - examines packet types, and takes appropriate action
  *
  ***********************************************************************/
-void process_message(unsigned long type,unsigned long *body)
+void process_message(unsigned long *header,unsigned long *body)
 {
+  unsigned long type = header[1];
+  unsigned long length = header[2];
   switch(type)
     {
     case M_ADD_WINDOW:
@@ -380,6 +383,8 @@ void process_message(unsigned long type,unsigned long *body)
     case M_END_WINDOWLIST:
       list_end();
       break;
+    case M_RESTACK:
+      list_restack(body,length);
     default:
       list_unknown(body);
       break;
@@ -978,6 +983,32 @@ void list_mini_icon(unsigned long *body)
   }
 }
 
+void list_restack(unsigned long *body, unsigned long length)
+{
+  PagerWindow *t;
+  Window target_w;
+  Window r[16]; 
+  int i,j;
+  
+  j = 0;
+  for (i = 0; i < (length - 4); i+=3)
+  {
+    target_w = body[i];
+    t = Start;
+    while((t!= NULL)&&(t->w != target_w))
+     {
+       t = t->next;
+     }
+    if (t != NULL)
+     {
+       r[j++] = t->IconView;
+       if (t->PagerView != None)
+         r[j++] = t->PagerView; 
+     }
+   }
+   XRestackWindows(dpy, r, j);
+}
+
 
 /***********************************************************************
  *
@@ -1059,7 +1090,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     {
       if(ReadFvwmPacket(fd[1],header,&body) > 0)
 	{
-	   process_message(header[1],body);
+	   process_message(header,body);
 	   free(body);
 	 }
     }

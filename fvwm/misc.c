@@ -863,111 +863,200 @@ void MapIt(FvwmWindow *t)
    }
 }
 
+/* send RESTACK packets for all windows between s1 and s2 */
+void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
+{
+  FvwmWindow *t, *b[8];
+  int r;
 
+  if (s1 == &Scr.FvwmRoot)
+   {
+      t = s1->stack_next;  
+      /* t has been moved to the top of stack */
+
+      BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t); 
+      if (t->stack_next == s2) 
+        {
+          return;
+        }
+   }
+  else
+   {
+      t = s1;
+   }
+  r = 0;
+  while (1) 
+   {
+     b[r++] = t;
+     t = t->stack_next;
+     if (r == 8 || t == s2)
+      {
+        switch (r) {
+        case 2:
+          BroadcastPacket (M_RESTACK, 6, 
+                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
+                           b[1]->w, b[1]->frame, (unsigned long)b[1]);
+          break;
+        case 3:
+          BroadcastPacket (M_RESTACK, 9, 
+                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
+                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
+                           b[2]->w, b[2]->frame, (unsigned long)b[2]); 
+          break;
+        case 4:
+          BroadcastPacket (M_RESTACK, 12, 
+                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
+                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
+                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
+                           b[3]->w, b[3]->frame, (unsigned long)b[3]); 
+          break;
+        case 5:
+          BroadcastPacket (M_RESTACK, 15, 
+                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
+                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
+                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
+                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
+                           b[4]->w, b[4]->frame, (unsigned long)b[4]); 
+          break;
+        case 6:
+          BroadcastPacket (M_RESTACK, 18, 
+                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
+                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
+                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
+                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
+                           b[4]->w, b[4]->frame, (unsigned long)b[4], 
+                           b[5]->w, b[5]->frame, (unsigned long)b[5]); 
+          break;
+        case 7:
+          BroadcastPacket (M_RESTACK, 21, 
+                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
+                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
+                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
+                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
+                           b[4]->w, b[4]->frame, (unsigned long)b[4], 
+                           b[5]->w, b[5]->frame, (unsigned long)b[5], 
+                           b[6]->w, b[6]->frame, (unsigned long)b[6]); 
+          break;
+        case 8:
+          BroadcastPacket (M_RESTACK, 24, 
+                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
+                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
+                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
+                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
+                           b[4]->w, b[4]->frame, (unsigned long)b[4], 
+                           b[5]->w, b[5]->frame, (unsigned long)b[5], 
+                           b[6]->w, b[6]->frame, (unsigned long)b[6], 
+                           b[7]->w, b[7]->frame, (unsigned long)b[7]); 
+          break;
+	default: 
+          fvwm_msg(ERR, "BroadcastRestack", "restacking %i windows ?", r);
+        }
+        if (t == s2) break;
+        t = t->stack_prev; /* we need an overlap for successive RESTACKs */
+        r = 0;
+      }
+   }
+}
+
+/* 
+   Raise t and its transients to the top of its layer. 
+   For the pager to work properly it is necessary that
+   RaiseWindow *always* sends a proper M_RESTACK packet,
+   even if the stacking order didn't change.
+*/
 void RaiseWindow(FvwmWindow *t)
 {
-  FvwmWindow *s, *r, *t2, *next;
+  FvwmWindow *s, *r, *t2, *next, tmp_r, tmp_s;
   unsigned int flags;
   int i, count;
   XWindowChanges changes;
   Window *wins;
-
+  
   Scr.LastWindowRaised = t;
-
-  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
+  
+  /* detach t early, so it doesn't make trouble in the loops */
+  t->stack_prev->stack_next = t->stack_next;
+  t->stack_next->stack_prev = t->stack_prev;
+  
+  count = 1;
+  if ((t->flags & ICONIFIED) && (!(t->flags & SUPPRESSICON)))
     {
-       if ((t != s) && (t->layer >= s->layer))
-        {
-             break;
-        }
-     }
-
-  if (s == t->stack_next)
-     {
-      return;
-     }
-
-  r = s->stack_prev;
-  /* We have to insert t and all its transients between r and s. */
-
-  count = 0;
+      count += 2;
+    }
 
 #ifndef DONT_RAISE_TRANSIENTS
+  /* collect the transients in a temp list */
+  tmp_s.stack_prev = &tmp_r;
+  tmp_r.stack_next = &tmp_s;
   for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
-     {
+    {
       next = t2->stack_next;
       if ((t2->flags & TRANSIENT) &&
           (t2->transientfor == t->w) &&
-          (t2 != t) &&
           (t2->layer == t->layer))
         {
-          if (t2 == s)
-            {
-              /* t2 is a transient that is already in place.
-                 This should only happen if we haven't yet
-                 inserted anything between r and s. */
-              if (r != s->stack_prev)
-                fprintf(stderr, "OOPS 1 in RaiseWindow\n");
-              s = s->stack_next;
-              r = s->stack_prev;
-            }
-          else
-            {
           /* t2 is a transient to raise */
           count++;
           if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
             {
-               count += 2;
+	      count += 2;
             }
 
-          BroadcastPacket(M_RAISE_WINDOW, 3,
-                          t2->w, t2->frame, (unsigned long)t2);
           /* unplug it */
           t2->stack_next->stack_prev = t2->stack_prev;
           t2->stack_prev->stack_next = t2->stack_next;
-          /* put it above s */
-          t2->stack_next = s;
-          t2->stack_prev = s->stack_prev;
+	  
+          /* put it above tmp_s */
+          t2->stack_next = &tmp_s;
+          t2->stack_prev = tmp_s.stack_prev;
           t2->stack_next->stack_prev = t2;
           t2->stack_prev->stack_next = t2;
-          }
+	}
+    }
+#endif /* DONT_RAISE_TRANSIENTS */
+
+  /* now find the place to reinsert t and friends */
+  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
+    {
+      if (t->layer >= s->layer)
+	{
+	  break;
         }
-     }
-#endif
+    }
+  r = s->stack_prev;
+
+#ifndef DONT_RAISE_TRANSIENTS
+  /* insert all transients between r and s. */
+  r->stack_next = tmp_r.stack_next;
+  r->stack_next->stack_prev = r; 
+  s->stack_prev = tmp_s.stack_prev;
+  s->stack_prev->stack_next = s;
+#endif /* DONT_RAISE_TRANSIENTS */
 
   /* don't forget t itself */
-  count++;
-  if ((t->flags & ICONIFIED) && (!(t->flags & SUPPRESSICON)))
-    {
-       count += 2;
-    }
-
-  BroadcastPacket(M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
-
-  t->stack_prev->stack_next = t->stack_next;
-  t->stack_next->stack_prev = t->stack_prev;
-
   t->stack_next = s;
   t->stack_prev = s->stack_prev;
   t->stack_prev->stack_next = t;
   t->stack_next->stack_prev = t;
-
-  wins = (Window *)safemalloc(count*sizeof(Window));
-
+  
+  wins = (Window*) safemalloc (count * sizeof (Window));
+  
   i = 0;
   for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
-  {
-     if (i >= count)
-       fprintf(stderr, "OOPS2 in RaiseWindow i==%d\n", i);
-     wins[i++] = t2->frame;
-     if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
-     {
-        if(!(t2->flags & NOICON_TITLE))
-          wins[i++] = t2->icon_w;
-        if(!(t2->icon_pixmap_w))
-          wins[i++] = t2->icon_pixmap_w;
-     }
-   }
+    {
+      if (i >= count) {
+	fvwm_msg (ERR, "RaiseWindow", "more transients than expected");
+	break;
+      }
+      wins[i++] = t2->frame;
+      if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
+	{
+	  if(!(t2->flags & NOICON_TITLE))
+	    wins[i++] = t2->icon_w;
+	  if(!(t2->icon_pixmap_w))
+	    wins[i++] = t2->icon_pixmap_w;
+	}
+    }
 
   changes.sibling = s->frame;
   if (changes.sibling != None)
@@ -980,12 +1069,15 @@ void RaiseWindow(FvwmWindow *t)
       changes.stack_mode = Below;
       flags = CWStackMode;
     }
-  
+
   XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
   XRestackWindows (dpy, wins, count);
+  
+  /* send out (one or more) M_RESTACK packets for windows between r and s */
+  BroadcastRestack (r, s);
 
   free (wins);
-
+  
   /* This should be unnecessary, since we never
      do an unguarded XRaiseWindow */
   raisePanFrames();
@@ -996,7 +1088,6 @@ void LowerWindow(FvwmWindow *t)
 {
   FvwmWindow *s;
   XWindowChanges changes;
-  int i;
   unsigned int flags;
 
   Scr.LastWindowRaised = NULL;
@@ -1005,16 +1096,23 @@ void LowerWindow(FvwmWindow *t)
     {
       if (t->layer > s->layer)
         {
-           break;
+	  break;
         }
     }
 
   if (s == t->stack_next)
-    {
+    { 
       return;
     }
+  
+  
+  t->stack_prev->stack_next = t->stack_next;
+  t->stack_next->stack_prev = t->stack_prev;
 
-  BroadcastPacket(M_LOWER_WINDOW, 3, t->w, t->frame, (unsigned long)t);
+  t->stack_next = s;
+  t->stack_prev = s->stack_prev;
+  t->stack_prev->stack_next = t;
+  t->stack_next->stack_prev = t;
 
   changes.sibling = s->frame;
   if (changes.sibling != None)
@@ -1036,13 +1134,7 @@ void LowerWindow(FvwmWindow *t)
       XConfigureWindow(dpy, t->icon_pixmap_w, flags, &changes);
     }
 
-  t->stack_prev->stack_next = t->stack_next;
-  t->stack_next->stack_prev = t->stack_prev;
-
-  t->stack_next = s;
-  t->stack_prev = s->stack_prev;
-  t->stack_prev->stack_next = t;
-  t->stack_next->stack_prev = t;
+  BroadcastRestack (t->stack_prev, t->stack_next);
 }
 
 

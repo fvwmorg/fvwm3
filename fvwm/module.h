@@ -52,7 +52,8 @@ extern struct queue_buff_struct **pipeQueue;
 #define M_DEWINDOWSHADE      (1<<25)
 #define M_LOCKONSEND         (1<<26)
 #define M_SENDCONFIG         (1<<27)
-#define MAX_MESSAGES         28
+#define M_RESTACK            (1<<28)
+#define MAX_MESSAGES         29
 
 /*
  * MAX_MASK is used to initialize the pipeMask array.  In a few places
