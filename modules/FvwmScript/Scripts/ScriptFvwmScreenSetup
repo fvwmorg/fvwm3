@@ -131,6 +131,7 @@ Property
  Size 70 30
  Position 180 355
  Type PushButton
+ Flags NoReliefString
  Title {Apply}
 Main
  Case message of
@@ -168,6 +169,7 @@ Property
  Size 70 30
  Position 315 355
  Type PushButton
+ Flags NoReliefString
  Title {OK}
 Main
  Case message of
@@ -232,6 +234,7 @@ Property
  Size 70 30
  Position 450 355
  Type PushButton
+ Flags NoReliefString
  Title {Cancel}
 Main
  Case message of
@@ -258,8 +261,9 @@ End
 
 Widget 18
 Property
- Position 15 5
+ Position 15 10
  Type ItemDraw
+ Flags NoReliefString	
  Title {Background}
 Main
  Case message of
@@ -274,6 +278,7 @@ Widget 4
 Property
  Position 30 30
  Type RadioButton
+ Flags NoReliefString
  Title {Uniform color:}
 Main
  Case message of
@@ -315,6 +320,7 @@ Property
  Size 50 50
  Position 58 140
  Type ItemDraw
+ Flags NoReliefString
  Title {#0EC4B8}
 Main
  Case message of
@@ -325,9 +331,10 @@ End
 
 Widget 20
 Property
- Size 250 1
+ Size 250 20
  Position 155 20
  Type HScrollBar
+ Flags NoReliefString
  Value 14
  MinValue 0
  MaxValue 255
@@ -343,9 +350,10 @@ End
 
 Widget 21
 Property
- Size 250 1
+ Size 250 20
  Position 155 75
  Type HScrollBar
+ Flags NoReliefString
  Value 196
  MinValue 0
  MaxValue 255
@@ -361,9 +369,10 @@ End
 
 Widget 22
 Property
- Size 250 1
+ Size 250 20
  Position 155 130
  Type HScrollBar
+ Flags NoReliefString
  Value 184
  MinValue 0
  MaxValue 255
@@ -383,6 +392,7 @@ Widget 5
 Property
  Position 30 220
  Type RadioButton
+ Flags NoReliefString
  Title {Pixmap:}
 Main
  Case message of
@@ -399,6 +409,7 @@ Property
  Size 280 30
  Position 30 280
  Type TextField
+ Flags NoReliefString
  Title {/usr/X11/include/X11/pixmaps/fvwm2.xpm}
 Main
  Case message of
@@ -412,6 +423,7 @@ Widget 25
 Property
  Position 327 279
  Type PushButton
+ Flags NoReliefString
  Title {Browser...}
 Main
  Case message of
@@ -453,6 +465,7 @@ Widget 50
 Property
  Position 30 320
  Type RadioButton
+ Flags NoReliefString
  Title {Disable xinit background}
 Main
  Case message of
@@ -482,8 +495,9 @@ End
 
 Widget 19
 Property
- Position 430 5
+ Position 430 10
  Type ItemDraw
+ Flags NoReliefString
  Title {Screen-saver}
 Main
  Case message of
@@ -497,6 +511,7 @@ Widget 10
 Property
  Position 440 40
  Type RadioButton
+ Flags NoReliefString
  Title {Blank}
 Main
  Case message of
@@ -510,6 +525,7 @@ Widget 12
 Property
  Position 505 40
  Type ItemDraw
+ Flags NoReliefString
  Title {Timeout(s):}
 Main
  Case message of
@@ -522,6 +538,7 @@ Widget 14
 Property
  Size 80 79
  Position 590 37
+ Flags NoReliefString
  Type TextField
 Main
  Case message of
@@ -534,6 +551,7 @@ Widget 11
 Property
  Position 440 85
  Type RadioButton
+ Flags NoReliefString
  Title {Pattern}
 Main
  Case message of
@@ -548,6 +566,7 @@ Widget 13
 Property
  Position 525 85
  Type ItemDraw
+ Flags NoReliefString
  Title {Cycle(s):}
 Main
  Case message of
@@ -561,6 +580,7 @@ Widget 15
 Property
  Size 80 79
  Position 590 82
+ Flags NoReliefString
  Type TextField
 Main
  Case message of
@@ -591,6 +611,7 @@ Widget 59
 Property
  Position 430 120
  Type ItemDraw
+ Flags NoReliefString
  Title {DPMS}
 Main
  Case message of
@@ -604,6 +625,7 @@ Widget 60
 Property
  Position 440 150
  Type RadioButton
+ Flags NoReliefString
  Title {Enable}
 Main
  Case message of
@@ -618,6 +640,7 @@ Widget 61
 Property
  Position 580 150
  Type RadioButton
+ Flags NoReliefString
  Title {Disable}
 Main
  Case message of
@@ -631,6 +654,7 @@ Widget 62
 Property
  Position 440 180
  Type ItemDraw
+ Flags NoReliefString
  Title {Standby(s):}
 Main
  Case message of
@@ -644,6 +668,7 @@ Property
  Size 60 20
  Position 530 177
  Type TextField
+ Flags NoReliefString
  Title{1000}
 Main
  Case message of
@@ -656,6 +681,7 @@ Widget 64
 Property
  Position 440 205
  Type ItemDraw
+ Flags NoReliefString
  Title {Suspend(s):}
 Main
  Case message of
@@ -669,6 +695,7 @@ Property
  Size 60 20
  Position 530 202
  Type TextField
+ Flags NoReliefString
  Title{1000}
 Main
  Case message of
@@ -681,6 +708,7 @@ Widget 66
 Property
  Position 440 230
  Type ItemDraw
+ Flags NoReliefString
  Title {Off(s):}
 Main
  Case message of
@@ -694,6 +722,7 @@ Property
  Size 60 20
  Position 530 227
  Type TextField
+ Flags NoReliefString
  Title{1000}
 Main
  Case message of
@@ -722,6 +751,7 @@ Widget 71
 Property
  Position 430 270
  Type ItemDraw
+ Flags NoReliefString
  Title {xscreensaver}
 Main
  Case message of
@@ -735,6 +765,7 @@ Widget 72
 Property
  Position 440 298
  Type CheckBox
+ Flags NoReliefString
  Title {Enable}
 Main
  Case message of
@@ -760,6 +791,7 @@ Widget 73
 Property
  Position 550 295
  Type PushButton
+ Flags NoReliefString
  Title {Config and Demo}
 Main
  Case message of
@@ -768,10 +800,6 @@ Main
    Do {Exec xscreensaver-command -prefs&}
   End
 End
-
-
-
-
 
 
 
