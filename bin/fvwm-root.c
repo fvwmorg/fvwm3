@@ -21,7 +21,6 @@ Display *dpy;
 int screen;
 Window root;
 char *display_name = NULL;
-void SetRootWindow(char *tline);
 Pixmap rootImage = None;
 Bool NoDither = False;
 Bool Dither = False;
@@ -58,6 +57,89 @@ void usage(int verbose)
 			"\t--help\n"
 			"\t--version\n");
 	}
+}
+
+int SetRootWindow(char *tline)
+{
+	Pixmap shapeMask = None, temp_pix = None, alpha = None;
+	int w, h, depth;
+	int nalloc_pixels = 0;
+	Pixel *alloc_pixels = NULL;
+	char *file_path;
+	FvwmPictureAttributes fpa;
+
+	if (use_our_color_limit)
+	{
+		PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
+		colorLimitop.color_limit = opt_color_limit;
+		PictureInitCMapRoot(
+			dpy, !NoColorLimit, &colorLimitop, True, True);
+	}
+	else
+	{
+		/* this use the default visual (not the fvwm one) as
+		 * getenv("FVWM_VISUALID") is NULL in any case. But this use
+		 * the same color limit than fvwm.
+		 * This is "broken" when fvwm use depth <= 8 and a private
+		 * color map (i.e., fvwm is started with the -visual{ID}
+		 * option), because when fvwm use a private color map the
+		 * default color limit is 244. There is no way to know here if
+		 * getenv("FVWM_VISUALID") !=NULL.
+		 * So, in this unfortunate case the user should use the
+		 * --color-limit option */
+		PictureInitCMap(dpy);
+	}
+	/* try built-in image path first */
+	file_path = PictureFindImageFile(tline, NULL, R_OK);
+	if (file_path == NULL)
+	{
+		file_path = tline;
+	}
+	fpa.mask = FPAM_NO_ALLOC_PIXELS | FPAM_NO_ALPHA;
+	if (Pdepth <= 8 && !NoDither)
+	{
+		fpa.mask |= FPAM_DITHER;
+	}
+	else if (Pdepth <= 16 && Dither)
+	{
+		fpa.mask |= FPAM_DITHER;
+	}
+	if (NoColorLimit)
+	{
+		fpa.mask |= FPAM_NO_COLOR_LIMIT;
+	}
+	if (!PImageLoadPixmapFromFile(
+		dpy, root, file_path, &temp_pix, &shapeMask, &alpha,
+		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, 0, fpa))
+	{
+		fprintf(
+			stderr, "[fvwm-root] failed to load image file '%s'\n",
+			tline);
+		return -1;
+	}
+	if (depth == Pdepth)
+	{
+		rootImage = temp_pix;
+	}
+	else
+	{
+		XGCValues gcv;
+		GC gc;
+
+		gcv.background= WhitePixel(dpy, screen);
+		gcv.foreground= BlackPixel(dpy, screen);
+		gc = fvwmlib_XCreateGC(
+			dpy, root, GCForeground | GCBackground, &gcv);
+		rootImage = XCreatePixmap(dpy, root, w, h, Pdepth);
+		XCopyPlane(dpy, temp_pix, rootImage, gc, 0, 0, w, h, 0, 0, 1);
+		XFreePixmap(dpy, temp_pix);
+		XFreeGC(dpy, gc);
+	}
+	XSetWindowBackgroundPixmap(dpy, root, rootImage);
+	save_colors = 1;
+	XClearWindow(dpy, root);
+
+	return 0;
 }
 
 int main(int argc, char **argv)
@@ -255,90 +337,6 @@ int main(int argc, char **argv)
 			(unsigned char *)  &dp, 1);
 	}
 	XCloseDisplay(dpy);
-
-	return 0;
-}
-
-
-int SetRootWindow(char *tline)
-{
-	Pixmap shapeMask = None, temp_pix = None, alpha = None;
-	int w, h, depth;
-	int nalloc_pixels = 0;
-	Pixel *alloc_pixels = NULL;
-	char *file_path;
-	FvwmPictureAttributes fpa;
-
-	if (use_our_color_limit)
-	{
-		PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
-		colorLimitop.color_limit = opt_color_limit;
-		PictureInitCMapRoot(
-			dpy, !NoColorLimit, &colorLimitop, True, True);
-	}
-	else
-	{
-		/* this use the default visual (not the fvwm one) as
-		 * getenv("FVWM_VISUALID") is NULL in any case. But this use
-		 * the same color limit than fvwm.
-		 * This is "broken" when fvwm use depth <= 8 and a private
-		 * color map (i.e., fvwm is started with the -visual{ID}
-		 * option), because when fvwm use a private color map the
-		 * default color limit is 244. There is no way to know here if
-		 * getenv("FVWM_VISUALID") !=NULL.
-		 * So, in this unfortunate case the user should use the
-		 * --color-limit option */
-		PictureInitCMap(dpy);
-	}
-	/* try built-in image path first */
-	file_path = PictureFindImageFile(tline, NULL, R_OK);
-	if (file_path == NULL)
-	{
-		file_path = tline;
-	}
-	fpa.mask = FPAM_NO_ALLOC_PIXELS | FPAM_NO_ALPHA;
-	if (Pdepth <= 8 && !NoDither)
-	{
-		fpa.mask |= FPAM_DITHER;
-	}
-	else if (Pdepth <= 16 && Dither)
-	{
-		fpa.mask |= FPAM_DITHER;
-	}
-	if (NoColorLimit)
-	{
-		fpa.mask |= FPAM_NO_COLOR_LIMIT;
-	}
-	if (!PImageLoadPixmapFromFile(
-		dpy, root, file_path, &temp_pix, &shapeMask, &alpha,
-		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, 0, fpa))
-	{
-		fprintf(
-			stderr, "[fvwm-root] failed to load image file '%s'\n",
-			tline);
-		return -1;
-	}
-	if (depth == Pdepth)
-	{
-		rootImage = temp_pix;
-	}
-	else
-	{
-		XGCValues gcv;
-		GC gc;
-
-		gcv.background= WhitePixel(dpy, screen);
-		gcv.foreground= BlackPixel(dpy, screen);
-		gc = fvwmlib_XCreateGC(
-			dpy, root, GCForeground | GCBackground, &gcv);
-		rootImage = XCreatePixmap(dpy, root, w, h, Pdepth);
-		XCopyPlane(dpy, temp_pix, rootImage, gc, 0, 0, w, h, 0, 0, 1);
-		XFreePixmap(dpy, temp_pix);
-		XFreeGC(dpy, gc);
-	}
-	XSetWindowBackgroundPixmap(dpy, root, rootImage);
-	save_colors = 1;
-	XClearWindow(dpy, root);
 
 	return 0;
 }
