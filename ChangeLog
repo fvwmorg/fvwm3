@@ -1,3 +1,9 @@
+2003-07-13  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/CombineChars.c (CombineChars):
+	bugfix: array mapping visual to logical position was allocated
+	to small (factor 2) in decoposing code
+
 2003-07-11  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/Flocale.c (FlocaleEncodeWinString):

@@ -1891,6 +1891,7 @@ CombineChars(
 	in_str_len = str_len;
 	/* we don't really need to NULL-terminate source, since we
 	   have string length */
+
 	/* be pessimistic, assume all characters are decomposed */
 	dest = (unsigned short int *)safemalloc(
 		(str_len + 1) * 2 * sizeof(unsigned short int));
@@ -1936,7 +1937,7 @@ CombineChars(
 		str_len = j;
 		dest = (unsigned short int *)safemalloc(
 			(str_len + 1) * 2 * sizeof(unsigned short int));
-		dest_v_to_l = (int *)safemalloc(str_len * sizeof(int));
+		dest_v_to_l = (int *)safemalloc(str_len * 2 * sizeof(int));
 	} while (has_changed);
 	/* source now holds decomposed string (got swapped before exiting
 	   loop, str_len holds string length */
