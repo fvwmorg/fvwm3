@@ -1647,26 +1647,28 @@ static void HandlePanelPress(button_info *b)
 
   /* We're sure that the window is mapped and decorated now. Find the top level
    * ancestor now. */
-#if 0
   XGrabServer(Dpy);
-#endif
-  ancestor = GetTopAncestorWindow(Dpy, b->PanelWin);
   lb = 0;
   tb = 0;
   rb = 0;
   bb = 0;
-  if (ancestor)
+  if (!b->panel_flags.ignore_border)
   {
-    if (XGetGeometry(Dpy, ancestor, &JunkW, &ax, &ay, &aw, &ah, &abw, &d) &&
+    ancestor = GetTopAncestorWindow(Dpy, b->PanelWin);
+    if (ancestor)
+    {
+      if (
+	XGetGeometry(Dpy, ancestor, &JunkW, &ax, &ay, &aw, &ah, &abw, &d) &&
 	XGetGeometry(Dpy, b->PanelWin, &JunkW, &px, &py, &pw, &ph, &pbw, &d) &&
 	XTranslateCoordinates(
 	  Dpy, b->PanelWin, ancestor, 0, 0, &px, &py, &JunkW))
-    {
-      /* calculate the 'border' width in all four directions */
-      lb = max(px, 0) + abw;
-      tb = max(py, 0) + abw;
-      rb = max((aw + abw) - (px + pw), 0) + abw;
-      bb = max((ah + abw) - (py + ph), 0) + abw;
+      {
+	/* calculate the 'border' width in all four directions */
+	lb = max(px, 0) + abw;
+	tb = max(py, 0) + abw;
+	rb = max((aw + abw) - (px + pw), 0) + abw;
+	bb = max((ah + abw) - (py + ph), 0) + abw;
+      }
     }
   }
   /* now find the source and destination positions for the slide operation */
@@ -1694,7 +1696,7 @@ static void HandlePanelPress(button_info *b)
   SlideWindow(Dpy, b->PanelWin,
 	      x1, y1, w1, h1,
 	      x2, y2, w2, h2,
-	      steps, b->slide_delay_ms, NULL, b->slide_flags.smooth);
+	      steps, b->slide_delay_ms, NULL, b->panel_flags.smooth);
 
   if (is_mapped)
   {

@@ -302,7 +302,8 @@ static void ParseSwallow(char **ss,byte *flags,byte *mask)
 *** Parses the options possible to Panel
 **/
 static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
-		       int *steps, int *delay, slide_flags_type *slide_flags)
+		       int *steps, int *delay, panel_flags_type *panel_flags,
+		       int *indicator_size)
 {
   char *swallowopts[] =
   {
@@ -317,6 +318,7 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
     "delay",
     "smooth",
     "noborder",
+    "indicator",
     NULL
   };
   char *t,*s=*ss;
@@ -398,10 +400,20 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
       s += n;
       break;
     case 18: /* smooth */
-      (*slide_flags).smooth = 1;
+      (*panel_flags).smooth = 1;
       break;
     case 19: /* noborder */
-      (*slide_flags).ignore_border = 1;
+      (*panel_flags).ignore_border = 1;
+      break;
+    case 20: /* triangle */
+      (*panel_flags).panel_indicator = 1;
+      *indicator_size = 0;
+      sscanf(s, "%d%n", indicator_size, &n);
+      if (*indicator_size < 0 || *indicator_size > 100)
+      {
+	*indicator_size = 0;
+      }
+      s += n;
       break;
     default:
       t=seekright(&s);
@@ -848,7 +860,8 @@ static void ParseButton(button_info **uberb,char *s)
 	    ParseSwallow(&s, &b->swallow,&b->swallow_mask);
 	  else
 	    ParsePanel(&s, &b->swallow, &b->swallow_mask, &b->slide_direction,
-		       &b->slide_steps, &b->slide_delay_ms, &b->slide_flags);
+		       &b->slide_steps, &b->slide_delay_ms, &b->panel_flags,
+		       &b->indicator_size);
 	}
 	t=seekright(&s);
 	o=seekright(&s);

@@ -179,7 +179,6 @@ extern Time lastTimestamp;
  * forward declarations
  ***************************************************************/
 
-static void draw_triangle_pattern(Window,GC,GC,GC,int,int,int,int,char,Bool);
 static void draw_separator(Window, GC,GC,int, int,int,int,int);
 static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
 			   int coffset);
@@ -2803,25 +2802,13 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   if(MI_IS_POPUP(mi))
   {
     y = y_offset + (y_height - TRIANGLE_HEIGHT + relief_thickness) / 2;
-    if(is_item_selected)
-    {
-      draw_triangle_pattern(MR_WINDOW(mr), ShadowGC, ReliefGC, ReliefGC,
-			    MR_TRIANGLE_X_OFFSET(mr), y,
-			    MR_TRIANGLE_X_OFFSET(mr) + TRIANGLE_WIDTH,
-			    y + TRIANGLE_HEIGHT - 1,
-			    MST_HAS_TRIANGLE_RELIEF(mr),
-			    MR_IS_LEFT_TRIANGLE(mr));
-    }
-    else
-    {
-      draw_triangle_pattern(MR_WINDOW(mr), ReliefGC, ShadowGC,
-			    MST_MENU_GC(mr),
-			    MR_TRIANGLE_X_OFFSET(mr), y,
-			    MR_TRIANGLE_X_OFFSET(mr) + TRIANGLE_WIDTH,
-			    y + TRIANGLE_HEIGHT - 1,
-			    MST_HAS_TRIANGLE_RELIEF(mr),
-			    MR_IS_LEFT_TRIANGLE(mr));
-    }
+    DrawTrianglePattern(
+      dpy, MR_WINDOW(mr),
+      ReliefGC, ShadowGC, (is_item_selected) ? ReliefGC : MST_MENU_GC(mr),
+      MR_TRIANGLE_X_OFFSET(mr), y, TRIANGLE_WIDTH, TRIANGLE_HEIGHT, 0,
+      (MR_IS_LEFT_TRIANGLE(mr)) ? 'l' : 'r',
+      MST_HAS_TRIANGLE_RELIEF(mr), !MST_HAS_TRIANGLE_RELIEF(mr),
+      is_item_selected);
   }
 
   /***************************************************************
@@ -3017,71 +3004,6 @@ static void draw_separator(Window w, GC TopGC, GC BottomGC, int x1, int y1,
 {
   XDrawLine(dpy, w, TopGC   , x1,           y1,  x2,          y2);
   XDrawLine(dpy, w, BottomGC, x1-extra_off, y1+1,x2+extra_off,y2+1);
-}
-
-/****************************************************************************
- *
- *  Draws a little Triangle pattern within a window
- *
- ****************************************************************************/
-static void draw_triangle_pattern(
-  Window w, GC ReliefGC, GC ShadowGC, GC FillGC,
-  int l, int u, int r, int b, char relief, Bool is_left_triangle)
-{
-  int m;
-  int tmp;
-
-  m = (u + b)/2;
-
-  /**************************************************************************
-   *
-   * anti-ugliness patch by Adam Rice, wysiwyg@glympton.airtime.co.uk,
-   * January 28th 1998.
-   *
-   **************************************************************************/
-
-  /* ensure vertical symmetry */
-  if (u-m > m-b)
-  {
-    u=2*m-b;
-  }
-  else if (u-m < m-b)
-  {
-    b=2*m-u;
-  }
-
-  /* make (r-l)/(m-b) or its inverse be a whole number */
-  if (r-l > m-b)
-  {
-    r=((r-l)/(m-b))*(m-b)+l;
-  }
-  else if (r-l < m-b)
-  {
-    r=(m-b)/((((m-b)-1)/(r-l))+1)+l;
-  }
-  if (is_left_triangle)
-  {
-    tmp = l;
-    l = r;
-    r = tmp;
-  }
-
-  if (!relief)
-  {
-    /* solid triangle */
-    XPoint points[3];
-    points[0].x = l; points[0].y = u;
-    points[1].x = l; points[1].y = b;
-    points[2].x = r; points[2].y = m;
-    XFillPolygon(dpy, w, FillGC, points, 3, Convex, CoordModeOrigin);
-  }
-  else
-  {
-    /* relief triangle */
-    XDrawLine(dpy, w, (is_left_triangle) ? ShadowGC : ReliefGC, l, u, l, b);
-    XDrawLine(dpy, w, ShadowGC, l, b, r, m);
-    XDrawLine(dpy, w, ReliefGC, r, m, l, u);
-  }
 }
 
 /***********************************************************************

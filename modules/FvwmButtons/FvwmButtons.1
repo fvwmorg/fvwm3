@@ -309,6 +309,17 @@ smoother this way, but most applications will appear
 to grow from the button instead of sliding out.  Also, without
 the \fIsmooth\fP option the animation may be delayed a bit.
 
+The \fInoborder\fP option tells FvwmButtons to ignore the borders
+of the window when calculating positions for the animation.
+
+With the \fIindicator\fP option set, FvwmButtons will draw a small
+triangle in the button that will open a panel.  The triangle points
+in the direction where the panel will pop up.  The \fIindicator\fP
+ keyword may be followed by a positive integer that specifies the
+maximum width and height of the indicator.  Without this size
+FvwmButtons will make the indicator as big as it fits in the button
+but leaving one pixel at each side.
+
 The defaults are sliding up with a delay of five millisecond and
 twelve animation steps. To post the panel without any animation,
 set the number of steps to zero.
@@ -494,14 +505,97 @@ backslash '\'.
 .SH CREATING PANELS
 
 Former versions of FvwmButtons (packaged with fvwm 2.0.46 to
-fvwm 2.3.6) had a different way of handling panels that the
+fvwm 2.3.6) had a different way of handling panels than the
 version you are using today.  This implies that you can not use
 your old panel configuration with the new panel feature.  Please
-read the next section to learn how to convert your old
-configuration.  New users of panels just read on and can safely
-ignore this section.
+read the corresponding section further down in this document to
+learn how to convert your old configuration.  New users of panels
+just read on and can safely ignore this section.
 
-[ this section still has to be written ]
+.SS HOW TO CREATE NEW PANELS
+
+Three things are necessary to configure panels in the button bar:
+an application window that becomes the panel, a button in the
+button bar and optionally certain style commands.
+
+Any program that can be launched from within fvwm and that has
+a window qualifies as the application.  A terminal window could
+be your panel, or some application like xload or xosview or
+another fvwm module, including FvwmButtons itself.  All you need
+to know is how to start your application from fvwm.
+
+The button that invokes the panel is as easily configured as any
+other button.  Essentially you need nothing more than the \fIPanel\fP
+option:
+
+.nf
+.sp
+*FvwmButtons(Panel my_first_panel \\
+  "Module FvwmButtons -g -30000-30000 my_first_panel")
+*FvwmButtons(Panel my_second_panel \\
+  "Exec exec xterm -g -30000-30000 -n my_second_panel")
+.sp
+.fi
+
+This works exactly like the \fISwallow\fP option.  The major
+difference is that the application is not put into the button
+when it starts up but instead hidden from view.  Now, if you
+press the button for the panel the window slides into view.
+The '-g -30000-30000' option tells the application that it
+should be created somewhere very far to the top and left of
+your visible screen.  Otherwise you would see it flashing for
+a moment when FvwmButtons starts up.  Some applications do not
+work well with this kind of syntax so you may have to live with
+the short flashing of the window.  If you want to make a panel
+from another instance of FvwmButtons you can do so, but you must
+give it a different name ('my_first_panel' in above example).
+If you run FvwmButtons under the same name new panels will be
+created recursively until your system runs out of resources and
+FvwmButtons crashes! To counfigure a second button bar with a
+different name, simply replace put '*new_name' in place of
+'*FvwmButtons' in your configuration file.  If you are not
+familiar with the \fISwallow\fP option or if you want to learn
+more about how 'swallowing' panels works, please refer to the
+description of the \fISwallow\fP option.
+
+Now that your panel basically works you will want to tune it
+a bit.  You may not want a window title on the panel.  To disable
+the title use the fvwm \fIStyle\fP command.  If your button bar
+is 'sticky' you may want to make the panel sticky too.  And
+probably the panel window should have no icon in case it is
+iconified.
+
+.nf
+.sp
+Style name_of_panel_window NoTitle
+Style name_of_panel_window Sticky
+Style name_of_panel_window NoIcon
+.sp
+.fi
+
+You may want that your panel stays open only until you select
+something within it.  You can give FvwmButtons the
+\fI-transientpanel\fP option after the -g option in the command.
+FvwmPager has a similar option '-transient' other applications
+do not provide something similar.
+
+Last but not least you can now put an icon, a title or a small
+arrow in the button so that you can see what it is good for.
+A title or icon can be specified as usual.  To activate the arrow,
+just add '(indicator)' after the 'Panel' keyword in the example
+above.  An optional direction in which the panel shall be opened
+can be given too:
+
+.nf
+.sp
+*FvwmButtons(Panel(down, indicator) my_first_panel \\
+  "Module FvwmButtons -g -30000-30000 -transientpanel my_first_panel")
+.sp
+.fi
+
+There are several more options to configure how your panel works,
+for example the speed and smoothness of the sliding animation. Please
+refer to the description of the \fIPanel\fP option for further details.
 
 .SS CONVERTING OLD PANEL CONFIGURATIONS TO THE NEW STYLE
 
@@ -552,9 +646,9 @@ instance of FvwmButtons a different name.
 
 .nf
 .sp
-*FvwmButtons(Title WinOps, Panel WinOps \\
+*FvwmButtons(Title WinOps, Panel FvwmButtonsWinOps \\
   "Module FvwmButtons FvwmButtonsWinOps")
-*FvwmButtons(Title Tools , Panel Tools \\
+*FvwmButtons(Title Tools , Panel FvwmButtonsTools \\
   "Module FvwmButtons FvwmButtonsTools")
 .sp
 .fi
@@ -565,7 +659,7 @@ start FvwmButtons with the '-transientpanel' option:
 
 .nf
 .sp
-*FvwmButtons(Title Tools , Panel(down) Tools \\
+*FvwmButtons(Title Tools , Panel(down) FvwmButtonsTools \\
   "Module FvwmButtons -transientpanel FvwmButtonsTools")
 .sp
 .fi

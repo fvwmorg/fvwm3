@@ -26,7 +26,8 @@
 
 
 /* Draws the relief pattern around a window
- * Draws a line_width wide rectangle from (x,y) to (x+w,y+h) i.e w+1 wide, h+1 high
+ * Draws a line_width wide rectangle from (x,y) to (x+w,y+h) i.e w+1 wide,
+ * h+1 high
  * Draws end points assuming CAP_NOT_LAST style in GC
  * Draws anti-clockwise in case CAP_BUTT is the style and the end points overlap
  * Top and bottom lines come out full length, the sides come out 1 pixel less
@@ -806,3 +807,140 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
   return CreateGradientPixmap(dpy, d, gc, type, *width_return, *height_return,
 			      ncolors, pixels, None, 0, 0, 0, 0);
 }
+
+/****************************************************************************
+ *
+ *  Draws a little Triangle pattern within a window
+ *
+ ****************************************************************************/
+void DrawTrianglePattern(
+  Display *dpy, Drawable d, GC ReliefGC, GC ShadowGC, GC FillGC,
+  int x, int y, int width, int height, int bw, char orientation,
+  Bool draw_relief, Bool do_fill, Bool is_pressed)
+{
+  const struct
+  {
+    const char line[3];
+    const char point[3];
+  } hi[4] =
+    {
+      { { 1, 0, 0 }, { 1, 1, 0 } }, /* up */
+      { { 1, 0, 1 }, { 1, 0, 0 } }, /* down */
+      { { 1, 0, 0 }, { 1, 1, 0 } }, /* left */
+      { { 1, 0, 1 }, { 1, 1, 0 } }  /* right */
+    };
+  XPoint points[4];
+  GC temp_gc;
+  int short_side;
+  int long_side;
+  int t_width;
+  int t_height;
+  int i;
+  int type;
+
+  /* remove border width from target area */
+  width -= 2 * bw;
+  height -= 2 * bw;
+  x += bw;
+  y += bw;
+  if (width < 1 || height < 1)
+    /* nothing to do */
+    return;
+
+  orientation = tolower(orientation);
+  switch (orientation)
+  {
+  case 'u':
+  case 'd':
+    long_side = width;
+    short_side = height;
+    type = (orientation == 'd');
+    break;
+  case 'l':
+  case 'r':
+    long_side = height;
+    short_side = width;
+    type = (orientation == 'r') + 2;
+    break;
+  default:
+    /* unknowm orientation */
+    return;
+  }
+
+  /* assure the base side has an odd length */
+  if ((long_side & 0x1) == 0)
+    long_side--;
+  /* reduce base length if short sides don't fit */
+  if (short_side < long_side / 2 + 1)
+    long_side = 2 * short_side - 1;
+  else
+    short_side = long_side / 2 + 1;
+
+  if (orientation == 'u' || orientation == 'd')
+  {
+    t_width = long_side;
+    t_height = short_side;
+  }
+  else
+  {
+    t_width = short_side;
+    t_height = long_side;
+  }
+  /* find proper x/y coordinate */
+  x += (width - t_width) / 2;
+  y += (height - t_height) / 2;
+  /* decrement width and height for convenience of calculation */
+  t_width--;
+  t_height--;
+
+  /* get the list of points to draw */
+  switch (orientation)
+  {
+  case 'u':
+    y += t_height;
+    t_height = -t_height;
+  case 'd':
+    points[1].x = x + t_width / 2;
+    points[1].y = y + t_height;
+    points[2].x = x + t_width;
+    points[2].y = y;
+    break;
+  case 'l':
+    x += t_width;
+    t_width = -t_width;
+  case 'r':
+    points[1].x = x + t_width;
+    points[1].y = y + t_height / 2;
+    points[2].x = x;
+    points[2].y = y + t_height;
+    break;
+  }
+  points[0].x = x;
+  points[0].y = y;
+  points[3].x = x;
+  points[3].y = y;
+
+  if (do_fill)
+  {
+    /* solid triangle */
+    XFillPolygon(dpy, d, FillGC, points, 3, Convex, CoordModeOrigin);
+  }
+  if (draw_relief)
+  {
+    /* relief triangle */
+    for (i = 0; i < 3; i++)
+    {
+      temp_gc = (is_pressed ^ hi[type].line[i]) ? ReliefGC : ShadowGC;
+      XDrawLine(dpy, d, temp_gc, points[i].x, points[i].y,
+		points[i+1].x, points[i+1].y);
+    }
+    for (i = 0; i < 3; i++)
+    {
+      temp_gc = (is_pressed ^ hi[type].point[i]) ? ReliefGC : ShadowGC;
+      XDrawPoint(dpy, d, temp_gc, points[i].x, points[i].y);
+    }
+  }
+
+  return;
+}
+

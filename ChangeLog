@@ -1,3 +1,10 @@
+1999-09-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (paint_item):
+	(draw_triangle_pattern):
+
+	* libs/Graphics.c (DrawTrianglePattern): new service function
+
 1999-09-23  Paul D. Smith  <psmith@gnu.org>
 
 	* fvwm/Makefile.am (LDADD): Move the $(X_LIBS) reference earlier

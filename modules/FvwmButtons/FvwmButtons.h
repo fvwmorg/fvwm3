@@ -140,7 +140,8 @@ typedef struct
 {
   unsigned smooth : 1;
   unsigned ignore_border : 1;
-} slide_flags_type;
+  unsigned panel_indicator : 1; /* b_Panel */
+} panel_flags_type;
 
 struct button_info_struct
 {
@@ -189,19 +190,21 @@ struct button_info_struct
 
   struct
   {
-    unsigned is_panel : 1;     /* b_Panel */
-    unsigned panel_mapped : 1; /* b_Panel */
+    unsigned is_panel : 1;        /* b_Panel */
+    unsigned panel_mapped : 1;    /* b_Panel */
     unsigned panel_iconified : 1; /* b_Panel */
-    unsigned panel_shaded : 1; /* b_Panel */
+    unsigned panel_shaded : 1;    /* b_Panel */
   } newflags;
-#define SLIDE_UP 0
-#define SLIDE_DOWN 1
-#define SLIDE_LEFT 2
-#define SLIDE_RIGHT 3
+#define SLIDE_UP 'u'
+#define SLIDE_DOWN 'd'
+#define SLIDE_LEFT 'l'
+#define SLIDE_RIGHT 'r'
+#define SLIDE_GEOMETRY 'g'
   char slide_direction;        /* b_Panel */
   int slide_steps;             /* b_Panel */
   int slide_delay_ms;          /* b_Panel */
-  slide_flags_type slide_flags;
+  int indicator_size;          /* b_Panel */
+  panel_flags_type panel_flags;
 };
 
 #include "button.h"

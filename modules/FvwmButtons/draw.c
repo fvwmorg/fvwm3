@@ -50,6 +50,7 @@
 #include <X11/Intrinsic.h>
 
 #include "libs/Colorset.h"
+#include "libs/fvwmlib.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "icons.h" /* ConfigureIconWindow() */
@@ -212,7 +213,7 @@ void RedrawButton(button_info *b,int clean)
   if((b->flags & b_Hangon && b->flags & b_Swallow) || b == CurrentButton ||
      (b->flags & b_Panel && b->newflags.panel_mapped))
   {
-    /* Hanging swallow or held down by user or mappen panel */
+    /* Hanging swallow or held down by user or mapped panel */
     rev=1;
   }
   if(b->flags&b_Action) /* If this is a Desk button that takes you to here.. */
@@ -295,7 +296,68 @@ void RedrawButton(button_info *b,int clean)
       XChangeGC(Dpy,NormalGC,GCForeground | GCFont,&gcv);
       DrawTitle(b,MyWindow,NormalGC);
     }
-  }
+  } /* title */
+  else if ((b->flags & b_Panel) && (b->panel_flags.panel_indicator))
+  {
+    XGCValues gcv;
+    int ix, iy, iw, ih;
+    int is;
+
+    /* draw the panel indicator, but not if there is a title */
+    if (b->slide_direction != SLIDE_GEOMETRY && (b->indicator_size & 1) == 0)
+    {
+      /* make sure we have an odd number */
+      b->indicator_size--;
+    }
+    is = b->indicator_size;
+
+    gcv.foreground = buttonHilite(b);
+    XChangeGC(Dpy,NormalGC,GCForeground,&gcv);
+    gcv.foreground = buttonShadow(b);
+    XChangeGC(Dpy,ShadowGC,GCForeground,&gcv);
+
+    GetInternalSize(b, &ix, &iy, &iw, &ih);
+    ix++;
+    iy++;
+    iw -= 2;
+    ih -= 2;
+    if (is != 0)
+    {
+      /* limit to user specified size */
+      if (is < iw)
+      {
+	ix += (iw - is) / 2;
+	iw = is;
+      }
+      if (is < ih)
+      {
+	iy += (ih - is) / 2;
+	ih = is;
+      }
+    }
+
+    if (b->slide_direction == SLIDE_GEOMETRY)
+    {
+      if (ih < iw)
+      {
+	ix += (iw - ih) / 2;
+	iw = ih;
+      }
+      else if (iw < ih)
+      {
+	iy += (ih - iw) / 2;
+	ih = iw;
+      }
+      RelieveRectangle(
+	Dpy, MyWindow, ix, iy, iw - 1, ih - 1, NormalGC, ShadowGC, 1);
+    }
+    else
+    {
+      DrawTrianglePattern(
+	Dpy, MyWindow, NormalGC, ShadowGC, None, ix, iy, iw, ih, 0,
+	b->slide_direction, 1, 0, 0);
+    }
+  } /* panel indicator */
 }
 
 /**

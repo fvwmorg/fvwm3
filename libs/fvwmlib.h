@@ -268,6 +268,11 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 				      unsigned int *width_return,
 				      unsigned int *height_return);
 
+void DrawTrianglePattern(
+  Display *dpy, Drawable d, GC ReliefGC, GC ShadowGC, GC FillGC,
+  int x, int y, int width, int height, int bw, char orientation,
+  Bool draw_relief, Bool do_fill, Bool is_pressed);
+
 
 /***********************************************************************
  * WinMagic.c
