@@ -1,5 +1,10 @@
 2002-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmWinList/FvwmWinList.c (main):
+	(ProcessMessage):
+	(AdjustWindow):
+	do not resize window while shaded; request size change later
+
 	* FvwmIconMan/xmanager.c (resize_manager):
 	(draw_manager):
 	* FvwmIconMan/FvwmIconMan.c (main):

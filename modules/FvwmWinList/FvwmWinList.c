@@ -158,6 +158,12 @@ int ReliefWidth = 2;
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
 
+struct
+{
+	unsigned is_shaded : 1;
+	unsigned needs_resize_after_unshade : 1;
+} flags = { 0, 0 };
+
 static RETSIGTYPE TerminateHandler(int sig);
 
 static char *AnimCommand = NULL;
@@ -173,6 +179,34 @@ static RETSIGTYPE TerminateHandler(int sig)
    * BEFORE we call it ...
    */
   fvwmSetTerminate(sig);
+}
+
+static void window_shade(unsigned long *body, int do_shade)
+{
+	Window w;
+
+	w = (Window)(body[0]);
+	if (w != win)
+	{
+		return;
+	}
+	if (do_shade)
+	{
+		flags.is_shaded = 1;
+		flags.needs_resize_after_unshade = 0;
+	}
+	else
+	{
+		flags.is_shaded = 0;
+		if (flags.needs_resize_after_unshade)
+		{
+			AdjustWindow(False);
+			RedrawWindow(True, True, NULL);
+			flags.needs_resize_after_unshade = 0;
+		}
+	}
+
+	return;
 }
 
 /******************************************************************************
@@ -296,7 +330,8 @@ int main(int argc, char **argv)
 		 M_CONFIGURE_WINDOW | M_ADD_WINDOW | M_DESTROY_WINDOW |
 		 M_VISIBLE_NAME | M_DEICONIFY |
 		 M_ICONIFY | M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |
-		 M_CONFIG_INFO | M_SENDCONFIG);
+		 M_CONFIG_INFO | M_SENDCONFIG | M_WINDOWSHADE |
+		 M_DEWINDOWSHADE);
   /* extended messages */
   SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
 
@@ -540,6 +575,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	AdjustWindow(False);
 	RedrawWindow(True, True, NULL);
       }
+      break;
+    case M_WINDOWSHADE:
+      window_shade(body, 1);
+      break;
+    case M_DEWINDOWSHADE:
+      window_shade(body, 0);
       break;
   case MX_PROPERTY_CHANGE:
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
@@ -1037,7 +1078,9 @@ void AdjustWindow(Bool force)
       }
     }
   }
-  if (WindowState && (new_height!=win_height || new_width!=win_width))
+  if (WindowState &&
+      (new_height!=win_height || new_width!=win_width ||
+       (!flags.is_shaded && flags.needs_resize_after_unshade)))
   {
 #ifdef COMPLEX_WINDOW_PLACEMENT
     if (Anchor)
@@ -1069,14 +1112,19 @@ void AdjustWindow(Bool force)
       }
       /* XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height); */
     }
-    if (Anchor && WindowState == 2)
+    if (flags.is_shaded)
+      flags.needs_resize_after_unshade = 1;
+    else if (Anchor && WindowState == 2)
       XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
     else
       XResizeWindow(dpy, win, new_width, new_height);
     /* The new code is sooo much simpler :-) */
 #else
-    /* This relies on fvwm honouring South/East gemoetry when resizing. */
-    XResizeWindow(dpy, win, new_width, new_height);
+    if (flags.is_shaded)
+      flags.needs_resize_after_unshade = 1;
+    else
+      /* This relies on fvwm honouring South/East gemoetry when resizing. */
+      XResizeWindow(dpy, win, new_width, new_height);
 #endif
   }
   UpdateArray(&buttons,new_width);
