@@ -864,7 +864,7 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	if (grab_buttons != fw->grabbed_buttons)
 	{
 		MyXGrabServer(dpy);
-		for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+		for (i = 0; i < NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
 		{
 			__focus_grab_one_button(fw, i, grab_buttons);
 		}

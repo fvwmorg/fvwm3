@@ -34,6 +34,11 @@
 /* Fvwm needs at least 3 buttons. X currently supports up to 5 buttons, so you
  * can use 3, 4 or 5 here. */
 #define NUMBER_OF_MOUSE_BUTTONS		   5
+/* The "extended" buttons do not provide the full functionality because X has
+ * no bit mask value for them.  Things like dragging windows don't work with
+ * them.  By default, they are ignoreg, but you can use mouse bindingslike
+ * "mouse 7 a a raise" to activate them. */
+#define NUMBER_OF_EXTENDED_MOUSE_BUTTONS   9
 #define DEFAULT_ALL_BUTTONS_MASK	   \
 	((Button1Mask * (NUMBER_OF_MOUSE_BUTTONS >= 1)) | \
 	 (Button2Mask * (NUMBER_OF_MOUSE_BUTTONS >= 2)) | \
