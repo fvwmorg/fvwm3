@@ -463,7 +463,7 @@ void HandlePropertyNotify(void)
 {
   XTextProperty text_prop;
   Boolean       OnThisPage    =  False;
-  int was_urgent;
+  int old_wmhints_flags;
 
   DBUG("HandlePropertyNotify","Routine Entered");
 
@@ -550,9 +550,9 @@ void HandlePropertyNotify(void)
     case XA_WM_HINTS:
       /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
 	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. */
-      was_urgent = 0;
+      old_wmhints_flags = 0;
       if (Tmp_win->wmhints) {
-	was_urgent = Tmp_win->wmhints->flags & XUrgencyHint;
+        old_wmhints_flags = Tmp_win->wmhints->flags;
 	XFree ((char *) Tmp_win->wmhints);
       }
       Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
@@ -560,8 +560,16 @@ void HandlePropertyNotify(void)
       if(Tmp_win->wmhints == NULL)
 	return;
 
-      if((Tmp_win->wmhints->flags & IconPixmapHint)||
-	 (Tmp_win->wmhints->flags & IconWindowHint))
+      /*
+       * rebuild icon if the client either provides an icon 
+       * pixmap or window or has reset the hints to `no icon'. 
+       */
+      if ((Tmp_win->wmhints->flags & 
+	   (IconPixmapHint|IconWindowHint|IconMaskHint)) ||
+          ((old_wmhints_flags & 
+	    (IconPixmapHint|IconWindowHint|IconMaskHint)) !=
+	   (Tmp_win->wmhints->flags & 
+	    (IconPixmapHint|IconWindowHint|IconMaskHint))))
 	{
 	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
 	    Tmp_win->icon_bitmap_file = NULL;
@@ -620,13 +628,15 @@ void HandlePropertyNotify(void)
 	 Treat urgency changes by calling user-settable functions.
 	 These could e.g. deiconify and raise the window or temporarily
 	 change the decor. */
-      if (!was_urgent && (Tmp_win->wmhints->flags & XUrgencyHint))
+      if (!(old_wmhints_flags & XUrgencyHint) && 
+	  (Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyFunc",
 			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND);
 	}
 
-      if (was_urgent && !(Tmp_win->wmhints->flags & XUrgencyHint))
+      if ((old_wmhints_flags & XUrgencyHint) && 
+	  !(Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyDoneFunc",
 			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND);

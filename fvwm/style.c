@@ -754,6 +754,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           if(token)
           {
             tmpstyle.icon_name = token;
+            tmpstyle.flags.has_icon = 1;
             tmpstyle.flag_mask.has_icon = 1;
           }
 	  tmpstyle.flags.common.is_icon_suppressed = 0;
