@@ -460,10 +460,10 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
     {
       XClearWindow(dpy,Scr.SizeWindow);
       if(Scr.d_depth >= 2)
-	RelieveWindowGC(dpy,Scr.SizeWindow,0,0,Scr.SizeStringWidth+ SIZE_HINDENT*2,
-		      Scr.StdFont.height + SIZE_VINDENT*2,
-		      Scr.StdReliefGC,
-		      Scr.StdShadowGC,2);
+	RelieveWindowGC(dpy,Scr.SizeWindow,0,0,
+	                Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
+	                Scr.StdFont.height + SIZE_VINDENT*2 - 1,
+	                Scr.StdReliefGC,Scr.StdShadowGC,2);
     }
   else
     {

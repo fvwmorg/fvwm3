@@ -85,7 +85,7 @@ unsigned long Globalgcm;
 void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		Window expose_win)
 {
-  int y, i, x;
+  int i, x, y;
   GC ReliefGC,ShadowGC;
   Pixel BackColor;
   Pixmap BackPixmap,TextColor;
@@ -101,6 +101,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #ifdef BORDERSTYLE
   int borderflags;
 #endif /* BORDERSTYLE */
+  int rwidth; /* relief width */
 
   if(!t)
     return;
@@ -179,6 +180,9 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     ShadowGC = Scr.ScratchGC2;
   }
 
+  /* MWMBorder style means thin 3d effects */
+  rwidth = ((t->flags & MWMBorders) ? 1 : 2);
+  
   if(t->flags & ICONIFIED)
   {
     DrawIconWindow(t);
@@ -271,14 +275,14 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		if (!(GetDecor(t,left_buttons[i].state[bs].style) & FlatButton)) {
 		    if (GetDecor(t,left_buttons[i].state[bs].style) & SunkButton)
 			RelieveWindowGC(dpy,t->left_w[i],0,0,
-				      t->title_height, t->title_height,
-				      (inverted ? ReliefGC : ShadowGC),
-				      (inverted ? ShadowGC : ReliefGC),2);
+				        t->title_height - 1, t->title_height - 1,
+				        (inverted ? ReliefGC : ShadowGC),
+				        (inverted ? ShadowGC : ReliefGC), rwidth);
 		    else
 			RelieveWindowGC(dpy,t->left_w[i],0,0,
-				      t->title_height, t->title_height,
-				      (inverted ? ShadowGC : ReliefGC),
-				      (inverted ? ReliefGC : ShadowGC),2);
+				        t->title_height - 1, t->title_height - 1,
+				        (inverted ? ShadowGC : ReliefGC),
+				        (inverted ? ReliefGC : ShadowGC), rwidth);
 		}
 	    }
 	}
@@ -332,14 +336,14 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		if (!(GetDecor(t,right_buttons[i].state[bs].style) & FlatButton)) {
 		    if (GetDecor(t,right_buttons[i].state[bs].style) & SunkButton)
 			RelieveWindowGC(dpy,t->right_w[i],0,0,
-				      t->title_height, t->title_height,
-				      (inverted ? ReliefGC : ShadowGC),
-				      (inverted ? ShadowGC : ReliefGC),2);
+				        t->title_height - 1, t->title_height - 1,
+				        (inverted ? ReliefGC : ShadowGC),
+				        (inverted ? ShadowGC : ReliefGC), rwidth);
 		    else
 			RelieveWindowGC(dpy,t->right_w[i],0,0,
-				      t->title_height-1, t->title_height,
-				      (inverted ? ShadowGC : ReliefGC),
-				      (inverted ? ReliefGC : ShadowGC),2);
+                                        t->title_height - 1, t->title_height - 1,
+				        (inverted ? ShadowGC : ReliefGC),
+				        (inverted ? ReliefGC : ShadowGC), rwidth);
 		}
 	    }
 	}
@@ -349,7 +353,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   }
 
   /* draw the border */
-  /* resize handles are input only so draw in the frame and it will show through */
+  /* resize handles are InputOnly so draw in the frame and it will show through */
   {
     /* for mono - put a black border on
      * for color, make it the color of the decoration background */
@@ -385,157 +389,139 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       if((flush_expose(t->frame))||(expose_win == t->frame)||
          (expose_win == None))
       {
-        /* draw the outside relief */
-        if (t->flags & MWMBorders)
-          RelieveWindowGC(dpy,t->frame,0,0,t->frame_width,t->frame_height,rgc,sgc,2);
-        else { /* FVWMBorder style has an extra line of shadow on top and left */
-          RelieveWindowGC(dpy,t->frame,0,0,t->frame_width+1,t->frame_height+1,sgc,sgc,1);
-          RelieveWindowGC(dpy,t->frame,1,1,t->frame_width-1,t->frame_height-1,rgc,sgc,2);
-        }
-        /* draw the inside relief for FvwmBorders 
-         * Motif & FVWM borders drawn later (over the handles) */
+        /* draw the inside relief */
         if(
 #ifdef BORDERSTYLE
            !(borderflags & NoInset)
 #endif
            && t->boundary_width > 2)
-        { /* draw the inside relief */
-          if ((t->flags & MWMBorders))
-            RelieveWindowGC(dpy,t->frame,t->boundary_width-1,t->boundary_width-1,
-                        t->frame_width-(t->boundary_width<<1)+2,
-                        t->frame_height-(t->boundary_width<<1)+2,
-                        sgc,rgc,1);
-          else
-            RelieveWindowGC(dpy,t->frame,t->boundary_width-2,t->boundary_width-2,
-                        t->frame_width-(t->boundary_width<<1)+5,
-                        t->frame_height-(t->boundary_width<<1)+5,
-                        sgc,rgc,2);
+        { /* draw a single pixel band for MWMBorders and the top FvwmBorder line */
+          RelieveWindowGC(dpy, t->frame,
+                          t->boundary_width - 1, t->boundary_width - 1,
+                          t->frame_width - (t->boundary_width * 2 ) + 1,
+                          t->frame_height - (t->boundary_width * 2 ) + 1,
+                          sgc, (t->flags & MWMBorders) ? rgc : sgc, 1);
+          /* draw the rest of FvwmBorder Inset */
+          if (!(t->flags & MWMBorders))
+            RelieveWindowGC(dpy, t->frame,
+                            t->boundary_width - 2, t->boundary_width - 2,
+                            t->frame_width - (t->boundary_width * 2) + 4,
+                            t->frame_height - (t->boundary_width* 2) + 4,
+                            sgc, rgc, 2);
         }
       
-        /* draw the handles into the inset edge in case NoInset is set */
-        if ((t->flags & BORDER) && (t->boundary_width > 4))
+        /* draw the outside relief */
+        if (t->flags & MWMBorders)
+          RelieveWindowGC(dpy, t->frame,
+                          0, 0, t->frame_width - 1, t->frame_height - 1,
+                          rgc, sgc, 2);
+        else { /* FVWMBorder style has an extra line of shadow on top and left */
+          RelieveWindowGC(dpy, t->frame,
+                          1, 1, t->frame_width - 2, t->frame_height - 2,
+                          rgc, sgc, 2);
+          RelieveWindowGC(dpy, t->frame,
+                          0, 0, t->frame_width - 1, t->frame_height - 1,
+                          sgc, sgc, 1);
+        }
+        
+        /* draw the handles as eight depressed rectangles around the border */
+        if ((t->flags & BORDER) && (t->boundary_width > 2))
 #ifdef BORDERSTYLE
         if (!(borderflags & HiddenHandles))
 #endif BORDERSTYLE
         {
-          XRectangle marks[8];
           /* MWM border windows have thin 3d effects 
-           * FvwmBorders have 3 pixels top/left, 2 bot/right */
-          int hwidth = (t->flags & MWMBorders ? 0 : 1);
-          int hlength = t->boundary_width - (t->flags & MWMBorders ?
-#ifndef BORDERSTYLE
-          2
-#else
-          ((borderflags & NoInset) ? 3 : 2)
-#endif
-          :
-#ifndef BORDERSTYLE
-          4);
-#define fudge 0
-#else
-          ((borderflags & NoInset) ? 3 : 4));
-          int fudge = ((borderflags & NoInset)
-                        && !(borderflags & MWMBorders)) ? 1 : 0;
+           * FvwmBorders have 3 pixels top/left, 2 bot/right so this make
+           * claculating the length of the marks difficult, top and bottom
+           * marks for FvwmBorders are different if NoInset is specified */
+          int tlength = t->boundary_width - rwidth - 2;
+          int blength = t->boundary_width - rwidth - 2;
+          int badjust = 0;
+          XRectangle marks[8];
+
+#ifdef BORDERSTYLE
+          if (borderflags & NoInset) {
+            tlength += 1;
+            blength += rwidth; /* coincidence, just happens to be 1 or 2 */
+            badjust = rwidth;
+          }
 #endif BORDERSTYLE
 
           /* hilite marks */
           i = 0;
           /* top left */
           marks[i].x = t->corner_width;
-          marks[i].y = hwidth + 1;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].y = rwidth;
+          marks[i].width = rwidth - 1; marks[i++].height = tlength;
           /* top right */
           marks[i].x = t->frame_width - t->corner_width;
-          marks[i].y = hwidth + 1;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].y = rwidth;
+          marks[i].width = rwidth - 1; marks[i++].height = tlength;
           /* bot left */
           marks[i].x = t->corner_width;
-          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+          marks[i].width = rwidth - 1; marks[i++].height = blength;
           /* bot right */
           marks[i].x = t->frame_width - t->corner_width;
-          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+          marks[i].width = rwidth - 1; marks[i++].height = blength;
           /* left top */
-          marks[i].x = hwidth + 1;
+          marks[i].x = rwidth;
           marks[i].y = t->corner_width;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].width = tlength; marks[i++].height = rwidth - 1;
           /* left bot */
-          marks[i].x = hwidth + 1;
+          marks[i].x = rwidth;
           marks[i].y = t->frame_height - t->corner_width;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].width = tlength; marks[i++].height = rwidth - 1;
           /* right top */
-          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
           marks[i].y = t->corner_width;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].width = blength; marks[i++].height = rwidth - 1;
           /* right bot */
-          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
+          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
           marks[i].y = t->frame_height - t->corner_width;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].width = blength; marks[i++].height = rwidth - 1;
 
           XDrawRectangles(dpy, t->frame, rgc, marks, i);
 
           /* shadow marks */
           i = 0;
           /* top left */
-          marks[i].x = t->corner_width - hwidth - 1;
-          marks[i].y = hwidth + 1;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].x = t->corner_width - rwidth;
+          marks[i].y = rwidth;
+          marks[i].width = rwidth - 1; marks[i++].height = tlength;
           /* top right */
-          marks[i].x = t->frame_width - t->corner_width - hwidth - 1;
-          marks[i].y = hwidth +  1;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].x = t->frame_width - t->corner_width - rwidth;
+          marks[i].y = rwidth;
+          marks[i].width = rwidth - 1; marks[i++].height = tlength;
           /* bot left */
-          marks[i].x = t->corner_width - hwidth - 1;
-          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].x = t->corner_width - rwidth;
+          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+          marks[i].width = rwidth - 1; marks[i++].height = blength;
           /* bot right */
-          marks[i].x = t->frame_width - t->corner_width - hwidth - 1;
-          marks[i].y = t->frame_height - t->boundary_width + hwidth * 2 - fudge;
-          marks[i].width = hwidth; marks[i++].height = hlength;
+          marks[i].x = t->frame_width - t->corner_width - rwidth;
+          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+          marks[i].width = rwidth - 1; marks[i++].height = blength;
           /* left top */
-          marks[i].x = hwidth + 1;
-          marks[i].y = t->corner_width - hwidth - 1;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].x = rwidth;
+          marks[i].y = t->corner_width - rwidth;
+          marks[i].width = tlength; marks[i++].height = rwidth - 1;
           /* left bot */
-          marks[i].x = hwidth + 1;
-          marks[i].y = t->frame_height - t->corner_width - hwidth - 1;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].x = rwidth;
+          marks[i].y = t->frame_height - t->corner_width - rwidth;
+          marks[i].width = tlength; marks[i++].height = rwidth - 1;
           /* right top */
-          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
-          marks[i].y = t->corner_width - hwidth - 1;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
+          marks[i].y = t->corner_width - rwidth;
+          marks[i].width = blength; marks[i++].height = rwidth - 1;
           /* right bot */
-          marks[i].x = t->frame_width - t->boundary_width + hwidth * 2 - fudge;
-          marks[i].y = t->frame_height - t->corner_width - hwidth - 1;
-          marks[i].width = hlength; marks[i++].height = hwidth;
+          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
+          marks[i].y = t->frame_height - t->corner_width - rwidth;
+          marks[i].width = blength; marks[i++].height = rwidth - 1;
 
           XDrawRectangles(dpy, t->frame, sgc, marks, i);
         }
 
-        /* draw the rest of the inset on top of the handles */
-        if(0 &&
-#ifdef BORDERSTYLE
-           !(borderflags & NoInset)
-#endif
-           && t->boundary_width > 2)
-        { /* draw the inside relief */
-          if (t->flags & MWMBorders) /* single pixel inside border */
-            RelieveWindowGC(dpy,t->frame,t->boundary_width-1,t->boundary_width-1,
-                        t->frame_width-(t->boundary_width<<1)+2,
-                        t->frame_height-(t->boundary_width<<1)+2,
-                        sgc,rgc,2);
-          else { /* 2 pixels + an extra shadow on bottom & right */
-            RelieveWindowGC(dpy,t->frame,t->boundary_width-2,t->boundary_width-2,
-                        t->frame_width-(t->boundary_width<<1)+5,
-                        t->frame_height-(t->boundary_width<<1)+5,
-                        sgc,rgc,2);
-            RelieveWindowGC(dpy,t->frame,t->boundary_width,t->boundary_width,
-                        t->frame_width-(t->boundary_width<<1)+1,
-                        t->frame_height-(t->boundary_width<<1)+1,
-                        sgc,sgc,2);
-          }
-        }
       
         /* now draw the pressed in part on top */
         /* a bit hacky to draw twice but you should see the code it replaces
@@ -714,11 +700,14 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   int tb_flags;
   GC ReliefGC, ShadowGC, tGC;
   Pixel Forecolor, BackColor;
+  int rwidth; /* relief width */
 
   if(!t)
     return;
   if(!(t->flags & TITLE))
     return;
+  
+  rwidth = (t->flags & MWMBorders) ? 1 : 2;
 
   if (onoroff)
   {
@@ -797,11 +786,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
    * title goes, so that its more legible. For color, no need */
   if(Scr.d_depth<2)
   {
-    RelieveWindowGC(dpy,t->title_w,0,0,hor_off-2,t->title_height,
-                  ReliefGC, ShadowGC,2);
+    RelieveWindowGC(dpy,t->title_w,0,0,hor_off-3,t->title_height - 1,
+                    ReliefGC, ShadowGC, rwidth);
     RelieveWindowGC(dpy,t->title_w,hor_off+w+2,0,
-                  t->title_width - w - hor_off-2,t->title_height,
-                  ReliefGC, ShadowGC,2);
+                    t->title_width - w - hor_off-3,t->title_height - 1,
+                    ReliefGC, ShadowGC, rwidth);
     XFillRectangle(dpy,t->title_w,
                    (PressedW==t->title_w?ShadowGC:ReliefGC),
                    hor_off - 2, 0, w+4,t->title_height);
@@ -835,11 +824,13 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
       if (!(tb_style & FlatButton)) {
 	  if (tb_style & SunkButton)
-	      RelieveWindowGC(dpy,t->title_w,0,0,t->title_width,t->title_height,
-			    ShadowGC, ReliefGC,2);
+	      RelieveWindowGC(dpy,t->title_w,0,0,
+	                      t->title_width - 1,t->title_height - 1,
+			      ShadowGC, ReliefGC, rwidth);
 	  else
-	      RelieveWindowGC(dpy,t->title_w,0,0,t->title_width,t->title_height,
-			    ReliefGC, ShadowGC,2);
+	      RelieveWindowGC(dpy,t->title_w,0,0,
+	                      t->title_width - 1,t->title_height - 1,
+	                      ReliefGC, ShadowGC, rwidth);
       }
 
       if(t->name != (char *)NULL)
@@ -852,14 +843,16 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   {
     /* an odd number of lines every 4 pixels */
     int num = (int)(t->title_height/8) * 2 - 1;
-    int min = t->title_height/2 - num*2 + 1;
-    int max = t->title_height/2 + num*2 - 3;
-    for(i=min; i <= max; i+=4)
+    int min = t->title_height / 2 - num * 2 + 1;
+    int max = t->title_height / 2 + num * 2 - 3;
+    for(i = min; i <= max; i += 4)
     {
-      RelieveWindowGC(dpy,t->title_w,4,i,hor_off-9,2,
-                      ReliefGC,ShadowGC,1);
-      RelieveWindowGC(dpy,t->title_w,hor_off+w+6,i,t->title_width-hor_off-w-10,2,
-                      ReliefGC,ShadowGC,1);
+      RelieveWindowGC(dpy, t->title_w,
+                      4, i, hor_off - 10, 1,
+                      ShadowGC, ReliefGC, 1);
+      RelieveWindowGC(dpy, t->title_w,
+                      hor_off + w + 6, i, t->title_width - hor_off - w - 11, 1,
+                      ShadowGC, ReliefGC, 1);
     }
   }
 
