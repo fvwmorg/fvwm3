@@ -172,7 +172,9 @@ int main(int argc, char **argv)
   char message[255];
   Bool single = False;
   Bool replace_wm = False;
-  Bool option_error = FALSE;
+  Bool option_error = False;
+  int visualClass = -1;
+  int visualId = -1;
   int x, y;
   struct stat statbuf;
 
@@ -278,6 +280,34 @@ int main(int argc, char **argv)
       {
 	replace_wm = True;
       }
+    /* check for visualId before visual to remove ambiguity */
+    else if (strncasecmp(argv[i],"-visualId",9)==0) {
+      visualClass = -1;
+      if (++i >= argc)
+        usage();
+      if (sscanf(argv[i], "0x%x", &visualId) == 0)
+        if (sscanf(argv[i], "%d", &visualId) == 0)
+          usage();
+    }
+    else if (strncasecmp(argv[i],"-visual",7)==0) {
+      visualId = None;
+      if (++i >= argc)
+        usage();
+      if (strncasecmp(argv[i], "staticg", 7) == 0)
+        visualClass = StaticGray;
+      else if (strncasecmp(argv[i], "g", 1) == 0)
+        visualClass = GrayScale;
+      else if (strncasecmp(argv[i], "staticc", 7) == 0)
+        visualClass = StaticColor;
+      else if (strncasecmp(argv[i], "p", 1) == 0)
+        visualClass = PseudoColor;
+      else if (strncasecmp(argv[i], "t", 1) == 0)
+        visualClass = TrueColor;
+      else if (strncasecmp(argv[i], "d", 1) == 0)
+        visualClass = DirectColor;
+      else
+        usage();
+    }
     else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
       fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s\n",
@@ -444,21 +474,17 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  {
-#ifdef PICK_TRUECOLOR
-    /* grab the best TrueColor visual */
-    /* this should be extended to allow a -visual option that takes a string
-     * or visualId but I think the only people who want it want this */
+  if (visualClass != -1) {
+    /* grab the best visual of the required class */
     XVisualInfo template, *vizinfo;
     int total, i;
 
-    /* grab a TrueColor visual */
     Scr.depth = 0;
     template.screen = Scr.screen;
-    template.class = TrueColor;
+    template.class = visualClass;
     vizinfo = XGetVisualInfo(dpy, VisualScreenMask | VisualClassMask, &template,
                              &total);
-    if (total) { /* get the deepest visual that matched */
+    if (total) {
       for (i = 0; i < total; i++) {
         if (vizinfo[i].depth > Scr.depth) {
           Scr.viz = vizinfo[i].visual;
@@ -468,14 +494,38 @@ int main(int argc, char **argv)
       XFree(vizinfo);
       /* have to have a colormap for non-default visual windows */
       Scr.cmap = XCreateColormap(dpy, Scr.Root, Scr.viz, AllocNone);
+    } else {
+      fvwm_msg(ERR, "main","Cannot find visual class %d", visualClass);
+      visualClass = -1;
     }
-    else
-#endif /* PICK_TRUECOLOR */
-    {
+  } else if (visualId != -1) {
+    /* grab visual id asked for */
+    XVisualInfo template, *vizinfo;
+    int total;
+
+    Scr.depth = 0;
+    template.screen = Scr.screen;
+    template.visualid = visualId;
+    vizinfo = XGetVisualInfo(dpy, VisualScreenMask | VisualIDMask, &template,
+                             &total);
+    if (total) {
+      /* visualID's are unique so there will only be one */
+      Scr.viz = vizinfo[0].visual;
+      Scr.depth = vizinfo[0].depth;
+      XFree(vizinfo);
+      /* have to have a colormap for non-default visual windows */
+      Scr.cmap = XCreateColormap(dpy, Scr.Root, Scr.viz, AllocNone);
+    } else {
+      fvwm_msg(ERR, "main", "VisualId 0x%x is not valid ", visualId);
+      visualId = -1;
+    }
+  }
+    
+  /* use default visuals if none found so far */
+  if (visualClass == -1 && visualId == -1) {
       Scr.viz = DefaultVisual(dpy, Scr.screen);
       Scr.depth = DefaultDepth(dpy, Scr.screen);
       Scr.cmap = DefaultColormap(dpy, Scr.screen);
-    }
   }
 
 #ifdef SHAPE
@@ -535,12 +585,12 @@ int main(int argc, char **argv)
 
   CreateCursors();
   InitVariables();
-#ifdef PICK_TRUECOLOR
-  /* this is so that menus use a colormap */
-  Scr.FvwmRoot.w = Scr.NoFocusWin;
-  Scr.FvwmRoot.number_cmap_windows = 1;
-  Scr.FvwmRoot.cmap_windows = &Scr.NoFocusWin;
-#endif
+  if (visualClass != -1 || visualId != -1) {
+    /* this is so that menus use the (non-default) fvwm colormap */
+    Scr.FvwmRoot.w = Scr.NoFocusWin;
+    Scr.FvwmRoot.number_cmap_windows = 1;
+    Scr.FvwmRoot.cmap_windows = &Scr.NoFocusWin;
+  }
   InitEventHandlerJumpTable();
   initModules();
 
@@ -1772,10 +1822,10 @@ void usage(void)
 {
 #if 0
   fvwm_msg(INFO,"usage","\nFvwm Version %s Usage:\n\n",VERSION);
-  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file]\n",g_argv[0]);
+  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n",g_argv[0]);
 #else
   fprintf(stderr,"\nFvwm Version %s Usage:\n\n",VERSION);
-  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file]\n\n",g_argv[0]);
+  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
 #endif
   exit( 1 );
 }

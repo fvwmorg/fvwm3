@@ -364,6 +364,14 @@ option. Normally, \fIfvwm2\fP will attempt to start up on all screens
 of a multi-screen display.
 .IP "\fB-version\fP"
 Print the version of \fIfvwm2\fP to stderr.
+.IP "\fB-visual\fP \fIvisual class\fP"
+Causes \fIfvwm2\fP to use \fIvisual class\fP for the window borders and menus.
+\fIvisual class\fP can be StaticGray, GrayScale, StaticColor, PseudoColor,
+TrueColor or DirectColor.
+.IP "\fB-visualId\fP \fInumber\fP"
+Causes \fIfvwm2\fP to use \fInumber\fP as the visualID for the window borders
+and menus. \fInumber\fP can be specified as N for decimal or 0xN for
+hexadecimal.  See xdpyinfo for a list of supported visuals.
 .IP "\fB-replace\fP"
 Try to take over from a previously running wm. This will not work
 unless the other wm is ICCCM 2.0 compliant.
