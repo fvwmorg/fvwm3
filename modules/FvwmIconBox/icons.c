@@ -362,24 +362,33 @@ void GetIconBitmap(struct icon_info *item)
   Window Junkroot;
   GC gc;
 
+  item->icon_depth = depth;
+  item->icon_file = NULL;
+  item->icon_maskPixmap = None;
+  item->iconPixmap = None;
+  item->icon_w = 0;
+  item->icon_h = 0;
   if (!XGetGeometry(dpy, item->wmhints->icon_pixmap, &Junkroot, &x, &y,
                (unsigned int *)&item->icon_w,
                (unsigned int *)&item->icon_h, &bw, &depth))
     return;
 
-  item->icon_depth = depth;
-  item->icon_file = NULL;
-  item->icon_maskPixmap = None;
 #ifdef SHAPE
   if (item->wmhints->flags & IconMaskHint)
-    {
-      SET_ICON_SHAPED(item, True);
-      item->icon_maskPixmap = item->wmhints->icon_mask;
-    }
+  {
+    SET_ICON_SHAPED(item, True);
+    item->icon_maskPixmap = item->wmhints->icon_mask;
+  }
 #endif
 
   item->icon_w = min(max_icon_width, item->icon_w);
   item->icon_h = min(max_icon_height, item->icon_h);
+  if (item->icon_w <= 0 || item->icon_h <= 0)
+  {
+    item->icon_w = 0;
+    item->icon_h = 0;
+    return;
+  }
 
   item->iconPixmap = XCreatePixmap(dpy, Root, item->icon_w,
                                    item->icon_h, depth);

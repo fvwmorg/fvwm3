@@ -125,6 +125,8 @@ Bug fixes:
 
 ** Problem with FvwmIconBox exitting on 64 bit platforms fixed.
 
+** Fixed FvwmIconBox crashes with MaxIconSize dimensions 0.
+
 ** A bug in fvwm24_convert is fixed.
 
 ** Fvwm is compatible with libstroke-0.5.

@@ -76,6 +76,8 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Fixed a problems with FvwmIconBox exiting on 64 bit platforms.
 
+* Fixed FvwmIconBox crashes with MaxIconSize dimensions 0.
+
 * Fixed parameters of fvwm24_convert.
 
 * Fixed a number of building problems related to old vendor unices,

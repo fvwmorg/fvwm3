@@ -1,5 +1,9 @@
 2001-09-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmIconBox/icons.c (GetIconBitmap):
+	fixed core dump with icon dimension == 0
+	safety patches
+
 	* FvwmCpp/FvwmCpp.c (Resolution):
 	* FvwmM4/FvwmM4.c (Resolution):
 	fixed screen size calculations for dimensions between 2147 and 107350
