@@ -384,118 +384,158 @@ Button *temp,*temp2;
 ******************************************************************************/
 void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 {
-  int up,Fontheight,newx,set,len;
-  GC topgc;
-  GC bottomgc;
-  char *string;
-  XGCValues gcv;
-  unsigned long gcm;
-  FlocaleFont *Ffont;
+	int up,Fontheight,newx,set,len;
+	GC topgc;
+	GC bottomgc;
+	char *string;
+	XGCValues gcv;
+	unsigned long gcm;
+	FlocaleFont *Ffont;
+	FvwmRenderAttributes fra;
 
-  /* The margin we want between the relief/text/pixmaps */
+	/* The margin we want between the relief/text/pixmaps */
 #define INNER_MARGIN 2
 
-  up=button->up;
-  set=button->set;
-  topgc = up ? hilite[set] : shadow[set];
-  bottomgc = up ? shadow[set] : hilite[set];
-  Ffont = FButtonFont;
+	up=button->up;
+	set=button->set;
+	topgc = up ? hilite[set] : shadow[set];
+	bottomgc = up ? shadow[set] : hilite[set];
+	Ffont = FButtonFont;
 
-  if (Ffont->font != NULL)
-  {
-    gcm = GCFont;
-    gcv.font = Ffont->font->fid;
-    XChangeGC(dpy, graph[set], gcm, &gcv);
-  }
-
-  Fontheight=FButtonFont->height;
-
-  if ((FftSupport && Ffont->fftf.fftfont != NULL) ||
-      (button->p.picture != 0 && button->p.alpha != 0))
-  {
-    clear_bg = True;
-  }
-
-  /* handle transparency by clearing button, otherwise paint with background */
-  if (clear_bg) {
-    if (colorset[set] >= 0 && Colorset[colorset[set]].pixmap == ParentRelative)
-      XClearArea(dpy,win,x,y,w,h+1, False);
-    else
-      XFillRectangle(dpy,win,background[set],x,y,w,h+1);
-  }
-
-  if (button->p.picture != 0) {
-    /* clip pixmap to fit inside button */
-    int height = min(button->p.height, h);
-    int offset = (button->p.height > h) ? 0 : ((h - button->p.height) >> 1);
-    PGraphicsCopyFvwmPicture(dpy, &(button->p), win, hilite[set],
-			     0, 0, button->p.width, height,
-			     x + 2 + button->reliefwidth, y+offset);
-    newx = button->p.width+2*INNER_MARGIN;
-  }
-  else
-  {
-    if (LeftJustify)
-    {
-       newx = INNER_MARGIN;
-      if (!button->is_iconified)
-      {
-	static int icon_offset = -1;
-
-	if (icon_offset == -1)
-	  icon_offset = FlocaleTextWidth(FButtonFont, "(", 1);
-	newx += icon_offset;
-      }
-    }
-    else
-      newx = max((w - button->tw) / 2 - button->reliefwidth, INNER_MARGIN);
-  }
-
-  /* check if the string needs to be truncated */
-  string = button->title;
-  len = strlen(string);
-
-  if (newx + button->tw + 2 * button->reliefwidth + INNER_MARGIN > w) {
-    if (button -> truncatewidth == w) {
-      /* truncated version already calculated, use it */
-      string = button->truncate_title;
-      len = strlen(string);
-    } else {
-      if (TruncateLeft) {
-	/* move the pointer up until the rest fits */
-	while (*string && (newx +
-			   FlocaleTextWidth(FButtonFont, string, strlen(string))
-			   + 2 * button->reliefwidth + INNER_MARGIN) > w) {
-	  string++;
-	  len--;
+	if (Ffont->font != NULL)
+	{
+		gcm = GCFont;
+		gcv.font = Ffont->font->fid;
+		XChangeGC(dpy, graph[set], gcm, &gcv);
 	}
-	button->truncatewidth = w;
-	button->truncate_title = string;
-      } else {
-	while ((len > 1) && (newx +
-			     FlocaleTextWidth(FButtonFont, string, len)
-			     + 2 * button->reliefwidth + INNER_MARGIN) > w)
-	  len--;
-      }
-    }
-  }
-  FwinString->str = string;
-  FwinString->len = len;
-  FwinString->x = x+newx+button->reliefwidth;
-  FwinString->y = y+1+button->reliefwidth+FButtonFont->ascent;
-  FwinString->gc = graph[set];
-  FwinString->flags.has_colorset = False;
-  if (colorset[set] >= 0)
-  {
-    FwinString->colorset = &Colorset[colorset[set]] ;
-    FwinString->flags.has_colorset = True;
-  }
-  FlocaleDrawString(dpy, FButtonFont, FwinString, FWS_HAVE_LENGTH);
 
-  /* Draw relief last */
-  RelieveRectangle(dpy,win,x,y,w-1,h,topgc,bottomgc,button->reliefwidth);
+	Fontheight=FButtonFont->height;
 
-  button->needsupdate=0;
+	if ((FftSupport && Ffont->fftf.fftfont != NULL) ||
+	    (button->p.picture != 0 && button->p.alpha != 0) || 
+	    (colorset[set] >= 0 && Colorset[colorset[set]].icon_alpha < 100))
+	{
+		clear_bg = True;
+	}
+
+	/* handle transparency by clearing button, otherwise paint with
+	 * background */
+	if (clear_bg)
+	{
+		if (colorset[set] >= 0 &&
+		    Colorset[colorset[set]].pixmap == ParentRelative)
+		{
+			XClearArea(dpy,win,x,y,w,h+1, False);
+		}
+		else
+		{
+			XFillRectangle(dpy,win,background[set],x,y,w,h+1);
+		}
+	}
+
+	if (button->p.picture != 0)
+	{
+		/* clip pixmap to fit inside button */
+		int height = min(button->p.height, h);
+		int offset = (button->p.height > h) ?
+			0 : ((h - button->p.height) >> 1);
+
+		fra.mask = FRAM_DEST_IS_A_WINDOW;
+		if (colorset[set] >= 0)
+		{
+			fra.mask |= FRAM_HAVE_ICON_CSET;
+			fra.colorset = &Colorset[colorset[set]];
+		}
+		PGraphicsRenderPicture(
+			dpy, win, &(button->p), &fra,
+			win, graph[set], None, None,
+			0, 0, button->p.width, height,
+			x + 2 + button->reliefwidth, y+offset, 0, 0,
+			False);
+		newx = button->p.width+2*INNER_MARGIN;
+	}
+	else
+	{
+		if (LeftJustify)
+		{
+			newx = INNER_MARGIN;
+			if (!button->is_iconified)
+			{
+				static int icon_offset = -1;
+
+				if (icon_offset == -1)
+					icon_offset = FlocaleTextWidth(
+						FButtonFont, "(", 1);
+				newx += icon_offset;
+			}
+		}
+		else
+		{
+			newx = max(
+				(w - button->tw) / 2 - button->reliefwidth,
+				INNER_MARGIN);
+		}
+	}
+	/* check if the string needs to be truncated */
+	string = button->title;
+	len = strlen(string);
+
+	if (newx + button->tw + 2 * button->reliefwidth + INNER_MARGIN > w)
+	{
+		if (button -> truncatewidth == w)
+		{
+                        /* truncated version already calculated use it */
+			string = button->truncate_title;
+			len = strlen(string);
+		}
+		else
+		{
+			if (TruncateLeft)
+			{
+				/* move the ptr up until the rest fits */
+				while (*string &&
+				       (newx + FlocaleTextWidth(
+					       FButtonFont, string,
+					       strlen(string))
+					+ 2 * button->reliefwidth +
+					INNER_MARGIN) > w) 
+				{
+					string++;
+					len--;
+				}
+				button->truncatewidth = w;
+				button->truncate_title = string;
+			}
+			else
+			{
+				while ((len > 1) &&
+				       (newx + FlocaleTextWidth(
+					       FButtonFont, string, len)
+					+ 2 * button->reliefwidth +
+					INNER_MARGIN) > w)
+				{
+					len--;
+				}
+			}
+		}
+	}
+	FwinString->str = string;
+	FwinString->len = len;
+	FwinString->x = x+newx+button->reliefwidth;
+	FwinString->y = y+1+button->reliefwidth+FButtonFont->ascent;
+	FwinString->gc = graph[set];
+	FwinString->flags.has_colorset = False;
+	if (colorset[set] >= 0)
+	{
+		FwinString->colorset = &Colorset[colorset[set]] ;
+		FwinString->flags.has_colorset = True;
+	}
+	FlocaleDrawString(dpy, FButtonFont, FwinString, FWS_HAVE_LENGTH);
+
+	/* Draw relief last */
+	RelieveRectangle(dpy,win,x,y,w-1,h,topgc,bottomgc,button->reliefwidth);
+
+	button->needsupdate=0;
 }
 
 /******************************************************************************

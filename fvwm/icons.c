@@ -485,7 +485,12 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 	  fw->icon_g.picture_w_g.y, fw->icon_g.picture_w_g.width,
 	  fw->icon_g.picture_w_g.height);
       }
-      if (Scr.DefaultColorset >= 0)
+      if (FShapesSupported)
+      {
+	      XSetWindowBackgroundPixmap(
+		      dpy, FW_W_ICON_PIXMAP(fw), ParentRelative);
+      }
+      else if (Scr.DefaultColorset >= 0)
 	SetWindowBackground(
 	  dpy, FW_W_ICON_TITLE(fw), fw->icon_g.picture_w_g.width,
 	  fw->icon_g.picture_w_g.height, &Colorset[Scr.DefaultColorset],
@@ -823,7 +828,8 @@ void DrawIconWindow(FvwmWindow *fw)
 
 	/* only relieve unshaped icons that share fvwm's visual */
 	if ((fw->iconPixmap != None) && !IS_ICON_SHAPED(fw)
-	    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
+	    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw))
+	    && !(fw->icon_alphaPixmap && FShapesSupported))
 	{
 		RelieveRectangle(dpy, FW_W_ICON_PIXMAP(fw), 0, 0,
 				 fw->icon_g.picture_w_g.width - 1,
@@ -835,62 +841,58 @@ void DrawIconWindow(FvwmWindow *fw)
 	/* need to locate the icon pixmap */
 	if (fw->iconPixmap != None)
 	{
-		if (fw->iconDepth == 1)
+		if (fw->iconDepth == 1 || Pdefault || IS_PIXMAP_OURS(fw))
 		{
-			/* it's a bitmap */
-			XCopyPlane(
-			      dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw),
-			      Scr.TitleGC, 0, 0,
-			      fw->icon_g.picture_w_g.width - 2 *
-			      ICON_RELIEF_WIDTH,
-			      fw->icon_g.picture_w_g.height - 2 *
-			      ICON_RELIEF_WIDTH,
-			      ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH, 1);
+			FvwmRenderAttributes fra;
+
+			fra.mask = FRAM_DEST_IS_A_WINDOW;
+			if (cs >= 0)
+			{
+				fra.mask |= FRAM_HAVE_ICON_CSET;
+				fra.colorset = &Colorset[cs];
+			}
+			if (fw->icon_alphaPixmap ||
+			    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+			{
+				XClearArea(
+					dpy, FW_W_ICON_PIXMAP(fw),
+					ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH,
+					fw->icon_g.picture_w_g.width -
+					2 * ICON_RELIEF_WIDTH,
+					fw->icon_g.picture_w_g.height -
+					2 * ICON_RELIEF_WIDTH,
+					False);
+			}
+			PGraphicsRenderPixmaps(
+				dpy, FW_W_ICON_PIXMAP(fw),
+				fw->iconPixmap, fw->icon_maskPixmap,
+				fw->icon_alphaPixmap, fw->iconDepth, &fra,
+				FW_W_ICON_PIXMAP(fw),
+				Scr.TitleGC, Scr.MonoGC, None,
+				0, 0,
+				fw->icon_g.picture_w_g.width -
+				2 * ICON_RELIEF_WIDTH,
+				fw->icon_g.picture_w_g.height -
+				2 * ICON_RELIEF_WIDTH,
+				ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH, 0, 0,
+				False);
 		}
 		else
 		{
-			if (Pdefault || IS_PIXMAP_OURS(fw))
-			{
-				if (fw->icon_alphaPixmap)
-				{
-					XClearWindow(dpy, FW_W_ICON_PIXMAP(fw));
-					XSetWindowBackgroundPixmap(
-							    dpy,
-							    FW_W_ICON_PIXMAP(fw),
-							    ParentRelative);
-				}
-				PGraphicsCopyPixmaps(
-						dpy, fw->iconPixmap, None,
-						fw->icon_alphaPixmap,
-						Pdepth,
-						FW_W_ICON_PIXMAP(fw),
-						Scr.TitleGC, 0, 0,
-						fw->icon_g.picture_w_g.width -
-						2 *
-						ICON_RELIEF_WIDTH,
-						fw->icon_g.picture_w_g.height -
-						2 *
-						ICON_RELIEF_WIDTH,
-						ICON_RELIEF_WIDTH,
-						ICON_RELIEF_WIDTH);
-			}
-			else
-			{
-				/* it's a client pixmap and fvwm is not using
-				 * the root visual The icon window has no 3d
-				 * border so copy to (0,0) install the root
-				 * colormap temporarily to help the Exceed
-				 * server */
-				if (Scr.bo.InstallRootCmap)
-					InstallRootColormap();
-				XCopyArea(
-				     dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw),
-				     DefaultGC(dpy, Scr.screen), 0, 0,
-				     fw->icon_g.picture_w_g.width,
-				     fw->icon_g.picture_w_g.height, 0, 0);
-				if (Scr.bo.InstallRootCmap)
-					UninstallRootColormap();
-			}
+			/* it's a client pixmap and fvwm is not using
+			 * the root visual The icon window has no 3d
+			 * border so copy to (0,0) install the root
+			 * colormap temporarily to help the Exceed
+			 * server */
+			if (Scr.bo.InstallRootCmap)
+				InstallRootColormap();
+			XCopyArea(
+				dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw),
+				DefaultGC(dpy, Scr.screen), 0, 0,
+				fw->icon_g.picture_w_g.width,
+				fw->icon_g.picture_w_g.height, 0, 0);
+			if (Scr.bo.InstallRootCmap)
+				UninstallRootColormap();
 		}
 	}
 
@@ -1479,7 +1481,7 @@ static void GetIconFromFile(FvwmWindow *fw)
 	}
 	SET_PIXMAP_OURS(fw, 1);
 	free(path);
-	if (FShapesSupported && fw->icon_maskPixmap && !fw->icon_alphaPixmap)
+	if (FShapesSupported && fw->icon_maskPixmap)
 		SET_ICON_SHAPED(fw, 1);
 
 	return;

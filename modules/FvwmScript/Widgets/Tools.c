@@ -251,44 +251,64 @@ int CountOption(char *str)
 void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
 		 int l_offset, int c_offset, int r_offset)
 {
-  int i,j;
-  char *str;
-  int len = 0;
+	int i,j;
+	char *str;
+	int len = 0;
 
-  if (DoRedraw)
-    XClearArea(dpy, xobj->win, 4, 4, xobj->width-8, xobj->height-8, False);
+	if (DoRedraw)
+	{
+		XClearArea(
+			dpy, xobj->win, 4, 4, xobj->width-8, xobj->height-8,
+			False);
+	}
 
-  str = GetMenuTitle(xobj->title,1);
-  len = strlen(str);
-  i = GetXTextPosition(xobj, xobj->width, FlocaleTextWidth(xobj->Ffont,str,len),
-		       l_offset, c_offset, r_offset);
+	str = GetMenuTitle(xobj->title,1);
+	len = strlen(str);
+	i = GetXTextPosition(
+		xobj, xobj->width, FlocaleTextWidth(xobj->Ffont,str,len),
+		l_offset, c_offset, r_offset);
 
-  if (len > 0 && xobj->iconPixmap==None)       /* Si l'icone n'existe pas */
-  {
-    j = xobj->height/2 + (xobj->Ffont->height)/2 + offset - 3;
-    MyDrawString(dpy,xobj,xobj->win,i,j,str,fore,hili,back,!xobj->flags[1]);
-  }
-  else                                  /* Si l'icone existe */
-  {
-    if (len > 0)
-    {
-      j = ((xobj->height - xobj->icon_h)/4)*3 + xobj->icon_h + offset +
-	(xobj->Ffont->height)/2 - 3;
-      MyDrawString(dpy,xobj,xobj->win,i,j,str,fore,hili,back,!xobj->flags[1]);
-    }
-    /* Dessin de l'icone */
-    j=(xobj->height - xobj->icon_h)/2+offset;
-    i=(xobj->width - xobj->icon_w)/2+offset;
-    PGraphicsCopyPixmaps(dpy, xobj->iconPixmap,
-			 xobj->icon_maskPixmap,
-			 xobj->icon_alphaPixmap,
-			 Pdepth, xobj->win, xobj->gc,
-			 0, 0, xobj->icon_w, xobj->icon_h,
-			 i, j);
-  }
-  free(str);
+	if (len > 0 && xobj->iconPixmap==None)
+	{
+		/* Si l'icone n'existe pas */
+		j = xobj->height/2 + (xobj->Ffont->height)/2 + offset - 3;
+		MyDrawString(
+			dpy,xobj,xobj->win,i,j,str,fore,hili,back,
+			!xobj->flags[1]);
+	}
+	else
+	{
+		
+		/* Si l'icone existe */
+		FvwmRenderAttributes fra;
+
+		if (len > 0)
+		{
+			j = ((xobj->height - xobj->icon_h)/4)*3 +
+				xobj->icon_h + offset +
+				(xobj->Ffont->height)/2 - 3;
+			MyDrawString(
+				dpy,xobj,xobj->win,i,j,str,fore,hili,
+				back,!xobj->flags[1]);
+		}
+		/* Dessin de l'icone */
+		fra.mask = FRAM_DEST_IS_A_WINDOW;
+		if (xobj->colorset >= 0)
+		{
+			fra.mask |= FRAM_HAVE_ICON_CSET;
+			fra.colorset = &Colorset[xobj->colorset];
+		}
+		j=(xobj->height - xobj->icon_h)/2+offset;
+		i=(xobj->width - xobj->icon_w)/2+offset;
+		PGraphicsRenderPixmaps(
+			dpy, xobj->win, xobj->iconPixmap, xobj->icon_maskPixmap,
+			xobj->icon_alphaPixmap, Pdepth, &fra, 
+			xobj->win, xobj->gc, None, None,
+			0, 0, xobj->icon_w, xobj->icon_h, i, j, 0, 0, False);
+	}
+	free(str);
 }
-
+	
 /***********************************************/
 /* Fonction de dessin d'un rectangle en relief */
 /***********************************************/

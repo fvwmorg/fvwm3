@@ -19,13 +19,12 @@
 #ifndef F_RENDER_INTERFACE_H
 #define F_RENDER_INTERFACE_H
 
-void FRenderCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha,
-		     Drawable d,
-		     int src_x, int src_y,
-		     int dest_x, int dest_y, int dest_w, int dest_h,
-		     Bool do_repeat);
-void FRenderTintRectangle(Display *dpy, Window win, int shade_percent,
-			  Pixel tint, Pixmap mask, Drawable d,
-			 int dest_x, int dest_y, int dest_w, int dest_h);
+int FRenderRender(
+	Display *dpy, Window win, Pixmap pixmap, Pixmap mask, Pixmap alpha,
+	int depth, int shade_percent, Pixel tint, int tint_percent,
+	Drawable d, GC gc, GC alpha_gc,
+	int src_x, int src_y, int src_w, int src_h,
+	int dest_x, int dest_y, int dest_w, int dest_h,
+	Bool do_repeat);
 
 #endif

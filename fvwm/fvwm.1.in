@@ -9460,10 +9460,6 @@ corresponds to the new syntax:
 Defines a colorset, see FvwmTheme(1).
 
 .TP
-.BI ReadWriteColors
-May speed-up changing colorsets, see FvwmTheme(1).
-
-.TP
 .B CleanupColorsets
 Resets a definition of all colorsets.
 

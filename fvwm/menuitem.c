@@ -301,6 +301,7 @@ void menuitem_paint(
 	GC on_gc;
 	GC off_gc;
 	int on_cs = -1, off_cs = -1;
+	FvwmRenderAttributes fra;
 	/*Pixel fg, fgsh;*/
 	short relief_thickness = ST_RELIEF_THICKNESS(ms);
 	Bool is_item_selected;
@@ -428,6 +429,8 @@ void menuitem_paint(
 	}
 
 	MI_WAS_DESELECTED(mi) = False;
+	fra.mask = 0;
+
 	/* Hilight 3D */
 	if (is_item_selected && relief_thickness > 0)
 	{
@@ -688,17 +691,41 @@ void menuitem_paint(
 
 	if (MI_PICTURE(mi))
 	{
+		GC tmp_gc;
+		int tmp_cs;
+
 		x = menudim_middle_x_offset(mpip->dim) -
 			MI_PICTURE(mi)->width / 2;
 		y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
-		if (alpha_redraw && MI_PICTURE(mi)->alpha != None)
+		if (x >= lit_x_start && x < lit_x_end)
+		{
+			tmp_gc = on_gc;
+			tmp_cs = on_cs;
+		}
+		else
+		{
+			tmp_gc = off_gc;
+			tmp_cs = off_cs;
+		}
+		fra.mask = FRAM_DEST_IS_A_WINDOW;
+		if (tmp_cs >= 0)
+		{
+			fra.mask |= FRAM_HAVE_ICON_CSET;
+			fra.colorset = &Colorset[tmp_cs];
+		}
+		if (alpha_redraw && 
+		    (MI_PICTURE(mi)->alpha != None ||
+		     (tmp_cs >=0 && Colorset[tmp_cs].icon_alpha < 100)))
 		{
 			XClearArea(dpy, mpip->w, x, y, MI_PICTURE(mi)->width,
 				   MI_PICTURE(mi)->height, False);
 		}
-		PGraphicsCopyFvwmPicture(
-			dpy, MI_PICTURE(mi), mpip->w, ReliefGC, 0, 0,
-			MI_PICTURE(mi)->width, MI_PICTURE(mi)->height, x, y);
+		PGraphicsRenderPicture(
+			dpy, mpip->w, MI_PICTURE(mi), &fra,
+			mpip->w, tmp_gc, Scr.MonoGC, None,
+			0, 0, MI_PICTURE(mi)->width, MI_PICTURE(mi)->height,
+			x, y, MI_PICTURE(mi)->width, MI_PICTURE(mi)->height,
+			False);
 	}
 
 	/***************************************************************
@@ -717,6 +744,7 @@ void menuitem_paint(
 		if (MI_MINI_ICON(mi)[i])
 		{
 			GC tmp_gc;
+			int tmp_cs;
 
 			if (MI_PICTURE(mi))
 			{
@@ -731,7 +759,29 @@ void menuitem_paint(
 					  relief_thickness : 0) -
 					 MI_MINI_ICON(mi)[i]->height) / 2;
 			}
-			if (alpha_redraw && MI_MINI_ICON(mi)[i]->alpha != None)
+			if (MDIM_ICON_X_OFFSET(*dim)[k] >= lit_x_start &&
+			    MDIM_ICON_X_OFFSET(*dim)[k] < lit_x_end)
+			{
+				/* icon is in hilighted area */
+				tmp_gc = on_gc;
+				tmp_cs = on_cs;
+			}
+			else
+			{
+				/* icon is in unhilighted area */
+				tmp_gc = off_gc;
+				tmp_cs = off_cs;
+			}
+			fra.mask = FRAM_DEST_IS_A_WINDOW;
+			if (tmp_cs >= 0)
+			{
+				fra.mask |= FRAM_HAVE_ICON_CSET;
+				fra.colorset = &Colorset[tmp_cs];
+			}
+			if (alpha_redraw &&
+			    (MI_MINI_ICON(mi)[i]->alpha != None
+			     || (tmp_cs >=0 &&
+				 Colorset[tmp_cs].icon_alpha < 100)))
 			{
 				XClearArea(
 					dpy, mpip->w,
@@ -739,22 +789,14 @@ void menuitem_paint(
 					MI_MINI_ICON(mi)[i]->width,
 					MI_MINI_ICON(mi)[i]->height, False);
 			}
-			if (MDIM_ICON_X_OFFSET(*dim)[k] >= lit_x_start &&
-			    MDIM_ICON_X_OFFSET(*dim)[k] < lit_x_end)
-			{
-				/* icon is in hilighted area */
-				tmp_gc = on_gc;
-			}
-			else
-			{
-				/* icon is in unhilighted area */
-				tmp_gc = off_gc;
-			}
-			PGraphicsCopyFvwmPicture(
-				dpy, MI_MINI_ICON(mi)[i], mpip->w, tmp_gc,
+			PGraphicsRenderPicture(
+				dpy, mpip->w, MI_MINI_ICON(mi)[i], &fra,
+				mpip->w, tmp_gc, Scr.MonoGC, None,
 				0, 0, MI_MINI_ICON(mi)[i]->width,
 				MI_MINI_ICON(mi)[i]->height,
-				MDIM_ICON_X_OFFSET(*dim)[k], y);
+				MDIM_ICON_X_OFFSET(*dim)[k], y,
+				MI_MINI_ICON(mi)[i]->width,
+				MI_MINI_ICON(mi)[i]->height, False);
 		}
 	}
 

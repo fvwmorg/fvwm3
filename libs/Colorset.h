@@ -22,8 +22,6 @@
 #define LIBS_COLORSETS_H
 
 typedef struct {
-	/* AllocColorset copies the first four pixels from colorset 0, 
-	 * don't move */
 	Pixel fg;
 	Pixel bg;
 	Pixel hilite;
@@ -47,6 +45,8 @@ typedef struct {
 	Pixel tint;
 	Pixel fg_tint;
 	Pixel fg_saved;
+	Pixel bg_tint;
+	Pixel bg_saved;
 	Pixmap mask;
 	Pixmap alpha_pixmap;
 	char *pixmap_args;
@@ -58,7 +58,8 @@ typedef struct {
 	int nalloc_pixels;
 	int tint_percent;
 	int fg_tint_percent;
-	Bool do_tint_use_mask;
+	int bg_tint_percent;
+	short image_alpha_percent;
 	Bool dither;
 #endif
 } colorset_struct;
@@ -83,6 +84,8 @@ typedef struct {
 #define BG_AVERAGE  0x40
 #define TINT_SUPPLIED  0x80
 #define FG_TINT_SUPPLIED  0x100
+#define BG_TINT_SUPPLIED  0x200
+#define ICON_TINT_SUPPLIED 0x400
 #endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */

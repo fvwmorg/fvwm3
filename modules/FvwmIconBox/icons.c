@@ -127,7 +127,7 @@ void CreateIconWindow(struct icon_info *item)
 	 * visual window to be drawn into */
 	if (IS_ICON_OURS(item))
 	{
-		if (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item))
+		if (Pdefault || (item->icon_depth == 1) || IS_PIXMAP_OURS(item))
 		{
 			item->icon_pixmap_w = XCreateWindow(dpy, icon_win, 0, 0,
 					max(max_icon_width, item->icon_w),
@@ -160,11 +160,10 @@ void CreateIconWindow(struct icon_info *item)
 				  hr, hr, item->icon_maskPixmap, FShapeSet);
 	}
 
-	if (item->icon_alphaPixmap != None)
+	if (FShapesSupported)
 	{
-		/* pixmap icon with some alpha */
-		XSetWindowBackgroundPixmap(dpy,
-					   item->icon_pixmap_w, ParentRelative);
+		XSetWindowBackgroundPixmap(
+			dpy, item->icon_pixmap_w, ParentRelative);
 	}
 }
 
@@ -250,8 +249,11 @@ void GetIconFromFile(struct icon_info *item)
 	{
 		fpa.mask |= FPAM_DITHER;
 	}
+	item->icon_w = 0;
+	item->icon_h = 0;
 	if (!PImageLoadPixmapFromFile(
-		dpy, Root, path,&item->iconPixmap, &item->icon_maskPixmap,
+		dpy, Root, path, &item->iconPixmap,
+		&item->icon_maskPixmap,
 		&item->icon_alphaPixmap, &item->icon_w, &item->icon_h,
 		&item->icon_depth, 0, NULL, fpa))
 	{

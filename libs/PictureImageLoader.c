@@ -63,9 +63,6 @@ typedef struct PImageLoader
 
 /* ---------------------------- local macros -------------------------------- */
 
-/* alpha limit if xrender is not supported by X or the X server */ 
-#define FIMAGE_ALPHA_LIMIT 130
-
 /* ---------------------------- imports ------------------------------------- */
 
 /* ---------------------------- included code files ------------------------- */
@@ -222,8 +219,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	*depth = Pdepth;
 	*pixmap = XCreatePixmap(dpy, Root, w, h, Pdepth);
 	*mask = XCreatePixmap(dpy, Root, w, h, 1);
-	if (XRenderSupport && !(fpa.mask & FPAM_NO_ALPHA) &&
-	    FRenderGetExtensionSupported())
+	if (!(fpa.mask & FPAM_NO_ALPHA))
 	{
 		*alpha = XCreatePixmap(dpy, Root, w, h, 8);
 	}
@@ -507,9 +503,7 @@ Bool PImageCreatePixmapFromArgbData(
 	Pixel back = WhitePixel(dpy, DefaultScreen(dpy));
 	Pixel fore = BlackPixel(dpy, DefaultScreen(dpy));
 	int a;
-	Bool use_alpha_pix = (XRenderSupport && alpha != None &&
-			      !(fpa.mask & FPAM_NO_ALPHA) &&
-			      FRenderGetExtensionSupported());
+	Bool use_alpha_pix = (alpha != None && !(fpa.mask & FPAM_NO_ALPHA));
 	int alpha_limit = 0;
 	int no_color_limit = !!(fpa.mask & FPAM_NO_COLOR_LIMIT);
 	int do_dither = !!((fpa.mask & FPAM_DITHER) && Pdepth <= 16 &&
@@ -580,7 +574,7 @@ Bool PImageCreatePixmapFromArgbData(
 	c.flags = DoRed | DoGreen | DoBlue;
 	if (!use_alpha_pix)
 	{
-		alpha_limit = FIMAGE_ALPHA_LIMIT;
+		alpha_limit = PICTURE_ALPHA_LIMIT;
 	}
 	for (j = 0; j < height; j++)
 	{

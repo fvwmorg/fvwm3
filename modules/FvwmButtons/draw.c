@@ -295,7 +295,8 @@ void RedrawButton(button_info *b,int clean)
     XClearArea(Dpy, MyWindow, ix, iy, iw, ih, False);
     clean = 1;
   }
-  if(b->flags&b_Icon && b->icon->alpha != None)
+  if(b->flags&b_Icon &&
+     (b->icon->alpha != None || (cset >= 0 && Colorset[cset].icon_alpha < 100)))
   {
     ConfigureIconWindow(b);
   }

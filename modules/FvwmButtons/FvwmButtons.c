@@ -2282,75 +2282,87 @@ static void update_root_transparency(XEvent *Event)
 static void recursive_change_colorset(container_info *c, int colorset,
 				      XEvent *Event)
 {
-  int i;
-  Bool bg_change = False;
+	int i;
+	Bool bg_change = False;
 
-  for (i = c->num_buttons; --i >= 0; )
-  {
-    button_info *b = c->buttons[i];
-
-    if (!b)
-      continue;
-
-    bg_change = False;
-    if (buttonColorset(b) == colorset)
-    {
-      bg_change = True;
-    }
-    else  if (buttonColorset(b) > -1 &&
-	      Colorset[buttonColorset(b)].pixmap == ParentRelative &&
-	      (UberButton->c->flags & b_Colorset &&
-	       colorset == UberButton->c->colorset))
-    {
-      bg_change = True;
-    }
-    else  if ((b->flags & b_Swallow) && (b->swallow & b_FvwmModule) &&
-	      (UberButton->c->flags & b_Colorset &&
-	       colorset == UberButton->c->colorset))
-    {
-      /* swallowed module */
-      bg_change = True;
-    }
-
-    if (b->flags & b_Container)
-    {
-      if (bg_change)
-      {
-	/* re-apply colorset to button */
-	RedrawButton(b, True);
-      }
-      /* recursively update containers */
-      recursive_change_colorset(b->c, colorset, Event);
-    }
-    else if (b->flags & b_Swallow)
-    {
-      /* swallowed window */
-      if (buttonSwallowCount(b) == 3 && b->IconWin != None && bg_change)
-      {
-	RedrawButton(b, True);
-	if (Event == NULL && (b->swallow & b_FvwmModule))
+	for (i = c->num_buttons; --i >= 0; )
 	{
-	  XSync(Dpy, 0);
-	  send_bg_change_to_module(b, Event);
-	}
-	else if (b->flags & b_Colorset)
-	{
-	  change_swallowed_window_colorset(b, True);
-	}
-      }
-    }
-    else
-    {
-      /* simple button */
-      if (bg_change)
-      {
-	/* re-apply colorset to button */
-	RedrawButton(b, True);
-      }
-    }
-  }
+		button_info *b = c->buttons[i];
 
-  return;
+		if (!b)
+		{
+			continue;
+		}
+
+		bg_change = False;
+		if (buttonColorset(b) == colorset)
+		{
+			bg_change = True;
+		}
+		else  if (buttonColorset(b) > -1 &&
+			  Colorset[buttonColorset(b)].pixmap == ParentRelative &&
+			  (UberButton->c->flags & b_Colorset &&
+			   colorset == UberButton->c->colorset))
+		{
+			bg_change = True;
+		}
+		else  if ((b->flags & b_Swallow) && (b->swallow & b_FvwmModule) &&
+			  (UberButton->c->flags & b_Colorset &&
+			   colorset == UberButton->c->colorset))
+		{
+			/* swallowed module */
+			bg_change = True;
+		}
+
+		if (b->flags & b_Container)
+		{
+			if (bg_change)
+			{
+				/* re-apply colorset to button */
+				RedrawButton(b, True);
+			}
+			/* recursively update containers */
+			recursive_change_colorset(b->c, colorset, Event);
+		}
+		else if (b->flags & b_Swallow)
+		{
+			/* swallowed window */
+			if (buttonSwallowCount(b) == 3 && b->IconWin != None &&
+			    bg_change)
+			{
+				RedrawButton(b, True);
+				if (Event == NULL && (b->swallow & b_FvwmModule))
+				{
+					XSync(Dpy, 0);
+					send_bg_change_to_module(b, Event);
+				}
+				else if (b->flags & b_Colorset)
+				{
+					change_swallowed_window_colorset(b, True);
+				}
+			}
+		}
+		else
+		{
+			/* simple button */
+			if (bg_change)
+			{
+				/* re-apply colorset to button */
+				RedrawButton(b, True);
+			}
+			if (Event == NULL && b->flags & b_Icon)
+			{
+				/* FIXME: do that only if an icon colorset
+				 * change */
+				DestroyIconWindow(b);
+				CreateIconWindow(b);
+				ConfigureIconWindow(b);
+				XMapWindow(Dpy, b->IconWin);
+			}
+		}
+	}
+
+	return;
 }
 
 static void change_colorset(int colorset, XEvent *Event)

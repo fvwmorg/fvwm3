@@ -56,6 +56,7 @@
 #include <libs/gravity.h>
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
+#include "libs/PictureGraphics.h"
 #include "geometry.h"
 #include "borders.h"
 #include "frame.h"
@@ -2764,11 +2765,12 @@ static void clear_expose_menu_area(Window win, XEvent *e)
 /************************************************************
  *
  * Draws a picture on the left side of the menu
+ * What about a SidePic Colorset ? (olicha 2002-08-21)
  *
  ************************************************************/
 static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 {
-	GC ReliefGC, TextGC;
+	GC gc;
 	FvwmPicture *sidePic;
 	int ys;
 	int yt;
@@ -2790,29 +2792,12 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 
 	if (Pdepth < 2)
 	{
-		ReliefGC = MST_MENU_SHADOW_GC(mr);
+		/* ? */
+		gc = MST_MENU_SHADOW_GC(mr);
 	}
 	else
 	{
-		ReliefGC = MST_MENU_RELIEF_GC(mr);
-	}
-	TextGC = MST_MENU_GC(mr);
-
-	if (MR_HAS_SIDECOLOR(mr))
-	{
-		Globalgcv.foreground = MR_SIDECOLOR(mr);
-	}
-	else if (MST_HAS_SIDE_COLOR(mr))
-	{
-		Globalgcv.foreground = MST_SIDE_COLOR(mr);
-	}
-	if (MR_HAS_SIDECOLOR(mr) || MST_HAS_SIDE_COLOR(mr))
-	{
-		Globalgcm = GCForeground;
-		XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
-		XFillRectangle(dpy, MR_WINDOW(mr), Scr.ScratchGC1,
-			       MR_SIDEPIC_X_OFFSET(mr), bw,
-			       sidePic->width, MR_HEIGHT(mr) - 2 * bw);
+		gc = MST_MENU_GC(mr);
 	}
 
 	if (sidePic->height > MR_HEIGHT(mr) - 2 * bw)
@@ -2828,26 +2813,36 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 		yt = MR_HEIGHT(mr) - bw - sidePic->height;
 	}
 
-	if (sidePic->depth == Pdepth) /* pixmap */
+	if (MR_HAS_SIDECOLOR(mr))
 	{
-		Globalgcv.clip_mask = sidePic->mask;
-		Globalgcv.clip_x_origin = MR_SIDEPIC_X_OFFSET(mr);
-		Globalgcv.clip_y_origin = yt - ys;
-		XChangeGC(
-			dpy, ReliefGC, GCClipMask | GCClipXOrigin |
-			GCClipYOrigin, &Globalgcv);
-		XCopyArea(
-			dpy, sidePic->picture, MR_WINDOW(mr), ReliefGC, 0, ys,
-			sidePic->width, h, MR_SIDEPIC_X_OFFSET(mr), yt);
-		Globalgcv.clip_mask = None;
-		XChangeGC(dpy, ReliefGC, GCClipMask, &Globalgcv);
+		Globalgcv.foreground = MR_SIDECOLOR(mr);
 	}
-	else
+	else if (MST_HAS_SIDE_COLOR(mr))
 	{
-		XCopyPlane(
-			dpy, sidePic->picture, MR_WINDOW(mr), TextGC, 0, ys,
-			sidePic->width, h, MR_SIDEPIC_X_OFFSET(mr), yt, 1);
+		Globalgcv.foreground = MST_SIDE_COLOR(mr);
 	}
+
+	if (MR_HAS_SIDECOLOR(mr) || MST_HAS_SIDE_COLOR(mr))
+	{
+		Globalgcm = GCForeground;
+		XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
+		XFillRectangle(dpy, MR_WINDOW(mr), Scr.ScratchGC1,
+			       MR_SIDEPIC_X_OFFSET(mr), bw,
+			       sidePic->width, MR_HEIGHT(mr) - 2 * bw);
+	}
+	else if (sidePic->alpha != None)
+	{
+		XClearArea(
+			dpy, MR_WINDOW(mr),
+			MR_SIDEPIC_X_OFFSET(mr), yt, sidePic->width, h, False);
+	}
+
+
+	PGraphicsRenderPicture(
+		dpy, MR_WINDOW(mr), sidePic, 0, MR_WINDOW(mr),
+		gc, Scr.MonoGC, None,
+		0, ys, sidePic->width, h,
+		MR_SIDEPIC_X_OFFSET(mr), yt, sidePic->width, h, False);
 
 	return;
 }

@@ -91,23 +91,44 @@ typedef struct
 	unsigned alloc_pixels : 1;
 } FvwmPictureFlags;
 
-#define FPAM_NO_ALLOC_PIXELS (1 << 1)  /* do not return the allocated pixels
+#define FPAM_NO_ALLOC_PIXELS (1)       /* do not return the allocated pixels
 					* this is used only if PUseDynamicColors,
 					* if not the allocated pixels are never
 					* returned */
-#define FPAM_NO_COLOR_LIMIT  (1 << 2)  /* do not use color limitation */
-#define FPAM_NO_ALPHA        (1 << 3)  /* do not return the alpha channel */
-#define FPAM_DITHER          (1 << 4)  /* dither the image */
-#define FPAM_TINT            (1 << 5)  /* tint the image */
+#define FPAM_NO_COLOR_LIMIT  (1 << 1)  /* do not use color limitation */
+#define FPAM_NO_ALPHA        (1 << 2)  /* do not return the alpha channel */
+#define FPAM_DITHER          (1 << 3)  /* dither the image */
+#define FPAM_TINT            (1 << 4)  /* tint the image */
 
 typedef struct
 {
-	unsigned long mask;
+	unsigned mask : 5;
 	XColor tint;
 	short tint_percent;
 } FvwmPictureAttributes;
 
 /* tint no yet implemented */
 #define PICTURE_FPA_AGREE(p,fpa) (p->fpa_mask == fpa.mask)
+
+#define FRAM_HAVE_ADDED_ALPHA       (1)
+#define FRAM_HAVE_TINT              (1 << 1)
+#define FRAM_HAVE_UNIFORM_COLOR     (1 << 2)
+#define FRAM_DEST_IS_A_WINDOW       (1 << 3)
+#define FRAM_HAVE_ICON_CSET         (1 << 4)
+
+#include "Colorset.h"
+
+typedef struct
+{
+	unsigned mask : 5;
+	short added_alpha_percent;
+	Pixel tint;
+	short tint_percent;
+	Pixel uniform_pixel;
+	colorset_struct *colorset;;
+} FvwmRenderAttributes;
+
+/* alpha limit if we cannot use the alpha channel */ 
+#define PICTURE_ALPHA_LIMIT 130
 
 #endif /* Picture_Base_H */

@@ -619,7 +619,7 @@ Bool CalculateGradientDimensions(
 	unsigned int *width_ret, unsigned int *height_ret)
 {
 	static unsigned int best_width = 0, best_height = 0;
-	int dither_factor = (dither > 0)? ncolors:1;
+	int dither_factor = (dither > 0)? 128:1;
 
 	/* get the best tile size (once) */
 	if (!best_width)

@@ -39,7 +39,7 @@ extern int    My_XNextEvent(Display *dpy, XEvent *event);
 extern void   DeadPipe(int nonsense);
 extern Bool   LoadIconFile(int button,int ico);
 extern void   CreateIconWindow(int button, Window *win);
-extern void   ConfigureIconWindow(int button,int row, int column);
+extern void   ConfigureIconWindow(int button,int row, int column, int colorset);
 extern int    GetXPMGradient(int button, int from[3], int to[3], int maxcols,
 		   int type);
 extern void   GetXPMColorset(int button, int colorset);

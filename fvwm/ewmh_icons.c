@@ -700,10 +700,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 
 	pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
 	mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
-	if (XRenderSupport && FRenderGetExtensionSupported())
-	{
-		alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
-	}
+	alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, Scr.Root, (unsigned char *)list, start, width, height,
 		pixmap, mask, alpha, &have_alpha, fpa) || pixmap == None)

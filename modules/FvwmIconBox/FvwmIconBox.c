@@ -718,10 +718,10 @@ void RedrawIcons(void)
 
 void RedrawIcon(struct icon_info *item, int f)
 {
-	unsigned long plane = 1;
 	int hr, len;
 	int diff, lm ,w, h, tw;
 	char label[256];
+	int cs;
 
 	hr = icon_relief/2;
 
@@ -731,18 +731,27 @@ void RedrawIcon(struct icon_info *item, int f)
 		XSetBackground(dpy, NormalGC, act_icon_back_pix);
 		XSetForeground(dpy, IconReliefGC, act_icon_hilite_pix);
 		XSetForeground(dpy, IconShadowGC, act_icon_shadow_pix);
-
+		cs = IconHicolorset;
 		if (max_icon_height != 0 && (IS_ICON_OURS(item)))
 		{
-			if (item->icon_alphaPixmap != None)
-				XSetWindowBackgroundPixmap(dpy,
-							   item->icon_pixmap_w,
-							   ParentRelative);
+			if (FShapesSupported)
+			{
+				XSetWindowBackgroundPixmap(
+					dpy,
+					item->icon_pixmap_w,
+					ParentRelative);
+			}
 			else
+			{
 				XSetWindowBackground(dpy, item->icon_pixmap_w,
 						     act_icon_back_pix);
+			}
 		}
 		XSetWindowBackground(dpy, item->IconWin, act_icon_back_pix);
+	}
+	else
+	{
+		cs = Iconcolorset;
 	}
 
 	/* icon pixmap */
@@ -750,37 +759,33 @@ void RedrawIcon(struct icon_info *item, int f)
 	{
 		if (item->iconPixmap != None && item->icon_pixmap_w != None)
 		{
-			if (item->icon_depth == 1)
+			if (item->icon_depth == 1 || IS_PIXMAP_OURS(item) ||
+			    Pdefault)
 			{
-				XCopyPlane(dpy,
-					   item->iconPixmap,
-					   item->icon_pixmap_w,
-					   NormalGC,
-					   0, 0, item->icon_w, item->icon_h,
-					   hr, hr, plane);
-			}
-			else if (IS_PIXMAP_OURS(item))
-			{
-				if (item->icon_alphaPixmap != None)
+				FvwmRenderAttributes fra;
+
+				fra.mask = FRAM_DEST_IS_A_WINDOW;
+				if (cs >= 0)
+				{
+					fra.mask |= FRAM_HAVE_ICON_CSET;
+					fra.colorset = &Colorset[cs];
+				}
+				if (item->icon_alphaPixmap != None ||
+				    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+				{
 					XClearWindow(dpy, item->icon_pixmap_w);
-				PGraphicsCopyPixmaps(dpy,
-						     item->iconPixmap,
-						     item->icon_maskPixmap,
-						     item->icon_alphaPixmap,
-						     item->icon_depth,
-						     item->icon_pixmap_w,
-						     NormalGC,
-						     0, 0,
-						     item->icon_w, item->icon_h,
-						     hr, hr);
-			}
-			else if (Pdefault)
-			{
-				XCopyArea(dpy, item->iconPixmap,
-					  item->icon_pixmap_w,
-					  NormalGC,
-					  0, 0,
-					  item->icon_w, item->icon_h, hr, hr);
+				}
+				PGraphicsRenderPixmaps(
+					dpy, item->icon_pixmap_w,
+					item->iconPixmap,
+					item->icon_maskPixmap,
+					item->icon_alphaPixmap,
+					item->icon_depth,
+					&fra,
+					item->icon_pixmap_w,
+					NormalGC, None, None,
+					0, 0, item->icon_w, item->icon_h,
+					hr, hr, 0, 0, False);
 			}
 			else
 			{
@@ -840,18 +845,18 @@ void RedrawIcon(struct icon_info *item, int f)
 		FwinString->gc =  NormalGC;
 		FwinString->x = lm;
 		FwinString->y = 3 + Ffont->ascent;
+		if (cs >= 0)
+		{
+			FwinString->colorset = &Colorset[cs];
+			FwinString->flags.has_colorset = True;
+		}
+		else
+		{
+			FwinString->flags.has_colorset = False;
+		}
 
 		if (Hilite == item)
 		{
-			if (IconHicolorset >= 0)
-			{
-				FwinString->colorset = &Colorset[IconHicolorset];
-				FwinString->flags.has_colorset = True;
-			}
-			else
-			{
-				FwinString->flags.has_colorset = False;
-			}
 			XRaiseWindow(dpy, item->IconWin);
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x + min(0, (diff - 8))/2,
@@ -866,15 +871,6 @@ void RedrawIcon(struct icon_info *item, int f)
 		}
 		else
 		{
-			if (Iconcolorset >= 0)
-			{
-				FwinString->colorset = &Colorset[Iconcolorset];
-				FwinString->flags.has_colorset = True;
-			}
-			else
-			{
-				FwinString->flags.has_colorset = False;
-			}
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x, item->y + h,
 					  w, 6 + Ffont->height);
@@ -894,7 +890,7 @@ void RedrawIcon(struct icon_info *item, int f)
 		XSetForeground(dpy, IconShadowGC, icon_shadow_pix);
 
 		if (max_icon_height != 0 && (IS_ICON_OURS(item)) &&
-		    item->icon_alphaPixmap == None)
+		    !FShapesSupported)
 		{
 			XSetWindowBackground(dpy, item->icon_pixmap_w,
 					     icon_back_pix);
@@ -1351,6 +1347,8 @@ static void change_colorset(int color)
   int x, y;
   unsigned int bw, w, h, depth;
   Window Junkroot;
+  Bool do_update_icon = False;
+  Bool do_update_icon_hi = False;
 
   if (color == colorset)
   {
@@ -1393,7 +1391,6 @@ static void change_colorset(int color)
     XClearWindow(dpy, b_button);
   }
   if (color == Iconcolorset) {
-    struct icon_info *tmp;
     icon_back_pix = (Iconcolorset < 0) ? GetColor(IconBack)
       : Colorset[Iconcolorset].bg;
     icon_fore_pix = (Iconcolorset < 0) ? GetColor(IconFore)
@@ -1408,17 +1405,7 @@ static void change_colorset(int color)
     XSetBackground(dpy, IconShadowGC, icon_back_pix);
     XSetForeground(dpy, NormalGC, icon_fore_pix);
     XSetBackground(dpy, NormalGC, icon_back_pix);
-
-    tmp = Head;
-    while(tmp != NULL)
-    {
-      if (max_icon_height != 0 && (IS_ICON_OURS(tmp)))
-	XSetWindowBackground(dpy, tmp->icon_pixmap_w, icon_back_pix);
-      XSetWindowBackground(dpy, tmp->IconWin, icon_back_pix);
-      XClearArea(dpy, tmp->icon_pixmap_w, 0, 0, 0, 0, True);
-      XClearArea(dpy, tmp->IconWin, 0, 0, 0, 0, True);
-      tmp = tmp->next;
-    }
+    do_update_icon = True;
   }
   if (color == IconHicolorset)
   {
@@ -1430,6 +1417,29 @@ static void change_colorset(int color)
       : Colorset[IconHicolorset].hilite;
     act_icon_shadow_pix = (IconHicolorset < 0) ? GetShadow(act_icon_back_pix)
       : Colorset[IconHicolorset].shadow;
+    do_update_icon_hi = True;
+  }
+
+  if (do_update_icon_hi || do_update_icon)
+  {
+	  struct icon_info *tmp;
+
+	  tmp = Head;
+	  while(tmp != NULL)
+	  {
+		  if (window_cond(tmp))
+		  {
+			  if (tmp == Hilite && do_update_icon_hi)
+			  {
+				  RedrawIcon(tmp,redraw_flag);
+			  }
+			  if (tmp != Hilite && do_update_icon)
+			  {
+				  RedrawIcon(tmp,redraw_flag);
+			  }
+		  }
+		  tmp = tmp->next;
+	  }
   }
 }
 

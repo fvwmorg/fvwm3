@@ -63,6 +63,12 @@
 #define USED_DIST(r1,g1,b1,r2,g2,b2) FAST_DIST(r1,g1,b1,r2,g2,b2)
 #define PICTURE_COLOR_CLOSENESS USED_DIST(3333,3333,3333,0,0,0)
 
+#define PICTURE_PAllocTable         1000000
+#define PICTURE_PUseDynamicColors   100000
+#define PICTURE_PStrictColorLimit   10000
+#define PICTURE_use_named           1000
+#define PICTURE_TABLETYPE_LENGHT    7
+
 /* ---------------------------- imports ------------------------------------- */
 
 /* ---------------------------- included code files ------------------------- */
@@ -110,8 +116,6 @@ typedef struct {
 
 /* ---------------------------- forward declarations ------------------------ */
 
-static int get_color_index(int r, int g, int b, int is_8);
-
 /* ---------------------------- local variables ----------------------------- */
 
 static int PColorLimit = 0;
@@ -125,14 +129,11 @@ static PColorsInfo Pcsi = {
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
-/* ***************************************************************************
- *
- * Color Allocation
- * alloc_color_in_cmap is strongly inspired by SetCloseColor from
- * the Xpm library
- *
- * ***************************************************************************/
+/* ---------------------------- local functions ----------------------------- */
 
+/* ***************************************************************************
+ * get shift and prec from a mask (depth > 8)
+ * ***************************************************************************/
 static
 void decompose_mask(
 	unsigned long mask, int *shift, int *prec)
@@ -152,6 +153,11 @@ void decompose_mask(
 		mask >>= 1;
 	}
 }
+
+/* ***************************************************************************
+ * color allocation in the colormap. strongly inspired by SetCloseColor from
+ * the Xpm library (depth <= 8)
+ * ***************************************************************************/
 
 static int
 closeness_cmp(const void *a, const void *b)
@@ -229,100 +235,9 @@ int alloc_color_in_cmap(XColor *c, Bool force)
 	return 0;
 }
 
-static
-int alloc_color_in_pct(XColor *c, int index)
-{
-	if (Pct[index].alloc_count == 0)
-	{
-		int s = PStrictColorLimit;
-
-		PStrictColorLimit = 0;
-		c->red = Pct[index].color.red;
-		c->green = Pct[index].color.green;
-		c->blue = Pct[index].color.blue;
-		PictureAllocColor(Pdpy, Pcmap, c, True); /* WARN (rec) */
-		Pct[index].color.pixel = c->pixel;
-		Pct[index].alloc_count = 1;
-		PStrictColorLimit = s;
-	}
-	else
-	{
-		c->red = Pct[index].color.red;
-		c->green = Pct[index].color.green;
-		c->blue = Pct[index].color.blue;
-		c->pixel = Pct[index].color.pixel;
-		if (Pct[index].alloc_count < 0xffffffff)
-			(Pct[index].alloc_count)++;
-	}
-	return 1;
-}
-
-int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
-{
-
-	if (PStrictColorLimit && Pct != NULL)
-	{
-		no_limit = 0;
-	}
-	if (Pdepth <= 8 && (no_limit || Pct == NULL) &&
-	    XAllocColor(dpy, cmap, c))
-	{
-		return 1;
-	}
-	else if (Pdepth <= 8 && (no_limit || Pct == NULL))
-	{
-		/* color allocation fail */
-#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
-		fprintf(stderr,"Color allocation fail for %x %x %x\n",
-			c->red >> 8, c->green >> 8, c->blue >> 8);
-#endif
-		if (!alloc_color_in_cmap(c, False))
-		{
-			int status;
-
-			XGrabServer(dpy);
-			status = alloc_color_in_cmap(c, True);
-			XUngrabServer(dpy);
-#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
-			fprintf(stderr,"\tuse(?) %x %x %x, %i\n",
-				c->red >> 8, c->green >> 8, c->blue >> 8,
-				status);
-#endif
-			return status;
-		}
-		else
-		{
-#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
-			fprintf(stderr,"\tuse %x %x %x\n",
-				c->red >> 8, c->green >> 8, c->blue >> 8);
-#endif
-			return 1;
-		}
-	}
-	else if (Pct != NULL) /* and PColorLimit > 0 && Pdepth <= 8 */
-	{
-		int index;
-
-		index = get_color_index(c->red,c->green,c->blue, False);
-		return alloc_color_in_pct(c, index);
-	}
-	/* Pdepth > 8 */
-	if (Pcsi.red_shift == 0)
-	{
-		decompose_mask(
-			Pvisual->red_mask,&Pcsi.red_shift,&Pcsi.red_prec);
-		decompose_mask(
-			Pvisual->green_mask,&Pcsi.green_shift,&Pcsi.green_prec);
-		decompose_mask(
-			Pvisual->blue_mask,&Pcsi.blue_shift,&Pcsi.blue_prec);
-	}
-	c->pixel = (Pixel)(
-		((c->red   >> (16 - Pcsi.red_prec))   << Pcsi.red_shift) +
-		((c->green >> (16 - Pcsi.green_prec)) << Pcsi.green_shift) +
-		((c->blue  >> (16 - Pcsi.blue_prec))  << Pcsi.blue_shift)
-		);
-	return 1;
-}
+/* ***************************************************************************
+ * dithering
+ * ***************************************************************************/
 
 static
 int my_dither(int x, int y, XColor *c)
@@ -469,193 +384,37 @@ int my_dither_depth_15_16_init(void)
 	return 1;
 }
 
-int PictureAllocColorAllProp(
-	Display *dpy, Colormap cmap, XColor *c, int x, int y,
-	Bool no_limit, Bool is_8, Bool do_dither)
-{
-	int index;
-	static int dither_ok = 0; /* not initalized, 1 ok, 2 init fail */
-	int switcher =
-		(do_dither && dither_ok != 2 && !no_limit &&
-		 Pdepth <= 16)? Pdepth:0;
-
-	if (dither_ok == 0 && (switcher == 15 || switcher == 16))
-	{
-		/* init dithering in depth 15 and 16 */
-		if (Pcsi.red_shift == 0)
-		{
-			decompose_mask(
-				Pvisual->red_mask,
-				&Pcsi.red_shift,
-				&Pcsi.red_prec);
-			decompose_mask(
-				Pvisual->green_mask,
-				&Pcsi.green_shift,
-				&Pcsi.green_prec);
-			decompose_mask(
-				Pvisual->blue_mask,
-				&Pcsi.blue_shift,
-				&Pcsi.blue_prec);
-		}
-		dither_ok = my_dither_depth_15_16_init();
-		if (dither_ok == 2)
-		{
-			switcher = 0;
-		}
-	}
-
-	switch(switcher)
-	{
-	case 0: /* no dithering and maybe no_limit */
-		if (Pct == NULL || no_limit)
-		{
-			if (is_8)
-			{
-				c->red = c->red*257;
-				c->green = c->green*257;
-				c->blue = c->blue*257;
-			}
-			return PictureAllocColor(dpy, cmap, c, no_limit);
-		}
-
-		/* Pdepth <= 8, no dither */
-		index = get_color_index(c->red,c->green,c->blue, is_8);
-		return alloc_color_in_pct(c, index);
-		break;
-	case 16: /* depth 15 or 16 and dithering */
-	case 15:
-		if (!is_8)
-		{
-			c->red = c->red >> 8;
-			c->green = c->green >> 8;
-			c->blue = c->blue >> 8;
-		}
-		c->red = Pcsi.red_dither[
-			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
-			((c->red) & 0xff)] * 257;
-		c->green = Pcsi.green_dither[
-			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
-			((c->green) & 0xff)] * 257;
-		c->blue = Pcsi.blue_dither[
-			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
-			((c->blue) & 0xff)] * 257;
-		c->pixel = (Pixel)(
-			((c->red >> (16 - Pcsi.red_prec)) << Pcsi.red_shift) +
-			((c->green >> (16 - Pcsi.green_prec))
-			 << Pcsi.green_shift) +
-			((c->blue >> (16 - Pcsi.blue_prec)) << Pcsi.blue_shift)
-			);
-		return 1;
-		break;
-	default: /* Pdepth <= 8, dithering */
-		if (!is_8)
-		{
-			c->red = c->red >> 8;
-			c->green = c->green >> 8;
-			c->blue = c->blue >> 8;
-		}
-		index = my_dither(x, y, c);
-		return alloc_color_in_pct(c, index);
-		break;
-	}
-}
-
-void PictureFreeColors(
-	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
-	Bool no_limit)
-{
-	if (PStrictColorLimit && Pct != NULL)
-	{
-		no_limit = 0;
-	}
-	if (Pct != NULL && !no_limit)
-	{
-		Pixel *p;
-		int i,j,do_free;
-		int m = 0;
-
-		if (!PUseDynamicColors)
-		{
-			return;
-		}
-		p = (Pixel *)safemalloc(n*sizeof(Pixel));
-		for(i= 0; i < n; i++)
-		{
-			do_free = 1;
-			for(j=0; j<PColorLimit; j++)
-			{
-				if (Pct[j].alloc_count &&
-				    Pct[j].alloc_count < 0xffffffff &&
-				    pixels[i] == Pct[j].color.pixel)
-				{
-					(Pct[j].alloc_count)--;
-					if (Pct[j].alloc_count)
-						do_free = 0;
-					break;
-				}
-			}
-			if (do_free)
-			{
-				p[m++] = pixels[i];
-			}
-		}
-		if (m > 0)
-		{
-			XFreeColors(dpy, cmap, p, m, planes);
-		}
-		return;
-	}
-	if ((Pct == NULL || no_limit) && Pdepth <= 8)
-	{
-		XFreeColors(dpy, cmap, pixels, n, planes);
-	}
-	return;
-}
-
-Pixel PictureGetNextColor(Pixel p, int n)
-{
-	int i;
-	XColor c;
-
-	if (n >= 0)
-		n = 1;
-	else
-		n = -1;
-
-	if (Pct == NULL)
-		return p;
-	for(i=0; i<PColorLimit; i++)
-	{
-		if (Pct[i].color.pixel == p)
-		{
-			if (i == 0 && n < 0)
-			{
-				c = Pct[PColorLimit-1].color;
-				alloc_color_in_pct(&c, PColorLimit-1);
-				return Pct[PColorLimit-1].color.pixel;
-			}
-			else if (i == PColorLimit-1 && n > 0)
-			{
-				c = Pct[0].color;
-				alloc_color_in_pct(&c, 0);
-				return Pct[0].color.pixel;
-			}
-			else
-			{
-				c = Pct[i+n].color;
-				alloc_color_in_pct(&c, i+n);
-				return Pct[i+n].color.pixel;
-			}
-		}
-	}
-	return p;
-}
-
 /* ***************************************************************************
- *
- * colors reduction
- *
+ * Color allocation in the "palette" (depth <= 8) 
  * ***************************************************************************/
+static
+int alloc_color_in_pct(XColor *c, int index)
+{
+	if (Pct[index].alloc_count == 0)
+	{
+		int s = PStrictColorLimit;
+
+		PStrictColorLimit = 0;
+		c->red = Pct[index].color.red;
+		c->green = Pct[index].color.green;
+		c->blue = Pct[index].color.blue;
+		PictureAllocColor(Pdpy, Pcmap, c, True); /* WARN (rec) */
+		Pct[index].color.pixel = c->pixel;
+		Pct[index].alloc_count = 1;
+		PStrictColorLimit = s;
+	}
+	else
+	{
+		c->red = Pct[index].color.red;
+		c->green = Pct[index].color.green;
+		c->blue = Pct[index].color.blue;
+		c->pixel = Pct[index].color.pixel;
+		if (Pct[index].alloc_count < 0xffffffff)
+			(Pct[index].alloc_count)++;
+	}
+	return 1;
+}
+
 static
 int get_color_index(int r, int g, int b, int is_8)
 {
@@ -684,6 +443,9 @@ int get_color_index(int r, int g, int b, int is_8)
 	return index;
 }
 
+/* ***************************************************************************
+ * local function for building the palette (depth <= 8) 
+ * ***************************************************************************/
 static
 XColor *build_mapping_colors(int nr, int ng, int nb)
 {
@@ -745,104 +507,6 @@ short *build_mapping_table(int nr, int ng, int nb)
 	free(colors_map);
 	return Table;
 }
-
-static
-void create_mapping_table(
-	int nr, int ng, int nb, int grey_bits, Bool use_named)
-{
-	Pcsi.d_nr = Pcsi.d_ng = Pcsi.d_nb = 0;
-	if (!use_named || PColorLimit == 0)
-	{
-		/* pure color cube */
-		Pcsi.nr = nr;
-		Pcsi.ng = ng;
-		Pcsi.nb = nb;
-		Pcsi.grey_bits = grey_bits;
-	}
-	else if (PColorLimit == 2)
-	{
-		/* ok */
-		Pcsi.nr = 0;
-		Pcsi.ng = 0;
-		Pcsi.nb = 0;
-		Pcsi.grey_bits = 1;
-	}
-	else /* named table */
-	{
-		/* dither table should be small */
-		if (PColorLimit <= 9)
-		{
-			Pcsi.d_nr = 3;
-			Pcsi.d_ng = 3;
-			Pcsi.d_nb = 3;
-		}
-		else
-		{
-			Pcsi.d_nr = 4;
-			Pcsi.d_ng = 4;
-			Pcsi.d_nb = 4;
-		}
-		PDitherMappingTable =
-			build_mapping_table(Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb);
-		if (PColorLimit <= 9)
-		{
-			Pcsi.nr = 8;
-			Pcsi.ng = 8;
-			Pcsi.nb = 8;
-		}
-		else
-		{
-			Pcsi.nr = 16;
-			Pcsi.ng = 16;
-			Pcsi.nb = 16;
-		}
-		PMappingTable = build_mapping_table(Pcsi.nr, Pcsi.ng, Pcsi.nb);
-	}
-
-}
-
-/* Replace the color in my_color by the closest matching color
-   from base_table */
-void PictureReduceColorName(char **my_color)
-{
-	int index;
-	XColor rgb;          /* place to calc rgb for each color in xpm */
-
-	if (!XpmSupport)
-		return;
-
-	if (!strcasecmp(*my_color,"none")) {
-		return; /* do not substitute the "none" color */
-	}
-
-	if (!XParseColor(Pdpy, Pcmap, *my_color, &rgb))
-	{
-		fprintf(stderr,"color_to_rgb: can't parse color %s\n",
-			*my_color);
-	}
-	index = get_color_index(rgb.red,rgb.green,rgb.blue, False);
-	/* Finally: replace the color string by the newly determined color
-	 * string */
-	free(*my_color);                    /* free old color */
-	/* area for new color */
-	*my_color = safemalloc(8);
-	sprintf(*my_color,"#%x%x%x",
-		Pct[index].color.red >> 8,
-		Pct[index].color.green >> 8,
-		Pct[index].color.blue >> 8); /* put it there */
-	return;
-}
-
-/* ***************************************************************************
- *
- * color table for depth <= 8
- *
- * ***************************************************************************/
-#define PICTURE_PAllocTable         1000000
-#define PICTURE_PUseDynamicColors   100000
-#define PICTURE_PStrictColorLimit   10000
-#define PICTURE_use_named           1000
-#define PICTURE_TABLETYPE_LENGHT    7
 
 static
 void free_table_colors(PColor *color_table, int npixels)
@@ -1141,6 +805,62 @@ void print_colormap(void)
 }
 #endif
 
+
+static
+void create_mapping_table(
+	int nr, int ng, int nb, int grey_bits, Bool use_named)
+{
+	Pcsi.d_nr = Pcsi.d_ng = Pcsi.d_nb = 0;
+	if (!use_named || PColorLimit == 0)
+	{
+		/* pure color cube */
+		Pcsi.nr = nr;
+		Pcsi.ng = ng;
+		Pcsi.nb = nb;
+		Pcsi.grey_bits = grey_bits;
+	}
+	else if (PColorLimit == 2)
+	{
+		/* ok */
+		Pcsi.nr = 0;
+		Pcsi.ng = 0;
+		Pcsi.nb = 0;
+		Pcsi.grey_bits = 1;
+	}
+	else /* named table */
+	{
+		/* dither table should be small */
+		if (PColorLimit <= 9)
+		{
+			Pcsi.d_nr = 3;
+			Pcsi.d_ng = 3;
+			Pcsi.d_nb = 3;
+		}
+		else
+		{
+			Pcsi.d_nr = 4;
+			Pcsi.d_ng = 4;
+			Pcsi.d_nb = 4;
+		}
+		PDitherMappingTable =
+			build_mapping_table(Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb);
+		if (PColorLimit <= 9)
+		{
+			Pcsi.nr = 8;
+			Pcsi.ng = 8;
+			Pcsi.nb = 8;
+		}
+		else
+		{
+			Pcsi.nr = 16;
+			Pcsi.ng = 16;
+			Pcsi.nb = 16;
+		}
+		PMappingTable = build_mapping_table(Pcsi.nr, Pcsi.ng, Pcsi.nb);
+	}
+
+}
+
 void finish_ct_init(
 	int call_type, int ctt, int nr, int ng, int nb, int grey_bits,
 	Bool use_named)
@@ -1199,6 +919,290 @@ void finish_ct_init(
 		}
 		create_mapping_table(nr,ng,nb,grey_bits,use_named);
 	}
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
+{
+
+	if (PStrictColorLimit && Pct != NULL)
+	{
+		no_limit = 0;
+	}
+	if (Pdepth <= 8 && (no_limit || Pct == NULL) &&
+	    XAllocColor(dpy, cmap, c))
+	{
+		return 1;
+	}
+	else if (Pdepth <= 8 && (no_limit || Pct == NULL))
+	{
+		/* color allocation fail */
+#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
+		fprintf(stderr,"Color allocation fail for %x %x %x\n",
+			c->red >> 8, c->green >> 8, c->blue >> 8);
+#endif
+		if (!alloc_color_in_cmap(c, False))
+		{
+			int status;
+
+			XGrabServer(dpy);
+			status = alloc_color_in_cmap(c, True);
+			XUngrabServer(dpy);
+#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
+			fprintf(stderr,"\tuse(?) %x %x %x, %i\n",
+				c->red >> 8, c->green >> 8, c->blue >> 8,
+				status);
+#endif
+			return status;
+		}
+		else
+		{
+#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
+			fprintf(stderr,"\tuse %x %x %x\n",
+				c->red >> 8, c->green >> 8, c->blue >> 8);
+#endif
+			return 1;
+		}
+	}
+	else if (Pct != NULL) /* and PColorLimit > 0 && Pdepth <= 8 */
+	{
+		int index;
+
+		index = get_color_index(c->red,c->green,c->blue, False);
+		return alloc_color_in_pct(c, index);
+	}
+	/* Pdepth > 8 */
+	if (Pcsi.red_shift == 0)
+	{
+		decompose_mask(
+			Pvisual->red_mask,&Pcsi.red_shift,&Pcsi.red_prec);
+		decompose_mask(
+			Pvisual->green_mask,&Pcsi.green_shift,&Pcsi.green_prec);
+		decompose_mask(
+			Pvisual->blue_mask,&Pcsi.blue_shift,&Pcsi.blue_prec);
+	}
+	c->pixel = (Pixel)(
+		((c->red   >> (16 - Pcsi.red_prec))   << Pcsi.red_shift) +
+		((c->green >> (16 - Pcsi.green_prec)) << Pcsi.green_shift) +
+		((c->blue  >> (16 - Pcsi.blue_prec))  << Pcsi.blue_shift)
+		);
+	return 1;
+}
+
+
+int PictureAllocColorAllProp(
+	Display *dpy, Colormap cmap, XColor *c, int x, int y,
+	Bool no_limit, Bool is_8, Bool do_dither)
+{
+	int index;
+	static int dither_ok = 0; /* not initalized, 1 ok, 2 init fail */
+	int switcher =
+		(do_dither && dither_ok != 2 && !no_limit &&
+		 Pdepth <= 16)? Pdepth:0;
+
+	if (dither_ok == 0 && (switcher == 15 || switcher == 16))
+	{
+		/* init dithering in depth 15 and 16 */
+		if (Pcsi.red_shift == 0)
+		{
+			decompose_mask(
+				Pvisual->red_mask,
+				&Pcsi.red_shift,
+				&Pcsi.red_prec);
+			decompose_mask(
+				Pvisual->green_mask,
+				&Pcsi.green_shift,
+				&Pcsi.green_prec);
+			decompose_mask(
+				Pvisual->blue_mask,
+				&Pcsi.blue_shift,
+				&Pcsi.blue_prec);
+		}
+		dither_ok = my_dither_depth_15_16_init();
+		if (dither_ok == 2)
+		{
+			switcher = 0;
+		}
+	}
+
+	switch(switcher)
+	{
+	case 0: /* no dithering and maybe no_limit */
+		if (Pct == NULL || no_limit)
+		{
+			if (is_8)
+			{
+				c->red = c->red*257;
+				c->green = c->green*257;
+				c->blue = c->blue*257;
+			}
+			return PictureAllocColor(dpy, cmap, c, no_limit);
+		}
+
+		/* Pdepth <= 8, no dither */
+		index = get_color_index(c->red,c->green,c->blue, is_8);
+		return alloc_color_in_pct(c, index);
+		break;
+	case 16: /* depth 15 or 16 and dithering */
+	case 15:
+		if (!is_8)
+		{
+			c->red = c->red >> 8;
+			c->green = c->green >> 8;
+			c->blue = c->blue >> 8;
+		}
+		c->red = Pcsi.red_dither[
+			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
+			((c->red) & 0xff)] * 257;
+		c->green = Pcsi.green_dither[
+			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
+			((c->green) & 0xff)] * 257;
+		c->blue = Pcsi.blue_dither[
+			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
+			((c->blue) & 0xff)] * 257;
+		c->pixel = (Pixel)(
+			((c->red >> (16 - Pcsi.red_prec)) << Pcsi.red_shift) +
+			((c->green >> (16 - Pcsi.green_prec))
+			 << Pcsi.green_shift) +
+			((c->blue >> (16 - Pcsi.blue_prec)) << Pcsi.blue_shift)
+			);
+		return 1;
+		break;
+	default: /* Pdepth <= 8, dithering */
+		if (!is_8)
+		{
+			c->red = c->red >> 8;
+			c->green = c->green >> 8;
+			c->blue = c->blue >> 8;
+		}
+		index = my_dither(x, y, c);
+		return alloc_color_in_pct(c, index);
+		break;
+	}
+}
+
+void PictureFreeColors(
+	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
+	Bool no_limit)
+{
+	if (PStrictColorLimit && Pct != NULL)
+	{
+		no_limit = 0;
+	}
+	if (Pct != NULL && !no_limit)
+	{
+		Pixel *p;
+		int i,j,do_free;
+		int m = 0;
+
+		if (!PUseDynamicColors)
+		{
+			return;
+		}
+		p = (Pixel *)safemalloc(n*sizeof(Pixel));
+		for(i= 0; i < n; i++)
+		{
+			do_free = 1;
+			for(j=0; j<PColorLimit; j++)
+			{
+				if (Pct[j].alloc_count &&
+				    Pct[j].alloc_count < 0xffffffff &&
+				    pixels[i] == Pct[j].color.pixel)
+				{
+					(Pct[j].alloc_count)--;
+					if (Pct[j].alloc_count)
+						do_free = 0;
+					break;
+				}
+			}
+			if (do_free)
+			{
+				p[m++] = pixels[i];
+			}
+		}
+		if (m > 0)
+		{
+			XFreeColors(dpy, cmap, p, m, planes);
+		}
+		return;
+	}
+	if ((Pct == NULL || no_limit) && Pdepth <= 8)
+	{
+		XFreeColors(dpy, cmap, pixels, n, planes);
+	}
+	return;
+}
+
+Pixel PictureGetNextColor(Pixel p, int n)
+{
+	int i;
+	XColor c;
+
+	if (n >= 0)
+		n = 1;
+	else
+		n = -1;
+
+	if (Pct == NULL)
+		return p;
+	for(i=0; i<PColorLimit; i++)
+	{
+		if (Pct[i].color.pixel == p)
+		{
+			if (i == 0 && n < 0)
+			{
+				c = Pct[PColorLimit-1].color;
+				alloc_color_in_pct(&c, PColorLimit-1);
+				return Pct[PColorLimit-1].color.pixel;
+			}
+			else if (i == PColorLimit-1 && n > 0)
+			{
+				c = Pct[0].color;
+				alloc_color_in_pct(&c, 0);
+				return Pct[0].color.pixel;
+			}
+			else
+			{
+				c = Pct[i+n].color;
+				alloc_color_in_pct(&c, i+n);
+				return Pct[i+n].color.pixel;
+			}
+		}
+	}
+	return p;
+}
+
+/* Replace the color in my_color by the closest matching color
+   from base_table */
+void PictureReduceColorName(char **my_color)
+{
+	int index;
+	XColor rgb;          /* place to calc rgb for each color in xpm */
+
+	if (!XpmSupport)
+		return;
+
+	if (!strcasecmp(*my_color,"none")) {
+		return; /* do not substitute the "none" color */
+	}
+
+	if (!XParseColor(Pdpy, Pcmap, *my_color, &rgb))
+	{
+		fprintf(stderr,"color_to_rgb: can't parse color %s\n",
+			*my_color);
+	}
+	index = get_color_index(rgb.red,rgb.green,rgb.blue, False);
+	/* Finally: replace the color string by the newly determined color
+	 * string */
+	free(*my_color);                    /* free old color */
+	/* area for new color */
+	*my_color = safemalloc(8);
+	sprintf(*my_color,"#%x%x%x",
+		Pct[index].color.red >> 8,
+		Pct[index].color.green >> 8,
+		Pct[index].color.blue >> 8); /* put it there */
+	return;
 }
 
 #define PA_COLOR_CUBE (1 << 1)

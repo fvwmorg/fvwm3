@@ -273,10 +273,17 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 		int offset = (button->p.height > h) ?
 			0 : ((h - button->p.height) >> 1);
 		int pwidth = min(button->p.width, w-5);
+		FvwmRenderAttributes fra;
 
-		PGraphicsCopyFvwmPicture(dpy, &(button->p), win, hilite,
-					 0, 0, pwidth, pheight,
-					 x+3, y+offset);
+		fra.mask = FRAM_DEST_IS_A_WINDOW;
+		if (cs >= 0)
+		{
+			fra.mask |= FRAM_HAVE_ICON_CSET;
+			fra.colorset = &Colorset[cs];
+		}
+		PGraphicsRenderPicture(
+			dpy, win, &(button->p), &fra, win, *drawgc, None, None,
+			0, 0, pwidth, pheight, x+3, y+offset, 0, 0, False);
 		newx += pwidth+2;
 	}
 

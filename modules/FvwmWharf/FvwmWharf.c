@@ -2218,14 +2218,14 @@ static void configure_all_icon_windows(void)
     for(j=0;j<num_columns; j++)
     {
       button = i*num_columns + j;
-      ConfigureIconWindow(button,i,j);
+      ConfigureIconWindow(button,i,j,global_colorset);
     };
   for(i=0;i<num_folders;i++)
     for(j=0;j<Folders[i].count;j++)
       if(num_columns < num_rows) {
-	ConfigureIconWindow(Folders[i].firstbutton+j,0, j);
+	ConfigureIconWindow(Folders[i].firstbutton+j,0, j, global_colorset);
       } else {
-	ConfigureIconWindow(Folders[i].firstbutton+j,j, 0);
+	ConfigureIconWindow(Folders[i].firstbutton+j,j, 0, global_colorset);
       }
   /* dirty hack to make swallowed app background be textured */
   XSetWindowBackgroundPixmap(

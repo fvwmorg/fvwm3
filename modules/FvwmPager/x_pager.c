@@ -2408,38 +2408,70 @@ void LabelIconWindow(PagerWindow *t)
   do_label_window(t, t->IconView);
 }
 
-static void do_picture_window(PagerWindow *t, Window w, int width, int height)
+static void do_picture_window(
+	PagerWindow *t, Window w, int width, int height)
 {
-  int iconX;
-  int iconY;
+	int iconX;
+	int iconY;
+	int cs;
+	FvwmRenderAttributes fra;
 
-  if (MiniIcons)
-  {
-    if (t->mini_icon.picture && w != None)
-    {
-      if (width > t->mini_icon.width)
-	iconX = (width - t->mini_icon.width) / 2;
-      else if (width < t->mini_icon.width)
-	iconX = -((t->mini_icon.width - width) / 2);
-      else
-	iconX = 0;
-      if (height > t->mini_icon.height)
-	iconY = (height - t->mini_icon.height) / 2;
-      else if (height < t->mini_icon.height)
-	iconY = -((t->mini_icon.height - height) / 2);
-      else
-	iconY = 0;
-      if (t->mini_icon.alpha != None)
-      {
-	      XClearArea(dpy, w, iconX, iconY,
-			 t->mini_icon.width,
-			 t->mini_icon.height, False);
-      }
-      PGraphicsCopyFvwmPicture(dpy, &t->mini_icon, w,  Scr.MiniIconGC, 0, 0,
-			       t->mini_icon.width, t->mini_icon.height,
-			       iconX, iconY);
-    }
-  }
+	if (MiniIcons)
+	{
+		if (t->mini_icon.picture && w != None)
+		{
+			if (width > t->mini_icon.width)
+			{
+				iconX = (width - t->mini_icon.width) / 2;
+			}
+			else if (width < t->mini_icon.width)
+			{
+				iconX = -((t->mini_icon.width - width) / 2);
+			}
+			else
+			{
+				iconX = 0;
+			}
+			if (height > t->mini_icon.height)
+			{
+				iconY = (height - t->mini_icon.height) / 2;
+			}
+			else if (height < t->mini_icon.height)
+			{
+				iconY = -((t->mini_icon.height - height) / 2);
+			}
+			else
+			{
+				iconY = 0;
+			}
+			fra.mask = FRAM_DEST_IS_A_WINDOW;
+			if (t == FocusWin)
+			{
+				cs =  activecolorset;
+			}
+			else
+			{
+				cs = windowcolorset;
+			}
+			if (t->mini_icon.alpha != None ||
+			    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+			{
+				XClearArea(dpy, w, iconX, iconY,
+					   t->mini_icon.width,
+					   t->mini_icon.height, False);
+			}
+			if (cs >= 0)
+			{
+				fra.mask |= FRAM_HAVE_ICON_CSET;
+				fra.colorset = &Colorset[cs];
+			}
+			PGraphicsRenderPicture(
+				dpy, w, &t->mini_icon, &fra, w,
+				Scr.MiniIconGC, None, None, 0, 0,
+				t->mini_icon.width, t->mini_icon.height,
+				iconX, iconY, 0, 0, False);
+		}
+	}
 }
 
 void PictureWindow (PagerWindow *t)

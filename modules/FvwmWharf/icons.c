@@ -160,12 +160,13 @@ void CreateIconWindow(int button, Window *win)
  * Combines icon shape masks after a resize
  *
  ****************************************************************************/
-void ConfigureIconWindow(int button,int row, int column)
+void ConfigureIconWindow(int button, int row, int column, int colorset)
 {
 #ifndef NO_ICONS
 	int x,y, w, h;
 	int xoff,yoff;
 	int i;
+	FvwmRenderAttributes fra;
 
 	if (Buttons[button].completeIcon != None)
 	{
@@ -192,6 +193,12 @@ void ConfigureIconWindow(int button,int row, int column)
 		  Buttons[button].completeIcon, NormalGC, 0,0,
 		  BUTTONWIDTH,BUTTONHEIGHT, 0,0);
 
+	fra.mask = 0;
+	if (colorset >= 0)
+	{
+		fra.mask |= FRAM_HAVE_ICON_CSET;
+		fra.colorset = &Colorset[colorset];
+	}
 	for(i=0;i<Buttons[button].iconno;i++) {
 		w = Buttons[button].icons[i].w;
 		h = Buttons[button].icons[i].h;
@@ -204,14 +211,16 @@ void ConfigureIconWindow(int button,int row, int column)
 		yoff = (BUTTONHEIGHT - h)/2;
 		if (xoff<0) xoff=0;
 		if (yoff<0) yoff=0;
-		PGraphicsCopyPixmaps(dpy,
-				     Buttons[button].icons[i].icon,
-				     Buttons[button].icons[i].mask,
-				     Buttons[button].icons[i].alpha,
-				     Buttons[button].icons[i].depth,
-				     Buttons[button].completeIcon,
-				     NormalGC,
-				     0, 0, w, h, xoff, yoff);
+		PGraphicsRenderPixmaps(
+			dpy, Buttons[button].IconWin,
+			Buttons[button].icons[i].icon,
+			Buttons[button].icons[i].mask,
+			Buttons[button].icons[i].alpha,
+			Buttons[button].icons[i].depth,
+			&fra,
+			Buttons[button].completeIcon,
+			NormalGC, None, None,
+			0, 0, w, h, xoff, yoff, 0, 0, False);
 	}
 	XSetWindowBackgroundPixmap(dpy, Buttons[button].IconWin,
 				   Buttons[button].completeIcon);

@@ -110,11 +110,10 @@ static void change_button_icon(button_info *b, const char *file)
 		return;
 	}
 	free(b->icon_file);
-	CopyString(&b->icon_file, file);
 	PDestroyFvwmPicture(Dpy, b->icon);
-	XDestroyWindow(Dpy, b->IconWin);
-	b->IconWin = None;
+	DestroyIconWindow(b);
 	b->icon = new_icon;
+	CopyString(&b->icon_file, file);
 	CreateIconWindow(b);
 	ConfigureIconWindow(b);
 	XMapWindow(Dpy, b->IconWin);

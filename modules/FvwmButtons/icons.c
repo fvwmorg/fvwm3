@@ -68,6 +68,8 @@ void CreateIconWindow(button_info *b)
 	XSetWindowAttributes attributes;     /* attributes for create windows */
 	Pixel bc,fc;
 	int cset;
+	FvwmRenderAttributes fra;
+	Pixmap temp;
 
 	if(!(b->flags&b_Icon))
 	{
@@ -75,15 +77,19 @@ void CreateIconWindow(button_info *b)
 	}
 
 	cset = buttonColorset(b);
+	fra.mask = FRAM_DEST_IS_A_WINDOW;
 	if (cset >= 0)
 	{
 		bc = Colorset[cset].bg;
 		fc = Colorset[cset].fg;
+		fra.mask |= FRAM_HAVE_ICON_CSET;
+		fra.colorset = &Colorset[cset];
 	}
 	else
 	{
 		bc = buttonBack(b);
 		fc = buttonFore(b);
+		fra.mask = 0;
 	}
 
 	if(b->IconWin != None)
@@ -106,14 +112,13 @@ void CreateIconWindow(button_info *b)
 			"tried created\n",MyName);
 		exit(2);
 	}
-	b->IconWin=XCreateWindow(Dpy, MyWindow,
-				 0, 0, b->icon->width, b->icon->height, 0,
-				 Pdepth, InputOutput, Pvisual,
-				 valuemask, &attributes);
+	b->IconWin=XCreateWindow(
+		Dpy, MyWindow, 0, 0, b->icon->width, b->icon->height, 0,
+		Pdepth, InputOutput, Pvisual, valuemask, &attributes);
 	if (attributes.background_pixel != None)
 	{
-		XSetWindowBackground(Dpy, b->IconWin,
-				     attributes.background_pixel);
+		XSetWindowBackground(
+			Dpy, b->IconWin, attributes.background_pixel);
 	}
 
 	if (FShapesSupported)
@@ -129,7 +134,6 @@ void CreateIconWindow(button_info *b)
 	{
 		/* bitmap icon */
 		XGCValues gcv;
-		Pixmap temp;
 
 		gcv.background= bc;
 		gcv.foreground= fc;
@@ -140,17 +144,38 @@ void CreateIconWindow(button_info *b)
 			FShapeCombineMask(Dpy, b->IconWin, FShapeBounding,
 					  0, 0, b->icon->picture, FShapeSet);
 		}
+	}
 
-		temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
-				     b->icon->height,Pdepth);
-		XCopyPlane(Dpy,b->icon->picture,temp,NormalGC,
-			   0,0,b->icon->width,b->icon->height,0,0,1);
-
-		XSetWindowBackgroundPixmap(Dpy,b->IconWin,temp);
+	if (b->icon->alpha != None ||
+	    (cset >= 0 && Colorset[cset].icon_alpha < 100))
+	{
+		XSetWindowBackgroundPixmap(Dpy, b->IconWin, ParentRelative);
+		PGraphicsRenderPicture(
+			Dpy, MyWindow, b->icon, &fra, b->IconWin,
+			NormalGC, None, None,
+			0, 0, b->icon->width, b->icon->height,
+			0, 0, 0, 0, False);
+	}
+	else if (cset >= 0 && Colorset[cset].icon_tint_percent > 0)
+	{
+		temp = XCreatePixmap(
+			Dpy, MyWindow, b->icon->width, b->icon->height, Pdepth);
+		PGraphicsRenderPicture(
+			Dpy, MyWindow, b->icon, &fra, temp,
+			NormalGC, None, None,
+			0, 0, b->icon->width, b->icon->height,
+			0, 0, 0, 0, False);
+		XSetWindowBackgroundPixmap(Dpy, b->IconWin, temp);
 		XFreePixmap(Dpy,temp);
+	}
+	else
+	{
+		/* pixmap icon */
+		XSetWindowBackgroundPixmap(Dpy, b->IconWin, b->icon->picture);
+	}
+#if 0
 		/* We won't use the icon pixmap anymore... but we still need
 		   it for width/height etc. so we can't destroy it. */
-	}
 	else if (b->icon->alpha != None)
 	{
 		/* pixmap icon with some alpha */
@@ -167,8 +192,20 @@ void CreateIconWindow(button_info *b)
 		/* pixmap icon */
 		XSetWindowBackgroundPixmap(Dpy, b->IconWin, b->icon->picture);
 	}
-
+#endif
 	return;
+#endif
+}
+
+void DestroyIconWindow(button_info *b)
+{
+#ifndef NO_ICONS
+	if(!(b->flags&b_Icon))
+	{
+		return;
+	}
+	XDestroyWindow(Dpy, b->IconWin);
+	b->IconWin = None;
 #endif
 }
 
@@ -185,6 +222,7 @@ void ConfigureIconWindow(button_info *b)
 	int framew,xpad,ypad;
 	FlocaleFont *Ffont;
 	int BW,BH;
+	int cset;
 
 	if(!b || !(b->flags&b_Icon))
 		return;
@@ -198,6 +236,7 @@ void ConfigureIconWindow(button_info *b)
 
 	buttonInfo(b,&x,&y,&xpad,&ypad,&framew);
 	framew=abs(framew);
+	cset = buttonColorset(b);
 
 	Ffont = buttonFont(b);
 	w = b->icon->width;
@@ -247,14 +286,26 @@ void ConfigureIconWindow(button_info *b)
 
 	XMoveResizeWindow(Dpy, b->IconWin, x,y,w,h);
 	XClearWindow(Dpy, b->IconWin);
-	if (b->icon->alpha != None)/* pixmap icon with alpha */
-	{
-		PGraphicsCopyPixmaps(Dpy, b->icon->picture,
-				     b->icon->mask,
-				     b->icon->alpha,
-				     Pdepth, b->IconWin, NormalGC,
-				     0, 0, b->icon->width, b->icon->height,
-				     0, 0);
+	if (b->icon->alpha != None ||
+	    (cset >= 0 && Colorset[cset].icon_alpha < 100))
+	{ /* pixmap icon with alpha */
+		FvwmRenderAttributes fra;
+
+		fra.mask = FRAM_DEST_IS_A_WINDOW;
+		if (cset >= 0)
+		{
+			fra.mask |= FRAM_HAVE_ICON_CSET;
+			fra.colorset = &Colorset[cset];
+		}
+		else
+		{
+			fra.mask = 0;
+		}
+		PGraphicsRenderPicture(
+			Dpy, MyWindow, b->icon, &fra, b->IconWin,
+			NormalGC, None, None,
+			0, 0, b->icon->width, b->icon->height,
+			0, 0, 0, 0, False);
 	}
 #endif
 }

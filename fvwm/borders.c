@@ -78,7 +78,8 @@ typedef struct
 		Pixmap p;
 		Pixmap shape;
 		Pixmap alpha;
-		Pixmap depth;
+		int depth;
+		FvwmRenderAttributes fra;
 		size_rect size;
 		struct
 		{
@@ -1361,14 +1362,12 @@ static void border_fill_pixmap_background(
 		xgcv.background = cd->back_color;
 		valuemask = GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
-		PGraphicsCopyPixmaps(dpy, bg->pixmap.p, bg->pixmap.shape,
-				     bg->pixmap.alpha, bg->pixmap.depth,
-				     dest_pix,
-				     Scr.TileGC,
-				     0, 0,
-				     bg->pixmap.size.width,
-				     bg->pixmap.size.height,
-				     pixmap_g->x, pixmap_g->y);
+		PGraphicsRenderPixmaps(
+			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
+			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
+			dest_pix, Scr.TileGC, Scr.MonoGC, None,
+			0, 0, bg->pixmap.size.width, bg->pixmap.size.height,
+			pixmap_g->x, pixmap_g->y, 0, 0, False);
 	}
 	else
 	{
@@ -1377,17 +1376,14 @@ static void border_fill_pixmap_background(
 		xgcv.background = cd->back_color;
 		valuemask = GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
-		PGraphicsTileRectangle(dpy, Scr.Root,
-				       bg->pixmap.p,
-				       bg->pixmap.shape,
-				       bg->pixmap.alpha,
-				       bg->pixmap.depth,
-				       0, 0,
-				       dest_pix, Scr.TileGC, Scr.MonoGC,
-				       pixmap_g->x, pixmap_g->y,
-				       pixmap_g->width - pixmap_g->x,
-				       pixmap_g->height - pixmap_g->y);
-
+		PGraphicsRenderPixmaps(
+			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
+			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
+			dest_pix, Scr.TileGC, Scr.MonoGC, None,
+			0, 0, bg->pixmap.size.width, bg->pixmap.size.height,
+			pixmap_g->x, pixmap_g->y,
+			pixmap_g->width - pixmap_g->x,
+			pixmap_g->height - pixmap_g->y, True);
 	}
 
 	return;
@@ -1404,6 +1400,7 @@ static void border_get_border_background(
 		bg->pixmap.alpha = None;
 		bg->pixmap.depth = Pdepth;
 		bg->pixmap.flags.is_tiled = 1;
+		bg->pixmap.fra.mask = 0;
 	}
 	else
 	{
@@ -1563,6 +1560,7 @@ static void border_draw_decor_to_pixmap(
 	FvwmPicture *p;
 	int border;
 
+	bg.pixmap.fra.mask = 0;
 	switch (type)
 	{
 	case SimpleButton:
@@ -1586,6 +1584,11 @@ static void border_draw_decor_to_pixmap(
 				break;
 			}
 			p = fw->mini_icon;
+			if (cd->cs >= 0)
+			{
+				bg.pixmap.fra.mask |= FRAM_HAVE_ICON_CSET;
+				bg.pixmap.fra.colorset = &Colorset[cd->cs];
+			}
 		}
 		else
 		{

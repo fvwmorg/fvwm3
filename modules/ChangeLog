@@ -1,3 +1,25 @@
+2002-08-30  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/icons.c (DestroyIconWindow):
+	(CreateIconWindow):
+	(ConfigureIconWindow):
+	* FvwmButtons/FvwmButtons.c (recursive_change_colorset):
+	(recursive_change_colorset):
+	* FvwmButtons/dynamic.c (change_button_icon):
+	* FvwmButtons/draw.c (RedrawButton):	
+	* FvwmIconBox/FvwmIconBox.c (change_colorset):
+	(RedrawIcon):
+	* FvwmIconBox/icons.c (GetIconFromFile): 
+	* FvwmIconMan/xmanager.c (iconify_box):
+	* FvwmPager/x_pager.c (do_picture_window):
+	* FvwmScript/Widgets/Tools.c (DrawIconStr):
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
+	* FvwmWharf/Wharf.h:
+	* FvwmWharf/icons.c (ConfigureIconWindow):
+	* FvwmWharf/FvwmWharf.c (configure_all_icon_windows):
+	* FvwmWinList/ButtonArray.c (DoButton):
+	Implemented IconAlpha and IconTint
+
 2002-08-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):

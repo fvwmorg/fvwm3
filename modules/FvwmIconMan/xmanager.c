@@ -1121,40 +1121,69 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 			 int button_already_cleared)
 {
 
-  if (!man->window_up)
-    return;
+	if (!man->window_up)
+	{
+		return;
+	}
 
-/* [BV 16-Apr-97] Mini Icons work on black-and-white too */
-  if (FMiniIconsSupported && man->draw_icons && win->pic.picture) {
-    if (iconified == 0 && man->draw_icons != 2) {
-      if (!button_already_cleared) {
-	XFillRectangle (theDisplay, man->theWindow,
-			man->backContext[contextId], g->icon_x, g->icon_y,
-			g->icon_w, g->icon_h);
-      }
-    }
-    else {
-      PGraphicsCopyFvwmPicture(theDisplay, &win->pic, man->theWindow,
-			       man->hiContext[contextId],
-			       0, 0, g->icon_w, g->icon_h,
-			       g->icon_x, g->icon_y);
-    }
-  }
-  else {
-    if (Pdepth > 2) {
-      draw_3d_icon (man, box, g, iconified, contextId);
-    }
-    else {
-      if (iconified == 0) {
-	XFillArc (theDisplay, man->theWindow, man->backContext[contextId],
-		  g->icon_x, g->icon_y, g->icon_w, g->icon_h, 0, 360 * 64);
-      }
-      else {
-	XFillArc (theDisplay, man->theWindow, man->hiContext[contextId],
-		  g->icon_x, g->icon_y, g->icon_w, g->icon_h, 0, 360 * 64);
-      }
-    }
-  }
+        /* [BV 16-Apr-97] Mini Icons work on black-and-white too */
+	if (FMiniIconsSupported && man->draw_icons && win->pic.picture)
+	{
+		if (iconified == 0 && man->draw_icons != 2)
+		{
+			if (!button_already_cleared)
+			{
+				XFillRectangle (
+					theDisplay, man->theWindow,
+					man->backContext[contextId],
+					g->icon_x, g->icon_y,
+					g->icon_w, g->icon_h);
+			}
+		}
+		else
+		{
+			FvwmRenderAttributes fra;
+			int cs = man->colorsets[contextId];
+
+			fra.mask = FRAM_DEST_IS_A_WINDOW;
+			if (cs >= 0)
+			{
+				fra.mask |= FRAM_HAVE_ICON_CSET;
+				fra.colorset = &Colorset[cs];
+			}
+			PGraphicsRenderPicture(
+				theDisplay, man->theWindow, &win->pic, &fra,
+				man->theWindow, man->hiContext[contextId],
+				None, None, 0, 0, g->icon_w, g->icon_h,
+				g->icon_x, g->icon_y, 0, 0, False);
+		}
+	}
+	else
+	{
+		if (Pdepth > 2)
+		{
+			draw_3d_icon (man, box, g, iconified, contextId);
+		}
+		else
+		{
+			if (iconified == 0)
+			{
+				XFillArc (
+					theDisplay, man->theWindow,
+					man->backContext[contextId],
+					g->icon_x, g->icon_y, g->icon_w,
+					g->icon_h, 0, 360 * 64);
+			}
+			else
+			{
+				XFillArc (
+					theDisplay, man->theWindow,
+					man->hiContext[contextId],
+					g->icon_x, g->icon_y, g->icon_w,
+					g->icon_h, 0, 360 * 64);
+			}
+		}
+	}
 }
 
 int change_windows_manager (WinData *win)

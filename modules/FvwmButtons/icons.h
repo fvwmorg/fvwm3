@@ -29,4 +29,5 @@
 
 /* ------------------------------ prototypes ------------------------------- */
 void CreateIconWindow(button_info*);
+void DestroyIconWindow(button_info *b);
 void ConfigureIconWindow(button_info*);
