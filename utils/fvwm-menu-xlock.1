@@ -2,8 +2,11 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.7  1999/08/19 04:20:07  migo
-''' fixed dependences of the man pages
+''' Revision 1.8  1999/08/23 20:37:24  migo
+''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
+''' * fvwm-menu-directory: new option --format (%s, %d, %n etc.); extended --title
+''' * fvwm-menu-xlock: new options --format and --special-first
+''' * fvwm_make_browse_menu.sh: improved the simulation command line
 '''
 ''' Revision 1.8  1999/08/23 20:37:24  migo
 ''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
@@ -96,7 +99,7 @@
 'br\}
 .\"	If the F register is turned on, we'll generate
 .\"	index entries out stderr for the following things:
-.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 01" "17/Aug/99" "Fvwm Utility"
+.\"		TH	Title 
 .\"		SH	Header
 .\"		Sh	Subsection 
 .\"		Ip	Item
@@ -196,7 +199,9 @@
 .	ds o a
 .	ds d- d\h'-1'\(ga
 .	ds D- D\h'-1'\(hy
+.	ds th \o'bp'
 .	ds Th \o'LP'
+.	ds ae ae
 .	ds Ae AE
 .	ds oe oe
 .	ds Oe OE
@@ -210,8 +215,22 @@ fvwm-menu-xlock \- builds xlock menu definition for FVWM
 [ \fB--title\fR|\fB\-t\fR title ]
 [ \fB--format\fR|\fB\-f\fR format ]
 [ \fB--icon\fR|\fB\-i\fR icon ]
+[ \fB--special-first\fR|\fB\-s\fR ]
+[ -- xlock params ]
+.SH "DESCRIPTION"
+A simple perl script which parses xlock's output to build an fvwm 2.xx
+menu definition of all xlock's modes.
+.SH "OPTIONS"
+\fB--help\fR    \- show the help and exit
+.PP
+\fB--version\fR \- show the version and exit
+.PP
+\fB--name\fR, \fB--title\fR, \fB--icon\fR \- define menu name, menu title and menu icon
+accordingly given in the following argument. Default is name \*(L"XLockMenu\*(R",
 title \*(L"XLock Modes\*(R" and no mini-icon (equivalent to an empty icon argument).
-Short options are ok if not ambiguous: \-h, \-n.
+.PP
+\fB--format\fR \- define menu item format in the following argument, default is
+\&'%n\e\fIt\fR\|(%d)\*(R'. TAB can be specified as \*(L'\et\*(R', but in fvwmrc you must specify a
 double backslash or a real TAB.
 .PP
 Format specifiers:

@@ -1,3 +1,8 @@
+1999-08-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/menus.c (AddToMenu): fixed bad allocation and fvwm hang for
+	menu labels with more than two TABs
+
 1999-08-23  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/menus.c (ReadMenuFace): fixed missing parsing of gradients

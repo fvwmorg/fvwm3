@@ -7,28 +7,30 @@ use Getopt::Long;
 
 my $version = "@VERSION@";
 
-my $name  = "XLockMenu";
-my $title = "XLock Modes";
-my $icon  = "";
+my $name  = 'XLockMenu';
+my $title = 'XLock Modes';
+my $itemF = '%n\t(%d)';  # may contain %n, %d, %D.
+my $icon  = '';
+my $specialFirst = 0;
 
 sub showHelp {
-	# GNU says it must be \*STDOUT, but this is not very good for us
-	my $out = \*STDERR;
-	print $out "A small perl script which builds xlock menu for fvwm.\n\n";
-	print $out "Usage: $0 [OPTIONS] [-- XLOCK-OPTIONS]\n";
-	print $out "Options:\n";
-	print $out "\t--help        show this help and exit\n";
-	print $out "\t--version     show the version and exit\n";
-	print $out "\t--name=NAME   menu name,  default is '$name'\n";
-	print $out "\t--title=NAME  menu title, default is '$title'\n";
-	print $out "\t--icon=XPM    menu icon,  default is no\n";
-	print $out "Short options are ok if not ambiguous: -h, -n.\n";
-	print $out "\nSome useful xlock(1) options, 'xlock -h' for more:\n";
-	print $out "\t-delay usecs  delay between batches of animations\n";
-	print $out "\t-nolock       screensaver, don't lock the display\n";
-	print $out "\t-inwindow     run in window as opposite to -inroot\n";
-	print $out "\t-sound        turn on sound if enabled\n";
-	print $out "\t-nice level   decrease the process priority (0 .. 19)\n";
+	print "A small perl script which builds xlock menu for fvwm.\n\n";
+	print "Usage: $0 [OPTIONS] [-- XLOCK-OPTIONS]\n";
+	print "Options:\n";
+	print "\t--help           show this help and exit\n";
+	print "\t--version        show the version and exit\n";
+	print "\t--name=NAME      menu name,  default is '$name'\n";
+	print "\t--title=NAME     menu title, default is '$title'\n";
+	print "\t--format=FMT     menu item format, default is '$itemF'\n";
+	print "\t--icon=XPM       menu icon,  default is no\n";
+	print "\t--special-first  put special modes first\n";
+	print "Short options are ok if not ambiguous: -h, -t.\n";
+	print "\nSome useful xlock(1) options, 'xlock -h' for more:\n";
+	print "\t-delay usecs     delay between batches of animations\n";
+	print "\t-nolock          screensaver, don't lock the display\n";
+	print "\t-inwindow        run in window as opposite to -inroot\n";
+	print "\t-sound           turn on sound if enabled\n";
+	print "\t-nice level      decrease the process priority (0 .. 19)\n";
 	exit 0;
 }
 
@@ -43,18 +45,24 @@ sub wrongUsage {
 }
 
 GetOptions(
-	"help"    => \&showHelp,
-	"version" => \&showVersion,
-	"name=s"  => \$name,
-	"title=s" => \$title,
-	"icon=s"  => \$icon,
+	"help"     => \&showHelp,
+	"version"  => \&showVersion,
+	"name=s"   => \$name,
+	"title=s"  => \$title,
+	"format=s" => \$itemF,
+	"icon=s"   => \$icon,
+	"special-first" => \$specialFirst,
 ) || wrongUsage();
 
 my $iconStr = $icon? "%$icon%": "";
-my $params  = @ARGV? ' ' . join(' ', @ARGV): '';
-my $dscLen  = 36;
+my $params = @ARGV? ' ' . join(' ', @ARGV): '';
+my $dscLen = 36;
+my $lines1 = "";  # non-special mode lines
+my $lines2 = "";  # special mode lines
 
 my $start = 0;
+my $special = 0;
+$itemF =~ s/\\t/\t/g;
 open(XL, "xlock -h 2>&1 |") || die "Exec echo 'Could not run xlock'\n";
 
 print "DestroyMenu $name\n";
@@ -68,15 +76,25 @@ while (<XL>) {
 		next;
 	};
 	if ($start && $_) {
-		@foo = split;
-		$mode = shift @foo;
-		next if $mode =~ /^-/;
-		printf "+ \"%s\t%-${dscLen}s Exec xlock$params -mode $mode\n",
-			"$iconStr$mode", "(@foo)\"";
+		my (undef, $name, $dsc) = split(/\s+/, $_, 3);
+		next if $name =~ /^-/;
+		my $dsc2 = $dsc =~ /^Shows (.*)$/? $1: $dsc;
+		my $itemStr = $itemF;
+		$itemStr =~ s/\\t/\t/g;
+		$itemStr =~ s/%n/$name/g;
+		$itemStr =~ s/%d/$dsc/g;
+		$itemStr =~ s/%D/$dsc2/g;
+
+		$special = 1 if !$spacial && $name eq 'blank';
+		($special? $lines2: $lines1) .=
+			qq(+ "$iconStr$itemStr" Exec xlock$params -mode $name\n);
 	}
 }
 
 close XL;
+print $specialFirst?
+	qq($lines2+ "" Nop\n$lines1):
+	qq($lines1+ "" Nop\n$lines2);
 
 
 # ---------------------------------------------------------------------------
@@ -90,7 +108,9 @@ fvwm-menu-xlock - builds xlock menu definition for FVWM
 B<fvwm-menu-xlock>
 [ B<--name>|B<-n> name ]
 [ B<--title>|B<-t> title ]
+[ B<--format>|B<-f> format ]
 [ B<--icon>|B<-i> icon ]
+[ B<--special-first>|B<-s> ]
 [ -- xlock params ]
 
 =head1 DESCRIPTION
@@ -108,8 +128,22 @@ B<--name>, B<--title>, B<--icon> - define menu name, menu title and menu icon
 accordingly given in the following argument. Default is name "XLockMenu",
 title "XLock Modes" and no mini-icon (equivalent to an empty icon argument).
 
+B<--format> - define menu item format in the following argument, default is
+'%n\t(%d)'. TAB can be specified as '\t', but in fvwmrc you must specify a
+double backslash or a real TAB.
+
+Format specifiers:
+  %n - mode name
+  %d - mode description
+  %D - mode description without "Shows " prefix if any
+
+B<--special-first> - instructs to include special modes (usually black,
+bomb and random) first.
+
 Option parameters can be specified both using '=' and in the next argument.
-Short options are ok if not ambiguous: -h, -n.
+Short options are ok if not ambiguous: -h, -t; but be careful with
+short options, what is now unambiguous, can became ambiguous in the next
+versions.
 
 Additional arguments (after B<-->) will be passed to xlock.
 

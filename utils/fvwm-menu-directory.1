@@ -2,8 +2,11 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.7  1999/08/19 04:20:07  migo
-''' fixed dependences of the man pages
+''' Revision 1.8  1999/08/23 20:37:24  migo
+''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
+''' * fvwm-menu-directory: new option --format (%s, %d, %n etc.); extended --title
+''' * fvwm-menu-xlock: new options --format and --special-first
+''' * fvwm_make_browse_menu.sh: improved the simulation command line
 '''
 ''' Revision 1.8  1999/08/23 20:37:24  migo
 ''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
@@ -96,7 +99,7 @@
 .\"	Of course, you have to process the output yourself
 .\"	in some meaninful fashion.
 .if \nF \{
-.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "17/Aug/99" "Fvwm Utility"
+.de IX
 .tm Index:\\$1\t\\n%\t"\\$2"
 ..
 .nr % 0
@@ -191,13 +194,14 @@
 .	ds th \o'bp'
 .	ds Th \o'LP'
 .	ds ae ae
-fvwm-menu-directory \- builds a directory browsing menu for FVWM
+.	ds Ae AE
 .	ds oe oe
 .	ds Oe OE
 .\}
 .rm #[ #] #H #V #F C
-[ \fB--name\fR|\fB\-n\fR NAME ]
+.SH "NAME"
 fvwm-menu-directory 2.3.7 \- builds a directory browsing menu for FVWM
+.SH "SYNOPSIS"
 \fBfvwm-menu-directory\fR
 [ \fB--help\fR|\fB\-h\fR ]
 [ \fB--version\fR|\fB\-v\fR ]
@@ -224,8 +228,36 @@ fvwm-menu-directory 2.3.7 \- builds a directory browsing menu for FVWM
 A perl script which provides an output to read in with PipeRead to build an
 fvwm menu containing a directory listing. Almost everything can be configured.
 .SH "OPTIONS"
-\fB--title=NAME\fR \- menu title, default is \*(L'%p\*(R'. Formats \f(CW%d\fR, \f(CW%p\fR may be used
-to subtitute the current directory name or the full path.
+\fB--help\fR    \- show the usage and exit
+.PP
+\fB--version\fR \- show version and exit
+.PP
+\fB--name=NAME\fR  \- menu name, used only with --reuse, default is MenuBrowser
+.PP
+\fB--title=NAME\fR \- menu title format, default is \*(L'%*\-40p\*(R' \- last 40 characters
+of the current full path. TAB can be specified as \*(L'\et\*(R', but in fvwmrc you
+must specify a double backslash or a real TAB.
+.PP
+Format specifiers:
+  \f(CW%d\fR \- the current directory name
+  \f(CW%p\fR \- the current directory full path
+.PP
+These specifiers can receive an optional integer size, positive for right
+adjusted string or negative for left adjusted, example: \f(CW%8x\fR; and optional
+*num or *\-num, which means to leave only the first or last (if minus) num of
+chars, the num must be greater than 3, since the striped part is replaced
+with \*(L"...\*(R", example: %*30x. Both can be combined: %\-10*\-20x, this instructs to
+get only the 20 last characters, but if the length is less then 10 \- to fill
+with up to 10 spaces on the right.
+.PP
+\fB--format=NAME\fR \- menu item format, default is \*(L'%n\*(R'. TAB and width modifiers
+for \f(CW%n\fR, \f(CW%N\fR and \f(CW%s\fR can be specified as described in \fB--title\fR above.
+Note, specifying a non default format slows the script.
+.PP
+Format specifiers:
+  \f(CW%n\fR \- file/dir name (without the path)
+  \f(CW%N\fR \- file/dir name (full with the path)
+  \f(CW%d\fR \- file/dir date (yyyy-mm-dd HH:MM:SS)
   \f(CW%D\fR \- file/dir date (yyyy-mm-dd)
   \f(CW%s\fR \- file/dir size (in bytes)
   \f(CW%t\fR \- file/dir type (File|Dir |Link|Sock|Blck|Char|Pipe)
@@ -339,7 +371,7 @@ Created   on 06-07-1999 by Dominik Vogt     <domivogt@fvwm.org>.
 Rewritten on 05-08-1999 by Mikhael Goikhman <migo@homemail.com>.
 .SH "COPYING"
 The script is distributed by the same terms as fvwm itself.
-.IX Name "fvwm-menu-directory - builds a directory browsing menu for FVWM"
+See GNU General Public License for details.
 .SH "BUGS"
 Report bugs to fvwm-bug@fvwm.org.
 

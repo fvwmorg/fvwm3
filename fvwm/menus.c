@@ -4441,10 +4441,12 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
   end = item;
   for (i = 0; i < MAX_ITEM_LABELS; i++, start = end)
   {
+    int tab_in_label = 0;
     /* Read label up to next tab. */
     if (*end)
     {
-      while (*end && *end != '\t')
+      while (*end && (*end != '\t'
+        || i == MAX_ITEM_LABELS - 1 && (tab_in_label = 1) != 0))
 	/* seek next tab or end of string */
 	end++;
       /* Copy the label. */
@@ -4452,19 +4454,18 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
       strncpy(MI_LABEL(tmp)[i], start, end - start);
       (MI_LABEL(tmp)[i])[end - start] = 0;
       if (*end == '\t')
-      {
 	/* skip the tab */
 	end++;
-	if (i == MAX_ITEM_LABELS - 1)
-	{
-	  char *s = MI_LABEL(tmp)[i];
+      if (tab_in_label)
+      {
+	/* Last label, remove all tabs. */
+	char *s = MI_LABEL(tmp)[i];
 
-	  /* Last label, remove all tabs. */
-	  while (*s)
-	  {
-	    if (*s == '\t')
-	      *s = ' ';
-	  }
+	while (*s)
+	{
+	  if (*s == '\t')
+	    *s = ' ';
+	  *s++;
 	}
       }
     }

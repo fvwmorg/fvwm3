@@ -3,13 +3,17 @@
 # Filter this script to pod2man to get a man page:
 #   pod2man -c "Fvwm Utility" fvwm-menu-directory | nroff -man | less -e
 
+# To speed up the script, several optimizations were made: trying to minimize
+# the number of additional file operations, function calls and includes.
+
 use strict;
 use Getopt::Long;
 
 my $version = "@VERSION@";
 
 my $name  = "MenuBrowser";  # used only with --reuse
-my $title = "%p";  # %d, %p subtitute the current directory name, full path
+my $title = "%*-40p";  # may contain specifiers %d, %p.
+my $itemF = "%n";      # may contain specifiers %n, %t, %T, %d, %D, %s.
 my $iconA = "";
 my $iconD = "";
 my $iconF = "";
@@ -20,62 +24,23 @@ my $xterm = "xterm -e";              # the X terminal program to invoke
 my $execA = undef;
 my $execT = $ENV{'SHELL'} || '/bin/sh';
 my $execF = $ENV{'EDITOR'} || "vi";  # the command to execute on plain files
-my $all   = 0;  # either show hidden files (like in 'ls -A')
+my $all   = 0;  # whether show hidden files (like in 'ls -A')
 my $links = 0;  # either follow linked dirs or not
 my $order = 5;  # -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6
 my $reuse = 0;  # non-popup mode
-my $checkSubdir = 0;  # wether check subdirs for +x permissions
-my $specialDirs = 0;  # wether include '..' and '~' dirs
+my $checkSubdir = 0;  # whether check subdirs for +x permissions
+my $specialDirs = 0;  # whether include '..' and '~' dirs
 my $memoryForSpeed = 0;
 my $submenuPos = " item +100 c";  # " menu +0 +0"
 my $dirFile = "$home/.fmd.dir";
-
-sub showHelp {
-	print "A perl script that builds directory listing for fvwm.\n\n";
-	print "Usage: $0 [OPTIONS]\n";
-	print "Options:\n";
-	print "\t--help             show this help and exit\n";
-	print "\t--version          show the version and exit\n";
-	print "\t--name=NAME        menu name,  default is '$name'\n";
-	print "\t--title=NAME       menu title, default is '$title'\n";
-	print "\t--icon-app=XPM     menu +x    icon, default is no\n";
-	print "\t--icon-dir=XPM     menu dir   icon, default is no\n";
-	print "\t--icon-file=XPM    menu file  icon, default is no\n";
-	print "\t--icon-title=XPM   menu title icon, default is no\n";
-	print "\t--dir=NAME         starting dir, default is '$dir'\n";
-	print "\t--order=NUM        NUM (-6 .. 6), default is 5\n";
-	print "\t\t1 - do not sort,  2 - dirs first, 3 - files first\n";
-	print "\t\t4 - sort by name, 5 - dirs first, 6 - files first\n";
-	print "\t\tNegative number represents reverse order.\n";
-	print "\t--all              show hidden files, default is no\n";
-	print "\t--links            follow linked dirs, default is no\n";
-	print "\t--xterm=CMD        xterm call, default is '$xterm'\n";
-	print "\t--exec-app[=CMD]   +x files action, default is '-'\n";
-	print "\t--exec-file=CMD    file action, default is '$execF'\n";
-	print "\t--exec-title=CMD   title action, default is '$execT'\n";
-	print "\t--reuse            no popups, reuse the same menu (no)\n";
-	print "\t--check-subdir     check subdir for +x permission (no)\n";
-	print "\t--special-dirs     include .. and ~ directories (no)\n";
-	print "\t--memory-for-speed use speed optimization (no)\n";
-	print "Short options are ok if not ambiguous: -a, -icon-f.\n";
-	exit 0;
-}
-
-sub showVersion {
-	print "$version\n";
-	exit 0;
-}
-
-sub wrongUsage {
-	print STDERR "Try '$0 --help' for more information.\n";
-	exit -1;
-}
 
 GetOptions(
 	"help"         => \&showHelp,
 	"version"      => \&showVersion,
 	"name=s"       => \$name,
 	"title=s"      => \$title,
+	"title=s"      => \$title,
+	"format=s"     => \$itemF,
 	"icon-app=s"   => \$iconA,
 	"icon-dir=s"   => \$iconD,
 	"icon-file=s"  => \$iconF,
@@ -107,8 +72,32 @@ unless (-d $dir) {
 $links || !-l $dir || exit(-1);  # exit if linked directories are disabled
 chdir($dir) || exit(-1);  # exit if no execute permission on the directory
 
-$title =~ s|%d|(split('/', $dir))[-1] or '/'|ge;
-$title =~ s|%p|$dir|g;
+# expand title
+expandWidthSpecifier(\$title, 'd', (split('/', $dir))[-1] || '/')
+	if $title =~ /%(-?\d+)?(\*-?\d+)?d/;
+expandWidthSpecifier(\$title, 'p', $dir)
+	if $title =~ /%(-?\d+)?(\*-?\d+)?p/;
+$title =~ s/\\t/\t/g;
+$itemF =~ s/\\t/\t/g;
+
+# item format optimization variables
+my $itemF_eval = $itemF ne '%f';  # evaluation needed
+my $itemF_name = undef;
+my $itemF_stat = undef;  # stat() needed
+my $itemF_date = undef;
+my $itemF_size = undef;
+my $itemF_type = undef;
+
+if ($itemF_eval) {
+	$itemF_name = $itemF =~ /%(-?\d+)?(\*-?\d+)?[nN]/;
+	$itemF_date = $itemF =~ /%[dD]/;
+	$itemF_size = $itemF =~ /%(-?\d+)?(\*-?\d+)?s/;
+	$itemF_type = $itemF =~ /%[tT]/;
+	$itemF_stat = $itemF_size || $itemF_date || $itemF_size || $itemF_type;
+}
+
+my @type1 = ("Sock", "Link", "File", "Blck", "Dir ", "Char", "Pipe");
+my @type2 = ("S", "L", "F", "B", "D", "C", "P");
 
 my $iconAStr = $iconA? "%$iconA%": "";
 my $iconDStr = $iconD? "%$iconD%": "";
@@ -161,9 +150,9 @@ print qq(+ "" Nop\n);
 if ($specialDirs) {
 	my $parentDir = $dir eq '/' || $dir !~ m!^(.*)/[^\/]+$!? undef: $1;
 	$parentDir = '/' if defined $parentDir && $parentDir eq '';
-	print makeFolderItem("..", $parentDir);
+	print evalFolderLine("..", $parentDir);
 	print qq(+ "" Nop\n);
-	print makeFolderItem("~", $home);
+	print evalFolderLine("~", $home);
 	print qq(+ "" Nop\n);
 }
 
@@ -174,23 +163,120 @@ foreach (@files) {
 	$filePath =~ s|/+|/|g;
 	if (-d) {
 		# it's a directory
-		print makeFolderItem($_, $filePath);
+		print evalFolderLine($_, $filePath);
 	} else {
 		# something else, apply editor to it or run it
+		my $itemStr = $itemF_eval? evalItem($_, $filePath): $_;
 		my $isApp = ($iconAStr || defined $execA) && -x && -f;
 		my $iconStr = $isApp && $iconAStr? $iconAStr: $iconFStr;
 		my $execF = $isApp && defined $execA? $execA: $execF;
 		my $fileAct = defined $execF? qq(Exec $execF"$filePath"): "Nop";
-		print qq(+ "$iconStr$_" $fileAct\n);
+		print qq(+ "$iconStr$itemStr" $fileAct\n);
 	}
 }
 
-sub makeFolderItem ($$) {
-	my ($text, $dir) = @_;
+sub evalFolderLine ($$) {
+	my ($name, $dir) = @_;
+	my $itemStr = $dir && $itemF_eval? evalItem($name, $dir): $name;
 	my $act = !$dir || $checkSubdir && !-x $dir? "Nop": !$reuse?
 		qq(Popup "$dir"$submenuPos):
 		qq(PipeRead 'echo "$dir" >$dirFile; echo Menu "$name" WarpTitle');
-	return qq(+ "$iconDStr$text" $act\n);
+	return qq(+ "$iconDStr$itemStr" $act\n);
+}
+
+sub evalItem ($$) {
+	my ($name, $file) = @_;
+	return $name unless $itemF_eval;
+
+	my $itemStr = "$itemF";
+	if ($itemF_name) {
+		expandWidthSpecifier(\$itemStr, 'n', $name);
+		expandWidthSpecifier(\$itemStr, 'N', $file);
+	}
+	return $itemStr unless $itemF_stat;
+
+	# / $dev, $ino, $mode, $nlink, $uid, $gid, $rdev,
+	# \ $size, $atime, $mtime, $ctime, $blksize, $blocks
+	my (undef, undef, $mode, undef, undef, undef, undef, $size,
+		undef, $time) = stat($file);
+	if ($itemF_date) {
+		eval 'use POSIX' unless defined $POSIX::VERSION;
+		my @time = localtime($time);
+		my $date1 = strftime("%Y-%m-%d %H:%M:%S", @time);
+		my $date2 = strftime("%Y-%m-%d", @time);
+		$itemStr =~ s/%d/$date1/g;
+		$itemStr =~ s/%D/$date2/g;
+	}
+	if ($itemF_size) {
+		expandWidthSpecifier(\$itemStr, 's', $size);
+	}
+	if ($itemF_type) {
+		my $type;
+#		$type = 2 if ($mode & 0100000);  # regular
+#		$type = 4 if ($mode & 0040000);  # directory
+#		$type = 0 if ($mode & 0140000);  # socket
+#		$type = 1 if ($mode & 0120000);  # symlink
+#		$type = 3 if ($mode & 0060000);  # block
+#		$type = 5 if ($mode & 0020000);  # char-dev
+#		$type = 6 if ($mode & 0010000);  # fifo
+		$type = -p _? 6: -c _? 5: -b _? 3: -l $file? 1: -S _? 0: -d _? 4: 2;
+		$itemStr =~ s/%t/$type1[$type]/g;
+		$itemStr =~ s/%T/$type2[$type]/g;
+	}
+	return $itemStr;
+}
+
+# Substitutes all %N1*N2x in $name by properly stripped and justified $value.
+sub expandWidthSpecifier (\$$$) {
+	my ($name, $char, $value) = @_;
+	$$name =~ s/%(-?\d+)?(\*(-?)(\d+))?$char/
+		my $value = !$2 || $4 <= 3 || $4 > length($value)? $value: $3?
+			"..." . substr($value, -$4 + 3, $4 - 3):
+			substr($value, 0, $4 - 3) . "...";
+		$1? sprintf("%$1s", $value): $value;
+	/ge;
+}
+
+sub showHelp {
+	print "A perl script that builds directory listing for fvwm.\n\n";
+	print "Usage: $0 [OPTIONS]\n";
+	print "Options:\n";
+	print "\t--help             show this help and exit\n";
+	print "\t--version          show the version and exit\n";
+	print "\t--name=NAME        menu name,  default is '$name'\n";
+	print "\t--title=NAME       menu title, default is '$title'\n";
+	print "\t--format=NAME      menu item format, default is '$itemF'\n";
+	print "\t--icon-app=XPM     menu +x    icon, default is no\n";
+	print "\t--icon-dir=XPM     menu dir   icon, default is no\n";
+	print "\t--icon-file=XPM    menu file  icon, default is no\n";
+	print "\t--icon-title=XPM   menu title icon, default is no\n";
+	print "\t--dir=NAME         starting dir, default is '$dir'\n";
+	print "\t--order=NUM        NUM (-6 .. 6), default is 5\n";
+	print "\t\t1 - do not sort,  2 - dirs first, 3 - files first\n";
+	print "\t\t4 - sort by name, 5 - dirs first, 6 - files first\n";
+	print "\t\tNegative number represents reverse order.\n";
+	print "\t--all              show hidden files, default is no\n";
+	print "\t--links            follow linked dirs, default is no\n";
+	print "\t--xterm=CMD        xterm call, default is '$xterm'\n";
+	print "\t--exec-app[=CMD]   +x files action, default is '-'\n";
+	print "\t--exec-file=CMD    file action, default is '$execF'\n";
+	print "\t--exec-title=CMD   title action, default is '$execT'\n";
+	print "\t--reuse            no popups, reuse the same menu (no)\n";
+	print "\t--check-subdir     check subdir for +x permission (no)\n";
+	print "\t--special-dirs     include .. and ~ directories (no)\n";
+	print "\t--memory-for-speed use speed optimization (no)\n";
+	print "Short options are ok if not ambiguous: -a, -icon-f.\n";
+	exit 0;
+}
+
+sub showVersion {
+	print "$version\n";
+	exit 0;
+}
+
+sub wrongUsage {
+	print STDERR "Try '$0 --help' for more information.\n";
+	exit -1;
 }
 
 
@@ -198,15 +284,16 @@ sub makeFolderItem ($$) {
 
 =head1 NAME
 
-fvwm-menu-directory - builds a directory browsing menu for FVWM
+fvwm-menu-directory @VERSION@ - builds a directory browsing menu for FVWM
 
 =head1 SYNOPSIS
 
 B<fvwm-menu-directory>
 [ B<--help>|B<-h> ]
 [ B<--version>|B<-v> ]
-[ B<--name>|B<-n> NAME ]
+[ B<--name>|B<-na> NAME ]
 [ B<--title>|B<-t> NAME ]
+[ B<--format>|B<-f> NAME ]
 [ B<--icon-app>|B<-icon-a> XPM ]
 [ B<--icon-dir>|B<-icon-d> XPM ]
 [ B<--icon-file>|B<-icon-f> XPM ]
@@ -237,8 +324,36 @@ B<--version> - show version and exit
 
 B<--name=NAME>  - menu name, used only with --reuse, default is MenuBrowser
 
-B<--title=NAME> - menu title, default is '%p'. Formats %d, %p may be used
-to subtitute the current directory name or the full path.
+B<--title=NAME> - menu title format, default is '%*-40p' - last 40 characters
+of the current full path. TAB can be specified as '\t', but in fvwmrc you
+must specify a double backslash or a real TAB.
+
+Format specifiers:
+  %d - the current directory name
+  %p - the current directory full path
+
+These specifiers can receive an optional integer size, positive for right
+adjusted string or negative for left adjusted, example: %8x; and optional
+*num or *-num, which means to leave only the first or last (if minus) num of
+chars, the num must be greater than 3, since the striped part is replaced
+with "...", example: %*30x. Both can be combined: %-10*-20x, this instructs to
+get only the 20 last characters, but if the length is less then 10 - to fill
+with up to 10 spaces on the right.
+
+B<--format=NAME> - menu item format, default is '%n'. TAB and width modifiers
+for %n, %N and %s can be specified as described in B<--title> above.
+Note, specifying a non default format slows the script.
+
+Format specifiers:
+  %n - file/dir name (without the path)
+  %N - file/dir name (full with the path)
+  %d - file/dir date (yyyy-mm-dd HH:MM:SS)
+  %D - file/dir date (yyyy-mm-dd)
+  %s - file/dir size (in bytes)
+  %t - file/dir type (File|Dir |Link|Sock|Blck|Char|Pipe)
+  %T - file/dir type (F|D|L|S|B|C|P)
+
+Example: --title '%*-40p\tDate, Type\tSize' --format '%*40n\t%d %t\t%s'
 
 B<--icon-app=XPM>   - menu application icon, default is no
 

@@ -1,3 +1,12 @@
+1999-08-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.in: new option --format to put the file size,
+	date, type, full name etc. into the menu label; the option --title is
+	extended (new default is "*-40p" now).
+	* fvwm-menu-xlock.in: new options --format and --special-first;
+	special and non-special modes are now separated
+	* fvwm_make_browse_menu.sh: improved the simulation command line
+
 1999-08-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* BuildXLockMenu: created the compatibility wrapper to fvwm-menu-xlock
