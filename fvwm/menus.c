@@ -6692,14 +6692,14 @@ void CopyMenuStyle(F_CMD_ARGS)
   }
   if (ST_PSTDFONT(origms) && ST_PSTDFONT(origms) != &Scr.DefaultFont)
   {
-    unsigned long *value = NULL;
+    unsigned long value = 0;
     char *orig_font_name;
     FvwmFont new_font;
     Bool loaded = 0;
 
-    if (XGetFontProperty(ST_PSTDFONT(origms)->font,XA_FONT,value))
+    if (XGetFontProperty(ST_PSTDFONT(origms)->font,XA_FONT,&value))
     {
-      orig_font_name = XGetAtomName(dpy, *value);
+      orig_font_name = XGetAtomName(dpy, value);
       if (orig_font_name != NULL)
       {
 	if (!LoadFvwmFont(dpy, orig_font_name, &new_font))

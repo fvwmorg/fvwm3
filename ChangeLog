@@ -1,5 +1,10 @@
 2001-01-13  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/menus.c (CopyMenuStle):
+	finish to fix a -Wall fix
+
+2001-01-13  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/placement.c (*):
 	* fvwm/fvwm.h:
 	* fvwm/styles.c (ProcessNewStyle):
