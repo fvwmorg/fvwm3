@@ -1,8 +1,14 @@
+2000-03-26  olicha	<olivier.chapuis@free.fr>
+
+	* FvwmScript/Instructions.c (Exec):
+	Fixed Do instruction again
+
 2000-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/parse.c (ParseButton):
 	fixed 'Action' option with trailing spaces
 
+>>>>>>> 1.487
 2000-03-24  olicha	<olivier.chapuis@free.fr>
 
 	* FvwmScript/Instructions.c (Exec):

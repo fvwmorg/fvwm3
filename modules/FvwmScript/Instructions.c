@@ -657,17 +657,16 @@ static void Exec (int NbArg,long *TabArg)
  char *tempstr;
  int i;
 
- for (i=0;i<NbArg;i++) 
+ for (i=0;i<NbArg;i++)
    leng += strlen(CalcArg(TabArg,&i));
- 
 
- if (leng > 998) 
+ if (leng >= 998) 
  {
    fprintf(stderr,"[FvwmScript]: too long command %i chars max 998\n", leng);
    return;
  }
    
- execstr=(char*)calloc(1,leng);
+ execstr=(char*)calloc(1,leng+1);
  for (i=0;i<NbArg;i++)
  {
   tempstr=CalcArg(TabArg,&i);
@@ -681,7 +680,6 @@ static void Exec (int NbArg,long *TabArg)
  write(fd[0], execstr, leng);
  leng = 1;
  write(fd[0], &leng, sizeof(int));
-
  free(execstr);
 }
 
