@@ -61,7 +61,7 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM2 1 "27 Jan 2001"
+.TH FVWM2 1 "30 Mar 2002"
 .UC
 .SH NAME
 
@@ -5491,22 +5491,38 @@ argument specifies the Xinerama screen on which the IconBox is
 defined.  It can be the usual screen Xinerama specification, 'p',
 'c', 'g', a screen number or the additional 'w' for the screen
 where the window center is located.  This is only useful with
-multiple Xinerama screens.  Perhaps easier to use is an X11
-geometry string:
+multiple Xinerama screens.
+The "l t r b" specification is more flexible than an X11 geometry.
+For example:
 .EX
-IconBox -80x200-1-1
+IconBox -80 240 -1 -1
 .EE
-Which would place an 80 by 240 pixel icon box in the lower right
-hand corner of the screen.  The icon box is a region of the screen
+defines a box that is 80 pixels wide from the right edge,
+240 pixels down from the top, and continues to the bottom of
+the screen.
+
+Perhaps it is easier to use is an X11
+geometry string though:
+.EX
+IconBox IconBox 1000x70-1-1
+.EE
+places an 1000 by 70 pixel icon box on the bottom of the screen
+starting in the lower right  hand corner of the screen.
+One way to figure out a geometry like this is to use a window
+that resizes in pixel increments, for example, xv.
+Then resize and place the xv window where you want the iconbox.
+Then use FvwmIdent to read the windows geometry.
+The icon box is a region of the screen
 where fvwm attempts to put icons for any matching window, as long
-as they do not overlap other icons. Multiple icon boxes can be
+as they do not overlap other icons. 
+Multiple icon boxes can be
 defined as overflow areas.  When the first icon box is full, the
 second one is filled.  All the icon boxes for one style must be
 defined in one
 .B Style
 command.  For example:
 .EX
-Style * IconBox -80x200-1-1, \\
+Style * IconBox -80 240 -1 -1, \\
         IconBox 1000x70-1-1
 .EE
 A Style command with the IconBox option replaces any icon box
