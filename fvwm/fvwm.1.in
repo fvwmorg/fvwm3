@@ -2465,7 +2465,7 @@ do not want this you can add
 as an option.  This might happen for example if you want the menu
 always in the top right corner of the screen.
 
-Where do you want a sub-menu to appear when you click on it's menu
+Where do you want a menu to appear when you click on it's menu
 item? The default is to place the title under the cursor, but if
 you want it where the position arguments say, use the
 .I SelectInPlace
@@ -4011,7 +4011,7 @@ Note that the
 .B FvwmTaskBar
 module has its own catalog and that the
 .B FvwmScript
-module has a set of special instructions for string translation. 
+module has a set of special instructions for string translation.
 It is out of the scoop of this documentation to explain how to
 build locale catalogs. We refer the user to the GNU gettext documentation.
 .\"end
