@@ -364,12 +364,12 @@ below it (like XRestackWindows).
 This packet contains information on the graphics used by fvwm. It is sent every
 time a DefaultFont, DefaultColors or HilightColor is executed. The first three
 integers in the body are the visualID, colormap and depth used by fvwm. The
-next integer is the GC used by fvwm to draw rubberband lines.  The rest of the
+next integer is the GContext used by fvwm to draw rubberband lines.  The rest of the
 packet body is made up of a number (currently two) of colorset structures. In
 the current implementation the first colorset is set by DefaultColors and
 DefaultFont, the second is set by HilightColor.  Each colorset structure
 consists of six integers: an information field; a background pixmap id;
-foreground, relief and shadow GCs; and a Font. The information field consists
+foreground, relief and shadow GContexts; and a Font. The information field consists
 of the following C struct<pre>
 struct {
   Bool repaint_needed : 1;
