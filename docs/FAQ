@@ -1567,7 +1567,11 @@ A: Because they are treated as modifiers.  You can use the
 
    Fvwm has to be restarted to use the changes made by xmodmap.
    Please refer to the man page of the xmodmap command for further
-   details.
+   details.  If you disable the CapsLock key in your keyboard map in
+   this way, you can speed up fvwm a bit by removing the Lock
+   modifier from the list of ignored modifiers:
+
+     IgnoreModifiers
 
 ----------------------------------------------------------------------
 
