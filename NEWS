@@ -3,24 +3,25 @@ _+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
-* New commands ResizeMaximize and ResizeMoveMaximize that modifiy
+* New commands ResizeMaximize and ResizeMoveMaximize that modify
   the maximized geometry of windows and maximize them as
-  necessary.  Very usefull to make a window larger manually and
+  necessary.  Very useful to make a window larger manually and
   then get back the old geometry with a click.
 
-* New command ResizeMoveMaximize similary
+* New command ResizeMoveMaximize similarly.
 
 * New styles FixedPPosition, FixedUSPosition, FixedSize, FixedUSSize,
   FixedPSize, VariablePPosition, VariableUSPosition, VariableSize,
   VariableUSSize, and VariablePSize.
 
 * Actions can be bound to windows swallowed in FvwmButtons.  To
-  diasable this feature for a specific button, the new option
+  disable this feature for a specific button, the new option
   ActionIgnoresClientWindow can be used.
 
 * Fvwm respect the extended window manager hints specification.
   This allows fvwm to work with KDE version >= 2 and GNOME version 2.
-  This support is configurable with some new styles and new commands.
+  This support is configurable using a bunch of new commands and style
+  options, search for "EWMH" in the man page.
 
 * New DateFormat option in FvwmTaskBar to change the date format in
   the clock's popup tip.
@@ -44,7 +45,7 @@ Changes in beta release 2.5.0 (not released yet)
 
 * New emacs style bindings in menus.
 
-* New Maximize global flags "layer" which caues the various grow methods
+* New Maximize global flag "layer" which causes the various grow methods
   to ignore the windows with a layer less than or equal to the layer on
   the window which is maximized.
 
@@ -62,11 +63,11 @@ Changes in beta release 2.5.0 (not released yet)
 * New styles MouseFocusClickIgnoreMotion and
   MouseFocusClickIgnoreMotionOff.
 
-* The module interface now supports up to 63 message types.
+* The module interface now supports up to 62 message types.
 
 * New module messages MX_ENTER_WINDOW and MX_LEAVE_WINDOW.
 
-* New events "enter_window" and "leave_window" in FvwmEvent.c.
+* New events "enter_window" and "leave_window" in FvwmEvent.
 
 _+_A NAME="2.4.4"_-_
 Changes in stable release 2.4.4 (16-Dec-2001)
