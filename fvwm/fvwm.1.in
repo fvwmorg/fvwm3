@@ -3618,7 +3618,7 @@ likely safe to leave this option at its default.
 is needed by EWMH compliant pagers or taskbars which represent
 windows which are on a different desktops as iconified. These
 pagers and taskbars use a version of the EWMH specification before
-version 1.2 (the current KDE2&3 versions).  These pagers and
+version 1.2 (the current KDE2 & 3 versions).  These pagers and
 taskbars use the IconicState WM_STATE state to determine if an
 application is iconified.  This state, according to the
 .SM ICCCM ,

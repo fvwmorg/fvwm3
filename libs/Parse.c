@@ -96,8 +96,10 @@ static char *CopyToken(
 		else
 		{
 			if ((*src == '\\' && *(src+1) != 0))
+			{
 				/* Skip over backslashes */
 				src++;
+			}
 			if (len < MAX_TOKEN_LENGTH - 1)
 			{
 				len++;
@@ -118,9 +120,13 @@ static char *CopyToken(
 	t = SkipSpaces(src, spaces, snum);
 	if (*t != 0 && dnum && strchr(delims, *t) != NULL)
 	{
+		if (out_delim)
+		{
+			*out_delim = *t;
+		}
 		src = t + 1;
 	}
-	if (*src != 0)
+	else if (*src != 0)
 	{
 		src++;
 	}

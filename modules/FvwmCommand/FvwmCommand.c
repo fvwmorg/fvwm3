@@ -271,7 +271,7 @@ int main ( int argc, char *argv[])
   strcpy(s,f_stem);
   strcat(s, "R");
 
-  Fdrun = open(Fr_name, O_WRONLY | O_CREAT | O_EXCL, 0600);
+  Fdrun = open(s, O_WRONLY | O_CREAT | O_EXCL, 0600);
   if (Fdrun < 0)
   {
     FILE *f;
