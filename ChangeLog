@@ -1,5 +1,11 @@
 1999-04-19  Bob Woodside  <proteus@pcnet.com>
 
+	* modules/FvwmIconBox/FvwmIconBox.c: GSFR.
+	* modules/FvwmIconBox/FvwmIconBox.h: Ibid.
+	* modules/FvwmIconBox/icons.c: Ibid.
+
+1999-04-19  Bob Woodside  <proteus@pcnet.com>
+
 	* fvwm/module.c: New-style variable packet building logic for GSFR -
 	used for the M_ADD_WINDOW/M_CONFIGURE_WINDOW packets.
 	* fvwm/module.h: Ibid.

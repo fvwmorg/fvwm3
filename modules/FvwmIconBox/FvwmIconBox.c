@@ -55,7 +55,9 @@
 #define FALSE   0
 #endif
 
+#include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
+
 
 char *MyName;
 
@@ -608,13 +610,13 @@ void RedrawIcon(struct icon_info *item, int f)
     XSetForeground(dpy, IconReliefGC, act_icon_hilite_pix);
     XSetForeground(dpy, IconShadowGC, act_icon_shadow_pix);
 
-    if (max_icon_height != 0 && (item->flags & ICON_OURS))
+    if (max_icon_height != 0 && (IS_ICON_OURS(item)))
       XSetWindowBackground(dpy, item->icon_pixmap_w, act_icon_back_pix);
     XSetWindowBackground(dpy, item->IconWin, act_icon_back_pix);
   }
 
   /* icon pixmap */
-  if ((f & 1) && (item->flags & ICON_OURS)){
+  if ((f & 1) && (IS_ICON_OURS(item))){
     if (item->iconPixmap != None && item->icon_pixmap_w != None){
       if (item->icon_depth != d_depth)
 	XCopyPlane(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
@@ -624,7 +626,7 @@ void RedrawIcon(struct icon_info *item, int f)
 	XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
 		  0, 0, item->icon_w, item->icon_h, hr, hr);
       }
-    if (!(item->flags & SHAPED_ICON)){
+    if (!(IS_ICON_SHAPED(item))){
       if (item->icon_w > 0 && item->icon_h > 0)
 	RelieveRectangle(dpy, item->icon_pixmap_w, 0, 0, item->icon_w
 		         +icon_relief - 1,
@@ -643,7 +645,7 @@ void RedrawIcon(struct icon_info *item, int f)
     w = max_icon_width + icon_relief;
     h = max_icon_height + icon_relief;
 
-    if (item->flags & ICONIFIED){
+    if (IS_ICONIFIED(item)){
       sprintf(label, "(%s)", item->name);
     }else
       strcpy(label, item->name);
@@ -685,7 +687,7 @@ void RedrawIcon(struct icon_info *item, int f)
     XSetForeground(dpy, IconReliefGC, icon_hilite_pix);
     XSetForeground(dpy, IconShadowGC, icon_shadow_pix);
 
-    if (max_icon_height != 0 && (item->flags & ICON_OURS))
+    if (max_icon_height != 0 && (IS_ICON_OURS(item)))
       XSetWindowBackground(dpy, item->icon_pixmap_w, icon_back_pix);
     XSetWindowBackground(dpy, item->IconWin, icon_back_pix);
   }
@@ -1780,6 +1782,7 @@ void process_message(unsigned long type, unsigned long *body)
   struct icon_info *tmp, *old;
   char *str;
   long olddesk;
+  struct ConfigWinPacket  *cfgpacket = (void *) body;
 
   switch(type){
   case M_CONFIGURE_WINDOW:
@@ -1787,10 +1790,10 @@ void process_message(unsigned long type, unsigned long *body)
       if (!(local_flags & CURRENT_ONLY)) break;
       tmp = Head;
       while(tmp != NULL){
-	if (tmp->id == body[0]){
-	  if ((tmp->desk != body[7]) && !(tmp->flags & STICKY)){
+	if (tmp->id == cfgpacket->w){
+	  if ((tmp->desk != cfgpacket->desk) && !(IS_STICKY(tmp))){
 	    olddesk = tmp->desk;
-	    tmp->desk = body[7];
+	    tmp->desk = cfgpacket->desk;
 	    if (olddesk == CurrentDesk || tmp->desk == CurrentDesk){
 	      if (tmp->desk == CurrentDesk && sortby != UNSORT)
 		SortItem(NULL);
@@ -1824,11 +1827,11 @@ void process_message(unsigned long type, unsigned long *body)
 	      if (!(local_flags & HIDE_V) && diffy)
 		RedrawVScrollbar();
 	    }
-	  }else if ((body[8] & STICKY) && !(tmp->flags & STICKY)) /* stick */
-	    tmp->flags |= STICKY;
-	  else if (!(body[8] & STICKY) && (tmp->flags & STICKY)){ /* unstick */
-	    tmp->flags &= ~STICKY;
-	    tmp->desk = body[7];
+	  }else if ((IS_STICKY(cfgpacket)) && !(IS_STICKY(tmp))) /* stick */
+            SET_STICKY(tmp, True);
+	  else if (!(IS_STICKY(cfgpacket)) && (IS_STICKY(tmp))){ /* unstick */
+            SET_STICKY(tmp, False);
+	    tmp->desk = cfgpacket->desk;
 	  }
 	  return;
 	}
@@ -1837,7 +1840,8 @@ void process_message(unsigned long type, unsigned long *body)
       break;
     }
   case M_ADD_WINDOW:
-    if (AddItem(body[0], body[7], body[8]) == True && ready){
+/*    if (AddItem(body[0], body[7], body[8]) == True && ready){ */
+    if (AddItem(cfgpacket) == True && ready){
       GetIconwinSize(&diffx, &diffy);
       if (diffy && (primary == BOTTOM || secondary == BOTTOM))
 	icon_win_y += diffy;
@@ -1998,9 +2002,9 @@ struct icon_info *SetFlag(unsigned long id, int t)
   while(tmp != NULL){
     if (tmp->id == id){
       if (t == M_ICONIFY)
-	tmp->flags |= ICONIFIED;
+        SET_ICONIFIED(tmp, True);
        else
-	tmp->flags ^= ICONIFIED;
+        SET_ICONIFIED(tmp, False);
       return tmp;
     }
     tmp = tmp->next;
@@ -2040,7 +2044,7 @@ int AdjustIconWindows(void)
 int desk_cond(struct icon_info *item)
 {
   if (!(local_flags & CURRENT_ONLY) ||
-      (item->flags & STICKY) || (item->desk == CurrentDesk))
+      (IS_STICKY(item)) || (item->desk == CurrentDesk))
     return 1;
 
   return 0;
@@ -2051,18 +2055,19 @@ int desk_cond(struct icon_info *item)
  *	Skeleton based on AddItem() from FvwmWinList:
  *		Copyright 1994, Mike Finger.
  ***********************************************************************/
-Bool AddItem(unsigned long id, long desk, unsigned long flags)
+/*Bool AddItem(unsigned long id, long desk, unsigned long flags) */
+Bool AddItem(ConfigWinPacket *cfgpacket)
 {
   struct icon_info *new, *tmp;
   tmp = Head;
 
-  if (id == main_win || (flags & TRANSIENT) || !(flags & SUPPRESSICON))
+  if (cfgpacket->w == main_win || (IS_TRANSIENT(cfgpacket)) || !(IS_ICON_SUPPRESSED(cfgpacket)))
     return False;
 
   while (tmp != NULL){
-    if (tmp->id == id ||
+    if (tmp->id == cfgpacket->w ||
 	(tmp->wmhints && (tmp->wmhints->flags & IconWindowHint) &&
-	 tmp->wmhints->icon_window == id))
+	 tmp->wmhints->icon_window == cfgpacket->w))
       return False;
     tmp = tmp->next;
   }
@@ -2081,10 +2086,11 @@ Bool AddItem(unsigned long id, long desk, unsigned long flags)
   new->icon_maskPixmap = None;
   new->icon_pixmap_w = None;
   new->icon_depth = 0;
-  new->desk = desk;
-  new->id = id;
+  new->desk = cfgpacket->desk;
+  new->id = cfgpacket->w;
   new->extra_flags = DEFAULTICON;
-  new->flags = flags | ICON_OURS;
+  memcpy(&(new->flags), &(cfgpacket->flags), sizeof(new->flags));
+  SET_ICON_OURS(new, True);
   new->wmhints = NULL;
 
 /* add new item to the head of the list
@@ -2126,7 +2132,7 @@ Bool DeleteItem(unsigned long id)
 	num_icons--;
     if (Hilite == tmp)
       Hilite = NULL;
-    if ((tmp->icon_pixmap_w != None) && (tmp->flags & ICON_OURS))
+    if ((tmp->icon_pixmap_w != None) && (IS_ICON_OURS(tmp)))
       XDestroyWindow(dpy, tmp->icon_pixmap_w);
     if (tmp->IconWin != None)
       XDestroyWindow(dpy, tmp->IconWin);
@@ -2382,7 +2388,7 @@ void freeitem(struct icon_info *item, int d)
   if (item == NULL)
     return;
 
-  if (!(item->flags & ICON_OURS)){
+  if (!(IS_ICON_OURS(item))){
     if (max_icon_height != 0)
     XUnmapWindow(dpy, item->icon_pixmap_w);
     if (d == 0)

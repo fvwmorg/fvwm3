@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #endif
 
+#include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
 #ifdef XPM
@@ -296,7 +297,7 @@ void GetIconWindow(struct icon_info *item)
 #ifdef SHAPE
   if (item->wmhints->flags & IconMaskHint)
     {
-      item->flags |= SHAPED_ICON;
+      SET_ICON_SHAPED(item, True);
       item->icon_maskPixmap = item->wmhints->icon_mask;
     }
 #endif
@@ -306,7 +307,7 @@ void GetIconWindow(struct icon_info *item)
 
   XReparentWindow(dpy, item->icon_pixmap_w, icon_win, 0, 0);
   XSetWindowBorderWidth(dpy, item->icon_pixmap_w, 0);
-  item->flags &= ~ICON_OURS;
+  SET_ICON_OURS(item, False);
 }
 
 /***************************************************************************
@@ -334,7 +335,7 @@ void GetIconBitmap(struct icon_info *item)
 #ifdef SHAPE
   if (item->wmhints->flags & IconMaskHint)
     {
-      item->flags |= SHAPED_ICON;
+      SET_ICON_SHAPED(item, True);
       item->icon_maskPixmap = item->wmhints->icon_mask;
     }
 #endif

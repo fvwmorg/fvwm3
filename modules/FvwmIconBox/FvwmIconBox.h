@@ -4,6 +4,7 @@
  *
  *************************************************************************/
 #include "libs/fvwmlib.h"
+#include <fvwm/vpacket.h>
 
 struct icon_info;
 Bool ExecIconBoxFunction(char *msg);
@@ -29,7 +30,8 @@ extern void   GetXPMFile(struct icon_info *item);
 extern void GetIconWindow(struct icon_info *item);
 extern void GetIconBitmap(struct icon_info *item);
 extern void process_message(unsigned long type,unsigned long *body);
-extern Bool AddItem(unsigned long id, long desk, unsigned long flags);
+/* extern Bool AddItem(unsigned long id, long desk, unsigned long flags); */
+extern Bool AddItem(ConfigWinPacket *cfgpacket);
 extern Bool DeleteItem(unsigned long id);
 extern struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item);
 extern void freeitem(struct icon_info *item, int d);
@@ -114,7 +116,7 @@ struct icon_info
   int icon_depth;
   long id;
   long desk;
-  long flags;
+  window_flags flags;
   long extra_flags;
   struct icon_info *next;
   struct icon_info *prev;
