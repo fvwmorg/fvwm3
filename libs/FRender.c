@@ -86,7 +86,7 @@ void FRenderVisualInit(Display *dpy)
 	if (!PFrenderAlphaFormat)
 	{
 		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
-			"fail to create XRender Visual Format\n");
+			"fail to create XRender Alpha Format\n");
 		return;
 	}
 	pf.depth = 1;
@@ -290,6 +290,14 @@ int FRenderRender(
 					dpy, tint_pixmap,
 					PFrenderAbsoluteFormat,
 					FRenderCPRepeat, &e_pa);
+				if (!tint_picture)
+				{
+					goto bail;
+				}
+			}
+			else
+			{
+				goto bail;
 			}
 			force_update = True;
 		}

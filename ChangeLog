@@ -1,3 +1,33 @@
+2002-09-19  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Rectangles.c:
+	* libs/Rectangles.h:
+	* libs/Makefile.am:
+	New libs files for rectangles, segments, regions ..etc
+	
+	* fvwm/menus.c (clear_expose_menu_area):
+	(get_menu_paint_item_parameters):
+	(paint_menu):
+	(select_menu_item):
+	(ParentalMenuRePaint):
+	(ParentalMenuRePaint):
+	* fvwm/menuitem.c (clear_menu_item_background):
+	(menuitem_paint):
+	* fvwm/menuitem.h (MenuPaintItemParameters):
+	Clip the item icons and text drawing
+
+	* fvwm/menus.c (__mloop_exit):
+	Fixed an indirect uninitialized variable bug
+
+	* fvwm/menus.c (__mloop_handle_event): *
+	(__mloop_handle_action_with_mi): *
+	Update some comments
+
+	* libs/FRender.c (FRenderVisualInit):
+	(FRenderRender):
+	* fvwm/colorset.c (parse_colorset):
+	Small clean up
+
 2002-09-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (__menu_loop):

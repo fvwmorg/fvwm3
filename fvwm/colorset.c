@@ -832,7 +832,6 @@ void parse_colorset(int n, char *line)
 		case 31: /* bgTint */
 			parse_simple_tint(
 				cs, args, &bg_tint, BG_TINT_SUPPLIED,
-#ifndef MERGED_CODE
 				&has_bg_tint_changed, &percent, "bgTint");
 			if (has_bg_tint_changed)
 			{
@@ -840,12 +839,6 @@ void parse_colorset(int n, char *line)
 			}
 			break;
 		case 32: /* dither */
-#else
-				&has_bg_tint_changed, &percent);
-			cs->bg_tint_percent = percent;
-			break;
-		case 31: /* dither */
-#endif
 			if (cs->pixmap_args || cs->gradient_args)
 			{
 				has_pixmap_changed = True;
@@ -892,14 +885,8 @@ void parse_colorset(int n, char *line)
 		case 39: /* IconTint */
 			parse_simple_tint(
 				cs, args, &icon_tint, ICON_TINT_SUPPLIED,
-#ifndef MERGE_CODE
 				&has_icon_tint_changed, &percent, "IconTint");
 			if (has_icon_tint_changed)
-#else
-				&has_icon_tint_changed, &percent);
-			if (has_icon_tint_changed &&
-			    percent != cs->icon_tint_percent)
-#endif
 			{
 				cs->icon_tint_percent = percent;
 				has_icon_pixels_changed = True;

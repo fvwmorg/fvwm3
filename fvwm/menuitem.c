@@ -23,6 +23,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/Rectangles.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"
@@ -50,6 +51,30 @@
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions ----------------------------- */
+void static
+clear_menu_item_background(
+	MenuPaintItemParameters *mpip, int x, int y, int w, int h)
+{
+	MenuStyle *ms = mpip->ms;
+
+	if (!ST_HAS_MENU_CSET(ms) &&
+	    ST_FACE(ms).type == GradientMenu &&
+	    (ST_FACE(ms).gradient_type == D_GRADIENT ||
+	     ST_FACE(ms).gradient_type == B_GRADIENT))
+	{
+		XEvent e;
+
+		e.xexpose.x = x;
+		e.xexpose.y = y;
+		e.xexpose.width = w;
+		e.xexpose.height = h;
+		mpip->cb_reset_bg(mpip->cb_mr, &e);
+	}
+	else
+	{
+		XClearArea(dpy, mpip->w, x, y, w, h, False);
+	}
+}
 
 /****************************************************************************
  *
@@ -302,8 +327,11 @@ void menuitem_paint(
 	/*Pixel fg, fgsh;*/
 	short relief_thickness = ST_RELIEF_THICKNESS(ms);
 	Bool is_item_selected;
-	Bool xft_redraw = False;
-	Bool alpha_redraw = False;
+	Bool item_cleared = False;
+	Bool xft_clear = False;
+	Bool empty_inter = False;
+	XRectangle b;
+	Region region = None;
 	int i;
 	int sx1;
 	int sx2;
@@ -329,6 +357,7 @@ void menuitem_paint(
 	if (MI_PICTURE(mi))
 	{
 		text_y += MI_PICTURE(mi)->height;
+		
 	}
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{
@@ -362,7 +391,7 @@ void menuitem_paint(
 	 ***************************************************************/
 	if (FftSupport && ST_PSTDFONT(ms)->fftf.fftfont != NULL)
 	{
-		xft_redraw = True;
+		xft_clear = True;
 	}
 
 	/* Hilight or clear the background. */
@@ -383,45 +412,27 @@ void menuitem_paint(
 				lit_x_start, y_offset + relief_thickness,
 				lit_x_end - lit_x_start,
 				y_height - relief_thickness);
+			item_cleared = True;
 		}
 	}
-	else if (xft_redraw ||
-		 (MI_WAS_DESELECTED(mi) &&
+	else if ((MI_WAS_DESELECTED(mi) &&
 		  (relief_thickness > 0 || ST_DO_HILIGHT(ms)) &&
 		  (ST_FACE(ms).type != GradientMenu || ST_HAS_MENU_CSET(ms))))
 	{
+		/* we clear if xft_clear and !ST_HAS_MENU_CSET(ms) as the
+		 * non colorset code is too complicate ... olicha */
 		int d = 0;
-		if (MI_PREV_ITEM(mi) && mpip->selected_item == MI_PREV_ITEM(mi))
+		if (MI_PREV_ITEM(mi) &&
+		    mpip->selected_item == MI_PREV_ITEM(mi))
 		{
 			/* Don't paint over the hilight relief. */
 			d = relief_thickness;
 		}
 		/* Undo the hilighting. */
-		if (xft_redraw && !ST_HAS_MENU_CSET(ms) &&
-		    ST_FACE(ms).type == GradientMenu &&
-		    (ST_FACE(ms).gradient_type == D_GRADIENT ||
-		     ST_FACE(ms).gradient_type == B_GRADIENT))
-		{
-			XEvent e;
-
-			e.xexpose.x = MDIM_ITEM_X_OFFSET(*dim);
-			e.xexpose.y = y_offset + d;
-			e.xexpose.width = MDIM_ITEM_WIDTH(*dim);
-			e.xexpose.height = y_height + relief_thickness - d;
-			mpip->cb_reset_bg(mpip->cb_mr, &e);
-		}
-		else
-		{
-			XClearArea(
-				dpy, mpip->w, MDIM_ITEM_X_OFFSET(*dim),
-				y_offset + d, MDIM_ITEM_WIDTH(*dim),
-				y_height + relief_thickness - d,
-				0);
-		}
-	}
-	else
-	{
-		alpha_redraw = True;
+		clear_menu_item_background(
+			mpip, MDIM_ITEM_X_OFFSET(*dim), y_offset + d,
+			MDIM_ITEM_WIDTH(*dim), y_height + relief_thickness - d);
+		item_cleared = True;
 	}
 
 	MI_WAS_DESELECTED(mi) = False;
@@ -609,10 +620,31 @@ void menuitem_paint(
 	fws->win = mpip->w;
 	fws->y = text_y;
 	fws->flags.has_colorset = False;
+	b.y = text_y - ST_PSTDFONT(ms)->ascent;
+	b.height = ST_PSTDFONT(ms)->height + 1; /* ? */
+	if (!item_cleared && mpip->ev)
+	{
+		int u,v;
+		if (!frect_get_seg_intersection(
+			mpip->ev->xexpose.y,
+			mpip->ev->xexpose.height,
+			b.y, b.height,
+			&u, &v))
+		{
+			/* empty intersection */
+			empty_inter = True;
+		}
+		b.y = u;
+		b.height = v;
+	}
+
 	for (i = MAX_MENU_ITEM_LABELS; i-- > 0; )
 	{
-		if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
+		if (!empty_inter && MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
 		{
+			Bool draw_string = True;
+			int text_width;
+
 			if (MI_LABEL_OFFSET(mi)[i] >= lit_x_start &&
 			    MI_LABEL_OFFSET(mi)[i] < lit_x_end)
 			{
@@ -635,20 +667,64 @@ void menuitem_paint(
 				}
 			}
 			fws->str = MI_LABEL(mi)[i];
-			fws->x = MI_LABEL_OFFSET(mi)[i];
-			FlocaleDrawString(dpy, ST_PSTDFONT(ms), fws, 0);
+			b.x = fws->x = MI_LABEL_OFFSET(mi)[i];
+			b.width = text_width = FlocaleTextWidth(
+				ST_PSTDFONT(ms), fws->str, strlen(fws->str));
+			if (!item_cleared && mpip->ev)
+			{
+				int s_x,s_w;
+				if (frect_get_seg_intersection(
+					mpip->ev->xexpose.x,
+					mpip->ev->xexpose.width,
+					fws->x, text_width,
+					&s_x, &s_w))
+				{
+					b.x = s_x;
+					b.width = s_w;
+					region = XCreateRegion();
+					XUnionRectWithRegion(&b, region, region);
+					fws->flags.has_clip_region = True;
+					fws->clip_region = region;
+					draw_string = True;
+					XSetRegion(dpy, fws->gc, region);
+				}
+				else
+				{
+					/* empty intersection */
+					draw_string = False;
+				}
+			}
+			if (draw_string)
+			{
+				if (!item_cleared && xft_clear)
+				{
+					clear_menu_item_background(
+						mpip,
+						b.x, b.y, b.width, b.height);
+				}
+				FlocaleDrawString(dpy, ST_PSTDFONT(ms), fws, 0);
+
+				/* hot key */
+				if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
+				    (!MI_IS_HOTKEY_AUTOMATIC(mi) ||
+				     ST_USE_AUTOMATIC_HOTKEYS(ms)) &&
+				    MI_HOTKEY_COLUMN(mi) == i)
+				{
+					FlocaleDrawUnderline(
+						dpy, ST_PSTDFONT(ms),fws,
+						MI_HOTKEY_COFFSET(mi));
+				}
+			}
 		}
-		if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
-		    (!MI_IS_HOTKEY_AUTOMATIC(mi) ||
-		     ST_USE_AUTOMATIC_HOTKEYS(ms)) &&
-		    MI_HOTKEY_COLUMN(mi) == i)
+		if (region)
 		{
-			FlocaleDrawUnderline(
-				dpy, ST_PSTDFONT(ms),fws,
-				MI_HOTKEY_COFFSET(mi));
+			XDestroyRegion(region);
+			region = None;
+			fws->flags.has_clip_region = False;
+			fws->clip_region = None;
+			XSetClipMask(dpy, fws->gc, None);
 		}
 	}
-
 
 	/***************************************************************
 	 * Draw the submenu triangle.
@@ -689,6 +765,7 @@ void menuitem_paint(
 	{
 		GC tmp_gc;
 		int tmp_cs;
+		Bool draw_picture = True;
 
 		x = menudim_middle_x_offset(mpip->dim) -
 			MI_PICTURE(mi)->width / 2;
@@ -709,19 +786,36 @@ void menuitem_paint(
 			fra.mask |= FRAM_HAVE_ICON_CSET;
 			fra.colorset = &Colorset[tmp_cs];
 		}
-		if (alpha_redraw &&
-		    (MI_PICTURE(mi)->alpha != None ||
-		     (tmp_cs >=0 && Colorset[tmp_cs].icon_alpha < 100)))
+		b.x = x;
+		b.y = y;
+		b.width = MI_PICTURE(mi)->width;
+		b.height =MI_PICTURE(mi)->height;
+		if (!item_cleared && mpip->ev)
 		{
-			XClearArea(dpy, mpip->w, x, y, MI_PICTURE(mi)->width,
-				   MI_PICTURE(mi)->height, False);
+			if (!frect_get_intersection(
+				mpip->ev->xexpose.x, mpip->ev->xexpose.y,
+				mpip->ev->xexpose.width,
+				mpip->ev->xexpose.height,
+				b.x, b.y, b.width, b.height, &b))
+			{
+				draw_picture = False;
+			}
 		}
-		PGraphicsRenderPicture(
-			dpy, mpip->w, MI_PICTURE(mi), &fra,
-			mpip->w, tmp_gc, Scr.MonoGC, None,
-			0, 0, MI_PICTURE(mi)->width, MI_PICTURE(mi)->height,
-			x, y, MI_PICTURE(mi)->width, MI_PICTURE(mi)->height,
-			False);
+		
+		if (draw_picture)
+		{
+			if (!item_cleared && (MI_PICTURE(mi)->alpha != None ||
+			     (tmp_cs >=0 && Colorset[tmp_cs].icon_alpha < 100)))
+			{
+				clear_menu_item_background(
+					mpip, b.x, b.y, b.width, b.height);
+			}
+			PGraphicsRenderPicture(
+				dpy, mpip->w, MI_PICTURE(mi), &fra,
+				mpip->w, tmp_gc, Scr.MonoGC, None,
+				b.x - x, b.y - y, b.width, b.height,
+				b.x, b.y, b.width, b.height, False);
+		}
 	}
 
 	/***************************************************************
@@ -731,6 +825,7 @@ void menuitem_paint(
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{
 		int k;
+		Bool draw_picture = True;
 
 		/* We need to reverse the mini icon order for left submenu
 		 * style. */
@@ -774,25 +869,39 @@ void menuitem_paint(
 				fra.mask |= FRAM_HAVE_ICON_CSET;
 				fra.colorset = &Colorset[tmp_cs];
 			}
-			if (alpha_redraw &&
-			    (MI_MINI_ICON(mi)[i]->alpha != None
-			     || (tmp_cs >=0 &&
-				 Colorset[tmp_cs].icon_alpha < 100)))
+			b.x = MDIM_ICON_X_OFFSET(*dim)[k];
+			b.y = y;
+			b.width = MI_MINI_ICON(mi)[i]->width;
+			b.height = MI_MINI_ICON(mi)[i]->height;
+			if (!item_cleared && mpip->ev)
 			{
-				XClearArea(
-					dpy, mpip->w,
-					MDIM_ICON_X_OFFSET(*dim)[k], y,
-					MI_MINI_ICON(mi)[i]->width,
-					MI_MINI_ICON(mi)[i]->height, False);
+				if (!frect_get_intersection(
+					mpip->ev->xexpose.x, mpip->ev->xexpose.y,
+					mpip->ev->xexpose.width,
+					mpip->ev->xexpose.height,
+					b.x, b.y, b.width, b.height, &b))
+				{
+					draw_picture = False;
+				}
 			}
-			PGraphicsRenderPicture(
-				dpy, mpip->w, MI_MINI_ICON(mi)[i], &fra,
-				mpip->w, tmp_gc, Scr.MonoGC, None,
-				0, 0, MI_MINI_ICON(mi)[i]->width,
-				MI_MINI_ICON(mi)[i]->height,
-				MDIM_ICON_X_OFFSET(*dim)[k], y,
-				MI_MINI_ICON(mi)[i]->width,
-				MI_MINI_ICON(mi)[i]->height, False);
+			if (draw_picture)
+			{
+				if (!item_cleared &&
+				    (MI_MINI_ICON(mi)[i]->alpha != None
+				    || (tmp_cs >=0 &&
+					Colorset[tmp_cs].icon_alpha < 100)))
+				{
+					clear_menu_item_background(
+						mpip, 
+						b.x, b.y, b.width, b.height);
+				}
+				PGraphicsRenderPicture(
+					dpy, mpip->w, MI_MINI_ICON(mi)[i], &fra,
+					mpip->w, tmp_gc, Scr.MonoGC, None,
+					b.x - MDIM_ICON_X_OFFSET(*dim)[k],
+					b.y - y, b.width, b.height,
+					b.x, b.y, b.width, b.height, False);
+			}
 		}
 	}
 

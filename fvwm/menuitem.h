@@ -121,6 +121,7 @@ typedef struct
 	MenuItem *selected_item;
 	MenuDimensions *dim;
 	FvwmWindow *fw;
+	XEvent *ev;
 	struct MenuRoot *cb_mr;
 	Bool (*cb_reset_bg)(struct MenuRoot *mr, XEvent *pevent);
 	struct

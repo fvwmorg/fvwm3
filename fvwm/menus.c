@@ -2743,7 +2743,8 @@ static void clear_expose_menu_area(Window win, XEvent *e)
 	else
 	{
 		XClearArea(
-			dpy, win, 0, e->xexpose.y, 0, e->xexpose.height, False);
+			dpy, win, e->xexpose.x, e->xexpose.y, e->xexpose.width,
+			e->xexpose.height, False);
 	}
 
 	return;
@@ -3092,7 +3093,7 @@ static Bool paint_menu_pixmap_background(
  ***********************************************************************/
 static void get_menu_paint_item_parameters(
 	MenuPaintItemParameters *mpip, MenuRoot *mr, MenuItem *mi,
-	FvwmWindow *fw, Bool do_redraw_menu_border)
+	FvwmWindow *fw, XEvent *pevent, Bool do_redraw_menu_border)
 {
 	mpip->ms = MR_STYLE(mr);
 	mpip->w = MR_WINDOW(mr);
@@ -3103,6 +3104,7 @@ static void get_menu_paint_item_parameters(
 	mpip->cb_reset_bg = paint_menu_gradient_background;
 	mpip->flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
 	mpip->flags.is_left_triangle = MR_IS_LEFT_TRIANGLE(mr);
+	mpip->ev = pevent;
 
 	return;
 }
@@ -3195,7 +3197,7 @@ static void paint_menu(
 			 : MST_MENU_RELIEF_GC(mr),
 			 MST_MENU_SHADOW_GC(mr), bw);
 	/* paint the menu items */
-	get_menu_paint_item_parameters(&mpip, mr, NULL, fw, True);
+	get_menu_paint_item_parameters(&mpip, mr, NULL, fw, pevent, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
 		int do_draw = 0;
@@ -3406,7 +3408,7 @@ static void select_menu_item(
 		fw = NULL;
 	}
 	MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
-	get_menu_paint_item_parameters(&mpip, mr, mi, fw, False);
+	get_menu_paint_item_parameters(&mpip, mr, mi, fw, NULL, False);
 	menuitem_paint(mi, &mpip);
 
 	return;
@@ -4874,9 +4876,10 @@ static mloop_ret_code_t __mloop_handle_event(
 
 	case Expose:
 		/* grab our expose events, let the rest go through */
+		XFlush(dpy);
 		menu_expose(pmp->exc->x.elast, (*pmp->pfw));
-		/* we want to dispatch this too so window decorations get
-		 * redrawn after being obscured by menus. */
+		/* we want to dispatch this too so that icons and maybe tear off 
+		 * get redrawn after being obscured by menus. */
 		dispatch_event(pmp->exc->x.elast);
 		return MENU_MLOOP_RET_LOOP;
 
@@ -5516,6 +5519,8 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 	/* now check whether we should animate the current real menu
 	 * over to the right to unobscure the prior menu; only a very
 	 * limited case where this might be helpful and not too disruptive */
+	/* but this cause terrible back-and-forth under certain circonstance,
+	 * I think we should disable this ... 2002-09-17 olicha */
 	if (in->mrPopup == NULL && pmp->parent_menu != NULL &&
 	    MR_XANIMATION(pmp->menu) != 0 &&
 	    pointer_in_passive_item_area(med->x_offset, med->mrMi))
@@ -5712,12 +5717,12 @@ static void __mloop_exit(
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
 	MenuOptions *pops)
 {
-	Bool dummy;
+	Bool no = False;
 	Bool do_deselect = False;
 
 	if (in->mrPopdown)
 	{
-		pop_menu_down_and_repaint_parent(&in->mrPopdown, &dummy, pmp);
+		pop_menu_down_and_repaint_parent(&in->mrPopdown, &no, pmp);
 		MR_SUBMENU_ITEM(pmp->menu) = NULL;
 	}
 	if (pmret->rc == MENU_SELECTED && is_double_click(
@@ -5774,7 +5779,7 @@ static void __mloop_exit(
 	}
 	if (in->mrPopup)
 	{
-		pop_menu_down_and_repaint_parent(&in->mrPopup, &dummy, pmp);
+		pop_menu_down_and_repaint_parent(&in->mrPopup, &no, pmp);
 		MR_SUBMENU_ITEM(pmp->menu) = NULL;
 	}
 	pmret->flags.is_key_press = in->mif.is_key_press;
@@ -6543,7 +6548,7 @@ void ParentalMenuRePaint(MenuRoot *mr)
 	}
 
 	/* now redraw the items */
-	get_menu_paint_item_parameters(&mpip, mr, NULL, NULL, True);
+	get_menu_paint_item_parameters(&mpip, mr, NULL, NULL, NULL, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
 		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr))
