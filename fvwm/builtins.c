@@ -1026,7 +1026,7 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
       {
 	if (height != 0)
 	{
-	  fvwm_msg(ERR, "SetTitleStyle",
+	  fvwm_msg(ERR, "do_title_style",
 		   "bad height argument (height must be from 5 to 256)");
 	  height = 0;
 	}
