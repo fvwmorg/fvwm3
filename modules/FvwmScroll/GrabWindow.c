@@ -178,12 +178,10 @@ void CreateWindow(int x,int y, int w, int h)
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      Loop - wait for data to process
- *
- ***********************************************************************/
+/******************************************************************************
+  LoopOnEvents - Process all the X events we get
+******************************************************************************/
+
 #define RIGHT 7
 #define LEFT 6
 #define BOTTOM 5
@@ -194,387 +192,519 @@ void CreateWindow(int x,int y, int w, int h)
 #define NONE 0
 int motion = NONE;
 
+void LoopOnEvents(Window target)
+{
+	Window root;
+	int x, y;
+	XEvent Event;
+	XEvent ev;
+	unsigned int tw, th, depth, border_width;
+	char *temp;
+	char *prop = NULL;
+	Atom actual = None;
+	int actual_format;
+	unsigned long nitems, bytesafter;
+
+	while (FPending(dpy)) {
+		FNextEvent(dpy,&Event);
+		switch(Event.type)
+		{
+		case Expose:
+			while (FCheckTypedWindowEvent(
+				dpy, main_win, Expose, &Event));
+			exposed = 1;
+			RedrawWindow(target);
+			break;
+
+		case ConfigureNotify:
+			while (FCheckTypedWindowEvent(
+				dpy, main_win, ConfigureNotify, &ev))
+			{
+				if (!ev.xconfigure.send_event)
+					continue;
+				Event.xconfigure.send_event = True;
+			}
+			if (!XGetGeometry(
+				dpy, main_win, &root ,&x, &y, &tw, &th,
+				&border_width, &depth))
+			{
+				return;
+			}
+			if ((tw != Width) || (th != Height))
+			{
+				if (colorset >= 0)
+					SetWindowBackground(
+						dpy, main_win, tw, th,
+						&Colorset[(colorset)], Pdepth,
+						shadowGC, True);
+				XResizeWindow(
+					dpy, holder_win,
+					tw - BAR_WIDTH - PAD_WIDTH3,
+					th - BAR_WIDTH - PAD_WIDTH3);
+				Width = tw;
+				Height = th;
+				if (target_y_offset > target_height - Height +
+				    BAR_WIDTH)
+					target_y_offset =
+						target_height - Height +
+						BAR_WIDTH;
+				if (target_y_offset < 0)
+					target_y_offset = 0;
+				if (target_x_offset > target_width - Width +
+				    BAR_WIDTH)
+					target_x_offset =
+						target_width - Width + BAR_WIDTH;
+				if (target_x_offset < 0)
+					target_x_offset = 0;
+
+				XMoveWindow(
+					dpy, target, -target_x_offset,
+					-target_y_offset);
+			}
+			else if (Event.xconfigure.send_event &&
+				 CSET_IS_TRANSPARENT(colorset))
+			{
+				SetWindowBackground(
+					dpy, main_win, tw, th,
+					&Colorset[(colorset)], Pdepth,
+					shadowGC, True);
+			}
+			break;
+
+		case ButtonPress:
+			if((Event.xbutton.y > Height-BAR_WIDTH) &&
+			   (Event.xbutton.x < SCROLL_BAR_WIDTH+PAD_WIDTH3))
+			{
+				motion = LEFT;
+				exposed = 2;
+				RedrawWindow(target);
+			}
+			else if((Event.xbutton.y > Height - BAR_WIDTH) &&
+				(Event.xbutton.x > Width - BAR_WIDTH -
+				 SCROLL_BAR_WIDTH-2) &&
+				(Event.xbutton.x < Width-BAR_WIDTH))
+			{
+				motion = RIGHT;
+				exposed = 2;
+				RedrawWindow(target);
+			}
+			else if((Event.xbutton.y < SCROLL_BAR_WIDTH+PAD_WIDTH3)
+				&& (Event.xbutton.x > Width-BAR_WIDTH))
+			{
+				motion = TOP;
+				exposed = 2;
+				RedrawWindow(target);
+			}
+			else if((Event.xbutton.y > Height - BAR_WIDTH - 
+				 SCROLL_BAR_WIDTH-2) &&
+				(Event.xbutton.y < Height-BAR_WIDTH)&&
+				(Event.xbutton.x > Width-BAR_WIDTH))
+			{
+				motion = BOTTOM;
+				exposed = 2;
+				RedrawWindow(target);
+			}
+			else if((Event.xbutton.x > Width - BAR_WIDTH)&&
+				(Event.xbutton.y < Height- BAR_WIDTH))
+			{
+				motion = VERTICAL;
+				target_y_offset=
+					(Event.xbutton.y - PAD_WIDTH3-
+					 SCROLL_BAR_WIDTH)* target_height/
+					(Height-BAR_WIDTH-PAD_WIDTH3 - 
+					 2*SCROLL_BAR_WIDTH);
+				if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 >
+				   target_height)
+					target_y_offset =
+						target_height - Height+BAR_WIDTH
+						+PAD_WIDTH3;
+				if(target_y_offset < 0)
+					target_y_offset = 0;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+				RedrawWindow(target);
+			}
+			else if((Event.xbutton.y > Height- BAR_WIDTH ) &&
+				(Event.xbutton.x < Width- BAR_WIDTH))
+			{
+				motion=HORIZONTAL;
+				target_x_offset=
+					(Event.xbutton.x -PAD_WIDTH3-
+					 SCROLL_BAR_WIDTH)* target_width/
+					(Width-BAR_WIDTH-PAD_WIDTH3-
+					 2*SCROLL_BAR_WIDTH);
+				if(target_x_offset < 0)
+					target_x_offset = 0;
+
+				if(target_x_offset + Width -BAR_WIDTH-PAD_WIDTH3>
+				   target_width)
+					target_x_offset = 
+						target_width - Width + BAR_WIDTH+
+						PAD_WIDTH3;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+				RedrawWindow(target);
+			}
+			else if((Event.xbutton.y > Height- BAR_WIDTH ) &&
+				(Event.xbutton.x > Width- BAR_WIDTH))
+			{
+				exposed = 2;
+				motion=QUIT;
+			}
+			RedrawWindow(target);
+			break;
+
+		case ButtonRelease:
+			if((Event.xbutton.y > Height- BAR_WIDTH ) &&
+			   (Event.xbutton.x > Width- BAR_WIDTH)&&
+			   (motion==QUIT))
+			{
+				XUnmapWindow(dpy,main_win);
+				XReparentWindow(dpy,target,Root,x,y);
+				XSync(dpy,0);
+				exit(0);
+			}
+			if((motion == LEFT)&&
+			   (Event.xbutton.y > Height-BAR_WIDTH) &&
+			   (Event.xbutton.x < SCROLL_BAR_WIDTH+PAD_WIDTH3))
+			{
+				target_x_offset -= (Width-BAR_WIDTH-PAD_WIDTH2);
+				if(target_x_offset < 0)
+					target_x_offset = 0;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+				motion = NONE;
+				exposed = 2;
+			}
+			else if((motion == RIGHT)&&
+				(Event.xbutton.y > Height-BAR_WIDTH) &&
+				(Event.xbutton.x >
+				 Width-BAR_WIDTH-SCROLL_BAR_WIDTH-2) &&
+				(Event.xbutton.x < Width-BAR_WIDTH))
+			{
+				target_x_offset += (Width-BAR_WIDTH-PAD_WIDTH2);
+				if(target_x_offset+Width-BAR_WIDTH -PAD_WIDTH3 >
+				   target_width)
+					target_x_offset =
+						target_width - Width+BAR_WIDTH+
+						PAD_WIDTH3;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+				motion = NONE;
+				exposed = 2;
+			}
+			else if((motion == TOP)&&
+				(Event.xbutton.y<SCROLL_BAR_WIDTH+PAD_WIDTH3)&&
+				(Event.xbutton.x > Width-BAR_WIDTH))
+			{
+				target_y_offset -= (Height-BAR_WIDTH-PAD_WIDTH2);
+				if(target_y_offset < 0)
+					target_y_offset = 0;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+				motion = NONE;
+				exposed = 2;
+			}
+			else if((motion == BOTTOM)&&
+				(Event.xbutton.y >
+				 Height-BAR_WIDTH-SCROLL_BAR_WIDTH-2) &&
+				(Event.xbutton.y < Height-BAR_WIDTH)&&
+				(Event.xbutton.x > Width-BAR_WIDTH))
+			{
+				target_y_offset += (Height-BAR_WIDTH-PAD_WIDTH2);
+				if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 >
+				   target_height)
+					target_y_offset = target_height -
+						Height+BAR_WIDTH+PAD_WIDTH3;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+				motion = NONE;
+				exposed = 2;
+			}
+			if(motion == VERTICAL)
+			{
+				target_y_offset =
+					(Event.xbutton.y-PAD_WIDTH3-
+					 SCROLL_BAR_WIDTH)*target_height /
+					(Height-BAR_WIDTH-PAD_WIDTH3 -
+					 2*SCROLL_BAR_WIDTH);
+				if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 >
+				   target_height)
+					target_y_offset = target_height - Height+
+						BAR_WIDTH+PAD_WIDTH3;
+				if(target_y_offset < 0)
+					target_y_offset = 0;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+			}
+			if(motion == HORIZONTAL)
+			{
+				target_x_offset=
+					(Event.xbutton.x -PAD_WIDTH3-
+					 SCROLL_BAR_WIDTH) * target_width /
+					(Width-BAR_WIDTH-PAD_WIDTH3-
+					 2*SCROLL_BAR_WIDTH);
+				if(target_x_offset < 0)
+					target_x_offset = 0;
+
+				if(target_x_offset + Width-BAR_WIDTH-PAD_WIDTH3>
+				   target_width)
+					target_x_offset =
+						target_width - Width +
+						BAR_WIDTH+PAD_WIDTH3;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+			}
+			RedrawWindow(target);
+			motion = NONE;
+			break;
+
+		case MotionNotify:
+			if((motion == LEFT)&&
+			   ((Event.xmotion.y < Height-BAR_WIDTH) ||
+			    (Event.xmotion.x > SCROLL_BAR_WIDTH+PAD_WIDTH3)))
+			{
+				motion = NONE;
+				exposed = 2;
+			}
+			else if((motion == RIGHT)&&
+				((Event.xmotion.y < Height-BAR_WIDTH) ||
+				 (Event.xmotion.x <
+				  Width-BAR_WIDTH-SCROLL_BAR_WIDTH-2) ||
+				 (Event.xmotion.x > Width-BAR_WIDTH)))
+			{
+				motion = NONE;
+				exposed = 2;
+			}
+			else if((motion == TOP)&&
+				((Event.xmotion.y>SCROLL_BAR_WIDTH+PAD_WIDTH3)||
+				 (Event.xmotion.x < Width-BAR_WIDTH)))
+			{
+				motion = NONE;
+				exposed = 2;
+			}
+			else if((motion == BOTTOM)&&
+				((Event.xmotion.y <
+				  Height-BAR_WIDTH-SCROLL_BAR_WIDTH-2) ||
+				 (Event.xmotion.y > Height-BAR_WIDTH)||
+				 (Event.xmotion.x < Width-BAR_WIDTH)))
+			{
+				motion = NONE;
+				exposed = 2;
+			}
+			if(motion == VERTICAL)
+			{
+				target_y_offset=
+					(Event.xmotion.y-PAD_WIDTH3-
+					 SCROLL_BAR_WIDTH)*target_height/
+					(Height-BAR_WIDTH-PAD_WIDTH3-
+					 2*SCROLL_BAR_WIDTH);
+				if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 >
+				   target_height)
+					target_y_offset =
+						target_height - Height+BAR_WIDTH+
+						PAD_WIDTH3;
+				if(target_y_offset < 0)
+					target_y_offset = 0;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+			}
+			if(motion == HORIZONTAL)
+			{
+				target_x_offset =
+					(Event.xmotion.x -PAD_WIDTH3-
+					 SCROLL_BAR_WIDTH)* target_width/
+					(Width-BAR_WIDTH-PAD_WIDTH3-
+					 2*SCROLL_BAR_WIDTH);
+				if(target_x_offset < 0)
+					target_x_offset = 0;
+
+				if(target_x_offset + Width-BAR_WIDTH-PAD_WIDTH3>
+				   target_width)
+					target_x_offset = 
+						target_width - Width + BAR_WIDTH+
+						PAD_WIDTH3;
+				XMoveWindow(
+					dpy,target,-target_x_offset,
+					-target_y_offset);
+			}
+			if((motion == QUIT)&&
+			   ((Event.xbutton.y < Height- BAR_WIDTH )||
+			    (Event.xbutton.x < Width- BAR_WIDTH)))
+			{
+				motion = NONE;
+				exposed = 2;
+			}
+			RedrawWindow(target);
+			break;
+		case ClientMessage:
+			if ((Event.xclient.format==32) &&
+			    (Event.xclient.data.l[0]==wm_del_win))
+			{
+				DeadPipe(1);
+			}
+			break;
+		case PropertyNotify:
+			if(Event.xproperty.atom == XA_WM_NAME)
+			{
+				if(XFetchName(dpy, target, &temp)==0)
+					temp = NULL;
+				change_window_name(temp);
+			}
+			else if (Event.xproperty.atom == XA_WM_ICON_NAME)
+			{
+				if (XGetWindowProperty (
+					dpy,
+					target, Event.xproperty.atom, 0,
+					MAX_ICON_NAME_LEN, False, XA_STRING,
+					&actual,&actual_format, &nitems,
+					&bytesafter, (unsigned char **) &prop)
+				    == Success && (prop != NULL))
+					change_icon_name(prop);
+			}
+			else if(Event.xproperty.atom == XA_WM_HINTS)
+			{
+				XWMHints *wmhints;
+
+				wmhints = XGetWMHints(dpy,target);
+				XSetWMHints(dpy,main_win, wmhints);
+				XFree(wmhints);
+			}
+			else if(Event.xproperty.atom == XA_WM_NORMAL_HINTS)
+			{
+				/* don't do Normal Hints. They alter the size of
+				 * the window */
+			}
+			else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
+			{
+				/* ignore colormap stuff. The FvwmScroll window 
+				 * may have a different visual to the client and
+				 so cannot pass this on */
+			}
+			break;
+
+		case DestroyNotify:
+			DeadPipe(1);
+			break;
+
+		case UnmapNotify:
+			break;
+
+		case MapNotify:
+			XMapWindow(dpy,main_win);
+			break;
+		case FocusIn:
+			XSetInputFocus(dpy,target,RevertToParent,CurrentTime);
+			break;
+		case ColormapNotify:
+			/* FvwmScroll may not have the same visual as the
+			 * captured window and so cannot share its colormap
+			 {
+			 XWindowAttributes xwa;
+			 if(XGetWindowAttributes(dpy,target, &xwa) != 0)
+			 {
+			 XSetWindowColormap(dpy,main_win,xwa.colormap);
+			 }
+			 }
+			*/
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+/******************************************************************************
+  ProcessMessage - Process the message coming from Fvwm
+******************************************************************************/
+void ProcessMessage(unsigned long type,unsigned long *body)
+{
+	char *tline, *token;
+
+	switch(type)
+	{
+	case M_CONFIG_INFO:
+		tline = (char*)&body[3];
+		tline = GetNextToken(tline, &token);
+		if (StrEquals(token, "Colorset"))
+		{
+			/* track all colorset changes and update display
+			 * if necessary */
+			if (LoadColorset(tline) == colorset)
+			{
+				XSetForeground(
+					dpy, hiliteGC,Colorset[colorset].hilite);
+				XSetForeground(
+					dpy, shadowGC, Colorset[colorset].shadow);
+				SetWindowBackground(
+					dpy, main_win, Width, Height,
+					&Colorset[colorset], Pdepth, shadowGC,
+					True);
+			}
+		}
+		free(token);
+		break;
+	case MX_PROPERTY_CHANGE:
+		if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
+		    CSET_IS_TRANSPARENT_PR(colorset))
+		{
+			SetWindowBackground(
+				dpy, main_win, Width, Height,
+				&Colorset[colorset],
+				Pdepth, shadowGC, True);
+		}
+		break;
+	}
+}
+
+/******************************************************************************
+  Loop -  Read and redraw until we die, blocking when can't read
+******************************************************************************/
 void Loop(Window target)
 {
-  Window root;
-  int x, y;
-  XEvent Event;
-  unsigned int tw, th, depth, border_width;
-  char *temp;
-  char *prop = NULL;
-  Atom actual = None;
-  int actual_format;
-  unsigned long nitems, bytesafter;
+	while(1)
+	{
+		FvwmPacket* packet;
+		fd_set fdset;
 
-  while(1) {
-    FvwmPacket* packet;
-    fd_set fdset;
+		FD_ZERO(&fdset);
+		FD_SET(fd[1], &fdset);
+		FD_SET(x_fd, &fdset);
 
-    FD_ZERO(&fdset);
-    FD_SET(fd[1], &fdset);
-    FD_SET(x_fd, &fdset);
+		LoopOnEvents(target);
 
-    /* process all X events first */
-    while (FPending(dpy)) {
-      FNextEvent(dpy,&Event);
-      switch(Event.type)
-      {
-      case Expose:
-	exposed = 1;
-	RedrawWindow(target);
-	break;
+		select(fd_width, SELECT_FD_SET_CAST &fdset, NULL, NULL, NULL );
 
-      case ConfigureNotify:
-	if (!XGetGeometry(dpy, main_win, &root ,&x, &y, &tw, &th,
-			  &border_width, &depth))
-	{
-	  return;
+		/* parse any config lines (colorsets) */
+		if (FD_ISSET(fd[1], &fdset))
+		{
+			packet = ReadFvwmPacket(fd[1]);
+			if (!packet)
+			{
+				/* fvwm has gone away or done KillModule */
+				XUnmapWindow(dpy,main_win);
+				XReparentWindow(dpy,target,Root,0,0);
+				XSync(dpy,0);
+				exit(0);
+			}
+			else
+			{
+				ProcessMessage(packet->type, packet->body);
+			}
+		}
 	}
-	if ((tw != Width) || (th != Height))
-	{
-	  if (colorset >= 0)
-	    SetWindowBackground(dpy, main_win, tw, th,
-				&Colorset[(colorset)], Pdepth,
-				shadowGC, True);
-	  XResizeWindow(dpy, holder_win, tw - BAR_WIDTH - PAD_WIDTH3,
-			th - BAR_WIDTH - PAD_WIDTH3);
-	  Width = tw;
-	  Height = th;
-	  if (target_y_offset > target_height - Height + BAR_WIDTH)
-	    target_y_offset = target_height - Height + BAR_WIDTH;
-	  if (target_y_offset < 0)
-	    target_y_offset = 0;
-	  if (target_x_offset > target_width - Width + BAR_WIDTH)
-	    target_x_offset = target_width - Width + BAR_WIDTH;
-	  if (target_x_offset < 0)
-	    target_x_offset = 0;
-
-	  XMoveWindow(dpy, target, -target_x_offset, -target_y_offset);
-	}
-	break;
-
-      case ButtonPress:
-	if((Event.xbutton.y > Height-BAR_WIDTH) &&
-	   (Event.xbutton.x < SCROLL_BAR_WIDTH+PAD_WIDTH3))
-	{
-	  motion = LEFT;
-	  exposed = 2;
-	  RedrawWindow(target);
-	}
-	else if((Event.xbutton.y > Height-BAR_WIDTH) &&
-		(Event.xbutton.x > Width-BAR_WIDTH-SCROLL_BAR_WIDTH-2) &&
-		(Event.xbutton.x < Width-BAR_WIDTH))
-	{
-	  motion = RIGHT;
-	  exposed = 2;
-	  RedrawWindow(target);
-	}
-	else if((Event.xbutton.y < SCROLL_BAR_WIDTH+PAD_WIDTH3) &&
-		(Event.xbutton.x > Width-BAR_WIDTH))
-	{
-	  motion = TOP;
-	  exposed = 2;
-	  RedrawWindow(target);
-	}
-	else if((Event.xbutton.y > Height-BAR_WIDTH-SCROLL_BAR_WIDTH-2) &&
-		(Event.xbutton.y < Height-BAR_WIDTH)&&
-		(Event.xbutton.x > Width-BAR_WIDTH))
-	{
-	  motion = BOTTOM;
-	  exposed = 2;
-	  RedrawWindow(target);
-	}
-	else if((Event.xbutton.x > Width - BAR_WIDTH)&&
-		(Event.xbutton.y < Height- BAR_WIDTH))
-	{
-
-	  motion = VERTICAL;
-	  target_y_offset=(Event.xbutton.y-PAD_WIDTH3-SCROLL_BAR_WIDTH)*
-	    target_height/
-	    (Height-BAR_WIDTH-PAD_WIDTH3 - 2*SCROLL_BAR_WIDTH);
-	  if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 > target_height)
-	    target_y_offset  = target_height - Height+BAR_WIDTH+PAD_WIDTH3;
-	  if(target_y_offset < 0)
-	    target_y_offset = 0;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	  RedrawWindow(target);
-	}
-	else if((Event.xbutton.y > Height- BAR_WIDTH ) &&
-		(Event.xbutton.x < Width- BAR_WIDTH))
-	{
-	  motion=HORIZONTAL;
-	  target_x_offset=(Event.xbutton.x -PAD_WIDTH3-SCROLL_BAR_WIDTH)*
-	    target_width/
-	    (Width-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH);
-	  if(target_x_offset < 0)
-	    target_x_offset = 0;
-
-	  if(target_x_offset + Width - BAR_WIDTH -PAD_WIDTH3> target_width)
-	    target_x_offset  = target_width - Width + BAR_WIDTH+PAD_WIDTH3;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	  RedrawWindow(target);
-	}
-	else if((Event.xbutton.y > Height- BAR_WIDTH ) &&
-		(Event.xbutton.x > Width- BAR_WIDTH))
-	{
-	  exposed = 2;
-	  motion=QUIT;
-	}
-	RedrawWindow(target);
-	break;
-
-      case ButtonRelease:
-	if((Event.xbutton.y > Height- BAR_WIDTH ) &&
-	   (Event.xbutton.x > Width- BAR_WIDTH)&&
-	   (motion==QUIT))
-	{
-	  XUnmapWindow(dpy,main_win);
-	  XReparentWindow(dpy,target,Root,x,y);
-	  XSync(dpy,0);
-	  exit(0);
-	}
-	if((motion == LEFT)&&(Event.xbutton.y > Height-BAR_WIDTH) &&
-	   (Event.xbutton.x < SCROLL_BAR_WIDTH+PAD_WIDTH3))
-	{
-	  target_x_offset -= (Width-BAR_WIDTH-PAD_WIDTH2);
-	  if(target_x_offset < 0)
-	    target_x_offset = 0;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	  motion = NONE;
-	  exposed = 2;
-	}
-	else if((motion == RIGHT)&&(Event.xbutton.y > Height-BAR_WIDTH) &&
-		(Event.xbutton.x > Width-BAR_WIDTH-SCROLL_BAR_WIDTH-2) &&
-		(Event.xbutton.x < Width-BAR_WIDTH))
-	{
-	  target_x_offset += (Width-BAR_WIDTH-PAD_WIDTH2);
-	  if(target_x_offset+Width-BAR_WIDTH -PAD_WIDTH3 > target_width)
-	    target_x_offset  = target_width - Width+BAR_WIDTH+PAD_WIDTH3;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	  motion = NONE;
-	  exposed = 2;
-	}
-	else if((motion == TOP)&&
-		(Event.xbutton.y<SCROLL_BAR_WIDTH+PAD_WIDTH3)&&
-		(Event.xbutton.x > Width-BAR_WIDTH))
-	{
-	  target_y_offset -= (Height-BAR_WIDTH-PAD_WIDTH2);
-	  if(target_y_offset < 0)
-	    target_y_offset = 0;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	  motion = NONE;
-	  exposed = 2;
-	}
-	else if((motion == BOTTOM)&&
-		(Event.xbutton.y > Height-BAR_WIDTH-SCROLL_BAR_WIDTH-2) &&
-		(Event.xbutton.y < Height-BAR_WIDTH)&&
-		(Event.xbutton.x > Width-BAR_WIDTH))
-	{
-	  target_y_offset += (Height-BAR_WIDTH-PAD_WIDTH2);
-	  if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 > target_height)
-	    target_y_offset  = target_height - Height+BAR_WIDTH+PAD_WIDTH3;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	  motion = NONE;
-	  exposed = 2;
-	}
-	if(motion == VERTICAL)
-	{
-	  target_y_offset=(Event.xbutton.y-PAD_WIDTH3-SCROLL_BAR_WIDTH) *
-	    target_height / (Height-BAR_WIDTH-PAD_WIDTH3 - 2*SCROLL_BAR_WIDTH);
-	  if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 > target_height)
-	    target_y_offset  = target_height - Height+BAR_WIDTH+PAD_WIDTH3;
-	  if(target_y_offset < 0)
-	    target_y_offset = 0;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	}
-	if(motion == HORIZONTAL)
-	{
-	  target_x_offset=(Event.xbutton.x -PAD_WIDTH3-SCROLL_BAR_WIDTH) *
-	    target_width / (Width-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH);
-	  if(target_x_offset < 0)
-	    target_x_offset = 0;
-
-	  if(target_x_offset + Width - BAR_WIDTH -PAD_WIDTH3> target_width)
-	    target_x_offset  = target_width - Width + BAR_WIDTH+PAD_WIDTH3;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	}
-	RedrawWindow(target);
-	motion = NONE;
-	break;
-
-      case MotionNotify:
-	if((motion == LEFT)&&((Event.xmotion.y < Height-BAR_WIDTH) ||
-			      (Event.xmotion.x > SCROLL_BAR_WIDTH+PAD_WIDTH3)))
-	{
-	  motion = NONE;
-	  exposed = 2;
-	}
-	else if((motion == RIGHT)&&((Event.xmotion.y < Height-BAR_WIDTH) ||
-				    (Event.xmotion.x <
-				     Width-BAR_WIDTH-SCROLL_BAR_WIDTH-2) ||
-				    (Event.xmotion.x > Width-BAR_WIDTH)))
-	{
-	  motion = NONE;
-	  exposed = 2;
-	}
-	else if((motion == TOP)&&
-		((Event.xmotion.y>SCROLL_BAR_WIDTH+PAD_WIDTH3)||
-		 (Event.xmotion.x < Width-BAR_WIDTH)))
-	{
-	  motion = NONE;
-	  exposed = 2;
-	}
-	else if((motion == BOTTOM)&&
-		((Event.xmotion.y < Height-BAR_WIDTH-SCROLL_BAR_WIDTH-2) ||
-		 (Event.xmotion.y > Height-BAR_WIDTH)||
-		 (Event.xmotion.x < Width-BAR_WIDTH)))
-	{
-	  motion = NONE;
-	  exposed = 2;
-	}
-	if(motion == VERTICAL)
-	{
-	  target_y_offset=(Event.xmotion.y-PAD_WIDTH3-SCROLL_BAR_WIDTH)*
-	    target_height/
-	    (Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH);
-	  if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 > target_height)
-	    target_y_offset  = target_height - Height+BAR_WIDTH+PAD_WIDTH3;
-	  if(target_y_offset < 0)
-	    target_y_offset = 0;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	}
-	if(motion == HORIZONTAL)
-	{
-	  target_x_offset=(Event.xmotion.x -PAD_WIDTH3-SCROLL_BAR_WIDTH)*
-	    target_width/
-	    (Width-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH);
-	  if(target_x_offset < 0)
-	    target_x_offset = 0;
-
-	  if(target_x_offset + Width - BAR_WIDTH -PAD_WIDTH3> target_width)
-	    target_x_offset  = target_width - Width + BAR_WIDTH+PAD_WIDTH3;
-	  XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	}
-	if((motion == QUIT)&&
-	   ((Event.xbutton.y < Height- BAR_WIDTH )||
-	    (Event.xbutton.x < Width- BAR_WIDTH)))
-	{
-	  motion = NONE;
-	  exposed = 2;
-	}
-	RedrawWindow(target);
-	break;
-      case ClientMessage:
-	if ((Event.xclient.format==32) &&
-	    (Event.xclient.data.l[0]==wm_del_win))
-	{
-	  DeadPipe(1);
-	}
-	break;
-      case PropertyNotify:
-	if(Event.xproperty.atom == XA_WM_NAME)
-	{
-	  if(XFetchName(dpy, target, &temp)==0)
-	    temp = NULL;
-	  change_window_name(temp);
-	}
-	else if (Event.xproperty.atom == XA_WM_ICON_NAME)
-	{
-	  if (XGetWindowProperty (dpy,
-				  target, Event.xproperty.atom, 0,
-				  MAX_ICON_NAME_LEN, False, XA_STRING,
-				  &actual,&actual_format, &nitems,
-				  &bytesafter, (unsigned char **) &prop)
-	      == Success && (prop != NULL))
-	    change_icon_name(prop);
-	}
-	else if(Event.xproperty.atom == XA_WM_HINTS)
-	{
-	  XWMHints *wmhints;
-
-	  wmhints = XGetWMHints(dpy,target);
-	  XSetWMHints(dpy,main_win, wmhints);
-	  XFree(wmhints);
-	}
-	else if(Event.xproperty.atom == XA_WM_NORMAL_HINTS)
-	{
-	  /* don't do Normal Hints. They alter the size of the window */
-	}
-	else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
-	{
-	  /* ignore colormap stuff. The FvwmScroll window may have a
-	   * different visual to the client and so cannot pass this on */
-	}
-	break;
-
-      case DestroyNotify:
-	DeadPipe(1);
-	break;
-
-      case UnmapNotify:
-	break;
-
-      case MapNotify:
-	XMapWindow(dpy,main_win);
-	break;
-      case FocusIn:
-	XSetInputFocus(dpy,target,RevertToParent,CurrentTime);
-	break;
-      case ColormapNotify:
-	/* FvwmScroll may not have the same visual as the captured window
-	 * and so cannot share its colormap
-	 {
-	 XWindowAttributes xwa;
-	 if(XGetWindowAttributes(dpy,target, &xwa) != 0)
-	 {
-	 XSetWindowColormap(dpy,main_win,xwa.colormap);
-	 }
-	 }
-	*/
-	break;
-      default:
-	break;
-      }
-    }
-
-    /* no more events to process */
-    /* wait for X-event or config line */
-    select( fd_width, SELECT_FD_SET_CAST &fdset, NULL, NULL, NULL );
-
-    /* parse any config lines (colorsets) */
-    if (FD_ISSET(fd[1], &fdset)) {
-      char *tline, *token;
-
-      packet = ReadFvwmPacket(fd[1]);
-      if (!packet) {
-	/* fvwm has gone away or done KillModule */
-	XUnmapWindow(dpy,main_win);
-	XReparentWindow(dpy,target,Root,0,0);
-	XSync(dpy,0);
-	exit(0);
-      }
-      if (packet && packet->type == M_CONFIG_INFO ) {
-	tline = (char*)&(packet->body[3]);
-	tline = GetNextToken(tline, &token);
-	if (StrEquals(token, "Colorset")) {
-	  /* track all colorset changes and update display if necessary */
-	  if (LoadColorset(tline) == colorset) {
-	    XSetForeground(dpy, hiliteGC,
-			   Colorset[colorset].hilite);
-	    XSetForeground(dpy, shadowGC,
-			   Colorset[colorset].shadow);
-	    SetWindowBackground(dpy, main_win, Width, Height,
-				&Colorset[colorset], Pdepth,
-				shadowGC, True);
-	  }
-	}
-	free(token);
-      }
-
-    }
-  }
-  return;
+	return;
 }
+
 
 
 

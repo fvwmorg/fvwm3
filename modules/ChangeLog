@@ -1,5 +1,13 @@
 2002-11-14  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmScroll/FvwmScroll.c (ErrorHandler):
+	(main):
+	* FvwmScroll/GrabWindow.c (LoopOnEvents):
+	(ProcessMessage):
+	(Loop):
+	New transparent stuff. split the big loop in 3. Added an X error
+	handler
+
 	* FvwmScript/FvwmScript.c (UpdateRootTransparency):
 	(ReadXServer):
 	(MainLoop):

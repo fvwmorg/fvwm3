@@ -57,6 +57,8 @@ char *BackColor = "black";
 
 Window app_win;
 
+static int ErrorHandler(Display*, XErrorEvent*);
+
 /***********************************************************************
  *
  *  Procedure:
@@ -144,6 +146,7 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
 
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
+  SetMessageMask(fd, MX_PROPERTY_CHANGE);
   PictureInitCMap(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
@@ -177,6 +180,8 @@ int main(int argc, char **argv)
     }
     GetConfigLine(fd,&tline);
   }
+
+  XSetErrorHandler(ErrorHandler);
 
   if(app_win == 0)
     GetTargetWindow(&app_win);
@@ -225,4 +230,24 @@ void GetTargetWindow(Window *app_win)
   target_win = fvwmlib_client_window(dpy, *app_win);
   if(target_win != None)
     *app_win = target_win;
+}
+
+/************************************************************************
+  X Error Handler
+************************************************************************/
+static int
+ErrorHandler(Display *dpy, XErrorEvent *event)
+{
+  /* some errors are OK=ish */
+  if (event->error_code == BadPixmap)
+    return 0;
+  if (event->error_code == BadDrawable)
+    return 0;
+#if 0
+  if (FRenderGetErrorCodeBase() + FRenderBadPicture == event->error_code)
+    return 0;
+#endif
+
+  PrintXErrorAndCoredump(dpy, event, MyName);
+  return 0;
 }
