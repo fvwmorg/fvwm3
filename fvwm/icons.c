@@ -794,13 +794,26 @@ void DrawIconTitleWindow(
 		clip.height = ICON_HEIGHT(fw) - 2*ICON_RELIEF_WIDTH;
 		XClearWindow(dpy, FW_W_ICON_TITLE(fw));
 	}
-	else if (x_title-ICON_RELIEF_WIDTH >= 1)
+	else
 	{
 		/* sometimes needed ... */
-		XClearArea(dpy, FW_W_ICON_TITLE(fw),
-			     ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH,
-			     x_title-ICON_RELIEF_WIDTH,
-			     ICON_HEIGHT(fw) - 2*ICON_RELIEF_WIDTH, False);
+		if (x_title-ICON_RELIEF_WIDTH >= 1)
+		{
+			XClearArea(
+				dpy, FW_W_ICON_TITLE(fw),
+				ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH,
+				x_title-ICON_RELIEF_WIDTH,
+				ICON_HEIGHT(fw) - 2*ICON_RELIEF_WIDTH, False);
+		}
+		if (is_sticky)
+		{
+			XClearArea(
+				dpy, FW_W_ICON_TITLE(fw),
+				w_title_w - x_stipple - w_stipple -1,
+				ICON_RELIEF_WIDTH,
+				w_stipple + 2,
+				ICON_HEIGHT(fw) - 2*ICON_RELIEF_WIDTH, False);
+		}
 	}
 
 	if (draw_string)
