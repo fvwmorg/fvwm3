@@ -3430,7 +3430,7 @@ or very few bindings you should not ignore more than two modifiers.
 I.e. do not ignore
 .SM scroll-lock
 if you have no problem with it.  In the
-.B FAQ
+.I FAQ
 you will find a better solution of this problem.
 
 .TP
@@ -3840,403 +3840,34 @@ is a comma separated list containing one or more of the keywords
 .IR WindowShadeShrinks " / " WindowShadeScrolls ,
 .IR WindowShadeSteps.
 
+.\" +++++++++++++++ general notes
+
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
 entries that have them describes the fvwm default behavior and
 can be used if you want to change the fvwm default behavior.
 
-The
-.IR Title " and " NoTitle
-options determine if the window has a title-bar or not.  By default
-all windows have a title-bar.
+.\" +++++++++++++++ focus policy
 
-Windows with the \fITitleAtBottom\fP style will have a title-bar
-below the window instead of above as usual. The \fITitleAtTop\fP
-style restores the default placement. Even if the window has the
-\fINoTitle\fP style set, this affects the \fIWindowShade\fP command.
-
-With the
-.I StipledTitle
-style, are drawn with the same effect that is usually reserved for
-windows with the
-.I Sticky
-style.
-.I StipledTitleOff
-reverts back to normal titles.
-
-\fIDecorateTransient\fP causes transient windows, which are normally
-left undecorated, to be given the usual fvwm decorations (title
-bar, buttons, etc.). Note that some pop-up windows, such as the xterm
-menus, are not managed by the window manager and still do not receive
-decorations. \fINakedTransient\fP (the default) causes transient windows
-not to be given the standard decorations. You can only bind keys or mouse
-buttons to the sides and the client window of an undecorated window
-('S' and 'W' contexts in bindings, see \fIMouse\fP and \fIKey\fP commands).
-
-A window with the \fIRaiseTransient\fP style that has transient windows
-will raise all its transients when it is raised.
-The \fIDontRaiseTransient\fP style disables this behavior.  All windows
-are then treated as if they had no transients.
-
-A window with the \fILowerTransient\fP style that has transient windows
-will lower all its transients when it is lowered.  The
-\fIDontLowerTransient\fP style disables this behavior.  All windows
-are then treated as if they had no transients.
-
-The \fIFlipTransient\fP style augments \fIRaiseTransient\fP and
-\fILowerTransient\fP styles so that repeated raising or repeated lowering
-of the main window makes the transients flip above and below the main.
-Note that flipping only occurs at the top or bottom of the layer,
-and so a second raise or lower may be necessary to actually flip when the
-first has simply moved the window's position.
-The \fIDontFlipTransient\fP style disables this behavior so that the
-main window is always below its transients.
-\fI(Dont)FlipTransient\fP has no effect if \fIRaiseTransient\fP and
-\fILowerTransient\fP are not used.
-
-The \fIStackTransientParent\fP style augments \fIRaiseTransient\fP and
-\fILowerTransient\fP styles.  Raising a window with
-\fIStackTransientParent\fP style transfers the raise action to the
-main window if the window being raised is a transient and its main
-window has \fIRaiseTransient\fP style; this effect makes raise on a
-transient act just like raise on its main - the whole group is raised.
-Similar behavior holds for lowering a whole group of transients when
-the main has \fILowerTransient\fP style. \fIDontStackTransientParent\fP
-turns this behavior off. \fI(Dont)StackTransientParent\fP has no
-effect if \fIRaiseTransient\fP and \fILowerTransient\fP are not used.
-
-A reasonable emulation of Motif raise/lower on transients is possible like this
-.EX
-Style * RaiseTransient
-Style * LowerTransient
-Style * StackTransientParent
-Style * DontFlipTransient
-.EE
-
-\fIIcon\fP takes an (optional) unquoted string argument which is the icon
-bitmap or pixmap to use. Icons specified this way override pixmap icons, but
-not icon windows, provided by the client in the WM_HINTS property. The
-IconOverride style changes the behavior to override any client-provided
-icons; the NoIconOverride style changes the behavior to not override
-any client-provided icons; the default overriding behavior can be
-activated with the NoActiveIconOverride style.
-
-There is one exception to these rules, namely
-.EX
-Style * Icon unknown.xpm
-.EE
-doesn't force the unknown.xpm icon on every window, it just sets the
-default icon like the DefaultIcon command. If you really want all
-windows to have the same icon, you can use
-.EX
-Style ** Icon unknown.xpm
-.EE
-
-\fIIconBox\fP takes four numeric arguments or an X11 geometry string:
-.EX
-IconBox l t r b
-.EE
-or
-.EX
-IconBox geometry
-.EE
-
-Where l is the left coordinate, t is the top, r is right and b is
-bottom. Negative coordinates indicate distance from the right or
-bottom of the screen.
-Perhaps easier to use is an X11 Geometry string:
-.EX
-IconBox -80x200-1-1
-.EE
-Which would place an 80 by 240 pixel icon box in the lower right hand
-corner of the screen.
-The icon box is a region of the screen where fvwm
-attempts to put icons for any matching window, as long as they do not
-overlap other icons.
-Multiple icon boxes can be defined as overflow areas.  When the first
-icon box is filled, the second one is filled.  All the icon boxes for
-one style must be defined in one command.  For example:
-.EX
-Style * IconBox -80x200-1-1, \\
-        IconBox 1000x70-1-1
-.EE
-If you never define an icon box, or you fill all the icon boxes, fvwm
-has a default icon box that covers the screen, it filled top to bottom,
-then left to right, and has an 80x80 pixel grid.  To disable all but
-the default icon box you can use IconBox without arguments in a
-separate Style command.
-
-Hint: You can auto arrange your icons in the icon box with a simple
-fvwm function. Put the DeiconifyAndRearrange function below in your
-configuration file:
-
-.EX
-AddToFunc DeiconifyAndRearrange
- + C Iconify off
- + C All (CurrentPage Iconic) RecaptureWindow
-.EE
-
-And then replace all places where you call the Iconify
-builtin function to de-iconify an icon with a call to the new
-function. For example replace
-
-.EX
-AddToFunc IconFunc
- + C Iconify off
- + M Raise
- + M Move
- + D Iconify off
-.EE
-
-with
-
-.EX
-AddToFunc IconFunc
- + C DeiconifyAndRearrange
- + M Raise
- + M Move
- + D DeiconifyAndRearrange
-.EE
-
-and
-
-.EX
-Mouse 1 I A Iconify off
-.EE
-
-with
-
-.EX
-Mouse 1 I A DeiconifyAndRearrange
-.EE
-
-\fIIconGrid\fP takes 2 numeric arguments greater than zero.
-.EX
-IconGrid x y
-.EE
-Icons are placed in an icon box by stepping thru the icon box using
-the x and y values for the icon grid, looking for a free space.
-The default grid is 3 by 3 pixels which gives a tightly packed appearance.
-To get a more regular appearance use a grid larger than your largest icon.
-Currently there is no way to clip an icon to a maximum size.
-An IconGrid definition must follow the IconBox definition that it
-applies to:
-.EX
-Style * IconBox -80x240-1-1, IconGrid 90 90
-.EE
-
-\fIIconFill\fP takes 2 arguments.
-.EX
-IconFill Bottom Right
-.EE
-Icons are placed in an icon box by stepping thru the icon box using
-these arguments to control the direction the box is filled in.
-By default the direction is left to right, then top to bottom.
-This would be expressed as:
-.EX
-IconFill left top
-.EE
-To fill an icon box in columns instead of rows, specify the
-vertical direction (top or bottom) first.
-The directions can be abbreviated or spelled out as follows: "t", "top",
-"b", "bot", "bottom", "l", "lft", "left", "r", "rgt", "right".
-An IconFill definition must follow the IconBox definition that it
-applies to:
-.EX
-Style * IconBox -80x240-1-1, IconFill b r
-.EE
-
-\fIMiniIcon\fP specifies a pixmap to use as the miniature icon for the
-window.  This miniature icon can be drawn in a title-bar button (see
-ButtonStyle), and can be used by various fvwm modules (FvwmWinList,
-FvwmIconMan, and FvwmTaskBar). It takes the name of a pixmap as an
-argument.
-
-\fIStartsOnDesk\fP takes a numeric argument which is the desktop number on
-which the window should be initially placed.  Note that standard Xt
-programs can also specify this via a resource (e.g. "-xrm '*Desk: 1'").
-
-\fIStartsOnPage\fP takes 1, 2, or 3 numeric arguments. If one or three
-arguments are given, the first (or only) argument is the desktop number.  If
-three arguments are given, the 2nd and 3rd arguments identify the x,y page
-position on the virtual window. If two arguments are given, they specify the
-page position, and indicate no desk preference. If only one argument is given,
-StartsOnPage functions exactly like StartsOnDesk. For those standard Xt
-programs which understand this usage, the starting desk/page can also be
-specified via a resource (e.g., "-xrm 'Fvwm.Page: 1 0 2'").
-
-StartsOnPage in conjunction with SkipMapping is a useful technique when you
-want to start an app on some other page and continue with what you were
-doing, rather than waiting for it to appear.
-
-\fIStartsOnPageIncludesTransients\fP will cause the StartsOnPage style to
-be applied even for transient windows. This is not usually useful, since
-transients are usually pop ups that you want to appear in your visible
-viewport; but occasionally an application will use a transient for something
-like a startup window that needs to be coerced into place.
-
-\fIActivePlacementIgnoresStartsOnPage\fP suppresses StartsOnPage or
-StartsOnDesk placement in the event that both ActivePlacement and SkipMapping
-are in effect when a window is created. This prevents you from interactively
-placing a window and then wondering where it disappeared to, because it got
-placed on a different desk or page. ActivePlacementHonorsStartsOnPage
-allows this to happen anyway. The option has no effect if SkipMapping is
-not in effect, because fvwm will switch to the proper desk/page to perform
-interactive placement. The default is ActivePlacementIgnoresStartsOnPage;
-ActivePlacementHonorsStartsOnPage matches the way the old StartsOnDesk style
-used to handle the situation.
-
-\fICaptureHonorsStartsOnPage\fP causes the initial capture (of an already
-existing window) at startup to place the window according to the
-StartsOnPage desk and page specification. CaptureIgnoresStartsOnPage
-causes fvwm to ignore these settings (including StartsOnDesk) on
-initial capture. The default is CaptureHonorsStartsOnPage.
-
-\fIRecaptureHonorsStartsOnPage\fP causes a window to be placed according to,
-or revert to, the StartsOnPage desk and page specification on Restart or
-Recapture. RecaptureIgnoresStartsOnPage causes fvwm to respect the current
-window position on Restart or Recapture. The default is
-RecaptureIgnoresStartsOnPage.
-
-\fILayer\fP accepts one a argument: a non-negative integer. This is
-the layer the window is put in.
-
-\fIStaysOnTop\fP puts the window in the top layer. This layer can
-be changed by the built-in command DefaultLayers; the default is 6.
-
-\fIStaysPut\fP puts the window in the put layer. This layer can
-be changed by the built-in command DefaultLayers; the default is 4.
-
-\fIStaysOnBottom\fP puts the window in the bottom layer. This layer can
-be changed by the built-in command DefaultLayers; the default is 2.
-
-\fIBorderWidth\fP takes a numeric argument which is the width of the border
-to place the window if it does not have resize-handles.
-
-\fIHandleWidth\fP takes a numeric argument which is the width of the border
-to place the window if it does have resize-handles.
-
-\fIMaxWindowSize\fP [\fIwidth\fP \fIheight\fP]
-Tells fvwm the maximum width and height of a window when it is
-initially created.  The values are the percentage of the total screen
-area.  If the letter 'p' is appended to wither of the values, the
-numbers are interpreted as pixels. This command is useful to force
-large application windows to be fully visible.  Neither \fIheight\fP
-nor \fIwidth\fP may be less than 100 pixels.  If you omit the
-parameters or their values are invalid, both limits are set to 32767
-pixels (which is the default).
-
-\fIResizeOpaque\fP instructs fvwm to resize the corresponding windows
-opaque instead of using an outline.  Since this causes the application
-to redraw frequently it can be quite slow and make the window flicker
-excessively, depending on the amount of graphics the application
-has to redraw.  The \fIResizeOutline\fP style (default) negates the
-\fIResizeOpaque\fP style.  Many applications do not like their windows
-being resized opaque, e.g. XEmacs, Netscape or terminals with a pixmap
-background.  If you do not like the result, don't use the
-\fIResizeOpaque\fP style for these windows.  To exempt certain windows
-from opaque resizing you could use these lines in your configuration
-file:
-
-.EX
-Style * ResizeOpaque
-Style rxvt ResizeOutline
-Style emacs ResizeOutline
-.EE
-
-\fIButton\fP and \fINoButton\fP take a numeric argument which is the
-number of the title-bar button which is to be included/omitted.
-
-\fISticky\fP makes the window sticky, i.e. it will always be visible
-on each page and each desk.  \fISlippery\fP reverts back to the
-default.
-
-\fIStickyIcon\fP makes the window sticky when its iconified.  It will
-de-iconify on top the active desktop. \fISlipperIcon\fP reverts back to the
-default.
-
-\fIMwmButtons\fP makes the Maximize button look pressed-in when the window
-is maximized.  See the MwmButton flag in ButtonStyle for more
-information.
-
-\fIMwmBorder\fP makes the 3-D bevel more closely match mwm's.
-
-\fIMwmDecor\fP makes fvwm attempt to recognize and respect the mwm
-decoration hints that applications occasionally use.
-
-\fIMwmFunctions\fP makes fvwm attempt to recognize and respect the mwm
-prohibited operations hints that applications occasionally use.
-HintOverride makes fvwm shade out operations that mwm would prohibit,
-but it lets you perform the operation anyway.
-
-\fIResizeHintOverride\fP instructs fvwm to ignore the program supplied
-minimum and maximum size. This can be handy for broken applications that
-refuse to be resized. Don't use it if you don't need it.
-
-\fIOLDecor\fP makes fvwm attempt to recognize and respect the olwm and olvwm
-hints that many older XView and OLIT applications use.
-
-\fIColor\fP takes two arguments.  The first is the window-label text color
-and the second is the window decoration's normal background color.
-The two colors are separated with a slash.  If the use of a slash
-causes problems then the separate \fIForeColor\fP and \fIBackColor\fP
-options can be used.
-
-\fIColorset\fP takes the colorset number as its sole argument and
-overrides the colors set by \fIColors\fP.  Instead, the
-corresponding colors from the given colorset are used.  Note that all
-other features of a colorset are unsupported yet.
-
-The \fIHilightFore\fP, \fIHilightBack\fP and \fIHilightColorset\fP
-styles work exactly like \fIForeColor\fP, \fIBackColor\fP and
-\fIColorset\fP but are used only if the window has the focus.
-These styles replace the old commands HilightColor and HilightColorset.
-
-The \fIFont\fP and \fIIconFont\fP options take the name of a font
-as their sole argument.  This font is used in the window or icon title.
-By default the font given in the \fIDefaultFont\fP command is used.
-To revert back to the default, use the style without the name argument.
-These styles replace the older WindowFont and IconFont commands.
-
-\fIUseDecor\fP accepts one argument: the name of a decor created with
-AddToDecor.  If UseDecor is not specified, the "Default" decor is
-used.  Windows do not actually contain decors, but are always assigned
-to one.  If the decor is later modified with AddToDecor, the changes
-will be visible for all windows which are assigned to it.  The decor
-for a window can be reassigned with ChangeDecor.
-
-\fIUseStyle\fP takes one arg, which is the name of another style.  That way
-you can have unrelated window names easily inherit similar traits
-without retyping.  For example: 'Style "rxvt" UseStyle "XTerm"'.
-Warning: If a style is built from one or more parent styles and the
-parent styles are changed, the derived style is not modified. To achieve
-this you have to issue the 'UseStyle' line again.
-
-.I SkipMapping
-tells fvwm not to switch to the desk the window is on when
-it gets mapped initially (useful with
-.IR StartsOnDesk " or " StartsOnPage ).
-
-.I Lenience
-instructs fvwm to ignore the convention in the
-.SM ICCCM
-which states that if an application sets the input field of the wm_hints
-structure to False, then it never wants the window manager to give it
-the input focus.  The only application that we know of which needs this
-is sxpm, and that is a silly bug with a trivial fix and has no overall
-effect on the program anyway.  Rumor is that some older applications
-have problems too.
-
-\fIClickToFocus\fP instructs fvwm to give the focus to the window when it is
-clicked in.  The default \fIMouseFocus\fP (or its alias
-\fIFocusFollowsMouse\fP) tells fvwm to give the window the focus as soon as
-the pointer enters the window, and take it away when the pointer leaves the
-window. \fISloppyFocus\fP is similar, but doesn't give up the focus if the
-pointer leaves the window to pass over the root window or a ClickToFocus
-window (unless you click on it, that is), which makes it possible to
-move the mouse out of the way without losing focus. A window with the
-style \fINeverFocus\fP never receives the focus. This is useful for
-FvwmButtons, for example.
+.I ClickToFocus
+instructs fvwm to give the focus to the window when it is clicked
+in.  The default
+.I MouseFocus
+(or its alias
+.IR FocusFollowsMouse )
+tells fvwm to give the window the focus as soon as the pointer
+enters the window, and take it away when the pointer leaves the
+window.
+.I SloppyFocus
+is similar, but doesn't give up the focus if the pointer leaves
+the window to pass over the root window or a ClickToFocus window
+(unless you click on it, that is), which makes it possible to move
+the mouse out of the way without losing focus.  A window with the
+style
+.I NeverFocus
+never receives the focus.  This is useful for modules like
+.BR FvwmButtons ,
+for example.
 
 The focus model can be augmented with severa additional options.
 .IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
@@ -4252,33 +3883,521 @@ The defaults are
 .IR ClickToFocusPassesClick ,
 .IR ClickToFocusRaises and MouseFocusClickRaisesOff .
 
+.I GrabFocus
+causes a newly mapped window to grab the focus, while
+.I GrabFocusOff
+turns this off.
+.I GrabFocus
+is the default for
+.I ClickToFocus
+windows and
+.I GrabFocusOff
+is the default for
+.IR MouseFocus " and " SloppyFocus
+windows.  Note that this option is switched back to the default
+every time you change the focus policy.  You have to use it
+after the initial
+.IR ClickToFocus / MouseFocus / SloppyFocus .
+This style does not apply to transient windows.  The
+.IR GrabFocusTransient " and " GrabFocusTransientOff
+styles are responsible for this behavior.  By default,
+.I GrabFocusTransient
+is turned on.
+
+.I Lenience
+instructs fvwm to ignore the convention in the
+.SM ICCCM
+which states that if an application sets the input field of the wm_hints
+structure to False, then it never wants the window manager to give it
+the input focus.  The only application that we know of which needs this
+is sxpm, and that is a silly bug with a trivial fix and has no overall
+effect on the program anyway.  Rumor is that some older applications
+have problems too.
+
+.\" +++++++++++++++ styles affecting the window title
+
+The
+.IR Title " and " NoTitle
+options determine if the window has a title-bar or not.  By default
+all windows have a title-bar.
+
+Windows with the
+.I TitleAtBottom
+style will have a title-bar below the window instead of above as
+usual. The
+.I TitleAtTop
+style restores the default placement.  Even if the window has the
+.I NoTitle
+style set, this affects the
+.I WindowShade
+command.
+
+With the
+.I StipledTitle
+style, are drawn with the same effect that is usually reserved for
+windows with the
+.I Sticky
+style.
+.I StipledTitleOff
+reverts back to normal titles.
+
+.I Color
+takes two arguments.  The first is the window-label text color
+and the second is the window decoration's normal background color.
+The two colors are separated with a slash.  If the use of a slash
+causes problems then the separate
+.IR ForeColor " and " BackColor
+options can be used.
+
+.I Colorset
+takes the colorset number as its sole argument and overrides the
+colors set by
+.IR Colors .
+Instead, the corresponding colors from the given colorset are
+used.  Note that all other features of a colorset are unsupported yet.
+
+The
+.IR HilightFore ", " HilightBack " and " HilightColorset
+styles work exactly like
+.IT ForeColor ", " BackColor " and " Colorset
+but are used only if the window has the focus.  These styles
+replace the old commands
+.BR HilightColor " and " HilightColorset .
+
+The
+.IR Font " and " IconFont
+options take the name of a font as their sole argument.
+This font is used in the window or icon title.  By default the
+font given in the
+.B DefaultFont
+command is used.  To revert back to the default, use the style
+without the name argument.  These styles replace the older
+.BR WindowFont " and " IconFont
+commands.
+
+.\" +++++++++++++++ styles affecting title buttons
+
+.IR Button " and " NoButton
+take a numeric argument which is the number of the title-bar
+button which is to be included/omitted.
+
+.I MwmButtons
+makes the
+.B Maximize
+button look pressed-in when the window is maximized.  See the
+.I MwmButton flag in
+.B ButtonStyle
+for more information.  To switch this style off again, use the
+.I FvwmButtons
+style.
+
+.\" +++++++++++++++ styles affecting borders
+
+.I MwmBorder
+makes the 3-D bevel more closely match mwm's.
+.I FvwmBorder
+turns off the previous option.
+
+.I HandleWidth
+takes a numeric argument which is the width of the border to
+place the window if it does have resize-handles.
+
+.I BorderWidth
+takes a numeric argument which is the width of the border to
+place the window if it does not have resize-handles.
+
+.I DepressableBorder
+makes the border parts of the window decoration look sunken in
+when a button is pressed over them.  This can be disabled
+again with the
+.I FirmBorder
+style.
+
+.\" +++++++++++++++ icons, shading, maximizing, movement, resizing
+
+.I Icon
+takes an (optional) unquoted string argument which is the icon
+bitmap or pixmap to use.  Icons specified this way override pixmap
+icons, but not icon windows, provided by the client in the application
+(with the WM_HINTS property).  The
+.I IconOverride
+style changes the behavior to override any client-provided icons; the
+.I NoIconOverride
+style changes the behavior to not override any client-provided icons;
+the default overriding behavior can be activated with the
+.I NoActiveIconOverride
+style.
+
+There is one exception to these rules, namely
+.EX
+Style * Icon unknown.xpm
+.EE
+doesn't force the unknown.xpm icon on every window, it just sets the
+default icon like the DefaultIcon command. If you really want all
+windows to have the same icon, you can use
+.EX
+Style ** Icon unknown.xpm
+.EE
+
+If the
+.I NoIcon
+attribute is set then the specified window will simply disappear
+when it is iconified.  The window can be recovered through the
+window-list.  If
+.I Icon
+is set without an argument then the
+.I NoIcon
+attribute is cleared but no icon is specified.  An example which
+allows only the
+.B FvwmPager
+module icon to exist:
+.EX
+Style * NoIcon
+Style FvwmPager Icon
+.EE
+
+.I IconBox
+takes four numeric arguments or an X11 geometry string:
+.EX
+.RI "IconBox " "l t r b"
+.EE
+or
+.EX
+IconBox geometry
+.EE
+
+Where
+.I l
+is the left coordinate,
+.I t
+is the top,
+.I r
+is right and
+.I b
+is bottom.  Negative coordinates indicate distance from the right or
+bottom of the screen.  Perhaps easier to use is an X11 Geometry string:
+.EX
+IconBox -80x200-1-1
+.EE
+Which would place an 80 by 240 pixel icon box in the lower right hand
+corner of the screen.  The icon box is a region of the screen where fvwm
+attempts to put icons for any matching window, as long as they do not
+overlap other icons.
+Multiple icon boxes can be defined as overflow areas.  When the first
+icon box is full, the second one is filled.  All the icon boxes for
+one style must be defined in one
+.B Style
+command.  For example:
+.EX
+Style * IconBox -80x200-1-1, \\
+        IconBox 1000x70-1-1
+.EE
+If you never define an icon box, or you fill all the icon boxes, fvwm
+has a default icon box that covers the screen, it fills top to bottom,
+then left to right, and has an 80x80 pixel grid.  To disable all but
+the default icon box you can use IconBox without arguments in a
+separate
+.B Style
+command.
+
+Hint: You can auto arrange your icons in the icon box with a simple
+fvwm function.  Put the "DeiconifyAndRearrange" function below in your
+configuration file:
+
+.EX
+AddToFunc DeiconifyAndRearrange
+ + C Iconify off
+ + C All (CurrentPage Iconic) RecaptureWindow
+.EE
+
+And then replace all places where you call the
+.B Iconify
+builtin function to de-iconify an icon with a call to the new
+function.  For example replace
+
+.EX
+AddToFunc IconFunc
+ + C Iconify off
+ + M Raise
+ + M Move
+ + D Iconify off
+
+Mouse 1 I A Iconify off
+.EE
+
+with
+
+.EX
+AddToFunc IconFunc
+ + C DeiconifyAndRearrange
+ + M Raise
+ + M Move
+ + D DeiconifyAndRearrange
+
+Mouse 1 I A DeiconifyAndRearrange
+.EE
+
+.I IconGrid
+takes 2 numeric arguments greater than zero.
+.EX
+.RI "IconGrid " "x y"
+.EE
+Icons are placed in an icon box by stepping through the icon box using
+the
+.IR x " and " y values for the icon grid, looking for a free space.
+The default grid is 3 by 3 pixels which gives a tightly packed appearance.
+To get a more regular appearance use a grid larger than your largest icon.
+Currently there is no way to clip an icon to a maximum size.
+An
+.I IconGrid
+definition must follow the
+.B IconBox
+definition that it applies to:
+.EX
+Style * IconBox -80x240-1-1, IconGrid 90 90
+.EE
+
+.I IconFill
+takes 2 arguments.
+.EX
+.RI "IconFill " "Bottom Right"
+.EE
+Icons are placed in an icon box by stepping through the icon box using
+these arguments to control the direction the box is filled in.
+By default the direction is left to right, then top to bottom.
+This would be expressed as:
+.EX
+IconFill left top
+.EE
+To fill an icon box in columns instead of rows, specify the
+vertical direction (top or bottom) first.
+The directions can be abbreviated or spelled out as follows: "t", "top",
+"b", "bot", "bottom", "l", "lft", "left", "r", "rgt", "right".
+An
+.B IconFill
+definition must follow the
+.B IconBox
+definition that it applies to:
+.EX
+Style * IconBox -80x240-1-1, IconFill b r
+.EE
+
+.I MiniIcon
+specifies a pixmap to use as the miniature icon for the window.
+This miniature icon can be drawn in a title-bar button (see
+.BR ButtonStyle ),
+and can be used by various fvwm modules
+.RB ( FvwmWinList ", " FvwmIconMan " and " FvwmTaskBar ).
+It takes the name of a pixmap as an argument.
+
+.IR WindowShadeShrinks " and " WindowShadeScrolls
+control if the contents of a window that is being shaded with the
+.B WindowShade
+command are scrolled (default) or if they stay in place.
+
+The
+.I WindowShadeSteps
+option elects the number of steps for animation when shading a window with
+.BR WindowShade .
+It takes one number as its argument.  If the number has a trailing
+.I ' p '
+it sets the number of pixels to use as the step size instead of
+a fixed number of steps.  0 disables the animation.  This happens
+too if the argument is omitted or invalid.
+
+.I ResizeOpaque
+instructs fvwm to resize the corresponding windows with their
+contents visible instead of using an outline.  Since this causes
+the application to redraw frequently it can be quite slow and
+make the window flicker excessively, depending on the amount of
+graphics the application redraws.  The
+.I ResizeOutline
+style (default) negates the
+.I ResizeOpaque
+style.  Many applications do not like their windows being resized
+opaque, e.g. XEmacs, Netscape or terminals with a pixmap background.
+If you do not like the result, don't use the
+.I ResizeOpaque
+style for these windows.  To exempt certain windows from opaque
+resizing you could use these lines in your configuration file:
+
+.EX
+Style * ResizeOpaque
+Style rxvt ResizeOutline
+Style emacs ResizeOutline
+.EE
+
+.I Sticky
+makes the window sticky, i.e. it will always be visible on each
+page and each desk.  The opposite style,
+.I Slippery
+reverts back to the default.
+
+.I StickyIcon
+makes the window sticky when its iconified.  It will de-iconify
+on top the active desktop.
+.I SlipperIcon
+reverts back to the default.
+
+.I IgnoreRestack
+makes fvwm ignore attempts of clients to raise or lower their
+own windows.  Bye default, the opposite style,
+.I AllowRestack
+is active.
+
+.I FixedPosition
+makes fvwm ignore attempts of the user to move the window.  To
+allow user movement of windows, use the
+.I VariablePosition
+style.
+
+.I ResizeHintOverride
+instructs fvwm to ignore the program supplied minimum and
+maximum size.  This can be handy for broken applications that
+refuse to be resized.  Don't use it if you don't need it.  The
+default (opposite) style is
+
+.IR MaxWindowSize " [" width "[p] " height "[p] ]"
+Tells fvwm the maximum width and height of a window.  The values
+are the percentage of the total screen area.  If the letter
+.RI ' p '
+is appended to either of the values, the numbers are interpreted
+as pixels. This command is useful to force large application
+windows to be fully visible.  Neither
+.IR height " or " width
+may be less than 100 pixels.  If you omit the parameters or
+their values are invalid, both limits are set to 32767 pixels
+(which is the default).
+
+.\" +++++++++++++++ placement and stacking policy
+
+.I StartsOnDesk
+takes a numeric argument which is the desktop number on which
+the window should be initially placed.  Note that standard Xt
+programs can also specify this via a resource (e.g. "-xrm '*Desk: 1'").
+
+.I StartsOnPage
+takes 1, 2, or 3 numeric arguments.  If one or three arguments
+are given, the first (or only) argument is the desktop number.
+If three arguments are given, the 2nd and 3rd arguments identify
+the x,y page position on the virtual window.  If two arguments
+are given, they specify the page position, and indicate no desk
+preference.  If only one argument is given,
+.I StartsOnPage
+functions exactly like
+.IR StartsOnDesk .
+For those standard Xt programs which understand this usage,
+the starting desk/page can also be specified via a resource
+(e.g., "-xrm 'Fvwm.Page: 1 0 2'").
+.I StartsOnPage
+in conjunction with
+.I SkipMapping
+is a useful technique when you want to start an app on some
+other page and continue with what you were doing, rather than
+waiting for it to appear.
+
+.I StartsOnPageIncludesTransients
+will cause the
+.I StartsOnPage
+style to be applied even for transient windows.  This is not
+usually useful, since transients are usually pop ups that you
+want to appear in your visible viewport; but occasionally an
+application will use a transient for something like a startup
+window that needs to be coerced into place.
+
+.I ActivePlacementIgnoresStartsOnPage
+suppresses
+.IR StartsOnPage " or " StartsOnDesk
+placement in the event that both
+.IR ActivePlacement " and " SkipMapping
+are in effect when a window is created.  This prevents you from
+interactively placing a window and then wondering where it
+disappeared to, because it got placed on a different desk or
+page.
+.I ActivePlacementHonorsStartsOnPage
+allows this to happen anyway.  The option has no effect if
+
+.I SkipMapping
+is not in effect, because fvwm will switch to the proper
+desk/page to perform interactive placement.  The default is
+.IR ActivePlacementIgnoresStartsOnPage "; "
+.I ActivePlacementHonorsStartsOnPage
+matches the way the old
+.I StartsOnDesk
+style used to handle the situation.
+
+.I CaptureHonorsStartsOnPage
+causes the initial capture (of an already existing window) at
+startup to place the window according to the
+.I StartsOnPage
+desk and page specification.
+.I CaptureIgnoresStartsOnPage
+causes fvwm to ignore these settings (including
+.IR StartsOnDesk )
+on initial capture.  The default is
+.IR CaptureHonorsStartsOnPage .
+
+.I RecaptureHonorsStartsOnPage
+causes a window to be placed according to, or revert to, the
+.I StartsOnPage
+desk and page specification on
+.BR Restart " or " Recapture .
+.I RecaptureIgnoresStartsOnPage
+causes fvwm to respect the current window position on
+.BR Restart " or " Recapture .
+The default is
+.IR RecaptureIgnoresStartsOnPage .
+
+.I Layer
+accepts one a argument: a non-negative integer. This is the
+layer the window is put in.
+
+.I StaysOnTop
+puts the window in the top layer.  This layer can be changed
+by the built-in command
+.BR DefaultLayers ;
+the default is 6.
+
+.I StaysPut
+puts the window in the put layer.  This layer can be changed by
+the built-in command
+.BR DefaultLayers ;
+the default is 4.
+
+.I StaysOnBottom
+puts the window in the bottom layer. This layer can be changed
+by the built-in command
+.BR DefaultLayers ;
+the default is 2.
+
 .I NoPPosition
-instructs fvwm to ignore the PPosition field when adding
-new windows.  Adherence to the PPosition field is required for some
-applications, but if you don't have one of those its a real headache.
+instructs fvwm to ignore the program specified position (PPosition hint)
+when adding new windows.  Adherence to the PPosition field is
+required for some applications, but if you don't have one of
+those its a real headache.
 
 With
 .I ActivePlacement
 the user is required to place every new window manually.  When a
 window pops up, a wire frame representing the new window is shown.
 The window is placed when a mouse button or any key except
-.Escape
-is pressed.  If the user aborts placing the window it is dumped
-in the top left corner of the screen.
+.SM Escape
+is pressed which aborts manual placement.  If the user aborts
+placing the window it is dumped in the top left corner of the screen.
 
 .I RandomPlacement
-causes windows which would normally require user
-placement to be automatically placed in ever-so-slightly random
-locations.  For the best of all possible worlds use both
+causes windows which would normally require user placement to be
+automatically placed in ever-so-slightly random locations.  For
+the best of all possible worlds use both
 .IR RandomPlacement ", " SmartPlacement " and " CleverPlacement .
 
 .I SmartPlacement
-causes windows which would normally require user
-placement to be automatically placed in a smart location - a location
-in which they do not overlap any other windows on the screen.  If no
-such position can be found user placement or random placement (if
-specified) will be used as a fall-back method.  For the best of all
-possible worlds use both
+causes windows which would normally require user placement to
+be automatically placed in a smart location - a location in
+which they do not overlap any other windows on the screen.  If
+no such position can be found user placement or random placement
+(if specified) will be used as a fall-back method.  For the best
+of all possible worlds use both
 .IR RandomPlacement " and " SmartPlacement .
 
 .I CleverPlacement
@@ -4297,28 +4416,162 @@ style.
 switches off both,
 .IR SmartPlacement " and " CleverPlacement .
 
-\fIStartsLowered\fP instructs fvwm to put the window initially at the
-bottom of its layer rather than the default \fIStartsRaised\fP.
+.I StartsLowered
+instructs fvwm to put the window initially at the bottom of
+its layer rather than the default
+.IR StartsRaised .
 
-\fIGrabFocus\fP causes a newly mapped window to grab the focus, wile
-\fIGrabFocusOff\fP turns this off. \fIGrabFocus\fP is the default
-for ClickToFocus windows and \fIGrabFocusOff\fP is the default for
-MouseFocus and SloppyFocus windows. Note that this option is switched
-back to the default every time you change the focus policy. You
-have to use it after the initial ClickToFocus/MouseFocus/SloppyFocus.
-This style does not apply to transient windows. The
-\fIGrabFocusTransient\fP and \fIGrabFocusTransientOff\fP styles
-are responsible for this behavior. By default, \fIGrabFocusTransient\fP
-is turned on.
+.I SkipMapping
+tells fvwm not to switch to the desk the window is on when
+it gets mapped initially (useful with
+.IR StartsOnDesk " or " StartsOnPage ).
 
-\fIIgnoreRestack\fP makes fvwm ignore attempts of clients to raise
-or lower their own windows.
+.\" +++++++++++++++ transient windows
 
-\fIFixedPosition\fP makes fvwm ignore attempts of the user to move
-the window.
+.I DecorateTransient
+causes transient windows, which are normally left undecorated,
+to be given the usual fvwm decorations (title bar, buttons,
+etc.). Note that some pop-up windows, such as the xterm menus,
+are not managed by the window manager and still do not receive
+decorations.
+.I NakedTransient
+(the default) causes transient windows not to be given the
+standard decorations. You can only bind keys or mouse buttons
+to the sides and the client window of an undecorated window ('S'
+and 'W' contexts in bindings, see
+.BR Mouse " and " Key
+commands).
 
-\fIDepressableBorder\fP makes the border parts of the window decoration
-look sunken in when a button is pressed over them.
+A window with the
+.I RaiseTransient
+style that has transient windows will raise all its transients
+when it is raised.  The
+.I DontRaiseTransient
+style disables this behavior.  All windows are then treated as
+if they had no transients.
+
+A window with the
+.I LowerTransient
+style that has transient windows will lower all its transients
+when it is lowered.  The
+.I DontLowerTransient
+style disables this behavior.  All windows are then treated as
+if they had no transients.
+
+The
+.I FlipTransient
+style augments
+.I RaiseTransient
+and
+.I LowerTransient
+styles so that repeated raising or repeated lowering of the main
+window makes the transients flip above and below the main.  Note
+that flipping only occurs at the top or bottom of the layer, and
+so a second raise or lower may be necessary to actually flip when the
+first has simply moved the window's position.  The
+.I DontFlipTransient
+style disables this behavior so that the main window is always
+below its transients.
+.I (Dont)FlipTransient
+has no effect if
+.IR RaiseTransient " and " LowerTransient
+are not used.
+
+The
+.I StackTransientParent
+style augments
+.IR RaiseTransient " and " LowerTransient
+styles.  Raising a window with
+.I StackTransientParent
+style transfers the raise action to the main window if the window
+being raised is a transient and its main window has
+.I RaiseTransient
+style; this effect makes raise on a transient act just like raise
+on its main - the whole group is raised.  Similar behavior holds
+for lowering a whole group of transients when the main has
+.I LowerTransient
+style.
+.I DontStackTransientParent
+turns this behavior off.
+.I (Dont)StackTransientParent
+has no effect if
+.IR RaiseTransient " and " LowerTransient
+are not used.
+
+A reasonable emulation of Motif raise/lower on transients is
+possible like this
+.EX
+Style * RaiseTransient
+Style * LowerTransient
+Style * StackTransientParent
+Style * DontFlipTransient
+.EE
+
+.\" +++++++++++++++ miscellaneous
+
+The
+.IR BackingStore " and " SaveUnder
+styles enable the corresponding window attributes in the X server.
+.I BackingStore
+means that the X server tries to keep the obscured parts of a
+window in memory while windows with
+.I SaveUnder
+store the graphics below them.  Either option can speed up fvwm
+if the connection to the X server is slow (e.g. over a modem
+link).  By default both styles are turned off.  To switch them off
+explicitly you can use the
+.IR BackingStoreOff " and " SaveUnderOff
+styles.
+
+.I MwmDecor
+makes fvwm attempt to recognize and respect the mwm decoration
+hints that applications occasionally use.  To switch this style
+off, use the
+.I NoDecorHint
+style.
+
+.I MwmFunctions
+makes fvwm attempt to recognize and respect the mwm prohibited
+operations hints that applications occasionally use.
+.I HintOverride
+makes fvwm shade out operations that mwm would prohibit,
+but it lets you perform the operation anyway.
+.I NoFuncHint
+allows turns off the mwm hints completely.
+
+.I OLDecor
+makes fvwm attempt to recognize and respect the olwm and olvwm
+hints that many older XView and OLIT applications use.  Switch
+this option off with
+.IR NoOLDecor .
+
+.I UseDecor
+accepts one argument: the name of a decor created with
+.BR AddToDecor .
+If
+.I UseDecor
+is not specified, the "Default" decor is used.  Windows do not
+actually contain decors, but are always assigned to one.  If
+the decor is later modified with
+.BR AddToDecor ,
+the changes will be visible for all windows which are assigned
+to it.  The decor for a window can be reassigned with
+.BR ChangeDecor .
+
+.I UseStyle
+takes one arg, which is the name of another style.  That way
+you can have unrelated window names easily inherit similar traits
+without retyping.  For example:
+.EX
+  Style rxvt UseStyle XTerm
+.EE
+Warning:  If a style is built from one or more parent styles and
+the parent styles are changed, the derived style is not modified.
+To achieve this you have to issue the
+.I UseStyle
+line again.
+
+.\" +++++++++++++++ examples
 
 An example:
 .EX
@@ -4365,65 +4618,72 @@ Style signal      StartsOnDesk 3
 Style Netscape* SkipMapping,              \\
                 StartsOnPage 1 1 1
 .EE
-Note that all properties for a window will be OR'ed together.  In the
-above example "FvwmPager" gets the property StaysOnTop via an exact
-window name match but also gets NoHandles, Sticky, and WindowListSkip
-by a match to "Fvwm*".  It will get NoTitle by virtue of a match to
-"*".  If conflicting styles are specified for a window, then the last
-style specified will be used.
+Note that all properties for a window will be or'ed together.  In the
+above example "FvwmPager" gets the property
+.I StaysOnTop
+via an exact window name match but also gets
+.IR NoHandles ", " Sticky " and " WindowListSkip
+by a match to "Fvwm*".  It will get
+.I NoTitle
+by virtue of a match to "*".  If conflicting styles are specified
+for a window, then the last style specified will be used.
 
-If the NoIcon attribute is set then the specified window will simply
-disappear when it is iconified.  The window can be recovered through
-the window-list.  If Icon is set without an argument then the NoIcon
-attribute is cleared but no icon is specified.  An example which
-allows only the FvwmPager module icon to exist:
+.TP
+.BI "DestroyStyle " style
+Deletes the style named
+.IR style .
+This will not affect currently visible windows (they each have a
+copy of their styles, which will remain unaffected).  Note that
+.I style
+is not a wild-carded search string, but rather a case-sensitive
+string that should exactly match the original
+.B Style
+command.
+
+Destroying style "*" can be done, but isn't really to be recommended.
+For example:
 .EX
-Style * NoIcon
-Style FvwmPager Icon
+DestroyStyle Application*
 .EE
 
-The \fIBackingStore\fP and \fISaveUnder\fP styles enable the corresponding
-window attributes in the X server.  BackingStore means that the X server
-tries to keep the obscured parts of a window in memory while windows
-with SaveUnder store the graphics below them.  Either option can speed
-up fvwm if the connection to the X server is slow (e.g. over a modem
-link).  By default both styles are turned off.  To switch them off
-explicitly you can use the \fIBackingStoreOff\fP and \fISaveUnderOff\fP
-styles.
-
-.IR WindowShadeShrinks " and " WindowShadeScrolls
-control if the contents of a window that is being shaded with the
-.B WindowShade
-command are scrolled (default) or if they stay in place.
-
-The
-.I WindowShadeSteps
-option elects the number of steps for animation when shading a window with
-.BR WindowShade .
-It takes one number as its argument.  If the number has a trailing
-.I ' p '
-it sets the number of pixels to use as the step size instead of
-a fixed number of steps.  0 disables the animation.  This happens
-too if the argument is omitted or invalid.
+This will remove all settings for the style named "Application*", NOT all
+styles starting with "Application".
 
 
 .SS OTHER COMMANDS CONTROLLING WINDOW STYLES
 
 .TP
-.B "AddButtonStyle" "\fIbutton\fP [\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
-Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
-number, or one of "All," "Left," or "Right."  \fIstate\fP can be
-"ActiveUp," "ActiveDown", "Inactive",
-"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive".
-If \fIstate\fP is omitted, then the style is added to every state.  If the
-button style and flags are enclosed in parentheses, then multiple state
-definitions can be placed on a single line.  Flags for additional button
-styles cannot be changed after definition.
+.BI "AddButtonStyle " button " [" state "] [" style "] [-- [!]" flag " ...]"
+Adds a button style to
+.IR button .
+.I button
+can be a button number, or one of "All", "Left" or "Right".
+.I state
+can be "ActiveUp," "ActiveDown" or "Inactive" or any of these three
+with "Toggled" prepended.  "ActiveUp" select to the style of the
+button when the window has the focus and the button is not pressed.
+"ActiveDown" is similar but applies when the button is pressed while
+the "Inactive" style is used for windows without the focus.  The
+"Toggled" prefix refers to maximized, shaded or sticky windows
+that have the corrseponding
+.I MwmDecor...
+button style set.  If
+.I state
+is omitted, then the style is added to every state.  If the
+.IR style " and " flags
+are enclosed in parentheses, then multiple
+.I state
+definitions can be placed on a single line.
+.I Flags
+for additional button styles cannot be changed after definition.
 
 Buttons are drawn in the order of definition, beginning with the most
-recent button style, followed by those added with AddButtonStyle.  To
-clear the button style stack, change style flags, or for descriptions
-of available styles and flags, see the ButtonStyle command.  Examples:
+recent button style, followed by those added with
+.BR AddButtonStyle .
+To clear the button style stack, change style flags, or for descriptions
+of available styles and flags, see the
+.B ButtonStyle
+command.  Examples:
 .EX
 ButtonStyle 1 Pixmap led.xpm -- Top Left
 ButtonStyle 1 ActiveDown HGradient 8 grey \\
@@ -4435,61 +4695,88 @@ AddButtonStyle 1 Vector 4 50x30@1 70x70@0 \\
   30x70@0 50x30@1
 .EE
 Initially for this example all button states are set to a pixmap.  The
-second line replaces the ActiveDown state with a gradient (it
+second line replaces the "ActiveDown" state with a gradient (it
 overrides the pixmap assigned to it in the line before, which assigned
-the same style to every state).  Then, the UseTitleStyle flag is set
-for all buttons, which causes fvwm to draw any styles set with
-TitleStyle before drawing the buttons.  Finally, AddButtonStyle is
-used to place additional pixmaps for both ActiveUp and ActiveDown
-states and a Vector button style is drawn on top of all state.
+the same style to every state).  Then, the
+.I UseTitleStyle
+flag is set for all buttons, which causes fvwm to draw any styles
+set with
+.B TitleStyle
+before drawing the buttons.  Finally,
+.B AddButtonStyle
+is used to place additional pixmaps for both "ActiveUp" and "ActiveDown"
+states and a vector button style is drawn on top of all state.
 
 .TP
-.B "AddButtonStyle" "\fIbutton\fP [\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
-Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
-number, or one of "All," "Left," or "Right."  \fIstate\fP can be
-
-.TP
-.B "AddTitleStyle" "[\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
-Adds a title style to the title-bar.  \fIstate\fP should be one of
-"ActiveUp," "ActiveDown", "Inactive",
-"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive."
-If \fIstate\fP is omitted,
-then the style is added to every state.  If the style and flags are
-enclosed in parentheses, then multiple state definitions can be placed
-on a single line.  This command is quite similar to the AddButtonStyle
+.BR "AddTitleStyle [" state "] [" style "] [-- [!]" flag " ...]"
+Adds a title style to the title-bar.
+.I state
+can be one of "ActiveUp," "ActiveDown" or "Inactive" or any of these
+with "Toggled" prepended.  If
+.I state
+is omitted, then the style is added to every state.  If the
+.IR style " and " flags
+are enclosed in parentheses, then multiple
+.I state
+definitions can be placed on a single line.  This command is quite
+similar to the
+.B AddButtonStyle
 command (see above).
 
-title-bars are drawn in the order of definition, beginning with the
-most recent TitleStyle, followed by those added with AddTitleStyle.
+Title-bars are drawn in the order of definition, beginning with the
+most recent
+.BR TitleStyle ,
+followed by those added with
+.BR AddTitleStyle .
 To clear the title style stack, change style flags, or for the
-descriptions of available styles and flags, see the TitleStyle and
-ButtonStyle commands.
+descriptions of available styles and flags, see the
+.BR TitleStyle " and " ButtonStyle
+commands.
 
 .TP
-.B "AddToDecor" "\fIdecor\fP"
-Add or divert commands to the decor named \fIdecor\fP.  A decor is a
-name given to the set of commands which affect button styles,
-title-bar styles, border styles and window fonts.  If
-\fIdecor\fP does not exist it is created; otherwise the existing
-\fIdecor\fP is modified.
-Note: Earlier versions allowed to use the HilightColor,
-HilightColorset and WindowFont commands in decors.  This is no
-longer possible.  Please use the \fIStyle\fP command with the
-Hilight... and Font options.
+.BI "AddToDecor " decor
+Add or divert commands to the decor named
+.IR decor .
+A decor is a name given to the set of commands which affect
+button styles, title-bar styles, border styles and window fonts.  If
+.I decor
+does not exist it is created; otherwise the existing
+.I decor
+is modified.  Note: Earlier versions allowed to use the
+.BR HilightColor ", " HilightColorset " and " WindowFont
+commands in decors.  This is no longer possible.  Please use the
+.I Style
+command with the
+.IR Hilight... " and " Font
+options.
 
-Created decors start out exactly like the default fvwm decor without
+New decors start out exactly like the "default" decor without
 any style definitions.  A given decor may be applied to a set of
-windows with the UseDecor option of the Style command.  Modifying an
-existing decor will affect windows which are currently assigned to it.
+windows with the
+.I UseDecor
+option of the
+.B Style
+command.  Modifying an existing decor will affect all windows which
+are currently assigned to it.
 
-AddToDecor is similar in usage to the AddToMenu and AddToFunc
-commands, except that menus and functions are replaced by ButtonStyle,
-AddButtonStyle, TitleStyle, AddTitleStyle and BorderStyle commands.
-Decors created with AddToDecor can be manipulated with ChangeDecor,
-DestroyDecor, UpdateDecor, and the UseDecor Style option.
+.B AddToDecor
+is similar in usage to the
+.BR AddToMenu " and " AddToFunc
+commands, except that menus and functions are replaced by
+.BR ButtonStyle ", " AddButtonStyle ", " TitleStyle ", " AddTitleStyle " and "
+.B BorderStyle
+commands.
+Decors created with
+.B AddToDecor
+can be manipulated with
+.BR ChangeDecor ", " DestroyDecor ", " UpdateDecor
+and the
+.I UseDecor
+.B Style
+option.
 
-The following example creates a decor 'FlatDecor' and style
-'FlatStyle'.  They are distinct entities:
+The following example creates a decor "FlatDecor" and style
+"FlatStyle".  They are distinct entities:
 .EX
 AddToDecor FlatDecor
  + ButtonStyle All ActiveUp (-- flat) \\
@@ -4501,12 +4788,10 @@ AddToDecor FlatDecor
 
 Style xterm UseStyle FlatStyle
 .EE
-An existing window's decor may be reassigned with ChangeDecor, or a
-Style command followed by a Recapture.  The decorations of all windows
-or of a specific decor can be updated with UpdateDecor (useful after
-decorations are modified.  A decor can be destroyed with DestroyDecor.
-If you change styles in the decor you must re-apply the style to
-all windows that are supposed to do it followed by a Recapture:
+An existing window's decor may be reassigned with
+.B ChangeDecor .
+A decor can be destroyed with
+.BR DestroyDecor .
 
 .EX
 AddToDecor FlatDecor
@@ -4520,57 +4805,52 @@ and now apply the style again:
 Style xterm UseStyle FlatStyle
 .EE
 
-A different way to achieve this to add the 'UseStyle' style
-to the decor itself:
-
-.EX
-AddToDecor FlatDecor
- + Style xterm UseStyle FlatStyle
-.EE
-
-Although this is not obvious, decors can partially be nested
-with the UseDecor style:
-
-.EX
-AddToDecor CommonDecor
- + Style * Forecolor black, Backcolor darkseagreen
-
-AddToDecor FlatDecor
- + Style * UseDecor CommonDecor
-...
-
-AddToDecor RaisedDecor
- + Style * UseDecor CommonDecor
-...
-.EE
-
-This works only with the 'Style' command.
-
 .TP
-.B "BorderStyle" "[\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
-Defines a border style for windows.  \fIstate\fP can be either
-"Active" or "Inactive."  If \fIstate\fP is omitted, then the style is
-set for both states.  If the style and flags are enclosed in
-parentheses, then multiple state definitions can be specified per
-line.
+.BI "BorderStyle [" state "] [" style "] [-- [!]" flag " ...]"
+Defines a border style for windows.
+.I state
+can be either "Active" or "Inactive".  If
+.I state
+is omitted, then the style is set for both states.  If the
+.IR style " and " flags
+are enclosed in parentheses, then multiple
+.I state
+definitions can be specified per line.
 
-\fIstyle\fP is a subset of the available button styles, and can only be
-TiledPixmap (uniform pixmaps which match the bevel colors work best
-this way).  If an "!"  is prefixed to any flag, flag behavior is
-negated.  If \fIstyle\fP is not specified, then one can change flags
-without resetting the style.
+.I style
+is a subset of the available button styles, and can only be
+.I TiledPixmap
+(uniform pixmaps which match the bevel colors work best this way).
+If a
+.RI ' ! '
+is prefixed to any
+.IR flag ,
+the behavior is negated.  If
+.I style
+is not specified, then one can change flags without resetting the style.
 
-The \fIHiddenHandles\fP flag hides the corner handle dividing lines on
-windows with handles (this option has no effect for NoHandle windows).
-By default, HiddenHandles is disabled.
+The
+.I HiddenHandles
+flag hides the corner handle dividing lines on windows with
+handles (this option has no effect for NoHandle windows).  By
+default,
+.I HiddenHandles
+is disabled.
 
-The \fINoInset\fP flag supplements HiddenHandles.  If given, the inner
-bevel around the window frame is not drawn.  If HiddenHandles is not
-specified, the frame will look a little strange.
+The
+.I NoInset
+flag supplements
+.IR HiddenHandles .
+If given, the inner bevel around the window frame is not drawn.  If
+.I HiddenHandles
+is not specified, the frame will look a little strange.
 
-The \fIRaised\fP causes a raised relief pattern to be drawn (default).
-The \fISunk\fP causes a sunken relief pattern to be drawn.
-The \fIFlat\fP inhibits the relief pattern from being drawn.
+.I Raised
+causes a raised relief pattern to be drawn (default).
+.I Sunk
+causes a sunken relief pattern to be drawn.
+.I Flat
+inhibits the relief pattern from being drawn.
 
 To decorate the active and inactive window borders with a textured
 pixmap, one might specify:
@@ -4591,41 +4871,53 @@ To unset a flag for a given state:
 .EX
 BorderStyle Inactive -- !NoInset
 .EE
-title-bar buttons can inherit the border style with the UseBorderStyle
-flag (see ButtonStyle).
+title-bar buttons can inherit the border style with the
+.I UseBorderStyle
+flag (see
+.BR ButtonStyle ).
 
 .TP
-.B "ButtonState" "[\fIActiveDown\fP \fIbool\fP] [\fIinactive\fP \fIbool\fP]"
-The \fIButtonState\fP command controls which states of the window
-titles and title buttons are used.  The default is to use all three
-states: ActiveUp, ActiveDown and Inactive (see \fIButtonStyle\fP and
-\fITitleStyle\fP commands).  The \fIbool\fP argument after the key
-word controls if the designated state is used ('True') or not
-('False'). The ActiveUp state cannot be deactivated. If no arguments
-are provided or the given arguments are illegal, the default is
-restored.
+.BI "ButtonState [" "ActiveDown bool" "] [" "inactive bool" "]"
+The
+.B ButtonState
+command controls which states of the window titles and title
+buttons are used.  The default is to use all three states:
+"ActiveUp", "ActiveDown" and "Inactive" (see
+.BR ButtonStyle " and " TitleStyle
+commands).  The
+.I bool
+argument after the key word controls if the designated state
+is used ("True") or not ("False").  The "ActiveUp" state cannot
+be deactivated. If no arguments are provided or the given
+arguments are illegal, the default is restored.
 
-The \fIActiveDown\fP state allows different button styles for pressed
+The "ActiveDown" state allows different button styles for pressed
 down buttons and titles on active windows.  Otherwise the
-"ActiveUp" state is used instead.  The \fIInactive\fP state allows
+"ActiveUp" state is used instead.  The "Inactive" state allows
 different button and title styles for inactive windows.  Otherwise
 the "ActiveUp" state is used instead.
 
 .TP
-.B "ButtonStyle" "\fIbutton\fP [\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
-Sets the button style for a title-bar button.  \fIbutton\fP is the
-title-bar button number between 0 and 9, or one of "All," "Left,"
-"Right," or "Reset."  Button numbering is described in the Mouse
-section (see below).  If the style and flags are enclosed in
-parentheses, then multiple state definitions can be specified per
-line.
+.BI "ButtonStyle " button " [" state "] [" style "] [-- [!]" flag " ...]"
+Sets the button style for a title-bar button.
+.I button
+is the title-bar button number between 0 and 9, or one of "All", "Left",
+"Right", or "Reset".  Button numbering is described in the
+.B Mouse
+command section.  If the
+.IR style " and " flags
+are enclosed in parentheses, then multiple
+.I state
+definitions can be specified per line.
 
-\fIstate\fP refers to which button state should be set.  Button states
-are defined as follows: "ActiveUp" and "ActiveDown" refer to the
+.I state
+refers to which button state should be set.  Button states are
+defined as follows: "ActiveUp" and "ActiveDown" refer to the
 un-pressed and pressed states for buttons on active windows; while the
-"Inactive" state denotes buttons on inactive windows. The "ToggledActiveUp",
-"ToggledActiveDown" and "ToggledInactive" states are used instead for buttons
-which have one of the MwmDecorMaximize, MwmDecorShade or MwmDecorStick
+"Inactive" state denotes buttons on inactive windows.  The
+"ToggledActiveUp", "ToggledActiveDown" and "ToggledInactive" states
+are used instead for buttons which have one of the
+.IR MwmDecorMaximize ", " MwmDecorShade " or " MwmDecorStick
 hints, if the window is maximized, shaded or sticky, respectively.
 .EX
 AddToDecor Default
@@ -4640,21 +4932,28 @@ AddToDecor Default
  + ButtonStyle 6 - MwmDecorShade
 Mouse 0 6 N WindowShade
 .EE
-If \fIstate\fP is ActiveUp, ActiveDown, Inactive, or a toggled variant,
-that particular button state is set.  If \fIstate\fP is omitted, every state
-is set. Specifying a style destroys the current style (use AddButtonStyle to
-avoid this).
+If
+.I state
+is "ActiveUp", "ActiveDown", "Inactive", or a "Toggled" variant,
+that particular button state is set.  If
+.I state
+is omitted, every state is set.  Specifying a style destroys the
+current style (use
+.B AddButtonStyle
+to avoid this).
 
-If \fIstyle\fP is omitted, then state-dependent flags can be set for
-the primary button style without destroying the current style.
-Examples (each line should be considered independent):
+If
+.I style
+is omitted, then state-dependent flags can be set for the primary
+button style without destroying the current style.  Examples (each
+line should be considered independent):
 .EX
 ButtonStyle Left -- flat
 ButtonStyle All ActiveUp (-- flat) \\
   Inactive (-- flat)
 .EE
 The first line sets every state of the left buttons to flat, while the
-second sets only the ActiveUp and Inactive states of every button to
+second sets only the "ActiveUp" and "Inactive" states of every button to
 flat (only flags are changed; the buttons' individual styles are not
 changed).
 
@@ -4662,7 +4961,7 @@ If you want to reset all buttons to their defaults:
 .EX
 ButtonStyle Reset
 .EE
-To reset the ActiveUp button state of button 1 to the default:
+To reset the "ActiveUp" button state of button 1 to the default:
 .EX
 ButtonStyle 1 ActiveUp Default
 .EE
@@ -4672,68 +4971,107 @@ button number 2:
 ButtonStyle 1 Default 2
 .EE
 
-For any given button, multiple state definitions can be given on one
-line by enclosing the style and flags in parentheses.  If only one
-definition per line is given the parentheses can be omitted.
+For any button, multiple
+.I state
+definitions can be given on one line by enclosing the
+.IR style " and " flags
+in parentheses.  If only one definition per line is given the
+parentheses can be omitted.
 
-\fIflags\fP affect the specified \fIstate\fP.  If an "!" is prefixed
-to any \fIflag\fP, its behavior is negated.  The available
-state-dependent flags for all styles are described here (the next
-ButtonStyle entry deals with state-independent flags).
+.I flags
+affect the specified
+.IR state .
+If a
+.RI ' ! '
+is prefixed to any
+.IR flag ,
+its behavior is negated.  The available state-dependent flags
+for all styles are described here (the
+.B ButtonStyle
+entry deals with state-independent flags).
 
-"Raised" causes a raised relief pattern to be drawn.
+.I Raised
+causes a raised relief pattern to be drawn.
 
-"Sunk" causes a sunken relief pattern to be drawn.
+.I Sunk
+causes a sunken relief pattern to be drawn.
 
-"Flat" inhibits the relief pattern from being drawn.
+.I Flat
+inhibits the relief pattern from being drawn.
 
-"UseTitleStyle" causes the given button state to render the current
-title style before rendering the button's own styles.  The Raised,
-Flat, and Sunk TitleStyle flags are ignored since they are redundant
-in this context.
+.I UseTitleStyle
+causes the given button state to render the current title style
+before rendering the button's own styles.  The
+.IR Raised ", " Flat ", " and Sunk
+.B TitleStyle
+flags are ignored since they are redundant in this context.
 
-"UseBorderStyle" causes the button to inherit the decorated
-BorderStyle options.
+.I UseBorderStyle
+causes the button to inherit the decorated
+.B BorderStyle
+options.
 
-Raised, Sunk, and Flat are mutually exclusive, and can be specified
-for the initial ButtonStyle only.  UseTitleStyle and UseBorderStyle
+.I Raised ", " Sunk " and " Flat
+are mutually exclusive, and can be specified for the initial
+.B ButtonStyle
+only.
+.IR UseTitleStyle " and " UseBorderStyle
 are also mutually exclusive (both can be off however).  The default is
-Raised with both UseBorderStyle and UseTitleStyle left unset.
+.I Raised
+with both
+.I UseBorderStyle " and " UseTitleStyle
+left unset.
 
-There is an \fBimportant note\fP for the ActiveDown state.  When a
-button is pressed, the relief is inverted.  Because of this, to obtain
-a sunken ActiveDown state you must specify the opposite of the desired
-relief (i.e. to obtain a pressed-in look which is raised, specify Sunk
-for ActiveDown).  This behavior is consistent, but may seem confusing
-at first.  The same applies to the toggled states.
+.I Important note
+for the "ActiveDown" state:  When a button is pressed, the relief
+is inverted.  Because of this, to obtain a sunken "ActiveDown"
+state you must specify the opposite of the desired relief (i.e.
+to obtain a pressed-in look which is raised, specify
+.I Sunk for "ActiveDown").  This behavior is consistent, but may
+seem confusing at first.  The same applies to the "Toggled" state.
 
 Button styles are classified as non-destructive, partially destructive,
 or fully destructive.  Non-destructive styles do not affect the image.
 Partially destructive styles can obscure some or all parts of the
-underlying image (i.e. Pixmap).  Fully destructive styles obscure the
-entire underlying image (i.e. Solid or one of the gradient styles).
-Thus, if stacking styles with AddButtonStyle (or AddTitleStyle for
-title-bars), use care in sequencing styles to minimize redraw.
+underlying image (i.e.
+.IR Pixmap ).
+Fully destructive styles obscure the entire underlying image (i.e.
+.I Solid
+or one of the
+.I gradient
+styles).  Thus, if stacking styles with
+.BR AddButtonStyle " (or " AddTitleStyle
+for title-bars), use care in sequencing styles to minimize redraw.
 
-The available styles and their arguments now follow (depending on
-compilation options, some button styles may be unavailable).
+The available styles and their arguments now follow.
 
-The "Simple" style does nothing.  There are no arguments, and this
-style is an example of a non-destructive button style.
+The
+.I Simple
+style does nothing.  There are no arguments, and this style is
+an example of a non-destructive button style.
 
-The "Default" style conditionally accepts one argument: a number which
-specifies the default button number to load.  If the style command
-given is ButtonStyle or AddButtonStyle, the argument is optional (if
-given, will override the current button).  If a command other than
-ButtonStyle or AddButtonStyle is used, the number must be specified.
+The
+.I Default
+style conditionally accepts one argument: a number which specifies
+the default button number to load.  If the style command given is
+.BR ButtonStyle " or " AddButtonStyle ,
+the argument is optional (if given, will override the current
+button).  If a command other than
+.BR ButtonStyle " or " AddButtonStyle is used, the number must be
+specified.
 
-The "Solid" style fills the button with a solid color.  The relief
-border color is not affected.  The color should be specified as a
-single argument.  This style is fully destructive.
+The
+.I Solid
+style fills the button with a solid color.  The relief border
+color is not affected.  The color should be specified as a single
+argument.  This style is fully destructive.
 
-The "Vector" style draws a line pattern.  Since this is a standard
-button style, the keyword "Vector" is optional.  The specification is
-a little cumbersome:
+The
+.I Vector
+style draws a line pattern.  Since this is a standard button style,
+the keyword
+.I Vector
+is optional.  The specification is a little cumbersome:
 .EX
 ButtonStyle 2 Vector 4 50x30@1 70x70@0 \\
   30x70@0 50x30@1
@@ -4741,19 +5079,22 @@ ButtonStyle 2 Vector 4 50x30@1 70x70@0 \\
 then the button 2 decoration will use a 4-point pattern consisting of
 a line from (x=50,y=30) to (70,70) in the shadow color (@0), and then
 to (30,70) in the shadow color, and finally to (50,30) in the
-highlight color (@1).  Is that too confusing? See the fvwm web pages
+highlight color (@1).  Is that too confusing?  See the fvwm web pages
 for a few examples.  You can use up to 32 points in a line pattern.
 This style is partially destructive.
 
-The "?Gradient" styles denote color gradients.  Fill in the question
-mark with any one of the defined gradient types.  Please refer to
-the \fICOLOR GRADIENTS\fP section below for a description of the
-gradient syntax.
+The
+.I ?Gradient
+styles denote color gradients.  Fill in the question mark with any
+one of the defined gradient types.  Please refer to the
+.B COLOR GRADIENTS
+sectionfor a description of the gradient syntax.  The gradient
+styles are fully destructive.
 
-The gradient styles are fully destructive.
-
-The "Pixmap" style displays a pixmap.  A pixmap should be specified as
-an argument.  For example, the following would give button 2 the same
+The
+.I Pixmap
+style displays a pixmap.  A pixmap should be specified as an
+argument.  For example, the following would give button 2 the same
 pixmap for both states, and button 4 different pixmaps for the up,
 down and inactive states.
 .EX
@@ -4763,16 +5104,26 @@ ButtonStyle 4 ActiveUp (Pixmap up.xpm) \\
 ButtonStyle 4 Inactive Pixmap inactive.xpm
 .EE
 The pixmap specification can be given as an absolute or relative
-pathname (see \fIImagePath\fP).  If the pixmap cannot be found, the button
-style reverts to Simple.  Flags specific to the Pixmap style are
-"Left," "Right," "Top," and "Bottom."  These can be used to justify
-the pixmap (default is centered for both directions).  Pixmap
-transparency is used for the color "None."  This style is partially
-destructive.
+pathname (see
+.BR ImagePath ).
+If the pixmap cannot be found, the button style reverts to
+.IR Simple .
+Flags specific to the
+.I Pixmap
+style are
+.IR Left ", " Right ", " Top ", and " Bottom .
+These can be used to justify the pixmap (default is centered for
+both directions).  Pixmap transparency is used for the color
+"None."  This style is partially destructive.
 
-The "MiniIcon" style draws the window's miniature icon in the button,
-which is specified with the MiniIcon option of the Style command. This
-button style accepts no arguments.  Example:
+The
+.I MiniIcon
+style draws the window's miniature icon in the button, which is
+specified with the
+.I MiniIcon
+option of the
+.B Style
+command.  This button style accepts no arguments.  Example:
 .EX
 Style *     MiniIcon mini-bx2.xpm
 Style xterm MiniIcon mini-term.xpm
@@ -4781,112 +5132,146 @@ Style Emacs MiniIcon mini-doc.xpm
 ButtonStyle 1 MiniIcon
 .EE
 
-The "TiledPixmap" style accepts a pixmap to be tiled as the button
-background.  One pixmap is specified as an argument.  Pixmap
-transparency is not used.  This style is fully destructive.
+The
+.I TiledPixmap
+style accepts a pixmap to be tiled as the button background.
+One pixmap is specified as an argument.  Pixmap transparency is
+not used.  This style is fully destructive.
 
 .TP
-.B "ButtonStyle" "\fIbutton\fP - \fI[!]flag ...\fP"
-Sets state-independent flags for the specified \fIbutton\fP.
-State-independent flags affect button behavior.  Each flag is
-separated by a space.  If an "!" is prefixed to the flag then the flag
-behavior is negated.  The special flag "Clear" clears any existing
-flags.
+.BI "ButtonStyle " button " - [!]" flag " ..."
+Sets state-independent flags for the specified
+.IR button .
+State-independent flags affect button behavior.  Each
+.I flag
+is separated by a space.  If a
+.RI ' ! '
+is prefixed to the flag then the behavior is negated.  The special flag
+.I Clear
+clears any existing flags.
 
 The following flags are usually used to tell fvwm which buttons should
-be affected by Mwm function hints.  This is not done automatically
-since you might have buttons bound to complex functions, for instance.
+be affected by mwm function hints (see
+.I MwmFunctions
+option of the
+.B Style
+command.  This is not done automatically since you might have
+buttons bound to complex functions, for instance.
 
-"MwmDecorMenu" should be assigned to title-bar buttons which display a
-menu.  The default assignment is the leftmost button.  When a window
-with the MwmFunctions Style option requests not to show this button,
-it will be hidden.
+.I MwmDecorMenu
+should be assigned to title-bar buttons which display a menu.  The
+default assignment is the leftmost button.  When a window with the
+.I MwmFunctions
+.B Style
+option requests not to show this button, it will be hidden.
 
-"MwmDecorMin" should be assigned to title-bar buttons which minimize
-or iconify the window.  The default assignment is the second button
-over from the rightmost button.  When a window with the MwmFunctions
-Style option requests not to show this button, it will be hidden.
+.I MwmDecorMin
+should be assigned to title-bar buttons which minimize or iconify
+the window.  The default assignment is the second button over from
+the rightmost button.  When a window with the
+.I MwmFunctions
+.B Style
+option requests not to show this button, it will be hidden.
 
-"MwmDecorMax" should be assigned to title-bar buttons which maximize
-the window.  The default assignment is the rightmost button.  When a
-window with the MwmFunctions Style option requests not to show this
-button, it will be hidden.  When the window is maximized, the vector
-pattern on the button looks pressed in.
+.I MwmDecorMax
+should be assigned to title-bar buttons which maximize the window.
+The default assignment is the rightmost button.  When a window with
+the
+.I MwmFunctions
+.B Style
+option requests not to show this button, it will be hidden.  When
+the window is maximized, the vector pattern on the button looks
+pressed in.
 
-"MwmDecorShade" should be assigned to title-bar buttons which shade
-the window (see \fIWindowShade\fP command).  When a window with the
-MwmFunctions Style option requests not to show the minimize button,
-this button will be hidden.  When the window is shaded, the vector
-pattern on the button looks pressed in.
+.I MwmDecorShade
+should be assigned to title-bar buttons which shade the window (see
+.B WindowShade
+command).  When the window is shaded, the vector pattern on the
+button looks pressed in.
 
-"MwmDecorStick" should be assigned to title-bar buttons which make
-the window sticky.  When the window is sticky, the vector pattern on
-the button looks pressed in.
+.I MwmDecorStick
+should be assigned to title-bar buttons which make the window sticky.
+When the window is sticky, the vector pattern on the button looks
+pressed in.
 
 .TP
-.B "ChangeDecor" "\fIdecor\fP"
-Changes the decor of a window to \fIdecor\fP.  \fIdecor\fP is
-"Default" or the name of a decor defined with AddToDecor.  If
-\fIdecor\fP is invalid, nothing occurs.  If called from somewhere in a
-window or its border, then that window is affected.  If called from
-the root window the user will be allowed to select the target window.
-ChangeDecor only affects attributes which can be set using the
-AddToDecor command.
+.BI "ChangeDecor " decor
+Changes the decor of a window to
+.IR decor . decor
+is "Default" or the name of a decor defined with
+.BR AddToDecor .
+If
+.I decor
+is invalid, nothing occurs.  If called from somewhere in a window
+or its border, then that window is affected.  If called from the
+root window the user will be allowed to select the target window.
+.B ChangeDecor
+only affects attributes which can be set using the
+.B AddToDecor
+command.
 .EX
 ChangeDecor CustomDecor1
 .EE
 
 .TP
-.B "DestroyDecor" "\fIdecor\fP"
-Deletes the \fIdecor\fP defined with AddToDecor, so that subsequent
-references to it are no longer valid.  Windows using this \fIdecor\fP
-revert to the default fvwm decor.  The decor named "Default" cannot be
+.BI "DestroyDecor " decor
+Deletes the
+.I decor
+defined with
+.BR AddToDecor ,
+so that subsequent references to it are no longer valid.  Windows
+using this
+.I decor
+revert to the "Default" decor.  The decor named "Default" cannot be
 destroyed.
 .EX
 DestroyDecor CustomDecor1
 .EE
 
 .TP
-.B "DestroyStyle" "\fIstyle\fP"
-Deletes the style named "\fIstyle\fP". This will not affect currently visible
-windows (they each have a copy of their styles, which will remain unaffected).
-Note that \fPstyle\fP is not a wild-carded search string, but rather a
-case-sensitive string that should exactly match the original \fBStyle\fP
-command.
-
-Destroying style \fI*\fP can be done, but isn't really to be recommended!
-For example:
-.EX
-DestroyStyle Application*
-.EE
-
-This will remove all settings for the style named "\fIApplication*\fP", NOT all
-styles starting with "Application".
-
-.TP
-.B "TitleStyle" "[\fIjustification\fP] [\fIheight\fP [\fInum\fP]]"
-Sets attributes for the title-bar.  Justifications can be "Centered",
-"RightJustified," or "LeftJustified."  \fIheight\fP sets the title
-bar's height to an amount in pixels.  Defaults are Centered and
-window's font height.  To reset the font height to the default value,
-omit the \fInum\fP argument after the 'height' keyword.  Example:
+.BI "TitleStyle [" justification "] [" height " [" num "]]"
+Sets attributes for the title-bar.  Justifications can be
+.I Centered ", " RightJustified " or " LeftJustified .
+.I height
+sets the title bar's height to an amount in pixels.  Defaults
+are
+.I Centered
+and the window's font height.  To reset the font height to
+the default value, omit the
+.I num
+argument after the
+.I height
+keyword.  Example:
 .EX
 TitleStyle LeftJustified Height 24
 .EE
 
 .TP
-.B "TitleStyle" "[\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
-Sets the style for the title-bar.  \fIstate\fP can be one of
-"ActiveUp," "ActiveDown," or "Inactive."  If \fIstate\fP is omitted,
-then the style is added to every state.  If parentheses are placed
-around the style and flags, then multiple state definitions can be
-given per line.  \fIstyle\fP can be omitted so that flags can be set
-while not destroying the current style.
+.BI "TitleStyle [" state "] [" style "] [-- [!]" flag " ...]"
+Sets the style for the title-bar.
+.I state
+can be one of  "ActiveUp", "ActiveDown", or "Inactive".  If
+.I state
+is omitted, then the
+.I style
+is added to every state.  If parentheses are placed around the
+.IR style " and " flags ,
+then multiple state definitions can be given per line.
+.I style
+can be omitted so that flags can be set while not destroying
+the current style.
 
-If an "!" is prefixed to any \fIflag\fP, its behavior is negated.
-Valid flags for each state include "Raised," "Flat," and "Sunk" (these
-are mutually exclusive).  The default is Raised.  See the note in
-ButtonStyle regarding the ActiveDown state.  Examples:
+If a
+.RI ' ! '
+is prefixed to any
+.IR flag ,
+its behavior is negated.  Valid flags for each state include
+.IR Raised ", " Flat " and " Sunk
+(these are mutually exclusive).  The default is
+.IR Raised .
+See the note in
+.B ButtonStyle
+regarding the "ActiveDown" state.  Examples:
 .EX
 TitleStyle ActiveUp HGradient 16 navy black
 TitleStyle ActiveDown (Solid red -- flat) \\
@@ -4894,12 +5279,14 @@ TitleStyle ActiveDown (Solid red -- flat) \\
 TitleStyle ActiveUp (-- Flat) ActiveDown  \\
   (-- Raised) Inactive (-- Flat)
 .EE
-This sets the ActiveUp state to a horizontal gradient, the ActiveDown
-state to solid red, and the Inactive state to a tiled wood pixmap.
-Finally, ActiveUp is set to look flat, while ActiveDown set to be sunk
-(the Raised flag for the ActiveDown state causes it to appear Sunk due
-to relief inversion), and Inactive is set to flat as well.  An example
-which sets flags for all states:
+This sets the "ActiveUp" state to a horizontal gradient, the "ActiveDown"
+state to solid red, and the "Inactive" state to a tiled wood pixmap.
+Finally, "ActiveUp" is set to look flat, while "ActiveDown" set to be sunk
+(the
+.I Raised
+flag for the "ActiveDown" state causes it to appear sunk due
+to relief inversion), and "Inactive" is set to flat as well.
+An example which sets flags for all states:
 .EX
 TitleStyle -- flat
 .EE
@@ -4911,15 +5298,27 @@ ButtonStyle All ActiveUp (-- flat) Inactive \\
 .EE
 
 .TP
-.B "UpdateDecor" "[\fIdecor\fP]"
-Updates window decorations.  \fIdecor\fP is an optional argument which
-specifies the \fIdecor\fP to update.  If given, only windows which are
-assigned to that particular \fIdecor\fP will be updated.  This command
-is useful, for instance, after a ButtonStyle, TitleStyle or
-BorderStyle (possibly used in conjunction with AddToDecor).
+.BI "UpdateDecor [" decor "]"
+This command is kept mainly for backwards compatibility.  Since
+all elements of a decor are updated immediately when they are
+changed, this command is mostly useless.
+
+Updates window decorations.
+.I decor
+is an optional argument which specifies the
+.I decor
+to update.  If given, only windows which are assigned to that particular
+.I decor
+will be updated.  This command is useful, for instance, after a
+.BR ButtonStyle ", " TitleStyle " or " BorderStyle
+(possibly used in conjunction with
+.BR AddToDecor ).
 Specifying an invalid decor results in all windows being updated.
-This command is less disturbing than Recapture, but does not affect
-window style options as Recapture does.
+This command is less disturbing than
+.BR Recapture ,
+but does not affect window style options as
+.B Recapture
+does.
 
 
 .SS COMMANDS CONTROLLING THE VIRTUAL DESKTOP
@@ -5669,5 +6068,5 @@ files in the distribution.  These files are no longer maintained
 and may be out of date.
 
 Bug reports can be sent to the fvwm workers' mailing list (see the
-.BR FAQ ).
+.IR FAQ ).
 \"  LocalWords:  XTerm rc

@@ -909,14 +909,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SMSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ClickToFocusClickRaises"))
+        else if(StrEquals(token, "ClickToFocusRaises"))
         {
 	  found = True;
 	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
 	  SMSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ClickToFocusClickRaisesOff"))
+        else if(StrEquals(token, "ClickToFocusRaisesOff"))
         {
 	  found = True;
 	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
