@@ -1,5 +1,8 @@
 1999-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/borders.c (SetupFrame):
+	corner and side windows are placed properly on shaded windows
+
 	* fvwm/update.c (apply_window_updates):
 	prevent paging a window when unmaximizing after style update
 

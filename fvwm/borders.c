@@ -1493,6 +1493,8 @@ void SetupFrame(
 
     if(HAS_BORDER(tmp_win))
     {
+      int add;
+
       tmp_win->corner_width = GetDecor(tmp_win,TitleHeight) +
         tmp_win->boundary_width ;
 
@@ -1508,6 +1510,10 @@ void SetupFrame(
       if(ywidth<2)
         ywidth = 2;
 
+      if (IS_SHADED(tmp_win))
+	add = tmp_win->corner_width / 3;
+      else
+	add = 0;
       for(i = 0; i < 4; i++)
       {
         if(i==0)
@@ -1519,10 +1525,18 @@ void SetupFrame(
         }
         else if (i==1)
         {
-          xwc.x = w - tmp_win->boundary_width;
+	  xwc.x = w - tmp_win->boundary_width;
           xwc.y = tmp_win->corner_width;
+	  if (IS_SHADED(tmp_win))
+	  {
+	    xwc.y /= 3;
+	    xwc.height = add + 2;
+	  }
+	  else
+	  {
+	    xwc.height = ywidth;
+	  }
           xwc.width = tmp_win->boundary_width;
-          xwc.height = ywidth;
 
         }
         else if(i==2)
@@ -1534,10 +1548,18 @@ void SetupFrame(
         }
         else
         {
-          xwc.x = 0;
+	  xwc.x = 0;
           xwc.y = tmp_win->corner_width;
+	  if (IS_SHADED(tmp_win))
+	  {
+	    xwc.y /= 3;
+	    xwc.height = add + 2;
+	  }
+	  else
+	  {
+	    xwc.height = ywidth;
+	  }
           xwc.width = tmp_win->boundary_width;
-          xwc.height = ywidth;
         }
 	XConfigureWindow(dpy, tmp_win->sides[i], xwcm, &xwc);
       }
@@ -1553,12 +1575,11 @@ void SetupFrame(
           xwc.x = 0;
 
         if (i & 0x2)
-          xwc.y = h - tmp_win->corner_width;
+          xwc.y = h - tmp_win->corner_width + add;
         else
-          xwc.y = 0;
+          xwc.y = -add;
 
-	if (!shaded || !(i & 2))
-	  XConfigureWindow(dpy, tmp_win->corners[i], xwcm, &xwc);
+	XConfigureWindow(dpy, tmp_win->corners[i], xwcm, &xwc);
       }
 
     }
