@@ -77,7 +77,6 @@ void writeHistory();
 int dummy(DragWellButton *);
 void createRootMenu();
 void flushHistory();
-void GetXPMColorset(int);
 void getReliefColors();
 void createBackground();
 void createWindow();
@@ -539,13 +538,10 @@ void createBackground() {
   gcv.background = xg.back;
   xg.buttonGC = XCreateGC(xg.dpy, xg.win, gcm, &gcv);
 
-  if (xg.colorset >=0) { /*colorset*/
-    GetXPMColorset(xg.colorset);
-    XCopyArea(xg.dpy, xg.icon,
-	    xg.win, xg.buttonGC, 0,0,
-	    xg.w,xg.h, 0,0);
-    XSetWindowBackgroundPixmap(xg.dpy, xg.win, xg.icon);
-  } else /*just use background pixel*/
+  if (xg.colorset >=0) /*colorset*/
+    SetWindowBackground(xg.dpy, xg.win, xg.w, xg.h, &Colorset[xg.colorset],
+      Pdepth, xg.buttonGC, False);
+  else /*just use background pixel*/
     XSetWindowBackground(xg.dpy, xg.win, xg.back);
 }
 
@@ -701,9 +697,9 @@ static void change_colorset(int colorset)
     XFreeGC(xg.dpy, xg.hiliteGC);
 
     /* update background pixmap */
-    XClearArea(xg.dpy,xg.win,0,0,xg.w,xg.h,FALSE);
     getReliefColors();
     createBackground();
+    XClearWindow(xg.dpy,xg.win);
     drawDragWellButton(&dragBut); /*draws the drag icon*/
   }
   XSync(xg.dpy, 0);
@@ -886,19 +882,4 @@ void createWindow()
   changeWindowName(xg.win, xg.appName);
   XSelectInput(xg.dpy, xg.win, MW_EVENTS);
   XMapWindow(xg.dpy,xg.win);
-}
-
-
-
-/* GetXPMColorset - gets the xpm for a colorset
- * Arguments:
- *   colorset - the colorset we are looking up*/
-void GetXPMColorset(int colorset)
-{
-  xg.icon=XCreatePixmap(xg.dpy,xg.win,xg.w,xg.h, Pdepth);
-  SetRectangleBackground(xg.dpy, xg.icon, 0, 0, xg.w,xg.h,
-			 &(Colorset[colorset]),
-			 Pdepth, xg.buttonGC);
-
-  return;
 }

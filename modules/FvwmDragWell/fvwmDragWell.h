@@ -52,7 +52,6 @@ typedef struct XGlobals_struct {
   Pixel back;
   Pixel shadow; /*colors of buttons, relief on menus*/
   Pixel hilite;
-  Pixmap icon;
   char *foreColorStr; /*strings for colors*/
   char *backColorStr;
   char *shadowColorStr;

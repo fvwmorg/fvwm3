@@ -1,3 +1,7 @@
+2000-03-10  Hippo
+
+	* FvwmDragWell/fvwmDragWell.*: support for transpency
+
 2000-03-10  olicha	<olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (change_colorset):
