@@ -56,6 +56,8 @@
 
 /* ---------------------------- local macros -------------------------------- */
 
+#define SWAP_ARGS(f,a1,a2) (f)?(a2):(a1),(f)?(a1):(a2)
+
 /* ---------------------------- imports ------------------------------------- */
 
 extern Window PressedW;
@@ -197,11 +199,11 @@ unsigned long Globalgcm;
  *
  *  Tile or stretch src into dest, starting at the given location and
  *  continuing for the given width and height. This is a utility function used
- *  by DrawMultiPixmapTitlebar. (tril@igs.net)
+ *  by border_draw_multi_pixmap_titlebar. (tril@igs.net)
  *
  ****************************************************************************/
-static void RenderIntoWindow(
-	GC gc, FvwmPicture *src, Window dest, int x_start, int y_start,
+static void border_render_into_pixmap(
+	GC gc, FvwmPicture *src, Pixmap dest, int x_start, int y_start,
 	int width, int height, Bool stretch)
 {
 	Pixmap pm;
@@ -246,10 +248,9 @@ static int get_multipm_length(
  *  Redraws multi-pixmap titlebar (tril@igs.net)
  *
  ****************************************************************************/
-#define SWAP_ARGS(f,a1,a2) (f)?(a2):(a1),(f)?(a1):(a2)
-static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
+static void border_draw_multi_pixmap_titlebar(
+	FvwmWindow *fw, DecorFace *df, Pixmap dest_pix)
 {
-	Window title_win;
 	GC gc;
 	char *title;
 	FvwmPicture **pm;
@@ -265,7 +266,6 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 	stretch_flags = df->u.multi_stretch_flags;
 	gc = Scr.TitleGC;
 	XSetClipMask(dpy, gc, None);
-	title_win = FW_W_TITLE(fw);
 	title = fw->visible_name;
 
 	tmp_g.width = 0;
@@ -273,14 +273,14 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 	get_title_geometry(fw, &tmp_g);
 	if (pm[TBP_MAIN])
 	{
-		RenderIntoWindow(
-			gc, pm[TBP_MAIN], title_win, 0, 0, tmp_g.width,
+		border_render_into_pixmap(
+			gc, pm[TBP_MAIN], dest_pix, 0, 0, tmp_g.width,
 			tmp_g.height, (stretch_flags & (1 << TBP_MAIN)));
 	}
 	else if (!title)
 	{
-		RenderIntoWindow(
-			gc, pm[TBP_LEFT_MAIN], title_win, 0, 0, tmp_g.width,
+		border_render_into_pixmap(
+			gc, pm[TBP_LEFT_MAIN], dest_pix, 0, 0, tmp_g.width,
 			tmp_g.height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
 	}
 
@@ -347,16 +347,16 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 
 		if (pm[TBP_LEFT_MAIN] && before_space > 0)
 		{
-			RenderIntoWindow(
-				gc, pm[TBP_LEFT_MAIN], title_win, 0, 0,
+			border_render_into_pixmap(
+				gc, pm[TBP_LEFT_MAIN], dest_pix, 0, 0,
 				SWAP_ARGS(has_vt, before_space,
 					  fw->title_thickness),
 				(stretch_flags & (1 << TBP_LEFT_MAIN)));
 		}
 		if (pm[TBP_RIGHT_MAIN] && after_space > 0)
 		{
-			RenderIntoWindow(
-				gc, pm[TBP_RIGHT_MAIN], title_win,
+			border_render_into_pixmap(
+				gc, pm[TBP_RIGHT_MAIN], dest_pix,
 				SWAP_ARGS(has_vt, under_offset + under_width,
 					  0),
 				SWAP_ARGS(has_vt, after_space,
@@ -365,8 +365,8 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 		}
 		if (pm[TBP_UNDER_TEXT] && under_width > 0)
 		{
-			RenderIntoWindow(
-				gc, pm[TBP_UNDER_TEXT], title_win,
+			border_render_into_pixmap(
+				gc, pm[TBP_UNDER_TEXT], dest_pix,
 				SWAP_ARGS(has_vt, under_offset, 0),
 				SWAP_ARGS(has_vt, under_width,
 					  fw->title_thickness),
@@ -377,7 +377,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 		{
 
 			XCopyArea(
-				dpy, pm[TBP_LEFT_OF_TEXT]->picture, title_win,
+				dpy, pm[TBP_LEFT_OF_TEXT]->picture, dest_pix,
 				gc, 0, 0,
 				SWAP_ARGS(has_vt, size,
 					  fw->title_thickness),
@@ -388,7 +388,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 		if (size > 0 && size <= after_space)
 		{
 			XCopyArea(
-				dpy, pm[TBP_RIGHT_OF_TEXT]->picture, title_win,
+				dpy, pm[TBP_RIGHT_OF_TEXT]->picture, dest_pix,
 				gc, 0, 0,
 				SWAP_ARGS(has_vt, size,
 					  fw->title_thickness),
@@ -396,11 +396,11 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 					  0));
 			after_space -= size;
 		}
-		size = fw->title_thickness;
-		text_offset = fw->title_text_offset;
+
+		text_offset = fw->title_text_offset + 2;
 		memset(&fstr, 0, sizeof(fstr));
 		fstr.str = fw->visible_name;
-		fstr.win = title_win;
+		fstr.win = dest_pix;
 		if (has_vt)
 		{
 			fstr.x = text_offset;
@@ -425,7 +425,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 	if (size > 0 && size <= before_space)
 	{
 		XCopyArea(
-			dpy, pm[TBP_LEFT_END]->picture, title_win, gc, 0, 0,
+			dpy, pm[TBP_LEFT_END]->picture, dest_pix, gc, 0, 0,
 			SWAP_ARGS(has_vt, size, fw->title_thickness),
 			0, 0);
 	}
@@ -433,14 +433,13 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 	if (size > 0 && size <= after_space)
 	{
 		XCopyArea(
-			dpy, pm[TBP_RIGHT_END]->picture, title_win, gc, 0, 0,
+			dpy, pm[TBP_RIGHT_END]->picture, dest_pix, gc, 0, 0,
 			SWAP_ARGS(has_vt, size, fw->title_thickness),
 			fw->title_length - size, 0);
 	}
 
 	return;
 }
-
 #endif /* FANCY_TITLEBARS */
 
 static Bool is_button_toggled(
@@ -2113,7 +2112,7 @@ static void border_set_title_pixmap(
 #ifdef FANCY_TITLEBARS
 	else if (tdd.df->style.face_type == MultiPixmap)
 	{
-		DrawMultiPixmapTitlebar(fw, tdd.df);
+		border_draw_multi_pixmap_titlebar(fw, tdd.df, dest_pix);
 	}
 #endif
 	else
