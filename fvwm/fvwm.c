@@ -308,8 +308,7 @@ int main(int argc, char **argv)
     {
       /* obsolete option */
       fvwm_msg(WARN, "main", "The -blackout option is obsolete, it may be "
-	       "removed in the future.",
-              VERSION,__DATE__,__TIME__);
+	       "removed in the future.");
     }
     else if (strncasecmp(argv[i], "-replace", 8) == 0)
     {
@@ -470,7 +469,7 @@ int main(int argc, char **argv)
   Scr.Root = RootWindow(dpy, Scr.screen);
   if(Scr.Root == None)
   {
-    fvwm_msg(ERR,"main","Screen %d is not a valid screen",(char *)Scr.screen);
+    fvwm_msg(ERR,"main","Screen %d is not a valid screen", (int)Scr.screen);
     exit(1);
   }
 

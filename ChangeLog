@@ -1,3 +1,17 @@
+2002-03-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/fvwmlib.h:
+	* fvwm/fvwm.h:
+	* config.h.in:
+	moved gcc extension __attribute__ handling to config.h
+
+	* fvwm/fvwm.c (main):
+	* fvwm/stack.c (add_window_to_stack_ring_after):
+	* fvwm/icons.c (GetIconWindow):
+	(GetIconBitmap):
+	* fvwm/add_window.c:
+	fixed core dumps and other bugs in debug messages
+
 2002-03-27  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FlocaleCharset.c (FlocaleInit_X_Charset):

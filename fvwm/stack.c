@@ -196,8 +196,8 @@ void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win)
   {
     /* tried to add the window before or after itself */
     fvwm_msg(ERR, "add_window_to_stack_ring_after",
-	     "BUG: tried to add window '%s' %s itself in stack ring\n", t->name,
-	     (t == add_after_win) ? "after" : "before");
+	     "BUG: tried to add window '%s' %s itself in stack ring\n",
+             t->name.name, (t == add_after_win) ? "after" : "before");
     return;
   }
   t->stack_next = add_after_win->stack_next;

@@ -1735,7 +1735,7 @@ void increase_icon_hint_count(FvwmWindow *fw)
 			break;
 		}
 		ICON_DBG((stderr,"icon hint count++ (%d) '%s'\n",
-			  (int)WAS_ICON_HINT_PROVIDED(fw), fw->name));
+			  (int)WAS_ICON_HINT_PROVIDED(fw), fw->name.name));
 	}
 
 	return;
@@ -1750,12 +1750,14 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 		if (SHAS_ICON(&pstyle->flags) &&
 		    SICON_OVERRIDE(pstyle->flags) == ICON_OVERRIDE)
 		{
-			ICON_DBG((stderr,"si: iwh ignored '%s'\n", fw->name));
+			ICON_DBG((stderr,"si: iwh ignored '%s'\n",
+                                  fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 		}
 		else
 		{
-			ICON_DBG((stderr,"si: using iwh '%s'\n", fw->name));
+			ICON_DBG((stderr,"si: using iwh '%s'\n",
+                                  fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
 	}
@@ -1764,25 +1766,27 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 		if (SHAS_ICON(&pstyle->flags) &&
 		    SICON_OVERRIDE(pstyle->flags) != NO_ICON_OVERRIDE)
 		{
-			ICON_DBG((stderr,"si: iph ignored '%s'\n", fw->name));
+			ICON_DBG((stderr,"si: iph ignored '%s'\n",
+                                  fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 		}
 		else
 		{
-			ICON_DBG((stderr,"si: using iph '%s'\n", fw->name));
+			ICON_DBG((stderr,"si: using iph '%s'\n",
+                                  fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
 	}
 	else if (SHAS_ICON(&pstyle->flags))
 	{
 		/* an icon was specified */
-		ICON_DBG((stderr,"si: using style '%s'\n", fw->name));
+		ICON_DBG((stderr,"si: using style '%s'\n", fw->name.name));
 		fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 	}
 	else
 	{
 		/* use default icon */
-		ICON_DBG((stderr,"si: using default '%s'\n", fw->name));
+		ICON_DBG((stderr,"si: using default '%s'\n", fw->name.name));
 		fw->icon_bitmap_file = Scr.DefaultIcon;
 	}
 
@@ -2609,8 +2613,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 			fvwm_msg(
 				WARN, "GetWindowSizeHints", "%s window %#lx"
 				" has broken aspect ratio: %d/%d - %d/%d\n",
-				tmp->name, FW_W(tmp), minAspectX, minAspectY,
-				maxAspectX, maxAspectY);
+				tmp->name.name, FW_W(tmp), minAspectX,
+                                minAspectY, maxAspectX, maxAspectY);
 		}
 		else
 		{
@@ -2664,7 +2668,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 			 "min_aspect = %d/%d, max_aspect = %d/%d\n"
 			 "base_width = %d, base_height = %d\n"
 			 "win_gravity = %d\n",
-			 tmp->name, FW_W(tmp), broken_cause,
+			 tmp->name.name, FW_W(tmp), broken_cause,
 			 HAS_OVERRIDE_SIZE_HINTS(tmp),
 			 orig_hints.flags,
 			 orig_hints.min_width, orig_hints.min_height,

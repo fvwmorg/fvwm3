@@ -1411,7 +1411,7 @@ static void GetIconWindow(FvwmWindow *fw)
   {
     fvwm_msg(ERR,"GetIconWindow", "Window '%s' has a bad icon window!"
 	     " Ignoring icon window.",
-	     fw->name);
+	     fw->name.name);
     /* disable the icon window hint */
     fw->wmhints->icon_window = None;
     fw->wmhints->flags &= ~IconWindowHint;
@@ -1460,7 +1460,7 @@ static void GetIconBitmap(FvwmWindow *fw)
 		    &JunkX, &JunkY, &width, &height, &JunkBW, &depth))
   {
     fvwm_msg(ERR,"GetIconBitmap", "Window '%s' has a bad icon pixmap!"
-	     " Ignoring icon.", fw->name);
+	     " Ignoring icon.", fw->name.name);
     /* disable icon pixmap hint */
     fw->wmhints->icon_pixmap = None;
     fw->wmhints->flags &= ~IconPixmapHint;
@@ -1472,7 +1472,7 @@ static void GetIconBitmap(FvwmWindow *fw)
     fvwm_msg(ERR, "GetIconBitmap",
 	     "Window '%s' has a bad icon bitmap depth %d (should be 1 or %d)!"
 	     " Ignoring icon bitmap.",
-	     fw->name, depth, DefaultDepth(dpy,Scr.screen));
+	     fw->name.name, depth, DefaultDepth(dpy,Scr.screen));
     /* disable icon pixmap hint */
     fw->wmhints->icon_pixmap = None;
     fw->wmhints->flags &= ~IconPixmapHint;
