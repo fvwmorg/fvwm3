@@ -1078,10 +1078,10 @@ A: The built in command WindowList provides a very close approximation
    Alt-TAB twice in quick succession (like a double click for keys):
 
       DestroyFunc my_dbltab2
-      AddToFunc my_dbltab2 WindowListFunc $w
+      AddToFunc my_dbltab2 "I" WindowListFunc $w
       DestroyFunc my_dbltab
       AddToFunc my_dbltab "I" Prev (CurrentDesk) my_dbltab2
-      Key TAB A M WindowList Root c c CurrentDesk NoGeometry my_dbltab
+      Key Tab A M WindowList Root c c CurrentDesk NoGeometry my_dbltab
    
    There are a lot of options to the WindowList command to control which
    windows are listed in which order and it may not be possible to set
