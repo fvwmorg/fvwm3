@@ -442,20 +442,9 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
     if(t->right_w[i] == None)
       t->nr_right_buttons--;
 
-  if(tflags & MWM_BORDER_FLAG)
-    t->bw = 0;
-  else if(t->boundary_width <= 0)
-    {
-      t->boundary_width = 0;
-      t->bw = 0;
-    }
-  else
-    {
-      t->bw = BW;
-      t->boundary_width = t->boundary_width - 1;
-    }
-  if(t->title_height > 0)
-    t->title_height += t->bw;
+  if(t->boundary_width <= 0)
+    t->boundary_width = 0;
+
   if(t->boundary_width == 0)
     t->flags &= ~BORDER;
 }

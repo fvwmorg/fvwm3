@@ -138,8 +138,8 @@ test_y = PageTop;
 #endif /* !NO_STUBBORN_PLACEMENT */
           if(!(test_window->flags & ICONIFIED)&&(test_window != t))
           {
-            tw=test_window->frame_width+2*test_window->bw;
-            th=test_window->frame_height+2*test_window->bw;
+            tw=test_window->frame_width;
+            th=test_window->frame_height;
             tx = test_window->frame_x - stickyx;
             ty = test_window->frame_y - stickyy;
             if((tx <= (test_x+width))&&((tx + tw) >= test_x)&&
@@ -229,7 +229,7 @@ int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
   /* Test window at far right of screen */
 /*  RBW - 11/02/1998  */
   xnew = PageRight;
-  xtest = PageRight - (t->frame_width  + 2 * t->bw);
+  xtest = PageRight - t->frame_width;
 /**/
   if(xtest > x)
     xnew = MIN(xnew, xtest);
@@ -253,23 +253,23 @@ int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
     if(testw->flags & ICONIFIED)
     {
       if((y < (testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc - stickyy))&&
-         (testw->icon_y_loc - stickyy < (t->frame_height+2*t->bw+y)))
+         (testw->icon_y_loc - stickyy < (t->frame_height+y)))
       {
         xtest = testw->icon_p_width+testw->icon_x_loc - stickyx;
         if(xtest > x)
           xnew = MIN(xnew, xtest);
-        xtest = testw->icon_x_loc - stickyx - (t->frame_width + 2 * t->bw);
+        xtest = testw->icon_x_loc - stickyx - t->frame_width;
         if(xtest > x)
           xnew = MIN(xnew, xtest);
       }
     }
-    else if((y < (testw->frame_height+2*testw->bw+testw->frame_y - stickyy)) &&
-            (testw->frame_y - stickyy < (t->frame_height+2*t->bw+y)))
+    else if((y < (testw->frame_height+testw->frame_y - stickyy)) &&
+            (testw->frame_y - stickyy < (t->frame_height+y)))
     {
-      xtest = testw->frame_width+2*testw->bw+testw->frame_x - stickyx;
+      xtest = testw->frame_width+testw->frame_x - stickyx;
       if(xtest > x)
         xnew = MIN(xnew, xtest);
-      xtest = testw->frame_x - stickyx - (t->frame_width + 2 * t->bw);
+      xtest = testw->frame_x - stickyx - t->frame_width;
       if(xtest > x)
         xnew = MIN(xnew, xtest);
     }
@@ -289,7 +289,7 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
   /* Test window at far bottom of screen */
 /*  RBW - 11/02/1998  */
   ynew = PageBottom;
-  ytest = PageBottom - (t->frame_height + 2 * t->bw);
+  ytest = PageBottom - t->frame_height;
 /**/
   if(ytest > y)
     ynew = MIN(ynew, ytest);
@@ -313,16 +313,16 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
       ytest = testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc - stickyy;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
-      ytest = testw->icon_y_loc - stickyy - (t->frame_height + 2 * t->bw);
+      ytest = testw->icon_y_loc - stickyy - t->frame_height;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
     }
     else
     {
-      ytest = testw->frame_height+2*testw->bw+testw->frame_y - stickyy;
+      ytest = testw->frame_height+testw->frame_y - stickyy;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
-      ytest = testw->frame_y - stickyy - (t->frame_height + 2 * t->bw);
+      ytest = testw->frame_y - stickyy - t->frame_height;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
     }
@@ -346,8 +346,8 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
   int stickyx, stickyy;
 
-  x12 = x11 + t->frame_width  + 2 * t->bw;
-  y12 = y11 + t->frame_height + 2 * t->bw;
+  x12 = x11 + t->frame_width;
+  y12 = y11 + t->frame_height;
 
   if (y12 > PageBottom) /* No room in y direction */
     return -1;
@@ -382,8 +382,8 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
     {
        x21 = testw->frame_x - stickyx;
        y21 = testw->frame_y - stickyy;
-       x22 = x21 + testw->frame_width  + 2 * testw->bw;
-       y22 = y21 + testw->frame_height + 2 * testw->bw;
+       x22 = x21 + testw->frame_width;
+       y22 = y21 + testw->frame_height;
     }
     if((x11 < x22) && (x12 > x21) &&
        (y11 < y22) && (y12 > y21))
@@ -607,8 +607,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
     if(tflag & RANDOM_PLACE_FLAG)
     {
       if(tflag & SMART_PLACE_FLAG)
-        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width+2*tmp_win->bw,
-                                       tmp_win->frame_height+2*tmp_win->bw,
+        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width,
+                                       tmp_win->frame_height,
                                        &xl,&yt, pdeltax, pdeltay);
       if(! smartlyplaced)
       {
@@ -622,26 +622,26 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
       }
       else
       {
-        tmp_win->attr.x = xl - tmp_win->old_bw + tmp_win->bw;
-        tmp_win->attr.y = yt - tmp_win->old_bw + tmp_win->bw;
+        tmp_win->attr.x = xl - tmp_win->old_bw;
+        tmp_win->attr.y = yt - tmp_win->old_bw;
       }
       /* patches 11/93 to try to keep the window on the
        * screen */
-      tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->bw;
-      tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw - tmp_win->bw;
+      tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw;
+      tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw;
 
       if(tmp_win->frame_x + tmp_win->frame_width +
          2*tmp_win->boundary_width> PageRight)
       {
         tmp_win->attr.x = PageRight -tmp_win->attr.width
-          - tmp_win->old_bw +tmp_win->bw - 2*tmp_win->boundary_width;
+          - tmp_win->old_bw - 2*tmp_win->boundary_width;
         Scr.randomx = 0;
       }
       if(tmp_win->frame_y + 2*tmp_win->boundary_width+tmp_win->title_height
          + tmp_win->frame_height > PageBottom)
       {
         tmp_win->attr.y = PageBottom -tmp_win->attr.height
-          - tmp_win->old_bw +tmp_win->bw - tmp_win->title_height -
+          - tmp_win->old_bw - tmp_win->title_height -
           2*tmp_win->boundary_width;;
         Scr.randomy = 0;
       }
@@ -650,8 +650,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
       tmp_win->ydiff = tmp_win->attr.y;
       /* put it where asked, mod title bar */
       /* if the gravity is towards the top, move it by the title height */
-      tmp_win->ydiff += gravy*(tmp_win->bw-tmp_win->old_bw);
-      tmp_win->xdiff += gravx*(tmp_win->bw-tmp_win->old_bw);
+      tmp_win->ydiff -= gravy*tmp_win->old_bw;
+      tmp_win->xdiff -= gravx*tmp_win->old_bw;
       if(gravy > 0)
         tmp_win->ydiff += 2*tmp_win->boundary_width + tmp_win->title_height;
       if(gravx > 0)
@@ -663,8 +663,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
       xl = -1;
       yt = -1;
       if(tflag & SMART_PLACE_FLAG)
-        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width+2*tmp_win->bw,
-                                       tmp_win->frame_height+2*tmp_win->bw,
+        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width,
+                                       tmp_win->frame_height,
                                        &xl,&yt, pdeltax, pdeltay);
       if(! smartlyplaced)
       {
@@ -705,8 +705,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
         yt -= pdeltay;
       }
       /**/
-      tmp_win->attr.y = yt - tmp_win->old_bw + tmp_win->bw;
-      tmp_win->attr.x = xl - tmp_win->old_bw + tmp_win->bw;
+      tmp_win->attr.y = yt - tmp_win->old_bw;
+      tmp_win->attr.x = xl - tmp_win->old_bw;
       tmp_win->xdiff = xl ;
       tmp_win->ydiff = yt ;
     }
@@ -778,8 +778,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
     tmp_win->ydiff = tmp_win->attr.y;
     /* put it where asked, mod title bar */
     /* if the gravity is towards the top, move it by the title height */
-    tmp_win->attr.y -= gravy*(tmp_win->bw-tmp_win->old_bw);
-    tmp_win->attr.x -= gravx*(tmp_win->bw-tmp_win->old_bw);
+    tmp_win->attr.y += gravy*tmp_win->old_bw;
+    tmp_win->attr.x += gravx*tmp_win->old_bw;
     if(gravy > 0)
       tmp_win->attr.y -= 2*tmp_win->boundary_width + tmp_win->title_height;
     if(gravx > 0)

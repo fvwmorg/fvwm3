@@ -133,8 +133,6 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	       &drag->x, &drag->y, (unsigned int *)&drag->width,
 	       (unsigned int *)&drag->height, &JunkBW,&JunkDepth);
 
-  drag->x += tmp_win->bw;
-  drag->y += tmp_win->bw;
   orig->x = drag->x;
   orig->y = drag->y;
   orig->width = drag->width;
@@ -178,9 +176,9 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	}
     }
   /* draw the rubber-band window */
-  MoveOutline (Scr.Root, drag->x - tmp_win->bw, drag->y - tmp_win->bw,
-	       drag->width - 1 + 2 * tmp_win->bw,
-	       drag->height - 1 + 2 * tmp_win->bw);
+  MoveOutline (Scr.Root, drag->x, drag->y,
+	       drag->width - 1,
+	       drag->height - 1);
   /* kick off resizing without requiring any motion if invoked with a key press */
   if (eventp->type == KeyPress)
     {
@@ -278,9 +276,9 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       if(!done)
 	{
 	  DispatchEvent();
-	  MoveOutline(Scr.Root, drag->x - tmp_win->bw, drag->y - tmp_win->bw,
-		      drag->width - 1 + 2 * tmp_win->bw,
-		      drag->height - 1 + 2 * tmp_win->bw);
+	  MoveOutline(Scr.Root, drag->x, drag->y,
+		      drag->width - 1,
+		      drag->height - 1);
 
 	}
     }
@@ -296,8 +294,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       /* size will be >= to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, True, xmotion,
 		     ymotion);
-      SetupFrame (tmp_win, drag->x - tmp_win->bw,
-		  drag->y - tmp_win->bw, drag->width, drag->height,FALSE);
+      SetupFrame (tmp_win, drag->x,
+		  drag->y, drag->width, drag->height,FALSE);
     }
   UninstallRootColormap();
   ResizeWindow = None;
@@ -378,9 +376,9 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
       if (*ymotionp == 1)
 	drag->y = orig->y + orig->height - drag->height;
 
-      MoveOutline(Scr.Root, drag->x - tmp_win->bw,drag->y - tmp_win->bw,
-		  drag->width - 1 + 2 * tmp_win->bw,
-		  drag->height - 1 + 2 * tmp_win->bw);
+      MoveOutline(Scr.Root, drag->x, drag->y,
+		  drag->width - 1,
+		  drag->height - 1);
     }
   DisplaySize(tmp_win, drag->width, drag->height,False,False);
 }

@@ -220,7 +220,7 @@ FvwmWindow *AddWindow(Window w)
       tmp_win->fl = &Scr.DefaultDecor;
 #endif
 
-  tmp_win->title_height = GetDecor(tmp_win,TitleHeight) + tmp_win->bw;
+  tmp_win->title_height = GetDecor(tmp_win,TitleHeight);
 
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
@@ -419,8 +419,8 @@ FvwmWindow *AddWindow(Window w)
 #endif
 
   /* create windows */
-  tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->bw;
-  tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw - tmp_win->bw;
+  tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw;
+  tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw;
 
   tmp_win->frame_width = tmp_win->attr.width+2*tmp_win->boundary_width;
   tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height+
@@ -469,7 +469,7 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->frame =
     XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y,
 		   tmp_win->frame_width, tmp_win->frame_height,
-		   tmp_win->bw,CopyFromParent, InputOutput,
+		   0,CopyFromParent, InputOutput,
 		   CopyFromParent,
 		   valuemask,
 		   &attributes);
@@ -497,7 +497,7 @@ FvwmWindow *AddWindow(Window w)
 		   tmp_win->boundary_width+tmp_win->title_height,
 		   (tmp_win->frame_width - 2*tmp_win->boundary_width),
 		   (tmp_win->frame_height - 2*tmp_win->boundary_width -
-		    tmp_win->title_height),tmp_win->bw, CopyFromParent,
+		    tmp_win->title_height),0, CopyFromParent,
 		   InputOutput,CopyFromParent, valuemask,&attributes);
   valuemask = valuemask_save;
 
@@ -505,8 +505,7 @@ FvwmWindow *AddWindow(Window w)
 			   EnterWindowMask|LeaveWindowMask);
   tmp_win->title_x = tmp_win->title_y = 0;
   tmp_win->title_w = 0;
-  tmp_win->title_width = tmp_win->frame_width - 2*tmp_win->corner_width
-    - 3 + tmp_win->bw;
+  tmp_win->title_width = tmp_win->frame_width - 2*tmp_win->corner_width - 3;
   if(tmp_win->title_width < 1)
     tmp_win->title_width = 1;
   if(tmp_win->flags & BORDER)

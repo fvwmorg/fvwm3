@@ -58,7 +58,6 @@
 #define SIGNAL_RETURN return
 #endif
 
-#define BW 1			/* border width */
 #define BOUNDARY_WIDTH 7    	/* border width */
 #define CORNER_WIDTH 16    	/* border width */
 
@@ -173,7 +172,6 @@ typedef struct FvwmWindow
     int frame_height;		/* height of frame */
     int boundary_width;
     int corner_width;
-    int bw;
     int title_x;
     int title_y;
     int title_height;		/* height of the title bar */

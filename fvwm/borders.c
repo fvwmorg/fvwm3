@@ -370,8 +370,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   if(t->flags & BORDER)
   {
     /* draw relief lines */
-    y= t->frame_height - 2*t->corner_width;
-    x = t->frame_width-  2*t->corner_width +t->bw;
+    y = t->frame_height - 2*t->corner_width;
+    x = t->frame_width -  2*t->corner_width;
 
     for(i=0;i<4;i++)
     {
@@ -445,7 +445,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #ifdef BORDERSTYLE
         if (flags&HiddenHandles) {
 	    RelieveWindowHH(t,t->corners[i],0,0,t->corner_width,
-			    ((i/2)?t->corner_width+t->bw:t->corner_width),
+			    ((i/2)?t->corner_width:t->corner_width),
 			    rgc,sgc, corners[i], corners[i]);
 
 	    if (!(flags&NoInset)) {
@@ -459,7 +459,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
          } else {
 #endif /* ! BORDERSTYLE */
 	     RelieveWindow(t,t->corners[i],0,0,t->corner_width,
-			   ((i/2)?t->corner_width+t->bw:t->corner_width),
+			   ((i/2)?t->corner_width:t->corner_width),
 			   rgc,sgc, corners[i]);
 
 	     if(t->boundary_width > 1)
@@ -521,24 +521,24 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       {
         if(t->boundary_width > 2)
         {
-          RelieveWindow(t,t->frame,t->boundary_width-1 - t->bw,
-                        t->boundary_width-1-t->bw,
+          RelieveWindow(t,t->frame,t->boundary_width-1,
+                        t->boundary_width-1,
                         t->frame_width-
-                        (t->boundary_width<<1)+2+3*t->bw,
+                        (t->boundary_width<<1)+2,
                         t->frame_height-
-                        (t->boundary_width<<1)+2+3*t->bw,
+                        (t->boundary_width<<1)+2,
                         sgc,rgc,
                         TOP_HILITE|LEFT_HILITE|RIGHT_HILITE|
                         BOTTOM_HILITE);
-          RelieveWindow(t,t->frame,0,0,t->frame_width+t->bw,
-                        t->frame_height+t->bw,rgc,sgc,
+          RelieveWindow(t,t->frame,0,0,t->frame_width,
+                        t->frame_height,rgc,sgc,
                         TOP_HILITE|LEFT_HILITE|RIGHT_HILITE|
                         BOTTOM_HILITE);
         }
         else
         {
-          RelieveWindow(t,t->frame,0,0,t->frame_width+t->bw,
-                        t->frame_height+t->bw,rgc,rgc,
+          RelieveWindow(t,t->frame,0,0,t->frame_width,
+                        t->frame_height,rgc,rgc,
                         TOP_HILITE|LEFT_HILITE|RIGHT_HILITE|
                         BOTTOM_HILITE);
         }
@@ -1069,15 +1069,15 @@ void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert)
       case 2:
         seg[0].x1 = t->boundary_width-1;
         seg[0].x2 = t->corner_width - (hh ? 1 : 2);
-        seg[0].y1 = t->corner_width - t->boundary_width+t->bw;
-        seg[0].y2 = t->corner_width - t->boundary_width+t->bw;
+        seg[0].y1 = t->corner_width - t->boundary_width;
+        seg[0].y2 = t->corner_width - t->boundary_width;
         n=1;
         break;
       case 3:
         seg[0].x1 = 0;
         seg[0].x2 = t->corner_width - t->boundary_width;
-        seg[0].y1 = t->corner_width - t->boundary_width+t->bw;
-        seg[0].y2 = t->corner_width - t->boundary_width+t->bw;
+        seg[0].y1 = t->corner_width - t->boundary_width;
+        seg[0].y2 = t->corner_width - t->boundary_width;
         n=1;
         break;
     }
@@ -1107,7 +1107,7 @@ void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert)
         break;
       case 3:
         seg[0].y1 = 0;
-        seg[0].y2 = t->corner_width - t->boundary_width + t->bw;
+        seg[0].y2 = t->corner_width - t->boundary_width;
         seg[0].x1 = t->corner_width - t->boundary_width;
         seg[0].x2 = t->corner_width - t->boundary_width;
         n=1;
@@ -1344,11 +1344,11 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
     right = tmp_win->nr_right_buttons;
 
     if (tmp_win->flags & TITLE)
-      tmp_win->title_height = GetDecor(tmp_win,TitleHeight) + tmp_win->bw;
+      tmp_win->title_height = GetDecor(tmp_win,TitleHeight);
 
     tmp_win->title_width= w-
       (left+right)*tmp_win->title_height
-      -2*tmp_win->boundary_width+tmp_win->bw;
+      -2*tmp_win->boundary_width;
 
 
     if(tmp_win->title_width < 1)
@@ -1392,7 +1392,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
         }
       }
 
-      xwc.x=w-tmp_win->boundary_width+tmp_win->bw;
+      xwc.x=w-tmp_win->boundary_width;
       for(i=0;i<Scr.nr_right_buttons;i++)
       {
         if(tmp_win->right_w[i] != None)
@@ -1411,7 +1411,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
 
     if(tmp_win->flags & BORDER)
     {
-      tmp_win->corner_width = GetDecor(tmp_win,TitleHeight) + tmp_win->bw +
+      tmp_win->corner_width = GetDecor(tmp_win,TitleHeight) +
         tmp_win->boundary_width ;
 
       if(w < 2*tmp_win->corner_width)
@@ -1422,7 +1422,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
 #endif
          )
         tmp_win->corner_width = h/3;
-      xwidth = w - 2*tmp_win->corner_width+tmp_win->bw;
+      xwidth = w - 2*tmp_win->corner_width;
       ywidth = h - 2*tmp_win->corner_width;
       xwcm = CWWidth | CWHeight | CWX | CWY;
       if(xwidth<2)
@@ -1441,7 +1441,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
         }
         else if (i==1)
         {
-          xwc.x = w - tmp_win->boundary_width+tmp_win->bw;
+          xwc.x = w - tmp_win->boundary_width;
           xwc.y = tmp_win->corner_width;
           xwc.width = tmp_win->boundary_width;
           xwc.height = ywidth;
@@ -1450,8 +1450,8 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
         else if(i==2)
         {
           xwc.x = tmp_win->corner_width;
-          xwc.y = h - tmp_win->boundary_width+tmp_win->bw;
-          xwc.height = tmp_win->boundary_width+tmp_win->bw;
+          xwc.y = h - tmp_win->boundary_width;
+          xwc.height = tmp_win->boundary_width;
           xwc.width = xwidth;
         }
         else
@@ -1473,7 +1473,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
       for(i=0;i<4;i++)
       {
         if(i%2)
-          xwc.x = w - tmp_win->corner_width+tmp_win->bw;
+          xwc.x = w - tmp_win->corner_width;
         else
           xwc.x = 0;
 
@@ -1494,8 +1494,8 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
   tmp_win->attr.height = h - tmp_win->title_height
     - 2*tmp_win->boundary_width;
   /* may need to omit the -1 for shaped windows, next two lines*/
-  cx = tmp_win->boundary_width-tmp_win->bw;
-  cy = tmp_win->title_height + tmp_win->boundary_width-tmp_win->bw;
+  cx = tmp_win->boundary_width;
+  cy = tmp_win->title_height + tmp_win->boundary_width;
 
 #ifdef WINDOWSHADE
   if (!shaded) {
@@ -1551,7 +1551,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
     client_event.xconfigure.height =h-2*tmp_win->boundary_width -
       tmp_win->title_height;
 
-    client_event.xconfigure.border_width =tmp_win->bw;
+    client_event.xconfigure.border_width = 0;
     /* Real ConfigureNotify events say we're above title window, so ... */
     /* what if we don't have a title ????? */
     client_event.xconfigure.above = tmp_win->frame;
@@ -1590,7 +1590,7 @@ void SetShape(FvwmWindow *tmp_win, int w)
       /* windows w/ titles */
       rect.x = tmp_win->boundary_width;
       rect.y = tmp_win->title_y;
-      rect.width = w - 2*tmp_win->boundary_width+tmp_win->bw;
+      rect.width = w - 2*tmp_win->boundary_width;
       rect.height = tmp_win->title_height;
 
 

@@ -1,7 +1,10 @@
 1999-03-01 Hippo
 
-	* Fixed opaque/animated moves to not crash shaded windows, removed
-	#ifndef NO_ETERM_SUPPORT, might want to make it a configure option.
+	* fvwm/*: Removed ->bw. FvwmBorder windows will look funny until I fix
+	them.
+	
+	* fvwm/move.c: Fixed opaque/animated moves to not crash shaded windows,
+	removed	#ifndef NO_ETERM_SUPPORT, might want to make it a configure option.
 
 1999-02-28  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 

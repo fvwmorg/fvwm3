@@ -294,7 +294,7 @@ SaveWindowStates(FILE *f)
       i += xmax / Scr.MyDisplayWidth;
       x = i * Scr.MyDisplayWidth
 	+ (ewin->orig_x % Scr.MyDisplayWidth) 
-	- ewin->old_bw + ewin->bw;
+	- ewin->old_bw;
       if (x < 0) x += Scr.MyDisplayWidth;
       
       i = 0; 
@@ -306,7 +306,7 @@ SaveWindowStates(FILE *f)
       i += ymax / Scr.MyDisplayHeight;
       y = i * Scr.MyDisplayHeight
 	+ (ewin->orig_y % Scr.MyDisplayHeight) 
-	- ewin->old_bw + ewin->bw;
+	- ewin->old_bw;
       if (y < 0) y += Scr.MyDisplayHeight;
       
       fprintf(f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i\n",
