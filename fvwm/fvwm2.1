@@ -919,6 +919,120 @@ can be used as a source of examples for fvwm configuration.
 .\" .IR FONT .
 .\" Note that no catalog-file or input-methods are implemented.
 
+.\"needs_lang_check
+.SH FONT NAMES AND FONT LOADING
+
+The font used for the text of a window title, an icon title, a menu and the
+geometry window can be specified by using the Font and IconFont Style,
+the Font MenuStyle and the DefaultFont command. Also, all the Modules which
+use text have configuration command(s) to specify font(s). All this styles
+and commands take a font name as argument. The aim of this section is
+to explain what is a font name for fvwm and which fonts fvwm load.
+
+First, you can use what we can call a usual font name as
+.EX
+-adobe-courier-bold-r-normal--10-100-75-75-m-60-ISO8859-1
+-adobe-courier-bold-r-normal--10-*
+-*-fixed-medium-o-normal--14-*-ISO8859-15
+.EE
+That is, you can use an X Logical Font Description (XLFD for short).
+Then the "first" font which match the description is loaded and
+used. This "first" font depends of your font path and also of your
+locale if fvwm has been compiled with the --enable-multibyte option
+to configure.
+If you have multibyte support, font which match the locale charset
+is loaded in priority. For example with
+.EX
+-adobe-courier-bold-r-normal--10-*
+.EE
+if the locale charset is ISO8859-1, then fvwm try first to load a font
+which match
+.EX
+-adobe-courier-bold-r-normal--10-*-ISO8859-1
+.EE
+as with the locale charset ISO8859-15 fvwm try first
+.EX
+-adobe-courier-bold-r-normal--10-*-ISO8859-15.
+.EE
+
+Secondly, a font name can be given as an extended XLFD. This
+is a period separated list of (simple) XLFD as:
+.EX
+-adobe-courier-bold-r-normal--14-*,-*-courier-medium-r-normal--14-*
+.EE
+Without multibyte support each simple font name is tried until a
+matching font is found. With multibyte support each simple font name
+is tried until a matching font with the locale charset is found and
+if this fails each simple font name is tried without constraint on
+the charset.
+
+More details on the XLFD can be found in various document as
+the X manual page, the X Logical Font Description Conventions document
+(called xlfd) and the XLoadFont and XCreateFontSet manual pages.
+Here some useful utilities: xlsfonts, xfontsel, xfd and xset.
+
+If you have Xft support (--enable-xft configure option) you can specify
+an Xft font name (description) of a true type (or Type1) font prefixed
+by "xft:" as
+.EX
+"xft:Luxi Mono"
+"xft:Luxi Mono:Medium:Roman:size=14:encoding=iso8859-1"
+.EE
+Then the "first" font which match the description is loaded.
+This first font strongly depends on the XftConfig configuration
+file.
+Unfortunately, it does not seem that there is a documentation on
+Xft font names (but it is similar to the XLFD on some point).
+One may read the Xft manual page. It seems that the first string
+which follows "xft:" is always considered as the family.
+With the second example
+Luxi Mono is the Family (Other XFree TTF family: "Luxi Serif", "Luxi Sans"),
+Medium is the Weight (other possible weight: Light, DemiBold, Bold, Black),
+Roman is the slant or the style (other possibility: Regular, Oblique, Italic)
+size specify the point size (for a pixel size use pixelsize=),
+encoding allows to define the charset.
+Using iso10646-1 allows to display UTF-8 strings (in menu for example)
+without multibyte support neither an UTF-8 locale (which is not available
+for all C libraries).
+An important parameter is "minspace=bool" where bool is True or
+False. If bool is False (the default?) Xft gives a greater font height
+to fvwm than if bool is True. This may modify text placement, icon and
+window title height, line spacing in menus and FvwmIdent, buttons
+height in some fvwm modules ...etc.  
+With a LCD monitor you may try to add "rgba=mode" where mode is either
+rgb, bgr, vrgb or vbgr to enable subpixel rendering. The good mode depends
+on the way your LCD cells are arranged.
+You can play with the rasterization by adding "matrix=x y 0 1" where
+x is a positive float and y is a positive or negative float (try 2 0 0 1
+and 1 -1 0 1, as 1 0 0 1 is the default). 
+You can pass other specification in between ":", as "foundry=foundry_name", 
+"spacing=type" where type can be monospace, proportional or charcell,
+"charwidth=integer", "charheight=integer" or "antialias=bool" where bool is
+True or False. It does not seems that these parameters are always taken
+in account. Moreover, for each category it is possible to give
+several value separated by a period:
+.EX
+"xft:familly1,familly2:pixelsize=13:encoding=koi8-u,iso8859-15"
+.EE
+To determine which Xft fonts are really loaded you can
+export XFT_DEBUG=1 before starting fvwm and take a look to the
+errors log. Any way, Xft support is experimental (from the X and the fvwm
+point of view) and the quality of the rendering depends on number of
+parameters (as the XFree and the freetype versions and your video card(s)).
+Moreover, the Xft protocol forces fvwm to proceed
+more redrawing which can lead to text flickering. If your are not
+happy with this simply do not use Xft rendering.
+
+Finally, after an Xft font name you can add after a ";" an XLFD font name
+(simple or extended) as:
+.EX
+xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
+.EE
+then, if either loading the Xft font fail or fvwm has no Xft support,
+fvwm load the usual font "-adobe-courier-bold-r-normal--14-*". This
+allows to write portable configuration files.
+.\"end
+
 .SH KEYBOARD SHORTCUTS
 
 Almost all window manager operations can be performed from the

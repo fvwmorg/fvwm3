@@ -612,7 +612,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     tmp_win->icon_g.title_w_g.x = x_title_w;
 
     /* set up TitleGC for drawing the icon label */
-    if (tmp_win->icon_font->font != None)
+    if (tmp_win->icon_font != NULL)
       NewFontAndColor(tmp_win->icon_font, TextColor, BackColor);
 
     tmp_win->icon_g.title_w_g.height = ICON_HEIGHT(tmp_win);

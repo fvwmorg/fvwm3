@@ -1,3 +1,18 @@
+2002-02-28  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm2.1:
+	New section FONT NAMES AND FONT LOADING
+
+	* INSTALL.fvwm:
+	* NEWS:
+	Document --enable-xft
+
+	* libs/Fft.c (get_FlocaleXftFont):
+	Used the xft font height in the place of ascent+descent
+
+	* fvwm/icons.c (DrawIconWindow):
+	Fixed the fg colors of the icon title
+
 2002-02-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/conditional.c (CMD_CondCase):

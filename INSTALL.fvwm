@@ -330,6 +330,18 @@ This option disable this conversion. Note that --enable-multibyte causes to
 ignore this option and you should try to use --enable-multibyte if you have
 problems with the window titles.
 
+  --enable-xft                  enable anti-aliased text rendering
+  ~~~~~~~~~~~~
+
+Enable the possibility to use Xft anti-aliased text rendering in all
+text drawn by fvwm2 and its modules. This support is totally experimental
+and if anti-aliased rendering is in used fvwm proceeds more redrawing which
+can cause text flickering. Moreover, this option add a not negligible amount
+of shared memory to all fvwm process. You need XFree version >= 4.1 and
+freetype2 version >= 6.1.0 (aka version 2.0.6), but more recent versions are
+better. The FONT NAMES AND FONT LOADING section of the fvwm2 manual page
+explain how to enable anti-aliased rendering.
+
   --disable-shape               disable shape extensions
   ~~~~~~~~~~~~~~~
 

@@ -72,7 +72,10 @@ FlocaleFont *get_FlocaleXftFont(Display *dpy, char *fontname)
   flf->utf8 = is_utf8_encoding(xftfont);
   MULTIBYTE_CODE(flf->fontset = None);
   flf->font = NULL;
-  flf->height = xftfont->ascent + xftfont->descent;
+  /* xft font height may be > xftfont->ascent + xftfont->descent, this
+   * depends on the minspace value */
+  /*flf->height = xftfont->ascent + xftfont->descent;*/
+  flf->height = xftfont->height;
   flf->ascent = xftfont->ascent;
   flf->descent = xftfont->descent;
   /* FIXME */

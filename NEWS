@@ -23,6 +23,11 @@ Font loading and memory management has been improved in the multibyte case.
 * Better support of non ISO-8859-1 window and icon titles. See the
 --disable-compound-text option in INSTALL.fvwm for more details.
 
+* Added anti-aliased text rendering support using Xft (this is off by
+default, use --enable-xft). Recent version of XFree and freetype2 is
+needed (see the FONT NAMES AND FONT LOADING section of the fvwm2 manual
+page).
+
 * New conditional command This.
 
 * Conditional commands now have a return code (True, False or
