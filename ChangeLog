@@ -1,3 +1,9 @@
+2001-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (handle_stick):
+	also redraw buttons when a window becomes sticky/slippery to make sure
+	that MWMDecorStick buttons are updated too; fixes bug #749
+
 2001-07-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:

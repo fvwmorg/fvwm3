@@ -45,6 +45,8 @@ Changes in beta release 2.4.1 (not released yet)
 * Fixed a number of building problems related to old vendor unices,
   libstroke-0.5, autoconf-2.50, bogus gnome-config and imlib-config.
 
+* Fixed drawing of title bar buttons with MWMDecorStick.
+
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)
 _+_/A_-_

@@ -3256,7 +3256,8 @@ void handle_stick(F_CMD_ARGS, int toggle)
     }
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
-  DrawDecorations(tmp_win, DRAW_TITLE, (Scr.Hilite==tmp_win), True, None);
+  DrawDecorations(
+    tmp_win, DRAW_TITLE | DRAW_BUTTONS, (Scr.Hilite==tmp_win), True, None);
   if ((sf = get_focus_window()))
   {
     focus_grab_buttons(sf, True);
