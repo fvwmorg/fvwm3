@@ -1686,6 +1686,11 @@ void HandleEnterNotify(void)
 
   DBUG("HandleEnterNotify","Routine Entered");
 
+  /* Ignore EnterNotify events while a window is resized or moved as a wire
+   * frame; otherwise the window list may be screwed up. */
+  if (Scr.flags.is_wire_frame_displayed)
+    return;
+
   /* look for a matching leaveNotify which would nullify this enterNotify */
   if(XCheckTypedWindowEvent (dpy, ewp->window, LeaveNotify, &d))
     {
@@ -1779,6 +1784,11 @@ void HandleEnterNotify(void)
 void HandleLeaveNotify(void)
 {
   DBUG("HandleLeaveNotify","Routine Entered");
+
+  /* Ignore LeaveNotify events while a window is resized or moved as a wire
+   * frame; otherwise the window list may be screwed up. */
+  if (Scr.flags.is_wire_frame_displayed)
+    return;
 
   /* CDE-like behaviour of raising the icon title if the icon
      gets the focus (in particular if the cursor is over the icon) */

@@ -264,7 +264,10 @@ static void InteractiveMove(
      (Scr.OpaqueSize*Scr.MyDisplayWidth*Scr.MyDisplayHeight)/100)
     do_move_opaque = True;
   else
+  {
+    Scr.flags.is_wire_frame_displayed = True;
     MyXGrabServer(dpy);
+  }
 
   if((!do_move_opaque)&&(IS_ICONIFIED(tmp_win)))
     XUnmapWindow(dpy,w);
@@ -281,7 +284,15 @@ static void InteractiveMove(
     UninstallFvwmColormap();
 
   if(!do_move_opaque)
+  {
+    XEvent event;
+    /* Throw away some events that dont interest us right now. */
+      while (XCheckMaskEvent(dpy, EnterWindowMask|LeaveWindowMask,
+                             &event) != False)
+        ;
+    Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
+  }
   UngrabEm(GRAB_NORMAL);
 }
 
@@ -1691,7 +1702,10 @@ void resize_window(F_CMD_ARGS)
   }
 
   if (!do_resize_opaque)
+  {
+    Scr.flags.is_wire_frame_displayed = True;
     MyXGrabServer(dpy);
+  }
 
   /* handle problems with edge-wrapping while resizing */
   edge_wrap_x = Scr.flags.edge_wrap_x;
@@ -2091,7 +2105,15 @@ void resize_window(F_CMD_ARGS)
     UninstallFvwmColormap();
   ResizeWindow = None;
   if (!do_resize_opaque)
+  {
+    XEvent event;
+    /* Throw away some events that dont interest us right now. */
+      while (XCheckMaskEvent(dpy, EnterWindowMask|LeaveWindowMask,
+                             &event) != False)
+        ;
+    Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
+  }
   xmotion = 0;
   ymotion = 0;
   WaitForButtonsUp(True);

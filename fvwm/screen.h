@@ -374,6 +374,7 @@ typedef struct ScreenInfo
     unsigned has_default_font_changed : 1;
     unsigned has_default_color_changed : 1;
     unsigned has_nr_buttons_changed : 1;
+    unsigned is_wire_frame_displayed : 1;
     unsigned silent_functions : 1;
     unsigned windows_captured : 1;
     unsigned edge_wrap_x : 1;
