@@ -72,7 +72,7 @@ extern char NoResource[];
    */
 
 /* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
+#define F_CMD_ARGS XEvent *eventp, Window w, FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 
 void CreateGCs(void);
@@ -93,7 +93,6 @@ void SwitchPages(Bool,Bool);
 void NextPage(void);
 void PrevPage(void);
 
-void Maximize(F_CMD_ARGS);
 void WindowShade(F_CMD_ARGS);
 void setShadeAnim(F_CMD_ARGS);
 

@@ -425,8 +425,9 @@ void move_window_to_page(F_CMD_ARGS)
 
 /* This function does the SnapAttraction stuff. If takes x and y coordinates
  * (*px and *py) and returns the snapped values. */
-static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
-			  int *px, int *py)
+static void DoSnapAttract(
+  FvwmWindow *tmp_win, unsigned int Width, unsigned int Height,
+  int *px, int *py)
 {
   int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
   rectangle self, other;
@@ -442,219 +443,241 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
   nyt = -1;
   self.x = *px;
   self.y = *py;
-  if(IS_ICONIFIED(tmp_win))
-    {
-      self.width = Width;
-      self.height = Height;
-    }
-  else
-    {
-      self.width = Width;
-      self.height = Height;
-    }
+  self.width = Width;
+  self.height = Height;
   while(Scr.SnapAttraction >= 0 && tmp)
+  {
+    switch (Scr.SnapMode)
     {
-      if(Scr.SnapMode == 0)  /* All */
-	{
-	  /* NOOP */
-	}
-      if(Scr.SnapMode == 1)  /* SameType */
-	{
-	  if( IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
-	    {
-	      tmp = tmp->next;
-	      continue;
-	    }
-	}
-      if(Scr.SnapMode == 2)  /* Icons */
-	{
-	  if( !IS_ICONIFIED(tmp) || !IS_ICONIFIED(tmp_win))
-	    {
-	      tmp = tmp->next;
-	      continue;
-	    }
-	}
-      if(Scr.SnapMode == 3)  /* Windows */
-	{
-	  if( IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
-	    {
-	      tmp = tmp->next;
-	      continue;
-	    }
-	}
-      if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
-	{
-	  if(IS_ICONIFIED(tmp))
-	    {
-	      if(tmp->icon_p_height > 0)
-		{
-		  other.width = tmp->icon_p_width;
-		  other.height = tmp->icon_p_height;
-		}
-	      else
-		{
-		  other.width = tmp->icon_w_width;
-		  other.height = tmp->icon_w_height;
-		}
-	      other.x = tmp->icon_x_loc;
-	      other.y = tmp->icon_y_loc;
-	    }
-	  else
-	    {
-	      other.width = tmp->frame_g.width;
-	      other.height = tmp->frame_g.height;
-	      other.x = tmp->frame_g.x;
-	      other.y = tmp->frame_g.y;
-	    }
-	  if(!((other.y + other.height) < (*py) ||
-	       (other.y) > (*py + self.height) ))
-	    {
-	      dist = abs(other.x - (*px + self.width));
-              if(dist < closestRight)
-		{
-		  closestRight = dist;
-		  if(((*px + self.width) >= other.x)&&
-		     ((*px + self.width) < other.x+Scr.SnapAttraction))
-		    nxl = other.x - self.width;
-		  if(((*px + self.width) >= other.x - Scr.SnapAttraction)&&
-		     ((*px + self.width) < other.x))
-		    nxl = other.x - self.width;
-                }
-	      dist = abs(other.x + other.width - *px);
-	      if(dist < closestLeft)
-		{
-		  closestLeft = dist;
-		  if((*px <= other.x + other.width)&&
-		     (*px > other.x + other.width - Scr.SnapAttraction))
-		    nxl = other.x + other.width;
-		  if((*px <= other.x + other.width + Scr.SnapAttraction)&&
-		     (*px > other.x + other.width))
-		    nxl = other.x + other.width;
-		}
-	    }
-          /* ScreenEdges - SJL */
-          if(!(Scr.MyDisplayHeight < (*py) ||
-               (*py + self.height) < 0) && (Scr.SnapMode & 8))
-            {
-              dist = abs(Scr.MyDisplayWidth - (*px + self.width));
-
-              if(dist < closestRight)
-		{
-		  closestRight = dist;
-
-		  if(((*px + self.width) >= Scr.MyDisplayWidth)&&
-		     ((*px + self.width) < Scr.MyDisplayWidth +
-                      Scr.SnapAttraction))
-		    nxl = Scr.MyDisplayWidth - self.width;
-
-		  if(((*px + self.width) >= Scr.MyDisplayWidth -
-                      Scr.SnapAttraction)&&
-		     ((*px + self.width) < Scr.MyDisplayWidth))
-		    nxl = Scr.MyDisplayWidth - self.width;
-                }
-
-              dist = abs(*px);
-
-	      if(dist < closestLeft)
-		{
-		  closestLeft = dist;
-
-                  if((*px <= 0)&&
-		     (*px > - Scr.SnapAttraction))
-		    nxl = 0;
-		  if((*px <= Scr.SnapAttraction)&&
-		     (*px > 0))
-		    nxl = 0;
-                }
-            }
-
-	  if(!((other.x + other.width) < (*px) ||
-	       (other.x) > (*px + self.width)))
-	    {
-	      dist = abs(other.y - (*py + self.height));
-	      if(dist < closestBottom)
-		{
-		  closestBottom = dist;
-		  if(((*py + self.height) >= other.y)&&
-		     ((*py + self.height) < other.y+Scr.SnapAttraction))
-		    nyt = other.y - self.height;
-		  if(((*py + self.height) >= other.y - Scr.SnapAttraction)&&
-		     ((*py + self.height) < other.y))
-		    nyt = other.y - self.height;
-		}
-	      dist = abs(other.y + other.height - *py);
-	      if(dist < closestTop)
-		{
-		  closestTop = dist;
-		  if((*py <= other.y + other.height)&&
-		     (*py > other.y + other.height - Scr.SnapAttraction))
-		    nyt = other.y + other.height;
-		  if((*py <= other.y + other.height + Scr.SnapAttraction)&&
-		     (*py > other.y + other.height))
-		    nyt = other.y + other.height;
-		}
-	    }
-          /* ScreenEdges - SJL */
-          if (!(Scr.MyDisplayWidth < (*px) || (*px + self.width) < 0 )
-              && (Scr.SnapMode & 8))
-            {
-              dist = abs(Scr.MyDisplayHeight - (*py + self.height));
-
-	      if(dist < closestBottom)
-		{
-		  closestBottom = dist;
-                  if(((*py + self.height) >= Scr.MyDisplayHeight)&&
-                     ((*py + self.height) < Scr.MyDisplayHeight +
-		      Scr.SnapAttraction))
-                    nyt = Scr.MyDisplayHeight - self.height;
-                  if(((*py + self.height) >= Scr.MyDisplayHeight -
-                      Scr.SnapAttraction)&&
-                     ((*py + self.height) < Scr.MyDisplayHeight))
-                    nyt = Scr.MyDisplayHeight - self.height;
-                }
-
-              dist = abs(- *py);
-
-              if(dist < closestTop)
-		{
-                  closestTop = dist;
-		  if((*py <= 0)&&
-		     (*py > - Scr.SnapAttraction))
-		    nyt = 0;
-		  if((*py <=  Scr.SnapAttraction)&&
-		     (*py > 0))
-		    nyt = 0;
-
-                }
-            }
-	}
-      tmp = tmp->next;
+    case 1:  /* SameType */
+      if( IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
+      {
+	tmp = tmp->next;
+	continue;
+      }
+      break;
+    case 2:  /* Icons */
+      if( !IS_ICONIFIED(tmp) || !IS_ICONIFIED(tmp_win))
+      {
+	tmp = tmp->next;
+	continue;
+      }
+      break;
+    case 3:  /* Windows */
+      if( IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
+      {
+	tmp = tmp->next;
+	continue;
+      }
+      break;
+    case 0:  /* All */
+    default:
+      /* NOOP */
+      break;
     }
+    if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
+    {
+      if(IS_ICONIFIED(tmp))
+      {
+	if(tmp->icon_p_height > 0)
+	{
+	  other.width = tmp->icon_p_width;
+	  other.height = tmp->icon_p_height;
+	}
+	else
+	{
+	  other.width = tmp->icon_w_width;
+	  other.height = tmp->icon_w_height;
+	}
+	other.x = tmp->icon_x_loc;
+	other.y = tmp->icon_y_loc;
+      }
+      else
+      {
+	other.width = tmp->frame_g.width;
+	other.height = tmp->frame_g.height;
+	other.x = tmp->frame_g.x;
+	other.y = tmp->frame_g.y;
+      }
+      if(!((other.y + (int)other.height) < (*py) ||
+	   (other.y) > (*py + (int)self.height) ))
+      {
+	dist = abs(other.x - (*px + (int)self.width));
+	if(dist < closestRight)
+	{
+	  closestRight = dist;
+	  if(((*px + (int)self.width) >= other.x)&&
+	     ((*px + (int)self.width) < other.x+Scr.SnapAttraction))
+	  {
+	    nxl = other.x - (int)self.width;
+	  }
+	  if(((*px + (int)self.width) >= other.x - Scr.SnapAttraction)&&
+	     ((*px + (int)self.width) < other.x))
+	  {
+	    nxl = other.x - (int)self.width;
+	  }
+	}
+	dist = abs(other.x + (int)other.width - *px);
+	if(dist < closestLeft)
+	{
+	  closestLeft = dist;
+	  if((*px <= other.x + (int)other.width)&&
+	     (*px > other.x + (int)other.width - Scr.SnapAttraction))
+	  {
+	    nxl = other.x + (int)other.width;
+	  }
+	  if((*px <= other.x + (int)other.width + Scr.SnapAttraction)&&
+	     (*px > other.x + (int)other.width))
+	  {
+	    nxl = other.x + (int)other.width;
+	  }
+	}
+      }
+      /* ScreenEdges - SJL */
+      if(!(Scr.MyDisplayHeight < (*py) ||
+	   (*py + (int)self.height) < 0) && (Scr.SnapMode & 8))
+      {
+	dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
+
+	if(dist < closestRight)
+	{
+	  closestRight = dist;
+
+	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth)&&
+	     ((*px + (int)self.width) < Scr.MyDisplayWidth +
+	      Scr.SnapAttraction))
+	    {
+	    nxl = Scr.MyDisplayWidth - (int)self.width;
+	  }
+
+	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth -
+	      Scr.SnapAttraction)&&
+	     ((*px + (int)self.width) < Scr.MyDisplayWidth))
+	  {
+	    nxl = Scr.MyDisplayWidth - (int)self.width;
+	  }
+	}
+
+	dist = abs(*px);
+
+	if(dist < closestLeft)
+	{
+	  closestLeft = dist;
+
+	  if((*px <= 0)&&
+	     (*px > - Scr.SnapAttraction))
+	  {
+	    nxl = 0;
+	  }
+	  if((*px <= Scr.SnapAttraction)&&
+	     (*px > 0))
+	  {
+	    nxl = 0;
+	  }
+	}
+      }
+
+      if(!((other.x + (int)other.width) < (*px) ||
+	   (other.x) > (*px + (int)self.width)))
+      {
+	dist = abs(other.y - (*py + (int)self.height));
+	if(dist < closestBottom)
+	{
+	  closestBottom = dist;
+	  if(((*py + (int)self.height) >= other.y)&&
+	     ((*py + (int)self.height) < other.y+Scr.SnapAttraction))
+	  {
+	    nyt = other.y - (int)self.height;
+	  }
+	  if(((*py + (int)self.height) >= other.y - Scr.SnapAttraction)&&
+	     ((*py + (int)self.height) < other.y))
+	  {
+	    nyt = other.y - (int)self.height;
+	  }
+	}
+	dist = abs(other.y + (int)other.height - *py);
+	if(dist < closestTop)
+	{
+	  closestTop = dist;
+	  if((*py <= other.y + (int)other.height)&&
+	     (*py > other.y + (int)other.height - Scr.SnapAttraction))
+	  {
+	    nyt = other.y + (int)other.height;
+	  }
+	  if((*py <= other.y + (int)other.height + Scr.SnapAttraction)&&
+	     (*py > other.y + (int)other.height))
+	  {
+	    nyt = other.y + (int)other.height;
+	  }
+	}
+      }
+      /* ScreenEdges - SJL */
+      if (!(Scr.MyDisplayWidth < (*px) || (*px + (int)self.width) < 0 )
+	  && (Scr.SnapMode & 8))
+      {
+	dist = abs(Scr.MyDisplayHeight - (*py + (int)self.height));
+
+	if(dist < closestBottom)
+	{
+	  closestBottom = dist;
+	  if(((*py + (int)self.height) >= Scr.MyDisplayHeight)&&
+	     ((*py + (int)self.height) < Scr.MyDisplayHeight +
+	      Scr.SnapAttraction))
+	  {
+	    nyt = Scr.MyDisplayHeight - (int)self.height;
+	  }
+	  if(((*py + (int)self.height) >= Scr.MyDisplayHeight -
+	      Scr.SnapAttraction)&&
+	     ((*py + (int)self.height) < Scr.MyDisplayHeight))
+	  {
+	    nyt = Scr.MyDisplayHeight - (int)self.height;
+	  }
+	}
+
+	dist = abs(- *py);
+
+	if(dist < closestTop)
+	{
+	  closestTop = dist;
+	  if((*py <= 0)&&(*py > - Scr.SnapAttraction))
+	  {
+	    nyt = 0;
+	  }
+	  if((*py <=  Scr.SnapAttraction)&&(*py > 0))
+	  {
+	    nyt = 0;
+	  }
+
+	}
+      }
+    }
+    tmp = tmp->next;
+  }
   /* Snap grid handling */
   if(nxl == -1)
+  {
+    if(*px != *px / Scr.SnapGridX * Scr.SnapGridX)
     {
-      if(*px != *px / Scr.SnapGridX * Scr.SnapGridX)
-	{
-	  *px = (*px + ((*px >= 0) ? Scr.SnapGridX : -Scr.SnapGridX) / 2) /
-	    Scr.SnapGridX * Scr.SnapGridX;
-	}
+      *px = (*px + ((*px >= 0) ? Scr.SnapGridX : -Scr.SnapGridX) / 2) /
+	Scr.SnapGridX * Scr.SnapGridX;
     }
+  }
   else
-    {
-      *px = nxl;
-    }
+  {
+    *px = nxl;
+  }
   if(nyt == -1)
+  {
+    if(*py != *py / Scr.SnapGridY * Scr.SnapGridY)
     {
-      if(*py != *py / Scr.SnapGridY * Scr.SnapGridY)
-	{
-	  *py = (*py + ((*py >= 0) ? Scr.SnapGridY : -Scr.SnapGridY) / 2) /
-	    Scr.SnapGridY * Scr.SnapGridY;
-	}
+      *py = (*py + ((*py >= 0) ? Scr.SnapGridY : -Scr.SnapGridY) / 2) /
+	Scr.SnapGridY * Scr.SnapGridY;
     }
+  }
   else
-    {
-      *py = nyt;
-    }
+  {
+    *py = nyt;
+  }
 }
 
 /****************************************************************************
@@ -804,13 +827,14 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  yt2 = Event.xbutton.y_root + YOffset;
 	  /* ignore the position of the button release if it was on a
 	   * different page. */
-	  if (!((xl < 0 && xl2 >= 0) || (xl >= 0 && xl2 < 0) ||
-		(yt < 0 && yt2 >= 0) || (yt >= 0 && yt2 < 0)))
+	  if (!(((xl <  0 && xl2 >= 0) || (xl >= 0 && xl2 <  0) ||
+		 (yt <  0 && yt2 >= 0) || (yt >= 0 && yt2 <  0)) &&
+		(abs(xl - xl2) > Scr.MyDisplayWidth / 2 ||
+		 abs(yt - yt2) > Scr.MyDisplayHeight / 2)))
 	  {
 	    xl = xl2;
 	    yt = yt2;
 	  }
-
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
 	  /* Resist moving windows over the edge of the screen! */
@@ -1035,6 +1059,8 @@ void resize_window(F_CMD_ARGS)
   unsigned edge_wrap_y;
   int px;
   int py;
+  int i;
+  Bool called_from_title = False;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_RESIZE, ButtonPress))
     return;
@@ -1089,14 +1115,13 @@ void resize_window(F_CMD_ARGS)
       drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
 
       /* size will be less or equal to requested */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, False, xmotion,
-		     ymotion);
+      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion);
       if (IS_SHADED(tmp_win))
 	{
 	  tmp_win->orig_g.width = drag->width;
 	  tmp_win->orig_g.height = drag->height;
- 	  SetupFrame (tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		      drag->width, tmp_win->frame_g.height,FALSE,False);
+ 	  SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		     drag->width, tmp_win->frame_g.height,FALSE,False);
 	}
       else
 	SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
@@ -1154,35 +1179,51 @@ void resize_window(F_CMD_ARGS)
       /* Get the current position to determine which border to resize */
       if(PressedW == tmp_win->sides[0])   /* top */
 	ymotion = 1;
-      if(PressedW == tmp_win->sides[1])  /* right */
+      else if(PressedW == tmp_win->sides[1])  /* right */
 	xmotion = -1;
-      if(PressedW == tmp_win->sides[2])  /* bottom */
+      else if(PressedW == tmp_win->sides[2])  /* bottom */
 	ymotion = -1;
-      if(PressedW == tmp_win->sides[3])  /* left */
+      else if(PressedW == tmp_win->sides[3])  /* left */
 	xmotion = 1;
-      if(PressedW == tmp_win->corners[0])  /* upper-left */
+      else if(PressedW == tmp_win->corners[0])  /* upper-left */
 	{
 	  ymotion = 1;
 	  xmotion = 1;
 	}
-      if(PressedW == tmp_win->corners[1])  /* upper-right */
+      else if(PressedW == tmp_win->corners[1])  /* upper-right */
 	{
 	  xmotion = -1;
 	  ymotion = 1;
 	}
-      if(PressedW == tmp_win->corners[2]) /* lower left */
+      else if(PressedW == tmp_win->corners[2]) /* lower left */
 	{
 	  ymotion = -1;
 	  xmotion = 1;
 	}
-      if(PressedW == tmp_win->corners[3])  /* lower right */
+      else if(PressedW == tmp_win->corners[3])  /* lower right */
 	{
 	  ymotion = -1;
 	  xmotion = -1;
 	}
     }
 #ifndef NO_EXPERIMENTAL_RESIZE
-  if((PressedW != Scr.Root)&&(xmotion == 0)&&(ymotion == 0))
+  if (tmp_win->title_w != None && PressedW == tmp_win->title_w)
+  {
+    called_from_title = True;
+  }
+  else
+  {
+    for (i = 5; i--; )
+    {
+      if ((tmp_win->left_w[i] != None && PressedW == tmp_win->left_w[i]) ||
+	  (tmp_win->right_w[i] != None && PressedW == tmp_win->right_w[i]))
+      {
+	called_from_title = True;
+      }
+    }
+  }
+  if(PressedW != Scr.Root && xmotion == 0 && ymotion == 0 &&
+     !called_from_title)
     {
       int dx = orig->width - px;
       int dy = orig->height - py;
@@ -1416,17 +1457,16 @@ void resize_window(F_CMD_ARGS)
   if(!abort)
     {
       /* size will be >= to requested */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, True, xmotion,
-		     ymotion);
+      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion);
        if (IS_SHADED(tmp_win))
        {
          SetupFrame(tmp_win, drag->x, drag->y,
-                     drag->width, tmp_win->frame_g.height, FALSE, False);
+		    drag->width, tmp_win->frame_g.height, FALSE, False);
          tmp_win->orig_g.height = drag->height;
        }
       else
 	SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
-		    FALSE, False);
+		   FALSE, False);
     }
   UninstallRootColormap();
   ResizeWindow = None;
@@ -1502,7 +1542,7 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
   if (action)
     {
       /* round up to nearest OK size to keep pointer inside rubberband */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, True, *xmotionp,
+      ConstrainSize(tmp_win, &drag->width, &drag->height, *xmotionp,
 		    *ymotionp);
       if (*xmotionp == 1)
 	drag->x = orig->x + orig->width - drag->width;
@@ -1598,26 +1638,13 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
 
 void ConstrainSize(
   FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
-  Bool roundUp, int xmotion, int ymotion)
+  int xmotion, int ymotion)
 {
-#define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
-#define _min(a,b) (((a) < (b)) ? (a) : (b))
+#define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
     int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
     int baseWidth, baseHeight;
     int dwidth = *widthp, dheight = *heightp;
-    int constrainx, constrainy;
 
-    /* roundUp is True if called from an interactive resize */
-    if (roundUp)
-      {
-	constrainx = tmp_win->hints.width_inc - 1;
-	constrainy = tmp_win->hints.height_inc - 1;
-      }
-    else
-      {
-	constrainx = 0;
-	constrainy = 0;
-      }
     dwidth -= 2 *tmp_win->boundary_width;
     dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);
 
@@ -1662,8 +1689,8 @@ void ConstrainSize(
     /*
      * Second, round to base + N * inc (up or down depending on resize type)
      */
-    dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
-    dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
+    dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
+    dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
 
     /*
      * Step 2a: Check that we didn't violate min and max.
@@ -1721,20 +1748,20 @@ void ConstrainSize(
 	if ((minAspectX * dheight > minAspectY * dwidth)&&(xmotion == 0))
 	  {
 	    /* Change width to match */
-	    delta = makemult(minAspectX * dheight / minAspectY - dwidth,
+	    delta = MAKEMULT(minAspectX * dheight / minAspectY - dwidth,
 			     xinc);
 	    if (dwidth + delta <= maxWidth)
 	      dwidth += delta;
 	  }
 	if (minAspectX * dheight > minAspectY * dwidth)
 	  {
-	    delta = makemult(dheight - dwidth*minAspectY/minAspectX,
+	    delta = MAKEMULT(dheight - dwidth*minAspectY/minAspectX,
 			     yinc);
 	    if (dheight - delta >= minHeight)
 	      dheight -= delta;
 	    else
 	      {
-		delta = makemult(minAspectX*dheight / minAspectY - dwidth,
+		delta = MAKEMULT(minAspectX*dheight / minAspectY - dwidth,
 				 xinc);
 		if (dwidth + delta <= maxWidth)
 		  dwidth += delta;
@@ -1743,20 +1770,20 @@ void ConstrainSize(
 
         if ((maxAspectX * dheight < maxAspectY * dwidth)&&(ymotion == 0))
 	  {
-            delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
+            delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight,
                              yinc);
             if (dheight + delta <= maxHeight)
 	      dheight += delta;
 	  }
         if ((maxAspectX * dheight < maxAspectY * dwidth))
 	  {
-	    delta = makemult(dwidth - maxAspectX*dheight/maxAspectY,
+	    delta = MAKEMULT(dwidth - maxAspectX*dheight/maxAspectY,
 			     xinc);
 	    if (dwidth - delta >= minWidth)
 		dwidth -= delta;
 	    else
 	      {
-		delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
+		delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight,
 				 yinc);
 		if (dheight + delta <= maxHeight)
 		  dheight += delta;
@@ -1861,4 +1888,320 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
   lasty = y;
   lastWidth = width;
   lastHeight = height;
+}
+
+
+/* ----------------------------- maximizing code --------------------------- */
+
+static void move_sticky_window_to_same_page(
+  int *x11, int *x12, int *y11, int *y12, int x21, int x22, int y21, int y22)
+{
+  /* make sure the x coordinate is on the same page as the reference window */
+  if (*x11 >= x22)
+  {
+    while (*x11 >= x22)
+    {
+      *x11 -= Scr.MyDisplayWidth;
+      *x12 -= Scr.MyDisplayWidth;
+    }
+  }
+  else if (*x12 <= x21)
+  {
+    while (*x12 <= x21)
+    {
+      *x11 += Scr.MyDisplayWidth;
+      *x12 += Scr.MyDisplayWidth;
+    }
+  }
+  /* make sure the y coordinate is on the same page as the reference window */
+  if (*y11 >= y22)
+  {
+    while (*y11 >= y22)
+    {
+      *y11 -= Scr.MyDisplayHeight;
+      *y12 -= Scr.MyDisplayHeight;
+    }
+  }
+  else if (*y12 <= y21)
+  {
+    while (*y12 <= y21)
+    {
+      *y11 += Scr.MyDisplayHeight;
+      *y12 += Scr.MyDisplayHeight;
+    }
+  }
+
+}
+
+static void MaximizeHeight(FvwmWindow *win, unsigned int win_width, int win_x,
+			   unsigned int *win_height, int *win_y)
+{
+  FvwmWindow *cwin;
+  int x11, x12, x21, x22;
+  int y11, y12, y21, y22;
+  int new_y1, new_y2;
+  Bool is_sticky;
+
+  x11 = win_x;             /* Start x */
+  y11 = *win_y;            /* Start y */
+  x12 = x11 + win_width;   /* End x   */
+  y12 = y11 + *win_height; /* End y   */
+  new_y1 = truncate_to_multiple(y11, Scr.MyDisplayHeight);
+  new_y2 = new_y1 + Scr.MyDisplayHeight;
+
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
+    if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
+      is_sticky = True;
+    else
+      is_sticky = False;
+    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
+      continue;
+    if (IS_ICONIFIED(cwin)) {
+      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
+	continue;
+      x21 = cwin->icon_x_loc;
+      y21 = cwin->icon_y_loc;
+      x22 = x21 + cwin->icon_p_width;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+    } else {
+      x21 = cwin->frame_g.x;
+      y21 = cwin->frame_g.y;
+      x22 = x21 + cwin->frame_g.width;
+      y22 = y21 + cwin->frame_g.height;
+    }
+    if (is_sticky)
+    {
+      move_sticky_window_to_same_page(
+	&x21, &x22, &new_y1, &new_y2, x11, x12, y11, y12);
+    }
+
+    /* Are they in the same X space? */
+    if (!((x22 <= x11) || (x21 >= x12))) {
+      if ((y22 <= y11) && (y22 >= new_y1)) {
+	new_y1 = y22;
+      } else if ((y12 <= y21) && (new_y2 >= y21)) {
+	new_y2 = y21;
+      }
+    }
+  }
+  *win_height = new_y2 - new_y1;
+  *win_y = new_y1;
+}
+
+static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
+			  unsigned int win_height, int win_y)
+{
+  FvwmWindow *cwin;
+  int x11, x12, x21, x22;
+  int y11, y12, y21, y22;
+  int new_x1, new_x2;
+  Bool is_sticky;
+
+  x11 = *win_x;            /* Start x */
+  y11 = win_y;             /* Start y */
+  x12 = x11 + *win_width;  /* End x   */
+  y12 = y11 + win_height;  /* End y   */
+  new_x1 = truncate_to_multiple(x11, Scr.MyDisplayWidth);
+  new_x2 = new_x1 + Scr.MyDisplayWidth;
+
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
+    if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
+      is_sticky = True;
+    else
+      is_sticky = False;
+    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
+      continue;
+    if (IS_ICONIFIED(cwin)) {
+      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
+	continue;
+      x21 = cwin->icon_x_loc;
+      y21 = cwin->icon_y_loc;
+      x22 = x21 + cwin->icon_p_width;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+    } else {
+      x21 = cwin->frame_g.x;
+      y21 = cwin->frame_g.y;
+      x22 = x21 + cwin->frame_g.width;
+      y22 = y21 + cwin->frame_g.height;
+    }
+    if (is_sticky)
+    {
+      move_sticky_window_to_same_page(
+	&new_x1, &new_x2, &y21, &y21, x11, x12, y11, y12);
+    }
+
+    /* Are they in the same Y space? */
+    if (!((y22 <= y11) || (y21 >= y12))) {
+      if ((x22 <= x11) && (x22 >= new_x1)) {
+	new_x1 = x22;
+      } else if ((x12 <= x21) && (new_x2 >= x21)) {
+	new_x2 = x21;
+      }
+    }
+  }
+  *win_width  = new_x2 - new_x1;
+  *win_x = new_x1;
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	(Un)Maximize a window.
+ *
+ ***********************************************************************/
+void Maximize(F_CMD_ARGS)
+{
+  unsigned int new_width, new_height;
+  int new_x,new_y;
+  int page_x, page_y;
+  int val1, val2, val1_unit, val2_unit;
+  int toggle;
+  char *token;
+  char *taction;
+  Bool grow_x = False;
+  Bool grow_y = False;
+
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+    return;
+
+  if(tmp_win == NULL)
+    return;
+
+  if(check_if_function_allowed(F_MAXIMIZE,tmp_win,True,NULL) == 0)
+  {
+    XBell(dpy, 0);
+    return;
+  }
+  toggle = ParseToggleArgument(action, &action, -1, 0);
+  if (toggle == 0 && !IS_MAXIMIZED(tmp_win))
+    return;
+
+  if (toggle == 1 && IS_MAXIMIZED(tmp_win))
+  {
+    /* Fake that the window is not maximized. */
+    SET_MAXIMIZED(tmp_win, 0);
+  }
+
+  /* parse first parameter */
+  val1_unit = Scr.MyDisplayWidth;
+  token = PeekToken(action, &taction);
+  if (token && StrEquals(token, "grow"))
+  {
+    grow_x = True;
+    val1 = 100;
+    val1_unit = Scr.MyDisplayWidth;
+  }
+  else if (GetOnePercentArgument(action, &val1, &val1_unit) == 0)
+  {
+    val1 = 100;
+    val1_unit = Scr.MyDisplayWidth;
+  }
+
+  /* parse second parameter */
+  val2_unit = Scr.MyDisplayHeight;
+  token = PeekToken(taction, NULL);
+  if (token && StrEquals(token, "grow"))
+  {
+    grow_y = True;
+    val2 = 100;
+    val2_unit = Scr.MyDisplayHeight;
+  }
+  else if (GetOnePercentArgument(taction, &val2, &val2_unit) == 0)
+  {
+    val2 = 100;
+    val2_unit = Scr.MyDisplayHeight;
+  }
+
+  if (IS_MAXIMIZED(tmp_win))
+  {
+    SET_MAXIMIZED(tmp_win, 0);
+    /* Unmaximizing is slightly tricky since we want the window to
+     * stay on the same page, even if we have moved to a different page
+     * in the meantime. The orig values are absolute! */
+    if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
+    {
+      /* Make sure we keep it on screen while unmaximizing. Since
+	 orig_g is in absolute coords, we need to extract the
+	 page-relative coords. This doesn't work well if the page
+	 has been moved by a fractional part of the page size
+	 between maximizing and unmaximizing. */
+      new_x = tmp_win->orig_g.x -
+	truncate_to_multiple(tmp_win->orig_g.x,Scr.MyDisplayWidth);
+      new_y = tmp_win->orig_g.y -
+	truncate_to_multiple(tmp_win->orig_g.y,Scr.MyDisplayHeight);
+    }
+    else
+    {
+      new_x = tmp_win->orig_g.x - Scr.Vx;
+      new_y = tmp_win->orig_g.y - Scr.Vy;
+    }
+    new_width = tmp_win->orig_g.width;
+    if (IS_SHADED(tmp_win))
+      new_height = tmp_win->title_g.height + tmp_win->boundary_width;
+    else
+      new_height = tmp_win->orig_g.height;
+    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE, False);
+    SetBorder(tmp_win, True, True, True, None);
+  }
+  else /* maximize */
+  {
+    if (IS_SHADED(tmp_win))
+      new_height = tmp_win->orig_g.height;
+    else
+      new_height = tmp_win->frame_g.height;
+    new_width = tmp_win->frame_g.width;
+
+    if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
+    {
+      /* maximize on visible page */
+      page_x = 0;
+      page_y = 0;
+    }
+    else
+    {
+      /* maximize on the page where the center of the window is */
+      page_x = truncate_to_multiple(
+	(tmp_win->frame_g.x + tmp_win->frame_g.width-1) / 2,
+	Scr.MyDisplayWidth);
+      page_y = truncate_to_multiple(
+	(tmp_win->frame_g.y + tmp_win->frame_g.height-1) / 2,
+	Scr.MyDisplayHeight);
+    }
+
+    new_x = tmp_win->frame_g.x;
+    new_y = tmp_win->frame_g.y;
+
+    if (grow_y)
+    {
+      MaximizeHeight(tmp_win, new_width, new_x, &new_height, &new_y);
+    }
+    else if(val2 >0)
+    {
+      new_height = val2*val2_unit/100-2;
+      new_y = page_y;
+    }
+    if (grow_x)
+    {
+      MaximizeWidth(tmp_win, &new_width, &new_x, new_height, new_y);
+    }
+    else if(val1 >0)
+    {
+      new_width = val1*val1_unit/100-2;
+      new_x = page_x;
+    }
+    if((val1==0)&&(val2==0))
+    {
+      new_x = page_x;
+      new_y = page_y;
+      new_height = Scr.MyDisplayHeight - 1;
+      new_width = Scr.MyDisplayWidth - 1;
+    }
+    SET_MAXIMIZED(tmp_win, 1);
+    ConstrainSize(tmp_win, &new_width, &new_height, 0, 0);
+    tmp_win->maximized_ht = new_height;
+    if (IS_SHADED(tmp_win))
+      new_height = tmp_win->frame_g.height;
+    SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE,False);
+    SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
+  }
 }

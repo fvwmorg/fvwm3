@@ -2176,6 +2176,9 @@ void swallow(unsigned long *body)
 {
   char *temp;
   int button,i,j;
+  int width, height;
+  int junk1, junk2, junk3, junk4;
+  Window root;
   long supplied;
 
   for(i=0;i<num_rows;i++)
@@ -2212,8 +2215,12 @@ void swallow(unsigned long *body)
 
 	      }
 	    if (Buttons[button].maxsize) {
-	      Buttons[button].icons[0].w = 55;
-	      Buttons[button].icons[0].h = 57;
+	      XGetGeometry(dpy, Buttons[button].IconWin, &root,
+	      	           &junk1, &junk2, &width, &height, &junk3,
+	      	           &junk4);
+	      			
+	      Buttons[button].icons[0].w = width;
+	      Buttons[button].icons[0].h = height;
 	    }
 	    else {
 	      Buttons[button].icons[0].w = ICON_WIN_WIDTH;

@@ -444,14 +444,10 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
   if(HAS_TITLE(t))
   {
-#if 0
-    /* domivogt (9-Jul-1999): causes bug: title bar inherits tiled background
-     * pixmap from borderstyle */
     if (NewColor)
     {
-      change_window_color(t->title_w, notex_valuemask, &attributes);
+      change_window_color(t->title_w, notex_valuemask, &notex_attributes);
     }
-#endif
     for(i=0;i<Scr.nr_left_buttons;++i)
     {
       if(t->left_w[i] != None)

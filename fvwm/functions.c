@@ -563,13 +563,17 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     /* impossibly short command */
     return;                             /* done */
   }
-  if (Action[0] == '#') {               /* a comment */
+  if (Action[0] == '#')
+  {
+    /* a comment */
     return;                             /* done */
   }
   /* Note: the module config command, "*" can not be handled by the
      regular command table because there is no required white space after
      the asterisk. */
-  if (Action[0] == '*') {               /* a module config command */
+  if (Action[0] == '*')
+  {
+    /* a module config command */
     ModuleConfig(NULL,0,0,0,Action,0);  /* process the command */
     return;                             /* done */
   }
@@ -578,15 +582,28 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     arguments[j] = NULL;
 
   if(tmp_win == NULL)
+  {
     w = Scr.Root;
+  }
   else
-    w = tmp_win->w;
-
-  if((tmp_win) &&(eventp))
-    w = eventp->xany.window;
-  if((tmp_win)&&(eventp->xbutton.subwindow != None)&&
-     (eventp->xany.window != tmp_win->w))
-    w = eventp->xbutton.subwindow;
+  {
+    if(eventp)
+    {
+      if(eventp->xbutton.subwindow != None &&
+	 eventp->xany.window != tmp_win->w)
+      {
+	w = eventp->xbutton.subwindow;
+      }
+      else
+      {
+	w = eventp->xany.window;
+      }
+    }
+    else
+    {
+      w = tmp_win->w;
+    }
+  }
 
   set_silent = False;
   if (Action[0] == '-')

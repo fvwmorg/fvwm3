@@ -53,8 +53,7 @@ static struct charstring win_contexts[]=
   {'8',C_R4},
   {'9',C_L5},
   {'0',C_R5},
-  {'a',C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|
-   C_L1|C_L2|C_L3|C_L4|C_L5|C_R1|C_R2|C_R3|C_R4|C_R5},
+  {'a',C_ALL},
   {0,0}
 };
 

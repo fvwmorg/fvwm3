@@ -753,9 +753,9 @@ MenuStatus do_menu(MenuParameters *pmp)
       if (pmp->ret_paction && *(pmp->ret_paction) && !fDoubleClick)
       {
 	cindirectDeep++;
-	ExecuteFunctionSaveTmpWin(*(pmp->ret_paction),pmp->button_window,
-				  &Event, *(pmp->pcontext), -1,
-				  EXPAND_COMMAND);
+	ExecuteFunctionSaveTmpWin(
+	  *(pmp->ret_paction), pmp->button_window,
+	  &Event, *(pmp->pcontext), -1, EXPAND_COMMAND);
 	cindirectDeep--;
 	free(*(pmp->ret_paction));
         *(pmp->ret_paction) = NULL;

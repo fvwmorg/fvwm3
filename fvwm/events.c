@@ -107,8 +107,8 @@ int last_event_type=0;
 Window last_event_window=0;
 
 #ifdef HAVE_STROKE
-int send_motion;
-char sequence[MAX_SEQUENCE+1];
+static int send_motion;
+static char sequence[MAX_SEQUENCE+1];
 #endif /* HAVE_STROKE */
 
 #ifdef SHAPE
@@ -197,7 +197,9 @@ void DispatchEvent(Bool preserve_Tmp_win)
 
   XFlush(dpy);
   if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
+  {
     Tmp_win = NULL;
+  }
   last_event_type = Event.type;
   last_event_window = w;
 
@@ -433,10 +435,21 @@ void HandleKeyPress(void)
 {
   char *action;
 
-  ButtonWindow = Tmp_win;
-
   DBUG("HandleKeyPress","Routine Entered");
 
+  if (Tmp_win && HAS_SLOPPY_FOCUS(Tmp_win))
+  {
+    /* A hack to make root key bindings work with SloppyFocus */
+    Window w;
+
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &w, &JunkX, &JunkY,
+		  &JunkX, &JunkY, &JunkMask);
+    if (w == None)
+    {
+      Tmp_win = NULL;
+      Event.xany.window = Scr.Root;
+    }
+  }
   Context = GetContext(Tmp_win,&Event, &PressedW);
   PressedW = None;
 
@@ -457,24 +470,21 @@ void HandleKeyPress(void)
 			KEY_BINDING);
 #endif /* HAVE_STROKE */
   if (action != NULL)
-    {
-      ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
-      return;
-    }
+  {
+    ButtonWindow = Tmp_win;
+    ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
+    ButtonWindow = NULL;
+    return;
+  }
 
   /* if we get here, no function key was bound to the key.  Send it
    * to the client if it was in a window we know about.
    */
-  if (Tmp_win)
-    {
-      if(Event.xkey.window != Tmp_win->w)
-	{
-	  Event.xkey.window = Tmp_win->w;
-	  XSendEvent(dpy, Tmp_win->w, False, KeyPressMask, &Event);
-	}
-    }
-
-  ButtonWindow = NULL;
+  if (Tmp_win && Event.xkey.window != Tmp_win->w)
+  {
+    Event.xkey.window = Tmp_win->w;
+    XSendEvent(dpy, Tmp_win->w, False, KeyPressMask, &Event);
+  }
 }
 
 
@@ -510,9 +520,9 @@ void HandlePropertyNotify(void)
     return;
 
   /*
-      Make sure at least part of window is on this page
-      before giving it focus...
-  */
+   * Make sure at least part of window is on this page
+   * before giving it focus...
+   */
   OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   switch (Event.xproperty.atom)
@@ -774,7 +784,7 @@ void HandlePropertyNotify(void)
 	int new_width, new_height;
 	new_width = Tmp_win->frame_g.width;
 	new_height = Tmp_win->frame_g.height;
-	ConstrainSize(Tmp_win, &new_width, &new_height, False, 0, 0);
+	ConstrainSize(Tmp_win, &new_width, &new_height, 0, 0);
 	if((new_width != Tmp_win->frame_g.width)||
 	   (new_height != Tmp_win->frame_g.height))
 	  SetupFrame(Tmp_win,Tmp_win->frame_g.x, Tmp_win->frame_g.y,
@@ -980,9 +990,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 	return;
     }
   /*
-      Make sure at least part of window is on this page
-      before giving it focus...
-  */
+   * Make sure at least part of window is on this page
+   * before giving it focus...
+   */
   OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   if(KeepRaised != None)
@@ -1382,7 +1392,9 @@ void HandleButtonPress(void)
 			MOUSE_BINDING);
 #endif /* HAVE_STROKE */
   if (action != NULL)
-    ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
+  {
+    ExecuteFunction(action, Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
+  }
 
   OldPressedW = PressedW;
   PressedW = None;
@@ -1719,7 +1731,7 @@ void HandleConfigureRequest(void)
      * requested client window width; the inner height is the same as the
      * requested client window height plus any title bar slop.
      */
-    ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
+    ConstrainSize(Tmp_win, &width, &height, 0, 0);
     h = (IS_SHADED(Tmp_win)) ? Tmp_win->frame_g.height : height;
     /* dont allow clients to resize maximized windows */
     if (!IS_MAXIMIZED(Tmp_win) || (width == Tmp_win->frame_g.width &&

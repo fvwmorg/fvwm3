@@ -13,12 +13,12 @@ Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
 
 # Needed by the builtin WindowList command, this should match the manpage.
-AddToFunc WindowListFunc I WindowId $0 Iconify -1
+AddToFunc WindowListFunc I WindowId $0 Iconify off
 + I WindowId $0 FlipFocus
 + I WindowId $0 Raise
 + I WindowId $0 WarpToWindow 5p 5p
 # Also in fvwm2 man page.
-AddToFunc UrgencyFunc I Iconify -1
+AddToFunc UrgencyFunc I Iconify off
 + I FlipFocus
 + I Raise
 + I WarpToWindow 5p 5p

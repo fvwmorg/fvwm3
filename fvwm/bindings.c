@@ -233,9 +233,9 @@ static void activate_binding(Binding *binding, BindingType type)
   /* grab keys immediately */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
-      if (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
+      if (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT))
 	GrabWindowKey(dpy, t->frame, binding,
-		      C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+		      C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT,
 		      GetUnusedModifiers(), True);
       if (binding->Context & C_ICON)
 	{

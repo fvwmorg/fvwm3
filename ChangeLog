@@ -1,3 +1,51 @@
+1999-08-01  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/borders.c (RedrawBorder): fixed window title drawing
+
+	* fvwm/move_resize.c (moveLoop): fixed a bug that cause windows to jump
+	around when moved against a page boundary
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/move_resize.c (resize_window):
+	(DoResize):
+	(Maximize):
+	* fvwm/events.c (HandlePropertyNotify):
+	(HandleConfigureRequest): use new signature of ConstrainSize
+
+	* fvwm/move_resize.c (resize_window): fixed resizing from title
+	buttons
+	(ConstrainSize): removed roundUp parameter. Windows can no longer be
+	resized off the screen
+
+	* fvwm/builtins.c (move_sticky_window_to_same_page):
+	(MaximizeHeight):
+	(MaximizeWidth):
+	(Maximize): moved functions to move_resize.c
+
+	* fvwm/fvwm2.1 (DeiconifyAndRearrange): Corrected hint to work on
+	current page
+
+	* fvwm/fvwm.h (rectangle): width and height are signed integers again.
+	unsigned caused too many bugs. Fixes 'CurrentPage' condition
+
+	* fvwm/module_interface.c (HandleModuleInput): Fixed menus from TaskBar
+	buttons
+
+	* fvwm/bindings.c (activate_binding):
+	* fvwm/icons.c (CreateIconWindow):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/events.c (HandleKeyPress):
+	A hack to make root key bindings work with SloppyFocus
+
+	* fvwm/ConfigFvwmDefaults: changed 'iconify -1' to 'iconify off'
+
+	* fvwm/focus.c (WarpOn): fixed several bugs in this function
+
+	* fvwm/move_resize.c (DoSnapAttract):
+	fixed SnapAttraction bug (not snapping when x/y position < 0)
+	reindented code
+	some speedup, removed redundant code
+
 1999-07-28  Hippo
 
 	* libs/Colorset.{c,h}: New function CreateBackgroundPixmap() creates a

@@ -627,7 +627,7 @@ void raiselower_func(F_CMD_ARGS)
 {
   FvwmWindow *x; /* sorry about this name, couldn't think of a better one */
   Bool ontop = True;
-  
+
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
@@ -640,7 +640,7 @@ void raiselower_func(F_CMD_ARGS)
       break;
     }
   }
-  
+
   if (ontop)
     LowerWindow(tmp_win);
   else

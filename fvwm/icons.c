@@ -217,7 +217,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       XSaveContext(dpy, tmp_win->icon_w, FvwmContext, (caddr_t)tmp_win);
       XDefineCursor(dpy, tmp_win->icon_w, Scr.FvwmCursors[CRS_DEFAULT]);
       GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_w, Scr.AllBindings,
-				  C_ICON, GetUnusedModifiers(),
+				  C_ICON|C_ROOT, GetUnusedModifiers(),
 				  Scr.FvwmCursors[CRS_DEFAULT], True);
 
       xwc.sibling = tmp_win->frame;
@@ -229,7 +229,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       XSaveContext(dpy, tmp_win->icon_pixmap_w, FvwmContext, (caddr_t)tmp_win);
       XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[CRS_DEFAULT]);
       GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings,
-				  C_ICON, GetUnusedModifiers(),
+				  C_ICON|C_ROOT, GetUnusedModifiers(),
 				  Scr.FvwmCursors[CRS_DEFAULT], True);
 
       xwc.sibling = tmp_win->frame;

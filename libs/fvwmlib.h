@@ -241,7 +241,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
 #define C_RALL       (C_R1|C_R2|C_R3|C_R4|C_R5)
 #define C_LALL       (C_L1|C_L2|C_L3|C_L4|C_L5)
 #define C_ALL   (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
-                 C_L1|C_L2|C_L3|C_L4|C_L5|C_R1|C_R2|C_R3|C_R4|C_R5)
+                 C_LALL|C_RALL)
 
 #define ALL_MODIFIERS (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|\
                        Mod3Mask|Mod4Mask|Mod5Mask)

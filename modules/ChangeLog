@@ -1,3 +1,15 @@
+1999-08-01  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.c (RedrawWindow): changed 'iconify -1' to
+	'iconify off'
+
+	* FvwmWharf/FvwmWharf.1: some clean up
+
+	* FvwmIconBox/FvwmIconBox.1: .fvwmrc -> .fvwm2rc
+
+	* FvwmWharf/FvwmWharf.c (swallow): applied maxswallow fix by
+	Ben Winslow
+
 1999-07-29  Brad Giaccio
 
 	* module/FvwmPager/*: added colorset support

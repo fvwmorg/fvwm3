@@ -305,8 +305,8 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
     cy = t->frame_g.y + t->frame_g.height/2;
   }
 
-  dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
-  dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
+  dx = (cx + Scr.Vx) / Scr.MyDisplayWidth * Scr.MyDisplayWidth;
+  dy = (cy +Scr.Vy) / Scr.MyDisplayHeight * Scr.MyDisplayHeight;
 
   MoveViewport(dx,dy,True);
 
@@ -332,14 +332,14 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   RaiseWindow(t);
 
   /* If the window is still not visible, make it visible! */
-  if(((t->frame_g.x + t->frame_g.height)< 0)||
-     (t->frame_g.y + t->frame_g.width < 0)||
-     (t->frame_g.x >Scr.MyDisplayWidth)||(t->frame_g.y>Scr.MyDisplayHeight))
+  if(t->frame_g.x + t->frame_g.width  < 0 ||
+     t->frame_g.y + t->frame_g.height < 0 ||
+     t->frame_g.x >= Scr.MyDisplayWidth   ||
+     t->frame_g.y >= Scr.MyDisplayHeight)
   {
     SetupFrame(t,0,0,t->frame_g.width, t->frame_g.height,False,False);
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
   }
-  UngrabEm();
 }
 
 

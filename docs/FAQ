@@ -703,8 +703,8 @@ A: From Jon Mountjoy, one of FVWM's users:
 
      # Keys on the function keypad on the Left of the Sun Keyboard:
      # F11 = Stop, F12 = Again, ..., F20 = Cut
-     Key F11    AWF   N       Next [!iconic CurrentScreen CurrentDesk] Focus
-     Key F12    AWF   N       Prev [!iconic CurrentScreen CurrentDesk] Focus
+     Key F11    AWF   N       Next (!iconic CurrentScreen CurrentDesk) Focus
+     Key F12    AWF   N       Prev (!iconic CurrentScreen CurrentDesk) Focus
      Key F13    WF    N       Maximize     100 100
      Key F15    WF    N       RaiseLower ""
      Key F17    WIF   N       Iconify ""
@@ -854,9 +854,9 @@ A: Start with a new one or convert your old one.  This can be done by
    Menu menu-name double-click-action
    MoveToDesk
    MoveToPage
-   Next [conditions] command
-   None [arguments] command
-   Prev [conditions] command
+   Next (conditions) command
+   None (arguments) command
+   Prev (conditions) command
    Read filename
    Recapture
    SnapAttraction
@@ -922,7 +922,7 @@ A: Assuming you are using the IconBox option of the Style command this
 
      AddToFunc DeiconifyAndRearrange
       + C Iconify off
-      + C All (CurrentDesk Iconic) RecaptureWindow
+      + C All (CurrentPage Iconic) RecaptureWindow
 
    And then replace all places where you call the Iconify builtin
    function to de-iconify an icon with a call to the new function. For
@@ -1391,7 +1391,7 @@ A: Turn off the Linux Virtual Screen stuff in your XF86Config file if
 A: This has come up a few times, so I thought I'd put it here too.
    I believe that the new official home for rxvt is:
 
-               http://babayaga.math.fu-berlin.de/~rxvt/
+     http://babayaga.math.fu-berlin.de/~rxvt/
 
    and rclock can be found in that rxvt distribution as well.
 
@@ -1501,6 +1501,12 @@ A: This has come up a few times, so I thought I'd put it here too.
 
    Note that the GlobalOpts command will be removed some day in the
    future and this options will become style flags.
+
+   If you want to start applications on a different page in the
+   background without switching to this page, use the 'SkipMapping'
+   style:
+
+     Style Netscape* StartsOnPage 0 1, SkipMapping
 
 ----------------------------------------------------------------------
 

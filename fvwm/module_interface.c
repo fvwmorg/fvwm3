@@ -318,6 +318,7 @@ int HandleModuleInput(Window w, int channel)
   char text[1000];
   int size;
   int cont,n;
+  extern FvwmWindow *ButtonWindow;
 
   /* Already read a (possibly NULL) window id from the pipe,
    * Now read an fvwm bultin command line */
@@ -386,6 +387,7 @@ int HandleModuleInput(Window w, int channel)
 	  tmp_win = NULL;
 	  w = None;
 	}
+
       if(tmp_win)
 	{
 	  if (!IS_ICONIFIED(tmp_win))
@@ -409,7 +411,9 @@ int HandleModuleInput(Window w, int channel)
       Event.xbutton.y = 0;
       Event.xbutton.subwindow = None;
       Context = GetContext(tmp_win,&Event,&w);
+      ButtonWindow = tmp_win;
       ExecuteFunction(text,tmp_win,&Event,Context,channel,EXPAND_COMMAND);
+      ButtonWindow = NULL;
     }
   return 0;
 }
@@ -925,7 +929,7 @@ void BroadcastColorset(int n)
   for (i=0; i < npipes; i++)
     SendName(i, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n));
 }
- 
+
 
 /*
 ** send an arbitrary string to all instances of a module

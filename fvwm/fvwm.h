@@ -52,7 +52,7 @@
  * fvwm include file
  ***********************************************************************/
 
-#define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
+#define F_CMD_ARGS XEvent *eventp, Window w, FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 
 #include <X11/Xlib.h>
@@ -91,8 +91,8 @@ typedef struct
 {
   int x;
   int y;
-  unsigned int width;
-  unsigned int height;
+  int width;
+  int height;
 } rectangle;
 
 /*

@@ -612,7 +612,7 @@ void RedrawWindow(int force)
 
       /* 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com. */
       if( Tip.type >= 0 && AutoFocus ){
-          SendFvwmPipe( "Iconify -1, Raise, Focus",
+          SendFvwmPipe( "Iconify off, Raise, Focus",
                         ItemID( &windows, Tip.type ) );
       }
     }
