@@ -230,8 +230,9 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	     lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance);
 
   if (lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance)
+{
     return False;
-
+}
   /* Move the viewport */
   /* and/or move the cursor back to the approximate correct location */
   /* that is, the same place on the virtual desktop that it */
@@ -318,19 +319,24 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   if(*yt >= Scr.MyDisplayHeight - edge_thickness)
     *yt = Scr.MyDisplayHeight - edge_thickness -1;
 
-  if((*delta_x != 0)||(*delta_y!=0))
+  if ((*delta_x == 0)&&(*delta_y == 0))
     {
-      if(Grab)
-	MyXGrabServer(dpy);
-      /* Turn off the rubberband if its on */
-      MoveOutline(Scr.Root,0,0,0,0);
-      XWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
-      MoveViewport(Scr.Vx + *delta_x,Scr.Vy + *delta_y,False);
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    xl, yt, &JunkX, &JunkY, &JunkMask);
-      if(Grab)
-	MyXUngrabServer(dpy);
+      my_timestamp = 0;
+      add_time = 0;
+      return False;
     }
+
+  if(Grab)
+    MyXGrabServer(dpy);
+  /* Turn off the rubberband if its on */
+  MoveOutline(Scr.Root,0,0,0,0);
+  XWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
+  MoveViewport(Scr.Vx + *delta_x,Scr.Vy + *delta_y,False);
+  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+                xl, yt, &JunkX, &JunkY, &JunkMask);
+  if(Grab)
+    MyXUngrabServer(dpy);
+
   my_timestamp = 0;
   add_time = 0;
   return True;
