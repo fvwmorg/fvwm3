@@ -618,7 +618,7 @@ static Bool __is_resize_allowed(FvwmWindow *t, int functions,
 				Bool is_user_request)
 {
         if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
-	    t->hints.min_width == t->hints.min_width &&
+	    t->hints.min_width == t->hints.max_width &&
 	    t->hints.min_height == t->hints.max_height)
 	{
 	        return False;

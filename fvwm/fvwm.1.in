@@ -2003,11 +2003,11 @@ and can be navigated with no button held.  But if it is invoked by
 a button press followed by mouse motion, it behaves exactly like a
 popup menu.
 
-.IR "Tear off" " or " "Pin up menus"
+.IR "Tear off menus" " or " "Pin up menus"
 are menus from either of the above two commands that have been
-"torn off" their context and pinned on the desktop like a normal
-window.  They are created from other menus by certain key presses
-or mouse sequences or with the
+"torn off" their original context and pinned on the desktop like a
+normal window.  They are created from other menus by certain key
+presses or mouse sequences or with the
 .B TearMenuOff
 command from inside a menu.
 
