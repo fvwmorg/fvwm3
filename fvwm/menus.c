@@ -942,7 +942,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 
   DO_RETURN:
   if (mrPopup) {
-    PopDownMenu(mrPopup, mr);
+    PopDownMenu(mrPopup, NULL);
   }
   if (retval == MENU_POPDOWN) {
     if (menu->selected)
@@ -1076,6 +1076,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     fWarpPointerToTitle = FALSE;
     return False;
   }
+  menu->mrDynamicPrev = menuPrior;
   menu->flags &= ~(MENU_IS_LEFT | MENU_IS_RIGHT | MENU_IS_UP | MENU_IS_DOWN);
   menu->xanimation = 0;
 
@@ -1246,7 +1247,6 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     DBUG("FPopupMenu","Warping to title");
     WarpPointerToTitle(menu);
   }
-
   return True;
 }
 

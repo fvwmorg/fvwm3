@@ -1,5 +1,9 @@
 1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/menus.c (MenuInteraction):
+	(FPopupMenu): fixed last patch (mrDynamicPrev not set, menu not popped
+	down when an item is selected)
+
 	* fvwm/menus.c:
 	(do_menu):
 	(MenuInteraction):
