@@ -91,9 +91,23 @@ void EvtMouseMiniScroll(struct XObj *xobj, XButtonEvent *EvtButton)
   int Pos = 0;
   struct timeval *tv;
   long tus,ts;
+  int count = 0;
 
   do
   {
+    if (count == 1)
+    {
+      /* emulate auto repeat delay */
+      tv = (struct timeval*)calloc(1,sizeof(struct timeval));
+      gettimeofday(tv,NULL);
+      tus = tv->tv_usec;
+      ts = tv->tv_sec;
+      while (((tv->tv_usec-tus)+(tv->tv_sec-ts)*1000000)<16667*16)
+        gettimeofday(tv,NULL);
+      free(tv);
+      count++;
+      continue;
+    }
     XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		  &x1, &y1, &x2, &y2, &modif);
     /* Determiner l'option courante */
@@ -151,6 +165,7 @@ void EvtMouseMiniScroll(struct XObj *xobj, XButtonEvent *EvtButton)
       DrawArrowN(xobj, 3, 3, 0);
       DrawArrowS(xobj, 3, 18, 0);
     }
+    count++;
   }
   while (!XCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
   DrawArrowN(xobj, 3, 3, 0);

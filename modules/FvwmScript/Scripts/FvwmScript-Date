@@ -365,7 +365,7 @@ Property
  Flags NoReliefString
  Type MiniScroll
  Value 1996
- MaxValue 1999
+ MaxValue 2037
  MinValue 1970
 Main
  Case message of
