@@ -56,47 +56,41 @@ static int mods_unused = DEFAULT_MODS_UNUSED;
 /* ---------------------------- local functions ----------------------------- */
 
 static void update_nr_buttons(
-	int contexts, int *nr_left_buttons, int *nr_right_buttons)
+	int contexts, int *nr_left_buttons, int *nr_right_buttons, Bool do_set)
 {
 	int i;
-	int l = (nr_left_buttons) ? *nr_left_buttons : 0;
-	int r = (nr_right_buttons) ? *nr_right_buttons : 0;
+	int l = *nr_left_buttons;
+	int r = *nr_right_buttons;
 
-	if (contexts != C_ALL && (contexts & C_LALL) && nr_left_buttons != NULL)
+	/* check for nr_left_buttons */
+	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
-		/* check for nr_left_buttons */
-		for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+		if ((contexts & (C_L1 << i)))
 		{
-			if ((contexts & (C_L1 << i)) &&
-			    *nr_left_buttons <= i / 2)
+			if (do_set || *nr_left_buttons <= i / 2)
 			{
-				Scr.flags.do_need_window_update = 1;
-				Scr.flags.has_nr_buttons_changed = 1;
 				*nr_left_buttons = i / 2 + 1;
 			}
 		}
 	}
-	if (contexts != C_ALL && (contexts & C_RALL) &&
-	    nr_right_buttons != NULL)
+	/* check for nr_right_buttons */
+	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
 	{
-		/* check for nr_right_buttons */
-		for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
+		if ((contexts & (C_L1 << i)))
 		{
-			if ((contexts & (C_L1 << i)) &&
-			    *nr_right_buttons <= i / 2)
+			if (do_set || *nr_right_buttons <= i / 2)
 			{
-				Scr.flags.do_need_window_update = 1;
-				Scr.flags.has_nr_buttons_changed = 1;
 				*nr_right_buttons = i / 2 + 1;
 			}
 		}
 	}
-	if ((nr_left_buttons && *nr_left_buttons != l) ||
-	    (nr_right_buttons && *nr_right_buttons != r))
+	if (*nr_left_buttons != l || *nr_right_buttons != r)
 	{
 		Scr.flags.do_need_window_update = 1;
 		Scr.flags.has_nr_buttons_changed = 1;
 	}
+
+	return;
 }
 
 static void activate_binding(
@@ -197,6 +191,43 @@ static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
 	return;
 }
 
+static int bind_get_bound_button_contexts(
+	Binding **pblist, int button, BindingType type,
+	unsigned char *buttons_grabbed)
+{
+	int bcontext = 0;
+	Binding *b;
+
+	if (buttons_grabbed)
+	{
+		*buttons_grabbed = 0;
+	}
+	for (b = *pblist; b != NULL; b = b->NextBinding)
+	{
+		if (b->type == type &&
+		    (b->Context & (C_WINDOW|C_EWMH_DESKTOP)) &&
+		    (b->Modifier == 0 || b->Modifier == AnyModifier) &&
+		    buttons_grabbed != NULL)
+		{
+			if (button == 0)
+			{
+				*buttons_grabbed |=
+					((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+			}
+			else
+			{
+				*buttons_grabbed |= (1 << (button - 1));
+			}
+		}
+		if (b->Context != C_ALL && (b->Context & (C_LALL | C_RALL)) &&
+		    b->type == type)
+		{
+			bcontext |= b->Context;
+		}
+	}
+
+	return bcontext;
+}
 /* ---------------------------- interface functions ------------------------- */
 
 /* Parses a mouse or key binding */
@@ -219,7 +250,7 @@ int ParseBinding(
 	STROKE_CODE(int i);
 
 	/* tline points after the key word "Mouse" or "Key" */
-	ptr = GetNextToken(tline, &token);
+	token = PeekToken(tline, &ptr);
 	if (token != NULL)
 	{
 		if (type == KEY_BINDING)
@@ -292,7 +323,6 @@ int ParseBinding(
 						"Illegal mouse button in line"
 						" %s", tline);
 				}
-				free(token);
 				return 0;
 			}
 			if (button > NUMBER_OF_MOUSE_BUTTONS)
@@ -311,33 +341,28 @@ int ParseBinding(
 				}
 			}
 		}
-		free(token);
 	}
 
 #ifdef HAVE_STROKE
 	if (type == STROKE_BINDING)
 	{
-		ptr = GetNextToken(ptr, &token);
+		token = PeekToken(ptr, &ptr);
 		if (token != NULL)
 		{
 			n4 = sscanf(token,"%d", &button);
-			free(token);
 		}
 	}
 #endif /* HAVE_STROKE */
 
-	ptr = GetNextToken(ptr, &token);
+	token = PeekToken(ptr, &ptr);
 	if (token != NULL)
 	{
 		n2 = sscanf(token, "%19s", context_string);
-		free(token);
 	}
-
-	action = GetNextToken(ptr, &token);
+	token = PeekToken(ptr, &action);
 	if (token != NULL)
 	{
 		n3 = sscanf(token, "%19s", modifier_string);
-		free(token);
 	}
 
 	if (n1 != 1 || n2 != 1 || n3 != 1
@@ -422,66 +447,23 @@ int ParseBinding(
 			}
 			FreeBindingList(rmlist);
 		}
-
 		if (is_binding_removed)
 		{
-			int bcontext = 0;
+			int bcontext;
 
-			if (buttons_grabbed)
-			{
-				*buttons_grabbed = 0;
-			}
-			for (b = *pblist; b != NULL; b = b->NextBinding)
-			{
-				if (b->type == MOUSE_BINDING &&
-				   (b->Context & (C_WINDOW|C_EWMH_DESKTOP)) &&
-				   (b->Modifier == 0 ||
-				    b->Modifier == AnyModifier) &&
-				   buttons_grabbed != NULL)
-				{
-					if (button == 0)
-					{
-						*buttons_grabbed |=
-							((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
-					}
-					else
-					{
-						*buttons_grabbed |=
-							(1 << (button - 1));
-					}
-				}
-				if (nr_left_buttons != NULL ||
-				    nr_right_buttons != NULL)
-				{
-					if (b->Context != C_ALL &&
-					    (b->Context & (C_LALL | C_RALL)) &&
-					    b->type == MOUSE_BINDING)
-					{
-						bcontext |= b->Context;
-					}
-				}
-			}
-			if (nr_left_buttons)
-			{
-				*nr_left_buttons = 0;
-			}
-			if (nr_right_buttons)
-			{
-				*nr_right_buttons = 0;
-			}
+			bcontext = bind_get_bound_button_contexts(
+				pblist, button, type, buttons_grabbed);
 			update_nr_buttons(
-				bcontext, nr_left_buttons, nr_right_buttons);
+				bcontext, nr_left_buttons, nr_right_buttons,
+				True);
+		}
+		/* return if it is an unbind request */
+		if (is_unbind_request)
+		{
+			return 0;
 		}
 	}
-
-	/* return if it is an unbind request */
-	if (is_unbind_request)
-	{
-		return 0;
-	}
-
-	update_nr_buttons(context, nr_left_buttons, nr_right_buttons);
-
+	update_nr_buttons(context, nr_left_buttons, nr_right_buttons, False);
 	if ((modifier & AnyModifier)&&(modifier&(~AnyModifier)))
 	{
 		fvwm_msg(
@@ -490,7 +472,6 @@ int ParseBinding(
 			" ignored.");
 		modifier = AnyModifier;
 	}
-
 	if ((type == MOUSE_BINDING)&&
 	    (context & (C_WINDOW|C_EWMH_DESKTOP))&&
 	    (((modifier==0)||modifier == AnyModifier)) &&
@@ -506,7 +487,6 @@ int ParseBinding(
 			*buttons_grabbed |= (1 << (button - 1));
 		}
 	}
-
 	rc = AddBinding(
 		dpy, pblist, type, STROKE_ARG((void *)stroke)
 		button, keysym, key_string, modifier, context, (void *)action,

@@ -1773,6 +1773,10 @@ void FlushMessageQueue(int module)
 			{
 				obj->done += a;
 			}
+			else if (errno == EINTR)
+			{
+				return;
+			}
 			/* the write returns EWOULDBLOCK or EAGAIN if the pipe
 			 * is full. (This is non-blocking I/O). SunOS returns
 			 * EWOULDBLOCK, OSF/1 returns EAGAIN under these

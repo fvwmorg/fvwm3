@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -520,7 +520,7 @@ static void warp_to_fvwm_window(
 	/* If the window is still not visible, make it visible! */
 	if (t->frame_g.x + t->frame_g.width  < 0 ||
 	    t->frame_g.y + t->frame_g.height < 0 ||
-	    t->frame_g.x >= Scr.MyDisplayWidth   ||
+	    t->frame_g.x >= Scr.MyDisplayWidth	 ||
 	    t->frame_g.y >= Scr.MyDisplayHeight)
 	{
 		frame_setup_window(

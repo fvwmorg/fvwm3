@@ -543,6 +543,7 @@ static Bool __handle_bpress_action(
 
 	if (!action || *action == 0)
 	{
+		PressedW = None;
 		return False;
 	}
 	/* draw pressed in decorations */
@@ -623,7 +624,6 @@ static void __handle_bpress_on_managed(XEvent *e, FvwmWindow *fw)
 	context = GetContext(fw, e, &PressedW);
 	/* Now handle click to focus and click to raise. */
 	__handle_focus_raise_click(&f, e, fw, context);
-fprintf(stderr,"hbom: f %d, r %d, ff %d, sc %d, 0x%08x '%s'\n", f.do_focus, f.do_raise, f.do_forbid_function, f.do_swallow_click, (int)Fw, (fw)?fw->visible_name:"(null)");
 	if (f.do_focus)
 	{
 		if (!__handle_click_to_focus(fw, context))
@@ -3886,6 +3886,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	unsigned int count;
 	int use_wait_cursor;
 
+return;
 	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 			  &JunkX, &JunkY, &mask) == False)
 	{

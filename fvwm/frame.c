@@ -940,11 +940,15 @@ static void frame_mrs_resize_move_windows(
 		{
 			XMoveWindow(dpy, FW_W(fw), 0, 0);
 		}
+#if 0
 		/* reduces flickering */
+		/* dv (11-Aug-2002): ... and slows down large scripts
+		 * dramatically.  Rather let it flicker */
 		if (mra->flags.is_setup)
 		{
 			usleep(1000);
 		}
+#endif
 		XSync(dpy, 0);
 		XMoveResizeWindow(
 			dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
@@ -1808,7 +1812,6 @@ void frame_move_resize(
 	{
 		UngrabEm(GRAB_FREEZE_CURSOR);
 	}
-refresh_focus(get_focus_window());
 
 	return;
 }
