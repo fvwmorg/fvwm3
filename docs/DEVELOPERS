@@ -200,3 +200,6 @@ following:
 
 Be sure to do steps 7 and 8 in that order, so you get the label on the
 right version of configure.in.
+
+For a stable release, do not forget to change the date in
+docs/fvwm.lsm.in.
