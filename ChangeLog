@@ -1,3 +1,11 @@
+2000-11-26  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* fvwm/fvwm.c (InstallSignals)
+	Invoke the SIGCHLD handler manually after installing all the signal
+	handlers. This should mean that any Zombies created while the default
+	SIGCHLD handler was in place (for instance, after a restart) will be
+	reaped.
+
 2000-11-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* todo-2.4:

@@ -1198,6 +1198,14 @@ InstallSignals(void)
   siginterrupt(SIGCHLD, 0);
 #endif
 #endif
+
+  /* When FVWM restarts, the SIGCHLD handler is automatically reset
+   * to the default handler. This means that Zombies left over from
+   * the previous instance of FVWM could still be roaming the process
+   * table if they exited while the default handler was in place.
+   * We fix this by invoking the SIGCHLD handler NOW, so that they
+   * may finally rest in peace. */
+  ReapChildren(0);
 }
 
 
