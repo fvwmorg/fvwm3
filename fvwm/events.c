@@ -428,6 +428,10 @@ void HandleFocusIn(void)
 	    }
 	}
     }
+  else
+  {
+    return;
+  }
   if (is_never_focused || focus_w != last_focus_w || focus_fw != last_focus_fw)
   {
     BroadcastPacket(M_FOCUS_CHANGE, 5, focus_w, focus_fw,

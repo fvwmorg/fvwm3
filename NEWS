@@ -413,8 +413,8 @@ Changes in alpha release 2.3.0 (February 1999)
   No limits of form size.
   Fonts and colors can change anywhere in the form.
   Form appearance can be configured globaly:
-   Form defaults are read from .FvwmForm.
-   There is a built in Default setting/saving dialogue.
+    Form defaults are read from .FvwmForm.
+    There is a built in Default setting/saving dialogue.
   Forms can be read in directly from a file.
   Some forms are installed automatically.
   Tab to previous field.
@@ -426,6 +426,50 @@ Changes in alpha release 2.3.0 (February 1999)
 * IconPath and PixmapPath are replaced by single ImagePath.  All
   images, no matter what their format are searched for along the
   ImagePath.
+
+Changes in official release 2.2.4 (November 1999)
+
+* Fixed HP-UX 10.20 build problems.
+
+* Fixed build problems without shape extension.
+
+Changes in official release 2.2.3 (October 1999)
+
+* Several minor bugfixes.
+
+* Fixed dragging windows out of the pager.
+
+* Added support for StartFunction & ImagePath not to break new configurations.
+
+* Fixed long-window-name-hangs-X bug.
+
+Changes in official release 2.2.2 (May 1999)
+
+* New "Emulate"  command  for independent  control of the  move/resize
+  feedback window.
+
+* EdgeThickness command can be issued at any time.
+
+* Pan frames not created when not needed.
+
+* Pan frames reach corners.
+
+* Fixed window wandering on restart, recapture.
+
+* International characters are accepted as input in FvwmForm.
+
+* Fix bug in window shading that left one row of pixels visible.
+
+* Fix to FvwmTaskbar so that  it won't loop  when  there are too  many
+  buttons.
+
+* Fix positioning bug on overlapping menus.
+
+* Fix M4 command problem, Problem Reports 201 and 246.
+
+* Fixed bug when calling a function without all args supplied.
+
+* Miscellaneous bug fixes,  see ChangeLog for details.
 
 Changes in official release 2.2 (February 1999)
 
