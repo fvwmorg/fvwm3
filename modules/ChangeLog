@@ -1,3 +1,12 @@
+2000-06-17  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* FvwmPager/x_pager.c: try to fix "variability" in size (width) of
+	  small icons in the pager. Calculated mini-window width and height
+	  by scaling window width and height. ("edge2 - edge1" has an
+	  off-by-one error anyway.) Also do all multiplications before the
+	  final division so that inaccuracies of integer divison are not
+	  scaled up.
+
 2000-06-15  Happy Hippo
 
 	* FvwmCommand/FvwmComand*: tries /var/tmp then /tmp for pipe location,

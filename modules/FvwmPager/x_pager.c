@@ -144,18 +144,23 @@ static Pixmap default_pixmap = None;
  *	You can always tell bad code by the size of the comments.
  ***********************************************************************/
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
-		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
+                     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
 {
   int virt, edge, size, page, over;
 
   /* coordinate of left hand edge on virtual desktop */
   virt = Scr.Vx + t->x;
+
   /* position of left hand edge of mini-window on pager window */
-  edge = virt * win_w / Scr.VWidth;
+  edge = (virt * win_w) / Scr.VWidth;
+
   /* absolute coordinate of right hand edge on virtual desktop */
   virt += t->width - 1;
-  /* width of mini window is right hand edge - left hand edge */
-  size = virt * win_w / Scr.VWidth - edge;
+
+  /* scale the width of the big window to find the mini-window's width   */
+  /* - this way, the width isn't vulnerable to integer arithmetic errors */
+  size = (t->width * win_w) / Scr.VWidth;
+
   /* Make size big enough to be visible */
   if (size < MinSize) {
     size = MinSize;
@@ -166,12 +171,14 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 
     /* work out the page that the right hand edge is on */
     page = virt / Scr.MyDisplayWidth;
+
     /* if the left edge is on the same page then possibly move it left */
     if (page == ((virt - t->width + 1) / Scr.MyDisplayWidth)) {
       /* calculate how far the mini-window right edge overlaps the page line */
       /* beware that the "over" is actually one greater than on screen, but
          this discrepancy is catered for in the next two lines */
-      over = edge + size - (page + 1) * win_w * Scr.MyDisplayWidth / Scr.VWidth;
+      over = edge + size - ((page + 1) * win_w * Scr.MyDisplayWidth) / Scr.VWidth;
+
       /* if the mini-window right edge is beyond the mini-window pager grid */
       if (over > 0) {
         /* move it left by the amount of pager grid overlap (!== the growth) */
@@ -185,15 +192,15 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 
   /* same code for y axis */
   virt = Scr.Vy + t->y;
-  edge = virt * win_h / Scr.VHeight;
+  edge = (virt * win_h) / Scr.VHeight;
   virt += t->height - 1;
-  size = virt * win_h / Scr.VHeight - edge;
+  size = (t->height * win_h) / Scr.VHeight;
   if (size < MinSize)
   {
     size = MinSize;
     page = virt / Scr.MyDisplayHeight;
     if (page == ((virt - t->height + 1) / Scr.MyDisplayHeight)) {
-      over = edge + size - (page + 1) * win_h * Scr.MyDisplayHeight / Scr.VHeight;
+      over = edge + size - ((page + 1) * win_h * Scr.MyDisplayHeight) / Scr.VHeight;
       if (over > 0)
         edge -= over;
     }
