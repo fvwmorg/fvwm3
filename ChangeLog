@@ -1,5 +1,9 @@
 2000-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (destroy_window_font):
+	(destroy_icon_font):
+	fixed core dump
+
 	* fvwm/focus.c (focus_grab_buttons):
 	* fvwm/fvwm.h (FvwmWindow):
 	* fvwm/bindings.c (ParseBinding):

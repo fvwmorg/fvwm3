@@ -1566,17 +1566,21 @@ void ParseOptions(char *filename)
       {
 	tmp++;
       }
-      tmp[strlen(tmp)-1] = 0;
+      if (strlen(tmp) > 0)
+      {
+	if (isspace(tmp[strlen(tmp)-1]))
+	  tmp[strlen(tmp)-1] = 0;
 
-      flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-      if (flags & WidthValue)
-	w = width;
-      if (flags & HeightValue)
-	h = height;
-      if (flags & XValue)
-	x = g_x;
-      if (flags & YValue)
-	y = g_y;
+	flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	if (flags & WidthValue)
+	  w = width;
+	if (flags & HeightValue)
+	  h = height;
+	if (flags & XValue)
+	  x = g_x;
+	if (flags & YValue)
+	  y = g_y;
+      }
     }
     else if((strncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
     {

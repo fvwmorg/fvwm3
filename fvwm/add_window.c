@@ -239,7 +239,8 @@ void setup_wm_hints(FvwmWindow *tmp_win)
 
 static void destroy_window_font(FvwmWindow *tmp_win)
 {
-  if (HAS_WINDOW_FONT(tmp_win))
+  if (HAS_WINDOW_FONT(tmp_win) &&
+      tmp_win->title_font.font != Scr.DefaultFont.font)
   {
     FreeFvwmFont(dpy, &(tmp_win->title_font));
   }
@@ -307,7 +308,8 @@ void setup_window_font(
 
 static void destroy_icon_font(FvwmWindow *tmp_win)
 {
-  if (HAS_ICON_FONT(tmp_win))
+  if (HAS_ICON_FONT(tmp_win) &&
+      tmp_win->icon_font.font != Scr.DefaultFont.font)
   {
     FreeFvwmFont(dpy, &(tmp_win->icon_font));
   }
