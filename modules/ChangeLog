@@ -1,3 +1,8 @@
+2004-06-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmConsole/FvwmConsoleC.c (main):
+	handle SIGPIPE
+
 2004-05-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommand.c (main):
