@@ -257,7 +257,8 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height+
     2*tmp_win->boundary_width;
 
-  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False);
+  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False,
+		0, 0);
 
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
@@ -408,7 +409,8 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->frame_width = tmp_win->attr.width+2*tmp_win->boundary_width;
   tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height+
     2*tmp_win->boundary_width;
-  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False);
+  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False,
+		0, 0);
 
   valuemask = CWBorderPixel | CWCursor | CWEventMask;
   if(Scr.d_depth < 2)
@@ -959,14 +961,14 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 {
   long supplied = 0;
 
-DB(("GetWinowSizeHints: called\n"));
+DB(("GetWinowSizeHints: called"));
   if (!XGetWMNormalHints (dpy, tmp->w, &tmp->hints, &supplied))
-{DB(("GetWinowSizeHints: XGetWMNormalHints failed\n"));
+{DB(("GetWinowSizeHints: XGetWMNormalHints failed"));
     tmp->hints.flags = 0;
 }
 
-DB(("GetWinowSizeHints: hints are:\n"));
-if(tmp->hints.flags & PResizeInc)DB(("GetWinowSizeHints: width_inc = %d, height_inc = %d\n",tmp->hints.width_inc,tmp->hints.height_inc));
+DB(("GetWinowSizeHints: hints are:"));
+if(tmp->hints.flags & PResizeInc) DB(("GetWinowSizeHints: width_inc = %d, height_inc = %d",tmp->hints.width_inc,tmp->hints.height_inc));
   /* Beat up our copy of the hints, so that all important field are
    * filled in! */
   if (tmp->hints.flags & PResizeInc)
@@ -985,7 +987,7 @@ if(tmp->hints.flags & PResizeInc)DB(("GetWinowSizeHints: width_inc = %d, height_
    * and vice-versa.
    */
 
-if(!(tmp->hints.flags & PBaseSize) && tmp->hints.flags & PMinSize)DB(("GetWinowSizeHints: base_width = %d, base_height= %d\n",tmp->hints.base_width,tmp->hints.base_height));
+if(!(tmp->hints.flags & PBaseSize) && tmp->hints.flags & PMinSize) DB(("GetWinowSizeHints: base_width = %d, base_height= %d",tmp->hints.base_width,tmp->hints.base_height));
   if(!(tmp->hints.flags & PBaseSize))
     {
       if(tmp->hints.flags & PMinSize)

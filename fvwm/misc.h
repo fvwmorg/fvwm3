@@ -139,10 +139,10 @@ extern char NoResource[];
 
 extern void       LookInList(FvwmWindow *, name_list *);
 extern void       MoveOutline(Window, int,int,int,int);
-extern void       AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
-				       Bool fWarpPointerToo, int cusDelay, float *ppctMovement);
-extern void       DoResize(int, int, FvwmWindow *);
-extern void       DisplaySize(FvwmWindow *, int, int, Bool);
+extern void       AnimatedMoveOfWindow(Window w,int startX,int startY,int endX,
+				       int endY,Bool fWarpPointerToo,
+				       int cusDelay, float *ppctMovement);
+extern void       DisplaySize(FvwmWindow *, int, int, Bool, Bool);
 extern void       DisplayPosition(FvwmWindow *, int, int,Bool);
 extern void       SetupFrame(FvwmWindow *,int,int,int,int,Bool);
 extern void       CreateGCs(void);
@@ -229,7 +229,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   unsigned long context, char *action,int *Module);
 extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
-extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp);
+extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
+				 int xmotion, int ymotion);
 extern void       HandlePaging(int, int, int *, int *, int *, int *,Bool);
 extern void       SetShape(FvwmWindow *, int);
 extern void       AutoPlace(FvwmWindow *);

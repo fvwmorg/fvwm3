@@ -1,3 +1,23 @@
+1998-12-13  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/misc.h: changed signature of DisplaySize
+
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/add_window.c (AddWindow): changed signature of ConstrainSize
+
+	* fvwm/resize.c: made statics orig... and drag..., xmotion, ymotion
+	parameters to DoResize/ConstrainSize, moved static globals last_...
+	into DisplaySize and introduced a parameter to reset them.
+
+	* fvwm/misc.h: removed DoResize from header file (this cannot be safely
+	called from outside resize.c!)
+
+	* fvwm/add_window.c:
+	* fvwm/resize.c:
+	* fvwm/events.c: even more debug code
+
+	* fvwm/resize.c (MoveOutline): removed duplicate code
+
 1998-12-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/add_window.c:
