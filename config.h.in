@@ -5,9 +5,6 @@
 #undef PACKAGE
 #undef VERSION
 
-/* Does select() take int* arguments (instead of fd_set*)?  */
-#undef SELECT_WANTS_INTP
-
 /* Where to search for the fvwm icons.  */
 #undef FVWM_ICONDIR
 
@@ -146,6 +143,15 @@
 
 /* Define as the return type of signal handlers (int or void).  */
 #undef RETSIGTYPE
+
+/* Define to the type of arg1 for select(). */
+#undef SELECT_TYPE_ARG1
+
+/* Define to the type of args 2, 3 and 4 for select(). */
+#undef SELECT_TYPE_ARG234
+
+/* Define to the type of arg5 for select(). */
+#undef SELECT_TYPE_ARG5
 
 /* Define if the setvbuf function takes the buffering type as its second
    argument and the buffer pointer as the third, as on System V

@@ -1514,7 +1514,7 @@ void HandleVisibilityNotify()
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   extern int fd_width, x_fd;
-  fd_set in_fdset,out_fdset;
+  fd_set in_fdset, out_fdset;
   Window targetWindow;
   int i;
 
@@ -1555,11 +1555,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   DBUG("My_XNextEvent","waiting for module input/output");
   XFlush(dpy);
-#ifdef SELECT_WANTS_INTP
-  if (select(fd_width, (int *)&in_fdset, (int *)&out_fdset, 0, NULL) > 0)
-#else
-  if (select(fd_width, &in_fdset, &out_fdset, 0, NULL) > 0)
-#endif
+  if (select((SELECT_TYPE_ARG1)fd_width,
+             SELECT_TYPE_ARG234 &in_fdset,
+             SELECT_TYPE_ARG234 &out_fdset,
+             SELECT_TYPE_ARG234 0,
+             SELECT_TYPE_ARG5   NULL) > 0)
   {
 
   /* Check for module input. */

@@ -80,7 +80,6 @@ readline_CFLAGS = @readline_CFLAGS@
 readline_LIBS = @readline_LIBS@
 rplay_CFLAGS = @rplay_CFLAGS@
 rplay_LIBS = @rplay_LIBS@
-socket_LIBS = @socket_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 

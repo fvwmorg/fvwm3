@@ -1,3 +1,17 @@
+1999-01-06  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in: Update to autoconf 2.13.
+	Use new AC_FUNC_SELECT_ARGTYPES to get select() argtypes.
+	If we can't find cpp, only print a warning.
+	Move testing of xpm, readline, etc. until later in the script so
+	we have a chance to find any necessary extra libs before then.
+	Remove the search for socket, since it wasn't accurate (on
+	Solaris, for example, -lsocket needs -lnsl too) and will be found
+	by X_EXTRA_LIBS anyway.
+
+	* fvwm/events.c (My_XNextEvent): Updated to use new #defines for
+	select().
+
 1999-01-06  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/misc.c (RaiseWindow):  Disabled Matthias Clasen's patch to keep

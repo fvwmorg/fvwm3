@@ -16,7 +16,8 @@ FvwmConsoleC_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 man_MANS = FvwmConsole.1 FvwmConsoleC.pl.1
 EXTRA_DIST = $(man_MANS) $(module_SCRIPTS) Changes .fvwm2rc.sample
 
-LDADD = -L$(top_builddir)/libs -lfvwm $(readline_LIBS) $(socket_LIBS)
+# Use X_EXTRA_LIBS to get socket(), etc.
+LDADD = -L$(top_builddir)/libs -lfvwm $(readline_LIBS) $(X_EXTRA_LIBS)
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes

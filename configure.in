@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-AC_PREREQ(2.12)
+AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
 AM_INIT_AUTOMAKE(fvwm, 2.1.8)
 AM_CONFIG_HEADER(config.h)
@@ -10,10 +10,6 @@ FVWM_CONFIGDIR='${sysconfdir}'
 
 AC_SUBST(FVWM_MODULEDIR)
 AC_SUBST(FVWM_CONFIGDIR)
-
-AC_ARG_WITH(cpp,
-[  --with-cpp              specify a path to cpp, for the FvwmCpp module])
-test -z "$with_cpp" && with_cpp=no
 
 AC_ARG_ENABLE(extras,
 [  --enable-extras         build the extra modules by default])
@@ -118,6 +114,56 @@ fi
 dnl Need to know where X is, for finding libraries
 AC_PATH_XTRA
 
+dnl Look harder for a C preprocessor for FvwmCpp
+AC_PATH_PROG(FVWM_CPP, cpp, no, $PATH:/lib:/usr/lib:/usr/ccs/lib)
+if test "$FVWM_CPP" = no; then
+  FVWM_CPP=
+  AC_MSG_WARN([cannot locate a C preprocessor: run FvwmCpp with -cppprog])
+fi
+dnl FIXME: make sure the cpp we found actually works...
+
+dnl Finish checking for programs.
+AM_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AM_PROG_LEX
+AC_PROG_YACC
+
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(stdlib.h fcntl.h limits.h malloc.h string.h memory.h unistd.h)
+AC_CHECK_HEADERS(getopt.h sys/select.h sys/systeminfo.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+dnl AC_HEADER_TIME
+dnl AC_STRUCT_TM
+
+dnl Checks for library functions.
+AC_TYPE_SIGNAL
+AC_FUNC_STRFTIME
+AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
+AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
+
+if test $ac_cv_func_setvbuf = yes; then
+  AC_FUNC_SETVBUF_REVERSED
+fi
+
+if test $ac_cv_func_select = yes; then
+  AC_FUNC_SELECT_ARGTYPES
+fi
+
+dnl Check for standard functions that we have replacements for.
+AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strerror usleep)
+AC_SUBST(LIBOBJS)
+
 dnl Checking for optional libraries
 dnl Default is to use them if found; can be disable using --without
 
@@ -133,7 +179,7 @@ if test "$xpm_LIBS"; then
   AC_MSG_CHECKING(for Xpm 3.4f or better)
   my_CPPFLAGS="$CPPFLAGS"
   my_LIBS="$LIBS"
-  CPPFLAGS="$CPPFLAGS $xpm_CFLAGS"
+  CPPFLAGS="$CPPFLAGS $X_CFLAGS $xpm_CFLAGS"
   LIBS="$LIBS $xpm_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
   AC_TRY_RUN([#include <X11/xpm.h>
    int main(int c, char **v) {
@@ -176,7 +222,10 @@ fi
 AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
 
-smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h)
+dnl Add in X_EXTRA_LIBS here to get things like connect().
+smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h,
+	      $X_EXTRA_LIBS)
+
 test "$rplay_LIBS" && AC_DEFINE(HAVE_RPLAY)
 AC_SUBST(rplay_LIBS)
 AC_SUBST(rplay_CFLAGS)
@@ -189,86 +238,6 @@ if test "$readline_LIBS"; then
 fi
 AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
-
-dnl The FvwmCpp module needs the exact pathname for CPP.
-test "$with_cpp" = yes && with_cpp=no
-if test "$with_cpp" = no; then
-  AC_PATH_PROG(FVWM_CPP, cpp, no, $PATH:/lib:/usr/lib:/usr/ccs/lib)
-  if test "$FVWM_CPP" = no; then
-    # Clear the cached value
-    unset ac_cv_path_FVWM_CPP
-    AC_MSG_ERROR([cannot locate a C preprocessor: try using --with-cpp])
-  fi
-else
-  FVWM_CPP="$with_cpp"
-  AC_SUBST(FVWM_CPP)
-fi
-dnl FIXME: make sure the cpp we found actually works...
-
-dnl Finish checking for programs.
-AM_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-AM_PROG_LEX
-AC_PROG_YACC
-
-
-dnl Checks for header files.
-AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(stdlib.h fcntl.h limits.h malloc.h string.h memory.h unistd.h)
-AC_CHECK_HEADERS(getopt.h sys/select.h sys/systeminfo.h)
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_OFF_T
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-dnl AC_HEADER_TIME
-dnl AC_STRUCT_TM
-
-dnl Checks for library functions.
-AC_TYPE_SIGNAL
-AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
-AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
-
-if test $ac_cv_func_setvbuf = yes; then
-   AC_FUNC_SETVBUF_REVERSED
-fi
-
-if test $ac_cv_func_select = yes; then
-  # See whether select wants fd_set* or int* args.
-  test "$ac_cv_header_sys_select_h" && my_include="#include <sys/select.h>"
-  AC_MSG_CHECKING(whether select wants fd_set*)
-  want_fd_set=no
-  AC_TRY_COMPILE([#include <stdio.h>
-    #include <sys/types.h>
-    #include <sys/time.h>
-    $my_include],
-   [fd_set in[1], out[1];
-    select(1, in, out, 0, NULL);],
-   [want_fd_set=yes])
-  AC_MSG_RESULT($want_fd_set)
-  if test "$want_fd_set" = no; then
-    AC_DEFINE(SELECT_WANTS_INTP)
-  fi
-fi
-
-dnl Check for standard functions that we have replacements for.
-AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strerror usleep)
-AC_SUBST(LIBOBJS)
-
-dnl According to Dan Espen <dane@mk.bellcore.com>, solaris needs
-dnl -lsocket to find socket routines.  The logic below mimics that found
-dnl in AC_PATH_XTRA.
-AC_CHECK_FUNC(connect)
-if test $ac_cv_func_connect = no; then
-    AC_CHECK_LIB(socket, connect, socket_LIBS="-lsocket")
-fi
-AC_SUBST(socket_LIBS)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 extras/Makefile utils/Makefile xpmroot/Makefile docs/Makefile

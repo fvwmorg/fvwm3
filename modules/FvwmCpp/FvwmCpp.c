@@ -26,7 +26,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>          
+#include <netdb.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -43,7 +43,7 @@
 #include <X11/Shell.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xmu/SysUtil.h>
-#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)              
+#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
 
 char *MyName;
 int fd[2];
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
   int i,cpp_debug = 0;
 
   strcpy(cpp_options,"");
-  
+
   /* Record the program name for error messages */
   temp = argv[0];
 
@@ -102,21 +102,21 @@ int main(int argc, char **argv)
     }
 
   /* Open the X display */
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: can't open display %s", MyName,
 	      XDisplayName(display_name));
       exit (1);
     }
 
-  
+
   Mscreen= DefaultScreen(dpy);
   ScreenHeight = DisplayHeight(dpy,Mscreen);
   ScreenWidth = DisplayWidth(dpy,Mscreen);
 
   /* We should exit if our fvwm pipes die */
-  signal (SIGPIPE, DeadPipe);  
-  
+  signal (SIGPIPE, DeadPipe);
+
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
 
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
       if(strcasecmp(argv[i],"-cppopt") == 0)
 	{
 	  strcat(cpp_options, argv[++i]);
-	  strcat(cpp_options, " ");	    
+	  strcat(cpp_options, " ");
 	}
       else if (strcasecmp(argv[i], "-cppprog") == 0)
 	{
@@ -145,11 +145,17 @@ int main(int argc, char **argv)
       {
         /* pass on any other arguments starting with '-' to cpp */
         strcat(cpp_options, argv[i]);
-        strcat(cpp_options, " ");	    
+        strcat(cpp_options, " ");
       }
       else
 	filename = argv[i];
     }
+
+  /* If we don't have a cpp, stop right now.  */
+  if (!cpp_prog || cpp_prog[0] == '\0') {
+    fprintf(stderr, "%s: no C preprocessor program specified\n", MyName);
+    exit(1);
+  }
 
   for(i=0;i<strlen(filename);i++)
     if((filename[i] == '\n')||(filename[i] == '\r'))
@@ -157,13 +163,13 @@ int main(int argc, char **argv)
 	filename[i] = 0;
       }
 
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
     {
-      fprintf(stderr,"FvwmCpp: can't open display %s",
-	      XDisplayName(display_name));
+      fprintf(stderr,"%s: can't open display %s",
+	      MyName, XDisplayName(display_name));
       exit (1);
     }
-  
+
   tmp_file = cpp_defs(dpy, display_name,cpp_options, filename);
 
   sprintf(read_string,"read %s\n",tmp_file);
@@ -237,22 +243,22 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
     perror("Cannot open pipe to cpp");
     exit(0377);
   }
-    
+
   gethostname(client,MAXHOSTNAME);
-  
+
   getostype  (ostype, sizeof ostype);
-  
+
   hostname = gethostbyname(client);
   strcpy(server, XDisplayName(host));
   colon = strchr(server, ':');
   if (colon != NULL) *colon = '\0';
   if ((server[0] == '\0') || (!strcmp(server, "unix")))
     strcpy(server, client);	/* must be connected to :0 or unix:0 */
-  
+
   /* TWM_TYPE is fvwm, for completeness */
-  
+
   fputs(MkDef("TWM_TYPE", "fvwm"), tmpf);
-  
+
   /* The machine running the X server */
   fputs(MkDef("SERVERHOST", server), tmpf);
   /* The machine running the window manager process */
@@ -261,12 +267,12 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
     fputs(MkDef("HOSTNAME", (char *)hostname->h_name), tmpf);
   else
     fputs(MkDef("HOSTNAME", (char *)client), tmpf);
-  
+
   fputs(MkDef("OSTYPE", ostype), tmpf);
-  
+
   pwent=getpwuid(geteuid());
   fputs(MkDef("USER", pwent->pw_name), tmpf);
-  
+
   fputs(MkDef("HOME", getenv("HOME")), tmpf);
   fputs(MkNum("VERSION", ProtocolVersion(display)), tmpf);
   fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
@@ -276,15 +282,15 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   visual = DefaultVisualOfScreen(screen);
   fputs(MkNum("WIDTH", DisplayWidth(display,Mscreen)), tmpf);
   fputs(MkNum("HEIGHT", DisplayHeight(display,Mscreen)), tmpf);
-  
+
   fputs(MkNum("X_RESOLUTION",Resolution(screen->width,screen->mwidth)),tmpf);
   fputs(MkNum("Y_RESOLUTION",Resolution(screen->height,screen->mheight)),tmpf);
   fputs(MkNum("PLANES",DisplayPlanes(display, Mscreen)), tmpf);
-  
+
   fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
   fputs(MkNum("SCREEN", Mscreen), tmpf);
 
-  switch(visual->class) 
+  switch(visual->class)
     {
     case(StaticGray):
 	  vc = "StaticGray";
@@ -308,11 +314,11 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 	vc = "NonStandard";
 	break;
       }
-    
+
     fputs(MkDef("CLASS", vc), tmpf);
-    if (visual->class != StaticGray && visual->class != GrayScale) 
+    if (visual->class != StaticGray && visual->class != GrayScale)
       fputs(MkDef("COLOR", "Yes"), tmpf);
-    else 
+    else
       fputs(MkDef("COLOR", "No"), tmpf);
     fputs(MkDef("FVWM_VERSION", VERSION), tmpf);
 
@@ -335,12 +341,12 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 
     fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
     fputs(MkDef("FVWM_CONFIGDIR", FVWM_CONFIGDIR), tmpf);
-    
+
     /*
      * At this point, we've sent the definitions to cpp.  Just include
      * the fvwmrc file now.
      */
-    
+
     fprintf(tmpf, "#include \"%s\"\n", config_file);
 
     pclose(tmpf);
@@ -371,10 +377,10 @@ static char *MkDef(char *name, char *def)
   int n;
 
   /* Get space to hold everything, if needed */
-  
+
   n = EXTRA + strlen(name) + strlen(def);
   cp = safemalloc(n);
-  
+
   sprintf(cp, "#define %s %s\n",name,def);
 
   return(cp);
@@ -383,8 +389,8 @@ static char *MkDef(char *name, char *def)
 static char *MkNum(char *name,int def)
 {
   char num[20];
-    
+
   sprintf(num, "%d", def);
-  
+
   return(MkDef(name, num));
 }

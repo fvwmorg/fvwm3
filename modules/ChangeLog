@@ -1,3 +1,8 @@
+1999-01-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCpp/FvwmCpp.c (main): If there's no default cpp and the user
+	didn't specify one, print an error and quit.
+
 1999-01-06  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/**:
