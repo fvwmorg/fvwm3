@@ -70,8 +70,8 @@ option, is 2 or 3.
 
 .IP "\fI-f <name>\fR" 0.4i
 Specifies an alternative FIFO set to communicate with a server.
-The default FIFO set is ~/.FvwmCommand, in which
-~/.FvwmCommandC is used to send commands and ~/.FvwmCommandM is to receive
+The default FIFO set is /var/tmp/FvwmCommand-${DISPLAY}C, in which
+FvwmCommand..C is used to send commands and FvwmCommand..M is to receive
 messages.
 FvwmCommandS must have been invoked with the same <name> as its first argument
 prior to FvwmCommand invocation.

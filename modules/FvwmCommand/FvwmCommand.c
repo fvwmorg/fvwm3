@@ -32,24 +32,25 @@
 #define MYNAME "FvwmCommand"
 #define MAXHOSTNAME 32
 
-int  Fdr, Fdw;  /* file discriptor for fifo */
-FILE *Frun;     /* File contains pid */
-char *Fr_name;
-int  Pfd;
-char *getline();
-fd_set fdset;
+static int  Fdr, Fdw;  /* file discriptor for fifo */
+static FILE *Frun;     /* File contains pid */
+static struct stat stat_buf;
+static char *Fr_name;
+static int  Pfd;
+static char *getline();
+static fd_set fdset;
 
-struct timeval Tv;
-int  Opt_reply; /* wait for replay */
-int  Opt_monitor;
-int  Opt_info;
-int  Opt_Serv;
-int  Opt_flags;
-FILE *Fp;
+static struct timeval Tv;
+static int  Opt_reply; /* wait for replay */
+static int  Opt_monitor;
+static int  Opt_info;
+static int  Opt_Serv;
+static int  Opt_flags;
+static FILE *Fp;
 
 volatile sig_atomic_t  Bg;  /* FvwmCommand in background */
 
-char hostname[MAXHOSTNAME];
+static char hostname[MAXHOSTNAME];
 
 void err_msg( const char *msg );
 void err_quit( const char *msg );
@@ -84,7 +85,6 @@ void spawn_child( void );
 int main ( int argc, char *argv[])
 {
   char cmd[MAX_MODULE_INPUT_TEXT_LEN + 1];
-  char *home;
   char *f_stem, *fc_name, *fm_name;
   char *sf_stem;
   int  i;
@@ -204,25 +204,20 @@ int main ( int argc, char *argv[])
     char *dpy_name;
 
     /* default name */
-    home = getenv("HOME");
-    if (!home)
-      home = "";
     dpy_name = getenv("DISPLAY");
     if (!dpy_name)
       dpy_name = ":0";
     if (strncmp(dpy_name, "unix:", 5) == 0)
       dpy_name += 4;
-    f_stem = safemalloc(strlen(home) + strlen(F_NAME) + MAXHOSTNAME +
-			strlen(dpy_name) + 4);
-    strcpy (f_stem, home);
-    if (f_stem[strlen(f_stem)-1] != '/')
-    {
-      strcat (f_stem, "/");
-    }
+    f_stem = safemalloc(11 + strlen(F_NAME) + MAXHOSTNAME + strlen(dpy_name));
+
+    if ((stat("/var/tmp", &stat_buf) == 0) && (stat_buf.st_mode & S_IFDIR))
+      strcpy (f_stem, "/var/tmp/");
+    else
+      strcpy (f_stem, "/tmp/");
     strcat (f_stem, F_NAME);
 
     /* Make it unique */
-    strcat(f_stem, "-");
     if (!dpy_name[0] || ':' == dpy_name[0])
     {
       gethostname(hostname, MAXHOSTNAME);

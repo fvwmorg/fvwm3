@@ -42,7 +42,7 @@ extern char *sys_errlist[];
 #endif
 
 
-#define F_NAME  ".FvwmCommand"
+#define F_NAME  "FvwmCommand-"
 
 /* number of default arguments when invoked from fvwm */
 #define FARGS 6

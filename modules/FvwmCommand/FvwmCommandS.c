@@ -35,6 +35,7 @@
 static int Fd[2]; /* pipes to fvwm */
 static int FfdC; /* command fifo file discriptors */
 static int FfdM; /* message fifo file discriptors */
+static struct stat stat_buf;
 
 static char *FfdC_name, *FfdM_name; /* fifo names */
 
@@ -151,7 +152,6 @@ sig_handler(int signo)
  */
 void server (char *name)
 {
-  char *home;
   char *f_stem;
   int  len;
   fd_set fdrset, fdwset;
@@ -160,30 +160,27 @@ void server (char *name)
   int  ix,cix;
   struct timeval tv;
 
+  tv.tv_sec = 10;
+  tv.tv_usec = 0;
+
   if (name == NULL)
   {
     char *dpy_name;
 
     /* default name */
-    home = getenv("HOME");
-    if  (home == NULL)
-      home = "";
     dpy_name = getenv("DISPLAY");
     if (!dpy_name)
       dpy_name = ":0";
     if (strncmp(dpy_name, "unix:", 5) == 0)
       dpy_name += 4;
-    f_stem = safemalloc(strlen(home) + strlen(F_NAME) + MAXHOSTNAME +
-			strlen(dpy_name) + 4);
-    strcpy(f_stem, home);
-    if (f_stem[strlen(f_stem)-1] != '/')
-    {
-      strcat(f_stem, "/");
-    }
+    f_stem = safemalloc(11 + strlen(F_NAME) + MAXHOSTNAME + strlen(dpy_name));
+    if ((stat("/var/tmp", &stat_buf) == 0) && (stat_buf.st_mode & S_IFDIR))
+      strcpy (f_stem, "/var/tmp/");
+    else
+      strcpy (f_stem, "/tmp/");
     strcat(f_stem, F_NAME);
 
     /* Make it unique */
-    strcat(f_stem, "-");
     if (!dpy_name[0] || ':' == dpy_name[0])
     {
       gethostname(hostname, MAXHOSTNAME);
@@ -208,26 +205,21 @@ void server (char *name)
 
   while (!isTerminated)
   {
-    struct timeval *timeout = NULL;
     int ret;
 
     FD_ZERO(&fdrset);
     FD_ZERO(&fdwset);
     FD_SET(FfdC, &fdrset);
     FD_SET(Fd[1], &fdrset);
-    if (queueing) {
+    if (queueing)
       FD_SET(FfdM, &fdwset);
-      tv.tv_sec = 10;
-      tv.tv_usec = 0;
-      timeout = &tv;
-    }
 
-    ret = fvwmSelect(FD_SETSIZE, &fdrset, &fdwset, 0, timeout);
+    ret = fvwmSelect(FD_SETSIZE, &fdrset, &fdwset, 0, queueing ? &tv : NULL);
 
     if (ret < 0)
       continue;
 
-    if (timeout && ret == 0) {
+    if (queueing && ret == 0) {
       /* a timeout has occurred, this means the pipe to FvwmCommand is full
        * dump any messages in the queue that have not been partially sent */
       Q *q1, *q2;
@@ -271,7 +263,6 @@ void server (char *name)
         break;
       }
       process_message(packet->type, packet->body);
-      continue;
     }
 
     if (FD_ISSET(FfdC, &fdrset))
@@ -327,7 +318,6 @@ void server (char *name)
 	  cix++;
 	}
       } /* for */
-      continue;
     } /* FD_ISSET */
 
     if (queueing && FD_ISSET(FfdM, &fdwset))
@@ -396,8 +386,6 @@ void close_fifos(void)
  */
 int open_fifos(const char *f_stem)
 {
-  struct stat stat_buf;
-
   /* create 2 fifos */
   FfdC_name = malloc(strlen(f_stem) + 2);
   if (FfdC_name == NULL)
@@ -461,14 +449,38 @@ int open_fifos(const char *f_stem)
     return -1;
   }
   else
+  {
     FfdC_ino = stat_buf.st_ino;
+    if (!(S_IFIFO & stat_buf.st_mode))
+    {
+      err_msg("command fifo is not a fifo");
+      return -1;
+    }
+    if (stat_buf.st_mode & (S_IRWXG | S_IRWXO))
+    {
+      err_msg("command fifo is too permissive");
+      return -1;
+    }
+  }
   if (fstat(FfdM, &stat_buf) != 0)
   {
     err_msg("stat()ing message fifo");
     return -1;
   }
   else
+  {
     FfdM_ino = stat_buf.st_ino;
+    if (!(S_IFIFO & stat_buf.st_mode))
+    {
+      err_msg("message fifo is not a fifo");
+      return -1;
+    }
+    if (stat_buf.st_mode & (S_IRWXG | S_IRWXO))
+    {
+      err_msg("message fifo is too permissive");
+      return -1;
+    }
+  }
 
   return 0;
 }
