@@ -1,3 +1,20 @@
+# This is a work in progress.
+# Anyone adding functionality should make sure they update these
+# tests to test that functionality.
+
+# The original purpose of these tests was to find bounds violations and
+# memory leaks.  These tests are the closest thing fvwm has to a regresssion
+# test.  Its hard to tell whether the tests are actually working.
+# Some of the menu prompts guide the tester thru the process.
+# I've also attempted to lay out some xterms in a recognizable pattern.
+# Some of the tests move the xterms around, or destroy them and then
+# try to get them back into the recognizable pattern.  The idea being
+# if the windows aren't arranged as they should be, something is wrong.
+# On my last full test, this didn't seem to work, although each individual
+# test seemed to work.
+# Somewhere around the PlaceAgain test the windows loose their arrangement.
+# The CloseDeleteDestroy test fails to delete some of the windows.
+
 # All tests are defined as functions, added to a menu and added to
 # the function that can run all tests.
 
@@ -344,6 +361,103 @@ AddToFunc ColorLimit-Func
  + I ColorLimit -23
  + I ColorLimit 0
 
+AddTest "Test ColormapFocus" ColormapFocus-Func
+AddToFunc ColormapFocus-Func
+ + I ColormapFocus
+ + I ColormapFocus    FollowsFocus
+ + I ColormapFocus 		FollowsFocus
+ + I ColormapFocus FollowsMouse
+ + I ColormapFocus FollowsFocus
+ + I ColormapFocus FollowsFocus
+ + I ColormapFocus FollowsMouse
+ + I Refresh
+
+AddTest "Test CursorStyle" CursorStyle-Func
+AddToFunc CursorStyle-Func
+ + I CursorStyle
+ + I CursorStyle liewud
+ + I CursorStyle BOTTOM 132
+ + I CursorStyle BOTTOM_LEFT 133
+ + I CursorStyle BOTTOM_RIGHT 134
+ + I CursorStyle DEFAULT 64
+ + I CursorStyle DEFAULT 68
+ + I CursorStyle DEFAULT 68
+ + I CursorStyle DESTROY 88
+ + I CursorStyle DESTROY 88
+ + I CursorStyle DESTROY 99
+ + I CursorStyle DESTROY
+ + I CursorStyle DEFAULT
+ + I CursorStyle MENU fleur yellow blue
+ + I CursorStyle MENU fleur invalid_color_name another_invalid_name
+ + I CursorStyle MENU fleur black white
+# These are the defaults from the man page:
+ + I CursorStyle POSITION top_left_corner
+ + I CursorStyle TITLE top_left_arrow
+ + I CursorStyle SYS hand2
+ + I CursorStyle MOVE fleur
+ + I CursorStyle RESIZE sizing
+ + I CursorStyle WAIT watch
+ + I CursorStyle MENU top_left_arrow
+ + I CursorStyle SELECT crosshair
+ + I CursorStyle DESTROY pirate
+ + I CursorStyle TOP top_side
+ + I CursorStyle RIGHT right_side
+ + I CursorStyle BOTTOM bottom_side
+ + I CursorStyle LEFT left_side
+ + I CursorStyle TOP_LEFT top_left_corner
+ + I CursorStyle TOP_RIGHT top_right_corner
+ + I CursorStyle BOTTOM_LEFT bottom_left_corner
+ + I CursorStyle BOTTOM_RIGHT bottom_right_corner
+ + I CursorStyle TOP_EDGE top_side
+ + I CursorStyle RIGHT_EDGE right_side
+ + I CursorStyle BOTTOM_EDGE bottom_side
+ + I CursorStyle LEFT_EDGE left_side
+ + I CursorStyle ROOT left_ptr
+ + I CursorStyle STROKE plus
+
+AddTest "Test DefaultColors" DefaultColors-Func
+AddToFunc DefaultColors-Func
+ + I DefaultColors Pink Blue
+ + I DefaultColors NotValid "On purpose"
+ + I DefaultColors Pink "Also on purpose (second arg)"
+ + I DefaultColors *
+ + I DefaultColors
+ + I Refresh
+
+AddTest "Test DefaultColorset" DefaultColorset-Func
+AddToFunc DefaultColorset-Func
+ + I DefaultColorset
+ + I DefaultColorset junk
+ + I DefaultColorset 0
+# whoa! fvwm will have to send over a million colour sets to the modules!
+#+ I DefaultColorset 1236789
+ + I DefaultColorset -1
+ + I Refresh
+
+AddTest "Test DefaultFont" DefaultFont-Func
+AddToFunc DefaultFont-Func
+ + I DefaultFont
+ + I DefaultFont 9x15bold
+ + I DefaultFont badnameforafont
+ + I DefaultFont "another bad name"
+ + I DefaultFont two args
+ + I DefaultFont
+ + I Refresh
+
+AddTest "Test DefaultIcon" DefaultIcon-Func
+AddToFunc DefaultIcon-Func
+ + I DefaultIcon
+ + I DefaultIcon test1.xpm
+ + I DefaultIcon
+ + I Refresh
+
+AddTest "Test DefaultLayers" DefaultLayers-Func
+AddToFunc DefaultLayers-Func
+ + I DefaultLayers
+ + I DefaultLayers junk three times
+ + I DefaultLayers 2 4 6
+ + I Refresh
+
 AddTest "Test Emulate" Emulate-Func
 AddToFunc Emulate-Func
  + I Emulate Fvwm
@@ -352,6 +466,9 @@ AddToFunc Emulate-Func
  + I Emulate badname
 
 # Note, there is no test for EscapeFunc
+
+# Need a FakeClick test.
+
 # Note, there is no test for HilightColor, its obsolete
 # Note, there is no test for HilightColorset, its obsolete
 # Note, there is no test for IconFont, its obsolete
@@ -1608,6 +1725,12 @@ AddToFunc AddToFunc_DestroyFunc-Func
 # Test from man page
  + I DestroyFunc PrintFunction
 
+AddTest "Test Beep" Beep-Func
+AddToFunc Beep-Func
+ + I Beep
+ + I Beep
+ + I Beep ü30 23äö ü9823r ,l.öapü39
+
 AddTest "Test Echo" Echo-Func
 AddToFunc Echo-Func
  + I Echo
@@ -1777,7 +1900,6 @@ AddToFunc DestroyModuleConfig-Func
  + I DestroyModuleConfig		dummymodule1
  + I DestroyModuleConfig dummymod*
  + I DestroyModuleConfig dummymod*
-
  + I *dummymodule
  + I *dummymodule
  + I *dummymodule ÖLq- ö.qljüpßi+123
@@ -1794,24 +1916,67 @@ AddToFunc DestroyModuleConfig-Func
  + I DestroyModuleConfig xFvwmForm: Fore
  + I DestroyModuleConfig xFvwmIconBox: Max*
 
-AddTest "Test SendToModule_KillModule" SendToModule_KillModule-Func
-AddToFunc SendToModule_KillModule-Func
+AddTest "Test KillModule" KillModule-Func
+AddToFunc KillModule-Func
+# First try no name:
+ + I KillModule
+ + I KillModule
+# Now try a module that doesn't exist
+ + I KillModule  	NoSuchModule
+# Now create a module and kill it twice:
+ + I Module FvwmBanner
+ + I KillModule FvwmBanner
+ + I KillModule FvwmBanner
+# Need some tests using module aliased and the : syntax
+
+# Module command already tested.
+
+# ModulePath tested near end since it hurts...
+
+AddTest "Test ModuleSynchronous" ModuleSynchronous-Func
+AddToFunc ModuleSynchronous-Func
+ + I ModuleSynchronous FvwmBanner
+ + I KillModule FvwmBanner
+ + I ModuleSynchronous Timeout 1 FvwmBanner
+ + I KillModule FvwmBanner
+ + I ModuleSynchronous Expect Nothing Timeout 0 FvwmBanner
+ + I KillModule FvwmBanner
+
+AddTest "Test ModuleTimeout" ModuleTimeout-Func
+AddToFunc ModuleTimeout-Func
+ + I ModuleTimeout 0
+ + I ModuleTimeout 
+ + I ModuleTimeout Junk
+ + I ModuleTimeout 01111111111111111
+ + I ModuleTimeout 2e222
+ + I ModuleTimeout 30
+
+
+AddTest "Test SendToModule" SendToModule-Func
+AddToFunc SendToModule-Func
  + I SendToModule
  + I SendToModule
  + I SendToModule	FvwmBanner	.-, q-l  ,j
  + I SendToModule		FvwmBanner		.-, q-l  ,j
- + I KillModule
- + I KillModule
- + I KillModule  	FvwmBanner
- + I KillModule FvwmBanner
- + I KillModule FvwmBanner
- + I KillModule FvwmBanner
- + I KillModule FvwmBanner
- + I Refresh
 
+# Quit is tested later, for obvious reasons.
+
+# QuitScreen isn't tested at all.
+
+# QuitSession isn't tested at all.
+
+# Need a restart test
+
+AddTest "Test SaveSession" SaveSession-Func
+AddToFunc SaveSession-Func
+ + I SaveSession
+
+# SaveQuitSession isn't tested.
 
 # Ending ManPage Order
 
+
+# start Module tests.  Might make sense to put these in another file:
 AddTest "Test FvwmBanner" FvwmBanner-Func
 AddToFunc FvwmBanner-Func
  + I *FvwmBannerTimeout 10
@@ -1823,309 +1988,103 @@ AddToFunc FvwmBanner-Func
  + I Module    FvwmBanner
  + I Module		FvwmBanner
 
-################# GLOBAL COMMANDS ###################
 
-AddTest "Test Menu_Destroy_Menu_Menu_Popup" Menu_Destroy_Menu_Menu_Popup-Func
-AddToFunc Menu_Destroy_Menu_Menu_Popup-Func
- + I AddToMenu menu1 "tt1" title top
- + I AddToMenu menu1 "t1" title
- + I AddToMenu menu1 "tt1"   title   top
- + I AddToMenu menu1 "t1"   title
- + I AddToMenu menu1 "tt1"		title		top
- + I AddToMenu menu1 "t1"		title
- + I AddToMenu menu1 "" ""
- + I AddToMenu menu1 "" nop
- + I AddToMenu menu1 "" nop
- + I AddToMenu menu1 "%test1.xpm%foo%test2.xpm%"
- + I AddToMenu menu1 "*test1.xpm*fo*test2.xpm*"
- + I AddToMenu menu1 "^test1.xpm^f^test2.xpm^"
- + I AddToMenu menu1 "@test1.xpm@oo@test2.xpm@"
- + I AddToMenu menu1 "%test1.xpm%foo%test2.xpm%"
- + I AddToMenu menu1 "*test1.xpm*fo*test2.xpm*"
- + I AddToMenu menu1 "^test1.xpm^f^test2.xpm^"
- + I AddToMenu menu1 "@test1.xpm@oo@test2.xpm@"
- + I AddToMenu menu1 "%test2.xpm%foo%test1.xpm%"
- + I AddToMenu menu1 "*test2.xpm*fo*test1.xpm*"
- + I AddToMenu menu1 "^test2.xpm^f^test1.xpm^"
- + I AddToMenu menu1 "@test2.xpm@oo@test1.xpm@"
- + I AddToMenu menu1 "xx" function xyz
- + I AddToMenu menu1 "xx" function xyz
- + I AddToMenu menu1 "xx" function xyz
+# I disabled all of these since they are mostly tested above and
+# lots of them have random targets, making them unpredictable.
 
- + I Menu menu1 root c+0 c+0 beep
- + I Menu menu1 root c+0 c+0 beep
- + I popup menu1 root c+0 c+0 beep
- + I popup menu1 root c+0 c+0 beep
-
- + I DestroyMenu
- + I DestroyMenu
- + I DestroyMenu		 menu1
-
- + I addtofunc makelongmenu
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "short menu"
- + I addtofunc makelongmenu I AddToMenu longmenu popup "recursive menu"
-
- + I AddToMenu longmenu "a very long menu" title
- + I Addtomenu "short menu" "a very short menu" title top
- + I Addtomenu "short menu" "single item" nop
- + I Addtomenu "recursive menu" "recursion" title top
- + I Addtomenu "recursive menu" "recurse" popup "recursive menu"
-
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
- + I makelongmenu
-
- + I Menu longmenu
- + I Popup longmenu
- + I DestroyMenu longmenu
-
-AddTest "Test Beep" Beep-Func
-AddToFunc Beep-Func
- + I Beep
- + I Beep
- + I Beep ü30 23äö ü9823r ,l.öapü39
+# # ShortHand Function for next test:
+# DestroyFunc EchoDo
+# AddToFunc EchoDo
+#  + I AddToFunc AllFunctionsNoParams-Func I Echo Doing $0
+#  + I AddToFunc AllFunctionsNoParams-Func I $0
 
 
-AddTest "Test MenuStyle" MenuStyle-Func
-AddToFunc MenuStyle-Func
- + I MenuStyle
- + I MenuStyle  red  yellow  green  9x15  mwm  anim
- + I MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
- + I MenuStyle red yellow green 9x15 mwm anim
- + I MenuStyle red yellow green 9x15 mwm anim
- + I MenuStyle red yellow green 6x10 mwm anim
- + I MenuStyle red yellow green 6x10 mwm
- + I MenuStyle red yellow green 6x10 fvwm
- + I MenuStyle red yellow green 6x10 fvwm anim
- + I MenuStyle yellow black pink 8x13bold fvwm anim
-
-AddTest "Test Title" Title-Func
-AddToFunc Title-Func
- + I Title
- + I Title "lökjads
- + I Title "lökjads
- + I Title -A -köq
-
-AddTest "Test ColormapFocus" ColormapFocus-Func
-AddToFunc ColormapFocus-Func
- + I ColormapFocus
- + I ColormapFocus    FollowsFocus
- + I ColormapFocus 		FollowsFocus
- + I ColormapFocus FollowsMouse
- + I ColormapFocus FollowsFocus
- + I ColormapFocus FollowsFocus
- + I ColormapFocus FollowsMouse
- + I Refresh
-
-AddTest "Test CursorStyle" CursorStyle-Func
-AddToFunc CursorStyle-Func
- + I CursorStyle
- + I CursorStyle liewud
- + I CursorStyle BOTTOM 132
- + I CursorStyle BOTTOM_LEFT 133
- + I CursorStyle BOTTOM_RIGHT 134
- + I CursorStyle DEFAULT 64
- + I CursorStyle DEFAULT 68
- + I CursorStyle DEFAULT 68
- + I CursorStyle DESTROY 88
- + I CursorStyle DESTROY 88
- + I CursorStyle DESTROY 99
- + I CursorStyle DESTROY
- + I CursorStyle DEFAULT
- + I CursorStyle MENU fleur yellow blue
- + I CursorStyle MENU fleur invalid_color_name another_invalid_name
- + I CursorStyle MENU fleur black white
-# These are the defaults from the man page:
- + I CursorStyle POSITION top_left_corner
- + I CursorStyle TITLE top_left_arrow
- + I CursorStyle SYS hand2
- + I CursorStyle MOVE fleur
- + I CursorStyle RESIZE sizing
- + I CursorStyle WAIT watch
- + I CursorStyle MENU top_left_arrow
- + I CursorStyle SELECT crosshair
- + I CursorStyle DESTROY pirate
- + I CursorStyle TOP top_side
- + I CursorStyle RIGHT right_side
- + I CursorStyle BOTTOM bottom_side
- + I CursorStyle LEFT left_side
- + I CursorStyle TOP_LEFT top_left_corner
- + I CursorStyle TOP_RIGHT top_right_corner
- + I CursorStyle BOTTOM_LEFT bottom_left_corner
- + I CursorStyle BOTTOM_RIGHT bottom_right_corner
- + I CursorStyle TOP_EDGE top_side
- + I CursorStyle RIGHT_EDGE right_side
- + I CursorStyle BOTTOM_EDGE bottom_side
- + I CursorStyle LEFT_EDGE left_side
- + I CursorStyle ROOT left_ptr
- + I CursorStyle STROKE plus
-
-AddTest "Test DefaultColors" DefaultColors-Func
-AddToFunc DefaultColors-Func
- + I DefaultColors Pink Blue
- + I DefaultColors NotValid "On purpose"
- + I DefaultColors Pink "Also on purpose (second arg)"
- + I DefaultColors *
- + I DefaultColors
- + I Refresh
-
-AddTest "Test DefaultColorset" DefaultColorset-Func
-AddToFunc DefaultColorset-Func
- + I DefaultColorset
- + I DefaultColorset junk
- + I DefaultColorset 0
-# whoa! fvwm will have to send over a million colour sets to the modules!
-#+ I DefaultColorset 1236789
- + I DefaultColorset -1
- + I Refresh
-
-AddTest "Test DefaultFont" DefaultFont-Func
-AddToFunc DefaultFont-Func
- + I DefaultFont
- + I DefaultFont 9x15bold
- + I DefaultFont badnameforafont
- + I DefaultFont "another bad name"
- + I DefaultFont two args
- + I DefaultFont
- + I Refresh
-
-AddTest "Test DefaultIcon" DefaultIcon-Func
-AddToFunc DefaultIcon-Func
- + I DefaultIcon
- + I DefaultIcon test1.xpm
- + I DefaultIcon
- + I Refresh
-
-AddTest "Test DefaultLayers" DefaultLayers-Func
-AddToFunc DefaultLayers-Func
- + I DefaultLayers
- + I DefaultLayers junk three times
- + I DefaultLayers 2 4 6
- + I Refresh
-
-
-
-
-
-
-# ShortHand Function for next test:
-DestroyFunc EchoDo
-AddToFunc EchoDo
- + I AddToFunc AllFunctionsNoParams-Func I Echo Doing $0
- + I AddToFunc AllFunctionsNoParams-Func I $0
-
-
-AddTest "Test AllFunctionsNoParams" AllFunctionsNoParams-Func
-AddToFunc AllFunctionsNoParams-Func
-EchoDo AddButtonStyle
-EchoDo AddTitleStyle
-EchoDo AddToDecor
-EchoDo AddToFunc
-EchoDo AddToMenu
-EchoDo AnimatedMove
-EchoDo Beep
-EchoDo BorderStyle
-EchoDo ButtonStyle
-EchoDo ChangeDecor
-EchoDo ClickTime
-EchoDo Close
-EchoDo ColorLimit
-EchoDo ColormapFocus
-EchoDo Current
-EchoDo CursorMove
-EchoDo CursorStyle
-EchoDo Delete
-EchoDo Desk
-EchoDo DeskTopSize
-EchoDo Destroy
-EchoDo DestroyDecor
-EchoDo DestroyFunc
-EchoDo DestroyMenu
-EchoDo DestroyModuleConfig
-EchoDo Echo
-EchoDo EdgeResistance
-EchoDo EdgeScroll
-EchoDo Exec
-EchoDo ExecUseShell
-EchoDo FlipFocus
-EchoDo Focus
-EchoDo Function
-EchoDo GlobalOpts
-EchoDo GotoPage
-EchoDo HilightColor
-EchoDo IconFont
-EchoDo Iconify
-EchoDo IconPath
-EchoDo Key
-EchoDo KillModule
-EchoDo Lower
-EchoDo Maximize
-EchoDo Menu
-EchoDo MenuStyle
-EchoDo Module
-EchoDo ModulePath
-EchoDo Move
-EchoDo MoveToPage
-EchoDo Nop
-EchoDo Next
-EchoDo None
-EchoDo OpaqueMoveSize
-EchoDo PipeRead
-EchoDo PixmapPath
-EchoDo Popup
-EchoDo Prev
-EchoDo Raise
-EchoDo RaiseLower
-EchoDo Read
-EchoDo Recapture
-EchoDo Refresh
-EchoDo RefreshWindow
-EchoDo Resize
-EchoDo SendToModule
-EchoDo SetAnimation
-EchoDo SetMenuDelay
-EchoDo SetEnv
-EchoDo Scroll
-EchoDo Stick
-EchoDo Style
-EchoDo Title
-EchoDo TitleStyle
-EchoDo TitleStyle
-EchoDo UpdateDecor
-EchoDo WarpToWindow
-#Log "Test hang"
-#Wait
-EchoDo MoveToDesk
-EchoDo WindowFont
-EchoDo WindowId
-EchoDo WindowList
-EchoDo WindowShade
-EchoDo XORvalue
+# AddTest "Test AllFunctionsNoParams" AllFunctionsNoParams-Func
+# AddToFunc AllFunctionsNoParams-Func
+# EchoDo AddButtonStyle
+# EchoDo AddTitleStyle
+# EchoDo AddToDecor
+# EchoDo AddToFunc
+# EchoDo AddToMenu
+# EchoDo AnimatedMove
+# EchoDo Beep
+# EchoDo BorderStyle
+# EchoDo ButtonStyle
+# EchoDo ChangeDecor
+# EchoDo ClickTime
+# EchoDo Close
+# EchoDo ColorLimit
+# EchoDo ColormapFocus
+# EchoDo Current
+# EchoDo CursorMove
+# EchoDo CursorStyle
+# EchoDo Delete
+# EchoDo Desk
+# EchoDo DeskTopSize
+# EchoDo Destroy
+# EchoDo DestroyDecor
+# EchoDo DestroyFunc
+# EchoDo DestroyMenu
+# EchoDo DestroyModuleConfig
+# EchoDo Echo
+# EchoDo EdgeResistance
+# EchoDo EdgeScroll
+# EchoDo Exec
+# EchoDo ExecUseShell
+# EchoDo FlipFocus
+# EchoDo Focus
+# EchoDo Function
+# EchoDo GlobalOpts
+# EchoDo GotoPage
+# EchoDo HilightColor
+# EchoDo IconFont
+# EchoDo Iconify
+# EchoDo IconPath
+# EchoDo Key
+# EchoDo KillModule
+# EchoDo Lower
+# EchoDo Maximize
+# EchoDo Menu
+# EchoDo MenuStyle
+# EchoDo Module
+# EchoDo ModulePath
+# EchoDo Move
+# EchoDo MoveToPage
+# EchoDo Nop
+# EchoDo Next
+# EchoDo None
+# EchoDo OpaqueMoveSize
+# EchoDo PipeRead
+# EchoDo PixmapPath
+# EchoDo Popup
+# EchoDo Prev
+# EchoDo Raise
+# EchoDo RaiseLower
+# EchoDo Read
+# EchoDo Recapture
+# EchoDo Refresh
+# EchoDo RefreshWindow
+# EchoDo Resize
+# EchoDo SendToModule
+# EchoDo SetAnimation
+# EchoDo SetMenuDelay
+# EchoDo SetEnv
+# EchoDo Scroll
+# EchoDo Stick
+# EchoDo Style
+# EchoDo Title
+# EchoDo TitleStyle
+# EchoDo TitleStyle
+# EchoDo UpdateDecor
+# EchoDo WarpToWindow
+# #Log "Test hang"
+# #Wait
+# EchoDo MoveToDesk
+# EchoDo WindowFont
+# EchoDo WindowId
+# EchoDo WindowList
+# EchoDo WindowShade
+# EchoDo XORvalue
 
 AddTest "Test ModulePath" ModulePath-Func
 AddToFunc ModulePath-Func
