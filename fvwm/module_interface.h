@@ -22,7 +22,7 @@
 extern int npipes;
 extern int *readPipes;
 extern int *writePipes;
-extern fqueue **pipeQueue;
+extern fqueue *pipeQueue;
 
 /*
  * MAX_MASK is used to initialize the pipeMask array.  In a few places

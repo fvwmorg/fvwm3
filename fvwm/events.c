@@ -2858,7 +2858,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     for(i=0; i<npipes; i++) {
       if(readPipes[i]>=0)
         FD_SET(readPipes[i], &in_fdset);
-      if (!fqueue_is_empty(pipeQueue[i]))
+      if (!fqueue_is_empty(&pipeQueue[i]))
         FD_SET(writePipes[i], &out_fdset);
     }
 

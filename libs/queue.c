@@ -182,7 +182,11 @@ void fqueue_remove_or_operate_from_front(
 		/* must free the record */
 		t = fq->first;
 		fq->first = fq->first->next;
-		if (fq->first->next == NULL)
+		if (fq->first == NULL)
+		{
+			fq->last = NULL;
+		}
+		else if (fq->first->next == NULL)
 		{
 			fq->last = fq->first;
 		}

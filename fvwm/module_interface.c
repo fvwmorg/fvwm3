@@ -87,7 +87,7 @@ typedef struct
 static msg_masks_type *PipeMask;
 static msg_masks_type *SyncMask;
 static msg_masks_type *NoGrabMask;
-fqueue **pipeQueue;
+fqueue *pipeQueue;
 
 extern fd_set init_fdset;
 
@@ -158,7 +158,7 @@ void initModules(void)
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
   pipeAlias = (char **)safemalloc(sizeof(char *)*npipes);
 #endif
-  pipeQueue = (fqueue **)safemalloc(sizeof(fqueue)*npipes);
+  pipeQueue = (fqueue *)safemalloc(sizeof(fqueue)*npipes);
 
   for (i=0; i < npipes; i++)
   {
@@ -171,7 +171,7 @@ void initModules(void)
     SyncMask[i].m2 = 0;
     NoGrabMask[i].m1 = 0;
     NoGrabMask[i].m2 = 0;
-    fqueue_init(pipeQueue[i]);
+    fqueue_init(&pipeQueue[i]);
     pipeName[i] = NULL;
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
     pipeAlias[i] = NULL;
@@ -203,7 +203,7 @@ void ClosePipes(void)
         pipeAlias[i] = NULL;
       }
 #endif
-      while(pipeQueue[i] != NULL)
+      while(!fqueue_is_empty(&pipeQueue[i]))
       {
         DeleteMessageQueueBuff(i);
       }
@@ -368,7 +368,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     NoGrabMask[i].m1 = 0;
     NoGrabMask[i].m2 = 0;
     free(arg1);
-    pipeQueue[i] = NULL;
+    fqueue_init(&pipeQueue[i]);
     if (DoingCommandLine) {
       /* add to the list of command line modules */
       DBUG("executeModule", "starting commandline module\n");
@@ -533,7 +533,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
       FD_ZERO(&out_fdset);
       if (readPipes[pipe_slot] >= 0)
         FD_SET(readPipes[pipe_slot], &in_fdset);
-      if (pipeQueue[pipe_slot] != NULL)
+      if (!fqueue_is_empty(&pipeQueue[pipe_slot]))
         FD_SET(writePipes[pipe_slot], &out_fdset);
 
       timeout.tv_sec = 0;
@@ -739,8 +739,8 @@ void KillModule(int channel)
   readPipes[channel] = -1;
   writePipes[channel] = -1;
   pipeOn[channel] = -1;
-  while(pipeQueue[channel] != NULL)
-    {
+  while(!fqueue_is_empty(&pipeQueue[channel]))
+  {
       DeleteMessageQueueBuff(channel);
     }
   if(pipeName[channel] != NULL)
@@ -1550,7 +1550,7 @@ static void AddToMessageQueue(
 	c->data = d;
 	memcpy((void*)d, (const void*)ptr, size);
 
-	fqueue_add_at_end(pipeQueue[module], c);
+	fqueue_add_at_end(&pipeQueue[module], c);
 
 	return;
 }
@@ -1559,11 +1559,11 @@ static void DeleteMessageQueueBuff(int module)
 {
 	mqueue_object_type *obj;
 
-	if (fqueue_get_first(pipeQueue[module], (void **)&obj) == 1)
+	if (fqueue_get_first(&pipeQueue[module], (void **)&obj) == 1)
 	{
 		/* remove from queue */
 		fqueue_remove_or_operate_from_front(
-			pipeQueue[module], NULL, NULL);
+			&pipeQueue[module], NULL, NULL);
 		if (obj->data != NULL)
 		{
 			free(obj->data);
@@ -1586,7 +1586,7 @@ void FlushMessageQueue(int module)
 		return;
 	}
 
-	while (fqueue_get_first(pipeQueue[module], (void **)&obj) == 1)
+	while (fqueue_get_first(&pipeQueue[module], (void **)&obj) == 1)
 	{
 		dptr = (char *)obj->data;
 		while (obj->done < obj->size)
