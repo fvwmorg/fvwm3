@@ -1,5 +1,5 @@
 /****************************************************************************
- * This module is based on Twm, but has been siginificantly modified 
+ * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
@@ -59,7 +59,7 @@ static XrmOptionDescRec table [] = {
    * to specify the desktop. I have to include dummy options that
    * are meaningless since Xrm seems to allow -w to match -workspace
    * if there would be no ambiguity. */
-    {"-workspacf",      "*junk",        XrmoptionSepArg, (caddr_t) NULL}, 
+    {"-workspacf",      "*junk",        XrmoptionSepArg, (caddr_t) NULL},
     {"-workspace",	"*desk",	XrmoptionSepArg, (caddr_t) NULL},
     {"-xrn",		NULL,		XrmoptionResArg, (caddr_t) NULL},
     {"-xrm",		NULL,		XrmoptionResArg, (caddr_t) NULL},
@@ -132,7 +132,7 @@ FvwmWindow *AddWindow(Window w)
 	free((char *)tmp_win);
 	return(NULL);
       }
-  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 ) 
+  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
     tmp_win->name = (char *)text_prop.value;
   else
     tmp_win->name = NoName;
@@ -172,7 +172,7 @@ FvwmWindow *AddWindow(Window w)
     int xws, yws, xbs, ybs;
     unsigned wws, hws, wbs, hbs;
     int boundingShaped, clipShaped;
-    
+
     XShapeSelectInput (dpy, tmp_win->w, ShapeNotifyMask);
     XShapeQueryExtents (dpy, tmp_win->w,
 			&boundingShaped, &xws, &yws, &wws, &hws,
@@ -215,7 +215,7 @@ FvwmWindow *AddWindow(Window w)
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
 
-  SelectDecor(tmp_win,styles.on_flags,styles.border_width,styles.resize_width); 
+  SelectDecor(tmp_win,styles.on_flags,styles.border_width,styles.resize_width);
 
   tmp_win->flags |= styles.on_flags & ALL_COMMON_FLAGS;
   /* find a suitable icon pixmap */
@@ -352,21 +352,21 @@ FvwmWindow *AddWindow(Window w)
 
   if(styles.ForeColor != NULL) {
     XColor color;
-    
+
     if((XParseColor (dpy, Scr.FvwmRoot.attr.colormap, styles.ForeColor, &color))
        &&(XAllocColor (dpy, Scr.FvwmRoot.attr.colormap, &color)))
       {
-        tmp_win->TextPixel = color.pixel; 
+        tmp_win->TextPixel = color.pixel;
       }
   }
   if(styles.BackColor != NULL) {
     XColor color;
-    
+
     if((XParseColor (dpy, Scr.FvwmRoot.attr.colormap,styles.BackColor, &color))
        &&(XAllocColor (dpy, Scr.FvwmRoot.attr.colormap, &color)))
-      
+
       {
-        tmp_win->BackPixel = color.pixel; 
+        tmp_win->BackPixel = color.pixel;
       }
     tmp_win->ShadowPixel = GetShadow(tmp_win->BackPixel);
     tmp_win->ReliefPixel = GetHilite(tmp_win->BackPixel);
@@ -400,16 +400,17 @@ FvwmWindow *AddWindow(Window w)
     2*tmp_win->boundary_width;
   ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
 
-  valuemask = CWBorderPixel | CWCursor | CWEventMask; 
+  valuemask = CWBorderPixel | CWCursor | CWEventMask;
   if(Scr.d_depth < 2)
     {
-      attributes.background_pixmap = Scr.light_gray_pixmap ;
+      attributes.background_pixmap = Scr.light_gray_pixmap;
       if(tmp_win->flags & STICKY)
 	attributes.background_pixmap = Scr.sticky_gray_pixmap;
       valuemask |= CWBackPixmap;
     }
   else
     {
+      attributes.background_pixmap = None;
       attributes.background_pixel = tmp_win->BackPixel;
       valuemask |= CWBackPixel;
     }
@@ -417,13 +418,13 @@ FvwmWindow *AddWindow(Window w)
   attributes.border_pixel = tmp_win->ShadowPixel;
 
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
-  attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask | 
-			   ButtonReleaseMask | EnterWindowMask | 
+  attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask |
+			   ButtonReleaseMask | EnterWindowMask |
 			   LeaveWindowMask | ExposureMask |
 			   VisibilityChangeMask);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-  if ((GetDecor(tmp_win,BorderStyle.inactive.style) & ButtonFaceTypeMask) 
+  if ((GetDecor(tmp_win,BorderStyle.inactive.style) & ButtonFaceTypeMask)
       == TiledPixmapButton)
       TexturePixmap = GetDecor(tmp_win,BorderStyle.inactive.u.p->picture);
 
@@ -436,11 +437,11 @@ FvwmWindow *AddWindow(Window w)
 #endif
 
   /* What the heck, we'll always reparent everything from now on! */
-  tmp_win->frame = 
-    XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y, 
+  tmp_win->frame =
+    XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y,
 		   tmp_win->frame_width, tmp_win->frame_height,
 		   tmp_win->bw,CopyFromParent, InputOutput,
-		   CopyFromParent, 
+		   CopyFromParent,
 		   valuemask,
 		   &attributes);
 
@@ -456,14 +457,14 @@ FvwmWindow *AddWindow(Window w)
 
   /* Thats not all, we'll double-reparent the window ! */
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
-  tmp_win->Parent = 
+  tmp_win->Parent =
     XCreateWindow (dpy, tmp_win->frame,
-		   tmp_win->boundary_width, 
+		   tmp_win->boundary_width,
 		   tmp_win->boundary_width+tmp_win->title_height,
 		   (tmp_win->frame_width - 2*tmp_win->boundary_width),
-		   (tmp_win->frame_height - 2*tmp_win->boundary_width - 
+		   (tmp_win->frame_height - 2*tmp_win->boundary_width -
 		    tmp_win->title_height),tmp_win->bw, CopyFromParent,
-		   InputOutput,CopyFromParent, valuemask,&attributes);  
+		   InputOutput,CopyFromParent, valuemask,&attributes);
 
   attributes.event_mask = (ButtonPressMask|ButtonReleaseMask|ExposureMask|
 			   EnterWindowMask|LeaveWindowMask);
@@ -487,8 +488,8 @@ FvwmWindow *AddWindow(Window w)
        * care of the mess */
       for(i=0;i<4;i++)
 	{
-	  attributes.cursor = Scr.FvwmCursors[TOP_LEFT+i];	  
-	  tmp_win->corners[i] = 
+	  attributes.cursor = Scr.FvwmCursors[TOP_LEFT+i];
+	  tmp_win->corners[i] =
 	    XCreateWindow (dpy, tmp_win->frame, 0,0,
 			   tmp_win->corner_width, tmp_win->corner_width,
 			   0, CopyFromParent,InputOutput,
@@ -506,10 +507,10 @@ FvwmWindow *AddWindow(Window w)
 
   if (tmp_win->flags & TITLE)
     {
-      tmp_win->title_x = tmp_win->boundary_width +tmp_win->title_height+1; 
+      tmp_win->title_x = tmp_win->boundary_width +tmp_win->title_height+1;
       tmp_win->title_y = tmp_win->boundary_width;
       attributes.cursor = Scr.FvwmCursors[TITLE_CURSOR];
-      tmp_win->title_w = 
+      tmp_win->title_w =
 	XCreateWindow (dpy, tmp_win->frame, tmp_win->title_x, tmp_win->title_y,
 		       tmp_win->title_width, tmp_win->title_height,0,
 		       CopyFromParent, InputOutput, CopyFromParent,
@@ -532,7 +533,7 @@ FvwmWindow *AddWindow(Window w)
 		XCreateWindow (dpy, tmp_win->frame, tmp_win->title_height*i, 0,
 			       tmp_win->title_height, tmp_win->title_height, 0,
 			       CopyFromParent, InputOutput,
-			       CopyFromParent, 
+			       CopyFromParent,
 			       valuemask,
 			       &attributes);
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
@@ -557,11 +558,11 @@ FvwmWindow *AddWindow(Window w)
             }
 #endif
             tmp_win->right_w[i] =
-              XCreateWindow (dpy, tmp_win->frame, 
+              XCreateWindow (dpy, tmp_win->frame,
                              tmp_win->title_width-
                              tmp_win->title_height*(i+1),
                              0, tmp_win->title_height,
-                             tmp_win->title_height, 
+                             tmp_win->title_height,
                              0, CopyFromParent, InputOutput,
                              CopyFromParent,
                              valuemask,
@@ -578,7 +579,7 @@ FvwmWindow *AddWindow(Window w)
 	    tmp_win->right_w[i] = None;
 	}
     }
-  
+
   if(tmp_win->flags & BORDER)
     {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
@@ -592,7 +593,7 @@ FvwmWindow *AddWindow(Window w)
       for(i=0;i<4;i++)
 	{
 	  attributes.cursor = Scr.FvwmCursors[TOP+i];
-	  tmp_win->sides[i] = 
+	  tmp_win->sides[i] =
 	    XCreateWindow (dpy, tmp_win->frame, 0, 0, tmp_win->boundary_width,
 			   tmp_win->boundary_width, 0, CopyFromParent,
 			   InputOutput, CopyFromParent,
@@ -607,10 +608,10 @@ FvwmWindow *AddWindow(Window w)
 #endif
     }
 
-      
+
 #ifdef MINI_ICONS
   if (tmp_win->mini_pixmap_file) {
-    tmp_win->mini_icon = CachePicture (dpy, Scr.Root, 
+    tmp_win->mini_icon = CachePicture (dpy, Scr.Root,
                                        IconPath,
 #ifdef XPM
                                        PixmapPath,
@@ -630,8 +631,8 @@ FvwmWindow *AddWindow(Window w)
   XReparentWindow(dpy, tmp_win->w, tmp_win->Parent,0,0);
 
   valuemask = (CWEventMask | CWDontPropagate);
-  attributes.event_mask = (StructureNotifyMask | PropertyChangeMask | 
-			   EnterWindowMask | LeaveWindowMask | 
+  attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
+			   EnterWindowMask | LeaveWindowMask |
 			   ColormapChangeMask | FocusChangeMask);
 
   attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
@@ -641,7 +642,7 @@ FvwmWindow *AddWindow(Window w)
     tmp_win->name = (char *)text_prop.value;
   else
     tmp_win->name = NoName;
-  
+
   XAddToSaveSet(dpy, tmp_win->w);
 
   /*
@@ -658,13 +659,13 @@ FvwmWindow *AddWindow(Window w)
   SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height, True);
 
   /* wait until the window is iconified and the icon window is mapped
-   * before creating the icon window 
+   * before creating the icon window
    */
   tmp_win->icon_w = None;
   GrabButtons(tmp_win);
   GrabKeys(tmp_win);
 
-  XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);  
+  XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->Parent, FvwmContext, (caddr_t) tmp_win);
   if (tmp_win->flags & TITLE)
@@ -674,7 +675,7 @@ FvwmWindow *AddWindow(Window w)
 	XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
       for(i=0;i<Scr.nr_right_buttons;i++)
 	if(tmp_win->right_w[i] != None)
-	  XSaveContext(dpy, tmp_win->right_w[i], FvwmContext, 
+	  XSaveContext(dpy, tmp_win->right_w[i], FvwmContext,
 		       (caddr_t) tmp_win);
     }
   if (tmp_win->flags & BORDER)
@@ -749,9 +750,9 @@ FvwmWindow *AddWindow(Window w)
     tmp_win->attr.colormap = Scr.FvwmRoot.attr.colormap;
   if(NeedToResizeToo)
     {
-      XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth, 
-		   Scr.MyDisplayHeight, 
-		   tmp_win->frame_x + (tmp_win->frame_width>>1), 
+      XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+		   Scr.MyDisplayHeight,
+		   tmp_win->frame_x + (tmp_win->frame_width>>1),
 		   tmp_win->frame_y + (tmp_win->frame_height>>1));
       Event.xany.type = ButtonPress;
       Event.xbutton.button = 1;
@@ -788,57 +789,57 @@ void GrabButtons(FvwmWindow *tmp_win)
 	{
 	  if(MouseEntry->Button_Key >0)
 	    {
-	      XGrabButton(dpy, MouseEntry->Button_Key, MouseEntry->Modifier, 
-			  tmp_win->w, 
+	      XGrabButton(dpy, MouseEntry->Button_Key, MouseEntry->Modifier,
+			  tmp_win->w,
 			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None, 
+			  GrabModeAsync, GrabModeAsync, None,
 			  Scr.FvwmCursors[DEFAULT]);
 	      if(MouseEntry->Modifier != AnyModifier)
 		{
-		  XGrabButton(dpy, MouseEntry->Button_Key, 
+		  XGrabButton(dpy, MouseEntry->Button_Key,
 			      (MouseEntry->Modifier | LockMask),
-			      tmp_win->w, 
+			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None, 
+			      GrabModeAsync, GrabModeAsync, None,
 			      Scr.FvwmCursors[DEFAULT]);
 		}
 	    }
 	  else
 	    {
-	      XGrabButton(dpy, 1, MouseEntry->Modifier, 
-			  tmp_win->w, 
+	      XGrabButton(dpy, 1, MouseEntry->Modifier,
+			  tmp_win->w,
 			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None, 
+			  GrabModeAsync, GrabModeAsync, None,
 			  Scr.FvwmCursors[DEFAULT]);
-	      XGrabButton(dpy, 2, MouseEntry->Modifier, 
-			  tmp_win->w, 
+	      XGrabButton(dpy, 2, MouseEntry->Modifier,
+			  tmp_win->w,
 			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None, 
+			  GrabModeAsync, GrabModeAsync, None,
 			  Scr.FvwmCursors[DEFAULT]);
-	      XGrabButton(dpy, 3, MouseEntry->Modifier, 
-			  tmp_win->w, 
+	      XGrabButton(dpy, 3, MouseEntry->Modifier,
+			  tmp_win->w,
 			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None, 
+			  GrabModeAsync, GrabModeAsync, None,
 			  Scr.FvwmCursors[DEFAULT]);
 	      if(MouseEntry->Modifier != AnyModifier)
 		{
 		  XGrabButton(dpy, 1,
 			      (MouseEntry->Modifier | LockMask),
-			      tmp_win->w, 
+			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None, 
+			      GrabModeAsync, GrabModeAsync, None,
 			      Scr.FvwmCursors[DEFAULT]);
 		  XGrabButton(dpy, 2,
 			      (MouseEntry->Modifier | LockMask),
-			      tmp_win->w, 
+			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None, 
+			      GrabModeAsync, GrabModeAsync, None,
 			      Scr.FvwmCursors[DEFAULT]);
 		  XGrabButton(dpy, 3,
 			      (MouseEntry->Modifier | LockMask),
-			      tmp_win->w, 
+			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None, 
+			      GrabModeAsync, GrabModeAsync, None,
 			      Scr.FvwmCursors[DEFAULT]);
 		}
 	    }
@@ -869,9 +870,9 @@ void GrabKeys(FvwmWindow *tmp_win)
 		   GrabModeAsync, GrabModeAsync);
 	  if(tmp->Modifier != AnyModifier)
 	    {
-	      XGrabKey(dpy, tmp->Button_Key, tmp->Modifier|LockMask, 
+	      XGrabKey(dpy, tmp->Button_Key, tmp->Modifier|LockMask,
 		       tmp_win->frame, True,
-		       GrabModeAsync, GrabModeAsync);	      
+		       GrabModeAsync, GrabModeAsync);
 	    }
 	}
     }
@@ -899,9 +900,9 @@ void FetchWmProtocols (FvwmWindow *tmp)
   if(tmp == NULL) return;
   /* First, try the Xlib function to read the protocols.
    * This is what Twm uses. */
-  if (XGetWMProtocols (dpy, tmp->w, &protocols, &n)) 
+  if (XGetWMProtocols (dpy, tmp->w, &protocols, &n))
     {
-      for (i = 0, ap = protocols; i < n; i++, ap++) 
+      for (i = 0, ap = protocols; i < n; i++, ap++)
 	{
 	  if (*ap == (Atom)_XA_WM_TAKE_FOCUS) flags |= DoesWmTakeFocus;
 	  if (*ap == (Atom)_XA_WM_DELETE_WINDOW) flags |= DoesWmDeleteWindow;
@@ -910,14 +911,14 @@ void FetchWmProtocols (FvwmWindow *tmp)
     }
   else
     {
-      /* Next, read it the hard way. mosaic from Coreldraw needs to 
+      /* Next, read it the hard way. mosaic from Coreldraw needs to
        * be read in this way. */
       if ((XGetWindowProperty(dpy, tmp->w, _XA_WM_PROTOCOLS, 0L, 10L, False,
 			      _XA_WM_PROTOCOLS, &atype, &aformat, &nitems,
 			      &bytes_remain,
 			      (unsigned char **)&protocols))==Success)
 	{
-	  for (i = 0, ap = protocols; i < nitems; i++, ap++) 
+	  for (i = 0, ap = protocols; i < nitems; i++, ap++)
 	    {
 	      if (*ap == (Atom)_XA_WM_TAKE_FOCUS) flags |= DoesWmTakeFocus;
 	      if (*ap == (Atom)_XA_WM_DELETE_WINDOW) flags |= DoesWmDeleteWindow;
@@ -947,7 +948,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   /* Beat up our copy of the hints, so that all important field are
    * filled in! */
-  if (tmp->hints.flags & PResizeInc) 
+  if (tmp->hints.flags & PResizeInc)
     {
       if (tmp->hints.width_inc == 0) tmp->hints.width_inc = 1;
       if (tmp->hints.height_inc == 0) tmp->hints.height_inc = 1;
@@ -957,7 +958,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       tmp->hints.width_inc = 1;
       tmp->hints.height_inc = 1;
     }
-  
+
   /*
    * ICCCM says that PMinSize is the default if no PBaseSize is given,
    * and vice-versa.
@@ -968,7 +969,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       if(tmp->hints.flags & PMinSize)
 	{
 	  tmp->hints.base_width = tmp->hints.min_width;
-	  tmp->hints.base_height = tmp->hints.min_height;      
+	  tmp->hints.base_height = tmp->hints.min_height;
 	}
       else
 	{
@@ -979,7 +980,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
   if(!(tmp->hints.flags & PMinSize))
     {
       tmp->hints.min_width = tmp->hints.base_width;
-      tmp->hints.min_height = tmp->hints.base_height;            
+      tmp->hints.min_height = tmp->hints.base_height;
     }
   if(!(tmp->hints.flags & PMaxSize))
     {
@@ -987,9 +988,9 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       tmp->hints.max_height = MAX_WINDOW_HEIGHT;
     }
   if(tmp->hints.max_width < tmp->hints.min_width)
-    tmp->hints.max_width = MAX_WINDOW_WIDTH;    
+    tmp->hints.max_width = MAX_WINDOW_WIDTH;
   if(tmp->hints.max_height < tmp->hints.min_height)
-    tmp->hints.max_height = MAX_WINDOW_HEIGHT;    
+    tmp->hints.max_height = MAX_WINDOW_HEIGHT;
 
   /* Zero width/height windows are bad news! */
   if(tmp->hints.min_height <= 0)

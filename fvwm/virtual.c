@@ -195,7 +195,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
 /***************************************************************************
  * checkPanFrames hides PanFrames if they are on the very border of the
- * VIRTUELL screen and EdgeWrap for that direction is off.
+ * VIRTUAL screen and EdgeWrap for that direction is off.
  * (A special cursor for the EdgeWrap border could be nice) HEDU
  ****************************************************************************/
 void checkPanFrames(void)

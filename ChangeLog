@@ -1,3 +1,39 @@
+1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/**:
+	* libs/**: removed trailing spaces from the files I touched since 11-20
+
+	* fvwm/fvwm.c (StartupStuff): Added call to checkPanFrames to make
+	page flipping via EdgeScroll work with FvwmCpp too.
+
+	* fvwm/misc.c (Destroy): remove window from window list before doing
+	anything else. Should fix race condition coredump with
+	Close/Delete/Destroy.
+
+	* TODO: updated
+
+	* FAQ (44): added section for FvwmButtons/Swallow
+
+1998-11-21  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (AddToMenu): fixed uninitialised memory read in item2
+	and s.
+
+	* fvwm/builtins.c (DirectionFunc):
+	(Circulate): fixed free of possible NULL pointer.
+
+	* fvwm/style.c (ProcessNewStyle): fixed uninitialised memory read:
+	'BUTTON'/'NOBUTTON' with invalid button number
+
+	* fvwm/add_window.c (AddWindow): fixed uninitialised memory read:
+	attributes.background_pixmap not set.
+
+	* libs/Parse.c (DoGetNextToken): cleaned up a bit because of the
+	array bounds violation in SetGlobalOptions, but I don't believe that
+	fixes it. Reformatted for further debugging.
+
+	* fvwm/functions.c (find_func_type): a little speedup
+
 1998-11-20  Bob Woodside  <proteus@pcnet.com>
 
 	* add_window.c 
@@ -9,6 +45,25 @@
 	* AUTHORS:  added entry.
 
 1998-11-20  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/complex.c (expand): a little speedup
+
+	* fvwm/functions.c (ExecuteFunction): a little speedup
+
+	* fvwm/menus.c (NewMenuRoot):
+	(FMenuMapped):
+	fixed uninitialised memory reads
+
+	* fvwm/menus.c (NewMenuRoot):
+	put parentheses around macro parameters
+
+	* fvwm/menus.c (NewMenuRoot):
+	(MakeMenu):
+	* fvwm/windows.c (do_windowList):
+	* fvwm/misc.h:
+	* fvwm/builtins.c (add_item_to_func):
+	(add_item_to_menu):
+	changed NewMenuRoot signature
 
 	* configure.in: Version 2.1.2 released (CVS tag = version-2_1_2)
 	and current version bumped to 2.1.3.
@@ -22,12 +77,12 @@
 
 	* fvwm/fvwm2.1: updated AddToMenu/AddToFunc syntax
 
-	* fvwm/builtins.c (CreateFlagString): 
-	(FreeConditionMask): 
-	(DefaultConditionMask): 
-	(CreateConditionMask): 
-	(MatchesContitionMask): 
-	(Circulate): 
+	* fvwm/builtins.c (CreateFlagString):
+	(FreeConditionMask):
+	(DefaultConditionMask):
+	(CreateConditionMask):
+	(MatchesContitionMask):
+	(Circulate):
 	(DirectionFunc):
  	Applied 'Direction' patch (added and modified some functions).
 

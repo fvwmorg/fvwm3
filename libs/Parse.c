@@ -139,9 +139,9 @@ void NukeToken(char **pstr)
  * which is extracted.
  * token is the extracted word, which is copied into a malloced
  * space, and must be freed after use. DoGetNextToken *never* returns an
- * empty string. If the token consists only of whitespace or delimiters,
- * the returned token is NULL instead. If out_delim is given, the character
- * ending the string is returned therein.
+ * empty string or token. If the token consists only of whitespace or
+ * delimiters, the returned token is NULL instead. If out_delim is given,
+ * the character ending the string is returned therein.
  *
  * spaces = string of characters to treat as spaces
  * delims = string of characters delimiting token
@@ -152,24 +152,33 @@ void NukeToken(char **pstr)
  **************************************************************************/
 char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
 		     char *out_delim)
-{ 
-  char *t,*start, *end, *text;
+{
+  char *t, *start, *end, *text;
   int snum;
   int dnum;
 
   snum = (spaces) ? strlen(spaces) : 0;
   dnum = (delims) ? strlen(delims) : 0;
-  t = indata;
-  if(t == NULL)
+  if(indata == NULL)
     {
+      if (out_delim)
+	*out_delim = '\0';
       *token = NULL;
       return NULL;
     }
-  while ( (isspace(*t) || (snum && strchr(spaces, *t))) && (*t != 0) ) t++;
+  t = indata;
+  while ( (*t != 0) &&
+	  ( isspace(*t) ||
+	    (snum &&
+	     strchr(spaces, *t)) ) )
+    t++;
   start = t;
-  while (!(isspace(*t) ||
-	   (snum && strchr(spaces, *t)) || (dnum && strchr(delims, *t))) &&
-	 (*t != 0) )
+  while ( (*t != 0) &&
+	  !( isspace(*t) ||
+	     (snum &&
+	      strchr(spaces, *t)) ||
+	     (dnum &&
+	      strchr(delims, *t)) ) )
     {
       /* Check for qouted text */
       if (IsQuote(*t))
@@ -179,7 +188,7 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
 	  t++;
 	  while((*t != c)&&(*t != 0))
 	    {
-	      /* Skip over escaped text, ie \" or \space */
+	      /* Skip over escaped text, ie \quote */
 	      if((*t == '\\')&&(*(t+1) != 0))
 		t++;
 	      t++;
@@ -207,7 +216,7 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
     {
       /* Check for qouted text */
       if(IsQuote(*start))
-	{	
+	{
 	  char c = *start;
 	  start++;
 	  while((*start != c)&&(*start != 0))
@@ -240,12 +249,12 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
   return end;
 }
 
-char *GetNextToken(char *indata,char **token)
+char *GetNextToken(char *indata, char **token)
 {
   return DoGetNextToken(indata, token, NULL, NULL, NULL);
 }
 
-char *GetNextOption(char *indata,char **token)
+char *GetNextOption(char *indata, char **token)
 {
   return DoGetNextToken(indata, token, ",", NULL, NULL);
 }

@@ -21,7 +21,6 @@ Cleanups:
     automake variable for the module directory; i.e. moduledir -->
     moduleexecdir? 
   - Make fvwmlib a shared lib?
-  - Copyrights (GPL?)
 
 ----------------------------------------------------------------------
 
@@ -30,7 +29,6 @@ Administration:
   - Implement a bug tracking system
   - Copy the entries from the debian bug tracking system
     http://www.debian.org/Bugs/db/pa/lfvwm2.html
-  -
 
 ----------------------------------------------------------------------
 
@@ -49,9 +47,9 @@ Old Patches:
 
 Bugfixes:
 
-  - Rewrite VISIBLE/RAISED lags to do something comprehensible.
   - Change flags implementation to allow adding more Styles easily
     (bitfields?) - THE GREAT STYLE FLAG REWRITE (GSFR)
+  - Rewrite VISIBLE/RAISED lags to do something comprehensible.
   - Fix Restart to not pass original (fvwm specific) options to other wm's
   - Run profiling on FVWM to see if I can speed it up any more
   - Try to decrease memory usage a little more

@@ -169,7 +169,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     sprintf(tlabel,"Desk: %d",desk);
   }
-  mr=NewMenuRoot(tlabel,0);
+  mr=NewMenuRoot(tlabel, False);
   AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
 
   next_desk = 0;

@@ -1,3 +1,8 @@
+1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1: Added BUGS section to point out frequent
+	problems with Swallow (action has to be quoted).
+
 1998-11-19  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmWinList/FvwmWinList.c (ProcessMessage): 

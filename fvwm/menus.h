@@ -173,6 +173,7 @@ typedef struct MenuRoot
     unsigned char flags; /* internal flags, deleted when menu pops down! */
     int xanimation;      /* x distance window was moved by animation     */
 } MenuRoot;
+/* don't forget to initialise new members in NewMenuRoot()! */
 
 typedef struct Binding
 {

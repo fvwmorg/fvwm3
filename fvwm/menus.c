@@ -32,7 +32,7 @@
 
 /* German Gomez Garcia, Nov 1998
    german@pinon.ccu.uniovi.es
-  
+
    Implemented new menu style definition, allowing multiple definitios and
    gradients and pixmaps 'ala' ButtonStyle. See doc/README.styles for more
    info.  */
@@ -109,13 +109,13 @@ Time dkp_timestamp;
 #define IS_TITLE_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_TITLE):FALSE))
 #define IS_POPUP_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_POPUP):FALSE))
 #define IS_SEPARATOR_MENU_ITEM(mi) ((mi)?(mi)->fIsSeparator:FALSE)
-#define IS_REAL_SEPARATOR_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals(mi->action,"nop") && !mi->strlen && !mi->strlen2):FALSE)
-#define IS_LABEL_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals(mi->action,"nop") && (mi->strlen || mi->strlen2)):FALSE)
-#define MENU_MIDDLE_OFFSET(menu) (menu->xoffset + (menu->width - menu->xoffset)/2)
-#define IS_LEFT_MENU(menu) (menu->flags & MENU_IS_LEFT)
-#define IS_RIGHT_MENU(menu) (menu->flags & MENU_IS_RIGHT)
-#define IS_UP_MENU(menu) (menu->flags & MENU_IS_UP)
-#define IS_DOWN_MENU(menu) (menu->flags & MENU_IS_DOWN)
+#define IS_REAL_SEPARATOR_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals((mi)->action,"nop") && !((mi)->strlen) && !((mi)->strlen2)):FALSE)
+#define IS_LABEL_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals((mi)->action,"nop") && ((mi)->strlen || ((mi)->strlen2))):FALSE)
+#define MENU_MIDDLE_OFFSET(menu) ((menu)->xoffset + ((menu)->width - (menu)->xoffset)/2)
+#define IS_LEFT_MENU(menu) ((menu)->flags & MENU_IS_LEFT)
+#define IS_RIGHT_MENU(menu) ((menu)->flags & MENU_IS_RIGHT)
+#define IS_UP_MENU(menu) ((menu)->flags & MENU_IS_UP)
+#define IS_DOWN_MENU(menu) ((menu)->flags & MENU_IS_DOWN)
 #define DOUBLECLICK_TIMEOUT (3*Scr.ClickTime)
 
 /****************************************************************************
@@ -376,7 +376,7 @@ Bool FMenuMapped(MenuRoot *menu)
 {
   XWindowAttributes win_attribs;
   XGetWindowAttributes(dpy,menu->w,&win_attribs);
-  return (win_attribs.map_state == IsViewable);
+  return (menu->w == None) ? False : (win_attribs.map_state == IsViewable);
 }
 
 static
@@ -611,7 +611,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   Bool fFakedMotion = FALSE;
 
   mops.flags = 0;
-  fPopupImmediately = ((menu->mf->style == MWMMenu 
+  fPopupImmediately = ((menu->mf->style == MWMMenu
 			|| menu->mf->style == WINMenu)
                       && (c10msDelaysBeforePopup > 0));
 
@@ -2132,7 +2132,8 @@ void MakeMenu(MenuRoot *mr)
 	     but, we need it at the end */
 	  /* (Give it just the name, which is 6 chars past the action
 	     since strlen("Popup ")==6 ) */
-	  menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6,0);
+	  menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6,
+					 False);
 	  mr->continuation = menuContinuation;
 
 	  /* Now move this item and the remaining items into the new menu */
@@ -2442,7 +2443,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
     return;
   /* empty items screw up our menu when painted, so we replace them with a
    * separator */
-  if (item == NULL || *item == 0)
+  if (item == NULL)
     item = "";
   if (action == NULL || *action == 0)
     action = "Nop";
@@ -2511,12 +2512,13 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       end = start;
       while(*end != 0)
 	end++;
-      if(end-start != 0)
+      if(end > start)
 	{
 	  char *s;
 
 	  tmp->item2 = safemalloc(end-start+1);
 	  strncpy(tmp->item2,start,end-start);
+	  tmp->item2[end-start] = 0;
 	  s = tmp->item2;
 	  while (*s)
 	    {
@@ -2524,7 +2526,6 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 		*s = ' ';
 	      s++;
 	    }
-	  tmp->item2[end-start] = 0;
 	}
     }
 
@@ -2602,38 +2603,39 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
  *
  *  Inputs:
  *	name	- the name of the menu root
- *      fFunction - non-zero if we should set func to F_FUNCTION,
+ *      fFunction - True if we should set func to F_FUNCTION,
  *                  F_POPUP otherwise
  *
  ***********************************************************************/
-MenuRoot *NewMenuRoot(char *name,int fFunction)
+MenuRoot *NewMenuRoot(char *name, Bool fFunction)
 {
   MenuRoot *tmp;
 
   tmp = (MenuRoot *) safemalloc(sizeof(MenuRoot));
-  if(fFunction != 0)
-    tmp->func = F_FUNCTION;
-  else
-    tmp->func = F_POPUP;
 
-  tmp->mf = Scr.DefaultMenuFace;
-  tmp->name = stripcpy(name);
   tmp->first = NULL;
   tmp->last = NULL;
   tmp->selected = NULL;
-  tmp->in_use = 0;
-  tmp->items = 0;
-  tmp->width = 0;
-  tmp->width2 = 0;
-  tmp->w = None;
   tmp->next  = Scr.AllMenus;
   tmp->continuation = NULL;
+  tmp->mrDynamicPrev = NULL;
+  tmp->name = stripcpy(name);
+  tmp->w = None;
+  tmp->height = 0;
+  tmp->width = 0;
+  tmp->width2 = 0;
+  tmp->width0 = 0;
+  tmp->items = 0;
+  tmp->in_use = 0;
+  tmp->func = (fFunction) ? F_FUNCTION : F_POPUP;
   tmp->sidePic = NULL;
   scanForPixmap(tmp->name, &tmp->sidePic, '@');
-  if (tmp->sidePic != NULL) {
-    /* DBUG("NewMenuRoot","Got side pixmap, name = %s\n",tmp->name); */
-  }
-  scanForColor(tmp->name,&tmp->sideColor,&tmp->colorize,'^');
+  scanForColor(tmp->name, &tmp->sideColor, &tmp->colorize,'^');
+  tmp->xoffset = 0;
+  tmp->mf = Scr.DefaultMenuFace;
+  tmp->flags = 0;
+  tmp->xanimation = 0;
+
   Scr.AllMenus = tmp;
   return (tmp);
 }

@@ -84,6 +84,19 @@ void Destroy(FvwmWindow *Tmp_win)
   if(!Tmp_win)
     return;
 
+  /* first of all, remove the window from the list of all windows! */
+  /*
+      RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
+      There's always a prev and next, since this is a ring anchored on
+      Scr.FvwmRoot
+  */
+  Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;
+  Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
+
+  Tmp_win->prev->next = Tmp_win->next;
+  if (Tmp_win->next != NULL)
+    Tmp_win->next->prev = Tmp_win->prev;
+
   XUnmapWindow(dpy, Tmp_win->frame);
 
   if(!PPosOverride)
@@ -173,18 +186,7 @@ void Destroy(FvwmWindow *Tmp_win)
       for(i=0;i<4;i++)
 	XDeleteContext(dpy, Tmp_win->corners[i], FvwmContext);
     }
-  
-  /*
-      RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
-      There's always a prev and next, since this is a ring anchored on
-      Scr.FvwmRoot
-  */
-  Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;
-  Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
 
-  Tmp_win->prev->next = Tmp_win->next;
-  if (Tmp_win->next != NULL)
-    Tmp_win->next->prev = Tmp_win->prev;
   free_window_names (Tmp_win, True, True);
   if (Tmp_win->wmhints)
     XFree ((char *)Tmp_win->wmhints);
@@ -482,11 +484,11 @@ int GetMoveArguments(char *action, int x, int y, int w, int h,
       retval = 2;
     else
       *fWarp = FALSE; /* make sure warping is off for interactive moves */
-  
+
   if (s1) free(s1);
   if (s2) free(s2);
   if (warp) free(warp);
-  
+
   return retval;
 }
 
@@ -574,7 +576,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       fHasContext = FALSE;
       break;
     }
-    
+
     pops->pos_hints.fRelative = TRUE; /* set to FALSE for absolute hints! */
     fUseItemOffset = FALSE;
     fHasContext = TRUE;
@@ -641,7 +643,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       /* no context string */
       fHasContext = FALSE;
     }
-    
+
     if (tok)
       free(tok);
     if (fHasContext)

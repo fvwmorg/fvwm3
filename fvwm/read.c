@@ -146,8 +146,8 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   while(tline)
   {
     int l;
-    while(tline && (l = strlen(line)) < sizeof(line) && strlen(tline) >= 2 &&
-          line[l-1]=='\n' && line[l-2]=='\\')
+    while(tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
+          line[l-2]=='\\' && line[l-1]=='\n')
     {
       tline = fgets(line+l-2,sizeof(line)-l+1,fd);
     }

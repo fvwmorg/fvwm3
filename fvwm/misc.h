@@ -217,7 +217,7 @@ extern void       RaiseWindow(FvwmWindow *t);
 extern void       LowerWindow(FvwmWindow *t);
 extern Bool       GrabEm(int);
 extern void       UngrabEm(void);
-extern MenuRoot   *NewMenuRoot(char *name, int function_or_popup);
+extern MenuRoot   *NewMenuRoot(char *name, Bool function_or_popup);
 extern void       AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 extern void       MakeMenu(MenuRoot *);
 extern void       CaptureAllWindows(void);
@@ -226,7 +226,7 @@ extern int        flush_expose(Window w);
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module);
 void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module);
+		   unsigned long context, char *action,int *Module);
 extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
 extern void       ConstrainSize (FvwmWindow *, int *, int *);
@@ -234,7 +234,7 @@ extern void       HandlePaging(int, int, int *, int *, int *, int *,Bool);
 extern void       SetShape(FvwmWindow *, int);
 extern void       AutoPlace(FvwmWindow *);
 void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module);
+		   unsigned long context, char *action,int* Module);
 extern void       SetFocus(Window,FvwmWindow *, Bool FocusByMouse);
 extern void       CheckAndSetFocus(void);
 extern void       initModules(void);
@@ -250,7 +250,8 @@ extern void       GetXPMFile(FvwmWindow *tmp_win);
 extern void       GetIconWindow(FvwmWindow *tmp_win);
 extern void       GetIconBitmap(FvwmWindow *tmp_win);
 /*  RBW - 11/02/1998  */
-extern int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y, int pdeltax, int pdeltay);
+extern int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y,
+			  int pdeltax, int pdeltay);
 /**/
 extern void usage(void);
 void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...);
@@ -526,7 +527,7 @@ void NoneFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	      unsigned long context, char *action,int* Module);
 void CurrentFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  	      unsigned long context, char *action,int* Module);
-void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win, 
+void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	       unsigned long context, char *action, int *Module);
 void WindowIdFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                   unsigned long context, char *action,int* Module);

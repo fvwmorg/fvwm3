@@ -1,7 +1,6 @@
-
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -40,6 +39,12 @@ Bool desperate;
  * Remove the field "code" from the structure "functions" in misc.c.
  * Then remove the values from this table.
  * dje 9/25/98
+ *
+ * Note: above comment is incorrect. The 3rd column is still used in
+ * find_func_type which is called from menus.c. Some work has to be done
+ * before it can be removed.
+ * Dominik Vogt 21/11/98
+
  */
 static struct functions func_config[] =
 {
@@ -160,7 +165,7 @@ static struct functions func_config[] =
   {"XORValue",     SetXOR,           F_XOR,                 FUNC_NO_WINDOW},
   {"",0,0,0}
 };
-  
+
 
 /*
 ** do binary search on func list
@@ -194,12 +199,12 @@ static struct functions *FindBuiltinFunction(char *func)
  *
  *  Inputs:
  *	func	- the function to execute
- *	action	- the menu action to execute 
+ *	action	- the menu action to execute
  *	w	- the window to execute this function on
  *	tmp_win	- the fvwm window structure
  *	event	- the event that caused the function
  *	context - the context in which the button was pressed
- *      val1,val2 - the distances to move in a scroll operation 
+ *      val1,val2 - the distances to move in a scroll operation
  *
  ***********************************************************************/
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
@@ -212,7 +217,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   char *arguments[10];
   struct functions *bif;
 
-  if (strlen(&Action[0]) < 2) {         /* impossibly short command */
+  if (Action[0] == 0 || Action[1] == 0){/* impossibly short command */
     return;                             /* done */
   }
   if (Action[0] == '#') {               /* a comment */
@@ -260,7 +265,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 	executeModule(eventp,w,tmp_win,context,taction, &Module);
       desperate = 0;
     }
-  
+
   /* Only wait for an all-buttons-up condition after calls from
    * regular built-ins, not from complex-functions or modules. */
   if(Module == -1)
@@ -281,15 +286,15 @@ int find_func_type(char *action)
   int j, len = 0;
   char *endtok = action;
   Bool matched;
+  int mlen;
+
   while (*endtok&&!isspace(*endtok))++endtok;
   len = endtok - action;
   j=0;
   matched = FALSE;
-  while((!matched)&&(strlen(func_config[j].keyword)>0))
+  while((!matched)&&((mlen = strlen(func_config[j].keyword))>0))
     {
-      int mlen = strlen(func_config[j].keyword);
-      if((mlen == len)
-	 && (strncasecmp(action,func_config[j].keyword,mlen)==0))
+      if((mlen == len) && (strncasecmp(action,func_config[j].keyword,mlen)==0))
       {
 	  matched=TRUE;
 	  /* found key word */

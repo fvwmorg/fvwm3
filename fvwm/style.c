@@ -9,8 +9,8 @@
  * Rewrote AddToList without tons of arg passing and merging.
  * Added a few comments.
  *
- * This module was all original code 
- * by Rob Nation 
+ * This module was all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -104,7 +104,7 @@ void ProcessNewStyle(XEvent *eventp,
   int is_quoted;                        /* for parsing args with quotes */
 
   memset(&tname, 0, sizeof(name_list)); /* init temp name_list area */
-  
+
   restofline = GetNextToken(text,&tname.name); /* parse style name */
   /* in case there was no argument! */
   if((tname.name == NULL)||(restofline == NULL))/* If no name, or blank cmd */
@@ -154,6 +154,7 @@ void ProcessNewStyle(XEvent *eventp,
         else if (ITIS("BUTTON"))
         {
           SKIP("BUTTON");
+	  butt = -1; /* just in case sscanf fails */
           sscanf(restofline,"%d",&butt);
           GETWORD;
           restofline = tmp;
@@ -192,7 +193,7 @@ void ProcessNewStyle(XEvent *eventp,
             tname.ForeColor[len] = 0;
             tname.off_flags |= FORE_COLOR_FLAG;
           }
-          
+
           while(isspace(*tmp))tmp++;
           if(*tmp == '/')
           {
@@ -410,7 +411,7 @@ void ProcessNewStyle(XEvent *eventp,
             num = sscanf(restofline,"%hd%hd", /* 2 shorts */
                          &which->IconGrid[0],
                          &which->IconGrid[1]);
-            if (num != 2 
+            if (num != 2
                 || which->IconGrid[0] < 1
                 || which->IconGrid[1] < 1) {
               fvwm_msg(ERR,"ProcessNewStyle",
@@ -473,7 +474,7 @@ void ProcessNewStyle(XEvent *eventp,
             tname.on_flags |= SUPPRESSICON_FLAG;
           }
           else
-            tname.on_flags |= SUPPRESSICON_FLAG;	    
+            tname.on_flags |= SUPPRESSICON_FLAG;
           restofline = tmp;
         }
         break;
@@ -585,11 +586,12 @@ void ProcessNewStyle(XEvent *eventp,
         else if (ITIS("NOBUTTON"))
         {
           SKIP("NOBUTTON");
-	  
+
+	  butt = -1; /* just in case sscanf fails */
           sscanf(restofline,"%d",&butt);
           GETWORD;
           SKIPSPACE;
-	  
+
           if (butt == 0) butt = 10;
           if (butt > 0 && butt <= 10)
             tname.off_buttons |= (1<<(butt-1));
@@ -664,21 +666,21 @@ void ProcessNewStyle(XEvent *eventp,
         else if(ITIS("StaysOnTop"))
         {
           SKIP("StaysOnTop");
-          tname.off_flags |= STAYSONTOP_FLAG;	  
+          tname.off_flags |= STAYSONTOP_FLAG;
         }
         else if(ITIS("StaysPut"))
         {
           SKIP("StaysPut");
-          tname.on_flags |= STAYSONTOP_FLAG;	  
+          tname.on_flags |= STAYSONTOP_FLAG;
         }
         else if(ITIS("Sticky"))
         {
-          tname.off_flags |= STICKY_FLAG;	  
+          tname.off_flags |= STICKY_FLAG;
           SKIP("Sticky");
         }
         else if(ITIS("Slippery"))
         {
-          tname.on_flags |= STICKY_FLAG;	  
+          tname.on_flags |= STICKY_FLAG;
           SKIP("Slippery");
         }
         else if(ITIS("STARTSONDESK"))
@@ -703,7 +705,7 @@ void ProcessNewStyle(XEvent *eventp,
           restofline = tmp;
           SKIPSPACE;
         }
-       /*  RBW - 11/02/1998 
+       /*  RBW - 11/02/1998
            StartsOnPage is like StartsOnDesk-Plus
        */
        else if(ITIS("STARTSONPAGE"))
@@ -792,7 +794,7 @@ void ProcessNewStyle(XEvent *eventp,
           SKIP("UseStyle");
           GETQUOTEDWORD;
           if (len > 0) {
-	    int hit = 0;            
+	    int hit = 0;
 	    /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
             for ( nptr = Scr.TheList; nptr; nptr = nptr->next ) {
               if (!strncasecmp(restofline,nptr->name,len)) { /* match style */

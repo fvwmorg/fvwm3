@@ -388,11 +388,13 @@ int main(int argc, char **argv)
   {
     Scr.gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
-                                  Scr.DefaultMenuFace->MenuColors.fore,Scr.DefaultMenuFace->MenuColors.back,
+                                  Scr.DefaultMenuFace->MenuColors.fore,
+				  Scr.DefaultMenuFace->MenuColors.back,
                                   Scr.d_depth);
     Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
-                                  Scr.DefaultMenuFace->MenuColors.fore,Scr.DefaultMenuFace->MenuColors.back,
+                                  Scr.DefaultMenuFace->MenuColors.fore,
+				  Scr.DefaultMenuFace->MenuColors.back,
                                   Scr.d_depth);
   }
 
@@ -481,6 +483,11 @@ void StartupStuff(void)
 
   CaptureAllWindows();
   MakeMenus();
+#ifndef NON_VIRTUAL
+  /* Have to do this here too because preprocessor modules have not run to the
+   * end when HandleEvents is entered from the main loop. */
+  checkPanFrames();
+#endif
 
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to speed up InitFunction
    * and RestartFunction (this can save quite a few seconds). */
@@ -517,7 +524,7 @@ void CaptureAllWindows(void)
   int i,j;
   unsigned int nchildren;
   Window root, parent, *children;
-  FvwmWindow *tmp,*next;		/* temp fvwm window structure */
+   FvwmWindow *tmp,*next;		/* temp fvwm window structure */
   Window w;
   unsigned long data[1];
   unsigned char *prop;
@@ -575,9 +582,11 @@ void CaptureAllWindows(void)
       }
     }
     Scr.flags |= WindowsCaptured;
+fprintf(stderr,"done\n");
   }
   else /* must be recapture */
   {
+fprintf(stderr,"recapturing\n");
     /* reborder all windows */
     tmp = Scr.FvwmRoot.next;
     for(i=0;i<nchildren;i++)

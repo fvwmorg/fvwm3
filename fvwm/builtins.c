@@ -492,7 +492,7 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   mr = FollowMenuContinuations(FindPopup(token),&mrPrior);
   if(mr == NULL)
-    mr = NewMenuRoot(token, 0);
+    mr = NewMenuRoot(token, False);
   last_menu = mr;
 
   rest = GetNextToken(rest,&item);
@@ -579,7 +579,7 @@ void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   mr = FindPopup(token);
   if(mr == NULL)
-    mr = NewMenuRoot(token, 1);
+    mr = NewMenuRoot(token, True);
   last_menu = mr;
   if (token)
     free(token);
@@ -1569,7 +1569,7 @@ void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     mr = mr->next;
   }
 }
-  
+
 MenuFace *FindMenuStyle(char *name)
 {
   MenuFace *mf = Scr.DefaultMenuFace;
@@ -1642,14 +1642,14 @@ void SetMenuStyle1(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *buffer, *rest;
   int  i = 0;
   char *fore, *back, *stipple, *font, *style, *animated;
-  
+
   rest = GetNextToken(action,&fore);
   rest = GetNextToken(rest,&back);
   rest = GetNextToken(rest,&stipple);
   rest = GetNextToken(rest,&font);
   rest = GetNextToken(rest,&style);
   rest = GetNextToken(rest,&animated);
-  
+
   if(!fore || !back || !stipple || !font || !style)
     {
       fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification", action);
@@ -2860,7 +2860,7 @@ void FreeMenuFace(Display *dpy, MenuFace *mf)
     case VGradMenu:
     case DGradMenu:
         /* - should we check visual is not TrueColor before doing this?
-         * 
+         *
          *            XFreeColors(dpy, Scr.FvwmRoot.attr.colormap,
          *                                mf->u.grad.pixels, mf->u.grad.npixels,
          *                                                    AllPlanes); */
@@ -3531,7 +3531,7 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 }
 
 /**********************************************************************
- * Parses the flag string and returns the text between [ ] or ( ) 
+ * Parses the flag string and returns the text between [ ] or ( )
  * characters.  The start of the rest of the line is put in restptr.
  * Note that the returned string is allocated here and it must be
  * freed when it is not needed anymore.
@@ -3543,7 +3543,7 @@ char *CreateFlagString(char *string, char **restptr)
   char *start;
   char closeopt;
   int length;
-  
+
   c = string;
   while (isspace(*c) && (*c != 0))
     c++;
@@ -3551,16 +3551,17 @@ char *CreateFlagString(char *string, char **restptr)
   if (*c == '[' || *c == '(')
   {
     /* Get the text between [ ] or ( ) */
-    if (*c == '[') 
-      closeopt = ']'; 
-    else 
+    if (*c == '[')
+      closeopt = ']';
+    else
       closeopt = ')';
     c++;
     start = c;
     length = 0;
     while (*c != closeopt) {
       if (*c == 0) {
-	fvwm_msg(ERR, "CreateConditionMask", "Conditionals require closing parenthesis");
+	fvwm_msg(ERR, "CreateConditionMask",
+		 "Conditionals require closing parenthesis");
 	return NULL;
       }
       c++;
@@ -3667,7 +3668,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->useCirculateHit = 1;
     else if(StrEquals(condition,"CirculateHitIcon"))
       mask->useCirculateHitIcon = 1;
-    else if(!mask->needsName && !mask->needsNotName) 
+    else if(!mask->needsName && !mask->needsNotName)
     {
       /* only 1st name to avoid mem leak */
       mask->name = condition;
@@ -3681,7 +3682,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 	mask->needsName = 1;
     }
 
-    if (prev_condition) 
+    if (prev_condition)
       free(prev_condition);
 
     prev_condition = condition;
@@ -3698,7 +3699,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
  **********************************************************************/
 Bool MatchesContitionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
-  return 
+  return
     ((mask->onFlags & fw->flags) == mask->onFlags) &&
     ((mask->offFlags & fw->flags) == 0) &&
     (mask->useCirculateHit || !(fw->flags & CirculateSkip)) &&
@@ -3747,7 +3748,8 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
     mask.useCirculateHitIcon = 1;
   }
   CreateConditionMask(flags, &mask);
-  free(flags);
+  if (flags)
+    free(flags);
 
   if(Scr.Focus != NULL)
   {
@@ -3865,7 +3867,7 @@ void CurrentFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
  * Execute a function to the closest window in the given
  * direction.
  **********************************************************************/
-void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win, 
+void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	       unsigned long context, char *action, int *Module)
 {
   int my_x;
@@ -3905,7 +3907,8 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   flags = CreateFlagString(action, &restofline);
   DefaultConditionMask(&mask);
   CreateConditionMask(flags, &mask);
-  free(flags);
+  if (flags)
+    free(flags);
 
   /* If there is a focused window, use that as a starting point.
    * Otherwise we use the pointer as a starting point. */
@@ -3922,18 +3925,18 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     }
   }
   else
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, 
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		  &my_x, &my_y, &JunkX, &JunkY, &JunkMask);
 
   /* Next we iterate through all windows and choose the closest one in
-   * the wanted direction. 
+   * the wanted direction.
    */
   best_window = NULL;
   best_score = -1;
   for (window = Scr.FvwmRoot.next; window != NULL; window = window->next) {
 
     /* Skip every window that does not match conditionals.
-     * Skip also currently focused window.  That would be too close. :) 
+     * Skip also currently focused window.  That would be too close. :)
      */
     if (window == tmp_win) continue;
     if (!MatchesContitionMask(window, &mask)) continue;
@@ -3950,8 +3953,8 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     his_x -= my_x;
     his_y -= my_y;
 
-    /* Arrange so that distance and offset are positive in desired 
-     * direction. 
+    /* Arrange so that distance and offset are positive in desired
+     * direction.
      */
     if (dir == 0 || dir == 2) {
       offset = (his_x < 0) ? -his_x : his_x;
@@ -3960,7 +3963,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
       offset = (his_y < 0) ? -his_y : his_y;
       distance = (dir == 3) ? -his_x : his_x;
     }
-	
+
     /* Target must be in given direction. */
     if (distance <= 0) continue;
 
@@ -3974,7 +3977,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
   if (best_window != NULL)
     ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module);
-  
+
   FreeConditionMask(&mask);
 }
 

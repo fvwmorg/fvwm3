@@ -88,6 +88,7 @@ INDEX
            and/or my mouse bindings?
        43) I'm seeing odd things when trying to preprocess files with
            the FvwmM4/Cpp module...
+       44) FvwmButtons Swallow command does not work.
 
 ======================================================================
 
@@ -1088,6 +1089,16 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
           optionally an 'InitFunction' call (but that should be based
           on a command line option).
 
+----------------------------------------------------------------------
 
+44) FvwmButtons Swallow command does not work.
+
+A: You probably forgot to quote the swallow action. Config lines like
+
+     *FvwmButtons(Swallow "FvwmPager" Module FvwmPager)
+
+   do not work. The 'Module FvwmPager' part has to be quoted:
+
+     *FvwmButtons(Swallow "FvwmPager" "Module FvwmPager")
 
 ----------------------------------------------------------------------

@@ -1,3 +1,30 @@
+* Switched to GNU autoconf
+* COPYING policy file
+* Improved menu handling: Menu position hints, individual menu styles,
+  cursor key navigation, animated menus :-)
+* Improved window movement: AnimatedMove, SetAnimation, SnapAttraction
+  (like in KDE), move/resize can be aborted with a mouse button, Warp option
+  to Move/AnimatedMove.
+* Direction command (allows to switch windows via cursor (or other) keys in an
+  intuitive way).
+* Recapture command is now faster.
+* Startup is a bit faster if you have a large configuration file and
+  a high ClickTime.
+* Desk/Page handling: $d in functions is replaced by the current desk number,
+  Desk parameters can be given a min/max allowed desk number, making a window
+  sticky moves it to the current page, MoveToDesk and MoveToPage functions,
+  enhanced WindowsDesk function
+* Styles: temporary GlobalOpts command, MouseFocusOnStartup, StipledTitles
+* Upgraded versions of FvwmCommand (1.5.1), FvwmConsole (1.3) and
+  FvwmIconMan.
+* FvwmPager: Balloons (small text windows with the window title appear in the
+  pager), current desk (always the current desk on the pager).
+* FvwmButtons improvements: animated panels (like CDE), better button
+  shuffling, button geometries (x and y position).
+* FvwmRearrange replaces FvwmTile and FvwmCascade.
+* New module FvwmAnimate.
+* New module FvwmEvent (successor to FvwmAudio).
+
 Changes in release 2.1.3
 
 Changes in release 2.1.2
@@ -26,10 +53,6 @@ Changes in release 2.1.0
 * FvwmAnimate added.
 
 Changes in release 2.1-pre-beta
-* The changes are too numerous to list here. There are lots of new features.
-  Please check the ChangeLog.
-* Brady Montz is no longer the maintainer. In the future fvwm is maintained
-  by the fvwm-workers mailing list.
 
 May 18, 1998
 
@@ -88,7 +111,7 @@ them to the fvwm mailing list.
 
 Figures...I just finish uploading 2.0.43 and I realize I forgot to
 update the man page to go with the changes in the -f parameter
-behavoir: 
+behaviour: 
 
 --- fvwm2.man~  Wed Jun 19 22:55:43 1996
 +++ fvwm2.man   Mon Jul  8 14:23:25 1996

@@ -1,6 +1,6 @@
 /****************************************************************************
  * This module is all new
- * by Rob Nation 
+ * by Rob Nation
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
  ****************************************************************************/
@@ -93,7 +93,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(junk);
   for(i=0;i<10;i++)
     action = GetNextToken(action,&arguments[i]);
-  /* These built-ins require a selected window 
+  /* These built-ins require a selected window
    * The function code is >= 100 and < 1000
    * F_RESIZE
    * F_MOVE
@@ -216,7 +216,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       type = DOUBLE_CLICK;
       ev = &d;
     }
-  /* some functions operate on button release instead of 
+  /* some functions operate on button release instead of
    * presses. These gets really weird for complex functions ... */
   if(ev->type == ButtonPress)
     ev->type = ButtonRelease;
@@ -234,7 +234,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(mi->action,arguments,tmp_win);	  	
+	  taction = expand(mi->action,arguments,tmp_win);
 	  ExecuteFunction(taction,tmp_win,ev,context,-2);
 	  free(taction);
 	}
@@ -251,9 +251,9 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 {
   int l,i,l2,n,k,j;
   char *out;
-  
+
   l = strlen(input);
-  l2 = strlen(input);
+  l2 = l;
 
   i=0;
   while(i<l)
@@ -295,13 +295,13 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
 	      else
 		sprintf(&out[j],"$w");
-	      j = strlen(out);
+	      j += strlen(&out[j]);
 	      i++;
 	    }
 	  else if(input[i+1] == 'd')
 	    {
 	      sprintf(&out[j], "%d", Scr.CurrentDesk);
-	      j = strlen(out);
+	      j += strlen(&out[j]);
 	      i++;
 	    }
 	  else if(input[i+1] == '$')
@@ -315,7 +315,7 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
       else
 	out[j++] = input[i];
       i++;
-    } 
+    }
   out[j] = 0;
   return out;
 }
