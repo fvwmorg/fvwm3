@@ -1,4 +1,9 @@
-2000-06-15  Happy Hippo
+2000-06-19  Hippo
+
+	* fvwm/module_interface.c: ExecuteCommandQueue is now reentrant and
+	the Wait command now allows module command to work.
+
+2000-06-15  Hippo
 
 	* fvwm/functions.*: Removed undocumented command AddModuleConfig.
 	* fvwm/modconf.*: Removed trailing newlines from module config lines.

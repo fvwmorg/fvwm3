@@ -1387,37 +1387,31 @@ static void AddToCommandQueue(Window window, int module, char *command)
  *  Procedure:
  *	EmptyCommandQueue - runs command from the module command queue
  *	This may be called recursively if a module command runs a function
- *	that does a Wait
+ *	that does a Wait, so it must be re-entrant
  *
  ************************************************************************/
-static Bool CommandQueueLocked = False;
 void ExecuteCommandQueue(void)
 {
   CommandQueue *temp;
 
-  /* don't drain the queue if it is busy - bad things will happen */
-  if (CommandQueueLocked)
-    return;
-
-  CommandQueueLocked = True;
-
   while (CQstart)
   {
-    if (CQstart->command)
-    {
-      DBUG("EmptyCommandQueue", CQstart->command);
-      ExecuteModuleCommand(CQstart->window, CQstart->module, CQstart->command);
-      free(CQstart->command);
-    }
+    /* remember the first command */
     temp = CQstart;
+    /* remove it from the queue */
     CQstart = CQstart->next;
+    /* fix the end pointer if the queue is now empty */
+    if (CQstart == NULL)
+      CQlast = NULL;
+    /* run the first command (this may add stuff to the queue) */
+    if (temp->command)
+    {
+      DBUG("EmptyCommandQueue", temp->command);
+      ExecuteModuleCommand(temp->window, temp->module, temp->command);
+      free(temp->command);
+    }
     free(temp);
   }
-
-  /* the queue is now empty so the end pointer must be changed */
-  CQlast = NULL;
-
-  CommandQueueLocked = False;
 }
 
 void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
