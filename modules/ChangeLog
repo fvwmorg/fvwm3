@@ -1,5 +1,10 @@
 2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmForm/FvwmForm.c (OpenWindows):
+	fixed FvwmForm windows with GrabServer getting buried under other
+	windows making the desktop unusable; fixes bug #566
+
 	* FvwmPager/FvwmPager.1 (Note):
 	added a note about the FvwmPagerSloppyFocus vs Sloppy/MouseFocus
 	page switching/focus problem

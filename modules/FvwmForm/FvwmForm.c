@@ -1543,7 +1543,8 @@ static void OpenWindows ()
 			   Pdepth, InputOutput, Pvisual,
 			   CWColormap | CWBackPixel | CWBorderPixel, &xswa);
   XSelectInput(dpy, CF.frame,
-               KeyPressMask | ExposureMask | StructureNotifyMask);
+               KeyPressMask | ExposureMask | StructureNotifyMask |
+	       VisibilityChangeMask);
   if (!CF.title) {
     CF.title = MyName+1;
   }

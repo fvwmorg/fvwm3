@@ -1,8 +1,13 @@
+2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c:
+	removed unused variable
+
 2001-08-07  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS:
 	FvwmIconBox, FvwmTaskBar and FvwmWinList support aliases
-	
+
 2001-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (CMD_Xinerama):

@@ -53,8 +53,6 @@
 #define MAX(A,B) ((A)>(B)? (A):(B))
 #endif
 
-static rectangle screen_g;
-
 /*  RBW - 11/02/1998  */
 static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay,
 		      int use_percent);

@@ -102,6 +102,15 @@ void ReadXServer ()
 	    CF.server_grabbed = 1;
 	}
 	break;
+      case VisibilityNotify:
+	if (CF.server_grabbed &&
+	    event.xvisibility.state != VisibilityUnobscured)
+	{
+	  /* raise our window to the top */
+	  XRaiseWindow(dpy, CF.frame);
+	  XSync(dpy, 0);
+	}
+	break;
       case KeyPress:  /* we do text input here */
 	n = XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
 	keypress = buf[0];
