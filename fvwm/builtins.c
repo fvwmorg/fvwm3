@@ -1519,7 +1519,7 @@ void SetXORPixmap(F_CMD_ARGS)
   }
 
   /* search for pixmap */
-  GCPicture = CachePicture(dpy, Scr.Root, NULL, PixmapName, Scr.ColorLimit);
+  GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName, Scr.ColorLimit);
   free(PixmapName);
   if (GCPicture == NULL) {
     fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
@@ -1641,7 +1641,7 @@ void SetHiColor(F_CMD_ARGS)
 
   action = GetNextToken(action,&hifore);
   GetNextToken(action,&hiback);
-  if(Scr.d_depth > 2)
+  if(Scr.depth > 2)
   {
     if(hifore)
     {
@@ -1955,7 +1955,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
     ms->look.MenuActiveColors.back = ms->look.MenuColors.back;
   if (!ms->look.f.hasStippleFore)
     ms->look.MenuStippleColors.fore = ms->look.MenuColors.back;
-  if(Scr.d_depth > 2) {                 /* if not black and white */
+  if(Scr.depth > 2) {                 /* if not black and white */
     ms->look.MenuRelief.back = GetShadow(ms->look.MenuColors.back);
     ms->look.MenuRelief.fore = GetHilite(ms->look.MenuColors.back);
   } else {                              /* black and white */
@@ -2007,7 +2007,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   else
     ms->look.MenuActiveGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  if(Scr.d_depth < 2)
+  if(Scr.depth < 2)
   {
     gcv.fill_style = FillStippled;
     gcv.stipple = Scr.gray_bitmap;
@@ -2413,7 +2413,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	}
 	if (arg1)
 	{
-	    tmpms->look.sidePic = CachePicture(dpy, Scr.Root, NULL,
+	    tmpms->look.sidePic = CachePicture(dpy, Scr.NoFocusWin, NULL,
 					       arg1, Scr.ColorLimit);
 	  if (!tmpms->look.sidePic)
 	    fvwm_msg(WARN, "NewMenuStyle", "Couldn't find pixmap %s", arg1);
@@ -3343,7 +3343,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		 || strncasecmp(style,"TiledPixmap",11)==0)
 	{
 	    s = GetNextToken(s, &file);
-	    bf->u.p = CachePicture(dpy, Scr.Root, NULL,
+	    bf->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
 				   file,Scr.ColorLimit);
 	    if (bf->u.p == NULL)
 	    {
@@ -3833,7 +3833,7 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     s = GetNextToken(s, &token);
     if (token)
     {
-      mf->u.p = CachePicture(dpy, Scr.Root, NULL,
+      mf->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
 			     token, Scr.ColorLimit);
       if (mf->u.p == NULL)
       {
@@ -5173,7 +5173,7 @@ void SetColorLimit(F_CMD_ARGS)
 {
   int val;
 
-  if (Scr.d_depth > 20) {               /* if more than 20 bit color */
+  if (Scr.depth > 20) {               /* if more than 20 bit color */
     return;                             /* ignore the limit */
   }
   if (GetIntegerArguments(action, NULL, &val, 1) != 1)

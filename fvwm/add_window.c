@@ -453,7 +453,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
 
   valuemask = CWCursor | CWEventMask;
-  if(Scr.d_depth < 2)
+  if(Scr.depth < 2)
     {
       attributes.background_pixmap = Scr.light_gray_pixmap;
       if(tmp_win->flags & STICKY)
@@ -640,7 +640,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
 #ifdef MINI_ICONS
   if (tmp_win->mini_pixmap_file) {
-    tmp_win->mini_icon = CachePicture (dpy, Scr.Root, NULL,
+    tmp_win->mini_icon = CachePicture (dpy, Scr.NoFocusWin, NULL,
 				       tmp_win->mini_pixmap_file,
 				       Scr.ColorLimit);
   }

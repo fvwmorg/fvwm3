@@ -480,7 +480,7 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
                  Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
     }
 
-  if(Scr.d_depth >= 2)
+  if(Scr.depth >= 2)
     RelieveRectangle(dpy,Scr.SizeWindow,0,0,
                      Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
                      Scr.StdFont.height + SIZE_VINDENT*2 - 1,

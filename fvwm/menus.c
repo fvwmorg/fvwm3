@@ -1403,8 +1403,8 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
       if (iy + ih > mh)
 	ih = mh - iy;
       /* grab image */
-      mi->mr->stored_item.stored = XCreatePixmap(dpy, Scr.Root, mw, ih,
-						 Scr.d_depth);
+      mi->mr->stored_item.stored = XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih,
+						 Scr.depth);
       XCopyArea(dpy, mi->mr->w, mi->mr->stored_item.stored,
 		mi->mr->ms->look.MenuGC, 0, iy, mw, ih, 0, 0);
       mi->mr->stored_item.y = iy;
@@ -1639,7 +1639,7 @@ void PaintEntry(MenuItem *mi)
   }
 
   ShadowGC = mr->ms->look.MenuShadowGC;
-  if(Scr.d_depth<2)
+  if(Scr.depth<2)
     ReliefGC = mr->ms->look.MenuShadowGC;
   else
     ReliefGC = mr->ms->look.MenuReliefGC;
@@ -1889,7 +1889,7 @@ void PaintSidePic(MenuRoot *mr)
   else
     return;
 
-  if(Scr.d_depth<2)
+  if(Scr.depth<2)
     ReliefGC = mr->ms->look.MenuShadowGC;
   else
     ReliefGC = mr->ms->look.MenuReliefGC;
@@ -2064,7 +2064,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  register int i = 0;
 	  register int dw;
 
-             pmap = XCreatePixmap(dpy, mr->w, mr->width, 5, Scr.d_depth);
+             pmap = XCreatePixmap(dpy, mr->w, mr->width, 5, Scr.depth);
 	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 
 	     bounds.width = mr->width;
@@ -2092,7 +2092,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  register int i = 0;
 	  register int dh = bounds.height / ms->look.face.u.grad.npixels + 1;
 
-             pmap = XCreatePixmap(dpy, mr->w, 5, mr->height, Scr.d_depth);
+             pmap = XCreatePixmap(dpy, mr->w, 5, mr->height, Scr.depth);
 	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 
 	  while (i < ms->look.face.u.grad.npixels)
@@ -2676,7 +2676,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	  name[i] = 0;
 
 	  /* Next, check for a color pixmap */
-	  pp=CachePicture(dpy,Scr.Root,NULL,name,
+	  pp=CachePicture(dpy,Scr.NoFocusWin,NULL,name,
 			  Scr.ColorLimit);
 	  if(*txt != '\0')
 	    txt++;

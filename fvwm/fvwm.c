@@ -540,18 +540,18 @@ int main(int argc, char **argv)
 
   DBUG("main","Done running config_commands");
 
-  if(Scr.d_depth<2)
+  if(Scr.depth<2)
   {
     Scr.gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
+      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,g_bits, g_width,g_height,
                                   Scr.StdColors.fore,
 				  Scr.StdColors.back,
-                                  Scr.d_depth);
+                                  Scr.depth);
     Scr.light_gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
-                                  Scr.StdColors.fore,
+      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,l_g_bits,l_g_width,
+                                  l_g_height,Scr.StdColors.fore,
 				  Scr.StdColors.back,
-                                  Scr.d_depth);
+                                  Scr.depth);
   }
 
   /* create the move/resize feedback window */
@@ -1418,8 +1418,7 @@ void InitVariables(void)
   /* create graphics contexts */
   CreateGCs();
 
-  Scr.d_depth = DefaultDepth(dpy, Scr.screen);
-  if (Scr.d_depth <= 8) {               /* if the color is limited */
+  if (Scr.depth <= 8) {               /* if the color is limited */
     Scr.ColorLimit = 255;               /* a number > than the builtin table! */
   }
   Scr.FvwmRoot.w = Scr.Root;

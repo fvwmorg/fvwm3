@@ -220,7 +220,6 @@ typedef struct ScreenInfo
 {
 
   unsigned long screen;
-  int d_depth;	        	/* copy of DefaultDepth(dpy, screen) */
   int NumberOfScreens;          /* number of screens on display */
   int MyDisplayWidth;		/* my copy of DisplayWidth(dpy, screen) */
   int MyDisplayHeight;	        /* my copy of DisplayHeight(dpy, screen) */

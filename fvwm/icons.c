@@ -236,7 +236,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
 
   if(Scr.Hilite == Tmp_win)
     {
-      if(Scr.d_depth < 2) {
+      if(Scr.depth < 2) {
 	  Relief =
 	      Shadow = Scr.DefaultDecor.HiShadowGC;
 	  TextColor = Scr.DefaultDecor.HiColors.fore;
@@ -271,7 +271,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
     }
   else
     {
-      if(Scr.d_depth < 2)
+      if(Scr.depth < 2)
 	{
 	  Relief = Scr.StdReliefGC;
 	  Shadow = Scr.StdShadowGC;
@@ -327,12 +327,12 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
   /* need to locate the icon pixmap */
   if(Tmp_win->iconPixmap != None)
     {
-      if(Tmp_win->iconDepth == Scr.d_depth)
+      if(Tmp_win->iconDepth == Scr.depth)
 	{
 	  XCopyArea(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,Scr.ScratchGC3,
 		    0,0,Tmp_win->icon_p_width-4, Tmp_win->icon_p_height-4,2,2);
 	}
-      else
+      else /* fixme: this only copies one plane, should be min(scr,icon)
 	XCopyPlane(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,Scr.ScratchGC3,0,
 		   0,Tmp_win->icon_p_width-4, Tmp_win->icon_p_height-4,2,2,1);
     }
@@ -662,7 +662,7 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   }
   free(path);
   color_reduce_pixmap(&my_image,Scr.ColorLimit);
-  rc = XpmCreatePixmapFromXpmImage(dpy,Scr.Root, &my_image,
+  rc = XpmCreatePixmapFromXpmImage(dpy,Scr.NoFocusWin, &my_image,
                                    &tmp_win->iconPixmap,
                                    &tmp_win->icon_maskPixmap,
                                    &xpm_attributes);
@@ -675,7 +675,7 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   tmp_win->icon_p_width = my_image.width;
   tmp_win->icon_p_height = my_image.height;
   tmp_win->flags |= PIXMAP_OURS;
-  tmp_win->iconDepth = Scr.d_depth;
+  tmp_win->iconDepth = Scr.depth;
 
 #ifdef SHAPE
   if (ShapesSupported && tmp_win->icon_maskPixmap)
