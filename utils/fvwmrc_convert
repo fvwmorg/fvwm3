@@ -1,16 +1,16 @@
-#!/bin/sh
+#!/bin/sh 
 
 # Some time ago, Martin Kraemer <Martin.Kraemer@mch.sni.de> posted an
 # incomplete script to convert fvwm-1 'rc' files to fvwm-2. I've just
 # recently fixed and enhanced that script; it's complete (or nearly
 # so) now. This should help if you choose to convert.
-#
+# 
 # I've also made a couple of other minor changes to make life easier
 # for our users here: I changed the default initialization from "Read
 # .fvwmrc" to "Read .fvwm2rc" (in fvwm/fvwmc), and I installed fvwm 2
 # as "fvwm2". With these changes, users can easily convert at their
 # leisure.
-#
+# 
 # Herewith the script. It's using GNU awk (gawk), but will run with
 # any "new" awk (nawk on Suns (SunOS 4, Solaris), awk on most other
 # systems). If you do not use gawk, it will be case-sensitive (the
@@ -34,30 +34,37 @@
 # of Austin Donnelly <and1000@debian.org>, 1 Mar 1999
 # Further major corrections by Julian Gilbey <jdg@debian.org>, 3 Mar 1999
 # and minor corrections March - May 1999.
+# Correct some major gaffs: Julian Gilbey, January 2000, with thanks to
+# Victor Meghesan <victorm@genesys.ro>
 
 echo "fvwmrc-to-fvwm2rc" >&2
 
 # gawk has IGNORECASE, so we use it if possible.
 if [ -n `command -v gawk 2>/dev/null` ]
 then
-   AWK=gawk
-elsif [ -x /usr/bin/gawk ]
+   AWK=`command -v gawk`
+elif [ -x /usr/bin/gawk ]
 then
    AWK=/usr/bin/gawk
-elsif [ -n `command -v awk 2>/dev/null` ]
+elif [ -n `command -v awk 2>/dev/null` ]
 then
-   AWK=awk
-elsif [ -x /usr/bin/awk ]
+   AWK=`command -v awk`
+elif [ -x /usr/bin/awk ]
 then
    AWK=/usr/bin/awk
 fi
 
 if [ ! -x $AWK ];then
-   echo "Can't fimd any awk, cannot run!" >&2
+   echo "Can't find any awk, cannot run!" >&2
    exit 1
 fi
 
 source=${1:-$HOME/.fvwmrc}
+if [ ! -r $source ] ; then
+	echo "Can't find source file $source, giving up" >&2
+	exit 1
+fi
+
 dest=${2:-$HOME/.fvwm2rc}
 if [ "$dest" != "-" ] ;then
 	echo "Output to $dest" >&2
@@ -88,8 +95,7 @@ BEGIN   {
 
 	hiforecolor="";             dflt["hiforecolor"] = "black";
 	hibackcolor="";             dflt["hibackcolor"] = "CadetBlue";
-	hilightfore = FALSE;
-	hilightback = FALSE;
+	hilightcolor = FALSE;
 
 	stdforecolor="";            dflt["stdforecolor"] = "black";
 	stdbackcolor="";            dflt["stdbackcolor"] = "grey70";
@@ -110,7 +116,7 @@ BEGIN   {
 	print $0;
 	next;
 }
-
+	
 ################ Rename common items ##############
 /Restart/ && /fvwm/             {
 	gsub("fvwm", "fvwm2"); gsub("fvwm22","fvwm2"); # try to leave paths alone
@@ -123,25 +129,25 @@ BEGIN   {
 ################ Highlight Colors ##############
 /^[ \t]*HiBackColor[ \t]*/	{
         dflt["hibackcolor"]=hibackcolor=$2;
-	printf ("#!%s (new command=Style * HilightBack)\n", $0);
-	if (hibackcolor != "" && hiforecolor != "" && !hilightback) {
-           printf ("\n#Set the background color for selected windows\n");
-	   printf ("Style * HilightBack %s\n", hibackcolor);
-	   hilightback=TRUE;
+	printf ("#!%s (new command=HilightColor)\n", $0);
+	if (hibackcolor != "" && hiforecolor != "" && !hilightcolor) {
+           printf ("\n#Set the foreground and background color for selected windows\n");
+	   printf ("HilightColor   %s %s\n", hiforecolor, hibackcolor);
+	   hilightcolor=TRUE;
         } else
-	   hilightback=FALSE;
+	   hilightcolor=FALSE;
         next;
 }
 
 /^[ \t]*HiForeColor[ \t]*/	{
         dflt["hiforecolor"]=hiforecolor=$2;
-	printf ("#!%s (new command=Style * HilightFore)\n", $0);
-	if (hibackcolor != "" && hiforecolor != "" && !hilightfore) {
-           printf ("\n#Set the foreground for selected windows\n");
-	   printf ("Style * HilightFore %s\n", hiforecolor);
-	   hilightfore=TRUE;
+	printf ("#!%s (new command=HilightColor)\n", $0);
+	if (hibackcolor != "" && hiforecolor != "" && !hilightcolor) {
+           printf ("\n#Set the foreground and background color for selected windows\n");
+	   printf ("HilightColor   %s %s\n", hiforecolor, hibackcolor);
+	   hilightcolor=TRUE;
         } else
-	   hilightfore=FALSE;
+	   hilightcolor=FALSE;
         next;
 }
 
@@ -182,7 +188,7 @@ BEGIN   {
 /^[ \t]*ButtonStyle[ \t]*/	{
         if ($2 == ":") {  # new style already
            if (NF != $4+4)
-	       print "ERROR: ButtonStyle command incorrect\n" NR $0 >"'$TTY'";
+	       print "ERROR: ButtonStyle command incorrect\n" NR ": " $0 >"'$TTY'";
 	   printf ("%s %d %d", $1, $3, $4);
 	   for (i=5; i<=NF; ++i)
 	       printf (" %s", $i);
@@ -204,24 +210,23 @@ BEGIN   {
 ########## Standard Colors ###########
 /^[ \t]*StdForeColor[ \t]*/	{
         dflt["stdforecolor"]=stdforecolor=$2;
-	printf ("#!%s (new command=Style * Color f/b)\n", $0);
-	print "Style * ForeColor " $2;
+	printf ("#!%s (new command=Style \"*\" Color f/b)\n", $0);
+	print "Style \"*\" ForeColor " $2;
 	next;
 }
 
 /^[ \t]*StdBackColor[ \t]*/	{
 	dflt["stdbackcolor"]=stdbackcolor=$2;
-	printf ("#!%s (new command=Style * Color f/b)\n", $0);
-	print "Style * BackColor " $2;
+	printf ("#!%s (new command=Style \"*\" Color f/b)\n", $0);
+	print "Style \"*\" BackColor " $2;
 	next;
 }
 
 ########## Icon Related Stuff ##########
-/^[ \t]*IconBox[ \t]*/		{ print "Style * " $0; next; }
-/^[ \t]*IconFont[ \t]*/		{ printf "Style * IconFont %s", $2; next; }
+/^[ \t]*IconBox[ \t]*/		{ print "Style \"*\" " $0; next; }
 /^[ \t]*IconFont[ \t]*/		{ print $0; next; }
-/^[ \t]*SuppressIcons[ \t]*/	{ print "Style * NoIcon"; next; }
-/^[ \t]*StickyIcons[ \t]*/	{ print "Style * StickyIcon"; next; }
+/^[ \t]*SuppressIcons[ \t]*/	{ print "Style \"*\" NoIcon"; next; }
+/^[ \t]*StickyIcons[ \t]*/	{ print "Style \"*\" StickyIcon"; next; }
 /^[ \t]*ModulePath[ \t]*/	{ print "#! (ModulePath command commented out)\n#" $0; next; }
 /^[ \t]*PixmapPath[ \t]*/	{ print $0; next; }
 /^[ \t]*IconPath[ \t]*/		{ print $0; next; }
@@ -229,44 +234,45 @@ BEGIN   {
 /^[ \t]*Icon[ \t]+/		{ printf "Style %s Icon %s\n", $2, $3; next; }
 
 ########## MWM hints ##########
-/^[ \t]*MWMFunctionHints[ \t]*/	{ printf ("Style * MWMFunctions\n"); next; }
-/^[ \t]*MWMDecor[ \t]*/		{ printf ("Style * MWMDecor\n"); next; }
-/^[ \t]*MWMDecorHints[ \t]*/	{ printf ("Style * MWMDecor\n"); next; }
-/^[ \t]*MWMBorders[ \t]*/	{ printf ("Style * MWMBorder\n"); next; }
-/^[ \t]*MWMButtons[ \t]*/	{ printf ("Style * MWMButtons\n"); next; }
-/^[ \t]*MWMHintOverride[ \t]*/	{ printf ("Style * HintOverride\n"); next; }
+/^[ \t]*MWMFunctionHints[ \t]*/	{ printf ("Style \"*\" MWMFunctions\n"); next; }
+/^[ \t]*MWMDecor[ \t]*/		{ printf ("Style \"*\" MWMDecor\n"); next; }
+/^[ \t]*MWMDecorHints[ \t]*/	{ printf ("Style \"*\" MWMDecor\n"); next; }
+/^[ \t]*MWMBorders[ \t]*/	{ printf ("Style \"*\" MWMBorder\n"); next; }
+/^[ \t]*MWMButtons[ \t]*/	{ printf ("Style \"*\" MWMButtons\n"); next; }
+/^[ \t]*MWMHintOverride[ \t]*/	{ printf ("Style \"*\" HintOverride\n"); next; }
 
 ########## Placement & Focus styles ##########
-/^[ \t]*RandomPlacement[ \t]*/	{ print "Style * " $0; placement = TRUE; next; }
-/^[ \t]*SmartPlacement[ \t]*/	{ print "Style * " $0; placement = TRUE; next; }
+/^[ \t]*RandomPlacement[ \t]*/	{ print "Style \"*\" " $0; placement = TRUE; next; }
+/^[ \t]*SmartPlacement[ \t]*/	{ print "Style \"*\" " $0; placement = TRUE; next; }
 /^[ \t]*Sticky(Back|Fore)Color[ \t]*/ {
       print "#! " $0 " (not supported in FVWM2)"; next;
 }
 /^[ \t]*Sticky[ \t]+/		{ printf "Style \"%s\" Sticky\n", $2; next; }
-/^[ \t]*NoPPosition[ \t]*/	{ print "Style * " $0; next; }
-/^[ \t]*ClickToFocus[ \t]*/	{ print "Style * " $0; next; }
-/^[ \t]*SloppyFocus[ \t]*/	{ print "Style * " $0; next; }
+/^[ \t]*NoPPosition[ \t]*/	{ print "Style \"*\" " $0; next; }
+/^[ \t]*ClickToFocus[ \t]*/	{ print "Style \"*\" " $0; next; }
+/^[ \t]*SloppyFocus[ \t]*/	{ print "Style \"*\" " $0; next; }
 /^[ \t]*StaysOnTop[ \t]*/	{ printf "Style \"%s\" StaysOnTop\n", $2; next; }
-/^[ \t]*AutoRaise[ \t]*/	{
+/^[ \t]*AutoRaise[ \t]*/		{
         print "#! " $0 " (use Module FvwmAuto)";
-	print "AddToFunc \"StartFunction\" I Module FvwmAuto " $2;
+	print "AddToFunc \"InitFunction\" \"I\" Module FvwmAuto " $2;
+	print "AddToFunc \"RestartFunction\" \"I\" Module FvwmAuto " $2;
 	next;
 }
 
 ########## Decoration styles ##########
-/^[ \t]*BorderWidth[ \t]*/	{ print "Style * " $0; next; }
-/^[ \t]*HandleWidth[ \t]*/	{ print "Style * " $0; next; }
-/^[ \t]*DecorateTransients[ \t]*/ { print "Style * DecorateTransient"; next; }
+/^[ \t]*BorderWidth[ \t]*/	{ print "Style \"*\" " $0; next; }
+/^[ \t]*HandleWidth[ \t]*/	{ print "Style \"*\" " $0; next; }
+/^[ \t]*DecorateTransients[ \t]*/ { print "Style \"*\" DecorateTransient"; next; }
 /^[ \t]*XORvalue[ \t]*/		{ print $0; next; }
-/^[ \t]*BoundaryWidth[ \t]*/	{ printf "Style * HandleWidth %s\n", $2; next; }
-/^[ \t]*NoBoundaryWidth[ \t]*/	{ print "Style * BorderWidth " $2; next; }
-/^[ \t]*NoTitle[ \t]*/		{ print "Style * " $0; next; }
-/^[ \t]*NoBorder[ \t]*/		{ print "Style * " $0; next; }
+/^[ \t]*BoundaryWidth[ \t]*/	{ printf "Style \"*\" HandleWidth %s\n", $2; next; }
+/^[ \t]*NoBoundaryWidth[ \t]*/	{ print "Style \"*\" BorderWidth " $2; next; }
+/^[ \t]*NoTitle[ \t]*/		{ print "Style \"*\" " $0; next; }
+/^[ \t]*NoBorder[ \t]*/		{ print "Style \"*\" " $0; next; }
 
 
 
 ########## Etc ##########
-/^[ \t]*Lenience[ \t]*/		{ print "Style * " $0; next; }
+/^[ \t]*Lenience[ \t]*/		{ print "Style \"*\" " $0; next; }
 /^[ \t]*Style[ \t]*/		{ print $0; next; }
 # Key keyname context mods (Exec|Module|Restart) ...
 #  used to be followed by a "name"; it is no longer
@@ -322,8 +328,8 @@ BEGIN   {
 # 		 print $0; next;
 # }
 
-/^[ \t]*WindowListSkip[ \t]*/	{ printf "Style %s WindowListSkip", $2; next; }
-/^[ \t]*WindowFont[ \t]*/	{ printf "Style * Font %s", $2; next; }
+/^[ \t]*WindowListSkip[ \t]*/	{ printf "Style %s WindowListSkip\n", $2; next; }
+/^[ \t]*WindowFont[ \t]*/	{ print $0; next; }
 /^[ \t]*ClickTime[ \t]*/	{ print $0; next; }
 /^[ \t]*OpaqueMove[ \t]*/	{ print "OpaqueMoveSize " $2; next; }
 /^[ \t]*EdgeScroll[ \t]*/	{ print $0; next; }
@@ -346,6 +352,7 @@ BEGIN   {
 	if (!warn["GoodStuff"])
 	{
 	    print "Note: GoodStuff renamed to FvwmButtons" >"'$TTY'";
+	    print "Note: FvwmButtons syntax may now be wrong; please check!" >"'$TTY'";
 	    warn["GoodStuff"]=TRUE;
 	}
 	next;
@@ -358,16 +365,16 @@ BEGIN   {
 }
 
 # hack: Modules spawned outside of a function, menu, or popup cannot have leading whitespace.
-# add these to the startfunction
-/^Module[ \t]*/                 { printf "AddToFunc \"StartFunction\" I %s \n", $0; next; }
+# add these to the initfunction
+/^Module[ \t]*/                 { printf "AddToFunc \"InitFunction\" \"I\" %s \n", $0; next; }
 
 # hack: function declarations cannot have leading whitespace
 /^Function[ \t]*/		{
 	if (inpopup)
-	   print "ERROR: EndPopup missing\n" NR $0 >"'$TTY'";
+	   print "ERROR: EndPopup missing\n" NR ": " $0 >"'$TTY'";
 	inpopup=FALSE;
 	if (infunction)
-	   print "ERROR: EndFunction missing\n" NR $0 >"'$TTY'";
+	   print "ERROR: EndFunction missing\n" NR ": " $0 >"'$TTY'";
 	infunction=TRUE;
 	prefix="AddToFunc " $2;
 	next;
@@ -383,10 +390,10 @@ BEGIN   {
 
 # hack: popup declarations cannot have leading whitespace
 /^Popup/                        {
-        if (inpopup)
-	   print "ERROR: EndPopup missing\n" NR $0 >"'$TTY'";
+        if (inpopup) 
+	   print "ERROR: EndPopup missing\n" NR ": " $0 >"'$TTY'";
         if (infunction)
-	   print "ERROR: EndFunction missing\n" NR $0 >"'$TTY'";
+	   print "ERROR: EndFunction missing\n" NR ": " $0 >"'$TTY'";
         infunction=FALSE;
 	inpopup=TRUE;
 
@@ -409,7 +416,7 @@ BEGIN   {
 
 /^[ \t]*EndPopup[ \t]*/		{
         if (!inpopup)
-	   print "ERROR: EndPopup outside of popup\n" NR $0 >"'$TTY'";
+	   print "ERROR: EndPopup outside of popup\n" NR ": " $0 >"'$TTY'";
         inpopup=FALSE;
 	prefix="";
 	next;
@@ -425,7 +432,7 @@ BEGIN   {
 /^[ \t]*StubbornIcons[ \t]*/	||
 /^[ \t]*StubbornIconPlacement[ \t]*/ ||
 /^[ \t]*StubbornPlacement[ \t]*/     ||
-/^[ \t]*Cursor[ \t]*/		{
+/^[ \t]*Cursor[ \t]*/		{ 
 	print "#! " $0 " [deleted]";
 	if (warned[$1]==FALSE) {
 	   print "Warning: " $1 " not in Fvwm2, command dropped" >"'$TTY'";
@@ -494,13 +501,13 @@ BEGIN   {
     if (infunction) {
         #gsub("[ 	]PopUp[ 	]", " "); }
 	if ($2 == "\"Motion\"")
-	    context="M";
+	    context="\"M\"";
 	else if ($2 == "\"Click\"")
-	    context="C";
+	    context="\"C\"";
 	else if ($2 == "\"DoubleClick\"")
-	    context="D";
+	    context="\"D\"";
 	else if ($2 == "\"Immediate\"")
-	    context="I";
+	    context="\"I\"";
 	else context=$2;
 		printf "%s", prefix " " context " " $1;
 	for (i=3; i<=NF; ++i)
@@ -537,17 +544,13 @@ BEGIN   {
 }
 
 END {
-    if (!hilightfore) {
-	printf ("\n#Set the foreground color for selected windows\n");
-	printf ("Style * HilightFore %s\n", dflt["hiforecolor"]);
-    }
-    if (!hilightback) {
-	printf ("\n#Set the background color for selected windows\n");
-	printf ("Style * HilightBack %s\n", dflt["hibackcolor"]);
+    if (!hilightcolor) {
+	printf ("\n#Set the foreground and background color for selected windows\n");
+	printf ("HilightColor   %s %s\n", dflt["hiforecolor"], dflt["hibackcolor"]);
     }
     if (!placement) {
         printf "# overide default RandomPlacement and SmartPlacement Styles\n";
-        printf "Style * %s\n", dflt["placement"];
+        printf "Style \"*\" %s\n", dflt["placement"];
     }
 }
 '
