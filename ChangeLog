@@ -1,3 +1,8 @@
+2001-03-02  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm2.1 (FakeClick): Add example.  Style changes focusing on
+	the word "will".
+
 2001-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/geometry.c (get_unshaded_geometry):

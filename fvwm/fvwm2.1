@@ -25,6 +25,10 @@
 .\"  acronyms:                          small (.SM)     .SM ICCCM
 .\"
 .\"
+.\" Note that the word "will" is rarely correct in a man page or any document.
+.\" Describe what fvwm does, not what it will do, even if you haven't
+.\" written the feature yet. dje 2/3/01.
+.\"
 .\" @(#)fvwm2.3 8/14/1999
 .de EX		\"Begin example
 .ne 5
@@ -59,8 +63,8 @@ Note that there are several window managers around that have "fvwm"
 in their name.  In the past, version 2.x of fvwm was commonly
 called fvwm2 to distinguish it from the former version 1.x (fvwm
 or even fvwm1).  Since version 1.x has been replaced by version 2.x
-a long time ago we will simply call version 2.x and all versions
-to come fvwm throughout this document, although the executable
+a long time ago we simply call version 2.x and all versions
+to come, fvwm, throughout this document, although the executable
 program is named fvwm2.  There is an fvwm offspring called fvwm95.
 Although it is very similar to older versions of fvwm version 2
 it is technically a different window manager that has been developed
@@ -161,7 +165,7 @@ as its initialization file.  This is equivalent to
 A short usage description is printed.
 .TP
 .BI "-replace"
-Try to take over from a previously running wm.  This will not work
+Try to take over from a previously running wm.  This does not work
 unless the other wm is
 .SM ICCCM
 2.0 compliant.
@@ -175,7 +179,7 @@ On a multi-screen display, run fvwm only on the screen named in the
 .I $DISPLAY
 environment variable or provided through the
 .B -d
-option. Normally, fvwm will attempt to start up on all screens
+option. Normally, fvwm attempts to start up on all screens
 of a multi-screen display.
 .TP
 .BI "-version"
@@ -211,8 +215,8 @@ used to display the name of the window.  In addition, there are up to
 known as the side-bars.  The corner pieces are called the frame.
 
 Unless the standard defaults files are modified, pressing mouse button
-1 in the title or side-bars will begin a move operation on the
-window.  Pressing button 1 in the corner frame pieces will begin a
+1 in the title or side-bars begins a move operation on the
+window.  Pressing button 1 in the corner frame pieces begins a
 resize operation.  Pressing button 2 anywhere in the border brings up
 an extensive list of window operations.
 
@@ -259,7 +263,7 @@ a separate window, called the
 (another module).
 
 Fvwm keeps the windows on the desktop in a layered stacking order;
-a window in a lower layer will never obscure a window in a higher layer.
+a window in a lower layer never obscures a window in a higher layer.
 The layer of a window can be changed by using the
 .B Layer
 command.  The concept of layers is a generalization of the
@@ -284,25 +288,25 @@ is:
 .EX
 xterm -geometry +0+0
 .EE
-will always show up in the upper-left hand
+creates a window in the upper-left hand
 corner of the visible portion of the screen.  It is permissible to
 specify geometries which place windows on the virtual desktop, but off
 the screen.  For example, if the visible screen is 1000 by 1000 pixels,
 and the desktop size is 3x3, and the current viewport is at the upper
-left hand corner of the desktop, then invoking:
+left hand corner of the desktop, invoking:
 .EX
 xterm -geometry +1000+1000
 .EE
-will place the window just off of the lower right hand corner of the
+places a window just off of the lower right hand corner of the
 screen.  It can be found by moving the mouse to the lower right hand
 corner of the screen and waiting for it to scroll into view.  A geometry
 specified as something like:
 .EX
 xterm -geometry -5-5
 .EE
-will generally place the window's lower right hand corner 5 pixels from the
+places the window's lower right hand corner 5 pixels from the
 lower right corner of the visible portion of the screen.  Not all
-applications support window geometries with negative offsets.  Some will
+applications support window geometries with negative offsets.  Some applications
 place the window's upper right hand corner 5 pixels above and to the left
 of the upper left hand corner of the screen; others may do just plain
 bizarre things.
@@ -311,7 +315,7 @@ There are several ways to cause a window to map onto a desktop or page
 other than the currently active one. The geometry technique mentioned above
 (specifying x,y coordinates larger than the physical screen size), however,
 suffers from the limitation of being interpreted relative to the current
-viewport: the window will not consistently appear on a specific page, unless
+viewport: the window may not consistently appear on a specific page, unless
 you always invoke the application from the same page.
 
 A better way to place windows on a different page or desk from the
@@ -330,11 +334,11 @@ the start-up desk or page on the command line:
 .EX
 xterm -xrm "*Desk:1"
 .EE
-will start an xterm on desk number 1;
+starts an xterm on desk number 1;
 .EX
 xterm -xrm "*Page:3 2 1"
 .EE
-will start an xterm two pages to the right and one down from the upper
+starts an xterm two pages to the right and one down from the upper
 left hand page of desk number 3.  Not all applications understand the use
 of these options, however.  You could achieve the same results with
 the following lines in your
@@ -350,14 +354,14 @@ XTerm*Page: 3 2 1
 
 .SH INITIALIZATION
 
-During initialization, fvwm will search for a configuration file
+During initialization, fvwm searchs for a configuration file
 which describes key and button bindings, and many other things.
-The format of these files will be described later.  Fvwm first
+The format of these files is described later.  Fvwm first
 searches for configuration files using the command
 .EX
 .BI "Read " .fvwm2rc
 .EE
-This will look for
+This looks for
 .IR .fvwm2rc " in "
 .IR "$HOME/.fvwm" " or " "$FVWM_USERDIR"
 directories, as described in
@@ -371,10 +375,10 @@ any mouse button or the
 .SM Help
 or
 .SM F1
-keys on the root window will bring up menus and forms that can
+keys on the root window brings up menus and forms that can
 create a starting configuration file.
 
-Fvwm will set two environment variables which will be inherited
+Fvwm sets two environment variables which are inherited
 by its children.  These are
 .I $DISPLAY
 which describes the display on which fvwm is running.
@@ -385,9 +389,9 @@ or
 .IR ":0.0" ,
 which doesn't work too well when passed through rsh to another machine, so
 .I $HOSTDISPLAY
-will also be set and will use a network-ready description of the display.
+is set to a network-ready description of the display.
 .I $HOSTDISPLAY
-will always use the TCP/IP transport protocol (even for a local connection) so
+always uses the TCP/IP transport protocol (even for a local connection) so
 .I $DISPLAY
 should be used for local connections, as it may use Unix-domain sockets,
 which are faster.
@@ -482,14 +486,14 @@ file that is generated during compilation.
 The basic fvwm configuration uses monochrome bitmap icons.  If
 .B XPM
 extensions are compiled in, then color icons can be used.
-In order to use these options you will need the XPM package, as
+In order to use these options you need the XPM package, as
 described in the
 .I INSTALL.fvwm
 file.
 
 If both the
 .BR SHAPE " and " XPM
-options are compiled in you will get shaped color icons, which
+options are compiled in you get shaped color icons, which
 are very spiffy.
 
 .SH MODULES
@@ -500,7 +504,7 @@ their own modules to do any weird or bizarre manipulations without
 bloating or affecting the integrity of fvwm itself.
 
 Modules must be spawned by fvwm so that it can set up two pipes for
-fvwm and the module to communicate with.  The pipes will already be
+fvwm and the module to communicate with.  The pipes are already
 open for the module when it starts and the file descriptors for the
 pipes are provided as command line arguments.
 
@@ -509,11 +513,11 @@ session by use of the
 .B Module
 built-in command.  Modules can exist for the duration of the X
 session, or can perform a single task and exit.  If the module
-is still active when fvwm is told to quit, then fvwm will close
-the communication pipes and wait to receive a SIGCHLD from the
+is still active when fvwm is told to quit, then fvwm closes
+the communication pipes and waits to receive a SIGCHLD from the
 module, indicating that it has detected the pipe closure and has
-exited.  If modules fail to detect the pipe closure fvwm will
-exit after approximately 30 seconds anyway.  The number of
+exited.  If modules fail to detect the pipe closure fvwm
+exits after approximately 30 seconds anyway.  The number of
 simultaneously executing modules is limited by the operating
 system's maximum number of simultaneously open files, usually between
 60 and 256.
@@ -555,7 +559,7 @@ number of applications set this property, and yet expect the
 window-manager to give them the keyboard focus anyway, so fvwm
 provides a window-style,
 .IR Lenience ", "
-which will allow fvwm to overlook this
+which allows fvwm to overlook this
 .SM ICCCM
 rule.  Even with this window-style it is not guaranteed that the
 application will accept focus.
@@ -568,7 +572,7 @@ The differences between
 .EX
 fvwm2; vi .fvwm2rc; fvwm2 -replace
 .EE
-will resemble the
+resembles the
 .B Restart
 command.  It is not exactly the same, since killing the previously
 running wm may terminate your X session, if the wm was started as
@@ -668,7 +672,7 @@ By using the
 .B Read
 built-in, it is easy to read in new configuration files as you go.
 
-Lines beginning with '#' will be ignored by fvwm.  Lines
+Lines beginning with '#' are ignored by fvwm.  Lines
 starting with '*' are expected to contain module configuration
 commands (rather than configuration commands for fvwm itself).
 Like in shell scripts embedded newlines in a configuration file line
@@ -716,10 +720,10 @@ function is started the pointer is moved by using the up, down,
 left, and right arrows, and the action is terminated by pressing
 return.  Holding down the
 .SM Shift
-key will cause the pointer movement to go in larger steps and
+key causes the pointer movement to go in larger steps and
 holding down the
 .SM control
-key will cause the cursor movement to go in smaller steps.
+key causes the cursor movement to go in smaller steps.
 Standard emacs and vi cursor movement controls (
 .SM Ctrl-n,
 .SM Ctrl-p,
@@ -737,8 +741,8 @@ and
 
 If the
 .B -s
-command line argument is not given, fvwm will automatically
-start up on every screen on the specified display.  After fvwm
+command line argument is not given, fvwm automatically
+starts up on every screen on the specified display.  After fvwm
 starts each screen is treated independently.  Restarts of fvwm
 need to be performed separately on each screen.  The use of
 .EX
@@ -758,29 +762,29 @@ Fvwm doesn't save any information regarding styles, decors,
 functions or menus.  If you change any on these resources during
 a session (e.g. by issuing
 .B Style
-commands or by using various modules), these changes will be lost
+commands or by using various modules), these changes are lost
 after saving and restarting the session.  To become permanent, such
 changes have to be added to the configuration file.
 
 Note further that the current implementation has the following
-anomaly when used on a multi-screen display: Starting fvwm
-for the first time, it will manage all screens by forking a copy
+anomally when used on a multi-screen display: Starting fvwm
+for the first time, fvwm manages all screens by forking a copy
 of itself for each screen.  Every copy knows its parent and issuing a
 .B Quit
-command to any instance of fvwm will kill the master and
+command to any instance of fvwm kills the master and
 thus all copies of fvwm.  When you save and restart the session,
 the session manager brings up a copy of fvwm on each screen, but
 this time they are started as individual instances managing one
 screen only.  Thus a
 .B Quit
-will now kill only the copy it was sent to.  This is probably not
+kills only the copy it was sent to.  This is probably not
 a very serious problem, since with session management, you are
 supposed to quit a session through the session manager anyway. If
 it is really needed,
 .EX
 Exec exec killall fvwm2
 .EE
-will still kill all copies of fvwm.  Your system must have the
+still kills all copies of fvwm.  Your system must have the
 .B killall
 command though.
 
@@ -812,8 +816,8 @@ and
 .SM F1
 keys invoke a built-in menu that fvwm creates.  This is primarily
 for new users that haven't created their own configuration file.
-Either key on the root (background) window will pop up an menu
-which should help you get started.
+Either key on the root (background) window pops up an menu
+to help you get started.
 
 The
 .SM Tab
@@ -821,7 +825,7 @@ key pressed anywhere with the
 .M Meta
 key (same as the
 .SM Alt
-key on PC keyboards) held down will pop-up a window list.
+key on PC keyboards) held down pop-ups a window list.
 
 Mouse button 1 on the title-bar or side frame can move, raise or lower
 a window.
@@ -838,7 +842,7 @@ Key Tab A M -
 
 Fvwm supports a set of built-in functions which can be bound to
 keyboard or mouse buttons.  If fvwm expects to find a built-in function
-in a command, but fails, it will check to see if the specified command
+in a command, but fails, it checks to see if the specified command
 should have been
 .EX
 Function (rest of command)
@@ -856,10 +860,10 @@ file contains the line
 .EX
 HelpMe
 .EE
-Fvwm will look for a built-in command called "HelpMe", and
-will fail.  Next it will look for a user-defined complex
+Fvwm looks for a built-in command called "HelpMe", and
+fails.  Next it looks for a user-defined complex
 function called "HelpMe".  If no such user defined function
-exists, Fvwm will try to execute a module called "HelpMe".
+exists, Fvwm trys to execute a module called "HelpMe".
 
 Note: There are many commands that affect look and feel of
 specific, some or all windows, like
@@ -1185,7 +1189,7 @@ There is no end-of-menu symbol.  Menus do not have to be defined in a
 contiguous region of the
 .I .fvwm2rc
 file.  The quoted portion in the above examples is the
-menu label, which will appear in the menu when the user pops
+menu label, which appears in the menu when the user pops
 it up.  The remaining portion is a built-in command which
 should be executed if the user selects that menu item.  An empty
 menu-label ("") and the
@@ -1273,7 +1277,7 @@ Titles can be used within the menu . If you add the option
 .I top
 behind the keyword
 .BR Title ,
-the title will be added to the top of the menu.  If there was a title
+the title is added to the top of the menu.  If there was a title
 already, it is overwritten.
 .EX
 AddToMenu Utilities Tools Title top
@@ -1344,7 +1348,7 @@ creates a menu with a picture in its bottom left corner.
 
 If the menu-name contains also a sub-string set of by '^'s, then the
 text between '^'s is expected to be the name a of X11 color and the
-column containing the side picture will be colorized with that
+column containing the side picture is colorized with that
 color.  You can set this color for a menu style using the
 .I SideColor
 option of the
@@ -1408,14 +1412,14 @@ DestroyMenuStyle pixamp1
 .BI "Menu " menu-name " [" position "] [" double-click-action ]
 Causes a previously defined menu to be popped up in a sticky manner.
 That is, if the user invokes the menu with a click action instead of a
-drag action, the menu will stay up.  The command
+drag action, the menu stays up.  The command
 .I double-click-action
-will be invoked if the user double-clicks a button (or hits the key
+is invoked if the user double-clicks a button (or hits the key
 rapidly twice if the menu is bound to a key) when bringing up
 the menu.  If the double click action is not specified, double clicking
 on the menu does nothing.  However, if the menu begins with a menu
 item (i.e. not with a title or a separator) and the double click action
-is not given, double clicking will invoke the first item of the menu
+is not given, double clicking invokes the first item of the menu
 (but only if the pointer really was over the item).
 
 Several other commands affect menu operation.  See
@@ -1481,7 +1485,7 @@ and
 .SM Delete
 exit the current sequence of menus.
 
-The pointer will be warped to where it was when the menu was invoked if
+The pointer is warped to where it was when the menu was invoked if
 it was both invoked and terminated with a keystroke.
 
 The
@@ -1577,8 +1581,8 @@ their sign.  Do not use any other separators.
 If
 .IR x " or " y
 are prefixed with "o<number>" where <number> is an integer, the
-menu and the rectangle will be moved to overlap at the specified position
-before any other offsets are applied.  The menu and the rectangle will be
+menu and the rectangle are moved to overlap at the specified position
+before any other offsets are applied.  The menu and the rectangle are
 placed so that the pixel at <number> percent of the rectangle's width/height
 is right over the pixel at <number> percent of the menu's width/height.
 So "o0" means that the top/left borders of the menu and the rectangle
@@ -1927,7 +1931,7 @@ makes sub-menus vanish as soon as the pointer leaves the sub-menu
 and the correspondent item in the parent menu.  With the opposite
 option
 .I PopdownDelayed
-the sub-menu will only pop down after the time specified with the
+the sub-menu only pops down after the time specified with the
 .I PopdownDelay
 option.  This comes handy when the pointer often strays off the
 menu item when trying to move into the sub-menu.  Whenever there
@@ -1953,7 +1957,7 @@ the parent menu's width to the right or left.
 .IR TitleWarp " and " TitleWarpOff
 affect if the pointer warps to the menu title when a sub-menu
 is opened or not. Note that regardless of this setting the
-pointer will not be warped if the menu does not pop up under
+pointer is not warped if the menu does not pop up under
 the pointer.
 
 .IR TitleUnderlines0 ", " TitleUnderlines1 " and " TitleUnderlines2
@@ -2012,7 +2016,7 @@ is the default.
 instructs fvwm to remove sub-menus when you move back
 into the parent menu.  With
 .I HoldSubmenus
-the sub-menu remains visible.  You will probably want to use
+the sub-menu remains visible.  You probably want to use
 .I HoldSubmenus
 if you are using the
 .I PopupDelayed
@@ -2050,7 +2054,7 @@ Any illegal characters and formatting directives are silently ignored:
 .BR %l ", " %c " and " %r
 .in +.3i
 Insert the next item label.  Up to three labels can be used.
-The item column will be left-aligned
+The item column is left-aligned
 .RB ( %l ),
 centered
 .RB ( %c )
@@ -2072,13 +2076,13 @@ or to the left
 .in +.3i
 The first
 .B %|
-denotes the beginning of the area that will be highlighted either
+denotes the beginning of the area that is highlighted either
 with a background color or a relief (or both).  The second
 .B %|
 marks the end of this area.
 .B %|
 can be used up to twice in the string.  If you don't add one
-or both of them, fvwm will set the margins to the margins of
+or both of them, fvwm sets the margins to the margins of
 the whole item (not counting the side picture).
 .in -.3i
 .B %s
@@ -2135,7 +2139,7 @@ above.
 Note: Only items defined in the format string are visible in the menus.
 So if you do not put a
 .B %s
-in there you will not see a side picture, even if one is specified.
+in there you do not see a side picture, even if one is specified.
 
 Note: The
 .I SubmenusLeft
@@ -2148,10 +2152,10 @@ menu item, the spaces between the different parts of the menu items
 are enlarged to match the width of the title.  Leading left aligned
 objects in the format string
 .RB ( %l ", " %i ", "%< ", first " %| )
-will stick to the left edge of the menu and trailing right aligned
+stick to the left edge of the menu and trailing right aligned
 objects
 .RB ( %r ", " %i ", "%> ", second " %| )
-will stick to the right edge.  The gaps between the remaining items
+stick to the right edge.  The gaps between the remaining items
 are enlarged equally.
 
 Examples:
@@ -2265,20 +2269,20 @@ arguments are the same as for
 .BR Menu .
 The command
 .I default-action
-will be invoked if the user clicks a button to invoke the menu
+is invoked if the user clicks a button to invoke the menu
 and releases it immediately again (or hits the key rapidly twice
 if the menu is bound to a key).  If the default action is not
 specified, double clicking on the menu does nothing.  However,
 if the menu begins with a menu item (i.e. not with a title or a
 separator) and the default action is not given, double clicking
-will invoke the first item of the menu (but only if the pointer
+invokes the first item of the menu (but only if the pointer
 really was over the item).
 
 To bind a previously defined pop-up menu to a key or mouse button:
 .sp
 .in +.25i
 The following example binds mouse buttons 2 and 3 to a pop-up called
-"Window Ops".  The menu will pop up if the buttons 2 or 3 are pressed
+"Window Ops".  The menu pops up if the buttons 2 or 3 are pressed
 in the window frame, side-bar, or title-bar, with no modifiers (none
 of shift, control, or meta).
 .EX
@@ -2340,10 +2344,10 @@ differs from
 in that pop-ups do not stay up if the user simply clicks.  These
 are popup-menus, which are a little hard on the wrist.
 .B Menu
-menus which will stay up on a click action.  See
+menus stay up on a click action.  See the
 .B Menu
 command for an explanation of the interactive behavior of menus.
-Note that a menu can be open only once, so a menu may not use
+A menu can be open only once, so a menu may not use
 itself or any of its predecessors as a sub-menu.
 
 .TP
@@ -2522,7 +2526,7 @@ is in.  If you use
 .EX
 ColormapFocus FollowsFocus
 .EE
-then the installed colormap will be the one for the window that
+then the installed colormap is the one for the window that
 currently has the keyboard focus.
 
 .TP
@@ -2790,18 +2794,18 @@ are made that it will work for you.
 .B FakeClick
 can simulate mouse button press and release events and pass them to
 fvwm or the applications.  The parameters are a list of commands
-which consist of a
+which consist of pairs of
 .I command
-token and an integer
-.I value
-each.  The
+tokens and integer
+.I values,
+The
 .IR press and release
 commands are followed by the appropriate mouse button number and generate
 a button press or release event on the window below the pointer.  The
 .I wait
 commands pauses fvwm for the given number of milliseconds.  The
 .I modifiers
-command allows to simulate pressing or releasing modifier keys.  The
+command simulates pressing or releasing modifier keys.  The
 values 1 to 5 are mapped to
 .SM Mod1
 to
@@ -2811,16 +2815,24 @@ while 6, 7 and 8 are mapped to
 .SM Lock
 and
 .SM Control
-The modifier will be set for any further button events.  To release a
+The modifier is set for any further button events.  To release a
 modifier key, use the corresponding negative number.  The
 .I depth
 command determines to which window the button events are sent.  With
 a depth of 1, all events go to the root window, regardless of the
 pointer's position.  With 2, the event is passed to the top level
 window under the pointer which is usually the frame window.  With 3,
-events will go to the client windows and so on.  With a value of
-0 the event will go to the smallest window that contains the pointer.
-
+events go to the client window.
+Higher numbers go to successive subwindows.  Zero (0)
+goes to the smallest window that contains the pointer.
+Note that events propagate upward.
+.EX
+ FakeClick depth 2 press 1 wait 250 release 1
+.EE
+This simulates a click with button 1 in the parent window
+(depth 2) with a delay of 250 milliseconds between the press and
+the release.  To generate clicks on the root window use depth 0,
+for the frame depth 1 and for the client window only depth 3.
 
 .TP
 .BI "GlobalOpts [" options "]"
@@ -2978,7 +2990,7 @@ Note: if the
 module is used to parse your
 .I .fvwm2rc
 files, then m4 may want to mangle the word "include" which
-will frequently show up in the
+frequently shows up in the
 .B ImagePath
 command.  To fix this one may add
 .EX
@@ -3024,9 +3036,9 @@ are the corresponding numbers and
 .I sticky
 is empty or a capital S.  The geometry of iconified windows is
 shown in parenthesis.  Selecting an item from the window list
-pop-up menu will by default cause the interpreted function
+pop-up menu causes the interpreted function
 "WindowListFunc" to be run with the window id of that window passed
-in as $0.  By default the "WindowListFunc" looks like this:
+in as $0. The default "WindowListFunc" looks like this:
 .EX
 AddToFunc WindowListFunc
  + I WindowId $0 Iconify off
@@ -3070,7 +3082,7 @@ arguments are the same as for
 .BR Menu .
 The command
 .I double-click-action
-will be invoked if the user double-clicks (or hits the key rapidly
+is invoked if the user double-clicks (or hits the key rapidly
 twice if the menu is bound to a key) when bringing the window list.  The
 .I double-click-action
 must be quoted if it consists of more than one word.
@@ -3191,12 +3203,12 @@ option.
 .BI "Layer [" "arg1 arg2" "] | [" default "]"
 Puts the current window in a new layer.  If
 .I arg1
-is non zero then the next layer will be the current layer
+is non zero then the next layer is the current layer
 number plus
 .IR arg1 .
 If
 .I arg1
-is zero then the new layer will be
+is zero then the new layer is
 .IR arg2 .
 
 As a special case,
@@ -3218,8 +3230,8 @@ AddToFunc lower-to-bottom
 .TP
 .BI "Move [[" w | m ] x [ p "] [" w | m ] y [ p "] [" Warp "]] | [" pointer "]"
 Allows the user to move a window.  If called from somewhere in a
-window or its border, then that window will be moved.  If called from
-the root window then the user will be allowed to select the target
+window or its border, then that window is moved.  If called from
+the root window then the user is allowed to select the target
 window.  If the optional argument
 .I Warp
 is specified the pointer is warped with the window.  If the single
@@ -3239,7 +3251,7 @@ command).
 
 If the optional arguments
 .IR x " and " y
-are provided, then the window will be moved immediately without
+are provided, then the window is moved immediately without
 user interaction.  Each argument can specify an absolute or
 relative position from either the left/top or right/bottom of the
 screen.  By default, the numeric value given is interpreted as a
@@ -3360,12 +3372,12 @@ Tells fvwm the maximum size window with which opaque window
 movement should be used.  The percentage is percent of the total
 screen area.  With
 .EX OpaqueMoveSize 0
-all windows will be moved using the traditional rubber-band outline.
+all windows are moved using the traditional rubber-band outline.
 With
 .EX
 OpaqueMoveSize 100
 .EE
-all windows will be moved as solid windows.  The default is
+all windows are moved as solid windows.  The default is
 .EX
 OpaqueMoveSize 5
 .EE
@@ -3413,8 +3425,8 @@ command) otherwise it is lowered.
 .TP
 .BI "Resize [" width [ p | c "] " height [ p | c "]] | [" bottomright | "br x y" "]"
 Allows to resize a window.  If called from somewhere in a window
-or its border, then that window will be resized.  If called from
-the root window then the user will be allowed to select the target
+or its border, then that window is resized.  If called from
+the root window then the user is allowed to select the target
 window.
 
 The operation can be aborted with Escape or by pressing any mouse button
@@ -3422,7 +3434,7 @@ The operation can be aborted with Escape or by pressing any mouse button
 
 If the optional arguments
 .IR width " and " height
-are provided, then the window will be resized so that its dimensions are
+are provided, then the window is resized so that its dimensions are
 .IR width " by " height .
 The units of
 .IR width " and " height
@@ -3439,7 +3451,7 @@ Resize 80c 24c
 to make a terminal window just big enough for 80x24 characters.
 Both,
 .IR width " and " height
-can be negative.  In this case the new size will be the screen
+can be negative.  In this case the new size is the screen
 size minus the given value.  If either value is "keep", the
 corresponding dimension of the window is left untouched.
 
@@ -3508,8 +3520,8 @@ above settings are the default.
 .BI "SnapAttraction [" proximity " [" behavior "] [" Screen "]]"
 If during an interactive move the window or icon comes within
 .I proximity
-pixels of another the window or icon, it will be moved to make the borders
-adjoin.  The default of -1 means that no snapping will happen.  A setting of
+pixels of another the window or icon, it is moved to make the borders
+adjoin.  The default of -1 means that no snapping happens.  A setting of
 0 does indeed snap when the distance is zero pixels.  This is relevant when
 the
 .B SnapGrid
@@ -3543,16 +3555,16 @@ setting for behavior is
 
 .TP
 .BI "SnapGrid [" "x-grid-size y-grid-size" "]"
-During an interactive move a window or icon will be positioned such that
-its location (top left corner) will be coincident with the nearest grid point.
+During an interactive move a window or icon is positioned such that
+its location (top left corner) is coincident with the nearest grid point.
 The default
 .IR x-grid-size " and " y-grid-size
 setting are both 1, which is effectively no grid all.  An
 interactive move with both
 .BR SnapGrid " and " SnapAttraction
-in effect will result in the window being moved to be adjacent to
+results in the window being moved to be adjacent to
 the nearest window border (if within snap proximity) or grid
-position.  In other words, the window will move the shortest distance possible
+position.  In other words, the window moves the shortest distance possible
 to satisfy both
 .BR SnapGrid " and " SnapAttraction .
 Note that the x and y coordinates are not coupled.  For example,
@@ -3575,7 +3587,7 @@ syntax has changed.  If you used
 .EX
 WindowsDesk n
 .EE
-to move a window to desk n, you will have to change
+to move a window to desk n, you have to change
 it to
 .EX
 MoveToDesk 0 n
@@ -3689,7 +3701,7 @@ default to percentage of window down and in from the upper left hand
 corner (or number of pixels down and in if
 .RI ' p '
 is appended to the numbers).  This command works also with windows
-that are not managed by fvwm.  In this case fvwm is will not bring
+that are not managed by fvwm.  In this case fvwm does not bring
 the window onto the screen if it is not visible.  For example it is
 possible to warp the pointer to the center of the root window on
 screen 1:
@@ -3708,7 +3720,7 @@ not understand the delete window protocol then the window is
 destroyed as with the
 .B Destroy
 command.  Note: if the window accepts the delete window protocol but
-does not close itself in response, the window will not be deleted.
+does not close itself in response, the window is not deleted.
 
 .TP
 .BI "Delete"
@@ -3725,7 +3737,7 @@ to crash and burn.
 Iconifies a window if it is not already iconified or de-iconifies it
 if it is already iconified.  The optional argument
 .I bool
-is a boolean argument.  "True" means only iconification will be
+is a boolean argument.  "True" means only iconification is
 allowed, while "False" forces de-iconification.  Using "toggle"
 switches between iconified and de-iconified states.
 
@@ -3759,18 +3771,18 @@ control the new size of the window.  An optional suffix
 .RI ' p '
 can be used to indicate pixels instead of percents of the screen
 size.  If horizontal is greater than 0 then the horizontal
-dimension of the window will be set to
+dimension of the window is set to
 .IR horizontal *screen_width/100.
 If the value is smaller than 0 the size is subtracted from the
 screen width, i.e. -25 is the same as 75.  If
 .I horizontal
-is "grow", it will maximize to current available space until
+is "grow", it is maximized to current available space until
 finding any obstacle.  The vertical resizing is similar.  If both
-horizontal and vertical values are "grow", it will expand
+horizontal and vertical values are "grow", it expands
 vertically first, then horizontally to find space.  Instead of
 the horizontal "grow" argument, "growleft" or "growright" can
 be used respectively "growup" and "growdown".  For example, the
-following will add a title-bar button to switch a window to the full
+following adds a title-bar button to switch a window to the full
 vertical size of the screen:
 .EX
 Mouse 0 4 A Maximize 0 100
@@ -3797,10 +3809,10 @@ Values larger than 100 can be used with caution.
 .TP
 .BI "Recapture"
 Causes fvwm to recapture all of its windows.  This
-ensures that the latest style parameters will be used.  The
+ensures that the latest style parameters are used.  The
 recapture operation is visually disturbing.
 
-Since fvwm version 2.4 only very few
+Since fvwm version 2.4 only a very few
 .B Style
 options need a
 .B Recapture
@@ -3974,7 +3986,7 @@ is hit, no matter where the mouse pointer is:
 .EX
 Key F11 A SCM WindowList
 .EE
-Binding a key to a title-bar button will cause that button to
+Binding a key to a title-bar button causes that button to
 appear.  Please refer to the
 .B Mouse
 command for details.
@@ -3987,7 +3999,7 @@ is '-'.
 .I Button
 is the mouse button number.  If
 .I Button
-is zero then any button will perform the specified function.
+is zero then any button performs the specified function.
 .I Context
 describes where the binding applies.  Valid contexts are 'R' for
 the root window, 'W' for an application window, 'T' for a window
@@ -3995,13 +4007,13 @@ title-bar, 'S' for a window side, top, or bottom bar, 'F' for a window
 frame (the corners), 'I' for an Icon window, or '0' through '9' for
 title-bar buttons, or any combination of these letters.  'A' is for any
 context except for title-bar buttons.  For instance, a context of "FST"
-will apply when the mouse is anywhere in a window's border except the
+applies when the mouse is anywhere in a window's border except the
 title-bar buttons.  Only 'S' and 'W' are valid for an undecorated window.
 
 .I Modifiers
 is any combination of 'N' for no modifiers, 'C' for control, 'S' for
 shift, 'M' for Meta, 'L' for Caps-Lock or 'A' for any modifier.
-For example, a modifier of "SM" will apply when both the
+For example, a modifier of "SM" applies when both the
 .SM Meta
 and
 .SM Shift
@@ -4127,8 +4139,8 @@ a grid on your machine. Here an example:
 Stroke N78963314   3  R  N  FvwmForm FvwmForm-QuitVerify
 Stroke N789633147  3  R  N  FvwmForm FvwmForm-QuitVerify
 .EE
-This example will start the "QuitVerify" form if you draw a box
-that begin in the top left corner.
+This example starts the "QuitVerify" form if you draw a box
+that begins in the top left corner.
 
 Note: You need
 .B libstroke
@@ -4165,7 +4177,7 @@ Key x R N StrokeFunc
 If you press mouse button 3 and
 .SM Alt
 anywhere (respectively, press the key x when the cursor is on
-the root window), then fvwm will record the mouse motions until
+the root window), then fvwm records the mouse motions until
 the mouse button 3 (respectively, the x key) is released and then
 check if the recorded
 .I sequence
@@ -4227,11 +4239,11 @@ option).
 
 You can use the
 .B StrokeFunc
-"alone".  In this case it will work as above with the
+"alone".  In this case it works as above with the
 .I NotStayPressed
 option enabled.  However,
-.I Modifiers
-will, in general, not work as expected (i.e., in this case
+.I Modifiers,
+in general, may not work as expected (i.e., in this case
 use 'A' or 'N' as
 .I Modifiers
 in the stroke bindings).
@@ -4241,7 +4253,7 @@ If that is the case the
 .B StrokeFunc
 used via a
 .B Key
-command will work as if the
+command works as if the
 .I NotStayPressed
 option is enabled.
 
