@@ -55,9 +55,12 @@ widget_get_value (GtkWidget *w)
 
   if (GTK_IS_OPTION_MENU (w))
     {
+      GtkWidget *menu = GTK_OPTION_MENU (w)->menu;
       GtkWidget *item;
 
-      item = gtk_menu_get_active (GTK_MENU (GTK_OPTION_MENU (w)->menu));
+      if (menu == NULL)
+        return NULL;
+      item = gtk_menu_get_active (GTK_MENU (menu));
       if (item)
 	{
 	  return gtk_object_get_data (GTK_OBJECT (item), "value");
