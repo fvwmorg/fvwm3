@@ -1,3 +1,11 @@
+Sat Mar 20 15:19:37 1999  DanEspen  <dje@blue>
+
+	* FAQ: Change references to FvwmTalk.
+
+	* TODO (Bugfixes): Change references to FvwmTalk.
+
+	* man-pages.html: Remove FvwmTalk, add FvwmAnimate.
+
 Mon Mar 15 22:47:01 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* DEVELOPERS (Building a distribution): removed the note about

@@ -315,7 +315,6 @@ modules/FvwmScript/Scripts/Makefile
 modules/FvwmScript/Scripts/some_nice_icons/Makefile
 modules/FvwmScript/Widgets/Makefile
 modules/FvwmScroll/Makefile
-modules/FvwmTalk/Makefile
 modules/FvwmTaskBar/Makefile
 modules/FvwmWharf/Makefile
 modules/FvwmWinList/Makefile

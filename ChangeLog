@@ -1,3 +1,9 @@
+Sat Mar 20 15:22:02 1999  DanEspen  <dje@blue>
+
+	* fvwm/fvwm2.1 (id): remove FvwmTalk
+
+	* configure.in (xpm_problem): remove FvwmTalk
+
 1999-03-20  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/move.c (moveLoop):

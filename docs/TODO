@@ -62,7 +62,7 @@ Bugfixes:
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
     isn't 100% correct?
   - bring back 'TogglePage'?
-  - Setting keys via FvwmTalk or Read requires Recapture to take effect?
+  - Setting keys via FvwmConsole or Read requires Recapture to take effect?
   - System Modal dialogs bug - popup menus shouldn't be allowed??  I think
     this is ok, actually...
   - Fix FvwmDeskTopScale size calculation
