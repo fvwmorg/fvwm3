@@ -542,6 +542,18 @@ AddToFunc WarpToWindow-Func
  + I Next [window1] WarpToWindow 50 50
  + I Refresh
 
+# This test destroys the test windows and then brings them back
+AddTest "Test Close_Delete_Destroy" Close_Delete_Destroy-Func
+AddToFunc Close_Delete_Destroy-Func
+ + I Next [window1] Close
+ + I Next [window2] Close #älök.,nm-öp93m-öki 0 <F3>üß8
+ + I Next [window3] Delete
+ + I Next [window4] Delete .mwq.-l km<F3>noi
+ + I Next [window5] Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
+ + I Next [window6] Destroy
+ + I CreateWindows-Func
+ + I Refresh
+
 # Ending ManPage Order
 
 AddTest "Test Maximize" Maximize-Func
@@ -1667,21 +1679,6 @@ AddToFunc WindowId-Func
  + I WindowID   0x00110011   nop
  + I WindowID		0x00110011		nop
  + I Refresh
-
-
-AddTest "Test Close_Delete_Destroy" Close_Delete_Destroy-Func
-AddToFunc Close_Delete_Destroy-Func
- + I Close
- + I Close
- + I Close #älök.,nm-öp93m-öki 0 <F3>üß8
- + I Delete
- + I Delete
- + I Delete .mwq.-l km<F3>noi
- + I Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
- + I Destroy
- + I Destroy
- + I Refresh
-
 
 # ShortHand Function for next test:
 DestroyFunc EchoDo
