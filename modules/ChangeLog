@@ -1,3 +1,10 @@
+2000-04-16  olicha <olivier.chapuis@free.fr>
+	
+	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* modules/FvwmScript/Scripts/script-fvwm-sample95.pl:
+	ScriptFvwmSetup95 (and script-fvwm-sample95.pl) build a multi-files
+	config and parse the menus (and the (Mini)Icon styles).
+	
 2000-04-15  olicha <olivier.chapuis@free.fr>
 	
 	* modules/FvwmForm/FvwmFormQuitVerify.

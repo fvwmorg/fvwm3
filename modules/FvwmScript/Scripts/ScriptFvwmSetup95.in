@@ -11,9 +11,6 @@ Init
    HideWidget 81
    HideWidget 82
    HideWidget 71
-   HideWidget 72
-   HideWidget 73
-   HideWidget 74
    HideWidget 5
 
    HideWidget 17
@@ -44,17 +41,24 @@ Init
    HideWidget 61
    HideWidget 62
    HideWidget 63
-   
+   HideWidget 64
+
    Set $FHOME=(GetOutput  {echo "$FVWM_USERHOME"} 1 1)
    Set $OUTPUT=$FHOME {/.fvwm2rc}
-   ChangeTitle 11 $OUTPUT
-   ChangeTitle 74 $OUTPUT
+   Set $T = $FHOME{/}
+   ChangeTitle 11 $T
    
    Set $CONFDIR = {xFVWM_CONFIGDIRx}
    Set $INPUT = $CONFDIR {/system.fvwm2rc-sample-95}
    Set $Perl = {xPERLx}
    Set $DefImagePath={xFVWM_IMAGEPATHx}
-   ChangeTitle 20 $DefImagePath
+
+   # for Dan ImagePath :)
+   Set $TIP=(StrCopy $DefImagePath  1  80)
+   Set $tmp=(StrCopy $DefImagePath  81  81)
+   If $tmp <> {} Then
+      Set $TIP=$TIP{ ...}
+   ChangeTitle 20 $TIP
 
    If $Perl == {} Then
    Begin
@@ -104,6 +108,7 @@ Init
      Set $GnomeY = 0
      Set $PanelStaysPut = 0
      Set $KfmIcons = 0
+     Set $Cde = 0
    
      # Check for KDE
      Set $KdeY=(GetOutput {echo "$KDEDIR"} 1 1)
@@ -117,13 +122,22 @@ Init
      Set $GnomePath = (GetOutput $CMD 1 -1)
      If $GnomePath <> {No} Then
        Set $GnomeY = 1
-     Set $CMD ={perl -e '$t=0; $a = `fvwm2 -version 2>&1`; $t=1 if ( $a =~ /Gnome/i); print "$t\n";'}
+     Set $CMD ={a=`fvwm2 -version 2>&1`; if echo $a|grep -qe 'Gnome'; then echo "1"; else echo "0"; fi}
      Set $GnomeS = (GetOutput $CMD 1 -1)
      If $GnomeY == {0} Then
        Set $GnomeS = 0
 
+     # Check for CDE
+     Set $CMD = {if [ -d /usr/dt/ ]; then echo "1"; else echo "0"; fi}
+     Set $Cde = (GetOutput $CMD 1 -1)
+     If $Cde == {1} Then
+	Set $CdeTitle={CDE has been detected and a support will be added     }
+     Else
+	Set $CdeTitle={It does not seem that CDE is installed on your machine}
+     ChangeTitle 64 $CdeTitle
+
      # Check for Stroke
-     Set $CMD ={perl -e '$t=0; $a = `fvwm2 -version 2>&1`; $t=1 if ( $a =~ /stroke/i); print "$t\n";'}
+     Set $CMD ={if fvwm-config --supports-stroke; then echo "1"; else echo "0"; fi}
      Set $Stroke = (GetOutput $CMD 1 -1)
 
    End
@@ -147,7 +161,19 @@ Widget 10
 Property
  Position 10 10
  Type ItemDraw
- Title {This Script creates a configuration file for FVWM and copy it in:}
+ Title {This Script creates configuration files (.fvwm2rc, bindings, decorations, desktop, functions, menus,}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 14
+Property
+ Position 10 30
+ Type ItemDraw
+ Title {modules, startup, styles, iconstyles) for FVWM and copy it in your FVWM_USERHOME directory:}
 Main
  Case message of
   SingleClic :
@@ -157,8 +183,9 @@ End
 
 Widget 11
 Property
- Position 10 35
- Size 610 20
+ Position 10 47
+ Size 580 20
+ Font fixed	
  Type ItemDraw
  Title {}
 Main
@@ -170,9 +197,9 @@ End
 
 Widget 12
 Property
- Position 10 60
+ Position 10 70
  Type ItemDraw
- Title {If such a file already exits it will be backup. Set your preferrences:}
+ Title {If such files already exit they will be backup under a backup subdir. Set your preferences:}
 Main
  Case message of
   SingleClic :
@@ -209,9 +236,10 @@ End
 
 Widget 20
 Property
- Position 20 115
- Size 580 20
+ Position 20 118
+ Size 570 20
  Type ItemDraw
+ Font fixed
  Title {}
 Main
  Case message of
@@ -235,9 +263,9 @@ End
 
 Widget 22
 Property
- Position 20 160
+ Position 20 165
  Type PopupMenu
- Title {No|$HOME/icons/|$HOME/icons/fvwm/|$FVWM_USERHOME/images/|$FVWM_USERHOME/icons/|/usr/share/icons/|/usr/share/icons/fvwm/|/usr/local/share/icons/|/usr/local/share/icons/fvwm/|$HOME/fvwm-web/icons/}
+ Title {No|$HOME/icons/|$HOME/icons/fvwm/|$FVWM_USERHOME/images/|$FVWM_USERHOME/icons/|$HOME/fvwm-web/icons/|/usr/share/icons/|/usr/share/icons/fvwm/|/usr/local/share/icons/|/usr/local/share/icons/fvwm/}
 Main
  Case message of
   SingleClic :
@@ -253,22 +281,22 @@ Main
    If (GetValue 22) == 5 Then
     ChangeTitle 24 {$FVWM_USERHOME/icons/}
    If (GetValue 22) == 6 Then
-    ChangeTitle 24 {/usr/share/icons/}
-   If (GetValue 22) == 7 Then
-    ChangeTitle 24 {/usr/share/icons/fvwm/}
-   If (GetValue 22) == 8 Then
-    ChangeTitle 24 {/usr/local/share/icons/}
-   If (GetValue 22) == 9 Then
-    ChangeTitle 24 {/usr/local/share/icons/fvwm}
-   If (GetValue 22) == 10 Then
     ChangeTitle 24 {$HOME/fvwm-web/icons/}
+   If (GetValue 22) == 7 Then
+    ChangeTitle 24 {/usr/share/icons/}
+   If (GetValue 22) == 8 Then
+    ChangeTitle 24 {/usr/share/icons/fvwm/}
+   If (GetValue 22) == 9 Then
+    ChangeTitle 24 {/usr/local/share/icons/}
+   If (GetValue 22) == 10 Then
+    ChangeTitle 24 {/usr/local/share/icons/fvwm}
   End
 End
 
 Widget 24
 Property
  Size 250 30
- Position 240 160
+ Position 240 165
  Type TextField
  Title {No}
 Main
@@ -280,7 +308,7 @@ End
 
 Widget 25
 Property
- Position 510 160
+ Position 510 165
  Type PushButton
  Title {Browser...}
 Main
@@ -299,7 +327,7 @@ End
 
 Widget 26
 Property
- Position 20 200
+ Position 20 205
  Type ItemDraw
  Title {For sounds effect you need fvwm_sounds and an .au player. Set the fvwm_sounds directory:}
 Main
@@ -311,7 +339,7 @@ End
 
 Widget 27
 Property
- Position 20 225
+ Position 20 230
  Type PopupMenu
  Title {/usr/share/sounds/|/usr/share/sounds/fvwm/|/usr/local/share/sounds/|/usr/local/share/sounds/fvwm/|$HOME/sounds|$HOME/sounds/fvwm/}
 Main
@@ -336,7 +364,7 @@ End
 Widget 29
 Property
  Size 250 30
- Position 240 225
+ Position 240 230
  Type TextField
  Title {/usr/share/sounds/}
 Main
@@ -348,7 +376,7 @@ End
 
 Widget 30
 Property
- Position 510 225
+ Position 510 230
  Type PushButton
  Title {Browser...}
 Main
@@ -412,7 +440,7 @@ Widget 17
 Property
  Position 20 110
  Type ItemDraw
- Title {Look Preferrence:}
+ Title {Look Preference:}
 Main
  Case message of
   SingleClic :
@@ -473,7 +501,7 @@ Main
    If (GetValue 36) == 7 Then
     ChangeTitle 37 {kwrite}
    If (GetValue 36) == 8 Then
-    ChangeTitle 37 {dtpad}
+    ChangeTitle 37 {/usr/dt/bin/dtpad}
   End
 End
 
@@ -524,7 +552,7 @@ Main
    If (GetValue 39) == 6 Then
      ChangeTitle 40 {gmc}
    If (GetValue 39) == 7 Then
-     ChangeTitle 40 {dtfile}
+     ChangeTitle 40 {/usr/bin/dt/dtfile}
    If (GetValue 39) == 8 Then
      ChangeTitle 40 {kexplorer}
   End
@@ -583,7 +611,7 @@ Main
    If (GetValue 42) == 9 Then
     ChangeTitle 43 {gnome-terminal}
    If (GetValue 42) == 10 Then
-    ChangeTitle 43 {dtterm}
+    ChangeTitle 43 {/usr/dt/dtterm}
   End
 End
 
@@ -649,9 +677,9 @@ End
 
 Widget 50
 Property
- Position 20 105
+ Position 20 100
  Type ItemDraw
- Title {Desktops Options (GNOME & KDE)}
+ Title {Desktops Options (GNOME, KDE & CDE)}
 Main
  Case message of
   SingleClic :
@@ -661,7 +689,7 @@ End
 
 Widget 51
 Property
- Position 20 140
+ Position 20 130
  Type CheckBox
  Title {Add GNOME system menu}
 Main
@@ -678,7 +706,7 @@ End
 
 Widget 52
 Property
- Position 275 140
+ Position 275 130
  Type CheckBox
  Title {Add GNOME user menu}
 Main
@@ -695,7 +723,7 @@ End
 
 Widget 53
 Property
- Position 20 175
+ Position 20 165
  Type CheckBox
  Title {Add GNOME "RedHat" menu}
 Main
@@ -712,7 +740,7 @@ End
 
 Widget 54
 Property
- Position 275 175
+ Position 275 165
  Type CheckBox
  Title {Use Gtk Menu instead of Fvwm one}
 Main
@@ -732,10 +760,10 @@ Main
   End
 End
 
-##### No gnome panel on the machine 
+##### No gnome-session on the machine 
 Widget 55
 Property
- Position 20 170
+ Position 20 150
  Type ItemDraw
  Title {It does not seem that GNOME is installed on your machine}
 Main
@@ -746,10 +774,9 @@ Main
 End
 
 
-
 Widget 57
 Property
- Position 20 210
+ Position 20 200
  Type CheckBox
  Title {Build a config for gnome-session}
 Main
@@ -765,9 +792,9 @@ End
 
 Widget 58
 Property
- Position 275 210
+ Position 275 200
  Type CheckBox
- Title {Try a "stays put" panel (gnome-session only)}
+ Title {Try a "stays put" panel (for gnome-session)}
 Main
  Case message of
   SingleClic :
@@ -782,7 +809,7 @@ End
 ##### No FVWM support for gnome
 Widget 59
 Property
- Position 20 210
+ Position 20 200
  Type ItemDraw
  Title {Your version of FVWM is not compiled with support for GNOME}
 Main
@@ -794,7 +821,7 @@ End
 
 Widget 60
 Property
- Position 20 260
+ Position 20 240
  Type CheckBox
  Title {Add KDE system menu}
 Main
@@ -811,7 +838,7 @@ End
 
 Widget 61
 Property
- Position 210 260
+ Position 210 240
  Type CheckBox
  Title {Add KDE user menu}
 Main
@@ -827,7 +854,7 @@ End
 
 Widget 62
 Property
- Position 400 260
+ Position 400 240
  Type CheckBox
  Title {Add support for KFM icons}
 Main
@@ -844,7 +871,7 @@ End
 ##### No KDE on the machine 
 Widget 63
 Property
- Position 20 260
+ Position 20 240
  Type ItemDraw
  Title {It does not seem that KDE is installed on your machine}
 Main
@@ -854,6 +881,18 @@ Main
   End
 End
 
+########## CDE
+Widget 64
+Property
+ Position 20 275
+ Type ItemDraw
+ Title {It does not seem that CDE is installed on your machine}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
 
 #############################################################################
 # Ok, apply, cancel, next and previous
@@ -937,6 +976,8 @@ Main
       Else
         ShowWidget 63
 
+      ShowWidget 64
+
       HideWidget 17
       HideWidget 18
       HideWidget 35
@@ -986,13 +1027,12 @@ Main
       Else
         HideWidget 63
 
+      HideWidget 64
+
       HideWidget 4
  
       ShowWidget 1
       ShowWidget 71
-      ShowWidget 72
-      ShowWidget 73
-      ShowWidget 74
     End
   End
 End
@@ -1076,6 +1116,8 @@ Main
       Else
         HideWidget 63
 
+      HideWidget 64
+
       ShowWidget 17
       ShowWidget 18
       ShowWidget 35
@@ -1095,9 +1137,6 @@ Main
     Begin
       HideWidget 1
       HideWidget 71
-      HideWidget 72
-      HideWidget 73
-      HideWidget 74
 
       ShowWidget 4
       ShowWidget 50
@@ -1131,6 +1170,7 @@ Main
       End
       Else
         ShowWidget 63
+    ShowWidget 64
 
     End
   End
@@ -1201,6 +1241,7 @@ Main
   SingleClic :
   Begin
    Do Restart
+   Quit
   End
 End
 
@@ -1210,49 +1251,9 @@ End
 Widget 71
 Property
  Size 570 20
- Position 20 120
+ Position 20 140
  Type ItemDraw
  Title {Are you ready to build the configuration?}
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-Widget 72
-Property
- Position 20 250
- Font fixed
- Type ItemDraw
- Title {Note: If this window disappear after you click on this button, then something bad happened.}
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-Widget 73
-Property
- Position 20 265
- Font fixed
- Type ItemDraw
- Title {Then either re-run this script or copy (and then edit) by hands fvwm2rc.system-sample-95 in}
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-Widget 74
-Property
- Size 400 20
- Position 20 280
- Font fixed
- Type ItemDraw
- Title {}
 Main
  Case message of
   SingleClic :
@@ -1263,23 +1264,19 @@ End
 Widget 1
 Property
  Size 70 30
- Position 265 160
+ Position 265 180
  Type PushButton
- Title {Yes, I am !}
+ Title {Yes, I am!}
 Main
  Case message of
   SingleClic :
   Begin
 
-   # Create the fvwm user home dir if need
-   If $FHOME <> {} Then
-      Do {Exec /bin/mkdir -p } $FHOME
+   # Create the fvwm user home dir if needed
+   Do {Exec /bin/mkdir -p } $FHOME
  
-   # Backup
-   Set $DATE = {date +%Y%m%d-%H%M%S}
-   Set $Backup = (GetOutput  $DATE 1 -1)
-   Set $Backup = $OUTPUT {-} $Backup
-   Do {Exec if [ -f } $OUTPUT { ]; then  /bin/cp } $OUTPUT { } $Backup{; fi;}
+   # Backup: script-fvwm-setup95.pl do that
+   
    
    Set $ImagePath = (GetTitle 24)
    Set $SoundPath = (GetTitle 29)
@@ -1310,6 +1307,8 @@ Main
       Set $Reditor = {emacs}
    If $Editor == {gvim} Then
       Set $Reditor = {VIM}
+   If $Editor == {/usr/dt/bin/dtpad} Then
+      Set $Reditor = {dtpad}
    If $Reditor == {} Then
       Set $Reditor = $Editor
 
@@ -1325,14 +1324,14 @@ Main
    If $KdeUserMenu == {1} Then
       Set $KdeMenu = {1}
 
-   Set $PERLCMD = $CONFDIR{/script-fvwm-setup95.pl --configin=} $INPUT { --configout=} $OUTPUT { --fvwm=} $Fvwm { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
+   Set $PERLCMD = $CONFDIR{/script-fvwm-setup95.pl --configin=} $INPUT { --dirout=} $FHOME { --fvwm=} $Fvwm { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --cde=} $Cde { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
 
   Do {BusyCursor Read True}
   Do {Echo Piperead 'perl } $PERLCMD {'}
   Do {Piperead 'perl } $PERLCMD {'}
 
   # cp the .start-* file if there are no
-  Do {PipeRead '[ -f } $FHOME {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid \#7F4B7F">} $FHOME {/.start-Background'}
+  Do {PipeRead '[ -f } $FHOME {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid orchid4">} $FHOME {/.start-Background'}
   Do {PipeRead '[ -f } $FHOME {/.start-DeskerPanelButtons ] || echo "AddToFunc StartFunction I FvwmButtons DeskerPanelButtons">} $FHOME {/.start-DeskerPanelButtons'}
   If $GnomeSession == {0} Then
   Begin
@@ -1363,9 +1362,6 @@ Main
   ShowWidget 82
 
   HideWidget 71
-  HideWidget 72
-  HideWidget 73
-  HideWidget 74
   HideWidget 1
   HideWidget 5
   End
@@ -1404,7 +1400,7 @@ Property
  Size 70 30
  Position 265 160
  Type PushButton
- Title {Copy !}
+ Title {Copy!}
 Main
  Case message of
   SingleClic :
@@ -1418,9 +1414,9 @@ Main
    Set $DATE = {date +%Y%m%d-%H%M%S}
    Set $Backup = (GetOutput  $DATE 1 -1)
    Set $Backup = $OUTPUT {-} $Backup
-   Do {PipeRead 'if [ -f } $OUTPUT { ]; then  /bin/mv } $OUTPUT { } $Backup{; fi; sed -e s/^FvwmScript\.*//} $INPUT { > } $OUTPUT{'}
+   Do {PipeRead 'if [ -f } $OUTPUT { ]; then  /bin/mv } $OUTPUT { } $Backup{; fi; sed -e /^#\\!D.*/d -e s/[:space:]*#\\!E.*// } $INPUT { > } $OUTPUT{'}
      # cp the .start-* file if there are no
-  Do {PipeRead '[ -f } $FHOME {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid \#7F4B7F">} $FHOME {/.start-Background'}
+  Do {PipeRead '[ -f } $FHOME {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid orchid4">} $FHOME {/.start-Background'}
   Do {PipeRead '[ -f } $FHOME {/.start-DeskerPanelButtons ] || echo "AddToFunc StartFunction I FvwmButtons DeskerPanelButtons">} $FHOME {/.start-DeskerPanelButtons'}
   If $GnomeSession == {0} Then
   Begin
@@ -1442,7 +1438,7 @@ Main
     Do {PipeRead '[ -f } $FHOME {/.start-WinMakerAppButtons ] || echo "# Do not start FvwmButtons WinMakerAppButtons">} $FHOME {/.start-WinMakerAppButtons'}
     Do {PipeRead '[ -f } $FHOME {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FHOME {/.start-FvwmAuto'}
     Do {PipeRead '[ -f } $FHOME {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FHOME {/.start-FvwmBanner'}
-   Do {PipeRead '[ -f } $FHOME {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FHOME {/.start-FvwmEvent'}
+    Do {PipeRead '[ -f } $FHOME {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FHOME {/.start-FvwmEvent'}
 
   ShowWidget 2
   ShowWidget 80
@@ -1452,7 +1448,6 @@ Main
   HideWidget 90
   HideWidget 91
   HideWidget 92
-  HideWidget 74
   HideWidget 1
   HideWidget 5
   End

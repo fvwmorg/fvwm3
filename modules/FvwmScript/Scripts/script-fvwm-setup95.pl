@@ -6,11 +6,17 @@ my $uncomment=0;
 my $comment=0;
 my $prefapps=0;
 my $gnomepath=0;
+my $mainOut="";
+my $currentOut="";
+my @PATH_DIRS = split(':',$ENV{PATH});
+my $date=`date +%Y%m%d-%H%M%S`;
+$date=~ s/\s//g;
+my $backupDir="";
 
 GetOptions(
 	"help"         => \&wrongUsage,
    "configin=s"	=> \$ConfigIn,
-   "configout=s"	=> \$ConfigOut,
+   "dirout=s"		=> \$DirOut,
 	"fvwm=i"       => \$Fvwm,
 	"km=i"			=> \$KdeMenu,
 	"ksm=i"       	=> \$KdeSysMenu,
@@ -24,8 +30,9 @@ GetOptions(
 	"gumf=i"       => \$GnomeUserMenuFvwm,
 	"grmf=i"      	=> \$GnomeRHMenuFvwm,
 	"gs=i"      	=> \$GnomeSession,
-,	"gy=i"       	=> \$GnomeY,
-,	"gpath=s"      => \$GnomePath,
+	"gy=i"       	=> \$GnomeY,
+	"gpath=s"      => \$GnomePath,
+	"cde=i"			=> \$Cde,
 	"stroke=i"     => \$Stroke,
 	"lap=i"      	=> \$Laptop,
 	"pp=i"  			=> \$PanelStaysPut,
@@ -40,7 +47,7 @@ GetOptions(
 	"dip=s"			=> \$DefImagePath
 ) || wrongUsage();
 
-if ($ConfigIn eq "" || $ConfigOut eq "" || $Fvwm eq "" ||
+if ($ConfigIn eq "" || $DirOut eq "" || $Fvwm eq "" ||
 		$KdeMenu eq "" || $KdeSysMenu eq "" || $KdeUserMenu eq "" ||  
 		$KfmIcons eq "" ||  $GnomeMenuGtk eq "" || 
 		$GnomeSysMenuGtk eq "" || $GnomeUserMenuGtk eq "" ||
@@ -50,17 +57,36 @@ if ($ConfigIn eq "" || $ConfigOut eq "" || $Fvwm eq "" ||
 		$Stroke eq "" || $Laptop eq "" || $PanelStaysPut eq "" || 
 		$Editor eq "" || $Reditor eq "" || $FileMgr eq "" || 
 		$Term eq "" || $SoundPlayer eq "" || $SoundPath eq "" ||
-		$IP eq "" || $ImagePath	eq "" || $DefImagePath	eq "") {
+		$IP eq "" || $ImagePath	eq "" || $DefImagePath	eq "" ||
+		$Cde eq "") {
 	wrongUsage();
 }
 
 if (! $SoundPath =~ /\/$/) { $SoundPath = "$SoundPath/"; }
+$fileOut=".fvwm2rc";
+$mainOut="$DirOut/$fileOut";
+$currentOut=$mainOut;
+$backupDir="$DirOut/backup";
 
-open(IN,"$ConfigIn");
-open(OUT,">$ConfigOut");
+open(IN,"$ConfigIn") || die "cannot read $ConfigIn";
+
+if (-f "$mainOut") {
+	system("/bin/mkdir -p '$backupDir'");
+	$backup="$backupDir/$fileOut-$date";
+	system("/bin/mv '$mainOut' '$backup'");
+   print "Echo backup $mainOut in $backup\n"
+}
+open(MAINOUT,">$mainOut") || die "cannot write on $mainOut";
+
 while(<IN>) {
 	$line=$_;
 	chomp($line);
+
+	next if ($line =~ /^\#\!D/);
+
+	if ($currentOut =~ /menus/ && $line =~ /^\+/) {
+		$line = menuCheck($line);
+	}
 
 	$line =~ s/^\#// if $uncomment;
    $line = "\#$line" if $comment;
@@ -88,7 +114,8 @@ while(<IN>) {
 			($line =~ /^\#G_ST/ && $GnomeY) || 
 			($line =~ /^\#STROKE/ && $Stroke) ||
 			($line =~ /^\#LAPTOP/ && $Laptop) || 
-			($line =~ /^\#PANEL_PUT/ && $PanelStaysPut)) {
+			($line =~ /^\#PANEL_PUT/ && $PanelStaysPut) ||
+			($line =~ /^\#CDE/ && $Cde)) {
 		@l=split(' ',$line);
 		$uncomment=$l[1];
 	}
@@ -106,6 +133,7 @@ while(<IN>) {
 		$prefapps=$l[1];
 	}
 
+
 	$line =~ s#rplay#$SoundPlayer# if ($line =~ /Event/);
 	$line =~ s#/usr/share/sounds/#$SoundPath# if ($line =~ /Event/);
 
@@ -119,15 +147,99 @@ while(<IN>) {
 	}
 	$line =~ s#/usr/include/X11/bitmap:/usr/include/X11/pixmaps#$DefImagePath# 
 		if ($line =~ /\/usr\/include\/X11\/bitmap:\/usr\/include\/X11\/pixmaps/);
+	
+	if ($line =~ /\#\!E/) {
+		$tmp = substr($line,index($line,'#!E')+3);
+		$tmp =~ s/\s//g;
+		@l = split(':',$tmp);
+		$t=0;
+		foreach $a (@l) { $t=1 if (checkApp($a)); }
+		$line = "#".$line unless $t;
+		$line =~ s/\s+\#\!E\s*.*\s*//;
+	}
 
-	print OUT "$line\n";
+	if ($line =~ /^\#SEG/) {
+		$line =~ s/^\#SEG//;
+		$line =~ s/\s//g;
+		$currentOut=$line;
+		if ($line eq "END") {
+			$currentOut=$mainOut;
+			close(OUT);
+		} else {
+			print MAINOUT "Read $line\n\n";
+			close(OUT) if ($currentOut ne $mainOut);
+			$currentOut="$DirOut/$line";
+			$fileOut=$line;
+			if (-f "$currentOut") {
+				system("/bin/mkdir -p '$backupDir'");
+				$backup="$backupDir/$fileOut-$date";
+				system("/bin/mv '$currentOut' '$backup'");
+				print "Echo backup $currentOut in $backup\n";
+			}
+			open(OUT,">$currentOut") || die "cannot write on $currentOut";
+		}
+	} else {
+		if ($currentOut ne $mainOut) {
+			print OUT "$line\n";
+		} else {
+			print MAINOUT "$line\n";
+		}
+	}
 }
 
 close(IN);
-close(OUT);
+close(MAINOUT);
 
 print "Echo END\n";
 
+#--------------------------------------------------------------------------
+# menu check
+
+sub menuCheck {
+	my ($menuline) =  @_;
+	my $action = "";
+	my $tact = "";
+   my $path = "";
+
+	return $menuline if (!($menuline =~ /exec/ && $menuline =~ /Exec/));
+	
+	if ($menuline =~ /Exec\s+cd/) {
+		$path = substr($menuline,rindex($menuline,'Exec cd'));
+		$path =~  s/^\s*Exec\s+cd\s*//;
+		$path = substr($action,0,index($path,';'));
+		$path =~ s/\s//g;
+		$path =~ s/\/$//;
+	}
+	$action = substr($menuline,rindex($menuline,'exec'));
+	$action =~ s/^exec\s+//;
+   $action =~ s/^killall\s+//;
+   $tact = $action;
+	$tact = substr($tact,0,index($tact,' ')) if ($tact =~ /\s/);
+	if ($tact eq "xterm" && $menuline =~ /\-e/) {
+		$action = substr($action,index($action,'-e'));
+		$action =~ s/^\-e\s+//;
+		$action = substr($action,0,index($action,' ')) if ($action =~ /\s/);
+	} else {
+		$action = $tact;
+	}
+	$action =~ s/^\s*\.\///;
+	$action = "$path/$action" if ($path ne "");
+	$menuline = "#".$menuline if (!checkApp($action));
+	return $menuline;
+}
+
+sub checkApp {
+	my($app) = @_;
+	my $dir ="";
+	if ($app =~ /^\//) {
+		if (-x $app ) { return 1 }
+	} else {
+		foreach $dir (@PATH_DIRS) {
+			if ( -x "$dir/$app" ) { return 1 }
+		}
+	}
+	return 0;
+}
 sub wrongUsage {
 	print STDERR "This script must be run by ScriptFvwmSetup95 only!\n";
 	exit -1;

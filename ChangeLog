@@ -1,3 +1,10 @@
+2000-04-16  olicha <olivier.chapuis@free.fr>
+	
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	Minor modifications. In particular, added "flags" for helping
+	menus/styles parsing and for multi-files building. Began a CDE 
+	support. 
+	
 2000-04-13  olicha <olivier.chapuis@free.fr>
 	
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
