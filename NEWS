@@ -1,3 +1,6 @@
+Note, the changes for the last OFFICIAL release start with release
+_+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
+
 Changes in beta release 2.3.10
 
 * New FvwmIconMan options: iconbutton and iconcolorset to control colors for
@@ -427,7 +430,9 @@ Changes in alpha release 2.3.0 (February 1999)
   images, no matter what their format are searched for along the
   ImagePath.
 
+_+_A NAME="2.2.4"_-_
 Changes in official release 2.2.4 (November 1999)
+_+_/A_-_
 
 * Fixed HP-UX 10.20 build problems.
 
