@@ -2282,8 +2282,18 @@ void MoveWindow(XEvent *Event)
 	else
 	{
 	  char buf[64];
-	  sprintf(buf, "Silent Move %dp %dp", x+t->border_width,
-		  y+t->title_height+t->border_width);
+	  int tx = x + t->border_width;
+	  int ty = y + t->title_height + t->border_width;
+
+	  if (tx < 0)
+	  {
+	    tx = tx + t->width - Scr.MyDisplayWidth;
+	  }
+	  if (ty < 0)
+	  {
+	    ty = ty + t->height - Scr.MyDisplayHeight;
+	  }
+	  sprintf(buf, "Silent Move %dp %dp", tx, ty);
 	  SendInfo(fd, buf, t->w);
 	}
 	XSync(dpy,0);
