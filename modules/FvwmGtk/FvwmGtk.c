@@ -42,7 +42,6 @@
 
 #include "fvwm/module.h"
 #include "libs/fvwmlib.h"
-#include "libs/ModParse.h"
 #include "libs/Picture.h"
 
 int fvwm_fd[2];
@@ -1297,7 +1296,7 @@ parse_config_line (char *buf)
     {
       fprintf (stderr, "Found line for me: %s\n", buf);
       p = buf + my_name_len;
-      if (e = FindToken (p, table, char*)) 
+      if ((e = FindToken (p, table, char*)))
 	{ 
 	  p += strlen (*e);	
 	  parse_arguments (&p, &argc, &argv); 
@@ -1432,7 +1431,7 @@ main (int argc, char **argv)
 {
   char *s, rcfile[200];
   
-  if (s = strrchr (argv[0], '/'))
+  if ((s = strrchr (argv[0], '/')))
     {
       s++;
     }

@@ -1,3 +1,8 @@
+1999-04-06  Tomas Ogren  <stric@ing.umu.se>
+
+	* FvwmGtk/FvwmGtk.c: Remove the libs/ModParse.h include and add some
+	()'s to get rid of warnings.
+
 Sun Apr  4 12:11:38 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/FormFvwmForm.: Save config file in users config dir.
