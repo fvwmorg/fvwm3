@@ -284,13 +284,14 @@ void ReadXServer ()
 	  int x, dy;
 	  x = BOX_SPC + TEXT_SPC
             + FontWidth(CF.cur_input->header.dt_ptr->dt_font_struct) *
-            old_cursor - 1;
+            ((old_cursor > 0) ? old_cursor - 1 : old_cursor) - 1;
 	  dy = CF.cur_input->header.size_y - 1;
 	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
                          CF.cur_input->header.dt_ptr->dt_colors[c_item_bg]);
-	  XDrawLine(dpy, CF.cur_input->header.win,
-                    CF.cur_input->header.dt_ptr->dt_item_GC,
-		    x, BOX_SPC, x, dy - BOX_SPC);
+          /* clear from the (old_cursor - 1) to the rest of the line */
+	  XClearArea(dpy, CF.cur_input->header.win, x, BOX_SPC,
+		     CF.cur_input->header.size_x - BOX_SPC -2 - x,
+		     dy - 2 * BOX_SPC, False);
 	}
       redraw:
 	{
@@ -301,7 +302,7 @@ void ReadXServer ()
 	  if (len > CF.cur_input->input.size)
 	    len = CF.cur_input->input.size;
 	  else
-	    XDrawImageString(dpy, CF.cur_input->header.win,
+	    XDrawString(dpy, CF.cur_input->header.win,
                              CF.cur_input->header.dt_ptr->dt_item_GC,
 			     BOX_SPC + TEXT_SPC +
 			     FontWidth(CF.cur_input->header.dt_ptr->
@@ -312,7 +313,7 @@ void ReadXServer ()
                              ascent,
 			     CF.cur_input->input.blanks,
 			     CF.cur_input->input.size - len);
-	  XDrawImageString(dpy, CF.cur_input->header.win,
+	  XDrawString(dpy, CF.cur_input->header.win,
                            CF.cur_input->header.dt_ptr->dt_item_GC,
 			   BOX_SPC + TEXT_SPC,
 			   BOX_SPC + TEXT_SPC +

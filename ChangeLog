@@ -1,7 +1,3 @@
-1999-07-21  Brad Giaccio
-
-	* module/FvwmScroll/*: added colorset support
-
 1999-07-20  Hippo
 
 	* fvwm/builtins.c: Fixed color leak with FvwmTheme.

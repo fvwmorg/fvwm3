@@ -105,6 +105,7 @@
 #include "libs/fvwmsignal.h"
 
 #include <libs/Picture.h>               /* for InitPictureCMap */
+#include "libs/Colorset.h"               /* for InitPictureCMap */
 
 #define IamTheMain 1                    /* in FvwmForm.h, chg extern to "" */
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
@@ -196,6 +197,8 @@ static void ct_Text(char *);
 static void ct_UseData(char *);
 static void ct_padVText(char *);
 static void ct_WarpPointer(char *);
+static void ct_Colorset(char *);
+static void ct_ItemColorset(char *);
 
 /* Must be in Alphabetic order (caseless) */
 static struct CommandTable ct_table[] = {
@@ -203,6 +206,7 @@ static struct CommandTable ct_table[] = {
   {"Button",ct_Button},
   {"ButtonFont",ct_ButtonFont},
   {"Choice",ct_Choice},
+  {"Colorset",ct_Colorset},
   {"Command",ct_Command},
   {"Font",ct_Font},
   {"Fore",ct_Fore},
@@ -210,6 +214,7 @@ static struct CommandTable ct_table[] = {
   {"Input",ct_Input},
   {"InputFont",ct_InputFont},
   {"ItemBack",ct_ItemBack},
+  {"ItemColorset",ct_ItemColorset},
   {"ItemFore",ct_ItemFore},
   {"Line",ct_Line},
   {"Message",ct_Message},
@@ -225,10 +230,12 @@ static struct CommandTable ct_table[] = {
 static struct CommandTable def_table[] = {
   {"Back",ct_Back},
   {"ButtonFont",ct_ButtonFont},
+  {"Colorset",ct_Colorset},
   {"Font",ct_Font},
   {"Fore",ct_Fore},
   {"InputFont",ct_InputFont},
   {"ItemBack",ct_ItemBack},
+  {"ItemColorset",ct_ItemColorset},
   {"ItemFore",ct_ItemFore},
   {"Read",ct_Read}
 };
@@ -262,6 +269,10 @@ static void ParseConfigLine(char *buf) {
   }
 
   /* This used to be case sensitive */
+  if (strncasecmp(buf, "Colorset", 8) == 0) {
+    LoadColorset(&buf[8]);
+    return;
+  }
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */
@@ -323,6 +334,7 @@ static void ct_Position(char *cp) {
 }
 static void ct_Fore(char *cp) {
   color_names[c_fg] = strdup(cp);
+  colorset = -1;
   myfprintf((stderr, "ColorFore: %s\n", color_names[c_fg]));
 }
 static void ct_Back(char *cp) {
@@ -331,16 +343,25 @@ static void ct_Back(char *cp) {
     screen_background_color = strdup(color_names[c_bg]);
     bg_state = 's';                     /* indicate set by command */
   }
+  colorset = -1;
   myfprintf((stderr, "ColorBack: %s, screen background %s, bg_state %c\n",
           color_names[c_bg],screen_background_color,(int)bg_state));
 }
+static void ct_Colorset(char *cp) {
+  sscanf(cp, "%d", &colorset);
+}
 static void ct_ItemFore(char *cp) {
   color_names[c_item_fg] = strdup(cp);
+  itemcolorset = -1;
   myfprintf((stderr, "ColorItemFore: %s\n", color_names[c_item_fg]));
 }
 static void ct_ItemBack(char *cp) {
   color_names[c_item_bg] = strdup(cp);
+  itemcolorset = -1;
   myfprintf((stderr, "ColorItemBack: %s\n", color_names[c_item_bg]));
+}
+static void ct_ItemColorset(char *cp) {
+  sscanf(cp, "%d", &itemcolorset);
 }
 static void ct_Font(char *cp) {
   font_names[f_text] = strdup(cp);
@@ -412,8 +433,12 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
     return;
   }
   if (dt->dt_used == 0) {               /* if nothing allocated */
-    dt->dt_colors[c_fg] = GetColor(dt->dt_color_names[c_fg]);
-    dt->dt_colors[c_bg] = GetColor(dt->dt_color_names[c_bg]);
+    dt->dt_colors[c_fg] = (colorset < 0)
+      ? GetColor(dt->dt_color_names[c_fg])
+      : Colorset[colorset % nColorsets].fg;
+    dt->dt_colors[c_bg] = (colorset < 0)
+      ? GetColor(dt->dt_color_names[c_bg])
+      : Colorset[colorset % nColorsets].bg;
 
     xgcv.foreground = dt->dt_colors[c_fg];
     xgcv.background = dt->dt_colors[c_bg];
@@ -425,18 +450,26 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
   if (this_item->type == I_TEXT) {      /* If no shadows needed */
     return;
   }
-  dt->dt_colors[c_item_fg] = GetColor(dt->dt_color_names[c_item_fg]);
-  dt->dt_colors[c_item_bg] = GetColor(dt->dt_color_names[c_item_bg]);
+  dt->dt_colors[c_item_fg] = (itemcolorset < 0)
+    ? GetColor(dt->dt_color_names[c_item_fg])
+    : Colorset[itemcolorset % nColorsets].fg;
+  dt->dt_colors[c_item_bg] = (itemcolorset < 0)
+    ? GetColor(dt->dt_color_names[c_item_bg])
+    : Colorset[itemcolorset % nColorsets].bg;
   xgcv.foreground = dt->dt_colors[c_item_fg];
   xgcv.background = dt->dt_colors[c_item_bg];
   xgcv.font = dt->dt_font;
-  dt->dt_item_GC = XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
+  dt->dt_item_GC = XCreateGC(dpy, CF.frame, GCForeground | GCFont, &xgcv);
   if (Pdepth < 2) {
     dt->dt_colors[c_itemlo] = BlackPixel(dpy, screen);
     dt->dt_colors[c_itemhi] = WhitePixel(dpy, screen);
   } else {
-    dt->dt_colors[c_itemlo] = GetShadow(dt->dt_colors[c_item_bg]);
-    dt->dt_colors[c_itemhi] = GetHilite(dt->dt_colors[c_item_bg]);
+    dt->dt_colors[c_itemlo] = (itemcolorset < 0)
+      ? GetShadow(dt->dt_colors[c_item_bg])
+      : Colorset[itemcolorset % nColorsets].shadow;
+    dt->dt_colors[c_itemhi] = (itemcolorset < 0)
+      ? GetHilite(dt->dt_colors[c_item_bg])
+      : Colorset[itemcolorset % nColorsets].hilite;
   }
   dt->dt_used = 2;                     /* fully allocated */
 }
@@ -995,7 +1028,7 @@ void RedrawFrame () {
       x = item->header.pos_x + TEXT_SPC + item->header.size_y;
       y = item->header.pos_y + TEXT_SPC +
         item->header.dt_ptr->dt_font_struct->ascent;
-      XDrawImageString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
+      XDrawString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
                        x, y, item->choice.text,
                        item->choice.n);
       break;
@@ -1009,7 +1042,7 @@ void RedrawText(Item *item) {
   x = item->header.pos_x + TEXT_SPC;
   y = item->header.pos_y + ( CF.padVText / 2 ) +
     item->header.dt_ptr->dt_font_struct->ascent;
-  XDrawImageString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
+  XDrawString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
                    x, y, item->text.value,
                    item->text.n);
 }
@@ -1064,13 +1097,13 @@ void RedrawItem (Item *item, int click)
     if (len > item->input.size)
       len = item->input.size;
     else
-      XDrawImageString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
+      XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		       BOX_SPC + TEXT_SPC
                        + FontWidth(item->header.dt_ptr->dt_font_struct) * len,
 		       BOX_SPC + TEXT_SPC
                        + item->header.dt_ptr->dt_font_struct->ascent,
 		       item->input.blanks, item->input.size - len);
-    XDrawImageString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
+    XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		     BOX_SPC + TEXT_SPC,
 		     BOX_SPC + TEXT_SPC +
                      item->header.dt_ptr->dt_font_struct->ascent,
@@ -1171,10 +1204,9 @@ void RedrawItem (Item *item, int click)
                   xsegs, 4);
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                    item->header.dt_ptr->dt_colors[c_item_fg]);
-    XDrawImageString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
+    XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		     BOX_SPC + TEXT_SPC,
-		     BOX_SPC + TEXT_SPC +
-                     item->header.dt_ptr->dt_font_struct->ascent,
+		     BOX_SPC + TEXT_SPC + item->header.dt_ptr->dt_font_struct->ascent,
 		     item->button.text, item->button.len);
     myfprintf((stderr,"Just put %s into a button\n",
                item->button.text));
@@ -1255,7 +1287,9 @@ static void OpenWindows ()
   xc_hand = XCreateFontCursor(dpy, XC_hand2);
   xcf.pixel = GetColor("White");
   XQueryColor(dpy, Pcmap, &xcf);
-  xcb.pixel = CF.screen_background = GetColor(screen_background_color);
+  xcb.pixel = CF.screen_background = (colorset < 0)
+    ? GetColor(screen_background_color)
+    : Colorset[colorset % nColorsets].bg;
   XQueryColor(dpy, Pcmap, &xcb);
   XRecolorCursor(dpy, xc_ibeam, &xcf, &xcb);
 
@@ -1303,6 +1337,13 @@ static void OpenWindows ()
       XSelectInput(dpy, item->header.win, ButtonPressMask | ExposureMask);
       xswa.cursor = xc_ibeam;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
+      if (itemcolorset >= 0)
+      {
+        SetWindowBackground(dpy, item->header.win,
+                            item->header.size_x, item->header.size_y,
+                            &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                            item->header.dt_ptr->dt_GC);
+      }
       break;
     case I_CHOICE:
       CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
@@ -1315,6 +1356,13 @@ static void OpenWindows ()
       XSelectInput(dpy, item->header.win, ButtonPressMask | ExposureMask);
       xswa.cursor = xc_hand;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
+      if (itemcolorset >= 0)
+      {
+        SetWindowBackground(dpy, item->header.win,
+                            item->header.size_x, item->header.size_y,
+                            &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                            item->header.dt_ptr->dt_GC);
+      }
       break;
     case I_BUTTON:
       myfprintf((stderr,"Checking alloc during Openwindow on button\n"));
@@ -1329,10 +1377,23 @@ static void OpenWindows ()
 		   ButtonPressMask | ExposureMask);
       xswa.cursor = xc_hand;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
+      if (itemcolorset >= 0)
+      {
+        SetWindowBackground(dpy, item->header.win,
+                            item->header.size_x, item->header.size_y,
+                            &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                            item->header.dt_ptr->dt_GC);
+      }
       break;
     }
   }
   Restart();
+  if (colorset >= 0)
+  {
+    SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
+                        &Colorset[(colorset % nColorsets)], Pdepth,
+                        root_item_ptr->header.dt_ptr->dt_GC);
+  }
   if (preload_yorn == 'n') {            /* if not a preload */
     XMapRaised(dpy, CF.frame);
     XMapSubwindows(dpy, CF.frame);
@@ -1417,6 +1478,36 @@ static void ParseActiveMessage(char *buf) {
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
 
+  if (strncasecmp(buf, "Colorset", 8) == 0) {
+    Item *item;
+    int n = LoadColorset(&buf[8]);
+    if(n == colorset || n == itemcolorset) {
+      for (item = root_item_ptr; item != 0;
+           item = item->header.next) {
+        item->header.dt_ptr->dt_used = 0;
+        if(item->header.dt_ptr->dt_GC) {
+          XFreeGC(dpy,item->header.dt_ptr->dt_GC);
+          item->header.dt_ptr->dt_GC = NULL;
+        }
+        if(item->header.dt_ptr->dt_item_GC) {
+          XFreeGC(dpy,item->header.dt_ptr->dt_item_GC);
+          item->header.dt_ptr->dt_item_GC = NULL;
+        }
+        CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
+        RedrawItem(item, 0);
+        if (itemcolorset >= 0 && item->header.win != 0) {
+          SetWindowBackground(dpy, item->header.win,
+                              item->header.size_x, item->header.size_y,
+                              &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                              item->header.dt_ptr->dt_GC);
+        }
+      }
+      SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
+                          &Colorset[(colorset % nColorsets)], Pdepth,
+                          root_item_ptr->header.dt_ptr->dt_GC);
+    }
+    return;
+  }
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */
@@ -1573,6 +1664,8 @@ int main (int argc, char **argv)
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
   InitPictureCMap(dpy);
+  /* prevent core dumps if fvwm doesn't provide any colorsets */
+  AllocColorset(0);
 
   fd_x = XConnectionNumber(dpy);
 

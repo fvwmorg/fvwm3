@@ -6,23 +6,27 @@ DestroyModuleConfig FormFvwmForm.*
 *FormFvwmForm.Text  ""
 *FormFvwmForm.Line  left
 *FormFvwmForm.Text  "Font for text:  "
-*FormFvwmForm.Input Font 60 "8x13bold"
+*FormFvwmForm.Input Font 63 "8x13bold"
 *FormFvwmForm.Line  left
 *FormFvwmForm.Text  "Font for input: "
-*FormFvwmForm.Input InputFont 60 "8x13bold"
+*FormFvwmForm.Input InputFont 63 "8x13bold"
 *FormFvwmForm.Line  left
 *FormFvwmForm.Text  "Font for button:"
-*FormFvwmForm.Input ButtonFont 60 "8x13bold"
+*FormFvwmForm.Input ButtonFont 63 "8x13bold"
 *FormFvwmForm.Line  left
 *FormFvwmForm.Text  "Color of text f/g:   "
-*FormFvwmForm.Input Fore 20 "Wheat"
+*FormFvwmForm.Input Fore 15 "Wheat"
 *FormFvwmForm.Text  "b/g:"
-*FormFvwmForm.Input Back 20 "Gray50"
+*FormFvwmForm.Input Back 15 "Gray50"
+*FormFvwmForm.Text  "colorset:"
+*FormFvwmForm.Input Colorset 5 "-1"
 *FormFvwmForm.Line  left
 *FormFvwmForm.Text  "Color of buttons f/g:"
-*FormFvwmForm.Input ItemFore 20 "Black"
+*FormFvwmForm.Input ItemFore 15 "Black"
 *FormFvwmForm.Text  "b/g:"
-*FormFvwmForm.Input ItemBack 20 "Light Gray"
+*FormFvwmForm.Input ItemBack 15 "Light Gray"
+*FormFvwmForm.Text  "colorset:"
+*FormFvwmForm.Input ItemColorset 5 "-1"
 *FormFvwmForm.Line left
 *FormFvwmForm.Message
 *FormFvwmForm.Line         expand
@@ -35,8 +39,10 @@ DestroyModuleConfig FormFvwmForm.*
 *FvwmFormDefaultButtonFont "'$(ButtonFont)'"\n\
 *FvwmFormDefaultFore "'$(Fore)'"\n\
 *FvwmFormDefaultBack "'$(Back)'"\n\
+*FvwmFormDefaultColorset "'$(Colorset)'"\n\
 *FvwmFormDefaultItemFore "'$(ItemFore)'"\n\
-*FvwmFormDefaultItemBack "'$(ItemBack)'"\
+*FvwmFormDefaultItemBack "'$(ItemBack)'"\n\
+*FvwmFormDefaultItemColorset "'$(ItemColorset)'"\
 " > ${FVWM_USERHOME}/.FvwmForm
 *FormFvwmForm.Command *FvwmFormDefaultRead n
 *FormFvwmForm.Command Module FvwmForm FormFvwmForm.

@@ -126,8 +126,10 @@ An example of what this file might contain after a save is:
   *FvwmFormDefaultButtonFont 10x20
   *FvwmFormDefaultFore white
   *FvwmFormDefaultBack cornflowerblue
+  *FvwmFormDefaultColorset -1
   *FvwmFormDefaultItemFore green
   *FvwmFormDefaultItemBack gray40
+  *FvwmFormDefaultItemColorset -1
 .EE
 The commands in this file are just like any other FvwmForm
 command except that they start with "*FvwmFormDefault".
@@ -157,12 +159,14 @@ The following commands are accepted before the form is displayed:
 *FvwmFormButtonFont
 *FvwmFormChoice
 *FvwmFormCommand
+*FvwmFormColorset
 *FvwmFormFont
 *FvwmFormFore
 *FvwmFormGrabServer
 *FvwmFormInput
 *FvwmFormInputFont
 *FvwmFormItemBack
+*FvwmFormItemColorset
 *FvwmFormItemFore
 *FvwmFormLine
 *FvwmFormMessage
@@ -213,16 +217,23 @@ distance from the right (resp. bottom) of the screen.
 
 If this option is omitted, FvwmForm starts at the center of the screen.
 .TP 4
+.B *FvwmFormColorset \fIn\fP
+Tells the module to use colorset \fIn\fP. See FvwmTheme.
+.TP 4
 .B *FvwmFormBack \fIcolor\fP
 Specifies the background color of the FvwmForm window
 and any text in the window.
 The first background color FvwmForm reads determines the overall
-screen background color.
+screen background color. Switches off the Colorset option.
 See DEFAULTS.
 .TP 4
 .B *FvwmFormFore \fIcolor\fP
 Specifies the foreground color for displaying text labels.
+Switches off the Colorset option.
 See DEFAULTS.
+.TP 4
+.B *FvwmFormItemColorset \fIn\fP
+Tells the module to use colorset \fIn\fP for items. See FvwmTheme.
 .TP 4
 .B *FvwmFormItemBack \fIcolor\fP
 Specifies the background color for the text input windows, and
@@ -230,11 +241,12 @@ the buttons.
 Buttons are displayed as 3D depressable buttons.
 Inputs are displayed as 3D indented fields.
 Medium shade background colors work best.
+Switches off the ItemColorset option.
 See DEFAULTS.
 .TP 4
 .B *FvwmFormItemFore \fIcolor\fP
 Specifies the foreground color for the text input strings and button
-text.
+text. Switches off the ItemColorset option.
 See DEFAULTS.
 .TP 4
 .B *FvwmFormFont \fIfont\fP

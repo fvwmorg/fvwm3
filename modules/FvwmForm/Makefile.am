@@ -46,7 +46,7 @@ config_DATA =        \
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
-    $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+    $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 
