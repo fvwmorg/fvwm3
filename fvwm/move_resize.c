@@ -2759,6 +2759,7 @@ void Maximize(F_CMD_ARGS)
   Bool grow_down = False;
   Bool grow_left = False;
   Bool grow_right = False;
+  Bool do_force_maximize = False;
   rectangle new_g;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
@@ -2778,7 +2779,7 @@ void Maximize(F_CMD_ARGS)
   if (toggle == 1 && IS_MAXIMIZED(tmp_win))
   {
     /* Fake that the window is not maximized. */
-    SET_MAXIMIZED(tmp_win, 0);
+    do_force_maximize = True;
   }
 
   /* parse first parameter */
@@ -2867,7 +2868,7 @@ void Maximize(F_CMD_ARGS)
     }
   }
 
-  if (IS_MAXIMIZED(tmp_win))
+  if (IS_MAXIMIZED(tmp_win) && !do_force_maximize)
   {
     SET_MAXIMIZED(tmp_win, 0);
     get_relative_geometry(&tmp_win->frame_g, &tmp_win->normal_g);
@@ -2944,7 +2945,10 @@ void Maximize(F_CMD_ARGS)
     DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
     /* remember the offset between old and new position in case the maximized
      * window is moved more than the screen width/height. */
-    update_absolute_geometry(tmp_win);
+    if (!do_force_maximize)
+    {
+      update_absolute_geometry(tmp_win);
+    }
     tmp_win->max_offset.x = tmp_win->normal_g.x - tmp_win->max_g.x;
     tmp_win->max_offset.y = tmp_win->normal_g.y - tmp_win->max_g.y;
 #if 0

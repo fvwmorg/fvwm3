@@ -9,6 +9,8 @@
 	* fvwm/move_resize.c (Maximize):
 	(resize_window):
 	don't maximize/shade/resize iconified windows
+	(Maximize):
+	fixed normal geometry when window was maximized twice
 
 2000-06-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
