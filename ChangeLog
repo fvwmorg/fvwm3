@@ -1,3 +1,10 @@
+1999-03-22  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/fvwm2.1 (Example): Colorlimit cutoff point now 21 bits.
+
+	* fvwm/builtins.c (SetColorLimit): Adjusted colorlimit cutoff point
+	to 21 bits.
+
 1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/builtins.c (SetBorderStyle): fixed coredump with whitespace

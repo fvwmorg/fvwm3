@@ -16,7 +16,7 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * Mailcheck interval option for FvwmTaskBar.
 
-* Colorlimit command does nothing if display depth is greater than 8.
+* Colorlimit command does nothing if display depth is greater than 20.
   This helps if you want to use the same configuration on more than one
   display depth.  ColorLimit defaults to ON if display depth is 8 bits
   or less.  This should help new users.
