@@ -638,12 +638,14 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	PressedW = exc->w.w;
 	/* Now handle click to focus and click to raise. */
 	__handle_focus_raise_click(&f, exc);
+fprintf(stderr,"_hbpom: do_focus: %d, do_raise: %d do_swallow: %d on 0x%08x '%s'\n", f.do_focus, f.do_raise, f.do_swallow_click, (int)exc->w.fw, exc->w.fw->visible_name);
 	if (f.do_focus)
 	{
 		if (!__handle_click_to_focus(exc))
 		{
 			/* Window didn't accept the focus; pass the click to the
 			 * application. */
+fprintf(stderr,"  pass click 1\n");
 			f.do_swallow_click = 0;
 		}
 	}
@@ -651,6 +653,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	{
 		if (__handle_click_to_raise(exc) == True)
 		{
+fprintf(stderr,"  delay raise\n");
 			/* We can't raise the window immediately because the
 			 * action bound to the click might be "Lower" or
 			 * "RaiseLower". So mark the window as scheduled to be
@@ -662,6 +665,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	/* handle bindings */
 	if (!f.do_forbid_function)
 	{
+fprintf(stderr,"  function allowed\n");
 		/* stroke bindings */
 		__handle_bpress_stroke();
 		/* mouse bindings */
@@ -669,6 +673,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 			Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
 			e->xbutton.state, GetUnusedModifiers(), exc->w.wcontext,
 			MOUSE_BINDING);
+fprintf(stderr,"  action '%s'\n", action?action:"(null)");
 		if (__handle_bpress_action(exc, action))
 		{
 			f.do_swallow_click = 1;
@@ -688,6 +693,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	/* clean up */
 	if (!f.do_swallow_click)
 	{
+fprintf(stderr,"  passing click\n");
 		/* pass the click to the application */
 		XAllowEvents(dpy, ReplayPointer, CurrentTime);
 		XFlush(dpy);
@@ -713,6 +719,7 @@ void HandleButtonPress(const evh_args_t *ea)
 	}
 	else if (ea->exc->w.fw != NULL)
 	{
+fprintf(stderr,"hbp: got bpress on 0x%08x '%s'\n", (int)ea->exc->w.fw, ea->exc->w.fw->visible_name);
 		__handle_bpress_on_managed(ea->exc);
 	}
 	else
