@@ -791,6 +791,7 @@ static cfunc_action_type CheckActionType(
   int dist;
   XEvent old_event;
   extern Time lastTimestamp;
+  Bool do_sleep = False;
 
   xcurrent = x;
   ycurrent = y;
@@ -806,11 +807,20 @@ static cfunc_action_type CheckActionType(
       return (is_button_pressed) ? CF_MOTION : CF_TIMEOUT;
     }
 
-    usleep(20000);
-    total+=20;
+    if (do_sleep)
+    {
+      usleep(20000);
+    }
+    else
+    {
+      usleep(1);
+      do_sleep = 1;
+    }
+    total += 20;
     if (XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
 			PointerMotionMask|ButtonPressMask|ExposureMask, d))
     {
+      do_sleep = 0;
       StashEventTime(d);
       switch (d->xany.type)
       {
