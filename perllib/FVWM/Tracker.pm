@@ -175,17 +175,23 @@ sub dump ($) {
 
 sub requestWindowListEvents ($) {
 	my $self = shift;
+	my $module = $self->{module};
 	warn "requestWindowListEvents() called after start()" if $self->{active};
+
 	$self->addHandler(M_END_WINDOWLIST, sub { $_[0]->terminate; });
-	$self->{module}->postponeSend("Send_WindowList");
+	$module->emulateEvent(M_END_WINDOWLIST, []) if $module->isDummy;
+	$module->postponeSend("Send_WindowList");
 }
 
 sub requestConfigInfoEvents ($;$) {
 	my $self = shift;
 	my $name = shift;
+	my $module = $self->{module};
 	warn "requestConfigInfoEvents() called after start()" if $self->{active};
+
 	$self->addHandler(M_END_CONFIG_INFO, sub { $_[0]->terminate; });
-	$self->{module}->postponeSend("Send_ConfigInfo" . ($name? " *$name": ""));
+	$module->emulateEvent(M_END_CONFIG_INFO, []) if $module->isDummy;
+	$module->postponeSend("Send_ConfigInfo" . ($name? " *$name": ""));
 }
 
 sub internalDie ($$) {

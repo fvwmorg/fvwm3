@@ -21,8 +21,9 @@ use FVWM::Module::Toolkit qw(base Gtk);
 
 sub eventLoop ($@) {
 	my $self = shift;
+	my @params = @_;
 
-	$self->eventLoopPrepared(@_);
+	$self->eventLoopPrepared(@params);
 	Gtk::Gdk->input_add(
 		$self->{istream}->fileno, ['read'],
 		sub ($$$) {
@@ -31,12 +32,12 @@ sub eventLoop ($@) {
 			unless ($self->processPacket($self->readPacket)) {
 				Gtk->main_quit;
 			}
-			$self->eventLoopPrepared(@_);
+			$self->eventLoopPrepared(@params);
 			return 1;
 		}
 	);
 	Gtk->main;
-	$self->eventLoopFinished(@_);
+	$self->eventLoopFinished(@params);
 }
 
 sub showError ($$;$) {
@@ -97,12 +98,13 @@ sub showDebug ($$;$) {
 		$dialog = new Gtk::Dialog;
 		$dialog->set_title($title);
 		$dialog->set_border_width(4);
+		$dialog->set_usize(540, 400);
 
-		my $text = $self->{gtkDebugText} || new Gtk::Text(undef, undef);
+		my $text = $self->{gtkDebugTextWg} || new Gtk::Text(undef, undef);
 		$text->set_editable(0);
 		$self->{gtkDebugString} ||= "";
 		$text->insert(undef, undef, undef, $self->{gtkDebugString});
-		$dialog->vbox->pack_start($text, 0, 1, 10);
+		$dialog->vbox->pack_start($text, 1, 1, 4);
 
 		my $button = new Gtk::Button "Close";
 		$dialog->action_area->pack_start($button, 1, 1, 0);
@@ -115,17 +117,38 @@ sub showDebug ($$;$) {
 			$self->{gtkDebugString} = "";
 		});
 
+		$button = new Gtk::Button "Save";
+		$dialog->action_area->pack_start($button, 1, 1, 0);
+		$button->signal_connect("clicked", sub {
+			my $fileDialog = new Gtk::FileSelection("Save $title");
+			my $fileName = "$ENV{FVWM_USERDIR}/";
+			$fileName .= $self->name . "-debug.txt";
+			$fileDialog->set_filename($fileName);
+			$fileDialog->ok_button->signal_connect("clicked", sub {
+				$fileName = $fileDialog->get_filename;
+				require General::FileSystem;
+				my $text = \$self->{gtkDebugString};
+				General::FileSystem::saveFile($fileName, $text)
+					if $fileName;
+				$fileDialog->destroy;
+			});
+			$fileDialog->cancel_button->signal_connect("clicked", sub {
+				$fileDialog->destroy;
+			});
+			$fileDialog->show;
+		});
+
 		$dialog->signal_connect('destroy', sub {
 			$self->{gtkDebugDialog} = undef;
-			$self->{gtkDebugText} = undef;
+			$self->{gtkDebugTextWg} = undef;
 		});
 		$dialog->show_all;
 
 		$self->{gtkDebugDialog} = $dialog;
-		$self->{gtkDebugText} = $text;
+		$self->{gtkDebugTextWg} = $text;
 	}
 
-	my $text = $self->{gtkDebugText};
+	my $text = $self->{gtkDebugTextWg};
 	#$text->set_point($text->get_length);
 	$text->insert(undef, undef, undef, "$msg\n");
 	$self->{gtkDebugString} .= "$msg\n";
@@ -188,21 +211,27 @@ Selecting the "Close" button closes the dialog. "Close All Errors" closes
 all error dialogs that may be open on the screen at that time.
 "Exit Module" terminates your entire module.
 
-Good for diagnostics of a GTK+ based module.
+Useful for diagnostics of a GTK+ based module.
 
 =item B<showMessage> I<msg> [I<title>]
 
 Creates a message window with one "Close" button.
 
-Good for debugging a GTK+ based module.
+Useful for notices by a GTK+ based module.
 
 =item B<showDebug> I<msg> [I<title>]
 
-Creates a persistent debug window with one "Close" button.
-All new debug messages are added to this window (i.e. the existing
-debug window is reused if found).
+Creates a persistent debug window with 3 buttons "Close", "Clear" and "Save".
+All new debug messages are added to this window (i.e. the existing debug
+window is reused if found).
 
-Good for debugging a GTK+ based module.
+"Close" withdraws the window until the next debug message arrives.
+
+"Clear" erases the current contents of the debug window.
+
+"Save" dumps the current contents of the debug window to the selected file.
+
+Useful for debugging a GTK+ based module.
 
 =head1 BUGS
 

@@ -1,3 +1,17 @@
+2003-06-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module/Tk.pm:
+	* FVWM/Module/Gtk.pm:
+	implemented showDebug with 3 buttons (Scott Smedley for Tk).
+
+	* FVWM/Module.pm.in:
+	* FVWM/Tracker/Scheduler.pm:
+	* FVWM/Tracker.pm:
+	use new method emulateEvent, some support for dummy mode
+
+	* FVWM/Tracker/Colorsets.pm:
+	improvements in dump
+
 2003-06-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

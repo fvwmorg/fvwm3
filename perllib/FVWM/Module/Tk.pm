@@ -17,7 +17,7 @@ package FVWM::Module::Tk;
 use 5.004;
 use strict;
 
-use FVWM::Module::Toolkit qw(base Tk Tk::Dialog);
+use FVWM::Module::Toolkit qw(base Tk Tk::Dialog Tk::ROText);
 
 sub new ($$@) {
 	my $class = shift;
@@ -26,7 +26,6 @@ sub new ($$@) {
 	my %params = @_;
 
 	my $self = $class->SUPER::new(%params);
-	bless $self, $class;
 
 	$self->internalDie("No Tk::Toplevel given in constructor")
 		unless UNIVERSAL::isa($top, "Tk::Toplevel");
@@ -39,8 +38,9 @@ sub new ($$@) {
 
 sub eventLoop ($) {
 	my $self = shift;
+	my @params = @_;
 
-	$self->eventLoopPrepared(@_);
+	$self->eventLoopPrepared(@params);
 	my $top = $self->{topLevel};
 	$top->fileevent($self->{istream},
 		readable => sub {
@@ -48,11 +48,11 @@ sub eventLoop ($) {
 				$self->disconnect;
 				$top->destroy;
 			}
-			$self->eventLoopPrepared(@_);
+			$self->eventLoopPrepared(@params);
 		}
 	);
 	MainLoop;
-	$self->eventLoopFinished(@_);
+	$self->eventLoopFinished(@params);
 }
 
 sub showError ($$;$) {
@@ -73,6 +73,80 @@ sub showError ($$;$) {
 
 	$self->terminate if $btn eq 'Exit Module';
 	$self->send("All ('$title') Close") if $btn eq 'Close All Errors';
+}
+
+sub showMessage ($$;$) {
+	my $self = shift;
+	my $msg = shift;
+	my $title = shift || ($self->name . " Message");
+
+	$self->topLevel()->messageBox(
+		-icon => 'info',
+		-type => 'ok',
+		-title => $title,
+		-message => $msg
+	);
+}
+
+sub showDebug ($$;$) {
+	my $self = shift;
+	my $msg = shift;
+	my $title = shift || ($self->name . " Debug");
+
+	my $dialog = $self->{tkDebugDialog};
+
+	if (!$dialog) {
+		if (!defined $self->topLevel()) {
+			# in the constructor, too early to popup a dialog
+			$self->FVWM::Module::showDebug($msg);
+			return;
+		}
+
+		# Tk's Dialog widgets are too damn inflexible.
+		# It's less hassle to build one from scratch.
+		$dialog = $self->topLevel()->Toplevel(-title => $title);
+		my $scroll = $dialog->Frame()->pack(-expand => 1, -fill => 'both');
+		my $bottom = $dialog->Frame()->pack(-expand => 0, -fill => 'x');
+		my $text = $scroll->Scrolled('ROText',
+			-bg => 'white',
+			-wrap => 'word',
+			-scrollbars => 'oe',
+		)->pack(-expand => 1, -fill => 'both');
+
+		$dialog->protocol('WM_DELETE_WINDOW', sub { $dialog->withdraw(); });
+		my @packOpts = (-side => 'left', -expand => 1, -fill => 'both');
+
+		$bottom->Button(
+			-text => 'Close',
+			-command => sub { $dialog->withdraw(); },
+		)->pack(@packOpts);
+		$bottom->Button(
+			-text => 'Clear',
+			-command => sub { $text->delete('0.0', 'end'); },
+		)->pack(@packOpts);
+		$bottom->Button(
+			-text => 'Save',
+			-command => sub {
+				my $file = $dialog->getSaveFile(-title => "Save $title");
+				return unless defined $file;
+				if (!open(OUT, ">$file")) {
+					$self->showError("Couldn't save $file: $!", 'Save Error');
+					return;
+				}
+				print OUT $text->get('0.0', 'end');
+				close(OUT);
+			},
+		)->pack(@packOpts);
+
+		$self->{tkDebugDialog} = $dialog;
+		$self->{tkDebugTextWg} = $text;
+	} else {
+		# this is annoying, the dialog may contain a check box for this
+		$dialog->deiconify();
+	}
+	my $text = $self->{tkDebugTextWg};
+	$text->insert('end', "$msg\n");
+	$text->see('end');
 }
 
 sub topLevel ($) {
@@ -108,8 +182,9 @@ FVWM::Module::Tk - FVWM::Module with the Tk widget library attached
 =head1 DESCRIPTION
 
 The B<FVWM::Module::Tk> package is a sub-class of B<FVWM::Module> that
-overloads the methods B<new>, B<eventLoop> and B<showError> to manage
-Tk objects as well. It also adds new methods B<topLevel> and B<winId>.
+overloads the methods B<new>, B<eventLoop>, B<showMessage>, B<showDebug> and
+B<showError> to manage Tk objects as well. It also adds new methods
+B<topLevel> and B<winId>.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
@@ -147,6 +222,25 @@ all error dialogs that may be open on the screen at that time.
 
 Good for diagnostics of a Tk based module.
 
+=item B<showMessage> I<msg> [I<title>]
+
+Creates a message window with one "Ok" button.
+
+Useful for notices by a Tk based module.
+
+=item B<showDebug> I<msg> [I<title>]
+
+Creates a debug window with 3 buttons "Close", "Clear" and "Save".
+All debug messages are added to the debug window.
+
+"Close" withdraws the window until the next debug message arrives.
+
+"Clear" erases the current contents of the debug window.
+
+"Save" dumps the current contents of the debug window to the selected file.
+
+Useful for debugging a Tk based module.
+
 =item B<topLevel>
 
 Returns the Tk toplevel that this object was created with.
@@ -165,10 +259,12 @@ Would not surprise me in the least.
 
 Mikhael Goikhman <migo@homemail.com>.
 
+=head1 THANKS TO
+
 Randy J. Ray <randy@byz.org>, author of the old classes
 B<X11::Fvwm> and B<X11::Fvwm::Tk>.
 
-=head1 THANKS TO
+Scott Smedley <ss@aao.gov.au>.
 
 Nick Ing-Simmons <Nick.Ing-Simmons@tiuk.ti.com> for Tk Perl extension.
 

@@ -152,6 +152,7 @@ sub new ($@) {
 	$self->{addXMask} = 0;
 
 	$self->{heldCommandArgs} = [];
+	$self->{syntheticEvents} = [];
 	$self->{usedTrackerClasses} = {};
 	$self->{trackers} = {};
 
@@ -376,6 +377,8 @@ sub terminate ($;$) {
 sub readPacket ($) {
 	my $self = shift;
 
+	goto RETURN_PACKET if @{$self->{syntheticEvents}};
+
 	$self->{lastPacket} = [];
 
 	my $header = "";
@@ -418,6 +421,9 @@ sub readPacket ($) {
 			if $off != $len;
 	}
 
+RETURN_PACKET:
+	($type, $packet) = @{shift @{$self->{syntheticEvents}}}
+		if @{$self->{syntheticEvents}};
 	$self->{lastPacket} = [$type, $packet];
 	return ($type, $packet);
 }
@@ -473,6 +479,18 @@ sub processPacket ($;$$) {
 	return $continue;
 }
 
+sub emulateEvent ($$$) {
+	my $self = shift;
+	my ($type, $packet) = @_;
+
+	if ($self->{isInEventLoop}) {
+		$self->invokeHandler(new FVWM::Event($type, $packet));
+		return;
+	}
+
+	push @{$self->{syntheticEvents}}, [$type, $packet];
+}
+
 sub eventLoopPrepared ($@) {
 	my $self = shift;
 	my $tracking = shift()? 1: 0;
@@ -499,6 +517,10 @@ sub eventLoopPrepared ($@) {
 	# execute postponed commands if any
 	$self->send(@{shift @{$self->{heldCommandArgs}}})
 		while @{$self->{heldCommandArgs}};
+
+	# fire emulated events if any
+	$self->processPacket(@{shift @{$self->{syntheticEvents}}})
+		while !$tracking && @{$self->{syntheticEvents}};
 }
 
 sub eventLoopFinished ($@) {
@@ -513,41 +535,15 @@ sub eventLoopFinished ($@) {
 
 sub eventLoop ($@) {
 	my $self = shift;
-#	my $tracking = shift()? 1: 0;
-
-#	$self->sendReady unless $tracking;
-
-#	# update module masks to handle trackers if needed
-#	my $addMask  = 0;
-#	my $addXMask = 0;
-#	foreach (values %{$self->{trackers}}) {
-#		my ($mask0, $xmask0) = $_->masks;
-#		$addMask  |= $mask0;
-#		$addXMask |= $xmask0;
-#	}
-#	my $oldMask  = $self->mask ($self->mask  | $addMask)  if $addMask;
-#	my $oldXMask = $self->xmask($self->xmask | $addXMask) if $addXMask;
-
-#	$self->debug("entered event loop", 3 + $tracking);
 
 	while (1) {
 		$self->eventLoopPrepared(@_);
-#		# first execute postponed commands if any
-#		$self->send(@{shift @{$self->{heldCommandArgs}}})
-#			while @{$self->{heldCommandArgs}};
 
 		# catch exceptions during read, for example from alarm() handler,
 		# but don't catch errors (or die) in event handlers
 		$self->processPacket(eval { $self->readPacket }) || last;
 	}
-
 	$self->eventLoopFinished(@_);
-#	$self->debug("exited event loop", 3 + $tracking);
-#	$self->disconnect unless $tracking;
-
-#	# restore module masks if needed
-#	$self->mask ($oldMask)  if $tracking && $addMask;
-#	$self->xmask($oldXMask) if $tracking && $addXMask;
 }
 
 sub track ($$;$@) {
@@ -705,6 +701,7 @@ B<getHandlerCategory>,
 B<readPacket>,
 B<invokeHandler>,
 B<processPacket>,
+B<emulateEvent>
 
 These methods deal with a received packet (event):
 
@@ -999,14 +996,14 @@ with an addition of "special" category for I<ON_EXIT> handlers.
 
 This is a blocking method that waits until there is a packet on the
 communication end from I<fvwm>. Then it returns a list of 2 values,
-packet type and packet data (packed).
+packet type and packet data (unpacked array of arguments).
 
 =item B<invokeHandler> I<event>
 
 Dispatches the apropos event handlers with the event data.
 This method is called automatically, so you usually should not worry about it.
 
-=item B<processPacket> [I<data type>]
+=item B<processPacket> [I<type data>]
 
 This method constructs the event object from the packet data and calls
 B<invokeHandler> with it. Prints debug info if requested. Finally calls
@@ -1014,6 +1011,15 @@ B<sendUnlock> if needed.
 
 You should not really worry about this method, it is called automatically
 from the event loop.
+
+=item B<emulateEvent> I<type data>
+
+This method emulates the event as returned by B<readPacket>. The given event
+is processed immeadeatelly if in the event loop, or just before the real
+B<readPacket> otherwise.
+
+The parameters are the same as in B<processPacket> and the same as in
+L<FVWM::Event> constructor.
 
 =item B<eventLoopPrepared>
 

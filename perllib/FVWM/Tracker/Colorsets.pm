@@ -75,7 +75,7 @@ sub calculateInternals ($$) {
 
 	my $num = hex($1);
 	my @numbers = getTokens($2);
-	return undef if @numbers != 20;
+	return undef if @numbers != CS_FIELDS;
 
 	# memory used for keys may be optimized later
 	my $newHash = {};
@@ -84,8 +84,8 @@ sub calculateInternals ($$) {
 		$newHash->{$_} = hex($numbers[$i++]);
 	}
 
-	my $oldHash = $self->{data}->{$num};
-	$self->{data}->{$num} = $newHash;
+	my $oldHash = $data->{$num};
+	$data->{$num} = $newHash;
 
 	return wantarray? ($num, $oldHash): $num;
 }
@@ -102,6 +102,7 @@ sub dump ($;$) {
 	my $self = shift;
 	my $num = shift;
 	my $data = $self->{data};
+	return "Colorset $num is unknown\n" if defined $num && !$data->{$num};
 	my @nums = defined $num? ($num):
 		sort { "$a$b" =~ /^\d+$/? $a <=> $b: $a cmp $b } keys %$data;
 
@@ -113,8 +114,9 @@ sub dump ($;$) {
 		foreach (CS_FIELDS) {
 			my $value = $csHash->{$_};
 			$i++;
-			next if $i > 5 && ($value == 0 || /alpha_percent/ && $value == 100);
-			$value = ("#" . sprintf("%06lx", $value)) if $i <= 7;
+			next if $i > 5 && ($value == 0 || /alpha_percent$/ && $value == 100);
+			$value = sprintf("#%06lx", $value) if $i <= 7;
+			$value = sprintf("0x%07lx", $value) if /pixmap$/;
 			$string .= " $_=$value";
 		}
 		$string .= "\n";

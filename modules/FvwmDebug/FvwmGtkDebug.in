@@ -590,9 +590,9 @@ $module->addHandler(MAX_MSG_MASK, \&storeEvent);
 $module->addHandler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&storeEvent);
 
 sub emulateSomeEvents () {
-	$module->invokeHandler(new FVWM::Event(M_NEW_DESK, [ $currentEventNum ]));
-	$module->invokeHandler(new FVWM::Event(M_MAP, [ 0x123, 0x456, 789 ]));
-	$module->invokeHandler(new FVWM::Event(M_NEW_PAGE, [ 0, 0, 2, 800, 600, 3, 3 ]));
+	$module->emulateEvent(M_NEW_DESK, [ $currentEventNum ]);
+	$module->emulateEvent(M_MAP, [ 0x123, 0x456, 789 ]);
+	$module->emulateEvent(M_NEW_PAGE, [ 0, 0, 2, 800, 600, 3, 3 ]);
 }
 
 if ($module->isDummy) {

@@ -1,3 +1,8 @@
+2003-06-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmGtkDebug.in:
+	use new module method emulateEvent
+
 2003-06-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIdent/FvwmIdent.c (ProcessXEvent):

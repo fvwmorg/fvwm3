@@ -91,9 +91,7 @@ sub sendSchedule ($$) {
 	my $string = "$self->{sentStringPrefix}$scheduleId";
 	if ($self->{useAlarm}) {
 		$SIG{ALRM} = sub {
-			$self->{module}->invokeHandler(
-				new FVWM::Event(M_STRING, [ 0, 0, 0, $string ])
-			);
+			$self->{module}->emulateEvent(M_STRING, [ 0, 0, 0, $string ]);
 		};
 		alarm($sd->{seconds});
 	} else {
