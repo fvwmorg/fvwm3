@@ -81,7 +81,7 @@ rpm-this: rpm-regenerate
 #    make deb-inplace release=1.mg fullname=migo # works on sources directly
 
 deb-regenerate:
-	(cd debian && $(MAKE) $(AM_MAKEFLAGS) Makefile) || exit 1
+	(cd debian && $(MAKE) $(AM_MAKEFLAGS) Makefile control) || exit 1
 
 deb-dist: dist deb-this
 
