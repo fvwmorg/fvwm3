@@ -1710,7 +1710,6 @@ int main(int argc, char **argv)
 	int i;
 	int len;
 	char *display_string;
-	char message[255];
 	Bool do_force_single_screen = False;
 	int single_screen_num = -1;
 	Bool replace_wm = False;

@@ -1,3 +1,8 @@
+2003-07-28  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm.c (main):
+	A -Wall fix
+
 2003-07-25  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.c (ewmh_HandleWindowType): 
