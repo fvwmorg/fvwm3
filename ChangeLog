@@ -1,3 +1,12 @@
+1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* acinclude.m4: add AM_PATH_GDK_IMLIB from imlib.m4.
+
+	* configure.in: use AM_PATH_GDK_IMLIB to check for gdk-imlib.
+
+	* acconfig.h: new define IMLIB to indicate the presence
+	of gdk-imlib (for FvwmGtk).
+
 1999-04-27  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1: Added hint at IgnoreModifiers default.

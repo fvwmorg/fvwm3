@@ -37,8 +37,13 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <gdk/gdkprivate.h>
 #include "gtkpixmapmenuitem.h"
+
+#ifdef IMLIB
+#include <gdk_imlib.h>
+#endif
 
 #include "fvwm/module.h"
 #include "libs/fvwmlib.h"
@@ -58,7 +63,8 @@ unsigned long context;
 char *notebook_label;
 int collecting_window_list;
 int window_list_button;
-
+GtkWidget *attach_to_toplevel;
+int icon_w, icon_h;
 
 /*
   General overview:
@@ -109,7 +115,11 @@ open_dialog (int argc, char **argv)
   g_return_if_fail (argc >= 2);
 
   item = g_hash_table_lookup (widgets, argv[0]);
-  if (item == NULL) 
+  if (item)
+    { 
+      name = gtk_widget_get_name (item);
+    }
+  else
     {
       item = gtk_window_new (GTK_WINDOW_DIALOG);
       gtk_widget_set_name (item, argv[0]);
@@ -427,8 +437,6 @@ send_values (GtkWidget *w)
 {
   GtkWidget *dialog;
   char **vals;
-  char *c;
-  int i;
 
   dialog = gtk_widget_get_toplevel (w);
   for (vals = (char **) gtk_object_get_data (GTK_OBJECT (w), "return_values");
@@ -501,7 +509,7 @@ widget_get_value (GtkWidget *w)
 	{
 	  blue = 65535;
 	}
-      g_snprintf (buf, sizeof (buf), "rgb:%0.4lx/%0.4lx/%0.4lx", 
+      g_snprintf (buf, sizeof (buf), "rgb:%.4lx/%.4lx/%.4lx", 
 		red, green, blue);
       return buf;
     }
@@ -670,7 +678,6 @@ void
 dialog_color (int argc, char **argv)
 {
   GtkWidget *item;
-  XColor color;
 
   g_return_if_fail (argc >= 1);
 
@@ -916,6 +923,11 @@ send_item (GtkWidget *item, char *s)
   SendText (fvwm_fd, s, context);
 }
 
+void
+detacher (GtkWidget *attach, GtkMenu *menu)
+{
+}
+
 GtkWidget*
 find_or_create_menu (char *name)
 {
@@ -927,7 +939,8 @@ find_or_create_menu (char *name)
   if (menu == NULL) 
     {
       menu = gtk_menu_new ();
-      
+      gtk_menu_attach_to_widget (GTK_MENU (menu), 
+				 attach_to_toplevel, detacher);
       gtk_widget_set_name (menu, name);
       name_copy = gtk_widget_get_name (menu);
       gtk_object_ref (GTK_OBJECT (menu));
@@ -949,14 +962,10 @@ find_or_create_menu (char *name)
 void
 open_menu (int argc, char **argv)
 {
-  GtkWidget *item;
-  char *name;
-
   g_return_if_fail (argc >= 1);
 
   current = find_or_create_menu (argv[0]);
 }
-
 
 /* from gtkcauldron.c */
 /* result must be g_free'd */
@@ -1013,18 +1022,21 @@ get_menu_accel_group (GtkMenuShell *menu_shell)
 	return ag;
 }
 
-
 GtkWidget *
 menu_item_new_with_pixmap_and_label (char *file, char *_label)
 {
   GtkWidget *item;
   GtkWidget *label;
   GtkWidget *icon;
-  GdkPixmap *pixmap;
-  GdkBitmap *mask;
+  GdkPixmap *pixmap = NULL;
+  GdkBitmap *mask = NULL;
   char *path;
-  gint accelerator_key = 0, underbar_pos = -1;
+  gint accel_key = 0, underbar_pos = -1;
   gchar *pattern, *converted_label;
+#ifdef IMLIB
+  GdkImlibImage *im;
+  int w, h;
+#endif
 
   path = findImageFile (file, image_path, R_OK);
 
@@ -1034,32 +1046,58 @@ menu_item_new_with_pixmap_and_label (char *file, char *_label)
     } 
   else 
     {
-      item = gtk_pixmap_menu_item_new ();
+#ifdef IMLIB
+      im = gdk_imlib_load_image (path);
+      if (im)
+	{
+	  if (icon_w == 0 || icon_h == 0)
+	    {
+	      w = im->rgb_width;
+	      h = im->rgb_height;
+	    }
+	  else 
+	    {
+	      w = icon_w;
+	      h = icon_h;
+	    }
+	  gdk_imlib_render (im, w, h);
+	  pixmap = gdk_imlib_move_image (im);
+	  mask = gdk_imlib_move_mask (im);
+	}
+#else      
       pixmap = gdk_pixmap_create_from_xpm (NULL, &mask, NULL, path);
-      icon = gtk_pixmap_new (pixmap, mask);
-      gtk_pixmap_menu_item_set_pixmap (GTK_PIXMAP_MENU_ITEM (item), icon);
-      gtk_widget_show (icon);
-      
+#endif
+      if (pixmap)
+	{
+	  item = gtk_pixmap_menu_item_new ();
+	  icon = gtk_pixmap_new (pixmap, mask);
+	  gtk_pixmap_menu_item_set_pixmap (GTK_PIXMAP_MENU_ITEM (item), icon);
+	  gtk_widget_show (icon);
+	}
+      else 
+	{
+	  item = gtk_menu_item_new ();
+	}
+
       free (path);
     }
-
-  converted_label = convert_label_with_ampersand (_label, &accelerator_key,
+  
+  converted_label = convert_label_with_ampersand (_label, &accel_key,
 						  &underbar_pos);
-  pattern = create_label_pattern (converted_label, underbar_pos);
   label = gtk_label_new (converted_label);
   if (underbar_pos != -1)
     {
       GtkAccelGroup *accel_group = 
 	get_menu_accel_group (GTK_MENU_SHELL (current));
-      
-      gtk_label_set_pattern (GTK_LABEL (label), pattern);
-	
-      gtk_widget_add_accelerator (item, "activate_item", 
-				  accel_group, accelerator_key, 0, 0);
 
+      pattern = create_label_pattern (converted_label, underbar_pos);
+      gtk_label_set_pattern (GTK_LABEL (label), pattern);
+
+      gtk_widget_add_accelerator (item, "activate_item", 
+				  accel_group, accel_key, 0, 0);
     }
   g_free (converted_label);
-
+  
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_container_add (GTK_CONTAINER (item), label);
   gtk_widget_show (label);
@@ -1074,17 +1112,20 @@ void
 menu_title (int argc, char **argv)
 {
   GtkWidget *item;
+  char *file;
 
   g_return_if_fail (argc >= 1);
 
   if (argc >= 2)
     {
-      item = menu_item_new_with_pixmap_and_label (argv[1], argv[0]);
+      file = argv[1];
     }
   else
     {
-      item = menu_item_new_with_pixmap_and_label ("", argv[0]);
+      file = "";
     }
+
+  item = menu_item_new_with_pixmap_and_label (file, argv[0]);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
   /* 
@@ -1117,17 +1158,19 @@ void
 menu_item (int argc, char **argv)
 {
   GtkWidget *item;
+  char *file;
   
   g_return_if_fail (argc >= 2);
 
   if (argc >= 3)
     {
-      item = menu_item_new_with_pixmap_and_label (argv[2], argv[0]);
+      file = argv[2];
     }
-  else
+  else 
     {
-      item = menu_item_new_with_pixmap_and_label ("", argv[0]);
+      file = "";
     }
+  item = menu_item_new_with_pixmap_and_label (file, argv[0]);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
   gtk_signal_connect 
@@ -1152,21 +1195,25 @@ menu_tearoff_item (int argc, char **argv)
 void
 menu_submenu (int argc, char **argv)
 {
-  GtkWidget *item;
-  int i;
-  
+  GtkWidget *item, *submenu;
+  char *file;
+
   if (argc >= 3)
     {
-      item = menu_item_new_with_pixmap_and_label (argv[2], argv[0]);
+      file = argv[2];
     }
-  else
+  else 
     {
-      item = menu_item_new_with_pixmap_and_label ("", argv[0]);
+      file = "";
     }
+
+  item = menu_item_new_with_pixmap_and_label (file, argv[0]);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), 
-			     find_or_create_menu (argv[1])); 
+  submenu = find_or_create_menu (argv[1]);
+
+  gtk_menu_detach (GTK_MENU (submenu));
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu); 
 }
 
 void
@@ -1248,6 +1295,30 @@ start_window_list (char *name, int button, char **opts)
   SendText (fvwm_fd, "Send_WindowList", 0);
 }
 
+void
+parse_rc_file (int argc, char **argv)
+{
+  g_return_if_fail (argc >= 1);
+
+  gtk_rc_parse (argv[0]);
+  
+}
+
+void 
+icon_size (int argc, char **argv)
+{
+  if (argc < 2)
+    {
+      icon_w = 0;
+      icon_h = 0;
+    }
+  else 
+    {
+      icon_w = atoi (argv[0]);
+      icon_h = atoi (argv[1]);
+    }
+}
+
 char *table[] = {
   "Box",
   "Button",
@@ -1262,6 +1333,7 @@ char *table[] = {
   "EndRadioGroup",
   "Entry",
   "Frame",
+  "IconSize",
   "Item",
   "Label",
   "Menu",
@@ -1269,6 +1341,7 @@ char *table[] = {
   "OptionMenu",
   "RadioButton",
   "RadioGroup",
+  "RCFile",
   "Scale",
   "Separator",
   "SpinButton",
@@ -1292,6 +1365,7 @@ void (*handler[])(int, char**) = {
   dialog_end_radiogroup,
   dialog_entry,
   dialog_start_frame,
+  icon_size,
   item,
   dialog_label,
   open_menu,
@@ -1299,6 +1373,7 @@ void (*handler[])(int, char**) = {
   dialog_start_option_menu,
   dialog_radiobutton,
   dialog_start_radiogroup,
+  parse_rc_file,
   dialog_scale,
   separator,
   dialog_spinbutton,
@@ -1316,8 +1391,7 @@ parse_arguments (char **line, int *argc, char ***argv)
 
   for (i = 0; i < 100 ; i++) 
     {
-/*      tmp[i] = GetArgument (line);*/
-	*line = GetNextSimpleOption( *line, &tmp[i] );
+      *line = GetNextSimpleOption( *line, &tmp[i] );
       if (!tmp[i]) break;
     }
   *argc = i;
@@ -1369,7 +1443,6 @@ parse_config_line (char *buf)
     }
   if (strncasecmp (buf, my_name, my_name_len) == 0) 
     {
-      fprintf (stderr, "Found line for me: %s\n", buf);
       p = buf + my_name_len;
       if ((e = FindToken (p, table, char*)))
 	{ 
@@ -1384,12 +1457,11 @@ parse_config_line (char *buf)
     }
   else if (strncasecmp (buf, "ImagePath", 9) == 0) 
     {
-      fprintf (stderr, "Found ImagePath: %s\n", buf);
       if (image_path) 
 	{
 	  free (image_path);
 	}
-      image_path = strdup (buf + 9);
+      image_path = stripcpy (buf + 9);
     }
 }
 
@@ -1403,11 +1475,6 @@ parse_options (void)
       parse_config_line (buf);
     } 
 } 
-
-void
-detacher (GtkWidget *attach, GtkMenu *menu)
-{
-}
 
 void 
 process_message (unsigned long type, 
@@ -1442,15 +1509,6 @@ process_message (unsigned long type,
             }
           else
             {
-	      /* FIXME: This is a hack: we must have menus attached
-		 to some widget or gtk_menu_set_tearoff_state complains.
-		 Unattached menus are attached to themself here!
-		 Submenus are attached already to their item. */
-	      if (!gtk_menu_get_attach_widget (GTK_MENU (widget)))
-		{
-		  gtk_menu_attach_to_widget (GTK_MENU (widget), 
-					     widget, detacher);
-		}
 	      gtk_menu_popup (GTK_MENU (widget), NULL, NULL, NULL, NULL, 
 			      button, timestamp);
 	    }    
@@ -1528,9 +1586,13 @@ main (int argc, char **argv)
   fvwm_fd[0] = atoi (argv[1]);
   fvwm_fd[1] = atoi (argv[2]);
 
+#ifdef IMLIB
+  gdk_init (&argc, &argv);
+  gdk_imlib_init ();
+  gtk_widget_push_visual (gdk_imlib_get_visual ());
+  gtk_widget_push_colormap (gdk_imlib_get_colormap ());
+#endif
   gtk_init (&argc, &argv);
-  g_snprintf (rcfile, 200, "%s/.%src", getenv ("HOME"), my_name + 1);
-  gtk_rc_parse (rcfile);
 
   widgets = g_hash_table_new (g_str_hash, g_str_equal);
   current = NULL;
@@ -1538,6 +1600,8 @@ main (int argc, char **argv)
   radio_group = NULL;
   group_name = NULL;
   collecting_window_list = 0;
+  attach_to_toplevel = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  icon_w = icon_h = 0;
 
   parse_options ();
   

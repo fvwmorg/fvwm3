@@ -277,7 +277,7 @@ dnl -lSM -lICE are in X_PRE_LIBS when they exist.
 AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
              [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 
-dnl FIXME: this requires AM_PATH_GTK to be defined.
+dnl Check the availability of Gtk
 AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
 if test "x$no_gtk" = x ; then
   with_gtk=yes
@@ -285,6 +285,8 @@ else
   with_gtk=no
 fi
 
+dnl Check the availability of gdk-imlib
+AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile docs/Makefile

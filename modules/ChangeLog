@@ -1,3 +1,26 @@
+1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c (parse_config_line): use stripcpy from
+	libs/Strings.c instead of strdup when copying the image path.
+
+	* FvwmGtk/FvwmGtk.1: document *FvwmGtkIconSize.
+
+	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label): 
+	optionally use imlib to load and scale images.
+	(icon_size): new function to implement the config command 
+	*FvwmGtkIconSize.
+
+	* FvwmGtk/Makefile.am (GDK_IMLIB_CFLAGS): 
+	(GDK_IMLIB_LIBS): New variables for imlib support.
+
+1999-04-27  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c (parse_rc_file): new function to implement
+	the config command *FvwmGtkRCFile. 
+
+	* FvwmGtk/FvwmGtk.1: document *FvwmGtkRCFile. Add a hint for
+	how to make FvwmGtk use GNOME themes.
+	
 1999-04-27  Bob Woodside <proteus@pcnet.com>
 
 	* FvwmWharf/FvwmWharf.c: Fixed off-by-two error in copying the
@@ -26,7 +49,7 @@ Mon Apr 26 12:20:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	(menu_item_new_with_pixmap_and_label): use the "stolen" functions
 	above to implement keyboard navigation like in fvwms native menus.
 
-	* FvwmGtk/FvwmGtk.1: document document underlined accelerators.
+	* FvwmGtk/FvwmGtk.1: document underlined accelerators.
 
 Mon Apr 26 01:33:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
