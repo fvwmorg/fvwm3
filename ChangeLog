@@ -1,3 +1,36 @@
+1999-04-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/icons.c (AutoPlaceIcon):
+	Use IsWindowOnThisPage. This fixes the problem that the icon may be on
+	a different page even if you iconified something on the current page
+
+	* fvwm/misc.h:
+	* fvwm/builtins.c (Maximize):
+	* fvwm/focus.c (SetFocus):
+	* fvwm/misc.c (IsWindowOnThisPage):
+	Implement and use service function IsWindowOnThisPage()
+
+	* fvwm/events.c (HandleFocusIn):
+	* fvwm/focus.c (IsLastFocusSetByMouse):
+	replaced global variable lastFocusType by function
+	IsLastFocusSetByMouse
+
+	* fvwm/misc.h:
+	* fvwm/builtins.c (flip_focus_func):
+	(focus_func):
+	(FocusOn):
+	(warp_func):
+	(WarpOn):
+	moved focus related code and prototypes to focus.[ch]
+
+	* fvwm/functions.c (ExecuteFunction): fixed coredump in SILENT
+
+1999-04-18  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (FocusOn):
+	* fvwm/events.c (HandleEnterNotify): use HAS_MOUSE_FOCUS and
+	HAS_SLOPPY_FOCUS instead of !HAS_CLICK_FOCUS and !HAS_NEVER_FOCUS
+
 1999-04-19  Bob Woodside  <proteus@pcnet.com>
 
 	* modules/FvwmRearrange/FvwmRearrange.c: GSFR.
@@ -27,37 +60,37 @@
 	* fvwm/module.c: New-style variable packet building logic for GSFR -
 	used for the M_ADD_WINDOW/M_CONFIGURE_WINDOW packets.
 	* fvwm/module.h: Ibid.
-	* modules/FvwmPager/FvwmPager.c: Changed to handle the new-style packet,
-	and changed all the flags references to their GSFR equivalents.
+	* modules/FvwmPager/FvwmPager.c: Changed to handle the new-style
+	packet, and changed all the flags references to their GSFR equivalents.
 	* modules/FvwmPager/FvwmPager.h: Ibid.
 	* modules/FvwmPager/x_pager.c: Ibid. Also, I termporarily reverted all
 	the "Silent" commands to their non-silent versions so the GSFR changes
-	can be tested; "Silent" handling seems to be broken at the moment - FVWM
-	segfaults whenever Pager sends a Silent command.
+	can be tested; "Silent" handling seems to be broken at the moment -
+	FVWM segfaults whenever Pager sends a Silent command.
 
 1999-04-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/events.c (HandleConfigureRequest): 
-	* fvwm/icons.c (CreateIconWindow): 
-	(DrawIconWindow): 
-	* fvwm/misc.c (LowerWindow): 
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/icons.c (CreateIconWindow):
+	(DrawIconWindow):
+	* fvwm/misc.c (LowerWindow):
 	(RaiseWindow): make sure icon windows are always restacked
 	below their frame.
 
 1999-04-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/fvwm.h (window_flags): new flags is_icon_entered 
+	* fvwm/fvwm.h (window_flags): new flags is_icon_entered
 	for tracking enter and leave events on iconified windows.
-	* fvwm/gsfr.h (IS_ICON_ENTERED): 
-	(SET_ICON_ENTERED): 
+	* fvwm/gsfr.h (IS_ICON_ENTERED):
+	(SET_ICON_ENTERED):
 	(SETM_ICONIFIED_BY_PARENT): new macros to set is_icon_entered.
 	* fvwm/icons.c (DrawIconWindow): change the logic of
 	DrawIconWindow to show the full icon title and raise it iff
 	the pointer is over the icon.
-	* fvwm/events.c (HandleEnterNotify):  
+	* fvwm/events.c (HandleEnterNotify):
 	(HandleLeaveNotify): maintain is_icon_entered and redraw the icon.
 	* NEWS: mention the new icon behaviour.
-	
+
 1999-04-18  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/vpacket.h: new file - this should contain structure descriptions

@@ -157,7 +157,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   attributes.border_pixmap = None;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
 			   VisibilityChangeMask |
-			   ExposureMask | KeyPressMask| 
+			   ExposureMask | KeyPressMask|
 			   EnterWindowMask | LeaveWindowMask |
 			   FocusChangeMask );
   if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
@@ -316,7 +316,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
             /* end keep label on screen. dje 8/7/97 */
           }
         }
-      else 
+      else
 	{
 	  /* resize the icon name window */
           Tmp_win->icon_w_width = Tmp_win->icon_p_width;
@@ -396,7 +396,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       xwc.stack_mode = Below;
       mask = CWSibling|CWStackMode;
       if (Tmp_win->icon_w != None)
-	{      
+	{
 	  XConfigureWindow(dpy, Tmp_win->icon_w, mask, &xwc);
 	}
       if (Tmp_win->icon_pixmap_w != None)
@@ -433,7 +433,7 @@ void RedoIconName(FvwmWindow *Tmp_win)
 
 
 
- /***********************************************************************
+/************************************************************************
  *
  *  Procedure:
  *	AutoPlace - Find a home for an icon
@@ -450,16 +450,19 @@ void AutoPlaceIcon(FvwmWindow *t)
   int new_x, new_y;
 
   /* New! Put icon in same page as the center of the window */
-  /* Not a good idea for StickyIcons */
-  if((IS_ICON_STICKY(t))||(IS_STICKY(t)))
+  /* Not a good idea for StickyIcons. Neither for icons of windows that are
+   * visible on the current page. */
+  if((IS_ICON_STICKY(t))||(IS_STICKY(t))||(IsWindowOnThisPage(t)))
     {
       base_x = 0;
       base_y = 0;
       /*Also, if its a stickyWindow, put it on the current page! */
       new_x = t->frame_x % Scr.MyDisplayWidth;
       new_y = t->frame_y % Scr.MyDisplayHeight;
-      if(new_x < 0)new_x += Scr.MyDisplayWidth;
-      if(new_y < 0)new_y += Scr.MyDisplayHeight;
+      if(new_x < 0)
+	new_x += Scr.MyDisplayWidth;
+      if(new_y < 0)
+	new_y += Scr.MyDisplayHeight;
       SetupFrame(t,new_x,new_y,
 		 t->frame_width,t->frame_height,False,False);
       t->Desk = Scr.CurrentDesk;
@@ -990,11 +993,12 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	    }
 	} /* if */
     } /* for */
-  if (tmp_win->icon_w == None) {
+  if (tmp_win->icon_w == None)
+  {
     if(IS_ICON_MOVED(tmp_win))
       CreateIconWindow(tmp_win,tmp_win->icon_x_loc,tmp_win->icon_y_loc);
     else
-	CreateIconWindow(tmp_win, def_x, def_y);
+      CreateIconWindow(tmp_win, def_x, def_y);
   }
 
   /* if no pixmap we want icon width to change to text width every iconify */

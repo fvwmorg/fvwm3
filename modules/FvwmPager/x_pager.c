@@ -304,9 +304,7 @@ void initialize_pager(void)
   sizehints.width_inc = Columns*(n+1);
   sizehints.height_inc = Rows*(m+1);
   sizehints.base_width = Columns * n + Columns - 1;
-  sizehints.base_height = Rows*(m + label_h+1) -2;
-  sizehints.min_width = Columns * n + Columns - 1;
-  sizehints.min_height = Rows*(m + label_h+1) -2;
+  sizehints.base_height = Rows*(m + label_h+1) - 1;
 
   Scr.Pager_w = XCreateWindow (dpy, Scr.Root, window_x, window_y, window_w,
 			       window_h, (unsigned int) 1,
@@ -767,7 +765,8 @@ void DispatchEvent(XEvent *Event)
 	}
       break;
     case MotionNotify:
-      while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event));
+      while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event))
+	;
 
       if(Event->xmotion.state == Button3MotionMask)
 	{
@@ -776,7 +775,7 @@ void DispatchEvent(XEvent *Event)
 	      if(Event->xany.window == Desks[i].w)
 		{
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-				    &JunkX, &JunkY,&x, &y, &JunkMask);
+				&JunkX, &JunkY,&x, &y, &JunkMask);
 		  Scroll(desk_w, desk_h, x, y, i);
 		}
 	    }
@@ -861,22 +860,25 @@ void ReConfigure(void)
 	       (unsigned *)&window_w,(unsigned *)&window_h,
 	       &border_width,&depth);
 
-
   n1 = Scr.Vx/Scr.MyDisplayWidth;
   m1 = Scr.Vy/Scr.MyDisplayHeight;
   n = (Scr.VxMax)/Scr.MyDisplayWidth;
   m = (Scr.VyMax)/Scr.MyDisplayHeight;
+  if (window_w > 0)
+    window_w = ((window_w - n)/(n+1))*(n+1)+n;
+  if (window_h > 0)
+    window_h = ((window_h - m)/(m+1))*(m+1)+m;
   desk_w = (window_w - Columns + 1)/Columns;
-  desk_h = (window_h - Rows*label_h - Rows + 2)/Rows;
+  desk_h = (window_h - Rows*label_h - Rows + 1)/Rows;
   w = (desk_w - n)/(n+1);
   h = (desk_h - m)/(m+1);
 
   sizehints.width_inc = Columns*(n+1);
   sizehints.height_inc = Rows*(m+1);
   sizehints.base_width = Columns * n + Columns - 1;
-  sizehints.base_height = Rows*(m + label_h+1) -2;
-  sizehints.min_width = Columns * n + Columns - 1;
-  sizehints.min_height = Rows*(m + label_h+1) -2;
+  sizehints.base_height = Rows*(m + label_h+1) - 1;
+  sizehints.min_width = sizehints.base_width;
+  sizehints.min_height = sizehints.base_height;
 
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
@@ -1657,9 +1659,7 @@ void MoveWindow(XEvent *Event)
 	  XMoveWindow(dpy,t->w,Scr.MyDisplayWidth+Scr.VxMax,
 		      Scr.MyDisplayHeight+Scr.VyMax);
 	  XSync(dpy,0);
-/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
-/*	  sprintf(command,"Silent MoveToDesk 0 %d", NewDesk);  */
-	  sprintf(command,"MoveToDesk 0 %d", NewDesk);
+	  sprintf(command,"Silent MoveToDesk 0 %d", NewDesk);
 	  SendInfo(fd,command,t->w);
 	  t->desk = NewDesk;
 	}
@@ -1684,9 +1684,7 @@ void MoveWindow(XEvent *Event)
 	SendInfo(fd,"Silent Move",t->icon_w);
       else
 #endif
-/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
-/*	SendInfo(fd,"Silent Move",t->w);  */
-	SendInfo(fd,"Move",t->w);
+	SendInfo(fd,"Silent Move",t->w);
       return;
     }
   else
@@ -1742,9 +1740,7 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    {
-/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
-/*	      sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);  */
-	      sprintf(command,"MoveToDesk 0 %d", NewDesk + desk1);
+	      sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);
 	      SendInfo(fd,command,t->w);
 	      t->desk = NewDesk + desk1;
 	    }
@@ -1764,9 +1760,7 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    MoveResizePagerView(t);
-/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
-/*	  SendInfo(fd,"Silent Raise",t->w);  */
-	  SendInfo(fd,"Raise",t->w);
+	  SendInfo(fd,"Silent Raise",t->w);
 	}
       if(Scr.CurrentDesk == t->desk)
 	{
@@ -1784,7 +1778,7 @@ void MoveWindow(XEvent *Event)
     and such.
 */
 #if 0
-            SendInfo(fd, "Silent Focus", t->icon_w);
+            SendInfo(fd, "Silent FlipFocus", t->icon_w);
 #else
             XSetInputFocus (dpy, t->icon_w, RevertToParent,
               Event->xbutton.time);
@@ -1793,7 +1787,7 @@ void MoveWindow(XEvent *Event)
 	  else
             {
 #if 0
-	    SendInfo(fd, "Silent Focus", t->w);
+	    SendInfo(fd, "Silent FlipFocus", t->w);
 #else
             XSetInputFocus (dpy, t->w, RevertToParent,
               Event->xbutton.time);
@@ -2151,7 +2145,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     MoveWindow.
 */
 #if 0
-          SendInfo(fd, "Silent Focus", t->icon_w);
+          SendInfo(fd, "Silent FlipFocus", t->icon_w);
 #else
           XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time);
 #endif
@@ -2159,7 +2153,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       else
         {
 #if 0
-          SendInfo(fd, "Silent Focus", t->w);
+          SendInfo(fd, "Silent FlipFocus", t->w);
 #else
           XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
 #endif

@@ -1,7 +1,13 @@
+1999-04-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DispatchEvent): reindented some code
+	(MoveWindow): reactivated 'silent' after fix in fvwm/functions.c
+	(ReConfigure): fixed bug in size calculation when resizing
+
 1999-04-19  Hippo
 
-	* FvwmIdent/* now uses the Default_graphics config command to inherit the
-	visuals of fvwm.
+	* FvwmIdent/* now uses the Default_graphics config command to inherit
+	the visuals of fvwm.
 	* FvwmScroll/* ditto
 
 Fri Apr 16 16:32:54 1999  DanEspen  <dje@blue>

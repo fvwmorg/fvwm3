@@ -806,7 +806,7 @@ void RaiseWindow(FvwmWindow *t)
   raisePanFrames();
 
   /*
-     The following is a hack to raise X windows over native windows 
+     The following is a hack to raise X windows over native windows
      which is needed for some (all ?) X servers running under windows NT.
    */
   if (Scr.go.RaiseHackNeeded)
@@ -1018,4 +1018,14 @@ void ReapChildren(void)
 #else
 # error One of waitpid or wait3 is needed.
 #endif
+}
+
+Bool IsWindowOnThisPage(FvwmWindow *fw)
+{
+  return (fw->Desk == Scr.CurrentDesk &&
+	  fw->frame_x > -fw->frame_width &&
+	  fw->frame_x < Scr.MyDisplayWidth &&
+	  fw->frame_y > -fw->frame_height &&
+	  fw->frame_y < Scr.MyDisplayHeight) ?
+    True : False;
 }

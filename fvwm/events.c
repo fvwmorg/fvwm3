@@ -335,7 +335,6 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
  *	HandleFocusIn - handles focus in events
  *
  ************************************************************************/
-extern Bool lastFocusType;
 void HandleFocusIn(void)
 {
   XEvent d;
@@ -363,7 +362,7 @@ void HandleFocusIn(void)
 	{
 	  SetBorder(Scr.Hilite,False,True,True,None);
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
-                          0, 0, (unsigned long)lastFocusType,
+                          0, 0, (unsigned long)IsLastFocusSetByMouse(),
                           Scr.DefaultDecor.HiColors.fore,
                           Scr.DefaultDecor.HiColors.back);
 	  if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
@@ -384,7 +383,8 @@ void HandleFocusIn(void)
     {
       SetBorder(Tmp_win,True,True,True,None);
       BroadcastPacket(M_FOCUS_CHANGE, 5,
-                      Tmp_win->w, Tmp_win->frame, (unsigned long)lastFocusType,
+                      Tmp_win->w, Tmp_win->frame,
+		      (unsigned long)IsLastFocusSetByMouse(),
                       GetDecor(Tmp_win,HiColors.fore),
                       GetDecor(Tmp_win,HiColors.back));
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
@@ -1341,7 +1341,7 @@ void HandleEnterNotify(void)
   if (!Tmp_win)
     return;
 
-  if(!HAS_CLICK_FOCUS(Tmp_win) && !HAS_NEVER_FOCUS(Tmp_win))
+  if(HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
     {
       SetFocus(Tmp_win->w,Tmp_win,1);
     }
@@ -1378,7 +1378,7 @@ void HandleLeaveNotify(void)
   if (Tmp_win && IS_ICONIFIED(Tmp_win))
     {
       SET_ICON_ENTERED(Tmp_win,0);
-      DrawIconWindow (Tmp_win); 
+      DrawIconWindow (Tmp_win);
     }
 
   /* If we leave the root window, then we're really moving
@@ -1529,7 +1529,7 @@ void HandleConfigureRequest(void)
     xwc.sibling = Tmp_win->frame;
     xwc.stack_mode = Below;
       if (Tmp_win->icon_w != None)
-	{      
+	{
 	  XConfigureWindow(dpy,Tmp_win->icon_w,CWSibling|CWStackMode,&xwc);
 	}
       if (Tmp_win->icon_pixmap_w != None)

@@ -40,6 +40,7 @@
 #include "style.h"
 #include "functions.h"
 #include "menus.h"
+#include "focus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -479,10 +480,9 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   taction = Action;
   /* parse prefixes */
   trash = PeekToken(taction, &trash2);
-/*
   while (trash)
     {
-      if (StrEquals(action, PRE_SILENT))
+      if (StrEquals(trash, PRE_SILENT))
 	{
 	  if (Scr.flags.silent_functions == 0)
 	    {
@@ -502,7 +502,6 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
       func_depth--;
       return;
     }
-*/
   skip = taction - Action;
 
   if (expand_cmd == EXPAND_COMMAND)

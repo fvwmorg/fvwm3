@@ -1231,7 +1231,7 @@ void ParseOptions(void)
 	  }
 
 	  tline = SkipNTokens( tline, 1 );
-	  
+
 	  CopyString(&ImagePath, tline);
 
 #ifdef DEBUG

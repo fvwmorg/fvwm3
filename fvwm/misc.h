@@ -135,8 +135,6 @@ extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
 				 int xmotion, int ymotion);
 extern void       SetShape(FvwmWindow *, int);
 void executeModule(F_CMD_ARGS);
-extern void       SetFocus(Window,FvwmWindow *, Bool FocusByMouse);
-extern void       CheckAndSetFocus(void);
 extern void       initModules(void);
 extern int        HandleModuleInput(Window w, int channel);
 extern void       match_string(struct config *, char *, char *, FILE *);
@@ -176,8 +174,6 @@ void SetStickyProp(FvwmWindow *, int, int, int);
 void SetClientProp(FvwmWindow *);
 void show_panner(void);
 void WaitForButtonsUp(void);
-void FocusOn(FvwmWindow *t,Bool FocusByMouse);
-void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
 /*  RBW - 11/02/1998  */
 Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,
 		 int PageY);
@@ -266,9 +262,6 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 
 void wait_func(F_CMD_ARGS);
-void flip_focus_func(F_CMD_ARGS);
-void focus_func(F_CMD_ARGS);
-void warp_func(F_CMD_ARGS);
 void SendDataToModule(F_CMD_ARGS);
 void SendLook(int module);
 void BroadcastLook(void);
@@ -398,7 +391,7 @@ typedef enum {
 
 void set_last_added_item(last_added_item_type type, void *item);
 void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
-
+Bool IsWindowOnThisPage(FvwmWindow *fw);
 
 
 #endif /* MISC_H */
