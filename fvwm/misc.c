@@ -975,6 +975,15 @@ void RaiseWindow(FvwmWindow *t)
 
   if(i > 0)
     {
+/*
+    RBW - temporarily backing out the XConfigure change - it breaks attempts to
+    raise a window above other (non override_redirect) windows that raise
+    themselves without FVWM's knowledge (like tkbiff). FVWM presently has no way
+    to know where they are in the stacking order, so it doesn't know what sibling
+    to raise the target window above. This will require some major changes,
+    post-2.2. (Yeah, I hate #if 0's too!)
+*/
+#if 0
 /*      XRaiseWindow(dpy,wins[0]);  */
       /*
            clasen@mathematik.uni-freiburg.de - 01/01/1999 - 
@@ -989,6 +998,9 @@ void RaiseWindow(FvwmWindow *t)
         changes.stack_mode = Above;
         XConfigureWindow(dpy, wins[0], (CWSibling|CWStackMode), &changes);
       }
+#else
+      XRaiseWindow(dpy,wins[0]);  
+#endif
 
 
       /*

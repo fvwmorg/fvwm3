@@ -1,3 +1,11 @@
+1999-01-06  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/misc.c (RaiseWindow):  Disabled Matthias Clasen's patch to keep
+	from raising StaysOnTop windows above override_redirect windows: there
+	are situations where non override_redirect windows raise themselves
+	without FVWM's knowledge, and it breaks normal raising in these cases.
+	It's on the right track, but more work is needed post-2.2.
+
 1999-01-06  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/events.c (GetContext): fixed fixed fix for fix (made
@@ -13,7 +21,7 @@
 	* archive/ChangeLog: File added to have a ChangeLog for the files that
 	are not distributed.
 
-1998-01-05  Bob Woodside  <proteus@pcnet.com>
+1999-01-05  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/misc.c (RaiseWindow):  Added Matthias Clasen's patch to keep
 	from raising StaysOnTop windows above override_redirect windows; fixed
