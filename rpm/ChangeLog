@@ -1,3 +1,8 @@
+2003-10-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm.spec.in:
+	fixed rpm build
+
 2003-10-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

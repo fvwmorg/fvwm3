@@ -24,7 +24,7 @@ Autoreq:   1
 
 Requires:  libXpm.so.4
 #Requires:  xpm >= 3.4g
-Requires:  perl >= 5.002
+Requires:  perl >= @REQUIRED_PERL_VERSION@
 
 # GTK, Imlib, stroke
 
@@ -77,7 +77,7 @@ make %{m_p}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make prefix=$RPM_BUILD_ROOT%{prefix} install
+make DESTDIR=$RPM_BUILD_ROOT prefix=%{prefix} install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -90,8 +90,12 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/error_codes docs/fvwm.lsm
 %{prefix}/bin/*
 %{prefix}/libexec/*
-%{prefix}/man/*/*
 %{prefix}/share/*
+# the following correct lines somehow generate rpm-build errors, so own share/*
+#%{prefix}/share/doc/*
+#%{prefix}/share/fvwm
+#%{prefix}/share/man/*/*
+#%{prefix}/share/locale/*/*/*
 
 %define date%(echo `LC_ALL="C" date +"%a %b %d %Y"`)
 %changelog

@@ -893,20 +893,23 @@ dnl lex+yacc now only needed for FvwmScript developers when syntax is changed
 dnl AM_PROG_LEX
 dnl AC_PROG_YACC
 
+REQUIRED_PERL_VERSION=5.004
+AC_SUBST(REQUIRED_PERL_VERSION)
+
 if test x"$PERL" = x; then
 	AC_PATH_PROG(PERL, perl)
 fi
-dnl We need at least perl 5.002 for FvwmConsoleC.pl and fvwm-menu-headlines.
 if test x"$PERL" != x; then
-	AC_MSG_CHECKING([for perl 5.002 or better])
-	if ("$PERL" -e "require 5.002;") 2>/dev/null; then
+	AC_MSG_CHECKING([for perl $REQUIRED_PERL_VERSION or better])
+	if ("$PERL" -e "require $REQUIRED_PERL_VERSION;") 2>/dev/null; then
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_RESULT(no)
 		AC_MSG_WARN([$PERL not found or too old])
 	fi
 else
-	AC_MSG_WARN([perl not found; you can't run some extra scripts])
+	AC_MSG_WARN([perl is not found, it is required for some scripts and modules])
+	AC_MSG_WARN([It is recommended to install perl $REQUIRED_PERL_VERSION or better later])
 	PERL=/usr/bin/perl
 fi
 AC_MSG_RESULT([assuming $PERL as perl location])
@@ -975,8 +978,6 @@ if test x"$enable_gtktest" = xyes; then
 	AM_PATH_GTK(1.1.0,[
 		FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)
 		MANFVWMGTK=FvwmGtk.1 AC_SUBST(MANFVWMGTK)
-		FVWMGTKDEBUG=FvwmGtkDebug AC_SUBST(FVWMGTKDEBUG)
-		MANFVWMGTKDEBUG=FvwmGtkDebug.1 AC_SUBST(MANFVWMGTKDEBUG)
 	],)
 	if test x"$no_gtk" = x; then
 		with_gtk=yes

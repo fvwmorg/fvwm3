@@ -58,8 +58,11 @@ distclean2: distclean
 #    make version=2.3.22 release=2 rpm-this
 #    make rpm-dist cparams='--enable-multibyte --quiet' mparams='CFLAGS="-O2 -g"'
 
+# automatical regeneration is missing for other dirs, so do it explicitly
+rpm-regenerate:
+	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) Makefile *.spec) || exit 1
+
 rpm-dist: dist rpm-this
 
-rpm-this:
+rpm-this: rpm-regenerate
 	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) rpm) || exit 1
-

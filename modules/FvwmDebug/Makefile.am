@@ -3,11 +3,10 @@
 ## Notes: Imakefile also linked with -ldnet_stub, on AlphaArchitecture
 
 moduledir = @FVWM_MODULEDIR@
-module_SCRIPTS = FvwmDebug @FVWMGTKDEBUG@
-EXTRA_SCRIPTS = FvwmGtkDebug
+module_SCRIPTS = FvwmDebug FvwmGtkDebug
 
-man_MANS = FvwmDebug.1 @MANFVWMGTKDEBUG@
-EXTRA_DIST = $(man_MANS) FvwmGtkDebug.1
+man_MANS = FvwmDebug.1 FvwmGtkDebug.1
+EXTRA_DIST = $(man_MANS)
 
 # all the following lines may be removed one day
 EXTRA_PROGRAMS = FvwmOldDebug
