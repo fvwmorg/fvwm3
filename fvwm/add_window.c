@@ -252,7 +252,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
 #ifdef SHAPE
   /* set boundary width to zero for shaped windows */
-  if (tmp_win->wShaped) tmp_win->boundary_width = 0;
+  if (tmp_win->wShaped)
+    tmp_win->boundary_width = 0;
 #endif /* SHAPE */
 
   tmp_win->flags |= styles.on_flags & ALL_COMMON_FLAGS;
@@ -353,7 +354,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
 /*  RBW - 11/02/1998  */
-  if(!PlaceWindow(tmp_win, styles.on_flags, styles.Desk, styles.PageX, styles.PageY))
+  if(!PlaceWindow(tmp_win, styles.on_flags, styles.Desk, styles.PageX,
+		  styles.PageY))
     return NULL;
 
   /*
@@ -490,7 +492,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   attributes.background_pixmap = None;
   attributes.border_pixmap = None;
   valuemask |= CWColormap | CWBackPixmap | CWBorderPixmap;
-  
+
   /* What the heck, we'll always reparent everything from now on! */
   tmp_win->frame =
     XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y,
@@ -541,6 +543,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->title_width = 1;
   if(tmp_win->flags & BORDER)
     {
+unsigned long tvaluemask = valuemask;
+valuemask &= ~(CWColormap | CWBorderPixmap);
       /* Just dump the windows any old place and let SetupFrame take
        * care of the mess */
       for(i=0;i<4;i++)
@@ -555,9 +559,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	  tmp_win->sides[i] =
 	    XCreateWindow (dpy, tmp_win->frame, 0, 0, tmp_win->boundary_width,
 			   tmp_win->boundary_width, 0, 0, InputOnly,
-			   DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
+			   DefaultVisual(dpy, Scr.screen), valuemask,
+			   &attributes);
 	}
-
+valuemask = tvaluemask;
     }
 
   /* restore valuemask to remember background */

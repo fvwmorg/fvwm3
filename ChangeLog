@@ -1,11 +1,15 @@
+1999-04-02  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/add_window.c (AddWindow): temporary fix for sides/corners
+
 1999-04-01  Andrew T. Veliath  <andrewtv@usa.net>
 
 	* fvwm/functions.c (func_config): Make GNOMEButton uppercase.
 
 1999-04-02  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* configure.in: 
-	* acconfig.h:  
+	* configure.in:
+	* acconfig.h:
 	* fvwm/misc.c (RaiseWindow): Remove EXCEED_HACK, always compile
 	the hack.
 
