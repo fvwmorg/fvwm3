@@ -1,5 +1,9 @@
 Changes in alpha release 2.1.5 (December 1998)
 
+* The WindowsDesk command is now obsolete. It has been replaced with the
+  MoveToDesk command, which uses an argument syntax identical to the
+  enhanced Desk command, and allows constraining a move within a range
+  of desks.
 
 Changes in alpha release 2.1.4 (December 1998)
 
