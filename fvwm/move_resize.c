@@ -1362,6 +1362,7 @@ void resize_window(F_CMD_ARGS)
   rectangle sorig;
   rectangle *drag = &sdrag;
   rectangle *orig = &sorig;
+  rectangle start_g;
   int ymotion=0, xmotion = 0;
   int was_maximized;
   unsigned edge_wrap_x;
@@ -1482,6 +1483,10 @@ void resize_window(F_CMD_ARGS)
   orig->y = drag->y;
   orig->width = drag->width;
   orig->height = drag->height;
+  start_g.x = drag->x;
+  start_g.y = drag->y;
+  start_g.width = drag->width;
+  start_g.height = drag->height;
   ymotion=xmotion=0;
 
   /* pop up a resize dimensions window */
@@ -1722,8 +1727,15 @@ void resize_window(F_CMD_ARGS)
 	finished = TRUE;
 	/* return pointer if aborted resize was invoked with key */
 	if (stashed_x >= 0)
+	{
 	  XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,
 		       stashed_y);
+	}
+	if (do_resize_opaque)
+	{
+	  DoResize(start_g.x, start_g.y, tmp_win, &start_g, orig,
+		   &xmotion, &ymotion, do_resize_opaque);
+	}
       }
       done = TRUE;
       break;
@@ -1777,7 +1789,7 @@ void resize_window(F_CMD_ARGS)
   /* pop down the size window */
   XUnmapWindow(dpy, Scr.SizeWindow);
 
-  if(!abort && !do_resize_opaque /*!!!*/)
+  if(!abort /*&& !do_resize_opaque !!!*/)
   {
     /* size will be >= to requested */
     ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
@@ -1883,7 +1895,7 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
     }
     else
     {
-      SetupFrame(tmp_win, drag->x, drag->y, drag->width - 1, drag->height - 1,
+      SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
 		 False, False);
     }
   }

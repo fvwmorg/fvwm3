@@ -1,3 +1,10 @@
+1999-09-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (resize_window):
+	aborting works with opaque resizing
+	fixed wandering window when resizing opaque
+	fixed window width/height being one pixel less when resizing opaque
+
 1999-09-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* configure.in: changed version to 2.3.8
