@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.12"_-_2.4.12_+_/A_-_.
+_+_A HREF="#2.4.13"_-_2.4.13_+_/A_-_.
 
 -------------------------------------------------------------------
 
@@ -404,8 +404,36 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 -------------------------------------------------------------------
 
 _+_A NAME="2.4.12"_-_
-Changes in stable release 2.4.12 (10-Oct-2002)
+Changes in stable release 2.4.13 (1-Nov-2002)
 _+_/A_-_
+
+* Icon titles for windows with an icon position hint no longer
+  appear at random places.
+
+* Fvwm no longer displays two icon pictures when switching from
+  NoIconOverride to IconOverride with windows that provide their
+  own icon window.
+
+* The Current, All, Pick, ThisWindow and PointerWindow commands
+  work on shaded windows too.
+
+* Fixed a problem stacking iconified transients.
+
+* No more flickering when raising transients.
+
+* Fixed a number of problems with window stacking, some new in
+  2.4.10 or later, some older problems that have been around for a
+  long time.
+
+* Windows starting lowered or on any layer other than the default
+  layer are displayed at the right place in FvwmPager.
+
+* Bindings with the "A"ny context can not be overridden by Gnome
+  panel or OpenOffice.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.12 (10-Oct-2002)
 
 * Fixed drawing problems with TiledPixmap and Solid MenuFaces which
   appeared in 2.4.10, replacing the same problem with ?Gradient
@@ -423,6 +451,7 @@ _+_/A_-_
 
 * Transient windows do not appear in FvwmWinList after they have
   been moved on the desktop.
+
 -------------------------------------------------------------------
 
 Changes in stable release 2.4.11 (20-Sep-2002)
