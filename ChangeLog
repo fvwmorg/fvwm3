@@ -1,3 +1,7 @@
+2000-12-05  Dan Espen  <dane@mk.telcordia.com>
+
+	* tests/purify/purify.fvwm2rc: Fix step logging.
+
 2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Graphics.c (fvwmlib_XCreateGC):

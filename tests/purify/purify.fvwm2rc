@@ -5,13 +5,13 @@
 DestroyFunc CreateFunc
 AddToFunc CreateFunc
  + I DestroyFunc $0
- + I AddToFunc $0
+ + I AddToFunc $0 $1 $2 $3 $4 $5 $6 $7 $8 $9
 
 # Log:
-DestroyFunc Log
-AddToFunc Log I Exec echo "### `date`: $0 ###"
+CreateFunc Log
+ + I Exec echo "### `date`: $0 ###"
 
-AddToFunc RootTail
+CreateFunc RootTail
  + I Exec xsetroot -solid black
  + I Exec root-tail -g 80x40+300+0 -color red -font lucidasanstypewriter-12 ~/.X.err
 
@@ -21,7 +21,6 @@ AddToMenu TestMenu "=== TestMenu ===" Title
 AddToMenu TestMenu "Run root tail" Function RootTail
 AddToMenu TestMenu "Run all tests" function TestFunc
 # Give the TestMenu a distinctive Style:
-DestroyMenuStyle TMS
 MenuStyle TMS fvwm, background cornflowerblue, foreground white, Hilight3DThick
 MenuStyle TMS AutomaticHotkeys, BorderWidth 5, Font 9x15bold
 ChangeMenuStyle TMS TestMenu
@@ -35,7 +34,7 @@ DestroyFunc TestFunc
 # function could supply it.  (I think.)
 CreateFunc AddTest
  + I AddToMenu TestMenu "$0" function $1
- + I AddToFunc TestFunc I Function Log $0
+ + I AddToFunc TestFunc I Function Log "$0"
  + I AddToFunc TestFunc I Function $1
 
 
@@ -217,7 +216,7 @@ AddToFunc MenuStyle-Func
 AddTest "Test Popup" Popup-Func
 AddToFunc Popup-Func
  + I Popup Main
- + I Popup I don't know
+ + I Popup "I don't know"
 
 # End of "Menu oriented commands. The "title" menu command is already
 # tested.
