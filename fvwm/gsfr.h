@@ -85,6 +85,8 @@
                                ((fw)->flags.common.has_mwm_override)
 #define HAS_OVERRIDE_SIZE_HINTS(fw)  \
                                ((fw)->flags.common.has_override_size)
+#define IGNORE_RESTACK(fw)  \
+                               ((fw)->flags.common.ignore_restack)
 
 
 /* access to the special flags of a window */

@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.1 (April 1999)
 
+* IgnoreRestack style: forbids clients to change their own stacking
+  order position.
+ 
 * The NoWarp option to the Focus command allow focusing window on a different
   page without switching to that page.
 

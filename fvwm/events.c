@@ -1403,6 +1403,106 @@ void HandleLeaveNotify(void)
 }
 
 
+
+Bool 
+intersect (int x0, int y0, int w0, int h0, 
+           int x1, int y1, int w1, int h1)
+{
+  return !((x0 > x1 + w1) || (x0 + w0 < x1) ||
+           (y0 > y1 + h1) || (y0 + h0 < y1));
+}
+
+Bool 
+overlap_box (FvwmWindow *r, int x, int y, int w, int h)
+{
+  if (IS_ICONIFIED(r))
+  {
+    return ((r->icon_pixmap_w) && 
+             intersect (x, y, w, h, r->icon_x_loc, r->icon_y_loc, 
+                             r->icon_p_width, r->icon_p_height)) ||
+           ((r->icon_w) && 
+             intersect (x, y, w, h, r->icon_xl_loc, r->icon_y_loc + r->icon_p_height,
+                             r->icon_w_width, r->icon_w_height));
+  }
+  else
+  {
+    return intersect (x, y, w, h, r->frame_x, r->frame_y, 
+                           r->frame_width, r->frame_height);
+  }
+}
+
+Bool
+overlap (FvwmWindow *r, FvwmWindow *s)
+{
+  if (r->Desk != s->Desk)
+  {
+    return 0;
+  }
+
+  if (IS_ICONIFIED(r))
+  {
+    return ((r->icon_pixmap_w) && 
+             overlap_box (s, r->icon_x_loc, r->icon_y_loc, 
+                             r->icon_p_width, r->icon_p_height)) ||
+           ((r->icon_w) && 
+             overlap_box (s, r->icon_xl_loc, r->icon_y_loc + r->icon_p_height,
+                             r->icon_w_width, r->icon_w_height));
+  }
+  else
+  {
+    return overlap_box (s, r->frame_x, r->frame_y, 
+                           r->frame_width, r->frame_height);
+  }
+}
+
+/* return true if stacking order changed */
+Bool
+HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw, 
+                                                 FvwmWindow *s, Window sw)
+{
+  Bool restack = 0;
+  FvwmWindow *t;
+
+  DBUG("HandleUnusualStackmodes", "called with %d, %lx\n", stack_mode, s);
+	
+  if (((rw != r->w) ^ IS_ICONIFIED(r)) ||
+      (s && (((sw != s->w) ^ IS_ICONIFIED(s)) || (r->Desk != s->Desk))))
+  {
+    /* one of the relevant windows is unmapped */
+    return;
+  } 
+
+  switch (stack_mode)
+  {
+   case TopIf: 
+    for (t = r->stack_prev; (t != &Scr.FvwmRoot) && !restack; t = t->stack_prev)
+    {
+      restack = (((s == NULL) || (s == t)) && overlap (t, r));
+    }
+    if (restack)
+    {
+      RaiseWindow (r);
+    }    
+    break;
+   case BottomIf:
+    for (t = r->stack_next; (t != &Scr.FvwmRoot) && !restack; t = t->stack_next)
+    {
+      restack = (((s == NULL) || (s == t)) && overlap (t, r));
+    }
+    if (restack)
+    {
+      LowerWindow (r);
+    }    
+    break;
+   case Opposite:
+    restack = (HandleUnusualStackmodes (TopIf, r, rw, s, sw) || 
+               HandleUnusualStackmodes (BottomIf, r, rw, s, sw));
+    break;
+  }
+  DBUG("HandleUnusualStackmodes", "\t---> %d\n", restack);
+  return restack;	
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -1486,98 +1586,7 @@ void HandleConfigureRequest(void)
         XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
       }
     }
-    return;
-  }
-
-  /*  Stacking order change requested...  */
-  if (cre->value_mask & CWStackMode)
-  {
-    FvwmWindow *otherwin;
-
-    otherwin  =  NULL;
-    xwc.sibling = (((cre->value_mask & CWSibling) &&
-                    (XFindContext (dpy, cre->above, FvwmContext,
-                                   (caddr_t *) &otherwin) == XCSUCCESS))
-                   ? otherwin->frame : cre->above);
-     /* we only allow clients to restack their windows within
-       their layer. Thus we don't handle TopIf, BottomIf or
-       Opposite modes. We could perhaps allow them and then
-       catch windows that have gone off to the end of the stack
-       and bring them back to the layer, but who cares ? Nobody will
-       use these modes anyway.
-    */
-    if (!(cre->value_mask & CWSibling))
-      {
-         switch (cre->detail)
-           {
-            case Above:
-              RaiseWindow (Tmp_win);
-              break;
-            case Below:
-              LowerWindow (Tmp_win);
-              break;
-           }
-      }
-    else if (otherwin &&
-      (otherwin->layer == Tmp_win->layer) &&
-      ((cre->detail == Above) || (cre->detail == Below)))
-      {
-    xwc.stack_mode = cre->detail;
-    XConfigureWindow (dpy, Tmp_win->frame,
-                      cre->value_mask & (CWSibling | CWStackMode), &xwc);
-
-    xwc.sibling = Tmp_win->frame;
-    xwc.stack_mode = Below;
-      if (Tmp_win->icon_w != None)
-	{
-	  XConfigureWindow(dpy,Tmp_win->icon_w,CWSibling|CWStackMode,&xwc);
-	}
-      if (Tmp_win->icon_pixmap_w != None)
-	{
-	  XConfigureWindow(dpy,Tmp_win->icon_pixmap_w,CWSibling|CWStackMode,&xwc);
-	}
-
-    sendEvent = True;
-
-    /*
-        RBW - Update the stacking order ring.
-    */
-    if (xwc.stack_mode == Above || xwc.stack_mode == Below)
-      {
-        FvwmSib = (otherwin != NULL ) ? otherwin: Scr.FvwmRoot.stack_next;  /*  Set up for Above.  */
-        if (xwc.stack_mode == Below)
-	  {
-            /*
-                If Below-sibling, raise above next lower window. If no sibling,
-                bottom of stack is "above" Scr.FvwmRoot in the ring.
-            */
-            FvwmSib = (FvwmSib == otherwin) ? FvwmSib->stack_next: FvwmSib->stack_prev;
-	  }
-        if (Tmp_win != FvwmSib)                            /* Don't chain it to itself!  */
-          {
-            Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;  /* Pluck from chain.   */
-            Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
-            Tmp_win->stack_next = FvwmSib;                          /* Set new pointers.   */
-            Tmp_win->stack_prev = FvwmSib->stack_prev;
-            FvwmSib->stack_prev->stack_next = Tmp_win;              /* Re-insert above sibling. */
-            FvwmSib->stack_prev = Tmp_win;
-          }
-      }
-    else
-      {
-        /*
-            Oh, bother! We have to rebuild the stacking order ring to figure
-            out where this one went (TopIf, BottomIf, or Opposite).
-        */
-        ResyncFvwmStackRing();
-      }
-
-     /*
-         Let the modules know that Tmp_win changed its place
-         in the stacking order
-      */
-     BroadcastRestack (Tmp_win->stack_prev, Tmp_win->stack_next);
-  }
+    if (!Tmp_win) return;
   }
 
 #ifdef SHAPE
@@ -1593,6 +1602,8 @@ void HandleConfigureRequest(void)
   }
 #endif /* SHAPE */
 
+ if (cre->window == Tmp_win->w)
+ {
   /* Don't modify frame_XXX fields before calling SetupWindow! */
   x = Tmp_win->frame_x;
   y = Tmp_win->frame_y;
@@ -1633,6 +1644,109 @@ void HandleConfigureRequest(void)
     {
       /* dont allow clients to resize maximized windows */
       SetupFrame (Tmp_win, x, y, width, height, sendEvent, False);
+    }
+  }
+ 
+  /*  Stacking order change requested...  */
+  /*  Handle this *after* geometry changes, since we need the new
+      geometry in occlusion calculations */
+  if ( (cre->value_mask & CWStackMode) && !IGNORE_RESTACK(Tmp_win) )
+    {
+      FvwmWindow *otherwin = NULL;
+
+      if (cre->value_mask & CWSibling)
+      {
+        if (XFindContext (dpy, cre->above, FvwmContext,
+			  (caddr_t *) &otherwin) == XCNOENT)
+	{
+          otherwin = NULL;
+	}
+      }
+
+      if ((cre->detail != Above) && (cre->detail != Below))
+	{
+	   HandleUnusualStackmodes (cre->detail, Tmp_win, cre->window,
+                                                 otherwin, cre->above);
+	}
+      /* only allow clients to restack windows within their layer */
+      else if (!otherwin || (otherwin->layer != Tmp_win->layer))
+	{
+	  switch (cre->detail)
+	    {
+            case Above:
+              RaiseWindow (Tmp_win);
+              break;
+            case Below:
+              LowerWindow (Tmp_win);
+              break;
+	    }
+	}
+      else 
+	{
+	  xwc.sibling = otherwin->frame;
+	  xwc.stack_mode = cre->detail;
+	  xwcm = CWSibling | CWStackMode;
+	  XConfigureWindow (dpy, Tmp_win->frame, xwcm, &xwc);
+	
+	  /* Maintain the condition that icon windows are stacked 
+	     immediately below their frame */
+	  /* 1. for Tmp_win */
+	  xwc.sibling = Tmp_win->frame;
+	  xwc.stack_mode = Below;
+	  xwcm = CWSibling | CWStackMode;
+	  if (Tmp_win->icon_w != None)
+	    {      
+	      XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
+	    }
+	  if (Tmp_win->icon_pixmap_w != None)
+	    {
+	      XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
+	    }
+	  
+	  /* 2. for otherwin */	  
+	  if (cre->detail == Below)
+	    {
+	      xwc.sibling = otherwin->frame;
+	      xwc.stack_mode = Below;
+	      xwcm = CWSibling | CWStackMode;
+	      if (otherwin->icon_w != None)
+		{      
+		  XConfigureWindow(dpy, otherwin->icon_w, xwcm, &xwc);
+		}
+	      if (otherwin->icon_pixmap_w != None)
+		{
+		  XConfigureWindow(dpy, otherwin->icon_pixmap_w, xwcm, &xwc);
+		}
+	    }
+
+	  /* Maintain the stacking order ring */
+	  if (cre->detail == Above)
+	    {
+	      Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;  /* Pluck from chain.   */
+	      Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
+	      Tmp_win->stack_next = otherwin;                          /* Set new pointers.   */
+	      Tmp_win->stack_prev = otherwin->stack_prev;
+	      otherwin->stack_prev->stack_next = Tmp_win;              /* Re-insert above sibling. */
+	      otherwin->stack_prev = Tmp_win;
+	    }
+	  else /* cre->detail == Below */
+	    {
+	      Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;  /* Pluck from chain.   */
+	      Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
+	      Tmp_win->stack_prev = otherwin;                          /* Set new pointers.   */
+	      Tmp_win->stack_next = otherwin->stack_next;
+	      otherwin->stack_next->stack_prev = Tmp_win;              /* Re-insert above sibling. */
+	      otherwin->stack_next = Tmp_win;
+	    }
+
+	  sendEvent = True;
+
+	  /*
+	    Let the modules know that Tmp_win changed its place
+	    in the stacking order
+	  */
+	  BroadcastRestack (Tmp_win->stack_prev, Tmp_win->stack_next);
+	}
     }
 }
 

@@ -2682,7 +2682,7 @@ DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
 UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
 ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse/NeverFocus,
 StartsLowered/StartsRaised, GrabFocus/GrabFocusOff,
-GrabFocusTransient/GrabFocusTransientOff.
+GrabFocusTransient/GrabFocusTransientOff, AllowRestack/IgnoreRestack.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -2913,6 +2913,9 @@ This style does not apply to transient windows. The
 \fIGrabFocusTransient\fP and \fIGrabFocusTransientOff\fP styles
 are responsible for this behaviour. By default, \fIGrabFocusTransient\fP
 is turned on.
+
+\fIIgnoreRestack\fP makes fvwm ignore attempts of clients to raise
+or lower their own windows.
 
 An example:
 .EX

@@ -1,3 +1,29 @@
+1999-04-21  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/events.c (HandleConfigureRequest): rewrite the
+	part dealing with stack_mode. Treat stack_modes != Above, Below by
+	calling  HandleUnusualStackmodes. The X protocol semantics of the
+	various stack_modes is more or less preserved with the exception
+	that raising/lowering are restricted to stay within the layer.
+
+	(HandleUnusualStackmodes): new function implementing TopIf,
+	BottomIf and Opposite restacking.
+	(intersect): 
+	(overlap_box): 
+	(overlap): auxiliary routines for occlusion detection in
+	HandleUnusualStackmodes.
+	
+	* fvwm/fvwm.h (common_flags_type): new flag ignore_restack. 
+	* fvwm/gsfr.h (IGNORE_RESTACK): new macro to access it.
+	* fvwm/style.c (ProcessNewStyle): set/reset ignore_restack
+	with the new style options AllowRestack/IgnoreRestack.
+
+	* fvwm/events.c (HandleConfigureRequest): ignore stack_mode
+	if ingnore_restack is set.
+
+	* NEWS: 
+	* fvwm/fvwm2.1: document AllowRestack/IgnoreRestack.
+	
 1999-04-21  Hippo
 
 	* libs/Picture.{c,h},fvwm/{add_window,fvwm,icons,menus}.c: Partly fixed

@@ -337,7 +337,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
     switch (tolower(token[0]))
     {
       case 'a':
-        if(StrEquals(token, "ACTIVEPLACEMENT"))
+        if(StrEquals(token, "AllowRestack"))
+        {
+          found = True;
+          tmpstyle.flags.common.ignore_restack = 0;
+          tmpstyle.flag_mask.common.ignore_restack = 1;
+        }
+        else if(StrEquals(token, "ACTIVEPLACEMENT"))
         {
 	  found = True;
           tmpstyle.flags.do_place_random = 0;
@@ -546,7 +552,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'i':
-        if(StrEquals(token, "IconTitle"))
+        if(StrEquals(token, "IgnoreRestack"))
+        {
+	  found = True;
+	  tmpstyle.flags.common.ignore_restack = 1;
+	  tmpstyle.flag_mask.common.ignore_restack = 1;
+        }
+        else if(StrEquals(token, "IconTitle"))
         {
 	  found = True;
           tmpstyle.flags.common.has_no_icon_title = 0;
