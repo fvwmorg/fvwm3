@@ -309,7 +309,6 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		   unsigned int contexts, unsigned int dead_modifiers,
 		   Bool fGrab)
 {
-  static int counter;
   /* remove unnecessary bits from dead_modifiers */
   dead_modifiers &= ~(binding->Modifier & dead_modifiers);
 

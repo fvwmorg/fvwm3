@@ -1,3 +1,12 @@
+Sat May 22 17:40:57 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/menus.c (PopDownMenu): removed unused variable `f'.
+
+	* fvwm/fvwm.c (CaptureOneWindow): removed unused variable `data'.
+
+	* libs/Bindings.c (GrabWindowKey): removed unused variable
+ 	`counter'.
+
 1999-05-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* NEWS:
@@ -3292,7 +3301,8 @@ Sun Feb 28 11:03:42 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 Sat Feb 27 12:49:23 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: allow FVWM_{MODULE,CONFIG}DIR to be overridden by
-	setting the corresponding environment variable before running configure.
+ 	setting the corresponding environment variable before running
+ 	configure.
 
 1999-02-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 

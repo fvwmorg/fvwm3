@@ -728,7 +728,6 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
   int aformat;
   unsigned long nitems, bytes_remain;
   unsigned char *prop;
-  unsigned long data[1];
 
   if (fw == NULL)
     return;

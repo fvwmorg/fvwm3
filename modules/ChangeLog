@@ -1,3 +1,8 @@
+Sat May 22 18:04:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/FvwmForm.c (ReadConfig): removed unused variable
+ 	`buffer'.
+
 Mon May 17 21:35:54 1999  DanEspen  <dje@blue>
 
 	* FvwmBacker/FvwmBacker.c (ParseConfig): Use InitGetConfigLine to

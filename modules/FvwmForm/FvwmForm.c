@@ -842,7 +842,6 @@ static void ReadDefaults ()
 static void ReadConfig ()
 {
   char *line_buf;                       /* ptr to curr config line */
-  char buffer[200];
 
   InitGetConfigLine(Channel,MyName);
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */

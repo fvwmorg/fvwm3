@@ -1876,7 +1876,6 @@ void PopDownMenu(MenuRoot **pmr, MenuParameters *pmp)
   {
     /* Finally execute the popdown action (if defined). */
     saved_pos_hints pos_hints;
-    Bool f;
     Time t;
     extern XEvent Event;
 
