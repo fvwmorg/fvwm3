@@ -1072,10 +1072,10 @@ static void ParseConfigLine(char *tline)
     switch(index)
     {
     case 0: /* Font */
-      CopyString(&font_string, rest);
+      CopyStringWithQuotes(&font_string, rest);
       break;
-    case 1: /* Selfont */
-      CopyString(&selfont_string, rest);
+    case 1: /* SelFont */
+      CopyStringWithQuotes(&selfont_string, rest);
       break;
     case 2: /* Geometry */
       while (isspace((unsigned char)*rest) && *rest != '\n' && *rest != 0)

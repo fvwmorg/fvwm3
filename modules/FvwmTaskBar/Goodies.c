@@ -209,7 +209,7 @@ Bool GoodiesParseConfig(char *tline)
     UpdateString(&clockfmt, rest);
     break;
   case 4: /* StatusFont */
-    CopyString(&statusfont_string, rest);
+    CopyStringWithQuotes(&statusfont_string, rest);
     break;
   case 5: /* TipsFore */
     CopyString(&TipsFore, rest);

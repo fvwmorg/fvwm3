@@ -1,3 +1,11 @@
+2002-06-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	* FvwmTaskBar/Goodies.c (GoodiesParseConfig):
+	* FvwmButtons/parse.c (ParseConfigLine):
+	fixed double quotes in *Font configuration options
+
 2002-06-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress):

@@ -22,6 +22,12 @@ void CopyString(char **dest, const char *source);
 
 
 /**
+ * Like CopyString, but strips leading and trailing (double) quotes if any.
+ **/
+void CopyStringWithQuotes(char **dest, const char *src);
+
+
+/**
  * Copy string into newly-malloced memory, stripping leading and
  * trailing spaces.  The difference between this and CopyString()
  * is that newlines are treated as whitespace by stripcpy(), whereas

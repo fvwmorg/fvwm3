@@ -1800,22 +1800,7 @@ void ParseOptions(void)
     {
       if (font_string)
 	free(font_string);
-      if (next && next[0] == '\"')
-      {
-	int l;
-
-	next++;
-	CopyString(&font_string, next);
-	l = strlen(font_string);
-	if (l > 0 && font_string[l - 1] == '\"')
-	{
-	  font_string[l - 1] = 0;
-	}
-      }
-      else
-      {
-	CopyString(&font_string,next);
-      }
+      CopyStringWithQuotes(&font_string, next);
       if(strncasecmp(font_string,"none",4) == 0)
       {
 	uselabel = 0;
@@ -2017,22 +2002,7 @@ void ParseOptions(void)
     {
       if (smallFont)
 	free(smallFont);
-      if (next && next[0] == '\"')
-      {
-	int l;
-
-	next++;
-	CopyString(&smallFont, next);
-	l = strlen(smallFont);
-	if (l > 0 && smallFont[l - 1] == '\"')
-	{
-	  smallFont[l - 1] = 0;
-	}
-      }
-      else
-      {
-	CopyString(&smallFont,next);
-      }
+      CopyStringWithQuotes(&smallFont, next);
       if (strncasecmp(smallFont,"none",4) == 0)
       {
 	free(smallFont);
@@ -2196,7 +2166,7 @@ void ParseOptions(void)
     {
       if (BalloonFont)
 	free(BalloonFont);
-      CopyString(&BalloonFont, next);
+      CopyStringWithQuotes(&BalloonFont, next);
     }
 
     else if (StrEquals(resource, "BalloonBorderColor"))

@@ -1380,7 +1380,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
   case 2:/* Font */
     if (ub->c->font_string)
       free(ub->c->font_string);
-    CopyString(&ub->c->font_string, s);
+    CopyStringWithQuotes(&ub->c->font_string, s);
     break;
   case 3:/* Padding */
     i=sscanf(s,"%d %d",&j,&k);
