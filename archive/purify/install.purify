@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cp test1.xpm /tmp
+cp test2.xpm /tmp
+cp test3.xpm /tmp
+cp purify.read /tmp
+

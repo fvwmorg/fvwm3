@@ -2,6 +2,22 @@ Sun Nov 15 12:24:12 1998  DanEspen  <dje@blue>
 
 	* NEWS: Document shadow/hilite change.
 
+1998-11-15  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (wait_func): Wait builtin can be aborted with
+	Control-Escape.
+	(movecursor): fixed bugs: cursor move didn't work on edge of screen;
+	didn't work if NON_VIRTUAL is defined
+	
+1998-11-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (CursorStyle): fixed coredump
+	(echo_func): empty line is ok now
+	(set_animation): rewrote parser to fix coredump (empty config line)
+	(SetMenuStyle): fixed 'exit' if no font is given
+	(add_item_to_func): fixed coredump (empty config line)
+	(add_item_to_menu): empty name not allowed
+
 Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 
 	* libs/Picture.c: Made  PictureCMap and PictureSaveDisplay globals
@@ -28,6 +44,7 @@ Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 
 	* Added the StackingOrder rewrite
 
+>>>>>>> 1.34
 1998-11-12  Dan Espen  <dane@mk.bellcore.com>
 
 	* Under the sample.fvwmrc directory, removed everything in the

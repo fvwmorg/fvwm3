@@ -690,7 +690,6 @@ void ProcessNewStyle(XEvent *eventp,
           if (spargs == 1)
             {
               tname.Desk = tmpno1 + 1;
-              GETWORD;
             }
           else
 	    {
@@ -699,6 +698,7 @@ void ProcessNewStyle(XEvent *eventp,
                        "bad StartsOnDesk arg: %s", restofline);
 	    }
 	  /**/
+          GETWORD;
           restofline = tmp;
           SKIPSPACE;
         }

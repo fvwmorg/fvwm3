@@ -1,0 +1,31 @@
+/* XPM */
+static char * mini_penguin_xpm[] = {
+/* width height num_colors chars_per_pixel */
+"16 18 7 1",
+/* colors */
+" 	s None	m none	c None",
+".	c #808080",
+"X	s iconColor1	m black	c black",
+"o	c #c0c0c0",
+"O	c #101010",
+"+	s iconColor2	m white	c white",
+"@	c #e0a008",
+/* pixels */
+"      .XX.      ",
+"     .XXXX.     ",
+"     XoXoXX     ",
+"     XOXX+X     ",
+"     X@@@oX     ",
+"     X@@@oX.    ",
+"     X@@++XX    ",
+"    X.+++++X.   ",
+"   .X++++++.X.  ",
+"   X+++o++++XX  ",
+"   X++oo++++XX. ",
+"  Xo++o+++++XXX ",
+"  @o++o+++++XXX ",
+" @@@+++++++@XX@ ",
+"@@@@@+++++o@@@@@",
+"@@@@@+++++X@@@@@",
+" @@@@@++XXX@@@@ ",
+"  @@@.XXXXX.@@  "};

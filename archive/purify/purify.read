@@ -1,0 +1,134 @@
+Style "*" BorderWidth
+Style "*" BorderWidth  3
+Style "*" BorderWidth	5
+Style "*" BorderWidth	5
+Style "*" HandleWidth
+Style "*" HandleWidth  3
+Style "*" HandleWidth		7
+Style "*" HandleWidth		7
+Style "*" NoIcon
+Style "*" NoIcon
+Style "*" Icon
+Style "*" Icon
+Style "*" MiniIcon
+Style "*" MiniIcon
+Style "*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
+Style "*" IconBox 1 5 100 500, IconGrid -0 10
+Style "*" NoTitle
+Style "*" NoTitle
+Style "*" Title
+Style "*" Title
+Style "*" NoHandles
+Style "*" NoHandles
+Style "*" Handles
+Style "*" Handles
+Style "*" WindowListSkip
+Style "*" WindowListSkip
+Style "*" WindowListHit
+Style "*" WindowListHit
+Style "*" CirculateSkip
+Style "*" CirculateSkip
+Style "*" CirculateHit
+Style "*" CirculateHit
+Style "*" StaysOnTop
+Style "*" StaysOnTop
+Style "*" StaysPut
+Style "*" StaysPut
+Style "*" Sticky
+Style "*" Sticky
+Style "*" Slippery
+Style "*" Slippery
+Style "*" StartIconic
+Style "*" StartIconic
+style "*" StartNormal
+style "*" StartNormal
+Style "*" Color
+Style "*" Color
+Style "*" ForeColor
+Style "*" ForeColor
+Style "*" BackColor
+Style "*" BackColor
+Style "*" StartsOnDesk
+Style "*" StartsOnDesk   0
+Style "*" StartsOnDesk		0
+Style "*" StartsOnDesk		0
+Style "*" StartsOnPage
+Style "*" StartsOnPage  0
+Style "*" StartsOnPage  0   0
+Style "*" StartsOnPage	0	0
+Style "*" StartsAnyWhere
+Style "*" StartsAnyWhere
+Style "*" IconTitle
+Style "*" IconTitle
+Style "*" NoIconTitle
+Style "*" NoIconTitle
+Style "*" MWMButtons
+Style "*" MWMButtons
+Style "*" FvwmButtons
+Style "*" FvwmButtons
+Style "*" MWMBorder
+Style "*" MWMBorder
+Style "*" FvwmBorder
+Style "*" FvwmBorder
+Style "*" MWMDecor
+Style "*" MWMDecor
+Style "*" NoDecorHint
+Style "*" NoDecorHint
+Style "*" MWMFunctions
+Style "*" MWMFunctions
+Style "*" NoFuncHint
+Style "*" NoFuncHint
+Style "*" HintOverride
+Style "*" HintOverride
+Style "*" style "*" NoOverride
+Style "*" style "*" NoOverride
+Style "*" NoButton
+Style "*" NoButton  1
+Style "*" NoButton		2
+Style "*" Button
+Style "*" Button  3
+Style "*" Button		0
+Style "*" OLDecor
+Style "*" OLDecor
+Style "*" NoOLDecor
+Style "*" NoOLDecor
+Style "*" StickyIcon
+Style "*" StickyIcon
+Style "*" SlipperyIcon
+Style "*" SlipperyIcon
+Style "*" SmartPlacement
+Style "*" SmartPlacement
+Style "*" DumbPlacement
+Style "*" DumbPlacement
+Style "*" RandomPlacement
+Style "*" RandomPlacement
+Style "*" ActivePlacement
+Style "*" ActivePlacement
+Style "*" DecorateTransient
+Style "*" DecorateTransient
+Style "*" NakedTransient
+Style "*" NakedTransient
+Style "*" SkipMapping
+Style "*" SkipMapping
+Style "*" ShowMapping
+Style "*" ShowMapping
+Style "*" UseDecor
+Style "*" UseDecor
+style "*" UseStyle
+style "*" UseStyle
+style "*" NoPPosition
+style "*" NoPPosition
+style "*" UsePPosition
+style "*" UsePPosition
+style "*" Lenience
+style "*" Lenience
+style "*" NoLenience
+style "*" NoLenience
+style "*" ClickToFocus
+style "*" ClickToFocus
+style "*" SloppyFocus
+style "*" SloppyFocus
+style "*" MouseFocus
+style "*" MouseFocus
+style "*" FocusFollowsMouse
+style "*" FocusFollowsMouse

@@ -1,0 +1,27 @@
+/* XPM */
+static char * mini_crosbone_xpm[] = {
+/* width height ncolors cpp [x_hot y_hot] */
+"16 16 5 1 0 0",
+/* colors */
+" 	s none	m none	c none",
+".	s iconColor1	m black	c black",
+"X	c #808080",
+"o	s iconColor2	m white	c white",
+"O	c #c0c0c0",
+/* pixels */
+" ..         ..  ",
+"X..         ..X ",
+"...X XXXXX X... ",
+"  o...ooo...oO  ",
+"  .oOOOOOOOo.   ",
+"  .OX.XOX.XO.   ",
+"  .O...O...O.   ",
+"  .XooO.OooX.   ",
+"   .XOOoOOX.    ",
+"    .OOOOO.     ",
+"  X...O.O...X   ",
+"X..oo..O..oo..X ",
+"..o  .OOO.  o.. ",
+" .    ...    .  ",
+"                ",
+"                "};

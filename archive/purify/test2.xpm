@@ -1,0 +1,22 @@
+/* XPM */
+static char * mini-turn_xpm[] = {
+"16 16 3 1",
+" 	c None s None",
+".	c #808080",
+"X	c black",
+"                ",
+"     ..XXX.     ",
+"    .XXXXXXX    ",
+"   .XX.    .X   ",
+"   XX.          ",
+"  XXX       X   ",
+"XXXXXXX    XXX  ",
+" XXXXX    XXXXX ",
+"  XXX    XXXXXXX",
+"   X       XXX  ",
+"          .XX   ",
+"   X.    .XX.   ",
+"    XXXXXXX.    ",
+"     .XXX..     ",
+"                ",
+"                "};

@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <errno.h>
+#include <X11/keysym.h>
 
 #include "fvwm.h"
 #include "menus.h"
@@ -486,7 +487,7 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   rest = GetNextToken(action,&token);
   if (!token)
-    token = "";
+    return;
   mr = FollowMenuContinuations(FindPopup(token),&mrPrior);
   if(mr == NULL)
     mr = NewMenuRoot(token, 0);
@@ -550,9 +551,10 @@ void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *token, *rest;
 
   rest = GetNextToken(action,&token);
+  if (!token)
+    return;
   mr = FindPopup(token);
-  if (token)
-    free(token);
+  free(token);
   while (mr)
   {
     mrContinuation = mr->continuation; /* save continuation before destroy */
@@ -571,6 +573,8 @@ void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *token, *rest,*item;
 
   rest = GetNextToken(action,&token);
+  if (!token)
+    return;
   mr = FindPopup(token);
   if(mr == NULL)
     mr = NewMenuRoot(token, 1);
@@ -597,7 +601,6 @@ void Nop_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
 void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
 		char *action, int *Module)
 {
-#ifndef NON_VIRTUAL
   int x,y,delta_x,delta_y,warp_x,warp_y;
   int val1, val2, val1_unit,val2_unit,n;
 
@@ -614,22 +617,23 @@ void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long contex
   delta_y = 0;
   warp_x = 0;
   warp_y = 0;
-  if(x >= Scr.MyDisplayWidth -2)
+#ifndef NON_VIRTUAL
+  if(x >= Scr.MyDisplayWidth -2 && val1 > 0)
   {
     delta_x = Scr.EdgeScrollX;
     warp_x = Scr.EdgeScrollX - 4;
   }
-  if(y>= Scr.MyDisplayHeight -2)
+  if(y>= Scr.MyDisplayHeight -2 && val2 > 0)
   {
     delta_y = Scr.EdgeScrollY;
     warp_y = Scr.EdgeScrollY - 4;
   }
-  if(x < 2)
+  if(x < 2 && val1 < 0)
   {
     delta_x = -Scr.EdgeScrollX;
     warp_x =  -Scr.EdgeScrollX + 4;
   }
-  if(y < 2)
+  if(y < 2 && val2 < 0)
   {
     delta_y = -Scr.EdgeScrollY;
     warp_y =  -Scr.EdgeScrollY + 4;
@@ -649,6 +653,7 @@ void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long contex
                  Scr.MyDisplayHeight,
                  x - warp_x,
                  y - warp_y);
+    return;
   }
 #endif
   XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
@@ -941,6 +946,9 @@ void wait_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   while(!done)
   {
+#if 0
+    GrabEm(WAIT);
+#endif
     if(My_XNextEvent(dpy, &Event))
     {
       DispatchEvent ();
@@ -955,8 +963,17 @@ void wait_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
            (matchWildcards(action,Tmp_win->class.res_name)==True))
           done = True;
       }
+      else if (Event.type == KeyPress &&
+	       XLookupKeysym(&(Event.xkey),0) == XK_Escape &&
+	       Event.xbutton.state & ControlMask)
+      {
+	done = 1;
+      }
     }
   }
+#if 0
+  UngrabEm();
+#endif
 }
 
 
@@ -1109,13 +1126,17 @@ void quit_screen_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void echo_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                unsigned long context, char *action,int *Module)
 {
-  if (action && *action)
+  unsigned int len;
+
+  if (!action)
+    action = "";
+  len = strlen(action);
+  if (len != 0)
   {
-    int len=strlen(action);
     if (action[len-1]=='\n')
       action[len-1]='\0';
-    fvwm_msg(INFO,"Echo",action);
   }
+  fvwm_msg(INFO,"Echo",action);
 }
 
 void raiselower_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -1487,9 +1508,9 @@ void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     free(newcursor);
     return;
   }
-  free(cname);
   nc = atoi(newcursor);
   free(newcursor);
+  free(cname);
   if ((nc < 0) || (nc >= XC_num_glyphs) || ((nc % 2) != 0))
   {
     fvwm_msg(ERR,"CursorStyle","Bad cursor number %s",newcursor);
@@ -1581,6 +1602,19 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   action = GetNextToken(action,&font);
   action = GetNextToken(action,&style);
   action = GetNextToken(action,&animated);
+
+  if (style == NULL)
+  {
+    if(fore != NULL)
+      free(fore);
+    if(back != NULL)
+      free(back);
+    if(stipple != NULL)
+      free(stipple);
+    if(font != NULL)
+      free(font);
+    return;
+  }
 
   if((style != NULL)&&(strncasecmp(style,"MWM",3)==0)) {
     Scr.menu_type = MWM;
@@ -3490,13 +3524,17 @@ extern int c10msDelaysBeforePopup;
 void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 			  unsigned long context, char *action,int* Module)
 {
-  char *opt = strtok(action," \t");
+  char *opt;
   int delay;
   float pct;
   int i = 0;
-  if (sscanf(opt,"%d",&delay) != 1) {
+
+  action = GetNextToken(action, &opt);
+  if (!opt || sscanf(opt,"%d",&delay) != 1) {
     fvwm_msg(ERR,"SetAnimation",
 	     "Improper milli-second delay as first argument");
+    if (opt)
+      free(opt);
     return;
   }
   if (delay > 500) {
@@ -3504,13 +3542,17 @@ void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	     "Using longer than .5 seconds as between frame animation delay");
   }
   cmsDelayDefault = delay;
-  while ((opt =strtok(NULL," \t"))) {
+  action = GetNextToken(action, &opt);
+  while (opt) {
     if (sscanf(opt,"%f",&pct) != 1) {
       fvwm_msg(ERR,"SetAnimation",
 	       "Use fractional values ending in 1.0 as args 2 and on");
+      free(opt);
       return;
     }
     rgpctMovementDefault[i++] = pct;
+    free(opt);
+    action = GetNextToken(action, &opt);
   }
   /* No pct entries means don't change them at all */
   if (i>0 && rgpctMovementDefault[i-1] != 1.0) {

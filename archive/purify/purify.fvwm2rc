@@ -1,0 +1,1718 @@
+########### PATH section -- must be first #############
+
+
+##### PIXMAP PATH
+
+PixmapPath
+PixmapPath 	 	 	
+PixmapPath   /usr/lib/X11/icons/pixmaps
+PixmapPath		/usr/lib/X11/icons/pixmaps
+PixmapPath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles
+PixmapPath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons
+PixmapPath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles
+PixmapPath       /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps
+PixmapPath
+PixmapPath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps
+
+##### ICON PATH
+
+IconPath
+IconPath 	 	 	
+IconPath   /usr/X11R6/include/X11/bitmaps:/usr/lib/X11/bitmaps
+IconPath 		/usr/X11R6/include/X11/bitmaps:/usr/lib/X11/bitmaps
+IconPath /usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/bitmaps:/etc/dtpixmaps
+IconPath /usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/bitmaps:/etc/dtpixmaps
+IconPath /usr/local/fvwm-2.0.46/icons:/usr/X11R6/include/X11/pixmaps:/opt/kde/share/icons
+IconPath /usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/bitmaps:/etc/dtpixmaps:/usr/local/fvwm-2.0.46/icons:/usr/X11R6/include/X11/pixmaps:/opt/kde/share/icons
+IconPath
+IconPath /tmp:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/bitmaps:/etc/dtpixmaps:/usr/local/fvwm-2.0.46/icons:/usr/X11R6/include/X11/pixmaps:/opt/kde/share/icons
+
+##### MODULE PATH
+
+ModulePath
+ModulePath 	 	 	
+ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
+ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
+ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
+ModulePath $HOME/bin/fvwm2
+ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
+ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
+ModulePath
+ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
+
+
+
+##### MODULE CONFIG, DESTROY MODULE CONFIG
+
+*dummymodule
+*dummymodule 	 	 	
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13 
+*dummymodule1r 13r  g3w 
+*dummymodule2r 13r  g3w 
+*dummymodule2r 13r  g3w 
+*dummymodule2 121 32 
+*dummymodule2 qw 124   
+
+DestroyModuleConfig
+DestroyModuleConfig 	 	 	
+DestroyModuleConfig  dummymodule1
+DestroyModuleConfig		dummymodule1
+DestroyModuleConfig dummymod*
+DestroyModuleConfig dummymod*
+
+*dummymodule
+*dummymodule 	 	 	
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13 
+*dummymodule1r 13r  g3w 
+*dummymodule2r 13r  g3w 
+*dummymodule2r 13r  g3w 
+*dummymodule2 121 32 
+*dummymodule2 qw 124   
+
+DestroyModuleConfig *
+
+##### MODULE
+
+*FvwmBannerTimeout 9182743120348908713204
+*FvwmBannerTimeout 1000
+*FvwmBannerTimeout 1000
+*FvwmBannerTimeout 1000
+
+Module
+Module	 	 	 
+Module FvwmBanner
+Module    FvwmBanner
+Module		FvwmBanner
+
+
+################# GLOBAL COMMANDS ###################
+
+##### ADD TO FUNC, DESTROY FUNC, FUNCTION
+
+AddToFunc
+AddToFunc   foo
+AddToFunc		bar
+
+### coredump!!
+
+#AddToFunc   suicide
+#AddToFunc		suicide
+#AddToFunc suicide
+# + "I" DestroyFunc suicide
+# + "I" DestroyFunc suicide
+# + "I" DestroyFunc suicide
+#AddToFunc suicide
+# + "I" DestroyFunc suicide
+#function suicide
+
+### coredump!!
+
+#AddToFunc loop1
+# + "I" function loop2
+#AddToFunc loop2
+# + "I" function loop1
+#function loop1
+
+### coredump!!
+
+#AddToFunc grow1
+# + "I" AddToFunc grow2 nop
+# + "I" function grow2
+#AddToFunc grow2
+# + "I" AddToFunc grow1 nop
+# + "I" function grow1
+#function grow1
+
+addtofunc foo
+ + "I" nop $w $d $1 $10298097
+function
+function   foo
+function		foo
+function nonexist
+
+DestroyFunc
+DestroyFunc    grow2
+DestroyFunc		grow1
+DestroyFunc loop1
+DestroyFunc loop2
+
+##### ADD TO MENU, DESTROY MENU, MENU, POPUP
+
+AddToMenu menu1 "tt1" title top
+AddToMenu menu1 "t1" title
+AddToMenu menu1 "tt1"   title   top
+AddToMenu menu1 "t1"   title
+AddToMenu menu1 "tt1"		title		top
+AddToMenu menu1 "t1"		title
++ "" ""
++ "" nop
++ "" nop
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "xx" function xyz
++ "xx" function xyz
++ "xx" function xyz
+
+Menu menu1 root c+0 c+0 beep
+Menu menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+
+DestroyMenu
+DestroyMenu 	 	 	
+DestroyMenu		 menu1
+
+addtofunc makelongmenu
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
+
+AddToMenu longmenu "a very long menu" title
+Addtomenu "short menu" "a very short menu" title top
++ "single item" nop
+Addtomenu "recursive menu" "recursion" title top
++ "recurse" popup "recursive menu"
+
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+
+Menu longmenu
+Popup longmenu
+DestroyMenu longmenu
+
+##### BEEP
+
+Beep
+Beep  	 			
+Beep ü30 23äö ü9823r ,l.öapü39
+
+##### BORDER STYLE
+
+BorderStyle
+BorderStyle -- HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Simple
+BorderStyle Simple
+BorderStyle Inactive -- HiddenHandles NoInset
+BorderStyle Active TiledPixmap test1.xpm
+BorderStyle Inactive TiledPixmap test2.xpm
+BorderStyle Active -- HiddenHandles NoInset
+
+##### TITLE STYLE
+
+### justification and height
+
+TitleStyle
+TitleStyle LEFtJusTiFied
+TitleStyle LEFtJusTiFied
+TitleStyle   centered
+TitleStyle		rightjustified
+TitleStyle heIGht 20
+TitleStyle heIGht 20
+TitleStyle leftjustified height 37
+TitleStyle leftjustified height 24
+
+### style
+
+TitleStyle -- raisED
+TitleStyle -- SUNk
+TitleStyle -- flat
+TitleStyle -- flat
+TitleStyle -- !flat
+TitleStyle Activeup -- raised
+TitleStyle Activeup -- raised
+TitleStyle activeDOWN -- sunk
+TitleStyle inactive -- flat
+TitleStyle inactive -- flat
+TitleStyle Activeup -- sunk
+TitleStyle simple
+TitleStyle simple
+TitleStyle default 3
+TitleStyle default 3
+TitleStyle solid blaCK
+TitleStyle solid blaCK
+TitleStyle simple
+
+### gradients
+
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 red blue
+TitleStyle hgradient 32 red blue
+TitleStyle hgradient 128 red blue
+TitleStyle hgradient 2 red blue
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 red blue
+TitleStyle vgradient 32 red blue
+TitleStyle vgradient 128 red blue
+TitleStyle vgradient 2 red blue
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle VGradient 16 2 Red 20 Blue 80
+TitleStyle VGradient 128 2 Red 20 Blue 80
+TitleStyle VGradient 2 2 Red 20 Blue 80
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle hGradient 16 2 Red 20 Blue 80
+TitleStyle hGradient 128 2 Red 20 Blue 80
+TitleStyle hGradient 2 2 Red 20 Blue 80
+ 
+### vector buttons
+
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+### pixmaps
+
+TitleStyle Pixmap test1.xpm
+TitleStyle Pixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test1.xpm
+TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+TitleStyle Inactive Pixmap nonexistent.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap
+TitleStyle MiniIcons
+TitleStyle miniicons
+
+##### ADD TITLE STYLE
+
+AddTitleStyle
+AddTitleStyle -- raisED
+AddTitleStyle -- SUNk
+AddTitleStyle -- flat
+AddTitleStyle -- flat
+AddTitleStyle -- !flat
+AddTitleStyle Activeup -- raised
+AddTitleStyle Activeup -- raised
+AddTitleStyle activeDOWN -- sunk
+AddTitleStyle inactive -- flat
+AddTitleStyle inactive -- flat
+AddTitleStyle Activeup -- sunk
+AddTitleStyle simple
+AddTitleStyle simple
+AddTitleStyle default 3
+AddTitleStyle default 3
+AddTitleStyle solid blaCK
+AddTitleStyle solid blaCK
+AddTitleStyle simple
+
+### gradients
+
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 red blue
+AddTitleStyle hgradient 32 red blue
+AddTitleStyle hgradient 128 red blue
+AddTitleStyle hgradient 2 red blue
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 red blue
+AddTitleStyle vgradient 32 red blue
+AddTitleStyle vgradient 128 red blue
+AddTitleStyle vgradient 2 red blue
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle VGradient 16 2 Red 20 Blue 80
+AddTitleStyle VGradient 128 2 Red 20 Blue 80
+AddTitleStyle VGradient 2 2 Red 20 Blue 80
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle hGradient 16 2 Red 20 Blue 80
+AddTitleStyle hGradient 128 2 Red 20 Blue 80
+AddTitleStyle hGradient 2 2 Red 20 Blue 80
+ 
+### vector buttons
+
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+### pixmaps
+
+AddTitleStyle Pixmap test1.xpm
+AddTitleStyle Pixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test1.xpm
+AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddTitleStyle Inactive Pixmap nonexistent.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap
+AddTitleStyle MiniIcons
+AddTitleStyle miniicons
+
+##### BUTTON STYLE
+
+### various states and styles
+
+ButtonStyle
+ButtonStyle All -- UseBorderStyle
+ButtonStyle All -- UseTitleStyle
+ButtonStyle Reset
+ButtonStyle All -- raisED
+ButtonStyle All -- SUNk
+ButtonStyle Left -- flat
+ButtonStyle Left -- flat
+ButtonStyle Right -- !flat
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left activeDOWN -- sunk
+ButtonStyle Left inactive -- flat
+ButtonStyle Left inactive -- flat
+ButtonStyle Left Activeup -- sunk
+ButtonStyle 1 simple
+ButtonStyle 1 simple
+ButtonStyle 1 default 3
+ButtonStyle 1 default 3
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 simple
+
+### gradients
+
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 red blue
+ButtonStyle 2 hgradient 32 red blue
+ButtonStyle 2 hgradient 128 red blue
+ButtonStyle 2 hgradient 2 red blue
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 red blue
+ButtonStyle 2 vgradient 32 red blue
+ButtonStyle 2 vgradient 128 red blue
+ButtonStyle 2 vgradient 2 red blue
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+ 
+### vector buttons
+
+ButtonStyle Reset
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle 1 5
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle Reset
+
+### pixmaps
+
+ButtonStyle 1 Pixmap test1.xpm
+ButtonStyle 1 Pixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test1.xpm
+ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ButtonStyle 1 Inactive Pixmap nonexistent.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap
+ButtonStyle 1 MiniIcons
+ButtonStyle 1 miniicons
+
+### state-independent flags
+
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMax 
+ButtonStyle 1 - MWMDecorMin
+ButtonStyle 1 -
+
+##### ADD BUTTON STYLE
+
+### various states and styles
+
+AddButtonStyle
+AddButtonStyle Reset
+AddButtonStyle All -- raisED
+AddButtonStyle All -- SUNk
+AddButtonStyle Left -- flat
+AddButtonStyle Left -- flat
+AddButtonStyle Right -- !flat
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left activeDOWN -- sunk
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left Activeup -- sunk
+AddButtonStyle 1 simple
+AddButtonStyle 1 simple
+AddButtonStyle 1 default 3
+AddButtonStyle 1 default 3
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 simple
+
+### gradients
+
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 red blue
+AddButtonStyle 2 hgradient 32 red blue
+AddButtonStyle 2 hgradient 128 red blue
+AddButtonStyle 2 hgradient 2 red blue
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 red blue
+AddButtonStyle 2 vgradient 32 red blue
+AddButtonStyle 2 vgradient 128 red blue
+AddButtonStyle 2 vgradient 2 red blue
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+ 
+### vector buttons
+
+AddButtonStyle Reset
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle 1 5
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle Reset
+
+### pixmaps
+
+AddButtonStyle 1 Pixmap test1.xpm
+AddButtonStyle 1 Pixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test1.xpm
+AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap
+AddButtonStyle 1 MiniIcons
+AddButtonStyle 1 miniicons
+
+##### CLICK TIME test
+
+ClickTime
+ClickTime 0
+ClickTime    0 # blah
+ClickTime 	 	0
+ClickTime -1
+ClickTime 150
+ClickTime 150
+ClickTime 200
+
+##### COLORMAP FOCUS
+
+ColormapFocus
+ColormapFocus    FollowsFocus
+ColormapFocus 		FollowsFocus
+ColormapFocus FollowsMouse
+ColormapFocus FollowsFocus
+ColormapFocus FollowsFocus
+ColormapFocus FollowsMouse
+
+##### COLOR LIMIT
+
+ColorLimit
+ColorLimit 0
+ColorLimit   77
+ColorLimit		77
+ColorLimit 50
+ColorLimit 50
+ColorLimit 40
+ColorLimit -23
+ColorLimit 0
+
+##### CURSOR MOVE
+
+CursorMove
+CursorMove 50p
+CursorMove   10p   -10p
+CursorMove 		-50		+50
+CursorMove -0 +0
+CursorMove -50p -50p
+CursorMove -1000 -1000
+
+##### CURSOR STYLE
+
+CursorStyle
+CursorStyle liewud
+CursorStyle BOTTOM 132
+CursorStyle BOTTOM_LEFT 133
+CursorStyle BOTTOM_RIGHT 134
+CursorStyle DEFAULT 64
+CursorStyle DEFAULT 68
+CursorStyle DEFAULT 68
+CursorStyle DESTROY 88
+CursorStyle DESTROY 88
+CursorStyle DESTROY 99
+CursorStyle DESTROY
+CursorStyle DEFAULT
+
+##### DESK
+
+Desk
+Desk    2
+Desk		+3
+Desk -2
+Desk 0 1
+Desk   0    3
+Desk		0		1923874
+Desk +1 0 10
+Desk -1 0 10
+Desk 0 0 5 7
+Desk 0 -11111 5 7
+Desk 0 0
+
+##### DESK TOP SIZE
+
+DeskTopSize
+DeskTopSize ödslajf
+DeskTopSize   2x2
+DeskTopSize		 2x2
+DeskTopSize 2x3
+DeskTopSize 2x3
+DeskTopSize 3x3
+DeskTopSize 3x1
+DeskTopSize 1x1
+DeskTopSize 0x2
+DeskTopSize 2x0
+DeskTopSize 0x0
+DeskTopSize 1000x1000
+DeskTopSize 2x2
+
+##### ECHO
+
+Echo
+Echo   	 	  						
+Echo ädsa		 iopq9 $SHELL "'lksaä"
+
+##### EDGE RESISTACE
+
+EdgeResistance
+EdgeResistance     300   10
+EdgeResistance		300		10
+EdgeResistance 400 400
+EdgeResistance 400 400
+EdgeResistance 300 10
+EdgeResistance 0 20
+EdgeResistance -1 20
+EdgeResistance 20 0
+EdgeResistance 20 -1
+
+##### EDGE SCROLL
+
+EdgeScroll
+EdgeScroll    50    50
+EdgeScroll		50		50
+EdgeScroll 100 100
+EdgeScroll -125 111
+EdgeScroll 100000 100000
+EdgeScroll 0 0
+EdgeScroll 75 75
+
+##### EXEC, EXEC USE SHELL
+
+### ExecUseShell
+
+ExecUseShell
+ExecUseShell
+ExecUseShell     /bin/bash
+ExecUseShell		/bin/bash
+ExecUseShell /bin/bash
+ExecUseShell /nonexistent/foo/bar
+ExecUseShell
+
+### Exec
+
+Exec
+Exec  	 	 	""
+Exec ls
+Exec ls -l
+
+##### GLOBAL OPTIONS
+
+GlobalOpts
+GlobalOpts SMARTPLACEMENTISREALLYSMART, SMARTPLACEMENTISNORMAL
+GlobalOpts CLICKTOFOCUSDOESNTPASSCLICK, CLICKTOFOCUSPASSESCLICK
+GlobalOpts CLICKTOFOCUSDOESNTRAISE, CLICKTOFOCUSRAISES, MOUSEFOCUSCLICKDOESNTRAISE, MOUSEFOCUSCLICKRAISES, NOSTIPLEDTITLES, STIPLEDTITLES, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
+GlobalOpts äöwwwkjfd 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds jäwpouef päu3pä9 upä43owu päfoopu 43päuo  4w3fuop af 4wawä4opufwuä4f 4wp \
+apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa \
+\
+
+##### GOTO PAGE
+
+GotoPage
+GotoPage  2  2
+GotoPage		1		1
+GotoPage -1 -100
+GotoPage 10000 1000000
+GotoPage 2 1
+GotoPage 2 1
+GotoPage 1 1
+
+##### HILIGHT COLOR
+
+HilightColor
+HilightColor blue
+HilightColor green
+HilightColor     black     yellow
+HilightColor		black		yellow
+HilightColor gold2 SteelBlue
+HilightColor gold2 SteelBlue
+HilightColor
+HilightColor gold2 SteelBlue
+
+##### ICON FONT
+
+IconFont
+IconFont     9x15
+IconFont		9x15
+IconFont /nonexistent/foo/bar
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont
+
+##### KEY
+
+Key
+Key f12
+Key f12 t
+key f12 t cs
+key		f12		t		cs               
+Key		f12		a		a		Nop
+Key  f12     a  a     function nonexistent
+Key f12 a a function nonexistent
+Key f12 t a function nonexistent
+Key f12 t a -
+Key f12 t a -
+
+##### MENU STYLE
+
+MenuStyle
+MenuStyle  red  yellow  green  9x15  mwm  anim 
+MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim	
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 6x10 mwm anim
+MenuStyle red yellow green 6x10 mwm
+MenuStyle red yellow green 6x10 fvwm
+MenuStyle red yellow green 6x10 fvwm anim
+MenuStyle yellow green blue 6x10 fvwm anim
+
+##### MOUSE
+
+Mouse
+Mouse 2
+Mouse 2 t
+Mouse 2 t cs
+Mouse		2		t		cs               
+Mouse		2		a		a		Nop
+Mouse  2     a  a     function nonexistent
+Mouse 2 a a function nonexistent
+Mouse 2 t a function nonexistent
+Mouse 2 t a -
+Mouse 2 t a -
+
+##### NOP
+
+Nop
+NOP	 	 	 	
+nOp allöoawqj _Ö:K_ÖL ökq
+
+##### OPAQUE MOVE SIZE
+
+OpaqueMoveSize
+OpaqueMoveSize    50
+OpaqueMoveSize		50
+OpaqueMoveSize 0
+OpaqueMoveSize 0
+OpaqueMoveSize -1
+OpaqueMoveSize 100
+OpaqueMoveSize 200
+OpaqueMoveSize 75
+OpaqueMoveSize 75
+OpaqueMoveSize 0
+
+##### SCROLL
+
+Scroll
+Scroll 50p
+Scroll   10p   -10p
+Scroll 		-50		+50
+Scroll -0 +0
+Scroll -50p -50p
+Scroll -1000 -1000
+
+##### SET ANIMATION
+
+SetAnimation
+SetAnimation  10  -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+SetAnimation 10	 -.01 0	 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+SetAnimation 0 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+SetAnimation 20 -.01 0 .01 .03 .08
+SetAnimation 1000 -.01 0 .01 .03 .08
+SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+ 
+##### SET ENV
+
+SetEnv
+SetEnv FOO
+SetEnv   BAR bar
+SetEnv		FOOBAR		barfoo
+SetEnv "	FOO	" x
+SetEnv FOO "   ""ölwäökkü"''
+SetEnv FOO "   ""ölwäökkü"''
+
+##### SET MENU DELAY
+
+SetMenuDelay
+SetMenuDelay   	 	 	
+SetMenuDelay 50
+SetMenuDelay 	  50
+SetMenuDelay 0
+SetMenuDelay -120
+SetMenuDelay -120
+
+##### TITLE
+
+Title
+Title "lökjads
+Title "lökjads
+Title -A -köq 
+
+##### WINDOW FONT
+
+WindowFont
+WindowFont     9x15
+WindowFont		9x15
+WindowFont /nonexistent/foo/bar
+WindowFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+WindowFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+WindowFont
+
+##### XOR VALUE
+
+XORValue
+XORValue     1
+XORValue		1
+XORValue 0
+XORValue 0
+XORValue 255
+XORValue 255
+XORValue 128
+XORValue 0
+
+
+################# settings that require a window ###################
+
+##### CREATE WINDOWS
+
+Style "*" SmartPlacement
+Style "*" RandomPlacement
+Style "*" MouseFocus
+AddToFunc makewindows
+ + "I" Exec xterm -geometry +0+0 -T window1 -n window1 -e sleep 1000
+ + "I" Wait window1
+ + "I" Exec xterm -geometry +50+50 -T window2 -n window2 -e sleep 1000
+ + "I" Wait window2
+ + "I" Exec xterm -geometry +100+100 -T window3 -n window3 -e sleep 1000
+ + "I" Wait window3
+ + "I" Exec xterm -geometry +150+150 -T window4 -n window4 -e sleep 1000
+ + "I" Wait window4
+ + "I" Exec xterm -geometry +200+200 -T window5 -n window5 -e sleep 1000
+ + "I" Wait window5
+ + "I" Exec xterm -geometry -0-0 -T window6 -n window6 -e sleep 1000
+ + "I" Wait window6
+function makewindows
+CursorMove 90 90
+
+##### STYLE
+
+Style "foo*" BorderWidth
+Style "foo*" BorderWidth  3
+Style "foo*" BorderWidth	5
+Style "foo*" BorderWidth	5
+Style "foo*" HandleWidth
+Style "foo*" HandleWidth  3
+Style "foo*" HandleWidth		7
+Style "foo*" HandleWidth		7
+Style "foo*" NoIcon
+Style "foo*" NoIcon
+Style "foo*" Icon
+Style "foo*" Icon
+Style "foo*" MiniIcon
+Style "foo*" MiniIcon
+Style "foo*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
+Style "foo*" IconBox 1 5 100 500, IconGrid -0 10
+Style "foo*" NoTitle
+Style "foo*" NoTitle
+Style "foo*" Title
+Style "foo*" Title
+Style "foo*" NoHandles
+Style "foo*" NoHandles
+Style "foo*" Handles
+Style "foo*" Handles
+Style "foo*" WindowListSkip
+Style "foo*" WindowListSkip
+Style "foo*" WindowListHit
+Style "foo*" WindowListHit
+Style "foo*" CirculateSkip
+Style "foo*" CirculateSkip
+Style "foo*" CirculateHit
+Style "foo*" CirculateHit
+Style "foo*" StaysOnTop
+Style "foo*" StaysOnTop
+Style "foo*" StaysPut
+Style "foo*" StaysPut
+Style "foo*" Sticky
+Style "foo*" Sticky
+Style "foo*" Slippery
+Style "foo*" Slippery
+Style "foo*" StartIconic
+Style "foo*" StartIconic
+style "foo*" StartNormal
+style "foo*" StartNormal
+Style "foo*" Color
+Style "foo*" Color
+Style "foo*" ForeColor
+Style "foo*" ForeColor
+Style "foo*" BackColor
+Style "foo*" BackColor
+Style "foo*" StartsOnDesk
+Style "foo*" StartsOnDesk   0
+Style "foo*" StartsOnDesk		0
+Style "foo*" StartsOnDesk		0
+Style "foo*" StartsOnPage
+Style "foo*" StartsOnPage  0
+Style "foo*" StartsOnPage  0   0
+Style "foo*" StartsOnPage	0	0
+Style "foo*" StartsAnyWhere
+Style "foo*" StartsAnyWhere
+Style "foo*" IconTitle
+Style "foo*" IconTitle
+Style "foo*" NoIconTitle
+Style "foo*" NoIconTitle
+Style "foo*" MWMButtons
+Style "foo*" MWMButtons
+Style "foo*" FvwmButtons
+Style "foo*" FvwmButtons
+Style "foo*" MWMBorder
+Style "foo*" MWMBorder
+Style "foo*" FvwmBorder
+Style "foo*" FvwmBorder
+Style "foo*" MWMDecor
+Style "foo*" MWMDecor
+Style "foo*" NoDecorHint
+Style "foo*" NoDecorHint
+Style "foo*" MWMFunctions
+Style "foo*" MWMFunctions
+Style "foo*" NoFuncHint
+Style "foo*" NoFuncHint
+Style "foo*" HintOverride
+Style "foo*" HintOverride
+Style "foo*" style "*" NoOverride
+Style "foo*" style "*" NoOverride
+Style "foo*" NoButton
+Style "foo*" NoButton  1
+Style "foo*" NoButton		2
+Style "foo*" Button
+Style "foo*" Button  3
+Style "foo*" Button		0
+Style "foo*" OLDecor
+Style "foo*" OLDecor
+Style "foo*" NoOLDecor
+Style "foo*" NoOLDecor
+Style "foo*" StickyIcon
+Style "foo*" StickyIcon
+Style "foo*" SlipperyIcon
+Style "foo*" SlipperyIcon
+Style "foo*" SmartPlacement
+Style "foo*" SmartPlacement
+Style "foo*" DumbPlacement
+Style "foo*" DumbPlacement
+Style "foo*" RandomPlacement
+Style "foo*" RandomPlacement
+Style "foo*" ActivePlacement
+Style "foo*" ActivePlacement
+Style "foo*" DecorateTransient
+Style "foo*" DecorateTransient
+Style "foo*" NakedTransient
+Style "foo*" NakedTransient
+Style "foo*" SkipMapping
+Style "foo*" SkipMapping
+Style "foo*" ShowMapping
+Style "foo*" ShowMapping
+Style "foo*" UseDecor
+Style "foo*" UseDecor
+style "*f*" UseStyle
+style "*f*" UseStyle
+style "*f*" NoPPosition
+style "*f*" NoPPosition
+style "*f*" UsePPosition
+style "*f*" UsePPosition
+style "*f*" Lenience
+style "*f*" Lenience
+style "*f*" NoLenience
+style "*f*" NoLenience
+style "*f*" ClickToFocus
+style "*f*" ClickToFocus
+style "*f*" SloppyFocus
+style "*f*" SloppyFocus
+style "*f*" MouseFocus
+style "*f*" MouseFocus
+style "*f*" FocusFollowsMouse
+style "*f*" FocusFollowsMouse
+
+Style "*" BorderWidth
+Style "*" BorderWidth  3
+Style "*" BorderWidth	5
+Style "*" BorderWidth	5
+Style "*" HandleWidth
+Style "*" HandleWidth  3
+Style "*" HandleWidth		7
+Style "*" HandleWidth		7
+Style "*" NoIcon
+Style "*" NoIcon
+Style "*" Icon
+Style "*" Icon
+Style "*" MiniIcon
+Style "*" MiniIcon
+Style "*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
+Style "*" IconBox 1 5 100 500, IconGrid -0 10
+Style "*" NoTitle
+Style "*" NoTitle
+Style "*" Title
+Style "*" Title
+Style "*" NoHandles
+Style "*" NoHandles
+Style "*" Handles
+Style "*" Handles
+Style "*" WindowListSkip
+Style "*" WindowListSkip
+Style "*" WindowListHit
+Style "*" WindowListHit
+Style "*" CirculateSkip
+Style "*" CirculateSkip
+Style "*" CirculateHit
+Style "*" CirculateHit
+Style "*" StaysOnTop
+Style "*" StaysOnTop
+Style "*" StaysPut
+Style "*" StaysPut
+Style "*" Sticky
+Style "*" Sticky
+Style "*" Slippery
+Style "*" Slippery
+Style "*" StartIconic
+Style "*" StartIconic
+style "*" StartNormal
+style "*" StartNormal
+Style "*" Color
+Style "*" Color
+Style "*" ForeColor
+Style "*" ForeColor
+Style "*" BackColor
+Style "*" BackColor
+Style "*" StartsOnDesk
+Style "*" StartsOnDesk   0
+Style "*" StartsOnDesk		0
+Style "*" StartsOnDesk		0
+Style "*" StartsOnPage
+Style "*" StartsOnPage  0
+Style "*" StartsOnPage  0   0
+Style "*" StartsOnPage	0	0
+Style "*" StartsAnyWhere
+Style "*" StartsAnyWhere
+Style "*" IconTitle
+Style "*" IconTitle
+Style "*" NoIconTitle
+Style "*" NoIconTitle
+Style "*" MWMButtons
+Style "*" MWMButtons
+Style "*" FvwmButtons
+Style "*" FvwmButtons
+Style "*" MWMBorder
+Style "*" MWMBorder
+Style "*" FvwmBorder
+Style "*" FvwmBorder
+Style "*" MWMDecor
+Style "*" MWMDecor
+Style "*" NoDecorHint
+Style "*" NoDecorHint
+Style "*" MWMFunctions
+Style "*" MWMFunctions
+Style "*" NoFuncHint
+Style "*" NoFuncHint
+Style "*" HintOverride
+Style "*" HintOverride
+Style "*" style "*" NoOverride
+Style "*" style "*" NoOverride
+Style "*" NoButton
+Style "*" NoButton  1
+Style "*" NoButton		2
+Style "*" Button
+Style "*" Button  3
+Style "*" Button		0
+Style "*" OLDecor
+Style "*" OLDecor
+Style "*" NoOLDecor
+Style "*" NoOLDecor
+Style "*" StickyIcon
+Style "*" StickyIcon
+Style "*" SlipperyIcon
+Style "*" SlipperyIcon
+Style "*" SmartPlacement
+Style "*" SmartPlacement
+Style "*" DumbPlacement
+Style "*" DumbPlacement
+Style "*" RandomPlacement
+Style "*" RandomPlacement
+Style "*" ActivePlacement
+Style "*" ActivePlacement
+Style "*" DecorateTransient
+Style "*" DecorateTransient
+Style "*" NakedTransient
+Style "*" NakedTransient
+Style "*" SkipMapping
+Style "*" SkipMapping
+Style "*" ShowMapping
+Style "*" ShowMapping
+Style "*" UseDecor
+Style "*" UseDecor
+style "*" UseStyle
+style "*" UseStyle
+style "*" NoPPosition
+style "*" NoPPosition
+style "*" UsePPosition
+style "*" UsePPosition
+style "*" Lenience
+style "*" Lenience
+style "*" NoLenience
+style "*" NoLenience
+style "*" ClickToFocus
+style "*" ClickToFocus
+style "*" SloppyFocus
+style "*" SloppyFocus
+style "*" MouseFocus
+style "*" MouseFocus
+style "*" FocusFollowsMouse
+style "*" FocusFollowsMouse
+
+Style "*" BorderWidth
+Style "*" BorderWidth  3
+Style "*" BorderWidth	5
+Style "*" BorderWidth	5
+Style "*" HandleWidth
+Style "*" HandleWidth  3
+Style "*" HandleWidth		7
+Style "*" HandleWidth		7
+Style "*" NoIcon
+Style "*" NoIcon
+Style "*" Icon
+Style "*" Icon
+Style "*" MiniIcon
+Style "*" MiniIcon
+Style "*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
+Style "*" IconBox 1 5 100 500, IconGrid -0 10
+Style "*" NoTitle
+Style "*" NoTitle
+Style "*" Title
+Style "*" Title
+Style "*" NoHandles
+Style "*" NoHandles
+Style "*" Handles
+Style "*" Handles
+Style "*" WindowListSkip
+Style "*" WindowListSkip
+Style "*" WindowListHit
+Style "*" WindowListHit
+Style "*" CirculateSkip
+Style "*" CirculateSkip
+Style "*" CirculateHit
+Style "*" CirculateHit
+Style "*" StaysOnTop
+Style "*" StaysOnTop
+Style "*" StaysPut
+Style "*" StaysPut
+Style "*" Sticky
+Style "*" Sticky
+Style "*" Slippery
+Style "*" Slippery
+Style "*" StartIconic
+Style "*" StartIconic
+style "*" StartNormal
+style "*" StartNormal
+Style "*" Color
+Style "*" Color
+Style "*" ForeColor
+Style "*" ForeColor
+Style "*" BackColor
+Style "*" BackColor
+Style "*" StartsOnDesk
+Style "*" StartsOnDesk   0
+Style "*" StartsOnDesk		0
+Style "*" StartsOnDesk		0
+Style "*" StartsOnPage
+Style "*" StartsOnPage  0
+Style "*" StartsOnPage  0   0
+Style "*" StartsOnPage	0	0
+Style "*" StartsAnyWhere
+Style "*" StartsAnyWhere
+Style "*" IconTitle
+Style "*" IconTitle
+Style "*" NoIconTitle
+Style "*" NoIconTitle
+Style "*" MWMButtons
+Style "*" MWMButtons
+Style "*" FvwmButtons
+Style "*" FvwmButtons
+Style "*" MWMBorder
+Style "*" MWMBorder
+Style "*" FvwmBorder
+Style "*" FvwmBorder
+Style "*" MWMDecor
+Style "*" MWMDecor
+Style "*" NoDecorHint
+Style "*" NoDecorHint
+Style "*" MWMFunctions
+Style "*" MWMFunctions
+Style "*" NoFuncHint
+Style "*" NoFuncHint
+Style "*" HintOverride
+Style "*" HintOverride
+Style "*" style "*" NoOverride
+Style "*" style "*" NoOverride
+Style "*" NoButton
+Style "*" NoButton  1
+Style "*" NoButton		2
+Style "*" Button
+Style "*" Button  3
+Style "*" Button		0
+Style "*" OLDecor
+Style "*" OLDecor
+Style "*" NoOLDecor
+Style "*" NoOLDecor
+Style "*" StickyIcon
+Style "*" StickyIcon
+Style "*" SlipperyIcon
+Style "*" SlipperyIcon
+Style "*" SmartPlacement
+Style "*" SmartPlacement
+Style "*" DumbPlacement
+Style "*" DumbPlacement
+Style "*" RandomPlacement
+Style "*" RandomPlacement
+Style "*" ActivePlacement
+Style "*" ActivePlacement
+Style "*" DecorateTransient
+Style "*" DecorateTransient
+Style "*" NakedTransient
+Style "*" NakedTransient
+Style "*" SkipMapping
+Style "*" SkipMapping
+Style "*" ShowMapping
+Style "*" ShowMapping
+Style "*" UseDecor
+Style "*" UseDecor
+style "*" UseStyle
+style "*" UseStyle
+style "*" NoPPosition
+style "*" NoPPosition
+style "*" UsePPosition
+style "*" UsePPosition
+style "*" Lenience
+style "*" Lenience
+style "*" NoLenience
+style "*" NoLenience
+style "*" ClickToFocus
+style "*" ClickToFocus
+style "*" SloppyFocus
+style "*" SloppyFocus
+style "*" MouseFocus
+style "*" MouseFocus
+style "*" FocusFollowsMouse
+style "*" FocusFollowsMouse
+
+
+
+##### READ, PIPE READ
+
+read
+read 	 	 	
+read /nonexistent/foo/bar
+read 	  /tmp/purify.read
+
+piperead
+piperead 	 	 	
+piperead cat
+piperead cat /nonexistent/foo/bar
+piperead 	cat	  /tmp/purify.read
+
+##### DECORS
+
+AddToDecor
+AddToDecor bar
+ + AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + AddTitleStyle -- flat
+ + TitleStyle -- flat
+ + BorderStyle -- HiddenHandles NoInset
+ + HilightColor white navy
+AddToDecor foo
+ + AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + AddTitleStyle -- flat
+ + TitleStyle -- flat
+ + BorderStyle -- HiddenHandles NoInset
+ + HilightColor white navy
+AddToDecor foo
+ + AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + AddTitleStyle -- flat
+ + TitleStyle -- flat
+ + BorderStyle -- HiddenHandles NoInset
+ + HilightColor white navy
+
+########## CREATE TEST FUNC
+
+##### SEND TO MODULE, KILL MODULE
+
+AddToFunc test_func
+ + "I" SendToModule
+ + "I" SendToModule	 	 	
+ + "I" SendToModule		FvwmBanner		.-, q-l  ,j
+ + "I" SendToModule		FvwmBanner		.-, q-l  ,j
+ + "I" KillModule
+ + "I" KillModule   	 	
+ + "I" KillModule  	FvwmBanner
+ + "I" KillModule FvwmBanner
+ + "I" KillModule FvwmBanner
+ + "I" KillModule FvwmBanner
+ + "I" KillModule FvwmBanner
+
+##### RAISE, RAISE LOWER, LOWER
+
+ + "I" Raise
+ + "I" Lower 
+ + "I" RaiseLower
+ + "I" RaiseLower
+ + "I" Raise	 	 	 
+ + "I" Lower 	 	 	 
+ + "I" RaiseLower	 	 	 
+ + "I" RaiseLower	 	 	 
+ + "I" Raise asöpoi
+ + "I" Lower asöpoi
+ + "I" RaiseLower asöpoi
+ + "I" RaiseLower asöpoi
+ + "I" Raise
+
+##### MOVE, ANIMATED MOVE, MOVE TO PAGE, MOVE TO DESK
+
+ + "I" AnimatedMove 50 50 warp
+ + "I" AnimatedMove -50 -50 warp
+ + "I" Move   10    10
+ + "I" Move		-10		-10
+ + "I" MoveToPage
+ + "I" MoveToPage	 	 		
+ + "I" MoveToPage 1 1
+ + "I" MoveToPage 10000 -12312
+ + "I" MoveToPage 0 0
+ + "I" MoveToDesk
+ + "I" MoveToDesk    2
+ + "I" MoveToDesk		+3
+ + "I" MoveToDesk -2
+ + "I" MoveToDesk 0 1
+ + "I" MoveToDesk   0    3
+ + "I" MoveToDesk		0		1923874
+ + "I" MoveToDesk +1 0 10
+ + "I" MoveToDesk -1 0 10
+ + "I" MoveToDesk 0 0 5 7
+ + "I" MoveToDesk 0 -11111 5 7
+ + "I" MoveToDesk 0 0
+
+##### RESIZE, MAXIMIZE, ICONIFY
+
+ + "I" Resize 50 50
+ + "I" Resize   45    45
+ + "I" Resize		40		60
+ + "I" Maximize
+ + "I" Maximize   100     100
+ + "I" Maximize
+ + "I" Maximize		0	100
+ + "I" Maximize 50 50
+ + "I" Maximize
+ + "I" Iconify 	 	 	
+ + "I" Iconify   0 üpikü
+ + "I" Iconify		0
+ + "I" Iconify -1
+ + "I" Iconify 1
+ + "I" Iconify 1
+ + "I" Iconify -102973
+
+##### STICK
+
+ + "I" Stick
+ + "I" Stick	 	 		
+ + "I" Stick öäpqewikrpü8.,.-kl-.294
+
+##### WARP TO WINDOW
+
+ + "I" CursorMove -100 -100
+ + "I" CursorMove 0 100
+ + WarpToWindow
+ + "I" CursorMove -100 -100
+ + "I" CursorMove 0 100
+ + WarpToWindow    10     10
+ + "I" CursorMove -100 -100
+ + "I" CursorMove 0 100
+ + WarpToWindow		50p		75
+ + "I" CursorMove -100 -100
+ + "I" CursorMove 0 100
+ + WarpToWindow 50 50
+
+##### DECOR COMMANDS
+
+AddToFunc test_func
+ + "I" DestroyDecor
+ + "I" DestroyDecor bar
+ + "I" DestroyDecor bar
+ + "I" UpdateDecor
+ + "I" UpdateDecor foo
+ + "I" UpdateDecor foo
+ + "I" Style "testw" UseDecor foo, Color white/grey40,HandleWidth 4
+ + "I" ChangeDecor
+ + "I" ChangeDecor foo
+
+##### WINDOW SHADE
+
+AddToFunc test_func
+ + "I" WindowShade
+ + "I" WindowShade 1
+ + "I" WindowShade 1
+ + "I" WindowShade 2
+ + "I" WindowShade 2
+ + "I" WindowShade
+ + "I" WindowShade
+ + "I" WindowShade 1
+
+##### REFRESH WINDOW, REFRESH, RECAPTURE
+
+ + "I" RefreshWindow
+ + "I" RefreshWindow 	 	 	
+ + "I" RefreshWindow wäepik-ö .-,poci32
+ + "I" Refresh
+ + "I" Refresh 	 	 	 	
+ + "I" Refresh .-3mölp 9 n a.d.ök3qj0
+ + "I" Recapture
+ + "I" Recapture	 	 	 
+ + "I" Recapture .-QW,ÖKcäük,.-qköcli qopiuw
+
+##### FOCUS, FLIP FOCUS, NEXT, PREV, CURRENT, NONE
+
+ + "I" prev
+ + "I" prev	 	 	 	
+ + "I" prev  ()
+ + "I" prev   (*)   focus
+ + "I" prev		(*)		flipfocus
+ + "I" next
+ + "I" next	 	 	 	
+ + "I" next  ()
+ + "I" next   (*)   focus
+ + "I" next		(*)		flipfocus
+ + "I" current
+ + "I" current	 	 	 	
+ + "I" current  ()
+ + "I" current   (*)   focus 97ö.,j1n, mp12l
+ + "I" current		(*)		flipfocus
+ + "I" none
+ + "I" none	 	 	 	
+ + "I" none  ()
+ + "I" none   (*)   focus
+ + "I" none		(*)		flipfocus olöiqwehj
+
+##### WINDOW ID
+
+ + "I" WindowID
+ + "I" WindowID 	 	 	
+ + "I" WindowID 0x7491
+ + "I" WindowID  3ölu -öirü2i 4li<F2><F5><F4>7z90
+ + "I" WindowID 0x00110011 nop
+ + "I" WindowID   0x00110011   nop
+ + "I" WindowID		0x00110011		nop
+
+##### WINDOW LIST
+
+ + "I" WindowList 
+ + "I" WindowList	 	 	
+ + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, Unsorted, UseIconName, Alphabetic, NotAlphabetic Nop
+ + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, Unsorted, UseIconName, Alphabetic, NotAlphabetic Nop
+
+##### CLOSE, DELETE, DESTROY
+
+ + "I" Close
+ + "I" Close	 	 	
+ + "I" Close #älök.,nm-öp93m-öki 0 <F3>üß8
+ + "I" Delete
+ + "I" Delete	 	 	
+ + "I" Delete .mwq.-l km<F3>noi
+ + "I" Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
+ + "I" Destroy 	 	 	
+ + "I" Destroy
+
+##### all functions without parameters
+
+AddToFunc test_func
+ + "I" echo AddButtonStyle
+ + "I" AddButtonStyle
+ + "I" echo AddTitleStyle
+ + "I" AddTitleStyle
+ + "I" echo AddToDecor
+ + "I" AddToDecor
+ + "I" echo AddToFunc
+ + "I" AddToFunc
+ + "I" echo AddToMenu
+ + "I" AddToMenu
+ + "I" echo AnimatedMove
+ + "I" AnimatedMove
+ + "I" echo Beep
+ + "I" Beep
+ + "I" echo BorderStyle
+ + "I" BorderStyle
+ + "I" echo ButtonStyle
+ + "I" ButtonStyle
+ + "I" echo ChangeDecor
+ + "I" ChangeDecor
+ + "I" echo ClickTime
+ + "I" ClickTime
+ + "I" echo Close
+ + "I" Close
+ + "I" echo ColorLimit
+ + "I" ColorLimit
+ + "I" echo ColormapFocus
+ + "I" ColormapFocus
+ + "I" echo Current
+ + "I" Current
+ + "I" echo CursorMove
+ + "I" CursorMove
+ + "I" echo CursorStyle
+ + "I" CursorStyle
+ + "I" echo Delete
+ + "I" Delete
+ + "I" echo Desk
+ + "I" Desk
+ + "I" echo DeskTopSize
+ + "I" DeskTopSize
+ + "I" echo Destroy
+ + "I" Destroy
+ + "I" echo DestroyDecor
+ + "I" DestroyDecor
+ + "I" echo DestroyFunc
+ + "I" DestroyFunc
+ + "I" echo DestroyMenu
+ + "I" DestroyMenu
+ + "I" echo DestroyModuleConfig
+ + "I" DestroyModuleConfig
+ + "I" echo Echo
+ + "I" Echo
+ + "I" echo EdgeResistance
+ + "I" EdgeResistance
+ + "I" echo EdgeScroll
+ + "I" EdgeScroll
+ + "I" echo Exec
+ + "I" Exec
+ + "I" echo ExecUseShell
+ + "I" ExecUseShell
+ + "I" echo FlipFocus
+ + "I" FlipFocus
+ + "I" echo Focus
+ + "I" Focus
+ + "I" echo Function
+ + "I" Function
+ + "I" echo GlobalOpts
+ + "I" GlobalOpts
+ + "I" echo GotoPage
+ + "I" GotoPage
+ + "I" echo HilightColor
+ + "I" HilightColor
+ + "I" echo IconFont
+ + "I" IconFont
+ + "I" echo Iconify
+ + "I" Iconify
+ + "I" echo IconPath
+ + "I" IconPath
+ + "I" echo Key
+ + "I" Key
+ + "I" echo KillModule
+ + "I" KillModule
+ + "I" echo Lower
+ + "I" Lower
+ + "I" echo Maximize
+ + "I" Maximize
+ + "I" echo Menu
+ + "I" Menu
+ + "I" echo MenuStyle
+ + "I" MenuStyle
+ + "I" echo Module
+ + "I" Module
+ + "I" echo ModulePath
+ + "I" ModulePath
+ + "I" echo Move
+ + "I" Move
+ + "I" echo MoveToPage
+ + "I" MoveToPage
+ + "I" echo Nop
+ + "I" Nop
+ + "I" echo Next
+ + "I" Next
+ + "I" echo None
+ + "I" None
+ + "I" echo OpaqueMoveSize
+ + "I" OpaqueMoveSize
+ + "I" echo PipeRead
+ + "I" PipeRead
+ + "I" echo PixmapPath
+ + "I" PixmapPath
+ + "I" echo Popup
+ + "I" Popup
+ + "I" echo Prev
+ + "I" Prev
+ + "I" echo Raise
+ + "I" Raise
+ + "I" echo RaiseLower
+ + "I" RaiseLower
+ + "I" echo Read
+ + "I" Read
+ + "I" echo Recapture
+ + "I" Recapture
+ + "I" echo Refresh
+ + "I" Refresh
+ + "I" echo RefreshWindow
+ + "I" RefreshWindow
+ + "I" echo Resize
+ + "I" Resize
+ + "I" echo SendToModule
+ + "I" SendToModule
+ + "I" echo SetAnimation
+ + "I" SetAnimation
+ + "I" echo SetMenuDelay
+ + "I" SetMenuDelay
+ + "I" echo SetEnv
+ + "I" SetEnv
+ + "I" echo Scroll
+ + "I" Scroll
+ + "I" echo Stick
+ + "I" Stick
+ + "I" echo Style
+ + "I" Style
+ + "I" echo Title
+ + "I" Title
+ + "I" echo TitleStyle
+ + "I" TitleStyle
+ + "I" echo TitleStyle
+ + "I" TitleStyle
+ + "I" echo UpdateDecor
+ + "I" UpdateDecor
+ + "I" echo WarpToWindow
+ + "I" WarpToWindow
+
+### hang
+#echo Wait
+#Wait
+
+AddToFunc test_func
+ + "I" echo WindowsDesk
+ + "I" WindowsDesk
+ + "I" echo WindowFont
+ + "I" WindowFont
+ + "I" echo WindowId
+ + "I" WindowId
+ + "I" echo WindowList
+ + "I" WindowList
+ + "I" echo WindowShade
+ + "I" WindowShade
+ + "I" echo XORvalue
+ + "I" XORvalue
+
+##### cleanup
+ + "I" beep
+ + "I" Echo ------------ ok ------------
+ + "I" quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
+
+Mouse 1 a a function test_func
+Mouse 2 a a function test_func
+Mouse 3 a a function test_func
+Key F12 a a function test_func

@@ -1,0 +1,119 @@
+This directory contains files to test fvwm2 (no modules) for memory leaks.
+
+Instructions:
+
+ - execute the shell script purify.install to copy some files needed by
+   the config file to /tmp
+ - edit purify.fvwm2rc so that the correct ModulePath is included in the
+   last ModulePath statement (all in one block)
+ - copy purify.fvwm2rc over your .fvwm2rc (or execute it any way you like)
+ - (re)start fvwm
+ - wait until the six windows have been created and the cursor warps near the
+   lower right edge of the screen; the windows redraw and the setup halts;
+   now press mouse button 2 to proceed.
+ - whenever fvwm2 expects user input, press mouse button 1
+ - the script will ternimate itself
+
+NOTE: you can safely ignore all error messages, beeps, ...
+   
+
+
+commands tested:
+----------------
+
+AddButtonStyle
+AddTitleStyle
+AddToDecor
+AddToFunc
+AddToMenu
+AnimatedMove
+Beep
+BorderStyle
+ButtonStyle
+ButtonStyle
+ChangeDecor
+ClickTime
+Close
+ColorLimit
+ColormapFocus
+Current
+CursorMove
+CursorStyle
+Delete
+Desk
+DeskTopSize
+Destroy
+DestroyDecor
+DestroyFunc
+DestroyMenu
+DestroyModuleConfig
+Echo
+EdgeResistance
+EdgeScroll
+Exec
+ExecUseShell
+FlipFocus
+Focus
+Function
+GlobalOpts
+GotoPage
+HilightColor
+IconFont
+Iconify
+IconPath
+Key
+KillModule
+Lower
+Maximize
+Menu
+MenuStyle
+ModulePath
+Mouse
+Move
+MoveToDesk
+MoveToPage
+Next
+None
+Nop
+OpaqueMoveSize
+PipeRead
+PixmapPath
+Popup
+Prev
+Quit
+Raise
+RaiseLower
+Recapture
+Read
+Refresh
+RefreshWindow
+Resize
+Scroll
+SendToModule
+SetAnimation
+SetEnv
+SetMenuDelay
+Stick
+Title
+TitleStyle
+TitleStyle
+UpdateDecor
+Wait
+WarpToWindow
+WindowFont
+WindowId
+WindowList
+WindowsDesk
+WindowShade
+XORvalue
+
+paritially tested commands:
+---------------------------
+
+Style
+Module
+
+untested commands:
+------------------
+
+Restart

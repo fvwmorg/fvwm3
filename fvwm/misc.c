@@ -429,6 +429,8 @@ int GetOnePositionArgument(char *s1,int x,int w,int *pFinalX,float factor,int ma
   int val;
   int cch = strlen(s1);
 
+  if (cch == 0)
+    return 0;
   if (s1[cch-1] == 'p') {
     factor = 1;  /* Use pixels, so don't multiply by factor */
     s1[cch-1] = '\0';

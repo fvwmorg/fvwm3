@@ -631,7 +631,7 @@ line.
 
 \fIstyle\fP is a subset of the available ButtonStyles, and can only be
 TiledPixmap (uniform pixmaps which match the bevel colors work best
-with this).  If an "!"  is prefixed to any flag, flag behavior is
+this way).  If an "!"  is prefixed to any flag, flag behavior is
 negated.  If \fIstyle\fP is not specified, then one can change flags
 without resetting the style.
 
@@ -1273,7 +1273,7 @@ used instead.
 .IP "Iconify [ \fIvalue\fP ]"
 Iconifies a window if it is not already iconified or de-iconifies it
 if it is already iconified.  If the optional argument \fIvalue\fP is
-positive the only iconification will be allowed.  It the optional
+positive only iconification will be allowed.  It the optional
 argument is negative only de-iconification will be allowed.
 
 
@@ -1556,7 +1556,7 @@ $HOME or ${HOME}).
 
 .IP "Mouse \fIButton Context Modifiers Function\fP"
 Defines a mouse binding, or removes the binding if \fIFunction\fP is
-\'-'.  . \fIButton\fP is the mouse button number.  If \fIButton\fP is
+'-'. \fIButton\fP is the mouse button number.  If \fIButton\fP is
 zero then any button will perform the specified function.
 \fIContext\fP describes where the binding applies.  Valid contexts are
 R for the root window, W for an application window, T for a window
@@ -1654,13 +1654,6 @@ the current page (a window that has the focus but is off-screen can
 be retrieved with this).
 
 
-.IP "Nop"
-Does nothing.  This is used to insert a blank line or separator in a
-menu.  If the menu item specification is Nop " ", then a blank line is
-inserted.  If it looks like Nop "", then a separator line is inserted.
-Can also be used as the double-click action for Menu.
-
-
 .IP "Next (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the next window which
 satisfies all \fIconditions\fP.  Conditions are the same as for \fICurrent\fP
@@ -1672,6 +1665,13 @@ attribute for iconified windows.
 .IP "None (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP if no window which satisfies all
 \fIconditions\fP exists.  Conditions are the same as for \fINext\fP.
+
+
+.IP "Nop"
+Does nothing.  This is used to insert a blank line or separator in a
+menu.  If the menu item specification is Nop " ", then a blank line is
+inserted.  If it looks like Nop "", then a separator line is inserted.
+Can also be used as the double-click action for Menu.
 
 
 .IP "OpaqueMoveSize \fIpercentage\fP"
@@ -1785,16 +1785,16 @@ Allows the user to raise a window.
 Alternately raises and lowers a window.
 
 
-.IP "Read \fIfilename option\fP"
-Causes fvwm to read commands from the file named \fIfilename\fP.
-If the option following the filename is "Quiet", no message is
-produced if the file is not found.
-
-
 .IP "Recapture"
 Causes fvwm to recapture all of its windows.  This ensures that the
 latest style parameters will be used.  The recapture operation is
 visually disturbing.
+
+
+.IP "Read \fIfilename option\fP"
+Causes fvwm to read commands from the file named \fIfilename\fP.
+If the option following the filename is "Quiet", no message is
+produced if the file is not found.
 
 
 .IP "Refresh"
@@ -1837,47 +1837,6 @@ Key F1 R N Restart $(HOME)/bin/fvwm
 Key F1 R N Restart /home/nation/bin/fvwm
 .EE
 
-.IP "SendToModule \fImodulename string\fP"
-Sends an arbitrary string (no quotes required) to all modules matching
-\fImodulename\fP, which may contain wildcards.  This only makes sense
-if the module is set up to understand and deal with these strings
-though...  Can be used for module to module communication, or
-implementation of more complex commands in modules.
-
-
-.IP "SetAnimation \fImilliseconds-delay fractions-to-move-list\fP"
-Sets the time between frames and the list of fractional offsets to 
-customize the animated moves of the \fIAnimatedMove\fP command and 
-the animation of menus (if the menu style is set to animated).  If
-the \fIfractions-to-move-list\fP is omitted, only the time between frames
-is altered.  The fractions-to-move-list specifies how far the window
-should be offset at each successive frame as a fraction of the difference
-between the starting location and the ending location.  e.g.:
-.EX
-SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 \\
-  .45 .6 .75 .85 .90 .94 .97 .99 1.0
-.EE
-
-Sets the delay between frames to 10ms, and sets the positions of the 16
-frames of the animation motion.  Notice that negative values are allowed,
-and in particular can be used to make the motion appear more cartoonish, by
-briefly moving slightly in the opposite direction of the main motion.  The 
-above settings are the default.
-
-.IP "SetMenuDelay \fImilliseconds-delay\fP"
-Sets the time to delay before popping up the current menu item's popup menu
-when you're using mwm or win menus.  See also the \fIMenuStyle\fP command.
-
-.IP "SetEnv \fIvarname stringvalue\fP"
-Set an environment variable to a new value, similar to shell's export
-or setenv command.  The variable and its value are inherited by processes
-started directly by fvwm2.  This can be especially useful in conjunction 
-with the FvwmM4 module; e.g.  "SetEnv height HEIGHT" will make the FvwmM4-set 
-variable "HEIGHT" usable by processes started by fvwm2 as the environment
-variable "$height".  If \fIstringvalue\fP includes whitespace, you should
-enclose it in quotes.
-
-
 .IP "Scroll \fIhorizonal vertical\fP"
 Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in
 the x-direction and \fIvertical\fP pages in the y-direction.  Either
@@ -1898,10 +1857,48 @@ If the letter "p" is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
 
+.IP "SendToModule \fImodulename string\fP"
+Sends an arbitrary string (no quotes required) to all modules matching
+\fImodulename\fP, which may contain wildcards.  This only makes sense
+if the module is set up to understand and deal with these strings
+though...  Can be used for module to module communication, or
+implementation of more complex commands in modules.
+
+.IP "SetAnimation \fImilliseconds-delay fractions-to-move-list\fP"
+Sets the time between frames and the list of fractional offsets to 
+customize the animated moves of the \fIAnimatedMove\fP command and 
+the animation of menus (if the menu style is set to animated).  If
+the \fIfractions-to-move-list\fP is omitted, only the time between frames
+is altered.  The fractions-to-move-list specifies how far the window
+should be offset at each successive frame as a fraction of the difference
+between the starting location and the ending location.  e.g.:
+.EX
+SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 \\
+  .45 .6 .75 .85 .90 .94 .97 .99 1.0
+.EE
+
+Sets the delay between frames to 10ms, and sets the positions of the 16
+frames of the animation motion.  Notice that negative values are allowed,
+and in particular can be used to make the motion appear more cartoonish, by
+briefly moving slightly in the opposite direction of the main motion.  The 
+above settings are the default.
+
+.IP "SetEnv \fIvarname stringvalue\fP"
+Set an environment variable to a new value, similar to shell's export
+or setenv command.  The variable and its value are inherited by processes
+started directly by fvwm2.  This can be especially useful in conjunction 
+with the FvwmM4 module; e.g.  "SetEnv height HEIGHT" will make the FvwmM4-set 
+variable "HEIGHT" usable by processes started by fvwm2 as the environment
+variable "$height".  If \fIstringvalue\fP includes whitespace, you should
+enclose it in quotes.
+
+.IP "SetMenuDelay \fImilliseconds-delay\fP"
+Sets the time to delay before popping up the current menu item's popup menu
+when you're using mwm or win menus.  See also the \fIMenuStyle\fP command.
+
 .IP "Stick"
 Makes a window sticky if it is not already sticky, or non-sticky if it
 is already sticky.
-
 
 .IP "Style \fIwindowname options\fP"
 This command is intended to replace the old fvwm 1.xx global commands
@@ -2251,13 +2248,6 @@ This command is less disturbing than Recapture, but does not affect
 window style options as Recapture does.
 
 
-.IP "WarpToWindow \fIx y\fP"
-Warps the cursor to the associated window.  The parameters x and y
-default to percentage of window down and in from the upper left hand
-corner (or number of pixels down and in if 'p' is appended to the
-numbers).
-
-
 .IP "Wait \fIname\fP"
 This built-in is intended to be used in \fIfvwm\fP functions only.  It
 causes execution of a function to pause until a new window name
@@ -2279,10 +2269,11 @@ to map itself, then switches to desk 2 and starts an xmh.  After the
 xmh window appears control moves to desk 0.
 
 
-.IP "WindowsDesk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
-Moves the selected window to another desktop (workspace, room).
-
-The arguments are the same as for the \fPDesk\P command.
+.IP "WarpToWindow \fIx y\fP"
+Warps the cursor to the associated window.  The parameters x and y
+default to percentage of window down and in from the upper left hand
+corner (or number of pixels down and in if 'p' is appended to the
+numbers).
 
 
 .IP "WindowFont \fIfontname\fP"
@@ -2356,6 +2347,12 @@ the following:
 WindowList OnlyIcons, Sticky, OnTop, Geometry
 .EE
 (Note - the "Only" options essentially wipe out all other ones...)
+
+
+.IP "WindowsDesk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
+Moves the selected window to another desktop (workspace, room).
+
+The arguments are the same as for the \fPDesk\P command.
 
 
 .IP "WindowShade [ \fIopt\fP ]"
