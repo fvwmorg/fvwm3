@@ -32,6 +32,9 @@ CFLAGSE="-g -O2 -Wall -Werror"
 CFLAGSW="-g -O2 -Wall"
 CFLAGS="$CFLAGSE"
 
+export LANG=en_US
+export LC_ALL=en_US
+
 # parse options
 IS_RELEASE=0
 IS_MINOR=1
@@ -66,8 +69,8 @@ if [ $IS_RELEASE = 1 ] ; then
   else
     echo "Email: $FVWMRELEMAIL"
   fi
-  echo "Your name will show up in the Changlog as $FVWMRELNAME"
-  echo "Your email address will show up in the Changlog as $FVWMRELEMAIL"
+  echo "Your name will show up in the ChangeLog as $FVWMRELNAME"
+  echo "Your email address will show up in the ChangeLog as $FVWMRELEMAIL"
 fi
 
 wrong_dir=1
@@ -184,35 +187,45 @@ if [ $IS_RELEASE = 0 ] ; then
 else
   echo updating NEWS file
   NNEWS="new-NEWS"
-    perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
+  perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
       < NEWS > $NNEWS || exit 41
   mv $NNEWS NEWS || exit 42
+  echo updating FAQ file
+  NFAQ="new-FAQ"
+  if [ $IS_MINOR = 1 ]; then
+    perl -pe 's/(Last updated).*(for beta release) '$VRELNUM' (and official)$/$1 @{[substr(`date "+%b %d, %Y"`,0,12)]} $2 '$VRELNUMP' $3/' \
+      < docs/FAQ > docs/$NFAQ || exit 43
+  else
+    perl -pe 's/(Last updated).*(for beta release .* and official release) [0-9]*\.[0-9*]\.[0-9*]\.$/$1 @{[substr(`date "+%b %d, %Y"`,0,12)]} $2 '$VRELNUMP'\./' \
+      < docs/FAQ > docs/$NFAQ || exit 44
+  fi
+  mv docs/$NFAQ docs/FAQ || exit 45
   echo tagging CVS source
   if [ ! "$FVWMRELPRECVSCOMMAND" = "" ] ; then
     $FVWMRELPRECVSCOMMAND
   fi
-  cvs tag version-${VRELEASE}_${VMAJOR}_${VMINOR} || exit 43
+  cvs tag version-${VRELEASE}_${VMAJOR}_${VMINOR} || exit 46
   echo increasing version number in configure.in
   NCFG="new-configure.in"
-  touch $NCFG || exit 44
+  touch $NCFG || exit 47
   cat configure.in |
   perl -pe 's/'$VRELNUM'/'$VRELNUMP'/g' \
-    > $NCFG || exit 45
-  mv $NCFG configure.in || exit 46
+    > $NCFG || exit 48
+  mv $NCFG configure.in || exit 49
   echo generating ChangeLog entry ...
   NCLOG="new-ChangeLog"
-  touch $NCLOG || exit 47
+  touch $NCLOG || exit 50
   echo `date +%Y-%m-%d`"  $FVWMRELNAME  <$FVWMRELEMAIL>" > $NCLOG
   echo >> $NCLOG
   echo "	* NEWS, configure.in:" >> $NCLOG
   echo "	changed version to $VRELNUMP" >> $NCLOG
   echo >> $NCLOG
   cat ChangeLog >> $NCLOG
-  mv $NCLOG ChangeLog || exit 48
+  mv $NCLOG ChangeLog || exit 51
   echo committing configure.in and ChangeLog
   cvs commit -m \
     "* Set development version to $VRELNUMP." \
-    NEWS configure.in ChangeLog || exit 49
+    NEWS configure.in ChangeLog || exit 52
   if [ ! "$FVWMRELPOSTCVSCOMMAND" = "" ] ; then
     $FVWMRELPOSTCVSCOMMAND
   fi
@@ -221,8 +234,9 @@ else
 fi
 echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
 echo " . Notify fvwm-owner@fvwm.org of the upload"
-echo " . Update the version numbers in fvwm-web/download.html, docs/FAQ"
-echo "   and fvwm-web/index.html."
+echo " . Update the version numbers in fvwm-web/download.html and"
+echo "   fvwm-web/index.html."
 echo " . If releasing the stable branch, update NEWS in the beta branch to"
 echo "   identify the latest stable release and describe the changes."
-echo " . Use fvwm-web generated/txt2html.sh to update the NEWS file."
+echo " . Use fvwm-web generated/txt2html.sh to update the NEWS file:"
+echo "   $ cd fvwm-web/generated && ./txt2html.sh ../../fvwm/NEWS"
