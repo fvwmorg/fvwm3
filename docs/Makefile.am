@@ -7,7 +7,7 @@ EXTRA_DIST = ANNOUNCE BUGS DEVELOPERS FAQ TODO Y2K-Compliance \
 	run_man2html.sh txt2html.sh $(HTML)
 
 HTML = cvs.html docs.html download.html features.html ftp.html index.html \
-	links.html mailinglist.html man-pages.html			  \
+	links.html mailinglist.html			  		  \
 	mod_changes.html mod_concept.html				  \
 	mod_f2m_communication.html mod_initialization.html		  \
 	mod_m2f_communication.html mod_security.html modules.html
