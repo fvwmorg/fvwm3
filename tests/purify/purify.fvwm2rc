@@ -119,6 +119,7 @@ Menu Menu-Position Root 150 10
 + "Position Mouse -150p -50p"
 Menu Menu-Position Mouse -150p -50p
 # There are lots more of these...and lots more options for the menu command.
+# Need to add "menu command syntax errors...
 
 Log "Test MenuStyle"
 
@@ -173,6 +174,165 @@ AddToMenu XStyle "XStyle Menu" Title
 + "An item in the menu"
 ChangeMenuStyle XStyle XStyle
 Menu Main
+# Need to add a bunch of MenuStyle syntax errors.
+
+Log "Test Popup"
+Popup Main
+Popup I don't know
+
+# End of "Menu oriented commands. The "title" menu command is already
+# tested.
+
+# For now, skip testing of the BugOpts command.
+# Log "Test BugOpts"
+
+Log "Test BusyCursor"
+# These are the defaults:
+BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
+BusyCursor Recapture True, Wait False
+# Turn all on:
+BusyCursor * True
+# Turn all off:
+BusyCursor * False
+# Set the opposite of the defaults:
+BusyCursor DynamicMenu True, ModuleSynchronous True, Read True
+BusyCursor Recapture False, Wait True
+# Back to the defaults:
+BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
+BusyCursor Recapture True, Wait False
+
+Log "Test ClickTime"
+
+ClickTime
+ClickTime 0
+ClickTime    0 # blah
+ClickTime 	 	0
+ClickTime -1
+ClickTime 150
+ClickTime 150
+ClickTime 200
+# This resets the default:
+ClickTime
+
+Log "Test COLOR LIMIT"
+
+ColorLimit
+ColorLimit 0
+ColorLimit   77
+ColorLimit		77
+ColorLimit 50
+ColorLimit 50
+ColorLimit 40
+ColorLimit -23
+ColorLimit 0
+
+Log "Test COLORMAP FOCUS"
+
+ColormapFocus
+ColormapFocus    FollowsFocus
+ColormapFocus 		FollowsFocus
+ColormapFocus FollowsMouse
+ColormapFocus FollowsFocus
+ColormapFocus FollowsFocus
+ColormapFocus FollowsMouse
+
+Log "Test CURSOR STYLE"
+
+CursorStyle
+CursorStyle liewud
+CursorStyle BOTTOM 132
+CursorStyle BOTTOM_LEFT 133
+CursorStyle BOTTOM_RIGHT 134
+CursorStyle DEFAULT 64
+CursorStyle DEFAULT 68
+CursorStyle DEFAULT 68
+CursorStyle DESTROY 88
+CursorStyle DESTROY 88
+CursorStyle DESTROY 99
+CursorStyle DESTROY
+CursorStyle DEFAULT
+# These are the defaults from the man page:
+CursorStyle POSITION top_left_corner
+CursorStyle TITLE top_left_arrow
+CursorStyle SYS hand2
+CursorStyle MOVE fleur
+CursorStyle RESIZE sizing
+CursorStyle WAIT watch
+CursorStyle MENU top_left_arrow
+CursorStyle SELECT crosshair
+CursorStyle DESTROY pirate
+CursorStyle TOP top_side
+CursorStyle RIGHT right_side
+CursorStyle BOTTOM bottom_side
+CursorStyle LEFT left_side
+CursorStyle TOP_LEFT top_left_corner
+CursorStyle TOP_RIGHT top_right_corner
+CursorStyle BOTTOM_LEFT bottom_left_corner
+CursorStyle BOTTOM_RIGHT bottom_right_corner
+CursorStyle TOP_EDGE top_side
+CursorStyle RIGHT_EDGE right_side
+CursorStyle BOTTOM_EDGE bottom_side
+CursorStyle LEFT_EDGE left_side
+CursorStyle ROOT left_ptr
+CursorStyle STROKE plus
+CursorStyle MENU fleur yellow blue
+CursorStyle MENU fleur invalid_color_name another_invalid_name
+
+Log "Test DefaultColors"
+DefaultColors Pink Blue
+DefaultColors NotValid "On purpose"
+DefaultColors Pink "Also on purpose (second arg)"
+DefaultColors *
+DefaultColors
+
+Log "Test DefaultColorset"
+DefaultColorset
+DefaultColorset junk
+DefaultColorset 0
+DefaultColorset 1236789
+DefaultColorset -1
+
+Log "Test DefaultFont"
+DefaultFont
+DefaultFont 9x15bold
+DefaultFont badnameforafont
+DefaultFont "another bad name"
+DefaultFont two args
+DefaultFont
+
+Log "Test DefaultIcon"
+DefaultIcon
+DefaultIcon test1.xpm
+DefaultIcon
+
+Log "Test DefaultLayers"
+DefaultLayers
+DefaultLayers junk three times
+DefaultLayers 2 4 6
+
+Log "Test Emulate"
+Emulate Fvwm
+Emulate Mwm
+Emulate Win
+Emulate badname
+
+# Note, there is no test for EscapeFunc
+# Note, there is no test for HilightColor, its obsolete
+# Note, there is no test for HilightColorset, its obsolete
+
+Log "Test ICON FONT"
+
+IconFont
+IconFont     9x15
+IconFont		9x15
+IconFont /nonexistent/foo/bar
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont
+
+# Note, there is no test for IconPath, its obsolete
+# Note, the ImagePath test is not in ManPage order, look elsewhere
+# Note, there is no test for PixmapPath, its obsolete
 
 # Ending ManPage Order
 
@@ -698,38 +858,6 @@ AddButtonStyle 1 Inactive Pixmap
 AddButtonStyle 1 MiniIcons
 AddButtonStyle 1 miniicons
 
-Log "Test CLICK TIME test"
-
-ClickTime
-ClickTime 0
-ClickTime    0 # blah
-ClickTime 	 	0
-ClickTime -1
-ClickTime 150
-ClickTime 150
-ClickTime 200
-
-Log "Test COLORMAP FOCUS"
-
-ColormapFocus
-ColormapFocus    FollowsFocus
-ColormapFocus 		FollowsFocus
-ColormapFocus FollowsMouse
-ColormapFocus FollowsFocus
-ColormapFocus FollowsFocus
-ColormapFocus FollowsMouse
-
-Log "Test COLOR LIMIT"
-
-ColorLimit
-ColorLimit 0
-ColorLimit   77
-ColorLimit		77
-ColorLimit 50
-ColorLimit 50
-ColorLimit 40
-ColorLimit -23
-ColorLimit 0
 
 Log "Test CURSOR MOVE"
 
@@ -740,22 +868,6 @@ CursorMove 		-50		+50
 CursorMove -0 +0
 CursorMove -50p -50p
 CursorMove -1000 -1000
-
-Log "Test CURSOR STYLE"
-
-CursorStyle
-CursorStyle liewud
-CursorStyle BOTTOM 132
-CursorStyle BOTTOM_LEFT 133
-CursorStyle BOTTOM_RIGHT 134
-CursorStyle DEFAULT 64
-CursorStyle DEFAULT 68
-CursorStyle DEFAULT 68
-CursorStyle DESTROY 88
-CursorStyle DESTROY 88
-CursorStyle DESTROY 99
-CursorStyle DESTROY
-CursorStyle DEFAULT
 
 Log "Test DESK"
 
@@ -867,16 +979,6 @@ Style "*" HilightFore gold2, HilightBack SteelBlue
 Style "*" HilightFore gold2, HilightBack SteelBlue
 Style "*" HilightFore , HilightBack 
 Style "*" HilightFore gold2, HilightBack SteelBlue
-
-Log "Test ICON FONT"
-
-IconFont
-IconFont     9x15
-IconFont		9x15
-IconFont /nonexistent/foo/bar
-IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
-IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
-IconFont
 
 Log "Test KEY"
 
@@ -1164,278 +1266,6 @@ style "*f*" MouseFocus
 style "*f*" MouseFocus
 style "*f*" FocusFollowsMouse
 style "*f*" FocusFollowsMouse
-
-Style "*" BorderWidth
-Style "*" BorderWidth  3
-Style "*" BorderWidth	5
-Style "*" BorderWidth	5
-Style "*" HandleWidth
-Style "*" HandleWidth  3
-Style "*" HandleWidth		7
-Style "*" HandleWidth		7
-Style "*" NoIcon
-Style "*" NoIcon
-Style "*" Icon
-Style "*" Icon
-Style "*" MiniIcon
-Style "*" MiniIcon
-Style "*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
-Style "*" IconBox 1 5 100 500, IconGrid -0 10
-Style "*" NoTitle
-Style "*" NoTitle
-Style "*" Title
-Style "*" Title
-Style "*" NoHandles
-Style "*" NoHandles
-Style "*" Handles
-Style "*" Handles
-Style "*" WindowListSkip
-Style "*" WindowListSkip
-Style "*" WindowListHit
-Style "*" WindowListHit
-Style "*" CirculateSkip
-Style "*" CirculateSkip
-Style "*" CirculateHit
-Style "*" CirculateHit
-Style "*" StaysOnTop
-Style "*" StaysOnTop
-Style "*" StaysPut
-Style "*" StaysPut
-Style "*" Sticky
-Style "*" Sticky
-Style "*" Slippery
-Style "*" Slippery
-Style "*" StartIconic
-Style "*" StartIconic
-style "*" StartNormal
-style "*" StartNormal
-Style "*" Color
-Style "*" Color
-Style "*" ForeColor
-Style "*" ForeColor
-Style "*" BackColor
-Style "*" BackColor
-Style "*" StartsOnDesk
-Style "*" StartsOnDesk   0
-Style "*" StartsOnDesk		0
-Style "*" StartsOnDesk		0
-Style "*" StartsOnPage
-Style "*" StartsOnPage  0
-Style "*" StartsOnPage  0   0
-Style "*" StartsOnPage	0	0
-Style "*" StartsAnyWhere
-Style "*" StartsAnyWhere
-Style "*" IconTitle
-Style "*" IconTitle
-Style "*" NoIconTitle
-Style "*" NoIconTitle
-Style "*" MWMButtons
-Style "*" MWMButtons
-Style "*" FvwmButtons
-Style "*" FvwmButtons
-Style "*" MWMBorder
-Style "*" MWMBorder
-Style "*" FvwmBorder
-Style "*" FvwmBorder
-Style "*" MWMDecor
-Style "*" MWMDecor
-Style "*" NoDecorHint
-Style "*" NoDecorHint
-Style "*" MWMFunctions
-Style "*" MWMFunctions
-Style "*" NoFuncHint
-Style "*" NoFuncHint
-Style "*" HintOverride
-Style "*" HintOverride
-Style "*" NoOverride
-Style "*" NoOverride
-Style "*" NoButton
-Style "*" NoButton  1
-Style "*" NoButton		2
-Style "*" Button
-Style "*" Button  3
-Style "*" Button		0
-Style "*" OLDecor
-Style "*" OLDecor
-Style "*" NoOLDecor
-Style "*" NoOLDecor
-Style "*" StickyIcon
-Style "*" StickyIcon
-Style "*" SlipperyIcon
-Style "*" SlipperyIcon
-Style "*" SmartPlacement
-Style "*" SmartPlacement
-Style "*" DumbPlacement
-Style "*" DumbPlacement
-Style "*" RandomPlacement
-Style "*" RandomPlacement
-Style "*" ActivePlacement
-Style "*" ActivePlacement
-Style "*" DecorateTransient
-Style "*" DecorateTransient
-Style "*" NakedTransient
-Style "*" NakedTransient
-Style "*" SkipMapping
-Style "*" SkipMapping
-Style "*" ShowMapping
-Style "*" ShowMapping
-Style "*" UseDecor
-Style "*" UseDecor
-style "*" UseStyle
-style "*" UseStyle
-style "*" NoPPosition
-style "*" NoPPosition
-style "*" UsePPosition
-style "*" UsePPosition
-style "*" Lenience
-style "*" Lenience
-style "*" NoLenience
-style "*" NoLenience
-style "*" ClickToFocus
-style "*" ClickToFocus
-style "*" SloppyFocus
-style "*" SloppyFocus
-style "*" MouseFocus
-style "*" MouseFocus
-style "*" FocusFollowsMouse
-style "*" FocusFollowsMouse
-
-Style "*" BorderWidth
-Style "*" BorderWidth  3
-Style "*" BorderWidth	5
-Style "*" BorderWidth	5
-Style "*" HandleWidth
-Style "*" HandleWidth  3
-Style "*" HandleWidth		7
-Style "*" HandleWidth		7
-Style "*" NoIcon
-Style "*" NoIcon
-Style "*" Icon
-Style "*" Icon
-Style "*" MiniIcon
-Style "*" MiniIcon
-Style "*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
-Style "*" IconBox 1 5 100 500, IconGrid -0 10
-Style "*" NoTitle
-Style "*" NoTitle
-Style "*" Title
-Style "*" Title
-Style "*" NoHandles
-Style "*" NoHandles
-Style "*" Handles
-Style "*" Handles
-Style "*" WindowListSkip
-Style "*" WindowListSkip
-Style "*" WindowListHit
-Style "*" WindowListHit
-Style "*" CirculateSkip
-Style "*" CirculateSkip
-Style "*" CirculateHit
-Style "*" CirculateHit
-Style "*" StaysOnTop
-Style "*" StaysOnTop
-Style "*" StaysPut
-Style "*" StaysPut
-Style "*" Sticky
-Style "*" Sticky
-Style "*" Slippery
-Style "*" Slippery
-Style "*" StartIconic
-Style "*" StartIconic
-style "*" StartNormal
-style "*" StartNormal
-Style "*" Color
-Style "*" Color
-Style "*" ForeColor
-Style "*" ForeColor
-Style "*" BackColor
-Style "*" BackColor
-Style "*" StartsOnDesk
-Style "*" StartsOnDesk   0
-Style "*" StartsOnDesk		0
-Style "*" StartsOnDesk		0
-Style "*" StartsOnPage
-Style "*" StartsOnPage  0
-Style "*" StartsOnPage  0   0
-Style "*" StartsOnPage	0	0
-Style "*" StartsAnyWhere
-Style "*" StartsAnyWhere
-Style "*" IconTitle
-Style "*" IconTitle
-Style "*" NoIconTitle
-Style "*" NoIconTitle
-Style "*" MWMButtons
-Style "*" MWMButtons
-Style "*" FvwmButtons
-Style "*" FvwmButtons
-Style "*" MWMBorder
-Style "*" MWMBorder
-Style "*" FvwmBorder
-Style "*" FvwmBorder
-Style "*" MWMDecor
-Style "*" MWMDecor
-Style "*" NoDecorHint
-Style "*" NoDecorHint
-Style "*" MWMFunctions
-Style "*" MWMFunctions
-Style "*" NoFuncHint
-Style "*" NoFuncHint
-Style "*" HintOverride
-Style "*" HintOverride
-Style "*" NoOverride
-Style "*" NoOverride
-Style "*" NoButton
-Style "*" NoButton  1
-Style "*" NoButton		2
-Style "*" Button
-Style "*" Button  3
-Style "*" Button		0
-Style "*" OLDecor
-Style "*" OLDecor
-Style "*" NoOLDecor
-Style "*" NoOLDecor
-Style "*" StickyIcon
-Style "*" StickyIcon
-Style "*" SlipperyIcon
-Style "*" SlipperyIcon
-Style "*" SmartPlacement
-Style "*" SmartPlacement
-Style "*" DumbPlacement
-Style "*" DumbPlacement
-Style "*" RandomPlacement
-Style "*" RandomPlacement
-Style "*" ActivePlacement
-Style "*" ActivePlacement
-Style "*" DecorateTransient
-Style "*" DecorateTransient
-Style "*" NakedTransient
-Style "*" NakedTransient
-Style "*" SkipMapping
-Style "*" SkipMapping
-Style "*" ShowMapping
-Style "*" ShowMapping
-Style "*" UseDecor
-Style "*" UseDecor
-style "*" UseStyle
-style "*" UseStyle
-style "*" NoPPosition
-style "*" NoPPosition
-style "*" UsePPosition
-style "*" UsePPosition
-style "*" Lenience
-style "*" Lenience
-style "*" NoLenience
-style "*" NoLenience
-style "*" ClickToFocus
-style "*" ClickToFocus
-style "*" SloppyFocus
-style "*" SloppyFocus
-style "*" MouseFocus
-style "*" MouseFocus
-style "*" FocusFollowsMouse
-style "*" FocusFollowsMouse
-
-
 
 Log "Test READ, PIPE READ"
 
