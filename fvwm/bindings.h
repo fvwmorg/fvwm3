@@ -19,7 +19,7 @@
 int ParseBinding(
   Display *dpy, Binding **pblist, char *tline, BindingType type,
   int *nr_left_buttons, int *nr_right_buttons, unsigned char *buttons_grabbed,
-  Bool do_ungrab_root);
+  Bool do_ungrab_root, Bool is_silent);
 void update_key_bindings(void);
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);
 unsigned int GetUnusedModifiers(void);

@@ -6949,10 +6949,18 @@ anything. If
 is used on a user defined function it affects all function and sub
 function calls until the original function exits.
 
+Another usage of
+.B Silent
+is with binding commands
+.BR Key ", " PointerKey " and " Mouse ,
+this disables error messages.
+
 Examples:
 .EX
 Silent Move 0 0
 Silent User_defined_function
+# don't complain on keabords without "Help" key
+Silent Key Help R A Popup HelpMenu
 .EE
 
 .TP

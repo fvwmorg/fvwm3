@@ -1,3 +1,21 @@
+2001-10-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/bindings.c (ParseBinding):
+	* fvwm/bindings.h:
+	* fvwm/fvwm2.1:
+	binding commands now do not print error messages with Silent
+
+	* fvwm/ConfigFvwmDefaults:
+	* NEWS:
+	don't use ReverseOrder in the default Alt-Tab like it was in 2.4.0;
+	use Silent before Key Help
+
+	* fvwm/add_window.c:
+	changed the broken size hints message to notify the owner
+
+	* docs/fvwm.lsm.in:
+	small changes
+
 2001-10-19  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS:

@@ -87,7 +87,7 @@ static void update_nr_buttons(
 int ParseBinding(
   Display *dpy, Binding **pblist, char *tline, BindingType type,
   int *nr_left_buttons, int *nr_right_buttons, unsigned char *buttons_grabbed,
-  Bool do_ungrab_root)
+  Bool do_ungrab_root, Bool is_silent)
 {
   char *action, context_string[20], modifier_string[20], *ptr, *token;
   char key_string[20] = "";
@@ -138,9 +138,11 @@ int ParseBinding(
       stroke[i] = '\0';
       if (strlen(token) > STROKE_MAX_SEQUENCE + num)
       {
-        fvwm_msg(WARN,"ParseBinding","To long stroke sequence in line %s"
-                      "Only %i elements will be taken in account",
-                       tline, STROKE_MAX_SEQUENCE);
+        if (!is_silent)
+          fvwm_msg(WARN, "ParseBinding",
+            "Too long stroke sequence in line %s"
+            "Only %i elements will be taken into account.\n",
+            tline, STROKE_MAX_SEQUENCE);
       }
     }
 #endif /* HAVE_STROKE */
@@ -149,7 +151,9 @@ int ParseBinding(
       n1 = sscanf(token, "%d", &button);
       if (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS)
       {
-	fvwm_msg(ERR,"ParseBinding","Illegal mouse button in line %s", tline);
+	if (!is_silent)
+	  fvwm_msg(ERR, "ParseBinding",
+	    "Illegal mouse button in line %s", tline);
 	free(token);
 	return 0;
       }
@@ -186,14 +190,15 @@ int ParseBinding(
   if (n1 != 1 || n2 != 1 || n3 != 1
      STROKE_CODE(|| (type == STROKE_BINDING && n4 != 1)))
   {
-    fvwm_msg(ERR,"ParseBinding","Syntax error in line %s", tline);
+    if (!is_silent)
+      fvwm_msg(ERR, "ParseBinding", "Syntax error in line %s", tline);
     return 0;
   }
 
-  if (ParseContext(context_string, &context))
-    fvwm_msg(WARN,"ParseBinding","Illegal context in line %s", tline);
-  if (ParseModifiers(modifier_string, &modifier))
-    fvwm_msg(WARN,"ParseBinding","Illegal modifier in line %s", tline);
+  if (ParseContext(context_string, &context) && !is_silent)
+    fvwm_msg(WARN, "ParseBinding", "Illegal context in line %s", tline);
+  if (ParseModifiers(modifier_string, &modifier) && !is_silent)
+    fvwm_msg(WARN, "ParseBinding", "Illegal modifier in line %s", tline);
 
   if (type == KEY_BINDING)
   {
@@ -204,7 +209,8 @@ int ParseBinding(
      */
     if (keysym == 0)
     {
-      fvwm_msg(ERR, "ParseBinding", "No such key: %s", key_string);
+      if (!is_silent)
+        fvwm_msg(ERR, "ParseBinding", "No such key: %s", key_string);
       return 0;
     }
   }
@@ -369,7 +375,7 @@ static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
 
   count = ParseBinding(
     dpy, &Scr.AllBindings, action, type, &Scr.nr_left_buttons,
-    &Scr.nr_right_buttons, &btg, do_grab_root);
+    &Scr.nr_right_buttons, &btg, do_grab_root, Scr.flags.silent_functions);
   if (btg != Scr.buttons2grab)
   {
     Scr.flags.do_need_window_update = 1;

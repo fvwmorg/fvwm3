@@ -9,7 +9,7 @@
 #  This picks up from where the builtin table in fvwm.c SetUpRCDefaults ends.
 
 # Set at least 2 root keys to bring up the builtin menu:
-Key Help R A Popup MenuFvwmRoot
+Silent Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
 # Ctrl-Alt-Escape for aboring Wait pause and ModuleSynchronous command
 Key Escape A MC EscapeFunc
@@ -19,14 +19,16 @@ AddToFunc WindowListFunc I WindowId $0 Iconify off
 + I WindowId $0 FlipFocus
 + I WindowId $0 Raise
 + I WindowId $0 WarpToWindow 5p 5p
+
 # Also in fvwm man page.
 AddToFunc UrgencyFunc I Iconify off
 + I FlipFocus
 + I Raise
 + I WarpToWindow 5p 5p
 AddToFunc UrgencyDoneFunc I Nop
+
 # Alt-Tab:
-Key Tab A M WindowList Root c c NoDeskSort, ReverseOrder
+Key Tab A M WindowList Root c c NoDeskSort
 # Default styles
 Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff
