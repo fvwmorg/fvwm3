@@ -16,3 +16,4 @@ bb.out
 TAGS
 .gdb_history
 gmon.out
+autom4te.cache
