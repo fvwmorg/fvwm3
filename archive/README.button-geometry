@@ -1,0 +1,185 @@
+FvwmButtons module enhancements
+-------------------------------
+
+To improve the FvwmButtons module I have done several modifications to the
+files 
+
+  FvwmButtons.h
+  button.c
+  parse.c
+
+The code I modified was version v2.0.41-plural-Z-alpha if the headers are
+right (it was included in the fvwm source package 2.0.46). I tried to
+adhere the coding/commenting/formatting style as closely as possible.
+
+
+The things I changed are:
+-------------------------
+
+ 1) fixed a bug with the alloc_buttonlist() call in the ShuffleButtons()
+    function (buttons.c). It prevented that some buttons on the right of
+    the last row could be activated with a mouseclick. Actually although
+    c->num_rows * c->num_columns buttons were allocated, c->num_buttons
+    was set to the number of used slots. Therefore a button several slots
+    high at the right side of the box couldn't be activated at the lowest
+    slot.
+
+ 2) improved the ShuffleButtons algorithm.
+
+ 3) enhanced the width x height option for the buttons to support standard
+    geometry format. You can force a button to a slot of the button box
+    (or a container) by just saying something like "NxM+3-0" (NxM button,
+    leftmost slot goes to the fourth slot of the container (counting left
+    to right) and the lowest slots of the button go to the lowest row of
+    slots of the container.
+    So now you can specify the exact positions of all your buttons.
+
+ 4) added the option "BoxSize" to root container and the subcontainers.
+
+
+--------------------------------------------------------------------------
+
+1) This bugfix is integrated into the rewritten ShuffleButtons() function.
+
+--------------------------------------------------------------------------
+
+2) I rewrote the ShuffleButtons function completely and added the functions
+   PlaceAndExpandButton and ShrinkButtons to the buttons.c module, added
+   the variable "posflags" to button_info_struct and container_info_struct
+   and the variables "BPosX" and "BPosY" to the button_info_struct.
+   posflags currently holds the flags "b_SizeFixed", "b_PosFixed" and
+   "b_SizeSmart".
+   
+   The new algorithm produces the same result as the old one if you do
+   not use the new features (fixed buttons, fixed/smart box size) with
+   one exception: If you got a "Button too wide" warning with the old
+   algorithm because the button extended over the right edge of the
+   container, it is placed on the next row instead with the new algorithm
+   (instead of being truncated).
+
+   The algorithm works like this:
+   ------------------------------
+   At first it creates an array "local_buttons" which holds all the
+   buttons of the container being shuffled. All buttons in the container
+   are replaced with NULL.
+
+     Next, the calculations of rows and columns are done.
+     If the b_SizeFixed flag is set and Rows and Columns were given in the
+   configuration file and are non-zero, these settings are used even if the
+   buttons do not fit into the box. This may cause FvwmButtons to fail but
+   prevents the code to add columns or remove rows.
+   If the b_SizeFixed flag is set but Rows or Columns are zero, the normal
+   calculations are done but empty rows at the bottom are not removed. So
+   if you specified a number of Rows you can be sure that the container
+   gets at least this many rows.
+
+     If the b_SizeSmart flag is set (mutually exclusive with b_SizeFixed),
+   after doing the normal size calculations, the algorithms looks at each
+   button. If it's width/height is larger than num_columns/num_rows the
+   latter are increased to accomodate the button. This steps even takes
+   "fixed buttons" into account i.e. if a 2x2 button is placed in a 4x4
+   container at positon +3-0, the container is blown up to 5x4. Note that
+   it doesn't get an additional row because the lower edge of the button
+   fits nicely into the "-0" slot (vertical). If -4 was specified it
+   would get an additional row.
+     So while the old algorithm was happy to place an 1x4 button in a 2x2
+   container, the new "SmartSize" algorithm is clever enough to enlarge
+   the container to 2x4 so the button can fit.
+
+     Next thing to do is allocation the buttonlist according to the bug
+   description (see 1).
+
+     Now it's time to do the real work: to actually place the buttons in
+   their containers. This is done in three steps:
+
+    a) Scan local_buttons for subcontainers and shuffle them.
+
+    b) Place the fixed buttons (buttons with the b_PosFixed flag in their
+       posflags).
+
+    c) Place the normal "floating" buttons.
+
+
+    There is nothing to say about a), so let's skip to b):
+    After recalculating negative offsets in BPosX/Y to positive values
+    (the actual size of the container is known by now), the function
+    PlaceAndExpandButtons() does the placement:
+      First it checks if the button is going to be placed outside of the
+    container. If so, FvwmButtons exits with an error:
+
+      "FvwmButtons: Button out of horizontal/vertical range. Quitting."
+
+    and shows the number of the button, the number of columns/rows and the
+    BPosX/Y of the button.
+      After that it is verified that the button is fully inside the
+    container, if not it is trucated. If the b_SmartSize flag is set for
+    the container, additional rows are added instead of truncating the
+    button's height. This doesn't work well if the "-n" vertical position
+    is used.
+      Now the funtion tests if any of the slots the button wants is
+    already occupied. If so the offending button must be a "fixed" button
+    too and FvwmButton exits with the error:
+
+      "FvwmButtons: Overlapping fixed buttons. Quitting."
+
+    (it gives more info too).
+    If all slots are empty (NULL), the button_info pointer of the placed
+    button is copied into ALL of the occupied slot. This makes the test
+    for overlapping buttons easier.
+
+    c) Now that the "fixed" buttons are happy the floating ones have to
+    be placed. This is done from left to right, top to bottom beginning at
+    slot 0/0. PlaceAndExpandButton is called for that purpose. It it
+    returns non-zero, the button does not fit and the next position is
+    tried. When the button is in place the next button is placed beginning
+    at the position of the previously placed one.
+
+    Finally the local_buttons array is thrown away and ShrinkButton is
+    called for each button. It replaced the button_info pointer of all
+    but the upper left slot of the button with NULL again so every button
+    is present in only one slot.
+
+--------------------------------------------------------------------------
+
+3,4)  Section 2) discusses what these enhancements are good for. I have
+    modified the parser so it recognizes X-geometry strings instead of
+    the former width x height syntax (match_strings() function). If a
+    valid position strin is parsed, the button/container gets it's
+    b_PosFixed flag set in the posflags variable.
+      I have added the "BoxSize" option which can have the values "dumb",
+    "fixed" and "smart" which are reflected in the posflags b_SizeFixed
+    and b_SizeSmart of the corresponding container (see 2). To achieve
+    this I modified the functions ParseContainer and ParseConfigLine and
+    added the ParseBoxSize function. The code should be self-explaining.
+
+--------------------------------------------------------------------------
+
+List of new/modified stuff:
+---------------------------
+
+PlaceAndExpandButton()          button.c       new
+ShrinkButton()                  button.c       new
+ShuffleButtons()                button.c       rewritten (mostly)
+alloc_button()                  button.c       modified (init BPosX/BPosY)
+container_info_struct.posflags  FvwmButtons.h  new flag variable
+button_info_struct.posflags     FvwmButtons.h  new flag variable
+button_info_struct.BPosX        FvwmButtons.h  new (button position x)
+button_info_struct.BPosY        FvwmButtons.h  new (button position y)
+constant b_SizeFixed            FvwmButtons.h  new flag for posflags
+constant b_PosFixed             FvwmButtons.h  new flag for posflags
+constant b_SizeSmart            FvwmButtons.h  new flag for posflags
+BoxSize                         parse.c        new option
+ParseBoxSize()                  parse.c        new (parse BoxSize option)
+ParseContainer()                parse.c        modified (BoxSize option)
+ParseConfigLine()               parse.c        modified (BoxSize option)
+match_strings()                 parse.c        modified (geometry handling)
+
+-------------------------------------------------------------------------
+
+Example:
+--------
+
+I have included the file FvwmButtons.sample with the options to create
+something similar to the CDE panel (I've not put much time in it so it
+should look only vaguely familiar). It relies heavily on fixed buttons
+and a large grid of buttons (mostly empty).

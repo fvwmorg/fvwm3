@@ -1,0 +1,267 @@
+Dominik Vogt, Nov-1-1998:
+-------------------------
+
+At the moment, we have basically four types of copyright in our code:
+
+1) GPL in some modules.
+2) Copyright notices that state everything may be done with the code as long
+   as the copyright stays intact.
+3) The twm copyright. It states the same as 2).
+4) Copyright by someone else without any permission.
+
+Obviously 1) is no problem, and I think 2) and 3) are not either since these
+notices grant us the right to redistribute the code under GPL (is that
+correct?). The twm copyright is still in six files. Can I get a copy of the
+original files somewhere to check what has to be done to remove the twm
+copyright?
+
+	fvwm/add_window.c
+	fvwm/events.c
+	fvwm/fvwm.h
+	fvwm/menus.h
+	fvwm/screen.h
+	fvwm/fvwm2.man
+
+
+The offending files or modules for 4) are:
+
+	extras/FvwmPipe
+		Matthias Ettrich (ettrich@informatik.uni-tuebingen.de)
+
+	extras/FvwmWharf
+		Bo Yang
+		Frank Fejes
+		Beat Christen
+		Kaj Groner
+		Alfredo K. Kojima
+		Robert Nation
+
+	extras/fvwmperl
+		Dan Astoorian <djast@utopia.csas.com>
+
+	extras/fvwmpython
+		Barry A. Warsaw <bwarsaw@python.org>
+
+	icons/xterm-bsd.xpm
+		Marshall Kirk McKusicki
+
+	modules/FvwmCascade
+		Andrew Veliath
+
+	modules/FvwmTile
+		Andrew Veliath
+
+In docs/m4_hacks there is a notice about a potential copyright problem with
+twm code. Anybody who knows what code this refers to?
+
+I have prepared the file archives/COPYING that puts all code except the
+files mentioned above under GNU public license. This way, all future code
+will be automatically placed under GPL so we can one by one resolve the
+copyright issues still left until we have clean GPLed code.
+
+
+
+
+-------------------------------------------------------------------------------
+
+
+
+docs:
+-----
+m4_hacks: (hint to Motif copyright violation)
+	Pete.Chown@dale.dircon.co.uk
+
+extras:
+-------
+FvwmCommand: (->GPL ok?)
+	Toshi Isogai
+
+FvwmConfig: (->GPL ok?)
+	Robert Nation
+
+FvwmConsole: (->GPL ok?)
+	Toshi Isogai
+
+FvwmDebug: (->GPL ok?)
+	Robert Nation
+
+FvwmGoodStuff: (->GPL ok?)
+	Robert Nation
+
+!!!FvwmPipe:
+	Matthias Ettrich (ettrich@informatik.uni-tuebingen.de)
+
+FvwmScript: (->GPL ok?)
+	Frederic Cordier
+
+FvwmTaskBar: (->GPL ok?)
+	Mike Finger (mfinger@mermaid.micro.umn.edu or Mike_Finger@atk.com)
+	Nobutaka Suzuki
+	Robert Nation
+
+!!!FvwmWharf:
+	Bo Yang
+	Frank Fejes
+	Beat Christen
+	Kaj Groner
+	Alfredo K. Kojima
+	Robert Nation
+
+!!!fvwmperl:
+	Dan Astoorian <djast@utopia.csas.com>
+
+!!!fvwmpython:
+	Barry A. Warsaw <bwarsaw@python.org>
+
+fvwm:
+-----
+
+general: (-> GPL ok?)
+	Robert Nation
+
+add_window.c:
+events.c:
+fvwm.h:
+menus.h:
+screen.h:
+	(-> GPL ok?)
+	Evans & Sutherland Computer Corporation
+	MIT
+
+fvwm2.man: (hint to twm copyright)
+
+icons:
+------
+!!!xterm-bsd.xpm: Marshall Kirk McKusicki, 1614 Oxford St,
+               Berkley, CA 94709-1608, USA
+
+libs:
+-----
+Picture.c: (->GPL ok?)
+	Romano Giannetti <romano@iet.unipi.it>
+	                 <http://www.iet.unipi.it/~romano>
+	Robert Nation
+ 
+modules:
+--------
+
+FvwmAnimate: GPL 
+	Frank Scheelen <scheelen@worldonline.nl>
+	Alfredo Kengi Kojima (kojima@inf.ufrgs.br)
+	Kaj Groner <kajg@mindspring.com>
+	Dan Espen <dane@mk.bellcore.com>
+
+FvwmAudio: GPL
+	Mark Boyns (boyns@sdsu.edu) and
+	Mark Scott (mscott@mcd.mot.com)
+
+FvwmAuto: (->GPL ok?)
+	Robert Nation
+
+FvwmBacker: (depends on FvwmIdent, ->GPL ok?)
+	Mike Finger (mfinger@mermaid.micro.umn.edu or Mike_Finger@atk.com)
+	Nobutaka Suzuki
+	Robert Nation
+
+FvwmBanner: GPL
+
+FvwmButtons: (?? ->GPL ok?)
+	Robert Nation
+	Jarl Totland
+
+!!!FvwmCascade:
+	Andrew Veliath
+
+FvwmCpp: (->GPL ok?)
+	Robert Nation
+
+FvwmEvent: GPL
+
+FvwmForm: (->GPL ok?)
+	Thomas Zuwei Feng
+
+FvwmIconBox: (->GPL ok?)
+	 Nobutaka Suzuki
+
+FvwmIconMan: GPL
+
+FvwmIdent: (->GPL ok?)
+	Nobutaka Suzuki
+	Robert Nation
+
+FvwmM4: (->GPL ok?)
+	Robert Nation
+
+FvwmPager: (->GPL ok?)
+	Robert Nation
+
+FvwmSave: (->GPL ok?)
+	Robert Nation
+
+FvwmSaveDesk: (->GPL ok?)
+	Carsten Paeth
+	Robert Nation
+
+FvwmScroll: (->GPL ok?)
+	Robert Nation
+
+FvwmTalk: (->GPL ok?)
+	Robert Nation
+
+!!!FvwmTile:
+	Andrew Veliath
+
+FvwmWinList: (->GPL ok?)
+	Mike Finger (mfinger@mermaid.micro.umn.edu or Mike_Finger@atk.com)
+	Nobutaka Suzuki
+	Robert Nation
+
+sample.fvwmrc: none
+--------------
+
+textures: none
+---------
+
+utils: (->GPL ok?)
+------
+	Dan Espen
+
+xpmroot: (->GPL ok?)
+--------
+	Robert Nation
+
+
+
+
+
+/* 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
