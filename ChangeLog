@@ -1,3 +1,8 @@
+2001-08-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/Makefile.am:
+	added fvwmrect.h to dist
+
 2001-08-14  Dan Espen  <dane@mk.telcordia.com>
 
 	* libs/XineramaSupport.c: Disable debug printing.
