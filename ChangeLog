@@ -1,4 +1,9 @@
-1999-93-22  Matthias Clasen <clasen@mathematik.uni-freiburg.de>
+1999-03-23  Tomas Ogren  <stric@ing.umu.se>
+
+	* libs/Parse.c (GetIntegerArguments): When chaining functions, please
+	remember to pass along the return-value all the way out..
+
+1999-03-22  Matthias Clasen <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/add_window.c (LookInList): Initialize layer to 
 	Scr.StaysPutLayer. This means that windows without

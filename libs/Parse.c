@@ -411,7 +411,7 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
  **************************************************************************/
 int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
 {
-  GetSuffixedIntegerArguments(action, ret_action, retvals, num, NULL, NULL);
+  return GetSuffixedIntegerArguments(action, ret_action, retvals, num, NULL, NULL);
 }
 
 
