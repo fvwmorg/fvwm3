@@ -76,9 +76,9 @@
 #  ifdef HAVE_SOLARIS_XINERAMA_H
 #   include <X11/extensions/xinerama.h>
 #  else
-#   define FSCREEN_NEED_SCREENINFO
 #   define FSCREEN_NEED_SOLARIS_PROTOTYPES
 #  endif
+#  define FSCREEN_NEED_SCREENINFO
 # else
 #  define FScreenHaveSolarisXinerama 0
 #  include <X11/extensions/Xinerama.h>
@@ -114,7 +114,7 @@ Status XineramaGetCenterHint(Display*, int, int*, int*);
 #if FScreenHaveXinerama
 # if FScreenHaveSolarisXinerama
 #  define XineramaQueryExtension(d,b,c) 1 /* Lie, for now */
-#  define XineramaIsActive(d) Xineramagetstate((d),0)
+#  define XineramaIsActive(d) XineramaGetState((d),0)
 # endif
 #else
 # define XineramaQueryExtension(da, b, c) 0

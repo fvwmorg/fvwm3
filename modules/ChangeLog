@@ -1,3 +1,12 @@
+2004-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/Goodies.c (f_scandir):
+	(cool_get_inboxstatus_maildir):
+	(cool_get_inboxstatus):
+	(cool_get_inboxstatus_mbox):
+	(GoodiesParseConfig):
+	added MailDir option to FvwmTaskBar by Jim C. Brown
+
 2004-08-02  Scott Smedley  <scottie7@tpg.com.au>
 
 	* FvwmButtons/draw.c:

@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <dirent.h>
 #include <pwd.h>
 #include "libs/ftime.h"
 #include <sys/stat.h>
@@ -83,6 +84,7 @@ int IgnoreOldMail = False;
 int ShowTips = False;
 char *statusfont_string = NULL;
 int last_date = -1;
+Bool using_MailDir = False;
 
 void cool_get_inboxstatus(void);
 
@@ -197,6 +199,7 @@ static char *goodyopts[] =
   "IgnoreOldMail",
   "ShowTips",
   "DateFormat",
+  "MailDir",
   NULL
 };
 
@@ -278,6 +281,9 @@ Bool GoodiesParseConfig(char *tline)
     {
 	    do_display_clock = False;
     }
+    break;
+  case 12: /* MailDir */
+    using_MailDir = True;
     break;
   default:
     /* unknow option */
@@ -729,7 +735,7 @@ void DestroyTipWindow()
 /* (based on the code of 'coolmail' By Byron C. Darrah */
 /*-----------------------------------------------------*/
 
-void cool_get_inboxstatus(void)
+void cool_get_inboxstatus_mbox(void)
 {
    static off_t oldsize = 0;
    off_t  newsize;
@@ -769,6 +775,115 @@ void cool_get_inboxstatus(void)
    }
 
    oldsize = newsize;
+}
+
+static int f_scandir(const char *dir, struct dirent *** namelist)
+{
+	DIR * f_dir;
+	struct dirent * f_temp;
+	/* 10 is just an arbituary number */
+	int f_count = 0, namelist_size = 10;
+	void * r_ret;
+
+	f_dir = opendir(dir);
+	if (f_dir == NULL)
+		return -1;
+	namelist[0] =
+		(struct dirent **)safemalloc(sizeof(struct dirent *) * 10);
+	do {
+		f_temp = readdir(f_dir);
+		if (f_temp == NULL)
+			break;
+		else if (strcmp(f_temp->d_name, ".") != 0 &&
+			 strcmp(f_temp->d_name, "..") != 0)
+		{
+			if (f_count > namelist_size)
+			{
+				r_ret = saferealloc(
+					(void *)(namelist[0]),
+					sizeof(struct dirent) * (f_count +10));
+				namelist[0] = (struct dirent **)r_ret;
+				namelist_size = f_count + 10;
+			}
+			namelist[0][f_count] = (struct dirent *)safemalloc(
+				sizeof(struct dirent));
+			memcpy(
+				namelist[0][f_count], f_temp,
+				sizeof(struct dirent));
+			f_count++;
+		}
+	} while (1);
+
+	return f_count;
+}
+
+void cool_get_inboxstatus_maildir(void)
+{
+	static int oldsize = 0;
+	int  newsize;
+	struct dirent **newlist;
+	struct dirent **curlist;
+	char * alt_mailpath;
+	int curent, newent;
+
+	alt_mailpath = safemalloc(strlen(mailpath) + strlen("/new") + 1);
+	strcpy(alt_mailpath, mailpath);
+	strcat(alt_mailpath, "/new");
+	newent = f_scandir(alt_mailpath, &newlist);
+	strcpy(alt_mailpath, mailpath);
+	strcat(alt_mailpath, "/cur");
+	curent = f_scandir(alt_mailpath, &curlist);
+	free(alt_mailpath);
+
+	newsize = curent + newent;
+
+	if (newent > 0)
+	{
+		anymail = 1;
+		unreadmail = 1;
+	}
+	else if (curent > 0)
+	{
+		anymail = 1;
+		unreadmail = 0;
+	}
+	else
+	{
+		anymail = 0;
+		unreadmail = 0;
+	}
+	if (newsize > oldsize && unreadmail)
+	{
+		newmail = 1;
+		mailcleared = 0;
+	}
+	else
+	{
+		newmail = 0;
+	}
+
+	oldsize = newsize;
+
+	while(curent--)
+	{
+		free(curlist[curent]);
+	}
+	free(curlist);
+	while(newent--)
+	{
+		free(newlist[newent]);
+	}
+	free(newlist);
+}
+
+void cool_get_inboxstatus()
+{
+	if (using_MailDir)
+	{
+		cool_get_inboxstatus_maildir();
+	} else {
+		cool_get_inboxstatus_mbox();
+	}
 }
 
 /*---------------------------------------------------------------------------*/

@@ -50,6 +50,8 @@ Changes in alpha release 2.5.11 (not released yet)
 
 * Added support for Solaris' Xinerama.
 
+* New option MailDir in FvwmTaskBar.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)

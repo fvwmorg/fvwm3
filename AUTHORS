@@ -2,7 +2,10 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
-Norman Yarvin
+Jim C. Brown:
+MailDir option in FvwmTaskBar.
+
+Norman Yarvin:
 Extend conditionals to handle multiple window names.
 
 Funda Wang:
