@@ -1,3 +1,9 @@
+Mar 16 1999 Hippo
+
+	* FvwmEvent/FvwmEvent.c: new config option *fvwmEventPassID makes
+	FvwmEvent pass on interesting information to the function/command
+	it calls.
+
 Mon Mar 15 22:43:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* Makefile.am: always recurse into all subdirectories.

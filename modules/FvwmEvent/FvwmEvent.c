@@ -23,6 +23,8 @@
 
 /* ChangeLog
 
+ * added *FvwmEventPassID config option
+
  * renamed & cleaned up so that FvwmEvent (TaDa !!) is a general event
    handler module.
                -- 21.04.98 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
@@ -126,13 +128,14 @@ char	cmd_line[BUFSIZE]="";
 time_t	audio_delay = 0,		/* seconds */
         last_time = 0,
         now;
+Bool	PassID = False;	/* don't tag on the windowID by default */
 
 #ifdef HAVE_RPLAY
 int	rplay_fd = -1;
 #endif
 
 /* prototypes */
-int     execute_event(short);
+int     execute_event(short, unsigned long*);
 void	config(void);
 void	DeadPipe(int) __attribute__((__noreturn__));
 
@@ -178,6 +181,48 @@ char	*events[MAX_MESSAGES+MAX_BUILTIN] =
 	"shutdown",
 	"unknown"
 };
+
+/* pointers to function args */
+int action_arg[MAX_MESSAGES+MAX_BUILTIN] = 
+{
+	-1,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	-1,
+	0,
+	0,
+	-1,
+	-1,
+	-1,
+	-1,
+	-1,
+	-1,
+#ifdef M_BELL
+	-1,
+#endif
+#ifdef M_TOGGLEPAGE
+	-1,
+#endif
+	-1,
+	-1,
+	-1,
+/* add builtins here */
+	-1,
+	-1,
+	-1
+};
+  
 
 /* define the action table  */
 char	*action_table[MAX_MESSAGES+MAX_BUILTIN];
@@ -245,7 +290,7 @@ INFO("--- started ----\n");
 INFO("--- configuring\n");
 
     config();				/* configure events */
-    execute_event(BUILTIN_STARTUP);	/* Startup event */
+    execute_event(BUILTIN_STARTUP, NULL);	/* Startup event */
 
     SendText(fd,"Nop",0);		/* what for ? */
 
@@ -294,10 +339,10 @@ INFO("--- waiting\n");
 	if (event < 0 || event >= MAX_MESSAGES)
 	    event=BUILTIN_UNKNOWN;
 
-	execute_event(event);		/* execute action */
+	execute_event(event, body);		/* execute action */
     } /* while */
 
-    execute_event(BUILTIN_SHUTDOWN);
+    execute_event(BUILTIN_SHUTDOWN, NULL);
     return 0;
 }
 
@@ -309,7 +354,7 @@ INFO("--- waiting\n");
  *    execute_event - actually executes the actions from lookup table
  *
  **********************************************************************/
-int execute_event(short event)
+int execute_event(short event, unsigned long *body)
 {
     static char buf[BUFSIZE];
 
@@ -326,18 +371,14 @@ int execute_event(short event)
 #endif
     if (action_table[event])
     {
-        sprintf(buf,"%s %s", cmd_line, action_table[event]);
-#if 1
+        if(PassID && (action_arg[event] != -1))
+          sprintf(buf,"%s %s %d", cmd_line, action_table[event], body[action_arg[event]]);
+        else
+          sprintf(buf,"%s %s", cmd_line, action_table[event]);
 INFO(buf);
 INFO("\n");
-
 	SendText(fd,buf,0);		/* let fvwm2 execute the function */
         last_time = now;
-#else
-	if( ! ( ret = system(buf)))	/* directly execute external program */
-	    last_time = now;
-	return ret;
-#endif
     }
     return 1;
 }
@@ -353,7 +394,8 @@ INFO("\n");
 char *table[]=
 {
     "Cmd",
-    "Delay"
+    "Delay",
+    "PassID"
 #ifdef HAVE_RPLAY
 	,
     "RplayHost",
@@ -401,12 +443,6 @@ INFO("\n");
 	    {
                 p+=strlen(*e);		/* skip matched token */
 		q=GetArgument(&p);
-		if (!q)
-		{
-		  fprintf(stderr,"%s: %s%s needs a parameter\n",
-			  MyName+1, MyName+1,*e);
-		  continue;
-		}
 
 		switch (e - (char**)table)
 		{
@@ -416,9 +452,10 @@ INFO("cmd_line = ->");
 INFO(cmd_line);
 INFO("<-\n");
                                                         break;
-		case 1: audio_delay = atoi(q);		break; /* Delay */
+		case 1: if (q) audio_delay = atoi(q);	break; /* Delay */
+		case 2: PassID = True;			break;
 #ifdef HAVE_RPLAY
-		case 2: if (*q == '$')		       /* RPlayHost */
+		case 3: if (q && (*q == '$'))		       /* RPlayHost */
 			{			 /* Check for $HOSTDISPLAY */
 			  char *c1= (char *)getenv(q+1), *c2= host;
 			  while (c1 && *c1 != ':')
@@ -428,8 +465,8 @@ INFO("<-\n");
 			else
 			  strcpy(host, q);
 		                                        break;
-		case 3: priority = atoi(q);		break; /* RplayPriority */
-		case 4: volume = atoi(q);		break; /* RplayVolume */
+		case 4: if (q) priority = atoi(q);	break; /* RplayPriority */
+		case 5: if (q) volume = atoi(q);	break; /* RplayVolume */
 #endif
 		}
 	    }
@@ -508,6 +545,6 @@ TerminateHandler(int nonsense)
  ***********************************************************************/
 void DeadPipe(int flag)
 {
-  execute_event(BUILTIN_SHUTDOWN);
+  execute_event(BUILTIN_SHUTDOWN, NULL);
   exit(flag);
 }

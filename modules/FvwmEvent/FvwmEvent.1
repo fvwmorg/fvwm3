@@ -103,6 +103,12 @@ You can even call different shell commands for each event just by setting
 	*FvwmEvent add_window killname "APPL ERROR"
 .sp
 .fi
+.IP "*FvwmEventPassID"
+Specifies that the event action will have an ID parameter added to the end
+of the command line. Most events will have the windowID of the window that the
+event refers to, new_desk will have the new desk number.
+
+
 .IP "*FvwmEvent \fIwindow-manager-event action-or-filename\fP"
 Binds particular actions to window manager events. 
 .nf
