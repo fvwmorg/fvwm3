@@ -2,6 +2,10 @@
 
 	* NEWS:
 	* configure.in:
+	changed version to 2.5.6
+
+	* NEWS:
+	* configure.in:
 	updated for 2.5.5
 
 2002-12-02  olicha  <olivier.chapuis@free.fr>
