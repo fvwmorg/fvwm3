@@ -1,3 +1,8 @@
+1999-03-04  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/fvwm2.1: Re-applied "Changed   fvwm to fvwm2 everywhere  I
+ 	thought it should be changed".  It seemed to have disappeared.
+
 1999-03-04  Tomas Ogren  <stric@ing.umu.se>
 
 	* NEWS: Updated w/ animated shading
