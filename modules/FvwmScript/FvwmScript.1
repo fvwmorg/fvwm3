@@ -144,7 +144,7 @@ These instructions are used to play a sound, move the pointer
 to widget 1 and to initialize $ToDo to "Restart" at every startup.
 
 .SH PERIODIC TASKS
-This part of the script contains some instructions whom are executed every
+This part of the script contains instructions that are executed every
 second.  For example:
 .EX
 Periodic Task
@@ -156,8 +156,8 @@ Periodic Task
 This example shows how to launch xcalc every 10 seconds.
 
 .SH THE QUIT FUNCTION
-This part of the script contains some instructions which are executed when
-the script exit (after the Quit instruction or if you close the window with
+This part of the script contains instructions that are executed when
+the script exits (after the Quit instruction or if you close the window with
 the Close, Delete or Destroy fvwm2 command). For Example
 .EX
 QuitFunc
@@ -165,22 +165,25 @@ QuitFunc
   Do {Echo bye, bye}
  End
 .EE
-Be award that if you used the KillModule fvwm2 command to close the script,
-then some instructions or functions which relies on the existence of a
+Be aware that if you used the KillModule fvwm2 command to close the script,
+some instructions or functions which rely on the existence of a
 communication link between the script and fvwm2 will not be executed
-(as the Do command). To smoothly kill a script with a fvwm2 command
+(for example the Do command). To smoothly kill a script with an fvwm2 command
 see the
 .B COMMANDS
 section.
 
 .SH MAIN OF A SCRIPT
 The second part of the script contains the description for every widget
-which will be used in the program.  A description of widget is composed of
-two parts. The first part describes initial properties and the second part
-contains instructions which will be executed when the widget receives
-messages. All widgets can send and receive messages. All message are identify
-by a number. The message "UserAction" is sent to a widget when user has
-altered this one. The syntax is as following:
+in the script.
+Each widget description has two parts.
+The first part describes initial properties,
+the second part contains instructions that are executed
+when the widget receives messages.
+All widgets can send and receive messages.
+All messages are identified by a number.
+The message "UserAction" is sent to a widget when the user operates the widget.
+The syntax for the first part is:
 .EX
 Widget		id	# A number between 1 and 99 inclusive
 Property
@@ -208,6 +211,7 @@ circulate around the widgets with the (Shift-)Tab short cut.
 
 The position of every widget must be specified.
 
+The syntax for the second part is:
 .EX
 Main
  Case Message of
@@ -463,7 +467,7 @@ Binds a keyboard key to the instruction
 
 .RI "SendSignal " id " " sig
 
-and set the "last string" to the concatenation of str1, str2...
+and sets the "last string" to the concatenation of str1, str2...
 (see the LastString function).
 The
 .I Keyname
@@ -472,15 +476,15 @@ and
 fields are defined as in the fvwm2 Key command.
 
 .SH ARGUMENTS
-Most of commands use arguments. There is two kinds of argument: numbers and
+Most of commands use arguments. There are two kinds of arguments: numbers and
 strings.
 A numerical argument is a value which is between -32000 and +32000. A string is
-always surrounded with brace. Variables always begin with the character "$" and
-can contains both number and string.
+always surrounded with braces. Variables always begin with the character "$" and
+can contain both numbers and strings.
 
 .SH FUNCTIONS
-All functions are used as argument. Functions can return both string and
-number.  The syntax is:
+All functions use arguments. Functions can return both a string and
+a number.  The syntax is:
 .EX
 (function argument1 argument2 etc)
 .EE
@@ -608,7 +612,7 @@ strings returned by the SendMsgAndGet function.
 
 .TP
 .RI "(LastString)"
-This function return the "current working string" for the Key instruction
+This function returns the "current working string" for the Key instruction
 and the SendString command
 (see the
 .B COMMANDS
@@ -652,7 +656,7 @@ The following FVWM command may be executed at any time
 
 .RI "SendToModule " ScriptName " SendString " id " " sig " " str
 
-it sends to any module with alias or name which match
+it sends to any module with alias or name which matches
 .I  ScriptName
 the string
 
@@ -665,7 +669,7 @@ the signal numbered
 and the string
 .I str
 can be obtained with the LastString function. Let us give an example.
-Says that you have a script MyScript with the widget:
+Say that you have a script MyScript with the widget:
 .EX
 Widget 50
 Property
