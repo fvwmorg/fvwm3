@@ -18,6 +18,7 @@
 #include "List.h"
 #include "Mallocs.h"
 #include "fvwm/module.h"
+#include "fvwm/fvwm.h"
 
 
 /******************************************************************************

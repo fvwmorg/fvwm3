@@ -1,4 +1,5 @@
 #include <libs/fvwmlib.h>
+#include <fvwm/fvwm.h>
 
 /* FvwmWinList Module for Fvwm. 
  *
@@ -19,14 +20,6 @@
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
-
-#define STICKY         (1<<2) /* Does window stick to glass? */
-#define ONTOP          (1<<1) /* does window stay on top */
-#define BORDER         (1<<13) /* Is this decorated with border*/
-#define TITLE          (1<<14) /* Is this decorated with title */
-#define ICONIFIED      (1<<16) /* is it an icon now? */
-#define TRANSIENT      (1<<17) /* is it a transient window? */
-#define WINDOWLISTSKIP   (1<<3)
 
 /* Motif  window hints */
 typedef struct
