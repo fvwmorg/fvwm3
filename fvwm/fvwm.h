@@ -251,6 +251,7 @@ typedef struct
 				      * when destroying/recapturing window. */
   unsigned has_border : 1; /* Is this decorated with border*/
   unsigned has_title : 1; /* Is this decorated with title */
+  unsigned is_decor_changed : 1; /* ChangeDecor was used for window */
   unsigned is_deiconify_pending : 1; /* Sent an XUnmapWindow for deiconifying,
 				      * but didn't receive a UnmapNotify yet.*/
   unsigned is_focused_on_other_desk : 1; /* window had the focus when the desk

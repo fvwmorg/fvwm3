@@ -423,6 +423,7 @@ void setup_style_and_decor(
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the style */
+  if (!IS_DECOR_CHANGED(tmp_win))
   {
     FvwmDecor *decor = &Scr.DefaultDecor;
 

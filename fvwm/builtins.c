@@ -1911,6 +1911,7 @@ void CMD_ChangeDecor(F_CMD_ARGS)
     XBell(dpy, 0);
     return;
   }
+  SET_DECOR_CHANGED(tmp_win, 1);
   old_height = (tmp_win->decor) ? tmp_win->decor->title_height : 0;
   tmp_win->decor = found;
   apply_decor_change(tmp_win);
