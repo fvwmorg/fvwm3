@@ -114,7 +114,7 @@
 /* gap above item text */
 #define ITEM_TEXT_Y_OFFSET        0
 /* gap below item text */
-#define ITEM_TEXT_Y_OFFSET2       1
+#define ITEM_TEXT_Y_OFFSET2       2
 #define ITEM_EXTRA_HEIGHT        (ITEM_TEXT_Y_OFFSET + ITEM_TEXT_Y_OFFSET2)
 
 #define TITLE_TEXT_Y_OFFSET       ITEM_TEXT_Y_OFFSET
@@ -195,7 +195,8 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 static void paint_menu(MenuRoot *, XEvent *, FvwmWindow *fw);
 static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 			     FvwmWindow *fw);
-static MenuRoot *copy_menu_root(MenuRoot *menu);
+static MenuRoot *copy_menu_root(MenuRoot *mr);
+static void make_menu(MenuRoot *mr);
 static void make_menu_window(MenuRoot *mr);
 static void get_xy_from_position_hints(
   MenuPosHints *ph, int width, int height, int context_width,
@@ -216,8 +217,8 @@ static int item_middle_y_offset(MenuRoot *mr, MenuItem *mi)
 {
   int r;
   if (!mi)
-    return MR_BORDER_WIDTH(mr);
-  r = (MI_IS_SELECTABLE(mi)) ? MR_STYLE(mr)->look.ReliefThickness : 0;
+    return MST_BORDER_WIDTH(mr);
+  r = (MI_IS_SELECTABLE(mi)) ? MST_RELIEF_THICKNESS(mr) : 0;
   return MI_Y_OFFSET(mi) + (MI_HEIGHT(mi) + r) / 2;
 }
 
@@ -228,7 +229,7 @@ static int menu_middle_x_offset(MenuRoot *mr)
 
 static Bool pointer_in_active_item_area(int x_offset, MenuRoot *mr)
 {
-  if (MR_STYLE(mr)->feel.flags.use_left_submenus)
+  if (MST_USE_LEFT_SUBMENUS(mr))
   {
     return (x_offset <=
 	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
@@ -243,7 +244,7 @@ static Bool pointer_in_active_item_area(int x_offset, MenuRoot *mr)
 
 static Bool pointer_in_passive_item_area(int x_offset, MenuRoot *mr)
 {
-  if (MR_STYLE(mr)->feel.flags.use_left_submenus)
+  if (MST_USE_LEFT_SUBMENUS(mr))
   {
     return (x_offset >=
 	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * POPUP_NOW_RATIO);
@@ -258,27 +259,27 @@ static Bool pointer_in_passive_item_area(int x_offset, MenuRoot *mr)
 
 static int get_left_popup_x_position(MenuRoot *mr, MenuRoot *submenu, int x)
 {
-  if (MR_STYLE(mr)->feel.flags.use_left_submenus)
+  if (MST_USE_LEFT_SUBMENUS(mr))
   {
-    return (x - MR_STYLE(mr)->feel.PopupOffsetAdd - MR_WIDTH(submenu) +
-	    MR_WIDTH(mr) * (100 - MR_STYLE(mr)->feel.PopupOffsetPercent)/100);
+    return (x - MST_POPUP_OFFSET_ADD(mr) - MR_WIDTH(submenu) +
+	    MR_WIDTH(mr) * (100 - MST_POPUP_OFFSET_PERCENT(mr))/100);
   }
   else
   {
-    return (x - MR_WIDTH(submenu) + MR_BORDER_WIDTH(mr));
+    return (x - MR_WIDTH(submenu) + MST_BORDER_WIDTH(mr));
   }
 }
 
 static int get_right_popup_x_position(MenuRoot *mr, MenuRoot *submenu, int x)
 {
-  if (MR_STYLE(mr)->feel.flags.use_left_submenus)
+  if (MST_USE_LEFT_SUBMENUS(mr))
   {
-    return (x + MR_WIDTH(mr) - MR_BORDER_WIDTH(mr));
+    return (x + MR_WIDTH(mr) - MST_BORDER_WIDTH(mr));
   }
   else
   {
-    return (x + MR_WIDTH(mr) * MR_STYLE(mr)->feel.PopupOffsetPercent / 100 +
-	    MR_STYLE(mr)->feel.PopupOffsetAdd);
+    return (x + MR_WIDTH(mr) * MST_POPUP_OFFSET_PERCENT(mr) / 100 +
+	    MST_POPUP_OFFSET_ADD(mr));
   }
 }
 
@@ -293,7 +294,7 @@ static void get_prefered_popup_position(
   /* set the direction flag */
   *pprefer_left_submenus =
     (MR_HAS_POPPED_UP_LEFT(mr) ||
-     (MR_STYLE(mr)->feel.flags.use_left_submenus &&
+     (MST_USE_LEFT_SUBMENUS(mr) &&
       !MR_HAS_POPPED_UP_RIGHT(mr)));
   /* get the x position */
   if (*pprefer_left_submenus)
@@ -307,8 +308,8 @@ static void get_prefered_popup_position(
   /* get the y position */
   if(MR_SELECTED_ITEM(mr))
   {
-    *py = menu_y + MR_SELECTED_ITEM(mr)->y_offset -
-      MR_BORDER_WIDTH(mr) + MR_STYLE(mr)->look.ReliefThickness;
+    *py = menu_y + MI_Y_OFFSET(MR_SELECTED_ITEM(mr)) -
+      MST_BORDER_WIDTH(mr) + MST_RELIEF_THICKNESS(mr);
   }
   else
   {
@@ -321,10 +322,10 @@ static void get_prefered_popup_position(
  * warping functions
  ***************************************************************/
 
-static void warp_pointer_to_title(MenuRoot *menu)
+static void warp_pointer_to_title(MenuRoot *mr)
 {
-  XWarpPointer(dpy, 0, MR_WINDOW(menu), 0, 0, 0, 0, menu_middle_x_offset(menu),
-	       item_middle_y_offset(menu, MR_FIRST_ITEM(menu)));
+  XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0, menu_middle_x_offset(mr),
+	       item_middle_y_offset(mr, MR_FIRST_ITEM(mr)));
 }
 
 static MenuItem *warp_pointer_to_item(MenuRoot *mr, MenuItem *mi,
@@ -390,7 +391,7 @@ static MenuItem *find_entry(
   XQueryPointer(dpy, Child, &JunkRoot, &JunkChild,
 		&root_x,&root_y, &x, &y, &JunkMask);
 
-  r = MR_STYLE(mr)->look.ReliefThickness / 2;
+  r = MST_RELIEF_THICKNESS(mr) / 2;
   /* look for the entry that the mouse is in */
   for(mi = MR_FIRST_ITEM(mr); mi; mi = MI_NEXT_ITEM(mi))
   {
@@ -401,7 +402,7 @@ static MenuItem *find_entry(
     b = (MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(MI_NEXT_ITEM(mi))) ? r : 0;
     if (y >= MI_Y_OFFSET(mi) - a &&
 	y < MI_Y_OFFSET(mi) + MI_HEIGHT(mi) + b -
-	((MI_IS_SELECTABLE(mi)) ? MR_STYLE(mr)->look.ReliefThickness : 0))
+	((MI_IS_SELECTABLE(mi)) ? MST_RELIEF_THICKNESS(mr) : 0))
     {
       break;
     }
@@ -476,32 +477,32 @@ static int get_selectable_item_count(MenuRoot *mr)
 static MenuRoot *seek_submenu_instance(MenuRoot *parent_menu,
 				       MenuItem *parent_item)
 {
-  MenuRoot *menu;
+  MenuRoot *mr;
 
-  for (menu = Menus.all; menu != NULL; menu = MR_NEXT_MENU(menu))
+  for (mr = Menus.all; mr != NULL; mr = MR_NEXT_MENU(mr))
   {
-    if (MR_PARENT_MENU(menu) == parent_menu &&
-	MR_PARENT_ITEM(menu) == parent_item)
+    if (MR_PARENT_MENU(mr) == parent_menu &&
+	MR_PARENT_ITEM(mr) == parent_item)
     {
       /* here it is */
       break;
     }
   }
-  return menu;
+  return mr;
 }
 
 static Bool is_submenu_mapped(MenuRoot *parent_menu, MenuItem *parent_item)
 {
   XWindowAttributes win_attribs;
-  MenuRoot *menu;
+  MenuRoot *mr;
 
-  menu = seek_submenu_instance(parent_menu, parent_item);
-  if (menu == NULL)
+  mr = seek_submenu_instance(parent_menu, parent_item);
+  if (mr == NULL)
     return False;
 
-  if (MR_WINDOW(menu) == None)
+  if (MR_WINDOW(mr) == None)
     return False;
-  XGetWindowAttributes(dpy, MR_WINDOW(menu), &win_attribs);
+  XGetWindowAttributes(dpy, MR_WINDOW(mr), &win_attribs);
   return (win_attribs.map_state == IsViewable);
 }
 
@@ -521,14 +522,67 @@ static MenuRoot *mr_popup_for_mi(MenuRoot *mr, MenuItem *mi)
     return menu;
 
   /* just look past "Popup " in the action, and find that menu root */
-  menu_name = PeekToken(SkipNTokens(mi->action, 1), NULL);
+  menu_name = PeekToken(SkipNTokens(MI_ACTION(mi), 1), NULL);
   menu = FindPopup(menu_name);
   return menu;
 }
 
+/* FindPopup expects a token as the input. Make sure you have used
+ * GetNextToken before passing a menu name to remove quotes (if necessary) */
+MenuRoot *FindPopup(char *popup_name)
+{
+  MenuRoot *mr;
+
+  if(popup_name == NULL)
+    return NULL;
+
+  mr = Menus.all;
+  while(mr != NULL)
+  {
+    if(MR_NAME(mr) != NULL)
+    {
+      if(mr == MR_ORIGINAL_MENU(mr) &&
+	 strcasecmp(popup_name, MR_NAME(mr)) == 0)
+      {
+        return mr;
+      }
+    }
+    mr = MR_NEXT_MENU(mr);
+  }
+  return NULL;
+
+}
+
+
 /***************************************************************
  * functions
  ***************************************************************/
+
+/* Make sure the menu is properly rebuilt when the style or the menu has
+ * changed. */
+void update_menu(MenuRoot *mr)
+{
+  if (MST_IS_UPDATED(mr))
+  {
+    /* The menu style has changed. */
+    MenuRoot *menu;
+
+    for (menu = Menus.all; menu; menu = MR_NEXT_MENU(menu))
+    {
+      if (MR_STYLE(menu) == MR_STYLE(mr))
+      {
+	/* Mark all other menus with the same style as changed. */
+	MR_IS_UPDATED(menu) = 1;
+      }
+    }
+    MST_IS_UPDATED(mr) = 0;
+  }
+  if (MR_IS_UPDATED(mr))
+  {
+    /* The menu has changed. We have to re-make it. */
+    make_menu(mr);
+  }
+}
 
 /****************************************************************************
  *
@@ -576,15 +630,15 @@ MenuStatus do_menu(MenuParameters *pmp)
   {
     XCheckTypedEvent(dpy, ButtonPressMask, &tmpevent);
   }
-  key_press = (pmp->eventp && (pmp->eventp == (XEvent *)1 ||
-			       pmp->eventp->type == KeyPress));
   if(pmp->menu == NULL)
   {
     return MENU_ERROR;
   }
+  key_press = (pmp->eventp && (pmp->eventp == (XEvent *)1 ||
+			       pmp->eventp->type == KeyPress));
 
   /* Try to pick a root-relative optimal x,y to
-     put the mouse right on the title w/o warping */
+   * put the mouse right on the title w/o warping */
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		&x, &y, &JunkX, &JunkY, &JunkMask);
   /* Save these-- we want to warp back here if this is a top level
@@ -606,6 +660,9 @@ MenuStatus do_menu(MenuParameters *pmp)
   if (!pmp->flags.is_already_mapped)
   {
     Bool prefer_left_submenus;
+
+    /* Make sure we are using the latest style and menu layout. */
+    update_menu(pmp->menu);
 
     if(pmp->flags.is_submenu)
     {
@@ -727,7 +784,7 @@ MenuStatus do_menu(MenuParameters *pmp)
  * routine is called.
  * TKP - uses XLookupString so that keypad numbers work with windowlist
  ***********************************************************************/
-static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
+static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
 				MenuItem **pmiCurrent, double_keypress *pdkp)
 {
   int fControlKey = event->xkey.state & ControlMask? True : False;
@@ -778,19 +835,19 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
      * Multiple hotkeys per menu
      * Search menu for matching hotkey;
      * remember how many we found and where we found it */
-    mi = ( miCurrent == NULL || miCurrent == MR_LAST_ITEM(menu)) ?
-      MR_FIRST_ITEM(menu) : miCurrent->next;
+    mi = ( miCurrent == NULL || miCurrent == MR_LAST_ITEM(mr)) ?
+      MR_FIRST_ITEM(mr) : MI_NEXT_ITEM(miCurrent);
     mi1 = mi;
     do
     {
-      key = tolower( mi->chHotkey );
+      key = tolower( MI_CHHOTKEY(mi) );
       if ( keychar == key )
       {
 	if ( ++countHotkey == 1 )
 	  newItem = mi;
 
       }
-      mi = (mi == MR_LAST_ITEM(menu)) ? MR_FIRST_ITEM(menu) : MI_NEXT_ITEM(mi);
+      mi = (mi == MR_LAST_ITEM(mr)) ? MR_FIRST_ITEM(mr) : MI_NEXT_ITEM(mi);
     }
     while (mi != mi1);
 
@@ -826,7 +883,7 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
 
     case XK_Left:
     case XK_KP_4:
-      if (MR_STYLE(menu)->feel.flags.use_left_submenus)
+      if (MST_USE_LEFT_SUBMENUS(mr))
       {
 	if (miCurrent && MI_IS_POPUP(miCurrent))
 	  return MENU_POPUP;
@@ -842,7 +899,7 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
 
     case XK_Right:
     case XK_KP_6:
-      if (!MR_STYLE(menu)->feel.flags.use_left_submenus)
+      if (!MST_USE_LEFT_SUBMENUS(mr))
       {
 	if (miCurrent && MI_IS_POPUP(miCurrent))
 	  return MENU_POPUP;
@@ -869,20 +926,20 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
     case XK_n: /* next */
       if (!miCurrent)
       {
-	XGetGeometry(dpy, MR_WINDOW(menu), &JunkRoot, &menu_x, &menu_y,
+	XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
 		     &menu_width, &menu_height, &JunkBW, &JunkDepth);
 	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		      &mx, &my, &JunkX, &JunkY, &JunkMask);
-	if (my < menu_y + MR_BORDER_WIDTH(menu))
+	if (my < menu_y + MST_BORDER_WIDTH(mr))
 	{
-	  if ((*pmiCurrent = get_selectable_item_from_index(menu,0)) != NULL)
+	  if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
 	    return MENU_NEWITEM;
 	  else
 	    return MENU_NOP;
 	}
-	else if (my > menu_y + menu_height - MR_BORDER_WIDTH(menu))
+	else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
 	{
-	  if ((*pmiCurrent = MR_LAST_ITEM(menu)) != NULL)
+	  if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
 	    return MENU_NEWITEM;
 	  else
 	    return MENU_NOP;
@@ -890,8 +947,8 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
 	else
 	{
 	  /*Warp the pointer back into the menu. */
-	  XWarpPointer(dpy, 0, MR_WINDOW(menu), 0, 0, 0, 0,
-		       menu_middle_x_offset(menu), my - menu_y);
+	  XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
+		       menu_middle_x_offset(mr), my - menu_y);
 	  *pmiCurrent = find_entry(NULL, NULL);
 	  return MENU_NEWITEM;
 	}
@@ -905,10 +962,10 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
 				always work to do a single down */
       if (is_up)
       {
-	index = get_selectable_item_index(menu, miCurrent);
+	index = get_selectable_item_index(mr, miCurrent);
 	if (index == 0)
 	  /* wraparound */
-	  index = get_selectable_item_count(menu);
+	  index = get_selectable_item_count(mr);
 	else if (fShiftedKey)
 	  index = 0;
 	else
@@ -919,21 +976,21 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
       else
       {
 	if (fShiftedKey)
-	  index = get_selectable_item_count(menu);
+	  index = get_selectable_item_count(mr);
 	else
 	{
-	  index = get_selectable_item_index(menu, miCurrent) +
+	  index = get_selectable_item_index(mr, miCurrent) +
 	    (fControlKey ? 5 : 1);
 	  /* correct for the case that we're between items */
 	  if (MI_IS_SEPARATOR(miCurrent) || MI_IS_TITLE(miCurrent))
 	    index--;
 	}
       }
-      newItem = get_selectable_item_from_index(menu, index);
+      newItem = get_selectable_item_from_index(mr, index);
       if (!is_up)
       {
 	if (newItem == miCurrent)
-	  newItem = get_selectable_item_from_index(menu, 0);
+	  newItem = get_selectable_item_from_index(mr, 0);
       }
       if (newItem)
       {
@@ -945,14 +1002,14 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
       break;
 
     case XK_Page_Up:
-      if ((*pmiCurrent = get_selectable_item_from_index(menu,0)) != NULL)
+      if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
 	return MENU_NEWITEM;
       else
 	return MENU_NOP;
       break;
 
     case XK_Page_Down:
-      if ((*pmiCurrent = MR_LAST_ITEM(menu)) != NULL)
+      if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
 	return MENU_NEWITEM;
       else
 	return MENU_NOP;
@@ -1038,7 +1095,7 @@ static MenuStatus MenuInteraction(
 
   memset(&(mops.flags), 0, sizeof(mops.flags));
   flags.do_popup_immediately =
-    (MR_STYLE(pmp->menu)->feel.flags.do_popup_immediately &&
+    (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
      (Menus.PopupDelay10ms > 0));
 
   /* remember where the pointer was so we can tell if it has moved */
@@ -1047,496 +1104,498 @@ static MenuStatus MenuInteraction(
 
   while (True)
   {
-      flags.do_popup_and_warp = False;
-      flags.do_popup_now = False;
-      flags.is_key_press = False;
-      if (flags.do_force_reposition)
+    flags.do_popup_and_warp = False;
+    flags.do_popup_now = False;
+    flags.is_key_press = False;
+    if (flags.do_force_reposition)
+    {
+      Event.type = MotionNotify;
+      Event.xmotion.time = lastTimestamp;
+      flags.is_motion_faked = True;
+      flags.do_force_reposition = False;
+    }
+    else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
+    {
+      /* handle exposure events first */
+      if (Menus.PopupDelay10ms > 0)
       {
-	Event.type = MotionNotify;
-	Event.xmotion.time = lastTimestamp;
-	flags.is_motion_faked = True;
-	flags.do_force_reposition = False;
-      }
-      else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
-      {
-	/* handle exposure events first */
-	if (Menus.PopupDelay10ms > 0)
+	while (XCheckMaskEvent(dpy,
+			       ButtonPressMask|ButtonReleaseMask|
+			       ExposureMask|KeyPressMask|
+			       VisibilityChangeMask|ButtonMotionMask,
+			       &Event) == False)
 	{
-	  while (XCheckMaskEvent(dpy,
-				 ButtonPressMask|ButtonReleaseMask|
-				 ExposureMask|KeyPressMask|
-				 VisibilityChangeMask|ButtonMotionMask,
-				 &Event) == False)
+	  usleep(10000 /* 10 ms*/);
+	  if (c10msDelays++ == Menus.PopupDelay10ms)
 	  {
-	    usleep(10000 /* 10 ms*/);
-	    if (c10msDelays++ == Menus.PopupDelay10ms)
-	    {
-	      DBUG("MenuInteraction","Faking motion");
-	      /* fake a motion event, and set flags.do_popup_now */
-	      Event.type = MotionNotify;
-	      Event.xmotion.time = lastTimestamp;
-	      flags.is_motion_faked = True;
-	      flags.do_popup_now = True;
-	      break;
-	    }
-	  }
-	}
-	else
-	{
-	  /* block until there is an event */
-	  XMaskEvent(dpy,
-		     ButtonPressMask|ButtonReleaseMask|ExposureMask |
-		     KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
-		     &Event);
-	}
-      }
-      /*DBUG("MenuInteraction","mrPopup=%s",mrPopup?mrPopup->name:"(none)");*/
-
-      StashEventTime(&Event);
-      if (Event.type == MotionNotify)
-      {
-	/* discard any extra motion events before a release */
-	while((XCheckMaskEvent(dpy,ButtonMotionMask|ButtonReleaseMask,
-			       &Event))&&(Event.type != ButtonRelease))
-	  ;
-      }
-
-      retval = 0;
-      switch(Event.type)
-	{
-	case ButtonRelease:
-	  mi = find_entry(&x_offset, &mrMi);
-	  /* hold the menu up when the button is released
-	   * for the first time if released OFF of the menu */
-	  if(pmp->flags.is_sticky && !flags.is_motion_first)
-	  {
-	    flags.is_release_first = True;
-	    pmp->flags.is_sticky = False;
-	    continue;
-	    /* break; */
-	  }
-	  retval = (mi) ? MENU_SELECTED : MENU_ABORTED;
-	  if (retval == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
-	      !MR_STYLE(pmp->menu)->feel.flags.do_popup_as_root_menu)
-	  {
-	      retval = MENU_POPUP;
-	      flags.do_popup_now = True;
-	      break;
-	  }
-	  pdkp->timestamp = 0;
-	  goto DO_RETURN;
-
-	case ButtonPress:
-	  /* if the first event is a button press allow the release to
-	     select something */
-	  pmp->flags.is_sticky = False;
-	  continue;
-
-	case VisibilityNotify:
-	  continue;
-
-	case KeyPress:
-	  /* Handle a key press events to allow mouseless operation */
-	  flags.is_key_press = True;
-	  x_offset = menu_middle_x_offset(pmp->menu);
-	  retval = menuShortcuts(pmp->menu, &Event, &mi, pdkp);
-	  if (retval == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
-	      !MR_STYLE(pmp->menu)->feel.flags.do_popup_as_root_menu)
-	    retval = MENU_POPUP;
-	  if (retval == MENU_POPDOWN ||
-	      retval == MENU_ABORTED ||
-	      retval == MENU_SELECTED
-#ifdef TEAR_OFF_MENUS
-	      || retval == MENU_TEAR_OFF
-#endif
-)
-	  {
-	    goto DO_RETURN;
-	  }
-	  /* now warp to the new menu-item, if any */
-	  if (mi && (mi != find_entry(NULL, &tmrMi) || pmp->menu != tmrMi))
-	  {
-	    if (tmrMi == NULL)
-	      tmrMi = pmp->menu;
-	    warp_pointer_to_item(tmrMi, mi, False);
-	    /* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item);*/
-	  }
-	  if (retval == MENU_POPUP && mi && MI_IS_POPUP(mi))
-	  {
-	    flags.do_popup_and_warp = True;
-	    DBUG("MenuInteraction","flags.do_popup_and_warp = True");
+	    DBUG("MenuInteraction","Faking motion");
+	    /* fake a motion event, and set flags.do_popup_now */
+	    Event.type = MotionNotify;
+	    Event.xmotion.time = lastTimestamp;
+	    flags.is_motion_faked = True;
+	    flags.do_popup_now = True;
 	    break;
 	  }
-	  break;
-
-	case MotionNotify:
-	  if (*phas_mouse_moved == False)
-	  {
-	    int x_root, y_root;
-	    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			  &x_root,&y_root, &JunkX, &JunkY, &JunkMask);
-	    if(x_root - x_init > Scr.MoveThreshold ||
-	       x_init - x_root > Scr.MoveThreshold ||
-	       y_root - y_init > Scr.MoveThreshold ||
-	       y_init - y_root > Scr.MoveThreshold)
-	    {
-	      /* global variable remember that this isn't just
-		 a click any more since the pointer moved */
-	      *phas_mouse_moved = True;
-	    }
-	  }
-	  mi = find_entry(&x_offset, &mrMi);
-	  if (!flags.is_release_first && !flags.is_motion_faked &&
-	      *phas_mouse_moved)
-	    flags.is_motion_first = True;
-	  flags.is_motion_faked = False;
-	  break;
-
-	case Expose:
-	  /* grab our expose events, let the rest go through */
-	  if((XFindContext(dpy, Event.xany.window, MenuContext,
-			   (caddr_t *)&mrNeedsPainting) != XCNOENT))
-	  {
-	    flush_expose(Event.xany.window);
-	    paint_menu(mrNeedsPainting, &Event, (*pmp->pTmp_win));
-	  }
-	  /* we want to dispatch this too so window decorations get redrawn
-	   * after being obscured by menus. */
-	  /* We need to preserve the Tmp_win here! */
-	  DispatchEvent(True);
-	  continue;
-
-	default:
-	  DispatchEvent(False);
-	  break;
-	} /* switch (Event.type) */
-
-      /* Now handle new menu items, whether it is from a keypress or
-       * a pointer motion event */
-      if (mi)
+	}
+      }
+      else
       {
-	/* we're on a menu item */
-	flags.is_off_menu_allowed = False;
-	mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
-	if (mrMi != pmp->menu && mrMi != mrPopup)
-	{
-	  /* we're on an item from a prior menu */
-	  retval = MENU_POPDOWN;
-	  pdkp->timestamp = 0;
-	  goto DO_RETURN;
-	}
+	/* block until there is an event */
+	XMaskEvent(dpy,
+		   ButtonPressMask|ButtonReleaseMask|ExposureMask |
+		   KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
+		   &Event);
+      }
+    }
 
-	/* see if we're on a new item of this menu */
-	if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi == pmp->menu)
-	{
-	  c10msDelays = 0;
-	  /* we're on the same menu, but a different item,
-	     so we need to unselect the old item */
-	  if (MR_SELECTED_ITEM(pmp->menu))
-	  {
-	    /* something else was already selected on this menu */
-	    if (mrPopup)
-	    {
-	      pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
-					       pmp);
-	      mrPopup = NULL;
-	    }
-	    /* We have to pop down the menu before unselecting the item in case
-	     * we are using gradient menus. The recalled image would paint over
-	     * the submenu. */
-	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			     (*pmp->pTmp_win));
-	  }
-	  /* do stuff to highlight the new item; this
-	   * sets MR_SELECTED_ITEM(menu), too */
-	  select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
-	} /* new item of the same menu */
+    StashEventTime(&Event);
+    if (Event.type == MotionNotify)
+    {
+      /* discard any extra motion events before a release */
+      while((XCheckMaskEvent(dpy,ButtonMotionMask|ButtonReleaseMask,
+			     &Event))&&(Event.type != ButtonRelease))
+	;
+    }
 
-	/* check what has to be done with the item */
-	flags.do_popdown = False;
-	flags.do_popup = False;
-	flags.do_menu = False;
-	flags.is_submenu_mapped = False;
+    retval = 0;
+    switch(Event.type)
+    {
+    case ButtonRelease:
+      mi = find_entry(&x_offset, &mrMi);
+      /* hold the menu up when the button is released
+       * for the first time if released OFF of the menu */
+      if(pmp->flags.is_sticky && !flags.is_motion_first)
+      {
+	flags.is_release_first = True;
+	pmp->flags.is_sticky = False;
+	continue;
+	/* break; */
+      }
+      retval = (mi) ? MENU_SELECTED : MENU_ABORTED;
+      if (retval == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
+	  !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+      {
+	retval = MENU_POPUP;
+	flags.do_popup_now = True;
+	break;
+      }
+      pdkp->timestamp = 0;
+      goto DO_RETURN;
 
-	if (mrMi == mrPopup)
-	{
-	  /* must make current popup menu a real menu */
-	  flags.do_menu = True;
-	  flags.is_submenu_mapped = True;
-	}
-	else if (flags.do_popup_and_warp)
-	{
-	  /* must create a real menu and warp into it */
-	  if (mrPopup == NULL || mrPopup != mrMiPopup)
-	  {
-	    flags.do_popup = True;
-	  }
-	  else
-	  {
-	    XRaiseWindow(dpy, MR_WINDOW(mrPopup));
-	    warp_pointer_to_item(mrPopup, MR_FIRST_ITEM(mrPopup), True);
-	    flags.do_menu = True;
-	    flags.is_submenu_mapped = True;
-	  }
-	}
-	else if (mi && MI_IS_POPUP(mi))
-	{
-	  if (pointer_in_active_item_area(x_offset, mrMi) ||
-	      flags.do_popup_now || flags.do_popup_immediately)
-	  {
-	    /* must create a new menu or popup */
-	    if (mrPopup == NULL || mrPopup != mrMiPopup)
-	    {
-	      flags.do_popup = True;
-	    }
-	    else if (flags.do_popup_and_warp)
-	    {
-	      warp_pointer_to_item(mrPopup, MR_FIRST_ITEM(mrPopup), True);
-	    }
-	  }
-	} /* else if (mi && MI_IS_POPUP(mi)) */
-	if (flags.do_popup && mrPopup && mrPopup != mrMiPopup)
-	{
-	  /* must remove previous popup first */
-	  flags.do_popdown = True;
-	}
+    case ButtonPress:
+      /* if the first event is a button press allow the release to
+	 select something */
+      pmp->flags.is_sticky = False;
+      continue;
 
-	if (flags.do_popdown)
+    case VisibilityNotify:
+      continue;
+
+    case KeyPress:
+      /* Handle a key press events to allow mouseless operation */
+      flags.is_key_press = True;
+      x_offset = menu_middle_x_offset(pmp->menu);
+      retval = menuShortcuts(pmp->menu, &Event, &mi, pdkp);
+      if (retval == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
+	  !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+	retval = MENU_POPUP;
+      if (retval == MENU_POPDOWN ||
+	  retval == MENU_ABORTED ||
+	  retval == MENU_SELECTED
+#ifdef TEAR_OFF_MENUS
+	  || retval == MENU_TEAR_OFF
+#endif
+	)
+      {
+	goto DO_RETURN;
+      }
+      /* now warp to the new menu-item, if any */
+      if (mi && (mi != find_entry(NULL, &tmrMi) || pmp->menu != tmrMi))
+      {
+	if (tmrMi == NULL)
+	  tmrMi = pmp->menu;
+	warp_pointer_to_item(tmrMi, mi, False);
+	/* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item);*/
+      }
+      if (retval == MENU_POPUP && mi && MI_IS_POPUP(mi))
+      {
+	flags.do_popup_and_warp = True;
+	DBUG("MenuInteraction","flags.do_popup_and_warp = True");
+	break;
+      }
+      break;
+
+    case MotionNotify:
+      if (*phas_mouse_moved == False)
+      {
+	int x_root, y_root;
+	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		      &x_root,&y_root, &JunkX, &JunkY, &JunkMask);
+	if(x_root - x_init > Scr.MoveThreshold ||
+	   x_init - x_root > Scr.MoveThreshold ||
+	   y_root - y_init > Scr.MoveThreshold ||
+	   y_init - y_root > Scr.MoveThreshold)
 	{
-	  DBUG("MenuInteraction","Popping down");
-	  /* popdown previous popup */
+	  /* global variable remember that this isn't just
+	     a click any more since the pointer moved */
+	  *phas_mouse_moved = True;
+	}
+      }
+      mi = find_entry(&x_offset, &mrMi);
+      if (!flags.is_release_first && !flags.is_motion_faked &&
+	  *phas_mouse_moved)
+	flags.is_motion_first = True;
+      flags.is_motion_faked = False;
+      break;
+
+    case Expose:
+      /* grab our expose events, let the rest go through */
+      if((XFindContext(dpy, Event.xany.window, MenuContext,
+		       (caddr_t *)&mrNeedsPainting) != XCNOENT))
+      {
+	flush_expose(Event.xany.window);
+	paint_menu(mrNeedsPainting, &Event, (*pmp->pTmp_win));
+      }
+      /* we want to dispatch this too so window decorations get redrawn
+       * after being obscured by menus. */
+      /* We need to preserve the Tmp_win here! */
+      DispatchEvent(True);
+      continue;
+
+    default:
+      DispatchEvent(False);
+      break;
+    } /* switch (Event.type) */
+
+    /* Now handle new menu items, whether it is from a keypress or
+     * a pointer motion event */
+    if (mi)
+    {
+      /* we're on a menu item */
+      flags.is_off_menu_allowed = False;
+      mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
+      if (mrMi != pmp->menu && mrMi != mrPopup)
+      {
+	/* we're on an item from a prior menu */
+	retval = MENU_POPDOWN;
+	pdkp->timestamp = 0;
+	goto DO_RETURN;
+      }
+
+      /* see if we're on a new item of this menu */
+      if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi == pmp->menu)
+      {
+	c10msDelays = 0;
+	/* we're on the same menu, but a different item,
+	   so we need to unselect the old item */
+	if (MR_SELECTED_ITEM(pmp->menu))
+	{
+	  /* something else was already selected on this menu */
 	  if (mrPopup)
 	  {
 	    pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
 					     pmp);
 	    mrPopup = NULL;
 	  }
-	  flags.do_popdown = False;
+	  /* We have to pop down the menu before unselecting the item in case
+	   * we are using gradient menus. The recalled image would paint over
+	   * the submenu. */
+	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			   (*pmp->pTmp_win));
 	}
-	if (flags.do_popup)
-	{
-	  DBUG("MenuInteraction","Popping up");
-          /* get pos hints for item's action */
-          get_popup_options(pmp->menu, mi, &mops);
-	  if (mrMi == pmp->menu && mrMiPopup == NULL && MI_IS_POPUP(mi) &&
-	      MR_MISSING_SUBMENU_FUNC(pmp->menu))
-	  {
-	    /* We're on a submenu item, but the submenu does not exist. The
-	     * user defined missing_submenu_action may create it. */
-	    Bool is_complex_function;
-	    Bool f;
-	    Time t;
-	    char *menu_name;
-	    char *action;
-	    extern XEvent Event;
+	/* do stuff to highlight the new item; this
+	 * sets MR_SELECTED_ITEM(pmp->menu), too */
+	select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+      } /* new item of the same menu */
 
-	    f = *pdo_warp_to_title;
-	    t = lastTimestamp;
-	    menu_name = PeekToken(SkipNTokens(mi->action, 1), NULL);
-	    is_complex_function =
-	      (FindFunction(MR_MISSING_SUBMENU_FUNC(pmp->menu)) != NULL);
-	    if (is_complex_function)
-	    {
-	      action =
-		safemalloc(
-		  strlen("Function") + 1 +
-		  strlen(MR_MISSING_SUBMENU_FUNC(pmp->menu)) + 1 +
-		  strlen(menu_name) + 1);
-	      sprintf(action, "Function %s %s",
-		      MR_MISSING_SUBMENU_FUNC(pmp->menu), menu_name);
-	    }
-	    else
-	    {
-	      action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
-	    }
-	    /* Execute the action */
-	    ExecuteFunctionSaveTmpWin(
-	      action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
-	      DONT_EXPAND_COMMAND);
-	    if (is_complex_function)
-	      free(action);
-	    /* restore the stuff we saved */
-	    lastTimestamp = t;
-	    *pdo_warp_to_title = f;
-	    /* grab the mouse again */
-	    if (!check_if_fvwm_window_exists(*(pmp->pTmp_win)))
-	    {
-	      *(pmp->pTmp_win) = NULL;
-	      *(pmp->pcontext) = 0;
-	    }
-	    /* Let's see if the menu exists now. */
-	    mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
-	  }
-	  mrPopup = mrMiPopup;
-	  if (!mrPopup)
+      /* check what has to be done with the item */
+      flags.do_popdown = False;
+      flags.do_popup = False;
+      flags.do_menu = False;
+      flags.is_submenu_mapped = False;
+
+      if (mrMi == mrPopup)
+      {
+	/* must make current popup menu a real menu */
+	flags.do_menu = True;
+	flags.is_submenu_mapped = True;
+      }
+      else if (flags.do_popup_and_warp)
+      {
+	/* must create a real menu and warp into it */
+	if (mrPopup == NULL || mrPopup != mrMiPopup)
+	{
+	  flags.do_popup = True;
+	}
+	else
+	{
+	  XRaiseWindow(dpy, MR_WINDOW(mrPopup));
+	  warp_pointer_to_item(mrPopup, MR_FIRST_ITEM(mrPopup), True);
+	  flags.do_menu = True;
+	  flags.is_submenu_mapped = True;
+	}
+      }
+      else if (mi && MI_IS_POPUP(mi))
+      {
+	if (pointer_in_active_item_area(x_offset, mrMi) ||
+	    flags.do_popup_now || flags.do_popup_immediately)
+	{
+	  /* must create a new menu or popup */
+	  if (mrPopup == NULL || mrPopup != mrMiPopup)
 	  {
-	    flags.do_menu = False;
-	    flags.do_popdown = False;
+	    flags.do_popup = True;
+	  }
+	  else if (flags.do_popup_and_warp)
+	  {
+	    warp_pointer_to_item(mrPopup, MR_FIRST_ITEM(mrPopup), True);
+	  }
+	}
+      } /* else if (mi && MI_IS_POPUP(mi)) */
+      if (flags.do_popup && mrPopup && mrPopup != mrMiPopup)
+      {
+	/* must remove previous popup first */
+	flags.do_popdown = True;
+      }
+
+      if (flags.do_popdown)
+      {
+	DBUG("MenuInteraction","Popping down");
+	/* popdown previous popup */
+	if (mrPopup)
+	{
+	  pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
+					   pmp);
+	  mrPopup = NULL;
+	}
+	flags.do_popdown = False;
+      }
+      if (flags.do_popup)
+      {
+	DBUG("MenuInteraction","Popping up");
+	/* get pos hints for item's action */
+	get_popup_options(pmp->menu, mi, &mops);
+	if (mrMi == pmp->menu && mrMiPopup == NULL && MI_IS_POPUP(mi) &&
+	    MR_MISSING_SUBMENU_FUNC(pmp->menu))
+	{
+	  /* We're on a submenu item, but the submenu does not exist. The
+	   * user defined missing_submenu_action may create it. */
+	  Bool is_complex_function;
+	  Bool f;
+	  Time t;
+	  char *menu_name;
+	  char *action;
+	  extern XEvent Event;
+
+	  f = *pdo_warp_to_title;
+	  t = lastTimestamp;
+	  menu_name = PeekToken(SkipNTokens(MI_ACTION(mi), 1), NULL);
+	  is_complex_function =
+	    (FindFunction(MR_MISSING_SUBMENU_FUNC(pmp->menu)) != NULL);
+	  if (is_complex_function)
+	  {
+	    action =
+	      safemalloc(
+		strlen("Function") + 1 +
+		strlen(MR_MISSING_SUBMENU_FUNC(pmp->menu)) + 1 +
+		strlen(menu_name) + 1);
+	    sprintf(action, "Function %s %s",
+		    MR_MISSING_SUBMENU_FUNC(pmp->menu), menu_name);
 	  }
 	  else
 	  {
-	    /* create a popup menu */
-	    if (!is_submenu_mapped(pmp->menu, mi))
-	    {
-	      /* We want to pop prepop menus so it doesn't *have* to be
-		 unpopped; do_menu pops down any menus it pops up, but we
-		 want to be able to popdown w/o actually removing the menu */
-	      int x;
-	      int y;
-	      Bool prefer_left_submenus;
-
-	      get_prefered_popup_position(
-		pmp->menu, mrPopup, &x, &y, &prefer_left_submenus);
-	      /* Note that we don't care if popping up the menu works. If it
-	       * doesn't we'll catch it below. */
-	      pop_menu_up(&mrPopup, pmp->menu, pmp->pTmp_win, pmp->pcontext, x,
-			  y, prefer_left_submenus, flags.do_popup_and_warp,
-			  &mops, &does_submenu_overlap, pdo_warp_to_title);
-	      if (mrPopup == NULL)
-	      {
-		/* the menu deleted itself when execution the dynamic popup
-		 * action */
-		retval = MENU_ERROR;
-		goto DO_RETURN;
-	      }
-	    }
-	    if (MR_PARENT_MENU(mrPopup) == pmp->menu)
-	    {
-	      mi = find_entry(NULL, &mrMi);
-	      if (mi && mrMi == mrPopup)
-	      {
-		flags.do_menu = True;
-		flags.is_submenu_mapped = True;
-		flags.do_popdown =
-		  !MR_STYLE(pmp->menu)->feel.flags.do_popup_immediately;
-	      }
-	    }
-	    else
-	    {
-	      /* This menu must be already mapped somewhere else, so ignore
-	       * it completely. This can only happen if we have reached the
-	       * maximum allowed number of menu copies. */
-	      flags.do_menu = False;
-	      flags.do_popdown = False;
-	      mrPopup = NULL;
-	    }
-	  } /* if (!mrPopup) */
-	} /* if (flags.do_popup) */
-	if (flags.do_menu)
-	{
-	  MenuParameters mp;
-
-	  mp.menu = mrPopup;
-	  mp.parent_menu = pmp->menu;
-	  mp.parent_item = mi;
-	  mp.pTmp_win = pmp->pTmp_win;
-	  mp.button_window = pmp->button_window;
-	  mp.pcontext = pmp->pcontext;
-	  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
-	  mp.flags.is_sticky = False;
-	  mp.flags.is_submenu = True;
-	  mp.flags.is_already_mapped = flags.is_submenu_mapped;
-	  mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
-	  mp.pops = &mops;
-	  mp.ret_paction = pmp->ret_paction;
-
-	  /* recursively do the new menu we've moved into */
-	  retval = do_menu(&mp);
-	  if (IS_MENU_RETURN(retval))
-	  {
-	    pdkp->timestamp = 0;
-	    goto DO_RETURN;
+	    action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 	  }
-	  if ((flags.do_popdown ||
-	       !MR_STYLE(pmp->menu)->feel.flags.do_popup_immediately) &&
-	      MR_STYLE(pmp->menu)->feel.flags.do_unmap_submenu_on_popdown)
+	  /* Execute the action */
+	  ExecuteFunctionSaveTmpWin(
+	    action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
+	    DONT_EXPAND_COMMAND);
+	  if (is_complex_function)
+	    free(action);
+	  /* restore the stuff we saved */
+	  lastTimestamp = t;
+	  *pdo_warp_to_title = f;
+	  /* grab the mouse again */
+	  if (!check_if_fvwm_window_exists(*(pmp->pTmp_win)))
 	  {
+	    *(pmp->pTmp_win) = NULL;
+	    *(pmp->pcontext) = 0;
+	  }
+	  /* Let's see if the menu exists now. */
+	  mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
+	} /* run MISSING_SUBMENU_FUNCTION */
+	mrPopup = mrMiPopup;
+	if (!mrPopup)
+	{
+	  flags.do_menu = False;
+	  flags.do_popdown = False;
+	}
+	else
+	{
+	  /* create a popup menu */
+	  if (!is_submenu_mapped(pmp->menu, mi))
+	  {
+	    /* We want to pop prepop menus so it doesn't *have* to be
+	       unpopped; do_menu pops down any menus it pops up, but we
+	       want to be able to popdown w/o actually removing the menu */
+	    int x;
+	    int y;
+	    Bool prefer_left_submenus;
+
+	    /* Make sure we are using the latest style and menu layout. */
+	    update_menu(mrPopup);
+
+	    get_prefered_popup_position(
+	      pmp->menu, mrPopup, &x, &y, &prefer_left_submenus);
+	    /* Note that we don't care if popping up the menu works. If it
+	     * doesn't we'll catch it below. */
+	    pop_menu_up(&mrPopup, pmp->menu, pmp->pTmp_win, pmp->pcontext, x,
+			y, prefer_left_submenus, flags.do_popup_and_warp,
+			&mops, &does_submenu_overlap, pdo_warp_to_title);
+	    if (mrPopup == NULL)
+	    {
+	      /* the menu deleted itself when execution the dynamic popup
+	       * action */
+	      retval = MENU_ERROR;
+	      goto DO_RETURN;
+	    }
+	  }
+	  if (MR_PARENT_MENU(mrPopup) == pmp->menu)
+	  {
+	    mi = find_entry(NULL, &mrMi);
+	    if (mi && mrMi == mrPopup)
+	    {
+	      flags.do_menu = True;
+	      flags.is_submenu_mapped = True;
+	      flags.do_popdown =
+		!MST_DO_POPUP_IMMEDIATELY(pmp->menu);
+	    }
+	  }
+	  else
+	  {
+	    /* This menu must be already mapped somewhere else, so ignore
+	     * it completely. This can only happen if we have reached the
+	     * maximum allowed number of menu copies. */
+	    flags.do_menu = False;
+	    flags.do_popdown = False;
+	    mrPopup = NULL;
+	  }
+	} /* if (!mrPopup) */
+      } /* if (flags.do_popup) */
+      if (flags.do_menu)
+      {
+	MenuParameters mp;
+
+	mp.menu = mrPopup;
+	mp.parent_menu = pmp->menu;
+	mp.parent_item = mi;
+	mp.pTmp_win = pmp->pTmp_win;
+	mp.button_window = pmp->button_window;
+	mp.pcontext = pmp->pcontext;
+	mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
+	mp.flags.is_sticky = False;
+	mp.flags.is_submenu = True;
+	mp.flags.is_already_mapped = flags.is_submenu_mapped;
+	mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
+	mp.pops = &mops;
+	mp.ret_paction = pmp->ret_paction;
+
+	/* recursively do the new menu we've moved into */
+	retval = do_menu(&mp);
+	if (IS_MENU_RETURN(retval))
+	{
+	  pdkp->timestamp = 0;
+	  goto DO_RETURN;
+	}
+	if ((flags.do_popdown ||
+	     !MST_DO_POPUP_IMMEDIATELY(pmp->menu)) &&
+	    MST_DO_UNMAP_SUBMENU_ON_POPDOWN(pmp->menu))
+	{
+	  pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
+					   pmp);
+	  mrPopup = NULL;
+	}
+	if (retval == MENU_POPDOWN)
+	{
+	  c10msDelays = 0;
+	  flags.do_force_reposition = True;
+	}
+      } /* if (flags.do_menu) */
+
+      /* Now check whether we can animate the current popup menu
+	 back to the original place to unobscure the current menu;  this
+	 happens only when using animation */
+      tmi = find_entry(NULL, &tmrMi);
+      if (mrPopup && MR_XANIMATION(mrPopup) && tmi &&
+	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
+      {
+	int x_popup, y_popup;
+	DBUG("MenuInteraction","Moving the popup menu back over");
+	XGetGeometry(dpy, MR_WINDOW(mrPopup), &JunkRoot, &x_popup, &y_popup,
+		     &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
+	/* move it back */
+	AnimatedMoveOfWindow(MR_WINDOW(mrPopup),x_popup,y_popup,
+			     x_popup - MR_XANIMATION(mrPopup), y_popup,
+			     False /* no warp ptr */,-1,NULL);
+	MR_XANIMATION(mrPopup) = 0;
+      }
+      /* now check whether we should animate the current real menu
+	 over to the right to unobscure the prior menu; only a very
+	 limited case where this might be helpful and not too disruptive */
+      if (mrPopup == NULL && pmp->parent_menu != NULL &&
+	  MR_XANIMATION(pmp->menu) != 0 &&
+	  pointer_in_passive_item_area(x_offset, mrMi))
+      {
+	int x_menu, y_menu;
+	DBUG("MenuInteraction","Moving the menu back over");
+	/* we have to see if we need menu to be moved */
+	XGetGeometry( dpy, MR_WINDOW(pmp->menu), &JunkRoot, &x_menu, &y_menu,
+		      &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
+	/* move it back */
+	AnimatedMoveOfWindow(MR_WINDOW(pmp->menu),x_menu,y_menu,
+			     x_menu - MR_XANIMATION(pmp->menu),y_menu,
+			     True /* warp ptr */,-1,NULL);
+	MR_XANIMATION(pmp->menu) = 0;
+      }
+
+    } /* if (mi) */
+    else
+    {
+      /* moved off menu, deselect selected item... */
+      if (MR_SELECTED_ITEM(pmp->menu))
+      {
+	if (mrPopup && flags.is_off_menu_allowed == False)
+	{
+	  int x, y, mx, my;
+	  unsigned int mw, mh;
+	  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			&x, &y, &JunkX, &JunkY, &JunkMask);
+	  XGetGeometry(dpy, MR_WINDOW(pmp->menu), &JunkRoot, &mx, &my,
+		       &mw, &mh, &JunkBW, &JunkDepth);
+	  if ((!MR_IS_LEFT(mrPopup)  && x < mx)    ||
+	      (!MR_IS_RIGHT(mrPopup) && x > mx + mw) ||
+	      (!MR_IS_UP(mrPopup)    && y < my)    ||
+	      (!MR_IS_DOWN(mrPopup)  && y > my + mh))
+	  {
+	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			     (*pmp->pTmp_win));
 	    pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
 					     pmp);
 	    mrPopup = NULL;
 	  }
-	  if (retval == MENU_POPDOWN)
+	  else
 	  {
-	    c10msDelays = 0;
-	    flags.do_force_reposition = True;
+	    flags.is_off_menu_allowed = True;
 	  }
-	} /* if (flags.do_menu) */
-
-	/* Now check whether we can animate the current popup menu
-	   back to the original place to unobscure the current menu;  this
-	   happens only when using animation */
-	tmi = find_entry(NULL, &tmrMi);
-	if (mrPopup && MR_XANIMATION(mrPopup) && tmi &&
-	    (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
+	} /* if (mrPopup && flags.is_off_menu_allowed == False) */
+	else if (flags.is_off_menu_allowed == False)
 	{
-	  int x_popup, y_popup;
-	  DBUG("MenuInteraction","Moving the popup menu back over");
-	  XGetGeometry(dpy, MR_WINDOW(mrPopup), &JunkRoot, &x_popup, &y_popup,
-		       &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	  /* move it back */
-	  AnimatedMoveOfWindow(MR_WINDOW(mrPopup),x_popup,y_popup,
-			       x_popup - MR_XANIMATION(mrPopup), y_popup,
-			       False /* no warp ptr */,-1,NULL);
-	  MR_XANIMATION(mrPopup) = 0;
+	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			   (*pmp->pTmp_win));
 	}
-	/* now check whether we should animate the current real menu
-	   over to the right to unobscure the prior menu; only a very
-	   limited case where this might be helpful and not too disruptive */
-	if (mrPopup == NULL && pmp->parent_menu != NULL &&
-	    MR_XANIMATION(pmp->menu) != 0 &&
-	    pointer_in_passive_item_area(x_offset, mrMi))
-	{
-	  int x_menu, y_menu;
-	  DBUG("MenuInteraction","Moving the menu back over");
-	  /* we have to see if we need menu to be moved */
-	  XGetGeometry( dpy, MR_WINDOW(pmp->menu), &JunkRoot, &x_menu, &y_menu,
-			&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	  /* move it back */
-	  AnimatedMoveOfWindow(MR_WINDOW(pmp->menu),x_menu,y_menu,
-			       x_menu - MR_XANIMATION(pmp->menu),y_menu,
-			       True /* warp ptr */,-1,NULL);
-	  MR_XANIMATION(pmp->menu) = 0;
-	}
-
-      } /* if (mi) */
-      else
-      {
-        /* moved off menu, deselect selected item... */
-        if (MR_SELECTED_ITEM(pmp->menu))
-	{
-          if (mrPopup && flags.is_off_menu_allowed == False)
-	  {
-	    int x, y, mx, my;
-	    unsigned int mw, mh;
-	    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			  &x, &y, &JunkX, &JunkY, &JunkMask);
-	    XGetGeometry(dpy, MR_WINDOW(pmp->menu), &JunkRoot, &mx, &my,
-			 &mw, &mh, &JunkBW, &JunkDepth);
-	    if ((!MR_IS_LEFT(mrPopup)  && x < mx)    ||
-		(!MR_IS_RIGHT(mrPopup) && x > mx + mw) ||
-		(!MR_IS_UP(mrPopup)    && y < my)    ||
-		(!MR_IS_DOWN(mrPopup)  && y > my + mh))
-	    {
-	      select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			       (*pmp->pTmp_win));
-	      pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
-					       pmp);
-	      mrPopup = NULL;
-	    }
-	    else
-	    {
-	      flags.is_off_menu_allowed = True;
-	    }
-	  } /* if (mrPopup && flags.is_off_menu_allowed == False) */
-	  else if (flags.is_off_menu_allowed == False)
-	  {
-	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			     (*pmp->pTmp_win));
-	  }
-        } /* if (MR_SELECTED_ITEM(menu)) */
-      } /* else (!mi) */
-      XFlush(dpy);
-    } /* while (True) */
+      } /* if (MR_SELECTED_ITEM(mpmp->enu)) */
+    } /* else (!mi) */
+    XFlush(dpy);
+  } /* while (True) */
 
   DO_RETURN:
   if (retval == MENU_POPDOWN)
@@ -1567,7 +1626,7 @@ static MenuStatus MenuInteraction(
   {
     /* save action to execute so that the menu may be destroyed now */
     if (pmp->ret_paction)
-      *pmp->ret_paction = (mi) ? strdup(mi->action) : NULL;
+      *pmp->ret_paction = (mi) ? strdup(MI_ACTION(mi)) : NULL;
     retval = MENU_ADD_BUTTON_IF(flags.is_key_press, MENU_DONE);
     if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_MENU(mi))
     {
@@ -1658,19 +1717,19 @@ static int do_menus_overlap(
 #endif
   if (allow_popup_offset_tolerance)
   {
-    if (MR_STYLE(mr)->feel.PopupOffsetAdd < 0)
-      s_tolerance = -MR_STYLE(mr)->feel.PopupOffsetAdd;
-    if (MR_STYLE(mr)->feel.flags.use_left_submenus)
-      prior_x += (100 - MR_STYLE(mr)->feel.PopupOffsetPercent) / 100;
+    if (MST_POPUP_OFFSET_ADD(mr) < 0)
+      s_tolerance = -MST_POPUP_OFFSET_ADD(mr);
+    if (MST_USE_LEFT_SUBMENUS(mr))
+      prior_x += (100 - MST_POPUP_OFFSET_PERCENT(mr)) / 100;
     else
-      prior_width *= (float)(MR_STYLE(mr)->feel.PopupOffsetPercent) / 100.0;
+      prior_width *= (float)(MST_POPUP_OFFSET_PERCENT(mr)) / 100.0;
 #if DEBUG_DO_MENUS_OVERLAP
     fprintf(stderr,
 	    "modified:\npx = %4d - %4d, py = %4d - %4d, s_tolerance = %d\n",
 	    prior_x,prior_x+prior_width-1,prior_y,prior_y+prior_height-1);
 #endif
   }
-  if (MR_STYLE(mr)->feel.flags.use_left_submenus)
+  if (MST_USE_LEFT_SUBMENUS(mr))
   {
     int t = s_tolerance;
     s_tolerance = h_tolerance;
@@ -1710,16 +1769,16 @@ static Bool pop_menu_up(
   int x_overlap = 0;
   int x_clipped_overlap;
   MenuRoot *mrMi;
-  MenuRoot *menu;
+  MenuRoot *mr;
   FvwmWindow *fw;
   int context;
   int bw = 0;
   int bwp = 0;
 
   DBUG("pop_menu_up","called");
-  menu = *pmenu;
-  if (!menu || MR_WINDOW(menu) == None ||
-      (MR_MAPPED_COPIES(menu) > 0 && MR_COPIES(menu) >= MAX_MENU_COPIES))
+  mr = *pmenu;
+  if (!mr || MR_WINDOW(mr) == None ||
+      (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
   {
     *pdo_warp_to_title = False;
     return False;
@@ -1730,7 +1789,7 @@ static Bool pop_menu_up(
    ***************************************************************/
 
   /* First of all, execute the popup action (if defined). */
-  if (MR_POPUP_ACTION(menu))
+  if (MR_POPUP_ACTION(mr))
   {
     char *menu_name;
     saved_pos_hints pos_hints;
@@ -1739,14 +1798,14 @@ static Bool pop_menu_up(
     extern XEvent Event;
 
     /* save variables that we still need but that may be overwritten */
-    menu_name = strdup(MR_NAME(menu));
+    menu_name = strdup(MR_NAME(mr));
     pos_hints = last_saved_pos_hints;
     f = *pdo_warp_to_title;
     t = lastTimestamp;
     /* need to ungrab the mouse during function call */
     UngrabEm();
     /* Execute the action */
-    ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(menu), *pfw, &Event,
+    ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
 			      *pcontext, -2, DONT_EXPAND_COMMAND);
     /* restore the stuff we saved */
     lastTimestamp = t;
@@ -1762,7 +1821,7 @@ static Bool pop_menu_up(
      * recreated, so we have to look for a menu with the saved name. */
     *pmenu = FindPopup(menu_name);
     free(menu_name);
-    menu = *pmenu;
+    mr = *pmenu;
     /* grab the mouse again */
     if(!GrabEm(MENU))
     {
@@ -1771,15 +1830,15 @@ static Bool pop_menu_up(
       free(menu_name);
       return False;
     }
-    if (menu)
+    if (mr)
     {
-      MakeMenu(menu);
+      make_menu(mr);
     }
   }
   fw = *pfw;
   context = *pcontext;
 
-  if(menu == NULL || MR_FIRST_ITEM(menu) == NULL || MR_ITEMS(menu) == 0)
+  if(mr == NULL || MR_FIRST_ITEM(mr) == NULL || MR_ITEMS(mr) == 0)
   {
     /* The menu deleted itself or all its items or it has been empty from the
      * start. */
@@ -1791,14 +1850,14 @@ static Bool pop_menu_up(
    * Create a new menu instance (if necessary)
    ***************************************************************/
 
-  if (MR_MAPPED_COPIES(menu) > 0)
+  if (MR_MAPPED_COPIES(mr) > 0)
   {
     /* create a new instance of the menu */
     *pmenu = copy_menu_root(*pmenu);
     if (!*pmenu)
       return False;
     make_menu_window(*pmenu);
-    menu = *pmenu;
+    mr = *pmenu;
   }
 
   /***************************************************************
@@ -1810,7 +1869,7 @@ static Bool pop_menu_up(
       !last_saved_pos_hints.flags.do_ignore_pos_hints)
   {
     get_xy_from_position_hints(
-      &(pops->pos_hints), MR_WIDTH(menu), MR_HEIGHT(menu),
+      &(pops->pos_hints), MR_WIDTH(mr), MR_HEIGHT(mr),
       (parent_menu) ? MR_WIDTH(parent_menu) : 0, prefer_left_submenu, &x, &y);
   }
 
@@ -1818,14 +1877,14 @@ static Bool pop_menu_up(
    * Initialise new menu
    ***************************************************************/
 
-  MR_PARENT_MENU(menu) = parent_menu;
-  MR_PARENT_ITEM(menu) = (parent_menu) ? MR_SELECTED_ITEM(parent_menu) : NULL;
-  MR_IS_PAINTED(menu) = 0;
-  MR_IS_LEFT(menu) = 0;
-  MR_IS_RIGHT(menu) = 0;
-  MR_IS_UP(menu) = 0;
-  MR_IS_DOWN(menu) = 0;
-  MR_XANIMATION(menu) = 0;
+  MR_PARENT_MENU(mr) = parent_menu;
+  MR_PARENT_ITEM(mr) = (parent_menu) ? MR_SELECTED_ITEM(parent_menu) : NULL;
+  MR_IS_PAINTED(mr) = 0;
+  MR_IS_LEFT(mr) = 0;
+  MR_IS_RIGHT(mr) = 0;
+  MR_IS_UP(mr) = 0;
+  MR_IS_DOWN(mr) = 0;
+  MR_XANIMATION(mr) = 0;
   InstallRootColormap();
 
   /***************************************************************
@@ -1846,17 +1905,17 @@ static Bool pop_menu_up(
       y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
       x = fw->frame_g.x + fw->frame_g.width -
 	fw->boundary_width - ButtonPosition(context, fw) *
-	fw->title_g.height-MR_WIDTH(menu) + 1;
+	fw->title_g.height-MR_WIDTH(mr) + 1;
     }
     else if(context&C_TITLE)
     {
       y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
       if(x < fw->frame_g.x + fw->title_g.x)
 	x = fw->frame_g.x + fw->title_g.x;
-      if((x + MR_WIDTH(menu)) >
+      if((x + MR_WIDTH(mr)) >
 	 (fw->frame_g.x + fw->title_g.x + fw->title_g.width))
 	x = fw->frame_g.x + fw->title_g.x + fw->title_g.width-
-	  MR_WIDTH(menu) +1;
+	  MR_WIDTH(mr) +1;
     }
   } /* if (pops->flags.has_poshints) */
 
@@ -1866,18 +1925,18 @@ static Bool pop_menu_up(
 
   if (parent_menu)
   {
-    bw = MR_BORDER_WIDTH(menu);
-    bwp = MR_BORDER_WIDTH(parent_menu);
+    bw = MST_BORDER_WIDTH(mr);
+    bwp = MST_BORDER_WIDTH(parent_menu);
     x_overlap =
-      do_menus_overlap(parent_menu, x, y, MR_WIDTH(menu), MR_HEIGHT(menu),
+      do_menus_overlap(parent_menu, x, y, MR_WIDTH(mr), MR_HEIGHT(mr),
 		       bwp, bwp, bwp, True);
   }
 
   /* clip to screen */
-  if (x + MR_WIDTH(menu) > Scr.MyDisplayWidth)
-    x = Scr.MyDisplayWidth - MR_WIDTH(menu);
-  if (y + MR_HEIGHT(menu) > Scr.MyDisplayHeight)
-    y = Scr.MyDisplayHeight - MR_HEIGHT(menu);
+  if (x + MR_WIDTH(mr) > Scr.MyDisplayWidth)
+    x = Scr.MyDisplayWidth - MR_WIDTH(mr);
+  if (y + MR_HEIGHT(mr) > Scr.MyDisplayHeight)
+    y = Scr.MyDisplayHeight - MR_HEIGHT(mr);
   if (x < 0)
     x = 0;
   if (y < 0)
@@ -1889,8 +1948,8 @@ static Bool pop_menu_up(
 
   if (parent_menu == NULL)
   {
-    MR_HAS_POPPED_UP_LEFT(menu) = 0;
-    MR_HAS_POPPED_UP_RIGHT(menu) = 0;
+    MR_HAS_POPPED_UP_LEFT(mr) = 0;
+    MR_HAS_POPPED_UP_RIGHT(mr) = 0;
   }
   else
   {
@@ -1900,7 +1959,7 @@ static Bool pop_menu_up(
     int right_x;
     unsigned int prev_width;
     unsigned int prev_height;
-    Bool use_left_submenus = MR_STYLE(menu)->feel.flags.use_left_submenus;
+    Bool use_left_submenus = MST_USE_LEFT_SUBMENUS(mr);
 
     /* try to find a better place */
     XGetGeometry(dpy,MR_WINDOW(parent_menu), &JunkRoot,&prev_x,&prev_y,
@@ -1908,7 +1967,7 @@ static Bool pop_menu_up(
 
     /* check if menus overlap */
     x_clipped_overlap =
-      do_menus_overlap(parent_menu, x, y, MR_WIDTH(menu), MR_HEIGHT(menu),
+      do_menus_overlap(parent_menu, x, y, MR_WIDTH(mr), MR_HEIGHT(mr),
 		       bwp, bwp, bwp, True);
     if (x_clipped_overlap &&
 	(!pops->flags.has_poshints || pops->pos_hints.is_relative == False ||
@@ -1916,12 +1975,12 @@ static Bool pop_menu_up(
     {
       /* menus do overlap, but do not reposition if overlap was caused by
        * relative positioning hints */
-      left_x = get_left_popup_x_position(parent_menu, menu, prev_x);
-      right_x = get_right_popup_x_position(parent_menu, menu, prev_x);
+      left_x = get_left_popup_x_position(parent_menu, mr, prev_x);
+      right_x = get_right_popup_x_position(parent_menu, mr, prev_x);
       if (use_left_submenus)
       {
-	if (left_x + MR_WIDTH(menu) < prev_x + bwp)
-	  left_x = prev_x + bwp - MR_WIDTH(menu);
+	if (left_x + MR_WIDTH(mr) < prev_x + bwp)
+	  left_x = prev_x + bwp - MR_WIDTH(mr);
       }
       else
       {
@@ -1933,7 +1992,7 @@ static Bool pop_menu_up(
        * Animate parent menu
        */
 
-      if (MR_STYLE(menu)->feel.flags.is_animated)
+      if (MST_IS_ANIMATED(mr))
       {
 	/* animate previous out of the way */
 	int a_left_x;
@@ -1942,10 +2001,10 @@ static Bool pop_menu_up(
 
 	if (use_left_submenus)
 	{
-	  if (prev_x - left_x < MR_WIDTH(menu))
+	  if (prev_x - left_x < MR_WIDTH(mr))
 	    a_right_x = x + (prev_x - left_x);
 	  else
-	    a_right_x = x + MR_WIDTH(menu) - bw;
+	    a_right_x = x + MR_WIDTH(mr) - bw;
 	  a_left_x = x - MR_WIDTH(parent_menu);
 	}
 	else
@@ -1954,7 +2013,7 @@ static Bool pop_menu_up(
 	    a_left_x = x + (prev_x - right_x);
 	  else
 	    a_left_x = x - prev_width + bw;
-	  a_right_x = x + MR_WIDTH(menu);
+	  a_right_x = x + MR_WIDTH(mr);
 	}
 	if (prefer_left_submenu)
 	{
@@ -1978,18 +2037,18 @@ static Bool pop_menu_up(
 	}
 	if (end_x == a_left_x || end_x == 0)
 	{
-	  MR_HAS_POPPED_UP_LEFT(menu) = 0;
-	  MR_HAS_POPPED_UP_RIGHT(menu) = 1;
+	  MR_HAS_POPPED_UP_LEFT(mr) = 0;
+	  MR_HAS_POPPED_UP_RIGHT(mr) = 1;
 	}
 	else
 	{
-	  MR_HAS_POPPED_UP_LEFT(menu) = 1;
-	  MR_HAS_POPPED_UP_RIGHT(menu) = 0;
+	  MR_HAS_POPPED_UP_LEFT(mr) = 1;
+	  MR_HAS_POPPED_UP_RIGHT(mr) = 0;
 	}
 	MR_XANIMATION(parent_menu) += end_x - prev_x;
 	AnimatedMoveOfWindow(MR_WINDOW(parent_menu),prev_x,prev_y,end_x,prev_y,
 			     True, -1, NULL);
-      } /* if (MR_STYLE(menu)->feel.flags.is_animated) */
+      } /* if (MST_IS_ANIMATED(mr)) */
 
       /*
        * Try the other side of the parent menu
@@ -2003,9 +2062,9 @@ static Bool pop_menu_up(
 	Bool use_left_as_last_resort;
 
 	use_left_as_last_resort =
-	  (left_x > Scr.MyDisplayWidth - right_x - MR_WIDTH(menu));
+	  (left_x > Scr.MyDisplayWidth - right_x - MR_WIDTH(mr));
 	may_use_left = (left_x >= 0);
-	may_use_right = (right_x + MR_WIDTH(menu) <= Scr.MyDisplayWidth);
+	may_use_right = (right_x + MR_WIDTH(mr) <= Scr.MyDisplayWidth);
 	if (!may_use_left && !may_use_right)
 	{
 	  /* If everything goes wrong, put the submenu on the side with more
@@ -2017,14 +2076,14 @@ static Bool pop_menu_up(
 	else
 	  do_use_left = False;
 	x = (do_use_left) ? left_x : right_x;
-	MR_HAS_POPPED_UP_LEFT(menu) = do_use_left;
-	MR_HAS_POPPED_UP_RIGHT(menu) = !do_use_left;
+	MR_HAS_POPPED_UP_LEFT(mr) = do_use_left;
+	MR_HAS_POPPED_UP_RIGHT(mr) = !do_use_left;
 
 	/* Force the menu onto the screen, but leave at least
 	 * PARENT_MENU_FORCE_VISIBLE_WIDTH pixels of the parent menu visible */
-	if (x + MR_WIDTH(menu) > Scr.MyDisplayWidth)
+	if (x + MR_WIDTH(mr) > Scr.MyDisplayWidth)
 	{
-	  int d = x + MR_WIDTH(menu) - Scr.MyDisplayWidth;
+	  int d = x + MR_WIDTH(mr) - Scr.MyDisplayWidth;
 	  int c;
 
 	  if (prev_width >= PARENT_MENU_FORCE_VISIBLE_WIDTH)
@@ -2052,22 +2111,22 @@ static Bool pop_menu_up(
     } /* if (x_clipped_overlap && ...) */
     else
     {
-      MR_HAS_POPPED_UP_LEFT(menu) = prefer_left_submenu;
-      MR_HAS_POPPED_UP_RIGHT(menu) = !prefer_left_submenu;
+      MR_HAS_POPPED_UP_LEFT(mr) = prefer_left_submenu;
+      MR_HAS_POPPED_UP_RIGHT(mr) = !prefer_left_submenu;
     }
 
     if (x < prev_x)
-      MR_IS_LEFT(menu) = 1;
-    if (x + MR_WIDTH(menu) > prev_x + prev_width)
-      MR_IS_RIGHT(menu) = 1;
+      MR_IS_LEFT(mr) = 1;
+    if (x + MR_WIDTH(mr) > prev_x + prev_width)
+      MR_IS_RIGHT(mr) = 1;
     if (y < prev_y)
-      MR_IS_UP(menu) = 1;
-    if (y + MR_HEIGHT(menu) > prev_y + prev_height)
-      MR_IS_DOWN(menu) = 1;
-    if (!MR_IS_LEFT(menu) && !MR_IS_RIGHT(menu))
+      MR_IS_UP(mr) = 1;
+    if (y + MR_HEIGHT(mr) > prev_y + prev_height)
+      MR_IS_DOWN(mr) = 1;
+    if (!MR_IS_LEFT(mr) && !MR_IS_RIGHT(mr))
     {
-      MR_IS_LEFT(menu) = 1;
-      MR_IS_RIGHT(menu) = 1;
+      MR_IS_LEFT(mr) = 1;
+      MR_IS_RIGHT(mr) = 1;
     }
   } /* if (parent_menu) */
 
@@ -2075,14 +2134,15 @@ static Bool pop_menu_up(
    * Pop up the menu
    ***************************************************************/
 
-  XMoveWindow(dpy, MR_WINDOW(menu), x, y);
-  XMapRaised(dpy, MR_WINDOW(menu));
+  XMoveWindow(dpy, MR_WINDOW(mr), x, y);
+  XMapRaised(dpy, MR_WINDOW(mr));
   XFlush(dpy);
-  MR_MAPPED_COPIES(menu)++;
+  MR_MAPPED_COPIES(mr)++;
+  MST_USAGE_COUNT(mr)++;
   if (ret_overlap)
   {
     *ret_overlap =
-      do_menus_overlap(parent_menu, x, y, MR_WIDTH(menu), MR_HEIGHT(menu),
+      do_menus_overlap(parent_menu, x, y, MR_WIDTH(mr), MR_HEIGHT(mr),
 		       0, 0, 0, False) ? True : False;
   }
 
@@ -2095,10 +2155,10 @@ static Bool pop_menu_up(
     MenuItem *mi;
 
     mi = find_entry(NULL, &mrMi);
-    if (mi && mrMi == menu && mi != MR_FIRST_ITEM(mrMi))
+    if (mi && mrMi == mr && mi != MR_FIRST_ITEM(mrMi))
     {
       /* pointer is on an item of the popup */
-      if (MR_STYLE(menu)->feel.flags.do_title_warp)
+      if (MST_DO_WARP_TO_TITLE(mr))
       {
 	/* warp pointer if not on a root menu */
 	do_warp_to_title = True;
@@ -2123,16 +2183,16 @@ static Bool pop_menu_up(
   {
     /* also warp */
     DBUG("pop_menu_up","Warping to item");
-    MR_SELECTED_ITEM(menu) =
-      warp_pointer_to_item(menu, MR_FIRST_ITEM(menu), True /* skip Title */);
-    select_menu_item(menu, MR_SELECTED_ITEM(menu), True, fw);
+    MR_SELECTED_ITEM(mr) =
+      warp_pointer_to_item(mr, MR_FIRST_ITEM(mr), True /* skip Title */);
+    select_menu_item(mr, MR_SELECTED_ITEM(mr), True, fw);
   }
   else if(do_warp_to_title)
   {
     /* Warp pointer to middle of top line, since we don't
      * want the user to come up directly on an option */
     DBUG("pop_menu_up","Warping to title");
-    warp_pointer_to_title(menu);
+    warp_pointer_to_title(mr);
   }
   return True;
 }
@@ -2155,7 +2215,7 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
     MI_WAS_DESELECTED(mi) = True;
 
 #ifdef GRADIENT_BUTTONS
-  switch (MR_STYLE(mr)->look.face.type)
+  switch (MST_FACE(mr).type)
   {
   case HGradMenu:
   case VGradMenu:
@@ -2174,13 +2234,13 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
       }
       iy = MI_Y_OFFSET(mi);
       ih = MI_HEIGHT(mi) +
-	(MI_IS_SELECTABLE(mi) ? MR_STYLE(mr)->look.ReliefThickness : 0);
+	(MI_IS_SELECTABLE(mi) ? MST_RELIEF_THICKNESS(mr) : 0);
       if (iy < 0)
       {
 	ih += iy;
 	iy = 0;
       }
-      mw = MR_WIDTH(mr) - 2 * MR_BORDER_WIDTH(mr);
+      mw = MR_WIDTH(mr) - 2 * MST_BORDER_WIDTH(mr);
       if (iy + ih > MR_HEIGHT(mr))
 	ih = MR_HEIGHT(mr) - iy;
       /* grab image */
@@ -2188,7 +2248,7 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 	XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih, Scr.depth);
       XCopyArea(
 	dpy, MR_WINDOW(mr), MR_STORED_ITEM(mr).stored,
-	MR_STYLE(mr)->look.MenuGC, MR_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
+	MST_MENU_GC(mr), MST_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
       MR_STORED_ITEM(mr).y = iy;
       MR_STORED_ITEM(mr).width = mw;
       MR_STORED_ITEM(mr).height = ih;
@@ -2197,9 +2257,9 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
     {
       /* ungrab image */
       XCopyArea(dpy, MR_STORED_ITEM(mr).stored, MR_WINDOW(mr),
-		MR_STYLE(mr)->look.MenuGC, 0, 0,
+		MST_MENU_GC(mr), 0, 0,
 		MR_STORED_ITEM(mr).width, MR_STORED_ITEM(mr).height,
-		MR_BORDER_WIDTH(mr), MR_STORED_ITEM(mr).y);
+		MST_BORDER_WIDTH(mr), MR_STORED_ITEM(mr).y);
 
       if (MR_STORED_ITEM(mr).stored != None)
 	XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
@@ -2227,44 +2287,6 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
   paint_item(mr, mi, fw, False);
 }
 
-/* FindPopup expects a token as the input. Make sure you have used
- * GetNextToken before passing a menu name to remove quotes (if necessary) */
-MenuRoot *FindPopup(char *popup_name)
-{
-  MenuRoot *mr;
-
-  if(popup_name == NULL)
-    return NULL;
-
-  mr = Menus.all;
-  while(mr != NULL)
-  {
-    if(MR_NAME(mr) != NULL)
-    {
-      if(mr == MR_ORIGINAL_MENU(mr) &&
-	 strcasecmp(popup_name, MR_NAME(mr)) == 0)
-      {
-        return mr;
-      }
-    }
-    mr = MR_NEXT_MENU(mr);
-  }
-  return NULL;
-
-}
-
-/* Returns the menu options for the menu that a given menu item pops up */
-static void get_popup_options(MenuRoot *mr, MenuItem *mi, MenuOptions *pops)
-{
-  if (!mi)
-    return;
-  pops->flags.has_poshints = 0;
-  /* just look past "Popup <name>" in the action */
-  GetMenuOptions(SkipNTokens(mi->action, 2), MR_WINDOW(mr), NULL, mr, mi,
-		 pops);
-}
-
-
 /***********************************************************************
  *
  *  Procedure:
@@ -2288,6 +2310,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
   memset(&(MR_DYNAMIC_FLAGS(*pmr)), 0, sizeof(MR_DYNAMIC_FLAGS(*pmr)));
   XUnmapWindow(dpy, MR_WINDOW(*pmr));
   MR_MAPPED_COPIES(*pmr)--;
+  MST_USAGE_COUNT(*pmr)--;
 
   UninstallRootColormap();
   XFlush(dpy);
@@ -2443,7 +2466,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   int x;
   int y;
   GC ShadowGC, ReliefGC, currentGC;
-  short relief_thickness = MR_STYLE(mr)->look.ReliefThickness;
+  short relief_thickness = MST_RELIEF_THICKNESS(mr);
 #ifdef GRADIENT_BUTTONS
   Bool is_gradient_menu;
 #endif
@@ -2451,14 +2474,14 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   int i;
   int sx1;
   int sx2;
-  int bw = MR_BORDER_WIDTH(mr);
+  int bw = MST_BORDER_WIDTH(mr);
 
   if (!mi)
     return;
   is_item_selected = (mi == MR_SELECTED_ITEM(mr));
 
 #ifdef GRADIENT_BUTTONS
-  switch (MR_STYLE(mr)->look.face.type)
+  switch (MST_FACE(mr).type)
   {
   case HGradMenu:
   case VGradMenu:
@@ -2480,7 +2503,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
   else
   {
-    text_y = y_offset + MR_STYLE(mr)->look.pStdFont->y + TITLE_TEXT_Y_OFFSET;
+    text_y = y_offset + MST_PSTDFONT(mr)->y + TITLE_TEXT_Y_OFFSET;
   }
   /* center text vertically if the pixmap is taller */
   if (MI_PICTURE(mi))
@@ -2491,7 +2514,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   {
     if (MI_MINI_ICON(mi)[i])
     {
-      y = MI_MINI_ICON(mi)[i]->height - MR_STYLE(mr)->look.pStdFont->height;
+      y = MI_MINI_ICON(mi)[i]->height - MST_PSTDFONT(mr)->height;
       if (y > 1)
       {
 	text_y += y / 2;
@@ -2499,11 +2522,11 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     }
   }
 
-  ShadowGC = MR_STYLE(mr)->look.MenuShadowGC;
+  ShadowGC = MST_MENU_SHADOW_GC(mr);
   if(Scr.depth<2)
-    ReliefGC = MR_STYLE(mr)->look.MenuShadowGC;
+    ReliefGC = MST_MENU_SHADOW_GC(mr);
   else
-    ReliefGC = MR_STYLE(mr)->look.MenuReliefGC;
+    ReliefGC = MST_MENU_RELIEF_GC(mr);
 
   /***************************************************************
    * Draw the shadows for the absolute outside of the menus
@@ -2554,13 +2577,13 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
    ***************************************************************/
 
   /* Hilight or clear the background. */
-  if (is_item_selected && MR_STYLE(mr)->look.flags.do_hilight)
+  if (is_item_selected && MST_DO_HILIGHT(mr))
   {
     /* Hilight the background. */
     if (MR_HILIGHT_WIDTH(mr) - 2 * relief_thickness > 0)
     {
       XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
-      XFillRectangle(dpy, MR_WINDOW(mr), MR_STYLE(mr)->look.MenuActiveBackGC,
+      XFillRectangle(dpy, MR_WINDOW(mr), MST_MENU_ACTIVE_BACK_GC(mr),
 		     MR_HILIGHT_X_OFFSET(mr) + relief_thickness,
 		     y_offset + relief_thickness,
 		     MR_HILIGHT_WIDTH(mr) - 2 * relief_thickness,
@@ -2568,7 +2591,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     }
   }
   else if (MI_WAS_DESELECTED(mi) &&
-	   (relief_thickness > 0 || MR_STYLE(mr)->look.flags.do_hilight)
+	   (relief_thickness > 0 || MST_DO_HILIGHT(mr))
 #ifdef GRADIENT_BUTTONS
 	   && !is_gradient_menu
 #endif
@@ -2607,7 +2630,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
    ***************************************************************/
 
   /* Calculate the separator offsets. */
-  if (MR_STYLE(mr)->look.flags.has_long_separators)
+  if (MST_HAS_LONG_SEPARATORS(mr))
   {
     sx1 = MR_ITEM_X_OFFSET(mr) + relief_thickness;
     sx2 = MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) - 1 - relief_thickness;
@@ -2633,7 +2656,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   else if(MI_IS_TITLE(mi))
   {
     /* Underline the title. */
-    switch (MR_STYLE(mr)->look.TitleUnderlines)
+    switch (MST_TITLE_UNDERLINES(mr))
     {
     case 0:
       break;
@@ -2652,7 +2675,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       }
       break;
     default:
-      for (i = MR_STYLE(mr)->look.TitleUnderlines; i-- > 0; )
+      for (i = MST_TITLE_UNDERLINES(mr); i-- > 0; )
       {
 	y = y_offset + y_height - 1 - i * UNDERLINE_HEIGHT;
 	XDrawLine(dpy, MR_WINDOW(mr), ShadowGC, sx1, y, sx2, y);
@@ -2662,23 +2685,23 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
 
   /* Note: it's ok to pass a NULL label to check_if_function_allowed. */
-  if(check_if_function_allowed(mi->func_type, fw, False, MI_LABEL(mi)[0]))
+  if(check_if_function_allowed(MI_FUNC_TYPE(mi), fw, False, MI_LABEL(mi)[0]))
   {
     currentGC = (is_item_selected) ?
-      MR_STYLE(mr)->look.MenuActiveGC : MR_STYLE(mr)->look.MenuGC;
-    if (MR_STYLE(mr)->look.flags.do_hilight &&
-	!MR_STYLE(mr)->look.flags.has_active_fore &&
+      MST_MENU_ACTIVE_GC(mr) : MST_MENU_GC(mr);
+    if (MST_DO_HILIGHT(mr) &&
+	!MST_HAS_ACTIVE_FORE(mr) &&
 	is_item_selected)
     {
       /* Use a lighter color for highlighted windows menu items if the
        * background is hilighted */
-      currentGC = MR_STYLE(mr)->look.MenuReliefGC;
+      currentGC = MST_MENU_RELIEF_GC(mr);
     }
   }
   else
   {
     /* should be a shaded out word, not just re-colored. */
-    currentGC = MR_STYLE(mr)->look.MenuStippleGC;
+    currentGC = MST_MENU_STIPPLE_GC(mr);
   }
 
 
@@ -2693,11 +2716,11 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       XDrawString(dpy, MR_WINDOW(mr), currentGC, MI_LABEL_OFFSET(mi)[i],
 		  text_y, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
     }
-    if (mi->hotkey && !MI_IS_TITLE(mi) && mi->hotkey_column == i)
+    if (MI_HOTKEY(mi) && !MI_IS_TITLE(mi) && MI_HOTKEY_COLUMN(mi) == i)
     {
       /* pete@tecc.co.uk: If the item has a hot key, underline it */
       draw_underline(mr, currentGC, MI_LABEL_OFFSET(mi)[i], text_y,
-		     MI_LABEL(mi)[i], mi->hotkey - 1);
+		     MI_LABEL(mi)[i], MI_HOTKEY(mi) - 1);
     }
   }
 
@@ -2715,17 +2738,17 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 			    MR_TRIANGLE_X_OFFSET(mr), y,
 			    MR_TRIANGLE_X_OFFSET(mr) + TRIANGLE_WIDTH,
 			    y + TRIANGLE_HEIGHT - 1,
-			    MR_STYLE(mr)->look.flags.has_triangle_relief,
+			    MST_HAS_TRIANGLE_RELIEF(mr),
 			    MR_IS_LEFT_TRIANGLE(mr));
     }
     else
     {
       draw_triangle_pattern(MR_WINDOW(mr), ReliefGC, ShadowGC,
-			    MR_STYLE(mr)->look.MenuGC,
+			    MST_MENU_GC(mr),
 			    MR_TRIANGLE_X_OFFSET(mr), y,
 			    MR_TRIANGLE_X_OFFSET(mr) + TRIANGLE_WIDTH,
 			    y + TRIANGLE_HEIGHT - 1,
-			    MR_STYLE(mr)->look.flags.has_triangle_relief,
+			    MST_HAS_TRIANGLE_RELIEF(mr),
 			    MR_IS_LEFT_TRIANGLE(mr));
     }
   }
@@ -2768,7 +2791,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     int k;
 
     /* We need to reverse the mini icon order for left submenu style. */
-    k = (MR_STYLE(mr)->feel.flags.use_left_submenus) ?
+    k = (MST_USE_LEFT_SUBMENUS(mr)) ?
       MAX_MINI_ICONS - 1 - i : i;
 
     if (MI_MINI_ICON(mi)[i])
@@ -2823,34 +2846,34 @@ static void paint_side_pic(MenuRoot *mr)
   int ys;
   int yt;
   int h;
-  int bw = MR_BORDER_WIDTH(mr);
+  int bw = MST_BORDER_WIDTH(mr);
 
   if (MR_SIDEPIC(mr))
     sidePic = MR_SIDEPIC(mr);
-  else if (MR_STYLE(mr)->look.sidePic)
-    sidePic = MR_STYLE(mr)->look.sidePic;
+  else if (MST_SIDEPIC(mr))
+    sidePic = MST_SIDEPIC(mr);
   else
     return;
 
   if(Scr.depth < 2)
   {
-    ReliefGC = MR_STYLE(mr)->look.MenuShadowGC;
+    ReliefGC = MST_MENU_SHADOW_GC(mr);
   }
   else
   {
-    ReliefGC = MR_STYLE(mr)->look.MenuReliefGC;
+    ReliefGC = MST_MENU_RELIEF_GC(mr);
   }
-  TextGC = MR_STYLE(mr)->look.MenuGC;
+  TextGC = MST_MENU_GC(mr);
 
   if(MR_HAS_SIDECOLOR(mr))
   {
     Globalgcv.foreground = MR_SIDECOLOR(mr);
   }
-  else if (MR_STYLE(mr)->look.flags.has_side_color)
+  else if (MST_HAS_SIDE_COLOR(mr))
   {
-    Globalgcv.foreground = MR_STYLE(mr)->look.sideColor;
+    Globalgcv.foreground = MST_SIDE_COLOR(mr);
   }
-  if (MR_HAS_SIDECOLOR(mr) || MR_STYLE(mr)->look.flags.has_side_color)
+  if (MR_HAS_SIDECOLOR(mr) || MST_HAS_SIDE_COLOR(mr))
   {
     Globalgcm = GCForeground;
     XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
@@ -2904,8 +2927,8 @@ static void paint_side_pic(MenuRoot *mr)
 static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
 			   int posn)
 {
-  int off1 = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, txt, posn);
-  int off2 = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, txt, posn + 1) - 1;
+  int off1 = XTextWidth(MST_PSTDFONT(mr)->font, txt, posn);
+  int off2 = XTextWidth(MST_PSTDFONT(mr)->font, txt, posn + 1) - 1;
   XDrawLine(dpy, MR_WINDOW(mr), gc, x + off1, y + 2, x + off2, y + 2);
 }
 
@@ -2996,9 +3019,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 {
   MenuItem *mi;
   MenuStyle *ms = MR_STYLE(mr);
-  register int type;
   XRectangle bounds;
-  int bw = MR_BORDER_WIDTH(mr);
+  int bw = MST_BORDER_WIDTH(mr);
 #ifdef PIXMAP_BUTTONS
   Picture *p;
   int width, height, x, y;
@@ -3024,18 +3046,20 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
     RelieveRectangle(
       dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1, MR_HEIGHT(mr) - 1,
       (Scr.depth<2) ?
-      MR_STYLE(mr)->look.MenuShadowGC : MR_STYLE(mr)->look.MenuReliefGC,
-      MR_STYLE(mr)->look.MenuShadowGC, bw);
+      MST_MENU_SHADOW_GC(mr) : MST_MENU_RELIEF_GC(mr),
+      MST_MENU_SHADOW_GC(mr), bw);
     return;
   }
   MR_IS_PAINTED(mr) = 1;
   if (ms)
   {
-    type = ms->look.face.type;
+    register int type;
+
+    type = ST_FACE(ms).type;
     switch(type)
     {
     case SolidMenu:
-      XSetWindowBackground(dpy, MR_WINDOW(mr), MR_STYLE(mr)->look.face.u.back);
+      XSetWindowBackground(dpy, MR_WINDOW(mr), MST_FACE(mr).u.back);
       flush_expose(MR_WINDOW(mr));
       XClearWindow(dpy,MR_WINDOW(mr));
       break;
@@ -3059,11 +3083,11 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr),
 			       GRADIENT_PIXMAP_THICKNESS, Scr.depth);
 	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
-	  dw = (float) (bounds.width / ms->look.face.u.grad.npixels) + 1;
-	  for (i = 0; i < ms->look.face.u.grad.npixels; i++)
+	  dw = (float) (bounds.width / ST_FACE(ms).u.grad.npixels) + 1;
+	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
 	  {
-	    unsigned short x = i * bounds.width/ms->look.face.u.grad.npixels;
-	    XSetForeground(dpy, pmapgc, ms->look.face.u.grad.pixels[i]);
+	    unsigned short x = i * bounds.width/ST_FACE(ms).u.grad.npixels;
+	    XSetForeground(dpy, pmapgc, ST_FACE(ms).u.grad.pixels[i]);
 	    XFillRectangle(dpy, pmap, pmapgc, x, 0, dw,
 			   GRADIENT_PIXMAP_THICKNESS);
 	  }
@@ -3084,11 +3108,11 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), GRADIENT_PIXMAP_THICKNESS,
 			       MR_HEIGHT(mr), Scr.depth);
 	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
-	  dh = (float) (bounds.height / ms->look.face.u.grad.npixels) + 1;
-	  for (i = 0; i < ms->look.face.u.grad.npixels; i++)
+	  dh = (float) (bounds.height / ST_FACE(ms).u.grad.npixels) + 1;
+	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
 	  {
-	    unsigned short y = i * bounds.height/ms->look.face.u.grad.npixels;
-	    XSetForeground(dpy, pmapgc, ms->look.face.u.grad.pixels[i]);
+	    unsigned short y = i * bounds.height/ST_FACE(ms).u.grad.npixels;
+	    XSetForeground(dpy, pmapgc, ST_FACE(ms).u.grad.pixels[i]);
 	    XFillRectangle(dpy, pmap, pmapgc, 0, y, GRADIENT_PIXMAP_THICKNESS,
 			   dh);
 	  }
@@ -3108,12 +3132,12 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	numLines = MR_WIDTH(mr) + MR_HEIGHT(mr) - 2 * bw;
 	for(i = 0; i < numLines; i++)
         {
-	  if((int)(i * ms->look.face.u.grad.npixels / numLines) > cindex)
+	  if((int)(i * ST_FACE(ms).u.grad.npixels / numLines) > cindex)
           {
 	    /* pick the next colour (skip if necc.) */
-	    cindex = i * ms->look.face.u.grad.npixels / numLines;
+	    cindex = i * ST_FACE(ms).u.grad.npixels / numLines;
 	    XSetForeground(dpy, Scr.TransMaskGC,
-			   ms->look.face.u.grad.pixels[cindex]);
+			   ST_FACE(ms).u.grad.pixels[cindex]);
 	  }
 	  if (type == DGradMenu)
 	    XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC, 0, i, i, 0);
@@ -3126,7 +3150,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 #endif  /* GRADIENT_BUTTONS */
 #ifdef PIXMAP_BUTTONS
     case PixmapMenu:
-      p = ms->look.face.u.p;
+      p = ST_FACE(ms).u.p;
 
       width = MR_WIDTH(mr) - 2 * bw;
       height = MR_HEIGHT(mr) - 2 * bw;
@@ -3134,18 +3158,18 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 #if 0
       /* these flags are never set at the moment */
       x = border;
-      if (ms->look.FaceStyle & HOffCenter)
+      if (ST_FACE(ms)Style & HOffCenter)
       {
-	if (ms->look.FaceStyle & HRight)
+	if (ST_FACE(ms)Style & HRight)
 	  x += (int)(width - p->width);
       }
       else
 	x += (int)(width - p->width) / 2;
 
       y = border;
-      if (ms->look.FaceStyle & VOffCenter)
+      if (ST_FACE(ms)Style & VOffCenter)
       {
-	if (ms->look.FaceStyle & VBottom)
+	if (ST_FACE(ms)Style & VBottom)
 	  y += (int)(height - p->height);
       }
       else...
@@ -3175,7 +3199,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 
    case TiledPixmapMenu:
      XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr),
-				ms->look.face.u.p->picture);
+				ST_FACE(ms).u.p->picture);
      flush_expose(MR_WINDOW(mr));
      XClearWindow(dpy,MR_WINDOW(mr));
      break;
@@ -3187,8 +3211,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
   {
     /* be smart about handling the expose, redraw only the entries
      * that we need to */
-    if((MR_STYLE(mr)->look.face.type != SolidMenu &&
-	MR_STYLE(mr)->look.face.type != SimpleMenu) ||
+    if((MST_FACE(mr).type != SolidMenu &&
+	MST_FACE(mr).type != SimpleMenu) ||
        pevent == NULL ||
        (pevent->xexpose.y < (MI_Y_OFFSET(mi) + MI_HEIGHT(mi)) &&
 	(pevent->xexpose.y + pevent->xexpose.height) > MI_Y_OFFSET(mi)))
@@ -3214,8 +3238,8 @@ static void FreeMenuItem(MenuItem *mi)
     if (MI_LABEL(mi)[i] != NULL)
       free(MI_LABEL(mi)[i]);
   }
-  if (mi->action != NULL)
-    free(mi->action);
+  if (MI_ACTION(mi) != NULL)
+    free(MI_ACTION(mi));
   if(MI_PICTURE(mi))
     DestroyPicture(dpy,MI_PICTURE(mi));
   for (i = 0; i < MAX_MINI_ICONS; i++)
@@ -3313,7 +3337,7 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
 #ifdef GRADIENT_BUTTONS
       memset(&(MR_STORED_ITEM(mr)), 0 , sizeof(MR_STORED_ITEM(mr)));
 #endif
-      MakeMenu(mr);
+      MR_IS_UPDATED(mr) = 1;
       return;
     }
   }
@@ -3378,25 +3402,8 @@ void destroy_menu(F_CMD_ARGS)
 
 /****************************************************************************
  *
- * Generates the windows for all menus
- *
- ****************************************************************************/
-void MakeMenus(void)
-{
-  MenuRoot *mr;
-
-  mr = Menus.all;
-  while(mr != NULL)
-  {
-    MakeMenu(mr);
-    mr = MR_NEXT_MENU(mr);
-  }
-}
-
-/****************************************************************************
- *
  * Merge menu continuations back into the original menu.
- * Called by MakeMenu().
+ * Called by make_menu().
  *
  ****************************************************************************/
 static void merge_continuation_menus(MenuRoot *mr)
@@ -3408,8 +3415,8 @@ static void merge_continuation_menus(MenuRoot *mr)
     MenuRoot *cont = MR_CONTINUATION_MENU(mr);
 
     /* link first item of continuation to item before 'more...' */
-    MR_LAST_ITEM(mr)->prev->next = MR_FIRST_ITEM(cont);
-    MR_FIRST_ITEM(cont)->prev = MR_LAST_ITEM(mr)->prev;
+    MI_NEXT_ITEM(MI_PREV_ITEM(MR_LAST_ITEM(mr))) = MR_FIRST_ITEM(cont);
+    MI_PREV_ITEM(MR_FIRST_ITEM(cont)) = MI_PREV_ITEM(MR_LAST_ITEM(mr));
     FreeMenuItem(MR_LAST_ITEM(mr));
     MR_LAST_ITEM(mr) = MR_LAST_ITEM(cont);
     MR_CONTINUATION_MENU(mr) = MR_CONTINUATION_MENU(cont);
@@ -3423,7 +3430,7 @@ static void merge_continuation_menus(MenuRoot *mr)
 /****************************************************************************
  *
  * Calculate the positions of the columns in the menu.
- * Called by MakeMenu().
+ * Called by make_menu().
  *
  ****************************************************************************/
 static void size_menu_horizontally(MenuRoot *mr)
@@ -3448,7 +3455,7 @@ static void size_menu_horizontally(MenuRoot *mr)
   int i;
   int j;
   int d;
-  short relief_thickness = MR_STYLE(mr)->look.ReliefThickness;
+  short relief_thickness = MST_RELIEF_THICKNESS(mr);
   unsigned short *item_order[MAX_ITEM_LABELS + MAX_MINI_ICONS +
 			    1 /* triangle */ + 2 /* relief markers */];
   short used_objects = 0;
@@ -3489,7 +3496,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       if (!is_formatted && MI_LABEL(mi)[0] != NULL)
       {
 	MI_LABEL_STRLEN(mi)[0] = strlen(MI_LABEL(mi)[0]);
-	w = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, MI_LABEL(mi)[0],
+	w = XTextWidth(MST_PSTDFONT(mr)->font, MI_LABEL(mi)[0],
 		       MI_LABEL_STRLEN(mi)[0]);
 	/* Negative value is used to indicate a title for now. */
 	MI_LABEL_OFFSET(mi)[0] = w;
@@ -3506,7 +3513,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       if (MI_LABEL(mi)[i])
       {
 	MI_LABEL_STRLEN(mi)[i] = strlen(MI_LABEL(mi)[i]);
-	w = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, MI_LABEL(mi)[i],
+	w = XTextWidth(MST_PSTDFONT(mr)->font, MI_LABEL(mi)[i],
 		       MI_LABEL_STRLEN(mi)[i]);
 	MI_LABEL_OFFSET(mi)[i] = w;
 	if (max.label_width[i] < w)
@@ -3522,7 +3529,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       int k;
 
       /* We need to reverse the mini icon order for left submenu style. */
-      k = (MR_STYLE(mr)->feel.flags.use_left_submenus) ?
+      k = (MST_USE_LEFT_SUBMENUS(mr)) ?
 	MAX_MINI_ICONS - 1 - i : i;
 
       if(MI_MINI_ICON(mi)[i] && max.icon_width[k] < MI_MINI_ICON(mi)[i]->width)
@@ -3536,9 +3543,9 @@ static void size_menu_horizontally(MenuRoot *mr)
   {
     max.sidepic_width = MR_SIDEPIC(mr)->width;
   }
-  else if (MR_STYLE(mr)->look.sidePic)
+  else if (MST_SIDEPIC(mr))
   {
-    max.sidepic_width = MR_STYLE(mr)->look.sidePic->width;
+    max.sidepic_width = MST_SIDEPIC(mr)->width;
   }
 
   /* Now calculate the offsets for the columns. */
@@ -3557,10 +3564,10 @@ static void size_menu_horizontally(MenuRoot *mr)
     int gap_right;
     int chars;
 
-    format = MR_STYLE(mr)->feel.item_format;
+    format = MST_ITEM_FORMAT(mr);
     if (!format)
     {
-      format = (MR_STYLE(mr)->feel.flags.use_left_submenus) ?
+      format = (MST_USE_LEFT_SUBMENUS(mr)) ?
 	DEFAULT_LEFT_ITEM_FORMAT : DEFAULT_ITEM_FORMAT;
     }
     /* Place the individual items off the menu in case they are not set in the
@@ -3570,7 +3577,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       label_offset[i] = 2 * Scr.MyDisplayWidth;
     }
 
-    x = MR_BORDER_WIDTH(mr);
+    x = MST_BORDER_WIDTH(mr);
     while (*format && !done)
     {
       switch (*format)
@@ -3736,7 +3743,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       case ' ':
       case '\t':
 	/* Advance the x position. */
-	x += XTextWidth(MR_STYLE(mr)->look.pStdFont->font, format, 1);
+	x += XTextWidth(MST_PSTDFONT(mr)->font, format, 1);
 	break;
       default:
 	/* Ignore unknown characters. */
@@ -3760,7 +3767,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       MR_TRIANGLE_X_OFFSET(mr) = 2 * Scr.MyDisplayWidth;
     }
 
-    total_width = x - MR_BORDER_WIDTH(mr);
+    total_width = x - MST_BORDER_WIDTH(mr);
     d = (sidepic_space + 2 * relief_thickness + max.title_width) -
       total_width;
     if (d > 0)
@@ -3789,9 +3796,9 @@ static void size_menu_horizontally(MenuRoot *mr)
 	MR_SIDEPIC_X_OFFSET(mr) += d;
       }
     }
-    MR_WIDTH(mr) = total_width + 2 * MR_BORDER_WIDTH(mr);
+    MR_WIDTH(mr) = total_width + 2 * MST_BORDER_WIDTH(mr);
     MR_ITEM_WIDTH(mr) = total_width - sidepic_space;
-    MR_ITEM_X_OFFSET(mr) = MR_BORDER_WIDTH(mr);
+    MR_ITEM_X_OFFSET(mr) = MST_BORDER_WIDTH(mr);
     if (sidepic_is_left)
       MR_ITEM_X_OFFSET(mr) += sidepic_space;
     if (!relief_begin_placed)
@@ -3843,7 +3850,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 /****************************************************************************
  *
  * Calculate the positions of the columns in the menu.
- * Called by MakeMenu().
+ * Called by make_menu().
  *
  ****************************************************************************/
 static void size_menu_vertically(MenuRoot *mr)
@@ -3851,20 +3858,21 @@ static void size_menu_vertically(MenuRoot *mr)
   MenuItem *mi;
   int y;
   int cItems;
-  short relief_thickness = MR_STYLE(mr)->look.ReliefThickness;
+  short relief_thickness = MST_RELIEF_THICKNESS(mr);
   short simple_entry_height;
   int i;
 
   MR_ITEM_TEXT_Y_OFFSET(mr) =
-    MR_STYLE(mr)->look.pStdFont->y + relief_thickness + ITEM_TEXT_Y_OFFSET;
+    MST_PSTDFONT(mr)->y + relief_thickness + ITEM_TEXT_Y_OFFSET;
 
-  simple_entry_height =	MR_STYLE(mr)->look.pStdFont->height +
+  simple_entry_height =	MST_PSTDFONT(mr)->height +
     ITEM_TEXT_Y_OFFSET + ITEM_TEXT_Y_OFFSET2;
 
   /* mi_prev trails one behind mi, since we need to move that
      into a newly-made menu if we run out of space */
-  y = MR_BORDER_WIDTH(mr);
-  for (cItems = 0, mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi), cItems++)
+  y = MST_BORDER_WIDTH(mr);
+  for (cItems = 0, mi = MR_FIRST_ITEM(mr); mi != NULL;
+       mi = MI_NEXT_ITEM(mi), cItems++)
   {
     int separator_height;
     Bool last_item_has_relief =
@@ -3876,9 +3884,9 @@ static void size_menu_vertically(MenuRoot *mr)
     MI_Y_OFFSET(mi) = y;
     if(MI_IS_TITLE(mi))
     {
-      MI_HEIGHT(mi) = MR_STYLE(mr)->look.pStdFont->height +
+      MI_HEIGHT(mi) = MST_PSTDFONT(mr)->height +
 	TITLE_TEXT_Y_OFFSET + TITLE_TEXT_Y_OFFSET2;
-      switch (MR_STYLE(mr)->look.TitleUnderlines)
+      switch (MST_TITLE_UNDERLINES(mr))
       {
       case 0:
 	if (last_item_has_relief)
@@ -3898,7 +3906,7 @@ static void size_menu_vertically(MenuRoot *mr)
 	break;
       default:
 	/* Space to draw n underlines. */
-	MI_HEIGHT(mi) += UNDERLINE_HEIGHT * MR_STYLE(mr)->look.TitleUnderlines;
+	MI_HEIGHT(mi) += UNDERLINE_HEIGHT * MST_TITLE_UNDERLINES(mr);
 	if (last_item_has_relief)
 	  MI_HEIGHT(mi) += relief_thickness;
 	break;
@@ -3937,7 +3945,7 @@ static void size_menu_vertically(MenuRoot *mr)
     y += MI_HEIGHT(mi);
     /* this item would have to be the last item, or else
      * we need to add a "More..." entry pointing to a new menu */
-    if (y + MR_BORDER_WIDTH(mr) +
+    if (y + MST_BORDER_WIDTH(mr) +
 	((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0)
 	> Scr.MyDisplayHeight)
     {
@@ -3953,7 +3961,7 @@ static void size_menu_vertically(MenuRoot *mr)
 	y -= MI_HEIGHT(mi);
 	mi = MI_PREV_ITEM(mi);
 	cItems--;
-	if (y + MR_BORDER_WIDTH(mr) + simple_entry_height + 2*relief_thickness
+	if (y + MST_BORDER_WIDTH(mr) + simple_entry_height + 2*relief_thickness
 	    <= Scr.MyDisplayHeight)
 	{
 	  /* ok, it fits now */
@@ -3984,7 +3992,7 @@ static void size_menu_vertically(MenuRoot *mr)
       MR_FIRST_ITEM(menuContinuation) = MI_NEXT_ITEM(mi);
       MR_LAST_ITEM(menuContinuation) = MR_LAST_ITEM(mr);
       MR_ITEMS(menuContinuation) = MR_ITEMS(mr) - cItems;
-      MI_NEXT_ITEM(mi)->prev = NULL;
+      MI_PREV_ITEM(MI_NEXT_ITEM(mi)) = NULL;
 
       /* mi_prev is now the last item in the mirent menu */
       MR_LAST_ITEM(mr) = mi;
@@ -3994,14 +4002,13 @@ static void size_menu_vertically(MenuRoot *mr)
       /* And add the entry pointing to the new menu */
       AddToMenu(mr, "More&...", szMenuContinuationActionAndName,
 		False /* no pixmap scan */, False);
-      MakeMenu(menuContinuation);
       free(szMenuContinuationActionAndName);
     }
   } /* for */
   /* The menu may be empty here! */
   if (MR_LAST_ITEM(mr) != NULL && MI_IS_SELECTABLE(MR_LAST_ITEM(mr)))
     y += relief_thickness;
-  MR_HEIGHT(mr) = y + MR_BORDER_WIDTH(mr);
+  MR_HEIGHT(mr) = y + MST_BORDER_WIDTH(mr);
 }
 
 
@@ -4021,7 +4028,7 @@ static void make_menu_window(MenuRoot *mr)
     | CWBorderPixel | CWSaveUnder;
   attributes.border_pixel = 0;
   attributes.colormap = Scr.cmap;
-  attributes.background_pixel = MR_STYLE(mr)->look.MenuColors.back;
+  attributes.background_pixel = MST_MENU_COLORS(mr).back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
   attributes.cursor = Scr.FvwmCursors[MENU];
   attributes.save_under = True;
@@ -4046,7 +4053,7 @@ static void make_menu_window(MenuRoot *mr)
  * Generates the window for a menu
  *
  ****************************************************************************/
-void MakeMenu(MenuRoot *mr)
+static void make_menu(MenuRoot *mr)
 {
   if(!Scr.flags.windows_captured)
     return;
@@ -4061,6 +4068,7 @@ void MakeMenu(MenuRoot *mr)
   /* create a new window for the menu */
   make_menu_window(mr);
 
+  MR_IS_UPDATED(mr) = 0;
   return;
 }
 
@@ -4079,32 +4087,33 @@ static char scanForHotkeys(MenuItem *it, int column)
 {
   char *start, *txt;
 
-  start = it->label[column];	/* Get start of string	*/
+  start = MI_LABEL(it)[column];	/* Get start of string	*/
   for (txt = start; *txt != '\0'; txt++)
-    {
-      /* Scan whole string	*/
-      if (*txt == '&')
-	{		/* A hotkey marker?			*/
-	  if (txt[1] == '&')
-	    {	/* Just an escaped &			*/
-	      char *tmp;		/* Copy the string down over it	*/
-	      for (tmp = txt; *tmp != '\0';
-		   tmp++) tmp[0] = tmp[1];
-	      continue;		/* ...And skip to the key char		*/
-	    }
-	  else {
-	    char ch = txt[1];
-	    /* It's a hot key marker - work out the offset value */
-	    it->hotkey = 1 + (txt - start);
-	    it->hotkey_column = column;
-	    for (; *txt != '\0'; txt++)
-	      /* Copy down.. */
-	      txt[0] = txt[1];
-	    return ch;			/* Only one hotkey per item...	*/
-	    }
-	}
+  {
+    /* Scan whole string	*/
+    if (*txt == '&')
+    {		/* A hotkey marker?			*/
+      if (txt[1] == '&')
+      {	/* Just an escaped &			*/
+	char *tmp;		/* Copy the string down over it	*/
+	for (tmp = txt; *tmp != '\0';
+	     tmp++) tmp[0] = tmp[1];
+	continue;		/* ...And skip to the key char		*/
+      }
+      else
+      {
+	char ch = txt[1];
+	/* It's a hot key marker - work out the offset value */
+	MI_HOTKEY(it) = 1 + (txt - start);
+	MI_HOTKEY_COLUMN(it) = column;
+	for (; *txt != '\0'; txt++)
+	  /* Copy down.. */
+	  txt[0] = txt[1];
+	return ch;			/* Only one hotkey per item...	*/
+      }
     }
-  it->hotkey = 0;		/* No hotkey found.  Set offset to zero	*/
+  }
+  MI_HOTKEY(it) = 0;		/* No hotkey found.  Set offset to zero	*/
   return '\0';
 }
 
@@ -4125,27 +4134,27 @@ static void scanForColor(char *instring, Pixel *p, Bool *flag, char identifier)
 
   /* Scan whole string        */
   for (txt = instring; *txt != '\0'; txt++)
+  {
+    /* A hotkey marker? */
+    if (*txt == identifier)
     {
-      /* A hotkey marker? */
-      if (*txt == identifier)
+      /* Just an escaped '^'  */
+      if (txt[1] == identifier)
       {
-        /* Just an escaped '^'  */
-        if (txt[1] == identifier)
-          {
-            char *tmp;                /* Copy the string down over it */
-            for (tmp = txt; *tmp != '\0'; tmp++) tmp[0] = tmp[1];
-            continue;         /* ...And skip to the key char          */
-          }
-        /* It's a hot key marker - work out the offset value          */
-        tstart = txt;
+	char *tmp;                /* Copy the string down over it */
+	for (tmp = txt; *tmp != '\0'; tmp++) tmp[0] = tmp[1];
+	continue;         /* ...And skip to the key char          */
+      }
+      /* It's a hot key marker - work out the offset value          */
+      tstart = txt;
         txt++;
         i=0;
         while((*txt != identifier)&&(*txt != '\0'))
-          {
-            name[i] = *txt;
-            txt++;
-            i++;
-          }
+        {
+	  name[i] = *txt;
+	  txt++;
+	  i++;
+	}
         name[i] = 0;
 
         *p = GetColor(name);
@@ -4157,8 +4166,8 @@ static void scanForColor(char *instring, Pixel *p, Bool *flag, char identifier)
 	  *tstart++ = *txt++;
         *tstart = 0;
 	break;
-      }
     }
+  }
   free(name);
   free(save_instring);
   return;
@@ -4258,7 +4267,7 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
  *       so built in window list can handle windows w/ * and % in title.
  *
  ***********************************************************************/
-void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
+void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 	       Bool fNoPlus)
 {
   MenuItem *tmp;
@@ -4270,7 +4279,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   int i;
   short current_mini_icon = 0;
 
-  if (MR_MAPPED_COPIES(menu) > 0)
+  if (MR_MAPPED_COPIES(mr) > 0)
   {
     /* whoa, we can't handle *everything* */
     return;
@@ -4289,32 +4298,32 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 
   if (StrEquals(item, "DynamicPopupAction"))
   {
-    if (MR_POPUP_ACTION(menu))
-      free(MR_POPUP_ACTION(menu));
+    if (MR_POPUP_ACTION(mr))
+      free(MR_POPUP_ACTION(mr));
     if (!action || *action == 0)
-      MR_POPUP_ACTION(menu) = NULL;
+      MR_POPUP_ACTION(mr) = NULL;
     else
-      MR_POPUP_ACTION(menu) = stripcpy(action);
+      MR_POPUP_ACTION(mr) = stripcpy(action);
     return;
   }
   else if (StrEquals(item, "DynamicPopdownAction"))
   {
-    if (MR_POPDOWN_ACTION(menu))
-      free(MR_POPDOWN_ACTION(menu));
+    if (MR_POPDOWN_ACTION(mr))
+      free(MR_POPDOWN_ACTION(mr));
     if (!action || *action == 0)
-      MR_POPDOWN_ACTION(menu) = NULL;
+      MR_POPDOWN_ACTION(mr) = NULL;
     else
-      MR_POPDOWN_ACTION(menu) = stripcpy(action);
+      MR_POPDOWN_ACTION(mr) = stripcpy(action);
     return;
   }
   else if (StrEquals(item, "MissingSubmenuFunction"))
   {
-    if (MR_MISSING_SUBMENU_FUNC(menu))
-      free(MR_MISSING_SUBMENU_FUNC(menu));
+    if (MR_MISSING_SUBMENU_FUNC(mr))
+      free(MR_MISSING_SUBMENU_FUNC(mr));
     if (!action || *action == 0)
-      MR_MISSING_SUBMENU_FUNC(menu) = NULL;
+      MR_MISSING_SUBMENU_FUNC(mr) = NULL;
     else
-      MR_MISSING_SUBMENU_FUNC(menu) = stripcpy(action);
+      MR_MISSING_SUBMENU_FUNC(mr) = stripcpy(action);
     return;
   }
 
@@ -4327,46 +4336,46 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   GetNextToken(GetNextToken(action, &token), &option);
   tmp = (MenuItem *)safemalloc(sizeof(MenuItem));
   memset(tmp, 0, sizeof(MenuItem));
-  if (MR_FIRST_ITEM(menu) == NULL)
+  if (MR_FIRST_ITEM(mr) == NULL)
   {
-    MR_FIRST_ITEM(menu) = tmp;
-    MR_LAST_ITEM(menu) = tmp;
-    tmp->prev = NULL;
+    MR_FIRST_ITEM(mr) = tmp;
+    MR_LAST_ITEM(mr) = tmp;
+    MI_PREV_ITEM(tmp) = NULL;
   }
   else if (StrEquals(token, "title") && option && StrEquals(option, "top"))
   {
-    if (MR_FIRST_ITEM(menu)->action)
+    if (MI_ACTION(MR_FIRST_ITEM(mr)))
     {
-      GetNextToken(MR_FIRST_ITEM(menu)->action, &token2);
+      GetNextToken(MI_ACTION(MR_FIRST_ITEM(mr)), &token2);
     }
     if (StrEquals(token2, "title"))
     {
-      tmp->next = MR_FIRST_ITEM(menu)->next;
-      FreeMenuItem(MR_FIRST_ITEM(menu));
+      MI_NEXT_ITEM(tmp) = MI_NEXT_ITEM(MR_FIRST_ITEM(mr));
+      FreeMenuItem(MR_FIRST_ITEM(mr));
     }
     else
     {
-      tmp->next = MR_FIRST_ITEM(menu);
+      MI_NEXT_ITEM(tmp) = MR_FIRST_ITEM(mr);
     }
     if (token2)
       free(token2);
-    tmp->prev = NULL;
-    if (MR_FIRST_ITEM(menu) == NULL)
-      MR_LAST_ITEM(menu) = tmp;
-    MR_FIRST_ITEM(menu) = tmp;
+    MI_PREV_ITEM(tmp) = NULL;
+    if (MR_FIRST_ITEM(mr) == NULL)
+      MR_LAST_ITEM(mr) = tmp;
+    MR_FIRST_ITEM(mr) = tmp;
   }
   else
   {
-    MR_LAST_ITEM(menu)->next = tmp;
-    tmp->prev = MR_LAST_ITEM(menu);
-    MR_LAST_ITEM(menu) = tmp;
+    MI_NEXT_ITEM(MR_LAST_ITEM(mr)) = tmp;
+    MI_PREV_ITEM(tmp) = MR_LAST_ITEM(mr);
+    MR_LAST_ITEM(mr) = tmp;
   }
   if (token)
     free(token);
   if (option)
     free(option);
 
-  tmp->action = stripcpy(action);
+  MI_ACTION(tmp) = stripcpy(action);
 
   /***************************************************************
    * Parse the labels
@@ -4383,16 +4392,16 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 	/* seek next tab or end of string */
 	end++;
       /* Copy the label. */
-      tmp->label[i] = safemalloc(end - start + 1);
-      strncpy(tmp->label[i], start, end - start);
-      (tmp->label[i])[end - start] = 0;
+      MI_LABEL(tmp)[i] = safemalloc(end - start + 1);
+      strncpy(MI_LABEL(tmp)[i], start, end - start);
+      (MI_LABEL(tmp)[i])[end - start] = 0;
       if (*end == '\t')
       {
 	/* skip the tab */
 	end++;
 	if (i == MAX_ITEM_LABELS - 1)
 	{
-	  char *s = tmp->label[i];
+	  char *s = MI_LABEL(tmp)[i];
 
 	  /* Last label, remove all tabs. */
 	  while (*s)
@@ -4405,23 +4414,23 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
     }
     else
     {
-      tmp->label[i] = NULL;
+      MI_LABEL(tmp)[i] = NULL;
     }
 
     /* Parse the label. */
-    if (tmp->label[i] != NULL)
+    if (MI_LABEL(tmp)[i] != NULL)
     {
       if (fPixmapsOk)
       {
-        if(!tmp->picture)
+        if(!MI_PICTURE(tmp))
 	{
-	  if (scanForPixmap(tmp->label[i], &tmp->picture, '*'))
+	  if (scanForPixmap(MI_LABEL(tmp)[i], &MI_PICTURE(tmp), '*'))
 	    MI_HAS_PICTURE(tmp) = True;
 	}
 	while (current_mini_icon < MAX_MINI_ICONS)
 	{
 	  if (scanForPixmap(
-	    tmp->label[i], &(MI_MINI_ICON(tmp)[current_mini_icon]), '%'))
+	    MI_LABEL(tmp)[i], &(MI_MINI_ICON(tmp)[current_mini_icon]), '%'))
 	  {
 	    current_mini_icon++;
 	    MI_HAS_PICTURE(tmp) = True;
@@ -4430,33 +4439,34 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 	    break;
 	}
       }
-      if (tmp->hotkey == 0)
+      if (MI_HOTKEY(tmp) == 0)
       {
 	/* pete@tecc.co.uk */
         char ch = scanForHotkeys(tmp, i);
 
 	if (ch != '\0')
-	  tmp->chHotkey = ch;
+	  MI_CHHOTKEY(tmp) = ch;
       }
-      if (*(tmp->label[i]))
+      if (*(MI_LABEL(tmp)[i]))
       {
 	MI_HAS_TEXT(tmp) = True;
       }
       else
       {
-	free(tmp->label[i]);
-	tmp->label[i] = NULL;
+	free(MI_LABEL(tmp)[i]);
+	MI_LABEL(tmp)[i] = NULL;
       }
     }
-    tmp->label_strlen[i] = (tmp->label[i]) ? strlen(tmp->label[i]) : 0;
+    MI_LABEL_STRLEN(tmp)[i] =
+      (MI_LABEL(tmp)[i]) ? strlen(MI_LABEL(tmp)[i]) : 0;
   } /* for */
 
   /***************************************************************
    * Set the type flags
    ***************************************************************/
 
-  find_func_type(tmp->action, &(tmp->func_type), NULL);
-  switch (tmp->func_type)
+  find_func_type(MI_ACTION(tmp), &(MI_FUNC_TYPE(tmp)), NULL);
+  switch (MI_FUNC_TYPE(tmp))
   {
   case F_POPUP:
     MI_IS_POPUP(tmp) = True;
@@ -4484,7 +4494,8 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
    * misc stuff
    ***************************************************************/
 
-  MR_ITEMS(menu)++;
+  MR_ITEMS(mr)++;
+  MR_IS_UPDATED(mr) = 1;
 }
 
 /***********************************************************************
@@ -4501,27 +4512,28 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
  ***********************************************************************/
 MenuRoot *NewMenuRoot(char *name)
 {
-  MenuRoot *tmp;
+  MenuRoot *mr;
   Bool flag;
 
-  tmp = (MenuRoot *)safemalloc(sizeof(MenuRoot));
-  tmp->s = (MenuRootStatic *)safemalloc(sizeof(MenuRootStatic));
-  tmp->d = (MenuRootDynamic *)safemalloc(sizeof(MenuRootDynamic));
+  mr = (MenuRoot *)safemalloc(sizeof(MenuRoot));
+  mr->s = (MenuRootStatic *)safemalloc(sizeof(MenuRootStatic));
+  mr->d = (MenuRootDynamic *)safemalloc(sizeof(MenuRootDynamic));
 
-  memset(tmp->s, 0, sizeof(MenuRootStatic));
-  memset(tmp->d, 0, sizeof(MenuRootDynamic));
-  MR_NEXT_MENU(tmp) = Menus.all;
-  MR_NAME(tmp) = stripcpy(name);
-  MR_WINDOW(tmp) = None;
-  scanForPixmap(MR_NAME(tmp), &MR_SIDEPIC(tmp), '@');
-  scanForColor(MR_NAME(tmp), &MR_SIDECOLOR(tmp), &flag,'^');
-  MR_HAS_SIDECOLOR(tmp) = flag;
-  MR_STYLE(tmp) = Menus.DefaultStyle;
-  MR_ORIGINAL_MENU(tmp) = tmp;
-  MR_COPIES(tmp) = 1;
+  memset(mr->s, 0, sizeof(MenuRootStatic));
+  memset(mr->d, 0, sizeof(MenuRootDynamic));
+  MR_NEXT_MENU(mr) = Menus.all;
+  MR_NAME(mr) = stripcpy(name);
+  MR_WINDOW(mr) = None;
+  scanForPixmap(MR_NAME(mr), &MR_SIDEPIC(mr), '@');
+  scanForColor(MR_NAME(mr), &MR_SIDECOLOR(mr), &flag,'^');
+  MR_HAS_SIDECOLOR(mr) = flag;
+  MR_STYLE(mr) = Menus.DefaultStyle;
+  MR_ORIGINAL_MENU(mr) = mr;
+  MR_COPIES(mr) = 1;
+  MR_IS_UPDATED(mr) = 1;
 
-  Menus.all = tmp;
-  return tmp;
+  Menus.all = mr;
+  return mr;
 }
 
 /***********************************************************************
@@ -4536,22 +4548,22 @@ MenuRoot *NewMenuRoot(char *name)
  *	menu	- the MenuRoot structure of the existing menu
  *
  ***********************************************************************/
-static MenuRoot *copy_menu_root(MenuRoot *menu)
+static MenuRoot *copy_menu_root(MenuRoot *mr)
 {
   MenuRoot *tmp;
 
-  if (!menu || MR_COPIES(menu) >= MAX_MENU_COPIES)
+  if (!mr || MR_COPIES(mr) >= MAX_MENU_COPIES)
     return NULL;
   tmp = (MenuRoot *)safemalloc(sizeof(MenuRoot));
   tmp->d = (MenuRootDynamic *)safemalloc(sizeof(MenuRootDynamic));
   memset(tmp->d, 0, sizeof(MenuRootDynamic));
-  tmp->s = menu->s;
+  tmp->s = mr->s;
 
-  MR_COPIES(menu)++;
-  MR_ORIGINAL_MENU(tmp) = MR_ORIGINAL_MENU(menu);
-  MR_CONTINUATION_MENU(tmp) = copy_menu_root(MR_CONTINUATION_MENU(menu));
-  MR_NEXT_MENU(tmp) = MR_NEXT_MENU(menu);
-  MR_NEXT_MENU(menu) = tmp;
+  MR_COPIES(mr)++;
+  MR_ORIGINAL_MENU(tmp) = MR_ORIGINAL_MENU(mr);
+  MR_CONTINUATION_MENU(tmp) = copy_menu_root(MR_CONTINUATION_MENU(mr));
+  MR_NEXT_MENU(tmp) = MR_NEXT_MENU(mr);
+  MR_NEXT_MENU(mr) = tmp;
   MR_WINDOW(tmp) = None;
   memset(&(MR_DYNAMIC_FLAGS(tmp)), 0, sizeof(MR_DYNAMIC_FLAGS(tmp)));
 
@@ -4904,9 +4916,9 @@ static MenuStyle *FindMenuStyle(char *name)
 
   while(ms)
   {
-     if(strcasecmp(ms->name,name)==0)
+     if(strcasecmp(ST_NAME(ms),name)==0)
        return ms;
-     ms = ms->next;
+     ms = ST_NEXT_STYLE(ms);
   }
   return NULL;
 }
@@ -4925,29 +4937,29 @@ static void FreeMenuStyle(MenuStyle *ms)
       MR_STYLE(mr) = Menus.DefaultStyle;
     mr = MR_NEXT_MENU(mr);
   }
-  if(ms->look.MenuGC)
-    XFreeGC(dpy, ms->look.MenuGC);
-  if(ms->look.MenuActiveGC)
-    XFreeGC(dpy, ms->look.MenuActiveGC);
-  if(ms->look.MenuActiveBackGC)
-    XFreeGC(dpy, ms->look.MenuActiveBackGC);
-  if(ms->look.MenuReliefGC)
-    XFreeGC(dpy, ms->look.MenuReliefGC);
-  if(ms->look.MenuStippleGC)
-    XFreeGC(dpy, ms->look.MenuStippleGC);
-  if(ms->look.MenuShadowGC)
-    XFreeGC(dpy, ms->look.MenuShadowGC);
-  if (ms->look.sidePic)
-    DestroyPicture(dpy, ms->look.sidePic);
-  if (ms->look.flags.has_side_color == 1)
-    FreeColors(&ms->look.sideColor, 1);
+  if(ST_MENU_GC(ms))
+    XFreeGC(dpy, ST_MENU_GC(ms));
+  if(ST_MENU_ACTIVE_GC(ms))
+    XFreeGC(dpy, ST_MENU_ACTIVE_GC(ms));
+  if(ST_MENU_ACTIVE_BACK_GC(ms))
+    XFreeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms));
+  if(ST_MENU_RELIEF_GC(ms))
+    XFreeGC(dpy, ST_MENU_RELIEF_GC(ms));
+  if(ST_MENU_STIPPLE_GC(ms))
+    XFreeGC(dpy, ST_MENU_STIPPLE_GC(ms));
+  if(ST_MENU_SHADOW_GC(ms))
+    XFreeGC(dpy, ST_MENU_SHADOW_GC(ms));
+  if (ST_SIDEPIC(ms))
+    DestroyPicture(dpy, ST_SIDEPIC(ms));
+  if (ST_HAS_SIDE_COLOR(ms) == 1)
+    FreeColors(&ST_SIDE_COLOR(ms), 1);
 
-  while(before->next != ms)
+  while(ST_NEXT_STYLE(before) != ms)
     /* Not too many checks, may segfaults in race conditions */
-    before = before->next;
+    before = ST_NEXT_STYLE(before);
 
-  before->next = ms->next;
-  free(ms->name);
+  ST_NEXT_STYLE(before) = ST_NEXT_STYLE(ms);
+  free(ST_NAME(ms));
   free(ms);
 }
 
@@ -4957,7 +4969,7 @@ void DestroyMenuStyle(F_CMD_ARGS)
   char *name = NULL;
   MenuRoot *mr;
 
-  action = GetNextToken(action,&name);
+  name = PeekToken(action, NULL);
   if (name == NULL)
   {
     fvwm_msg(ERR,"DestroyMenuStyle", "needs one parameter");
@@ -4966,23 +4978,32 @@ void DestroyMenuStyle(F_CMD_ARGS)
 
   ms = FindMenuStyle(name);
   if(ms == NULL)
+  {
     fvwm_msg(ERR,"DestroyMenuStyle", "cannot find style %s", name);
+    return;
+  }
   else if (ms == Menus.DefaultStyle)
-    fvwm_msg(ERR,"DestroyMenuStyle", "cannot destroy Default Menu Face");
+  {
+    fvwm_msg(ERR,"DestroyMenuStyle", "cannot destroy default menu style");
+    return;
+  }
+  else if (ST_USAGE_COUNT(ms) != 0)
+  {
+    fvwm_msg(ERR,"DestroyMenuStyle", "menu style is in use");
+    return;
+  }
   else
   {
-    FreeMenuFace(dpy, &ms->look.face);
+    FreeMenuFace(dpy, &ST_FACE(ms));
     FreeMenuStyle(ms);
   }
-  free(name);
   for (mr = Menus.all; mr; mr = MR_NEXT_MENU(mr))
   {
     if (MR_STYLE(mr) == ms)
+    {
       MR_STYLE(mr) = Menus.DefaultStyle;
-  }
-  if (!fFvwmInStartup)
-  {
-    MakeMenus();
+      MR_IS_UPDATED(mr) = 1;
+    }
   }
 }
 
@@ -4991,76 +5012,83 @@ static void UpdateMenuStyle(MenuStyle *ms)
   XGCValues gcv;
   unsigned long gcm;
 
-  if (ms->look.pStdFont && ms->look.pStdFont != &Scr.StdFont)
-    {
-      ms->look.pStdFont->y = ms->look.pStdFont->font->ascent;
-      ms->look.pStdFont->height =
-	ms->look.pStdFont->font->ascent + ms->look.pStdFont->font->descent;
-    }
+  if (ST_USAGE_COUNT(ms) != 0)
+  {
+    fvwm_msg(ERR,"UpdateMenuStyle", "menu style is in use");
+    return;
+  }
+  ST_IS_UPDATED(ms) = 1;
+
+  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != &Scr.StdFont)
+  {
+    ST_PSTDFONT(ms)->y = ST_PSTDFONT(ms)->font->ascent;
+    ST_PSTDFONT(ms)->height =
+      ST_PSTDFONT(ms)->font->ascent + ST_PSTDFONT(ms)->font->descent;
+  }
 
   /* calculate colors based on foreground */
-  if (!ms->look.flags.has_active_fore)
-    ms->look.MenuActiveColors.fore=ms->look.MenuColors.fore;
+  if (!ST_HAS_ACTIVE_FORE(ms))
+    ST_MENU_ACTIVE_COLORS(ms).fore=ST_MENU_COLORS(ms).fore;
 
   /* calculate colors based on background */
-  if (!ms->look.flags.has_active_back)
-    ms->look.MenuActiveColors.back = ms->look.MenuColors.back;
-  if (!ms->look.flags.has_stipple_fore)
-    ms->look.MenuStippleColors.fore = ms->look.MenuColors.back;
+  if (!ST_HAS_ACTIVE_BACK(ms))
+    ST_MENU_ACTIVE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
+  if (!ST_HAS_STIPPLE_FORE(ms))
+    ST_MENU_STIPPLE_COLORS(ms).fore = ST_MENU_COLORS(ms).back;
   if(Scr.depth > 2)
   {                 /* if not black and white */
-    ms->look.MenuRelief.back = GetShadow(ms->look.MenuColors.back);
-    ms->look.MenuRelief.fore = GetHilite(ms->look.MenuColors.back);
+    ST_MENU_RELIEF_COLORS(ms).back = GetShadow(ST_MENU_COLORS(ms).back);
+    ST_MENU_RELIEF_COLORS(ms).fore = GetHilite(ST_MENU_COLORS(ms).back);
   }
   else
   {                              /* black and white */
-    ms->look.MenuRelief.back = GetColor("black");
-    ms->look.MenuRelief.fore = GetColor("white");
+    ST_MENU_RELIEF_COLORS(ms).back = GetColor("black");
+    ST_MENU_RELIEF_COLORS(ms).fore = GetColor("white");
   }
-  ms->look.MenuStippleColors.back = ms->look.MenuColors.back;
+  ST_MENU_STIPPLE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
 
   /* make GC's */
   gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
-  gcv.font = ms->look.pStdFont->font->fid;
+  gcv.font = ST_PSTDFONT(ms)->font->fid;
   gcv.function = GXcopy;
   gcv.line_width = 0;
 
-  gcv.foreground = ms->look.MenuRelief.fore;
-  gcv.background = ms->look.MenuRelief.back;
-  if(ms->look.MenuReliefGC)
-    XChangeGC(dpy, ms->look.MenuReliefGC, gcm, &gcv);
+  gcv.foreground = ST_MENU_RELIEF_COLORS(ms).fore;
+  gcv.background = ST_MENU_RELIEF_COLORS(ms).back;
+  if(ST_MENU_RELIEF_GC(ms))
+    XChangeGC(dpy, ST_MENU_RELIEF_GC(ms), gcm, &gcv);
   else
-    ms->look.MenuReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_RELIEF_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = ms->look.MenuRelief.back;
-  gcv.background = ms->look.MenuRelief.fore;
-  if(ms->look.MenuShadowGC)
-    XChangeGC(dpy, ms->look.MenuShadowGC, gcm, &gcv);
+  gcv.foreground = ST_MENU_RELIEF_COLORS(ms).back;
+  gcv.background = ST_MENU_RELIEF_COLORS(ms).fore;
+  if(ST_MENU_SHADOW_GC(ms))
+    XChangeGC(dpy, ST_MENU_SHADOW_GC(ms), gcm, &gcv);
   else
-    ms->look.MenuShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_SHADOW_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = (ms->look.flags.has_active_back) ?
-    ms->look.MenuActiveColors.back : ms->look.MenuRelief.back;
-  gcv.background = (ms->look.flags.has_active_fore) ?
-    ms->look.MenuActiveColors.fore : ms->look.MenuRelief.fore;
-  if(ms->look.MenuActiveBackGC)
-    XChangeGC(dpy, ms->look.MenuActiveBackGC, gcm, &gcv);
+  gcv.foreground = (ST_HAS_ACTIVE_BACK(ms)) ?
+    ST_MENU_ACTIVE_COLORS(ms).back : ST_MENU_RELIEF_COLORS(ms).back;
+  gcv.background = (ST_HAS_ACTIVE_FORE(ms)) ?
+    ST_MENU_ACTIVE_COLORS(ms).fore : ST_MENU_RELIEF_COLORS(ms).fore;
+  if(ST_MENU_ACTIVE_BACK_GC(ms))
+    XChangeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms), gcm, &gcv);
   else
-    ms->look.MenuActiveBackGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_BACK_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = ms->look.MenuColors.fore;
-  gcv.background = ms->look.MenuColors.back;
-  if(ms->look.MenuGC)
-    XChangeGC(dpy, ms->look.MenuGC, gcm, &gcv);
+  gcv.foreground = ST_MENU_COLORS(ms).fore;
+  gcv.background = ST_MENU_COLORS(ms).back;
+  if(ST_MENU_GC(ms))
+    XChangeGC(dpy, ST_MENU_GC(ms), gcm, &gcv);
   else
-    ms->look.MenuGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = ms->look.MenuActiveColors.fore;
-  gcv.background = ms->look.MenuActiveColors.back;
-  if(ms->look.MenuActiveGC)
-    XChangeGC(dpy, ms->look.MenuActiveGC, gcm, &gcv);
+  gcv.foreground = ST_MENU_ACTIVE_COLORS(ms).fore;
+  gcv.background = ST_MENU_ACTIVE_COLORS(ms).back;
+  if(ST_MENU_ACTIVE_GC(ms))
+    XChangeGC(dpy, ST_MENU_ACTIVE_GC(ms), gcm, &gcv);
   else
-    ms->look.MenuActiveGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   if(Scr.depth < 2)
   {
@@ -5070,29 +5098,24 @@ static void UpdateMenuStyle(MenuStyle *ms)
   }
   else
   {
-    gcv.foreground = ms->look.MenuStippleColors.fore;
-    gcv.background = ms->look.MenuStippleColors.back;
+    gcv.foreground = ST_MENU_STIPPLE_COLORS(ms).fore;
+    gcv.background = ST_MENU_STIPPLE_COLORS(ms).back;
   }
-  if(ms->look.MenuStippleGC)
-    XChangeGC(dpy, ms->look.MenuStippleGC, gcm, &gcv);
+  if(ST_MENU_STIPPLE_GC(ms))
+    XChangeGC(dpy, ST_MENU_STIPPLE_GC(ms), gcm, &gcv);
   else
-    ms->look.MenuStippleGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_STIPPLE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 }
 
 void UpdateAllMenuStyles(void)
 {
   MenuStyle *ms;
 
-  for (ms = Menus.DefaultStyle; ms; ms = ms->next)
+  for (ms = Menus.DefaultStyle; ms; ms = ST_NEXT_STYLE(ms))
   {
     UpdateMenuStyle(ms);
   }
-  if (!fFvwmInStartup)
-  {
-    MakeMenus();
-  }
 }
-
 
 static int GetMenuStyleIndex(char *option)
 {
@@ -5149,9 +5172,14 @@ static void NewMenuStyle(F_CMD_ARGS)
     return;
   }
 
+  ms = FindMenuStyle(name);
+  if (ms && ST_USAGE_COUNT(ms) != 0)
+  {
+    fvwm_msg(ERR,"NewMenuStyle", "menu style is in use");
+    return;
+  }
   tmpms = (MenuStyle *)safemalloc(sizeof(MenuStyle));
   memset(tmpms, 0, sizeof(MenuStyle));
-  ms = FindMenuStyle(name);
   if (ms)
   {
     /* copy the structure over our temporary menu face. */
@@ -5162,9 +5190,10 @@ static void NewMenuStyle(F_CMD_ARGS)
   }
   else
   {
-    tmpms->name = name;
+    ST_NAME(tmpms) = name;
     is_initialised = False;
   }
+  ST_IS_UPDATED(tmpms) = 1;
 
   /* Parse the options. */
   while (action && *action)
@@ -5172,13 +5201,13 @@ static void NewMenuStyle(F_CMD_ARGS)
     if (is_initialised == False)
     {
       /* some default configuration goes here for the new menu style */
-      tmpms->look.MenuColors.back = GetColor("white");
-      tmpms->look.MenuColors.fore = GetColor("black");
-      tmpms->look.pStdFont = &Scr.StdFont;
-      tmpms->look.face.type = SimpleMenu;
-      tmpms->look.flags.has_active_fore = 0;
-      tmpms->look.flags.has_active_back = 0;
-      tmpms->feel.flags.do_popup_as_root_menu = 0;
+      ST_MENU_COLORS(tmpms).back = GetColor("white");
+      ST_MENU_COLORS(tmpms).fore = GetColor("black");
+      ST_PSTDFONT(tmpms) = &Scr.StdFont;
+      ST_FACE(tmpms).type = SimpleMenu;
+      ST_HAS_ACTIVE_FORE(tmpms) = 0;
+      ST_HAS_ACTIVE_BACK(tmpms) = 0;
+      ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 0;
       gc_changed = True;
       option = "fvwm";
     }
@@ -5206,67 +5235,67 @@ static void NewMenuStyle(F_CMD_ARGS)
     case 2: /* win */
       if (i == 0)
       {
-	tmpms->feel.PopupOffsetPercent = 67;
-	tmpms->feel.PopupOffsetAdd = 0;
-	tmpms->feel.flags.do_popup_immediately = 0;
-	tmpms->feel.flags.do_title_warp = 1;
-	tmpms->feel.flags.do_unmap_submenu_on_popdown = 0;
-	tmpms->look.ReliefThickness = 1;
-	tmpms->look.TitleUnderlines = 1;
-	tmpms->look.flags.has_long_separators = 0;
-	tmpms->look.flags.has_triangle_relief = 1;
-	tmpms->look.flags.do_hilight = 0;
+	ST_POPUP_OFFSET_PERCENT(tmpms) = 67;
+	ST_POPUP_OFFSET_ADD(tmpms) = 0;
+	ST_DO_POPUP_IMMEDIATELY(tmpms) = 0;
+	ST_DO_WARP_TO_TITLE(tmpms) = 1;
+	ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 0;
+	ST_RELIEF_THICKNESS(tmpms) = 1;
+	ST_TITLE_UNDERLINES(tmpms) = 1;
+	ST_HAS_LONG_SEPARATORS(tmpms) = 0;
+	ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
+	ST_DO_HILIGHT(tmpms) = 0;
       }
       else if (i == 1)
       {
-	tmpms->feel.PopupOffsetPercent = 100;
-	tmpms->feel.PopupOffsetAdd = -DEFAULT_MENU_BORDER_WIDTH - 1;
-	tmpms->feel.flags.do_popup_immediately = 1;
-	tmpms->feel.flags.do_title_warp = 0;
-	tmpms->feel.flags.do_unmap_submenu_on_popdown = 0;
-	tmpms->look.ReliefThickness = 2;
-	tmpms->look.TitleUnderlines = 2;
-	tmpms->look.flags.has_long_separators = 1;
-	tmpms->look.flags.has_triangle_relief = 1;
-	tmpms->look.flags.do_hilight = 0;
+	ST_POPUP_OFFSET_PERCENT(tmpms) = 100;
+	ST_POPUP_OFFSET_ADD(tmpms) = -DEFAULT_MENU_BORDER_WIDTH - 1;
+	ST_DO_POPUP_IMMEDIATELY(tmpms) = 1;
+	ST_DO_WARP_TO_TITLE(tmpms) = 0;
+	ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 0;
+	ST_RELIEF_THICKNESS(tmpms) = 2;
+	ST_TITLE_UNDERLINES(tmpms) = 2;
+	ST_HAS_LONG_SEPARATORS(tmpms) = 1;
+	ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
+	ST_DO_HILIGHT(tmpms) = 0;
       }
       else /* i == 2 */
       {
-	tmpms->feel.PopupOffsetPercent = 100;
-	tmpms->feel.PopupOffsetAdd = -DEFAULT_MENU_BORDER_WIDTH - 3;
-	tmpms->feel.flags.do_popup_immediately = 1;
-	tmpms->feel.flags.do_title_warp = 0;
-	tmpms->feel.flags.do_unmap_submenu_on_popdown = 1;
-	tmpms->look.ReliefThickness = 0;
-	tmpms->look.TitleUnderlines = 1;
-	tmpms->look.flags.has_long_separators = 0;
-	tmpms->look.flags.has_triangle_relief = 0;
-	tmpms->look.flags.do_hilight = 1;
+	ST_POPUP_OFFSET_PERCENT(tmpms) = 100;
+	ST_POPUP_OFFSET_ADD(tmpms) = -DEFAULT_MENU_BORDER_WIDTH - 3;
+	ST_DO_POPUP_IMMEDIATELY(tmpms) = 1;
+	ST_DO_WARP_TO_TITLE(tmpms) = 0;
+	ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 1;
+	ST_RELIEF_THICKNESS(tmpms) = 0;
+	ST_TITLE_UNDERLINES(tmpms) = 1;
+	ST_HAS_LONG_SEPARATORS(tmpms) = 0;
+	ST_HAS_TRIANGLE_RELIEF(tmpms) = 0;
+	ST_DO_HILIGHT(tmpms) = 1;
       }
 
       /* common settings */
-      tmpms->look.BorderWidth = DEFAULT_MENU_BORDER_WIDTH;
-      tmpms->feel.flags.use_left_submenus = 0;
-      tmpms->feel.flags.is_animated = 0;
-      FreeMenuFace(dpy, &tmpms->look.face);
-      tmpms->look.face.type = SimpleMenu;
-      if (tmpms->look.pStdFont && tmpms->look.pStdFont != &Scr.StdFont)
+      ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
+      ST_USE_LEFT_SUBMENUS(tmpms) = 0;
+      ST_IS_ANIMATED(tmpms) = 0;
+      FreeMenuFace(dpy, &ST_FACE(tmpms));
+      ST_FACE(tmpms).type = SimpleMenu;
+      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.StdFont)
       {
-	XFreeFont(dpy, tmpms->look.pStdFont->font);
-	free(tmpms->look.pStdFont);
+	XFreeFont(dpy, ST_PSTDFONT(tmpms)->font);
+	free(ST_PSTDFONT(tmpms));
       }
-      tmpms->look.pStdFont = &Scr.StdFont;
+      ST_PSTDFONT(tmpms) = &Scr.StdFont;
       gc_changed = True;
-      if (tmpms->look.flags.has_side_color == 1)
+      if (ST_HAS_SIDE_COLOR(tmpms) == 1)
       {
-	FreeColors(&tmpms->look.sideColor, 1);
-	tmpms->look.flags.has_side_color = 0;
+	FreeColors(&ST_SIDE_COLOR(tmpms), 1);
+	ST_HAS_SIDE_COLOR(tmpms) = 0;
       }
-      tmpms->look.flags.has_side_color = 0;
-      if (tmpms->look.sidePic)
+      ST_HAS_SIDE_COLOR(tmpms) = 0;
+      if (ST_SIDEPIC(tmpms))
       {
-	DestroyPicture(dpy, tmpms->look.sidePic);
-	tmpms->look.sidePic = NULL;
+	DestroyPicture(dpy, ST_SIDEPIC(tmpms));
+	ST_SIDEPIC(tmpms) = NULL;
       }
 
       if (is_initialised == False)
@@ -5278,97 +5307,97 @@ static void NewMenuStyle(F_CMD_ARGS)
       break;
 
     case 3: /* Foreground */
-      FreeColors(&tmpms->look.MenuColors.fore, 1);
+      FreeColors(&ST_MENU_COLORS(tmpms).fore, 1);
       if (arg1)
-	tmpms->look.MenuColors.fore = GetColor(arg1);
+	ST_MENU_COLORS(tmpms).fore = GetColor(arg1);
       else
-	tmpms->look.MenuColors.fore = GetColor("black");
+	ST_MENU_COLORS(tmpms).fore = GetColor("black");
       gc_changed = True;
       break;
 
     case 4: /* Background */
-      FreeColors(&tmpms->look.MenuColors.back, 1);
+      FreeColors(&ST_MENU_COLORS(tmpms).back, 1);
       if (arg1)
-	tmpms->look.MenuColors.back = GetColor(arg1);
+	ST_MENU_COLORS(tmpms).back = GetColor(arg1);
       else
-	tmpms->look.MenuColors.back = GetColor("grey");
+	ST_MENU_COLORS(tmpms).back = GetColor("grey");
       gc_changed = True;
       break;
 
     case 5: /* Greyed */
-      if (tmpms->look.flags.has_stipple_fore)
-	FreeColors(&tmpms->look.MenuStippleColors.fore, 1);
+      if (ST_HAS_STIPPLE_FORE(tmpms))
+	FreeColors(&ST_MENU_STIPPLE_COLORS(tmpms).fore, 1);
       if (arg1 == NULL)
       {
-	tmpms->look.flags.has_stipple_fore = 0;
+	ST_HAS_STIPPLE_FORE(tmpms) = 0;
       }
       else
       {
-	tmpms->look.MenuStippleColors.fore = GetColor(arg1);
-	tmpms->look.flags.has_stipple_fore = 1;
+	ST_MENU_STIPPLE_COLORS(tmpms).fore = GetColor(arg1);
+	ST_HAS_STIPPLE_FORE(tmpms) = 1;
       }
       gc_changed = True;
       break;
 
     case 6: /* HilightBack */
-      if (tmpms->look.flags.has_active_back)
-	FreeColors(&tmpms->look.MenuActiveColors.back, 1);
+      if (ST_HAS_ACTIVE_BACK(tmpms))
+	FreeColors(&ST_MENU_ACTIVE_COLORS(tmpms).back, 1);
       if (arg1 == NULL)
       {
-	tmpms->look.flags.has_active_back = 0;
+	ST_HAS_ACTIVE_BACK(tmpms) = 0;
       }
       else
       {
-	tmpms->look.MenuActiveColors.back = GetColor(arg1);
-	tmpms->look.flags.has_active_back = 1;
+	ST_MENU_ACTIVE_COLORS(tmpms).back = GetColor(arg1);
+	ST_HAS_ACTIVE_BACK(tmpms) = 1;
       }
-      tmpms->look.flags.do_hilight = 1;
+      ST_DO_HILIGHT(tmpms) = 1;
       gc_changed = True;
       break;
 
     case 7: /* HilightBackOff */
-      tmpms->look.flags.do_hilight = 0;
+      ST_DO_HILIGHT(tmpms) = 0;
       gc_changed = True;
       break;
 
     case 8: /* ActiveFore */
-      if (tmpms->look.flags.has_active_fore)
-	FreeColors(&tmpms->look.MenuActiveColors.fore, 1);
+      if (ST_HAS_ACTIVE_FORE(tmpms))
+	FreeColors(&ST_MENU_ACTIVE_COLORS(tmpms).fore, 1);
       if (arg1 == NULL)
       {
-	tmpms->look.flags.has_active_fore = 0;
+	ST_HAS_ACTIVE_FORE(tmpms) = 0;
       }
       else
       {
-	tmpms->look.MenuActiveColors.fore = GetColor(arg1);
-	tmpms->look.flags.has_active_fore = 1;
+	ST_MENU_ACTIVE_COLORS(tmpms).fore = GetColor(arg1);
+	ST_HAS_ACTIVE_FORE(tmpms) = 1;
       }
       gc_changed = True;
       break;
 
     case 9: /* ActiveForeOff */
-      tmpms->look.flags.has_active_fore = 0;
+      ST_HAS_ACTIVE_FORE(tmpms) = 0;
       gc_changed = True;
       break;
 
     case 10: /* Hilight3DThick */
-      tmpms->look.ReliefThickness = 2;
+      ST_RELIEF_THICKNESS(tmpms) = 2;
       break;
 
     case 11: /* Hilight3DThin */
-      tmpms->look.ReliefThickness = 1;
+      ST_RELIEF_THICKNESS(tmpms) = 1;
       break;
 
     case 12: /* Hilight3DOff */
-      tmpms->look.ReliefThickness = 0;
+      ST_RELIEF_THICKNESS(tmpms) = 0;
       break;
 
     case 13: /* Animation */
-      tmpms->feel.flags.is_animated = 1;
+      ST_IS_ANIMATED(tmpms) = 1;
       break;
 
     case 14: /* AnimationOff */
-      tmpms->feel.flags.is_animated = 0;
+      ST_IS_ANIMATED(tmpms) = 0;
       break;
 
     case 15: /* Font */
@@ -5378,21 +5407,21 @@ static void NewMenuStyle(F_CMD_ARGS)
 		 "Couldn't load font '%s' or 'fixed'\n", arg1);
 	break;
       }
-      if (tmpms->look.pStdFont && tmpms->look.pStdFont != &Scr.StdFont)
+      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.StdFont)
       {
-	if (tmpms->look.pStdFont->font)
-	  XFreeFont(dpy, tmpms->look.pStdFont->font);
-	free(tmpms->look.pStdFont);
+	if (ST_PSTDFONT(tmpms)->font)
+	  XFreeFont(dpy, ST_PSTDFONT(tmpms)->font);
+	free(ST_PSTDFONT(tmpms));
       }
       if (arg1 == NULL)
       {
 	/* reset to screen font */
-	tmpms->look.pStdFont = &Scr.StdFont;
+	ST_PSTDFONT(tmpms) = &Scr.StdFont;
       }
       else
       {
-	tmpms->look.pStdFont = (MyFont *)safemalloc(sizeof(MyFont));
-	tmpms->look.pStdFont->font = xfs;
+	ST_PSTDFONT(tmpms) = (MyFont *)safemalloc(sizeof(MyFont));
+	ST_PSTDFONT(tmpms)->font = xfs;
       }
       gc_changed = True;
       break;
@@ -5400,7 +5429,7 @@ static void NewMenuStyle(F_CMD_ARGS)
     case 16: /* MenuFace */
       while (args && *args != '\0' && isspace(*args))
 	args++;
-      ReadMenuFace(args, &tmpms->look.face, True);
+      ReadMenuFace(args, &ST_FACE(tmpms), True);
       break;
 
     case 17: /* PopupDelay */
@@ -5412,7 +5441,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       {
 	fvwm_msg(WARN, "NewMenuStyle",
 		 "PopupDelay applied to style '%s' will affect all menus",
-		 tmpms->name);
+		 ST_NAME(tmpms));
       }
       break;
 
@@ -5424,56 +5453,56 @@ static void NewMenuStyle(F_CMD_ARGS)
       }
       else
       {
-	tmpms->feel.PopupOffsetAdd = val[0];
+	ST_POPUP_OFFSET_ADD(tmpms) = val[0];
 	if (n == 2 && val[1] <= 100 && val[1] >= 0)
-	  tmpms->feel.PopupOffsetPercent = val[1];
+	  ST_POPUP_OFFSET_PERCENT(tmpms) = val[1];
 	else
-	  tmpms->feel.PopupOffsetPercent = 100;
+	  ST_POPUP_OFFSET_PERCENT(tmpms) = 100;
       }
       break;
 
     case 19: /* TitleWarp */
-      tmpms->feel.flags.do_title_warp = 1;
+      ST_DO_WARP_TO_TITLE(tmpms) = 1;
       break;
 
     case 20: /* TitleWarpOff */
-      tmpms->feel.flags.do_title_warp = 0;
+      ST_DO_WARP_TO_TITLE(tmpms) = 0;
       break;
 
     case 21: /* TitleUnderlines0 */
-      tmpms->look.TitleUnderlines = 0;
+      ST_TITLE_UNDERLINES(tmpms) = 0;
       break;
 
     case 22: /* TitleUnderlines1 */
-      tmpms->look.TitleUnderlines = 1;
+      ST_TITLE_UNDERLINES(tmpms) = 1;
       break;
 
     case 23: /* TitleUnderlines2 */
-      tmpms->look.TitleUnderlines = 2;
+      ST_TITLE_UNDERLINES(tmpms) = 2;
       break;
 
     case 24: /* SeparatorsLong */
-      tmpms->look.flags.has_long_separators = 1;
+      ST_HAS_LONG_SEPARATORS(tmpms) = 1;
       break;
 
     case 25: /* SeparatorsShort */
-      tmpms->look.flags.has_long_separators = 0;
+      ST_HAS_LONG_SEPARATORS(tmpms) = 0;
       break;
 
     case 26: /* TrianglesSolid */
-      tmpms->look.flags.has_triangle_relief = 0;
+      ST_HAS_TRIANGLE_RELIEF(tmpms) = 0;
       break;
 
     case 27: /* TrianglesRelief */
-      tmpms->look.flags.has_triangle_relief = 1;
+      ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
       break;
 
     case 28: /* PopupImmediately */
-      tmpms->feel.flags.do_popup_immediately = 1;
+      ST_DO_POPUP_IMMEDIATELY(tmpms) = 1;
       break;
 
     case 29: /* PopupDelayed */
-      tmpms->feel.flags.do_popup_immediately = 0;
+      ST_DO_POPUP_IMMEDIATELY(tmpms) = 0;
       break;
 
     case 30: /* DoubleClickTime */
@@ -5485,85 +5514,85 @@ static void NewMenuStyle(F_CMD_ARGS)
       {
 	fvwm_msg(WARN, "NewMenuStyle",
 		 "DoubleClickTime for style '%s' will affect all menus",
-		 tmpms->name);
+		 ST_NAME(tmpms));
       }
       break;
 
     case 31: /* SidePic */
-      if (tmpms->look.sidePic)
+      if (ST_SIDEPIC(tmpms))
       {
-	DestroyPicture(dpy, tmpms->look.sidePic);
-	tmpms->look.sidePic = NULL;
+	DestroyPicture(dpy, ST_SIDEPIC(tmpms));
+	ST_SIDEPIC(tmpms) = NULL;
       }
       if (arg1)
       {
-	tmpms->look.sidePic = CachePicture(dpy, Scr.NoFocusWin, NULL,
+	ST_SIDEPIC(tmpms) = CachePicture(dpy, Scr.NoFocusWin, NULL,
 					   arg1, Scr.ColorLimit);
-	if (!tmpms->look.sidePic)
+	if (!ST_SIDEPIC(tmpms))
 	  fvwm_msg(WARN, "NewMenuStyle", "Couldn't find pixmap %s", arg1);
       }
       break;
 
     case 32: /* SideColor */
-      if (tmpms->look.flags.has_side_color == 1)
+      if (ST_HAS_SIDE_COLOR(tmpms) == 1)
       {
-	FreeColors(&tmpms->look.sideColor, 1);
-	tmpms->look.flags.has_side_color = 0;
+	FreeColors(&ST_SIDE_COLOR(tmpms), 1);
+	ST_HAS_SIDE_COLOR(tmpms) = 0;
       }
       if (arg1)
       {
-	tmpms->look.sideColor = GetColor(arg1);
-	tmpms->look.flags.has_side_color = 1;
+	ST_SIDE_COLOR(tmpms) = GetColor(arg1);
+	ST_HAS_SIDE_COLOR(tmpms) = 1;
       }
       break;
 
     case 33: /* PopupAsRootmenu */
-      tmpms->feel.flags.do_popup_as_root_menu = 1;
+      ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 1;
       break;
 
     case 34: /* PopupAsSubmenu */
-      tmpms->feel.flags.do_popup_as_root_menu = 0;
+      ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 0;
       break;
 
     case 35: /* RemoveSubmenus */
-      tmpms->feel.flags.do_unmap_submenu_on_popdown = 1;
+      ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 1;
       break;
 
     case 36: /* HoldSubmenus */
-      tmpms->feel.flags.do_unmap_submenu_on_popdown = 0;
+      ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 0;
       break;
 
     case 37: /* SubmenusRight */
-      tmpms->feel.flags.use_left_submenus = 0;
+      ST_USE_LEFT_SUBMENUS(tmpms) = 0;
       break;
 
     case 38: /* SubmenusLeft */
-      tmpms->feel.flags.use_left_submenus = 1;
+      ST_USE_LEFT_SUBMENUS(tmpms) = 1;
       break;
 
     case 39: /* BorderWidth */
       if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 	  *val < 0 || *val > MAX_MENU_BORDER_WIDTH)
-	tmpms->look.BorderWidth = DEFAULT_MENU_BORDER_WIDTH;
+	ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
       else
-	tmpms->look.BorderWidth = *val;
+	ST_BORDER_WIDTH(tmpms) = *val;
       break;
 
     case 40: /* Hilight3DThickness */
       if (GetIntegerArguments(args, NULL, val, 1) > 0 &&
 	  *val >= 0 && *val <= MAX_ITEM_RELIEF_THICKNESS)
-	tmpms->look.ReliefThickness = *val;
+	ST_RELIEF_THICKNESS(tmpms) = *val;
       break;
 
     case 41: /* ItemFormat */
-      if (tmpms->feel.item_format)
+      if (ST_ITEM_FORMAT(tmpms))
       {
-	free(tmpms->feel.item_format);
-	tmpms->feel.item_format = NULL;
+	free(ST_ITEM_FORMAT(tmpms));
+	ST_ITEM_FORMAT(tmpms) = NULL;
       }
       if (arg1)
       {
-	tmpms->feel.item_format = strdup(arg1);
+	ST_ITEM_FORMAT(tmpms) = strdup(arg1);
       }
       break;
 
@@ -5600,7 +5629,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   {
     /* First MenuStyle MUST be the default style */
     Menus.DefaultStyle = tmpms;
-    tmpms->next = NULL;
+    ST_NEXT_STYLE(tmpms) = NULL;
   }
   else if (ms)
   {
@@ -5613,16 +5642,12 @@ static void NewMenuStyle(F_CMD_ARGS)
     MenuStyle *before = Menus.DefaultStyle;
 
     /* add a new menu face to list */
-    tmpms->next = NULL;
-    while(before->next)
-      before = before->next;
-    before->next = tmpms;
+    ST_NEXT_STYLE(tmpms) = NULL;
+    while(ST_NEXT_STYLE(before))
+      before = ST_NEXT_STYLE(before);
+    ST_NEXT_STYLE(before) = tmpms;
   }
 
-  if (!fFvwmInStartup)
-  {
-    MakeMenus();
-  }
   return;
 }
 
@@ -5668,7 +5693,6 @@ static void OldMenuStyle(F_CMD_ARGS)
     free(animated);
 }
 
-
 void SetMenuStyle(F_CMD_ARGS)
 {
   char *option;
@@ -5683,7 +5707,6 @@ void SetMenuStyle(F_CMD_ARGS)
   return;
 }
 
-
 void ChangeMenuStyle(F_CMD_ARGS)
 {
   char *name = NULL, *menuname = NULL;
@@ -5691,7 +5714,7 @@ void ChangeMenuStyle(F_CMD_ARGS)
   MenuRoot *mr = NULL;
 
 
-  action = GetNextToken(action,&name);
+  name = PeekToken(action, &action);
   if (name == NULL)
   {
     fvwm_msg(ERR,"ChangeMenuStyle", "needs at least two parameters");
@@ -5702,28 +5725,28 @@ void ChangeMenuStyle(F_CMD_ARGS)
   if(ms == NULL)
   {
     fvwm_msg(ERR,"ChangeMenuStyle", "cannot find style %s", name);
-    free(name);
     return;
   }
-  free(name);
 
-  action = GetNextToken(action,&menuname);
+  menuname = PeekToken(action, &action);
   while(menuname && *menuname)
   {
     mr = FindPopup(menuname);
     if(mr == NULL)
     {
       fvwm_msg(ERR,"ChangeMenuStyle", "cannot find menu %s", menuname);
-      free(menuname);
       break;
     }
-    MR_STYLE(mr) = ms;
-    if (!fFvwmInStartup)
+    if (MR_MAPPED_COPIES(mr) != 0)
     {
-      MakeMenu(mr);
+      fvwm_msg(ERR,"ChangeMenuStyle", "menu %s is in use", menuname);
     }
-    free(menuname);
-    action = GetNextToken(action,&menuname);
+    else
+    {
+      MR_STYLE(mr) = ms;
+      MR_IS_UPDATED(mr) = 1;
+    }
+    menuname = PeekToken(action, &action);
   }
 }
 
@@ -5733,30 +5756,27 @@ void add_item_to_menu(F_CMD_ARGS)
   MenuRoot *mrPrior;
   char *token, *rest,*item;
 
-  rest = GetNextToken(action,&token);
+  token = PeekToken(action, &rest);
   if (!token)
     return;
-  mr = FollowMenuContinuations(FindPopup(token),&mrPrior);
-  if(mr == NULL)
+  mr = FindPopup(token);
+  if (mr && MR_MAPPED_COPIES(mr) != 0)
+  {
+    fvwm_msg(ERR,"add_item_to_menu", "menu %s is in use", token);
+    return;
+  }
+  mr = FollowMenuContinuations(FindPopup(token), &mrPrior);
+  if (mr == NULL)
     mr = NewMenuRoot(token);
 
   /* Set + state to last menu */
   set_last_added_item(ADDED_MENU, mr);
 
-  rest = GetNextToken(rest,&item);
-  AddToMenu(mr, item,rest,True /* pixmap scan */, True);
+  rest = GetNextToken(rest, &item);
+  AddToMenu(mr, item, rest, True /* pixmap scan */, True);
   if (item)
     free(item);
-  /* These lines are correct! We must not release token if the string is
-     empty.  WHY??
-   * It cannot be NULL! GetNextToken never returns an empty string! */
-  if (*token)
-    free(token);
 
-  if (!fFvwmInStartup)
-  {
-    MakeMenu(mr);
-  }
   return;
 }
 
@@ -5766,19 +5786,25 @@ void add_another_menu_item(char *action)
   MenuRoot *mrPrior;
   char *rest,*item;
 
-  mr = FollowMenuContinuations(Scr.last_added_item.item ,&mrPrior);
+  mr = FollowMenuContinuations(Scr.last_added_item.item, &mrPrior);
   if(mr == NULL)
     return;
+  if (MR_MAPPED_COPIES(mr) != 0)
+  {
+    fvwm_msg(ERR,"add_another_menu_item", "menu is in use");
+    return;
+  }
   rest = GetNextToken(action,&item);
   AddToMenu(mr, item,rest,True /* pixmap scan */, False);
   if (item)
     free(item);
-  if (!fFvwmInStartup)
-  {
-    MakeMenu(mr);
-  }
+
+  return;
 }
 
+/*
+ * ----------------------------- Position hints -------------------------------
+ */
 
 static int float_to_int_with_tolerance(float f)
 {
@@ -6213,3 +6239,16 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 
   return action;
 }
+
+
+/* Returns the menu options for the menu that a given menu item pops up */
+static void get_popup_options(MenuRoot *mr, MenuItem *mi, MenuOptions *pops)
+{
+  if (!mi)
+    return;
+  pops->flags.has_poshints = 0;
+  /* just look past "Popup <name>" in the action */
+  GetMenuOptions(SkipNTokens(MI_ACTION(mi), 2), MR_WINDOW(mr), NULL, mr, mi,
+		 pops);
+}
+

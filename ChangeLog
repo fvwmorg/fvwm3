@@ -1,4 +1,18 @@
+1999-06-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c: increased item height by one pixel
+
 1999-06-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c: Rewrote menu code so that MakeMenu is only called when
+	menus are mapped. This should save quite some time when building
+	dynamic menus. This used to call MakeMenu once for every new item.
+
+	* fvwm/menus.c (MakeMenus): function no longer needed.
+
+	* fvwm/fvwm.c (StartupStuff): no need to call MakeMenus any more
+
+	* fvwm/windowlist.c (do_windowList): no need to call MakeMenu any more
 
 	* libs/Bindings.c:
 	* fvwm/fvwm.c: Applied update to strokes patch

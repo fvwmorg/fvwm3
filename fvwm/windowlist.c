@@ -253,7 +253,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     /* Sort window list by desktop number */
     if((flags & SHOW_ALLDESKS) && !(flags & NO_DESK_SORT))
     {
-      /* run through the windowlist finding the first desk not already processed */
+      /* run through the windowlist finding the first desk not already
+       * processed */
       next_desk = INT_MAX;
       for (ii = 0; ii < numWindows; ii++)
       {
@@ -379,7 +380,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (func)
     free(func);
   free(windowList);
-  MakeMenu(mr);
   if (!default_action && eventp && eventp->type == KeyPress)
     teventp = (XEvent *)1;
   else

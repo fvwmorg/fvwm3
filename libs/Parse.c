@@ -135,8 +135,8 @@ static char *SkipSpaces(char *indata, char *spaces, int snum)
 /* Copies a token beginning at src to a previously allocated area dest. dest
  * must be large enough to hold the token. Leading whitespaces cause the token
  * to be NULL. */
-static char *CopyToken(char *src, char *dest, char *spaces, int snum, char *delims,
-		int dnum, char *out_delim)
+static char *CopyToken(char *src, char *dest, char *spaces, int snum,
+		       char *delims, int dnum, char *out_delim)
 {
   while ( (*src != 0) && !(isspace((unsigned char)*src) ||
 			   (snum && strchr(spaces, *src)) ||

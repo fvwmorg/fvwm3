@@ -98,7 +98,7 @@ typedef struct MenuFeel
     {
       unsigned is_animated : 1;
       unsigned do_popup_immediately : 1;
-      unsigned do_title_warp : 1;
+      unsigned do_warp_to_title : 1;
       unsigned do_popup_as_root_menu : 1;
       unsigned do_unmap_submenu_on_popdown : 1;
       unsigned use_left_submenus : 1;
@@ -144,8 +144,8 @@ typedef struct MenuLook
     unsigned char ReliefThickness;
     unsigned char TitleUnderlines;
     unsigned char BorderWidth;
-    Picture *sidePic;
-    Pixel sideColor;
+    Picture *side_picture;
+    Pixel side_color;
     GC MenuGC;
     GC MenuActiveGC;
     GC MenuActiveBackGC;
@@ -155,18 +155,110 @@ typedef struct MenuLook
     ColorPair MenuColors;
     ColorPair MenuActiveColors;
     ColorPair MenuStippleColors;
-    ColorPair MenuRelief;
+    ColorPair MenuReliefColors;
     MyFont *pStdFont;
     int FontHeight;              /* menu font height */
 } MenuLook;
 
 typedef struct MenuStyle
 {
-    char *name;
-    struct MenuStyle *next;
-    MenuLook look;
-    MenuFeel feel;
+  char *name;
+  struct MenuStyle *next_style;
+  unsigned int usage_count;
+  MenuLook look;
+  MenuFeel feel;
+  struct
+  {
+    unsigned is_updated : 1;
+  } flags;
 } MenuStyle;
+
+#define ST_NAME(s)                    ((s)->name)
+#define MST_NAME(m)                   ((m)->s->ms->name)
+#define ST_NEXT_STYLE(s)              ((s)->next_style)
+#define MST_NEXT_STYLE(m)             ((m)->s->ms->next_style)
+#define ST_USAGE_COUNT(s)             ((s)->usage_count)
+#define MST_USAGE_COUNT(m)            ((m)->s->ms->usage_count)
+/* flags */
+#define ST_IS_UPDATED(s)              ((s)->flags.is_updated)
+#define MST_IS_UPDATED(m)             ((m)->s->ms->flags.is_updated)
+/* look */
+#define ST_FACE(s)                    ((s)->look.face)
+#define MST_FACE(m)                   ((m)->s->ms->look.face)
+#define ST_DO_HILIGHT(s)              ((s)->look.flags.do_hilight)
+#define MST_DO_HILIGHT(m)             ((m)->s->ms->look.flags.do_hilight)
+#define ST_HAS_ACTIVE_FORE(s)         ((s)->look.flags.has_active_fore)
+#define MST_HAS_ACTIVE_FORE(m)        ((m)->s->ms->look.flags.has_active_fore)
+#define ST_HAS_ACTIVE_BACK(s)         ((s)->look.flags.has_active_back)
+#define MST_HAS_ACTIVE_BACK(m)        ((m)->s->ms->look.flags.has_active_back)
+#define ST_HAS_STIPPLE_FORE(s)        ((s)->look.flags.has_stipple_fore)
+#define MST_HAS_STIPPLE_FORE(m)       ((m)->s->ms->look.flags.has_stipple_fore)
+#define ST_HAS_LONG_SEPARATORS(s)     ((s)->look.flags.has_long_separators)
+#define MST_HAS_LONG_SEPARATORS(m)    ((m)->s->ms->look.flags.has_long_separators)
+#define ST_HAS_TRIANGLE_RELIEF(s)     ((s)->look.flags.has_triangle_relief)
+#define MST_HAS_TRIANGLE_RELIEF(m)    ((m)->s->ms->look.flags.has_triangle_relief)
+#define ST_HAS_SIDE_COLOR(s)          ((s)->look.flags.has_side_color)
+#define MST_HAS_SIDE_COLOR(m)         ((m)->s->ms->look.flags.has_side_color)
+#define ST_RELIEF_THICKNESS(s)        ((s)->look.ReliefThickness)
+#define MST_RELIEF_THICKNESS(m)       ((m)->s->ms->look.ReliefThickness)
+#define ST_TITLE_UNDERLINES(s)        ((s)->look.TitleUnderlines)
+#define MST_TITLE_UNDERLINES(m)       ((m)->s->ms->look.TitleUnderlines)
+#define ST_BORDER_WIDTH(s)            ((s)->look.BorderWidth)
+#define MST_BORDER_WIDTH(m)           ((m)->s->ms->look.BorderWidth)
+#define ST_SIDEPIC(s)                 ((s)->look.side_picture)
+#define MST_SIDEPIC(m)                ((m)->s->ms->look.side_picture)
+#define ST_SIDE_COLOR(s)              ((s)->look.side_color)
+#define MST_SIDE_COLOR(m)             ((m)->s->ms->look.side_color)
+#define ST_MENU_GC(s)                 ((s)->look.MenuGC)
+#define MST_MENU_GC(m)                ((m)->s->ms->look.MenuGC)
+#define ST_MENU_ACTIVE_GC(s)          ((s)->look.MenuActiveGC)
+#define MST_MENU_ACTIVE_GC(m)         ((m)->s->ms->look.MenuActiveGC)
+#define ST_MENU_ACTIVE_BACK_GC(s)     ((s)->look.MenuActiveBackGC)
+#define MST_MENU_ACTIVE_BACK_GC(m)    ((m)->s->ms->look.MenuActiveBackGC)
+#define ST_MENU_STIPPLE_GC(s)         ((s)->look.MenuStippleGC)
+#define MST_MENU_STIPPLE_GC(m)        ((m)->s->ms->look.MenuStippleGC)
+#define ST_MENU_RELIEF_GC(s)          ((s)->look.MenuReliefGC)
+#define MST_MENU_RELIEF_GC(m)         ((m)->s->ms->look.MenuReliefGC)
+#define ST_MENU_SHADOW_GC(s)          ((s)->look.MenuShadowGC)
+#define MST_MENU_SHADOW_GC(m)         ((m)->s->ms->look.MenuShadowGC)
+#define ST_MENU_COLORS(s)             ((s)->look.MenuColors)
+#define MST_MENU_COLORS(m)            ((m)->s->ms->look.MenuColors)
+#define ST_MENU_ACTIVE_COLORS(s)      ((s)->look.MenuActiveColors)
+#define MST_MENU_ACTIVE_COLORS(m)     ((m)->s->ms->look.MenuActiveColors)
+#define ST_MENU_STIPPLE_COLORS(s)     ((s)->look.MenuStippleColors)
+#define MST_MENU_STIPPLE_COLORS(m)    ((m)->s->ms->look.MenuStippleColors)
+#define ST_MENU_RELIEF_COLORS(s)      ((s)->look.MenuReliefColors)
+#define MST_MENU_RELIEF_COLORS(m)     ((m)->s->ms->look.MenuReliefColors)
+#define ST_PSTDFONT(s)                ((s)->look.pStdFont)
+#define MST_PSTDFONT(m)               ((m)->s->ms->look.pStdFont)
+#define ST_FONT_HEIGHT(s)             ((s)->look.FontHeight)
+#define MST_FONT_HEIGHT(m)            ((m)->s->ms->look.FontHeight)
+/* feel */
+#define ST_IS_ANIMATED(s)             ((s)->feel.flags.is_animated)
+#define MST_IS_ANIMATED(m)            ((m)->s->ms->feel.flags.is_animated)
+#define ST_DO_POPUP_IMMEDIATELY(s)    ((s)->feel.flags.do_popup_immediately)
+#define MST_DO_POPUP_IMMEDIATELY(m) \
+        ((m)->s->ms->feel.flags.do_popup_immediately)
+#define ST_DO_WARP_TO_TITLE(s)        ((s)->feel.flags.do_warp_to_title)
+#define MST_DO_WARP_TO_TITLE(m)       ((m)->s->ms->feel.flags.do_warp_to_title)
+#define ST_DO_POPUP_AS_ROOT_MENU(s)   ((s)->feel.flags.do_popup_as_root_menu)
+#define MST_DO_POPUP_AS_ROOT_MENU(m) \
+        ((m)->s->ms->feel.flags.do_popup_as_root_menu)
+#define ST_DO_UNMAP_SUBMENU_ON_POPDOWN(s) \
+        ((s)->feel.flags.do_unmap_submenu_on_popdown)
+#define MST_DO_UNMAP_SUBMENU_ON_POPDOWN(m) \
+        ((m)->s->ms->feel.flags.do_unmap_submenu_on_popdown)
+#define ST_USE_LEFT_SUBMENUS(s)       ((s)->feel.flags.use_left_submenus)
+#define MST_USE_LEFT_SUBMENUS(m)      ((m)->s->ms->feel.flags.use_left_submenus)
+#define ST_FLAGS(s)                   ((s)->feel.flags)
+#define MST_FLAGS(m)                  ((m)->s->ms->feel.flags)
+#define ST_POPUP_OFFSET_PERCENT(s)    ((s)->feel.PopupOffsetPercent)
+#define MST_POPUP_OFFSET_PERCENT(m)   ((m)->s->ms->feel.PopupOffsetPercent)
+#define ST_POPUP_OFFSET_ADD(s)        ((s)->feel.PopupOffsetAdd)
+#define MST_POPUP_OFFSET_ADD(m)       ((m)->s->ms->feel.PopupOffsetAdd)
+#define ST_ITEM_FORMAT(s)             ((s)->feel.item_format)
+#define MST_ITEM_FORMAT(m)            ((m)->s->ms->feel.item_format)
+
 
 
 /************************
@@ -283,6 +375,7 @@ typedef struct MenuRootStatic
   {
     unsigned has_side_color : 1;
     unsigned is_left_triangle : 1;
+    unsigned is_updated : 1;
   } flags;
   struct
   {
@@ -293,7 +386,6 @@ typedef struct MenuRootStatic
 } MenuRootStatic;
 
 /* access macros to static menu members */
-#define MR_BORDER_WIDTH(m)       ((m)->s->ms->look.BorderWidth)
 #define MR_FIRST_ITEM(m)         ((m)->s->first)
 #define MR_LAST_ITEM(m)          ((m)->s->last)
 #define MR_COPIES(m)             ((m)->s->copies)
@@ -320,6 +412,7 @@ typedef struct MenuRootStatic
 #define MR_MISSING_SUBMENU_FUNC(m) ((m)->s->dynamic.missing_submenu_func)
 #define MR_HAS_SIDECOLOR(m)      ((m)->s->flags.has_side_color)
 #define MR_IS_LEFT_TRIANGLE(m)   ((m)->s->flags.is_left_triangle)
+#define MR_IS_UPDATED(m)         ((m)->s->flags.is_updated)
 
 
 /* This struct contains the parts of a root menu that differ in all copies of
@@ -510,13 +603,11 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 			  float *ppctMovement );
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
-void MakeMenu(MenuRoot *);
 MenuStatus do_menu(MenuParameters *pmp);
 MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops);
 void DestroyMenu(MenuRoot *mr, Bool recreate);
-void MakeMenus(void);
 void add_item_to_menu(F_CMD_ARGS);
 void add_another_menu_item(char *action);
 void destroy_menu(F_CMD_ARGS);

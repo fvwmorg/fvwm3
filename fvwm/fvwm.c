@@ -696,8 +696,6 @@ void StartupStuff(void)
   checkPanFrames();
 
   fFvwmInStartup = False;
-  /* Must be done after startup is completed! */
-  MakeMenus();
 
   /* Make sure we have the correct click time now. */
   if (Scr.ClickTime < 0)
