@@ -2142,6 +2142,7 @@ static void MenuInteraction(
 	  MenuParameters mp;
 	  XEvent e;
 
+	  memset(&mp, 0, sizeof(mp));
 	  mp.menu = mrPopup;
 	  mp.parent_menu = pmp->menu;
 	  mp.parent_item = mi;
@@ -5440,6 +5441,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   else
     teventp = eventp;
 
+  memset(&mp, 0, sizeof(mp));
   mp.menu = menu;
   mp.parent_menu = NULL;
   mp.parent_item = NULL;

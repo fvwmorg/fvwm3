@@ -2808,7 +2808,7 @@ int flush_expose (Window w)
   XEvent dummy;
   int i=0;
 
-  while (XCheckTypedWindowEvent (dpy, w, Expose, &dummy))
+  while (XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
     i++;
   return i;
 }
