@@ -1,3 +1,8 @@
+1998-12-15  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/fvwm2.1 (Note): Document the way menustyle affects the placement
+	of the feedback windows.
+
 1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (MatchesContitionMask): tried to fix transient icons
