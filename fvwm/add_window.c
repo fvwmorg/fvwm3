@@ -1953,121 +1953,6 @@ void setup_focus_policy(FvwmWindow *fw)
 	return;
 }
 
-Bool setup_window_placement(
-	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
-	initial_window_options_t *win_opts)
-{
-	int client_argc = 0;
-	char **client_argv = NULL;
-	XrmValue rm_value;
-	int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
-	/* Used to parse command line of clients for specific desk requests. */
-	/* Todo: check for multiple desks. */
-	XrmDatabase db = NULL;
-	static XrmOptionDescRec table [] = {
-		/* Want to accept "-workspace N" or -xrm "fvwm*desk:N" as
-		 * options to specify the desktop. I have to include dummy
-		 * options that are meaningless since Xrm seems to allow -w to
-		 * match -workspace if there would be no ambiguity. */
-		{"-workspacf", "*junk", XrmoptionSepArg, (caddr_t) NULL},
-		{"-workspace", "*desk", XrmoptionSepArg, (caddr_t) NULL},
-		{"-xrn", NULL, XrmoptionResArg, (caddr_t) NULL},
-		{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL},
-	};
-	Bool rc;
-	const exec_context_t *exc;
-	exec_context_changes_t ecc;
-
-	/* Find out if the client requested a specific desk on the command
-	 * line. */
-	/*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
-
-	if (XGetCommand(dpy, FW_W(fw), &client_argv, &client_argc) &&
-	    client_argc > 0 && client_argv != NULL)
-	{
-		/* Get global X resources */
-		MergeXResources(dpy, &db, False);
-
-		/* command line takes precedence over all */
-		MergeCmdLineResources(
-			&db, table, 4, client_argv[0], &client_argc,
-			client_argv, True);
-
-		/* Now parse the database values: */
-		if (GetResourceString(db, "desk", client_argv[0], &rm_value) &&
-		    rm_value.size != 0)
-		{
-			SGET_START_DESK(*pstyle) = atoi(rm_value.addr);
-			/*  RBW - 11/20/1998  */
-			if (SGET_START_DESK(*pstyle) > -1)
-			{
-				SSET_START_DESK(
-					*pstyle, SGET_START_DESK(*pstyle) + 1);
-			}
-			pstyle->flags.use_start_on_desk = 1;
-		}
-		if (GetResourceString(
-			    db, "fvwmscreen", client_argv[0], &rm_value) &&
-		    rm_value.size != 0)
-		{
-			SSET_START_SCREEN(
-				*pstyle, FScreenGetScreenArgument(
-					rm_value.addr, 'c'));
-			pstyle->flags.use_start_on_screen = 1;
-		}
-		if (GetResourceString(db, "page", client_argv[0], &rm_value) &&
-		    rm_value.size != 0)
-		{
-			spargs = sscanf(
-				rm_value.addr, "%d %d %d", &tmpno1, &tmpno2,
-				&tmpno3);
-			switch (spargs)
-			{
-			case 1:
-				pstyle->flags.use_start_on_desk = 1;
-				SSET_START_DESK(*pstyle, (tmpno1 > -1) ?
-						tmpno1 + 1 : tmpno1);
-				break;
-			case 2:
-				pstyle->flags.use_start_on_desk = 1;
-				SSET_START_PAGE_X(*pstyle, (tmpno1 > -1) ?
-						  tmpno1 + 1 : tmpno1);
-				SSET_START_PAGE_Y(*pstyle, (tmpno2 > -1) ?
-						  tmpno2 + 1 : tmpno2);
-				break;
-			case 3:
-				pstyle->flags.use_start_on_desk = 1;
-				SSET_START_DESK(*pstyle, (tmpno1 > -1) ?
-						tmpno1 + 1 : tmpno1);
-				SSET_START_PAGE_X(*pstyle, (tmpno2 > -1) ?
-						  tmpno2 + 1 : tmpno2);
-				SSET_START_PAGE_Y(*pstyle, (tmpno3 > -1) ?
-						  tmpno3 + 1 : tmpno3);
-				break;
-			default:
-				break;
-			}
-		}
-
-		XFreeStringList(client_argv);
-		XrmDestroyDatabase(db);
-	}
-	if (pstyle->flags.do_start_iconic)
-	{
-		win_opts->initial_state = IconicState;
-	}
-	ecc.type = EXCT_NULL;
-	ecc.w.fw = fw;
-	exc = exc_create_context(&ecc, ECC_TYPE | ECC_FW);
-	rc = PlaceWindow(
-		exc, &pstyle->flags, attr_g, SGET_START_DESK(*pstyle),
-		SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle),
-		SGET_START_SCREEN(*pstyle), PLACE_INITIAL, win_opts);
-	exc_destroy_context(exc);
-
-	return rc;
-}
-
 Bool validate_transientfor(FvwmWindow *fw)
 {
 	XWindowAttributes wa;
@@ -2347,7 +2232,7 @@ FvwmWindow *AddWindow(
 		attr_g.width = wattr.width;
 		attr_g.height = wattr.height;
 		do_resize_too = setup_window_placement(
-			fw, &style, &attr_g, win_opts);
+			fw, &style, &attr_g, win_opts, PLACE_INITIAL);
 		wattr.x = attr_g.x;
 		wattr.y = attr_g.y;
 

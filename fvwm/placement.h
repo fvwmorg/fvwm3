@@ -3,8 +3,11 @@
 #ifndef PLACEMENT_H
 #define PLACEMENT_H
 
-#define PLACE_INITIAL 0x0
-#define PLACE_AGAIN   0x1
+/* ---------------------------- included header files ---------------------- */
+
+/* ---------------------------- global definitions ------------------------- */
+
+/* ---------------------------- global macros ------------------------------ */
 
 #define NORMAL_PLACEMENT_PENALTY(fw)      (fw->placement_penalty[0])
 #define ONTOP_PLACEMENT_PENALTY(fw)       (fw->placement_penalty[1])
@@ -18,9 +21,22 @@
 #define PERCENTAGE_85_PENALTY(fw) (fw->placement_percentage_penalty[2])
 #define PERCENTAGE_75_PENALTY(fw) (fw->placement_percentage_penalty[3])
 
-Bool PlaceWindow(
-	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
-	int Desk, int PageX, int PageY, int XineramaScreen, int mode,
-	initial_window_options_t *win_opts);
+/* ---------------------------- type definitions --------------------------- */
+
+typedef enum
+{
+	PLACE_INITIAL,
+	PLACE_AGAIN
+} placement_mode_t;
+
+/* ---------------------------- forward declarations ----------------------- */
+
+/* ---------------------------- exported variables (globals) --------------- */
+
+/* ---------------------------- interface functions ------------------------ */
+
+Bool setup_window_placement(
+	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
+	initial_window_options_t *win_opts, placement_mode_t mode);
 
 #endif /* PLACEMENT_H */

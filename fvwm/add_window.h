@@ -28,9 +28,6 @@ Bool setup_transientfor(FvwmWindow *fw);
 void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle);
 void setup_icon_background_parameters(FvwmWindow *fw, window_style *pstyle);
 void setup_icon_title_parameters(FvwmWindow *fw, window_style *pstyle);
-Bool setup_window_placement(
-	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
-	initial_window_options_t *win_opts);
 Bool validate_transientfor(FvwmWindow *fw);
 void setup_title_geometry(
 	FvwmWindow *fw, window_style *pstyle);

@@ -25,6 +25,8 @@
  * warrantees of any sort whatsoever are given or implied or anything.
  */
 
+/* ---------------------------- included header files ---------------------- */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -49,12 +51,110 @@
 #include "icons.h"
 #include "add_window.h"
 
+/* ---------------------------- local definitions -------------------------- */
+
+/* ---------------------------- local macros ------------------------------- */
+
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))
 #endif
 #ifndef MAX
 #define MAX(A,B) ((A)>(B)? (A):(B))
 #endif
+
+/* ---------------------------- imports ------------------------------------ */
+
+/* ---------------------------- included code files ------------------------ */
+
+/* ---------------------------- local types -------------------------------- */
+
+typedef enum
+{
+	PR_POS_ALGORITHM
+} preason_pos_t;
+
+typedef enum
+{
+	PR_SCREEN_CURRENT,
+	PR_SCREEN_STYLE,
+	PR_SCREEN_X_RESOURCE_FVWMSCREEN,
+	PR_SCREEN_IGNORE_CAPTURE
+} preason_screen_t;
+
+typedef enum
+{
+	PR_PAGE_CURRENT,
+	PR_PAGE_STYLE,
+	PR_PAGE_X_RESOURCE_PAGE,
+	PR_PAGE_IGNORE_CAPTURE,
+	PR_PAGE_IGNORE_INVALID,
+	PR_PAGE_STICKY
+} preason_page_t;
+
+typedef enum
+{
+	PR_DESK_CURRENT,
+	PR_DESK_STYLE,
+	PR_DESK_X_RESOURCE_DESK,
+	PR_DESK_X_RESOURCE_PAGE,
+	PR_DESK_CAPTURE,
+	PR_DESK_STICKY,
+	PR_DESK_WINDOW_GROUP_LEADER,
+	PR_DESK_WINDOW_GROUP_MEMBER,
+	PR_DESK_TRANSIENT,
+	PR_DESK_XPROP_XA_WM_DESKTOP
+} preason_desk_t;
+
+typedef struct
+{
+	struct
+	{
+		preason_pos_t reason;
+		int x;
+		int y;
+	} pos;
+	struct
+	{
+		preason_screen_t reason;
+		int screen;
+		rectangle g;
+		unsigned was_modified_by_ewmh_workingarea : 1;
+	} screen;
+	struct
+	{
+		preason_page_t reason;
+		int px;
+		int py;
+		unsigned do_switch_page : 1;
+		unsigned do_honor_starts_on_page : 1;
+	} page;
+	struct
+	{
+		preason_desk_t reason;
+		preason_desk_t sod_reason;
+		int desk;
+		unsigned do_switch_desk : 1;
+	} desk;
+} placement_reason_t;
+
+typedef struct
+{
+	int desk;
+	int page_x;
+	int page_y;
+	int screen;
+} placement_start_style_t;
+
+typedef struct
+{
+	unsigned do_forbid_manual_placement : 1;
+	unsigned do_honor_starts_on_page : 1;
+	unsigned do_honor_starts_on_screen : 1;
+	unsigned is_smartly_placed : 1;
+	unsigned do_not_use_wm_placement : 1;
+} placement_flags_t;
+
+/* ---------------------------- forward declarations ----------------------- */
 
 static int get_next_x(
 	FvwmWindow *t, rectangle *screen_g, int x, int y, int pdeltax,
@@ -69,6 +169,12 @@ static float test_fit(
 static void CleverPlacement(
 	FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
 	int *x, int *y, int pdeltax, int pdeltay, int use_percent);
+
+/* ---------------------------- local variables ---------------------------- */
+
+/* ---------------------------- exported variables (globals) --------------- */
+
+/* ---------------------------- local functions ---------------------------- */
 
 static int SmartPlacement(
 	FvwmWindow *t, rectangle *screen_g,
@@ -110,8 +216,9 @@ static int SmartPlacement(
 			{
 				if (t == test_fw ||
 				    IS_EWMH_DESKTOP(FW_W(test_fw)))
+				{
 					continue;
-
+				}
 				/*  RBW - account for sticky windows...  */
 				if (test_fw->Desk == t->Desk ||
 				    IS_STICKY_ACROSS_DESKS(test_fw))
@@ -639,7 +746,7 @@ static float test_fit(
 			EWMH_GetStrutIntersection(
 				x11, y11, x12, y12, use_percent);
 	}
-	else /* EWMH_USE_DYNAMIC_WORKING_AREA, count the base strut */ 
+	else /* EWMH_USE_DYNAMIC_WORKING_AREA, count the base strut */
 	{
 		aoi +=  EWMH_STRUT_PLACEMENT_PENALTY(t) *
 			EWMH_GetBaseStrutIntersection(
@@ -648,47 +755,450 @@ static float test_fit(
 	return aoi;
 }
 
+static void __place_get_placement_flags(
+	placement_flags_t *ret_flags, FvwmWindow *fw, style_flags *sflags,
+	initial_window_options_t *win_opts, int mode)
+{
+	/*!!!*/
+	Bool override_ppos;
+	Bool override_uspos;
+	Bool has_ppos = False;
+	Bool has_uspos = False;
 
-/*
- *
- * Handles initial placement and sizing of a new window
+	/* Windows use the position hint if these conditions are met:
+	 *
+	 *  The program specified a USPosition hint and it is not overridden
+	 *  with the No(Transient)USPosition style.
+	 *
+	 * OR
+	 *
+	 *  The program specified a PPosition hint and it is not overridden
+	 *  with *  the No(Transient)PPosition style.
+	 *
+	 * Windows without a position hint are placed using wm placement.
+	 */
+	if (IS_TRANSIENT(fw))
+	{
+		override_ppos = SUSE_NO_TRANSIENT_PPOSITION(sflags);
+		override_uspos = SUSE_NO_TRANSIENT_USPOSITION(sflags);
+	}
+	else
+	{
+		override_ppos = SUSE_NO_PPOSITION(sflags);
+		override_uspos = SUSE_NO_USPOSITION(sflags);
+	}
+	if ((fw->hints.flags & PPosition) && !override_ppos)
+	{
+		has_ppos = True;
+	}
+	if ((fw->hints.flags & USPosition) && !override_uspos)
+	{
+		has_uspos = True;
+	}
+	if (mode == PLACE_AGAIN)
+	{
+		ret_flags->do_not_use_wm_placement = False;
+	}
+	else if (has_ppos || has_uspos)
+	{
+		ret_flags->do_not_use_wm_placement = True;
+	}
+	else if (win_opts->flags.do_override_ppos)
+	{
+		ret_flags->do_not_use_wm_placement = True;
+	}
+	else if (!ret_flags->do_honor_starts_on_page &&
+		 fw->wmhints && (fw->wmhints->flags & StateHint) &&
+		 fw->wmhints->initial_state == IconicState)
+	{
+		ret_flags->do_forbid_manual_placement = True;
+	}
+
+	return;
+}
+
+static Bool __place_get_wm_pos(
+	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
+	placement_flags_t flags, rectangle screen_g,
+	placement_start_style_t start_style, int mode,
+	initial_window_options_t *win_opts, placement_reason_t *reason,
+	int pdeltax, int pdeltay)
+{
+	/*!!!*/
+
+	unsigned int placement_mode = SPLACEMENT_MODE(sflags);
+	FvwmWindow *fw = exc->w.fw;
+	Bool rc;
+	int DragWidth;
+	int DragHeight;
+	size_borders b;
+	int PageLeft;
+	int PageTop;
+	int PageRight;
+	int PageBottom;
+	int xl;
+	int yt;
+
+	rc = False;
+	PageLeft   = screen_g.x - pdeltax;
+	PageTop    = screen_g.y - pdeltay;
+	PageRight  = PageLeft + screen_g.width - pdeltax;
+	PageBottom = PageTop + screen_g.height - pdeltay;
+	xl = -1;
+	yt = PageTop;
+	/* override if Manual placement happen */
+	SET_PLACED_BY_FVWM(fw, True);
+	if (flags.do_forbid_manual_placement)
+	{
+		switch (placement_mode)
+		{
+		case PLACE_MANUAL:
+		case PLACE_MANUAL_B:
+			placement_mode = PLACE_CASCADE;
+			break;
+		case PLACE_TILEMANUAL:
+			placement_mode = PLACE_TILECASCADE;
+			break;
+		default:
+			break;
+		}
+	}
+	/* first, try various "smart" placement */
+	switch (placement_mode)
+	{
+	case PLACE_TILEMANUAL:
+		flags.is_smartly_placed = SmartPlacement(
+			fw, &screen_g, fw->frame_g.width, fw->frame_g.height,
+			&xl, &yt, pdeltax, pdeltay);
+		if (flags.is_smartly_placed)
+		{
+			break;
+		}
+		/* fall through to manual placement */
+	case PLACE_MANUAL:
+	case PLACE_MANUAL_B:
+		/* either "smart" placement fail and the second
+		 * choice is a manual placement (TileManual) or we
+		 * have a manual placement in any case (Manual) */
+		xl = -1;
+		yt = -1;
+		if (GrabEm(CRS_POSITION, GRAB_NORMAL))
+		{
+			int mx;
+			int my;
+
+			/* Grabbed the pointer - continue */
+			MyXGrabServer(dpy);
+			if (XGetGeometry(
+				    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+				    (unsigned int *)&DragWidth,
+				    (unsigned int *)&DragHeight, &JunkBW,
+				    &JunkDepth) == 0)
+			{
+				MyXUngrabServer(dpy);
+				UngrabEm(GRAB_NORMAL);
+				return False;
+			}
+			SET_PLACED_BY_FVWM(fw,False);
+			MyXGrabKeyboard(dpy);
+			DragWidth = fw->frame_g.width;
+			DragHeight = fw->frame_g.height;
+
+			if (Scr.SizeWindow != None)
+			{
+				XMapRaised(dpy, Scr.SizeWindow);
+			}
+			FScreenGetScrRect(
+				NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
+			if (__move_loop(
+				    exc, mx, my, DragWidth, DragHeight, &xl,
+				    &yt, False))
+			{
+				/* resize too */
+				rc = True;
+			}
+			else
+			{
+				rc = False;
+			}
+			if (Scr.SizeWindow != None)
+			{
+				XUnmapWindow(dpy, Scr.SizeWindow);
+			}
+			MyXUngrabKeyboard(dpy);
+			MyXUngrabServer(dpy);
+			UngrabEm(GRAB_NORMAL);
+		}
+		else
+		{
+			/* couldn't grab the pointer - better do
+			 * something */
+			XBell(dpy, 0);
+			xl = 0;
+			yt = 0;
+		}
+		if (flags.do_honor_starts_on_page)
+		{
+			xl -= pdeltax;
+			yt -= pdeltay;
+		}
+		attr_g->y = yt;
+		attr_g->x = xl;
+		break;
+	case PLACE_MINOVERLAPPERCENT:
+		CleverPlacement(
+			fw, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 1);
+		flags.is_smartly_placed = True;
+		break;
+	case PLACE_TILECASCADE:
+		flags.is_smartly_placed = SmartPlacement(
+			fw, &screen_g, fw->frame_g.width, fw->frame_g.height,
+			&xl, &yt, pdeltax, pdeltay);
+		if (flags.is_smartly_placed)
+		{
+			break;
+		}
+		/* fall through to cascade placement */
+	case PLACE_CASCADE:
+	case PLACE_CASCADE_B:
+		/* either "smart" placement fail and the second choice is
+		 * "cascade" placement (TileCascade) or we have a "cascade"
+		 * placement in any case (Cascade) or we have a crazy
+		 * SPLACEMENT_MODE(sflags) value set with the old Style
+		 * Dumb/Smart, Random/Active, Smart/SmartOff (i.e.:
+		 * Dumb+Random+Smart or Dumb+Active+Smart) */
+		if (Scr.cascade_window != NULL)
+		{
+			Scr.cascade_x += fw->title_thickness;
+			Scr.cascade_y += 2 * fw->title_thickness;
+		}
+		Scr.cascade_window = fw;
+		if (Scr.cascade_x > screen_g.width / 2)
+		{
+			Scr.cascade_x = fw->title_thickness;
+		}
+		if (Scr.cascade_y > screen_g.height / 2)
+		{
+			Scr.cascade_y = 2 * fw->title_thickness;
+		}
+		attr_g->x = Scr.cascade_x + PageLeft - pdeltax;
+		attr_g->y = Scr.cascade_y + PageTop - pdeltay;
+
+		/* migo: what should these crazy calculations mean? */
+#if 0
+		fw->frame_g.x = PageLeft + attr_g->x +
+			fw->attr_backup.border_width + 10;
+		fw->frame_g.y = PageTop + attr_g->y +
+			fw->attr_backup.border_width + 10;
+#endif
+
+		/* try to keep the window on the screen */
+		get_window_borders(fw, &b);
+		if (attr_g->x + fw->frame_g.width >= PageRight)
+		{
+			attr_g->x = PageRight - attr_g->width -
+				b.total_size.width;
+			Scr.cascade_x = fw->title_thickness;
+		}
+		if (attr_g->y + fw->frame_g.height >= PageBottom)
+		{
+			attr_g->y = PageBottom - attr_g->height -
+				b.total_size.height;
+			Scr.cascade_y = 2 * fw->title_thickness;
+		}
+
+		/* the left and top sides are more important in huge
+		 * windows */
+		if (attr_g->x < PageLeft)
+		{
+			attr_g->x = PageLeft;
+		}
+		if (attr_g->y < PageTop)
+		{
+			attr_g->y = PageTop;
+		}
+		break;
+	case PLACE_MINOVERLAP:
+		CleverPlacement(
+			fw, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 0);
+		flags.is_smartly_placed = True;
+		break;
+	default:
+		/* can't happen */
+		break;
+	}
+
+	if (flags.is_smartly_placed)
+	{
+		/* "smart" placement succed, we have done ... */
+		attr_g->x = xl;
+		attr_g->y = yt;
+	}
+
+	return rc;
+}
+
+static Bool __place_get_nowm_pos(
+	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
+	placement_flags_t flags, rectangle screen_g,
+	placement_start_style_t start_style, int mode,
+	initial_window_options_t *win_opts, placement_reason_t *reason,
+	int pdeltax, int pdeltay)
+{
+	/*!!!*/
+	FvwmWindow *fw = exc->w.fw;
+	size_borders b;
+
+	if (!win_opts->flags.do_override_ppos)
+	{
+		SET_PLACED_BY_FVWM(fw,False);
+	}
+	/* the USPosition was specified, or the window is a transient, or it
+	 * starts iconic so place it automatically */
+
+	if (SUSE_START_ON_SCREEN(sflags) && flags.do_honor_starts_on_screen)
+	{
+		fscreen_scr_t mangle_screen;
+
+		/* If StartsOnScreen has been given for a window, translate its
+		 * USPosition so that it is relative to that particular screen.
+		 *  If we don't do this, then a geometry would completely
+		 * cancel the effect of the StartsOnScreen style. However, some
+		 * applications try to remember their position.  This would
+		 * break if these were translated to screen coordinates.  There
+		 * is no reliable way to do it.  Currently, if the desired
+		 * place does not intersect the target screen, we assume the
+		 * window position must be adjusted to the screen origin. So
+		 * there are two ways to get a window to pop up on a particular
+		 * Xinerama screen.  1: The intuitive way giving a geometry
+		 * hint relative to the desired screen's 0,0 along with the
+		 * appropriate StartsOnScreen style (or *wmscreen resource), or
+		 * 2: Do NOT specify a Xinerama screen (or specify it to be
+		 * 'g') and give the geometry hint in terms of the global
+		 * screen. */
+		mangle_screen = FScreenFetchMangledScreenFromUSPosHints(
+			&(fw->hints));
+		if (mangle_screen != FSCREEN_GLOBAL)
+		{
+			/* whoever set this hint knew exactly what he was
+			 * doing; so ignore the StartsOnScreen style */
+			flags.do_honor_starts_on_screen = 0;
+		}
+		else if (attr_g->x + attr_g->width < screen_g.x ||
+			 attr_g->x >= screen_g.x + screen_g.width ||
+			 attr_g->y + attr_g->height < screen_g.y ||
+			 attr_g->y >= screen_g.y + screen_g.height)
+		{
+			/* desired coordinates do not intersect the target
+			 * screen.  Let's assume the application specified
+			 * global coordinates and translate them to the screen.
+			 */
+			FScreenTranslateCoordinates(
+				NULL, start_style.screen, NULL, FSCREEN_GLOBAL,
+				&attr_g->x, &attr_g->y);
+		}
+	}
+
+	/* If SkipMapping, and other legalities are observed, adjust for
+	 * StartsOnPage. */
+	if (DO_NOT_SHOW_ON_MAP(fw) && flags.do_honor_starts_on_page &&
+	    (!IS_TRANSIENT(fw) || SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags))
+#if 0
+	    /* dv 08-Jul-2003:  Do not use this.  Instead, force the window on
+	     * the requested page even if the application requested a different
+	     * position. */
+	    && (SUSE_NO_PPOSITION(sflags) || !(fw->hints.flags & PPosition))
+	    /* dv 08-Jul-2003:  This condition is always true because we
+	     * already checked for flags.do_honor_starts_on_page above. */
+	    /*  RBW - allow StartsOnPage to go through, even if iconic. */
+	    && ((!(fw->wmhints && (fw->wmhints->flags & StateHint) &&
+		   fw->wmhints->initial_state == IconicState))
+		|| flags.do_honor_starts_on_page)
+#endif
+		)
+	{
+		/* We're placing a SkipMapping window - either capturing one
+		 * that's previously been mapped, or overriding USPosition - so
+		 * what we have here is its actual untouched coordinates. In
+		 * case it was a StartsOnPage window, we have to 1) convert the
+		 * existing x,y offsets relative to the requested page (i.e.,
+		 * as though there were only one page, no virtual desktop),
+		 * then 2) readjust relative to the current page. */
+		if (attr_g->x < 0)
+		{
+			attr_g->x += Scr.MyDisplayWidth;
+		}
+		attr_g->x %= Scr.MyDisplayWidth;
+		attr_g->x -= pdeltax;
+		/* Noticed a quirk here. With some apps (e.g., xman), we find
+		 * the placement has moved 1 pixel away from where we
+		 * originally put it when we come through here.  Why is this
+		 * happening? Probably attr_backup.border_width, try xclock
+		 * -borderwidth 100 */
+		if (attr_g->y < 0)
+		{
+			attr_g->y += Scr.MyDisplayHeight;
+		}
+		attr_g->y %= Scr.MyDisplayHeight;
+		attr_g->y -= pdeltay;
+	}
+	/* put it where asked, mod title bar */
+	/* if the gravity is towards the top, move it by the title height */
+	{
+		rectangle final_g;
+		int gravx;
+		int gravy;
+
+		gravity_get_offsets(fw->hints.win_gravity, &gravx, &gravy);
+		final_g.x = attr_g->x + gravx * fw->attr_backup.border_width;
+		final_g.y = attr_g->y + gravy * fw->attr_backup.border_width;
+		/* Virtually all applications seem to share a common bug: they
+		 * request the top left pixel of their *border* as their origin
+		 * instead of the top left pixel of their client window, e.g.
+		 * 'xterm -g +0+0' creates an xterm that tries to map at (0 0)
+		 * although its border (width 1) would not be visible if it ran
+		 * under plain X.  It should have tried to map at (1 1)
+		 * instead.  This clearly violates the ICCCM, but trying to
+		 * change this is like tilting at windmills.  So we have to add
+		 * the border width here. */
+		final_g.x += fw->attr_backup.border_width;
+		final_g.y += fw->attr_backup.border_width;
+		final_g.width = 0;
+		final_g.height = 0;
+		if (mode == PLACE_INITIAL)
+		{
+			get_window_borders(fw, &b);
+			gravity_resize(
+				fw->hints.win_gravity, &final_g,
+				b.total_size.width, b.total_size.height);
+		}
+		attr_g->x = final_g.x;
+		attr_g->y = final_g.y;
+	}
+
+	return False;
+}
+
+/* Handles initial placement and sizing of a new window
  *
  * Return value:
  *
  *   0 = window lost
  *   1 = OK
- *   2 = OK, window must be resized too
- *
- */
-Bool PlaceWindow(
+ *   2 = OK, window must be resized too */
+Bool __place_window(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
-	int Desk, int PageX, int PageY, int XineramaScreen, int mode,
-	initial_window_options_t *win_opts)
+	placement_start_style_t start_style, int mode,
+	initial_window_options_t *win_opts, placement_reason_t *reason)
 {
 	FvwmWindow *t;
-	int xl = -1;
-	int yt;
-	int DragWidth;
-	int DragHeight;
 	int px = 0;
 	int py = 0;
 	int pdeltax = 0;
 	int pdeltay = 0;
-	int PageLeft;
-	int PageTop;
-	int PageRight;
-	int PageBottom;
 	rectangle screen_g;
-	size_borders b;
 	Bool rc = False;
-	struct
-	{
-		unsigned do_forbid_manual_placement : 1;
-		unsigned do_honor_starts_on_page : 1;
-		unsigned do_honor_starts_on_screen : 1;
-		unsigned is_smartly_placed : 1;
-		unsigned do_not_use_wm_placement : 1;
-	} flags;
+	placement_flags_t flags;
 	extern Bool Restarting;
 	FvwmWindow *fw = exc->w.fw;
 
@@ -717,6 +1227,8 @@ Bool PlaceWindow(
 		{
 			flags.do_honor_starts_on_page = False;
 			flags.do_honor_starts_on_screen = False;
+			reason->page.reason = PR_PAGE_IGNORE_CAPTURE;
+			reason->screen.reason = PR_PAGE_IGNORE_CAPTURE;
 		}
 		/*
 		 * it's a cold start window capture, and that's disallowed...
@@ -727,6 +1239,8 @@ Bool PlaceWindow(
 		{
 			flags.do_honor_starts_on_page = False;
 			flags.do_honor_starts_on_screen = False;
+			reason->page.reason = PR_PAGE_IGNORE_CAPTURE;
+			reason->screen.reason = PR_PAGE_IGNORE_CAPTURE;
 		}
 		/*
 		 * it's ActivePlacement and SkipMapping, and that's disallowed.
@@ -739,13 +1253,14 @@ Bool PlaceWindow(
 		     !SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags)))
 		{
 			flags.do_honor_starts_on_page = False;
+			reason->page.reason = PR_PAGE_IGNORE_INVALID;
 			fvwm_msg(
-				WARN, "PlaceWindow",
+				WARN, "__place_window",
 				"invalid style combination used: StartsOnPage"
 				"/StartsOnDesk and SkipMapping don't work with"
 				" ManualPlacement and TileManualPlacement."
 				" Putting window on current page, please use"
-				" an other placement style or"
+				" another placement style or"
 				" ActivePlacementHonorsStartsOnPage.");
 		}
 	}
@@ -756,8 +1271,9 @@ Bool PlaceWindow(
 		{
 			/* use screen from style */
 			FScreenGetScrRect(
-				NULL, XineramaScreen, &screen_g.x, &screen_g.y,
-				&screen_g.width, &screen_g.height);
+				NULL, start_style.screen, &screen_g.x,
+				&screen_g.y, &screen_g.width, &screen_g.height);
+			reason->screen.screen = start_style.screen;
 		}
 		else
 		{
@@ -765,6 +1281,7 @@ Bool PlaceWindow(
 			FScreenGetScrRect(
 				NULL, FSCREEN_GLOBAL, &screen_g.x, &screen_g.y,
 				&screen_g.width, &screen_g.height);
+			reason->screen.screen = FSCREEN_GLOBAL;
 		}
 	}
 	else
@@ -773,6 +1290,7 @@ Bool PlaceWindow(
 		FScreenGetScrRect(
 			NULL, FSCREEN_CURRENT, &screen_g.x, &screen_g.y,
 			&screen_g.width, &screen_g.height);
+		reason->screen.screen = FSCREEN_CURRENT;
 	}
 
 	if (SPLACEMENT_MODE(sflags) != PLACE_MINOVERLAPPERCENT &&
@@ -781,27 +1299,30 @@ Bool PlaceWindow(
 		EWMH_GetWorkAreaIntersection(
 			fw, &screen_g.x, &screen_g.y, &screen_g.width,
 			&screen_g.height, SEWMH_PLACEMENT_MODE(sflags));
+		reason->screen.was_modified_by_ewmh_workingarea = 1;
 	}
-
-	PageLeft   = screen_g.x - pdeltax;
-	PageTop    = screen_g.y - pdeltay;
-	PageRight  = PageLeft + screen_g.width;
-	PageBottom = PageTop + screen_g.height;
-	yt = PageTop;
-
+	reason->screen.g = screen_g;
 	/* Don't alter the existing desk location during Capture/Recapture.  */
 	if (!win_opts->flags.do_override_ppos)
 	{
 		fw->Desk = Scr.CurrentDesk;
+		reason->desk.reason = PR_DESK_CURRENT;
+	}
+	else
+	{
+		reason->desk.reason = PR_DESK_CAPTURE;
 	}
 	if (S_IS_STICKY_ACROSS_DESKS(SFC(*sflags)))
 	{
 		fw->Desk = Scr.CurrentDesk;
+		reason->desk.reason = PR_DESK_STICKY;
 	}
-	else if (SUSE_START_ON_DESK(sflags) && Desk &&
+	else if (SUSE_START_ON_DESK(sflags) && start_style.desk &&
 		 flags.do_honor_starts_on_page)
 	{
-		fw->Desk = (Desk > -1) ? Desk - 1 : Desk;
+		fw->Desk = (start_style.desk > -1) ?
+			start_style.desk - 1 : start_style.desk;
+		reason->desk.reason = reason->desk.sod_reason;
 	}
 	else
 	{
@@ -818,6 +1339,8 @@ Bool PlaceWindow(
 				{
 					/* found the group leader, break out */
 					fw->Desk = t->Desk;
+					reason->desk.reason =
+						PR_DESK_WINDOW_GROUP_LEADER;
 					break;
 				}
 				else if (t->wmhints &&
@@ -830,6 +1353,8 @@ Bool PlaceWindow(
 					 * but keep looking for the group
 					 * leader */
 					fw->Desk = t->Desk;
+					reason->desk.reason =
+						PR_DESK_WINDOW_GROUP_MEMBER;
 				}
 			}
 		}
@@ -842,6 +1367,7 @@ Bool PlaceWindow(
 				if (FW_W(t) == FW_W_TRANSIENTFOR(fw))
 				{
 					fw->Desk = t->Desk;
+					reason->desk.reason = PR_DESK_TRANSIENT;
 					break;
 				}
 			}
@@ -866,471 +1392,217 @@ Bool PlaceWindow(
 				{
 					fw->Desk = *(unsigned long *)prop;
 					XFree(prop);
+					reason->desk.reason =
+						PR_DESK_XPROP_XA_WM_DESKTOP;
 				}
 			}
 		}
 	}
-
+	reason->desk.desk = Scr.CurrentDesk;
 	/* I think it would be good to switch to the selected desk
 	 * whenever a new window pops up, except during initialization */
 	/*  RBW - 11/02/1998  --  I dont. */
-	if ((!win_opts->flags.do_override_ppos)&&(!DO_NOT_SHOW_ON_MAP(fw)))
+	if (!win_opts->flags.do_override_ppos && !DO_NOT_SHOW_ON_MAP(fw))
 	{
 		goto_desk(fw->Desk);
+		reason->desk.do_switch_desk = 1;
 	}
-
 	/* Don't move viewport if SkipMapping, or if recapturing the window,
 	 * adjust the coordinates later. Otherwise, just switch to the target
-	 * page - it's ever so much simpler.
-	 */
-	if (!S_IS_STICKY_ACROSS_PAGES(SFC(*sflags)) &&
-	    SUSE_START_ON_DESK(sflags))
+	 * page - it's ever so much simpler. */
+	if (S_IS_STICKY_ACROSS_PAGES(SFC(*sflags)))
 	{
-		if (PageX && PageY)
+		reason->page.reason = PR_PAGE_STICKY;
+	}
+	else if (SUSE_START_ON_DESK(sflags))
+	{
+		if (start_style.page_x != 0 && start_style.page_y != 0)
 		{
-			px = PageX - 1;
-			py = PageY - 1;
+			px = start_style.page_x - 1;
+			py = start_style.page_y - 1;
+			reason->page.reason = PR_PAGE_STYLE;
 			px *= Scr.MyDisplayWidth;
 			py *= Scr.MyDisplayHeight;
-			if ( (!win_opts->flags.do_override_ppos) &&
-			     (!DO_NOT_SHOW_ON_MAP(fw)))
+			if (!win_opts->flags.do_override_ppos &&
+			    !DO_NOT_SHOW_ON_MAP(fw))
 			{
 				MoveViewport(px,py,True);
+				reason->page.do_switch_page = 1;
 			}
 			else if (flags.do_honor_starts_on_page)
 			{
 				/*  Save the delta from current page */
-				pdeltax     = Scr.Vx - px;
-				pdeltay     = Scr.Vy - py;
-				PageLeft   -= pdeltax;
-				PageRight  -= pdeltax;
-				PageTop    -= pdeltay;
-				PageBottom -= pdeltay;
+				pdeltax = Scr.Vx - px;
+				pdeltay = Scr.Vy - py;
+				reason->page.do_honor_starts_on_page = 1;
 			}
 		}
 	}
 
-	/* Desk has been selected, now pick a location for the window.
-	 *
-	 * Windows use the position hint if these conditions are met:
-	 *
-	 *  The program specified a USPosition hint and it is not overridden
-	 *  with the No(Transient)USPosition style.
-	 *
-	 * OR
-	 *
-	 *  The program specified a PPosition hint and it is not overridden
-	 *  with *  the No(Transient)PPosition style.
-	 *
-	 * Windows without a position hint are placed using wm placement.
-	 *
-	 * If RandomPlacement was specified, then place the window in a
-	 * psuedo-random location
-	 */
+	/* pick a location for the window. */
+	__place_get_placement_flags(&flags, fw, sflags, win_opts, mode);
+	if (flags.do_not_use_wm_placement)
 	{
-		Bool override_ppos;
-		Bool override_uspos;
-		Bool has_ppos = False;
-		Bool has_uspos = False;
-
-		if (IS_TRANSIENT(fw))
-		{
-			override_ppos = SUSE_NO_TRANSIENT_PPOSITION(sflags);
-			override_uspos = SUSE_NO_TRANSIENT_USPOSITION(sflags);
-		}
-		else
-		{
-			override_ppos = SUSE_NO_PPOSITION(sflags);
-			override_uspos = SUSE_NO_USPOSITION(sflags);
-		}
-		if ((fw->hints.flags & PPosition) && !override_ppos)
-		{
-			has_ppos = True;
-		}
-		if ((fw->hints.flags & USPosition) && !override_uspos)
-		{
-			has_uspos = True;
-		}
-
-		if (mode == PLACE_AGAIN)
-		{
-			flags.do_not_use_wm_placement = False;
-		}
-		else if (has_ppos || has_uspos)
-		{
-			flags.do_not_use_wm_placement = True;
-		}
-		else if (win_opts->flags.do_override_ppos)
-		{
-			flags.do_not_use_wm_placement = True;
-		}
-		else if (!flags.do_honor_starts_on_page &&
-			 fw->wmhints && (fw->wmhints->flags & StateHint) &&
-			 fw->wmhints->initial_state == IconicState)
-		{
-			flags.do_forbid_manual_placement = True;
-		}
+		rc = __place_get_nowm_pos(
+			exc, sflags, attr_g, flags, screen_g, start_style,
+			mode, win_opts, reason, pdeltax, pdeltay);
 	}
-
-	if (!flags.do_not_use_wm_placement)
-	{
-		unsigned int placement_mode = SPLACEMENT_MODE(sflags);
-
-		/* override if Manual placement happen */
-		SET_PLACED_BY_FVWM(fw,True);
-
-		if (flags.do_forbid_manual_placement)
-		{
-			switch (placement_mode)
-			{
-			case PLACE_MANUAL:
-			case PLACE_MANUAL_B:
-				placement_mode = PLACE_CASCADE;
-				break;
-			case PLACE_TILEMANUAL:
-				placement_mode = PLACE_TILECASCADE;
-				break;
-			default:
-				break;
-			}
-		}
-
-		/* first, try various "smart" placement */
-		switch (placement_mode)
-		{
-		case PLACE_TILEMANUAL:
-			flags.is_smartly_placed = SmartPlacement(
-				fw, &screen_g, fw->frame_g.width,
-				fw->frame_g.height, &xl, &yt, pdeltax,
-				pdeltay);
-			if (flags.is_smartly_placed)
-			{
-				break;
-			}
-			/* fall through to manual placement */
-		case PLACE_MANUAL:
-		case PLACE_MANUAL_B:
-			/* either "smart" placement fail and the second
-			 * choice is a manual placement (TileManual) or we
-			 * have a manual placement in any case (Manual) */
-			xl = -1;
-			yt = -1;
-
-			if (GrabEm(CRS_POSITION, GRAB_NORMAL))
-			{
-				int mx;
-				int my;
-
-				/* Grabbed the pointer - continue */
-				MyXGrabServer(dpy);
-				if (XGetGeometry(
-					    dpy, FW_W(fw), &JunkRoot, &JunkX,
-					    &JunkY, (unsigned int *)&DragWidth,
-					    (unsigned int *)&DragHeight,
-					    &JunkBW,  &JunkDepth) == 0)
-				{
-					MyXUngrabServer(dpy);
-					UngrabEm(GRAB_NORMAL);
-					return False;
-				}
-				SET_PLACED_BY_FVWM(fw,False);
-				MyXGrabKeyboard(dpy);
-				DragWidth = fw->frame_g.width;
-				DragHeight = fw->frame_g.height;
-
-				if (Scr.SizeWindow != None)
-				{
-					XMapRaised(dpy, Scr.SizeWindow);
-				}
-				FScreenGetScrRect(
-					NULL, FSCREEN_GLOBAL, &mx, &my, NULL,
-					NULL);
-				if (__move_loop(
-					    exc, mx, my, DragWidth, DragHeight,
-					    &xl, &yt, False))
-				{
-					/* resize too */
-					rc = True;
-				}
-				else
-				{
-					/* ok */
-					rc = False;
-				}
-				if (Scr.SizeWindow != None)
-				{
-					XUnmapWindow(dpy, Scr.SizeWindow);
-				}
-				MyXUngrabKeyboard(dpy);
-				MyXUngrabServer(dpy);
-				UngrabEm(GRAB_NORMAL);
-			}
-			else
-			{
-				/* couldn't grab the pointer - better do
-				 * something */
-				XBell(dpy, 0);
-				xl = 0;
-				yt = 0;
-			}
-			if (flags.do_honor_starts_on_page)
-			{
-				xl -= pdeltax;
-				yt -= pdeltay;
-			}
-			attr_g->y = yt;
-			attr_g->x = xl;
-			break;
-		case PLACE_MINOVERLAPPERCENT:
-			CleverPlacement(
-				fw, sflags, &screen_g, &xl, &yt, pdeltax,
-				pdeltay, 1);
-			flags.is_smartly_placed = True;
-			break;
-		case PLACE_TILECASCADE:
-			flags.is_smartly_placed = SmartPlacement(
-				fw, &screen_g, fw->frame_g.width,
-				fw->frame_g.height, &xl, &yt, pdeltax,
-				pdeltay);
-			if (flags.is_smartly_placed)
-			{
-				break;
-			}
-			/* fall through to cascade placement */
-		case PLACE_CASCADE:
-		case PLACE_CASCADE_B:
-			/* either "smart" placement fail and the second choice
-			 * is "cascade" placement (TileCascade) or we have a
-			 * "cascade" placement in any case (Cascade) or we
-			 * have a crazy SPLACEMENT_MODE(sflags) value set with
-			 * the old Style Dumb/Smart, Random/Active,
-			 * Smart/SmartOff (i.e.: Dumb+Random+Smart or
-			 * Dumb+Active+Smart) */
-			if (Scr.cascade_window != NULL)
-			{
-				Scr.cascade_x += fw->title_thickness;
-				Scr.cascade_y += 2 * fw->title_thickness;
-			}
-			Scr.cascade_window = fw;
-			if (Scr.cascade_x > screen_g.width / 2)
-			{
-				Scr.cascade_x = fw->title_thickness;
-			}
-			if (Scr.cascade_y > screen_g.height / 2)
-			{
-				Scr.cascade_y = 2 * fw->title_thickness;
-			}
-			attr_g->x = Scr.cascade_x + PageLeft - pdeltax;
-			attr_g->y = Scr.cascade_y + PageTop - pdeltay;
-
-			/* migo: what should these crazy calculations mean? */
-#if 0
-			fw->frame_g.x = PageLeft + attr_g->x +
-				fw->attr_backup.border_width + 10;
-			fw->frame_g.y = PageTop + attr_g->y +
-				fw->attr_backup.border_width + 10;
-#endif
-
-			/* try to keep the window on the screen */
-			get_window_borders(fw, &b);
-			if (attr_g->x + fw->frame_g.width >= PageRight)
-			{
-				attr_g->x = PageRight - attr_g->width -
-					b.total_size.width;
-				Scr.cascade_x = fw->title_thickness;
-			}
-			if (attr_g->y + fw->frame_g.height >= PageBottom)
-			{
-				attr_g->y = PageBottom - attr_g->height -
-					b.total_size.height;
-				Scr.cascade_y = 2 * fw->title_thickness;
-			}
-
-			/* the left and top sides are more important in huge
-			 * windows */
-			if (attr_g->x < PageLeft)
-			{
-				attr_g->x = PageLeft;
-			}
-			if (attr_g->y < PageTop)
-			{
-				attr_g->y = PageTop;
-			}
-			break;
-		case PLACE_MINOVERLAP:
-			CleverPlacement(
-				fw, sflags, &screen_g, &xl, &yt, pdeltax,
-				pdeltay, 0);
-			flags.is_smartly_placed = True;
-			break;
-		default:
-			/* can't happen */
-			break;
-		}
-
-		if (flags.is_smartly_placed)
-		{
-			/* "smart" placement succed, we have done ... */
-			attr_g->x = xl;
-			attr_g->y = yt;
-		}
-	} /* !flags.do_not_use_wm_placement */
 	else
 	{
-		if (!win_opts->flags.do_override_ppos)
-			SET_PLACED_BY_FVWM(fw,False);
-		/* the USPosition was specified, or the window is a transient,
-		 * or it starts iconic so place it automatically */
-
-		if (SUSE_START_ON_SCREEN(sflags) &&
-		    flags.do_honor_starts_on_screen)
-		{
-			fscreen_scr_t mangle_screen;
-
-			/* If StartsOnScreen has been given for a window,
-			 * translate its USPosition so that it is relative to
-			 * that particular screen.  If we don't do this, then
-			 * a geometry would completely cancel the effect of
-			 * the StartsOnScreen style.
-			 * However, some applications try to remember their
-			 * position.  This would break if these were
-			 * translated to screen coordinates.  There is no
-			 * reliable way to do it.  Currently, if the desired
-			 * place does not intersect the target screen, we
-			 * assume the window position must be adjusted to the
-			 * screen origin.
- 			 * So there are two ways to get a window to pop up on
-			 * a particular Xinerama screen.  1: The intuitive way
-			 * giving a geometry hint relative to the desired
-			 * screen's 0,0 along with the appropriate
-			 * StartsOnScreen style (or *wmscreen resource), or
-			 * 2: Do NOT specify a Xinerama screen (or specify it
-			 * to be 'g') and give the geometry hint in terms of
-			 * the global screen. */
-
-			mangle_screen =
-				FScreenFetchMangledScreenFromUSPosHints(
-					&(fw->hints));
-			if (mangle_screen != FSCREEN_GLOBAL)
-			{
-				/* whoever set this hint knew exactly what he
-				 * was doing; so ignore the StartsOnScreen
-				 * style */
-				flags.do_honor_starts_on_screen = 0;
-			}
-			else if (attr_g->x + attr_g->width < screen_g.x ||
-				 attr_g->x >= screen_g.x + screen_g.width ||
-				 attr_g->y + attr_g->height < screen_g.y ||
-				 attr_g->y >= screen_g.y + screen_g.height)
-			{
-				/* desired coordinates do not intersect the
-				 * target screen.  Let's assume the
-				 * application specified global coordinates
-				 * and translate them to the screen. */
-				FScreenTranslateCoordinates(
-					NULL, XineramaScreen, NULL,
-					FSCREEN_GLOBAL, &attr_g->x,
-					&attr_g->y);
-			}
-		}
-
-		/* If SkipMapping, and other legalities are observed, adjust
-		 * for StartsOnPage. */
-		if (DO_NOT_SHOW_ON_MAP(fw) &&
-		    flags.do_honor_starts_on_page &&
-		    (!IS_TRANSIENT(fw) ||
-		     SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags))
-#if 0
-		    /* dv 08-Jul-2003:  Do not use this.  Instead, force the
-		     * window on the requested page even if the application
-		     * requested a different position. */
-		    && (SUSE_NO_PPOSITION(sflags) ||
-			!(fw->hints.flags & PPosition))
-		    /* dv 08-Jul-2003:  This condition is always true because
-		     * we already checked for flags.do_honor_starts_on_page
-		     * above. */
-		    /*  RBW - allow StartsOnPage to go through, even if
-		     * iconic.  */
-		    && ((!(fw->wmhints &&
-			   (fw->wmhints->flags & StateHint) &&
-			   fw->wmhints->initial_state == IconicState))
-			|| flags.do_honor_starts_on_page)
-#endif
-			)
-		{
-			/* We're placing a SkipMapping window - either
-			 * capturing one that's previously been mapped, or
-			 * overriding USPosition - so what we have here is its
-			 * actual untouched coordinates. In case it was a
-			 * StartsOnPage window, we have to 1) convert the
-			 * existing x,y offsets relative to the requested page
-			 * (i.e., as though there were only one page, no
-			 * virtual desktop), then 2) readjust relative to the
-			 * current page. */
-			if (attr_g->x < 0)
-			{
-				attr_g->x += Scr.MyDisplayWidth;
-			}
-			attr_g->x %= Scr.MyDisplayWidth;
-			attr_g->x -= pdeltax;
-			/* Noticed a quirk here. With some apps (e.g., xman),
-			 * we find the placement has moved 1 pixel away from
-			 * where we originally put it when we come through
-			 * here.  Why is this happening?
-			 * Probably attr_backup.border_width, try xclock
-			 * -borderwidth 100 */
-			if (attr_g->y < 0)
-			{
-				attr_g->y += Scr.MyDisplayHeight;
-			}
-			attr_g->y %= Scr.MyDisplayHeight;
-			attr_g->y -= pdeltay;
-		}
-
-		/* put it where asked, mod title bar */
-		/* if the gravity is towards the top, move it by the title
-		 * height */
-		{
-			rectangle final_g;
-			int gravx;
-			int gravy;
-
-			gravity_get_offsets(
-				fw->hints.win_gravity, &gravx, &gravy);
-			final_g.x = attr_g->x + gravx *
-				fw->attr_backup.border_width;
-			final_g.y = attr_g->y + gravy *
-				fw->attr_backup.border_width;
-			/* Virtually all applications seem to share a common
-			 * bug: they request the top left pixel of their
-			 * *border* as their origin instead of the top left
-			 * pixel of their client window, e.g. 'xterm -g +0+0'
-			 * creates an xterm that tries to map at (0 0)
-			 * although its border (width 1) would not be visible
-			 * if it ran under plain X.  It should have tried to
-			 * map at (1 1) instead.  This clearly violates the
-			 * ICCCM, but trying to change this is like tilting at
-			 * windmills.  So we have to add the border width
-			 * here. */
-			final_g.x += fw->attr_backup.border_width;
-			final_g.y += fw->attr_backup.border_width;
-			final_g.width = 0;
-			final_g.height = 0;
-			if (mode == PLACE_INITIAL)
-			{
-				get_window_borders(fw, &b);
-				gravity_resize(
-					fw->hints.win_gravity, &final_g,
-					b.total_size.width,
-					b.total_size.height);
-			}
-			attr_g->x = final_g.x;
-			attr_g->y = final_g.y;
-		}
+		rc = __place_get_wm_pos(
+			exc, sflags, attr_g, flags, screen_g, start_style,
+			mode, win_opts, reason, pdeltax, pdeltay);
 	}
 
 	return rc;
 }
+
+void __place_handle_x_resources(
+	FvwmWindow *fw, window_style *pstyle, placement_reason_t *reason)
+{
+	int client_argc = 0;
+	char **client_argv = NULL;
+	XrmValue rm_value;
+	/* Used to parse command line of clients for specific desk requests. */
+	/* Todo: check for multiple desks. */
+	XrmDatabase db = NULL;
+	static XrmOptionDescRec table [] = {
+		/* Want to accept "-workspace N" or -xrm "fvwm*desk:N" as
+		 * options to specify the desktop. I have to include dummy
+		 * options that are meaningless since Xrm seems to allow -w to
+		 * match -workspace if there would be no ambiguity. */
+		{"-workspacf", "*junk", XrmoptionSepArg, (caddr_t) NULL},
+		{"-workspace", "*desk", XrmoptionSepArg, (caddr_t) NULL},
+		{"-xrn", NULL, XrmoptionResArg, (caddr_t) NULL},
+		{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL},
+	};
+	int t1 = -1, t2 = -1, t3 = -1, spargs = 0;
+
+	/* Find out if the client requested a specific desk on the command
+	 * line.
+	 *  RBW - 11/20/1998 - allow a desk of -1 to work.  */
+	if (XGetCommand(dpy, FW_W(fw), &client_argv, &client_argc) == 0)
+	{
+		return;
+	}
+	if (client_argc <= 0 || client_argv == NULL)
+	{
+		return;
+	}
+	/* Get global X resources */
+	MergeXResources(dpy, &db, False);
+	/* command line takes precedence over all */
+	MergeCmdLineResources(
+		&db, table, 4, client_argv[0], &client_argc, client_argv, True);
+	/* parse the database values */
+	if (GetResourceString(db, "desk", client_argv[0], &rm_value) &&
+	    rm_value.size != 0)
+	{
+		SGET_START_DESK(*pstyle) = atoi(rm_value.addr);
+		/*  RBW - 11/20/1998  */
+		if (SGET_START_DESK(*pstyle) > -1)
+		{
+			SSET_START_DESK(
+				*pstyle, SGET_START_DESK(*pstyle) + 1);
+		}
+		reason->desk.sod_reason = PR_DESK_X_RESOURCE_DESK;
+		pstyle->flags.use_start_on_desk = 1;
+	}
+	if (GetResourceString(db, "fvwmscreen", client_argv[0], &rm_value) &&
+	    rm_value.size != 0)
+	{
+		SSET_START_SCREEN(
+			*pstyle, FScreenGetScreenArgument(rm_value.addr, 'c'));
+		reason->screen.reason = PR_SCREEN_X_RESOURCE_FVWMSCREEN;
+		reason->screen.screen = SGET_START_SCREEN(*pstyle);
+		pstyle->flags.use_start_on_screen = 1;
+	}
+	if (GetResourceString(db, "page", client_argv[0], &rm_value) &&
+	    rm_value.size != 0)
+	{
+		spargs = sscanf(
+			rm_value.addr, "%d %d %d", &t1, &t2, &t3);
+		switch (spargs)
+		{
+		case 1:
+			pstyle->flags.use_start_on_desk = 1;
+			SSET_START_DESK(*pstyle, (t1 > -1) ? t1 + 1 : t1);
+			reason->desk.sod_reason = PR_DESK_X_RESOURCE_PAGE;
+			break;
+		case 2:
+			pstyle->flags.use_start_on_desk = 1;
+			SSET_START_PAGE_X(*pstyle, (t1 > -1) ? t1 + 1 : t1);
+			SSET_START_PAGE_Y(*pstyle, (t2 > -1) ? t2 + 1 : t2);
+			reason->page.reason = PR_PAGE_X_RESOURCE_PAGE;
+			reason->page.px = SGET_START_PAGE_X(*pstyle);
+			reason->page.py = SGET_START_PAGE_Y(*pstyle);
+			break;
+		case 3:
+			pstyle->flags.use_start_on_desk = 1;
+			SSET_START_DESK(*pstyle, (t1 > -1) ? t1 + 1 : t1);
+			reason->desk.sod_reason =
+				PR_DESK_X_RESOURCE_PAGE;
+			SSET_START_PAGE_X(*pstyle, (t2 > -1) ? t2 + 1 : t2);
+			SSET_START_PAGE_Y(*pstyle, (t3 > -1) ? t3 + 1 : t3);
+			reason->page.reason = PR_PAGE_X_RESOURCE_PAGE;
+			reason->page.px = SGET_START_PAGE_X(*pstyle);
+			reason->page.py = SGET_START_PAGE_Y(*pstyle);
+			break;
+		default:
+			break;
+		}
+	}
+	XFreeStringList(client_argv);
+	XrmDestroyDatabase(db);
+
+	return;
+}
+
+/* ---------------------------- interface functions ------------------------ */
+
+Bool setup_window_placement(
+	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
+	initial_window_options_t *win_opts, placement_mode_t mode)
+{
+	Bool rc;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
+	placement_reason_t reason;
+	placement_start_style_t start_style;
+
+	memset(&reason, 0, sizeof(reason));
+	if (pstyle->flags.use_start_on_desk)
+	{
+		reason.desk.sod_reason = PR_DESK_STYLE;
+		reason.page.px = SGET_START_PAGE_X(*pstyle);
+		reason.page.py = SGET_START_PAGE_Y(*pstyle);
+	}
+	if (pstyle->flags.use_start_on_screen)
+	{
+		reason.screen.reason = PR_SCREEN_STYLE;
+		reason.screen.screen = SGET_START_SCREEN(*pstyle);
+	}
+	__place_handle_x_resources(fw, pstyle, &reason);
+	if (pstyle->flags.do_start_iconic)
+	{
+		win_opts->initial_state = IconicState;
+	}
+	ecc.type = EXCT_NULL;
+	ecc.w.fw = fw;
+	exc = exc_create_context(&ecc, ECC_TYPE | ECC_FW);
+	start_style.desk = SGET_START_DESK(*pstyle);
+	start_style.page_x = SGET_START_PAGE_X(*pstyle);
+	start_style.page_y = SGET_START_PAGE_Y(*pstyle);
+	start_style.screen = SGET_START_SCREEN(*pstyle);
+	rc = __place_window(
+		exc, &pstyle->flags, attr_g, start_style, mode, win_opts,
+		&reason);
+	exc_destroy_context(exc);
+
+	return rc;
+}
+
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_PlaceAgain(F_CMD_ARGS)
 {
@@ -1395,7 +1667,8 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		attr_g.width = attr.width;
 		attr_g.height = attr.height;
 
-		setup_window_placement(exc->w.fw, &style, &attr_g, &win_opts);
+		setup_window_placement(
+			exc->w.fw, &style, &attr_g, &win_opts, PLACE_AGAIN);
 		AnimatedMoveFvwmWindow(
 			fw, FW_W_FRAME(fw), -1, -1, attr_g.x, attr_g.y, False,
 			-1, ppctMovement);
