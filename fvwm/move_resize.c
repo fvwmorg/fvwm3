@@ -4090,7 +4090,6 @@ void CMD_Maximize(F_CMD_ARGS)
 	int layers[2] = { -1, -1 };
 	Bool global_flag_parsed = False;
 	int  scr_x, scr_y, scr_w, scr_h;
-	int sx, sy, sw, sh;
 	rectangle new_g;
 	FvwmWindow *fw = exc->w.fw;
 
@@ -4180,14 +4179,11 @@ void CMD_Maximize(F_CMD_ARGS)
 			&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
 	}
 
-	sx = scr_x;
-	sy = scr_y;
-	sw = scr_w;
-	sh = scr_h;
 	if (!ignore_working_area)
 	{
 		EWMH_GetWorkAreaIntersection(
-			fw, &sx, &sy, &sw, &sh, EWMH_MAXIMIZE_MODE(fw));
+			fw, &scr_x, &scr_y, &scr_w, &scr_h,
+			EWMH_MAXIMIZE_MODE(fw));
 	}
 #if 0
 	fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
@@ -4195,7 +4191,7 @@ void CMD_Maximize(F_CMD_ARGS)
 #endif
 
 	/* parse first parameter */
-	val1_unit = sw;
+	val1_unit = scr_w;
 	token = PeekToken(action, &taction);
 	if (token && StrEquals(token, "grow"))
 	{
@@ -4221,24 +4217,24 @@ void CMD_Maximize(F_CMD_ARGS)
 		if (GetOnePercentArgument(token, &val1, &val1_unit) == 0)
 		{
 			val1 = 100;
-			val1_unit = sw;
+			val1_unit = scr_w;
 		}
 		else if (val1 < 0)
 		{
 			/* handle negative offsets */
-			if (val1_unit == sw)
+			if (val1_unit == scr_w)
 			{
 				val1 = 100 + val1;
 			}
 			else
 			{
-				val1 = sw + val1;
+				val1 = scr_w + val1;
 			}
 		}
 	}
 
 	/* parse second parameter */
-	val2_unit = sh;
+	val2_unit = scr_h;
 	token = PeekToken(taction, NULL);
 	if (token && StrEquals(token, "grow"))
 	{
@@ -4264,31 +4260,20 @@ void CMD_Maximize(F_CMD_ARGS)
 		if (GetOnePercentArgument(token, &val2, &val2_unit) == 0)
 		{
 			val2 = 100;
-			val2_unit = sh;
+			val2_unit = scr_h;
 		}
 		else if (val2 < 0)
 		{
 			/* handle negative offsets */
-			if (val2_unit == sh)
+			if (val2_unit == scr_h)
 			{
 				val2 = 100 + val2;
 			}
 			else
 			{
-				val2 = sh + val2;
+				val2 = scr_h + val2;
 			}
 		}
-	}
-
-	if (!grow_left && !grow_right)
-	{
-		scr_x = sx;
-		scr_w = sw;
-	}
-	if (!grow_up && !grow_down)
-	{
-		scr_y = sy;
-		scr_h = sh;
 	}
 
 #if 0
