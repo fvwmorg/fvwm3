@@ -198,7 +198,7 @@ while test $# -gt 0; do
 			echo "	readline: $with_readline"
 			echo "	rplay: $with_rplay"
 			echo "	shape (shaped windows): $with_shape"
-			echo "  shm (shared memory): $with_shm"
+			echo "	shm (shared memory): $with_shm"
 			echo "	sm (session management): $with_sm"
 			echo "	stroke (mouse gestures): $with_stroke"
 			echo "	xinerama (multi-head): $with_xinerama"

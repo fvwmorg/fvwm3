@@ -43,15 +43,21 @@ my $stay = 0;
 my $nolock = 0;
 my $debug = 0;
 my $detached = 0;
-my $ppArgs = {};
-my $ppFileCount = 0;
+my ($ppArgs, $ppFileCount, $preprocessOptions);
 
-my $preprocessOptions = {
-	"c|cmd|command" => \$ppArgs->{command},
-	"q|quote=s"     => \$ppArgs->{quote},
-	"nosend"        => \$ppArgs->{nosend},
-	"noremove"      => \$ppArgs->{noremove},
-};
+sub initPreprocessVars () {
+	$ppArgs = {};
+	$ppFileCount = 0;
+	
+	$preprocessOptions = {
+		"c|cmd|command" => \$ppArgs->{command},
+		"q|quote=s"     => \$ppArgs->{quote},
+		"nosend"        => \$ppArgs->{nosend},
+		"noremove"      => \$ppArgs->{noremove},
+	};
+}
+
+initPreprocessVars();
 
 my $options = {
 	"e|eval=s"     => \$lineToEval,
@@ -224,7 +230,14 @@ sub preprocess ($;$) {
 	my $args = shift;
 	my $data = shift;
 
-	unlock();
+	my $nosend   = $args->{nosend};
+	my $noremove = $args->{noremove};
+	my $command  = $args->{command};
+	my $quote    = $args->{quote} || '%';
+	my ($quote1, $quote2) = split(//, $quote, 2);
+	$quote2 ||= $quote1;
+
+	unlock() unless $command;
 
 	my $depth = $args->{depth};
 	$depth ||= 0;
@@ -232,13 +245,6 @@ sub preprocess ($;$) {
 		printActionError("preprocess", "Too deep include depth=$depth");
 		return;
 	}
-
-	my $nosend   = $args->{nosend};
-	my $noremove = $args->{noremove};
-	my $command  = $args->{command};
-	my $quote    = $args->{quote} || '%';
-	my ($quote1, $quote2) = split(//, $quote, 2);
-	$quote2 ||= $quote1;
 
 	my $textRef = $command? \$data: loadFile($data);
 	unless (defined $textRef) {
@@ -287,6 +293,11 @@ sub preprocess ($;$) {
 	# line based directives
 	preprocessDirectives($textRef);
 
+	if ($command) {
+		$module->send($$textRef);
+		return;
+	}
+
 	my $tempFileName = $module->userDataDir . "/.FvwmPerl-preprocess-$$";
 	$tempFileName .= "-" . (++$ppFileCount);
 	saveFile($tempFileName, $textRef);
@@ -332,8 +343,8 @@ sub processMessage ($$) {
 	}
 
 	elsif ($action eq "preprocess") {
-		$ppArgs = {};
 		@ARGV = getTokens($rest);
+		initPreprocessVars();
 		GetOptions(%$preprocessOptions) || return;
 
 		preprocess($ppArgs, join(" ", @ARGV));
