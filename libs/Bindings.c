@@ -735,23 +735,15 @@ KeySym FvwmStringToKeysym(Display *dpy, char *key)
 	}
 	else
 	{
-		KeySym lowerks;
-		KeySym upperks;
-
 		s = alloca(strlen(key) + 1);
 		strcpy(s, key);
-		*s = tolower(*s);
-		lowerks = XStringToKeysym(s);
-		*s = toupper(*s);
-		upperks = XStringToKeysym(s);
 		/* always prefer the lower case spelling if it exists */
-		if (lowerks == 0)
+		*s = tolower(*s);
+		keysym = XStringToKeysym(s);
+		if (keysym == NoSymbol)
 		{
-			keysym = upperks;
-		}
-		else
-		{
-			keysym = lowerks;
+			*s = toupper(*s);
+			keysym = XStringToKeysym(s);
 		}
 	}
 	if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)
