@@ -1,3 +1,7 @@
+1999-03-19  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/fvwm2.1: Fixed some *roff tyops
+
 1999-03-18  Paul D. Smith  <psmith@gnu.org>
 
 	* libs/Module.c (SendText): Rewrite to work on RISC architectures
