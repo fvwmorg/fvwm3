@@ -70,10 +70,10 @@
 	(regrab_focus_win):
 	* fvwm/events.c (HandleButtonPress):
 	* fvwm/builtins.c (SetGlobalOptions):
-	removed GlobalOpts and WIndowShadeAnimate commands in favour of styles
+	removed GlobalOpts and WindowShadeAnimate commands in favour of styles
 
 	* fvwm/add_window.c (AddWindow):
-	fixed placement to honouring the layer
+	fixed placement to honour the layer
 
 	* fvwm/add_window.c (GetWindowSizeHints):
 	* fvwm/fvwm.h (struct):

@@ -2270,21 +2270,20 @@ void SetEnv(F_CMD_ARGS)
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
   XEvent event;
-#ifdef BUSYCURSORs
+#ifdef BUSYCURSOR
   Bool need_ungrab = False;
 #endif
 
   if (fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
-#ifdef BUSYCURSORs
+#ifdef BUSYCURSOR
   if (BUSY_RECAPTURE & Scr.BusyCursor)
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
 #else
   GrabEm(CRS_WAIT, GRAB_BUSY);
 #endif
-XSync(dpy, 0);
   MyXGrabServer(dpy);
   XSync(dpy,0);
   if (fSingle)
@@ -2300,7 +2299,7 @@ XSync(dpy, 0);
 			 &event) != False)
     ;
   MyXUngrabServer(dpy);
-#ifdef BUSYCURSORs
+#ifdef BUSYCURSOR
   if (need_ungrab)
 #endif
     UngrabEm(GRAB_BUSY);

@@ -4255,11 +4255,20 @@ instructs fvwm to ignore the PPosition field when adding
 new windows.  Adherence to the PPosition field is required for some
 applications, but if you don't have one of those its a real headache.
 
+With
+.I ActivePlacement
+the user is required to place every new window manually.  When a
+window pops up, a wire frame representing the new window is shown.
+The window is placed when a mouse button or any key except
+.Escape
+is pressed.  If the user aborts placing the window it is dumped
+in the top left corner of the screen.
+
 .I RandomPlacement
 causes windows which would normally require user
 placement to be automatically placed in ever-so-slightly random
 locations.  For the best of all possible worlds use both
-.IR RandomPlacement " and " SmartPlacement .
+.IR RandomPlacement ", " SmartPlacement " and " CleverPlacement .
 
 .I SmartPlacement
 causes windows which would normally require user
@@ -4281,6 +4290,10 @@ is not used,
 has no effect.  To switch this style off again, use the
 .I CleverPlacementOff
 style.
+
+.I DumbPlacement
+switches off both,
+.IR SmartPlacement " and " CleverPlacement .
 
 \fIStartsLowered\fP instructs fvwm to put the window initially at the
 bottom of its layer rather than the default \fIStartsRaised\fP.
