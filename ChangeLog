@@ -1,3 +1,9 @@
+2001-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (AddToFunction):
+	allow "Click", "Hold", etc. in addition to single letter function
+	specifiers
+
 2001-03-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (DoSetFocus):
