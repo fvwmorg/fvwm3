@@ -12,7 +12,7 @@ DestroyModuleConfig         FormFvwmTalk.*
 *FormFvwmTalk.Message
 *FormFvwmTalk.Line         center
 # Buttons
-*FormFvwmTalk.Button       continue    "Return - Execute"         ^M
+*FormFvwmTalk.Button       restart    "Return - Execute"         ^M
 *FormFvwmTalk.Command        $(Command)
 *FormFvwmTalk.Button       continue    "F1 - Help" F1
 *FormFvwmTalk.Command        Module FvwmForm FormFvwmTalkHelp.
