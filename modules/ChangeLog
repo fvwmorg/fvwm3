@@ -1,3 +1,10 @@
+1999-05-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmEvent/FvwmEvent.c (event_table): bring in sync with
+	list of events in Module.h, change the parsing of 
+	*FvwmEvent lines to treat everything after the event type
+	as action. 
+
 1999-05-11  Dan Espen  <dane@mk.bellcore.com>
 
 	* FvwmAnimate/FvwmAnimate.c: Put slash and dot between FVWM_USERHOME

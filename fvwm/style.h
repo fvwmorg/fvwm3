@@ -65,6 +65,7 @@
 #define SHAS_OL_DECOR(sf)             ((sf)->has_ol_decor)
 #define SUSE_NO_PPOSITION(sf)         ((sf)->use_no_pposition)
 #define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
+#define SICON_OVERRIDE(sf)            ((sf)->icon_override)
 
 /* access to other parts of a style (call with the style itself) */
 #define SGET_NEXT_STYLE(style)        ((style).next)

@@ -150,10 +150,10 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
 {
   { "new_page",	-1 },
   { "new_desk", 0 },
-  { "add_window", 0 },
+  { "old_add_window", 0 },
   { "raise_window", 0 },
   { "lower_window", 0 },
-  { "configure_window", 0 },
+  { "old_configure_window", 0 },
   { "focus_change", 0 },
   { "destroy_window", 0 },
   { "iconify", 0 },
@@ -180,6 +180,11 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
   { "mini_icon", -1 },
   { "windowshade", -1 },
   { "dewindowshade", -1 },
+  { "lockonsend", -1 },
+  { "sendconfig", -1 },
+  { "restack", -1 },
+  { "add_window", 0 },
+  { "configure_window", 0 },
   /* add builtins here */
   { "startup", -1 },
   { "shutdown", -1 },
@@ -329,58 +334,59 @@ int main(int argc, char **argv)
  **********************************************************************/
 void execute_event(short event, unsigned long *body)
 {
+  fprintf(stderr, "execute %d\n", event);
 #ifdef HAVE_RPLAY
 
   if (rplay_fd != -1)		/* this is the sign that rplay is used */
-  {
-    if (rplay_table[event])
     {
-      if (rplay(rplay_fd, rplay_table[event]) >= 0)
-	last_time = now;
-      else
-	rplay_perror("rplay");
+      if (rplay_table[event])
+	{
+	  if (rplay(rplay_fd, rplay_table[event]) >= 0)
+	    last_time = now;
+	  else
+	    rplay_perror("rplay");
+	}
     }
-  }
-  else	/* avoid invalid second execute */
+  else 	/* avoid invalid second execute */
 #endif
-  if (action_table[event])
-  {
-    char *buf;
-    int len = 0;
-
-    len = strlen(cmd_line) + strlen(action_table[event]) + 32;
-    if (audio_play_dir)
-      len += strlen(audio_play_dir);
-    buf = (char *)safemalloc(len);
-    if (audio_compat)
-    {
-      /*
-       * Don't use audio_play_dir if it's NULL or if the sound file
-       * is an absolute pathname.
-       */
-      if (!audio_play_dir || audio_play_dir[0] == '\0' ||
-	  action_table[event][0] == '/')
-	sprintf(buf,"%s %s", cmd_line, action_table[event]);
-      else
-	sprintf(buf,"%s %s/%s &", cmd_line, audio_play_dir,
-		action_table[event]);
-      if(!system(buf))
-	last_time = now;
-    }
-    else
-    {
-      if(PassID && (event_table[event].action_arg != -1))
-	sprintf(buf,"%s %s %ld", cmd_line, action_table[event],
-		body[event_table[event].action_arg]);
-      else
-	sprintf(buf,"%s %s", cmd_line, action_table[event]);
-      INFO(buf);
-      INFO("\n");
-      SendText(fd,buf,0);		/* let fvwm2 execute the function */
-      last_time = now;
-    }
-    free(buf);
-  }
+    if (action_table[event])
+      {
+	char *buf = NULL;
+	int len = 0;
+	
+	len = strlen(cmd_line) + strlen(action_table[event]) + 32;
+	if (audio_play_dir)
+	  len += strlen(audio_play_dir);
+	buf = (char *)safemalloc(len);
+	if (audio_compat)
+	  {
+	    /*
+	       * Don't use audio_play_dir if it's NULL or if the sound file
+	       * is an absolute pathname.
+	       */
+	    if (!audio_play_dir || audio_play_dir[0] == '\0' ||
+		action_table[event][0] == '/')
+	      sprintf(buf,"%s %s", cmd_line, action_table[event]);
+	    else
+	      sprintf(buf,"%s %s/%s &", cmd_line, audio_play_dir,
+		      action_table[event]);
+	      if(!system(buf))
+		last_time = now;
+	  }
+	else
+	  {
+	    if(PassID && (event_table[event].action_arg != -1))
+	      sprintf(buf,"%s %s %ld", cmd_line, action_table[event],
+		      body[event_table[event].action_arg]);
+	    else
+	      sprintf(buf,"%s %s", cmd_line, action_table[event]);
+	    INFO(buf);
+	    INFO("\n");
+	    SendText(fd,buf,0);		/* let fvwm2 execute the function */
+	    last_time = now;
+	  }
+      }
+  free(buf);
 }
 
 
@@ -532,7 +538,12 @@ void config(void)
       else  /* test for isspace(*p) ??? */
       {
 	p = GetNextSimpleOption( p, &event );
+#if 0 
+	/* this is bad for commands with whitespace */
 	p = GetNextSimpleOption( p, &action );
+#else
+	action = strdup(p);
+#endif
 
 	INFO(event);
 	INFO("  ");
@@ -548,6 +559,7 @@ void config(void)
 		  MyName+1, buf);
 	  continue;
 	}
+
 	for (found = 0,i = 0; !found && i < MAX_MESSAGES+MAX_BUILTIN;
 	     i++)
 	{

@@ -1069,7 +1069,7 @@ keyboard focus.
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
 "!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized",
-"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage",
+"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage", 
 and "CurrentPageAnyDesk".  In addition, the condition
 may include a window name to match to.  The window name may include
 the wildcards * and ?.  The window name, icon name, class, and
@@ -2718,8 +2718,9 @@ DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
 UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
 ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse/NeverFocus,
 StartsLowered/StartsRaised, GrabFocus/GrabFocusOff,
-GrabFocusTransient/GrabFocusTransientOff, AllowRestack/IgnoreRestack,
-VariablePosition/FixedPosition.
+GrabFocusTransient/GrabFocusTransientOff, IgnoreRestack/AllowRestack,
+FixedPosition/VariablePosition, 
+IconOverride/NoIconOverride/NoActiveIconOverride.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -2736,9 +2737,14 @@ buttons to the sides and the client window of an undecorated window
 ('S' and 'W' contexts in bindings, see \fIMouse\fP and \fIKey\fP commands).
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
-bitmap or pixmap to use. Icons specified this way override icons
-provided by the client in the WM_HINTS property. There is one exception
-to this rule, namely
+bitmap or pixmap to use. Icons specified this way override pixmap icons, but
+not icon windows, provided by the client in the WM_HINTS property. The
+IconOverride style changes the behaviour to override any client-provided
+icons; the NoIconOverride style changes the behaviour to not override 
+any client-provided icons; the default overriding behaviour can be 
+activated with the NoActiveIconOverride style. 
+
+There is one exception to these rules, namely
 .EX
 Style * Icon unknown.xpm
 .EE

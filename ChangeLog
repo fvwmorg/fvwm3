@@ -1,3 +1,20 @@
+1999-05-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.h (style_flags): new member icon_override. 
+
+	* fvwm/style.h (SICON_OVERRIDE): macro to access icon_override.
+
+	* fvwm/style.c (ProcessNewStyle): new style option
+	IconOverride/NoActiveIconOverride/NoIconOverride sets
+	icon_override.
+	
+	* fvwm/add_window.c (AddWindow): change logic for determining 
+	the icon. It uses the icon_override style flag now.
+
+	* NEWS:
+	* fvwm/fvwm2.1: document IconOverride/NoIconOverride/
+	NoActiveIconOverride.
+
 1999-05-10  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (paint_menu_item): take sidepic into account for right

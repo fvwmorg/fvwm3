@@ -562,7 +562,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'i':
-        if(StrEquals(token, "IgnoreRestack"))
+	if(StrEquals(token, "IconOverride"))
+	{
+	  found = True;
+	  tmpstyle.flags.icon_override = ICON_OVERRIDE;
+	  tmpstyle.flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	}
+        else if(StrEquals(token, "IgnoreRestack"))
         {
 	  found = True;
 	  tmpstyle.flags.common.ignore_restack = 1;
@@ -859,7 +865,19 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'n':
-        if(StrEquals(token, "NoIconTitle"))
+	if(StrEquals(token, "NoActiveIconOverride"))
+	{
+	  found = True;
+	  tmpstyle.flags.icon_override = NO_ACTIVE_ICON_OVERRIDE;
+	  tmpstyle.flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	}
+	else if(StrEquals(token, "NoIconOverride"))
+	{
+	  found = True;
+	  tmpstyle.flags.icon_override = NO_ICON_OVERRIDE;
+	  tmpstyle.flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	}
+        else if(StrEquals(token, "NoIconTitle"))
         {
 	  found = True;
           tmpstyle.flags.common.has_no_icon_title = 1;

@@ -222,6 +222,11 @@ typedef struct
   unsigned has_no_title : 1;
   unsigned has_ol_decor : 1;
   unsigned use_start_on_desk : 1;
+  unsigned icon_override : 2;
+#define NO_ACTIVE_ICON_OVERRIDE 0
+#define ICON_OVERRIDE           1
+#define NO_ICON_OVERRIDE        2
+#define ICON_OVERRIDE_MASK      3 
 } style_flags;
 
 /* only style.c and add_window.c are allowed to access this struct!! */

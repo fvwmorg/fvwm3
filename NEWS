@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.2 (April 1999)
 
+* New style IconOverride/NoIconOverride/NoActiveIconOverride to
+  influence the overriding behaviour of the Icon style.
+
 * The FvwmCommand module is now much faster and can thus comfortably be used in
   shell scripts. The tradeoff is that it does not report errors any more. To
   get the old behaviour run FvwmCommand with the '-i 1' option.
