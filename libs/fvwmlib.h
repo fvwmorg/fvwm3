@@ -144,7 +144,7 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
                                  sizeof(struct_entry),                  \
                                  XCmpToken)
 
-extern int XCmpToken(); //const char *s, const char **t); 
+extern int XCmpToken(); /* const char *s, const char **t); */
 
 
 /***********************************************************************

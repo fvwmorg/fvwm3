@@ -1,3 +1,7 @@
+1999-04-05  Tomas Ogren  <stric@ing.umu.se>
+
+	* libs/fvwmlib.h: Be gone evil // comments in c-code
+
 Sun Apr  4 10:53:17 1999  DanEspen  <dje@blue>
 
 	* fvwm/FormFvwmHelp.in: New form, creates users starting configuration.
