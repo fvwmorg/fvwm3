@@ -1324,13 +1324,6 @@ void HandleUnmapNotify(void)
     return;
   }
 
-  MyXGrabServer(dpy);
-
-  if(XCheckTypedWindowEvent (dpy, Event.xunmap.window, DestroyNotify,&dummy))
-  {
-    destroy_window(Tmp_win);
-  }
-  else
   /*
    * The program may have unmapped the client window, from either
    * NormalState or IconicState.  Handle the transition to WithdrawnState.
@@ -1339,12 +1332,14 @@ void HandleUnmapNotify(void)
    * won't cause it to get mapped) and then throw away all state (pretend
    * that we've received a DestroyNotify).
    */
-  if (XTranslateCoordinates (dpy, Event.xunmap.window, Scr.Root,
+  if (!XCheckTypedWindowEvent (dpy, Event.xunmap.window, DestroyNotify, &dummy)
+   && XTranslateCoordinates (dpy, Event.xunmap.window, Scr.Root,
 			     0, 0, &dstx, &dsty, &dumwin))
   {
     XEvent ev;
     Bool reparented;
 
+    MyXGrabServer(dpy);
     reparented = XCheckTypedWindowEvent (dpy, Event.xunmap.window,
 					 ReparentNotify, &ev);
     SetMapStateProp (Tmp_win, WithdrawnState);
@@ -1362,18 +1357,10 @@ void HandleUnmapNotify(void)
     }
     XRemoveFromSaveSet (dpy, Event.xunmap.window);
     XSelectInput (dpy, Event.xunmap.window, NoEventMask);
-    destroy_window(Tmp_win);		/* do not need to mash event before */
-    /*
-     * Flush any pending events for the window.
-     */
-    /* Bzzt! it could be about to re-map */
-/*      while(XCheckWindowEvent(dpy, Event.xunmap.window,
-			      StructureNotifyMask | PropertyChangeMask |
-			      ColormapChangeMask | VisibilityChangeMask |
-			      EnterWindowMask | LeaveWindowMask, &dummy));
-*/
-  } /* else window no longer exists and we'll get a destroy notify */
-  MyXUngrabServer(dpy);
+    MyXUngrabServer(dpy);
+  }
+
+  destroy_window(Tmp_win);		/* do not need to mash event before */
 
   if (focus_grabbed)
   {
