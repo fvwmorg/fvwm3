@@ -554,56 +554,58 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   client_id = GetClientID(w->w);
 
   if (xstreq(client_id, m->client_id))
+  {
+
+    /* client_id's match */
+
+    window_role = GetWindowRole(w->w);
+
+    if (window_role || m->window_role)
     {
+      /* We have or had a window role, base decision on it */
 
-      /* client_id's match */
+      found = xstreq(window_role, m->window_role);
+    }
+    else
+    {
+      /* Compare res_class, res_name and WM_NAME, unless the
+         user has changed WM_NAME */
 
-      window_role = GetWindowRole(w->w);
-
-      if (window_role || m->window_role)
+      if (xstreq(w->class.res_name, m->res_name) &&
+          xstreq(w->class.res_class, m->res_class) &&
+          (IS_NAME_CHANGED(w) || IS_NAME_CHANGED(m) ||
+           xstreq(w->name, m->wm_name)))
+      {
+        if (client_id)
         {
-          /* We have or had a window role, base decision on it */
-
-          found = xstreq(window_role, m->window_role);
+          /* If we have a client_id, we don't compare
+             WM_COMMAND, since it will be different. */
+          found = 1;
         }
-      else
-	{
-          /* Compare res_class, res_name and WM_NAME, unless the
-             user has changed WM_NAME */
+        else
+        {
+          /* for non-SM-aware clients we also compare WM_COMMAND */
+          XGetCommand (dpy, w->w, &wm_command, &wm_command_count);
 
-	  if (xstreq(w->class.res_name, m->res_name) &&
-	      xstreq(w->class.res_class, m->res_class) &&
-	      (IS_NAME_CHANGED(w) || IS_NAME_CHANGED(m) ||
-	       xstreq(w->name, m->wm_name)))
+          if (wm_command_count == m->wm_command_count)
+          {
+            for (i = 0; i < wm_command_count; i++)
             {
-              if (client_id)
-                {
-                  /* If we have a client_id, we don't compare
-                     WM_COMMAND, since it will be different. */
-                  found = 1;
-                }
-              else
-	        {
-                  /* for non-SM-aware clients we also compare WM_COMMAND */
-	          XGetCommand (dpy, w->w, &wm_command, &wm_command_count);
+              if (strcmp(wm_command[i], m->wm_command[i]) != 0)
+                break;
+            }
 
-	          if (wm_command_count == m->wm_command_count)
-		    {
-		      for (i = 0; i < wm_command_count; i++)
-		        {
-		          if (strcmp (wm_command[i], m->wm_command[i]) != 0)
-			    break;
-		        }
-
-                      if (i == wm_command_count)
-                        {
-                          found = 1;
-                        }
-		    } /* if (wm_command_count ==... */
-		} /* else no client id */
-	    } /* if res_class, res_name and wm_name agree */
-	} /* else no window roles */
-    } /* if client_id's agree */
+            if (i == wm_command_count)
+            {
+              /* migo (21/Oct/1999): on restarts compare window ids too */
+              if (!Restarting || w->w == m->win)
+                found = 1;
+            }
+          } /* if (wm_command_count ==... */
+        } /* else no client id */
+      } /* if res_class, res_name and wm_name agree */
+    } /* else no window roles */
+  } /* if client_id's agree */
 
   if (client_id)
     XFree (client_id);
@@ -618,8 +620,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   fprintf(stderr, "\twin(%s, %s, %s, %d)\n[%d]\tmat(%s, %s, %s, %d)\n\n",
 	  w->class.res_name, w->class.res_class, w->name, IS_NAME_CHANGED(w),
 	  found,
-	  m->res_name, m->res_class, m->wm_name, IS_NAME_CHANGED(m)
-    );
+	  m->res_name, m->res_class, m->wm_name, IS_NAME_CHANGED(m));
 #endif
   return found;
 }

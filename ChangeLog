@@ -1,3 +1,10 @@
+1999-10-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/session.c (matchWin): reimplemented disabled code, so it
+	still compares window ids on Restarting, but only when all other
+	components agree. This is needed, so windows with the same
+	resources/names are not randomly switched.
+
 1999-10-20  Hippo
 
 	* libs/Colorset.{h,c}: AllocColorset duplicates colorset 0 into new
