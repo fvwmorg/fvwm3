@@ -18,7 +18,8 @@
  ***********************************************************************/
 
 #include "config.h"
-/**#include "libs/fvwmlib.h"**/
+#include "libs/fvwmlib.h"
+#include "libs/Picture.h"
 
 #include <stdio.h>
 #include <unistd.h>

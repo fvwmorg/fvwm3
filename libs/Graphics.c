@@ -2,7 +2,10 @@
 ** Graphics.c: misc convenience functions for drawing stuff
 */
 
+#include "libs/fvwmlib.h"
+
 #include <X11/Xlib.h>
+
 /****************************************************************************
  *
  * Draws the relief pattern around a window
