@@ -1729,6 +1729,7 @@ void HandleConfigureRequest(void)
       XCNOENT)
     Tmp_win = NULL;
 
+#define EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
   /* merge all pending ConfigureRequests for the window into a single event */
   if (Tmp_win)
@@ -1742,8 +1743,8 @@ void HandleConfigureRequest(void)
     {
       unsigned long vma;
       unsigned long vmo;
-      unsigned long xm = CWX | CWWidth;
-      unsigned long ym = CWY | CWHeight;
+      const unsigned long xm = CWX | CWWidth;
+      const unsigned long ym = CWY | CWHeight;
 
       ecre = &e.xconfigurerequest;
       vma = cre->value_mask & ecre->value_mask;

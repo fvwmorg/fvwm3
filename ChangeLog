@@ -1,3 +1,21 @@
+2000-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c:
+	fixed core dump when accessing already deleted icon boxes in
+	free_icon_boxes()
+
+	* fvwm/style.c (remove_icon_boxes_from_style):
+	new function
+	(free_style_mask):
+	(merge_styles):
+	(free_style):
+	set icon_boxes member of a style to NULL after deleting the icon boxes
+
+2000-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleConfigureRequest):
+	activated anti-race-condition patch
+
 2000-10-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/icccm2.c (SetupICCCM2):

@@ -168,6 +168,20 @@ void free_icon_boxes(icon_boxes *ib)
       ib->is_orphan = True;
     }
   }
+
+  return;
+}
+
+static void remove_icon_boxes_from_style(window_style *pstyle)
+{
+  if (SHAS_ICON_BOXES(&pstyle->flags))
+  {
+    free_icon_boxes(SGET_ICON_BOXES(*pstyle));
+    pstyle->flags.has_icon_boxes = 0;
+    SSET_ICON_BOXES(*pstyle, NULL);
+  }
+
+  return;
 }
 
 static void copy_icon_boxes(icon_boxes **pdest, icon_boxes *src)
@@ -428,13 +442,13 @@ static void merge_styles(
 
   /* Note, only one style cmd can define a windows iconboxes,
    * the last one encountered. */
-  if(SGET_ICON_BOXES(*add_style))
+  if (SHAS_ICON_BOXES(&add_style->flags))
   {
     /* If style has iconboxes */
     /* copy it */
     if (do_free)
     {
-      free_icon_boxes(SGET_ICON_BOXES(*merged_style));
+      remove_icon_boxes_from_style(merged_style);
       copy_icon_boxes(
 	&SGET_ICON_BOXES(*merged_style), SGET_ICON_BOXES(*add_style));
     }
@@ -480,7 +494,7 @@ static void free_style(window_style *style)
   SAFEFREE(SGET_WINDOW_FONT(*style));
   SAFEFREE(SGET_ICON_NAME(*style));
   SAFEFREE(SGET_MINI_ICON_NAME(*style));
-  free_icon_boxes(SGET_ICON_BOXES(*style));
+  remove_icon_boxes_from_style(style);
 
   return;
 }
@@ -517,7 +531,7 @@ static void free_style_mask(window_style *style, style_flags *mask)
   if (pmask->has_mini_icon)
     SAFEFREE(SGET_MINI_ICON_NAME(*style));
   if (pmask->has_icon_boxes)
-    free_icon_boxes(SGET_ICON_BOXES(*style));
+    remove_icon_boxes_from_style(style);
   /* remove styles from definitiion */
   blockunmask((char *)&style->flag_mask, (char *)&style->flag_mask,
               (char *)pmask, sizeof(style_flags));
