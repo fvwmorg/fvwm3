@@ -3,6 +3,9 @@
 	* fvwm/fvwm2.1:
 	added "BI-DIRECTIONAL TEXTS" section
 
+	* libs/System.c:
+	added #include <sys/select.h> to fix endless loop on QNX
+
 2002-04-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1:

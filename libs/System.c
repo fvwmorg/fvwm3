@@ -26,6 +26,11 @@
 #endif
 #include <sys/stat.h>
 
+/* needed for QNX to define FD_SETSIZE */
+#if HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
+
 
 /*
 ** just in case...
