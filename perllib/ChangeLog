@@ -1,3 +1,8 @@
+2002-09-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* perllib/FVWM/Module.pm.in:
+	more documentation improvements
+
 2002-09-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* perllib/FVWM/Constants.pm:

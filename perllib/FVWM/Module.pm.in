@@ -465,7 +465,7 @@ FVWM::Module - the base class representing FVWM module
   $module->send("Beep");
 
   # auto-raise all windows
-  sub autoRaise { $_[0]->send("Raise", $_[2]) });
+  sub autoRaise { $_[0]->send("Raise", $_[1]->_win_id) };
   $module->addHandler(M_FOCUS_CHANGE, \&autoRaise);
 
   $module->eventLoop;
@@ -532,7 +532,7 @@ B<searchDirs>
 
 =over 4
 
-=item B<new> %params
+=item B<new> I<param-hash>
 
 Creates a module object. Only one module instance may be created in the
 program, since this object gets exclusive rights on communication with I<fvwm>.
@@ -558,6 +558,8 @@ Example:
         Debug => 1,
     );
 
+Event types needed for the 4 mask parameters are defined in B<FVWM::Constants>.
+
 =item B<version>
 
 Returns FVWM version string I<x.y.z>.
@@ -574,7 +576,7 @@ Arguments that are used for I<fvwm>-to-module communication are not included.
 Arguments that are automatically parsed using I<EnableAlias> and/or
 I<EnableOptions> specified in the constructor are not included.
 
-=item B<send> command [window-id]
+=item B<send> I<command> [I<window-id>]
 
 Sends I<command> back for execution. If the I<window-id> is specified this
 command will be executed in this window context.
@@ -614,7 +616,7 @@ I<SyncMask> and I<SyncXMask>, I<fvwm> gets locked until the module sends
 the "unlock" notification. This is automatically sent (if needed) when a
 handler is finished, but sometimes a handler should release I<fvwm> earlier.
 
-=item B<terminate> [continue]
+=item B<terminate> [I<continue>]
 
 This method is used for 2 purposed, usually in event handlers. To terminate
 the entire event loop and to terminate only an execution of the current
@@ -624,12 +626,12 @@ handler if I<continue> is set.
 
 This deletes all event handlers without exception.
 
-=item B<addHandler> mask code
+=item B<addHandler> I<mask code>
 
 Defines a handler (that is a I<code> subroutine) for the given I<mask> event
 (or several events). Usually the event type is one of the FVWM I<M_*> or
-I<MX_*> constants, but it may also be I<ON_EXIT>, this special event is
-called just before the event loop is terminated.
+I<MX_*> constants (see B<FVWM::Constants>), but it may also be I<ON_EXIT>,
+this special event is called just before the event loop is terminated.
 
 The I<mask> may include several events in the same category (the event types
 are or-ed). In this case the handler will be called for every matching event.
@@ -641,20 +643,25 @@ The handler subroutine is called with these parameters:
 
     ($self, $event)
 
-where C<$self> is a module object, C<$event> is an event object.
+where C<$self> is a module object, C<$event> is B<FVWM::Event> object.
+
+If the I<mask> includes more than one event type, use C<$event-E<gt>type>
+to dispatch event types if needed.
 
 The handler may call C<$self-E<gt>terminate> to terminate the event loop
 completely or C<$self-E<gt>terminate("continue")> to terminate the current
 event handler only. The second form is useful when the handler subroutine
 calls other subroutines that need to terminate the primary one.
 
-If several event handlers are added for the same event type. 
+If several event handlers are added for the same event type, they are
+executed in the added order. To forbid the further propagation of the
+same event, an event handler may call C<$event-E<gt>propagationAllowed(0)>.
 
 The return value from B<addHandler> is an identifier the only purpose of
 which is to be passed to B<deleteHandler> in case the newly defined handler
 should be deleted at some point.
 
-=item B<deleteHandler> id
+=item B<deleteHandler> I<id>
 
 Removes the handler specified by I<id>. The return value is 1 if the handler
 is found and deleted, 0 otherwise.
@@ -665,7 +672,7 @@ This adds the default handler for I<M_ERROR> event. This class simply prints
 an error message to the standard error stream, but subclasses may define
 another default handler by overwriting this method.
 
-=item B<debug> msg [level]
+=item B<debug> I<msg> [I<level>]
 
 Prints I<msg> to the standard error stream if I<level> is greater or equal to
 the module debug level defined using I<Debug> in the constructor. The default
@@ -678,16 +685,16 @@ This method is automatically called (with I<level> 1) to dump all incoming
 and outgoing communication data in B<send> and B<processPacket>. Apparently
 this data is only seen if I<Debug> is set to something positive.
 
-=item B<internalDie> msg
+=item B<internalDie> I<msg>
 
 This may be used to end the module with the corresponding I<msg>.
 For a clean module exit use B<debug> and B<terminate> instead.
 
-=item B<name> [name]
+=item B<name> [I<name>]
 
 Sets or returns the module name. Called automatically from the constructor.
 
-=item B<mask> [mask]
+=item B<mask> [I<mask>]
 
 Sets or returns the module mask. Called automatically from the constructor.
 This method should be called twice for regular and extended packet types.
@@ -697,7 +704,7 @@ mask, all other mask parameters results in setting the mask.
 The module only receives the packets matching these 2 module masks (regular
 and extended).
 
-=item B<syncMask> [mask]
+=item B<syncMask> [I<mask>]
 
 The same as B<mask>, but sets/returns the synchronization mask of the
 module.
@@ -714,7 +721,7 @@ It is safe to call this method more than once.
 This method may be called from signal handlers before I<exit>ing for the
 proper shutdown.
 
-=item B<getHandlerCategory> type
+=item B<getHandlerCategory> I<type>
 
 Returns one of 3 string ids depending on the event handler I<type> that has
 the same meaning as the corresponding packet type ("regular" or "extended")
@@ -726,12 +733,12 @@ This is a blocking method that waits until there is a packet on the
 communication end from I<fvwm>. Then it returns a list of 2 values,
 packet type and packet data (packed).
 
-=item B<invokeHandler> event
+=item B<invokeHandler> I<event>
 
 Dispatches the apropos event handlers with the event data.
 This method is called automatically, so you usually should not worry about it.
 
-=item B<processPacket> [data type]
+=item B<processPacket> [I<data type>]
 
 This method constructs the event object from the packet data and calls
 B<invokeHandler> with it. Prints debug info if requested. Finally calls
@@ -744,7 +751,7 @@ from the event loop.
 
 Not implemented yet.
 
-=item B<isEventExtended> type
+=item B<isEventExtended> I<type>
 
 For technical reasons there are 2 categories of FVWM events, regular and
 extended. This is done to enable more events. With introdution of the

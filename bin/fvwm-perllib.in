@@ -95,12 +95,12 @@ $internalPods->{tutorial} = q{
 	System and manages windows, menus, key and mouse bindings, virtual
 	desktops and pages, draws window decorations using defined colors or
 	images, title-bar buttons and fonts.  It may also manage such things
-	like root background, mouse cursors, sounds, run applications and
-	do a lot of other nice things.
+	as root background, mouse cursors, sounds, run applications and
+	do other nice things.
 
 	:head1 WHAT IS A MODULE
 
-	In the unix traditions different functionality may be implemented
+	In the unix traditions, different functionality may be implemented
 	by separate programs to reduce a bloat. A module is an optional
 	program that is intended to extend the window manager using a defined
 	module protocol.
@@ -129,7 +129,7 @@ $internalPods->{tutorial} = q{
 	handlers. When an event is processed, the module enters the event
 	loop again.
 
-	In our case, we should listen to an FVWM event M_NEW_PAGE. The list
+	In our case, we should listen to an FVWM event I<M_NEW_PAGE>. The list
 	of all events may be found in L<FVWM::Constants>. When we receive
 	the event we want to get new page coordinates and display them
 	using our special xmessage window.
