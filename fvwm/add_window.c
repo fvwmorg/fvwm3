@@ -774,7 +774,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 		       GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT],
 		       True);
   GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
-		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT,
+		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR/*|C_ROOT*/,
 		    GetUnusedModifiers(), True);
 
   XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
@@ -827,7 +827,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	register unsigned int mods;
 	register unsigned int max = GetUnusedModifiers();
 	register unsigned int living_modifiers = ~max;
-	
+
 	/* handle all bindings for the dead modifiers */
 	for (mods = 1; mods <= max; mods++)
 	{
