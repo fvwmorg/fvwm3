@@ -60,7 +60,7 @@ static void FShmInit(Display *dpy)
 
 	FShmInitialized = True;
 
-	if (1 || !XShmSupport)
+	if (!XShmSupport)
 	{
 		return;
 	}
