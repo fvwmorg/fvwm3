@@ -42,6 +42,7 @@ void new_layer(FvwmWindow *t, int layer);
 
 void init_stack_and_layers(void);
 Bool is_on_top_of_layer(FvwmWindow *t);
+Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *t);
 
 /* This function recursively finds the transients of the window t and sets their
  * is_in_transient_subtree flag.  If a layer is given, only windows in this

@@ -43,6 +43,7 @@
 
 /* ----------------------------- stack ring code --------------------------- */
 
+extern Bool is_frame_hide_window();
 static void RaiseOrLowerWindow(
 	FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window);
 #if 0
@@ -50,6 +51,7 @@ static void ResyncFvwmStackRing(void);
 #endif
 static void ResyncXStackingOrder(void);
 static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2);
+static Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop);
 
 #define DEBUG_STACK_RING 1
 #ifdef DEBUG_STACK_RING
@@ -315,51 +317,22 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
  ********************************************************************/
 static void raise_over_unmanaged(FvwmWindow *t)
 {
-	Window junk;
-	Window *tops;
 	int i;
-	unsigned int num;
 	Window OR_Above = None;
 	Window *wins;
 	int count = 0;
 	FvwmWindow *t2 = NULL;
 	unsigned int flags;
 	XWindowChanges changes;
-	XWindowAttributes wa;
 
-	if (!XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num))
-	{
-		return;
-	}
 
 	/********************************************************************
 	 * Locate the highest override_redirect window above our target, and
 	 * the highest of our windows below it.
-	 ********************************************************************/
-	for (i = 0; i < num && tops[i] != FW_W_FRAME(t); i++)
-	{
-		/* look for target window in list */
-	}
-	for (; i < num; i++)
-	{
-		/* It might be just as well (and quicker) just to check for the
-		 * absence of an FvwmContext instead of for
-		 * override_redirect... */
-		if (!XGetWindowAttributes(dpy, tops[i], &wa))
-		{
-			continue;
-		}
-		if (wa.override_redirect == True && wa.class != InputOnly &&
-		    tops[i] != Scr.NoFocusWin)
-		{
-			OR_Above = tops[i];
-		}
-	} /* end for */
 
-	/********************************************************************
 	 * Count the windows we need to restack, then build the stack list.
 	 ********************************************************************/
-	if (OR_Above)
+	if (! is_above_unmanaged(t, &OR_Above))
 	{
 		for (count = 0, t2 = Scr.FvwmRoot.stack_next;
 		     t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
@@ -410,7 +383,6 @@ static void raise_over_unmanaged(FvwmWindow *t)
 		}
 	}/*  end - we found an OR above our target  */
 
-	XFree (tops);
 	return;
 }
 
@@ -1395,6 +1367,70 @@ void init_stack_and_layers(void)
 }
 
 
+Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop)
+{
+/*
+          Chase through the entire stack of the server's windows looking
+        for any unmanaged window that's higher than the target.
+          Called from raise_over_unmanaged and is_on_top_of_layer.
+*/
+	Bool ontop = True;
+
+
+	Window junk;
+	Window *tops;
+	int i;
+	unsigned int num;
+	Window OR_Above = None;
+	XWindowAttributes wa;
+
+	if (!XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num))
+	{
+		return ontop;
+	}
+
+	/********************************************************************
+	 * Locate the highest override_redirect window above our target, and
+	 * the highest of our windows below it.
+	 ********************************************************************/
+	for (i = 0; i < num && tops[i] != FW_W_FRAME(fw); i++)
+	{
+		/* look for target window in list */
+	}
+	for (; i < num; i++)
+	{
+		/* It might be just as well (and quicker) just to check for the
+		 * absence of an FvwmContext instead of for
+		 * override_redirect... */
+		if (!XGetWindowAttributes(dpy, tops[i], &wa))
+		{
+			continue;
+		}
+                /*
+                    Don't forget to ignore the hidden frame resizing windows...
+                */
+		if (wa.override_redirect == True
+                    && wa.class != InputOnly
+		    && tops[i] != Scr.NoFocusWin
+                    && (! is_frame_hide_window(tops[i]))
+                    )
+		{
+			OR_Above = tops[i];
+		}
+	} /* end for */
+
+	if (OR_Above)  {
+        *umtop = OR_Above;
+        ontop = False;
+        }
+
+	XFree (tops);
+
+
+	return ontop;
+}
+
+
 static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 {
 	FvwmWindow *t;
@@ -1433,14 +1469,75 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 	return ontop;
 }
 
-Bool is_on_top_of_layer(FvwmWindow *fw)
+Bool _is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 {
+Window  junk;
+Bool  ontop     = False;
 	if (Scr.bo.RaiseOverUnmanaged)
 	{
-		return False;
-	}
 
+#define EXPERIMENTAL_ROU_HANDLING
+#ifdef EXPERIMENTAL_ROU_HANDLING
+/*
+    RBW - 2002/08/15 - 
+          RaiseOverUnmanaged adds some overhead. The only way to let our
+        caller know for sure whether we need to grab the mouse buttons
+        because we may need to raise this window is to query the
+        server's tree and look for any override_redirect windows above
+        this one.
+          But this function is called far too often to do this every
+        time. Only if the window is at the top of the FvwmWindow stack do
+        we need more information from the server; and then only at the
+        last moment in HandleEnterNotify when we really need to know
+        whether a raise will be needed if the user clicks in the client
+        window. is_on_top_of_layer_and_above_unmanaged is called in that
+        case.
+*/
+	if (is_on_top_of_layer_ignore_rom(fw))
+		{
+                if (client_entered)  
+                /* FIXME! - perhaps we should only do if MFCR  */
+                        {
+#ifdef ROUDEBUG
+                        printf("RBW-iotol  - %8.8lx is on top, checking server tree.  ***\n", FW_W_CLIENT(fw));
+#endif
+		        ontop = is_above_unmanaged(fw, &junk);
+#ifdef ROUDEBUG
+                        printf("         returning %d\n", (int) ontop);
+#endif
+                        }
+                        else  
+                        {
+#ifdef ROUDEBUG
+                        printf("RBW-iotol  - %8.8lx is on top, *** NOT checking server tree.\n", FW_W_CLIENT(fw));
+#endif
+                        ontop = True;
+                        }
+		return ontop;
+		}
+		else
+		{
+		return False;
+		}
+#else
+		return False;   /*  Old pre-2002/08/22 handling.  */
+#endif
+	}
+        else
+        {
 	return is_on_top_of_layer_ignore_rom(fw);
+        }
+}
+
+
+Bool is_on_top_of_layer(FvwmWindow *fw)
+{
+        return _is_on_top_of_layer(fw, False);
+}
+
+Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
+{
+        return _is_on_top_of_layer(fw, True);
 }
 
 /* ----------------------------- built in functions ------------------------ */

@@ -1715,7 +1715,16 @@ ENTER_DBG((stderr, "en: delete focus\n"));
 	if (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(Fw)))
 	{
 ENTER_DBG((stderr, "en: set mousey focus\n"));
-		SetFocusWindow(Fw, True, FOCUS_SET_BY_ENTER);
+                if (ewp->window == FW_W(Fw))
+                {
+                  /*  Event is for the client window...*/
+		  SetFocusWindowClientEntered(Fw, True, FOCUS_SET_BY_ENTER);
+                }
+                else
+                {
+                  /*  Event is for the frame...*/
+		  SetFocusWindow(Fw, True, FOCUS_SET_BY_ENTER);
+                }
 	}
 	else if (focus_is_focused(Fw) && focus_does_accept_input_focus(Fw))
 	{

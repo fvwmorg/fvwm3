@@ -1,3 +1,34 @@
+2002-08-12  Bob Woodside  <dumbledore@woodsway.com>
+
+	* fvwm/focus.h:
+        * fvwm/stack.h:
+        New defs for Experimental RaiseOverUnmanaged Handling.
+
+        * fvwm/events.c (HandleEnterNotify):
+        * fvwm/focus.c:
+            (set_focus_to_fwin)
+            (focus_query_grab_buttons)
+            (_focus_grab_buttons)
+            (focus_grab_buttons)
+            (focus_grab_buttons_client_entered)
+            (_SetFocusWindow)
+            (__activate_window_by_command)
+            (_ReturnFocusWindow)
+            (_DeleteFocus)
+            (_ForceDeleteFocus)
+        * fvwm/stack.c:
+            (raise_over_unmanaged)
+            (is_above_unmanaged)
+            (_is_on_top_of_layer)
+            (is_on_top_of_layer)
+            (is_on_top_of_layer_and_above_unmanaged)
+	Experimental RaiseOverUnmanaged Handling - an attempt to fix the
+        interaction of RaiseOverUnmanaged with various focus policies,
+        particularly mouse focus + client click raises; issue mouse
+        button grabs when and only when they are actually needed; and
+        fix the old "xfm + MouseFocusClickRaises" bug once and for all.
+        (Thanks to the GFPR, this is much more straightforward to do!)
+
 2002-08-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in:

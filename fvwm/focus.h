@@ -36,7 +36,15 @@
 	_fw = (a); \
 	fprintf(stderr, "sfw: %s:%d 0x%08x '%s'\n", __FILE__, __LINE__, \
 		(int)_fw, (_fw) ? _fw->visible_name : "(null)"); \
-	_SetFocusWindow(_fw, b, c); \
+	_SetFocusWindow(_fw, b, c, False); \
+}
+#define SetFocusWindowClientEntered(a, b, c, d) \
+{ \
+	FvwmWindow *_fw; \
+	_fw = (a); \
+	fprintf(stderr, "sfw: %s:%d 0x%08x '%s'\n", __FILE__, __LINE__, \
+		(int)_fw, (_fw) ? _fw->visible_name : "(null)"); \
+	_SetFocusWindow(_fw, b, c, True); \
 }
 #define ReturnFocusWindow(a) \
 { \
@@ -57,7 +65,8 @@
 	_ForceDeleteFocus(); \
 }
 #else
-#define SetFocusWindow(a, b, c) _SetFocusWindow(a, b, c);
+#define SetFocusWindow(a, b, c) _SetFocusWindow(a, b, c, False);
+#define SetFocusWindowClientEntered(a, b, c) _SetFocusWindow(a, b, c, True);
 #define ReturnFocusWindow(a) _ReturnFocusWindow(a);
 #define DeleteFocus(a) _DeleteFocus(a);
 #define ForceDeleteFocus() _ForceDeleteFocus();
@@ -79,7 +88,7 @@
  **********************************************************************/
 void _SetFocusWindow(
 	FvwmWindow *fw, Bool do_allow_force_broadcast,
-	fpol_set_focus_by_t set_by);
+	fpol_set_focus_by_t set_by, Bool client_entered);
 void _ReturnFocusWindow(FvwmWindow *Fw);
 void _DeleteFocus(Bool do_allow_force_broadcast);
 void _ForceDeleteFocus(void);
@@ -91,6 +100,7 @@ void restore_focus_after_unmap(
  **/
 Bool IsLastFocusSetByMouse(void);
 void focus_grab_buttons(FvwmWindow *fw);
+void focus_grab_buttons_client_entered(FvwmWindow *fw);
 void focus_grab_buttons_on_layer(int layer);
 void focus_grab_buttons_all(void);
 void focus_grab_buttons_on_pointer_window(void);

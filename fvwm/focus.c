@@ -61,6 +61,7 @@ typedef struct
 	unsigned do_forbid_warp : 1;
 	unsigned do_force : 1;
 	unsigned is_focus_by_focus_cmd : 1;
+	unsigned client_entered : 1;
 	fpol_set_focus_by_t set_by;
 } sftfwin_args_t;
 
@@ -406,8 +407,26 @@ static void set_focus_to_fwin(
 	__set_focus_to_fwin(w, fw, args);
 	/* Make sure the button grabs on the new and the old focused windows
 	 * are up to date. */
-	focus_grab_buttons(fw);
-	focus_grab_buttons(get_focus_window());
+        if (args->client_entered)
+                {
+                        focus_grab_buttons_client_entered(fw);
+                }
+                else
+                {
+                        focus_grab_buttons(fw);
+                }
+        /* RBW -- don't call this twice for the same window!  */
+        if (fw != get_focus_window())
+        {
+                if (args->client_entered)
+                {
+                        focus_grab_buttons_client_entered(get_focus_window());
+                }
+                else
+                {
+                        focus_grab_buttons(get_focus_window());
+                }
+        }
 
 	return;
 }
@@ -530,7 +549,7 @@ static void warp_to_fvwm_window(
 	}
 }
 
-static Bool focus_query_grab_buttons(FvwmWindow *fw)
+static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 {
 	Bool flag;
 	Bool is_focused;
@@ -544,7 +563,7 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw)
 	{
 		return True;
 	}
-	if (is_on_top_of_layer(fw))
+	if (is_on_top_of_layer_and_above_unmanaged(fw))
 	{
 		return False;
 	}
@@ -630,6 +649,7 @@ static void __activate_window_by_command(
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_focus_cmd = !!is_focus_by_focus_cmd;
 	sf_args.set_by = FOCUS_SET_BY_FUNCTION;
+        sf_args.client_entered = 0;
 	if (fw == NULL || !FP_DO_FOCUS_BY_FUNCTION(FW_FOCUS_POLICY(fw)))
 	{
 		UngrabEm(GRAB_NORMAL);
@@ -697,6 +717,7 @@ static void __activate_window_by_command(
 		sf = get_focus_window();
 		sf_args.do_forbid_warp = !!do_not_warp;
 		sf_args.do_force = 0;
+                sf_args.client_entered = 0;
 		set_focus_to_fwin(FW_W(fw), fw, &sf_args);
 		if (sf != get_focus_window())
 		{
@@ -883,7 +904,7 @@ Bool focus_query_close_release_focus(FvwmWindow *fw)
 	return False;
 }
 
-void focus_grab_buttons(FvwmWindow *fw)
+void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 {
 	int i;
 	Bool do_grab_window = False;
@@ -894,7 +915,7 @@ void focus_grab_buttons(FvwmWindow *fw)
 		/* It's pointless to grab buttons on dying windows */
 		return;
 	}
-	do_grab_window = focus_query_grab_buttons(fw);
+	do_grab_window = focus_query_grab_buttons(fw, client_entered);
 	if (do_grab_window == True)
 	{
 		grab_buttons |= FP_USE_MOUSE_BUTTONS(FW_FOCUS_POLICY(fw));
@@ -910,6 +931,16 @@ void focus_grab_buttons(FvwmWindow *fw)
 	}
 
 	return;
+}
+
+void focus_grab_buttons(FvwmWindow *fw)
+{
+        return _focus_grab_buttons(fw, False);
+}
+
+void focus_grab_buttons_client_entered(FvwmWindow *fw)
+{
+        return _focus_grab_buttons(fw, True);
 }
 
 void focus_grab_buttons_on_layer(int layer)
@@ -942,7 +973,7 @@ void focus_grab_buttons_all(void)
 
 void _SetFocusWindow(
 	FvwmWindow *fw, Bool do_allow_force_broadcast,
-	fpol_set_focus_by_t set_by)
+	fpol_set_focus_by_t set_by, Bool client_entered)
 {
 	sftfwin_args_t sf_args;
 
@@ -951,6 +982,14 @@ void _SetFocusWindow(
 	sf_args.do_forbid_warp = 0;
 	sf_args.do_force = 1;
 	sf_args.set_by = set_by;
+        if (client_entered)
+                {
+                        sf_args.client_entered = 1;
+                }
+                else
+                {
+                        sf_args.client_entered = 0;
+                }
 	set_focus_to_fwin(FW_W(fw), fw, &sf_args);
 
 	return;
@@ -963,6 +1002,7 @@ void _ReturnFocusWindow(FvwmWindow *fw)
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_focus_cmd = 0;
 	sf_args.do_forbid_warp = 1;
+        sf_args.client_entered = 0;
 	sf_args.do_force = 0;
 	sf_args.set_by = FOCUS_SET_FORCE;
 	set_focus_to_fwin(FW_W(fw), fw, &sf_args);
@@ -977,6 +1017,7 @@ void _DeleteFocus(Bool do_allow_force_broadcast)
 	sf_args.do_allow_force_broadcast = !!do_allow_force_broadcast;
 	sf_args.is_focus_by_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;
+        sf_args.client_entered = 0;
 	sf_args.do_force = 0;
 	sf_args.set_by = FOCUS_SET_FORCE;
 	set_focus_to_fwin(Scr.NoFocusWin, NULL, &sf_args);
@@ -991,6 +1032,7 @@ void _ForceDeleteFocus(void)
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;
+        sf_args.client_entered = 0;
 	sf_args.do_force = 1;
 	sf_args.set_by = FOCUS_SET_FORCE;
 	set_focus_to_fwin(Scr.NoFocusWin, NULL, &sf_args);
