@@ -164,7 +164,7 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
   int XOffset, YOffset;
   Window w;
-  Bool opaque_move = False;
+  Bool do_move_opaque = False;
 
   w = *win;
 
@@ -193,18 +193,18 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
 
   if(DragWidth*DragHeight <
      (Scr.OpaqueSize*Scr.MyDisplayWidth*Scr.MyDisplayHeight)/100)
-    opaque_move = True;
+    do_move_opaque = True;
   else
     MyXGrabServer(dpy);
 
-  if((!opaque_move)&&(IS_ICONIFIED(tmp_win)))
+  if((!do_move_opaque)&&(IS_ICONIFIED(tmp_win)))
     XUnmapWindow(dpy,w);
 
   XOffset = origDragX - DragX;
   YOffset = origDragY - DragY;
   XMapRaised(dpy,Scr.SizeWindow);
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
-	   opaque_move,False);
+	   do_move_opaque,False);
 
   XUnmapWindow(dpy,Scr.SizeWindow);
   if (Scr.bo.InstallRootCmap)
@@ -212,7 +212,7 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   else
     UninstallFvwmColormap();
 
-  if(!opaque_move)
+  if(!do_move_opaque)
     MyXUngrabServer(dpy);
   UngrabEm();
 }
@@ -755,7 +755,7 @@ static void DoSnapAttract(
  *
  ****************************************************************************/
 void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
-	      int Height, int *FinalX, int *FinalY,Bool opaque_move,
+	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque,
 	      Bool AddWindow)
 {
   Bool finished = False;
@@ -770,7 +770,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
   /* prevent flicker when paging */
-  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, opaque_move);
+  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
 
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
@@ -778,7 +778,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   xl += XOffset;
   yt += YOffset;
 
-  if(((!opaque_move)&&(!Scr.gs.EmulateMWM))||(AddWindow))
+  if(((!do_move_opaque)&&(!Scr.gs.EmulateMWM))||(AddWindow))
     MoveOutline(xl, yt, Width - 1, Height - 1);
 
   DisplayPosition(tmp_win,xl,yt,True);
@@ -845,7 +845,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       /* simple code to bag out of move - CKH */
       if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
       {
-	if(!opaque_move)
+	if(!do_move_opaque)
 	  MoveOutline(0, 0, 0, 0);
 	if (!IS_ICONIFIED(tmp_win))
 	{
@@ -889,7 +889,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	 *    except button 1 was pressed. */
 	if (button_mask || (Event.xbutton.button != 1))
 	{
-	  if(!opaque_move)
+	  if(!do_move_opaque)
 	    MoveOutline(0, 0, 0, 0);
 	  if (!IS_ICONIFIED(tmp_win))
 	  {
@@ -907,7 +907,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	break;
       }
     case ButtonRelease:
-      if(!opaque_move)
+      if(!do_move_opaque)
 	MoveOutline(0, 0, 0, 0);
       xl2 = Event.xbutton.x_root + XOffset;
       yt2 = Event.xbutton.y_root + YOffset;
@@ -965,7 +965,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       paged=0;
       while(paged<=1)
       {
-	if(!opaque_move)
+	if(!do_move_opaque)
 	  MoveOutline(xl, yt, Width - 1, Height - 1);
 	else
 	{
@@ -1013,11 +1013,14 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     } /* switch */
     if(!done)
     {
+      if (!do_move_opaque)
+	/* must undraw the rubber band in case the event causes some drawing */
+	MoveOutline(0,0,0,0);
       DispatchEvent(False);
-      if(!opaque_move)
+      if(!do_move_opaque)
 	MoveOutline(xl, yt, Width - 1, Height - 1);
     }
-    if (opaque_move && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
+    if (do_move_opaque && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
        * location */
@@ -1045,7 +1048,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	       client_event.xconfigure.height);
 #endif
     }
-    if(opaque_move)
+    if(do_move_opaque)
     {
       if (!IS_ICONIFIED(tmp_win))
       {
@@ -1776,6 +1779,9 @@ void resize_window(F_CMD_ARGS)
     }
     if(!done)
     {
+      if (!do_resize_opaque)
+	/* must undraw the rubber band in case the event causes some drawing */
+	MoveOutline(0,0,0,0);
       DispatchEvent(False);
       if (!do_resize_opaque)
 	MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);

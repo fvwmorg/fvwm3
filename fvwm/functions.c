@@ -486,6 +486,7 @@ static cfunc_action_type CheckActionType(
   int xcurrent,ycurrent,total = 0;
   Time t0;
   int dist;
+  XEvent old_event;
   extern Time lastTimestamp;
 
   xcurrent = x;
@@ -495,45 +496,52 @@ static cfunc_action_type CheckActionType(
 
   while ((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
 	 !may_time_out)
+  {
+    if (!(x - xcurrent < dist && xcurrent - x < dist &&
+	  y - ycurrent < dist && ycurrent - y < dist))
     {
-      if (!(x - xcurrent < dist && xcurrent - x < dist &&
-	    y - ycurrent < dist && ycurrent - y < dist))
-      {
-	return CF_MOTION;
-      }
+      return CF_MOTION;
+    }
 
-      usleep(20000);
-      total+=20;
-      if(XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
-			 PointerMotionMask|ButtonPressMask, d))
+    usleep(20000);
+    total+=20;
+    if(XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
+		       PointerMotionMask|ButtonPressMask|ExposureMask, d))
+    {
+      StashEventTime(d);
+      switch (d->xany.type)
       {
-	StashEventTime(d);
-	switch (d->xany.type)
+      case ButtonRelease:
+	return CF_CLICK;
+      case MotionNotify:
+	if (d->xmotion.state &
+	    (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))
 	{
-	case ButtonRelease:
-	  return CF_CLICK;
-	case MotionNotify:
-	  if (d->xmotion.state &
-	      (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))
-	  {
-	    xcurrent = d->xmotion.x_root;
-	    ycurrent = d->xmotion.y_root;
-	  }
-	  else
-	  {
-	    return (is_button_pressed) ? CF_CLICK : CF_TIMEOUT;
-	  }
-	  break;
-	case ButtonPress:
-	  if (may_time_out)
-	    is_button_pressed = True;
-	  break;
-	default:
-	  /* can't happen */
-	  break;
+	  xcurrent = d->xmotion.x_root;
+	  ycurrent = d->xmotion.y_root;
 	}
+	else
+	{
+	  return (is_button_pressed) ? CF_CLICK : CF_TIMEOUT;
+	}
+	break;
+      case ButtonPress:
+	if (may_time_out)
+	  is_button_pressed = True;
+	break;
+      case Expose:
+	/* must handle expose here so that raising a window with "I" works */
+	memcpy(&old_event, &Event, sizeof(XEvent));
+	memcpy(&Event, d, sizeof(XEvent));
+	DispatchEvent(True);
+	memcpy(&Event, &old_event, sizeof(XEvent));
+	break;
+      default:
+	/* can't happen */
+	break;
       }
     }
+  }
 
   return (is_button_pressed) ? CF_HOLD : CF_TIMEOUT;
 }
