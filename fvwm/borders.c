@@ -482,7 +482,6 @@ static ButtonState border_flags_to_button_state(
 	{
 		if (is_pressed && Scr.gs.use_inactive_down_buttons)
 		{
-fprintf(stderr, "\tYahoo!\n");
 			return (is_toggled) ?
 				BS_ToggledInactiveDown : BS_InactiveDown;
 		}

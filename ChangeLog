@@ -1,3 +1,11 @@
+2002-09-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/FEvent.h:
+	fixed compilation warning in #endif comment
+
+	* fvwm/borders.c:
+	removed debug fprintf
+
 2002-09-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in (LIBOBJS):

@@ -113,4 +113,4 @@ int FWindowEvent(
 #define XWindowEvent(a, b, c, d) use_FWindowEvent
 #endif
 
-#endif / * FEVENT_H */
+#endif /* FEVENT_H */
