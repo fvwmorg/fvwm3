@@ -1,3 +1,8 @@
+2001-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWharf/FvwmWharf.c (change_colorset):
+	fixed colour set updates in FvwmWharf
+
 2001-05-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmAnimate/FvwmAnimate.1:
@@ -33,7 +38,7 @@
 
 	* FvwmTaskBar/FvwmTaskBar.c (ErrorHandler):
 	BadPixmap and BadDrawable are ok
-	
+
 2001-05-10  Hippo
 
 	* FvwmEvent/FvwmEvent.[c1]: PassId returns a hex number

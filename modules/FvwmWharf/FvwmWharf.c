@@ -2200,25 +2200,23 @@ static void configure_all_icon_windows(void)
 
 static void change_colorset(int colorset)
 {
-  if (colorset == global_colorset && colorset >= 0)
+  if (colorset != global_colorset || colorset < 0)
   {
-    BgColor = Colorset[global_colorset].bg;
-
-    /* update GCs */
-    XFreeGC(dpy, NormalGC);
-    XFreeGC(dpy, HiReliefGC);
-    XFreeGC(dpy, HiInnerGC);
-    XFreeGC(dpy, MaskGC);
-    CreateShadowGC();
-
-    /* update background pixmap */
-    GetXPMColorset(BACK_BUTTON, global_colorset);
+    return;
   }
 
+  BgColor = Colorset[global_colorset].bg;
+  /* update GCs */
+  XFreeGC(dpy, NormalGC);
+  XFreeGC(dpy, HiReliefGC);
+  XFreeGC(dpy, HiInnerGC);
+  XFreeGC(dpy, MaskGC);
+  CreateShadowGC();
+  /* update background pixmap */
+  GetXPMColorset(BACK_BUTTON, global_colorset);
   /* activate changes */
   configure_all_icon_windows();
-
-  for(x = 0; x < num_folders; x++)
+  for (x = 0; x < num_folders; x++)
   {
     XClearWindow(dpy, Folders[x].win);
     RedrawWindow(&Folders[x].win,num_folderbuttons, -1,
@@ -2230,10 +2228,9 @@ static void change_colorset(int colorset)
       else
 	RedrawUnpushedOutline(&Folders[x].win, y, 1);
     }
-    XClearWindow(dpy, main_win);
-    RedrawWindow(&main_win,0, -1, num_rows, num_columns);
   }
-
+  XClearWindow(dpy, main_win);
+  RedrawWindow(&main_win,0, -1, num_rows, num_columns);
   XSync(dpy, 0);
 
   return;
