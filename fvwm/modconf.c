@@ -69,7 +69,9 @@ struct moduleInfoList
 
 struct moduleInfoList *modlistroot = NULL;
 
-static char *AddToModList(char *tline);         /* prototypes */
+static struct moduleInfoList *AddToModList(char *tline);
+static void SendConfigToModule(
+  int module, const struct moduleInfoList *entry, char *match, int match_len);
 
 
 /*
@@ -83,19 +85,28 @@ static char *AddToModList(char *tline);         /* prototypes */
  */
 void  ModuleConfig(char *action) {
   int module, end;
+  struct moduleInfoList *new_entry;
 
   end = strlen(action) - 1;
   if (action[end] == '\n')
     action[end] = '\0';
-  action = AddToModList(action);            /* save for config request */
-  for (module=0;module<npipes;module++) {/* look at all possible pipes */
-    if (PipeMask[module] & M_SENDCONFIG) { /* does module want config cmds */
-      SendName(module,M_CONFIG_INFO,0,0,0,action); /* send cmd to module */
+  new_entry = AddToModList(action);              /* save for config request */
+  for (module = 0; module < npipes; module++) /* look at all possible pipes */
+  {
+    if (PipeMask[module] & M_SENDCONFIG)    /* does module want config cmds */
+    {
+      extern char **pipeName;
+      char *name = pipeName[module];
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+      extern char **pipeAlias;
+      if (pipeAlias[module]) name = pipeAlias[module];
+#endif
+      SendConfigToModule(module, new_entry, CatString2("*", name), 0);
     }
   }
 }
 
-static char *AddToModList(char *tline)
+static struct moduleInfoList *AddToModList(char *tline)
 {
   struct moduleInfoList *t, *prev, *this;
   char *rline = tline;
@@ -136,7 +147,7 @@ static char *AddToModList(char *tline)
   else
     prev->next = this;
 
-  return rline;
+  return this;
 }
 
 /**************************************************************/
@@ -219,7 +230,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     match_len = strlen(match);
   }
 
-  /* send dektop geometry */
+  /* send desktop geometry */
   sprintf(msg2,"DesktopSize %d %d\n", Scr.VxMax / Scr.MyDisplayWidth + 1,
 	  Scr.VyMax / Scr.MyDisplayHeight + 1);
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
@@ -250,17 +261,26 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   sprintf(msg2,"MoveThreshold %d\n", Scr.MoveThreshold);
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
 
-  for (t = modlistroot; t != NULL; t = t->next) {
-    if (match)
-    {
-      if (t->alias_len > 0 && t->alias_len != match_len)
-        continue;
-      /* migo: this should be strncmp not strncasecmp probably. */
-      if (strncasecmp(t->data, match, match_len))
-        continue;
-    }
-    SendName(*Module,M_CONFIG_INFO,0,0,0,t->data);
+  for (t = modlistroot; t != NULL; t = t->next)
+  {
+    SendConfigToModule(*Module, t, match, match_len);
   }
   SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
   free(match);
+}
+
+static void SendConfigToModule(
+  int module, const struct moduleInfoList *entry, char *match, int match_len)
+{
+  if (match)
+  {
+    if (match_len == 0)
+      match_len = strlen(match);
+    if (entry->alias_len > 0 && entry->alias_len != match_len)
+      return;
+    /* migo: this should be strncmp not strncasecmp probably. */
+    if (strncasecmp(entry->data, match, match_len) != 0)
+      return;
+  }
+  SendName(module, M_CONFIG_INFO, 0, 0, 0, entry->data);
 }
