@@ -195,7 +195,7 @@ int main(int argc, char **argv)
   int len;
   char *display_string;
   char message[255];
-  Bool single = False;
+  Bool do_force_single_screen = False;
   Bool replace_wm = False;
   Bool option_error = False;
   int visualClass = -1;
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
       }
     else if (strncasecmp(argv[i],"-s",2)==0)
     {
-      single = True;
+      do_force_single_screen = True;
     }
     else if (strncasecmp(argv[i],"-d",2)==0)
     {
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 
   master_pid = getpid();
 
-  if(!single)
+  if(!do_force_single_screen)
   {
     int	myscreen = 0;
     char *cp;
@@ -602,7 +602,7 @@ int main(int argc, char **argv)
     ) {
       if (prop != NULL) {
         Restarting = True;
-        /* single = True; */
+        /* do_force_single_screen = True; */
       }
     }
   }
@@ -777,6 +777,10 @@ void StartupStuff(void)
   const char *initFuncName;
 
   CaptureAllWindows();
+  /* Turn off the SM stuff after the initial capture so that new windows will
+   * not be matched by accident. */
+  if (Restarting)
+    DisableSM();
   /* Have to do this here too because preprocessor modules have not run to the
    * end when HandleEvents is entered from the main loop. */
   checkPanFrames();

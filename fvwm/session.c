@@ -200,6 +200,7 @@ LoadGlobalState(char *filename)
     */
       MoveViewport(i1, i2, True);
     }
+#if 0
     /* migo (08-Dec-1999): we don't want to eliminate .fvwm2rc for now */
     else if (/*!Restarting*/ 0)
     {
@@ -244,6 +245,7 @@ LoadGlobalState(char *filename)
         Scr.gs.EmulateWIN = i2;
       }
     }
+#endif
   }
   fclose(f);
 }
@@ -386,6 +388,14 @@ SaveWindowStates(FILE *f)
     fprintf(f, "\n");
   }
   return 1;
+}
+
+void
+DisableSM(void)
+{
+  num_match = 0;
+
+  return;
 }
 
 void
@@ -701,7 +711,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       ewin->max_offset.x = matches[i].max_x_offset;
       ewin->max_offset.y = matches[i].max_y_offset;
       SET_STICKY(ewin, IS_STICKY(&(matches[i])));
-      ewin->Desk = matches[i].desktop;
+      ewin->Desk = (IS_STICKY(ewin)) ? Scr.CurrentDesk : matches[i].desktop;
       set_layer(ewin, matches[i].layer);
 
       /* this is not enough to fight fvwms attempts to
