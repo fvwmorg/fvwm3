@@ -1,3 +1,11 @@
+2002-04-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (initialize_pager):
+	fixed initial layout or the pager
+	(Scroll):
+	fixed viewport getting stuck at the desktop boundaries when dragging
+	with button 3
+
 2002-03-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmIdent/FvwmIdent.c:

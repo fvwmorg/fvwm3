@@ -448,7 +448,8 @@ void initialize_pager(void)
   {
     window_h = Rows * (Scr.VHeight / Scr.VScale + m + label_h + 1) - 1;
   }
-
+  desk_w = (window_w - Columns + 1) / Columns;
+  desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
   if (is_transient)
   {
     rectangle screen_g;
@@ -1953,51 +1954,80 @@ void Hilight(PagerWindow *t, int on)
 void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	    Bool do_scroll_icon)
 {
-  char command[256];
-  int sx, sy;
-  if(Wait == 0)
-  {
-    /* Desk < 0 means we want to scroll an icon window */
-    if(Desk >= 0 && Desk + desk1 != Scr.CurrentDesk)
-    {
-      return;
-    }
+	char command[256];
+	static int last_sx = -999999;
+	static int last_sy = -999999;
+	int sx;
+	int sy;
 
-    /* center around mouse */
-    x -= (desk_w / (1 + Scr.VxMax / Scr.MyDisplayWidth)) / 2;
-    y -= (desk_h / (1 + Scr.VyMax / Scr.MyDisplayHeight)) / 2;
+	/* Desk < 0 means we want to scroll an icon window */
+	if(Desk >= 0 && Desk + desk1 != Scr.CurrentDesk)
+	{
+		return;
+	}
 
-    if(x < 0)
-      x = 0;
-    if(y < 0)
-      y = 0;
+	/* center around mouse */
+	x -= (desk_w / (1 + Scr.VxMax / Scr.MyDisplayWidth)) / 2;
+	y -= (desk_h / (1 + Scr.VyMax / Scr.MyDisplayHeight)) / 2;
 
-    if(x > window_w)
-      x = window_w;
-    if(y > window_h)
-      y = window_h;
+	if(x < 0)
+	{
+		x = 0;
+	}
+	if(y < 0)
+	{
+		y = 0;
+	}
 
-    sx = 0;
-    sy = 0;
-    if(window_w != 0)
-      sx = 100 * (x * Scr.VWidth / window_w - Scr.Vx) / Scr.MyDisplayWidth;
-    if(window_h != 0)
-      sy = 100 * (y * Scr.VHeight / window_h - Scr.Vy) / Scr.MyDisplayHeight;
+	if(x > window_w)
+	{
+		x = window_w;
+	}
+	if(y > window_h)
+	{
+		y = window_h;
+	}
+
+	sx = 0;
+	sy = 0;
+	if(window_w != 0)
+	{
+		sx = 100 * (x * Scr.VWidth / window_w - Scr.Vx) /
+			Scr.MyDisplayWidth;
+	}
+	if(window_h != 0)
+	{
+		sy = 100 * (y * Scr.VHeight / window_h - Scr.Vy) /
+			Scr.MyDisplayHeight;
+	}
 #ifdef DEBUG
-    fprintf(stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
-	    y, sx, sy);
+	fprintf(stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
+		y, sx, sy);
 #endif
-    /* Make sure weExecuteCommandQueue(); don't get stuck a few pixels fromt the top/left border.
-     * Since sx/sy are ints, values between 0 and 1 are rounded down. */
-    if(sx == 0 && x == 0 && Scr.Vx != 0)
-      sx = -1;
-    if(sy == 0 && y == 0 && Scr.Vy != 0)
-      sy = -1;
+	/* Make sure weExecuteCommandQueue(); don't get stuck a few pixels fromt
+	 * the top/left border. Since sx/sy are ints, values between 0 and 1 are
+	 * rounded down. */
+	if (sx == 0 && x == 0 && Scr.Vx != 0)
+	{
+		sx = -1;
+	}
+	if (sy == 0 && y == 0 && Scr.Vy != 0)
+	{
+		sy = -1;
+	}
+	if (Wait == 0 || last_sx != sx || last_sy != sy)
+	{
+		sprintf(command,"Scroll %d %d\n",sx,sy);
+		SendInfo(fd,command,0);
+		Wait = 1;
+	}
+	if (Wait == 0)
+	{
+		last_sx = sx;
+		last_sy = sy;
+	}
 
-    sprintf(command,"Scroll %d %d\n",sx,sy);
-    SendInfo(fd,command,0);
-    Wait = 1;
-  }
+	return;
 }
 
 void MoveWindow(XEvent *Event)

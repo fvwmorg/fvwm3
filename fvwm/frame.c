@@ -794,7 +794,8 @@ static void frame_mrs_hide_changing_parts(
 	/* cover bottom/right borders and possibly part of the client */
 	XMoveResizeWindow(
 		dpy, hide_wins.w[2],
-		0, mra->current_g.height - mra->b_g.bottom_right.height - b_add,
+		0,
+		mra->current_g.height - mra->b_g.bottom_right.height - b_add,
 		mra->current_g.width, mra->b_g.bottom_right.height + b_add);
 	XMoveResizeWindow(
 		dpy, hide_wins.w[3],
