@@ -218,7 +218,7 @@ typedef enum
 	BS_AllActiveDown,
 	BS_AllInactiveUp,
 	BS_AllInactiveDown,
-	BS_MaxButtonStateName,
+	BS_MaxButtonStateName
 } ButtonState;
 
 #define BS_MASK_DOWN     (1 << 0)

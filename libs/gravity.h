@@ -26,7 +26,7 @@ typedef enum
 	DIR_MINOR_MASK = 7,
 	DIR_MASK = 7,
 	DIR_C = 8,
-	DIR_ALL_MASK = 8,
+	DIR_ALL_MASK = 8
 } direction_t;
 
 typedef enum

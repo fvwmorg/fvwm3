@@ -1,5 +1,10 @@
 2004-07-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/screen.h:
+	* libs/gravity.h (enum):
+	* libs/wcontext.h (enum):
+	-pedantic fixes
+
 	* fvwm/fvwm.c (StartupStuff):
 	do not ungrab the pointer while the startup functions execute
 	(Done):
