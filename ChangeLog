@@ -1,3 +1,28 @@
+Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c
+	* fvwm/complex.c
+	* fvwm/menus.c
+	* fvwm/move.c
+	* fvwm/placement.c
+	* fvwm/resize.c:
+	* fixed XBell bug
+
+Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* modules/FvwmButtons/CHANGES
+	* modules/FvwmButtons/FvwmButtons.h
+	* modules/FvwmButtons/FvwmButtons.1
+	* modules/FvwmButtons/TODO
+	* modules/FvwmButtons/button.c
+	* modules/FvwmButtons/draw.c
+	* modules/FvwmButtons/parse.c:
+	* Left/Right/Center option for buttons, did some cleanup
+
+Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* cleaned up lots of files for lclint
+
 Sun Nov  1 12:52:59 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* sample.fvwmrc/system.fvwm2rc*: Removed the lines setting
