@@ -1,5 +1,8 @@
 2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	fake a MapNotify and then an UnmapNotify when a window is created iconic
+
 	* fvwm/add_window.c (AddWindow):
 	workaround for buggy TK menu positioning
 

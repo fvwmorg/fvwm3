@@ -163,7 +163,9 @@ static void fake_map_unmap_notify(FvwmWindow *fw, int event_type)
 	XEvent client_event;
 	XWindowAttributes winattrs = {0};
 
-/*if (event_type == UnmapNotify)return;*/
+#if 0
+if (event_type == UnmapNotify)return;
+#endif
 	if (!XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
 	{
 		return;
@@ -2050,7 +2052,6 @@ void HandleMapRequest(void)
 {
 	DBUG("HandleMapRequest","Routine Entered");
 
-fprintf(stderr,"hmr:\n");
 	if (fFvwmInStartup)
 	{
 		/* Just map the damn thing, decorations are added later
@@ -2271,8 +2272,12 @@ void HandleMapRequestKeepRaised(
 			Iconify(Fw, win_opts);
 			if (is_new_window)
 			{
-				/* the window will not be mapped - fake an
-				 * UnmapNotify event */
+				/* the window will not be mapped - fake a
+				 * MapNotify and an UnmapNotify event.  Can't
+				 * remember exactly why this is necessary, but
+				 * probably something w/ (de)iconify state
+				 * confusion. */
+				fake_map_unmap_notify(Fw, MapNotify);
 				fake_map_unmap_notify(Fw, UnmapNotify);
 			}
 			break;
