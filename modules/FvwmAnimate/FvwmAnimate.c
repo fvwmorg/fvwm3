@@ -1125,6 +1125,10 @@ void ParseConfigLine(char *buf) {
         break;
       case Iterations_arg:              /* Iterations */
         Animate.iterations = atoi(q);
+        /* Silently fix up iterations less than 1. */
+        if (Animate.iterations <= 0) {
+          Animate.iterations = 1;
+        }
         break;
       case Effect_arg:                /* Effect */
       case Resize_arg:                /* -or - Resize */
@@ -1154,6 +1158,10 @@ void ParseConfigLine(char *buf) {
         break;
       case Width_arg:                 /* Width */
         Animate.width = atoi(q);
+        /* Silently fix up width less than 0. */
+        if (Animate.width < 0) {
+          Animate.width = 0;
+        }
         CreateDrawGC();                 /* update GC */
         break;
       default:
