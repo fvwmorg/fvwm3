@@ -1,5 +1,7 @@
 1999-09-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.8
+
 	* fvwm/events.c (HandlePropertyNotify): fixed bug with xterm:
 	<maximize, change font, normalize> got the window size wrong
 
