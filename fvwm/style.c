@@ -444,7 +444,8 @@ static void add_style_to_list(window_style *new_style)
 
 static void remove_all_of_style_from_list(char *style_ref)
 {
-  window_style *nptr = all_styles, *lptr = NULL;
+  window_style *nptr = all_styles;
+  window_style *lptr = NULL;
 
   /* loop though styles */
   while (nptr)
@@ -468,6 +469,10 @@ static void remove_all_of_style_from_list(char *style_ref)
         /* Middle of list */
         SSET_NEXT_STYLE(*lptr, nptr);
       }
+      /* fix list end pointer */
+      if (last_style_in_list == tmp_ptr)
+        last_style_in_list = lptr;
+
       free_style(tmp_ptr);
       /* Free style */
       free( tmp_ptr );
@@ -484,13 +489,12 @@ static void remove_all_of_style_from_list(char *style_ref)
 
 
 /* Remove a style. */
-void ProcessDestroyStyle( XEvent *eventp, Window w, FvwmWindow *tmp_win,
-                          unsigned long context,char *action, int *Module )
+void ProcessDestroyStyle(F_CMD_ARGS)
 {
   char *name;
 
   /* parse style name */
-  action = GetNextToken(action, &name);
+  name = PeekToken(action, &action);
 
   /* in case there was no argument! */
   if (name == NULL)
@@ -498,7 +502,6 @@ void ProcessDestroyStyle( XEvent *eventp, Window w, FvwmWindow *tmp_win,
 
   /* Do it */
   remove_all_of_style_from_list( name );
-  free( name );
   /* compact the current list of styles */
   merge_style_list();
 }
@@ -598,8 +601,7 @@ int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
  * must be freed in ProcessDestroyStyle().
  *
  */
-void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
-                     unsigned long context,char *action, int *Module )
+void ProcessNewStyle(F_CMD_ARGS)
 {
   char *line;
   char *option;
