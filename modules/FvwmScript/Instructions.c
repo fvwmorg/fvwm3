@@ -296,7 +296,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
    BufCom=(char*)calloc(sizeof(char),maxsize);
    size=fread(BufCom,1,maxsize,f);
    pclose(f);
-   strncpy(Command,cmndbuf,256);
+   strncpy(Command,cmndbuf,255);
    TimeCom=time(NULL);
   }
  }

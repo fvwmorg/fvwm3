@@ -26,7 +26,7 @@ extern Atom type;
 extern char *imagePath;
 extern X11base *x11base;
 extern int nbobj;
-extern struct XObj *tabxobj[100];
+extern struct XObj *tabxobj[1000];
 extern int x_fd;
 
 /* Constante pour les type de message envoie entre objets */
