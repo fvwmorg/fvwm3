@@ -110,10 +110,11 @@ transient FvwmPager, GSFR for the main module, dynamic menus, recursive menus,
 rewrite of menu drawing, speed up startup with lots of menus, new menu styles
 BorderWidth, ItemFormat, VerticalItemSpacing, VerticalTitleSpacing,
 Hilight3DThickness and SubmenusLeft, major clean up of the menu code,
-improved transient FvwmPager, mproved transient window handling, MaxWindowSize
+improved transient FvwmPager, improved transient window handling, MaxWindowSize
 style, Improved(?) mouse paging, RaiseTransient and LowerTransient styles,
 nicer cursors, helped with colorset implementation, variables for FvwmButtons
-actions.
+actions, fvwm-cats page, ported &%!#?-95 like config file from fvwm95, cleanup
+of gradient drawing code.
 
 A.J. Weber:
 SnapAttraction patch.
