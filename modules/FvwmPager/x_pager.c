@@ -170,7 +170,7 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
     if (page == ((virt - t->width + 1) / Scr.MyDisplayWidth)) {
       /* calculate how far the mini-window right edge overlaps the page line */
       /* beware that the "over" is actually one greater than on screen, but
-      /* this discrepancy is catered for in the next two lines */
+         this discrepancy is catered for in the next two lines */
       over = edge + size - (page + 1) * win_w * Scr.MyDisplayWidth / Scr.VWidth;
       /* if the mini-window right edge is beyond the mini-window pager grid */
       if (over > 0) {

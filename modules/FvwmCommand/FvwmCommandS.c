@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
     sigaddset(&sigact.sa_mask, SIGTERM);
     sigaddset(&sigact.sa_mask, SIGPIPE);
 
-#ifdef SA_INTERRUPT
-    sigact.sa_flags = SA_INTERRUPT;
+#ifdef SA_RESTART
+    sigact.sa_flags = SA_RESTART;
 #else
     sigact.sa_flags = 0;
 #endif
@@ -121,11 +121,11 @@ int main(int argc, char *argv[])
   signal(SIGHUP, sig_handler);
   signal(SIGTERM, sig_handler);
 #ifdef HAVE_SIGINTERRUPT
-  siginterrupt(SIGINT, 1);
-  siginterrupt(SIGHUP, 1);
-  siginterrupt(SIGQUIT, 1);
-  siginterrupt(SIGTERM, 1);
-  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGINT, 0);
+  siginterrupt(SIGHUP, 0);
+  siginterrupt(SIGQUIT, 0);
+  siginterrupt(SIGTERM, 0);
+  siginterrupt(SIGPIPE, 0);
 #endif
 #endif
 
@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
   Fd[1] = atoi(argv[2]);
 
   server(fifoname);
+  close_pipes();
   return 1;
 }
 
@@ -142,7 +143,6 @@ int main(int argc, char *argv[])
 static RETSIGTYPE
 sig_handler(int signo)
 {
-  close_pipes();
   fvwmSetTerminate(signo);
 }
 
@@ -292,14 +292,14 @@ void server (char *name)
       {
         cmd[cix] = buf[ix];
         if (cmd[cix] == '\n')
-	{
+        {
           cmd[cix] = '\0';
           cix = 0;
           if (StrHasPrefix(bugger_off, cmd))
             /* fvwm will close our pipes when it has processed this */
             SendQuitNotification(Fd);
           else
-	    SendText(Fd, cmd, 0);
+            SendText(Fd, cmd, 0);
         }
 	else if (cix >= MAX_MODULE_INPUT_TEXT_LEN)
 	{
