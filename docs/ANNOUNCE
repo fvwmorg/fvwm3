@@ -107,7 +107,7 @@ found at:
 Suggested changes to your configuration file:
 --------------------------------------------
 
-All fvwm user configurations should better be moved to $HOME/.fvwm
+All fvwm user configurations should be moved to $HOME/.fvwm
 directory; Read command supports $HOME/.fvwm by default, but not $HOME.
 
 Recapture can be removed from any style changing code.
@@ -135,3 +135,6 @@ The Colorlimit command can be removed.
 The FvwmGoodStuff module is obsoleted by FvwmButtons.
 If you are using FvwmGoodStuff, you need to recode this part
 of your configuration.
+
+Most of these configuration files changes can be done using the new
+fvwm24_convert command that comes with fvwm.
