@@ -841,6 +841,10 @@ void changeDesks(int desk)
   else if ((FocusWin) && (!HAS_NEVER_FOCUS(FocusWin)))
 #endif
     SetFocus(Scr.NoFocusWin,NULL,1);
+
+#ifdef GNOME
+  GNOME_SetCurrentDesk();
+#endif
 }
 
 

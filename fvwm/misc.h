@@ -334,6 +334,7 @@ void SetEnv(F_CMD_ARGS);
 
 void CoerceEnterNotifyOnCurrentWindow(void);
 
+void new_layer(FvwmWindow *t, int layer);
 void change_layer(F_CMD_ARGS);
 void SetDefaultLayers(F_CMD_ARGS);
 

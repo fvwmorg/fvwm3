@@ -3998,10 +3998,48 @@ void setShadeAnim(F_CMD_ARGS)
   return;
 }
 
+void
+new_layer (FvwmWindow *tmp_win, int layer)
+{
+  FvwmWindow *t2, *next;
+  Atom a;
+
+  if (layer < tmp_win->layer)
+    {
+      tmp_win->layer = layer;
+      RaiseWindow(tmp_win);
+    }
+  else if (layer > tmp_win->layer)
+    {
+#ifndef DONT_RAISE_TRANSIENTS
+      /* this could be done much more efficiently */
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+	{
+	  next = t2->stack_next;
+	  if ((IS_TRANSIENT(t2)) &&
+	      (t2->transientfor == tmp_win->w) &&
+	      (t2 != tmp_win) &&
+	      (t2->layer >= tmp_win->layer) &&
+              (t2->layer < layer))
+	    {
+	      t2->layer = layer;
+	      LowerWindow(t2);
+	    }
+	}
+#endif
+      tmp_win->layer = layer;
+      LowerWindow(tmp_win);
+    }
+
+#ifdef GNOME
+  GNOME_SetLayer (tmp_win);
+#endif
+}
+
+
 void change_layer(F_CMD_ARGS)
 {
   int n, layer, val[2];
-  FvwmWindow *t2, *next;
   char *token;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
@@ -4040,32 +4078,7 @@ void change_layer(F_CMD_ARGS)
       layer = 0;
     }
 
-  if (layer < tmp_win->layer)
-    {
-      tmp_win->layer = layer;
-      RaiseWindow(tmp_win);
-    }
-  else if (layer > tmp_win->layer)
-    {
-#ifndef DONT_RAISE_TRANSIENTS
-      /* this could be done much more efficiently */
-      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
-	{
-	  next = t2->stack_next;
-	  if ((IS_TRANSIENT(t2)) &&
-	      (t2->transientfor == tmp_win->w) &&
-	      (t2 != tmp_win) &&
-	      (t2->layer >= tmp_win->layer) &&
-              (t2->layer < layer))
-	    {
-	      t2->layer = layer;
-	      LowerWindow(t2);
-	    }
-	}
-#endif
-      tmp_win->layer = layer;
-      LowerWindow(tmp_win);
-    }
+  new_layer (tmp_win, layer);
 }
 
 void SetDefaultLayers(F_CMD_ARGS)

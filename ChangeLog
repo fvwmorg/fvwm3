@@ -1,3 +1,20 @@
+1999-04-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/gnome.c (GNOME_SetLayer): new function for updating
+	the layer hint.
+
+1999-04-21  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/virtual.c (changeDesks): call GNOME_SetCurrentDesk.
+
+	* fvwm/misc.h: 
+	* fvwm/builtins.c (new_layer): new function split off from
+	change_layer to do the actual change. 
+
+	* fvwm/gnome.c (GNOME_ProcessClientMessage): 
+	implement the _WIN_LAYER client message with the new_layer
+	function. Use the XA_ defines instead of strings.
+	
 1999-04-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandleUnusualStackmodes): commented out two DBUG

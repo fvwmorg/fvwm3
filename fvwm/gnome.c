@@ -475,6 +475,17 @@ GNOME_SetDesk(FvwmWindow *fwin)
 }
 
 
+void
+GNOME_SetLayer(FvwmWindow *fwin)
+{
+  Atom atom_set;
+  int val;
+
+  atom_set = XInternAtom(dpy, XA_WIN_LAYER, False);
+  val = fwin->layer;
+  XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
+		  PropModeReplace, (unsigned char *)&val, 1);
+}
 
 
 /*** INITALIZE GNOME WM SUPPORT ***/
@@ -679,7 +690,7 @@ GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
   int x, y;
   Atom a;
 
-  a = XInternAtom(dpy, "_WIN_AREA", False);
+  a = XInternAtom(dpy, XA_WIN_AREA, False);
   if (ev->xclient.message_type == a)
     {
       /* convert to integer grid */
@@ -690,27 +701,17 @@ GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
       return 1;
     }
 
-  a = XInternAtom(dpy, "_WIN_WORKSPACE", False);
+  a = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
   if (ev->xclient.message_type == a)
     {
       changeDesks(ev->xclient.data.l[0]);
       return 1;
     }
 
-  a = XInternAtom(dpy, "_WIN_LAYER", False);
+  a = XInternAtom(dpy, XA_WIN_LAYER, False);
   if (ev->xclient.message_type == a && fwin)
     {
-      /* support for layers in a fvwm requires adding significant
-       * new functionallity
-       */
-#if 0
-      fwin->layer = ev->xclient.data.l[0];
-#endif
-      XChangeProperty(dpy, fwin->w, a, XA_CARDINAL, 32,
-		      PropModeReplace,
-		      (unsigned char *)(&(ev->xclient.data.l[0])), 1);
-
-      /* need to restack the windows */
+      new_layer (fwin, ev->xclient.data.l[0]);
       return 1;
     }
 
