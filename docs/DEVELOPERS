@@ -20,35 +20,41 @@ tree.
     autoreconf
 
 There will be some warnings, which are ignorable as long as you get a
-working configure script.
+working configure script: the configure script will fix all those
+problems.
 
 Now, configure and build as per INSTALL.fvwm and INSTALL.  If
 configure fails, please look through `config.log' for clues.
 
 
-Rules of the Road
------------------
+Development Rules of the Road
+-----------------------------
 
- 1) _Every_ change must be properly ChangeLogged.  If you use Emacs, you
+ 1) _Every_ change must be properly ChangeLog'd.  If you use Emacs, you
     can do this oh-so-trivially with the C-x 4 a command; it will add a
     header (if it's a new day), the name of the file, and even the name
     of the function you're currently in.
 
     If you start adding them as you change functions, it'll soon become
-    second-nature and we'll get proper changelogs.
+    second-nature and we'll get proper ChangeLogs.
 
- 2) If you add a new user-visible feature, please add a blurb about it
-    to the NEWS file.  A couple sentences is fine; don't repeat the
+    If you don't use Emacs, please mimic the format of all the other log
+    entries when adding your own.
+
+ 2) If you make a user-visible change please add a blurb about it to the
+    NEWS file.  A couple sentences is fine; don't repeat the
     documentation but give folks enough of an idea so they can decide if
     they want to learn more.  Bug fixes (unless they're _really_ user
     visible) shouldn't be noted in the NEWS file.
 
- 3) If you add a new user-visible feature, please don't forget to update
-    the appropriate man pages at the same time.
+ 3) If you add a new user-visible feature, don't forget to update the
+    appropriate man pages at the same time!
 
  4) Bug fixes may be committed at any time (unless we're in code freeze
-    for a release) usually without much review (unless you want someone
-    else to look at it).
+    for a release), usually without much review (unless you want someone
+    else to look at it).  All our code freeze, etc. is merely
+    procedural, not enforced, so it's important you read fvwm-workers
+    and keep up-to-date with the current state of the tree.
 
  5) New features should be discussed on the list to ensure everyone
     thinks they're "appropriate" (one of the goals of fvwm is to be
@@ -56,12 +62,12 @@ Rules of the Road
     want the kitchen sink).
 
  6) If the new feature is large enough, unstable enough, or not
-    targetted at the next release, it should go on a private branch.
-    Otherwise, concensus will probably have it installed on the main
+    targeted at the next release, it should go on a private branch.
+    Otherwise, consensus will probably have it installed on the main
     branch.
 
  7) Before adding a new feature think twice if it could perhaps
-    be implemented as a module (perhaps after some extension 
+    be implemented as a module (perhaps after some extension
     of the fvwm<->module communication protocol). Moving features
     in modules helps to keep fvwm itself clean and efficient.
 
@@ -69,17 +75,31 @@ Rules of the Road
         ** Of course, compile and test before committing! **
 
 
+Dealing with CVS
+----------------
+
+All details about dealing with CVS should be found in cvs.html.  Go look
+there!
+
+
 Doing the JitterBug
 -------------------
 
 If you haven't already noticed them, now is the time to visit our bug
-tracking pages: http://www.fvwm.org/cgi-bin/fvwm-bug.  Anybody can
-submit or view bug reports there.
+tracking pages:
 
-Developers with CVS write access can update the bug database.  To do
-so, you have to go to the Jitterbug page, but then tack a ".private"
-on to the end of the URL.  Then you'll be asked to authenticate.  The
-username and password are the same as you use for the CVS repository.
+  http://www.fvwm.org/cgi-bin/fvwm-bug
+
+Anybody can submit or view bug reports there.
+
+Developers with CVS write access can also update the bug database
+(whee!).  To do so, you have to go to the Jitterbug page, but then tack
+a ".private" on to the end of the URL:
+
+  http://www.fvwm.org/cgi-bin/fvwm-bug.private
+
+Then you'll be asked to authenticate.  The username and password are the
+same as you use for the CVS repository.
 
 You'll probably want to bookmark that page.
 
@@ -87,7 +107,7 @@ You'll probably want to bookmark that page.
 Changing a Makefile
 -------------------
 
-First of all, NEVER edit anything named Makefile, or Makefile.in.  These
+First of all, NEVER edit anything named Makefile or Makefile.in.  These
 are both derived from the corresponding Makefile.am.  The most common
 reason for editing is to change the list of sources.
 
@@ -136,16 +156,6 @@ Steps: 1. make sure you have XPM and a C++ compiler
        4. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
 
-If this is to be an "official" release, then do also the following:
-
-       5. tag the CVS tree:
-          cvs tag version-x_y_z
-       6. increase the version number in configure.in (see above)
-       7. upload the file fvwm-x.y.z.tar.gz to
-	  ftp://ftp.fvwm.org/pub/incoming/fvwm
-       8. notify fvwm-owner@fvwm.org of the upload
-
-
 Note that you need to have actually built everything before packing
 the distribution, hence step 2.  Among other things, this generates
 the proper dependency information for insertion into Makefile.in's
@@ -158,3 +168,18 @@ package into the tar file. It may be hard to appreciate how useful
 this is, until it has reminded you that you forgot file "foo.h" in
 some _SOURCES line.  But trust me, it will save your bacon in this way
 some day!
+
+
+If this is to be an "official", labeled release, then do also the
+following:
+
+       5. tag the CVS tree:
+          cvs tag version-x_y_z
+       6. increase the version number in configure.in (see above)
+          and `cvs commit' this change
+       7. upload the file fvwm-x.y.z.tar.gz to
+	  ftp://ftp.fvwm.org/pub/incoming/fvwm
+       8. notify fvwm-owner@fvwm.org of the upload
+
+Be sure to do steps 5 and 6 in that order, so you get the label on the
+right version of configure.in.
