@@ -2,7 +2,7 @@
 ## Process this file with automake to create Makefile.in
 
 EXTRA_DIST = ANNOUNCE BUGS DEVELOPERS FAQ TODO Y2K-Compliance \
-	color_combos error_codes fvwm-2.xx.lsm fvwm.lsm	\
+	color_combos error_codes fvwm.lsm	\
 	m4_hacks black-stone1.jpg fvwm.gif fvwm_smaller.gif	\
 	run_man2html.sh txt2html.sh $(HTML)
 

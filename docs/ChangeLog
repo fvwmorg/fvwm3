@@ -1,5 +1,7 @@
 1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* Makefile.am (EXTRA_DIST): removed fvwm-2.xx.lsm from distribution
+
 	* FAQ (15): Added RedHat configuration question
 
 1999-02-04  Paul D. Smith  <psmith@gnu.org>
