@@ -260,7 +260,6 @@ typedef struct MenuLook
 	gc_quad_t inactive_gcs;
 	gc_quad_t active_gcs;
 	gc_quad_t stipple_gcs;
-	GC MenuStippleGC;
 	ColorPair MenuColors;
 	ColorPair MenuActiveColors;
 	ColorPair MenuStippleColors;

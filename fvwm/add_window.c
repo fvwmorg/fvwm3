@@ -1594,9 +1594,8 @@ void setup_window_font(
 void setup_icon_font(
 	FvwmWindow *fw, window_style *pstyle, Bool do_destroy)
 {
-	int height;
+	int height = 0;
 
-	height = (IS_ICON_FONT_LOADED(fw)) ? fw->icon_font->height : 0;
 	if (IS_ICON_SUPPRESSED(fw) || HAS_NO_ICON_TITLE(fw))
 	{
 		if (IS_ICON_FONT_LOADED(fw))
@@ -1632,6 +1631,7 @@ void setup_icon_font(
 		SET_ICON_FONT_LOADED(fw, 1);
 	}
 	/* adjust y position of existing icons */
+	height = (IS_ICON_FONT_LOADED(fw)) ? fw->icon_font->height : 0;
 	if (height)
 	{
 		resize_icon_title_height(fw, height - fw->icon_font->height);
@@ -2997,27 +2997,6 @@ void destroy_window(FvwmWindow *fw)
 		return;
 	}
 
-	/****** remove from window list ******/
-
-	/* first of all, remove the window from the list of all windows! */
-	if (fw->prev != NULL)
-	{
-		fw->prev->next = fw->next;
-	}
-	if (fw->next != NULL)
-	{
-		fw->next->prev = fw->prev;
-	}
-
-	/****** also remove it from the stack ring ******/
-
-	/*
-	 * RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
-	 * There's always a prev and next, since this is a ring anchored on
-	 * Scr.FvwmRoot
-	 */
-	remove_window_from_stack_ring(fw);
-
 	/****** check if we have to delay window destruction ******/
 
 	if ((Scr.flags.is_executing_complex_function ||
@@ -3056,6 +3035,27 @@ void destroy_window(FvwmWindow *fw)
 		focus_grab_buttons_on_layer(fw->layer);
 		return;
 	}
+
+	/****** remove from window list ******/
+
+	/* first of all, remove the window from the list of all windows! */
+	if (fw->prev != NULL)
+	{
+		fw->prev->next = fw->next;
+	}
+	if (fw->next != NULL)
+	{
+		fw->next->prev = fw->prev;
+	}
+
+	/****** also remove it from the stack ring ******/
+
+	/*
+	 * RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
+	 * There's always a prev and next, since this is a ring anchored on
+	 * Scr.FvwmRoot
+	 */
+	remove_window_from_stack_ring(fw);
 
 	/****** unmap the frame ******/
 

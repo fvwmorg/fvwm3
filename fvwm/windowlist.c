@@ -1093,6 +1093,10 @@ void CMD_WindowList(F_CMD_ARGS)
 	{
 		FreeConditionMask(&mask);
 	}
+	if (sor_keyname && sor_keyname != sor_default_keyname)
+	{
+		free(sor_keyname);
+	}
 	exc_destroy_context(exc2);
 
 	return;

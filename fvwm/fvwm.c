@@ -1601,6 +1601,7 @@ void ResetAllButtons(FvwmDecor *decor)
 	int i;
 	int j;
 
+	DestroyAllButtons(decor);
 	for (tbp = decor->buttons, i = 0; i < NUMBER_OF_BUTTONS; i++, tbp++)
 	{
 		memset(&TB_FLAGS(*tbp), 0, sizeof(TB_FLAGS(*tbp)));

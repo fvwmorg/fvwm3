@@ -411,6 +411,16 @@ static void __execute_function(
 	}
 
 	func_depth++;
+	if (func_depth > MAX_FUNCTION_DEPTH)
+	{
+		fvwm_msg(
+			ERR, "__execute_function",
+			"Function '%s' called with a depth of %i, "
+			"stopping function execution!",
+			action, func_depth);
+		func_depth--;
+		return;
+	}
 	if (args)
 	{
 		for (j = 0; j < 11; j++)

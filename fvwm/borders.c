@@ -1406,7 +1406,7 @@ static Pixmap border_create_root_transparent_pixmap(
 	p = CreateBackgroundPixmap(
 		dpy, w, my_w, my_h, &Colorset[cs],
 		Pdepth, Scr.BordersGC, False);
-	if (td->td_is_rotated)
+	if (p && td->td_is_rotated)
 	{
 		Pixmap tmp;
 		tmp = CreateRotatedPixmap(
@@ -2952,7 +2952,6 @@ static void border_draw_decor_to_pixmap(
 		int ap, cs;
 		unsigned int stretch;
 		Pixmap tmp = None;
-		FvwmPicture *tmp_pic = NULL;
 		FvwmPicture *full_pic = NULL;
 		rectangle g;
 		dynamic_common_decorations *dcd = &(cd->dynamic_cd);
@@ -3086,14 +3085,14 @@ static void border_draw_decor_to_pixmap(
 			/* should not happen */
 			return;
 		}
-		border_fill_pixmap_background(dest_pix, &dest_g, &bg, cd);
+		if (bg.pixmap.p != None)
+		{
+			border_fill_pixmap_background(
+				dest_pix, &dest_g, &bg, cd);
+		}
 		if (tmp != None)
 		{
 			XFreePixmap(dpy, tmp);
-		}
-		if (tmp_pic)
-		{
-			PDestroyFvwmPicture(dpy, tmp_pic);
 		}
 		break;
 	}
@@ -3126,6 +3125,10 @@ static void border_draw_decor_to_pixmap(
 		{
 			tmp = border_create_root_transparent_pixmap(
 				td, w, w_g->width, w_g->height, cs);
+			if (tmp == None)
+			{
+				break;
+			}
 			bg.pixmap.p = tmp;
 			bg.pixmap.g.width = w_g->width;
 			bg.pixmap.g.height = w_g->height;
@@ -3138,6 +3141,10 @@ static void border_draw_decor_to_pixmap(
 			tmp = CreateBackgroundPixmap(
 				dpy, w, w_g->width, w_g->height,
 				cs_t, Pdepth, Scr.BordersGC, False);
+			if (tmp == None)
+			{
+				break;
+			}
 			bg.pixmap.p = tmp;
 			GetWindowBackgroundPixmapSize(
 				cs_t, w_g->width, w_g->height,

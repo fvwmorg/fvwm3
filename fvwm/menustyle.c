@@ -406,13 +406,13 @@ void menustyle_free(MenuStyle *ms)
 	{
 		XFreeGC(dpy, HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms)));
 	}
-	if (ST_MENU_STIPPLE_GC(ms))
-	{
-		XFreeGC(dpy, ST_MENU_STIPPLE_GC(ms));
-	}
 	if (SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)))
 	{
 		XFreeGC(dpy, SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)));
+	}
+	if (FORE_GC(ST_MENU_STIPPLE_GCS(ms)))
+	{
+		XFreeGC(dpy, FORE_GC(ST_MENU_STIPPLE_GCS(ms)));
 	}
 	if (ST_SIDEPIC(ms))
 	{
@@ -770,9 +770,9 @@ void menustyle_parse_style(F_CMD_ARGS)
 			}
 
 			/* common settings */
-			ST_CSET_MENU(tmpms) = -1;
-			ST_CSET_ACTIVE(tmpms) = -1;
-			ST_CSET_GREYED(tmpms) = -1;
+			ST_CSET_MENU(tmpms) = 0;
+			ST_CSET_ACTIVE(tmpms) = 0;
+			ST_CSET_GREYED(tmpms) = 0;
 			ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
 			ST_ACTIVE_AREA_PERCENT(tmpms) =
 				DEFAULT_MENU_POPUP_NOW_RATIO;
@@ -1189,7 +1189,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			    *val < 0)
 			{
 				ST_HAS_MENU_CSET(tmpms) = 0;
-				ST_CSET_MENU(tmpms) = -1;
+				ST_CSET_MENU(tmpms) = 0;
 			}
 			else
 			{
@@ -1204,7 +1204,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			    *val < 0)
 			{
 				ST_HAS_ACTIVE_CSET(tmpms) = 0;
-				ST_CSET_ACTIVE(tmpms) = -1;
+				ST_CSET_ACTIVE(tmpms) = 0;
 			}
 			else
 			{
@@ -1220,7 +1220,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			    *val < 0)
 			{
 				ST_HAS_GREYED_CSET(tmpms) = 0;
-				ST_CSET_GREYED(tmpms) = -1;
+				ST_CSET_GREYED(tmpms) = 0;
 			}
 			else
 			{
@@ -1426,11 +1426,8 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		FreeColors(&ST_MENU_STIPPLE_COLORS(destms).fore, 1, True);
 	}
 	ST_HAS_STIPPLE_FORE(destms) = ST_HAS_STIPPLE_FORE(origms);
-	if (ST_HAS_STIPPLE_FORE(origms))
-	{
-		memcpy(&ST_MENU_STIPPLE_COLORS(destms).fore,
-		       &ST_MENU_STIPPLE_COLORS(origms).fore, sizeof(Pixel));
-	}
+	memcpy(&ST_MENU_STIPPLE_COLORS(destms),
+	       &ST_MENU_STIPPLE_COLORS(origms), sizeof(ColorPair));
 
 	/* HilightBack */
 	if (ST_HAS_ACTIVE_BACK(destms))
@@ -1438,11 +1435,8 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).back, 1, True);
 	}
 	ST_HAS_ACTIVE_BACK(destms) = ST_HAS_ACTIVE_BACK(origms);
-	if (ST_HAS_ACTIVE_BACK(origms))
-	{
-		memcpy(&ST_MENU_ACTIVE_COLORS(destms).back,
-		       &ST_MENU_ACTIVE_COLORS(origms).back, sizeof(Pixel));
-	}
+	memcpy(&ST_MENU_ACTIVE_COLORS(destms),
+	       &ST_MENU_ACTIVE_COLORS(origms), sizeof(ColorPair));
 	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
 
 	/* ActiveFore */
@@ -1451,11 +1445,6 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).fore, 1, True);
 	}
 	ST_HAS_ACTIVE_FORE(destms) = ST_HAS_ACTIVE_FORE(origms);
-	if (ST_HAS_ACTIVE_FORE(origms))
-	{
-		memcpy(&ST_MENU_ACTIVE_COLORS(destms).fore,
-		       &ST_MENU_ACTIVE_COLORS(origms).fore, sizeof(Pixel));
-	}
 	ST_DO_HILIGHT_FORE(destms) = ST_DO_HILIGHT_FORE(origms);
 
 	/* Hilight3D */
@@ -1505,7 +1494,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 					    ST_FACE(origms).u.grad.npixels);
 		memcpy(ST_FACE(destms).u.grad.xcs,
 		       ST_FACE(origms).u.grad.xcs,
-		       sizeof(Pixel) * ST_FACE(origms).u.grad.npixels);
+		       sizeof(XColor) * ST_FACE(origms).u.grad.npixels);
 		ST_FACE(destms).u.grad.npixels = ST_FACE(origms).u.grad.npixels;
 		ST_FACE(destms).u.grad.do_dither =
 			ST_FACE(origms).u.grad.do_dither;

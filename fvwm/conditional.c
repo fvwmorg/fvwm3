@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <math.h>
+//#include <sys/stat.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
@@ -117,6 +118,7 @@ static FvwmWindow *Circulate(
 		fw = NULL;
 		if (Direction == 0)
 		{
+			FreeConditionMask(&mask);
 			return NULL;
 		}
 	}
@@ -241,6 +243,51 @@ static void select_cmd(F_CMD_ARGS)
 	FreeConditionMask(&mask);
 
 	return;
+}
+
+static Bool cond_check_access(char *file, int type, Bool im)
+{
+	char *full_file;
+	char *path = NULL;
+
+	if (!file || *file == 0)
+	{
+		return False;
+	}
+	if (file[0] == '/')
+	{
+		if (access(file, type) == 0)
+		{
+			return True;
+		}
+		else
+		{
+			return False;
+		}
+	}
+	if (type != X_OK && !im)
+	{
+		return False;
+	}
+	if (!im)
+	{
+		path = getenv("PATH");
+	}
+	else
+	{
+		path = PictureGetImagePath();
+	}
+	if (path == NULL || *path == 0)
+	{
+		return False;
+	}
+	full_file = searchPath(path, file, NULL, type);
+	if (full_file)
+	{
+		free(full_file);
+		return True;
+	}
+	return False;
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -1524,6 +1571,52 @@ void CMD_On(F_CMD_ARGS)
 		else if (StrEquals(cond, "ToRestart"))
 		{
 			match = exc->type == EXCT_TORESTART;
+		}
+		else if (StrEquals(cond, "x") || StrEquals(cond, "r") ||
+			 StrEquals(cond, "w") || StrEquals(cond, "f") ||
+			 StrEquals(cond, "i"))
+		{
+			char *pattern;
+			int type = X_OK;
+			Bool im = False;
+
+			switch(cond[0])
+			{
+			case 'X':
+			case 'x':
+				type = X_OK;
+				break;
+			case 'R':
+			case 'r':
+				type = R_OK;
+				break;
+			case 'W':
+			case 'w':
+				type = W_OK;
+				break;
+			case 'f':
+			case 'F':
+				type = F_OK;
+				break;
+			case 'i':
+			case 'I':
+				im = True;
+				type = R_OK;
+				break;	
+			default:
+				/* cannot happen */
+				break;
+			}
+			tmp = GetNextSimpleOption(tmp, &pattern);
+			if (pattern)
+			{
+				match = cond_check_access(pattern, type, im);
+				free(pattern);
+			}
+			else
+			{
+				error = True;
+			}
 		}
 
 		if (!on)

@@ -55,7 +55,6 @@ CreateFunc AddTest
  + I DestroyFunc $1
  + I AddToFunc TestFunc I Function $1
 
-
 # Now start defining test functions:
 
 AddTest "Test AddToFunc" AddToFunc-Func
@@ -299,29 +298,48 @@ AddToFunc MenuPositioning-Func
  + I Menu Menu-Position Root 150 10
  + I AddToMenu Menu-Position "Position Mouse -150p -50p"
  + I Menu Menu-Position Mouse -150p -50p
+ + I AddToMenu Menu-Position "Position Root c c"
+ + I Menu Menu-Position Root c c
+ + I AddToMenu Menu-Position "Position window -100m c+0"
+ + I All (purify) Menu Menu-Position window -100m c+0
+ + I AddToMenu Menu-Position "Position Button1 50+10p 50+10m"
+ + I All (purify) Menu Menu-Position Button1 50+10p 50+10m
+ + I AddToMenu Menu-Position "Position Mouse c -100m-8p"
+ + I Menu Menu-Position Mouse c -100m-8p
+ + I AddToMenu Menu-Position "Position rectangle 512x384+1+1 +0 +0"
+ + I Menu Menu-Position rectangle 512x384+1+1 +0 +0
 # There are lots more of these...and lots more options for the menu command.
 # Need to add "menu command syntax errors...
+ + I AddToMenu Menu-Position "Position pouf +0 +0"
+ + I Menu Menu-Position pouf +0 +0
+ + I AddToMenu Menu-Position "Position root +0k u+10"
+ + I Menu Menu-Position root +0k u+10
 
 AddTest "Test MenuStyle" MenuStyle-Func
 AddToFunc MenuStyle-Func
 # Attempt to use every option:
  + I MenuStyle FvwmStyle Fvwm, BorderWidth 10, Foreground black, Background Gray
  + I MenuStyle FvwmStyle Greyed blue,  HilightBack, ActiveFore, Hilight3DThick
- + I MenuStyle FvwmStyle Animation, Font 9x15bold, PopupOffset 2 2, TitleWarp
+ + I MenuStyle FvwmStyle Animation, Font "xft:monospace;9x15bold/iso8859-1"
+ + I MenuStyle FvwmStyle PopupOffset 2 2, TitleWarp, DoubleClickTime 500
+ + I MenuStyle FvwmStyle PopupImmediately, PopdownImmediately
  + I MenuStyle FvwmStyle TitleUnderlines0, SeparatorsLong, TrianglesSolid
  + I MenuStyle FvwmStyle AutomaticHotkeys, PopupAsRootMenu, RemoveSubmenus
  + I MenuStyle FvwmStyle SubmenusRight, SelectOnRelease Alt, VerticalItemSpacing -2
 
  + I MenuStyle MwmStyle Mwm, HilightBackOff, ActiveForeOff, Hilight3DThin
- + I MenuStyle MwmStyle AnimationOff, PopupDelayed, TitleWarpOff
+ + I MenuStyle MwmStyle AnimationOff, PopupDelayed, PopupDelay 26, TitleWarpOff
+ + I MenuStyle MwmStyle PopupDelayed, PopupDelay 26, DoubleClickTime
+ + I MenuStyle MwmStyle PopdownDelayed, PopdownDelay 100
  + I MenuStyle MwmStyle Font -*-*-*-*-normal--*-160-75-75-m-50-iso8859-*
  + I MenuStyle MwmStyle TitleUnderlines1, SeparatorsShort, TrianglesRelief
  + I MenuStyle MwmStyle AutomaticHotkeysOff, PopupAsSubmenu, HoldSubmenus
  + I MenuStyle MwmStyle SubmenusLeft, VerticalTitleSpacing 5
 
-# Since the Theme module may not be running this Style may not display well:
  + I MenuStyle WinStyle MenuColorset 0, ActiveColorset 0, GreyedColorset 0
  + I MenuStyle WinStyle Hilight3DOff, PopupImmediately
+ + I MenuStyle WinStyle PopdownDelayed, PopdownDelay 100
+ + I MenuStyle WinStyle Font "shadow=2 all:-*-fixed-*-*-normal--*-*-*-*-*-*-*-*"
 
  + I MenuStyle XStyle Hilight3DThickness -3, MenuFace Solid Maroon
  + I MenuStyle XStyle TitleUnderlines2, SidePic xtrek_fed_e.xbm, SideColor cyan
@@ -368,6 +386,47 @@ AddToFunc Popup-Func
 
 # For now, skip testing of the BugOpts command.
 # Log "Test BugOpts"
+AddTest "Test BugOpts" BugOpts-Func
+AddToFunc BugOpts-Func
+ + I BugOpts FlickeringMoveWorkaround True
+ + I BugOpts FlickeringMoveWorkaround False
+ + I BugOpts FlickeringMoveWorkaround toggle
+ + I BugOpts FlickeringMoveWorkaround what ever
+ + I BugOpts FlickeringMoveWorkaround
+ + I BugOpts MixedVisualWorkaround True
+ + I BugOpts MixedVisualWorkaround False
+ + I BugOpts MixedVisualWorkaround toggle
+ + I BugOpts MixedVisualWorkaround what ever
+ + I BugOpts MixedVisualWorkaround
+ + I BugOpts ModalityIsEvil True
+ + I BugOpts ModalityIsEvil False
+ + I BugOpts ModalityIsEvil toggle
+ + I BugOpts ModalityIsEvil what ever
+ + I BugOpts ModalityIsEvil
+ + I BugOpts RaiseOverNativeWindows True
+ + I BugOpts RaiseOverNativeWindows False
+ + I BugOpts RaiseOverNativeWindows toggle
+ + I BugOpts RaiseOverNativeWindows what ever
+ + I BugOpts RaiseOverNativeWindows
+ + I BugOpts RaiseOverUnmanaged True
+ + I BugOpts RaiseOverUnmanaged False
+ + I BugOpts RaiseOverUnmanaged toggle
+ + I BugOpts RaiseOverUnmanaged what ever
+ + I BugOpts RaiseOverUnmanaged
+ + I BugOpts FlickeringQtDialogsWorkaround True
+ + I BugOpts FlickeringQtDialogsWorkaround False
+ + I BugOpts FlickeringQtDialogsWorkaround toggle
+ + I BugOpts FlickeringQtDialogsWorkaround what ever
+ + I BugOpts FlickeringQtDialogsWorkaround
+ + I BugOpts EWMHIconicStateWorkaround True
+ + I BugOpts EWMHIconicStateWorkaround False
+ + I BugOpts EWMHIconicStateWorkaround toggle
+ + I BugOpts EWMHIconicStateWorkaround what ever
+ + I BugOpts EWMHIconicStateWorkaround
+#
+ + I BugOpts
+ + I BugOpts FooBugs True
+ + I BugOpts EWMHIconicStateWorkaround, FooBugs
 
 AddTest "Test BusyCursor" BusyCursor-Func
 AddToFunc BusyCursor-Func
@@ -384,6 +443,8 @@ AddToFunc BusyCursor-Func
 # Back to the defaults:
  + I BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
  + I BusyCursor Wait False
+#
+ + I BusyCursor blabla
 
 AddTest "Test ClickTime" ClickTime-Func
 AddToFunc ClickTime-Func
@@ -397,18 +458,6 @@ AddToFunc ClickTime-Func
  + I ClickTime 200
 # This resets the default:
  + I ClickTime
-
-AddTest "Test ColorLimit" ColorLimit-Func
-AddToFunc ColorLimit-Func
- + I Colorlimit
- + I ColorLimit 0
- + I ColorLimit   77
- + I ColorLimit		77
- + I ColorLimit 50
- + I ColorLimit 50
- + I ColorLimit 40
- + I ColorLimit -23
- + I ColorLimit 0
 
 AddTest "Test ColormapFocus" ColormapFocus-Func
 AddToFunc ColormapFocus-Func
@@ -439,6 +488,7 @@ AddToFunc CursorStyle-Func
  + I CursorStyle MENU fleur yellow blue
  + I CursorStyle MENU fleur invalid_color_name another_invalid_name
  + I CursorStyle MENU fleur black white
+ + I CursorStyle MENU test1.xpm black white
 # These are the defaults from the man page:
  + I CursorStyle POSITION top_left_corner
  + I CursorStyle TITLE top_left_arrow
@@ -487,6 +537,35 @@ AddTest "Test DefaultFont" DefaultFont-Func
 AddToFunc DefaultFont-Func
  + I DefaultFont
  + I DefaultFont 9x15bold
+ + I DefaultFont -adobe-courier-bold-r-normal--10-100-75-75-m-60-ISO8859-1
+ + I DefaultFont -adobe-courier-bold-r-normal--10-*
+ + I DefaultFont *-fixed-medium-o-normal--14-*-ISO8859-15
+ + I DefaultFont *-fixed-medium-o-normal--14-*-ISO8859-6
+ + I DefaultFont -adobe-courier-bold-r-normal--10-*
+ + I DefaultFont -adobe-courier-bold-r-normal--14-*,-*-courier-medium-r-normal--14-*
+ + I DefaultFont -adobe-courier-bold-r-normal--14-*-foo,-*-courier-medium-r-normal--14-*
+ + I DefaultFont "xft:Luxi Mono"
+ + I DefaultFont "xft:Luxi Mono:Medium:Roman:size=14:encoding=iso8859-1"
+ + I DefaultFont xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
+ + I DefaultFont StringEncoding=jisx0208.1983-0:-*-fixed-medium-r-*-ja-*-iso10646-1
+ + I DefaultFont "StringEncoding=jisx0208.1983-0:xft:Bitstream Cyberbit"
+ + I DefaultFont *-fixed-medium-r-*-ja-*-iso10646-1
+ + I DefaultFont "StringEncoding=UTF-8:xft:Bitstream Cyberbit"
+ + I DefaultFont "xft:Bitstream Cyberbit:encoding=iso10646-1"
+ + I DefaultFont "StringEncoding=UTF-8:-*-pretty_font-*-12-*"
+ + I DefaultFont -misc-fixed-*--20-*/iso10646-1
+ + I DefaultFont -misc-fixed-*--14-*-iso8859-1/*/latin1
+ + I DefaultFont misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
+ + I DefaultFont "shadow=2:StringEncoding=iso8859-15:xft:monospace;-adobe-courier-bold-r-normal--14-*/iso8859-1/iso8859-1"
+ + I DefaultFont "shadow=2 all:StringEncoding=iso8859-15:xft:monospace;-adobe-courier-bold-r-normal--14-*/iso8859-1/iso8859-1"
+ + I DefaultFont "shadow=2 c:StringEncoding=iso8859-15:xft:monospace;-adobe-courier-bold-r-normal--14-*/iso8859-1/iso8859-1"
+ + I DefaultFont "shadow=2 sn:StringEncoding=iso8859-15:xft:monospace;-adobe-courier-bold-r-normal--14-*/iso8859-1/iso8859-1"
+ + I DefaultFont "shadow=2 sn:xft:monospace;shadow=2 sn:-adobe-courier-bold-r-normal--14-*"
+ + I DefaultFont "shadow=2 foo:-adobe-courier-bold-r-normal--14-*"
+ + I DefaultFont "shadow=-2:-adobe-courier-bold-r-normal--14-*"
+ + I DefaultFont "shadow=:-adobe-courier-bold-r-normal--14-*"
+ + I DefaultFont "shadow=ghgh:-adobe-courier-bold-r-normal--14-*"
+ + I DefaultFont "shadowwwwwwwwwwwwww=2:-adobe-courier-bold-r-normal--14-*"
  + I DefaultFont badnameforafont
  + I DefaultFont "another bad name"
  + I DefaultFont two args
@@ -508,12 +587,15 @@ AddToFunc DefaultLayers-Func
  + I DefaultLayers 2 4 6
  + I Refresh
 
+#FIXME: Deschedule (and Schedule)
+
 AddTest "Test Emulate" Emulate-Func
 AddToFunc Emulate-Func
  + I Emulate Fvwm
  + I Emulate Mwm
  + I Emulate Win
  + I Emulate badname
+ + I Emulate
 
 # Note, there is no test for EscapeFunc
 
@@ -522,6 +604,50 @@ AddToFunc Emulate-Func
 # Note, there is no test for HilightColor, its obsolete
 # Note, there is no test for HilightColorset, its obsolete
 # Note, there is no test for IconFont, its obsolete
+# Note, there is no test for IconPath, its obsolete
+# Note, the ImagePath test is not in ManPage order, look elsewhere
+
+AddTest "Test LocalePath" LocalePath-Func
+AddToFunc LocalePath-Func
++ I Echo $[gt.Restart]
++ I LocalePath ";fvwm-themes:+"
++ I Echo $[gt.Restart]
++ I LocalePath "/tmp;hop"
++ I Echo $[gt.Restart]
++ I LocalePath "+:;fvwm-themes"
++ I Echo $[gt.Restart]
++ I LocalePath +:+:,vs,vnnsv:+:+
++ I LocalePath sdkjvbfsjkvbu/dj;nsfdvnsjkv__;,sdfnvjdsnvvn:+
++ I LocalePath /qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb
++ I LocalePath /qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb:+
++ I LocalePath /qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb:/shhdh/dsggdh;dhhdh:;shhdfh:/dffdg/dggdf/;:+
++ I LocalePath :/qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb:/shhdh/dsggdh;dhhdh:;shhdfh:/dffdg/dggdf/;:+
++ I LocalePath +:/qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb:/shhdh/dsggdh;dhhdh:;shhdfh:/dffdg/dggdf/;:
++ I LocalePath +:/qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb:/shhdh/dsggdh;dhhdh:;shhdfh:/dffdg/dggdf/;
++ I LocalePath :/qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb:/shhdh/dsggdh;dhhdh:;shhdfh:/dffdg/dggdf/;:
++ I LocalePath /qdsbcdjc/njdcdjcn;sjkdcnbszcjksdcb:/shhdh/dsggdh;dhhdh:;shhdfh:/dffdg/dggdf/;
++ I LocalePath None
++ I Echo $[gt.Restart]
++ I LocalePath
++ I Echo $[gt.Restart]
+
+
+# Note, there is no test for PixmapPath, its obsolete
+
+AddTest "Test PrintInfo" PrintInfo-Func
+AddToFunc PrintInfo-Func
++ I PrintInfo Colors
++ I PrintInfo Colors 3
++ I PrintInfo locale
++ I PrintInfo locale 3
++ I PrintInfo locale dffgsg
++ I PrintInfo
++ I PrintInfo nls
++ I PrintInfo nls 3
++ I PrintInfo dffdghhq 4
+
+# FIXME: Schedule (see DeSchedule above)
+# FIXME: State
 
 # This test tests "Exec" and "Wait" but also creates some windows
 # used in tests afterward.
@@ -529,7 +655,6 @@ AddToFunc Emulate-Func
 AddTest "Test CreateWindows" CreateWindows-Func
 AddToFunc CreateWindows-Func
  + I Style "*" TileCascadePlacement
- + I DestroyFunc makewindows
  + I AddToFunc makewindows
  + I AddToFunc makewindows I Exec xterm -geometry 10x5+0+0 -T window1 -n window1 -e sleep 1000
  + I AddToFunc makewindows I Wait window1
@@ -543,17 +668,20 @@ AddToFunc CreateWindows-Func
  + I AddToFunc makewindows I Wait window5
  + I AddToFunc makewindows I Exec xterm -geometry 10x5-0-0 -T window6 -n window6 -e sleep 1000
  + I AddToFunc makewindows I Wait window6
+ + I AddToFunc makewindows I Exec xterm -iconic -geometry 10x5+125+125 -T window_iconic -n window_iconic -e sleep 1000
+ + I AddToFunc makewindows I Wait window_iconic
+ + I AddToFunc makewindows I Exec xterm -geometry 50x20-0+0 -T window_shaded -n window_shaded -e sleep 1000
+ + I AddToFunc makewindows I Wait window_shaded
+ + I AddToFunc makewindows I Next (window_shaded) WindowShade On
  + I function makewindows
 # Move to main page, move the pointer to the lower right corner near window6
  + I GotoPage 0 0
  + I CursorMove -1000 -1000
  + I CursorMove 95 95
 
-# Note, there is no test for IconPath, its obsolete
-# Note, the ImagePath test is not in ManPage order, look elsewhere
-# Note, there is no test for PixmapPath, its obsolete
 # Note, there is no test for WindowFont, its obsolete
 
+# FIXME: add new options in 2.6
 AddTest "Test WindowList" WindowList-Func
 AddToFunc WindowList-Func
  + I WindowList
@@ -577,14 +705,34 @@ AddToFunc Moves-Func
  + I Next (window2) AnimatedMove 0 100 warp
  + I Next (window2) AnimatedMove -50 -50 warp
  + I Next (window2) AnimatedMove 25p 25p warp
-# Need some HideGeometryWindow tests.
-# Need some Layer tests.
+ + I Next (window_iconic) AnimatedMove 50 50 warp
+ + I Next (window_shaded) AnimatedMove 25p 25p warp
+ + I Next (window_shaded) AnimatedMove -0p 0p warp
+# Need some HideGeometryWindow tests (need interaction).
+ + I HideGeometryWindow Move
+ + I HideGeometryWindow Resize
+ + I HideGeometryWindow Never
+ + I HideGeometryWindow dsqncbd
+ + I HideGeometryWindow
+# Layer
+ + I Next (window3) Layer 0 6
+ + I Next (window3) Layer 0 1
+ + I Next (window3) Layer 0 -1
+ + I Next (window3) Layer 0 afafd
+ + I Next (window3) Layer afafd 34
+ + I Next (window3) Layer
+ + I Next (window3) Layer 1
+ + I Next (window3) Layer -2
+ + I Next (window3) Layer 0 6
+ + I Next (window2) Layer 0 2
 # Lower
  + I Next (window5) Lower
  + I Next (window4) Lower
  + I Next (window3) Lower
  + I Next (window2) Lower
  + I Next (window1) Lower
+ + I Next (window_iconic) Lower
+ + I Next (window_shaded) Lower
 # Move
  + I Next (window1) Move   w+10    w+10
  + I Next (window1) Move		w-10		w-10
@@ -599,6 +747,8 @@ AddToFunc Moves-Func
  + I Next (window1) Move -10 -10
 # Put window1 back where it started:
  + I Next (window1) Move 0 0 warp
+ + I Next (window_iconic) Move w+10 w+10
+ + I Next (window_iconic) Move 50 50
 # MoveToDesk
 # This seems to be undocumented, no arg moves to main desk:
  + I Next (window3) MoveToDesk
@@ -612,16 +762,34 @@ AddToFunc Moves-Func
  + I Next (window3) MoveToDesk -1 0 10
  + I Next (window3) MoveToDesk 0 0 5 7
  + I Next (window3) MoveToDesk 0 -11111 5 7
+ + I Next (window3) MoveToDesk dhcdshcb
  + I Next (window3) MoveToDesk 0 0
+ + I Next (window_iconic) MoveToDesk +1 0 10
+ + I Next (window_shaded) MoveToDesk -1 0 10
+ + I Next (window_iconic) MoveToDesk 0 0
+ + I Next (window_shaded) MoveToDesk  0 0
  + I MoveThreshold 0
  + I MoveThreshold -3
  + I MoveThreshold 99
+ + I MoveThreshold ,hhqxbcjq
+ + I MoveThreshold
  + I MoveThreshold 3
  + I Next (window1) MoveToPage
  + I Next (window1) MoveToPage
  + I Next (window1) MoveToPage 1 1
  + I Next (window1) MoveToPage 10000 -12312
  + I Next (window1) MoveToPage 0 0
+ + I Next (window_iconic) MoveToPage 1 1
+ + I Next (window_shaded) MoveToPage 10000 -12312
+ + I Next (window_iconic) MoveToPage 0 0
+ + I Next (window_shaded) MoveToPage 0 0
+ + I Next (window3) MoveToScreen p
+ + I Next (window3) MoveToScreen c
+ + I Next (window3) MoveToScreen g
+ + I Next (window3) MoveToScreen 1
+ + I Next (window3) MoveToScreen u
+ + I Next (window3) MoveToScreen
+ + I Next (window3) MoveToScreen 0
  + I Refresh
 
 AddTest "Test OpaqueMoveSize" OpaqueMoveSize-Func
@@ -650,6 +818,11 @@ AddToFunc PlaceAgain-Func
  + I Next (window3) PlaceAgain
  + I Next (window4) PlaceAgain Anim
  + I Next (window5) PlaceAgain Anim
+ + I Next (window_iconic) PlaceAgain Anim
+ + I Next (window_shaded) PlaceAgain Anim
+ + I Style * MinOverlapPlacement
+ + I UpdateStyles
+ + I All (!Sticky) PlaceAgain Anim
 
 AddTest "Test Raise_RaiseLower_Lower" Raise_RaiseLower_Lower-Func
 AddToFunc Raise_RaiseLower_Lower-Func
@@ -665,6 +838,8 @@ AddToFunc Raise_RaiseLower_Lower-Func
  + I Next (window3) Lower asöpoi
  + I Next (window3) RaiseLower asöpoi
  + I Next (window3) RaiseLower asöpoi
+ + I Next (window_iconic) RaiseLower
+ + I Next (window_shaded) RaiseLower
  + I Refresh
 
 AddTest "Test Resize" Resize-Func
@@ -675,11 +850,41 @@ AddToFunc Resize-Func
  + I Next (window3) Resize 0 keep
  + I Next (window3) Resize keep 0
  + I Next (window6) Resize 20p 20p br
+ + I Next (window_iconic) Resize 20p 20p br
+ + I Next (window_shaded) Resize 20p 20p br
+ + I Next (window_shaded) Resize 20c 10c
  + I Next (window1) Resize 10c 5c
  + I Next (window2) Resize 10c 5c
  + I Next (window3) Resize 10c 5c
  + I Next (window4) Resize 10c 5c
  + I Next (window5) Resize 10c 5c
+
+AddTest "Test ResizeMaximize" ResizeMaximize-Func
+AddToFunc Resize-Func
+ + I Next (window1) ResizeMaximize 50 50
+ + I Next (window1) ResizeMaximize 50 50
+ + I Next (window1) Maximize
+ + I Next (window5) ResizeMaximize   80c    24c
+ + I Next (window5) ResizeMaximize   80c    24c
+ + I Next (window5) Maximize
+ + I Next (window2) ResizeMaximize		40p		60p
+ + I Next (window2) ResizeMaximize		40p		60p
+ + I Next (window2) Maximize
+ + I Next (window3) ResizeMaximize 0 keep
+ + I Next (window3) ResizeMaximize 0 keep
+ + I Next (window3) Maximize
+ + I Next (window3) ResizeMaximize keep 0
+ + I Next (window3) ResizeMaximize keep 0
+ + I Next (window3) Maximize
+ + I Next (window6) ResizeMaximize 20p 20p br
+ + I Next (window6) ResizeMaximize 20p 20p br
+ + I Next (window6) Maximize
+ + I Next (window_iconic) ResizeMaximize 20p 20p br
+ + I Next (window_iconic) ResizeMaximize 20p 20p br
+ + I Next (window_iconic) Maximize
+ + I Next (window_shaded) ResizeMaximize 20p 20p br
+ + I Next (window_shaded) ResizeMaximize 20p 20p br
+ + I Next (window_shaded) Maximize
 
 AddTest "Test ResizeMove" ResizeMove-Func
 AddToFunc ResizeMove-Func
@@ -688,6 +893,24 @@ AddToFunc ResizeMove-Func
  + I Next (window3) ResizeMove 10c 5c
  + I Next (window4) ResizeMove 10c 5c
  + I Next (window5) ResizeMove 10c 5c
+ + I Next (window_iconic) ResizeMove 10c 5c
+ + I Next (window_shaded) ResizeMove 50 50 30 30
+ + I Next (window_shaded) ResizeMove 20c 10c
+
+AddTest "Test ResizeMoveMaximize" ResizeMoveMaximize-Func
+AddToFunc ResizeMoveMaximize-Func
+ + I Next (window1) ResizeMoveMaximize 50 50 30 30
+ + I Next (window1) ResizeMoveMaximize 50 50 30 30
+ + I Next (window1) Maximize
+ + I Next (window1) ResizeMoveMaximize 10c 5c 0 0
+ + I Next (window1) ResizeMoveMaximize 10c 5c 0 0
+ + I Next (window1) Maximize
+ + I Next (window_iconic) ResizeMoveMaximize 10c 5c 0 0
+ + I Next (window_iconic) Maximize
+ + I Next (window_shaded) ResizeMoveMaximize 20c 10c 0 0
+ + I Next (window_shaded) Maximize
+
+# FIXME: RestackTransients
 
 AddTest "Test SetAnimation" SetAnimation-Func
 AddToFunc SetAnimation-Func
@@ -761,11 +984,15 @@ AddToFunc FlipFocus-Func
  + I Next (window6) FlipFocus
  + I Next (window1) FlipFocus NoWarp
  + I Next (window1) FlipFocus JUNK
+ + I Next (window_iconic) FlipFocus
+ + I Next (window_shaded) FlipFocus
 
 AddTest "Test Focus" Focus-Func
 AddToFunc Focus-Func
  + I Next (window2) Focus
  + I Next (window3) Focus NoWarp
+ + I Next (window_iconic) Focus
+ + I Next (window_shaded) FlipFocus
  + I Next (window1) Focus JUNK
 
 AddTest "Test WarpToWindow" WarpToWindow-Func
@@ -773,6 +1000,8 @@ AddToFunc WarpToWindow-Func
  + I Next (window1) WarpToWindow
  + I Next (window2) WarpToWindow    10     10
  + I Next (window3) WarpToWindow		50p		75
+ + I Next (window_iconic) WarpToWindow		50p		75
+ + I Next (window_shaded) WarpToWindow		50p		75
  + I Next (window1) WarpToWindow 50 50
  + I Refresh
 
@@ -785,6 +1014,8 @@ AddToFunc Close_Delete_Destroy-Func
  + I Next (window4) Delete .mwq.-l km<F3>noi
  + I Next (window5) Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
  + I Next (window6) Destroy
+ + I Next (window_iconic) Close
+ + I Next (window_shaded) Close
  + I CreateWindows-Func
  + I Refresh
 
@@ -806,6 +1037,10 @@ AddToFunc Iconify-Func
  + I Next (window5) Iconify
  + I Next (window6) Iconify toggle
  + I Next (window6) Iconify toggle
+ + I Next (window_iconic) Iconify
+ + I Next (window_iconic) Iconify
+ + I Next (window_shaded) Iconify
+ + I Next (window_shaded) Iconify
 # This next part disabled, windows seem to have a toggling limit,
 # dje 12/22/00.
 # + I Next (window6) Iconify toggle
@@ -821,6 +1056,8 @@ AddToFunc Maximize-Func
  + I Next (window2) Maximize False
  + I Next (window6) Maximize False
  + I Next (window5) Maximize False
+ + I Next (window_iconic) Maximize
+ + I Next (window_shaded) Maximize
 # Back to normal, pause...
  + I PipeRead 'sleep 2'
  + I Next (window1) Maximize 180p 400p
@@ -837,6 +1074,8 @@ AddToFunc Maximize-Func
  + I Next (window3) Maximize
  + I Next (window2) Maximize growleft growup
  + I Next (window2) Maximize
+ + I Next (window_iconic) Maximize
+ + I Next (window_shaded) Maximize
 
 AddTest "Test Recapture_Refresh" Recapture_Refresh-Func
 AddToFunc Recapture_Refresh-Func
@@ -849,6 +1088,8 @@ AddToFunc Recapture_Refresh-Func
  + I Refresh .-3mölp 9 n a.d.ök3qj0
  + I Next (window1) RefreshWindow
  + I Next (window1) RefreshWindow
+ + I Next (window_iconic) RefreshWindow
+ + I Next (window_shaded) RefreshWindow
  + I Next (window3) RefreshWindow wäepik-ö .-,poci32
 
 AddTest "Test Stick" Stick-Func
@@ -860,36 +1101,97 @@ AddToFunc Stick-Func
  + I Next (window1) Stick toggle
  + I Next (window3) Stick off
  + I Next (window5) Stick false
+ + I Next (window_iconic) Stick false
+ + I Next (window_shaded) Stick false
  + I GotoPage 0 1
 # Now stick 1,3,5 again and return to main page
  + I Next (window1) Stick toggle
  + I Next (window3) Stick on
  + I Next (window5) Stick true
+ + I Next (window_iconic) Stick true
+ + I Next (window_shaded) Stick true
  + I GotoPage 0 0
 # Now unstick everyting:
  + I All (window*) Stick off
 # There are no syntax errors:
  + I Next (window2) Stick öäpqewikrpü8.,.-kl-.294
  + I Next (window2) Stick öäpqewikrpü8.,.-kl-.294
-
+# StickAcrossPages
+ + I All (window*) StickAcrossPages
+ + I GotoPage 1 1
+# Unstick 1,3,5 and go to another page
+ + I Next (window1) StickAcrossPages toggle
+ + I Next (window3) StickAcrossPages off
+ + I Next (window5) StickAcrossPages false
+ + I Next (window_iconic) StickAcrossPages false
+ + I GotoPage 0 1
+# Now stick 1,3,5 again and return to main page
+ + I Next (window1) StickAcrossPages toggle
+ + I Next (window3) StickAcrossPages on
+ + I Next (window5) StickAcrossPages true
+ + I Next (window_iconic) StickAcrossPages true
+ + I GotoPage 0 0
+# Now unstick everyting:
+ + I All (window*) StickAcrossPages off
+ + I Next (window2) StickAcrossPages öäpqewikrpü8.,.-kl-.294
+ + I Next (window2) StickAcrossPages öäpqewikrpü8.,.-kl-.294
+# StickAcrossDesks
+ + I All (window*) StickAcrossDesks
+ + I GotoPage 1 1
+# Unstick 1,3,5 and go to another page
+ + I Next (window1) StickAcrossDesks toggle
+ + I Next (window3) StickAcrossDesks off
+ + I Next (window5) StickAcrossDesks false
+ + I Next (window_iconic) StickAcrossDesks false
+ + I GotoPage 0 1
+# Now stick 1,3,5 again and return to main page
+ + I Next (window1) StickAcrossDesks toggle
+ + I Next (window3) StickAcrossDesks on
+ + I Next (window5) StickAcrossDesks true
+ + I Next (window_iconic) StickAcrossDesks true
+ + I GotoPage 0 0
+# Now unstick everyting:
+ + I All (window*) StickAcrossDesks off
+ + I Next (window2) StickAcrossDesks öäpqewikrpü8.,.-kl-.294
+ + I Next (window2) StickAcrossDesks öäpqewikrpü8.,.-kl-.294
+ 
 AddTest "Test WindowShade" WindowShade-Func
 AddToFunc WindowShade-Func
 # This is/was exactly the same as the Iconify test, consider a common macro:
+ + I Style (window1) TitleAtTop
+ + I Style (window2) TitleAtBottom
+ + I Style (window3) TitleAtLeft
+ + I Style (window4) TitleAtRight
+ + I Style (window5) NoTitle, BorderWidth 7, HandleWidth 7
+ + I Style (window6) NoTitle, BorderWidth 0, HandleWidth 0
+ + I UpdateStyles
  + I Next (window1) WindowShade
  + I Next (window2) WindowShade   0 üpikü
  + I Next (window3) WindowShade		0
  + I Next (window4) WindowShade -1
  + I Next (window5) WindowShade 1
  + I Next (window6) WindowShade on
+ + I Next (window_iconic) WindowShade on
  + I Next (window6) WindowShade -102973
+ + I Next (window_iconic) WindowShade -102973
  + I Next (window4) WindowShade off
  + I Next (window6) WindowShade False
+ + I Next (window_iconic) WindowShade False
  + I Next (window1) WindowShade "False"
  + I Next (window2) WindowShade  0 "True" üpikü
  + I Next (window3) WindowShade
  + I Next (window5) WindowShade
  + I Next (window6) WindowShade toggle
  + I Next (window6) WindowShade toggle
+ + I Next (window_iconic) WindowShade toggle
+ + I Next (window_iconic) WindowShade toggle
+ + I Next (window_shaded) WindowShade toggle
+ + I Next (window_shaded) WindowShade toggle
+
+#AddTest "Run windowshade.pl" windowshade.pl-Func
+#AddToFunc windowshade.pl
+#+ I FvwmCommandS
+#+ I Exec perl /tmp/windowshade.pl
 
 AddTest "Test IgnoreModifiers" IgnoreModifiers-Func
 AddToFunc IgnoreModifiers-Func
@@ -962,283 +1264,297 @@ AddToFunc StyleOldGlobalOptions-Func
 # Really long arg:
  + I Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
 
+DestroyFunc StyleAndUpdate
+AddToFunc StyleAndUpdate I Style $*
++ I UpdateStyles
+
 # This group is in the same order that args are listed on the man page:
 AddTest "Test Style" Style-Func
 AddToFunc Style-Func
- + I Style "window*" BorderWidth
- + I Style "window*" BorderWidth  3
- + I Style "window*" BorderWidth	5
- + I Style "window*" BorderWidth	5
- + I Style "window*" HandleWidth
- + I Style "window*" HandleWidth  3
- + I Style "window*" HandleWidth		7
- + I Style "window*" HandleWidth		7
- + I Style "window*" NoIcon
- + I Style "window*" NoIcon
- + I Style "window*" Icon
- + I Style "window*" Icon
- + I Style "window*" MiniIcon
- + I Style "window*" MiniIcon
- + I Style "window*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
- + I Style "window*" IconBox 1 5 100 500, IconGrid -0 10
- + I Style "window*" NoTitle
- + I Style "window*" NoTitle
- + I Style "window*" Title
- + I Style "window*" Title
- + I Style "window*" TitleAtBottom
- + I Style "window*" TitleAtTop
- + I Style "window*" StippledTitle
- + I Style "window*" StippledTitleOff
- + I Style "window*" NoHandles
- + I Style "window*" NoHandles
- + I Style "window*" Handles
- + I Style "window*" Handles
- + I Style "window*" WindowListSkip
- + I Style "window*" WindowListSkip
- + I Style "window*" WindowListHit
- + I Style "window*" WindowListHit
- + I Style "window*" CirculateSkip
- + I Style "window*" CirculateSkip
- + I Style "window*" CirculateHit
- + I Style "window*" CirculateHit
- + I Style "window*" StaysOnTop
- + I Style "window*" StaysOnTop
- + I Style "window*" StaysOnBottom
- + I Style "window*" StaysOnBottom
- + I Style "window*" StaysPut
- + I Style "window*" StaysPut
- + I Style "window*" Sticky
- + I Style "window*" Sticky
- + I Style "window*" Slippery
- + I Style "window*" Slippery
- + I Style "window*" StartIconic
- + I Style "window*" StartIconic
+ + I StyleAndUpdate "window*" BorderWidth
+ + I StyleAndUpdate "window*" BorderWidth  3
+ + I StyleAndUpdate "window*" BorderWidth	5
+ + I StyleAndUpdate "window*" BorderWidth	5
+ + I StyleAndUpdate "window*" HandleWidth
+ + I StyleAndUpdate "window*" HandleWidth  3
+ + I StyleAndUpdate "window*" HandleWidth		7
+ + I StyleAndUpdate "window*" HandleWidth		7
+ + I StyleAndUpdate "window*" NoIcon
+ + I StyleAndUpdate "window*" NoIcon
+ + I StyleAndUpdate "window*" Icon
+ + I StyleAndUpdate "window*" Icon
+ + I StyleAndUpdate "window*" Icon klcxvndk
+ + I StyleAndUpdate "window*" Icon jdncjdsnc jdnvcjdfnv jkdvjqdsvn
+ + I StyleAndUpdate "window*" Icon test1.xpm
+ + I StyleAndUpdate "window*" Icon test1.xpm
+ + I StyleAndUpdate "window*" MiniIcon
+ + I StyleAndUpdate "window*" MiniIcon
+ + I StyleAndUpdate "window*" MiniIcon -
+ + I StyleAndUpdate "window*" MiniIcon -
+ + I StyleAndUpdate "window*" MiniIcon klcxvndk
+ + I StyleAndUpdate "window*" MiniIcon jdncjdsnc jdnvcjdfnv jkdvjqdsvn
+ + I StyleAndUpdate "window*" MiniIcon test1.xpm
+ + I StyleAndUpdate "window*" MiniIcon test1.xpm
+ + I StyleAndUpdate "window*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
+ + I StyleAndUpdate "window*" IconBox 1 5 100 500, IconGrid -0 10
+ + I StyleAndUpdate "window*" NoTitle
+ + I StyleAndUpdate "window*" NoTitle
+ + I StyleAndUpdate "window*" Title
+ + I StyleAndUpdate "window*" Title
+ + I StyleAndUpdate "window*" TitleAtBottom
+ + I StyleAndUpdate "window*" TitleAtTop
+ + I StyleAndUpdate "window*" StippledTitle
+ + I StyleAndUpdate "window*" StippledTitleOff
+ + I StyleAndUpdate "window*" NoHandles
+ + I StyleAndUpdate "window*" NoHandles
+ + I StyleAndUpdate "window*" Handles
+ + I StyleAndUpdate "window*" Handles
+ + I StyleAndUpdate "window*" WindowListSkip
+ + I StyleAndUpdate "window*" WindowListSkip
+ + I StyleAndUpdate "window*" WindowListHit
+ + I StyleAndUpdate "window*" WindowListHit
+ + I StyleAndUpdate "window*" CirculateSkip
+ + I StyleAndUpdate "window*" CirculateSkip
+ + I StyleAndUpdate "window*" CirculateHit
+ + I StyleAndUpdate "window*" CirculateHit
+ + I StyleAndUpdate "window*" StaysOnTop
+ + I StyleAndUpdate "window*" StaysOnTop
+ + I StyleAndUpdate "window*" StaysOnBottom
+ + I StyleAndUpdate "window*" StaysOnBottom
+ + I StyleAndUpdate "window*" StaysPut
+ + I StyleAndUpdate "window*" StaysPut
+ + I StyleAndUpdate "window*" Sticky
+ + I StyleAndUpdate "window*" Sticky
+ + I StyleAndUpdate "window*" Slippery
+ + I StyleAndUpdate "window*" Slippery
+ + I StyleAndUpdate "window*" StartIconic
+ + I StyleAndUpdate "window*" StartIconic
  + I style "window*" StartNormal
  + I style "window*" StartNormal
- + I Style "window*" Color
- + I Style "window*" Color
- + I Style "window*" ForeColor
- + I Style "window*" ForeColor
- + I Style "window*" BackColor
- + I Style "window*" BackColor
+ + I StyleAndUpdate "window*" Color
+ + I StyleAndUpdate "window*" Color
+ + I StyleAndUpdate "window*" ForeColor
+ + I StyleAndUpdate "window*" ForeColor
+ + I StyleAndUpdate "window*" BackColor
+ + I StyleAndUpdate "window*" BackColor
 # A GAP (olicha)
- + I Style "window*" ManualPlacement
- + I Style "window*" ManualPlacement
- + I Style "window*" CascadePlacement
- + I Style "window*" CascadePlacement
- + I Style "window*" MinOverlapPlacement
- + I Style "window*" MinOverlapPlacement
- + I Style "window*" MinOverlapPercentPlacement
- + I Style "window*" MinOverlapPercentPlacement
- + I Style "window*" TileManualPlacement
- + I Style "window*" TileManualPlacement
- + I Style "window*" TileCascadePlacement
- + I Style "window*" TileCascadePlacement
+ + I StyleAndUpdate "window*" ManualPlacement
+ + I StyleAndUpdate "window*" ManualPlacement
+ + I StyleAndUpdate "window*" CascadePlacement
+ + I StyleAndUpdate "window*" CascadePlacement
+ + I StyleAndUpdate "window*" MinOverlapPlacement
+ + I StyleAndUpdate "window*" MinOverlapPlacement
+ + I StyleAndUpdate "window*" MinOverlapPercentPlacement
+ + I StyleAndUpdate "window*" MinOverlapPercentPlacement
+ + I StyleAndUpdate "window*" TileManualPlacement
+ + I StyleAndUpdate "window*" TileManualPlacement
+ + I StyleAndUpdate "window*" TileCascadePlacement
+ + I StyleAndUpdate "window*" TileCascadePlacement
 
 
 AddTest "Test StyleHilightForeBack" StyleHilightForeBack-Func
 AddToFunc StyleHilightForeBack-Func
- + I Style "*" HilightFore , HilightBack
- + I Style "*" HilightFore blue, HilightBack
- + I Style "*" HilightFore green, HilightBack
- + I Style "*" HilightFore black, HilightBack yellow
- + I Style "*" HilightFore black, HilightBack yellow
- + I Style "*" HilightFore gold2, HilightBack SteelBlue
- + I Style "*" HilightFore gold2, HilightBack SteelBlue
- + I Style "*" HilightFore , HilightBack
- + I Style "*" HilightFore gold2, HilightBack SteelBlue
+ + I StyleAndUpdate "*" HilightFore , HilightBack
+ + I StyleAndUpdate "*" HilightFore blue, HilightBack
+ + I StyleAndUpdate "*" HilightFore green, HilightBack
+ + I StyleAndUpdate "*" HilightFore black, HilightBack yellow
+ + I StyleAndUpdate "*" HilightFore black, HilightBack yellow
+ + I StyleAndUpdate "*" HilightFore gold2, HilightBack SteelBlue
+ + I StyleAndUpdate "*" HilightFore gold2, HilightBack SteelBlue
+ + I StyleAndUpdate "*" HilightFore , HilightBack
+ + I StyleAndUpdate "*" HilightFore gold2, HilightBack SteelBlue
 
 # Missing tests: HilightColorset, BorderColorset, HilightBorderColorset
 
 AddTest "Test StyleFont" StyleFont-Func
 AddToFunc StyleFont-Func
- + I Style "*" Font
- + I Style "*" Font 9x15
- + I Style "*" Font 9x15
- + I Style "*" Font /nonexistent/foo/bar
- + I Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
- + I Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
- + I Style "*" Font
+ + I StyleAndUpdate "*" Font
+ + I StyleAndUpdate "*" Font 9x15
+ + I StyleAndUpdate "*" Font 9x15
+ + I StyleAndUpdate "*" Font /nonexistent/foo/bar
+ + I StyleAndUpdate "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+ + I StyleAndUpdate "*" Font
 
 AddTest "Test StyleIconFont" StyleIconFont-Func
 AddToFunc StyleIconFont-Func
- + I Style * IconFont
- + I Style * IconFont     9x15
- + I Style * IconFont		9x15
- + I Style * IconFont /nonexistent/foo/bar
- + I Style * IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
- + I Style * IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
- + I Style * IconFont
+ + I StyleAndUpdate * IconFont
+ + I StyleAndUpdate * IconFont     9x15
+ + I StyleAndUpdate * IconFont		9x15
+ + I StyleAndUpdate * IconFont /nonexistent/foo/bar
+ + I StyleAndUpdate * IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+ + I StyleAndUpdate * IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+ + I StyleAndUpdate * IconFont
 
 # Just arbitrary break in style tests:
 AddTest "Test Style2" Style2-Func
 AddToFunc Style2-Func
- + I Style "window*" StartsOnDesk
- + I Style "window*" StartsOnDesk   0
- + I Style "window*" StartsOnDesk		0
- + I Style "window*" StartsOnDesk		0
- + I Style "window*" StartsOnPage
- + I Style "window*" StartsOnPage  0
- + I Style "window*" StartsOnPage  0   0
- + I Style "window*" StartsOnPage	0	0
- + I Style "window*" StartsAnyWhere
- + I Style "window*" StartsAnyWhere
+ + I StyleAndUpdate "window*" StartsOnDesk
+ + I StyleAndUpdate "window*" StartsOnDesk   0
+ + I StyleAndUpdate "window*" StartsOnDesk		0
+ + I StyleAndUpdate "window*" StartsOnDesk		0
+ + I StyleAndUpdate "window*" StartsOnPage
+ + I StyleAndUpdate "window*" StartsOnPage  0
+ + I StyleAndUpdate "window*" StartsOnPage  0   0
+ + I StyleAndUpdate "window*" StartsOnPage	0	0
+ + I StyleAndUpdate "window*" StartsAnyWhere
+ + I StyleAndUpdate "window*" StartsAnyWhere
 
- + I Style "window1" ActivePlacementHonorsStartsOnPage
- + I Style "window2" ActivePlacementIgnoresStartsOnPage
- + I Style "window3" CaptureHonorsStartsOnPage
- + I Style "window4" CaptureIgnoresStartsOnPage
- + I Style "window5" RecaptureHonorsStartsOnPage
- + I Style "window6" RecaptureIgnoresStartsOnPage
- + I Style "window1" StartsOnPageIncludesTransients
- + I Style "window2" StartsOnPageIgnoresTransients
+ + I StyleAndUpdate "window1" ActivePlacementHonorsStartsOnPage
+ + I StyleAndUpdate "window2" ActivePlacementIgnoresStartsOnPage
+ + I StyleAndUpdate "window3" CaptureHonorsStartsOnPage
+ + I StyleAndUpdate "window4" CaptureIgnoresStartsOnPage
+ + I StyleAndUpdate "window5" RecaptureHonorsStartsOnPage
+ + I StyleAndUpdate "window6" RecaptureIgnoresStartsOnPage
+ + I StyleAndUpdate "window1" StartsOnPageIncludesTransients
+ + I StyleAndUpdate "window2" StartsOnPageIgnoresTransients
 
- + I Style "window*" IconTitle
- + I Style "window*" IconTitle
- + I Style "window*" NoIconTitle
- + I Style "window*" NoIconTitle
- + I Style "window*" MWMButtons
- + I Style "window*" MWMButtons
- + I Style "window*" FvwmButtons
- + I Style "window*" FvwmButtons
- + I Style "window*" MWMBorder
- + I Style "window*" MWMBorder
- + I Style "window*" FvwmBorder
- + I Style "window*" FvwmBorder
- + I Style "window*" MWMDecor
- + I Style "window*" MWMDecor
- + I Style "window*" NoDecorHint
- + I Style "window*" NoDecorHint
- + I Style "window*" MWMFunctions
- + I Style "window*" MWMFunctions
- + I Style "window*" NoFuncHint
- + I Style "window*" NoFuncHint
- + I Style "window*" HintOverride
- + I Style "window*" HintOverride
- + I Style "window*" NoOverride
- + I Style "window*" NoOverride
- + I Style "window*" NoButton
- + I Style "window*" NoButton  1
- + I Style "window*" NoButton		2
- + I Style "window*" Button
- + I Style "window*" Button  3
- + I Style "window*" Button		0
- + I Style "window*" ReizeHintOverride
- + I Style "window*" NoResizeOverride
- + I Style "window*" OLDecor
- + I Style "window*" OLDecor
- + I Style "window*" NoOLDecor
- + I Style "window*" NoOLDecor
- + I Style "window*" GNOMEUseHints
- + I Style "window*" GNOMEIgnoreHints
- + I Style "window*" StickyIcon
- + I Style "window*" StickyIcon
- + I Style "window*" SlipperyIcon
- + I Style "window*" SlipperyIcon
- + I Style "window*" SmartPlacement
- + I Style "window*" SmartPlacement
- + I Style "window*" CleverPlacement
- + I Style "window*" DumbPlacement
- + I Style "window*" DumbPlacement
- + I Style "window*" RandomPlacement
- + I Style "window*" RandomPlacement
- + I Style "window*" ActivePlacement
- + I Style "window*" ActivePlacement
- + I Style "window*" CascadePlacement
- + I Style "window*" CascadePlacement
- + I Style "window*" ManualPlacement
- + I Style "window*" ManualPlacement
- + I Style "window*" TileCascadePlacement
- + I Style "window*" TileCascadePlacement
- + I Style "window*" TileManualPlacement
- + I Style "window*" TileManualPlacement
- + I Style "window*" MinOverlapPlacement
- + I Style "window*" MinOverlapPlacement
- + I Style "window*" MinOverlapPercentPlacement
- + I Style "window*" MinOverlapPercentPlacement
- + I Style "window*" DecorateTransient
- + I Style "window*" DecorateTransient
- + I Style "window*" NakedTransient
- + I Style "window*" NakedTransient
- + I Style "window*" RaiseTransient
- + I Style "window*" DontRaiseTransient
- + I Style "window*" LowerTransient
- + I Style "window*" DontLowerTransient
- + I Style "window*" StackTransientParent
- + I Style "window*" DontStackTransientParent
- + I Style "window*" SkipMapping
- + I Style "window*" SkipMapping
- + I Style "window*" ShowMapping
- + I Style "window*" ShowMapping
- + I Style "window*" UseDecor
- + I Style "window*" UseDecor
- + I style "*indo*" UseStyle
- + I style "*indo*" UseStyle
- + I style "*indo*" NoPPosition
- + I style "*indo*" NoPPosition
- + I style "*indo*" UsePPosition
- + I style "*indo*" UsePPosition
- + I Style "window*" UseIconPosition
- + I Style "window*" NoIconPosition
- + I style "*indo*" Lenience
- + I style "*indo*" Lenience
- + I style "*indo*" NoLenience
- + I style "*indo*" NoLenience
- + I style "*indo*" ClickToFocus
- + I style "*indo*" ClickToFocus
- + I style "*indo*" SloppyFocus
- + I style "*indo*" SloppyFocus
- + I style "*indo*" MouseFocus
- + I style "*indo*" MouseFocus
- + I style "*indo*" FocusFollowsMouse
- + I style "*indo*" FocusFollowsMouse
- + I Style "window2" NeverFocus
- + I Style "window*" ClickToFocusPassesClickOff
- + I Style "window*" ClickToFocusPassesClick
- + I Style "window*" ClickToFocusRaisesOff
- + I Style "window*" ClickToFocusRaises
- + I Style "window*" MouseFocusClickRaises
- + I Style "window*" MouseFocusClickRaisesOff
- + I Style "window*" StartsLowered
- + I Style "window*" StartsRaised
- + I Style "window*" GrabFocus
- + I Style "window*" GrabFocusOff
- + I Style "window*" GrabFocusTransient
- + I Style "window*" GrabFocusTransientOff
- + I Style "window*" IgnoreRestack
- + I Style "window*" AllowRestack
- + I Style "window*" FixedPosition
- + I Style "window*" VariablePosition
- + I Style "window*" IconOverride
- + I Style "window*" NoIconOverride
- + I Style "window*" NoActiveIconOverride
- + I Style "window1" DepressableBorder
- + I Style "window2" FirmBorder
- + I Style "window3" MaxWindowSize 10p 10p
- + I Style "window3" MaxWindowSize 200p 2000000p
- + I Style "window3" MaxWindowSize 100 100
- + I Style "window3" MaxWindowSize 0 0
- + I Style "window3" MaxWindowSize
- + I Style "window*" ResizeOpaque
- + I Style "window*" ResizeOutline
- + I Style "window*" BackingStore
- + I Style "window*" BackingStoreOff
- + I Style "window*" Opacity
- + I Style "window*" ParentalRelativity
- + I Style "window*" SaveUnder
- + I Style "window*" SaveUnderOff
- + I Style "window*" WindowShadeShrinks
- + I Style "window*" WindowShadeScrolls
- + I Style "window*" WindowShadeSteps 0
- + I Style "window*" WindowShadeSteps 2
- + I Style "window*" WindowShadeSteps 2p
+ + I StyleAndUpdate "window*" IconTitle
+ + I StyleAndUpdate "window*" IconTitle
+ + I StyleAndUpdate "window*" NoIconTitle
+ + I StyleAndUpdate "window*" NoIconTitle
+ + I StyleAndUpdate "window_iconic" IconTitle
+ + I StyleAndUpdate "window*" MWMButtons
+ + I StyleAndUpdate "window*" MWMButtons
+ + I StyleAndUpdate "window*" FvwmButtons
+ + I StyleAndUpdate "window*" FvwmButtons
+ + I StyleAndUpdate "window*" MWMBorder
+ + I StyleAndUpdate "window*" MWMBorder
+ + I StyleAndUpdate "window*" FvwmBorder
+ + I StyleAndUpdate "window*" FvwmBorder
+ + I StyleAndUpdate "window*" MWMDecor
+ + I StyleAndUpdate "window*" MWMDecor
+ + I StyleAndUpdate "window*" NoDecorHint
+ + I StyleAndUpdate "window*" NoDecorHint
+ + I StyleAndUpdate "window*" MWMFunctions
+ + I StyleAndUpdate "window*" MWMFunctions
+ + I StyleAndUpdate "window*" NoFuncHint
+ + I StyleAndUpdate "window*" NoFuncHint
+ + I StyleAndUpdate "window*" HintOverride
+ + I StyleAndUpdate "window*" HintOverride
+ + I StyleAndUpdate "window*" NoOverride
+ + I StyleAndUpdate "window*" NoOverride
+ + I StyleAndUpdate "window*" NoButton
+ + I StyleAndUpdate "window*" NoButton  1
+ + I StyleAndUpdate "window*" NoButton		2
+ + I StyleAndUpdate "window*" Button
+ + I StyleAndUpdate "window*" Button  3
+ + I StyleAndUpdate "window*" Button		0
+ + I StyleAndUpdate "window*" ReizeHintOverride
+ + I StyleAndUpdate "window*" NoResizeOverride
+ + I StyleAndUpdate "window*" OLDecor
+ + I StyleAndUpdate "window*" OLDecor
+ + I StyleAndUpdate "window*" NoOLDecor
+ + I StyleAndUpdate "window*" NoOLDecor
+ + I StyleAndUpdate "window*" GNOMEUseHints
+ + I StyleAndUpdate "window*" GNOMEIgnoreHints
+ + I StyleAndUpdate "window*" StickyIcon
+ + I StyleAndUpdate "window*" StickyIcon
+ + I StyleAndUpdate "window*" SlipperyIcon
+ + I StyleAndUpdate "window*" SlipperyIcon
+ + I StyleAndUpdate "window*" SmartPlacement
+ + I StyleAndUpdate "window*" SmartPlacement
+ + I StyleAndUpdate "window*" CleverPlacement
+ + I StyleAndUpdate "window*" DumbPlacement
+ + I StyleAndUpdate "window*" DumbPlacement
+ + I StyleAndUpdate "window*" RandomPlacement
+ + I StyleAndUpdate "window*" RandomPlacement
+ + I StyleAndUpdate "window*" ActivePlacement
+ + I StyleAndUpdate "window*" ActivePlacement
+ + I StyleAndUpdate "window*" CascadePlacement
+ + I StyleAndUpdate "window*" CascadePlacement
+ + I StyleAndUpdate "window*" ManualPlacement
+ + I StyleAndUpdate "window*" ManualPlacement
+ + I StyleAndUpdate "window*" TileCascadePlacement
+ + I StyleAndUpdate "window*" TileCascadePlacement
+ + I StyleAndUpdate "window*" TileManualPlacement
+ + I StyleAndUpdate "window*" TileManualPlacement
+ + I StyleAndUpdate "window*" MinOverlapPlacement
+ + I StyleAndUpdate "window*" MinOverlapPlacement
+ + I StyleAndUpdate "window*" MinOverlapPercentPlacement
+ + I StyleAndUpdate "window*" MinOverlapPercentPlacement
+ + I StyleAndUpdate "window*" DecorateTransient
+ + I StyleAndUpdate "window*" DecorateTransient
+ + I StyleAndUpdate "window*" NakedTransient
+ + I StyleAndUpdate "window*" NakedTransient
+ + I StyleAndUpdate "window*" RaiseTransient
+ + I StyleAndUpdate "window*" DontRaiseTransient
+ + I StyleAndUpdate "window*" LowerTransient
+ + I StyleAndUpdate "window*" DontLowerTransient
+ + I StyleAndUpdate "window*" StackTransientParent
+ + I StyleAndUpdate "window*" DontStackTransientParent
+ + I StyleAndUpdate "window*" SkipMapping
+ + I StyleAndUpdate "window*" SkipMapping
+ + I StyleAndUpdate "window*" ShowMapping
+ + I StyleAndUpdate "window*" ShowMapping
+ + I StyleAndUpdate "window*" UseDecor
+ + I StyleAndUpdate "window*" UseDecor
+ + I StyleAndUpdate "*indo*" UseStyle
+ + I StyleAndUpdate "*indo*" UseStyle
+ + I StyleAndUpdate "*indo*" NoPPosition
+ + I StyleAndUpdate "*indo*" NoPPosition
+ + I StyleAndUpdate "*indo*" UsePPosition
+ + I StyleAndUpdate "*indo*" UsePPosition
+ + I StyleAndUpdate "window*" UseIconPosition
+ + I StyleAndUpdate "window*" NoIconPosition
+ + I StyleAndUpdate "*indo*" Lenience
+ + I StyleAndUpdate "*indo*" Lenience
+ + I StyleAndUpdate "*indo*" NoLenience
+ + I StyleAndUpdate "*indo*" NoLenience
+ + I StyleAndUpdate "*indo*" ClickToFocus
+ + I StyleAndUpdate "*indo*" ClickToFocus
+ + I StyleAndUpdate "*indo*" SloppyFocus
+ + I StyleAndUpdate "*indo*" SloppyFocus
+ + I StyleAndUpdate "*indo*" MouseFocus
+ + I StyleAndUpdate "*indo*" MouseFocus
+ + I StyleAndUpdate "*indo*" FocusFollowsMouse
+ + I StyleAndUpdate "*indo*" FocusFollowsMouse
+ + I StyleAndUpdate "window2" NeverFocus
+ + I StyleAndUpdate "window*" ClickToFocusPassesClickOff
+ + I StyleAndUpdate "window*" ClickToFocusPassesClick
+ + I StyleAndUpdate "window*" ClickToFocusRaisesOff
+ + I StyleAndUpdate "window*" ClickToFocusRaises
+ + I StyleAndUpdate "window*" MouseFocusClickRaises
+ + I StyleAndUpdate "window*" MouseFocusClickRaisesOff
+ + I StyleAndUpdate "window*" StartsLowered
+ + I StyleAndUpdate "window*" StartsRaised
+ + I StyleAndUpdate "window*" GrabFocus
+ + I StyleAndUpdate "window*" GrabFocusOff
+ + I StyleAndUpdate "window*" GrabFocusTransient
+ + I StyleAndUpdate "window*" GrabFocusTransientOff
+ + I StyleAndUpdate "window*" IgnoreRestack
+ + I StyleAndUpdate "window*" AllowRestack
+ + I StyleAndUpdate "window*" FixedPosition
+ + I StyleAndUpdate "window*" VariablePosition
+ + I StyleAndUpdate "window*" IconOverride
+ + I StyleAndUpdate "window*" NoIconOverride
+ + I StyleAndUpdate "window*" NoActiveIconOverride
+ + I StyleAndUpdate "window1" DepressableBorder
+ + I StyleAndUpdate "window2" FirmBorder
+ + I StyleAndUpdate "window3" MaxWindowSize 10p 10p
+ + I StyleAndUpdate "window3" MaxWindowSize 200p 2000000p
+ + I StyleAndUpdate "window3" MaxWindowSize 100 100
+ + I StyleAndUpdate "window3" MaxWindowSize 0 0
+ + I StyleAndUpdate "window3" MaxWindowSize
+ + I StyleAndUpdate "window*" ResizeOpaque
+ + I StyleAndUpdate "window*" ResizeOutline
+ + I StyleAndUpdate "window*" BackingStore
+ + I StyleAndUpdate "window*" BackingStoreOff
+ + I StyleAndUpdate "window*" Opacity
+ + I StyleAndUpdate "window*" ParentalRelativity
+ + I StyleAndUpdate "window*" SaveUnder
+ + I StyleAndUpdate "window*" SaveUnderOff
+ + I StyleAndUpdate "window*" WindowShadeShrinks
+ + I StyleAndUpdate "window*" WindowShadeScrolls
+ + I StyleAndUpdate "window*" WindowShadeSteps 0
+ + I StyleAndUpdate "window*" WindowShadeSteps 2
+ + I StyleAndUpdate "window*" WindowShadeSteps 2p
 
 AddTest "Test DestroyStyle" DestroyStyle
 AddToFunc DestroyStyle-Func
- + I Style "destroyme" IconBox 1 1 2 2, font 10x20, lenience
+ + I StyleAndUpdate "destroyme" IconBox 1 1 2 2, font 10x20, lenience
  + I DestroyStyle "destroyme"
  + I DestroyStyle "destroyme"
- + I Style "destroyme" IconBox -80x240-1-1, IconFill b r, mwmdecor
+ + I StyleAndUpdate "destroyme" IconBox -80x240-1-1, IconFill b r, mwmdecor
  + I DestroyStyle "destroyme"
  + I DestroyStyle "destroyme"
 # The man page says not to do this, to-do-2.4 #130
@@ -1773,14 +2089,12 @@ AddToFunc AddToFunc_DestroyFunc-Func
  + I AddToFunc suicide_func I DestroyFunc suicide_func
  + I function suicide_func
 
-### coredump!
-#AddToFunc loop1
-# + I function loop2
-#AddToFunc loop2
+### coredump! Fixed but ...
+# + I AddToFunc loop1 I function loop2
+# + I AddToFunc loop2 I function loop1
 # + I function loop1
-#function loop1
 
-### coredump!!
+### coredump!! Fixed but ...
 #AddToFunc grow1
 # + I AddToFunc grow2 nop
 # + I function grow2
@@ -2181,9 +2495,21 @@ AddToFunc Cleanup-Func
  + I All (window4) destroy
  + I All (window5) destroy
  + I All (window6) destroy
+ + I All (window_iconic) destroy
+ + I All (window_shaded) destroy
  + I beep
  + I Echo ------------ ok ------------
  + I quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
+
+DestroyFunc PurifyInit
+AddToFunc   PurifyInit
+ + I ImagePath /tmp
+ + I mouse 1 1 a close
+ + I mouse 1 t a move
+ + I mouse 2 t a lower
+ + I mouse 3 t a raiselower
+# + I CreateWindows-Func
+# + I Menu TestMenu
 
 # Now Display the tests:
 AddToFunc InitFunction

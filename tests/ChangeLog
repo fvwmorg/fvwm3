@@ -1,3 +1,12 @@
+2003-05-18  olicha  <olivier.chapuis@free.fr>
+
+	* purify/purify.fvwm2rc:
+	Updated. Added a window_iconic and window_shaded. Be more agressive
+	with Style (Style -> Style + UpdateStyles). Added more font in
+	DefaultFont. More menu position. Added a few new MenuStyle. Added
+	BugOpts, LocalePath, PrintInfo, ResizeMaximize, ResizeMoveMaximize
+	and StickAcross{Desks,Page} tests.
+
 2003-04-13  Mikhael Goikhman  <migo@homemail.com>
 
 	* hints/README:

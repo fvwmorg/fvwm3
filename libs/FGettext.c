@@ -72,8 +72,12 @@ void fgettext_add_one_path(char *path, int position)
 	}
 
 	domain = GetQuotedString(path, &dir, ";", NULL, NULL, NULL);
-	if (!dir || dir[0] != '/')
+	if (!dir || dir[0] == '\0' || dir[0] != '/')
 	{
+		if (dir)
+		{
+			free(dir);
+		}
 		CopyString(&dir, FGDefaultDir);
 	}
 	if (!domain || domain[0] == '\0')
@@ -99,12 +103,8 @@ void fgettext_add_one_path(char *path, int position)
 		prevpath = fgpath;
 		fgpath = fgpath->next;
 	}
-	if (fgpath->next == NULL)
-	{
-		/* end */
-		fgpath->next = tmp;
-	}
-	else
+	if ((fgpath->next != NULL) ||
+	    (count == position && fgpath->next == NULL))
 	{
 		tmp->next = fgpath;
 		if (fgpath == FGPath)
@@ -117,6 +117,11 @@ void fgettext_add_one_path(char *path, int position)
 			/* middle */
 			prevpath->next = tmp;
 		}
+	}
+	else
+	{
+		/* end */
+		fgpath->next = tmp;
 	}
 }
 
@@ -152,18 +157,30 @@ void fgettext_free_path(void)
 
 void FGettextInit(const char *domain, const char *dir, const char *module)
 {
+	char *btd, *td;
+
 	if (!HaveNLSSupport)
 	{
 		return;
 	}
 	setlocale (LC_MESSAGES, "");
 
-	FGDefaultDir = bindtextdomain (domain, dir);
-	FGDefaultDomain = textdomain (domain);
+	btd = bindtextdomain (domain, dir);
+	td = textdomain (domain);
+	if (!td || !btd)
+	{
+		fprintf(
+			stderr,"[%s][FGettextInit]: <<ERROR>> "
+			"gettext initialisation fail!\n",
+			module);
+		return;
+	}
 	FGModuleName = module;
+	CopyString(&FGDefaultDir, btd);
+	CopyString(&FGDefaultDomain, td);
 	FGPath = (FGettextPath *)safemalloc(sizeof(FGettextPath));
-	CopyString(&FGPath->domain, domain);
-	CopyString(&FGPath->dir, dir);
+	CopyString(&FGPath->domain, td);
+	CopyString(&FGPath->dir, btd);
 	FGPath->next = NULL;
 	FGLastPath = FGPath;
 	FGettextInitOk = 1;

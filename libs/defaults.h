@@ -147,6 +147,8 @@
    is welcome.
 */
 #define FLOCALE_FALLBACK_FONT		  "fixed"
+#define FLOCALE_FFT_FALLBACK_FONT         "MonoSpace"
+
 #define FLOCALE_NUMBER_MISS_CSET_ERR_MSG   5
 
 /*** window geometry ***/
@@ -355,4 +357,6 @@
 #define DEF_FP_OVERRIDE_RELEASE_FOCUS		0
 #define DEF_FP_SORT_WINDOWLIST_BY		1
 
+/* Function execution */
+#define MAX_FUNCTION_DEPTH    512
 #endif /* _DEFAULTS_ */

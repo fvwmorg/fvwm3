@@ -1823,16 +1823,6 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 		{
 			memset(&df->style, 0, sizeof(df->style));
 			DFS_FACE_TYPE(df->style) = MiniIconButton;
-#if 0
-			/* Have to remove this again. This is all so badly
-			 * written there is no chance to prevent a coredump
-			 * and a memory leak the same time without a rewrite of
-			 * large parts of the code. */
-			if (df->u.p)
-			{
-				PDestroyFvwmPicture(dpy, df->u.p);
-			}
-#endif
 			/* pixmap read in when the window is created */
 			df->u.p = NULL;
 		}
@@ -2626,7 +2616,7 @@ void CMD_Echo(F_CMD_ARGS)
 void CMD_PrintInfo(F_CMD_ARGS)
 {
 	int verbose;
-	char *rest, *subject;
+	char *rest, *subject = NULL;
 
 	rest = GetNextToken(action, &subject);
 	if (!rest || GetIntegerArguments(rest, NULL, &verbose, 1) != 1)
@@ -2650,7 +2640,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 		fvwm_msg(ERR, "PrintInfo",
 			 "Unknown subject '%s'", action);
 	}
-
+	if (subject)
+	{
+		free(subject);
+	}
 	return;
 }
 
@@ -2965,6 +2958,7 @@ void CMD_DefaultFont(F_CMD_ARGS)
 {
 	char *font;
 	FlocaleFont *new_font;
+	FvwmWindow *t;
 
 	font = PeekToken(action, &action);
 	if (!font)
@@ -2984,6 +2978,19 @@ void CMD_DefaultFont(F_CMD_ARGS)
 	}
 	FlocaleUnloadFont(dpy, Scr.DefaultFont);
 	Scr.DefaultFont = new_font;
+	/* we should do that here because a redraw can happen before
+	   flush_window_updates is called ... */
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		if (USING_DEFAULT_ICON_FONT(t))
+		{
+			t->icon_font = Scr.DefaultFont;
+		}
+		if (USING_DEFAULT_WINDOW_FONT(t))
+		{
+			t->title_font = Scr.DefaultFont;
+		}
+	}
 	/* set flags to indicate that the font has changed */
 	Scr.flags.do_need_window_update = 1;
 	Scr.flags.has_default_font_changed = 1;
