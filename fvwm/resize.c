@@ -176,8 +176,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
   /* draw the rubber-band window */
   MoveOutline (Scr.Root, drag->x - tmp_win->bw, drag->y - tmp_win->bw,
-	       drag->width + 2 * tmp_win->bw,
-	       drag->height + 2 * tmp_win->bw);
+	       drag->width - 1 + 2 * tmp_win->bw,
+	       drag->height - 1 + 2 * tmp_win->bw);
   /* kick off resizing without requiring any motion if invoked with a key press */
   if (eventp->type == KeyPress)
     {
@@ -277,8 +277,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  MoveOutline(Scr.Root,0,0,0,0);
 	  DispatchEvent();
 	  MoveOutline(Scr.Root, drag->x - tmp_win->bw, drag->y - tmp_win->bw,
-		      drag->width + 2 * tmp_win->bw,
-		      drag->height + 2 * tmp_win->bw);
+		      drag->width - 1 + 2 * tmp_win->bw,
+		      drag->height - 1 + 2 * tmp_win->bw);
 
 	}
     }
@@ -377,8 +377,8 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
 	drag->y = orig->y + orig->height - drag->height;
 
       MoveOutline(Scr.Root, drag->x - tmp_win->bw,drag->y - tmp_win->bw,
-		  drag->width + 2 * tmp_win->bw,
-		  drag->height + 2 * tmp_win->bw);
+		  drag->width - 1 + 2 * tmp_win->bw,
+		  drag->height - 1 + 2 * tmp_win->bw);
     }
   DisplaySize(tmp_win, drag->width, drag->height,False,False);
 }

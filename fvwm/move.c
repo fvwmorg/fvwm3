@@ -272,8 +272,8 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
     }
   else
     {
-      self.w = Width + tmp_win->bw;
-      self.h = Height + tmp_win->bw;
+      self.w = Width + 2 * tmp_win->bw;
+      self.h = Height + 2 * tmp_win->bw;
     }
   while(Scr.SnapAttraction >= 0 && tmp)
     {
@@ -416,6 +416,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   Bool done;
   int xl,yt,delta_x,delta_y,paged;
   unsigned int button_mask = 0;
+  unsigned int bw = tmp_win->bw;
 
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
@@ -424,7 +425,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   yt += YOffset;
 
   if(((!opaque_move)&&(Scr.DefaultMenuFace->style!=MWMMenu))||(AddWindow))
-    MoveOutline(Scr.Root, xl, yt, Width,Height);
+    MoveOutline(Scr.Root, xl, yt, Width - 1 + 2 * bw, Height - 1 + 2 * bw);
 
   DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,True);
 
@@ -513,12 +514,12 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  /* Resist moving windows over the edge of the screen! */
 	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
 	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
-	    xl = Scr.MyDisplayWidth - Width - tmp_win->bw;
+	    xl = Scr.MyDisplayWidth - Width - 2 * bw;
 	  if((xl <= 0)&&(xl > -Scr.MoveResistance))
 	    xl = 0;
 	  if(((yt + Height) >= Scr.MyDisplayHeight)&&
 	     ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
-	    yt = Scr.MyDisplayHeight - Height - tmp_win->bw;
+	    yt = Scr.MyDisplayHeight - Height - 2 * bw;
 	  if((yt <= 0)&&(yt > -Scr.MoveResistance))
 	    yt = 0;
 
@@ -543,12 +544,12 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  /* Resist moving windows over the edge of the screen! */
 	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
 	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
-	    xl = Scr.MyDisplayWidth - Width - tmp_win->bw;
+	    xl = Scr.MyDisplayWidth - Width - 2 * bw;
 	  if((xl <= 0)&&(xl > -Scr.MoveResistance))
 	    xl = 0;
 	  if(((yt + Height) >= Scr.MyDisplayHeight)&&
 	     ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
-	    yt = Scr.MyDisplayHeight - Height - tmp_win->bw;
+	    yt = Scr.MyDisplayHeight - Height - 2 * bw;
 	  if((yt <= 0)&&(yt > -Scr.MoveResistance))
 	    yt = 0;
 
@@ -558,7 +559,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  while(paged<=1)
 	    {
 	      if(!opaque_move)
-		MoveOutline(Scr.Root, xl, yt, Width,Height);
+		MoveOutline(Scr.Root, xl, yt, Width - 1 + 2 * bw, Height - 1 + 2 * bw);
 	      else
 		{
 		  if (tmp_win->flags & ICONIFIED)
@@ -612,7 +613,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    MoveOutline(Scr.Root,0,0,0,0);
 	  DispatchEvent();
 	  if(!opaque_move)
-	    MoveOutline(Scr.Root, xl, yt, Width, Height);
+	    MoveOutline(Scr.Root, xl, yt, Width - 1 + 2 * bw, Height - 1 + 2 * bw);
 	}
     }
   if (!NeedToResizeToo)
@@ -815,8 +816,6 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
   if((!opaque_move)&&(tmp_win->flags & ICONIFIED))
     XUnmapWindow(dpy,w);
 
-  DragWidth += JunkBW;
-  DragHeight+= JunkBW;
   XOffset = origDragX - DragX;
   YOffset = origDragY - DragY;
   XMapRaised(dpy,Scr.SizeWindow);
