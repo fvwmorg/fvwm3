@@ -242,6 +242,10 @@ sub Shorten ($) {
 	my $r = substr($string, 0, $length);
 	$r .= "..." if length($string) > $length;
 
+	# For some special characters, FVWM expects a double sequence to get
+	# a literal character.
+	$r =~ s/([*&%^])/$1$1/g;
+
 	return $r;
 }
 
