@@ -283,6 +283,7 @@ typedef struct ScreenInfo
   GC StdGC;
   GC StdReliefGC;
   GC StdShadowGC;
+  Bool usingDefaultVisual;
   Visual *viz;
   unsigned int depth;
   Colormap cmap;
@@ -291,6 +292,7 @@ typedef struct ScreenInfo
   GC ScratchGC1;
   GC ScratchGC2;
   GC ScratchGC3;
+  GC IconPixmapGC;		/* ignored unless fvwm is using -visual */
   int SizeStringWidth;	        /* minimum width of size window */
   int BoundaryWidth;	        /* frame width for decorated windows */
   int NoBoundaryWidth;	        /* frame width for decorated windows */

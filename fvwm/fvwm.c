@@ -516,10 +516,12 @@ int main(int argc, char **argv)
 
   /* use default visuals if none found so far */
   if (visualClass == -1 && visualId == -1) {
-      Scr.viz = DefaultVisual(dpy, Scr.screen);
-      Scr.depth = DefaultDepth(dpy, Scr.screen);
-      Scr.cmap = DefaultColormap(dpy, Scr.screen);
-  }
+    Scr.viz = DefaultVisual(dpy, Scr.screen);
+    Scr.depth = DefaultDepth(dpy, Scr.screen);
+    Scr.cmap = DefaultColormap(dpy, Scr.screen);
+    Scr.usingDefaultVisual = True;
+  } else
+    Scr.usingDefaultVisual = False;
 
 #ifdef SHAPE
   ShapesSupported=XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);

@@ -317,8 +317,6 @@ typedef struct FvwmWindow
     int icon_p_height;		/* height of the icon pixmap window */
     Pixmap iconPixmap;		/* pixmap for the icon */
     int iconDepth;		/* Drawable depth for the icon */
-    Colormap iconCMap;
-    Visual *iconViz;
     Pixmap icon_maskPixmap;	/* pixmap for the icon mask */
     char *name;			/* name of the window */
     char *icon_name;		/* name of the icon */
