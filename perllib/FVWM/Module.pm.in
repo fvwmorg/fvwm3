@@ -308,7 +308,7 @@ sub send ($$;$$) {
 			$self->debug("Can't send [$line]\n", 0);
 			next;
 		}
-		$self->debug("sent: [$line]", 1);
+		$self->debug("sent [$line]" . (!$continue && " FINISH"), 1);
 		my $len = length $line;
 		$self->{ostream}->print(
 			pack("lla${len}l", $winId, $len, $line, $continue)
@@ -343,11 +343,17 @@ sub readPacket ($) {
 	my $header = "";
 	my $packet = "";
 
-	# header is sizeof(int) * HEADER_SIZE bytes long:
-	my $got = sysread($self->{istream}, $header, INTSIZE * HEADER_SIZE);
+	# read a packet's header first, sizeof(int) * HEADER_SIZE bytes long
+	my $got;
+	# With perl-5.8.0, $SIG{ALRM} causes sysread to exit with "Illegal seek",
+	# so loop around sysread. I am not sure this is safe.
+	do {
+		$got = sysread($self->{istream}, $header, INTSIZE * HEADER_SIZE);
+	} until (defined $got);
 
-	unless (defined $got and $got == (INTSIZE * HEADER_SIZE)) {
+	if ($got != (INTSIZE * HEADER_SIZE)) {
 		# module killed or other read error
+		$self->debug($got? "read packet error": "connection closed", 2);
 		return undef;
 	}
 
@@ -441,6 +447,7 @@ sub eventLoop ($) {
 		# but don't catch errors (or die) in event handlers
 		$self->processPacket(eval { $self->readPacket }) || last;
 	}
+	$self->debug("exited event loop", 2);
 	$self->disconnect;
 }
 

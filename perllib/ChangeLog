@@ -1,3 +1,12 @@
+2002-10-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	work around the new perl-5.8.0 behaviour regarding signals
+	failing sysread
+
+	* FVWM/Module/Gtk.pm:
+	show an error message box if Gtk-Perl is requested, but can't be loaded
+
 2002-10-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:
