@@ -2331,9 +2331,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     DBUG("My_XNextEvent","waiting for module input/output");
     num_fd = fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP);
 
-    /* It's a bit gross doing this Grand Exit here, but there is
-     * no nice express route out of this function from here */
-    if ( isTerminated ) exit(0);
+    /* Express route out of FVWM ... */
+    if ( isTerminated ) return 0;
   }
   while (num_fd < 0);
 

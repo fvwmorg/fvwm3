@@ -1,3 +1,9 @@
+2000-11-26  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* fvwm/builtins.c
+	* fvwm/events.c
+	Provide "safe" route out of My_XNextEvent loops if FVWM dies.
+
 2000-11-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/menus.c (FreeMenuStyle):

@@ -29,6 +29,7 @@
 #include <X11/keysym.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/fvwmsignal.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "libs/Colorset.h"
@@ -734,7 +735,7 @@ void wait_func(F_CMD_ARGS)
     wait_string = strdup("");
   }
 
-  while(!done)
+  while(!done && !isTerminated)
   {
     if (BUSY_WAIT & Scr.BusyCursor)
     {
