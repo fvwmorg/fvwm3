@@ -151,6 +151,8 @@ typedef struct DecorFace
 			int num;
 			signed char *x;
 			signed char *y;
+		        signed char *xoff;
+		        signed char *yoff;
 			signed char *c;
 			unsigned use_fgbg : 1;
 		} vector;

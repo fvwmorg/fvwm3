@@ -1630,8 +1630,8 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 				XDrawLine(
 					dpy,Desks[desk].w,Desks[desk].DashedGC,
 					x1,y1,x1,y2);
-				x += Scr.MyDisplayWidth;
 			}
+			x += Scr.MyDisplayWidth;
 		}
 		y = Scr.MyDisplayHeight;
 		x1 = 0;
@@ -1640,9 +1640,11 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		{
 			y1 = (y * desk_h) / Scr.VHeight;
 			if (!use_no_separators)
+			{
 				XDrawLine(
 					dpy,Desks[desk].w,Desks[desk].DashedGC,
 					x1,y1,x2,y1);
+			}
 			y += Scr.MyDisplayHeight;
 		}
 	}

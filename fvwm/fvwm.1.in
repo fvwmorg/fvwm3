@@ -6620,7 +6620,7 @@ Style * SmartPlacement
   -->
 Style * SmartPlacement, CleverPlacement
 
-Global SmartPlacementIsNormal
+GlobalOpts SmartPlacementIsNormal
 Style * SmartPlacement
   -->
 Style * SmartPlacement, CleverPlacementOff
@@ -7644,17 +7644,21 @@ argument.  This style is fully destructive.
 
 The
 .I "Vector num"
-.IR X x Y @ C " ..."
+.IB X [ offset p]x Y [ offset p]@ C " ..."
 style draws a line pattern.  Since this is a standard button style,
 the keyword
 .I Vector
 is optional,
 .I num
 is a number of point specifications of the form
-.IR X x Y @ C .
+.IB X [ offset p]x Y [ offset p]@ C " ..."
 .IR X " and " Y
 are point coordinates inside the button, given in percents
-(from 0 to 100).
+(from 0 to 100).  An optional absolute
+.I offset
+in pixels, can be given as "+<offset>p" for a positive or
+"-<offset>p" for a negative offset.
+
 .I C
 specifies a line color (0 - the shadow color, 1 - the highlight
 color, 2 - the background color, 3 - the foreground color, 4 -
@@ -8176,6 +8180,65 @@ window over the edge of the screen, so that it straddles a pan
 frame, clicks on the window, near the edge of the screen are
 treated as clicks on the root window.
 
+.TP
+.BI "EWMHBaseStrut " left " " right " " top " " bottom
+Where left, right, top and bottom are positive or null integers
+which define bands at the edge of the screen.
+.I left
+defines a band on the left of your screen of width
+.IR left ","
+.I right
+defines a band on the right of your screen of width
+.IR right ","
+.I top
+defines a band on the top of your screen of height
+.I top
+and
+.I bottom
+defines a band on the bottom of your screen of height
+.IR bottom "."
+The unit is the pixel and the default is 0 0 0 0.  These areas
+define additional reserved space to the reserved space defined by
+some ewmh compliant applications. This is used to compute the
+Working Area. See the
+.B EXTENDED WINDOW MANAGER HINTS
+section for a definition of the Working Area.
+
+.TP
+.BI "EWMHNumberOfDesktops " num "  [" max "]"
+This command is useful only for an ewmh compliant pager or taskbar
+(as kpager or kicker taskbar) and not for fvwm modules (FvwmPager
+or FvwmIconMan). It causes a compliant application to consider at
+least
+.I num
+desktops (desktop 0 to desktop
+.IR num "-1)."
+The optional argument
+.I max
+causes a compliant application to never consider more than
+.I max
+desktops. If
+.I max
+is 0 (the default) there is no limitation.  The actual mumbler of
+desktops is determined dynamically.  It is at least
+.IR num ","
+but it can be d if there is a window on desktop d-1 (or if the
+current desktop is desktop d-1) and d is less or equal to
+.I max
+or
+.I max
+is null.
+Moreover, a compliant pager can ask to change
+.I num
+itself.
+This is accepted by fvwm only if this number is
+less than or equal to
+.I max
+or if
+.I max
+is null.  Note that negative desktops are not supported by the
+ewmh specification.  The default is 4 0.
+
 .IP "\fBGotoDesk\fP \fIprev\fP \
 \fB|\fP \fIarg1\fP \
 \fB[\fP\fIarg2\fP\
@@ -8227,67 +8290,6 @@ The number of active desktops is determined dynamically.  Only
 desktops which contain windows or are currently being displayed
 are active.  Desktop numbers must be between 2147483647 and
 -2147483648 (is that enough?).
-
-.TP
-.BI "EWMHBaseStrut " left " " right " " top " " bottom
-Where left, right, top and bottom are positive or null integers
-which define bands at the edge of the screen.
-.I left
-defines a band on the left of your screen of width
-.IR left ","
-.I right
-defines a band on the right of your screen of width
-.IR right ","
-.I top
-defines a band on the top of your screen of height
-.I top
-and
-.I bottom
-defines a band on the bottom of your screen of height
-.IR bottom "."
-The unit is the pixel and the default is 0 0 0 0.  These areas
-define additional reserved space to the reserved space defined by
-some ewmh compliant applications. This is used to compute the
-Working Area. See the
-.B EXTENDED WINDOW MANAGER HINTS
-section for a definition of the Working Area.
-.\" You can override the Working Area by using this command together
-.\" with the command "Style * IgnoreWmStrut"
-
-.TP
-.BI "EWMHNumberOfDesktops " num "  [" max "]"
-This command is useful only for an ewmh compliant pager or taskbar
-(as kpager or kicker taskbar) and not for fvwm modules (FvwmPager
-or FvwmIconMan). It causes a compliant application to consider at
-least
-.I num
-desktops (desktop 0 to desktop
-.IR num "-1)."
-The optional argument
-.I max
-causes a compliant application to never consider more than
-.I max
-desktops. If
-.I max
-is 0 (the default) there is no limitation.  The actual mumbler of
-desktops is determined dynamically.  It is at least
-.IR num ","
-but it can be d if there is a window on desktop d-1 (or if the
-current desktop is desktop d-1) and d is less or equal to
-.I max
-or
-.I max
-is null.
-Moreover, a compliant pager can ask to change
-.I num
-itself.
-This is accepted by fvwm only if this number is
-less than or equal to
-.I max
-or if
-.I max
-is null.  Note that negative desktops are not supported by the
-ewmh specification.  The default is 4 0.
 
 .TP
 .BI "GotoDeskAndPage " prev " | " "desk xpage ypage"

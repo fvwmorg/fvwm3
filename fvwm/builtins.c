@@ -978,6 +978,85 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	return;
 }
 
+static Bool __parse_vector_line_one_coord(
+	char **ret_action, int *pcoord, int *poff, char *action)
+{
+	int offset;
+	int n;
+
+	*ret_action = action;
+	n = sscanf(action, "%d%n", pcoord, &offset);
+	if (n < 1)
+	{
+		return False;
+	}
+	action += offset;
+	/* check for offest */
+	if (*action == '+' || *action == '-')
+	{
+		n = sscanf(action, "%dp%n", poff, &offset);
+		if (n < 1)
+		{
+			return False;
+		}
+		if (*poff < -128)
+		{
+			*poff = -128;
+		}
+		else if (*poff > 127)
+		{
+			*poff = 127;
+		}
+		action += offset;
+	}
+	else
+	{
+		*poff = 0;
+	}
+	*ret_action = action;
+
+	return True;
+}
+
+static Bool __parse_vector_line(
+	char **ret_action, int *px, int *py, int *pxoff, int *pyoff, int *pc,
+	char *action)
+{
+	Bool is_valid = True;
+	int offset;
+	int n;
+
+	*ret_action = action;
+	if (__parse_vector_line_one_coord(&action, px, pxoff, action) == False)
+	{
+		return False;
+	}
+	if (*action != 'x')
+	{
+		return False;
+	}
+	action++;
+	if (__parse_vector_line_one_coord(&action, py, pyoff, action) == False)
+	{
+		return False;
+	}
+	if (*action != '@')
+	{
+		return False;
+	}
+	action++;
+	/* read the line style */
+	n = sscanf(action, "%d%n", pc, &offset);
+	if (n < 1)
+	{
+		return False;
+	}
+	action += offset;
+	*ret_action = action;
+
+	return is_valid;
+}
+
 /* ---------------------------- interface functions ------------------------- */
 
 void refresh_window(Window w, Bool window_update)
@@ -1159,6 +1238,15 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 		{
 			free (df->u.vector.y);
 		}
+		/* free offsets for coord */
+		if (df->u.vector.xoff)
+		{
+			free(df->u.vector.xoff);
+		}
+		if (df->u.vector.yoff)
+		{
+			free(df->u.vector.yoff);
+		}
 		if (df->u.vector.c)
 		{
 			free (df->u.vector.c);
@@ -1275,7 +1363,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				num = sscanf(style,"%d",&num_coords);
 			}
 
-			if (num != 1 || num_coords<2 ||
+			if (num < 1 || num_coords<2 ||
 			    num_coords > MAX_TITLE_BUTTON_VECTOR_LINES)
 			{
 				if (verbose)
@@ -1292,6 +1380,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			vc->use_fgbg = 0;
 			vc->x = safemalloc(sizeof(char) * num_coords);
 			vc->y = safemalloc(sizeof(char) * num_coords);
+			vc->xoff = safemalloc(sizeof(char) * num_coords);
+			vc->yoff = safemalloc(sizeof(char) * num_coords);
 			vc->c = safemalloc(sizeof(char) * num_coords);
 
 			/* get the points */
@@ -1299,27 +1389,15 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				int x;
 				int y;
+				int xoff = 0;
+				int yoff = 0;
 				int c;
 
-				/* X x Y @ line_style */
-				num = sscanf(
-					s,"%dx%d@%d%n", &x, &y, &c, &offset);
-				if (num != 3)
+				if (__parse_vector_line(
+					    &s, &x, &y, &xoff, &yoff, &c, s) ==
+				    False)
 				{
-					if (verbose)
-					{
-						fvwm_msg(
-							ERR, "ReadDecorFace",
-							"Bad button style (3)"
-							" in line %s", action);
-					}
-					free(vc->x);
-					free(vc->y);
-					free(vc->c);
-					vc->x = NULL;
-					vc->y = NULL;
-					vc->c = NULL;
-					return False;
+					break;
 				}
 				if (x < 0)
 				{
@@ -1344,11 +1422,33 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				vc->x[i] = x;
 				vc->y[i] = y;
 				vc->c[i] = c;
+				vc->xoff[i] = xoff;
+				vc->yoff[i] = yoff;
 				if (c == 2 || c == 3)
 				{
 					vc->use_fgbg = 1;
 				}
-				s += offset;
+			}
+			if (i < vc->num)
+			{
+				if (verbose)
+				{
+					fvwm_msg(
+						ERR, "ReadDecorFace",
+						"Bad button style (3) in line"
+						" %s", action);
+				}
+				free(vc->x);
+				free(vc->y);
+				free(vc->c);
+				free(vc->xoff);
+				free(vc->yoff);
+				vc->x = NULL;
+				vc->y = NULL;
+				vc->c = NULL;
+				vc->xoff = NULL;
+				vc->yoff = NULL;
+				return False;
 			}
 			memset(&df->style, 0, sizeof(df->style));
 			DFS_FACE_TYPE(df->style) = VectorButton;

@@ -9,6 +9,8 @@ Changes in developement release 2.5.5 (not released yet)
 
 * New command RestackTransients.
 
+* Added a pixel offset to vecto button definitions.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)
@@ -355,7 +357,7 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
   IndexedIconName / ExactIconName.
 
 * New command "DesktopName desk name" to define the name of a
-  desktop for the FvwmPager, the WindowList and ewmh compliant
+  desktop for the FvwmPager, the WindowList and EWMH compliant
   pagers. New expanding variables $[desk.name<n>] for the desktop
   names.
 

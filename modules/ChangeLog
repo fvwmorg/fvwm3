@@ -1,3 +1,8 @@
+2002-11-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DrawGrid):
+	fixed hang with NoSeparators option
+
 2002-10-31  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWharf/icons.c (LoadIconFile):

@@ -1542,10 +1542,14 @@ static void border_draw_vector_to_pixmap(
 		}
 		XDrawLine(
 			dpy, dest_pix, gcs[coords->c[i]],
-			pixmap_g->width * coords->x[i-1] / 100,
-			pixmap_g->height * coords->y[i-1] / 100,
-			pixmap_g->width * coords->x[i] / 100,
-			pixmap_g->height * coords->y[i] / 100);
+			pixmap_g->width * coords->x[i-1] / 100 +
+			coords->xoff[i-1],
+			pixmap_g->height * coords->y[i-1] / 100 +
+			coords->yoff[i-1],
+			pixmap_g->width * coords->x[i] / 100 +
+			coords->xoff[i],
+			pixmap_g->height * coords->y[i] / 100 +
+			coords->yoff[i]);
 	}
 
 	return;

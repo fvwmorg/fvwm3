@@ -835,6 +835,7 @@ InstallSignals(void)
 static void LoadDefaultLeftButton(DecorFace *df, int i)
 {
 	struct vector_coords *v = &df->u.vector;
+	int j = 0;
 
 	memset(&df->style, 0, sizeof(df->style));
 	DFS_FACE_TYPE(df->style) = DefaultVectorButton;
@@ -845,6 +846,8 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 22;
 		v->y[0] = 39;
@@ -864,6 +867,8 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 32;
 		v->y[0] = 45;
@@ -882,6 +887,8 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 49;
 		v->y[0] = 49;
@@ -901,6 +908,8 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 32;
 		v->y[0] = 45;
@@ -917,6 +926,12 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		v->c[4] = 1;
 		break;
 	}
+	/* set offsets to 0, for all buttons */
+	for(j = 0 ; j < v->num ; j++)
+	{
+	  v->xoff[j] = 0;
+	  v->yoff[j] = 0;
+	}
 
 	return;
 }
@@ -930,6 +945,7 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 static void LoadDefaultRightButton(DecorFace *df, int i)
 {
 	struct vector_coords *v = &df->u.vector;
+	int j = 0;
 
 	memset(&df->style, 0, sizeof(df->style));
 	DFS_FACE_TYPE(df->style) = DefaultVectorButton;
@@ -940,6 +956,8 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 25;
 		v->y[0] = 25;
@@ -959,6 +977,8 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 39;
 		v->y[0] = 39;
@@ -978,6 +998,8 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 49;
 		v->y[0] = 49;
@@ -997,6 +1019,8 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		v->num = 5;
 		v->x = safemalloc(sizeof(char) * v->num);
 		v->y = safemalloc(sizeof(char) * v->num);
+		v->xoff = safemalloc(sizeof(char) * v->num);
+		v->yoff = safemalloc(sizeof(char) * v->num);
 		v->c = safecalloc(v->num, sizeof(char));
 		v->x[0] = 36;
 		v->y[0] = 36;
@@ -1012,6 +1036,12 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		v->y[4] = 36;
 		v->c[4] = 1;
 		break;
+	}
+	/* set offsets to 0, for all buttons */
+	for(j = 0 ; j < v->num ; j++)
+	{
+	  v->xoff[j] = 0;
+	  v->yoff[j] = 0;
 	}
 
 	return;
