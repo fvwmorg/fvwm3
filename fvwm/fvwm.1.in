@@ -3989,7 +3989,7 @@ to fvwm or the applications.  The parameters are a list of
 commands which consist of pairs of
 .I command
 tokens and integer
-.I values,
+.IR values ,
 The
 .IR press " and " release
 commands are followed by the appropriate mouse button number and
@@ -4017,13 +4017,55 @@ the pointer's position.  With 2, the event is passed to the top
 level window under the pointer which is usually the frame window.
 With 3, events go to the client window. Higher numbers go to
 successive sub windows.  Zero (0) goes to the smallest window that
-contains the pointer. Note that events propagate upward.
+contains the pointer.  Note that events propagate upward.
 .EX
  FakeClick depth 2 press 1 wait 250 release 1
 .EE
 This simulates a click with button 1 in the parent window (depth
 2) with a delay of 250 milliseconds between the press and the
 release.
+Note: all command names can be abbreviated with their first letter.
+
+
+.TP
+.BI "FakeKeypress [" "command value" "] ..."
+This command is mainly intended for debugging fvwm and no
+guarantees are made that it works for you.
+.B FakeKeypress
+can simulate key press and release events and pass them
+to fvwm or applications.  The parameters are a list of
+commands which consist of pairs of command tokens and values.
+The
+.IR press " and " release
+commands are followed by the name of a keysym.  Standard KeySym
+names are obtained from <X11/keysymdef.h> by removing the XK_
+prefix from each name.
+The
+.IR wait ", " modifiers " and " depth
+commands are the same as those used by
+.BR FakeClick .
+
+Save all GVim sessions with: "Esc:w\\n"
+.EX
+All (gvim) FakeKeypress press Escape \\
+                        press colon \\
+                        press w \\
+                        press Return
+.EE
+Save & exit all GVim sessions with: "Esc:wq\\n"
+.EX
+All (gvim) FakeKeypress press Escape \\
+                        press colon \\
+                        press w \\
+                        press q \\
+                        press Return
+.EE
+Send A to a specific window:
+.EX
+WindowId 0x3800002 FakeKeypress press A
+.EE
+Note: all command names can be abbreviated with their first letter.
+
 
 .TP
 .BI "GlobalOpts [" options "]"

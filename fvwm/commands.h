@@ -62,6 +62,7 @@ enum
 	F_EXEC,
 	F_EXEC_SETUP,
 	F_FAKE_CLICK,
+	F_FAKE_KEYPRESS,
 	F_FOCUSSTYLE,
 	F_FUNCTION,
 	F_GLOBAL_OPTS,
@@ -268,6 +269,7 @@ P(EwmhNumberOfDesktops);
 P(Exec);
 P(ExecUseShell);
 P(FakeClick);
+P(FakeKeypress);
 P(FlipFocus);
 P(Focus);
 P(FocusStyle);

@@ -81,7 +81,7 @@ extern int cmsDelayDefault;
 /* ---------------------------- included code files ------------------------ */
 
 /* ---------------------------- local types -------------------------------- */
-
+typedef enum {FakeMouseEvent, FakeKeyEvent} FakeEventType;
 /* ---------------------------- forward declarations ----------------------- */
 
 /* ---------------------------- local variables ---------------------------- */
@@ -3718,7 +3718,39 @@ void CMD_SetAnimation(F_CMD_ARGS)
 	return;
 }
 
-void CMD_FakeClick(F_CMD_ARGS)
+/* Determine which modifiers are required with a keycode to make <keysym>. */
+static Bool FKeysymToKeycode (Display *dpy, KeySym keysym,
+	unsigned int *keycode, unsigned int *modifiers)
+{
+	int m;
+
+	*keycode = XKeysymToKeycode(dpy, keysym);
+	*modifiers = 0;
+
+	for (m = 0; m <= 8; ++m)
+	{
+		KeySym ks = XKeycodeToKeysym(dpy, *keycode, m);
+		if (ks == keysym)
+		{
+			switch (m)
+			{
+				case 0: /* No modifiers */
+					break;
+				case 1: /* Shift modifier */
+					*modifiers |= ShiftMask;
+					break;
+				default:
+					fvwm_msg(ERR, "FKeysymToKeycode",
+						"Unhandled modifier %d", m);
+					break;
+			}
+			return True;
+		}
+	}
+	return False;
+}
+
+static void __fake_event(F_CMD_ARGS, FakeEventType type)
 {
 	char *token;
 	char *optlist[] = {
@@ -3732,19 +3764,19 @@ void CMD_FakeClick(F_CMD_ARGS)
 	unsigned int mask = 0;
 	Window root = Scr.Root;
 	int maxdepth = 0;
+	static char args[128];
+	strncpy(args, action, sizeof(args) - 1);
 
-	/* get the mask of pressed/released buttons */
-	if (FQueryPointer(
-		    dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX,
-		    &JunkY, &mask) == False)
-	{
-		/* pointer is on a different screen - that's okay here */
-	}
+	/* get the mask of pressed/released buttons/keys */
+	FQueryPointer(
+		dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX,
+		&JunkY, &mask);
+
 	token = PeekToken(action, &action);
 	while (token && action)
 	{
 		int index = GetTokenIndex(token, optlist, 0, NULL);
-		int val;
+		int val, depth;
 		XEvent e;
 		Window w;
 		Window child_w;
@@ -3754,13 +3786,9 @@ void CMD_FakeClick(F_CMD_ARGS)
 		int ry = 0;
 		Bool do_unset;
 		long add_mask = 0;
+		KeySym keysym = NoSymbol;
 
 		XFlush(dpy);
-		if (GetIntegerArguments(action, &action, &val, 1) != 1)
-		{
-			/* error */
-			return;
-		}
 		do_unset = True;
 		switch (index)
 		{
@@ -3770,38 +3798,68 @@ void CMD_FakeClick(F_CMD_ARGS)
 			/* fall through */
 		case 2:
 		case 3:
-			/* button press or release */
-			if (val >= 1 && val <= NUMBER_OF_MOUSE_BUTTONS)
+			/* key/button press or release */
+			if (type == FakeMouseEvent)
 			{
-				int depth = 1;
+				if ((GetIntegerArguments(
+					     action, &action, &val, 1) != 1) ||
+				    val < 1 || val > NUMBER_OF_MOUSE_BUTTONS)
+				{
+					fvwm_msg(
+						ERR, "__fake_event",
+						"Invalid button specifier in"
+						" \"%s\" for FakeClick.", args);
+					return; /* error */
+				}
+			}
+			else /* type == FakeKeyEvent */
+			{
+				char *key = PeekToken(action, &action);
+				if (key == NULL)
+				{
+					fvwm_msg(
+						ERR, "__fake_event",
+						"No keysym specifier in \"%s\""
+						" for FakeKeypress.", args);
+					return;
+				}
 
-				w = None;
-				child_w = root;
-				for (depth = 1; depth != maxdepth &&
-					     w != child_w && child_w != None;
-				     depth++)
+				// Do *NOT* use FvwmStringToKeysym() as it is
+				// case insensitive.
+				keysym = XStringToKeysym(key);
+				if (keysym == NoSymbol)
 				{
-					w = child_w;
-					if (FQueryPointer(
-						    dpy, w, &root, &child_w,
-						    &rx, &ry, &x, &y,
-						    &JunkMask) == False)
-					{
-						/* pointer is on a different
-						 * screen - that's okay here */
-					}
+					fvwm_msg(
+						ERR, "__fake_event",
+						"Invalid keysym specifier (%s)"
+						" in \"%s\" for FakeKeypress.",
+						key, args);
+					return;
 				}
-				if (do_unset)
+			}
+
+			w = None;
+			child_w = root;
+			for (depth = 1;
+				 depth != maxdepth &&
+				     w != child_w && child_w != None;
+				 depth++)
+			{
+				w = child_w;
+				if (FQueryPointer(
+						dpy, w, &root, &child_w,
+						&rx, &ry, &x, &y,
+						&JunkMask) == False)
 				{
-					e.type = ButtonRelease;
-					add_mask = ButtonPressMask;
+					/* pointer is on a different
+					 * screen - that's okay here */
 				}
-				else
-				{
-					e.type = ButtonPress;
-					add_mask = ButtonPressMask |
-						ButtonReleaseMask;
-				}
+			}
+
+			if (type == FakeMouseEvent)
+			{
+				e.type = (do_unset) ?
+					ButtonRelease : ButtonPress;
 				e.xbutton.display = dpy;
 				e.xbutton.window = w;
 				e.xbutton.subwindow = None;
@@ -3814,10 +3872,11 @@ void CMD_FakeClick(F_CMD_ARGS)
 				e.xbutton.button = val;
 				e.xbutton.state = mask;
 				e.xbutton.same_screen = (Scr.Root == root);
-				FSendEvent(
-					dpy, PointerWindow, True,
-					SubstructureNotifyMask | add_mask, &e);
-				XFlush(dpy);
+				/* SS: I think this mask handling code is buggy.
+				 * The value of <mask> is overridden during a
+				 * "wait" operation. Also why are we only using
+				 * Button1Mask? What if the user has requested
+				 * a FakeClick using some other button? */
 				if (do_unset)
 				{
 					mask &= ~(Button1Mask << (val - 1));
@@ -3826,37 +3885,75 @@ void CMD_FakeClick(F_CMD_ARGS)
 				{
 					mask |= (Button1Mask << (val - 1));
 				}
+				add_mask = (do_unset) ?
+					ButtonPressMask : ButtonReleaseMask;
 			}
 			else
 			{
-				/* error */
-				return;
+				/* type == FakeKeyEvent */
+				e.type = (do_unset ? KeyRelease : KeyPress);
+				e.xkey.display = dpy;
+				e.xkey.subwindow = None;
+				e.xkey.root = root;
+				e.xkey.time = fev_get_evtime();
+				e.xkey.x = x;
+				e.xkey.y = y;
+				e.xkey.x_root = rx;
+				e.xkey.y_root = ry;
+				e.xkey.same_screen = (Scr.Root == root);
+
+				w = e.xkey.window = exc->w.w;
+
+				if (FKeysymToKeycode(
+					    dpy, keysym, &(e.xkey.keycode),
+					    &(e.xkey.state)) != True)
+				{
+					fvwm_msg(DBG, "__fake_event",
+						"FKeysymToKeycode failed");
+					return;
+				}
+				e.xkey.state |= mask;
+				add_mask = (do_unset) ?
+					KeyReleaseMask : KeyPressMask;
 			}
+/*!!!*/fprintf(stderr,"fse: to 0x%08x\n", (int)w);
+			FSendEvent(dpy, w, True,
+				SubstructureNotifyMask | add_mask, &e);
+			XFlush(dpy);
 			break;
 		case 4:
 		case 5:
 			/* wait */
-			if (val > 0 && val <= 1000000)
+			if ((GetIntegerArguments(
+				     action, &action, &val, 1) != 1) ||
+			    val <= 0 || val > 1000000)
 			{
-				usleep(1000 * val);
-				if (FQueryPointer(
-					    dpy, Scr.Root, &root, &JunkRoot,
-					    &JunkX, &JunkY, &JunkX, &JunkY,
-					    &mask) == False)
-				{
-					/* pointer is on a different screen -
-					 * that's okay here */
-				}
-			}
-			else
-			{
-				/* error */
+				fvwm_msg(ERR, "__fake_event",
+					"Invalid wait value in \"%s\"", args);
 				return;
+			}
+
+			usleep(1000 * val);
+			if (FQueryPointer(
+					dpy, Scr.Root, &root, &JunkRoot,
+					&JunkX, &JunkY, &JunkX, &JunkY,
+					&mask) == False)
+			{
+				/* pointer is on a different screen -
+				 * that's okay here */
 			}
 			break;
 		case 6:
 		case 7:
 			/* set modifier */
+			if (GetIntegerArguments(action, &action, &val, 1) != 1)
+			{
+				fvwm_msg(
+					ERR, "__fake_event",
+					"Invalid modifier value in \"%s\"",
+					args);
+				return;
+			}
 			do_unset = False;
 			if (val < 0)
 			{
@@ -3884,6 +3981,8 @@ void CMD_FakeClick(F_CMD_ARGS)
 				/* error */
 				return;
 			}
+			/* SS: Could be buggy if a "modifier" operation
+			 * preceeds a "wait" operation. */
 			if (do_unset)
 			{
 				mask &= ~val;
@@ -3896,10 +3995,17 @@ void CMD_FakeClick(F_CMD_ARGS)
 		case 8:
 		case 9:
 			/* new max depth */
+			if (GetIntegerArguments(action, &action, &val, 1) != 1)
+			{
+				fvwm_msg(ERR, "__fake_event",
+					"Invalid depth value in \"%s\"", args);
+				return;
+			}
 			maxdepth = val;
 			break;
 		default:
-			/* error */
+			fvwm_msg(ERR, "__fake_event",
+				"Invalid command (%s) in \"%s\"", token, args);
 			return;
 		}
 		if (action)
@@ -3907,6 +4013,20 @@ void CMD_FakeClick(F_CMD_ARGS)
 			token = PeekToken(action, &action);
 		}
 	}
+
+	return;
+}
+
+void CMD_FakeClick(F_CMD_ARGS)
+{
+	__fake_event(F_PASS_ARGS, FakeMouseEvent);
+
+	return;
+}
+
+void CMD_FakeKeypress(F_CMD_ARGS)
+{
+	__fake_event(F_PASS_ARGS, FakeKeyEvent);
 
 	return;
 }

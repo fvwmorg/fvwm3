@@ -259,6 +259,10 @@ const func_t func_table[] =
 	CMD_ENT("fakeclick", CMD_FakeClick, F_FAKE_CLICK, 0, 0),
 	/* - Generate a mouse click */
 
+	CMD_ENT("fakekeypress", CMD_FakeKeypress, F_FAKE_KEYPRESS,
+		0, 0),
+	/* - Send a keyboard event to a window */
+
 	CMD_ENT("flipfocus", CMD_FlipFocus, F_FLIP_FOCUS,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Focus a window without rotating windowlist order */
