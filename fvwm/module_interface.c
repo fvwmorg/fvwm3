@@ -1202,41 +1202,72 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
   if ((SyncMask[module] & ptr[1]) && !myxgrabcount)
   {
     Window targetWindow;
-    int e = 0;
-    int count = 0;
-    int delay = 1;
-    int finished = 0;
+    fd_set readSet;
+    struct timeval timeout;
 
     FlushQueue(module);
-    fcntl(readPipes[module],F_SETFL,0);
-    while(!finished)
+
+    FD_ZERO(&readSet);
+    do
     {
-      while ((e = read(readPipes[module],&targetWindow, sizeof(Window))) > 0)
+      /*
+       * We give the read a long timeout; if the module fails to
+       * respond within this time then it deserves to be KILLED!!!
+       * 
+       * NOTE: I initially tried a smaller timeout, but FvwmAnimate
+       *       kept dying on me (CJR 30/01/00)
+       */
+      timeout.tv_sec = 1;
+      timeout.tv_usec = 0;
+      FD_SET(readPipes[module], &readSet);
+
+      /*
+       * Wait for input to arrive on our descriptor, but not too long
+       * since we really don't want to block here.
+       */
+      if (
+          /*
+           * Our descriptor set only contains one descriptor, so if
+           * any watched descriptors receive readable data then there
+           * is only one candidate ...
+           */ 
+          (fvwmSelect(readPipes[module] + 1,
+                      &readSet,
+                      NULL,
+                      NULL,
+                      &timeout) <= 0)
+          ||
+          /*
+           * We really shouldn't see any errors here - the only thing
+           * that I can think of is that the remote end of our
+           * descriptor was closed and we receive an end-of-file ...
+           */
+          (read(readPipes[module],
+                &targetWindow,
+                sizeof(targetWindow)) != sizeof(targetWindow))
+         )
       {
-        if (HandleModuleInput(targetWindow, module, NULL) == 66)
-        {
-          finished = 1;
-          break;
-        }
+        /*
+         * Something has gone wrong - get rid of the offender!!
+         */
+        fvwm_msg(ERR, "PositiveWrite",
+                 "Failed to read descriptor:\n"
+                 "- data available=%c\n"
+                 "- terminate signal=%c\n",
+                 (FD_ISSET(readPipes[module], &readSet) ? 'Y' : 'N'),
+                 isTerminated ? 'Y' : 'N');
+        KillModule(module);
+        break;
       }
-      if (errno == EAGAIN && !finished && count++ < 7)
-      {
-        /* Give the module another chance to reply.  This is necessary with
-         * fast module input. Otherwise the module might be killed
-         * unnecessarily (i.e. because it had no chance to reply).  Experiments
-         * indicate that a delay of 1 microsecond is usually enough. */
-        usleep(delay);
-        delay *= 10;
-        continue;
-      }
-      finished = 1;
+
+      /*
+       * NOTE: this function can call PositiveWrite, so we could
+       *       get some really nasty recursion here!!!
+       */
     }
-    if (e <= 0)
-    {
-      KillModule(module);
-    }
-    fcntl(readPipes[module],F_SETFL,O_NDELAY);
+    while (HandleModuleInput(targetWindow, module, NULL) != 66);
   }
+
   return size;
 }
 
