@@ -254,6 +254,7 @@ void FftDrawString(
 	FftFontType *fftf;
 	FftFont *uf;
 	int x,y, xt,yt, step = 0;
+	float alpha_factor;
 
 	if (!FftSupport)
 	{
@@ -328,18 +329,21 @@ void FftDrawString(
 	}
 
 	XQueryColor(dpy, Pcmap, &xfg);
-	fft_fg.color.red = xfg.red;
-	fft_fg.color.green = xfg.green;
-	fft_fg.color.blue = xfg.blue;
-	fft_fg.color.alpha = 0xffff;
+	alpha_factor = ((fws->flags.has_colorset)?
+		 ((float)fws->colorset->fg_alpha/100) : 1);
+	/* Render uses premultiplied alpha */
+	fft_fg.color.red = xfg.red * alpha_factor;
+	fft_fg.color.green = xfg.green * alpha_factor;
+	fft_fg.color.blue = xfg.blue * alpha_factor;
+	fft_fg.color.alpha = 0xffff * alpha_factor;
 	fft_fg.pixel = xfg.pixel;
 	if (flf->shadow_size != 0 && has_fg_pixels)
 	{
 		XQueryColor(dpy, Pcmap, &xfgsh);
-		fft_fgsh.color.red = xfgsh.red;
-		fft_fgsh.color.green = xfgsh.green;
-		fft_fgsh.color.blue = xfgsh.blue;
-		fft_fgsh.color.alpha = 0xffff;
+		fft_fgsh.color.red = xfgsh.red * alpha_factor;
+		fft_fgsh.color.green = xfgsh.green * alpha_factor;
+		fft_fgsh.color.blue = xfgsh.blue * alpha_factor;
+		fft_fgsh.color.alpha = 0xffff * alpha_factor;
 		fft_fgsh.pixel = xfgsh.pixel;
 	}
 

@@ -1,3 +1,13 @@
+2002-05-31  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Fft.c (FftDrawString):
+	* libs/Colorset.c (DumpColorset):
+	(LoadColorset):
+	* libs/Colorset.h:
+	* fvwm/colorset.c (parse_colorset):
+	New colorset option fg_alpha which defines an alpha for rendering
+	text with Xft
+
 2002-05-29  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Fft.c (FftSetupEncoding):

@@ -98,6 +98,7 @@ static char *csetopts[] =
 	"sh",
 
 	"fgsh",
+	"fg_alpha",
 
 	/* these strings are used inside the cases in the switch below! */
 	"Pixmap",
@@ -509,6 +510,7 @@ void parse_colorset(int n, char *line)
 	int i;
 	int w;
 	int h;
+	int tmp;
 	colorset_struct *cs;
 	char *optstring;
 	char *args;
@@ -526,6 +528,7 @@ void parse_colorset(int n, char *line)
 	Bool has_sh_changed = False;
 	Bool has_hi_changed = False;
 	Bool has_fgsh_changed = False;
+	Bool has_fg_alpha_changed = False;
 	Bool has_tint_changed = False;
 	Bool has_pixmap_changed = False;
 	Bool has_shape_changed = False;
@@ -594,24 +597,40 @@ void parse_colorset(int n, char *line)
 			get_simple_color(args, &fgsh, cs, FGSH_SUPPLIED, 0,NULL);
 			has_fgsh_changed = True;
 			break;
-		case 13: /* TiledPixmap */
-		case 14: /* Pixmap */
-		case 15: /* AspectPixmap */
+		case 13: /* fg_alpha */
+			if (GetIntegerArguments(args, NULL, &tmp, 1))
+			{
+				if (tmp > 100)
+					cs->fg_alpha = 100;
+				else if (cs->fg_alpha < 0)
+					cs->fg_alpha = 0;
+				else
+					cs->fg_alpha = tmp;
+			}
+			else
+			{
+				cs->fg_alpha = 100;
+			}
+			has_fg_alpha_changed = True;
+			break;	
+		case 14: /* TiledPixmap */
+		case 15: /* Pixmap */
+		case 16: /* AspectPixmap */
 			has_pixmap_changed = True;
 			free_colorset_background(cs);
 			parse_pixmap(win, gc, cs, i, args, &pixmap_is_a_bitmap);
 			break;
-		case 16: /* Shape */
-		case 17: /* TiledShape */
-		case 18: /* AspectShape */
+		case 17: /* Shape */
+		case 18: /* TiledShape */
+		case 19: /* AspectShape */
 			parse_shape(win, cs, i, args, &has_shape_changed);
 			break;
-		case 19: /* Plain */
+		case 20: /* Plain */
 			has_pixmap_changed = True;
 			pixmap_is_a_bitmap = False;
 			free_colorset_background(cs);
 			break;
-		case 20: /* NoShape */
+		case 21: /* NoShape */
 			has_shape_changed = True;
 			if (cs->shape_mask)
 			{
@@ -619,7 +638,7 @@ void parse_colorset(int n, char *line)
 				cs->shape_mask = None;
 			}
 			break;
-		case 21: /* Transparent */
+		case 22: /* Transparent */
 
 			/* This is only allowable when the root depth == fvwm
 			 * visual depth otherwise bad match errors happen,
@@ -638,13 +657,13 @@ void parse_colorset(int n, char *line)
 			cs->pixmap = ParentRelative;
 			cs->pixmap_type = PIXMAP_STRETCH;
 			break;
-		case 22: /* Tint */
-		case 23: /* TintMask */
+		case 23: /* Tint */
+		case 24: /* TintMask */
 			parse_tint(win, gc, cs, i, args, &tint,
 				   &has_tint_changed,
 				   &has_pixmap_changed);
 			break;
-		case 24: /* NoTint */
+		case 25: /* NoTint */
 			has_pixmap_changed = True;
 			/* restore the pixmap */
 			if (cs->picture != NULL && cs->pixmap)
@@ -1212,7 +1231,8 @@ void parse_colorset(int n, char *line)
 	XSync(dpy, False);
 
 	/* inform modules of the change */
-	if (have_pixels_changed || has_pixmap_changed || has_shape_changed)
+	if (have_pixels_changed || has_pixmap_changed || has_shape_changed ||
+	    has_fg_alpha_changed)
         {
 		BroadcastColorset(n);
         }
@@ -1343,6 +1363,7 @@ void alloc_colorset(int n)
 			/* in case just a pixmap is given */
 			ncs->color_flags = FG_CONTRAST | BG_AVERAGE;
 		}
+		ncs->fg_alpha = 100;
 		nColorsets++;
 	}
 }

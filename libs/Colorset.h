@@ -30,6 +30,7 @@ typedef struct {
   Pixel fgsh;
   Pixmap pixmap;
   Pixmap shape_mask;
+  unsigned int fg_alpha : 7;
   unsigned int width : 12;
   unsigned int height : 12;
   unsigned int pixmap_type: 3;
@@ -38,13 +39,13 @@ typedef struct {
   unsigned int shape_type : 2;
 #ifdef FVWM_COLORSET_PRIVATE
   /* fvwm/colorset.c use only */
+  Pixel tint;
   Pixmap mask;
   Pixmap alpha_pixmap;
   unsigned int color_flags : 7;
   FvwmPicture *picture;
   Pixel *pixels;
   int nalloc_pixels;
-  Pixel tint;
   int tint_percent;
   Bool do_tint_use_mask;
 #endif
