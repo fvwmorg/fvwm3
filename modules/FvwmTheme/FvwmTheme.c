@@ -351,7 +351,7 @@ static void parse_colorset(char *line)
       {
 	/* deafult to background colour where pixmap is transparent */
 	XSetForeground(dpy, gc, cs->bg);
-	XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width, cs->width);
+	XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width, cs->height);
 	XSetClipMask(dpy, gc, picture->mask);
       }
       XCopyArea(dpy, picture->picture, cs->pixmap, gc, 0, 0, cs->width,
