@@ -189,6 +189,11 @@ freebsd*)
 	;;
 esac
 
+dnl *** pkg-config
+dnl unfortunately, we need pkg-config for the detection of certain libs:
+dnl - certain version of fontconfig (without fontconfig-config
+AM_CHECK_PKG_CONFIG
+
 dnl ********* session management
 dnl Check the availability of SM; we don't have to add any extra libraries,
 dnl since -lSM -lICE are in X_PRE_LIBS when they exist.

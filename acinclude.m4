@@ -1001,6 +1001,37 @@ c = locale_charset ();
 ])
 
 #-----------------------------------------------------------------------------
+# pkg-config
+
+dnl
+dnl
+AC_DEFUN(AM_CHECK_PKG_CONFIG,
+[dnl
+dnl Get the cflags and libraries from the freetype-config script
+dnl
+AC_ARG_WITH(pkgconfig-prefix,
+[  --with-pkgconfig-prefix=PFX  prefix where pkg-config is installed],
+            pkgconfig_config_prefix="$withval", pkgconfig_config_prefix="")
+AC_ARG_WITH(pkgconfig-exec-prefix,
+[  --with-pkgconfig-exec-prefix=PFX  exec prefix where pkg-config is installed],
+            pkgconfig_config_exec_prefix="$withval",pkgconfig_config_exec_prefix="")
+
+if test x$pkgconfig_config_exec_prefix != x ; then
+  pkgconfig_config_args="$pkgconfig_config_args --exec-prefix=$pkgconfig_config_exec_prefix"
+  if test x${PKG_CONFIG+set} != xset ; then
+    PKG_CONFIG=$pkgconfig_config_exec_prefix/bin/pkg-config
+  fi
+fi
+if test x$pkgconfig_config_prefix != x ; then
+  pkgconfig_config_args="$pkgconfig_config_args --prefix=$pkgconfig_config_prefix"
+  if test x${PKG_CONFIG+set} != xset ; then
+    PKG_CONFIG=$pkgconfig_config_prefix/bin/pkg-config
+  fi
+fi
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+])
+
+#-----------------------------------------------------------------------------
 # Configure paths for FreeType2
 # Marcelo Magallon 2001-10-26, based on gtk.m4 by Owen Taylor
 
@@ -1173,8 +1204,25 @@ AC_PATH_PROG(FC_CONFIG, fontconfig-config, no)
 min_fc_version=ifelse([$1], ,1.0.1,$1)
 AC_MSG_CHECKING(for Fontconfig - version >= $min_fc_version)
 no_fc=""
+pkg_config_fontconfig_exists=""
+
 if test "$FC_CONFIG" = "no" ; then
-  no_fc=yes
+  if test "x$PKG_CONFIG" != "xno" ; then
+    if pkg-config --exists 'fontconfig' ; then
+      if pkg-config --exists 'fontconfig >= $1' ; then
+        FC_CFLAGS=`$PKG_CONFIG --cflags fontconfig`
+        FC_LIBS=`$PKG_CONFIG --libs fontconfig`
+      else
+        no_fc=yes
+        fc_config_is_lt=yes
+      fi
+    else
+      pkg_config_fontconfig_exists="maybe"
+      no_fc=yes
+    fi
+  else
+    no_fc=yes
+  fi
 else
   FC_CFLAGS=`$FC_CONFIG $fc_config_args --cflags`
   FC_LIBS=`$FC_CONFIG $fc_config_args --libs`
@@ -1190,30 +1238,33 @@ else
          sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
   fc_min_micro_version=`echo $min_fc_version | \
          sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-  if test "x$enable_fctest" = "xyes" ; then
-    fc_config_is_lt=no
-    if test $fc_config_major_version -lt $fc_min_major_version ; then
-      fc_config_is_lt=yes
-    else
-      if test $fc_config_major_version -eq $fc_min_major_version ; then
-        if test $fc_config_minor_version -lt $fc_min_minor_version ; then
-          fc_config_is_lt=yes
-        else
-          if test $fc_config_minor_version -eq $fc_min_minor_version ; then
-            if test $fc_config_micro_version -lt $fc_min_micro_version ; then
-              fc_config_is_lt=yes
-            fi
+  fc_config_is_lt=no
+  if test $fc_config_major_version -lt $fc_min_major_version ; then
+    fc_config_is_lt=yes
+  else
+    if test $fc_config_major_version -eq $fc_min_major_version ; then
+      if test $fc_config_minor_version -lt $fc_min_minor_version ; then
+        fc_config_is_lt=yes
+      else
+        if test $fc_config_minor_version -eq $fc_min_minor_version ; then
+          if test $fc_config_micro_version -lt $fc_min_micro_version ; then
+            fc_config_is_lt=yes
           fi
         fi
       fi
     fi
-    if test "x$fc_config_is_lt" = "xyes" ; then
-      ifelse([$3], , :, [$3])
-    else
-      ac_save_CFLAGS="$CFLAGS"
-      ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $FC_CFLAGS $FT2_CFLAGS"
-      LIBS="$FC_LIBS $LIBS $FT2_LIBS"
+  fi
+  if test "x$fc_config_is_lt" = "xyes" ; then
+    no_fc=yes
+  fi
+fi
+
+if test "x$no_fc" = x ; then
+  if test "x$enable_fctest" = "xyes" ; then
+    ac_save_CFLAGS="$CFLAGS"
+    ac_save_LIBS="$LIBS"
+    CFLAGS="$CFLAGS $FC_CFLAGS $FT2_CFLAGS"
+    LIBS="$FC_LIBS $LIBS $FT2_LIBS"
 dnl
 dnl Sanity checks for the results of fontconfig-config to some extent
 dnl
@@ -1239,22 +1290,30 @@ main()
   }
 }
 ],, no_fc=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-      CFLAGS="$ac_save_CFLAGS"
-      LIBS="$ac_save_LIBS"
-    fi             # test $fc_config_version -lt $fc_min_version
-  fi               # test "x$enable_fctest" = "xyes"
-fi                 # test "$FC_CONFIG" = "no"
+    CFLAGS="$ac_save_CFLAGS"
+    LIBS="$ac_save_LIBS"
+  fi
+fi
+
 if test "x$no_fc" = x ; then
    AC_MSG_RESULT(yes)
    ifelse([$2], , :, [$2])
 else
    AC_MSG_RESULT(no)
-   # no errors message "if $FC_CONFIG" = "no" as this is normal with Xft1
-   if test "$FC_CONFIG" != "no" ; then
-     echo "*** The Fontconfig test program failed to run.  If your system uses"
-     echo "*** shared libraries and they are installed outside the normal"
-     echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
-     echo "*** (or whatever is appropiate for your system) is correctly set."
+   if test "x$fc_config_is_lt" = "xyes" ; then
+       echo "*** Your Fontconfig package version is < $1"
+   elif test "$FC_CONFIG" != "no" ; then
+       echo "*** The Fontconfig test program failed to run.  If your system uses"
+       echo "*** shared libraries and they are installed outside the normal"
+       echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
+       echo "*** (or whatever is appropiate for your system) is correctly set."
+     fi
+   fi
+   if test "x$pkg_config_fontconfig_exists" = "xmaybe" ; then
+      echo "*** fontconfig was not found in the pkg-config search path."
+      echo "*** either fontconfig is not installed or perhaps you should"
+      echo "*** add the directory containing fontconfig.pc to the "
+      echo "*** PKG_CONFIG_PATH environment variable."
    fi
    FC_CFLAGS=""
    FC_LIBS=""
@@ -1303,8 +1362,25 @@ AC_PATH_PROG(XFT_CONFIG, xft-config, no)
 min_xft_version=ifelse([$1], ,2.0.0,$1)
 AC_MSG_CHECKING(for Xft - version >= $min_xft_version)
 no_xft=""
+pkg_config_xft_exists=""
+
 if test "$XFT_CONFIG" = "no" ; then
-  no_xft=yes
+  if test "x$PKG_CONFIG" != "xno" ; then
+    if pkg-config --exists 'xft' ; then
+      if pkg-config --exists 'xft >= $1' ; then
+        XFT_CFLAGS=`$PKG_CONFIG --cflags xft`
+        XFT_LIBS=`$PKG_CONFIG --libs xft`
+      else
+        no_xft=yes
+        xft_config_is_lt=yes
+      fi
+    else
+      pkg_config_xft_exists="maybe"
+      no_xft=yes
+    fi
+  else
+    no_xft=yes
+  fi
 else
   XFT_CFLAGS=`$XFT_CONFIG $xft_config_args --cflags`
   XFT_LIBS=`$XFT_CONFIG $xft_config_args --libs`
@@ -1320,30 +1396,32 @@ else
          sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
   xft_min_micro_version=`echo $min_xft_version | \
          sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-  if test "x$enable_xfttest" = "xyes" ; then
-    xft_config_is_lt=no
-    if test $xft_config_major_version -lt $xft_min_major_version ; then
-      xft_config_is_lt=yes
-    else
-      if test $xft_config_major_version -eq $xft_min_major_version ; then
-        if test $xft_config_minor_version -lt $xft_min_minor_version ; then
-          xft_config_is_lt=yes
-        else
-          if test $xft_config_minor_version -eq $xft_min_minor_version ; then
-            if test $xft_config_micro_version -lt $xft_min_micro_version ; then
-              xft_config_is_lt=yes
-            fi
+  xft_config_is_lt=no
+  if test $xft_config_major_version -lt $xft_min_major_version ; then
+    xft_config_is_lt=yes
+  else
+    if test $xft_config_major_version -eq $xft_min_major_version ; then
+      if test $xft_config_minor_version -lt $xft_min_minor_version ; then
+        xft_config_is_lt=yes
+      else
+        if test $xft_config_minor_version -eq $xft_min_minor_version ; then
+          if test $xft_config_micro_version -lt $xft_min_micro_version ; then
+            xft_config_is_lt=yes
           fi
         fi
       fi
-    fi
-    if test "x$xft_config_is_lt" = "xyes" ; then
-      ifelse([$3], , :, [$3])
-    else
-      ac_save_CFLAGS="$CFLAGS"
-      ac_save_LIBS="$LIBS"
-      CFLAGS="$XFT_CFLAGS $CFLAGS"
-      LIBS="$XFT_LIBS $LIBS"
+  fi
+  if test "x$xft_config_is_lt" = "xyes" ; then
+    ifelse([$3], , :, [$3])
+  fi
+fi
+
+if test "x$no_xft" = x ; then
+  if test "x$enable_xfttest" = "xyes" ; then
+    ac_save_CFLAGS="$CFLAGS"
+    ac_save_LIBS="$LIBS"
+    CFLAGS="$XFT_CFLAGS $CFLAGS"
+    LIBS="$XFT_LIBS $LIBS"
 dnl
 dnl Sanity checks for the results of xft-config to some extent
 dnl
@@ -1370,16 +1448,23 @@ main()
 }
 ],, no_xft=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
       CFLAGS="$ac_save_CFLAGS"
-      LIBS="$ac_save_LIBS"
-    fi             # test $xft_config_version -lt $xft_min_version
-  fi               # test "x$enable_xfttest" = "xyes"
-fi                 # test "$XFT_CONFIG" = "no"
+    LIBS="$ac_save_LIBS"
+  fi
+fi
+
 if test "x$no_xft" = x ; then
    AC_MSG_RESULT(yes)
    ifelse([$2], , :, [$2])
 else
    AC_MSG_RESULT(no)
-   if test "$XFT_CONFIG" = "no" ; then
+   if test "x$xft_config_is_lt" = "xyes" ; then
+       echo "*** Your xft2 package version is < $1"
+   elif test "x$pkg_config_fontconfig_exists" = "xmaybe" ; then
+      echo "*** xft2 was not found in the pkg-config search path."
+      echo "*** either xft is not installed or perhaps you should"
+      echo "*** add the directory containing xft.pc to the "
+      echo "*** PKG_CONFIG_PATH environment variable."
+   elif test "$XFT_CONFIG" = "no" ; then
      echo "*** The xft-config script installed by Xft 2 could not be found."
      echo "*** If Xft 2 was installed in PREFIX, make sure PREFIX/bin is in"
      echo "*** your path, or set the XFT_CONFIG environment variable to the"
