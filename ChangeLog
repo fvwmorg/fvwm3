@@ -1,3 +1,12 @@
+2004-04-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (style_parse_one_style_option):
+	* fvwm/style.h:
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/fvwm.h:
+	* fvwm/window_flags.h:
+	new style "State"
+
 2004-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in:

@@ -864,7 +864,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		}
 	}
 	if (GET_USER_STATES(mask) !=
-	    (mask->flag_mask.user_states & GET_USER_STATES(fw)))
+	    (mask->flag_mask.common.user_states & GET_USER_STATES(fw)))
 	{
 		return False;
 	}

@@ -61,6 +61,16 @@
 	((fw)->flags.common.title_dir = x)
 #define SETM_TITLE_DIR(fw,x) \
 	(fw)->flag_mask.common.title_dir = ((x) ? DIR_MAJOR_MASK : 0)
+#define SET_USER_STATES(fw, mask) \
+	(fw)->flags.common.user_states |= (mask)
+#define CLEAR_USER_STATES(fw, mask) \
+	(fw)->flags.common.user_states &= ~(mask)
+#define TOGGLE_USER_STATES(fw, mask) \
+	(fw)->flags.common.user_states ^= (mask)
+#define SETM_USER_STATES(fw, mask) \
+	(fw)->flag_mask.common.user_states |= (mask)
+#define GET_USER_STATES(fw) \
+	((fw)->flags.common.user_states)
 #define HAS_VERTICAL_TITLE(fw) \
 	(HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E))
 #define HAS_STIPPLED_TITLE(fw) \
@@ -710,15 +720,5 @@
 	(fw)->flag_mask.has_ewmh_init_wm_desktop = (x)
 #define HAS_EWMH_INIT_WM_DESKTOP(fw) \
 	((fw)->flags.has_ewmh_init_wm_desktop)
-#define SET_USER_STATES(fw, mask) \
-	(fw)->flags.user_states |= (mask)
-#define CLEAR_USER_STATES(fw, mask) \
-	(fw)->flags.user_states &= ~(mask)
-#define TOGGLE_USER_STATES(fw, mask) \
-	(fw)->flags.user_states ^= (mask)
-#define SETM_USER_STATES(fw, mask) \
-	(fw)->flag_mask.user_states |= (mask)
-#define GET_USER_STATES(fw) \
-	((fw)->flags.user_states)
 
 #endif /* _WINDOW_FLAGS_ */

@@ -6303,7 +6303,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea
 .IR EWMHPlacementUseDynamicWorkingArea ,
 .IR MoveByProgramMethod ,
-.IR Unmanaged .
+.IR Unmanaged ,
+.IR State .
 
 .\" +++++++++++++++ general notes
 In the above list some options are listed as
@@ -7888,6 +7889,25 @@ However, windows that are already ignored at the time when the
 option is set must be recaptured with the
 .B Recapture
 command in order to become managed.
+
+.I State
+sets the initial value of of one of the 32 user defined states
+which are associated with each window.  The state number ranges
+from 0 to 31 and must be given as an argument.  The states have no
+meaning in fvwm, but they can be checked in conditional commands
+like
+.B Next
+with the
+.I State
+condition and manipulated with the
+.B State
+command.
+.EX
+# turn on state 11 for xterms ...
+Style xterm State 11
+# ... but not for rxvts.
+Style rxvt !State 11
+.EE
 
 .\" +++++++++++++++ styles affecting window selection
 

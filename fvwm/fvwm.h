@@ -204,6 +204,7 @@ typedef struct
 	unsigned has_no_border : 1;
 	unsigned has_window_font : 1;
 	unsigned title_dir : 2;
+	unsigned user_states : 32;
 	/* static flags that do not change dynamically after the window has
 	 * been created */
 	struct
@@ -396,7 +397,6 @@ typedef struct
 	unsigned has_ewmh_init_skip_taskbar_state : 2;
 	unsigned has_ewmh_init_sticky_state : 2;
 	unsigned has_ewmh_init_wm_desktop : 2;
-	unsigned user_states : 32;
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */

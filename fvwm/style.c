@@ -3666,6 +3666,35 @@ static Bool style_parse_one_style_option(
 			S_SET_DO_USE_WINDOW_GROUP_HINT(SCM(*ps), 1);
 			S_SET_DO_USE_WINDOW_GROUP_HINT(SCC(*ps), 1);
 		}
+		else if (StrEquals(token, "State"))
+		{
+			unsigned int mask;
+			unsigned int states;
+
+			spargs = GetIntegerArguments(rest, NULL, tmpno, 1);
+			if (spargs == 1 && tmpno[0] >= 0 && tmpno[0] <= 31)
+			{
+				states = S_USER_STATES(SCF(*ps));
+				mask = (1 << tmpno[0]);
+				if (on)
+				{
+					states |= mask;
+				}
+				else
+				{
+					states &= ~mask;
+				}
+				S_SET_USER_STATES(SCF(*ps), states);
+				S_SET_USER_STATES(SCM(*ps), 1);
+				S_SET_USER_STATES(SCC(*ps), 1);
+			}
+			else
+			{
+				fvwm_msg(
+					ERR,"style_parse_one_style_option",
+					"bad State arg: %s", rest);
+			}
+		}
 		else
 		{
 			found = False;

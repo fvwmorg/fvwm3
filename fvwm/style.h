@@ -129,6 +129,10 @@
 	((c).title_dir)
 #define S_SET_TITLE_DIR(c,x) \
 	((c).title_dir = x)
+#define S_USER_STATES(c) \
+	((c).user_states)
+#define S_SET_USER_STATES(c,x) \
+	((c).user_states = x)
 #define S_IS_STICKY_ACROSS_PAGES(c) \
 	((c).is_sticky_across_pages)
 #define S_SET_IS_STICKY_ACROSS_PAGES(c,x) \

@@ -10,6 +10,8 @@ Changes in alpha release 2.5.11 (not released yet)
 * New options GrowOnWindowLayer and GrowOnlayers to the Maximize
   command.
 
+* New Style option "State".
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)
