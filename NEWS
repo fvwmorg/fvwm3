@@ -1,5 +1,9 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* More menu Shortcut keys: Tab moves down, Shift Tab moves up,
+  Space executes.  You can now reasonably operate the built-in
+  windowlist with one hand.
+
 * Six new color gradients can be used in TitleStyle, BorderStyle,
   ButtonStyle and MenuStyle commands (BGradient, DGradient,
   SGradient, CGradient, RGradient and YGradient).

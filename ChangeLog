@@ -1,3 +1,11 @@
+Sat Aug 21 09:55:27 1999  DanEspen  <dje@blue>
+
+	* NEWS, fvwm/fvwm2.1: Describe new key shortcuts, and some of the ones
+	that were missed.
+
+	* fvwm/menus.c (menuShortcuts): Tab acts like down arrow, shift tab
+	acts like up arrow, space selects.
+
 1999-08-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1: added COLOR GRADIENTS section

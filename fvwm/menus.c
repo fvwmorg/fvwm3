@@ -880,7 +880,12 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
     /* MMH mikehan@best.com 2/7/99 */
   }
 
+  /* to understand the following, pay attention to the fall thrus in the
+     switch statement, and how "items_to_move" affects the flow. */
   items_to_move = 0;
+  if (fShiftedKey && (keysym == XK_Tab)) { /* chg shift tab */
+    items_to_move = -1;                 /* to move up */
+  }
   switch(keysym)		/* Other special keyboard handling	*/
   {
   case XK_Escape:		/* Escape key pressed. Abort		*/
@@ -889,6 +894,7 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
     return MENU_ABORTED;
     break;
 
+  case XK_space:
   case XK_Return:
   case XK_KP_Enter:
     return MENU_SELECTED;
@@ -977,6 +983,7 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
       items_to_move = 5;
     }
     /* fall through */
+  case XK_Tab:                          /* Tab added mostly for Winlist */
   case XK_Down:
   case XK_KP_2:
   case XK_j: /* vi down */
@@ -4805,13 +4812,6 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     Pixel *pixels;
     char gtype = style[0];
 
-    /* translate the gradient string into an array of colors etc */
-    npixels = ParseGradient(s, &s_colors, &perc, &nsegs);
-    if (npixels <= 0)
-      return False;
-    /* grab the colors */
-    pixels = AllocAllGradientColors(s_colors, perc, nsegs, npixels);
-    if (pixels == None)
       return False;
 
     mf->u.grad.pixels = pixels;
