@@ -1,3 +1,8 @@
+2000-10-16  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Scripts/Makefile.am:
+	Install Setup95 not Setup95.in
+	
 2000-11-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmBacker/root_bits.c:

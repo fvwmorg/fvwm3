@@ -175,9 +175,9 @@ CursorStyle ROOT top_left_arrow
 #------------------------------------------------------------------------------
 
 #WIN 1
-Style * Font		-adobe-times-medium-r-*-*-16-*-*-*-*-*-*-*
+Style * Font		-*-times-medium-r-*-*-16-*-*-*-*-*-*-*
 #FVWM 1
-#Style * Font		-adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+#Style * Font		-*-times-bold-r-*-*-14-*-*-*-*-*-*-*
 
 Style * IconFont	fixed
 
@@ -243,12 +243,12 @@ AddButtonStyle	6	Pixmap mini.winXX-minimize.xpm
 
 #WIN 4
 MenuStyle * win
-MenuStyle * font -adobe-times-medium-r-*-*-16-*-*-*-*-*-*-*
+MenuStyle * font -*-times-medium-r-*-*-16-*-*-*-*-*-*-*
 MenuStyle * Foreground black, Background grey80 
 MenuStyle * ActiveFore white, HilightBack Blue4
 #FVWM 5
 #MenuStyle * fvwm
-#MenuStyle * font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+#MenuStyle * font -*-times-bold-r-*-*-14-*-*-*-*-*-*-*
 #MenuStyle * Foreground black, Background grey80 
 #MenuStyle * ActiveFore black, HilightBack grey85
 #MenuStyle * Hilight3DThick
@@ -257,12 +257,12 @@ MenuStyle * VerticalItemSpacing 2 4, VerticalTitleSpacing 2 4
 
 #WIN 4
 MenuStyle winops win
-MenuStyle winops font -adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
+MenuStyle winops font -*-times-medium-r-*-*-14-*-*-*-*-*-*-*
 MenuStyle winops Foreground black, Background grey80 
 MenuStyle winops ActiveFore white, HilightBack Blue4
 #FVWM 6
 #MenuStyle winops fvwm
-#MenuStyle winops font -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*
+#MenuStyle winops font -*-times-bold-r-*-*-12-*-*-*-*-*-*-*
 #MenuStyle winops Foreground black, Background grey80 
 #MenuStyle winops ActiveFore black, HilightBack grey85
 #MenuStyle winops TitleWarpOff
