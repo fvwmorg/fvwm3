@@ -1,3 +1,9 @@
+1998-12-18  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/placement.c (PlaceWindow): Removed checks for IconicState property
+	that prevented StartsOnPage from working when an app was started with
+	the -iconic argument.
+
 1998-12-18  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/move.c (moveLoop): Remove some fprintfs left behind by
