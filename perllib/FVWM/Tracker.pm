@@ -51,6 +51,7 @@ sub new ($$) {
 		module => $module,
 		data   => undef,
 		active => 0,
+		handlerTypes => {},
 		handlerIds => {},
 		observers => {},
 	};
@@ -63,7 +64,7 @@ sub masks ($) {
 	my $self = shift;
 	my $mask = 0;
 	my $xmask = 0;
-	while (my ($id, $type) = each %{$self->{handlerIds}}) {
+	while (my ($id, $type) = each %{$self->{handlerTypes}}) {
 		(($type & M_EXTENDED_MSG)? $xmask: $mask) |= $type;
 	}
 	$self->internalDie("Inactive mask is not zero")
@@ -78,7 +79,8 @@ sub addHandler ($$$) {
 	my $handler = shift;
 
 	my $handlerId = $self->{module}->addHandler($type, $handler, 1);
-	$self->{handlerIds}->{$handlerId} = $type;
+	$self->{handlerTypes}->{$handlerId} = $type;
+	$self->{handlerIds}->{$handlerId} = $handlerId;
 	return $handlerId;
 }
 
@@ -88,8 +90,13 @@ sub deleteHandlers ($;$) {
 		shift(): [ keys %{$self->{handlerIds}} ];
 
 	foreach (@$handlerIds) {
-		next unless defined delete $self->{handlerIds}->{$_};
-		$self->{module}->deleteHandler($_) if $self->{module};
+		next unless defined delete $self->{handlerTypes}->{$_};
+		my $handlerId = delete $self->{handlerIds}->{$_}
+			or die "Internal #1";
+		if ($self->{module}) {
+			$self->{module}->deleteHandler($handlerId)
+				or die "Internal #2";
+		}
 	}
 }
 

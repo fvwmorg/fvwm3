@@ -1,13 +1,18 @@
+2004-04-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Tracker.pm:
+	fix argument of FVWM::Module::deleteHandler
+
 2004-01-28  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/EventNames.pm:
+	* FVWM/EventNames.pm:
 	fixed all unsigned vus signed field types
 
-	* perllib/FVWM/Tracker/PageInfo.pm:
+	* FVWM/Tracker/PageInfo.pm:
 	improved man page
 
-	* perllib/FVWM/Module/Gtk.pm:
-	* perllib/FVWM/Module/Gtk2.pm:
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Gtk2.pm:
 	fixed usage example
 
 2003-11-12  Mikhael Goikhman  <migo@homemail.com>
