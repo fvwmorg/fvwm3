@@ -1332,7 +1332,8 @@ void DrawGrid(int i, int erase)
   while(x < MaxW)
   {
     x1 = x*desk_w/MaxW;
-    XDrawLine(dpy,Desks[i].w,Desks[i].DashedGC,x1,y1,x1,y2);
+    if (!use_no_separators)
+      XDrawLine(dpy,Desks[i].w,Desks[i].DashedGC,x1,y1,x1,y2);
     x += Scr.MyDisplayWidth;
   }
 
@@ -1342,7 +1343,8 @@ void DrawGrid(int i, int erase)
   while(y < MaxH)
   {
     y1 = y*(desk_h)/MaxH;
-    XDrawLine(dpy,Desks[i].w,Desks[i].DashedGC,x1,y1,x2,y1);
+    if (!use_no_separators)
+      XDrawLine(dpy,Desks[i].w,Desks[i].DashedGC,x1,y1,x2,y1);
     y += Scr.MyDisplayHeight;
   }
   if(((Scr.CurrentDesk - desk1)  == i) && !ShapeLabels)
@@ -1400,9 +1402,6 @@ void DrawIconGrid(int erase)
   int MaxW,MaxH;
   int i;
 
-  if (use_no_separators)
-    return;
-
   MaxW = (Scr.VxMax + Scr.MyDisplayWidth);
   MaxH = Scr.VyMax + Scr.MyDisplayHeight;
 
@@ -1439,8 +1438,9 @@ void DrawIconGrid(int erase)
   while(x < MaxW)
   {
     x1 = x*icon_w/MaxW;
-    for(i=0;i<ndesks;i++)
-      XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x1,y2);
+    if (!use_no_separators)
+      for(i=0;i<ndesks;i++)
+        XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x1,y2);
     x += Scr.MyDisplayWidth;
   }
 
@@ -1450,8 +1450,9 @@ void DrawIconGrid(int erase)
   while(y < MaxH)
   {
     y1 = y*(icon_h)/MaxH;
-    for(i=0;i<ndesks;i++)
-      XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x2,y1);
+    if (!use_no_separators)
+      for(i=0;i<ndesks;i++)
+        XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x2,y1);
     y += Scr.MyDisplayHeight;
   }
   n1 = Scr.Vx/Scr.MyDisplayWidth;
