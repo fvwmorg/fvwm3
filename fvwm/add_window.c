@@ -2043,7 +2043,7 @@ void destroy_window(FvwmWindow *tmp_win)
 
   /****** free colormap windows ******/
 
-  if(tmp_win->cmap_windows != (Window *)NULL)
+  if (tmp_win->cmap_windows != (Window *)NULL)
   {
     XFree((void *)tmp_win->cmap_windows);
     tmp_win->cmap_windows = NULL;

@@ -538,7 +538,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MST_SELECT_ON_RELEASE_KEY(mr) = old_sor_keycode;
   if (ret_action)
     free(ret_action);
-  DestroyMenu(mr, False);
+  DestroyMenu(mr, False, False);
   if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
     old_execute_function(
       default_action, tmp_win, eventp, context, *Module, 0 , NULL);

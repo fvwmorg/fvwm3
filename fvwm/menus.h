@@ -687,10 +687,9 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
-MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops);
-void DestroyMenu(MenuRoot *mr, Bool recreate);
+Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request);
 void add_item_to_menu(F_CMD_ARGS);
 void add_another_menu_item(char *action);
 void destroy_menu(F_CMD_ARGS);

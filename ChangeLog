@@ -1,3 +1,25 @@
+2001-03-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (DestroyMenu):
+	(copy_menu_root):
+	fixed handling of continuation menus with dynamic menu actions
+
+	* fvwm/menus.c (pop_menu_down):
+	(DestroyMenu):
+	(destroy_menu):
+	(merge_continuation_menus):
+	* fvwm/windowlist.c (do_windowList):
+	fixed deleting menus from dynamic menu actions
+
+	* fvwm/menus.c (DestroyMenu):
+	Fixed menu list corruption
+	(make_menu):
+	do not resize menu if it has other mapped copies
+	(update_menu):
+	do not update menu style for menus with copies
+	(DestroyMenu):
+	returns if menu was actually destroyed or not
+
 2001-03-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (size_menu_vertically):

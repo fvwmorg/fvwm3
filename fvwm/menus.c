@@ -147,6 +147,8 @@ static void make_menu_window(MenuRoot *mr);
 static void get_xy_from_position_hints(
   MenuPosHints *ph, int width, int height, int context_width,
   Bool do_reverse_x, int *ret_x, int *ret_y);
+static MenuRoot *FindPopup(char *popup_name);
+static void merge_continuation_menus(MenuRoot *mr);
 
 
 /***************************************************************
@@ -565,20 +567,19 @@ static MenuRoot *mr_popup_for_mi(MenuRoot *mr, MenuItem *mi)
 
 /* FindPopup expects a token as the input. Make sure you have used
  * GetNextToken before passing a menu name to remove quotes (if necessary) */
-MenuRoot *FindPopup(char *popup_name)
+static MenuRoot *FindPopup(char *popup_name)
 {
   MenuRoot *mr;
 
-  if(popup_name == NULL)
+  if (popup_name == NULL)
     return NULL;
 
   mr = Menus.all;
-  while(mr != NULL)
+  while (mr != NULL)
   {
-    if(MR_NAME(mr) != NULL)
+    if (MR_NAME(mr) != NULL)
     {
-      if(mr == MR_ORIGINAL_MENU(mr) &&
-	 strcasecmp(popup_name, MR_NAME(mr)) == 0)
+      if (mr == MR_ORIGINAL_MENU(mr) && StrEquals(popup_name, MR_NAME(mr)))
       {
 	return mr;
       }
@@ -618,6 +619,8 @@ void update_menu(MenuRoot *mr)
     /* The menu has changed. We have to re-make it. */
     make_menu(mr);
   }
+
+  return;
 }
 
 /****************************************************************************
@@ -2523,6 +2526,7 @@ static int pop_menu_up(
     Time t;
     exec_func_args_type efa;
     extern XEvent Event;
+    int mapped_copies = MR_MAPPED_COPIES(mr);
 
     /* save variables that we still need but that may be overwritten */
     menu_name = safestrdup(MR_NAME(mr));
@@ -2553,17 +2557,24 @@ static int pop_menu_up(
       *pfw = NULL;
       *pcontext = 0;
     }
-    /* Now let's see if the menu still exists. It may have been destroyed and
-     * recreated, so we have to look for a menu with the saved name. */
-    *pmenu = FindPopup(menu_name);
-    if (menu_name)
+    if (mapped_copies == 0)
     {
-      free(menu_name);
-    }
-    mr = *pmenu;
-    if (mr)
-    {
-      make_menu(mr);
+      /* Now let's see if the menu still exists. It may have been destroyed and
+       * recreated, so we have to look for a menu with the saved name.
+       * FindPopup() will always return the original menu, not one of its
+       * copies, so below logic would fail miserably if used with a menu copy.
+       * On the other hand, menu copies can't be deleted within a dynamic popup
+       * action, so just ignore this case. */
+      *pmenu = FindPopup(menu_name);
+      if (menu_name)
+      {
+	free(menu_name);
+      }
+      mr = *pmenu;
+      if (mr)
+      {
+	make_menu(mr);
+      }
     }
   }
   fw = *pfw;
@@ -3108,7 +3119,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
   if (MR_COPIES(*pmr) > 1)
   {
     /* delete this instance of the menu */
-    DestroyMenu(*pmr, False);
+    DestroyMenu(*pmr, False, False);
   }
   else if (MR_POPDOWN_ACTION(*pmr))
   {
@@ -4001,82 +4012,78 @@ static void FreeMenuItem(MenuItem *mi)
   free(mi);
 }
 
-void DestroyMenu(MenuRoot *mr, Bool recreate)
+Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 {
   MenuItem *mi,*tmp2;
   MenuRoot *tmp, *prev;
 
-  if(mr == NULL)
-    return;
+  if (mr == NULL)
+    return False;
 
   /* seek menu in master list */
   tmp = Menus.all;
   prev = NULL;
-  while((tmp != NULL)&&(tmp != mr))
+  while (tmp && tmp != mr)
   {
     prev = tmp;
     tmp = MR_NEXT_MENU(tmp);
   }
-  if(tmp != mr)
+  if (tmp != mr)
+  {
     /* no such menu */
-    return;
+    return False;
+  }
 
-  if (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) == 1)
+  if (MR_MAPPED_COPIES(mr) > 0 && (is_command_request || MR_COPIES(mr) == 1))
   {
     /* can't destroy a menu while in use */
     fvwm_msg(ERR,"DestroyMenu", "Menu %s is in use", MR_NAME(mr));
-    return;
+    return False;
   }
 
   if (MR_COPIES(mr) > 1 && MR_ORIGINAL_MENU(mr) == mr)
   {
-    MenuRootDynamic *temp_mrd;
-    MenuRoot *temp_mr;
+    MenuRoot *m;
+    MenuRoot *new_orig;
 
-    tmp = Menus.all;
-    prev = NULL;
-    while (tmp && MR_ORIGINAL_MENU(tmp) != mr)
+    /* find a new 'original' menu */
+    for (m = Menus.all, new_orig = NULL; m; m = MR_NEXT_MENU(m))
     {
-      prev = tmp;
-      tmp = MR_NEXT_MENU(tmp);
+      if (m != mr)
+      {
+	if (new_orig == NULL)
+	{
+	  new_orig = m;
+	}
+	MR_ORIGINAL_MENU(m) = new_orig;
+      }
     }
-    /* build one new valid original menu structure from both menus */
-    temp_mrd = mr->d;
-    mr->d = tmp->d;
-    tmp->d = temp_mrd;
-    temp_mr = mr;
-    mr = tmp;
-    tmp = temp_mr;
-    /* update the context to point to the new MenuRoot */
-    XDeleteContext(dpy, MR_WINDOW(tmp), MenuContext);
-    XSaveContext(dpy, MR_WINDOW(tmp), MenuContext, (caddr_t)tmp);
-    /* now dump the parts of mr we don't need any longer */
+    MR_ORIGINAL_MENU(mr) = new_orig;
+    /* now dump old original menu */
   }
 
+  MR_COPIES(mr)--;
   if (MR_STORED_ITEM(mr).stored)
     XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
-
-  MR_COPIES(mr)--;
   if (MR_COPIES(mr) > 0)
   {
-    recreate = False;
-    /* recursively destroy the menu continuations */
-    if (MR_CONTINUATION_MENU(mr))
-      DestroyMenu(MR_CONTINUATION_MENU(mr), False);
+    do_recreate = False;
   }
   else
   {
+    //merge_continuation_menus(mr);
     /* free all items */
     mi = MR_FIRST_ITEM(mr);
-    while(mi != NULL)
+    while (mi != NULL)
     {
       tmp2 = MI_NEXT_ITEM(mi);
       FreeMenuItem(mi);
       mi = tmp2;
     }
-    if (recreate)
+    if (do_recreate)
     {
       /* just dump the menu items but keep the menu itself */
+      MR_COPIES(mr)++;
       MR_FIRST_ITEM(mr) = NULL;
       MR_LAST_ITEM(mr) = NULL;
       MR_SELECTED_ITEM(mr) = NULL;
@@ -4085,7 +4092,7 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
       MR_ITEMS(mr) = 0;
       memset(&(MR_STORED_ITEM(mr)), 0 , sizeof(MR_STORED_ITEM(mr)));
       MR_IS_UPDATED(mr) = 1;
-      return;
+      return True;
     }
   }
 
@@ -4113,13 +4120,15 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
 
   free(mr->d);
   free(mr);
+
+  return True;
 }
 
 void destroy_menu(F_CMD_ARGS)
 {
   MenuRoot *mr;
   MenuRoot *mrContinuation;
-  Bool recreate = False;
+  Bool do_recreate = False;
 
   char *token;
 
@@ -4128,7 +4137,7 @@ void destroy_menu(F_CMD_ARGS)
     return;
   if (StrEquals(token, "recreate"))
   {
-    recreate = True;
+    do_recreate = True;
     token = PeekToken(action, NULL);
   }
   mr = FindPopup(token);
@@ -4138,9 +4147,12 @@ void destroy_menu(F_CMD_ARGS)
   {
     /* save continuation before destroy */
     mrContinuation = MR_CONTINUATION_MENU(mr);
-    DestroyMenu(mr, recreate);
+    if (!DestroyMenu(mr, do_recreate, True))
+    {
+      return;
+    }
     /* Don't recreate the continuations */
-    recreate = False;
+    do_recreate = False;
     mr = mrContinuation;
   }
   return;
@@ -4169,7 +4181,7 @@ static void merge_continuation_menus(MenuRoot *mr)
     MR_CONTINUATION_MENU(mr) = MR_CONTINUATION_MENU(cont);
     /* fake an empty menu so that DestroyMenu does not destroy the items. */
     MR_FIRST_ITEM(cont) = NULL;
-    DestroyMenu(cont, False);
+    DestroyMenu(cont, False, False);
   }
   return;
 }
@@ -4868,7 +4880,7 @@ static void make_menu_window(MenuRoot *mr)
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
 
-  if(MR_WINDOW(mr) != None)
+  if (MR_WINDOW(mr) != None)
     XDestroyWindow(dpy,MR_WINDOW(mr));
   w = MR_WIDTH(mr);
   if (w == 0)
@@ -4894,7 +4906,13 @@ static void make_menu(MenuRoot *mr)
   Bool has_continuation_menu = False;
 
   if (!Scr.flags.windows_captured)
+  {
     return;
+  }
+  if (MR_MAPPED_COPIES(mr) > 0)
+  {
+    return;
+  }
 
   merge_continuation_menus(mr);
   do
@@ -4902,8 +4920,8 @@ static void make_menu(MenuRoot *mr)
     memset(&msp, 0, sizeof(MenuSizingParameters));
     msp.menu = mr;
     calculate_item_sizes(&msp);
-    /* Call size_menu_horizontally first because it calculated some values used
-     * by size_menu_vertically. */
+    /* Call size_menu_horizontally first because it calculated some values
+     * used by size_menu_vertically. */
     size_menu_horizontally(&msp);
     has_continuation_menu = size_menu_vertically(&msp);
     /* repeat this step if the menu was split */
@@ -4914,8 +4932,8 @@ static void make_menu(MenuRoot *mr)
 
   /* create a new window for the menu */
   make_menu_window(mr);
-
   MR_IS_UPDATED(mr) = 0;
+
   return;
 }
 
@@ -5413,7 +5431,7 @@ static MenuRoot *copy_menu_root(MenuRoot *mr)
 
   MR_COPIES(mr)++;
   MR_ORIGINAL_MENU(tmp) = MR_ORIGINAL_MENU(mr);
-  MR_CONTINUATION_MENU(tmp) = copy_menu_root(MR_CONTINUATION_MENU(mr));
+  MR_CONTINUATION_MENU(tmp) = MR_CONTINUATION_MENU(mr);
   MR_NEXT_MENU(tmp) = MR_NEXT_MENU(mr);
   MR_NEXT_MENU(mr) = tmp;
   MR_WINDOW(tmp) = None;
