@@ -1497,16 +1497,10 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
   cx = tmp_win->boundary_width;
   cy = tmp_win->title_height + tmp_win->boundary_width;
 
-#ifdef WINDOWSHADE
-  if (!shaded) {
-#endif
-      XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width,
-		    tmp_win->attr.height);
-      XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy,
-                        tmp_win->attr.width, tmp_win->attr.height);
-#ifdef WINDOWSHADE
-  }
-#endif
+  XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width,
+                tmp_win->attr.height);
+  XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy,
+                    tmp_win->attr.width, tmp_win->attr.height);
 
   /*
    * fix up frame and assign size/location values in tmp_win

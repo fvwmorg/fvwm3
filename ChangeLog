@@ -1,5 +1,8 @@
 1999-03-04  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/borders.c (SetupFrame): do XResizeWindow on tmp->w
+	even if shaded. This fixes animated WindowShade.
+
 	* fvwm/fvwm.c (main): call SetupICCCM2 before selecting
 	for SubstructureRedirect on the root window.
 	(Done): call CloseICCCM2 after undecorating all windows.
