@@ -1189,9 +1189,6 @@ RETSIGTYPE Restart(int sig)
 
 void LoadDefaultLeftButton(DecorFace *df, int i)
 {
-#ifndef VECTOR_BUTTONS
-    df->style = SimpleButton;
-#else
     struct vector_coords *v = &df->u.vector;
 
     memset(&df->style, 0, sizeof(df->style));
@@ -1275,7 +1272,6 @@ void LoadDefaultLeftButton(DecorFace *df, int i)
 	v->line_style |= (1 << 4);
 	break;
     }
-#endif /* VECTOR_BUTTONS */
 }
 
 /***********************************************************************
@@ -1286,9 +1282,6 @@ void LoadDefaultLeftButton(DecorFace *df, int i)
  ************************************************************************/
 void LoadDefaultRightButton(DecorFace *df, int i)
 {
-#ifndef VECTOR_BUTTONS
-    df->style = SimpleButton;
-#else
     struct vector_coords *v = &df->u.vector;
 
     memset(&df->style, 0, sizeof(df->style));
@@ -1373,7 +1366,6 @@ void LoadDefaultRightButton(DecorFace *df, int i)
 	v->line_style |= (1 << 4);
 	break;
     }
-#endif /* VECTOR_BUTTONS */
 }
 
 /***********************************************************************
@@ -1458,10 +1450,8 @@ void DestroyFvwmDecor(FvwmDecor *fl)
     for (; j < MaxButtonState; ++j)
       FreeDecorFace(dpy, &TB_STATE(fl->titlebar)[i]);
   }
-#ifdef BORDERSTYLE
   FreeDecorFace(dpy, &fl->BorderStyle.active);
   FreeDecorFace(dpy, &fl->BorderStyle.inactive);
-#endif
 #ifdef USEDECOR
   if (fl->tag)
   {
@@ -1541,7 +1531,6 @@ void InitFvwmDecor(FvwmDecor *fl)
 #endif
     }
 
-#ifdef BORDERSTYLE
     /* initialize border texture styles */
     memset(&fl->BorderStyle.active.style, 0,
 	   sizeof(fl->BorderStyle.active.style));
@@ -1552,7 +1541,6 @@ void InitFvwmDecor(FvwmDecor *fl)
 #ifdef MULTISTYLE
     fl->BorderStyle.active.next = NULL;
     fl->BorderStyle.inactive.next = NULL;
-#endif
 #endif
 }
 

@@ -78,13 +78,9 @@ typedef enum
 {
   /* menu types */
   SimpleMenu = 0,
-#ifdef GRADIENT_BUTTONS
   GradientMenu,
-#endif
-#ifdef PIXMAP_BUTTONS
   PixmapMenu,
   TiledPixmapMenu,
-#endif
   SolidMenu
   /* max button is 8 (0x8) */
 } MenuFaceType;
@@ -111,17 +107,13 @@ typedef struct MenuFace
 {
   union
   {
-#ifdef PIXMAP_BUTTONS
     Picture *p;
-#endif
     Pixel back;
-#ifdef GRADIENT_BUTTONS
     struct
     {
       int npixels;
       Pixel *pixels;
     } grad;
-#endif
   } u;
   MenuFaceType type;
   char gradient_type;
@@ -483,7 +475,6 @@ typedef struct MenuRootDynamic
     unsigned has_popped_up_left : 1;
     unsigned has_popped_up_right : 1;
   } dflags;
-#ifdef GRADIENT_BUTTONS
   struct
   {
     Pixmap stored;
@@ -491,7 +482,6 @@ typedef struct MenuRootDynamic
     int height;
     int y;
   } stored_item;
-#endif
 } MenuRootDynamic;
 
 /* access macros to static menu members */
@@ -503,9 +493,7 @@ typedef struct MenuRootDynamic
 #define MR_WINDOW(m)                ((m)->d->window)
 #define MR_SELECTED_ITEM(m)         ((m)->d->selected_item)
 #define MR_XANIMATION(m)            ((m)->d->xanimation)
-#ifdef GRADIENT_BUTTONS
 #define MR_STORED_ITEM(m)           ((m)->d->stored_item)
-#endif
 /* flags */
 #define MR_DYNAMIC_FLAGS(m)         ((m)->d->dflags)
 #define MR_IS_PAINTED(m)            ((m)->d->dflags.is_painted)

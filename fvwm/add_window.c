@@ -158,20 +158,27 @@ void setup_window_name(FvwmWindow *tmp_win)
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
 #ifdef I18N_MB
   {
-    if (text_prop.value) {
-      if (text_prop.encoding == XA_STRING) {
+    if (text_prop.value)
+    {
+      if (text_prop.encoding == XA_STRING)
+      {
         /* STRING encoding, use this as it is */
         tmp_win->name = (char *)text_prop.value;
         tmp_win->name_list = NULL;
-      } else {
+      }
+      else
+      {
         /* not STRING encoding, try to convert */
         if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
-            && num > 0 && *list) {
+            && num > 0 && *list)
+	{
           /* XXX: does not consider the conversion is REALLY succeeded */
           XFree(text_prop.value); /* return of XGetWMName() */
           tmp_win->name = *list;
           tmp_win->name_list = list;
-        } else {
+        }
+	else
+	{
           if (list) XFreeStringList(list);
           XFree(text_prop.value); /* return of XGetWMName() */
           XGetWMName(dpy, tmp_win->w, &text_prop); /* XXX: read again ? */
@@ -179,7 +186,9 @@ void setup_window_name(FvwmWindow *tmp_win)
           tmp_win->name_list = NULL;
         }
       }
-    } else {
+    }
+    else
+    {
       tmp_win->name = NoName;
     }
   }
@@ -452,10 +461,8 @@ void get_default_window_background(
 void setup_frame_window(
   FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
 {
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   Pixmap TexturePixmap = None;
   Pixmap TexturePixmapSave;
-#endif
 
   valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
   pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
@@ -472,7 +479,6 @@ void setup_frame_window(
   XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
 
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   /* stash valuemask bits in case BorderStyle TiledPixmap overwrites */
   TexturePixmapSave = pattributes->background_pixmap;
 
@@ -484,7 +490,6 @@ void setup_frame_window(
     pattributes->background_pixmap = TexturePixmap;
     valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
   }
-#endif
   pattributes->event_mask =
     (ExposureMask | VisibilityChangeMask | ButtonPressMask |
      ButtonReleaseMask);
@@ -496,10 +501,8 @@ void setup_frame_window(
 				   pattributes);
   XSaveContext(dpy, tmp_win->decor_w, FvwmContext, (caddr_t) tmp_win);
 
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   /* restore background */
   pattributes->background_pixmap = TexturePixmapSave;
-#endif
 }
 
 void setup_title_window(
@@ -1234,7 +1237,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->maximized_g.width = w_max;
     tmp_win->maximized_g.height = h_max;
     SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
-    SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
+    DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
     /* fix orig values to not change page on unmaximize  */
     if (tmp_win->orig_g.x >= Scr.MyDisplayWidth)
       tmp_win->orig_g.x = tmp_win->orig_g.x % Scr.MyDisplayWidth;

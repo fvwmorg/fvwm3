@@ -61,21 +61,14 @@ static void ApplyWindowFont(FvwmDecor *fl);
 
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
-static char  *button_states[MaxButtonState]={
-    "ActiveUp",
-#ifdef ACTIVEDOWN_BTNS
-    "ActiveDown",
-#endif
-#ifdef INACTIVE_BTNS
-    "Inactive",
-#endif
-    "ToggledActiveUp",
-#ifdef ACTIVEDOWN_BTNS
-    "ToggledActiveDown",
-#endif
-#ifdef INACTIVE_BTNS
-    "ToggledInactive",
-#endif
+static char  *button_states[MaxButtonState] =
+{
+  "ActiveUp",
+  "ActiveDown",
+  "Inactive",
+  "ToggledActiveUp",
+  "ToggledActiveDown",
+  "ToggledInactive",
 };
 
 
@@ -169,7 +162,8 @@ void WindowShade(F_CMD_ARGS)
 	XMoveResizeWindow(
 	  dpy, tmp_win->decor_w, 0, dy, tmp_win->frame_g.width, new_height);
 	SetupTitleBar(tmp_win, tmp_win->frame_g.width, new_height);
-        SetBorder(tmp_win, tmp_win->frame_g.width, True, True, None);
+	DrawDecorations(tmp_win, DRAW_FRAME, tmp_win->frame_g.width > 0, True,
+			None);
       }
       h = tmp_win->title_g.height+tmp_win->boundary_width;
       ph = 0;
@@ -271,7 +265,7 @@ void WindowShade(F_CMD_ARGS)
     BroadcastPacket(M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }
-  SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
+  DrawDecorations(tmp_win, DRAW_FRAME, (Scr.Hilite == tmp_win), True, None);
   FlushOutputQueues();
   XSync(dpy, 0);
 
@@ -644,7 +638,7 @@ void handle_stick(F_CMD_ARGS, int toggle)
     SET_STICKY(tmp_win, 1);
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
-  SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);
+  DrawDecorations(tmp_win, DRAW_TITLE, (Scr.Hilite==tmp_win), True, None);
 
 #ifdef GNOME
   GNOME_SetHints (tmp_win);
@@ -882,15 +876,15 @@ void SetHiColor(F_CMD_ARGS)
   if(Scr.flags.windows_captured && Scr.Hilite)
   {
     hilight = Scr.Hilite;
-    SetBorder(Scr.Hilite,False,True,True,None);
-    SetBorder(hilight,True,True,True,None);
+    DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
+    DrawDecorations(hilight, DRAW_ALL, True, True, None);
   }
 }
 
 
 char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button);
 
-#if defined(MULTISTYLE) && defined(EXTENDED_TITLESTYLE)
+#if defined(MULTISTYLE)
 /*****************************************************************************
  *
  * Appends a titlestyle (veliaa@rpi.edu)
@@ -916,7 +910,7 @@ void AddTitleStyle(F_CMD_ARGS)
       GetNextToken(action, &parm);
     }
 }
-#endif /* MULTISTYLE && EXTENDED_TITLESTYLE */
+#endif /* MULTISTYLE */
 
 void SetTitleStyle(F_CMD_ARGS)
 {
@@ -942,7 +936,6 @@ void SetTitleStyle(F_CMD_ARGS)
     {
       TB_JUSTIFICATION(fl->titlebar) = JUST_RIGHT;
     }
-#ifdef EXTENDED_TITLESTYLE
     else if (StrEquals(parm,"height"))
     {
       int height, next;
@@ -989,12 +982,12 @@ void SetTitleStyle(F_CMD_ARGS)
 	  tmp->frame_g.height = 0;
 	  tmp->frame_g.width = 0;
 	  SetupFrame(tmp,x,y,w,h,True,False);
-	  SetTitleBar(tmp,True,True);
-	  SetTitleBar(tmp,False,True);
+	  DrawDecorations(tmp, DRAW_TITLE, True, True, None);
+	  DrawDecorations(tmp, DRAW_TITLE, False, True, None);
 	  tmp = tmp->next;
 	}
-	SetTitleBar(hi,True,True);
-	}
+	DrawDecorations(hi, DRAW_TITLE, True, True, None);
+      }
       else
 	fvwm_msg(ERR,"SetTitleStyle",
 		 "bad height argument (height must be from 5 to 256)");
@@ -1008,16 +1001,6 @@ void SetTitleStyle(F_CMD_ARGS)
 	break;
       }
     }
-#else /* ! EXTENDED_TITLESTYLE */
-    else if (strcmp(parm,"--")==0)
-    {
-      if (!(action = ReadTitleButton(prev, &fl->titlebar, False, -1)))
-      {
-	free(parm);
-	break;
-      }
-    }
-#endif /* EXTENDED_TITLESTYLE */
     free(parm);
     prev = action;
     action = GetNextToken(action,&parm);
@@ -1351,9 +1334,9 @@ static void ApplyWindowFont(FvwmDecor *fl)
   fl->WindowFont.y = fl->WindowFont.font->ascent;
   extra_height = fl->TitleHeight;
 #ifdef I18N_MB
-  fl->TitleHeight=fl->WindowFont.height+3;
+  fl->TitleHeight = fl->WindowFont.height+3;
 #else
-  fl->TitleHeight=fl->WindowFont.font->ascent+fl->WindowFont.font->descent+3;
+  fl->TitleHeight = fl->WindowFont.font->ascent+fl->WindowFont.font->descent+3;
 #endif
   extra_height -= fl->TitleHeight;
 
@@ -1379,11 +1362,11 @@ static void ApplyWindowFont(FvwmDecor *fl)
     tmp->frame_g.height = 0;
     tmp->frame_g.width = 0;
     SetupFrame(tmp,x,y,w,h,True,False);
-    SetTitleBar(tmp,True,True);
-    SetTitleBar(tmp,False,True);
+    DrawDecorations(tmp, DRAW_TITLE, True, True, None);
+    DrawDecorations(tmp, DRAW_TITLE, False, True, None);
     tmp = tmp->next;
   }
-  SetTitleBar(hi,True,True);
+  DrawDecorations(hi, DRAW_TITLE, True, True, None);
 }
 
 void LoadWindowFont(F_CMD_ARGS)
@@ -1461,7 +1444,6 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 {
   switch (DFS_FACE_TYPE(df->style))
   {
-#ifdef GRADIENT_BUTTONS
   case GradientButton:
     /* - should we check visual is not TrueColor before doing this?
 
@@ -1471,18 +1453,14 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
     free(df->u.grad.pixels);
     df->u.grad.pixels = NULL;
     break;
-#endif
 
-#ifdef PIXMAP_BUTTONS
   case PixmapButton:
   case TiledPixmapButton:
     if (df->u.p)
       DestroyPicture(dpy, df->u.p);
     df->u.p = NULL;
     break;
-#endif
 
-#ifdef VECTOR_BUTTONS
   case VectorButton:
     if (df->u.vector.x)
     {
@@ -1495,7 +1473,6 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
       df->u.vector.y = NULL;
     }
     break;
-#endif
 
   default:
     break;
@@ -1570,7 +1547,6 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	return False;
       }
     }
-#ifdef VECTOR_BUTTONS
     else if (strncasecmp(style,"Vector",6)==0 ||
 	     (strlen(style)<=2 && isdigit(*style)))
     {
@@ -1620,7 +1596,6 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       memset(&df->style, 0, sizeof(df->style));
       DFS_FACE_TYPE(df->style) = VectorButton;
     }
-#endif
     else if (strncasecmp(style,"Solid",5)==0)
     {
       s = GetNextToken(s, &file);
@@ -1639,7 +1614,6 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	return False;
       }
     }
-#ifdef GRADIENT_BUTTONS
     else if (strncasecmp(style+1, "Gradient", 8)==0)
     {
       char **s_colors;
@@ -1666,8 +1640,6 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       DFS_FACE_TYPE(df->style) = GradientButton;
       df->u.grad.gradient_type = toupper(style[0]);
     }
-#endif /* GRADIENT_BUTTONS */
-#ifdef PIXMAP_BUTTONS
     else if (strncasecmp(style,"Pixmap",6)==0
 	     || strncasecmp(style,"TiledPixmap",11)==0)
     {
@@ -1711,7 +1683,6 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       df->u.p = NULL; /* pixmap read in when the window is created */
     }
 #endif
-#endif /* PIXMAP_BUTTONS */
     else
     {
       if(verbose)
@@ -1796,21 +1767,16 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	else
 	  DFS_BUTTON_RELIEF(df->style) = DFS_BUTTON_IS_SUNK;
       }
-#ifdef EXTENDED_TITLESTYLE
       else if (StrEquals(tok,"UseTitleStyle"))
       {
 	if (set)
 	{
 	  DFS_USE_TITLE_STYLE(df->style) = 1;
-#ifdef BORDERSTYLE
 	  DFS_USE_BORDER_STYLE(df->style) = 0;
-#endif
 	}
 	else
 	  DFS_USE_TITLE_STYLE(df->style) = 0;
       }
-#endif
-#ifdef BORDERSTYLE
       else if (StrEquals(tok,"HiddenHandles"))
       {
 	DFS_HAS_HIDDEN_HANDLES(df->style) = !!set;
@@ -1824,14 +1790,11 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	if (set)
 	{
 	  DFS_USE_BORDER_STYLE(df->style) = 1;
-#ifdef EXTENDED_TITLESTYLE
 	  DFS_USE_TITLE_STYLE(df->style) = 0;
-#endif
 	}
 	else
 	  DFS_USE_BORDER_STYLE(df->style) = 0;
       }
-#endif
       else
 	if(verbose)
 	  fvwm_msg(ERR,"ReadDecorFace",
@@ -1904,9 +1867,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
   tmpdf.next = NULL;
 #endif
 #ifdef MINI_ICONS
-#ifdef PIXMAP_BUTTONS
   tmpdf.u.p = NULL;
-#endif
 #endif
 
   if (strncmp(spec, "--",2)==0)
@@ -2028,7 +1989,7 @@ void ChangeDecor(F_CMD_ARGS)
     tmp_win->frame_g.height = 0;
     tmp_win->frame_g.width = 0;
     SetupFrame(tmp_win,x,y,width,height,True,False);
-    SetBorder(tmp_win,Scr.Hilite == tmp_win,2,True,None);
+    DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None);
 }
 
 /*****************************************************************************
@@ -2130,41 +2091,46 @@ void add_item_to_decor(F_CMD_ARGS)
  ****************************************************************************/
 void UpdateDecor(F_CMD_ARGS)
 {
-    FvwmWindow *fw = Scr.FvwmRoot.next;
+  FvwmWindow *fw = Scr.FvwmRoot.next;
 #ifdef USEDECOR
-    FvwmDecor *fl = &Scr.DefaultDecor, *found = NULL;
-    char *item = NULL;
-    action = GetNextToken(action, &item);
-    if (item) {
-	/* search for tag */
-	for (; fl; fl = fl->next)
-	    if (fl->tag)
-		if (strcasecmp(item, fl->tag)==0) {
-		    found = fl;
-		    break;
-		}
-	free(item);
-    }
+  FvwmDecor *fl = &Scr.DefaultDecor, *found = NULL;
+  FvwmWindow *hilight = Scr.Hilite;
+  char *item = NULL;
+  action = GetNextToken(action, &item);
+  if (item)
+  {
+    /* search for tag */
+    for (; fl; fl = fl->next)
+      if (fl->tag)
+	if (strcasecmp(item, fl->tag)==0)
+	{
+	  found = fl;
+	  break;
+	}
+    free(item);
+  }
 #endif
 
-    for (; fw; fw = fw->next)
-    {
+  for (; fw; fw = fw->next)
+  {
 #ifdef USEDECOR
-	/* update specific decor, or all */
-	if (found) {
-	    if (fw->fl == found) {
-		SetBorder(fw,True,True,True,None);
-		SetBorder(fw,False,True,True,None);
-	    }
-	}
-	else
-#endif
-	{
-	    SetBorder(fw,True,True,True,None);
-	    SetBorder(fw,False,True,True,None);
-	}
+    /* update specific decor, or all */
+    if (found)
+    {
+      if (fw->fl == found)
+      {
+	DrawDecorations(fw, DRAW_ALL, True, True, None);
+	DrawDecorations(fw, DRAW_ALL, False, True, None);
+      }
     }
-    SetBorder(Scr.Hilite,True,True,True,None);
+    else
+#endif
+    {
+      DrawDecorations(fw, DRAW_ALL, True, True, None);
+      DrawDecorations(fw, DRAW_ALL, False, True, None);
+    }
+  }
+  DrawDecorations(hilight, DRAW_ALL, True, True, None);
 }
 
 

@@ -362,7 +362,7 @@ void HandleFocusIn(void)
 	}
       else
 	{
-	  SetBorder(Scr.Hilite,False,True,True,None);
+	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
                           0, 0, (unsigned long)IsLastFocusSetByMouse(),
                           Scr.DefaultDecor.HiColors.fore,
@@ -383,7 +383,7 @@ void HandleFocusIn(void)
     }
   else if(Tmp_win != Scr.Hilite)
     {
-      SetBorder(Tmp_win,True,True,True,None);
+      DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
       BroadcastPacket(M_FOCUS_CHANGE, 5,
                       Tmp_win->w, Tmp_win->frame,
 		      (unsigned long)IsLastFocusSetByMouse(),
@@ -573,7 +573,8 @@ void HandlePropertyNotify(void)
 
       /* fix the name in the title bar */
       if(!IS_ICONIFIED(Tmp_win))
-	SetTitleBar(Tmp_win,(Scr.Hilite==Tmp_win),True);
+	DrawDecorations(
+	  Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
 
       /*
        * if the icon name is NoName, set the name of the icon to be
@@ -889,17 +890,10 @@ void HandleExpose(void)
   DBUG("HandleExpose","Routine Entered");
 
   if (Tmp_win)
-    {
-      if ((Event.xany.window == Tmp_win->title_w))
-	{
-	  SetTitleBar(Tmp_win,(Scr.Hilite == Tmp_win),False);
-	}
-      else
-	{
-	  RedrawBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
-		       Event.xany.window);
-	}
-    }
+  {
+    DrawDecorations(
+      Tmp_win, DRAW_ALL, (Scr.Hilite == Tmp_win), True, Event.xany.window);
+  }
   return;
 }
 
@@ -1155,7 +1149,7 @@ void HandleMapNotify(void)
     }
   if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
     {
-      SetBorder(Tmp_win,False,True,True,Tmp_win->decor_w);
+      DrawDecorations(Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
     }
   XSync(dpy,0);
   MyXUngrabServer (dpy);
@@ -1368,7 +1362,7 @@ void HandleButtonPress(void)
     }
     if (!IS_ICONIFIED(Tmp_win))
     {
-      SetBorder(Tmp_win, True, True, True, None);
+      DrawDecorations(Tmp_win, DRAW_ALL, True, True, PressedW);
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
@@ -1393,12 +1387,16 @@ void HandleButtonPress(void)
 
   Context = GetContext(Tmp_win,&Event, &PressedW);
   LocalContext = Context;
-  if(Context == C_TITLE)
-    SetTitleBar(Tmp_win,(Scr.Hilite == Tmp_win),False);
-  else if ((Context & C_LALL) || (Context & C_RALL))
-    SetBorder(Tmp_win, (Scr.Hilite == Tmp_win), True, True, PressedW);
+  if (Context == C_TITLE)
+    DrawDecorations(
+      Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
+  else if (Context & (C_LALL | C_RALL))
+    DrawDecorations(
+      Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win), True, PressedW);
   else
-    SetBorder(Tmp_win, (Scr.Hilite == Tmp_win), True, True, None);
+    DrawDecorations(
+      Tmp_win, DRAW_FRAME, (Scr.Hilite == Tmp_win),
+      (HAS_DEPRESSABLE_BORDER(Tmp_win) && HAS_BORDER(Tmp_win)), None);
 
   ButtonWindow = Tmp_win;
 
@@ -1423,13 +1421,18 @@ void HandleButtonPress(void)
 
   OldPressedW = PressedW;
   PressedW = None;
-  if(LocalContext == C_TITLE)
-    SetTitleBar(ButtonWindow,(Scr.Hilite==ButtonWindow),False);
-  else if ((Context & C_LALL) || (Context & C_RALL))
-    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,OldPressedW);
+  if (Context == C_TITLE)
+    DrawDecorations(
+      ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow), True, None);
+  else if (Context & (C_LALL | C_RALL))
+    DrawDecorations(
+      ButtonWindow, DRAW_BUTTONS, (Scr.Hilite == ButtonWindow), True,
+      OldPressedW);
   else
-    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,
-	      Tmp_win ? Tmp_win->decor_w : 0);
+    DrawDecorations(
+      ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
+      (HAS_DEPRESSABLE_BORDER(Tmp_win) && HAS_BORDER(Tmp_win)),
+      (Tmp_win) ? Tmp_win->decor_w : 0);
   ButtonWindow = NULL;
 }
 
@@ -1468,9 +1471,9 @@ void HandleButtonRelease()
    /*  modifier = (Event.xbutton.state & mods_used); */
 
    /* need to search for an appropriate stroke binding */
-   action = CheckBinding(Scr.AllBindings, stroke, Event.xbutton.button,
-		    Event.xbutton.state, GetUnusedModifiers(), Context,
-			STROKE_BINDING);
+   action = CheckBinding(
+     Scr.AllBindings, stroke, Event.xbutton.button, Event.xbutton.state,
+     GetUnusedModifiers(), Context, STROKE_BINDING);
    /* got a match, now process it */
 /* DEBUG printfs
    printf ("action is %p\n", action);
@@ -1615,9 +1618,9 @@ void HandleLeaveNotify(void)
 	  if (Event.xcrossing.detail != NotifyInferior)
 	    {
 	      if(Scr.Focus != NULL)
-		SetFocus(Scr.NoFocusWin,NULL,1);
+		SetFocus(Scr.NoFocusWin, NULL, 1);
 	      if(Scr.Hilite != NULL)
-		SetBorder(Scr.Hilite,False,True,True,None);
+		DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
 	    }
 	}
   /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */

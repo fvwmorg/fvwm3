@@ -1553,7 +1553,7 @@ void resize_window(F_CMD_ARGS)
     else
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
 		 drag->width, drag->height,False,False);
-    SetBorder(tmp_win,True,True,True,None);
+    DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
 
     ResizeWindow = None;
     return;
@@ -1856,7 +1856,7 @@ void resize_window(F_CMD_ARGS)
 	{
 	  DoResize(start_g.x, start_g.y, tmp_win, &start_g, orig,
 		   &xmotion, &ymotion, do_resize_opaque);
-	  SetBorder(tmp_win,True,True,True,None);
+	  DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
 	}
       }
       done = True;
@@ -2719,7 +2719,7 @@ void Maximize(F_CMD_ARGS)
     else
       new_height = tmp_win->orig_g.height;
     SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True, False);
-    SetBorder(tmp_win, True, True, True, None);
+    DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
   }
   else /* maximize */
   {
@@ -2784,6 +2784,6 @@ void Maximize(F_CMD_ARGS)
     if (IS_SHADED(tmp_win))
       new_height = tmp_win->frame_g.height;
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,True,False);
-    SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
+    DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
   }
 }

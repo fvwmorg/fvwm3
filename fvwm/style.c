@@ -2168,7 +2168,7 @@ static void handle_window_style_change(FvwmWindow *t)
 
     if (IS_SHADED(t))
       XRaiseWindow(dpy, t->decor_w);
-    SetBorder(t, (Scr.Hilite == t), 2, True, None);
+    DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
     Scr.Hilite = u;
   }
   if (do_update_icon)

@@ -58,7 +58,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
   if (Fw && HAS_NEVER_FOCUS(Fw))
   {
     /* make sure the window is not hilighted */
-    SetBorder(Fw, False, False, True, None);
+    DrawDecorations(Fw, DRAW_ALL, False, False, None);
     return;
   }
 

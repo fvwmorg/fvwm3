@@ -107,9 +107,7 @@ static const struct functions func_config[] =
 #endif /* MULTISTYLE */
   {"addmoduleconfig",  AddModConfig, F_ADD_MOD,             0},
 #ifdef MULTISTYLE
-#ifdef EXTENDED_TITLESTYLE
   {"addtitlestyle",AddTitleStyle,    F_ADD_TITLE_STYLE,     0},
-#endif /* EXTENDED_TITLESTYLE */
 #endif /* MULTISTYLE */
 #ifdef USEDECOR
   {"addtodecor",   add_item_to_decor,F_ADD_DECOR,	    0},
@@ -119,9 +117,7 @@ static const struct functions func_config[] =
   {"all",          AllFunc,          F_ALL,                 0},
   {"animatedmove", animated_move_window,F_ANIMATED_MOVE,    FUNC_NEEDS_WINDOW},
   {"beep",         Bell,             F_BEEP,                0},
-#ifdef BORDERSTYLE
   {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,         0},
-#endif /* BORDERSTYLE */
   {"bugopts",      SetBugOptions,    F_BUG_OPTS,            0},
   {"busycursor",   setBusyCursor,    F_BUSY_CURSOR,         0},
   {"buttonstate",  cmd_button_state, F_BUTTON_STATE,        0},

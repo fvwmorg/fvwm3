@@ -66,10 +66,7 @@ void CreateGCs(void)
   Scr.ScratchGC1 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.ScratchGC2 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.ScratchGC3 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-
-#if defined(PIXMAP_BUTTONS) || defined(GRADIENT_BUTTONS)
   Scr.TransMaskGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-#endif
 
 }
 

@@ -16,16 +16,22 @@
 #ifndef _BORDERS_H
 #define _BORDERS_H
 
-void SetBorder (FvwmWindow *, Bool,int,Bool, Window);
-void RedrawBorder (FvwmWindow *, Bool,int,Bool, Window);
-void SetTitleBar(FvwmWindow *, Bool,Bool);
+typedef enum
+{
+  DRAW_FRAME    = 0x1,
+  DRAW_TITLE    = 0x2,
+  DRAW_BUTTONS  = 0x4,
+  DRAW_ALL      = 0x7
+} draw_window_parts;
+
 void SetupTitleBar(FvwmWindow *tmp_win, int w, int h);
-void SetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
-void ForceSetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
+void SetupFrame(FvwmWindow *, int, int, int, int, Bool, Bool);
+void ForceSetupFrame(FvwmWindow *, int, int, int, int, Bool, Bool);
 void SetShape(FvwmWindow *, int);
 void cmd_button_state(F_CMD_ARGS);
-#ifdef BORDERSTYLE
 void SetBorderStyle(F_CMD_ARGS);
-#endif
+void DrawDecorations(
+  FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
+  Window expose_win);
 
 #endif /* _BORDERS_H */

@@ -71,17 +71,11 @@ typedef struct
 typedef enum
 {
     /* button types */
-#ifdef VECTOR_BUTTONS
     VectorButton                ,
-#endif
     SimpleButton                ,
-#ifdef GRADIENT_BUTTONS
     GradientButton              ,
-#endif
-#ifdef PIXMAP_BUTTONS
     PixmapButton                ,
     TiledPixmapButton           ,
-#endif
 #ifdef MINI_ICONS
     MiniIconButton              ,
 #endif
@@ -111,15 +105,11 @@ typedef struct
 #define DFS_BUTTON_MASK    3
     unsigned int button_relief : 2;
     /* not used in border styles */
-#ifdef EXTENDED_TITLESTYLE
     unsigned int use_title_style : 1;
-#endif
-#ifdef BORDERSTYLE
     unsigned int use_border_style : 1;
     /* only used in border styles */
     unsigned int has_hidden_handles : 1;
     unsigned int has_no_inset : 1;
-#endif
   } flags;
 } DecorFaceStyle;
 
@@ -138,11 +128,8 @@ typedef struct DecorFace
   DecorFaceStyle style;
   union
   {
-#ifdef PIXMAP_BUTTONS
     Picture *p;
-#endif
     Pixel back;
-#ifdef GRADIENT_BUTTONS
     struct
     {
       int npixels;
@@ -150,8 +137,6 @@ typedef struct DecorFace
       char gradient_type;
     }
     grad;
-#endif
-#ifdef VECTOR_BUTTONS
     struct vector_coords
     {
       int num;
@@ -159,7 +144,6 @@ typedef struct DecorFace
       int *y;
       unsigned long line_style;
     } vector;
-#endif
   } u;
 
 #ifdef MULTISTYLE
@@ -181,19 +165,11 @@ enum
 enum ButtonState
 {
   ActiveUp,
-#ifdef ACTIVEDOWN_BTNS
   ActiveDown,
-#endif
-#ifdef INACTIVE_BTNS
   Inactive,
-#endif
   ToggledActiveUp,
-#ifdef ACTIVEDOWN_BTNS
   ToggledActiveDown,
-#endif
-#ifdef INACTIVE_BTNS
   ToggledInactive,
-#endif
   MaxButtonState
 };
 
@@ -248,12 +224,10 @@ typedef struct FvwmDecor
   TitleButton left_buttons[5];
   TitleButton right_buttons[5];
   TitleButton titlebar;
-#ifdef BORDERSTYLE
   struct BorderStyle
   {
     DecorFace active, inactive;
   } BorderStyle;
-#endif
 #ifdef USEDECOR
   struct FvwmDecor *next;	/* additional user-defined styles */
 #endif
@@ -305,9 +279,7 @@ typedef struct ScreenInfo
   MyFont StdFont;     	/* font structure */
   MyFont IconFont;      /* for icon labels */
 
-#if defined(PIXMAP_BUTTONS) || defined(GRADIENT_BUTTONS)
   GC TransMaskGC;               /* GC for transparency masks */
-#endif
   Pixel StdFore, StdBack, StdHilite, StdShadow; /* don't change the order */
   GC StdGC;
   GC StdReliefGC;

@@ -2060,15 +2060,6 @@ static int do_menus_overlap(
   XGetGeometry(dpy,MR_WINDOW(mr), &JunkRoot,&prior_x,&prior_y,
 	       &prior_width,&prior_height, &JunkBW, &JunkDepth);
   x_overlap = 0;
-#if DEBUG_DO_MENUS_OVERLAP
-  fprintf(stderr,"do_menus_overlap called: (allow tolerance = %d)\n",
-	  allow_popup_offset_tolerance);
-  fprintf(stderr,"tolerances: h = %d, v = %d, s = %d\n", h_tolerance,
-	  v_tolerance, s_tolerance);
-  fprintf(stderr,"x  = %4d - %4d,  y = %4d - %4d\n",x,x+width-1,y,y+height-1);
-  fprintf(stderr,"px = %4d - %4d, py = %4d - %4d\n",prior_x,
-	  prior_x+prior_width-1,prior_y,prior_y+prior_height-1);
-#endif
   if (allow_popup_offset_tolerance)
   {
     if (MST_POPUP_OFFSET_ADD(mr) < 0)
@@ -2077,11 +2068,6 @@ static int do_menus_overlap(
       prior_x += (100 - MST_POPUP_OFFSET_PERCENT(mr)) / 100;
     else
       prior_width *= (float)(MST_POPUP_OFFSET_PERCENT(mr)) / 100.0;
-#if DEBUG_DO_MENUS_OVERLAP
-    fprintf(stderr,
-	    "modified:\npx = %4d - %4d, py = %4d - %4d, s_tolerance = %d\n",
-	    prior_x,prior_x+prior_width-1,prior_y,prior_y+prior_height-1);
-#endif
   }
   if (MST_USE_LEFT_SUBMENUS(mr))
   {
@@ -2576,7 +2562,6 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
   if (select == False)
     MI_WAS_DESELECTED(mi) = True;
 
-#ifdef GRADIENT_BUTTONS
   if (!MST_HAS_MENU_CSET(mr))
   {
     switch (MST_FACE(mr).type)
@@ -2643,7 +2628,6 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
       break;
     } /* switch */
   } /* if */
-#endif
 
   MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
   paint_item(mr, mi, fw, False);
@@ -2865,11 +2849,8 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     }
   }
   else if (MI_WAS_DESELECTED(mi) &&
-	   (relief_thickness > 0 || MST_DO_HILIGHT(mr))
-#ifdef GRADIENT_BUTTONS
-	   && (MST_FACE(mr).type != GradientMenu || MST_HAS_MENU_CSET(mr))
-#endif
-	  )
+	   (relief_thickness > 0 || MST_DO_HILIGHT(mr)) &&
+	   (MST_FACE(mr).type != GradientMenu || MST_HAS_MENU_CSET(mr)))
   {
     int d = 0;
     if (MI_PREV_ITEM(mi) && MR_SELECTED_ITEM(mr) == MI_PREV_ITEM(mi))
@@ -3231,19 +3212,14 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
   MenuStyle *ms = MR_STYLE(mr);
   XRectangle bounds;
   int bw = MST_BORDER_WIDTH(mr);
-#ifdef PIXMAP_BUTTONS
   Picture *p;
   int width, height, x, y;
-#endif
-
-#ifdef GRADIENT_BUTTONS
   Pixmap pmap;
   GC	 pmapgc;
   XGCValues gcv;
   unsigned long gcm = 0;
   gcv.line_width=3;
   gcm = GCLineWidth;
-#endif
 
   if (MR_IS_PAINTED(mr) && pevent &&
       (pevent->xexpose.x >= MR_WIDTH(mr) - bw ||
@@ -3284,7 +3260,6 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
       flush_expose(MR_WINDOW(mr));
       XClearWindow(dpy,MR_WINDOW(mr));
       break;
-#ifdef GRADIENT_BUTTONS
     case GradientMenu:
       bounds.x = bw;
       bounds.y = bw;
@@ -3408,8 +3383,6 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	break;
       }
       break;
-#endif	/* GRADIENT_BUTTONS */
-#ifdef PIXMAP_BUTTONS
     case PixmapMenu:
       p = ST_FACE(ms).u.p;
 
@@ -3464,7 +3437,6 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
      flush_expose(MR_WINDOW(mr));
      XClearWindow(dpy,MR_WINDOW(mr));
      break;
-#endif /* PIXMAP_BUTTONS */
     } /* switch(type) */
   } /* if (ms) */
 
@@ -3571,10 +3543,8 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
     /* now dump the parts of mr we don't need any longer */
   }
 
-#ifdef GRADIENT_BUTTONS
   if (MR_STORED_ITEM(mr).stored)
     XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
-#endif
 
   MR_COPIES(mr)--;
   if (MR_COPIES(mr) > 0)
@@ -3603,9 +3573,7 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
       MR_CONTINUATION_MENU(mr) = NULL;
       MR_PARENT_MENU(mr) = NULL;
       MR_ITEMS(mr) = 0;
-#ifdef GRADIENT_BUTTONS
       memset(&(MR_STORED_ITEM(mr)), 0 , sizeof(MR_STORED_ITEM(mr)));
-#endif
       MR_IS_UPDATED(mr) = 1;
       return;
     }
@@ -4970,7 +4938,6 @@ static void FreeMenuFace(Display *dpy, MenuFace *mf)
 {
   switch (mf->type)
   {
-#ifdef GRADIENT_BUTTONS
   case GradientMenu:
     /* - should we check visual is not TrueColor before doing this?
      *
@@ -4980,16 +4947,13 @@ static void FreeMenuFace(Display *dpy, MenuFace *mf)
     free(mf->u.grad.pixels);
     mf->u.grad.pixels = NULL;
     break;
-#endif
 
-#ifdef PIXMAP_BUTTONS
   case PixmapMenu:
   case TiledPixmapMenu:
     if (mf->u.p)
       DestroyPicture(dpy, mf->u.p);
     mf->u.p = NULL;
     break;
-#endif
   case SolidMenu:
     FreeColors(&mf->u.back, 1);
   default:
@@ -5041,7 +5005,6 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     }
   }
 
-#ifdef GRADIENT_BUTTONS
   else if (StrEquals(style+1, "Gradient"))
   {
     char **s_colors;
@@ -5065,9 +5028,7 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     mf->type = GradientMenu;
     mf->gradient_type = toupper(style[0]);
   }
-#endif /* GRADIENT_BUTTONS */
 
-#ifdef PIXMAP_BUTTONS
   else if (StrEquals(style,"Pixmap") || StrEquals(style,"TiledPixmap"))
   {
     s = GetNextToken(s, &token);
@@ -5096,7 +5057,6 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
 	return False;
     }
   }
-#endif /* PIXMAP_BUTTONS */
 
   else
   {
