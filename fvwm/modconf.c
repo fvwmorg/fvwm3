@@ -160,7 +160,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	      unsigned long context, char *action, int *Module)
 {
   struct moduleInfoList *t;
-  char *message,msg2[32];
+  char *message, msg2[32];
   char *ImagePath = GetImagePath();
 
   if (ImagePath && strlen(ImagePath))
@@ -172,9 +172,8 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 #ifdef XPM 
   {
-    char message[20]; /** Fixme: should not be static size **/
-    sprintf(message,"ColorLimit %d\n",Scr.ColorLimit);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
+    sprintf(msg2,"ColorLimit %d\n",Scr.ColorLimit);
+    SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
   }
 #endif
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to

@@ -1,3 +1,8 @@
+1999-03-17  Bob Woodside <proteus@pcnet.com>
+
+	* docs/fvwm.lsm: corrected a couple of typos that prevented the LSM
+	from accepting the entry.
+
 Wed Mar 17 00:09:32 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/modconf.c (SendDataToModule): fixed stupid off-by-one error

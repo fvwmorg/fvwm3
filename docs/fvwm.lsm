@@ -1,7 +1,7 @@
 Begin3
 Title:          FVWM (F? Virtual Window Manager)
 Version:        2.2
-Entered-date:   19Feb99
+Entered-date:   19FEB99
 Description:    FVWM2 is an ICCCM-compliant X window manager providing a 3D
                 look for window decorations, multiple discontiguous virtual
                 desktops, a high degree of configurability, and an external
@@ -15,7 +15,7 @@ Alternate-site: sunsite.unc.edu/pub/Linux/X11/window-managers/fvwm-2.2.tar.gz
                 1k fvwm.lsm
                 1036k fvwm-2.2.tar.gz
 Original-site:
-Platform:       Unix, X, Xpm package (for optional xpm support)
+Platforms:      Unix, X, Xpm package (for optional xpm support)
 Copying-policy: May only be distributied without restrictions. For further
                 permissions check the COPYING file that comes with the
                 distribution.
