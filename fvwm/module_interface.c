@@ -733,6 +733,9 @@ make_vpacket(unsigned long *body, unsigned long event_type,
   extern Time lastTimestamp;
   unsigned long *bp = body;
 
+  /* truncate long packets */
+  if (num > FvwmPacketMaxSize)
+    num = FvwmPacketMaxSize;
   *(bp++) = START_FLAG;
   *(bp++) = event_type;
   *(bp++) = num+FvwmPacketHeaderSize;
@@ -1078,8 +1081,12 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
   va_list ap;
 
   /* Packet is the header plus the items plus enough items to hold the name
-     string.  */
-  *len = FvwmPacketHeaderSize + num + (strlen(name) / sizeof(unsigned long)) + 1;
+   * string. */
+  *len =
+    FvwmPacketHeaderSize + num + (strlen(name) / sizeof(unsigned long)) + 1;
+  /* truncate long packets */
+  if (*len > FvwmPacketMaxSize_byte)
+    *len = FvwmPacketMaxSize_byte;
 
   body = (unsigned long *)safemalloc(*len * sizeof(unsigned long));
   body[*len-1] = 0; /* Zero out end of memory to avoid uninit memory access. */
@@ -1091,8 +1098,11 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
   strcpy((char *)&body[FvwmPacketHeaderSize+num], name);
   body[2] = *len;
 
-  /* DB(("Packet (%lu): %lu %lu %lu `%s'", *len,
-       body[FvwmPacketHeaderSize], body[FvwmPacketHeaderSize+1], body[FvwmPacketHeaderSize+2], name)); */
+#if 0
+  DB(("Packet (%lu): %lu %lu %lu `%s'", *len,
+      body[FvwmPacketHeaderSize], body[FvwmPacketHeaderSize+1],
+      body[FvwmPacketHeaderSize+2], name));
+#endif
 
   return (body);
 }

@@ -2,7 +2,7 @@ This directory contains files to test fvwm (no modules) for memory leaks.
 
 Instructions:
 
- - execute the shell script purify.install to copy some files needed by
+ - execute the shell script install.purify to copy some files needed by
    the config file to /tmp
  - copy purify.fvwm2rc over your .fvwm2rc (or execute it any way you like)
  - (re)start fvwm

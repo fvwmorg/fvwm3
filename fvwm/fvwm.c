@@ -1687,6 +1687,8 @@ int CatchRedirectError(Display *dpy, XErrorEvent *event)
 {
   fvwm_msg(ERR,"CatchRedirectError","another WM is running");
   exit(1);
+  /* to make insure happy */
+  return 0;
 }
 
 /***********************************************************************
@@ -1702,6 +1704,8 @@ int CatchFatal(Display *dpy)
      */
   ClosePipes();
   exit(1);
+  /* to make insure happy */
+  return 0;
 }
 
 /***********************************************************************

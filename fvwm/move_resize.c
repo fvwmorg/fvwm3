@@ -3016,12 +3016,9 @@ void CMD_Maximize(F_CMD_ARGS)
     SetupFrame(
       tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, True);
     DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
+    update_absolute_geometry(tmp_win);
     /* remember the offset between old and new position in case the maximized
      * window is moved more than the screen width/height. */
-    if (!do_force_maximize)
-    {
-      update_absolute_geometry(tmp_win);
-    }
     tmp_win->max_offset.x = tmp_win->normal_g.x - tmp_win->max_g.x;
     tmp_win->max_offset.y = tmp_win->normal_g.y - tmp_win->max_g.y;
 #if 0
