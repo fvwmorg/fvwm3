@@ -3663,10 +3663,11 @@ is omitted, the value of the variable $[schedule.last] is used as
 the id.
 
 .TP
-.BI "Emulate " Fvwm " | " Mwm " | " Win
-This command affects how miscellaneous things are done by
-fvwm. For example where the move/resize feedback window appears
-depends on this command.  To have more Mwm- or Win-like behavior
+.BI "Emulate " Fvwm | Mwm | Win
+This command is a catch all for how miscellaneous things are done by fvwm.
+Right now this command affects where the move/resize feedback window appears
+and how window placement is aborted.
+To have more Mwm- or Win-like behavior
 you can call
 .BI Emulate
 with
@@ -3675,6 +3676,8 @@ as its argument.  With
 .I Mwm
 resize and move feedback windows are in the center of the screen,
 instead of the upper left corner.
+This also affects how manual placement is aborted.
+See the ManualPlacement description.
 
 .TP
 .BI "EscapeFunc"
