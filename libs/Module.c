@@ -130,7 +130,7 @@ static int first_pass = 1;
 
 void InitGetConfigLine(int *fd,char *match)
 {
-  char *buffer = (char *)safemalloc(strlen(match) + 32);
+  char *buffer = (char *)alloca(strlen(match) + 32);
   first_pass = 0;                       /* make sure get wont do this */
   sprintf(buffer,"Send_ConfigInfo %s",match);
   SendText(fd,buffer,0);

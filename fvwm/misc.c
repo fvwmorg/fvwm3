@@ -45,7 +45,7 @@
 #include "Module.h"
 #include "focus.h"
 
-FvwmWindow *FocusOnNextTimeStamp = NULL;
+static FvwmWindow *FocusOnNextTimeStamp = NULL;
 
 char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
 char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
@@ -81,7 +81,7 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 	if (tmp->icon_name_list != NULL)
 	  XFreeStringList(tmp->icon_name_list);
 	else
-	  XFree(tmp->icon_name); 
+	  XFree(tmp->icon_name);
 #else
 	XFree(tmp->icon_name);
 #endif
@@ -413,7 +413,7 @@ Bool StashEventTime (XEvent *ev)
     default:
       return False;
     }
-  /* Only update is the new timestamp is later than the old one, or
+  /* Only update if the new timestamp is later than the old one, or
    * if the new one is from a time at least 30 seconds earlier than the
    * old one (in which case the system clock may have changed) */
   if((NewTimestamp > lastTimestamp)||((lastTimestamp - NewTimestamp) > 30000))
@@ -693,6 +693,11 @@ void HandleHardFocus(FvwmWindow *t)
 {
   int x,y;
 
+/* domivogt (29-Jun-1999): function doesn't seem to do anything useful. Try
+ * replacing it with SetFocus. */
+SetFocus(t->w,t,1);
+return;
+#if 0
   FocusOnNextTimeStamp = t;
   Scr.Focus = NULL;
   /* Do something to guarantee a new time stamp! */
@@ -707,6 +712,7 @@ void HandleHardFocus(FvwmWindow *t)
 	       Scr.MyDisplayHeight,
 	       x ,y);
   UngrabEm();
+#endif
 }
 
 

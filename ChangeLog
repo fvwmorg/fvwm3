@@ -1,6 +1,20 @@
+1999-06-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c (ConstrainSize):
+	* fvwm/add_window.c (GetWindowSizeHints): handle MaxWindowSize in
+	ConstrainSize. Use the border width to calculate the actual size.
+
+1999-06-29  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Module.c (InitGetConfigLine): use alloca instead of safemalloc
+
+	* fvwm/misc.c (HandleHardFocus): disabled HandleHardFocus to see if
+	this causes any problems.
+
 1999-06-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* fvwm/events.c (HandleUnmapNotify): removed some copy-and-past code trash
+	* fvwm/events.c (HandleUnmapNotify): removed some copy-and-past code
+	trash
 
 1999-06-27  Dominik Vogt  <dominik_vogt@gmx.de>
 

@@ -1024,19 +1024,19 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     {
       if(tmp->hints.max_width < tmp->hints.min_width)
         {
-	  tmp->hints.max_width = Scr.MaxWindowWidth;
+	  tmp->hints.max_width = DEFAULT_MAX_WINDOW_WIDTH;
           broken_hints = 5;
         }
       if(tmp->hints.max_height < tmp->hints.min_height)
         {
-	  tmp->hints.max_height = Scr.MaxWindowHeight;
+	  tmp->hints.max_height = DEFAULT_MAX_WINDOW_HEIGHT;
           broken_hints = 6;
         }
     }
   else
     {
-      tmp->hints.max_width = Scr.MaxWindowWidth;
-      tmp->hints.max_height = Scr.MaxWindowHeight;
+      tmp->hints.max_width = DEFAULT_MAX_WINDOW_WIDTH;
+      tmp->hints.max_height = DEFAULT_MAX_WINDOW_HEIGHT;
     }
 
   /*
