@@ -1,3 +1,8 @@
+2000-06-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* Enabled locking FvwmTheme config and messages.
+	Fixed 'ModuleSynchronous FvwmTheme' dead-lock.
+
 2000-06-20  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* FvwmPager/x_pager.c: tune the mini-window height and width
