@@ -2174,7 +2174,7 @@ void ParseOptions(void)
     else if (StrEquals(resource, "BalloonYOffset"))
     {
       sscanf(arg1, "%d", &BalloonYOffset);
-      if (BalloonYOffset <= 0)
+      if (BalloonYOffset == 0)
       {
 	fprintf(stderr,
 		"%s: Warning:"
