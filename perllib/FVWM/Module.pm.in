@@ -186,6 +186,7 @@ sub new ($@) {
 
 	$self->{disconnected} = 0;
 	$self->{debug} = $params{'Debug'} || 0;
+	$self->{debug} = ${$self->{debug}} if ref($self->{debug}) eq 'SCALAR';
 	$self->{lastPacket} = [];
 	$self->{handlers} = {};
 	$self->{shouldSendUnlock} = 0;

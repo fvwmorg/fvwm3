@@ -1,3 +1,8 @@
+2002-06-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* perl/xmessage.ppp:
+	added examples for new preprocess directives
+
 2002-05-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* perl/module-example:

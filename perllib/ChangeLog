@@ -1,3 +1,8 @@
+2002-06-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	Debug may be given as a reference in constructor, good for EnableOptions
+
 2002-06-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

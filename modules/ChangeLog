@@ -1,3 +1,10 @@
+2002-06-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPerl/FvwmPerl.1:
+	* FvwmPerl/FvwmPerl.in:
+	added --nolock, --nosend, --noremove like in FvwmM4/FvwmCpp; --debug;
+	implemented preprocess directives %Repeat, %ModuleConfig, %Prefix, %End
+
 2002-06-19  olicha  <olivier.chapuis@free.fr>
 
 	* **/Makefile.am
