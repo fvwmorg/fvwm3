@@ -1148,13 +1148,12 @@ Shadow=size [offset] [directions]:
 .I size
 is a positive integer which specifies the number of pixels of shadow.
 .I offset
-is an optional positive integer which defines the number of pixels to offset
-the shadow from the edge of the character.
-The default offset is zero.
+is an optional positive integer which defines the number of pixels
+to offset the shadow from the edge of the character.  The default
+offset is zero.
 .I directions
-is an optional set of directions the shadow
-emanates from the character.
-The
+is an optional set of directions the shadow emanates from the
+character.  The
 .I directions
 are a space separated list of fvwm directions:
 
@@ -1176,29 +1175,23 @@ are a space separated list of fvwm directions:
 
 a shadow is displayed in each given direction.
 .I All
-is equivalent to all the directions.
-The default
+is equivalent to all the directions.  The default
 .I direction
 is
 .IR BottomRight .
 
-The shadow effect only works with colorsets.
-The color of the shadow is defined by using the
+The shadow effect only works with colorsets.  The color of the
+shadow is defined by using the
 .I fgsh
 option of the
 .I Colorset
-command.
-Please refer to the
+command.  Please refer to the
 .B COLORSETS
 section for details about colorsets.
 
-Note: It can be difficult to find
-the font,
-.IR fg , fgsh
-and
-.IR bg
-colors to make this effect look good, but it
-can look quite good.
+Note: It can be difficult to find the font,
+.IR fg ", " fgsh " and " bg
+colors to make this effect look good, but it can look quite good.
 
 .SH BI-DIRECTIONAL TEXT
 
@@ -1210,10 +1203,8 @@ In fvwm this is done automatically in window titles, menus,
 module labels and other places if the fonts used for displaying the
 text are of one of the charsets that require
 .I bidi
-(bi-directional)
-support.
-For example, this includes iso8859-6, iso8859-8 and iso10646-1
-(unicode), but not other iso8859-* fonts.
+(bi-directional) support.  For example, this includes iso8859-6,
+iso8859-8 and iso10646-1 (unicode), but not other iso8859-* fonts.
 
 This bi-directional text support is done using the
 .I fribidi
