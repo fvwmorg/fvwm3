@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* Some code (charset conversion) from the glib-2 (gutf8.c) copyrighted 
+/* Some code (charset conversion) from the glib-2 (gutf8.c) copyrighted
  * by Tom Tromey & Red Hat, Inc. */
 
 #include "config.h"
@@ -71,7 +71,7 @@ void get_charset(void)
   if (charset)
       return;
 
-#ifdef HAVE_CODESET     
+#ifdef HAVE_CODESET
   /* Get the name of the current locale.  */
   if ((setlocale(LC_CTYPE, getenv("LC_CTYPE"))) == NULL)
       fprintf(stderr,
@@ -85,11 +85,12 @@ void get_charset(void)
 /***********************************************************************
  * conversion between charsets
  ***********************************************************************/
-char *convert_charsets(const char *in_charset, const char *out_charset, 
+char *convert_charsets(const char *in_charset, const char *out_charset,
 		       const unsigned char *in, unsigned int in_size)
 {
   iconv_t cd;
   int have_error = 0;
+  int is_finished = 0;
   size_t nconv;
   size_t insize,outbuf_size,outbytes_remaining,len;
   const char *inptr;
@@ -111,7 +112,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
       fvwm_msg(WARN, "convert_charsets",
 	       "conversion from `%s' to `%s' fail (init)\n",
 	       in_charset,out_charset);
-    
+
     /* Terminate the output string.  */
     return NULL;
   }
@@ -126,41 +127,44 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 
   inptr = in;
 
- again:
-
-  nconv = iconv(cd,(const char **)&inptr,&insize,&outp,&outbytes_remaining);
-  if (nconv == (size_t) -1)
+  for (is_finished = 0; is_finished == 0; )
+  {
+    nconv = iconv(cd,(char **)&inptr,&insize,&outp,&outbytes_remaining);
+    if (nconv == (size_t) -1)
     {
       switch (errno)
-	{
-	case EINVAL:
-	  /* Incomplete text, do not report an error */
-	  break;
-	case E2BIG:
-	  {
-	    size_t used = outp - dest;
+      {
+      case EINVAL:
+        /* Incomplete text, do not report an error */
+        is_finished = 1;
+        break;
+      case E2BIG:
+      {
+        size_t used = outp - dest;
 
-	    outbuf_size *= 2;
-	    dest = realloc (dest, outbuf_size);
-		
-	    outp = dest + used;
-	    outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
+        outbuf_size *= 2;
+        dest = realloc (dest, outbuf_size);
 
-	    goto again;
-	  }
-	default:
-	  fvwm_msg(ERR, "convert_charsets",
-		   "Error during conversion from %s to %s\n",
-		   in_charset,out_charset);
-	  have_error = True;
-	  break;
-	}
+        outp = dest + used;
+        outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
+
+        break;
+      }
+      default:
+        fvwm_msg(ERR, "convert_charsets",
+                 "Error during conversion from %s to %s\n",
+                 in_charset,out_charset);
+        have_error = 1;
+        is_finished = 1;
+        break;
+      }
     }
+  }
 
 
   /* Terminate the output string.  */
   *outp = '\0';
-  
+
   if (iconv_close (cd) != 0)
     fvwm_msg(ERR, "convert_charsets","iconv_close fail\n",
 	     in_charset,out_charset);
