@@ -1,3 +1,26 @@
+1999-03-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/functions.c: sorted functions
+
+	* fvwm/parse.h:
+	* fvwm/functions.c (func_config):
+	(repeat_function): new 'Repeat' function
+
+	* fvwm/builtins.c (Maximize):
+	* libs/Parse.c (PeekToken): changed PeekToken function to return token
+	and set new string pointer via parameters
+	(SkipNTokens):
+	(CheckNTokens):
+
+	* fvwm/functions.c (DeferExecution):
+	(ExecuteFunction): added some debugging code to force a coredump if
+	tmp_win is accessed in functions that don't use DeferExecution (which
+	is illegal: if they need a window they have to make sure they got one).
+	(expand): added 'noexpand' command prefix
+
+	* fvwm/functions.c (DeferExecution): Check *tmp_win for non-NULL
+	instead of tmp_win. Caused a coredump.
+
 Tue Mar 30 20:54:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/menus.c (menuShortcuts): bugfix `if ( countHotkey = 1 )'

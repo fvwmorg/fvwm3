@@ -28,8 +28,13 @@
 #include "module.h"
 
 
-static char *expand(char *input, char *arguments[],FvwmWindow *tmp_win);
-static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d,Bool may_time_out);
+static char *last_function = NULL;
+static char *last_complex_function = NULL;
+static char *last_builtin_function = NULL;
+static char *last_top_function = NULL;
+static char *last_module = NULL;
+static char *last_menu = NULL;
+static FvwmWindow *last_fvwm_window = NULL;
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -53,6 +58,11 @@ extern FvwmWindow *Tmp_win;
  * how that goes.
  * dje 12/19/98.
  */
+
+#define PRE_NOEXPAND     "NOEXPAND"
+#define PRE_NOEXPAND_LEN 8
+#define PRE_REPEAT       "REPEAT"
+#define PRE_SILENT       "SILENT"
 
 /* The function names in the first field *must* be in uppercase or else the
  * function cannot be called. */
@@ -158,6 +168,7 @@ static struct functions func_config[] =
   {"RECAPTURE",    Recapture,        F_RECAPTURE,           FUNC_NO_WINDOW},
   {"REFRESH",      refresh_function, F_REFRESH,             FUNC_NO_WINDOW},
   {"REFRESHWINDOW",refresh_win_function, F_REFRESH,         FUNC_NEEDS_WINDOW},
+  {PRE_REPEAT,     repeat_function,  F_REPEAT,              FUNC_NO_WINDOW},
   {"RESIZE",       resize_window,    F_RESIZE,              FUNC_NEEDS_WINDOW},
   {"RESTART",      restart_function, F_RESTART,             FUNC_NO_WINDOW},
   {"SCROLL",       scroll,           F_SCROLL,              FUNC_NO_WINDOW},
@@ -167,7 +178,7 @@ static struct functions func_config[] =
   {"SETANIMATION", set_animation,    F_SET_ANIMATION,	    FUNC_NO_WINDOW},
   {"SETENV",       SetEnv,           F_SETENV,              FUNC_NO_WINDOW},
   {"SET_MASK",     set_mask_function,F_SET_MASK,            FUNC_NO_WINDOW},
-  {"SILENT",       NULL,             F_SILENT,              FUNC_NO_WINDOW},
+  {PRE_SILENT,     NULL,             F_SILENT,              FUNC_NO_WINDOW},
   {"SNAPATTRACTION",SetSnapAttraction,F_SNAP_ATT,           FUNC_NO_WINDOW},
   {"SNAPGRID",     SetSnapGrid,      F_SNAP_GRID,           FUNC_NO_WINDOW},
   {"STICK",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
@@ -192,6 +203,27 @@ static struct functions func_config[] =
   {"",0,0,0}
 };
 
+
+void update_last_string(char **pdest, char **pdest2, char *src,
+			Bool no_expand, Bool no_store)
+{
+  if (no_store)
+    return;
+  if (no_expand)
+    {
+      if (*pdest == src)
+	return;
+      *pdest = strdup(src);
+    }
+  else
+    {
+      if (*pdest)
+	free(*pdest);
+      *pdest = src;
+    }
+  *pdest2 = *pdest;
+  return;
+}
 
 /*
 ** do binary search on func list
@@ -237,6 +269,140 @@ static struct functions *FindBuiltinFunction(char *func)
 }
 
 
+static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
+		    Bool fAddNoexpand)
+{
+  int l,i,l2,n,k,j;
+  char *out;
+
+  l = strlen(input);
+  l2 = l;
+
+  i=0;
+  while(i<l)
+    {
+      if(input[i] == '$')
+	{
+	  n = input[i+1] - '0';
+	  if((n >= 0)&&(n <= 9)&&(arguments[n] != NULL))
+	    {
+	      l2 += strlen(arguments[n])-2;
+	      i++;
+	    }
+	  else if(input[i+1] == 'd' || input[i+1] == 'w' ||
+		  input[i+1] == 'x' || input[i+1] == 'y')
+	    {
+	      l2 += 16;
+	      i++;
+	    }
+	}
+      i++;
+    }
+
+  i=0;
+  if (fAddNoexpand)
+    {
+      out = safemalloc(l2+PRE_NOEXPAND_LEN+2);
+      strcpy(out, PRE_NOEXPAND" ");
+      j = PRE_NOEXPAND_LEN+1;
+    }
+  else
+    {
+      out = safemalloc(l2+1);
+      j=0;
+    }
+  while(i<l)
+    {
+      if(input[i] == '$')
+	{
+	  n = input[i+1] - '0';
+	  if((n >= 0)&&(n <= 9)&&(arguments[n] != NULL))
+	    {
+	      for(k=0;k<strlen(arguments[n]);k++)
+		out[j++] = arguments[n][k];
+	      i++;
+	    }
+	  else if(input[i+1] == 'w')
+	    {
+	      if(tmp_win)
+		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
+	      else
+		sprintf(&out[j],"$w");
+	      j += strlen(&out[j]);
+	      i++;
+	    }
+	  else if(input[i+1] == 'd')
+	    {
+	      sprintf(&out[j], "%d", Scr.CurrentDesk);
+	      j += strlen(&out[j]);
+	      i++;
+	    }
+	  else if(input[i+1] == 'x')
+	    {
+	      sprintf(&out[j], "%d", Scr.Vx);
+	      j += strlen(&out[j]);
+	      i++;
+	    }
+	  else if(input[i+1] == 'y')
+	    {
+	      sprintf(&out[j], "%d", Scr.Vy);
+	      i++;
+	    }
+	  else if(input[i+1] == '$')
+	    {
+	      out[j++] = '$';
+	      i++;
+	    }
+	  else
+	    out[j++] = input[i];
+	}
+      else
+	out[j++] = input[i];
+      i++;
+    }
+  out[j] = 0;
+  return out;
+}
+
+/*****************************************************************************
+ *
+ * Waits Scr.ClickTime, or until it is evident that the user is not
+ * clicking, but is moving the cursor
+ *
+ ****************************************************************************/
+static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
+{
+  int xcurrent,ycurrent,total = 0;
+  Time t0;
+  extern Time lastTimestamp;
+
+  xcurrent = x;
+  ycurrent = y;
+  t0 = lastTimestamp;
+
+  while(((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
+	 !may_time_out) &&
+	x - xcurrent < 3 && x - xcurrent > -3 &&
+	y - ycurrent < 3 && y - ycurrent > -3)
+    {
+      usleep(20000);
+      total+=20;
+      if(XCheckMaskEvent (dpy,EndMask, d))
+	{
+	  StashEventTime(d);
+	    return True;
+	}
+      if(XCheckMaskEvent (dpy,ButtonMotionMask|PointerMotionMask, d))
+	{
+	  xcurrent = d->xmotion.x_root;
+	  ycurrent = d->xmotion.y_root;
+	  StashEventTime(d);
+	}
+    }
+  return False;
+}
+
+
 /***********************************************************************
  *
  *  Procedure:
@@ -255,11 +421,16 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   Window w;
   int matched,j;
   char *function;
-  char *action, *taction, *expaction;
+  char *action, *taction, *t2action;
+  char *next;
+  static char *expaction = NULL;
   char *arguments[10];
   struct functions *bif;
-  int func_type;
   Bool set_silent;
+  Bool exp_malloced;
+  Bool no_expand;
+  Bool no_store;
+  int skip;
 
   if (!Action || Action[0] == 0 || Action[1] == 0)
   {
@@ -276,7 +447,6 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     ModuleConfig(NULL,0,0,0,Action,0);  /* process the command */
     return;                             /* done */
   }
-
   for(j=0;j<10;j++)
     arguments[j] = NULL;
 
@@ -291,50 +461,83 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
      (eventp->xany.window != tmp_win->w))
     w = eventp->xbutton.subwindow;
 
-  taction = expaction = expand(Action,arguments,tmp_win);
+  set_silent = False;
+  no_expand = False;
+  no_store = False;
+  if (Action[0] == '-')
+    {
+      no_store = 1;
+      Action++;
+    }
+
+  taction = Action;
+  /* parse prefixes */
+  action = PeekToken(taction, &t2action);
+  while (action)
+    {
+      if (StrEquals(action, PRE_NOEXPAND))
+	no_expand = True;
+      else if (StrEquals(action, PRE_SILENT))
+	{
+	  if (Scr.flags.silent_functions == 0)
+	    {
+	      set_silent = 1;
+	      Scr.flags.silent_functions = 1;
+	    }
+	}
+      else if (StrEquals(action, PRE_REPEAT))
+	{
+	  no_store = True;
+	  break;
+	}
+      else
+	break;
+      taction = t2action;
+      action = PeekToken(taction, &t2action);
+    }
+  if (taction == NULL)
+    {
+      if (set_silent)
+	Scr.flags.silent_functions = 0;
+      return;
+    }
+  skip = taction - Action;
+
+  if (no_expand)
+    expaction = Action;
+  else
+    {
+      expaction = expand(Action, arguments, tmp_win, True);
+      skip += PRE_NOEXPAND_LEN+1;
+    }
+  taction = expaction + skip;
   j=0;
   matched = FALSE;
-  func_type = F_NOP;
-  set_silent = 0;
 
-  do
-  {
-    action = GetNextToken(taction,&function);
-    if (!function)
-      {
-	if (set_silent)
-	  Scr.flags.silent_functions = 0;
-	return;
-      }
-    bif = FindBuiltinFunction(function);
-    if (bif)
-      {
-	func_type = bif->func_type;
-	if (func_type == F_SILENT)
-	  {
-	    taction = action;
-	    free(function);
-	    if (Scr.flags.silent_functions == 0)
-	      {
-		set_silent = 1;
-		Scr.flags.silent_functions = 1;
-	      }
-	  }
-	else
-	  {
-	    matched = TRUE;
-	    bif->action(eventp,w,tmp_win,context,action,&Module);
-	  }
-      }
-  } while (func_type == F_SILENT);
+  action = GetNextToken(taction,&function);
+  bif = FindBuiltinFunction(function);
+  if (bif)
+    {
+      matched = TRUE;
+      update_last_string(&last_builtin_function, &last_function, expaction,
+		         no_expand, no_store);
+      bif->action(eventp,w,tmp_win,context,action,&Module);
+    }
 
-  if(!matched)
+  if (!matched)
     {
       Bool desperate = 1;
 
       ComplexFunction2(eventp,w,tmp_win,context,taction, &Module, &desperate);
       if(desperate)
-	executeModule(eventp,w,tmp_win,context,taction, &Module);
+	{
+	  update_last_string(&last_module, &last_function, expaction,
+			     no_expand, no_store);
+	  executeModule(eventp,w,tmp_win,context,taction, &Module);
+	}
+      else
+	update_last_string(&last_complex_function, &last_function,
+			   expaction, no_expand, no_store);
     }
 
   /* Only wait for an all-buttons-up condition after calls from
@@ -342,10 +545,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   if(Module == -1)
     WaitForButtonsUp();
 
-  if (function)
-    free(function);
-  if(expaction != NULL)
-    free(expaction);
+  free(function);
   if (set_silent)
     Scr.flags.silent_functions = 0;
 
@@ -381,7 +581,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
   original_w = *w;
 
-  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(tmp_win != NULL))
+  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(*tmp_win != NULL))
   {
     if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
                                       (eventp->type != ButtonPress)))
@@ -668,44 +868,6 @@ FvwmFunction *FindFunction(char *function_name)
 
 /*****************************************************************************
  *
- * Waits Scr.ClickTime, or until it is evident that the user is not
- * clicking, but is moving the cursor
- *
- ****************************************************************************/
-static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
-{
-  int xcurrent,ycurrent,total = 0;
-  Time t0;
-  extern Time lastTimestamp;
-
-  xcurrent = x;
-  ycurrent = y;
-  t0 = lastTimestamp;
-
-  while(((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
-	 !may_time_out) &&
-	x - xcurrent < 3 && x - xcurrent > -3 &&
-	y - ycurrent < 3 && y - ycurrent > -3)
-    {
-      usleep(20000);
-      total+=20;
-      if(XCheckMaskEvent (dpy,EndMask, d))
-	{
-	  StashEventTime(d);
-	    return True;
-	}
-      if(XCheckMaskEvent (dpy,ButtonMotionMask|PointerMotionMask, d))
-	{
-	  xcurrent = d->xmotion.x_root;
-	  ycurrent = d->xmotion.y_root;
-	  StashEventTime(d);
-	}
-    }
-  return False;
-}
-
-/*****************************************************************************
- *
  * Builtin which determines if the button press was a click or double click...
  *
  ****************************************************************************/
@@ -770,7 +932,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(fi->action,arguments,tmp_win);
+	  taction = expand(fi->action,arguments,tmp_win,False);
 	  ExecuteFunction(taction,tmp_win,eventp,context,-2);
 	  free(taction);
 	}
@@ -846,7 +1008,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(fi->action,arguments,tmp_win);
+	  taction = expand(fi->action,arguments,tmp_win,False);
 	  ExecuteFunction(taction,tmp_win,ev,context,-2);
 	  free(taction);
 	}
@@ -860,87 +1022,37 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 }
 
 
-static char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
+void repeat_function(F_CMD_ARGS)
 {
-  int l,i,l2,n,k,j;
-  char *out;
+  int index;
+  char *optlist[] = {
+    "function",
+    "complex",
+    "builtin",
+    "module",
+    "top",
+    NULL
+  };
 
-  l = strlen(input);
-  l2 = l;
-
-  i=0;
-  while(i<l)
-    {
-      if(input[i] == '$')
-	{
-	  n = input[i+1] - '0';
-	  if((n >= 0)&&(n <= 9)&&(arguments[n] != NULL))
-	    {
-	      l2 += strlen(arguments[n])-2;
-	      i++;
-	    }
-	  else if(input[i+1] == 'd' || input[i+1] == 'w' ||
-		  input[i+1] == 'x' || input[i+1] == 'y')
-	    {
-	      l2 += 16;
-	      i++;
-	    }
-	}
-      i++;
-    }
-
-  out = safemalloc(l2+1);
-  i=0;
-  j=0;
-  while(i<l)
-    {
-      if(input[i] == '$')
-	{
-	  n = input[i+1] - '0';
-	  if((n >= 0)&&(n <= 9)&&(arguments[n] != NULL))
-	    {
-	      for(k=0;k<strlen(arguments[n]);k++)
-		out[j++] = arguments[n][k];
-	      i++;
-	    }
-	  else if(input[i+1] == 'w')
-	    {
-	      if(tmp_win)
-		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
-	      else
-		sprintf(&out[j],"$w");
-	      j += strlen(&out[j]);
-	      i++;
-	    }
-	  else if(input[i+1] == 'd')
-	    {
-	      sprintf(&out[j], "%d", Scr.CurrentDesk);
-	      j += strlen(&out[j]);
-	      i++;
-	    }
-	  else if(input[i+1] == 'x')
-	    {
-	      sprintf(&out[j], "%d", Scr.Vx);
-	      j += strlen(&out[j]);
-	      i++;
-	    }
-	  else if(input[i+1] == 'y')
-	    {
-	      sprintf(&out[j], "%d", Scr.Vy);
-	      i++;
-	    }
-	  else if(input[i+1] == '$')
-	    {
-	      out[j++] = '$';
-	      i++;
-	    }
-	  else
-	    out[j++] = input[i];
-	}
-      else
-	out[j++] = input[i];
-      i++;
-    }
-  out[j] = 0;
-  return out;
+  GetNextTokenIndex(action, optlist, 0, &index);
+  switch (index)
+  {
+  case 1: /* complex */
+fprintf(stderr,"repeating complex %s\n",last_complex_function);
+    ExecuteFunction(last_complex_function, tmp_win, eventp, context, *Module);
+    break;
+  case 2: /* builtin */
+fprintf(stderr,"repeating builtin %s\n",last_builtin_function);
+    ExecuteFunction(last_builtin_function, tmp_win, eventp, context, *Module);
+    break;
+  case 3: /* module */
+fprintf(stderr,"repeating module %s\n",last_module);
+    ExecuteFunction(last_module, tmp_win, eventp, context, *Module);
+    break;
+  case 0: /* function */
+  default:
+fprintf(stderr,"repeating %s\n",last_function);
+    ExecuteFunction(last_function, tmp_win, eventp, context, *Module);
+    break;
+  }
 }

@@ -94,6 +94,7 @@ enum {
     F_SHADE_ANIMATE,
     F_LAYER,
     F_SILENT,
+    F_REPEAT,
     F_IGNORE_MODIFIERS,
 
     F_RESIZE = 100,

@@ -189,10 +189,10 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 }
 
 
-static int 
+static int
 truncate_to_multiple (int x, int m)
 {
-  return (x < 0) ? (m * (x / m - 1)) : (m * (x / m)); 
+  return (x < 0) ? (m * (x / m - 1)) : (m * (x / m));
 }
 
 /***********************************************************************
@@ -230,7 +230,7 @@ void Maximize(F_CMD_ARGS)
 
   /* parse first parameter */
   val1_unit = Scr.MyDisplayWidth;
-  taction = PeekToken(action, &token);
+  token = PeekToken(action, &taction);
   if (token && StrEquals(token, "grow"))
     {
       grow_x = True;
@@ -245,7 +245,7 @@ void Maximize(F_CMD_ARGS)
 
   /* parse second parameter */
   val2_unit = Scr.MyDisplayHeight;
-  PeekToken(taction, &token);
+  token = PeekToken(taction, NULL);
   if (token && StrEquals(token, "grow"))
     {
       grow_y = True;
@@ -264,13 +264,15 @@ void Maximize(F_CMD_ARGS)
     /* Unmaximizing is slightly tricky since we want the window to
        stay on the same page, even if we have move to a different page
        in the meantime. the orig values are absolute! */
-    if (tmp_win->flags & STICKY) 
+    if (tmp_win->flags & STICKY)
       {
-	/* make sure we keep it on screen while unmaximizing */ 
-	new_x=tmp_win->orig_x-truncate_to_multiple(tmp_win->orig_x,Scr.MyDisplayWidth);
-	new_y=tmp_win->orig_y-truncate_to_multiple(tmp_win->orig_y,Scr.MyDisplayHeight); 
+	/* make sure we keep it on screen while unmaximizing */
+	new_x = tmp_win->orig_x -
+	  truncate_to_multiple(tmp_win->orig_x,Scr.MyDisplayWidth);
+	new_y = tmp_win->orig_y -
+	  truncate_to_multiple(tmp_win->orig_y,Scr.MyDisplayHeight);
       }
-    else 
+    else
       {
 	new_x = tmp_win->orig_x - Scr.Vx;
 	new_y = tmp_win->orig_y - Scr.Vy;
@@ -515,7 +517,7 @@ void WindowShade(F_CMD_ARGS)
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
         XResizeWindow(dpy, tmp_win->Parent,
                       tmp_win->frame_width - 2 * tmp_win->boundary_width,
-                      max(h - 2 * tmp_win->boundary_width 
+                      max(h - 2 * tmp_win->boundary_width
                           - tmp_win->title_height, 1));
         if (Scr.go.WindowShadeScrolls)
           XMoveWindow(dpy, tmp_win->w, 0, y);
@@ -553,7 +555,7 @@ void WindowShade(F_CMD_ARGS)
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
         XResizeWindow(dpy, tmp_win->Parent,
                       tmp_win->frame_width - 2 * tmp_win->boundary_width,
-                      max(h - 2 * tmp_win->boundary_width 
+                      max(h - 2 * tmp_win->boundary_width
                           - tmp_win->title_height, 1));
         tmp_win->frame_height = h;
         /* way too flickery
@@ -1579,19 +1581,19 @@ void imagePath_function(F_CMD_ARGS)
     SetImagePath( action );
 }
 
-/** Prepend rather than replace the image path.  
+/** Prepend rather than replace the image path.
     Used for obsolete PixmapPath and IconPath **/
 static void obsolete_imagepaths( const char* pre_path )
 {
     char* tmp = stripcpy( pre_path );
     char* path = alloca( strlen( tmp ) + strlen( GetImagePath() ) + 2 );
-    
+
     strcpy( path, tmp );
     free( tmp );
 
     strcat( path, ":" );
     strcat( path, GetImagePath() );
-    
+
     SetImagePath( path );
 }
 

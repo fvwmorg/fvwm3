@@ -210,16 +210,30 @@ extern void       RaiseWindow(FvwmWindow *t);
 extern void       LowerWindow(FvwmWindow *t);
 extern Bool       GrabEm(int);
 extern void       UngrabEm(void);
-extern FvwmFunction *NewFvwmFunction(char *name);
 extern MenuRoot   *NewMenuRoot(char *name);
 extern void       AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 extern void       MakeMenu(MenuRoot *);
 extern void       CaptureAllWindows(void);
 extern void       SetTimer(int);
 extern int        flush_expose(Window w);
+
+
+/* --- functions.c --- */
+void find_func_type(char *action, short *func_type, Bool *func_needs_window);
+FvwmFunction *FindFunction(char *function_name);
+extern FvwmFunction *NewFvwmFunction(char *name);
+void ComplexFunction(F_CMD_ARGS);
+void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
+void DestroyFunction(FvwmFunction *func);
+extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
+			  int, int);
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module);
 void AddToFunction(FvwmFunction *func, char *action);
+void repeat_function(F_CMD_ARGS);
+/* --- end of functions.c --- */
+
+
 void do_windowList(F_CMD_ARGS);
 extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
@@ -237,7 +251,6 @@ extern void       match_string(struct config *, char *, char *, FILE *);
 extern void       no_popup(char *ptr);
 extern void       KillModule(int channel, int place);
 extern void       ClosePipes(void);
-void find_func_type(char *action, short *func_type, Bool *func_needs_window);
 extern void       GetIconWindow(FvwmWindow *tmp_win);
 extern void       GetIconBitmap(FvwmWindow *tmp_win);
 /*  RBW - 11/02/1998  */
@@ -260,10 +273,6 @@ void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, unsigned long, int,int);
 extern Bool PopUpMenu(MenuRoot *, int, int);
-void ComplexFunction(F_CMD_ARGS);
-void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
-extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
-			  int, int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void move_window(F_CMD_ARGS);
 void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -349,7 +358,6 @@ char *GetNextPtr(char *ptr);
 void InteractiveMove(Window *w, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 		     XEvent *eventp);
 
-FvwmFunction *FindFunction(char *function_name);
 MenuRoot *FindPopup(char *popup_name);
 
 void Bell(F_CMD_ARGS);
@@ -402,7 +410,6 @@ void Nop_func(F_CMD_ARGS);
 void SetGlobalOptions(F_CMD_ARGS);
 void Emulate(F_CMD_ARGS);
 void set_mask_function(F_CMD_ARGS);
-void DestroyFunction(FvwmFunction *func);
 void DestroyMenu(MenuRoot *mr);
 Pixel GetColor(char *);
 void FreeColors(Pixel *pixels, int n);
@@ -502,11 +509,11 @@ int  GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev);
 
 /* hook into .fvwm2rc functions */
 void GNOME_ButtonFunc(
-         XEvent *eventp, 
+         XEvent *eventp,
 	 Window w,
-	 FvwmWindow *fwin, 
-	 unsigned long context, 
-	 char *action, 
+	 FvwmWindow *fwin,
+	 unsigned long context,
+	 char *action,
 	 int *Module);
 
 /* get hints on a window; sets parameters in a FvwmWindow */

@@ -7,7 +7,9 @@ man_MANS = fvwm2.1
 
 fvwm2_SOURCES = add_window.c bindings.c borders.c builtins.c colormaps.c   \
 	colors.c decorations.c defaults.h events.c focus.c functions.c	   \
-	functions.h fvwm.c fvwm.h fvwmdebug.c fvwmdebug.h icccm2.c icons.c \
+	functions.h fvwm.c fvwm.h fvwmdebug.c fvwmdebug.h \
+	gnome.c \
+	icccm2.c icons.c \
 	menus.c menus.h misc.c misc.h modconf.c module.c module.h move.c   \
 	parse.h placement.c read.c resize.c screen.h session.c style.c	   \
 	virtual.c windows.c gnome.c

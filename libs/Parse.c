@@ -183,15 +183,25 @@ char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
   end = CopyToken(indata, tmptok, spaces, snum, delims, dnum, out_delim);
 
   if (tmptok[0] == 0)
+  {
     *token = NULL;
+    return NULL;
+  }  
   else
     *token = tmptok;
   return end;
 }
 
-char *PeekToken(char *indata, char **token)
+char *PeekToken(char *indata, char **outdata)
 {
-  return DoPeekToken(indata, token, NULL, NULL, NULL);
+  char *dummy;
+  char *token;
+
+  if (!outdata)
+    outdata = &dummy;
+
+  *outdata = DoPeekToken(indata, &token, NULL, NULL, NULL);
+  return token;
 }
 
 /* Tries to seek up to n tokens in indata. Returns the number of tokens
@@ -203,7 +213,7 @@ int CheckNTokens(char *indata, unsigned int n)
 
   for (i = 0; i < n; i++)
     {
-      indata = PeekToken(indata, &token);
+      token = PeekToken(indata, NULL);
       if (token == NULL)
 	break;
     }
@@ -294,7 +304,7 @@ char *SkipNTokens(char *indata, unsigned int n)
   char *junk;
 
   for ( ; n > 0 ; n--)
-    indata = PeekToken(indata, &junk);
+    PeekToken(indata, &indata);
   return indata;
 }
 
