@@ -8,5 +8,103 @@ Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d hilight/shad
 German Gomez Garcia:
 Named MenuStyles
 
+Steven M. Robbins:
+Autoconf & automake support.
+
 Dominik Vogt:
 Improved ShuffleButtons algorithm (FvwmButtons), button geometries (FvwmButtons), Menu Position Hints, XResources.c, various move/resize and menu enhancements, MoveToPage, MoveToDesk, various parsing functions, COPYING file
+
+A.J. Weber:
+SnapAttraction patch
+
+
+
+Along with a cast of thousands (well, dozens) mentioned in old
+ChangeLog entries.  If you find your name below, please send an entry
+in the style of the above entries, to the mailing list
+<fvwm-workers@@hpc.uh.edu>.
+
+Dan Astoorian
+Andrew (a.b.) Atrens
+John Aughey
+Greg Badros
+Graham Barr
+David Barth
+Mike Blatchley
+Mark Boyns
+Eli Burke
+Martin Cartwright
+Beat Christen
+Frederic Cordier
+Andrew Davison
+Frederic Devernay
+Austin Donnelly
+Matthias Ettrich
+Evans & Sutherland Computer Corporation
+Frank Fejes
+Thomas Zuwei Feng
+Mike Finger
+Pete Forman
+Patrice Fortier
+Todd Fries
+lar3ry gensch
+Romano Giannetti
+Peter Gray
+Kaj Groner
+Eddy J. Gurney
+Markus Gutschke
+Georg Hager
+John Heidemann
+Charles Hines
+Paul Hudson
+Sverre H. Huseby
+Toshi Isogai
+Thimo Jansen
+Albrecht Kadlec
+Michael A. Kazda
+Jonathan Kelley
+Andreas Klemm
+Alfredo Kengi Kojima
+Chris Laas
+Tom LaStrange
+Ric Lister
+David MacKenzie
+Don Mahurin
+Pekka Marjola
+Anthony Martin
+Christophe Martin
+Makoto Matushita
+Grant McDorman
+Henry R. McTague
+Brady Montz
+Robert Nation
+Dan Niles
+Ludvig A. Norin
+Bill Oswald
+Carsten Paeth
+Hector Peraza
+Per Persson
+Tim Phipps
+Pekka Pietik{inen
+Mark Powell
+Randy Ray
+William E. Roadcap
+Frank Scheelen
+Eric Schott
+Mark Scott
+Paul D. Smith
+Kit Smithers
+Nobutaka Suzuki
+Szijarto Szabolcs
+Andrew Taylor
+Jason L. Tibbitts
+Jarl Totland
+Ilkka E T Tuohela
+Andrew Veliath
+Barry A. Warsaw
+Dan Weeks
+Brian Wellington
+Rob Whapham
+Alan Wild
+Randall Winchester
+Bo Yang
