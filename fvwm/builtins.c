@@ -633,7 +633,6 @@ void exec_function(F_CMD_ARGS)
   {
     cmd = strdup(action);
   }
-fprintf(stderr,"cmd: '%s'\n",cmd);
   if (!cmd)
     return;
   /* Use to grab the pointer here, but the fork guarantees that
@@ -795,7 +794,6 @@ void echo_func(F_CMD_ARGS)
 {
   unsigned int len;
 
-fprintf(stderr,"echo action='%s'\n",action);
   if (!action)
     action = "";
   len = strlen(action);

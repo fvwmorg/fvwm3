@@ -363,7 +363,6 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
   char *string = NULL;
   Bool is_string = False;
 
-fprintf(stderr,"expand: '%s'\n", input);
   l = strlen(input);
   l2 = l;
 
@@ -621,7 +620,6 @@ fprintf(stderr,"expand: '%s'\n", input);
     i++;
   }
   out[j] = 0;
-fprintf(stderr,"to '%s'\n", out);
   return out;
 }
 
