@@ -898,6 +898,30 @@ void FetchWmProtocols (FvwmWindow *tmp)
   return;
 }
 
+
+int
+gcd (int a, int b)
+{
+  int r0, r1, r2;
+
+  if ((a == 0) || (b == 0))
+    {
+       return 0;
+    }
+
+  r1 = a;
+  r2 = b;
+  while (r2 != 0)
+   {
+     r0 = r1;
+     r1 = r2;
+     r2 = r0 % r1;
+   }
+
+  return r1;
+}
+
+
 /***********************************************************************
  *
  *  Procedure:
@@ -907,19 +931,30 @@ void FetchWmProtocols (FvwmWindow *tmp)
  *	tmp - the fvwm window structure to use
  *
  ***********************************************************************/
+
 void GetWindowSizeHints(FvwmWindow *tmp)
 {
   long supplied = 0;
+  Bool broken_hints = False;
 
-  if (!XGetWMNormalHints (dpy, tmp->w, &tmp->hints, &supplied))
+  if (HAS_OVERRIDE_SIZE_HINTS(tmp) ||
+      !XGetWMNormalHints (dpy, tmp->w, &tmp->hints, &supplied))
     tmp->hints.flags = 0;
 
   /* Beat up our copy of the hints, so that all important field are
    * filled in! */
   if (tmp->hints.flags & PResizeInc)
     {
-      if (tmp->hints.width_inc <= 0) tmp->hints.width_inc = 1;
-      if (tmp->hints.height_inc <= 0) tmp->hints.height_inc = 1;
+      if (tmp->hints.width_inc <= 0) 
+        {
+          tmp->hints.width_inc = 1;
+	  broken_hints = True;
+        }
+      if (tmp->hints.height_inc <= 0) 
+        {
+          tmp->hints.height_inc = 1;
+	  broken_hints = True;
+        }
     }
   else
     {
@@ -927,34 +962,18 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       tmp->hints.height_inc = 1;
     }
 
-  /*
-   * ICCCM says that PMinSize is the default if no PBaseSize is given,
-   * and vice-versa.
-   */
-
-  if(tmp->hints.flags & PBaseSize)
-    {
-      if (tmp->hints.base_width < 0) tmp->hints.base_width = 0;
-      if (tmp->hints.base_height < 0) tmp->hints.base_height = 0;
-    }
-  else
-    {
-      if(tmp->hints.flags & PMinSize)
-	{
-	  tmp->hints.base_width = tmp->hints.min_width;
-	  tmp->hints.base_height = tmp->hints.min_height;
-	}
-      else
-	{
-	  tmp->hints.base_width = 0;
-	  tmp->hints.base_height = 0;
-	}
-    }
-
   if(tmp->hints.flags & PMinSize)
     {
-      if (tmp->hints.min_width <= 0) tmp->hints.min_width = 1;
-      if (tmp->hints.min_height <= 0) tmp->hints.min_height = 1;      
+      if (tmp->hints.min_width <= 0) 
+        {
+          tmp->hints.min_width = 1;
+	  broken_hints = True;
+        }
+      if (tmp->hints.min_height <= 0) 
+        {
+          tmp->hints.min_height = 1;      
+	  broken_hints = True;
+        }
     }
   else
     {
@@ -973,9 +992,15 @@ void GetWindowSizeHints(FvwmWindow *tmp)
   if(tmp->hints.flags & PMaxSize)
     {
       if(tmp->hints.max_width < tmp->hints.min_width)
-	tmp->hints.max_width = MAX_WINDOW_WIDTH;
+        {
+	  tmp->hints.max_width = MAX_WINDOW_WIDTH;
+          broken_hints = True;
+        }
       if(tmp->hints.max_height < tmp->hints.min_height)
-	tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+        {
+	  tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+          broken_hints = True;
+        }
     }
   else
     {
@@ -983,12 +1008,55 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       tmp->hints.max_height = MAX_WINDOW_HEIGHT;
     }
 
-  if (HAS_OVERRIDE_SIZE_HINTS(tmp))
+  /*
+   * ICCCM says that PMinSize is the default if no PBaseSize is given,
+   * and vice-versa.
+   */
+
+  if(tmp->hints.flags & PBaseSize)
     {
-      tmp->hints.min_width = 1;
-      tmp->hints.min_height = 1;
-      tmp->hints.max_width = MAX_WINDOW_WIDTH;
-      tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+      if (tmp->hints.base_width < 0) 
+        {
+          tmp->hints.base_width = 0;
+          broken_hints = True;
+        }
+      if (tmp->hints.base_height < 0) 
+        {
+          tmp->hints.base_height = 0;
+          broken_hints = True;
+        }
+      if ((tmp->hints.base_width > tmp->hints.min_width) ||
+          (tmp->hints.base_height > tmp->hints.min_height))
+        {
+          /* In this case, doing the aspect ratio calculation
+	     for window_size - base_size as prescribed by the
+             ICCCM is going to fail. 
+             Resetting the flag disables
+             the use of base_size in aspect ratio calculation
+             while it is still used for grid sizing in the way
+	     most window manager do, allowing for window sizes
+	     below the base size. 
+           */
+          tmp->hints.flags &= ~PBaseSize;
+#if 0
+ 	/* Keep silent about this, since the Xlib manual actually
+  	   recommends making min <= base <= max ! */
+          broken_hints = True;
+#endif
+        }
+    }
+  else
+    {
+      if(tmp->hints.flags & PMinSize)
+	{
+	  tmp->hints.base_width = tmp->hints.min_width;
+	  tmp->hints.base_height = tmp->hints.min_height;
+	}
+      else
+	{
+	  tmp->hints.base_width = 0;
+	  tmp->hints.base_height = 0;
+	}
     }
 
   if(!(tmp->hints.flags & PWinGravity))
@@ -998,6 +1066,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if (tmp->hints.flags & PAspect)
   {
+    int g;
+
     /*
     ** check to make sure min/max aspect ratios look valid
     */
@@ -1005,6 +1075,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 #define maxAspectY tmp->hints.max_aspect.y
 #define minAspectX tmp->hints.min_aspect.x
 #define minAspectY tmp->hints.min_aspect.y
+
+
     /*
     ** The math looks like this:
     **
@@ -1020,14 +1092,36 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     ** seems safest.
     **
     */
+     
+    /* protect against silly things like MAXINT/MAXINT */
+    g  = gcd(maxAspectX, maxAspectY);
+    if (g != 0)
+      {
+        maxAspectX /= g;
+        maxAspectY /= g;
+      }
+
+    g = gcd (minAspectX, minAspectY);
+    if (g != 0)
+      {
+        minAspectX /= g;
+        minAspectY /= g;
+      }
+
     if ((minAspectX * maxAspectY) > (maxAspectX * minAspectY))
     {
       tmp->hints.flags &= ~PAspect;
-      fvwm_msg(WARN,
-               "GetWindowSizeHints",
-               "window id 0x%08x max_aspect ratio is < min_aspect ratio -> ignoring, but program displaying this window should be fixed!!!!",
-               tmp->w);
+      broken_hints = True;
     }
   }
+
+  if (broken_hints)
+    {
+      fvwm_msg (WARN, "GetWindowSizeHints",
+               "%s window %#lx has broken size hints\n"
+               "Please report this to fvwm-workers@fvwm.org\n",
+                tmp->name, tmp->w);
+    }
 }
+
 

@@ -1,3 +1,21 @@
+1999-05-05  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/icons.c (Iconify): remove unnecessary EnterNotify event
+	squashing.
+
+	* fvwm/events.c (HandleEnterNotify): improve the icon title
+	raising fix with a better understanding of what goes on:
+	We get an EnterNotify with mode == NotifyUnGrab when fvwm releases
+	the grab held during iconification. Now we only react to 
+	EnterNotify events with mode == NotifyNormal.
+
+	* fvwm/add_window.c (GetWindowSizeHints): issue a warning
+	if broken hints are encountered. Reset PBaseSize if base > min,
+	to avoid problems with size - base becoming <= 0 in the aspect
+	ratio calculations. Normalize the aspect ratios.
+	(gcd): Euclid.
+
+
 1999-05-05  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* utils/BuildXLockMenu: applied patch by Mikhael Goikhman

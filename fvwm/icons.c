@@ -1059,12 +1059,6 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	    SetFocus(Scr.NoFocusWin, NULL,1);
 	}
     }
-  /* domivogt (04-may-1999): Need to throw away enter events for the currently
-   * iconified window so that the icon title is not raised */
-  XFlush(dpy);
-  while (XCheckTypedWindowEvent(dpy, tmp_win->frame, EnterNotify, &dummy))
-    ;
-  return;
 }
 
 

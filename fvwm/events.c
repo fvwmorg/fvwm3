@@ -1292,13 +1292,13 @@ void HandleEnterNotify(void)
     int delta_x=0, delta_y=0;
     /* this was in the HandleMotionNotify before, HEDU */
     HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,
-                 &Event.xcrossing.x_root,&Event.xcrossing.y_root,
+                 &ewp->x_root,&ewp->y_root,
                  &delta_x,&delta_y,True,True);
     return;
   }
 
   /* multi screen? */
-  if (Event.xany.window == Scr.Root)
+  if (ewp->window == Scr.Root)
   {
     if (!Scr.Focus || HAS_MOUSE_FOCUS(Scr.Focus))
     {
@@ -1327,12 +1327,13 @@ void HandleEnterNotify(void)
       InstallWindowColormaps(NULL);
   }
 
-  if (IS_ICONIFIED(Tmp_win))
+  /* We get an EnterNotify with mode == UnGrab when fvwm releases
+     the grab held during iconification. We have to ignore this,
+     or icon title will be initially raised. */
+  if (IS_ICONIFIED(Tmp_win) && (ewp->mode == NotifyNormal))
     {
       SET_ICON_ENTERED(Tmp_win,1);
-fprintf(stderr,"entering icon 0x%x\n", Tmp_win);
       DrawIconWindow (Tmp_win);
-fprintf(stderr,"entering icon done\n");
     }
 
   return;
