@@ -2593,8 +2593,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 #ifdef MINI_ICONS
 	else if (strncasecmp (style, "MiniIcon", 8) == 0) {
 	    bf->style = MiniIconButton;
-	    if (mf->u.p)
-	      DestroyPicture(dpy, mf->u.p);
+	    if (bf->u.p)
+	      DestroyPicture(dpy, bf->u.p);
 	    bf->u.p = NULL; /* pixmap read in when the window is created */
   	}
 #endif
