@@ -127,7 +127,7 @@ Contents
     5.12  The StartsOnPage style does not work for me.  Why?
     5.13  Some modules can not be started when I restart fvwm.
     5.14  I'm running Rational Rose and fvwm ignores its windows.
-    5.15  Although I use the WIndowListSkip style for my modules they
+    5.15  Although I use the WindowListSkip style for my modules they
           still show up in FvwmIconMan, FvwmWinList etc.
 
 6. Miscellaneous
@@ -1308,7 +1308,7 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
 
    The reason for all this is because of the fact that FvwmM4 is a
    module.  Fvwm won't be looking at the commands coming back from
-   the module until after it hits the mainloop of the code, AFTER the
+   the module until after it hits the main loop of the code, AFTER the
    startup is all done and it has already tried to execute the
    InitFunction.
 
@@ -1731,7 +1731,7 @@ A: This problem might occur on other applications besides the one
 
    Heres what we found out:
 
-   Rational Rose  uses software from Mainsoft  that  lets MS Windows
+   Rational Rose uses software from Mainsoft that lets MS Windows
    applications be recompiled to run on UNIX.
 
    There are 2 Mainsoft Knowledgebase pages that relate to UNIX
@@ -1856,7 +1856,7 @@ A: If you want more color icons, grab the ones out of the ctwm
    http://www.sct.gu.edu.au/~anthony/icons/ (which has a lot, I
    believe).
 
-   Icons used to be distribued along with fvwm.  Now there is a basic
+   Icons used to be distributed along with fvwm.  Now there is a basic
    set of icons available at the fvwm web site.  You might find some
    links at the fvwm web site to other sources of icons.
 
