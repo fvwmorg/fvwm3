@@ -603,7 +603,7 @@ style can be used.
 
 .SH MWM COMPATIBILITY
 Fvwm provides options to emulate Motif Window Manager (Mwm) as
-good as possible.  Please refer to the
+well as possible.  Please refer to the
 .B Emulate
 command as well as to the Mwm specific options of the
 .BR Style " and " MenuStyle
@@ -4731,12 +4731,12 @@ The default is
 automatically place new windows in a cascading fashion.
 
 .I TileCascadePlacement
-tries to automatically place new windows in a smart
+automatically places new windows in a smart
 location - a location in which they do not overlap any other
-windows on the screen.  If no such position can be found
-.I CascadePlacement
-will be used as a fall-back method.
-
+windows on the screen.  If no such position can be found 
+.IR CascadePlacement
+is used as a fall-back method.
+ 
 .I TileManualPlacement
 This is the same as
 .IR TileCascadePlacement ,
@@ -4746,25 +4746,25 @@ as the fall-back method.
 
 .I MinOverlapPlacement
 automatically place new windows in a location in which the overlapping
-area in pixels of other windows is minimal.  Moreover, this placement policy
+area in pixels of other windows is minimal.  This placement policy
 especially tries to avoid overlapping icons and windows on higher layers.
 
 .I MinOverlapPercentPlacement
 is similar to
 .IR MinOverlapPlacement
 but tries to minimize the overlapped percentages of other windows
-instead of the overlapped area in pixels.  Moreover, the algorithm
-tries to avoid to cover other windows completely and try even harder
+instead of the overlapped area in pixels.  This placement policy
+tries to avoid covering other windows completely and tries even harder
 not to cover small windows.
 
 .I ManualPlacement
 (aka active placement).
 The user is required to place every new window manually.  The window
-will only show as a rubber band until a place is selected manually.
+only shows as a rubber band until a place is selected manually.
 The window is placed when a mouse button or any key except
 .SM Escape
-is pressed which aborts manual placement.  If the user aborts
-placing the window it is dumped in the top left corner of the screen.
+is pressed.  Escape aborts manual placement which places the window
+in the top left corner of the screen.
 If mouse button 2 is pressed during the initial placement of a window
 (respectively
 .SM Shift
@@ -4790,6 +4790,9 @@ AddToFunc GrowDownFunc
 + I windowid $0 (PlacedByButton3) \\
   Resize bottomright keep -0p
 .EE
+
+.\" dje, something is wrong here, where does "XTerm" come from?
+
 Now, whenever a window with the name or class "XTerm" is created
 and the user presses button 3 to finish initial placement, the
 window is automatically enlarged until it hits the bottom screen
@@ -4852,9 +4855,9 @@ Style * ManualPlacementsHonorsStartsOnPageOff
 .B Placement policy options and window stacking
 .I NoPPosition
 instructs fvwm to ignore the program specified position (PPosition hint)
-when adding new windows.  Adherence to the PPosition field is
+when adding new windows.  Using PPosition is
 required for some applications, but if you don't have one of
-those its a real headache.  Many programs set this field to something
+those its a real headache.  Many programs set PPosition to something
 obnoxious like 0,0 (upper left corner).
 
 .I NoIconPosition

@@ -1313,7 +1313,6 @@ AddToFunc ButtonStyle-Func
  + I ButtonStyle 1 solid blaCK
  + I ButtonStyle 1 solid blaCK
  + I ButtonStyle 1 simple
- + I Refresh
 
 AddTest "Test ButtonStyleGradients" ButtonStyleGradients-Func
 AddToFunc ButtonStyleGradients-Func
@@ -1377,12 +1376,385 @@ AddToFunc ButtonStyleDash-Func
  + I ButtonStyle 1 - MWMDecorMin
  + I ButtonStyle 1 -
 
-# Ending ManPage Order
+# ChangeDecor, DestroyDecor, UpdateDecor
+AddTest "Test DecorCommands" DecorCommands-Func
+AddToFunc DecorCommands-Func
+ + I DestroyDecor
+ + I DestroyDecor bar
+ + I DestroyDecor bar
+ + I UpdateDecor
+ + I UpdateDecor foo
+ + I UpdateDecor foo
+ + I Style "testw" UseDecor foo, Color white/grey40,HandleWidth 4
+ + I ChangeDecor
+ + I ChangeDecor foo
 
+AddTest "Test TitleStyle_justify" TitleStyle_justify-Func
+AddToFunc TitleStyle_justify-Func
+ + I TitleStyle
+ + I TitleStyle LEFtJusTiFied
+ + I TitleStyle LEFtJusTiFied
+ + I TitleStyle   centered
+ + I TitleStyle		rightjustified
+ + I TitleStyle heIGht 20
+ + I TitleStyle heIGht 20
+ + I TitleStyle leftjustified height 37
+ + I TitleStyle leftjustified height 24
 
+AddTest "Test TitleStyles" TitleStyles-Func
+AddToFunc TitleStyles-Func
+ + I TitleStyle -- raisED
+ + I TitleStyle -- SUNk
+ + I TitleStyle -- flat
+ + I TitleStyle -- flat
+ + I TitleStyle -- !flat
+ + I TitleStyle Activeup -- raised
+ + I TitleStyle Activeup -- raised
+ + I TitleStyle activeDOWN -- sunk
+ + I TitleStyle inactive -- flat
+ + I TitleStyle inactive -- flat
+ + I TitleStyle Activeup -- sunk
+ + I TitleStyle simple
+ + I TitleStyle simple
+ + I TitleStyle default 3
+ + I TitleStyle default 3
+ + I TitleStyle solid blaCK
+ + I TitleStyle solid blaCK
+ + I TitleStyle simple
 
-AddTest "Test ConfigDestroyModuleConfig" ConfigDestroyModuleConfig-Func
-AddToFunc ConfigDestroyModuleConfig-Func
+AddTest "Test gradients" gradients-Func
+AddToFunc gradients-Func
+ + I TitleStyle hgradient 16 green red
+ + I TitleStyle hgradient 16 green red
+ + I TitleStyle hgradient 16 red blue
+ + I TitleStyle hgradient 32 red blue
+ + I TitleStyle hgradient 128 red blue
+ + I TitleStyle hgradient 2 red blue
+ + I TitleStyle vgradient 16 green red
+ + I TitleStyle vgradient 16 green red
+ + I TitleStyle vgradient 16 red blue
+ + I TitleStyle vgradient 32 red blue
+ + I TitleStyle vgradient 128 red blue
+ + I TitleStyle vgradient 2 red blue
+ + I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I TitleStyle VGradient 16 2 Red 20 Blue 80
+ + I TitleStyle VGradient 128 2 Red 20 Blue 80
+ + I TitleStyle VGradient 2 2 Red 20 Blue 80
+ + I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I TitleStyle hGradient 16 2 Red 20 Blue 80
+ + I TitleStyle hGradient 128 2 Red 20 Blue 80
+ + I TitleStyle hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test vector_buttons" vector_buttons-Func
+AddToFunc vector_buttons-Func
+ + I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+AddTest "Test pixmaps" pixmaps-Func
+AddToFunc pixmaps-Func
+ + I TitleStyle Pixmap test1.xpm
+ + I TitleStyle Pixmap test2.xpm
+ + I TitleStyle TiledPixmap test2.xpm
+ + I TitleStyle TiledPixmap test2.xpm
+ + I TitleStyle TiledPixmap test1.xpm
+ + I TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I TitleStyle Inactive Pixmap nonexistent.xpm
+ + I TitleStyle Inactive Pixmap test3.xpm
+ + I TitleStyle Inactive Pixmap test3.xpm
+ + I TitleStyle Inactive Pixmap
+ + I TitleStyle MiniIcons
+ + I TitleStyle miniicons
+
+# UpdateDecor test is above in "DecorCommands".
+
+# This test removed, "Desk" is replaced by "GotoDesk"
+# AddTest "Test Desk" Desk-Func
+# AddToFunc Desk-Func
+#  + I Desk
+#  + I Desk    2
+#  + I Desk		+3
+#  + I Desk -2
+#  + I Desk 0 1
+#  + I Desk   0    3
+#  + I Desk		0		1923874
+#  + I Desk +1 0 10
+#  + I Desk -1 0 10
+#  + I Desk 0 0 5 7
+#  + I Desk 0 -11111 5 7
+#  + I Desk 0 0
+
+AddTest "Test DeskTopSize" DeskTopSize-Func
+AddToFunc DeskTopSize-Func
+ + I DeskTopSize
+ + I DeskTopSize ödslajf
+ + I DeskTopSize   2x2
+ + I DeskTopSize		 2x2
+ + I DeskTopSize 2x3
+ + I DeskTopSize 2x3
+ + I DeskTopSize 3x3
+ + I DeskTopSize 3x1
+ + I DeskTopSize 1x1
+ + I DeskTopSize 0x2
+ + I DeskTopSize 2x0
+ + I DeskTopSize 0x0
+ + I DeskTopSize 1000x1000
+ + I DeskTopSize 2x2
+
+AddTest "Test EdgeResistance" EdgeResistance-Func
+AddToFunc EdgeResistance-Func
+ + I EdgeResistance
+ + I EdgeResistance     300   10
+ + I EdgeResistance		300		10
+ + I EdgeResistance 400 400
+ + I EdgeResistance 400 400
+ + I EdgeResistance 300 10
+ + I EdgeResistance 0 20
+ + I EdgeResistance -1 20
+ + I EdgeResistance 20 0
+ + I EdgeResistance 20 -1
+
+AddTest "Test EdgeScroll" EdgeScroll-Func
+AddToFunc EdgeScroll-Func
+ + I EdgeScroll
+ + I EdgeScroll    50    50
+ + I EdgeScroll		50		50
+ + I EdgeScroll 100 100
+ + I EdgeScroll -125 111
+ + I EdgeScroll 100000 100000
+ + I EdgeScroll 0 0
+ + I EdgeScroll 75 75
+
+# Need EdgeThickness tests
+
+# Need GotoDesk tests
+
+# Need GotoDeskAndPage tests
+
+AddTest "Test GotoPage" GotoPage-Func
+AddToFunc GotoPage-Func
+ + I GotoPage
+ + I GotoPage  2  2
+ + I GotoPage		1		1
+ + I GotoPage -1 -100
+ + I GotoPage 10000 1000000
+ + I GotoPage 2 1
+ + I GotoPage 2 1
+ + I GotoPage 1 1
+
+AddTest "Test Scroll" Scroll-Func
+AddToFunc Scroll-Func
+ + I Scroll
+ + I Scroll 50p
+ + I Scroll   10p   -10p
+ + I Scroll 		-50		+50
+ + I Scroll -0 +0
+ + I Scroll -50p -50p
+ + I Scroll -1000 -1000
+
+# Need to add more "action" tests, actions are I!M|C|H|D
+AddTest "Test AddToFunc_DestroyFunc" AddToFunc_DestroyFunc-Func
+AddToFunc AddToFunc_DestroyFunc-Func
+ + I AddToFunc
+ + I AddToFunc   foo
+ + I AddToFunc		bar
+
+ + I AddToFunc   suicide_func
+ + I AddToFunc		suicide_func
+ + I AddToFunc suicide_func
+ + I AddToFunc suicide_func I DestroyFunc suicide_func
+ + I AddToFunc suicide_func I DestroyFunc suicide_func
+ + I AddToFunc suicide_func I DestroyFunc suicide_func
+ + I AddToFunc suicide_func
+ + I AddToFunc suicide_func I DestroyFunc suicide_func
+ + I function suicide_func
+
+### coredump!
+#AddToFunc loop1
+# + I function loop2
+#AddToFunc loop2
+# + I function loop1
+#function loop1
+
+### coredump!!
+#AddToFunc grow1
+# + I AddToFunc grow2 nop
+# + I function grow2
+#AddToFunc grow2
+# + I AddToFunc grow1 nop
+# + I function grow1
+#function grow1
+
+ + I addtofunc foo
+ + I addtofunc foo I nop $w $d $1 $10298097
+ + I function
+ + I function   foo
+ + I function		foo
+ + I function nonexist
+ + I DestroyFunc
+ + I DestroyFunc    grow2
+ + I DestroyFunc		grow1
+ + I DestroyFunc loop1
+ + I DestroyFunc loop2
+ + I AddtoFunc variable I Echo "This should display as 1 dollar sign: $$."
+ + I Function variable
+# Test from man page
+ + I DestroyFunc PrintFunction
+
+AddTest "Test Echo" Echo-Func
+AddToFunc Echo-Func
+ + I Echo
+ + I Echo
+ + I Echo ädsa		 iopq9 $SHELL "'lksaä"
+# Test from man page, extra quotes around I intentional:
+ + "I" Echo Beginning style definitions...
+
+AddTest "Test Exec" Exec-Func
+AddToFunc Exec-Func
+ + I Exec
+ + I Exec  	 	 	""
+ + I Exec echo "Test of exec using echo"
+ + I Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
+ + I Exec exec echo "Test with recommended extra exec"
+ + I Exec echo "Test with unnecessary trailing ampersand" &
+
+AddTest "Test ExecUseShell" ExecUseShell-Func
+AddToFunc ExecUseShell-Func
+ + I ExecUseShell
+ + I ExecUseShell ''
+ + I ExecUseShell     /bin/bash
+ + I ExecUseShell		/bin/bash
+ + I ExecUseShell /bin/ksh /bin/sh
+ + I ExecUseShell /nonexistent/foo/bar
+ + I ExecUseShell
+
+# Function test:
+# Function is already pretty well tested, add a test that creates a function
+# That matches a built in fvwm function:
+AddTest "Test Function" Function-Func
+AddToFunc Function-Func
+ + I DestroyFunc Style
+ + I AddToFunc Style I Exec echo "Style Function just ran"
+ + I Function Style
+
+AddTest "Test Nop" Nop-Func
+AddToFunc Nop-Func
+ + I Nop
+ + I NOP
+ + I nOp allöoawqj _Ö:K_ÖL ökq
+
+AddTest "Test PipeRead" PipeRead-Func
+AddToFunc PipeRead-Func
+ + I piperead
+ + I piperead `sleep 2`
+## hangs !!
+#piperead cat
+ + I piperead "cat /nonexistent/foo/bar"
+ + I piperead " 	cat	  /tmp/purify.read"
+
+AddTest "Test Read" Read-Func
+AddToFunc Read-Func
+ + I read
+ + I read
+ + I read /nonexistent/foo/bar
+ + I read 	  /tmp/purify.read
+ + I Echo "Next test reads a non-existing file quietly, there should not be any message"
+ + I Read "There is no file with this name!" quiet
+
+AddTest "Test SetEnv" SetEnv-Func
+AddToFunc SetEnv-Func
+ + I SetEnv
+ + I SetEnv FOO
+ + I SetEnv   BAR bar
+ + I SetEnv		FOOBAR		barfoo
+ + I SetEnv "	FOO	" x
+ + I SetEnv FOO "   ""ölwäökkü"''
+ + I SetEnv FOO "   ""ölwäökkü"''
+
+# Silent test:
+AddTest "Test Silent" Silent-Func
+AddToFunc Silent-Func
+ + I Silent Move
+# Need a function that has a window target:
+ + I DestroyFunc User_defined_function
+ + I AddToFunc User_defined_function I Move
+ + I Silent Function User_defined_function
+
+AddTest "Test UnsetEnv" UnsetEnv-Func
+AddToFunc UnsetEnv-Func
+ + I UnsetEnv FOO         BAR
+ + I UnsetEnv       FOO
+ + I SetEnv   NICEVAR
+ + I UnSetEnv NICEVAR
+ + I UnSetEnv NICEVAR
+ + I UnSetEnv "   ""ölwäökkü"''
+
+# Wait tested elsewhere.  A Wait meant to be aborted by Ctrl-Alt-Escape
+# would be a nice addition.  You'd need to guide the tester thru it.
+
+# Conditional command "All" tested elsewhere.
+
+# Need lots more conditions, (visible/iconic, etc.)
+AddTest "Test Current" Current-Func
+AddToFunc Current-Func
+ + I current
+ + I current
+ + I current  ()
+ + I Current   (*)   focus 97ö.,j1n, mp12l
+ + I current		(*)		flipfocus
+
+# Need "Direction" test
+
+# Need more conditions like Current, with exceptions, see man page.
+AddTest "Test Next" Next-Func
+AddToFunc Next-Func
+ + I next
+ + I next
+ + I Next  ()
+ + I next   (*)   focus
+ + I next		(*)		flipfocus
+
+# Needs more conditions like Current
+AddTest "Test None" None-Func
+AddToFunc None-Func
+ + I none
+ + I None
+ + I none  ()
+ + I none   (*)   focus
+ + I none		(*)		flipfocus olöiqwehj
+
+# Need "Pick" tests
+
+AddTest "Test Prev" Prev-Func
+AddToFunc Prev-Func
+ + I prev
+ + I prev
+ + I prev  ()
+ + I prev   (*)   focus
+ + I prev		(*)		flipfocus
+
+AddTest "Test WindowId" WindowId-Func
+AddToFunc WindowId-Func
+ + I WindowID
+ + I WindowID
+ + I WindowID 0x7491
+ + I WindowID  3ölu -öirü2i 4li<F2><F5><F4>7z90
+ + I WindowID 0x00110011 nop
+ + I WindowID   0x00110011   nop
+ + I WindowID		0x00110011		nop
+ + I WindowId root 1 WarpToWindow 50 50
+ + I WindowId root WarpToWindow 0 0
+
+AddTest "Test ModuleConfig" ModuleConfig-Func
+AddToFunc ModuleConfig-Func
+ + I DestroyModuleConfig dummymodule
  + I *dummymodule
  + I *dummymodule
  + I *dummymodule ÖLq- ö.qljüpßi+123
@@ -1394,6 +1766,11 @@ AddToFunc ConfigDestroyModuleConfig-Func
  + I *dummymodule2r 13r  g3w
  + I *dummymodule2 121 32
  + I *dummymodule2 qw 124
+ + I *xFvwmIconBox: MaxIconSize 48x48
+ + I *xFvwmPager: WindowBorderWidth 1
+
+AddTest "Test DestroyModuleConfig" DestroyModuleConfig-Func
+AddToFunc DestroyModuleConfig-Func
  + I DestroyModuleConfig
  + I DestroyModuleConfig
  + I DestroyModuleConfig  dummymodule1
@@ -1413,6 +1790,27 @@ AddToFunc ConfigDestroyModuleConfig-Func
  + I *dummymodule2 121 32
  + I *dummymodule2 qw 124
  + I DestroyModuleConfig *
+ + I DestroyModuleConfig xFvwmButtons*
+ + I DestroyModuleConfig xFvwmForm: Fore
+ + I DestroyModuleConfig xFvwmIconBox: Max*
+
+AddTest "Test SendToModule_KillModule" SendToModule_KillModule-Func
+AddToFunc SendToModule_KillModule-Func
+ + I SendToModule
+ + I SendToModule
+ + I SendToModule	FvwmBanner	.-, q-l  ,j
+ + I SendToModule		FvwmBanner		.-, q-l  ,j
+ + I KillModule
+ + I KillModule
+ + I KillModule  	FvwmBanner
+ + I KillModule FvwmBanner
+ + I KillModule FvwmBanner
+ + I KillModule FvwmBanner
+ + I KillModule FvwmBanner
+ + I Refresh
+
+
+# Ending ManPage Order
 
 AddTest "Test FvwmBanner" FvwmBanner-Func
 AddToFunc FvwmBanner-Func
@@ -1426,53 +1824,6 @@ AddToFunc FvwmBanner-Func
  + I Module		FvwmBanner
 
 ################# GLOBAL COMMANDS ###################
-
-AddTest "Test AddToFunc_DestroyFunc" AddToFunc_DestroyFunc-Func
-AddToFunc AddToFunc_DestroyFunc-Func
- + I AddToFunc
- + I AddToFunc   foo
- + I AddToFunc		bar
-
- + I AddToFunc   suicide_func
- + I AddToFunc		suicide_func
- + I AddToFunc suicide_func
- + I AddToFunc suicide_func I DestroyFunc suicide_func
- + I AddToFunc suicide_func I DestroyFunc suicide_func
- + I AddToFunc suicide_func I DestroyFunc suicide_func
- + I AddToFunc suicide_func
- + I AddToFunc suicide_func I DestroyFunc suicide_func
- + I function suicide_func
-
-### coredump!
-
-#AddToFunc loop1
-# + I function loop2
-#AddToFunc loop2
-# + I function loop1
-#function loop1
-
-### coredump!!
-
-#AddToFunc grow1
-# + I AddToFunc grow2 nop
-# + I function grow2
-#AddToFunc grow2
-# + I AddToFunc grow1 nop
-# + I function grow1
-#function grow1
-
- + I addtofunc foo
- + I addtofunc foo I nop $w $d $1 $10298097
- + I function
- + I function   foo
- + I function		foo
- + I function nonexist
-
- + I DestroyFunc
- + I DestroyFunc    grow2
- + I DestroyFunc		grow1
- + I DestroyFunc loop1
- + I DestroyFunc loop2
 
 AddTest "Test Menu_Destroy_Menu_Menu_Popup" Menu_Destroy_Menu_Menu_Popup-Func
 AddToFunc Menu_Destroy_Menu_Menu_Popup-Func
@@ -1559,95 +1910,6 @@ AddToFunc Beep-Func
  + I Beep
  + I Beep ü30 23äö ü9823r ,l.öapü39
 
-AddTest "Test Desk" Desk-Func
-AddToFunc Desk-Func
- + I Desk
- + I Desk    2
- + I Desk		+3
- + I Desk -2
- + I Desk 0 1
- + I Desk   0    3
- + I Desk		0		1923874
- + I Desk +1 0 10
- + I Desk -1 0 10
- + I Desk 0 0 5 7
- + I Desk 0 -11111 5 7
- + I Desk 0 0
-
-AddTest "Test DeskTopSize" DeskTopSize-Func
-AddToFunc DeskTopSize-Func
- + I DeskTopSize
- + I DeskTopSize ödslajf
- + I DeskTopSize   2x2
- + I DeskTopSize		 2x2
- + I DeskTopSize 2x3
- + I DeskTopSize 2x3
- + I DeskTopSize 3x3
- + I DeskTopSize 3x1
- + I DeskTopSize 1x1
- + I DeskTopSize 0x2
- + I DeskTopSize 2x0
- + I DeskTopSize 0x0
- + I DeskTopSize 1000x1000
- + I DeskTopSize 2x2
-
-AddTest "Test Echo" Echo-Func
-AddToFunc Echo-Func
- + I Echo
- + I Echo
- + I Echo ädsa		 iopq9 $SHELL "'lksaä"
-
-AddTest "Test EdgeResistance" EdgeResistance-Func
-AddToFunc EdgeResistance-Func
- + I EdgeResistance
- + I EdgeResistance     300   10
- + I EdgeResistance		300		10
- + I EdgeResistance 400 400
- + I EdgeResistance 400 400
- + I EdgeResistance 300 10
- + I EdgeResistance 0 20
- + I EdgeResistance -1 20
- + I EdgeResistance 20 0
- + I EdgeResistance 20 -1
-
-AddTest "Test EdgeScroll" EdgeScroll-Func
-AddToFunc EdgeScroll-Func
- + I EdgeScroll
- + I EdgeScroll    50    50
- + I EdgeScroll		50		50
- + I EdgeScroll 100 100
- + I EdgeScroll -125 111
- + I EdgeScroll 100000 100000
- + I EdgeScroll 0 0
- + I EdgeScroll 75 75
-
-AddTest "Test ExecUseShell" ExecUseShell-Func
-AddToFunc ExecUseShell-Func
- + I ExecUseShell
- + I ExecUseShell
- + I ExecUseShell     /bin/bash
- + I ExecUseShell		/bin/bash
- + I ExecUseShell /bin/bash
- + I ExecUseShell /nonexistent/foo/bar
- + I ExecUseShell
-
-AddTest "Test Exec" Exec-Func
-AddToFunc Exec-Func
- + I Exec
- + I Exec  	 	 	""
- + I Exec echo "Test of exec using echo"
- + I Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
-
-AddTest "Test GotoPage" GotoPage-Func
-AddToFunc GotoPage-Func
- + I GotoPage
- + I GotoPage  2  2
- + I GotoPage		1		1
- + I GotoPage -1 -100
- + I GotoPage 10000 1000000
- + I GotoPage 2 1
- + I GotoPage 2 1
- + I GotoPage 1 1
 
 AddTest "Test MenuStyle" MenuStyle-Func
 AddToFunc MenuStyle-Func
@@ -1661,38 +1923,6 @@ AddToFunc MenuStyle-Func
  + I MenuStyle red yellow green 6x10 fvwm
  + I MenuStyle red yellow green 6x10 fvwm anim
  + I MenuStyle yellow black pink 8x13bold fvwm anim
-
-AddTest "Test Nop" Nop-Func
-AddToFunc Nop-Func
- + I Nop
- + I NOP
- + I nOp allöoawqj _Ö:K_ÖL ökq
-
-AddTest "Test Scroll" Scroll-Func
-AddToFunc Scroll-Func
- + I Scroll
- + I Scroll 50p
- + I Scroll   10p   -10p
- + I Scroll 		-50		+50
- + I Scroll -0 +0
- + I Scroll -50p -50p
- + I Scroll -1000 -1000
-
-AddTest "Test SetEnv" SetEnv-Func
-AddToFunc SetEnv-Func
- + I SetEnv
- + I SetEnv FOO
- + I SetEnv   BAR bar
- + I SetEnv		FOOBAR		barfoo
- + I SetEnv "	FOO	" x
- + I SetEnv FOO "   ""ölwäökkü"''
- + I SetEnv FOO "   ""ölwäökkü"''
-
-AddTest "Test UnsetEnv" UnsetEnv-Func
-AddToFunc UnsetEnv-Func
- + I UnsetEnv FOO         BAR
- + I UnsetEnv       FOO
- + I UnSetEnv "   ""ölwäökkü"''
 
 AddTest "Test Title" Title-Func
 AddToFunc Title-Func
@@ -1798,175 +2028,10 @@ AddToFunc DefaultLayers-Func
  + I DefaultLayers 2 4 6
  + I Refresh
 
-AddTest "Test TitleStyle_justify" TitleStyle_justify-Func
-AddToFunc TitleStyle_justify-Func
- + I TitleStyle
- + I TitleStyle LEFtJusTiFied
- + I TitleStyle LEFtJusTiFied
- + I TitleStyle   centered
- + I TitleStyle		rightjustified
- + I TitleStyle heIGht 20
- + I TitleStyle heIGht 20
- + I TitleStyle leftjustified height 37
- + I TitleStyle leftjustified height 24
- + I Refresh
-
-AddTest "Test TitleStyles" TitleStyles-Func
-AddToFunc TitleStyles-Func
- + I TitleStyle -- raisED
- + I TitleStyle -- SUNk
- + I TitleStyle -- flat
- + I TitleStyle -- flat
- + I TitleStyle -- !flat
- + I TitleStyle Activeup -- raised
- + I TitleStyle Activeup -- raised
- + I TitleStyle activeDOWN -- sunk
- + I TitleStyle inactive -- flat
- + I TitleStyle inactive -- flat
- + I TitleStyle Activeup -- sunk
- + I TitleStyle simple
- + I TitleStyle simple
- + I TitleStyle default 3
- + I TitleStyle default 3
- + I TitleStyle solid blaCK
- + I TitleStyle solid blaCK
- + I TitleStyle simple
- + I Refresh
-
-AddTest "Test gradients" gradients-Func
-AddToFunc gradients-Func
- + I TitleStyle hgradient 16 green red
- + I TitleStyle hgradient 16 green red
- + I TitleStyle hgradient 16 red blue
- + I TitleStyle hgradient 32 red blue
- + I TitleStyle hgradient 128 red blue
- + I TitleStyle hgradient 2 red blue
- + I TitleStyle vgradient 16 green red
- + I TitleStyle vgradient 16 green red
- + I TitleStyle vgradient 16 red blue
- + I TitleStyle vgradient 32 red blue
- + I TitleStyle vgradient 128 red blue
- + I TitleStyle vgradient 2 red blue
- + I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I TitleStyle VGradient 16 2 Red 20 Blue 80
- + I TitleStyle VGradient 128 2 Red 20 Blue 80
- + I TitleStyle VGradient 2 2 Red 20 Blue 80
- + I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I TitleStyle hGradient 16 2 Red 20 Blue 80
- + I TitleStyle hGradient 128 2 Red 20 Blue 80
- + I TitleStyle hGradient 2 2 Red 20 Blue 80
- + I Refresh
-
-AddTest "Test vector_buttons" vector_buttons-Func
-AddToFunc vector_buttons-Func
- + I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I Refresh
-
-AddTest "Test pixmaps" pixmaps-Func
-AddToFunc pixmaps-Func
- + I TitleStyle Pixmap test1.xpm
- + I TitleStyle Pixmap test2.xpm
- + I TitleStyle TiledPixmap test2.xpm
- + I TitleStyle TiledPixmap test2.xpm
- + I TitleStyle TiledPixmap test1.xpm
- + I TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I TitleStyle Inactive Pixmap nonexistent.xpm
- + I TitleStyle Inactive Pixmap test3.xpm
- + I TitleStyle Inactive Pixmap test3.xpm
- + I TitleStyle Inactive Pixmap
- + I TitleStyle MiniIcons
- + I TitleStyle miniicons
- + I Refresh
 
 
 
-AddTest "Test Read_PipeRead" Read_PipeRead-Func
-AddToFunc Read_PipeRead-Func
- + I read
- + I read
- + I read /nonexistent/foo/bar
- + I read 	  /tmp/purify.read
 
- + I piperead
- + I piperead `sleep 2`
-## hangs !!
-#piperead cat
- + I piperead "cat /nonexistent/foo/bar"
- + I piperead " 	cat	  /tmp/purify.read"
- + I Refresh
-
-
-AddTest "Test SendToModule_KillModule" SendToModule_KillModule-Func
-AddToFunc SendToModule_KillModule-Func
- + I SendToModule
- + I SendToModule
- + I SendToModule	FvwmBanner	.-, q-l  ,j
- + I SendToModule		FvwmBanner		.-, q-l  ,j
- + I KillModule
- + I KillModule
- + I KillModule  	FvwmBanner
- + I KillModule FvwmBanner
- + I KillModule FvwmBanner
- + I KillModule FvwmBanner
- + I KillModule FvwmBanner
- + I Refresh
-
-AddTest "Test DecorCommands" DecorCommands-Func
-AddToFunc DecorCommands-Func
- + I DestroyDecor
- + I DestroyDecor bar
- + I DestroyDecor bar
- + I UpdateDecor
- + I UpdateDecor foo
- + I UpdateDecor foo
- + I Style "testw" UseDecor foo, Color white/grey40,HandleWidth 4
- + I ChangeDecor
- + I ChangeDecor foo
- + I Refresh
-
-AddTest "Test Next_Prev_Current_None" Next_Prev_Current_None-Func
-AddToFunc Next_Prev_Current_None-Func
- + I prev
- + I prev
- + I prev  ()
- + I prev   (*)   focus
- + I prev		(*)		flipfocus
- + I next
- + I next
- + I next  ()
- + I next   (*)   focus
- + I next		(*)		flipfocus
- + I current
- + I current
- + I current  ()
- + I current   (*)   focus 97ö.,j1n, mp12l
- + I current		(*)		flipfocus
- + I none
- + I none
- + I none  ()
- + I none   (*)   focus
- + I none		(*)		flipfocus olöiqwehj
- + I Refresh
-
-AddTest "Test WindowId" WindowId-Func
-AddToFunc WindowId-Func
- + I WindowID
- + I WindowID
- + I WindowID 0x7491
- + I WindowID  3ölu -öirü2i 4li<F2><F5><F4>7z90
- + I WindowID 0x00110011 nop
- + I WindowID   0x00110011   nop
- + I WindowID		0x00110011		nop
- + I Refresh
 
 # ShortHand Function for next test:
 DestroyFunc EchoDo
@@ -2081,7 +2146,8 @@ AddToFunc ModulePath-Func
 AddTest "Test Cleanup" Cleanup-Func
 AddToFunc Cleanup-Func
  + I All (window1) destroy
- + I All (window2) destroy
+# Old [] syntax tested intentionally
+ + I All [window2] destroy
  + I All (window3) destroy
  + I All (window4) destroy
  + I All (window5) destroy
