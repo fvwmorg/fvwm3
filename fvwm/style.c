@@ -756,15 +756,15 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         {
 	  found = True;
           ptmpstyle->flags.placement_mode |= PLACE_CLEVER;
-          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
-          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVER;
+          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVER;
         }
         else if(StrEquals(token, "CleverPlacementOff"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode &= (~PLACE_CLEVER);
-          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
-          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVER;
+          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVER;
         }
 	else if(StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
 	{
@@ -958,8 +958,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         {
 	  found = True;
           ptmpstyle->flags.placement_mode &= (~PLACE_SMART);
-          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
-          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->flag_mask.placement_mode |= PLACE_SMART;
+          ptmpstyle->change_mask.placement_mode |= PLACE_SMART;
         }
         else if(StrEquals(token, "DontFlipTransient"))
         {
@@ -1752,8 +1752,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         {
 	  found = True;
           ptmpstyle->flags.placement_mode |= PLACE_SMART;
-          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
-          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->flag_mask.placement_mode |= PLACE_SMART;
+          ptmpstyle->change_mask.placement_mode |= PLACE_SMART;
         }
         else if(StrEquals(token, "SkipMapping"))
         {
