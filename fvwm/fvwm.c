@@ -474,6 +474,7 @@ int main(int argc, char **argv)
   /* Make sure we have the correct click time now. */
   if (Scr.ClickTime < 0)
     Scr.ClickTime = -Scr.ClickTime;
+  fFvwmInStartup = False;
   DBUG("main","Entering HandleEvents loop...");
   HandleEvents();
   DBUG("main","Back from HandleEvents loop?  Exitting...");
