@@ -907,7 +907,7 @@ void CMD_ResizeMove(F_CMD_ARGS)
 
 	if (IS_EWMH_FULLSCREEN(fw))
 	{
-		/* do not unmaximize ! */ 
+		/* do not unmaximize ! */
 		CMD_ResizeMoveMaximize(F_PASS_ARGS);
 		return;
 	}
@@ -2218,7 +2218,9 @@ Bool __move_loop(
 				continue;
 			}
 			if (!(e.xkey.state & Mod1Mask))
+			{
 				nosnap_enabled = True;
+			}
 			do_snap = nosnap_enabled &&
 				(e.xkey.state & Mod1Mask) ? False : True;
 
@@ -3474,7 +3476,7 @@ void CMD_Resize(F_CMD_ARGS)
 
 	if (IS_EWMH_FULLSCREEN(fw))
 	{
-		/* do not unmaximize ! */ 
+		/* do not unmaximize ! */
 		CMD_ResizeMaximize(F_PASS_ARGS);
 		return;
 	}
