@@ -439,215 +439,183 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   */
   MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade, &do_maximize);
 
-  /* create windows */
+  /* set up geometry */
   tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw;
   tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw;
-
   tmp_win->frame_width = tmp_win->attr.width+2*tmp_win->boundary_width;
-  tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height+
-    2*tmp_win->boundary_width;
+  tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height
+			  + 2 * tmp_win->boundary_width;
   ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False,
 		0, 0);
-
-
-  valuemask = CWCursor | CWEventMask;
-  if(Scr.depth < 2)
-    {
-      attributes.background_pixmap = Scr.light_gray_pixmap;
-      if(tmp_win->flags & STICKY)
-	attributes.background_pixmap = Scr.sticky_gray_pixmap;
-      valuemask |= CWBackPixmap;
-    }
-  else
-    {
-      attributes.background_pixmap = None;
-      attributes.background_pixel = tmp_win->BackPixel;
-      valuemask |= CWBackPixel;
-    }
-
-  attributes.cursor = Scr.FvwmCursors[DEFAULT];
-  attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask |
-			   ButtonReleaseMask | EnterWindowMask |
-			   LeaveWindowMask | ExposureMask |
-			   VisibilityChangeMask);
-
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-  if ((GetDecor(tmp_win,BorderStyle.inactive.style) & ButtonFaceTypeMask)
-      == TiledPixmapButton)
-      TexturePixmap = GetDecor(tmp_win,BorderStyle.inactive.u.p->picture);
-
-  if (TexturePixmap) {
-      TexturePixmapSave = attributes.background_pixmap;
-      attributes.background_pixmap = TexturePixmap;
-      valuemask_save = valuemask;
-      valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
-  }
-#endif
-
-  attributes.colormap = Scr.cmap;
-  attributes.background_pixmap = None;
-  attributes.border_pixmap = None;
-  valuemask |= CWColormap | CWBackPixmap | CWBorderPixmap;
-
-  /* What the heck, we'll always reparent everything from now on! */
-  tmp_win->frame =
-    XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y,
-		   tmp_win->frame_width, tmp_win->frame_height,
-		   0,Scr.depth, InputOutput,
-		   Scr.viz,
-		   valuemask,
-		   &attributes);
-
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-  if (TexturePixmap) {
-      attributes.background_pixmap = TexturePixmapSave;
-      valuemask = valuemask_save;
-  }
-#endif
-
-  attributes.save_under = FALSE;
-  attributes.event_mask &= ~VisibilityChangeMask;
-
-  /* Thats not all, we'll double-reparent the window ! */
-  attributes.cursor = Scr.FvwmCursors[DEFAULT];
-
-  /* make sure this does not have a BackPixel or BackPixmap so that
-     that when the window dies there is no flash of BackPixel/BackPixmap */
-  valuemask_save = valuemask;
-  valuemask &= ~CWBackPixel & ~CWBackPixmap;
-  attributes.event_mask &= ~ExposureMask;
-  tmp_win->Parent =
-    XCreateWindow (dpy, tmp_win->frame,
-		   tmp_win->boundary_width,
-		   tmp_win->boundary_width+tmp_win->title_height,
-		   (tmp_win->frame_width - 2*tmp_win->boundary_width),
-		   (tmp_win->frame_height - 2*tmp_win->boundary_width -
-		    tmp_win->title_height),0, CopyFromParent,
-		   InputOutput,CopyFromParent, valuemask,&attributes);
-
-  /* create the resize handles */
-  /* sides and corners are input only */
-  /* title and buttons maybe one day */
-  valuemask |= CWEventMask;
-  attributes.colormap = DefaultColormap(dpy, Scr.screen);
-  attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
-			   |EnterWindowMask|LeaveWindowMask);
   tmp_win->title_x = tmp_win->title_y = 0;
   tmp_win->title_w = 0;
   tmp_win->title_width = tmp_win->frame_width - 2 * tmp_win->boundary_width;
   if(tmp_win->title_width < 1)
     tmp_win->title_width = 1;
-  if(tmp_win->flags & BORDER)
-    {
-unsigned long tvaluemask = valuemask;
-valuemask &= ~(CWColormap | CWBorderPixmap);
-      /* Just dump the windows any old place and let SetupFrame take
-       * care of the mess */
-      for(i=0;i<4;i++)
-	{
-	  attributes.cursor = Scr.FvwmCursors[TOP_LEFT+i];
-	  tmp_win->corners[i] =
-	    XCreateWindow (dpy, tmp_win->frame, 0,0,
-			   tmp_win->corner_width, tmp_win->corner_width,
-			   0, 0, InputOnly, DefaultVisual(dpy, Scr.screen),
-			   valuemask, &attributes);
-	  attributes.cursor = Scr.FvwmCursors[TOP+i];
-	  tmp_win->sides[i] =
-	    XCreateWindow (dpy, tmp_win->frame, 0, 0, tmp_win->boundary_width,
-			   tmp_win->boundary_width, 0, 0, InputOnly,
-			   DefaultVisual(dpy, Scr.screen), valuemask,
-			   &attributes);
-	}
-valuemask = tvaluemask;
-    }
+
+  /* create windows */
+
+  /* mono screens use a stipple pixmap to get greys */
+  if(Scr.depth < 2) {
+    valuemask_save = CWBackPixmap;
+    if(tmp_win->flags & STICKY)
+      attributes.background_pixmap = Scr.sticky_gray_pixmap;
+    else
+      attributes.background_pixmap = Scr.light_gray_pixmap;
+  } else {
+    valuemask_save = CWBackPixel;
+    attributes.background_pixel = tmp_win->BackPixel;
+    attributes.background_pixmap = None;
+  }
+
+  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+  attributes.cursor = Scr.FvwmCursors[DEFAULT];
+  attributes.colormap = Scr.cmap;
+  attributes.border_pixmap = None;
+  attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask
+			   | ButtonReleaseMask | EnterWindowMask
+			   | LeaveWindowMask | ExposureMask
+			   | VisibilityChangeMask);
+
+  /* stash valuemask bits in case BorderStyle TiledPixmap overwrites */
+#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
+  TexturePixmapSave = attributes.background_pixmap;
+  if ((GetDecor(tmp_win, BorderStyle.inactive.style) & ButtonFaceTypeMask)
+      == TiledPixmapButton)
+    TexturePixmap = GetDecor(tmp_win,BorderStyle.inactive.u.p->picture);
+  if (TexturePixmap) {
+    attributes.background_pixmap = TexturePixmap;
+    valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
+  }
+#endif
+
+  /* create the frame window, child of root, grandparent of client */
+  tmp_win->frame = XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,
+  				  tmp_win->frame_y, tmp_win->frame_width,
+  				  tmp_win->frame_height, 0, Scr.depth,
+  				  InputOutput, Scr.viz, valuemask, &attributes);
+
+#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
+  /* restore background */
+  attributes.background_pixmap = TexturePixmapSave;
+#endif
+
 
   /* restore valuemask to remember background */
-  valuemask = valuemask_save;
-  attributes.colormap = Scr.cmap;
-  attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
-			   |EnterWindowMask|LeaveWindowMask|ExposureMask);
+  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+  attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
+			   | EnterWindowMask | LeaveWindowMask | ExposureMask);
 
-  if (tmp_win->flags & TITLE)
-    {
-      tmp_win->title_x = tmp_win->boundary_width +tmp_win->title_height+1;
-      tmp_win->title_y = tmp_win->boundary_width;
-      attributes.cursor = Scr.FvwmCursors[TITLE_CURSOR];
-      tmp_win->title_w =
-	XCreateWindow (dpy, tmp_win->frame, tmp_win->title_x, tmp_win->title_y,
-		       tmp_win->title_width, tmp_win->title_height,0,
-		       CopyFromParent, InputOutput, CopyFromParent,
-		       valuemask,&attributes);
-      attributes.cursor = Scr.FvwmCursors[SYS];
-      for(i=4;i>=0;i--)
-	{
-	  if((i<Scr.nr_left_buttons)&&(tmp_win->left_w[i] > 0))
-	    {
+  if (tmp_win->flags & TITLE) {
+    tmp_win->title_x = tmp_win->boundary_width + tmp_win->title_height + 1;
+    tmp_win->title_y = tmp_win->boundary_width;
+    attributes.cursor = Scr.FvwmCursors[TITLE_CURSOR];
+    tmp_win->title_w = XCreateWindow (dpy, tmp_win->frame, tmp_win->title_x,
+				      tmp_win->title_y, tmp_win->title_width,
+				      tmp_win->title_height, 0, CopyFromParent,
+				      InputOutput, CopyFromParent, valuemask,
+				      &attributes);
+    attributes.cursor = Scr.FvwmCursors[SYS];
+    for(i = 4; i >= 0; i--) {
+      if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0)) {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-	      if (TexturePixmap
-		  && GetDecor(tmp_win,left_buttons[i].flags) & UseBorderStyle) {
-		  TexturePixmapSave = attributes.background_pixmap;
-		  attributes.background_pixmap = TexturePixmap;
-		  valuemask_save = valuemask;
-		  valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
-	      }
+        if (TexturePixmap
+	    && GetDecor(tmp_win,left_buttons[i].flags) & UseBorderStyle) {
+	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+	  attributes.background_pixmap = TexturePixmap;
+        } else {
+	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+          attributes.background_pixmap = TexturePixmapSave;
+        }
 #endif
-	      tmp_win->left_w[i] =
-		XCreateWindow (dpy, tmp_win->frame, tmp_win->title_height*i, 0,
-			       tmp_win->title_height, tmp_win->title_height, 0,
-			       CopyFromParent, InputOutput,
-			       CopyFromParent,
-			       valuemask,
-			       &attributes);
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-	      if (TexturePixmap
-		  && GetDecor(tmp_win,left_buttons[i].flags) & UseBorderStyle) {
-		  attributes.background_pixmap = TexturePixmapSave;
-		  valuemask = valuemask_save;
-	      }
-#endif
-	    }
-	  else
-	    tmp_win->left_w[i] = None;
+        tmp_win->left_w[i] = XCreateWindow (dpy, tmp_win->frame,
+					    tmp_win->title_height * i, 0,
+					    tmp_win->title_height,
+					    tmp_win->title_height, 0,
+					    CopyFromParent, InputOutput,
+					    CopyFromParent, valuemask,
+					    &attributes);
+      } else
+        tmp_win->left_w[i] = None;
 
-	  if((i<Scr.nr_right_buttons)&&(tmp_win->right_w[i] >0)) {
+      if((i < Scr.nr_right_buttons) && (tmp_win->right_w[i] > 0)) {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-            if (TexturePixmap
-                && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle) {
-              TexturePixmapSave = attributes.background_pixmap;
-              attributes.background_pixmap = TexturePixmap;
-              valuemask_save = valuemask;
-              valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
-            }
+        if (TexturePixmap
+	    && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle) {
+	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+          attributes.background_pixmap = TexturePixmap;
+        } else {
+	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+          attributes.background_pixmap = TexturePixmapSave;
+        }
 #endif
-            tmp_win->right_w[i] =
-              XCreateWindow (dpy, tmp_win->frame,
-                             tmp_win->title_width-
-                             tmp_win->title_height*(i+1),
-                             0, tmp_win->title_height,
-                             tmp_win->title_height,
-                             0, CopyFromParent, InputOutput,
-                             CopyFromParent,
-                             valuemask,
-                             &attributes);
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-            if (TexturePixmap
-                && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle) {
-              attributes.background_pixmap = TexturePixmapSave;
-              valuemask = valuemask_save;
-            }
-#endif
-          }
-	  else
-	    tmp_win->right_w[i] = None;
-	}
+        tmp_win->right_w[i] = XCreateWindow (dpy, tmp_win->frame,
+					     tmp_win->title_width
+					     - tmp_win->title_height * (i + 1),
+					     0, tmp_win->title_height,
+					     tmp_win->title_height, 0,
+					     CopyFromParent, InputOutput,
+					     CopyFromParent, valuemask,
+					     &attributes);
+      } else
+        tmp_win->right_w[i] = None;
     }
+  }
+
+  /* create the resize handles */
+  /* sides and corners are input only */
+  /* title and buttons maybe one day */
+  valuemask = CWCursor | CWEventMask;
+  attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
+			   | EnterWindowMask | LeaveWindowMask);
+  if(tmp_win->flags & BORDER) {
+    /* Just dump the windows any old place and let SetupFrame take
+     * care of the mess */
+    for(i=0;i<4;i++) {
+      attributes.cursor = Scr.FvwmCursors[TOP_LEFT+i];
+      tmp_win->corners[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
+					   tmp_win->corner_width,
+					   tmp_win->corner_width, 0, 0,
+					   InputOnly,
+					   DefaultVisual(dpy, Scr.screen),
+					   valuemask, &attributes);
+      XLowerWindow(dpy, tmp_win->corners[i]);
+      
+      attributes.cursor = Scr.FvwmCursors[TOP+i];
+      tmp_win->sides[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
+					 tmp_win->boundary_width,
+					 tmp_win->boundary_width, 0, 0,
+					 InputOnly,
+					 DefaultVisual(dpy, Scr.screen),
+					 valuemask, &attributes);
+    }
+  }
+
+  /* create the parent of the client window */
+  /* make sure this does not have a BackPixel or BackPixmap so that
+     that when the client dies there is no flash of BackPixel/BackPixmap */
+  /* may look odd with shaped windows if fvwm has shapes disabled */
+  valuemask = CWCursor|CWColormap|CWBorderPixmap|CWBackPixmap|CWEventMask;
+  attributes.cursor = Scr.FvwmCursors[DEFAULT];
+  attributes.colormap = Scr.cmap;
+  attributes.border_pixmap = attributes.background_pixmap = None;
+  attributes.event_mask = SubstructureRedirectMask;
+  tmp_win->Parent = XCreateWindow (dpy, tmp_win->frame, tmp_win->boundary_width,
+				   tmp_win->boundary_width
+				   + tmp_win->title_height,
+				   (tmp_win->frame_width
+				   - 2 * tmp_win->boundary_width),
+				   (tmp_win->frame_height 
+				   - 2 * tmp_win->boundary_width
+				   - tmp_win->title_height), 0, CopyFromParent,
+				   InputOutput, CopyFromParent, valuemask,
+				   &attributes);
 
 
 #ifdef MINI_ICONS
   if (tmp_win->mini_pixmap_file) {
     tmp_win->mini_icon = CachePicture (dpy, Scr.NoFocusWin, NULL,
-				       tmp_win->mini_pixmap_file,
-				       Scr.ColorLimit);
+				       tmp_win->mini_pixmap_file, Scr.ColorLimit);
   }
   else {
     tmp_win->mini_icon = NULL;
@@ -655,8 +623,8 @@ valuemask = tvaluemask;
 #endif
 
   XMapSubwindows (dpy, tmp_win->frame);
-  XRaiseWindow(dpy,tmp_win->Parent);
-  XReparentWindow(dpy, tmp_win->w, tmp_win->Parent,0,0);
+  XRaiseWindow(dpy, tmp_win->Parent);
+  XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
 
   valuemask = (CWEventMask | CWDontPropagate);
   attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
