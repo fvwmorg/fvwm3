@@ -60,6 +60,7 @@
 #define CMD_SELECT		"WindowListFunc $w"
 #define CMD_CLICK1		"Raise"
 #define CMD_CLICK3		"Lower"
+#define CMD_DEFAULT		"Nop"
 #endif
 
 /* ---------------------------- local macros -------------------------------- */
@@ -237,6 +238,7 @@ static void parse_cmd(char **ret_cmd, char *cmd)
 
 static Bool parse_options(void)
 {
+	int m;
 	char *tline;
 
 #if 0
@@ -246,7 +248,6 @@ static Bool parse_options(void)
 	mark_command = safestrdup(CMD_MARK);
 	select_command = safestrdup(CMD_SELECT);
 #endif
-
 	memset(ClickAction, 0, sizeof(ClickAction));
 	ClickAction[PROXY_ACTION_SELECT] = strdup(CMD_SELECT);
 	ClickAction[PROXY_ACTION_CLICK + 0] = strdup(CMD_CLICK1);
@@ -254,6 +255,10 @@ static Bool parse_options(void)
 	{
 		ClickAction[PROXY_ACTION_CLICK + 2] = strdup(CMD_CLICK3);
 	}
+	for(m=0;m<PROXY_ACTION_LAST;m++)
+		if(ClickAction[m]==NULL)
+			ClickAction[m] = strdup(CMD_DEFAULT);
+
 	InitGetConfigLine(fd, CatString3("*", MyName, 0));
 	for (GetConfigLine(fd, &tline); tline != NULL;
 		GetConfigLine(fd, &tline))
@@ -1099,7 +1104,9 @@ static void ProcessMessage(FvwmPacket* packet)
 				free(proxy->name);
 			}
 			proxy->name = safestrdup((char*)&body[3]);
-			UpdateOneWindow(proxy);
+/*			UpdateOneWindow(proxy);
+*/
+			/*** window name not currently utilized anywhere */
 		}
 		break;
 	case M_ICON_NAME:
@@ -1111,7 +1118,10 @@ static void ProcessMessage(FvwmPacket* packet)
 				free(proxy->iconname);
 			}
 			proxy->iconname = safestrdup((char*)&body[3]);
-			UpdateOneWindow(proxy);
+/*			UpdateOneWindow(proxy);
+*/
+			DrawProxyBackground(proxy);
+			DrawProxy(proxy);
 		}
 		break;
 	case M_NEW_DESK:
@@ -1145,7 +1155,8 @@ static void ProcessMessage(FvwmPacket* packet)
 	case M_FOCUS_CHANGE:
 	{
 		focusWindow=bh->w;
-		fprintf(errorFile,"M_FOCUS_CHANGE 0x%x\n",(int)focusWindow);
+/*		fprintf(errorFile,"M_FOCUS_CHANGE 0x%x\n",(int)focusWindow);
+*/
 	}
 	case M_STRING:
 	{
