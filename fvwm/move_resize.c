@@ -1953,18 +1953,9 @@ void CMD_Resize(F_CMD_ARGS)
 
   if (IS_SHADED(tmp_win))
   {
-    drag->x = tmp_win->normal_g.x;
-    drag->y = tmp_win->normal_g.y;
-    if (was_maximized)
-    {
-      drag->width = tmp_win->max_g.width;
-      drag->height = tmp_win->max_g.height;
-    }
-    else
-    {
-      drag->width = tmp_win->normal_g.width;
-      drag->height = tmp_win->normal_g.height;
-    }
+    SET_MAXIMIZED(tmp_win, was_maximized);
+    get_unshaded_geometry(tmp_win, drag);
+    SET_MAXIMIZED(tmp_win, 0);
   }
   else
   {
@@ -1977,15 +1968,10 @@ void CMD_Resize(F_CMD_ARGS)
     }
   }
 
-  orig->x = drag->x;
-  orig->y = drag->y;
-  orig->width = drag->width;
-  orig->height = drag->height;
-  start_g.x = drag->x;
-  start_g.y = drag->y;
-  start_g.width = drag->width;
-  start_g.height = drag->height;
-  ymotion=xmotion=0;
+  *orig = *drag;
+  start_g = *drag;
+  ymotion = 0;
+  xmotion = 0;
 
   /* pop up a resize dimensions window */
   if (!Scr.gs.do_hide_resize_window)
