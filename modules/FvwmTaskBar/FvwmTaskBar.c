@@ -502,20 +502,40 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        2. be carful with dynamic style change */
     if (cfgpacket->w == win)
     {
-      if (win_border != (short)cfgpacket->border_width ||
-	  win_title_height != (int)cfgpacket->title_height ||
-	  win_has_title != HAS_TITLE(cfgpacket) ||
-	  win_title_dir != GET_TITLE_DIR(cfgpacket))
+      int nb;
+      int nh;
+      int nw;
+      int ntd;
+      int nht;
+      int nth;
+
+      nb = (short)cfgpacket->border_width;
+      nw = screen_g.width - (win_border<<1);
+      nh = (int)cfgpacket->frame_height - (win_border<<1);
+      nht = HAS_TITLE(cfgpacket);
+      ntd = GET_TITLE_DIR(cfgpacket);
+      nth = (int)cfgpacket->title_height;
+      if (ntd == DIR_S || ntd == DIR_N)
+      {
+	nh -= nth;
+      }
+      else
+      {
+	nw -= nth;
+      }
+      if (nb != win_border || nw != win_width || nh != win_height ||
+	  nht != win_has_title || ntd != win_title_dir ||
+	  nth != win_title_height)
       {
 	XSizeHints hints;
 	long dumy;
 
-	win_border = (short)cfgpacket->border_width;
-	win_width = screen_g.width-(win_border<<1);
-	win_title_height = (int)cfgpacket->title_height;
-	win_has_title = HAS_TITLE(cfgpacket);
-	win_title_dir = GET_TITLE_DIR(cfgpacket);
-
+	win_border = nb;
+	win_width = nw;
+	win_height = nh;
+	win_has_title = nht;
+	win_title_dir = ntd;
+	win_title_height = nth;
 	if (AutoStick)
 	{
 	  win_x = screen_g.x + win_border;
@@ -563,10 +583,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	XSetWMNormalHints(dpy,win,&hints);
 
 	if (AutoStick)
+	{
 	  XMoveResizeWindow(dpy, win, win_x, win_y, win_width, win_height);
-	else
+	}
+	else if (!IS_SHADED(cfgpacket))
+	{
 	  XResizeWindow(dpy, win, win_width, win_height);
-
+	}
 	UpdateArray(&buttons, -1, -1,
 		    win_width - stwin_width - StartAndLaunchButtonsWidth
 		    - WindowButtonsLeftMargin - WindowButtonsRightMargin,
@@ -1803,6 +1826,10 @@ void LoopOnEvents(void)
 void AdjustWindow(int width, int height)
 {
   NRows = (height+2)/RowHeight;
+  if (NRows <= 0)
+  {
+    NRows = 1;
+  }
   win_height = height;
   win_width = width;
   ArrangeButtonArray(&buttons);

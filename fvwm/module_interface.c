@@ -1238,7 +1238,7 @@ void BroadcastConfig(unsigned long event_type, const FvwmWindow *t)
 	/*  RBW-  BroadcastPacket(event_type, CONFIGARGS(t)); */
 	BroadcastNewPacket(event_type, CONFIGARGSNEW(t1));
 #ifndef DISABLE_MBC
-	/* send out an old version of the packet to keep old mouldules happy */
+	/* send out an old version of the packet to keep old modules happy */
 	{
 		long old_flags = 0;
 		SETOLDFLAGS

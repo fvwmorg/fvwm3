@@ -238,7 +238,7 @@ Bool StartButtonParseConfig(char *tline)
 
 		for(k=0;k<j;k++)
 		{
-			if (strncmp(tokens[k], "Title", 5)==0)
+			if (strncasecmp(tokens[k], "Title", 5)==0)
 			{
 				tokens[j+1] = tokens[k] + ((sizeof(char))*5);
 				while(*(tokens[j+1])==' ')
@@ -248,7 +248,7 @@ Bool StartButtonParseConfig(char *tline)
 					tokens[j+1]);
 				titleRecorded=1;
 			}
-			else if (strncmp(tokens[k], "Icon", 4)==0)
+			else if (strncasecmp(tokens[k], "Icon", 4)==0)
 			{
 				tokens[j+1] = tokens[k] + ((sizeof(char))*4);
 				while(*(tokens[j+1])==' ')
@@ -258,7 +258,7 @@ Bool StartButtonParseConfig(char *tline)
 					tokens[j+1] );
 				iconRecorded = 1;
 			}
-			else if (strncmp(tokens[k], "Action", 6)==0)
+			else if (strncasecmp(tokens[k], "Action", 6)==0)
 			{
 				rest = tokens[k] + ((sizeof(char))*6);
 				rest = ParseButtonOptions(rest, &mouseButton);
