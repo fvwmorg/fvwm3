@@ -135,6 +135,12 @@ An example of what this file might contain after a save is:
   *FvwmFormDefault: ButtonPointer hand2
   *FvwmFormDefault: ButtonInPointer star
   *FvwmFormDefault: InputPointer gumby
+  *FvwmFormDefault: ButtonPointerFore blue
+  *FvwmFormDefault: ButtonPointerBack gray
+  *FvwmFormDefault: ButtonInPointerFore gray
+  *FvwmFormDefault: ButtonInPointerBack blue
+  *FvwmFormDefault: InputPointerFore 
+  *FvwmFormDefault: InputPointerBack 
 .EE
 The commands in this file are just like any other FvwmForm
 command except that they start with "*FvwmFormDefault".
@@ -187,7 +193,11 @@ Back
 Button
 ButtonFont
 ButtonInPointer
+ButtonInPointerFore
+ButtonInPointerBack
 ButtonPointer
+ButtonPointerFore
+ButtonPointerBack
 Choice
 Command
 Colorset
@@ -200,6 +210,8 @@ InputPointer
 ItemBack
 ItemColorset
 ItemFore
+InputPointerFore 
+InputPointerBack 
 Line
 Message
 PadVText
@@ -523,6 +535,24 @@ Change the default mouse pointer (xterm) used
 while the pointer is over a text field.
 The pointername must be one of the names defined in
 the include file X11/cursorfont.h (without the XC_ prefix).
+See DEFAULTS.
+
+.TP 4
+.B *FvwmForm: ButtonPointerFore|Back \fIcolor\fP
+Change the default mouse pointer foreground and background colors
+used when hovering over a button.
+See DEFAULTS.
+
+.TP 4
+.B *FvwmForm: ButtonInPointerFore|Back \fIcolor\fP
+Change the default mouse pointer foreground and background colors
+used while a button is pressed in.
+See DEFAULTS.
+
+.TP 4
+.B *FvwmForm: InputPointerFore|Back \fIcolor\fP
+Change the default mouse pointer foreground and background colors
+used while the pointer is over a text field.
 See DEFAULTS.
 
 .SH EXAMPLES

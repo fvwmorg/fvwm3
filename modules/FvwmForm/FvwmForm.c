@@ -164,7 +164,11 @@ static void ct_Back(char *);
 static void ct_Button(char *);
 static void ct_ButtonFont(char *);
 static void ct_ButtonInPointer(char *);
+static void ct_ButtonInPointerBack(char *);
+static void ct_ButtonInPointerFore(char *);
 static void ct_ButtonPointer(char *);
+static void ct_ButtonPointerBack(char *);
+static void ct_ButtonPointerFore(char *);
 static void ct_Choice(char *);
 static void ct_Command(char *);
 static void ct_Font(char *);
@@ -182,6 +186,8 @@ static void ct_Read(char *);
 static void ct_Selection(char *);
 static void ct_Text(char *);
 static void ct_InputPointer(char *);
+static void ct_InputPointerBack(char *);
+static void ct_InputPointerFore(char *);
 static void ct_Title(char *);
 static void ct_UseData(char *);
 static void ct_padVText(char *);
@@ -197,7 +203,11 @@ static struct CommandTable ct_table[] =
   {"Button",ct_Button},
   {"ButtonFont",ct_ButtonFont},
   {"ButtonInPointer",ct_ButtonInPointer},
+  {"ButtonInPointerBack",ct_ButtonInPointerBack},
+  {"ButtonInPointerFore",ct_ButtonInPointerFore},
   {"ButtonPointer",ct_ButtonPointer},
+  {"ButtonPointerBack",ct_ButtonPointerBack},
+  {"ButtonPointerFore",ct_ButtonPointerFore},
   {"Choice",ct_Choice},
   {"Colorset",ct_Colorset},
   {"Command",ct_Command},
@@ -208,6 +218,8 @@ static struct CommandTable ct_table[] =
   {"Input",ct_Input},
   {"InputFont",ct_InputFont},
   {"InputPointer",ct_InputPointer},
+  {"InputPointerBack",ct_InputPointerBack},
+  {"InputPointerFore",ct_InputPointerFore},
   {"ItemBack",ct_ItemBack},
   {"ItemColorset",ct_ItemColorset},
   {"ItemFore",ct_ItemFore},
@@ -229,12 +241,18 @@ static struct CommandTable def_table[] =
   {"Back",ct_Back},
   {"ButtonFont",ct_ButtonFont},
   {"ButtonInPointer",ct_ButtonInPointer},
+  {"ButtonInPointerBack",ct_ButtonInPointerBack},
+  {"ButtonInPointerFore",ct_ButtonInPointerFore},
   {"ButtonPointer",ct_ButtonPointer},
+  {"ButtonPointerBack",ct_ButtonPointerBack},
+  {"ButtonPointerFore",ct_ButtonPointerFore},
   {"Colorset",ct_Colorset},
   {"Font",ct_Font},
   {"Fore",ct_Fore},
   {"InputFont",ct_InputFont},
   {"InputPointer",ct_InputPointer},
+  {"InputPointerBack",ct_InputPointerBack},
+  {"InputPointerFore",ct_InputPointerFore},
   {"ItemBack",ct_ItemBack},
   {"ItemColorset",ct_ItemColorset},
   {"ItemFore",ct_ItemFore},
@@ -504,7 +522,7 @@ static void ct_ButtonInPointer(char *cp)
   if (cursor == -1) {
     fprintf(stderr,"ButtonInPointer: invalid cursor name %s\n",cp);
   } else {
-    CF.xc_hand1 = XCreateFontCursor(dpy,cursor);
+    CF.pointer[button_in_pointer] = XCreateFontCursor(dpy,cursor);
   }
 }
 static void ct_ButtonPointer(char *cp)
@@ -514,7 +532,7 @@ static void ct_ButtonPointer(char *cp)
   if (cursor == -1) {
     fprintf(stderr,"ButtonPointer: invalid cursor name %s\n",cp);
   } else {
-    CF.xc_hand2 = XCreateFontCursor(dpy,cursor);
+    CF.pointer[button_pointer] = XCreateFontCursor(dpy,cursor);
   }
 }
 static void ct_InputFont(char *cp)
@@ -531,9 +549,38 @@ static void ct_InputPointer(char *cp)
   if (cursor == -1) {
     fprintf(stderr,"InputPointer: invalid cursor name %s\n",cp);
   } else {
-    CF.xc_ibeam = XCreateFontCursor(dpy,cursor);
+    CF.pointer[input_pointer] = XCreateFontCursor(dpy,cursor);
   }
 }
+/* process buttons using an index to the ___ array */
+static void color_arg(Ptr_color *color_cell, char *color_name);
+static void color_arg(Ptr_color *color_cell, char *color_name) {
+  if (color_name && *color_name) {
+    color_cell->pointer_color.pixel = GetColor(color_name);
+    color_cell->used=1;
+  }
+}
+
+/* arg is a color name, alloc the color */
+static void ct_ButtonInPointerBack(char *cp) {
+  color_arg(&CF.p_c[button_in_back],cp);
+}
+static void ct_ButtonInPointerFore(char *cp) {
+  color_arg(&CF.p_c[button_in_fore],cp);
+}
+static void ct_ButtonPointerBack(char *cp) {
+  color_arg(&CF.p_c[button_back],cp);
+}
+static void ct_ButtonPointerFore(char *cp) {
+  color_arg(&CF.p_c[button_fore],cp);
+}
+static void ct_InputPointerBack(char *cp) {
+  color_arg(&CF.p_c[input_back],cp);
+}
+static void ct_InputPointerFore(char *cp) {
+  color_arg(&CF.p_c[input_fore],cp);
+}
+
 static void ct_Line(char *cp)
 {
   /* malloc new line */
@@ -1070,6 +1117,13 @@ static void InitConstants () {
   font_names[1]=safestrdup("8x13bold");
   font_names[2]=safestrdup("8x13bold");
   screen_background_color=safestrdup("Light Gray");
+  CF.p_c[input_fore].pointer_color.pixel = WhitePixel(dpy, screen);
+  CF.p_c[input_back].pointer_color.pixel = BlackPixel(dpy, screen);
+  CF.p_c[button_fore].pointer_color.pixel = BlackPixel(dpy, screen);
+  CF.p_c[button_back].pointer_color.pixel = WhitePixel(dpy, screen);
+  /* The in pointer is the reverse of the hover pointer. */
+  CF.p_c[button_in_fore].pointer_color.pixel = WhitePixel(dpy, screen);
+  CF.p_c[button_in_back].pointer_color.pixel = BlackPixel(dpy, screen);
 }
 
 /* read the configuration file */
@@ -1586,30 +1640,59 @@ static void OpenWindows ()
   int x, y;
   int gravity = NorthWestGravity;
   Item *item;
-  static XColor xcf, xcb;
   static XSetWindowAttributes xswa;
   static XWMHints wmh = { InputHint, True };
   static XSizeHints sh =
     { PPosition | PSize | USPosition | USSize | PWinGravity};
   XClassHint myclasshints;
 
-  if (!CF.xc_ibeam) {
-    CF.xc_ibeam = XCreateFontCursor(dpy, XC_xterm);
+  if (!CF.pointer[input_pointer]) {
+    CF.pointer[input_pointer] = XCreateFontCursor(dpy, XC_xterm);
   }
-  if (!CF.xc_hand1) {
-    CF.xc_hand1 = XCreateFontCursor(dpy, XC_hand1);
+  if (!CF.pointer[button_in_pointer]) {
+    CF.pointer[button_in_pointer] = XCreateFontCursor(dpy, XC_hand2);
   }
-  if (!CF.xc_hand2) {
-    CF.xc_hand2 = XCreateFontCursor(dpy, XC_hand2);
+  if (!CF.pointer[button_pointer]) {
+    CF.pointer[button_pointer] = XCreateFontCursor(dpy,XC_hand2);
   }
-  xcf.pixel = GetColor("White");
-  XQueryColor(dpy, Pcmap, &xcf);
-  xcb.pixel = CF.screen_background = (colorset < 0)
+  CF.screen_background = (colorset < 0)
     ? GetColor(screen_background_color)
     : Colorset[colorset].bg;
-  XQueryColor(dpy, Pcmap, &xcb);
-  XRecolorCursor(dpy, CF.xc_ibeam, &xcf, &xcb);
 
+  if (!CF.p_c[input_back].used) {  /* if not set, use screen b/g */
+    CF.p_c[input_back].pointer_color.pixel = CF.screen_background;
+  }
+  myfprintf((stderr,
+             "screen bg %X, getcolor bg %X, colorset bg %X colorset %d\n",
+             (int)CF.screen_background,
+             (int)GetColor(screen_background_color),
+             (int)Colorset[colorset].bg,
+             (int)colorset));
+  XQueryColor(dpy, Pcmap, &CF.p_c[input_fore].pointer_color);
+  XQueryColor(dpy, Pcmap, &CF.p_c[input_back].pointer_color);
+  XRecolorCursor(dpy, CF.pointer[input_pointer],
+                 &CF.p_c[input_fore].pointer_color,
+                 &CF.p_c[input_back].pointer_color);
+  myfprintf((stderr,"input fore %X, back %X\n",
+          (int)CF.p_c[input_fore].pointer_color.pixel,
+          (int)CF.p_c[input_back].pointer_color.pixel));
+  /* The input cursor is handled differently than the 2 button cursors. */
+  XQueryColor(dpy, Pcmap, &CF.p_c[button_fore].pointer_color);
+  XQueryColor(dpy, Pcmap, &CF.p_c[button_back].pointer_color);
+  XRecolorCursor(dpy, CF.pointer[button_pointer],
+                 &CF.p_c[button_fore].pointer_color,
+                 &CF.p_c[button_back].pointer_color);
+  myfprintf((stderr,"button fore %X, back %X\n",
+          (int)CF.p_c[button_fore].pointer_color.pixel,
+          (int)CF.p_c[button_back].pointer_color.pixel));
+  XQueryColor(dpy, Pcmap, &CF.p_c[button_in_fore].pointer_color);
+  XQueryColor(dpy, Pcmap, &CF.p_c[button_in_back].pointer_color);
+  XRecolorCursor(dpy, CF.pointer[button_in_pointer],
+                 &CF.p_c[button_in_fore].pointer_color,
+                 &CF.p_c[button_in_back].pointer_color);
+  myfprintf((stderr,"button in fore %X, back %X\n",
+          (int)CF.p_c[button_in_fore].pointer_color.pixel,
+          (int)CF.p_c[button_in_back].pointer_color.pixel));
   /* the frame window first */
   if (CF.have_geom)
   {
@@ -1639,11 +1722,14 @@ static void OpenWindows ()
     FScreenCenterOnScreen(
       NULL, FSCREEN_CURRENT, &x, &y, CF.max_width, CF.total_height);
   }
-  myfprintf((stderr,"going to create window w. bg %s\n",
-             screen_background_color));
   xswa.background_pixel = CF.screen_background;
   xswa.border_pixel = 0;
   xswa.colormap = Pcmap;
+  myfprintf((stderr,
+          "going to create window w. bg %s, b/g pixel %X, black pixel %X\n",
+          screen_background_color,
+          (int)xswa.background_pixel,
+          BlackPixel(dpy, screen)));
   CF.frame = XCreateWindow(dpy, root, x, y, CF.max_width, CF.total_height, 0,
 			   Pdepth, InputOutput, Pvisual,
 			   CWColormap | CWBackPixel | CWBorderPixel, &xswa);
@@ -1677,7 +1763,7 @@ static void OpenWindows ()
 			    0, CF.screen_background,
                             item->header.dt_ptr->dt_colors[c_item_bg]);
       XSelectInput(dpy, item->header.win, ButtonPressMask | ExposureMask);
-      xswa.cursor = CF.xc_ibeam;
+      xswa.cursor = CF.pointer[input_pointer];
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       if (itemcolorset >= 0)
       {
@@ -1696,7 +1782,7 @@ static void OpenWindows ()
 			    0, CF.screen_background,
                             item->header.dt_ptr->dt_colors[c_item_bg]);
       XSelectInput(dpy, item->header.win, ButtonPressMask | ExposureMask);
-      xswa.cursor = CF.xc_hand2;
+      xswa.cursor = CF.pointer[button_pointer];
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       if (itemcolorset >= 0)
       {
@@ -1717,7 +1803,7 @@ static void OpenWindows ()
                             item->header.dt_ptr->dt_colors[c_item_bg]);
       XSelectInput(dpy, item->header.win,
 		   ButtonPressMask | ExposureMask);
-      xswa.cursor = CF.xc_hand2;
+      xswa.cursor = CF.pointer[button_pointer];
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       if (itemcolorset >= 0)
       {

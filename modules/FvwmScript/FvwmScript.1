@@ -31,9 +31,9 @@ menu, modal dialog... At the startup, FvwmScript reads
 the file which is specified in the command line. This file contains the script.
 This script is not included in the configuration file of Fvwm.
 
-A FvwmScript script is fully controllable by using the keyboard.
-(Shift)-Tab circulates around the widgets, Return simulate a mouse
-click, the arrows either move the cursor or change the values of the
+An FvwmScript script is fully controllable by using the keyboard.
+(Shift)-Tab circulates around the widgets, Return simulates a mouse
+click, the arrows move the cursor or change the values of the
 widget and Escape "cancels" for Menu and PopupMenu.
 
 .SH INVOCATION
@@ -182,8 +182,8 @@ Property
 The option 'Flags` Hidden is used to specify if the widget is hidden.
 NoReliefString specifies if strings are drawn with relief or not.
 NoFocus specifies if the widget can get the keyboard focus or not.
-By default all widget take the focus, but Rectangle, HDipstick and VDipstick
-which cannot at all. Moreover, the NoFocus widgets are skipped when you 
+By default all widgets take focus, except Rectangle, HDipstick and VDipstick
+which cannot. Moreover, the NoFocus widgets are skipped when you 
 circulate around the widgets with the (Shift-)Tab short cut.
 
 The position of every widget must be specified.

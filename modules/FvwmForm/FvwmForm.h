@@ -157,6 +157,13 @@ typedef struct _line {
   Item **items;                         /* ptr to array of items */
 } Line;
 
+/* Need a struct for the pointer color.
+   Since colors are unsigned, we need a flag to indicate whether
+   the color was ever set. */
+typedef struct _ptrc {
+  XColor pointer_color;
+  char used;
+} Ptr_color;
 
 /* There is one "form". Start of attempt to change that. */
 typedef struct _form {
@@ -185,9 +192,15 @@ typedef struct _form {
   char *expand_buffer;                  /* buffer to expand commands in */
   int expand_buffer_size;               /* current size */
   char have_env_var;                    /* at least one env var on cmd line */
-  Cursor xc_ibeam, xc_hand2, xc_hand1;  /* cursors */
+  Cursor pointer[3];
+  Ptr_color p_c[6];                     /* fg/bg for pointers, used flag */
   int activate_on_press;                /* activate button on press */
 } Form;
+
+enum {input_pointer,button_pointer,button_in_pointer};
+enum {input_fore,input_back,
+      button_fore,button_back,
+      button_in_fore,button_in_back};
 
 extern Form cur_form;                   /* current form */
 #define CF cur_form                     /* I may want to undo this... */

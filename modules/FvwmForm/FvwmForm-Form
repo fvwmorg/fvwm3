@@ -32,15 +32,25 @@ DestroyModuleConfig FvwmForm-Form: *
 *FvwmForm-Form: Line left
 *FvwmForm-Form: Text  "Pointer over button:    "
 *FvwmForm-Form: Input ButtonPointer 20 "hand2"
-*FvwmForm-Form: Text  " (Default hand2)"
+*FvwmForm-Form: Text  "f/g"
+*FvwmForm-Form: Input ButtonPointerFore 20 "white"
+*FvwmForm-Form: Text  "b/g"
+*FvwmForm-Form: Input ButtonPointerBack 20 "black"
+
 *FvwmForm-Form: Line left
 *FvwmForm-Form: Text  "Pointer while button in:"
-*FvwmForm-Form: Input ButtonInPointer 20 "hand1"
-*FvwmForm-Form: Text  " (Default hand1)"
+*FvwmForm-Form: Input ButtonInPointer 20 "hand2"
+*FvwmForm-Form: Text  "f/g"
+*FvwmForm-Form: Input ButtonInPointerFore 20 "black"
+*FvwmForm-Form: Text  "b/g"
+*FvwmForm-Form: Input ButtonInPointerBack 20 "white"
 *FvwmForm-Form: Line left
 *FvwmForm-Form: Text  "Pointer over input:     "
 *FvwmForm-Form: Input InputPointer 20 "xterm"
-*FvwmForm-Form: Text  " (Default xterm)"
+*FvwmForm-Form: Text  "f/g"
+*FvwmForm-Form: Input InputPointerFore 20 "white"
+*FvwmForm-Form: Text  "b/g"
+*FvwmForm-Form: Input InputPointerBack 20 "black"
 
 *FvwmForm-Form: Line left
 *FvwmForm-Form: Text  "Activate buttons:"
@@ -71,6 +81,16 @@ DestroyModuleConfig FvwmForm-Form: *
  '*FvwmFormDefault: InputPointer $(InputPointer)' ; /bin/echo  \
  '*FvwmFormDefault: ActivateOnPress $(ActivateOnPress)'\
 ) > ${FVWM_USERDIR}/.FvwmForm
+# This would have surely hit a limit so its appended with >>:
+*FvwmForm-Form: Command !(\
+ /bin/echo '*FvwmFormDefault: ButtonPointerFore $(ButtonPointerFore)';\
+ /bin/echo '*FvwmFormDefault: ButtonPointerBack $(ButtonPointerBack)';\
+ /bin/echo '*FvwmFormDefault: ButtonInPointerFore $(ButtonInPointerFore)';\
+ /bin/echo '*FvwmFormDefault: ButtonInPointerBack $(ButtonInPointerBack)';\
+ /bin/echo '*FvwmFormDefault: InputPointerFore $(InputPointerFore)';\
+ /bin/echo '*FvwmFormDefault: InputPointerBack $(InputPointerBack)';\
+) >> ${FVWM_USERDIR}/.FvwmForm
+
 *FvwmForm-Form: Command *FvwmFormDefault: Read n
 *FvwmForm-Form: Command Module FvwmForm FvwmForm-Form
 *FvwmForm-Form: Button       restart   "F3 - Reset" F3

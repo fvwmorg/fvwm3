@@ -398,7 +398,7 @@ void ReadXServer ()
                               reversed. I don't know what other GUIs do,
                               Java doesn't do anything, neither does anything
                               else I can find...dje */
-                           CF.xc_hand1,   /* cursor */
+                           CF.pointer[button_in_pointer],   /* cursor */
                            CurrentTime);
             } /* end activate on press */
 	  }
