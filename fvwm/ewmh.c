@@ -130,7 +130,8 @@ ewmh_atom ewmh_atom_wm_state[] =
 {
   ENTRY("_NET_WM_STATE_ABOVE",           XA_ATOM,   ewmh_WMStateStaysOnTop),
   ENTRY("_NET_WM_STATE_BELOW",           XA_ATOM,   ewmh_WMStateStaysOnBottom),
-  ENTRY("_NET_WM_STATE_FULLSCREEN",      XA_ATOM,   ewmh_WMStateFullScreen),
+  /* not yet implemented */
+  /*ENTRY("_NET_WM_STATE_FULLSCREEN",      XA_ATOM,   ewmh_WMStateFullScreen),*/
   ENTRY("_NET_WM_STATE_HIDDEN",          XA_ATOM,   ewmh_WMStateHidden),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORIZ", XA_ATOM,   ewmh_WMStateMaxHoriz),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORZ",  XA_ATOM,   ewmh_WMStateMaxHoriz),

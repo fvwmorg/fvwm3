@@ -1,3 +1,8 @@
+2003-05-29  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh.c (ewmh_atom_wm_state):
+	Do not claim that we support _NET_WM_STATE_FULLSCREEN
+
 2003-05-28  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS:
