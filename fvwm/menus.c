@@ -4814,12 +4814,22 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     Pixel *pixels;
     char gtype = style[0];
 
+    if (!IsGradientTypeSupported(style[0]))
+      return False;
+
+    /* translate the gradient string into an array of colors etc */
+    npixels = ParseGradient(s, &s_colors, &perc, &nsegs);
+    if (npixels <= 0)
+      return False;
+    /* grab the colors */
+    pixels = AllocAllGradientColors(s_colors, perc, nsegs, npixels);
+    if (pixels == None)
       return False;
 
     mf->u.grad.pixels = pixels;
     mf->u.grad.npixels = npixels;
     mf->type = GradientMenu;
-    mf->gradient_type = toupper(gtype);
+    mf->gradient_type = toupper(style[0]);
   }
 #endif /* GRADIENT_BUTTONS */
 

@@ -1,3 +1,7 @@
+1999-08-23  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (ReadMenuFace): fixed missing parsing of gradients
+
 1999-08-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (menuShortcuts): fixe Right key in menus.
