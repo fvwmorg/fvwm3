@@ -1,9 +1,15 @@
+1999-06-10  Hippo
+
+	* fvwm/{{colors,fvwm,icons}.c,screen.h}: clean up of icon rendering:
+	removed Bool usingDefaultVisual & GC IconPixmapGC,
+	client supplied icon bitmaps are always drawn in correct colors,
+	client supplied icon pixmaps have no relief when fvwm is using a
+	non-default visual.
+
 1999-06-10  Chris Rankin  <rankinc@zipworld.com.au>
 
-    * modules/FvwmIconMan
-      modules/FvwmIconBox
-      modules/FvwmWinList
-i   Modified signal handling to use fvwmsignal.
+	* modules/Fvwm{Icon{Man,Box},WinList}: Modified signal handling
+	to use fvwmsignal.
 
 1999-06-09  Bob Woodside  <proteus@pcnet.com>
 

@@ -72,17 +72,6 @@ void CreateGCs(void)
   Scr.TransMaskGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 #endif
 
-  /* use this only for client supplied icon pixmaps when fvwm is using
-   * a non default visual */
-  if (!Scr.usingDefaultVisual) {
-    gcm |= GCForeground | GCBackground | GCPlaneMask;
-    gcv.foreground = WhitePixel(dpy, Scr.screen);
-    gcv.background = BlackPixel(dpy, Scr.screen);
-    gcv.plane_mask = AllPlanes;
-    Scr.IconPixmapGC = XCreateGC(dpy, RootWindow(dpy, Scr.screen), gcm, &gcv);
-  } else
-    Scr.IconPixmapGC = NULL;
-
 }
 
 

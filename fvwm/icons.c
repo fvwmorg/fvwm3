@@ -123,11 +123,12 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       tmp_win->icon_t_width = 0;
       tmp_win->icon_w_height = 0;
     }
-  if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_p_height >0))
-    {
-      tmp_win->icon_p_width += 4;
-      tmp_win->icon_p_height += 4;
-    }
+
+  if ((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_height > 0)
+      && ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth))) {
+    tmp_win->icon_p_width += 4;
+    tmp_win->icon_p_height += 4;
+  }
 
   if(tmp_win->icon_p_width == 0)
     tmp_win->icon_p_width = tmp_win->icon_t_width+6;
@@ -158,16 +159,22 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
      && (tmp_win->icon_p_height > 0)) {
       /* client supplied icon pixmaps use the default visual */
-      if (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win))
+      if ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth))
 	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
 					       tmp_win->icon_p_width,
 					       tmp_win->icon_p_height, 0,
 					       Scr.depth, InputOutput,
 					       Scr.viz, valuemask, &attributes);
       else {
-        /* must use root visuals not fvwm's */
-        attributes.background_pixel = BlackPixel(dpy, Scr.screen);
+        /* client supplied icon pixmap and fvwm is using another visual */
+        /* use it as the background pixmap, don't try to put relief on it
+         * because fvwm will not have the correct colors and
+         * don't ask for exposures */
+        attributes.background_pixmap = tmp_win->iconPixmap;
+	attributes.event_mask &= ~ExposureMask;
         attributes.colormap = DefaultColormap(dpy, Scr.screen);
+        valuemask &= ~CWBackPixel;
+        valuemask |= CWBackPixmap;
 	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
 					       tmp_win->icon_p_width,
 					       tmp_win->icon_p_height, 0,
@@ -190,14 +197,15 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     }
 
 
-#ifdef XPM
 #ifdef SHAPE
-  if (ShapesSupported && IS_ICON_SHAPED(tmp_win))
-    {
-      XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding,2, 2,
-			tmp_win->icon_maskPixmap, ShapeSet);
-    }
-#endif
+  if (ShapesSupported && IS_ICON_SHAPED(tmp_win)) {
+  /* when fvwm is using the non-default visual client supplied icon pixmaps
+   * are drawn in a window with no relief */
+    int off = ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth))
+	      ? 2 : 0;
+    XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding, off, off,
+		      tmp_win->icon_maskPixmap, ShapeSet);
+  }
 #endif
 
   if(tmp_win->icon_w != None)
@@ -313,78 +321,53 @@ void DrawIconWindow(FvwmWindow *tmp_win)
         }
     }
 
-  if(IS_ICON_OURS(tmp_win) && (tmp_win->icon_pixmap_w != None)
-      && (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win))) {
-    XSetWindowBackground(dpy, tmp_win->icon_pixmap_w, BackColor);
-  }
-  if(tmp_win->icon_w != None)
-    XSetWindowBackground(dpy, tmp_win->icon_w, BackColor);
-
-  /* write the icon label */
+  /* set up ScratchGC3 for drawing the icon label */
   NewFontAndColor(Scr.IconFont.font->fid,TextColor,BackColor);
+  if(tmp_win->icon_w != None) {
+    tmp_win->icon_w_height = ICON_HEIGHT;
+    XMoveResizeWindow(dpy, tmp_win->icon_w, tmp_win->icon_xl_loc,
+                      tmp_win->icon_y_loc + tmp_win->icon_p_height,
+                      tmp_win->icon_w_width,ICON_HEIGHT);
+    XSetWindowBackground(dpy, tmp_win->icon_w, BackColor);
+    XClearWindow(dpy,tmp_win->icon_w);
+    /* text position */
+    x = (tmp_win->icon_w_width - tmp_win->icon_t_width) / 2;
+    if(x < 3)
+      x = 3;
+    XDrawString (dpy, tmp_win->icon_w, Scr.ScratchGC3, x,
+		 tmp_win->icon_w_height - Scr.IconFont.height + Scr.IconFont.y
+		 - 3, tmp_win->icon_name, strlen(tmp_win->icon_name));
+    RelieveRectangle(dpy, tmp_win->icon_w, 0, 0, tmp_win->icon_w_width - 1,
+		     ICON_HEIGHT - 1, Relief, Shadow, 2);
+  }
 
   if(tmp_win->icon_pixmap_w != None) {
     XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc,
 		tmp_win->icon_y_loc);
   }
-  if(tmp_win->icon_w != None)
-    {
-      tmp_win->icon_w_height = ICON_HEIGHT;
-      XMoveResizeWindow(dpy, tmp_win->icon_w, tmp_win->icon_xl_loc,
-                        tmp_win->icon_y_loc+tmp_win->icon_p_height,
-                        tmp_win->icon_w_width,ICON_HEIGHT);
 
-      XClearWindow(dpy,tmp_win->icon_w);
-    }
-
-  if((tmp_win->iconPixmap != None) && (!(IS_ICON_SHAPED(tmp_win)))) {
-    if (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win)) {
-      RelieveRectangle(dpy, tmp_win->icon_pixmap_w, 0, 0,
+  if ((tmp_win->iconPixmap != None) && !(IS_ICON_SHAPED(tmp_win))
+      && ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth)))
+    RelieveRectangle(dpy, tmp_win->icon_pixmap_w, 0, 0,
 		       tmp_win->icon_p_width - 1, tmp_win->icon_p_height - 1,
 	               Relief, Shadow, 2);
-    } else {
-      RelieveRectangle(dpy, tmp_win->icon_pixmap_w, 0, 0,
-		       tmp_win->icon_p_width - 1, tmp_win->icon_p_height - 1,
-	               Scr.IconPixmapGC, Scr.IconPixmapGC, 2);
-    }
-  }
 
   /* need to locate the icon pixmap */
-  if(tmp_win->iconPixmap != None) {
-    if (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win)) {
+  if (tmp_win->iconPixmap != None) {
+    if (tmp_win->iconDepth == 1) {
+      /* it's a bitmap */
+      XCopyPlane(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
+		 Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
+		 tmp_win->icon_p_height - 4, 2, 2, 1);
+    } else {
       if (tmp_win->iconDepth == Scr.depth) {
+        /* it's a pixmap */
 	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
 		  Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
 		tmp_win->icon_p_height - 4, 2, 2);
-      } else {
-	XCopyPlane(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		   Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
-		   tmp_win->icon_p_height - 4, 2, 2, 1);
       }
-    } else if (tmp_win->iconDepth == DefaultDepth(dpy,Scr.screen)) {
-      XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		Scr.IconPixmapGC, 0, 0, tmp_win->icon_p_width - 4,
-		tmp_win->icon_p_height - 4, 2, 2);
-    } else {
-      XCopyPlane(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		 Scr.IconPixmapGC, 0, 0, tmp_win->icon_p_width - 4,
-		 tmp_win->icon_p_height - 4, 2, 2, 1);
     }
   }
-
-  if(tmp_win->icon_w != None)
-    {
-      /* text position */
-      x = (tmp_win->icon_w_width - tmp_win->icon_t_width)/2;
-      if(x<3)x=3;
-
-      XDrawString (dpy, tmp_win->icon_w, Scr.ScratchGC3, x,
-                   tmp_win->icon_w_height-Scr.IconFont.height+
-		   Scr.IconFont.y-3,
-                   tmp_win->icon_name, strlen(tmp_win->icon_name));
-      RelieveRectangle(dpy,tmp_win->icon_w,0,0,tmp_win->icon_w_width - 1,
-                       ICON_HEIGHT - 1,Relief,Shadow,2);
-    }
 
   if (IS_ICON_ENTERED(tmp_win))
     {
@@ -861,14 +844,23 @@ void GetIconWindow(FvwmWindow *tmp_win)
  ****************************************************************************/
 void GetIconBitmap(FvwmWindow *tmp_win)
 {
+  unsigned int width, height, depth;
   /* We are guaranteed that wmhints is non-null when calling this
    * routine */
   XGetGeometry(dpy, tmp_win->wmhints->icon_pixmap, &JunkRoot, &JunkX, &JunkY,
-	       (unsigned int *)&tmp_win->icon_p_width,
-	       (unsigned int *)&tmp_win->icon_p_height, &JunkBW, &JunkDepth);
-  tmp_win->iconPixmap = tmp_win->wmhints->icon_pixmap;
-  tmp_win->iconDepth = JunkDepth;
+	       &width, &height, &JunkBW, &depth);
 
+  /* sanity check the pixmap depth, it must be the same as the root or 1 */
+  if ((depth != 1) && (depth != DefaultDepth(dpy,Scr.screen))) {
+    fvwm_msg(ERR, "GetIconBitmap", "Bad client icon pixmap depth %d", depth);
+    return;
+  }
+  
+  tmp_win->iconPixmap = tmp_win->wmhints->icon_pixmap;
+  tmp_win->icon_p_width = width;
+  tmp_win->icon_p_height = height;
+  tmp_win->iconDepth = depth;
+  
 #ifdef SHAPE
   if (ShapesSupported)
   {
