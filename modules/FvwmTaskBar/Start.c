@@ -228,8 +228,12 @@ Bool StartButtonParseConfig(char *tline)
 		titleRecorded = iconRecorded = 0;
 		tokens[j++] = strtok_r(rest, ",", &strtok_ptr);
 		while((tokens[j++] = strtok_r(NULL, ",", &strtok_ptr)))
-			while(*(tokens[j-1])==' ')
+		{
+			while(isspace(*(tokens[j-1])))
+			{
 				tokens[j-1]+=sizeof(char);
+			}
+		}
 		j--;
 
 		for(k=0;k<j;k++)

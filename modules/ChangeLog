@@ -1,3 +1,8 @@
+2004-01-24  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/Start.c (StartButtonParseConfig):
+	Fixed Button parsing when some tabs are used
+
 2004-01-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/Scripts/FvwmScript-Quit:
