@@ -126,7 +126,7 @@ static FvwmWindow *Circulate(
 
 	for (pass = 0; pass < 3 && !found; pass++)
 	{
-		while (fw && !found)
+		while (fw && !found && fw != &Scr.FvwmRoot)
 		{
 			/* Make CirculateUp and CirculateDown take args. by
 			 * Y.NOMURA */
@@ -151,7 +151,7 @@ static FvwmWindow *Circulate(
 				return found;
 			}
 		}
-		if (fw == NULL)
+		if (fw == NULL || fw == &Scr.FvwmRoot)
 		{
 			if (Direction > 0)
 			{
