@@ -1,5 +1,14 @@
 2001-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmCommand/findcmd.pl:
+	* FvwmCommand/findcmd (create_pm):
+	* FvwmCommand/Makefile.am:
+	removed findcmd shell script; use fvwmcmd.pl instead
+
+	* FvwmCommand/findcmd.pl (listcmd):
+	adapted to new command table syntax
+	fixed uppercas vs. lowercase problem
+
 	* FvwmScript/Scripts/FvwmScript-BaseConfig:
 	fixed typo
 

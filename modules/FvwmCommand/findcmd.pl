@@ -17,52 +17,76 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 sub getcmd {
-    $/ = "\n\n";
-    while(<STDIN>) {
-	#find "func_type func_config[] =" in various spacing
-	if (s/func_type.*\[\]\s+=(\s|\n)+\{// ) {
-	    return listcmd();
-	}
+  $/ = "\n\n";
+  while(<STDIN>) {
+    #find "func_type func_config[] =" in various spacing
+    if (s/func_type.*\[\]\s*=(\s|\n)*\{// ) {
+      return listcmd();
     }
-    print stderr "Can't find func_type\n";
-    exit 1;
+  }
+  print stderr "Can't find func_type\n";
+  exit 1;
 }
 
 sub listcmd {
-    my($cmd,@cmd);
-    while( /"(.*)"/g ) {
-	$cmd = $1;
-	next if $cmd =~ /^\+?$/;
-	push @cmd, $cmd;
+  my($cmd,@cmd);
+
+  while (/CMD_ENTRY/) {
+    $old = $_;
+    s/.*CMD_ENTRY[^,]*,\s*([^,]+).*/\1/s;
+    s/\s*$//;
+    if (!/^\+\s*$/) {
+      push @cmd, $_;
     }
-    @cmd;
+    $_ = $old;
+    s/(.*)CMD_ENTRY.*/\1/s;
+  }
+  @cmd;
 }
 
 sub create_pm {
-    my( @cmd, $i, @ln );
-    my( $fvwmdir ) = $ARGV[0];
-    my( $pm ) = "FvwmCommand.pm";
+  my( @cmd, $i, @ln );
+  my( $fvwmdir ) = $ARGV[0];
+  my( $pm ) = "FvwmCommand.pm";
 
-    @cmd = getcmd();
+  @cmd = getcmd();
 
+  if ($ARGV[1] eq "-sh") {
+    print "# FvwmCommand.sh\n";
+    print "# Collection of fvwm builtin commands for FvwmCommand\n";
+    print "#\n";
+    print "alias FvwmCommand=\'$fvwmdir/FvwmCommand\'\n";
+
+    for( $i=0; $i<=$#cmd; $i++) {
+      print  "$cmd[$i] () {\n";
+      print  "\tFvwmCommand \"$cmd[$i] \$\*\"\n";
+      print  "}\n";
+    }
+
+    print "AM () { \n";
+    print "	FvwmCommand \"+ \$\*\"\n";
+    print "}\n";
+  }
+  else {
     print  "# $pm\n";
     print  "# Collection of fvwm builtin commands for FvwmCommand\n";
     print  "package FvwmCommand;\nuse Exporter;\n";
     print  "\@ISA=qw(Exporter);\n\@EXPORT=qw(";
     for( $i=0; $i<=$#cmd; $i++) {
-	if( $i % 5 == 0 ) {
-	    print  "\n  $cmd[$i]";
-	}else{
-	    print  " $cmd[$i]";
-	}
+      if( $i % 5 == 0 ) {
+	print  "\n  $cmd[$i]";
+      }else{
+	print  " $cmd[$i]";
+      }
     }
     print  "\n);\n";
     print  "\nsub FvwmCommand { system \"$fvwmdir/FvwmCommand '\@_'\"}\n\n";
     foreach $i (@cmd) {
-	print  "sub $i { FvwmCommand \"$i \@_ \" }\n";
+      print  "sub $i { FvwmCommand \"$i \@_ \" }\n";
     }
     print  "sub AM { FvwmCommand \"+ \@_ \" }\n";
     print  "1;\n";
+  }
 }
 
 create_pm();

@@ -12,9 +12,11 @@ module_DATA = FvwmCommand.sh FvwmCommand.pm
 FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
 FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
 
-FvwmCommand.sh: findcmd
-	$(SHELL) $(srcdir)/findcmd $(bindir)		\
-		< $(top_srcdir)/fvwm/functions.c > $@
+FvwmCommand.sh: findcmd.pl
+	if test -n "$(PERL)" -a -x "$(PERL)"; then \
+		$(PERL) $(srcdir)/findcmd.pl $(bindir) -sh \
+		< $(top_srcdir)/fvwm/functions.c > $@; \
+	else echo '# Did not find perl during FVWM install' > $@; fi
 
 FvwmCommand.pm: findcmd.pl
 	if test -n "$(PERL)" -a -x "$(PERL)"; then \
@@ -29,7 +31,7 @@ FvwmCommand_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmCommand.1
 
-EXTRA_DIST = $(man_MANS) findcmd findcmd.pl
+EXTRA_DIST = $(man_MANS) findcmd.pl
 
 LDADD = -L$(top_builddir)/libs -lfvwm
 
