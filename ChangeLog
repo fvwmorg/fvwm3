@@ -1,3 +1,8 @@
+2000-06-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (SetupTitleBar):
+	fixed NoButton bug
+
 2000-06-12  Brad Giaccio  <bgiaccio@psrw.com>
 
 	* fvwm/fvwm.c: fvwm/borders.c:
@@ -10,7 +15,7 @@
 
 	* sample/system.fvwm2rc-sample-95:
 	Fixed pager swallowing
-	
+
 2000-06-09  Hippo
 
 	* fvwm/move_resize.c: moved EdgeResistance code into doSnapAttraction()
