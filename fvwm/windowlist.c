@@ -174,14 +174,20 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       else if (StrEquals(tok,"UseIconName"))
         flags |= SHOW_ICONNAME;
       else if (StrEquals(tok,"NoGeometry"))
+      {
         flags &= ~SHOW_GEOMETRY;
+        flags &= ~SHOW_INFONOTGEO;
+      }
       else if (StrEquals(tok,"NoGeometryWithInfo"))
       {
         flags &= ~SHOW_GEOMETRY;
         flags |= SHOW_INFONOTGEO;
       }
       else if (StrEquals(tok,"Geometry"))
+      {
         flags |= SHOW_GEOMETRY;
+        flags &= ~SHOW_INFONOTGEO;
+      }
       else if (StrEquals(tok,"NoIcons"))
         flags &= ~SHOW_ICONIC;
       else if (StrEquals(tok,"Icons"))

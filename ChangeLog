@@ -1,5 +1,12 @@
 1999-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/windowlist.c (do_windowList): reset nogeometrywithinfo when
+	using geometry or nogeometry
+
+01999-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/windowlist.c (do_windowList): applied
+
 	* fvwm/builtins.c (ReadDecorFace): terminate 'style' string
 
 1999-10-14  Brad Giaccio  <bgiaccio@psrw.com>
