@@ -363,6 +363,7 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
   char *string = NULL;
   Bool is_string = False;
 
+fprintf(stderr,"expand: '%s'\n", input);
   l = strlen(input);
   l2 = l;
 
@@ -620,6 +621,7 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
     i++;
   }
   out[j] = 0;
+fprintf(stderr,"to '%s'\n", out);
   return out;
 }
 
@@ -718,7 +720,6 @@ void ExecuteFunction(
   Window w;
   int j;
   char *function;
-  char *action;
   char *taction;
   char *trash;
   char *trash2;
@@ -727,7 +728,6 @@ void ExecuteFunction(
   const func_type *bif;
   Bool set_silent;
   Bool must_free_string = False;
-  int skip;
 
   if (!Action || Action[0] == 0 || Action[1] == 0)
   {
@@ -825,9 +825,8 @@ void ExecuteFunction(
     func_depth--;
     return;
   }
-  skip = taction - Action;
 
-  function = PeekToken(taction, &action);
+  function = PeekToken(taction, NULL);
   if (function)
     function = expand(function, arguments, tmp_win, False);
   if (function)
@@ -850,14 +849,13 @@ void ExecuteFunction(
 #endif
   if (expand_cmd == EXPAND_COMMAND)
   {
-    expaction = expand(Action, arguments, tmp_win,
+    expaction = expand(taction, arguments, tmp_win,
 		       (bif) ? !!(bif->flags & FUNC_ADD_TO) : False);
   }
   else
   {
-    expaction = Action;
+    expaction = taction;
   }
-  taction = expaction + skip;
   j = 0;
   if (expand_cmd == EXPAND_COMMAND)
   {
@@ -868,18 +866,20 @@ void ExecuteFunction(
   }
   if (bif)
   {
-    bif->action(eventp,w,tmp_win,context,action,&Module);
+    char *runaction;
+    runaction = SkipNTokens(expaction, 1);
+    bif->action(eventp,w,tmp_win,context,runaction,&Module);
   }
   else
   {
     Bool desperate = 1;
 
-    execute_complex_function(eventp,w,tmp_win,context,taction, &Module,
+    execute_complex_function(eventp,w,tmp_win,context,expaction, &Module,
 			     &desperate, DONT_EXPAND_COMMAND);
     if(desperate)
     {
       if (executeModuleDesperate(
-	eventp,w,tmp_win,context,taction, &Module) == -1 && *function != 0)
+	eventp,w,tmp_win,context,expaction, &Module) == -1 && *function != 0)
       {
 	fvwm_msg(
 	  ERR, "ExecuteFunction", "No such command '%s'", function);

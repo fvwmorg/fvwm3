@@ -4,6 +4,9 @@
 
 2000-05-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (ExecuteFunction):
+	another parameter expansion fix
+
 	* fvwm/misc.c (IntersectsInterval):
 	new function
 

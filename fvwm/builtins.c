@@ -633,6 +633,7 @@ void exec_function(F_CMD_ARGS)
   {
     cmd = strdup(action);
   }
+fprintf(stderr,"cmd: '%s'\n",cmd);
   if (!cmd)
     return;
   /* Use to grab the pointer here, but the fork guarantees that

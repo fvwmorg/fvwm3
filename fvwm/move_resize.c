@@ -707,6 +707,9 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
 	       &width, &height, &JunkBW, &JunkDepth);
   if (do_move_to_page)
   {
+    rectangle r;
+    rectangle s;
+
     do_animate = False;
     SET_STICKY(tmp_win, 0);
 
@@ -715,6 +718,19 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
       page_x = Scr.Vx;
       page_y = Scr.Vy;
     }
+#if 1
+    r.x = x;
+    r.y = y;
+    r.width = width;
+    r.height = height;
+    s.x = page_x - Scr.Vx;
+    s.y = page_y - Scr.Vy;
+    s.width = Scr.MyDisplayWidth;
+    s.height = Scr.MyDisplayHeight;
+    move_into_rectangle(&r, &s);
+    FinalX = r.x;
+    FinalY = r.y;
+#else
     if (!IntersectsInterval(x, width, page_x - Scr.Vx, Scr.MyDisplayWidth))
     {
       FinalX = x % Scr.MyDisplayWidth;
@@ -737,6 +753,7 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
     {
       FinalY = y;
     }
+#endif
   }
   else
   {

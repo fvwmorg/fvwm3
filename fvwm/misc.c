@@ -241,7 +241,6 @@ void fvwm_msg(int type,char *id,char *msg,...)
   }
   vfprintf(stderr, msg, args);
   fprintf(stderr,"\n");
-
   if (type == ERR)
   {
     /* I hate to use a fixed length but this will do for now */
@@ -290,21 +289,6 @@ void ReapChildren(void)
 #endif
 }
 
-Bool IsRectangleOnThisPage(rectangle *rec, int desk)
-{
-  return (desk == Scr.CurrentDesk &&
-	  rec->x + rec->width > 0 &&
-	  rec->x < Scr.MyDisplayWidth &&
-	  rec->y + rec->height > 0 &&
-	  rec->y < Scr.MyDisplayHeight) ?
-    True : False;
-}
-
-Bool IntersectsInterval(int x1, int width1, int x2, int width2)
-{
-  return !(x1 + width1 <= x2 || x2 + width2 <= x1);
-}
-
 /****************************************************************************
  *
  * For menus, move, and resize operations, we can effect keyboard
@@ -349,4 +333,49 @@ Bool check_if_fvwm_window_exists(FvwmWindow *fw)
 int truncate_to_multiple (int x, int m)
 {
   return (x < 0) ? (m * (((x + 1) / m) - 1)) : (m * (x / m));
+}
+
+Bool IntersectsInterval(int x1, int width1, int x2, int width2)
+{
+  return !(x1 + width1 <= x2 || x2 + width2 <= x1);
+}
+
+Bool IsRectangleOnThisPage(rectangle *rec, int desk)
+{
+  return (desk == Scr.CurrentDesk &&
+	  rec->x + rec->width > 0 &&
+	  rec->x < Scr.MyDisplayWidth &&
+	  rec->y + rec->height > 0 &&
+	  rec->y < Scr.MyDisplayHeight) ?
+    True : False;
+}
+
+Bool move_into_rectangle(rectangle *move_rec, rectangle *target_rec)
+{
+  Bool has_changed = False;
+
+  if (!IntersectsInterval(move_rec->x, move_rec->width,
+                          target_rec->x, target_rec->width))
+  {
+    move_rec->x = move_rec->x % target_rec->width;
+    if (move_rec->x < 0)
+    {
+      move_rec->x += target_rec->width;
+    }
+    move_rec->x += target_rec->x;
+    has_changed = True;
+  }
+  if (!IntersectsInterval(move_rec->y, move_rec->height,
+                          target_rec->y, target_rec->height))
+  {
+    move_rec->y = move_rec->y % target_rec->height;
+    if (move_rec->y < 0)
+    {
+      move_rec->y += target_rec->height;
+    }
+    move_rec->y += target_rec->y;
+    has_changed = True;
+  }
+
+  return has_changed;
 }
