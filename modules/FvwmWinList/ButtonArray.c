@@ -257,24 +257,26 @@ int UpdateButtonDesk(ButtonArray *array, int butnum, long desk )
 ******************************************************************************/
 void RemoveButton(ButtonArray *array, int butnum)
 {
-  Button *temp, *temp2;
+  Button *temp, *to_die;
 
   if (butnum == 0) {
-    temp2 = array->head;
+    to_die = array->head;
     temp = NULL;
   } else {
     temp = find_n(array, butnum-1);
     if (temp == NULL) return;
-    temp2 = temp->next;
+    to_die = temp->next;
   }
-  if (temp2 == NULL) return;
-  if (temp)
-    temp->next = temp2->next;
+  if ( !to_die ) return;
 
-  if (array->tail == temp2)
+  if (array->tail == to_die)
     array->tail = temp;
+  if ( !temp )
+    array->head = to_die->next;
+  else
+    temp->next = to_die->next;
 
-  FreeButton(temp2);
+  FreeButton(to_die);
   array->count--;
   if (temp && temp != array->head)
     temp = temp->next;
