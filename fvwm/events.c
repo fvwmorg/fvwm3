@@ -1531,11 +1531,7 @@ void HandleEnterNotify(void)
     return;
   }
 
-  /* multi screen? */
-  if (ewp->window == Scr.Root
-      /* domivogt (16-May-2000): added this test because somehow fvwm sometimes
-       * get an EnterNotify on the root window although it is single screen. */
-       && Scr.NumberOfScreens > 1)
+  if (ewp->window == Scr.Root)
   {
     if (!Scr.Focus || HAS_MOUSE_FOCUS(Scr.Focus))
     {

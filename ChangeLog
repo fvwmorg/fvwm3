@@ -1,3 +1,10 @@
+2000-05-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleEnterNotify):
+	fixed mouse focus and removed one - buggy - half of the "focus lost when
+	root window is entered" workaround and removed a misleading comment
+
 2000-05-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in: display "no" for gnome if not supported

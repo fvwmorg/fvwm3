@@ -537,6 +537,7 @@ style * grabfocusoff        override_redirect windows that may be above it. This
       }
     }
 
+
     /*  This needs to be done after all the raise hacks.  */
     raisePanFrames();
   }
