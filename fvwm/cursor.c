@@ -505,16 +505,29 @@ void CursorStyle(F_CMD_ARGS)
       SafeDefineCursor(fw->corners[i],Scr.FvwmCursors[CRS_TOP_LEFT+i]);
       SafeDefineCursor(fw->sides[i],Scr.FvwmCursors[CRS_TOP+i]);
     }
-    for (i = 0; i / 2 < Scr.nr_left_buttons; i += 2)
+    for (i = 0 ; i / 2 < Scr.nr_left_buttons; i += 2)
     {
       SafeDefineCursor(fw->button_w[i],Scr.FvwmCursors[CRS_SYS]);
     }
-    for (i = 1; i / 2 < Scr.nr_right_buttons; i += 2)
+    for (i = 1 ; i / 2 < Scr.nr_right_buttons; i += 2)
     {
-      SafeDefineCursor(fw->button_w[i + NR_LEFT_BUTTONS],
+      SafeDefineCursor(fw->button_w[i],
 		       Scr.FvwmCursors[CRS_SYS]);
     }
     SafeDefineCursor(fw->title_w, Scr.FvwmCursors[CRS_TITLE]);
+    if (index == CRS_DEFAULT)
+    {
+      SafeDefineCursor(fw->frame, Scr.FvwmCursors[CRS_DEFAULT]);
+      SafeDefineCursor(fw->Parent, Scr.FvwmCursors[CRS_DEFAULT]);
+      SafeDefineCursor(fw->decor_w, Scr.FvwmCursors[CRS_DEFAULT]);
+      if (IS_ICONIFIED(fw))
+      {
+	if (!HAS_NO_ICON_TITLE(fw))
+	  SafeDefineCursor(fw->icon_w, Scr.FvwmCursors[CRS_DEFAULT]);
+	if (fw->icon_pixmap_w != None)
+	  SafeDefineCursor(fw->icon_pixmap_w, Scr.FvwmCursors[CRS_DEFAULT]);
+      }
+    }
     fw = fw->next;
   }
 

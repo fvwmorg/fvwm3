@@ -1436,6 +1436,7 @@ void HandleButtonRelease()
    /* unsigned int modifier; */
    char *action;
    int real_modifier;
+   Window dummy;
 
    DBUG("HandleButtonRelease","Routine Entered");
 
@@ -1444,7 +1445,7 @@ void HandleButtonRelease()
 
    DBUG("HandleButtonRelease",sequence);
 
-   Context = GetContext(Tmp_win,&Event, &PressedW);
+   Context = GetContext(Tmp_win,&Event, &dummy);
 
    /*  Allows modifier to work (Only R context works here). */
    real_modifier = Event.xbutton.state - (1 << (7 + Event.xbutton.button));
@@ -2393,22 +2394,22 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
     Tmp_win = t;
   }
-if (e->type == ButtonPress && t && e->xkey.window == t->frame &&
-    e->xkey.subwindow != None)
-{
- /* Translate frame coordinates into subwindow coordinates. */
- e->xkey.window = e->xkey.subwindow;
- XTranslateCoordinates(
-  dpy, t->frame, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
-   &(e->xkey.y), &(e->xkey.subwindow));
- if (e->xkey.window == t->Parent)
- {
-  e->xkey.window = e->xkey.subwindow;
-  XTranslateCoordinates(
-   dpy, t->Parent, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
-   &(e->xkey.y), &(e->xkey.subwindow));
- }
-}
+  if (e->type == ButtonPress && t && e->xkey.window == t->frame &&
+      e->xkey.subwindow != None)
+  {
+    /* Translate frame coordinates into subwindow coordinates. */
+    e->xkey.window = e->xkey.subwindow;
+    XTranslateCoordinates(
+      dpy, t->frame, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+      &(e->xkey.y), &(e->xkey.subwindow));
+    if (e->xkey.window == t->Parent)
+    {
+      e->xkey.window = e->xkey.subwindow;
+      XTranslateCoordinates(
+	dpy, t->Parent, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+	&(e->xkey.y), &(e->xkey.subwindow));
+    }
+  }
   if(!t)
     return C_ROOT;
 

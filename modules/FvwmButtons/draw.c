@@ -181,7 +181,8 @@ void MakeButton(button_info *b)
 /**
 *** RedrawButton()
 *** Writes out title, if any, and displays the bevel right, by calling
-*** RelieveButton. If clean is nonzero, also clears background.
+*** RelieveButton. If clean is nonzero, also clears background. If clean is 2,
+*** forces clearing the background (used in case a panel has lost its window).
 **/
 void RedrawButton(button_info *b,int clean)
 {
@@ -317,6 +318,10 @@ void RedrawButton(button_info *b,int clean)
 	     !(b->flags&b_Swallow) && !(b->flags&b_ColorsetParent))
     {
       XFillRectangle(Dpy,MyWindow,NormalGC,x+f,y+f,BW-2*f,BH-2*f);
+    }
+    else if (clean == 2)
+    {
+      XClearArea(Dpy, MyWindow, x+f, y+f, BW-2*f, BH-2*f, False);
     }
   }
 

@@ -1211,6 +1211,7 @@ void Loop(void)
 	    else
 	    {
 	      b->flags &= ~(b_Swallow | b_Panel);
+	      RedrawButton(b,2);
 #ifdef DEBUG_HANGON
 	      fprintf(stderr,"\n");
 #endif

@@ -5041,7 +5041,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   mp.menu = menu;
   mp.parent_menu = NULL;
   mp.parent_item = NULL;
-  fw = Tmp_win;
+  fw = (tmp_win != None) ? tmp_win : Tmp_win;
   mp.pTmp_win = &fw;
   mp.button_window = ButtonWindow;
   tc = Context;

@@ -1,3 +1,32 @@
+2000-06-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (menu_func):
+	menus invoked from modules were executed in wrong window context
+
+2000-06-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (execute_complex_function):
+	(ExecuteFunction):
+	allow expose events while waiting for buttons to be released
+
+	* fvwm/borders.c (RedrawBorder):
+	(draw_frame_relief):
+	fixed drawing of depressed fvwm borders on bottom and right side
+
+	* fvwm/cursor.c (CursorStyle):
+	fixed update of SYS cursorstyle for title buttons
+	fixed update of DEFAULT cursorstyle for windows and icons
+
+	* fvwm/update.c (apply_window_updates):
+	fixed off screen decoration changes
+
+	* fvwm/borders.c (SetupTitleBar):
+	fixed top-left cursor over 'title' when windows are too small
+
+	* fvwm/events.c (HandleButtonRelease):
+	fixed title button being depressed if non-existing function bound to
+	it
+
 2000-06-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: changed version to 2.3.20

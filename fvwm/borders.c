@@ -296,19 +296,19 @@ static enum ButtonState get_button_state(
 }
 
 static const char ulgc[] = { 1, 0, 0, 0x7f, 2, 1, 1 };
-static const char brgc[] = { 1, 1, 2, 0x7f, 0, 0, 1 };
+static const char brgc[] = { 1, 1, 2, 0x7f, 0, 0, 3 };
 
 /* called twice by RedrawBorder */
 static void draw_frame_relief(
-  FvwmWindow *t, GC rgc, GC sgc, GC tgc, int w_dout, int w_hiout, int w_trout,
-  int w_c, int w_trin, int w_shin, int w_din)
+  FvwmWindow *t, GC rgc, GC sgc, GC tgc, GC dgc, int w_dout, int w_hiout,
+  int w_trout, int w_c, int w_trin, int w_shin, int w_din)
 {
   int i;
   int offset = 0;
   int width = t->frame_g.width - 1;
   int height = t->frame_g.height - 1;
   int w[7];
-  GC gc[3];
+  GC gc[4];
 
   w[0] = w_dout;
   w[1] = w_hiout;
@@ -320,6 +320,7 @@ static void draw_frame_relief(
   gc[0] = rgc;
   gc[1] = sgc;
   gc[2] = tgc;
+  gc[3] = dgc;
 
   for (i = 0; i < 7; i++)
   {
@@ -548,7 +549,8 @@ static void RedrawBorder(
   }
   w_c = t->boundary_width - sum;
   draw_frame_relief(
-    t, rgc, sgc, tgc, w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
+    t, rgc, sgc, tgc, sgc,
+    w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
 
   /*
    * draw the handle marks
@@ -761,7 +763,8 @@ static void RedrawBorder(
       XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
       XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
       draw_frame_relief(
-	t, sgc, rgc, tgc, w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
+	t, sgc, rgc, tgc, sgc,
+	w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
       XSetClipMask(dpy, sgc, None);
       XSetClipMask(dpy, rgc, None);
     }
@@ -1056,8 +1059,12 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   int i;
   int buttons = 0;
   int tw = tmp_win->frame_g.width - 2 * tmp_win->boundary_width;
+  int rest = 0;
 
-  xwcm = CWWidth | CWX | CWY | CWHeight;
+  xwcm = CWX | CWY | CWHeight | CWWidth;
+  xwc.width = tmp_win->title_g.width;
+  xwc.height = tmp_win->title_g.height;
+
   tmp_win->title_g.x = tmp_win->boundary_width +
     tmp_win->nr_left_buttons * tmp_win->title_g.height;
   if(tmp_win->title_g.x >=  w - tmp_win->boundary_width)
@@ -1071,18 +1078,11 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   {
     tmp_win->title_g.y = tmp_win->boundary_width;
   }
-
-  xwc.width = tmp_win->title_g.width;
-  xwc.height = tmp_win->title_g.height;
   xwc.x = tmp_win->title_g.x;
   xwc.y = tmp_win->title_g.y;
   XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
 
-  xwcm = CWX | CWY | CWHeight | CWWidth;
-  xwc.height = tmp_win->title_g.height;
   xwc.width = tmp_win->title_g.height;
-  xwc.y = tmp_win->title_g.y;
-
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
     if (tmp_win->button_w[i])
@@ -1095,6 +1095,9 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
       xwc.width = 6;
     if (xwc.width > tmp_win->title_g.height)
       xwc.width = tmp_win->title_g.height;
+    rest = tw - buttons * xwc.width;
+    if (rest > 0)
+      xwc.width++;
   }
   /* left */
   xwc.x = tmp_win->boundary_width;
@@ -1113,6 +1116,9 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
       }
     }
+    rest--;
+    if (rest == 0)
+      xwc.width--;
   }
   /* right */
   xwc.x = w - tmp_win->boundary_width - xwc.width;
@@ -1131,6 +1137,9 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
       }
     }
+    rest--;
+    if (rest == 0)
+      xwc.width--;
   }
 }
 

@@ -225,8 +225,10 @@ static void apply_window_updates(
 
     if (IS_SHADED(t))
       XRaiseWindow(dpy, t->decor_w);
-    if (IsRectangleOnThisPage(&t->frame_g, Scr.CurrentDesk))
-      DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
+    /* domivogt (6-Jun-2000): Don't check if the window is visible here.  If we
+     * do, some updates are not applied and when the window becomes visible
+     * again, the X Server may not redraw the window. */
+    DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
     Scr.Hilite = u;
   }
   if (flags->do_update_icon_font)

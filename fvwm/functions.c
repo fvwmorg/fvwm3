@@ -1028,7 +1028,7 @@ void ExecuteFunction(
   /* Only wait for an all-buttons-up condition after calls from
    * regular built-ins, not from complex-functions, menus or modules. */
   if(Module == -1)
-    WaitForButtonsUp(False);
+    WaitForButtonsUp(True);
 
   if (set_silent)
     Scr.flags.silent_functions = 0;
@@ -1610,7 +1610,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     }
     fi = fi->next_item;
   }
-  WaitForButtonsUp(False);
+  WaitForButtonsUp(True);
   /* This is the right place to ungrab the pointer (see comment above). */
   UngrabEm(GRAB_NORMAL);
   for(i=0;i<11;i++)
