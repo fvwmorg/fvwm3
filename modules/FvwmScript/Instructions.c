@@ -1751,7 +1751,6 @@ static void Key (int NbArg,long *TabArg)
   int error = 0;
   int i,j=0;
   KeySym keysym = NoSymbol;
-  int button = 0;
 
   /* the key */
   key_string = CalcArg(TabArg,&j);
@@ -1777,7 +1776,6 @@ static void Key (int NbArg,long *TabArg)
   
   tmp = safestrdup(CatString3(widget, " ", sig));
   action = safestrdup(CatString3(tmp, " ", str));
-  fprintf(stderr, "Action: %s\n", action);
   free(sig);
   free(widget);
   free(str);
@@ -1804,7 +1802,7 @@ static void Key (int NbArg,long *TabArg)
   }
   
   AddBinding(dpy, &BindingsList, KEY_BINDING, STROKE_ARG(0)
-	     button, keysym, key_string, modifier, C_WINDOW, 
+	     0, keysym, key_string, modifier, C_WINDOW, 
 	     (void *)action, NULL);
   free(key_string);
   free(in_modifier);
