@@ -37,11 +37,11 @@ Docdir:    %{prefix}/share/doc
 FVWM is a powerful ICCCM-compliant multiple virtual desktop window manager
 for the X Window System.
 
-This 2.4 version includes new features like full support of the EWMH
-(Enhanced Window Manager Hints) specification, internalization, improved
-window decoration code (no flickering anymore), bi-directional asian text
-support, FreeType font support (antialiasing), improved Xinerama support,
-perl-based module library, support for PNG images, side titles and much more.
+This 2.5 version includes new features like full support of the EWMH
+(Enhanced Window Manager Hints) specification, internationalization,
+improved window decoration code (no flickering anymore), bi-directional
+asian text support, FreeType font support (antialiasing), image rendering,
+Perl based module library, support for PNG images, side titles and much more.
 
 colorsets, ICCCM2 and GNOME
 compliance, session management, improvements in all modules, several
@@ -54,10 +54,10 @@ pour le systХme X Window.
 La version 2.5 contient un grand nombre de nouvelles fonctionnalitИs.
 Voici quelques exemples:
 full support of the EWMH
-(Enhanced Window Manager Hints) specification, internalization, improved
-window decoration code (no flickering anymore), bi-directional asian text
-support, FreeType font support (antialiasing), improved Xinerama support,
-perl-based module library, support for PNG images, side titles and much more.
+(Enhanced Window Manager Hints) specification, internationalization,
+improved window decoration code (no flickering anymore), bi-directional
+asian text support, FreeType font support (antialiasing), image rendering,
+Perl based module library, support for PNG images, side titles and much more.
 
 %description -l ru
 FVWM является мощным оконным менеджером для X Window System, соответствующим
@@ -67,14 +67,14 @@ FVWM является мощным оконным менеджером для X Window System, соответствующим
 спецификации EWMH (Enhanced Window Manager Hints), интернационализация,
 улучшение оконных декораций (полное отсутствие мигания), поддержка
 дву-направленного азиатского текста, поддержка фонтов FreeType (сглаживание),
-улучшенная поддержка Xinerama, библиотека для написания модулей на perl,
+фильтрование изображений, библиотека для написания модулей на Perl,
 поддержка изображений в формате PNG, боковые заголовки окон и многое другое.
 
 %prep
 %setup
 
 %build
-# gnome libs are only used in FvwmGtk, probably it is overhead to require it
+# gnome libs are only used in FvwmGtk, probably it is overhead to require them;
 # compiling without -g saves about 7Mb
 ./configure --prefix=%{prefix} %{c_p}
 make %{m_p}

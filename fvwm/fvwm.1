@@ -8208,6 +8208,7 @@ commas or whitespace.  Conditions include
 "Visible", "!Visible",
 "Raised", "!Raised",
 "Layer [n]",
+"State n",
 "Sticky", "!Sticky",
 "Maximized", "!Maximized",
 "Shaded", "!Shaded",
@@ -8268,8 +8269,14 @@ The "CurrentGlobalPageAnyDesk" condition excludes all window that
 are not on the current page but that may be on any desk.  The
 screen does not matter if Xinerama support is enabled.
 
-The argument of the "Layer" condition defaults to the layer of the
-focus window.
+The "Layer" condition excludes all windows not in the specified
+layer.  The argument of the "Layer" condition defaults to the
+layer of the focus window.
+
+The "State" condition includes only windows with the specified
+integer state set, see the
+.B State
+command.  The argument may range from 0 to 31.
 
 The "PlacedByButton3" condition is fulfilled if the last
 interactive motion of the window (with the

@@ -133,24 +133,23 @@ FlocaleFont *FlocaleGetFontSet(Display *dpy, char *fontname, char *module)
 		{
 			mc_errors++;
 			fprintf(stderr,
-				"[%s][FlocaleGetFontSet][%s]:"
-				"The following charsets are missing:\n",
-				fontname, (module)? module:"FVWM");
-			if (mc_errors >= FLOCALE_NUMBER_MISS_CSET_ERR_MSG)
+				"[%s][FlocaleGetFontSet]: (%s)"
+				" Missing font charsets:\n",
+				(module)? module: "FVWM", fontname);
+			for (i = 0; i < mc; i++)
 			{
-				fprintf(stderr, "\tNo more such error will be"
-					" reported");
+				fprintf(stderr, "%s", ml[i]);
+				if (i < mc - 1)
+					fprintf(stderr, ", ");
 			}
-		}
-		for (i=0; i < mc; i++)
-		{
-			fprintf(stderr, " %s", ml[i]);
-		}
-		fprintf(stderr, "\n");
-		if (mc_errors >= FLOCALE_NUMBER_MISS_CSET_ERR_MSG)
-		{
-			fprintf(stderr,
-				"\tNo more such error will be reported");
+			fprintf(stderr, "\n");
+			if (mc_errors == FLOCALE_NUMBER_MISS_CSET_ERR_MSG)
+			{
+				fprintf(stderr,
+					"[%s][FlocaleGetFontSet]:"
+					" No more missing charset reportings\n",
+					(module)? module: "FVWM");
+			}
 		}
 		XFreeStringList(ml);
 	}
@@ -456,14 +455,15 @@ void FlocaleSetlocaleForX(
 		fprintf(stderr,
 			"[%s][%s]: ERROR -- Cannot set locale. Please check"
 			" your $LC_CTYPE or $LANG.\n",
-			(module == NULL)? "" : module, "FInitLocale");
+			(module == NULL)? "" : module, "FlocaleSetlocaleForX");
 		return;
 	}
 	if (!XSupportsLocale())
 	{
 		fprintf(stderr,
 			"[%s][%s]: WARNING -- X does not support locale %s\n",
-			(module == NULL)? "":module, "FInitLocale",Flocale);
+			(module == NULL)? "": module, "FlocaleSetlocaleForX",
+			Flocale);
 		Flocale = NULL;
 	}
 }
@@ -496,7 +496,7 @@ void FlocaleInit(
 	{
 		fprintf(stderr,
 			"[%s][%s]: WARNING -- Cannot set locale modifiers\n",
-			(module == NULL)? "":module, "FInitLocale");
+			(module == NULL)? "": module, "FlocaleInit");
 	}
 #if FLOCALE_DEBUG_SETLOCALE
 	fprintf(stderr,"[%s][FlocaleInit] locale: %s, modifier: %s\n",
@@ -552,7 +552,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		flf = flf->next;
 	}
 
-	/* not cached load the font as a ; sperated list */
+	/* not cached load the font as a ";" separated list */
 	str = GetQuotedString(fontname, &fn, ";", NULL, NULL, NULL);
 	while (!flf && (fn && *fn))
 	{
@@ -574,23 +574,23 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 
 	if (flf == NULL)
 	{
-		/* loading fail try default font */
+		/* loading failed, try default font */
 		if (!ask_default)
 		{
 			fprintf(stderr,"[%s][FlocaleGetFont]: "
-				"WARNING -- can't get font '%s',"
-				" try to load default font:\n",
-				(module)? module:"FVWM", fontname);
+				"WARNING -- can't load font '%s',"
+				" trying default:\n",
+				(module)? module: "FVWM", fontname);
 		}
 		else
 		{
-			/* we already try default fonts: try again? yes */
+			/* we already tried default fonts: try again? yes */
 		}
 		if (FlocaleMultibyteSupport && Flocale != NULL)
 		{
 			if (!ask_default)
 			{
-				fprintf(stderr, "\t %s\n",
+				fprintf(stderr, "\t%s\n",
 					FLOCALE_MB_FALLBACK_FONT);
 			}
 			if ((flf = FlocaleGetFontSet(
@@ -604,7 +604,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		{
 			if (!ask_default)
 			{
-				fprintf(stderr,"\t %s\n",
+				fprintf(stderr,"\t%s\n",
 					FLOCALE_FALLBACK_FONT);
 			}
 			if ((flf = FlocaleGetFont(
@@ -616,21 +616,21 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			{
 				fprintf(stderr,
 					"[%s][FlocaleLoadFont]:"
-					" ERROR -- can't get font\n",
-					(module)? module:"FVWM");
+					" ERROR -- can't load font.\n",
+					(module)? module: "FVWM");
 			}
 			else
 			{
 				fprintf(stderr,
 					"[%s][FlocaleLoadFont]: ERROR"
-					" -- can't get default font:\n",
-					(module)? module:"FVWM");
+					" -- can't load default font:\n",
+					(module)? module: "FVWM");
 				if (FlocaleMultibyteSupport)
 				{
-					fprintf(stderr,"\t %s\n",
+					fprintf(stderr, "\t%s\n",
 						FLOCALE_MB_FALLBACK_FONT);
 				}
-				fprintf(stderr,"\t %s\n",
+				fprintf(stderr, "\t%s\n",
 					FLOCALE_FALLBACK_FONT);
 			}
 		}
@@ -652,14 +652,15 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	{
 		return;
 	}
-	if (--(flf->count)>0) /* Remove a weight, still too heavy? */
+	/* Remove a weight, still too heavy? */
+	if (--(flf->count) > 0)
 	{
 		return;
 	}
 
 	if (flf->name != NULL &&
-	   !StrEquals(flf->name,FLOCALE_MB_FALLBACK_FONT) &&
-	   !StrEquals(flf->name,FLOCALE_FALLBACK_FONT))
+		!StrEquals(flf->name, FLOCALE_MB_FALLBACK_FONT) &&
+		!StrEquals(flf->name, FLOCALE_FALLBACK_FONT))
 	{
 		free(flf->name);
 	}

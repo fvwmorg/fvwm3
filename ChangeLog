@@ -1,10 +1,14 @@
 2002-04-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.1:
-	improved main headers, added new COLORSETS section
+	improved main headers, added new COLORSETS section;
+	documented State condition
 
 	* NEWS:
 	documented Tint in colorsets and utility renaming
+
+	* libs/Flocale.c:
+	corrected several error reporting problems
 
 2002-04-25  Dominik Vogt  <dominik.vogt@gmx.de>
 

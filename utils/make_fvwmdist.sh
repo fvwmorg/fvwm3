@@ -41,8 +41,7 @@ IS_MINOR=1
 IS_MAJOR=0
 while [ ! x$1 = x ] ; do
   case "$1" in
-    -r)
-      IS_RELEASE=1 ;;
+    -r) IS_RELEASE=1 ;;
     -R) IS_MINOR=0; IS_MAJOR=0 ;;
     -M) IS_MINOR=0; IS_MAJOR=1 ;;
     -w) CFLAGS="$CFLAGSW" ;;
@@ -196,7 +195,7 @@ if [ $IS_RELEASE = 0 ] ; then
 else
   echo updating NEWS file
   NNEWS="new-NEWS"
-  perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date "+%d-%b-%Y"`,0,11)]})/' \
+  perl -pe '$hr = "-" x 69; s/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$hr\n\n$1 '$VRELNUM' (@{[substr(`date "+%d-%b-%Y"`,0,11)]})/' \
       < NEWS > $NNEWS || exit 41
   mv $NNEWS NEWS || exit 42
   echo updating FAQ file
