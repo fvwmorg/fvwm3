@@ -756,7 +756,7 @@ void CMD_ResizeMove(F_CMD_ARGS)
 
 static void InteractiveMove(
 	Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
-	const XEvent *eventp, Bool do_start_at_pointer)
+	Bool do_start_at_pointer)
 {
 	int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
 	int XOffset, YOffset;
@@ -1228,8 +1228,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 
 		if (n != 2 || fPointer)
 		{
-			InteractiveMove(
-				&w, fw, &FinalX, &FinalY, eventp, fPointer);
+			InteractiveMove(&w, fw, &FinalX, &FinalY, fPointer);
 		}
 		else if (IS_ICONIFIED(fw))
 		{
