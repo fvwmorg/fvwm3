@@ -11,6 +11,8 @@ The FVWM-Workers list is pleased to announce FVWM version 2.4 "F2K"
 %% domivogt: ;-)
 %% dan: No, how about F2K,  like thanks a lot for asking over and over whether
         fvwm was complaint, and making sure I was at work on New Years Eve. :)
+%% dan: Well it might be 3000 before we do another non-beta. :) I agree F2K
+        is getting a little old already.
 
 Available at http://www.fvwm.org/ it includes the following
 
@@ -39,8 +41,7 @@ Highlights:
  ** The root cursor now indicates when Fvwm is busy.
 
  ** New command to configure a way to abort Fvwm.
-%% domivogt: What does this mean? Which command?
-%% dan: beats me.
+    Look at EscapeFunc in the fvwm2 man page.
 
  ** Dynamically generated menus and some menu generating scripts.
 
@@ -67,13 +68,17 @@ Highlights:
 
  ** Animated window shading with the WindowShadeAnimate command.
 
- ** Layers.
-%% domivogt: we need an introduction about layers somewhere
+ ** The old StaysOnTop style option has been generalized into the
+    concept of layers.  Seem the fvwm2 man page for details.
 
  ** The WindowList command has options to allow better
     control of which windows are shown.
 
  ** Using alt-tab now works exactly like the other one.
+
+ ** When fvwm is run remotely, startup is noticably faster.
+
+ ** Killing modules running under an alias now works.
 
 More detailed information on the contents of this release can be
 found at:

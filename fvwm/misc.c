@@ -33,6 +33,11 @@
 #include <stdarg.h>
 #include <sys/wait.h>
 
+/* To add timing info to debug output, #define this: */
+#ifdef FVWM_DEBUG_TIME
+#include <sys/times.h>
+#endif
+
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -225,6 +230,16 @@ void fvwm_msg(int type,char *id,char *msg,...)
 {
   char *typestr;
   va_list args;
+#ifdef FVWM_DEBUG_TIME
+  clock_t time_val, time_taken;
+  static clock_t start_time = 0;
+  static clock_t prev_time = 0;
+  struct tms not_used_tms;
+  char buffer[200];                     /* oversized */
+  time_t mytime;
+  struct tm *t_ptr;
+  static int counter = 0;
+#endif
 
   switch(type)
   {
@@ -247,13 +262,43 @@ void fvwm_msg(int type,char *id,char *msg,...)
       break;
   }
 
+#ifdef FVWM_DEBUG_TIME
+  time(&mytime);
+  t_ptr = localtime(&mytime);
+  if (start_time == 0) {
+    prev_time = start_time =
+      (unsigned int)times(&not_used_tms); /* get clock ticks */
+  }
+  time_val = (unsigned int)times(&not_used_tms); /* get clock ticks */
+  time_taken = time_val - prev_time;
+  prev_time = time_val;
+  sprintf(buffer, "%.2d:%.2d:%.2d %ld",
+          t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec,time_taken);
+#endif
+
   if (Scr.NumberOfScreens > 1)
   {
-    fprintf(stderr,"[FVWM.%d][%s]: %s ",(int)Scr.screen,id,typestr);
+    fprintf(stderr,"[FVWM.%d][%s]: "
+#ifdef FVWM_DEBUG_TIME
+            "%s "
+#endif
+            "%s ",(int)Scr.screen,id,
+#ifdef FVWM_DEBUG_TIME
+            buffer,
+#endif
+            typestr);
   }
   else
   {
-    fprintf(stderr,"[FVWM][%s]: %s ",id,typestr);
+    fprintf(stderr,"[FVWM][%s]: "
+#ifdef FVWM_DEBUG_TIME
+            "%s "
+#endif
+            "%s ",id,
+#ifdef FVWM_DEBUG_TIME
+            buffer,
+#endif
+            typestr);
   }
 
   va_start(args,msg);

@@ -1,3 +1,15 @@
+2000-08-28  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm.c (main): Read commands from config files without
+	doing XSync on each comamnd.  (Speed up.)
+
+	* fvwm/misc.c (fvwm_msg): Add ifdef'd timing logic to fvwm_msg.
+
+	* fvwm/read.c (ReadFile): Add information to existing debug lines.
+
+	* fvwm/add_window.c (setup_window_name): Add debugging to window
+	creation.
+
 2000-08-19  Mikhael Goikhman  migo@homemail.com
 
 	* fvwm/module_interface.c:

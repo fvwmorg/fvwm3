@@ -643,7 +643,7 @@ int main(int argc, char **argv)
     {
       DoingCommandLine = True;
       ExecuteFunction(
-	config_commands[i], NULL, &Event, C_ROOT, -1, EXPAND_COMMAND, NULL);
+	config_commands[i], NULL, &Event, C_ROOT, 1, EXPAND_COMMAND, NULL);
       free(config_commands[i]);
     }
     DoingCommandLine = False;
@@ -652,15 +652,15 @@ int main(int argc, char **argv)
        and for compatibility: ~/.fvwm2rc, $sysconfdir/system.fvwm2rc */
     if (
       !run_command_file( CatString3(fvwm_userdir, "/",       FVWMRC),
-        &Event, NULL, C_ROOT, -1 ) &&
+        &Event, NULL, C_ROOT, 1 ) &&
       !run_command_file( CatString3(home_dir,     "/",       FVWMRC),
-        &Event, NULL, C_ROOT, -1 ) &&
+        &Event, NULL, C_ROOT, 1 ) &&
       !run_command_file( CatString3(FVWM_DATADIR, "/",       FVWMRC),
-        &Event, NULL, C_ROOT, -1 ) &&
+        &Event, NULL, C_ROOT, 1 ) &&
       !run_command_file( CatString3(FVWM_DATADIR, "/system", FVWMRC),
-        &Event, NULL, C_ROOT, -1 ) &&
+        &Event, NULL, C_ROOT, 1 ) &&
       !run_command_file( CatString3(FVWM_CONFDIR, "/system", FVWMRC),
-        &Event, NULL, C_ROOT, -1 ) )
+        &Event, NULL, C_ROOT, 1 ) )
     {
       fvwm_msg( ERR, "main", "Cannot read startup file, tried: "
         "\n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
@@ -777,14 +777,14 @@ void StartupStuff(void)
   /* migo (04-Sep-1999): execute StartFunction */
   if (FindFunction(startFuncName)) {
     char *action = "Function " startFuncName;
-    ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND, NULL);
+    ExecuteFunction(action, NULL, &Event, C_ROOT, 1, EXPAND_COMMAND, NULL);
   }
 
   /* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
   initFuncName = getInitFunctionName(Restarting == True);
   if (FindFunction(initFuncName)) {
     char *action = strdup(CatString2("Function ", initFuncName));
-    ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND, NULL);
+    ExecuteFunction(action, NULL, &Event, C_ROOT, 1, EXPAND_COMMAND, NULL);
     free(action);
   }
 
@@ -979,7 +979,7 @@ void SetRCDefaults(void)
 
   while (defaults[i])
   {
-    ExecuteFunction(defaults[i],NULL,&Event,C_ROOT,-1,EXPAND_COMMAND, NULL);
+    ExecuteFunction(defaults[i],NULL,&Event,C_ROOT,1,EXPAND_COMMAND, NULL);
     i++;
   }
 } /* SetRCDefaults */
@@ -1672,7 +1672,7 @@ void Done(int restart, char *command)
   if (FindFunction(exitFuncName))
   {
     char *action = strdup(CatString2("Function ", exitFuncName));
-    ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND, NULL);
+    ExecuteFunction(action, NULL, &Event, C_ROOT, 1, EXPAND_COMMAND, NULL);
     free(action);
   }
 

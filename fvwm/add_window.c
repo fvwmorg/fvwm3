@@ -206,6 +206,8 @@ void setup_window_name(FvwmWindow *tmp_win)
 #endif
   else
     tmp_win->name = NoName;
+  if (debugging)
+    fvwm_msg(DBG,"setup_window_name","Assigned name %s'",tmp_win->name);
 }
 
 void setup_class_and_resource(FvwmWindow *tmp_win)

@@ -74,7 +74,7 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
     while(isspace((unsigned char)*tline))
       tline++;
     if (debugging)
-      fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
+      fvwm_msg(DBG,"ReadSubFunc","Module switch %d, about to exec: '%.*s'",Module,strlen(tline)-1,tline);
 
     ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND,NULL);
     tline = fgets(line,(sizeof line)-1,f);
@@ -195,7 +195,8 @@ void ReadFile(F_CMD_ARGS)
     DoingCommandLine = False;
 
     if (debugging)
-	fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);
+	fvwm_msg(DBG,"ReadFile","Module flag %d, about to attempt '%s'",
+                 *Module,action);
 
     if ( !parse_filename( "Read", action, &filename, &read_quietly ) )
 	return;
