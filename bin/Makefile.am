@@ -47,4 +47,16 @@ _fvwm-menu-headlines.1: fvwm-menu-headlines.in
 
 pod2man: _fvwm-menu-xlock.1 _fvwm-menu-directory.1 _fvwm-menu-headlines.1
 
+## Create compatibility symlinks if available
+
+install-exec-local:
+	@rm -f $(bindir)/xpmroot
+	@$(LN_S) fvwm-root $(bindir)/xpmroot || \
+		echo "Minor warning: $(bindir)/xpmroot symlink was not created"
+
+install-data-local:
+	@rm -f $(mandir)/xpmroot.1
+	@$(LN_S) fvwm-root.1 $(mandir)/xpmroot.1 || \
+		echo "Minor warning: $(mandir)/xpmroot.1 symlink was not created"
+
 CLEANFILES = $(bin_SCRIPTS) $(bin_PROGRAMS)
