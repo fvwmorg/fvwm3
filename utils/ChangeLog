@@ -1,3 +1,27 @@
+2000-02-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-*.{in,1}:
+	some clean up in code and man; ~ in file names is now mostly expanded;
+	added --wm-icons; changed to work with Redhat 5.1 perl
+
+	* fvwm-menu-xlock.in:
+	actually renamed --format to the previously documented --item,
+	--item format now can contain width specifiers like in other scripts;
+	renamed --icon to --icon-item, added --icon-title;
+
+	* fvwm-menu-directory.in:
+	actually renamed --format to the previously documented --item;
+	changed data file name used in --reuse to .fvwm-menu-directory.dir
+
+	* fvwm-menu-headlines.in: timezones of sites are now taken in account,
+	still daylight saving time is evaluated approximately for dumb sites
+	dumping local time for own zone without specifying it instead of GMC;
+	support for AppWatch site, support for user defined sites;
+	added --info, --icon-title, --icon-item, --icon-home.
+
+	* fvwm-menu-desktop.{in,1}:
+	change --i-know-what-i-do (flag) to --time-limit (integer)
+
 2000-01-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwmrc_convert:
@@ -10,7 +34,7 @@
 
 1999-12-17  Mikhael Goikhman  <migo@homemail.com>
 
-	* fvwm-menu-headlines:
+	* fvwm-menu-headlines.in:
 	* fvwm-menu-headlines.1:
 	A new configurable script to show popular web site headlines in fvwm
 	menus. Currently supported FreshMeat, LinuxToday, SlashDot, Segfault.

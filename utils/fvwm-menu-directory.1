@@ -2,13 +2,17 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.15  1999/12/17 02:51:47  migo
-''' * fvwm-menu-headlines: a new configurable script in fvwm-menu family
-''' - Displays headlines of some popular web sites in fvwm menus.
-''' - Supported FreshMeat, LinuxToday, Slashdot, Segfault, more to come.
-''' * fvwm-menu-directory --special-dirs option now more configurable
-''' * fvwm-menu-directory, fvwm-menu-xlock: renamed --format to --item, warning!
-''' * fvwm-menu scripts (4 for now) are now installed.
+''' Revision 1.16  2000/02/05 14:58:55  migo
+''' fvwm-menu scripts are mostly ready for 2.4
+''' * all scripts: minor fixes to satisfy some older perl-s, leading ~ is now
+''' _ expanded in file names (Olivier's requests); added --wm-icons option.
+''' * fvwm-menu-desktop: added --time-limit (Alex's request).
+''' * fvwm-menu-headlines: support for AppWatch site (Frederic's request);
+''' _ fixed timezones; support for user defined sites; added --info,
+''' _ --icon-title, --icon-item, --icon-home.
+''' * fvwm-menu-xlock: (WARNING) renamed --icon to --icon-item for consistency
+''' _ and added --icon-title; actually renamed --format to documented --item.
+''' * fvwm-menu-directory: actually renamed --format to documented --item.
 '''
 '''
 .de Sh
@@ -101,7 +105,7 @@
 .nr % 0
 .rr F
 .\}
-.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "17/Dec/99" "Fvwm Utility"
+.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "5/Feb/100" "Fvwm Utility"
 .UC
 .if n .hy 0
 .if n .na
@@ -204,10 +208,11 @@ fvwm-menu-directory \- builds a directory browsing menu for FVWM
 [ \fB--name\fR|\fB\-na\fR NAME ]
 [ \fB--title\fR|\fB\-t\fR NAME ]
 [ \fB--item\fR|\fB\-it\fR NAME ]
-[ \fB--icon-app\fR|\fB\-icon-a\fR XPM ]
+[ \fB--icon-title\fR|\fB\-icon-t\fR XPM ]
 [ \fB--icon-dir\fR|\fB\-icon-d\fR XPM ]
 [ \fB--icon-file\fR|\fB\-icon-f\fR XPM ]
-[ \fB--icon-title\fR|\fB\-icon-t\fR XPM ]
+[ \fB--icon-app\fR|\fB\-icon-a\fR XPM ]
+[ \fB--wm-icons\fR ]
 [ \fB--dir\fR|\fB\-d\fR NAME ]
 [ \fB--order\fR|\fB\-o\fR NUM ]
 [ \fB--[no]all\fR|\fB\-a\fR ]
@@ -261,13 +266,17 @@ Format specifiers:
 .PP
 Example: --title \*(L'%*\-40p\etDate, Type\etSize\*(R' --item \*(L'%*40n\et%d \f(CW%t\fR\et%s\*(R'
 .PP
-\fB--icon-app=XPM\fR   \- menu application icon, default is no
+\fB--icon-title=XPM\fR \- menu title icon, default is no
 .PP
 \fB--icon-dir=XPM\fR   \- menu dir   icon, default is no
 .PP
 \fB--icon-file=XPM\fR  \- menu file  icon, default is no
 .PP
-\fB--icon-title=XPM\fR \- menu title icon, default is no
+\fB--icon-app=XPM\fR   \- menu application icon, default is no
+.PP
+\fB--wm-icons\fR \- define icon names suitable for use with wm-icons package.
+Currently this is equivalent to: --icon-title menu/shell.xpm --icon-item
+menu/editor.xpm --icon-dir menu/folder.xpm --icon-app menu/utility.xpm.
 .PP
 \fB--dir=NAME\fR \- starting dir, default is ${HOME\-.}
 .PP
@@ -328,7 +337,9 @@ is equivalent to non-specifying this option at all.
 \&    that is never free'd again while fvwm is running.
 .Ve
 Option parameters can be specified both using \*(L'=\*(R' and in the next argument.
-Short options are ok if not ambiguous: \f(CW-a\fR, \f(CW-x\fR, \f(CW-icon-f\fR.
+Short options are ok if not ambiguous: \f(CW-a\fR, \f(CW-x\fR, \f(CW-icon-f\fR; but be
+careful with short options, what is now unambiguous, can become ambiguous
+in the next versions.
 .SH "USAGE"
 Put this into your fvwm configuration file to invoke the script:
 .PP
@@ -336,11 +347,11 @@ Put this into your fvwm configuration file to invoke the script:
 \&  AddToFunc FuncFvwmMenuDirectory
 \&  + I PipeRead "fvwm-menu-directory -d $0"
 .Ve
-More complex example (the + line is one long line):
+More complex example (the + line is a one long line):
 .PP
 .Vb 2
 \&  # AddToFunc FuncFvwmMenuDirectory
-\&  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --icon-file menu/editor.xpm --icon-dir menu/folder.xpm --icon-title menu/shell.xpm --icon-app menu/utility.xpm
+\&  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons
 .Ve
 And put this in the menu from which you want to pop-up the directory menus:
 .PP
@@ -359,7 +370,7 @@ and enable busy cursor
 .Ve
 in your configuration file when using this script for better results.
 .PP
-Another very interesting usage (\f(CW--reuse\fR or \f(CW-r\fR is mandatary for this):
+Another interesting usage (\f(CW--reuse\fR or \f(CW-r\fR is mandatary for this):
 .PP
 .Vb 3
 \&  AddToMenu MenuBrowser
@@ -369,9 +380,9 @@ Another very interesting usage (\f(CW--reuse\fR or \f(CW-r\fR is mandatary for t
 Here \f(CW--dir\fR starting parameter is ignored if there is ~/.fmd.dir file,
 you can delete it.
 .SH "AUTHORS"
-Created   on 06-07-1999 by Dominik Vogt     <domivogt@fvwm.org>.
+Inspired  on 1999-06-07 by Dominik Vogt     <domivogt@fvwm.org>.
 .PP
-Rewritten on 05-08-1999 by Mikhael Goikhman <migo@homemail.com>.
+Rewritten on 1999-08-05 by Mikhael Goikhman <migo@homemail.com>.
 .SH "COPYING"
 The script is distributed by the same terms as fvwm itself.
 See GNU General Public License for details.

@@ -41,6 +41,7 @@ fvwm-menu-desktop
 \fImicon\fR:\fIlaw\fR:\fIplace\fR:\fIside_pic\fR:\fIcolor\fR ]
 [ \fB\-\-icon\-folder\fR  \fImicon\fR:\fIlaw\fR:\fIplace\fR ]
 [ \fB\-\-icon\-app\fR \fImicon\fR:\fIlaw\fR:\fIplace\fR ]
+[ \fB\-\-wm\-icons\fR ]
 [ \fB\-\-enable\-style\fR ]
 [ \fB\-\-enable\-tran\-style\fR ]
 [ \fB\-\-icon-style\fR \fImicon\fR:\fIicon\fR:\fIlaw\fR ]
@@ -51,8 +52,8 @@ fvwm-menu-desktop
 [ \fB\-\-destroy\-type\fR \fIFLAG\fR ]
 [ \fB\-\-xterm\fR \fICMD\fR ]
 [ \fB\-\-lang\fR \fINAME\fR ]
-[ \fB\-\-no-check-app\fR ]
-[ \fB\-\-i-know-what-i-do\fR ]
+[ \fB\-\-no\-check\-app\fR ]
+[ \fB\-\-time\-limit\fR \fINUM\fR ]
 
 .SH DESCRIPTION
 This is a perl script which parses Gnome or KDE menus definitions to build
@@ -300,6 +301,16 @@ Default for fvwm menus
 with \-\-enable\-tran\-mini\-icons: gnome\-default.xpm:dh.
 Default for gtk menus: gnome\-default.png:dh
 
+.IP \fB--wm-icons\fR
+This is a shortcut, which can be used if you plan to use icons from the
+wm-icons package. Currently this is equavalent to:
+\-\-enable\-mini\-icons
+\-\-mini\-icons\-path ''
+\-\-icon\-toptitle menu/folders.xpm:ow
+\-\-icon\-title menu/folders.xpm:ow
+\-\-icon\-folder menu/folder.xpm:ow
+\-\-icon\-app menu/utility.xpm:ow.
+
 .IP "Style Options"
 
 .IP "\fB\-\-enable-style\fR \fImini\-icon\fR:\fIicon\fR:\fIlaw\fR:\fIaddstyle\fR"
@@ -376,13 +387,10 @@ language.
 .IP "\fB\-\-[no]check-app\fR"
 Either check or don't check that applications to execute are in your path.
 Default is \-\-check-app.
-.IP "\fB\-\-i-know-what-i-do\fR"
-Use this option only if you know what are you doing
-or if you see that everything works well!
-This option disables an auto\-limitation of fvwm\-menu\-desktop: to never
-run more than 10 seconds (is this enough?).
-This limitation may be useful if one makes a mistake with
-the \-\-dir or \-\-install\-path options.
+.IP "\fB\-\-time-limit\fR \fINUM\fR"
+Change the internal limit (15 seconds) for running this script
+to NUM seconds, 0 means unlimited running. This limiting may be useful
+to cut mistakes with the \-\-dir or \-\-install\-path options.
 
 .SH BUGS
 This script needs more testing to see if all options work well
@@ -392,6 +400,8 @@ expected. I have tested the script with gnome-core-1.0.3 and kde-1.1.
 
 .SH AUTHORS
 Olivier Chapuis <olivier.chapuis@free.fr>
+
+Mikhael Goikhman <migo@homemail.com> - some changes
 
 .SH COPYING
 The script is distributed by the same terms as FVWM itself.

@@ -17,6 +17,9 @@
 # ---------------------------------------------------------------------------
 # Modification History
 #
+#  * migo (29/01/2000): Added --wm-icons; changed --i-know-what-i-do (flag)
+#    to --time-limit (integer), the default is now 15 seconds, not 10.
+#
 #  * migo (15/08/1999): Prepared for inclusion into fvwm. Many small fixes
 #    in the script and the man page. All 'fvwm2' replaced with 'fvwm' except
 #    for file names and fvwm2gnome. New --fvwm-gtk-name option.
@@ -127,21 +130,22 @@ foreach $i (keys(%DI)) {
 	$DI{$i} = '';
 }
 
-my $MINI_ICONS = 0;		# mini-icon disabled  (enable =1)
-my $TRAN       = 0;		# mini-icon translation disabled (enable =1)
+my $MINI_ICONS = 0;             # mini-icon disabled  (enable =1)
+my $TRAN       = 0;             # mini-icon translation disabled (enable =1)
+my $wmIcons    = 0;             # use wm-icons compatible menu icon names
 
 
 # default for style
 my %dstyle;
 $dstyle{mini_icon} = 'mini-x.xpm'; # default MiniIcons Style
 $dstyle{gnome_mini_icon}  = 'gnome-default.xpm';
-$dstyle{icon}      = 'x.xpm';	# default Icons Style
+$dstyle{icon}      = 'x.xpm';   # default Icons Style
 $dstyle{gnome_icon}       = 'gnome-default.xpm';
-my $style_law   = 'dh';		# default law
-my $addstyle    = '';		# a style to add every where
-my $STYLE       = 0;		# style is disable (enable =1)
-my $TRAN_STYLE  = 0;		# translation for style is disabled (enable =1)
-my $STYLEOUTPUT = '';		# The styles are in this variable
+my $style_law   = 'dh';         # default law
+my $addstyle    = '';           # a style to add every where
+my $STYLE       = 0;            # style is disable (enable =1)
+my $TRAN_STYLE  = 0;            # translation for style is disabled (enable =1)
+my $STYLEOUTPUT = '';           # The styles are in this variable
 my $ICON_STYLE  = '';
 
 
@@ -150,14 +154,13 @@ my $TERM_CMD = "xterm -e";
 
 
 # Other stuff
-my $timelimit = 10;                    # limit runing time for the script
+my $timelimit = 15;                    # limit runing time for the script
 my $LANG      = $ENV{LANG} || "";      # Internationalization support :o)
 my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 my $CHECK     = 1;                     # we check by default
 my $MENU_DESTROY = '';
 my $DESC_DIR = '';
 my $SUBMENUS_PREFIX = '';
-my $IKWID = 0;
 
 my $name = "";
 my $l = "";
@@ -206,7 +209,8 @@ GetOptions(
 	"xterm:s" => \$TERM_CMD,
 	"lang:s" => \$LANG,
 	"check-app!" => \$CHECK,
-	"i-know-what-i-do" => \$IKWID,
+	"wm-icons" => \$wmIcons,
+	"time-limit=s" => \$timelimit,
 ) || wrongUsage();
 wrongUsage() if @ARGV;
 
@@ -215,6 +219,7 @@ wrongUsage() if @ARGV;
 
 # for limiting runing time to $timelimit
 my $startime = time;
+$timelimit = 300 if $timelimit <= 0 || $timelimit > 300;
 
 # see if we build a gnome or a kde menu.
 $DESKTOP = 'Kde'   if ( $MENU_NAME =~ /kde/ );
@@ -289,6 +294,14 @@ else { $SUBMENUS_PREFIX = "$MENU_NAME-" }
 # ---------
 # Icon init
 
+if ($wmIcons) {
+	$MINI_ICONS = 1;
+	$MINI_ICONS_DIR = "";
+	$DI{"fvwm_toptitle"} = "menu/folders.xpm:ow";
+	$DI{"fvwm_title"}    = "menu/folders.xpm:ow";
+	$DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
+	$DI{"fvwm_app"}      = "menu/utility.xpm:ow";
+}
 
 if ( $TRAN ) { $MINI_ICONS = 1 }
 
@@ -571,9 +584,8 @@ sub build_a_level {
 	for $item (@Main_List) {
 
 		#PB (good place ??)
-		if ( ((time - $startime) >= $timelimit) && $IKWID != 1 ) {
-			die "fvwm-menu-desktop decides to die because it thinks that it\n"
-			. "run to much time (see the man page)"
+		if ( time - $startime >= $timelimit ) {
+			die "fvwm-menu-desktop runs longer than time-limit; dying (see the man page)\n";
 		}
 
 		$tmp_name = substr($item,rindex ($item,'/')+1);
@@ -878,6 +890,7 @@ Options:
 	--icon-title micon:law:place:sidepic:color     as above for sub menus
 	--icon-folder micon:law:place   mini-icons for folder item
 	--icon-app micon:law:place      mini-icon for applications item
+	--wm-icons                define menu icon names to use with wm-icons
 	--enable-style            build icons and mini-icons style
 	--enable-tran-style       as above with translation (for FvwmGtk menus)
 	--icon-style micon:icon:law     icons for style
@@ -892,7 +905,7 @@ Options:
 		in it, default is 'xterm -e'
 	--lang NAME               language, default is \$LANG
 	--[no]check-app           [do not] check that apps are in your path
-	--i-know-what-i-do        so, ...
+	--time-limit NUM          limit script running time to NUM seconds
 Short options are ok if not ambiguous: -h, -x, -icon-a.
 END_HELP
 	exit 0;

@@ -14,11 +14,11 @@ my $version = "@VERSION@";
 my $name  = "MenuBrowser";  # used only with --reuse
 my $title = "%*-40p";  # may contain specifiers %d, %p.
 my $itemF = "%n";      # may contain specifiers %n, %t, %T, %d, %D, %s.
-my $iconA = "";
+my $iconT = "";
 my $iconD = "";
 my $iconF = "";
-my $iconT = "";
-my $home  = $ENV{'HOME'} || '/';
+my $iconA = "";
+my $home  = $ENV{'HOME'} || '/tmp';
 my $dir   = $home;
 my $xterm = "xterm -e";              # the X terminal program to invoke
 my $execA = undef;
@@ -28,23 +28,23 @@ my $all   = 0;  # whether show hidden files (like in 'ls -A')
 my $links = 0;  # either follow linked dirs or not
 my $order = 5;  # -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6
 my $reuse = 0;  # non-popup mode
+my $wmIcons = 0;
 my $checkSubdir = 0;  # whether check subdirs for +x permissions
 my $specialDirVal = undef;  # which of (.. ~ /) dirs include or none
 my $memoryForSpeed = 0;
 my $submenuPos = " item +100 c";  # " menu +0 +0"
-my $dirFile = "$home/.fmd.dir";
+my $dirFile = "$home/.fvwm-menu-directory.dir";
 
 GetOptions(
 	"help"         => \&showHelp,
 	"version"      => \&showVersion,
 	"name=s"       => \$name,
 	"title=s"      => \$title,
-	"title=s"      => \$title,
-	"format=s"     => \$itemF,
-	"icon-app=s"   => \$iconA,
+	"item=s"       => \$itemF,
+	"icon-title=s" => \$iconT,
 	"icon-dir=s"   => \$iconD,
 	"icon-file=s"  => \$iconF,
-	"icon-title=s" => \$iconT,
+	"icon-app=s"   => \$iconA,
 	"dir=s"        => \$dir,
 	"order=i"      => \$order,
 	"all!"         => \$all,
@@ -54,12 +54,14 @@ GetOptions(
 	"exec-file=s"  => \$execF,
 	"exec-title=s" => \$execT,
 	"reuse!"       => \$reuse,
+	"wm-icons"     => \$wmIcons,
 	"check-subdir!"     => \$checkSubdir,
 	"special-dirs:s"    => \$specialDirVal,
 	"memory-for-speed!" => \$memoryForSpeed,
 ) || wrongUsage();
 wrongUsage() if @ARGV;
 
+$dir =~ s:^~(/|$):$home$1:;
 chomp($dir = `cat "$dirFile"`) if $reuse && -f $dirFile;
 $name = $dir unless $reuse;
 
@@ -99,10 +101,17 @@ if ($itemF_eval) {
 my @type1 = ("Sock", "Link", "File", "Blck", "Dir ", "Char", "Pipe");
 my @type2 = ("S", "L", "F", "B", "D", "C", "P");
 
-my $iconAStr = $iconA? "%$iconA%": "";
+if ($wmIcons) {
+	$iconT ||= "menu/shell.xpm";
+	$iconD ||= "menu/folder.xpm";
+	$iconF ||= "menu/editor.xpm";
+	$iconA ||= "menu/utility.xpm";
+}
+
+my $iconTStr = $iconT? "%$iconT%": "";
 my $iconDStr = $iconD? "%$iconD%": "";
 my $iconFStr = $iconF? "%$iconF%": "";
-my $iconTStr = $iconT? "%$iconT%": "";
+my $iconAStr = $iconA? "%$iconA%": "";
 
 $execA = undef if defined $execA && $execA eq '-';
 $execF = undef if defined $execF && $execF eq '-';
@@ -183,7 +192,7 @@ foreach (@files) {
 		# it's a directory
 		print evalFolderLine($_, $filePath);
 	} else {
-		# something else, apply editor to it or run it
+		# something else, apply editor to it or run itself
 		my $itemStr = $itemF_eval? evalItem($_, $filePath): $_;
 		my $isApp = ($iconAStr || defined $execA) && -x && -f;
 		my $iconStr = $isApp && $iconAStr? $iconAStr: $iconFStr;
@@ -222,8 +231,8 @@ sub evalItem ($$) {
 
 	# / $dev, $ino, $mode, $nlink, $uid, $gid, $rdev,
 	# \ $size, $atime, $mtime, $ctime, $blksize, $blocks
-	my (undef, undef, $mode, undef, undef, undef, undef, $size,
-		undef, $time) = stat($file);
+	my ($misc, $misc, $mode, $misc, $misc, $misc, $misc, $size,
+		$misc, $time) = stat($file);
 	if ($itemF_date) {
 		eval 'use POSIX' unless defined $POSIX::VERSION;
 		my @time = localtime($time);
@@ -276,6 +285,7 @@ sub showHelp {
 	print "\t--icon-dir=XPM     menu dir   icon, default is no\n";
 	print "\t--icon-file=XPM    menu file  icon, default is no\n";
 	print "\t--icon-title=XPM   menu title icon, default is no\n";
+	print "\t--wm-icons         define icon names to use with wm-icons\n";
 	print "\t--dir=NAME         starting dir, default is '$dir'\n";
 	print "\t--order=NUM        NUM (-6 .. 6), default is 5\n";
 	print "\t\t1 - do not sort,  2 - dirs first, 3 - files first\n";
@@ -289,7 +299,7 @@ sub showHelp {
 	print "\t--exec-title=CMD   title action, default is '$execT'\n";
 	print "\t--reuse            no popups, reuse the same menu (no)\n";
 	print "\t--check-subdir     check subdir for +x permission (no)\n";
-	print "\t--special-dirs     include .. and ~ directories (no)\n";
+	print "\t--special-dirs[=X] include .. and ~ directories (no)\n";
 	print "\t--memory-for-speed use speed optimization (no)\n";
 	print "Short options are ok if not ambiguous: -a, -icon-f.\n";
 	exit 0;
@@ -321,10 +331,11 @@ B<fvwm-menu-directory>
 [ B<--name>|B<-na> NAME ]
 [ B<--title>|B<-t> NAME ]
 [ B<--item>|B<-it> NAME ]
-[ B<--icon-app>|B<-icon-a> XPM ]
+[ B<--icon-title>|B<-icon-t> XPM ]
 [ B<--icon-dir>|B<-icon-d> XPM ]
 [ B<--icon-file>|B<-icon-f> XPM ]
-[ B<--icon-title>|B<-icon-t> XPM ]
+[ B<--icon-app>|B<-icon-a> XPM ]
+[ B<--wm-icons> ]
 [ B<--dir>|B<-d> NAME ]
 [ B<--order>|B<-o> NUM ]
 [ B<--[no]all>|B<-a> ]
@@ -382,13 +393,17 @@ Format specifiers:
 
 Example: --title '%*-40p\tDate, Type\tSize' --item '%*40n\t%d %t\t%s'
 
-B<--icon-app=XPM>   - menu application icon, default is no
+B<--icon-title=XPM> - menu title icon, default is no
 
 B<--icon-dir=XPM>   - menu dir   icon, default is no
 
 B<--icon-file=XPM>  - menu file  icon, default is no
 
-B<--icon-title=XPM> - menu title icon, default is no
+B<--icon-app=XPM>   - menu application icon, default is no
+
+B<--wm-icons> - define icon names suitable for use with wm-icons package.
+Currently this is equivalent to: --icon-title menu/shell.xpm --icon-item
+menu/editor.xpm --icon-dir menu/folder.xpm --icon-app menu/utility.xpm.
 
 B<--dir=NAME> - starting dir, default is ${HOME-.}
 
@@ -448,7 +463,9 @@ B<--[no]memory-for-speed> - use speed optimization, default is
     that is never free'd again while fvwm is running.
 
 Option parameters can be specified both using '=' and in the next argument.
-Short options are ok if not ambiguous: C<-a>, C<-x>, C<-icon-f>.
+Short options are ok if not ambiguous: C<-a>, C<-x>, C<-icon-f>; but be
+careful with short options, what is now unambiguous, can become ambiguous
+in the next versions.
 
 =head1 USAGE
 
@@ -457,10 +474,10 @@ Put this into your fvwm configuration file to invoke the script:
   AddToFunc FuncFvwmMenuDirectory
   + I PipeRead "fvwm-menu-directory -d $0"
 
-More complex example (the + line is one long line):
+More complex example (the + line is a one long line):
 
   # AddToFunc FuncFvwmMenuDirectory
-  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --icon-file menu/editor.xpm --icon-dir menu/folder.xpm --icon-title menu/shell.xpm --icon-app menu/utility.xpm
+  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons
 
 And put this in the menu from which you want to pop-up the directory menus:
 
@@ -477,7 +494,7 @@ and enable busy cursor
 
 in your configuration file when using this script for better results.
 
-Another very interesting usage (C<--reuse> or C<-r> is mandatary for this):
+Another interesting usage (C<--reuse> or C<-r> is mandatary for this):
 
   AddToMenu MenuBrowser
   + DynamicPopupAction Piperead "fvwm-menu-directory -r -na MenuBrowser -d / -s"
@@ -488,9 +505,9 @@ you can delete it.
 
 =head1 AUTHORS
 
-Created   on 06-07-1999 by Dominik Vogt     <domivogt@fvwm.org>.
+Inspired  on 1999-06-07 by Dominik Vogt     <domivogt@fvwm.org>.
 
-Rewritten on 05-08-1999 by Mikhael Goikhman <migo@homemail.com>.
+Rewritten on 1999-08-05 by Mikhael Goikhman <migo@homemail.com>.
 
 =head1 COPYING
 

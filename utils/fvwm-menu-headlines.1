@@ -2,13 +2,17 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.1  1999/12/17 02:51:47  migo
-''' * fvwm-menu-headlines: a new configurable script in fvwm-menu family
-''' - Displays headlines of some popular web sites in fvwm menus.
-''' - Supported FreshMeat, LinuxToday, Slashdot, Segfault, more to come.
-''' * fvwm-menu-directory --special-dirs option now more configurable
-''' * fvwm-menu-directory, fvwm-menu-xlock: renamed --format to --item, warning!
-''' * fvwm-menu scripts (4 for now) are now installed.
+''' Revision 1.2  2000/02/05 14:58:55  migo
+''' fvwm-menu scripts are mostly ready for 2.4
+''' * all scripts: minor fixes to satisfy some older perl-s, leading ~ is now
+''' _ expanded in file names (Olivier's requests); added --wm-icons option.
+''' * fvwm-menu-desktop: added --time-limit (Alex's request).
+''' * fvwm-menu-headlines: support for AppWatch site (Frederic's request);
+''' _ fixed timezones; support for user defined sites; added --info,
+''' _ --icon-title, --icon-item, --icon-home.
+''' * fvwm-menu-xlock: (WARNING) renamed --icon to --icon-item for consistency
+''' _ and added --icon-title; actually renamed --format to documented --item.
+''' * fvwm-menu-directory: actually renamed --format to documented --item.
 '''
 '''
 .de Sh
@@ -101,7 +105,7 @@
 .nr % 0
 .rr F
 .\}
-.TH FVWM-MENU-HEADLINES 1 "perl 5.005, patch 01" "17/Dec/99" "Fvwm Utility"
+.TH FVWM-MENU-HEADLINES 1 "perl 5.005, patch 01" "5/Feb/100" "Fvwm Utility"
 .UC
 .if n .hy 0
 .if n .na
@@ -201,26 +205,35 @@ fvwm-menu-headlines \- builds headlines menu definition for FVWM
 \fBfvwm-menu-headlines\fR
 [ \fB--help\fR|\fB\-h\fR ]
 [ \fB--version\fR|\fB\-v\fR ]
-[ \fB--site\fR|\fB\-s\fR ]
+[ \fB--info\fR [site] ]
+[ \fB--site\fR|\fB\-s\fR site ]
 [ \fB--name\fR|\fB\-n\fR name ]
 [ \fB--title\fR|\fB\-t\fR title ]
 [ \fB--item\fR name ]
 [ \fB--exec\fR|\fB\-e\fR action ]
-[ \fB--icon\fR icon ]
+[ \fB--icon-title\fR icon ]
+[ \fB--icon-item\fR icon ]
+[ \fB--icon-home\fR icon ]
+[ \fB--wm-icons\fR ]
 [ \fB--frontpage\fR [where] ]
 [ \fB--proxy\fR|\fB\-p\fR host:port ]
 [ \fB--buggyproxy\fR|\fB\-b\fR ]
 [ \fB--file\fR [file] ]
 [ \fB--fake\fR [file] ]
 .SH "DESCRIPTION"
-A perl script which builds an fvwm menu definition of headlines of popular
-news web sites: FreshMeat, Slashdot, LinuxToday, Segfault etc.
+A perl script which builds an fvwm menu definition for headlines of popular
+news web sites: FreshMeat, Slashdot, LinuxToday, Segfault and more.
 .SH "OPTIONS"
 \fB--help\fR    \- show the help and exit
 .PP
 \fB--version\fR \- show the version and exit
 .PP
-\fB--site\fR \- defile a web site, headlines of which to show, default: freshmeat
+\fB--info\fR [site] \- if site name is given print the site specific info,
+otherwise print all site names
+.PP
+\fB--site\fR site \- defile a web site, headlines of which to show, this option
+also can be used together with --help to get new defaults.
+Default site: freshmeat.
 .PP
 \fB--name\fR, \fB--title\fR, \fB--icon\fR \- define menu name, menu title and menu icon
 accordingly given in the following argument. Default is name
@@ -229,10 +242,10 @@ accordingly given in the following argument. Default is name
 .PP
 \fB--item\fR, \fB--exec\fR \- define menu item or exec format in the following
 argument (what is shown and what is executed when the item is chosen),
-default is \*(L'%h\et%\*(R'. TAB can be specified as \*(L'\et\*(R', but in fvwmrc you should
-specify a double backslash or a real TAB.
+default is \*(L'%h\e\fIt\fR\|(%[%Y\-%m-%d \f(CW%H:\fR%M])\*(R'. TAB can be specified as \*(L'\et\*(R', but
+in fvwmrc you should specify a double backslash or a real TAB.
 .PP
-Format specifiers for a news entry:
+Format specifiers for a headline entry:
   \f(CW%h\fR \- headline
   \f(CW%u\fR \- url
   \f(CW%d\fR \- date in native format
@@ -240,32 +253,50 @@ Format specifiers for a news entry:
   %{name} \- site-specific-named-value
   %(text) \- arbitrary text
 .PP
-\fB--frontpage\fR \- show site fronpage item in the menu too. Optional value can
-be used to specify where this item will be placed in the menu \- \*(L'top\*(R' or \*(L't\*(R',
-\&'bottom\*(R' or \*(L'b\*(R'.
+These specifiers can receive an optional integer size, positive for right
+adjusted string or negative for left adjusted, example: \f(CW%8x\fR; and optional
+*num or *\-num, which means to leave only the first or last (if minus) num of
+chars, the num must be greater than 3, since the striped part is replaced
+with \*(L"...\*(R", example: %*30x. Both can be combined: %\-10*\-20x, this instructs to
+get only the 20 last characters, but if the length is less then 10 \- to fill
+with up to 10 spaces on the right.
 .PP
-\fB--proxy\fR \- define proxy host[:port] to use.
+\fB--icon-title\fR, \fB--icon-item\fR, \fB--icon-home\fR \- define menu icon for
+title, regular item and home item respectively given in the following argument.
+Default is no menu icons (equivalent to an empty icon argument).
+.PP
+\fB--wm-icons\fR \- define icon names suitable for use with wm-icons package.
+Currently this is equivalent to: --icon-title \*(L'\*(R' --icon-item
+menu/information.xpm --icon-home menu/home.xpm.
+.PP
+\fB--frontpage\fR [where] \- show site fronpage item in the menu too. Optional
+value can be used to specify where this item will be placed in the menu \-
+\&'top\*(R' or \*(L't\*(R', \*(L'bottom\*(R' or \*(L'b\*(R'.
+.PP
+\fB--proxy\fR host[:port] \- define a proxy to use.
 Example: --proxy proxy.inter.net:3128
 .PP
 \fB--buggyproxy\fR \- try this if your proxy requires non standard end-of-line.
 .PP
 \fB--file\fR [file] \- write the menu output to specified file. If no filename is
 given with this option (or empty filename), the default filename
-~/.fvwm-menu-headlines/SITE.menu is used. Without this option or with \*(L'\-\*(R'
+WORK_HOME/SITE.menu is used. Without this option or with \*(L'\-\*(R'
 filename, the menu output is written to standard output.
 .PP
 \fB--fake\fR [file] \- don't connect to the host using HTTP protocol, instead,
-read from ~/.fvwm-menu-headlines/SITE.in file. The following reads input from
+read from WORK_HOME/SITE.in file. The following reads input from
 segfault.in (downloaded http://segfault.org/stories.txt) and saves output
-to segfault.menu (both files are in ~/.fvwm-menu-headlines):
+to segfault.menu (both files are in WORK_HOME):
   fvwm-menu-headlines --site segfault --fake --file
+.PP
+WORK_HOME of this script is ~/.fvwm-menu-headlines. It is created if needed.
 .PP
 Option parameters can be specified both using \*(L'=\*(R' and in the next argument.
 Short options are ok if not ambiguous: \f(CW-h\fR, \f(CW-t\fR; but be careful with
-short options, what is now unambiguous, can became ambiguous in the next
+short options, what is now unambiguous, can become ambiguous in the next
 versions.
 .SH "USAGE"
-One of the ways to use this script is to define a crontab
+1. One of the ways to use this script is to define a crontab
 entry to run the script every hour or so for every monitored site:
 .PP
 .Vb 3
@@ -277,50 +308,82 @@ Then add these lines to your fvwm configuration file:
 .PP
 .Vb 3
 \&  DestroyFunc FuncFvwmMenuHeadlines
-\&  AddToFunc FuncFvwmMenuHeadlines
+\&  AddToFunc   FuncFvwmMenuHeadlines
 \&  + I Read "$HOME/.fvwm-menu-headlines/$0.menu"
 .Ve
 .Vb 7
 \&  DestroyMenu MenuHeadlines
-\&  AddToMenu MenuHeadlines "Headlines" Title
+\&  AddToMenu   MenuHeadlines "Headlines" Title
 \&  + MissingSubmenuFunction FuncFvwmMenuHeadlines
 \&  + "FreshMeat"  Popup freshmeat
 \&  + "LinuxToday" Popup linuxtoday
 \&  + "Slashdot"   Popup slashdot
 \&  + "Segfault"   Popup segfault
 .Ve
-Another way to use this script (only if you have fast network/proxy) is to run
-it every time you want to open your Headlines submenus.
+2. Another way to use this script (only if you have fast network/proxy) is to
+run it every time you want to open your Headlines submenus.
 .PP
 In this case your fvwm configuration lines could be:
 .PP
 .Vb 3
 \&  DestroyFunc FuncFvwmMenuHeadlines
-\&  AddToFunc FuncFvwmMenuHeadlines
+\&  AddToFunc   FuncFvwmMenuHeadlines
 \&  + I PipeRead "fvwm-menu-headlines --site $0"
 .Ve
-.Vb 7
+.Vb 8
 \&  DestroyMenu MenuHeadlines
-\&  AddToMenu MenuHeadlines "Headlines" Title
+\&  AddToMenu   MenuHeadlines "Headlines" Title
 \&  + MissingSubmenuFunction FuncFvwmMenuHeadlines
 \&  + "FreshMeat"  Popup freshmeat
-\&  + "LinuxToday" Popup linuxtoday
 \&  + "Slashdot"   Popup slashdot
+\&  + "LinuxToday" Popup linuxtoday
 \&  + "Segfault"   Popup segfault
+\&  + "AppWatch"   Popup appwatch
 .Ve
 In the end add \*(L"Popup MenuHeadlines\*(R" somewhere.
 .PP
-Here is a usual solution. Use FvwmConsole or FvwmCommand to run fvwm commands
+3. Here is a usual usage. Use FvwmConsole or FvwmCommand to run fvwm commands
 from a shell script. Every time you want headlines from some site, execute
-(give any additional options you want):
+(give any additional options if you want):
 .PP
 .Vb 3
 \&  PipeRead "fvwm-menu-headlines --site segfault --name MenuHeadlinesSegfault"
 \&  # after several seconds
 \&  Popup MenuHeadlinesSegfault
 .Ve
+.SH "HOW TO ADD SITE HEADLINES"
+It is possible to add user defined site headlines without touching the script
+itself. Put your perl extensions to the file WORK_HOME/extension.pl.
+For each site add something similar to:
+.PP
+.Vb 8
+\&  $siteInfo->{'myslashdot'} = {
+\&    'name' => "MySlashdot",
+\&    'host' => "myslashdot.org",
+\&    'path' => "/myslashdot.xml",
+\&    'func' => \e&processMySlashdot,
+\&    # the following string is only used in --info
+\&    'flds' => 'time, title, department, topic, author, url',
+\&  };
+.Ve
+.Vb 11
+\&  sub processMySlashdot () {
+\&    return processXml(
+\&      'story',
+\&      # mandatory 'h', 'u' and 'd' aliases or undef
+\&      { 'h' => 'title', 'u' => 'url', 'd' => 'time' },
+\&      sub ($) {  # convert 'd' string to (y, m, d, H, M, S)
+\&        $_[0] =~ /(\ed+)-(\ed+)-(\ed+) (\ed+):(\ed+):(\ed+)/;
+\&        ($1, ($2 || 0) - 1, $3, $4, $5, $6);
+\&      }, +0,  # timezone offset; already in UTC
+\&    );
+\&  }
+.Ve
+.Vb 1
+\&  1;
+.Ve
 .SH "AUTHORS"
-This script is inspired by WMHeadlines v1.3 by
+This script is inspired by WMHeadlines v1.3 by:
 .PP
 .Vb 2
 \&  Jeff Meininger <jeffm@boxybutgood.com>
@@ -350,6 +413,8 @@ Report bugs to fvwm-bug@fvwm.org.
 .IX Header "OPTIONS"
 
 .IX Header "USAGE"
+
+.IX Header "HOW TO ADD SITE HEADLINES"
 
 .IX Header "AUTHORS"
 

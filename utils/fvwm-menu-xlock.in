@@ -10,8 +10,85 @@ my $version = "@VERSION@";
 my $name  = 'XLockMenu';
 my $title = 'XLock Modes';
 my $itemF = '%n\t(%d)';  # may contain %n, %d, %D.
-my $icon  = '';
+my $iconT = '';
+my $iconI = '';
+my $wmIcons = 0;
 my $specialFirst = 0;
+
+GetOptions(
+	"help"     => \&showHelp,
+	"version"  => \&showVersion,
+	"name=s"   => \$name,
+	"title=s"  => \$title,
+	"item=s"   => \$itemF,
+	"icon-title=s"  => \$iconT,
+	"icon-item=s"   => \$iconI,
+	"wm-icons"      => \$wmIcons,
+	"special-first" => \$specialFirst,
+) || wrongUsage();
+
+if ($wmIcons) {
+	$iconT ||= "";
+	$iconI ||= "menu/wm-lock.xpm";
+}
+
+my $iconTStr = $iconT? "%$iconT%": "";
+my $iconIStr = $iconI? "%$iconI%": "";
+my $params = @ARGV? ' ' . join(' ', @ARGV): '';
+my $dscLen = 36;
+my $lines1 = "";  # non-special mode lines
+my $lines2 = "";  # special mode lines
+
+my $start = 0;
+my $special = 0;
+$itemF =~ s/\\t/\t/g;
+open(XL, "xlock -h 2>&1 |") || die "Exec echo 'Could not run xlock'\n";
+
+print "DestroyMenu $name\n";
+print "AddToMenu $name \"$iconTStr$title\" Title\n";
+
+while (<XL>) {
+	chomp;
+
+	/where mode is one of:/ && do {
+		$start = 1;
+		next;
+	};
+	if ($start && $_) {
+		my ($misc, $name, $dsc) = split(/\s+/, $_, 3);
+		next if $name =~ /^-/;
+		my $dsc2 = $dsc =~ /^Shows (.*)$/? $1: $dsc;
+		my $itemStr = $itemF;
+		$itemStr =~ s/\\t/\t/g;
+		expandWidthSpecifier(\$itemStr, 'n', $name);
+		expandWidthSpecifier(\$itemStr, 'd', $dsc);
+		expandWidthSpecifier(\$itemStr, 'D', $dsc2);
+
+		$special = 1 if !$special && $name eq 'blank';
+		($special? $lines2: $lines1) .=
+			qq(+ "$iconIStr$itemStr" Exec xlock$params -mode $name\n);
+	}
+}
+
+close XL;
+print $specialFirst?
+	qq($lines2+ "" Nop\n$lines1):
+	qq($lines1+ "" Nop\n$lines2);
+
+exit(0);
+
+# ---------------------------------------------------------------------------
+
+# Substitutes all %N1*N2x in $name by properly stripped and justified $value.
+sub expandWidthSpecifier (\$$$) {
+	my ($name, $char, $value) = @_;
+	$$name =~ s/%(-?\d+)?(\*(-?)(\d+))?$char/
+		my $value = !$2 || $4 <= 3 || $4 > length($value)? $value: $3?
+			"..." . substr($value, -$4 + 3, $4 - 3):
+			substr($value, 0, $4 - 3) . "...";
+		$1? sprintf("%$1s", $value): $value;
+	/ge;
+}
 
 sub showHelp {
 	print "A small perl script which builds xlock menu for fvwm.\n\n";
@@ -22,7 +99,9 @@ sub showHelp {
 	print "\t--name=NAME      menu name,  default is '$name'\n";
 	print "\t--title=NAME     menu title, default is '$title'\n";
 	print "\t--item=NAME      menu item format, default is '$itemF'\n";
-	print "\t--icon=XPM       menu icon,  default is no\n";
+	print "\t--icon-title=XPM menu title icon, default is no\n";
+	print "\t--icon-item=XPM  menu item  icon, default is no\n";
+	print "\t--wm-icons       define icon names to use with wm-icons\n";
 	print "\t--special-first  put special modes first\n";
 	print "Short options are ok if not ambiguous: -h, -t.\n";
 	print "\nSome useful xlock(1) options, 'xlock -h' for more:\n";
@@ -44,58 +123,7 @@ sub wrongUsage {
 	exit -1;
 }
 
-GetOptions(
-	"help"     => \&showHelp,
-	"version"  => \&showVersion,
-	"name=s"   => \$name,
-	"title=s"  => \$title,
-	"format=s" => \$itemF,
-	"icon=s"   => \$icon,
-	"special-first" => \$specialFirst,
-) || wrongUsage();
-
-my $iconStr = $icon? "%$icon%": "";
-my $params = @ARGV? ' ' . join(' ', @ARGV): '';
-my $dscLen = 36;
-my $lines1 = "";  # non-special mode lines
-my $lines2 = "";  # special mode lines
-
-my $start = 0;
-my $special = 0;
-$itemF =~ s/\\t/\t/g;
-open(XL, "xlock -h 2>&1 |") || die "Exec echo 'Could not run xlock'\n";
-
-print "DestroyMenu $name\n";
-print "AddToMenu $name \"$title\" Title\n";
-
-while (<XL>) {
-	chomp;
-
-	/where mode is one of:/ && do {
-		$start = 1;
-		next;
-	};
-	if ($start && $_) {
-		my (undef, $name, $dsc) = split(/\s+/, $_, 3);
-		next if $name =~ /^-/;
-		my $dsc2 = $dsc =~ /^Shows (.*)$/? $1: $dsc;
-		my $itemStr = $itemF;
-		$itemStr =~ s/\\t/\t/g;
-		$itemStr =~ s/%n/$name/g;
-		$itemStr =~ s/%d/$dsc/g;
-		$itemStr =~ s/%D/$dsc2/g;
-
-		$special = 1 if !$spacial && $name eq 'blank';
-		($special? $lines2: $lines1) .=
-			qq(+ "$iconStr$itemStr" Exec xlock$params -mode $name\n);
-	}
-}
-
-close XL;
-print $specialFirst?
-	qq($lines2+ "" Nop\n$lines1):
-	qq($lines1+ "" Nop\n$lines2);
-
+__END__
 
 # ---------------------------------------------------------------------------
 
@@ -111,7 +139,8 @@ B<fvwm-menu-xlock>
 [ B<--name>|B<-n> name ]
 [ B<--title>|B<-t> title ]
 [ B<--item> format ]
-[ B<--icon> icon ]
+[ B<--icon-title> icon ]
+[ B<--icon-item> icon ]
 [ B<--special-first>|B<-s> ]
 [ -- xlock params ]
 
@@ -126,18 +155,36 @@ B<--help>    - show the help and exit
 
 B<--version> - show the version and exit
 
-B<--name>, B<--title>, B<--icon> - define menu name, menu title and menu icon
-accordingly given in the following argument. Default is name "XLockMenu",
-title "XLock Modes" and no mini-icon (equivalent to an empty icon argument).
+B<--name> name - define menu name in the following argument.
+Default is "XLockMenu"
 
-B<--item> - define menu item format in the following argument, default is
-'%n\t(%d)'. TAB can be specified as '\t', but in fvwmrc you should specify a
-double backslash or a real TAB.
+B<--title> title - define menu title in the following argument.
+Default is "XLock Modes".
+
+B<--item> format - define menu item format in the following argument,
+default is '%n\t(%d)'. TAB can be specified as '\t', but in fvwmrc
+you should specify a double backslash or a real TAB.
 
 Format specifiers:
   %n - mode name
   %d - mode description
   %D - mode description without "Shows " prefix if any
+
+These specifiers can receive an optional integer size, positive for right
+adjusted string or negative for left adjusted, example: %8x; and optional
+*num or *-num, which means to leave only the first or last (if minus) num of
+chars, the num must be greater than 3, since the striped part is replaced
+with "...", example: %*30x. Both can be combined: %-10*-20x, this instructs to
+get only the 20 last characters, but if the length is less then 10 - to fill
+with up to 10 spaces on the right.
+
+B<--icon-title>, B<--icon-item> - define menu icon for title and regular item
+accordingly given in the following argument. Default is no menu icons
+(equivalent to an empty icon argument).
+
+B<--wm-icons> - define icon names suitable for use with wm-icons package.
+Currently this is equivalent to: --icon-title '' --icon-item
+menu/wm-lock.xpm.
 
 B<--special-first> - instructs to include special modes (usually black,
 bomb and random) first.
@@ -155,10 +202,10 @@ Please see the B<xlock>(1) man page for the xlock options.
 
 Add these lines to your fvwm configuration file:
 
-  PipeRead 'fvwm-menu-xlock -n MenuSSaver -t "Screensaver" \
-    -i mini-bball.xpm -- -nice 19 -nolock'
-  PipeRead 'fvwm-menu-xlock -n MenuSLock  -t "Lock Screen" \
-    -i mini-rball.xpm -- -nice 19'
+  PipeRead 'fvwm-menu-xlock --name MenuSSaver --title "Screensaver" \
+    --icon-item mini-bball.xpm --special-first -- -nice 19 -nolock'
+  PipeRead 'fvwm-menu-xlock --name MenuSLock --title "Lock Screen" \
+    --icon-item mini-rball.xpm --special-first -- -nice 19'
   AddToMenu "Utilities" "Screensaver%mini-monitor.xpm%" Popup MenuSSaver
   AddToMenu "Utilities" "Screenlock%mini-lock.xpm%"     Popup MenuSLock
 
@@ -166,9 +213,7 @@ Add these lines to your fvwm configuration file:
 
 Charles K. Hines <chuck_hines@vnet.ibm.com>, initial version.
 
-Mikhael Goikhman <migo@homemail.com>, 24 Feb 1999.
-
-Mikhael Goikhman <migo@homemail.com>, 02 Aug 1999.
+Mikhael Goikhman <migo@homemail.com>, from 24 Feb 1999.
 
 =head1 COPYING
 

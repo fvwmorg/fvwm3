@@ -2,13 +2,17 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.9  1999/12/17 02:51:48  migo
-''' * fvwm-menu-headlines: a new configurable script in fvwm-menu family
-''' - Displays headlines of some popular web sites in fvwm menus.
-''' - Supported FreshMeat, LinuxToday, Slashdot, Segfault, more to come.
-''' * fvwm-menu-directory --special-dirs option now more configurable
-''' * fvwm-menu-directory, fvwm-menu-xlock: renamed --format to --item, warning!
-''' * fvwm-menu scripts (4 for now) are now installed.
+''' Revision 1.10  2000/02/05 14:58:55  migo
+''' fvwm-menu scripts are mostly ready for 2.4
+''' * all scripts: minor fixes to satisfy some older perl-s, leading ~ is now
+''' _ expanded in file names (Olivier's requests); added --wm-icons option.
+''' * fvwm-menu-desktop: added --time-limit (Alex's request).
+''' * fvwm-menu-headlines: support for AppWatch site (Frederic's request);
+''' _ fixed timezones; support for user defined sites; added --info,
+''' _ --icon-title, --icon-item, --icon-home.
+''' * fvwm-menu-xlock: (WARNING) renamed --icon to --icon-item for consistency
+''' _ and added --icon-title; actually renamed --format to documented --item.
+''' * fvwm-menu-directory: actually renamed --format to documented --item.
 '''
 '''
 .de Sh
@@ -101,7 +105,7 @@
 .nr % 0
 .rr F
 .\}
-.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 01" "17/Dec/99" "Fvwm Utility"
+.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 01" "5/Feb/100" "Fvwm Utility"
 .UC
 .if n .hy 0
 .if n .na
@@ -204,7 +208,8 @@ fvwm-menu-xlock \- builds xlock menu definition for FVWM
 [ \fB--name\fR|\fB\-n\fR name ]
 [ \fB--title\fR|\fB\-t\fR title ]
 [ \fB--item\fR format ]
-[ \fB--icon\fR icon ]
+[ \fB--icon-title\fR icon ]
+[ \fB--icon-item\fR icon ]
 [ \fB--special-first\fR|\fB\-s\fR ]
 [ -- xlock params ]
 .SH "DESCRIPTION"
@@ -215,18 +220,36 @@ menu definition of all xlock's modes.
 .PP
 \fB--version\fR \- show the version and exit
 .PP
-\fB--name\fR, \fB--title\fR, \fB--icon\fR \- define menu name, menu title and menu icon
-accordingly given in the following argument. Default is name \*(L"XLockMenu\*(R",
-title \*(L"XLock Modes\*(R" and no mini-icon (equivalent to an empty icon argument).
+\fB--name\fR name \- define menu name in the following argument.
+Default is \*(L"XLockMenu\*(R"
 .PP
-\fB--item\fR \- define menu item format in the following argument, default is
-\&'%n\e\fIt\fR\|(%d)\*(R'. TAB can be specified as \*(L'\et\*(R', but in fvwmrc you should specify a
-double backslash or a real TAB.
+\fB--title\fR title \- define menu title in the following argument.
+Default is \*(L"XLock Modes\*(R".
+.PP
+\fB--item\fR format \- define menu item format in the following argument,
+default is \*(L'%n\e\fIt\fR\|(%d)\*(R'. TAB can be specified as \*(L'\et\*(R', but in fvwmrc
+you should specify a double backslash or a real TAB.
 .PP
 Format specifiers:
   \f(CW%n\fR \- mode name
   \f(CW%d\fR \- mode description
   \f(CW%D\fR \- mode description without \*(L"Shows \*(L" prefix if any
+.PP
+These specifiers can receive an optional integer size, positive for right
+adjusted string or negative for left adjusted, example: \f(CW%8x\fR; and optional
+*num or *\-num, which means to leave only the first or last (if minus) num of
+chars, the num must be greater than 3, since the striped part is replaced
+with \*(L"...\*(R", example: %*30x. Both can be combined: %\-10*\-20x, this instructs to
+get only the 20 last characters, but if the length is less then 10 \- to fill
+with up to 10 spaces on the right.
+.PP
+\fB--icon-title\fR, \fB--icon-item\fR \- define menu icon for title and regular item
+accordingly given in the following argument. Default is no menu icons
+(equivalent to an empty icon argument).
+.PP
+\fB--wm-icons\fR \- define icon names suitable for use with wm-icons package.
+Currently this is equivalent to: --icon-title \*(L'\*(R' --icon-item
+menu/wm-lock.xpm.
 .PP
 \fB--special-first\fR \- instructs to include special modes (usually black,
 bomb and random) first.
@@ -243,19 +266,17 @@ Please see the \fBxlock\fR(1) man page for the xlock options.
 Add these lines to your fvwm configuration file:
 .PP
 .Vb 6
-\&  PipeRead 'fvwm-menu-xlock -n MenuSSaver -t "Screensaver" \e
-\&    -i mini-bball.xpm -- -nice 19 -nolock'
-\&  PipeRead 'fvwm-menu-xlock -n MenuSLock  -t "Lock Screen" \e
-\&    -i mini-rball.xpm -- -nice 19'
+\&  PipeRead 'fvwm-menu-xlock --name MenuSSaver --title "Screensaver" \e
+\&    --icon-item mini-bball.xpm --special-first -- -nice 19 -nolock'
+\&  PipeRead 'fvwm-menu-xlock --name MenuSLock --title "Lock Screen" \e
+\&    --icon-item mini-rball.xpm --special-first -- -nice 19'
 \&  AddToMenu "Utilities" "Screensaver%mini-monitor.xpm%" Popup MenuSSaver
 \&  AddToMenu "Utilities" "Screenlock%mini-lock.xpm%"     Popup MenuSLock
 .Ve
 .SH "AUTHORS"
 Charles K. Hines <chuck_hines@vnet.ibm.com>, initial version.
 .PP
-Mikhael Goikhman <migo@homemail.com>, 24 Feb 1999.
-.PP
-Mikhael Goikhman <migo@homemail.com>, 02 Aug 1999.
+Mikhael Goikhman <migo@homemail.com>, from 24 Feb 1999.
 .SH "COPYING"
 The script is distributed by the same terms as fvwm itself.
 See GNU General Public License for details.
