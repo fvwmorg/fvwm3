@@ -564,15 +564,16 @@ void HandlePropertyNotify(void)
        * rebuild icon if the client either provides an icon 
        * pixmap or window or has reset the hints to `no icon'. 
        */
-      if ((Tmp_win->wmhints->flags & 
-	   (IconPixmapHint|IconWindowHint|IconMaskHint)) ||
-          ((old_wmhints_flags & 
-	    (IconPixmapHint|IconWindowHint|IconMaskHint)) !=
-	   (Tmp_win->wmhints->flags & 
-	    (IconPixmapHint|IconWindowHint|IconMaskHint))))
+      if ((Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint)) ||
+          ((old_wmhints_flags & (IconPixmapHint|IconWindowHint)) !=
+	   (Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint))))
 	{
-	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
+	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon) 
 	    Tmp_win->icon_bitmap_file = NULL;
+          if(!Tmp_win->icon_bitmap_file &&
+             !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
+	    Tmp_win->icon_bitmap_file = Scr.DefaultIcon;
+             
 	  if (!IS_ICON_SUPPRESSED(Tmp_win) ||
 	      (Tmp_win->wmhints->flags & IconWindowHint))
 	    {
