@@ -925,7 +925,9 @@ parameter on the command line it expands it to a string indicated
 by the parameter name.  Unknown parameters are left untouched.
 Parameter expansion is performed before quoting.  To quote a '$'
 use "$$".  Note that module configuration lines (i.e. lines
-beginning with '*') are not subject to parameter expansion.
+beginning with '*') are not fully expanded; for backward compatibility
+single alphabetic-letter parameters (like "$d" or "$n") are not expanded
+in these lines.
 
 The general idea is to expand single letter parameters as soon
 as possible.  So a "$d" is expanded immediately when read by the

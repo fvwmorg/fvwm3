@@ -3,6 +3,10 @@ _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
 Changes in beta release 2.3.33 (not released yet)
 
+* Module configuration commands are now partially expanded similarly to
+  any other commands, except that single alphabetic-letter parameters are
+  not expanded for backward compatibility.
+
 Changes in beta release 2.3.32 (2001-05-04)
 
 * Fixed several focus problems and several core dumps.

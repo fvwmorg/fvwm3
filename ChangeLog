@@ -1,3 +1,16 @@
+2001-05-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* fvwm/fvwm2.1:
+	* fvwm/read.c (expand):
+	(execute_function):
+	Module configuration commands are now processed like any other
+	commands (so "+ I $0" when $0 is "*FvwmPager..." is now recognized
+	as a module command, as well as "+ I *$0" when $0 is "FvwmPager...").
+	This also means that parameters are expanded now in module lines,
+	except for single alphabetical-letter parameters, which are not
+	expanded for backward compatibility.
+
 2001-05-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (is_on_top_of_layer):

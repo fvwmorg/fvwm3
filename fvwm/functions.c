@@ -470,7 +470,7 @@ static int expand_extended_var(
 }
 
 static char *expand(
-  char *input, char *arguments[], FvwmWindow *tmp_win, Bool addto)
+  char *input, char *arguments[], FvwmWindow *tmp_win, Bool addto, Bool ismod)
 {
   int l,i,l2,n,k,j,m;
   int xlen;
@@ -491,7 +491,7 @@ static char *expand(
   i=0;
   while(i<l)
   {
-    if(input[i] == '$')
+    if (input[i] == '$' && (!ismod || !isalpha(input[i+1])))
     {
       switch (input[i+1])
       {
@@ -598,7 +598,7 @@ static char *expand(
   j=0;
   while(i<l)
   {
-    if(input[i] == '$')
+    if (input[i] == '$' && (!ismod || !isalpha(input[i+1])))
     {
       switch (input[i+1])
       {
@@ -944,24 +944,6 @@ void execute_function(exec_func_args_type *efa)
   fvwm_msg(INFO, "LOG", "%s", efa->action);
 #endif
 
-  /* Note: the module config command, "*" can not be handled by the
-   * regular command table because there is no required white space after
-   * the asterisk. */
-  if (efa->action[0] == '*')
-  {
-#ifdef USEDECOR
-    if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
-    {
-      fvwm_msg(
-	WARN, "execute_function",
-	"Command can not be added to a decor; executing command now: '%s'",
-	efa->action);
-    }
-#endif
-    /* process a module config command */
-    ModuleConfig(efa->action);
-    return;
-  }
   func_depth++;
   if (efa->args)
   {
@@ -1036,8 +1018,8 @@ void execute_function(exec_func_args_type *efa)
 
   function = PeekToken(taction, NULL);
   if (function)
-    function = expand(function, arguments, efa->tmp_win, False);
-  if (function)
+    function = expand(function, arguments, efa->tmp_win, False, False);
+  if (function && function[0] != '*')
   {
 #if 1
     /* DV: with this piece of code it is impossible to have a complex function
@@ -1069,10 +1051,11 @@ void execute_function(exec_func_args_type *efa)
       efa->action);
   }
 #endif
+
   if (!(efa->flags.exec & FUNC_DONT_EXPAND_COMMAND))
   {
     expaction = expand(taction, arguments, efa->tmp_win,
-		       (bif) ? !!(bif->flags & FUNC_ADD_TO) : False);
+      (bif) ? !!(bif->flags & FUNC_ADD_TO) : False, taction[0] == '*');
     if (func_depth <= 1)
       must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
     else
@@ -1082,7 +1065,25 @@ void execute_function(exec_func_args_type *efa)
   {
     expaction = taction;
   }
-  j = 0;
+
+  /* Note: the module config command, "*" can not be handled by the
+   * regular command table because there is no required white space after
+   * the asterisk. */
+  if (expaction[0] == '*')
+  {
+#ifdef USEDECOR
+    if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
+    {
+      fvwm_msg(
+	WARN, "execute_function",
+	"Command can not be added to a decor; executing command now: '%s'",
+	expaction);
+    }
+#endif
+    /* process a module config command */
+    ModuleConfig(expaction);
+  }
+  else
   if (bif && bif->func_type != F_FUNCTION)
   {
     char *runaction;
