@@ -152,21 +152,24 @@ Building a distribution
 
 By this, I mean the file "fvwm-x.y.z.tar.gz".
 
-Steps: 1. make sure you have XPM, the strokes library and a X server with
+Steps: 1. When building a release, update the CVS sources first.
+       2. make sure you have XPM, the strokes library and a X server with
           the shape extension
-       2. rerun automake --add-missing; autoreconf; configure --enable-gnome
-       3. make clean
-       4. double check that you get no warnings during the build (the
+       3. rerun automake --add-missing; autoreconf
+       4. If building a stable release, remove the config.cache file.
+       5. Rerun ./configure --enable-gnome
+       6. make clean
+       7. double check that you get no warnings during the build (the
           options for compilers other than gcc may be different):
           make CFLAGS="-g -O2 -Wall -Werror"
-       5. make distcheck2
-       6. ensure that you see the message
+       8. make distcheck2
+       9. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
 
-The steps 2 to 5 can be done by running the script utils/make_fvwmdist.sh
+The steps 3 to 9 can be done by running the script utils/make_fvwmdist.sh
 from the top level directory of the source tree.  You can also call
 this script with the -r option.  In this case the it will also do
-the steps 6 to 9.  The release number will be increase by one after
+the steps 9 to 12.  The release number will be increase by one after
 the second digit.  The script will ask you for a name and mail address
 to be used in the ChangeLog entry.
 
@@ -187,16 +190,16 @@ some day!
 If this is to be an "official", labeled release, then do also the
 following:
 
-       7. tag the CVS tree:
+      10. tag the CVS tree:
           cvs tag version-x_y_z
-       8. increase the version number in configure.in (see above)
+      11. increase the version number in configure.in (see above)
           and `cvs commit' this change
-       9. Create entries in the ChangeLog and NEWS files indicating the
+      12. Create entries in the ChangeLog and NEWS files indicating the
           release.
-      10. upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
+      13. upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
 	  ftp://ftp.fvwm.org/pub/incoming/fvwm
-      11. notify fvwm-owner@fvwm.org of the upload
-      12. make sure the web pages in fvwm-web point to the new release
+      14. notify fvwm-owner@fvwm.org of the upload
+      15. make sure the web pages in fvwm-web point to the new release
 
 Be sure to do steps 7 and 8 in that order, so you get the label on the
 right version of configure.in.
