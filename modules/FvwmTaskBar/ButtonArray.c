@@ -189,6 +189,8 @@ Button *ButtonNew(const char *title, Picture *p, int state, int count)
 {
   Button *new;
 
+  if (title == NULL) 
+    return NULL;
   new = (Button *)safemalloc(sizeof(Button));
   new->title = safemalloc(strlen(title)+1);
   strcpy(new->title, title);
@@ -435,6 +437,8 @@ void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
   Button *new, *temp;
 
   new = ButtonNew(title, p, state, count);
+  if (new == NULL)
+    return;
   if (iconified)
     new->iconified = 1;
   if (array->head == NULL)

@@ -48,12 +48,6 @@
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
 
-#define F_SWALLOWED      1
-#define F_NOT_SWALLOWED  2
-
-#define F_ICONIFIED	(1<<2)
-
-
 /* Motif  window hints */
 typedef struct
 {
@@ -118,11 +112,9 @@ extern void MakeMeWindow(void);
 extern void WaitForExpose(void);
 extern void RedrawWindow(int force);
 extern void StartMeUp(void);
-extern int OpenConsole(void);
 extern void ConsoleMessage(char *fmt,...);
 extern void LoopOnEvents(void);
 extern void AdjustWindow(int width, int height);
-extern char *makename(const char *string,long flags);
 extern void ChangeWindowName(char *str);
 extern void LinkAction(const char *string);
 extern void AddToSkipList(char *string);
@@ -131,13 +123,10 @@ extern void PrintSkipList(void);
 extern void FvwmNameMessage(long *body);
 extern void SetMwmHints(unsigned int value,
 			unsigned int funcs,unsigned int input);
-extern void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp);
 extern void RevealTaskBar(void);
 extern void HideTaskBar(void);
 extern void WarpTaskBar(int x, Bool force);
 extern void PurgeConfigEvents(void);
 extern void redraw_buttons(void);
-
-extern void Swallow(unsigned long *body);
 
 #endif

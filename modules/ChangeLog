@@ -1,6 +1,12 @@
+2000-05-20  olicha <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/*:
+	Complete GSFR conversion. Fixed WindowListSkip/Hit style change.
+	Remove dummy code (e.g., the swallow code)
+	
 2000-05-17  olicha <olivier.chapuis@free.fr>
 
-	* FvwmScript/Scripts/Widgets/TextField.c (*):
+	* FvwmScript/Widgets/TextField.c (*):
 	Fixed long text input
 
 2000-05-17  olicha <olivier.chapuis@free.fr>

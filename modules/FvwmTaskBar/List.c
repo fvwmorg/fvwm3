@@ -9,7 +9,6 @@
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
  *
- *  Things to do:  Convert to C++  (In Progress)
  */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -52,20 +51,14 @@ void InitList(List *list)
 /******************************************************************************
   AddItem - Allocates spaces for and appends an item to the list
 ******************************************************************************/
-void AddItem(List *list, long id, long flags, ConfigWinPacket *cfgpacket,
+void AddItem(List *list, long id, ConfigWinPacket *cfgpacket,
              long Desk, int count)
 {
   Item *new;
   new=(Item *)safemalloc(sizeof(Item));
   new->id=id;
   new->name=NULL;
-  new->tb_flags=flags;
-
-  /* If this was M_ADD_WINDOW or M_CONFIGURE_WINDOW, we have real flags  */
-  if (cfgpacket != NULL) {
-    memcpy(&new->flags, &cfgpacket->flags, sizeof(new->flags));
-  }
-
+  memcpy(&new->flags, &cfgpacket->flags, sizeof(new->flags));
   new->Desk=Desk;
   new->count=count;
   memset((void *)&(new->p), 0, sizeof(Picture));
@@ -81,7 +74,7 @@ void AddItem(List *list, long id, long flags, ConfigWinPacket *cfgpacket,
 /******************************************************************************
   AddItemName - Allocates spaces for and appends an item to the list
 ******************************************************************************/
-void AddItemName(List *list, char *string, long flags)
+void AddItemName(List *list, char *string, int iconified)
 {
   Item *new;
 
@@ -89,7 +82,7 @@ void AddItemName(List *list, char *string, long flags)
   new->id = 0L;
   new->name = NULL;
   UpdateString(&new->name, string);
-  new->tb_flags = flags;
+  SET_ICONIFIED(new,iconified);
   new->next = NULL;
 
   if (list->tail == NULL)
@@ -110,8 +103,7 @@ int FindItem(List *list, long id)
 {
   Item *temp;
 
-  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next)
-    ;
+  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next);
   if (temp==NULL)
     return -1;
   return temp->count;
@@ -132,8 +124,9 @@ int FindNameItem(List *list, char *string)
 }
 
 /******************************************************************************
-  UpdateItem - Update the item in the list, setting name & flags as necessary.
+  UpdateItem* - Update the item in the list
 ******************************************************************************/
+
 int UpdateItemName(List *list, long id, char *string)
 {
   Item *temp;
@@ -143,35 +136,34 @@ int UpdateItemName(List *list, long id, char *string)
   return temp->count;
 }
 
-int UpdateItemFlags(List *list, long id, long flags)
+int UpdateItemIconifiedFlag(List *list, long id, int iconified)
 {
   Item *temp;
   for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
-  if (flags!=-1) temp->tb_flags=flags;
+  SET_ICONIFIED(temp,iconified);
   return temp->count;
 }
 
-int UpdateItemFlagsAnimate(List *list, ConfigWinPacket *cfgpacket)
+int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket)
 {
   Item *temp;
   for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
-  SET_ICON_SUPPRESSED(temp,IS_ICON_SUPPRESSED(cfgpacket));
+  temp->flags = cfgpacket->flags; 
   return temp->count;
 }
 
-int UpdateItemFlagsDesk(List *list, ConfigWinPacket *cfgpacket)
+int UpdateItemIndexDesk(List *list, int i, long desk)
 {
   Item *temp;
-  for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
+  for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
-  SET_STICKY(temp,IS_STICKY(cfgpacket));
-  temp->Desk=cfgpacket->desk;
+  temp->Desk=desk;
   return temp->count;
 }
 
-int UpdateNameItem(List *list, char *string, long id, long flags) {
+int UpdateNameItem(List *list, char *string, long id, int iconified) {
   Item *temp;
 
   for(temp=list->head;
@@ -180,7 +172,7 @@ int UpdateNameItem(List *list, char *string, long id, long flags) {
   if (temp==NULL) return -1;
   else {
     if (id != -1) temp->id = id;
-    if (flags != -1) temp->tb_flags = flags;
+    if (iconified != -1) SET_ICONIFIED(temp,iconified);
     return temp->count;
   }
 }
@@ -253,9 +245,8 @@ void PrintList(List *list)
 		 "R-Name","R-Class");
   fprintf(stderr,"   ---------- --------------- --------------- --------------- --------------- ----\n");
   for(temp=list->head;temp!=NULL;temp=temp->next) {
-    fprintf(stderr,"   %10ld %-15.15s %4ld\n",temp->id,
-		   (temp->name==NULL) ? "<null>" : temp->name,
-		   temp->tb_flags);
+    fprintf(stderr,"   %10ld %-15.15s\n",temp->id,
+		   (temp->name==NULL) ? "<null>" : temp->name);
   }
 }
 
@@ -271,29 +262,29 @@ char *ItemName(List *list, int n)
 }
 
 /******************************************************************************
-  ItemFlags - Return the flags for an item
+  IsItemIndexIconified - Say if an item is iconified
 ******************************************************************************/
-long ItemFlags(List *list, long id)
+int IsItemIconified(List *list, long id)
 {
   Item *temp;
-  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
+  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next);
   if (temp==NULL) return -1;
-  else return temp->tb_flags;
+  return IS_ICONIFIED(temp);
 }
 
 /******************************************************************************
-  ItemIndexFlags - Return the flags for an item of index i
+  IsItemIndexIconified - Say if an item of index i is iconified
 ******************************************************************************/
-long ItemIndexFlags(List *list, int i)
+int IsItemIndexIconified(List *list, int i)
 {
   Item *temp;
   for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
-  else return temp->tb_flags;
+  return IS_ICONIFIED(temp);
 }
 
 /******************************************************************************
-  IsItemIndexSticky - Say if an item is sticky
+  IsItemIndexSticky - Say if an item of index i is sticky
 ******************************************************************************/
 int IsItemIndexSticky(List *list, int i)
 {
@@ -301,6 +292,17 @@ int IsItemIndexSticky(List *list, int i)
   for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
   return IS_STICKY(temp);
+}
+
+/******************************************************************************
+  IsItemIndexSkipWindowList - Say if an item of index i is in the skip list
+******************************************************************************/
+int IsItemIndexSkipWindowList(List *list, int i)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
+  if (temp==NULL) return -1;
+  return DO_SKIP_WINDOW_LIST(temp);
 }
 
 /******************************************************************************
@@ -313,23 +315,6 @@ int IsItemIndexIconSuppressed(List *list, int i)
   if (temp==NULL) return -1;
   return IS_ICON_SUPPRESSED(temp);
 }
-
-/* RBW- never used... */
-/******************************************************************************
-  XorFlags - Exclusive of the flags with the specified value.
-******************************************************************************/
-/*
-long XorFlags(List *list, int n, long value)
-{
-Item *temp;
-long ret;
-  for(temp=list->head;temp!=NULL && i<n;temp=temp->next)
-  if (temp==NULL) return -1;
-  ret=temp->flags;
-  temp->flags^=value;
-  return ret;
-}
-*/
 
 /******************************************************************************
   ItemCount - Return the number of items inthe list
@@ -361,7 +346,7 @@ void CopyItem(List *dest, List *source, int n)
   for(temp=source->head;temp!=NULL && temp->count!=n;temp=temp->next);
   if (temp==NULL) return;
   memcpy(&cfgpkt.flags, &temp->flags, sizeof(cfgpkt.flags));
-  AddItem(dest, temp->id, temp->tb_flags, &cfgpkt,temp->Desk,temp->count);
+  AddItem(dest, temp->id, &cfgpkt,temp->Desk,temp->count);
   UpdateItemName(dest,temp->id,temp->name);
   DeleteItem(source,temp->id);
 }

@@ -36,6 +36,7 @@ typedef struct
   unsigned do_update_window_color_hi : 1;
   unsigned do_update_window_font : 1;
   unsigned do_update_window_font_height : 1;
+  unsigned do_update_modules_flags : 1;
 } update_win;
 
 void apply_decor_change(FvwmWindow *tmp_win);

@@ -2526,6 +2526,13 @@ void check_window_style_change(
    *   handling the 'usestyle' style
    */
 
+   /*
+   * do_window_list_skip
+   */
+  if (SCDO_WINDOW_LIST_SKIP(*ret_style))
+  {
+    flags->do_update_modules_flags = True;
+  }
   /*
    * has_icon
    * icon_override
@@ -2547,6 +2554,7 @@ void check_window_style_change(
     flags->do_update_icon_font = True;
     flags->do_update_icon_title = True;
     flags->do_update_icon = True;
+    flags->do_update_modules_flags = True;
   }
 
 

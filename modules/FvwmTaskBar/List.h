@@ -9,7 +9,6 @@
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
  *
- *  Things to do:  Convert to C++  (In Progress)
  */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -31,12 +30,7 @@
 typedef struct item {
   long id;
   char *name;
-  /*
-     caveat - these flags do not even resemble the old FvwmWindow flags.
-     They are strictly internal to this module.
-  */
-  long tb_flags;
-  /* The new, post-gsfr flags - for possible future use.  */
+  /* The new, post-gsfr flags - now the "only" flag  */
   window_flags flags;
   long Desk;
   int  count;
@@ -51,26 +45,26 @@ typedef struct {
 
 /* Function Prototypes */
 void InitList(List *list);
-void AddItem(List *list, long id, long flags, ConfigWinPacket *cfgpacket,
+void AddItem(List *list, long id, ConfigWinPacket *cfgpacket,
              long Desk, int count);
-void AddItemName(List *list, char *string, long flags);
+void AddItemName(List *list, char *string, int iconified);
 int FindItem(List *list, long id);
 int FindNameItem(List *list, char *string);
 int UpdateItemName(List *list, long id, char *string);
-int UpdateItemFlags(List *list, long id, long flags);
-int UpdateItemFlagsDesk(List *list, ConfigWinPacket *cfgpacket);
-int UpdateItemFlagsAnimate(List *list, ConfigWinPacket *cfgpacket);
-int UpdateNameItem(List *list, char *string, long id, long flags);
+int UpdateItemIconifiedFlag(List *list, long id, int iconified);
+int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket);
+int UpdateItemIndexDesk(List *list, int i, long desk);
+int UpdateNameItem(List *list, char *string, long id, int iconified);
 void FreeItem(Item *ptr);
 int DeleteItem(List *list,long id);
 void FreeList(List *list);
 void PrintList(List *list);
 char *ItemName(List *list, int n);
-long ItemFlags(List *list, long id );
-long ItemIndexFlags(List *list, int i);
+int IsItemIconified(List *list, long id);
+int IsItemIndexIconified(List *list, int i);
 int IsItemIndexSticky(List *list, int i);
+int IsItemIndexSkipWindowList(List *list, int i);
 int IsItemIndexIconSupressed(List *list, int i);
-/* long XorFlags(List *list, int n, long value); */
 int ItemCount(List *list);
 long ItemID(List *list, int n);
 void CopyItem(List *dest,List *source,int n);

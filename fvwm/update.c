@@ -58,6 +58,7 @@
 #include "geometry.h"
 #include "move_resize.h"
 #include "add_window.h"
+#include "module_interface.h"
 
 static void init_style(
   FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle, short *pbuttons)
@@ -267,8 +268,10 @@ static void apply_window_updates(
   {
     setup_frame_attributes(t, pstyle);
   }
+  if (flags->do_update_modules_flags) {
+    BroadcastConfig(M_CONFIGURE_WINDOW,t);
+  }
   t->shade_anim_steps = pstyle->shade_anim_steps;
-
   return;
 }
 

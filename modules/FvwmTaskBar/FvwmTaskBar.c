@@ -8,16 +8,7 @@
  * visible so that the 1 pixel panframes don't get in the way)
  *
  * Merciless hack by RBW for the Great Style Flag Rewrite - 04/20/1999.
- * This module slightly abused the old flags word, inventing new meanings for
- * certain bits. Therefore, I'm leaving all that infrastructure alone, only
- * changing the private flag word's name and ensuring that it contains a bit
- * for the ICONIFIED state,which is all the module cares about once the flags
- * are added to its Item struct. The Item field is renamed to tb_flags.
- * For possible future use, I'm adding a field to the struct to carry the *real*
- * flags, called, oddly enough, flags. This is necessary in order to use the
- * standard macros for testing and manipulating the bitfields. The real flags
- * are not presently used.
- *
+ * Now the GSFR is used and there are no other flags (olicha may 19, 2000).
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any code contained here for any purpose, as long
@@ -166,7 +157,6 @@ int UpdateInterval = 30;
 
 ButtonArray buttons;
 List windows;
-List swallowed;
 
 char *ClickAction[3] = { DEFAULT_CLICK1, DEFAULT_CLICK2, DEFAULT_CLICK3 },
      *EnterAction,
@@ -313,8 +303,6 @@ int main(int argc, char **argv)
 		);
 
   /* Parse the config file */
-  InitList(&swallowed);
-
   ParseConfig();
 
   /* Setup the XConnection */
@@ -414,12 +402,12 @@ void ReadFvwmPipe(void)
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
   int redraw=-1;
-  int i;
+  int i = -1;
   char *string;
   long Desk;
   Picture p;
   struct ConfigWinPacket  *cfgpacket;
-  unsigned long tb_flags;
+  int iconified;
 
 /*    memset(&p, 0, sizeof(Picture)); */
 
@@ -430,7 +418,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     if (win != body[0])
     {
       /* This case is handled in LoopOnEvents() */
-      if (ItemFlags(&windows, body[0]) & F_ICONIFIED)
+      if (IsItemIconified(&windows, body[0]))
 	i = -1;
       RadioButton(&buttons, i, BUTTON_BRIGHT);
       ButPressed = i;
@@ -446,15 +434,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     cfgpacket = (ConfigWinPacket *) body;
     if (!ShowTransients && (IS_TRANSIENT(cfgpacket)))
       break;
-    /* Matched only at startup when default border width and
-       actual border width differ. Don't assign win_width here so
-       Window redraw and rewarping gets handled by XEvent
-       ConfigureNotify code.
-       Not exactly: users cannot modify the win_width of the taskbar (see
+    /* Notes: users cannot modify the win_width of the taskbar (see
        the hints in StartMeup; it is a good idea). So "we have to" modify
        the win_width here by modifying the WMNormalHints. Moreover, 1. we want
        that the TaskBar width with its border is execately the screen width
-       2. be carful with dynamic border width change (olicha Nov 22, 99) */
+       2. be carful with dynamic "border width" change */
     if (cfgpacket->w == win)
     {
       if (win_border != (int)cfgpacket->border_width)
@@ -493,34 +477,53 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     }
 
-    if ((i=FindItem(&windows, cfgpacket->w)) != -1)
+    if ((i=FindItem(&windows, body[0])) != -1)
     {
+      int remove=0;
+      int add = 0;
+      int skiplist = 0;
+
       if (GetDeskNumber(&windows,i,&Desk) && DeskOnly)
       {
         if (DeskNumber != Desk && DeskNumber == cfgpacket->desk
 	    && !IsItemIndexSticky(&windows,i))
 	{
           /* window moving to current desktop */
-          AddButton(&buttons, ItemName(&windows,i),
-                    GetItemPicture(&windows,i), BUTTON_UP, i,
-		    ItemIndexFlags(&windows, i) & F_ICONIFIED ? 1 : 0);
-          redraw = 1;
+          add = 1;
         }
         if (DeskNumber != cfgpacket->desk && DeskNumber == Desk)
 	{
           /* window moving to another desktop */
-          RemoveButton(&buttons, i);
-          redraw = 1;
+          remove = 1;
         }
-	UpdateItemFlagsDesk(&windows, cfgpacket);
+	UpdateItemIndexDesk(&windows, i, cfgpacket->desk);
       }
-      if (AnimCommand && AnimCommand[0] != 0)
-	UpdateItemFlagsAnimate(&windows, cfgpacket);
+      if (UseSkipList && (!DeskOnly || DeskNumber == cfgpacket->desk)) {
+	skiplist = IsItemIndexSkipWindowList(&windows,i);
+	if (DO_SKIP_WINDOW_LIST(cfgpacket) && !skiplist) {
+	  remove = 1;
+	}
+	if (!DO_SKIP_WINDOW_LIST(cfgpacket) && skiplist) {
+	  add = 1;
+	}
+      }
+
+      UpdateItemGSFRFlags(&windows, cfgpacket);
+      if (remove) {
+	RemoveButton(&buttons, i);
+	redraw = 1;
+      }
+      else if (add) {
+	 AddButton(&buttons, ItemName(&windows,i),
+		   GetItemPicture(&windows,i), BUTTON_UP, i,
+		   IsItemIndexIconified(&windows, i));
+          redraw = 1;
+      }
+	
     }
-    else if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList)
+    else
     {
       AddItem(&windows, cfgpacket->w,
-	      IS_ICONIFIED(cfgpacket) ? F_ICONIFIED : 0,
 	      cfgpacket, cfgpacket->desk, Count++);
       if (Count > COUNT_LIMIT)
 	Count = 0;
@@ -535,18 +538,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     break;
 
   case M_DESTROY_WINDOW:
-    /*      if ((i = DeleteItem(&windows, body[0])) == -1) */
     if ((i = FindItem(&windows, body[0])) == -1)
       break;
-    if (FindItem(&swallowed, body[0]) != -1)
-      break;
-
-    if (GetDeskNumber(&windows, i, &Desk))
-    {
+    /*    if (GetDeskNumber(&windows, i, &Desk))
+	  {*/
       DeleteItem(&windows, body[0]);
       RemoveButton(&buttons, i);
       redraw = 1;
-    }
+      /*}*/
     break;
 
 #ifdef MINI_ICONS
@@ -570,22 +569,17 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     if ((type == M_ICON_NAME   && !UseIconNames) ||
 	(type == M_WINDOW_NAME &&  UseIconNames)) break;
     string = (char *) &body[3];
-    if ((i = FindNameItem(&swallowed, string)) != -1) {
-      if (ItemIndexFlags(&swallowed, i) == F_NOT_SWALLOWED) {
-	Swallow(body);
-	break;
-      }
-    }
     if ((i = UpdateItemName(&windows, body[0], (char *)&body[3])) == -1)
       break;
     if (UpdateButton(&buttons, i, string, DONT_CARE) == -1)
     {
       if (GetDeskNumber(&windows, i, &Desk) == 0)
 	break;
-      if (!DeskOnly || Desk == DeskNumber)
+      if ((!DeskOnly || Desk == DeskNumber) && 
+	  (!UseSkipList || !IsItemIndexSkipWindowList(&windows, i)))
       {
 	AddButton(&buttons, string, NULL, BUTTON_UP, i,
-		  (ItemIndexFlags(&windows, i) & F_ICONIFIED) ? 1 : 0);
+		  IsItemIndexIconified(&windows, i));
 	redraw = 1;
       }
     }
@@ -598,25 +592,22 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     /* fwvm will wait for an Unlock message before continuing
      * be careful when changing this construct, make sure unlock happens
      * if AnimCommand && AnimCommand[0] != 0 */
-    tb_flags = ItemFlags(&windows, body[0]);
+    iconified = IsItemIconified(&windows, body[0]);
     if (((i = FindItem(&windows, body[0])) == -1)
-	|| (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED))
-	|| (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED))
+	|| (type == M_DEICONIFY && !iconified)
+	|| (type == M_ICONIFY   && iconified))
     {
       if (AnimCommand && AnimCommand[0] != 0)
 	SendUnlockNotification(Fvwm_fd);
       break;
     }
-    tb_flags ^= F_ICONIFIED;
-    UpdateItemFlags(&windows, body[0], tb_flags);
+
+    iconified = !iconified;
+    UpdateItemIconifiedFlag(&windows, body[0], iconified);
     {
       Button *temp = find_n(&buttons, i);
       if (temp)
       {
-	/* Seems that we cannot use IS_ICON_SUPPRESSED on the cfgpacket.
-	 * Sometimes we've got no or double animation after a Style
-	 * (No)Icon command because fvwm2 does not warn about this.
-	 * are these bugs? */
 	if (AnimCommand && (AnimCommand[0] != 0)
 	    && IsItemIndexIconSuppressed(&windows,i))
 	{
@@ -641,7 +632,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  SendText(Fvwm_fd, buff, 0);
 	}
 	temp->needsupdate = 1;
-	temp->iconified = (tb_flags & F_ICONIFIED) ? 1 : 0;
+  	temp->iconified = iconified;
 	DrawButtonArray(&buttons, 0);
       }
       if (AnimCommand && AnimCommand[0] != 0)
@@ -704,10 +695,11 @@ void redraw_buttons()
 
   for (item=windows.head; item; item=item->next)
   {
-    if (DeskNumber == item->Desk || IS_STICKY(item))
+    if ((DeskNumber == item->Desk || IS_STICKY(item)) && 
+	(!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     {
       AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
-		(item->tb_flags & F_ICONIFIED) ? 1 : 0);
+		IS_ICONIFIED(item));
     }
   }
 
@@ -808,8 +800,6 @@ static char *moduleopts[] =
   "DeskOnly",
   "UpdateInterval",
   "HighlightFocus",
-  "SwallowModule",
-  "Swallow",
   "ButtonWidth",
   "NoIconAction",
   "NoBrightFocus",
@@ -834,9 +824,7 @@ void ParseConfig(void)
 
 static void ParseConfigLine(char *tline)
 {
-  char *str;
   char *rest;
-  int i, j;
   int index;
 
   while (isspace((unsigned char)*tline))
@@ -940,82 +928,34 @@ static void ParseConfigLine(char *tline)
     case 18: /* HighlightFocus */
       HighlightFocus=True;
       break;
-    case 19: /* SwallowModule */
-      {
-	/* tell fvwm to launch the module for us */
-	str = safemalloc(strlen(rest) + 8);
-	sprintf(str, "Module %s", rest);
-	fprintf(stderr, "%s: Trying to: %s", Module, str);
-	SendFvwmPipe(Fvwm_fd, str, 0);
-
-	/* Remember the anticipated window's name for swallowing */
-	i = 4;
-	while(str[i] != 0 && str[i] != '"')
-	i++;
-	j = ++i;
-	while(str[i] != 0 && str[i] != '"')
-	  i++;
-	if (i > j)
-	{
-	  str[i] = 0;
-	  fprintf(stderr,"%s: Looking for window: [%s]\n", Module, &str[j]);
-	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-	}
-	free(str);
-      } /* swallowmodule */
-      break;
-    case 20: /* Swallow */
-      {
-	/* tell fvwm to Exec the process for us */
-	str = safemalloc(strlen(rest) + 6);
-	sprintf(str, "Exec %s", rest);
-	fprintf(stderr,"%s: Trying to: %s", Module, str);
-	SendFvwmPipe(Fvwm_fd, str, 0);
-
-	/* Remember the anticipated window's name for swallowing */
-	i = 4;
-	while(str[i] != 0 && str[i] != '"')
-	  i++;
-	j = ++i;
-	while( str[i] != 0 && str[i] != '"')
-	  i++;
-	if (i > j)
-	{
-	  str[i] = 0;
-	  fprintf(stderr,"%s: Looking for window: [%s]\n", Module, &str[j]);
-	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-	}
-	free(str);
-      } /* swallow */
-      break;
-    case 21: /* ButtonWidth */
+    case 19: /* ButtonWidth */
       button_width = atoi(rest);
       break;
-    case 22: /* NoIconAction */
+    case 20: /* NoIconAction */
       CopyString(&AnimCommand, rest);
       if (strlen(AnimCommand) > MAX_NO_ICON_ACTION_LENGTH)
 	AnimCommand[MAX_NO_ICON_ACTION_LENGTH] = 0;
       break;
-    case 23: /* NoBrightFocus */
+    case 21: /* NoBrightFocus */
       NoBrightFocus = True;
       break;
-    case 24: /* FocusFore */
+    case 22: /* FocusFore */
       CopyString(&FocusForeColor, rest);
       focuscolorset = -1;
       break;
-    case 25: /* FocusBack */
+    case 23: /* FocusBack */
       CopyString(&FocusBackColor, rest);
       focuscolorset = -1;
       break;
-    case 26: /* FocusColorset */
+    case 24: /* FocusColorset */
       focuscolorset = -1;
       focuscolorset = atoi(rest);
       AllocColorset(focuscolorset);
       break;
-    case 27: /* 3DFvwm */
+    case 25: /* 3DFvwm */
       ThreeDfvwm = True;
       break;
-    case 28: /* Rows */
+    case 26: /* Rows */
       RowsNumber = atoi(rest);
       if (!(1 <= RowsNumber && RowsNumber <= 8)) {
 	RowsNumber = 1;
@@ -1030,41 +970,6 @@ static void ParseConfigLine(char *tline)
       break;
     } /* switch */
   } /* else options */
-}
-
-/******************************************************************************
-  Swallow a process window
-******************************************************************************/
-void Swallow(unsigned long *body)
-{
-  XSizeHints hints;
-  long supplied;
-  int h,w;
-
-  /* Swallow the window */
-  XUnmapWindow(dpy, body[0]);
-
-  if (!XGetWMNormalHints (dpy, (Window)body[0], &hints, &supplied))
-    hints.flags = 0;
-  h = win_height - 10; w = 80;
-  ConstrainSize(&hints, &w, &h);
-  XResizeWindow(dpy,(Window)body[0], w, h);
-
-  stwin_width += w + 2;
-
-  XReparentWindow(dpy,(Window)body[0], win,
-		  win_width - stwin_width + goodies_width + 2, 5);
-  goodies_width += w + 2;
-
-  XMapWindow(dpy,body[0]);
-  XSelectInput(dpy,(Window)body[0],
-	       PropertyChangeMask|StructureNotifyMask);
-
-
-  /* Do not swallow it next time */
-  UpdateNameItem(&swallowed, (char*)&body[3], body[0], F_SWALLOWED);
-  fprintf(stderr,"%s: -> Swallowed: %s\n",Module,(char*)&body[3]);
-  RedrawWindow(1);
 }
 
 /******************************************************************************
@@ -1418,21 +1323,6 @@ void AdjustWindow(int width, int height)
   win_width = width;
   ArrangeButtonArray(&buttons);
   change_colorset(0, False);
-}
-
-/******************************************************************************
-  makename - Based on the flags return me '(name)' or 'name'
-******************************************************************************/
-char *makename(const char *string,long flags)
-{
-  char *ptr;
-
-  ptr=safemalloc(strlen(string)+3);
-  *ptr = '\0';
-  if (flags&F_ICONIFIED) *ptr = '(';
-  strcat(ptr,string);
-  if (flags&F_ICONIFIED) strcat(ptr,")");
-  return ptr;
 }
 
 /******************************************************************************
@@ -1858,7 +1748,7 @@ void StartMeUp(void)
    XSelectInput(dpy,win,(ExposureMask | KeyPressMask | PointerMotionMask |
                          EnterWindowMask | LeaveWindowMask |
                          StructureNotifyMask));
-   /* ResizeRedirectMask |   */
+
    ChangeWindowName(&Module[1]);
 
    InitGoodies();
@@ -1933,152 +1823,6 @@ PropMwmHints prop;
 		       (unsigned char *)&prop,
 		       PROP_MWM_HINTS_ELEMENTS);
     }
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *      ConstrainSize - adjust the given width and height to account for the
- *              constraints imposed by size hints
- *
- *      The general algorithm, especially the aspect ratio stuff, is
- *      borrowed from uwm's CheckConsistency routine.
- *
- ***********************************************************************/
-void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
-{
-#define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
-#define _min(a,b) (((a) < (b)) ? (a) : (b))
-
-
-  int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
-  int baseWidth, baseHeight;
-  int dwidth = *widthp, dheight = *heightp;
-
-  if(hints->flags & PMinSize)
-    {
-      minWidth = hints->min_width;
-      minHeight = hints->min_height;
-      if(hints->flags & PBaseSize)
-	{
-	  baseWidth = hints->base_width;
-	  baseHeight = hints->base_height;
-	}
-      else
-	{
-	  baseWidth = hints->min_width;
-	  baseHeight = hints->min_height;
-	}
-    }
-  else if(hints->flags & PBaseSize)
-    {
-      minWidth = hints->base_width;
-      minHeight = hints->base_height;
-      baseWidth = hints->base_width;
-      baseHeight = hints->base_height;
-    }
-  else
-    {
-      minWidth = 1;
-      minHeight = 1;
-      baseWidth = 1;
-      baseHeight = 1;
-    }
-
-  if(hints->flags & PMaxSize)
-    {
-      maxWidth = hints->max_width;
-      maxHeight = hints->max_height;
-    }
-  else
-    {
-      maxWidth = 10000;
-      maxHeight = 10000;
-    }
-  if(hints->flags & PResizeInc)
-    {
-      xinc = hints->width_inc;
-      yinc = hints->height_inc;
-    }
-  else
-    {
-      xinc = 1;
-      yinc = 1;
-    }
-
-  /*
-   * First, clamp to min and max values
-   */
-  if (dwidth < minWidth) dwidth = minWidth;
-  if (dheight < minHeight) dheight = minHeight;
-
-  if (dwidth > maxWidth) dwidth = maxWidth;
-  if (dheight > maxHeight) dheight = maxHeight;
-
-
-  /*
-   * Second, fit to base + N * inc
-   */
-  dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
-  dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
-
-
-  /*
-   * Third, adjust for aspect ratio
-   */
-#define maxAspectX hints->max_aspect.x
-#define maxAspectY hints->max_aspect.y
-#define minAspectX hints->min_aspect.x
-#define minAspectY hints->min_aspect.y
-  /*
-   * The math looks like this:
-   *
-   * minAspectX    dwidth     maxAspectX
-   * ---------- <= ------- <= ----------
-   * minAspectY    dheight    maxAspectY
-   *
-   * If that is multiplied out, then the width and height are
-   * invalid in the following situations:
-   *
-   * minAspectX * dheight > minAspectY * dwidth
-   * maxAspectX * dheight < maxAspectY * dwidth
-   *
-   */
-
-  if (hints->flags & PAspect)
-    {
-      if (minAspectX * dheight > minAspectY * dwidth)
-	{
-	  delta = makemult(minAspectX * dheight / minAspectY - dwidth,
-			   xinc);
-	  if (dwidth + delta <= maxWidth)
-	    dwidth += delta;
-	  else
-	    {
-	      delta = makemult(dheight - dwidth*minAspectY/minAspectX,
-			       yinc);
-	      if (dheight - delta >= minHeight) dheight -= delta;
-	    }
-	}
-
-      if (maxAspectX * dheight < maxAspectY * dwidth)
-	{
-	  delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
-			   yinc);
-	  if (dheight + delta <= maxHeight)
-	    dheight += delta;
-	  else
-	    {
-	      delta = makemult(dwidth - maxAspectX*dheight/maxAspectY,
-			       xinc);
-	      if (dwidth - delta >= minWidth) dwidth -= delta;
-	    }
-	}
-    }
-
-  *widthp = dwidth;
-  *heightp = dheight;
-  return;
 }
 
 /***********************************************************************
