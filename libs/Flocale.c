@@ -2107,7 +2107,15 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	if (strlen(tmp_str) == 0 && comb_chars &&
 	    (comb_chars[0].c.byte1 != 0 || comb_chars[0].c.byte2 != 0))
 	{
-		result = FlocaleTextWidth(flf, " ", 1);
+		if(do_free)
+		{
+			free(tmp_str);
+		}
+		if(comb_chars)
+		{
+			free(comb_chars);
+		}
+		return FlocaleTextWidth(flf, " ", 1);
 	}
 	else if (FftSupport && flf->fftf.fftfont != NULL)
 		     {

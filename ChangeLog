@@ -1,3 +1,10 @@
+2003-09-05  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/Flocale.c (FlocaleDrawUnderline): 
+	Fixed bug with text width when a string contains only
+	"orphaned" combining characters (compensation for font shadowd
+	was counted twice)
+	
 2003-09-04  olicha  <olivier.chapuis@free.fr>
 
 	* todo-2.6:
