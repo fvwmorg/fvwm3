@@ -32,26 +32,13 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "fvwm.h"
-#include "externs.h"
-#include "cursor.h"
-#include "functions.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "defaults.h"
 #include "update.h"
 #include "style.h"
 #include "colorset.h"
 #include "ewmh.h"
 #include "gnome.h"
-#include "icons.h"
-#include "focus.h"
-#include <libs/gravity.h>
-#include "geometry.h"
-#include "move_resize.h"
-#include "add_window.h"
-#include "borders.h"
-#include "frame.h"
 
 /* ---------------------------- local definitions --------------------------- */
 

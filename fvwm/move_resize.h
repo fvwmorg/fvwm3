@@ -16,15 +16,13 @@
 #ifndef _MOVE_RESIZE_
 #define _MOVE_RESIZE_
 
-#include "menus.h"
-
 void switch_move_resize_grid(Bool state);
 void AnimatedMoveOfWindow(
-  Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
-  int cusDelay, float *ppctMovement, MenuRoot *menu_root);
+	Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
+	int cusDelay, float *ppctMovement, void *menu_root);
 void AnimatedMoveFvwmWindow(
-  FvwmWindow *fw, Window w, int startX, int startY, int endX, int endY,
-  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
+	FvwmWindow *fw, Window w, int startX, int startY, int endX, int endY,
+	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
 Bool moveLoop(FvwmWindow *fw, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque);
 void handle_stick(F_CMD_ARGS, int toggle);

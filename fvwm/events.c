@@ -53,15 +53,11 @@
 #endif
 
 #include <stdio.h>
-#include <errno.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
-#include "libs/gravity.h"
-#include "libs/FRenderInit.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -70,15 +66,14 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "defaults.h"
 #include "events.h"
-#include "colorset.h"
+#include "eventhandler.h"
+#include "eventmask.h"
 #include "fvwmsignal.h"
 #include "module_interface.h"
 #include "session.h"
 #include "borders.h"
 #include "frame.h"
-#include "colormaps.h"
 #include "add_window.h"
 #include "icccm2.h"
 #include "icons.h"
@@ -89,11 +84,11 @@
 #include "stack.h"
 #include "geometry.h"
 #include "focus.h"
-#include "move_resize.h"
 #include "virtual.h"
 #include "decorations.h"
 #include "schedule.h"
 #include "menus.h"
+#include "colormaps.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -123,7 +118,7 @@ extern void StartupStuff(void);
 
 /* ---------------------------- local types --------------------------------- */
 
-typedef void (*PFEH)(void);
+typedef void (*PFEH)(const evh_args_t *ea);
 
 typedef struct
 {
@@ -693,13 +688,7 @@ static void __handle_bpress_on_managed(XEvent *e, FvwmWindow *fw)
 
 /* ---------------------------- event handlers ------------------------------ */
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleButtonPress - ButtonPress event handler
- *
- ***********************************************************************/
-void HandleButtonPress(void)
+void HandleButtonPress(const evh_args_t *ea)
 {
 	DBUG("HandleButtonPress","Routine Entered");
 
@@ -722,13 +711,7 @@ void HandleButtonPress(void)
 }
 
 #ifdef HAVE_STROKE
-/***********************************************************************
- *
- *  Procedure:
- *      HandleButtonRelease - ButtonRelease event handler
- *
- ************************************************************************/
-void HandleButtonRelease()
+void HandleButtonRelease(const evh_args_t *ea)
 {
 	char *action;
 	int context;
@@ -773,13 +756,7 @@ void HandleButtonRelease()
 }
 #endif /* HAVE_STROKE */
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleClientMessage - client message event handler
- *
- ************************************************************************/
-void HandleClientMessage(void)
+void HandleClientMessage(const evh_args_t *ea)
 {
 	XEvent button;
 
@@ -827,7 +804,8 @@ void HandleClientMessage(void)
 	   when grabbed the pointer, it is OK */
 	{
 		extern Atom _XA_WM_COLORMAP_NOTIFY;
-		if (Event.xclient.message_type == _XA_WM_COLORMAP_NOTIFY) {
+		if (Event.xclient.message_type == _XA_WM_COLORMAP_NOTIFY)
+		{
 			set_client_controls_colormaps(Event.xclient.data.l[1]);
 			return;
 		}
@@ -850,13 +828,14 @@ void HandleClientMessage(void)
 	}
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleConfigureRequest - ConfigureRequest event handler
- *
- ************************************************************************/
-void HandleConfigureRequest(void)
+void HandleColormapNotify(const evh_args_t *ea)
+{
+	colormap_handle_colormap_notify(&ea->e);
+
+	return;
+}
+
+void HandleConfigureRequest(const evh_args_t *ea)
 {
 	rectangle new_g;
 	int dx;
@@ -1126,6 +1105,7 @@ void HandleConfigureRequest(void)
 			unsigned long ym;
 			unsigned long old_mask;
 			XEvent old_e;
+			evh_args_t ea2;
 
 			FCheckIfEvent(
 				dpy, &e, test_resizing_event, (char *)&args);
@@ -1164,7 +1144,9 @@ void HandleConfigureRequest(void)
 			ecre->value_mask &= ~args.cr_value_mask;
 			old_e = Event;
 			Event = e;
-			HandleConfigureRequest();
+			ea2 = *ea;
+			ea2.e = e;
+			HandleConfigureRequest(&ea2);
 			e = old_e;
 			/* collect the size/position changes */
 			if (ecre->value_mask & CWX)
@@ -1409,13 +1391,7 @@ void HandleConfigureRequest(void)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleDestroyNotify - DestroyNotify event handler
- *
- ***********************************************************************/
-void HandleDestroyNotify(void)
+void HandleDestroyNotify(const evh_args_t *ea)
 {
 	DBUG("HandleDestroyNotify","Routine Entered");
 
@@ -1425,12 +1401,6 @@ void HandleDestroyNotify(void)
 	GNOME_SetClientList();
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleEnterNotify - EnterNotify event handler
- *
- ************************************************************************/
 #define DEBUG_ENTERNOTIFY 0
 #if DEBUG_ENTERNOTIFY
 static int ecount=0;
@@ -1438,7 +1408,7 @@ static int ecount=0;
 #else
 #define ENTER_DBG(x)
 #endif
-void HandleEnterNotify(void)
+void HandleEnterNotify(const evh_args_t *ea)
 {
 	XEnterWindowEvent *ewp = &Event.xcrossing;
 	XEvent d;
@@ -1772,13 +1742,7 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleExpose - expose event handler
- *
- ***********************************************************************/
-void HandleExpose(void)
+void HandleExpose(const evh_args_t *ea)
 {
 #if 0
 	/* This doesn't work well. Sometimes, the expose count is zero although
@@ -1813,13 +1777,7 @@ void HandleExpose(void)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleFocusIn - handles focus in events
- *
- ************************************************************************/
-void HandleFocusIn(void)
+void HandleFocusIn(const evh_args_t *ea)
 {
 	XEvent d;
 	Window w = None;
@@ -1959,7 +1917,7 @@ void HandleFocusIn(void)
 	return;
 }
 
-void HandleFocusOut(void)
+void HandleFocusOut(const evh_args_t *ea)
 {
 	if (Scr.UnknownWinFocused != None && Scr.StolenFocusWin != None &&
 	    Event.xfocus.window == Scr.UnknownWinFocused)
@@ -1972,13 +1930,7 @@ void HandleFocusOut(void)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleKeyPress - key press event handler
- *
- ************************************************************************/
-void HandleKeyPress(void)
+void HandleKeyPress(const evh_args_t *ea)
 {
 	char *action;
 	int context;
@@ -2028,13 +1980,7 @@ void HandleKeyPress(void)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleLeaveNotify - LeaveNotify event handler
- *
- ************************************************************************/
-void HandleLeaveNotify(void)
+void HandleLeaveNotify(const evh_args_t *ea)
 {
 	DBUG("HandleLeaveNotify","Routine Entered");
 
@@ -2129,13 +2075,7 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)Fw));
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleMapNotify - MapNotify event handler
- *
- ***********************************************************************/
-void HandleMapNotify(void)
+void HandleMapNotify(const evh_args_t *ea)
 {
 	Bool is_on_this_page = False;
 
@@ -2228,20 +2168,14 @@ void HandleMapNotify(void)
 	return;
 }
 
-void HandleMappingNotify(void)
+void HandleMappingNotify(const evh_args_t *ea)
 {
 	XRefreshKeyboardMapping(&Event.xmapping);
 
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleMapRequest - MapRequest event handler
- *
- ************************************************************************/
-void HandleMapRequest(void)
+void HandleMapRequest(const evh_args_t *ea)
 {
 	DBUG("HandleMapRequest","Routine Entered");
 
@@ -2476,13 +2410,7 @@ void HandleMapRequestKeepRaised(
 }
 
 #ifdef HAVE_STROKE
-/***********************************************************************
- *
- *  Procedure:
- *      HandleMotionNotify - MotionNotify event handler
- *
- ************************************************************************/
-void HandleMotionNotify()
+void HandleMotionNotify(const evh_args_t *ea)
 {
 	DBUG("HandleMotionNotify","Routine Entered");
 
@@ -2495,13 +2423,7 @@ void HandleMotionNotify()
 }
 #endif /* HAVE_STROKE */
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandlePropertyNotify - property notify event handler
- *
- ***********************************************************************/
-void HandlePropertyNotify(void)
+void HandlePropertyNotify(const evh_args_t *ea)
 {
 	Bool OnThisPage = False;
 	Bool has_icon_changed = False;
@@ -3021,13 +2943,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 	}
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleReparentNotify - ReparentNotify event handler
- *
- ************************************************************************/
-void HandleReparentNotify(void)
+void HandleReparentNotify(const evh_args_t *ea)
 {
 	if (!Fw)
 	{
@@ -3064,13 +2980,21 @@ void HandleReparentNotify(void)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleShapeNotify - shape notification event handler
- *
- ***********************************************************************/
-void HandleShapeNotify (void)
+void HandleSelectionRequest(const evh_args_t *ea)
+{
+	icccm2_handle_selection_request(&ea->e);
+
+	return;
+}
+
+void HandleSelectionClear(const evh_args_t *ea)
+{
+	icccm2_handle_selection_clear();
+
+	return;
+}
+
+void HandleShapeNotify(const evh_args_t *ea)
 {
 	DBUG("HandleShapeNotify","Routine Entered");
 
@@ -3095,13 +3019,7 @@ void HandleShapeNotify (void)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleUnmapNotify - UnmapNotify event handler
- *
- ************************************************************************/
-void HandleUnmapNotify(void)
+void HandleUnmapNotify(const evh_args_t *ea)
 {
 	int dstx, dsty;
 	Window dumwin;
@@ -3245,14 +3163,7 @@ void HandleUnmapNotify(void)
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      HandleVisibilityNotify - record fully visible windows for
- *      use in the RaiseLower function and the OnTop type windows.
- *
- ************************************************************************/
-void HandleVisibilityNotify(void)
+void HandleVisibilityNotify(const evh_args_t *ea)
 {
 	DBUG("HandleVisibilityNotify","Routine Entered");
 
@@ -3363,7 +3274,10 @@ void DispatchEvent(Bool preserve_Fw)
 	last_event_type = Event.type;
 	if (EventHandlerJumpTable[Event.type])
 	{
-		(*EventHandlerJumpTable[Event.type])();
+		evh_args_t ea;
+
+		ea.e = Event;
+		(*EventHandlerJumpTable[Event.type])(&ea);
 	}
 
 #ifdef C_ALLOCA
@@ -3863,6 +3777,7 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 	Window child;
 	Window root;
 	Bool f;
+	evh_args_t ea;
 
 	f = FQueryPointer(
 		dpy, Scr.Root, &root, &child, &Event.xcrossing.x_root,
@@ -3897,7 +3812,8 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 				Event.xany.window = child;
 			}
 		}
-		HandleEnterNotify();
+		ea.e = Event;
+		HandleEnterNotify(&ea);
 		Fw = None;
 	}
 

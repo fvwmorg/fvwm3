@@ -18,12 +18,11 @@
 
 #define FEVENT_C
 #include "config.h"
-
-#include <stdio.h>
-
 #include <X11/Xlib.h>
 #include "FEvent.h"
 #undef FEVENT_C
+
+#include <stdio.h>
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -52,7 +51,7 @@ XTimeCoord *FGetMotionEvents(
 {
 	XTimeCoord *rc;
 
-	/*!!!*/rc = XGetMotionEvents(display, w, start, stop, nevents_return);
+	rc = XGetMotionEvents(display, w, start, stop, nevents_return);
 
 	return rc;
 }
@@ -62,7 +61,7 @@ int FAllowEvents(
 {
 	int rc;
 
-	/*!!!*/rc = XAllowEvents(display, event_mode, time);
+	rc = XAllowEvents(display, event_mode, time);
 
 	return rc;
 }
@@ -74,7 +73,7 @@ Bool FCheckIfEvent(
 {
 	Bool rc;
 
-	/*!!!*/rc = XCheckIfEvent(display, &fev_event, predicate, arg);
+	rc = XCheckIfEvent(display, &fev_event, predicate, arg);
 	*event_return = fev_event;
 
 	return rc;
@@ -85,7 +84,7 @@ Bool FCheckMaskEvent(
 {
 	Bool rc;
 
-	/*!!!*/rc = XCheckMaskEvent(display, event_mask, &fev_event);
+	rc = XCheckMaskEvent(display, event_mask, &fev_event);
 	*event_return = fev_event;
 
 	return rc;
@@ -96,7 +95,7 @@ Bool FCheckTypedEvent(
 {
 	Bool rc;
 
-	/*!!!*/rc = XCheckTypedEvent(display, event_type, &fev_event);
+	rc = XCheckTypedEvent(display, event_type, &fev_event);
 	*event_return = fev_event;
 
 	return rc;
@@ -107,7 +106,7 @@ Bool FCheckTypedWindowEvent(
 {
 	Bool rc;
 
-	/*!!!*/rc = XCheckTypedWindowEvent(display, w, event_type, &fev_event);
+	rc = XCheckTypedWindowEvent(display, w, event_type, &fev_event);
 	*event_return = fev_event;
 
 	return rc;
@@ -118,7 +117,7 @@ Bool FCheckWindowEvent(
 {
 	Bool rc;
 
-	/*!!!*/rc = XCheckWindowEvent(display, w, event_mask, &fev_event);
+	rc = XCheckWindowEvent(display, w, event_mask, &fev_event);
 	*event_return = fev_event;
 
 	return rc;
@@ -129,7 +128,7 @@ int FEventsQueued(
 {
 	int rc;
 
-	/*!!!*/rc = XEventsQueued(display, mode);
+	rc = XEventsQueued(display, mode);
 
 	return rc;
 }
@@ -141,7 +140,7 @@ int FIfEvent(
 {
 	int rc;
 
-	/*!!!*/rc = XIfEvent(display, &fev_event, predicate, arg);
+	rc = XIfEvent(display, &fev_event, predicate, arg);
 	*event_return = fev_event;
 
 	return rc;
@@ -152,7 +151,7 @@ int FMaskEvent(
 {
 	int rc;
 
-	/*!!!*/rc = XMaskEvent(display, event_mask, &fev_event);
+	rc = XMaskEvent(display, event_mask, &fev_event);
 	*event_return = fev_event;
 
 	return rc;
@@ -163,7 +162,7 @@ int FNextEvent(
 {
 	int rc;
 
-	/*!!!*/rc = XNextEvent(display, &fev_event);
+	rc = XNextEvent(display, &fev_event);
 	*event_return = fev_event;
 
 	return rc;
@@ -174,7 +173,7 @@ int FPeekEvent(
 {
 	int rc;
 
-	/*!!!*/rc = XPeekEvent(display, &fev_event);
+	rc = XPeekEvent(display, &fev_event);
 	*event_return = fev_event;
 
 	return rc;
@@ -187,7 +186,7 @@ int FPeekIfEvent(
 {
 	int rc;
 
-	/*!!!*/rc = XPeekIfEvent(display, &fev_event, predicate, arg);
+	rc = XPeekIfEvent(display, &fev_event, predicate, arg);
 	*event_return = fev_event;
 
 	return rc;
@@ -198,7 +197,7 @@ int FPending(
 {
 	int rc;
 
-	/*!!!*/rc = XPending(display);
+	rc = XPending(display);
 
 	return rc;
 }
@@ -208,7 +207,7 @@ int FPutBackEvent(
 {
 	int rc;
 
-	/*!!!*/rc = XPutBackEvent(display, event);
+	rc = XPutBackEvent(display, event);
 
 	return rc;
 }
@@ -218,7 +217,7 @@ int FQLength(
 {
 	int rc;
 
-	/*!!!*/rc = XQLength(display);
+	rc = XQLength(display);
 
 	return rc;
 }
@@ -230,7 +229,7 @@ Bool FQueryPointer(
 {
 	Bool rc;
 
-	/*!!!*/rc = XQueryPointer(
+	rc = XQueryPointer(
 		display, w, root_return, child_return, root_x_return,
 		root_y_return, win_x_return, win_y_return, mask_return);
 
@@ -243,7 +242,7 @@ Status FSendEvent(
 {
 	Status rc;
 
-	/*!!!*/rc = XSendEvent(display, w, propagate, event_mask, event_send);
+	rc = XSendEvent(display, w, propagate, event_mask, event_send);
 
 	return rc;
 }
@@ -254,7 +253,7 @@ int FWarpPointer(
 {
 	int rc;
 
-	/*!!!*/rc = XWarpPointer(
+	rc = XWarpPointer(
 		display, src_w, dest_w, src_x, src_y, src_width, src_height,
 		dest_x, dest_y);
 
@@ -266,7 +265,7 @@ int FWindowEvent(
 {
 	int rc;
 
-	/*!!!*/rc = XWindowEvent(display, w, event_mask, &fev_event);
+	rc = XWindowEvent(display, w, event_mask, &fev_event);
 	*event_return = fev_event;
 
 	return rc;

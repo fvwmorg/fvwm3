@@ -24,9 +24,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
 
-#include "libs/fvwmlib.h"
 #include "fvwm.h"
-#include "cursor.h"
 #include "functions.h"
 #include "misc.h"
 #include "screen.h"
@@ -34,10 +32,8 @@
 #include "commands.h"
 #include "update.h"
 #include "style.h"
-#include "focus.h"
 #include "stack.h"
 #include "events.h"
-#include "externs.h"
 #include "ewmh.h"
 #include "ewmh_intern.h"
 

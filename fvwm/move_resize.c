@@ -30,22 +30,18 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <X11/keysym.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
-#include "libs/Flocale.h"
-#include "libs/gravity.h"
 #include "libs/Picture.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
-#include "functions.h"
 #include "commands.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "colorset.h"
-#include "defaults.h"
+#include "menus.h"
 #include "move_resize.h"
 #include "module_interface.h"
 #include "focus.h"
@@ -54,12 +50,12 @@
 #include "geometry.h"
 #include "gnome.h"
 #include "ewmh.h"
-#include "colormaps.h"
 #include "virtual.h"
 #include "decorations.h"
 #include "events.h"
-#include "menus.h"
-#include <X11/keysym.h>
+#include "eventhandler.h"
+#include "eventmask.h"
+#include "colormaps.h"
 
 /* ----- move globals ----- */
 extern XEvent Event;
@@ -885,8 +881,8 @@ static void InteractiveMove(
  * somewhere in ins list of floats, and movement will stop when it hits a 1.0
  * entry */
 static void AnimatedMoveAnyWindow(
-	FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
-	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
+	FvwmWindow *tmp_win, Window w, int startX, int startY, int endX,
+	int endY, Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
 	MenuRoot *menu_root)
 {
 	int pointerX, pointerY;
@@ -1038,7 +1034,7 @@ static void AnimatedMoveAnyWindow(
 void AnimatedMoveOfWindow(
 	Window w, int startX, int startY, int endX, int endY,
 	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
-	MenuRoot *menu_root)
+	void *menu_root)
 {
 	AnimatedMoveAnyWindow(
 		NULL, w, startX, startY, endX, endY, fWarpPointerToo,
@@ -2546,6 +2542,7 @@ static Bool resize_window(F_CMD_ARGS)
 	Bool called_from_title = False;
 	frame_move_resize_args mr_args = NULL;
 	long evmask;
+	evh_args_t ea;
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
@@ -3032,7 +3029,8 @@ static Bool resize_window(F_CMD_ARGS)
 			is_done = True;
 
 		case PropertyNotify:
-			HandlePropertyNotify();
+			ea.e = *eventp;
+			HandlePropertyNotify(&ea);
 			break;
 
 		default:

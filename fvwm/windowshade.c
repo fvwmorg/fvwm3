@@ -21,14 +21,9 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FShape.h"
-#include "libs/fvwmrect.h"
-#include "libs/gravity.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "misc.h"
-#include "cursor.h"
-#include "functions.h"
 #include "commands.h"
 #include "screen.h"
 #include "module_interface.h"

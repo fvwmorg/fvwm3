@@ -32,16 +32,12 @@
 #include <limits.h>
 
 #include "libs/fvwmlib.h"
-#include <libs/gravity.h>
-#include <libs/FScreen.h>
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
-#include "cursor.h"
 #include "functions.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "fvwmlib.h"
 #include "menus.h"
 #include "conditional.h"
 #include "stack.h"

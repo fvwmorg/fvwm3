@@ -27,20 +27,15 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <X11/Xproto.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
-#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
-#include "cursor.h"
-#include "functions.h"
 #include "commands.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "decorations.h"
-#include <X11/Xproto.h>
 #include "lang-strings.h"
 #include "update.h"
 #include "style.h"

@@ -27,30 +27,18 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FShape.h"
-#include "libs/Flocale.h"
-#include <libs/gravity.h>
+#include "libs/Picture.h"
+#include "libs/PictureGraphics.h"
 #include "fvwm.h"
 #include "externs.h"
-#include "events.h"
-#include "cursor.h"
-#include "functions.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "defaults.h"
 #include "geometry.h"
 #include "borders.h"
 #include "builtins.h"
 #include "icons.h"
-#include "module_interface.h"
-#include "colorset.h"
-#include "libs/Picture.h"
-#include "libs/PictureGraphics.h"
-#include "add_window.h"
 #include "frame.h"
 
 /* ---------------------------- local definitions --------------------------- */

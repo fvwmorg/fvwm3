@@ -1,5 +1,54 @@
 2002-09-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/*.[ch]:
+	removed unnecessary includes
+
+	* fvwm/Makefile.am (fvwm_SOURCES):
+	* fvwm/events.h:
+	* fvwm/eventmasks.h:
+	* fvwm/eventhandlers.h:
+	new files split from events.h
+
+	* fvwm/icccm2.c (HandleSelectionRequest):
+	(HandleSelectionClear):
+	* fvwm/colormaps.c (HandleColormapNotify):
+	* fvwm/menus.c (menu_tear_off):
+	* fvwm/move_resize.c (resize_window):
+	* fvwm/events.c:
+	(HandleExpose):
+	(HandleDestroyNotify):
+	(HandleMapRequest):
+	(HandleMapNotify):
+	(HandleUnmapNotify):
+	(HandleButtonPress):
+	(HandleEnterNotify):
+	(HandleLeaveNotify):
+	(HandleFocusIn):
+	(HandleFocusOut):
+	(HandleConfigureRequest):
+	(HandleClientMessage):
+	(HandlePropertyNotify):
+	(HandleKeyPress):
+	(HandleVisibilityNotify):
+	(HandleColormapNotify):
+	(HandleShapeNotify):
+	(HandleSelectionClear):
+	(HandleSelectionRequest):
+	(HandleReparentNotify):
+	(HandleMappingNotify):
+	(HandleButtonRelease):
+	(HandleMotionNotify):
+	(HandleSelectionRequest):
+	(HandleSelectionClear):
+	(HandleColormapNotify):
+	* fvwm/events.h:
+	new argument avh_args_t to the event handler functions; still unused
+	moved all event handlers to events.c
+	remove now unnecessary includes in some files
+
+	* fvwm/icccm2.c (HandleSelectionRequest):
+	re-indented file
+
 	* **/*.c:
 	use replacements for X event functions everywhere
 

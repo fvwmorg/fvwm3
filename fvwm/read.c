@@ -33,16 +33,13 @@
 #include <fcntl.h>
 #endif
 
-#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
 #include "events.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "read.h"
 
 #define MAX_READ_DEPTH 40
 static char *curr_read_file = NULL;

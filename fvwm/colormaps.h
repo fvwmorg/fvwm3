@@ -46,7 +46,7 @@
  * This procedure handles both a client changing its own colormap, and
  * a client explicitly installing its colormap itself (only the window
  * manager should do that, so we must set it correctly). */
-void HandleColormapNotify(void);
+void colormap_handle_colormap_notify(const XEvent *e);
 
 /* Re-Install the active colormap */
 void ReInstallActiveColormap(void);

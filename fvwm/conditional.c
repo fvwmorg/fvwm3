@@ -31,13 +31,10 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
-#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
-#include "cursor.h"
 #include "functions.h"
 #include "conditional.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 #include "update.h"

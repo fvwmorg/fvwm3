@@ -35,7 +35,6 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
 
 #include <X11/Xmd.h>
 
-
 void EWMH_SetCurrentDesktop(void);
 void EWMH_SetNumberOfDesktops(void);
 

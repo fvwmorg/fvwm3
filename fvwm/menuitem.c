@@ -19,21 +19,17 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <X11/Intrinsic.h>
+
 #include "libs/fvwmlib.h"
-#include "libs/safemalloc.h"
-#include "libs/Flocale.h"
-#include <libs/Picture.h>
-#include <libs/PictureGraphics.h>
+#include "libs/Picture.h"
+#include "libs/PictureGraphics.h"
 #include "externs.h"
 #include "fvwm.h"
-#include "cursor.h"
-#include "functions.h"
 #include "misc.h"
 #include "screen.h"
 #include "menustyle.h"
+#include "menudim.h"
 #include "menuitem.h"
-#include "menus.h"
 #include "decorations.h"
 
 /* ---------------------------- local definitions --------------------------- */

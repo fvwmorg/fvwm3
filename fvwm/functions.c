@@ -35,11 +35,8 @@
 #include <stdio.h>
 
 #include <X11/keysym.h>
-#include <X11/Intrinsic.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/Parse.h"
-#include "libs/gravity.h"
 #include "fvwm.h"
 #include "commands.h"
 #include "externs.h"
@@ -51,13 +48,7 @@
 #include "module_interface.h"
 #include "misc.h"
 #include "screen.h"
-#include "geometry.h"
 #include "repeat.h"
-#include "read.h"
-#include "virtual.h"
-#include "colorset.h"
-#include "ewmh.h"
-#include "schedule.h"
 #include "expand.h"
 #include "menus.h"
 

@@ -33,60 +33,47 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
-
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif
+#if HAVE_SYS_SYSTEMINFO_H
+/* Solaris has sysinfo instead of gethostname.  */
+#include <sys/systeminfo.h>
+#endif
+
+#include <X11/Xproto.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
-#include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"
-#include "libs/Flocale.h"
-#include <libs/gravity.h>
 #include "libs/FRenderInit.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "defaults.h"
 #include "builtins.h"
-#include "menus.h"
 #include "module_interface.h"
 #include "colorset.h"
+#include "events.h"
+#include "eventhandler.h"
+#include "eventmask.h"
 #include "icccm2.h"
 #include "gnome.h"
 #include "ewmh.h"
-#include "icons.h"
 #include "add_window.h"
 #include "fvwmsignal.h"
-#include "colormaps.h"
 #include "stack.h"
 #include "virtual.h"
 #include "session.h"
-#include "events.h"
 #include "read.h"
-#include "colors.h"
 #include "focus.h"
 #include "update.h"
-#include "window_flags.h"
 #include "move_resize.h"
-#include "borders.h"
 #include "frame.h"
-
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-/* need to get prototype for XrmUniqueQuark for XUniqueContext call */
-#include <X11/Xresource.h>
-
-#if HAVE_SYS_SYSTEMINFO_H
-/* Solaris has sysinfo instead of gethostname.  */
-#include <sys/systeminfo.h>
-#endif
+#include "menus.h"
 
 /* ---------------------------- local definitions --------------------------- */
 

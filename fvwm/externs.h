@@ -43,10 +43,6 @@
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Intrinsic.h>
-
 extern void Done(int, char *) __attribute__((__noreturn__));
 extern void setInitFunctionName(int n, const char *name);
 extern const char *getInitFunctionName(int n);

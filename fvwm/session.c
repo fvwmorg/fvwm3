@@ -29,15 +29,14 @@
 #endif
 #include <signal.h>
 #include <fcntl.h>
+#ifdef SESSION
+#include <X11/SM/SMlib.h>
+#endif
 
 #include "libs/fvwmlib.h"
-#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
-#include "cursor.h"
-#include "functions.h"
 #include "add_window.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 #include "session.h"
@@ -46,9 +45,6 @@
 #include "icccm2.h"
 #include "virtual.h"
 #include "geometry.h"
-#ifdef SESSION
-#include <X11/SM/SMlib.h>
-#endif
 
 extern int master_pid;
 

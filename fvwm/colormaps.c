@@ -80,9 +80,9 @@ void set_client_controls_colormaps(Bool flag)
  * a client explicitly installing its colormap itself (only the window
  * manager should do that, so we must set it correctly).
  */
-void HandleColormapNotify(void)
+void colormap_handle_colormap_notify(const XEvent *e)
 {
-	XColormapEvent *cevent = (XColormapEvent *)&Event;
+	XColormapEvent *cevent = (XColormapEvent *)e;
 	Bool ReInstall = False;
 	XWindowAttributes attr;
 

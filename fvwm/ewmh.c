@@ -29,19 +29,12 @@
 
 #include <stdio.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xmd.h>
-
 #include "libs/fvwmlib.h"
-#include <libs/gravity.h>
 #include "fvwm.h"
-#include "cursor.h"
-#include "functions.h"
 #include "commands.h"
 #include "misc.h"
 #include "screen.h"
 #include "update.h"
-#include "move_resize.h"
 #include "stack.h"
 #include "style.h"
 #include "externs.h"

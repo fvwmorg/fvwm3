@@ -33,25 +33,20 @@
 #include <fcntl.h>
 #endif
 
-#include <X11/Intrinsic.h>
-
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
-#include "libs/PictureImageLoader.h"
-#include "libs/gravity.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
-#include "functions.h"
 #include "commands.h"
 #include "bindings.h"
 #include "events.h"
+#include "eventmask.h"
 #include "misc.h"
 #include "screen.h"
-#include "defaults.h"
 #include "icons.h"
 #include "borders.h"
 #include "frame.h"
@@ -61,7 +56,6 @@
 #include "virtual.h"
 #include "decorations.h"
 #include "module_interface.h"
-#include "colorset.h"
 #include "gnome.h"
 #include "ewmh.h"
 #include "geometry.h"

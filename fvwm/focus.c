@@ -25,19 +25,16 @@
 /* ---------------------------- included header files ----------------------- */
 
 #include <config.h>
+
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
-#include "cursor.h"
-#include "functions.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 #include "focus.h"
-#include "icons.h"
 #include "borders.h"
 #include "frame.h"
 #include "virtual.h"

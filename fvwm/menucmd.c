@@ -31,28 +31,14 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <assert.h>
-#include <X11/keysym.h>
 
-#include <libs/fvwmlib.h>
 #include "fvwm.h"
-#include "externs.h"
-#include "events.h"
-#include "menus.h"
-#include "cursor.h"
 #include "functions.h"
 #include "repeat.h"
 #include "misc.h"
 #include "move_resize.h"
 #include "screen.h"
-#include "borders.h"
-#include "colors.h"
-#include "colormaps.h"
-#include "decorations.h"
-#include "colorset.h"
-#include "defaults.h"
-#include "libs/FScreen.h"
-#include "libs/Flocale.h"
+#include "menus.h"
 
 /* ---------------------------- local definitions --------------------------- */
 

@@ -27,16 +27,12 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
 #include <errno.h>
 #include <X11/keysym.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 #include "libs/setpgrp.h"
-#include "libs/FShape.h"
-#include "libs/Flocale.h"
-#include "libs/gravity.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
 #include "fvwm.h"
@@ -48,25 +44,19 @@
 #include "functions.h"
 #include "commands.h"
 #include "screen.h"
-#include "defaults.h"
 #include "builtins.h"
 #include "module_interface.h"
 #include "borders.h"
 #include "frame.h"
-#include "geometry.h"
 #include "events.h"
-#include "gnome.h"
 #include "ewmh.h"
-#include "icons.h"
-#include "menus.h"
 #include "virtual.h"
 #include "decorations.h"
 #include "add_window.h"
 #include "update.h"
 #include "style.h"
-#include "focus.h"
-#include "stack.h"
 #include "move_resize.h"
+#include "menus.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -994,7 +984,6 @@ void ApplyDefaultFontAndColors(void)
 	{
 		resize_geometry_window();
 	}
-
 	UpdateAllMenuStyles();
 
 	return;

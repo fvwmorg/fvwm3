@@ -30,11 +30,9 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
-#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
-#include "functions.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -42,11 +40,9 @@
 #include "geometry.h"
 #include "update.h"
 #include "style.h"
-#include "borders.h"
 #include "move_resize.h"
 #include "virtual.h"
 #include "stack.h"
-#include "add_window.h"
 #include "ewmh.h"
 #include "icons.h"
 

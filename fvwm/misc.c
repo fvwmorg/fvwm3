@@ -28,19 +28,16 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include "libs/ftime.h"
 
-#include "libs/fvwmlib.h"
+#include "libs/ftime.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
-#include "functions.h"
-#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
 #include "events.h"
-#include "focus.h"
+#include "eventmask.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
