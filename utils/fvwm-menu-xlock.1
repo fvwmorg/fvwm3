@@ -2,15 +2,8 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.1  1999/08/16 01:07:52  migo
-''' New interfaces for menu generating scripts.
-'''
-''' * fvwm_make_directory_menu.sh: replaced by configurable fvwm-menu-directory.
-''' * fvwm_make_browse_menu.sh: can be simulated by fvwm-menu-directory --reuse.
-''' * BuildXLockMenu: replaced by fvwm-menu-xlock.
-''' * fvwm-menu-desktop: new perl script by Olivier Chapuis for GNOME and KDE.
-'''
-''' All fvwm-menu scripts have --help option.
+''' Revision 1.2  1999/08/16 09:07:13  domivogt
+''' * Use FVWM instead of F{ine,antastic,eline} V W M.
 '''
 ''' Revision 1.8  1999/08/23 20:37:24  migo
 ''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
@@ -103,7 +96,7 @@
 'br\}
 .\"	If the F register is turned on, we'll generate
 .\"	index entries out stderr for the following things:
-.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 01" "16/Aug/99" "Fvwm Utility"
+.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 02" "16/Aug/99" "Fvwm Utility"
 .\"		SH	Header
 .\"		Sh	Subsection 
 .\"		Ip	Item
@@ -198,7 +191,7 @@
 .	ds 8 ss
 .	ds v \h'-1'\o'\(aa\(ga'
 .	ds _ \h'-1'^
-fvwm-menu-xlock \- builds xlock menu definition for Fine Virtual Window Manager
+fvwm-menu-xlock \- builds xlock menu definition for \fBFVWMo\fR
 .	ds 3 3
 .	ds o a
 .	ds d- d\h'-1'\(ga

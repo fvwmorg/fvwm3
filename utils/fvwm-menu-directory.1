@@ -2,15 +2,8 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.1  1999/08/16 01:07:51  migo
-''' New interfaces for menu generating scripts.
-'''
-''' * fvwm_make_directory_menu.sh: replaced by configurable fvwm-menu-directory.
-''' * fvwm_make_browse_menu.sh: can be simulated by fvwm-menu-directory --reuse.
-''' * BuildXLockMenu: replaced by fvwm-menu-xlock.
-''' * fvwm-menu-desktop: new perl script by Olivier Chapuis for GNOME and KDE.
-'''
-''' All fvwm-menu scripts have --help option.
+''' Revision 1.2  1999/08/16 09:07:13  domivogt
+''' * Use FVWM instead of F{ine,antastic,eline} V W M.
 '''
 ''' Revision 1.8  1999/08/23 20:37:24  migo
 ''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
@@ -103,7 +96,7 @@
 .\"	Of course, you have to process the output yourself
 .\"	in some meaninful fashion.
 .if \nF \{
-.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "16/Aug/99" "Fvwm Utility"
+.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 02" "16/Aug/99" "Fvwm Utility"
 .tm Index:\\$1\t\\n%\t"\\$2"
 ..
 .nr % 0
@@ -198,7 +191,7 @@
 .	ds th \o'bp'
 .	ds Th \o'LP'
 .	ds ae ae
-fvwm-menu-directory \- builds a directory browsing menu for Feline Virtual Window Manager
+fvwm-menu-directory \- builds a directory browsing menu for \fBFVWM\fR
 .	ds oe oe
 .	ds Oe OE
 .\}

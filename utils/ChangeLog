@@ -1,3 +1,9 @@
+1999-08-16  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* fvwm-menu-xlock.1: 
+	* fvwm-menu-directory.1: 
+	* fvwm-menu-desktop.1: use FVWM instead of F{ine,antastic,eline} VWM
+
 1999-08-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* ChangeLog:
