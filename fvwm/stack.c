@@ -445,7 +445,7 @@ static Bool must_move_transients(
 	return False;
 }
 
-static Window __get_visible_window(FvwmWindow *fw)
+static Window __get_stacking_sibling(FvwmWindow *fw)
 {
 	Window w;
 
@@ -455,6 +455,10 @@ static Window __get_visible_window(FvwmWindow *fw)
 			FW_W_ICON_PIXMAP(fw) : FW_W_ICON_TITLE(fw);
 	}
 	else
+	{
+		w = None;
+	}
+	if (w == None)
 	{
 		w = FW_W_FRAME(fw);
 	}
@@ -507,10 +511,10 @@ static void restack_windows(
 			}
 		}
 	}
-	changes.sibling = __get_visible_window(r);
+	changes.sibling = __get_stacking_sibling(r);
 	if (changes.sibling == None)
 	{
-		changes.sibling = __get_visible_window(s);
+		changes.sibling = __get_stacking_sibling(s);
 		is_reversed = 1;
 	}
 	else
