@@ -4084,11 +4084,11 @@ is finally executed, it is expanded again.  It may therefore be
 necessary to quote the parts of the command that must not be
 expanded twice.
 
-Note:  A window's id as it is returned with $w can be used as the
+Note:  A window's id as it is returned with $[w.id] can be used as the
 .IR command_id .
 Example:
 .EX
-Current Schedule 1000 $w WindowShade
+Current Schedule 1000 $[w.id] WindowShade
 .EE
 
 .TP

@@ -176,7 +176,7 @@ enum
 
 /* ---------------------------- local functions ----------------------------- */
 
-static int expand_vars_extended(
+static signed int expand_vars_extended(
 	char *var_name, char *output, FvwmWindow *fw,
 	fvwm_cond_func_rc *cond_rc)
 {
@@ -208,20 +208,20 @@ static int expand_vars_extended(
 		if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
 		{
 			/* not a non-negative integer without leading zeros */
-			return 0;
+			return -1;
 		}
 		if (sscanf(rest, "%d%n", &cs, &n) < 1)
 		{
-			return 0;
+			return -1;
 		}
 		if (*(rest + n) != 0)
 		{
 			/* trailing characters */
-			return 0;
+			return -1;
 		}
 		if (cs < 0)
 		{
-			return 0;
+			return -1;
 		}
 		alloc_colorset(cs);
 		switch (i)
@@ -247,7 +247,7 @@ static int expand_vars_extended(
 	{
 		if (rest == NULL)
 		{
-			return 0;
+			return -1;
 		}
 		string = _(rest);
 		l = strlen(string);
@@ -261,12 +261,12 @@ static int expand_vars_extended(
 	case VAR_DESK_NAME:
 		if (sscanf(rest, "%d%n", &cs, &n) < 1)
 		{
-			return 0;
+			return -1;
 		}
 		if (*(rest + n) != 0)
 		{
 			/* trailing characters */
-			return 0;
+			return -1;
 		}
 		s = GetDesktopName(cs);
 		if (s == NULL)
@@ -378,7 +378,7 @@ static int expand_vars_extended(
 	case VAR_W_HEIGHT:
 		if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			return 0;
+			return -1;
 		}
 		else
 		{
@@ -401,7 +401,7 @@ static int expand_vars_extended(
 				val = g.height;
 				break;
 			default:
-				return 0;
+				return -1;
 			}
 		}
 		break;
@@ -411,7 +411,7 @@ static int expand_vars_extended(
 	case VAR_CW_HEIGHT:
 		if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			return 0;
+			return -1;
 		}
 		else
 		{
@@ -434,7 +434,7 @@ static int expand_vars_extended(
 				val = g.height;
 				break;
 			default:
-				return 0;
+				return -1;
 			}
 		}
 		break;
@@ -444,7 +444,7 @@ static int expand_vars_extended(
 	case VAR_IT_HEIGHT:
 		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			return 0;
+			return -1;
 		}
 		else
 		{
@@ -452,7 +452,7 @@ static int expand_vars_extended(
 
 			if (get_visible_icon_title_geometry(fw, &g) == False)
 			{
-				return 0;
+				return -1;
 			}
 			is_numeric = True;
 			switch (i)
@@ -470,7 +470,7 @@ static int expand_vars_extended(
 				val = g.height;
 				break;
 			default:
-				return 0;
+				return -1;
 			}
 		}
 		break;
@@ -480,7 +480,7 @@ static int expand_vars_extended(
 	case VAR_IP_HEIGHT:
 		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			return 0;
+			return -1;
 		}
 		else
 		{
@@ -488,7 +488,7 @@ static int expand_vars_extended(
 
 			if (get_visible_icon_picture_geometry(fw, &g) == False)
 			{
-				return 0;
+				return -1;
 			}
 			is_numeric = True;
 			switch (i)
@@ -506,7 +506,7 @@ static int expand_vars_extended(
 				val = g.height;
 				break;
 			default:
-				return 0;
+				return -1;
 			}
 		}
 		break;
@@ -516,7 +516,7 @@ static int expand_vars_extended(
 	case VAR_I_HEIGHT:
 		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			return 0;
+			return -1;
 		}
 		else
 		{
@@ -524,7 +524,7 @@ static int expand_vars_extended(
 
 			if (get_visible_icon_geometry(fw, &g) == False)
 			{
-				return 0;
+				return -1;
 			}
 			is_numeric = True;
 			switch (i)
@@ -542,7 +542,7 @@ static int expand_vars_extended(
 				val = g.height;
 				break;
 			default:
-				return 0;
+				return -1;
 			}
 		}
 		break;
@@ -561,7 +561,7 @@ static int expand_vars_extended(
 	case VAR_COND_RC:
 		if (cond_rc == NULL)
 		{
-			return 0;
+			return -1;
 		}
 		switch (*cond_rc)
 		{
@@ -571,7 +571,7 @@ static int expand_vars_extended(
 			val = (int)(*cond_rc);
 			break;
 		default:
-			return 0;
+			return -1;
 		}
 		is_numeric = True;
 		break;
@@ -590,7 +590,7 @@ static int expand_vars_extended(
 			if (!fw || IS_ICONIFIED(fw)
 			    || IS_EWMH_DESKTOP(FW_W(fw)))
 			{
-				return 0;
+				return -1;
 			}
 			is_numeric = True;
 			context_w = FW_W_FRAME(fw);
@@ -603,7 +603,7 @@ static int expand_vars_extended(
 			if (!fw || IS_ICONIFIED(fw) || IS_SHADED(fw)
 			    || IS_EWMH_DESKTOP(FW_W(fw)))
 			{
-				return 0;
+				return -1;
 			}
 			is_numeric = True;
 			context_w = FW_W(fw);
@@ -620,7 +620,7 @@ static int expand_vars_extended(
 				  &JunkX, &JunkY, &x, &y, &JunkMask) == False)
 		{
 			/* pointer is on a different screen, don't expand */
-			return 0;
+			return -1;
 		}
 		val = (is_x) ? x : y;
 		break;
@@ -635,19 +635,7 @@ static int expand_vars_extended(
 		break;
 	default:
 		/* unknown variable - try to find it in the environment */
-		s = getenv(var_name);
-		if (s)
-		{
-			if (output)
-			{
-				strcpy(output, s);
-			}
-			return strlen(s);
-		}
-		else
-		{
-			return 0;
-		}
+		string = getenv(var_name);
 	}
 	if (is_numeric)
 	{
@@ -660,7 +648,7 @@ static int expand_vars_extended(
 		{
 			strcpy(output, string);
 		}
-		return string ? strlen(string) : 0;
+		return string ? strlen(string) : -1;
 	}
 }
 
@@ -715,7 +703,7 @@ char *expand_vars(
 					{
 						xlen = expand_vars_extended(
 							var, NULL, fw, cond_rc);
-						if (xlen > 0)
+						if (xlen >= 0)
 						{
 							l2 += xlen - (k + 2);
 						}
@@ -848,7 +836,7 @@ char *expand_vars(
 					xlen = expand_vars_extended(
 						var, &out[j], fw, cond_rc);
 					input[m] = ']';
-					if (xlen > 0)
+					if (xlen >= 0)
 					{
 						j += xlen;
 						i += k + 2;

@@ -1236,9 +1236,10 @@ A: The following discusses a general solution, you should substitute
 
      AddToFunc StartFunction I Module FvwmEvent
 
-   The sample to use with fvwm 2.3.21 to 2.5.6 versions (this
-   moves a newly created window "My Window" only, and switches to
-   all new windows):
+   The sample to use with fvwm 2.3.21 to 2.4.15 versions (consider
+   to upgrade and use the version below).  This moves a newly
+   created window named "My Window", and warps a pointer to all new
+   windows regardless of their name:
 
      *FvwmEvent-NewWindow: Cmd
      *FvwmEvent-NewWindow: PassId
@@ -1253,11 +1254,10 @@ A: The following discusses a general solution, you should substitute
 
      AddToFunc StartFunction I FvwmEvent FvwmEvent-NewWindow
 
-   And finally the configuration for 2.5.7 or later.  This moves a
-   newly created window named "My Window", and wraps a pointer to
-   all new windows regardless of their name:
+   And finally the suggested configuration for 2.5.7+ and 2.4.16+.
+   This moves a newly created window named "My Window", and wraps a
+   pointer to all new windows regardless of their name:
 
-     *FvwmEvent-NewWindow: Cmd
      *FvwmEvent-NewWindow: StartDelay 4
      *FvwmEvent-NewWindow: add_window FuncFocusWindow
 

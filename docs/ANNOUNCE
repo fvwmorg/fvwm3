@@ -17,6 +17,7 @@ Dedication
   Diane Merriman
   Dominik Vogt
   Dorothy Robinson
+  Fabien Villard
   Gregg Dameron
   Jeremie Petit
   John Latham
@@ -37,23 +38,23 @@ Dedication
 
 -------------------------------------------------------------------
 
-Fvwm is a powerful window manager.  Version 2.5.7 is an
-unstable release that includes new features and improvements over
-unstable 2.5.6 and stable 2.4.15 versions.  You are welcome to
-upgrade and test the new features or help stabilizing the code.
-Please be aware that any features introduced in the 2.5.x
-development versions may be renamed, changed or removed without
-notice before the next stable release.
+Fvwm is a powerful window manager.  Version 2.5.7 is an unstable
+release that includes improvements over unstable 2.5.7 and stable
+2.4.16 versions.  You are welcome to upgrade and test the new
+features or help stabilizing the code.  Please be aware that any
+features introduced in the 2.5.x development versions may be
+renamed, changed or removed without notice before 2.6.0.
 
-The release is available at the fvwm home page: http://www.fvwm.org/
+This release is available at the home page: http://www.fvwm.org/.
+We are 10 year old now, participate in the birthday events!
 
-Fixed:
-------
+Bug Fixes:
+----------
 
-See ChangeLog file for details.
+See ChangeLog and NEWS (the 2.4.x section) files for details.
 
-Improved:
----------
+Improvements:
+-------------
 
 New features:
 -------------

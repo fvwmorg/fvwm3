@@ -1,3 +1,13 @@
+2003-05-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/functions.c (expand_extended_var):
+	(expand):
+	fixed expanding variables that are empty, for example $[w.resource]
+	or $[gt.a] or $[version.info] or $[EMPTY_STRING]
+
+	* fvwm/fvwm.1.in:
+	s/$w/$[w.id]/
+
 2003-05-29  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.c (ewmh_atom_wm_state):
