@@ -1,5 +1,9 @@
 2001-03-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleConfigureRequest):
+	fixed XMoveResize requests that leave the x/y position unchanged for
+	windows with South/East gravity
+
 	* fvwm/move_resize.c (DoSnapAttract):
 	fixed core dump
 

@@ -1,3 +1,8 @@
+2001-03-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.sh:
+	fixed sliding position of top right panel in test 3
+
 2001-03-12  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmButtons/FvwmButtons.sh: Add one button test.

@@ -2193,34 +2193,34 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
       False);
     dw += (constr_w - oldnew_w);
     dh += (constr_h - oldnew_h);
-    if (dx && dw)
+    if ((cre->value_mask & CWX) && dw)
     {
       new_g.x = Tmp_win->frame_g.x + dx;
       new_g.width = Tmp_win->frame_g.width + dw;
     }
-    else if (dx && !dw)
+    else if ((cre->value_mask & CWX) && !dw)
     {
       new_g.x = Tmp_win->frame_g.x + dx;
     }
-    else if (!dx && dw)
+    else if (!(cre->value_mask & CWX) && dw)
     {
       gravity_resize(Tmp_win->hints.win_gravity, &new_g, dw, 0);
     }
-    if (dy && dh)
+    if ((cre->value_mask & CWY) && dh)
     {
       new_g.y = Tmp_win->frame_g.y + dy;
       new_g.height = Tmp_win->frame_g.height + dh;
     }
-    else if (dy && !dh)
+    else if ((cre->value_mask & CWY) && !dh)
     {
       new_g.y = Tmp_win->frame_g.y + dy;
     }
-    else if (!dy && dh)
+    else if (!(cre->value_mask & CWY) && dh)
     {
       gravity_resize(Tmp_win->hints.win_gravity, &new_g, 0, dh);
     }
 
-    if (dx || dy || dw || dh)
+    if ((cre->value_mask & CWX) || (cre->value_mask & CWY) || dw || dh)
     {
       if (IS_SHADED(Tmp_win))
 	get_shaded_geometry(Tmp_win, &new_g, &new_g);

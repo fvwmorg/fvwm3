@@ -244,7 +244,7 @@ if [ "$DO_SOME" = "n" -o "$DO_3" = "y" ] ; then
   base='indicator, smooth, delay 30, steps 3, position'
   FC '*FButt: (Panel(up,    '"$base "'Module top -'"$ww"'p 0 mlr mtb) bul "W bul")'
   FC '*FButt: (Panel(up,    '"$base"' Button top center mlr mtb) buc "W buc")'
-  FC '*FButt: (Panel(up,    '"$base"' Module top '"$ww"'p 0 mlr mtb) bur "W bur")'
+  FC '*FButt: (Panel(up,    '"$base"' Module top 100 0 mlr mtb) bur "W bur")'
   # Root right 0 50 put brl down a page in the middle. isn't that 100?
   # This goes to the bottom right.  why?
   FC '*FButt: (Panel(left,  '"$base"' Root right 0 0) brl "W brl")'
