@@ -151,7 +151,7 @@ An example argument to Circulate is
 If the proxies aren't already shown (such as with the Show command),
 any Circulate command will automatically show the proxies.
 
-.IP "SendToModule FvwmProxy Next" (temporary)
+.IP "SendToModule FvwmProxy Next (temporary)"
 If a proxy window is selected, the next proxy is selected.
 Windows with the WindowListSkip option are ignored.
 The proxies are sorted left to right during the Show command.
@@ -162,7 +162,7 @@ the leftmost proxy is used.
 This nearly duplicates the functionality of
 Circulate ScanForWindow East South (CurrentPage).
 
-.IP "SendToModule FvwmProxy Prev" (temporary)
+.IP "SendToModule FvwmProxy Prev (temporary)"
 If a proxy window is selected, the previous proxy is selected.
 The starting point is the same as with the Next command, except
 that the choice with no recent selection is the rightmost proxy.
