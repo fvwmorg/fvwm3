@@ -1,5 +1,8 @@
 Changes in beta release 2.3.10
 
+* FvwmIconMan, FvwmTaskBar and FvwmWinList support animatation via
+  FvwmAnimate.
+
 * New command StrokeFunc to handle mouse stroke.
 
 * The default root cursor, unless specified otherwise, is now left pointer.

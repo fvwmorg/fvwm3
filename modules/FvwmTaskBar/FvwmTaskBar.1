@@ -140,12 +140,14 @@ window name.  This is useful to keep the width of the buttons small.
 Tells FvwmTaskBar to show the application transient windows also. By default
 they are not shown.
 
-.IP "*FvwmTaskBarAction \fIaction response[,response...]\fP"
+.IP "*FvwmTaskBarAction \fIaction response\fP"
 Tells FvwmTaskBar to do \fIresponse\fP when \fIaction\fP is done.  The
 currently supported \fIaction\fPs are: Click1, Click2, Click3.  The currently
 supported \fIresponse\fPs are any fvwm built-in commands, including modules
-and functions.
-The configuration example below shows the default values.
+and functions.  Warning: Use of the former syntax that allowed to use comma
+separated lists of commands is strongly discouraged due to synchronization
+problems with fvwm.  Please use complex fvwm functions instead (defined with
+the AddToFunc command of fvwm).
 
 .IP "*FvwmTaskBarButtonWidth \fIwidth\fP"
 Indicates the maximum width that window buttons should reach.
@@ -159,6 +161,13 @@ focus style, you'll want the taskbar to be ClickToFocus.
 
 .IP "*FvwmTaskBarShowTips"
 Enables the tips windows (by default disabled).
+
+.IP "*FvwmTaskBarNoIconAction \fIaction\fP"
+Tells FvwmTaskBar to do \fIaction\fP is when a NoIcon style window is
+iconified or deiconified. Relevant coordinates are appended to \fIaction\fP so
+that the icon can be traced to an FvwmTaskBar button. An example action
+is "*FvwmTaskBarNoIconAction SendToModule FvwmAnimate animate". A blank or null
+action turns this feature off.
 
 .SH ""
 
@@ -225,6 +234,15 @@ initialization commands:
 AddToFunc "StartFunction" "I" Module FvwmTaskBar
 
 #
+# For Click 1 action 
+#
+
+AddToFunc DeiconifyRaiseAndFocus
++ I Iconify off
++ I Raise
++ I Focus
+
+#
 # Set the style for the taskbar window, keep always on top of another
 # windows
 #
@@ -242,14 +260,15 @@ StaysOnTop,WindowSkipList,CirculateSkip
 *FvwmTaskBarSelFont -adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
 *FvwmTaskBarStatusFont fixed
 
-*FvwmTaskBarAction Click1 Iconify -1, Raise
-*FvwmTaskBarAction Click2 Iconify +1, Lower
-*FvwmTaskBarAction Click3 Iconify -1, Raise
+*FvwmTaskBarAction Click1 DeiconifyRaiseAndFocus
+*FvwmTaskBarAction Click2 Iconify On
+*FvwmTaskBarAction Click3 Lower
 
 *FvwmTaskBarUseSkipList
 *FvwmTaskBarUseIconNames
 *FvwmTaskBarAutoStick
 *FvwmTaskBarShowTips
+*FvwmTaskBarNoIconAction SendToModule FvwmAnimate animate
 
 *FvwmTaskBarButtonWidth 180
 *FvwmTaskBarBellVolume 20

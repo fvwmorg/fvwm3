@@ -591,3 +591,24 @@ int LocateButton(ButtonArray *array, int xp,  int yp, int *xb, int *yb,
 
   return (num == -1) ? num : temp->count;
 }
+
+extern int StartButtonWidth;
+
+void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc)
+{
+  Button *temp;
+  int x = 0;
+  int y = 0;
+  int r = 0;
+
+  for(temp=array->head; temp->count != numbut; temp=temp->next) {
+    if((x + 2*array->tw > array->w) && (r < NRows))
+      { x = 0; y += RowHeight+2; ++r; }
+    else
+     x += array->tw;
+  }
+
+  *xc = x+StartButtonWidth+3;
+  *yc = y;
+}
+

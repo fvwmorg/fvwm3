@@ -87,6 +87,7 @@
 #include "Goodies.h"
 #include "Start.h"
 
+#define MAX_NO_ICON_ACTION_LENGTH (MAX_MODULE_INPUT_TEXT_LEN - 100)
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 #define SomeButtonDown(a) ((a)&Button1Mask||(a)&Button2Mask||(a)&Button3Mask)
@@ -166,6 +167,8 @@ char *ClickAction[3] = { DEFAULT_CLICK1, DEFAULT_CLICK2, DEFAULT_CLICK3 },
      *geometry       = NULL,
      *font_string    = "fixed",
      *selfont_string = NULL;
+
+static char *AnimCommand = NULL;
 
 int UseSkipList    = False,
     UseIconNames   = False,
@@ -319,6 +322,10 @@ int main(int argc, char **argv)
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
+
+  /* Lock on send only for iconify and deiconify (for NoIconAction) */
+  if (AnimCommand && (AnimCommand[0] != 0))
+    SetSyncMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
 
   /* Receive all messages from Fvwm */
   EndLessLoop();
@@ -534,7 +541,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (!DeskOnly || Desk == DeskNumber)
       {
 	AddButton(&buttons, string, NULL, BUTTON_UP, i,
-		  !!(ItemIndexFlags(&windows, i) & F_ICONIFIED));
+		  (ItemIndexFlags(&windows, i) & F_ICONIFIED) ? 1 : 0);
 	redraw = 1;
       }
     }
@@ -544,18 +551,47 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
   case M_DEICONIFY:
   case M_ICONIFY:
-    if ((i = FindItem(&windows, body[0])) == -1)
+    /* fwvm will wait for an Unlock message before continuing
+     * be careful when changing this construct, make sure unlock happens 
+     * if AnimCommand && AnimCommand[0] != 0 */
+   tb_flags = ItemFlags(&windows, body[0]);
+    if (((i = FindItem(&windows, body[0])) == -1)
+	|| (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED))
+	|| (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED))
+    {
+      if (AnimCommand && AnimCommand[0] != 0) 
+	SendText(Fvwm_fd, "Unlock 1", 0);
       break;
-    tb_flags = ItemFlags(&windows, body[0]);
-    if (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED))
-      break;
-    if (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED)
-      break;
+    }
     tb_flags ^= F_ICONIFIED;
     UpdateItemFlags(&windows, body[0], tb_flags);
     {
       Button *temp = find_n(&buttons, i);
-      if (temp) {
+      if (temp) 
+      {
+	if (AnimCommand && (AnimCommand[0] != 0)) 
+	{
+	  char buff[MAX_MODULE_INPUT_TEXT_LEN];
+	  Window child;
+	  int x, y;
+	  int abs_x, abs_y;
+
+	  ButtonCoordinates(&buttons, i, &x, &y);
+	  XTranslateCoordinates(dpy, win, Root, x, y,
+				&abs_x, &abs_y, &child);
+	  if (type == M_DEICONIFY) {
+	    sprintf(buff, "%s %d %d %d %d %d %d %d %d", AnimCommand,
+		    abs_x, abs_y, buttons.tw-2, RowHeight,
+		    (int)body[7], (int)body[8], (int)body[9],
+		    (int)body[10]);
+	  } else {
+	    sprintf(buff, "%s %d %d %d %d %d %d %d %d", AnimCommand,
+		    (int)body[7], (int)body[8], (int)body[9], (int)body[10],
+		    abs_x, abs_y, buttons.tw-2, RowHeight);
+	  }
+	  SendText(Fvwm_fd, buff, 0);
+	  SendText(Fvwm_fd, "Unlock 1", 0);
+	}
 	temp->needsupdate = 1;
 	temp->iconified = (tb_flags & F_ICONIFIED) ? 1 : 0;
 	DrawButtonArray(&buttons, 0);
@@ -826,6 +862,7 @@ static char *moduleopts[] =
   "SwallowModule",
   "Swallow",
   "ButtonWidth",
+  "NoIconAction",
   NULL
 };
 
@@ -999,6 +1036,11 @@ static void ParseConfigLine(char *tline)
     case 21: /* ButtonWidth */
       button_width = atoi(rest);
       break;
+    case 22: /* NoIconAction */
+      CopyString(&AnimCommand, rest);
+      if (strlen(AnimCommand) > MAX_NO_ICON_ACTION_LENGTH)
+	AnimCommand[MAX_NO_ICON_ACTION_LENGTH] = 0;
+      break;
     default:
       if (!GoodiesParseConfig(tline) &&
 	  !StartButtonParseConfig(tline))
@@ -1170,7 +1212,6 @@ void LoopOnEvents(void)
           redraw = 0;
           usleep(50000);
         }
-
         if (HighlightFocus) {
           if (num == ButPressed)
 	    RadioButton(&buttons, num, BUTTON_DOWN);
