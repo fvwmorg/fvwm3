@@ -868,6 +868,7 @@ cc[3]++;
 	/* must handle expose here so that raising a window with "I" works */
 	memcpy(&old_event, &Event, sizeof(XEvent));
 	memcpy(&Event, d, sizeof(XEvent));
+	/* note: handling Expose events will never modify the global Tmp_win */
 	DispatchEvent(True);
 	memcpy(&Event, &old_event, sizeof(XEvent));
 	break;

@@ -715,36 +715,6 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	ewin->icon_g.y -= Scr.Vy;
       }
 
-#if 0
-      int j;
-      FvwmWindow *t;
-
-      /* Find the window to stack this one below. */
-      for (j = i-1; j >= 0; j--) {
-
-	/* matches are sorted in stacking order */
-	if (matches[j].used) {
-
-	  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-	  {
-#ifdef FVWM_DEBUG_DEVEL
-	    fprintf(stderr, "[S]");
-#endif
-	    if (matchWin(t, &matches[j]))
-	    {
-	      ewin->stack_next->stack_prev = ewin->stack_prev;
-	      ewin->stack_prev->stack_next = ewin->stack_next;
-
-	      ewin->stack_prev = t;
-	      ewin->stack_next = t->stack_next;
-	      ewin->stack_prev->stack_next = ewin;
-	      ewin->stack_next->stack_prev = ewin;
-	      return True;
-	    }
-	  }
-	}
-      }
-#endif
       return True;
     }
   }

@@ -84,7 +84,6 @@ static void change_grab_cursor(int cursor)
  * until the GRAB_PASSIVE is released too.
  ****************************************************************************/
 #undef DEBUG_GRAB
-#define DEBUG_GRAB
 #ifdef DEBUG_GRAB
 void print_grab_stats(char *text)
 {

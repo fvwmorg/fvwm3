@@ -21,29 +21,6 @@
  *     copyright remains in the source code and all documentation
  ****************************************************************************/
 
-/* Almost a complete rewrite by
-   Greg J. Badros, Apr 6, Apr 16-19, 1997
-   gjb@cs.washington.edu
-
-   Fixed bugs w/ Escape leaving a menu item highlighted the next
-      time it pops up
-   Added Checking for reused hotkeys
-   Added Win-like drawing code (motivated by fvwm95)
-   Splitting of long (i.e. tall) menus into "More..." popup menus
-   Integrated LEFT_MENUS compile-time option as a bug fix
-      and added new menu style MWMLeft to builtin.c
-   Drastically Improved handling of keyboard-movement keystrokes --
-      moves one item at a time
-   Animated animated menus (along with animated move)
-   */
-
-/* German Gomez Garcia, Nov 1998
-   german@pinon.ccu.uniovi.es
-
-   Implemented new menu style definition, allowing multiple definitios and
-   gradients and pixmaps 'ala' ButtonStyle. See doc/README.styles for more
-   info.  */
-
 
 /***********************************************************************
  *
@@ -99,7 +76,8 @@
 #define MAX_MENU_BORDER_WIDTH	     50
 #define MAX_ITEM_RELIEF_THICKNESS    50
 
-#define POPUP_NOW_RATIO		     3/4
+
+#define POPUP_NOW_RATIO		     0.75
 
 #define PARENT_MENU_FORCE_VISIBLE_WIDTH 20
 
@@ -1737,7 +1715,8 @@ static void MenuInteraction(
       }
       /* we want to dispatch this too so window decorations get redrawn
        * after being obscured by menus. */
-      /* We need to preserve the Tmp_win here! */
+      /* We need to preserve the Tmp_win here! Note that handling an Expose
+       * event will never invalidate the Tmp_win. */
       DispatchEvent(True);
       continue;
 
@@ -2385,6 +2364,8 @@ static int pop_menu_up(
     }
   }
   fw = *pfw;
+  if (fw && !check_if_fvwm_window_exists(fw))
+    fw = NULL;
   context = *pcontext;
 
   if(mr == NULL || MR_FIRST_ITEM(mr) == NULL || MR_ITEMS(mr) == 0)
@@ -2832,6 +2813,8 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
   } /* if */
 
   MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
+  if (fw && !check_if_fvwm_window_exists(fw))
+    fw = NULL;
   paint_item(mr, mi, fw, False);
 }
 
@@ -3464,6 +3447,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
   unsigned long gcm = GCLineWidth;
   gcv.line_width = 3;
 
+  if (fw && !check_if_fvwm_window_exists(fw))
+    fw = NULL;
   if (MR_IS_PAINTED(mr) && pevent &&
       (pevent->xexpose.x >= MR_WIDTH(mr) - bw ||
        pevent->xexpose.x + pevent->xexpose.width <= bw ||

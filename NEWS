@@ -16,7 +16,7 @@ Changes in beta release 2.3.24 (2000-11-28)
 
 Changes in beta release 2.3.23 (2000-11-25)
 
-* New styles UseIconPosition and NoIconPosition (default).
+* New styles UseIconPosition (default) and NoIconPosition.
 
 * Better focus handling on multi head displays.
 

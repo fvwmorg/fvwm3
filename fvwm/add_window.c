@@ -470,17 +470,28 @@ void change_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
 
 void setup_layer(FvwmWindow *tmp_win, window_style *pstyle)
 {
-  /* FIXME: shouldn't transients inherit the layer ? */
+  FvwmWindow *tf;
+  int layer;
+
   if (SUSE_LAYER(&pstyle->flags))
   {
-    set_default_layer(tmp_win, SGET_LAYER(*pstyle));
-    set_layer(tmp_win, SGET_LAYER(*pstyle));
+    /* use layer from style */
+    layer = SGET_LAYER(*pstyle);
+  }
+  else if ((tf = get_transientfor_fvwmwindow(tmp_win)) != NULL)
+  {
+    /* inherit layer from transientfor window */
+    layer = get_layer(tf);
   }
   else
   {
-    set_default_layer(tmp_win, Scr.DefaultLayer);
-    set_layer(tmp_win, Scr.DefaultLayer);
+    /* use default layer */
+    layer = Scr.DefaultLayer;
   }
+  set_default_layer(tmp_win, layer);
+  set_layer(tmp_win, layer);
+
+  return;
 }
 
 void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle)

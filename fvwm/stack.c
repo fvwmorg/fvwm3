@@ -39,7 +39,9 @@
 
 static void RaiseOrLowerWindow(
   FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window);
+#if 0
 static void ResyncFvwmStackRing(void);
+#endif
 static void ResyncXStackingOrder(void);
 static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2);
 
@@ -70,7 +72,7 @@ static void verify_stack_ring_consistency(void)
 
   XSync(dpy, 0);
   t2 = Scr.FvwmRoot.stack_next;
-  if (!t2)
+  if (t2 == &Scr.FvwmRoot)
     return;
   last_layer = t2->layer;
 
@@ -81,12 +83,28 @@ static void verify_stack_ring_consistency(void)
       fprintf(
 	stderr,
 	"vsrc: stack ring is corrupt! "
-	"'%s' (layer %d) is above '%s' (layer %d)\n",
-	t1->name, t1->layer, t2->name, t2->layer);
+	"'%s' (layer %d) is above '%s' (layer %d/%d)\n",
+	t1->name, t1->layer, t2->name, t2->layer, last_layer);
       dump_stack_ring();
       return;
     }
     last_layer = t1->layer;
+  }
+  t2 = &Scr.FvwmRoot;
+  for (t1 = t2->stack_next; t1 != &Scr.FvwmRoot; t2 = t1, t1 = t1->stack_next)
+  {
+    if (t1->stack_prev != t2)
+      break;
+  }
+  if (t1 != &Scr.FvwmRoot || t1->stack_prev != t2)
+  {
+    fprintf(
+      stderr,
+      "vsrc: stack ring is corrupt - fvwm will probably crash! "
+      "0x%08x -> 0x%08x but 0x%08x <- 0x%08x\n",
+      (int)t2, (int)t1, (int)(t1->stack_prev), (int)t1);
+    dump_stack_ring();
+    return;
   }
   MyXGrabServer(dpy);
   if (!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
@@ -126,8 +144,8 @@ static void verify_stack_ring_consistency(void)
 	  }
 	}
       }
-      MyXUngrabServer (dpy);
-      XFree (children);
+      MyXUngrabServer(dpy);
+      XFree(children);
       return;
     }
     last_index = i;
@@ -143,16 +161,38 @@ void remove_window_from_stack_ring(FvwmWindow *t)
 {
   t->stack_prev->stack_next = t->stack_next;
   t->stack_next->stack_prev = t->stack_prev;
+  /* not really necessary, but gives a little more saftey */
+  t->stack_prev = NULL;
+  t->stack_next = NULL;
   return;
 }
 
-/* Add window t to the stack ring after window t2 */
+/* Add window t to the stack ring after window t */
 void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win)
 {
+  if (t == add_after_win || t == add_after_win->stack_next)
+  {
+    /* tried to add the window before or after itself */
+    fvwm_msg(ERR, "add_window_to_stack_ring_after",
+	     "BUG: tried to add window '%s' %s itself in stack ring\n", t->name,
+	     (t == add_after_win) ? "after" : "before");
+    return;
+  }
   t->stack_next = add_after_win->stack_next;
   add_after_win->stack_next->stack_prev = t;
   t->stack_prev = add_after_win;
   add_after_win->stack_next = t;
+  return;
+}
+
+/* Add a whole ring of windows. The list_head itself will not be added. */
+static void add_windowlist_to_stack_ring_after(
+  FvwmWindow *list_head, FvwmWindow *add_after_win)
+{
+  add_after_win->stack_next->stack_prev = list_head->stack_prev;
+  list_head->stack_prev->stack_next = add_after_win->stack_next;
+  add_after_win->stack_next = list_head->stack_next;
+  list_head->stack_next->stack_prev = add_after_win;
   return;
 }
 
@@ -164,6 +204,39 @@ FvwmWindow *get_next_window_in_stack_ring(FvwmWindow *t)
 FvwmWindow *get_prev_window_in_stack_ring(FvwmWindow *t)
 {
   return t->stack_prev;
+}
+
+FvwmWindow *get_transientfor_fvwmwindow(FvwmWindow *t)
+{
+  FvwmWindow *s;
+
+  if (!t || !IS_TRANSIENT(t) || t->transientfor == Scr.Root ||
+      t->transientfor == None)
+    return NULL;
+  for (s = Scr.FvwmRoot.next; s != &Scr.FvwmRoot; s = s->next)
+  {
+    if (s->w == t->transientfor)
+    {
+      return s;
+    }
+  }
+
+  return NULL;
+}
+
+static FvwmWindow *get_transientfor_top_fvwmwindow(FvwmWindow *t)
+{
+  FvwmWindow *s;
+
+  s = t;
+  while (s && IS_TRANSIENT(s) && DO_STACK_TRANSIENT_PARENT(s))
+  {
+    s = get_transientfor_fvwmwindow(s);
+    if (s)
+      t = s;
+  }
+
+  return t;
 }
 
 /* Takes a window from the top of the stack ring and puts it at the appropriate
@@ -362,14 +435,80 @@ static Bool must_move_transients(
   return False;
 }
 
+static void restack_windows(
+  FvwmWindow *r, FvwmWindow *s, int count, Bool do_broadcast_all)
+{
+  FvwmWindow *t;
+  unsigned int flags;
+  int i;
+  XWindowChanges changes;
+  Window *wins;
+
+  if (count <= 0)
+  {
+    FvwmWindow *prev = NULL;
+    count = 0;
+    for (t = r; prev != s; prev = t, t = t->stack_next)
+    {
+      count++;
+      if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
+	count += 2;
+    }
+  }
+  /* restack the windows between r and s */
+  wins = (Window*) safemalloc (count * sizeof (Window));
+  i = 0;
+  for (t = r->stack_next; t != s; t = t->stack_next)
+  {
+    if (i >= count)
+    {
+      fvwm_msg (ERR, "RaiseOrLowerWindow", "more transients than expected");
+      break;
+    }
+    wins[i++] = t->frame;
+    if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
+    {
+      if(t->icon_w != None)
+	wins[i++] = t->icon_w;
+      if(t->icon_pixmap_w != None)
+	wins[i++] = t->icon_pixmap_w;
+    }
+  }
+
+  changes.sibling = s->frame;
+  if (changes.sibling != None)
+  {
+    changes.stack_mode = Above;
+    flags = CWSibling|CWStackMode;
+  }
+  else
+  {
+    changes.stack_mode = Below;
+    flags = CWStackMode;
+  }
+  XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
+  XRestackWindows (dpy, wins, count);
+  free(wins);
+  if (do_broadcast_all)
+  {
+    /* send out M_RESTACK for all windows, to make sure we don't forget
+     * anything. */
+    BroadcastRestackAllWindows();
+  }
+  else
+  {
+    /* send out (one or more) M_RESTACK packets for windows between r and s */
+    BroadcastRestack(r, s);
+  }
+
+  return;
+}
+
 static void RaiseOrLowerWindow(
   FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window)
 {
   FvwmWindow *s, *r, *t2, *next, tmp_r;
-  unsigned int flags;
-  int i, count;
-  XWindowChanges changes;
-  Window *wins;
+  int count;
   Bool do_move_transients;
   Bool found_transient;
   Bool no_movement;
@@ -468,12 +607,8 @@ static void RaiseOrLowerWindow(
 
 	  /* unplug it */
 	  remove_window_from_stack_ring(t2);
-
 	  /* put it above tmp_r */
-	  t2->stack_next = &tmp_r;
-	  t2->stack_prev = tmp_r.stack_prev;
-	    t2->stack_prev->stack_next = t2;
-	    tmp_r.stack_prev = t2;
+	  add_window_to_stack_ring_after(t2, tmp_r.stack_prev);
 	}
       }
       if (tmp_r.stack_next == &tmp_r)
@@ -499,11 +634,8 @@ static void RaiseOrLowerWindow(
 
     if (do_move_transients && tmp_r.stack_next != &tmp_r)
     {
-	/* insert all transients between r and s. */
-	r->stack_next = tmp_r.stack_next;
-	tmp_r.stack_next->stack_prev = r;
-	s->stack_prev = tmp_r.stack_prev;
-	tmp_r.stack_prev->stack_next = s;
+      /* insert all transients between r and s. */
+      add_windowlist_to_stack_ring_after(&tmp_r, s);
     }
 
     /*
@@ -523,49 +655,9 @@ static void RaiseOrLowerWindow(
     }
     else
     {
-      wins = (Window*) safemalloc (count * sizeof (Window));
-      i = 0;
-      for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
-      {
-	if (i >= count)
-	{
-	  fvwm_msg (ERR, "RaiseOrLowerWindow", "more transients than expected");
-	  break;
-	}
-	wins[i++] = t2->frame;
-	if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
-	{
-	  if(t2->icon_w != None)
-	    wins[i++] = t2->icon_w;
-	  if(t2->icon_pixmap_w != None)
-	    wins[i++] = t2->icon_pixmap_w;
-	}
-      }
-
-      changes.sibling = s->frame;
-      if (changes.sibling != None)
-      {
-	changes.stack_mode = Above;
-	flags = CWSibling|CWStackMode;
-      }
-      else
-      {
-	changes.stack_mode = Below;
-	flags = CWStackMode;
-      }
-
-      XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
-      XRestackWindows (dpy, wins, count);
-
-      /* send out (one or more) M_RESTACK packets for windows between r and s */
-      BroadcastRestack(r, s);
-      if (do_move_transients && tmp_r.stack_next != &tmp_r)
-      {
-	/* send out M_RESTACK for all windows, to make sure we don't forget
-	 * anything. */
-	BroadcastRestackAllWindows();
-      }
-      free (wins);
+      /* restack the windows between r and s */
+      restack_windows(
+	r, s, count, (do_move_transients && tmp_r.stack_next != &tmp_r));
     }
   }
 
@@ -755,6 +847,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     libfvwm eventually, along with some other chain manipulation functions.
 */
 
+#if 0
 /*
     ResyncFvwmStackRing -
     Rebuilds the stacking order ring of FVWM-managed windows. For use in cases
@@ -806,6 +899,12 @@ static void ResyncFvwmStackRing (void)
       /* Pluck from chain. */
       remove_window_from_stack_ring(t1);
       add_window_to_stack_ring_after(t1, t2->stack_prev);
+      if (t2 != &Scr.FvwmRoot && t2->layer > t1->layer)
+      {
+	/* oops, now our stack ring is out of order! */
+	/* emergency fix */
+	t1->layer = t2->layer;
+      }
       t2 = t1;
     }
   }
@@ -814,6 +913,7 @@ static void ResyncFvwmStackRing (void)
 
   XFree (children);
 }
+#endif
 
 /* same as above but synchronizes the stacking order in X from the stack ring.
  */
@@ -951,51 +1051,163 @@ int get_layer(FvwmWindow *t)
   return t->layer;
 }
 
-void new_layer (FvwmWindow *tmp_win, int layer)
+/* This function recursively finds the transients of the window t and sets their
+ * is_in_transient_subtree flag.  If a layer is given, only windows in this
+ * layer are checked.  If the layer is < 0, all windows are considered. */
+static void mark_transient_subtree(FvwmWindow *t, int layer, Bool do_lower)
 {
-  FvwmWindow *t2, *next;
+  FvwmWindow *s;
+  FvwmWindow *start;
+  FvwmWindow *end;
+  Bool is_finished;
 
+  if (layer >= 0 && t->layer != layer)
+    return;
+  /* find out on which windows to operate */
+  if (layer >= 0)
+  {
+    /* only work on the given layer */
+    start = &Scr.FvwmRoot;
+    end = &Scr.FvwmRoot;
+    for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot && s->layer <= layer;
+	 s = s->stack_next)
+    {
+      if (s->layer == layer)
+      {
+	if (start == &Scr.FvwmRoot)
+	  start = s;
+	end = s->stack_next;
+      }
+    }
+  }
+  else
+  {
+    /* work on complete window list */
+    start = Scr.FvwmRoot.stack_next;
+    end = &Scr.FvwmRoot;
+  }
+  /* clean the temporary flag in all windows and precalculate the transient
+   * frame windows */
+  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
+  {
+    SET_IN_TRANSIENT_SUBTREE(s, 0);
+    if (IS_TRANSIENT(s) && (layer < 0 || layer == s->layer))
+    {
+      s->pscratch = get_transientfor_fvwmwindow(s);
+    }
+  }
+  /* now loop over the windows and mark the ones we need to move */
+  SET_IN_TRANSIENT_SUBTREE(t, 1);
+  is_finished = True;
+  while (!is_finished)
+  {
+    FvwmWindow *r;
+
+    /* recursively search for all transient windows */
+    is_finished = 1;
+    for (s = start; s != end; s = s->stack_next)
+    {
+      if (IS_IN_TRANSIENT_SUBTREE(s) || !IS_TRANSIENT(s))
+	continue;
+      r = (FvwmWindow *)s->pscratch;
+      if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
+	  ((do_lower && DO_LOWER_TRANSIENT(r)) ||
+	   (!do_lower && DO_RAISE_TRANSIENT(r))))
+      {
+	/* have to move this one too */
+	SET_IN_TRANSIENT_SUBTREE(t, 1);
+	/* need another scan through the list */
+	is_finished = False;
+      }
+    }
+  }
+
+  return;
+}
+
+static int collect_transients_recursive(
+  FvwmWindow *t, FvwmWindow *list_head, int layer, Bool do_lower)
+{
+  FvwmWindow *s;
+  int count = 0;
+
+  mark_transient_subtree(t, layer, do_lower);
+  /* now collect the marked windows in a separate list */
+  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; )
+  {
+    FvwmWindow *tmp;
+
+    tmp = s->stack_next;
+    if (IS_IN_TRANSIENT_SUBTREE(s))
+    {
+      remove_window_from_stack_ring(s);
+      add_window_to_stack_ring_after(s, list_head->stack_prev);
+      count++;
+      if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
+	count += 2;
+    }
+    s = tmp;
+  }
+
+  return count;
+}
+
+void new_layer(FvwmWindow *tmp_win, int layer)
+{
+  FvwmWindow *s;
+  FvwmWindow *target;
+  FvwmWindow *prev;
+  FvwmWindow list_head;
+  int add_after_layer;
+  int count;
+
+  tmp_win = get_transientfor_top_fvwmwindow(tmp_win);
+  if (layer == tmp_win->layer)
+    return;
+  list_head.stack_next = &list_head;
+  list_head.stack_prev = &list_head;
+  count = collect_transients_recursive(
+    tmp_win, &list_head, layer, (layer < tmp_win->layer));
+  if (count == 0)
+  {
+    /* no windows to move */
+    return;
+  }
+
+  add_after_layer = layer;
   if (layer < tmp_win->layer)
   {
-    tmp_win->layer = layer;
-    /* temporary fix; new transient handling code assumes the layers are
-     * properly arranged when RaiseOrLowerWindow() is called. */
-    ResyncFvwmStackRing();
-    /* domivogt (9-Sep-1999): this was RaiseWindow before. The intent may
-     * have been good (put the window on top of the new lower layer), but it
-     * doesn't work with applications like the gnome panel that use the layer
-     * hint as a poor man's raise/lower, i.e. if panel is on the top level
-     * and requests to be lowered to the normal level it stays on top of all
-     * normal windows. This is not what was intended by lowering. */
-    LowerWindow(tmp_win);
+    /* lower below the windows in the new (lower) layer */
+    add_after_layer = layer;
   }
-  else if (layer > tmp_win->layer)
+  else
+  {
+    /* raise above the windows in the new (higher) layer */
+    add_after_layer = layer + 1;
+  }
+  /* find the place to insert the windows */
+  for (target = Scr.FvwmRoot.stack_next; target != &Scr.FvwmRoot;
+       target = target->stack_next)
+  {
+    if (target->layer < add_after_layer)
     {
-      if (DO_RAISE_TRANSIENT(tmp_win))
-	{
-	  /* this could be done much more efficiently */
-	  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
-	    {
-	      next = t2->stack_next;
-	      if ((IS_TRANSIENT(t2)) &&
-		  (t2->transientfor == tmp_win->w) &&
-		  (t2 != tmp_win) &&
-		  (t2->layer >= tmp_win->layer) &&
-		  (t2->layer < layer))
-		{
-		  t2->layer = layer;
-		  LowerWindow(t2);
-		}
-	    }
-	}
-      tmp_win->layer = layer;
-      /* see comment above */
-      ResyncFvwmStackRing();
-      /* see comment above */
-      RaiseWindow(tmp_win);
+      /* add all windows before the current window */
+      break;
     }
+  }
+  /* insert windows at new position */
+  add_windowlist_to_stack_ring_after(&list_head, target->stack_prev);
+  prev = NULL;
+  for (s = list_head.stack_next; prev != list_head.stack_prev;
+       prev = s, s = s->stack_next)
+  {
+    s->layer = layer;
+    GNOME_SetLayer(tmp_win);
+  }
+  /* move the windows without modifying their stacking order */
+  restack_windows(list_head.stack_next->stack_prev, target, count, (count > 1));
 
-  GNOME_SetLayer (tmp_win);
+  return;
 }
 
 /* ----------------------------- common functions -------------------------- */
@@ -1061,7 +1273,11 @@ void raiselower_func(F_CMD_ARGS)
   Bool ontop;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+  {
+/*fixme: debug code */
+dump_stack_ring();
     return;
+  }
 
   ontop = is_on_top_of_layer(tmp_win);
 
@@ -1069,6 +1285,8 @@ void raiselower_func(F_CMD_ARGS)
     LowerWindow(tmp_win);
   else
     RaiseWindow(tmp_win);
+
+  return;
 }
 
 void change_layer(F_CMD_ARGS)

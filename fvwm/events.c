@@ -1451,6 +1451,11 @@ void HandleButtonPress(void)
   do_pass_click = True;
   if (action && *action)
   {
+    if (Tmp_win && IS_ICONIFIED(Tmp_win))
+    {
+      /* release the pointer since it can't do harm over an icon */
+      XAllowEvents(dpy, AsyncPointer, CurrentTime);
+    }
     old_execute_function(action, Tmp_win, &Event, Context, -1, 0, NULL);
     if (Context != C_WINDOW && Context != C_NO_CONTEXT)
     {
@@ -2051,94 +2056,97 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d)\n",
   /*  Handle this *after* geometry changes, since we need the new
       geometry in occlusion calculations */
   if ( (cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Tmp_win) )
-    {
-      FvwmWindow *otherwin = NULL;
+  {
+    FvwmWindow *otherwin = NULL;
 
-      if (cre->value_mask & CWSibling)
+    if (cre->value_mask & CWSibling)
+    {
+      if (XFindContext (dpy, cre->above, FvwmContext,
+			(caddr_t *) &otherwin) == XCNOENT)
       {
-        if (XFindContext (dpy, cre->above, FvwmContext,
-			  (caddr_t *) &otherwin) == XCNOENT)
+	otherwin = NULL;
+      }
+      if (otherwin == Tmp_win)
+      {
+	otherwin = NULL;
+      }
+    }
+    if ((cre->detail != Above) && (cre->detail != Below))
+    {
+      HandleUnusualStackmodes (cre->detail, Tmp_win, cre->window,
+			       otherwin, cre->above);
+    }
+    /* only allow clients to restack windows within their layer */
+    else if (!otherwin || compare_window_layers(otherwin, Tmp_win) != 0)
+    {
+      switch (cre->detail)
+      {
+      case Above:
+	RaiseWindow(Tmp_win);
+	break;
+      case Below:
+	LowerWindow(Tmp_win);
+	break;
+      }
+    }
+    else
+    {
+      xwc.sibling = otherwin->frame;
+      xwc.stack_mode = cre->detail;
+      xwcm = CWSibling | CWStackMode;
+      XConfigureWindow (dpy, Tmp_win->frame, xwcm, &xwc);
+
+      /* Maintain the condition that icon windows are stacked
+	 immediately below their frame */
+      /* 1. for Tmp_win */
+      xwc.sibling = Tmp_win->frame;
+      xwc.stack_mode = Below;
+      xwcm = CWSibling | CWStackMode;
+      if (Tmp_win->icon_w != None)
+      {
+	XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
+      }
+      if (Tmp_win->icon_pixmap_w != None)
+      {
+	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
+      }
+
+      /* 2. for otherwin */
+      if (cre->detail == Below)
+      {
+	xwc.sibling = otherwin->frame;
+	xwc.stack_mode = Below;
+	xwcm = CWSibling | CWStackMode;
+	if (otherwin->icon_w != None)
 	{
-          otherwin = NULL;
+	  XConfigureWindow(dpy, otherwin->icon_w, xwcm, &xwc);
+	}
+	if (otherwin->icon_pixmap_w != None)
+	{
+	  XConfigureWindow(dpy, otherwin->icon_pixmap_w, xwcm, &xwc);
 	}
       }
 
-      if ((cre->detail != Above) && (cre->detail != Below))
-	{
-	   HandleUnusualStackmodes (cre->detail, Tmp_win, cre->window,
-                                                 otherwin, cre->above);
-	}
-      /* only allow clients to restack windows within their layer */
-      else if (!otherwin || compare_window_layers(otherwin, Tmp_win) != 0)
-	{
-	  switch (cre->detail)
-	    {
-            case Above:
-              RaiseWindow (Tmp_win);
-              break;
-            case Below:
-              LowerWindow (Tmp_win);
-              break;
-	    }
-	}
-      else
-	{
-	  xwc.sibling = otherwin->frame;
-	  xwc.stack_mode = cre->detail;
-	  xwcm = CWSibling | CWStackMode;
-	  XConfigureWindow (dpy, Tmp_win->frame, xwcm, &xwc);
+      /* Maintain the stacking order ring */
+      if (cre->detail == Above)
+      {
+	remove_window_from_stack_ring(Tmp_win);
+	add_window_to_stack_ring_after(
+	  Tmp_win, get_prev_window_in_stack_ring(otherwin));
+      }
+      else /* cre->detail == Below */
+      {
+	remove_window_from_stack_ring(Tmp_win);
+	add_window_to_stack_ring_after(Tmp_win, otherwin);
+      }
 
-	  /* Maintain the condition that icon windows are stacked
-	     immediately below their frame */
-	  /* 1. for Tmp_win */
-	  xwc.sibling = Tmp_win->frame;
-	  xwc.stack_mode = Below;
-	  xwcm = CWSibling | CWStackMode;
-	  if (Tmp_win->icon_w != None)
-	    {
-	      XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
-	    }
-	  if (Tmp_win->icon_pixmap_w != None)
-	    {
-	      XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
-	    }
-
-	  /* 2. for otherwin */
-	  if (cre->detail == Below)
-	    {
-	      xwc.sibling = otherwin->frame;
-	      xwc.stack_mode = Below;
-	      xwcm = CWSibling | CWStackMode;
-	      if (otherwin->icon_w != None)
-		{
-		  XConfigureWindow(dpy, otherwin->icon_w, xwcm, &xwc);
-		}
-	      if (otherwin->icon_pixmap_w != None)
-		{
-		  XConfigureWindow(dpy, otherwin->icon_pixmap_w, xwcm, &xwc);
-		}
-	    }
-
-	  /* Maintain the stacking order ring */
-	  if (cre->detail == Above)
-	    {
-	      remove_window_from_stack_ring(Tmp_win);
-	      add_window_to_stack_ring_after(
-		Tmp_win, get_prev_window_in_stack_ring(otherwin));
-	    }
-	  else /* cre->detail == Below */
-	    {
-	      remove_window_from_stack_ring(Tmp_win);
-	      add_window_to_stack_ring_after(Tmp_win, otherwin);
-	    }
-
-	  /*
-	    Let the modules know that Tmp_win changed its place
-	    in the stacking order
-	  */
-	  BroadcastRestackThisWindow(Tmp_win);
-	}
+      /*
+	Let the modules know that Tmp_win changed its place
+	in the stacking order
+      */
+      BroadcastRestackThisWindow(Tmp_win);
     }
+  }
 
 #if 1
   /* This causes some ddd windows not to be drawn properly. Reverted back to
@@ -2146,12 +2154,12 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d)\n",
   /* domivogt (15-Oct-1999): enabled this to work around buggy apps that
    * ask for a nonsense height and expect that they really get it. */
   if (do_send_event)
-    {
-      SendConfigureNotify(
-	Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
-	new_g.width, new_g.height, cre->border_width, True);
-      XSync(dpy,0);
-    }
+  {
+    SendConfigureNotify(
+      Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
+      new_g.width, new_g.height, cre->border_width, True);
+    XSync(dpy,0);
+  }
 #endif
 }
 
@@ -2495,7 +2503,16 @@ void DispatchEvent(Bool preserve_Tmp_win)
 #endif
 
   if (preserve_Tmp_win)
-    Tmp_win = s_Tmp_win;
+  {
+    /* Just to be safe, check if the saved window still exists.  Since this is
+     * only used with Expose events we should be safe anyway, but a bit of
+     * security does not hurt. */
+    if (check_if_fvwm_window_exists(s_Tmp_win))
+      Tmp_win = s_Tmp_win;
+    else
+      Tmp_win = NULL;
+  }
+
   DBUG("DispatchEvent","Leaving Routine");
   return;
 }
@@ -2709,6 +2726,7 @@ void handle_all_expose(void)
   XPending(dpy);
   while (XCheckMaskEvent(dpy, ExposureMask, &Event))
   {
+    /* note: handling Expose events will never modify the global Tmp_win */
     DispatchEvent(True);
   }
   memcpy(&Event, &old_event, sizeof(XEvent));
@@ -2848,6 +2866,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
   while (mask & (DEFAULT_ALL_BUTTONS_MASK))
   {
     /* handle expose events */
+    XAllowEvents(dpy, SyncPointer, CurrentTime);
     if (XCheckMaskEvent(dpy, evmask, &Event))
     {
       switch (Event.type)
@@ -2856,6 +2875,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	mask = Event.xbutton.state;
 	break;
       case Expose:
+	/* note: handling Expose events will never modify the global Tmp_win */
 	DispatchEvent(True);
 	break;
       default:

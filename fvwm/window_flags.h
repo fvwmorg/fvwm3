@@ -215,6 +215,9 @@
                                (fw)->flags.is_icon_unmapped = !!(x)
 #define SETM_ICON_UNMAPPED(fw,x) \
                                (fw)->flag_mask.is_icon_unmapped = !!(x)
+#define IS_IN_TRANSIENT_SUBTREE(fw) ((fw)->flags.is_in_transient_subtree)
+#define SET_IN_TRANSIENT_SUBTREE(fw,x) \
+          (fw)->flags.is_in_transient_subtree = !!(x)
 #define IS_MAP_PENDING(fw)     ((fw)->flags.is_map_pending)
 #define SET_MAP_PENDING(fw,x)  (fw)->flags.is_map_pending = !!(x)
 #define SETM_MAP_PENDING(fw,x) (fw)->flag_mask.is_map_pending = !!(x)

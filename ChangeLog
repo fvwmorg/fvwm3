@@ -1,3 +1,55 @@
+2000-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (verify_stack_ring_consistency):
+	additional checks
+	(remove_window_from_stack_ring):
+	Set stack pointers to NULL after removing a window from the stack ring.
+	At least, this should cause a core dump as sooner.
+
+	* fvwm/menus.c
+	removed some comments
+	(paint_menu):
+	(pop_menu_up):
+	(select_menu_item):
+	prevent possible FvwmWindow pointer corruption
+
+	* fvwm/stack.c (add_window_to_stack_ring_after):
+	* fvwm/events.c (HandleConfigureRequest):
+	safety patch for broken ConfigureRequest packets when a window requests
+	to be placed relative to itself or its own fframe window
+	(DispatchEvent):
+	fixed possible fvwm window corruption; a pointer to a just deleted
+	window was remembered under certain circumstances
+
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	use functions to add/delete windows from stack ring
+
+	* fvwm/session.c (MatchWinToSM):
+	removed '#if 0'ed stacking order code
+
+	* fvwm/move_resize.c (moveLoop):
+	(resize_window):
+	removed XAllowEvents calls
+
+	* fvwm/events.c (HandleButtonPress):
+	* fvwm/events.c (WaitForButtonsUp):
+	fixed hang with actions bound to a button on an icon
+
+	* fvwm/stack.c (new_layer):
+	(mark_transient_subtree):
+	fixed stack ring corruption with applications that use the GNOME layer
+	hint
+
+	* fvwm/window_flags.h (SET_IN_TRANSIENT_SUBTREE):
+	* fvwm/fvwm.h (struct):
+	new flag to fix stack ring problem
+
+	* fvwm/add_window.c (setup_layer):
+	transients inherit layer from transientfor window when created
+
+	* fvwm/stack.c (get_transientfor_window):
+	new function
+
 2000-12-07  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Move CreateWindows before WindowList so
@@ -59,7 +111,7 @@
 	* fvwm/add_window.c (destroy_icon_font):
 	(destroy_window_font):
 	use default font when no font is currently loaded to fix an esoteric
-	reace contition with restart/destroy/recapture
+	race condition with restart/destroy/recapture
 
 	* fvwm/menus.c (pop_menu_down_and_repaint_parent):
 	(MenuInteraction):
@@ -91,7 +143,7 @@
 	function has finished
 
 	* tests/purify/purify.fvwm2rc:
-	removec 'recapture' from BusyCursor test
+	removed 'recapture' from BusyCursor test
 	destroy makewindows function before adding to it
 	moved some tests behind window creation
 
@@ -107,7 +159,7 @@
 2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):
-	fixed staring windows on other desks
+	fixed starting windows on other desks
 
 2000-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
 

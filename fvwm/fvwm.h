@@ -261,6 +261,7 @@ typedef struct
   unsigned is_icon_shaped : 1; /* is the icon shaped? */
   unsigned is_icon_unmapped : 1; /* was the icon unmapped, even though the
 				  * window is still iconified (Transients) */
+  unsigned is_in_transient_subtree : 1; /* temporary flag used in stack.c */
   unsigned is_mapped : 1; /* is it mapped? */
   unsigned is_map_pending : 1; /* Sent an XMapWindow, but didn't receive a
 				* MapNotify yet.*/
@@ -503,6 +504,8 @@ typedef struct FvwmWindow
   int max_window_height;
   int shade_anim_steps;
   unsigned char grabbed_buttons;
+
+  void *pscratch;             /* multi purpose scratch pointer */
 } FvwmWindow;
 
 /* include this down here because FvwmWindows must be defined when including

@@ -1282,7 +1282,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       done = True;
       break;
     case ButtonPress:
-      XAllowEvents(dpy, AsyncPointer, CurrentTime);
       if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
 	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
       {
@@ -2165,7 +2164,6 @@ void resize_window(F_CMD_ARGS)
     switch(Event.type)
     {
     case ButtonPress:
-      XAllowEvents(dpy, AsyncPointer, CurrentTime);
       done = True;
       if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
 	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))

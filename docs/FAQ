@@ -356,9 +356,8 @@ A: Some people find this annoying, but let me say that I did that for
 
         - so both 1.xx and 2.xx can be installed for use, in case some
           people at the same site would rather stay at 1.xx
-        - fvwm2 core dumps usually if it tries to read in a 1.xx rc
-          file because the syntax is pretty different and completely
-          incompatible
+        - the syntax of the rc files is pretty different and
+          completely incompatible
         - when people ask questions, if they explicitly mention their
           .fvwm2rc file I know that they are running one of the 2.xx
           versions, since they rarely mention exactly what version
