@@ -380,7 +380,7 @@ if test "$xpm_LIBS"; then
 	 problem_xpm=": Internal xpm detection logic error!"
        fi
      fi],
-   [with_xpm=no])
+   [with_xpm="no"; problem_xpm=": Xpm library or header not found!"])
   AC_MSG_RESULT($with_xpm)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
@@ -427,7 +427,7 @@ if test "$png_LIBS"; then
 	 problem_png=": Internal png detection logic error!"
        fi
      fi],
-   [with_png=no])
+   [with_png="no"; problem_png=": png library or header not found!"])
   AC_MSG_RESULT($with_png)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
