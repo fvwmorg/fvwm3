@@ -1,3 +1,13 @@
+Tue Mar  9 19:48:47 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ReadXServer.c (process_paste_data): You can now use button
+	2 to paste into a form.  You should be able to paste a return to
+	activate a button, right now, thats not working.
+
+	* FvwmForm/DefineMe.c (DefineMe): Fixed bug in "Fvwmform FormFvwmForm",
+	somewhere along the line, all the newlines in the output save file got
+	lost.
+
 1999-03-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/draw.c (DrawTitle):
