@@ -5,6 +5,11 @@ _+_A HREF="#2.4.9"_-_2.4.9_+_/A_-_.
 
 Changes in alpha release 2.5.4 (not released yet)
 
+* Style switches can be prefixed with '!' to inverse their meaning.
+  For example, "Style * Sticky" is the same as "Style * !Slippery".
+  This works *only* for pairs of styles that take no arguments and
+  for the Button and NoButton styles.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)
