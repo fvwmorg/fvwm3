@@ -321,7 +321,6 @@ typedef struct ScreenInfo
   int ClickTime;               /*Max button-click delay for Function built-in*/
   int ScrollResistance;        /* resistance to scrolling in desktop */
   int MoveResistance;          /* res to moving windows over viewport edge */
-  int MoveSmoothness;
   int MoveThreshold;           /* number of pixels of mouse motion to decide
 				* it's a move operation */
   int SnapAttraction;          /* attractiveness of window edges */

@@ -32,7 +32,6 @@ void move_window_doit(
   char *action,int* Module, Bool do_animate, Bool do_move_to_page);
 void animated_move_window(F_CMD_ARGS);
 void move_window_to_page(F_CMD_ARGS);
-void SetMoveSmoothness(F_CMD_ARGS);
 void SetMoveThreshold(F_CMD_ARGS);
 void SetOpaque(F_CMD_ARGS);
 void HideGeometryWindow(F_CMD_ARGS);

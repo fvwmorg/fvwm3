@@ -1,62 +1,49 @@
 Items with highest priority / most severe problems:
 
- - Please take a look at the issues under 'to be discussed'.  Let
-   us make a decision if these will be done or not fast.
+ - Is #48 finished? (win95-like config file)
  - Verify if #150 is really fixed.
- - Should remove the problems that have been fixed for a long
-   time from this list?
+ - #158 (IS_NAME_CHANGED flag) Mikhael?
+ - What should we do with #128 (bug #564)?  Can fvwm do anything
+   about the window that receives the selection?
+ - Do we want to set up bzip2 tarballs (#12)?  We'd have to put
+   links on the downloads page then.  Definitely saves a lot of
+   space (compressed with bzip2 -9):
+     fvwm-2.3.16.tar.gz:  1533662 bytes
+     fvwm-2.3.16.tar.bz2: 1188684 bytes
+ - #157
+ - #138/#145
 
 New since last update:
 
-none :-)
+150 (from 'closed' to 'to be verified')
 
 Closed since last update:
 
-132, 144, 150, 151, 154, 155
+14, 16, 90, 110, 119, 140, 141, 142, 153
 
 ---------- Summary: ----------------------------------------------
 
  1 to be verified
- 7 to be discussed
-30 to do
+ 1 to be discussed
+29 to do
  5 distribution issues
  9 testing
 ----------------------
-52 open items
-106 items done
-158 items in total
+45 open items
+114 items closed
+159 items in total
 
 ---------- To be verified: ---------------------------------------
 
-110) Running two FvwmAuto modules at one freezes fvwm.
-     [reported by Olivier on 15-Apr-2000]
-     [patch supposed by Tim]
+150) Mini windows in pager can reach into adjacent pages
+     because of the min size of 3x3 pixels.
 
 ---------- To be discussed ---------------------------------------
 
- 14) Figure out what the problem with Amaya is.
-     [reported on 3-Jun-1999 by Rob Urban <urban@spielwiese.de>]
-     [still unreproducible; remove from the list?]
- 16) Try to fix the 'netscape stuck on page' problem.
-     [reported on 17-May-1999 by <jason@sdf.lonestar.org>]
-     [still unreproducible; remove from the list?]
- 90) Icon distribution.
-     [Is there anything we have to do, e.g. add links from the web
-     pages or the FAQ or ...]
-140) Remove "Layer" command?  Instead, the "Layer" styles
-     can be applied immediately w/o Recapture.
-     [2 votes against vs 1 vote for removing]
-141) Remove "MoveSmoothness" command?  I wrote it back when
-     window motion was very jerky due to excessive network
-     traffic, but I guess it's not very useful.
-142) Remove copyright disclaimers from individual files
-     (smaller tarball).
-     [saves only 15k tarball size]
-153) Investigate/reduce excessive colour allocation traffic
-     on startup.
-     [reported by Dan]
+128) Bug #564 (pasting text goes to window with the mouse, not
+     the focused window).
 
----------- To do: ------------------------------------------------
+--------- To do: ------------------------------------------------
 
  17) Fix the bug that causes icons to lose management (bug #352).
      [couldn't reproduce this yet; can anybody who has netcool
@@ -75,9 +62,6 @@ Closed since last update:
 118) Investigate "FvwmPager & StaysOnTop" bug (#543).
      [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
      [in progress, reproduced by Mike Han]
-119) MaxSwallow does not work in FvwmWharf e.g. with
-     'xload -g 50x50'.
-     [reported by Dominik]
 120) Icons are not always sorted properly; there may be
      gaps after page switching (with IconBox).
      [reported by Joerg Klemenz on 26-Feb-2000]
@@ -91,8 +75,6 @@ Closed since last update:
 125) Bug #479 (windows migrating to page 0 0 during restart)
 126) Bug #489 (icons migrating on restart, ident does not work)
 127) Bug #511 (xpp subwindows not drawn properly)
-128) Bug #564 (pasting text goes to window with the mouse, not
-     the focused window).
 129) Bug #560
 130) Fix bounds error with 'DestroyStyle *' in
      update_window_color_hi_style().
@@ -118,7 +100,7 @@ Closed since last update:
 146) Bug #542 (Winch signals).
 148) Losing focus when entering root window bug.
      [reported by Elliot Sowadsky on 29-Dec-1999]
-     [suggested fix: Lenience style; does not help :-(]
+     [suggested fix: Lenience style... does not help]
 152) Investigate/fix fvwm freeze on Exceed.
      [various reporters, but no usable feedback yet]
 156) xterm client window cursor corrupted.
@@ -127,7 +109,8 @@ Closed since last update:
      [Mike Han/Dominik]
 158) IS_NAME_CHANGED flag still broken?
      [Mikhael?]
- 
+159) configure check for gnome.h
+
 ---------- Distribution issues: ----------------------------------
 
  9)  Set up RPM packages.
@@ -150,8 +133,37 @@ Closed since last update:
  95) Test new panel implementation in FvwmButtons.
 105) Test binding code.
 106) Test window position code.
- 
-========== Done: =================================================
+
+========== Closed recently: ======================================
+
+ 14) Figure out what the problem with Amaya is.
+     [reported on 3-Jun-1999 by Rob Urban <urban@spielwiese.de>]
+     [still unreproducible; not relevant for 2.4]
+ 16) Try to fix the 'netscape stuck on page' problem.
+     [reported on 17-May-1999 by <jason@sdf.lonestar.org>]
+     [still unreproducible; not relevant for 2.4]
+ 90) Icon distribution.
+110) Running two FvwmAuto modules at one freezes fvwm.
+119) MaxSwallow does not work in FvwmWharf e.g. with
+     'xload -g 50x50'.
+     [reported by Dominik]
+     [not reproducible anymore]
+140) Remove "Layer" command?  Instead, the "Layer" styles
+     can be applied immediately w/o Recapture.
+     [3 votes against vs 1 vote for removing]
+     [maybe after 2.4]
+141) Remove "MoveSmoothness" command?  I wrote it back when
+     window motion was very jerky due to excessive network
+     traffic, but I guess it's not very useful.
+142) Remove copyright disclaimers from individual files
+     (smaller tarball).
+     [saves only 15k tarball size; not worth the effort]
+153) Investigate/reduce excessive colour allocation traffic
+     on startup.
+     [reported by Dan]
+     [perhaps after 2.4]
+
+========== Closed: ===============================================
 
  1)  Document the GNOME stuff (man page still missing).
  2)  Add screen shots to web page.
@@ -320,11 +332,8 @@ Closed since last update:
 147) Investigate/fix missing windows in pager after Recapture.
      [reported by Paul (PDS) on 06-Jan-2000]
 149) "date" command confuses keyboard focus.
-150) Mini windows in pager can reach into adjacent pages
-     because of the min size of 3x3 pixels.
 151) Colours in FvwmIconMan screwed up.
 154) Investigate/fix move lockups.
      [Reported by Brad]
      [did not happoen for several months; fix if it shows up again]
 155) Remove busycursor configure option.
-

@@ -1559,7 +1559,6 @@ static void InitVariables(void)
   Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
   Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
   Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
-  Scr.MoveSmoothness = DEFAULT_MOVE_SMOOTHNESS;
   Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
   /* ClickTime is set to the positive value upon entering the event loop. */
   Scr.ClickTime = -DEFAULT_CLICKTIME;

@@ -56,7 +56,6 @@
 #define DEFAULT_SNAP_ATTRACTION_MODE      0
 #define DEFAULT_SNAP_GRID_X               1
 #define DEFAULT_SNAP_GRID_Y               1
-#define DEFAULT_MOVE_SMOOTHNESS           30
 
 /* paging */
 #define DEFAULT_EDGE_SCROLL             100

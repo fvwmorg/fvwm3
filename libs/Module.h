@@ -131,6 +131,30 @@ void SendText(int *fd, const char *message, unsigned long window);
 
 /************************************************************************
  *
+ * SendFinishedStartupNotification - informs fvwm that the module has
+ * finished its startup procedures and is fully operational now.
+ *
+ ***********************************************************************/
+void SendFinishedStartupNotification(int *fd);
+
+/************************************************************************
+ *
+ * SendUnlockNotification - informs fvwm that the module has
+ * finished it's procedures and fvwm may proceed.
+ *
+ ***********************************************************************/
+void SendUnlockNotification(int *fd);
+
+/************************************************************************
+ *
+ * SendQuitNotification - informs fvwm that the module has
+ * finished and may be killed.
+ *
+ ***********************************************************************/
+void SendQuitNotification(int *fd);
+
+/************************************************************************
+ *
  * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited
  * string separated into its component sections and sent one by one to fvwm.
  * It is discouraged to use this function with a "synchronous" module.

@@ -495,6 +495,8 @@ static void InteractiveMove(
   if(IS_MAPPED(tmp_win) && DragWidth*DragHeight <
      (Scr.OpaqueSize*Scr.MyDisplayWidth*Scr.MyDisplayHeight)/100)
     do_move_opaque = True;
+  else if (IS_ICONIFIED(tmp_win))
+    do_move_opaque = True;
   else
   {
     Scr.flags.is_wire_frame_displayed = True;
@@ -1137,7 +1139,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   FvwmWindow tmp_win_copy;
   int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
   int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
-  int count;
   int vx = Scr.Vx;
   int vy = Scr.Vy;
   int xl_orig;
@@ -1153,7 +1154,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int orig_icon_x = 0;
   int orig_icon_y = 0;
 
-  if (!IS_MAPPED(tmp_win))
+  if (!IS_MAPPED(tmp_win) && !IS_ICONIFIED(tmp_win))
     do_move_opaque = False;
   bad_window = None;
   if (IS_ICONIFIED(tmp_win))
@@ -1189,7 +1190,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   yt_orig = yt;
 
   /* draw initial outline */
-  if ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win))
+  if (!IS_ICONIFIED(tmp_win) &&
+      ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
     MoveOutline(xl, yt, Width - 1, Height - 1);
 
   DisplayPosition(tmp_win,xl,yt,True);
@@ -1223,9 +1225,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       XEvent new_event;
 
       /*** logic borrowed from icewm ***/
-      count = Scr.MoveSmoothness;
-      /* if count is zero, loop 'infinitely'; this test is not a bug */
-      while (--count != 0 && XPending(dpy) > 0 &&
+      while (XPending(dpy) > 0 &&
 	     XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
 			     ButtonPressMask | ButtonRelease | KeyPressMask,
 			     &new_event))
@@ -1553,17 +1553,6 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
 	       offset,
 	       Scr.DefaultFont.font->ascent + SIZE_VINDENT,
 	       str, strlen(str));
-}
-
-
-void SetMoveSmoothness(F_CMD_ARGS)
-{
-  int val = 0;
-
-  if (GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
-    Scr.MoveSmoothness = DEFAULT_MOVE_SMOOTHNESS;
-  else
-    Scr.MoveSmoothness = val;
 }
 
 
