@@ -11,12 +11,16 @@ module_SCRIPTS = FvwmCascade FvwmTile
 FvwmCascade: FORCE
 	echo "#!/bin/sh" > $@
 	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
-	echo exec ${moduledir}/FvwmRearrange -cascade '$$@' >> $@
+	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
+	echo 'shift;shift;shift;shift;shift' >> $@
+	echo exec ${moduledir}'/FvwmRearrange $$modargs -cascade $$@' >> $@
 
 FvwmTile: FORCE
 	echo "#!/bin/sh" > $@
 	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
-	echo exec ${moduledir}/FvwmRearrange -tile '$$@' >> $@
+	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
+	echo 'shift;shift;shift;shift;shift' >> $@
+	echo exec ${moduledir}'/FvwmRearrange $$modargs -tile $$@' >> $@
 
 # do nothing, just force the above rules that depend on it...
 FORCE:

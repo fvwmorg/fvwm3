@@ -1,3 +1,13 @@
+Sun May 23 11:52:33 1999  DanEspen  <dje@blue>
+
+	* FvwmRearrange/FvwmRearrange.c (main): Use InitGetConfigLine to
+	reduce pipe traffic, even though I have my doubts that this module
+	should be reading a config at all.  It seems to only make sense to
+	control this module thru the command line.
+
+	* FvwmRearrange/Makefile.am (FvwmTile): Make FvwmTile and FvwmCascade
+	shells work.  The first 5 args must be before the -tile or -cascade.
+
 Sat May 22 08:42:24 1999  DanEspen  <dje@blue>
 
 	* FvwmWinList/FvwmWinList.c (ParseConfig):

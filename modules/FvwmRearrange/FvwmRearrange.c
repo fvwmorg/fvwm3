@@ -554,6 +554,7 @@ int main(int argc, char *argv[])
 		free(args);
 	}
 #else
+        InitGetConfigLine(fd,match);
 	GetConfigLine(fd, &config_line);
 	while (config_line != NULL) {
 		if (strncmp(match,config_line,len)==0) {
