@@ -1566,7 +1566,7 @@ static void MenuInteraction(
       /* discard any extra motion events before a release */
       while((XCheckMaskEvent(dpy,ButtonMotionMask|ButtonReleaseMask,
 			     &Event))&&(Event.type != ButtonRelease))
-	  ;
+	;
     }
 
     pmret->rc = MENU_NOP;
@@ -1600,7 +1600,10 @@ static void MenuInteraction(
 	{
 	  if (pmret->menu != mrMi)
 	  {
-	    pmret->flags.is_menu_posted = 0;
+	    if (mi != MR_PARENT_ITEM(pmp->menu))
+	    {
+	      pmret->flags.is_menu_posted = 0;
+	    }
 	  }
 	  if (pmp->menu != mrMi)
 	  {

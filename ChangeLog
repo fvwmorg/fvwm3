@@ -1,5 +1,8 @@
 2001-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (MenuInteraction):
+	minor posting fix
+
 	* fvwm/stack.c (RaiseOrLowerWindow):
 	reduce flickering when raising windows
 
