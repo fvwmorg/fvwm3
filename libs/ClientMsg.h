@@ -13,34 +13,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
-** MyXGrabServer & MyXUngrabServer - to handle nested grab server calls
-*/
+/***************************************************************************
+ *
+ * ICCCM Client Messages - Section 4.2.8 of the ICCCM dictates that all
+ * client messages will have the following form:
+ *
+ *     event type	ClientMessage
+ *     message type	_XA_WM_PROTOCOLS
+ *     window		tmp->w
+ *     format		32
+ *     data[0]		message atom
+ *     data[1]		time stamp
+ *
+ ****************************************************************************/
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
 
-#include "Grab.h"
 
-/* Made into global for module interface.  See module.c. */
-int myxgrabcount = 0;
+void send_clientmessage (Display *disp, Window w, Atom a, Time timestamp);
 
-void MyXGrabServer(Display *disp)
-{
-  if (myxgrabcount == 0)
-  {
-    XGrabServer(disp);
-  }
-  ++myxgrabcount;
-}
 
-void MyXUngrabServer(Display *disp)
-{
-  if (--myxgrabcount < 0) /* should never happen */
-  {
-    /* fvwm_msg(ERR,"MyXUngrabServer","too many ungrabs!\n"); */
-    myxgrabcount = 0;
-  }
-  if (myxgrabcount == 0)
-  {
-    XUngrabServer(disp);
-  }
-}
-
+extern Atom _XA_WM_PROTOCOLS;

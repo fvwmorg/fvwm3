@@ -60,7 +60,12 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
                                  sizeof(struct_entry),                  \
                                  XCmpToken)
 
-extern int XCmpToken(); /* const char *s, const char **t); */
+/* We don't prototype the following, because it will generate
+   warnings about incompatible fifth parameter to bsearch().  The 
+   bsearch() comparison function is prototyped as 
+   "int compare( const void*, const void* )" */
+extern int XCmpToken(); /* const char* s, const char** t */
+
 
 
 

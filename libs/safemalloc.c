@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "safemalloc.h"
+
 /***********************************************************************
  *
  *  Procedure:

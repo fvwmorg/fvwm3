@@ -119,7 +119,7 @@ char *GetQuotedString(char *sin, char **sout, const char *delims,
  * neither a whitespace character nor contained in the string 'spaces'. snum
  * is the number of characters in 'spaces'. You must not pass a NULL pointer
  * in indata. */
-char *SkipSpaces(char *indata, char *spaces, int snum)
+static char *SkipSpaces(char *indata, char *spaces, int snum)
 {
   while (*indata != 0 && (isspace((unsigned char)*indata) ||
 			  (snum && strchr(spaces, *indata))))
@@ -130,7 +130,7 @@ char *SkipSpaces(char *indata, char *spaces, int snum)
 /* Copies a token beginning at src to a previously allocated area dest. dest
  * must be large enough to hold the token. Leading whitespaces cause the token
  * to be NULL. */
-char *CopyToken(char *src, char *dest, char *spaces, int snum, char *delims,
+static char *CopyToken(char *src, char *dest, char *spaces, int snum, char *delims,
 		int dnum, char *out_delim)
 {
   while ( (*src != 0) && !(isspace((unsigned char)*src) ||
@@ -217,21 +217,24 @@ char *PeekToken(char *indata, char **outdata)
 }
 
 
+/**** SMR: Defined but not used -- is this for the future or a relic of the past? ****/
+
 /* Tries to seek up to n tokens in indata. Returns the number of tokens
  * actually found (up to a maximum of n). */
-int CheckNTokens(char *indata, unsigned int n)
-{
-  unsigned int i;
-  char *token;
 
-  for (i = 0; i < n; i++)
-    {
-      token = PeekToken(indata, NULL);
-      if (token == NULL)
-	break;
-    }
-  return i;
-}
+/* int CheckNTokens(char *indata, unsigned int n) */
+/* { */
+/*   unsigned int i; */
+/*   char *token; */
+
+/*   for (i = 0; i < n; i++) */
+/*     { */
+/*       token = PeekToken(indata, NULL); */
+/*       if (token == NULL) */
+/* 	break; */
+/*     } */
+/*   return i; */
+/* } */
 
 /*
 ** MatchToken: does case-insensitive compare on next token in string, leaving

@@ -88,11 +88,12 @@ int usleep( unsigned long usec );
 #endif
 
 
-
+#include "ClientMsg.h"
+#include "Grab.h"
+#include "Parse.h"
 #include "Strings.h"
 #include "envvar.h"
-#include "Parse.h"
-
+#include "safemalloc.h"
 
 int matchWildcards(char *pattern, char *string);
 
@@ -104,7 +105,6 @@ int matchWildcards(char *pattern, char *string);
 
 int GetFdWidth(void);
 int getostype(char *buf, int max);
-char *safemalloc(int);
 
 /**
  * Set a colon-separated path, with environment variable expansions.

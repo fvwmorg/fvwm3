@@ -1,3 +1,23 @@
+Mon May 24 17:45:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/wild.c: include wild.h.
+
+	* libs/safemalloc.c: include safemalloc.h.
+
+	* libs/fvwmlib.h: include ClientMsg.h, Grab.h, and safemalloc.h.
+
+	* libs/Parse.c (SkipSpaces,CopyToken): make static.
+	* libs/Parse.c (CheckNTokens): comment out unused function.
+
+	* libs/Grab.c: include Grab.h.
+
+	* libs/Bindings.c (GrabWindowButton): make static.
+
+	* libs/wild.h: 
+	* libs/safemalloc.h: 
+	* libs/Grab.h:
+	* libs/ClientMsg.h: new files.
+
 1999-05-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.c (Done): call RestartInSession if command is
