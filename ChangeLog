@@ -1,3 +1,8 @@
+2003-09-01  olicha  <olivier.chapuis@free.fr>
+
+	* libs/gravity.c (gravity_dir_to_string):
+	A new interface function to transform a direction_t to a string
+
 2003-08-31  S. Anderson  <sa@xmission.com>
 
 	* libs/defaults.h (FLOCALE_MB_FALLBACK_FONT): 

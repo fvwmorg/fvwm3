@@ -80,6 +80,7 @@ int gravity_dir_to_sign_one_axis(
 	direction_t dir);
 direction_t gravity_parse_dir_argument(
 	char *action, char **ret_action, direction_t default_ret);
+char *gravity_dir_to_string(direction_t dir, char *default_str);
 multi_direction_t gravity_parse_multi_dir_argument(
 	char *action, char **ret_action);
 void gravity_get_next_multi_dir(int dir_set, multi_direction_t *dir);

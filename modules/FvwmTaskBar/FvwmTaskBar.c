@@ -161,7 +161,7 @@ int  win_width    = 5,
 	WindowState  = -2, /* -2 unmaped, 1 not hidden, -1 hidden,
 			    *  0 hidden -> not hidden (for the events loop) */
 	FocusInWin = 0;    /* 1 if the Taskbar has the focus */
-
+direction_t win_shade_direction = 0;
 static int auto_stick_y = 0;
 
 static volatile sig_atomic_t AlarmSet = NOT_SET;
@@ -611,6 +611,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	XMoveWindow(dpy, win, win_x, win_y);
       }
       win_is_shaded = IS_SHADED(cfgpacket);
+      win_shade_direction = SHADED_DIR(cfgpacket);
       break;
     }
 
@@ -803,10 +804,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (temp)
       {
 	Bool do_reshade = False;
+	direction_t shade_dir = win_shade_direction;
+	char buff[MAX_MODULE_INPUT_TEXT_LEN];
+
 	if (AnimCommand && (AnimCommand[0] != 0)
 	    && IsItemIndexIconSuppressed(&windows,i))
 	{
-	  char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	  Window child;
 	  int x, y;
 	  int abs_x, abs_y;
@@ -836,7 +839,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	DrawButtonArray(&buttons, 0, NULL);
 	if (do_reshade)
 	{
-		SendText(Fvwm_fd, "WindowShade On", win);
+		sprintf(
+			buff,"WindowShade %s",
+			gravity_dir_to_string(shade_dir,""));
+		SendText(Fvwm_fd, buff, win);
 	}
       }
       if (AnimCommand && AnimCommand[0] != 0)

@@ -45,6 +45,19 @@ struct _gravity_offset
 
 /* ---------------------------- local variables ---------------------------- */
 
+static char *gravity_dir_optlist[] = {
+	"-", "N",  "North",     "Top",         "t", "Up",         "u",
+	"]", "E",  "East",      "Right",       "r", "Right",      "r",
+	"_", "S",  "South",     "Bottom",      "b", "Down",       "d",
+	"[", "W",  "West",      "Left",        "l", "Left",       "l",
+	"^", "NE", "NorthEast", "TopRight",    "tr", "UpRight",   "ur",
+	">", "SE", "SouthEast", "BottomRight", "br", "DownRight", "dr",
+	"v", "SW", "SouthWest", "BottomLeft",  "bl", "DownLeft",  "dl",
+	"<", "NW", "NorthWest", "TopLeft",     "tl", "UpLeft",    "ul",
+	".", "C",  "Center",    "Centre",      NULL, NULL,        NULL,
+	NULL
+};
+
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
@@ -415,20 +428,7 @@ direction_t gravity_parse_dir_argument(
 	int index;
 	int rc;
 	char *next;
-	char *optlist[] = {
-		"-", "N",  "North",     "Top",         "t", "Up",         "u",
-		"]", "E",  "East",      "Right",       "r", "Right",      "r",
-		"_", "S",  "South",     "Bottom",      "b", "Down",       "d",
-		"[", "W",  "West",      "Left",        "l", "Left",       "l",
-		"^", "NE", "NorthEast", "TopRight",    "tr", "UpRight",   "ur",
-		">", "SE", "SouthEast", "BottomRight", "br", "DownRight", "dr",
-		"v", "SW", "SouthWest", "BottomLeft",  "bl", "DownLeft",  "dl",
-		"<", "NW", "NorthWest", "TopLeft",     "tl", "UpLeft",    "ul",
-		".", "C",  "Center",    "Centre",      NULL, NULL,        NULL,
-		NULL
-	};
-
-	next = GetNextTokenIndex(action, optlist, 0, &index);
+	next = GetNextTokenIndex(action, gravity_dir_optlist, 0, &index);
 	if (index == -1)
 	{
 		/* nothing selected, use default and don't modify action */
@@ -445,6 +445,25 @@ direction_t gravity_parse_dir_argument(
 	}
 
 	return (direction_t)rc;
+}
+
+char *gravity_dir_to_string(direction_t dir, char *default_str)
+{
+	char *str = NULL;
+	int d = dir * 7;
+
+	if (d >= sizeof(gravity_dir_optlist)/sizeof(gravity_dir_optlist[0]))
+	{
+		return default_str;
+	}
+	str = gravity_dir_optlist[d];
+
+	if (str == NULL)
+	{
+		return default_str;
+	}
+	
+	return str;
 }
 
 multi_direction_t gravity_parse_multi_dir_argument(
