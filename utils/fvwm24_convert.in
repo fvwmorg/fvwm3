@@ -52,26 +52,18 @@ $\ = "\n";			# set output record separator
 	   'IGNORENATIVEWINDOWS','RaiseOverNativeWindows off');
 
 print "Input from $source, output to $dest\n";
-
-open(IN, $source) || die "Can't open $source";
-open(STDOUT, ">$dest2") || die "Can't redirect stdout to $dest2";
-$pass = "1";
-parse_pass();
-close(IN);
-close(STDOUT);
-
-open(IN, $dest2) || die "Can't open $source";
-open(STDOUT, ">$dest") || die "Can't redirect stdout to $dest2";
-$pass = "2";
-parse_pass();
-close(IN);
+parse_pass($source, $dest2, 1);
+parse_pass($dest2, $dest, 2);
 system "rm $dest2 2>/dev/null";
-
 exit 0;
 
 
 sub parse_pass {
-  if ($pass eq "2") {
+  local($sourcefile, $destfile, $pass) = @_;
+
+  open(IN, $sourcefile) || die "Can't open $source";
+  open(STDOUT, ">$destfile") || die "Can't redirect stdout to $dest2";
+  if ($pass == 2) {
     print '# This file changed by the .fvwm2rc to .fvwm/.fvwm2rc converter';
   }
   # create assoc array by imagepath:
@@ -158,7 +150,7 @@ sub parse_pass {
     }
 
     $single_lines = $_;
-    if ($pass eq "2") {
+    if ($pass == 2) {
       $line = $_;
       # collect continuation lines
       while (substr($line, length($line), 1) eq "\\") { # backslashed lines
@@ -207,7 +199,7 @@ sub parse_pass {
     }
 
     # generate warnings in pass 2 only
-    if ($pass eq "2") {
+    if ($pass == 2) {
       if (/^\s*[*].+PANEL/i) {
 	if ($lastwarn ne "panel") {
 	  print STDERR "Possible old style FvwmButtons Panel definition found";
@@ -275,6 +267,8 @@ sub parse_pass {
     $lastwarn = "";
     print $single_lines;			# pass everything else thru
   }
+  close(IN);
+  close(STDOUT);
 }
 
 
