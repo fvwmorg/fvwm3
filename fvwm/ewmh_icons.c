@@ -649,115 +649,153 @@ void extract_wm_icon(CARD32 *list, unsigned int size, int wanted_w, int wanted_h
 int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 			   Bool is_mini_icon)
 {
-  int start, width, height;
-  int wanted_w, wanted_h;
-  int max_w, max_h;
-  Pixmap pixmap = None;
-  Pixmap mask = None;
-  Pixmap alpha = None;
-  Bool free_list = False;
-  int have_alpha;
+	int start, width, height;
+	int wanted_w, wanted_h;
+	int max_w, max_h;
+	Pixmap pixmap = None;
+	Pixmap mask = None;
+	Pixmap alpha = None;
+	Bool free_list = False;
+	int have_alpha;
 
-  if (list == NULL)
-  {
-    /* we are called from icons.c or update.c */
-    list = ewmh_AtomGetByName(FW_W(fwin),"_NET_WM_ICON",
-			      EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
-    free_list = True;
-    if (list == NULL)
-      return 0;
-  }
+	if (list == NULL)
+	{
+		/* we are called from icons.c or update.c */
+		list = ewmh_AtomGetByName(FW_W(fwin),"_NET_WM_ICON",
+					  EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
+		free_list = True;
+		if (list == NULL)
+			return 0;
+	}
 
-  if (is_mini_icon)
-  {
-    wanted_w = MINI_ICON_WANTED_WIDTH;
-    wanted_h = MINI_ICON_WANTED_HEIGHT;
-    max_w = MINI_ICON_MAX_WIDTH;
-    max_h = ICON_MAX_HEIGHT;
-  }
-  else
-  {
-    wanted_w = ICON_WANTED_WIDTH;
-    wanted_h = ICON_WANTED_HEIGHT;
-    max_w = ICON_MAX_WIDTH;
-    max_h = ICON_MAX_HEIGHT;
-  }
+	if (is_mini_icon)
+	{
+		wanted_w = MINI_ICON_WANTED_WIDTH;
+		wanted_h = MINI_ICON_WANTED_HEIGHT;
+		max_w = MINI_ICON_MAX_WIDTH;
+		max_h = ICON_MAX_HEIGHT;
+	}
+	else
+	{
+		wanted_w = ICON_WANTED_WIDTH;
+		wanted_h = ICON_WANTED_HEIGHT;
+		max_w = ICON_MAX_WIDTH;
+		max_h = ICON_MAX_HEIGHT;
+	}
 
-  extract_wm_icon(list, size, wanted_w, wanted_h, &start, &width, &height);
-  if (width == 0 || height == 0 || width > max_w || height > max_h)
-  {
-    if (free_list)
-      free(list);
-    return 0;
-  }
+	extract_wm_icon(list, size, wanted_w, wanted_h, &start, &width, &height);
+	if (width == 0 || height == 0)
+	{
+		if (free_list)
+			free(list);
+		return 0;
+	}
 
-  pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
-  mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
-  if (XRenderSupport)
-  {
-	  alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
-  }
-  if (!PImageCreatePixmapFromArgbData(dpy, Scr.Root, Scr.ColorLimit,
-				      (unsigned char *)list,
-				      start, width, height,
-				      pixmap, mask, alpha, &have_alpha)
-      || pixmap == None)
-  {
-    fvwm_msg(ERR, "EWMH_SetIconFromWMIcon","fail to create a pixmap\n");
-    if (pixmap != None)
-      XFreePixmap(dpy, pixmap);
-    if (mask != None)
-      XFreePixmap(dpy, mask);
-    if (alpha != None)
-      XFreePixmap(dpy, alpha);
-    if (free_list)
-      free(list);
-    return 0;
-  }
-  if (!have_alpha && alpha != None)
-  {
-	  XFreePixmap(dpy, alpha);
-	  alpha = None;
-  }
+	pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
+	mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
+	if (XRenderSupport)
+	{
+		alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
+	}
+	if (!PImageCreatePixmapFromArgbData(dpy, Scr.Root, Scr.ColorLimit,
+					    (unsigned char *)list,
+					    start, width, height,
+					    pixmap, mask, alpha, &have_alpha)
+	    || pixmap == None)
+	{
+		fvwm_msg(ERR, "EWMH_SetIconFromWMIcon",
+			 "fail to create a pixmap\n");
+		if (pixmap != None)
+			XFreePixmap(dpy, pixmap);
+		if (mask != None)
+			XFreePixmap(dpy, mask);
+		if (alpha != None)
+			XFreePixmap(dpy, alpha);
+		if (free_list)
+			free(list);
+		return 0;
+	}
+	if (!have_alpha && alpha != None)
+	{
+		XFreePixmap(dpy, alpha);
+		alpha = None;
+	}
 
-  if (FMiniIconsSupported && is_mini_icon && !DO_EWMH_MINI_ICON_OVERRIDE(fwin))
-  {
-    char *name = NULL;
+	if (width > max_w || height > max_h)
+	{
+		Pixmap np = None,nm =None, na = None;
+	    
+		if (pixmap)
+		{
+			np = CreateStretchPixmap(dpy, pixmap, width, height,
+						 Pdepth, wanted_w, wanted_h,
+						 Scr.TitleGC);
+			XFreePixmap(dpy, pixmap);
+			pixmap = np;
+		}
+		if (mask)
+		{
+			nm = CreateStretchPixmap(dpy, mask, width, height,
+						 1, wanted_w, wanted_h,
+						 Scr.MonoGC);
+			XFreePixmap(dpy, mask);
+			mask = nm;
+		}
+		if (alpha)
+		{
+			GC my_gc = fvwmlib_XCreateGC(dpy, alpha, 0, 0);
+			na = CreateStretchPixmap(dpy, alpha, width, height,
+						 8, wanted_w, wanted_h,
+						 my_gc);
+			XFreePixmap(dpy, alpha);
+			XFreeGC(dpy, my_gc);
+			alpha = na;
+		}
+		width = wanted_w;
+		height = wanted_h;
+	}
+	if (FMiniIconsSupported && is_mini_icon &&
+	    !DO_EWMH_MINI_ICON_OVERRIDE(fwin))
+	{
+		char *name = NULL;
 
-    CopyString(&name,"ewmh_mini_icon");
-    if (fwin->mini_icon)
-    {
-	PDestroyFvwmPicture(dpy,fwin->mini_icon);
-	fwin->mini_icon = 0;
-    }
-    fwin->mini_icon = PCacheFvwmPictureFromPixmap(dpy, Scr.NoFocusWin,
-						  name,pixmap, mask, alpha,
-						  width, height);
-    if (fwin->mini_icon != NULL)
-    {
-      fwin->mini_pixmap_file = name;
-      BroadcastFvwmPicture(M_MINI_ICON,
-			   FW_W(fwin), FW_W_FRAME(fwin), (unsigned long)fwin,
-			   fwin->mini_icon,
-			   fwin->mini_pixmap_file);
-      border_redraw_decorations(fwin);
-    }
-  }
-  if (!is_mini_icon)
-  {
-    fwin->iconPixmap = pixmap;
-    fwin->icon_maskPixmap = mask;
-    fwin->icon_alphaPixmap = alpha;
-    fwin->icon_g.picture_w_g.width = width;
-    fwin->icon_g.picture_w_g.height = height;
-    fwin->iconDepth = Pdepth;
-    SET_PIXMAP_OURS(fwin, 1);
-    if (FShapesSupported && mask && !alpha)
-      SET_ICON_SHAPED(fwin, 1);
-  }
-  if (free_list)
-    free(list);
-  return 1;
+		CopyString(&name,"ewmh_mini_icon");
+		if (fwin->mini_icon)
+		{
+			PDestroyFvwmPicture(dpy,fwin->mini_icon);
+			fwin->mini_icon = 0;
+		}
+		fwin->mini_icon = PCacheFvwmPictureFromPixmap(dpy,
+							      Scr.NoFocusWin,
+							      name,
+							      pixmap,mask,alpha,
+							      width, height);
+		if (fwin->mini_icon != NULL)
+		{
+			fwin->mini_pixmap_file = name;
+			BroadcastFvwmPicture(M_MINI_ICON,
+					     FW_W(fwin), FW_W_FRAME(fwin),
+					     (unsigned long)fwin,
+					     fwin->mini_icon,
+					     fwin->mini_pixmap_file);
+			border_redraw_decorations(fwin);
+		}
+	}
+	if (!is_mini_icon)
+	{
+		fwin->iconPixmap = pixmap;
+		fwin->icon_maskPixmap = mask;
+		fwin->icon_alphaPixmap = alpha;
+		fwin->icon_g.picture_w_g.width = width;
+		fwin->icon_g.picture_w_g.height = height;
+		fwin->iconDepth = Pdepth;
+		SET_PIXMAP_OURS(fwin, 1);
+		if (FShapesSupported && mask && !alpha)
+			SET_ICON_SHAPED(fwin, 1);
+	}
+	if (free_list)
+		free(list);
+	return 1;
 }
 
 #endif /* HAVE_EWMH */

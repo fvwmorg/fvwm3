@@ -1,5 +1,8 @@
 2002-05-06  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	Resize an ewmh icon to the wanted size if it is to big
+
 	* fvwm/ewmh.c (EWMH_WindowDestroyed):
 	Set also the stacking list when a window is destroyed
 
