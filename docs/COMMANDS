@@ -1,4 +1,4 @@
-The recognized commands for fvwm 2.5.6 (from cvs) as of 12-Jan-2003:
+The recognized commands for fvwm 2.5.8 (from cvs) as of 07-Jul-2003:
 
   #                     - Comment line (ignored)
   *                     - Module configuration line (no space after asterisk)
@@ -78,6 +78,7 @@ The recognized commands for fvwm 2.5.6 (from cvs) as of 12-Jan-2003:
   IconPath              - (obsolete, use ImagePath instead)
   IgnoreModifiers       - Modifiers to ignore on mouse and key bindings
   ImagePath             - Directories to search for images
+  KeepRc                - Do not modify the previous command return code
   Key                   - Bind or unbind a key to an fvwm action
   KillModule            - Stops an fvwm module
   Layer                 - Change the layer of a window
@@ -152,9 +153,9 @@ The recognized commands for fvwm 2.5.6 (from cvs) as of 12-Jan-2003:
   Stroke                - Bind a stroke to an fvwm action
   StrokeFunc            - Record stroke and execute corresponding stroke action
   Style                 - Set attributes of windows that match a pattern
-  TearMenuOff           - Convert a menu to a window, for use as a menu command
+  TearMenuOff           - Convert a menu to a window, for use in menu items
   Test                  - Execute command if conditions are met
-  TestRc                - Conditional switch
+  TestRc                - Conditional switch (may be changed)
   ThisWindow            - Operate on the context window if it meets conditions
   Title                 - Insert title into a menu
   TitleStyle            - Control window title

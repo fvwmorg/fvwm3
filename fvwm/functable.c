@@ -49,19 +49,20 @@
 
 /* ---------------------------- exported variables (globals) --------------- */
 
-/* IMPORTANT: command description should not be longer than 53 characters */
-/* the next line must be blank for modules to properly parse this file */
+/* IMPORTANT: command description should not be longer than 53 characters. */
+/* If you change func_table format, change also perllib/FVWM/create-commands */
+/* The next line must be blank for modules to properly parse this file. */
 
 const func_t func_table[] =
 {
 	/* CMD_ENT("#", CMD_Comment, 0, 0, 0), */
-	/* - Comment line (ignored) */
+	/* # - Comment line (ignored) */
 
 	/* CMD_ENT("*", CMD_Asteric, 0, 0, 0), */
-	/* - Module configuration line (no space after asterisk) */
+	/* * - Module configuration line (no space after asterisk) */
 
 	CMD_ENT("+", CMD_Plus, F_ADDMENU2, 0, 0),
-	/* - Continue the last AddToFunc, AddToMenu or AddToDecor */
+	/* + - Continue the last AddToFunc, AddToMenu or AddToDecor */
 
 	CMD_ENT("addbuttonstyle", CMD_AddButtonStyle, F_ADD_BUTTON_STYLE,
 		FUNC_DECOR, 0),
@@ -266,7 +267,7 @@ const func_t func_table[] =
 	/* - Configure focus and raise policy for windows */
 
 	CMD_ENT("function", CMD_Dummy, F_FUNCTION, 0, 0),
-	/* - Execute a user defined function, see AddToFunc */
+	/* Function - Execute a user defined function, see AddToFunc */
 
 	CMD_ENT("globalopts", CMD_GlobalOpts, F_GLOBAL_OPTS, 0, 0),
 	/* - (obsolete, use corresponding Style * instead) */
@@ -314,7 +315,7 @@ const func_t func_table[] =
 	/* - Directories to search for images */
 
 	CMD_ENT(PRE_KEEPRC, CMD_Dummy, F_KEEPRC, 0, 0),
-	/* - Suppress errors on command, avoid window selection */
+	/* KeepRc - Do not modify the previous command return code */
 
 	CMD_ENT("key", CMD_Key, F_KEY, 0, 0),
 	/* - Bind or unbind a key to an fvwm action */
@@ -533,7 +534,7 @@ const func_t func_table[] =
 	/* - Set an environment variable */
 
 	CMD_ENT(PRE_SILENT, CMD_Dummy, F_SILENT, 0, 0),
-	/* - Suppress errors on command, avoid window selection */
+	/* Silent - Suppress errors on command, avoid window selection */
 
 	CMD_ENT("snapattraction", CMD_SnapAttraction, F_SNAP_ATT, 0, 0),
 	/* - Control attraction of windows during move */
@@ -569,7 +570,7 @@ const func_t func_table[] =
 	/* - Set attributes of windows that match a pattern */
 
 	CMD_ENT("tearmenuoff", CMD_Dummy, F_TEARMENUOFF, 0, 0),
-	/* - Convert a menu to a window, for use as a menu command */
+	/* TearMenuOff - Convert a menu to a window, for use in menu items */
 
 	CMD_ENT("test", CMD_Test, F_TEST_, 0, 0),
 	/* - Execute command if conditions are met */
@@ -581,7 +582,7 @@ const func_t func_table[] =
 	/* - Operate on the context window if it meets conditions */
 
 	CMD_ENT("title", CMD_Dummy, F_TITLE, 0, 0),
-	/* - Insert title into a menu */
+	/* Title - Insert title into a menu */
 
 	CMD_ENT("titlestyle", CMD_TitleStyle, F_TITLESTYLE, FUNC_DECOR, 0),
 	/* - Control window title */
@@ -650,5 +651,5 @@ const func_t func_table[] =
 	CMD_ENT("xsynchronize", CMD_XSynchronize, F_XSYNCHRONIZE, 0, 0),
 	/* - For debugging, cause all X requests to be synchronous */
 
-	{"",0,0,0,0}
+	{ "", 0, 0, 0, 0 }
 };

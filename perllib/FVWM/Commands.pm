@@ -5,7 +5,7 @@ package FVWM::Commands;
 use vars qw($VERS $TIME @LIST);
 
 $VERS = '2.5.8 (from cvs)';
-$TIME = 1054875383;
+$TIME = 1057578789;
 
 @LIST = (
 	{
@@ -477,6 +477,12 @@ $TIME = 1054875383;
 		descr => q{Directories to search for images},
 	},
 	{
+		name => 'KeepRc',
+		cursor => '',
+		window => 0,
+		descr => q{Do not modify the previous command return code},
+	},
+	{
 		name => 'Key',
 		cursor => '',
 		window => 0,
@@ -924,7 +930,7 @@ $TIME = 1054875383;
 		name => 'TearMenuOff',
 		cursor => '',
 		window => 0,
-		descr => q{Convert a menu to a window, for use as a menu command},
+		descr => q{Convert a menu to a window, for use in menu items},
 	},
 	{
 		name => 'Test',
@@ -1121,7 +1127,7 @@ Example:
 =item @LIST
 
 The command list that is an array of hashes with keys I<name>, I<cursor>,
-I<descr> (strings) and I<window> (boolean).
+I<descr> (string) and I<window> (boolean).
 
 I<name> may be special, like "+", "#" and "*".  Other names usually contain
 only isalpha characters, like B<Move>, B<SendToModule>.

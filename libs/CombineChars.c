@@ -27,16 +27,16 @@
 
 typedef struct char_combclass
 {
-        unsigned short int key;
-        int combclass;
+	unsigned short int key;
+	int combclass;
 } char_combclass_t;
 
 
 typedef struct char_comb
 {
-        unsigned short int key;
-        unsigned short int first;
-        unsigned short int second;
+	unsigned short int key;
+	unsigned short int first;
+	unsigned short int second;
 } char_comb_t;
 
 /* ---------------------------- static variables --------------------------- */
@@ -45,335 +45,335 @@ typedef struct char_comb
 /* parsed from UnicodeData-3.2.0.txt */
 static const char_combclass_t combclass_table[] =
 {
-	{ 0x0300, 230},
-	{ 0x0301, 230},
-	{ 0x0302, 230},
-	{ 0x0303, 230},
-	{ 0x0304, 230},
-	{ 0x0305, 230},
-	{ 0x0306, 230},
-	{ 0x0307, 230},
-	{ 0x0308, 230},
-	{ 0x0309, 230},
-	{ 0x030A, 230},
-	{ 0x030B, 230},
-	{ 0x030C, 230},
-	{ 0x030D, 230},
-	{ 0x030E, 230},
-	{ 0x030F, 230},
-	{ 0x0310, 230},
-	{ 0x0311, 230},
-	{ 0x0312, 230},
-	{ 0x0313, 230},
-	{ 0x0314, 230},
-	{ 0x0315, 232},
-	{ 0x0316, 220},
-	{ 0x0317, 220},
-	{ 0x0318, 220},
-	{ 0x0319, 220},
-	{ 0x031A, 232},
-	{ 0x031B, 216},
-	{ 0x031C, 220},
-	{ 0x031D, 220},
-	{ 0x031E, 220},
-	{ 0x031F, 220},
-	{ 0x0320, 220},
-	{ 0x0321, 202},
-	{ 0x0322, 202},
-	{ 0x0323, 220},
-	{ 0x0324, 220},
-	{ 0x0325, 220},
-	{ 0x0326, 220},
-	{ 0x0327, 202},
-	{ 0x0328, 202},
-	{ 0x0329, 220},
-	{ 0x032A, 220},
-	{ 0x032B, 220},
-	{ 0x032C, 220},
-	{ 0x032D, 220},
-	{ 0x032E, 220},
-	{ 0x032F, 220},
-	{ 0x0330, 220},
-	{ 0x0331, 220},
-	{ 0x0332, 220},
-	{ 0x0333, 220},
-	{ 0x0334, 1},
-	{ 0x0335, 1},
-	{ 0x0336, 1},
-	{ 0x0337, 1},
-	{ 0x0338, 1},
-	{ 0x0339, 220},
-	{ 0x033A, 220},
-	{ 0x033B, 220},
-	{ 0x033C, 220},
-	{ 0x033D, 230},
-	{ 0x033E, 230},
-	{ 0x033F, 230},
-	{ 0x0340, 230},
-	{ 0x0341, 230},
-	{ 0x0342, 230},
-	{ 0x0343, 230},
-	{ 0x0344, 230},
-	{ 0x0345, 240},
-	{ 0x0346, 230},
-	{ 0x0347, 220},
-	{ 0x0348, 220},
-	{ 0x0349, 220},
-	{ 0x034A, 230},
-	{ 0x034B, 230},
-	{ 0x034C, 230},
-	{ 0x034D, 220},
-	{ 0x034E, 220},
-	{ 0x0360, 234},
-	{ 0x0361, 234},
-	{ 0x0362, 233},
-	{ 0x0363, 230},
-	{ 0x0364, 230},
-	{ 0x0365, 230},
-	{ 0x0366, 230},
-	{ 0x0367, 230},
-	{ 0x0368, 230},
-	{ 0x0369, 230},
-	{ 0x036A, 230},
-	{ 0x036B, 230},
-	{ 0x036C, 230},
-	{ 0x036D, 230},
-	{ 0x036E, 230},
-	{ 0x036F, 230},
-	{ 0x0483, 230},
-	{ 0x0484, 230},
-	{ 0x0485, 230},
-	{ 0x0486, 230},
-	{ 0x0591, 220},
-	{ 0x0592, 230},
-	{ 0x0593, 230},
-	{ 0x0594, 230},
-	{ 0x0595, 230},
-	{ 0x0596, 220},
-	{ 0x0597, 230},
-	{ 0x0598, 230},
-	{ 0x0599, 230},
-	{ 0x059A, 222},
-	{ 0x059B, 220},
-	{ 0x059C, 230},
-	{ 0x059D, 230},
-	{ 0x059E, 230},
-	{ 0x059F, 230},
-	{ 0x05A0, 230},
-	{ 0x05A1, 230},
-	{ 0x05A3, 220},
-	{ 0x05A4, 220},
-	{ 0x05A5, 220},
-	{ 0x05A6, 220},
-	{ 0x05A7, 220},
-	{ 0x05A8, 230},
-	{ 0x05A9, 230},
-	{ 0x05AA, 220},
-	{ 0x05AB, 230},
-	{ 0x05AC, 230},
-	{ 0x05AD, 222},
-	{ 0x05AE, 228},
-	{ 0x05AF, 230},
-	{ 0x05B0, 10},
-	{ 0x05B1, 11},
-	{ 0x05B2, 12},
-	{ 0x05B3, 13},
-	{ 0x05B4, 14},
-	{ 0x05B5, 15},
-	{ 0x05B6, 16},
-	{ 0x05B7, 17},
-	{ 0x05B8, 18},
-	{ 0x05B9, 19},
-	{ 0x05BB, 20},
-	{ 0x05BC, 21},
-	{ 0x05BD, 22},
-	{ 0x05BF, 23},
-	{ 0x05C1, 24},
-	{ 0x05C2, 25},
-	{ 0x05C4, 230},
-	{ 0x064B, 27},
-	{ 0x064C, 28},
-	{ 0x064D, 29},
-	{ 0x064E, 30},
-	{ 0x064F, 31},
-	{ 0x0650, 32},
-	{ 0x0651, 33},
-	{ 0x0652, 34},
-	{ 0x0653, 230},
-	{ 0x0654, 230},
-	{ 0x0655, 220},
-	{ 0x0670, 35},
-	{ 0x06D6, 230},
-	{ 0x06D7, 230},
-	{ 0x06D8, 230},
-	{ 0x06D9, 230},
-	{ 0x06DA, 230},
-	{ 0x06DB, 230},
-	{ 0x06DC, 230},
-	{ 0x06DF, 230},
-	{ 0x06E0, 230},
-	{ 0x06E1, 230},
-	{ 0x06E2, 230},
-	{ 0x06E3, 220},
-	{ 0x06E4, 230},
-	{ 0x06E7, 230},
-	{ 0x06E8, 230},
-	{ 0x06EA, 220},
-	{ 0x06EB, 230},
-	{ 0x06EC, 230},
-	{ 0x06ED, 220},
-	{ 0x0711, 36},
-	{ 0x0730, 230},
-	{ 0x0731, 220},
-	{ 0x0732, 230},
-	{ 0x0733, 230},
-	{ 0x0734, 220},
-	{ 0x0735, 230},
-	{ 0x0736, 230},
-	{ 0x0737, 220},
-	{ 0x0738, 220},
-	{ 0x0739, 220},
-	{ 0x073A, 230},
-	{ 0x073B, 220},
-	{ 0x073C, 220},
-	{ 0x073D, 230},
-	{ 0x073E, 220},
-	{ 0x073F, 230},
-	{ 0x0740, 230},
-	{ 0x0741, 230},
-	{ 0x0742, 220},
-	{ 0x0743, 230},
-	{ 0x0744, 220},
-	{ 0x0745, 230},
-	{ 0x0746, 220},
-	{ 0x0747, 230},
-	{ 0x0748, 220},
-	{ 0x0749, 230},
-	{ 0x074A, 230},
-	{ 0x093C, 7},
-	{ 0x094D, 9},
-	{ 0x0951, 230},
-	{ 0x0952, 220},
-	{ 0x0953, 230},
-	{ 0x0954, 230},
-	{ 0x09BC, 7},
-	{ 0x09CD, 9},
-	{ 0x0A3C, 7},
-	{ 0x0A4D, 9},
-	{ 0x0ABC, 7},
-	{ 0x0ACD, 9},
-	{ 0x0B3C, 7},
-	{ 0x0B4D, 9},
-	{ 0x0BCD, 9},
-	{ 0x0C4D, 9},
-	{ 0x0C55, 84},
-	{ 0x0C56, 91},
-	{ 0x0CCD, 9},
-	{ 0x0D4D, 9},
-	{ 0x0DCA, 9},
-	{ 0x0E38, 103},
-	{ 0x0E39, 103},
-	{ 0x0E3A, 9},
-	{ 0x0E48, 107},
-	{ 0x0E49, 107},
-	{ 0x0E4A, 107},
-	{ 0x0E4B, 107},
-	{ 0x0EB8, 118},
-	{ 0x0EB9, 118},
-	{ 0x0EC8, 122},
-	{ 0x0EC9, 122},
-	{ 0x0ECA, 122},
-	{ 0x0ECB, 122},
-	{ 0x0F18, 220},
-	{ 0x0F19, 220},
-	{ 0x0F35, 220},
-	{ 0x0F37, 220},
-	{ 0x0F39, 216},
-	{ 0x0F71, 129},
-	{ 0x0F72, 130},
-	{ 0x0F74, 132},
-	{ 0x0F7A, 130},
-	{ 0x0F7B, 130},
-	{ 0x0F7C, 130},
-	{ 0x0F7D, 130},
-	{ 0x0F80, 130},
-	{ 0x0F82, 230},
-	{ 0x0F83, 230},
-	{ 0x0F84, 9},
-	{ 0x0F86, 230},
-	{ 0x0F87, 230},
-	{ 0x0FC6, 220},
-	{ 0x1037, 7},
-	{ 0x1039, 9},
-	{ 0x1714, 9},
-	{ 0x1734, 9},
-	{ 0x17D2, 9},
-	{ 0x18A9, 228},
-	{ 0x20D0, 230},
-	{ 0x20D1, 230},
-	{ 0x20D2, 1},
-	{ 0x20D3, 1},
-	{ 0x20D4, 230},
-	{ 0x20D5, 230},
-	{ 0x20D6, 230},
-	{ 0x20D7, 230},
-	{ 0x20D8, 1},
-	{ 0x20D9, 1},
-	{ 0x20DA, 1},
-	{ 0x20DB, 230},
-	{ 0x20DC, 230},
-	{ 0x20E1, 230},
-	{ 0x20E5, 1},
-	{ 0x20E6, 1},
-	{ 0x20E7, 230},
-	{ 0x20E8, 220},
-	{ 0x20E9, 230},
-	{ 0x20EA, 1},
-	{ 0x302A, 218},
-	{ 0x302B, 228},
-	{ 0x302C, 232},
-	{ 0x302D, 222},
-	{ 0x302E, 224},
-	{ 0x302F, 224},
-	{ 0x3099, 8},
-	{ 0x309A, 8},
-	{ 0xFB1E, 26},
-	{ 0xFE20, 230},
-	{ 0xFE21, 230},
-	{ 0xFE22, 230},
-	{ 0xFE23, 230},
+	{ 0x0300, 230 },
+	{ 0x0301, 230 },
+	{ 0x0302, 230 },
+	{ 0x0303, 230 },
+	{ 0x0304, 230 },
+	{ 0x0305, 230 },
+	{ 0x0306, 230 },
+	{ 0x0307, 230 },
+	{ 0x0308, 230 },
+	{ 0x0309, 230 },
+	{ 0x030A, 230 },
+	{ 0x030B, 230 },
+	{ 0x030C, 230 },
+	{ 0x030D, 230 },
+	{ 0x030E, 230 },
+	{ 0x030F, 230 },
+	{ 0x0310, 230 },
+	{ 0x0311, 230 },
+	{ 0x0312, 230 },
+	{ 0x0313, 230 },
+	{ 0x0314, 230 },
+	{ 0x0315, 232 },
+	{ 0x0316, 220 },
+	{ 0x0317, 220 },
+	{ 0x0318, 220 },
+	{ 0x0319, 220 },
+	{ 0x031A, 232 },
+	{ 0x031B, 216 },
+	{ 0x031C, 220 },
+	{ 0x031D, 220 },
+	{ 0x031E, 220 },
+	{ 0x031F, 220 },
+	{ 0x0320, 220 },
+	{ 0x0321, 202 },
+	{ 0x0322, 202 },
+	{ 0x0323, 220 },
+	{ 0x0324, 220 },
+	{ 0x0325, 220 },
+	{ 0x0326, 220 },
+	{ 0x0327, 202 },
+	{ 0x0328, 202 },
+	{ 0x0329, 220 },
+	{ 0x032A, 220 },
+	{ 0x032B, 220 },
+	{ 0x032C, 220 },
+	{ 0x032D, 220 },
+	{ 0x032E, 220 },
+	{ 0x032F, 220 },
+	{ 0x0330, 220 },
+	{ 0x0331, 220 },
+	{ 0x0332, 220 },
+	{ 0x0333, 220 },
+	{ 0x0334, 1 },
+	{ 0x0335, 1 },
+	{ 0x0336, 1 },
+	{ 0x0337, 1 },
+	{ 0x0338, 1 },
+	{ 0x0339, 220 },
+	{ 0x033A, 220 },
+	{ 0x033B, 220 },
+	{ 0x033C, 220 },
+	{ 0x033D, 230 },
+	{ 0x033E, 230 },
+	{ 0x033F, 230 },
+	{ 0x0340, 230 },
+	{ 0x0341, 230 },
+	{ 0x0342, 230 },
+	{ 0x0343, 230 },
+	{ 0x0344, 230 },
+	{ 0x0345, 240 },
+	{ 0x0346, 230 },
+	{ 0x0347, 220 },
+	{ 0x0348, 220 },
+	{ 0x0349, 220 },
+	{ 0x034A, 230 },
+	{ 0x034B, 230 },
+	{ 0x034C, 230 },
+	{ 0x034D, 220 },
+	{ 0x034E, 220 },
+	{ 0x0360, 234 },
+	{ 0x0361, 234 },
+	{ 0x0362, 233 },
+	{ 0x0363, 230 },
+	{ 0x0364, 230 },
+	{ 0x0365, 230 },
+	{ 0x0366, 230 },
+	{ 0x0367, 230 },
+	{ 0x0368, 230 },
+	{ 0x0369, 230 },
+	{ 0x036A, 230 },
+	{ 0x036B, 230 },
+	{ 0x036C, 230 },
+	{ 0x036D, 230 },
+	{ 0x036E, 230 },
+	{ 0x036F, 230 },
+	{ 0x0483, 230 },
+	{ 0x0484, 230 },
+	{ 0x0485, 230 },
+	{ 0x0486, 230 },
+	{ 0x0591, 220 },
+	{ 0x0592, 230 },
+	{ 0x0593, 230 },
+	{ 0x0594, 230 },
+	{ 0x0595, 230 },
+	{ 0x0596, 220 },
+	{ 0x0597, 230 },
+	{ 0x0598, 230 },
+	{ 0x0599, 230 },
+	{ 0x059A, 222 },
+	{ 0x059B, 220 },
+	{ 0x059C, 230 },
+	{ 0x059D, 230 },
+	{ 0x059E, 230 },
+	{ 0x059F, 230 },
+	{ 0x05A0, 230 },
+	{ 0x05A1, 230 },
+	{ 0x05A3, 220 },
+	{ 0x05A4, 220 },
+	{ 0x05A5, 220 },
+	{ 0x05A6, 220 },
+	{ 0x05A7, 220 },
+	{ 0x05A8, 230 },
+	{ 0x05A9, 230 },
+	{ 0x05AA, 220 },
+	{ 0x05AB, 230 },
+	{ 0x05AC, 230 },
+	{ 0x05AD, 222 },
+	{ 0x05AE, 228 },
+	{ 0x05AF, 230 },
+	{ 0x05B0, 10 },
+	{ 0x05B1, 11 },
+	{ 0x05B2, 12 },
+	{ 0x05B3, 13 },
+	{ 0x05B4, 14 },
+	{ 0x05B5, 15 },
+	{ 0x05B6, 16 },
+	{ 0x05B7, 17 },
+	{ 0x05B8, 18 },
+	{ 0x05B9, 19 },
+	{ 0x05BB, 20 },
+	{ 0x05BC, 21 },
+	{ 0x05BD, 22 },
+	{ 0x05BF, 23 },
+	{ 0x05C1, 24 },
+	{ 0x05C2, 25 },
+	{ 0x05C4, 230 },
+	{ 0x064B, 27 },
+	{ 0x064C, 28 },
+	{ 0x064D, 29 },
+	{ 0x064E, 30 },
+	{ 0x064F, 31 },
+	{ 0x0650, 32 },
+	{ 0x0651, 33 },
+	{ 0x0652, 34 },
+	{ 0x0653, 230 },
+	{ 0x0654, 230 },
+	{ 0x0655, 220 },
+	{ 0x0670, 35 },
+	{ 0x06D6, 230 },
+	{ 0x06D7, 230 },
+	{ 0x06D8, 230 },
+	{ 0x06D9, 230 },
+	{ 0x06DA, 230 },
+	{ 0x06DB, 230 },
+	{ 0x06DC, 230 },
+	{ 0x06DF, 230 },
+	{ 0x06E0, 230 },
+	{ 0x06E1, 230 },
+	{ 0x06E2, 230 },
+	{ 0x06E3, 220 },
+	{ 0x06E4, 230 },
+	{ 0x06E7, 230 },
+	{ 0x06E8, 230 },
+	{ 0x06EA, 220 },
+	{ 0x06EB, 230 },
+	{ 0x06EC, 230 },
+	{ 0x06ED, 220 },
+	{ 0x0711, 36 },
+	{ 0x0730, 230 },
+	{ 0x0731, 220 },
+	{ 0x0732, 230 },
+	{ 0x0733, 230 },
+	{ 0x0734, 220 },
+	{ 0x0735, 230 },
+	{ 0x0736, 230 },
+	{ 0x0737, 220 },
+	{ 0x0738, 220 },
+	{ 0x0739, 220 },
+	{ 0x073A, 230 },
+	{ 0x073B, 220 },
+	{ 0x073C, 220 },
+	{ 0x073D, 230 },
+	{ 0x073E, 220 },
+	{ 0x073F, 230 },
+	{ 0x0740, 230 },
+	{ 0x0741, 230 },
+	{ 0x0742, 220 },
+	{ 0x0743, 230 },
+	{ 0x0744, 220 },
+	{ 0x0745, 230 },
+	{ 0x0746, 220 },
+	{ 0x0747, 230 },
+	{ 0x0748, 220 },
+	{ 0x0749, 230 },
+	{ 0x074A, 230 },
+	{ 0x093C, 7 },
+	{ 0x094D, 9 },
+	{ 0x0951, 230 },
+	{ 0x0952, 220 },
+	{ 0x0953, 230 },
+	{ 0x0954, 230 },
+	{ 0x09BC, 7 },
+	{ 0x09CD, 9 },
+	{ 0x0A3C, 7 },
+	{ 0x0A4D, 9 },
+	{ 0x0ABC, 7 },
+	{ 0x0ACD, 9 },
+	{ 0x0B3C, 7 },
+	{ 0x0B4D, 9 },
+	{ 0x0BCD, 9 },
+	{ 0x0C4D, 9 },
+	{ 0x0C55, 84 },
+	{ 0x0C56, 91 },
+	{ 0x0CCD, 9 },
+	{ 0x0D4D, 9 },
+	{ 0x0DCA, 9 },
+	{ 0x0E38, 103 },
+	{ 0x0E39, 103 },
+	{ 0x0E3A, 9 },
+	{ 0x0E48, 107 },
+	{ 0x0E49, 107 },
+	{ 0x0E4A, 107 },
+	{ 0x0E4B, 107 },
+	{ 0x0EB8, 118 },
+	{ 0x0EB9, 118 },
+	{ 0x0EC8, 122 },
+	{ 0x0EC9, 122 },
+	{ 0x0ECA, 122 },
+	{ 0x0ECB, 122 },
+	{ 0x0F18, 220 },
+	{ 0x0F19, 220 },
+	{ 0x0F35, 220 },
+	{ 0x0F37, 220 },
+	{ 0x0F39, 216 },
+	{ 0x0F71, 129 },
+	{ 0x0F72, 130 },
+	{ 0x0F74, 132 },
+	{ 0x0F7A, 130 },
+	{ 0x0F7B, 130 },
+	{ 0x0F7C, 130 },
+	{ 0x0F7D, 130 },
+	{ 0x0F80, 130 },
+	{ 0x0F82, 230 },
+	{ 0x0F83, 230 },
+	{ 0x0F84, 9 },
+	{ 0x0F86, 230 },
+	{ 0x0F87, 230 },
+	{ 0x0FC6, 220 },
+	{ 0x1037, 7 },
+	{ 0x1039, 9 },
+	{ 0x1714, 9 },
+	{ 0x1734, 9 },
+	{ 0x17D2, 9 },
+	{ 0x18A9, 228 },
+	{ 0x20D0, 230 },
+	{ 0x20D1, 230 },
+	{ 0x20D2, 1 },
+	{ 0x20D3, 1 },
+	{ 0x20D4, 230 },
+	{ 0x20D5, 230 },
+	{ 0x20D6, 230 },
+	{ 0x20D7, 230 },
+	{ 0x20D8, 1 },
+	{ 0x20D9, 1 },
+	{ 0x20DA, 1 },
+	{ 0x20DB, 230 },
+	{ 0x20DC, 230 },
+	{ 0x20E1, 230 },
+	{ 0x20E5, 1 },
+	{ 0x20E6, 1 },
+	{ 0x20E7, 230 },
+	{ 0x20E8, 220 },
+	{ 0x20E9, 230 },
+	{ 0x20EA, 1 },
+	{ 0x302A, 218 },
+	{ 0x302B, 228 },
+	{ 0x302C, 232 },
+	{ 0x302D, 222 },
+	{ 0x302E, 224 },
+	{ 0x302F, 224 },
+	{ 0x3099, 8 },
+	{ 0x309A, 8 },
+	{ 0xFB1E, 26 },
+	{ 0xFE20, 230 },
+	{ 0xFE21, 230 },
+	{ 0xFE22, 230 },
+	{ 0xFE23, 230 },
 	/* out of range */
 #if 0
-	{ 0x1D165, 216},
-	{ 0x1D166, 216},
-	{ 0x1D167, 1},
-	{ 0x1D168, 1},
-	{ 0x1D169, 1},
-	{ 0x1D16D, 226},
-	{ 0x1D16E, 216},
-	{ 0x1D16F, 216},
-	{ 0x1D170, 216},
-	{ 0x1D171, 216},
-	{ 0x1D172, 216},
-	{ 0x1D17B, 220},
-	{ 0x1D17C, 220},
-	{ 0x1D17D, 220},
-	{ 0x1D17E, 220},
-	{ 0x1D17F, 220},
-	{ 0x1D180, 220},
-	{ 0x1D181, 220},
-	{ 0x1D182, 220},
-	{ 0x1D185, 230},
-	{ 0x1D186, 230},
-	{ 0x1D187, 230},
-	{ 0x1D188, 230},
-	{ 0x1D189, 230},
-	{ 0x1D18A, 220},
-	{ 0x1D18B, 220},
-	{ 0x1D1AA, 230},
-	{ 0x1D1AB, 230},
-	{ 0x1D1AC, 230},
-	{ 0x1D1AD, 230},
+	{ 0x1D165, 216 },
+	{ 0x1D166, 216 },
+	{ 0x1D167, 1 },
+	{ 0x1D168, 1 },
+	{ 0x1D169, 1 },
+	{ 0x1D16D, 226 },
+	{ 0x1D16E, 216 },
+	{ 0x1D16F, 216 },
+	{ 0x1D170, 216 },
+	{ 0x1D171, 216 },
+	{ 0x1D172, 216 },
+	{ 0x1D17B, 220 },
+	{ 0x1D17C, 220 },
+	{ 0x1D17D, 220 },
+	{ 0x1D17E, 220 },
+	{ 0x1D17F, 220 },
+	{ 0x1D180, 220 },
+	{ 0x1D181, 220 },
+	{ 0x1D182, 220 },
+	{ 0x1D185, 230 },
+	{ 0x1D186, 230 },
+	{ 0x1D187, 230 },
+	{ 0x1D188, 230 },
+	{ 0x1D189, 230 },
+	{ 0x1D18A, 220 },
+	{ 0x1D18B, 220 },
+	{ 0x1D1AA, 230 },
+	{ 0x1D1AB, 230 },
+	{ 0x1D1AC, 230 },
+	{ 0x1D1AD, 230 },
 #endif
 };
 
@@ -1392,7 +1392,7 @@ static const char_comb_t comb_table[] =
 	{ 0xFEF5, 0x0644, 0x0622 }, /* LAM_ALEF_MADDA */
 	{ 0xFEF7, 0x0644, 0x0623 }, /* LAM_ALEF_HAMZA_ABOVE */
 	{ 0xFEF9, 0x0644, 0x0625 }, /* LAM_ALEF_HAMZA_BELOW */
-	{ 0xFEFB, 0x0644, 0x0627 } /* LAM_ALEF */
+	{ 0xFEFB, 0x0644, 0x0627 }, /* LAM_ALEF */
 };
 
 /* -------------------------- local functions ------------------------------ */
@@ -1403,14 +1403,14 @@ static const char_comb_t comb_table[] =
 static int
 get_combining_class(unsigned short int ch)
 {
-        int count;
-        int table_size = sizeof(combclass_table) / sizeof(combclass_table[0]);
+	int count;
+	int table_size = sizeof(combclass_table) / sizeof(combclass_table[0]);
 
-	for(count = 0; count < table_size; count++)
+	for (count = 0; count < table_size; count++)
 	{
-	        if(combclass_table[count].key == ch)
+		if (combclass_table[count].key == ch)
 		{
-		        return combclass_table[count].combclass;
+			return combclass_table[count].combclass;
 		}
 	}
 
@@ -1420,12 +1420,12 @@ get_combining_class(unsigned short int ch)
 static const char_comb_t*
 get_comb_entry_decomposed(unsigned short int ch)
 {
-        int count;
+	int count;
 	int table_size = sizeof(comb_table) / sizeof(comb_table[0]);
 
-	for(count = 0; count < table_size; count++)
+	for (count = 0; count < table_size; count++)
 	{
-		if(comb_table[count].key == ch)
+		if (comb_table[count].key == ch)
 		{
 			return &comb_table[count];
 		}
@@ -1437,13 +1437,13 @@ get_comb_entry_decomposed(unsigned short int ch)
 static unsigned short int
 get_comb_entry_composed(unsigned short int first, unsigned short int second)
 {
-        int count;
+	int count;
 	int table_size = sizeof(comb_table) / sizeof(comb_table[0]);
 
-	for(count = 0; count < table_size; count++)
+	for (count = 0; count < table_size; count++)
 	{
-		if(comb_table[count].first == first &&
-		   comb_table[count].second == second)
+		if (comb_table[count].first == first &&
+		    comb_table[count].second == second)
 		{
 			return comb_table[count].key;
 		}
@@ -1453,27 +1453,27 @@ get_comb_entry_composed(unsigned short int first, unsigned short int second)
 }
 
 static int
-convert_to_ucs2(const unsigned char *str_utf8, unsigned short int *str_ucs2, int len)
+convert_to_ucs2(
+	const unsigned char *str_utf8, unsigned short int *str_ucs2, int len)
 {
-        int in_pos = 0;
+	int in_pos = 0;
 	int out_pos = 0;
-	while(in_pos < len)
+	while (in_pos < len)
 	{
-		if(str_utf8[in_pos] <= 0x7f)
+		if (str_utf8[in_pos] <= 0x7f)
 		{
 			str_ucs2[out_pos] =
 				(unsigned short int)str_utf8[in_pos];
 			in_pos++;
 		}
-		else if(in_pos < len-1 &&
-			str_utf8[in_pos] <= 0xdf)
+		else if (in_pos < len-1 && str_utf8[in_pos] <= 0xdf)
 		{
 			str_ucs2[out_pos] =
 				((str_utf8[in_pos] & 0x1f) << 6) +
 				(str_utf8[in_pos+1] & 0x3f);
 			in_pos += 2;
 		}
-		else if(in_pos < len-2)
+		else if (in_pos < len-2)
 		{
 			str_ucs2[out_pos] =
 				((str_utf8[in_pos] & 0x0f) << 12) +
@@ -1492,20 +1492,20 @@ convert_to_ucs2(const unsigned char *str_utf8, unsigned short int *str_ucs2, int
 }
 
 static int
-convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
-		int len)
+convert_to_utf8(
+	const unsigned short int *str_ucs2, unsigned char *str_utf8, int len)
 {
-        int in_pos = 0;
+	int in_pos = 0;
 	int out_pos = 0;
 
-	for(in_pos = 0 ; in_pos < len ; in_pos++)
+	for (in_pos = 0 ; in_pos < len ; in_pos++)
 	{
-		if(str_ucs2[in_pos] <= 0x7f)
+		if (str_ucs2[in_pos] <= 0x7f)
 		{
 			str_utf8[out_pos] = str_ucs2[in_pos];
 			out_pos++;
 		}
-		else if(str_ucs2[in_pos] <= 0x7ff)
+		else if (str_ucs2[in_pos] <= 0x7ff)
 		{
 			str_utf8[out_pos] =
 				(str_ucs2[in_pos] >> 6) | 0xc0;
@@ -1539,20 +1539,20 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 
 
 int
-CombineChars(unsigned char *str_visual, int len,
-	      superimpose_char_t **comb_chars)
+CombineChars(
+	unsigned char *str_visual, int len, superimpose_char_t **comb_chars)
 {
-        int i,j,k;  /* counters */
-        unsigned short int *source;
+	int i,j,k;  /* counters */
+	unsigned short int *source;
 	unsigned short int *dest;
 	int str_len;
 	int comp_str_len = 0;
   	Bool has_changed;
 
 	/* if input has zero length, return immediatly */
-	if(len == 0)
+	if (len == 0)
 	{
-	        return 0;
+		return 0;
 	}
 
 	/* decompose composed characters */
@@ -1567,13 +1567,13 @@ CombineChars(unsigned char *str_visual, int len,
 		(str_len + 1) * 2 * sizeof(unsigned short int));
 	do
 	{
-	        has_changed = False;
-	        for(i = 0, j = 0; i < str_len; i++)
+		has_changed = False;
+		for (i = 0, j = 0; i < str_len; i++)
 		{
-		        const char_comb_t *decomp =
+			const char_comb_t *decomp =
 				get_comb_entry_decomposed(source[i]);
 			/* current character is decomposable */
-			if(decomp)
+			if (decomp)
 			{
 				dest[j] = decomp->first;
 				dest[j+1] = decomp->second;
@@ -1592,7 +1592,7 @@ CombineChars(unsigned char *str_visual, int len,
 		str_len = j;
 		dest = (unsigned short int *)safemalloc(
 			(str_len + 1) * 2 * sizeof(unsigned short int));
-	} while(has_changed);
+	} while (has_changed);
 	/* source now holds decomposed string (got swapped before exiting
 	   loop, str_len holds string length */
 	/* we reuse dest for composing, can use existing string lengths
@@ -1601,14 +1601,14 @@ CombineChars(unsigned char *str_visual, int len,
 	/* rearrange combining characters */
 	do
 	{
-	        has_changed = False;
-		for(i = 0; i < str_len - 1; i++)
+		has_changed = False;
+		for (i = 0; i < str_len - 1; i++)
 		{
-		        /* swap if combining-class(c1) > combining-class(c2)
+			/* swap if combining-class(c1) > combining-class(c2)
 			   and combining-class(c2) != 0 */
-		        int c1 = get_combining_class(source[i]);
+			int c1 = get_combining_class(source[i]);
 			int c2 = get_combining_class(source[i+1]);
-			if(c1 > c2 && c2 != 0)
+			if (c1 > c2 && c2 != 0)
 			{
 				unsigned short int temp = source[i];
 				source[i] = source[i+1];
@@ -1616,24 +1616,24 @@ CombineChars(unsigned char *str_visual, int len,
 				has_changed = True;
 			}
 		}
-	} while(has_changed);
+	} while (has_changed);
 
 	/* compose */
 	do
 	{
-	        unsigned short int *temp;
+		unsigned short int *temp;
 		Bool last_changed = False;
-	        has_changed = False;
+		has_changed = False;
 
-		for(i = 0, j = 0; i < str_len - 1; j++)
+		for (i = 0, j = 0; i < str_len - 1; j++)
 		{
-		        unsigned short int composed =
-				get_comb_entry_composed(source[i],source[i+1]);
-			if(composed != 0)
+			unsigned short int composed =
+				get_comb_entry_composed(source[i], source[i+1]);
+			if (composed != 0)
 			{
 				dest[j] = composed;
 				/* if the last character was "absorbed" */
-				if(i == str_len - 2)
+				if (i == str_len - 2)
 				{
 					last_changed = True;
 				}
@@ -1654,7 +1654,7 @@ CombineChars(unsigned char *str_visual, int len,
 		   if the last character is a non-combining character */
 		/* since we have an immediate return on zero length, this works
 		   otherwise this would introduce crap here */
-		if(!last_changed)
+		if (!last_changed)
 		{
 			source[j] = dest[i];
 			str_len = j+1;
@@ -1663,22 +1663,22 @@ CombineChars(unsigned char *str_visual, int len,
 		{
 			str_len = j;
 		}
-	} while(has_changed);
+	} while (has_changed);
 
 	/* source contains composed string */
 
-	/* gather "uncomposed" combining characters here for rendering
+	/* gather "uncomposed" combining characters here for rendering
 	  over normal characters later */
 
-	if(comb_chars != NULL)
+	if (comb_chars != NULL)
 	{
-	        /* calculate number of combining characters left */
-	        comp_str_len = 0;
-		for(i = 0 ; i < str_len ; i++)
+		/* calculate number of combining characters left */
+		comp_str_len = 0;
+		for (i = 0 ; i < str_len ; i++)
 		{
-		        if(get_combining_class(source[i]) != 0)
+			if (get_combining_class(source[i]) != 0)
 			{
-			        comp_str_len++;
+				comp_str_len++;
 			}
 		}
 		/* allocate storage for combining characters */
@@ -1686,24 +1686,24 @@ CombineChars(unsigned char *str_visual, int len,
 			safemalloc((comp_str_len + 1) *
 				   sizeof(superimpose_char_t));
 	}
-	for(i = 0,j = 0,k = 0 ; i < str_len ; i++)
+	for (i = 0,j = 0,k = 0 ; i < str_len ; i++)
 	{
-	        /* if character is non-combining,
+		/* if character is non-combining,
 		   just copy it over to output */
-	        /* if first character is a combing character, just output
+		/* if first character is a combing character, just output
 		   it as if it where a base character */
-	        if(get_combining_class(source[i]) == 0)
+		if (get_combining_class(source[i]) == 0)
 		{
-		        dest[j] = source[i];
+			dest[j] = source[i];
 			j++;
 		}
 		else
 		{
-		        if(comb_chars != NULL)
+			if (comb_chars != NULL)
 			{
-			        /* store composing character as associated
+				/* store composing character as associated
 				   with last base charcter */
-			        (*comb_chars)[k].position = j == 0 ? 0 : j-1;
+				(*comb_chars)[k].position = j == 0 ? 0 : j-1;
 				(*comb_chars)[k].c.byte1 = source[i] >> 8;
 				(*comb_chars)[k].c.byte2 = source[i] & 0xff;
 				k++;
@@ -1711,9 +1711,9 @@ CombineChars(unsigned char *str_visual, int len,
 		}
 	}
 	/* terminate */
-	if(comb_chars != NULL)
+	if (comb_chars != NULL)
 	{
-	        (*comb_chars)[comp_str_len].position = 0;
+		(*comb_chars)[comp_str_len].position = 0;
 		(*comb_chars)[comp_str_len].c.byte1 = 0;
 		(*comb_chars)[comp_str_len].c.byte2 = 0;
 	}

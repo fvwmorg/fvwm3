@@ -1,7 +1,11 @@
 #!/usr/bin/perl -w
 
-use lib '..';
+use FindBin;
+use lib "$FindBin::Bin/..";
 use General::FileSystem;
+use POSIX;
+
+chdir($FindBin::Bin) || die "Can't chmod $FindBin::Bin: $!\n";
 
 my $functableSrc = "../../fvwm/functable.c";
 my $contentRef = loadFile($functableSrc);
@@ -9,18 +13,18 @@ die "No commands found, so Commands.pm is not generated.\n" unless $contentRef;
 
 my $commandEntriesCode = "";
 foreach my $entry ($$contentRef =~
-	m{(?:/\* )?CMD_ENT\(\s*(?:"|PRE_).*?\),(?: \*/)?.*?/\* - .*? \*/}sg)
+	m{(?:/\* )?CMD_ENT\(\s*(?:"|PRE_).*?\),(?: \*/)?.*?/\* .*?- .*? \*/}sg)
 {
-	my ($string, $name, $flags, $cursor, $descr) = $entry =~ m{
-		(?:"|PRE_) (.+?) "? ,
+	my ($name, $flags, $cursor, $name2, $descr) = $entry =~ m{
+		,
 		.*? CMD_(\w+) ,
 		.*? ,
 		.*? ([\w\s|]+?) ,
 		.*? (?:CRS_)?(\w+)
 		.*? \) ,
-		.*? /\*\s-\s (.*?) \s\*/
+		.*? /\*\s (?:(.+)\s)? -\s (.*?) \s\*/
 	}xs;
-	$name = $string if $string !~ /^\w/;
+	$name = $name2 if $name2;
 	my $window = $flags =~ FUNC_NEEDS_WINDOW? 1: 0;
 	$cursor = "" if $cursor eq "0";
 	$commandEntriesCode .=
@@ -94,7 +98,7 @@ Example:
 =item \@LIST
 
 The command list that is an array of hashes with keys I<name>, I<cursor>,
-I<descr> (strings) and I<window> (boolean).
+I<descr> (string) and I<window> (boolean).
 
 I<name> may be special, like "+", "#" and "*".  Other names usually contain
 only isalpha characters, like B<Move>, B<SendToModule>.
@@ -124,4 +128,25 @@ For more information about the commands themselves, see fvwm(1).
 =cut
 ENDOUTPUT
 
+# ---------------------------------
+print "Creating Commands.pm\n";
 saveFile("Commands.pm", \$output);
+
+# ---------------------------------
+print "Testing  Commands.pm\n";
+eval qq{
+	use lib '$FindBin::Bin/..';
+	use FVWM::Commands;
+};
+die $@ if $@;
+$FVWM::Commands::TIME ||= 0;  # avoid "used once" warning
+
+my $date = strftime("%d-%b-%Y", gmtime($FVWM::Commands::TIME));
+my $cmds = "The recognized commands for fvwm $version as of $date:\n\n";
+foreach my $command (@FVWM::Commands::LIST = @FVWM::Commands::LIST) {
+	$cmds .= sprintf "  %-21s - %s\n", $command->{name}, $command->{descr};
+}
+
+# ---------------------------------
+print "Creating ../../docs/COMMANDS\n";
+saveFile("../../docs/COMMANDS", \$cmds);

@@ -90,16 +90,16 @@ char *FBidiConvert(
 	   combing characters accordingly */
 	pos_l_to_v =
 		(FriBidiStrIndex *)safemalloc((str_len + 1) *
-					      sizeof(FriBidiStrIndex));
+			sizeof(FriBidiStrIndex));
 	fribidi_log2vis(
 		logical_unicode_str, str_len, &pbase_dir,
 		visual_unicode_str, pos_l_to_v, NULL, NULL);
 	/* re-order combining characters */
-	if(comb_chars != NULL)
+	if (comb_chars != NULL)
 	{
 	        i = 0;
-		while(comb_chars[i].c.byte1 != 0 ||
-		      comb_chars[i].c.byte2 != 0)
+		while (comb_chars[i].c.byte1 != 0 ||
+		       comb_chars[i].c.byte2 != 0)
 		{
 		        comb_chars[i].position =
 				pos_l_to_v[comb_chars[i].position];
