@@ -1,3 +1,9 @@
+1999-05-13 Hippo
+
+	* fvwm/{lots} New command "DefaultBackground":
+	understands TiledPixmap <pixmap>. With no args uses DefaultColors.
+	Used by some modules.
+
 1999-05-13  Dan Espen  <dane@mk.bellcore.com>
 
 	* INSTALL.fvwm (Configuration File): Clear up distinction between

@@ -1749,11 +1749,12 @@ static void ApplyDefaultFontAndColors(void)
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
 
   /* make GC's */
-  gcm = GCFunction|GCFont|GCLineWidth|GCForeground;
+  gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
   gcv.function = GXcopy;
   gcv.font = Scr.StdFont.font->fid;
   gcv.line_width = 0;
   gcv.foreground = Scr.StdColors.fore;
+  gcv.background = Scr.StdColors.back;
   if(Scr.StdGC)
     XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
   else
@@ -1775,10 +1776,10 @@ static void ApplyDefaultFontAndColors(void)
   /* update the geometry window for move/resize */
   if(Scr.SizeWindow != None)
   {
-    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdColors.back);
     Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
+    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Scr.bg, &Scr.bgtype);
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
@@ -1814,12 +1815,62 @@ static void ApplyDefaultFontAndColors(void)
 
 void SetDefaultIcon(F_CMD_ARGS)
 {
+  if (Scr.DefaultIcon)
+    free(Scr.DefaultIcon);
   GetNextToken(action, &Scr.DefaultIcon);
 }
 
 
 void SetDefaultBackground(F_CMD_ARGS)
 {
+  char *type = NULL;
+  char *rest = NULL;
+  
+  action = GetNextToken(action, &type);
+  action = GetNextToken(action, &rest);
+  
+  /* no args mean restore what was set with DefaultColors */
+  if (!type) {
+    if (Scr.bgtype.bits.is_pixmap)
+      XFreePixmap(dpy, Scr.bg.pixmap);
+    Scr.bg.pixel = Scr.StdColors.back;
+    Scr.bgtype.word = 0;
+  } else {
+    if (!rest) {
+      fvwm_msg(WARN, "DefaultBackground", "not enough arguments");
+      free(type);
+      return;
+    }
+      
+    if (StrEquals(type, "TiledPixmap") || StrEquals(type, "Pixmap")) {
+      Picture *pic = CachePicture(dpy, Scr.NoFocusWin, NULL, rest, Scr.ColorLimit);
+      
+      if (pic && pic->depth == Scr.depth) {
+	Pixmap newpixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
+					 pic->height, Scr.depth);
+
+	XCopyArea(dpy, pic->picture, newpixmap, Scr.StdGC, 0, 0, pic->width,
+		  pic->height, 0, 0);
+	if (Scr.bgtype.bits.is_pixmap)
+	  XFreePixmap(dpy, Scr.bg.pixmap);
+	Scr.bg.pixmap = newpixmap;
+	Scr.bgtype.bits.w = pic->width;
+	Scr.bgtype.bits.h = pic->height;
+	Scr.bgtype.bits.is_pixmap = True;
+	if (StrEquals(type, "Pixmap"))
+	  Scr.bgtype.bits.stretch_h = Scr.bgtype.bits.stretch_v = True;
+	else
+	  Scr.bgtype.bits.stretch_h = Scr.bgtype.bits.stretch_v = False;
+      } else {
+        fvwm_msg(WARN, "DefaultBackground", "Couldn't load pixmap %s\n", rest);
+      }
+      if (pic) DestroyPicture(dpy, pic);
+    }
+    free(type);
+    free(rest);
+  }
+    
+  ApplyDefaultFontAndColors();
 }
 
 
@@ -1849,8 +1900,8 @@ void SetDefaultColors(F_CMD_ARGS)
       Scr.StdColors.back = GetColor(back);
       Scr.StdRelief.fore = GetHilite(Scr.StdColors.back);
       Scr.StdRelief.back = GetShadow(Scr.StdColors.back);
-      Scr.bg.pixel = Scr.StdColors.back;
-      Scr.bgtype.word = 0;
+      if (!Scr.bgtype.bits.is_pixmap)
+        Scr.bg.pixel = Scr.StdColors.back;
     }
   free(fore);
   free(back);
