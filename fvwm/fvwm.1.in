@@ -248,18 +248,16 @@ can be specified as N for decimal or 0xN for hexadecimal. See man
 page of xdpyinfo for a list of supported visuals.
 .TP
 .BI "-color-limit " limit[:A]
-.\"needs_lang_check
 Specifies a
 .I limit
 on the colors used in image, gradient and possibly simple colors used
 by fvwm. The optional
 .I A
-should be a sequence of 0 and 1's and allows fine tuning of how fvwm
-limit the colors. This option is useful only with screens that only
+is a sequence of 0 and 1's that allows fine tuning of how fvwm
+limits the colors. This option is only useful with screens that
 display 256 colors (or less). The default depends on your X server and
-the conditions you run fvwm. A more detailed description of this option
+how you run fvwm. A more detailed description of this option
 will be added later.
-.\"end
 
 .SH ANATOMY OF A WINDOW
 
@@ -3183,11 +3181,9 @@ to the default.
 
 .TP
 .BI "ColorLimit " limit
-.\"needs_lang_check
 This command is obsolete. See the
 .I -color-limit
 option to fvwm.
-.\"end
 .\"Specifies a
 .\".I limit
 .\"on the colors used in pixmaps used by fvwm. Zero (the default)
