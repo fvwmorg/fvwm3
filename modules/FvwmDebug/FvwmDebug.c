@@ -207,9 +207,6 @@ void process_message(unsigned long type,unsigned long *body)
     case M_END_WINDOWLIST:
       list_end();
       break;
-    case M_NEW_LOOK:
-      list_look(body);
-      break;
     case M_DEFAULTICON:
     case M_ICON_FILE:
     default:
@@ -527,21 +524,6 @@ void list_res_name(unsigned long *body)
   fprintf(stderr,"\t frame ID %lx\n",body[1]);
   fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
   fprintf(stderr,"\t resource name %s\n",(char *)(&body[3]));
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *	list_look - displays packet contents to stderr
- *
- ***********************************************************************/
-void list_look(unsigned long *body)
-{
-  fprintf(stderr,"fvwm visual info\n");
-  fprintf(stderr,"\t VisualID 0x%lx\n",body[0]);
-  fprintf(stderr,"\t colormap 0x%lx\n",body[1]);
-  fprintf(stderr,"\t depth %ld\n",body[2]);
-  fprintf(stderr,"\t XorGC 0x%lx\n",body[3]);
 }
 
 /***********************************************************************
