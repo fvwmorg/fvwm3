@@ -1,6 +1,13 @@
+2000-12-02  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* libs/Picture.c (LoadPicture)
+	Blocking delivery of SIGCHLD seems to work OK, but could cause
+	trouble later since we might break XPM's pclose() call. Restore
+	the default SIGCHLD handler around this function instead.
+
 2000-11-29  Chris Rankin  <rankinc@zipworld.com.au>
 
-	libs/Picture.c (LoadPicture)
+	* libs/Picture.c (LoadPicture)
 	Replace DEBUG code, now that we know that OSF gets XpmFileInvalid
 	error from XpmReadFileToXpmImage(). Try blocking receipt of SIGCHLD
 	signal around this XPM function.

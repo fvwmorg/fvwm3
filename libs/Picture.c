@@ -175,8 +175,12 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
   int rc;
   XpmImage	my_image = {0};
 
-  sigset_t old_set;
-  sigset_t block_set;
+#ifdef HAVE_SIGACTION
+  struct sigaction defaultHandler;
+  struct sigaction originalHandler;
+#else
+  void (*originalHandler)(int);
+#endif
 #endif
 
   p = (Picture*)safemalloc(sizeof(Picture));
@@ -194,13 +198,20 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
   xpm_attributes.valuemask = XpmSize | XpmReturnAllocPixels | XpmCloseness
 			     | XpmVisual | XpmColormap | XpmDepth;
 
-  /* DEBUG CODE FOR OSF PROBLEM - DON'T RECEIVE SIGCHLD SIGNALS HERE */
-  sigemptyset(&block_set);
-  sigaddset(&block_set, SIGCHLD);
-  sigprocmask(SIG_BLOCK, &block_set, &old_set);
+#ifdef HAVE_SIGACTION
+  sigemptyset(&defaultHandler.sa_mask);
+  defaultHandler.sa_flags = 0;
+  defaultHandler.sa_handler = SIG_DFL;
+  sigaction(SIGCHLD, &defaultHandler, &originalHandler);
+#else
+  originalHandler = signal(SIGCHLD, SIG_DFL);
+#endif
   rc = XpmReadFileToXpmImage(path, &my_image, NULL);
-  sigprocmask(SIG_SETMASK, &old_set, NULL);
-  /**/
+#ifdef HAVE_SIGACTION
+  sigaction(SIGCHLD, &originalHandler, NULL);
+#else
+  signal(SIGCHLD, originalHandler);
+#endif
 
   if (rc == XpmSuccess) {
     color_reduce_pixmap(&my_image, color_limit);
