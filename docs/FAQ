@@ -1285,7 +1285,7 @@ A: FVWM spawns itself into all found screens unless -s command line
 A: Instead of Maximize use "Maximize 100 -30p" where 30 is the width of
    your FvwmTaskBar.
 
-   Or use EWMHBaseStrut in Fvwm 2.5.x or later.
+   Or use EwmhBaseStruts in Fvwm 2.5.x or later.
 
 ======================================================================
                              4 - Modules

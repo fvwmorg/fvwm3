@@ -92,45 +92,38 @@ int main(int argc, char **argv)
 	{
 		if (
 			strcasecmp(argv[i], "-r") == 0 ||
-			strcasecmp(argv[i], "--retain-pixmap") == 0 ||
-			strcasecmp(argv[i], "-retain-pixmap") == 0)
+			strcasecmp(argv[i], "--retain-pixmap") == 0)
 		{
 			RetainPixmap = True;
 		}
 		else if (
-			strcasecmp(argv[i], "--no-retain-pixmap") == 0 ||
-			strcasecmp(argv[i], "-no-retain-pixmap") == 0)
+			strcasecmp(argv[i], "--no-retain-pixmap") == 0)
 		{
 			RetainPixmap = False;
 		}
 		else if (
 			strcasecmp(argv[i], "-d") == 0 ||
-			strcasecmp(argv[i], "--dummy") == 0 ||
-			strcasecmp(argv[i], "-dummy") == 0)
+			strcasecmp(argv[i], "--dummy") == 0)
 		{
 			Dummy = True;
 		}
 		else if (
-			strcasecmp(argv[i], "--no-dummy") == 0 ||
-			strcasecmp(argv[i], "-no-dummy") == 0)
+			strcasecmp(argv[i], "--no-dummy") == 0)
 		{
 			Dummy = False;
 		}
 		else if (
-			strcasecmp(argv[i], "--dither") == 0 ||
-			strcasecmp(argv[i], "-dither") == 0)
+			strcasecmp(argv[i], "--dither") == 0)
 		{
 			Dither = True;
 		}
 		else if (
-			strcasecmp(argv[i], "--no-dither") == 0 ||
-			strcasecmp(argv[i], "-no-dither") == 0)
+			strcasecmp(argv[i], "--no-dither") == 0)
 		{
 			NoDither = True;
 		}
 		else if (
-			strcasecmp(argv[i], "--color-limit") == 0 ||
-			strcasecmp(argv[i], "-color-limit") == 0)
+			strcasecmp(argv[i], "--color-limit") == 0)
 		{
 			use_our_color_limit = True;
 			if (i+1 < argc)
@@ -140,15 +133,14 @@ int main(int argc, char **argv)
 			}
 		}
 		else if (
-			strcasecmp(argv[i], "--no-color-limit") == 0 ||
-			strcasecmp(argv[i], "-no-color-limit") == 0)
+			strcasecmp(argv[i], "--no-color-limit") == 0)
 		{
 			NoColorLimit = True;
 		}
 		else if (
 			strcasecmp(argv[i], "-h") == 0 ||
-			strcasecmp(argv[i], "--help") == 0 ||
-			strcasecmp(argv[i], "-help") == 0)
+			strcasecmp(argv[i], "-?") == 0 ||
+			strcasecmp(argv[i], "--help") == 0)
 		{
 			usage(1);
 			exit(0);
@@ -161,17 +153,16 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (Dummy ||
+	if (
+		Dummy ||
 		strcasecmp(argv[argc-1], "-d") == 0 ||
-		strcasecmp(argv[argc-1], "--dummy") == 0 ||
-		strcasecmp(argv[argc-1], "-dummy") == 0)
+		strcasecmp(argv[argc-1], "--dummy") == 0)
 	{
 		Dummy = True;
 	}
 	else if (
 		strcasecmp(argv[argc-1], "-h") == 0 ||
-		strcasecmp(argv[argc-1], "--help") == 0 ||
-		strcasecmp(argv[argc-1], "-help") == 0)
+		strcasecmp(argv[argc-1], "--help") == 0)
 	{
 		usage(1);
 		exit(0);

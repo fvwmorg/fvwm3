@@ -1,5 +1,26 @@
 2002-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/ewmh_conf.c:
+	reindented
+
+	* fvwm/commands.h:
+	* fvwm/functable.c (func_table):
+	* fvwm/ewmh_conf.c (CMD_EwmhBaseStruts):
+	renamed EWMHBaseStrut to EwmhBaseStruts
+
+	* fvwm/style.c (style_set_old_focus_policy):
+	SloppyFocus and MouseFocus use "FPFocusClickModifiers N" by default
+	(style_parse_one_style_option):
+	renamed "Border" style to "Borders"
+	removed "NoBorder" style; use !Borders instead
+	renamed PlacmentOverlapPenalties to MinOverlapPlacementPenalties
+	renamed PlacmentOverlapPercentPenalties to
+	MinOverlapPercentPlacementPenalties
+
+	* fvwm/fvwm.1.in:
+	* NEWS:
+	corrected typo
+
 	* libs/Fft.c:
 	Fixed compiler warnings
 

@@ -979,7 +979,7 @@ maximizes a window.  To know if an application reserves space you
 can type "xprop | grep _NET_WM_STRUT" in a terminal and select the
 application.  If four numbers appear then these numbers define the
 reserved space as explained in the
-.B EWMHBaseStrut
+.B EwmhBaseStruts
 command.
 
 This support can be disabled at compile time
@@ -4122,7 +4122,7 @@ passed to WindowList can be
 .IR NoDeskNum,
 .IR NoNumInDeskTitle ,
 .IR NoCurrentDeskTitle ,
-.IR "MaxLabelLength length",
+.IR "MaxLabelWidth width",
 .IR TitleForAllDesks ,
 .IR "Function funcname" ,
 .IR "Desk desknum" ,
@@ -4236,7 +4236,7 @@ With
 the window's Xinerama screen number is displayed.
 
 The
-.I MaxLabelLength
+.I MaxLabelWidth
 option takes the number of characters to print as its argument.
 No more than that many characters of the window name are visible.
 
@@ -5720,7 +5720,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StippledTitle " / " StippledTitleOff ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
-.IR NoBorder " / " Border ,
+.IR !Borders " / " Borders ,
 .IR NoHandles " / " Handles ,
 .IR WindowListSkip " / " WindowListHit ,
 .IR CirculateSkip " / " CirculateHit ,
@@ -5754,8 +5754,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
 .IR TileCascadePlacement ,
-.IR PlacementOverlapPenalties ,
-.IR PlacementOverlapPercentPenalties ,
+.IR MinOverlapPlacementPenalties ,
+.IR MinOverlapPercentPlacementPenalties ,
 .IR DecorateTransient " / " NakedTransient ,
 .IR DontRaiseTransient " / " RaiseTransient ,
 .IR DontLowerTransient " / " LowerTransient ,
@@ -5933,7 +5933,12 @@ style takes a list of modifier keys just like the
 .B Key
 command.  The exact combination of modifier keys must be pressed
 for the click to focus or raise a window to work.  The default is
-to use no modifiers ("N").
+to use any modifiers ("A").  This setting is overwritten each time
+one of the styles
+.IR ClickToFocus " or " NeverFocus
+("A"ny modifier), or
+.IR SloppyFocus " or " MouseFocus
+("N"o modifier) is used.
 
 With the
 .IR FPPassFocusClick
@@ -6213,9 +6218,9 @@ style.
 .TP
 .B Borders
 
-.I NoBorder
+.I !Borders
 suppresses the window border (but not the title) completely.  The
-.I Border
+.I Borders
 style enables them again.  Without borders, all other styles
 affecting window borders are meaningless.
 
@@ -6663,7 +6668,7 @@ overlapping area in pixels of other windows is minimized.
 By default this placement policy tries to avoid
 overlapping icons and windows on higher layers.
 This can be configured with the
-.IR PlacementOverlapPenalties
+.IR MinOverlapPlacementPenalties
 style.
 
 .I MinOverlapPercentPlacement
@@ -6674,12 +6679,12 @@ instead of the overlapped area in pixels.  This placement policy
 tries to avoid covering other windows completely and tries even
 harder not to cover small windows.
 This can be configured with the
-.I PlacementOverlapPenalties
+.I MinOverlapPlacementPenalties
 and
-.I PlacementOverlapPercentPenalties
+.I MinOverlapPercentPlacementPenalties
 styles.
 
-.I PlacementOverlapPenalties
+.I MinOverlapPlacementPenalties
 takes at most 6 positive or null decimal arguments:
 .EX
 .I norm ontop icon sticky below strut
@@ -6727,7 +6732,7 @@ style the
 .I strut
 factor affects the placed window.
 
-.I PlacementOverlapPercentPenalties
+.I MinOverlapPercentPlacementPenalties
 takes at most 4 positive or null integer arguments:
 .EX
 .I cover_100 cover_95 cover_85 cover_75
@@ -6740,14 +6745,14 @@ which are:
 This style affects the
 .I MinOverlapPercentPlacement
 placement policy and is similar to the
-.I PlacementOverlapPenalties
+.I MinOverlapPlacementPenalties
 style. The
 .I cover_xx
 factor is used when the window being placed covers at least
 .I xx
 percent of the window. This factor is added to the factor
 determined by the
-.IR PlacementOverlapPenalties
+.IR MinOverlapPlacementPenalties
 style.
 
 .I ManualPlacement
@@ -7143,7 +7148,7 @@ Note that with the
 .IR MinOverlapPlacement " and " MinOverlapPercentPlacement
 placement policy, the way the EWMH (dynamic) working area is taken
 in account is configurable with the
-.I PlacementOverlapPenalties
+.I MinOverlapPlacementPenalties
 style.
 
 .\" +++++++++++++++ miscellaneous
@@ -8342,7 +8347,7 @@ frame, clicks on the window, near the edge of the screen are
 treated as clicks on the root window.
 
 .TP
-.BI "EWMHBaseStrut " left " " right " " top " " bottom
+.BI "EwmhBaseStruts " left " " right " " top " " bottom
 Where left, right, top and bottom are positive or null integers
 which define bands at the edge of the screen.
 .I left

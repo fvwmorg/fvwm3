@@ -71,7 +71,7 @@ enum
 	F_EDGE_SCROLL,
 	F_EMULATE,
 	F_ESCAPE_FUNC,
-	F_EWMH_BASE_STRUT,
+	F_EWMH_BASE_STRUTS,
 	F_EWMH_NUMBER_OF_DESKTOPS,
 	F_EXEC,
 	F_EXEC_SETUP,
@@ -264,7 +264,7 @@ void CMD_EdgeScroll(F_CMD_ARGS);
 void CMD_EdgeThickness(F_CMD_ARGS);
 void CMD_Emulate(F_CMD_ARGS);
 void CMD_EscapeFunc(F_CMD_ARGS);
-void CMD_EwmhBaseStrut(F_CMD_ARGS);
+void CMD_EwmhBaseStruts(F_CMD_ARGS);
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
 void CMD_Exec(F_CMD_ARGS);
 void CMD_ExecUseShell(F_CMD_ARGS);

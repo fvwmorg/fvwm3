@@ -852,6 +852,7 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 	{
 	case 0:
 		/* ClickToFocus */
+		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), DEF_FP_MODIFIERS);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 1);
@@ -874,6 +875,7 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 1:
 		/* MouseFocus */
+		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
@@ -896,6 +898,7 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 2:
 		/* SloppyFocus */
+		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
@@ -918,6 +921,7 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 3:
 		/* NeverFocus */
+		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), DEF_FP_MODIFIERS);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
@@ -939,6 +943,8 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		FPS_SORT_WINDOWLIST_BY(fp, FPOL_SORT_WL_BY_FOCUS);
 		break;
 	}
+	FPS_MODIFIERS(S_FOCUS_POLICY(SCM(*ps)), 0xffffffff);
+	FPS_MODIFIERS(S_FOCUS_POLICY(SCC(*ps)), 0xffffffff);
 	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCM(*ps)), 1);
 	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCC(*ps)), 1);
 	FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCM(*ps)), 1);
@@ -1919,7 +1925,7 @@ static Bool style_parse_one_style_option(
 			S_SET_IS_BOTTOM_TITLE_ROTATED(SCM(*ps), 1);
 			S_SET_IS_BOTTOM_TITLE_ROTATED(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "Border"))
+		else if (StrEquals(token, "Borders"))
 		{
 			S_SET_HAS_NO_BORDER(SCF(*ps), !on);
 			S_SET_HAS_NO_BORDER(SCM(*ps), 1);
@@ -2660,6 +2666,84 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode = PLACE_MASK;
 			ps->change_mask.placement_mode = PLACE_MASK;
 		}
+		else if (StrEquals(token, "MinOverlapPlacementPenalties"))
+		{
+			float f[6] = {-1, -1, -1, -1, -1, -1};
+			Bool bad = False;
+
+			num = 0;
+			if (rest != NULL)
+			{
+				num = sscanf(
+					rest, "%f %f %f %f %f %f", &f[0],
+					&f[1], &f[2], &f[3], &f[4], &f[5]);
+				for (i=0; i < num; i++)
+				{
+					if (f[i] < 0)
+						bad = True;
+				}
+			}
+			if (bad)
+			{
+				fvwm_msg(
+					ERR, "style_parse_one_style_option",
+					"Bad argument to MinOverlap"
+					"PlacementPenalties: %s", rest);
+				break;
+			}
+			SSET_NORMAL_PLACEMENT_PENALTY(*ps, 1);
+			SSET_ONTOP_PLACEMENT_PENALTY(
+				*ps, PLACEMENT_AVOID_ONTOP);
+			SSET_ICON_PLACEMENT_PENALTY(*ps, PLACEMENT_AVOID_ICON);
+			SSET_STICKY_PLACEMENT_PENALTY(
+				*ps, PLACEMENT_AVOID_STICKY);
+			SSET_BELOW_PLACEMENT_PENALTY(
+				*ps, PLACEMENT_AVOID_BELOW);
+			SSET_EWMH_STRUT_PLACEMENT_PENALTY(
+				*ps, PLACEMENT_AVOID_EWMH_STRUT);
+			for (i=0; i < num; i++)
+			{
+				(*ps).placement_penalty[i] = f[i];
+			}
+			ps->flags.has_placement_penalty = 1;
+			ps->flag_mask.has_placement_penalty = 1;
+			ps->change_mask.has_placement_penalty = 1;
+		}
+		else if (StrEquals(
+				 token, "MinOverlapPercentPlacementPenalties"))
+		{
+			Bool bad = False;
+
+			num = GetIntegerArguments(rest, NULL, val, 4);
+			for (i=0; i < num; i++)
+			{
+				if (val[i] < 0)
+					bad = True;
+			}
+			if (bad)
+			{
+				fvwm_msg(
+					ERR, "style_parse_one_style_option",
+					"Bad argument to MinOverlapPercent"
+					"PlacementPenalties: %s", rest);
+				break;
+			}
+			SSET_99_PLACEMENT_PERCENTAGE_PENALTY(
+				*ps, PLACEMENT_AVOID_COVER_99);
+			SSET_95_PLACEMENT_PERCENTAGE_PENALTY(
+				*ps, PLACEMENT_AVOID_COVER_95);
+			SSET_85_PLACEMENT_PERCENTAGE_PENALTY(
+				*ps, PLACEMENT_AVOID_COVER_85);
+			SSET_75_PLACEMENT_PERCENTAGE_PENALTY(
+				*ps, PLACEMENT_AVOID_COVER_75);
+			for (i=0; i < num; i++)
+			{
+				(*ps).placement_percentage_penalty[i] = val[i];
+			}
+			ps->flags.has_placement_percentage_penalty = 1;
+			ps->flag_mask.has_placement_percentage_penalty = 1;
+			ps->change_mask.has_placement_percentage_penalty = 1;
+		}
 		else if (StrEquals(token, "MWMBUTTONS"))
 		{
 			S_SET_HAS_MWM_BUTTONS(SCF(*ps), on);
@@ -2917,12 +3001,6 @@ static Bool style_parse_one_style_option(
 		{
 			style_set_old_focus_policy(ps, 3);
 		}
-		else if (StrEquals(token, "NoBorder"))
-		{
-			S_SET_HAS_NO_BORDER(SCF(*ps), on);
-			S_SET_HAS_NO_BORDER(SCM(*ps), 1);
-			S_SET_HAS_NO_BORDER(SCC(*ps), 1);
-		}
 		else
 		{
 			found = False;
@@ -2954,83 +3032,6 @@ static Bool style_parse_one_style_option(
 			ps->flags.use_parent_relative = on;
 			ps->flag_mask.use_parent_relative = 1;
 			ps->change_mask.use_parent_relative = 1;
-		}
-		else if (StrEquals(token, "PlacementOverlapPenalties"))
-		{
-			float f[6] = {-1, -1, -1, -1, -1, -1};
-			Bool bad = False;
-
-			num = 0;
-			if (rest != NULL)
-			{
-				num = sscanf(
-					rest, "%f %f %f %f %f %f", &f[0],
-					&f[1], &f[2], &f[3], &f[4], &f[5]);
-				for (i=0; i < num; i++)
-				{
-					if (f[i] < 0)
-						bad = True;
-				}
-			}
-			if (bad)
-			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"Bad argument to"
-					" PlacementOverlapPenalties: %s", rest);
-				break;
-			}
-			SSET_NORMAL_PLACEMENT_PENALTY(*ps, 1);
-			SSET_ONTOP_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_ONTOP);
-			SSET_ICON_PLACEMENT_PENALTY(*ps, PLACEMENT_AVOID_ICON);
-			SSET_STICKY_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_STICKY);
-			SSET_BELOW_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_BELOW);
-			SSET_EWMH_STRUT_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_EWMH_STRUT);
-			for (i=0; i < num; i++)
-			{
-				(*ps).placement_penalty[i] = f[i];
-			}
-			ps->flags.has_placement_penalty = 1;
-			ps->flag_mask.has_placement_penalty = 1;
-			ps->change_mask.has_placement_penalty = 1;
-		}
-		else if (StrEquals(token, "PlacementOverlapPercentPenalties"))
-		{
-			Bool bad = False;
-
-			num = GetIntegerArguments(rest, NULL, val, 4);
-			for (i=0; i < num; i++)
-			{
-				if (val[i] < 0)
-					bad = True;
-			}
-			if (bad)
-			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"Bad argument to PlacementOverlap"
-					"PercentagePenalties: %s", rest);
-				break;
-			}
-			SSET_99_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_99);
-			SSET_95_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_95);
-			SSET_85_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_85);
-			SSET_75_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_75);
-			for (i=0; i < num; i++)
-			{
-				(*ps).placement_percentage_penalty[i] = val[i];
-			}
-			ps->flags.has_placement_percentage_penalty = 1;
-			ps->flag_mask.has_placement_percentage_penalty = 1;
-			ps->change_mask.has_placement_percentage_penalty = 1;
 		}
 		else
 		{

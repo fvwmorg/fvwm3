@@ -121,7 +121,7 @@ Changes in alpha release 2.5.3 (25-Aug-2002)
 
 * New Style option IconSize for restricting icon sizes.
 
-* New WindowList options SortClassName, MaxLabelLength, NoLayer,
+* New WindowList options SortClassName, MaxLabelWidth, NoLayer,
   ShowScreen, ShowPage, ShowPageX and ShowPageY.
 
 * Restored old way of handling clicks in windows with ClickToFocus
@@ -193,7 +193,7 @@ Changes in alpha release 2.5.2 (24-Jun-2002)
 * Allow to bind a function to the focus click and pass it to the
   application at the same time.
 
-* New styles NoBorder and Border to enable or disable window
+* New styles !Borders and Borders to enable or disable window
   borders.
 
 * Removed the --enable-multibyte configure option.  Multibyte
@@ -362,8 +362,8 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
   pixmaps for different parts of the titlebar: Main, LeftEnd,
   LeftOfText, UnderText, RightOfText, RightEnd and more.
 
-* New styles PlacementOverlapPenalties and
-  PlacementOverlapPercentPenalties.
+* New styles MinOverlapPlacementPenalties and
+  MinOverlapPercentPlacementPenalties.
 
 * New styles IndexedWindowName / ExactWindowName and
   IndexedIconName / ExactIconName.
