@@ -1,3 +1,8 @@
+2003-01-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* perllib/FVWM/EventNames.pm:
+	M_NEW_PAGE now has 7 arguments
+
 2002-12-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

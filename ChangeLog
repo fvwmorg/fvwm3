@@ -1,3 +1,9 @@
+2003-01-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/module_interface.c (MoveViewport):
+	* fvwm/virtual.c (CMD_DesktopSize, CMD_Send_WindowList):
+	M_NEW_PAGE now has 7 arguments
+
 2003-01-02  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm.1.in:
@@ -15,7 +21,7 @@
 	(SetIconPixmapSize):
 	Fixed IconSize style for non shaped depth > 1 pixmaps
 
-2002-01-02  Mikhael Goikhman  <migo@homemail.com>
+2003-01-02  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:
 	* fvwm/commands.h:

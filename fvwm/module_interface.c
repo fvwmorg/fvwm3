@@ -1938,8 +1938,10 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	}
 	SendPacket(mod, M_NEW_DESK, 1, Scr.CurrentDesk);
 	SendPacket(
-		mod, M_NEW_PAGE, 5, Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax,
-		Scr.VyMax);
+		mod, M_NEW_PAGE, 7, Scr.Vx, Scr.Vy, Scr.CurrentDesk,
+		Scr.MyDisplayWidth, Scr.MyDisplayHeight,
+		(int)(Scr.VxMax / Scr.MyDisplayWidth) + 1,
+		(int)(Scr.VyMax / Scr.MyDisplayHeight) + 1);
 
 	if (Scr.Hilite != NULL)
 	{

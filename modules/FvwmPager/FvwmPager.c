@@ -821,14 +821,14 @@ void list_new_page(unsigned long *body)
       body[0] = body[2];
       list_new_desk(body);
   }
-  if((Scr.VxMax != body[3])||(Scr.VyMax != body[4]))
+  if (Scr.VxPages != body[5] || Scr.VyPages != body[6])
   {
-    Scr.VxMax = body[3];
-    Scr.VyMax = body[4];
-    Scr.VxPages = Scr.VxMax / Scr.MyDisplayWidth;
-    Scr.VyPages = Scr.VyMax / Scr.MyDisplayHeight;
-    Scr.VWidth = Scr.VxMax + Scr.MyDisplayWidth;
-    Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
+    Scr.VxPages = body[5];
+    Scr.VyPages = body[6];
+    Scr.VWidth = Scr.VxPages * Scr.MyDisplayWidth;
+    Scr.VHeight = Scr.VyPages * Scr.MyDisplayHeight;
+    Scr.VxMax = Scr.VWidth - Scr.MyDisplayWidth;
+    Scr.VyMax = Scr.VHeight - Scr.MyDisplayHeight;
     ReConfigure();
   }
   MovePage(False);
@@ -2193,14 +2193,14 @@ void ParseOptions(void)
 
   Scr.VxMax = dx * Scr.MyDisplayWidth - Scr.MyDisplayWidth;
   Scr.VyMax = dy * Scr.MyDisplayHeight - Scr.MyDisplayHeight;
-  if(Scr.VxMax <0)
+  if (Scr.VxMax < 0)
     Scr.VxMax = 0;
-  if(Scr.VyMax <0)
+  if (Scr.VyMax < 0)
     Scr.VyMax = 0;
-  Scr.VxPages = Scr.VxMax / Scr.MyDisplayWidth;
-  Scr.VyPages = Scr.VyMax / Scr.MyDisplayHeight;
   Scr.VWidth = Scr.VxMax + Scr.MyDisplayWidth;
   Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
+  Scr.VxPages = Scr.VWidth / Scr.MyDisplayWidth;
+  Scr.VyPages = Scr.VHeight / Scr.MyDisplayHeight;
   Scr.Vx = 0;
   Scr.Vy = 0;
 

@@ -32,13 +32,15 @@ use vars qw($EVENTS_INFO);
 $EVENTS_INFO = {
 
 	&M_NEW_PAGE             => {
-		format => "l5",
+		format => "l7",
 		fields => [
 			vp_x         => number,
 			vp_y         => number,
 			desk         => number,
 			vp_width     => number,
 			vp_height    => number,
+			desk_pages_x => number,
+			desk_pages_y => number,
 		],
 	},
 

@@ -1,3 +1,8 @@
+2003-01-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPager/FvwmPager.c (list_new_page):
+	updated to the changed arguments of M_NEW_PAGE
+
 2002-12-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmWindowMenu/*:

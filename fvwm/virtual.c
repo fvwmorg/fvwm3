@@ -1061,11 +1061,11 @@ void MoveViewport(int newx, int newy, Bool grab)
 	{
 		newy = Scr.VyMax;
 	}
-	if (newx <0)
+	if (newx < 0)
 	{
 		newx = 0;
 	}
-	if (newy <0)
+	if (newy < 0)
 	{
 		newy = 0;
 	}
@@ -1093,8 +1093,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 	if (deltax || deltay)
 	{
 		BroadcastPacket(
-			M_NEW_PAGE, 5, Scr.Vx, Scr.Vy, Scr.CurrentDesk,
-			Scr.VxMax, Scr.VyMax);
+			M_NEW_PAGE, 7, Scr.Vx, Scr.Vy, Scr.CurrentDesk,
+			Scr.MyDisplayWidth, Scr.MyDisplayHeight,
+			(int)(Scr.VxMax / Scr.MyDisplayWidth) + 1,
+			(int)(Scr.VyMax / Scr.MyDisplayHeight) + 1);
 
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
@@ -1754,8 +1756,11 @@ void CMD_DesktopSize(F_CMD_ARGS)
 		0: val[0]*Scr.MyDisplayWidth-Scr.MyDisplayWidth;
 	Scr.VyMax = (val[1] <= 0) ?
 		0: val[1]*Scr.MyDisplayHeight-Scr.MyDisplayHeight;
-	BroadcastPacket(M_NEW_PAGE, 5,
-			Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+	BroadcastPacket(
+		M_NEW_PAGE, 7, Scr.Vx, Scr.Vy, Scr.CurrentDesk,
+		Scr.MyDisplayWidth, Scr.MyDisplayHeight,
+		(int)(Scr.VxMax / Scr.MyDisplayWidth) + 1,
+		(int)(Scr.VyMax / Scr.MyDisplayHeight) + 1);
 
 	checkPanFrames();
 	/* update GNOME pager */
