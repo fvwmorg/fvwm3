@@ -1,3 +1,8 @@
+1999-03-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate.c: Remove fonts and colors from customization form.
+	These can now be set globally by FvwmForm.
+
 1999-01-25  Steven Michael ROBBINS  <stever@bongo.cs.mcgill.ca>
 
 	* FvwmAnimate.c: Include config.h first.  Remove include of

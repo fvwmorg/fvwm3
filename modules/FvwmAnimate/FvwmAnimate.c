@@ -1185,12 +1185,6 @@ static void DefineForm() {
   myfprintf((stderr,"Defining form Form%s\n", MyName+1));
   CMD1X("DestroyModuleConfig Form%s*");
   CMD1X("*Form%sWarpPointer");
-  CMD1X("*Form%sFont         9x15bold");
-  CMD1X("*Form%sButtonFont   8x13bold");
-  CMD1X("*Form%sInputFont    9x15bold");
-  CMD1X("*Form%sFore         white");
-  CMD1X("*Form%sBack         cornflowerblue");
-  CMD1X("*Form%sItemFore     green");
   CMD1X("*Form%sLine         center");
   CMD11("*Form%sText         \"Custom settings for %s\"");
   CMD1X("*Form%sLine         left");
