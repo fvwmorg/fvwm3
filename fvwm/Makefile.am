@@ -5,6 +5,12 @@ bin_PROGRAMS = fvwm2
 EXTRA_DIST = $(man_MANS)
 man_MANS = fvwm2.1
 
+if GNOME
+GNOME = gnome.c
+else
+GNOME =
+endif
+
 fvwm2_SOURCES = add_window.c \
 	bindings.c \
 	borders.c \
@@ -21,7 +27,7 @@ fvwm2_SOURCES = add_window.c \
 	fvwm.h \
 	fvwmdebug.c \
 	fvwmdebug.h \
-	gnome.c \
+	$(GNOME) \
 	icccm2.c \
 	icons.c \
 	menus.c \

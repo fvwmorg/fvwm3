@@ -523,6 +523,7 @@ void GNOME_GetHints(FvwmWindow *fwin);
 void GNOME_SetHints(FvwmWindow *fwin);
 
 /* update public window manager information */
+void GNOME_SetAreaCount();
 void GNOME_SetCurrentArea();
 void GNOME_SetCurrentDesk();
 void GNOME_SetClientList();

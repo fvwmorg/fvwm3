@@ -1,3 +1,15 @@
+1999-04-01  Andrew T. Veliath  <andrewtv@usa.net>
+
+	* fvwm/builtins.c (SetDeskSize): Call GNOME_SetAreaCount.
+
+	* fvwm/misc.h: Add proto for GNOME_SetAreaCount.
+
+	* fvwm/Makefile.am (GNOME): If GNOME hints disabled, avoid
+	compilation of gnome.c.
+
+	* configure.in: Turn --enable-gnome into an smr_SWITCH macro and
+	use an AM_CONDITIONAL.
+
 1999-04-01  Hippo
 
 	* fvwm/*: #define PICK_TRUECOLOR and fvwm will use a truecolor visual

@@ -1577,6 +1577,11 @@ void SetDeskSize(F_CMD_ARGS)
                   Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
   checkPanFrames();
+
+#ifdef GNOME
+  /* update GNOME pager */
+  GNOME_SetAreaCount();
+#endif
 }
 
 
