@@ -1587,13 +1587,19 @@ void GetWindowSizeHints(FvwmWindow *tmp)
   if (tmp->hints.flags & PResizeInc)
   {
     SET_SIZE_INC_SET(tmp, 1);
-    if (tmp->hints.width_inc <= 0)
+    if (tmp->hints.width_inc < 0 ||
+        (tmp->hints.width_inc == 0 &&
+         (tmp->hints.flags & PMinSize) && (tmp->hints.flags & PMaxSize) &&
+         tmp->hints.min_width != tmp->hints.max_width))
     {
       tmp->hints.width_inc = 1;
       broken_cause = "width_inc";
       SET_SIZE_INC_SET(tmp, 0);
     }
-    if (tmp->hints.height_inc <= 0)
+    if (tmp->hints.height_inc < 0 ||
+        (tmp->hints.height_inc == 0 &&
+         (tmp->hints.flags & PMinSize) && (tmp->hints.flags & PMaxSize) &&
+         tmp->hints.min_height != tmp->hints.max_height))
     {
       tmp->hints.height_inc = 1;
       if (!*broken_cause)
