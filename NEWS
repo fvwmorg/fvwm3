@@ -1,7 +1,9 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
-Changes in beta release 2.3.33 (not released yet)
+Changes in beta release 2.3.34 (not released yet)
+
+Changes in beta release 2.3.33 (2001-06-22)
 
 * Module configuration commands are now partially expanded similarly to
   any other commands, except that single alphabetic-letter parameters are
