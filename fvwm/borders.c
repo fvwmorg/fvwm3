@@ -382,7 +382,7 @@ static void RedrawBorder(
     XClearWindow(dpy, t->decor_w);
 
   /*
-   * draw the inside relief
+   * Nothing to do if flat
    */
 
   if (borderstyle->flags.button_relief == DFS_BUTTON_IS_FLAT)
@@ -1190,12 +1190,14 @@ void DrawDecorations(
   }
   else if (expose_win == t->title_w)
     is_title_redraw_allowed = True;
-  else if (expose_win == t->frame || expose_win == t->decor_w ||
-           (HAS_BORDER(t) &&
+  else if (expose_win == t->frame || expose_win == t->decor_w
+/* sides and corners are InputOnly and incapable of triggering Expose events
+           || (HAS_BORDER(t) &&
             (expose_win == t->sides[0] || expose_win == t->corners[0] ||
              expose_win == t->sides[1] || expose_win == t->corners[1] ||
              expose_win == t->sides[2] || expose_win == t->corners[2] ||
-             expose_win == t->sides[3] || expose_win == t->corners[3])))
+             expose_win == t->sides[3] || expose_win == t->corners[3])) */
+           )
   {
     is_frame_redraw_allowed = True;
   }

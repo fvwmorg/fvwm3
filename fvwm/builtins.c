@@ -202,6 +202,22 @@ void WindowShade(F_CMD_ARGS)
       /* This causes a ConfigureNotify if the client size has changed while
        * the window was shaded. */
       XResizeWindow(dpy, tmp_win->w, cw, ch);
+      /* make the decor window the full sze before the animation unveils it */
+      XMoveResizeWindow(dpy, tmp_win->decor_w, 0, HAS_BOTTOM_TITLE(tmp_win)
+        ? frame_g.height - big_g.height : 0, big_g.width, big_g.height);
+      /* draw the border decoration iff backing store is on */
+      if (Scr.use_backing_store != NotUseful)
+      { /* eek! fvwm doesn't know the backing_store setting for windows */
+        XWindowAttributes xwa;
+
+        if (XGetWindowAttributes(dpy, tmp_win->decor_w, &xwa)
+            && xwa.backing_store != NotUseful)
+        {
+          tmp_win->frame_g.width = big_g.width;
+          tmp_win->frame_g.height = big_g.height;
+          DrawDecorations(tmp_win, DRAW_FRAME, Scr.Focus == tmp_win, True, None);
+        }
+      }
       while (frame_g.height + diff.height < big_g.height)
       {
 	parent_g.x += pdiff.x;
@@ -221,7 +237,6 @@ void WindowShade(F_CMD_ARGS)
 	XMoveResizeWindow(
 	  dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
 	  frame_g.height);
-	XMoveResizeWindow(dpy, tmp_win->decor_w, 0, 0, frame_g.width, frame_g.height);
         FlushOutputQueues();
         XSync(dpy, 0);
       }
