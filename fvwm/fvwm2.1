@@ -2026,16 +2026,15 @@ has specified.  The active-color is the one used to draw the text of the
 selected entry. The animflag is either "anim" or "noanim", when enabled
 sub-menus that don't fit on the screen cause the parent menu to be shifted
 to the left so the sub-menu can be seen. See also the "SetAnimation"
-and "SetMenuDelay" commands. The style option
-is either "fvwm" "mwm" "win" or "next (menuface)", which changes the appearance
-and operation of the menus.
+and "SetMenuDelay" commands. The style option is either "fvwm" "mwm"
+or "win", which changes the appearance and operation of the menus.
 
 "mwm" and "win" style menus popup sub-menus automatically.
 "win" menus indicate the current menu item by changing the
 background to black.
 "fvwm" sub-menus overlap the parent menu, "mwm" and "win" style menus
 never overlap the parent menu.
-"next (menuface)" style is used to define more complex menus, you can use the
+The optional "(menuface)" is used to define more complex menus, you can use the
 same options for menuface as for ButtonStyle plus DGradient, top-left to
 down-right, and BGradient, down-left to top-right. see \fIButtonStyle\fP for
 more info.

@@ -1,5 +1,8 @@
 1998-12-16  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/fvwm2.1: Updated manpage for SetMenuStyle: 'next' does not exist
+	anymore.
+
 	* fvwm/builtins.c (Recapture): Recapture now swallows all mouse and
 	keyboard events (and a few others). This speeds up things dramatically.
 
