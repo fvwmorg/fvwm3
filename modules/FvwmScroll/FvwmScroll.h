@@ -17,7 +17,7 @@ extern char* MyName;
 extern Display* dpy;
 extern Window Root;
 extern int screen;
-extern GC reliefGC, shadowGC;
+extern GC hiliteGC, shadowGC;
 extern fd_set_size_t fd_width;
 extern int fd[2];
 extern int x_fd;

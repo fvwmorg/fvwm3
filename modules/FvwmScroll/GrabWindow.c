@@ -45,13 +45,14 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
+#include "libs/Colorset.h"
 
 #include "FvwmScroll.h"
 
-int Width = 300, Height = 300;
-int target_width, target_height;
-int target_x_offset = 0, target_y_offset = 0;
-int exposed;
+static int Width = 300, Height = 300;
+static int target_width, target_height;
+static int target_x_offset = 0, target_y_offset = 0;
+static int exposed;
 int Reduction_H = 2;
 int Reduction_V = 2;
 
@@ -61,8 +62,9 @@ int Reduction_V = 2;
 #define PAD_WIDTH2 3
 #define PAD_WIDTH3 5
 
-Window main_win,holder_win;
-Pixel hilite_pix,shadow_pix;
+static Window main_win,holder_win;
+static Pixel hilite_pix,shadow_pix;
+extern int colorset;
 extern char *BackColor;
 
 #define MW_EVENTS   (ExposureMask | StructureNotifyMask| ButtonReleaseMask |\
@@ -87,13 +89,13 @@ void CreateWindow(int x,int y, int w, int h)
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
 
-  mysizehints.flags = PWinGravity| PResizeInc | PBaseSize |
-    PMaxSize | PMinSize | USSize | USPosition;
+  mysizehints.flags = PWinGravity| PResizeInc | PBaseSize | PMaxSize | PMinSize
+		      | USSize | USPosition;
   /* subtract one for the right/bottom border */
   mysizehints.width_inc = 1;
   mysizehints.height_inc = 1;
-  mysizehints.base_height = BAR_WIDTH+PAD_WIDTH3;
-  mysizehints.base_width = BAR_WIDTH+PAD_WIDTH3;
+  mysizehints.base_height = BAR_WIDTH + PAD_WIDTH3;
+  mysizehints.base_width = BAR_WIDTH + PAD_WIDTH3;
 
   Width = w/Reduction_H + BAR_WIDTH + PAD_WIDTH3;
   Height = h/Reduction_V + BAR_WIDTH + PAD_WIDTH3;
@@ -108,17 +110,20 @@ void CreateWindow(int x,int y, int w, int h)
 
   mysizehints.win_gravity = NorthWestGravity;
 
-  attributes.colormap = Pcmap;
-  attributes.background_pixel = GetColor(BackColor);
+  attributes.backing_store = NotUseful;
+  attributes.background_pixel = (colorset < 0) ? GetColor(BackColor)
+				: Colorset[colorset % nColorsets].bg;
   attributes.border_pixel = 0;
+  attributes.colormap = Pcmap;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
 			   mysizehints.width, mysizehints.height, 0, Pdepth,
-			   InputOutput, Pvisual,
-			   CWColormap | CWBackPixel | CWBorderPixel,
-			   &attributes);
+			   InputOutput, Pvisual, CWBackingStore | CWBackPixel
+			   | CWBorderPixel | CWColormap, &attributes);
 
-  hilite_pix = GetHilite(attributes.background_pixel);
-  shadow_pix = GetShadow(attributes.background_pixel);
+  hilite_pix = (colorset < 0) ? GetHilite(attributes.background_pixel)
+			      : Colorset[colorset % nColorsets].hilite;
+  shadow_pix = (colorset < 0) ? GetShadow(attributes.background_pixel)
+			      : Colorset[colorset % nColorsets].shadow;
 
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
@@ -129,17 +134,21 @@ void CreateWindow(int x,int y, int w, int h)
   holder_win = XCreateWindow(dpy, main_win, PAD_WIDTH3, PAD_WIDTH3,
 			     mysizehints.width - BAR_WIDTH - PAD_WIDTH3,
 			     mysizehints.height - BAR_WIDTH - PAD_WIDTH3,
-			     0, Pdepth, InputOutput, Pvisual,
-			     CWColormap | CWBackPixel | CWBorderPixel,
+			     0, Pdepth, InputOutput, Pvisual, CWBackingStore
+			     | CWBackPixel | CWBorderPixel | CWColormap,
 			     &attributes);
   XMapWindow(dpy,holder_win);
 
 
   gcm = GCForeground;
   gcv.foreground = hilite_pix;
-  reliefGC = XCreateGC(dpy, holder_win, gcm, &gcv);
+  hiliteGC = XCreateGC(dpy, holder_win, gcm, &gcv);
   gcv.foreground = shadow_pix;
   shadowGC = XCreateGC(dpy, holder_win, gcm, &gcv);
+
+  if (colorset >= 0)
+    SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
+			&Colorset[(colorset % nColorsets)], Pdepth, shadowGC);
 
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
  }
@@ -163,9 +172,9 @@ int motion = NONE;
 void Loop(Window target)
 {
   Window root;
-  int x,y,depth,border_width;
+  int x, y;
   XEvent Event;
-  int tw,th;
+  unsigned int tw, th, depth, border_width;
   char *temp;
   char *prop = NULL;
   Atom actual = None;
@@ -173,6 +182,7 @@ void Loop(Window target)
   unsigned long nitems, bytesafter;
 
   while(1) {
+    FvwmPacket* packet;
     fd_set fdset;
 
     FD_ZERO(&fdset);
@@ -190,29 +200,28 @@ void Loop(Window target)
 	  break;
 
 	case ConfigureNotify:
-	  XGetGeometry(dpy,main_win,&root,&x,&y,
-		       (unsigned int *)&tw,(unsigned int *)&th,
-		       (unsigned int *)&border_width,
-		       (unsigned int *)&depth);
-	  if((tw != Width)||(th!= Height))
-	    {
-	      XResizeWindow(dpy,holder_win,tw-BAR_WIDTH-PAD_WIDTH3,
-			    th-BAR_WIDTH-PAD_WIDTH3);
-	      Width = tw;
-	      Height = th;
-	      if(target_y_offset + Height - BAR_WIDTH > target_height)
-		target_y_offset  = target_height - Height + BAR_WIDTH;
-	      if(target_y_offset < 0)
-		target_y_offset = 0;
-	      if(target_x_offset < 0)
-		target_x_offset = 0;
-	      if(target_x_offset + Width - BAR_WIDTH > target_width)
-		target_x_offset  = target_width - Width + BAR_WIDTH;
+	  XGetGeometry(dpy, main_win, &root ,&x, &y, &tw, &th, &border_width,
+		       &depth);
+	  if ((tw != Width) || (th != Height)) {
+	    if (colorset >= 0)
+	      SetWindowBackground(dpy, main_win, tw, th,
+				  &Colorset[(colorset % nColorsets)], Pdepth,
+				  shadowGC);
+	    XResizeWindow(dpy, holder_win, tw - BAR_WIDTH - PAD_WIDTH3,
+			  th - BAR_WIDTH - PAD_WIDTH3);
+	    Width = tw;
+	    Height = th;
+	    if (target_y_offset > target_height - Height + BAR_WIDTH)
+	      target_y_offset = target_height - Height + BAR_WIDTH;
+	    if (target_y_offset < 0)
+	      target_y_offset = 0;
+	    if (target_x_offset > target_width - Width + BAR_WIDTH)
+	      target_x_offset = target_width - Width + BAR_WIDTH;
+	    if (target_x_offset < 0)
+	      target_x_offset = 0;
 
-	      XMoveWindow(dpy,target,-target_x_offset, -target_y_offset);
-	      exposed = 1;
-	      RedrawWindow(target);
-	    }
+	    XMoveWindow(dpy, target, -target_x_offset, -target_y_offset);
+	  }
 	  break;
 
 	case ButtonPress:
@@ -504,18 +513,27 @@ void Loop(Window target)
 
     /* parse any config lines (colorsets) */
     if (FD_ISSET(fd[1], &fdset)) {
-      char *tline;
+      char *tline, *token;
 
-      GetConfigLine(fd, &tline);
-      if (tline != NULL && (strlen(tline) > 1)) {
-/* this is where dynamic colorset changinf happens
-            SetWindowBackground(dpy, main_win, tw, th, G->bg, G->depth,
-				G->shadowGC);
-*/
+      packet = ReadFvwmPacket(fd[1]);
+      if (packet && packet->type == M_CONFIG_INFO ) {
+	tline = (char*)&(packet->body[3]);
+	tline = GetNextToken(tline, &token);
+	if (StrEquals(token, "Colorset")) {
+	  /* track all colorset changes and update display if necessary */
+	  if (LoadColorset(tline) == colorset) {
+	    XSetForeground(dpy, hiliteGC,
+			   Colorset[colorset % nColorsets].hilite);
+	    XSetForeground(dpy, shadowGC,
+			   Colorset[colorset % nColorsets].shadow);
+	    SetWindowBackground(dpy, main_win, Width, Height,
+				&Colorset[colorset % nColorsets], Pdepth,
+				shadowGC);
+	  }
+	}
+	free(token);
       }
 
-      /* free up line malloc'd by GetConfigLine */
-      if (tline) free(tline);
     }
   }
   return;
@@ -543,7 +561,7 @@ void RedrawWindow(Window target)
   RelieveRectangle(dpy, main_win, PAD_WIDTH3 - 2, PAD_WIDTH3 - 2,
 		   Width-BAR_WIDTH - PAD_WIDTH3 + 3,
 		   Height-BAR_WIDTH - PAD_WIDTH3 + 3,
-		   shadowGC, reliefGC, 2);
+		   shadowGC, hiliteGC, 2);
 
   y = (Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH)*
     target_y_offset/target_height
@@ -563,23 +581,23 @@ void RedrawWindow(Window target)
 		 w,Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,False);
 
       RelieveRectangle(dpy, main_win, x, y, w - 1, h - 1,
-		       reliefGC, shadowGC, 2);
+		       hiliteGC, shadowGC, 2);
     }
   if(exposed & 1)
       RelieveRectangle(dpy, main_win, x - 2, PAD_WIDTH2, w + 3,
 		       Height - BAR_WIDTH - PAD_WIDTH2 + 1,
-		       shadowGC, reliefGC, 2);
+		       shadowGC, hiliteGC, 2);
   if(exposed)
     {
       if(motion == TOP)
-	RedrawTopButton(shadowGC,reliefGC,x,PAD_WIDTH3);
+	RedrawTopButton(shadowGC,hiliteGC,x,PAD_WIDTH3);
       else
-	RedrawTopButton(reliefGC,shadowGC,x,PAD_WIDTH3);
+	RedrawTopButton(hiliteGC,shadowGC,x,PAD_WIDTH3);
       if(motion == BOTTOM)
-	RedrawBottomButton(shadowGC,reliefGC,x,
+	RedrawBottomButton(shadowGC,hiliteGC,x,
 			   Height-BAR_WIDTH-SCROLL_BAR_WIDTH);
       else
-	RedrawBottomButton(reliefGC,shadowGC,x,
+	RedrawBottomButton(hiliteGC,shadowGC,x,
 			   Height-BAR_WIDTH-SCROLL_BAR_WIDTH);
     }
 
@@ -598,25 +616,25 @@ void RedrawWindow(Window target)
       XClearArea(dpy,main_win,PAD_WIDTH3+SCROLL_BAR_WIDTH,y,
 		 Width-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,h,False);
       RelieveRectangle(dpy, main_win, x, y, w - 1, h - 1,
-		       reliefGC, shadowGC, 2);
+		       hiliteGC, shadowGC, 2);
     }
   if(exposed& 1)
     {
       RelieveRectangle(dpy, main_win, PAD_WIDTH2, y - 2,
 		       Width - BAR_WIDTH - PAD_WIDTH2 + 1, h + 2,
-		       shadowGC, reliefGC, 2);
+		       shadowGC, hiliteGC, 2);
     }
   if(exposed)
     {
       if(motion == LEFT)
-	RedrawLeftButton(shadowGC,reliefGC,PAD_WIDTH3,y);
+	RedrawLeftButton(shadowGC,hiliteGC,PAD_WIDTH3,y);
       else
-	RedrawLeftButton(reliefGC,shadowGC,PAD_WIDTH3,y);
+	RedrawLeftButton(hiliteGC,shadowGC,PAD_WIDTH3,y);
       if(motion ==RIGHT)
-	RedrawRightButton(shadowGC,reliefGC,
+	RedrawRightButton(shadowGC,hiliteGC,
 			  Width-BAR_WIDTH-SCROLL_BAR_WIDTH,y);
       else
-	RedrawRightButton(reliefGC,shadowGC,
+	RedrawRightButton(hiliteGC,shadowGC,
 			  Width-BAR_WIDTH-SCROLL_BAR_WIDTH,y);
     }
 
@@ -628,12 +646,12 @@ void RedrawWindow(Window target)
       RelieveRectangle(dpy, main_win, Width - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		       Height - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		       SCROLL_BAR_WIDTH + 3, SCROLL_BAR_WIDTH + 3,
-		       shadowGC, reliefGC, 2);
+		       shadowGC, hiliteGC, 2);
       else
 	RelieveRectangle(dpy, main_win, Width - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		         Height - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		         SCROLL_BAR_WIDTH + 3,SCROLL_BAR_WIDTH + 3,
-		         reliefGC, shadowGC, 2);
+		         hiliteGC, shadowGC, 2);
     }
   exposed = 0;
 }

@@ -58,9 +58,12 @@ FvwmScroll at start-up time, you probably don't want to.
 FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
 and looks for lines as listed below:
 
+.IP "*FvwmScrollColorset \fIn\fP"
+Tells the module to use colorset \fIn\fP. See FvwmTheme.
+
 .IP "*FvwmScrollBack \fIcolor\fP"
 Tells the module to use \fIcolor\fP instead of black for the window
-background.
+background. Switches off the Colorset option.
 
 .SH BUGS
 When the scroll bars are removed by clicking on the button in the

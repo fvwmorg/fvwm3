@@ -34,6 +34,7 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
+#include "libs/Colorset.h"
 #include "FvwmScroll.h"
 
 char *MyName;
@@ -43,9 +44,12 @@ int fd[2];
 Display *dpy;			/* which display are we talking to */
 Window Root;
 int screen;
-GC reliefGC, shadowGC;
+GC hiliteGC, shadowGC;
 int x_fd;
 int ScreenWidth, ScreenHeight;
+
+/* default colorset to use, set to -1 when explicitly setting colors */
+int colorset = 0;
 
 char *BackColor = "black";
 
@@ -117,6 +121,8 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
   InitPictureCMap(dpy);
+  /* prevent core dumps if fvwm doesn't provide any colorsets */
+  AllocColorset(0);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */
@@ -131,6 +137,15 @@ int main(int argc, char **argv)
 			   Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);
+	      colorset = -1;
+	    }
+    else if(strncasecmp(tline,CatString3(MyName,"Colorset",""),Clength+8)==0)
+      {
+        sscanf(&tline[Clength+8], "%d", &colorset);
+      }
+    else if(strncasecmp(tline, "Colorset", 8) == 0)
+      {
+        LoadColorset(&tline[8]);
 	    }
 	}
       GetConfigLine(fd,&tline);
