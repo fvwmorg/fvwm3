@@ -1,4 +1,12 @@
-2003-09-05  Marcus Lundblad  <ml@update.uu.se>
+2003-09-05  malu  <ml@update.uu.se>
+
+	* libs/Flocale.c (FlocaleDrawString):
+	(FlocaleTextWidth):
+	Fixed drawing of combining characters with font shadow
+	(character offsets were miscalculated, since FlocaleTextWidth
+	adds shadow width)
+
+2003-09-05  malu  <ml@update.uu.se>
 
 	* libs/Flocale.c (FlocaleDrawUnderline): 
 	Fixed bug with text width when a string contains only

@@ -1839,7 +1839,10 @@ void FlocaleDrawString(
 			}
 			buf[j] = 0;
 			pixel_pos[i] = curr_pixel_pos;
-			curr_pixel_pos += FlocaleTextWidth(flf, buf, curr_len);
+			/* need to compensate for shadow width (if any) */
+			curr_pixel_pos += 
+				FlocaleTextWidth(flf, buf, curr_len) -
+				FLF_SHADOW_WIDTH(flf);
 		}
 	}
 
@@ -1955,6 +1958,26 @@ void FlocaleDrawString(
 			{
 			        int xt = fws->x;
 				int yt = fws->y;
+				FlocaleInitGstpArgs(&gstp_args, flf, fws, 
+						    fws->x, fws->y);
+				if (flf->shadow_size != 0)
+				{
+					XSetForeground(dpy, fws->gc, fgsh);
+					while (FlocaleGetShadowTextPosition(
+					       &xt, &yt, &gstp_args))
+					{
+						XmbDrawString(
+							      dpy, fws->win, 
+							      flf->fontset, 
+							      fws->gc,
+							      xt, yt, 
+							      buf2, 
+							      strlen(buf2));
+					}
+					XSetForeground(dpy, fws->gc, fg);
+				}
+				xt = gstp_args.orig_x;
+				yt = gstp_args.orig_y;
 			        XmbDrawString(
 					dpy, fws->win, flf->fontset, fws->gc,
 					xt + offset, yt, buf2, strlen(buf2));
