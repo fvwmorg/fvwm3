@@ -135,7 +135,7 @@ static Bool blocksintersect(char *blk1, char *blk2, int length)
 	return False;
 }
 
-Bool style_ids_are_equals(style_id_t a, style_id_t b)
+static Bool style_ids_are_equals(style_id_t a, style_id_t b)
 {
 	if (SID_GET_HAS_NAME(a) && SID_GET_HAS_NAME(b) &&
 	    !strcmp(SID_GET_NAME(a), SID_GET_NAME(b)))
@@ -150,17 +150,17 @@ Bool style_ids_are_equals(style_id_t a, style_id_t b)
 	return False;
 }
 
-Bool style_id_equals_id(window_style s, style_id_t id)
+static Bool style_id_equals_id(window_style s, style_id_t id)
 {
 	return style_ids_are_equals(SGET_ID(s), id);
 }
 
-Bool styles_have_same_id(window_style s, window_style t)
+static Bool styles_have_same_id(window_style s, window_style t)
 {
 	return style_ids_are_equals(SGET_ID(s), SGET_ID(t));
 }
 
-Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
+static Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 {
 	if (SID_GET_HAS_NAME(s_id) &&
 	    (matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) == TRUE ||
@@ -178,7 +178,7 @@ Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 	return False;
 }
 
-Bool one_fw_can_match_both_ids(window_style s, window_style t)
+static Bool one_fw_can_match_both_ids(window_style s, window_style t)
 {
 	if (SGET_ID_HAS_WINDOW_ID(s) && SGET_ID_HAS_WINDOW_ID(t) &&
 	    SGET_WINDOW_ID(s) != SGET_WINDOW_ID(t))
@@ -260,7 +260,7 @@ static int Get_TBLR(char *token, unsigned char *IconFill)
 	return 1;
 }
 
-void cleanup_style_defaults(window_style *style)
+static void cleanup_style_defaults(window_style *style)
 {
 	int i;
 	char *dflt;

@@ -561,7 +561,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
  * ret_suffixnum (0 = no suffix, 1 = first suffix in suffixlist ...).
  *
  */
-int _get_suffixed_integer_arguments(
+static int _get_suffixed_integer_arguments(
 	char *action, char **ret_action, int *retvals, int num,
 	char *suffixlist, int *ret_suffixnum, char *parsestring)
 {

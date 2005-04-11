@@ -25,6 +25,7 @@
 
 #include "fvwmlib.h"
 #include "PictureBase.h"
+#include "FRenderInit.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

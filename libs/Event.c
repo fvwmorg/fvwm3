@@ -18,6 +18,7 @@
 #include "config.h"
 #include <X11/Xlib.h>
 #include <stdio.h>
+#include "fvwmlib.h"
 
 /*
  * Return the subwindow member of an event if the event type has one.

@@ -1,3 +1,30 @@
+2005-04-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (style_ids_are_equals):
+	(style_id_equals_id):
+	(styles_have_same_id):
+	(fw_match_style_id):
+	(one_fw_can_match_both_ids):
+	(cleanup_style_defaults):
+	* libs/fsm.c (fprintfhex):
+	(CloseDownClient):
+	* libs/FGettext.c (fgettext_free_fgpath_list):
+	* libs/Parse.c (_get_suffixed_integer_arguments):
+	* libs/Graphics.c (AllocNonlinearGradient):
+	* libs/PictureUtils.c (build_mapping_table):
+	(finish_ct_init):
+	made static
+
+	* libs/setpgrp.c:
+	* libs/Event.c:
+	* libs/FRenderInit.c:
+	include own header file
+
+	* libs/System.c (getFileStamp):
+	* libs/Fft.c (FftPDumyFunc):
+	* libs/FScreen.c (FScreenSetDefaultModuleScreen):
+	exported
+
 2005-03-01  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in (Example): Piperead in dynamic menu example,

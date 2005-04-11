@@ -45,6 +45,7 @@ void FScreenSLSOnOff(Bool do_enable);
  * config string sent by fvwm. */
 void FScreenConfigureModule(char *args);
 const char* FScreenGetConfiguration(void); /* For use by FVWM */
+void FScreenSetDefaultModuleScreen(char *scr_spec);
 void FScreenDisableRandR(void);
 
 void FScreenSetPrimaryScreen(int scr);

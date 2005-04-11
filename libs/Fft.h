@@ -306,6 +306,8 @@ typedef struct
 
 /* ---------------------------- interface functions ------------------------ */
 
+void FftPDumyFunc(void);
+
 /* ---------------------------- global definitions ------------------------- */
 
 #if FftSupport

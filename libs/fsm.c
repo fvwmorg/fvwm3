@@ -1,5 +1,5 @@
 /* -*-c-*- */
-/* Copyright (C) 2003  Olivier Chapuis 
+/* Copyright (C) 2003  Olivier Chapuis
  * some code taken from the xsm: Copyright 1993, 1998  The Open Group */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -108,8 +108,8 @@ void free_fsm_client(fsm_client_t *client)
 /*
  * auth stuff
  */
-void
-fprintfhex (register FILE *fp, unsigned int len, char *cp)
+static void
+fprintfhex(register FILE *fp, unsigned int len, char *cp)
 {
     static const char hexchars[] = "0123456789abcdef";
 
@@ -226,7 +226,7 @@ Status SetAuthentication(
 		goto bad;
 	}
 	if (!(addfp = fdopen(fd, "wb")))
-	{ 
+	{
 		goto bad;
 	}
 	if ((remAuthFile = unique_filename (path, ".fsm-", &fd)) == NULL)
@@ -234,7 +234,7 @@ Status SetAuthentication(
 		goto bad;
 	}
 	if (!(removefp = fdopen(fd, "wb")))
-	{ 
+	{
 		goto bad;
 	}
 
@@ -257,7 +257,7 @@ Status SetAuthentication(
 		(*authDataEntries)[i+1].protocol_name = "XSMP";
 		(*authDataEntries)[i+1].auth_name = "MIT-MAGIC-COOKIE-1";
 
-		(*authDataEntries)[i+1].auth_data = 
+		(*authDataEntries)[i+1].auth_data =
 			FIceGenerateMagicCookie (MAGIC_COOKIE_LEN);
 		(*authDataEntries)[i+1].auth_data_length = MAGIC_COOKIE_LEN;
 
@@ -352,7 +352,7 @@ void MyIoErrorHandler(FIceConn ice_conn)
 	{
 		(*prev_handler) (ice_conn);
 	}
-}    
+}
 
 static
 void InstallIOErrorHandler(void)
@@ -528,7 +528,7 @@ SaveYourselfDoneProc(FSmsConn smsConn, FSmPointer managerData, Bool success)
 	FSmsSaveComplete(client->smsConn);
 }
 
-void
+static void
 CloseDownClient(fsm_client_t *client)
 {
 
@@ -559,7 +559,7 @@ CloseDownClient(fsm_client_t *client)
 }
 
 static void
-CloseConnectionProc(FSmsConn smsConn, FSmPointer managerData, 
+CloseConnectionProc(FSmsConn smsConn, FSmPointer managerData,
 		    int count, char **reasonMsgs)
 {
     fsm_client_t	*client = (fsm_client_t *) managerData;
@@ -613,7 +613,7 @@ void GetPropertiesProc(FSmsConn smsConn, FSmPointer managerData)
 
 static Status
 NewClientProc(
-	FSmsConn smsConn, FSmPointer managerData, unsigned long *maskRet, 
+	FSmsConn smsConn, FSmPointer managerData, unsigned long *maskRet,
 	FSmsCallbacks *callbacksRet, char **failureReasonRet)
 {
     fsm_client_t *nc;
@@ -632,7 +632,7 @@ NewClientProc(
 
     running_list = flist_append_obj(running_list, nc);
 
-#ifdef FVWM_DEBUG_FSM 
+#ifdef FVWM_DEBUG_FSM
 	fprintf(
 		stderr, "[%s][NewClientProc] On FIceConn fd = %d, client "
 		"set up session mngmt protocol\n", module_name,
@@ -829,7 +829,7 @@ void ProcessIceMsg(fsm_ice_conn_t *fic)
 				break;
 			}
 		}
-	 
+
 		if (!found)
 		{
 			/*
@@ -969,7 +969,7 @@ void set_session_manager(Display *dpy, Window window, char *sm)
 	fprintf(
 		stderr, "[%s][fsm_init] Proxy %s window 0x%lx\n",
 		module_name, (sm)? "On":"Off", client_leader);
-	
+
 #endif
 
 	/* set the client id for ksmserver */
@@ -1057,7 +1057,7 @@ int fsm_init(char *module)
 	    return 0;
 	}
 
-	if (FIceAddConnectionWatch(&ice_watch_fd, NULL) == 0) 
+	if (FIceAddConnectionWatch(&ice_watch_fd, NULL) == 0)
 	{
 		fprintf(stderr,
 			"[%s][fsm_init] <<ERROR>> -- "
@@ -1107,7 +1107,7 @@ void fsm_fdset(fd_set *in_fdset)
 		FD_SET(fic->fd, in_fdset);
 		l = l->next;
 	}
-	
+
 }
 
 Bool fsm_process(fd_set *in_fdset)

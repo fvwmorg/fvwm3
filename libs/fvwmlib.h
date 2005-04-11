@@ -166,6 +166,7 @@ char* searchPath( const char* path, const char* filename,
 /* An interface for verifying cached files. */
 
 #define FileStamp unsigned long
+FileStamp getFileStamp(const char *name);
 void setFileStamp(FileStamp *stamp, const char *name);
 Bool isFileStampChanged(const FileStamp *stamp, const char *name);
 
@@ -304,14 +305,6 @@ GC fvwmlib_XCreateGC(
 #define Y_GRADIENT 'Y'
 
 Bool IsGradientTypeSupported(char type);
-
-#if 0
-Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
-			   int skip_first_color);
-
-Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
-			      int nsegs, int npixels);
-#endif
 
 /* Convenience function. Calls AllocNonLinearGradient to fetch all colors and
  * then frees the color names and the perc and color_name arrays. */

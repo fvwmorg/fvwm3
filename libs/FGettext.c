@@ -94,7 +94,7 @@ void fgettext_add_one_path(char *path, int position)
 	FGPathList = flist_insert_obj(FGPathList, tmp, position);
 }
 
-void fgettext_free_fgpath_list(void)
+static void fgettext_free_fgpath_list(void)
 {
 	flist *l = FGPathList;
 

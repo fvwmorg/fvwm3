@@ -775,7 +775,7 @@ XColor *build_mapping_colors(int nr, int ng, int nb)
 	return colors;
 }
 
-short *build_mapping_table(int nr, int ng, int nb, Bool use_named)
+static short *build_mapping_table(int nr, int ng, int nb, Bool use_named)
 {
 	int size = nr*ng*nb;
 	XColor *colors_map;
@@ -1220,7 +1220,7 @@ void create_mapping_table(
 	}
 }
 
-void finish_ct_init(
+static void finish_ct_init(
 	int call_type, int ctt, int nr, int ng, int nb, int ngrey,
 	int grey_bits, Bool use_named)
 {

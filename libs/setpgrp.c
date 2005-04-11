@@ -22,6 +22,7 @@
 
 #include "config.h"
 #include <unistd.h>
+#include "setpgrp.h"
 
 int fvwm_setpgrp(void)
 {

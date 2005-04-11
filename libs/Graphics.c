@@ -539,7 +539,7 @@ XColor *AllocLinearGradient(
  * Allocates a nonlinear color gradient (veliaa@rpi.edu)
  *
  */
-XColor *AllocNonlinearGradient(
+static XColor *AllocNonlinearGradient(
 	char *s_colors[], int clen[], int nsegs, int npixels, int dither)
 {
 	XColor *xcs = (XColor *)safemalloc(sizeof(XColor) * npixels);
