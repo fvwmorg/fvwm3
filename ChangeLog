@@ -1,3 +1,9 @@
+2005-06-02  Dan Espen  <dane@mk.telcordia.com>
+
+	* NEWS:
+	* fvwm/fvwm.1.in:
+	Spelling fix contition -> condition
+
 2005-04-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (style_ids_are_equals):

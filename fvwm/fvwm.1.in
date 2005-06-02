@@ -10111,7 +10111,7 @@ Execute
 .I command
 on all windows meeting the conditions.  It returns 1 if any window
 matches the condition and 0 otherwise.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
@@ -10126,7 +10126,7 @@ Performs
 if any window which satisfies all
 .I conditions
 exists.  The command is run in the context of the root window.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 .TP
 .BI "Break [levels]"
@@ -10154,7 +10154,7 @@ Performs
 .I command
 on the currently focused window if it satisfies all
 .IR conditions .
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
@@ -10190,7 +10190,7 @@ those farther away.  The
 .I Center
 direction simply selects the window closest to the starting point.
 Returns -1 if an invalid direction was given.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 .TP
 .BI "KeepRc " command
@@ -10215,7 +10215,7 @@ on the next window which satisfies all
 If the command is running in a window context, it starts looking
 for a matching window from there.  Otherwise it starts at the
 focused window.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 .TP
 .BI "None [(" conditions ")] " command
@@ -10225,7 +10225,7 @@ if no window which satisfies all
 .I conditions
 exists.  The command is run in the context of the root window.
 Returns 1 if no window matches the conditions and 0 otherwise.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
@@ -10256,7 +10256,7 @@ selections with complex functions.  The command is executed only
 if the given
 .I conditions
 are met.  Returns -1 if no window was selected.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
@@ -10271,7 +10271,7 @@ Performs
 if the window under the pointer satisfies all
 .IR conditions .
 Returns -1 if there is no window under the pointer.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
@@ -10290,7 +10290,7 @@ on the previous window which satisfies all
 If the command is running in a window context, it starts looking
 for a matching window from there.  Otherwise it starts at the
 focused window.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 .TP
 .B "ScanForWindow \
@@ -10333,7 +10333,7 @@ windows matching the conditions will eventually be found.  If the
 focus reaches a limit along the primary axis, it will wrap around
 to the opposite side.  Returns -1 if an invalid direction was
 given.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 .TP
 .BI "Test [(" test-conditions ")] " command
@@ -10463,7 +10463,7 @@ ignored.
 is never interactive.  The command is executed only if the given
 .I conditions
 are met.  It returns -1 if used outside a window context.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
@@ -10495,7 +10495,7 @@ windows, there are some exceptions, for example the
 .B WarpToWindow
 command.
 Returns -1 if no window with the given id exists.
-.RB "See " Conditions " section below for a list of contitions."
+.RB "See " Conditions " section below for a list of conditions."
 
 This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
@@ -10673,7 +10673,7 @@ condition matches only windows that are allowed to be closed.
 
 The
 .I CurrentDesk
-contition matches only windows that are on the current desk.
+condition matches only windows that are on the current desk.
 
 The
 .I CurrentGlobalPage

@@ -1674,7 +1674,7 @@ Changes in beta release 2.3.19 (June 2000)
 
 Changes in beta release 2.3.18 (May 2000)
 
-* Renamed the MovedButton3 contition to PlacedByButton3.
+* Renamed the MovedButton3 condition to PlacedByButton3.
 
 * Removed FlipTransient and DontFlipTransient styles (they never
   worked anyway).

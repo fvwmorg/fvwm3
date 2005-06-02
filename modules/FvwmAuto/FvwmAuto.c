@@ -530,7 +530,7 @@ main(int argc, char **argv)
 				raised_win = focus_win;
 			}
 			/* force fvwm to synchronise on slow X connections to
-			 * avoid a race contition.  Still possible, but much
+			 * avoid a race condition.  Still possible, but much
 			 * less likely. */
 			SendInfo(fd, "XSync", focus_win);
 
