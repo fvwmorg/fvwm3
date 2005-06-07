@@ -1,3 +1,8 @@
+2005-06-07  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmScript/FvwmScript.1.in (following): Clarify description of
+	Do block.
+
 2005-06-02  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmAuto/FvwmAuto.c (main): Spelling fix in comment
