@@ -484,13 +484,13 @@ Warp the mouse pointer into the widget numbered \fIid\fP.
 Write to the file \fIfilename\fP the string which is the concatenation of all
 arguments \fIstr1\fP, \fIstr2\fP, etc.
 
-.IP "Do {\fIcommand args\fP} etc"
+.IP "Do {\fIcommand args\fP}"
 Execute the fvwm command inside the Do block.
 Any fvwm command as described in the fvwm2
 man page can used.
 Commands are sent from this module to the fvwm
 main program for processing.
-The command and arguments can not exceed 988 characters.
+The length of the command and arguments can not exceed 988 characters.
 
 .IP "Set $\fIvar\fP={\fIstr\fP1} {\fIstr2\fP} etc"
 Concatenate all arguments to a string and set the variable $\fIvar\fP to this
