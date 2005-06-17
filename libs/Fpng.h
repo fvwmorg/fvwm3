@@ -2,7 +2,7 @@
 /* Copyright (C) 2002  Olivier Chapuis */
 
 #ifndef FPNG_H
-#define FPNH_H
+#define FPNG_H
 
 /* ---------------------------- included header files ---------------------- */
 

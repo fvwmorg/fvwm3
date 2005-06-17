@@ -3316,7 +3316,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	{
 		__resize_get_dir_proximity(
 			&xmotion, &ymotion, fw, orig->width - px,
-			orig->width - py, px, py);
+			orig->height - py, px, py);
 		if (xmotion != 0 || ymotion != 0)
 		{
 			do_warp_to_border = True;
