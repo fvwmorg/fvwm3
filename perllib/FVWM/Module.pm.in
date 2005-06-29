@@ -357,7 +357,7 @@ sub send ($$;$$) {
 		my $len = length $line;
 		$SIG{PIPE} = sub { $self->debug("Failed send [$line]\n", 1); };
 		$self->{ostream}->print(
-			pack("lla${len}l", $winId, $len, $line, $continue)
+			pack("l!l!a${len}l!", $winId, $len, $line, $continue)
 		);
 	}
 	return $self;
@@ -422,9 +422,13 @@ sub readPacket ($) {
 	}
 
 	my ($magic, $type, $len, $timestamp) =
-		unpack(sprintf("L%d", HEADER_SIZE), $header);
+		unpack(sprintf("L!%d", HEADER_SIZE), $header);
 	$self->internalDie("Bad magic number $magic in packet")
 		unless $magic == START_FLAG;
+
+	# $type should not be anything other than a 32-bit number
+	# however, extended messages are padded with set bits on 64-bit systems
+	$type &= 0xffffffff;
 
 	# $len is number of words in packet, including header;
 	# we need this as number of bytes.

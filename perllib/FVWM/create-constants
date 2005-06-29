@@ -10,6 +10,7 @@ outfile=`dirname $0`/Constants.pm
 	echo ""; \
 	echo "package FVWM::Constants;"; \
 	echo "use Exporter;"; \
+	echo "use Config;"; \
 	echo "@ISA = qw(Exporter);"; \
 	echo ""; \
 ) \
@@ -31,7 +32,7 @@ outfile=`dirname $0`/Constants.pm
 
 ( \
 	echo "use constant ON_EXIT => '1e20';"; \
-	echo "use constant INTSIZE => 4;" \
+	echo "use constant INTSIZE => \$Config{longsize};" \
 ) \
 	>>$outfile
 

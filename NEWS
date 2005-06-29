@@ -12,6 +12,8 @@ Changes in beta release 2.5.13 (not released yet)
    - Mouse/Key command no args possible core dump.
    - Direction with no args possible core dump.
    - FvwmScript periodic tasks run too often.
+   - Perl modules did not work on 64 machines.
+   - FvwmDebug did not report any extended messages.
 
 * New module features:
 
@@ -20,7 +22,7 @@ Changes in beta release 2.5.13 (not released yet)
      TipsColorset, TipsFormat, TipsBorderWidth, TipsPlacement,
      TipsJustification and TipsOffsets options.
    - FvwmButtons: PressColorset & ActiveColorset options for
-	 _individual_ buttons.
+     _individual_ buttons.
 
 -------------------------------------------------------------------
 

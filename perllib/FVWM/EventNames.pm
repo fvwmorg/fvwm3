@@ -35,7 +35,7 @@ use vars qw($EVENTS_INFO);
 $EVENTS_INFO = {
 
 	&M_NEW_PAGE             => {
-		format => "l3L4",
+		format => "l!3L!4",
 		fields => [
 			vp_x         => number,
 			vp_y         => number,
@@ -51,7 +51,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_NEW_DESK             => {
-		format => "l",
+		format => "l!",
 		fields => [
 			desk_n       => number,
 		],
@@ -64,7 +64,7 @@ $EVENTS_INFO = {
 #	},
 
 	&M_RAISE_WINDOW         => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -73,7 +73,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_LOWER_WINDOW         => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -85,7 +85,7 @@ $EVENTS_INFO = {
 #	},
 
 	&M_FOCUS_CHANGE         => {
-		format => "L5",
+		format => "L!5",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -96,7 +96,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_DESTROY_WINDOW       => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -105,7 +105,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_ICONIFY              => {
-		format => "L3l8",
+		format => "L!3l!8",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -122,7 +122,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_DEICONIFY            => {
-		format => "L3l8",
+		format => "L!3l!8",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -139,7 +139,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_WINDOW_NAME          => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -149,7 +149,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_ICON_NAME            => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -159,7 +159,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_RES_CLASS            => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -169,7 +169,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_RES_NAME             => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -185,7 +185,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_ICON_LOCATION        => {
-		format => "L3l4",
+		format => "L!3l!4",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -198,7 +198,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_MAP                  => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -207,7 +207,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_ERROR                => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -217,7 +217,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_CONFIG_INFO          => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -233,7 +233,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_ICON_FILE            => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -243,7 +243,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_DEFAULTICON          => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -253,7 +253,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_STRING               => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -263,7 +263,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_MINI_ICON            => {
-		format => "L9a*",
+		format => "L!9a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -279,7 +279,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_WINDOWSHADE          => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -288,7 +288,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_DEWINDOWSHADE        => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -297,7 +297,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_VISIBLE_NAME         => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -310,14 +310,14 @@ $EVENTS_INFO = {
 #	},
 
 	&M_RESTACK              => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
 			ptr          => number,
 			low_windows  => looped,
 		],
-		loop_format => "L3a*",
+		loop_format => "L!3a*",
 		loop_fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -326,7 +326,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_ADD_WINDOW           => {
-		format => "L3l6l8L2lL2l3S4a*",
+		format => "L!3l!6l!8L!2l!L!2l!3S4a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -362,7 +362,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_CONFIGURE_WINDOW     => {
-		format => "L3l6l8L2lL2l3S4a*",
+		format => "L!3l!6l!8L!2l!L!2l!3S4a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -401,7 +401,7 @@ $EVENTS_INFO = {
 #	},
 
 	&MX_VISIBLE_ICON_NAME   => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -411,7 +411,7 @@ $EVENTS_INFO = {
 	},
 
 	&MX_ENTER_WINDOW        => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -420,7 +420,7 @@ $EVENTS_INFO = {
 	},
 
 	&MX_LEAVE_WINDOW        => {
-		format => "L3",
+		format => "L!3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -429,7 +429,7 @@ $EVENTS_INFO = {
 	},
 
 	&MX_PROPERTY_CHANGE     => {
-		format => "L3a*",
+		format => "L!3a*",
 		fields => [
 			type         => number,
 			value        => number,

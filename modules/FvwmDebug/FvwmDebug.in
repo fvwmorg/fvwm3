@@ -78,6 +78,7 @@ $module->xmask($xmask);
 #$module->addHandler($mask, \&showEvent);
 #$module->addHandler($xmask | M_EXTENDED_MSG, \&showEvent);
 $module->addHandler(MAX_MSG_MASK, \&showEvent);
+$module->addHandler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&showEvent);
 
 $module->addHandler(ON_EXIT, sub { system("killall xconsole"); }) if $xconsole;
 $logFile = '|xconsole -file /dev/stdin -geometry 600x400 -notify' if $xconsole;

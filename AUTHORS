@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Viktor Griph:
+Patch for Perl modules on 64 bit machines.
+
 Bjoern Steinbrink:
 Patch for FvwmScript tasks running too often.
 

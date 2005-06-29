@@ -2,6 +2,7 @@
 
 package FVWM::Constants;
 use Exporter;
+use Config;
 @ISA = qw(Exporter);
 
 use constant M_NEW_PAGE => (1);
@@ -50,7 +51,7 @@ use constant START_FLAG => 0xffffffff;
 use constant RESPONSE_READY => "NOP FINISHED STARTUP";
 use constant RESPONSE_UNLOCK => "NOP UNLOCK";
 use constant ON_EXIT => '1e20';
-use constant INTSIZE => 4;
+use constant INTSIZE => $Config{longsize};
 @EXPORT = qw(
   M_NEW_PAGE
   M_NEW_DESK

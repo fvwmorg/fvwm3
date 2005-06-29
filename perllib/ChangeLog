@@ -1,3 +1,19 @@
+2005-06-28  Viktor Griph <griph@dd.chalmers.se>
+
+	* FVWM/Module.pm.in:
+	changed format for pack in send to use native longs
+	changed format for unpack in readPacket to use native longs
+	event types are forced to have no bits above bit 31 set.
+
+	* FVWM/EventNames.pm:
+	changed all formats in $EVENTS_INFO to use native long
+
+	* FVWM/create-constants:
+	changed INTSIZE to be $Config{longsize} for 64-bit compilance
+
+	* FVWM/Constants.pm:
+	regenerated file
+
 2004-07-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Tracker/WindowList.pm:
