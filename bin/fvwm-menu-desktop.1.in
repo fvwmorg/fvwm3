@@ -203,7 +203,9 @@ to use this option.
 Use gnome\-sys for the GNOME system menu (this is the default),
 gnome\-user for
 the GNOME user menu, gnome\-redhat for the AnotherLevel
-menu of Red Hat, kde\-sys for the KDE system menu and kde\-user for
+menu of Red Hat,
+gnome\-mandriva for Mandriva menudrake menus,
+kde\-sys for the KDE system menu and kde\-user for
 the KDE user menu. It may be useful to use KDE or GNOME as a flag with
 the \-\-dir option.
 .IP "\fB\-\-type\fR \fINAME\fR"
@@ -214,7 +216,8 @@ The name for then FvwmGtk module to use instead of default FvwmGtk.
 .IP "\fB\-\-title\fR \fINAME\fR"
 Define the menu title of the top menu. Default
 is "Gnome System Menu" for gnome\-sys, "Gnome User Menu" for
-gnome\-user, "Gnome Red Hat Menu" for gnome\-redhat. For KDE the
+gnome\-user, "Gnome Red Hat Menu" for gnome\-redhat,
+"Gnome Mandriva Menu" for gnome\-mandriva. For KDE the
 default is given by KDE itself (or are similar to GNOME title).
 .IP "\fB\-\-name\fR \fINAME\fR"
 Define the menu name of the top menu. Default is the \-\-desktop
@@ -402,6 +405,7 @@ Note that if this option is not set, the description directory is
 install\-prefix/share/gnome/apps if \-\-desktop is gnome\-sys,
 $HOME/.gnome/apps  if \-\-desktop is gnome\-user,
 $HOME/.gnome/apps\-redhat  if \-\-desktop is gnome\-redhat,
+$HOME/.gnome/apps\-mdk  if \-\-desktop is gnome\-mandriva,
 $KDEDIR/share/applink if \-\-desktop is kde\-sys and
 $HOME/.kde/share/applnk if\-\-desktop is sys\-user.
 .IP "\fB\-\-destroy\-type\fR \fIflag\fR"

@@ -14,6 +14,8 @@ Changes in beta release 2.5.13 (not released yet)
    - FvwmScript periodic tasks run too often.
    - Perl modules did not work on 64 machines.
    - FvwmDebug did not report any extended messages.
+   - fvwm-menu-desktop supports mandriva.
+   - fvwm-menu-desktop when verifying executable, allow full path.
 
 * New module features:
 

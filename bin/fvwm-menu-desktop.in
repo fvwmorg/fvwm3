@@ -264,6 +264,10 @@ if ( $MENU_NAME eq 'gnome-redhat' ) {
 	$APPS_DIR   = "$ENV{HOME}/.gnome/apps-redhat";
 	$MENU_TITLE = 'Gnome RedHat Menu';
 }
+if ( $MENU_NAME eq 'gnome-mandriva' ) {
+	$APPS_DIR   = "$ENV{HOME}/.gnome/apps-mdk";
+	$MENU_TITLE = 'Gnome Mandriva Menu';
+}
 
 if (! -d $KDE_APPS)
 {
@@ -481,7 +485,7 @@ if ($UNICONV ne "") {
 
 #----------------
 # "Main" variable: contains the directories to look at.
-# + is the "level" separator, the menu is builded level by level
+# + is the "level" separator, the menu is built level by level
 # with a double loop
 if ($mergeUserMenu && -d $mergeUserDir) {
 	@Rec_Dir_List = ("$mergeUserDir","+");
@@ -895,7 +899,6 @@ sub get_info {
 
 	open(DESC,$file) || die "fvwm-menu-desktop: can't open $file: $!";
 	while(<DESC>) {
-
 		if ( /^Name\[$LANG.*\]\s*=\s*(.*)$/ ) { 
 			$label = $1;
 			if ($UTF8) {
@@ -919,6 +922,14 @@ sub get_info {
 			next;
 		}
 
+		# Mandrake creates lines like:
+		# Exec=NO_XALF command args...
+	        if ( /^Exec\s*=\s*NO_XALF\s*((\S*).*$)/ ) {
+		  print STDERR "FOUND X_ALF EXEC $1 EXEC_EXEC $2\n";
+			$exec = $1;
+			$exec_exec = $2;
+			next;
+		}
 		if ( /^Exec\s*=\s*((\S*).*$)/ ) {
 			$exec = $1;
 			$exec_exec = $2;
@@ -1145,10 +1156,13 @@ sub update_style {
 
 
 #--------------------------------------------------------------------------
-# Check if an application is in the path
+# Check if application binary is executable and reachable
 
 sub check_app {
 	my($app) = @_;
+       # If full path, dont use path, just check path
+	if ( substr($app,0,1) eq '/' and -x $app ) { return 1 };
+	# Check if an application is in the path
 	foreach $dir (@PATH_DIRS) {
 		if ( -x "$dir/$app" ) { return 1 }
 	}
@@ -1171,7 +1185,7 @@ Options:
 	--version                 show version and exit
 	--install-prefix DIR      install prefix of the desktop
 	--desktop NAME            desktop to build the menu for it:
-		gnome-sys (default), gnome-user, gnome-redhat,
+		gnome-sys (default), gnome-user, gnome-redhat, gnome-madriva,
 		kde-sys, kde-user
 	--type NAME               fvwm (default) or gtk for a FvwmGtk menu
 	--fvwmgtk-alias NAME      FvwmGtk module name, default is FvwmGtk
