@@ -397,7 +397,9 @@ static int get_next_x(
 		(Scr.Desktops->ewmh_working_area.x +
 		 Scr.Desktops->ewmh_working_area.width) - t->frame_g.width;
 	if (xtest > x)
+	{
 		xnew = MIN(xnew, xtest);
+	}
 	/* Test the values of the right edges of every window */
 	for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
 	{
@@ -448,12 +450,16 @@ static int get_next_x(
 				}
 			}
 		}
-		else if (y < testw->frame_g.height + testw->frame_g.y -
-			 stickyy && testw->frame_g.y - stickyy <
-			 t->frame_g.height + y)
+		else if (
+			y <
+			testw->frame_g.height + testw->frame_g.y - stickyy &&
+			testw->frame_g.y - stickyy < t->frame_g.height + y &&
+			PageLeft <
+			testw->frame_g.width + testw->frame_g.x - stickyx &&
+			testw->frame_g.x - stickyx < PageRight)
 		{
-			win_left = PageLeft + testw->frame_g.x - stickyx -
-				t->frame_g.width;
+			win_left = PageLeft + pdeltax + testw->frame_g.x -
+				stickyx - t->frame_g.width;
 			for(i=start; i <= GET_NEXT_STEP; i++)
 			{
 				xtest = (win_left) + (testw->frame_g.width) *
@@ -463,7 +469,8 @@ static int get_next_x(
 					xnew = MIN(xnew, xtest);
 				}
 			}
-			win_left = PageLeft + testw->frame_g.x - stickyx;
+			win_left = PageLeft + pdeltax + testw->frame_g.x -
+				stickyx;
 			for(i=start; i <= GET_NEXT_STEP; i++)
 			{
 				xtest = (win_left) + (testw->frame_g.width) *
