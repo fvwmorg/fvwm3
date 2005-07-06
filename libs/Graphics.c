@@ -80,6 +80,8 @@ void do_relieve_rectangle_with_rotation(
 	int i,i2;
 	int a;
 	int l;
+	int max_w;
+	int max_h;
 
 	a = (use_alternate_shading) ? 1 : 0;
 	l = 1 - a;
@@ -107,9 +109,11 @@ void do_relieve_rectangle_with_rotation(
 		relief_gc = ReliefGC;
 		break;
 	}
+	max_w = min((w + 1) / 2, line_width);
+	max_h = min((h + 1) / 2, line_width);
 	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
 	/* from 0 to the lesser of line_width & just over half w */
-	for (i = 0; (i < line_width) && (i <= w / 2); i++)
+	for (i = 0; i < max_w; i++)
 	{
 		if (rotation == ROTATION_0)
 		{
@@ -126,20 +130,20 @@ void do_relieve_rectangle_with_rotation(
 	}
 	i2 = i;
 	/* draw top segments */
-	for (i = 0; (i < line_width) && (i <= h / 2); i++,i2++)
+	for (i = 0; i < max_h; i++,i2++)
 	{
 		seg[i2].x1 = x+w-i-a; seg[i2].y1 = y+i;
 		seg[i2].x2 = x+i+1-a; seg[i2].y2 = y+i;
 	}
 	XDrawSegments(dpy, d, relief_gc, seg, i2);
 	/* bottom */
-	for (i = 0; (i < line_width) && (i <= h / 2); i++)
+	for (i = 0; i < max_h; i++)
 	{
 		seg[i].x1 = x+i+a+l;   seg[i].y1 = y+h-i;
 		seg[i].x2 = x+w-i-1+a; seg[i].y2 = y+h-i;
 	}
 	i2 = i;
-	for (i = 0; (i < line_width) && (i <= w / 2); i++,i2++)
+	for (i = 0; i < max_w; i++,i2++)
 	{
 		if (rotation == ROTATION_0)
 		{
