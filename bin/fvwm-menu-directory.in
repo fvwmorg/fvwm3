@@ -436,7 +436,7 @@ The title item with its own attached action is usually added to the menu.
 This may be used to define an action for the directory for which the menu is
 built, such as starting a terminal in this directory (the default).
 However, this may annoy some users. To disable the title action use
-B<--command-title> "", to remove the title complitely use B<--title> "".
+B<--command-title> "", to remove the title completely use B<--title> "".
 
 =head1 OPTIONS
 
