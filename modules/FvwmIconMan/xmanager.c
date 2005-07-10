@@ -267,7 +267,7 @@ static ManGeometry *figure_geometry(WinManager *man)
 					ret.cols = n;
 					break;
 				}
-				else if ((n/i)*man->max_button_width <= 
+				else if ((n/i)*man->max_button_width <=
 					 ret.width)
 				{
 					ret.cols =
@@ -579,7 +579,7 @@ Button *xy_to_button(WinManager *man, int x, int y)
 	g = figure_geometry(man);
 	row = y / g->boxheight;
 	col = x / g->boxwidth;
-	
+
 	if (x >= 0 && x <= g->width &&
 	    y >= 0 && y <= g->height && col < g->cols)
 	{
@@ -1569,7 +1569,7 @@ void check_in_window(WinData *win)
     if (win->manager->usewinlist && DO_SKIP_WINDOW_LIST(win))
       in_viewport = 0;
     if ((win->manager->showonlyfocused && win->state != FOCUS_CONTEXT) &&
-	(win->manager->showonlyfocused && win->state != FOCUS_SELECT_CONTEXT)) 
+	(win->manager->showonlyfocused && win->state != FOCUS_SELECT_CONTEXT))
 	in_viewport = 0;
     if (win->button == NULL && in_viewport && is_state_selected) {
       insert_windows_button(win);
@@ -1638,9 +1638,6 @@ static void draw_relief(WinManager *man, int button_state, ButtonGeometry *g,
       relief = min(man->geometry.boxheight/2, man->geometry.boxwidth/2);
       if (man->relief_thickness < 0)
         relief *= -1;
-      fprintf(stderr, "%s: Requested relief (%d) too large (for %dx%d box); capped to %d.\n",
-	      MyName, man->relief_thickness, man->geometry.boxwidth, man->geometry.boxheight, relief);
-      man->relief_thickness = relief;
   }
 
   if (state == BUTTON_FLAT || relief == 0)
@@ -2556,7 +2553,7 @@ static char *get_tips(WinManager *man, Button *b)
 
 	/* TIPS_NEEDED */
 	if (free_str != NULL &&
-	    (b->drawn_state.display_string == NULL || 
+	    (b->drawn_state.display_string == NULL ||
 	     strcmp(s, b->drawn_state.display_string)))
 	{
 		return s;

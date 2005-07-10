@@ -1,3 +1,10 @@
+2005-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (draw_relief):
+	don't remove the button relief if a button ever gets too small for the
+	relief; instead, shrink the relief for the moment, but remember the
+	original value
+
 2005-06-28  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmDebug/FvwmDebug.in:
@@ -67,7 +74,7 @@
 
 	* FvwmIconMan/FvwmIconMan.1.in:
 	Try to clarify
-	
+
 2004-12-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmIconMan/FvwmIconMan.1.in: lang check.
@@ -76,7 +83,7 @@
 2004-12-02  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/xmanager.h:
-	* FvwmIconMan/xmanager.c (set_win_displaystring): 
+	* FvwmIconMan/xmanager.c (set_win_displaystring):
 	(tips_cancel):
 	(tips_on):
 	(tips_update_label):
@@ -96,7 +103,7 @@
 	* FvwmIconMan/xmanager.c (first_row_len):
 	(index_to_box):
 	Formatting
-	
+
 	* FvwmIconMan/xmanager.c (figure_geometry):
 	(xy_to_button):
 	(set_button_geometry):
@@ -445,12 +452,12 @@
 
 2004-03-15  Chris Ross  <cross+fvwm@distal.com>
 
- 	* FvwmIconMan/FvwmIconMan.1:
- 	* FvwmIconMan/FvwmIconMan.h:
- 	* FvwmIconMan/globals.c (init_win_manager):
- 	* FvwmIconMan/readconfig.c (read_in_resources):
- 	* FvwmIconMan/xmanager.c (draw_3d_icon)
- 	(draw_relief):
+	* FvwmIconMan/FvwmIconMan.1:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/globals.c (init_win_manager):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	* FvwmIconMan/xmanager.c (draw_3d_icon):
+	(draw_relief):
  	Added ReliefThickness option to FvwmIconMan to control
  	the width of the relief used for both icon manager buttons
  	and icons.  Works much the same as the Frame specification
