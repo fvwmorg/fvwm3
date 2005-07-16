@@ -1,26 +1,35 @@
-Fvwm is a powerful window manager.  Version 2.5.12 is an alpha
-release that includes a few new features and fixes a bug with
-window styles and window states that was introduced in 2.5.11.
-You are welcome to upgrade and test the new features or help
-stabilizing the code. Please be aware that any features introduced
-in the 2.5.x development versions may be renamed, changed or
-removed without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.13 is an alpha
+release that includes a few new module features and several bug
+fixes, including some crashes.  You are welcome to upgrade and
+test the new features or help stabilizing the code.  Please be
+aware that any features introduced in the 2.5.x development
+versions may be renamed, changed or removed without notice before
+2.6.0.
+
+Upgrading from earlier 2.5.x releases is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 New features:
 -------------
 
-* New core features:
-
-   - New command EdgeLeaveCommand.
-
-* New module features:
-
-   - FvwmIconMan: ShowOnlyFocused option.
+   - FvwmIconMan: MaxButtonWidth and MaxButtonWidthByColumns
+     options.
+   - FvwmIconMan: added tool tips with Tips, TipsDelays, TipsFont,
+     TipsColorset, TipsFormat, TipsBorderWidth, TipsPlacement,
+     TipsJustification and TipsOffsets options.
+   - FvwmButtons: PressColorset & ActiveColorset options for
+     _individual_ buttons.
 
 Bug Fixes:
 ----------
 
-* Changing a style no longer clears the window state flags defined
-  with the State command.
+   - The MoveToPage command did not work without arguments in
+     2.5.11 and 2.5.12.
+   - Mouse/Key command no args possible core dump.
+   - Direction with no args possible core dump.
+   - FvwmScript periodic tasks run too often.
+   - Perl modules did not work on 64 machines.
+   - FvwmDebug did not report any extended messages.
+   - fvwm-menu-desktop supports mandriva.
+   - fvwm-menu-desktop when verifying executable, allow full path.

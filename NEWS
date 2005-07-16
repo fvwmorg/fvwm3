@@ -3,7 +3,7 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.13 (not released yet)
+Changes in beta release 2.5.13 (16-Jul-2005)
 
 * Bug Fixes:
 
@@ -19,7 +19,8 @@ Changes in beta release 2.5.13 (not released yet)
 
 * New module features:
 
-   - FvwmIconMan: MaxButtonWidth and MaxButtonWidthByColumns options.
+   - FvwmIconMan: MaxButtonWidth and MaxButtonWidthByColumns
+     options.
    - FvwmIconMan: added tool tips with Tips, TipsDelays, TipsFont,
      TipsColorset, TipsFormat, TipsBorderWidth, TipsPlacement,
      TipsJustification and TipsOffsets options.
