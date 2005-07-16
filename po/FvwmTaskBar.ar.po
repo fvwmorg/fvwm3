@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fvwm\n"
-"POT-Creation-Date: 2002-11-28 14:23+0100\n"
+"POT-Creation-Date: 2003-04-11 12:43+0200\n"
 "PO-Revision-Date: 2002-12-06 08:25+0100\n"
 "Last-Translator: Nadim Shaikli <shaikli@yahoo.com>\n"
 "Language-Team: Arabic\n"
@@ -27,7 +27,6 @@ msgstr "لديك رسائل جديدة"
 msgid "You have mail"
 msgstr "لديك رسائل بالبريد"
 
-#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1308
+#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1320
 msgid "Click here to start"
 msgstr "أضغط هنا للبدأ"
-

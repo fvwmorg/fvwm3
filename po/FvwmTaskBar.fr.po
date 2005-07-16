@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fvwm\n"
-"POT-Creation-Date: 2002-11-28 12:23+0100\n"
+"POT-Creation-Date: 2003-04-11 12:43+0200\n"
 "PO-Revision-Date: 2002-11-27 21:29+0100\n"
 "Last-Translator: Olivier Chapuis <olivier.chapuis@free.fr>\n"
 "Language-Team: French\n"
@@ -28,6 +28,6 @@ msgstr "Vous avez un nouveau message"
 msgid "You have mail"
 msgstr "Vous avez un message"
 
-#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1308
+#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1320
 msgid "Click here to start"
 msgstr "Cliquer ici pour ouvrir le menu"
