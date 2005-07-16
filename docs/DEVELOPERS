@@ -211,8 +211,7 @@ Compile tests:
     even if you checked out from scratch.  It is a useful
     additional check.
   - Double check that you get no warnings during the build:
-      make CFLAGS="-g -O2 -Wall -Wpointer-arith \
-        -Wstrict-prototypes -fno-stric-aliasing -Werror"
+      make CFLAGS="-g -O2 -Wall -Wpointer-arith -fno-stric-aliasing -Werror"
     On some systems, the system include files generate warnings.
     On such a system you have to omit the -Werror option and check
     the output of the compilation run for warnings manually.  It
