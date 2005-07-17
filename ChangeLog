@@ -1,3 +1,8 @@
+2005-07-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	don't use the unportable fuction rintf()
+
 2005-07-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS:
@@ -106,7 +111,7 @@
 
 	* fvwm/move_resize.c (GetOnePositionArgument):
 	Fixed a one pixel bug in the Move and AnimatedMove commands by rounding
-	float values to neast int
+	float values to nearest int
 
 2005-01-06  Olivier Chapuis  <olivier.chapuis@free.fr>
 

@@ -290,29 +290,29 @@ static int GetOnePositionArgument(
 	}
 	else if (sscanf(s1,"w-%d",&val) == 1)
 	{
-		*pFinalX = x - (int)(rintf(val*factor));
+		*pFinalX = x - (int)(val*factor + 0.5);
 	}
 	else if (sscanf(s1,"w+%d",&val) == 1 || sscanf(s1,"w%d",&val) == 1 )
 	{
-		*pFinalX = x + (int)(rintf(val*factor));
+		*pFinalX = x + (int)(val*factor + 0.5);
 	}
 	else if (sscanf(s1,"m-%d",&val) == 1)
 	{
 		add_pointer_position = True;
-		*pFinalX = -(int)(rintf(val*factor));
+		*pFinalX = -(int)(val*factor + 0.5);
 	}
 	else if (sscanf(s1,"m+%d",&val) == 1 || sscanf(s1,"m%d",&val) == 1 )
 	{
 		add_pointer_position = True;
-		*pFinalX = (int)(rintf(val*factor));
+		*pFinalX = (int)(val*factor + 0.5);
 	}
 	else if (sscanf(s1,"-%d",&val) == 1)
 	{
-		*pFinalX = max-w - (int)(rintf(val*factor));
+		*pFinalX = max-w - (int)(val*factor + 0.5);
 	}
 	else if (sscanf(s1,"+%d",&val) == 1 || sscanf(s1,"%d",&val) == 1)
 	{
-		*pFinalX = (int)(rintf(val*factor));
+		*pFinalX = (int)(val*factor + 0.5);
 	}
 	else
 	{

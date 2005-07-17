@@ -5,6 +5,10 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.14 (not released yet)
 
+* Bug Fixes:
+
+   - Fixed a Solaris compiler error introduced in 2.5.13.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.13 (16-Jul-2005)
