@@ -54,7 +54,7 @@ Bool FTipsInit(Display *dpy);
 ftips_config *FTipsNewConfig(void);
 
 void FTipsOn(
-	Display *dpy, Window winF, ftips_config *fc, void *id, char *str,
+	Display *dpy, Window win_f, ftips_config *fc, void *id, char *str,
 	int x, int y, int w, int h);
 
 void FTipsCancel(Display *dpy);

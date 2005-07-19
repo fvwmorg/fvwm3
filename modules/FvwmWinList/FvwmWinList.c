@@ -1586,28 +1586,28 @@ void ChangeWindowName(char *str)
 
 void SetMwmHints(unsigned int value, unsigned int funcs, unsigned int input)
 {
-PropMwmHints prop;
+	PropMwmHints prop;
 
-  if (MwmAtom==None)
-    {
-      MwmAtom=XInternAtom(dpy,"_MOTIF_WM_HINTS",False);
-    }
-  if (MwmAtom!=None)
-    {
-      /* sh->mwm.decorations contains OR of the MWM_DECOR_XXXXX */
-      prop.decorations= value;
-      prop.functions = funcs;
-      prop.inputMode = input;
-      prop.flags = MWM_HINTS_DECORATIONS | MWM_HINTS_FUNCTIONS |
-	MWM_HINTS_INPUT_MODE;
+	if (MwmAtom==None)
+	{
+		MwmAtom=XInternAtom(dpy,"_MOTIF_WM_HINTS",False);
+	}
+	if (MwmAtom!=None)
+	{
+		/* sh->mwm.decorations contains OR of the MWM_DECOR_XXXXX */
+		prop.props[0] =
+			MWM_HINTS_DECORATIONS | MWM_HINTS_FUNCTIONS |
+			MWM_HINTS_INPUT_MODE;
+		prop.props[1] = funcs;
+		prop.props[2]= value;
+		prop.props[3] = input;
 
-      /* HOP - LA! */
-      XChangeProperty (dpy,win,
-		       MwmAtom, MwmAtom,
-		       32, PropModeReplace,
-		       (unsigned char *)&prop,
-		       PROP_MWM_HINTS_ELEMENTS);
-    }
+		/* HOP - LA! */
+		XChangeProperty(
+			dpy, win, MwmAtom, MwmAtom, 32, PropModeReplace,
+			(unsigned char *)&(prop.props[0]),
+			PROP_MWM_HINTS_ELEMENTS);
+	}
 }
 
 /*

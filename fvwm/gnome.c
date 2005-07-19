@@ -256,6 +256,18 @@ static Window __button_proxy = 0;
 /* how many desks does gnome know about */
 static unsigned int gnome_max_desk = 1;
 
+static int atom_size(int format)
+{
+	if (format == 32)
+	{
+		return sizeof(long);
+	}
+	else
+	{
+		return (format >> 3);
+	}
+}
+
 static void *
 AtomGet(Window win, Atom to_get, Atom type, int *size)
 {
@@ -274,10 +286,13 @@ AtomGet(Window win, Atom to_get, Atom type, int *size)
 
 	if ((retval) && (num_ret > 0) && (format_ret > 0))
 	{
-		data = safemalloc(num_ret * (format_ret >> 3));
+		int asize;
+
+		asize = atom_size(format_ret);
+		data = safemalloc(num_ret * asize);
 		if (data)
 		{
-			memcpy(data, retval, num_ret * (format_ret >> 3));
+			memcpy(data, retval, num_ret * asize);
 		}
 		XFree(retval);
 		*size = num_ret * (format_ret >> 3);
@@ -295,7 +310,7 @@ static void
 GNOME_GetHintIcons(FvwmWindow *fwin)
 {
 	Atom atom_get;
-	CARD32 *retval;
+	long *retval;
 	int size;
 	unsigned int i;
 	Pixmap pmap;
@@ -305,7 +320,10 @@ GNOME_GetHintIcons(FvwmWindow *fwin)
 	retval = AtomGet(FW_W(fwin), atom_get, XA_PIXMAP, &size);
 	if (retval)
 	{
-		for (i = 0; i < (size / (sizeof(CARD32))); i += 2)
+		int n;
+
+		n = size / atom_size(32);
+		for (i = 0; i < n; i += 2)
 		{
 			pmap = retval[i];
 			mask = retval[i + 1];
@@ -320,7 +338,7 @@ static void
 GNOME_GetHintLayer(FvwmWindow *fwin)
 {
 	Atom atom_get;
-	CARD32 *retval;
+	long *retval;
 	int size;
 
 	atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
@@ -338,7 +356,7 @@ static void
 GNOME_GetHintState(FvwmWindow *fwin)
 {
 	Atom atom_get;
-	CARD32 *retval;
+	long *retval;
 	int size;
 
 	atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
@@ -449,7 +467,7 @@ static void
 GNOME_GetExpandedSize(FvwmWindow *fwin)
 {
 	Atom atom_get;
-	CARD32 *retval;
+	long *retval;
 	int size;
 
 	/* unimplimented */
@@ -492,7 +510,7 @@ void
 GNOME_SetHints(FvwmWindow *fwin)
 {
 	Atom atom_set;
-	int val;
+	long val;
 
 	atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
 	val = 0;
@@ -620,7 +638,7 @@ void
 GNOME_SetDesk(FvwmWindow *fwin)
 {
 	Atom atom_set;
-	int val;
+	long val;
 
 	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
 	val = fwin->Desk;
@@ -640,7 +658,7 @@ void
 GNOME_SetLayer(FvwmWindow *fwin)
 {
 	Atom atom_set;
-	int val;
+	long val;
 
 	atom_set = XInternAtom(dpy, XA_WIN_LAYER, False);
 	val = get_layer(fwin);
@@ -659,7 +677,7 @@ void
 GNOME_SetAreaCount(void)
 {
 	Atom atom_set;
-	CARD32 val[2];
+	long val[2];
 
 	atom_set = XInternAtom(dpy, XA_WIN_AREA_COUNT, False);
 	val[0] = (Scr.VxMax + Scr.MyDisplayWidth) / Scr.MyDisplayWidth;
@@ -679,7 +697,7 @@ void
 GNOME_SetCurrentArea(void)
 {
 	Atom atom_set;
-	CARD32 val[2];
+	long val[2];
 
 	atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
 	val[0] = Scr.Vx / Scr.MyDisplayWidth;
@@ -697,7 +715,7 @@ void
 GNOME_SetDeskCount(void)
 {
 	Atom atom_set;
-	CARD32 val;
+	long val;
 	FvwmWindow *t;
 
 	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
@@ -732,10 +750,10 @@ void
 GNOME_SetCurrentDesk(void)
 {
 	Atom atom_set;
-	CARD32 val;
+	long val;
 
 	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-	val = (CARD32) Scr.CurrentDesk;
+	val = (long) Scr.CurrentDesk;
 	if (val >= gnome_max_desk)
 	{
 		GNOME_SetDeskCount();
@@ -814,7 +832,7 @@ void
 GNOME_SetWinArea(FvwmWindow *w)
 {
 	Atom atom_set;
-	CARD32 val[2];
+	long val[2];
 
 	atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
 
@@ -853,7 +871,7 @@ GNOME_Init(void)
 {
 	int i;
 	Atom atom_set, list[11];
-	CARD32 val;
+	long val;
 
 	atom_set = XInternAtom(dpy, XA_WIN_PROTOCOLS, False);
 	/* these indicate what GNOME compliance properties have been
@@ -924,7 +942,7 @@ CMD_GnomeShowDesks(F_CMD_ARGS)
 {
 	int n;
 	Atom atom_set;
-	CARD32 val[1];
+	long val[1];
 
 	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
 	DBUG("GNOME_ShowDesks","Routine Entered");
@@ -1121,4 +1139,3 @@ CMD_GnomeButton(F_CMD_ARGS)
 
 	return;
 }
-

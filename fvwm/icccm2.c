@@ -40,7 +40,7 @@ Atom _XA_WM_COLORMAP_NOTIFY;
 #define _XA_VERSION   conversion_targets[3]
 #define MAX_TARGETS                      4
 
-Atom conversion_targets[MAX_TARGETS];
+long conversion_targets[MAX_TARGETS];
 
 long icccm_version[] = { 2, 0 };
 
@@ -150,9 +150,12 @@ convertProperty(Window w, Atom target, Atom property)
 	}
 	else if (target == _XA_TIMESTAMP)
 	{
+		long local_managing_since;
+
+		local_managing_since = managing_since;
 		XChangeProperty(
 			dpy, w, property, XA_INTEGER, 32, PropModeReplace,
-			(unsigned char *)&managing_since, 1);
+			(unsigned char *)&local_managing_since, 1);
 	}
 	else if (target == _XA_VERSION)
 	{
@@ -177,7 +180,8 @@ convertProperty(Window w, Atom target, Atom property)
 void
 icccm2_handle_selection_request(const XEvent *e)
 {
-	Atom type, *adata;
+	Atom type;
+	unsigned long *adata;
 	int i, format;
 	unsigned long num, rest;
 	unsigned char *data;
@@ -200,15 +204,17 @@ icccm2_handle_selection_request(const XEvent *e)
 				dpy, ev.requestor, ev.property, 0, 256, False,
 				_XA_ATOM_PAIR, &type, &format, &num, &rest,
 				&data);
-			/* FIXME: to be 100% correct, should deal with rest > 0,
-			 * but since we have 4 possible targets, we will
-			 * hardly ever meet multiple requests with a length > 8
+			/* FIXME: to be 100% correct, should deal with
+			 * rest > 0, but since we have 4 possible targets, we
+			 * will hardly ever meet multiple requests with a
+			 * length > 8
 			 */
-			adata =(Atom*)data;
+			adata = (unsigned long *)data;
 			for(i = 0; i < num; i += 2)
 			{
 				if (!convertProperty(
-					    ev.requestor, adata[i], adata[i+1]))
+					    ev.requestor, adata[i],
+					    adata[i+1]))
 				{
 					adata[i+1] = None;
 				}

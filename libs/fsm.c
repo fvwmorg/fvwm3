@@ -885,7 +885,7 @@ char *GetClientID(Display *dpy, Window window)
 		if (actual_type == XA_WINDOW && actual_format == 32 &&
 		    nitems == 1 && bytes_after == 0)
 		{
-			client_leader = *((Window *) prop);
+			client_leader = (Window)(*(long *)prop);
 		}
 	}
 
@@ -956,7 +956,7 @@ void set_session_manager(Display *dpy, Window window, char *sm)
 		if (actual_type == XA_WINDOW && actual_format == 32 &&
 		    nitems == 1 && bytes_after == 0)
 		{
-			client_leader = *((Window *) prop);
+			client_leader = (Window)(*(long *)prop);
 		}
 	}
 

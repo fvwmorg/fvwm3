@@ -363,6 +363,18 @@ void ewmh_DeleteProperty(
 	}
 }
 
+static int atom_size(int format)
+{
+	if (format == 32)
+	{
+		return sizeof(long);
+	}
+	else
+	{
+		return (format >> 3);
+	}
+}
+
 static
 void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
 {
@@ -382,17 +394,35 @@ void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
 
 	if ((ok == Success) && (retval) && (num_ret > 0) && (format_ret > 0))
 	{
-		data = safemalloc(num_ret * (format_ret >> 3));
-		if (data)
+		int asize;
+
+		asize = atom_size(format_ret);
+		data = safemalloc(num_ret * asize);
+		if (format_ret == 32 && asize * 8 != format_ret)
 		{
-			memcpy(data, retval, num_ret * (format_ret >> 3));
+			int i;
+
+			for (i = 0; i < num_ret; i++)
+			{
+				((CARD32 *)data)[i] = ((long *)retval)[i];
+			}
+		}
+		else
+		{
+			if (data)
+			{
+				memcpy(data, retval, num_ret * asize);
+			}
 		}
 		XFree(retval);
 		*size = num_ret * (format_ret >> 3);
 		return data;
 	}
 	if (retval)
+	{
 		XFree(retval);
+	}
+
 	return NULL;
 }
 
@@ -432,7 +462,7 @@ int check_desk(void)
 
 void EWMH_SetCurrentDesktop(void)
 {
-	CARD32 val;
+	long val;
 
 	val = Scr.CurrentDesk;
 
@@ -455,7 +485,7 @@ void EWMH_SetCurrentDesktop(void)
 
 void EWMH_SetNumberOfDesktops(void)
 {
-	CARD32 val;
+	long val;
 
 	if (ewmhc.CurrentNumberOfDesktops < ewmhc.NumberOfDesktops)
 	{
@@ -480,7 +510,7 @@ void EWMH_SetNumberOfDesktops(void)
 		ewmhc.CurrentNumberOfDesktops = Scr.CurrentDesk + 1;
 	}
 
-	val = (CARD32)ewmhc.CurrentNumberOfDesktops;
+	val = (long)ewmhc.CurrentNumberOfDesktops;
 	ewmh_ChangeProperty(Scr.Root, "_NET_NUMBER_OF_DESKTOPS",
 			    EWMH_ATOM_LIST_CLIENT_ROOT,
 			    (unsigned char *)&val, 1);
@@ -489,7 +519,7 @@ void EWMH_SetNumberOfDesktops(void)
 
 void EWMH_SetDesktopViewPort(void)
 {
-	CARD32 val[256][2]; /* no more than 256 desktops */
+	long val[256][2]; /* no more than 256 desktops */
 	int i = 0;
 
 	while(i < ewmhc.NumberOfDesktops && i < 256)
@@ -505,7 +535,7 @@ void EWMH_SetDesktopViewPort(void)
 
 void EWMH_SetDesktopGeometry(void)
 {
-	CARD32 val[2];
+	long val[2];
 
 	val[0] = Scr.VxMax + Scr.MyDisplayWidth;
 	val[1] = Scr.VyMax + Scr.MyDisplayHeight;
@@ -526,7 +556,7 @@ void EWMH_SetActiveWindow(Window w)
 
 void EWMH_SetWMDesktop(FvwmWindow *fwin)
 {
-	CARD32 desk = fwin->Desk;
+	long desk = fwin->Desk;
 
 	if (IS_STICKY_ACROSS_DESKS(fwin))
 	{
@@ -843,7 +873,7 @@ void EWMH_SetClientListStacking()
 
 void ewmh_SetWorkArea(void)
 {
-	CARD32 val[256][4]; /* no more than 256 desktops */
+	long val[256][4]; /* no more than 256 desktops */
 	int i = 0;
 
 	while(i < ewmhc.NumberOfDesktops && i < 256)
@@ -1081,7 +1111,7 @@ float EWMH_GetStrutIntersection(
  */
 void EWMH_SetFrameStrut(FvwmWindow *fwin)
 {
-	CARD32 val[4];
+	long val[4];
 	size_borders b;
 
 	if (EWMH_IsKdeSysTrayWindow(FW_W(fwin)))
@@ -1643,7 +1673,7 @@ void EWMH_Init(void)
 {
 	int i;
 	int supported_count = 0;
-	CARD32 val;
+	long val;
 	XTextProperty text;
 	unsigned char utf_name[4];
 	char *names[1];

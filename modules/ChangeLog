@@ -1,3 +1,13 @@
+2005-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmBacker/FvwmBacker.c (SetRootAtoms):
+	(DeleteRootAtoms):
+	* FvwmWinList/FvwmWinList.c (SetMwmHints):
+	* FvwmWinList/FvwmWinList.c (PropMotifWmHints):
+	* FvwmTaskBar/FvwmTaskBar.c (SetMwmHints):
+	* FvwmTaskBar/FvwmTaskBar.h (PropMotifWmHints):
+	64-bit fixes
+
 2005-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c (draw_relief):

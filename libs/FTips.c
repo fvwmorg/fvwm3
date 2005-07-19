@@ -55,15 +55,15 @@
 
 static Window win = None;
 static GC gc = None;
-static Window winFor;
+static Window win_for;
 
-static ftips_config *currentConfig,*defaultConfig;
+static ftips_config *current_config, *default_config;
 
 static char *label;
 static int state = FVWM_TIPS_NOTHING;
 static void *boxID = NULL;
 
-static FlocaleWinString FwinString;
+static FlocaleWinString fwin_string;
 static rectangle box;
 
 static unsigned long timeOut;
@@ -91,7 +91,7 @@ void __initialize_window(Display *dpy)
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 	Atom _net_um_window_type;
-	Atom _net_um_window_type_tooltips;
+	long _net_um_window_type_tooltips;
 
 	valuemask = CWOverrideRedirect | CWEventMask | CWColormap;
 	attributes.override_redirect = True;
@@ -99,14 +99,14 @@ void __initialize_window(Display *dpy)
 	attributes.colormap = Pcmap;
 	win = XCreateWindow(
 		dpy, DefaultRootWindow(dpy), 0, 0, 1, 1,
-		currentConfig->border_width, Pdepth, InputOutput, Pvisual,
+		current_config->border_width, Pdepth, InputOutput, Pvisual,
 		valuemask, &attributes);
 
 	_net_um_window_type = XInternAtom(
 		dpy, "_NET_UM_WINDOW_TYPE", False);
 	_net_um_window_type_tooltips = XInternAtom(
 		dpy, "_NET_UM_WINDOW_TYPE_TOOLTIPS", False);
-	
+
 	XChangeProperty(
 		dpy, win, _net_um_window_type, XA_ATOM, 32, PropModeReplace,
 		(unsigned char *) &_net_um_window_type_tooltips, 1);
@@ -123,12 +123,12 @@ void __setup_cs(Display *dpy)
 	XSetWindowAttributes xswa;
 	unsigned long valuemask = 0;
 
-	
-	if (currentConfig->colorset > -1)
+
+	if (current_config->colorset > -1)
 	{
-		xswa.border_pixel = Colorset[currentConfig->colorset].fg;
-		xswa.background_pixel = Colorset[currentConfig->colorset].bg;
-		if (Colorset[currentConfig->colorset].pixmap)
+		xswa.border_pixel = Colorset[current_config->colorset].fg;
+		xswa.background_pixel = Colorset[current_config->colorset].bg;
+		if (Colorset[current_config->colorset].pixmap)
 		{
 			/* set later */
 			xswa.background_pixmap = None;
@@ -141,11 +141,11 @@ void __setup_cs(Display *dpy)
 	}
 	else
 	{
-		xswa.border_pixel = currentConfig->border_pixel;
-		xswa.background_pixel = currentConfig->bg;
+		xswa.border_pixel = current_config->border_pixel;
+		xswa.background_pixel = current_config->bg;
 		valuemask = CWBackPixel | CWBorderPixel;
 	}
-	XChangeWindowAttributes(dpy, win, valuemask, &xswa);	
+	XChangeWindowAttributes(dpy, win, valuemask, &xswa);
 }
 
 static
@@ -155,47 +155,47 @@ void __setup_gc(Display *dpy)
 	unsigned long valuemask;
 
 	valuemask = GCForeground;
-	if (currentConfig->colorset > -1)
+	if (current_config->colorset > -1)
 	{
-		xgcv.foreground = Colorset[currentConfig->colorset].fg;
+		xgcv.foreground = Colorset[current_config->colorset].fg;
 	}
 	else
 	{
-		xgcv.foreground = currentConfig->fg;
+		xgcv.foreground = current_config->fg;
 	}
-	if (currentConfig->Ffont && currentConfig->Ffont->font != NULL)
+	if (current_config->Ffont && current_config->Ffont->font != NULL)
 	{
-		xgcv.font = currentConfig->Ffont->font->fid;
+		xgcv.font = current_config->Ffont->font->fid;
 		valuemask |= GCFont;
 	}
 	XChangeGC(dpy, gc, valuemask, &xgcv);
 
-	return;	
+	return;
 }
 
 static
 void __draw(Display *dpy)
 {
-	if (!currentConfig->Ffont)
+	if (!current_config->Ffont)
 	{
 		return;
 	}
 
-	FwinString.str = label;
-	FwinString.win = win;
-	FwinString.gc = gc;
-	if (currentConfig->colorset > -1)
+	fwin_string.str = label;
+	fwin_string.win = win;
+	fwin_string.gc = gc;
+	if (current_config->colorset > -1)
 	{
-		FwinString.colorset = &Colorset[currentConfig->colorset];
-		FwinString.flags.has_colorset = True;
+		fwin_string.colorset = &Colorset[current_config->colorset];
+		fwin_string.flags.has_colorset = True;
 	}
 	else
 	{
-		FwinString.flags.has_colorset = False;
+		fwin_string.flags.has_colorset = False;
 	}
-	FwinString.x = 2;
-	FwinString.y = currentConfig->Ffont->ascent;
-	FlocaleDrawString(dpy, currentConfig->Ffont, &FwinString, 0);
+	fwin_string.x = 2;
+	fwin_string.y = current_config->Ffont->ascent;
+	FlocaleDrawString(dpy, current_config->Ffont, &fwin_string, 0);
 
 	return;
 }
@@ -210,39 +210,39 @@ void __map_window(Display *dpy)
 	ftips_placement_t placement;
 	int x,y;
 	static int border_width = 1;
-	static Window winF = None;
+	static Window win_f = None;
 
-	if (border_width != currentConfig->border_width)
+	if (border_width != current_config->border_width)
 	{
-		XSetWindowBorderWidth(dpy, win, currentConfig->border_width);
-		border_width = currentConfig->border_width;
+		XSetWindowBorderWidth(dpy, win, current_config->border_width);
+		border_width = current_config->border_width;
 	}
 
 	FScreenGetScrRect(
 		fsarg,  FSCREEN_GLOBAL, &screen_g.x, &screen_g.y,
 		&screen_g.width, &screen_g.height);
 
-	new_g.height = ((currentConfig->Ffont)? currentConfig->Ffont->height:0)
+	new_g.height = ((current_config->Ffont)? current_config->Ffont->height:0)
 		+ 1;
 	new_g.width = 4;
 
-	if (label && currentConfig->Ffont)
+	if (label && current_config->Ffont)
 	{
 		new_g.width += FlocaleTextWidth(
-			currentConfig->Ffont, label, strlen(label));
+			current_config->Ffont, label, strlen(label));
 	}
 
-	if (currentConfig->placement != FTIPS_PLACEMENT_AUTO_UPDOWN &&
-	    currentConfig->placement != FTIPS_PLACEMENT_AUTO_LEFTRIGHT)
+	if (current_config->placement != FTIPS_PLACEMENT_AUTO_UPDOWN &&
+	    current_config->placement != FTIPS_PLACEMENT_AUTO_LEFTRIGHT)
 	{
-		placement = currentConfig->placement;
+		placement = current_config->placement;
 	}
 	else
 	{
 		XTranslateCoordinates(
-			dpy, winFor, DefaultRootWindow(dpy), box.x, box.y,
+			dpy, win_for, DefaultRootWindow(dpy), box.x, box.y,
 			&x, &y, &dummy);
-		if (currentConfig->placement == FTIPS_PLACEMENT_AUTO_UPDOWN)
+		if (current_config->placement == FTIPS_PLACEMENT_AUTO_UPDOWN)
 		{
 			if (y + box.height/2 >= screen_g.height/2)
 			{
@@ -269,66 +269,66 @@ void __map_window(Display *dpy)
 	if (placement == FTIPS_PLACEMENT_RIGHT ||
 	    placement == FTIPS_PLACEMENT_LEFT)
 	{
-		if (currentConfig->justification == FTIPS_JUSTIFICATION_CENTER)
+		if (current_config->justification == FTIPS_JUSTIFICATION_CENTER)
 		{
 			y = box.y + (box.height / 2) - (new_g.height / 2) -
-				currentConfig->border_width;
+				current_config->border_width;
 		}
-		else if (currentConfig->justification ==
+		else if (current_config->justification ==
 			 FTIPS_JUSTIFICATION_RIGHT_DOWN)
 		{
-			y = box.y + box.height  - new_g.height - 
-				(2 * currentConfig->border_width) - 
-				currentConfig->justification_offset;
+			y = box.y + box.height  - new_g.height -
+				(2 * current_config->border_width) -
+				current_config->justification_offset;
 		}
 		else /* LEFT_UP */
 		{
-			y = box.y + currentConfig->justification_offset;	
-		
+			y = box.y + current_config->justification_offset;
+
 		}
 	}
 	else /* placement == FTIPS_PLACEMENT_DOWN ||
 	       placement == FTIPS_PLACEMENT_UP */
 	{
-		if (currentConfig->justification == FTIPS_JUSTIFICATION_CENTER)
+		if (current_config->justification == FTIPS_JUSTIFICATION_CENTER)
 		{
 			x = box.x + (box.width / 2) - (new_g.width / 2) -
-				currentConfig->border_width;
+				current_config->border_width;
 		}
-		else if (currentConfig->justification ==
+		else if (current_config->justification ==
 			 FTIPS_JUSTIFICATION_RIGHT_DOWN)
 		{
-			x = box.x + box.width  - new_g.width - 
-				(2 * currentConfig->border_width) - 
-				currentConfig->justification_offset;
+			x = box.x + box.width  - new_g.width -
+				(2 * current_config->border_width) -
+				current_config->justification_offset;
 		}
 		else /* LEFT_UP */
 		{
-			x = box.x + currentConfig->justification_offset;	
+			x = box.x + current_config->justification_offset;
 		}
 	}
 
 	if (placement == FTIPS_PLACEMENT_RIGHT)
 	{
-		x = box.x + box.width + currentConfig->placement_offset + 1;
+		x = box.x + box.width + current_config->placement_offset + 1;
 	}
 	else if (placement == FTIPS_PLACEMENT_LEFT)
 	{
-		x = box.x - currentConfig->placement_offset - new_g.width
-			- (2 * currentConfig->border_width) - 1;
+		x = box.x - current_config->placement_offset - new_g.width
+			- (2 * current_config->border_width) - 1;
 	}
 	else if (placement == FTIPS_PLACEMENT_DOWN)
 	{
-		y = box.y + box.height + currentConfig->placement_offset - 0;
+		y = box.y + box.height + current_config->placement_offset - 0;
 	}
 	else  /* UP */
 	{
-		y = box.y - currentConfig->placement_offset - new_g.height
-			+ 0 - (2 * currentConfig->border_width);
+		y = box.y - current_config->placement_offset - new_g.height
+			+ 0 - (2 * current_config->border_width);
 	}
 
 	XTranslateCoordinates(
-		dpy, winFor, DefaultRootWindow(dpy), x, y,
+		dpy, win_for, DefaultRootWindow(dpy), x, y,
 		&new_g.x, &new_g.y, &dummy);
 
 	if (placement == FTIPS_PLACEMENT_RIGHT ||
@@ -338,35 +338,35 @@ void __map_window(Display *dpy)
 
 		if (new_g.x < 2)
 		{
-			x = box.x + box.width + currentConfig->placement_offset
+			x = box.x + box.width + current_config->placement_offset
 				+ 1;
 			XTranslateCoordinates(
-				dpy, winFor, DefaultRootWindow(dpy), x, y,
+				dpy, win_for, DefaultRootWindow(dpy), x, y,
 				&x1, &y1, &dummy);
 			/* */
 			l1 = new_g.width + new_g.x - 2;
 			l2 = screen_g.width - (x1 + new_g.width) -
-				currentConfig->border_width - 2;
+				current_config->border_width - 2;
 			if (l2 > l1)
 			{
 				new_g.x = x1;
 			}
 		}
 		else if (new_g.x + new_g.width >
-			 screen_g.width - (2 * currentConfig->border_width) - 2)
+			 screen_g.width - (2 * current_config->border_width) - 2)
 		{
-			x = box.x - currentConfig->placement_offset - new_g.width
-				- (2 * currentConfig->border_width) - 1;
+			x = box.x - current_config->placement_offset - new_g.width
+				- (2 * current_config->border_width) - 1;
 			XTranslateCoordinates(
-				dpy, winFor, DefaultRootWindow(dpy), x, y,
+				dpy, win_for, DefaultRootWindow(dpy), x, y,
 				&x1, &y1, &dummy);
 			/* */
 			l1 = new_g.width + x1 - 2;
 			l2 = screen_g.width - (new_g.x + new_g.width) -
-				(2 * currentConfig->border_width) - 2;
+				(2 * current_config->border_width) - 2;
 			if (l1 > l2)
 			{
-				new_g.x = x1;	
+				new_g.x = x1;
 			}
 		}
 		if ( new_g.y < 2 )
@@ -374,10 +374,10 @@ void __map_window(Display *dpy)
 			new_g.y = 2;
 		}
 		else if (new_g.y + new_g.height >
-			 screen_g.height - (2 * currentConfig->border_width) - 2)
+			 screen_g.height - (2 * current_config->border_width) - 2)
 		{
 			new_g.y = screen_g.height - new_g.height -
-				(2 * currentConfig->border_width) - 2;
+				(2 * current_config->border_width) - 2;
 		}
 	}
 	else /* placement == FTIPS_PLACEMENT_DOWN ||
@@ -386,19 +386,19 @@ void __map_window(Display *dpy)
 		if (new_g.y < 2)
 		{
 			y = box.y + box.height +
-				currentConfig->placement_offset - 0;
+				current_config->placement_offset - 0;
 			XTranslateCoordinates(
-				dpy, winFor, DefaultRootWindow(dpy),
+				dpy, win_for, DefaultRootWindow(dpy),
 				x, y, &new_g.x, &new_g.y, &dummy);
 		}
 		else if (new_g.y + new_g.height >
-			 screen_g.height - (2 * currentConfig->border_width) - 2)
+			 screen_g.height - (2 * current_config->border_width) - 2)
 		{
-			y = box.y - currentConfig->placement_offset - 
+			y = box.y - current_config->placement_offset -
 				new_g.height + 0
-				- (2 * currentConfig->border_width);
+				- (2 * current_config->border_width);
 			XTranslateCoordinates(
-				dpy, winFor, DefaultRootWindow(dpy),
+				dpy, win_for, DefaultRootWindow(dpy),
 				x, y, &new_g.x, &new_g.y, &dummy);
 		}
 		if ( new_g.x < 2 )
@@ -406,10 +406,10 @@ void __map_window(Display *dpy)
 			new_g.x = 2;
 		}
 		else if (new_g.x + new_g.width >
-			 screen_g.width - (2 * currentConfig->border_width) - 2)
+			 screen_g.width - (2 * current_config->border_width) - 2)
 		{
 			new_g.x = screen_g.width - new_g.width -
-				(2 * currentConfig->border_width) - 2;
+				(2 * current_config->border_width) - 2;
 		}
 	}
 
@@ -417,28 +417,31 @@ void __map_window(Display *dpy)
 	XMoveResizeWindow(
 		dpy, win, new_g.x, new_g.y, new_g.width, new_g.height);
 	__setup_gc(dpy);
-	if (currentConfig->colorset > -1)
+	if (current_config->colorset > -1)
 	{
 		SetWindowBackground(
 			dpy, win, new_g.width, new_g.height,
-			&Colorset[currentConfig->colorset], Pdepth, gc, True);
+			&Colorset[current_config->colorset], Pdepth, gc, True);
 	}
 	else
 	{
-		XSetWindowBackground (dpy, win, currentConfig->bg);
+		XSetWindowBackground (dpy, win, current_config->bg);
 	}
-	if (currentConfig->border_width > 0)
+	if (current_config->border_width > 0)
 	{
 		XSetWindowBorder(
-			dpy, win, Colorset[currentConfig->colorset].fg);
+			dpy, win, Colorset[current_config->colorset].fg);
 	}
 
-	if (state != FVWM_TIPS_MAPPED && winF != winFor)
+	if (state != FVWM_TIPS_MAPPED && win_f != win_for)
 	{
+		long l_win_for;
+
+		l_win_for = win_for;
 		XChangeProperty(
 			dpy, win, _net_um_for, XA_WINDOW, 32, PropModeReplace,
-			(unsigned char *) &winFor, 1);
-		winF = winFor;
+			(unsigned char *) &l_win_for, 1);
+		win_f = win_for;
 	}
 	XMapRaised(dpy, win);
 	state = FVWM_TIPS_MAPPED;
@@ -451,19 +454,19 @@ void __map_window(Display *dpy)
 Bool FTipsInit(Display *dpy)
 {
 
-	currentConfig = defaultConfig = FTipsNewConfig();
+	current_config = default_config = FTipsNewConfig();
 	__initialize_window(dpy);
 
 	if (gc == None || win == None)
 	{
 		return False;
 	}
-	
+
 	__setup_cs(dpy);
 	__setup_gc(dpy);
 
-	memset(&FwinString, 0, sizeof(FwinString));
-	
+	memset(&fwin_string, 0, sizeof(fwin_string));
+
 	return True;
 }
 
@@ -474,7 +477,7 @@ ftips_config *FTipsNewConfig(void)
 	fc = (ftips_config *)safemalloc(sizeof(ftips_config));
 
 	memset(fc, 0, sizeof(ftips_config));
-	
+
 	/* use colorset 0 as default */
 	fc->border_width = FTIPS_DEFAULT_BORDER_WIDTH;
 	fc->placement = FTIPS_DEFAULT_PLACEMENT;
@@ -488,7 +491,7 @@ ftips_config *FTipsNewConfig(void)
 }
 
 void FTipsOn(
-	Display *dpy, Window winF, ftips_config *fc, void *id, char *str,
+	Display *dpy, Window win_f, ftips_config *fc, void *id, char *str,
 	int x, int y, int w, int h)
 {
 	unsigned long delay;
@@ -500,16 +503,16 @@ void FTipsOn(
 
 	if (fc == NULL)
 	{
-		fc = defaultConfig;
+		fc = default_config;
 	}
-	currentConfig = fc;
+	current_config = fc;
 
 	if (label != NULL)
 	{
 		free(label);
 	}
 	CopyString(&label, str);
-	winFor = winF;
+	win_for = win_f;
 
 	if (id == boxID)
 	{
@@ -546,7 +549,7 @@ void FTipsCancel(Display *dpy)
 	{
 		XUnmapWindow(dpy, win);
 	}
-	boxID = 0; 
+	boxID = 0;
 	state = FVWM_TIPS_NOTHING;
 }
 
@@ -644,7 +647,7 @@ void FTipsUpdateLabel(Display *dpy, char *str)
 
 void FTipsColorsetChanged(Display *dpy, int cs)
 {
-	if (state != FVWM_TIPS_MAPPED || cs != currentConfig->colorset)
+	if (state != FVWM_TIPS_MAPPED || cs != current_config->colorset)
 	{
 		return;
 	}

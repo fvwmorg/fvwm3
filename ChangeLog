@@ -1,3 +1,45 @@
+2005-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/ewmh_events.c (ewmh_WMIconGeometry):
+	* fvwm/ewmh_names.c (EWMH_WMName):
+	(EWMH_WMIconName):
+	* fvwm/ewmh.c (EWMH_SetCurrentDesktop):
+	(EWMH_SetNumberOfDesktops):
+	(EWMH_SetDesktopViewPort):
+	(EWMH_SetDesktopGeometry):
+	(EWMH_SetWMDesktop):
+	(ewmh_SetWorkArea):
+	(EWMH_SetFrameStrut):
+	(EWMH_Init):
+	* fvwm/gnome.c (AtomGet):
+	(atom_size):
+	(GNOME_GetHintIcons):
+	(GNOME_GetHintLayer):
+	(GNOME_GetHintState):
+	(GNOME_GetExpandedSize):
+	(GNOME_SetAreaCount):
+	(GNOME_SetCurrentArea):
+	(GNOME_SetDeskCount):
+	(GNOME_SetCurrentDesk):
+	(GNOME_SetCurrentDesk):
+	(GNOME_SetWinArea):
+	(GNOME_Init):
+	(CMD_GnomeShowDesks):
+	(GNOME_SetHints):
+	(GNOME_SetDesk):
+	(GNOME_SetLayer):
+	* libs/fsm.c (GetClientID):
+	(set_session_manager):
+	* fvwm/session.c (GetClientID):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/colorset.c (get_root_pixmap):
+	* fvwm/add_window.c (FetchWmProtocols):
+	* libs/FTips.c (__initialize_window):
+	* fvwm/icccm2.c (convertProperty)
+	(icccm2_handle_selection_request)
+	* fvwm/fvwm.c (SetMWM_INFO):
+	64-bit fixes
+
 2005-07-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (GetOnePositionArgument):

@@ -176,12 +176,14 @@ Pixmap get_root_pixmap(Atom prop)
 	int ret;
 	Pixmap pix = None;
 
-	ret = XGetWindowProperty(dpy, Scr.Root, prop, 0L, 1L, False, XA_PIXMAP,
-			   &type, &format, &length, &after, &reteval);
-	if (ret == Success && type == XA_PIXMAP && format == 32 && length == 1 &&
-	    after == 0)
+	ret = XGetWindowProperty(
+		dpy, Scr.Root, prop, 0L, 1L, False, XA_PIXMAP,
+		&type, &format, &length, &after, &reteval);
+	if (
+		ret == Success && type == XA_PIXMAP && format == 32 &&
+		length == 1 && after == 0)
 	{
-		pix = ((Pixmap *)reteval)[0];
+		pix = (Pixmap)(*(long *)reteval);
 	}
 	if (reteval)
 	{
@@ -207,7 +209,8 @@ void update_root_pixmap(Atom prop)
 		pix = get_root_pixmap(prop);
 		if (pix && !XGetGeometry(
 			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
-			&w, &h, (unsigned int *)&dummy, (unsigned int *)&dummy))
+			&w, &h, (unsigned int *)&dummy,
+			(unsigned int *)&dummy))
 		{
 			pix = None;
 		}
@@ -217,7 +220,8 @@ void update_root_pixmap(Atom prop)
 		pix = get_root_pixmap(a_rootpix);
 		if (pix && !XGetGeometry(
 			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
-			&w, &h, (unsigned int *)&dummy, (unsigned int *)&dummy))
+			&w, &h, (unsigned int *)&dummy,
+			(unsigned int *)&dummy))
 		{
 			pix = None;
 		}

@@ -37,13 +37,14 @@
 /* Motif  window hints */
 typedef struct
 {
-    CARD32      flags;
-    CARD32      functions;
-    CARD32      decorations;
-    INT32       inputMode;
+	long props[4];
+	/* props[0]: flags */
+	/* props[1]: functions */
+	/* props[2]: decorations */
+	/* props[3]: inputMode */
 } PropMotifWmHints;
 
-typedef PropMotifWmHints        PropMwmHints;
+typedef PropMotifWmHints PropMwmHints;
 
 /* Motif window hints */
 #define MWM_HINTS_FUNCTIONS     (1L << 0)

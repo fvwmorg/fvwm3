@@ -265,18 +265,18 @@ void DeleteRootAtoms(Display *dpy2, Window root2)
 	XA_XROOTPMAP_ID = XInternAtom(dpy2, "_XROOTPMAP_ID", False);
 
 	if (XGetWindowProperty(
-		dpy2, root2, XA_XSETROOT_ID, 0L, 1L, True,
-		XA_PIXMAP, &type, &format, &length, &after, &data) == Success &&
-	    type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
-	    *((Pixmap *)data) != None)
+		    dpy2, root2, XA_XSETROOT_ID, 0L, 1L, True,
+		    XA_PIXMAP, &type, &format, &length, &after, &data) ==
+	    Success && type == XA_PIXMAP && format == 32 && length == 1 &&
+	    after == 0 && (Pixmap)(*(long *)data) != None)
 	{
 		XKillClient(dpy2, *((Pixmap *)data));
 	}
 	if (XGetWindowProperty(
-		dpy2, root2, XA_ESETROOT_PMAP_ID, 0L, 1L, True,
-		XA_PIXMAP, &type, &format, &length, &after, &data) == Success &&
-	    type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
-	    *((Pixmap *)data) != None)
+		    dpy2, root2, XA_ESETROOT_PMAP_ID, 0L, 1L, True,
+		    XA_PIXMAP, &type, &format, &length, &after, &data) ==
+	    Success && type == XA_PIXMAP && format == 32 && length == 1 &&
+	    after == 0 && (Pixmap)(*(Pixmap *)data) != None)
 	{
 		e_deleted = True;
 		XKillClient(dpy2, *((Pixmap *)data));
@@ -289,22 +289,25 @@ void DeleteRootAtoms(Display *dpy2, Window root2)
 
 void SetRootAtoms(Display *dpy2, Window root2, Pixmap RootPix)
 {
+	long l_root_pix;
+
+	l_root_pix = RootPix;
 	if (RetainPixmap && RootPix != None)
 	{
 		XChangeProperty(
 			dpy2, root2, XA_ESETROOT_PMAP_ID, XA_PIXMAP, 32,
 			PropModeReplace,
-			(unsigned char *) &RootPix, 1);
+			(unsigned char *) &l_root_pix, 1);
 		XChangeProperty(
 			dpy2, root2, XA_XROOTPMAP_ID, XA_PIXMAP, 32,
 			PropModeReplace,
-			(unsigned char *) &RootPix, 1);
+			(unsigned char *) &l_root_pix, 1);
 	}
 	else
 	{
 		XChangeProperty(
 			dpy2, root2, XA_XSETROOT_ID, XA_PIXMAP, 32,
-			PropModeReplace, (unsigned char *) &RootPix, 1);
+			PropModeReplace, (unsigned char *) &l_root_pix, 1);
 	}
 }
 

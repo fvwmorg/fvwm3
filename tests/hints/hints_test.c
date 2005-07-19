@@ -83,12 +83,13 @@ Atom ATOM_MOTIF_WM_HINTS = None;
 /*
  * _MWM_HINTS property
  */
-typedef struct {
-	CARD32 flags;
-	CARD32 functions;
-	CARD32 decorations;
-	INT32 inputMode;
-	/* CARD32 status; ??? */
+typedef struct
+{
+	long props[4];
+	/* props[0]: flags */
+	/* props[1]: functions */
+	/* props[2]: decorations */
+	/* props[3]: inputMode */
 } PropMotifWmHints;
 
 typedef PropMotifWmHints PropMwmHints;
@@ -247,10 +248,10 @@ int main(int argc, char **argv)
 	hints.flags = 0;
 
 	wm_hints.flags = 0;
-	mwm_hints.flags = 0;
-	mwm_hints.functions = 0;
-	mwm_hints.decorations = 0;
-	mwm_hints.inputMode = 0;
+	mwm_hints.props[0] = 0;
+	mwm_hints.props[1] = 0;
+	mwm_hints.props[2] = 0;
+	mwm_hints.props[3] = 0;
 
 	win = XCreateSimpleWindow(
 		dpy, Root, 0, 0, hints.width, hints.height, 0, 0, 0);
@@ -477,25 +478,25 @@ int main(int argc, char **argv)
 		}
 		else if (strcasecmp(argv[i], "--mwm-input") == 0)
 		{
-			mwm_hints.flags |= MWM_HINTS_INPUT_MODE;
+			mwm_hints.props[0] |= MWM_HINTS_INPUT_MODE;
 			i++;
 			if (strcasecmp(argv[i], "modless") == 0)
 			{
-				mwm_hints.inputMode = MWM_INPUT_MODELESS;
+				mwm_hints.props[3] = MWM_INPUT_MODELESS;
 			}
 			else if (strcasecmp(argv[i], "app_modal") == 0)
 			{
-				mwm_hints.inputMode =
+				mwm_hints.props[3] =
 					MWM_INPUT_PRIMARY_APPLICATION_MODAL;
 			}
 			else if (strcasecmp(argv[i], "sys_modal") == 0)
 			{
-				mwm_hints.inputMode =
+				mwm_hints.props[3] =
 					MWM_INPUT_SYSTEM_MODAL;
 			}
 			else if (strcasecmp(argv[i], "full_app_modal") == 0)
 			{
-				mwm_hints.inputMode =
+				mwm_hints.props[3] =
 					MWM_INPUT_FULL_APPLICATION_MODAL;
 			}
 			else
@@ -607,30 +608,30 @@ int main(int argc, char **argv)
 		}
 		else if (mwm_func_arg)
 		{
-			mwm_hints.flags |= MWM_HINTS_FUNCTIONS;
+			mwm_hints.props[0] |= MWM_HINTS_FUNCTIONS;
 			if (strcasecmp(argv[i], "all") == 0)
 			{
-				mwm_hints.functions |= MWM_FUNC_ALL;
+				mwm_hints.props[1] |= MWM_FUNC_ALL;
 			}
 			else if (strcasecmp(argv[i], "resize") == 0)
 			{
-				mwm_hints.functions |= MWM_FUNC_RESIZE;
+				mwm_hints.props[1] |= MWM_FUNC_RESIZE;
 			}
 			else if (strcasecmp(argv[i], "move") == 0)
 			{
-				mwm_hints.functions |= MWM_FUNC_MOVE;
+				mwm_hints.props[1] |= MWM_FUNC_MOVE;
 			}
 			else if (strcasecmp(argv[i], "minimize") == 0)
 			{
-				mwm_hints.functions |= MWM_FUNC_MINIMIZE;
+				mwm_hints.props[1] |= MWM_FUNC_MINIMIZE;
 			}
 			else if (strcasecmp(argv[i], "maximize") == 0)
 			{
-				mwm_hints.functions |= MWM_FUNC_MAXIMIZE;
+				mwm_hints.props[1] |= MWM_FUNC_MAXIMIZE;
 			}
 			else if (strcasecmp(argv[i], "close") == 0)
 			{
-				mwm_hints.functions |= MWM_FUNC_CLOSE;
+				mwm_hints.props[1] |= MWM_FUNC_CLOSE;
 			}
 			else
 			{
@@ -639,34 +640,34 @@ int main(int argc, char **argv)
 		}
 		else if (mwm_decor_arg)
 		{
-			mwm_hints.flags |= MWM_HINTS_DECORATIONS;
+			mwm_hints.props[0] |= MWM_HINTS_DECORATIONS;
 			if (strcasecmp(argv[i], "all") == 0)
 			{
-				mwm_hints.decorations |= MWM_DECOR_ALL;
+				mwm_hints.props[2] |= MWM_DECOR_ALL;
 			}
 			else if (strcasecmp(argv[i], "border") == 0)
 			{
-				mwm_hints.decorations |= MWM_DECOR_BORDER;
+				mwm_hints.props[2] |= MWM_DECOR_BORDER;
 			}
 			else if (strcasecmp(argv[i], "resizeh") == 0)
 			{
-				mwm_hints.decorations |= MWM_DECOR_RESIZEH;
+				mwm_hints.props[2] |= MWM_DECOR_RESIZEH;
 			}
 			else if (strcasecmp(argv[i], "title") == 0)
 			{
-				mwm_hints.decorations |= MWM_DECOR_TITLE;
+				mwm_hints.props[2] |= MWM_DECOR_TITLE;
 			}
 			else if (strcasecmp(argv[i], "menu") == 0)
 			{
-				mwm_hints.decorations |= MWM_DECOR_MENU;
+				mwm_hints.props[2] |= MWM_DECOR_MENU;
 			}
 			else if (strcasecmp(argv[i], "minimize") == 0)
 			{
-				mwm_hints.decorations |= MWM_DECOR_MINIMIZE;
+				mwm_hints.props[2] |= MWM_DECOR_MINIMIZE;
 			}
 			else if (strcasecmp(argv[i], "maximize") == 0)
 			{
-				mwm_hints.decorations |= MWM_DECOR_MAXIMIZE;
+				mwm_hints.props[2] |= MWM_DECOR_MAXIMIZE;
 			}
 			else
 			{
@@ -746,7 +747,7 @@ int main(int argc, char **argv)
 		XFree(nametext.value);
 	}
 
-	if (mwm_hints.flags != 0)
+	if (mwm_hints.props[0] != 0)
 	{
 		XChangeProperty(
 			dpy, win, ATOM_MOTIF_WM_HINTS, ATOM_MOTIF_WM_HINTS, 32,

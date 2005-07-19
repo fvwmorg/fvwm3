@@ -1631,8 +1631,9 @@ void SetMWM_INFO(Window window)
 {
 	struct mwminfo
 	{
-		long flags;
-		Window win;
+		long props[2];
+		/* prop[0]: flags */
+		/* prop[1]: win */
 	}  motif_wm_info;
 	static char set_yorn='n';
 
@@ -1645,8 +1646,8 @@ void SetMWM_INFO(Window window)
 	{
 		/* Set Motif WM_INFO atom to make motif relinquish
 		 * broken handling of modal dialogs */
-		motif_wm_info.flags = 2;
-		motif_wm_info.win = window;
+		motif_wm_info.props[0] = 2;
+		motif_wm_info.props[1] = window;
 		XChangeProperty(
 			dpy,Scr.Root, _XA_MOTIF_WM, _XA_MOTIF_WM,32,
 			PropModeReplace, (unsigned char *)&motif_wm_info, 2);

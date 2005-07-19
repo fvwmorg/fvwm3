@@ -2474,6 +2474,7 @@ FvwmWindow *AddWindow(
 void FetchWmProtocols(FvwmWindow *tmp)
 {
 	Atom *protocols = NULL, *ap;
+	long *l_protocols;
 	int i, n;
 	Atom atype;
 	int aformat;
@@ -2512,10 +2513,11 @@ void FetchWmProtocols(FvwmWindow *tmp)
 			     dpy, FW_W(tmp), _XA_WM_PROTOCOLS, 0L, 10L, False,
 			     _XA_WM_PROTOCOLS, &atype, &aformat, &nitems,
 			     &bytes_remain,
-			     (unsigned char **)&protocols)) == Success)
+			     (unsigned char **)&l_protocols)) == Success)
 		{
-			for (i = 0, ap = protocols; i < nitems; i++, ap++)
+			for (i = 0; i < nitems; i++)
 			{
+				ap = &(l_protocols[i]);
 				if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
 				{
 					SET_WM_TAKES_FOCUS(tmp, 1);

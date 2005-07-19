@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 		dpy, root, prop, 0L, 1L, True, AnyPropertyType,
 		&type, &format, &length, &after, &data);
 	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
-	    *((Pixmap *)data) != None)
+	    data != NULL && (Pixmap)(*(long *)data) != None)
 	{
 		XKillClient(dpy, *((Pixmap *)data));
 	}
@@ -299,7 +299,7 @@ int main(int argc, char **argv)
 		dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
 		&type, &format, &length, &after, &data);
 	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
-	    *((Pixmap *)data) != None)
+	    data != NULL && (Pixmap)(*(long *)data) != None)
 	{
 		e_killed = True;
 		XKillClient(dpy, *((Pixmap *)data));
@@ -312,6 +312,9 @@ int main(int argc, char **argv)
 
 	if (RetainPixmap && !Dummy)
 	{
+		long prop;
+
+		prop = rootImage;
 		if (data != NULL)
 			XFree(data);
 		XSetCloseDownMode(dpy, RetainPermanent);
@@ -321,20 +324,22 @@ int main(int argc, char **argv)
 			m_prop = XInternAtom(dpy, "_XROOTPMAP_ID", False);
 		XChangeProperty(
 			dpy, root, e_prop, XA_PIXMAP, 32, PropModeReplace,
-			(unsigned char *) &rootImage, 1);
+			(unsigned char *) &prop, 1);
 		XChangeProperty(
 			dpy, root, m_prop, XA_PIXMAP, 32, PropModeReplace,
-			(unsigned char *) &rootImage, 1);
+			(unsigned char *) &prop, 1);
 	}
 	else
 	{
 		Pixmap dp = None;
+		long prop;
 
 		if (prop == None)
 			prop = XInternAtom(dpy, "_XSETROOT_ID", False);
+		prop = dp;
 		XChangeProperty(
 			dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
-			(unsigned char *)  &dp, 1);
+			(unsigned char *) &prop, 1);
 	}
 	XCloseDisplay(dpy);
 

@@ -293,7 +293,7 @@ GetClientID(FvwmWindow *fw)
 		if (actual_type == XA_WINDOW && actual_format == 32 &&
 		    nitems == 1 && bytes_after == 0)
 		{
-			client_leader = *((Window *) prop);
+			client_leader = (Window)(*(long *)prop);
 		}
 	}
 
@@ -305,7 +305,9 @@ GetClientID(FvwmWindow *fw)
 
 	if (client_leader)
 	{
-		if (XGetTextProperty(dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
+		if (
+			XGetTextProperty(
+				dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
 		{
 			if (tp.encoding == XA_STRING && tp.format == 8 &&
 			    tp.nitems != 0)

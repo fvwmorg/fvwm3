@@ -292,7 +292,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(
 	}
 
 	if (pixmap == None)
+	{
 		return NULL;
+	}
 
 	if (FMiniIconsSupported && orig_icon != NULL)
 	{
@@ -376,7 +378,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(
 	case 1:
 	{
 		XColor colors[2];
-		CARD32 fg,bg;
+		CARD32 fg, bg;
 
 		colors[0].pixel = fwin->colors.fore;
 		colors[1].pixel = fwin->colors.back;

@@ -773,7 +773,7 @@ typedef struct FvwmWindow
 	/* original delta between normalized and maximized window, used to
 	 * keep unmaximized window at same screen position */
 	position max_offset;
-	int *mwm_hints;
+	long *mwm_hints;
 	int ol_hints;
 	int functions;
 	/* Colormap windows property */
