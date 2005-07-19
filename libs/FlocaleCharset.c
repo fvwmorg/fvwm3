@@ -336,6 +336,7 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("CNS11643.1992-7",     cns11643,     NULL),
 	CT_ENTRY("DOSENCODING-CP437",   dosencoding_cp437,   NULL),
 	CT_ENTRY("DOSENCODING-CP850",   dosencoding_cp850,   NULL),
+	CT_ENTRY("EUC-JP",              euc_jp,              NULL),
 	CT_ENTRY("GB2312.1980-0",       gb2312_1980_0,       NULL),
 	CT_ENTRY("GBK-0",               gbk_0,               NULL),
 	CT_ENTRY("GEORGIAN-ACADEMY",    georgian_academy,    NULL),
