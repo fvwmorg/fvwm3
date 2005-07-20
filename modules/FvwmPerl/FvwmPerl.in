@@ -52,6 +52,7 @@ sub initPreprocessVars () {
 	$preprocessOptions = {
 		"c|cmd|command" => \$ppArgs->{command},
 		"q|quote=s"     => \$ppArgs->{quote},
+		"w|winid=s"     => \$ppArgs->{winid},
 		"nosend"        => \$ppArgs->{nosend},
 		"noremove"      => \$ppArgs->{noremove},
 	};
@@ -242,8 +243,11 @@ sub preprocess ($;$) {
 	my $noremove = $args->{noremove};
 	my $command  = $args->{command};
 	my $quote    = $args->{quote} || '%';
+	my $winid    = $args->{winid} || undef;
+
 	my ($quote1, $quote2) = split(//, $quote, 2);
 	$quote2 ||= $quote1;
+	$winid = eval $winid if $winid && $winid =~ /^0(x[\da-f]+|[0-7]+)$/;
 
 	unlock() unless $command;
 
@@ -302,7 +306,7 @@ sub preprocess ($;$) {
 	preprocessDirectives($textRef);
 
 	if ($command) {
-		$module->send($$textRef);
+		$module->send($$textRef, $winid);
 		return;
 	}
 
@@ -311,7 +315,7 @@ sub preprocess ($;$) {
 	saveFile($tempFileName, $textRef);
 
 	unless ($nosend) {
-		$module->send("Read $tempFileName");
+		$module->send("Read $tempFileName", $winid);
 		$module->send("Exec rm -f '$tempFileName'")
 			unless $noremove;
 	}
@@ -357,6 +361,8 @@ sub processMessage ($$) {
 			config => [qw(pass_through require_order)]
 		);
 		$parser->getoptions(%$preprocessOptions) || return;
+		$ppArgs->{winid} = $event->_win_id || undef
+			unless defined $ppArgs->{winid} && $ppArgs->{winid} =~ /^\d/;
 
 		preprocess($ppArgs, join(" ", @ARGV));
 	}
@@ -441,9 +447,9 @@ There are several command line switches:
 B<FvwmPerl>
 [ B<--eval> line ]
 [ B<--load> file ]
-[ B<--preprocess> [ B<--quote> char ] [ B<--cmd> ]
+[ B<--preprocess> [ B<--quote> char ] [ B<--winid> wid ] [ B<--cmd> ]
 [ B<--nosend> ] [ B<--noremove> ] [ line | file ] ]
-[ B<--stay> ] [ --nolock ]
+[ B<--stay> ] [ B<--nolock> ]
 [ alias ]
 
 Long switches may be abbreviated to short one-letter switches.
@@ -452,11 +458,18 @@ B<-e>|B<--eval> line - evaluate the given perl code
 
 B<-l>|B<--load> file - evaluate perl code in the given file
 
-B<-p>|B<--preprocess> file - preprocess the given fvwmrc file
+B<-p>|B<--preprocess> [ file ] - preprocess the given fvwmrc file
+
+The following 5 options are only valid together with B<--preprocess>
+option.
 
 B<-c>|B<--cmd> line - an FVWM command to be preprocessed instead of file
 
-B<-q>|B<--quote> char - changes the default '%' quote
+B<-q>|B<--quote> char - change the default '%' quote
+
+B<-w>|B<--winid> wid - set explicit window context (should begin with
+digit, may be in oct or hex form; this window id overwrites implicit
+window context if any)
 
 B<--nosend> - do not send the preprocessed file to I<fvwm> for B<Read>ing,
 the default is send. Useful for preprocessing non fvwmrc files.
