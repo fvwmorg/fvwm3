@@ -277,7 +277,7 @@ static int
 compare_desk (const window_list_entry **u1, const window_list_entry **u2)
 {
   int r = (*u1)->desk - (*u2)->desk;
-  return ((r != 0) ? r : (int) u1 - (int) u2);
+  return ((r != 0) ? r : (long) u1 - (long) u2);
 }
 
 static int

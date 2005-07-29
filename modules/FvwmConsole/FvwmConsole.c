@@ -191,7 +191,7 @@ void server (void)
 {
   struct sockaddr_un sas, csas;
   int  len;
-  size_t clen;     /* length of sockaddr */
+  socklen_t clen;     /* length of sockaddr */
   char buf[MAX_COMMAND_SIZE];      /*  command line buffer */
   char *tline;
   char ver[40];

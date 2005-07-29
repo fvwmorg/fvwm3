@@ -395,9 +395,9 @@ static int myXErrorHandler(Display *display,XErrorEvent *error_event)
 	XGetErrorDatabaseText(display,"XRequest",
 		request_number,buffer,function,messagelen);
 
-	fprintf(stderr, "non-fatal X error as follows, display 0x%x"
+	fprintf(stderr, "non-fatal X error as follows, display %p"
 		" op %d:%d \"%s\" serial %u error %d\n",
-		(unsigned int)display,
+		display,
 		error_event->request_code,error_event->minor_code,
 		function,(unsigned int)error_event->serial,
 		error_event->error_code);
@@ -407,8 +407,7 @@ static int myXErrorHandler(Display *display,XErrorEvent *error_event)
 
 static int myXIOErrorHandler(Display *display)
 {
-	fprintf(stderr, "fatal IO Error on display 0x%x\n",
-		(unsigned int)display);
+	fprintf(stderr, "fatal IO Error on display %p\n", display);
 	originalXIOErrorHandler(display);
 
 	/* should never get this far */

@@ -109,8 +109,8 @@ static void dump_stack_ring(void)
 	for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot;
 	     t1 = t1->stack_next)
 	{
-		fprintf(stderr,"    l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
-			(int)t1, (int)FW_W_FRAME(t1), t1->name.name);
+		fprintf(stderr,"    l=%d fw=%p f=0x%08x '%s'\n", t1->layer,
+			t1, (int)FW_W_FRAME(t1), t1->name.name);
 	}
 
 	return;
@@ -167,9 +167,8 @@ void verify_stack_ring_consistency(void)
 		fprintf(
 			stderr,
 			"vsrc: stack ring is corrupt -"
-			" fvwm will probably crash! "
-			"0x%08x -> 0x%08x but 0x%08x <- 0x%08x\n",
-			(int)t2, (int)t1, (int)(t1->stack_prev), (int)t1);
+			" fvwm will probably crash! %p -> %p but %p <- %p",
+			t2, t1, t1->stack_prev, t1);
 		dump_stack_ring();
 		return;
 	}
@@ -193,15 +192,15 @@ void verify_stack_ring_consistency(void)
 		{
 			fprintf(
 				stderr,"vsrc: window already died:"
-				" fw=0x%08x w=0x%08x '%s'\n",
-				(int)t1, (int)FW_W_FRAME(t1), t1->name.name);
+				" fw=%p w=0x%08x '%s'\n",
+				t1, (int)FW_W_FRAME(t1), t1->name.name);
 		}
 		else if (i >= last_index)
 		{
 			fprintf(
 				stderr, "vsrc: window is at wrong position"
-				" in stack ring: fw=0x%08x f=0x%08x '%s'\n",
-				(int)t1, (int)FW_W_FRAME(t1),
+				" in stack ring: fw=%p f=0x%08x '%s'\n",
+				t1, (int)FW_W_FRAME(t1),
 				t1->name.name);
 			dump_stack_ring();
 			fprintf(stderr,"dumping X stacking order:\n");

@@ -732,7 +732,7 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 		fvwm_msg(
 			ERR, "HandleModuleInput",
 			"Fail to read (Module: %i, read: %i, size: %i)",
-			module, n, sizeof(size));
+			module, n, (int)sizeof(size));
 		KillModule(module);
 		return False;
 	}
@@ -741,7 +741,7 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 	{
 		fvwm_msg(ERR, "HandleModuleInput",
 			 "Module(%i) command is too big (%ld), limit is %d",
-			 module, size, sizeof(text));
+			 module, size, (int)sizeof(text));
 		/* The rest of the output from this module is going to be
 		 * scrambled so let's kill it rather than risk interpreting
 		 * garbage */
@@ -767,7 +767,7 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 	{
 		fvwm_msg(ERR, "HandleModuleInput",
 			 "Module %i, Size Problems (read: %d, size: %d)",
-			 module, n, sizeof(cont));
+			 module, n, (int)sizeof(cont));
 		KillModule(module);
 		return False;
 	}

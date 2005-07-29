@@ -560,8 +560,8 @@ static inline void __cr_detect_icccm_move(
 		{
 			fprintf(
 				stderr,
-				"_cdim: --- already detected (pid %d) 0x%08x"
-				" '%s'\n", HAS_EWMH_WM_PID(fw), (int)fw,
+				"_cdim: --- already detected (pid %d) %p"
+				" '%s'\n", HAS_EWMH_WM_PID(fw), fw,
 				fw->visible_name);
 		}
 		return;
@@ -572,7 +572,7 @@ static inline void __cr_detect_icccm_move(
 		{
 			fprintf(
 				stderr,"_cdim: +++ has ewmh_wm_pid: icccm"
-				" 0x%08x '%s'\n", (int)fw, fw->visible_name);
+				" %p '%s'\n", fw, fw->visible_name);
 		}
 		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
@@ -584,7 +584,7 @@ static inline void __cr_detect_icccm_move(
 		{
 			fprintf(
 				stderr, "_cdim: +++ has ewmh_window_type:"
-				" icccm 0x%08x '%s'\n", (int)fw,
+				" icccm %p '%s'\n", fw,
 				fw->visible_name);
 		}
 		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
@@ -596,8 +596,8 @@ static inline void __cr_detect_icccm_move(
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
 			fprintf(
-				stderr, "_cdim: --- shaped window 0x%08x "
-				"'%s'\n", (int)fw, fw->visible_name);
+				stderr, "_cdim: --- shaped window %p "
+				"'%s'\n", fw, fw->visible_name);
 		}
 		/* no detection for shaped windows */
 		return;
@@ -608,7 +608,7 @@ static inline void __cr_detect_icccm_move(
 		{
 			fprintf(
 				stderr, "_cdim: --- using StaticGravity"
-				" 0x%08x '%s'\n", (int)fw, fw->visible_name);
+				" %p '%s'\n", fw, fw->visible_name);
 		}
 		return;
 	}
@@ -618,7 +618,7 @@ static inline void __cr_detect_icccm_move(
 		{
 			fprintf(
 				stderr, "_cdim: --- using StaticGravity"
-				" 0x%08x '%s'\n", (int)fw, fw->visible_name);
+				" %p '%s'\n", fw, fw->visible_name);
 		}
 		return;
 	}
@@ -629,8 +629,8 @@ static inline void __cr_detect_icccm_move(
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
 			fprintf(
-				stderr, "_cdim: --- not moved 0x%08x '%s'\n",
-				(int)fw, fw->visible_name);
+				stderr, "_cdim: --- not moved %p '%s'\n",
+				fw, fw->visible_name);
 		}
 		return;
 	}
@@ -651,8 +651,8 @@ static inline void __cr_detect_icccm_move(
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
 			fprintf(
-				stderr, "_cdim: --- not moved 0x%08x '%s'\n",
-				(int)fw, fw->visible_name);
+				stderr, "_cdim: --- not moved %p '%s'\n",
+				fw, fw->visible_name);
 		}
 		return;
 	}
@@ -682,8 +682,8 @@ static inline void __cr_detect_icccm_move(
 			if (Scr.bo.do_debug_cr_motion_method == 1)
 			{
 				fprintf(
-					stderr, "+++ fullscreen icccm 0x%08x"
-					" '%s'\n", (int)fw, fw->visible_name);
+					stderr, "+++ fullscreen icccm %p"
+					" '%s'\n", fw, fw->visible_name);
 			}
 			return;
 		}
@@ -697,7 +697,7 @@ static inline void __cr_detect_icccm_move(
 			{
 				fprintf(
 					stderr, "+++ fullscreen traditional"
-					" 0x%08x '%s'\n", (int)fw,
+					" %p '%s'\n", fw,
 					fw->visible_name);
 			}
 			return;
@@ -714,8 +714,8 @@ static inline void __cr_detect_icccm_move(
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
 			fprintf(
-				stderr, "+++ travelling icccm 0x%08x '%s'\n",
-				(int)fw, fw->visible_name);
+				stderr, "+++ travelling icccm %p '%s'\n",
+				fw, fw->visible_name);
 		}
 		return;
 	}
@@ -729,8 +729,8 @@ static inline void __cr_detect_icccm_move(
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
 			fprintf(
-				stderr, "+++ travelling traditional 0x%08x"
-				" '%s'\n", (int)fw, fw->visible_name);
+				stderr, "+++ travelling traditional %p"
+				" '%s'\n", fw, fw->visible_name);
 		}
 		return;
 	}
@@ -782,10 +782,10 @@ static inline void __cr_detect_icccm_move(
 			if (Scr.bo.do_debug_cr_motion_method == 1)
 			{
 				fprintf(
-					stderr, "+++ near border %s 0x%08x "
+					stderr, "+++ near border %s %p "
 					"'%s'\n", (m ==
 						   CR_MOTION_METHOD_USE_GRAV)
-					? "icccm" : "traditional", (int)fw,
+					? "icccm" : "traditional", fw,
 					fw->visible_name);
 			}
 			return;
@@ -794,7 +794,7 @@ static inline void __cr_detect_icccm_move(
 	if (Scr.bo.do_debug_cr_motion_method == 1)
 	{
 		fprintf(
-			stderr, "--- not detected 0x%08x '%s'\n", (int)fw,
+			stderr, "--- not detected %p '%s'\n", fw,
 			fw->visible_name);
 	}
 

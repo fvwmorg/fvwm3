@@ -5021,8 +5021,10 @@ void print_styles(int verbose)
 			mem += sizeof(icon_boxes);
 		}
 	}
-	fprintf(stderr,"  Number of styles: %i, Memory Used: %i bits\n",
-		count, count*sizeof(window_style) + mem);
+	fprintf(stderr,"  Number of styles: %d, Memory Used: %d bits\n",
+		count, (int)(count*sizeof(window_style) + mem));
+
+	return;
 }
 
 /* ---------------------------- builtin commands --------------------------- */

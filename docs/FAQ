@@ -3149,7 +3149,7 @@ your applications request.
      AddToFunc Thumbnail
      + I Raise
      + I SetEnv Icon-$[w.id] $[w.iconfile]
-     + I ThisWindow (!Shaded Iconifiable !Iconic) PipeRead \
+     + I ThisWindow (!Shaded, Iconifiable, !Iconic) PipeRead \
          "xwd -silent -id $[w.id] | convert -scale 64 -frame 1x1 \
          -mattecolor black -quality 0 xwd:- \
          png:$[FVWM_USERDIR]/icon.tmp.$[w.id].png \
