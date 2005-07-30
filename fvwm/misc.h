@@ -80,6 +80,8 @@ FvwmWindow *get_pointer_fvwm_window(void);
 Time get_server_time(void);
 void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 	__attribute__ ((format (printf, 3, 4)));
+void fvwm_msg_report_app(void);
+void fvwm_msg_report_app_and_workers(void);
 void set_last_added_item(last_added_item_t type, void *item);
 void print_g(char *text, rectangle *g);
 

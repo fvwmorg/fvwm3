@@ -416,6 +416,7 @@ void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
 		}
 		XFree(retval);
 		*size = num_ret * (format_ret >> 3);
+
 		return data;
 	}
 	if (retval)
@@ -554,11 +555,11 @@ void EWMH_SetActiveWindow(Window w)
 		(unsigned char *)&w, 1);
 }
 
-void EWMH_SetWMDesktop(FvwmWindow *fwin)
+void EWMH_SetWMDesktop(FvwmWindow *fw)
 {
-	long desk = fwin->Desk;
+	long desk = fw->Desk;
 
-	if (IS_STICKY_ACROSS_DESKS(fwin))
+	if (IS_STICKY_ACROSS_DESKS(fw))
 	{
 		desk = 0xFFFFFFFF;
 	}
@@ -568,7 +569,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
 		EWMH_SetNumberOfDesktops();
 	}
 	ewmh_ChangeProperty(
-		FW_W(fwin), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
+		FW_W(fw), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
 		(unsigned char *)&desk, 1);
 }
 
@@ -576,7 +577,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
  *  fvwm must maintain the _NET_WM_STATE
  */
 
-void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)
+void EWMH_SetWMState(FvwmWindow *fw, Bool do_restore)
 {
 	Atom wm_state[EWMH_NUMBER_OF_STATE];
 	int i = 0;
@@ -584,7 +585,7 @@ void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)
 
 	while(list->name != NULL)
 	{
-		if (list->action(fwin, NULL, NULL, do_restore))
+		if (list->action(fw, NULL, NULL, do_restore))
 		{
 			wm_state[i++] = list->atom;
 		}
@@ -594,13 +595,13 @@ void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)
 	if (i > 0)
 	{
 		ewmh_ChangeProperty(
-			FW_W(fwin), "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN,
+			FW_W(fw), "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN,
 			(unsigned char *)wm_state, i);
 	}
 	else
 	{
 		ewmh_DeleteProperty(
-			FW_W(fwin), "_NET_WM_STATE",
+			FW_W(fw), "_NET_WM_STATE",
 			EWMH_ATOM_LIST_CLIENT_WIN);
 	}
 }
@@ -697,14 +698,14 @@ void set_kde_sys_tray(void)
 	}
 }
 
-void ewmh_AddToKdeSysTray(FvwmWindow *fwin)
+void ewmh_AddToKdeSysTray(FvwmWindow *fw)
 {
 	unsigned int size = 0;
 	Atom *val;
 	KstItem *t;
 
 	val = ewmh_AtomGetByName(
-		FW_W(fwin), "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
+		FW_W(fw), "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
 		EWMH_ATOM_LIST_FIXED_PROPERTY, &size);
 
 	if (val == NULL)
@@ -714,7 +715,7 @@ void ewmh_AddToKdeSysTray(FvwmWindow *fwin)
 	free(val);
 
 	t = ewmh_KstWinList;
-	while(t != NULL && t->w != FW_W(fwin))
+	while(t != NULL && t->w != FW_W(fw))
 		t = t->next;
 
 	if (t != NULL)
@@ -722,7 +723,7 @@ void ewmh_AddToKdeSysTray(FvwmWindow *fwin)
 		return; /* already in the list */
 	}
 
-	add_kst_item(FW_W(fwin));
+	add_kst_item(FW_W(fw));
 	set_kde_sys_tray();
 }
 
@@ -977,7 +978,7 @@ void EWMH_UpdateWorkArea(void)
 }
 
 void EWMH_GetWorkAreaIntersection(
-	FvwmWindow *fwin, int *x, int *y, int *w, int *h, int type)
+	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type)
 {
 	int nx,ny,nw,nh;
 	int area_x = Scr.Desktops->ewmh_working_area.x;
@@ -1109,17 +1110,17 @@ float EWMH_GetStrutIntersection(
 /*
  *  fvwm_win
  */
-void EWMH_SetFrameStrut(FvwmWindow *fwin)
+void EWMH_SetFrameStrut(FvwmWindow *fw)
 {
 	long val[4];
 	size_borders b;
 
-	if (EWMH_IsKdeSysTrayWindow(FW_W(fwin)))
+	if (EWMH_IsKdeSysTrayWindow(FW_W(fw)))
 	{
 		/* Fixed position of tray window in kicker */
 		return;
 	}
-	get_window_borders(fwin, &b);
+	get_window_borders(fw, &b);
 
 	/* left */
 	val[0] = b.top_left.width;
@@ -1131,10 +1132,10 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
 	val[3] = b.bottom_right.height;
 
 	ewmh_ChangeProperty(
-		FW_W(fwin), "_KDE_NET_WM_FRAME_STRUT", EWMH_ATOM_LIST_FVWM_WIN,
+		FW_W(fw), "_KDE_NET_WM_FRAME_STRUT", EWMH_ATOM_LIST_FVWM_WIN,
 		(unsigned char *)&val, 4);
 	ewmh_ChangeProperty(
-		FW_W(fwin), "_NET_FRAME_EXTENTS", EWMH_ATOM_LIST_FVWM_WIN,
+		FW_W(fw), "_NET_FRAME_EXTENTS", EWMH_ATOM_LIST_FVWM_WIN,
 		(unsigned char *)&val, 4);
 }
 
@@ -1148,14 +1149,14 @@ Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_CLOSE, NULL, fwin, True, False);
+	return is_function_allowed(F_CLOSE, NULL, fw, True, False);
 }
 
 Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
 {
-	if (!is_function_allowed(F_MAXIMIZE, NULL, fwin, True, False) ||
-	    !is_function_allowed(F_MOVE, NULL, fwin, True, False) ||
-	    !is_function_allowed(F_RESIZE, NULL, fwin, True, True))
+	if (!is_function_allowed(F_MAXIMIZE, NULL, fw, True, False) ||
+	    !is_function_allowed(F_MOVE, NULL, fw, True, False) ||
+	    !is_function_allowed(F_RESIZE, NULL, fw, True, True))
 	{
 		return False;
 	}
@@ -1164,25 +1165,25 @@ Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_ICONIFY, NULL, fwin, True, False);
+	return is_function_allowed(F_ICONIFY, NULL, fw, True, False);
 }
 
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_MAXIMIZE, NULL, fwin, True, False);
+	return is_function_allowed(F_MAXIMIZE, NULL, fw, True, False);
 }
 
 Bool ewmh_AllowsMove(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_MOVE, NULL, fwin, True, False);
+	return is_function_allowed(F_MOVE, NULL, fw, True, False);
 }
 
 Bool ewmh_AllowsResize(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_RESIZE, NULL, fwin, True, False);
+	return is_function_allowed(F_RESIZE, NULL, fw, True, False);
 }
 
-void EWMH_SetAllowedActions(FvwmWindow *fwin)
+void EWMH_SetAllowedActions(FvwmWindow *fw)
 {
 	Atom wm_actions[EWMH_NUMBER_OF_ALLOWED_ACTIONS];
 	int i = 0;
@@ -1190,7 +1191,7 @@ void EWMH_SetAllowedActions(FvwmWindow *fwin)
 
 	while(list->name != NULL)
 	{
-		if (list->action(fwin, NULL, NULL, 0))
+		if (list->action(fw, NULL, NULL, 0))
 			wm_actions[i++] = list->atom;
 		list++;
 	}
@@ -1198,14 +1199,14 @@ void EWMH_SetAllowedActions(FvwmWindow *fwin)
 	if (i > 0)
 	{
 		ewmh_ChangeProperty(
-			FW_W(fwin), "_NET_WM_ALLOWED_ACTIONS",
+			FW_W(fw), "_NET_WM_ALLOWED_ACTIONS",
 			EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)wm_actions,
 			i);
 	}
 	else
 	{
 		ewmh_DeleteProperty(
-			FW_W(fwin), "_NET_WM_ALLOWED_ACTIONS",
+			FW_W(fw), "_NET_WM_ALLOWED_ACTIONS",
 			EWMH_ATOM_LIST_FVWM_WIN);
 	}
 }
@@ -1216,7 +1217,7 @@ void EWMH_SetAllowedActions(FvwmWindow *fwin)
 
 int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 {
-	if (Scr.EwmhDesktop != NULL && FW_W(Scr.EwmhDesktop) != FW_W(fwin))
+	if (Scr.EwmhDesktop != NULL && FW_W(Scr.EwmhDesktop) != FW_W(fw))
 	{
 		fvwm_msg(
 			WARN,"ewmh_HandleDesktop",
@@ -1225,8 +1226,8 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 		/* what to do ? */
 	}
 
-	fwin->ewmh_window_type = EWMH_WINDOW_TYPE_DESKTOP_ID;
-	Scr.EwmhDesktop = fwin;
+	fw->ewmh_window_type = EWMH_WINDOW_TYPE_DESKTOP_ID;
+	Scr.EwmhDesktop = fw;
 
 	SSET_LAYER(*style, 0);
 	style->flags.use_layer = 1;
@@ -1311,13 +1312,13 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 
 int ewmh_HandleDialog(EWMH_CMD_ARGS)
 {
-	fwin->ewmh_window_type = EWMH_WINDOW_TYPE_DIALOG_ID;
+	fw->ewmh_window_type = EWMH_WINDOW_TYPE_DIALOG_ID;
 	return 0;
 }
 
 int ewmh_HandleDock(EWMH_CMD_ARGS)
 {
-	fwin->ewmh_window_type = EWMH_WINDOW_TYPE_DOCK_ID;
+	fw->ewmh_window_type = EWMH_WINDOW_TYPE_DOCK_ID;
 
 	S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
 	S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
@@ -1342,9 +1343,9 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
 	S_SET_IS_UNMAXIMIZABLE(SCM(*style), 1);
 	S_SET_IS_UNMAXIMIZABLE(SCC(*style), 1);
 
-	if (fwin->ewmh_hint_layer == -1)
+	if (fw->ewmh_hint_layer == -1)
 	{
-		fwin->ewmh_hint_layer = Scr.TopLayer;
+		fw->ewmh_hint_layer = Scr.TopLayer;
 		if (DO_EWMH_USE_STACKING_HINTS(style))
 		{
 			SSET_LAYER(*style, Scr.TopLayer);
@@ -1367,7 +1368,7 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
 
 int ewmh_HandleMenu(EWMH_CMD_ARGS)
 {
-	fwin->ewmh_window_type = EWMH_WINDOW_TYPE_MENU_ID;
+	fw->ewmh_window_type = EWMH_WINDOW_TYPE_MENU_ID;
 
 	/* tear off menu */
 
@@ -1409,13 +1410,13 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
 
 int ewmh_HandleNormal(EWMH_CMD_ARGS)
 {
-	fwin->ewmh_window_type = EWMH_WINDOW_TYPE_NORMAL_ID;
+	fw->ewmh_window_type = EWMH_WINDOW_TYPE_NORMAL_ID;
 	return 0;
 }
 
 int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 {
-	fwin->ewmh_window_type = EWMH_WINDOW_TYPE_TOOLBAR_ID;
+	fw->ewmh_window_type = EWMH_WINDOW_TYPE_TOOLBAR_ID;
 
 	/* this ok for KDE 2 (and 3??) but I do not think that a toolbar
 	   should be sticky */
@@ -1439,7 +1440,7 @@ int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 	return 1;
 }
 
-void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
+void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style)
 {
 	Atom *val;
 	ewmh_atom *list = ewmh_atom_window_type;
@@ -1447,9 +1448,9 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
 	int i = 0;
 	Bool found = False;
 
-	fwin->ewmh_window_type = 0;
+	fw->ewmh_window_type = 0;
 	val = ewmh_AtomGetByName(
-		FW_W(fwin), "_NET_WM_WINDOW_TYPE",
+		FW_W(fw), "_NET_WM_WINDOW_TYPE",
 		EWMH_ATOM_LIST_FIXED_PROPERTY, &size);
 
 	if (val == NULL)
@@ -1465,7 +1466,7 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
 		{
 			if (list->atom == val[i])
 			{
-				list->action(fwin, NULL, style, 0);
+				list->action(fw, NULL, style, 0);
 				found = True;
 			}
 			list++;
@@ -1479,18 +1480,18 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
  * a workaround for ksmserver exit windows
  */
 static
-int ksmserver_workarround(FvwmWindow *fwin)
+int ksmserver_workarround(FvwmWindow *fw)
 {
 
-	if (fwin->name.name != NULL && fwin->class.res_name != NULL &&
-	    fwin->icon_name.name != NULL && fwin->class.res_class != NULL &&
-	    strcmp(fwin->name.name, "ksmserver") == 0 &&
-	    strcmp(fwin->class.res_class, "ksmserver") == 0 &&
-	    strcmp(fwin->icon_name.name, "ksmserver") == 0 &&
-	    strcmp(fwin->class.res_name, "unnamed") == 0)
+	if (fw->name.name != NULL && fw->class.res_name != NULL &&
+	    fw->icon_name.name != NULL && fw->class.res_class != NULL &&
+	    strcmp(fw->name.name, "ksmserver") == 0 &&
+	    strcmp(fw->class.res_class, "ksmserver") == 0 &&
+	    strcmp(fw->icon_name.name, "ksmserver") == 0 &&
+	    strcmp(fw->class.res_name, "unnamed") == 0)
 	{
 		int layer = 0;
-		if (IS_TRANSIENT(fwin))
+		if (IS_TRANSIENT(fw))
 		{
 			layer = Scr.TopLayer + 2;
 		}
@@ -1499,7 +1500,7 @@ int ksmserver_workarround(FvwmWindow *fwin)
 			layer = Scr.TopLayer + 1;
 		}
 
-		new_layer(fwin, layer);
+		new_layer(fw, layer);
 		return 1;
 	}
 	return 0;
@@ -1509,20 +1510,20 @@ int ksmserver_workarround(FvwmWindow *fwin)
  * Window Initialisation / Destroy
  */
 
-void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
+void EWMH_GetStyle(FvwmWindow *fw, window_style *style)
 {
 	if (style->change_mask.use_layer)
 	{
-		fwin->ewmh_normal_layer = SGET_LAYER(*style);
+		fw->ewmh_normal_layer = SGET_LAYER(*style);
 	}
-	else if (fwin->ewmh_normal_layer == 0)
+	else if (fw->ewmh_normal_layer == 0)
 	{
-		fwin->ewmh_normal_layer = Scr.DefaultLayer;
+		fw->ewmh_normal_layer = Scr.DefaultLayer;
 	}
-	ewmh_WMState(fwin, NULL, style, 0);
-	ewmh_WMDesktop(fwin, NULL, style, 0);
+	ewmh_WMState(fw, NULL, style, 0);
+	ewmh_WMDesktop(fw, NULL, style, 0);
 	/* the window type override the state hint */
-	ewmh_HandleWindowType(fwin, style);
+	ewmh_HandleWindowType(fw, style);
 }
 
 static void ewmh_check_wm_pid(FvwmWindow *fw)
@@ -1546,59 +1547,59 @@ static void ewmh_check_wm_pid(FvwmWindow *fw)
 }
 
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
-void EWMH_WindowInit(FvwmWindow *fwin)
+void EWMH_WindowInit(FvwmWindow *fw)
 {
-	/*EWMH_DLOG("Init window 0x%lx",FW_W(fwin));*/
-	EWMH_SetWMState(fwin, False);
-	EWMH_SetWMDesktop(fwin);
-	EWMH_SetAllowedActions(fwin);
-	ewmh_WMStrut(fwin, NULL, NULL, 0);
-	ewmh_WMIconGeometry(fwin, NULL, NULL, 0);
-	ewmh_AddToKdeSysTray(fwin);
-	EWMH_SetFrameStrut(fwin);
-	if (IS_EWMH_DESKTOP(FW_W(fwin)))
+	/*EWMH_DLOG("Init window 0x%lx",FW_W(fw));*/
+	EWMH_SetWMState(fw, False);
+	EWMH_SetWMDesktop(fw);
+	EWMH_SetAllowedActions(fw);
+	ewmh_WMStrut(fw, NULL, NULL, 0);
+	ewmh_WMIconGeometry(fw, NULL, NULL, 0);
+	ewmh_AddToKdeSysTray(fw);
+	EWMH_SetFrameStrut(fw);
+	if (IS_EWMH_DESKTOP(FW_W(fw)))
 	{
 		return;
 	}
-	if (ksmserver_workarround(fwin))
+	if (ksmserver_workarround(fw))
 	{
 		return;
 	}
-	ewmh_WMIcon(fwin, NULL, NULL, 0);
-	ewmh_check_wm_pid(fwin);
-	/*EWMH_DLOG("window 0x%lx initialised",FW_W(fwin));*/
+	ewmh_WMIcon(fw, NULL, NULL, 0);
+	ewmh_check_wm_pid(fw);
+	/*EWMH_DLOG("window 0x%lx initialised",FW_W(fw));*/
 }
 
 /* unmap or reparent: restore state */
-void EWMH_RestoreInitialStates(FvwmWindow *fwin, int event_type)
+void EWMH_RestoreInitialStates(FvwmWindow *fw, int event_type)
 {
-	EWMH_SetWMState(fwin, True);
-	if (HAS_EWMH_INIT_WM_DESKTOP(fwin) == EWMH_STATE_HAS_HINT)
+	EWMH_SetWMState(fw, True);
+	if (HAS_EWMH_INIT_WM_DESKTOP(fw) == EWMH_STATE_HAS_HINT)
 	{
 		ewmh_ChangeProperty(
-			FW_W(fwin), "_NET_WM_DESKTOP",
+			FW_W(fw), "_NET_WM_DESKTOP",
 			EWMH_ATOM_LIST_CLIENT_WIN,
-			(unsigned char *)&(fwin->ewmh_hint_desktop), 1);
+			(unsigned char *)&(fw->ewmh_hint_desktop), 1);
 	}
 	else
 	{
 		ewmh_DeleteProperty(
-			FW_W(fwin), "_NET_WM_DESKTOP",
+			FW_W(fw), "_NET_WM_DESKTOP",
 			EWMH_ATOM_LIST_CLIENT_WIN);
 	}
-	if (HAS_EWMH_WM_ICON_HINT(fwin) == EWMH_FVWM_ICON)
-		EWMH_DeleteWmIcon(fwin, True, True);
+	if (HAS_EWMH_WM_ICON_HINT(fw) == EWMH_FVWM_ICON)
+		EWMH_DeleteWmIcon(fw, True, True);
 }
 
 /* a window are going to be destroyed (in the add_window.c destroy_window
  * sens) */
-void EWMH_DestroyWindow(FvwmWindow *fwin)
+void EWMH_DestroyWindow(FvwmWindow *fw)
 {
-	if (IS_EWMH_DESKTOP(FW_W(fwin)))
+	if (IS_EWMH_DESKTOP(FW_W(fw)))
 	{
 		Scr.EwmhDesktop = NULL;
 	}
-	if (fwin->Desk >= ewmhc.NumberOfDesktops)
+	if (fw->Desk >= ewmhc.NumberOfDesktops)
 	{
 		ewmhc.NeedsToCheckDesk = True;
 	}
@@ -1781,7 +1782,7 @@ void EWMH_DLOG(char *msg, ...)
 }
 #endif
 
-void EWMH_fullscreen(FvwmWindow *fwin)
+void EWMH_fullscreen(FvwmWindow *fw)
 {
 	fscreen_scr_arg fscr;
 	rectangle scr_g;
@@ -1792,64 +1793,64 @@ void EWMH_fullscreen(FvwmWindow *fwin)
 
 	/* maximize with ResizeMoveMaximize */
 	if (!is_function_allowed(
-		    F_MAXIMIZE, NULL, fwin, True, False) ||
+		    F_MAXIMIZE, NULL, fw, True, False) ||
 	    !is_function_allowed(
-		    F_MOVE, NULL, fwin, True, False) ||
+		    F_MOVE, NULL, fw, True, False) ||
 	    !is_function_allowed(
-		    F_RESIZE, NULL, fwin, True, True))
+		    F_RESIZE, NULL, fw, True, True))
 	{
 		return;
 	}
-	if (IS_ICONIFIED(fwin))
+	if (IS_ICONIFIED(fw))
 	{
 		execute_function_override_window(
-			NULL, NULL, "Iconify off", 0, fwin);
+			NULL, NULL, "Iconify off", 0, fw);
 	}
-	if (IS_SHADED(fwin))
+	if (IS_SHADED(fw))
 	{
-		int sas = fwin->shade_anim_steps;
+		int sas = fw->shade_anim_steps;
 
-		fwin->shade_anim_steps = 0;
+		fw->shade_anim_steps = 0;
 		execute_function_override_window(
-			NULL, NULL, "WindowShade off", 0, fwin);
-		fwin->shade_anim_steps = sas;
+			NULL, NULL, "WindowShade off", 0, fw);
+		fw->shade_anim_steps = sas;
 	}
-	SET_EWMH_FULLSCREEN(fwin,True);
-	apply_decor_change(fwin);
+	SET_EWMH_FULLSCREEN(fw,True);
+	apply_decor_change(fw);
 	fscr.xypos.x =
-		fwin->frame_g.x + fwin->frame_g.width / 2;
+		fw->frame_g.x + fw->frame_g.width / 2;
 	fscr.xypos.y =
-		fwin->frame_g.y + fwin->frame_g.height / 2;
+		fw->frame_g.y + fw->frame_g.height / 2;
 	FScreenGetScrRect(
 		&fscr, FSCREEN_XYPOS, &scr_g.x, &scr_g.y,
 		&scr_g.width, &scr_g.height);
-	get_window_borders(fwin, &b);
-	get_page_offset_check_visible(&page_x, &page_y, fwin);
+	get_window_borders(fw, &b);
+	get_page_offset_check_visible(&page_x, &page_y, fw);
 	sprintf(
 		cmd, "ResizeMoveMaximize %dp %dp +%dp +%dp",
 		scr_g.width, scr_g.height,
 		scr_g.x - b.top_left.width + page_x,
 		scr_g.y - b.top_left.height + page_y);
-	if (DO_EWMH_USE_STACKING_HINTS(fwin))
+	if (DO_EWMH_USE_STACKING_HINTS(fw))
 	{
-		int sl = fwin->ewmh_normal_layer;
+		int sl = fw->ewmh_normal_layer;
 
-		new_layer(fwin, Scr.TopLayer);
+		new_layer(fw, Scr.TopLayer);
 		if (sl == 0)
 		{
-			fwin->ewmh_normal_layer =
+			fw->ewmh_normal_layer =
 				Scr.DefaultLayer;
 		}
 		else
 		{
-			fwin->ewmh_normal_layer = sl;
+			fw->ewmh_normal_layer = sl;
 		}
 	}
 	if (cmd[0] != 0)
 	{
-		SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fwin, 1);
-		execute_function_override_window(NULL, NULL, cmd, 0, fwin);
-		SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fwin, 0);
+		SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw, 1);
+		execute_function_override_window(NULL, NULL, cmd, 0, fw);
+		SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw, 0);
 	}
 
 	return;

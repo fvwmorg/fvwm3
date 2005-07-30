@@ -1682,6 +1682,10 @@ void new_layer(FvwmWindow *fw, int layer)
 	int old_layer;
 	Bool do_lower;
 
+	if (layer < 0)
+	{
+		layer = 0;
+	}
 	fw = get_transientfor_top_fvwmwindow(fw);
 	if (layer == fw->layer)
 	{
@@ -1698,7 +1702,6 @@ void new_layer(FvwmWindow *fw, int layer)
 		/* no windows to move */
 		return;
 	}
-
 	add_after_layer = layer;
 	if (layer < fw->layer)
 	{
@@ -1848,7 +1851,6 @@ void CMD_Layer(F_CMD_ARGS)
 		layer = 0;
 	}
 	new_layer(fw, layer);
-
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
 #endif
@@ -1878,7 +1880,6 @@ void CMD_DefaultLayers(F_CMD_ARGS)
 			Scr.BottomLayer = i;
 		}
 	}
-
 	def = PeekToken(action, &action);
 	if (def)
 	{
@@ -1894,7 +1895,6 @@ void CMD_DefaultLayers(F_CMD_ARGS)
 			Scr.DefaultLayer = i;
 		}
 	}
-
 	top = PeekToken(action, &action);
 	if (top)
 	{
@@ -1910,7 +1910,6 @@ void CMD_DefaultLayers(F_CMD_ARGS)
 			Scr.TopLayer = i;
 		}
 	}
-
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
 #endif

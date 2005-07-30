@@ -2795,15 +2795,10 @@ void GetWindowSizeHints(FvwmWindow *fw)
 				"The applicaton window (window id %#lx)\n"
 				"  \"%s\" has broken aspect ratio: "
 				"%d/%d - %d/%d\n"
-				"    fvwm is ignoring this aspect ratio.  "
-				"If you are having a problem with the\n"
-				"    application, send a bug report with this "
-				"message included to the\n"
-				"    application owner.  "
-				"There is no need to notify "
-				"fvwm-workers@fvwm.org.\n",
+				"    fvwm is ignoring this aspect ratio.  ",
 				FW_W(fw), fw->name.name, minAspectX,
 				minAspectY, maxAspectX, maxAspectY);
+			fvwm_msg_report_app();
 		}
 		else
 		{
@@ -2850,11 +2845,6 @@ void GetWindowSizeHints(FvwmWindow *fw)
 			"The application window (id %#lx)\n"
 			"  \"%s\" has broken size hints (%s).\n"
 			"    fvwm is ignoring those hints.  "
-			"If you are having a problem with the\n"
-			"    application, send a bug report with this "
-			"message included to the\n"
-			"    application owner.  "
-			"There is no need to notify fvwm-workers@fvwm.org.\n"
 			"  hint override = %d, flags = %lx\n"
 			"  min_width = %d, min_height = %d, "
 			"max_width = %d, max_height = %d\n"
@@ -2872,6 +2862,7 @@ void GetWindowSizeHints(FvwmWindow *fw)
 			orig_hints.max_aspect.x, orig_hints.max_aspect.y,
 			orig_hints.base_width, orig_hints.base_height,
 			orig_hints.win_gravity);
+		fvwm_msg_report_app();
 	}
 
 	return;

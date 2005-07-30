@@ -412,6 +412,30 @@ void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 } /* fvwm_msg */
 #endif
 
+void fvwm_msg_report_app(void)
+{
+	fprintf(
+		stderr,
+		"    If you are having a problem with the application, send a"
+		" bug report\n"
+		"    with this message included to the application owner.\n"
+		"    There is no need to notify fvwm-workers@fvwm.org.\n");
+
+	return;
+}
+
+void fvwm_msg_report_app_and_workers(void)
+{
+	fprintf(
+		stderr,
+		"    If you are having a problem with the application, send"
+		" a bug report with\n"
+		"    this message included to the application owner and"
+		" notify\n"
+		"    fvwm-workers@fvwm.org.\n");
+
+	return;
+}
 
 /* Store the last item that was added with '+' */
 void set_last_added_item(last_added_item_t type, void *item)

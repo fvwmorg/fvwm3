@@ -13,7 +13,7 @@
 #include "ftime.h"
 #endif
 
-#define EWMH_CMD_ARGS FvwmWindow *fwin, XEvent *ev, window_style *style, \
+#define EWMH_CMD_ARGS FvwmWindow *fw, XEvent *ev, window_style *style, \
 	unsigned long any
 
 typedef struct ewmh_atom
@@ -103,11 +103,11 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS);
 int ewmh_HandleNormal(EWMH_CMD_ARGS);
 int ewmh_HandleToolBar(EWMH_CMD_ARGS);
 
-void ewmh_AddToKdeSysTray(FvwmWindow *fwin);
+void ewmh_AddToKdeSysTray(FvwmWindow *fw);
 void ewmh_SetWorkArea(void);
 void ewmh_ComputeAndSetWorkArea(void);
 void ewmh_HandleDynamicWorkArea(void);
-void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style);
+void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style);
 
 int ewmh_CurrentDesktop(EWMH_CMD_ARGS);
 int ewmh_DesktopGeometry(EWMH_CMD_ARGS);
@@ -148,7 +148,7 @@ Bool ewmh_AllowsResize(EWMH_CMD_ARGS);
 /* ewmh_icon */
 int ewmh_WMIcon(EWMH_CMD_ARGS);
 CARD32 *ewmh_SetWmIconFromPixmap(
-	FvwmWindow *fwin, CARD32 *orig_icon, unsigned int *orig_size,
+	FvwmWindow *fw, CARD32 *orig_icon, unsigned int *orig_size,
 	Bool is_mini_icon);
 
 /* debugging */

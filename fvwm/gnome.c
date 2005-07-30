@@ -949,7 +949,7 @@ CMD_GnomeShowDesks(F_CMD_ARGS)
 	n = GetIntegerArguments(action, NULL, (int *)val, 1);
 	if(n != 1)
 	{
-		fvwm_msg(ERR,"GnomeShowDesks","requires one argument");
+		fvwm_msg(ERR, "GnomeShowDesks", "requires one argument");
 		return;
 	}
 	gnome_max_desk = val[0];
@@ -965,12 +965,15 @@ CMD_GnomeShowDesks(F_CMD_ARGS)
 int
 GNOME_ProcessClientMessage(const exec_context_t *exc)
 {
-	int x, y;
 	Atom a;
-	FvwmWindow *fwin = exc->w.fw;
+	FvwmWindow *fw = exc->w.fw;
 	XEvent *ev = exc->x.etrigger;
+	long p0 = 0;
+	long p1 = 0;
+	const char* invalid_req = "---";
+	const char* invalid_prop = "---";
 
-	if (fwin != NULL  && DO_IGNORE_GNOME_HINTS(fwin))
+	if (fw != NULL  && DO_IGNORE_GNOME_HINTS(fw))
 	{
 		return 0;
 	}
@@ -978,33 +981,70 @@ GNOME_ProcessClientMessage(const exec_context_t *exc)
 	if (ev->xclient.message_type == a)
 	{
 		/* convert to integer grid */
-		x = ev->xclient.data.l[0] * Scr.MyDisplayWidth;
-		y = ev->xclient.data.l[1] * Scr.MyDisplayHeight;
+		p0 = ev->xclient.data.l[0] * Scr.MyDisplayWidth;
+		p1 = ev->xclient.data.l[1] * Scr.MyDisplayHeight;
+		if (p0 < 0 || p0 > 0x7fffffff || p1 < 0 || p1 > 0x7fffffff)
+		{
+			invalid_prop = "page";
+			invalid_req = "_WIN_AREA";
+			goto err_msg;
+		}
+		MoveViewport(p0, p1, 1);
 
-		MoveViewport(x, y, 1);
 		return 1;
 	}
 	a = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
 	if (ev->xclient.message_type == a)
 	{
+		p0 = ev->xclient.data.l[0];
+		if (p0 < 0 || p0 > 0x7fffffff)
+		{
+			invalid_prop = "desk";
+			invalid_req = "_WIN_WORKSPACE";
+			goto err_msg;
+		}
 		goto_desk(ev->xclient.data.l[0]);
+
 		return 1;
 	}
 	a = XInternAtom(dpy, XA_WIN_LAYER, False);
-	if (ev->xclient.message_type == a && fwin)
+	if (ev->xclient.message_type == a && fw)
 	{
-		new_layer(fwin, ev->xclient.data.l[0]);
+		p0 = ev->xclient.data.l[0];
+		if (p0 < 0 || p0 > 0x7fffffff)
+		{
+			invalid_prop = "layer";
+			invalid_req = "_WIN_LAYER";
+			goto err_msg;
+		}
+		new_layer(fw, ev->xclient.data.l[0]);
+
 		return 1;
 	}
 	a = XInternAtom(dpy, XA_WIN_STATE, False);
-	if (ev->xclient.message_type == a && fwin)
+	if (ev->xclient.message_type == a && fw)
 	{
 		GNOME_HandlePropRequest(
 			exc, ev->xclient.data.l[0], ev->xclient.data.l[1]);
+
 		return 1;
 	}
 
 	return 0;
+
+  err_msg:
+	fvwm_msg(
+		WARN, "GNOME_ProcessClientMessage",
+		"The application window (id %#lx)\n"
+		"  \"%s\" has requested an invalid %s (%ld, %ld)\n"
+		"  using a %s client message.\n"
+		"    fvwm is ignoring this request.\n",
+		fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)", invalid_prop,
+		p0, p1, invalid_req);
+	fvwm_msg_report_app_and_workers();
+
+	return 0;
+
 }
 
 void GNOME_HandlePropRequest(
