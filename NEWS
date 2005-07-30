@@ -8,6 +8,7 @@ Changes in beta release 2.5.14 (not released yet)
 * Bug Fixes:
 
    - Fixed a Solaris compiler error introduced in 2.5.13.
+   - Fixed a hang with AbiWord using an invalid layer.
 
 -------------------------------------------------------------------
 
