@@ -43,19 +43,19 @@ static int get_aspect_dimensions(
 	double ax;
 	double ay;
 
-	ax = dest_w / src_w;
-	ay = dest_h / src_h;
+	ax = (double)dest_w / (double)src_w;
+	ay = (double)dest_h / (double)src_h;
 	if (ax >= ay)
 	{
 		/* fit in x direction */
 		*ret_w = dest_w;
-		*ret_h = dest_h * dest_w / src_w;
+		*ret_h = (src_h * dest_w) / src_w;
 		return 0;
 	}
 	else
 	{
 		/* fit in y direction */
-		*ret_w = dest_w * dest_h / src_h;
+		*ret_w = (src_w * dest_h) / src_h;
 		*ret_h = dest_h;
 		return 1;
 	}
