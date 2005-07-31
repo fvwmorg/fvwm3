@@ -1,5 +1,8 @@
 2005-07-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/ewmh_events.c (ewmh_WMIconGeometry):
+	fixed bogus warning
+
 	* libs/Colorset.c (get_aspect_dimensions):
 	fixed aspectpixmap size calculations
 

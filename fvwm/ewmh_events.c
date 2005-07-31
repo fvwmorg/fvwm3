@@ -1350,7 +1350,7 @@ int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 		FW_W(fw), "_NET_WM_ICON_GEOMETRY",
 		EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
-	if (size < 4 * sizeof(CARD32))
+	if (val != NULL && size < 4 * sizeof(CARD32))
 	{
 		fvwm_msg(
 			WARN, "ewmh_WMIconGeometry",
@@ -1373,7 +1373,6 @@ int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 
 		return 0;
 	}
-
 	fw->ewmh_icon_geometry.x = val[0];
 	fw->ewmh_icon_geometry.y = val[1];
 	fw->ewmh_icon_geometry.width = val[2];
