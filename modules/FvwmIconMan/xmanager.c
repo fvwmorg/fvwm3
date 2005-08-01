@@ -863,6 +863,18 @@ void set_win_iconified(WinData *win, int iconified)
 		win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
 	}
 	win->iconified = iconified;
+	if (!iconified)
+	{
+		win->state = PLAIN_CONTEXT;
+		if (globals.select_win == win)
+		{
+			add_win_state(win, SELECT_CONTEXT);
+		}
+		if (globals.focus_win == win)
+		{
+			add_win_state(win, FOCUS_CONTEXT);
+		}
+	}
 }
 
 void set_win_state(WinData *win, int state)

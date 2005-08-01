@@ -1,3 +1,8 @@
+2005-08-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (set_win_iconified):
+	fixed select/focus button state lost when deiconifying a window
+
 2005-07-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ewmh_events.c (ewmh_WMIconGeometry):
