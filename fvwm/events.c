@@ -1322,7 +1322,7 @@ static void __check_click_to_focus_or_raise(
 	} f;
 
 	f.is_focused = !!focus_is_focused(fw);
-	f.is_client_click = (exc->w.wcontext == C_WINDOW) ? True : False;
+	f.is_client_click = (exc->w.wcontext == C_WINDOW);
 	/* check if we need to raise and/or focus the window */
 	ret_args->do_focus = focus_query_click_to_focus(fw, exc->w.wcontext);
 	if (exc->w.wcontext == C_WINDOW && !ret_args->do_focus &&
@@ -1390,7 +1390,7 @@ static void __check_click_to_focus_or_raise(
 static void __handle_focus_raise_click(
 	hfrc_ret_t *ret_args, const exec_context_t *exc)
 {
-	memset (ret_args, 0, sizeof(*ret_args));
+	memset(ret_args, 0, sizeof(*ret_args));
 	if (exc->w.fw == NULL)
 	{
 		return;

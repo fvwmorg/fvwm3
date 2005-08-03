@@ -1,3 +1,8 @@
+2005-08-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (__check_click_to_focus_or_raise):
+	small cleanup patch
+
 2005-08-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c (set_win_iconified):
@@ -3957,8 +3962,8 @@
 	(frame_has_handles_and_tiled_border):
 	(frame_create_move_resize_args):
 	(frame_free_move_resize_args):
-	Title, Border and Buttons Style Colorset Option: External drawing stuff.
-	Basically additional redrawing for RootTransparent
+	Title, Border and Buttons Style Colorset Option: External drawing
+	stuff. Basically additional redrawing for RootTransparent
 
 	* fvwm/builtins.c (update_decorface_colorset, new):
 	(update_titlebutton_colorset, new):
@@ -4731,7 +4736,8 @@
 	initialize window decorations with a "None" pixmap;
 	delay drawing window decorations initially to prevent drawing multiple
 	times;
-	=> windows grabbing the focus upon startup are drawn focused immediately
+	=> windows grabbing the focus upon startup are drawn focused
+	immediately
 
 	* fvwm/frame.c (frame_free_move_resize_args):
 	reparent the frame hide windows to NoFocusWin instead of Root to
