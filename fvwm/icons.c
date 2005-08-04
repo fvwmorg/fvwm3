@@ -2371,20 +2371,25 @@ void DeIconify(FvwmWindow *fw)
 			if (t == fw)
 			{
 				BroadcastPacket(
-					M_DEICONIFY, 11, FW_W(t), FW_W_FRAME(t),
-					(unsigned long)t, icon_rect.x,
-					icon_rect.y, icon_rect.width,
-					icon_rect.height, t->frame_g.x,
-					t->frame_g.y, t->frame_g.width,
-					t->frame_g.height);
+					M_DEICONIFY, 11, (long)FW_W(t),
+					(long)FW_W_FRAME(t), (unsigned long)t,
+					(long)icon_rect.x, (long)icon_rect.y,
+					(long)icon_rect.width,
+					(long)icon_rect.height,
+					(long)t->frame_g.x,
+					(long)t->frame_g.y,
+					(long)t->frame_g.width,
+					(long)t->frame_g.height);
 			}
 			else
 			{
 				BroadcastPacket(
-					M_DEICONIFY, 7, FW_W(t), FW_W_FRAME(t),
-					(unsigned long)t, icon_rect.x,
-					icon_rect.y, icon_rect.width,
-					icon_rect.height);
+					M_DEICONIFY, 7, (long)FW_W(t),
+					(long)FW_W_FRAME(t),
+					(unsigned long)t, (long)icon_rect.x,
+					(long)icon_rect.y,
+					(long)icon_rect.width,
+					(long)icon_rect.height);
 			}
 			XMapWindow(dpy, FW_W_PARENT(t));
 			if (t->Desk == Scr.CurrentDesk)
@@ -2521,9 +2526,11 @@ void Iconify(FvwmWindow *fw, initial_window_options_t *win_opts)
 				SET_ICONIFIED_BY_PARENT(t, 1);
 				get_icon_geometry(t, &g);
 				BroadcastPacket(
-					M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
-					(unsigned long)t, -32768, -32768,
-					g.width, g.height);
+					M_ICONIFY, 7, (long)FW_W(t),
+					(long)FW_W_FRAME(t),
+					(unsigned long)t, (long)-32768,
+					(long)-32768, (long)g.width,
+					(long)g.height);
 				BroadcastConfig(M_CONFIGURE_WINDOW,t);
 			}
 		} /* if */
@@ -2584,11 +2591,12 @@ void Iconify(FvwmWindow *fw, initial_window_options_t *win_opts)
 	/* if this fails it does not overwrite icon_rect */
 	EWMH_GetIconGeometry(fw, &icon_rect);
 	BroadcastPacket(
-		M_ICONIFY, 11, FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
-		icon_rect.x, icon_rect.y, icon_rect.width, icon_rect.height,
+		M_ICONIFY, 11, (long)FW_W(fw), (long)FW_W_FRAME(fw),
+		(unsigned long)fw, (long)icon_rect.x, (long)icon_rect.y,
+		(long)icon_rect.width, (long)icon_rect.height,
 		/* next 4 added for Animate module */
-		fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
-		fw->frame_g.height);
+		(long)fw->frame_g.x, (long)fw->frame_g.y,
+		(long)fw->frame_g.width, (long)fw->frame_g.height);
 	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 
 	if (win_opts->initial_state != IconicState ||

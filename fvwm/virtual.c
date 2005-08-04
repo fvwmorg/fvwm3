@@ -111,6 +111,7 @@ static int GetDeskNumber(char *action, int current_desk)
 {
 	int n;
 	int m;
+	int is_relative;
 	int desk;
 	int val[4];
 	int min, max;
@@ -134,11 +135,13 @@ static int GetDeskNumber(char *action, int current_desk)
 	{
 		/* absolute desk number */
 		desk = val[1];
+		is_relative = 0;
 	}
 	else
 	{
 		/* relative desk number */
 		desk += val[0];
+		is_relative = 1;
 	}
 	if (n == 3)
 	{
@@ -158,13 +161,25 @@ static int GetDeskNumber(char *action, int current_desk)
 		}
 		else
 		{
-			/*  min > max is nonsense, so swap 'em.  */
+			/* min > max is nonsense, so swap 'em. */
 			min = val[m+1];
 			max = val[m];
 		}
-		if (desk < min)
+		if (is_relative)
 		{
-			/*  Relative move outside of range, wrap around.  */
+			/* Relative moves wrap around.	*/
+			if (desk < min)
+			{
+				desk += (max - min + 1);
+			}
+			else if (desk > max)
+			{
+				desk -= (max - min + 1);
+			}
+		}
+		else if (desk < min)
+		{
+			/* Relative move outside of range, wrap around. */
 			if (val[0] < 0)
 			{
 				desk = max;
@@ -176,7 +191,7 @@ static int GetDeskNumber(char *action, int current_desk)
 		}
 		else if (desk > max)
 		{
-			/*  Relative move outside of range, wrap around.  */
+			/* Move outside of range, truncate. */
 			if (val[0] > 0)
 			{
 				desk = min;
@@ -1073,10 +1088,11 @@ void MoveViewport(int newx, int newy, Bool grab)
 	if (deltax || deltay)
 	{
 		BroadcastPacket(
-			M_NEW_PAGE, 7, Scr.Vx, Scr.Vy, Scr.CurrentDesk,
-			Scr.MyDisplayWidth, Scr.MyDisplayHeight,
-			(int)(Scr.VxMax / Scr.MyDisplayWidth) + 1,
-			(int)(Scr.VyMax / Scr.MyDisplayHeight) + 1);
+			M_NEW_PAGE, 7, (long)Scr.Vx, (long)Scr.Vy,
+			(long)Scr.CurrentDesk, (long)Scr.MyDisplayWidth,
+			(long)Scr.MyDisplayHeight,
+			(long)((Scr.VxMax / Scr.MyDisplayWidth) + 1),
+			(long)((Scr.VyMax / Scr.MyDisplayHeight) + 1));
 
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
@@ -1243,7 +1259,7 @@ void goto_desk(int desk)
 		Scr.CurrentDesk = desk;
 		MapDesk(desk, True);
 		focus_grab_buttons_all();
-		BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+		BroadcastPacket(M_NEW_DESK, 1, (long)Scr.CurrentDesk);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -1903,10 +1919,11 @@ void CMD_DesktopSize(F_CMD_ARGS)
 	Scr.VyMax = (val[1] <= 0) ?
 		0: val[1]*Scr.MyDisplayHeight-Scr.MyDisplayHeight;
 	BroadcastPacket(
-		M_NEW_PAGE, 7, Scr.Vx, Scr.Vy, Scr.CurrentDesk,
-		Scr.MyDisplayWidth, Scr.MyDisplayHeight,
-		(int)(Scr.VxMax / Scr.MyDisplayWidth) + 1,
-		(int)(Scr.VyMax / Scr.MyDisplayHeight) + 1);
+		M_NEW_PAGE, 7, (long)Scr.Vx, (long)Scr.Vy,
+		(long)Scr.CurrentDesk, (long)Scr.MyDisplayWidth,
+		(long)Scr.MyDisplayHeight,
+		(long)((Scr.VxMax / Scr.MyDisplayWidth) + 1),
+		(long)((Scr.VyMax / Scr.MyDisplayHeight) + 1));
 
 	checkPanFrames();
 	/* update GNOME pager */
@@ -1980,7 +1997,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		Scr.CurrentDesk = val[0];
 		MapDesk(val[0], True);
 		focus_grab_buttons_all();
-		BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+		BroadcastPacket(M_NEW_DESK, 1, (long)Scr.CurrentDesk);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -1994,7 +2011,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	}
 	else
 	{
-		BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+		BroadcastPacket(M_NEW_DESK, 1, (long)Scr.CurrentDesk);
 	}
 	EWMH_SetCurrentDesktop();
 	GNOME_SetCurrentDesk();

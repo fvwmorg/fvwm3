@@ -3021,8 +3021,8 @@ void destroy_window(FvwmWindow *fw)
 		}
 		adjust_fvwm_internal_windows(fw);
 		BroadcastPacket(
-			M_DESTROY_WINDOW, 3, FW_W(fw), FW_W_FRAME(fw),
-			(unsigned long)fw);
+			M_DESTROY_WINDOW, 3, (long)FW_W(fw),
+			(long)FW_W_FRAME(fw), (unsigned long)fw);
 		EWMH_DestroyWindow(fw);
 		focus_grab_buttons_on_layer(fw->layer);
 		Scr.FWScheduledForDestroy = flist_append_obj(
@@ -3039,8 +3039,9 @@ void destroy_window(FvwmWindow *fw)
 	{
 		SET_SCHEDULED_FOR_DESTROY(fw, 1);
 		adjust_fvwm_internal_windows(fw);
-		BroadcastPacket(M_DESTROY_WINDOW, 3,
-				FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw);
+		BroadcastPacket(
+			M_DESTROY_WINDOW, 3, (long)FW_W(fw),
+			(long)FW_W_FRAME(fw), (unsigned long)fw);
 		EWMH_DestroyWindow(fw);
 	}
 	focus_grab_buttons_on_layer(fw->layer);

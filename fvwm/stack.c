@@ -1039,8 +1039,8 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 		}
 		/* s1 has been moved to the top of stack */
 		BroadcastPacket(
-			M_RAISE_WINDOW, 3, FW_W(s1), FW_W_FRAME(s1),
-			(unsigned long)s1);
+			M_RAISE_WINDOW, 3, (long)FW_W(s1),
+			(long)FW_W_FRAME(s1), (unsigned long)s1);
 		if (s1->stack_next == s2)
 		{
 			/* avoid sending empty RESTACK packet */
@@ -1431,7 +1431,8 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
 void RaiseWindow(FvwmWindow *t)
 {
 	BroadcastPacket(
-		M_RAISE_WINDOW, 3, FW_W(t), FW_W_FRAME(t), (unsigned long)t);
+		M_RAISE_WINDOW, 3, (long)FW_W(t), (long)FW_W_FRAME(t),
+		(unsigned long)t);
 	raise_or_lower_window(t, SM_RAISE, True, False);
 	focus_grab_buttons_on_layer(t->layer);
 #ifdef DEBUG_STACK_RING
@@ -1443,7 +1444,8 @@ void RaiseWindow(FvwmWindow *t)
 void LowerWindow(FvwmWindow *t)
 {
 	BroadcastPacket(
-		M_LOWER_WINDOW, 3, FW_W(t), FW_W_FRAME(t), (unsigned long)t);
+		M_LOWER_WINDOW, 3, (long)FW_W(t), (long)FW_W_FRAME(t),
+		(unsigned long)t);
 	raise_or_lower_window(t, SM_LOWER, True, False);
 	focus_grab_buttons_on_layer(t->layer);
 #ifdef DEBUG_STACK_RING

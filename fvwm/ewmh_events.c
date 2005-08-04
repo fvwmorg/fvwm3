@@ -1359,7 +1359,7 @@ int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 			"  but provided only %d of the 4 values required.\n"
 			"    fvwm is ignoring this request.\n",
 			fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			size / sizeof(CARD32));
+			(int)(size / sizeof(CARD32)));
 		fvwm_msg_report_app_and_workers();
 		free(val);
 		val = NULL;

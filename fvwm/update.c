@@ -555,10 +555,10 @@ static void apply_window_updates(
 		if (Scr.Hilite != NULL && t == Scr.Hilite)
 		{
 			BroadcastPacket(
-				M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite),
-				FW_W_FRAME(Scr.Hilite), 0,
-				Scr.Hilite->hicolors.fore,
-				Scr.Hilite->hicolors.back);
+				M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
+				(long)FW_W_FRAME(Scr.Hilite), (long)0,
+				(long)Scr.Hilite->hicolors.fore,
+				(long)Scr.Hilite->hicolors.back);
 		}
 	}
 	if (flags->do_refresh)

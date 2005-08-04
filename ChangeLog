@@ -1,5 +1,35 @@
 2005-08-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/vpacket.h (ConfigWinPacket):
+	* fvwm/windowshade.c (CMD_WindowShade):
+	* fvwm/virtual.c (MoveViewport):
+	(goto_desk):
+	(CMD_DesktopSize):
+	(CMD_GotoDeskAndPage):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/stack.c (BroadcastRestack):
+	(RaiseWindow):
+	(LowerWindow):
+	* fvwm/icons.c (DeIconify):
+	(Iconify):
+	* fvwm/geometry.c (broadcast_icon_geometry):
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleFocusIn):
+	(HandleLeaveNotify):
+	(HandleMapNotify):
+	(HandleMapRequestKeepRaised):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/module_interface.c (SendFvwmPicture)
+	(BroadcastFvwmPicture):
+	(CMD_Send_WindowList):
+	* fvwm/modconf.c (CMD_Send_ConfigInfo):
+	* fvwm/ewmh_events.c (ewmh_WMIconGeometry):
+	64-bit fixes
+
+	* fvwm/virtual.c (GetDeskNumber):
+	fixed bug #1396: applied patch by srivasta@debian.org to fix wrapping
+	around the given desk range with a relative desk
+
 	* fvwm/focus.c (focus_grab_buttons_on_layer):
 	fixed a hang
 

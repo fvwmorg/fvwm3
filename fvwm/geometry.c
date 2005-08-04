@@ -1223,9 +1223,9 @@ void broadcast_icon_geometry(
 	if (rc == True && (!IS_ICON_UNMAPPED(fw) || do_force == True))
 	{
 		BroadcastPacket(
-			M_ICON_LOCATION, 7, FW_W(fw), FW_W_FRAME(fw),
-			(unsigned long)fw,
-			g.x, g.y, g.width, g.height);
+			M_ICON_LOCATION, 7, (long)FW_W(fw),
+			(long)FW_W_FRAME(fw), (unsigned long)fw,
+			(long)g.x, (long)g.y, (long)g.width, (long)g.height);
 	}
 
 	return;

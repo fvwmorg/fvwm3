@@ -1882,7 +1882,9 @@ ENTER_DBG((stderr, "++++++++ en (%d): fw 0x%08x w 0x%08x sw 0x%08xmode 0x%x deta
 	if (ewp->window == Scr.Root && ewp->subwindow == None &&
 	    ewp->detail == NotifyInferior && ewp->mode == NotifyNormal)
 	{
-		BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
+		BroadcastPacket(
+			MX_ENTER_WINDOW, 3, (long)Scr.Root, (long)NULL,
+			(long)NULL);
 	}
 	if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
 	{
@@ -2124,7 +2126,9 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	}
 	if (IS_EWMH_DESKTOP(FW_W(fw)))
 	{
-		BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
+		BroadcastPacket(
+			MX_ENTER_WINDOW, 3, (long)Scr.Root, (long)NULL,
+			(long)NULL);
 		return;
 	}
 	if (ewp->window == FW_W_FRAME(fw) ||
@@ -2132,8 +2136,8 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	    ewp->window == FW_W_ICON_PIXMAP(fw))
 	{
 		BroadcastPacket(
-			MX_ENTER_WINDOW, 3, FW_W(fw), FW_W_FRAME(fw),
-			(unsigned long)fw);
+			MX_ENTER_WINDOW, 3, (long)FW_W(fw),
+			(long)FW_W_FRAME(fw), (unsigned long)fw);
 	}
 	sf = get_focus_window();
 	if (sf && fw != sf && FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
@@ -2357,8 +2361,10 @@ void HandleFocusIn(const evh_args_t *ea)
 		    !is_unmanaged_focused)
 		{
 			BroadcastPacket(
-				M_FOCUS_CHANGE, 5, focus_w, focus_fw,
-				(unsigned long)IsLastFocusSetByMouse(), fc, bc);
+				M_FOCUS_CHANGE, 5, (long)focus_w,
+				(long)focus_fw,
+				(unsigned long)IsLastFocusSetByMouse(),
+				(long)fc, (long)bc);
 			EWMH_SetActiveWindow(focus_w);
 		}
 		last_focus_w = focus_w;
@@ -2632,9 +2638,9 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
 	     te->xcrossing.window == FW_W_ICON_PIXMAP(fw)))
 	{
 		BroadcastPacket(
-			MX_LEAVE_WINDOW, 3, FW_W(fw), FW_W_FRAME(fw),
-			(unsigned long)fw);
-}
+			MX_LEAVE_WINDOW, 3, (long)FW_W(fw),
+			(long)FW_W_FRAME(fw), (unsigned long)fw);
+	}
 
 	return;
 }
@@ -2704,13 +2710,14 @@ void HandleMapNotify(const evh_args_t *ea)
 	if (IS_ICONIFIED(fw))
 	{
 		BroadcastPacket(
-			M_DEICONIFY, 3, FW_W(fw), FW_W_FRAME(fw),
+			M_DEICONIFY, 3, (long)FW_W(fw), (long)FW_W_FRAME(fw),
 			(unsigned long)fw);
 	}
 	else
 	{
 		BroadcastPacket(
-			M_MAP, 3, FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw);
+			M_MAP, 3, (long)FW_W(fw), (long)FW_W_FRAME(fw),
+			(unsigned long)fw);
 	}
 
 	if (is_on_this_page &&
@@ -2928,7 +2935,8 @@ void HandleMapRequestKeepRaised(
 				/* fake that the window was mapped to allow
 				 * modules to swallow it */
 				BroadcastPacket(
-					M_MAP, 3, FW_W(fw),FW_W_FRAME(fw),
+					M_MAP, 3, (long)FW_W(fw),
+					(long)FW_W_FRAME(fw),
 					(unsigned long)fw);
 #endif
 			}
@@ -2965,8 +2973,9 @@ void HandleMapRequestKeepRaised(
 	}
 	if (IS_SHADED(fw))
 	{
-		BroadcastPacket(M_WINDOWSHADE, 3, FW_W(fw), FW_W_FRAME(fw),
-				(unsigned long)fw);
+		BroadcastPacket(
+			M_WINDOWSHADE, 3, (long)FW_W(fw), (long)FW_W_FRAME(fw),
+			(unsigned long)fw);
 	}
 	/* If the newly mapped window overlaps the focused window, make sure
 	 * ClickToFocusRaises and MouseFocusClickRaises work again. */

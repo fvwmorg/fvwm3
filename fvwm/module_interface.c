@@ -918,13 +918,12 @@ static unsigned long
 make_new_vpacket(unsigned char *body, unsigned long event_type,
 		 unsigned long num, va_list ap)
 {
-	unsigned long arglen;
+	long arglen;
+	unsigned long addlen;
 	unsigned long bodylen = 0;
 	unsigned long *bp = (unsigned long *)body;
 	unsigned long *bp1 = bp;
 	unsigned long plen = 0;
-	int *tmpint;
-	Bool expandint;
 
 	*(bp++) = START_FLAG;
 	*(bp++) = event_type;
@@ -934,32 +933,66 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 
 	for (; num > 0; --num)
 	{
-		arglen = va_arg(ap, unsigned long);
-		if (arglen == 0)
+		arglen = va_arg(ap, long);
+		if (arglen <= 0)
 		{
-			expandint = True;
-			arglen = sizeof(unsigned long);
+			if (arglen == 0)
+			{
+				arglen = -sizeof(int);
+			}
+			addlen = sizeof(unsigned long);
 		}
 		else
 		{
-			expandint = False;
+			addlen = arglen;
 		}
-		bodylen += arglen;
-		if (bodylen < FvwmPacketMaxSize_byte)
+		bodylen += addlen;
+		if (bodylen >= FvwmPacketMaxSize_byte)
 		{
-			if (!expandint)
-			{
-				register char *tmp = (char *)bp;
-				memcpy(tmp, va_arg(ap, char *), arglen);
-				tmp += arglen;
-				bp = (unsigned long *)tmp;
-			}
-			else
-			{
-				tmpint = va_arg(ap, int *);
-				*bp = (unsigned long) *tmpint;
-				bp++;
-			}
+			fvwm_msg(
+				ERR, "make_new_vpacket",
+				"packet too long %ld %ld", (long)bodylen,
+				(long)FvwmPacketMaxSize_byte);
+			break;
+		}
+		if (arglen > 0)
+		{
+			register char *tmp = (char *)bp;
+			memcpy(tmp, va_arg(ap, char *), arglen);
+			tmp += arglen;
+			bp = (unsigned long *)tmp;
+		}
+		else if (arglen == 0 || arglen == -sizeof(int))
+		{
+			int *tmp;
+
+			tmp = va_arg(ap, int *);
+			*bp = (unsigned long) *tmp;
+			bp++;
+		}
+		else if (arglen == -sizeof(long))
+		{
+			unsigned long *tmp;
+
+			tmp = va_arg(ap, unsigned long *);
+			*bp = (unsigned long) *tmp;
+			bp++;
+		}
+		else if (arglen == -sizeof(short))
+		{
+			short *tmp;
+
+			tmp = va_arg(ap, short *);
+			*bp = (unsigned long) *tmp;
+			bp++;
+		}
+		else
+		{
+			fvwm_msg(
+				ERR, "make_new_vpacket",
+				"can not handle arglen %ld, please contact"
+				" fvwm-workers@fvwm.org. aborting...", arglen);
+			abort();
 		}
 	}
 
@@ -1063,67 +1096,67 @@ static void BroadcastNewPacket(unsigned long event_type,
 	as a dummy to preserve alignment of the other fields in the
 	old packet: we should drop this before the next release.
 */
-#define CONFIGARGS(_t) 30,\
-	    (unsigned long)(sizeof(unsigned long)),\
-	    &FW_W(*(_t)),\
-	    (unsigned long)(sizeof(unsigned long)),\
-	    &FW_W_FRAME(*(_t)),\
-	    (unsigned long)(sizeof(unsigned long)),\
-	    &(_t),\
-	    (unsigned long)(0),\
-	    &(*(_t))->frame_g.x,\
-	    (unsigned long)(0),\
-	    &(*(_t))->frame_g.y,\
-	    (unsigned long)(0),\
-	    &(*(_t))->frame_g.width,\
-	    (unsigned long)(0),\
-	    &(*(_t))->frame_g.height,\
-	    (unsigned long)(0),\
-	    &(*(_t))->Desk,\
-	    (unsigned long)(0),\
-	    &(*(_t))->layer,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.base_width,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.base_height,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.width_inc,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.height_inc,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.min_width,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.min_height,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.max_width,\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.max_height,\
-	    (unsigned long)(0),\
-	    &FW_W_ICON_TITLE(*(_t)),\
-	    (unsigned long)(sizeof(unsigned long)),\
-	    &FW_W_ICON_PIXMAP(*(_t)),\
-	    (unsigned long)(0),\
-	    &(*(_t))->hints.win_gravity,\
-	    (unsigned long)(sizeof(unsigned long)),\
-	    &(*(_t))->colors.fore,\
-	    (unsigned long)(sizeof(unsigned long)),\
-	    &(*(_t))->colors.back,\
-	    (unsigned long)(0),\
-	    &(*(_t))->ewmh_hint_layer,\
-	    (unsigned long)(sizeof(unsigned long)),\
-	    &(*(_t))->ewmh_hint_desktop,\
-	    (unsigned long)(0),\
-	    &(*(_t))->ewmh_window_type,\
-	    (unsigned long)(sizeof(short)),\
-	    &(*(_t))->title_thickness,\
-	    (unsigned long)(sizeof(short)),\
-	    &(*(_t))->boundary_width,\
-	    (unsigned long)(sizeof(short)),\
-	    &dummy,\
-	    (unsigned long)(sizeof(short)),\
-	    &dummy,\
-	    (unsigned long)(sizeof((*(_t))->flags)),\
-	    &(*(_t))->flags
+#define CONFIGARGS(_fw) 30,\
+		(unsigned long)(-sizeof(Window)),	\
+		&FW_W(*(_fw)),				\
+		(unsigned long)(-sizeof(Window)),	\
+		&FW_W_FRAME(*(_fw)),			\
+		(unsigned long)(-sizeof(void *)),	\
+		&(_fw),					\
+		(unsigned long)(0),			\
+		&(*(_fw))->frame_g.x,			\
+		(unsigned long)(0),			\
+		&(*(_fw))->frame_g.y,			\
+		(unsigned long)(0),			\
+		&(*(_fw))->frame_g.width,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->frame_g.height,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->Desk,			\
+		(unsigned long)(0),			\
+		&(*(_fw))->layer,			\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.base_width,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.base_height,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.width_inc,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.height_inc,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.min_width,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.min_height,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.max_width,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.max_height,		\
+		(unsigned long)(-sizeof(Window)),	\
+		&FW_W_ICON_TITLE(*(_fw)),		\
+		(unsigned long)(-sizeof(Window)),	\
+		&FW_W_ICON_PIXMAP(*(_fw)),		\
+		(unsigned long)(0),			\
+		&(*(_fw))->hints.win_gravity,		\
+		(unsigned long)(-sizeof(Pixel)),	\
+		&(*(_fw))->colors.fore,			\
+		(unsigned long)(-sizeof(Pixel)),	\
+		&(*(_fw))->colors.back,			\
+		(unsigned long)(0),			\
+		&(*(_fw))->ewmh_hint_layer,		\
+		(unsigned long)(sizeof(unsigned long)),	\
+		&(*(_fw))->ewmh_hint_desktop,		\
+		(unsigned long)(0),			\
+		&(*(_fw))->ewmh_window_type,		\
+		(unsigned long)(sizeof(short)),		\
+		&(*(_fw))->title_thickness,		\
+		(unsigned long)(sizeof(short)),		\
+		&(*(_fw))->boundary_width,		\
+		(unsigned long)(sizeof(short)),		\
+		&dummy,					\
+		(unsigned long)(sizeof(short)),		\
+		&dummy,					\
+		(unsigned long)(sizeof((*(_fw))->flags)),	\
+		&(*(_fw))->flags
 
 void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {
@@ -1258,7 +1291,7 @@ SendFvwmPicture(
 	char *name)
 {
 	unsigned long *body;
-	unsigned int
+	unsigned long
 		data4 = 0, data5 = 0, data6 = 0,
 		data7 = 0, data8 = 0, data9 = 0;
 	int l;
@@ -1297,7 +1330,7 @@ BroadcastFvwmPicture(
 	unsigned long data3, FvwmPicture *picture, char *name)
 {
 	unsigned long *body;
-	unsigned int data4, data5, data6, data7, data8, data9;
+	unsigned long data4, data5, data6, data7, data8, data9;
 	int i, l;
 
 	if (!FMiniIconsSupported)
@@ -1592,7 +1625,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 
 				name = get_pipe_name(module);
 				/* Doh! Something has gone wrong - get rid of
-				 * the offender!! */
+				 * the offender! */
 				fvwm_msg(ERR, "PositiveWrite",
 					 "Failed to read descriptor from"
 					 " '%s':\n"
@@ -1830,26 +1863,28 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	{
 		return;
 	}
-	SendPacket(mod, M_NEW_DESK, 1, Scr.CurrentDesk);
+	SendPacket(mod, M_NEW_DESK, 1, (long)Scr.CurrentDesk);
 	SendPacket(
-		mod, M_NEW_PAGE, 7, Scr.Vx, Scr.Vy, Scr.CurrentDesk,
-		Scr.MyDisplayWidth, Scr.MyDisplayHeight,
-		(int)(Scr.VxMax / Scr.MyDisplayWidth) + 1,
-		(int)(Scr.VyMax / Scr.MyDisplayHeight) + 1);
+		mod, M_NEW_PAGE, 7, (long)Scr.Vx, (long)Scr.Vy,
+		(long)Scr.CurrentDesk, (long)Scr.MyDisplayWidth,
+		(long)Scr.MyDisplayHeight,
+		(long)((Scr.VxMax / Scr.MyDisplayWidth) + 1),
+		(long)((Scr.VyMax / Scr.MyDisplayHeight) + 1));
 
 	if (Scr.Hilite != NULL)
 	{
 		SendPacket(
-			mod, M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite),
-			FW_W_FRAME(Scr.Hilite), (unsigned long)True,
-			Scr.Hilite->hicolors.fore, Scr.Hilite->hicolors.back);
+			mod, M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
+			(long)FW_W_FRAME(Scr.Hilite), (unsigned long)True,
+			(long)Scr.Hilite->hicolors.fore,
+			(long)Scr.Hilite->hicolors.back);
 	}
 	else
 	{
 		SendPacket(
 			mod, M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
-			GetColor(DEFAULT_FORE_COLOR),
-			GetColor(DEFAULT_BACK_COLOR));
+			(long)GetColor(DEFAULT_FORE_COLOR),
+			(long)GetColor(DEFAULT_BACK_COLOR));
 	}
 	if (Scr.DefaultIcon != NULL)
 	{
@@ -1895,16 +1930,18 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 			if (rc == True)
 			{
 				SendPacket(
-					mod, M_ICONIFY, 7, FW_W(t),
-					FW_W_FRAME(t), (unsigned long)t, r.x,
-					r.y, r.width, r.height);
+					mod, M_ICONIFY, 7, (long)FW_W(t),
+					(long)FW_W_FRAME(t), (unsigned long)t,
+					(long)r.x, (long)r.y,
+					(long)r.width, (long)r.height);
 			}
 		}
 		if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 		{
 			SendPacket(
-				mod, M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, 0, 0, 0, 0);
+				mod, M_ICONIFY, 7, (long)FW_W(t),
+				(long)FW_W_FRAME(t), (unsigned long)t,
+				(long)0, (long)0, (long)0, (long)0);
 		}
 		if (FMiniIconsSupported && t->mini_icon != NULL)
 		{
@@ -1918,16 +1955,18 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	if (Scr.Hilite == NULL)
 	{
 		BroadcastPacket(
-			M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
-			GetColor(DEFAULT_FORE_COLOR),
-			GetColor(DEFAULT_BACK_COLOR));
+			M_FOCUS_CHANGE, 5, (long)0, (long)0,
+			(unsigned long)True,
+			(long)GetColor(DEFAULT_FORE_COLOR),
+			(long)GetColor(DEFAULT_BACK_COLOR));
 	}
 	else
 	{
 		BroadcastPacket(
-			M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite), FW_W(Scr.Hilite),
-			(unsigned long)True, Scr.Hilite->hicolors.fore,
-			Scr.Hilite->hicolors.back);
+			M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
+			(long)FW_W(Scr.Hilite), (unsigned long)True,
+			(long)Scr.Hilite->hicolors.fore,
+			(long)Scr.Hilite->hicolors.back);
 	}
 
 	SendPacket(mod, M_END_WINDOWLIST, 0);

@@ -385,7 +385,9 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 	}
 	send_desktop_names(mod);
 	send_ignore_modifiers(mod);
-	SendPacket(mod, M_END_CONFIG_INFO, 0, 0, 0, 0, 0, 0, 0, 0);
+	SendPacket(
+		mod, M_END_CONFIG_INFO, (long)0, (long)0, (long)0, (long)0,
+		(long)0, (long)0, (long)0, (long)0);
 
 	return;
 }

@@ -189,8 +189,8 @@ void CMD_WindowShade(F_CMD_ARGS)
 	/* update hints and inform modules */
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 	BroadcastPacket(
-		(toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3, FW_W(fw),
-		FW_W_FRAME(fw), (unsigned long)fw);
+		(toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3,
+		(long)FW_W(fw), (long)FW_W_FRAME(fw), (unsigned long)fw);
 	FlushAllMessageQueues();
 	XFlush(dpy);
 	EWMH_SetWMState(fw, False);

@@ -22,11 +22,11 @@ typedef struct ConfigWinPacket
 	/*** Note that this packet format will break on future 128 bit
 	 *** platforms. ***/
 	/*** Put long int, Window, and pointers  here ***/
-	Window             w;
-	Window             frame;
-	FvwmWindow         *fvwmwin;
-	signed long int  frame_x;
-	signed long int  frame_y;
+	unsigned long int         w;      /* Window */
+	unsigned long int         frame; /* Window */
+	unsigned long int         *fvwmwin;
+	signed long int    frame_x;
+	signed long int    frame_y;
 	unsigned long int  frame_width;
 	unsigned long int  frame_height;
 	unsigned long int  desk;
@@ -46,8 +46,8 @@ typedef struct ConfigWinPacket
 	unsigned long int  hints_min_height;
 	unsigned long int  hints_max_width;
 	unsigned long int  hints_max_height;
-	Window             icon_w;
-	Window             icon_pixmap_w;
+	unsigned long int  icon_w;        /* Window */
+	unsigned long int  icon_pixmap_w; /* Window */
 	unsigned long int  hints_win_gravity;
 	unsigned long int  TextPixel;
 	unsigned long int  BackPixel;
