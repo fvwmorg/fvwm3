@@ -55,7 +55,7 @@ fvwm's initialization, or can be bound to a menu or mouse
 button or keystroke to invoke it later.
 
 .SH CONFIGURATION OPTIONS
-The following commands can be used in the config file (see 
+The following commands can be used in the config file (see
 .IR fvwm (1),
 section
 .B "MODULE COMMANDS"
@@ -233,7 +233,7 @@ specifies if strings are drawn with relief or not.
 .I NoFocus
 specifies if the widget can get the keyboard focus or not.
 By default all widgets take focus, except Rectangle, HDipstick and VDipstick
-which cannot. Moreover, the NoFocus widgets are skipped when you 
+which cannot. Moreover, the NoFocus widgets are skipped when you
 circulate around the widgets with the (Shift-)Tab short cut.
 .IR Left " / " Center " / " Right
 specifies the text position. These apply only to ItemDraw, List, Menu,
@@ -251,7 +251,7 @@ The position of every widget must be specified.
 The syntax for the second part is:
 .EX
 Main
- Case Message of
+ Case message of
   SingleClic:
   Begin
    # list of instructions which will be
@@ -636,7 +636,7 @@ If
 is 1, then FvwmScript waits for an answer from the external program
 and the return value is this answer (a line of no more
 than 32000 characters). If the communication fails, the returned value is 0.
-See the section 
+See the section
 .B A COMMUNICATION PROTOCOL
 for a description of the communication protocol used.
 
@@ -727,7 +727,7 @@ Property
  Title {Quit}
  ...
 Main
-Case Message of
+Case message of
 
   SingleClic:
   Begin
@@ -819,7 +819,7 @@ pass the
 via an option to the program). The protocol uses two fifos, in the FVWM user
 directory, named:
 .RI ".tmp-com-in-" comId " and .tmp-com-out-" comId "."
-The program should create and listen on the 
+The program should create and listen on the
 .RI ".tmp-com-in-" comId
 fifo. Then, when FvwmScript executes a function of the form:
 
@@ -835,7 +835,7 @@ to support multi-communications). If
 .I bool
 is 0, FvwmScript does not wait for an answer from the program and
 return 1 if the previous actions succeed and 0 if they failed
-(then the program should "go back" to the in fifo). 
+(then the program should "go back" to the in fifo).
 If
 .I bool
 is 1, then FvwmScript waits (20 sec) for an answer from the program and

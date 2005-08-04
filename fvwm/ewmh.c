@@ -330,6 +330,7 @@ ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name)
 		}
 		i++;
 	}
+
 	return NULL;
 }
 
@@ -350,6 +351,8 @@ void ewmh_ChangeProperty(
 			dpy, w, a->atom, a->atom_type , format,
 			PropModeReplace, data, length);
 	}
+
+	return;
 }
 
 void ewmh_DeleteProperty(
@@ -361,6 +364,8 @@ void ewmh_DeleteProperty(
 	{
 		XDeleteProperty(dpy, w, a->atom);
 	}
+
+	return;
 }
 
 static int atom_size(int format)
@@ -449,15 +454,16 @@ static
 int check_desk(void)
 {
 	int d = -1;
-	FvwmWindow *t;
+	FvwmWindow *fw;
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		if (!IS_STICKY_ACROSS_DESKS(t))
+		if (!IS_STICKY_ACROSS_DESKS(fw))
 		{
-			d = max(d,t->Desk);
+			d = max(d, fw->Desk);
 		}
 	}
+
 	return d;
 }
 
@@ -482,6 +488,8 @@ void EWMH_SetCurrentDesktop(void)
 	ewmh_ChangeProperty(Scr.Root,"_NET_CURRENT_DESKTOP",
 			    EWMH_ATOM_LIST_CLIENT_ROOT,
 			    (unsigned char *)&val, 1);
+
+	return;
 }
 
 void EWMH_SetNumberOfDesktops(void)
@@ -516,6 +524,8 @@ void EWMH_SetNumberOfDesktops(void)
 			    EWMH_ATOM_LIST_CLIENT_ROOT,
 			    (unsigned char *)&val, 1);
 	ewmh_SetWorkArea();
+
+	return;
 }
 
 void EWMH_SetDesktopViewPort(void)
@@ -532,6 +542,8 @@ void EWMH_SetDesktopViewPort(void)
 	ewmh_ChangeProperty(
 		Scr.Root, "_NET_DESKTOP_VIEWPORT", EWMH_ATOM_LIST_CLIENT_ROOT,
 		(unsigned char *)&val, i*2);
+
+	return;
 }
 
 void EWMH_SetDesktopGeometry(void)
@@ -543,6 +555,8 @@ void EWMH_SetDesktopGeometry(void)
 	ewmh_ChangeProperty(
 		Scr.Root,"_NET_DESKTOP_GEOMETRY", EWMH_ATOM_LIST_CLIENT_ROOT,
 		(unsigned char *)&val, 2);
+
+	return;
 }
 
 /*
@@ -553,6 +567,8 @@ void EWMH_SetActiveWindow(Window w)
 	ewmh_ChangeProperty(
 		Scr.Root, "_NET_ACTIVE_WINDOW", EWMH_ATOM_LIST_CLIENT_WIN,
 		(unsigned char *)&w, 1);
+
+	return;
 }
 
 void EWMH_SetWMDesktop(FvwmWindow *fw)
@@ -571,6 +587,8 @@ void EWMH_SetWMDesktop(FvwmWindow *fw)
 	ewmh_ChangeProperty(
 		FW_W(fw), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
 		(unsigned char *)&desk, 1);
+
+	return;
 }
 
 /*
@@ -604,6 +622,8 @@ void EWMH_SetWMState(FvwmWindow *fw, Bool do_restore)
 			FW_W(fw), "_NET_WM_STATE",
 			EWMH_ATOM_LIST_CLIENT_WIN);
 	}
+
+	return;
 }
 
 /*
@@ -625,10 +645,11 @@ void add_kst_item(Window w)
 		prev = &(t->next);
 		t = t->next;
 	}
-
 	*prev = (KstItem *)safemalloc(sizeof(KstItem));
 	(*prev)->w = w;
 	(*prev)->next = NULL;
+
+	return;
 }
 
 static
@@ -652,6 +673,8 @@ void delete_kst_item(Window w)
 		*prev = t->next;
 	}
 	free(t);
+
+	return;
 }
 
 static
@@ -696,6 +719,8 @@ void set_kde_sys_tray(void)
 	{
 		free(wins);
 	}
+
+	return;
 }
 
 void ewmh_AddToKdeSysTray(FvwmWindow *fw)
@@ -725,6 +750,8 @@ void ewmh_AddToKdeSysTray(FvwmWindow *fw)
 
 	add_kst_item(FW_W(fw));
 	set_kde_sys_tray();
+
+	return;
 }
 
 #if 0
@@ -741,6 +768,8 @@ void ewmh_FreeKdeSysTray(void)
 		t = ewmh_KstWinList;
 	}
 	set_kde_sys_tray();
+
+	return;
 }
 #endif
 
@@ -750,8 +779,9 @@ int EWMH_IsKdeSysTrayWindow(Window w)
 
 	t = ewmh_KstWinList;
 	while(t != NULL && t->w != w)
+	{
 		t = t->next;
-
+	}
 	if (t == NULL)
 	{
 		return 0;
@@ -759,6 +789,7 @@ int EWMH_IsKdeSysTrayWindow(Window w)
 #ifdef DEBUG_KST
 	fprintf(stderr,"IsKdeSysTrayWindow: 0x%lx\n", w);
 #endif
+
 	return 1;
 }
 
@@ -806,6 +837,8 @@ void EWMH_ManageKdeSysTray(Window w, int type)
 #endif
 		break;
 	}
+
+	return;
 }
 
 /**** Client lists ****/
@@ -813,20 +846,20 @@ void EWMH_ManageKdeSysTray(Window w, int type)
 void EWMH_SetClientList()
 {
 	Window *wl = NULL;
-	FvwmWindow *t;
+	FvwmWindow *fw;
 	int nbr = 0;
 	int i = 0;
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
 		nbr++;
 	}
 	if (nbr != 0)
 	{
-		wl = (Window *)safemalloc(sizeof (Window) * nbr);
-		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+		wl = (Window *)safemalloc(sizeof(Window) * nbr);
+		for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 		{
-			wl[i++] = FW_W(t);
+			wl[i++] = FW_W(fw);
 		}
 	}
 	ewmh_ChangeProperty(
@@ -836,28 +869,32 @@ void EWMH_SetClientList()
 	{
 		free (wl);
 	}
+
+	return;
 }
 
 void EWMH_SetClientListStacking()
 {
 	Window *wl = NULL;
-	FvwmWindow *t;
+	FvwmWindow *fw;
 	int nbr = 0;
 	int i = 0;
 
-	for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot;
-	     t = t->stack_next)
+	for (
+		fw = Scr.FvwmRoot.stack_next; fw != &Scr.FvwmRoot;
+		fw = fw->stack_next)
 	{
 		nbr++;
 	}
 	i = nbr-1;
 	if (nbr != 0)
 	{
-		wl = (Window *)safemalloc(sizeof (Window) * nbr);
-		for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot;
-		     t = t->stack_next)
+		wl = (Window *)safemalloc(sizeof(Window) * nbr);
+		for (
+			fw = Scr.FvwmRoot.stack_next; fw != &Scr.FvwmRoot;
+			fw = fw->stack_next)
 		{
-			wl[i--] = FW_W(t);
+			wl[i--] = FW_W(fw);
 		}
 	}
 	ewmh_ChangeProperty(
@@ -867,6 +904,8 @@ void EWMH_SetClientListStacking()
 	{
 		free (wl);
 	}
+
+	return;
 }
 
 /**** Working Area stuff ****/
@@ -888,6 +927,8 @@ void ewmh_SetWorkArea(void)
 	ewmh_ChangeProperty(
 		Scr.Root, "_NET_WORKAREA", EWMH_ATOM_LIST_FVWM_ROOT,
 		(unsigned char *)&val, i*4);
+
+	return;
 }
 
 void ewmh_ComputeAndSetWorkArea(void)
@@ -897,19 +938,20 @@ void ewmh_ComputeAndSetWorkArea(void)
 	int top = ewmhc.BaseStrut.top;
 	int bottom = ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
-	FvwmWindow *t;
+	FvwmWindow *fw;
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		if (DO_EWMH_IGNORE_STRUT_HINTS(t) ||
-		    !IS_STICKY_ACROSS_PAGES(t))
+		if (
+			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
+			!IS_STICKY_ACROSS_PAGES(fw))
 		{
 			continue;
 		}
-		left = max(left, t->strut.left);
-		right = max(right, t->strut.right);
-		top = max(top, t->strut.top);
-		bottom = max(bottom, t->strut.bottom);
+		left = max(left, fw->strut.left);
+		right = max(right, fw->strut.right);
+		top = max(top, fw->strut.top);
+		bottom = max(bottom, fw->strut.bottom);
 	}
 
 	x = left;
@@ -917,10 +959,11 @@ void ewmh_ComputeAndSetWorkArea(void)
 	width = Scr.MyDisplayWidth - (left + right);
 	height = Scr.MyDisplayHeight - (top + bottom);
 
-	if (Scr.Desktops->ewmh_working_area.x != x ||
-	    Scr.Desktops->ewmh_working_area.y != y ||
-	    Scr.Desktops->ewmh_working_area.width != width ||
-	    Scr.Desktops->ewmh_working_area.height != height)
+	if (
+		Scr.Desktops->ewmh_working_area.x != x ||
+		Scr.Desktops->ewmh_working_area.y != y ||
+		Scr.Desktops->ewmh_working_area.width != width ||
+		Scr.Desktops->ewmh_working_area.height != height)
 	{
 		Scr.Desktops->ewmh_working_area.x = x;
 		Scr.Desktops->ewmh_working_area.y = y;
@@ -929,6 +972,7 @@ void ewmh_ComputeAndSetWorkArea(void)
 		ewmh_SetWorkArea();
 	}
 
+	return;
 }
 
 void ewmh_HandleDynamicWorkArea(void)
@@ -938,19 +982,20 @@ void ewmh_HandleDynamicWorkArea(void)
 	int dyn_top = ewmhc.BaseStrut.top;
 	int dyn_bottom = ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
-	FvwmWindow *t;
+	FvwmWindow *fw;
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		if (DO_EWMH_IGNORE_STRUT_HINTS(t) ||
-		    !IS_STICKY_ACROSS_PAGES(t))
+		if (
+			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
+			!IS_STICKY_ACROSS_PAGES(fw))
 		{
 			continue;
 		}
-		dyn_left = max(dyn_left, t->dyn_strut.left);
-		dyn_right = max(dyn_right, t->dyn_strut.right);
-		dyn_top = max(dyn_top, t->dyn_strut.top);
-		dyn_bottom = max(dyn_bottom, t->dyn_strut.bottom);
+		dyn_left = max(dyn_left, fw->dyn_strut.left);
+		dyn_right = max(dyn_right, fw->dyn_strut.right);
+		dyn_top = max(dyn_top, fw->dyn_strut.top);
+		dyn_bottom = max(dyn_bottom, fw->dyn_strut.bottom);
 	}
 
 	x = dyn_left;
@@ -958,10 +1003,11 @@ void ewmh_HandleDynamicWorkArea(void)
 	width = Scr.MyDisplayWidth - (dyn_left + dyn_right);
 	height = Scr.MyDisplayHeight - (dyn_top + dyn_bottom);
 
-	if (Scr.Desktops->ewmh_dyn_working_area.x != x ||
-	    Scr.Desktops->ewmh_dyn_working_area.y != y ||
-	    Scr.Desktops->ewmh_dyn_working_area.width != width ||
-	    Scr.Desktops->ewmh_dyn_working_area.height != height)
+	if (
+		Scr.Desktops->ewmh_dyn_working_area.x != x ||
+		Scr.Desktops->ewmh_dyn_working_area.y != y ||
+		Scr.Desktops->ewmh_dyn_working_area.width != width ||
+		Scr.Desktops->ewmh_dyn_working_area.height != height)
 	{
 		Scr.Desktops->ewmh_dyn_working_area.x = x;
 		Scr.Desktops->ewmh_dyn_working_area.y = y;
@@ -969,12 +1015,16 @@ void ewmh_HandleDynamicWorkArea(void)
 		Scr.Desktops->ewmh_dyn_working_area.height = height;
 		/* here we may update the maximized window ...etc */
 	}
+
+	return;
 }
 
 void EWMH_UpdateWorkArea(void)
 {
 	ewmh_ComputeAndSetWorkArea();
 	ewmh_HandleDynamicWorkArea();
+
+	return;
 }
 
 void EWMH_GetWorkAreaIntersection(
@@ -1014,6 +1064,8 @@ void EWMH_GetWorkAreaIntersection(
 	*y = ny;
 	*w = nw;
 	*h = nh;
+
+	return;
 }
 
 static
@@ -1038,6 +1090,7 @@ float get_intersection(
 		ret = 100 * max(ret / ((x22 - x21) * (y22 - y21)),
 				ret / ((x12 - x11) * (y12 - y11)));
 	}
+
 	return ret;
 }
 
@@ -1086,8 +1139,9 @@ float EWMH_GetBaseStrutIntersection(
 	int x11, int y11, int x12, int y12, Bool use_percent)
 {
 	return ewmh_GetStrutIntersection(
-		x11, y11, x12, y12, ewmhc.BaseStrut.left, ewmhc.BaseStrut.right,
-		ewmhc.BaseStrut.top, ewmhc.BaseStrut.bottom, use_percent);
+		x11, y11, x12, y12, ewmhc.BaseStrut.left,
+		ewmhc.BaseStrut.right, ewmhc.BaseStrut.top,
+		ewmhc.BaseStrut.bottom, use_percent);
 }
 
 float EWMH_GetStrutIntersection(
@@ -1103,6 +1157,7 @@ float EWMH_GetStrutIntersection(
 	bottom = Scr.MyDisplayHeight -
 		(Scr.Desktops->ewmh_working_area.y
 		 + Scr.Desktops->ewmh_working_area.height);
+
 	return ewmh_GetStrutIntersection(
 		x11, y11, x12, y12, left, right, top, bottom, use_percent);
 }
@@ -1137,6 +1192,8 @@ void EWMH_SetFrameStrut(FvwmWindow *fw)
 	ewmh_ChangeProperty(
 		FW_W(fw), "_NET_FRAME_EXTENTS", EWMH_ATOM_LIST_FVWM_WIN,
 		(unsigned char *)&val, 4);
+
+	return;
 }
 
 /*
@@ -1160,6 +1217,7 @@ Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
 	{
 		return False;
 	}
+
 	return True;
 }
 
@@ -1209,6 +1267,8 @@ void EWMH_SetAllowedActions(FvwmWindow *fw)
 			FW_W(fw), "_NET_WM_ALLOWED_ACTIONS",
 			EWMH_ATOM_LIST_FVWM_WIN);
 	}
+
+	return;
 }
 
 /*
@@ -1313,6 +1373,7 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 int ewmh_HandleDialog(EWMH_CMD_ARGS)
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_DIALOG_ID;
+
 	return 0;
 }
 
@@ -1411,6 +1472,7 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
 int ewmh_HandleNormal(EWMH_CMD_ARGS)
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_NORMAL_ID;
+
 	return 0;
 }
 
@@ -1452,12 +1514,10 @@ void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style)
 	val = ewmh_AtomGetByName(
 		FW_W(fw), "_NET_WM_WINDOW_TYPE",
 		EWMH_ATOM_LIST_FIXED_PROPERTY, &size);
-
 	if (val == NULL)
 	{
 		return;
 	}
-
 	/* we support only one window type: the first that we support */
 	while(i < size && !found)
 	{
@@ -1474,6 +1534,8 @@ void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style)
 		i++;
 	}
 	free(val);
+
+	return;
 }
 
 /*
@@ -1491,6 +1553,7 @@ int ksmserver_workarround(FvwmWindow *fw)
 	    strcmp(fw->class.res_name, "unnamed") == 0)
 	{
 		int layer = 0;
+
 		if (IS_TRANSIENT(fw))
 		{
 			layer = Scr.TopLayer + 2;
@@ -1499,10 +1562,11 @@ int ksmserver_workarround(FvwmWindow *fw)
 		{
 			layer = Scr.TopLayer + 1;
 		}
-
 		new_layer(fw, layer);
+
 		return 1;
 	}
+
 	return 0;
 }
 
@@ -1524,6 +1588,8 @@ void EWMH_GetStyle(FvwmWindow *fw, window_style *style)
 	ewmh_WMDesktop(fw, NULL, style, 0);
 	/* the window type override the state hint */
 	ewmh_HandleWindowType(fw, style);
+
+	return;
 }
 
 static void ewmh_check_wm_pid(FvwmWindow *fw)
@@ -1544,6 +1610,8 @@ static void ewmh_check_wm_pid(FvwmWindow *fw)
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 		}
 	}
+
+	return;
 }
 
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
@@ -1568,6 +1636,8 @@ void EWMH_WindowInit(FvwmWindow *fw)
 	ewmh_WMIcon(fw, NULL, NULL, 0);
 	ewmh_check_wm_pid(fw);
 	/*EWMH_DLOG("window 0x%lx initialised",FW_W(fw));*/
+
+	return;
 }
 
 /* unmap or reparent: restore state */
@@ -1588,7 +1658,11 @@ void EWMH_RestoreInitialStates(FvwmWindow *fw, int event_type)
 			EWMH_ATOM_LIST_CLIENT_WIN);
 	}
 	if (HAS_EWMH_WM_ICON_HINT(fw) == EWMH_FVWM_ICON)
+	{
 		EWMH_DeleteWmIcon(fw, True, True);
+	}
+
+	return;
 }
 
 /* a window are going to be destroyed (in the add_window.c destroy_window
@@ -1603,6 +1677,8 @@ void EWMH_DestroyWindow(FvwmWindow *fw)
 	{
 		ewmhc.NeedsToCheckDesk = True;
 	}
+
+	return;
 }
 
 /* a window has been destroyed (unmap/reparent/destroy) */
@@ -1616,6 +1692,8 @@ void EWMH_WindowDestroyed(void)
 	}
 	ewmh_ComputeAndSetWorkArea();
 	ewmh_HandleDynamicWorkArea();
+
+	return;
 }
 
 /*
@@ -1636,6 +1714,7 @@ int set_all_atom_in_list(ewmh_atom *list)
 		l++;
 		list++;
 	}
+
 	return l;
 }
 
@@ -1660,6 +1739,8 @@ void set_net_supported(int l)
 		Scr.Root, "_NET_SUPPORTED", EWMH_ATOM_LIST_FVWM_ROOT,
 		(unsigned char *)supported, k);
 	free(supported);
+
+	return;
 }
 
 static
@@ -1668,6 +1749,8 @@ void clean_up(void)
 	ewmh_ChangeProperty(
 		Scr.Root,"_KDE_NET_SYSTEM_TRAY_WINDOWS",
 		EWMH_ATOM_LIST_FVWM_ROOT, NULL, 0);
+
+	return;
 }
 
 void EWMH_Init(void)
@@ -1730,6 +1813,8 @@ void EWMH_Init(void)
 	EWMH_SetClientList();
 	EWMH_SetClientListStacking();
 	ewmh_ComputeAndSetWorkArea();
+
+	return;
 }
 
 /*
@@ -1737,13 +1822,14 @@ void EWMH_Init(void)
  */
 void EWMH_ExitStuff(void)
 {
-	FvwmWindow *t;
+	FvwmWindow *fw;
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		EWMH_RestoreInitialStates(t, 0);
+		EWMH_RestoreInitialStates(fw, 0);
 	}
 
+	return;
 }
 
 #ifdef EWMH_DEBUG
@@ -1779,6 +1865,8 @@ void EWMH_DLOG(char *msg, ...)
 	va_end(args);
 	fprintf(stderr, "\n");
 	fprintf(stderr, "            [time]: %s\n",buffer);
+
+	return;
 }
 #endif
 

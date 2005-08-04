@@ -875,8 +875,10 @@ void focus_grab_buttons_on_layer(int layer)
 {
 	FvwmWindow *fw;
 
-	for (fw = Scr.FvwmRoot.stack_next; fw->layer >= layer;
-	     fw = fw->stack_next)
+	for (
+		fw = Scr.FvwmRoot.stack_next;
+		fw != &Scr.FvwmRoot && fw->layer >= layer;
+		fw = fw->stack_next)
 	{
 		if (fw->layer == layer)
 		{
