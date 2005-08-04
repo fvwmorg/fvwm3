@@ -13,4 +13,4 @@ Bug Fixes:
 ----------
 
    - Fixed a Solaris compiler error introduced in 2.5.13.
-   - Fixed a hang with AbiWord using an invalid layer.
+   - Fixed a hang with layers set by applications (e.g. AbiWord).
