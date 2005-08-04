@@ -1,5 +1,9 @@
 2005-08-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in:
+	detect if Window, Pixel or void * are bigger than long and refuse to
+	compile
+
 	* libs/vpacket.h (ConfigWinPacket):
 	* fvwm/windowshade.c (CMD_WindowShade):
 	* fvwm/virtual.c (MoveViewport):

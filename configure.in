@@ -173,6 +173,38 @@ if test x"$no_x" = x"yes"; then
   exit 1
 fi
 
+dnl check size of some types
+ac_save_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS $X_CFLAGS"
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(Window, , [#include <stdio.h>
+#include <X11/X.h>])
+AC_CHECK_SIZEOF(Pixel, , [#include <stdio.h>
+#include <X11/Intrinsic.h>])
+AC_CHECK_SIZEOF(void *)
+CFLAGS="$ac_save_CFLAGS"
+size_check_failed=""
+if test "$ac_cv_sizeof_void_p" -gt "$ac_cv_sizeof_long"; then
+  echo "The type void * is bigger than long."
+  size_check_failed=1
+fi
+if test "$ac_cv_sizeof_Window" -gt "$ac_cv_sizeof_long"; then
+  echo "The type Window is bigger than long."
+  size_check_failed=1
+fi
+if test "$ac_cv_sizeof_Pixel" -gt "$ac_cv_sizeof_long"; then
+  echo "The type Pixel is bigger than long."
+  size_check_failed=1
+fi
+if test x"$size_check_failed" = x1; then
+  echo "This is not supported by the module interface yet (make_new_vpacket)."
+  echo "Detected type sizes are: int($ac_cv_sizeof_int), long($ac_cv_sizeof_long), void*($ac_cv_sizeof_void_p), Window($ac_cv_sizeof_Window), Pixel($ac_cv_sizeof_Pixel)"
+  echo "Please report details of your system and this message to ${FVWMWORKERSLIST}."
+  echo
+  exit 1
+fi
+
 dnl 'unset' is not portable, but setting to null is not enough to avoid using
 dnl the cached value!  For ancient shells "rm config.cache" is a solution.
 UNSET=true
@@ -1074,6 +1106,16 @@ case "$ac_cv_efence" in
   yes) AC_CHECK_LIB(efence, malloc) ;;
 esac
 
+dnl !!!
+ac_save_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS $X_CFLAGS"
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(Window, , [#include <stdio.h>
+#include <X11/X.h>])
+AC_CHECK_SIZEOF(Pixel, , [#include <stdio.h>
+#include <X11/X.h>])
+AC_CHECK_SIZEOF(void *)
+CFLAGS="$ac_save_CFLAGS"
 
 # mainly for fvwm-config
 AC_SUBST(with_bidi)
