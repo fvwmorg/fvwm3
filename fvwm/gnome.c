@@ -1003,7 +1003,7 @@ GNOME_ProcessClientMessage(const exec_context_t *exc)
 			invalid_req = "_WIN_WORKSPACE";
 			goto err_msg;
 		}
-		goto_desk(ev->xclient.data.l[0]);
+		goto_desk(p0);
 
 		return 1;
 	}
@@ -1017,7 +1017,7 @@ GNOME_ProcessClientMessage(const exec_context_t *exc)
 			invalid_req = "_WIN_LAYER";
 			goto err_msg;
 		}
-		new_layer(fw, ev->xclient.data.l[0]);
+		new_layer(fw, p0);
 
 		return 1;
 	}
