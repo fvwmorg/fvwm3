@@ -48,7 +48,7 @@ void clean_up(void)
 	{
 		close(Ns);
 		Ns = -1;
-		}
+	}
 	if (S_name != NULL)
 	{
 		unlink(S_name);
