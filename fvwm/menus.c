@@ -4008,7 +4008,8 @@ static int pop_menu_up(
 				MR_XANIMATION(parent_menu) += end_x - prev_x;
 				if (ST_HAS_MENU_CSET(MR_STYLE(parent_menu)) &&
 				    CSET_IS_TRANSPARENT(
-					    ST_CSET_MENU(MR_STYLE(mr))))
+					    ST_CSET_MENU(
+						    MR_STYLE(parent_menu))))
 				{
 					transparent_bg = True;
 					get_menu_repaint_transparent_parameters(

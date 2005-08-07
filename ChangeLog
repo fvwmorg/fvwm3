@@ -1,5 +1,7 @@
 2005-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menustyle.c (menustyle_copy):
+
 	* fvwm/events.c (HandleEvents):
 	simplify the style list if there is nothing else to do
 

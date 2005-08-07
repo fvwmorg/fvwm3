@@ -1541,7 +1541,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	/* PopdownImmediately */
 	ST_DO_POPDOWN_IMMEDIATELY(destms) = ST_DO_POPDOWN_IMMEDIATELY(origms);
 	/* PopdownDelay */
-	ST_POPDOWN_DELAY(destms) = ST_POPDOWN_DELAY(destms);
+	ST_POPDOWN_DELAY(destms) = ST_POPDOWN_DELAY(origms);
 
 	menustyle_update(destms);
 
