@@ -1,3 +1,22 @@
+2005-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEvents):
+	simplify the style list if there is nothing else to do
+
+	* fvwm/style.c (__simplify_style_list):
+	(styles_have_same_id):
+	(style_id_equals_id):
+	(style_ids_are_equals):
+	(__style_command):
+	(remove_all_of_style_from_list):
+	(one_fw_can_match_both_ids):
+	pass pointers instead of the whole style structure
+	(__simplify_style_list):
+	fixed memory leak and tweaked the code
+
+	* libs/Strings.c (CatString3):
+	fixed a buffer overflow
+
 2005-08-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in:
@@ -2360,7 +2379,7 @@
 	(blocksintersect):
 	(blockand):
 	Fixed blockand which always returned True. Added blocksintersect which
-	return the same value than blockand but faster.
+	returns the same value as blockand but faster.
 
 2003-06-13  olicha  <olivier.chapuis@free.fr>
 

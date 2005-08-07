@@ -1394,18 +1394,18 @@ static void SetRCDefaults(void)
 		{ NULL, NULL, NULL }
 	};
 
-	for (i = 0; defaults[i][0]; i++)
+	for (i = 0; defaults[i][0] != NULL; i++)
 	{
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
+		char *cmd;
 
 		ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
-		execute_function(
-			NULL, exc,
-			CatString3(defaults[i][0],defaults[i][1],defaults[i][2]),
-			0);
+		cmd = CatString3(
+			defaults[i][0], defaults[i][1], defaults[i][2]);
+		execute_function(NULL, exc, cmd, 0);
 		exc_destroy_context(exc);
 	}
 
@@ -2267,9 +2267,9 @@ int main(int argc, char **argv)
 	{
 		Pdepth = 0;
 
-		/* Detection of a card with 2 hardware colormaps (8+24) which use
-		 * depth 8 for the default. We can use our own depth 24 cmap
-		 * without affecting other applications. */
+		/* Detection of a card with 2 hardware colormaps (8+24) which
+		 * use depth 8 for the default. We can use our own depth 24
+		 * cmap without affecting other applications. */
 		if (DefaultDepth(dpy, Scr.screen) <= 8)
 		{
 			XVisualInfo template, *vizinfo = NULL;

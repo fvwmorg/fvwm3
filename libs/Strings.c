@@ -26,13 +26,11 @@
 
 
 #define CHUNK_SIZE 256
-
-
-char* CatString3(const char *a, const char *b, const char *c)
+char *CatString3(const char *a, const char *b, const char *c)
 {
 	static char* buffer = NULL;
 	static int buffer_len = 0;
-	int len = 0;
+	int len = 1;
 
 	if (a != NULL)
 	{
@@ -50,31 +48,25 @@ char* CatString3(const char *a, const char *b, const char *c)
 	/* Expand buffer to fit string, to a multiple of CHUNK_SIZE */
 	if (len > buffer_len)
 	{
-		if ( buffer )
-		{
-			free( buffer );
-		}
-		buffer_len = CHUNK_SIZE * (1 + len / CHUNK_SIZE);
-		buffer = safemalloc( buffer_len );
+		buffer_len = CHUNK_SIZE * (1 + ((len - 1) / CHUNK_SIZE));
+		buffer = saferealloc(buffer, buffer_len);
 	}
-
 	buffer[0] = 0;
 	if (a != NULL)
 	{
-		strcat( buffer, a );
+		strcat(buffer, a);
 	}
 	if (b != NULL)
 	{
-		strcat( buffer, b );
+		strcat(buffer, b);
 	}
 	if (c != NULL)
 	{
-		strcat( buffer, c );
+		strcat(buffer, c);
 	}
 
 	return buffer;
 }
-
 #undef CHUNK_SIZE
 
 

@@ -3849,13 +3849,13 @@ void HandleEvents(void)
 		{
 			flush_window_updates();
 		}
-		if (Scr.flags.do_need_style_list_update)
-		{
-			simplify_style_list();
-		}
 		if (My_XNextEvent(dpy, &ev))
 		{
 			dispatch_event(&ev);
+		}
+		if (Scr.flags.do_need_style_list_update)
+		{
+			simplify_style_list();
 		}
 	}
 

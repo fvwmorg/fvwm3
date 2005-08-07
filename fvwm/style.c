@@ -116,7 +116,9 @@ static Bool blockissubset(char *sub, char *super, int length)
 	for (i = 0; i < length; i++)
 	{
 		if ((sub[i] & super[i]) != sub[i])
+		{
 			return False;
+		}
 	}
 
 	return True;
@@ -129,35 +131,40 @@ static Bool blocksintersect(char *blk1, char *blk2, int length)
 	for (i = 0; i < length; i++)
 	{
 		if (blk1[i] & blk2[i])
+		{
 			return True;
+		}
 	}
 
 	return False;
 }
 
-static Bool style_ids_are_equals(style_id_t a, style_id_t b)
+static Bool style_ids_are_equal(style_id_t *a, style_id_t *b)
 {
-	if (SID_GET_HAS_NAME(a) && SID_GET_HAS_NAME(b) &&
-	    !strcmp(SID_GET_NAME(a), SID_GET_NAME(b)))
+	if (
+		SID_GET_HAS_NAME(*a) && SID_GET_HAS_NAME(*b) &&
+		!strcmp(SID_GET_NAME(*a), SID_GET_NAME(*b)))
 	{
 		return True;
 	}
-	if (SID_GET_HAS_WINDOW_ID(a) && SID_GET_HAS_WINDOW_ID(b) &&
-	    SID_GET_WINDOW_ID(a) == SID_GET_WINDOW_ID(b))
+	if (
+		SID_GET_HAS_WINDOW_ID(*a) && SID_GET_HAS_WINDOW_ID(*b) &&
+		SID_GET_WINDOW_ID(*a) == SID_GET_WINDOW_ID(*b))
 	{
 		return True;
 	}
+
 	return False;
 }
 
-static Bool style_id_equals_id(window_style s, style_id_t id)
+static Bool style_id_equals_id(window_style *s, style_id_t* id)
 {
-	return style_ids_are_equals(SGET_ID(s), id);
+	return style_ids_are_equal(&SGET_ID(*s), id);
 }
 
-static Bool styles_have_same_id(window_style s, window_style t)
+static Bool styles_have_same_id(window_style* s, window_style* t)
 {
-	return style_ids_are_equals(SGET_ID(s), SGET_ID(t));
+	return style_ids_are_equal(&SGET_ID(*s), &SGET_ID(*t));
 }
 
 static Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
@@ -178,13 +185,14 @@ static Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 	return False;
 }
 
-static Bool one_fw_can_match_both_ids(window_style s, window_style t)
+static Bool one_fw_can_match_both_ids(window_style *s, window_style *t)
 {
-	if (SGET_ID_HAS_WINDOW_ID(s) && SGET_ID_HAS_WINDOW_ID(t) &&
-	    SGET_WINDOW_ID(s) != SGET_WINDOW_ID(t))
+	if (SGET_ID_HAS_WINDOW_ID(*s) && SGET_ID_HAS_WINDOW_ID(*t) &&
+	    SGET_WINDOW_ID(*s) != SGET_WINDOW_ID(*t))
 	{
 		return False;
 	}
+
 	return True;
 }
 
@@ -522,8 +530,8 @@ static void merge_styles(
 			*merged_style, SGET_WINDOW_SHADE_STEPS(*add_style));
 	}
 
-	/* Note, only one style cmd can define a windows iconboxes,
-	 * the last one encountered. */
+	/* Note:  Only one style cmd can define a window's iconboxes, the last one
+	 * encountered. */
 	if (SHAS_ICON_BOXES(&add_style->flag_mask))
 	{
 		/* If style has iconboxes */
@@ -806,7 +814,7 @@ static Bool remove_all_of_style_from_list(style_id_t style_id)
 	{
 		next = SGET_NEXT_STYLE(*nptr);
 		/* Check if it's to be wiped */
-		if (style_id_equals_id(*nptr, style_id))
+		if (style_id_equals_id(nptr, &style_id))
 		{
 			remove_style_from_list(nptr, True);
 			is_changed = True;
@@ -821,8 +829,7 @@ static Bool remove_all_of_style_from_list(style_id_t style_id)
 static Bool __simplify_style_list(void)
 {
 	window_style *cur;
-	Bool has_modified = False;
-	Bool is_merge_allowed;
+	Bool has_modified;
 
 	/* Step 1:
 	 *   Remove styles that are completely overridden by later
@@ -830,7 +837,9 @@ static Bool __simplify_style_list(void)
 	 * Step 2:
 	 *   Merge styles with the same name if there are no
 	 *   conflicting styles with other names set in between. */
-	for (cur = last_style_in_list; cur; cur = SGET_PREV_STYLE(*cur))
+	for (
+		cur = last_style_in_list, has_modified = False; cur;
+		cur = SGET_PREV_STYLE(*cur))
 	{
 		style_flags dummyflags;
 		/* incremental flags set in styles with the same name */
@@ -840,16 +849,15 @@ static Bool __simplify_style_list(void)
 		style_flags interflags;
 		window_style *cmp;
 
-		is_merge_allowed = True;
 		memset(&interflags, 0, sizeof(style_flags));
 		memcpy(&sumflags, &cur->flag_mask, sizeof(style_flags));
 		memcpy(&sumdflags, &cur->flag_default, sizeof(style_flags));
 		cmp = SGET_PREV_STYLE(*cur);
 		while (cmp)
 		{
-			if (!styles_have_same_id(*cur, *cmp))
+			if (!styles_have_same_id(cur, cmp))
 			{
-				if (one_fw_can_match_both_ids(*cur,*cmp))
+				if (one_fw_can_match_both_ids(cur, cmp))
 				{
 					blockor((char *)&interflags,
 						(char *)&interflags,
@@ -880,88 +888,43 @@ static Bool __simplify_style_list(void)
 				has_modified = True;
 				continue;
 			}
-
-			if (is_merge_allowed &&
-			    !blocksintersect(
-				    (char *)&cur->flag_mask,
-				    (char *)&interflags,
-				    sizeof(style_flags)) &&
-			    !blocksintersect(
-				    (char *)&cur->flag_default,
-				    (char *)&interflags,
-				    sizeof(style_flags)))
-			{
-				/* upward merging */
-				window_style *tmp = SGET_PREV_STYLE(*cmp);
-
-				/* merge cmp into cur and delete it
-				 * afterwards */
-				merge_styles(cmp, cur, True);
-				remove_style_from_list(cur, False);
-				/* release the style structure */
-				free(cur);
-				cur = cmp;
-				cmp = tmp;
-				has_modified = True;
-				memset(&interflags, 0, sizeof(style_flags));
-				/* Add the style to the set */
-				blockor((char *)&sumflags,
-					(char *)&sumflags,
-					(char *)&cur->flag_mask,
-					sizeof(style_flags));
-				blockor((char *)&sumdflags,
-					(char *)&sumflags,
-					(char *)&cur->flag_mask,
-					sizeof(style_flags));
-				blockor((char *)&sumdflags,
-					(char *)&sumdflags,
-					(char *)&cur->flag_default,
-					sizeof(style_flags));
-				continue;
-			}
-
-			/* remove all styles that are overridden later
-			 * from the style */
-			free_style_mask(cmp, &sumflags);
-			blockunmask((char *)&dummyflags,
-				    (char *)&sumdflags,
-				    (char *)&cmp->flag_mask,
-				    sizeof(style_flags));
-			free_style_mask(cmp, &dummyflags);
-			/* Add the style to the set */
-			blockor((char *)&sumflags,
-				(char *)&sumflags,
-				(char *)&cmp->flag_mask,
-				sizeof(style_flags));
-			blockor((char *)&sumdflags,
-				(char *)&sumflags,
-				(char *)&cmp->flag_mask,
-				sizeof(style_flags));
-			blockor((char *)&sumdflags,
+			/* remove all styles that are overridden later from the
+			 * style */
+			blockor((char *)&dummyflags,
 				(char *)&sumdflags,
-				(char *)&cmp->flag_default,
+				(char *)&sumflags,
 				sizeof(style_flags));
-			if (is_merge_allowed &&
-			    !blocksintersect(
-				    (char *)&cmp->flag_mask,
-				    (char *)&interflags,
-				    sizeof(style_flags)) &&
-			    !blocksintersect(
-				    (char *)&cmp->flag_default,
-				    (char *)&interflags,
-				    sizeof(style_flags)))
+			free_style_mask(cmp, &dummyflags);
+			if (
+				!blocksintersect(
+					(char *)&cmp->flag_mask,
+					(char *)&interflags,
+					sizeof(style_flags)) &&
+				!blocksintersect(
+					(char *)&cmp->flag_default,
+					(char *)&interflags,
+					sizeof(style_flags)))
 			{
+				/* merge old style into new style */
 				window_style *tmp = SGET_PREV_STYLE(*cmp);
 				window_style *prev = SGET_PREV_STYLE(*cur);
 				window_style *next = SGET_NEXT_STYLE(*cur);
 
+				/* Add the style to the set */
+				blockor((char *)&sumflags,
+					(char *)&sumflags,
+					(char *)&cmp->flag_mask,
+					sizeof(style_flags));
+				blockor((char *)&sumdflags,
+					(char *)&sumflags,
+					(char *)&cmp->flag_default,
+				sizeof(style_flags));
 				/* merge cmp into cur and delete it
 				 * afterwards */
 				merge_styles(cmp, cur, True);
 				free_style(cur);
 				memcpy(cur, cmp, sizeof(window_style));
-				/* restore fields overwritten by
-				 * memcpy */
+				/* restore fields overwritten by memcpy */
 				SSET_PREV_STYLE(*cur, prev);
 				SSET_NEXT_STYLE(*cur, next);
 				/* remove the style without freeing the
@@ -972,9 +935,49 @@ static Bool __simplify_style_list(void)
 				cmp = tmp;
 				has_modified = True;
 			}
+			else if (
+				!blocksintersect(
+					(char *)&cur->flag_mask,
+					(char *)&interflags,
+					sizeof(style_flags)) &&
+				!blocksintersect(
+					(char *)&cur->flag_default,
+					(char *)&interflags,
+					sizeof(style_flags)))
+			{
+				/* merge new style into old style */
+				window_style *tmp = SGET_PREV_STYLE(*cmp);
+
+				/* Add the style to the set */
+				blockor((char *)&sumflags,
+					(char *)&sumflags,
+					(char *)&cur->flag_mask,
+					sizeof(style_flags));
+				blockor((char *)&sumdflags,
+					(char *)&sumflags,
+					(char *)&cur->flag_default,
+					sizeof(style_flags));
+				/* merge cur into cmp and delete it
+				 * afterwards */
+				merge_styles(cmp, cur, True);
+				remove_style_from_list(cur, True);
+				cur = cmp;
+				cmp = tmp;
+				has_modified = True;
+				memset(&interflags, 0, sizeof(style_flags));
+				continue;
+			}
 			else
 			{
-				is_merge_allowed = False;
+				/* Add it to the set of interfering styles. */
+				blockor((char *)&interflags,
+					(char *)&interflags,
+					(char *)&cmp->flag_mask,
+					sizeof(style_flags));
+				blockor((char *)&interflags,
+					(char *)&interflags,
+					(char *)&cmp->flag_default,
+					sizeof(style_flags));
 				cmp = SGET_PREV_STYLE(*cmp);
 			}
 		}
@@ -4123,8 +4126,7 @@ static void __style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 			SSET_ICON_NAME(*ps, NULL);
 		}
 	}
-	if (last_style_in_list &&
-	    styles_have_same_id(*ps, *last_style_in_list))
+	if (last_style_in_list && styles_have_same_id(ps, last_style_in_list))
 	{
 		/* merge with previous style */
 		merge_styles(last_style_in_list, ps, True);
@@ -4194,11 +4196,8 @@ void free_icon_boxes(icon_boxes *ib)
 
 void simplify_style_list(void)
 {
-	Scr.flags.do_need_style_list_update = 0;
-	while (__simplify_style_list())
-	{
-		/* repeat until nothing has been done for a complete pass */
-	}
+	/* one pass through the style list, then process other events first */
+	Scr.flags.do_need_style_list_update = !!__simplify_style_list();
 
 	return;
 }
