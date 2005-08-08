@@ -1,3 +1,14 @@
+2005-08-08  Jason Weber  <baboon@imonk.com>
+
+	* FvwmProxy/FvwmProxy.1.in:
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmProxy/FvwmProxy.h:
+	Added ProxyIconified option to retain proxies for iconified windows
+	and give them their own colorset.
+	Fixed inappropriate collisions between proxies on different desks
+	and also lock proxy offsets on moving windows instead of snapping
+	to window center.
+
 2005-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmBanner/fvwm-logo-current.xbm:

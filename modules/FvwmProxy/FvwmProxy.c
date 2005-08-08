@@ -45,6 +45,7 @@
 
 #define PROXY_KEY_POLLING	True
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
+#define PROXY_ICONIFIED		False	/* show proxy when iconified */
 #define PROXY_WIDTH		180
 #define PROXY_HEIGHT		60
 #define PROXY_SEPARATION	10
@@ -99,10 +100,12 @@ static FlocaleWinString *FwinString;
 
 static int cset_normal = 0;
 static int cset_select = 0;
+static int cset_iconified = 0;
 static char *font_name = NULL;
 static FlocaleFont *Ffont;
 static int enterSelect=False;
 static int showMiniIcons=True;
+static int proxyIconified=PROXY_ICONIFIED;
 static int proxyMove=PROXY_MOVE;
 static int proxyWidth=PROXY_WIDTH;
 static int proxyHeight=PROXY_HEIGHT;
@@ -304,6 +307,13 @@ static Bool parse_options(void)
 				cset_select = 0;
 			}
 		}
+		else if (StrEquals(resource, "IconifiedColorset"))
+		{
+			if (sscanf(tline, "%d", &cset_iconified) < 1)
+			{
+				cset_iconified = 0;
+			}
+		}
 		else if (StrEquals(resource, "Font"))
 		{
 			if (font_name != NULL)
@@ -323,6 +333,10 @@ static Bool parse_options(void)
 		else if (StrEquals(resource, "ProxyMove"))
 		{
 			proxyMove = ParseToggleArgument(tline, NULL, 0, 1);
+		}
+		else if (StrEquals(resource, "ProxyIconified"))
+		{
+			proxyIconified = ParseToggleArgument(tline, NULL, 0, 1);
 		}
 		else if (StrEquals(resource, "Width"))
 		{
@@ -493,7 +507,8 @@ static void DrawWindow(
 		texty=maxy;
 	}
 
-	cset = (proxy==selectProxy) ? cset_select : cset_normal;
+	cset = (proxy==selectProxy) ? cset_select :
+		((proxy->flags.is_iconified) ? cset_iconified : cset_normal);
 	XSetForeground(dpy,fg_gc,Colorset[cset].fg);
 	XSetBackground(dpy,fg_gc,Colorset[cset].bg);
 	XSetForeground(dpy,sh_gc,Colorset[cset].shadow);
@@ -553,7 +568,8 @@ static void DrawProxyBackground(ProxyWindow *proxy)
 	{
 		return;
 	}
-	cset = (proxy==selectProxy) ? cset_select : cset_normal;
+	cset = (proxy==selectProxy) ? cset_select :
+		((proxy->flags.is_iconified) ? cset_iconified : cset_normal);
 	XSetForeground(dpy,fg_gc,Colorset[cset].fg);
 	XSetBackground(dpy,fg_gc,Colorset[cset].bg);
 	SetWindowBackground(
@@ -571,7 +587,8 @@ static void OpenOneWindow(ProxyWindow *proxy)
 	{
 		return;
 	}
-	if (proxy->desk != deskNumber || proxy->flags.is_iconified)
+	if (proxy->desk != deskNumber ||
+			(!proxyIconified && proxy->flags.is_iconified) )
 	{
 		return;
 	}
@@ -705,6 +722,9 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 
 	for (other=proxy->next; other; other=other->next)
 	{
+		if(other->desk != deskNumber)
+			continue;
+
 		int dx=abs(proxy->proxyx-other->proxyx);
 		int dy=abs(proxy->proxyy-other->proxyy);
 		if (dx<(proxyWidth+proxySeparation) &&
@@ -758,6 +778,9 @@ static void AdjustWindows(void)
 		collision=False;
 		for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 		{
+			if(proxy->desk != deskNumber)
+				continue;
+
 			if (AdjustOneWindow(proxy) == True)
 			{
 				collision = True;
@@ -766,11 +789,40 @@ static void AdjustWindows(void)
 	}
 }
 
+static void RecenterProxy(ProxyWindow *proxy)
+{
+	proxy->proxyx=proxy->x + (proxy->w-proxy->proxyw)/2;
+	proxy->proxyy=proxy->y + (proxy->h-proxy->proxyh)/2;
+}
+
+static void RecalcProxyTweaks(void)
+{
+	ProxyWindow *proxy;
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		proxy->tweakx=proxy->proxyx -
+			(proxy->x + (proxy->w-proxy->proxyw)/2);
+		proxy->tweaky=proxy->proxyy -
+			(proxy->y + (proxy->h-proxy->proxyh)/2);
+	}
+}
+static void TweakProxy(ProxyWindow *proxy)
+{
+	proxy->proxyx += proxy->tweakx;
+	proxy->proxyy += proxy->tweaky;
+}
+
 static void ReshuffleWindows(void)
 {
+	ProxyWindow *proxy;
+
 	if (are_windows_shown)
 	{
 		CloseWindows();
+	}
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		RecenterProxy(proxy);
 	}
 	AdjustWindows();
 	SortProxies();
@@ -778,6 +830,7 @@ static void ReshuffleWindows(void)
 	{
 		OpenWindows();
 	}
+	RecalcProxyTweaks();
 
 	return;
 }
@@ -822,6 +875,10 @@ static void ConfigureWindow(FvwmPacket *packet)
 		proxy->next = firstProxy;
 		firstProxy = proxy;
 		proxy->window=target;
+
+		// unreliable on existing windows
+		// on 2.5.10, reporting false just after M_ICONIFY
+		proxy->flags.is_iconified = !!IS_ICONIFIED(cfgpacket);
 	}
 	proxy->x=wx;
 	proxy->y=wy;
@@ -830,9 +887,13 @@ static void ConfigureWindow(FvwmPacket *packet)
 	proxy->h=wsy;
 	proxy->proxyw=proxyWidth;
 	proxy->proxyh=proxyHeight;
-	proxy->proxyx=proxy->x + (proxy->w-proxy->proxyw)/2;
-	proxy->proxyy=proxy->y + (proxy->h-proxy->proxyh)/2;
-	proxy->flags.is_iconified = !!IS_ICONIFIED(cfgpacket);
+
+	RecenterProxy(proxy);
+	if (!is_new_window)
+	{
+		TweakProxy(proxy);
+	}
+
 	if (are_windows_shown)
 	{
 		if (is_new_window)
@@ -896,7 +957,7 @@ static void IconifyWindow(Window w, int is_iconified)
 		return;
 	}
 	proxy->flags.is_iconified = !!is_iconified;
-	if (is_iconified)
+	if (!proxyIconified && is_iconified)
 	{
 		if (proxy->flags.is_shown)
 		{
@@ -907,10 +968,12 @@ static void IconifyWindow(Window w, int is_iconified)
 	{
 		if (are_windows_shown)
 		{
-			ReshuffleWindows();
+//			ReshuffleWindows();
 			OpenOneWindow(proxy);
 		}
 	}
+
+	DrawProxyBackground(proxy);
 
 	return;
 }
@@ -1040,7 +1103,7 @@ static void AbortProxies(void)
 
 static void change_cset(int cset)
 {
-	if (cset == cset_normal)
+	if (cset == cset_normal || cset == cset_iconified)
 	{
 		ProxyWindow *proxy;
 

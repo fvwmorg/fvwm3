@@ -37,6 +37,7 @@ typedef struct sProxyWindow
 	Window			proxy;
 	int			proxyx,proxyy;
 	int			proxyw,proxyh;
+	int			tweakx,tweaky;
 	FvwmPicture		picture;
 	char			*name;
 	char			*iconname;
