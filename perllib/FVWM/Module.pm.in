@@ -355,7 +355,9 @@ sub send ($$;$$) {
 		}
 		$self->debug("sent [$line]" . (!$continue && " FINISH"), 2);
 		my $len = length $line;
-		$SIG{PIPE} = sub { $self->debug("Failed send [$line]\n", 1); };
+		local $SIG{PIPE} = sub {
+			$self->debug("Failed send [$line]\n", 1);
+		};
 		$self->{ostream}->print(
 			pack("l!l!a${len}l!", $winId, $len, $line, $continue)
 		);

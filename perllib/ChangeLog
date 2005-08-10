@@ -1,3 +1,9 @@
+2005-08-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	fix annoying warning in certain situations: "DESTROY created new
+	reference to dead object 'FVWM::Module' during global destruction"
+
 2005-06-28  Viktor Griph <griph@dd.chalmers.se>
 
 	* FVWM/Module.pm.in:
