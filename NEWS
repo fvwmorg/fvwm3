@@ -9,12 +9,25 @@ Changes in beta release 2.5.14 (not released yet)
 
    - Fvwm now officially supports 64-bit architertures.
 
+* New module features:
+
+   - FvwmPerl module supports window context when preprocessing.
+   - FvwmPerl module accepts new --export option that by default
+     defines two fvwm functions "Eval" and ".", to be used like:
+
+       FvwmPerl -x
+       Eval $a = $[desk.n] - 2; cmd("GotoDesk 0 $a") if $a >= 0
+       . Exec xmessage %{2 + cos(0)}%    # embedded calculator
+
+   - New FvwmProxy option ProxyIconified.
+
 * Bug Fixes:
 
    - Fixed a Solaris compiler error introduced in 2.5.13.
    - Fixed a hang with layers set by applications (e.g. AbiWord).
    - GotoDesk with a relative page argument now wraps around at
      the end of the given range as documented. (Bug #1396).
+   - Supported euc-jp class of encodings.
 
 -------------------------------------------------------------------
 

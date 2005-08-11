@@ -38,15 +38,19 @@ use Getopt::Long;
 my $lineToEval = undef;
 my $fileToLoad = undef;
 my $preprocess = 0;
+my $exportFuncNames = undef;
 # whether continue running after --eval, --load or --preprocess, default is no
 my $stay = 0;
 my $nolock = 0;
 my $debug = 0;
 my $detached = 0;
 my ($ppArgs, $ppFileCount, $preprocessOptions);
+my $ppMainQuoteRef = undef;
 
 sub initPreprocessVars () {
 	$ppArgs = {};
+	$ppArgs->{quote} = $$ppMainQuoteRef if $ppMainQuoteRef;
+	$ppMainQuoteRef = \$ppArgs->{quote} unless $ppMainQuoteRef;
 	$ppFileCount = 0;
 	
 	$preprocessOptions = {
@@ -64,6 +68,7 @@ my $options = {
 	"e|eval=s"     => \$lineToEval,
 	"l|load=s"     => \$fileToLoad,
 	"p|preprocess" => \$preprocess,
+	"x|export:s"   => \$exportFuncNames,
 	"s|stay!"      => \$stay,
 	"nolock"       => \$nolock,
 	"debug=i"      => \$debug,
@@ -135,6 +140,30 @@ sub showMessage ($;$$) {
 	FVWM::Module::Toolkit->showMessage(
 		$_[0], $_[1] || "FvwmPerl user message", $_[2]
 	);
+}
+
+sub export ($;$) {
+	my $funcNames = shift || "";
+	my $doUnexport = shift || 0;
+
+	my @funcNames = split(/[\s,]+/, $funcNames);
+	@funcNames = qw(Eval .) if $funcNames eq "";
+
+	my $name = $module->name;
+
+	foreach (@funcNames) {
+		my $action =
+			/eval/i? 'eval':
+			/load/i? 'load':
+			/preprocess|pp/i || $_ eq "."? 'preprocess -c --':
+			die "Can't guess action for function '$_' to export\n";
+
+		$module->send(qq(
+			DestroyFunc $_
+		) . ($doUnexport ? "" : qq(
+			AddToFunc $_ I SendToModule $name $action \$*
+		)));
+	}
 }
 
 sub load ($) {
@@ -367,6 +396,14 @@ sub processMessage ($$) {
 		preprocess($ppArgs, join(" ", @ARGV));
 	}
 
+	elsif ($action eq "export") {
+		export($rest);
+	}
+
+	elsif ($action eq "unexport") {
+		export($rest, 1);
+	}
+
 	elsif ($action eq "stop") {
 		stop();
 	}
@@ -387,6 +424,11 @@ $module->addHandler(M_STRING, \&processMessage);
 
 # unlock fvwm earlier if requested
 $module->sendReady if $nolock;
+
+if (defined $exportFuncNames) {
+	export($exportFuncNames);
+	$stay = 1;
+}
 
 if (defined $lineToEval) {
 	doEval($lineToEval);
@@ -431,7 +473,7 @@ if you want to immediatelly start to send commands to FvwmPerl.
 =head1 DESCRIPTION
 
 This module is intended to extend fvwm commands with the perl scripting
-power.  It enables to embed perl expressions in the fvwmrc files and
+power.  It enables to embed perl expressions in the fvwm config files and
 construct fvwm commands.
 
 =head1 INVOCATION
@@ -449,7 +491,9 @@ B<FvwmPerl>
 [ B<--load> file ]
 [ B<--preprocess> [ B<--quote> char ] [ B<--winid> wid ] [ B<--cmd> ]
 [ B<--nosend> ] [ B<--noremove> ] [ line | file ] ]
-[ B<--stay> ] [ B<--nolock> ]
+[ B<--export> [names] ]
+[ B<--stay> ]
+[ B<--nolock> ]
 [ alias ]
 
 Long switches may be abbreviated to short one-letter switches.
@@ -458,7 +502,7 @@ B<-e>|B<--eval> line - evaluate the given perl code
 
 B<-l>|B<--load> file - evaluate perl code in the given file
 
-B<-p>|B<--preprocess> [ file ] - preprocess the given fvwmrc file
+B<-p>|B<--preprocess> [ file ] - preprocess the given fvwm config file
 
 The following 5 options are only valid together with B<--preprocess>
 option.
@@ -472,10 +516,13 @@ digit, may be in oct or hex form; this window id overwrites implicit
 window context if any)
 
 B<--nosend> - do not send the preprocessed file to I<fvwm> for B<Read>ing,
-the default is send. Useful for preprocessing non fvwmrc files.
+the default is send. Useful for preprocessing non fvwm config files.
 
 B<--noremove> - do not remove the preprocessed file after sending
 it to I<fvwm> for B<Read>ing, the default is remove. Useful for debugging.
+
+B<-x>|B<--export> [names] - define fvwm shortcut functions (by default,
+two functions named "Eval" and ".").  This option implies B<--stay>.
 
 B<-s>|B<--stay> - continues an execution after B<--eval>, B<--load> or
 B<--preprocess> are processed.  By default, the module is not persistent
@@ -511,7 +558,7 @@ preprocess only separate configuration lines (or alternativelly,
 execute separate perl commands that produce fvwm commands).
 
 The following code snippet adds ability of arithmetics and string scripting
-to certain lines that needs this. To use this, you want to start FvwmPerl as
+to certain lines that need this. To use this, you want to start FvwmPerl as
 your first command so that other commands may be asked to be preprosessed.
 
     ModuleSynchronize FvwmPerl
@@ -525,8 +572,8 @@ your first command so that other commands may be asked to be preprosessed.
 
     . Exec exec %{ -x "/usr/bin/X11/aterm" ? "aterm" : "xterm" }% -sb
 
-    # center a window (here "WindowId $[w.id]" is a workaround)
-    Next (MyWindow) . WindowId $[w.id] Move \
+    # center a window
+    Next (MyWindow) . Move \
       %{($WIDTH - $[w.width]) / 2}%p %{($HEIGHT - $[w.height]) / 2}%p
 
     . Exec exec xmessage %{2 + 2}%           # simple calculator
@@ -564,7 +611,7 @@ with the I<[FvwmPerl][load]:> header prepended.
 
 =item B<preprocess> [-q|--quote char] [-c|--cmd] [I<line> | I<file>]
 
-Preprocess fvwmrc I<file> or (if --cmd is given) I<line>.
+Preprocess fvwm config I<file> or (if --cmd is given) I<line>.
 This file contains lines that are not touched (usually FVWM commands)
 and specially preformatted perl code that is processed and replaced.
 Text enclosed in B<%{> ... B<}%> delimiters, that may start anywhere
@@ -658,12 +705,36 @@ Examples:
 Additional preprocess parameters --nosend and --noremove may be given too.
 See their description at the top.
 
+=item B<export> [I<func-names>]
+
+Send to I<fvwm> the definition of shortcut functions that help to activate
+different actions of the module (i.e. B<eval>, B<load> and B<preprocess>).
+
+Function names (I<func-names>) may be separated by commas or/and whitespace.
+By default, two functions "Eval" and "." are assumed.
+
+The actual action defined in a function is guessed from the function name
+if possible, where function name "." is reserved for B<preprocess> action.
+
+For example, any of these two fvwm commands
+
+   SendToModule MyPerl export PerlEval,PP
+   FvwmPerl --export PerlEval,PP MyPerl
+
+define the following two shortcut functions:
+
+  DestroyFunc PerlEval
+  AddToFunc I SendToModule MyPerl eval $*
+  DestroyFunc PP
+  AddToFunc I SendToModule MyPerl preprocess -c -- $*
+
 =back
 
-These 3 actions may be requested in one of 3 ways: 1) in the command line when
+These 4 actions may be requested in one of 3 ways: 1) in the command line when
 FvwmPerl is invoked (in this case FvwmPerl is short-lived unless B<--stay>
-is also given), 2) by sending the corresponding message in fvwmrc using
-SendToModule, 3) by calling the corresponding perl function in perl code.
+or B<--export> is also given), 2) by sending the corresponding message in
+fvwm config using SendToModule, 3) by calling the corresponding perl function
+in perl code.
 
 =head1 FUNCTIONS
 
@@ -691,6 +762,15 @@ on the file $fileName, described above.
 
 This function is equivalent to the B<preprocess> functionality
 with the given parameters and the file $fileName described above.
+
+=item B<export(>I<$funcNames, [$doUnexport]>B<)>
+
+This function is equivalent to the B<export> functionality
+with the given $funcNames, described above. May also B<unexport>
+the function names if the second parameter is true.
+
+Function names should be separated by commas or/and whitespace.
+If I<$funcNames> is empty then functions "Eval" and "." are assumed.
 
 =item B<stop()>
 
@@ -767,7 +847,11 @@ The names, meanings and parameters of the messages are the same as the
 corresponding actions, described above.
 
 Additionally, a message B<stop> causes a module to quit.
-A message B<dump> dumps the contents of the changed variables.
+
+A message B<unexport> [I<func-names>] undoes the effect of B<export>,
+described in the ACTIONS section.
+
+A message B<dump> dumps the contents of the changed variables (not yet).
 
 =head1 EXAMPLES
 
@@ -776,26 +860,27 @@ A simple test:
     SendToModule FvwmPerl eval $h{dir} = $ENV{HOME}
     SendToModule FvwmPerl eval load($h{dir} . "/test.fpl")
     SendToModule FvwmPerl load $[HOME]/test.fpl
-    SendToModule FvwmPerl preprocess fvwmrc.ppp
-    SendToModule FvwmPerl eval dump(\%h, @a);
+    SendToModule FvwmPerl preprocess config.ppp
+    SendToModule FvwmPerl export Eval,PerlEval,PerlLoad,PerlPP
+    SendToModule FvwmPerl unexport PerlEval,PerlLoad,PerlPP
     SendToModule FvwmPerl stop
 
 The following example handles root backgrounds in fvwmrc.
 All these commands may be added to StartFunction.
 
-    Module FvwmPerl
+    Module FvwmPerl --export PerlEval
 
     # find all background pixmaps for a later use
-    SendToModule FvwmPerl eval $a = $ENV{HOME} . "/bg"; \
+    PerlEval $a = $ENV{HOME} . "/bg"; \
       opendir DIR, $a; @b = grep { /xpm$/ } readdir(DIR); closedir DIR
 
     # build a menu of background pixmaps
     AddToMenu MyBackgrounds "My Backgrounds" Title
-    SendToModule FvwmPerl eval foreach $b (@b) \
+    PerlEval foreach $b (@b) \
       { cmd("AddToMenu MyBackgrounds '$b' Exec fvwm-root $a/$b") }
 
     # choose a random background to load on start-up
-    SendToModule FvwmPerl eval cmd("AddToFunc \
+    PerlEval cmd("AddToFunc \
       InitFunction + I Exec exec fvwm-root $a/" . $b[int(random(@b))])
 
 =head1 ESCAPING

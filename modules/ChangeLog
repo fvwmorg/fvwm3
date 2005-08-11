@@ -1,3 +1,12 @@
+2005-08-11  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPerl/FvwmPerl.in:
+	* FvwmPerl/FvwmPerl.1:
+	implement new configurable "export" action (and "unexport") that
+	defines (or undefines) shortcut fvwm functions to easier send
+	"eval", "load" and "preprocess" actions;
+	reuse the initial preprocessing quote if any; improve documentation
+
 2005-08-08  Jason Weber  <baboon@imonk.com>
 
 	* FvwmProxy/FvwmProxy.1.in:

@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FVWMPERL 1"
-.TH FVWMPERL 1 "2005-07-20" "perl v5.8.6" "FVWM Modules"
+.TH FVWMPERL 1 "2005-08-11" "perl v5.8.6" "FVWM Modules"
 .SH "NAME"
 FvwmPerl \- the FVWM perl manipulator and preprocessor
 .SH "SYNOPSIS"
@@ -152,7 +152,7 @@ if you want to immediatelly start to send commands to FvwmPerl.
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 This module is intended to extend fvwm commands with the perl scripting
-power.  It enables to embed perl expressions in the fvwmrc files and
+power.  It enables to embed perl expressions in the fvwm config files and
 construct fvwm commands.
 .SH "INVOCATION"
 .IX Header "INVOCATION"
@@ -171,7 +171,9 @@ There are several command line switches:
 [ \fB\-\-load\fR file ]
 [ \fB\-\-preprocess\fR [ \fB\-\-quote\fR char ] [ \fB\-\-winid\fR wid ] [ \fB\-\-cmd\fR ]
 [ \fB\-\-nosend\fR ] [ \fB\-\-noremove\fR ] [ line | file ] ]
-[ \fB\-\-stay\fR ] [ \fB\-\-nolock\fR ]
+[ \fB\-\-export\fR [names] ]
+[ \fB\-\-stay\fR ]
+[ \fB\-\-nolock\fR ]
 [ alias ]
 .PP
 Long switches may be abbreviated to short one-letter switches.
@@ -180,7 +182,7 @@ Long switches may be abbreviated to short one-letter switches.
 .PP
 \&\fB\-l\fR|\fB\-\-load\fR file \- evaluate perl code in the given file
 .PP
-\&\fB\-p\fR|\fB\-\-preprocess\fR [ file ] \- preprocess the given fvwmrc file
+\&\fB\-p\fR|\fB\-\-preprocess\fR [ file ] \- preprocess the given fvwm config file
 .PP
 The following 5 options are only valid together with \fB\-\-preprocess\fR
 option.
@@ -194,10 +196,13 @@ digit, may be in oct or hex form; this window id overwrites implicit
 window context if any)
 .PP
 \&\fB\-\-nosend\fR \- do not send the preprocessed file to \fIfvwm\fR for \fBRead\fRing,
-the default is send. Useful for preprocessing non fvwmrc files.
+the default is send. Useful for preprocessing non fvwm config files.
 .PP
 \&\fB\-\-noremove\fR \- do not remove the preprocessed file after sending
 it to \fIfvwm\fR for \fBRead\fRing, the default is remove. Useful for debugging.
+.PP
+\&\fB\-x\fR|\fB\-\-export\fR [names] \- define fvwm shortcut functions (by default,
+two functions named \*(L"Eval\*(R" and \*(L".\*(R").  This option implies \fB\-\-stay\fR.
 .PP
 \&\fB\-s\fR|\fB\-\-stay\fR \- continues an execution after \fB\-\-eval\fR, \fB\-\-load\fR or
 \&\fB\-\-preprocess\fR are processed.  By default, the module is not persistent
@@ -235,7 +240,7 @@ preprocess only separate configuration lines (or alternativelly,
 execute separate perl commands that produce fvwm commands).
 .PP
 The following code snippet adds ability of arithmetics and string scripting
-to certain lines that needs this. To use this, you want to start FvwmPerl as
+to certain lines that need this. To use this, you want to start FvwmPerl as
 your first command so that other commands may be asked to be preprosessed.
 .PP
 .Vb 1
@@ -260,8 +265,8 @@ your first command so that other commands may be asked to be preprosessed.
 .Ve
 .PP
 .Vb 3
-\&    # center a window (here "WindowId $[w.id]" is a workaround)
-\&    Next (MyWindow) . WindowId $[w.id] Move \e
+\&    # center a window
+\&    Next (MyWindow) . Move \e
 \&      %{($WIDTH - $[w.width]) / 2}%p %{($HEIGHT - $[w.height]) / 2}%p
 .Ve
 .PP
@@ -298,7 +303,7 @@ If perl code contains an error, it is printed to the standard error stream
 with the \fI[FvwmPerl][load]:\fR header prepended.
 .IP "\fBpreprocess\fR [\-q|\-\-quote char] [\-c|\-\-cmd] [\fIline\fR | \fIfile\fR]" 4
 .IX Item "preprocess [-q|--quote char] [-c|--cmd] [line | file]"
-Preprocess fvwmrc \fIfile\fR or (if \-\-cmd is given) \fIline\fR.
+Preprocess fvwm config \fIfile\fR or (if \-\-cmd is given) \fIline\fR.
 This file contains lines that are not touched (usually \s-1FVWM\s0 commands)
 and specially preformatted perl code that is processed and replaced.
 Text enclosed in \fB%{\fR ... \fB}%\fR delimiters, that may start anywhere
@@ -393,11 +398,38 @@ Examples:
 Additional preprocess parameters \-\-nosend and \-\-noremove may be given too.
 See their description at the top.
 .RE
+.IP "\fBexport\fR [\fIfunc-names\fR]" 4
+.IX Item "export [func-names]"
+Send to \fIfvwm\fR the definition of shortcut functions that help to activate
+different actions of the module (i.e. \fBeval\fR, \fBload\fR and \fBpreprocess\fR).
+.Sp
+Function names (\fIfunc-names\fR) may be separated by commas or/and whitespace.
+By default, two functions \*(L"Eval\*(R" and \*(L".\*(R" are assumed.
+.Sp
+The actual action defined in a function is guessed from the function name
+if possible, where function name \*(L".\*(R" is reserved for \fBpreprocess\fR action.
+.Sp
+For example, any of these two fvwm commands
+.Sp
+.Vb 2
+\&   SendToModule MyPerl export PerlEval,PP
+\&   FvwmPerl --export PerlEval,PP MyPerl
+.Ve
+.Sp
+define the following two shortcut functions:
+.Sp
+.Vb 4
+\&  DestroyFunc PerlEval
+\&  AddToFunc I SendToModule MyPerl eval $*
+\&  DestroyFunc PP
+\&  AddToFunc I SendToModule MyPerl preprocess -c -- $*
+.Ve
 .PP
-These 3 actions may be requested in one of 3 ways: 1) in the command line when
+These 4 actions may be requested in one of 3 ways: 1) in the command line when
 FvwmPerl is invoked (in this case FvwmPerl is short-lived unless \fB\-\-stay\fR
-is also given), 2) by sending the corresponding message in fvwmrc using
-SendToModule, 3) by calling the corresponding perl function in perl code.
+or \fB\-\-export\fR is also given), 2) by sending the corresponding message in
+fvwm config using SendToModule, 3) by calling the corresponding perl function
+in perl code.
 .SH "FUNCTIONS"
 .IX Header "FUNCTIONS"
 There are several functions that perl code may call:
@@ -419,6 +451,14 @@ on the file \f(CW$fileName\fR, described above.
 .IX Item "preprocess(@params, [-c $command] [$fileName])"
 This function is equivalent to the \fBpreprocess\fR functionality
 with the given parameters and the file \f(CW$fileName\fR described above.
+.IP "\fBexport(\fR\fI$funcNames, [$doUnexport]\fR\fB)\fR" 4
+.IX Item "export($funcNames, [$doUnexport])"
+This function is equivalent to the \fBexport\fR functionality
+with the given \f(CW$funcNames\fR, described above. May also \fBunexport\fR
+the function names if the second parameter is true.
+.Sp
+Function names should be separated by commas or/and whitespace.
+If \fI$funcNames\fR is empty then functions \*(L"Eval\*(R" and \*(L".\*(R" are assumed.
 .IP "\fB\f(BIstop()\fB\fR" 4
 .IX Item "stop()"
 Terminates the module.
@@ -495,17 +535,22 @@ The names, meanings and parameters of the messages are the same as the
 corresponding actions, described above.
 .PP
 Additionally, a message \fBstop\fR causes a module to quit.
-A message \fBdump\fR dumps the contents of the changed variables.
+.PP
+A message \fBunexport\fR [\fIfunc-names\fR] undoes the effect of \fBexport\fR,
+described in the \s-1ACTIONS\s0 section.
+.PP
+A message \fBdump\fR dumps the contents of the changed variables (not yet).
 .SH "EXAMPLES"
 .IX Header "EXAMPLES"
 A simple test:
 .PP
-.Vb 6
+.Vb 7
 \&    SendToModule FvwmPerl eval $h{dir} = $ENV{HOME}
 \&    SendToModule FvwmPerl eval load($h{dir} . "/test.fpl")
 \&    SendToModule FvwmPerl load $[HOME]/test.fpl
-\&    SendToModule FvwmPerl preprocess fvwmrc.ppp
-\&    SendToModule FvwmPerl eval dump(\e%h, @a);
+\&    SendToModule FvwmPerl preprocess config.ppp
+\&    SendToModule FvwmPerl export Eval,PerlEval,PerlLoad,PerlPP
+\&    SendToModule FvwmPerl unexport PerlEval,PerlLoad,PerlPP
 \&    SendToModule FvwmPerl stop
 .Ve
 .PP
@@ -513,25 +558,25 @@ The following example handles root backgrounds in fvwmrc.
 All these commands may be added to StartFunction.
 .PP
 .Vb 1
-\&    Module FvwmPerl
+\&    Module FvwmPerl --export PerlEval
 .Ve
 .PP
 .Vb 3
 \&    # find all background pixmaps for a later use
-\&    SendToModule FvwmPerl eval $a = $ENV{HOME} . "/bg"; \e
+\&    PerlEval $a = $ENV{HOME} . "/bg"; \e
 \&      opendir DIR, $a; @b = grep { /xpm$/ } readdir(DIR); closedir DIR
 .Ve
 .PP
 .Vb 4
 \&    # build a menu of background pixmaps
 \&    AddToMenu MyBackgrounds "My Backgrounds" Title
-\&    SendToModule FvwmPerl eval foreach $b (@b) \e
+\&    PerlEval foreach $b (@b) \e
 \&      { cmd("AddToMenu MyBackgrounds '$b' Exec fvwm-root $a/$b") }
 .Ve
 .PP
 .Vb 3
 \&    # choose a random background to load on start-up
-\&    SendToModule FvwmPerl eval cmd("AddToFunc \e
+\&    PerlEval cmd("AddToFunc \e
 \&      InitFunction + I Exec exec fvwm-root $a/" . $b[int(random(@b))])
 .Ve
 .SH "ESCAPING"
