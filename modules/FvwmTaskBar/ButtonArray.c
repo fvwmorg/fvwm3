@@ -55,6 +55,7 @@ extern GC shadow, hilite, graph, whitegc, blackgc, checkered, icongraph,
 extern GC iconbackgraph;
 extern GC focusbackgraph;
 extern FlocaleWinString *FwinString;
+extern int pad;
 extern int button_width;
 extern int iconcolorset;
 extern int focuscolorset;
@@ -261,6 +262,10 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 	XRectangle rect,inter;
 	Region t_region;
 
+	if (w <= 0)
+	{
+		w = 1;
+	}
 	if (button == NULL)
 	{
 		return;
@@ -698,7 +703,7 @@ void DrawButtonArray(ButtonArray *array, int all, XEvent *evp)
 		}
 		if (temp->needsupdate || all)
 			ButtonDraw(
-				temp, x + array->x, y, array->tw-3, array->h,
+				temp, x + array->x, y, array->tw-pad, array->h,
 				(temp->needsupdate)? NULL:evp);
 		x += array->tw;
 	}

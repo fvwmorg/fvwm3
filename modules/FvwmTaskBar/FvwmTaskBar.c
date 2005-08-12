@@ -131,6 +131,7 @@ GC      focushilite = None;
 GC      blackgc = None;
 GC      whitegc = None;
 GC      checkered = None;
+int     pad = 3;
 int     colorset = -1;
 int     iconcolorset = -1;
 int     focuscolorset = -1;
@@ -1088,6 +1089,7 @@ static char *moduleopts[] =
   "Rows",
   "PageOnly",
   "ScreenOnly",
+  "Pad",
   NULL
 };
 
@@ -1169,8 +1171,11 @@ static void ParseConfigLine(char *tline)
       colorset = -1;
       break;
     case 5: /* Colorset */
-      colorset = -1;
       colorset = atoi(rest);
+      if (colorset < 0)
+      {
+	      colorset = -1;
+      }
       AllocColorset(colorset);
       break;
     case 6: /* IconFore */
@@ -1182,8 +1187,11 @@ static void ParseConfigLine(char *tline)
       iconcolorset = -1;
       break;
     case 8: /* IconColorset */
-      iconcolorset = -1;
       iconcolorset = atoi(rest);
+      if (iconcolorset < 0)
+      {
+	      iconcolorset = -1;
+      }
       AllocColorset(iconcolorset);
       break;
     case 9: /* Action */
@@ -1202,7 +1210,10 @@ static void ParseConfigLine(char *tline)
       AutoHide=True;
       AutoStick=True;
       VisiblePixels=atoi(rest);
-      if (VisiblePixels < 1) VisiblePixels = DEFAULT_VISIBLE_PIXELS;
+      if (VisiblePixels < 1)
+      {
+	      VisiblePixels = DEFAULT_VISIBLE_PIXELS;
+      }
       break;
     case 14: /* UseIconNames */
       UseIconNames=True;
@@ -1215,12 +1226,20 @@ static void ParseConfigLine(char *tline)
       break;
     case 17: /* UpdateInterval */
       UpdateInterval = atoi(rest);
+      if (UpdateInterval < 0)
+      {
+	      UpdateInterval = 30;
+      }
       break;
     case 18: /* HighlightFocus */
       HighlightFocus=True;
       break;
     case 19: /* ButtonWidth */
       button_width = atoi(rest);
+      if (button_width < 0)
+      {
+	      button_width = DEFAULT_BTN_WIDTH;
+      }
       break;
     case 20: /* NoIconAction */
       CopyString(&AnimCommand, rest);
@@ -1239,8 +1258,11 @@ static void ParseConfigLine(char *tline)
       focuscolorset = -1;
       break;
     case 24: /* FocusColorset */
-      focuscolorset = -1;
       focuscolorset = atoi(rest);
+      if (focuscolorset < 0)
+      {
+	      focuscolorset = -1;
+      }
       AllocColorset(focuscolorset);
       break;
     case 25: /* 3DFvwm */
@@ -1248,8 +1270,9 @@ static void ParseConfigLine(char *tline)
       break;
     case 26: /* Rows */
       RowsNumber = atoi(rest);
-      if (!(1 <= RowsNumber && RowsNumber <= 8)) {
-	RowsNumber = 1;
+      if (!(1 <= RowsNumber && RowsNumber <= 8))
+      {
+	      RowsNumber = 1;
       }
       break;
     case 27: /* PageOnly */
@@ -1257,6 +1280,13 @@ static void ParseConfigLine(char *tline)
       break;
     case 28: /* ScreenOnly */
       ScreenOnly=True;
+      break;
+    case 29: /* Pad */
+      pad = atoi(rest);
+      if (pad < 0)
+      {
+	      pad = 3;
+      }
       break;
     default:
       if (!GoodiesParseConfig(tline) &&

@@ -21,6 +21,8 @@ Changes in beta release 2.5.14 (not released yet)
        . Exec xmessage %{2 + cos(0)}%    # embedded calculator
 
    - New FvwmProxy option ProxyIconified.
+   - New FvwmTaskBar option Pad to control the gap between
+     buttons.
 
 * Bug Fixes:
 

@@ -1,3 +1,9 @@
+2005-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/ButtonArray.c (DrawButtonArray):
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	new option "Pad" to control the gap between the buttons
+
 2005-08-11  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPerl/FvwmPerl.in:
