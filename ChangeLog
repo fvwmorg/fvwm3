@@ -1,3 +1,9 @@
+2005-08-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/conditional.c (CMD_Test):
+	* fvwm/fvwm.1.in:
+	add Test conditions IsEnvSet and MatchEnv
+
 2005-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menustyle.c (menustyle_copy):
@@ -117,6 +123,7 @@
 
 2005-07-19  Mikhael Goikhman  <migo@homemail.com>
 
+	* libs/FlocaleCharset.c:
 	support euc-jp encodings (Yasuhiro Nakazaki)
 
 2005-07-18  Dominik Vogt  <dominik.vogt@gmx.de>

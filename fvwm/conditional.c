@@ -1741,15 +1741,15 @@ void CMD_Test(F_CMD_ARGS)
 	char *restofline;
 	char *flags;
 	char *condition;
-	char *tmp;
+	char *flags_ptr;
 	int match;
 	int error;
 
 	flags = CreateFlagString(action, &restofline);
 
 	/* Next parse the flags in the string. */
-	tmp = flags;
-	tmp = GetNextSimpleOption(tmp, &condition);
+	flags_ptr = flags;
+	flags_ptr = GetNextSimpleOption(flags_ptr, &condition);
 
 	match = 1;
 	error = 0;
@@ -1776,11 +1776,12 @@ void CMD_Test(F_CMD_ARGS)
 		else if (StrEquals(cond, "Version"))
 		{
 			char *pattern;
-			tmp = GetNextSimpleOption(tmp, &pattern);
+			flags_ptr = GetNextSimpleOption(flags_ptr, &pattern);
 			if (pattern)
 			{
 				char *ver;
-				tmp = GetNextSimpleOption(tmp, &ver);
+				flags_ptr = GetNextSimpleOption(
+					flags_ptr, &ver);
 				if (ver == NULL)
 				{
 					match = matchWildcards(
@@ -1859,11 +1860,53 @@ void CMD_Test(F_CMD_ARGS)
 				/* cannot happen */
 				break;
 			}
-			tmp = GetNextSimpleOption(tmp, &pattern);
+			flags_ptr = GetNextSimpleOption(flags_ptr, &pattern);
 			if (pattern)
 			{
 				match = cond_check_access(pattern, type, im);
 				free(pattern);
+			}
+			else
+			{
+				error = 1;
+			}
+		}
+		else if (StrEquals(cond, "IsEnvSet"))
+		{
+			char *var_name;
+			flags_ptr = GetNextSimpleOption(flags_ptr, &var_name);
+			if (var_name)
+			{
+				const char *value = getenv(var_name);
+				match = value != NULL && value[0] != '\0';
+			}
+			else
+			{
+				error = 1;
+			}
+		}
+		else if (StrEquals(cond, "MatchEnv"))
+		{
+			char *var_name;
+			flags_ptr = GetNextSimpleOption(flags_ptr, &var_name);
+			if (var_name)
+			{
+				const char *value = getenv(var_name);
+				char *pattern;
+				flags_ptr = GetNextSimpleOption(
+					flags_ptr, &pattern);
+				if (!value)
+				{
+					value = "";
+				}
+				if (pattern)
+				{
+					match = matchWildcards(pattern, value);
+				}
+				else
+				{
+					error = 1;
+				}
 			}
 			else
 			{
@@ -1885,8 +1928,9 @@ void CMD_Test(F_CMD_ARGS)
 		{
 			break;
 		}
-		tmp = GetNextSimpleOption(tmp, &condition);
+		flags_ptr = GetNextSimpleOption(flags_ptr, &condition);
 	}
+
 	if (flags != NULL)
 	{
 		free(flags);

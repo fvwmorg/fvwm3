@@ -10346,6 +10346,8 @@ are satisfied.  The
 are keywords with possible arguments from the list below
 and are separated by commas or whitespace.  They include
 .IR "Version operator x.y.z" ,
+.IR "IsEnvSet varname" ,
+.IR "MatchEnv varname pattern" ,
 .IR Start ,
 .IR Init ,
 .IR Restart ,
@@ -10379,6 +10381,15 @@ Example:
 .EX
 Test (Version >= 2.5.11) Echo 2.5.11 or later.
 .EE
+The
+.I "IsEnvSet varname"
+test-condition is true if the given environment variable is set and
+not empty.
+The
+.I "MatchEnv varname pattern"
+test-condition is true if the environment variable value matches
+the pattern that may include special "*" and "?" chars.
+
 The
 .I Start
 test-condition is the same as either
