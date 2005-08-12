@@ -6,7 +6,9 @@
 
 2005-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (pop_menu_up):
 	* fvwm/menustyle.c (menustyle_copy):
+	two fixes by Viktor Griph
 
 	* fvwm/events.c (HandleEvents):
 	simplify the style list if there is nothing else to do

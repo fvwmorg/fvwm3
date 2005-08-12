@@ -28,6 +28,10 @@ Changes in beta release 2.5.14 (not released yet)
    - Fixed a hang with layers set by applications (e.g. AbiWord).
    - GotoDesk with a relative page argument now wraps around at
      the end of the given range as documented. (Bug #1396).
+   - PopupDelayed menu style option was not copied on
+     CopyMenuStyle.
+   - Transparent Animated menus with non-transparent popup were
+     not animated correctly.
    - Supported euc-jp class of encodings.
 
 -------------------------------------------------------------------
