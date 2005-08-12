@@ -945,21 +945,35 @@ void checkPanFrames(void)
  */
 void raisePanFrames(void)
 {
+	Window windows[4];
+	int n;
+
+	/* Note: make sure the stacking order of the pan frames is not changed
+	 * every time they are raised by using XRestackWindows. */
+	n = 0;
 	if (Scr.PanFrameTop.isMapped)
 	{
-		XRaiseWindow(dpy,Scr.PanFrameTop.win);
+		windows[n++] = Scr.PanFrameTop.win;
 	}
 	if (Scr.PanFrameLeft.isMapped)
 	{
-		XRaiseWindow(dpy,Scr.PanFrameLeft.win);
+		windows[n++] = Scr.PanFrameLeft.win;
 	}
 	if (Scr.PanFrameRight.isMapped)
 	{
-		XRaiseWindow(dpy,Scr.PanFrameRight.win);
+		windows[n++] = Scr.PanFrameRight.win;
 	}
 	if (Scr.PanFrameBottom.isMapped)
 	{
-		XRaiseWindow(dpy,Scr.PanFrameBottom.win);
+		windows[n++] = Scr.PanFrameBottom.win;
+	}
+	if (n > 0)
+	{
+		XRaiseWindow(dpy, windows[0]);
+		if (n > 1)
+		{
+			XRestackWindows(dpy, windows, n);
+		}
 	}
 
 	return;
