@@ -47,6 +47,7 @@
 #include "stack.h"
 #include "commands.h"
 #include "decorations.h"
+#include "virtual.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1912,6 +1913,112 @@ void CMD_Test(F_CMD_ARGS)
 			{
 				error = 1;
 			}
+		}
+		else if (StrEquals(cond, "EdgeIsActive"))
+		{
+			direction_t dir= DIR_NONE;
+			char *dirname;
+			char *next;
+			next = GetNextSimpleOption(flags_ptr, &dirname);
+			if (dirname)
+			{
+				dir = gravity_parse_dir_argument(
+					dirname, NULL, DIR_NONE);
+				if (dir == DIR_NONE)
+				{
+					if (!StrEquals(dirname, "Any"))
+					{
+						next = flags_ptr;
+					}
+				}
+				else if (dir > DIR_MAJOR_MASK)
+				{
+					error = 1;
+				}
+				free(dirname);
+			}
+
+			if (!error)
+			{
+				if (((dir == DIR_W || dir == DIR_NONE) &&
+					Scr.PanFrameLeft.isMapped) ||
+				    ((dir == DIR_N || dir == DIR_NONE) &&
+					Scr.PanFrameTop.isMapped) ||
+				    ((dir == DIR_S || dir == DIR_NONE) &&
+					Scr.PanFrameBottom.isMapped) ||
+				    ((dir == DIR_E || dir == DIR_NONE) &&
+ 				    	Scr.PanFrameRight.isMapped))
+				{
+				  	match = 1;
+				}
+				else
+				{
+				  	match = 0;
+				}
+			}
+			flags_ptr = next;
+		}
+		else if (StrEquals(cond, "EdgeHasPointer"))
+		{
+			int x,y;
+			Window win;
+			direction_t dir = DIR_NONE;
+			char *dirname;
+			char *next;
+			next = GetNextSimpleOption(flags_ptr, &dirname);
+			if (dirname)
+			{
+				dir = gravity_parse_dir_argument(
+					dirname, NULL, DIR_NONE);
+				if (dir == DIR_NONE)
+				{
+					if (!StrEquals(dirname, "Any"))
+					{
+						next = flags_ptr;
+					}
+				}
+				else if (dir > DIR_MAJOR_MASK)
+				{
+					error = 1;
+				}
+				free(dirname);
+			}
+
+			if (!error)
+			{
+				if (FQueryPointer(
+					dpy, Scr.Root, &JunkRoot, &win,
+					&JunkX, &JunkY,	&x, &y, &JunkMask)
+ 					== False)
+				{
+					/* pointer is on a different screen */
+					match = 0;
+				}
+				else if (is_pan_frame(win))
+				{
+					if (dir == DIR_NONE ||
+					    (dir == DIR_N &&
+					     win == Scr.PanFrameTop.win) ||
+					    (dir == DIR_S &&
+					     win == Scr.PanFrameBottom.win) ||
+					    (dir == DIR_E &&
+					     win == Scr.PanFrameRight.win) ||
+					    (dir == DIR_W &&
+					     win == Scr.PanFrameLeft.win))
+					{
+						match = 1;
+					}
+					else
+					{
+						match = 0;
+					}
+				}
+				else
+				{
+					match = 0;
+				}
+			}
+			flags_ptr = next;
 		}
 		else
 		{

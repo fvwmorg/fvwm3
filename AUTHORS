@@ -4,6 +4,7 @@ Maintainers of GNU Software" (maintain.texi), the section called
 
 Viktor Griph:
 Patch for Perl modules on 64 bit machines.
+EdgeHasPointer and EdgeIsActive test conditions.
 
 Bjoern Steinbrink:
 Patch for FvwmScript tasks running too often.

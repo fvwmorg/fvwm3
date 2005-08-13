@@ -8,7 +8,8 @@ Changes in beta release 2.5.14 (not released yet)
 * New features:
 
    - Fvwm now officially supports 64-bit architertures.
-   - New Test conditions IsEnvSet and MatchEnv.
+   - New Test conditions IsEnvSet, MatchEnv, EdgeHasPointer
+     and EdgeIsActive..
 
 * New module features:
 

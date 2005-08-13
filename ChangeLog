@@ -1,3 +1,9 @@
+2005-08-13  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/conditional.c (CMD_Test):
+	* fvwm/fvwm.1.in: 
+	added test conditions EdgeHasPointer and EdgeIsActive
+
 2005-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (raisePanFrames):

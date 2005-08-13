@@ -10348,6 +10348,8 @@ and are separated by commas or whitespace.  They include
 .IR "Version operator x.y.z" ,
 .IR "IsEnvSet varname" ,
 .IR "MatchEnv varname pattern" ,
+.IR "EdgeHasPointer direction" ,
+.IR "EdgeIsActive direction" ,
 .IR Start ,
 .IR Init ,
 .IR Restart ,
@@ -10389,6 +10391,22 @@ The
 .I "MatchEnv varname pattern"
 test-condition is true if the environment variable value matches
 the pattern that may include special "*" and "?" chars.
+
+The 
+.IB "EdgeHasPointer " [ direction ]
+test-condition is true if the edge in the given direction currently
+contains the pointer. 
+The 
+.IB "EdgeIsActive " [ direction ]
+test-condition is true if the edge in the given direction currently is
+active. An edge is active, and can contain a pointer if either a
+command is bound to it or edge scroll is available in that
+direction. The direction may be one of
+.IR " Any", " North", " Top", " Up", " West", " Left", " South", " Bottom", 
+.IR " Down", " Right" and " East" .
+If no direction is specified
+.I Any
+is assumed.
 
 The
 .I Start
