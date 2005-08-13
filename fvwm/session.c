@@ -82,6 +82,7 @@ typedef struct _match
 	int max_x_offset, max_y_offset;
 	int desktop;
 	int layer;
+	int default_layer;
 	int used;
 	int gravity;
 	unsigned long ewmh_hint_desktop;
@@ -523,7 +524,7 @@ SaveWindowStates(FILE *f)
 		{
 			layer = Scr.DefaultLayer;
 		}
-		fprintf(f, "  [LAYER] %i\n", layer);
+		fprintf(f, "  [LAYER] %i %i\n", layer, ewin->default_layer);
 		fprintf(f, "  [EWMH_DESKTOP] %lu\n", ewin->ewmh_hint_desktop);
 		fprintf(f, "  [FLAGS] ");
 		for (i = 0; i < sizeof(window_flags); i++)
@@ -1294,6 +1295,7 @@ LoadWindowStates(char *filename)
 			matches[num_match - 1].icon_y = 0;
 			matches[num_match - 1].desktop = 0;
 			matches[num_match - 1].layer = 0;
+			matches[num_match - 1].default_layer = 0;
 			memset(&(matches[num_match - 1].flags), 0,
 			       sizeof(window_flags));
 			matches[num_match - 1].used = 0;
@@ -1325,8 +1327,9 @@ LoadWindowStates(char *filename)
 		}
 		else if (!strcmp(s1, "[LAYER]"))
 		{
-			sscanf(s, "%*s %i",
-			       &(matches[num_match - 1].layer));
+			sscanf(s, "%*s %i %i",
+			       &(matches[num_match - 1].layer),
+			       &(matches[num_match - 1].default_layer));
 		}
 		else if (!strcmp(s1, "[EWMH_DESKTOP]"))
 		{
@@ -1544,6 +1547,7 @@ MatchWinToSM(
 			ewin->Desk = (IS_STICKY_ACROSS_DESKS(ewin)) ?
 				Scr.CurrentDesk : matches[i].desktop;
 			set_layer(ewin, matches[i].layer);
+			set_default_layer(ewin, matches[i].default_layer);
 			/* Note: the Modal, skip pager, skip taskbar and
 			 * "stacking order" state are not restored here: there
 			 * are restored in EWMH_ExitStuff */

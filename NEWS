@@ -36,6 +36,8 @@ Changes in beta release 2.5.14 (not released yet)
    - Transparent Animated menus with non-transparent popup were
      not animated correctly.
    - Supported euc-jp class of encodings.
+   - A window's default layer is no longer set to 0 durin a
+     restart.
 
 -------------------------------------------------------------------
 
