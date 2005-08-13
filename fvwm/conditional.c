@@ -1872,21 +1872,21 @@ void CMD_Test(F_CMD_ARGS)
 				error = 1;
 			}
 		}
-		else if (StrEquals(cond, "IsEnvSet"))
+		else if (StrEquals(cond, "EnvIsSet"))
 		{
 			char *var_name;
 			flags_ptr = GetNextSimpleOption(flags_ptr, &var_name);
 			if (var_name)
 			{
 				const char *value = getenv(var_name);
-				match = value != NULL && value[0] != '\0';
+				match = value != NULL;
 			}
 			else
 			{
 				error = 1;
 			}
 		}
-		else if (StrEquals(cond, "MatchEnv"))
+		else if (StrEquals(cond, "EnvMatch"))
 		{
 			char *var_name;
 			flags_ptr = GetNextSimpleOption(flags_ptr, &var_name);
@@ -1894,6 +1894,8 @@ void CMD_Test(F_CMD_ARGS)
 			{
 				const char *value = getenv(var_name);
 				char *pattern;
+				/* unfortunately, GetNextSimpleOption is
+				 * broken, does not accept quoted empty "" */
 				flags_ptr = GetNextSimpleOption(
 					flags_ptr, &pattern);
 				if (!value)
@@ -1902,7 +1904,11 @@ void CMD_Test(F_CMD_ARGS)
 				}
 				if (pattern)
 				{
-					match = matchWildcards(pattern, value);
+					match =
+						/* include empty string case */
+						(!pattern[0] && !value[0])
+						||
+						matchWildcards(pattern, value);
 				}
 				else
 				{

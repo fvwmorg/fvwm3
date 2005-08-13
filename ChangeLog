@@ -1,7 +1,14 @@
+2005-08-13  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/conditional.c (CMD_Test):
+	* fvwm/fvwm.1.in:
+	rename previously added Test conditions to EnvIsSet and EnvMatch,
+	tweak the logic when the variable is set, but empty
+
 2005-08-13  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/conditional.c (CMD_Test):
-	* fvwm/fvwm.1.in: 
+	* fvwm/fvwm.1.in:
 	added test conditions EdgeHasPointer and EdgeIsActive
 
 2005-08-12  Dominik Vogt  <dominik.vogt@gmx.de>

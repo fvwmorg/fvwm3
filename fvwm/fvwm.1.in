@@ -10346,8 +10346,8 @@ are satisfied.  The
 are keywords with possible arguments from the list below
 and are separated by commas or whitespace.  They include
 .IR "Version operator x.y.z" ,
-.IR "IsEnvSet varname" ,
-.IR "MatchEnv varname pattern" ,
+.IR "EnvIsSet varname" ,
+.IR "EnvMatch varname pattern" ,
 .IR "EdgeHasPointer direction" ,
 .IR "EdgeIsActive direction" ,
 .IR Start ,
@@ -10384,13 +10384,14 @@ Example:
 Test (Version >= 2.5.11) Echo 2.5.11 or later.
 .EE
 The
-.I "IsEnvSet varname"
-test-condition is true if the given environment variable is set and
-not empty.
+.I "EnvIsSet varname"
+test-condition is true if the given environment variable is set.
 The
-.I "MatchEnv varname pattern"
-test-condition is true if the environment variable value matches
-the pattern that may include special "*" and "?" chars.
+.I "EnvMatch varname pattern"
+test-condition is true if
+.I pattern
+matches the given environment variable value.
+The pattern may contain special "*" and "?" chars.
 
 The 
 .IB "EdgeHasPointer " [ direction ]
