@@ -541,6 +541,11 @@ int HandlePaging(
 
 	do
 	{
+		int rc;
+		Window JunkW;
+		int JunkC;
+		unsigned int JunkM;
+
 		if (FCheckPeekIfEvent(dpy, &e, test_button_event, NULL))
 		{
 			is_timestamp_valid = False;
@@ -548,7 +553,16 @@ int HandlePaging(
 			return 0;
 		}
 		/* get pointer location */
-		fev_get_evpos_or_query(dpy, Scr.Root, pev, &x, &y);
+		rc = FQueryPointer(
+			dpy, Scr.Root, &JunkW, &JunkW, &x, &y, &JunkC, &JunkC,
+			&JunkM);
+		if (rc == False)
+		{
+			/* pointer is on a different screen */
+			x = 0;
+			y = 0;
+		}
+
 		/* check actual pointer location since PanFrames can get buried
 		 * under window being moved or resized - mab */
 		if (x >= edge_thickness &&

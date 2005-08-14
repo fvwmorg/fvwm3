@@ -1,3 +1,10 @@
+2005-08-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c (HandlePaging):
+	use FQueryPointer every time to track the pointer position; this fixes
+	fvwm hanging in HandlePaging for the given delay once the pointer
+	touches the pan frames
+
 2005-08-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/session.c (SaveWindowStates):

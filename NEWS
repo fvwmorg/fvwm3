@@ -38,6 +38,10 @@ Changes in beta release 2.5.14 (not released yet)
    - Supported euc-jp class of encodings.
    - A window's default layer is no longer set to 0 durin a
      restart.
+   - Fixed an annoying MouseFocus/SloppyFocus problem in
+     conjunction with EdgeResistance + EdgeScroll (sometimes a
+     window did noit get the focus as it should have). This
+     problem first occured in 2.5.11.
 
 -------------------------------------------------------------------
 
