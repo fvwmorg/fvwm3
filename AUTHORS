@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Jonathan Kotta:
+FixedPosition condition.
+
 Viktor Griph:
 Patch for Perl modules on 64 bit machines.
 EdgeHasPointer and EdgeIsActive test conditions.

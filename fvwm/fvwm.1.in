@@ -10477,7 +10477,7 @@ is another conditional command, the previous return code is
 replaced by the new one.  Example:
 .EX
 AddToFunc ToggleXterm
-+ I Any (my_xtermwindow) Close
++ I All (my_xtermwindow) Close
 + I TestRc (NoMatch) Exec xterm -T my_xtermwindow
 .EE
 
@@ -10620,6 +10620,7 @@ directly in front of its name.
 .IR CurrentPage ,
 .IR CurrentPageAnyDesk ,
 .IR CurrentScreen ,
+.IR FixedPosition ,
 .IR FixedSize ,
 .IR Focused ,
 .IR HasHandles ,
@@ -10736,6 +10737,21 @@ that are at least partially on the Xinerama screen containing the
 mouse pointer.
 
 The
+.I FixedPosition
+condition excludes all windows that don't have a fixed position,
+either set through WM hints or the
+.B Style
+option
+.IR FixedPosition .
+Example:
+.EX
+DestroyFunc ToggleFixedGeometry
+AddToFunc   ToggleFixedGeometry
++ I Pick (FixedPosition) WindowStyle VariablePosition, VariableSize
++ I TestRc (NoMatch) WindowStyle FixedPosition, FixedSize
+.EE
+
+The
 .I FixedSize
 condition excludes all windows that don't have a fixed size,
 either set through WM hints or the
@@ -10745,7 +10761,7 @@ option
 
 The
 .I Focused
-matches on the the window the currently has the keyboard focus.
+matches on the the window that currently has the keyboard focus.
 This is not useful for the
 .B Current
 command but can be used with the other conditional commands.

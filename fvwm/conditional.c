@@ -517,31 +517,36 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond,"FixedSize"))
 		{
-		        /* don't set mask here, because we make the test here
+			/* don't set mask here, because we make the test here
 			   (and don't compare against window's mask)
 			   by checking allowed function */
-		        SET_SIZE_FIXED(mask, on);
+			SET_SIZE_FIXED(mask, on);
 			SETM_SIZE_FIXED(mask, 1);
+		}
+		else if (StrEquals(cond, "FixedPosition"))
+		{
+			SET_FIXED(mask, on);
+			SETM_FIXED(mask, 1);
 		}
 		else if (StrEquals(cond,"HasHandles"))
 		{
-		        SET_HAS_HANDLES(mask,on);
-			SETM_HAS_HANDLES(mask,1);
+			SET_HAS_HANDLES(mask, on);
+			SETM_HAS_HANDLES(mask, 1);
 		}
 		else if (StrEquals(cond,"Iconifiable"))
 		{
-		        SET_IS_UNICONIFIABLE(mask,!on);
-		        SETM_IS_UNICONIFIABLE(mask,1);
+			SET_IS_UNICONIFIABLE(mask, !on);
+			SETM_IS_UNICONIFIABLE(mask, 1);
 		}
 		else if (StrEquals(cond,"Maximizable"))
 		{
-		        SET_IS_UNMAXIMIZABLE(mask,!on);
-		        SETM_IS_UNMAXIMIZABLE(mask,1);
+			SET_IS_UNMAXIMIZABLE(mask, !on);
+			SETM_IS_UNMAXIMIZABLE(mask, 1);
 		}
 		else if (StrEquals(cond,"Closable"))
 		{
-		        SET_IS_UNCLOSABLE(mask,!on);
-		        SETM_IS_UNCLOSABLE(mask,1);
+			SET_IS_UNCLOSABLE(mask, !on);
+			SETM_IS_UNCLOSABLE(mask, 1);
 		}
 		else if (StrEquals(cond,"Shaded"))
 		{
@@ -717,8 +722,21 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	    !is_function_allowed(F_RESIZE,NULL,fw,True,False))
 	{
 	        return False;
-        }
-        SETM_SIZE_FIXED(mask, 0);
+	}
+	SETM_SIZE_FIXED(mask, 0);
+	if (IS_FIXED(mask) && 
+	    mask->flag_mask.common.s.is_fixed &&
+	    is_function_allowed(F_MOVE, NULL, fw, True, False))
+	{       
+	        return False;
+	}
+	if (!IS_FIXED(mask) && 
+	    mask->flag_mask.common.s.is_fixed &&
+	    !is_function_allowed(F_MOVE, NULL, fw, True, False))
+	{       
+	        return False;
+	}
+	SETM_FIXED(mask, 0);
 	if (IS_UNICONIFIABLE(mask) &&
 	    mask->flag_mask.common.s.is_uniconifiable &&
 	    is_function_allowed(F_ICONIFY,NULL,fw,True,False))
