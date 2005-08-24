@@ -632,8 +632,7 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
 		}
 		if (!has_hint)
 		{
-			SET_HAS_EWMH_INIT_HIDDEN_STATE(
-				fw, EWMH_STATE_NO_HINT);
+			SET_HAS_EWMH_INIT_HIDDEN_STATE(fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
 		style->flags.do_start_iconic = 1;
@@ -835,11 +834,13 @@ int ewmh_WMStateModal(EWMH_CMD_ARGS)
 				fw, EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
-		if (!has_hint &&
-		    HAS_EWMH_INIT_MODAL_STATE(fw) != EWMH_STATE_HAS_HINT)
+		if (HAS_EWMH_INIT_MODAL_STATE(fw) != EWMH_STATE_UNDEFINED_HINT)
 		{
-			SET_HAS_EWMH_INIT_MODAL_STATE(
-				fw, EWMH_STATE_NO_HINT);
+			return 0;
+		}
+		if (!has_hint)
+		{
+			SET_HAS_EWMH_INIT_MODAL_STATE(fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
 
@@ -938,11 +939,6 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
 				fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
-		if (has_hint && HAS_EWMH_INIT_SHADED_STATE(fw) ==
-		    EWMH_STATE_NO_HINT)
-		{
-			return 0;
-		}
 
 		SET_SHADED(fw, 1);
 		SET_SHADED_DIR(fw, GET_TITLE_DIR(fw));
@@ -1003,20 +999,15 @@ int ewmh_WMStateSkipPager(EWMH_CMD_ARGS)
 				fw, EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
+		if (HAS_EWMH_INIT_SKIP_PAGER_STATE(fw) !=
+		    EWMH_STATE_UNDEFINED_HINT)
+		{
+			return 0;
+		}
+		if (!has_hint)
 		{
 			SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(
 				fw, EWMH_STATE_NO_HINT);
-			return 0;
-		}
-		if (!has_hint && HAS_EWMH_INIT_SKIP_PAGER_STATE(fw) !=
-		    EWMH_STATE_HAS_HINT)
-		{
-			return 0;
-		}
-		if (has_hint && HAS_EWMH_INIT_SKIP_PAGER_STATE(fw) ==
-		    EWMH_STATE_NO_HINT)
-		{
 			return 0;
 		}
 
@@ -1078,16 +1069,15 @@ int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS)
 				fw, EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
-		if (!has_hint && HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw) !=
-		    EWMH_STATE_HAS_HINT)
+		if (HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw) !=
+		    EWMH_STATE_UNDEFINED_HINT)
+		{
+			return 0;
+		}
+		if (!has_hint)
 		{
 			SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(
 				fw, EWMH_STATE_NO_HINT);
-			return 0;
-		}
-		if (has_hint && HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw) ==
-		    EWMH_STATE_NO_HINT)
-		{
 			return 0;
 		}
 

@@ -1,3 +1,11 @@
+2005-08-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/ewmh_events.c (ewmh_WMStateShaded)
+	(ewmh_WMStateSkipTaskBar):
+	(ewmh_WMStateSkipPager):
+	(ewmh_WMStateModal):
+	fixed several ewmh-hints
+
 2005-08-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.1.in:
