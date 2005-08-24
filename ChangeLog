@@ -2,6 +2,11 @@
 
 	* NEWS:
 	* configure.in:
+	increased version to 2.5.15
+	released 2.5.14
+
+	* NEWS:
+	* configure.in:
 	updated for 2.5.14 release
 
 	* fvwm/ewmh_events.c (ewmh_WMStateShaded)
