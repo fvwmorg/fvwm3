@@ -35,7 +35,7 @@
 Bool FBidiIsApplicable(const char *charset)
 {
 	if (fribidi_parse_charset((char *)charset) ==
-	    FRIBIDI_CHARSET_NOT_FOUND)
+	    FRIBIDI_CHAR_SET_NOT_FOUND)
 	{
 		return False;
 	}
@@ -69,7 +69,7 @@ char *FBidiConvert(
 	}
 
 	fribidi_charset = fribidi_parse_charset((char *)charset);
-	if (fribidi_charset == FRIBIDI_CHARSET_NOT_FOUND)
+	if (fribidi_charset == FRIBIDI_CHAR_SET_NOT_FOUND)
 	{
 		return NULL;
 	}
@@ -99,20 +99,20 @@ char *FBidiConvert(
 	/* remap mapping from logical to visual to "compensate" for BIDI */
 	if (comb_chars != NULL)
 	{
-		for(i = 0 ; 
-		    comb_chars[i].c.byte1 != 0 || 
-		    comb_chars[i].c.byte2 != 0 ;
+		for (i = 0;
+		    comb_chars[i].c.byte1 != 0 ||
+		    comb_chars[i].c.byte2 != 0;
 		    i++)
 		{
 			/* if input string is zero characters => only
 			   combining chars, set position to zero */
 			comb_chars[i].position =
-				str_len != 0 ? 
+				str_len != 0 ?
 				pos_l_to_v[comb_chars[i].position] : 0;
 		}
 	}
 	
-	if(l_to_v != NULL)
+	if (l_to_v != NULL)
 	{
 		/* values in the previuos mapping gives the position of
 		   input characters after combining step */
@@ -120,17 +120,16 @@ char *FBidiConvert(
 		   the output from combining */
 		int orig_len;
 		int *l_to_v_temp;
-		i = 0;
-		for(i = 0 ; l_to_v[i] != -1 ; i++)
+		for (i = 0; l_to_v[i] != -1; i++)
 		{
 		}
 		orig_len = i;
 		l_to_v_temp = (int *)safemalloc(orig_len * sizeof(int));
-		for(i = 0 ; i < orig_len ; i++)
+		for (i = 0; i < orig_len; i++)
 		{
 			l_to_v_temp[i] = pos_l_to_v[l_to_v[i]];
 		}
-		for(i = 0 ; i < orig_len ; i++)
+		for (i = 0; i < orig_len; i++)
 		{
 			l_to_v[i] = l_to_v_temp[i];
 		}

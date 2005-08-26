@@ -806,6 +806,11 @@ if test x"$with_bidi" = xno; then
 	Bidi_LIBS=
 else
 	AC_DEFINE(HAVE_BIDI)
+	AC_TRY_RUN([#include <fribidi/fribidi.h>
+		int main(int c, char **v) {
+			return FRIBIDI_CHARSET_NOT_FOUND * 0;
+		}
+	], [AC_DEFINE(FRIBIDI_CHARSET_SPELLING)])
 fi
 AC_SUBST(Bidi_LIBS)
 AC_SUBST(Bidi_CFLAGS)

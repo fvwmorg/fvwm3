@@ -5,6 +5,10 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.15 (not released yet)
 
+* Bug Fixes:
+
+   - Supported a new fribidi version 0.10.5 in addition to 0.10.4.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.14 (24-Aug-2005)

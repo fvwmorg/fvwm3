@@ -112,6 +112,13 @@
 /* Define if fribidi library is used. */
 #undef HAVE_BIDI
 
+/* Support fribidi-0.10.4 and older with "CHARSET" spelling. */
+#undef FRIBIDI_CHARSET_SPELLING
+
+#ifdef FRIBIDI_CHARSET_SPELLING
+#  define FRIBIDI_CHAR_SET_NOT_FOUND FRIBIDI_CHARSET_NOT_FOUND
+#endif
+
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,
  * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined

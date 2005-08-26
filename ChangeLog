@@ -1,3 +1,12 @@
+2005-08-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* acconfig.h:
+	* configure.in:
+	* libs/FBidi.c:
+	support new spelling FRIBIDI_CHAR_SET_NOT_FOUND introduced in
+	fribidi-0.10.5; autodetect old spelling FRIBIDI_CHARSET_NOT_FOUND
+
 2005-08-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS:
