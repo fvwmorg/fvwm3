@@ -1527,7 +1527,7 @@ static void border_draw_one_border_part(
 	common_decorations_type *cd, FvwmWindow *fw, rectangle *sidebar_g,
 	rectangle *frame_g, border_relief_descr *br, window_parts part,
 	window_parts draw_handles, Bool is_inverted, Bool do_hilight,
-	Bool do_clear)
+	Bool do_clear, frame_title_layout_t *title_layout)
 {
 	pixmap_background_type bg;
 	rectangle part_g;
@@ -1536,6 +1536,9 @@ static void border_draw_one_border_part(
 	Pixmap p;
 	Window w;
 	Bool free_bg_pixmap = False;
+	
+	int title_height = title_layout->title_g.height;
+	int border_width = fw->boundary_width;
 
 	/* make a pixmap */
 	border_get_part_geometry(fw, part, sidebar_g, &part_g, &w);
@@ -1551,8 +1554,40 @@ static void border_draw_one_border_part(
 	relative_g.y = part_g.y;
 	border_get_border_background(
 		&bg, cd, &part_g, &relative_g, &free_bg_pixmap, w);
-	bg.pixmap.g.x = 0;
-	bg.pixmap.g.y = 0;
+	switch (part)
+	{
+	case PART_BORDER_E:
+		bg.pixmap.g.x = (frame_g->width - border_width);
+		break;
+	case PART_BORDER_NE:
+	case PART_BORDER_SE:
+		bg.pixmap.g.x = (frame_g->width - border_width - title_height);
+		break;
+	case PART_BORDER_N:
+	case PART_BORDER_S:
+		bg.pixmap.g.x = (border_width + title_height);
+		break;
+	default:
+		bg.pixmap.g.x = 0;
+		break;
+	}
+	switch (part)
+	{
+	case PART_BORDER_S:
+		bg.pixmap.g.y = (frame_g->height - border_width);
+		break;
+	case PART_BORDER_SW:
+	case PART_BORDER_SE:
+		bg.pixmap.g.y = (frame_g->height - border_width - title_height);
+		break;
+	case PART_BORDER_W:
+	case PART_BORDER_E:
+		bg.pixmap.g.y = (border_width + title_height);
+		break;
+	default:
+		bg.pixmap.g.y = 0;
+		break;
+	}
 	/* set the geometry for drawing the Tiled pixmap; maybe add the relief
 	 * as offset? */
 	pix_g.x = 0;
@@ -1592,6 +1627,7 @@ static void border_draw_all_border_parts(
 {
 	window_parts part;
 	window_parts draw_handles;
+	frame_title_layout_t title_layout;
 
 	/* get the description of the drawing directives */
 	border_get_border_relief_size_descr(&br->relief, fw, do_hilight);
@@ -1601,6 +1637,9 @@ static void border_draw_all_border_parts(
 	/* draw everything in a big loop */
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 	draw_handles = (draw_parts & PART_HANDLES);
+
+	frame_get_titlebar_dimensions(fw, frame_g, NULL, &title_layout);
+
 	for (part = PART_BORDER_N; (part & PART_FRAME); part <<= 1)
 	{
 		if (part & draw_parts)
@@ -1609,7 +1648,7 @@ static void border_draw_all_border_parts(
 				cd, fw, &br->sidebar_g, frame_g, br, part,
 				draw_handles,
 				(pressed_parts & part) ? True : False,
-				do_hilight, do_clear);
+				do_hilight, do_clear, &title_layout);
 		}
 	}
 

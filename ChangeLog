@@ -1,3 +1,11 @@
+2005-08-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/borders.c (border_draw_one_border_part)
+	(border_draw_all_border_parts):
+	improve offsets when drawing borders for "BorderStyle TiledPixmap"
+	windows to make the borders look homogeneous (based on the patch of
+	Evgeny Stambulchik)
+
 2005-08-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:
