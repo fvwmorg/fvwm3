@@ -592,7 +592,7 @@ static window_parts border_get_tb_parts_to_draw(
 		(fw->decor_state.parts_lit & PART_TITLE), 0);
 	if (old_state != td->tbstate.tstate)
 	{
-			draw_parts |= PART_TITLE;
+		draw_parts |= PART_TITLE;
 	}
 	/* size changed? */
 	if ((td->old_layout.title_g.width != td->layout.title_g.width ||
@@ -656,7 +656,7 @@ static window_parts border_get_tb_parts_to_draw(
 		if ((draw_parts & PART_TITLE) == PART_NONE &&
 		    (old_g->x != new_g->x || old_g->y != new_g->y))
 		{
-			for(tdf = df; tdf != NULL; tdf = tdf->next)
+			for (tdf = df; tdf != NULL; tdf = tdf->next)
 			{
 				if (DFS_FACE_TYPE(tdf->style) ==
 				    ColorsetButton &&
@@ -1526,8 +1526,7 @@ static void border_get_border_background(
 static void border_draw_one_border_part(
 	common_decorations_type *cd, FvwmWindow *fw, rectangle *sidebar_g,
 	rectangle *frame_g, border_relief_descr *br, window_parts part,
-	window_parts draw_handles, Bool is_inverted, Bool do_hilight,
-	Bool do_clear, frame_title_layout_t *title_layout)
+	window_parts draw_handles, Bool is_inverted, Bool do_clear)
 {
 	pixmap_background_type bg;
 	rectangle part_g;
@@ -1536,9 +1535,6 @@ static void border_draw_one_border_part(
 	Pixmap p;
 	Window w;
 	Bool free_bg_pixmap = False;
-	
-	int title_height = title_layout->title_g.height;
-	int border_width = fw->boundary_width;
 
 	/* make a pixmap */
 	border_get_part_geometry(fw, part, sidebar_g, &part_g, &w);
@@ -1557,15 +1553,15 @@ static void border_draw_one_border_part(
 	switch (part)
 	{
 	case PART_BORDER_E:
-		bg.pixmap.g.x = (frame_g->width - border_width);
+		bg.pixmap.g.x = frame_g->width - fw->boundary_width;
 		break;
 	case PART_BORDER_NE:
 	case PART_BORDER_SE:
-		bg.pixmap.g.x = (frame_g->width - border_width - title_height);
+		bg.pixmap.g.x = frame_g->width - fw->corner_width;
 		break;
 	case PART_BORDER_N:
 	case PART_BORDER_S:
-		bg.pixmap.g.x = (border_width + title_height);
+		bg.pixmap.g.x = fw->corner_width;
 		break;
 	default:
 		bg.pixmap.g.x = 0;
@@ -1574,15 +1570,15 @@ static void border_draw_one_border_part(
 	switch (part)
 	{
 	case PART_BORDER_S:
-		bg.pixmap.g.y = (frame_g->height - border_width);
+		bg.pixmap.g.y = frame_g->height - fw->boundary_width;
 		break;
 	case PART_BORDER_SW:
 	case PART_BORDER_SE:
-		bg.pixmap.g.y = (frame_g->height - border_width - title_height);
+		bg.pixmap.g.y = frame_g->height - fw->corner_width;
 		break;
 	case PART_BORDER_W:
 	case PART_BORDER_E:
-		bg.pixmap.g.y = (border_width + title_height);
+		bg.pixmap.g.y = fw->corner_width;
 		break;
 	default:
 		bg.pixmap.g.y = 0;
@@ -1627,7 +1623,6 @@ static void border_draw_all_border_parts(
 {
 	window_parts part;
 	window_parts draw_handles;
-	frame_title_layout_t title_layout;
 
 	/* get the description of the drawing directives */
 	border_get_border_relief_size_descr(&br->relief, fw, do_hilight);
@@ -1638,8 +1633,6 @@ static void border_draw_all_border_parts(
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 	draw_handles = (draw_parts & PART_HANDLES);
 
-	frame_get_titlebar_dimensions(fw, frame_g, NULL, &title_layout);
-
 	for (part = PART_BORDER_N; (part & PART_FRAME); part <<= 1)
 	{
 		if (part & draw_parts)
@@ -1648,7 +1641,7 @@ static void border_draw_all_border_parts(
 				cd, fw, &br->sidebar_g, frame_g, br, part,
 				draw_handles,
 				(pressed_parts & part) ? True : False,
-				do_hilight, do_clear, &title_layout);
+				do_clear);
 		}
 	}
 

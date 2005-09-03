@@ -1,3 +1,9 @@
+2005-09-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/borders.c (border_draw_one_border_part)
+	(border_draw_all_border_parts):
+	fix the previous patch to work with title-less windows too
+
 2005-08-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/borders.c (border_draw_one_border_part)
