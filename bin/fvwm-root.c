@@ -331,15 +331,13 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		Pixmap dp = None;
-		long prop;
+		long dp = (long)None;
 
 		if (prop == None)
 			prop = XInternAtom(dpy, "_XSETROOT_ID", False);
-		prop = dp;
 		XChangeProperty(
 			dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
-			(unsigned char *) &prop, 1);
+			(unsigned char *)  &dp, 1);
 	}
 	XCloseDisplay(dpy);
 

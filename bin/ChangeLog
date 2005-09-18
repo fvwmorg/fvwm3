@@ -1,3 +1,8 @@
+2005-09-19  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* fvwm-root.c (main):
+	64-bit refixes
+
 2005-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm-root.c (main):
