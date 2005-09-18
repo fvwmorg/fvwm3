@@ -1379,8 +1379,8 @@ void MakeList(void)
 	}
 	if (HAS_EWMH_INIT_STICKY_STATE(targ) == EWMH_STATE_HAS_HINT ||
 	    (HAS_EWMH_INIT_WM_DESKTOP(targ) ==  EWMH_STATE_HAS_HINT &&
-	     (target.ewmh_hint_desktop == 0xFFFFFFFE ||
-	      target.ewmh_hint_desktop == 0xFFFFFFFF)))
+	     (target.ewmh_hint_desktop == (unsigned long)-2 ||
+	      target.ewmh_hint_desktop == (unsigned long)-1)))
 	{
 		strcat(ewmh_init_state, "Sticky ");
 	}

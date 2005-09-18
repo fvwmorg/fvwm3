@@ -1382,6 +1382,7 @@ void CreateWindow(void)
     /* hack to prevent mapping on wrong screen with StartsOnScreen */
     FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
   }
+/*!!!*/fprintf(stderr, "pos %d %d, grav %d\n", wx, wy, gravity);
 
   mysizehints.win_gravity = gravity;
 
@@ -2002,6 +2003,7 @@ void ParseOptions(void)
 	  xneg = 1;
 	if (flags & YNegative)
 	  yneg = 1;
+/*!!!*/fprintf(stderr, "geom: size %d %d, pos %d %d, neg %d %d\n", num_columns, num_rows, geom_x, geom_y, xneg, yneg);
       }
       else if (strncasecmp(tline,CatString3(
 			     "*", MyName, "MaxIconSize"),Clength+12)==0)

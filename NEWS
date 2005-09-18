@@ -9,6 +9,7 @@ Changes in beta release 2.5.15 (not released yet)
 
    - Supported a new fribidi version 0.10.5 in addition to 0.10.4.
    - Better look for windows with "BorderStyle TiledPixmap".
+   - Some EWMH-related 64-bit fixes.
 
 -------------------------------------------------------------------
 

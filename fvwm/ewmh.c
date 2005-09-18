@@ -577,7 +577,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fw)
 
 	if (IS_STICKY_ACROSS_DESKS(fw))
 	{
-		desk = 0xFFFFFFFF;
+		desk = (unsigned long)-1;
 	}
 	else if (desk >= ewmhc.CurrentNumberOfDesktops)
 	{

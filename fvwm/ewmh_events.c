@@ -231,7 +231,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 
 		/* the spec says that if d = 0xFFFFFFFF then we have to Stick
 		 * the window however KDE use 0xFFFFFFFE :o) */
-		if (d == 0xFFFFFFFE || d == 0xFFFFFFFF)
+		if (d == (unsigned long)-2 || d == (unsigned long)-1)
 		{
 			execute_function_override_window(
 				NULL, NULL, "Stick on", 0, fw);
@@ -299,7 +299,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 			HAS_EWMH_INIT_WM_DESKTOP(fw),
 			fw->ewmh_hint_desktop, val[0]);
 #endif
-		if ((val[0] == 0xFFFFFFFE || val[0] == 0xFFFFFFFF))
+		if (val[0] == (unsigned long)-2 || val[0] == (unsigned long)-1)
 		{
 			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
 			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
