@@ -1551,7 +1551,11 @@ static void append_item_to_menu(
 			{
 				MR_LAST_ITEM(mr) = mi;
 			}
-			MI_PREV_ITEM(MI_NEXT_ITEM(MR_FIRST_ITEM(mr))) = mi;
+			if (MI_NEXT_ITEM(MR_FIRST_ITEM(mr)) != NULL)
+			{
+				MI_PREV_ITEM(MI_NEXT_ITEM(
+					MR_FIRST_ITEM(mr))) = mi;
+			}
 			MI_NEXT_ITEM(mi) = MI_NEXT_ITEM(MR_FIRST_ITEM(mr));
 			menuitem_free(MR_FIRST_ITEM(mr));
 		}

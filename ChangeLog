@@ -1,3 +1,9 @@
+2005-09-20  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* fvwm/menus.c (append_item_to_menu): 
+	fixed bug #1121: Use of pointer without checking for NULL
+
 2005-09-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:
@@ -17,13 +23,6 @@
 	* fvwm/ewmh_events.c (ewmh_WMDesktop):
 	(ewmh_WMDesktop):
 	64-bit fixes
-
-2005-09-13  Viktor Griph  <griph@dd.chalmers.se>
-
-	* NEWS:
-	* AUTHORS:
-	* fvwm/expand.c (expand_vars_extended, expand_vars):
-	allow nesting of variables
 
 2005-09-03  Mikhael Goikhman  <migo@homemail.com>
 

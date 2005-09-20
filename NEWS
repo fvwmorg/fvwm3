@@ -15,6 +15,8 @@ Changes in beta release 2.5.15 (not released yet)
    - Supported a new fribidi version 0.10.5 in addition to 0.10.4.
    - Better look for windows with "BorderStyle TiledPixmap".
    - Some EWMH-related 64-bit fixes.
+   - Fixed segmentation fault when replacing title of title only menus
+     (Bug #1121)
 
 -------------------------------------------------------------------
 
