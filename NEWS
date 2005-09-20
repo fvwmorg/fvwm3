@@ -5,6 +5,11 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.15 (not released yet)
 
+* New features:
+
+   - Variables can be nested, like $[desk.name$[desk.n]].
+   - Obsolete one-letter variables work, but generate warnings now.
+
 * Bug Fixes:
 
    - Supported a new fribidi version 0.10.5 in addition to 0.10.4.

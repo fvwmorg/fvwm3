@@ -700,6 +700,20 @@ static signed int expand_vars_extended(
 	default:
 		/* unknown variable - try to find it in the environment */
 		string = getenv(var_name);
+		if (!string)
+		{
+			/* Replace it with unexpanded variable. This is needed 
+			 * since var_name might have been expanded */
+			l = strlen(var_name) + 3;
+			if (output)
+			{
+				strcpy(output, "$[");
+				strcpy(output + 2, var_name);
+				output[l - 1] = ']';
+				output[l] = 0;
+			}
+			return l; 
+		}
 	}
 	if (is_numeric)
 	{
@@ -723,7 +737,8 @@ char *expand_vars(
 	cond_rc_t *cond_rc, const exec_context_t *exc)
 {
 	int l, i, l2, n, k, j, m;
-	int xlen;
+	int xlen, xlevel;
+	Bool name_has_dollar;
 	char *out;
 	char *var;
 	const char *string = NULL;
@@ -755,9 +770,27 @@ char *expand_vars(
 				/* extended variables */
 				var = &input[i+2];
 				m = i + 2;
-				while (m < l && input[m] != ']' && input[m])
+				xlevel = 1;
+				name_has_dollar = False;
+				while (m < l && xlevel && input[m])
 				{
-					m++;
+					/* handle nested variables */
+					if (input[m] == ']')
+					{
+						xlevel--;
+					}
+					else if (input[m] == '[')
+					{
+						xlevel++;
+					}
+					else if (input[m] == '$')
+					{
+						name_has_dollar = True;
+					}
+					if (xlevel)
+					{
+						m++;
+					}
 				}
 				if (input[m] == ']')
 				{
@@ -766,9 +799,20 @@ char *expand_vars(
 					k = strlen(var);
 					if (!addto)
 					{
+						if (name_has_dollar)
+						{
+							var = expand_vars(
+								var, arguments,
+								addto, ismod,
+								cond_rc, exc);
+						}
 						xlen = expand_vars_extended(
 							var, NULL, cond_rc,
 							exc);
+						if (name_has_dollar)
+						{
+							free(var);
+						}
 						if (xlen >= 0)
 						{
 							l2 += xlen - (k + 2);
@@ -890,17 +934,45 @@ char *expand_vars(
 				}
 				var = &input[i+2];
 				m = i + 2;
-				while (m < l && input[m] != ']' && input[m])
+				xlevel = 1;
+				name_has_dollar = False;
+				while (m < l && xlevel && input[m])
 				{
-					m++;
+					/* handle nested variables */
+					if (input[m] == ']')
+					{
+						xlevel--;
+					}
+					else if (input[m] == '[')
+					{
+						xlevel++;
+					}
+					else if (input[m] == '$')
+					{
+						name_has_dollar = True;
+					}
+					if (xlevel)
+					{
+						m++;
+					}
 				}
 				if (input[m] == ']')
 				{
 					input[m] = 0;
 					/* handle variable name */
 					k = strlen(var);
+					if (name_has_dollar)
+					{
+						var = expand_vars(
+							var, arguments,	addto,
+							ismod, cond_rc,	exc);
+					}
 					xlen = expand_vars_extended(
 						var, &out[j], cond_rc, exc);
+					if (name_has_dollar)
+					{
+						free(var);
+					}
 					input[m] = ']';
 					if (xlen >= 0)
 					{
@@ -975,10 +1047,8 @@ char *expand_vars(
 			case 'w':
 				if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 				{
-#if 0
 					fvwm_msg(OLD, "expand_vars",
 						"Use $[w.id] instead of $w");
-#endif
 					sprintf(&out[j], "0x%x",
 						(unsigned int)FW_W(fw));
 				}
@@ -990,28 +1060,22 @@ char *expand_vars(
 				i++;
 				break;
 			case 'd':
-#if 0
 				fvwm_msg(OLD, "expand_vars",
 					"Use $[desk.n] instead of $d");
-#endif
 				sprintf(&out[j], "%d", Scr.CurrentDesk);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'x':
-#if 0
 				fvwm_msg(OLD, "expand_vars",
 					"Use $[vp.x] instead of $x");
-#endif
 				sprintf(&out[j], "%d", Scr.Vx);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'y':
-#if 0
 				fvwm_msg(OLD, "expand_vars",
 					"Use $[vp.y] instead of $y");
-#endif
 				sprintf(&out[j], "%d", Scr.Vy);
 				j += strlen(&out[j]);
 				i++;
@@ -1025,11 +1089,9 @@ char *expand_vars(
 					switch(input[i+1])
 					{
 					case 'c':
-#if 0
 						fvwm_msg(OLD, "expand_vars",
 							"Use $[w.class] "
 							"instead of $c");
-#endif
 						if (fw->class.res_class &&
 						    fw->class.res_class[0])
 						{
@@ -1038,11 +1100,9 @@ char *expand_vars(
 						}
 						break;
 					case 'r':
-#if 0
 						fvwm_msg(OLD, "expand_vars",
 							"Use $[w.resource] "
 							"instead of $r");
-#endif
 						if (fw->class.res_name &&
 						    fw->class.res_name[0])
 						{
@@ -1051,11 +1111,9 @@ char *expand_vars(
 						}
 						break;
 					case 'n':
-#if 0
 						fvwm_msg(OLD, "expand_vars",
 							"Use $[w.name] "
 							"instead of $n");
-#endif
 						if (fw->name.name &&
 						    fw->name.name[0])
 						{

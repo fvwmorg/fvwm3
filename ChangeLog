@@ -1,9 +1,29 @@
+2005-09-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* fvwm/expand.c (expand_vars):
+	warn on usage of obsolete one-letter variables
+
+2005-09-19  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* AUTHORS:
+	* fvwm/expand.c (expand_vars_extended, expand_vars):
+	allow nesting of variables
+
 2005-09-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ewmh.c (EWMH_SetWMDesktop):
 	* fvwm/ewmh_events.c (ewmh_WMDesktop):
 	(ewmh_WMDesktop):
 	64-bit fixes
+
+2005-09-13  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* AUTHORS:
+	* fvwm/expand.c (expand_vars_extended, expand_vars):
+	allow nesting of variables
 
 2005-09-03  Mikhael Goikhman  <migo@homemail.com>
 
@@ -1155,8 +1175,8 @@
 
 2004-05-29  Norbert Buchmuller  <norbi@nix.hu>
 
-       * libs/FImage.c (FShmSafeCreateImage):
-       Yet another fix to SHM remote client problem
+	* libs/FImage.c (FShmSafeCreateImage):
+	Yet another fix to SHM remote client problem
 
 2004-05-26  Francis Litterio  <franl@world.std.com>
 
@@ -2049,7 +2069,7 @@
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
 	* NEWS:
-        updated with reagrds to combing characters
+	updated with reagrds to combing characters
 
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
@@ -10326,7 +10346,7 @@
 	A font can now be given as a ";" separated list of either ","
 	separated list of XFLD font name or Xft font name with "xft:" as
 	prefix, e.g.:
-          xft:Verdana:Regular:size=12:rgba=rgb;-adobe-*-medium-r-*--12-*,fixed
+	  xft:Verdana:Regular:size=12:rgba=rgb;-adobe-*-medium-r-*--12-*,fixed
 	See Flocale.h for details
 
 	* fvwm/events.c (HandleExpose):
@@ -11292,7 +11312,7 @@
 	Check as a user request
 
 	* fvwm/fvwm2.1:
-        * fvwm/move_resize.c (CMD_Maximize):
+	* fvwm/move_resize.c (CMD_Maximize):
 	(MaximizeWidth):
 	(MaximizeHeight):
 	New global flags "layer" and "ewmiwa". layer causes the grow* methods
@@ -12730,9 +12750,9 @@
 2001-08-20  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/focus.c (MoveFocus, focus_grab_buttons): Fixed passive button
-        grab synchronization so apps using XtTranslations to catch double-
-        clicks don't get confused by extraneous Leave/EnterNotify events.
-        This fixes the "xfm/moxfm don't see double-clicks" problem.
+	grab synchronization so apps using XtTranslations to catch double-
+	clicks don't get confused by extraneous Leave/EnterNotify events.
+	This fixes the "xfm/moxfm don't see double-clicks" problem.
 
 2001-08-20  Dan Espen  <dane@mk.telcordia.com>
 
