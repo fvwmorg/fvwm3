@@ -73,6 +73,7 @@ $internalPods->{index} = qq{
 
 	    index
 	    tutorial
+	    events
 	    {{CLASS_NAMES}}
 
 	For example:
@@ -96,7 +97,8 @@ $internalPods->{tutorial} = q{
 	A window manager is a program that runs on top of the X Window
 	System and manages windows, menus, key and mouse bindings, virtual
 	desktops and pages, draws window decorations using defined colors or
-	images, title-bar buttons and fonts.  It may also manage such things
+	images, title-bar buttons and fonts. The window manager defines
+	window placement and focus policies. It may also manage such things
 	as root background, mouse cursors, sounds, run applications and
 	do other nice things.
 
@@ -132,7 +134,7 @@ $internalPods->{tutorial} = q{
 	loop again.
 
 	In our case, we should listen to an FVWM event I<M_NEW_PAGE>. The list
-	of all events may be found in L<FVWM::Constants>. When we receive
+	of all events may be found in man page "events". When we receive
 	the event we want to get new page coordinates and display them
 	using our special xmessage window.
 
@@ -179,7 +181,7 @@ $internalPods->{tutorial} = q{
 	        my $page_nx = int($event->_vp_x / $width);
 	        my $page_ny = int($event->_vp_y / $height);
 
-		# actually show the flash
+	        # actually show the flash
 	        $module->send("Exec xmessage -name FlashWindow \
 	            -bg cyan -fg white -center -timeout 1 -button '' \
 	            -xrm '*cursorName: none' -xrm '*borderWidth: 2' \
@@ -188,7 +190,7 @@ $internalPods->{tutorial} = q{
 	    }
 
 	All event handlers are called with 2 parameters, a module and an
-	event objects. The arguments of the event are described in
+	event objects. The arguments for all events are defined in
 	L<FVWM::EventNames>. Each event type has its own arguments. Our
 	I<M_NEW_PAGE> has 5 arguments: vp_x vp_y desk vp_width vp_height.
 	We should do some calculations to get the page numbers from viewport
@@ -213,6 +215,62 @@ $internalPods->{tutorial} = q{
 	To kill the module, execute:
 
 	    KillModule /path/to/module-flash
+
+	:head2 Using event trackers
+
+	In fact, the task of calculating page coordinates, or managing
+	information about all windows, or gathering colorset, module or
+	global information is so often, that there are existing
+	implentation in the form of event trackers. Tracker is an instance
+	of L<FVWM::Tracker> superclass. Currently these tracker classes are
+	available (see their man pages):
+
+	    FVWM::Tracker::Colorsets
+	    FVWM::Tracker::GlobalConfig
+	    FVWM::Tracker::ModuleConfig
+	    FVWM::Tracker::PageInfo
+	    FVWM::Tracker::Scheduler
+	    FVWM::Tracker::WindowList
+
+	Using a tracker is easy, something along lines:
+
+	    my $tracker = $module->track("WindowList");
+	    my $colorset_tracker = $module->track("Colorsets");
+
+	Our module that we wrote above may be reduced if we use:
+
+	    my $viewport = $module->track("PageInfo");
+
+	    my $page_nx = $viewport->data("page_nx");
+	    my $page_ny = $viewport->data("page_ny");
+
+	Note that the tracker continues to work and maintain the up-to-date
+	information about the current page and desk (or up-to-date windows
+	or colorsets depending on the tracker type) at any given moment.
+
+	Internally, trackers listen to appropriate events using the same
+	event handler mechanism, so there is no speed advantage. However
+	it is a good idea to reuse the existing verified code and reduce
+	the number of events needed to be trapped manually. There is
+	usually no problem if the developer and the tracker define
+	handlers for the same events (besides the handler order maybe).
+
+	:head2 On the module masks
+
+	In our example above we explicitelly defined Mask in constructor.
+	This is not really needed. If not specified, the event mask is
+	managed automatically (it is updated every time a new event handler
+	is added).
+
+	Note, there are actually two event masks, called "mask" and
+	"xmask" (extended mask). If you are interested in the details,
+	refer to the FVWM documentation or perllib sources.
+
+	When trackers are added or removed, the module mask (and xmask)
+	are automatically tweaked underhand. In short, there is often no
+	reason to worry about the module masks. However, in rare cases
+	you may want to define SyncMask (or SyncXMask), so that fvwm is
+	synchronized with the module on certain events.
 
 	:head2 Creating a more functional module
 
@@ -241,30 +299,27 @@ $internalPods->{tutorial} = q{
 	        }
 	    });
 
-	Now, let convert our module to be GTK+ based and not to be
+	Now, let's convert our module to be GTK+ based and not to be
 	dependent on I<xmessage>.
 
 	    use lib `fvwm-perllib dir`;
 	    use FVWM::Module::Gtk;
-	    use Gtk;
-	    init Gtk;
+	    use Gtk -init;
+	    use POSIX qw(SIGALRM);
 
 	    my $format = "(%d, %d)";
-	    my $module = new FVWM::Module::Gtk(Mask => M_NEW_PAGE);
+	    my $module = new FVWM::Module::Gtk;
+	    my $pageinfo = $module->track("PageInfo");
 
-	    $module->addHandler(M_NEW_PAGE, sub {
-	        my ($module, $event) = @_;
+	    $pageinfo->observe("desk/page changed", sub {
+	        my ($module, $tracker, $data) = @_;
 
-	        my $width  = $event->_vp_width;
-	        my $height = $event->_vp_height;
+	        my $page_nx = $data->{page_nx};
+	        my $page_ny = $data->{page_ny};
+	        my $width  = $data->{vp_width};
+	        my $height = $data->{vp_height};
 
-	        if (!$width || !$height) {
-	            return;
-	        }
-	        my $page_nx = int($event->_vp_x / $width);
-	        my $page_ny = int($event->_vp_y / $height);
-
-		# actually show the flash
+	        # actually show the flash
 	        my ($w, $h) = (80, 50);
 	        my $string = sprintf($format, $page_nx, $page_ny);
 
@@ -282,7 +337,9 @@ $internalPods->{tutorial} = q{
 	        $frame->add($label);
 	        $window->show_all;
 
-	        $SIG{ALRM} = sub { $window->destroy(); };
+	        POSIX::sigaction(SIGALRM, POSIX::SigAction->new(
+	            sub { $window->destroy(); }
+	        ));
 	        alarm(1);
 	    });
 
@@ -308,6 +365,52 @@ $internalPods->{tutorial} = q{
 	Mikhael Goikhman <migo@homemail.com>.
 };
 
+$internalPods->{events} = q{
+	:head1 NAME
+
+	events - list of all FVWM events with arguments
+
+	:head1 DESCRIPTION
+
+	This list is automatically generated from L<FVWM::EventNames> package.
+
+	Given L<FVWM::Event> object of certain event type, say I<M_STRING>,
+	here is the syntax to get value of its I<win_id> argument:
+
+	    $win_id = $event->_win_id;
+
+	There are several more ways to access arguments, like:
+
+	    $win_id = $event->argValues->[0];
+	    $text = $event->args->{text};
+
+	:head1 EVENTS WITH ARGUMENTS
+
+	{{EVENT_NAMES}}
+
+	:head1 ARGUMENT TYPE LEGEND
+
+	Here is a mapping of FVWM argument types to perl native types:
+
+	    number - integer
+	    bool   - boolean, true or false
+	    window - X window id in decimal, use sprintf("0x%07x", $wid)
+	    pixel  - "rgb:" . join('/', sprintf("%06lx", $val) =~ /(..)(..)(..)/)
+	    string - string (scalar)
+	    wflags - window flags in binary string
+	    looped - loop of zero or more fixed argument bunches
+
+	Run L<FvwmDebug> or L<FvwmGtkDebug> to browse events.
+
+	:head1 SEE ALSO
+
+	See "tutorial", L<FVWM::Event>, L<FVWM::EventNames> and L<FvwmDebug>.
+
+	:head1 AUTHOR
+
+	Mikhael Goikhman <migo@homemail.com>.
+};
+
 my $topic = $ARGV[0] || "index";
 my $file = "-";
 my $text = "";
@@ -315,9 +418,27 @@ if (exists $internalPods->{$topic}) {
 	$text = $internalPods->{$topic};
 	$text =~ s/^\t//mg;
 	$text =~ s/^:/=/mg;
-	my @classNames = sort @{listFileNames($perllibdir, 1)};
-	@classNames = map { s!\.pm$!!; s!/!::!g; $_ } @classNames;
-	$text =~ s/{{CLASS_NAMES}}/join("\n    ", @classNames)/seg;
+
+	if ($topic eq 'index') {
+		my @classNames = sort @{listFileNames($perllibdir, 1)};
+		@classNames = map { s!\.pm$!!; s!/!::!g; $_ } @classNames;
+		$text =~ s/{{CLASS_NAMES}}/join("\n    ", @classNames)/seg;
+	}
+
+	if ($topic eq 'events') {
+		my $content = `cat '$perllibdir/FVWM/EventNames.pm'`;
+		my $result = "";
+		foreach ($content =~ /\t&([^\s]+.*?\t\tfields[^\n]+(?:\n\t\t\t[^\n]+)*)/sg) {
+			my ($name, $rest) = /^([^\s]+).*?((?:\n\t\t\t[^\n]+)*)$/s;  # ]
+			$result .= "    $name\n";
+			$rest =~ s/([^\s]+)\s*=>\s*([\w]+)/
+				$result .= sprintf("        %-16s\t%s\n", $1, $2)
+			/eg;
+			$result .= "\n";
+		}
+		$text =~ s!{{EVENT_NAMES}}!$result!se;
+	}
+
 } else {
 	$file = "$perllibdir/$topic.pm";
 	$file =~ s!::!/!g;

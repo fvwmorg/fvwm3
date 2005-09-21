@@ -1,3 +1,8 @@
+2005-09-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-perllib.in:
+	enhance "tutorial", add "events" man page
+
 2005-09-19  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm-root.c (main):
