@@ -9,6 +9,7 @@ Changes in beta release 2.5.15 (not released yet)
 
    - Variables can be nested, like $[desk.name$[desk.n]].
    - Obsolete one-letter variables work, but generate warnings now.
+   - Added MouseWheel and ScrollOffPage menu style options.
 
 * Bug Fixes:
 

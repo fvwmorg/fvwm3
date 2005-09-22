@@ -2136,6 +2136,12 @@ displayed if the pointer hovers over the item long enough or moves
 close to the triangle indicating the sub menu.  This behaviour can
 be tuned with menu styles.
 
+Scrolling a mouse wheel over a menu either wraps the pointer along the
+menu (default), scrolls the menu under the pointer or act as if the
+menu was clicked depending on the
+.I MouseWheel
+menu style.
+
 Clicking on a selected item activates it - what happens exactly
 depends on the type of the item.
 
@@ -2853,7 +2859,9 @@ SelectOnRelease,
 ItemFormat,
 VerticalItemSpacing,
 VerticalTitleSpacing,
-AutomaticHotkeys / AutomaticHotkeysOff.
+AutomaticHotkeys / AutomaticHotkeysOff,
+MouseWheel,
+ScrollOffPage / !ScrollOffPage.
 
 In the above list some options are listed as option pairs or
 triples with a '/' in between.  These options exclude each other.
@@ -3392,6 +3400,24 @@ the first character of each menu item's label.  This behavior is
 always overridden if an explicit hot-key is assigned in the
 .B AddToMenu
 command.
+
+.IR MouseWheel
+controls the ability to scroll the menu using a mouse wheel. It takes
+one argument, that can be one of
+ScrollsPointer, ScrollsMenu, ScrollsMenuBackwards or ActivatesItem.
+ScrollsPointer makes the mouse wheel scroll the pointer over a menu.
+This is the default. ScrollsMenu and ScrollsMenuBackwards scroll the menu
+beneath the pointer. ActivatesItem disables scrolling by mouse wheel and 
+makes the use of a mouse wheel act as if the menu was clicked.
+If no argument is supplied the default setting is restored.
+
+.IR ScrollOffPage 
+allows a menu to be scrolled out of the visible area if
+.I MouseWheel 
+is set to ScrollsMenu or ScrollsMenuBackwards. This is the default.
+The opposite,
+.I !ScrollOffPage
+disables this behaviour.
 
 Examples:
 .EX

@@ -348,6 +348,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"PopdownDelay",
 		"PopupActiveArea",
 		"PopupIgnore", "PopupClose",
+		"MouseWheel", "ScrollOffPage",
 		NULL
 	};
 
@@ -629,10 +630,12 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 {
 	char *name;
 	char *option = NULL;
+	char *poption = NULL;
 	char *optstring = NULL;
 	char *nextarg;
 	char *args = NULL;
 	char *arg1;
+	int on;
 	MenuStyle *ms;
 	MenuStyle *tmpms;
 	Bool is_initialised = True;
@@ -681,6 +684,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 	/* Parse the options. */
 	while (!is_initialised || (action && *action))
 	{
+	  	on = 1;
 		if (!is_initialised)
 		{
 			/* some default configuration goes here for the new
@@ -698,6 +702,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			ST_DOUBLE_CLICK_TIME(tmpms) = DEFAULT_MENU_CLICKTIME;
 			ST_POPUP_DELAY(tmpms) = DEFAULT_POPUP_DELAY;
 			ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
+			ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
+			ST_SCROLL_OFF_PAGE(tmpms) = 1;
 			has_gc_changed = True;
 			option = "fvwm";
 		}
@@ -720,8 +726,13 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			nextarg = GetNextToken(args, &arg1);
 		}
-
-		switch((i = menustyle_get_styleopt_index(option)))
+		poption = option;
+		while (poption[0] == '!')
+		{
+			on ^= 1;
+			poption++;
+		}
+		switch((i = menustyle_get_styleopt_index(poption)))
 		{
 		case 0: /* fvwm */
 		case 1: /* mwm */
@@ -1287,6 +1298,43 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			ST_DO_POPUP_AS(tmpms) = MDP_CLOSE;
 			break;
 
+		case 56: /* MouseWheel */
+			if (arg1)
+		        {
+				if (StrEquals(arg1, "ActivatesItem"))
+				{
+					ST_MOUSE_WHEEL(tmpms) = MMW_OFF;	
+				}
+				else if (StrEquals(arg1, 
+					"ScrollsMenuBackwards"))
+				{
+					ST_MOUSE_WHEEL(tmpms) = MMW_MENU_BACKWARDS;
+				}
+				else if (StrEquals(arg1, "ScrollsMenu"))
+				{
+					ST_MOUSE_WHEEL(tmpms) = MMW_MENU;
+				}
+				else if (StrEquals(arg1, "ScrollsPointer"))
+				{
+					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
+				}
+				else
+				{
+					fvwm_msg(ERR, "NewMenuStyle", 
+					"unknown argument to MouseWheel '%s'",
+						 arg1);
+					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
+				}				
+		        }
+		        else
+		        {
+		        	ST_MOUSE_WHEEL(tmpms) = 
+					(on) ? MMW_POINTER : MMW_OFF;	
+			}
+			break;
+		case 57: /* ScrollOffPage */
+	        	ST_SCROLL_OFF_PAGE(tmpms) = on;
+			break;
 #if 0
 		case 99: /* PositionHints */
 			/* to be implemented */
@@ -1295,7 +1343,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		default:
 			fvwm_msg(ERR, "NewMenuStyle", "unknown option '%s'",
-				 option);
+				 poption);
 			break;
 		} /* switch */
 
@@ -1542,6 +1590,10 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	ST_DO_POPDOWN_IMMEDIATELY(destms) = ST_DO_POPDOWN_IMMEDIATELY(origms);
 	/* PopdownDelay */
 	ST_POPDOWN_DELAY(destms) = ST_POPDOWN_DELAY(origms);
+	/* Scroll */
+	ST_MOUSE_WHEEL(destms) = ST_MOUSE_WHEEL(origms);
+	/* ScrollOffPage */
+	ST_SCROLL_OFF_PAGE(destms) = ST_SCROLL_OFF_PAGE(origms);
 
 	menustyle_update(destms);
 
@@ -1634,10 +1686,16 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 void CMD_MenuStyle(F_CMD_ARGS)
 {
 	char *option;
+	char *poption;
 	MenuStyle *dummy;
 
 	GetNextSimpleOption(SkipNTokens(action, 1), &option);
-	if (option == NULL || menustyle_get_styleopt_index(option) != -1)
+	poption = option;
+	while (poption && poption[0] == '!')
+	{
+	  poption++;
+	}  
+	if (option == NULL || menustyle_get_styleopt_index(poption) != -1)
 	{
 		dummy = menustyle_parse_style(F_PASS_ARGS);
 	}

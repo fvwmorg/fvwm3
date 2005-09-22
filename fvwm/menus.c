@@ -129,7 +129,8 @@ typedef enum
 	SA_WARPBACK,
 	SA_SELECT,
 	SA_TEAROFF,
-	SA_ABORT
+	SA_ABORT,
+	SA_SCROLL
 } shortcut_action;
 
 /* ---------------------------- menu loop types ---------------------------- */
@@ -287,6 +288,27 @@ static Bool menu_get_geometry(
 	return brc;
 }
 
+static Bool menu_get_outer_geometry(
+	MenuRoot *mr, MenuParameters *pmp,
+	Window *root_return, int *x_return, int *y_return,
+	unsigned int *width_return, unsigned int *height_return,
+	unsigned int *border_width_return, unsigned int *depth_return)
+{
+	if (MR_IS_TEAR_OFF_MENU(mr))
+	{
+		return XGetGeometry(dpy, 
+			FW_W_FRAME(pmp->tear_off_root_menu_window), 
+			root_return,x_return,y_return, width_return,
+			height_return, border_width_return, depth_return );
+	}
+	else
+	{
+	  	return menu_get_geometry(mr,root_return,x_return,y_return,
+			width_return, height_return, border_width_return, 
+			depth_return );
+	}	
+}
+
 static Bool pointer_in_active_item_area(int x_offset, MenuRoot *mr)
 {
 	float ratio = (float)MST_ACTIVE_AREA_PERCENT(mr) / 100.0;
@@ -421,6 +443,35 @@ static void animated_move_back(
 	}
 
 	return;
+}
+
+/* move a menu or a tear-off menu preserving transparncy. 
+ * tear-off menus are moved with their frame coordinates. */
+static void move_any_menu(
+	MenuRoot *mr, MenuParameters *pmp, int endX, int endY
+)
+{
+	if (MR_IS_TEAR_OFF_MENU(mr))
+	{
+		float fFull = 1.0;
+		AnimatedMoveFvwmWindow(
+			pmp->tear_off_root_menu_window,
+			FW_W_FRAME(pmp->tear_off_root_menu_window),
+			-1, -1, endX, endY, False, 0, &fFull);
+	}
+	else
+	{
+		XMoveWindow(dpy, MR_WINDOW(mr), endX, endY);
+		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
+			CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
+	        {
+			MenuRepaintTransparentParameters mrtp;
+			get_menu_repaint_transparent_parameters(
+				&mrtp, mr, (*pmp->pexc)->w.fw);
+			repaint_transparent_menu(
+				&mrtp,False, endX,endY, endX, endY);
+      	      	}
+	}
 }
 
 /* ---------------------------- submenu function --------------------------- */
@@ -776,9 +827,9 @@ static void menuShortcuts(
 	MenuRoot *mr, MenuParameters *pmp, MenuReturn *pmret, XEvent *event,
 	MenuItem **pmiCurrent, double_keypress *pdkp)
 {
-	int fControlKey = event->xkey.state & ControlMask? True : False;
-	int fShiftedKey = event->xkey.state & ShiftMask? True: False;
-	int fMetaKey = event->xkey.state & Mod1Mask? True: False;
+	int fControlKey;
+	int fShiftedKey;
+	int fMetaKey;
 	KeySym keysym;
 	char ckeychar = 0;
 	int ikeychar;
@@ -792,6 +843,7 @@ static void menuShortcuts(
 	unsigned int menu_width;
 	unsigned int menu_height;
 	int items_to_move;
+	int direction = 0;
 	Bool fSkipSection = False;
 	shortcut_action saction = SA_NONE;
 
@@ -802,28 +854,58 @@ static void menuShortcuts(
 		pmret->rc = MENU_SELECTED;
 		return;
 	}
-
-	/*** handle double-keypress ***/
-
-	if (pdkp->timestamp &&
-	    fev_get_evtime() - pdkp->timestamp <
-	    MST_DOUBLE_CLICK_TIME(pmp->menu) &&
-	    event->xkey.state == pdkp->keystate &&
-	    event->xkey.keycode == pdkp->keycode)
+	/*** map mouse events to keysymb ***/
+	if (event->type == ButtonRelease)
 	{
-		*pmiCurrent = NULL;
-		pmret->rc = MENU_DOUBLE_CLICKED;
-		return;
+	        /*** Read the control keys stats ***/	
+		fControlKey = event->xbutton.state & ControlMask? True : False;
+		fShiftedKey = event->xbutton.state & ShiftMask? True: False;
+		fMetaKey = event->xbutton.state & Mod1Mask? True: False;
+		switch (event->xbutton.button)
+		{
+		case 4: /* ScrollUp -- Translate to NumPad - */
+			keysym = XK_KP_Subtract;		        
+		        break;
+		case 5: /* ScrollDown -- Translate to NumPad + */
+		        keysym = XK_KP_Add;
+       		        break;
+		default:
+			/* No mapped button */
+		  	pmret->rc = MENU_NOP;
+			return;
+		}
+		index = 0;
 	}
-	pdkp->timestamp = 0;
+	else /* Should be KeyPressed */
+	{
+	        /*** Read the control keys stats ***/	
+		fControlKey = event->xkey.state & ControlMask? True : False;
+		fShiftedKey = event->xkey.state & ShiftMask? True: False;
+		fMetaKey = event->xkey.state & Mod1Mask? True: False;
+		
+		/*** handle double-keypress ***/
 
-	/*** find out the key ***/
+		if (pdkp->timestamp &&
+		    fev_get_evtime() - pdkp->timestamp <
+		    MST_DOUBLE_CLICK_TIME(pmp->menu) &&
+		    event->xkey.state == pdkp->keystate &&
+		    event->xkey.keycode == pdkp->keycode)
+		{
+			*pmiCurrent = NULL;
+			pmret->rc = MENU_DOUBLE_CLICKED;
+			return;
+		}
+		pdkp->timestamp = 0;
 
-	/* Is it okay to treat keysym-s as Ascii?
-	 * No, because the keypad numbers don't work. Use XlookupString */
-	index = XLookupString(&(event->xkey), &ckeychar, 1, &keysym, NULL);
-	ikeychar = (int)ckeychar;
+		/*** find out the key ***/
 
+		/* Is it okay to treat keysym-s as Ascii?
+		 * No, because the keypad numbers don't work.
+		 * Use XlookupString */
+		index = XLookupString(&(event->xkey), &ckeychar, 1, &keysym, 
+				      NULL);
+		ikeychar = (int)ckeychar;
+	}
 	/*** Try to match hot keys ***/
 
 	/* Need isascii here - isgraph might coredump! */
@@ -1061,13 +1143,22 @@ static void menuShortcuts(
 		saction = SA_TEAROFF;
 		break;
 
+	/* menu-scroll */
+	case XK_KP_Add:      /* ScrollUp */
+		saction = SA_SCROLL;
+		direction = 1;
+		break;
+	case XK_KP_Subtract: /* ScrollDown */
+		saction = SA_SCROLL;
+		direction = -1;
+		break;
 	default:
 		break;
 	}
 
 	if (!miCurrent &&
 	    (saction == SA_ENTER || saction == SA_MOVE_ITEMS ||
-	     saction == SA_SELECT))
+	     saction == SA_SELECT || saction == SA_SCROLL))
 	{
 		if (menu_get_geometry(
 			    mr, &JunkRoot, &menu_x, &menu_y, &menu_width,
@@ -1256,12 +1347,113 @@ static void menuShortcuts(
 			(MR_IS_TEAR_OFF_MENU(mr)) ? MENU_NOP : MENU_TEAR_OFF;
 		return;
 
+	case SA_SCROLL:
+		if (MST_MOUSE_WHEEL(mr) == MMW_MENU)
+		{
+			direction *= -1;
+		}
+		if (!menu_get_outer_geometry(
+				mr, pmp, &JunkRoot, &menu_x, &menu_y, 
+			    	&JunkWidth, &menu_height,
+			    	&JunkBW, &JunkDepth))
+		{		
+			fvwm_msg(ERR, "menuShortcuts",
+				"can't get geometry of menu %s", MR_NAME(mr));
+			return;
+		}
+		for (newItem = miCurrent; newItem && 
+		       ( !MI_IS_SELECTABLE(newItem) || newItem ==  miCurrent );
+		       newItem = (direction == 1) ?
+		                 MI_NEXT_ITEM(newItem) :  MI_PREV_ITEM(newItem))
+			; /* maybe use while insted... */
+
+		if (newItem)
+		{
+			*pmiCurrent = newItem;
+			pmret->rc = MENU_NEWITEM;
+			/* Have to work with relative positions or tear off
+			 * menus will be hard to reposition */
+			if (FQueryPointer( dpy, MR_WINDOW(mr), &JunkRoot,
+			    	&JunkChild, &JunkX, &JunkY, &mx, &my, &JunkMask)
+			    	==  False)
+			{
+				/* This should not happen */
+			    	mx = 0;
+				my = 0;
+			}
+					  
+			if (MST_MOUSE_WHEEL(mr) == MMW_POINTER)
+			{
+				if (event->type == ButtonRelease)
+				{
+			
+				  	FWarpPointer(dpy, 0, 0, 0, 0, 0, 0, 0,
+						- my + menuitem_middle_y_offset(
+							newItem,
+							MR_STYLE(mr)));
+					
+				}
+				/* pointer wrapped elsewhere for key events */
+			}
+			else
+			{
+
+				menu_y += my - menuitem_middle_y_offset(
+							newItem,
+							MR_STYLE(mr));
+
+				if (!MST_SCROLL_OFF_PAGE(mr) && 
+				    menu_height < MR_SCREEN_HEIGHT(mr))
+				{
+					if (menu_y < 0)
+					{
+						FWarpPointer(dpy, 0, 0, 0, 0,
+							     0, 0, 0,-menu_y);
+						menu_y=0;
+					}
+				
+					if (menu_y + menu_height >
+					    MR_SCREEN_HEIGHT(mr))
+					{
+						FWarpPointer(dpy, 0, 0, 0, 0, 0,
+							0, 0,
+							MR_SCREEN_HEIGHT(mr) 
+						        - menu_y - menu_height);
+						menu_y = MR_SCREEN_HEIGHT(mr) -
+						  	 menu_height;
+					}
+				}
+				move_any_menu(mr,pmp,menu_x,menu_y);
+			}
+		}
+		else
+		{
+			pmret->rc = MENU_NOP;
+		}
+		break;
 	case SA_NONE:
 	default:
 		pmret->rc = MENU_NOP;
 		break;
 	}
-
+	if (saction != SA_SCROLL && pmret->rc == MENU_NEWITEM)
+	{
+		if (!menu_get_outer_geometry(
+			mr, pmp, &JunkRoot, &menu_x, &menu_y, 
+		    	&JunkWidth, &menu_height,
+		    	&JunkBW, &JunkDepth))
+		{		
+			fvwm_msg(ERR, "menuShortcuts",
+				"can't get geometry of menu %s", MR_NAME(mr));
+			return;
+		}
+		if (menu_y < 0 || menu_y + menu_height > MR_SCREEN_HEIGHT(mr))
+		{
+			menu_y = 
+			  (menu_y < 0) ? 0 : MR_SCREEN_HEIGHT(mr) - menu_height;
+			move_any_menu(mr,pmp,menu_x,menu_y);
+		}
+	}
 	return;
 }
 
@@ -4676,6 +4868,25 @@ static mloop_ret_code_t __mloop_handle_event(
 			{
 				pmret->rc = MENU_TEAR_OFF;
 				return MENU_MLOOP_RET_END;
+			}
+			else if ( med->mrMi != NULL && 
+				  MST_MOUSE_WHEEL(med->mrMi) != MMW_OFF &&
+				  ((*pmp->pexc)->x.elast->xbutton.button == 4 ||
+				   (*pmp->pexc)->x.elast->xbutton.button == 5))
+			{			  
+				menuShortcuts(med->mrMi, pmp, pmret, 
+					  (*pmp->pexc)->x.elast,
+					  &med->mi,pdkp);
+				if (pmret->rc == MENU_NOP)
+				{
+                        	 	return MENU_MLOOP_RET_LOOP;
+				}
+				else if (pmret->rc == MENU_NEWITEM)
+				{
+					/* umpost the menu if posted */
+					pmret->flags.is_menu_posted = 0;
+				}
+				break;
 			}
 		}
 		in->mif.was_item_unposted = 0;

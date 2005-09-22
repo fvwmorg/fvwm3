@@ -1,3 +1,17 @@
+2005-09-22  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* AUTHORS:
+	* fvwm/menustyle.h (enum, MenuFeel, ST_DO_SCROLL, MST_DO_SCROLL) 
+	(ST_SCROLL_OFF_PAGE, MST_SCROLL_OFF_PAGE): 
+	* fvwm/menustyle.c (menustyle_copy): 
+	(menustyle_get_styleopt_index): 
+	(menustyle_parse_style, CMD_MenuStyle): 
+	* fvwm/menus.c (menuShortcuts, enum, __mloop_handle_event): 
+	(menu_get_outer_geometry, move_any_menu):
+	* fvwm/fvwm.1.in: 
+	added MouseWheel and ScrollOffPage menu styles
+	
 2005-09-20  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:

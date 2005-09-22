@@ -10,7 +10,8 @@ FixedPosition condition.
 
 Viktor Griph:
 Patch for Perl modules on 64 bit machines. EdgeHasPointer and
-EdgeIsActive test conditions. Nested variable expansion.
+EdgeIsActive test conditions. Nested variable expansion. MouseWheel
+and ScrollOffPage menu style options.
 
 Bjoern Steinbrink:
 Patch for FvwmScript tasks running too often.

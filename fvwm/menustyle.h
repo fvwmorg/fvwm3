@@ -121,6 +121,10 @@
 #define ST_USE_AUTOMATIC_HOTKEYS(s)   ((s)->feel.flags.use_automatic_hotkeys)
 #define MST_USE_AUTOMATIC_HOTKEYS(m) \
 	((m)->s->ms->feel.flags.use_automatic_hotkeys)
+#define ST_MOUSE_WHEEL(s)               ((s)->feel.flags.mouse_wheel)
+#define MST_MOUSE_WHEEL(m)              ((m)->s->ms->feel.flags.mouse_wheel)
+#define ST_SCROLL_OFF_PAGE(s)         ((s)->feel.flags.scroll_off_page)
+#define MST_SCROLL_OFF_PAGE(m)        ((m)->s->ms->feel.flags.scroll_off_page)
 #define ST_FLAGS(s)                   ((s)->feel.flags)
 #define MST_FLAGS(m)                  ((m)->s->ms->feel.flags)
 #define ST_POPUP_OFFSET_PERCENT(s)    ((s)->feel.PopupOffsetPercent)
@@ -163,6 +167,14 @@ typedef enum
 	MDP_CLOSE = 3
 } ms_do_popup_as_t;
 
+typedef enum
+{
+	MMW_OFF = 0,
+	MMW_MENU_BACKWARDS = 1,
+	MMW_MENU = 2,	
+	MMW_POINTER = 3
+} ms_mouse_wheel_t;
+
 typedef struct MenuFeel
 {
 	struct
@@ -175,6 +187,8 @@ typedef struct MenuFeel
 		unsigned do_unmap_submenu_on_popdown : 1;
 		unsigned use_left_submenus : 1;
 		unsigned use_automatic_hotkeys : 1;
+		unsigned mouse_wheel : 2;
+		unsigned scroll_off_page : 1;
 	} flags;
 	int PopdownDelay10ms;
 	int PopupOffsetPercent;
