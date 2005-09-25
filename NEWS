@@ -10,14 +10,18 @@ Changes in beta release 2.5.15 (not released yet)
    - Variables can be nested, like $[desk.name$[desk.n]].
    - Obsolete one-letter variables work, but generate warnings now.
    - Added MouseWheel and ScrollOffPage menu style options.
+   - Windows can be placed by any button (now also >3)
+   - It is now possible to redefine the buttons usable to finish
+     window movement and manual placement.
+   - New window condition PlacedByButton.
 
 * Bug Fixes:
 
    - Supported a new fribidi version 0.10.5 in addition to 0.10.4.
    - Better look for windows with "BorderStyle TiledPixmap".
    - Some EWMH-related 64-bit fixes.
-   - Fixed segmentation fault when replacing title of title only menus
-     (Bug #1121)
+   - Fixed segmentation fault when replacing title of title only
+     menus (Bug #1121)
 
 -------------------------------------------------------------------
 

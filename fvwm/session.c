@@ -83,6 +83,7 @@ typedef struct _match
 	int desktop;
 	int layer;
 	int default_layer;
+	int placed_by_button;
 	int used;
 	int gravity;
 	unsigned long ewmh_hint_desktop;
@@ -525,6 +526,7 @@ SaveWindowStates(FILE *f)
 			layer = Scr.DefaultLayer;
 		}
 		fprintf(f, "  [LAYER] %i %i\n", layer, ewin->default_layer);
+		fprintf(f, "  [PLACED_BY_BUTTON] %i\n", ewin->placed_by_button);
 		fprintf(f, "  [EWMH_DESKTOP] %lu\n", ewin->ewmh_hint_desktop);
 		fprintf(f, "  [FLAGS] ");
 		for (i = 0; i < sizeof(window_flags); i++)
@@ -1331,6 +1333,11 @@ LoadWindowStates(char *filename)
 			       &(matches[num_match - 1].layer),
 			       &(matches[num_match - 1].default_layer));
 		}
+		else if (!strcmp(s1, "[PLACED_BY_BUTTON]"))
+		{
+			sscanf(s, "%*s %i",
+			       &(matches[num_match - 1].placed_by_button));
+		}
 		else if (!strcmp(s1, "[EWMH_DESKTOP]"))
 		{
 			sscanf(s, "%*s %lu",
@@ -1498,7 +1505,6 @@ MatchWinToSM(
 				}
 			}
 			SET_NAME_CHANGED(ewin,IS_NAME_CHANGED(&(matches[i])));
-			SET_PLACED_WB3(ewin,IS_PLACED_WB3(&(matches[i])));
 			SET_PLACED_BY_FVWM(
 				ewin, IS_PLACED_BY_FVWM(&(matches[i])));
 			ret_state_args->do_shade = IS_SHADED(&(matches[i]));
@@ -1548,6 +1554,7 @@ MatchWinToSM(
 				Scr.CurrentDesk : matches[i].desktop;
 			set_layer(ewin, matches[i].layer);
 			set_default_layer(ewin, matches[i].default_layer);
+			ewin->placed_by_button = matches[i].placed_by_button;
 			/* Note: the Modal, skip pager, skip taskbar and
 			 * "stacking order" state are not restored here: there
 			 * are restored in EWMH_ExitStuff */

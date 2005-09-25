@@ -483,10 +483,56 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			mask->my_flags.needs_overlapped = on;
 			mask->my_flags.do_check_overlapped = 1;
 		}
+		else if (StrEquals(cond,"PlacedByButton"))
+		{
+			int button, button_mask;
+			if (sscanf(tmp, "%d", &button) && 
+			    (button >= 1 && 
+			     button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS))
+			{
+				free(condition);
+				tmp = GetNextToken (tmp, &condition);
+				button_mask = (1<<(button-1));
+			}
+			else
+			{
+				button_mask = 
+				     (1<<NUMBER_OF_EXTENDED_MOUSE_BUTTONS) - 1;
+			}
+			if (on)
+			{			
+				if (mask->placed_by_button_mask & 
+				    mask->placed_by_button_set_mask & 
+				    ~button_mask)
+				{
+				  	  fvwm_msg(WARN, "PlacedByButton", 
+						   "Condition always False.");
+				}
+				mask->placed_by_button_mask |= button_mask;
+			}
+			else
+			{
+				mask->placed_by_button_mask &= ~button_mask;
+			}
+			mask->placed_by_button_set_mask |= button_mask;
+		}
 		else if (StrEquals(cond,"PlacedByButton3"))
 		{
-			SET_PLACED_WB3(mask, on);
-			SETM_PLACED_WB3(mask, 1);
+			if (on)
+			{
+				if (mask->placed_by_button_mask & 
+				    mask->placed_by_button_set_mask & ~(1<<2))
+				{
+				  	  fvwm_msg(WARN, "PlacedByButton3", 
+						   "Condition always False.");
+				}
+				mask->placed_by_button_mask |= (1<<2);
+			}
+			else
+			{
+				mask->placed_by_button_mask &= ~(1<<2);
+			}
+			mask->placed_by_button_set_mask |= (1<<2);
 		}
 		else if (StrEquals(cond,"Raised"))
 		{
@@ -916,6 +962,16 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 		is_same_layer = (fw->layer == mask->layer);
 		if (mask->my_flags.needs_same_layer != is_same_layer)
+		{
+			return False;
+		}
+	}
+	if (mask->placed_by_button_set_mask)
+	{
+		if (!((mask->placed_by_button_set_mask &
+			(1<<(fw->placed_by_button - 1))) ==
+		     (mask->placed_by_button_set_mask &
+		      mask->placed_by_button_mask)))
 		{
 			return False;
 		}

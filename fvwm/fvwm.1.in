@@ -4923,10 +4923,18 @@ pointer position before starting the operation; this is mainly
 intended for internal use by modules like
 .BR FvwmPager .
 
-The operation can be aborted with Escape or by pressing mouse
-button 2. Pressing button 3 sets the
-.I PlacedByButton3
-condition (see
+The operation can be aborted with Escape or any mouse button not set 
+to place the window. By default mouse button 2 is set to cancel the move
+operation. To change this you may use the
+.B Mouse
+command with special context 'P' for Placement (see
+.B Mouse
+command for details).
+
+The window condition 
+.I PlacedByButton
+can be used to check if a specific button was pressed to place the
+window (see
 .B Current
 command).
 
@@ -6040,14 +6048,63 @@ The special context 'M' for menus can only be used to control
 which mouse button is used to tear off menus.  See the section
 "Tear Off Menus" for details.
 
-By default, the binding applies to all windows. You can specify
-that a binding only applies to specific windows by specifying the
-window name in brackets. The window name is a wildcard pattern
-specifying the class, resource or name of the window you want the
-binding to apply to.
+The special context 'P' controls what buttons that can be used to place 
+a window. When using this context no modifiers are allowed (
+.I Modifiers
+must be N), no
+.I window
+is allowed, and the 
+.I Function
+must be one of 
+.IR PlaceWindow ", " PlaceWindowDrag ", " PlaceWindowInteractive ", "
+.IR CancelPlacement ", " CancelPlacementDrag ", " CancelPlacementInteractive 
+.RI " or " - .
+
+.I PlaceWindow
+makes 
+.I Button
+usable for window placement, both for interactive and drag move.
+.I CancelPlacement
+does the inverse. That is makes 
+.I Button
+to cancel move for both interactive and drag move. It may however not
+override how new windows are resized after being placed. This is 
+controlled by the
+.B Emulate
+command. Also a window being dragged can always be placed
+by releasing the button hold while dragging, regardless of if it is
+set to 
+.I PlaceWindow
+or not.
+
+.IR PlaceWindowDrag " and " PlaceWindowInteractive / CancelPlacementDrag 
+.RI " and " CancelPlacementInteractive
+work as 
+.IR PlaceWindow / CancelPlacement
+with the exception that they only affect either windows dragged /
+placed interactively.
+
+.I -
+is equivalent to
+.IR CancelPlacement .
+
+The following example makes all buttons but button 3 usable for
+interactive placement and makes drag moves started by other buttons
+than one cancel if button 1 is pressed before finishing the move:
+.EX
+Mouse 0 P N PlaceWindow
+Mouse 3 P N CancelPlacement
+Mouse 1 P N CancelPlacementDrag 
+.EE
+
+By default, the binding applies to all windows. You can specify that a
+binding only applies to specific windows by specifying the window name
+in brackets. The window name is a wildcard pattern specifying the
+class, resource or name of the window you want the binding to apply
+to.
 
 The following example shows how the same key-binding can be used to
-perform different functions depending on the window that is focussed:
+perform different functions depending on the window that is focused:
 .EX
 Key (rxvt)  V A C Echo ctrl-V-in-RXVT
 Key (*term) V A C Echo ctrl-V-in-Term
@@ -7626,9 +7683,18 @@ pressed during the initial placement of a window (respectively
 .SM Shift
 and mouse button 1 in case Mwm emulation has been enabled with the
 .B Emulate
-command), the user is asked to resize the window too.  Pressing
-button 3 sets the
-.I PlacedByButton3
+command), the user is asked to resize the window too.  
+
+It is possible to define buttons usable to place windows with the
+.B Move
+command and the special context 'P' for placement (see
+.B Move
+command). However, you can't redefine the way to also resize the
+window other than the way it is affected by the
+.B Emulate
+command. The button used for placing the window can be checked with
+the
+.I PlacedByButton
 condition (see
 .B Current
 command).
@@ -7643,7 +7709,7 @@ AddToFunc StartFunction
 + I FvwmEvent
 
 AddToFunc GrowDownFunc
-+ I windowid $0 (PlacedByButton3) \\
++ I windowid $0 (PlacedByButton 3) \\
   Resize bottomright keep -0p
 .EE
 
@@ -10657,6 +10723,7 @@ directly in front of its name.
 .IR Maximizable ,
 .IR Maximized ,
 .IR Overlapped ,
+.IR "PlacedByButton n" ,
 .IR PlacedByButton3 ,
 .IR PlacedByFvwm ,
 .IR Raised ,
@@ -10840,16 +10907,31 @@ have many windows or if RaiseOverUnmanaged is used and the
 connection to the X server is slow.
 
 The
-.I PlacedByButton3
+.I "PlacedByButton n"
 condition is fulfilled if the last interactive motion of the
 window (with the
 .B Move
-command) was ended by pressing mouse button 3.  This is especially
-useful with the
-.I ManualPlacement
-option of the
-.B Style
-command.
+command or as 
+.IR ManualPlacement )
+was ended by pressing mouse button
+.IR n .
+Example:
+.EX
+Mouse   1 T     A       Function MoveWindow
+
+DestroyFunc MoveWindow
+AddToFunc MoveWindow
++ C Move
++ C ThisWindow (PlacedByButton 5) WindowShade off
++ C TestRc (Match) Maximize on 0 100
++ C ThisWindow (PlacedByButton 4) WindowShade on
+.EE
+
+The
+.I PlacedByButton3
+condition has the same meaning as 
+.I PlacedByButton
+3. It remains only for backward compatibility.
 
 The
 .I PlacedByFvwm

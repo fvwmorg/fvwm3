@@ -35,6 +35,7 @@
 #include "screen.h"
 #include "focus.h"
 #include "menus.h"		/* for menu_binding */
+#include "move_resize.h"	/* for placement_binding */
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -496,6 +497,11 @@ static int ParseBinding(
 	if (context == C_MENU)
 	{
 		return(menu_binding(button,keysym,modifier,action));
+	}
+	/* short circuit placement bindings for now. */
+	if (context == C_PLACEMENT)
+	{
+		return(placement_binding(button,keysym,modifier,action));
 	}
 	/*
 	** Remove the "old" bindings if any

@@ -92,6 +92,11 @@ static rectangle sizew_g =
 	-1
 };
 
+static int move_interactive_finish_button_mask = 
+	((1<<(NUMBER_OF_EXTENDED_MOUSE_BUTTONS))-1) & ~0x2;
+static int move_drag_finish_button_mask = 
+	((1<<(NUMBER_OF_EXTENDED_MOUSE_BUTTONS))-1) & ~0x3;
+
 /* ----- end of move globals ----- */
 
 /* ----- resize globals ----- */
@@ -1306,6 +1311,139 @@ void AnimatedMoveFvwmWindow(
 	return;
 }
 
+int placement_binding(int button, KeySym keysym, int modifier, char *action)
+{
+	if (keysym != 0)
+	{
+		/* fixme */
+		fvwm_msg(
+			ERR, "placement_binding",
+			"sorry, placement keybindings not allowed. yet.");
+		return 1;
+	}
+	if (modifier != 0)
+	{
+		/* fixme */
+		fvwm_msg(
+			ERR, "placement_binding",
+			"sorry, placement binding modifiers not allowed. yet.");
+		return 1;
+	}
+	if (strcmp(action,"-") == 0 || 
+		strcasecmp(action,"CancelPlacement") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			if (button == 0)
+			{
+				move_drag_finish_button_mask = 0;
+				move_interactive_finish_button_mask = 0;
+			}
+			else if (button > 0 && button <= 
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+			{
+				move_drag_finish_button_mask &=
+					~(1<<(button-1));
+				move_interactive_finish_button_mask &=
+					~(1<<(button-1));
+			}
+		}
+	}
+	else if (strcasecmp(action,"CancelPlacementDrag") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			if (button == 0)
+			{				
+				move_drag_finish_button_mask = 0;
+			}
+			else if (button > 0 && button <= 
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+			{
+				move_drag_finish_button_mask &= 
+					~(1<<(button-1));
+			}
+		}
+	}
+	else if (strcasecmp(action,"CancelPlacementInteractive") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			if (button == 0)
+			{				
+				move_interactive_finish_button_mask = 0;
+			}
+			else if (button > 0 && button <= 
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+			{
+				move_interactive_finish_button_mask &= 
+					~(1<<(button-1));
+			}
+		}
+	}
+	else if (strcasecmp(action,"PlaceWindow") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			if (button == 0)
+			{
+				move_interactive_finish_button_mask =
+				move_drag_finish_button_mask =
+					(1<<NUMBER_OF_EXTENDED_MOUSE_BUTTONS)-1;
+			}
+			else if (button > 0 && button <= 
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+			{
+				move_drag_finish_button_mask |= (1<<(button-1));
+				move_interactive_finish_button_mask |= 
+					(1<<(button-1));
+			}
+		}
+	}
+	else if (strcasecmp(action,"PlaceWindowDrag") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			if (button == 0)
+			{				
+				move_drag_finish_button_mask =
+					(1<<NUMBER_OF_EXTENDED_MOUSE_BUTTONS)-1;
+			}
+			else if (button > 0 && button <= 
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+			{
+				move_drag_finish_button_mask |= (1<<(button-1));				
+			}
+		}
+	}
+	else if (strcasecmp(action,"PlaceWindowInteractive") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			if (button == 0)
+			{				
+				move_interactive_finish_button_mask =
+					(1<<NUMBER_OF_EXTENDED_MOUSE_BUTTONS)-1;
+			}
+			else if (button > 0 && button <= 
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+			{
+				move_interactive_finish_button_mask |= 
+					(1<<(button-1));				
+			}
+		}
+	}
+	else
+	{
+		fvwm_msg(
+			ERR, "placement_binding",
+			"invalid action %s", action);
+	}
+
+	return 0;
+}
+
+
 /*
  *
  * Start a window move operation
@@ -1964,7 +2102,6 @@ Bool __move_loop(
 	int y_virtual_offset = 0;
 	Bool sent_cn = False;
 	Bool do_resize_too = False;
-	Bool do_exec_placement_func = False;
 	int x_bak;
 	int y_bak;
 	Window move_w = None;
@@ -2055,6 +2192,10 @@ Bool __move_loop(
 	DisplayPosition(fw, exc->x.elast, xl, yt, True);
 
 	memset(&e, 0, sizeof(e));
+
+	// Unset the placed by button mask. 
+	// If the move is canceled this will remain as zero.
+	fw->placed_by_button = 0;
 	while (!finished && bad_window != FW_W(fw))
 	{
 		int rc = 0;
@@ -2218,20 +2359,31 @@ Bool __move_loop(
 				 * event */
 				break;
 			}
-			if ((e.xbutton.button == 2 && !Scr.gs.do_emulate_mwm) ||
+			if (!IS_MAPPED(fw) &&
+			    ((e.xbutton.button == 2 && !Scr.gs.do_emulate_mwm)
+			     ||
 			    (e.xbutton.button == 1 && Scr.gs.do_emulate_mwm &&
-			     (e.xbutton.state & ShiftMask)))
-			{
+			     (e.xbutton.state & ShiftMask))))
+			{			  
 				do_resize_too = True;
-				do_exec_placement_func = False;
-				SET_PLACED_WB3(fw,False);
 				/* Fallthrough to button-release */
 			}
-			else if (e.xbutton.button == 3)
+			else if (!button_mask && e.xbutton.button <=
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS && 
+				 e.xbutton.button > 0 &&
+				 (move_interactive_finish_button_mask & 
+				  (1<<(e.xbutton.button-1))))
 			{
-				do_exec_placement_func = True;
 				do_resize_too = False;
-				SET_PLACED_WB3(fw,True);
+				break;
+			}
+			else if (button_mask &&  e.xbutton.button <=
+				 NUMBER_OF_EXTENDED_MOUSE_BUTTONS && 
+				 e.xbutton.button > 0 &&
+				 (move_drag_finish_button_mask & 
+				  (1<<(e.xbutton.button-1))))
+			{
+				do_resize_too = False;
 				/* Fallthrough to button-release */
 			}
 			else
@@ -2240,11 +2392,15 @@ Bool __move_loop(
 				 *  - the move started with a pressed button
 				 *    and another button was pressed during the
 				 *    operation
-				 *  - no button was pressed at the beginning
-				 *    and any button except button 1 was
-				 *    pressed. */
-				SET_PLACED_WB3(fw,False);
-				if (button_mask || (e.xbutton.button != 1))
+				 *  - Any button not in the
+				 *    move_finish_button_mask is pressed
+				 */
+			  /*	if (button_mask) */
+			  	/* - button_mask will always be set here.
+				 *   only add an if if we want to be able to 
+				 *   place windows dragged by other means
+				 *   than releasing the initial button.
+				 */
 				{
 					if (!do_move_opaque)
 					{
@@ -2266,6 +2422,7 @@ Bool __move_loop(
 				break;
 			}
 		case ButtonRelease:
+			fw->placed_by_button = e.xbutton.button;
 			if (!do_move_opaque)
 				switch_move_resize_grid(False);
 			xl2 = e.xbutton.x_root + XOffset + x_virtual_offset;

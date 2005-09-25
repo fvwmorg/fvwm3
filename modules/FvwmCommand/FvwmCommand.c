@@ -847,8 +847,6 @@ void list_configure(unsigned long *body)
 	    IS_PARTIALLY_VISIBLE( cfgpacket ) );
     printf( "is_pixmap_ours: %d\n",
 	    IS_PIXMAP_OURS( cfgpacket ) );
-    printf( "is_placed_wb3: %d\n",
-	    IS_PLACED_WB3( cfgpacket ) );
     printf( "is_size_inc_set: %d\n",
 	    IS_SIZE_INC_SET( cfgpacket ) );
     printf( "is_transient: %d\n",

@@ -342,7 +342,6 @@ typedef struct
 	unsigned is_partially_visible : 1;
 	/* is the icon pixmap ours to free? */
 	unsigned is_pixmap_ours : 1;
-	unsigned is_placed_wb3 : 1;
 	/* fvwm places the window itself */
 	unsigned is_placed_by_fvwm : 1;
 	/* mark window to be destroyed after last complex func has finished. */
@@ -451,6 +450,8 @@ typedef struct WindowConditionMask
 	window_flags flag_mask;
 	struct name_condition *name_condition;
 	int layer;
+	int placed_by_button_mask;
+	int placed_by_button_set_mask;
 } WindowConditionMask;
 
 /* only style.c and add_window.c are allowed to access this struct! */
@@ -826,6 +827,8 @@ typedef struct FvwmWindow
 
 	float placement_penalty[6];
 	int placement_percentage_penalty[4];
+
+        unsigned char placed_by_button;
 
 #define EWMH_WINDOW_TYPE_NONE_ID      0
 #define EWMH_WINDOW_TYPE_DESKTOP_ID   1

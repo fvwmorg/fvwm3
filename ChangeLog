@@ -1,3 +1,26 @@
+2005-09-25  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* AUTHORS:
+	* fvwm/fvwm.h (window_flags, WindowConditionMask, FvwmWindow): 
+	* fvwm/window_flags.h (IS_PLACED_BY_WB3, SET_PLACED_WB3)
+	(SETM_PLACED_WB3): 
+	* fvwm/session.c (_match, SaveWindowStates, LoadWindowStates): 
+	* fvwm/conditional.c (MatchesConditionMask, CreateConditionMask): 
+	* fvwm/add_window.c (setup_window_structure): 
+	* fvwm/move_resize.h (placement_binding):
+	* fvwm/move_resize.c (__move_loop, placement_binding): 
+	* fvwm/bindings.c (ParseBinding): 	
+	* libs/wcontext.c (win_contexts): 
+	* libs/wcontext.h (enum): 
+	* fvwm/fvwm.1.in:
+	Added placement context for simple mouse bindings to allow
+	specification of buttons to finish/cancel movment. Buttons >3
+	may now be used to place windows.
+	Replaced window flag placed_wb3 with placed_by_button 
+	FvwmWindow member. Added window condition PlacedByButton.
+	
+
 2005-09-22  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:

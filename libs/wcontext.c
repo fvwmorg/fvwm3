@@ -69,6 +69,7 @@ charmap_t win_contexts[] =
 	{'-', C_SB_TOP},
 	{'_', C_SB_BOTTOM},
 	{'m', C_MENU},
+	{'p', C_PLACEMENT},
 	{0, 0}
 };
 

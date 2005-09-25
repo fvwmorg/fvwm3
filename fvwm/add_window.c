@@ -447,7 +447,7 @@ static void setup_window_structure(
 			*pfw, USED_TITLE_DIR_FOR_SHADING(savewin));
 		SET_SHADED_DIR(*pfw, SHADED_DIR(savewin));
 		SET_NAME_CHANGED(*pfw,IS_NAME_CHANGED(savewin));
-		SET_PLACED_WB3(*pfw,IS_PLACED_WB3(savewin));
+		(*pfw)->placed_by_button = savewin->placed_by_button;
 		SET_PLACED_BY_FVWM(*pfw, IS_PLACED_BY_FVWM(savewin));
 		SET_HAS_EWMH_WM_ICON_HINT(*pfw, HAS_EWMH_WM_ICON_HINT(savewin));
 		(*pfw)->ewmh_mini_icon_width = savewin->ewmh_mini_icon_width;
