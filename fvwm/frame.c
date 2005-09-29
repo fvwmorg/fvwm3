@@ -293,9 +293,9 @@ static void frame_setup_border(
 		if (diff_g != NULL)
 		{
 			/* Reset PressedW to NULL if the part has moved.
-			 * This prevents strange ref points from being used 
+			 * This prevents strange ref points from being used
 			 * in resize if the window is unshaded or moved via a
-			 * complex function before a resize. 
+			 * complex function before a resize.
 			 * If this isn't desired a flag will be needed to
 			 * indicate that a part has moved. */
 			if (part == PART_BORDER_NE || part == PART_BORDER_E ||
@@ -306,7 +306,7 @@ static void frame_setup_border(
 				    PressedW == FW_W_CORNER(fw, 1) ||
 				    PressedW == FW_W_CORNER(fw, 3))
 				{
-					PressedW = NULL;
+					PressedW = None;
 				}
 			}
 			if (part == PART_BORDER_SW || part == PART_BORDER_S ||
@@ -317,7 +317,7 @@ static void frame_setup_border(
 				    PressedW == FW_W_CORNER(fw, 2) ||
 				    PressedW == FW_W_CORNER(fw, 3))
 				{
-					PressedW = NULL;
+					PressedW = None;
 				}
 			}
 			if (part == PART_BORDER_SW || part == PART_BORDER_W ||
@@ -327,7 +327,7 @@ static void frame_setup_border(
 				    PressedW == FW_W_CORNER(fw, 0) ||
 				    PressedW == FW_W_CORNER(fw, 2))
 				{
-					PressedW = NULL;
+					PressedW = None;
 				}
 			}
 			if (part == PART_BORDER_NW || part == PART_BORDER_N ||
@@ -337,7 +337,7 @@ static void frame_setup_border(
 				    PressedW == FW_W_CORNER(fw, 0) ||
 				    PressedW == FW_W_CORNER(fw, 1))
 				{
-					PressedW = NULL;
+					PressedW = None;
 				}
 			}
 		}

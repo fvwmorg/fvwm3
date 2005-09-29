@@ -1,58 +1,63 @@
+2005-09-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c (frame_setup_border):
+	fixed a Warning
+
 2005-09-29  Viktor Griph  <griph@dd.chalmers.se>
-	
+
 	* NEWS:
-	* fvwm/move_resize.c (__resize_window): 
+	* fvwm/move_resize.c (__resize_window):
 	removed duplicate pointer query for enter/leave notify events.
 	resizeing of shaded windows in the shaded direction no longer
 	results in bofus ref points.
 
-	* fvwm/frame.c (frame_setup_border): 
+	* fvwm/frame.c (frame_setup_border):
 	reset PressedW if the part has moved. This prevents strange
 	ref points in resize if called from some complex functions.
-	
-	* fvwm/frame.c (frame_create_move_resize_args): 
-	shaded windows use get_client_geometry for client geometry. 
+
+	* fvwm/frame.c (frame_create_move_resize_args):
+	shaded windows use get_client_geometry for client geometry.
 
 2005-09-25  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
 	* AUTHORS:
-	* fvwm/fvwm.h (window_flags, WindowConditionMask, FvwmWindow): 
+	* fvwm/fvwm.h (window_flags, WindowConditionMask, FvwmWindow):
 	* fvwm/window_flags.h (IS_PLACED_BY_WB3, SET_PLACED_WB3)
-	(SETM_PLACED_WB3): 
-	* fvwm/session.c (_match, SaveWindowStates, LoadWindowStates): 
-	* fvwm/conditional.c (MatchesConditionMask, CreateConditionMask): 
-	* fvwm/add_window.c (setup_window_structure): 
+	(SETM_PLACED_WB3):
+	* fvwm/session.c (_match, SaveWindowStates, LoadWindowStates):
+	* fvwm/conditional.c (MatchesConditionMask, CreateConditionMask):
+	* fvwm/add_window.c (setup_window_structure):
 	* fvwm/move_resize.h (placement_binding):
-	* fvwm/move_resize.c (__move_loop, placement_binding): 
-	* fvwm/bindings.c (ParseBinding): 	
-	* libs/wcontext.c (win_contexts): 
-	* libs/wcontext.h (enum): 
+	* fvwm/move_resize.c (__move_loop, placement_binding):
+	* fvwm/bindings.c (ParseBinding):
+	* libs/wcontext.c (win_contexts):
+	* libs/wcontext.h (enum):
 	* fvwm/fvwm.1.in:
 	Added placement context for simple mouse bindings to allow
 	specification of buttons to finish/cancel movment. Buttons >3
 	may now be used to place windows.
-	Replaced window flag placed_wb3 with placed_by_button 
+	Replaced window flag placed_wb3 with placed_by_button
 	FvwmWindow member. Added window condition PlacedByButton.
-	
+
 2005-09-22  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
 	* AUTHORS:
-	* fvwm/menustyle.h (enum, MenuFeel, ST_DO_SCROLL, MST_DO_SCROLL) 
-	(ST_SCROLL_OFF_PAGE, MST_SCROLL_OFF_PAGE): 
-	* fvwm/menustyle.c (menustyle_copy): 
-	(menustyle_get_styleopt_index): 
-	(menustyle_parse_style, CMD_MenuStyle): 
-	* fvwm/menus.c (menuShortcuts, enum, __mloop_handle_event): 
+	* fvwm/menustyle.h (enum, MenuFeel, ST_DO_SCROLL, MST_DO_SCROLL)
+	(ST_SCROLL_OFF_PAGE, MST_SCROLL_OFF_PAGE):
+	* fvwm/menustyle.c (menustyle_copy):
+	(menustyle_get_styleopt_index):
+	(menustyle_parse_style, CMD_MenuStyle):
+	* fvwm/menus.c (menuShortcuts, enum, __mloop_handle_event):
 	(menu_get_outer_geometry, move_any_menu):
-	* fvwm/fvwm.1.in: 
+	* fvwm/fvwm.1.in:
 	added MouseWheel and ScrollOffPage menu styles
-	
+
 2005-09-20  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
-	* fvwm/menus.c (append_item_to_menu): 
+	* fvwm/menus.c (append_item_to_menu):
 	fixed bug #1121: Use of pointer without checking for NULL
 
 2005-09-19  Mikhael Goikhman  <migo@homemail.com>
