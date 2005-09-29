@@ -3479,9 +3479,60 @@ static Bool __resize_window(F_CMD_ARGS)
 			do_warp_to_border = True;
 		}
 	}
-	__resize_get_refpos(
-		&ref_x, &ref_y, xmotion, ymotion, orig->width, orig->height,
-		fw);
+	if (!IS_SHADED(fw))
+	{
+		__resize_get_refpos(
+			&ref_x, &ref_y, xmotion, ymotion, orig->width,
+			orig->height, fw);
+	}
+	else
+	{
+		switch (SHADED_DIR(fw)) 
+		{
+		case DIR_N:
+		case DIR_NW:
+		case DIR_NE:
+			if (ymotion == -1)
+			{
+				ymotion = 0;
+			}
+			break;
+		case DIR_S:
+		case DIR_SW:
+		case DIR_SE:
+			if (ymotion == 1)
+			{
+				ymotion = 0;
+			}
+			break;
+		default:
+			break;
+		}
+		switch (SHADED_DIR(fw)) 
+		{
+		case DIR_E:
+		case DIR_NE:
+		case DIR_SE:
+			if (xmotion == 1)
+			{
+				xmotion = 0;
+			}
+			break;
+		case DIR_W:
+		case DIR_NW:
+		case DIR_SW:
+			if (xmotion == -1)
+			{
+				xmotion = 0;
+			}
+			break;
+		default:
+			break;
+		}			
+		__resize_get_refpos(
+			&ref_x, &ref_y, xmotion, ymotion, fw->frame_g.width, 
+			fw->frame_g.height, fw);
+	}
 	x_off = 0;
 	y_off = 0;
 	if (do_warp_to_border == True)
@@ -3606,43 +3657,14 @@ static Bool __resize_window(F_CMD_ARGS)
 			 * This *is* necessary. */
 			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &JunkMask) == True)
+				    &y, &JunkX, &JunkY, &button_mask) == True)
 			{
 				fev_make_null_event(&e2, dpy);
 				e2.type = MotionNotify;
 				e2.xmotion.time = fev_get_evtime();
 				e2.xmotion.x_root = x;
 				e2.xmotion.y_root = y;
-				e2.xmotion.state = JunkMask;
-				e2.xmotion.same_screen = True;
-				ev = e2;
-				fev_fake_event(&ev);
-			}
-			else
-			{
-				/* pointer is on a different screen,
-				 * ignore event */
-			}
-		}
-		if (ev.type == EnterNotify || ev.type == LeaveNotify)
-		{
-			XEvent e2;
-			int x;
-			int y;
-
-			/* Query the pointer to catch the latest information.
-			 * This *is* necessary. */
-			if (FQueryPointer(
-				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &button_mask) ==
-			    True)
-			{
-				fev_make_null_event(&e2, dpy);
-				e2.type = MotionNotify;
-				e2.xmotion.time = fev_get_evtime();
-				e2.xmotion.x_root = x;
-				e2.xmotion.y_root = y;
-				e2.xmotion.state = JunkMask;
+				e2.xmotion.state = button_mask;
 				e2.xmotion.same_screen = True;
 				ev = e2;
 				fev_fake_event(&ev);

@@ -22,6 +22,8 @@ Changes in beta release 2.5.15 (not released yet)
    - Some EWMH-related 64-bit fixes.
    - Fixed segmentation fault when replacing title of title only
      menus (Bug #1121)
+   - Fixes for resizing of shaded windows and windows changed by a
+     complex function that calls resize after othet window changes.
 
 -------------------------------------------------------------------
 

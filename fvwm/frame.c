@@ -45,6 +45,8 @@
 
 /* ---------------------------- imports ------------------------------------ */
 
+extern Window PressedW;
+
 /* ---------------------------- included code files ------------------------ */
 
 /* ---------------------------- local types -------------------------------- */
@@ -290,15 +292,53 @@ static void frame_setup_border(
 		}
 		if (diff_g != NULL)
 		{
+			/* Reset PressedW to NULL if the part has moved.
+			 * This prevents strange ref points from being used 
+			 * in resize if the window is unshaded or moved via a
+			 * complex function before a resize. 
+			 * If this isn't desired a flag will be needed to
+			 * indicate that a part has moved. */
 			if (part == PART_BORDER_NE || part == PART_BORDER_E ||
 			    part == PART_BORDER_SE)
 			{
 				xwc.x -= diff_g->width;
+				if (PressedW == FW_W_SIDE(fw,1) ||
+				    PressedW == FW_W_CORNER(fw, 1) ||
+				    PressedW == FW_W_CORNER(fw, 3))
+				{
+					PressedW = NULL;
+				}
 			}
 			if (part == PART_BORDER_SW || part == PART_BORDER_S ||
 			    part == PART_BORDER_SE)
 			{
 				xwc.y -= diff_g->height;
+				if (PressedW == FW_W_SIDE(fw,2)||
+				    PressedW == FW_W_CORNER(fw, 2) ||
+				    PressedW == FW_W_CORNER(fw, 3))
+				{
+					PressedW = NULL;
+				}
+			}
+			if (part == PART_BORDER_SW || part == PART_BORDER_W ||
+			    part == PART_BORDER_NW)
+			{
+				if (PressedW == FW_W_SIDE(fw,3)||
+				    PressedW == FW_W_CORNER(fw, 0) ||
+				    PressedW == FW_W_CORNER(fw, 2))
+				{
+					PressedW = NULL;
+				}
+			}
+			if (part == PART_BORDER_NW || part == PART_BORDER_N ||
+			    part == PART_BORDER_NE)
+			{
+				if (PressedW == FW_W_SIDE(fw,0)||
+				    PressedW == FW_W_CORNER(fw, 0) ||
+				    PressedW == FW_W_CORNER(fw, 1))
+				{
+					PressedW = NULL;
+				}
 			}
 		}
 		XConfigureWindow(dpy, w, CWWidth | CWHeight | CWX | CWY, &xwc);
@@ -1755,20 +1795,31 @@ frame_move_resize_args frame_create_move_resize_args(
 	mra->w_with_focus = (fw == get_focus_window()) ? FW_W(fw) : None;
 
 	/* calculate various geometries */
-	rc = XGetGeometry(
-		dpy, FW_W(fw), &JunkRoot, &mra->client_g.x, &mra->client_g.y,
-		&mra->client_g.width, &mra->client_g.height, &JunkBW,
-		&JunkDepth);
-	if (rc == True)
+	if (!IS_SHADED(fw))
 	{
-		rc = XTranslateCoordinates(
-			dpy, FW_W_PARENT(fw), Scr.Root, mra->client_g.x,
-			mra->client_g.y, &mra->client_g.x, &mra->client_g.y,
-			&JunkChild);
+		rc = XGetGeometry(
+			dpy, FW_W(fw), &JunkRoot, &mra->client_g.x,
+			&mra->client_g.y, &mra->client_g.width,
+			&mra->client_g.height, &JunkBW,	&JunkDepth);
+		if (rc == True)
+		{
+			rc = XTranslateCoordinates(
+				dpy, FW_W_PARENT(fw), Scr.Root,
+				mra->client_g.x, mra->client_g.y,
+				&mra->client_g.x, &mra->client_g.y,
+				&JunkChild);
+		}
+		if (rc == False)
+		{
+			/* Can only happen if the window died */
+			get_client_geometry(fw, &mra->client_g);
+		}
 	}
-	if (rc == False)
+	else
 	{
-		/* Can only happen if the window died */
+		/* If the window was reisez while shaded the client window
+		 * will not have been resized. Use the frame to get the
+		 * geometry */
 		get_client_geometry(fw, &mra->client_g);
 	}
 	get_window_borders(fw, &mra->b_g);
