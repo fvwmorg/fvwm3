@@ -2315,6 +2315,7 @@ Bool __move_loop(
 			Keyboard_shortcuts(
 				&e, fw, &x_virtual_offset,
 				&y_virtual_offset, ButtonRelease);
+			e.xbutton.button = 0;
 		}
 		switch (e.type)
 		{

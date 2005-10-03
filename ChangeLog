@@ -1,3 +1,9 @@
+2005-10-03  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/move_resize.c (__move_loop): 
+	fixed bug where finishing movment with keyboard would set a random
+	button as used for placement.
+
 2005-09-30  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS
@@ -14,8 +20,8 @@
 	* NEWS:
 	* fvwm/move_resize.c (__resize_window):
 	removed duplicate pointer query for enter/leave notify events.
-	resizeing of shaded windows in the shaded direction no longer
-	results in bofus ref points.
+	resizing of shaded windows in the shaded direction no longer
+	results in bogus ref points.
 
 	* fvwm/frame.c (frame_setup_border):
 	reset PressedW if the part has moved. This prevents strange
