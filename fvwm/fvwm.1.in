@@ -634,10 +634,10 @@ the
 command.
 
 Xinerama support was designed to work out of the box with the same
-configurations file that would work on a single screen.  It may
-not work too well if the involved screens use different screen
+configuration file that would work on a single screen.  It may
+not perforrm very well if the involved screens use different screen
 resolutions.  In this situation, windows may get stuck in the
-portion of the whole desktop that belongs to neither screen.  If
+portion of the whole desktop that belongs to neither screen.  When
 this happens, the windows or icons can be retrieved with the
 command
 
@@ -3221,7 +3221,7 @@ selected.  This is intended for
 navigation.
 The key name is a standard X11 key name as defined in
 .IR /usr/include/X11/keysymdef.h ,
-(without the 
+(without the
 .I XK_
 prefix), or the keysym database
 .IR /usr/X11R6/lib/X11/XKeysymDB .
@@ -3407,13 +3407,13 @@ one argument, that can be one of
 ScrollsPointer, ScrollsMenu, ScrollsMenuBackwards or ActivatesItem.
 ScrollsPointer makes the mouse wheel scroll the pointer over a menu.
 This is the default. ScrollsMenu and ScrollsMenuBackwards scroll the menu
-beneath the pointer. ActivatesItem disables scrolling by mouse wheel and 
+beneath the pointer. ActivatesItem disables scrolling by mouse wheel and
 makes the use of a mouse wheel act as if the menu was clicked.
 If no argument is supplied the default setting is restored.
 
-.IR ScrollOffPage 
+.IR ScrollOffPage
 allows a menu to be scrolled out of the visible area if
-.I MouseWheel 
+.I MouseWheel
 is set to ScrollsMenu or ScrollsMenuBackwards. This is the default.
 The opposite,
 .I !ScrollOffPage
@@ -4177,10 +4177,10 @@ to fvwm or applications.  The parameters are a list of
 commands which consist of pairs of command tokens and values.
 The
 .IR press " and " release
-commands are followed by a key name.  
+commands are followed by a key name.
 The key name is a standard X11 key name as defined in
 .IR /usr/include/X11/keysymdef.h ,
-(without the 
+(without the
 .I XK_
 prefix), or the keysym database
 .IR /usr/X11R6/lib/X11/XKeysymDB .
@@ -4923,7 +4923,7 @@ pointer position before starting the operation; this is mainly
 intended for internal use by modules like
 .BR FvwmPager .
 
-The operation can be aborted with Escape or any mouse button not set 
+The operation can be aborted with Escape or any mouse button not set
 to place the window. By default mouse button 2 is set to cancel the move
 operation. To change this you may use the
 .B Mouse
@@ -4931,7 +4931,7 @@ command with special context 'P' for Placement (see
 .B Mouse
 command for details).
 
-The window condition 
+The window condition
 .I PlacedByButton
 can be used to check if a specific button was pressed to place the
 window (see
@@ -5976,7 +5976,7 @@ Normally, the key binding is activated when the key is pressed.
 .I Keyname
 is a standard X11 key name as defined in
 .IR /usr/include/X11/keysymdef.h ,
-(without the 
+(without the
 .I XK_
 prefix), or the keysym database
 .IR /usr/X11R6/lib/X11/XKeysymDB .
@@ -6048,38 +6048,38 @@ The special context 'M' for menus can only be used to control
 which mouse button is used to tear off menus.  See the section
 "Tear Off Menus" for details.
 
-The special context 'P' controls what buttons that can be used to place 
+The special context 'P' controls what buttons that can be used to place
 a window. When using this context no modifiers are allowed (
 .I Modifiers
 must be N), no
 .I window
-is allowed, and the 
+is allowed, and the
 .I Function
-must be one of 
+must be one of
 .IR PlaceWindow ", " PlaceWindowDrag ", " PlaceWindowInteractive ", "
-.IR CancelPlacement ", " CancelPlacementDrag ", " CancelPlacementInteractive 
+.IR CancelPlacement ", " CancelPlacementDrag ", " CancelPlacementInteractive
 .RI " or " - .
 
 .I PlaceWindow
-makes 
+makes
 .I Button
 usable for window placement, both for interactive and drag move.
 .I CancelPlacement
-does the inverse. That is makes 
+does the inverse. That is makes
 .I Button
 to cancel move for both interactive and drag move. It may however not
-override how new windows are resized after being placed. This is 
+override how new windows are resized after being placed. This is
 controlled by the
 .B Emulate
 command. Also a window being dragged can always be placed
 by releasing the button hold while dragging, regardless of if it is
-set to 
+set to
 .I PlaceWindow
 or not.
 
-.IR PlaceWindowDrag " and " PlaceWindowInteractive / CancelPlacementDrag 
+.IR PlaceWindowDrag " and " PlaceWindowInteractive / CancelPlacementDrag
 .RI " and " CancelPlacementInteractive
-work as 
+work as
 .IR PlaceWindow / CancelPlacement
 with the exception that they only affect either windows dragged /
 placed interactively.
@@ -6094,7 +6094,7 @@ than one cancel if button 1 is pressed before finishing the move:
 .EX
 Mouse 0 P N PlaceWindow
 Mouse 3 P N CancelPlacement
-Mouse 1 P N CancelPlacementDrag 
+Mouse 1 P N CancelPlacementDrag
 .EE
 
 By default, the binding applies to all windows. You can specify that a
@@ -7683,7 +7683,7 @@ pressed during the initial placement of a window (respectively
 .SM Shift
 and mouse button 1 in case Mwm emulation has been enabled with the
 .B Emulate
-command), the user is asked to resize the window too.  
+command), the user is asked to resize the window too.
 
 It is possible to define buttons usable to place windows with the
 .B Move
@@ -10485,17 +10485,17 @@ test-condition is true if
 matches the given environment variable value.
 The pattern may contain special "*" and "?" chars.
 
-The 
+The
 .IB "EdgeHasPointer " [ direction ]
 test-condition is true if the edge in the given direction currently
-contains the pointer. 
-The 
+contains the pointer.
+The
 .IB "EdgeIsActive " [ direction ]
 test-condition is true if the edge in the given direction currently is
 active. An edge is active, and can contain a pointer if either a
 command is bound to it or edge scroll is available in that
 direction. The direction may be one of
-.IR " Any", " North", " Top", " Up", " West", " Left", " South", " Bottom", 
+.IR " Any", " North", " Top", " Up", " West", " Left", " South", " Bottom",
 .IR " Down", " Right" and " East" .
 If no direction is specified
 .I Any
@@ -10911,7 +10911,7 @@ The
 condition is fulfilled if the last interactive motion of the
 window (with the
 .B Move
-command or as 
+command or as
 .IR ManualPlacement )
 was ended by pressing mouse button
 .IR n .
@@ -10929,7 +10929,7 @@ AddToFunc MoveWindow
 
 The
 .I PlacedByButton3
-condition has the same meaning as 
+condition has the same meaning as
 .I PlacedByButton
 3. It remains only for backward compatibility.
 
