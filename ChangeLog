@@ -1,13 +1,19 @@
+2005-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (__move_loop):
+	removed the previous patch as it breaks aborting window motion with the
+	escape key.
+
 2005-10-03  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/move_resize.c (__move_loop): 
+	* fvwm/move_resize.c (__move_loop):
 	fixed bug where finishing movment with keyboard would set a random
 	button as used for placement.
 
 2005-09-30  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS
-	* fvwm/frame.c (frame_setup_border): 
+	* fvwm/frame.c (frame_setup_border):
 	reverted change for move of window parts (reset of PressedW).
 
 2005-09-29  Dominik Vogt  <dominik.vogt@gmx.de>
