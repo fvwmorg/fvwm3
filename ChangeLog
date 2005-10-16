@@ -1,3 +1,9 @@
+2005-10-16  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/move_resize.c (__move_loop): 
+	reimplemented a fix for the place with keyboard setting a button as 
+	used for place bug; this time without breaking escape key.
+
 2005-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (__move_loop):

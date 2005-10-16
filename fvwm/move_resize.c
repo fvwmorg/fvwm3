@@ -2111,6 +2111,8 @@ Bool __move_loop(
 	/* if Alt is initially pressed don't enable no-snap until Alt is
 	 * released */
 	Bool nosnap_enabled = False;
+	/* Must not set placed by button if the event is a modified KeyEvent */
+	Bool is_fake_event;
 	FvwmWindow *fw = exc->w.fw;
 	unsigned int draw_parts = PART_NONE;
 	XEvent e;
@@ -2307,7 +2309,7 @@ Bool __move_loop(
 				 * ignore event */
 			}
 		}
-
+		is_fake_event = False;
 		/* Handle a limited number of key press events to allow
 		 * mouseless operation */
 		if (e.type == KeyPress)
@@ -2315,6 +2317,8 @@ Bool __move_loop(
 			Keyboard_shortcuts(
 				&e, fw, &x_virtual_offset,
 				&y_virtual_offset, ButtonRelease);
+			
+			is_fake_event = (e.type != KeyPress);
 		}
 		switch (e.type)
 		{
@@ -2422,7 +2426,10 @@ Bool __move_loop(
 				break;
 			}
 		case ButtonRelease:
-			fw->placed_by_button = e.xbutton.button;
+			if (!is_fake_event)
+			{
+				fw->placed_by_button = e.xbutton.button;
+			}
 			if (!do_move_opaque)
 				switch_move_resize_grid(False);
 			xl2 = e.xbutton.x_root + XOffset + x_virtual_offset;
