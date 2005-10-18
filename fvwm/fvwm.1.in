@@ -4683,6 +4683,7 @@ The
 passed to WindowList are separated by commas and can be
 .IR Geometry " / " NoGeometry " / " NoGeometryWithInfo ,
 .IR NoDeskNum,
+.IR NoLayer,
 .IR NoNumInDeskTitle ,
 .IR NoCurrentDeskTitle ,
 .IR "MaxLabelWidth width",
@@ -5021,12 +5022,12 @@ is negative or omitted the default value (which might be increased
 when 16000x9000 pixel displays become affordable) is restored.
 
 .TP
-.B "MoveToPage [\fIoptions\fP
+.B "MoveToPage [\fIoptions\fP\
 ] [\fIx\fP\
 [\fIp\fP|\fIw\fP\
 ] \fIy\fP\
 [\fIp\fP|\fIw\fP\
-]] | [\fIprev\
+]] | [\fIprev\fP\
 ]"
 Moves the selected window to another page (x,y).  The upper left
 page is (0,0), the upper right is (M,0), where M is one less than
@@ -6485,6 +6486,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR WindowListSkip " / " WindowListHit ,
 .IR CirculateSkip " / " CirculateHit ,
 .IR CirculateSkipShaded " / " CirculateHitShaded ,
+.IR CirculateSkipIcon " / " CirculateHitIcon ,
 .IR Layer ,
 .IR StaysOnTop " / " StaysOnBottom " / " StaysPut ,
 .IR Sticky " / " Slippery ,
@@ -7719,6 +7721,7 @@ until it hits the bottom screen border.
 
 .I Old placement styles
 DumbPlacement / SmartPlacement / SmartPlacementOff,
+CleverPlacement / CleverPlacementOff,
 ActivePlacement / RandomPlacement,
 ActivePlacementsHonorsStartsOnPage /
 ActivePlacementsHonorsStartsOnPageOff, GlobalOpts
@@ -10446,14 +10449,14 @@ and are separated by commas or whitespace.  They include
 .IR Init ,
 .IR Restart ,
 .IR Exit ,
-.IR Quit " and"
+.IR Quit ,
 .IR ToRestart ,
 .IR True ,
 .IR False ,
 .IR F ,
 .IR R ,
 .IR W ,
-.IR X ,
+.IR X " and"
 .IR I .
 A test-condition prefixed with "!" is reverted.
 

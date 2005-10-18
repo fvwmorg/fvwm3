@@ -1,5 +1,13 @@
 2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
 
+	* fvwm/fvwm.1.in: 
+	added NoLayer to list of allowed options for WindowList command
+	fixed grammar of test-conditions list. formatting fixes for
+	MoveToPage command. Added CirculateSkipIcon / CirculateHitIcon to
+	style option list.
+
+2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
+
 	* NEWS:
 	* fvwm/functions.c (__execute_function) 
 	(__run_complex_function_items, execute_complex_function): 
