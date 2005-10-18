@@ -682,7 +682,7 @@ Examples:
         Iconify off
         WindowShade off
         Raise
-        WrapToWindow 50 50
+        WarpToWindow 50 50
     %End
 
     %ModuleConfig FvwmPager destroy

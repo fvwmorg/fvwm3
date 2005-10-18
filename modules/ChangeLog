@@ -1,3 +1,9 @@
+2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPerl/FvwmPerl: 
+	* FvwmPerl/FvwmPerl.in (Examples): 
+	fixed typo (WrapToWindow -> WarpToWindow)
+
 2005-09-25  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmCommand/FvwmCommand.c (list_configure): 
