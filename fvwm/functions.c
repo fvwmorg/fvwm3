@@ -96,7 +96,7 @@ typedef enum
 
 static void execute_complex_function(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
-	Bool *desperate);
+	Bool *desperate, Bool has_ref_window_moved);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -353,7 +353,7 @@ static const func_t *find_builtin_function(char *func)
 
 static void __execute_function(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
-	FUNC_FLAGS_TYPE exec_flags, char *args[])
+	FUNC_FLAGS_TYPE exec_flags, char *args[], Bool has_ref_window_moved)
 {
 	static unsigned int func_depth = 0;
 	cond_rc_t *func_rc = NULL;
@@ -371,6 +371,9 @@ static void __execute_function(
 	Bool must_free_string = False;
 	Bool must_free_function = False;
 	Bool do_keep_rc = False;
+	/* needed to be able to avoid resize to use moved windows for base */
+	extern Window PressedW;
+	Window dummy_w;
 
 	if (!action)
 	{
@@ -627,7 +630,18 @@ static void __execute_function(
 			if (rc == False)
 			{
 				exc2 = exc_clone_context(exc, &ecc, mask);
-				bif->action(func_rc, exc2, runaction);
+				if (has_ref_window_moved && 
+				    (bif->func_t == F_ANIMATED_MOVE ||
+				     bif->func_t == F_MOVE ||
+				     bif->func_t == F_RESIZE))
+				{
+					dummy_w = PressedW;
+					PressedW = None;
+					bif->action(func_rc, exc2, runaction);
+				}
+				{
+					bif->action(func_rc, exc2, runaction);
+				}				
 				exc_destroy_context(exc2);
 			}
 		}
@@ -647,7 +661,8 @@ static void __execute_function(
 			}
 			exc2 = exc_clone_context(exc, &ecc, mask);
 			execute_complex_function(
-				func_rc, exc2, runaction, &desperate);
+				func_rc, exc2, runaction, &desperate,
+				has_ref_window_moved);
 			if (!bif && desperate)
 			{
 				if (executeModuleDesperate(
@@ -802,10 +817,19 @@ static cfunc_action_t CheckActionType(
 
 static void __run_complex_function_items(
 	cond_rc_t *cond_rc, char cond, FvwmFunction *func,
-	const exec_context_t *exc, char *args[])
+	const exec_context_t *exc, char *args[], Bool has_ref_window_moved)
 {
 	char c;
 	FunctionItem *fi;
+	int x0, y0, x, y;
+	extern Window PressedW;
+
+	if (!(!has_ref_window_moved && PressedW && XTranslateCoordinates(
+				  dpy, PressedW , Scr.Root, 0, 0, &x0, &y0,
+				  &JunkChild)))
+	{
+		x0 = y0 = 0;
+	}
 
 	for (fi = func->first_item; fi != NULL && cond_rc->break_levels == 0; )
 	{
@@ -819,7 +843,14 @@ static void __run_complex_function_items(
 		{
 			__execute_function(
 				cond_rc, exc, fi->action, FUNC_DONT_DEFER,
-				args);
+				args, has_ref_window_moved);
+			if (!has_ref_window_moved && PressedW && 
+			    XTranslateCoordinates(
+				  dpy, PressedW , Scr.Root, 0, 0, &x, &y,
+				  &JunkChild))
+			{
+				has_ref_window_moved =(x != x0 || y != y0);
+			}
 		}
 		fi = fi->next_item;
 	}
@@ -854,7 +885,7 @@ static void __cf_cleanup(
 
 static void execute_complex_function(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
-	Bool *desperate)
+	Bool *desperate, Bool has_ref_window_moved)
 {
 	cond_rc_t tmp_rc;
 	cfunc_action_t type = CF_MOTION;
@@ -999,7 +1030,8 @@ static void execute_complex_function(
 	}
 	exc2 = exc_clone_context(exc, &ecc, mask);
 	__run_complex_function_items(
-		cond_rc, CF_IMMEDIATE, func, exc2, arguments);
+		cond_rc, CF_IMMEDIATE, func, exc2, arguments,
+		has_ref_window_moved);
 	exc_destroy_context(exc2);
 	for (fi = func->first_item;
 	     fi != NULL && cond_rc->break_levels == 0;
@@ -1141,7 +1173,7 @@ static void execute_complex_function(
 	mask |= ECC_ETRIGGER | ECC_W;
 	exc2 = exc_clone_context(exc, &ecc, mask);
 	__run_complex_function_items(
-		cond_rc, type, func, exc2, arguments);
+		cond_rc, type, func, exc2, arguments, has_ref_window_moved);
 	exc_destroy_context(exc2);
 	/* This is the right place to ungrab the pointer (see comment above).
 	 */
@@ -1244,7 +1276,7 @@ void execute_function(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags)
 {
-	__execute_function(cond_rc, exc, action, exec_flags, NULL);
+	__execute_function(cond_rc, exc, action, exec_flags, NULL, False);
 
 	return;
 }

@@ -1,3 +1,10 @@
+2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* fvwm/functions.c (__execute_function) 
+	(__run_complex_function_items, execute_complex_function): 
+	fix for moving/resizing reference window usage with complex functions.
+
 2005-10-16  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/move_resize.c (__move_loop): 
