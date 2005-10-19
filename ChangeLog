@@ -1,3 +1,10 @@
+2005-10-19  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/functions.c (__execute_function): 
+	fixed an error in yesterdays patch to complex fuctions. the commands
+	pressed window were not retored correctly after running move functions
+	without it, and functions would be run twice.
+
 2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/fvwm.1.in: 
@@ -5,8 +12,6 @@
 	fixed grammar of test-conditions list. formatting fixes for
 	MoveToPage command. Added CirculateSkipIcon / CirculateHitIcon to
 	style option list.
-
-2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
 	* fvwm/functions.c (__execute_function) 

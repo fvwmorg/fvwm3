@@ -638,7 +638,9 @@ static void __execute_function(
 					dummy_w = PressedW;
 					PressedW = None;
 					bif->action(func_rc, exc2, runaction);
+					PressedW = dummy_w;
 				}
+				else
 				{
 					bif->action(func_rc, exc2, runaction);
 				}				
