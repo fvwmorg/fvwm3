@@ -880,6 +880,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			break;
 
+		case 7: /* HilightBackOff */
+			on ^= 1;
+			/* fall throw */
 		case 6: /* HilightBack */
 			if (ST_HAS_ACTIVE_BACK(tmpms))
 			{
@@ -887,7 +890,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 					&ST_MENU_ACTIVE_COLORS(tmpms).back, 1,
 					True);
 			}
-			if (arg1 == NULL)
+			if (arg1 == NULL || !on)
 			{
 				ST_HAS_ACTIVE_BACK(tmpms) = 0;
 			}
@@ -897,15 +900,13 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 					GetColor(arg1);
 				ST_HAS_ACTIVE_BACK(tmpms) = 1;
 			}
-			ST_DO_HILIGHT_BACK(tmpms) = 1;
+			ST_DO_HILIGHT_BACK(tmpms) = on;
 			has_gc_changed = True;
 			break;
 
-		case 7: /* HilightBackOff */
-			ST_DO_HILIGHT_BACK(tmpms) = 0;
-			has_gc_changed = True;
-			break;
-
+		case 9: /* ActiveForeOff */
+			on ^= 1;
+			/* fall throw */
 		case 8: /* ActiveFore */
 			if (ST_HAS_ACTIVE_FORE(tmpms))
 			{
@@ -913,7 +914,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 					&ST_MENU_ACTIVE_COLORS(tmpms).fore, 1,
 					True);
 			}
-			if (arg1 == NULL)
+			if (arg1 == NULL || !on)
 			{
 				ST_HAS_ACTIVE_FORE(tmpms) = 0;
 			}
@@ -923,12 +924,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 					GetColor(arg1);
 				ST_HAS_ACTIVE_FORE(tmpms) = 1;
 			}
-			ST_DO_HILIGHT_FORE(tmpms) = 1;
-			has_gc_changed = True;
-			break;
-
-		case 9: /* ActiveForeOff */
-			ST_DO_HILIGHT_FORE(tmpms) = 0;
+			ST_DO_HILIGHT_FORE(tmpms) = on;
 			has_gc_changed = True;
 			break;
 
@@ -945,11 +941,11 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 13: /* Animation */
-			ST_IS_ANIMATED(tmpms) = 1;
+			ST_IS_ANIMATED(tmpms) = on;
 			break;
 
 		case 14: /* AnimationOff */
-			ST_IS_ANIMATED(tmpms) = 0;
+			ST_IS_ANIMATED(tmpms) = !on;
 			break;
 
 		case 15: /* Font */
@@ -1021,11 +1017,11 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 19: /* TitleWarp */
-			ST_DO_WARP_TO_TITLE(tmpms) = 1;
+			ST_DO_WARP_TO_TITLE(tmpms) = on;
 			break;
 
 		case 20: /* TitleWarpOff */
-			ST_DO_WARP_TO_TITLE(tmpms) = 0;
+			ST_DO_WARP_TO_TITLE(tmpms) = !on;
 			break;
 
 		case 21: /* TitleUnderlines0 */
@@ -1041,27 +1037,27 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 24: /* SeparatorsLong */
-			ST_HAS_LONG_SEPARATORS(tmpms) = 1;
+			ST_HAS_LONG_SEPARATORS(tmpms) = on;
 			break;
 
 		case 25: /* SeparatorsShort */
-			ST_HAS_LONG_SEPARATORS(tmpms) = 0;
+			ST_HAS_LONG_SEPARATORS(tmpms) = !on;
 			break;
 
 		case 26: /* TrianglesSolid */
-			ST_HAS_TRIANGLE_RELIEF(tmpms) = 0;
+			ST_HAS_TRIANGLE_RELIEF(tmpms) = !on;
 			break;
 
 		case 27: /* TrianglesRelief */
-			ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
+			ST_HAS_TRIANGLE_RELIEF(tmpms) = on;
 			break;
 
 		case 28: /* PopupImmediately */
-			ST_DO_POPUP_IMMEDIATELY(tmpms) = 1;
+			ST_DO_POPUP_IMMEDIATELY(tmpms) = on;
 			break;
 
 		case 29: /* PopupDelayed */
-			ST_DO_POPUP_IMMEDIATELY(tmpms) = 0;
+			ST_DO_POPUP_IMMEDIATELY(tmpms) = !on;
 			break;
 
 		case 30: /* DoubleClickTime */
@@ -1119,19 +1115,19 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 35: /* RemoveSubmenus */
-			ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 1;
+			ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = on;
 			break;
 
 		case 36: /* HoldSubmenus */
-			ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 0;
+			ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = !on;
 			break;
 
 		case 37: /* SubmenusRight */
-			ST_USE_LEFT_SUBMENUS(tmpms) = 0;
+			ST_USE_LEFT_SUBMENUS(tmpms) = !on;
 			break;
 
 		case 38: /* SubmenusLeft */
-			ST_USE_LEFT_SUBMENUS(tmpms) = 1;
+			ST_USE_LEFT_SUBMENUS(tmpms) = on;
 			break;
 
 		case 39: /* BorderWidth */
@@ -1178,11 +1174,11 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 42: /* AutomaticHotkeys */
-			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 1;
+			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = on;
 			break;
 
 		case 43: /* AutomaticHotkeysOff */
-			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
+			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = !on;
 			break;
 
 		case 44: /* VerticalItemSpacing */
@@ -1303,9 +1299,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		        {
 				if (StrEquals(arg1, "ActivatesItem"))
 				{
-					ST_MOUSE_WHEEL(tmpms) = MMW_OFF;	
+					ST_MOUSE_WHEEL(tmpms) = MMW_OFF;
 				}
-				else if (StrEquals(arg1, 
+				else if (StrEquals(arg1,
 					"ScrollsMenuBackwards"))
 				{
 					ST_MOUSE_WHEEL(tmpms) = MMW_MENU_BACKWARDS;
@@ -1320,16 +1316,16 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 				}
 				else
 				{
-					fvwm_msg(ERR, "NewMenuStyle", 
+					fvwm_msg(ERR, "NewMenuStyle",
 					"unknown argument to MouseWheel '%s'",
 						 arg1);
 					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
-				}				
+				}
 		        }
 		        else
 		        {
-		        	ST_MOUSE_WHEEL(tmpms) = 
-					(on) ? MMW_POINTER : MMW_OFF;	
+		        	ST_MOUSE_WHEEL(tmpms) =
+					(on) ? MMW_POINTER : MMW_OFF;
 			}
 			break;
 		case 57: /* ScrollOffPage */
@@ -1397,7 +1393,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 {
 	FvwmPictureAttributes fpa;
 
-	/* Copy origms to destms, be award of all pointers in the MenuStyle
+	/* Copy origms to destms, be aware of all pointers in the MenuStyle
 	   strcture. Use  the same order as in menustyle_parse_style */
 
 	/* menu colors */
@@ -1415,21 +1411,22 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	memcpy(&ST_MENU_STIPPLE_COLORS(destms),
 	       &ST_MENU_STIPPLE_COLORS(origms), sizeof(ColorPair));
 
-	/* HilightBack */
+	/* HilightBack and ActiveFore*/
 	if (ST_HAS_ACTIVE_BACK(destms))
 	{
 		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).back, 1, True);
 	}
-	ST_HAS_ACTIVE_BACK(destms) = ST_HAS_ACTIVE_BACK(origms);
-	memcpy(&ST_MENU_ACTIVE_COLORS(destms),
-	       &ST_MENU_ACTIVE_COLORS(origms), sizeof(ColorPair));
-	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
-
-	/* ActiveFore */
 	if (ST_HAS_ACTIVE_FORE(destms))
 	{
 		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).fore, 1, True);
 	}
+	/* FIXME: Should copied colors be allocated? */
+	memcpy(&ST_MENU_ACTIVE_COLORS(destms),
+	       &ST_MENU_ACTIVE_COLORS(origms), sizeof(ColorPair));
+
+	ST_HAS_ACTIVE_BACK(destms) = ST_HAS_ACTIVE_BACK(origms);
+	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
+
 	ST_HAS_ACTIVE_FORE(destms) = ST_HAS_ACTIVE_FORE(origms);
 	ST_DO_HILIGHT_FORE(destms) = ST_DO_HILIGHT_FORE(origms);
 
@@ -1694,7 +1691,7 @@ void CMD_MenuStyle(F_CMD_ARGS)
 	while (poption && poption[0] == '!')
 	{
 	  poption++;
-	}  
+	}
 	if (option == NULL || menustyle_get_styleopt_index(poption) != -1)
 	{
 		dummy = menustyle_parse_style(F_PASS_ARGS);

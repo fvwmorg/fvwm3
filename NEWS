@@ -14,6 +14,7 @@ Changes in beta release 2.5.15 (not released yet)
    - It is now possible to redefine the buttons usable to finish
      window movement and manual placement.
    - New window condition PlacedByButton.
+   - MenuStyle pairs can be negated by prefixing '!'.
 
 * Bug Fixes:
 

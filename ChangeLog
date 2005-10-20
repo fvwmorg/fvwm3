@@ -1,3 +1,19 @@
+2005-10-20  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/move_resize.c (__resize_window): 
+	fix for not being able to finish resize with mouse when resizing on
+	click with modifiers active. (intruduced with 'removed duplicate 
+	pointer query' at sep 29)
+
+	* NEWS:
+	* fvwm/fvwm.1.in: 
+	* fvwm/menustyle.c (menustyle_parse_style): 
+	made style pairs negatable with '!' prefix
+	ActiveForeOff and HilightBackOff frees colors used.
+	
+	* fvwm/menustyle.c (menustyle_copy): 
+	fix for freeing color from sorce instead of destination.
+
 2005-10-19  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/functions.c (__execute_function): 

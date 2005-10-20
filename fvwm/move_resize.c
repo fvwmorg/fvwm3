@@ -3664,14 +3664,16 @@ static Bool __resize_window(F_CMD_ARGS)
 			 * This *is* necessary. */
 			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &button_mask) == True)
+				    &y, &JunkX, &JunkY, &JunkMask) == True)
 			{
+				/* Must NOT use button_mask here, or resize
+				 * will not work with num lock */
 				fev_make_null_event(&e2, dpy);
 				e2.type = MotionNotify;
 				e2.xmotion.time = fev_get_evtime();
 				e2.xmotion.x_root = x;
 				e2.xmotion.y_root = y;
-				e2.xmotion.state = button_mask;
+				e2.xmotion.state = JunkMask;
 				e2.xmotion.same_screen = True;
 				ev = e2;
 				fev_fake_event(&ev);

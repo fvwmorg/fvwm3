@@ -2865,6 +2865,8 @@ ScrollOffPage / !ScrollOffPage.
 
 In the above list some options are listed as option pairs or
 triples with a '/' in between.  These options exclude each other.
+All paired options can be negated to have the effect of the 
+counterpart option by prefixing ! to the option.
 
 .IR Fvwm ", " Mwm ", " Win
 reset all options to the style with the same name in former
