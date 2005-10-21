@@ -7428,7 +7428,7 @@ is active.
 
 .IR FixedPosition " and " FixedUSPosition
 make fvwm ignore attempts of the user to move the window.  It is
-still possible to move the window by resizing is.  To allow the
+still possible to move the window by resizing it.  To allow the
 user to move windows, use the
 .IR VariablePosition or VariableUSPosition
 style.

@@ -352,8 +352,9 @@ int main(int argc, char **argv)
 						hints.win_gravity =
 							SouthWestGravity;
 					}
-					hints.flags |= PPosition|PWinGravity;
+					hints.flags |= PWinGravity;
 				}
+				hints.flags |= PPosition;
 			}
 		}
 		else if (strcasecmp(argv[i], "--us-geometry") == 0)
