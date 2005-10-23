@@ -97,6 +97,50 @@ static void menustyle_free_face(MenuFace *mf)
 	return;
 }
 
+static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
+{
+	FvwmPictureAttributes fpa;
+	int i;
+
+	menustyle_free_face(destmf);
+	destmf->type = SimpleMenu;
+	switch (origmf->type)
+	{
+	case SolidMenu:
+		CopyColor(destmf->u.back, origmf->u.back, False, True);
+		destmf->type = SolidMenu;
+		break;
+	case GradientMenu:
+		destmf->u.grad.xcs =
+			(XColor *)safemalloc(sizeof(XColor) *
+					    origmf->u.grad.npixels);
+		memcpy(destmf->u.grad.xcs,
+		       origmf->u.grad.xcs,
+		       sizeof(XColor) * origmf->u.grad.npixels);
+		for (i = 0; i<origmf->u.grad.npixels;i++)
+		{
+			fvwmlib_clone_color(origmf->u.grad.xcs[i].pixel);
+		}
+		
+		destmf->u.grad.npixels = origmf->u.grad.npixels;
+		destmf->u.grad.do_dither = origmf->u.grad.do_dither;
+		destmf->type = GradientMenu;
+		destmf->gradient_type = origmf->gradient_type;
+		break;
+	case PixmapMenu:
+	case TiledPixmapMenu:
+		fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
+		destmf->u.p = PCacheFvwmPicture(
+			dpy, Scr.NoFocusWin, NULL, origmf->u.p->name,
+			fpa);
+		CopyColor(&destmf->u.back, &origmf->u.back, False,True);
+		destmf->type = origmf->type;
+		break;
+	default:
+		break;
+	}
+}
+
 /*
  *
  * Reads a menu face line into a structure (veliaa@rpi.edu)
@@ -432,6 +476,21 @@ void menustyle_free(MenuStyle *ms)
 	if (ST_ITEM_FORMAT(ms))
 	{
 		free(ST_ITEM_FORMAT(ms));
+	}
+
+	FreeColors(&ST_MENU_COLORS(ms).back,1,True);
+	FreeColors(&ST_MENU_COLORS(ms).fore,1,True);
+	if (ST_HAS_STIPPLE_FORE(ms))
+	{
+		FreeColors(&ST_MENU_STIPPLE_COLORS(ms).fore,1,True);
+	}
+	if (ST_HAS_ACTIVE_BACK(ms))
+	{
+		FreeColors(&ST_MENU_ACTIVE_COLORS(ms).back,1,True);
+	}
+	if (ST_HAS_ACTIVE_FORE(ms))
+	{
+		FreeColors(&ST_MENU_ACTIVE_COLORS(ms).fore,1,True);
 	}
 
 	while (ST_NEXT_STYLE(before) != ms)
@@ -1392,41 +1451,33 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 {
 	FvwmPictureAttributes fpa;
-
 	/* Copy origms to destms, be aware of all pointers in the MenuStyle
 	   strcture. Use  the same order as in menustyle_parse_style */
 
 	/* menu colors */
-	FreeColors(&ST_MENU_COLORS(destms).fore, 1, True);
-	FreeColors(&ST_MENU_COLORS(destms).back, 1, True);
-	memcpy(&ST_MENU_COLORS(destms), &ST_MENU_COLORS(origms),
-	       sizeof(ColorPair));
-
+	CopyColor(&ST_MENU_COLORS(destms).fore, &ST_MENU_COLORS(origms).fore,
+		  True, True);
+	CopyColor(&ST_MENU_COLORS(destms).back, &ST_MENU_COLORS(origms).back,
+		  True, True);
 	/* Greyed */
-	if (ST_HAS_STIPPLE_FORE(destms))
-	{
-		FreeColors(&ST_MENU_STIPPLE_COLORS(destms).fore, 1, True);
-	}
+	CopyColor(&ST_MENU_STIPPLE_COLORS(destms).fore,
+		  &ST_MENU_STIPPLE_COLORS(origms).fore, 
+		  ST_HAS_STIPPLE_FORE(destms), ST_HAS_STIPPLE_FORE(origms));
+	ST_MENU_STIPPLE_COLORS(destms).back = 
+		ST_MENU_STIPPLE_COLORS(origms).back;
 	ST_HAS_STIPPLE_FORE(destms) = ST_HAS_STIPPLE_FORE(origms);
-	memcpy(&ST_MENU_STIPPLE_COLORS(destms),
-	       &ST_MENU_STIPPLE_COLORS(origms), sizeof(ColorPair));
 
-	/* HilightBack and ActiveFore*/
-	if (ST_HAS_ACTIVE_BACK(destms))
-	{
-		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).back, 1, True);
-	}
-	if (ST_HAS_ACTIVE_FORE(destms))
-	{
-		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).fore, 1, True);
-	}
-	/* FIXME: Should copied colors be allocated? */
-	memcpy(&ST_MENU_ACTIVE_COLORS(destms),
-	       &ST_MENU_ACTIVE_COLORS(origms), sizeof(ColorPair));
-
+	/* HilightBack */
+	CopyColor(&ST_MENU_ACTIVE_COLORS(destms).back,
+		  &ST_MENU_ACTIVE_COLORS(origms).back, 
+		  ST_HAS_ACTIVE_BACK(destms), ST_HAS_ACTIVE_BACK(origms));
 	ST_HAS_ACTIVE_BACK(destms) = ST_HAS_ACTIVE_BACK(origms);
 	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
 
+	/* ActiveFore */
+	CopyColor(&ST_MENU_ACTIVE_COLORS(destms).fore,
+		  &ST_MENU_ACTIVE_COLORS(origms).fore, 
+		  ST_HAS_ACTIVE_FORE(destms), ST_HAS_ACTIVE_FORE(origms));
 	ST_HAS_ACTIVE_FORE(destms) = ST_HAS_ACTIVE_FORE(origms);
 	ST_DO_HILIGHT_FORE(destms) = ST_DO_HILIGHT_FORE(origms);
 
@@ -1462,41 +1513,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 		ST_PSTDFONT(destms) = Scr.DefaultFont;
 	}
 	/* MenuFace */
-	menustyle_free_face(&ST_FACE(destms));
-	ST_FACE(destms).type = SimpleMenu;
-	switch (ST_FACE(origms).type)
-	{
-	case SolidMenu:
-		memcpy(&ST_FACE(destms).u.back, &ST_FACE(origms).u.back,
-		       sizeof(Pixel));
-		ST_FACE(destms).type = SolidMenu;
-		break;
-	case GradientMenu:
-		ST_FACE(destms).u.grad.xcs =
-			(XColor *)safemalloc(sizeof(XColor) *
-					    ST_FACE(origms).u.grad.npixels);
-		memcpy(ST_FACE(destms).u.grad.xcs,
-		       ST_FACE(origms).u.grad.xcs,
-		       sizeof(XColor) * ST_FACE(origms).u.grad.npixels);
-		ST_FACE(destms).u.grad.npixels = ST_FACE(origms).u.grad.npixels;
-		ST_FACE(destms).u.grad.do_dither =
-			ST_FACE(origms).u.grad.do_dither;
-		ST_FACE(destms).type = GradientMenu;
-		ST_FACE(destms).gradient_type = ST_FACE(origms).gradient_type;
-		break;
-	case PixmapMenu:
-	case TiledPixmapMenu:
-		fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
-		ST_FACE(destms).u.p = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, ST_FACE(origms).u.p->name,
-			fpa);
-		memcpy(&ST_FACE(destms).u.back, &ST_FACE(origms).u.back,
-		       sizeof(Pixel));
-		ST_FACE(destms).type = ST_FACE(origms).type;
-		break;
-	default:
-		break;
-	}
+	menustyle_copy_face(&ST_FACE(destms), &ST_FACE(origms));
 
 	/* PopupDelay */
 	ST_POPUP_DELAY(destms) = ST_POPUP_DELAY(origms);
@@ -1531,16 +1548,9 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	}
 
 	/* side color */
-	if (ST_HAS_SIDE_COLOR(destms) == 1)
-	{
-		FreeColors(&ST_SIDE_COLOR(destms), 1, True);
-	}
+	CopyColor(&ST_SIDE_COLOR(destms), &ST_SIDE_COLOR(origms), 
+		  ST_HAS_SIDE_COLOR(destms), ST_HAS_SIDE_COLOR(origms));
 	ST_HAS_SIDE_COLOR(destms) = ST_HAS_SIDE_COLOR(origms);
-	if (ST_HAS_SIDE_COLOR(origms) == 1)
-	{
-		memcpy(&ST_SIDE_COLOR(destms), &ST_SIDE_COLOR(origms),
-		       sizeof(Pixel));
-	}
 
 	/* PopupAsRootmenu */
 	ST_DO_POPUP_AS(destms) = ST_DO_POPUP_AS(origms);

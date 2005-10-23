@@ -79,3 +79,17 @@ void FreeColors(Pixel *pixels, int n, Bool no_limit)
 
 	return;
 }
+
+/* Copy one color and reallocate it */
+void CopyColor(Pixel *dst_color, Pixel *src_color, Bool do_free_dest,
+	       Bool do_copy_src)
+{
+	if (do_free_dest)
+	{
+		FreeColors(dst_color, 1, True);
+	}
+	if (do_copy_src)
+	{
+		*dst_color = fvwmlib_clone_color(*src_color);
+	}
+}

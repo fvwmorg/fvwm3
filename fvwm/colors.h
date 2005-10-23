@@ -19,4 +19,7 @@
 
 void FreeColors(Pixel *pixels, int n, Bool no_limit);
 
+void CopyColor(Pixel *dst_color, Pixel *src_color, Bool do_free_dest,
+	       Bool do_copy_src);
+
 #endif /* COLORS_H */

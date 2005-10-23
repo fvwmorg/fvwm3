@@ -1,3 +1,16 @@
+2005-10-23  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/menustyle.c (menustyle_copy_face): 
+	separated from menustyle_copy; color copies are reallocated.
+	(menustyle_free): 
+	all colors freed
+	(menustyle_copy): 
+	color copies are reallocated.
+
+	* fvwm/colors.c (CopyColor): 
+	* fvwm/colors.h (CopyColor): 
+	added CopyColor
+
 2005-10-20  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/move_resize.c (__resize_window): 
