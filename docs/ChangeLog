@@ -1,3 +1,8 @@
+2005-10-24  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FAQ: 
+	Changed CenterWindow function in Q7.14 to work with oversized windows.
+
 2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
 
 	* DEVELOPERS (Preparations): 

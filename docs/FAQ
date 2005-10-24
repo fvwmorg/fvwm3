@@ -2948,8 +2948,8 @@ your applications request.
      DestroyFunc CenterWindow
      AddToFunc   CenterWindow
      + I ThisWindow Piperead "echo Move \
-       $(( $[vp.width]/2-$[w.width]/2 ))p \
-       $(( $[vp.height]/2-$[w.height]/2 ))p"
+       +$(( $[vp.width]/2-$[w.width]/2 ))p \
+       +$(( $[vp.height]/2-$[w.height]/2 ))p"
 
    If you had a window named "MyWindow" you would center it using
    the command:
