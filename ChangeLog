@@ -1,5 +1,22 @@
 2005-10-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menustyle.c (menustyle_copy_face):
+	(menustyle_copy):
+	(menustyle_free_face):
+	(menustyle_free):
+	(menustyle_parse_style):
+	use new functions and fix a bug
+
+	* fvwm/Makefile.am:
+	* fvwm/colors.c:
+	* fvwm/colors.h:
+	removed empty files colors.c and colors.h
+
+	* fvwm/colors.c (CopyColor):
+	(FreeColors):
+	moved to libs/ColorUtils.c and renamed to fvwmlib_free_colors and
+	fvwmlib_copy_color
+
 	* fvwm/frame.c (frame_reshape_border):
 	removed unused code
 

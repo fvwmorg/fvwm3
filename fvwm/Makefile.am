@@ -10,7 +10,7 @@ config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 
 ## please keep .c file in largest first order to speed up parallel makes
 fvwm_SOURCES = \
-	add_window.h bindings.h borders.h builtins.h colormaps.h colors.h \
+	add_window.h bindings.h borders.h builtins.h colormaps.h \
 	commands.h conditional.h condrc.h cursor.h decorations.h events.h \
 	eventhandler.h eventmask.h ewmh.h \
 	ewmh_intern.h expand.h externs.h focus.h functable.h functions.h \
@@ -28,7 +28,7 @@ fvwm_SOURCES = \
 	menuitem.c ewmh_icons.c decorations.c update.c expand.c misc.c \
 	functable.c bindings.c cursor.c colormaps.c ewmh_conf.c modconf.c \
 	read.c menucmd.c ewmh_names.c icccm2.c schedule.c windowshade.c \
-	focus_policy.c repeat.c execcontext.c colors.c menudim.c condrc.c
+	focus_policy.c repeat.c execcontext.c menudim.c condrc.c
 
 fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

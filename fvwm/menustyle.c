@@ -31,7 +31,6 @@
 #include "functions.h"
 #include "misc.h"
 #include "screen.h"
-#include "colors.h"
 #include "colorset.h"
 #include "menustyle.h"
 
@@ -88,7 +87,7 @@ static void menustyle_free_face(MenuFace *mf)
 		mf->u.p = NULL;
 		break;
 	case SolidMenu:
-		FreeColors(&mf->u.back, 1, True);
+		fvwmlib_free_colors(dpy, &mf->u.back, 1, True);
 	default:
 		break;
 	}
@@ -107,7 +106,8 @@ static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
 	switch (origmf->type)
 	{
 	case SolidMenu:
-		CopyColor(destmf->u.back, origmf->u.back, False, True);
+		fvwmlib_copy_color(
+			dpy, &destmf->u.back, &origmf->u.back, False, True);
 		destmf->type = SolidMenu;
 		break;
 	case GradientMenu:
@@ -121,7 +121,7 @@ static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
 		{
 			fvwmlib_clone_color(origmf->u.grad.xcs[i].pixel);
 		}
-		
+
 		destmf->u.grad.npixels = origmf->u.grad.npixels;
 		destmf->u.grad.do_dither = origmf->u.grad.do_dither;
 		destmf->type = GradientMenu;
@@ -133,7 +133,8 @@ static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
 		destmf->u.p = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, origmf->u.p->name,
 			fpa);
-		CopyColor(&destmf->u.back, &origmf->u.back, False,True);
+		fvwmlib_copy_color(
+			dpy, &destmf->u.back, &origmf->u.back, False,True);
 		destmf->type = origmf->type;
 		break;
 	default:
@@ -467,7 +468,7 @@ void menustyle_free(MenuStyle *ms)
 	}
 	if (ST_HAS_SIDE_COLOR(ms) == 1)
 	{
-		FreeColors(&ST_SIDE_COLOR(ms), 1, True);
+		fvwmlib_free_colors(dpy, &ST_SIDE_COLOR(ms), 1, True);
 	}
 	if (ST_PSTDFONT(ms) && !ST_USING_DEFAULT_FONT(ms))
 	{
@@ -478,19 +479,22 @@ void menustyle_free(MenuStyle *ms)
 		free(ST_ITEM_FORMAT(ms));
 	}
 
-	FreeColors(&ST_MENU_COLORS(ms).back,1,True);
-	FreeColors(&ST_MENU_COLORS(ms).fore,1,True);
+	fvwmlib_free_colors(dpy, &ST_MENU_COLORS(ms).back,1,True);
+	fvwmlib_free_colors(dpy, &ST_MENU_COLORS(ms).fore,1,True);
 	if (ST_HAS_STIPPLE_FORE(ms))
 	{
-		FreeColors(&ST_MENU_STIPPLE_COLORS(ms).fore,1,True);
+		fvwmlib_free_colors(
+			dpy, &ST_MENU_STIPPLE_COLORS(ms).fore,1,True);
 	}
 	if (ST_HAS_ACTIVE_BACK(ms))
 	{
-		FreeColors(&ST_MENU_ACTIVE_COLORS(ms).back,1,True);
+		fvwmlib_free_colors(
+			dpy, &ST_MENU_ACTIVE_COLORS(ms).back,1,True);
 	}
 	if (ST_HAS_ACTIVE_FORE(ms))
 	{
-		FreeColors(&ST_MENU_ACTIVE_COLORS(ms).fore,1,True);
+		fvwmlib_free_colors(
+			dpy, &ST_MENU_ACTIVE_COLORS(ms).fore,1,True);
 	}
 
 	while (ST_NEXT_STYLE(before) != ms)
@@ -873,7 +877,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			if (ST_HAS_SIDE_COLOR(tmpms) == 1)
 			{
-				FreeColors(&ST_SIDE_COLOR(tmpms), 1, True);
+				fvwmlib_free_colors(
+					dpy, &ST_SIDE_COLOR(tmpms), 1, True);
 				ST_HAS_SIDE_COLOR(tmpms) = 0;
 			}
 			ST_HAS_SIDE_COLOR(tmpms) = 0;
@@ -892,7 +897,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 3: /* Foreground */
-			FreeColors(&ST_MENU_COLORS(tmpms).fore, 1, True);
+			fvwmlib_free_colors(
+				dpy, &ST_MENU_COLORS(tmpms).fore, 1, True);
 			if (arg1)
 			{
 				ST_MENU_COLORS(tmpms).fore = GetColor(arg1);
@@ -906,7 +912,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 4: /* Background */
-			FreeColors(&ST_MENU_COLORS(tmpms).back, 1, True);
+			fvwmlib_free_colors(
+				dpy, &ST_MENU_COLORS(tmpms).back, 1, True);
 			if (arg1)
 			{
 				ST_MENU_COLORS(tmpms).back = GetColor(arg1);
@@ -922,7 +929,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 5: /* Greyed */
 			if (ST_HAS_STIPPLE_FORE(tmpms))
 			{
-				FreeColors(
+				fvwmlib_free_colors(
+					dpy,
 					&ST_MENU_STIPPLE_COLORS(tmpms).fore, 1,
 					True);
 			}
@@ -945,7 +953,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 6: /* HilightBack */
 			if (ST_HAS_ACTIVE_BACK(tmpms))
 			{
-				FreeColors(
+				fvwmlib_free_colors(
+					dpy,
 					&ST_MENU_ACTIVE_COLORS(tmpms).back, 1,
 					True);
 			}
@@ -969,7 +978,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 8: /* ActiveFore */
 			if (ST_HAS_ACTIVE_FORE(tmpms))
 			{
-				FreeColors(
+				fvwmlib_free_colors(
+					dpy,
 					&ST_MENU_ACTIVE_COLORS(tmpms).fore, 1,
 					True);
 			}
@@ -1155,7 +1165,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 32: /* SideColor */
 			if (ST_HAS_SIDE_COLOR(tmpms) == 1)
 			{
-				FreeColors(&ST_SIDE_COLOR(tmpms), 1, True);
+				fvwmlib_free_colors(
+					dpy, &ST_SIDE_COLOR(tmpms), 1, True);
 				ST_HAS_SIDE_COLOR(tmpms) = 0;
 			}
 			if (arg1)
@@ -1455,29 +1466,34 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	   strcture. Use  the same order as in menustyle_parse_style */
 
 	/* menu colors */
-	CopyColor(&ST_MENU_COLORS(destms).fore, &ST_MENU_COLORS(origms).fore,
-		  True, True);
-	CopyColor(&ST_MENU_COLORS(destms).back, &ST_MENU_COLORS(origms).back,
-		  True, True);
+	fvwmlib_copy_color(
+		dpy, &ST_MENU_COLORS(destms).fore,
+		&ST_MENU_COLORS(origms).fore, True, True);
+	fvwmlib_copy_color(
+		dpy, &ST_MENU_COLORS(destms).back,
+		&ST_MENU_COLORS(origms).back, True, True);
 	/* Greyed */
-	CopyColor(&ST_MENU_STIPPLE_COLORS(destms).fore,
-		  &ST_MENU_STIPPLE_COLORS(origms).fore, 
-		  ST_HAS_STIPPLE_FORE(destms), ST_HAS_STIPPLE_FORE(origms));
-	ST_MENU_STIPPLE_COLORS(destms).back = 
+	fvwmlib_copy_color(
+		dpy, &ST_MENU_STIPPLE_COLORS(destms).fore,
+		&ST_MENU_STIPPLE_COLORS(origms).fore,
+		ST_HAS_STIPPLE_FORE(destms), ST_HAS_STIPPLE_FORE(origms));
+	ST_MENU_STIPPLE_COLORS(destms).back =
 		ST_MENU_STIPPLE_COLORS(origms).back;
 	ST_HAS_STIPPLE_FORE(destms) = ST_HAS_STIPPLE_FORE(origms);
 
 	/* HilightBack */
-	CopyColor(&ST_MENU_ACTIVE_COLORS(destms).back,
-		  &ST_MENU_ACTIVE_COLORS(origms).back, 
-		  ST_HAS_ACTIVE_BACK(destms), ST_HAS_ACTIVE_BACK(origms));
+	fvwmlib_copy_color(
+		dpy, &ST_MENU_ACTIVE_COLORS(destms).back,
+		&ST_MENU_ACTIVE_COLORS(origms).back,
+		ST_HAS_ACTIVE_BACK(destms), ST_HAS_ACTIVE_BACK(origms));
 	ST_HAS_ACTIVE_BACK(destms) = ST_HAS_ACTIVE_BACK(origms);
 	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
 
 	/* ActiveFore */
-	CopyColor(&ST_MENU_ACTIVE_COLORS(destms).fore,
-		  &ST_MENU_ACTIVE_COLORS(origms).fore, 
-		  ST_HAS_ACTIVE_FORE(destms), ST_HAS_ACTIVE_FORE(origms));
+	fvwmlib_copy_color(
+		dpy, &ST_MENU_ACTIVE_COLORS(destms).fore,
+		&ST_MENU_ACTIVE_COLORS(origms).fore,
+		ST_HAS_ACTIVE_FORE(destms), ST_HAS_ACTIVE_FORE(origms));
 	ST_HAS_ACTIVE_FORE(destms) = ST_HAS_ACTIVE_FORE(origms);
 	ST_DO_HILIGHT_FORE(destms) = ST_DO_HILIGHT_FORE(origms);
 
@@ -1548,8 +1564,9 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	}
 
 	/* side color */
-	CopyColor(&ST_SIDE_COLOR(destms), &ST_SIDE_COLOR(origms), 
-		  ST_HAS_SIDE_COLOR(destms), ST_HAS_SIDE_COLOR(origms));
+	fvwmlib_copy_color(
+		dpy, &ST_SIDE_COLOR(destms), &ST_SIDE_COLOR(origms),
+		ST_HAS_SIDE_COLOR(destms), ST_HAS_SIDE_COLOR(origms));
 	ST_HAS_SIDE_COLOR(destms) = ST_HAS_SIDE_COLOR(origms);
 
 	/* PopupAsRootmenu */
@@ -1562,7 +1579,8 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	/* BorderWidth */
 	ST_BORDER_WIDTH(destms) = ST_BORDER_WIDTH(origms);
 	/* Hilight3DThickness */
-	ST_IS_ITEM_RELIEF_REVERSED(destms) = ST_IS_ITEM_RELIEF_REVERSED(origms);
+	ST_IS_ITEM_RELIEF_REVERSED(destms) =
+		ST_IS_ITEM_RELIEF_REVERSED(origms);
 
 	/* ItemFormat */
 	if (ST_ITEM_FORMAT(destms))
