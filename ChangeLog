@@ -1,56 +1,61 @@
+2005-10-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c (frame_reshape_border):
+	removed unused code
+
 2005-10-23  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/menustyle.c (menustyle_copy_face): 
+	* fvwm/menustyle.c (menustyle_copy_face):
 	separated from menustyle_copy; color copies are reallocated.
-	(menustyle_free): 
+	(menustyle_free):
 	all colors freed
-	(menustyle_copy): 
+	(menustyle_copy):
 	color copies are reallocated.
 
-	* fvwm/colors.c (CopyColor): 
-	* fvwm/colors.h (CopyColor): 
+	* fvwm/colors.c (CopyColor):
+	* fvwm/colors.h (CopyColor):
 	added CopyColor
 
 2005-10-20  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/move_resize.c (__resize_window): 
+	* fvwm/move_resize.c (__resize_window):
 	fix for not being able to finish resize with mouse when resizing on
-	click with modifiers active. (intruduced with 'removed duplicate 
+	click with modifiers active. (intruduced with 'removed duplicate
 	pointer query' at sep 29)
 
 	* NEWS:
-	* fvwm/fvwm.1.in: 
-	* fvwm/menustyle.c (menustyle_parse_style): 
+	* fvwm/fvwm.1.in:
+	* fvwm/menustyle.c (menustyle_parse_style):
 	made style pairs negatable with '!' prefix
 	ActiveForeOff and HilightBackOff frees colors used.
-	
-	* fvwm/menustyle.c (menustyle_copy): 
+
+	* fvwm/menustyle.c (menustyle_copy):
 	fix for freeing color from sorce instead of destination.
 
 2005-10-19  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/functions.c (__execute_function): 
+	* fvwm/functions.c (__execute_function):
 	fixed an error in yesterdays patch to complex fuctions. the commands
 	pressed window were not retored correctly after running move functions
 	without it, and functions would be run twice.
 
 2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/fvwm.1.in: 
+	* fvwm/fvwm.1.in:
 	added NoLayer to list of allowed options for WindowList command
 	fixed grammar of test-conditions list. formatting fixes for
 	MoveToPage command. Added CirculateSkipIcon / CirculateHitIcon to
 	style option list.
 
 	* NEWS:
-	* fvwm/functions.c (__execute_function) 
-	(__run_complex_function_items, execute_complex_function): 
+	* fvwm/functions.c (__execute_function)
+	(__run_complex_function_items, execute_complex_function):
 	fix for moving/resizing reference window usage with complex functions.
 
 2005-10-16  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/move_resize.c (__move_loop): 
-	reimplemented a fix for the place with keyboard setting a button as 
+	* fvwm/move_resize.c (__move_loop):
+	reimplemented a fix for the place with keyboard setting a button as
 	used for place bug; this time without breaking escape key.
 
 2005-10-15  Dominik Vogt  <dominik.vogt@gmx.de>

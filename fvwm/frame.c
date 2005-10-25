@@ -1185,19 +1185,12 @@ static int frame_get_shading_laziness(
 
 void frame_reshape_border(FvwmWindow *fw)
 {
-	int dw;
-	int dh;
 	int grav;
 	int off_x = 0;
 	int off_y = 0;
 	rectangle naked_g;
 	rectangle *new_g;
-	size_borders b_old;
-	size_borders b_new;
 
-	get_window_borders(fw, &b_old);
-	dw = b_new.total_size.width - b_old.total_size.width;
-	dh = b_new.total_size.height - b_old.total_size.height;
 	/* calculate the new offsets */
 	if (!IS_MAXIMIZED(fw))
 	{
@@ -1217,7 +1210,6 @@ void frame_reshape_border(FvwmWindow *fw)
 	gravity_translate_to_northwest_geometry_no_bw(
 		grav, fw, &naked_g, &naked_g);
 	set_window_border_size(fw, fw->unshaped_boundary_width);
-	get_window_borders(fw, &b_new);
 	gravity_add_decoration(grav, fw, new_g, &naked_g);
 	if (IS_MAXIMIZED(fw))
 	{
