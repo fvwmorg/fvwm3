@@ -219,20 +219,24 @@ static void ParseTitle(char **ss, byte *flags, byte *mask)
     {
     case 0: /* Left */
       *flags&=~b_TitleHoriz;
+      *flags&=~3;
       *mask|=b_TitleHoriz;
       break;
     case 1: /* Right */
       *flags&=~b_TitleHoriz;
+      *flags&=~3;
       *flags|=2;
       *mask|=b_TitleHoriz;
       break;
     case 2: /* Center */
       *flags&=~b_TitleHoriz;
+      *flags&=~3;
       *flags|=1;
       *mask|=b_TitleHoriz;
       break;
     case 3: /* Side */
       *flags|=b_Horizontal;
+      *flags&=~3;
       *mask|=b_Horizontal;
       break;
     default:
@@ -1165,8 +1169,8 @@ static void ParseButton(button_info **uberb,char *s)
 	break;
 
       case 17: /* Center */
-	b->flags.b_Right = 1;
-	b->flags.b_Left = 1;
+	b->flags.b_Right = 0;
+	b->flags.b_Left = 0;
 	break;
 
       case 18: /* Colorset */

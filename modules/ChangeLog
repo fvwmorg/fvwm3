@@ -1,12 +1,17 @@
+2005-10-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParseTitle):
+	fixed the "center" button option
+
 2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
 
-	* FvwmPerl/FvwmPerl: 
-	* FvwmPerl/FvwmPerl.in (Examples): 
+	* FvwmPerl/FvwmPerl:
+	* FvwmPerl/FvwmPerl.in (Examples):
 	fixed typo (WrapToWindow -> WarpToWindow)
 
 2005-09-25  Viktor Griph  <griph@dd.chalmers.se>
 
-	* FvwmCommand/FvwmCommand.c (list_configure): 
+	* FvwmCommand/FvwmCommand.c (list_configure):
 	removed print of removed placed_wb3 flag
 
 2005-09-18  Dominik Vogt  <dominik.vogt@gmx.de>
