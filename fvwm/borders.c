@@ -1550,39 +1550,47 @@ static void border_draw_one_border_part(
 	relative_g.y = part_g.y;
 	border_get_border_background(
 		&bg, cd, &part_g, &relative_g, &free_bg_pixmap, w);
-	switch (part)
+	if (cd->texture_pixmap) 
 	{
-	case PART_BORDER_E:
-		bg.pixmap.g.x = frame_g->width - fw->boundary_width;
-		break;
-	case PART_BORDER_NE:
-	case PART_BORDER_SE:
-		bg.pixmap.g.x = frame_g->width - fw->corner_width;
-		break;
-	case PART_BORDER_N:
-	case PART_BORDER_S:
-		bg.pixmap.g.x = fw->corner_width;
-		break;
-	default:
-		bg.pixmap.g.x = 0;
-		break;
+		switch (part)
+		{
+		case PART_BORDER_E:
+			bg.pixmap.g.x = frame_g->width - fw->boundary_width;
+			break;
+		case PART_BORDER_NE:
+		case PART_BORDER_SE:
+			bg.pixmap.g.x = frame_g->width - fw->corner_width;
+			break;
+		case PART_BORDER_N:
+		case PART_BORDER_S:
+			bg.pixmap.g.x = fw->corner_width;
+			break;
+		default:
+			bg.pixmap.g.x = 0;
+			break;
+		}
+		switch (part)
+		{
+		case PART_BORDER_S:
+			bg.pixmap.g.y = frame_g->height - fw->boundary_width;
+			break;
+		case PART_BORDER_SW:
+		case PART_BORDER_SE:
+			bg.pixmap.g.y = frame_g->height - fw->corner_width;
+			break;
+		case PART_BORDER_W:
+		case PART_BORDER_E:
+			bg.pixmap.g.y = fw->corner_width;
+			break;
+		default:
+			bg.pixmap.g.y = 0;
+			break;
+		}
 	}
-	switch (part)
+	else
 	{
-	case PART_BORDER_S:
-		bg.pixmap.g.y = frame_g->height - fw->boundary_width;
-		break;
-	case PART_BORDER_SW:
-	case PART_BORDER_SE:
-		bg.pixmap.g.y = frame_g->height - fw->corner_width;
-		break;
-	case PART_BORDER_W:
-	case PART_BORDER_E:
-		bg.pixmap.g.y = fw->corner_width;
-		break;
-	default:
+		bg.pixmap.g.x = 0;
 		bg.pixmap.g.y = 0;
-		break;
 	}
 	/* set the geometry for drawing the Tiled pixmap; maybe add the relief
 	 * as offset? */
