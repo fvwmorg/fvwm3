@@ -1,6 +1,7 @@
 2005-10-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/parse.c (ParseTitle):
+	(ParseButton):
 	fixed the "center" button option
 
 2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
