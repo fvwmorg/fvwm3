@@ -2138,6 +2138,10 @@ static void GetIconFromFile(FvwmWindow *fw)
  */
 static void GetIconWindow(FvwmWindow *fw)
 {
+	unsigned int w;
+	unsigned int h;
+	unsigned int bw;
+
 	fw->icon_g.picture_w_g.width = 0;
 	fw->icon_g.picture_w_g.height = 0;
 
@@ -2145,9 +2149,7 @@ static void GetIconWindow(FvwmWindow *fw)
 	 * routine */
 	if (XGetGeometry(
 		    dpy, fw->wmhints->icon_window, &JunkRoot, &JunkX, &JunkY,
-		    (unsigned int *)&fw->icon_g.picture_w_g.width,
-		    (unsigned int *)&fw->icon_g.picture_w_g.height,
-		    &JunkBW, &JunkDepth) == 0)
+		    &w, &h, &bw, &JunkDepth) == 0)
 	{
 		fvwm_msg(
 			ERR,"GetIconWindow",
@@ -2158,8 +2160,9 @@ static void GetIconWindow(FvwmWindow *fw)
 		fw->wmhints->flags &= ~IconWindowHint;
 		return;
 	}
-	fw->icon_g.picture_w_g.width += JunkBW<<1;
-	fw->icon_g.picture_w_g.height += JunkBW<<1;
+	fw->icon_border_width = bw;
+	fw->icon_g.picture_w_g.width = w + 2 * bw;
+	fw->icon_g.picture_w_g.height = h + 2 * bw;
 	/*
 	 * Now make the new window the icon window for this window,
 	 * and set it up to work as such (select for key presses

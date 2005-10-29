@@ -320,12 +320,9 @@ static inline void __handle_cr_on_icon(
 
 		if (cre->value_mask & CWBorderWidth)
 		{
-			bw = cre->border_width;
+			fw->icon_border_width = cre->border_width;
 		}
-		else
-		{
-			bw = 0;
-		}
+		bw = fw->icon_border_width;
 		if ((cre->value_mask & (CWWidth | CWHeight)) ==
 		    (CWWidth | CWHeight))
 		{

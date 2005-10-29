@@ -1,6 +1,13 @@
+2005-10-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (GetIconWindow):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/events.c (__handle_cr_on_icon):
+	properly handle icon border width; fixes an xterm active icon loop
+
 2005-10-27  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/borders.c (border_draw_one_border_part): 
+	* fvwm/borders.c (border_draw_one_border_part):
 	fix for the TiledPixmap borderstyle fix not to affect RootTransparent
 	borders.
 

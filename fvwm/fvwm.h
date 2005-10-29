@@ -720,6 +720,7 @@ typedef struct FvwmWindow
 		/* width of the text in the icon title */
 		int title_text_width;
 	} icon_g;
+	short icon_border_width;
 
 	/* Drawable depth for the icon */
 	int iconDepth;
