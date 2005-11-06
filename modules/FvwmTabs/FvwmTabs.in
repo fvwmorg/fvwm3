@@ -26,7 +26,7 @@
 use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
-use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol Tk Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry);
+use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry);
 
 use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon %global);
 
@@ -365,14 +365,13 @@ sub letItGo ($$$$)
 
 	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
 	$xServer->ReparentWindow($winId, $xServer->root(), (0, 0));
-	XSync();
 	# position the window at the location we found it. (ie. before the
 	# window was added to this tabber.)
 	$xServer->ConfigureWindow($winId,
 							  x => $tabWin{$tId}{tab}[$tabNo]{initialXPos},
 							  y => $tabWin{$tId}{tab}[$tabNo]{initialYPos});
 	$xServer->MapWindow($winId);
-	XSync();
+	XSync(); # wait for window to popup.
 
 	# if the window we're releasing is a tabber, we need to recompute
 	# the wrapper window id as it can change dynamically.
@@ -404,9 +403,7 @@ sub releaseAll ($$)
 
 sub XSync ()
 {
-	# There doesn't appear to be an XSync function so we'll just make
-	# do with atom() & ignore the return value.
-	# Actually, atom() is cached by X11::Protocol so we need to issue
+	# atom() is cached by X11::Protocol so we need to issue
 	# the actual X request.
 	# $xServer->atom("WM_NAME");
 	$xServer->req('InternAtom', "WM_NAME", 0);
@@ -591,13 +588,6 @@ my $fds = IO::Select->new($xServer->connection->fh);
 
 sub callback
 {
-	# Damn! This is the most annoying bug in X. I don't think it's
-	# possible to tell the X server to flush its buffer without sending
-	# an actual X command. FvwmTabs *almost* works without this XSync() call.
-	# It would eradicate a significant amount of X traffic if we could
-	# remove it.
-	XSync();
-	
 	$xServer->flush();
  	$xServer->handle_input() if ($fds->can_read(0));
 
@@ -848,25 +838,6 @@ sub tabInfo ($)
 	{
 		print("\t" . join(", ", map("$_=" . $a->{$_}, sort(keys(%{$a})))) . "\n");
 	}
-	print("toplevel->id()=" . $tabWin{$tId}{toplevel}->id() . "\n");
-	print("toplevel->wrapper()=" . $tabWin{$tId}{toplevel}->wrapper() . "\n");
-	print("toplevel->frame()=" . $tabWin{$tId}{toplevel}->frame() . "\n");
-	print("wrapperWinId=" . $tabWin{$tId}{wrapperWinId} . "\n");
-
-	my ($root, $parent, @kids);
-	($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
-	printf("A: parent=$parent (0x%x)\n", $parent);
-	($root, $parent, @kids) = $xServer->QueryTree($parent);
-	printf("A: grandparent=$parent (0x%x)\n", $parent);
-	($root, $parent, @kids) = $xServer->QueryTree($parent);
-	printf("A: great grandparent=$parent (0x%x)\n", $parent);
-
-	($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{parent});
-	printf("B: parent=$parent (0x%x)\n", $parent);
-	($root, $parent, @kids) = $xServer->QueryTree($parent);
-	printf("B: grandparent=$parent (0x%x)\n", $parent);
-	($root, $parent, @kids) = $xServer->QueryTree($parent);
-	printf("B: great grandparent=$parent (0x%x)\n", $parent);
 
 	XSync();
 }
@@ -875,12 +846,12 @@ sub getProperty ($$)
 {
 	my ($winId, $property) = @_;
 
-	my $atom = $xServer->atom($property);
-	my @s = $xServer->robust_req('GetProperty', $winId, $atom, "AnyPropertyType", 0, 200, 0);
+	my @s = $xServer->robust_req('GetProperty',
+								 $winId,
+								 $xServer->atom($property),
+								 'AnyPropertyType', 0, 200, 0);
 	my $p = $s[0];
 	return undef if ($p eq 'Window');
-	# print(STDERR "p=$p\n");
-	# print(STDERR "p->[0]=$p->[0]\n");
 	return $p->[0];
 }
 
@@ -931,6 +902,7 @@ sub removeTab ($$$)
 		}
 		else
 		{
+			$tabWin{$tId}{toplevel}->wm('grid', '', '', '', '');
 			$tabWin{$tId}{titleFrame}->configure(-text => 'No title');
 			$tabWin{$tId}{winFrame}->configure(-height => 1, -width => 0);
 		}
@@ -988,6 +960,7 @@ sub showTab ($$)
 	$tabWin{$tId}{winFrame}->configure(-height => $g{height}, -width => $g{width});
 	$tabWin{$tId}{toplevel}->geometry("");
 	showTitle($tId, $tabNo, $g{width});
+	setResizing ($tId, $winId);
 	# If we're changing the active tab really quickly we have to handle/flush
 	# all the X events in the queue - this prevents us from getting a
 	# 'Protocol Error'.
@@ -1446,6 +1419,36 @@ sub fillDialog ()
 }
 
 # ======= ======= =======
+
+sub setResizing ($$)
+{
+	my ($tId, $winId) = @_;
+
+	my @s = $xServer->GetProperty($winId,
+								  $xServer->atom('WM_NORMAL_HINTS'),
+								  'AnyPropertyType', 0, 200, 0);
+
+	my ($flags) = unpack("L", $s[0]);
+	my ($wInc, $hInc, $baseW, $baseH) = (1, 1, 0, 0);
+	if ($flags & (1 << 6)) # PResizeInc
+	{
+		# $wInc & $hInc specify multiples of pixels to increment by.
+		($wInc, $hInc) = unpack("II", substr($s[0], 36, 8));
+		# $baseW & $baseH are number of pixels in window that aren't
+		# part of the resizable area. But note that this is completely
+		# different to the $baseW & $baseH we need to input to wmGrid().
+		($baseW, $baseH) = unpack("II", substr($s[0], 60, 8));
+	}
+
+	my %g = $xServer->GetGeometry($winId);
+	# $baseW & $baseH are number of grid units of *resizable* part of window.
+	$baseW = ($g{width} - $baseW) / $wInc;
+	$baseH = ($g{height} - $baseH) / $hInc;
+
+	# In pre-804.025 versions of Tk there is a bug in wmGrid().
+	# $tabWin{$tId}{toplevel}->wmGrid($baseW, $baseH, $wInc, $hInc);
+	$tabWin{$tId}{toplevel}->wm('grid', $baseW, $baseH, $wInc, $hInc);
+}
 
 loadState();
 print("Module " . $fvwm->name() . " started with: X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
