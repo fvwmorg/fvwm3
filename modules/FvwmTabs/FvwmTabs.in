@@ -26,14 +26,9 @@
 use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
-use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry Tk::PNG);
+use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk>=804.025 Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry Tk::PNG);
 
 use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon %global);
-
-# My Perl/Tk patch to fix dynamically-sized drop sites was merged into 
-# Tk-804.025-beta6.
-$global{buggyTkDND} = ($Tk::VERSION < 804.025);
-print("This version of Tk has buggy drag-&-drop - workaround enabled.\n") if ($global{buggyTkDND});
 
 
 $TOP = new MainWindow();
@@ -45,6 +40,19 @@ $fvwm = new FVWM::Module::Tk($TOP,
 
 $fvwm->debug("Debug level is: " . $fvwm->{debug});
 $fvwm->addDefaultErrorHandler();
+
+sub ver ($)
+{
+	my ($v) = @_;
+	$v =~ /^(\d+)\.(\d+)\.(\d+)$/;
+	return $1 + ($2 + ($3 / 1000.0)) / 1000.0;
+}
+
+if (ver($fvwm->version()) < ver('2.5.11'))
+{
+	print(STDERR $fvwm->name() . " requires FVWM >= 2.5.11 - exiting.\n");
+	exit;
+}
 
 my $configTracker = $fvwm->track('ModuleConfig',
 	 DefaultConfig => {activeBG => 'MidnightBlue',
@@ -187,13 +195,6 @@ $configTracker->observe("config line added", sub {
 
 $pConfig->{global} = $fvwm->track("GlobalConfig")->data;
 
-sub ver ($)
-{
-	my ($v) = @_;
-	$v =~ /^(\d+)\.(\d+)\.(\d+)$/;
-	return $1 + ($2 + ($3 / 1000.0)) / 1000.0;
-}
-
 # ignoreWin() - called when we're contemplating swallowing a window.
 sub ignoreWin ($)
 {
@@ -224,70 +225,61 @@ sub toPixels ($$)
 	return $tol;	
 }
 
-my $winTracker;
-if (ver($fvwm->version()) < ver('2.5.11'))
-{
-	print(STDERR $fvwm->name() . ": Swallow overlapping (D&D), & mini icon features require FVWM >= 2.5.11 - these features disabled.\n");
-	$global{noWinTracker} = 1;
-}
-else
-{
-	$winTracker = $fvwm->track("WindowList", "!stack icons !names winfo");
-	$winTracker->observe("window moved", sub {
-		my ($fvwm, $tracker, $z, $winId, $old) = @_;
+my $winTracker = $fvwm->track("WindowList", "!stack icons names winfo");
+$winTracker->observe("window moved", sub {
+	my ($fvwm, $tracker, $z, $winId, $old) = @_;
+	
+	return if (ignoreWin($winId));
+
+	$fvwm->debug("swallow win move: $winId");
+
+	my $p = $tracker->data($winId);
+	return if (defined winIdToTId($winId)); # ignore tabbers moving.
+	
+	foreach my $tId (sort(keys(%tabWin)))
+	{
+		# window must overlap tabber by at least $tol pixels to be
+		# swallowed.
+		my $tol = toPixels($tId, $pConfig->{swallowDNDTolerance});
+
+		my $t = $tracker->data($tabWin{$tId}{selfId});
+		# At this point, $p is the window that moved & $t is the tabber we
+		# are checking for an overlap with.
+		next if (!$tabWin{$tId}{enableSwallowDND});
+		next if ($p->{desk} != $t->{desk} ||
+			$p->{X} > ($t->{X} + $t->{width} - $tol) ||
+			($p->{X} + $p->{width}) < ($t->{X} + $tol) ||
+			$p->{Y} > ($t->{Y} + $t->{height} - $tol) ||
+			($p->{Y} + $p->{height}) < ($t->{Y} + $tol));
+
+		# If OpaqueMoveSize is in use, we need to ensure the window
+		# isn't swallowed already.
+		return if (defined getTabNo($tId, $winId));
 		
-		return if (ignoreWin($winId));
+		# ok, we've got a match - this tabber should swallow the window.
+		addTab($tId, $winId);
+		return;
+	}
+});
 
-		$fvwm->debug("swallow win move: $winId");
+$winTracker->observe("window icon updated", sub {
+	my ($fvwm, $tracker, $pc, $winId, $old) = @_;
 
-		my $p = $tracker->data($winId);
-		return if (defined winIdToTId($winId)); # ignore tabbers moving.
-		
-		foreach my $tId (sort(keys(%tabWin)))
-		{
-			# window must overlap tabber by at least $tol pixels to be
-			# swallowed.
-			my $tol = toPixels($tId, $pConfig->{swallowDNDTolerance});
+	return if (!isTrue($pConfig->{useIconsOnTabs}));
 
-			my $t = $tracker->data($tabWin{$tId}{selfId});
-			# At this point, $p is the window that moved & $t is the tabber we
-			# are checking for an overlap with.
-			next if (!$tabWin{$tId}{enableSwallowDND});
-			next if ($p->{desk} != $t->{desk} ||
-				$p->{x} > ($t->{x} + $t->{frame_width} - $tol) ||
-				($p->{x} + $p->{frame_width}) < ($t->{x} + $tol) ||
-				$p->{y} > ($t->{y} + $t->{frame_height} - $tol) ||
-				($p->{y} + $p->{frame_height}) < ($t->{y} + $tol));
+	my ($tId, $tabNo) = findWin($winId);
+	return if (!defined $tId);
 
-			# If OpaqueMoveSize is in use, we need to ensure the window
-			# isn't swallowed already.
-			return if (defined getTabNo($tId, $winId));
-			
-			# ok, we've got a match - this tabber should swallow the window.
-			addTab($tId, $winId);
-			return;
-		}
-	});
+	my $p = $pc->{$winId};
+	return if (!defined $p->{mini_icon_name});
 
-	$winTracker->observe("window icon updated", sub {
-		my ($fvwm, $tracker, $pc, $winId, $old) = @_;
-
-		return if (!isTrue($pConfig->{useIconsOnTabs}));
-
-		my ($tId, $tabNo) = findWin($winId);
-		return if (!defined $tId);
-
-		my $p = $pc->{$winId};
-		return if (!defined $p->{mini_icon_name});
-
-		if (!defined $old->{mini_icon_name} ||
-			$p->{mini_icon_name} ne $old->{mini_icon_name})
-		{
-			my $pButton = $tabWin{$tId}{tab}[$tabNo]{button};
-			$pButton->configure(-image => createMiniIcon($p->{mini_icon_name}, $winId));
-		}
-	});
-}
+	if (!defined $old->{mini_icon_name} ||
+		$p->{mini_icon_name} ne $old->{mini_icon_name})
+	{
+		my $pButton = $tabWin{$tId}{tab}[$tabNo]{button};
+		$pButton->configure(-image => createMiniIcon($p->{mini_icon_name}, $winId));
+	}
+});
 
 sub autoSwallow (%)
 {
@@ -349,10 +341,10 @@ sub showMenu ($$)
 			   -command => [\&releaseAll, undef, $tId, 1]);
 	$menu->add('command',
 			   -label => 'Add',
-			   -command => [\&pickAndAdd, undef, $tId, '']);
+			   -command => [\&pickAndAddClick, undef, $tId, '']);
 	$menu->add('command',
 			   -label => 'Multi Add',
-			   -command => [\&pickAndAdd, undef, $tId, 'multi']);
+			   -command => [\&pickAndAddClick, undef, $tId, 'multi']);
 	$menu->add('command',
 			   -label => 'Resize All To Current',
 			   -command => [\&doResize, $tId]);
@@ -388,9 +380,6 @@ sub showMenu ($$)
 				   -command => [\&toggleAutoResize, $tId]);
 		$oMenu->add('checkbutton',
 				   -label => 'Swallow Overlapping (D&D)',
-				   -state => (defined $global{noWinTracker} ?
-				   			 'disabled' :
-							 'normal'),
 				   -variable => \$tabWin{$tId}{enableSwallowDND});
 		$tabWin{$tId}{optionsMenu} = $oMenu;
 	}
@@ -473,14 +462,16 @@ sub createNewTabber
 							-padx => 0,
 							-borderwidth => 0,
 							-relief => 'flat')->pack(@po);
-	$bKill->Tk::bind('<ButtonRelease-1>', [\&killTab, $tId]);
+	$bKill->Tk::bind('<ButtonRelease-1>', [\&closeTab, $tId, 'Close']);
+	$bKill->Tk::bind('<ButtonRelease-2>', [\&killTab, $tId]);
+	$bKill->Tk::bind('<ButtonRelease-3>', [\&closeTab, $tId, 'Destroy']);
 	my $bAdd = $af->Button(-text => 'A',
 						   -image => createImage($pConfig->{addIcon}),
 						   -padx => 0,
 						   -borderwidth => 0,
 						   -relief => 'flat')->pack(@po);
-	$bAdd->Tk::bind('<ButtonRelease-1>', [\&pickAndAdd, $tId, '']);
-	$bAdd->Tk::bind('<ButtonRelease-3>', [\&pickAndAdd, $tId, 'multi']);
+	$bAdd->Tk::bind('<ButtonRelease-1>', [\&pickAndAddClick, $tId, '']);
+	$bAdd->Tk::bind('<ButtonRelease-3>', [\&pickAndAddClick, $tId, 'multi']);
 
 	my $bRelease = $af->Button(-text => 'R',
 							   -image => createImage($pConfig->{releaseIcon}),
@@ -640,12 +631,25 @@ sub releaseCurrent ($$)
 	letItGo($b, $tId, $tabWin{$tId}{currentTab}, 0);
 }
 
+sub closeTab ($$$)
+{
+	my ($b, $tId, $cmd) = @_;
+	return if (!defined $tabWin{$tId}{currentTab});
+	my $tabNo = $tabWin{$tId}{currentTab};
+	# Ensure the window is mapped off-screen.
+	$tabWin{$tId}{tab}[$tabNo]{initialXPos} = 2000;
+	$tabWin{$tId}{tab}[$tabNo]{initialYPos} = 2000;
+	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
+	releaseTab($tId, $tabNo, 0);
+	# Give the window 1 second to be mapped, before closing it.
+	$fvwm->send("Schedule 1000 WindowId $winId $cmd");
+}
+
 sub killTab ($$)
 {
 	my ($b, $tId) = @_;
 	return if (!defined $tabWin{$tId}{currentTab});
 	my $winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
-	# TODO: This is a bit harsh.
 	$xServer->KillClient($winId);
 }
 
@@ -704,17 +708,18 @@ $fvwm->addHandler(M_STRING, sub {
 		no strict;
 		&$1($tId, split(/\s+/, $3));
 	}
-	elsif ($event->args->{text} =~ /addme (tWin)?(\S+)(.*)?/)
+	elsif ($event->args->{text} =~ /addme (\S+)(.*)?/)
 	{
-		my $bMulti = ($3 eq ' multi');
-		my $tId = (!defined $1 ? $2 : &winIdToTId($2));
+		my $bMulti = ($2 eq ' multi');
+		my $tId = $1;
+		$tId = winIdToTId($tId) if (!exists $tabWin{$tId});
 		if (!defined $tId || !exists $tabWin{$tId})
 		{
 			print(STDERR $self->name() . ": Unknown Tabber \"$2\"\n");
 			return;
 		}
 		addTab($tId, $event->args->{win_id});
-		pickAndAdd(undef, $tId, 'multi') if ($bMulti);
+		pickAndAdd($tId, 'multi') if ($bMulti);
 	}
 	else
 	{
@@ -723,7 +728,7 @@ $fvwm->addHandler(M_STRING, sub {
 		my $fn = shift(@a);
 		if (!defined main->can($fn))
 		{
-			print(STDERR $self->name() . ": Unknown command: $fn\n");
+			print(STDERR $self->name() . ": Unknown command: \"$fn(@a)\"\n");
 			return;
 		}
 		no strict;
@@ -838,7 +843,6 @@ sub swallowNext
 $fvwm->addHandler(M_ADD_WINDOW, sub {
 	my ($self, $event) = @_;
 
-    return if (defined $global{doingTabize} && $global{doingTabize});
 	$fvwm->debug("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
 	my $winId = $event->args->{win_id};
 
@@ -1153,10 +1157,6 @@ sub addTab ($$)
 		$dd->configure(-image => $dndIcon);
 	}
 
-	# This line gets around a bug in Tk::DropSite.
-	$pButton->Tk::bind($site, '<Configure>', [$site, 'DropSiteUpdate']) if ($global{buggyTkDND});
-
-
 	$balloon->attach($pButton,
 					 -balloonmsg => \$tabWin{$tId}{balloonMsg},
 					 -postcommand => [\&setBalloonMsg, $tId, $winId]);
@@ -1171,10 +1171,16 @@ sub addTab ($$)
 	showTab($tId, $tabNo);
 }
 
-sub pickAndAdd ($$$)
+sub pickAndAdd ($$)
+{
+	my ($tId, $arg) = @_;
+	$fvwm->send("Pick SendToModule " . $fvwm->name() . " addme $tId $arg");
+}
+
+sub pickAndAddClick ($$$)
 {
 	my ($b, $tId, $arg) = @_;
-	$fvwm->send("Pick SendToModule *" . $fvwm->name() . " addme $tId $arg");
+	pickAndAdd($tId, $arg);
 }
 
 sub tabInfo ($$)
@@ -1592,27 +1598,6 @@ sub swapLeft ($)
 	swapRight($tId) if ($b);
 }
 
-# record which desk each tab-manager is on for saveState().
-$fvwm->mask($fvwm->mask() | M_CONFIGURE_WINDOW | M_ADD_WINDOW);
-$fvwm->addHandler(M_ADD_WINDOW, sub {
-	my ($self, $event) = @_;
-
-	# we keep all windows cos at this point 'selfId' may not be defined
-	# & we need to use it to decide if this is a tab-manager window.
-	$global{winIdToDesk}{$event->args->{win_id}} = $event->args->{desk};
-});
-$fvwm->addHandler(M_CONFIGURE_WINDOW, sub {
-	my ($self, $event) = @_;
-
-	$global{winIdToDesk}{$event->args->{win_id}} = $event->args->{desk};
-});
-
-sub getDesk ($)
-{
-	my ($winId) = @_;
-	return $global{winIdToDesk}{$winId};
-}
-
 sub saveState ()
 {
 	my $file = $pConfig->{stateFile};
@@ -1628,7 +1613,7 @@ sub saveState ()
 		print(OUT "createNewTabber($tId);\n");
 		my ($x, $y) = getXYPos(getWrapperWinId($tId));
 		print(OUT "\$fvwm->send(\"Move ${x}p ${y}p\", \$tabWin{$tId}{selfId});\n");
-		my $desk = getDesk($tabWin{$tId}{selfId});
+		my $desk = $winTracker->data($tabWin{$tId}{selfId})->{desk};
 		print(OUT "\$fvwm->send(\"MoveToDesk 0 $desk\", \$tabWin{$tId}{selfId});\n");
 		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
 		{
@@ -1680,7 +1665,7 @@ sub createSwallowDialog ($)
 {
 	my ($main) = @_;
 
-	$global{tabberNo} = $global{deskNo} = $global{pageNo} = 'Any';
+	$global{tabberId} = $global{deskNo} = $global{pageNo} = 'Any';
 	my @pad = qw/-padx 3 -pady 3/;
 	my $name = $fvwm->name . ": Tabizer";
 	my $tl = $main->Toplevel(-title => $name);
@@ -1688,11 +1673,11 @@ sub createSwallowDialog ($)
 	$tl->iconname($name);
 	$tl->protocol('WM_DELETE_WINDOW', [$tl, 'destroy']);
 
-	$global{eTabberNo} = createThingy($top,
+	$global{eTabberId} = createThingy($top,
 									  'Add to Tab-Manager no.:',
-									  \$global{tabberNo},
+									  \$global{tabberId},
 									  @pad);
-	$global{eTabberNo}->pack(-side => 'left', -anchor => 'w', @pad);
+	$global{eTabberId}->pack(-side => 'left', -anchor => 'w', @pad);
 
 	my $lf = $top->LabFrame(-label => 'Swallow Matching Windows',
 							-labelside => 'acrosstop');
@@ -1751,8 +1736,8 @@ sub createSwallowDialog ($)
 
 sub doSwallow ()
 {
-	my $tId = $global{tabberNo};
-	$tId = emptiestTabber() if ($global{tabberNo} eq 'Any');
+	my $tId = $global{tabberId};
+	$tId = emptiestTabber() if ($global{tabberId} eq 'Any');
 	return if (!defined $tId);
 	foreach ($global{list}->curselection())
 	{
@@ -1769,17 +1754,17 @@ sub doRegexSwallow ()
 		$regex =~ s|/|\/|g;
 		my $deskNo = $global{deskNo};
 		my $pageNo = $global{pageNo};
-		my %p = (lc($global{regexType}) => $regex, type => $global{tabberNo});
+		my %p = (lc($global{regexType}) => $regex, type => $global{tabberId});
 		my @a;
 		push(@a, \%p);
-		foreach my $winId (keys(%{$global{info}}))
+		foreach my $window ($winTracker->windows)
 		{
 			next if ($deskNo ne 'Any' &&
-					 $global{info}{$winId}{desk} != $deskNo);
+					 $window->{desk} != $deskNo);
 			next if ($pageNo ne 'Any' &&
-					 $global{info}{$winId}{page} != $pageNo);
+					 $window->{page_nx} != $pageNo);
 
-			swallowCheck($winId, \@a);
+			swallowCheck($window->{win_id}, \@a);
 		}
 	}
 	fillDialog();
@@ -1790,9 +1775,8 @@ sub tabizeWindows ($)
 	my ($tId) = @_;
 
 	createSwallowDialog($TOP);
-	my $nTabbers = scalar(keys(%tabWin)) - 1;
-	$global{eTabberNo}->configure(-choices => ['Any', 0 .. $nTabbers]);
-	$global{tabberNo} = $tId;
+	$global{eTabberId}->configure(-choices => ['Any', sort(keys(%tabWin))]);
+	$global{tabberId} = $tId;
 	fillDialog();
 }
 
@@ -1801,54 +1785,22 @@ sub min ($$) { return ($_[0] < $_[1] ? $_[0] : $_[1]); }
 
 sub fillDialog ()
 {
-	if (!defined $global{bHandlersInstalled})
-	{
-		$global{bHandlersInstalled} = 1;
-		$fvwm->addHandler(M_NEW_PAGE, sub {
-			my ($module, $event) = @_;
+	$global{pageWidth} = $winTracker->pageInfo('vp_width');
+	$global{pageHeight} = $winTracker->pageInfo('vp_height');
+	$global{nPagesPerDesk} = $winTracker->pageInfo('desk_pages_x');
+	$global{maxDesk} = 3; # TODO
 
-			$global{pageWidth} = $event->args->{vp_width};
-			$global{pageHeight} = $event->args->{vp_height};
-			$global{nPagesPerDesk} = $event->args->{desk_pages_x};
-		});
+	my $nPages = $global{nPagesPerDesk} - 1;
+	$global{eDeskNo}->configure(-choices => ['Any', 0 .. $global{maxDesk}]);
+	$global{ePageNo}->configure(-choices => ['Any', 0 .. $nPages]);
 
-		$fvwm->addHandler(M_CONFIGURE_WINDOW, sub {
-			my ($module, $event) = @_;
-
-			my $page = $event->args->{frame_x} / $global{pageWidth};
-			$global{maxDesk} = max($event->args->{desk}, $global{maxDesk});
-			my $winId = $event->args->{win_id};
-			push(@{$global{windows}}, $winId);
-			$global{info}{$winId}{desk} = $event->args->{desk};
-			$global{info}{$winId}{page} = $page;
-		});
-
-		$fvwm->addHandler(M_WINDOW_NAME, sub {
-			my ($module, $event) = @_;
-
-			return unless $global{doingTabize};
-			$global{list}->insert('end', $event->args->{name});
-		});
-
-		$fvwm->addHandler(M_END_WINDOWLIST, sub {
-			$fvwm->mask($global{oldMask});
-			$fvwm->debug("pageWidth=$global{pageWidth}");
-			$fvwm->debug("pageHeight=$global{pageHeight}");
-			$fvwm->debug("nPages/desk=$global{nPagesPerDesk}");
-			my $nPages = $global{nPagesPerDesk} - 1;
-			$global{eDeskNo}->configure(-choices => ['Any', 0 .. $global{maxDesk}]);
-			$global{ePageNo}->configure(-choices => ['Any', 0 .. $nPages]);
-		});
-	}
-
-	$global{oldMask} = $fvwm->mask();
-	$fvwm->mask($global{oldMask} | M_WINDOW_NAME | M_NEW_PAGE | M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
-	$global{maxDesk} = 0;
-	delete $global{info};
-	@{$global{windows}} = ();
-    $global{doingTabize} = 1;
 	$global{list}->delete('0.0', 'end');
-	$fvwm->send("Send_WindowList");
+	@{$global{windows}} = ();
+	foreach my $window ($winTracker->windows)
+	{
+		$global{list}->insert('end', $window->{name});
+		push(@{$global{windows}}, $window->{win_id});
+	}
 }
 
 # ======= ======= =======
