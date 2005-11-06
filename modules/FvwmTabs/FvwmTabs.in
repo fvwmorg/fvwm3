@@ -26,15 +26,12 @@
 use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
-use FVWM::Module::Toolkit qw(Tk FileHandle X11::Protocol Tk::Balloon Tk::DragDrop Tk::DropSite);
+use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol Tk Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry);
 
-use IO::Select;
-
-use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon);
+use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon %global);
 
 $TOP = new MainWindow();
 $TOP->withdraw();
-# Why does FVWM::Module::Tk require a widget?
 $fvwm = new FVWM::Module::Tk($TOP,
 							 Name => "FvwmTabs",
 							 Mask => (M_ERROR | M_STRING | M_ADD_WINDOW),
@@ -167,7 +164,7 @@ sub parseAutoSwallow ($)
 	{
 		if (!/^\s*(.+?)(\s+(\d+|any))?\s*$/i)
 		{
-			print($fvwm->name() . ": unparseable autoSwallow$type.\n");
+			print(STDERR $fvwm->name() . ": unparseable autoSwallow$type.\n");
 			next;
 		}
 		autoSwallow(lc($type) => $1, type => (!defined $3 ? 'any' : $3));
@@ -179,35 +176,14 @@ foreach ('Class', 'Resource', 'Name')
 	parseAutoSwallow($_);
 }
 
-# ======= ======= =======
-# TODO: colorsets
-# my $csTracker = $fvwm->track("Colorsets");
-# my $csHash = $csTracker->data;
-# my $cs1_fg = $csHash->{1}->{fg} || 'unknown';
-# my $cs1_bg = $csHash->{1}->{bg} || 'unknown';
-# my $cs5_bg = $csTracker->data(6)->{bg} || 'unknown';
-# print("cs1_fg=$cs1_fg cs1_bg=$cs1_bg\n");
-
-# $csTracker->observe("colorset changed", sub {
-# 	print("Colorset observation.\n");
-# 	    foreach (@_)
-#     {
-#         print("\targ=$_\n");
-#     }
-# });
-
-# ======= ======= =======
-
-
 $xServer = X11::Protocol->new($TOP->screen());
 $xServer->event_handler('queue');
-# $xServer->event_handler(\&eventHandler);
 
 $xServer->error_handler(\&errorHandler);
 sub errorHandler ($$)
 {
 	my($self, $data) = @_;
-	print($fvwm->name() . ': ' . $self->make_error_msg($data));
+	print(STDERR $fvwm->name() . ': ' . $self->format_error_msg($data));
 }
 
 # Check for registered X events every $pollRate milliseconds.
@@ -298,6 +274,9 @@ sub createNewTabber ()
                    -label => 'Show Titlebar',
 				   -variable => \$tabWin{$tId}{showTitlebar},
                    -command => [\&showTitlebar, $tId]);
+		$menu->add('command',
+				   -label => 'Window Tabizer Dialog',
+				   -command => [\&tabizeWindows, $tId]);
 		$menu->add('separator');
 
 		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
@@ -358,6 +337,7 @@ sub takeFocus ($)
 	{
 		# TODO: who do we give the focus to?
 		$winId = $tabWin{$tId}{toplevelId};
+		# return;	# default action will focus icon.
 	}
 	elsif (!defined $tabWin{$tId}{currentTab})
 	{
@@ -385,6 +365,7 @@ sub letItGo ($$$$)
 
 	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
 	$xServer->ReparentWindow($winId, $xServer->root(), (0, 0));
+	XSync();
 	# position the window at the location we found it. (ie. before the
 	# window was added to this tabber.)
 	$xServer->ConfigureWindow($winId,
@@ -446,11 +427,7 @@ sub closeTabber ($)
 	# we can destroy the window.
 	XSync();
 
-	# If we destroy the toplevel we find that subsequent tabbers have
-	# strange window ids. That is, X/FVWM identify the tabber differently
-	# than the tabber identifies itself ($tabWin{$tId}{parent}).
-	# Hence, we don't destroy the toplevel. This causes a memory leak of
-	# ~40kb for every tabber.
+	# TODO: destroy() call intermittently causes problems.
 	# $tabWin{$tId}{toplevel}->destroy();
 	delete $tabWin{$tId};
 }
@@ -463,7 +440,6 @@ sub winIdToTId ($)
 	{
 		return $tId if ($winId == $tabWin{$tId}{selfId});
 	}
-	# print("BUGGER: no match on $winId\n");
 	return -1;
 }
 
@@ -495,7 +471,7 @@ $fvwm->addHandler(M_STRING, sub {
 	{
 		# fn <fnName> <winId> <optArgs>
 		my $tId = winIdToTId(hex($2));
-		print("focus not in tabber. ($2)\n"), return if ($tId < 0);
+		print(STDERR "focus not in tabber. ($2)\n"), return if ($tId < 0);
 		no strict;
 		&$1($tId, split(/\s+/, $3));
 	}
@@ -540,40 +516,55 @@ sub releaseTab ($$$)
 $fvwm->addHandler(M_ADD_WINDOW, sub {
 	my ($self, $event) = @_;
 
+    return if (defined $global{doingTabize} && $global{doingTabize});
 	$fvwm->debug("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
 	my $winId = $event->args->{win_id};
 
-	my $s = chr(0);
-	my ($resource, $class) = split(/$s/, getProperty($winId, 'WM_CLASS'));
-	my $name = getProperty($winId, 'WM_NAME');
-	$fvwm->debug("newWindow - resource=$resource class=$class name=$name");
+	swallowCheck($winId, \@autoSwallow);
+});
 
-	foreach (@autoSwallow)
+# swallowCheck() - check if a window should be swallowed/tabized by a tabber.
+sub swallowCheck ($$)
+{
+	my ($winId, $pArray) = @_;
+
+	my $s = chr(0);
+	my $name = getProperty($winId, 'WM_NAME');
+	return if (!defined $name);
+	my ($resource, $class) = split(/$s/, getProperty($winId, 'WM_CLASS'));
+
+	foreach (@{$pArray})
 	{
-		if ((exists $_->{resource} && $_->{resource} eq $resource) ||
-			(exists $_->{class} && $_->{class} eq $class) ||
-			(exists $_->{name} && $_->{name} eq $name))
+		if ((exists $_->{resource} && $resource =~ /$_->{resource}/) ||
+			(exists $_->{class} && $class =~ /$_->{class}/) ||
+			(exists $_->{name} && $name =~ /$_->{name}/))
 		{
 			my $tId = $_->{type};
-			if ($tId eq 'any')
+			if ($tId =~ /any/i)
 			{
-				my @tIds = keys(%tabWin);
-				return if ($#tIds < 0);	# no tabbers running.
 				# choose the emptiest tabber.
-				my $n = 99;
-				foreach (@tIds)
-				{
-					if ($tabWin{$_}{nTabs} < $n)
-					{
-						$tId = $_;
-						$n = $tabWin{$_}{nTabs};
-					}
-				}
+				$tId = emptiestTabber();
+				return if ($tId < 0);
 			}
 			addTab($tId, $winId) if (exists $tabWin{$tId})
 		}
 	}
-});
+}
+
+sub emptiestTabber ()
+{
+	my $tId = -1;	# return -1 if no tabbers running.
+	my $n = 99;
+	foreach (keys(%tabWin))
+	{
+		if ($tabWin{$_}{nTabs} < $n)
+		{
+			$tId = $_;
+			$n = $tabWin{$_}{nTabs};
+		}
+	}
+	return $tId;
+}
 
 # ON_EXIT handler is invoked just before this module terminates.
 $fvwm->addHandler(ON_EXIT, sub {
@@ -608,7 +599,6 @@ sub callback
 	XSync();
 	
 	$xServer->flush();
- 	# print("!\n"), $xServer->handle_input() if ($fds->can_read(0));
  	$xServer->handle_input() if ($fds->can_read(0));
 
 	while (my %e = $xServer->dequeue_event())
@@ -671,7 +661,7 @@ sub eventHandler
 			$tId = $_, last if ($tabWin{$_}{wrapperWinId} == $event{event});
 		}
 
-		print "BUG: EnterNotify\n", return if ($tId < 0);
+		print(STDERR "BUG: EnterNotify\n"), return if ($tId < 0);
 		$tabWin{$tId}{focusTimestamp} = $event{time};
 		$fvwm->debug("focusTimestamp set to $tabWin{$tId}{focusTimestamp}");
 		takeFocus($tId);
@@ -738,7 +728,7 @@ if ($pConfig->{dragDropIcon} ne 'none')
 	$img = eval { $TOP->Photo(-file => $pConfig->{dragDropIcon}); };
 	if (!defined $img)
 	{
-		print(STDERR $fvwm->name() . ": Couldn't create D&D icon from " . $pConfig->{dragDropIcon});
+		print(STDERR $fvwm->name() . ": Couldn't create D&D icon from " . $pConfig->{dragDropIcon} . "\n");
 	}
 }
 
@@ -757,7 +747,7 @@ sub addTab ($$)
 	# check if the window actually exists before we try to swallow it.
 	if (!defined getProperty($winId, 'WM_NAME'))
 	{
-		print($fvwm->name() . ": Window doesn't exist.\n");
+		print(STDERR $fvwm->name() . ": Window doesn't exist.\n");
 		return;
 	}
 
@@ -816,7 +806,7 @@ sub addTab ($$)
 	}
 
 	# This line gets around a bug in Tk::DropSite.
-	$pButton->Tk::bind($site, '<Configure>', [$site, 'DropSiteUpdate']);
+	$pButton->Tk::bind($site, '<Configure>', [$site, 'DropSiteUpdate']) if ($Tk::VERSION < 804.025);
 
 	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 
@@ -886,8 +876,12 @@ sub getProperty ($$)
 	my ($winId, $property) = @_;
 
 	my $atom = $xServer->atom($property);
-	my @s = $xServer->GetProperty($winId, $atom, "AnyPropertyType", 0, 200, 0);
-	return $s[0];
+	my @s = $xServer->robust_req('GetProperty', $winId, $atom, "AnyPropertyType", 0, 200, 0);
+	my $p = $s[0];
+	return undef if ($p eq 'Window');
+	# print(STDERR "p=$p\n");
+	# print(STDERR "p->[0]=$p->[0]\n");
+	return $p->[0];
 }
 
 # return the tabNo for the specified window ID or -1 if the window is
@@ -1122,10 +1116,6 @@ sub about ($)
 	$rcsId =~ /,v (.*) (\d+\/\d+\/\d+) \d+:\d+:\d+/;
 	my $version = $fvwm->name() . " v$1   ($2)\n\nby Scott Smedley\nscottie7\@tpg.com.au"; # \n\nhttp://users.tpg.com.au/users/scottie7/fvwmtabs.html";
 	# TODO: Tk::Dialog has a hardcoded width of 3 inches, how annoying!
-	# $tabWin{$tId}{toplevel}->Dialog(-text => $version,
-	# 								-bitmap => 'info',
-	# 								-title => 'About ' . $fvwm->name(),
-	# 								-buttons => ['Ok'])->Show();
 	$fvwm->showMessage($version, "About " . $fvwm->name());
 }
 
@@ -1147,7 +1137,6 @@ sub setBalloonMsg ($$)
 sub reorderTab ($$$)
 {
 	my ($tId, $insertionPoint, $tabNo) = @_;
-	# print(STDERR "move tabNo $tabNo before tabNo $insertionPoint (tId=$tId)\n");
 
 	return if ($insertionPoint == $tabNo || $insertionPoint == $tabNo + 1);
 
@@ -1158,7 +1147,6 @@ sub reorderTab ($$$)
 	for (my $i = $s; $i < $tabWin{$tId}{nTabs}; $i++)
 	{
 		$tabWin{$tId}{tab}[$i]{button}->pack('forget');
-		# print(STDERR "Unpacking $i\n");
 	}
 	
 	my $currentWinId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
@@ -1168,24 +1156,19 @@ sub reorderTab ($$$)
 	{
 		for (my $i = $s; $i < $e - 1; $i++)
 		{
-			# print(STDERR "$i = $i+1\n");
 			$tabWin{$tId}{tab}[$i] = $tabWin{$tId}{tab}[$i+1];
 		}
-		# print(STDERR "$e-1 = $tabNo\n");
 		$tabWin{$tId}{tab}[$e-1] = $mover;
 	}
 	else
 	{
 		for (my $i = $e; $i > $s; $i--)
 		{
-			# print(STDERR "$i = $i-1\n");
 			$tabWin{$tId}{tab}[$i] = $tabWin{$tId}{tab}[$i-1];
 		}
-		# print(STDERR "$insertionPoint = $tabNo\n");
 		$tabWin{$tId}{tab}[$insertionPoint] = $mover;
 	}
 	$tabWin{$tId}{currentTab} = getTabNo($tId, $currentWinId);
-	# print(STDERR "currentTab=$tabWin{$tId}{currentTab}\n");
 
 	for (my $i = $s; $i < $tabWin{$tId}{nTabs}; $i++)
 	{
@@ -1196,7 +1179,6 @@ sub reorderTab ($$$)
 			$bExpand = ($pConfig->{fixedSizeTabs} =~ /true/i ||
 						($tabWin{$tId}{nTabs} == 1) ? 1 : 0);
 		}
-		# print(STDERR "Packing $i -expand => $bExpand\n");
 		$tabWin{$tId}{tab}[$i]{button}->pack(-expand => $bExpand, -fill => 'x', -side => 'left');
 	}
 }
@@ -1248,7 +1230,7 @@ sub saveState ()
 		return;
 	}
 	print(STDERR $fvwm->name() . ": Saving state to $file\n");
-	foreach my $tId (keys(%tabWin))
+	foreach my $tId (sort(keys(%tabWin)))
 	{
 		print(OUT "createNewTabber();\n");
 		my ($x, $y) = getXYPos($tabWin{$tId}{wrapperWinId});
@@ -1276,7 +1258,195 @@ sub loadState ()
 	}
 }
 
-loadState();
+# ======= ======= =======
 
-print("Module " . $fvwm->name() . " started with X11::Protocol version " .  $X11::Protocol::VERSION . ".\n");
+sub createThingy ($$$;@)
+{
+	my ($w, $label, $var, @po) = @_;
+
+	my $f = $w->Frame()->pack(@po, -expand => 0, -fill => 'x');
+	$f->Label(-text => $label)->pack(-side => 'left', -anchor => 'w');
+	my $lb = $f->BrowseEntry(-listwidth => 20,
+							 -state => 'readonly',
+							 -variable => $var,
+							 -width => 3);
+	$lb->Subwidget('entry')->Subwidget('entry')->configure(-bg => 'white');
+	$lb->Subwidget('slistbox')->configure(-bg => 'white', -height => 4);
+	$lb->Subwidget('choices')->configure(-bg => 'yellow');
+	return $lb;
+}
+ 
+sub createSwallowDialog ($)
+{
+	my ($main) = @_;
+
+	$global{tabberNo} = $global{deskNo} = $global{pageNo} = 'Any';
+	my @pad = qw/-padx 3 -pady 3/;
+	my $name = $fvwm->name . ": Tabizer";
+	my $tl = $main->Toplevel(-title => $name);
+	my $top = $tl->Frame()->pack(-expand => 1, -fill => 'both', @pad);
+	$tl->iconname($name);
+	$tl->protocol('WM_DELETE_WINDOW', [$tl, 'destroy']);
+
+	$global{eTabberNo} = createThingy($top,
+									  'Add to Tab-Manager no.:',
+									  \$global{tabberNo},
+									  @pad);
+	$global{eTabberNo}->pack(-side => 'left', -anchor => 'w', @pad);
+
+	my $lf = $top->LabFrame(-label => 'Swallow Matching Windows',
+							-labelside => 'acrosstop');
+	$lf->pack(-expand => 0, -fill => 'both', @pad);
+	$global{regex} = $lf->LabEntry(-label => 'regex:',
+								   -bg => 'white',
+								   -labelPack => [qw/-side left/]);
+	$global{regex}->pack(-fill => 'x', @pad);
+
+	$global{regexType} = 'Name';
+	my $f = $lf->Frame()->pack();
+	foreach ('Name', 'Class', 'Resource')
+	{
+		$f->Radiobutton(-text => $_,
+						-value => $_,
+						-variable => \$global{regexType})->pack(-side => 'left');
+	}
+
+	$f = $lf->Frame()->pack(-expand => 0, -fill => 'x');
+	$global{eDeskNo} = createThingy($f, 'Desk:',
+									\$global{deskNo},
+									-side => 'left', @pad)->pack(@pad);
+	$global{ePageNo} = createThingy($f, 'Page:',
+									\$global{pageNo},
+									-side => 'left', @pad)->pack(@pad);
+	$lf->Button(-text => 'Add Matching',
+				-activeforeground => 'LimeGreen',
+				-command => \&doRegexSwallow)->pack(-fill => 'x', @pad);
+
+	$lf = $top->LabFrame(-label => 'Swallow Individual Windows',
+						 -labelside => 'acrosstop');
+	$lf->pack(-expand => 1, -fill => 'both', @pad);
+
+	$global{list} = $lf->Scrolled('Listbox',
+								  -width => 40,
+								  -height => 10,
+								  -setgrid => 1,
+								  -bg => 'white',
+								  -selectmode => 'extended',
+								  -selectbackground => 'darkblue',
+								  -selectforeground => 'white',
+								  -scrollbars => 'osoe');
+	$global{list}->pack(-expand => 1, -fill => 'both', -padx => 2, -pady => 2);
+	my @po = qw/-side left -expand 1 -fill x/;
+	$lf->Button(-text => 'Add Selected',
+				-activeforeground => 'LimeGreen',
+				-command => \&doSwallow)->pack(@po, @pad);
+	$lf->Button(-text => 'Refresh List',
+				-activeforeground => 'orange',
+				-command => \&fillDialog)->pack(@po, @pad);
+	$top->Button(-text => 'Close',
+				 -activeforeground => 'red',
+				 -command => [$tl, 'destroy'])->pack(@po, @pad);
+	# $tl->resizable(0, 0);
+}
+
+sub doSwallow ()
+{
+	foreach ($global{list}->curselection())
+	{
+		my $tId = $global{tabberNo};
+		$tId = emptiestTabber() if ($global{tabberNo} eq 'Any');
+		addTab($tId, $global{windows}[$_]);
+	}
+	fillDialog();
+}
+
+sub doRegexSwallow ()
+{
+	my $regex = $global{regex}->get();
+	if ($regex ne '')
+	{
+		$regex =~ s|/|\/|g;
+		my $deskNo = $global{deskNo};
+		my $pageNo = $global{pageNo};
+		my %p = (lc($global{regexType}) => $regex, type => $global{tabberNo});
+		my @a;
+		push(@a, \%p);
+		foreach my $winId (keys(%{$global{info}}))
+		{
+			next if ($deskNo ne 'Any' &&
+					 $global{info}{$winId}{desk} != $deskNo);
+			next if ($pageNo ne 'Any' &&
+					 $global{info}{$winId}{page} != $pageNo);
+
+			swallowCheck($winId, \@a);
+		}
+	}
+	fillDialog();
+}
+
+$fvwm->addHandler(M_NEW_PAGE, sub {
+    my ($module, $event) = @_;
+
+    $global{pageWidth} = $event->args->{vp_width};
+    $global{pageHeight} = $event->args->{vp_height};
+    $global{nPagesPerDesk} = $event->args->{desk_pages_x};
+});
+
+sub max ($$) { return ($_[0] > $_[1] ? $_[0] : $_[1]); }
+
+$fvwm->addHandler(M_CONFIGURE_WINDOW, sub {
+    my ($module, $event) = @_;
+
+    my $page = $event->args->{frame_x} / $global{pageWidth};
+    $global{maxDesk} = max($event->args->{desk}, $global{maxDesk});
+	my $winId = $event->args->{win_id};
+	push(@{$global{windows}}, $winId);
+	$global{info}{$winId}{desk} = $event->args->{desk};
+	$global{info}{$winId}{page} = $page;
+});
+
+$fvwm->addHandler(M_WINDOW_NAME, sub {
+    my ($module, $event) = @_;
+
+    return unless $global{doingTabize};
+	$global{list}->insert('end', $event->args->{name});
+});
+
+$fvwm->addHandler(M_END_WINDOWLIST, sub {
+	$fvwm->mask($global{oldMask});
+    $fvwm->debug("pageWidth=$global{pageWidth}");
+    $fvwm->debug("pageHeight=$global{pageHeight}");
+    $fvwm->debug("nPages/desk=$global{nPagesPerDesk}");
+	my $nPages = $global{nPagesPerDesk} - 1;
+	$global{eDeskNo}->configure(-choices => ['Any', 0 .. $global{maxDesk}]);
+	$global{ePageNo}->configure(-choices => ['Any', 0 .. $nPages]);
+});
+
+sub tabizeWindows ($)
+{
+	my ($tId) = @_;
+
+	createSwallowDialog($TOP);
+	my $nTabbers = scalar(keys(%tabWin)) - 1;
+	$global{eTabberNo}->configure(-choices => ['Any', 0 .. $nTabbers]);
+	$global{tabberNo} = $tId;
+	fillDialog();
+}
+
+sub fillDialog ()
+{
+	$global{oldMask} = $fvwm->mask();
+	$fvwm->mask($global{oldMask} | M_WINDOW_NAME | M_NEW_PAGE | M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
+	$global{maxDesk} = 0;
+	delete $global{info};
+	@{$global{windows}} = ();
+    $global{doingTabize} = 1;
+	$global{list}->delete('0.0', 'end');
+	$fvwm->send("Send_WindowList");
+}
+
+# ======= ======= =======
+
+loadState();
+print("Module " . $fvwm->name() . " started with: X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
 $fvwm->eventLoop();
