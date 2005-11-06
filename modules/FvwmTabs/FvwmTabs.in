@@ -26,7 +26,7 @@
 use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
-use FVWM::Module::Toolkit qw(Tk FileHandle X11::Protocol Tk::Balloon);
+use FVWM::Module::Toolkit qw(Tk FileHandle X11::Protocol Tk::Balloon Tk::DragDrop Tk::DropSite);
 
 use IO::Select;
 
@@ -62,7 +62,12 @@ my $configTracker = $fvwm->track('ModuleConfig',
 						   balloonFont => 'Helvetica -12',
 						   balloonWait => 350, # in milliseconds
 						   balloonBG => '#C0C080',
-						   autoResize => 'false'});
+						   balloonMsg => 'Tab %tabNo:\n%iconText\n%title',
+						   autoResize => 'false',
+						   stateFile => '/tmp/.fvwmtabs.state',
+						   fixedSizeTabs => 'false',
+						   showTitlebar => 'true',
+						   useTMTitlebar => 'true'});
 
 my $pConfig = $configTracker->data;
 $configTracker->observe("config line added", sub {
@@ -119,10 +124,23 @@ $configTracker->observe("config line added", sub {
 			parseAutoSwallow($1);
 			return;	# not a per-tabber option.
 		}
-		elsif ($p =~ /^(fontSelector|autoResize)$/)
+		elsif ($p =~ /^(fontSelector|autoResize|fixedSizeTabs|balloonMsg)$/)
 		{
 			# handled implicitly.
 			return;
+		}
+		elsif ($p eq 'showTitlebar')
+		{
+			$tabWin{$tId}{showTitlebar} = ($pConfig->{showTitlebar} =~ /true/i ? 1 : 0);
+			showTitlebar($tId);
+		}
+		elsif ($p eq 'useTMTitlebar')
+		{
+			if ($pConfig->{useTMTitlebar} !~ /true/i)
+			{
+				my $t = $fvwm->name() . " [$tId]";
+				$tabWin{$tId}{toplevel}->configure(-title => $t);
+			}
 		}
 		else
 		{
@@ -217,11 +235,17 @@ sub createNewTabber ()
 	$tabFrame->pack(-side => 'top', -expand => 0, -fill => 'x');
 	$topFrame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
 
-	my $titleFrame = $topFrame->Label(-text => "No title",
+	# titlebar
+	my $wrapFrame = $topFrame->Frame();
+	$wrapFrame->pack(-expand => 1, -fill => 'x');
+	my $titleFrame = $wrapFrame->Label(-text => "No title",
 									  -font => $pConfig->{titleFont},
 									  -bg => $pConfig->{titleBG},
 									  -fg => $pConfig->{titleFG});
-	$titleFrame->pack(-expand => 0, -fill => 'x', -side => 'top');
+	$tabWin{$tId}{showTitlebar} = ($pConfig->{showTitlebar} =~ /true/i ? 1 : 0);
+	$tabWin{$tId}{titleFrame} = $titleFrame;
+	$tabWin{$tId}{wrapFrame} = $wrapFrame;
+	showTitlebar($tId);
 
 	my $winFrame = $topFrame->Frame();
 	$winFrame->pack(-expand => 1, -fill => 'both', -side => 'top');
@@ -269,6 +293,10 @@ sub createNewTabber ()
 
 			$menu->add('cascade', -label => 'Font', -menu => $fontMenu);
 		}
+		$menu->add('checkbutton',
+                   -label => 'Show Titlebar',
+				   -variable => \$tabWin{$tId}{showTitlebar},
+                   -command => [\&showTitlebar, $tId]);
 		$menu->add('separator');
 
 		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
@@ -286,9 +314,9 @@ sub createNewTabber ()
 	$tabWin{$tId}{toplevel} = $tl;
 	$tabWin{$tId}{toplevelId} = hex($tabWin{$tId}{toplevel}->id());
 	$tabWin{$tId}{tabFrame} = $tabFrame;
-	$tabWin{$tId}{titleFrame} = $titleFrame;
 	$tabWin{$tId}{winFrame} = $winFrame;
 	$tabWin{$tId}{currentTab} = undef;
+	$tabWin{$tId}{lastId} = undef;
 	$tabWin{$tId}{parent} = hex($winFrame->id);
 	$tabWin{$tId}{menuButton} = $b;
 	$tabWin{$tId}{menu} = $menu;
@@ -314,13 +342,6 @@ sub wrapperWinId ($)
 			event_mask => $xServer->pack_event_mask());
 	}
 
-	# The window id of the WM decoration frame appears to be the great
-	# grandparent of the toplevel window.
-	#my ($root, $parent, @kids);
-	#($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
-	#($root, $parent, @kids) = $xServer->QueryTree($parent);
-	#($root, $parent, @kids) = $xServer->QueryTree($parent);
-	# $tabWin{$tId}{wrapperWinId} = $parent;
 	$tabWin{$tId}{wrapperWinId} = hex($tabWin{$tId}{toplevel}->frame());
 	$xServer->ChangeWindowAttributes($tabWin{$tId}{wrapperWinId},
 		event_mask => $xServer->pack_event_mask('EnterWindow'));
@@ -381,6 +402,11 @@ sub letItGo ($$$$)
 	removeTab($tId, $tabNo, 'letgo');
 }
 
+sub letItGoClick ($$$$)
+{
+    my ($button, $tId, $winId, $bIconify) = @_;
+	letItGo($button, $tId, getTabNo($tId, $winId), $bIconify);
+}
 
 # release all windows from <$tId> tabber.
 sub releaseAll ($$)
@@ -441,7 +467,7 @@ sub winIdToTId ($)
 	return -1;
 }
 
-# SendToModule commands should be arriving as M_STRING events.
+# SendToModule commands arrive as M_STRING events.
 $fvwm->addHandler(M_STRING, sub {
 	my ($self, $event) = @_;
 
@@ -473,9 +499,13 @@ $fvwm->addHandler(M_STRING, sub {
 		no strict;
 		&$1($tId, split(/\s+/, $3));
 	}
+	elsif ($event->args->{text} =~ /saveState/)
+	{
+		saveState();
+	}
 	else
 	{
-		print(STDERR $self->name . ": Unknown command: " . $event->args->{text} . "\n");
+		print(STDERR $self->name() . ": Unknown command: " . $event->args->{text} . "\n");
 	}
 });
 
@@ -487,6 +517,16 @@ sub showNext ($$)
 	return if ($tabWin{$tId}{nTabs} <= 0);
 	my $nextTabNo = ($tabWin{$tId}{currentTab} + $inc) % $tabWin{$tId}{nTabs};
 	showTab($tId, $nextTabNo) if ($nextTabNo != $tabWin{$tId}{currentTab});
+}
+
+sub showLast ($)
+{
+	my ($tId) = @_;
+
+	return if ($tabWin{$tId}{nTabs} <= 0 || !defined $tabWin{$tId}{lastId});
+	my $tabNo = getTabNo($tId, $tabWin{$tId}{lastId});
+	return if ($tabNo < 0);
+	showTab($tId, $tabNo);
 }
 
 # releaseTab() - invoked from key binding.
@@ -557,7 +597,6 @@ sub cleanup ()
 }
 
 my $fds = IO::Select->new($xServer->connection->fh);
-# $| = 1;
 
 sub callback
 {
@@ -661,11 +700,11 @@ sub eventHandler
 		return if (!defined $val);	# window no longer exists!
 		if ($prop eq 'WM_NAME')
 		{
-			setTabTitle($tId, $tabNo, $event{window}, $val);
+			setTabTitle($tId, $tabNo, $val);
 		}
 		elsif ($prop eq 'WM_ICON_NAME')
 		{
-			setTabName($tId, $tabNo, $event{window}, $val);
+			setTabName($tId, $tabNo, $val);
 		}
 	}
 	elsif ($event{name} eq 'DestroyNotify')
@@ -682,6 +721,17 @@ sub eventHandler
 	}
 }
 
+sub getXYPos ($)
+{
+	my ($winId) = @_;
+
+	my ($na1, $na2, $x, $y) = $xServer->TranslateCoordinates($winId,
+                                                             $xServer->root(),
+                                                             0,
+                                                             0);
+	return ($x, $y);
+}
+
 sub addTab ($$)
 {
 	my ($tId, $winId) = @_;
@@ -694,16 +744,18 @@ sub addTab ($$)
 		return;
 	}
 
+	# check if the window actually exists before we try to swallow it.
+	if (!defined getProperty($winId, 'WM_NAME'))
+	{
+		print($fvwm->name() . ": Window doesn't exist.\n");
+		return;
+	}
+
 	my $tabNo = $tabWin{$tId}{nTabs}++;
 	$tabWin{$tId}{tab}[$tabNo]{winId} = $winId;
 
 	# save position of window for later.
-	my ($na1, $na2, $x, $y) = $xServer->TranslateCoordinates($winId,
-															 $xServer->root(),
-															 0,
-															 0);
-	$tabWin{$tId}{tab}[$tabNo]{initialXPos} = $x;
-	$tabWin{$tId}{tab}[$tabNo]{initialYPos} = $y;
+	($tabWin{$tId}{tab}[$tabNo]{initialXPos}, $tabWin{$tId}{tab}[$tabNo]{initialYPos}) = getXYPos($winId);
 
 	# if the auto-resize option is specified & the new window to add is
 	# smaller than the tabber, then we need to enlarge the new window. If
@@ -728,20 +780,31 @@ sub addTab ($$)
 										-padx => 2,
 										-width => 1,
 										-anchor => 'w',
-										-command => [\&showTab, $tId, $tabNo],
+										-command => [\&showTabClick, $tId, $winId],
 										-font => $pConfig->{buttonFont});
 	my $pButton = $tabWin{$tId}{tab}[$tabNo]{button};
 
 	# Raise the FvwmTabs window whenever a tab is selected.
 	$pButton->Tk::bind('<ButtonPress-1>', sub { $fvwm->send("Current Raise"); });
 	$pButton->pack(-side => 'left', -expand => 1, -fill => 'x');
-	$pButton->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $tabNo, 0]);
-	$pButton->Tk::bind('<ButtonRelease-3>', [\&letItGo, $tId, $tabNo, 1]);
+	$pButton->Tk::bind('<ButtonRelease-2>', [\&letItGoClick, $tId, $winId, 0]);
+	$pButton->Tk::bind('<ButtonRelease-3>', [\&letItGoClick, $tId, $winId, 1]);
+
+	# drag-&-drop to reorder tabs.
+	$pButton->DragDrop(-event => '<Control-B2-Motion>',
+					   -sitetypes => [qw(Local)],
+					   -selection => $winId,
+					   -cursor => 'sb_h_double_arrow',
+					   -text => '*',
+					   -handlers => []);
+	$pButton->DropSite(-droptypes => [qw(Local)],
+					   -dropcommand => [\&moveTabClick, [$tId, $winId]]);
+
 	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 
 	$balloon->attach($pButton,
 					 -balloonmsg => \$tabWin{$tId}{balloonMsg},
-					 -postcommand => [\&setBalloonMsg, $tId, $tabNo]);
+					 -postcommand => [\&setBalloonMsg, $tId, $winId]);
 
 	# Ensure we are notified of any attribute changes in the new window.
 	# PropertyChange will tell us when WM_NAME or WM_ICON_NAME changes.
@@ -782,6 +845,7 @@ sub tabInfo ($)
 	print("toplevel->frame()=" . $tabWin{$tId}{toplevel}->frame() . "\n");
 	print("wrapperWinId=" . $tabWin{$tId}{wrapperWinId} . "\n");
 	print("autoResize is " . $pConfig->{autoResize} . "\n");
+	print("fixedSizeTabs is " . $pConfig->{fixedSizeTabs} . "\n");
 	XSync();
 }
 
@@ -796,6 +860,7 @@ sub getProperty ($$)
 
 # return the tabNo for the specified window ID or -1 if the window is
 # not part of the tabber.
+# TODO: rename this function to "winIdToTabNo"?
 sub getTabNo ($$)
 {
 	my ($tId, $winId) = @_;
@@ -827,14 +892,6 @@ sub removeTab ($$$)
 	for (my $t = $tabNo; $t < $tabWin{$tId}{nTabs} - 1; $t++)
 	{
 		$tabWin{$tId}{tab}[$t] = $tabWin{$tId}{tab}[$t + 1];
-		$tabWin{$tId}{tab}[$t]{button}->configure(-command => [\&showTab, $tId, $t]);
-		$tabWin{$tId}{tab}[$t]{button}->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $t, 0]);
-		$tabWin{$tId}{tab}[$t]{button}->Tk::bind('<ButtonRelease-3>', [\&letItGo, $tId, $t, 1]);
-
-		$balloon->detach($tabWin{$tId}{tab}[$t]{button});	
-		$balloon->attach($tabWin{$tId}{tab}[$t]{button},
-						 -balloonmsg => \$tabWin{$tId}{balloonMsg},
-						 -postcommand => [\&setBalloonMsg, $tId, $t]);
 	}
 	$tabWin{$tId}{nTabs}--;
 	$tabWin{$tId}{tab}[$tabWin{$tId}{nTabs}] = undef;
@@ -884,38 +941,65 @@ sub showTab ($$)
 					-width => 1,
 					-relief => 'raised');
 		$tabWin{$tId}{tab}[$currentTab]{button}->pack(-expand => 1);
+		$tabWin{$tId}{lastId} = $winId;
 	}
 	# Map the new tab.
 	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
 	$xServer->MapWindow($winId);
 	$tabWin{$tId}{currentTab} = $tabNo;
+	my $bEq = ($pConfig->{fixedSizeTabs} =~ /true/i ? 1 : 0);
 	$tabWin{$tId}{tab}[$tabNo]{button}->configure(
 					-bg => $pConfig->{activeBG},
 					-activebackground => $pConfig->{activeBG},
 					-fg => $pConfig->{activeFG},
 					-activeforeground => $pConfig->{activeFG},
-					-width => 0,
+					-width => $bEq,
 					-relief => $pConfig->{activeRelief});
-	my $bExpand = ($tabWin{$tId}{nTabs} == 1);
+	my $bExpand = ($bEq || ($tabWin{$tId}{nTabs} == 1));
 	$tabWin{$tId}{tab}[$tabNo]{button}->pack(-expand => $bExpand);
-	$tabWin{$tId}{titleFrame}->configure(-text => $tabWin{$tId}{tab}[$tabNo]{title});
 
 	my %g = $xServer->GetGeometry($winId);
 	$tabWin{$tId}{winFrame}->configure(-height => $g{height}, -width => $g{width});
 	$tabWin{$tId}{toplevel}->geometry("");
+	showTitle($tId, $tabNo, $g{width});
 	# If we're changing the active tab really quickly we have to handle/flush
 	# all the X events in the queue - this prevents us from getting a
 	# 'Protocol Error'.
 	callback();
 }
 
-sub setTabTitle($$$$)
+sub showTabClick ($$)
 {
-	my ($tId, $tabNo, $winId, $titleStr) = @_;
+	my ($tId, $winId) = @_;
+	showTab($tId, getTabNo($tId, $winId));
+}
 
+sub showTitle ($$$)
+{
+	my ($tId, $tabNo, $w) = @_;
+
+	$fvwm->debug("BUG: showTitle()") if ($tabNo != $tabWin{$tId}{currentTab});
 	# This is a nice feature - Wrap the title text across multiple lines.
 	# The following command in an xterm window illustrates the usefulness:
 	# echo "abc\ndef\nghi\njkl" && sleep 3
+
+	$w -= 30;
+
+	my $titleStr = $tabWin{$tId}{tab}[$tabNo]{title};
+	# make sure the title text does not exceed this length.
+	$tabWin{$tId}{titleFrame}->configure(-text => $titleStr,
+										 -wraplength => "${w}p");
+
+	if ($pConfig->{useTMTitlebar} =~ /true/i)
+	{
+		my $title = $fvwm->name() . " [$tId] : " . $titleStr;
+		$tabWin{$tId}{toplevel}->configure(-title => $title);
+	}
+}
+
+sub setTabTitle($$$)
+{
+	my ($tId, $tabNo, $titleStr) = @_;
 
 	$titleStr =~ s/\n//g;
 	$tabWin{$tId}{tab}[$tabNo]{title} = $titleStr;
@@ -923,16 +1007,28 @@ sub setTabTitle($$$$)
 	{
 		# get the width of the title label in pixels.
 		my $w = $tabWin{$tId}{titleFrame}->width();
-		$w -= 30;
-		# make sure the title text does not exceed this length.
-		$tabWin{$tId}{titleFrame}->configure(-text => $titleStr,
-											 -wraplength => "${w}p");
+		showTitle($tId, $tabNo, $w);
 	}
 }
 
-sub setTabName ($$$$)
+sub showTitlebar ($)
 {
-	my ($tId, $tabNo, $winId, $name) = @_;
+	my ($tId) = @_;
+
+	if ($tabWin{$tId}{showTitlebar})
+	{
+		$tabWin{$tId}{titleFrame}->pack(-expand => 0, -fill => 'x', -side => 'top');
+	}
+	else
+	{
+		$tabWin{$tId}{titleFrame}->pack('forget');
+		$tabWin{$tId}{wrapFrame}->configure(-width => 0, -height => 1);
+	}
+}
+
+sub setTabName ($$$)
+{
+	my ($tId, $tabNo, $name) = @_;
 
 	$tabWin{$tId}{tab}[$tabNo]{button}->configure(-text => $name);
 }
@@ -1003,27 +1099,72 @@ sub about ($)
 
 sub setBalloonMsg ($$)
 {
-	my ($tId, $tabNo) = @_;
+	my ($tId, $winId) = @_;
 
-	$tabWin{$tId}{balloonMsg} = "Tab $tabNo:\n" . $tabWin{$tId}{tab}[$tabNo]{button}->cget(-text) . "\n" .  $tabWin{$tId}{tab}[$tabNo]{title};
+	my $tabNo = getTabNo($tId, $winId);
+
+	my $msg = $pConfig->{balloonMsg};
+	$msg =~ s/\\n/\n/g;
+	$msg =~ s/%tabNo/$tabNo/gi;
+	my $iconText = $tabWin{$tId}{tab}[$tabNo]{button}->cget(-text);
+	$msg =~ s/%iconText/$iconText/gi;
+	$msg =~ s/%title/$tabWin{$tId}{tab}[$tabNo]{title}/gi;
+	$tabWin{$tId}{balloonMsg} = $msg;
 }
+
+sub moveTab ($$$)
+{
+	my ($tId, $insertionPoint, $tabNo) = @_;
+	print(STDERR "move tabNo $tabNo before tabNo $insertionPoint (tId=$tId)\n");
+
+	return if ($insertionPoint == $tabNo);
+
+	# TODO
+}
+
+sub moveTabClick ($$$)
+{
+	my ($pa, $winId, $notUsed) = @_;
+
+	my ($tId, $insertionPoint) = @$pa;
+	moveTab($tId, getTabNo($tId, $insertionPoint), getTabNo($tId, $winId));
+}
+
+sub saveState ()
+{
+	my $file = $pConfig->{stateFile};
+	if (!open(OUT, ">$file"))
+	{
+		print(STDERR $fvwm->name() . ": Couldn't save state to $file.\n");
+		return;
+	}
+	print(STDERR $fvwm->name() . ": Saving state to $file\n");
+	foreach my $tId (keys(%tabWin))
+	{
+		print(OUT "createNewTabber();\n");
+		my ($x, $y) = getXYPos($tabWin{$tId}{wrapperWinId});
+		print(OUT "\$fvwm->send(\"Move ${x}p ${y}p\", \$tabWin{$tId}{selfId});\n");
+		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
+		{
+			print(OUT "addTab($tId, $tabWin{$tId}{tab}[$tabNo]{winId});\n");
+		}
+		print(OUT "showTab($tId, $tabWin{$tId}{currentTab});\n");
+	}
+	close(OUT);
+}
+
+sub loadState ()
+{
+	my $file = $pConfig->{stateFile};
+	if (-r $file)
+	{
+		print(STDERR $fvwm->name() . ": Reading state from $file\n");
+		eval `cat $file`;
+		unlink($file);
+	}
+}
+
+loadState();
 
 print("Module " . $fvwm->name() . " started with X11::Protocol version " .  $X11::Protocol::VERSION . ".\n");
 $fvwm->eventLoop();
-
-
-# TODO
-# - option for vertical tab buttons (ie. put tabs on side)
-#   (need a vertical font, can't find one.)
-# - option: icons on tab buttons.
-# - option: set FvwmTabs title to active tab title.
-# - colorset support
-#   (waiting for Colorset tracker in fvwm-perllib)
-# - consider removing the 'FvwmTabs' button & using the menu popup over
-#   the title frame.
-# - associate a mini icon with each tab-button.
-# - Preserve state b/w FVWM Restarts.
-# - BUG: iconified FvwmTabs icons don't take focus.
-# - BUG: problem swallowing shaded windows.
-# - BUG: Using "Maximise" to resize FvwmTabs windows stops dynamic
-#        resizing from working.
