@@ -44,30 +44,31 @@ $fvwm->debug("Debug level is: " . $fvwm->{debug});
 $fvwm->addDefaultErrorHandler();
 
 my $configTracker = $fvwm->track('ModuleConfig',
-		 DefaultConfig => {activeBG => 'MidnightBlue',
-						   activeFG => 'yellow',
-						   inactiveBG => 'royalblue',
-						   inactiveFG => 'antiquewhite',
-						   titleFG => 'black',
-						   titleBG => 'antiquewhite',
-						   activeRelief => 'sunken',
-						   pollRate => 250,	# in milliseconds.
-						   autoSwallowClass => '',
-						   autoSwallowResource => '',
-						   autoSwallowName => '',
-						   fontSelector => 'gfontsel --print -f "%f"',
-						   buttonFont => 'Helvetica -12 bold',
-						   titleFont => 'Helvetica -12 bold',
-						   menuFont => 'Helvetica -12',
-						   balloonFont => 'Helvetica -12',
-						   balloonWait => 350, # in milliseconds
-						   balloonBG => '#C0C080',
-						   balloonMsg => 'Tab %tabNo:\n%iconText\n%title',
-						   autoResize => 'false',
-						   stateFile => '/tmp/.fvwmtabs.state',
-						   fixedSizeTabs => 'false',
-						   showTitlebar => 'true',
-						   useTMTitlebar => 'true'});
+	 DefaultConfig => {activeBG => 'MidnightBlue',
+					   activeFG => 'yellow',
+					   inactiveBG => 'royalblue',
+					   inactiveFG => 'antiquewhite',
+					   titleFG => 'black',
+					   titleBG => 'antiquewhite',
+					   activeRelief => 'sunken',
+					   pollRate => 250,	# in milliseconds.
+					   autoSwallowClass => '',
+					   autoSwallowResource => '',
+					   autoSwallowName => '',
+					   fontSelector => 'gfontsel --print -f "%f"',
+					   buttonFont => 'Helvetica -12 bold',
+					   titleFont => 'Helvetica -12 bold',
+					   menuFont => 'Helvetica -12',
+					   balloonFont => 'Helvetica -12',
+					   balloonWait => 350, # in milliseconds
+					   balloonBG => '#C0C080',
+					   balloonMsg => 'Tab %tabNo:\n%iconText\n%title',
+					   autoResize => 'false',
+					   stateFile => '/tmp/.fvwmtabs.state',
+					   fixedSizeTabs => 'false',
+					   showTitlebar => 'true',
+					   useTMTitlebar => 'true',
+					   dragDropIcon => '/usr/share/icons/mini/mini-happy.xpm'});
 
 my $pConfig = $configTracker->data;
 $configTracker->observe("config line added", sub {
@@ -237,7 +238,7 @@ sub createNewTabber ()
 
 	# titlebar
 	my $wrapFrame = $topFrame->Frame();
-	$wrapFrame->pack(-expand => 1, -fill => 'x');
+	$wrapFrame->pack(-expand => 0, -fill => 'x');
 	my $titleFrame = $wrapFrame->Label(-text => "No title",
 									  -font => $pConfig->{titleFont},
 									  -bg => $pConfig->{titleBG},
@@ -320,11 +321,10 @@ sub createNewTabber ()
 	$tabWin{$tId}{parent} = hex($winFrame->id);
 	$tabWin{$tId}{menuButton} = $b;
 	$tabWin{$tId}{menu} = $menu;
-	# $tl->wrapper() doesn't work ...
-	# selfId appears to be parent + 1 anyway.
-	$tabWin{$tId}{selfId} = $tabWin{$tId}{parent} + 1;
-	$tabWin{$tId}{balloonMsg} = '?';
 	$winFrame->waitVisibility();
+	my ($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
+	$tabWin{$tId}{selfId} = $parent;
+	$tabWin{$tId}{balloonMsg} = '?';
 
 	$xServer->ChangeWindowAttributes($tabWin{$tId}{parent},
 		event_mask => $xServer->pack_event_mask('ResizeRedirect'));
@@ -495,7 +495,7 @@ $fvwm->addHandler(M_STRING, sub {
 	{
 		# fn <fnName> <winId> <optArgs>
 		my $tId = winIdToTId(hex($2));
-		print("focus not in tabber.\n"), return if ($tId < 0);
+		print("focus not in tabber. ($2)\n"), return if ($tId < 0);
 		no strict;
 		&$1($tId, split(/\s+/, $3));
 	}
@@ -732,6 +732,16 @@ sub getXYPos ($)
 	return ($x, $y);
 }
 
+my $img;
+if ($pConfig->{dragDropIcon} ne 'none')
+{
+	$img = eval { $TOP->Photo(-file => $pConfig->{dragDropIcon}); };
+	if (!defined $img)
+	{
+		print(STDERR $fvwm->name() . ": Couldn't create D&D icon from " . $pConfig->{dragDropIcon});
+	}
+}
+
 sub addTab ($$)
 {
 	my ($tId, $winId) = @_;
@@ -791,14 +801,22 @@ sub addTab ($$)
 	$pButton->Tk::bind('<ButtonRelease-3>', [\&letItGoClick, $tId, $winId, 1]);
 
 	# drag-&-drop to reorder tabs.
-	$pButton->DragDrop(-event => '<Control-B2-Motion>',
-					   -sitetypes => [qw(Local)],
-					   -selection => $winId,
-					   -cursor => 'sb_h_double_arrow',
-					   -text => '*',
-					   -handlers => []);
+	my $dd = $pButton->DragDrop(-event => '<Control-B2-Motion>',
+								-sitetypes => [qw(Local)],
+								-selection => $winId,
+								-cursor => 'sb_h_double_arrow',
+								-text => '*',
+								-handlers => []);
+	my $site =
 	$pButton->DropSite(-droptypes => [qw(Local)],
-					   -dropcommand => [\&moveTabClick, [$tId, $winId]]);
+					   -dropcommand => [\&reorderTabClick, [$tId, $winId]]);
+	if ($pConfig->{dragDropIcon} ne 'none' && defined $img)
+	{
+		$dd->configure(-image => $img);
+	}
+
+	# This line gets around a bug in Tk::DropSite.
+	$pButton->Tk::bind($site, '<Configure>', [$site, 'DropSiteUpdate']);
 
 	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 
@@ -844,8 +862,22 @@ sub tabInfo ($)
 	print("toplevel->wrapper()=" . $tabWin{$tId}{toplevel}->wrapper() . "\n");
 	print("toplevel->frame()=" . $tabWin{$tId}{toplevel}->frame() . "\n");
 	print("wrapperWinId=" . $tabWin{$tId}{wrapperWinId} . "\n");
-	print("autoResize is " . $pConfig->{autoResize} . "\n");
-	print("fixedSizeTabs is " . $pConfig->{fixedSizeTabs} . "\n");
+
+	my ($root, $parent, @kids);
+	($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
+	printf("A: parent=$parent (0x%x)\n", $parent);
+	($root, $parent, @kids) = $xServer->QueryTree($parent);
+	printf("A: grandparent=$parent (0x%x)\n", $parent);
+	($root, $parent, @kids) = $xServer->QueryTree($parent);
+	printf("A: great grandparent=$parent (0x%x)\n", $parent);
+
+	($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{parent});
+	printf("B: parent=$parent (0x%x)\n", $parent);
+	($root, $parent, @kids) = $xServer->QueryTree($parent);
+	printf("B: grandparent=$parent (0x%x)\n", $parent);
+	($root, $parent, @kids) = $xServer->QueryTree($parent);
+	printf("B: great grandparent=$parent (0x%x)\n", $parent);
+
 	XSync();
 }
 
@@ -886,7 +918,7 @@ sub removeTab ($$$)
 	}
 
 	$balloon->detach($tabWin{$tId}{tab}[$tabNo]{button});
-	$tabWin{$tId}{tab}[$tabNo]{button}->packForget();
+	$tabWin{$tId}{tab}[$tabNo]{button}->destroy();
 	$tabWin{$tId}{tab}[$tabNo] = undef;
 
 	for (my $t = $tabNo; $t < $tabWin{$tId}{nTabs} - 1; $t++)
@@ -1112,22 +1144,99 @@ sub setBalloonMsg ($$)
 	$tabWin{$tId}{balloonMsg} = $msg;
 }
 
-sub moveTab ($$$)
+sub reorderTab ($$$)
 {
 	my ($tId, $insertionPoint, $tabNo) = @_;
-	print(STDERR "move tabNo $tabNo before tabNo $insertionPoint (tId=$tId)\n");
+	# print(STDERR "move tabNo $tabNo before tabNo $insertionPoint (tId=$tId)\n");
 
-	return if ($insertionPoint == $tabNo);
+	return if ($insertionPoint == $tabNo || $insertionPoint == $tabNo + 1);
 
-	# TODO
+	my ($s, $e) = ($insertionPoint > $tabNo ?
+				   ($tabNo, $insertionPoint) :
+				   ($insertionPoint, $tabNo));
+
+	for (my $i = $s; $i < $tabWin{$tId}{nTabs}; $i++)
+	{
+		$tabWin{$tId}{tab}[$i]{button}->pack('forget');
+		# print(STDERR "Unpacking $i\n");
+	}
+	
+	my $currentWinId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
+
+	my $mover = $tabWin{$tId}{tab}[$tabNo];
+	if ($insertionPoint > $tabNo)
+	{
+		for (my $i = $s; $i < $e - 1; $i++)
+		{
+			# print(STDERR "$i = $i+1\n");
+			$tabWin{$tId}{tab}[$i] = $tabWin{$tId}{tab}[$i+1];
+		}
+		# print(STDERR "$e-1 = $tabNo\n");
+		$tabWin{$tId}{tab}[$e-1] = $mover;
+	}
+	else
+	{
+		for (my $i = $e; $i > $s; $i--)
+		{
+			# print(STDERR "$i = $i-1\n");
+			$tabWin{$tId}{tab}[$i] = $tabWin{$tId}{tab}[$i-1];
+		}
+		# print(STDERR "$insertionPoint = $tabNo\n");
+		$tabWin{$tId}{tab}[$insertionPoint] = $mover;
+	}
+	$tabWin{$tId}{currentTab} = getTabNo($tId, $currentWinId);
+	# print(STDERR "currentTab=$tabWin{$tId}{currentTab}\n");
+
+	for (my $i = $s; $i < $tabWin{$tId}{nTabs}; $i++)
+	{
+		my $bExpand = 1;
+		if ($i == $tabWin{$tId}{currentTab})
+		{
+			my $bEq = ($pConfig->{fixedSizeTabs} =~ /true/i ? 1 : 0);
+			$bExpand = ($pConfig->{fixedSizeTabs} =~ /true/i ||
+						($tabWin{$tId}{nTabs} == 1) ? 1 : 0);
+		}
+		# print(STDERR "Packing $i -expand => $bExpand\n");
+		$tabWin{$tId}{tab}[$i]{button}->pack(-expand => $bExpand, -fill => 'x', -side => 'left');
+	}
 }
 
-sub moveTabClick ($$$)
+sub reorderTabClick ($$$)
 {
 	my ($pa, $winId, $notUsed) = @_;
 
 	my ($tId, $insertionPoint) = @$pa;
-	moveTab($tId, getTabNo($tId, $insertionPoint), getTabNo($tId, $winId));
+	reorderTab($tId, getTabNo($tId, $insertionPoint), getTabNo($tId, $winId));
+}
+
+sub swapRight ($)
+{
+	my ($tId) = @_;
+
+	return if ($tabWin{$tId}{nTabs} <= 0);
+	if ($tabWin{$tId}{currentTab} == $tabWin{$tId}{nTabs} - 2)
+	{
+		reorderTab($tId, $tabWin{$tId}{currentTab}, $tabWin{$tId}{currentTab}+1);
+	}
+	else
+	{
+		my $inc = ($tabWin{$tId}{currentTab} == ($tabWin{$tId}{nTabs} - 1) ? 1 : 2);
+		reorderTab($tId,
+				   ($tabWin{$tId}{currentTab} + $inc) % $tabWin{$tId}{nTabs},
+				   $tabWin{$tId}{currentTab});
+	}
+}
+
+sub swapLeft ($)
+{
+	my ($tId) = @_;
+
+	return if ($tabWin{$tId}{nTabs} <= 0);
+	my $b = ($tabWin{$tId}{currentTab} == 0 ? 1 : 0);
+	reorderTab($tId,
+			   ($tabWin{$tId}{currentTab} - 1) % $tabWin{$tId}{nTabs},
+			   $tabWin{$tId}{currentTab});
+	swapRight($tId) if ($b);
 }
 
 sub saveState ()
@@ -1148,7 +1257,10 @@ sub saveState ()
 		{
 			print(OUT "addTab($tId, $tabWin{$tId}{tab}[$tabNo]{winId});\n");
 		}
-		print(OUT "showTab($tId, $tabWin{$tId}{currentTab});\n");
+		if ($tabWin{$tId}{nTabs} > 0)
+		{
+			print(OUT "showTab($tId, $tabWin{$tId}{currentTab});\n");
+		}
 	}
 	close(OUT);
 }
