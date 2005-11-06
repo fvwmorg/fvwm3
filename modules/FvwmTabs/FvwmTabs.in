@@ -168,7 +168,7 @@ sub parseAutoSwallow ($)
 	my ($type) = @_;
 	foreach (split(/,/, $pConfig->{'autoSwallow' . $type}))
 	{
-		if (!/^\s*(.+?)(\s+(\d+|any))?\s*$/i)
+		if (!/^\s*(.+?)(\s+(\d+|any|lastFocus))?\s*$/i)
 		{
 			print(STDERR $fvwm->name() . ": unparseable autoSwallow$type.\n");
 			next;
@@ -345,6 +345,7 @@ sub takeFocus ($)
 {
 	my ($tId) = @_;
 
+	$global{lastFocus} = $tId;
 	my $winId;
 	if ($tabWin{$tId}{toplevel}->state() eq 'iconic')
 	{
@@ -554,6 +555,12 @@ sub swallowCheck ($$)
 				# choose the emptiest tabber.
 				$tId = emptiestTabber();
 				return if ($tId < 0);
+			}
+			elsif ($tId =~ /lastFocus/i)
+			{
+				$tId = (defined $global{lastFocus} ?
+						$global{lastFocus} :
+						emptiestTabber());
 			}
 			addTab($tId, $winId) if (exists $tabWin{$tId})
 		}
