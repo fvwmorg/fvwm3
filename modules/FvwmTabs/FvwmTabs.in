@@ -3,7 +3,7 @@
 # $Id$
 
 # 	FvwmTabs
-#	Copyright (C) 2002 Scott Smedley ss@aao.gov.au
+#	Copyright (C) 2002, 2003 Scott Smedley ss@aao.gov.au
 #	
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -24,42 +24,13 @@
 # for how to install/use this module.
 
 use strict;
-use vars qw($TOP $fvwm $xServer %tabWin);
-use X11::Protocol;
-use Tk;
-
 use lib `fvwm-perllib dir`;
+use FVWM::Module;
+use FVWM::Module::Toolkit 'X11::Protocol';
+use FVWM::Module::Toolkit 'Tk';	# aka: use Tk;
 use FVWM::Module::Tk;
 
-# TODO: colors, etc - make configurable.
-my %config = (activeBG => 'MidnightBlue',
-			  activeFG => 'yellow',
-			  inactiveBG => 'royalblue',
-			  inactiveFG => 'antiquewhite',
-			  titleBG => 'antiquewhite',
-			  bDebug => 0,
-			  activeButtonRelief => 'sunken', # 'flat' looks nice too.
-			  pollRate => 250);	# in milliseconds.
-
-sub autoSwallow ($$$$)
-{
-	my ($resource, $class, $name, $tId) = @_;
-
-	my %p;
-	$p{resource} = $resource if (defined $resource);
- 	$p{class} = $class if (defined $class);
- 	$p{name} = $name if (defined $name);
- 	$p{type} = $tId;	# can be a tId or 'any'.
-
-	push(@{$config{autoSwallow}}, \%p);
-}
-
-# specify patterns for windows to be auto-"swallowed".
-autoSwallow('xterm', undef, undef, 0);
-autoSwallow(undef, undef, 'xload', 'any');
-# to swallow a specific type of xterm window try setting the
-# title. ie. rxvt -T myXTerm
-autoSwallow(undef, undef, 'myXTerm', 'any');
+use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow);
 
 
 $TOP = new MainWindow();
@@ -67,16 +38,79 @@ $TOP->withdraw();
 # Why does FVWM::Module::Tk require a widget?
 $fvwm = new FVWM::Module::Tk($TOP,
 							 Name => "FvwmTabs",
-							 Mask => (M_ERROR | M_STRING | M_ADD_WINDOW));
+							 Mask => (M_ERROR | M_STRING | M_ADD_WINDOW),
+							 Debug => 0);
 
+$fvwm->debug("Debug level is: " . $fvwm->{debug});
 $fvwm->addDefaultErrorHandler();
 
-# TODO: read configuration settings from FVWM, etc.
-# my $params = $fvwm->readConfigInfo();
-# foreach (keys(%params))
-# {
-# 	print("$_=$params{$_}\n");
-# }
+# ======= ======= =======
+
+my $configTracker = $fvwm->track('ModuleConfig',
+		 DefaultConfig => {activeBG => 'MidnightBlue',
+						   activeFG => 'yellow',
+						   inactiveBG => 'royalblue',
+						   inactiveFG => 'antiquewhite',
+						   titleFG => 'black',
+						   titleBG => 'antiquewhite',
+						   activeButtonRelief => 'sunken',
+						   pollRate => 250,	# in milliseconds.
+						   autoSwallowClass => '',
+						   autoSwallowResource => '',
+						   autoSwallowName => 'test1'});
+my $pConfig = $configTracker->data;
+$configTracker->observe("config line added", sub {
+	# 1st arg is FVWM::Module::Tk hash
+	# 2nd arg is FVWM::Tracker::ModuleConfig hash
+	# 3rd arg is hash of config values
+	# 4th arg is name of config value that has changed.
+	my $p = $_[3];
+	print("Module Config event - \"$p\" changed. New val: $_[2]{$p}\n");
+	# print("\targs: " . join(", ", map("$_=" . $_[2]{$_}, keys(%{$_[2]}))) . "\n");
+});
+
+# ======= ======= =======
+
+sub autoSwallow (%)
+{
+	my (%args) = @_;
+
+	$fvwm->debug("AutoSwallow: " . join(", ", map("$_=" . $args{$_},
+												  sort(keys(%args)))));
+	push(@autoSwallow, \%args);
+}
+
+foreach my $type ('Class', 'Resource', 'Name')
+{
+	foreach (split(/,/, $pConfig->{"autoSwallow$type"}))
+	{
+		if (!/^\s*(.+?)(\s+(\d+|any))?\s*$/i)
+		{
+			print($fvwm->name() . ": unparseable autoSwallow$type.\n");
+			next;
+		}
+		autoSwallow(lc($type) => $1, type => (!defined $3 ? 'any' : $3));
+	}
+}
+
+# ======= ======= =======
+# TODO: colorsets
+# my $csTracker = $fvwm->track("Colorsets");
+# my $csHash = $csTracker->data;
+# my $cs1_fg = $csHash->{1}->{fg} || 'unknown';
+# my $cs1_bg = $csHash->{1}->{bg} || 'unknown';
+# my $cs5_bg = $csTracker->data(6)->{bg} || 'unknown';
+# print("cs1_fg=$cs1_fg cs1_bg=$cs1_bg\n");
+
+# $csTracker->observe("colorset changed", sub {
+# 	print("Colorset observation.\n");
+# 	    foreach (@_)
+#     {
+#         print("\targ=$_\n");
+#     }
+# });
+
+# ======= ======= =======
 
 sub createNewTabber ()
 {
@@ -97,7 +131,9 @@ sub createNewTabber ()
 	$tabFrame->pack(-side => 'top', -expand => 0, -fill => 'x');
 	$topFrame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
 
-	my $titleFrame = $topFrame->Label(-text => "No title", -bg => $config{titleBG});
+	my $titleFrame = $topFrame->Label(-text => "No title",
+									  -bg => $pConfig->{titleBG},
+									  -fg => $pConfig->{titleFG});
 	$titleFrame->pack(-expand => 0, -fill => 'x', -side => 'top');
 
 	my $winFrame = $topFrame->Frame();
@@ -168,9 +204,9 @@ sub letItGo ($$$$)
 {
 	my ($button, $tId, $tabNo, $bIconify) = @_;
 
-	if ($config{bDebug} && $tabNo >= $tabWin{$tId}{nTabs})
+	if ($fvwm->{debug} && $tabNo >= $tabWin{$tId}{nTabs})
 	{
-		print(STDERR "BUG: invalid tabNo.\n");
+		$fvwm->debug("BUG: invalid tabNo.");
 		return;
 	}
 
@@ -211,7 +247,7 @@ sub closeTabber ($)
 {
 	my ($tId) = @_;
 
-	print("closeTabber($tId)\n") if ($config{bDebug});
+	$fvwm->debug("closeTabber($tId)");
 	releaseAll($tId, 0);
 	$tabWin{$tId}{toplevel}->withdraw();
 	# We need to wait for the X server to do the reparenting before
@@ -238,13 +274,7 @@ sub winIdToTId ($)
 $fvwm->addHandler(M_STRING, sub {
 	my ($self, $event) = @_;
 
-	if ($config{bDebug})
-	{
-		foreach (sort(keys %{$event->args}))
-		{
-			print("\t$_ = " . $event->args->{$_} . "\n");
-		}
-	}
+	$fvwm->debug("M_STRING: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
 
 	if ($event->args->{text} =~ /newTabber/)
 	{
@@ -299,26 +329,35 @@ sub releaseTab ($$$)
 $fvwm->addHandler(M_ADD_WINDOW, sub {
 	my ($self, $event) = @_;
 
-	print("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))) . "\n") if ($config{bDebug});
+	$fvwm->debug("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
 	my $winId = $event->args->{win_id};
 
 	my $s = chr(0);
 	my ($resource, $class) = split(/$s/, getProperty($winId, 'WM_CLASS'));
 	my $name = getProperty($winId, 'WM_NAME');
-	print("FvwmTabs: newWindow - resource=$resource class=$class name=$name\n") if ($config{bDebug});
+	$fvwm->debug("newWindow - resource=$resource class=$class name=$name");
 
-	foreach (@{$config{autoSwallow}})
+	foreach (@autoSwallow)
 	{
 		if ((exists $_->{resource} && $_->{resource} eq $resource) ||
 			(exists $_->{class} && $_->{class} eq $class) ||
 			(exists $_->{name} && $_->{name} eq $name))
 		{
 			my $tId = $_->{type};
-			if ($_->{type} eq 'any')
+			if ($tId eq 'any')
 			{
 				my @tIds = keys(%tabWin);
 				return if ($#tIds < 0);	# no tabbers running.
-				$tId = $tIds[rand @tIds];
+				# choose the emptiest tabber.
+				my $n = 99;
+				foreach (@tIds)
+				{
+					if ($tabWin{$_}{nTabs} < $n)
+					{
+						$tId = $_;
+						$n = $tabWin{$_}{nTabs};
+					}
+				}
 			}
 			addTab($tId, $winId) if (exists $tabWin{$tId})
 		}
@@ -367,13 +406,13 @@ sub callback
 }
 
 # Check for registered X events every $pollRate milliseconds.
-$TOP->repeat($config{pollRate}, \&callback);
+$TOP->repeat($pConfig->{pollRate}, \&callback);
 
 sub eventHandler
 {
 	my (%event) = @_;
 
-	print("Got a $event{name} event: " . join(", ", map("$_ = $event{$_}", keys(%event))) . "\n") if ($config{bDebug});
+	$fvwm->debug("Got a $event{name} event: " . join(", ", map("$_ = $event{$_}", keys(%event))));
 
 
 	if ($event{name} eq 'ResizeRequest')
@@ -414,7 +453,7 @@ sub eventHandler
 
 	if ($tabNo < 0)
 	{
-		print(STDERR "FvwmTabs: Ignoring event for invalid/unknown window.\n") if ($config{bDebug});
+		$fvwm->debug("Ignoring event for invalid/unknown window.");
 		return;
 	}
 
@@ -442,7 +481,7 @@ sub eventHandler
 	}
 	else
 	{
-		print(STDERR "Got a strange event: $event{name}\n") if ($config{bDebug});
+		$fvwm->debug("Got a strange event: $event{name}");
 	}
 }
 
@@ -510,6 +549,11 @@ sub tabInfo ($)
 		printf("Tab #$tabNo winId = 0x%x (%d)\n",
 			   $tabWin{$tId}{tab}[$tabNo]{winId},
 			   $tabWin{$tId}{tab}[$tabNo]{winId});
+	}
+	print("AutoSwallow:\n");
+	foreach my $a (@autoSwallow)
+	{
+		print("\t" . join(", ", map("$_=" . $a->{$_}, sort(keys(%{$a})))) . "\n");
 	}
 }
 
@@ -595,10 +639,10 @@ sub showTab ($$)
 		my $winId = $tabWin{$tId}{tab}[$currentTab]{winId};
 		$xServer->UnmapWindow($winId);
 		$tabWin{$tId}{tab}[$currentTab]{button}->configure(
-					-bg => $config{inactiveBG},
-					-activebackground => $config{inactiveBG},
-					-fg => $config{inactiveFG},
-					-activeforeground => $config{inactiveFG},
+					-bg => $pConfig->{inactiveBG},
+					-activebackground => $pConfig->{inactiveBG},
+					-fg => $pConfig->{inactiveFG},
+					-activeforeground => $pConfig->{inactiveFG},
 					-relief => 'raised');
 	}
 	# Map the new tab.
@@ -606,11 +650,11 @@ sub showTab ($$)
 	$xServer->MapWindow($winId);
 	$tabWin{$tId}{currentTab} = $tabNo;
 	$tabWin{$tId}{tab}[$tabNo]{button}->configure(
-					-bg => $config{activeBG},
-					-activebackground => $config{activeBG},
-					-fg => $config{activeFG},
-					-activeforeground => $config{activeFG},
-					-relief => $config{activeButtonRelief});
+					-bg => $pConfig->{activeBG},
+					-activebackground => $pConfig->{activeBG},
+					-fg => $pConfig->{activeFG},
+					-activeforeground => $pConfig->{activeFG},
+					-relief => $pConfig->{activeButtonRelief});
 	$tabWin{$tId}{titleFrame}->configure(-text => $tabWin{$tId}{tab}[$tabNo]{title});
 
 	my %g = $xServer->req('GetGeometry', $winId);
@@ -669,7 +713,7 @@ $fvwm->eventLoop();
 # TODO
 #
 # - when user resizes window, dynamic-resizes no longer work.
-# - configuration options: bg/fg colors/fonts/sizes, titles, etc.
+# - colorset support & dynamic configuration options.
 #   (waiting for support in fvwm-perllib)
 # - consider removing the 'FvwmTabs' button & using the menu popup over
 #   the title frame.
