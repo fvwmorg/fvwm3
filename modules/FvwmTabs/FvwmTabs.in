@@ -28,6 +28,8 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
 use FVWM::Module::Toolkit qw(Tk FileHandle X11::Protocol Tk::Balloon);
 
+use IO::Select;
+
 use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon);
 
 $TOP = new MainWindow();
@@ -59,7 +61,8 @@ my $configTracker = $fvwm->track('ModuleConfig',
 						   menuFont => 'Helvetica -12',
 						   balloonFont => 'Helvetica -12',
 						   balloonWait => 350, # in milliseconds
-						   balloonBG => '#C0C080'});
+						   balloonBG => '#C0C080',
+						   autoResize => 'false'});
 
 my $pConfig = $configTracker->data;
 $configTracker->observe("config line added", sub {
@@ -115,6 +118,11 @@ $configTracker->observe("config line added", sub {
 		{
 			parseAutoSwallow($1);
 			return;	# not a per-tabber option.
+		}
+		elsif ($p =~ /^(fontSelector|autoResize)$/)
+		{
+			# handled implicitly.
+			return;
 		}
 		else
 		{
@@ -174,6 +182,14 @@ foreach ('Class', 'Resource', 'Name')
 
 $xServer = X11::Protocol->new($TOP->screen());
 $xServer->event_handler('queue');
+# $xServer->event_handler(\&eventHandler);
+
+$xServer->error_handler(\&errorHandler);
+sub errorHandler ($$)
+{
+	my($self, $data) = @_;
+	print($fvwm->name() . ': ' . $self->make_error_msg($data));
+}
 
 # Check for registered X events every $pollRate milliseconds.
 $repeatId = $TOP->repeat($pConfig->{pollRate}, \&callback);
@@ -500,15 +516,25 @@ sub cleanup ()
 	}
 }
 
+my $fds = IO::Select->new($xServer->connection->fh);
+# $| = 1;
+
 sub callback
 {
- 	# $xServer->req('ListProperties', $xServer->root());
+	# Damn! This is the most annoying bug in X. I don't think it's
+	# possible to tell the X server to flush its buffer without sending
+	# an actual X command. FvwmTabs *almost* works without this XSync() call.
+	# It would eradicate a significant amount of X traffic if we could
+	# remove it.
 	XSync();
-	while (1)
+	
+	$xServer->flush();
+ 	# print("!\n"), $xServer->handle_input() if ($fds->can_read(0));
+ 	$xServer->handle_input() if ($fds->can_read(0));
+
+	while (my %e = $xServer->dequeue_event())
 	{
-		my %event = $xServer->dequeue_event();
-		last if (!exists($event{name}));
-		eventHandler(%event);
+		eventHandler(%e)
 	}
 }
 
@@ -536,14 +562,26 @@ sub eventHandler
 								  "height" => $h, #$event{height},
 								  "width" => $event{width});
 
-		# If the tabber is resized, resize the currently viewed app/tab
-		# (if any) to fit into the new space.
-		return if (!defined $tabWin{$tId}{currentTab});
-		my $winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
-		
-		$xServer->ConfigureWindow($winId,
-								  "height" => $h, # $event{height},
-								  "width" => $event{width});
+		if ($pConfig->{autoResize} =~ /true/i)
+		{
+			for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
+			{
+				$xServer->ConfigureWindow($tabWin{$tId}{tab}[$tabNo]{winId},
+										  "height" => $h, # $event{height},
+										  "width" => $event{width});
+			}
+		}
+		else
+		{
+			# If the tabber is resized, resize the currently viewed app/tab
+			# (if any) to fit into the new space.
+			return if (!defined $tabWin{$tId}{currentTab});
+			my $winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
+			
+			$xServer->ConfigureWindow($winId,
+									  "height" => $h, # $event{height},
+									  "width" => $event{width});
+		}
 		return;
 	}
 
@@ -566,6 +604,7 @@ sub eventHandler
 		my $prop = $xServer->atom_name($event{atom});
 		return if ($prop ne 'WM_NAME' && $prop ne 'WM_ICON_NAME');
 		my $val = getProperty($event{window}, $prop);
+		return if (!defined $val);	# window no longer exists!
 		if ($prop eq 'WM_NAME')
 		{
 			setTabTitle($tId, $tabNo, $event{window}, $val);
@@ -611,6 +650,22 @@ sub addTab ($$)
 															 0);
 	$tabWin{$tId}{tab}[$tabNo]{initialXPos} = $x;
 	$tabWin{$tId}{tab}[$tabNo]{initialYPos} = $y;
+
+	# if the auto-resize option is specified & the new window to add is
+	# smaller than the tabber, then we need to enlarge the new window. If
+	# the new window is larger than the tabber, then the tabber will
+	# expand appropriately (with all existing windows in the tabber) on
+	# the resize event.
+	if ($pConfig->{autoResize} =~ /true/i)
+	{
+		my %g = $xServer->GetGeometry($winId);
+		my $h = $tabWin{$tId}{winFrame}->height();
+		my $w = $tabWin{$tId}{winFrame}->width();
+		if ($g{height} < $h || $g{width} < $w)
+		{
+			$xServer->ConfigureWindow($winId, "height" => $h, "width" => $w);
+		}
+	}
 
 	$xServer->ReparentWindow($winId, $tabWin{$tId}{parent}, (0, 0));
 	my $txt = getProperty($winId, "WM_ICON_NAME");
@@ -671,6 +726,8 @@ sub tabInfo ($)
 	print("toplevel->id()=" . $tabWin{$tId}{toplevel}->id() . "\n");
 	print("toplevel->wrapper()=" . $tabWin{$tId}{toplevel}->wrapper() . "\n");
 	print("toplevel->frame()=" . $tabWin{$tId}{toplevel}->frame() . "\n");
+	print("autoResize is " . $pConfig->{autoResize} . "\n");
+	XSync();
 }
 
 sub getProperty ($$)
@@ -678,12 +735,12 @@ sub getProperty ($$)
 	my ($winId, $property) = @_;
 
 	my $atom = $xServer->atom($property);
-	my @s = $xServer->req('GetProperty', $winId, $atom, "AnyPropertyType", 0, 200, 0);
+	my @s = $xServer->GetProperty($winId, $atom, "AnyPropertyType", 0, 200, 0);
 	return $s[0];
 }
 
 # return the tabNo for the specified window ID or -1 if the window is
-# not part of the fvwm.
+# not part of the tabber.
 sub getTabNo ($$)
 {
 	my ($tId, $winId) = @_;
@@ -792,7 +849,7 @@ sub showTab ($$)
 	$tabWin{$tId}{tab}[$tabNo]{button}->pack(-expand => $bExpand);
 	$tabWin{$tId}{titleFrame}->configure(-text => $tabWin{$tId}{tab}[$tabNo]{title});
 
-	my %g = $xServer->req('GetGeometry', $winId);
+	my %g = $xServer->GetGeometry($winId);
 	$tabWin{$tId}{winFrame}->configure(-height => $g{height}, -width => $g{width});
 	$tabWin{$tId}{toplevel}->geometry("");
 	# If we're changing the active tab really quickly we have to handle/flush
@@ -822,7 +879,7 @@ sub setTabTitle($$$$)
 	}
 }
 
-sub setTabName($$$$)
+sub setTabName ($$$$)
 {
 	my ($tId, $tabNo, $winId, $name) = @_;
 
@@ -897,16 +954,18 @@ sub setBalloonMsg ($$)
 {
 	my ($tId, $tabNo) = @_;
 
-	print("setBalloonMsg(tId=$tId, tabNo=$tabNo)\n");
 	$tabWin{$tId}{balloonMsg} = "Tab $tabNo:\n" . $tabWin{$tId}{tab}[$tabNo]{button}->cget(-text) . "\n" .  $tabWin{$tId}{tab}[$tabNo]{title};
 }
 
-print("Module " . $fvwm->name() . " started.\n");
+print("Module " . $fvwm->name() . " started with X11::Protocol version " .  $X11::Protocol::VERSION . ".\n");
 $fvwm->eventLoop();
 
 
 # TODO
-#
+# - option for vertical tab buttons (ie. put tabs on side)
+#   (need a vertical font, can't find one.)
+# - option: icons on tab buttons.
+# - option: set FvwmTabs title to active tab title.
 # - when user resizes window, dynamic-resizes no longer work.
 # - colorset support
 #   (waiting for Colorset tracker in fvwm-perllib)
@@ -914,6 +973,6 @@ $fvwm->eventLoop();
 #   the title frame.
 # - associate a mini icon with each tab-button.
 # - Preserve state b/w FVWM Restarts.
-# - BUG: KillModule FvwmTabs isn't releasing all tabs. (fixed?)
 # - BUG: (rare) sometimes get a "BUGGER: no match on <id>\nfocus not in tabber"
 #        error.
+# - BUG: problem swallowing shaded windows.
