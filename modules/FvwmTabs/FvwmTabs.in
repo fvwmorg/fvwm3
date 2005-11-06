@@ -30,6 +30,12 @@ use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk Tk::Ba
 
 use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon %global);
 
+# My Perl/Tk patch to fix dynamically-sized drop sites was merged into 
+# Tk-804.025-beta6.
+$global{buggyTkDND} = ($Tk::VERSION < 804.025);
+print("This version of Tk has buggy drag-&-drop - workaround enabled.\n") if ($global{buggyTkDND});
+
+
 $TOP = new MainWindow();
 $TOP->withdraw();
 $fvwm = new FVWM::Module::Tk($TOP,
@@ -308,21 +314,29 @@ sub createNewTabber ()
 	$xServer->ChangeWindowAttributes($tabWin{$tId}{parent},
 		event_mask => $xServer->pack_event_mask('ResizeRedirect'));
 
-	wrapperWinId($tId);
+	buggyFocusWorkaround($tId);
 }
 
-sub wrapperWinId ($)
+sub getWrapperWinId ($)
+{
+	my ($tId) = @_;
+	return hex($tabWin{$tId}{toplevel}->frame());
+}
+
+sub buggyFocusWorkaround ($)
 {
 	my ($tId) = @_;
 
-	if (exists $tabWin{$tId}{wrapperWinId})
+	if (exists $tabWin{$tId}{_wrapperWinId})
 	{
-		$xServer->ChangeWindowAttributes($tabWin{$tId}{wrapperWinId},
+		# don't want events on old window id anymore.
+		$xServer->ChangeWindowAttributes($tabWin{$tId}{_wrapperWinId},
 			event_mask => $xServer->pack_event_mask());
 	}
 
-	$tabWin{$tId}{wrapperWinId} = hex($tabWin{$tId}{toplevel}->frame());
-	$xServer->ChangeWindowAttributes($tabWin{$tId}{wrapperWinId},
+	$tabWin{$tId}{_wrapperWinId} = getWrapperWinId($tId);
+	# request events on new window id.
+	$xServer->ChangeWindowAttributes($tabWin{$tId}{_wrapperWinId},
 		event_mask => $xServer->pack_event_mask('EnterWindow'));
 	$tabWin{$tId}{focusTimestamp} = 'CurrentTime';
 }
@@ -331,13 +345,12 @@ sub takeFocus ($)
 {
 	my ($tId) = @_;
 
-	# $fvwm->debug("takeFocus($tId) state=" . $tabWin{$tId}{toplevel}->state());
 	my $winId;
 	if ($tabWin{$tId}{toplevel}->state() eq 'iconic')
 	{
 		# TODO: who do we give the focus to?
 		$winId = $tabWin{$tId}{toplevelId};
-		# return;	# default action will focus icon.
+		return;
 	}
 	elsif (!defined $tabWin{$tId}{currentTab})
 	{
@@ -349,7 +362,6 @@ sub takeFocus ($)
 	}
 	# "revert-to" (2nd) arg can be 'Parent', 'PointerRoot' or 'None'.
 	$xServer->SetInputFocus($winId, 'Parent', $tabWin{$tId}{focusTimestamp});
-	# $fvwm->debug("takeFocus(end) winId=$winId");
 }
 
 # Don't you just *love* Prince!?
@@ -376,7 +388,7 @@ sub letItGo ($$$$)
 	# if the window we're releasing is a tabber, we need to recompute
 	# the wrapper window id as it can change dynamically.
 	my $otherTId = winIdToTId($winId);
-	wrapperWinId($otherTId) if ($otherTId >= 0);
+	buggyFocusWorkaround($otherTId) if ($otherTId >= 0);
 
 	$fvwm->send("Iconify", $winId) if ($bIconify);
 	removeTab($tId, $tabNo, 'letgo');
@@ -648,7 +660,7 @@ sub eventHandler
 		my $tId = -1;
 		for (keys(%tabWin))
 		{
-			$tId = $_, last if ($tabWin{$_}{wrapperWinId} == $event{event});
+			$tId = $_, last if (getWrapperWinId($_) == $event{event});
 		}
 
 		print(STDERR "BUG: EnterNotify\n"), return if ($tId < 0);
@@ -796,7 +808,7 @@ sub addTab ($$)
 	}
 
 	# This line gets around a bug in Tk::DropSite.
-	$pButton->Tk::bind($site, '<Configure>', [$site, 'DropSiteUpdate']) if ($Tk::VERSION < 804.025);
+	$pButton->Tk::bind($site, '<Configure>', [$site, 'DropSiteUpdate']) if ($global{buggyTkDND});
 
 	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 
@@ -1081,13 +1093,19 @@ sub setFont ($$$)
 	}
 }
 
+sub version ()
+{
+	my $rcsId = '$Id$';
+	$rcsId =~ /,v (.*) (\d+\/\d+\/\d+) \d+:\d+:\d+/;
+	return ($1, $2);
+}
+
 sub about ($)
 {
 	my ($tId) = @_;
 
-	my $rcsId = '$Id$';
-	$rcsId =~ /,v (.*) (\d+\/\d+\/\d+) \d+:\d+:\d+/;
-	my $version = $fvwm->name() . " v$1   ($2)\n\nby Scott Smedley\nscottie7\@tpg.com.au"; # \n\nhttp://users.tpg.com.au/users/scottie7/fvwmtabs.html";
+	my ($v, $d) = version();
+	my $version = $fvwm->name() . " v$v   ($d)\n\nby Scott Smedley\nscottie7\@tpg.com.au"; # \n\nhttp://users.tpg.com.au/users/scottie7/fvwmtabs.html";
 	# TODO: Tk::Dialog has a hardcoded width of 3 inches, how annoying!
 	$fvwm->showMessage($version, "About " . $fvwm->name());
 }
@@ -1194,6 +1212,27 @@ sub swapLeft ($)
 	swapRight($tId) if ($b);
 }
 
+# record which desk each tab-manager is on for saveState().
+$fvwm->mask($fvwm->mask() | M_CONFIGURE_WINDOW | M_ADD_WINDOW);
+$fvwm->addHandler(M_ADD_WINDOW, sub {
+	my ($self, $event) = @_;
+
+	# we keep all windows cos at this point 'selfId' may not be defined
+	# & we need to use it to decide if this is a tab-manager window.
+	$global{winIdToDesk}{$event->args->{win_id}} = $event->args->{desk};
+});
+$fvwm->addHandler(M_CONFIGURE_WINDOW, sub {
+	my ($self, $event) = @_;
+
+	$global{winIdToDesk}{$event->args->{win_id}} = $event->args->{desk};
+});
+
+sub getDesk ($)
+{
+	my ($winId) = @_;
+	return $global{winIdToDesk}{$winId};
+}
+
 sub saveState ()
 {
 	my $file = $pConfig->{stateFile};
@@ -1206,8 +1245,10 @@ sub saveState ()
 	foreach my $tId (sort(keys(%tabWin)))
 	{
 		print(OUT "createNewTabber();\n");
-		my ($x, $y) = getXYPos($tabWin{$tId}{wrapperWinId});
+		my ($x, $y) = getXYPos(getWrapperWinId($tId));
 		print(OUT "\$fvwm->send(\"Move ${x}p ${y}p\", \$tabWin{$tId}{selfId});\n");
+		my $desk = getDesk($tabWin{$tId}{selfId});
+		print(OUT "\$fvwm->send(\"MoveToDesk 0 $desk\", \$tabWin{$tId}{selfId});\n");
 		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
 		{
 			print(OUT "addTab($tId, $tabWin{$tId}{tab}[$tabNo]{winId});\n");
@@ -1357,44 +1398,6 @@ sub doRegexSwallow ()
 	fillDialog();
 }
 
-$fvwm->addHandler(M_NEW_PAGE, sub {
-    my ($module, $event) = @_;
-
-    $global{pageWidth} = $event->args->{vp_width};
-    $global{pageHeight} = $event->args->{vp_height};
-    $global{nPagesPerDesk} = $event->args->{desk_pages_x};
-});
-
-sub max ($$) { return ($_[0] > $_[1] ? $_[0] : $_[1]); }
-
-$fvwm->addHandler(M_CONFIGURE_WINDOW, sub {
-    my ($module, $event) = @_;
-
-    my $page = $event->args->{frame_x} / $global{pageWidth};
-    $global{maxDesk} = max($event->args->{desk}, $global{maxDesk});
-	my $winId = $event->args->{win_id};
-	push(@{$global{windows}}, $winId);
-	$global{info}{$winId}{desk} = $event->args->{desk};
-	$global{info}{$winId}{page} = $page;
-});
-
-$fvwm->addHandler(M_WINDOW_NAME, sub {
-    my ($module, $event) = @_;
-
-    return unless $global{doingTabize};
-	$global{list}->insert('end', $event->args->{name});
-});
-
-$fvwm->addHandler(M_END_WINDOWLIST, sub {
-	$fvwm->mask($global{oldMask});
-    $fvwm->debug("pageWidth=$global{pageWidth}");
-    $fvwm->debug("pageHeight=$global{pageHeight}");
-    $fvwm->debug("nPages/desk=$global{nPagesPerDesk}");
-	my $nPages = $global{nPagesPerDesk} - 1;
-	$global{eDeskNo}->configure(-choices => ['Any', 0 .. $global{maxDesk}]);
-	$global{ePageNo}->configure(-choices => ['Any', 0 .. $nPages]);
-});
-
 sub tabizeWindows ($)
 {
 	my ($tId) = @_;
@@ -1406,8 +1409,50 @@ sub tabizeWindows ($)
 	fillDialog();
 }
 
+sub max ($$) { return ($_[0] > $_[1] ? $_[0] : $_[1]); }
+
 sub fillDialog ()
 {
+	if (!defined $global{bHandlersInstalled})
+	{
+		$global{bHandlersInstalled} = 1;
+		$fvwm->addHandler(M_NEW_PAGE, sub {
+			my ($module, $event) = @_;
+
+			$global{pageWidth} = $event->args->{vp_width};
+			$global{pageHeight} = $event->args->{vp_height};
+			$global{nPagesPerDesk} = $event->args->{desk_pages_x};
+		});
+
+		$fvwm->addHandler(M_CONFIGURE_WINDOW, sub {
+			my ($module, $event) = @_;
+
+			my $page = $event->args->{frame_x} / $global{pageWidth};
+			$global{maxDesk} = max($event->args->{desk}, $global{maxDesk});
+			my $winId = $event->args->{win_id};
+			push(@{$global{windows}}, $winId);
+			$global{info}{$winId}{desk} = $event->args->{desk};
+			$global{info}{$winId}{page} = $page;
+		});
+
+		$fvwm->addHandler(M_WINDOW_NAME, sub {
+			my ($module, $event) = @_;
+
+			return unless $global{doingTabize};
+			$global{list}->insert('end', $event->args->{name});
+		});
+
+		$fvwm->addHandler(M_END_WINDOWLIST, sub {
+			$fvwm->mask($global{oldMask});
+			$fvwm->debug("pageWidth=$global{pageWidth}");
+			$fvwm->debug("pageHeight=$global{pageHeight}");
+			$fvwm->debug("nPages/desk=$global{nPagesPerDesk}");
+			my $nPages = $global{nPagesPerDesk} - 1;
+			$global{eDeskNo}->configure(-choices => ['Any', 0 .. $global{maxDesk}]);
+			$global{ePageNo}->configure(-choices => ['Any', 0 .. $nPages]);
+		});
+	}
+
 	$global{oldMask} = $fvwm->mask();
 	$fvwm->mask($global{oldMask} | M_WINDOW_NAME | M_NEW_PAGE | M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
 	$global{maxDesk} = 0;
@@ -1451,5 +1496,6 @@ sub setResizing ($$)
 }
 
 loadState();
-print("Module " . $fvwm->name() . " started with: X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
+my ($version, $date) = version();
+print($fvwm->name() . " (v$version) started with: Perl " . join('.', map(ord($_), split(//, $^V))) . ", X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
 $fvwm->eventLoop();
