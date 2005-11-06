@@ -26,9 +26,9 @@
 use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
-use FVWM::Module::Toolkit qw(Tk FileHandle X11::Protocol);
+use FVWM::Module::Toolkit qw(Tk FileHandle X11::Protocol Tk::Balloon);
 
-use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId);
+use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon);
 
 $TOP = new MainWindow();
 $TOP->withdraw();
@@ -56,7 +56,10 @@ my $configTracker = $fvwm->track('ModuleConfig',
 						   fontSelector => 'gfontsel --print -f "%f"',
 						   buttonFont => 'Helvetica -12 bold',
 						   titleFont => 'Helvetica -12 bold',
-						   menuFont => 'Helvetica -12'});
+						   menuFont => 'Helvetica -12',
+						   balloonFont => 'Helvetica -12',
+						   balloonWait => 350, # in milliseconds
+						   balloonBG => '#C0C080'});
 
 my $pConfig = $configTracker->data;
 $configTracker->observe("config line added", sub {
@@ -175,6 +178,10 @@ $xServer->event_handler('queue');
 # Check for registered X events every $pollRate milliseconds.
 $repeatId = $TOP->repeat($pConfig->{pollRate}, \&callback);
 
+$balloon = $TOP->Balloon(-bg => $pConfig->{balloonBG},
+						 -font => $pConfig->{balloonFont},
+						 -initwait => $pConfig->{balloonWait});
+
 sub createNewTabber ()
 {
 	my $tId;
@@ -272,7 +279,7 @@ sub createNewTabber ()
 	# $tl->wrapper() doesn't work ...
 	# selfId appears to be parent + 1 anyway.
 	$tabWin{$tId}{selfId} = $tabWin{$tId}{parent} + 1;
-
+	$tabWin{$tId}{balloonMsg} = '?';
 	$winFrame->waitVisibility();
 
 	$xServer->ChangeWindowAttributes($tabWin{$tId}{parent},
@@ -623,6 +630,10 @@ sub addTab ($$)
 	$pButton->Tk::bind('<ButtonRelease-3>', [\&letItGo, $tId, $tabNo, 1]);
 	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 
+	$balloon->attach($pButton,
+					 -balloonmsg => \$tabWin{$tId}{balloonMsg},
+					 -postcommand => [\&setBalloonMsg, $tId, $tabNo]);
+
 	# Ensure we are notified of any attribute changes in the new window.
 	# PropertyChange will tell us when WM_NAME or WM_ICON_NAME changes.
 	# StructureNotify will tell us when a program running in a tab
@@ -697,6 +708,7 @@ sub removeTab ($$$)
 			  event_mask => $xServer->pack_event_mask());
 	}
 
+	$balloon->detach($tabWin{$tId}{tab}[$tabNo]{button});
 	$tabWin{$tId}{tab}[$tabNo]{button}->packForget();
 	$tabWin{$tId}{tab}[$tabNo] = undef;
 
@@ -706,6 +718,11 @@ sub removeTab ($$$)
 		$tabWin{$tId}{tab}[$t]{button}->configure(-command => [\&showTab, $tId, $t]);
 		$tabWin{$tId}{tab}[$t]{button}->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $t, 0]);
 		$tabWin{$tId}{tab}[$t]{button}->Tk::bind('<ButtonRelease-3>', [\&letItGo, $tId, $t, 1]);
+
+		$balloon->detach($tabWin{$tId}{tab}[$t]{button});	
+		$balloon->attach($tabWin{$tId}{tab}[$t]{button},
+						 -balloonmsg => \$tabWin{$tId}{balloonMsg},
+						 -postcommand => [\&setBalloonMsg, $tId, $t]);
 	}
 	$tabWin{$tId}{nTabs}--;
 	$tabWin{$tId}{tab}[$tabWin{$tId}{nTabs}] = undef;
@@ -874,6 +891,14 @@ sub about ($)
 	# 								-title => 'About ' . $fvwm->name(),
 	# 								-buttons => ['Ok'])->Show();
 	$fvwm->showMessage($version, "About " . $fvwm->name());
+}
+
+sub setBalloonMsg ($$)
+{
+	my ($tId, $tabNo) = @_;
+
+	print("setBalloonMsg(tId=$tId, tabNo=$tabNo)\n");
+	$tabWin{$tId}{balloonMsg} = "Tab $tabNo:\n" . $tabWin{$tId}{tab}[$tabNo]{button}->cget(-text) . "\n" .  $tabWin{$tId}{tab}[$tabNo]{title};
 }
 
 print("Module " . $fvwm->name() . " started.\n");
