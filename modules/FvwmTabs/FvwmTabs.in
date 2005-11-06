@@ -41,7 +41,7 @@ $TOP->withdraw();
 $fvwm = new FVWM::Module::Tk($TOP,
 							 Name => "FvwmTabs",
 							 Mask => (M_ERROR | M_STRING | M_ADD_WINDOW),
-							 Debug => 0);
+							 Debug => 2);
 
 $fvwm->debug("Debug level is: " . $fvwm->{debug});
 $fvwm->addDefaultErrorHandler();
@@ -67,11 +67,11 @@ my $configTracker = $fvwm->track('ModuleConfig',
 					   balloonBG => '#C0C080',
 					   balloonMsg => 'Tab %tabNo:\n%iconText\n%title',
 					   autoResize => 'false',
-					   stateFile => '/tmp/.fvwmtabs.state',
+					   stateFile => $ENV{FVWM_USERDIR} . '/.fvwmtabs.state',
 					   fixedSizeTabs => 'false',
 					   showTitlebar => 'true',
 					   useTMTitlebar => 'true',
-					   dragDropIcon => '/usr/share/icons/mini/mini-happy.xpm'});
+					   dragDropIcon => 'happyMini.xpm'});
 
 my $pConfig = $configTracker->data;
 $configTracker->observe("config line added", sub {
@@ -128,11 +128,6 @@ $configTracker->observe("config line added", sub {
 			parseAutoSwallow($1);
 			return;	# not a per-tabber option.
 		}
-		elsif ($p =~ /^(fontSelector|autoResize|fixedSizeTabs|balloonMsg)$/)
-		{
-			# handled implicitly.
-			return;
-		}
 		elsif ($p eq 'showTitlebar')
 		{
 			$tabWin{$tId}{showTitlebar} = ($pConfig->{showTitlebar} =~ /true/i ? 1 : 0);
@@ -146,6 +141,15 @@ $configTracker->observe("config line added", sub {
 				$tabWin{$tId}{toplevel}->configure(-title => $t);
 			}
 		}
+		elsif ($p =~ /^(fontSelector|autoResize|fixedSizeTabs|balloonMsg|stateFile)$/)
+		{
+			# handled implicitly.
+			return;
+		}
+		elsif ($p =~ /^(balloon(Font|Wait|BG)|dragDropIcon)$/)
+		{
+			print(STDERR $fvwm->name() . ": \"$p\" option will not take effect until FvwmTabs restarts.\n");
+		}
 		else
 		{
 			$self->showError("Unknown option: $p");
@@ -153,6 +157,9 @@ $configTracker->observe("config line added", sub {
 		}
 	}
 });
+
+
+$pConfig->{global} = $fvwm->track("GlobalConfig")->data;
 
 sub autoSwallow (%)
 {
@@ -734,10 +741,19 @@ sub getXYPos ($)
 my $img;
 if ($pConfig->{dragDropIcon} ne 'none')
 {
-	$img = eval { $TOP->Photo(-file => $pConfig->{dragDropIcon}); };
+	my $imgFile = $pConfig->{dragDropIcon};
+	if (substr($imgFile, 0, 1) ne '/')
+	{
+		foreach (split(/:/, $pConfig->{global}->{ImagePath}))
+		{
+			my $tmp = "$_/$imgFile";
+			$imgFile = $tmp, last if (-f $tmp);
+		}
+	}
+	$img = eval { $TOP->Photo(-file => $imgFile); };
 	if (!defined $img)
 	{
-		print(STDERR $fvwm->name() . ": Couldn't create D&D icon from " . $pConfig->{dragDropIcon} . "\n");
+		print(STDERR $fvwm->name() . ": Couldn't create D&D icon from $imgFile\n");
 	}
 }
 
@@ -1248,6 +1264,7 @@ sub saveState ()
 		print(STDERR $fvwm->name() . ": Couldn't save state to $file.\n");
 		return;
 	}
+	chmod(0600, $file);
 	print(STDERR $fvwm->name() . ": Saving state to $file\n");
 	foreach my $tId (sort(keys(%tabWin)))
 	{
