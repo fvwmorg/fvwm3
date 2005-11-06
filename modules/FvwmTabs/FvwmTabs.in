@@ -26,7 +26,7 @@
 use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
-use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry);
+use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry Tk::PNG);
 
 use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId $balloon %global);
 
@@ -40,7 +40,7 @@ $TOP = new MainWindow();
 $TOP->withdraw();
 $fvwm = new FVWM::Module::Tk($TOP,
 							 Name => "FvwmTabs",
-							 Mask => (M_ERROR | M_STRING | M_ADD_WINDOW),
+							 Mask => (M_STRING | M_ADD_WINDOW),
 							 Debug => 0);
 
 $fvwm->debug("Debug level is: " . $fvwm->{debug});
@@ -72,9 +72,32 @@ my $configTracker = $fvwm->track('ModuleConfig',
 					   showTitlebar => 'true',
 					   useTMTitlebar => 'true',
 					   dragDropIcon => 'happyMini.xpm',
-					   bBuggyFocus => 'false'});
+					   bBuggyFocus => 'false',
+					   enableSwallowDND => 'true',
+					   swallowDNDTolerance => 10, # pixels
+					   useIconsOnTabs => 'true',
+					   killIcon => 'none',
+					   addIcon => 'none',
+					   releaseIcon => 'none',
+					   menuIcon => 'none'});
 
 my $pConfig = $configTracker->data;
+
+sub setButtonAttr ($$$)
+{
+	my ($b, $attr, $val) = @_;
+
+	eval { $b->configure(-lc($attr) => $pConfig->{$val}); };
+	if ($@)
+	{
+		print(STDERR $fvwm->name() . ": invalid value \"" .
+			$pConfig->{$val} . "\" for \"-" . lc($attr) . "\"\n");
+		$pConfig->{$val} = $b->cget(-lc($attr));
+	}
+}
+
+sub isTrue ($) { return ($_[0] =~ /true/i ? 1 : 0); }
+
 $configTracker->observe("config line added", sub {
 	# 1st arg is FVWM::Module::Tk hash
 	# 2nd arg is FVWM::Tracker::ModuleConfig hash
@@ -89,11 +112,11 @@ $configTracker->observe("config line added", sub {
 		{
 			if (defined $tabWin{$tId}{currentTab})
 			{
-				$tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{button}->configure(-lc($1) => $pConfig->{$p});
+				setButtonAttr($tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{button}, $1, $p);
 				if ($1 ne 'Relief')
 				{
 					my $active = 'active' . ($1 eq 'BG' ? 'back' : 'fore') . 'ground';
-					$tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{button}->configure(-$active => $pConfig->{$p});
+					setButtonAttr($tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{button}, $active, $p);
 				}
 			}
 		}
@@ -106,7 +129,8 @@ $configTracker->observe("config line added", sub {
 				for (my $i = 0; $i < $tabWin{$tId}{nTabs}; $i++)
 				{
 					next if ($i == $tabWin{$tId}{currentTab});
-					$tabWin{$tId}{tab}[$i]{button}->configure(-lc($1) => $pConfig->{$p}, -$active => $pConfig->{$p});
+					setButtonAttr($tabWin{$tId}{tab}[$i]{button}, $1, $p);
+					setButtonAttr($tabWin{$tId}{tab}[$i]{button}, $active, $p);
 				}
 			}
 		}
@@ -131,23 +155,25 @@ $configTracker->observe("config line added", sub {
 		}
 		elsif ($p eq 'showTitlebar')
 		{
-			$tabWin{$tId}{showTitlebar} = ($pConfig->{showTitlebar} =~ /true/i ? 1 : 0);
+			$tabWin{$tId}{showTitlebar} = isTrue($pConfig->{showTitlebar});
 			showTitlebar($tId);
+		}
+		elsif ($p =~ /enableSwallowDND|autoResize/)
+		{
+			$tabWin{$tId}{$p} = isTrue($pConfig->{$p});
 		}
 		elsif ($p eq 'useTMTitlebar')
 		{
-			if ($pConfig->{useTMTitlebar} !~ /true/i)
-			{
-				my $t = $fvwm->name() . " [$tId]";
-				$tabWin{$tId}{toplevel}->configure(-title => $t);
-			}
+			my $bOn = isTrue($pConfig->{useTMTitlebar});
+			$tabWin{$tId}{useTMTitlebar} = $bOn;
+			setupMainTitlebar($tId, $bOn);
 		}
-		elsif ($p =~ /^(fontSelector|autoResize|fixedSizeTabs|balloonMsg|stateFile|bBuggyFocus)$/)
+		elsif ($p =~ /^(fontSelector|fixedSizeTabs|balloonMsg|stateFile|bBuggyFocus|swallowDNDTolerance)$/)
 		{
 			# handled implicitly.
 			return;
 		}
-		elsif ($p =~ /^(balloon(Font|Wait|BG)|dragDropIcon)$/)
+		elsif ($p =~ /^(balloon(Font|Wait|BG)|dragDropIcon|useIconsOnTabs|(kill|add|release|menu)Icon)$/)
 		{
 			print(STDERR $fvwm->name() . ": \"$p\" option will not take effect until FvwmTabs restarts.\n");
 		}
@@ -159,8 +185,109 @@ $configTracker->observe("config line added", sub {
 	}
 });
 
-
 $pConfig->{global} = $fvwm->track("GlobalConfig")->data;
+
+sub ver ($)
+{
+	my ($v) = @_;
+	$v =~ /^(\d+)\.(\d+)\.(\d+)$/;
+	return $1 + ($2 + ($3 / 1000.0)) / 1000.0;
+}
+
+# ignoreWin() - called when we're contemplating swallowing a window.
+sub ignoreWin ($)
+{
+	my ($winId) = @_;
+
+	# handle situations in which we release window from tabber.
+	# don't want to swallow it again straight away.
+	if (defined $global{ignoreSwallow}{$winId})
+	{
+		my $ts = $global{ignoreSwallow}{$winId};
+		# delete $global{ignoreSwallow}{$winId};
+		# ignore window for 1 'window move' event or at least 1 second.
+		# Wish we had millisecond-resolution time ...
+		return ((time() - $ts) < 2);
+	}
+	return 0;
+}
+
+sub toPixels ($$)
+{
+	my ($tId, $tol) = @_;
+
+	if ($tol =~ /(\d+)%/)
+	{
+		return ($1 / 100.0) * min($tabWin{$tId}{winFrame}->height(),
+								  $tabWin{$tId}{winFrame}->width());
+	}
+	return $tol;	
+}
+
+my $winTracker;
+if (ver($fvwm->version()) < ver('2.5.11'))
+{
+	print(STDERR $fvwm->name() . ": Swallow overlapping (D&D), & mini icon features require FVWM >= 2.5.11 - these features disabled.\n");
+	$global{noWinTracker} = 1;
+}
+else
+{
+	$winTracker = $fvwm->track("WindowList", "!stack icons !names winfo");
+	$winTracker->observe("window moved", sub {
+		my ($fvwm, $tracker, $z, $winId, $old) = @_;
+		
+		return if (ignoreWin($winId));
+
+		$fvwm->debug("swallow win move: $winId");
+
+		my $p = $tracker->data($winId);
+		return if (winIdToTId($winId) >= 0); # ignore tabbers moving.
+		
+		foreach my $tId (sort(keys(%tabWin)))
+		{
+			# window must overlap tabber by at least $tol pixels to be
+			# swallowed.
+			my $tol = toPixels($tId, $pConfig->{swallowDNDTolerance});
+
+			my $t = $tracker->data($tabWin{$tId}{selfId});
+			# At this point, $p is the window that moved & $t is the tabber we
+			# are checking for an overlap with.
+			next if (!$tabWin{$tId}{enableSwallowDND});
+			next if ($p->{desk} != $t->{desk} ||
+				$p->{x} > ($t->{x} + $t->{frame_width} - $tol) ||
+				($p->{x} + $p->{frame_width}) < ($t->{x} + $tol) ||
+				$p->{y} > ($t->{y} + $t->{frame_height} - $tol) ||
+				($p->{y} + $p->{frame_height}) < ($t->{y} + $tol));
+
+			# If OpaqueMoveSize is in use, we need to ensure the window
+			# isn't swallowed already.
+			return if (getTabNo($tId, $winId) >= 0);
+			
+			# ok, we've got a match - this tabber should swallow the window.
+			addTab($tId, $winId);
+			return;
+		}
+	});
+
+	$winTracker->observe("window icon updated", sub {
+		my ($fvwm, $tracker, $pc, $winId, $old) = @_;
+
+		return if (!isTrue($pConfig->{useIconsOnTabs}));
+
+		my ($tId, $tabNo) = findWin($winId);
+		return if (!defined $tId);
+
+		my $p = $pc->{$winId};
+		return if (!defined $p->{mini_icon_name});
+
+		if (!defined $old->{mini_icon_name} ||
+			$p->{mini_icon_name} ne $old->{mini_icon_name})
+		{
+			my $pButton = $tabWin{$tId}{tab}[$tabNo]{button};
+			$pButton->configure(-image => createMiniIcon($p->{mini_icon_name}, $winId));
+		}
+	});
+}
 
 sub autoSwallow (%)
 {
@@ -207,6 +334,85 @@ $balloon = $TOP->Balloon(-bg => $pConfig->{balloonBG},
 						 -font => $pConfig->{balloonFont},
 						 -initwait => $pConfig->{balloonWait});
 
+sub showMenu ($$)
+{
+	my ($button, $tId) = @_;
+
+	my $menu = $tabWin{$tId}{menu};
+
+	$menu->delete(0, 'end');
+	$menu->add('command',
+			   -label => 'Release All',
+			   -command => [\&releaseAll, undef, $tId, 0]);
+	$menu->add('command',
+			   -label => 'Release All (Iconify)',
+			   -command => [\&releaseAll, undef, $tId, 1]);
+	$menu->add('command',
+			   -label => 'Add',
+			   -command => [\&pickAndAdd, undef, $tId, '']);
+	$menu->add('command',
+			   -label => 'Multi Add',
+			   -command => [\&pickAndAdd, undef, $tId, 'multi']);
+	$menu->add('command',
+			   -label => 'Resize All To Current',
+			   -command => [\&doResize, $tId]);
+	if ($pConfig->{fontSelector} ne 'none')
+	{
+		my $fontMenu = $menu->Menu(-tearoff => 0, -font => $pConfig->{menuFont});
+		$fontMenu->add('command',
+					   -label => 'Button Font',
+					   -command => [\&selectFont, $tId, 'button']);
+		$fontMenu->add('command',
+					   -label => 'Title Font',
+					   -command => [\&selectFont, $tId, 'title']);
+		$fontMenu->add('command',
+					   -label => 'Menu Font',
+					   -command => [\&selectFont, $tId, 'menu']);
+
+		$menu->add('cascade', -label => 'Font', -menu => $fontMenu);
+	}
+	if (!defined $tabWin{$tId}{optionsMenu})
+	{
+		my $oMenu = $menu->Menu(-tearoff => 0, -font => $pConfig->{menuFont});
+		$oMenu->add('checkbutton',
+				   -label => 'Show Internal Titlebar',
+				   -variable => \$tabWin{$tId}{showTitlebar},
+				   -command => [\&showTitlebar, $tId]);
+		$oMenu->add('checkbutton',
+				   -label => 'Use Main Titlebar',
+				   -variable => \$tabWin{$tId}{useTMTitlebar},
+				   -command => [\&toggleMainTitlebar, $tId]);
+		$oMenu->add('checkbutton',
+				   -label => 'Auto Resize',
+				   -variable => \$tabWin{$tId}{autoResize},
+				   -command => [\&toggleAutoResize, $tId]);
+		$oMenu->add('checkbutton',
+				   -label => 'Swallow Overlapping (D&D)',
+				   -state => (defined $global{noWinTracker} ?
+				   			 'disabled' :
+							 'normal'),
+				   -variable => \$tabWin{$tId}{enableSwallowDND});
+		$tabWin{$tId}{optionsMenu} = $oMenu;
+	}
+	$menu->add('cascade',
+				-label => 'Options',
+				-menu => $tabWin{$tId}{optionsMenu});
+	$menu->add('command',
+			   -label => 'Window Tabizer Dialog',
+			   -command => [\&tabizeWindows, $tId]);
+	$menu->add('separator');
+
+	for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
+	{
+		$menu->add('command', -label => $tabWin{$tId}{tab}[$tabNo]{title},
+							 -command => [\&showTab, $tId, $tabNo]);
+	}
+	$menu->add('separator') if ($tabWin{$tId}{nTabs} > 0);
+	$menu->add('command', -label => 'About', -command => [\&about, $tId]);
+	$menu->add('command', -label => 'Close', -command => [\&closeTabber, $tId]);
+	$menu->Popup(-popanchor => 'ne', -popover => 'cursor');
+}
+
 sub createNewTabber ()
 {
 	my $tId;
@@ -233,7 +439,10 @@ sub createNewTabber ()
 									  -font => $pConfig->{titleFont},
 									  -bg => $pConfig->{titleBG},
 									  -fg => $pConfig->{titleFG});
-	$tabWin{$tId}{showTitlebar} = ($pConfig->{showTitlebar} =~ /true/i ? 1 : 0);
+	$tabWin{$tId}{showTitlebar} = isTrue($pConfig->{showTitlebar});
+	$tabWin{$tId}{enableSwallowDND} = isTrue($pConfig->{enableSwallowDND});
+	$tabWin{$tId}{useTMTitlebar} = isTrue($pConfig->{useTMTitlebar});
+	$tabWin{$tId}{autoResize} = isTrue($pConfig->{autoResize});
 	$tabWin{$tId}{titleFrame} = $titleFrame;
 	$tabWin{$tId}{wrapFrame} = $wrapFrame;
 	showTitlebar($tId);
@@ -244,65 +453,59 @@ sub createNewTabber ()
 	$tl->protocol('WM_DELETE_WINDOW', [\&closeTabber, $tId]);
 	$tl->protocol('WM_TAKE_FOCUS', [\&takeFocus, $tId]);
 
-	my $b = $tabFrame->Button(-text => $fvwm->name(),
-							  -font => $pConfig->{buttonFont},
-							  -padx => 3,
-							  -command => [\&tabInfo, $tId]);
-	$b->pack(-side => 'left', -expand => 0);
+	#my $b = $tabFrame->Button(-text => $fvwm->name(),
+	#						  -font => $pConfig->{buttonFont},
+	#						  -padx => 3);
+	#$b->pack(-side => 'left', -expand => 0);
+	# ===
+	my $af = $tabFrame->Frame()->pack(-side => 'right', -fill => 'y');
+	my @po = qw/-side right -fill y/;
+	my $bKill = $af->Button(-text => 'K',
+							-image => createImage($pConfig->{killIcon}),
+							-padx => 0,
+							-borderwidth => 0,
+							-relief => 'flat')->pack(@po);
+	$bKill->Tk::bind('<ButtonRelease-1>', [\&killTab, $tId]);
+	my $bAdd = $af->Button(-text => 'A',
+						   -image => createImage($pConfig->{addIcon}),
+						   -padx => 0,
+						   -borderwidth => 0,
+						   -relief => 'flat')->pack(@po);
+	$bAdd->Tk::bind('<ButtonRelease-1>', [\&pickAndAdd, $tId, '']);
+	$bAdd->Tk::bind('<ButtonRelease-3>', [\&pickAndAdd, $tId, 'multi']);
 
-	$tabFrame->configure(-width => $b->reqwidth(), -height => $b->reqheight());
+	my $bRelease = $af->Button(-text => 'R',
+							   -image => createImage($pConfig->{releaseIcon}),
+							   -padx => 0,
+							   -borderwidth => 0,
+							   -relief => 'flat')->pack(@po);
+	$bRelease->Tk::bind('<ButtonRelease-1>', [\&releaseCurrent, $tId]);
+	$bRelease->Tk::bind('<ButtonRelease-2>', [\&releaseAll, $tId, 1]);
+	$bRelease->Tk::bind('<ButtonRelease-3>', [\&releaseAll, $tId, 0]);
+
+	my $bMenu = $af->Button(-text => 'M',
+							-image => createImage($pConfig->{menuIcon}),
+							-padx => 0,
+							-borderwidth => 0,
+							-relief => 'flat')->pack(@po);
+	$bMenu->Tk::bind('<ButtonRelease-1>', [\&showMenu, $tId]);
+	$bMenu->Tk::bind('<ButtonRelease-2>', [\&tabInfo, $tId]);
+
+
+
+	# ===
+	# $tabFrame->configure(-width => $b->reqwidth(), -height => $b->reqheight());
+	# $tabFrame->configure(-width => 100, -height => 28);
+	$tabFrame->waitVisibility();
 	$tabFrame->packPropagate(0);
+	$tabFrame->configure(-height => 28, -width => $af->reqwidth());
 
-	my $menu = $tl->Menu(-tearoff => 0, -font => $pConfig->{menuFont});
+	$tabWin{$tId}{menu} = $tl->Menu(-tearoff => 0,
+									-font => $pConfig->{menuFont});
 
-	$b->Tk::bind('<ButtonRelease-3>', sub {
-		$menu->delete(0, 'end');
-		$menu->add('command',
-				   -label => 'Release All',
-				   -command => [\&releaseAll, $tId, 0]);
-		$menu->add('command',
-				   -label => 'Release All (Iconify)',
-				   -command => [\&releaseAll, $tId, 1]);
-		$menu->add('command',
-				   -label => 'Add',
-				   -command => [\&pickAndAdd, $tId, '']);
-		$menu->add('command',
-				   -label => 'Multi Add',
-				   -command => [\&pickAndAdd, $tId, 'multi']);
-		if ($pConfig->{fontSelector} ne 'none')
-		{
-			my $fontMenu = $menu->Menu(-tearoff => 0, -font => $pConfig->{menuFont});
-			$fontMenu->add('command',
-						   -label => 'Button Font',
-						   -command => [\&selectFont, $tId, 'button']);
-			$fontMenu->add('command',
-						   -label => 'Title Font',
-						   -command => [\&selectFont, $tId, 'title']);
-			$fontMenu->add('command',
-						   -label => 'Menu Font',
-						   -command => [\&selectFont, $tId, 'menu']);
-
-			$menu->add('cascade', -label => 'Font', -menu => $fontMenu);
-		}
-		$menu->add('checkbutton',
-                   -label => 'Show Titlebar',
-				   -variable => \$tabWin{$tId}{showTitlebar},
-                   -command => [\&showTitlebar, $tId]);
-		$menu->add('command',
-				   -label => 'Window Tabizer Dialog',
-				   -command => [\&tabizeWindows, $tId]);
-		$menu->add('separator');
-
-		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
-		{
-			$menu->add('command', -label => $tabWin{$tId}{tab}[$tabNo]{title},
-								 -command => [\&showTab, $tId, $tabNo]);
-		}
-		$menu->add('separator') if ($tabWin{$tId}{nTabs} > 0);
-		$menu->add('command', -label => 'About', -command => [\&about, $tId]);
-		$menu->add('command', -label => 'Close', -command => [\&closeTabber, $tId]);
-		$menu->Popup(-popanchor => 'nw', -popover => 'cursor');
-	});
+	#$b->Tk::bind('<ButtonRelease-1>', [\&showMenu, $tId]);
+	#$b->Tk::bind('<ButtonRelease-2>', [\&tabInfo, $tId]);
+	#$b->Tk::bind('<ButtonRelease-3>', [\&showMenu, $tId]);
 
 	$tabWin{$tId}{nTabs} = 0;
 	$tabWin{$tId}{toplevel} = $tl;
@@ -312,8 +515,7 @@ sub createNewTabber ()
 	$tabWin{$tId}{currentTab} = undef;
 	$tabWin{$tId}{lastId} = undef;
 	$tabWin{$tId}{parent} = hex($winFrame->id);
-	$tabWin{$tId}{menuButton} = $b;
-	$tabWin{$tId}{menu} = $menu;
+	# $tabWin{$tId}{menuButton} = $b;
 	$winFrame->waitVisibility();
 	my ($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
 	$tabWin{$tId}{selfId} = $parent;
@@ -370,7 +572,7 @@ sub takeFocus ($)
 		$winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
 	}
 
-	my $ts = ($pConfig->{bBuggyFocus} =~ /true/i ?
+	my $ts = (isTrue($pConfig->{bBuggyFocus}) ?
 			  'CurrentTime' :
 			  $tabWin{$tId}{focusTimestamp});
 	# "revert-to" (2nd) arg can be 'Parent', 'PointerRoot' or 'None'.
@@ -389,6 +591,7 @@ sub letItGo ($$$$)
 	}
 
 	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
+	$global{ignoreSwallow}{$winId} = time();
 	$xServer->ReparentWindow($winId, $xServer->root(), (0, 0));
 	# position the window at the location we found it. (ie. before the
 	# window was added to this tabber.)
@@ -414,9 +617,9 @@ sub letItGoClick ($$$$)
 }
 
 # release all windows from <$tId> tabber.
-sub releaseAll ($$)
+sub releaseAll ($$$)
 {
-	my ($tId, $bIconify) = @_;
+	my ($b, $tId, $bIconify) = @_;
 	for (my $tabNo = $tabWin{$tId}{nTabs} - 1; $tabNo >= 0; $tabNo--)
 	{
 		letItGo(undef, $tId, $tabNo, $bIconify);
@@ -424,6 +627,23 @@ sub releaseAll ($$)
 	$tabWin{$tId}{tab} = undef;
 	$tabWin{$tId}{nTabs} = 0;
 	$tabWin{$tId}{currentTab} = undef;
+}
+
+sub releaseCurrent ($$)
+{
+	my ($b, $tId) = @_;
+
+	return if (!defined $tabWin{$tId}{currentTab});
+	letItGo($b, $tId, $tabWin{$tId}{currentTab}, 0);
+}
+
+sub killTab ($$)
+{
+	my ($b, $tId) = @_;
+	return if (!defined $tabWin{$tId}{currentTab});
+	my $winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
+	# TODO: This is a bit harsh.
+	$xServer->KillClient($winId);
 }
 
 sub XSync ()
@@ -443,7 +663,7 @@ sub closeTabber ($)
 	$xServer->ChangeWindowAttributes($tabWin{$tId}{parent},
 		event_mask => $xServer->pack_event_mask());
 
-	releaseAll($tId, 0);
+	releaseAll(undef, $tId, 0);
 	$tabWin{$tId}{toplevel}->withdraw();
 	# We need to wait for the X server to do the reparenting before
 	# we can destroy the window.
@@ -471,9 +691,15 @@ $fvwm->addHandler(M_STRING, sub {
 
 	$fvwm->debug("M_STRING: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
 
-	if ($event->args->{text} =~ /newTabber/)
+	# Older versions of Perl don't support 'xdigit'.
+	# if ($event->args->{text} =~ /fn (\S+) (0x[[:xdigit:]]+)\s*(.*)/)
+	if ($event->args->{text} =~ /fn (\S+) (0x[0-9a-fA-F]+)\s*(.*)/)
 	{
-		createNewTabber();
+		# fn <fnName> <winId> <optArgs>
+		my $tId = winIdToTId(hex($2));
+		print(STDERR "focus not in tabber. ($2)\n"), return if ($tId < 0);
+		no strict;
+		&$1($tId, split(/\s+/, $3));
 	}
 	elsif ($event->args->{text} =~ /addme (w?)(\d+)(.*)?/)
 	{
@@ -485,25 +711,21 @@ $fvwm->addHandler(M_STRING, sub {
 			return;
 		}
 		addTab($tId, $event->args->{win_id});
-		pickAndAdd($tId, 'multi') if ($bMulti);
-	}
-	# Older versions of Perl don't support 'xdigit'.
-	# elsif ($event->args->{text} =~ /fn (\S+) (0x[[:xdigit:]]+)\s*(.*)/)
-	elsif ($event->args->{text} =~ /fn (\S+) (0x[0-9a-fA-F]+)\s*(.*)/)
-	{
-		# fn <fnName> <winId> <optArgs>
-		my $tId = winIdToTId(hex($2));
-		print(STDERR "focus not in tabber. ($2)\n"), return if ($tId < 0);
-		no strict;
-		&$1($tId, split(/\s+/, $3));
-	}
-	elsif ($event->args->{text} =~ /saveState/)
-	{
-		saveState();
+		pickAndAdd(undef, $tId, 'multi') if ($bMulti);
 	}
 	else
 	{
-		print(STDERR $self->name() . ": Unknown command: " . $event->args->{text} . "\n");
+		# handle createNewTabber, saveState & enableDND.
+		my @a = split(/\s+/, $event->args->{text});
+		my $fn = shift(@a);
+		if (!defined main->can($fn))
+		{
+			print(STDERR $self->name() . ": Unknown command: $fn\n");
+			return;
+		}
+		no strict;
+		&$fn(@a);
+		$fvwm->debug("M_STRING: invoked command \"$fn\"");
 	}
 });
 
@@ -535,50 +757,6 @@ sub releaseTab ($$$)
 	letItGo(undef, $tId, $tabNo, $bIconify);
 }
 
-$fvwm->addHandler(M_ADD_WINDOW, sub {
-	my ($self, $event) = @_;
-
-    return if (defined $global{doingTabize} && $global{doingTabize});
-	$fvwm->debug("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
-	my $winId = $event->args->{win_id};
-
-	swallowCheck($winId, \@autoSwallow);
-});
-
-# swallowCheck() - check if a window should be swallowed/tabized by a tabber.
-sub swallowCheck ($$)
-{
-	my ($winId, $pArray) = @_;
-
-	my $s = chr(0);
-	my $name = getProperty($winId, 'WM_NAME');
-	return if (!defined $name);
-	my ($resource, $class) = split(/$s/, getProperty($winId, 'WM_CLASS'));
-
-	foreach (@{$pArray})
-	{
-		if ((exists $_->{resource} && $resource =~ /$_->{resource}/) ||
-			(exists $_->{class} && $class =~ /$_->{class}/) ||
-			(exists $_->{name} && $name =~ /$_->{name}/))
-		{
-			my $tId = $_->{type};
-			if ($tId =~ /any/i)
-			{
-				# choose the emptiest tabber.
-				$tId = emptiestTabber();
-				return if ($tId < 0);
-			}
-			elsif ($tId =~ /lastFocus/i)
-			{
-				$tId = (defined $global{lastFocus} ?
-						$global{lastFocus} :
-						emptiestTabber());
-			}
-			addTab($tId, $winId) if (exists $tabWin{$tId})
-		}
-	}
-}
-
 sub emptiestTabber ()
 {
 	my $tId = -1;	# return -1 if no tabbers running.
@@ -593,6 +771,77 @@ sub emptiestTabber ()
 	}
 	return $tId;
 }
+
+sub whichTabber ($)
+{
+	my ($tId) = @_;
+
+	if ($tId =~ /any/i)
+	{
+		# choose the emptiest tabber.
+		return emptiestTabber();
+	}
+	elsif ($tId =~ /lastFocus/i)
+	{
+		return (defined $global{lastFocus} ?
+			$global{lastFocus} :
+			emptiestTabber());
+	}
+	return $tId;
+}
+
+# swallowCheck() - check if a window should be swallowed/tabized by a tabber.
+sub swallowCheck ($$)
+{
+	my ($winId, $pArray) = @_;
+
+	my $tId = $global{swallowNext};
+	if (!defined $tId)
+	{
+		return if (ignoreWin($winId));
+		my $s = chr(0);
+		my $name = getProperty($winId, 'WM_NAME');
+		return if (!defined $name);
+		my ($resource, $class) = split(/$s/, getProperty($winId, 'WM_CLASS'));
+
+		my $bFound = 0;
+		foreach (@{$pArray})
+		{
+			if ((exists $_->{resource} && $resource =~ /$_->{resource}/) ||
+				(exists $_->{class} && $class =~ /$_->{class}/) ||
+				(exists $_->{name} && $name =~ /$_->{name}/))
+			{
+				$tId = $_->{type};
+				$bFound = 1;
+				last;
+			}
+		}
+		return if (!$bFound);
+	}
+	$tId = whichTabber($tId);
+	addTab($tId, $winId) if (exists $tabWin{$tId});
+	delete $global{swallowNext};
+}
+
+sub swallowNext
+{
+	my ($tId, @fvwmCommand) = @_;
+	$global{swallowNext} = $tId;
+	$fvwm->debug("Got swallowNext: $global{swallowNext}");
+	$fvwm->debug("fvwmCommand is @fvwmCommand");
+	$fvwm->send("@fvwmCommand");
+}
+
+$fvwm->addHandler(M_ADD_WINDOW, sub {
+	my ($self, $event) = @_;
+
+    return if (defined $global{doingTabize} && $global{doingTabize});
+	$fvwm->debug("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
+	my $winId = $event->args->{win_id};
+
+	swallowCheck($winId, \@autoSwallow);
+});
+
 
 # ON_EXIT handler is invoked just before this module terminates.
 $fvwm->addHandler(ON_EXIT, sub {
@@ -652,14 +901,9 @@ sub eventHandler
 								  "height" => $h, #$event{height},
 								  "width" => $event{width});
 
-		if ($pConfig->{autoResize} =~ /true/i)
+		if ($tabWin{$tId}{autoResize})
 		{
-			for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
-			{
-				$xServer->ConfigureWindow($tabWin{$tId}{tab}[$tabNo]{winId},
-										  "height" => $h, # $event{height},
-										  "width" => $event{width});
-			}
+			resizeAll($tId, $event{width}, $h); # $event{height}
 		}
 		else
 		{
@@ -672,6 +916,7 @@ sub eventHandler
 									  "height" => $h, # $event{height},
 									  "width" => $event{width});
 		}
+		XSync();
 		return;
 	}
 	elsif ($event{name} eq 'EnterNotify')
@@ -689,15 +934,8 @@ sub eventHandler
 		return;
 	}
 
-	my $tabNo = -1;
-	my $tId = undef;
-	for (keys(%tabWin))
-	{
-		$tabNo = getTabNo($_, $event{window});
-		$tId = $_, last if ($tabNo >= 0)
-	}
-
-	if ($tabNo < 0)
+	my ($tId, $tabNo) = findWin($event{window});
+	if (!defined $tId)
 	{
 		$fvwm->debug("Ignoring event for invalid/unknown window.");
 		return;
@@ -743,22 +981,84 @@ sub getXYPos ($)
 	return ($x, $y);
 }
 
-my $img;
-if ($pConfig->{dragDropIcon} ne 'none')
+sub createImage ($)
 {
-	my $imgFile = $pConfig->{dragDropIcon};
-	if (substr($imgFile, 0, 1) ne '/')
+	my ($filename) = @_;
+
+	if (defined $global{imageCache}{$filename})
 	{
+		return $global{imageCache}{$filename};
+	}
+	my $orig = $filename;
+	if (substr($filename, 0, 1) ne '/')
+	{
+		my $bFound = 0;
 		foreach (split(/:/, $pConfig->{global}->{ImagePath}))
 		{
-			my $tmp = "$_/$imgFile";
-			$imgFile = $tmp, last if (-f $tmp);
+			my $tmp = "$_/$filename";
+			$filename = $tmp, $bFound = 1, last if (-f $tmp);
+		}
+		return '' if (!$bFound);
+	}
+	print(STDERR "Creating icon from $filename\n");
+	my $img = eval { $TOP->Photo(-file => $filename); };
+	return '' if (!defined $img);
+	$global{imageCache}{$orig} = $img;
+	return $img;
+}
+
+sub createMiniIcon ($$)
+{
+	my ($iconName, $winId) = @_;
+
+	return createImage($iconName) if ($iconName ne 'ewmh_mini_icon');
+
+	my ($val, $type, $format, $bytes_after) =
+		$xServer->GetProperty($winId,
+							  $xServer->atom("_NET_WM_ICON"),
+							  'AnyPropertyType',
+							  0,
+							  8192,
+							  0);
+
+	my $w = unpack("L", substr($val, 0, 4));
+	my $h = unpack("L", substr($val, 4, 4));
+	# print("w=$w h=$h\n");
+
+	my $img = $TOP->Photo(-width => $w, -height => $h);
+	my $index = 8;
+	for my $y (0 .. $h - 1)
+	{
+		for my $x (0 .. $w - 1)
+		{
+			my $pixel = unpack("L", substr($val, $index, 4));
+			$index += 4;
+
+			my $alpha = ($pixel >> 24) & 0xff;
+			next if ($alpha == 0);
+			my $blue = $pixel & 0xff;
+			my $green = ($pixel >> 8) & 0xff;
+			my $red = ($pixel >> 16) & 0xff;
+
+			my $color = sprintf("#%02x%02x%02x", $red, $green, $blue);
+			$img->put($color, -to => ($x, $y, $x+1, $y+1));
 		}
 	}
-	$img = eval { $TOP->Photo(-file => $imgFile); };
-	if (!defined $img)
+	# TODO: image resizing quality is crap, but at least it works for now.
+	my $img2 = $TOP->Photo();
+	my ($xFactor, $yFactor) = ($w / 16, $h / 16);
+	$img2->copy($img, -subsample => ($xFactor, $yFactor));
+	return $img2;
+}
+
+my $dndIcon;
+if ($pConfig->{dragDropIcon} ne 'none')
+{
+	$dndIcon = createImage($pConfig->{dragDropIcon});
+	if ($dndIcon eq '')
 	{
-		print(STDERR $fvwm->name() . ": Couldn't create D&D icon from $imgFile\n");
+		print(STDERR $fvwm->name() . ": Couldn't create D&D icon from " .
+			$pConfig->{dragDropIcon} . "\n");
 	}
 }
 
@@ -777,7 +1077,7 @@ sub addTab ($$)
 	# check if the window actually exists before we try to swallow it.
 	if (!defined getProperty($winId, 'WM_NAME'))
 	{
-		print(STDERR $fvwm->name() . ": Window doesn't exist.\n");
+		print(STDERR $fvwm->name() . ": Window ($winId) doesn't exist.\n");
 		return;
 	}
 
@@ -792,27 +1092,43 @@ sub addTab ($$)
 	# the new window is larger than the tabber, then the tabber will
 	# expand appropriately (with all existing windows in the tabber) on
 	# the resize event.
-	if ($pConfig->{autoResize} =~ /true/i)
+	if ($tabWin{$tId}{autoResize})
 	{
 		my %g = $xServer->GetGeometry($winId);
 		my $h = $tabWin{$tId}{winFrame}->height();
 		my $w = $tabWin{$tId}{winFrame}->width();
 		if ($g{height} < $h || $g{width} < $w)
 		{
-			$xServer->ConfigureWindow($winId, "height" => $h, "width" => $w);
+			$xServer->ConfigureWindow($winId,
+									  "height" => max($h, $g{height}),
+									  "width" => max($w, $g{width}));
 		}
 	}
 
 	$xServer->ReparentWindow($winId, $tabWin{$tId}{parent}, (0, 0));
-	my $txt = getProperty($winId, "WM_ICON_NAME");
+
+	my $name = getProperty($winId, "WM_NAME");
+	$tabWin{$tId}{tab}[$tabNo]{title} = $name;
+	my $iconName = getProperty($winId, "WM_ICON_NAME");
+	$iconName = $name if ($iconName eq '');
+
 	$tabWin{$tId}{tab}[$tabNo]{button} =
-		$tabWin{$tId}{tabFrame}->Button(-text => $txt,
+		$tabWin{$tId}{tabFrame}->Button(-text => $iconName,
 										-padx => 2,
 										-width => 1,
 										-anchor => 'w',
+										-compound => 'left',
 										-command => [\&showTabClick, $tId, $winId],
 										-font => $pConfig->{buttonFont});
 	my $pButton = $tabWin{$tId}{tab}[$tabNo]{button};
+
+	if (defined $winTracker &&
+		defined $winTracker->data($winId) &&
+		isTrue($pConfig->{useIconsOnTabs}))
+	{
+		my $icon = createMiniIcon($winTracker->data($winId)->{mini_icon_name}, $winId);
+		$pButton->configure(-image => $icon);
+	}
 
 	# Raise the FvwmTabs window whenever a tab is selected.
 	$pButton->Tk::bind('<ButtonPress-1>', sub { $fvwm->send("Current Raise"); });
@@ -830,15 +1146,14 @@ sub addTab ($$)
 	my $site =
 	$pButton->DropSite(-droptypes => [qw(Local)],
 					   -dropcommand => [\&reorderTabClick, [$tId, $winId]]);
-	if ($pConfig->{dragDropIcon} ne 'none' && defined $img)
+	if ($pConfig->{dragDropIcon} ne 'none' && defined $dndIcon)
 	{
-		$dd->configure(-image => $img);
+		$dd->configure(-image => $dndIcon);
 	}
 
 	# This line gets around a bug in Tk::DropSite.
 	$pButton->Tk::bind($site, '<Configure>', [$site, 'DropSiteUpdate']) if ($global{buggyTkDND});
 
-	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 
 	$balloon->attach($pButton,
 					 -balloonmsg => \$tabWin{$tId}{balloonMsg},
@@ -854,15 +1169,15 @@ sub addTab ($$)
 	showTab($tId, $tabNo);
 }
 
-sub pickAndAdd ($$)
+sub pickAndAdd ($$$)
 {
-	my ($tId, $arg) = @_;
+	my ($b, $tId, $arg) = @_;
 	$fvwm->send("Pick SendToModule *" . $fvwm->name() . " addme $tId $arg");
 }
 
-sub tabInfo ($)
+sub tabInfo ($$)
 {
-	my ($tId) = @_;
+	my ($button, $tId) = @_;
 
 	print("\nnTabs=$tabWin{$tId}{nTabs}\n");
 	printf("parent=0x%x (%d)\n", $tabWin{$tId}{parent}, $tabWin{$tId}{parent});
@@ -894,6 +1209,20 @@ sub getProperty ($$)
 	return undef if ($p eq 'Window');
 	return $p->[0];
 }
+
+# find which tabber/tab a window is in (if any).
+sub findWin ($)
+{
+	my ($winId) = @_;
+
+	foreach (keys(%tabWin))
+	{
+		my $tabNo = getTabNo($_, $winId);
+		return ($_, $tabNo) if ($tabNo >= 0);
+	}
+	return undef;
+}
+		
 
 # return the tabNo for the specified window ID or -1 if the window is
 # not part of the tabber.
@@ -971,11 +1300,12 @@ sub showTab ($$)
 		return if ($tabNo == $currentTab);
 		my $winId = $tabWin{$tId}{tab}[$currentTab]{winId};
 		$xServer->UnmapWindow($winId);
+		my $b = $tabWin{$tId}{tab}[$currentTab]{button};
+		setButtonAttr($b, 'bg', 'inactiveBG');
+		setButtonAttr($b, 'activebackground', 'inactiveBG');
+		setButtonAttr($b, 'fg', 'inactiveFG');
+		setButtonAttr($b, 'activeforeground', 'inactiveFG');
 		$tabWin{$tId}{tab}[$currentTab]{button}->configure(
-					-bg => $pConfig->{inactiveBG},
-					-activebackground => $pConfig->{inactiveBG},
-					-fg => $pConfig->{inactiveFG},
-					-activeforeground => $pConfig->{inactiveFG},
 					-width => 1,
 					-relief => 'raised');
 		$tabWin{$tId}{tab}[$currentTab]{button}->pack(-expand => 1);
@@ -985,12 +1315,13 @@ sub showTab ($$)
 	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
 	$xServer->MapWindow($winId);
 	$tabWin{$tId}{currentTab} = $tabNo;
-	my $bEq = ($pConfig->{fixedSizeTabs} =~ /true/i ? 1 : 0);
+	my $bEq = isTrue($pConfig->{fixedSizeTabs});
+	my $b = $tabWin{$tId}{tab}[$tabNo]{button};
+	setButtonAttr($b, 'bg', 'activeBG');
+	setButtonAttr($b, 'activebackground', 'activeBG');
+	setButtonAttr($b, 'fg', 'activeFG');
+	setButtonAttr($b, 'activeforeground', 'activeFG');
 	$tabWin{$tId}{tab}[$tabNo]{button}->configure(
-					-bg => $pConfig->{activeBG},
-					-activebackground => $pConfig->{activeBG},
-					-fg => $pConfig->{activeFG},
-					-activeforeground => $pConfig->{activeFG},
 					-width => $bEq,
 					-relief => $pConfig->{activeRelief});
 	my $bExpand = ($bEq || ($tabWin{$tId}{nTabs} == 1));
@@ -1013,6 +1344,32 @@ sub showTabClick ($$)
 	showTab($tId, getTabNo($tId, $winId));
 }
 
+sub setMainTitlebar ($$)
+{
+	my ($tId, $titleStr) = @_;
+
+	my $title = $fvwm->name() . " [$tId]";
+	$title .= " : $titleStr" if ($titleStr ne '');
+	$tabWin{$tId}{toplevel}->configure(-title => $title);
+}
+
+sub setupMainTitlebar ($$)
+{
+	my ($tId, $bOn) = @_;
+
+	my $titleStr = '';
+	if ($bOn && defined $tabWin{$tId}{currentTab})
+	{
+		$titleStr = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{title};
+	}
+	setMainTitlebar($tId, $titleStr);
+}
+
+sub toggleMainTitlebar ($)
+{
+	setupMainTitlebar($_[0], $tabWin{$_[0]}{useTMTitlebar});
+}
+
 sub showTitle ($$$)
 {
 	my ($tId, $tabNo, $w) = @_;
@@ -1020,7 +1377,7 @@ sub showTitle ($$$)
 	$fvwm->debug("BUG: showTitle()") if ($tabNo != $tabWin{$tId}{currentTab});
 	# This is a nice feature - Wrap the title text across multiple lines.
 	# The following command in an xterm window illustrates the usefulness:
-	# echo "abc\ndef\nghi\njkl" && sleep 3
+	# echo "to be?\nor\nnot to be?" && sleep 3
 
 	$w -= 30;
 
@@ -1029,11 +1386,7 @@ sub showTitle ($$$)
 	$tabWin{$tId}{titleFrame}->configure(-text => $titleStr,
 										 -wraplength => $w);
 
-	if ($pConfig->{useTMTitlebar} =~ /true/i)
-	{
-		my $title = $fvwm->name() . " [$tId] : " . $titleStr;
-		$tabWin{$tId}{toplevel}->configure(-title => $title);
-	}
+	setMainTitlebar($tId, $titleStr) if ($tabWin{$tId}{useTMTitlebar});
 }
 
 sub setTabTitle($$$)
@@ -1108,8 +1461,8 @@ sub setFont ($$$)
 		{
 			$tabWin{$tId}{tab}[$tabNo]{button}->configure(-font => $font);
 		}	
-		$tabWin{$tId}{menuButton}->configure(-font => $font);
-		$tabWin{$tId}{tabFrame}->configure(-height => $tabWin{$tId}{menuButton}->reqheight());
+		# $tabWin{$tId}{menuButton}->configure(-font => $font);
+		# $tabWin{$tId}{tabFrame}->configure(-height => $tabWin{$tId}{menuButton}->reqheight());
 	}
 	elsif ($type eq 'title')
 	{
@@ -1134,7 +1487,6 @@ sub about ($)
 
 	my ($v, $d) = version();
 	my $version = $fvwm->name() . " v$v   ($d)\n\nby Scott Smedley\nscottie7\@tpg.com.au"; # \n\nhttp://users.tpg.com.au/users/scottie7/fvwmtabs.html";
-	# TODO: Tk::Dialog has a hardcoded width of 3 inches, how annoying!
 	$fvwm->showMessage($version, "About " . $fvwm->name());
 }
 
@@ -1194,8 +1546,8 @@ sub reorderTab ($$$)
 		my $bExpand = 1;
 		if ($i == $tabWin{$tId}{currentTab})
 		{
-			my $bEq = ($pConfig->{fixedSizeTabs} =~ /true/i ? 1 : 0);
-			$bExpand = ($pConfig->{fixedSizeTabs} =~ /true/i ||
+			my $bEq = isTrue($pConfig->{fixedSizeTabs});
+			$bExpand = (isTrue($pConfig->{fixedSizeTabs}) ||
 						($tabWin{$tId}{nTabs} == 1) ? 1 : 0);
 		}
 		$tabWin{$tId}{tab}[$i]{button}->pack(-expand => $bExpand, -fill => 'x', -side => 'left');
@@ -1443,6 +1795,7 @@ sub tabizeWindows ($)
 }
 
 sub max ($$) { return ($_[0] > $_[1] ? $_[0] : $_[1]); }
+sub min ($$) { return ($_[0] < $_[1] ? $_[0] : $_[1]); }
 
 sub fillDialog ()
 {
@@ -1527,6 +1880,43 @@ sub setResizing ($$)
 	# $tabWin{$tId}{toplevel}->wmGrid($baseW, $baseH, $wInc, $hInc);
 	$tabWin{$tId}{toplevel}->wm('grid', $baseW, $baseH, $wInc, $hInc);
 }
+
+sub enableDND ($)
+{
+	foreach my $tId (keys(%tabWin))
+	{
+		$tabWin{$tId}{enableSwallowDND} = $_[0];
+	}
+}
+
+sub resizeAll ($$$)
+{
+	my ($tId, $w, $h) = @_;
+	for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
+	{
+		$xServer->ConfigureWindow($tabWin{$tId}{tab}[$tabNo]{winId},
+								  "height" => $h,
+								  "width" => $w);
+	}
+}
+
+sub doResize ($)
+{
+	my ($tId) = @_;
+	return if (!defined $tabWin{$tId}{currentTab});
+	my $winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
+	my %g = $xServer->GetGeometry($winId);
+	resizeAll($tId, $g{width}, $g{height});
+}
+
+sub toggleAutoResize ($)
+{
+	my ($tId) = @_;
+
+	return if (!$tabWin{$tId}{autoResize});
+	doResize($tId);
+}
+
 
 loadState();
 my ($version, $date) = version();
