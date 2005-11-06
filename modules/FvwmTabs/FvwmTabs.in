@@ -62,6 +62,7 @@ my $configTracker = $fvwm->track('ModuleConfig',
 					   titleFG => 'black',
 					   titleBG => 'antiquewhite',
 					   activeRelief => 'sunken',
+					   inactiveRelief => 'raised',
 					   pollRate => 250,	# in milliseconds.
 					   autoSwallowClass => '',
 					   autoSwallowResource => '',
@@ -128,7 +129,7 @@ $configTracker->observe("config line added", sub {
 				}
 			}
 		}
-		elsif ($p =~ /^inactive(FG|BG)$/)
+		elsif ($p =~ /^inactive(FG|BG|Relief)$/)
 		{
 			# currentTab is always defined if $nTabs > 0
 			if (defined $tabWin{$tId}{currentTab})
@@ -138,7 +139,10 @@ $configTracker->observe("config line added", sub {
 				{
 					next if ($i == $tabWin{$tId}{currentTab});
 					setButtonAttr($tabWin{$tId}{tab}[$i]{button}, $1, $p);
-					setButtonAttr($tabWin{$tId}{tab}[$i]{button}, $active, $p);
+					if ($1 ne 'Relief')
+					{
+						setButtonAttr($tabWin{$tId}{tab}[$i]{button}, $active, $p);
+					}
 				}
 			}
 		}
@@ -712,7 +716,7 @@ $fvwm->addHandler(M_STRING, sub {
 	{
 		my $bMulti = ($2 eq ' multi');
 		my $tId = $1;
-		$tId = winIdToTId($tId) if (!exists $tabWin{$tId});
+		$tId = winIdToTId(hex($tId)) if (!exists $tabWin{$tId});
 		if (!defined $tId || !exists $tabWin{$tId})
 		{
 			print(STDERR $self->name() . ": Unknown Tabber \"$2\"\n");
@@ -1315,7 +1319,7 @@ sub showTab ($$)
 		setButtonAttr($b, 'activeforeground', 'inactiveFG');
 		$tabWin{$tId}{tab}[$currentTab]{button}->configure(
 					-width => 1,
-					-relief => 'raised');
+					-relief => $pConfig->{inactiveRelief});
 		$tabWin{$tId}{tab}[$currentTab]{button}->pack(-expand => 1);
 		$tabWin{$tId}{lastId} = $winId;
 	}
