@@ -31,11 +31,30 @@ use Tk;
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
 
-# colors - TODO: make configurable.
-my $activeBG = 'MidnightBlue';
-my $activeFG = 'yellow';
-my $inactiveBG = 'royalblue';
-my $inactiveFG = 'antiquewhite';
+# TODO: colors, etc - make configurable.
+my %config = (activeBG => 'MidnightBlue',
+			  activeFG => 'yellow',
+			  inactiveBG => 'royalblue',
+			  inactiveFG => 'antiquewhite',
+			  titleBG => 'antiquewhite',
+			  bDebug => 0);
+
+sub autoSwallow ($$$$)
+{
+	my ($resource, $class, $name, $tId) = @_;
+
+	my %p;
+	$p{resource} = $resource if (defined $resource);
+ 	$p{class} = $class if (defined $class);
+ 	$p{name} = $name if (defined $name);
+ 	$p{type} = $tId;	# can be a tId or 'any'.
+
+	push(@{$config{autoSwallow}}, \%p);
+}
+
+# specify patterns for windows to be auto-"swallowed".
+autoSwallow('xterm', undef, undef, 0);
+autoSwallow(undef, undef, 'xload', 'any');
 
 
 $TOP = new MainWindow();
@@ -43,7 +62,7 @@ $TOP->withdraw();
 # Why does FVWM::Module::Tk require a widget?
 $fvwm = new FVWM::Module::Tk($TOP,
 							 Name => "FvwmTabs",
-							 Mask => (M_ERROR | M_STRING));
+							 Mask => (M_ERROR | M_STRING | M_ADD_WINDOW));
 
 $fvwm->addDefaultErrorHandler();
 
@@ -73,7 +92,7 @@ sub createNewTabber ()
 	$tabFrame->pack(-side => 'top', -expand => 0, -fill => 'x');
 	$topFrame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
 
-	my $titleFrame = $topFrame->Label(-text => "No title");
+	my $titleFrame = $topFrame->Label(-text => "No title", -bg => $config{titleBG});
 	$titleFrame->pack(-expand => 0, -fill => 'x', -side => 'top');
 
 	my $winFrame = $topFrame->Frame();
@@ -101,6 +120,7 @@ sub createNewTabber ()
 								 -command => [\&showTab, $tId, $tabNo]);
 		}
 		$menu->add('separator') if ($tabWin{$tId}{nTabs} > 0);
+		$menu->add('command', -label => 'About', -command => [\&about, $tId]);
 		$menu->add('command', -label => 'Close', -command => [\&closeTabber, $tId]);
 		$menu->Popup(-popanchor => 'nw', -popover => 'cursor');
 	});
@@ -138,7 +158,7 @@ sub letItGo ($$$$)
 
 	# print("letItGo($tId, $tabNo)\n");
 
-	if ($tabNo >= $tabWin{$tId}{nTabs})
+	if ($config{bDebug} && $tabNo >= $tabWin{$tId}{nTabs})
 	{
 		print(STDERR "BUG: invalid tabNo.\n");
 		return;
@@ -170,7 +190,7 @@ sub closeTabber ($)
 {
 	my ($tId) = @_;
 
-	print("closeTabber($tId)\n");
+	print("closeTabber($tId)\n") if ($config{bDebug});
 	releaseAll($tId, 0);
 	$tabWin{$tId}{toplevel}->withdraw();
 	# We need to wait for the X server to do the reparenting before
@@ -199,10 +219,14 @@ sub winIdToTId ($)
 $fvwm->addHandler(M_STRING, sub {
 	my ($self, $event) = @_;
 
-	foreach (sort(keys %{$event->args}))
+	if ($config{bDebug})
 	{
-		print("\t$_ = " . $event->args->{$_} . "\n");
+		foreach (sort(keys %{$event->args}))
+		{
+			print("\t$_ = " . $event->args->{$_} . "\n");
+		}
 	}
+
 	if ($event->args->{text} =~ /newTabber/)
 	{
 		createNewTabber();
@@ -225,15 +249,46 @@ $fvwm->addHandler(M_STRING, sub {
 	}
 });
 
+$fvwm->addHandler(M_ADD_WINDOW, sub {
+	my ($self, $event) = @_;
+
+	print("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))) . "\n") if ($config{bDebug});
+	my $winId = $event->args->{win_id};
+
+	my $s = chr(0);
+	my ($resource, $class) = split(/$s/, getProperty($winId, 'WM_CLASS'));
+	print("FvwmTabs: resource=$resource\n");
+	print("FvwmTabs: class=$class\n");
+	my $name = getProperty($winId, 'WM_NAME');
+	print("FvwmTabs: name=$name\n");
+
+	foreach (@{$config{autoSwallow}})
+	{
+		if ((exists $_->{resource} && $_->{resource} eq $resource) ||
+			(exists $_->{class} && $_->{class} eq $class) ||
+			(exists $_->{name} && $_->{name} eq $name))
+		{
+			my $tId = $_->{type};
+			if ($_->{type} eq 'any')
+			{
+				my @tIds = keys(%tabWin);
+				return if ($#tIds < 0);	# no tabbers running.
+				$tId = $tIds[rand @tIds];
+			}
+			addTab($tId, $winId) if (exists $tabWin{$tId})
+		}
+	}
+});
+
 # ON_EXIT handler is invoked just before this module terminates.
 $fvwm->addHandler(ON_EXIT, sub {
 	my ($self, $event) = @_; 
-	print("Got ON_EXIT event.\n");
+	print("FvwmTabs: Got ON_EXIT event.\n");
 	cleanup();
 });
 
 $SIG{PIPE} = sub {
-	print("SIGPIPE!\n");
+	print("FvwmTabs: SIGPIPE!\n");
 	cleanup();
 	exit;
 };
@@ -273,7 +328,7 @@ sub eventHandler
 {
 	my (%event) = @_;
 
-	print("Got an X event: " . join(", ", map("$_ = $event{$_}", keys(%event))) . "\n");
+	print("Got a $event{name} event: " . join(", ", map("$_ = $event{$_}", keys(%event))) . "\n") if ($config{bDebug});
 
 
 	if ($event{name} eq 'ResizeRequest')
@@ -313,11 +368,9 @@ sub eventHandler
 
 	if ($tabNo < 0)
 	{
-		print(STDERR "Ignoring event for invalid/unknown window.\n");
+		print(STDERR "FvwmTabs: Ignoring event for invalid/unknown window.\n");
 		return;
 	}
-
-	# print("tId appears to be: $tId\n");
 
 	if ($event{name} eq 'PropertyNotify')
 	{
@@ -343,7 +396,7 @@ sub eventHandler
 	}
 	else
 	{
-		print(STDERR "Got a strange event: $event{name}\n");
+		print(STDERR "Got a strange event: $event{name}\n") if ($config{bDebug});
 	}
 }
 
@@ -359,7 +412,7 @@ sub addTab ($$)
 	# {
 	# 	print("\tgeom: $k = $g{$k}\n");
 	# }
-	print("geom: x=$g{x} y=$g{y} w=$g{width} h=$g{height}\n");
+	print("geom: x=$g{x} y=$g{y} w=$g{width} h=$g{height}\n") if ($config{bDebug});
 
 	# print("tId=$tId\n");
 	# print("addTab parent=" . $tabWin{$tId}{parent} . "\n");
@@ -387,7 +440,7 @@ sub addTab ($$)
 	$pButton->Tk::bind('<ButtonPress-1>', sub { $fvwm->send("Current Raise"); });
 	$pButton->pack(-side => 'left', -expand => 1, -fill => 'both');
 	$pButton->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $tabNo, 0]);
-	$tabWin{$tId}{tab}[$tabNo]{title} = &getProperty($winId, "WM_NAME");
+	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 	# Ensure we are notified of any attribute changes in the new window.
 	# PropertyChange will tell us when WM_NAME or WM_ICON_NAME changes.
 	# StructureNotify will tell us when a program running in a tab
@@ -478,7 +531,7 @@ sub removeTab ($$$)
 		{
 			$tabWin{$tId}{titleFrame}->configure(-text => 'No title');
 			# TODO: proper resize.
-			$tabWin{$tId}{winFrame}->configure(-height => 10, -width => 0);
+			$tabWin{$tId}{winFrame}->configure(-height => 1, -width => 0);
 		}
 	}
 	elsif ($tabWin{$tId}{currentTab} > $tabNo)
@@ -507,10 +560,10 @@ sub showTab ($$)
 		return if ($tabNo == $currentTab);
 		my $winId = $tabWin{$tId}{tab}[$currentTab]{winId};
 		$xServer->UnmapWindow($winId);
-		$tabWin{$tId}{tab}[$currentTab]{button}->configure(-bg => $inactiveBG,
-													  -activebackground => $inactiveBG,
-													  -fg => $inactiveFG,
-													  -activeforeground => $inactiveFG,
+		$tabWin{$tId}{tab}[$currentTab]{button}->configure(-bg => $config{inactiveBG},
+													  -activebackground => $config{inactiveBG},
+													  -fg => $config{inactiveFG},
+													  -activeforeground => $config{inactiveFG},
 													  -relief => 'raised');
 	}
 	# Map the new tab.
@@ -518,10 +571,10 @@ sub showTab ($$)
 	$xServer->MapWindow($winId);
 	$tabWin{$tId}{currentTab} = $tabNo;
 	# TODO: option sunken or flat.
-	$tabWin{$tId}{tab}[$tabNo]{button}->configure(-bg => $activeBG,
-												  -activebackground => $activeBG,
-												  -fg => $activeFG,
-												  -activeforeground => $activeFG,
+	$tabWin{$tId}{tab}[$tabNo]{button}->configure(-bg => $config{activeBG},
+												  -activebackground => $config{activeBG},
+												  -fg => $config{activeFG},
+												  -activeforeground => $config{activeFG},
 												  -relief => 'sunken');
 	$tabWin{$tId}{titleFrame}->configure(-text => $tabWin{$tId}{tab}[$tabNo]{title});
 
@@ -535,6 +588,15 @@ sub setTabTitle($$$$)
 {
 	my ($tId, $tabNo, $winId, $titleStr) = @_;
 
+	# Mmmm, bugger! This would have been a nice feature - Wrap the title
+	# text across multiple lines. But this causes the reparented window
+	# to be in the wrong position.
+	# The following command in an xterm window illustrates the problem:
+	# echo "abc\ndef\nghi\njkl" && sleep 3
+	# $titleStr =~ s/"/\\"/g;
+	# $titleStr = `echo "$titleStr" | fold -w80 -s`;
+	# chomp($titleStr);
+
 	$tabWin{$tId}{tab}[$tabNo]{title} = $titleStr;
 	if ($tabNo == $tabWin{$tId}{currentTab})
 	{
@@ -547,6 +609,21 @@ sub setTabName($$$$)
 	my ($tId, $tabNo, $winId, $name) = @_;
 
 	$tabWin{$tId}{tab}[$tabNo]{button}->configure(-text => $name);
+}
+
+sub about ($)
+{
+	my ($tId) = @_;
+
+	print("in about()\n");
+	my $rcsId = '$Id$';
+	$rcsId =~ /,v (.*) (\d+\/\d+\/\d+) \d+:\d+:\d+/;
+	my $version = $fvwm->name() . " v$1   ($2)\n\nby Scott Smedley\nscottie7\@tpg.com.au"; # \n\nhttp://users.tpg.com.au/users/scottie7/fvwmtabs.html";
+	# TODO: Tk::Dialog has a hardcoded wraplength of 3 inches, how annoying!
+	$tabWin{$tId}{toplevel}->Dialog(-text => $version,
+									-bitmap => 'info',
+									-title => 'About ' . $fvwm->name(),
+									-buttons => ['Ok'])->Show();
 }
 
 print("Module " . $fvwm->name() . " started.\n");
@@ -571,5 +648,6 @@ $fvwm->eventLoop();
 #   the title frame.
 # - associate a mini icon with each tab-button.
 # - Preserve state b/w FVWM Restarts.
-# - specify patterns for windows to be auto-"swallowed".
+# - truncate title so $winFrame doesn't grow & therefore cause
+#   tabbed app to grow.
 # - tons of stuff!
