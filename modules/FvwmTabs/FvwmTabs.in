@@ -25,13 +25,10 @@
 
 use strict;
 use lib `fvwm-perllib dir`;
-use FVWM::Module;
-use FVWM::Module::Toolkit 'X11::Protocol';
-use FVWM::Module::Toolkit 'Tk';	# aka: use Tk;
 use FVWM::Module::Tk;
+use FVWM::Module::Toolkit qw(Tk FileHandle X11::Protocol);
 
-use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow);
-
+use vars qw($TOP $fvwm $xServer %tabWin @autoSwallow $repeatId);
 
 $TOP = new MainWindow();
 $TOP->withdraw();
@@ -44,8 +41,6 @@ $fvwm = new FVWM::Module::Tk($TOP,
 $fvwm->debug("Debug level is: " . $fvwm->{debug});
 $fvwm->addDefaultErrorHandler();
 
-# ======= ======= =======
-
 my $configTracker = $fvwm->track('ModuleConfig',
 		 DefaultConfig => {activeBG => 'MidnightBlue',
 						   activeFG => 'yellow',
@@ -53,23 +48,78 @@ my $configTracker = $fvwm->track('ModuleConfig',
 						   inactiveFG => 'antiquewhite',
 						   titleFG => 'black',
 						   titleBG => 'antiquewhite',
-						   activeButtonRelief => 'sunken',
+						   activeRelief => 'sunken',
 						   pollRate => 250,	# in milliseconds.
 						   autoSwallowClass => '',
 						   autoSwallowResource => '',
-						   autoSwallowName => 'test1'});
+						   autoSwallowName => '',
+						   fontSelector => 'gfontsel --print -f "%f"',
+						   buttonFont => 'Helvetica -12 bold',
+						   titleFont => 'Helvetica -12 bold',
+						   menuFont => 'Helvetica -12'});
+
 my $pConfig = $configTracker->data;
 $configTracker->observe("config line added", sub {
 	# 1st arg is FVWM::Module::Tk hash
 	# 2nd arg is FVWM::Tracker::ModuleConfig hash
 	# 3rd arg is hash of config values
 	# 4th arg is name of config value that has changed.
-	my $p = $_[3];
-	print("Module Config event - \"$p\" changed. New val: $_[2]{$p}\n");
-	# print("\targs: " . join(", ", map("$_=" . $_[2]{$_}, keys(%{$_[2]}))) . "\n");
-});
+	my ($self, $h, $v, $p) = @_;
+	$self->debug("Module Config event - \"$p\" changed, new val: \"$v->{$p}\"");
 
-# ======= ======= =======
+	foreach my $tId (keys(%tabWin))
+	{
+		if ($p =~ /^active(FG|BG|Relief)$/)
+		{
+			if (defined $tabWin{$tId}{currentTab})
+			{
+				$tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{button}->configure(-lc($1) => $pConfig->{$p});
+				if ($1 ne 'Relief')
+				{
+					my $active = 'active' . ($1 eq 'BG' ? 'back' : 'fore') . 'ground';
+					$tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{button}->configure(-$active => $pConfig->{$p});
+				}
+			}
+		}
+		elsif ($p =~ /^inactive(FG|BG)$/)
+		{
+			# currentTab is always defined if $nTabs > 0
+			if (defined $tabWin{$tId}{currentTab})
+            {
+				my $active = 'active' . ($1 eq 'BG' ? 'back' : 'fore') . 'ground';
+				for (my $i = 0; $i < $tabWin{$tId}{nTabs}; $i++)
+				{
+					next if ($i == $tabWin{$tId}{currentTab});
+					$tabWin{$tId}{tab}[$i]{button}->configure(-lc($1) => $pConfig->{$p}, -$active => $pConfig->{$p});
+				}
+			}
+		}
+		elsif ($p =~ /^title(FG|BG)$/)
+		{
+			$tabWin{$tId}{titleFrame}->configure(-lc($1) => $pConfig->{$p});
+		}
+		elsif ($p eq 'pollRate')
+		{
+			$TOP->afterCancel($repeatId);
+			$repeatId = $TOP->repeat($pConfig->{pollRate}, \&callback);
+			return;	# not a per-tabber option.
+		}
+		elsif ($p =~ /^(button|title|menu)Font$/)
+		{
+			setFont($tId, $1, $pConfig->{$p});
+		}
+		elsif ($p =~ /^autoSwallow(Class|Resource|Name)$/)
+		{
+			parseAutoSwallow($1);
+			return;	# not a per-tabber option.
+		}
+		else
+		{
+			$self->showError("Unknown option: $p");
+			return;
+		}
+	}
+});
 
 sub autoSwallow (%)
 {
@@ -80,9 +130,10 @@ sub autoSwallow (%)
 	push(@autoSwallow, \%args);
 }
 
-foreach my $type ('Class', 'Resource', 'Name')
+sub parseAutoSwallow ($)
 {
-	foreach (split(/,/, $pConfig->{"autoSwallow$type"}))
+	my ($type) = @_;
+	foreach (split(/,/, $pConfig->{'autoSwallow' . $type}))
 	{
 		if (!/^\s*(.+?)(\s+(\d+|any))?\s*$/i)
 		{
@@ -91,6 +142,11 @@ foreach my $type ('Class', 'Resource', 'Name')
 		}
 		autoSwallow(lc($type) => $1, type => (!defined $3 ? 'any' : $3));
 	}
+}
+
+foreach ('Class', 'Resource', 'Name')
+{
+	parseAutoSwallow($_);
 }
 
 # ======= ======= =======
@@ -112,6 +168,13 @@ foreach my $type ('Class', 'Resource', 'Name')
 
 # ======= ======= =======
 
+
+$xServer = X11::Protocol->new($TOP->screen());
+$xServer->event_handler('queue');
+
+# Check for registered X events every $pollRate milliseconds.
+$repeatId = $TOP->repeat($pConfig->{pollRate}, \&callback);
+
 sub createNewTabber ()
 {
 	my $tId;
@@ -120,7 +183,7 @@ sub createNewTabber ()
 		last if (!defined($tabWin{$tId}));
 	}
 
-	my $title = "FvwmTabs [$tId]";
+	my $title = $fvwm->name() . " [$tId]";
 	my $tl = $TOP->Toplevel(Name => $fvwm->name(),
 							-class => $fvwm->name(),
 							-title => $title);
@@ -132,6 +195,7 @@ sub createNewTabber ()
 	$topFrame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
 
 	my $titleFrame = $topFrame->Label(-text => "No title",
+									  -font => $pConfig->{titleFont},
 									  -bg => $pConfig->{titleBG},
 									  -fg => $pConfig->{titleFG});
 	$titleFrame->pack(-expand => 0, -fill => 'x', -side => 'top');
@@ -142,17 +206,46 @@ sub createNewTabber ()
 	$tl->protocol('WM_DELETE_WINDOW', [\&closeTabber, $tId]);
 	$tl->protocol('WM_TAKE_FOCUS', [\&takeFocus, $tId]);
 
-	my $b = $tabFrame->Button(-text => "FvwmTabs", -command => [\&tabInfo, $tId]);
+	my $b = $tabFrame->Button(-text => $fvwm->name(),
+							  -font => $pConfig->{buttonFont},
+							  -padx => 3,
+							  -command => [\&tabInfo, $tId]);
 	$b->pack(-side => 'left', -expand => 0);
 
-	my $menu = $tl->Menu(-tearoff => 0);
+	$tabFrame->configure(-width => $b->reqwidth(), -height => $b->reqheight());
+	$tabFrame->packPropagate(0);
+
+	my $menu = $tl->Menu(-tearoff => 0, -font => $pConfig->{menuFont});
 
 	$b->Tk::bind('<ButtonRelease-3>', sub {
 		$menu->delete(0, 'end');
-		$menu->add('command', -label => 'Release All', -command => [\&releaseAll, $tId, 0]);
-		$menu->add('command', -label => 'Release All (Iconify)', -command => [\&releaseAll, $tId, 1]);
-		$menu->add('command', -label => 'Add', -command => [\&pickAndAdd, $tId, '']);
-		$menu->add('command', -label => 'Multi Add', -command => [\&pickAndAdd, $tId, 'multi']);
+		$menu->add('command',
+				   -label => 'Release All',
+				   -command => [\&releaseAll, $tId, 0]);
+		$menu->add('command',
+				   -label => 'Release All (Iconify)',
+				   -command => [\&releaseAll, $tId, 1]);
+		$menu->add('command',
+				   -label => 'Add',
+				   -command => [\&pickAndAdd, $tId, '']);
+		$menu->add('command',
+				   -label => 'Multi Add',
+				   -command => [\&pickAndAdd, $tId, 'multi']);
+		if ($pConfig->{fontSelector} ne 'none')
+		{
+			my $fontMenu = $menu->Menu(-tearoff => 0, -font => $pConfig->{menuFont});
+			$fontMenu->add('command',
+						   -label => 'Button Font',
+						   -command => [\&selectFont, $tId, 'button']);
+			$fontMenu->add('command',
+						   -label => 'Title Font',
+						   -command => [\&selectFont, $tId, 'title']);
+			$fontMenu->add('command',
+						   -label => 'Menu Font',
+						   -command => [\&selectFont, $tId, 'menu']);
+
+			$menu->add('cascade', -label => 'Font', -menu => $fontMenu);
+		}
 		$menu->add('separator');
 
 		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
@@ -168,11 +261,14 @@ sub createNewTabber ()
 
 	$tabWin{$tId}{nTabs} = 0;
 	$tabWin{$tId}{toplevel} = $tl;
+	$tabWin{$tId}{toplevelId} = hex($tabWin{$tId}{toplevel}->id());
 	$tabWin{$tId}{tabFrame} = $tabFrame;
 	$tabWin{$tId}{titleFrame} = $titleFrame;
 	$tabWin{$tId}{winFrame} = $winFrame;
 	$tabWin{$tId}{currentTab} = undef;
 	$tabWin{$tId}{parent} = hex($winFrame->id);
+	$tabWin{$tId}{menuButton} = $b;
+	$tabWin{$tId}{menu} = $menu;
 	# $tl->wrapper() doesn't work ...
 	# selfId appears to be parent + 1 anyway.
 	$tabWin{$tId}{selfId} = $tabWin{$tId}{parent} + 1;
@@ -190,13 +286,15 @@ sub takeFocus ($)
 	my $winId;
 	if (!defined $tabWin{$tId}{currentTab})
 	{
-		$winId = $tabWin{$tId}{selfId};
+		$winId = $tabWin{$tId}{toplevelId};
 	}
 	else
 	{
 		$winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
 	}
+	# "revert-to" (2nd) arg can be 'Parent', 'PointerRoot' or 'None'.
 	$xServer->SetInputFocus($winId, 'Parent', 'CurrentTime');
+	# $fvwm->debug("takeFocus(end) winId=$winId");
 }
 
 # Don't you just *love* Prince!?
@@ -218,6 +316,7 @@ sub letItGo ($$$$)
 							  x => $tabWin{$tId}{tab}[$tabNo]{initialXPos},
 							  y => $tabWin{$tId}{tab}[$tabNo]{initialYPos});
 	$xServer->MapWindow($winId);
+	XSync();
 	$fvwm->send("WindowId $winId Iconify") if ($bIconify);
 	removeTab($tId, $tabNo, 'letgo');
 }
@@ -240,7 +339,10 @@ sub XSync ()
 {
 	# There doesn't appear to be an XSync function so we'll just make
 	# do with atom() & ignore the return value.
-	$xServer->atom("WM_NAME");
+	# Actually, atom() is cached by X11::Protocol so we need to issue
+	# the actual X request.
+	# $xServer->atom("WM_NAME");
+	$xServer->req('InternAtom', "WM_NAME", 0);
 }
 
 sub closeTabber ($)
@@ -248,12 +350,22 @@ sub closeTabber ($)
 	my ($tId) = @_;
 
 	$fvwm->debug("closeTabber($tId)");
+
+	$xServer->ChangeWindowAttributes($tabWin{$tId}{parent},
+		event_mask => $xServer->pack_event_mask());
+
 	releaseAll($tId, 0);
 	$tabWin{$tId}{toplevel}->withdraw();
 	# We need to wait for the X server to do the reparenting before
 	# we can destroy the window.
 	XSync();
-	$tabWin{$tId}{toplevel}->destroy();
+
+	# If we destroy the toplevel we find that subsequent tabbers have
+	# strange window ids. That is, X/FVWM identify the tabber differently
+	# than the tabber identifies itself ($tabWin{$tId}{parent}).
+	# Hence, we don't destroy the toplevel. This causes a memory leak of
+	# ~40kb for every tabber.
+	# $tabWin{$tId}{toplevel}->destroy();
 	delete $tabWin{$tId};
 }
 
@@ -299,10 +411,6 @@ $fvwm->addHandler(M_STRING, sub {
 		print("focus not in tabber.\n"), return if ($tId < 0);
 		no strict;
 		&$1($tId, split(/\s+/, $3));
-		# I don't know why, but if we're getting messages to change the
-		# shown tab really quickly we get a 'Protocol Error'. The call
-		# to callback() below fixes the problem.
-		callback();
 	}
 	else
 	{
@@ -367,12 +475,12 @@ $fvwm->addHandler(M_ADD_WINDOW, sub {
 # ON_EXIT handler is invoked just before this module terminates.
 $fvwm->addHandler(ON_EXIT, sub {
 	my ($self, $event) = @_; 
-	print("FvwmTabs: Got ON_EXIT event.\n");
+	print($fvwm->name() . ": Got ON_EXIT event.\n");
 	cleanup();
 });
 
 $SIG{PIPE} = sub {
-	print("FvwmTabs: SIGPIPE!\n");
+	print($fvwm->name() . ": SIGPIPE!\n");
 	cleanup();
 	exit;
 };
@@ -385,18 +493,10 @@ sub cleanup ()
 	}
 }
 
-$xServer = X11::Protocol->new($TOP->screen());
-# $xServer->{event_handler} = \&eventHandler;
-$xServer->event_handler('queue');
-
 sub callback
 {
-	# $xServer->handle_input();
-	# $xServer->next_event();
-	# TODO: why do I have to send a req to get events.
-	# Need a non-blocking way to get an event.
- 	$xServer->req('ListProperties', $xServer->root());
-	# XSync(); doesn't work.
+ 	# $xServer->req('ListProperties', $xServer->root());
+	XSync();
 	while (1)
 	{
 		my %event = $xServer->dequeue_event();
@@ -404,9 +504,6 @@ sub callback
 		eventHandler(%event);
 	}
 }
-
-# Check for registered X events every $pollRate milliseconds.
-$TOP->repeat($pConfig->{pollRate}, \&callback);
 
 sub eventHandler
 {
@@ -492,8 +589,8 @@ sub addTab ($$)
 	if ($winId == $tabWin{$tId}{selfId})
 	{
 		# can't make tabber a child of itself
-		print("Can't add self to tabber!\n");
 		$fvwm->send("Beep");
+		$fvwm->showError("Can't add self to tabber!");
 		return;
 	}
 
@@ -512,13 +609,18 @@ sub addTab ($$)
 	my $txt = getProperty($winId, "WM_ICON_NAME");
 	$tabWin{$tId}{tab}[$tabNo]{button} =
 		$tabWin{$tId}{tabFrame}->Button(-text => $txt,
-										-command => [\&showTab, $tId, $tabNo]);
+										-padx => 2,
+										-width => 1,
+										-anchor => 'w',
+										-command => [\&showTab, $tId, $tabNo],
+										-font => $pConfig->{buttonFont});
 	my $pButton = $tabWin{$tId}{tab}[$tabNo]{button};
 
 	# Raise the FvwmTabs window whenever a tab is selected.
 	$pButton->Tk::bind('<ButtonPress-1>', sub { $fvwm->send("Current Raise"); });
-	$pButton->pack(-side => 'left', -expand => 1, -fill => 'both');
+	$pButton->pack(-side => 'left', -expand => 1, -fill => 'x');
 	$pButton->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $tabNo, 0]);
+	$pButton->Tk::bind('<ButtonRelease-3>', [\&letItGo, $tId, $tabNo, 1]);
 	$tabWin{$tId}{tab}[$tabNo]{title} = getProperty($winId, "WM_NAME");
 
 	# Ensure we are notified of any attribute changes in the new window.
@@ -555,6 +657,9 @@ sub tabInfo ($)
 	{
 		print("\t" . join(", ", map("$_=" . $a->{$_}, sort(keys(%{$a})))) . "\n");
 	}
+	print("toplevel->id()=" . $tabWin{$tId}{toplevel}->id() . "\n");
+	print("toplevel->wrapper()=" . $tabWin{$tId}{toplevel}->wrapper() . "\n");
+	print("toplevel->frame()=" . $tabWin{$tId}{toplevel}->frame() . "\n");
 }
 
 sub getProperty ($$)
@@ -583,6 +688,8 @@ sub removeTab ($$$)
 {
 	my ($tId, $tabNo, $state) = @_;
 
+	$fvwm->debug("removeTab($tId, $tabNo, $state)");
+
 	if ($state eq 'letgo')
 	{
 		# We are no longer interested in events for this window.
@@ -598,6 +705,7 @@ sub removeTab ($$$)
 		$tabWin{$tId}{tab}[$t] = $tabWin{$tId}{tab}[$t + 1];
 		$tabWin{$tId}{tab}[$t]{button}->configure(-command => [\&showTab, $tId, $t]);
 		$tabWin{$tId}{tab}[$t]{button}->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $t, 0]);
+		$tabWin{$tId}{tab}[$t]{button}->Tk::bind('<ButtonRelease-3>', [\&letItGo, $tId, $t, 1]);
 	}
 	$tabWin{$tId}{nTabs}--;
 	$tabWin{$tId}{tab}[$tabWin{$tId}{nTabs}] = undef;
@@ -615,9 +723,14 @@ sub removeTab ($$$)
 			$tabWin{$tId}{winFrame}->configure(-height => 1, -width => 0);
 		}
 	}
-	elsif ($tabWin{$tId}{currentTab} > $tabNo)
+	else
 	{
-		$tabWin{$tId}{currentTab}--;
+		$tabWin{$tId}{currentTab}-- if ($tabWin{$tId}{currentTab} > $tabNo);
+		if ($tabWin{$tId}{nTabs} == 1)
+		{
+			# allow the selected tab button to expand as much as possible.
+			$tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{button}->pack(-expand => 1);
+		}
 	}
 }
 
@@ -643,7 +756,9 @@ sub showTab ($$)
 					-activebackground => $pConfig->{inactiveBG},
 					-fg => $pConfig->{inactiveFG},
 					-activeforeground => $pConfig->{inactiveFG},
+					-width => 1,
 					-relief => 'raised');
+		$tabWin{$tId}{tab}[$currentTab]{button}->pack(-expand => 1);
 	}
 	# Map the new tab.
 	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
@@ -654,12 +769,19 @@ sub showTab ($$)
 					-activebackground => $pConfig->{activeBG},
 					-fg => $pConfig->{activeFG},
 					-activeforeground => $pConfig->{activeFG},
-					-relief => $pConfig->{activeButtonRelief});
+					-width => 0,
+					-relief => $pConfig->{activeRelief});
+	my $bExpand = ($tabWin{$tId}{nTabs} == 1);
+	$tabWin{$tId}{tab}[$tabNo]{button}->pack(-expand => $bExpand);
 	$tabWin{$tId}{titleFrame}->configure(-text => $tabWin{$tId}{tab}[$tabNo]{title});
 
 	my %g = $xServer->req('GetGeometry', $winId);
 	$tabWin{$tId}{winFrame}->configure(-height => $g{height}, -width => $g{width});
 	$tabWin{$tId}{toplevel}->geometry("");
+	# If we're changing the active tab really quickly we have to handle/flush
+	# all the X events in the queue - this prevents us from getting a
+	# 'Protocol Error'.
+	callback();
 }
 
 sub setTabTitle($$$$)
@@ -669,8 +791,6 @@ sub setTabTitle($$$$)
 	# This is a nice feature - Wrap the title text across multiple lines.
 	# The following command in an xterm window illustrates the usefulness:
 	# echo "abc\ndef\nghi\njkl" && sleep 3
-	# $titleStr =~ s/"/\\"/g;
-	# chomp($titleStr);
 
 	$titleStr =~ s/\n//g;
 	$tabWin{$tId}{tab}[$tabNo]{title} = $titleStr;
@@ -692,6 +812,55 @@ sub setTabName($$$$)
 	$tabWin{$tId}{tab}[$tabNo]{button}->configure(-text => $name);
 }
 
+sub selectFont ($$)
+{
+	my ($tId, $type) = @_;
+	my $cmd = $pConfig->{fontSelector};
+	my $currentFont = $pConfig->{$type . 'Font'};
+	$cmd =~ s/%f/$currentFont/g;
+	$SIG{CHLD}= sub { wait; };
+	my $pipe = new FileHandle();
+	if (!$pipe->open("$cmd|"))
+	{
+		$fvwm->showError("Select font: command $cmd failed.");
+		return
+	}
+
+	sub fontCallback ($$$)
+	{
+		my ($pipe, $tId, $type) = @_;
+		my $line = $pipe->getline();
+		setFont($tId, $type, $line) if (defined($line));
+		$pipe->close() if ($pipe->eof());
+	}
+
+	$TOP->fileevent($pipe, "readable" => [\&fontCallback, $pipe, $tId, $type]);
+}
+
+sub setFont ($$$)
+{
+	my ($tId, $type, $font) = @_;
+	$fvwm->debug("new $type font is: $font");
+	$pConfig->{$type . 'Font'} = $font;
+	if ($type eq 'button')
+	{
+		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
+		{
+			$tabWin{$tId}{tab}[$tabNo]{button}->configure(-font => $font);
+		}	
+		$tabWin{$tId}{menuButton}->configure(-font => $font);
+		$tabWin{$tId}{tabFrame}->configure(-height => $tabWin{$tId}{menuButton}->reqheight());
+	}
+	elsif ($type eq 'title')
+	{
+		$tabWin{$tId}{titleFrame}->configure(-font => $font);
+	}
+	elsif ($type eq 'menu')
+	{
+		$tabWin{$tId}{menu}->configure(-font => $font);
+	}
+}
+
 sub about ($)
 {
 	my ($tId) = @_;
@@ -699,11 +868,12 @@ sub about ($)
 	my $rcsId = '$Id$';
 	$rcsId =~ /,v (.*) (\d+\/\d+\/\d+) \d+:\d+:\d+/;
 	my $version = $fvwm->name() . " v$1   ($2)\n\nby Scott Smedley\nscottie7\@tpg.com.au"; # \n\nhttp://users.tpg.com.au/users/scottie7/fvwmtabs.html";
-	# TODO: Tk::Dialog has a hardcoded wraplength of 3 inches, how annoying!
-	$tabWin{$tId}{toplevel}->Dialog(-text => $version,
-									-bitmap => 'info',
-									-title => 'About ' . $fvwm->name(),
-									-buttons => ['Ok'])->Show();
+	# TODO: Tk::Dialog has a hardcoded width of 3 inches, how annoying!
+	# $tabWin{$tId}{toplevel}->Dialog(-text => $version,
+	# 								-bitmap => 'info',
+	# 								-title => 'About ' . $fvwm->name(),
+	# 								-buttons => ['Ok'])->Show();
+	$fvwm->showMessage($version, "About " . $fvwm->name());
 }
 
 print("Module " . $fvwm->name() . " started.\n");
@@ -713,9 +883,12 @@ $fvwm->eventLoop();
 # TODO
 #
 # - when user resizes window, dynamic-resizes no longer work.
-# - colorset support & dynamic configuration options.
-#   (waiting for support in fvwm-perllib)
+# - colorset support
+#   (waiting for Colorset tracker in fvwm-perllib)
 # - consider removing the 'FvwmTabs' button & using the menu popup over
 #   the title frame.
 # - associate a mini icon with each tab-button.
 # - Preserve state b/w FVWM Restarts.
+# - BUG: KillModule FvwmTabs isn't releasing all tabs. (fixed?)
+# - BUG: (rare) sometimes get a "BUGGER: no match on <id>\nfocus not in tabber"
+#        error.
