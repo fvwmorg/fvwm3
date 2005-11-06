@@ -63,7 +63,9 @@ sub createNewTabber ()
 	}
 
 	my $title = "FvwmTabs [$tId]";
-	my $tl = $TOP->Toplevel(-title => $title);
+	my $tl = $TOP->Toplevel(Name => 'FvwmTabs',
+							-class => 'FvwmTabs',
+							-title => $title);
 	$tl->iconname($title);
 	my $topFrame = $tl->Frame();
 	my $tabFrame = $topFrame->Frame();
