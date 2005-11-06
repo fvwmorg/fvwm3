@@ -300,14 +300,45 @@ sub createNewTabber ()
 
 	$xServer->ChangeWindowAttributes($tabWin{$tId}{parent},
 		event_mask => $xServer->pack_event_mask('ResizeRedirect'));
+
+	wrapperWinId($tId);
+}
+
+sub wrapperWinId ($)
+{
+	my ($tId) = @_;
+
+	if (exists $tabWin{$tId}{wrapperWinId})
+	{
+		$xServer->ChangeWindowAttributes($tabWin{$tId}{wrapperWinId},
+			event_mask => $xServer->pack_event_mask());
+	}
+
+	# The window id of the WM decoration frame appears to be the great
+	# grandparent of the toplevel window.
+	#my ($root, $parent, @kids);
+	#($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
+	#($root, $parent, @kids) = $xServer->QueryTree($parent);
+	#($root, $parent, @kids) = $xServer->QueryTree($parent);
+	# $tabWin{$tId}{wrapperWinId} = $parent;
+	$tabWin{$tId}{wrapperWinId} = hex($tabWin{$tId}{toplevel}->frame());
+	$xServer->ChangeWindowAttributes($tabWin{$tId}{wrapperWinId},
+		event_mask => $xServer->pack_event_mask('EnterWindow'));
+	$tabWin{$tId}{focusTimestamp} = 'CurrentTime';
 }
 
 sub takeFocus ($)
 {
 	my ($tId) = @_;
 
+	# $fvwm->debug("takeFocus($tId) state=" . $tabWin{$tId}{toplevel}->state());
 	my $winId;
-	if (!defined $tabWin{$tId}{currentTab})
+	if ($tabWin{$tId}{toplevel}->state() eq 'iconic')
+	{
+		# TODO: who do we give the focus to?
+		$winId = $tabWin{$tId}{toplevelId};
+	}
+	elsif (!defined $tabWin{$tId}{currentTab})
 	{
 		$winId = $tabWin{$tId}{toplevelId};
 	}
@@ -316,7 +347,7 @@ sub takeFocus ($)
 		$winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
 	}
 	# "revert-to" (2nd) arg can be 'Parent', 'PointerRoot' or 'None'.
-	$xServer->SetInputFocus($winId, 'Parent', 'CurrentTime');
+	$xServer->SetInputFocus($winId, 'Parent', $tabWin{$tId}{focusTimestamp});
 	# $fvwm->debug("takeFocus(end) winId=$winId");
 }
 
@@ -340,7 +371,13 @@ sub letItGo ($$$$)
 							  y => $tabWin{$tId}{tab}[$tabNo]{initialYPos});
 	$xServer->MapWindow($winId);
 	XSync();
-	$fvwm->send("WindowId $winId Iconify") if ($bIconify);
+
+	# if the window we're releasing is a tabber, we need to recompute
+	# the wrapper window id as it can change dynamically.
+	my $otherTId = winIdToTId($winId);
+	wrapperWinId($otherTId) if ($otherTId >= 0);
+
+	$fvwm->send("Iconify", $winId) if ($bIconify);
 	removeTab($tId, $tabNo, 'letgo');
 }
 
@@ -400,10 +437,9 @@ sub winIdToTId ($)
 	{
 		return $tId if ($winId == $tabWin{$tId}{selfId});
 	}
-	print("BUGGER: no match on $winId\n");
+	# print("BUGGER: no match on $winId\n");
 	return -1;
 }
-
 
 # SendToModule commands should be arriving as M_STRING events.
 $fvwm->addHandler(M_STRING, sub {
@@ -427,7 +463,9 @@ $fvwm->addHandler(M_STRING, sub {
 		addTab($tId, $event->args->{win_id});
 		pickAndAdd($tId, 'multi') if ($bMulti);
 	}
-	elsif ($event->args->{text} =~ /fn (\S+) (0x[[:xdigit:]]+)\s*(.*)/)
+	# Older versions of Perl don't support 'xdigit'.
+	# elsif ($event->args->{text} =~ /fn (\S+) (0x[[:xdigit:]]+)\s*(.*)/)
+	elsif ($event->args->{text} =~ /fn (\S+) (0x[0-9a-fA-F]+)\s*(.*)/)
 	{
 		# fn <fnName> <winId> <optArgs>
 		my $tId = winIdToTId(hex($2));
@@ -445,6 +483,8 @@ $fvwm->addHandler(M_STRING, sub {
 sub showNext ($$)
 {
 	my ($tId, $inc) = @_;
+
+	return if ($tabWin{$tId}{nTabs} <= 0);
 	my $nextTabNo = ($tabWin{$tId}{currentTab} + $inc) % $tabWin{$tId}{nTabs};
 	showTab($tId, $nextTabNo) if ($nextTabNo != $tabWin{$tId}{currentTab});
 }
@@ -582,6 +622,20 @@ sub eventHandler
 									  "height" => $h, # $event{height},
 									  "width" => $event{width});
 		}
+		return;
+	}
+	elsif ($event{name} eq 'EnterNotify')
+	{
+		my $tId = -1;
+		for (keys(%tabWin))
+		{
+			$tId = $_, last if ($tabWin{$_}{wrapperWinId} == $event{event});
+		}
+
+		print "BUG: EnterNotify\n", return if ($tId < 0);
+		$tabWin{$tId}{focusTimestamp} = $event{time};
+		$fvwm->debug("focusTimestamp set to $tabWin{$tId}{focusTimestamp}");
+		takeFocus($tId);
 		return;
 	}
 
@@ -726,6 +780,7 @@ sub tabInfo ($)
 	print("toplevel->id()=" . $tabWin{$tId}{toplevel}->id() . "\n");
 	print("toplevel->wrapper()=" . $tabWin{$tId}{toplevel}->wrapper() . "\n");
 	print("toplevel->frame()=" . $tabWin{$tId}{toplevel}->frame() . "\n");
+	print("wrapperWinId=" . $tabWin{$tId}{wrapperWinId} . "\n");
 	print("autoResize is " . $pConfig->{autoResize} . "\n");
 	XSync();
 }
@@ -812,11 +867,7 @@ sub showTab ($$)
 {
 	my ($tId, $tabNo) = @_;
 
-	if ($tabNo >= $tabWin{$tId}{nTabs})
-	{
-		print(STDERR "BUG: invalid tabNo ($tabNo) in call to showTab().\n");
-		return
-	}
+	$fvwm->send("Beep"), return if ($tabNo >= $tabWin{$tId}{nTabs});
 
 	# Unmap the current tab.
 	if (defined($tabWin{$tId}{currentTab}))
@@ -966,13 +1017,13 @@ $fvwm->eventLoop();
 #   (need a vertical font, can't find one.)
 # - option: icons on tab buttons.
 # - option: set FvwmTabs title to active tab title.
-# - when user resizes window, dynamic-resizes no longer work.
 # - colorset support
 #   (waiting for Colorset tracker in fvwm-perllib)
 # - consider removing the 'FvwmTabs' button & using the menu popup over
 #   the title frame.
 # - associate a mini icon with each tab-button.
 # - Preserve state b/w FVWM Restarts.
-# - BUG: (rare) sometimes get a "BUGGER: no match on <id>\nfocus not in tabber"
-#        error.
+# - BUG: iconified FvwmTabs icons don't take focus.
 # - BUG: problem swallowing shaded windows.
+# - BUG: Using "Maximise" to resize FvwmTabs windows stops dynamic
+#        resizing from working.
