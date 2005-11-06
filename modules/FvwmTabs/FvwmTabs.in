@@ -2,7 +2,7 @@
 
 # $Id$
 
-# 	FVWM-Tabs
+# 	FvwmTabs
 #	Copyright (C) 2002 Scott Smedley ss@aao.gov.au
 #	
 #	This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,7 @@
 # for how to install/use this module.
 
 use strict;
-use vars qw($TOP $tabber %opts $tabFrame $parent $xServer $winFrame);
-use vars qw(@tab $nTabs $currentTab $title);
+use vars qw($TOP $fvwm $xServer %tabWin);
 use X11::Protocol;
 use Tk;
 
@@ -39,52 +38,130 @@ my $inactiveBG = 'royalblue';
 my $inactiveFG = 'antiquewhite';
 
 
-my $TOP = new MainWindow();
-my $tabber = new FVWM::Module::Tk($TOP,
-								  Name => "FvwmTabs",
-								  Mask => (M_ERROR | M_STRING));
+$TOP = new MainWindow();
+$TOP->withdraw();
+# Why does FVWM::Module::Tk require a widget?
+$fvwm = new FVWM::Module::Tk($TOP,
+							 Name => "FvwmTabs",
+							 Mask => (M_ERROR | M_STRING));
 
+$fvwm->addDefaultErrorHandler();
 
-$nTabs = 0;
-$currentTab = undef;
 # TODO: read configuration settings from FVWM, etc.
-# &readOptions();
+my $params = $fvwm->readConfigInfo();
+# foreach (keys(%params))
+# {
+# 	print("$_=$params{$_}\n");
+# }
 
-my $topFrame = $TOP->Frame();
-$TOP->title("FVWM Tabs");
-$tabFrame = $topFrame->Frame();
-$tabFrame->pack(-side => 'top', -expand => 0, -fill => 'x');
-$topFrame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
+sub createNewTabber ()
+{
+	my $tId;
+	for ($tId = 0; ; $tId++)
+	{
+		last if (!defined($tabWin{$tId}));
+	}
 
-$title = $topFrame->Label(-text => "No title");
-$title->pack(-expand => 0, -fill => 'x', -side => 'top');
+	my $title = "FvwmTabs [$tId]";
+	my $tl = $TOP->Toplevel(-title => $title);
+	$tl->iconname($title);
+	my $topFrame = $tl->Frame();
+	my $tabFrame = $topFrame->Frame();
+	$tabFrame->pack(-side => 'top', -expand => 0, -fill => 'x');
+	$topFrame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
 
-my $winFrame = $topFrame->Frame(-height => 30, -width => 60);
-$winFrame->pack(-expand => 1, -fill => 'both', -side => 'top');
+	my $titleFrame = $topFrame->Label(-text => "No title");
+	$titleFrame->pack(-expand => 0, -fill => 'x', -side => 'top');
 
-$TOP->protocol('WM_DELETE_WINDOW', sub {
-	print("Got WM_DELETE_WINDOW\n");
-	exit if ($nTabs == 0);
-	&releaseAll();
-	# wait a bit before terminating to allow windows to be remapped
-	# & all X events to be handled.
-	# TODO: isn't there any way to XSync?
-	$topFrame->after(1500, \&exit);
-});
+	my $winFrame = $topFrame->Frame();
+	$winFrame->pack(-expand => 1, -fill => 'both', -side => 'top');
+
+	$tl->protocol('WM_DELETE_WINDOW', [\&closeTabber, $tId]);
+
+	my $b = $tabFrame->Button(-text => "FvwmTabs", -command => [\&tabInfo, $tId]);
+	$b->pack(-side => 'left', -expand => 0);
+
+	my $menu = $tl->Menu(-tearoff => 0);
+
+	$b->Tk::bind('<ButtonRelease-3>', sub {
+		$menu->delete(0, 'end');
+		$menu->add('command', -label => 'Release All', -command => [\&releaseAll, $tId]);
+		$menu->add('command', -label => 'Add', -command => [\&pickAndAdd, $tId]);
+		$menu->add('separator');
+
+		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
+		{
+			$menu->add('command', -label => $tabWin{$tId}{tab}[$tabNo]{title},
+								 -command => [\&showTab, $tId, $tabNo]);
+		}
+		$menu->add('separator') if ($tabWin{$tId}{nTabs} > 0);
+		$menu->add('command', -label => 'Close', -command => [\&closeTabber, $tId]);
+		$menu->Popup(-popanchor => 'nw', -popover => 'cursor');
+	});
+
+	$tabWin{$tId}{nTabs} = 0;
+	$tabWin{$tId}{toplevel} = $tl;
+	$tabWin{$tId}{tabFrame} = $tabFrame;
+	$tabWin{$tId}{titleFrame} = $titleFrame;
+	$tabWin{$tId}{winFrame} = $winFrame;
+	$tabWin{$tId}{currentTab} = undef;
+	$tabWin{$tId}{parent} = hex($winFrame->id);
+	# selfId appears to be parent + 1.
+	$tabWin{$tId}{selfId} = $tabWin{$tId}{parent} + 1;
+	# printf("created parent 0x%x\n", $tabWin{$tId}{parent});
+}
+
+sub closeTabber ($)
+{
+	my ($tId) = @_;
+
+	print("Got WM_DELETE_WINDOW for $tId\n");
+	&releaseAll($tId);
+	# TODO: do we need to sleep for a bit?
+	$tabWin{$tId}{toplevel}->destroy();
+	delete $tabWin{$tId};
+}
+
+
+sub winIdToTId ($)
+{
+	my ($winId) = @_;
+
+	foreach my $tId (keys(%tabWin))
+	{
+		return $tId if ($winId == $tabWin{$tId}{selfId});
+	}
+	print("BUGGER: no match on $winId\n");
+	return -1;
+}
+
 
 # SendToModule commands should be arriving as M_STRING events.
-$tabber->addHandler(M_STRING, sub {
+$fvwm->addHandler(M_STRING, sub {
 	my ($self, $event) = @_;
 
 	print("Got " . $event->name . " event.\n");
+	print("self=" . $self->name . "\n");
 
 	foreach (sort(keys %{$event->args}))
 	{
 		print("\t$_ = " . $event->args->{$_} . "\n");
 	}
-	if ($event->args->{text} eq 'addme')
+	if ($event->args->{text} =~ /newTabber/)
 	{
-		addTab($event->args->{win_id});
+		&createNewTabber();
+	}
+	elsif ($event->args->{text} =~ /addme (w?)(\d+)/)
+	{
+		my $tId = ($1 eq '' ? $2 : &winIdToTId($2));
+		if (!exists $tabWin{$tId})
+		{
+			print("Unknown Tabber $2\n");
+			return;
+		}
+		print("start " . $event->args->{text} . "\n");
+		&addTab($tId, $event->args->{win_id});
+		print("end addme\n");
 	}
 	else
 	{
@@ -93,37 +170,41 @@ $tabber->addHandler(M_STRING, sub {
 });
 
 # ON_EXIT handler is invoked just before this module terminates.
-$tabber->addHandler(ON_EXIT, sub {
+$fvwm->addHandler(ON_EXIT, sub {
 	my ($self, $event) = @_; 
-
 	print("Got ON_EXIT event.\n");
-	&releaseAll();
+	&cleanup();
 });
 
-
-sub releaseAll ()
+# release all windows from <$tId> tabber.
+sub releaseAll ($)
 {
-	for (my $tabNo = $nTabs - 1; $tabNo >= 0; $tabNo--)
+	my ($tId) = @_;
+	for (my $tabNo = $tabWin{$tId}{nTabs} - 1; $tabNo >= 0; $tabNo--)
 	{
-		&letItGo(undef, $tabNo);
+		&letItGo(undef, $tId, $tabNo);
 		# my $winId = $tab[$tabNo]{winId};
 		# print(sprintf("reparenting 0x%x\n", $winId));
 		# $xServer->ReparentWindow($winId, $xServer->root(), (0, 0));
 	}
-	@tab = undef;
-	$nTabs = 0;
-	$currentTab = undef;
+	$tabWin{$tId}{tab} = undef;
+	$tabWin{$tId}{nTabs} = 0;
+	$tabWin{$tId}{currentTab} = undef;
 }
-
-$tabber->addDefaultErrorHandler;
 
 $SIG{PIPE} = sub {
 	print("SIGPIPE!\n");
-	&releaseAll();
+	&cleanup();
 	exit;
 };
 
-$parent = hex($winFrame->id);
+sub cleanup ()
+{
+	foreach (keys(%tabWin))
+	{
+		&releaseAll($_);
+	}
+}
 
 $xServer = X11::Protocol->new($TOP->screen());
 # $xServer->{event_handler} = \&eventHandler;
@@ -134,7 +215,7 @@ sub callback
 	# print("#");
 	# $xServer->handle_input();
 	# $xServer->next_event();
-	# TODO: why do I have to send this req to get events.
+	# TODO: why do I have to send a req to get events.
 	# Need a non-blocking way to get an event.
  	$xServer->req('ListProperties', $xServer->root());
 	while (1)
@@ -146,20 +227,30 @@ sub callback
 }
 
 # Check for registered X events every second.
-$topFrame->repeat(1000, \&callback);
+$TOP->repeat(1000, \&callback);
 
 sub eventHandler
 {
 	my (%event) = @_;
 
-	print("Got an X event:\n\t" . join("\n\t", map("$_ = $event{$_}", keys(%event))) . "\n");
+	print("Got an X event: " . join(", ", map("$_ = $event{$_}", keys(%event))) . "\n");
 
-	my $tabNo = &getTabNo($event{window});
+	my $tabNo = -1;
+	my $tId = undef;
+	for (keys(%tabWin))
+	{
+		$tabNo = &getTabNo($_, $event{window});
+		$tId = $_, last if ($tabNo >= 0)
+	}
+
 	if ($tabNo < 0)
 	{
 		print(STDERR "Ignoring event for invalid/unknown window.\n");
 		return;
 	}
+
+	# print("tId appears to be: $tId\n");
+
 	if ($event{name} eq 'PropertyNotify')
 	{
 		my $prop = $xServer->atom_name($event{atom});
@@ -169,64 +260,80 @@ sub eventHandler
 		print("new value is: $val\n");
 		if ($prop eq 'WM_NAME')
 		{
-			&setTabTitle($event{window}, $val);
+			&setTabTitle($tId, $tabNo, $event{window}, $val);
 		}
 		elsif ($prop eq 'WM_ICON_NAME')
 		{
-			&setTabName($event{window}, $val);
+			&setTabName($tId, $tabNo, $event{window}, $val);
 		}
 	}
 	elsif ($event{name} eq 'DestroyNotify')
 	{
-		&removeTab($tabNo, 'destroyed');
+		&removeTab($tId, $tabNo, 'destroyed');
 	}
-	else
-	{
-		print(STDERR "Got a strange event: $event{name}\n");
-	}
+	# else
+	# {
+	# 	print(STDERR "Got a strange event: $event{name}\n");
+	# }
 }
 
 # Don't you just *love* Prince!?
-sub letItGo ($$)
+sub letItGo ($$$)
 {
-	my ($button, $tabNo) = @_;
+	my ($button, $tId, $tabNo) = @_;
 
-	print("letItGo($tabNo) called: nTabs=$nTabs\n");
-	if ($tabNo >= $nTabs)
+	print("letItGo($tId, $tabNo)\n");
+
+	if ($tabNo >= $tabWin{$tId}{nTabs})
 	{
 		print(STDERR "BUG: invalid tabNo.\n");
 		return;
 	}
 
-	my $winId = $tab[$tabNo]{winId};
+	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
 	print(sprintf("reparenting 0x%x\n", $winId));
 	$xServer->ReparentWindow($winId, $xServer->root(), (0, 0));
-	&removeTab($tabNo, 'letgo');
+	$xServer->MapWindow($winId);
+	&removeTab($tId, $tabNo, 'letgo');
 }
 
-sub addTab ($)
+sub addTab ($$)
 {
-	my ($winId) = @_;
+	my ($tId, $winId) = @_;
+
+	# print("addTab($tId, $winId)\n");
 
 	my %g = $xServer->req('GetGeometry', $winId);
-	foreach my $k (keys(%g))
+	# TODO: save geometry of window for later.
+	# foreach my $k (keys(%g))
+	# {
+	# 	print("\tgeom: $k = $g{$k}\n");
+	# }
+
+	# print("tId=$tId\n");
+	# print("addTab parent=" . $tabWin{$tId}{parent} . "\n");
+	# printf("reparenting 0x%x to 0x%x\n", $winId, $tabWin{$tId}{parent});
+
+	if ($winId == $tabWin{$tId}{selfId})
 	{
-		print("\tgeom: $k = $g{$k}\n");
+		# can't make tabber a child of itself
+		print("Can't add self to tabber!\n");
+		$fvwm->send("Beep");
+		return;
 	}
 
-
-	printf("parent is 0x%x\n", $parent);
-	print("reparenting $winId\n");
-	$xServer->ReparentWindow($winId, $parent, (0, 0));
-	my $tabNo = $nTabs++;
-	$tab[$tabNo]{winId} = $winId;
+	$xServer->ReparentWindow($winId, $tabWin{$tId}{parent}, (0, 0));
+	my $tabNo = $tabWin{$tId}{nTabs}++;
+	# print("tabNo=$tabNo\n");
+	$tabWin{$tId}{tab}[$tabNo]{winId} = $winId;
 	my $txt = &getProperty($winId, "WM_ICON_NAME");
-	$tab[$tabNo]{button} = $tabFrame->Button(-text => $txt,
-								   -command => [\&showTab, $tabNo]);
-	my $pButton = $tab[$tabNo]{button};
+	$tabWin{$tId}{tab}[$tabNo]{button} =
+		$tabWin{$tId}{tabFrame}->Button(-text => $txt,
+										-command => [\&showTab, $tId, $tabNo]);
+	my $pButton = $tabWin{$tId}{tab}[$tabNo]{button};
 	$pButton->pack(-side => 'left', -expand => 1, -fill => 'both');
-	$pButton->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tabNo]);
-	$tab[$tabNo]{title} = &getProperty($winId, "WM_NAME");
+	$pButton->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $tabNo]);
+	$tabWin{$tId}{tab}[$tabNo]{title} = &getProperty($winId, "WM_NAME");
 	# Ensure we are notified of any attribute changes in the new window.
 	# PropertyChange will tell us when WM_NAME or WM_ICON_NAME changes.
 	# StructureNotify will tell us when a program running in a tab
@@ -235,38 +342,26 @@ sub addTab ($)
 				  $winId,
 				  event_mask => $xServer->pack_event_mask('PropertyChange',
 				  										  'StructureNotify'));
-	&showTab($tabNo);
+	&showTab($tId, $tabNo);
 }
 
-
-
-my $b = $tabFrame->Button(-text => "FVWM-Tabs", -command => \&tabInfo);
-$b->pack(-side => 'left', -expand => 0);
-
-my $menu = $topFrame->Menu(-tearoff => 0);
-
-$b->Tk::bind('<ButtonRelease-3>', sub {
-	$menu->delete(0, 'end');
-	$menu->add('command', -label => 'Release All', -command => \&releaseAll);
-	$menu->add('command', -label => 'Add');	# TODO: NYI
-	$menu->add('separator');
-
-	for (my $tabNo = 0; $tabNo < $nTabs; $tabNo++)
-	{
-		$menu->add('command', -label => $tab[$tabNo]{title},
-							 -command => [\&showTab, $tabNo]);
-	}
-	$menu->Popup(-popanchor => 'nw', -popover => 'cursor');
-});
-
-sub tabInfo ()
+sub pickAndAdd ($)
 {
-	print("\nnTabs=$nTabs\n");
-	for (my $tabNo = 0; $tabNo < $nTabs; $tabNo++)
+	my ($tId) = @_;
+	$fvwm->send("Pick SendToModule *" . $fvwm->name() . " addme $tId");
+}
+
+sub tabInfo ($)
+{
+	my ($tId) = @_;
+
+	print("\nnTabs=$tabWin{$tId}{nTabs}\n");
+	printf("parent=0x%x\n", $tabWin{$tId}{parent});
+	for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
 	{
-		print(sprintf("Tab #$tabNo winId = 0x%x (%d)\n",
-					  $tab[$tabNo]{winId},
-					  $tab[$tabNo]{winId}));
+		printf("Tab #$tabNo winId = 0x%x (%d)\n",
+			   $tabWin{$tId}{tab}[$tabNo]{winId},
+			   $tabWin{$tId}{tab}[$tabNo]{winId});
 	}
 }
 
@@ -280,133 +375,147 @@ sub getProperty ($$)
 }
 
 # return the tabNo for the specified window ID or -1 if the window is
-# not part of the tabber.
-sub getTabNo ($)
+# not part of the fvwm.
+sub getTabNo ($$)
 {
-	my ($winId) = @_;
-	for (my $tabNo = 0; $tabNo < $nTabs; $tabNo++)
+	my ($tId, $winId) = @_;
+	for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
 	{
-		return $tabNo if ($tab[$tabNo]{winId} == $winId);
+		return $tabNo if ($tabWin{$tId}{tab}[$tabNo]{winId} == $winId);
 	}
 	return -1;
 }
 
 # the window for <$tabNo> has been destroyed/letgo - cleanup appropriately.
-sub removeTab ($$)
+sub removeTab ($$$)
 {
-	my ($tabNo,$state) = @_;
+	my ($tId, $tabNo, $state) = @_;
 
-	if ($state ne 'destroyed')
+	print("removeTab($tId, $tabNo, $state)\n");
+
+	if ($state eq 'letgo')
 	{
 		# We are no longer interested in events for this window.
 		$xServer->req('ChangeWindowAttributes',
-					  $tab[$tabNo]{winId},
+					  $tabWin{$tId}{tab}[$tabNo]{winId},
 					  event_mask => $xServer->pack_event_mask());
 	}
 
-	$tab[$tabNo]{button}->packForget();
-	$tab[$tabNo] = undef;
+	$tabWin{$tId}{tab}[$tabNo]{button}->packForget();
+	$tabWin{$tId}{tab}[$tabNo] = undef;
 
-	if ($tabNo == $nTabs - 1)
+	for (my $t = $tabNo; $t < $tabWin{$tId}{nTabs} - 1; $t++)
 	{
-		$nTabs--;
-		$currentTab = undef if ($currentTab == $tabNo);
-		if ($nTabs > 0)
+		$tabWin{$tId}{tab}[$t] = $tabWin{$tId}{tab}[$t + 1];
+		printf("new tab #$t = 0x%x\n", $tabWin{$tId}{tab}[$t]{winId});
+		$tabWin{$tId}{tab}[$t]{button}->configure(-command => [\&showTab, $tId, $t]);
+		$tabWin{$tId}{tab}[$t]{button}->Tk::bind('<ButtonRelease-2>', [\&letItGo, $tId, $t]);
+	}
+	$tabWin{$tId}{nTabs}--;
+	$tabWin{$tId}{tab}[$tabWin{$tId}{nTabs}] = undef;
+
+	if ($tabWin{$tId}{currentTab} == $tabNo)
+	{
+		$tabWin{$tId}{currentTab} = undef;
+		if ($tabWin{$tId}{nTabs} > 0)
 		{
-			showTab($tabNo - 1)
+			&showTab($tId, ($tabNo < $tabWin{$tId}{nTabs} ? $tabNo : $tabNo - 1))
 		}
 		else
 		{
-			$title->configure(-text => 'No title');
+			$tabWin{$tId}{titleFrame}->configure(-text => 'No title');
+			# TODO: proper resize.
+			$tabWin{$tId}{winFrame}->configure(-height => 10, -width => 0);
 		}
 	}
-	else
+	elsif ($tabWin{$tId}{currentTab} > $tabNo)
 	{
-		for (my $t = $tabNo; $t < $nTabs - 1; $t++)
-		{
-			$tab[$t] = $tab[$t + 1];
-			my $pButton = $tab[$t]{button};
-			$pButton->configure(-command => [\&showTab, $t]);
-			$pButton->Tk::bind('<ButtonRelease-2>', [\&letItGo, $t]);
-		}
-		$tab[$nTabs - 1] = undef;
-		$currentTab = undef;
-		$nTabs--;
-		showTab($tabNo);
+		$tabWin{$tId}{currentTab}--;
 	}
 }
 
-sub showTab ($)
+sub showTab ($$)
 {
-	my ($tabNo) = @_;
+	my ($tId, $tabNo) = @_;
+
+	print("showTab($tId, $tabNo)\n");
+
+	if ($tabNo >= $tabWin{$tId}{nTabs})
+	{
+		print(STDERR "BUG: invalid tabNo ($tabNo) in call to showTab().\n");
+		return
+	}
 
 	# Unmap the current tab.
-	if (defined($currentTab))
+	if (defined($tabWin{$tId}{currentTab}))
 	{
+		my $currentTab = $tabWin{$tId}{currentTab};
+		print("showTab: currentTab=$currentTab\n");
 		return if ($tabNo == $currentTab);
-		print("currentTab=$currentTab\n");
-		my $winId = $tab[$currentTab]{winId};
+		my $winId = $tabWin{$tId}{tab}[$currentTab]{winId};
 		$xServer->UnmapWindow($winId);
-		$tab[$currentTab]{button}->configure(-bg => $inactiveBG,
-											 -activebackground => $inactiveBG,
-											 -fg => $inactiveFG,
-											 -activeforeground => $inactiveFG,
-											 -relief => 'raised');
+		$tabWin{$tId}{tab}[$currentTab]{button}->configure(-bg => $inactiveBG,
+													  -activebackground => $inactiveBG,
+													  -fg => $inactiveFG,
+													  -activeforeground => $inactiveFG,
+													  -relief => 'raised');
 	}
 	# Map the new tab.
-	my $winId = $tab[$tabNo]{winId};
+	my $winId = $tabWin{$tId}{tab}[$tabNo]{winId};
 	$xServer->MapWindow($winId);
-	$currentTab = $tabNo;
-	$tab[$tabNo]{button}->configure(-bg => $activeBG,
-									-activebackground => $activeBG,
-									-fg => $activeFG,
-									-activeforeground => $activeFG,
-									-relief => 'sunken');
-	$title->configure(-text => $tab[$tabNo]{title});
+	$tabWin{$tId}{currentTab} = $tabNo;
+	# TODO: option sunken or flat.
+	$tabWin{$tId}{tab}[$tabNo]{button}->configure(-bg => $activeBG,
+												  -activebackground => $activeBG,
+												  -fg => $activeFG,
+												  -activeforeground => $activeFG,
+												  -relief => 'sunken');
+	$tabWin{$tId}{titleFrame}->configure(-text => $tabWin{$tId}{tab}[$tabNo]{title});
 
 	my %g = $xServer->req('GetGeometry', $winId);
-	$winFrame->configure(-height => $g{height}, -width => $g{width});
+	$tabWin{$tId}{winFrame}->configure(-height => $g{height}, -width => $g{width});
 }
 
-sub setTabTitle($$)
+sub setTabTitle($$$$)
 {
-	my ($winId, $titleStr) = @_;
+	my ($tId, $tabNo, $winId, $titleStr) = @_;
 
-	my $tabNo = &getTabNo($winId);
-	return if ($tabNo < 0);
-
-	$tab[$tabNo]{title} = $titleStr;
-	if ($tabNo == $currentTab)
+	$tabWin{$tId}{tab}[$tabNo]{title} = $titleStr;
+	if ($tabNo == $tabWin{$tId}{currentTab})
 	{
-		$title->configure(-text => $titleStr);
+		$tabWin{$tId}{titleFrame}->configure(-text => $titleStr);
 	}
 }
 
-sub setTabName($$)
+sub setTabName($$$$)
 {
-	my ($winId, $name) = @_;
+	my ($tId, $tabNo, $winId, $name) = @_;
 
-	my $tabNo = &getTabNo($winId);
-	return if ($tabNo < 0);
-	$tab[$tabNo]{button}->configure(-text => $name);
+	$tabWin{$tId}{tab}[$tabNo]{button}->configure(-text => $name);
 }
 
-$tabber->eventLoop();
+$fvwm->eventLoop();
 
 
 # TODO
 #
 # - GetGeometry doesn't appear to return x/y only w/h.
 #   (use to put windows back where they came from when released.)
-# - make work with multiple tabbers.
 # - when user resizes window, dynamic-resizes no longer work.
-# - fix focusing.
-# - configuration options: bg/fg colors, titles, etc.
-# - key bindings to release $currentTab/all tabs.
+# - fix focusing?
+# - configuration options: bg/fg colors/fonts/sizes, titles, etc.
+# - key bindings:
+#   * release current tab.
+#	* release all tabs.
+#	* add new window.
+#	* display next tab.
+#	* display previous tab.
+#	* close tabber.
+#	* create new tabber.
 # - allow resizing of windows IN tab.
-# - sometimes windows don't appear when they're released! (erratic)
 # - consider removing the 'FVWM-Tabs' button & using the menu popup over
 #   the title frame.
 # - associate a mini icon with each tab-button.
+# - ReleaseAllIconised - release all tabs & iconise them.
+# - Preserve state b/w FVWM Restarts.
 # - tons of stuff!
-
