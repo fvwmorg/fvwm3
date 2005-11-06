@@ -3,7 +3,7 @@
 # $Id$
 
 # 	FvwmTabs
-#	Copyright (C) 2002, 2003 Scott Smedley ss@aao.gov.au
+#	Copyright (C) 2002, 2003, 2004 Scott Smedley ss@aao.gov.au
 #	
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ $TOP->withdraw();
 $fvwm = new FVWM::Module::Tk($TOP,
 							 Name => "FvwmTabs",
 							 Mask => (M_ERROR | M_STRING | M_ADD_WINDOW),
-							 Debug => 2);
+							 Debug => 0);
 
 $fvwm->debug("Debug level is: " . $fvwm->{debug});
 $fvwm->addDefaultErrorHandler();
@@ -71,7 +71,8 @@ my $configTracker = $fvwm->track('ModuleConfig',
 					   fixedSizeTabs => 'false',
 					   showTitlebar => 'true',
 					   useTMTitlebar => 'true',
-					   dragDropIcon => 'happyMini.xpm'});
+					   dragDropIcon => 'happyMini.xpm',
+					   bBuggyFocus => 'false'});
 
 my $pConfig = $configTracker->data;
 $configTracker->observe("config line added", sub {
@@ -141,7 +142,7 @@ $configTracker->observe("config line added", sub {
 				$tabWin{$tId}{toplevel}->configure(-title => $t);
 			}
 		}
-		elsif ($p =~ /^(fontSelector|autoResize|fixedSizeTabs|balloonMsg|stateFile)$/)
+		elsif ($p =~ /^(fontSelector|autoResize|fixedSizeTabs|balloonMsg|stateFile|bBuggyFocus)$/)
 		{
 			# handled implicitly.
 			return;
@@ -368,8 +369,12 @@ sub takeFocus ($)
 	{
 		$winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
 	}
+
+	my $ts = ($pConfig->{bBuggyFocus} =~ /true/i ?
+			  'CurrentTime' :
+			  $tabWin{$tId}{focusTimestamp});
 	# "revert-to" (2nd) arg can be 'Parent', 'PointerRoot' or 'None'.
-	$xServer->SetInputFocus($winId, 'Parent', $tabWin{$tId}{focusTimestamp});
+	$xServer->SetInputFocus($winId, 'Parent', $ts);
 }
 
 # Don't you just *love* Prince!?
@@ -1022,7 +1027,7 @@ sub showTitle ($$$)
 	my $titleStr = $tabWin{$tId}{tab}[$tabNo]{title};
 	# make sure the title text does not exceed this length.
 	$tabWin{$tId}{titleFrame}->configure(-text => $titleStr,
-										 -wraplength => "${w}p");
+										 -wraplength => $w);
 
 	if ($pConfig->{useTMTitlebar} =~ /true/i)
 	{
@@ -1280,6 +1285,10 @@ sub saveState ()
 		if ($tabWin{$tId}{nTabs} > 0)
 		{
 			print(OUT "showTab($tId, $tabWin{$tId}{currentTab});\n");
+		}
+		if ($tabWin{$tId}{toplevel}->state() eq 'iconic')
+		{
+			print(OUT "\$fvwm->send(\"Iconify\", \$tabWin{$tId}{selfId});\n");
 		}
 	}
 	close(OUT);
