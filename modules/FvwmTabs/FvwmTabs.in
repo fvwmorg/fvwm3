@@ -241,7 +241,7 @@ else
 		$fvwm->debug("swallow win move: $winId");
 
 		my $p = $tracker->data($winId);
-		return if (winIdToTId($winId) >= 0); # ignore tabbers moving.
+		return if (defined winIdToTId($winId)); # ignore tabbers moving.
 		
 		foreach my $tId (sort(keys(%tabWin)))
 		{
@@ -261,7 +261,7 @@ else
 
 			# If OpaqueMoveSize is in use, we need to ensure the window
 			# isn't swallowed already.
-			return if (getTabNo($tId, $winId) >= 0);
+			return if (defined getTabNo($tId, $winId));
 			
 			# ok, we've got a match - this tabber should swallow the window.
 			addTab($tId, $winId);
@@ -303,7 +303,7 @@ sub parseAutoSwallow ($)
 	my ($type) = @_;
 	foreach (split(/,/, $pConfig->{'autoSwallow' . $type}))
 	{
-		if (!/^\s*(.+?)(\s+(\d+|any|lastFocus))?\s*$/i)
+		if (!/^\s*(.+?)(\s+(\S+))?\s*$/i)
 		{
 			print(STDERR $fvwm->name() . ": unparseable autoSwallow$type.\n");
 			next;
@@ -413,12 +413,26 @@ sub showMenu ($$)
 	$menu->Popup(-popanchor => 'ne', -popover => 'cursor');
 }
 
-sub createNewTabber ()
+sub createNewTabber
 {
-	my $tId;
-	for ($tId = 0; ; $tId++)
+	my $tId = shift();
+
+	if (!defined $tId)
 	{
-		last if (!defined($tabWin{$tId}));
+		for ($tId = 0; ; $tId++)
+		{
+			last if (!defined($tabWin{$tId}));
+		}
+	}
+	elsif (exists $tabWin{$tId})
+	{
+		$fvwm->showError("Tabber \"$tId\" already exists!");
+		return;
+	}
+	elsif ($tId =~ /^(any|lastFocus)$/i)
+	{
+		$fvwm->showError("Tabber name \"$tId\" is illegal!");
+		return;
 	}
 
 	my $title = $fvwm->name() . " [$tId]";
@@ -445,18 +459,12 @@ sub createNewTabber ()
 	$tabWin{$tId}{autoResize} = isTrue($pConfig->{autoResize});
 	$tabWin{$tId}{titleFrame} = $titleFrame;
 	$tabWin{$tId}{wrapFrame} = $wrapFrame;
+	$tabWin{$tId}{nTabs} = 0;
 	showTitlebar($tId);
 
 	my $winFrame = $topFrame->Frame();
 	$winFrame->pack(-expand => 1, -fill => 'both', -side => 'top');
 
-	$tl->protocol('WM_DELETE_WINDOW', [\&closeTabber, $tId]);
-	$tl->protocol('WM_TAKE_FOCUS', [\&takeFocus, $tId]);
-
-	#my $b = $tabFrame->Button(-text => $fvwm->name(),
-	#						  -font => $pConfig->{buttonFont},
-	#						  -padx => 3);
-	#$b->pack(-side => 'left', -expand => 0);
 	# ===
 	my $af = $tabFrame->Frame()->pack(-side => 'right', -fill => 'y');
 	my @po = qw/-side right -fill y/;
@@ -494,8 +502,6 @@ sub createNewTabber ()
 
 
 	# ===
-	# $tabFrame->configure(-width => $b->reqwidth(), -height => $b->reqheight());
-	# $tabFrame->configure(-width => 100, -height => 28);
 	$tabFrame->waitVisibility();
 	$tabFrame->packPropagate(0);
 	$tabFrame->configure(-height => 28, -width => $af->reqwidth());
@@ -503,11 +509,6 @@ sub createNewTabber ()
 	$tabWin{$tId}{menu} = $tl->Menu(-tearoff => 0,
 									-font => $pConfig->{menuFont});
 
-	#$b->Tk::bind('<ButtonRelease-1>', [\&showMenu, $tId]);
-	#$b->Tk::bind('<ButtonRelease-2>', [\&tabInfo, $tId]);
-	#$b->Tk::bind('<ButtonRelease-3>', [\&showMenu, $tId]);
-
-	$tabWin{$tId}{nTabs} = 0;
 	$tabWin{$tId}{toplevel} = $tl;
 	$tabWin{$tId}{toplevelId} = hex($tabWin{$tId}{toplevel}->id());
 	$tabWin{$tId}{tabFrame} = $tabFrame;
@@ -515,11 +516,13 @@ sub createNewTabber ()
 	$tabWin{$tId}{currentTab} = undef;
 	$tabWin{$tId}{lastId} = undef;
 	$tabWin{$tId}{parent} = hex($winFrame->id);
-	# $tabWin{$tId}{menuButton} = $b;
 	$winFrame->waitVisibility();
 	my ($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
 	$tabWin{$tId}{selfId} = $parent;
 	$tabWin{$tId}{balloonMsg} = '?';
+
+	$tl->protocol('WM_DELETE_WINDOW', [\&closeTabber, $tId]);
+	$tl->protocol('WM_TAKE_FOCUS', [\&takeFocus, $tId]);
 
 	$xServer->ChangeWindowAttributes($tabWin{$tId}{parent},
 		event_mask => $xServer->pack_event_mask('ResizeRedirect'));
@@ -604,7 +607,7 @@ sub letItGo ($$$$)
 	# if the window we're releasing is a tabber, we need to recompute
 	# the wrapper window id as it can change dynamically.
 	my $otherTId = winIdToTId($winId);
-	buggyFocusWorkaround($otherTId) if ($otherTId >= 0);
+	buggyFocusWorkaround($otherTId) if (defined $otherTId);
 
 	$fvwm->send("Iconify", $winId) if ($bIconify);
 	removeTab($tId, $tabNo, 'letgo');
@@ -682,7 +685,7 @@ sub winIdToTId ($)
 	{
 		return $tId if ($winId == $tabWin{$tId}{selfId});
 	}
-	return -1;
+	return undef;
 }
 
 # SendToModule commands arrive as M_STRING events.
@@ -697,17 +700,17 @@ $fvwm->addHandler(M_STRING, sub {
 	{
 		# fn <fnName> <winId> <optArgs>
 		my $tId = winIdToTId(hex($2));
-		print(STDERR "focus not in tabber. ($2)\n"), return if ($tId < 0);
+		print(STDERR "focus not in tabber. ($2)\n"), return if (!defined $tId);
 		no strict;
 		&$1($tId, split(/\s+/, $3));
 	}
-	elsif ($event->args->{text} =~ /addme (w?)(\d+)(.*)?/)
+	elsif ($event->args->{text} =~ /addme (tWin)?(\S+)(.*)?/)
 	{
 		my $bMulti = ($3 eq ' multi');
-		my $tId = ($1 eq '' ? $2 : &winIdToTId($2));
-		if (!exists $tabWin{$tId})
+		my $tId = (!defined $1 ? $2 : &winIdToTId($2));
+		if (!defined $tId || !exists $tabWin{$tId})
 		{
-			printf("Unknown Tabber %d (0x%x)\n", $2, $2);
+			print(STDERR $self->name() . ": Unknown Tabber \"$2\"\n");
 			return;
 		}
 		addTab($tId, $event->args->{win_id});
@@ -745,7 +748,7 @@ sub showLast ($)
 
 	return if ($tabWin{$tId}{nTabs} <= 0 || !defined $tabWin{$tId}{lastId});
 	my $tabNo = getTabNo($tId, $tabWin{$tId}{lastId});
-	return if ($tabNo < 0);
+	return if (!defined $tabNo);
 	showTab($tId, $tabNo);
 }
 
@@ -759,7 +762,7 @@ sub releaseTab ($$$)
 
 sub emptiestTabber ()
 {
-	my $tId = -1;	# return -1 if no tabbers running.
+	my $tId = undef;	# return undef if no tabbers running.
 	my $n = 99;
 	foreach (keys(%tabWin))
 	{
@@ -819,7 +822,7 @@ sub swallowCheck ($$)
 		return if (!$bFound);
 	}
 	$tId = whichTabber($tId);
-	addTab($tId, $winId) if (exists $tabWin{$tId});
+	addTab($tId, $winId) if (defined $tId && exists $tabWin{$tId});
 	delete $global{swallowNext};
 }
 
@@ -886,13 +889,13 @@ sub eventHandler
 
 	if ($event{name} eq 'ResizeRequest')
 	{
-		my $tId = -1;
+		my $tId;
 		for (keys(%tabWin))
 		{
 			$tId = $_, last if ($tabWin{$_}{parent} == $event{window});
 		}
 
-		return if ($tId < 0);
+		return if (!defined $tId);
 
 		my $h = $tabWin{$tId}{winFrame}->height();
 		# resize the $winFrame widget. Can't use $w->configure(-height ...)
@@ -921,13 +924,13 @@ sub eventHandler
 	}
 	elsif ($event{name} eq 'EnterNotify')
 	{
-		my $tId = -1;
+		my $tId;
 		for (keys(%tabWin))
 		{
 			$tId = $_, last if (getWrapperWinId($_) == $event{event});
 		}
 
-		print(STDERR "BUG: EnterNotify\n"), return if ($tId < 0);
+		print(STDERR "BUG: EnterNotify\n"), return if (!defined $tId);
 		$tabWin{$tId}{focusTimestamp} = $event{time};
 		$fvwm->debug("focusTimestamp set to $tabWin{$tId}{focusTimestamp}");
 		takeFocus($tId);
@@ -1023,7 +1026,6 @@ sub createMiniIcon ($$)
 
 	my $w = unpack("L", substr($val, 0, 4));
 	my $h = unpack("L", substr($val, 4, 4));
-	# print("w=$w h=$h\n");
 
 	my $img = $TOP->Photo(-width => $w, -height => $h);
 	my $index = 8;
@@ -1218,13 +1220,13 @@ sub findWin ($)
 	foreach (keys(%tabWin))
 	{
 		my $tabNo = getTabNo($_, $winId);
-		return ($_, $tabNo) if ($tabNo >= 0);
+		return ($_, $tabNo) if (defined $tabNo);
 	}
 	return undef;
 }
 		
 
-# return the tabNo for the specified window ID or -1 if the window is
+# return the tabNo for the specified window ID or undef if the window is
 # not part of the tabber.
 # TODO: rename this function to "winIdToTabNo"?
 sub getTabNo ($$)
@@ -1234,7 +1236,7 @@ sub getTabNo ($$)
 	{
 		return $tabNo if ($tabWin{$tId}{tab}[$tabNo]{winId} == $winId);
 	}
-	return -1;
+	return undef;
 }
 
 # the window for <$tabNo> has been destroyed/letgo - cleanup appropriately.
@@ -1461,8 +1463,6 @@ sub setFont ($$$)
 		{
 			$tabWin{$tId}{tab}[$tabNo]{button}->configure(-font => $font);
 		}	
-		# $tabWin{$tId}{menuButton}->configure(-font => $font);
-		# $tabWin{$tId}{tabFrame}->configure(-height => $tabWin{$tId}{menuButton}->reqheight());
 	}
 	elsif ($type eq 'title')
 	{
@@ -1625,7 +1625,7 @@ sub saveState ()
 	print(STDERR $fvwm->name() . ": Saving state to $file\n");
 	foreach my $tId (sort(keys(%tabWin)))
 	{
-		print(OUT "createNewTabber();\n");
+		print(OUT "createNewTabber($tId);\n");
 		my ($x, $y) = getXYPos(getWrapperWinId($tId));
 		print(OUT "\$fvwm->send(\"Move ${x}p ${y}p\", \$tabWin{$tId}{selfId});\n");
 		my $desk = getDesk($tabWin{$tId}{selfId});
@@ -1653,6 +1653,7 @@ sub loadState ()
 	{
 		print(STDERR $fvwm->name() . ": Reading state from $file\n");
 		eval `cat $file`;
+		print(STDERR $fvwm->name() . ": Error parsing $file\n") if ($@);
 		unlink($file);
 	}
 }
@@ -1750,10 +1751,11 @@ sub createSwallowDialog ($)
 
 sub doSwallow ()
 {
+	my $tId = $global{tabberNo};
+	$tId = emptiestTabber() if ($global{tabberNo} eq 'Any');
+	return if (!defined $tId);
 	foreach ($global{list}->curselection())
 	{
-		my $tId = $global{tabberNo};
-		$tId = emptiestTabber() if ($global{tabberNo} eq 'Any');
 		addTab($tId, $global{windows}[$_]);
 	}
 	fillDialog();
@@ -1921,4 +1923,5 @@ sub toggleAutoResize ($)
 loadState();
 my ($version, $date) = version();
 print($fvwm->name() . " (v$version) started with: Perl " . join('.', map(ord($_), split(//, $^V))) . ", X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
+$fvwm->send("NOP FINISHED STARTUP");
 $fvwm->eventLoop();
