@@ -1257,6 +1257,8 @@ dnl
 	modules/FvwmScript/Scripts/Makefile
 	modules/FvwmScript/Widgets/Makefile
 	modules/FvwmScroll/Makefile
+	modules/FvwmTabs/Makefile
+	modules/FvwmTabs/FvwmTabs
 	modules/FvwmTaskBar/Makefile
 	modules/FvwmTheme/Makefile
 	modules/FvwmWharf/Makefile

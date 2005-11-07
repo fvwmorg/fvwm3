@@ -15,6 +15,7 @@ Changes in beta release 2.5.15 (not released yet)
      window movement and manual placement.
    - New window condition PlacedByButton.
    - MenuStyle pairs can be negated by prefixing '!'.
+   - New generic tabbing module - FvwmTabs.
 
 * Bug Fixes:
 
