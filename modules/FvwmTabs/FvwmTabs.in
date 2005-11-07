@@ -1,9 +1,9 @@
-#!/usr/bin/perl -w
+#!@PERL@ -w
 
 # $Id$
 
 # 	FvwmTabs
-#	Copyright (C) 2002, 2003, 2004 Scott Smedley ss@aao.gov.au
+#	Copyright (C) 2002, 2003, 2004, 2005 Scott Smedley ss@aao.gov.au
 #	
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -20,11 +20,16 @@
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-# see: http://users.tpg.com.au/users/scottie7/fvwmtabs.html
-# for how to install/use this module.
+# see the FvwmTabs(1) man page for how to use this module.
+
+BEGIN {
+    use vars qw($prefix $datadir);
+    $prefix = "@prefix@";
+    $datadir = "@datadir@";
+}
 
 use strict;
-use lib `fvwm-perllib dir`;
+use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module::Tk;
 use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk>=804.025 Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry Tk::PNG);
 
@@ -40,6 +45,7 @@ $fvwm = new FVWM::Module::Tk($TOP,
 
 $fvwm->debug("Debug level is: " . $fvwm->{debug});
 $fvwm->addDefaultErrorHandler();
+$fvwm->send("Read ConfigFvwmTabs");
 
 sub ver ($)
 {
@@ -80,7 +86,7 @@ my $configTracker = $fvwm->track('ModuleConfig',
 					   fixedSizeTabs => 'false',
 					   showTitlebar => 'true',
 					   useTMTitlebar => 'true',
-					   dragDropIcon => 'happyMini.xpm',
+					   dragDropIcon => 'none',
 					   bBuggyFocus => 'false',
 					   enableSwallowDND => 'true',
 					   swallowDNDTolerance => 10, # pixels
@@ -1134,7 +1140,8 @@ sub addTab ($$)
 
 	if (defined $winTracker &&
 		defined $winTracker->data($winId) &&
-		isTrue($pConfig->{useIconsOnTabs}))
+		isTrue($pConfig->{useIconsOnTabs}) &&
+		defined $winTracker->data($winId)->{mini_icon_name})
 	{
 		my $icon = createMiniIcon($winTracker->data($winId)->{mini_icon_name}, $winId);
 		$pButton->configure(-image => $icon);
@@ -1496,7 +1503,7 @@ sub about ($)
 	my ($tId) = @_;
 
 	my ($v, $d) = version();
-	my $version = $fvwm->name() . " v$v   ($d)\n\nby Scott Smedley\nscottie7\@tpg.com.au"; # \n\nhttp://users.tpg.com.au/users/scottie7/fvwmtabs.html";
+	my $version = $fvwm->name() . " v$v   ($d)\n\nby Scott Smedley\nss\@aao.gov.au";
 	$fvwm->showMessage($version, "About " . $fvwm->name());
 }
 
