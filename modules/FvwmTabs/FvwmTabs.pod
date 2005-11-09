@@ -145,11 +145,11 @@ Show internal titlebar. If set to I<true> a titlebar appears below the row of ta
 
 =item E<42>FvwmTabs: useTMTitlebar I<bool>
 
-Add the title associated with the selected tab to the tab-manager titlebar. (ie. the titlebar at the top of the window, distinct from the titlebar below the tab-buttons.) Default value is I<false>.
+Add the title associated with the selected tab to the tab-manager titlebar. (ie. the titlebar at the top of the window, distinct from the titlebar below the tab-buttons.) Default value is I<true>.
 
 =item E<42>FvwmTabs: dragDropIcon I<imageFile>
 
-Specify the icon to display when performing a drag-&-drop operation to reorder the tab-buttons. FvwmTabs will search the ImagePath for this image unless an absolute filename (ie. filename begins with '/') is specified. The default value is I<happyMini.xpm>. If I<none> (or an invalid file) is specified a E<42> is used.
+Specify the icon to display when performing a drag-&-drop operation to reorder the tab-buttons. FvwmTabs will search the ImagePath for this image unless an absolute filename (ie. filename begins with '/') is specified. The default value is I<none>. If I<none> (or an invalid file) is specified a E<42> is used.
 
 =item E<42>FvwmTabs: bBuggyFocus I<bool>
 
@@ -159,7 +159,7 @@ FvwmTabs tries to work around a limitation in Perl/Tk (there is no way to access
 
 Swallow windows that (are moved to) overlap a tabber.
 Note: drag-&-drop can be enabled for individual tabbers via the menu.
-The default value is I<false>.
+The default value is I<true>.
 
 =item E<42>FvwmTabs: swallowDNDTolerance I<tol>
 
@@ -421,6 +421,12 @@ option: menu item to sort tabs by name, file extension, etc.
 For autoSwallow options that specify a tab-manager, create the tab-manager if it doesn't already exist. (default behaviour is not to swallow it)
 
 =back
+
+=head1 FVWMTABS HOMEPAGE
+
+There is some useful information about FvwmTabs, including a short tutorial, on the authors website:
+
+L<http://members.optusnet.com.au/~scottsmedley/fvwmtabs/>.
 
 =head1 LICENSING
 

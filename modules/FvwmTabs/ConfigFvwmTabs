@@ -122,8 +122,13 @@ AddToMenu TabbersMenu
 + DynamicPopupAction Function MakeTabbersMenu
 
 
+
+
 # Make sure "SaveState" is only added to ExitFunction once.
+# This looks complicated mostly because environment variable
+# values are preserved between restarts.
 Test (!EnvIsSet FvwmTabs_AddedSaveStateHook) AddToFunc ExitFunction I Test (ToRestart) Function SaveState
+Test (Match) AddToFunc ExitFunction I Test (ToRestart) UnsetEnv FvwmTabs_AddedSaveStateHook
 SetEnv FvwmTabs_AddedSaveStateHook
 
 # FvwmTabs-DefaultSetup has some useful key-bindings for FvwmTabs.
@@ -131,4 +136,5 @@ SetEnv FvwmTabs_AddedSaveStateHook
 # variable is set, in which case the user probably wants to define their
 # own bindings.
 Test (!EnvIsSet FvwmTabs_NoDefaultSetup) Read FvwmTabs-DefaultSetup
-SetEnv FvwmTabs_ConfigSourced
+Test (Match) AddToFunc ExitFunction I Test (ToRestart) UnsetEnv FvwmTabs_NoDefaultSetup
+SetEnv FvwmTabs_NoDefaultSetup
