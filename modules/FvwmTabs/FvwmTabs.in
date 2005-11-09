@@ -821,6 +821,8 @@ sub swallowCheck ($$)
 		my $name = getProperty($winId, 'WM_NAME');
 		return if (!defined $name);
 		my ($resource, $class) = split(/$s/, getProperty($winId, 'WM_CLASS'));
+		$resource = '' if (!defined $resource);
+		$class = '' if (!defined $class);
 
 		my $bFound = 0;
 		foreach (@{$pArray})
