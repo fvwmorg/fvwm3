@@ -16,6 +16,7 @@ Changes in beta release 2.5.15 (not released yet)
    - New window condition PlacedByButton.
    - MenuStyle pairs can be negated by prefixing '!'.
    - New generic tabbing module - FvwmTabs.
+   - New Style option: EWMHIgnoreWindowType.
 
 * Bug Fixes:
 

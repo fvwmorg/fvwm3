@@ -343,6 +343,10 @@
 	((c).s.do_ewmh_ignore_state_hints)
 #define S_SET_DO_EWMH_IGNORE_STATE_HINTS(c,x) \
 	((c).s.do_ewmh_ignore_state_hints = !!(x))
+#define S_DO_EWMH_IGNORE_WINDOW_TYPE(c) \
+	((c).s.do_ewmh_ignore_window_type)
+#define S_SET_DO_EWMH_IGNORE_WINDOW_TYPE(c,x) \
+	((c).s.do_ewmh_ignore_window_type = !!(x))
 #define S_EWMH_MAXIMIZE_MODE(c) \
 	((c).s.ewmh_maximize_mode)
 #define S_SET_EWMH_MAXIMIZE_MODE(c,x) \

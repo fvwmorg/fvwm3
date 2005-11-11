@@ -161,6 +161,12 @@
 	(fw)->flags.common.s.do_ewmh_ignore_state_hints = !!(x)
 #define SETM_DO_EWMH_IGNORE_STATE_HINTS(fw,x) \
 	(fw)->flag_mask.common.s.do_ewmh_ignore_state_hints = !!(x)
+#define DO_EWMH_IGNORE_WINDOW_TYPE(fw) \
+	((fw)->flags.common.s.do_ewmh_ignore_window_type)
+#define SET_DO_EWMH_IGNORE_WINDOW_TYPE(fw,x) \
+	(fw)->flags.common.s.do_ewmh_ignore_window_type = !!(x)
+#define SETM_DO_EWMH_IGNORE_WINDOW_TYPE(fw,x) \
+	(fw)->flag_mask.common.s.do_ewmh_ignore_window_type = !!(x)
 #define EWMH_MAXIMIZE_MODE(fw) \
 	((fw)->flags.common.s.ewmh_maximize_mode)
 #define SET_EWMH_MAXIMIZE_MODE(fw,x) \

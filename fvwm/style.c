@@ -2397,7 +2397,7 @@ static Bool style_parse_one_style_option(
 		}
 		else
 		{
-			found = EWMH_CMD_Style(token, ps);
+			found = EWMH_CMD_Style(token, ps, on);
 		}
 		break;
 

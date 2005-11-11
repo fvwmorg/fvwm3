@@ -6607,6 +6607,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR EWMHUseStackingOrderHints " / " EWMHIgnoreStackingOrderHints ,
 .IR EWMHIgnoreStateHints " / " EWMHUseStateHints ,
 .IR EWMHIgnoreStrutHints " / " EWMHUseStrutHints ,
+.IR EWMHIgnoreWindowType " / " !EWMHIgnoreWindowType ,
 .IR EWMHMaximizeIgnoreWorkingArea " / " EWMHMaximizeUseWorkingArea " / "
 .IR EWMHMaximizeUseDynamicWorkingArea ,
 .IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea
@@ -8061,6 +8062,11 @@ causes fvwm to ignore initial EWMH state hints when a new window
 is mapped. The default
 .I EWMHUseStateHints
 causes fvwm to accept such hints.
+
+.I EWMHIgnoreWindowType
+causes fvwm to ignore EWMH window type specification. The default
+.I !EWMHIgnoreWindowType
+causes fvwm to style windows of specified types as such.
 
 .I EWMHMaximizeIgnoreWorkingArea
 causes fvwm to ignore the EWMH working area when it executes a

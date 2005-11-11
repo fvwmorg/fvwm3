@@ -10,7 +10,7 @@
 Bool EWMH_BugOpts(char *opt, Bool toggle);
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
 void CMD_EwmhBaseStrut(F_CMD_ARGS);
-Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
+Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle, int on);
 
 /* for maximize and placement ewmh style */
 #define EWMH_IGNORE_WORKING_AREA      0

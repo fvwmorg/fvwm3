@@ -160,35 +160,35 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
  * Styles
  */
 
-Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
+Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle, int on)
 {
 	int found = False;
 
 	if (StrEquals(token, "EWMHDonateIcon"))
 	{
 		found = True;
-		S_SET_DO_EWMH_DONATE_ICON(SCF(*ptmpstyle), 1);
+		S_SET_DO_EWMH_DONATE_ICON(SCF(*ptmpstyle), on);
 		S_SET_DO_EWMH_DONATE_ICON(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_DONATE_ICON(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHDonateMiniIcon"))
 	{
 		found = True;
-		S_SET_DO_EWMH_DONATE_MINI_ICON(SCF(*ptmpstyle), 1);
+		S_SET_DO_EWMH_DONATE_MINI_ICON(SCF(*ptmpstyle), on);
 		S_SET_DO_EWMH_DONATE_MINI_ICON(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_DONATE_MINI_ICON(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHDontDonateIcon"))
 	{
 		found = True;
-		S_SET_DO_EWMH_DONATE_ICON(SCF(*ptmpstyle), 0);
+		S_SET_DO_EWMH_DONATE_ICON(SCF(*ptmpstyle), !on);
 		S_SET_DO_EWMH_DONATE_ICON(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_DONATE_ICON(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHDontDonateMiniIcon"))
 	{
 		found = True;
-		S_SET_DO_EWMH_DONATE_MINI_ICON(SCF(*ptmpstyle), 0);
+		S_SET_DO_EWMH_DONATE_MINI_ICON(SCF(*ptmpstyle), !on);
 		S_SET_DO_EWMH_DONATE_MINI_ICON(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_DONATE_MINI_ICON(SCC(*ptmpstyle), 1);
 	}
@@ -225,14 +225,14 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
 	else if (StrEquals(token, "EWMHMiniIconOverride"))
 	{
 		found = True;
-		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCF(*ptmpstyle), 1);
+		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCF(*ptmpstyle), on);
 		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHNoMiniIconOverride"))
 	{
 		found = True;
-		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCF(*ptmpstyle), 0);
+		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCF(*ptmpstyle), !on);
 		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ptmpstyle), 1);
 	}
@@ -268,44 +268,51 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
 	else if (StrEquals(token, "EWMHUseStackingOrderHints"))
 	{
 		found = True;
-		S_SET_DO_EWMH_USE_STACKING_HINTS(SCF(*ptmpstyle), 1);
+		S_SET_DO_EWMH_USE_STACKING_HINTS(SCF(*ptmpstyle), on);
 		S_SET_DO_EWMH_USE_STACKING_HINTS(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_USE_STACKING_HINTS(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHIgnoreStackingOrderHints"))
 	{
 		found = True;
-		S_SET_DO_EWMH_USE_STACKING_HINTS(SCF(*ptmpstyle), 0);
+		S_SET_DO_EWMH_USE_STACKING_HINTS(SCF(*ptmpstyle), !on);
 		S_SET_DO_EWMH_USE_STACKING_HINTS(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_USE_STACKING_HINTS(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHUseStateHints"))
 	{
 		found = True;
-		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCF(*ptmpstyle), 0);
+		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCF(*ptmpstyle), !on);
 		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHIgnoreStateHints"))
 	{
 		found = True;
-		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCF(*ptmpstyle), 1);
+		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCF(*ptmpstyle), on);
 		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHUseStrutHints"))
 	{
 		found = True;
-		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCF(*ptmpstyle), 0);
+		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCF(*ptmpstyle), !on);
 		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCC(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "EWMHIgnoreStrutHints"))
 	{
 		found = True;
-		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCF(*ptmpstyle), 1);
+		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCF(*ptmpstyle), on);
 		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCM(*ptmpstyle), 1);
 		S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCC(*ptmpstyle), 1);
+	}
+	else if (StrEquals(token, "EWMHIgnoreWindowType"))
+	{
+		found = True;
+		S_SET_DO_EWMH_IGNORE_WINDOW_TYPE(SCF(*ptmpstyle), on);
+		S_SET_DO_EWMH_IGNORE_WINDOW_TYPE(SCM(*ptmpstyle), 1);
+		S_SET_DO_EWMH_IGNORE_WINDOW_TYPE(SCC(*ptmpstyle), 1);
 	}
 	return found;
 }

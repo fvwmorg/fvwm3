@@ -1511,6 +1511,10 @@ void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style)
 	Bool found = False;
 
 	fw->ewmh_window_type = 0;
+	if (DO_EWMH_IGNORE_WINDOW_TYPE(style))
+	{
+		return;
+	}
 	val = ewmh_AtomGetByName(
 		FW_W(fw), "_NET_WM_WINDOW_TYPE",
 		EWMH_ATOM_LIST_FIXED_PROPERTY, &size);
