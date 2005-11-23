@@ -1,3 +1,8 @@
+2005-11-21  Harry Felder  <harry@rentec.com>
+
+	* FvwmProxy/FvwmProxy.c (AdjustOneWindow):
+	fixed C89 compile error
+
 2005-11-07  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/FvwmTabs.in:

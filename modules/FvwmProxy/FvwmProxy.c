@@ -722,11 +722,15 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 
 	for (other=proxy->next; other; other=other->next)
 	{
-		if(other->desk != deskNumber)
-			continue;
+		int dx;
+		int dy;
 
-		int dx=abs(proxy->proxyx-other->proxyx);
-		int dy=abs(proxy->proxyy-other->proxyy);
+		if(other->desk != deskNumber)
+		{
+			continue;
+		}
+		dx = abs(proxy->proxyx-other->proxyx);
+		dy = abs(proxy->proxyy-other->proxyy);
 		if (dx<(proxyWidth+proxySeparation) &&
 				dy<proxyHeight+proxySeparation )
 		{
