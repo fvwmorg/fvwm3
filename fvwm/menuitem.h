@@ -108,6 +108,7 @@ typedef struct
 	MenuDimensions *dim;
 	FvwmWindow *fw;
 	XEvent *ev;
+	unsigned int used_mini_icons;
 	struct MenuRoot *cb_mr;
 	Bool (*cb_reset_bg)(struct MenuRoot *mr, XEvent *pevent);
 	struct

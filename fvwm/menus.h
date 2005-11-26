@@ -66,6 +66,7 @@ typedef struct MenuRootStatic
 	Pixel sideColor;
 	/* Menu Face */
 	MenuStyle *ms;
+	unsigned int used_mini_icons;
 	/* permanent flags */
 	struct
 	{
@@ -104,6 +105,7 @@ typedef struct MenuRootStatic
 #define MR_SIDEPIC(m)            ((m)->s->sidePic)
 #define MR_SIDECOLOR(m)          ((m)->s->sideColor)
 #define MR_STYLE(m)              ((m)->s->ms)
+#define MR_USED_MINI_ICONS(m)    ((m)->s-> used_mini_icons)
 /* flags */
 #define MR_FLAGS(m)              ((m)->s->flags)
 #define MR_POPUP_ACTION(m)       ((m)->s->dynamic.popup_action)
@@ -171,7 +173,7 @@ typedef struct MenuRootDynamic
 	} stored_pixels; /* alloc pixels when dithering is used for gradients */
 } MenuRootDynamic;
 
-/* access macros to static menu members */
+/* access macros to dynamic menu members */
 #define MR_ORIGINAL_MENU(m)         ((m)->d->original_menu)
 #define MR_NEXT_MENU(m)             ((m)->d->next_menu)
 #define MR_CONTINUATION_MENU(m)     ((m)->d->continuation_menu)
@@ -352,6 +354,6 @@ void SetMenuCursor(Cursor cursor);
 void repaint_transparent_menu(
 	MenuRepaintTransparentParameters *prtmp,
 	Bool first, int x, int y, int end_x, int end_y);
-void menu_expose(XEvent *event, FvwmWindow *fw);
+Bool menu_expose(XEvent *event, FvwmWindow *fw);
 int menu_binding(int button,KeySym keysym,int modifier,char *action);
 #endif /* _MENUS_ */
