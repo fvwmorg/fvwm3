@@ -268,8 +268,10 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 	{
 		if (verbose)
 		{
-			fvwm_msg(ERR, "menustyle_parse_face", "unknown style %s: %s",
-				 style, action);
+			fvwm_msg(
+				ERR,
+				"menustyle_parse_face", "unknown style %s: %s",
+				style, action);
 		}
 		free(style);
 		return False;
