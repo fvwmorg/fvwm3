@@ -33,7 +33,6 @@
 #include "libs/ftime.h"
 #include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <pwd.h>
 #include <sys/param.h>
 #include <sys/types.h>
@@ -314,7 +313,7 @@ static char *m4_defs(
 	{
 		strcpy(tmp_name, m4_outfile);
 		/*
-		 * check to make sure it doesn't exist already, to prevent 
+		 * check to make sure it doesn't exist already, to prevent
 		 * security hole
 		 */
 		/* first try to unlink it */

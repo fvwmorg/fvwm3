@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <math.h>
 
+
 #include "defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"
@@ -34,12 +35,15 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-/* Define some standard constants that are not defined on QNX 4.25 */
+/* Define some standard constants that are not included in the C89 standard */
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 #ifndef M_PI_2
 #define M_PI_2 1.57079632679489661923
+#endif
+#ifndef M_1_PI
+#define M_1_PI 0.31830988618379067154
 #endif
 
 /* ---------------------------- local macros ------------------------------- */

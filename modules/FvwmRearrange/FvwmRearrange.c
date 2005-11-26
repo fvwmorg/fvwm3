@@ -26,7 +26,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
 #include "libs/ftime.h"
 #include <sys/types.h>

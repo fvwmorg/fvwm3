@@ -38,9 +38,7 @@
 
 #include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <strings.h>	/* strncasecmp() */
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

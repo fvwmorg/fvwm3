@@ -253,7 +253,6 @@ int fvwm_mkstemp (char *TEMPLATE)
  * Michael Han <mikehan@mikehan.com> */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>

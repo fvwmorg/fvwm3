@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <signal.h>
-#include <stdlib.h>                     /* for getenv */
 
 #include "libs/ftime.h"
 #include <fcntl.h>

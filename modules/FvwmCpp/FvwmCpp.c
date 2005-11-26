@@ -33,7 +33,6 @@
 #include "libs/ftime.h"
 #include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <pwd.h>
 #include <sys/param.h>
 #include <sys/types.h>
@@ -272,7 +271,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 	{
 		strcpy(tmp_name,cpp_outfile);
 		/*
-		 * check to make sure it doesn't exist already, to prevent 
+		 * check to make sure it doesn't exist already, to prevent
 		 * security hole
 		 */
 		/* first try to unlink it */
@@ -424,7 +423,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 	*options = '\0';
 	if (FHaveShapeExtension)
 		strcat(options, "SHAPE ");
-	
+
 	if (XpmSupport)
 		strcat(options, "XPM ");
 

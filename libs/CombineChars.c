@@ -20,7 +20,6 @@
 #include "config.h"
 #include <X11/Xlib.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "safemalloc.h"
 
 /* ---------------------------- local types -------------------------------- */
@@ -1811,7 +1810,7 @@ convert_to_ucs2(
 					(str_utf8[in_pos+1] & 0x3f);
 				/* check for overlong sequence */
 				if(str_ucs2[out_pos] < 0x80)
-					str_ucs2[out_pos] = 
+					str_ucs2[out_pos] =
 						REPLACEMENT_CHARACTER;
 				in_pos += 2;
 			}
@@ -1827,7 +1826,7 @@ convert_to_ucs2(
 					(str_utf8[in_pos+2] & 0x3f);
 				/* check for overlong sequence */
 				if(str_ucs2[out_pos] < 0x800)
-					str_ucs2[out_pos] = 
+					str_ucs2[out_pos] =
 						REPLACEMENT_CHARACTER;
 				in_pos += 3;
 			}
@@ -2012,7 +2011,7 @@ CombineChars(
 		for (i = 0, j = 0; i < str_len - 1; j++)
 		{
 			unsigned short int composed =
-				get_comb_entry_composed(source[i], 
+				get_comb_entry_composed(source[i],
 							source[i+1]);
 			dest_v_to_l[j] = source_v_to_l[i];
 			if (composed != 0)
@@ -2133,7 +2132,7 @@ CombineChars(
 			   string by inserting consequitive entries, as many
 			   as the step in the mapping from visual to logical
 			*/
-			int step = (i == out_str_len - 1) ? 
+			int step = (i == out_str_len - 1) ?
 				    in_str_len - j :
 				    dest_v_to_l[i+1] - dest_v_to_l[i];
 			for(k = 0 ; k < step ; k++, j++)

@@ -44,7 +44,6 @@
 
 #include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
 

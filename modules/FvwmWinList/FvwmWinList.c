@@ -56,8 +56,6 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
-#include <stdlib.h>
-
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
 #include "libs/fvwmlib.h"

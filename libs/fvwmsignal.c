@@ -38,8 +38,18 @@ volatile sig_atomic_t debug_term_signal = 0;
 #endif
 
 static volatile sig_atomic_t canJump = false;
+#ifdef HAVE_SIGSETJMP
 static sigjmp_buf deadJump;
-
+#define SIGSETJMP(env, savesigs) sigsetjmp(env, savesigs)
+#else
+static jmp_buf deadJump;
+#define SIGSETJMP(env, savesigs) setjmp(env)
+#endif
+#if defined(HAVE_SIGLONGJMP) && defined(HAVE_SIGSETJMP)
+#define SIGLONGJMP(env, val) siglongjmp(env, val)
+#else
+#define SIGLONGJMP(env, val) longjmp(env, val)
+#endif
 /*
  * Reap child processes, preventing them from becoming zombies.
  * We do this asynchronously within the SIGCHLD handler so that
@@ -140,7 +150,7 @@ fvwmSetTerminate(int sig)
 		 * NOTE: No need to restore the signal mask, since siglongjmp
 		 *       is designed to do that for us.
 		 */
-		siglongjmp(deadJump, SIG_DONE);
+		SIGLONGJMP(deadJump, SIG_DONE);
 	}
 
 	BSD_UNBLOCK_SIGNALS;
@@ -187,7 +197,7 @@ fvwmSelect(fd_set_size_t nfds,
 	 * functions! This is because we might need to abandon them half
 	 * way through execution and return here!
 	 */
-	if ( sigsetjmp(deadJump, 1) == SIG_INIT )
+	if ( SIGSETJMP(deadJump, 1) == SIG_INIT )
 	{
 		/*
 		 * Activate the non-local jump. Between now and when we turn the

@@ -21,7 +21,6 @@
 #include "config.h"
 
 #include <X11/Xlib.h>
-#include <stdlib.h>
 extern Window main_win;
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"

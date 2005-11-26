@@ -1,10 +1,36 @@
+2005-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* configure.in:
+	* libs/fvwmsignal.c:
+	* libs/Graphics.c:
+	c89 fixes
+
+	* fvwm/ewmh_names.c:
+	* libs/CombineChars.c:
+	* libs/FGettext.c:
+	* libs/FScreen.c:
+	* libs/FTips.c:
+	* libs/Flocale.c:
+	* libs/Parse.c:
+	* libs/PictureUtils.c:
+	* libs/System.c:
+	* libs/XError.c:
+	* libs/alloca.c:
+	* libs/envvar.c:
+	* libs/safemalloc.c:
+	* libs/strdup.c:
+	* libs/usleep.c:
+	do not #include stdlib.h (comes from config.h)
+
+	* libs/Flocale.c:
+	do not #include string.h (comes from config.h)
+
+	* acconfig.h:
+	fixed detection of string.h/strings.h
+
 2005-11-26  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/menuitem.h (MenuPaintItemParameters): 
-	* fvwm/menus.h (MenuRootStatic): 
-	fixed compile errors introduced with the menu drawing patch.
-
-	* libs/Fft.c (FftGetFont): 
+	* libs/Fft.c (FftGetFont):
 	fixed compiler warning with gcc 3.4.4
 
 2005-11-25  Dominik Vogt  <dominik.vogt@gmx.de>

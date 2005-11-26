@@ -18,7 +18,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "safemalloc.h"
 #include "Strings.h"

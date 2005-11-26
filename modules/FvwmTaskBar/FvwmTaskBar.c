@@ -63,8 +63,6 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
-#include <stdlib.h>
-
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
 #include "libs/FScreen.h"

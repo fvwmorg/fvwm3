@@ -21,7 +21,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include "libs/ftime.h"
 
 #include <X11/Xlib.h>

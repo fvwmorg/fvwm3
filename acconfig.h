@@ -271,28 +271,24 @@ This text should not appear anywhere (but it does with autoconf-2.50+).
 #  endif
 #endif
 
-#ifdef STDC_HEADERS
-#  include <stdlib.h>
+#ifdef HAVE_STRING_H
 #  include <string.h>
-#else
-#  ifdef HAVE_STRING_H
-#    include <string.h>
-#  else
-#    include <strings.h>
-#  endif
-#  ifdef HAVE_MEMORY_H
-#    include <memory.h>
-#  endif
-#  ifdef HAVE_STDLIB_H
-#    include <stdlib.h>
-#  endif
-#  ifdef HAVE_MALLOC_H
-#    include <malloc.h>
-#  endif
-#  ifndef HAVE_STRCHR
-#    define strchr(_s,_c)   index((_s),(_c))
-#    define strrchr(_s,_c)  rindex((_s),(_c))
-#  endif
+#endif
+#ifdef HAVE_STRINGS_H
+#  include <strings.h>
+#endif
+#ifdef HAVE_MEMORY_H
+#  include <memory.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+#endif
+#ifdef HAVE_MALLOC_H
+#  include <malloc.h>
+#endif
+#ifndef HAVE_STRCHR
+#  define strchr(_s,_c)   index((_s),(_c))
+#  define strrchr(_s,_c)  rindex((_s),(_c))
 #endif
 
 #ifndef HAVE_MEMCPY

@@ -68,7 +68,6 @@
 
 #include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"

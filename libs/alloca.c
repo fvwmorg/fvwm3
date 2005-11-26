@@ -39,10 +39,6 @@
 
 #include "config.h"
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
 #ifdef emacs
 #include "blockinput.h"
 #endif

@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-
 #include <sys/types.h>
 #include "ftime.h"
 

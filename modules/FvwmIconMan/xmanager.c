@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"

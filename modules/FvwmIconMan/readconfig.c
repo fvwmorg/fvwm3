@@ -16,7 +16,6 @@
 
 #include "config.h"
 #include <ctype.h>
-#include <stdlib.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "xmanager.h"
@@ -2041,7 +2040,7 @@ void read_in_resources()
 	      if (!strcasecmp(p, "always")) {
 		      i = TIPS_ALWAYS;
 	      }
-	      
+
 	      else if (!strcasecmp(p, "false")) {
 		      i = TIPS_NEVER;
 	      }

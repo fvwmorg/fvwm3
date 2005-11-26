@@ -30,7 +30,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <X11/Xlib.h>
 

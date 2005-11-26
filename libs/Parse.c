@@ -24,7 +24,6 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <stdlib.h>
 
 #include "safemalloc.h"
 #include "Strings.h"

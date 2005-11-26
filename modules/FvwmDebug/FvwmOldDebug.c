@@ -33,7 +33,6 @@
 #include "libs/ftime.h"
 #include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 
 #include "FvwmOldDebug.h"
 

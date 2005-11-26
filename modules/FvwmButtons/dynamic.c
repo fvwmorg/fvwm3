@@ -19,7 +19,6 @@
 #include "config.h"
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 /* the following 5 are just to satisfy X11/extensions/shape.h on some systems */
 #include <X11/Xlib.h>

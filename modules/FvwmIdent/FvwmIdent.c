@@ -39,7 +39,6 @@
 
 #include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>

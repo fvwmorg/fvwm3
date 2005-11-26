@@ -21,7 +21,6 @@
 
 #include "config.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>

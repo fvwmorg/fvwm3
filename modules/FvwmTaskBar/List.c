@@ -32,7 +32,6 @@
 #include "libs/safemalloc.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "FvwmTaskBar.h"
 #include "List.h"

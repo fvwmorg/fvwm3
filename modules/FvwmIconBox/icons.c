@@ -36,7 +36,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
-#include <stdlib.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

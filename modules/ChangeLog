@@ -1,3 +1,47 @@
+2005-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmAnimate/FvwmAnimate.c:
+	* FvwmAuto/FvwmAuto.c:
+	* FvwmButtons/button.c:
+	* FvwmButtons/draw.c:
+	* FvwmButtons/dynamic.c:
+	* FvwmButtons/icons.c:
+	* FvwmButtons/output.c:
+	* FvwmButtons/parse.c:
+	* FvwmCommand/FvwmCommand.h:
+	* FvwmConsole/FvwmConsole.h:
+	* FvwmCpp/FvwmCpp.c:
+	* FvwmDebug/FvwmOldDebug.c:
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmForm/FvwmForm.c:
+	* FvwmGtk/expand.c:
+	* FvwmGtk/windowlist.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmIconBox/icons.c:
+	* FvwmIconMan/FvwmIconMan.c:
+	* FvwmIconMan/readconfig.c:
+	* FvwmIconMan/xmanager.c:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmM4/FvwmM4.c:
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmSave/FvwmSave.c:
+	* FvwmSaveDesk/FvwmSaveDesk.c:
+	* FvwmTaskBar/ButtonArray.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmTaskBar/List.c:
+	* FvwmWharf/ASSound/ASSound.c:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmWharf/icons.c:
+	* FvwmWharf/stepgfx.c:
+	* FvwmWinList/ButtonArray.c:
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmWinList/List.c:
+	do not #include stdlib.h (comes from config.h)
+
+	* FvwmButtons/draw.c:
+	do not #include strings.h (not portable; comes from config.h)
+
 2005-11-21  Harry Felder  <harry@rentec.com>
 
 	* FvwmProxy/FvwmProxy.c (AdjustOneWindow):

@@ -910,6 +910,9 @@ if test x$ac_cv_func_waitpid = xno; then
     fi
 fi
 
+dnl C89/C99 signal handling
+AC_CHECK_FUNCS(sigsetjmp siglongjmp)
+
 dnl Make the C++ compiler optional, for it is only used in
 dnl modules, not for the main code.
 dnl
