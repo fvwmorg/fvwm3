@@ -64,9 +64,9 @@ typedef struct MenuRootStatic
 	unsigned short items;
 	FvwmPicture *sidePic;
 	Pixel sideColor;
+	unsigned int used_mini_icons;
 	/* Menu Face */
 	MenuStyle *ms;
-	unsigned int used_mini_icons;
 	/* permanent flags */
 	struct
 	{
@@ -104,8 +104,8 @@ typedef struct MenuRootStatic
 #define MR_ITEMS(m)              ((m)->s->items)
 #define MR_SIDEPIC(m)            ((m)->s->sidePic)
 #define MR_SIDECOLOR(m)          ((m)->s->sideColor)
+#define MR_USED_MINI_ICONS(m)    ((m)->s->used_mini_icons)
 #define MR_STYLE(m)              ((m)->s->ms)
-#define MR_USED_MINI_ICONS(m)    ((m)->s-> used_mini_icons)
 /* flags */
 #define MR_FLAGS(m)              ((m)->s->flags)
 #define MR_POPUP_ACTION(m)       ((m)->s->dynamic.popup_action)
