@@ -357,7 +357,7 @@ void menuitem_paint(
 	{
 		text_y += MI_PICTURE(mi)->height;
 	}
-	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	for (i = 0; i < mpip->used_mini_icons; i++)
 	{
 		y = 0;
 		if (MI_MINI_ICON(mi)[i])
@@ -441,9 +441,12 @@ void menuitem_paint(
 		   ST_DO_HILIGHT_BACK(ms) || ST_DO_HILIGHT_FORE(ms)) &&
 		  (ST_FACE(ms).type != GradientMenu || ST_HAS_MENU_CSET(ms))))
 	{
+		int x1;
+		int x2;
 		/* we clear if xft_clear and !ST_HAS_MENU_CSET(ms) as the
 		 * non colorset code is too complicate ... olicha */
 		int d = 0;
+
 		if (MI_PREV_ITEM(mi) &&
 		    mpip->selected_item == MI_PREV_ITEM(mi))
 		{
@@ -451,9 +454,14 @@ void menuitem_paint(
 			d = relief_thickness;
 		}
 		/* Undo the hilighting. */
+		x1 = min(
+			MDIM_HILIGHT_X_OFFSET(*dim), MDIM_ITEM_X_OFFSET(*dim));
+		x2 = max(
+			MDIM_HILIGHT_X_OFFSET(*dim) + MDIM_HILIGHT_WIDTH(*dim),
+			MDIM_ITEM_X_OFFSET(*dim) + MDIM_ITEM_WIDTH(*dim));
 		clear_menu_item_background(
-			mpip, MDIM_ITEM_X_OFFSET(*dim), y_offset + d,
-			MDIM_ITEM_WIDTH(*dim), y_height + relief_thickness - d);
+			mpip, x1, y_offset + d, x2 - x1,
+			y_height + relief_thickness - d);
 		item_cleared = True;
 	}
 
@@ -798,7 +806,7 @@ void menuitem_paint(
 	 * Draw the mini icons.
 	 */
 
-	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	for (i = 0; i < mpip->used_mini_icons; i++)
 	{
 		int k;
 		Bool draw_picture = True;
@@ -806,7 +814,7 @@ void menuitem_paint(
 		/* We need to reverse the mini icon order for left submenu
 		 * style. */
 		k = (ST_USE_LEFT_SUBMENUS(ms)) ?
-			MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
+			mpip->used_mini_icons - 1 - i : i;
 
 		if (MI_MINI_ICON(mi)[i])
 		{
@@ -874,8 +882,9 @@ void menuitem_paint(
 						b.x, b.y, b.width, b.height);
 				}
 				PGraphicsRenderPicture(
-					dpy, mpip->w, MI_MINI_ICON(mi)[i], &fra,
-					mpip->w, tmp_gc, Scr.MonoGC, Scr.AlphaGC,
+					dpy, mpip->w, MI_MINI_ICON(mi)[i],
+					&fra, mpip->w, tmp_gc, Scr.MonoGC,
+					Scr.AlphaGC,
 					b.x - MDIM_ICON_X_OFFSET(*dim)[k],
 					b.y - y, b.width, b.height,
 					b.x, b.y, b.width, b.height, False);

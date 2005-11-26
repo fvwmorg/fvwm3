@@ -3286,8 +3286,7 @@ Places the side picture either at the beginning or the end of the
 menu. This directive may be used only once and only as the first
 or last in the format string. If the
 .B %s
-is not at the beginning of the string, all characters to the right
-of it are silently ignored.
+is not at the beginning of the string, menus are not drawn properly.
 .in -.3i
 .BR Space ", " Tab ", " %Space " and " %Tab
 .in +.3i

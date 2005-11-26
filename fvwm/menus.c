@@ -2012,14 +2012,6 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 					break;
 				}
 				x += gap_left;
-				if (!first)
-				{
-					/* Stop parsing immediately. %s
-					 * must be first or last in the
-					 * format string. */
-					sidepic_is_left = False;
-					done = True;
-				}
 				MR_SIDEPIC_X_OFFSET(msp->menu) = x;
 				if (first)
 				{
@@ -2680,6 +2672,7 @@ static void make_menu(MenuRoot *mr, Bool is_tear_off)
 		has_continuation_menu = size_menu_vertically(&msp);
 		/* repeat this step if the menu was split */
 	} while (has_continuation_menu);
+	MR_USED_MINI_ICONS(mr) = msp.used_mini_icons;
 
 	MR_XANIMATION(mr) = 0;
 	memset(&(MR_DYNAMIC_FLAGS(mr)), 0, sizeof(MR_DYNAMIC_FLAGS(mr)));
@@ -3359,6 +3352,7 @@ static void get_menu_paint_item_parameters(
 	mpip->selected_item = MR_SELECTED_ITEM(mr);
 	mpip->dim = &MR_DIM(mr);
 	mpip->fw = fw;
+	mpip->used_mini_icons = MR_USED_MINI_ICONS(mr);
 	mpip->cb_mr = mr;
 	mpip->cb_reset_bg = paint_menu_gradient_background;
 	mpip->flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
@@ -3379,7 +3373,6 @@ static void paint_menu(
 {
 	MenuItem *mi;
 	MenuStyle *ms = MR_STYLE(mr);
-	MenuPaintItemParameters mpip;
 	int bw = MST_BORDER_WIDTH(mr);
 	XGCValues gcv;
 	short relief_thickness = ST_RELIEF_THICKNESS(MR_STYLE(mr));
@@ -3457,7 +3450,6 @@ static void paint_menu(
 			 HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
 			 SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)), bw);
 	/* paint the menu items */
-	get_menu_paint_item_parameters(&mpip, mr, NULL, fw, pevent, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
 		int do_draw = 0;
@@ -3486,6 +3478,10 @@ static void paint_menu(
 		}
 		if (do_draw)
 		{
+			MenuPaintItemParameters mpip;
+
+			get_menu_paint_item_parameters(
+				&mpip, mr, NULL, fw, pevent, True);
 			mpip.flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
 			menuitem_paint(mi, &mpip);
 		}
@@ -3500,8 +3496,6 @@ static void paint_menu(
 static void select_menu_item(
 	MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw)
 {
-	MenuPaintItemParameters mpip;
-
 	if (select == True && MR_SELECTED_ITEM(mr) != NULL &&
 	    MR_SELECTED_ITEM(mr) != mi)
 	{
@@ -3671,8 +3665,13 @@ static void select_menu_item(
 		fw = NULL;
 	}
 	MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
-	get_menu_paint_item_parameters(&mpip, mr, mi, fw, NULL, False);
-	menuitem_paint(mi, &mpip);
+	if (MR_IS_PAINTED(mr))
+	{
+		MenuPaintItemParameters mpip;
+
+		get_menu_paint_item_parameters(&mpip, mr, mi, fw, NULL, False);
+		menuitem_paint(mi, &mpip);
+	}
 
 	return;
 }
@@ -4843,6 +4842,7 @@ static mloop_ret_code_t __mloop_handle_event(
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
 {
 	MenuRoot *tmrMi;
+	Bool rc;
 
 	pmret->rc = MENU_NOP;
 	switch ((*pmp->pexc)->x.elast->type)
@@ -5149,10 +5149,13 @@ static mloop_ret_code_t __mloop_handle_event(
 	case Expose:
 		/* grab our expose events, let the rest go through */
 		XFlush(dpy);
-		menu_expose((*pmp->pexc)->x.elast, (*pmp->pexc)->w.fw);
-		/* we want to dispatch this too so that icons and maybe tear off
-		 * get redrawn after being obscured by menus. */
-		dispatch_event((*pmp->pexc)->x.elast);
+		rc = menu_expose((*pmp->pexc)->x.elast, (*pmp->pexc)->w.fw);
+		/* we want to dispatch this too so that icons and maybe tear
+		 * off get redrawn after being obscured by menus. */
+		if (rc == False)
+		{
+			dispatch_event((*pmp->pexc)->x.elast);
+		}
 		return MENU_MLOOP_RET_LOOP;
 
 	case ClientMessage:
@@ -6807,7 +6810,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	return;
 }
 
-void menu_expose(XEvent *event, FvwmWindow *fw)
+Bool menu_expose(XEvent *event, FvwmWindow *fw)
 {
 	MenuRoot *mr = NULL;
 
@@ -6817,9 +6820,13 @@ void menu_expose(XEvent *event, FvwmWindow *fw)
 	{
 		flush_accumulate_expose(event->xany.window, event);
 		paint_menu(mr, event, fw);
-	}
 
-	return;
+		return True;
+	}
+	else
+	{
+		return False;
+	}
 }
 
 /*
@@ -6840,7 +6847,6 @@ void repaint_transparent_menu(
 {
 	MenuItem *mi;
 	MenuRoot *mr;
-	MenuPaintItemParameters mpip;
 	MenuStyle *ms;
 	int h = 0;
 	int s_h = 0;
@@ -6902,14 +6908,17 @@ void repaint_transparent_menu(
 	}
 
 	/* now redraw the items */
-	get_menu_paint_item_parameters(&mpip, mr, NULL, prtm->fw, NULL, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
+		MenuPaintItemParameters mpip;
+
 		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT_BACK(mr) &&
 		    !CSET_IS_TRANSPARENT_PR_TINT(ST_CSET_MENU(ms)))
 		{
 			continue;
 		}
+		get_menu_paint_item_parameters(
+			&mpip, mr, NULL, prtm->fw, NULL, True);
 		mpip.flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
 		menuitem_paint(mi, &mpip);
 	}

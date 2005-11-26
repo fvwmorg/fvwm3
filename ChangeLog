@@ -1,19 +1,48 @@
+2005-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menuitem.c (menuitem_paint):
+	properly undraw unselected item area
+
+2005-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/menus.c (get_menu_paint_item_parameters)
+	(get_menu_paint_item_parameters):
+	(make_menu):
+	fixed text offset of menu items with icons but with an item format that
+	disables icons
+	(size_menu_horizontally):
+	allow sidepic to be placed in the middle of menu items; this is better
+	than ignoring the item format completely but does not draw the items
+	properly either
+
+	* fvwm/menus.c (__mloop_handle_event):
+	(menu_expose):
+	fixed delayed menu drawing issue
+	(select_menu_item):
+	do not draw the selected menu item before the menu is drawn for the
+	first time
+	(repaint_transparent_menu):
+	(select_menu_item):
+	(paint_menu):
+	don't call get_menu_paint_item_parameters when the result is not used
+	(get_menu_paint_item_parameters):
+
 2005-11-10  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/ewmh.h (EWMH_CMD_Style): 
-	* fvwm/ewmh_conf.c (EWMH_CMD_Style): 
-	* fvwm/style.c (style_parse_one_style_option): 
+	* fvwm/ewmh.h (EWMH_CMD_Style):
+	* fvwm/ewmh_conf.c (EWMH_CMD_Style):
+	* fvwm/style.c (style_parse_one_style_option):
 	Added support for inverting boolean EWMH styles with !.
 
 	* NEWS:
 	* fvwm/fvwm.h
 	* fvwm/style.h:
 	* fvwm/window_flags.h:
-	* fvwm/ewmh_conf.c (EWMH_CMD_Style): 	
-	* fvwm/ewmh.c (ewmh_HandleWindowType): 
-	* fvwm/fvwm.1.in: 
+	* fvwm/ewmh_conf.c (EWMH_CMD_Style):
+	* fvwm/ewmh.c (ewmh_HandleWindowType):
+	* fvwm/fvwm.1.in:
 	Added style EWMHIgnoreWindowType to make fvwm ignore window types.
-	
 
 2005-10-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
