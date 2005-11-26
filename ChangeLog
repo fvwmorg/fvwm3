@@ -1,3 +1,9 @@
+2005-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c (frame_free_move_resize_args):
+	fixed drawing of transparent decorations or when using lazy shading
+	during resize
+
 2005-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in:

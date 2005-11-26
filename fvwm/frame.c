@@ -1913,14 +1913,14 @@ void frame_free_move_resize_args(
 		border_draw_decorations(
 			fw, PART_ALL,
 			(mra->w_with_focus != None) ? True : False, True,
-			CLEAR_ALL, &mra->current_g, &mra->next_g);
+			CLEAR_ALL, &mra->current_g, &mra->end_g);
 	}
 	else if (mra->trans_parts != PART_NONE)
 	{
 		border_draw_decorations(
 			fw, mra->trans_parts,
 			(mra->w_with_focus != None) ? True : False, True,
-			CLEAR_ALL, &mra->current_g, &mra->next_g);
+			CLEAR_ALL, &mra->current_g, &mra->end_g);
 	}
 	update_absolute_geometry(fw);
 	frame_reparent_hide_windows(Scr.NoFocusWin);
