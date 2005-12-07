@@ -2865,7 +2865,7 @@ ScrollOffPage / !ScrollOffPage.
 
 In the above list some options are listed as option pairs or
 triples with a '/' in between.  These options exclude each other.
-All paired options can be negated to have the effect of the 
+All paired options can be negated to have the effect of the
 counterpart option by prefixing ! to the option.
 
 .IR Fvwm ", " Mwm ", " Win
@@ -7511,14 +7511,12 @@ inhibits the window from being maximized.
 .IR AllowMaximizeFixedSize
 enables the function
 .I Maximize
-to be performed on windows that are not resizable, unless maximisation
-has been disabled either using the style
-.I Unmaximizable
-or throuth WM hints,
-This on by default.
-The opposite,
+to be performed on windows that are not resizable, unless
+maximization has been disabled either using the style
+.I !Maximizable
+or through WM hints.  This is on by default.  The opposite,
 .IR !AllowMaximizeFixedSize ,
-inibits all windows that are not resizable from being maximized.
+inhibits all windows that are not resizable from being maximized.
 
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
