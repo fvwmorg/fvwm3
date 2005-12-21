@@ -10832,7 +10832,7 @@ The
 condition matches only windows that are on the current page of the
 current desk.  If Xinerama support is enabled, it only matches
 windows that are at least partially on the Xinerama screen
-containing the mouse pointer.  This conditions implicitly
+containing the mouse pointer.  This condition implicitly
 activates the
 .I CurrentDesk
 condition.

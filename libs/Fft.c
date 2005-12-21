@@ -271,7 +271,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	FlocaleCharset *fc;
 	FftPattern *src_pat = NULL, *load_pat = NULL;
 	FftMatrix *a = NULL;
-	FcResult result;
+	FftResult result;
 
 	result = 0;
 	if (!FftSupport || !(FRenderGetExtensionSupported() || 1))
