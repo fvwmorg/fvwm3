@@ -2861,7 +2861,8 @@ VerticalItemSpacing,
 VerticalTitleSpacing,
 AutomaticHotkeys / AutomaticHotkeysOff,
 MouseWheel,
-ScrollOffPage / !ScrollOffPage.
+ScrollOffPage / !ScrollOffPage,
+TrianglesUseFore / !TrianglesUseFore.
 
 In the above list some options are listed as option pairs or
 triples with a '/' in between.  These options exclude each other.
@@ -3419,6 +3420,12 @@ is set to ScrollsMenu or ScrollsMenuBackwards. This is the default.
 The opposite,
 .I !ScrollOffPage
 disables this behaviour.
+
+.I TrianglesUseFore
+draws sub menu triangles with the foreground color of the menu colorset 
+(normally drawn with the hilight color).
+.I !TrianglesUseFore
+disables this behaivour.
 
 Examples:
 .EX

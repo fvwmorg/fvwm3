@@ -396,6 +396,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"PopupActiveArea",
 		"PopupIgnore", "PopupClose",
 		"MouseWheel", "ScrollOffPage",
+		"TrianglesUseFore",
 		NULL
 	};
 
@@ -1403,6 +1404,10 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 57: /* ScrollOffPage */
 	        	ST_SCROLL_OFF_PAGE(tmpms) = on;
 			break;
+
+		case 58: /* TrianglesUseFore */
+			ST_TRIANGLES_USE_FORE(tmpms) = on;
+			break;
 #if 0
 		case 99: /* PositionHints */
 			/* to be implemented */
@@ -1621,6 +1626,8 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	ST_MOUSE_WHEEL(destms) = ST_MOUSE_WHEEL(origms);
 	/* ScrollOffPage */
 	ST_SCROLL_OFF_PAGE(destms) = ST_SCROLL_OFF_PAGE(origms);
+	/* TrianglesUseFore */
+	ST_TRIANGLES_USE_FORE(destms) = ST_TRIANGLES_USE_FORE(origms);
 
 	menustyle_update(destms);
 

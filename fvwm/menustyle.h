@@ -32,9 +32,11 @@
 #define ST_HAS_STIPPLE_FORE(s)        ((s)->look.flags.has_stipple_fore)
 #define MST_HAS_STIPPLE_FORE(m)       ((m)->s->ms->look.flags.has_stipple_fore)
 #define ST_HAS_LONG_SEPARATORS(s)     ((s)->look.flags.has_long_separators)
-#define MST_HAS_LONG_SEPARATORS(m)    ((m)->s->ms->look.flags.has_long_separators)
+#define MST_HAS_LONG_SEPARATORS(m)    \
+	((m)->s->ms->look.flags.has_long_separators)
 #define ST_HAS_TRIANGLE_RELIEF(s)     ((s)->look.flags.has_triangle_relief)
-#define MST_HAS_TRIANGLE_RELIEF(m)    ((m)->s->ms->look.flags.has_triangle_relief)
+#define MST_HAS_TRIANGLE_RELIEF(m)    \
+	((m)->s->ms->look.flags.has_triangle_relief)
 #define ST_HAS_SIDE_COLOR(s)          ((s)->look.flags.has_side_color)
 #define MST_HAS_SIDE_COLOR(m)         ((m)->s->ms->look.flags.has_side_color)
 #define ST_HAS_MENU_CSET(s)           ((s)->look.flags.has_menu_cset)
@@ -47,7 +49,11 @@
 #define MST_IS_ITEM_RELIEF_REVERSED(m) \
 	((m)->s->ms->look.flags.is_item_relief_reversed)
 #define ST_USING_DEFAULT_FONT(s)      ((s)->look.flags.using_default_font)
-#define MST_USING_DEFAULT_FONT(m)     ((m)->s->ms->look.flags.using_default_font)
+#define MST_USING_DEFAULT_FONT(m)     \
+	((m)->s->ms->look.flags.using_default_font)
+#define ST_TRIANGLES_USE_FORE(s)      ((s)->look.flags.triangles_use_fore)
+#define MST_TRIANGLES_USE_FORE(m)     \
+	((m)->s->ms->look.flags.triangles_use_fore)
 #define ST_RELIEF_THICKNESS(s)        ((s)->look.ReliefThickness)
 #define MST_RELIEF_THICKNESS(m)       ((m)->s->ms->look.ReliefThickness)
 #define ST_TITLE_UNDERLINES(s)        ((s)->look.TitleUnderlines)
@@ -55,17 +61,25 @@
 #define ST_BORDER_WIDTH(s)            ((s)->look.BorderWidth)
 #define MST_BORDER_WIDTH(m)           ((m)->s->ms->look.BorderWidth)
 #define ST_ITEM_GAP_ABOVE(s)          ((s)->look.vertical_spacing.item_above)
-#define MST_ITEM_GAP_ABOVE(m)         ((m)->s->ms->look.vertical_spacing.item_above)
+#define MST_ITEM_GAP_ABOVE(m)         \
+	((m)->s->ms->look.vertical_spacing.item_above)
 #define ST_ITEM_GAP_BELOW(s)          ((s)->look.vertical_spacing.item_below)
-#define MST_ITEM_GAP_BELOW(m)         ((m)->s->ms->look.vertical_spacing.item_below)
+#define MST_ITEM_GAP_BELOW(m)         \
+	((m)->s->ms->look.vertical_spacing.item_below)
 #define ST_TITLE_GAP_ABOVE(s)         ((s)->look.vertical_spacing.title_above)
-#define MST_TITLE_GAP_ABOVE(m)        ((m)->s->ms->look.vertical_spacing.title_above)
+#define MST_TITLE_GAP_ABOVE(m)        \
+	((m)->s->ms->look.vertical_spacing.title_above)
 #define ST_TITLE_GAP_BELOW(s)         ((s)->look.vertical_spacing.title_below)
-#define MST_TITLE_GAP_BELOW(m)        ((m)->s->ms->look.vertical_spacing.title_below)
-#define ST_SEPARATOR_GAP_ABOVE(s)     ((s)->look.vertical_spacing.separator_above)
-#define MST_SEPARATOR_GAP_ABOVE(m)    ((m)->s->ms->look.vertical_spacing.separator_above)
-#define ST_SEPARATOR_GAP_BELOW(s)     ((s)->look.vertical_spacing.separator_below)
-#define MST_SEPARATOR_GAP_BELOW(m)    ((m)->s->ms->look.vertical_spacing.separator_below)
+#define MST_TITLE_GAP_BELOW(m)        \
+	((m)->s->ms->look.vertical_spacing.title_below)
+#define ST_SEPARATOR_GAP_ABOVE(s)     \
+	((s)->look.vertical_spacing.separator_above)
+#define MST_SEPARATOR_GAP_ABOVE(m)    \
+	((m)->s->ms->look.vertical_spacing.separator_above)
+#define ST_SEPARATOR_GAP_BELOW(s)     \
+	((s)->look.vertical_spacing.separator_below)
+#define MST_SEPARATOR_GAP_BELOW(m)    \
+	((m)->s->ms->look.vertical_spacing.separator_below)
 #define ST_CSET_MENU(s)               ((s)->look.cset.menu)
 #define MST_CSET_MENU(m)              ((m)->s->ms->look.cset.menu)
 #define ST_CSET_ACTIVE(s)             ((s)->look.cset.active)
@@ -104,7 +118,7 @@
 #define ST_DO_POPUP_IMMEDIATELY(s)    ((s)->feel.flags.do_popup_immediately)
 #define MST_DO_POPUP_IMMEDIATELY(m) \
 	((m)->s->ms->feel.flags.do_popup_immediately)
-#define ST_DO_POPDOWN_IMMEDIATELY(s)    ((s)->feel.flags.do_popdown_immediately)
+#define ST_DO_POPDOWN_IMMEDIATELY(s)  ((s)->feel.flags.do_popdown_immediately)
 #define MST_DO_POPDOWN_IMMEDIATELY(m) \
 	((m)->s->ms->feel.flags.do_popdown_immediately)
 #define ST_DO_WARP_TO_TITLE(s)        ((s)->feel.flags.do_warp_to_title)
@@ -243,6 +257,7 @@ typedef struct MenuLook
 		unsigned has_greyed_cset : 1;
 		unsigned is_item_relief_reversed : 1;
 		unsigned using_default_font : 1;
+		unsigned triangles_use_fore : 1;
 	} flags;
 	unsigned char ReliefThickness;
 	unsigned char TitleUnderlines;

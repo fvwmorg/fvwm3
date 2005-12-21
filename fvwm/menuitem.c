@@ -723,22 +723,51 @@ void menuitem_paint(
 		    is_item_selected)
 		{
 			/* triangle is in hilighted area */
-			tmp_gc = gcs.hilight_gc;
+			if(ST_TRIANGLES_USE_FORE(ms))
+			{
+				tmp_gc = gcs.fore_gc;
+			}
+			else
+			{
+				tmp_gc = gcs.hilight_gc;
+			}
 		}
 		else
 		{
 			/* triangle is in unhilighted area */
-			tmp_gc = off_gcs.hilight_gc;
+			if(ST_TRIANGLES_USE_FORE(ms))
+			{
+				tmp_gc = off_gcs.fore_gc;
+			}
+			else
+			{
+				tmp_gc = off_gcs.hilight_gc;
+			}
 		}
 		y = y_offset + (y_height - MENU_TRIANGLE_HEIGHT +
 				relief_thickness) / 2;
-		DrawTrianglePattern(
-			dpy, mpip->w, gcs.hilight_gc, gcs.shadow_gc, tmp_gc,
-			MDIM_TRIANGLE_X_OFFSET(*dim), y, MENU_TRIANGLE_WIDTH,
-			MENU_TRIANGLE_HEIGHT, 0,
-			(mpip->flags.is_left_triangle) ? 'l' : 'r',
-			ST_HAS_TRIANGLE_RELIEF(ms),
-			!ST_HAS_TRIANGLE_RELIEF(ms), is_item_selected);
+
+		if(ST_TRIANGLES_USE_FORE(ms))
+		{
+			DrawTrianglePattern(
+				dpy, mpip->w, tmp_gc, tmp_gc, tmp_gc,
+				MDIM_TRIANGLE_X_OFFSET(*dim), y, 
+				MENU_TRIANGLE_WIDTH, MENU_TRIANGLE_HEIGHT, 0,
+				(mpip->flags.is_left_triangle) ? 'l' : 'r',
+				ST_HAS_TRIANGLE_RELIEF(ms),
+				!ST_HAS_TRIANGLE_RELIEF(ms), is_item_selected);
+	
+		}
+		else
+		{
+			DrawTrianglePattern(
+				dpy, mpip->w, gcs.hilight_gc, gcs.shadow_gc,
+				tmp_gc,	MDIM_TRIANGLE_X_OFFSET(*dim), y, 
+				MENU_TRIANGLE_WIDTH, MENU_TRIANGLE_HEIGHT, 0,
+				(mpip->flags.is_left_triangle) ? 'l' : 'r',
+				ST_HAS_TRIANGLE_RELIEF(ms),
+				!ST_HAS_TRIANGLE_RELIEF(ms), is_item_selected);
+		}
 	}
 
 	/*

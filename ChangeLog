@@ -1,3 +1,13 @@
+2005-12-21  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* AUTHORS:
+	* fvwm/menuitem.c:
+	* fvwm/menustyle.h:
+	* fvwm/fvwm.1.in:
+	commited patch by Malcolm Still adding TrianglesUseFore MenuStyle
+	option.
+
 2005-12-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in:
