@@ -68,7 +68,18 @@ typedef FcValue     FftValue;
 typedef FcPattern   FftPattern;
 typedef FcFontSet   FftFontSet;
 typedef FcObjectSet FftObjectSet;
+#if 1
+/* FftResult must be FcResult for gcc 3.4 not to warn of incompatible
+ * pointer type
+ */
+typedef FcResult    FftResult;
 
+#define FftResultMatch        FcResultMatch
+#define FftResultNoMatch      FcResultNoMatch
+#define FftResultTypeMismatch FcResultTypeMismatch
+#define FftFftResultNoId      FcResultNoId
+
+#else
 typedef enum _FftResult
 {
 	FftResultMatch        = FcResultMatch,
@@ -76,7 +87,7 @@ typedef enum _FftResult
 	FftResultTypeMismatch = FcResultTypeMismatch,
 	FftFftResultNoId	    = FcResultNoId
 } FftResult;
-
+#endif
 /* XftValue and are different in Xft+Fc and Xft 1 */
 typedef struct _Xft1Value
 {

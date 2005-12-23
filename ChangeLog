@@ -1,3 +1,8 @@
+2005-12-23  Viktor Griph  <griph@dd.chalmers.se>
+
+	* libs/Fft.h:
+	new fix for incompatible pointer type warning with gcc 3.4.
+
 2005-12-21  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
