@@ -1205,19 +1205,22 @@ static void style_parse_button_style(
 	{
 		fvwm_msg(
 			ERR, "CMD_Style",
-			"Button and NoButtn styles require an argument");
-	}
-	if (on)
-	{
-		ps->flags.is_button_disabled &= ~(1 << button);
-		ps->flag_mask.is_button_disabled |= (1 << button);
-		ps->change_mask.is_button_disabled |= (1 << button);
+			"Button and NoButton styles require an argument");
 	}
 	else
 	{
-		ps->flags.is_button_disabled |= (1 << button);
-		ps->flag_mask.is_button_disabled |= (1 << button);
-		ps->change_mask.is_button_disabled |= (1 << button);
+		if (on)
+		{
+			ps->flags.is_button_disabled &= ~(1 << button);
+			ps->flag_mask.is_button_disabled |= (1 << button);
+			ps->change_mask.is_button_disabled |= (1 << button);
+		}
+		else
+		{
+			ps->flags.is_button_disabled |= (1 << button);
+			ps->flag_mask.is_button_disabled |= (1 << button);
+			ps->change_mask.is_button_disabled |= (1 << button);
+		}
 	}
 
 	return;
@@ -1927,7 +1930,6 @@ static Bool style_parse_one_style_option(
 {
 	window_style *add_style;
 	/* work area for button number */
-	int butt;
 	int num;
 	int i;
 	int tmpno[3] = { -1, -1, -1 };
@@ -3269,21 +3271,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "NoButton"))
 		{
-			butt = -1;
-			GetIntegerArguments(rest, NULL, &butt, 1);
-			butt = BUTTON_INDEX(butt);
-			if (butt >= 0 && butt < NUMBER_OF_TITLE_BUTTONS)
-			{
-				ps->flags.is_button_disabled |= (1 << butt);
-				ps->flag_mask.is_button_disabled |= (1 << butt);
-				ps->change_mask.is_button_disabled |=
-					(1 << butt);
-			}
-			else
-			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					 "NoButton Style requires an argument");
-			}
+			style_parse_button_style(ps, rest, !on);
 		}
 		else if (StrEquals(token, "NOOLDECOR"))
 		{

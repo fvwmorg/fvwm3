@@ -1,3 +1,10 @@
+2006-01-01  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/style.c (style_parse_button_style):
+	corrected typo in error message, and made errorous buttons not apply
+	(style_parse_one_style_option):
+	changed NoButton to use style_parse_button_style
+
 2005-12-23  Viktor Griph  <griph@dd.chalmers.se>
 
 	* libs/Fft.h:
