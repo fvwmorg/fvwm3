@@ -4,7 +4,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_SCRIPTS = FvwmTabs
-DIST_SOURCES = FvwmTabs.pod
+#DIST_SOURCES = FvwmTabs.pod
 
 EXTRA_DIST = $(man_MANS) ConfigFvwmTabs FvwmTabs-DefaultSetup
 man_MANS = FvwmTabs.1

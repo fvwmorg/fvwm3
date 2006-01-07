@@ -2,7 +2,7 @@
 ## Process this file with automake to create Makefile.in
 
 ## Make sure we have a current version of automake
-AUTOMAKE_OPTIONS = 1.4
+AUTOMAKE_OPTIONS = 1.8
 
 SUBDIRS = \
 	libs \
@@ -76,7 +76,7 @@ rpm-this: rpm-regenerate
 #    make deb-dist
 #    make release=1 deb-dist
 #    make deb-this
-#    make version=2.3.22 release=2 deb-this 
+#    make version=2.3.22 release=2 deb-this
 #    make deb-dist cparams='--enable-gnome --quiet' mparams='CFLAGS="-O2 -g"'
 #    make deb-inplace release=1.mg fullname=migo # works on sources directly
 

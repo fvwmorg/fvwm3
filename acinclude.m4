@@ -40,10 +40,12 @@ if test "$ac_cv_func_select" = yes; then
     ])dnl AC_CACHE_VAL
   ])dnl AC_CACHE_VAL
   if test "$ac_found" = no; then
-    AC_MSG_ERROR([can't determine argument types])
+    AC_MSG_ERROR([can not determine argument types])
   fi
 
   AC_MSG_RESULT([select($ac_cv_type_fd_set_size_t,$ac_cv_type_fd_set *,...)])
+  AH_TEMPLATE([fd_set_size_t],
+  [Define to the type used in argument 1 `select'.  Usually this is an `int'.])
   AC_DEFINE_UNQUOTED(fd_set_size_t, $ac_cv_type_fd_set_size_t)
   ac_cast=
   if test "$ac_cv_type_fd_set" != fd_set; then
@@ -72,8 +74,14 @@ changequote([,]),dnl
     # We found fd_set type in a header, need special cast
     ac_cast="($ac_cv_type_fd_set *)",dnl
     # No fd_set type; it is safe to define it
+    AH_TEMPLATE([fd_set],
+  [Define to the type used in arguments 2-4 of `select', if not set by system
+  headers.])
     AC_DEFINE_UNQUOTED(fd_set,$ac_cv_type_fd_set))
   fi
+  AH_TEMPLATE([SELECT_FD_SET_CAST],
+  [Define a suitable cast for arguments 2-4 of `select'.  On most systems,
+   this will be the empty string, as select usually takes pointers to fd_set.])
   AC_DEFINE_UNQUOTED(SELECT_FD_SET_CAST,$ac_cast)
 fi
 ])
@@ -83,7 +91,7 @@ fi
 dnl Checking for typedefs, with extra headers
 
 
-dnl pds_CHECK_TYPE(TYPE, DEFAULT, [HEADERS])
+dnl pds_CHECK_TYPE(TYPE, DEFAULT, [HEADERS], [comment])
 AC_DEFUN([pds_CHECK_TYPE],
 [AC_REQUIRE([AC_HEADER_STDC])dnl
 AC_MSG_CHECKING(for $1)
@@ -96,10 +104,11 @@ changequote([,]), [#include <sys/types.h>
 #include <stdlib.h>
 #include <stddef.h>
 #endif
-$3], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
-AC_MSG_RESULT($ac_cv_type_$1)
-if test $ac_cv_type_$1 = no; then
-  AC_DEFINE($1, $2)
+$3], ac_cv_type_[$1]=yes, ac_cv_type_[$]1=no)])dnl
+AC_MSG_RESULT($ac_cv_type_[$1])
+if test $ac_cv_type_[$1] = no; then
+  AH_TEMPLATE([$1],[$4])
+  AC_DEFINE_UNQUOTED($1, $2)
 fi
 ])
 
@@ -110,7 +119,8 @@ dnl Each switch defines an --enable-FOO and --disable-FOO option in
 dnl the resulting configure script.
 dnl
 dnl Usage:
-dnl smr_SWITCH(name, description, default, pos-def, neg-def)
+dnl smr_SWITCH(name, description, default, pos-def, neg-def,
+dnl            pos-def-comment, neg-def-comment)
 dnl
 dnl where:
 dnl
@@ -130,7 +140,10 @@ AC_DEFUN([smr_SWITCH], [
         ifelse($3, on,
             [  --disable-[$1]m4_substr([             ], m4_len([$1])) disable [$2]],
             [  --enable-[$1] m4_substr([             ], m4_len([$1])) enable [$2]]),
-        [ if test "$enableval" = yes; then
+        [
+        ifelse([$4], , , [AH_TEMPLATE([$4],[$6])])
+        ifelse([$5], , , [AH_TEMPLATE([$5],[$7])])
+        if test "$enableval" = yes; then
             AC_MSG_RESULT(yes)
             ifelse($4, , , [AC_DEFINE($4)])
         else
@@ -287,10 +300,10 @@ else
 fi])
 
 
-dnl Defines a boolean variable good for acconfig.h depending on a condition.
+dnl Defines a boolean variable for config.h depending on a condition.
 dnl
 dnl Usage:
-dnl mg_DEFINE_IF_NOT(c-code, cpp-if-cond, var-name, extra-flags)
+dnl mg_DEFINE_IF_NOT(c-code, cpp-if-cond, var-name, extra-flags, var-comment)
 dnl
 dnl c-code       the first code part inside main()
 dnl cpp-if-cond  boolean preprocessor condition
@@ -304,6 +317,7 @@ AC_DEFUN([mg_DEFINE_IF_NOT], [
 mg_save_CPPFLAGS="$CPPFLAGS"
 ifelse($4, , , CPPFLAGS="$CPPFLAGS [$4]")
 
+AH_TEMPLATE([$3],[$5])
 AC_TRY_RUN([
 #include <stdio.h>
 int main(int c, char **v) {
@@ -932,7 +946,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 		AC_TRY_RUN([
 			#include <gnome.h>
 			int main(int c, char **v) {
-				/* we can't really run this outside of X */
+				/* we can not really run this outside of X */
 				if (!c) gnome_init("test-app", "0.0", c, v);
 				return 0;
 			}],
@@ -973,6 +987,8 @@ size_t iconv();
 #endif
 ], [], use_const=no, use_const=yes)
 	AC_MSG_RESULT($use_const)
+        AH_TEMPLATE([ICONV_ARG_CONST],
+                    [define if second arg of iconv use const])
 	if test "x$use_const" = "xyes"; then
 		AC_DEFINE(ICONV_ARG_CONST, const)
 	else
@@ -984,6 +1000,7 @@ size_t iconv();
 # check for  locale_charset if libiconv is used
 #
 AC_DEFUN([CHECK_LIBCHARSET],[
+exit 77
 	AC_MSG_CHECKING(check for libcharset)
 	ac_save_CFLAGS="$CFLAGS"
       	ac_save_LIBS="$LIBS"
@@ -1769,11 +1786,11 @@ AC_DEFUN([AM_GNU_GETTEXT_VERSION], [])
 
 
 #-----------------------------------------------------------------------------
-# Safty check for mkstemp
+# Safety check for mkstemp
 #
-AC_DEFUN([AM_SAFTY_CHECK_MKSTEMP],[
+AC_DEFUN([AM_SAFETY_CHECK_MKSTEMP],[
   AC_CHECK_FUNCS(mkstemp)
-  has_safty_mkstemp=no
+  has_safety_mkstemp=no
   AC_MSG_CHECKING(if mkstemp is safe)
   if test x$ac_cv_func_mkstemp != xno; then
     AC_TRY_RUN([
@@ -1812,12 +1829,13 @@ int main(void)
   return 0;
 }
     ],
-    [has_safty_mkstemp=yes], [has_safty_mkstemp=no])
+    [has_safety_mkstemp=yes], [has_safety_mkstemp=no])
   fi
-  if test x$has_safty_mkstemp = xno; then
+  AH_TEMPLATE([HAVE_SAFETY_MKSTEMP],[Enable the use of mkstemp])
+  if test x$has_safety_mkstemp = xno; then
     AC_MSG_RESULT(no, use our mkstemp)
   else
     AC_MSG_RESULT(yes)
-    AC_DEFINE(HAVE_SAFTY_MKSTEMP)
+    AC_DEFINE(HAVE_SAFETY_MKSTEMP)
   fi
 ])

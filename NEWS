@@ -8,7 +8,7 @@ Changes in beta release 2.5.15 (not released yet)
 * New features:
 
    - Variables can be nested, like $[desk.name$[desk.n]].
-   - Obsolete one-letter variables work, but generate warnings now.   
+   - Obsolete one-letter variables work, but generate warnings now.
    - Windows can be placed by any button (now also >3)
    - It is now possible to redefine the buttons usable to finish
      window movement and manual placement.
@@ -16,8 +16,11 @@ Changes in beta release 2.5.15 (not released yet)
    - MenuStyle pairs can be negated by prefixing '!'.
    - New generic tabbing module - FvwmTabs.
    - New Style option: EWMHIgnoreWindowType.
-   - New MenuStyle options: MouseWheel, ScrollOffPage and 
+   - New MenuStyle options: MouseWheel, ScrollOffPage and
      TrianglesUseFore.
+   - To compile from CVS, autoconf-2.53 and automake-1.8 or above
+     are now required.  This does not affect compiling the
+     released tarballs.
 
 * Bug Fixes:
 

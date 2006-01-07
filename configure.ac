@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-AC_PREREQ(2.13)
+AC_PREREQ(2.53)
 AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
@@ -32,7 +32,7 @@ if test x"$ISRELEASED" != xyes; then
 	RELDATELONG="(not released yet)"
 	RELDATESHORT="(not released yet)"
 	RELDATENUM="(not released yet)"
-#	# migo: unfortunately this nice idea can't work, it is not updated.
+#	# migo: unfortunately this nice idea can not work, it is not updated.
 #	# I will think more about this, maybe autoconf-2.50+ has a solution.
 #	if test -d CVS/ -a -f CVS/Entries && \
 #		date +%Y-%m-%d -d 'Wed Sep  4 12:36:50 2002' >/dev/null 2>&1
@@ -51,6 +51,7 @@ if test x"$ISRELEASED" != xyes; then
 fi
 
 AC_SUBST(ISRELEASED)
+AH_TEMPLATE([VERSIONINFO],[Additional version information, like date])
 AC_DEFINE_UNQUOTED(VERSIONINFO, "$VERSIONINFO")
 AC_SUBST(VERSIONINFO)
 AC_SUBST(RELDATELONG)
@@ -90,6 +91,12 @@ AC_SUBST(FVWM_DATADIR)
 AC_SUBST(FVWM_PERLLIBDIR)
 AC_SUBST(FVWM_CONFDIR)
 
+AH_TEMPLATE([FVWM_CONFIG],
+  [Name of config filenames in FVWM_USERDIR and FVWM_DATADIR])
+AC_DEFINE(FVWM_CONFIG, "config")
+
+AH_TEMPLATE([FVWM2RC],[Suffix for old (to be deprecated) config filenames])
+AC_DEFINE(FVWM2RC, ".fvwm2rc")
 
 # Various configure-time options
 
@@ -103,8 +110,21 @@ AC_ARG_ENABLE(efence,
   [ac_cv_efence="$enableval"],
   [ac_cv_efence="no"])
 
-smr_SWITCH(command-log, command logging, off, FVWM_COMMAND_LOG)
-smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
+smr_SWITCH(command-log, command logging, off, FVWM_COMMAND_LOG,, [Produces a log of all executed commands and their times on stderr.])
+AH_VERBATIM([_FVWM_COMMAND_LOG],
+[#ifdef FVWM_COMMAND_LOG
+#   define FVWM_DEBUG_TIME 1
+#endif])
+
+smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS,, [if you would like to see lots of debug messages from fvwm, for debugging
+   purposes, uncomment the next line])
+AH_VERBATIM([_FVWM_DEBUG_MSGS],
+[#ifdef FVWM_DEBUG_MSGS
+#   define DBUG(x,y) fvwm_msg(DBG,x,y)
+#else
+#   define DBUG(x,y) /* no messages */
+#endif])
+
 dnl dummy: smr_SWITCH(sm, dummy for test script, on, SESSION)
 
 # Need to know where X is, for finding some libraries (e.g. xpm)
@@ -142,7 +162,9 @@ AC_ARG_WITH(imagepath,
     val="$withval"
     ;;
   esac ])
+AH_TEMPLATE([FVWM_IMAGEPATH],[Where to search for images.])
 AC_DEFINE_UNQUOTED(FVWM_IMAGEPATH, "$val")
+
 FVWM_IMAGEPATH="$val"
 AC_SUBST(FVWM_IMAGEPATH)
 AC_MSG_RESULT($val)
@@ -254,6 +276,7 @@ if test x"$with_sm" != xno; then
   dnl test "$sm_LIBS" && AC_DEFINE(SESSION)
 
   $UNSET ac_cv_lib_SM_SmcOpenConnection
+  AH_TEMPLATE([SESSION],[Enables session management functionality.])
   AC_CHECK_LIB(SM, SmcOpenConnection, with_sm=yes; AC_DEFINE(SESSION),
     with_sm=no; problem_sm=": Failed to detect libSM",
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
@@ -281,6 +304,22 @@ AC_ARG_ENABLE(shape,
   [ with_shape="not specified, check" ]
 )
 
+AH_TEMPLATE(SHAPE,
+[   Define if you want the Shaped window extensions.
+   Shaped window extensions seem to increase the window managers RSS
+   by about 60 Kbytes. They provide for leaving a title-bar on the window
+   without a border.
+   If you don't use shaped window extension, you can either make your
+   shaped windows undecorated, or live with a border and backdrop around
+   all your shaped windows (oclock, xeyes)
+
+   If you normally use a shaped window (xeyes or oclock), you might as
+   well compile this extension in, since the memory cost is  minimal in
+   this case (The shaped window shared libs will be loaded anyway). If you
+   don't normally use a shaped window, you have to decide for yourself.
+
+   Note: if it is compiled in, run time detection is used to make sure that
+   the currently running X server supports it.])
 if test x"$with_shape" != xno; then
   $UNSET ac_cv_lib_Xext_XShapeQueryExtension
   AC_CHECK_LIB(Xext, XShapeQueryExtension,
@@ -302,6 +341,7 @@ AC_ARG_ENABLE(shm,
   [ with_shm="not specified, check" ]
 )
 
+AH_TEMPLATE([HAVE_XSHM],[Define if  MIT Shared Memory extension is used.])
 if test x"$with_shm" != xno; then
   $UNSET ac_cv_lib_Xext_XShmQueryExtension
   AC_CHECK_LIB(Xext, XShmQueryExtension,
@@ -325,6 +365,13 @@ AC_ARG_ENABLE(xinerama,
   [ with_xinerama="not specified, check" ]
 )
 
+AH_TEMPLATE([HAVE_XINERAMA],[Define if Xinerama library is used.])
+AH_TEMPLATE([HAVE_SOLARIS_XINERAMA],
+  [Define if Solaris' Xinerama calls are being used.
+  (Solaris 7 11/99 and later)])
+AH_TEMPLATE([HAVE_SOLARIS_XINERAMA_H],
+  [Define if Solaris' X11/extensions/xinerama.h header is provided.
+  (Solaris 9 and later)])
 if test x"$with_xinerama" != xno; then
   $UNSET ac_cv_lib_Xinerama_XineramaIsActive
   _check_solaris_xinerama=no
@@ -352,8 +399,11 @@ AC_SUBST(Xinerama_LIBS)
 AC_SUBST(Xinerama_CFLAGS)
 
 # ********* xinerama-emulation
-smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen (useful only for developers), off,
-           USE_XINERAMA_EMULATION)
+smr_SWITCH(
+  xinerama-emulation,
+  [Xinerama emulation on one screen (useful only for developers)], off,
+  USE_XINERAMA_EMULATION,,
+  [Define if Xinerama should be emulated on a single screen.])
 if test x"$enable_xinerama_emulation" = xyes; then
   with_xinerama_emulation=yes
 else
@@ -373,10 +423,12 @@ AC_ARG_ENABLE(xrender,
   [ with_xrender="not specified, check" ]
 )
 
+AH_TEMPLATE([HAVE_XRENDER],[Define if Xrender library is used.])
 if test x"$with_xrender" != xno; then
   $UNSET ac_cv_lib_Xrender_XRenderComposite
   AC_CHECK_LIB(Xrender, XRenderComposite,
-    with_xrender=yes; Xrender_LIBS=-lXrender; AC_DEFINE(HAVE_XRENDER),
+    with_xrender=yes; Xrender_LIBS=-lXrender;
+    AC_DEFINE(HAVE_XRENDER),
     with_xrender=no; Xrender_LIBS=
     problem_xrender=": Failed to detect libXrender",
     [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
@@ -400,6 +452,9 @@ AC_ARG_ENABLE(xft,
   ]
 )
 
+AH_TEMPLATE([HAVE_XFT],[Define if Xft library is used.])
+AH_TEMPLATE([HAVE_XFT2],[Define if Xft 2 library is used.])
+AH_TEMPLATE([HAVE_XFT_UTF8],[Define if Xft library can handle utf8 encoding])
 if test x"$with_xft" != xno; then
 
   # first check for freetype2
@@ -467,7 +522,8 @@ if test x"$with_xft" != xno; then
       problem_xft=": Can't detect Xft 1 or 2 and fontconfig"
     fi
     if test x"$with_xft" = xyes; then
-      AC_CHECK_LIB(Xft, XftDrawStringUtf8, AC_DEFINE(HAVE_XFT_UTF8),,
+      AC_CHECK_LIB(Xft, XftDrawStringUtf8,
+        AC_DEFINE(HAVE_XFT_UTF8),,
         [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS $Xrender_LIBS])
     fi
   fi
@@ -516,6 +572,7 @@ if test x"$xpm_LIBS" != x; then
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
 
+  AH_TEMPLATE([XPM],[Define if Xpm library is used.])
   if test x"$with_xpm" = xyes; then
     AC_DEFINE(XPM)
     # FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
@@ -564,6 +621,7 @@ if test x"$png_LIBS" != x; then
   LIBS="$my_LIBS"
 fi
 
+AH_TEMPLATE([HAVE_PNG],[Define if ppm library is used.])
 if test x"$with_png" = xyes; then
   AC_DEFINE(HAVE_PNG)
   png_LIBS="-lpng -lz"
@@ -583,6 +641,7 @@ $UNSET ac_cv_lib_rplay_rplay_create
 # Add in X_EXTRA_LIBS here to get things like connect().
 smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h,
 	      $X_EXTRA_LIBS)
+AH_TEMPLATE([HAVE_RPLAY],[Define if rplay library is used.])
 test x"$rplay_LIBS" != x && AC_DEFINE(HAVE_RPLAY)
 AC_SUBST(rplay_LIBS)
 AC_SUBST(rplay_CFLAGS)
@@ -593,10 +652,20 @@ $UNSET ac_cv_header_stroke_h
 $UNSET ac_cv_lib_stroke_stroke_init
 dnl Add in X_LIBS for MOUSE_DROPPINGS?
 dnl As of 23/Mar/2000 the only libstroke RPM has /usr/X11R6/include/stroke.h
+AH_TEMPLATE([HAVE_STROKE],[Define if stroke library is used.])
 smr_CHECK_LIB(stroke, , mouse strokes recognition,
 	stroke_init, stroke.h,
 	[$X_LIBS -lX11], $X_CFLAGS -I/usr/X11R6/include)
-test x"$stroke_LIBS" != x && AC_DEFINE(HAVE_STROKE)
+test x"$stroke_LIBS" != x &&
+AC_DEFINE(HAVE_STROKE)
+AH_VERBATIM([_HAVE_STROKE],
+[#ifdef HAVE_STROKE
+#    define STROKE_ARG(x) x,
+#    define STROKE_CODE(x) x
+#else
+#    define STROKE_ARG(x)
+#    define STROKE_CODE(x)
+#endif])
 AC_SUBST(stroke_LIBS)
 AC_SUBST(stroke_CFLAGS)
 
@@ -606,6 +675,7 @@ with_readline=no
 problem_readline=": Both termcap and ncurses disabled"
 
 smr_ARG_WITHLIB(termcap, , to accomplish readline)
+AH_TEMPLATE([HAVE_READLINE],[Define if readline is available.])
 if test x"$with_termcap" != xno; then
   # Forget cached values, so user can re-run configure
   $UNSET ac_cv_header_readline_history_h
@@ -627,7 +697,7 @@ if test x"$with_ncurses" != xno -a ! "$readline_LIBS"; then
   $UNSET ac_cv_header_readline_history_h
   $UNSET ac_cv_lib_readline_readline
   AC_MSG_CHECKING([with ncurses])
-  dnl We can't call smr_CHECK_LIB twice here without having the usage twice...
+  dnl We can not call smr_CHECK_LIB twice here without having the usage twice.
   dnl old_LIBS=$LIBS
   dnl AC_CHECK_LIB(readline, readline, , , $ncurses_LIBS)
   dnl LIBS=$old_LIBS
@@ -652,9 +722,11 @@ AC_SUBST(readline_CFLAGS)
 
 
 # Check if Xsetlocale() is available or not.
+AH_TEMPLATE([X_LOCALE],[Enables to use setlocale() provided by X])
 AC_CHECK_LIB(X11, _Xsetlocale, AC_DEFINE(X_LOCALE),, $X_LIBS -lX11)
 
 # Check if Xsetlocale() is available or not.
+AH_TEMPLATE([HAVE_XOUTPUT_METHOD],[Enable X output method])
 AC_CHECK_LIB(X11, XOpenOM, AC_DEFINE(HAVE_XOUTPUT_METHOD),, $X_LIBS -lX11)
 
 # ******** iconv
@@ -669,6 +741,11 @@ AC_ARG_ENABLE(iconv,
   [ac_cv_iconv="$enableval"],
   [ac_cv_iconv="yes"])
 
+AH_TEMPLATE([USE_LIBICONV],
+  [define if we use libiconv (not needed in general: for example iconv is
+  native with recent glibc)])
+AH_TEMPLATE([HAVE_ICONV],
+  [Define if iconv (in the libc) or libiconv is available])
 if test x"$ac_cv_iconv" != xno; then
   # * first check for gnu libiconv
   $UNSET ac_cv_header_libiconv_h
@@ -713,14 +790,21 @@ if test x"$ac_cv_iconv" != xno; then
      ICONV_SECOND_ARG
   fi
 fi
+AH_VERBATIM([_HAVE_LIBCHARSET],
+[#ifdef USE_LIBICONV
+/* define to use locale_charset in the place of nl_langinfog if libiconv
+ * is used */
+#undef HAVE_LIBCHARSET
+#endif])
 
 
 # ******** nl_langinfo and CODESET
+AH_TEMPLATE([HAVE_CODESET],[Have nl_langinfo (CODESET)])
 AC_MSG_CHECKING([for nl_langinfo (CODESET)])
 AC_TRY_COMPILE([#include <langinfo.h>
 #include <locale.h>],
 [char *codeset = nl_langinfo(CODESET); setlocale(LC_CTYPE, "");],
-   AC_DEFINE(HAVE_CODESET,,[Have nl_langinfo (CODESET)])
+   AC_DEFINE(HAVE_CODESET)
    have_codeset=yes,
    have_codeset=no)
 AC_MSG_RESULT($have_codeset)
@@ -800,6 +884,9 @@ int main()
 	fi
 fi
 
+AH_TEMPLATE([HAVE_BIDI],[Define if fribidi library is used.])
+AH_TEMPLATE([FRIBIDI_CHARSET_SPELLING],
+  [Support fribidi-0.10.4 and older with "CHARSET" spelling.])
 if test x"$with_bidi" = xno; then
 	Bidi_CFLAGS=
 	Bidi_LIBS=
@@ -811,6 +898,11 @@ else
 		}
 	], [AC_DEFINE(FRIBIDI_CHARSET_SPELLING)])
 fi
+AH_VERBATIM([_FRIBIDI_CHARSET_SPELLING],
+[#ifdef FRIBIDI_CHARSET_SPELLING
+#  define FRIBIDI_CHAR_SET_NOT_FOUND FRIBIDI_CHARSET_NOT_FOUND
+#endif])
+
 AC_SUBST(Bidi_LIBS)
 AC_SUBST(Bidi_CFLAGS)
 
@@ -854,6 +946,9 @@ AC_ARG_ENABLE(nls,
 	fi ],
 )
 
+AH_TEMPLATE([HAVE_NLS],
+  [Define to 1 if translation of program messages to the user's native
+  language is requested.])
 if test x"$with_gettext" != xno; then
   AM_GNU_FGETTEXT
   if test x"$USE_NLS" = "xyes"; then
@@ -978,7 +1073,7 @@ AC_CHECK_FUNCS(setpgrp setpgid)
 
 
 
-pds_CHECK_TYPE(sig_atomic_t, int, [#include <signal.h>])
+pds_CHECK_TYPE(sig_atomic_t, int, [#include <signal.h>], [Specify a type for sig_atomic_t if it's not available.])
 
 if test x$ac_cv_func_setvbuf = xyes; then
   AC_FUNC_SETVBUF_REVERSED
@@ -996,7 +1091,7 @@ dnl AC_SUBST(LIBOBJS)
 
 # check for mkstemp, see the discution on this subject on the fvwm workers
 # list (2001-02-16 and 2001-02-24)
-AM_SAFTY_CHECK_MKSTEMP
+AM_SAFETY_CHECK_MKSTEMP
 
 # If we do not have atexit(), then check for on_exit()
 if test x$ac_cv_func_atexit = xno; then
@@ -1035,7 +1130,8 @@ AC_SUBST(FVWMGTK)
 AC_SUBST(MANFVWMGTK)
 
 # Check the availability of gdk-imlib
-AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB),)
+AH_TEMPLATE([GDK_IMLIB],[Define if gdk-imlib is used])
+AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB))
 if test x"$no_imlib" = x; then
   with_gdkimlib=yes
   problem_gdkimlib=""
@@ -1056,21 +1152,32 @@ else
   problem_gnomehints=": Explicitly disabled"
 fi
 
-# Define some compatibility macros needed for acconfig.h.
+# Define some compatibility macros needed for config.h.
 mg_DEFINE_IF_NOT([#include <X11/keysym.h>],
   [defined XK_Page_Up && defined XK_Page_Down],
-  [COMPAT_OLD_KEYSYMDEF], [$X_CFLAGS])
+  [COMPAT_OLD_KEYSYMDEF], [$X_CFLAGS],
+  [Old AIX systems (3.2.5) don't define some common keysyms.])
+AH_VERBATIM([_COMPAT_OLD_KEYSYMDEF],
+[#ifdef COMPAT_OLD_KEYSYMDEF
+#  define XK_Page_Up   XK_Prior
+#  define XK_Page_Down XK_Next
+#endif])
 
 if test x"$with_stroke" = xyes; then
   mg_DEFINE_IF_NOT([#include <stroke.h>],
     [defined STROKE_MAX_SEQUENCE],
-    [COMPAT_OLD_LIBSTROKE], [$stroke_CFLAGS])
+    [COMPAT_OLD_LIBSTROKE], [$stroke_CFLAGS],
+    [Old libstroke <= 0.4 does not use STROKE_ prefix for constants.])
 fi
+AH_VERBATIM([_COMPAT_OLD_LIBSTROKE],
+[#ifdef COMPAT_OLD_LIBSTROKE
+/* currently we only use one constant */
+#  define STROKE_MAX_SEQUENCE MAX_SEQUENCE
+#endif])
 
 
 # Allow building with dmalloc.  Do this last to avoid screwing up any
 # other checks above.
-
 case "$ac_cv_dmalloc" in
   yes) AC_CHECK_HEADERS(dmalloc.h)
        AC_CHECK_LIB(dmalloc, dmalloc_shutdown)
@@ -1079,10 +1186,140 @@ esac
 
 
 # Allow building with efence.
-
 case "$ac_cv_efence" in
   yes) AC_CHECK_LIB(efence, malloc) ;;
 esac
+
+# some explicit definitions for config.h file
+AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
+[
+/**
+ * The next few defines are options that are only changed from their values
+ * shown here on systems that _don't_ use the configure script.
+ **/
+
+/* Enable tests for missing too many XEvents.  Usually you want this. */
+#define WORRY_ABOUT_MISSED_XEVENTS 1
+
+/* Define if the X11 ConnectionNumber is actually a file descriptor. */
+#define HAVE_X11_FD 1
+
+/* Define if fork() has unix semantics.  On VMS, no child process is created
+   until after a successful exec(). */
+#define FORK_CREATES_CHILD 1
+
+/* Suffix for executable filenames; NULL if no extension needed. */
+#define EXECUTABLE_EXTENSION NULL
+
+/* Define to remove the extension from executable pathnames before calling
+   exec(). */
+#undef REMOVE_EXECUTABLE_EXTENSION
+
+/* Enables the "MiniIcon" Style option to specify a small pixmap which
+ * can be used as one of the title-bar buttons, shown in window list,
+ * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined
+ * (see below). */
+/* #undef MINI_ICONS */
+/* NOTE: hard coded to 1 */
+#if 1
+#define FMiniIconsSupported 1
+#else
+#define FMiniIconsSupported 0
+#endif
+
+/* Enables tagged general decoration styles which can be assigned to
+ * windows using the UseDecor Style option, or dynamically updated
+ * with ChangeDecor.  To create and destroy "decor" definitions, see
+ * the man page entries for AddToDecor and DestroyDecor.  There is a
+ * slight memory penalty for each additionally defined decor. */
+/* #undef USEDECOR */
+/* NOTE: hard coded to 1 */
+#define USEDECOR 1
+
+#if RETSIGTYPE != void
+#define SIGNAL_RETURN return 0
+#else
+#define SIGNAL_RETURN return
+#endif
+
+/* Allow GCC extensions to work, if you have GCC. */
+#ifndef __attribute__
+/* This feature is available in gcc versions 2.5 and later. */
+#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) || __STRICT_ANSI__
+#    define __attribute__(x)
+#  endif
+/* The __-protected variants of `format' and `printf' attributes
+ * are accepted by gcc versions 2.6.4 (effectively 2.7) and later. */
+#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
+#    define __format__ format
+#    define __printf__ printf
+#  endif
+#endif
+
+#if HAVE_ALLOCA_H
+#  include <alloca.h>
+#else
+#  ifdef _AIX
+       #pragma alloca
+#  else
+#    ifndef alloca /* predefined by HP cc +Olibcalls */
+	 char *alloca ();
+#    endif
+#  endif
+#endif
+
+#ifdef HAVE_STRING_H
+#  include <string.h>
+#endif
+#ifdef HAVE_STRINGS_H
+#  include <strings.h>
+#endif
+#ifdef HAVE_MEMORY_H
+#  include <memory.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+#endif
+#ifdef HAVE_MALLOC_H
+#  include <malloc.h>
+#endif
+#ifndef HAVE_STRCHR
+#  define strchr(_s,_c)   index((_s),(_c))
+#  define strrchr(_s,_c)  rindex((_s),(_c))
+#endif
+
+#ifndef HAVE_MEMCPY
+#  define memcpy(_d,_s,_l)  bcopy((_s),(_d),(_l))
+#endif
+#ifndef HAVE_MEMMOVE
+#  define memmove(_d,_s,_l) bcopy((_s),(_d),(_l))
+#endif
+
+#if HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+
+#ifndef min
+#  define min(a,b) (((a)<(b)) ? (a) : (b))
+#endif
+#ifndef max
+#  define max(a,b) (((a)>(b)) ? (a) : (b))
+#endif
+#ifndef abs
+#  define abs(a) (((a)>=0)?(a):-(a))
+#endif
+
+#include "libs/defaults.h"
+
+#ifndef FEVENT_C
+#include <X11/Xlib.h>
+#include "libs/FEvent.h"
+#endif])
+
 
 # mainly for fvwm-config
 AC_SUBST(with_bidi)

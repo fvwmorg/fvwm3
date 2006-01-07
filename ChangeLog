@@ -1,6 +1,23 @@
 2006-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in:
+	* configure.ac:
+	renamed configure.in to configure.ac
+
+	* acinclude.m4:
+	some updates for new autoconf/automake versions
+
+	* configure.in:
+	* acconfig.h:
+	removed acconfig.h
+
+	* configure.in:
+	require autoconf-2.53 or later
+
+	* Makefile.am (AUTOMAKE_OPTIONS):
+	require automake-1.8 or later
+
+	* configure.in:
 	check for X library path before X library checks
 	removed obsolete C++ compiler check
 	removed duplicate type size checks
