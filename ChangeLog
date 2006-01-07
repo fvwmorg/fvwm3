@@ -1,3 +1,14 @@
+2006-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* configure.in:
+	check for X library path before X library checks
+	removed obsolete C++ compiler check
+	removed duplicate type size checks
+	replaced M4 comment ("dnl") with shell comment ("#") in many places
+
+	* acinclude.m4:
+	fixed aclocal warnings
+
 2006-01-01  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/style.c (style_parse_button_style):

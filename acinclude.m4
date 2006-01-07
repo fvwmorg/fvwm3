@@ -4,7 +4,7 @@ dnl Convenience macros
 dnl new version of FUNC_SELECT
 dnl - submitted to autoconf maintainer; expected to appear in next version
 
-AC_DEFUN(AC_FUNC_SELECT,
+AC_DEFUN([AC_FUNC_SELECT],
 [AC_CHECK_FUNCS(select)
 if test "$ac_cv_func_select" = yes; then
   AC_CHECK_HEADERS(unistd.h sys/types.h sys/time.h sys/select.h sys/socket.h)
@@ -84,7 +84,7 @@ dnl Checking for typedefs, with extra headers
 
 
 dnl pds_CHECK_TYPE(TYPE, DEFAULT, [HEADERS])
-AC_DEFUN(pds_CHECK_TYPE,
+AC_DEFUN([pds_CHECK_TYPE],
 [AC_REQUIRE([AC_HEADER_STDC])dnl
 AC_MSG_CHECKING(for $1)
 AC_CACHE_VAL(ac_cv_type_$1,
@@ -123,7 +123,7 @@ dnl             --enable-name nor --disable-name is specified
 dnl pos-def     a symbol to AC_DEFINE if switch is on (optional)
 dnl neg-def     a symbol to AC_DEFINE if switch is off (optional)
 dnl
-AC_DEFUN(smr_SWITCH, [
+AC_DEFUN([smr_SWITCH], [
     AC_MSG_CHECKING(whether to enable $2)
     AC_ARG_ENABLE(
         $1,
@@ -168,7 +168,7 @@ dnl libname             (optional) actual name of library,
 dnl                     if different from name
 dnl description         (optional) used to construct help string
 dnl
-AC_DEFUN(smr_ARG_WITHLIB, [
+AC_DEFUN([smr_ARG_WITHLIB], [
 
 ifelse($2, , smr_lib=[$1], smr_lib=[$2])
 
@@ -215,7 +215,7 @@ dnl header              a header file required for using the lib
 dnl extra-flags         (optional) flags required when compiling the
 dnl                     header, typically more includes; for ex. X_CFLAGS
 dnl
-AC_DEFUN(smr_ARG_WITHINCLUDES, [
+AC_DEFUN([smr_ARG_WITHINCLUDES], [
 
 AC_ARG_WITH([$1]-includes,
 [  --with-$1-includes=DIR  set directory for $1 headers],
@@ -256,7 +256,7 @@ dnl header      (optional) header required for using library
 dnl x-libs      (optional) extra libraries, if needed to link with lib
 dnl x-flags     (optional) extra flags, if needed to include header files
 dnl
-AC_DEFUN(smr_CHECK_LIB,
+AC_DEFUN([smr_CHECK_LIB],
 [
 ifelse($2, , smr_lib=[$1], smr_lib=[$2])
 ifelse($5, , , smr_header=[$5])
@@ -300,7 +300,7 @@ dnl
 dnl Example:
 dnl mg_DEFINE_IF_NOT([#include <features.h>], [defined __USE_BSD], [NON_BSD])
 dnl
-AC_DEFUN(mg_DEFINE_IF_NOT, [
+AC_DEFUN([mg_DEFINE_IF_NOT], [
 mg_save_CPPFLAGS="$CPPFLAGS"
 ifelse($4, , , CPPFLAGS="$CPPFLAGS [$4]")
 
@@ -329,7 +329,7 @@ dnl contents of gtk.m4
 dnl AM_PATH_GTK([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for GTK, and define GTK_CFLAGS and GTK_LIBS
 dnl
-AC_DEFUN(AM_PATH_GTK,
+AC_DEFUN([AM_PATH_GTK],
 [dnl
 dnl Get the cflags and libraries from the gtk-config script
 dnl
@@ -522,11 +522,11 @@ dnl modified by migo - write diagnostics to >&5 (i.e. config.log) not stdout
 dnl AM_PATH_IMLIB([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for IMLIB, and define IMLIB_CFLAGS and IMLIB_LIBS
 dnl
-AC_DEFUN(AM_PATH_IMLIB,
+AC_DEFUN([AM_PATH_IMLIB],
 [dnl
 dnl Get the cflags and libraries from the imlib-config script
 dnl
-AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (optional)],
+AC_ARG_WITH([imlib-prefix],[  --with-imlib-prefix=PFX prefix for IMLIB files (optional)],
             imlib_prefix="$withval", imlib_prefix="")
 AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
@@ -661,7 +661,7 @@ int main ()
 ])
 
 # Check for gdk-imlib
-AC_DEFUN(AM_PATH_GDK_IMLIB,
+AC_DEFUN([AM_PATH_GDK_IMLIB],
 [dnl
 dnl Get the cflags and libraries from the imlib-config script
 dnl
@@ -1007,7 +1007,7 @@ c = locale_charset ();
 
 dnl
 dnl
-AC_DEFUN(AM_CHECK_PKG_CONFIG,
+AC_DEFUN([AM_CHECK_PKG_CONFIG],
 [dnl
 dnl Get the cflags and libraries from the freetype-config script
 dnl
@@ -1040,7 +1040,7 @@ AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 dnl AM_CHECK_FT2([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for FreeType2, and define FT2_CFLAGS and FT2_LIBS
 dnl
-AC_DEFUN(AM_CHECK_FT2,
+AC_DEFUN([AM_CHECK_FT2],
 [dnl
 dnl Get the cflags and libraries from the freetype-config script
 dnl
@@ -1175,7 +1175,7 @@ AC_SUBST(FT2_LIBS)
 dnl AM_CHECK_FC([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for fontconfig, and define FC_CFLAGS and FC_LIBS
 dnl
-AC_DEFUN(AM_CHECK_FC,
+AC_DEFUN([AM_CHECK_FC],
 [dnl
 dnl Get the cflags and libraries from the fontconfig-config script
 dnl
@@ -1331,7 +1331,7 @@ AC_SUBST(FC_LIBS)
 dnl AM_CHECK_XFT([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for xft, and define XFT_CFLAGS and XFT_LIBS
 dnl
-AC_DEFUN(AM_CHECK_XFT,
+AC_DEFUN([AM_CHECK_XFT],
 [dnl
 dnl Get the cflags and libraries from the xft-config script
 dnl
