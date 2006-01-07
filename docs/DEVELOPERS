@@ -10,8 +10,8 @@ the tar file distribution instead, available from ftp.fvwm.org.
 To build from the CVS sources, you will need:
   * GNU gcc
   * GNU make
-  * autoconf (version >= 2.13)
-  * automake (version >= 1.4)
+  * autoconf (version >= 2.53)
+  * automake (version >= 1.8)
 
 
 After the *initial* checkout of the sources, (see cvs.html) you
