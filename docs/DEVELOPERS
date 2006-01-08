@@ -1,7 +1,7 @@
 			Notes for Developers                         -*-text-*-
 			--------------------
 
-Last updated on 16-Jul-2004
+Last updated on 08-Jan-2006
 
 You will need to install several GNU tools to be able to use the
 cvs sources.  If you do not have these tools available, build from
@@ -11,7 +11,7 @@ To build from the CVS sources, you will need:
   * GNU gcc
   * GNU make
   * autoconf (version >= 2.53)
-  * automake (version >= 1.8)
+  * automake (version >= 1.4)
 
 
 After the *initial* checkout of the sources, (see cvs.html) you
