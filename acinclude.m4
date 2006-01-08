@@ -134,16 +134,16 @@ dnl pos-def     a symbol to AC_DEFINE if switch is on (optional)
 dnl neg-def     a symbol to AC_DEFINE if switch is off (optional)
 dnl
 AC_DEFUN([smr_SWITCH], [
-    AC_MSG_CHECKING(whether to enable $2)
+    AC_MSG_CHECKING(whether to enable [$2])
     AC_ARG_ENABLE(
         $1,
-        ifelse($3, on,
-            [  --disable-[$1]m4_substr([             ], m4_len([$1])) disable [$2]],
-            [  --enable-[$1] m4_substr([             ], m4_len([$1])) enable [$2]]),
-        [
+	ifelse($3, on,
+		[AC_HELP_STRING([--disable-$1], [disable $2])],
+		[AC_HELP_STRING([--enable-$1], [enable $2])]
+	),
         ifelse([$4], , , [AH_TEMPLATE([$4],[$6])])
         ifelse([$5], , , [AH_TEMPLATE([$5],[$7])])
-        if test "$enableval" = yes; then
+        [ if test "$enableval" = yes; then
             AC_MSG_RESULT(yes)
             ifelse($4, , , [AC_DEFINE($4)])
         else
@@ -154,7 +154,9 @@ AC_DEFUN([smr_SWITCH], [
            [ AC_MSG_RESULT(yes)
             ifelse($4, , , [AC_DEFINE($4)]) ],
            [ AC_MSG_RESULT(no)
-            ifelse($5, , , [AC_DEFINE($5)])]))])
+            ifelse($5, , , [AC_DEFINE($5)])])
+	)
+])
 
 
 dnl Allow argument for optional libraries; wraps AC_ARG_WITH, to
