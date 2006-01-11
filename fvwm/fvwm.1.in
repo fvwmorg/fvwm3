@@ -3422,7 +3422,7 @@ The opposite,
 disables this behaviour.
 
 .I TrianglesUseFore
-draws sub menu triangles with the foreground color of the menu colorset 
+draws sub menu triangles with the foreground color of the menu colorset
 (normally drawn with the hilight color).
 .I !TrianglesUseFore
 disables this behaivour.
@@ -6800,7 +6800,8 @@ style automatically receive the focus when they are created.
 .I FPGrabFocus
 is the default for windows with the
 .I ClickToFocus
-style.
+style.  Note that even if these styles are disabled, the
+application may take the focus itself.  Fvwm can not prevent this.
 
 The
 .I OverrideGrabFocus
