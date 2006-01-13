@@ -21,6 +21,8 @@ Changes in beta release 2.5.15 (not released yet)
    - To compile from CVS, autoconf-2.53 and automake-1.8 or above
      are now required.  This does not affect compiling the
      released tarballs.
+   - New option "screen" to Move and ResizeMove commands to allow
+     specifying the target Xinerama screen.
 
 * Bug Fixes:
 

@@ -274,7 +274,8 @@ void switch_move_resize_grid(Bool state)
 
 /* The vars are named for the x-direction, but this is used for both x and y */
 static int GetOnePositionArgument(
-	char *s1,int x,int w,int *pFinalX,float factor, int max, Bool is_x)
+	char *s1, int x, int w, int *pFinalX, float factor, int max, int off,
+	Bool is_x)
 {
 	int val;
 	int cch = strlen(s1);
@@ -313,11 +314,11 @@ static int GetOnePositionArgument(
 	}
 	else if (sscanf(s1,"-%d",&val) == 1)
 	{
-		*pFinalX = max-w - (int)(val*factor + 0.5);
+		*pFinalX = max-w - (int)(val*factor + 0.5) + off;
 	}
 	else if (sscanf(s1,"+%d",&val) == 1 || sscanf(s1,"%d",&val) == 1)
 	{
-		*pFinalX = (int)(val*factor + 0.5);
+		*pFinalX = (int)(val*factor + 0.5) + off;
 	}
 	else
 	{
@@ -363,8 +364,10 @@ static int GetMoveArguments(
 	char *warp = NULL;
 	char *action;
 	char *naction;
-	int scrWidth = Scr.MyDisplayWidth;
-	int scrHeight = Scr.MyDisplayHeight;
+	int scr_x = 0;
+	int scr_y = 0;
+	int scr_w = Scr.MyDisplayWidth;
+	int scr_h = Scr.MyDisplayHeight;
 	int retval = 0;
 
 	if (!paction)
@@ -379,6 +382,20 @@ static int GetMoveArguments(
 		*paction = action;
 		free(s1);
 		return 0;
+	}
+	if (s1 && StrEquals(s1, "screen"))
+	{
+		char *token;
+		int scr;
+
+		free(s1);
+		token = PeekToken(action, &action);
+		scr = FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
+		FScreenGetScrRect(NULL, scr, &scr_x, &scr_y, &scr_w, &scr_h);
+		action = GetNextToken(action, &s1);
+	}
+	else
+	{
 	}
 	action = GetNextToken(action, &s2);
 	if (fWarp)
@@ -399,8 +416,8 @@ static int GetMoveArguments(
 			retval++;
 		}
 		else if (GetOnePositionArgument(
-				 s1, *pFinalX, w, pFinalX, (float)scrWidth/100,
-				 scrWidth, True))
+				 s1, *pFinalX, w, pFinalX, (float)scr_w/100,
+				 scr_w, scr_x, True))
 		{
 			retval++;
 		}
@@ -409,8 +426,8 @@ static int GetMoveArguments(
 			retval++;
 		}
 		else if (GetOnePositionArgument(
-				 s2, *pFinalY, h, pFinalY,
-				 (float)scrHeight/100, scrHeight, False))
+				 s2, *pFinalY, h, pFinalY, (float)scr_h/100,
+				 scr_h, scr_y, False))
 		{
 			retval++;
 		}
@@ -2317,7 +2334,7 @@ Bool __move_loop(
 			Keyboard_shortcuts(
 				&e, fw, &x_virtual_offset,
 				&y_virtual_offset, ButtonRelease);
-			
+
 			is_fake_event = (e.type != KeyPress);
 		}
 		switch (e.type)

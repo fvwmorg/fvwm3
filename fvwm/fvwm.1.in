@@ -4908,7 +4908,8 @@ AddToFunc lower-to-bottom
 .EE
 
 .TP
-.B "Move [[\fIw\fP\
+.B "Move [[screen \fIscreen\fP]
+ [\fIw\fP\
  | \fIm\fP\
 ]\fIx\fP\
 [\fIp\fP\
@@ -4922,7 +4923,18 @@ AddToFunc lower-to-bottom
 Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window is moved.  If called from
 the root window then the user is allowed to select the target
-window.  If the optional argument
+window.
+
+If the literal option Screen followed by a
+.I screen
+argument is specified, the coordinates are interpreted as relative
+to the given screen.  The width and height of the screen are used
+for the calculations instead of the display dimensions.  The
+.I screen
+as interpreted as in the
+.B MoveToScreen
+command.
+If the optional argument
 .I Warp
 is specified the pointer is warped with the window.  If the single
 argument
@@ -5169,8 +5181,8 @@ command) otherwise it is lowered.
 ] \fIheight\fP \
 [\fIp\fP \
 | \fIc\fP\
-]] | [\fIbottomright\fP \
-| \fIbr x y\fP\
+]] | [bottomright \
+| br \fIx y\fP\
 ]"
 Allows for resizing a window.  If called from somewhere in a window
 or its border, then that window is resized.  If called from the
@@ -5240,7 +5252,9 @@ window.  They are interpreted exactly like the
 .IR x " and " y
 arguments of the
 .B Move
-command.
+command.  Actually, any of the options accepted by the
+.B Move
+command can be used.
 
 .TP
 .BI "ResizeMaximize [" resize-arguments "]"
@@ -5281,6 +5295,13 @@ Example:
 # Move the window to the top left corner
 ResizeMove w+0 -10p 0 -20p
 .EE
+
+Note:  Fvwm may not be able to parse the command properly if the
+option
+.I bottomright
+of the
+.B Resize
+command is used.
 
 .TP
 .BI "ResizeMoveMaximize " "resize-arguments move-arguments"
