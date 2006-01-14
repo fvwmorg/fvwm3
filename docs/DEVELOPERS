@@ -202,7 +202,7 @@ Configuration tests:
   - Make sure configure detects all optional libraries except the
     ones that are recommended not to be used.  Repeat the previous
     step until configure finds everything.  Building a release
-    without all optional libraries should be a rare exception.
+    without any optional library should be a rare exception.
 
 Compile tests:
 
