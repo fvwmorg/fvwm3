@@ -1,6 +1,11 @@
 2006-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
+	* configure.in:
+	increased version to 2.5.16
+	released 2.5.15
+
+	* NEWS:
 	* configure.ac:
 	updated for 2.5.15 release
 
