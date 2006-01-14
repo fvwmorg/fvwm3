@@ -1,9 +1,9 @@
-2005-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-11-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* hints/hints_test.c:
 	do not #include stdlib.h (comes from config.h)
 
-2005-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* hints/hints_test.c:
 	64-bit fixes
@@ -13,7 +13,7 @@
 	* perl/module-winlist
 	update one event field name
 
-2004-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* hints/hints_test.c (main):
 	fixed if clause
@@ -80,12 +80,12 @@
 	* hints/hints_test.c:
 	reformatted, added --help, basic argument checking
 
-2003-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* hints/hints_test.c:
 	-Wall fix
 
-2003-02-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-02-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* Makefile.am:
 	fixed "make distcheck"
@@ -95,7 +95,7 @@
 	* hints/Makefile: remove.
 	* hints/Makefile.am: Supplied missing Makefile.am.
 
-2003-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* Makefile.am:
 	* hints/Makefile:
@@ -194,22 +194,22 @@
 	Added a program which map a window with various hints set or not
 	accordingly to some options
 
-2001-04-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-04-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* purify/purify.fvwm2rc:
 	added DestroyDecor recreate tests
 
-2001-04-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-04-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* purify/purify.fvwm2rc:
 	added tests for AddToFunc parsing
 
-2001-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-03-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* purify/purify.fvwm2rc:
 	more gradient tests
 
-2001-03-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-03-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmButtons/FvwmButtons.sh:
 	fixed sliding position of top right panel in test 3

@@ -136,14 +136,14 @@ files that are packed into the distribution.  If you leave one
 out, nobody will be able to build the distributed tar file!
 
 
-Changing configure.in
+Changing configure.ac
 ---------------------
 
 The most common reason to do this is to change the version string.
 If you're editing it for any other reason, I will assume you know
 what you're doing.
 
-Steps: 1. edit configure.in, and find the line containing
+Steps: 1. edit configure.ac, and find the line containing
           AM_INIT_AUTOMAKE(fvwm, x.y.z) at the top of the file
        2. change x.y.z to the new version string
        3. re-run "make" from the top of the build directory
@@ -166,12 +166,12 @@ Preparations:
     stable release it is best to throw away the whole source tree
     and check it out from scratch to ensure all source files have
     been added to CVS.
-  - Change the dates in configure.in and fill in the release date
+  - Change the dates in configure.ac and fill in the release date
     in NEWS.  Note: For releases prior to 2.5.3, the date has to be
     updated in docs/fvwm.lsm.in and fvwm/fvwm.1 instead of
-    configure.in.
+    configure.ac.
   - Verify that the version variable at the very beginning of
-    configure.in has the value of the going to be released version
+    configure.ac has the value of the going to be released version
     and set ISRELEASED to "yes".  It should be "yes" in the
     released tarballs.
   - For a stable release, update docs/ANNOUNCE file.  For the
@@ -278,7 +278,7 @@ Upload the release:
 Increase the version number:
 
   - Increase the version number in the very beginning of
-    configure.in (see above) and set ISRELEASED to "no".
+    configure.ac (see above) and set ISRELEASED to "no".
   - Create a new section for future changes in the NEWS file.
   - Add a ChangeLog entry indicating that a new version started.
   - Commit these three changes.

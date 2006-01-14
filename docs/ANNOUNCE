@@ -1,53 +1,39 @@
-Fvwm is a powerful window manager.  Version 2.5.14 is a beta
-release that fixes a couple of bugs, including some crashes.  You
-are welcome to upgrade and test the new features or help
-stabilizing the code.  Please be aware that any features
-introduced in the 2.5.x development versions may be renamed,
-changed or removed without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.15 is a beta
+release that fixes a couple of bugs and introduces a number of new
+minor features.  You are welcome to upgrade and test the new
+features or help stabilizing the code.  Please be aware that any
+features introduced in the 2.5.x development versions may be
+renamed, changed or removed without notice before 2.6.0.
 
-2.5.14 is the first release that includes official (but
-experimental) support for 64-bit architectures, including AMD64
-support. For 64-bit support, upgrading from any earlier release is
-mandatory. Otherwise upgrading from any earlier 2.5.x release is
-recommended.
+2.5.15 fixes some bugs with the 64-bit architecture support.  For
+64-bit support, upgrading from any earlier release is strongly
+recommended.  Otherwise upgrading from any earlier 2.5.x release
+is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - Fvwm now officially supports 64-bit architertures.
-   - New Test conditions EnvIsSet, EnvMatch, EdgeHasPointer and
-     EdgeIsActive.
-   - New window condition FixedPosition.
-
-* New module features:
-
-   - FvwmPerl module supports window context when preprocessing.
-   - FvwmPerl module accepts new --export option that by default
-     defines two fvwm functions "Eval" and ".", to be used like:
-
-       FvwmPerl -x
-       Eval $a = $[desk.n] - 2; cmd("GotoDesk 0 $a") if $a >= 0
-       . Exec xmessage %{2 + cos(0)}%    # embedded calculator
-
-   - New FvwmProxy option ProxyIconified.
-   - New FvwmTaskBar option Pad to control the gap between
-     buttons.
+   - Variables can be nested, like $[desk.name$[desk.n]].
+   - Obsolete one-letter variables work, but generate warnings now.
+   - Windows can be placed by any button (now also >3).
+   - It is now possible to redefine the buttons usable to finish
+     window movement and manual placement.
+   - New window condition PlacedByButton.
+   - MenuStyle pairs can be negated by prefixing '!'.
+   - New generic tabbing module - FvwmTabs.
+   - New Style option: EWMHIgnoreWindowType.
+   - New MenuStyle options: MouseWheel, ScrollOffPage and
+     TrianglesUseFore.
+   - New option "screen" to Move and ResizeMove commands to allow
+     specifying the target Xinerama screen.
 
 * Bug Fixes:
 
-   - Fixed a Solaris compiler error introduced in 2.5.13.
-   - Fixed a hang with layers set by applications (e.g. AbiWord).
-   - GotoDesk with a relative page argument now wraps around at
-     the end of the given range as documented. (Bug #1396).
-   - PopupDelayed menu style option was not copied on
-     CopyMenuStyle.
-   - Transparent Animated menus with non-transparent popup were
-     not animated correctly.
-   - Supported euc-jp class of encodings.
-   - A window's default layer is no longer set to 0 durin a
-     restart.
-   - Fixed an annoying MouseFocus/SloppyFocus problem in
-     conjunction with EdgeResistance + EdgeScroll (sometimes a
-     window did noit get the focus as it should have). This
-     problem first occured in 2.5.11.
+   - Supported a new fribidi version 0.10.5 in addition to 0.10.4.
+   - Better look for windows with "BorderStyle TiledPixmap".
+   - Some EWMH-related 64-bit fixes.
+   - Fixed segmentation fault when replacing title of title only
+     menus (Bug #1121).
+   - Fixes for resizing of shaded windows and resizing/moving
+     windows with complex functions.

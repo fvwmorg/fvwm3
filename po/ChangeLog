@@ -59,10 +59,10 @@
 
 2002-12-02  olicha  <olivier.chapuis@free.fr>
 
-	* Makefile.am (uninstall-local-yes): 
+	* Makefile.am (uninstall-local-yes):
 	Fixed make uninstall
 
-2002-12-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-12-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* Makefile.am:
 	fixed (?) install and uninstall rules

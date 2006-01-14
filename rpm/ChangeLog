@@ -40,7 +40,7 @@
 	* fvwm.spec.in:
 	use --sysconfdir=/etc
 
-2001-07-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm.spec.in:
 	removed todo-2.4 and todo-3.0 from rpm
@@ -65,7 +65,7 @@
 	* fvwm.spec.in:
 	translated lang=ru; not translated lang=fr
 
-2001-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm.spec.in:
 	renamed --enable-kanji to --enable-multibyte

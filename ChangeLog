@@ -1,10 +1,16 @@
+2006-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* NEWS:
+	* configure.ac:
+	updated for 2.5.15 release
+
 2006-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (GetOnePositionArgument):
 	(GetMoveArguments):
 	new option "screen" to Move type commands
 
-2006-01-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2006-01-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* acinclude.m4 (smr_SWITCH):
 	updated
@@ -14,7 +20,7 @@
 	* Makefile.am
 	restore requirement of automake-1.4; 1.8 is too new even for my system
 
-2006-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2006-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	* configure.ac:
@@ -64,18 +70,18 @@
 	commited patch by Malcolm Still adding TrianglesUseFore MenuStyle
 	option.
 
-2005-12-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-12-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	corrected typos
 
-2005-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-11-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_free_move_resize_args):
 	fixed drawing of transparent decorations or when using lazy shading
 	during resize
 
-2005-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-11-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	* libs/fvwmsignal.c:
@@ -110,12 +116,12 @@
 	* libs/Fft.c (FftGetFont):
 	fixed compiler warning with gcc 3.4.4
 
-2005-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-11-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):
 	properly undraw unselected item area
 
-2005-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-11-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):
 	* fvwm/menus.c (get_menu_paint_item_parameters)
@@ -156,7 +162,7 @@
 	* fvwm/fvwm.1.in:
 	Added style EWMHIgnoreWindowType to make fvwm ignore window types.
 
-2005-10-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-10-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (GetIconWindow):
 	* fvwm/fvwm.h (FvwmWindow):
@@ -169,7 +175,7 @@
 	fix for the TiledPixmap borderstyle fix not to affect RootTransparent
 	borders.
 
-2005-10-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-10-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menustyle.c (menustyle_copy_face):
 	(menustyle_copy):
@@ -246,7 +252,7 @@
 	reimplemented a fix for the place with keyboard setting a button as
 	used for place bug; this time without breaking escape key.
 
-2005-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-10-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):
 	removed the previous patch as it breaks aborting window motion with the
@@ -264,7 +270,7 @@
 	* fvwm/frame.c (frame_setup_border):
 	reverted change for move of window parts (reset of PressedW).
 
-2005-09-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-09-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_setup_border):
 	fixed a Warning
@@ -339,7 +345,7 @@
 	* fvwm/expand.c (expand_vars_extended, expand_vars):
 	allow nesting of variables
 
-2005-09-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-09-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh.c (EWMH_SetWMDesktop):
 	* fvwm/ewmh_events.c (ewmh_WMDesktop):
@@ -369,7 +375,7 @@
 	support new spelling FRIBIDI_CHAR_SET_NOT_FOUND introduced in
 	fribidi-0.10.5; autodetect old spelling FRIBIDI_CHARSET_NOT_FOUND
 
-2005-08-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	* configure.in:
@@ -400,14 +406,14 @@
 	(CreateConditionMask):
 	added FixedPosition condition
 
-2005-08-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (HandlePaging):
 	use FQueryPointer every time to track the pointer position; this fixes
 	fvwm hanging in HandlePaging for the given delay once the pointer
 	touches the pan frames
 
-2005-08-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/session.c (SaveWindowStates):
 	(LoadWindowStates):
@@ -427,7 +433,7 @@
 	* fvwm/fvwm.1.in:
 	added test conditions EdgeHasPointer and EdgeIsActive
 
-2005-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (raisePanFrames):
 	prevent cycling of pan frame window stacking order
@@ -438,7 +444,7 @@
 	* fvwm/fvwm.1.in:
 	add Test conditions IsEnvSet and MatchEnv
 
-2005-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (pop_menu_up):
 	* fvwm/menustyle.c (menustyle_copy):
@@ -461,7 +467,7 @@
 	* libs/Strings.c (CatString3):
 	fixed a buffer overflow
 
-2005-08-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	detect if Window, Pixel or void * are bigger than long and refuse to
@@ -505,17 +511,17 @@
 	* fvwm/ewmh.c:
 	reindented some code and renamed some variables
 
-2005-08-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__check_click_to_focus_or_raise):
 	small cleanup patch
 
-2005-08-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-08-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIconMan/xmanager.c (set_win_iconified):
 	fixed select/focus button state lost when deiconifying a window
 
-2005-07-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_WMIconGeometry):
 	fixed bogus warning
@@ -523,7 +529,7 @@
 	* libs/Colorset.c (get_aspect_dimensions):
 	fixed aspectpixmap size calculations
 
-2005-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_WMIconGeometry):
 	fixed a core dump
@@ -548,7 +554,7 @@
 	(fvwm_msg_report_app_and_workers):
 	new utility functions
 
-2005-07-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (dump_stack_ring):
 	(verify_stack_ring_consistency):
@@ -562,7 +568,7 @@
 	* libs/FlocaleCharset.c:
 	support euc-jp encodings (Yasuhiro Nakazaki)
 
-2005-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_WMIconGeometry):
 	* fvwm/ewmh_names.c (EWMH_WMName):
@@ -604,12 +610,12 @@
 	* fvwm/fvwm.c (SetMWM_INFO):
 	64-bit fixes
 
-2005-07-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (GetOnePositionArgument):
 	don't use the unportable fuction rintf()
 
-2005-07-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	* configure.in:
@@ -621,7 +627,7 @@
 	* configure.in:
 	updated for 2.5.13 release
 
-2005-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Graphics.c (do_relieve_rectangle_with_rotation):
 	fixed drawing of relief with very small rectangles, i.e. when
@@ -631,7 +637,7 @@
 
 	* NEWS: fvwm-menu-desktop changes.
 
-2005-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (get_next_x):
 	fixed collision detection of windows on pages other than the current
@@ -651,7 +657,7 @@
 	* fvwm/fvwm.1.in:
 	Spelling fix contition -> condition
 
-2005-04-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-04-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_ids_are_equals):
 	(style_id_equals_id):
@@ -687,7 +693,7 @@
 
 	* fvwm/fvwm.1.in (Focus): Typos in focus section.
 
-2005-02-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-02-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (Circulate):
 	added tests for fw == Scr.FvwmRoot again to fix a crash
@@ -726,7 +732,7 @@
 	Applied Arnaud Vrac patch which fixes maximize by growing vs
 	EWMH working area
 
-2004-12-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-12-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/builtins.c (do_button_style):
 	ButtonStyle Reset takes effect immediately
@@ -758,7 +764,7 @@
 
 	* fvwm/fvwm.1.in: Fix keysym description add XKeysymDB.
 
-2004-11-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-11-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (__mloop_get_event):
 	* fvwm/functions.c (execute_complex_function):
@@ -769,7 +775,7 @@
 	properly set the "state" member of faked motion and key events;
 	fixes broken "nosnap" feature
 
-2004-10-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c (ParseBinding):
 	reformatted
@@ -784,7 +790,7 @@
 	fixed handling of root window in window specific binding code
 	renamed some functions
 
-2004-10-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (__update_windowlist):
 	replaced while loop by for loop
@@ -797,7 +803,7 @@
 	defused possible endless loop when a window iconified by the
 	transientfor window loses the "transient" relationship
 
-2004-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):
 	(__resize_window):
@@ -806,7 +812,7 @@
 	* fvwm/menus.c (__mloop_handle_action_with_mi):
 	do not "post" a submenu menu item it the submenu does not exist
 
-2004-10-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__handle_bpress_on_managed):
 	do not draw the decorations pressed in if executing a function is
@@ -815,12 +821,12 @@
 	* libs/Parse.c (CopyToken):
 	fixed parsing of delimiters
 
-2004-10-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (GetDeskNumber):
 	fixed MoveToDesk without argument
 
-2004-10-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	re-formatted and some spelling corrections
@@ -831,20 +837,20 @@
 	(CMD_CleanupColorsets):
 	moved functions to colorset.c
 
-2004-10-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Parse.c (CopyToken):
 	skip any whitespace before a delimiter; this allows to have spaces
 	before the commas in an option list
 
-2004-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_reshape_border):
 	re-shaping shaded windows no longer unshades them
 	re-shaping unshaded windows on pages other than 0 0 no longer moves
 	them out of the current page
 
-2004-10-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__cr_detect_icccm_move):
 	* fvwm/screen.h (ScreenInfo):
@@ -871,7 +877,7 @@
 	caused by calculating the old client window geometry using the new
 	title dimensions; query the window size instead
 
-2004-10-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (test_map_request):
 	(test_button_event):
@@ -888,7 +894,7 @@
 	(HandleUnmapNotify):
 	fixed core dump
 
-2004-10-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/window_flags.h:
 	removed useless and broken SETM_ macros
@@ -896,12 +902,12 @@
 	* fvwm/update.c (init_style):
 	fixed resetting user states
 
-2004-10-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-10-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/envvar.c (add_to_envlist):
 	fixed crash
 
-2004-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-09-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/builtins.c (CMD_UnsetEnv):
 	use flib_unsetenv
@@ -930,7 +936,7 @@
 	* perllib/FVWM/Commands.pm:
 	new command EdgeLeaveCommand
 
-2004-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-09-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	updated for 2.4.19
@@ -944,7 +950,7 @@
 	* configure.in:
 	updated for 2.5.11 release
 
-2004-09-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-09-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/geometry.c (get_page_offset):
 	(get_page_offset_rectangle):
@@ -958,12 +964,12 @@
 	new options wrapx, wrapy, nodesklimitx, nodesklimity to MoveToPage
 	command
 
-2004-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-09-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Flocale.c (FlocaleGetNameProperty):
 	fixed freeing uninitialized pointer
 
-2004-09-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-09-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (select_cmd):
 	(direction_cmd):
@@ -1022,7 +1028,7 @@
 	These man pages were renamed to have a .in suffix.
 	ie. bin/fvwm-bug.1 renamed to bin/fvwm-bug.1.in
 
-2004-09-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-09-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__place_window):
 	fixed starting desk output with bugopts explainwindowplacement
@@ -1037,7 +1043,7 @@
 	Fixed window specific bindings "patch" by sending key release event
 	when needed
 
-2004-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/defaults.h:
 	* fvwm/screen.h:
@@ -1066,7 +1072,7 @@
 	fixed use of NUMBER_OF_MOUSE_BUTTONS vs.
 	NUMBER_OF_EXTENDED_MOUSE_BUTTONS
 
-2004-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	put -Wall -Wno-implicit-int before user specified flags
@@ -1078,7 +1084,7 @@
 
 	* libs/FScreen.c: Fixed case error.  Patch from Chris Ross.
 
-2004-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FScreen.c:
 	cleaned up ifdef hell
@@ -1096,24 +1102,24 @@
 	Update.
 	Patch by Chris Ross.
 
-2004-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__handle_cr_on_client):
 	don't reevaluate window geometry when a ConfigureRequest has no size or
 	position set
 
-2004-08-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (get_menu_options):
 	(do_menu):
 	new menu option TearOffImmediately
 
-2004-08-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__place_get_wm_pos):
 	cascade placemnt fix by Paul Vojta
 
-2004-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/geometry.c (constrain_size):
 	Don't touch the aspect ratio if modifying the width/height does not
@@ -1130,7 +1136,7 @@
 	* fvwm/geometry.c (constrain_size):
 	look up the latest size hints if necessary
 
-2004-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/geometry.c (constrain_size):
 	* fvwm/ewmh.c (EWMH_fullscreen):
@@ -1141,12 +1147,12 @@
 	allow windows to override their size hints when going fullscreen:
 	minimum and maximum size, size inc, aspect ratio, etc.
 
-2004-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/decorations.c (struct):
 	MWM hints on 64 bit machines fix
 
-2004-07-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in (Note):
 	* fvwm/read.c (CMD_Read):
@@ -1158,7 +1164,7 @@
 	(CMD_PipeRead):
 	removed debug code
 
-2004-07-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (GetResizeArguments):
 	(GetMoveArguments):
@@ -1168,7 +1174,7 @@
 	* fvwm/conditional.c (CMD_None):
 	Fixed CMD_None return code
 
-2004-07-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (is_above_unmanaged):
 	windows on other Desks are always considered on top
@@ -1185,7 +1191,7 @@
 	(PictureInitColors):
 	use flib_putenv instead of putenv
 
-2004-07-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/screen.h:
 	* libs/gravity.h (enum):
@@ -1219,7 +1225,7 @@
 	* fvwm/fvwm.1.in:
 	use commas between conditions
 
-2004-07-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/builtins.c (CMD_Wait):
 	ignore MapNotify reported to any window except the root window
@@ -1239,13 +1245,13 @@
 	Committed patch by Norman Yarvin (with a few minor mods) to extend
 	conditionals to handle multiple window names.
 
-2004-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (CONFIGARGS):
 	* libs/vpacket.h (ConfigWinPacket):
 	put window_flags at end of structure
 
-2004-07-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (CONFIGARGS):
 	(OLDCONFIGARGS):
@@ -1258,7 +1264,7 @@
 	* libs/vpacket.h (ConfigWinPacket):
 	64 bit fix
 
-2004-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/execcontext.c (__exc_change_context):
 	fixed handling of etrigger event, fixing a problem with PropertyNotify
@@ -1303,7 +1309,7 @@
 	Allow user to specify window-specific bindings that should NOT be
 	intercepted by FVWM. This is accomplished with an '--' binding action.
 
-2004-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__resize_window):
 	Fixed event handling
@@ -1318,7 +1324,7 @@
 	* fvwm/conditional.c:
 	Extend "Test (Version >= x.y.z)" syntax to allow version comparison.
 
-2004-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (GetResizeArguments):
 	(GetResizeMoveArguments):
@@ -1375,7 +1381,7 @@
 	Key, Mouse, PointerKey & Stroke commands.
 	Remove strange "-Key" option listed for PointerKey.
 
-2004-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-06-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Fft.c (FftDrawString):
 	* fvwm/session.c (get_version_string):
@@ -1386,7 +1392,7 @@
 	* libs/PictureUtils.c (struct):
 	fixed compilation with -Wall -Wstrict-prototypes -Wpointer-arith
 
-2004-06-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-06-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__cr_detect_icccm_move):
 	windows with ewmh hints are assumed to use icccm2 compliant movement
@@ -1399,7 +1405,7 @@
 	* fvwm/fvwm.c (ReapChildren):
 	moved function to lib
 
-2004-06-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-06-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/modconf.c (send_desktop_geometry):
 	(send_color_limit):
@@ -1446,7 +1452,7 @@
 	* libs/wild.h:
 	Make args to matchWildcards() const.
 
-2004-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
 	use EWMH_fullscreen
@@ -1478,13 +1484,13 @@
 	* fvwm/expand.c (expand_vars_extended):
 	include full path in iconfile and miniiconfile variables
 
-2004-06-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-06-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c (execute_complex_function):
 	(CheckActionType):
 	fixed double click patch
 
-2004-06-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-06-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh.c (EWMH_SetWMDesktop):
 	use 0xFFFFFFFF instead of 0xFFFFFFFE for "sticky across all desks"
@@ -1507,7 +1513,7 @@
 	* fvwm/style.c (style_parse_one_style_option)
 	Added support for new CenterPlacement style (cf. macro PLACE_CENTER).
 
-2004-05-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-05-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleEnterNotify):
 	fixed endless loop of edge commands when doing something that grabs
@@ -1517,7 +1523,7 @@
 	(execute_complex_function):
 	double clicks no longer work when pressing different buttons
 
-2004-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-05-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__place_get_wm_pos):
 	fixed placement in top left corner when pressing escape during manual
@@ -1593,12 +1599,12 @@
 	new default ~/.fvwm/config file is now recommended instead of
 	still supported ~/.fvwm/.fvwm2rc
 
-2004-04-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-04-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (NewMenuRoot):
 	do not strip whitespace from menu names when creating a new menu
 
-2004-04-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-04-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_get_size):
 	* fvwm/menuitem.h:
@@ -1610,14 +1616,14 @@
 	* fvwm/ewmh_events.c (ewmh_DesktopGeometry):
 	Fixed EWMH DesktopGeometry and Stacking list
 
-2004-04-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-04-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (GetDeskNumber):
 	(CMD_MoveToDesk):
 	(CMD_GotoDesk):
 	fixed MoveToDesk with one argument
 
-2004-04-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-04-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_one_style_option):
 	* fvwm/style.h:
@@ -1626,18 +1632,18 @@
 	* fvwm/window_flags.h:
 	new style "State"
 
-2004-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	corrected a typo
 
-2004-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (unmaximize_fvwm_window):
 	fixed redrawing of maximize button when unmaximizing but when the size
 	and position does not change
 
-2004-03-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/expand.c (expand_vars_extended):
 	new extended variable $[w.layer]
@@ -1647,7 +1653,7 @@
 	(CMD_Maximize):
 	applied modified layer patch for maximize by Rafal Bisingier
 
-2004-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (setup_frame_attributes):
 	Hopefully fixed BackingStore code and removed now useless backing store
@@ -1656,7 +1662,7 @@
 	* fvwm/expand.c (expand_vars_extended):
 	new extended variable $[w.desk]
 
-2004-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	* configure.in:
@@ -1673,7 +1679,7 @@
 	* libs/gravity.c (gravity_add_rotations):
 	new function
 
-2004-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__explain_placement):
 	new function
@@ -1686,7 +1692,7 @@
 	new BugOpts option ExplainWindowPlacement
 	renamed some members of Screen
 
-2004-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__place_get_wm_pos):
 	(__place_get_nowm_pos):
@@ -1697,7 +1703,7 @@
 	split into multiple functions
 	cleaned up a little
 
-2004-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (setup_window_placement):
 	* fvwm/placement.c (setup_window_placement):
@@ -1719,7 +1725,7 @@
 	(FlocaleTextWidth):
 	reduced redundant calls to iconv
 
-2004-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (CMD_XorValue):
 	fixed a very small outline drawing problem caused by using 0 line width
@@ -1744,24 +1750,24 @@
 	* libs/FImage.c (FShmSafeCreateImage):
 	Fixed some safety tests
 
-2004-02-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-02-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__handle_cr_on_client):
 	fixed a bug in the Jave configure request workaround
 
-2004-02-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-02-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__cr_detect_icccm_move):
 	improved motion method detection for fullscreen requests
 
-2004-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-02-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (AddWindow):
 	* fvwm/screen.h (ScreenInfo):
 	* fvwm/builtins.c (CMD_BugOpts):
 	new BugOpts option DisplayNewWindowNames intended for debugging
 
-2004-02-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-02-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Bindings.c (FvwmStringToKeysym):
 	small performance enhancement
@@ -1770,7 +1776,7 @@
 	(__move_loop):
 	fixed the FlickeringMoveWorkaround option which did nothing before
 
-2004-02-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-02-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_one_style_option):
 	* fvwm/fvwm.h:
@@ -1784,7 +1790,7 @@
 	* libs/Graphics.c (do_relieve_rectangle_with_rotation):
 	made left side of a relief one pixel longer at the bottom
 
-2004-02-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-02-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/defaults.h (DEF_FP_SORT_WINDOWLIST_BY):
 	* fvwm/style.c (style_set_old_focus_policy):
@@ -1804,7 +1810,7 @@
 	* fvwm/events.c (__test_for_motion):
 	Fixed a lockup, see the long comment in the code
 
-2004-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/schedule.c (execute_obj_func):
 	fixed using uninitialised return code
@@ -1814,12 +1820,12 @@
 	* fvwm/builtins.c (do_title_style):
 	Fixed MinHeight, it must reset the Height
 
-2004-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-01-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (menuShortcuts):
 	applied menu navigation patch by Anton Kazennikov
 
-2003-12-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-12-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/gravity.c (gravity_dir_to_string):
 	(gravity_parse_dir_argument):
@@ -1864,12 +1870,12 @@
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	several updates; added Debian menu if found
 
-2003-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-11-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	new configure option --en/disable-iconv
 
-2003-11-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-11-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (__mloop_handle_event):
 	* fvwm/menustyle.c (menustyle_parse_style):
@@ -1946,7 +1952,7 @@
 	* NEWS:
 	added 2.4.17 NEWS
 
-2003-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-09-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	* fvwm/conditional.c (CreateConditionMask):
@@ -1960,12 +1966,12 @@
 	* libs/FImage.c (FShmInit):
 	Removed debug code
 
-2003-09-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-09-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (warp_to_fvwm_window):
 	don't unnecessarily call MoveViewport
 
-2003-09-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-09-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/decorations.c (__is_resize_allowed):
 	fixed a condition
@@ -2180,7 +2186,7 @@
 	(EWMH_SetFrameStrut):
 	Fixed position of kde tray windows in kicker
 
-2003-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (FlushMessageQueue):
 	retry writing pipe if write returns EINTR
@@ -2245,7 +2251,7 @@
 	* fvwm/fvwm.1.in:
 	corrections in some long option names
 
-2003-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (setup_style_and_decor):
 	* fvwm/geometry.c (set_window_border_size):
@@ -2407,7 +2413,7 @@
 	fixed rendering combining characters using Unicode font in a
 	non-UTF-8 locale
 
-2003-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	renamed MoveWindowByProgramMethod to MoveByProgramMethod
@@ -2435,7 +2441,7 @@
 	* todo-2.6:
 	closed D.1 with "no consensus" resolution
 
-2003-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	documented tear off menus
@@ -2454,7 +2460,7 @@
 	minor reformattings (use TABs not 8 spaces and a space after keywords
 	like for, if or while)
 
-2003-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (apply_window_updates):
 	* fvwm/update.h:
@@ -2503,7 +2509,7 @@
 	* libs/FRender.c (FRenderRender):
 	Fixed compilation
 
-2003-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh.c (ewmh_check_wm_pid):
 	(EWMH_WindowInit):
@@ -2520,7 +2526,7 @@
 	* libs/Flocale.c (FlocaleDrawString):
 	fixed drawing superimposed characters with a fontset
 
-2003-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (__cr_detect_icccm_move):
 	(__handle_cr_on_client):
@@ -2578,7 +2584,7 @@
 	* libs/Bindings.c:
 	fixed a problem with uninitialised global variable
 
-2003-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Bindings.c (key_modifiers):
 	moved to new file wcontext.c
@@ -2626,7 +2632,7 @@
 	* libs/FCombineChars.c (FCombineChars):
 	Added support for drawing superimposed combining characters
 
-2003-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/commands.h:
 	* fvwm/functable.c (func_table):
@@ -2643,7 +2649,7 @@
 	(do_menu):
 	Cleanup
 
-2003-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menustyle.c (menustyle_copy):
 	(copy_menu_style):
@@ -2679,13 +2685,13 @@
 	* fvwm/menustyle.h:
 	Split CMD_CopyMenuStyle into CMD_CopyMenuStyle and copy_menu_style
 
-2003-06-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-06-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (do_move_window_to_desk):
 	(UnmapDesk):
 	fixed "Visible" condition on non current desks
 
-2003-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-06-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	**/*.c:
 	**/*.h:
@@ -2793,7 +2799,7 @@
 	* fvwm/conditional.c (CMD_CondCase):
 	fixed the CondCase command
 
-2003-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-06-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	new configure option --deisable-gtk to disable detection of gtk library
@@ -2807,7 +2813,7 @@
 	* fvwm/builtins.c (ReadDecorFace): Off by one patch from
 	Anil Madhavapeddy.
 
-2003-06-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-06-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	cleaned up of CirculateHit... conditions
@@ -2835,7 +2841,7 @@
 	fontconfig and xft2 if the version is < the required version
 	(even if --disable-*test).
 
-2003-06-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-06-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Graphics.c:
 	define M_PI and M_PI_2 if they are not defined by math.h
@@ -2917,7 +2923,7 @@
 	* NEWS:
 	A TaskBar news
 
-2003-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-05-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (__update_windowlist):
 	don't fiddle with the window list for windows that are going to be
@@ -2946,7 +2952,7 @@
 	* fvwm/decorations.c: Sync up motif hints structure to aix,hp,
 	solaris.
 
-2003-05-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-05-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/misc.c (GrabEm):
 	do not confine the pointer to the root window when grabbed; this can
@@ -3019,7 +3025,7 @@
 	Added a list for the windows which are scheduled for destroy
 	Remove a fw at once from the fw list when we destroy_window
 
-2003-05-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-05-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (CMD_DestroyStyle):
 	do not update windows if no style was deleted
@@ -3092,7 +3098,7 @@
 	* fvwm/windowlist.c (CMD_WindowList):
 	Fixed a memory leak if MaxLabelWidth is used
 
-2003-05-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-05-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c (__context_has_window):
 	(__execute_function):
@@ -3105,7 +3111,7 @@
 	* libs/System.c (searchPath):
 	Fixed a core dump
 
-2003-05-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-05-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):
 	(__resize_window):
@@ -3121,7 +3127,7 @@
 	* fvwm/NEWS:
 	Minor typo corrections.
 
-2003-04-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):
 	fixed UMR
@@ -3137,7 +3143,7 @@
 	(ewmh_WMStateStaysOnBottom):
 	Fixed EwmhUseStackingHints and EwmhIgnoreStackingHints style update
 
-2003-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (do_execute_module):
 	* fvwm/fvwm.c (main):
@@ -3183,7 +3189,7 @@
 	* INSTALL.fvwm:
 	several updates (FvwmGtk, gettext)
 
-2003-04-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menucmd.c (menu_func):
 	* fvwm/windowlist.c (CMD_WindowList):
@@ -3225,7 +3231,7 @@
 	* fvwm.c:
 	replaced "Mouse 0 R N Menu MenuFvwmRoot" binding with "Mouse 1 R A"
 
-2003-04-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (do_menu):
 	the NoWarp position hint option works with root menus too
@@ -3284,7 +3290,7 @@
 	(EWMH_WMName):
 	Fixed a core dump and safety check related to not loaded font
 
-2003-04-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Module.h:
 	reformatted
@@ -3314,7 +3320,7 @@
 	* fvwm/fvwm.1.in:
 	updated WindowId entry
 
-2003-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/schedule.c (deschedule):
 	(squeue_execute):
@@ -3373,7 +3379,7 @@
 	* libs/FGettext.h:
 	New interface function which copies the string
 
-2003-04-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (CMD_Cond):
 	allow to negate the condition code with '!' prefix
@@ -3424,12 +3430,12 @@
 	* configure.in:
 	Fixed a miss print in fribidi config check
 
-2003-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-04-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (__restore_focus_after_unmap):
 	iconified windows without an icon do not receive focus
 
-2003-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual (CMD_GotoDeskAndPage):
 	different "GotoDeskAndPage prev" fix that works with any viewports, not
@@ -3440,7 +3446,7 @@
 	* fvwm/virtual (CMD_GotoDeskAndPage):
 	fixed "GotoDeskAndPage prev" with desks larger than 2x2
 
-2003-03-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* ETHICAL_LICENSE:
 	added file
@@ -3457,14 +3463,14 @@
 	* fvwm/fvwm.1.in:
 	clarified some things, typo fixed
 
-2003-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Colorset.c (CreateBackgroundPixmap):
 	(GetWindowBackgroundPixmapSize):
 	(get_aspect_dimensions):
 	fixed size calculation of aspect pixmaps
 
-2003-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (clear_icon):
 	(clear_icon):
@@ -3475,7 +3481,7 @@
 	set a valid icon picture position if there is neither a picture nor a
 	title
 
-2003-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	* AUTHORS:
@@ -3489,12 +3495,12 @@
 	* fvwm/fvwm.1.in:
 	actually remove duplicate Iconify entry, use $[w.id] not $w, more fixes
 
-2003-03-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FScreen.c:
 	removed debug output
 
-2003-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FScreen.c (FScreenMangleScreenIntoUSPosHints):
 	(FScreenFetchMangledScreenFromUSPosHints):
@@ -3504,7 +3510,7 @@
 	* fvwm/conditional.c (direction_cmd):
 	Some fixes, reformatting and improvements.
 
-2003-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (Iconify):
 	initialise icon position to +0+0 if there is neiter a picture nor a
@@ -3520,7 +3526,7 @@
 	fixed drawing of sticky icon titles when the stickyicon style is being
 	set
 
-2003-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (CMD_PlaceAgain):
 	* fvwm/add_window.c (setup_window_placement):
@@ -3547,7 +3553,7 @@
 	* todo-2.6 (todo): Close C.13 (861): cant reproduce, no problems
 	detected with Purify.
 
-2003-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Colorset.c (SetWindowBackgroundWithOffset):
 	use None, not 0 for Window structures
@@ -3561,7 +3567,7 @@
 	* fvwm/fvwm.1.in:
 	removed key release binding because they can not work reliably
 
-2003-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-03-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functable.c (func_table):
 	trigger on ButtonPress for many of the functions
@@ -3585,7 +3591,7 @@
 	Check that the max size hint is not broken relatively to the the base
 	size hint
 
-2003-02-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-02-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	* configure.in:
@@ -3626,7 +3632,7 @@
 	* configure.in:
 	Fixed compilation warning if fribidi is in path
 
-2003-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-02-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/windowlist.c (CMD_WindowList):
 	removed unused instruction
@@ -3644,7 +3650,7 @@
 	* fvwm/functions.c (__run_complex_function_items): Make Break start
 	working again.
 
-2003-02-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-02-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (get_outline_rects):
 	(draw_move_resize_grid):
@@ -3690,7 +3696,7 @@
 
 	* fvwm/builtins.c (CMD_Exec): Use STDIN_FILENO instead of a zero.
 
-2003-02-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-02-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.h:
 	* fvwm/menuitem.c (menuitem_get_size):
@@ -3701,14 +3707,14 @@
 	* fvwm/menus.c (_calculate_item_sizes):
 	backed out patch from 30-Jan-2003
 
-2003-01-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-01-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.h:
 	* fvwm/menuitem.c (menuitem_get_item_size):
 	* fvwm/menus.c (_calculate_item_sizes):
 	functions renamed due to global name space collision with IRIX 6.5
 
-2003-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	added tests/hints/Makefile.am
@@ -3723,7 +3729,7 @@
 	* sample.fvwmrc/DecorMwm: Remove bad mouse binding, that I meant to
 	Replace a long time ago.
 
-2003-01-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (new_layer):
 	(collect_transients_recursive):
@@ -4116,7 +4122,7 @@
 	New option to ButtonStyle and TitleStyle: StretchedPixmap.
 	Use the new Scr.AlphaGC.
 
-2002-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-12-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (validate_transientfor):
 	do not ignore transientfor hint for iconified windows
@@ -4129,7 +4135,7 @@
 	* fvwm/functable.c:
 	rename ScanWindow to ScanForWindow
 
-2002-12-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-12-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):
 	* fvwm/colorset.c (parse_colorset):
@@ -4162,7 +4168,7 @@
 	* fvwm/fvwm.1.in
 	Documented conditional options "FixedSize" and "HasHandles".
 
-2002-12-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-12-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (PlaceWindow):
 	fixed StickyAcrossDesks w/ StartsOnPage
@@ -4257,7 +4263,7 @@
 	Added ar to ALL_LINGUAS
 
 
-2002-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-12-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__resize_window):
 	fixed handling of MontionNotify and PropertyNotify events
@@ -4275,7 +4281,7 @@
 	* libs/FGettext.c (*):
 	New command FlocalePath
 
-2002-12-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-12-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	* configure.in:
@@ -4303,7 +4309,7 @@
 	* libs/FBidiJoin.c (shape_n_join):
 	enabled a new bidi shaping code
 
-2002-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_restore_client_gravities):
 	(frame_free_move_resize_args):
@@ -4318,7 +4324,7 @@
 	* Makefile.am:
 	Fixed two missprints
 
-2002-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c (ParseBinding):
 	fix for stroke-less compile
@@ -4369,7 +4375,7 @@
 	* libs/Makefile.am:
 	gnu gettext libintl warper
 
-2002-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (RestoreWithdrawnLocation):
 	rixed rxvts with S/E gravity travelling off screen upon recapture after
@@ -4391,7 +4397,7 @@
 	* fvwm/events.c (HandleUnmapNotify):
 	fixed reparenting problem with restarts from desks != 0
 
-2002-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c:
 	removed experimental code
@@ -4492,7 +4498,7 @@
 
 	* libs/Makefile.am: Add missing Bindings.h.
 
-2002-11-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):
 	send M_CONFIGURE_WINDOW only when the window actually moves
@@ -4508,7 +4514,7 @@
 	with minor improvements; it is disabled for now (#if 0) since
 	some Arabic chars cause core dump
 
-2002-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in (Examples):
 	added documentation of Icon option for PlaceAgain command
@@ -4537,7 +4543,7 @@
 	* fvwm/colorset.c (update_root_transparent_colorset):
 	Fixed update of the RootTransparent colorset in fvwm
 
-2002-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Bindings.c (__compare_binding):
 	(MatchBindingExactly):
@@ -4550,7 +4556,7 @@
 	* NEWS
 	Removed any reference on "xft and flickering"
 
-2002-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/eventmask.h (XEVMASK_ICONW):
 	* fvwm/events.c (HandleKeyRelease):
@@ -4562,7 +4568,7 @@
 	implemented key release bindings; prefix the key name with a '-';
 	does not work well with some applications
 
-2002-11-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Bindings.h:
 	new file
@@ -4591,7 +4597,7 @@
 	* libs/fvwmlib.h (enum):
 	fixed Key vs. PointerKey with "A"ny context
 
-2002-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (Iconify):
 	icon placement safety patch
@@ -4613,7 +4619,7 @@
 	(usage):
 	named-palette -> visual-palette, -N -> -P
 
-2002-11-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ConfigFvwmDefaults:
 	include ConfigFvwmProxyDefaults
@@ -4621,7 +4627,7 @@
 	* fvwm/fvwm.c (usage):
 	polished usage message
 
-2002-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.c (usage):
 	(main):
@@ -4655,7 +4661,7 @@
 	* libs/PictureBase.h:
 	Added two macro
 
-2002-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_conf.c (set_state_workaround):
 	* fvwm/functable.c (func_table):
@@ -4770,7 +4776,7 @@
 	Fixed StaticColor visual. Rename some of the color allocators. Clean up
 	free colors stuff
 
-2002-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_window):
 	ignore MoveToPage with sticky windows
@@ -4820,7 +4826,7 @@
 	* fvwm.1.in:
 	New option "Locale" to PrintInfo Command
 
-2002-11-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleExpose):
 	removed no-op
@@ -4830,7 +4836,7 @@
 	* fvwm/fvwm.1.in: colour -> color
 	Language check.
 
-2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	* fvwm/fvwm.c (usage):
@@ -4864,13 +4870,13 @@
 	-named-pallet. -color-limit now take only integer argument.
 
 
-2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Module.h (struct):
 	new type FvwmWinPacketBodyHeader to access the standard fields in a
 	packet with a window
 
-2002-11-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	updated for 2.4.13
@@ -4940,7 +4946,7 @@
 	* fvwm/icons.c (GetIconFromFile):
 	Fixed color leaks
 
-2002-10-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/commands.h:
 	* fvwm/functable.c:
@@ -4987,7 +4993,7 @@
 	* NEWS:
 	updated for 2.5.4
 
-2002-10-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	added FvwmProxy module
@@ -4998,7 +5004,7 @@
 	* fvwm/windowlist.c (CMD_WindowList):
 	renamed SortClassName to SortByClass
 
-2002-10-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menustyle.c (menustyle_update):
 	(menustyle_parse_style):
@@ -5008,7 +5014,7 @@
 	* fvwm/menustyle.h:
 	removed HilightRelief MenuStyle and hard coded it
 
-2002-10-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (make_menu_window):
 	fixed updating menu background with "Menustyle * Background"
@@ -5026,13 +5032,13 @@
 	* INSTALL.fvwm:
 	added --enable-xinerama-emulation description
 
-2002-10-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (restack_windows):
 	(__get_stacking_sibling):
 	fixed another stacking problem
 
-2002-10-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (AddWindow):
 	braodcast M_RESTACK_WINDOW after M_ADD_WINDOW to fix problem with
@@ -5042,7 +5048,7 @@
 	(__get_visible_window):
 	fixed a stacking problem with layers
 
-2002-10-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functable.c (func_table):
 	fixed Pick command
@@ -5068,7 +5074,7 @@
 
 	* fvwm/fvwm.1.in: Lang check done.
 
-2002-10-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c:
 	work on new menu loop code
@@ -5090,7 +5096,7 @@
 	* fvwm/conditional.c (circulate_cmd):
 	fixed the "Any" command
 
-2002-10-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (mark_transient_subtree):
 	fixed stack ring corruption with iconified transients
@@ -5098,7 +5104,7 @@
 	fixed a problem with lowering windows below the icons of their
 	transients
 
-2002-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Colorset.c:
 	* fvwm/menustyle.c:
@@ -5115,7 +5121,7 @@
 	* libs/PictureUtils.c:
 	Minor fixes and add #if O experimental code
 
-2002-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (DrawIconPixmapWindow):
 	(DrawIconWindow):
@@ -5148,7 +5154,7 @@
 	* fvwm/add_window.c (destroy_icon):
 	fixed a memory leak
 
-2002-10-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):
 	* fvwm/menustyle.c (menustyle_parse_style):
@@ -5201,7 +5207,7 @@
 	* fvwm/colorset.c:
 	Replaced (Pdepht < 2) test by (PictureUseBWOnly())
 
-2002-10-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (get_default_window_attributes):
 	cleaned up
@@ -5225,7 +5231,7 @@
 	* fvwm/builtins.c (CMD_Colorset):
 	Do not BroadcastColorset in CMD_Colorset, parse_colorset do that!
 
-2002-10-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (AddWindow):
 	* fvwm/update.c (apply_window_updates):
@@ -5267,7 +5273,7 @@
 	Use _XROOTPMAP_ID and not ESETROOT_PMAP_ID neither XSETROOT_ID
 	to found a root pixmap
 
-2002-10-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c (bind_get_bound_button_contexts):
 	another mouse binding fix
@@ -5320,7 +5326,7 @@
 	* libs/PictureImageLoader.h:
 	Replace Root by win
 
-2002-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (setup_key_and_button_grabs):
 	* fvwm/bindings.c (ParseBinding):
@@ -5337,7 +5343,7 @@
 	fixed duplicate icon pixmap when switching from NoIconOverride to
 	IconOverride
 
-2002-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c:
 	re-indented some code
@@ -5347,12 +5353,12 @@
 	* fvwm/fvwm.1.in:
 	corrected default of Use/NoIconPosition style
 
-2002-10-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/windowlist.c (CMD_WindowList):
 	fixed random string for iconified windows in the WindowList
 
-2002-10-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	updated for 2.4.12
@@ -5412,7 +5418,7 @@
 	builtin commands.  Use "builtin", not "built in" or "built-in".
 	Other adjustments.
 
-2002-10-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Graphics.c (do_relieve_rectangle):
 	removed debug message
@@ -5510,7 +5516,7 @@
 	* fvwm/icons.c (DrawIconTitleWindow):
 	An other drawing fix
 
-2002-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):
 	fixed uninitialised variable
@@ -5536,7 +5542,7 @@
 	* libs/FRender.c (*):
 	Fixed compilation and small clean up
 
-2002-09-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (CreateFlagString):
 	fixed quoting in conditional command conditions
@@ -5614,7 +5620,7 @@
 	* fvwm/ewmh_icons.c (ewmh_SetWmIconFromPixmap):
 	Fixed the alpha channel
 
-2002-09-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
 	updated for 2.4.11
@@ -5673,7 +5679,7 @@
 	* fvwm/colorset.c (parse_colorset):
 	Small clean up
 
-2002-09-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (__menu_loop):
 	(__mloop_handle_action_with_mi):
@@ -5693,7 +5699,7 @@
 	new function
 	fixed stacking core dump
 
-2002-09-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Graphics.c:
 	ANSI C fixes
@@ -5702,7 +5708,7 @@
 	added a program that tests for -Werror option and similar; bug out of
 	configure if the test program doesn't compile
 
-2002-09-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	* configure.in:
@@ -5723,7 +5729,7 @@
 	(GNOME_HandlePropRequest):
 	fixed dummy macros when compiling without gnome/ewmh support
 
-2002-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/queue.c (fqueue_add_inside):
 	add a new command with the same execution time as a previous one behind
@@ -5754,7 +5760,7 @@
 	* libs/Module.c:
 	reformatted; don't send end-of-line with SET_*MASK
 
-2002-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/borders.c (border_draw_multi_pixmap_titlebar):
 	fixed multipixmap title drawing
@@ -5788,7 +5794,7 @@
 	* libs/FRender.c (FRenderRender):
 	Allows to use the root window as src pixmap
 
-2002-09-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	Fixed open double quotes in ButtonState section
@@ -5838,7 +5844,7 @@
 	* acconfig.h:
 	possibly fixed compilation with non gcc
 
-2002-09-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (_focus_grab_buttons):
 	(__focus_grab_buttons):
@@ -5918,7 +5924,7 @@
 	* fvwm/module_interface.c (ExecuteModuleCommand):
 	initialise module number
 
-2002-09-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (CaptureOneWindow):
 	fixed memory corruption
@@ -5977,7 +5983,7 @@
 	use new function interface
 	replaced "(XEvent *)1" hack with a regular flag
 
-2002-09-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (destroy_window):
 	* fvwm/update.c (destroy_scheduled_windows):
@@ -6059,7 +6065,7 @@
 	added XEvent *e argument to remove use of global "Event"; changed all
 	callers
 
-2002-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (get_next_window_in_stack_ring):
 	(get_prev_window_in_stack_ring):
@@ -6203,7 +6209,7 @@
 
 	* fvwm/fvwm.1.in: Language check.
 
-2002-09-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c (old_execute_function):
 	removed
@@ -6256,7 +6262,7 @@
 	* Makefile.am:
 	minor improvements in the new release procedure
 
-2002-09-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (RaiseOrLowerWindow):
 	(__restack_window):
@@ -6266,7 +6272,7 @@
 	handle restacking trees of transient windows; still does not work too
 	well if a window has multiple transients at the same time
 
-2002-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.h:
 	* fvwm/stack.c:
@@ -6381,7 +6387,7 @@
 	* fvwm/fvwm.1:
 	another solution for reporting the cvs status
 
-2002-09-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in (LIBOBJS):
 	* acinclude.m4 (smr_SWITCH):
@@ -6431,7 +6437,7 @@
 	reformat license info in -version to be 3 lines and one empty line
 	instead of 5 non-empty lines, for readability
 
-2002-09-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FEvent.c:
 	* libs/FEvent.h:
@@ -6452,7 +6458,7 @@
 	* fvwm/menus.c (paint_menu):
 	fixed a minor drawing problem with menu item reliefs
 
-2002-09-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-09-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (InteractiveMove):
 	removed eventp from interface
@@ -6624,7 +6630,7 @@
 	* libs/PictureUtils.h:
 	Some cleanup
 
-2002-08-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (paint_menu_gradient_background):
 	fixed drawing of SidePic menu background when not using SideColor
@@ -6646,7 +6652,7 @@
 	* libs/Picture.h:
 	added const to some prototypes
 
-2002-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (MenuInteraction):
 	(__menu_loop):
@@ -6686,7 +6692,7 @@
 	fixed TiledPixmap menu background drawing bug
 	sorted function in file and removed forward declarations
 
-2002-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/Makefile.am (LDADD):
 	put -lfvwm at front of library list
@@ -6730,7 +6736,7 @@
 	fix the old "xfm + MouseFocusClickRaises" bug once and for all.
 	(Thanks to the GFPR, this is much more straightforward to do!)
 
-2002-08-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	added a paragraph about scripting and complex functions.
@@ -6739,12 +6745,12 @@
 	fixed flag_mask and change_mask of TitleAt... styles that broke left
 	and bottom titles
 
-2002-08-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.1.in:
 	describe new focus policy styles
 
-2002-08-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (merge_styles):
 	fixed applying style updates immediately
@@ -6798,7 +6804,7 @@
 	removed debug code now that the EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 	seems to work without problems
 
-2002-08-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (merge_styles):
 	fixed style defaults getting stuck to on once set
@@ -6818,14 +6824,14 @@
 	* fvwm/Makefile.am:
 	don't include *.in in EXTRA_DIST, they are auto-included
 
-2002-08-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleConfigureRequest):
 	(HandlePropertyNotify):
 	(is_resizing_event_pending):
 	fixed uninitialised return code of test_resizing_event
 
-2002-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/decorations.c (SelectDecor):
 	* fvwm/style.h:
@@ -6846,7 +6852,7 @@
 	* fvwm/fvwm.c (setVersionInfo):
 	fixed output of "fvwm -version"
 
-2002-08-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_one_style_option):
 	Old focus styles override less of the behaviour specified with the
@@ -6869,7 +6875,7 @@
 	fix spelling, "hot-spot", not "hotspot" (too bad its wrong in
 	the xpm docs).
 
-2002-08-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_focus_policy_style):
 	fixed parsing of FPFocusClickButtons and FocusClickModifiers
@@ -6880,7 +6886,7 @@
 	* fvwm/events.c (HandleConfigureRequest):
 	fixed ConfigureRequest race condition
 
-2002-08-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	quote environment variables
@@ -6911,7 +6917,7 @@
 	* fvwm/fvwm.1:
 	corrected the pixmap cursor description, added an example
 
-2002-08-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (select_menu_item):
 	(paint_menu_gradient_background):
@@ -6919,7 +6925,7 @@
 	(MenuInteraction):
 	fixed a minor problem w/ entering submenus via keyboard
 
-2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (CMD_ResizeMove):
 	(CMD_Resize):
@@ -6964,7 +6970,7 @@
 	Fixed a typo so that ClickToFocusRaisesOff actually turns
 	the option off instead of on.
 
-2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (focus_grab_buttons):
 	only grab necessary buttons on the client window
@@ -6978,7 +6984,7 @@
 	(usage):
 	Added -color-limit to fvwm usage
 
-2002-08-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_one_style_option):
 	(style_parse_focus_policy_style):
@@ -7112,12 +7118,12 @@
 	-color-limit for fvwm. 257 fix. Some prepartion for tint and
 	alpha in colorset.
 
-2002-08-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Flocale.c (FlocaleRotateDrawString):
 	fixed a crash
 
-2002-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (parse_and_set_window_style):
 	fixed the default for passing the click-to-raise click for mousey
@@ -7165,7 +7171,7 @@
 	* fvwm/virtual.c (is_pan_frame):
 	new function
 
-2002-08-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (AddWindow):
 	fixed compile error
@@ -7225,7 +7231,7 @@
 	* fvwm/focus.c (focus_grab_buttons_on_pointer_window):
 	clean up
 
-2002-08-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (setup_window_structure):
 	(AddWindow):
@@ -7273,7 +7279,7 @@
 	* fvwm/Makefile.am:
 	specify stroke includes before Xft includes, may improve some cases
 
-2002-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	fixed sys/time.h detection
@@ -7288,14 +7294,14 @@
 	* fvwm/events.c (InitEventHandlerJumpTable):
 	another attempt at handling "unknown" modifiers in key bindings
 
-2002-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (is_on_top_of_layer_ignore_rom):
 	* fvwm/add_window.c (destroy_window):
 	* fvwm/focus.c (focus_grab_buttons):
 	fixed core dump
 
-2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (focus_force_refresh_focus):
 	* fvwm/events.c (HandleEnterNotify):
@@ -7399,7 +7405,7 @@
 	* Makefile.am:
 	DESTDIR fix
 
-2002-08-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (parse_and_set_window_style):
 	* fvwm/focus.c (focus_query_grab_focus):
@@ -7410,7 +7416,7 @@
 	new styles OverrideGrabFocus and AllowGrabFocus
 	cleaned up focus grabbing code and moved to focus.c
 
-2002-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (CMD_WarpToWindow):
 	fixed negative arguments for unmanaged windows
@@ -7420,7 +7426,7 @@
 	cleaned up
 	new direction "center"
 
-2002-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (addkbsubinstoarray):
 	disabled experimental pointer warping code
@@ -7428,7 +7434,7 @@
 	* fvwm/menus.c:
 	removed menu crash debug code
 
-2002-07-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c:
 	added tons of crash debug code
@@ -7449,12 +7455,12 @@
 	* fvwm/menus.c (DestroyMenu):
 	fixed a crash w/ accessing already deleted menus
 
-2002-07-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (get_menu_options):
 	fixed menu context rectangle "icon" if the icon was not just a pixmap
 
-2002-07-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleMapNotify):
 	(HandleMapRequestKeepRaised):
@@ -7464,7 +7470,7 @@
 	* fvwm/style.c (parse_and_set_window_style):
 	removed old do_grab_focus_when_created and *_when_transient_* flags
 
-2002-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (MatchesConditionMask):
 	* fvwm/focus.c (DoSetFocus):
@@ -7491,13 +7497,13 @@
 	* fvwm/placement.c (PlaceWindow):
 	Fixed interaction between CascadePlacement and StartsOnPage
 
-2002-07-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/fvwmsignal.c (fvwmSelect):
 	call alloca(0) in fvwmSelect to make sure the memory is not leaked in
 	modules
 
-2002-07-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (CaptureOneWindow):
 	fixed a core dump w/ windows being destroyed during a recapture
@@ -7521,7 +7527,7 @@
 	(__move_window):
 	renamed function
 
-2002-07-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Flocale.c (FlocaleRotateDrawString):
 	create gcs only once
@@ -7547,7 +7553,7 @@
 	* libs/Flocale.c (FlocaleRotateDrawString):
 	Removed some static declarations
 
-2002-07-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/gravity.c (gravity_multi_dir_to_dir):
 	* libs/gravity.h (enum):
@@ -7585,7 +7591,7 @@
 	(decompose_mask):
 	Fixed(??) color allocation for some visuals
 
-2002-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Flocale.c (FlocaleFontStructDrawString):
 	a little code cleanup
@@ -7602,7 +7608,7 @@
 	(resize_window):
 	fixed some bugs w/ pointer on wrong screen
 
-2002-07-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleLeaveNotify):
 	fixed problem w/ click+drag and mousey focus
@@ -7610,7 +7616,7 @@
 	* fvwm/menus.c (size_menu_horizontally):
 	fixed menu style SubmenusLeft w/ icons in menu items
 
-2002-07-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):
 	* fvwm/menus.h:
@@ -7657,7 +7663,7 @@
 	* libs/PictureGraphics.c (PGraphicsTintRectangle):
 	Implemented a new color limit method
 
-2002-07-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (moveLoop):
 	fixed problem moving the pointer off screen while moving a window
@@ -7695,12 +7701,12 @@
 	did color limitation when tinting
 
 
-2002-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (WaitForButtonsUp):
 	fixed handling of button release events
 
-2002-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (MenuInteraction):
 	fixed core dump w/ dynamic popdown action destroying a menu
@@ -7711,19 +7717,19 @@
 	(HandleLeaveNotify):
 	improved LEAVE_WINDOW/ENTER_WINDOW handling
 
-2002-07-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Colorset.c (SetWindowBackground):
 	(SetWindowBackgroundWithOffset):
 	(ScrollPixmap):
 	implemented new functions to allow pixmap backgrounds with an offset
 
-2002-07-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):
 	send Map/UnmapNotify before iconyfying, not after
 
-2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):
 	fake a MapNotify and then an UnmapNotify when a window is created iconic
@@ -7746,7 +7752,7 @@
 	* libs/Flocale.c (FlocaleGetFontSet):
 	Removed some unwanted code
 
-2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleLeaveNotify):
 	(HandleEnterNotify):
@@ -7761,7 +7767,7 @@
 	fixed a bug in warpttowindow command with subwindows of unmanaged
 	windows
 
-2002-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandlePropertyNotify):
 	* fvwm/events.h:
@@ -7773,13 +7779,13 @@
 	until the button is released again; this restores the old behaviour
 	from 2.3.23 and before with click+drag and rxvt/aterm
 
-2002-06-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (apply_window_updates):
 	fixed applying neverfocus to currently focused window; decorations
 	partially drawn hilighted
 
-2002-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menucmd.c (menu_func):
 	another module/menu/context window fix
@@ -7790,7 +7796,7 @@
 	* libs/Flocale.c (FlocaleStringToString2b):
 	Fixed crash with big5-0 FontStruct
 
-2002-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menucmd.c (menu_func):
 	fixed context window of menus invoked by a module
@@ -7806,7 +7812,7 @@
 	* fvwm/functions.c (CheckActionType):
 	fixed window selection problem w/ menus invoked from modules
 
-2002-07-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-07-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/gnome.c (GNOME_HandlePropRequest):
 	-Wall fixes
@@ -7814,7 +7820,7 @@
 	* fvwm/module_interface.c (ExecuteCommandQueue):
 	fixed compile bug w/ --enable-debug-msgs
 
-2002-06-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleButtonPress):
 	(HandleKeyPress):
@@ -7835,7 +7841,7 @@
 	renamed is_deiconify_pending to is_iconify_pending
 	some re-indenting
 
-2002-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (MenuInteraction):
 	(pop_menu_down):
@@ -7915,7 +7921,7 @@
 	* libs/FlocaleCharset.c:
 	small fixes
 
-2002-06-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (WaitForButtonsUp):
 	use the wait cursot only after the 20th pass through the loop
@@ -7984,7 +7990,7 @@
 	* fvwm/fvwm.1:
 	Some documentation cleanup regarding Xft
 
-2002-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c (find_func_type):
 	fixed bug i introduced w/ last commit
@@ -8013,7 +8019,7 @@
 	* fvwm/functions.c:
 	reindented file
 
-2002-06-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (CoerceEnterNotifyOnCurrentWindow):
 	fixed colorurmap focus problem
@@ -8033,7 +8039,7 @@
 	* configure.in:
 	reworded some names of supported features
 
-2002-06-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (apply_window_updates):
 	* fvwm/session.c (MatchWinToSM):
@@ -8067,7 +8073,7 @@
 	* libs/Strings.h:
 	added CopyStringWithQuotes, not perfect, but works for now
 
-2002-06-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.h:
 	* fvwm/commands.h:
@@ -8162,7 +8168,7 @@
 	improved *CascadePlacement, if the last placed window does not exist
 	any more, reuse the last used position instead of adding a new cascade
 
-2002-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleEnterNotify):
 	* fvwm/fvwm.c (InitVariables):
@@ -8175,7 +8181,7 @@
 	Fixed an write out of memory bug. This complete Mikhail Kruk patch
 	related to named module packet
 
-2002-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (focus_grab_buttons):
 	* fvwm/events.c (HandleButtonPress):
@@ -8187,7 +8193,7 @@
 	replaced an error "Illegal mouse button" with a descriptive warning
 	when a button number is greater than NUMBER_OF_MOUSE_BUTTONS
 
-2002-05-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (GetContext):
 	fixed key bindings on decorations
@@ -8244,7 +8250,7 @@
 	* libs/Flocale.h:
 	Fixed the position of ne shadow text and remove some unused #define
 
-2002-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/colorset.c (parse_colorset):
 	fixed integer overflow in average colour calculation
@@ -8264,7 +8270,7 @@
 	Used gravity multi direction type and functions. Removed
 	FlocaleGetNextShadowDirection
 
-2002-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (restore_focus_after_unmap):
 	fixed a problem w/ colormap transition when transient window died
@@ -8285,7 +8291,7 @@
 	* acconfig.h (MULTIBYTE):
 	removed MULTIBYTE option (unconditionally on)
 
-2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/gravity.c (ParseDirectionArgument):
 	allow "t", "u", ... shortcuts as direction arguments
@@ -8328,7 +8334,7 @@
 	* libs/Fft.c (FftDrawString):
 	Cleanup the FlocaleFont structure by addings some flags
 
-2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleFocusIn):
 	* fvwm/add_window.c (adjust_fvwm_internal_windows):
@@ -8358,7 +8364,7 @@
 	(FlocaleTextWidth):
 	Implemented negative shadow text
 
-2002-05-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menucmd.c (CMD_AddToMenu):
 	* fvwm/windowlist.c (CMD_WindowList):
@@ -8385,7 +8391,7 @@
 	* fvwm.1:
 	fixed ShadeAgain quoting
 
-2002-05-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleButtonPress):
 	allow to pass the focus click to applications and have a function bound
@@ -8472,7 +8478,7 @@
 	* fvwm/style.c (check_window_style_change):
 	ParentalRelativity style is now dynamic
 
-2002-05-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):
 	fixed menu item hilight area
@@ -8537,7 +8543,7 @@
 	Check if the XRender extension is enabled on the display before
 	performing XRender operations
 
-2002-05-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):
 	fixed item hilighting problems
@@ -8547,7 +8553,7 @@
 	* fvwm/colorset.c (parse_colorset):
 	More coloset fixes
 
-2002-05-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-05-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandlePropertyNotify):
 	workaround for xterm resize problem
@@ -8698,12 +8704,12 @@
 	* libs/Flocale.c:
 	corrected several error reporting problems
 
-2002-04-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-04-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.h:
 	fixed leaving tear off menus
 
-2002-04-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-04-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/borders.c (border_draw_part_relief):
 	(border_set_button_pixmap):
@@ -8732,7 +8738,7 @@
 	* libs/Flocale.c:
 	fixed --disable-multibyte
 
-2002-04-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-04-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/borders.c (border_draw_title_deep):
 	(border_set_title_pixmap):
@@ -8883,7 +8889,7 @@
 	* fvwm/fvwm.c:
 	fixed ReadWriteColors on a PseudoColor display
 
-2002-04-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-04-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (move_window_doit):
 	set the is_icon_moved too flag if the icon was moved non-interactively
@@ -8904,7 +8910,7 @@
 	* fvwm/ConfigFvwmDefaults:
 	several fixes and spelling
 
-2002-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-04-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Bindings.c (CheckBinding):
 	(MatchBinding):
@@ -8980,7 +8986,7 @@
 	* libs/System.c:
 	added #include <sys/select.h> to fix endless loop on QNX
 
-2002-04-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-04-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm2.1:
 	changed description of focus models
@@ -9130,13 +9136,13 @@
 	* fvwm/move_resize.c:
 	include cleanup
 
-2002-04-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-04-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (test_map_request):
 	(test_resizing_event):
 	fixed endless loop in HandleConfigureRequest
 
-2002-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (setup_style_and_decor):
 	fixed borderless transients
@@ -9160,7 +9166,7 @@
 	don't redraw windows on a different desk
 	keep track of Scr.Hilite
 
-2002-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (unmap_window):
 	* fvwm/move_resize.c (resize_window):
@@ -9188,7 +9194,7 @@
 	* configure.in:
 	fixed multibyte support reporting
 
-2002-03-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/fvwmlib.h:
 	* fvwm/fvwm.h:
@@ -9229,7 +9235,7 @@
 	minor modifications, like removed #include;
 	fixed core dump with bidi and utf-8
 
-2002-03-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_update_hidden_window_pos):
 	fixed shade/maximize/unshade
@@ -9310,7 +9316,7 @@
 	Moved iconv conversions into the library. Try to found the good iconv
 	charset with the help of the font and of the FlocaleCharset table.
 
-2002-03-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Module.c (SendFvwmPipe):
 	* libs/Graphics.c (do_relieve_rectangle):
@@ -9342,7 +9348,7 @@
 	* fvwm/icons.c (DeIconify):
 	fiexd fucoused window not hilighting after deiconification
 
-2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (apply_window_updates):
 	windows are not unshaded when the decoration layout changes
@@ -9410,7 +9416,7 @@
 	* libs/Makefile.am:
 	added a dummy call to FBidi to test linking against bidi libs
 
-2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/windowshade.c (CMD_WindowShade):
 	changed syntax of windowshade with direction
@@ -9492,7 +9498,7 @@
 	window shading works again; there are still some problems with
 	recapture, restart, border drawing and shaped windows
 
-2002-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/geometry.c (get_shaded_geometry_with_dir):
 	new function
@@ -9577,7 +9583,7 @@
 	* fvwm/misc.c (GrabEm):
 	fixed the cursor over the title window while resizing
 
-2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Graphics.c (CreateTiledPixmap):
 	improved efficience: let the X server tile a pixmap via the GC settings
@@ -9603,7 +9609,7 @@
 
 	* NEWS: Document FvwmForm timeout.
 
-2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/session.c (MatchWinToSM):
 	* fvwm/add_window.c (AddWindow):
@@ -9626,7 +9632,7 @@
 	* libs/FBidi.h:
 	new files
 
-2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.c (LoadDefaultLeftButton):
 	(LoadDefaultRightButton):
@@ -9638,7 +9644,7 @@
 	* libs/Graphics.c (CreateGradientPixmap):
 	fixed potential core dump with illegal gradients
 
-2002-03-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.h (FvwmWindow):
 	removed button_background_pixmap member
@@ -9658,7 +9664,7 @@
 	(GetResizeArguments):
 	implemented new option "Frame" to the Resize and ResizeMove commands
 
-2002-03-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm2.1:
 	* fvwm/builtins.c (ReadDecorFace):
@@ -9704,7 +9710,7 @@
 	* fvwm/ConfigFvwmDefaults:
 	RightTitleRotatedCW is a default
 
-2002-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_get_sidebar_geometry):
 	window corners are always at least the border width thick
@@ -9744,7 +9750,7 @@
 	* libs/Flocale.h:
 	several renamings of text_direction to text_rotation
 
-2002-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/windowshade.c (CMD_WindowShade):
 	* fvwm/frame.c (frame_create_move_resize_args):
@@ -9789,7 +9795,7 @@
 	(setup_button_windows):
 	fixed visual and depth of decoration windows
 
-2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_setup_title_bar):
 	fixed title layout bug
@@ -9818,7 +9824,7 @@
 	LeftTitleRotatedCounterClockWise, RightTitleRotatedClockWise /
 	RightTitleRotatedCounterClockWise
 
-2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* acconfig.h:
 	* vms/config.h (FMiniIconsSupported):
@@ -9862,7 +9868,7 @@
 	(draw_clipped_decorations_with_geom):
 	performance enhancement
 
-2002-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_move_resize_step):
 	force setting up the border when function is called with FRAME_MR_SETUP
@@ -9955,7 +9961,7 @@
 	* libs/fvwmrect.c (fvwmrect_subtract_rectangles):
 	new function
 
-2002-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c:
 	clean up
@@ -9977,7 +9983,7 @@
 
 	* AUTHORS: New author added.
 
-2002-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c:
 	* fvwm/borders.c:
@@ -10001,7 +10007,7 @@
 	fixed off-by-one bug in setup_visible_name
 	maximum window number can be set in defaults.h
 
-2002-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/windowlist.h:
 	* fvwm/virtual.h:
@@ -10109,7 +10115,7 @@
 	Implemented vertical text rendering, new style SideTitleTextDefault,
 	SideTitleTextTopToBottom, SideTitleTextBottomToTop
 
-2002-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.h:
 	removed inclusion of fvwmdebug.h
@@ -10120,7 +10126,7 @@
 	* fvwm/menus.c (get_menu_options):
 	fixed a compiler warning
 
-2002-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c (ParseBinding):
 	fixed compiler warning
@@ -10133,7 +10139,7 @@
 	fixed parsing of conditions versus position of window list broken with
 	a recent "fix"
 
-2002-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Fft.h:
 	* libs/Fft.c (FftTextWidth):
@@ -10180,7 +10186,7 @@
 	* fvwm/events.c (HandleExpose):
 	Fixed Xft related compilation failure and warning
 
-2002-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c:
 	* fvwm/update.c:
@@ -10225,7 +10231,7 @@
 	Corrected the description of the XineramaPrimaryScreen command that was
 	essentially lying.
 
-2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (menu_tear_off):
 	(unlink_item_from_menu):
@@ -10432,7 +10438,7 @@
 	* libs/Parse.h:
 	use new type direction_type
 
-2002-03-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh.c (EWMH_SetFrameStrut):
 	use function from geometry.c to get the border size
@@ -10455,7 +10461,7 @@
 	* fvwm/fvwm2.1:
 	fixed some typos and indentation of several new variable entries
 
-2002-03-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.h (enum):
 	* fvwm/functions.c (func_config):
@@ -10479,14 +10485,14 @@
 	* fvwm/builtins.c (CMD_WindowShade):
 	fixes for animated shading w/ titleatbottom+north and titleattop+south
 
-2002-03-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (moveLoop):
 	(resize_window):
 	* fvwm/virtual.c (HandlePaging):
 	moving/resizing windows opaque is much faster
 
-2002-03-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (resize_resize_handle_windows):
 	(change_resize_handle_windows):
@@ -10515,7 +10521,7 @@
 
 	* fvwm/fvwm2.1: Fixes to the font section.
 
-2002-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (CMD_WindowId):
 	set the correct context window for unmanaged windows
@@ -10583,7 +10589,7 @@
 	* configure.in:
 	added and documented --disable-bidi and --disable-perllib
 
-2002-03-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/geometry.c (get_window_borders):
 	fixed calculation of $[cw.y] and $[cw.height]
@@ -10591,11 +10597,11 @@
 	* fvwm/move_resize.c (resize_move_window):
 	windows are mo longer hilighted after ResizeMove or ResizeMoveMaximize
 
-2002-03-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (resize_move_window):
 
-2002-02-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	re-added --enable-xinerama-emulation option that was removed recently
@@ -10622,7 +10628,7 @@
 	* fvwm/icons.c (DrawIconWindow):
 	Fixed the fg colors of the icon title
 
-2002-02-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (CMD_CondCase):
 	fixed CondCase command
@@ -10674,12 +10680,12 @@
 	* fvwm/menus.c (paint_item):
 	Always clear the text area before drawing text with an Xft font
 
-2002-02-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* acinclude.m4 (smr_CHECK_LIB):
 	fixed a bug with variable expansion and autoconf cache values
 
-2002-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (seek_submenu_instance):
 	(FindPopup):
@@ -10733,7 +10739,7 @@
 	new variable cond.rc that returns the last return code of a conditinal
 	command
 
-2002-02-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (CMD_Cond):
 	(CMD_CondCase):
@@ -10814,12 +10820,12 @@
 	* configure.in:
 	autogenerate perllib/FVWM/Module/Makefile
 
-2002-02-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (moveLoop):
 	fixed a problem with keyboard movement vs. EdgeResistance
 
-2002-02-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c:
 	fixed problem with root bindings and xfishtank
@@ -10968,7 +10974,7 @@
 	* fvwm/screen.h (ScreenInfo):
 	Use the new Text and Font API
 
-2002-02-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (PositiveWrite):
 	fixed core dump when a module died in the select of PositiveWrite()
@@ -10998,23 +11004,23 @@
 	* INSTALL.fvwm:
 	New section "Bug Reports".
 
-2002-02-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (apply_window_updates):
 	fixed propagation of window border and title colours to the modules
 
-2002-02-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (do_menu):
 	fixed leaving tear off menus when something is selected with the mouse
 
-2002-02-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleEnterNotify):
 	* fvwm/menus.c:
 	more work on tear off menus
 
-2002-02-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-02-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.h (XEVMASK_TEAR_OFF_MENU):
 	* fvwm/menus.c (menu_enter_tear_off_menu):
@@ -11029,7 +11035,7 @@
 	* fvwm/windowlist.c (CMD_WindowList):
 	don't initialise some variables twice
 
-2002-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (CaptureOneWindow):
 	properly recapture tear off menus
@@ -11075,7 +11081,7 @@
 	* libs/queue.h:
 	fix warnings, gcc compains on having something after #endif
 
-2002-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/builtins.c (CMD_Delete):
 	(CMD_Close):
@@ -11117,7 +11123,7 @@
 	* libs/queue.c:
 	fixed core dump
 
-2002-01-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (AddToMessageQueue):
 	(initModules):
@@ -11169,7 +11175,7 @@
 	a patch to config.status to generate scripts executable, may be handy;
 	added generation of utils/fvwm24_convert
 
-2002-01-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/schedule.c:
 	* fvwm/functions.c (expand_extended_var):
@@ -11179,7 +11185,7 @@
 	* fvwm/misc.c (get_server_time):
 	fixed MouseFocus
 
-2002-01-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/misc.c (get_server_time):
 	* fvwm/events.c (My_XNextEvent):
@@ -11208,7 +11214,7 @@
 	* configure.in:
 	Use gnu libiconv in priority against the system iconv
 
-2002-01-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/stack.c (RaiseOrLowerWindow):
 	(restack_windows):
@@ -11247,7 +11253,7 @@
 	as argument when fvwm2 detects that the root background change
  	Removed the ROOT_BG_CHANGE_STRING stuff
 
-2002-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS, configure.in:
 	changed version to 2.5.1
@@ -11297,12 +11303,12 @@
 	suppressing the M_FOCUS_CHANGE message if the focus does not change in
 	the flush_window_updates() function.
 
-2002-01-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (PlaceWindow):
 	minor performance enhancement
 
-2002-01-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/defaults.h:
 	* fvwm/menus.c (MenuInteraction):
@@ -11310,7 +11316,7 @@
 	(pointer_in_passive_item_area):
 	new menu style PopupActiveArea
 
-2002-01-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (CMD_ResizeMaximize):
 	(CMD_ResizeMoveMaximize):
@@ -11321,7 +11327,7 @@
 	* fvwm/fvwm2.1:
 	s/Penalities/Penalties/g
 
-2002-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleLeaveNotify):
 	(HandleEnterNotify):
@@ -11358,12 +11364,12 @@
 	* fvwm/ewmh_icons.c (ewmh_SetWmIconFromPixmap):
 	Save and restore the icon_pixmap_w and add comments
 
-2002-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleEnterNotify):
 	fixed EnterNotify events for icons
 
-2002-01-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/*.c:
 	* fvwm/stack.c (overlap_box):
@@ -11386,7 +11392,7 @@
 	fixed $[w.height] when the window is shaded
 	cleaned up icon geometry code
 
-2002-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/commands.h:
 	* fvwm/functions.c:
@@ -11422,7 +11428,7 @@
 	* fvwm/ewmh.c (atom_get):
 	Be paranoid
 
-2002-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (flush_window_updates):
 	fixed unnecessary window style updates
@@ -11438,7 +11444,7 @@
 	the backing store attribute on the client window - which now is the
 	default.
 
-2002-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/commands.h:
 	* fvwm/functions.c (func_config):
@@ -11466,7 +11472,7 @@
 	* fvwm/events.c (HandleEnterNotify):
 	Tried to fix focusing problem w/ unclutter.
 
-2002-01-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c (CheckActionType):
 	remove debug code
@@ -11481,7 +11487,7 @@
 	use this function everywhere
 	use the Fixed... styles to decide if a menu item is greyed or not
 
-2002-01-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleExpose):
 	eat up expose events even if the server claims that the expose count is
@@ -11536,13 +11542,13 @@
 	* fvwm/menus.c (ParentalMenuRePaint):
 	Fixed transparent animated menu with HilightBackOff
 
-2002-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (merge_styles):
 	fixed core dump w/ multiple use of the UseStyle style and HilightBack
 	in the copied style
 
-2002-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/modconf.c (send_ignore_modifiers):
 	(send_move_threshold):
@@ -11567,7 +11573,7 @@
 	* fvwm/fvwm2.1:
 	corrected documentation of IgnoreModifiers command
 
-2002-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c:
 	* fvwm/cursor.c:
@@ -11585,7 +11591,7 @@
 	* fvwm/fvwm.h (FvwmWindow):
 	remnamed icon_w member to icon_title_w
 
-2002-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (RedoIconName):
 	fixed sizing of icon title for icons without a pixmap
@@ -11650,7 +11656,7 @@
 	* fvwm/read.c (CMD_Read): Correct message on missing file when using
 	Read with full path.
 
-2002-01-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-01-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/defaults.h:
 	* fvwm/misc.c (GrabEm):
@@ -11670,7 +11676,7 @@
 	(set_focus_model):
 	fixed focus problems with netscape and ddd
 
-2001-12-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-12-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Target.c (fvwmlib_keyboard_shortcuts):
 	* libs/Pointer.c (GetLocationFromEventOrQuery):
@@ -11761,7 +11767,7 @@
 	Added ewmh_hint_layer, ewmh_hint_desktop and ewmh_window_type to the
 	cfgpacket for FvwmIdent
 
-2001-12-20  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-12-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (resize_geometry_window):
 	fixed wrong size calculation of geometry window
@@ -11774,7 +11780,7 @@
 	* fvwm/fvwm2.1:
 	A few formatting fixes
 
-2001-12-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-12-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/gnome.c (GNOME_SetHints):
 	fixed window getting frozen into position upon a recapture or restart
@@ -11799,7 +11805,7 @@
 	* fvwm/virtual.c (CMD_DesktopName):
 	Removed some debugging code
 
-2001-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-12-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.h (struct):
 	* fvwm/window_flags.h (IS_FIXED_PPOS):
@@ -11857,7 +11863,7 @@
 	* fvwm/update.h:
 	Implemented _NET_WM_ALLOWED_ACTIONS from version 1.2 of the wm-spec
 
-2001-12-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-12-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/borders.c (RedrawTitle):
 	* libs/defaults.h (WINDOW_TITLE_OFFSET):
@@ -11912,7 +11918,7 @@
 	* fvwm/ewmh.c (EWMH_SetClientListStacking):
 	Set the stacking list in the good orders
 
-2001-12-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-12-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* vms/config.h:
 	* fvwm/functions.c:
@@ -11966,7 +11972,7 @@
 	which are send to modules with BroadcastWindowIconNames.
 	The set mask cmds use unsigned long mask and not int mask!
 
-2001-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-12-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh.h:
 	* fvwm/ewmh.c:
@@ -12068,7 +12074,7 @@
 	* fvwm/ewmh_icons.c (ewmh_SetWmIconFromPixmap):
 	Fixed creation of the ewmh icon in the case of the window is iconified
 
-2001-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-11-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (PlaceWindow):
 	fixed manual placement on Xinerama screens other than the one with the
@@ -12161,7 +12167,7 @@
 	* fvwm/ewmh_names.c (convert_charsets):
 	Fixed infinite loop
 
-2001-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-11-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_names.c (convert_charsets):
 	-Wall fix: 2nd parameter of iconv is char **, not const char ** as the
@@ -12376,7 +12382,7 @@
 	(do_move_window_to_desk):
 	EWMH_SetCurrentDesk, EWMH_SetWMDesktop
 
-2001-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-11-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (apply_window_updates):
 	* fvwm/gnome.c (GNOME_GetStyle):
@@ -12551,7 +12557,7 @@
 	* NEWS:
 	Some FvwmScript news
 
-2001-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-10-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c (activate_binding):
 	* libs/Bindings.c (GrabWindowKeyOrButton):
@@ -12560,7 +12566,7 @@
 	* fvwm/events.c (HandleButtonPress):
 	it is possible to bind actions to the 'ClickToFocus' click
 
-2001-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-10-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (HandlePaging):
 	allow paging during move/resize when pressing keys
@@ -12600,7 +12606,7 @@
 	* fvwm/cursor.c: Extract cursor validation routine to become a libs
 	routine.
 
-2001-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-10-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS, configure.in:
 	changed version to 2.5.0
@@ -12611,7 +12617,7 @@
 	Fixed drawing of leftJustified stippled title and suppress warnings
 	in RelieveRectangle w/ RightJustified stippled title
 
-2001-10-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-10-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (CMD_XineramaSlsSize):
 	fixed ABR
@@ -12629,7 +12635,7 @@
 	Fixed a core dump with @c and fixed icon placement if the icon should
 	not be on the current page
 
-2001-10-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-10-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (AutoPlaceIcon):
 	* libs/FScreen.c (FScreenParseScreenBit):
@@ -12646,13 +12652,13 @@
 	* fvwm/menus.c (get_menu_options):
 	fixed Xinerama placement of menu with empty but not null position hints
 
-2001-10-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-10-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/borders.c (RedrawTitle):
 	* libs/defaults.h (WINDOW_TITLE_STICKY_GAP):
 	suppress a warning in RelieveRectangle w/ small sticky windows
 
-2001-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (get_menu_options):
 	A 'rectangle' context rectangle for menus honours the '@screen' bit
@@ -12676,7 +12682,7 @@
 	* fvwm/windowlist.c (CMD_WindowList):
 	fixed Xinerama placement of window list when called without options
 
-2001-09-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FScreen.c (FScreenSLSOnOff):
 	fixed core dump when calling XineramaSls before XineramaSlsSize
@@ -12687,7 +12693,7 @@
 	* libs/FShape.h (FHaveShapeExtension):
 	set macro to 1 when compiling w/ shape extension
 
-2001-09-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Bindings.c (AddBinding):
 	* fvwm/bindings.c (ParseBinding):
@@ -12704,17 +12710,17 @@
 	fixed some problems overriding keys
 	reduced duplication of logic
 
-2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS, configure.in:
 	changed version to 2.5.0
 
-2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.in:
 	changed version to 2.4.2
 
-2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Colorset.c:
 	(SetWindowBackground):
@@ -12754,7 +12760,7 @@
 	(RelieveRectangle2):
 	allow alternate shading for title buttons
 
-2001-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	**/*.1:
 	Applied man page patch by Dmitry Yu. Bolkhovityanov:
@@ -12799,7 +12805,7 @@
 	* configure.in:
 	changed version to 2.4.1 again
 
-2001-09-14  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Bindings.c (FvwmStringToKeysym):
 	try both cases of the first letter of a key name
@@ -12820,7 +12826,7 @@
 	print a verbose error message and exit if X11 headers and libraries
 	are not found
 
-2001-09-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.c (main):
 	* libs/FShape.c:
@@ -12835,7 +12841,7 @@
 	* fvwm/builtins.c (CMD_SetEnv):
 	calling SetEnv without a value is the same as UnsetEnv
 
-2001-09-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleReparentNotify):
 	fixed vanishing windows in rapid map/unmap cycles; bug #770
@@ -12843,7 +12849,7 @@
 	* fvwm/add_window.c (hide_screen):
 	fixed possible BadWindow error
 
-2001-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (MoveViewport):
 	(goto_desk):
@@ -12861,7 +12867,7 @@
 	* fvwm/move_resize.c (moveLoop):
 	Fixed PlacedByButton3 condition
 
-2001-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FScreen.c:
 	* fvwm/functions.c (func_config):
@@ -12911,13 +12917,13 @@
 	Added a new windows_flags is_placed_by_fvwm and a new condition
 	PlacedByFvwm
 
-2001-09-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (focus_grab_buttons):
 	(MoveFocus):
 	disabled xt/double click patch for now
 
-2001-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Graphics.c (RelieveRectangle):
 	print a warning if one of the dimensions is <= 0
@@ -12932,7 +12938,7 @@
 	* libs/FScreen.c (FScreenInit):
 	Fixed the position of the xinerama emulation delimiters
 
-2001-08-31  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm2.1:
 	Xinerama introduction
@@ -12966,12 +12972,12 @@
 	Transient windows ignore the window position if neither the PPosition
 	nor the USPosition hint is set.
 
-2001-08-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (restore_focus_after_unmap):
 	fixed a bug transfering the focus when a window was iconified
 
-2001-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (MatchesConditionMask):
 	* fvwm/move_resize.c (position_geometry_window):
@@ -13048,7 +13054,7 @@
 
 	* fvwm/style.c (CMD_Style): Fix up iconboxes using negative geom specs.
 
-2001-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/cursor.c (CMD_CursorStyle):
 	* fvwm/icons.c (GetXPMFile):
@@ -13090,7 +13096,7 @@
 	* fvwm/fvwm.h (icon_boxes_struct):  Save  sign  for later  screen
  	position calculation.
 
-2001-08-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (flush_window_updates):
 	* fvwm/screen.h (ScreenInfo):
@@ -13110,7 +13116,7 @@
 	applied Dmitry's Xinerama patch for Maximize command
 	replaced "global" and "absolute" with "screen" which is more flexible
 
-2001-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Parse.c (SkipQuote):
 	fixed a bug in handling of caller specified quote pairs
@@ -13143,7 +13149,7 @@
 
 	* libs/XineramaSupport.c: Disable debug printing.
 
-2001-08-13  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/defaults.h (DEFAULT_MENU_STYLE):
 	reset colour sets in default menu style too
@@ -13154,7 +13160,7 @@
 	* events.c:
 	completed the libstroke-0.5 compatibility fix
 
-2001-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (draw_move_resize_grid):
 	fixed drawing of resize grid when invoked from button or key press
@@ -13163,7 +13169,7 @@
 	rewrote a condition to improve readability
 	fixed StartsOn... w/ SkipMapping
 
-2001-08-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/session.c (MatchWinToSM):
 	(LoadWindowStates):
@@ -13185,7 +13191,7 @@
 	* fvwm/icons.c:
 	keep expanded icon titles on screen
 
-2001-08-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (do_all_iconboxes):
 	default icon box fills the primary screen
@@ -13212,7 +13218,7 @@
 	* libs/XineramaSupport.c (XineramaSupportParseGeometryWithScreen):
 	fixed core dump in debug output
 
-2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c:
 	removed unused variable
@@ -13222,7 +13228,7 @@
 	* NEWS:
 	FvwmIconBox, FvwmTaskBar and FvwmWinList support aliases
 
-2001-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (CMD_Xinerama):
 	replaced XineramaEnable and ...Disable with XineramaCommand
@@ -13240,7 +13246,7 @@
 	(handle_stick):
 	added new command MoveToScreen
 
-2001-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/fvwmrect.c:
 	* libs/fvwmrect.h:
@@ -13267,7 +13273,7 @@
 	implemented new condition AcceptsFocus to cope with applications like
 	xclock that have circulatehit but don't take focus
 
-2001-08-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/XineramaSupport.c (XineramaSupportParseGeometry):
 	handle Xinerama screens
@@ -13304,12 +13310,12 @@
 	* fvwm/fvwm2.1:
 	Added the formal description of Vector that was absent.
 
-2001-08-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm2.1:
 	some man page corrections
 
-2001-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (handle_stick):
 	also redraw buttons when a window becomes sticky/slippery to make sure
@@ -13326,7 +13332,7 @@
 	* fvwm/fvwm2.1:
 	minor typo
 
-2001-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/XineramaSupport.c (XineramaSupportConfigureModule):
 	* fvwm/modconf.c (send_xinerama_state):
@@ -13348,7 +13354,7 @@
 	also, ignore Scr.NoFocusWin and all InputOnly windows for raising since
 	these are invisible
 
-2001-07-28  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	fixed syntax of BugOpts command
@@ -13390,12 +13396,12 @@
 	* libs/defaults.h (DEFAULT_XINERAMA_DISABLED):
 	communicate xinerama state at module startup
 
-2001-07-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/XineramaSupport.c:
 	next Xinerama patch
 
-2001-07-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (moveLoop):
 	windows were lost off screen w/ non opaque interactive move when motion
@@ -13445,12 +13451,12 @@
 	delete grid before moving the geometry window to get rid of arifacts of
 	the grid
 
-2001-07-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/XineramaSupport.c (XineramaSupportInit):
 	make the blank area in Xinerama emulation usable again
 
-2001-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (update_menu):
 	(pop_menu_up):
@@ -13466,12 +13472,12 @@
 	* libs/XineramaSupport.c (XineramaSupportInit):
 	Draw the xinerama simulation screens with orr windows
 
-2001-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/windowlist.c (CMD_WindowList):
 	fixed windowlist placement w/ Xinerama
 
-2001-07-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (pop_menu_up):
 	fixed calculations that force a menu on screen w/ Xinerama
@@ -13507,7 +13513,7 @@
 
 	* fvwm/fvwm2.1: Remove some test code, fix remaining .IP commands.
 
-2001-07-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/XineramaSupport.c (XineramaSupportInit):
 	added xinerama emulation for developers
@@ -13527,7 +13533,7 @@
 	cleanded up xinerama detection
 	added shape detection
 
-2001-07-21  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm2.1:
 	Added Xinerama introduction
@@ -13618,7 +13624,7 @@
 	(autoreconf is ok) from autoconf-2.50;
 	applied a patch that adds gtk include dirs to gnome include dirs
 
-2001-07-03  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-07-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS, configure.in:
 	changed version to 2.4.0.1

@@ -8,12 +8,12 @@
 	* fvwm-root.c (main):
 	64-bit refixes
 
-2005-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-root.c (main):
 	64-bit fixes
 
-2005-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2005-07-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-menu-directory:
 	applied patch  by Stephen Dennison <stephenrd@gmail.com> to correct a
@@ -30,12 +30,12 @@
 
 	* fvwm-menu-desktop.1.in: Fix .IP.
 
-2004-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-root.c:
 	fixed compiling
 
-2004-08-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-08-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-root.c (SetRootWindow):
 	(main):
@@ -47,7 +47,7 @@
 	* fvwm-menu-directory.1:
 	new option --func-name
 
-2004-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-bug.in:
 	script safty patch; see
@@ -165,7 +165,7 @@
 	all programs now support --help, -h, -?, --version, -V
 	and some (that supported it in 2.4.x also support -v)
 
-2002-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-root.c:
 	removed long option names with "-" instead of "--"
@@ -177,7 +177,7 @@
 	* fvwm_make_directory_menu.sh:
 	moved from bin to utils again
 
-2002-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* Makefile.am (bin_SCRIPTS):
 	install below shell scripts too
@@ -186,7 +186,7 @@
 	* fvwm_make_directory_menu.sh:
 	moved from utils to bin
 
-2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-11-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-root.c (SetRootWindow):
 	fixed compile error
@@ -214,7 +214,7 @@
 	* Makefile.am (bin_SCRIPTS):
 	fvwm-root depends on libfvwm
 
-2002-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-10-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-root.1:
 	applied patch by Cameron Simpson
@@ -389,7 +389,7 @@
 	* configure_dev.sh:
 	s/autolocal/aclocal/; pass arguments to ./configure
 
-2002-03-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure_dev.sh:
 	added autolocal
@@ -469,7 +469,7 @@
 	* fvwm-config.in:
 	Added ewmh
 
-2001-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-11-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm24_convert:
 	Print an error message if source file is not writable
@@ -545,7 +545,7 @@
 	* make_fvwmdist.sh:
 	changed date format in NEWS file to actually match the one in NEWS
 
-2001-06-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-06-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh:
 	changed date format in NEWS file
@@ -556,7 +556,7 @@
 	* fvwm-menu-directory.in:
 	be consistent in code and doc: s/--check-subdir/--check-subdirs/
 
-2001-06-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-06-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh:
 	corrected typos
@@ -588,7 +588,7 @@
 	* fvwm-menu-desktop.in:
 	rewordings
 
-2001-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-03-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm24_convert.1:
 	updated
@@ -611,14 +611,14 @@
 	New options --check-[mini-]icons to fix problems if no icons
 	are found for the styles
 
-2001-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-03-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm24_convert.in (line):
 	fixed HilightColor conversion
 	added HilightColorset conversion
 	convert WindowShadeAnimate command
 
-2001-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-03-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm24_convert.in (line):
 	enhanced button panel line recognition
@@ -649,12 +649,12 @@
 	* make_fvwmdist.sh: Add instruction to increase release number in FAQ.
 	* fvwm24_convert.in: Changes in GlobalOpts conversions.
 
-2001-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-03-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm24_convert.in (line):
 	replace "IconFont" with "Style * IconFont"
 
-2001-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-03-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-menu-headlines.1:
 	* fvwm-menu-directory.1:
@@ -673,7 +673,7 @@
 	* make_fvwmdist.sh (wrong_dir): Use portable way of redirecting
 	the grep output.
 
-2001-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh (wrong_dir):
 	fixed logic
@@ -684,7 +684,7 @@
 	  -w: disable -Werror in compiler flags
 	  -a, -b, -s: build an alpha/beta/stable release
 
-2001-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh (wrong_dir):
 	portability fixes
@@ -728,14 +728,14 @@
 	* fvwm-menu-desktop.1:
 	New option --utf8 for UTF8 encoding (in KDE2)
 
-2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-12-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh:
 	added environment variable to allow bringing up the network
 	programmatically
 	documentation in file
 
-2000-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-11-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh:
 	make distcheck2
@@ -745,7 +745,7 @@
 	* Makefile.am:
 	fixed 'make distcheck' by adding $(top_srcdir)/utils/ path
 
-2000-11-17  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-11-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* rebuild_dev.sh:
 	added script that reconfigures and rebuilds fvwm
@@ -783,7 +783,7 @@
 	added --command options, which enhance --exec ones;
 	use ~/.fvwm ($FVWM_USERDIR) for state files/dirs, not $HOME
 
-2000-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-10-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* xpmroot.c (SetRootWindow):
 	honour return code of XGetWindowAttributes()
@@ -852,7 +852,7 @@
 	* fvwm-config.in:
 	a new fvwm script, to be used for querying fvwm instalation
 
-2000-02-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-02-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh (VERSION_STRING):
 	improved release building script
@@ -881,12 +881,12 @@
 	* fvwm-menu-desktop.{in,1}:
 	change --i-know-what-i-do (flag) to --time-limit (integer)
 
-2000-01-02  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-01-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwmrc_convert:
 	use new styles Font, IconFont, Hilight...
 
-2000-01-01  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-01-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwmrc_convert:
 	updated for WindowFont and HilightColor(set)
@@ -904,7 +904,7 @@
 	* Makefile.am: added fvwm-menu-headlines; fvwm-menu scripts now
 	are installed
 
-1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
+1999-11-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* make_fvwmdist.sh:
 	new script to help building the distribution
@@ -921,7 +921,7 @@
 	fvwm-menu-{xlock,directory}.1 are not autogenerated now, because of
 	'cvs update' timestamp bug; use: make _fvwm-menu-xlock.1
 
-1999-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
+1999-11-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-menu-directory.in:
 	* fvwm-menu-desktop.in:
@@ -930,7 +930,7 @@
 	* fvwm-menu-desktop.1:
 	ispell session
 
-1999-11-05  Dominik Vogt  <dominik.vogt@gmx.de>
+1999-11-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm_make_browse_menu.sh:
 	applied fix by Brad Giaccio
@@ -979,7 +979,7 @@
 	* fvwm-menu-desktop.1:
 	some small documentation fixes, added some useful xlock options
 
-1999-08-17  Dominik Vogt  <dominik_vogt@gmx.de>
+1999-08-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-menu-xlock.in:
 	* fvwm-menu-directory.in:

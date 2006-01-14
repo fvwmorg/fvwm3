@@ -3,13 +3,13 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.15 (not released yet)
+Changes in beta release 2.5.15 (14-Jan-2006)
 
 * New features:
 
    - Variables can be nested, like $[desk.name$[desk.n]].
    - Obsolete one-letter variables work, but generate warnings now.
-   - Windows can be placed by any button (now also >3)
+   - Windows can be placed by any button (now also >3).
    - It is now possible to redefine the buttons usable to finish
      window movement and manual placement.
    - New window condition PlacedByButton.
@@ -18,9 +18,8 @@ Changes in beta release 2.5.15 (not released yet)
    - New Style option: EWMHIgnoreWindowType.
    - New MenuStyle options: MouseWheel, ScrollOffPage and
      TrianglesUseFore.
-   - To compile from CVS, autoconf-2.53 and automake-1.8 or above
-     are now required.  This does not affect compiling the
-     released tarballs.
+   - To compile from CVS, autoconf-2.53 or above is now required.
+     This does not affect compiling the released tarballs.
    - New option "screen" to Move and ResizeMove commands to allow
      specifying the target Xinerama screen.
 
@@ -30,7 +29,7 @@ Changes in beta release 2.5.15 (not released yet)
    - Better look for windows with "BorderStyle TiledPixmap".
    - Some EWMH-related 64-bit fixes.
    - Fixed segmentation fault when replacing title of title only
-     menus (Bug #1121)
+     menus (Bug #1121).
    - Fixes for resizing of shaded windows and resizing/moving
      windows with complex functions.
 
