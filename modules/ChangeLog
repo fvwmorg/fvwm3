@@ -1,3 +1,10 @@
+2006-01-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmTabs/FvwmTabs.1:
+	* FvwmTabs/Makefile.am:
+	do not automatically generate man page on "make", so that perl is
+	not required to install fvwm, this also fixes double "make dist"
+
 2005-11-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmAnimate/FvwmAnimate.c:
