@@ -1,6 +1,12 @@
+2006-01-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/functions.c (execute_complex_function):
+	print a message to the console instead of ringing the bell when a
+	grab fails
+
 2006-01-14  Viktor Griph  <griph@dd.chalmers.se>
 
-	* NEWS: 
+	* NEWS:
 	fixed typo (NEWS still said 2.5.15)
 
 2006-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>

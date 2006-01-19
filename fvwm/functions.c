@@ -630,7 +630,7 @@ static void __execute_function(
 			if (rc == False)
 			{
 				exc2 = exc_clone_context(exc, &ecc, mask);
-				if (has_ref_window_moved && 
+				if (has_ref_window_moved &&
 				    (bif->func_t == F_ANIMATED_MOVE ||
 				     bif->func_t == F_MOVE ||
 				     bif->func_t == F_RESIZE))
@@ -643,7 +643,7 @@ static void __execute_function(
 				else
 				{
 					bif->action(func_rc, exc2, runaction);
-				}				
+				}
 				exc_destroy_context(exc2);
 			}
 		}
@@ -846,7 +846,7 @@ static void __run_complex_function_items(
 			__execute_function(
 				cond_rc, exc, fi->action, FUNC_DONT_DEFER,
 				args, has_ref_window_moved);
-			if (!has_ref_window_moved && PressedW && 
+			if (!has_ref_window_moved && PressedW &&
 			    XTranslateCoordinates(
 				  dpy, PressedW , Scr.Root, 0, 0, &x, &y,
 				  &JunkChild))
@@ -1026,7 +1026,10 @@ static void execute_complex_function(
 	if (!GrabEm(CRS_NONE, GRAB_NORMAL))
 	{
 		func->use_depth--;
-		XBell(dpy, 0);
+		fvwm_msg(
+			ERR,
+			"ComplexFunction", "Grab failed in function %s,"
+			" unable to execute immediate action", action);
 		__cf_cleanup(&depth, arguments, cond_rc);
 		return;
 	}
