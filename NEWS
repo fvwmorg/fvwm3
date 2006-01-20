@@ -3,7 +3,16 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.16 (not released yet)
+Changes in beta release 2.5.16 (20-Jan-2006)
+
+* New features:
+
+   - If the pointer can not be grabbed in functions, a message is
+     printed to the console instead of beeping.
+
+* Bug Fixes:
+
+   - Fixed a couple of build problems introduced in 2.5.15.
 
 -------------------------------------------------------------------
 

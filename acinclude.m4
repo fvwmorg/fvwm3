@@ -1002,7 +1002,6 @@ size_t iconv();
 # check for  locale_charset if libiconv is used
 #
 AC_DEFUN([CHECK_LIBCHARSET],[
-exit 77
 	AC_MSG_CHECKING(check for libcharset)
 	ac_save_CFLAGS="$CFLAGS"
       	ac_save_LIBS="$LIBS"

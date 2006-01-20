@@ -1,39 +1,19 @@
-Fvwm is a powerful window manager.  Version 2.5.15 is a beta
-release that fixes a couple of bugs and introduces a number of new
-minor features.  You are welcome to upgrade and test the new
-features or help stabilizing the code.  Please be aware that any
-features introduced in the 2.5.x development versions may be
-renamed, changed or removed without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.16 is a beta
+release that fixes some build problems in the prior 2.5.15
+release.  Please be aware that any features introduced in the
+2.5.x development versions may be renamed, changed or removed
+without notice before 2.6.0.
 
-2.5.15 fixes some bugs with the 64-bit architecture support.  For
-64-bit support, upgrading from any earlier release is strongly
-recommended.  Otherwise upgrading from any earlier 2.5.x release
-is recommended.
+Upgrading from 2.5.15 is necessary if one of these problems was
+encountered.  Otherwise, upgrading is optional.
 
 This release is available at the home page: http://www.fvwm.org/.
 
-* New features:
+New features:
 
-   - Variables can be nested, like $[desk.name$[desk.n]].
-   - Obsolete one-letter variables work, but generate warnings now.
-   - Windows can be placed by any button (now also >3).
-   - It is now possible to redefine the buttons usable to finish
-     window movement and manual placement.
-   - New window condition PlacedByButton.
-   - MenuStyle pairs can be negated by prefixing '!'.
-   - New generic tabbing module - FvwmTabs.
-   - New Style option: EWMHIgnoreWindowType.
-   - New MenuStyle options: MouseWheel, ScrollOffPage and
-     TrianglesUseFore.
-   - New option "screen" to Move and ResizeMove commands to allow
-     specifying the target Xinerama screen.
+   - If the pointer can not be grabbed in functions, a message is
+     printed to the console instead of beeping.
 
 * Bug Fixes:
 
-   - Supported a new fribidi version 0.10.5 in addition to 0.10.4.
-   - Better look for windows with "BorderStyle TiledPixmap".
-   - Some EWMH-related 64-bit fixes.
-   - Fixed segmentation fault when replacing title of title only
-     menus (Bug #1121).
-   - Fixes for resizing of shaded windows and resizing/moving
-     windows with complex functions.
+   - Fixed a couple of build problems introduced in 2.5.15.
