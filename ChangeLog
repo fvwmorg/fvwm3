@@ -2,6 +2,11 @@
 
 	* NEWS:
 	* configure.ac:
+	increased version to 2.5.17
+	released 2.5.16
+
+	* NEWS:
+	* configure.ac:
 	updated for 2.5.16 release
 
 	* acinclude.m4 (CHECK_LIBCHARSET):
@@ -21,7 +26,7 @@
 2006-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
-	* configure.in:
+	* configure.ac:
 	increased version to 2.5.16
 	released 2.5.15
 
