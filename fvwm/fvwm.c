@@ -2362,7 +2362,7 @@ int main(int argc, char **argv)
 	XSetErrorHandler(CatchRedirectError);
 	XSetIOErrorHandler(CatchFatal);
 	XSelectInput(dpy, Scr.Root, XEVMASK_ROOTW);
-	XFlush(dpy);
+	XSync(dpy, 0);
 
 	XSetErrorHandler(FvwmErrorHandler);
 

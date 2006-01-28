@@ -1,3 +1,9 @@
+2006-01-28  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS: 
+	* fvwm/fvwm.c (main): 
+	fix for fvwm not detecting non ICCCM2 wm (bug 3151)
+
 2006-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
