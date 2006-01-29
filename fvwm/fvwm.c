@@ -2359,13 +2359,21 @@ int main(int argc, char **argv)
 	}
 
 	SetupICCCM2(replace_wm);
-	XSetErrorHandler(CatchRedirectError);
 	XSetIOErrorHandler(CatchFatal);
-	XSelectInput(dpy, Scr.Root, XEVMASK_ROOTW);
-	XSync(dpy, 0);
-
-	XSetErrorHandler(FvwmErrorHandler);
-
+	{
+		/* We need to catch any errors of XSelectInput on the root
+		 * window here.  The event mask contains
+		 * SubstructureRedirectMask which can be acquired by exactly
+		 * one client (window manager).  Synchronizing is necessary
+		 * here because Neither XSetErrorHandler nor XSelectInput
+		 * generate any protocol requests.
+		 */
+		XSync(dpy, 0);
+		XSetErrorHandler(CatchRedirectError);
+		XSelectInput(dpy, Scr.Root, XEVMASK_ROOTW);
+		XSync(dpy, 0);
+		XSetErrorHandler(FvwmErrorHandler);
+	}
 	{
 		/* do not grab the pointer earlier because if fvwm exits with
 		 * the pointer grabbed while a different display is visible,

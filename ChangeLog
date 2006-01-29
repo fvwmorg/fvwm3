@@ -1,8 +1,20 @@
+2006-01-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/fvwm.c (main):
+	replaced previous patch with a better one
+
+	* fvwm/virtual.c (unmap_window):
+	* fvwm/menus.c (do_menu):
+	* fvwm/events.c (fake_map_unmap_notify):
+	(HandleMapNotify):
+	* fvwm/add_window.c (MappedNotOverride):
+	Added XFlush after XSelectInput
+
 2006-01-28  Viktor Griph  <griph@dd.chalmers.se>
 
-	* NEWS: 
-	* fvwm/fvwm.c (main): 
-	fix for fvwm not detecting non ICCCM2 wm (bug 3151)
+	* NEWS:
+	* fvwm/fvwm.c (main):
+	fix for fvwm not detecting non ICCCM2 wm (bug #3151)
 
 2006-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 

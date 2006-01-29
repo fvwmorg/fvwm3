@@ -296,17 +296,17 @@ static Bool menu_get_outer_geometry(
 {
 	if (MR_IS_TEAR_OFF_MENU(mr))
 	{
-		return XGetGeometry(dpy, 
-			FW_W_FRAME(pmp->tear_off_root_menu_window), 
+		return XGetGeometry(dpy,
+			FW_W_FRAME(pmp->tear_off_root_menu_window),
 			root_return,x_return,y_return, width_return,
 			height_return, border_width_return, depth_return );
 	}
 	else
 	{
 	  	return menu_get_geometry(mr,root_return,x_return,y_return,
-			width_return, height_return, border_width_return, 
+			width_return, height_return, border_width_return,
 			depth_return );
-	}	
+	}
 }
 
 static Bool pointer_in_active_item_area(int x_offset, MenuRoot *mr)
@@ -445,7 +445,7 @@ static void animated_move_back(
 	return;
 }
 
-/* move a menu or a tear-off menu preserving transparncy. 
+/* move a menu or a tear-off menu preserving transparncy.
  * tear-off menus are moved with their frame coordinates. */
 static void move_any_menu(
 	MenuRoot *mr, MenuParameters *pmp, int endX, int endY
@@ -857,14 +857,14 @@ static void menuShortcuts(
 	/*** map mouse events to keysymb ***/
 	if (event->type == ButtonRelease)
 	{
-	        /*** Read the control keys stats ***/	
+	        /*** Read the control keys stats ***/
 		fControlKey = event->xbutton.state & ControlMask? True : False;
 		fShiftedKey = event->xbutton.state & ShiftMask? True: False;
 		fMetaKey = event->xbutton.state & Mod1Mask? True: False;
 		switch (event->xbutton.button)
 		{
 		case 4: /* ScrollUp -- Translate to NumPad - */
-			keysym = XK_KP_Subtract;		        
+			keysym = XK_KP_Subtract;
 		        break;
 		case 5: /* ScrollDown -- Translate to NumPad + */
 		        keysym = XK_KP_Add;
@@ -878,11 +878,11 @@ static void menuShortcuts(
 	}
 	else /* Should be KeyPressed */
 	{
-	        /*** Read the control keys stats ***/	
+	        /*** Read the control keys stats ***/
 		fControlKey = event->xkey.state & ControlMask? True : False;
 		fShiftedKey = event->xkey.state & ShiftMask? True: False;
 		fMetaKey = event->xkey.state & Mod1Mask? True: False;
-		
+
 		/*** handle double-keypress ***/
 
 		if (pdkp->timestamp &&
@@ -902,7 +902,7 @@ static void menuShortcuts(
 		/* Is it okay to treat keysym-s as Ascii?
 		 * No, because the keypad numbers don't work.
 		 * Use XlookupString */
-		index = XLookupString(&(event->xkey), &ckeychar, 1, &keysym, 
+		index = XLookupString(&(event->xkey), &ckeychar, 1, &keysym,
 				      NULL);
 		ikeychar = (int)ckeychar;
 	}
@@ -1353,15 +1353,15 @@ static void menuShortcuts(
 			direction *= -1;
 		}
 		if (!menu_get_outer_geometry(
-				mr, pmp, &JunkRoot, &menu_x, &menu_y, 
+				mr, pmp, &JunkRoot, &menu_x, &menu_y,
 			    	&JunkWidth, &menu_height,
 			    	&JunkBW, &JunkDepth))
-		{		
+		{
 			fvwm_msg(ERR, "menuShortcuts",
 				"can't get geometry of menu %s", MR_NAME(mr));
 			return;
 		}
-		for (newItem = miCurrent; newItem && 
+		for (newItem = miCurrent; newItem &&
 		       ( !MI_IS_SELECTABLE(newItem) || newItem ==  miCurrent );
 		       newItem = (direction == 1) ?
 		                 MI_NEXT_ITEM(newItem) :  MI_PREV_ITEM(newItem))
@@ -1381,17 +1381,17 @@ static void menuShortcuts(
 			    	mx = 0;
 				my = 0;
 			}
-					  
+
 			if (MST_MOUSE_WHEEL(mr) == MMW_POINTER)
 			{
 				if (event->type == ButtonRelease)
 				{
-			
+
 				  	FWarpPointer(dpy, 0, 0, 0, 0, 0, 0, 0,
 						- my + menuitem_middle_y_offset(
 							newItem,
 							MR_STYLE(mr)));
-					
+
 				}
 				/* pointer wrapped elsewhere for key events */
 			}
@@ -1402,7 +1402,7 @@ static void menuShortcuts(
 							newItem,
 							MR_STYLE(mr));
 
-				if (!MST_SCROLL_OFF_PAGE(mr) && 
+				if (!MST_SCROLL_OFF_PAGE(mr) &&
 				    menu_height < MR_SCREEN_HEIGHT(mr))
 				{
 					if (menu_y < 0)
@@ -1411,13 +1411,13 @@ static void menuShortcuts(
 							     0, 0, 0,-menu_y);
 						menu_y=0;
 					}
-				
+
 					if (menu_y + menu_height >
 					    MR_SCREEN_HEIGHT(mr))
 					{
 						FWarpPointer(dpy, 0, 0, 0, 0, 0,
 							0, 0,
-							MR_SCREEN_HEIGHT(mr) 
+							MR_SCREEN_HEIGHT(mr)
 						        - menu_y - menu_height);
 						menu_y = MR_SCREEN_HEIGHT(mr) -
 						  	 menu_height;
@@ -1439,17 +1439,17 @@ static void menuShortcuts(
 	if (saction != SA_SCROLL && pmret->rc == MENU_NEWITEM)
 	{
 		if (!menu_get_outer_geometry(
-			mr, pmp, &JunkRoot, &menu_x, &menu_y, 
+			mr, pmp, &JunkRoot, &menu_x, &menu_y,
 		    	&JunkWidth, &menu_height,
 		    	&JunkBW, &JunkDepth))
-		{		
+		{
 			fvwm_msg(ERR, "menuShortcuts",
 				"can't get geometry of menu %s", MR_NAME(mr));
 			return;
 		}
 		if (menu_y < 0 || menu_y + menu_height > MR_SCREEN_HEIGHT(mr))
 		{
-			menu_y = 
+			menu_y =
 			  (menu_y < 0) ? 0 : MR_SCREEN_HEIGHT(mr) - menu_height;
 			move_any_menu(mr,pmp,menu_x,menu_y);
 		}
@@ -4869,12 +4869,12 @@ static mloop_ret_code_t __mloop_handle_event(
 				pmret->rc = MENU_TEAR_OFF;
 				return MENU_MLOOP_RET_END;
 			}
-			else if ( med->mrMi != NULL && 
+			else if ( med->mrMi != NULL &&
 				  MST_MOUSE_WHEEL(med->mrMi) != MMW_OFF &&
 				  ((*pmp->pexc)->x.elast->xbutton.button == 4 ||
 				   (*pmp->pexc)->x.elast->xbutton.button == 5))
-			{			  
-				menuShortcuts(med->mrMi, pmp, pmret, 
+			{
+				menuShortcuts(med->mrMi, pmp, pmret,
 					  (*pmp->pexc)->x.elast,
 					  &med->mi,pdkp);
 				if (pmret->rc == MENU_NOP)
@@ -6684,12 +6684,14 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			{
 				XSelectInput(
 					dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
+				XFlush(dpy);
 			}
 			__menu_loop(pmp, pmret, &dkp);
 			if (!pmp->flags.is_submenu)
 			{
 				XSelectInput(
 					dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
+				XFlush(dpy);
 			}
 		}
 		do_check_pop_down = False;

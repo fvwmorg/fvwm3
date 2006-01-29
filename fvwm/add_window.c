@@ -374,6 +374,7 @@ static int MappedNotOverride(
 	if (wa.override_redirect == True)
 	{
 		XSelectInput(dpy, w, XEVMASK_ORW);
+		XFlush(dpy);
 	}
 	return (((win_opts->initial_state == IconicState) ||
 		 (wa.map_state != IsUnmapped)) &&

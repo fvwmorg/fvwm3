@@ -193,6 +193,7 @@ static void fake_map_unmap_notify(const FvwmWindow *fw, int event_type)
 	FSendEvent(
 		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
 	XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
+	XFlush(dpy);
 
 	return;
 }
@@ -2656,6 +2657,7 @@ void HandleMapNotify(const evh_args_t *ea)
 		    te->xmap.window != Scr.NoFocusWin)
 		{
 			XSelectInput(dpy, te->xmap.window, XEVMASK_ORW);
+			XFlush(dpy);
 			Scr.UnknownWinFocused = te->xmap.window;
 		}
 		return;
@@ -2665,6 +2667,7 @@ void HandleMapNotify(const evh_args_t *ea)
 		/* Now that we know the frame is mapped after capturing the
 		 * window we do not need StructureNotifyMask events anymore. */
 		XSelectInput(dpy, FW_W_FRAME(fw), XEVMASK_FRAMEW);
+		XFlush(dpy);
 	}
 	/* Except for identifying over-ride redirect window mappings, we
 	 * don't need or want windows associated with the

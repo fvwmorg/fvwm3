@@ -255,6 +255,7 @@ static void unmap_window(FvwmWindow *t)
 	if (ret)
 	{
 		XSelectInput(dpy, FW_W(t), eventMask);
+		XFlush(dpy);
 	}
 
 	return;
@@ -317,6 +318,7 @@ static void map_window(FvwmWindow *t)
 	if (ret)
 	{
 		XSelectInput(dpy, FW_W(t), eventMask);
+		XFlush(dpy);
 	}
 
 	return;
