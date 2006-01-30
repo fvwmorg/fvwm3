@@ -3,7 +3,7 @@
 # $Id$
 
 # 	FvwmTabs
-#	Copyright (C) 2002, 2003, 2004, 2005 Scott Smedley ss@aao.gov.au
+#	Copyright (C) 2002-2006 Scott Smedley ss@aao.gov.au
 #	
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -414,7 +414,12 @@ sub showMenu ($$)
 
 sub createNewTabber
 {
-	my $tId = shift();
+	my ($tId, $geom);
+	foreach (@_)
+	{
+		$geom = $2, next if (/^--?g(eometry)?=(.*)/);
+		$tId = $_;
+	}
 
 	if (!defined $tId)
 	{
@@ -438,6 +443,7 @@ sub createNewTabber
 	my $tl = $TOP->Toplevel(Name => $fvwm->name(),
 							-class => $fvwm->name(),
 							-title => $title);
+	$tl->geometry($geom) if (defined $geom);
 	$tl->iconname($title);
 	$tl->focusmodel("active");
 	my $topFrame = $tl->Frame();
@@ -504,8 +510,9 @@ sub createNewTabber
 
 	# ===
 	$tabFrame->waitVisibility();
-	$tabFrame->packPropagate(0);
-	$tabFrame->configure(-height => 28, -width => $af->reqwidth());
+	# $tabFrame->packPropagate(0);
+	# $tabFrame->configure(-height => 28, -width => $af->reqwidth());
+	$tabFrame->configure(-width => $af->reqwidth());
 
 	$tabWin{$tId}{menu} = $tl->Menu(-tearoff => 0,
 									-font => $pConfig->{menuFont});

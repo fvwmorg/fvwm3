@@ -2,15 +2,15 @@
 #
 # Generate this man page with:
 #
-# pod2man -c "FVWM Modules" -r "FvwmTabs v3.4" FvwmTabs.pod >! FvwmTabs.1
+# pod2man -c "FVWM Modules" -r "FvwmTabs v3.7" FvwmTabs.pod >! FvwmTabs.1
 #
 # View this man page with:
 #
-# pod2man -c "FVWM Modules" -r "FvwmTabs v3.4" FvwmTabs.pod | nroff -man | less
+# pod2man -c "FVWM Modules" -r "FvwmTabs v3.7" FvwmTabs.pod | nroff -man | less
 #
 # Generate a HTML version of the man page with:
 #
-# pod2html -t "FvwmTabs v3.4" FvwmTabs.pod >! FvwmTabs.man.html
+# pod2html -t "FvwmTabs v3.7" FvwmTabs.pod >! FvwmTabs.man.html
 
 
 =head1 NAME
@@ -204,7 +204,9 @@ A number of FVWM functions are available once the B<FvwmTabs> module is started.
 
 =item NewTabber
 
-Create a new tabber. Optional argument is tabber name. No whitespace is allowed in the tabber name.
+Create a new tabber. Optional argument is tabber name. No whitespace is allowed in the tabber name. Can also prefix --geometry argument.
+
+Example: NewTabber --geometry+200+400 scottie
 
 =item Tabize
 

@@ -9,8 +9,10 @@
 # Default USER CONFIGURATION settings are in FvwmTabs-DefaultSetup.
 
 # Create a new Tabber.
+# Can specify optional --geometry 1st argument.
+# ie. NewTabber --geometry=+220+550 scottie
 DestroyFunc NewTabber
-AddToFunc NewTabber I SendToModule FvwmTabs createNewTabber $0
+AddToFunc NewTabber I SendToModule FvwmTabs createNewTabber $0 $1
 
 # Add a window (as a tab) to a Tabber.
 DestroyFunc Tabize

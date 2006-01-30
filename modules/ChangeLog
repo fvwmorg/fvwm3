@@ -1,3 +1,14 @@
+2005-11-07  Scott Smedley  <ss@aao.gov.au>
+
+	* FvwmTabs/FvwmTabs.in:
+	* FvwmTabs/FvwmTabs.pod:
+	* FvwmTabs/ConfigFvwmTabs:
+
+	Allow user to specify position of new tabbers with:
+		NewTabber --geometry=+0+0 uniqueId
+	bugfix: don't hardcode height of button frame - allow it to be
+	determined by the size of the font/mini-icon.
+
 2006-01-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmTabs/FvwmTabs.1:
