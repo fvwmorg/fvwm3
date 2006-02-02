@@ -340,7 +340,7 @@ ModuleArgs *ParseModuleArgs(int argc, char *argv[], int use_arg6_as_alias)
 
 	/* File descriptors for the pipes */
 	ma.to_fvwm = atoi(argv[1]);
-	ma.from_fvwm = atoi(argv[2]);
+	ma.fvwm_fds[1] = atoi(argv[2]);
 
 	/* Ignore argv[3] */
 
