@@ -27,8 +27,8 @@ at your own risk.  You may freely use this module or any portion of it
 for any purpose as long as the copyright is kept intact.
 
 .SH INITIALIZATION
-During initialization, \fIFvwmBacker\fP gets config info from 
-\fBfvwm\fP's module configuration database (see 
+During initialization, \fIFvwmBacker\fP gets config info from
+\fBfvwm\fP's module configuration database (see
 .IR fvwm (1),
 section
 .BR "MODULE COMMANDS" ).
@@ -93,9 +93,27 @@ image, screen_width times screen_height bytes
 with a Pixmap image or a C,B,D,R,S or Y
 Gradient and screen_width bytes with
 a VGradient or screen height bytes with an HGradient.
- 
+
 .IP "*FvwmBacker: DoNotRetainPixmap"
 Cancels the effect of the previous option. This is the default.
+
+.SH RUN-TIME CONFIGURATION
+It it possible to replace FvwmBacker's configuration at run-time,
+although it is not yet possible to remove existing configuration
+lines.  This is done by simply removing the old configuration from
+withing fvwm and then read a new one.  This can be done in many
+ways, for example by using an fvwm function or one of the modules
+.BR FvwmCommand " or " FvwmConsole .
+
+Example:
+
+.nf
+.sp
+DestroyModuleConfig FvwmBacker*
+*FvwmBacker: Command (Desk 0) -solid black
+*FvwmBacker: Command (Desk 1) -solid blue
+.sp
+.fi
 
 .SH OLD-STYLE OPTIONS
 There is continued support for the now deprecated option:
