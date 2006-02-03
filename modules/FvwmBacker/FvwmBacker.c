@@ -325,95 +325,95 @@ void SetDeskPageBackground(const Command *c)
 	{
 	case 1: /* solid colors */
 	case 2: /* colorset */
-			dpy2 =  XOpenDisplay(displayName);
-			if (!dpy2)
+		dpy2 =  XOpenDisplay(displayName);
+		if (!dpy2)
+		{
+			fvwm_msg(ERR, "FvwmBacker",
+				 "Fail to create a forking dpy, Exit!");
+			exit(2);
+		}
+		screen2 = DefaultScreen(dpy2);
+		root2 = RootWindow(dpy2, screen2);
+		if (RetainPixmap)
+		{
+			XSetCloseDownMode(dpy2, RetainPermanent);
+		}
+		XGrabServer(dpy2);
+		DeleteRootAtoms(dpy2, root2);
+		switch (c->type)
+		{
+		case 2:
+			current_colorset = c->colorset;
+			/* Process a colorset */
+			if (CSET_IS_TRANSPARENT(c->colorset))
 			{
-				fvwm_msg(ERR, "FvwmBacker",
-					 "Fail to create a forking dpy, Exit!");
-				exit(2);
+				fvwm_msg(ERR,"FvwmBacker", "You cannot "
+					 "use a transparent colorset as "
+					 "background!");
+				XUngrabServer(dpy2);
+				XCloseDisplay(dpy2);
+				return;
 			}
-			screen2 = DefaultScreen(dpy2);
-			root2 = RootWindow(dpy2, screen2);
+			else if (Pdepth != DefaultDepth(dpy2, screen2))
+			{
+				fvwm_msg(ERR,"FvwmBacker", "You cannot "
+					 "use a colorset background if\n"
+					 "the fvwm depth is not equal "
+					 "to the root depth!");
+				XUngrabServer(dpy2);
+				XCloseDisplay(dpy2);
+				return;
+			}
+			else if (RetainPixmap)
+			{
+				pix = CreateBackgroundPixmap(
+					dpy2, root2, MyDisplayWidth,
+					MyDisplayHeight,
+					&Colorset[c->colorset],
+					DefaultDepth(dpy2, screen2),
+					DefaultGC(dpy2, screen2), False);
+				if (pix != None)
+				{
+					XSetWindowBackgroundPixmap(
+						dpy2, root2, pix);
+					XClearWindow(dpy2, root2);
+				}
+			}
+			else
+			{
+				SetWindowBackground(
+					dpy2, root2, MyDisplayWidth,
+					MyDisplayHeight,
+					&Colorset[c->colorset],
+					DefaultDepth(dpy2, screen2),
+					DefaultGC(dpy2, screen2), True);
+			}
+			break;
+		case 1: /* Process a solid color request */
 			if (RetainPixmap)
 			{
-				XSetCloseDownMode(dpy2, RetainPermanent);
-			}
-			XGrabServer(dpy2);
-			DeleteRootAtoms(dpy2, root2);
-			switch (c->type)
-			{
-			case 2:
-				current_colorset = c->colorset;
-				/* Process a colorset */
-				if (CSET_IS_TRANSPARENT(c->colorset))
-				{
-					fvwm_msg(ERR,"FvwmBacker", "You cannot "
-						 "use a transparent colorset as "
-						 "background!");
-					XUngrabServer(dpy2);
-					XCloseDisplay(dpy2);
-					return;
-				}
-				else if (Pdepth != DefaultDepth(dpy2, screen2))
-				{
-					fvwm_msg(ERR,"FvwmBacker", "You cannot "
-						 "use a colorset background if\n"
-						 "the fvwm depth is not equal "
-						 "to the root depth!");
-					XUngrabServer(dpy2);
-					XCloseDisplay(dpy2);
-					return;
-				}
-				else if (RetainPixmap)
-				{
-					pix = CreateBackgroundPixmap(
-						dpy2, root2, MyDisplayWidth,
-						MyDisplayHeight,
-						&Colorset[c->colorset],
-						DefaultDepth(dpy2, screen2),
-						DefaultGC(dpy2, screen2), False);
-					if (pix != None)
-					{
-						XSetWindowBackgroundPixmap(
-							dpy2, root2, pix);
-						XClearWindow(dpy2, root2);
-					}
-				}
-				else
-				{
-					SetWindowBackground(
-						dpy2, root2, MyDisplayWidth,
-						MyDisplayHeight,
-						&Colorset[c->colorset],
-						DefaultDepth(dpy2, screen2),
-						DefaultGC(dpy2, screen2), True);
-				}
-				break;
-			case 1: /* Process a solid color request */
-				if (RetainPixmap)
-				{
-					GC gc;
-					XGCValues xgcv;
+				GC gc;
+				XGCValues xgcv;
 
-					xgcv.foreground = c->solidColor;
-					gc = fvwmlib_XCreateGC(
-						dpy2, root2, GCForeground,
-						&xgcv);
-					pix = XCreatePixmap(
-						dpy2, root2, 1, 1,
-						DefaultDepth(dpy2, screen2));
-					XFillRectangle(
-						dpy2, pix, gc, 0, 0, 1, 1);
-					XFreeGC(dpy2, gc);
-				}
-				XSetWindowBackground(dpy2, root2, c->solidColor);
-				XClearWindow(dpy2, root2);
-				break;
+				xgcv.foreground = c->solidColor;
+				gc = fvwmlib_XCreateGC(
+					dpy2, root2, GCForeground,
+					&xgcv);
+				pix = XCreatePixmap(
+					dpy2, root2, 1, 1,
+					DefaultDepth(dpy2, screen2));
+				XFillRectangle(
+					dpy2, pix, gc, 0, 0, 1, 1);
+				XFreeGC(dpy2, gc);
 			}
-			SetRootAtoms(dpy2, root2, pix);
-			XUngrabServer(dpy2);
-			XCloseDisplay(dpy2); /* this XSync, Ungrab, ...etc */
+			XSetWindowBackground(dpy2, root2, c->solidColor);
+			XClearWindow(dpy2, root2);
 			break;
+		}
+		SetRootAtoms(dpy2, root2, pix);
+		XUngrabServer(dpy2);
+		XCloseDisplay(dpy2); /* this XSync, Ungrab, ...etc */
+		break;
 	case -1:
 	case 0:
 	default:
@@ -539,12 +539,13 @@ int ParseConfigLine(char *line)
 		if (strncasecmp(line, configPrefix, cpl) == 0)
 		{
 			if (strncasecmp(
-				line+cpl, "RetainPixmap", 12) == 0)
+				    line+cpl, "RetainPixmap", 12) == 0)
 			{
 				RetainPixmap = True;
 			}
 			else if (strncasecmp(
-				line+cpl, "DoNotRetainPixmap", 17) == 0)
+					 line+cpl,
+					 "DoNotRetainPixmap", 17) == 0)
 			{
 				RetainPixmap = False;
 			}
@@ -624,7 +625,7 @@ Bool ParseNewCommand(
 		else if (StrEquals(name, "Page"))
 		{
 			if ((option_val = GetNextToken(
-				option_val,&value)) == NULL)
+				     option_val,&value)) == NULL)
 			{
 				fvwm_msg(
 					ERR, "FvwmBacker",
@@ -712,7 +713,8 @@ void AddCommand(char *line)
 				return;
 			}
 			error = ParseNewCommand(
-				parens, this, &do_ignore_desk, &do_ignore_page);
+				parens, this, &do_ignore_desk,
+				&do_ignore_page);
 			if (error)
 			{
 				free(this);

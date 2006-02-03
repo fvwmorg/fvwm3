@@ -1,3 +1,8 @@
+2006-02-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmBacker/FvwmBacker.c:
+	reindented code
+
 2005-11-07  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/FvwmTabs.in:
