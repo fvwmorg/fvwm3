@@ -1,9 +1,20 @@
+2006-02-04  Scott Smedley  <ss@aao.gov.au>
+
+	* FvwmTabs/FvwmTabs.in:
+	* FvwmTabs/FvwmTabs.pod:
+	* FvwmTabs/FvwmTabs.1:
+
+	i18n & l10n support.
+	New 'buttonYPadding' option.
+	Updated man page.
+	Removed version information from 'About' dialog.
+
 2006-02-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmBacker/FvwmBacker.c:
 	reindented code
 
-2005-11-07  Scott Smedley  <ss@aao.gov.au>
+2006-01-30  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/FvwmTabs.in:
 	* FvwmTabs/FvwmTabs.pod:

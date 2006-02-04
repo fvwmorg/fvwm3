@@ -30,6 +30,7 @@ BEGIN {
 
 use strict;
 use lib "@FVWM_PERLLIBDIR@";
+use encoding ':locale';
 use FVWM::Module::Tk;
 use FVWM::Module::Toolkit qw(FileHandle IO::Select X11::Protocol>=0.52 Tk>=804.025 Tk::Balloon Tk::DragDrop Tk::DropSite Tk::LabFrame Tk::BrowseEntry Tk::PNG);
 
@@ -69,6 +70,7 @@ my $configTracker = $fvwm->track('ModuleConfig',
 					   titleBG => 'antiquewhite',
 					   activeRelief => 'sunken',
 					   inactiveRelief => 'raised',
+					   buttonYPadding => 3,
 					   pollRate => 250,	# in milliseconds.
 					   autoSwallowClass => '',
 					   autoSwallowResource => '',
@@ -150,6 +152,17 @@ $configTracker->observe("config line added", sub {
 						setButtonAttr($tabWin{$tId}{tab}[$i]{button}, $active, $p);
 					}
 				}
+			}
+		}
+		elsif ($p eq 'buttonYPadding')
+		{
+			# currentTab is always defined if $nTabs > 0
+			if (defined $tabWin{$tId}{currentTab})
+			{
+				for (my $i = 0; $i < $tabWin{$tId}{nTabs}; $i++)
+				{
+					setButtonAttr($tabWin{$tId}{tab}[$i]{button}, 'pady', $p);
+				}	
 			}
 		}
 		elsif ($p =~ /^title(FG|BG)$/)
@@ -1137,9 +1150,12 @@ sub addTab ($$)
 	my $iconName = getProperty($winId, "WM_ICON_NAME");
 	$iconName = $name if ($iconName eq '');
 
+	# -borderwidth => 0 also gets rid of 2x2=4 pixels in height, but
+	# will not be able to display relief of button.
 	$tabWin{$tId}{tab}[$tabNo]{button} =
 		$tabWin{$tId}{tabFrame}->Button(-text => $iconName,
 										-padx => 2,
+										-pady => $pConfig->{buttonYPadding},
 										-width => 1,
 										-anchor => 'w',
 										-compound => 'left',
@@ -1235,6 +1251,9 @@ sub getProperty ($$)
 								 'AnyPropertyType', 0, 200, 0);
 	my $p = $s[0];
 	return undef if ($p eq 'Window');
+	# Remove font encoding details (if any).
+	my ($startM, $endM) = (chr(27), chr(2));
+	$p->[0] =~ s/$startM.*?$endM//g;
 	return $p->[0];
 }
 
@@ -1500,20 +1519,12 @@ sub setFont ($$$)
 	}
 }
 
-sub version ()
-{
-	my $rcsId = '$Id$';
-	$rcsId =~ /,v (.*) (\d+\/\d+\/\d+) \d+:\d+:\d+/;
-	return ($1, $2);
-}
-
 sub about ($)
 {
 	my ($tId) = @_;
 
-	my ($v, $d) = version();
-	my $version = $fvwm->name() . " v$v   ($d)\n\nby Scott Smedley\nss\@aao.gov.au";
-	$fvwm->showMessage($version, "About " . $fvwm->name());
+	my $info = $fvwm->name() . "\n\nby Scott Smedley\nss\@aao.gov.au";
+	$fvwm->showMessage($info, "About " . $fvwm->name());
 }
 
 sub setBalloonMsg ($$)
@@ -1893,7 +1904,6 @@ sub toggleAutoResize ($)
 
 
 loadState();
-my ($version, $date) = version();
-print($fvwm->name() . " (v$version) started with: Perl " . join('.', map(ord($_), split(//, $^V))) . ", X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
+print($fvwm->name() . " started with: Perl " . join('.', map(ord($_), split(//, $^V))) . ", X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
 $fvwm->send("NOP FINISHED STARTUP");
 $fvwm->eventLoop();

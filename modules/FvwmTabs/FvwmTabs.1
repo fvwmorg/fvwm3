@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FVWMTABS 1"
-.TH FVWMTABS 1 "2006-01-30" "FvwmTabs v3.7" "FVWM Modules"
+.TH FVWMTABS 1 "2006-02-04" "FvwmTabs" "FVWM Modules"
 .SH "NAME"
 \&\fBFvwmTabs\fR \- a generic tabbing module for the FVWM window manager.
 .SH "SYNOPSIS"
@@ -183,6 +183,9 @@ The relief style to use for active buttons. \fIstyle\fR can be either \fIraised\
 .IP "*FvwmTabs: inactiveRelief \fIstyle\fR" 4
 .IX Item "*FvwmTabs: inactiveRelief style"
 The relief style to use for inactive buttons. \fIstyle\fR can be either \fIraised\fR, \fIflat\fR or \fIsunken\fR. The default style is \fIflat\fR.
+.IP "*FvwmTabs: buttonYPadding \fIpixels\fR" 4
+.IX Item "*FvwmTabs: buttonYPadding pixels"
+How much padding to use around top and bottom of tab buttons. The default value is \fI3\fR pixels.
 .IP "*FvwmTabs: pollRate \fIms\fR" 4
 .IX Item "*FvwmTabs: pollRate ms"
 Specifies how often to check for X events. \fIms\fR is time in milliseconds. The default value, \fI250\fR, should be fine for most users. If you are on a very slow machine you may wish to increase this.
@@ -279,7 +282,7 @@ A number of \s-1FVWM\s0 functions are available once the \fBFvwmTabs\fR module i
 .IX Item "NewTabber"
 Create a new tabber. Optional argument is tabber name. No whitespace is allowed in the tabber name. Can also prefix \-\-geometry argument.
 .Sp
-Example: NewTabber \-\-geometry+200+400 scottie
+Example: NewTabber \-\-geometry=+200+400 scottie
 .IP "Tabize" 4
 .IX Item "Tabize"
 Add a window (as a tab) to a tabber.

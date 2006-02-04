@@ -2,15 +2,15 @@
 #
 # Generate this man page with:
 #
-# pod2man -c "FVWM Modules" -r "FvwmTabs v3.7" FvwmTabs.pod >! FvwmTabs.1
+# pod2man -c "FVWM Modules" -r "FvwmTabs" FvwmTabs.pod >! FvwmTabs.1
 #
 # View this man page with:
 #
-# pod2man -c "FVWM Modules" -r "FvwmTabs v3.7" FvwmTabs.pod | nroff -man | less
+# pod2man -c "FVWM Modules" -r "FvwmTabs" FvwmTabs.pod | nroff -man | less
 #
 # Generate a HTML version of the man page with:
 #
-# pod2html -t "FvwmTabs v3.7" FvwmTabs.pod >! FvwmTabs.man.html
+# pod2html -t "FvwmTabs" FvwmTabs.pod >! FvwmTabs.man.html
 
 
 =head1 NAME
@@ -82,6 +82,10 @@ The relief style to use for active buttons. I<style> can be either I<raised>, I<
 =item E<42>FvwmTabs: inactiveRelief I<style>
 
 The relief style to use for inactive buttons. I<style> can be either I<raised>, I<flat> or I<sunken>. The default style is I<flat>.
+
+=item E<42>FvwmTabs: buttonYPadding I<pixels>
+
+How much padding to use around top and bottom of tab buttons. The default value is I<3> pixels.
 
 =item E<42>FvwmTabs: pollRate I<ms>
 
@@ -206,7 +210,7 @@ A number of FVWM functions are available once the B<FvwmTabs> module is started.
 
 Create a new tabber. Optional argument is tabber name. No whitespace is allowed in the tabber name. Can also prefix --geometry argument.
 
-Example: NewTabber --geometry+200+400 scottie
+Example: NewTabber --geometry=+200+400 scottie
 
 =item Tabize
 
