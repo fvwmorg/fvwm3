@@ -235,6 +235,8 @@ typedef struct
 {
 	/* module name */
 	char* name;
+	/* length of the module name */
+	int namelen;
 	/* file descriptor to send info back to FVWM */
 	int to_fvwm;
 	/* file descriptor to read packets from FVWM */

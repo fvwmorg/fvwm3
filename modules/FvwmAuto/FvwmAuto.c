@@ -103,6 +103,8 @@ TerminateHandler(int signo)
 int
 main(int argc, char **argv)
 {
+	/* The struct holding the module info */
+	static ModuleArgs* module;
 	char *enter_fn="Silent Raise";        /* default */
 	char *leave_fn=NULL;
 	char *buf;
@@ -132,7 +134,15 @@ main(int argc, char **argv)
 	freopen(".FvwmAutoDebug","w",stderr);
 #endif
 
-	if (argc < 7 || argc > 11)
+	module = ParseModuleArgs(argc,argv,0); /* no alias in this module */
+	if (module==NULL)
+	{
+		fprintf(stderr,"FvwmAuto Version "VERSION" should only be executed by fvwm!\n");
+		exit(1);
+	}
+
+
+	if (module->user_argc < 1 || module->user_argc > 5)
 	{
 		fprintf(stderr,"FvwmAuto can use one to five arguments.\n");
 		exit(1);
@@ -186,10 +196,10 @@ main(int argc, char **argv)
 #endif
 #endif
 
-	fd[0] = atoi(argv[1]);
-	fd[1] = atoi(argv[2]);
+	fd[0] = module->to_fvwm;
+	fd[1] = module->from_fvwm;
 
-	if ((timeout = atoi(argv[6])))
+	if ((timeout = atoi(module->user_argv[0]) ))
 	{
 		sec = timeout / 1000;
 		usec = (timeout % 1000) * 1000;
@@ -201,32 +211,32 @@ main(int argc, char **argv)
 	}
 	delay = &value;
 
-	n = 7;
-	if (n < argc && argv[n])
+	n = 1;
+	if (n < module->user_argc && module->user_argv[n])
 	{
 		char *token;
 
 		/* -passid option */
-		if (n < argc && *argv[n] && StrEquals(argv[n], "-passid"))
+		if (n < module->user_argc && *module->user_argv[n] && StrEquals(module->user_argv[n], "-passid"))
 		{
 			do_pass_id = True;
 			n++;
 		}
-		if (n < argc && *argv[n] && StrEquals(argv[n], "-menterleave"))
+		if (n < module->user_argc && *module->user_argv[n] && StrEquals(module->user_argv[n], "-menterleave"))
 		{
 			/* enterleave mode */
 			use_leave_mode = True;
 			use_enter_mode = True;
 			n++;
 		}
-		else if (n < argc && *argv[n] && StrEquals(argv[n], "-menter"))
+		else if (n < module->user_argc && *module->user_argv[n] && StrEquals(module->user_argv[n], "-menter"))
 		{
 			/* enter mode */
 			use_leave_mode = False;
 			use_enter_mode = True;
 			n++;
 		}
-		else if (n < argc && *argv[n] && StrEquals(argv[n], "-mfocus"))
+		else if (n < module->user_argc && *module->user_argv[n] && StrEquals(module->user_argv[n], "-mfocus"))
 		{
 			/* focus mode */
 			use_leave_mode = False;
@@ -234,16 +244,16 @@ main(int argc, char **argv)
 			n++;
 		}
 		/*** enter command ***/
-		if (n < argc && *argv[n] && StrEquals(argv[n], "Nop"))
+		if (n < module->user_argc && *module->user_argv[n] && StrEquals(module->user_argv[n], "Nop"))
 		{
 			/* nop */
 			enter_fn = NULL;
 			n++;
 		}
-		else if (n < argc)
+		else if (n < module->user_argc)
 		{
 			/* override default */
-			enter_fn = argv[n];
+			enter_fn = module->user_argv[n];
 			n++;
 		}
 		/* This is a hack to prevent user interaction with old configs.
@@ -258,17 +268,17 @@ main(int argc, char **argv)
 			}
 		}
 		/*** leave command ***/
-		if (n < argc && argv[n] && *argv[n] &&
-		    StrEquals(argv[n], "Nop"))
+		if (n < module->user_argc && module->user_argv[n] && *module->user_argv[n] &&
+		    StrEquals(module->user_argv[n], "Nop"))
 		{
 			/* nop */
 			leave_fn = NULL;
 			n++;
 		}
-		else if (n < argc)
+		else if (n < module->user_argc)
 		{
 			/* leave function specified */
-			leave_fn=argv[n];
+			leave_fn=module->user_argv[n];
 			n++;
 		}
 		if (leave_fn)

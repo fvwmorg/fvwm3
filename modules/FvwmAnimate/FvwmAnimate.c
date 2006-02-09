@@ -66,8 +66,7 @@
 
 static Display *dpy;
 GC gc;
-static char *MyName;
-static int MyNameLen;
+static ModuleArgs* module;
 static int Channel[2];
 static XColor xcol;
 static unsigned long color;             /* color for animation */
@@ -116,17 +115,17 @@ static struct
 #endif
 
 /* Macros for creating and sending commands:
-   CMD1X - Myname+1
-   CMD10 - Myname+1,MyName
-   CMD11 - Myname+1,MyName+1 */
+   CMD1X - module->name
+   CMD10 - module->name, CatString3("*",module->name,0)
+   CMD11 - module->name,module->name */
 #define CMD1X(TEXT) \
-  sprintf(cmd,TEXT,MyName+1);\
+  sprintf(cmd,TEXT,module->name);\
   SendText(Channel,cmd,0);
 #define CMD10(TEXT) \
-  sprintf(cmd,TEXT,MyName+1,MyName);\
+  sprintf(cmd,TEXT,module->name,CatString3("*",module->name,0));\
   SendText(Channel,cmd,0);
 #define CMD11(TEXT) \
-  sprintf(cmd,TEXT,MyName+1,MyName+1);\
+  sprintf(cmd,TEXT,module->name,module->name);\
   SendText(Channel,cmd,0);
 
 static void Loop(void);
@@ -753,27 +752,13 @@ HandleTerminate(int sig) {
 
 
 int main(int argc, char **argv) {
-  char *s;
   char cmd[200];                        /* really big area for a command */
 
-  /* Save our program  name - for error events */
-  if ((s=strrchr(argv[0], '/')))        /* strip path */
-    s++;
-  else                          /* no slash */
-    s = argv[0];
-  if(argc==7)                         /* if override name */
-    s = argv[6];                      /* use arg as name */
-  MyNameLen=strlen(s)+1;                /* account for '*' */
-  MyName = safemalloc(MyNameLen+1);     /* account for \0 */
-  *MyName='*';
-  strcpy(MyName+1, s);          /* append name */
-
-  myfprintf((stderr,"%s: Starting, argv[0] is %s, len %d\n",MyName+1,
-	     argv[0],MyNameLen));
-
-  if ((argc != 6)&&(argc != 7)) {       /* Now MyName is defined */
-    fprintf(stderr,"%s Version "VERSION" should only be executed by fvwm!\n",
-	    MyName+1);
+  /* The new arg parsing function replaces the "manual" parsing */
+  module = ParseModuleArgs(argc,argv,1);
+  if (module==NULL)
+  {
+    fprintf(stderr,"FvwmAnimate Version "VERSION" should only be executed by fvwm!\n");
     exit(1);
   }
 
@@ -812,12 +797,12 @@ int main(int argc, char **argv) {
 #endif
 #endif
 
-  Channel[0] = atoi(argv[1]);
-  Channel[1] = atoi(argv[2]);
+  Channel[0] = module->to_fvwm;
+  Channel[1] = module->from_fvwm;
 
   dpy = XOpenDisplay("");
   if (dpy==NULL) {
-    fprintf(stderr,"%s: could not open display\n",MyName+1);
+    fprintf(stderr,"%s: can not open display\n",module->name);
     exit(1);
   }
   /* FvwmAnimate must use the root visuals so do not call
@@ -827,7 +812,7 @@ int main(int argc, char **argv) {
   Scr.root = DefaultRootWindow(dpy);
   Scr.screen = DefaultScreen(dpy);
 
-  sprintf(cmd,"read .%s Quiet",MyName+1); /* read quiet modules config */
+  sprintf(cmd,"read .%s Quiet",module->name); /* read quiet modules config */
   SendText(Channel,cmd,0);
   ParseOptions();                       /* get cmds fvwm has parsed */
 
@@ -1119,7 +1104,7 @@ static void ParseOptions(void) {
   Scr.CurrentDesk = 0;
 
   myfprintf((stderr,"Reading options\n"));
-  InitGetConfigLine(Channel,MyName);
+  InitGetConfigLine(Channel,CatString3("*",module->name,0));
   while (GetConfigLine(Channel,&buf), buf != NULL) {
     ParseConfigLine(buf);
   } /* end config lines */
@@ -1140,9 +1125,9 @@ void ParseConfigLine(char *buf) {
     PictureSetImagePath(&buf[9]);
   }
   /* Search for MyName (normally *FvwmAnimate) */
-  else if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
+  else if (strncasecmp(buf, CatString3("*",module->name,0), module->namelen+1) == 0) {/* If its for me */
     myfprintf((stderr,"Found line for me: %s\n", buf));
-    p = buf+MyNameLen;              /* starting point */
+    p = buf+module->namelen+1;              /* starting point */
     q = NULL;
     if ((e = FindToken(p,table,char *))) { /* config option ? */
       if ((strcasecmp(*e,"Stop") != 0)
@@ -1152,7 +1137,7 @@ void ParseConfigLine(char *buf) {
 	p = GetNextSimpleOption( p, &q );
 	if (!q) {                       /* If arg not found */
 	  fprintf(stderr,"%s: %s%s needs a parameter\n",
-		  MyName+1, MyName+1,*e);
+		  module->name, module->name,*e);
 	  return;
 	}
       }
@@ -1227,7 +1212,7 @@ void ParseConfigLine(char *buf) {
 	  } /* end match */
 	} /* end all effects */
 	if (i > NUM_EFFECTS) {          /* If not found */
-	  fprintf(stderr, "%s: Unknown Effect '%s'\n", MyName+1, q);
+	  fprintf(stderr, "%s: Unknown Effect '%s'\n", module->name, q);
 	}
 	/* Logically, you would only reset these when you got a command
 	   of None, or Random, but it doesn't really matter. */
@@ -1251,11 +1236,11 @@ void ParseConfigLine(char *buf) {
 	CreateDrawGC();                 /* update GC */
 	break;
       default:
-	fprintf(stderr,"%s: unknown action %s\n",MyName+1,*e);
+	fprintf(stderr,"%s: unknown action %s\n",module->name,*e);
 	break;
       }
     } else {                        /* Match Myname, but a space */
-      fprintf(stderr,"%s: unknown command: %s\n",MyName+1,buf);
+      fprintf(stderr,"%s: unknown command: %s\n",module->name,buf);
     }
     if(q) {                             /* if parsed an arg */
       free(q);                          /* free its memory */
@@ -1286,7 +1271,7 @@ static void CreateDrawGC(void) {
 			dpy, RootWindow(dpy,Scr.screen), 0, Animate.pixmap, fpa);
 		if (!picture)
 			fprintf(stderr, "%s: Could not load pixmap '%s'\n",
-				MyName + 1, Animate.pixmap);
+				module->name, Animate.pixmap);
 		else {
 			pixmap = XCreatePixmap(
 				dpy, RootWindow(dpy, Scr.screen), picture->width,
@@ -1314,13 +1299,13 @@ static void CreateDrawGC(void) {
 			{
 				fprintf(stderr,
 					"%s: could not allocate color '%s'\n",
-					MyName+1,Animate.color);
+					module->name,Animate.color);
 			}
 		}
 		else
 		{
 			fprintf(stderr,"%s: could not parse color '%s'\n",
-				MyName+1,Animate.color);
+				module->name,Animate.color);
 		}
 	}
 	gcv.line_width = Animate.width;
@@ -1448,29 +1433,29 @@ static void SaveConfig(void) {
      read.c, right now, this logic only works well if fvwm is started
      from the users home directory.
   */
-  sprintf(filename,"%s/.%s",getenv("FVWM_USERDIR"),MyName+1);
+  sprintf(filename,"%s/.%s",getenv("FVWM_USERDIR"),module->name);
   config_file = fopen(filename,"w");
   if (config_file == NULL) {
     sprintf(msg,
 	    "%s: Open config file <%s> for write failed. \
 Save not done! Error\n",
-	    MyName+1, filename);
+	    module->name, filename);
     perror(msg);
     return;
   }
-  fprintf(config_file,"# This file created by %s\n\n",MyName+1);
+  fprintf(config_file,"# This file was created by %s\n\n",module->name);
   for (i=0; i < NUM_EFFECTS; i++) {
     if (effects[i].function == Animate.resize) {
-      fprintf(config_file,"*%s: Effect %s\n",MyName+1,effects[i].name);
+      fprintf(config_file,"*%s: Effect %s\n",module->name,effects[i].name);
       break;
     } /* found match */
   } /* all possible effects */
-  fprintf(config_file,"*%s: Iterations %d\n",MyName+1,Animate.iterations);
-  fprintf(config_file,"*%s: Width %d\n",MyName+1,Animate.width);
-  fprintf(config_file,"*%s: Twist %f\n",MyName+1,Animate.twist);
-  fprintf(config_file,"*%s: Delay %d\n",MyName+1,Animate.delay);
+  fprintf(config_file,"*%s: Iterations %d\n",module->name,Animate.iterations);
+  fprintf(config_file,"*%s: Width %d\n",module->name,Animate.width);
+  fprintf(config_file,"*%s: Twist %f\n",module->name,Animate.twist);
+  fprintf(config_file,"*%s: Delay %d\n",module->name,Animate.delay);
   if (Animate.color) {
-    fprintf(config_file,"*%s: Color %s\n",MyName+1,Animate.color);
+    fprintf(config_file,"*%s: Color %s\n",module->name,Animate.color);
   }
   /* Note, add "time" if that ever works. dje. 10/14/98 */
   fclose(config_file);
@@ -1482,7 +1467,7 @@ Save not done! Error\n",
 static void StopCmd(void) {
   char cmd[200];
   myfprintf((stderr,"%s: Defining startup menu in preparation for stop\n",
-	     MyName+1));
+	     module->name));
   CMD1X("DestroyMenu Menu%s");
   CMD11("AddToMenu Menu%s \"%s\" Title");
   CMD11("AddToMenu Menu%s \"&0. Start FvwmAnimate\" Module %s");
@@ -1491,7 +1476,7 @@ static void StopCmd(void) {
 static void DefineForm(void) {
   unsigned i;
   char cmd[200];
-  myfprintf((stderr,"Defining form Form%s\n", MyName+1));
+  myfprintf((stderr,"Defining form Form%s\n", module->name));
   CMD1X("DestroyModuleConfig Form%s*");
   CMD1X("*Form%sWarpPointer");
   CMD1X("*Form%sLine         center");
@@ -1509,7 +1494,7 @@ static void DefineForm(void) {
   } /* end all buttons */
   /* Macro for a command with one var */
 #define CMD1V(TEXT,VAR) \
-  sprintf(cmd,TEXT,MyName+1,VAR);\
+  sprintf(cmd,TEXT,module->name,VAR);\
   SendText(Channel,cmd,0);
 
   /* There is a cleaner way (using the array) for this...dje */

@@ -1,3 +1,15 @@
+2006-02-09  Renato Caldas  <seventhguardian@gmail.com>
+
+	* FvwmAuto/FvwmAuto.c:
+	* FvwmConsole/FvwmConsole.c:
+	* FvwmConsole/FvwmConsole.h:
+	* FvwmAnimate/FvwmAnimate.c:
+	Changed to use ParseModuleArgs instead of the "manual" parsing methods.
+	Changed to use ModuleArgs struct for module name-storing.
+
+	* FvwmConsole/FvwmConsole.c:
+	Removed some redundant name-storing vars.
+
 2006-02-04  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/FvwmTabs.in:

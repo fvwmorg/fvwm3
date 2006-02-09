@@ -29,7 +29,8 @@
 
 #include "FvwmConsole.h"
 
-char *MyName;
+/* using ParseModuleArgs now */
+static ModuleArgs* module;
 
 int Fd[2];  /* pipe to fvwm */
 int  Ns = -1; /* socket handles */
@@ -70,7 +71,6 @@ RETSIGTYPE ReapChildren(int sig)
 
 int main(int argc, char *argv[])
 {
-  char *tmp, *s;
   char client[120];
   char **eargv;
   int i,j,k;
@@ -83,28 +83,20 @@ int main(int argc, char *argv[])
      * (of client) in an initializer (of xterm_a). */
   xterm_post[1] = client;
 
-  /* Save the program name - its used for error messages and option parsing */
-  tmp = argv[0];
+  module = ParseModuleArgs(argc, argv, 0); /* we don't use an alias */
+  if (module == NULL)
+  {
+    fprintf(stderr,"FvwmConsole version "VERSION" should only be executed by fvwm!\n");
+    exit(1);
+  }
 
-  s=strrchr(argv[0], '/');
-  if (s != NULL)
-    tmp = s + 1;
+  strcpy(Name, module->name);
 
-  strcpy(Name, tmp);
-
-  MyName = safemalloc(strlen(tmp)+2);
-  strcpy(MyName,"*");
-  strcat(MyName, tmp);
 
   /* construct client's name */
   strcpy(client, argv[0]);
   strcat(client, "C");
 
-  if (argc < FARGS)    {
-	fprintf(stderr,"%s version %s should only be executed by fvwm!\n",
-		MyName, VERSION);
-	exit(1);
-  }
 
   if ((eargv =(char **)safemalloc((argc+12)*sizeof(char *))) == NULL) {
 	ErrMsg("allocation");
@@ -117,17 +109,17 @@ int main(int argc, char *argv[])
 	eargv[j] = xterm_pre[k];
   }
 
-  for (i=FARGS ; i<argc; i++) {
-	if (!strcmp (argv[i], "-e")) {
+  for (i = 0; i< module->user_argc; i++) {
+	if (!strcmp (module->user_argv[i], "-e")) {
 	  i++;
 	  break;
-	} else if (!strcmp (argv[i], "-terminal")) {
+	} else if (!strcmp (module->user_argv[i], "-terminal")) {
 	  i++;
-	  if (i < argc)
+	  if (i < module->user_argc)
 	    /* use alternative terminal emulator */
-	    eargv[0] = argv[i];
+	    eargv[0] = module->user_argv[i];
 	} else {
-	  eargv[j++] = argv[i];
+	  eargv[j++] = module->user_argv[i];
 	}
   }
 
@@ -136,8 +128,8 @@ int main(int argc, char *argv[])
   }
 
   /* copy rest of -e args */
-  for( ; i<argc; i++, j++) {
-	  eargv[j-1] = argv[i];
+  for( ; i<module->user_argc; i++, j++) {
+	  eargv[j-1] = module->user_argv[i];
   }
 
   eargv[j] = NULL;
@@ -148,8 +140,8 @@ int main(int argc, char *argv[])
   signal (SIGINT, SigHandler);
   signal (SIGQUIT, SigHandler);
 
-  Fd[0] = atoi(argv[1]);
-  Fd[1] = atoi(argv[2]);
+  Fd[0] = module->to_fvwm;
+  Fd[1] = module->from_fvwm;
 
   /* launch xterm with client */
   clpid = fork();
@@ -252,7 +244,8 @@ void server (void)
 	GetConfigLine(Fd,&tline);
   }
   send(Ns, C_END, strlen(C_END), 0);
-  strcpy(ver, MyName);
+  strcpy(ver, "*");
+  strcpy(ver, module->name);
   strcat(ver, " version ");
   strcat(ver, VERSION VERSIONINFO);
   strcat(ver, "\n");

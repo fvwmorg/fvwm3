@@ -34,9 +34,6 @@
 /* #define M_PASS M_ERROR */
 #define M_PASS M_ERROR
 
-/* number of default arguments when invoked from fvwm */
-#define FARGS 6
-
 #define XTERM "xterm"
 
 /* message to client */

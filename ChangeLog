@@ -1,3 +1,9 @@
+2006-02-09  Renato Caldas  <seventhguardian@gmail.com>
+
+	* libs/Module.h:
+	* libs/Module.c (ParseModuleArgs):
+	added variable "namelen" to ModuleArgs struct
+
 2006-02-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Module.h:

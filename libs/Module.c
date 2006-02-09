@@ -333,6 +333,8 @@ ModuleArgs *ParseModuleArgs(int argc, char *argv[], int use_arg6_as_alias)
 		ma.user_argv = &(argv[6]);
 	}
 
+	ma.namelen=strlen(ma.name);
+
 	if (ma.user_argc == 0)
 	{
 		ma.user_argv = NULL;
