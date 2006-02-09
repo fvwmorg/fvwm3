@@ -24,6 +24,7 @@
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "libs/modifiers.h"
+#include "libs/Module.h"
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif
@@ -47,7 +48,7 @@ extern int nbobj;
 extern char **TabVVar;
 extern int TabIdObj[1001];
 extern char *ScriptName;
-extern char *ModuleName;
+extern ModuleArgs *module;
 extern TypeBuffSend BuffSend;
 extern Atom propriete;
 extern char *LastString;
@@ -606,14 +607,14 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   }
 
   /* Construction de la commande */
-  execstr = (char*)safecalloc(strlen(ModuleName) + strlen(arg) +
+  execstr = (char*)safecalloc(strlen(module->name) + strlen(arg) +
     strlen(x11base->TabScriptId[x11base->NbChild + 2]) + 5,sizeof(char));
   scriptname = (char*)safecalloc(sizeof(char),100);
   sscanf(arg,"%s",scriptname);
   scriptarg = (char*)safecalloc(sizeof(char),strlen(arg));
   scriptarg = (char*)strncpy(scriptarg, &arg[strlen(scriptname)],
 			     strlen(arg) - strlen(scriptname));
-  sprintf(execstr,"%s %s %s %s",ModuleName,scriptname,
+  sprintf(execstr,"%s %s %s %s",module->name,scriptname,
 	  x11base->TabScriptId[x11base->NbChild + 2],scriptarg);
   free(scriptname);
   free(scriptarg);

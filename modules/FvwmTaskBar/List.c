@@ -37,7 +37,7 @@
 #include "List.h"
 #include "Mallocs.h"
 
-extern char *Module;
+extern ModuleArgs *module;
 
 /*
   InitList - Initialize the list
@@ -250,7 +250,7 @@ void FreeList(List *list)
 void PrintList(List *list)
 {
   Item *temp;
-  fprintf(stderr,"%s List of Items:\n", Module);
+  fprintf(stderr,"%s List of Items:\n", module->name);
   fprintf(stderr,"   %10s %-15s %-15s %-15s %-15s Flgs\n","ID","Name","I-Name",
 		 "R-Name","R-Class");
   fprintf(stderr,"   ---------- --------------- --------------- --------------- --------------- ----\n");

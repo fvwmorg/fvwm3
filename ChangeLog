@@ -3,7 +3,7 @@
 	* fvwm/menus.c (size_menu_horizontally):
 	fix for drawing menus with sidepic on the right
 
-	* libs/Flocale.c (FlocaleFontStructDrawString)
+	* libs/Flocale.c (FlocaleFontStructDrawString):
 	(FlocaleDrawString):
 	set the foreground colour before drawing a string
 

@@ -32,8 +32,7 @@
 #include "libs/fvwmsignal.h"
 
 /* Globals */
-static char *name;
-static int namelen;
+static ModuleArgs* module;
 static int fd[2]; /* communication pipes */
 
 /* forward declarations */
@@ -47,28 +46,24 @@ static void parse_colorset(char *line);
 
 int main(int argc, char **argv)
 {
-	name = GetFileNameFromPath(argv[0]);
-	namelen = strlen(name);
+	module = ParseModuleArgs(argc,argv,0); /* no alias allowed */
+	if (module==NULL)
+	{
+		fprintf(stderr,
+			"FvwmTheme "VERSION" should only be executed by fvwm!\n"
+			);
+		exit(1);
+	}
 
 	fprintf(
 		stderr,
 		"%s is obsolete, see the Colorset section of the fvwm(1) man"
-		" page\n", name);
+		" page\n", module->name);
 	set_signals();
 
-	/* try to make sure it is fvwm that spawned this module */
-	if (argc != 6)
-	{
-		fprintf(
-			stderr,
-			"%s "VERSION" should only be executed by fvwm!\n",
-			name);
-		exit(1);
-	}
-
 	/* note the communication pipes */
-	fd[0] = atoi(argv[1]);
-	fd[1] = atoi(argv[2]);
+	fd[0] = module->to_fvwm;
+	fd[1] = module->from_fvwm;
 
 	/* get the initial configuration options */
 	parse_config();
@@ -98,7 +93,7 @@ static void main_loop(void)
 		/* wait for an instruction from fvwm or a timeout */
 		if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, NULL) < 0)
 		{
-			fprintf(stderr, "%s: select error!\n", name);
+			fprintf(stderr, "%s: select error!\n", module->name);
 			exit(-1);
 		}
 
@@ -178,14 +173,14 @@ static void parse_config(void)
 	char *line;
 
 	/* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */
-	config_options[2] = safemalloc(namelen + 10);
-	sprintf(config_options[2], "*%sColorset", name);
-	config_options[3] = safemalloc(namelen + 17);
-	sprintf(config_options[3], "*%sReadWriteColors", name);
+	config_options[2] = safemalloc(module->namelen + 10);
+	sprintf(config_options[2], "*%sColorset", module->name);
+	config_options[3] = safemalloc(module->namelen + 17);
+	sprintf(config_options[3], "*%sReadWriteColors", module->name);
 
 	/* set a filter on the config lines sent */
-	line = safemalloc(namelen + 2);
-	sprintf(line, "*%s", name);
+	line = safemalloc(module->namelen + 2);
+	sprintf(line, "*%s", module->name);
 	InitGetConfigLine(fd, line);
 	free(line);
 
@@ -243,7 +238,7 @@ static void set_signals(void) {
 
 static RETSIGTYPE signal_handler(int signal)
 {
-	fprintf(stderr, "%s quiting on signal %d\n", name, signal);
+	fprintf(stderr, "%s quiting on signal %d\n", module->name, signal);
 	exit(signal);
 	SIGNAL_RETURN;
 }

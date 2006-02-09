@@ -24,6 +24,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Flocale.h"
 #include "libs/Picture.h"
+#include "libs/Module.h"
 #include "ButtonArray.h"
 #include "Mallocs.h"
 #include "Start.h"
@@ -31,8 +32,7 @@
 extern Display *dpy;
 extern Window Root, win;
 extern FlocaleFont *FButtonFont, *FSelButtonFont;
-extern char *Module;
-extern int Clength;
+extern ModuleArgs *module;
 extern char *ImagePath;
 
 Button *StartButton;
@@ -79,7 +79,7 @@ Bool StartButtonParseConfig(char *tline)
 	int mouseButton;
 	char **tmpStrPtr;
 
-	option = tline + Clength;
+	option = tline + module->namelen;
 	i = GetTokenIndex(option, startopts, -1, &rest);
 	while (*rest && *rest != '\n' && isspace(*rest))
 	{
@@ -361,13 +361,15 @@ char *ParseButtonOptions(char *pos, int *mouseButton)
       pos = rest;
       if (*mouseButton < 1 || *mouseButton > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
       {
-        fprintf(stderr,"%s: Invalid mouse button %d", Module, *mouseButton);
+        fprintf(stderr,"%s: Invalid mouse button %d", module->name,
+                *mouseButton);
         *mouseButton = 0;
       }
       break;
 
     default:
-      fprintf(stderr,"%s: Invalid taskbar button option '%s'", Module, token);
+      fprintf(stderr,"%s: Invalid taskbar button option '%s'", module->name,
+              token);
     }
     while (*pos && *pos != ',' && *pos != ')')
       pos++;

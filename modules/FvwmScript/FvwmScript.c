@@ -62,7 +62,7 @@ extern int __bounds_debug_no_checking;
 char *ScriptName;       /* Nom du fichier contenat le script decrivant le GUI */
 char *ScriptBaseName;
 char *ScriptPath = "";
-char *ModuleName;
+ModuleArgs *module;
 int fd[2];                      /* pipe pair */
 int fd_err;
 int x_fd;                       /* fd for X */
@@ -188,7 +188,7 @@ void ReadConfig (char *ScriptName)
   if (yyin == NULL)
   {
     fprintf(stderr,"[%s][ReadConfig]: <<ERROR>> Can't open the script %s\n",
-	    ModuleName,s);
+	    module->name,s);
     exit(1);
   }
   /* On ne redefini pas yyout qui est la sortie standard */
@@ -500,7 +500,7 @@ void OpenWindow (void)
   IndicWM->flags = InputHint|StateHint;
 
   classHints.res_name = safestrdup(ScriptBaseName);
-  classHints.res_class = safestrdup(ModuleName);
+  classHints.res_class = safestrdup(module->name);
 
   XSetWMProperties(dpy, x11base->win, &Name,
 		   &Name, NULL, 0, IndicNorm, IndicWM, &classHints);
@@ -1314,41 +1314,40 @@ int main (int argc, char **argv)
 
   FlocaleInit(LC_CTYPE, "", "", "FvwmScript");
 
-  ModuleName = GetFileNameFromPath(argv[0]);
-
-  if (argc < 6)
+  module = ParseModuleArgs(argc,argv,0); /* no alias */
+  if (module == NULL)
   {
-    fprintf(stderr,"%s must be started by Fvwm.\n", ModuleName);
+    fprintf(stderr,"FvwmScript must be started by Fvwm.\n");
     exit(1);
   }
 
-  if (argc == 6)
+  if (module->user_argc == 0)
   {
-    fprintf(stderr,"%s requires the script's name or path.\n", ModuleName);
+    fprintf(stderr,"FvwmScript requires the script's name or path.\n");
     exit(1);
   }
 
   /* On determine si le script a un pere */
-  if (argc >= 8)
-    IsFather = (argv[7][0] != (char)161);
+  if (module->user_argc >= 2)
+    IsFather = (module->user_argv[1][0] != (char)161);
   else
     IsFather = 1;
 
-  ScriptName = argv[6];
+  ScriptName = module->user_argv[0];
   ScriptBaseName = GetFileNameFromPath(ScriptName);
   ref = strtol(argv[4], NULL, 16);
   if (ref == 0) ref = None;
-  fd[0] = atoi(argv[1]);
-  fd[1] = atoi(argv[2]);
+  fd[0] = module->to_fvwm;
+  fd[1] = module->from_fvwm;
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST| M_STRING |
 		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
   SetMessageMask(fd, MX_PROPERTY_CHANGE);
   /* Enregistrement des arguments du script */
   x11base = (X11base*) safecalloc(1,sizeof(X11base));
-  x11base->TabArg[0] = ModuleName;
-  for (i=8-IsFather; i<argc; i++)
-    x11base->TabArg[i-7+IsFather] = argv[i];
+  x11base->TabArg[0] = module->name;
+  for (i=2-IsFather; i< module->user_argc; i++)
+    x11base->TabArg[i-1+IsFather] = module->user_argv[i];
   /* Couleurs et fontes par defaut */
   x11base->font = NULL;
   x11base->forecolor = safestrdup("black");

@@ -48,12 +48,11 @@ extern Display *dpy;
 extern Window Root, win;
 extern int Fvwm_fd[2];
 extern int screen;
-extern char *Module;
+extern ModuleArgs *module;
 extern int win_width, win_height, win_y, win_border, RowHeight, Midline;
 extern rectangle screen_g;
 extern Pixel back, fore;
 extern int colorset;
-extern int Clength;
 extern GC blackgc, hilite, shadow, checkered;
 extern FlocaleWinString *FwinString;
 
@@ -209,7 +208,7 @@ Bool GoodiesParseConfig(char *tline)
   char *option;
   int i;
 
-  option = tline + Clength;
+  option = tline + module->namelen;
   i = GetTokenIndex(option, goodyopts, -1, &rest);
   while (*rest && *rest != '\n' && isspace(*rest))
     rest++;
@@ -295,9 +294,10 @@ Bool GoodiesParseConfig(char *tline)
 void LoadGoodiesFont(void)
 {
 	if ((FStatusFont =
-	     FlocaleLoadFont(dpy, statusfont_string, Module)) == NULL)
+	     FlocaleLoadFont(dpy, statusfont_string, module->name)) == NULL)
 	{
-		fprintf(stderr, "%s: Couldn't load font. Exiting!\n",Module);
+		fprintf(stderr, "%s: Couldn't load font. Exiting!\n",
+                       module->name);
 		exit(1);
 	}
 	goodies_fontheight = FStatusFont->height;

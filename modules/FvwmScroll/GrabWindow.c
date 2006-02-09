@@ -159,7 +159,7 @@ void CreateWindow(int x,int y, int w, int h)
   FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
   XSetWMNormalHints(dpy,main_win,&mysizehints);
   XSelectInput(dpy,main_win,MW_EVENTS);
-  change_window_name(MyName);
+  change_window_name(module->name);
 
   holder_win = XCreateWindow(dpy, main_win, PAD_WIDTH3, PAD_WIDTH3,
 			     mysizehints.width - BAR_WIDTH - PAD_WIDTH3,
@@ -842,7 +842,7 @@ void change_window_name(char *str)
 
   if (XStringListToTextProperty(&str,1,&name) == 0)
   {
-    fprintf(stderr,"%s: cannot allocate window name\n",MyName);
+    fprintf(stderr,"%s: cannot allocate window name\n",module->name);
     return;
   }
   XSetWMName(dpy,main_win,&name);
@@ -861,7 +861,7 @@ void change_icon_name(char *str)
     return;
   if (XStringListToTextProperty(&str,1,&name) == 0)
   {
-    fprintf(stderr,"%s: cannot allocate window name\n",MyName);
+    fprintf(stderr,"%s: cannot allocate window name\n",module->name);
     return;
   }
   XSetWMIconName(dpy,main_win,&name);
@@ -887,7 +887,7 @@ void GrabWindow(Window target)
 		    (unsigned int *)&border_width,
 		    (unsigned int *)&depth))
   {
-    fprintf(stderr,"%s: cannot get window geometry\n", MyName);
+    fprintf(stderr,"%s: cannot get window geometry\n", module->name);
     exit(0);
   }
   XSync(dpy,0);

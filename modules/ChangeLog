@@ -1,3 +1,47 @@
+2006-02-10  Renato Caldas  <seventhguardian@gmail.com>
+
+	* FvwmTheme/FvwmTheme.c:
+	* FvwmScript/FvwmScript.c:
+	* FvwmScript/Instructions.c:
+	* FvwmSave/FvwmSave.c:
+	* FvwmSaveDesk/FvwmSaveDesk.c:
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmScroll/FvwmScroll.c:
+	* FvwmScroll/FvwmScroll.h:
+	* FvwmScroll/GrabWindow.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmTaskBar/List.c:
+	* FvwmTaskBar/Start.c:
+	Replaced global vars for name and name length for a ModuleArgs
+	struct pointed by "module".
+	main() changed to copy the global fd's for comunication with fvwm
+	from the struct.
+	main() changed to use ParseModuleArgs instead of the "manual"
+	parsing methods.
+	main() changed to use the struct's user_argc and user_argv for
+	parsing command line options.
+	Small misc changes to use module->name for error messages.
+
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfig):
+	(ParseConfigLine):
+	* FvwmTaskBar/Goodies.c (GoodiesParseConfig):
+	Changed functions to use CatString3 and module->name.
+
+	* FvwmTaskBar/Start.c (StartButtonParseConfig):
+	Changed function to use module->namelen.
+
+	* FvwmScroll/FvwmScroll.c:
+	Replaced global var win_app for module->window.
+
+	* FvwmRearrange/FvwmRearrange.c:
+	Removed unused variable "len".
+
+	* FvwmTaskBar/Start.c:
+	* FvwmScript/Instructions.c:
+	Added #include "libs/Module.h" in order to be able
+	to use the ModuleArgs struct
+
 2006-02-09  Renato Caldas  <seventhguardian@gmail.com>
 
 	* FvwmAuto/FvwmAuto.c:

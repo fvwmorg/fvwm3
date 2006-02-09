@@ -1,5 +1,5 @@
 /* -*-c-*- */
-extern char* MyName;
+extern ModuleArgs *module;
 extern Display* dpy;
 extern Window Root;
 extern int screen;

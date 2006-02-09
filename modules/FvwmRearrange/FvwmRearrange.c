@@ -59,7 +59,7 @@ typedef struct window_item {
 Display *dpy;
 int dx, dy;
 int dwidth, dheight;
-char *argv0;
+static ModuleArgs *module;
 int fd[2];
 fd_set_size_t fd_width;
 window_list wins = NULL, wins_tail = NULL;
@@ -205,7 +205,7 @@ int get_window(void)
     default:
       fprintf(console,
 	"%s: internal inconsistency: unknown message 0x%08x\n",
-	argv0, (int)packet->type);
+	module->name, (int)packet->type);
       break;
     }
   }
@@ -483,7 +483,7 @@ void parse_args(char *s, int argc, char *argv[], int argi)
       if (++nsargc > 4) {
 	fprintf(console,
 		"%s: %s: ignoring unknown arg %s\n",
-		argv0, s, argv[argi]);
+		module->name, s, argv[argi]);
 	continue;
       }
       if (nsargc == 1) {
@@ -512,31 +512,25 @@ void parse_args(char *s, int argc, char *argv[], int argi)
 int main(int argc, char *argv[])
 {
   char match[128];
-  int len;
   char *config_line;
   int scr;
 
   console = fopen("/dev/console","w");
   if (!console) console = stderr;
 
-  if (!(argv0 = strrchr(argv[0],'/')))
-    argv0 = argv[0];
-  else
-    ++argv0;
-
-  if (argc < 6) {
-    fprintf(stderr,
-	    "%s: module should be executed by fvwm only\n",
-	    argv0);
+  module = ParseModuleArgs(argc,argv,0);
+  if (module == NULL)
+  {
+    fprintf(stderr,"FvwmRearrange: module should be executed by fvwm only\n");
     exit(-1);
   }
 
-  fd[0] = atoi(argv[1]);
-  fd[1] = atoi(argv[2]);
+  fd[0] = module->to_fvwm;
+  fd[1] = module->from_fvwm;
 
   if (!(dpy = XOpenDisplay(NULL))) {
     fprintf(console, "%s: couldn't open display %s\n",
-	    argv0,
+	    module->name,
 	    XDisplayName(NULL));
     exit(-1);
   }
@@ -547,8 +541,7 @@ int main(int argc, char *argv[])
   fd_width = GetFdWidth();
 
   strcpy(match, "*");
-  strcat(match, argv0);
-  len = strlen(match);
+  strcat(match, module->name);
   InitGetConfigLine(fd,match);
   GetConfigLine(fd, &config_line);
   while (config_line != NULL)
@@ -563,8 +556,8 @@ int main(int argc, char *argv[])
   }
   FScreenGetScrRect(NULL, FSCREEN_CURRENT, &dx, &dy, &dwidth, &dheight);
 
-  if (strcmp(argv0, "FvwmCascade") &&
-      (!strcmp(argv0, "FvwmTile") ||
+  if (strcmp(module->name, "FvwmCascade") &&
+      (!strcmp(module->name, "FvwmTile") ||
        (argc >= 7 && !strcmp(argv[6], "-tile")))) {
     FvwmTile = 1;
     FvwmCascade = 0;
@@ -574,7 +567,7 @@ int main(int argc, char *argv[])
     FvwmTile = 0;
     resize = 0;
   }
-  parse_args("module args", argc, argv, 6);
+  parse_args("module args", module->user_argc, module->user_argv, 0);
 
   SetMessageMask(fd,
 		 M_CONFIGURE_WINDOW |

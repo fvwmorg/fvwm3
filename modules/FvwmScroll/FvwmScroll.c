@@ -40,7 +40,7 @@
 #include "libs/FRenderInit.h"
 #include "FvwmScroll.h"
 
-char *MyName;
+ModuleArgs *module;
 fd_set_size_t fd_width;
 int fd[2];
 
@@ -56,8 +56,6 @@ int colorset = 0;
 
 char *BackColor = "black";
 
-Window app_win;
-
 static int ErrorHandler(Display*, XErrorEvent*);
 
 /*
@@ -68,75 +66,60 @@ static int ErrorHandler(Display*, XErrorEvent*);
  */
 int main(int argc, char **argv)
 {
-  char *temp, *s;
-  int Clength;
   char *tline;
 
-  /* Save the program name for error messages and config parsing */
-  temp = argv[0];
-  s=strrchr(argv[0], '/');
-  if (s != NULL)
-    temp = s + 1;
-
-  MyName = safemalloc(strlen(temp)+2);
-  strcpy(MyName,"*");
-  strcat(MyName, temp);
-  Clength = strlen(MyName);
-
-  if(argc < 6)
+  module = ParseModuleArgs(argc,argv,0); /* no alias allowed */
+  if (module==NULL)
   {
-    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
+    fprintf(stderr,"FvwmScroll Version %s should only be executed by fvwm!\n",
 	    VERSION);
     exit(1);
   }
 
-  if(argc >= 7)
+  if(module->user_argc >= 1)
   {
     extern int Reduction_H;
     extern int Percent_H;
     int len;
-    len = strlen(argv[6])-1;
-    if (len >= 0 && argv[6][len] == 'p')
+    len = strlen(module->user_argv[0])-1;
+    if (len >= 0 && module->user_argv[0][len] == 'p')
     {
-      argv[6][len] = '\0';
-      Percent_H = atoi(argv[6]);
+      module->user_argv[0][len] = '\0';
+      Percent_H = atoi(module->user_argv[0]);
     }
     else
     {
-      Reduction_H = atoi(argv[6]);
+      Reduction_H = atoi(module->user_argv[0]);
     }
   }
 
-  if(argc >= 8)
+  if(module->user_argc >= 2)
   {
     extern int Reduction_V;
     extern int Percent_V;
     int len;
-    len = strlen(argv[7])-1;
-    if (len >= 0 && argv[7][len] == 'p')
+    len = strlen(module->user_argv[1])-1;
+    if (len >= 0 && module->user_argv[1][len] == 'p')
     {
-      argv[7][len] = '\0';
-      Percent_V = atoi(argv[7]);
+      module->user_argv[1][len] = '\0';
+      Percent_V = atoi(module->user_argv[1]);
     }
     else
     {
-      Reduction_V = atoi(argv[7]);
+      Reduction_V = atoi(module->user_argv[1]);
     }
   }
 
   /* Dead pipe == dead fvwm */
   signal (SIGPIPE, DeadPipe);
 
-  fd[0] = atoi(argv[1]);
-  fd[1] = atoi(argv[2]);
-
-  /* An application window may have already been selected - look for it */
-  sscanf(argv[4],"%x",(unsigned int *)&app_win);
+  fd[0] = module->to_fvwm;
+  fd[1] = module->from_fvwm;
 
   /* Open the Display */
   if (!(dpy = XOpenDisplay(NULL)))
   {
-    fprintf(stderr,"%s: can't open display\n", MyName);
+    fprintf(stderr,"%s: can't open display\n", module->name);
     exit (1);
   }
   x_fd = XConnectionNumber(dpy);
@@ -156,22 +139,23 @@ int main(int argc, char **argv)
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */
-  InitGetConfigLine(fd,MyName);
+  InitGetConfigLine(fd,CatString3("*",module->name,0));
   GetConfigLine(fd,&tline);
 
   while(tline != (char *)0)
   {
     if(strlen(tline)>1)
     {
-      if(strncasecmp(tline,CatString3(MyName, "Back",""),
-		     Clength+4)==0)
+      if(strncasecmp(tline,CatString3("*",module->name, "Back"),
+		     module->namelen+4)==0)
       {
-	CopyString(&BackColor,&tline[Clength+4]);
+	CopyString(&BackColor,&tline[module->namelen+4]);
 	colorset = -1;
       }
-      else if(strncasecmp(tline,CatString3(MyName,"Colorset",""),Clength+8)==0)
+      else if(strncasecmp(tline,CatString3("*",module->name,"Colorset"),
+                          module->namelen+8)==0)
       {
-	sscanf(&tline[Clength+8], "%d", &colorset);
+	sscanf(&tline[module->namelen+8], "%d", &colorset);
 	AllocColorset(colorset);
       }
       else if(strncasecmp(tline, "Colorset", 8) == 0)
@@ -184,20 +168,20 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(ErrorHandler);
 
-  if(app_win == 0)
-    GetTargetWindow(&app_win);
+  if(module->window == 0)
+    GetTargetWindow(&module->window);
 
-  if(app_win == 0)
+  if(module->window == 0)
     return 0;
 
   fd_width = GetFdWidth();
 
-  GrabWindow(app_win);
+  GrabWindow(module->window);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
 
-  Loop(app_win);
+  Loop(module->window);
   return 0;
 }
 
@@ -210,8 +194,8 @@ RETSIGTYPE DeadPipe(int nonsense)
 {
   extern Atom wm_del_win;
 
-  XReparentWindow(dpy,app_win,Root,0,0);
-  send_clientmessage (dpy, app_win, wm_del_win, CurrentTime);
+  XReparentWindow(dpy,module->window,Root,0,0);
+  send_clientmessage (dpy, module->window, wm_del_win, CurrentTime);
   XSync(dpy,0);
   exit(0);
   SIGNAL_RETURN;
@@ -228,7 +212,7 @@ void GetTargetWindow(Window *app_win)
 {
   Window target_win;
 
-  fvwmlib_get_target_window(dpy, screen, MyName, app_win, True);
+  fvwmlib_get_target_window(dpy, screen, module->name, app_win, True);
   target_win = fvwmlib_client_window(dpy, *app_win);
   if(target_win != None)
     *app_win = target_win;
@@ -250,6 +234,6 @@ ErrorHandler(Display *dpy, XErrorEvent *event)
     return 0;
 #endif
 
-  PrintXErrorAndCoredump(dpy, event, MyName);
+  PrintXErrorAndCoredump(dpy, event, module->name);
   return 0;
 }

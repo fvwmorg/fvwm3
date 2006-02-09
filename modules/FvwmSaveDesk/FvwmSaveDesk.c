@@ -57,7 +57,7 @@
 
 #include "FvwmSaveDesk.h"
 
-char *MyName;
+static ModuleArgs *module;
 int fd[2];
 
 struct list *list_root = NULL;
@@ -78,31 +78,20 @@ long CurDesk = 1;   /* actual Desktop while being called */
  */
 int main(int argc, char **argv)
 {
-  char *temp, *s;
   char *display_name = NULL;
 
-  /* Record the program name for error messages */
-  temp = argv[0];
-
-  s=strrchr(argv[0], '/');
-  if (s != NULL)
-    temp = s + 1;
-
-  MyName = safemalloc(strlen(temp)+2);
-  strcpy(MyName,"*");
-  strcat(MyName, temp);
-
-  if((argc != 6)&&(argc != 7))
-    {
-      fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
-	      VERSION);
-      exit(1);
-    }
+  module = ParseModuleArgs(argc,argv,0); /* no alias */
+  if (module == NULL)
+  {
+    fprintf(stderr,"FvwmSaveDesk Version %s should only be executed by fvwm!\n",
+            VERSION);
+    exit(1);
+  }
 
   /* Open the X display */
   if (!(dpy = XOpenDisplay(display_name)))
     {
-      fprintf(stderr,"%s: can't open display %s", MyName,
+      fprintf(stderr,"%s: can't open display %s", module->name,
 	      XDisplayName(display_name));
       exit (1);
     }
@@ -113,8 +102,8 @@ int main(int argc, char **argv)
   /* We should exit if our fvwm pipes die */
   signal (SIGPIPE, DeadPipe);
 
-  fd[0] = atoi(argv[1]);
-  fd[1] = atoi(argv[2]);
+  fd[0] = module->to_fvwm;
+  fd[1] = module->from_fvwm;
 
   /* Create a list of all windows */
   /* Request a list of all windows,
