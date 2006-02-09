@@ -617,6 +617,9 @@ void FlocaleFontStructDrawString(
 					is_string16, dpy, d, gc, xt, yt,
 					fws->e_str, fws->str2b, len);
 			}
+		}
+		if (has_fg_pixels)
+		{
 			XSetForeground(dpy, gc, fg);
 		}
 		xt = gstp_args.orig_x;
@@ -909,7 +912,6 @@ void FlocaleRotateDrawString(
 				dpy, fws->win, my_gc, xpsh, ypsh, rotated_w,
 				rotated_h);
 		}
-		XSetForeground(dpy, my_gc, fg);
 	}
 	xpsh = gstp_args.orig_x;
 	ypsh = gstp_args.orig_y;
@@ -1827,8 +1829,8 @@ void FlocaleDrawString(
 	}
 
 	/* encode the string */
-	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars,
-			       NULL);
+	FlocaleEncodeWinString(
+		dpy, flf, fws, &do_free, &len, &comb_chars, NULL);
 	curr_str = fws->e_str;
 	for(char_len = 0, i = 0 ;
 	    i < len && curr_str[i] != 0 ;
@@ -1838,15 +1840,15 @@ void FlocaleDrawString(
 	}
 
 	/* for superimposition calculate the character positions in pixels */
-	if(comb_chars != NULL && (comb_chars[0].c.byte1 != 0 ||
-				  comb_chars[0].c.byte2 != 0))
+	if (comb_chars != NULL && (
+		   comb_chars[0].c.byte1 != 0 || comb_chars[0].c.byte2 != 0))
 	{
 		/* the second condition is actually redundant,
 		   but there for clarity,
 		   ending at 0 is what's expected in a correct
 		   string */
-		pixel_pos = (int *)safemalloc((char_len != 0 ? char_len : 1)
-					      * sizeof(int));
+		pixel_pos = (int *)safemalloc(
+			(char_len != 0 ? char_len : 1) * sizeof(int));
 
 		/* if there is 0 bytes in the encoded string, there might
 		   still be combining character to draw (at position 0) */
@@ -1855,12 +1857,13 @@ void FlocaleDrawString(
 			pixel_pos[0] = 0;
 		}
 
-		for(i = 0, curr_pixel_pos = 0 ;
-		    i < char_len ;
-		    i++, curr_str += curr_len)
+		for(
+			i = 0, curr_pixel_pos = 0 ;
+			i < char_len ;
+			i++, curr_str += curr_len)
 		{
 		        curr_len = FlocaleStringNumberOfBytes(flf, curr_str);
-			for(j = 0 ; j < curr_len ; j++)
+			for (j = 0 ; j < curr_len ; j++)
 			{
 			        buf[j] = curr_str[j];
 			}
@@ -1932,8 +1935,8 @@ void FlocaleDrawString(
 					dpy, fws->win, flf->fontset, fws->gc,
 					xt, yt, fws->e_str, len);
 			}
-			XSetForeground(dpy, fws->gc, fg);
 		}
+		XSetForeground(dpy, fws->gc, fg);
 		xt = gstp_args.orig_x;
 		yt = gstp_args.orig_y;
 		XmbDrawString(
@@ -1949,7 +1952,7 @@ void FlocaleDrawString(
 
 	/* here take care of superimposing chars */
 	i = 0;
-	if(comb_chars != NULL)
+	if (comb_chars != NULL)
 	{
 		while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
 		{
@@ -2001,8 +2004,8 @@ void FlocaleDrawString(
 							      buf2,
 							      strlen(buf2));
 					}
-					XSetForeground(dpy, fws->gc, fg);
 				}
+				XSetForeground(dpy, fws->gc, fg);
 				xt = gstp_args.orig_x;
 				yt = gstp_args.orig_y;
 			        XmbDrawString(
@@ -2052,7 +2055,7 @@ void FlocaleDrawString(
 		}
 	}
 
-	if(do_free)
+	if (do_free)
 	{
 		if (fws->e_str != NULL)
 		{

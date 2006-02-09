@@ -334,12 +334,22 @@ void menuitem_paint(
 	int i;
 	int sx1;
 	int sx2;
+	FlocaleFont* font;
 
 	if (!mi)
 	{
 		return;
 	}
 	is_item_selected = (mi == mpip->selected_item);
+
+	if (MI_IS_TITLE(mi))
+	{
+		font = ST_PTITLEFONT(ms);
+	}
+	else
+	{
+		font = ST_PSTDFONT(ms);
+	}
 
 	y_offset = MI_Y_OFFSET(mi);
 	y_height = MI_HEIGHT(mi);
@@ -349,7 +359,7 @@ void menuitem_paint(
 	}
 	else
 	{
-		text_y = y_offset + ST_PSTDFONT(ms)->ascent +
+		text_y = y_offset + font->ascent +
 			ST_TITLE_GAP_ABOVE(ms);
 	}
 	/* center text vertically if the pixmap is taller */
@@ -367,7 +377,7 @@ void menuitem_paint(
 				y = MI_MINI_ICON(mi)[i]->height;
 			}
 		}
-		y -= ST_PSTDFONT(ms)->height;
+		y -= font->height;
 		if (y > 1)
 		{
 			text_y += y / 2;
@@ -389,6 +399,11 @@ void menuitem_paint(
 		gcs = ST_MENU_ACTIVE_GCS(ms);
 		off_gcs = ST_MENU_INACTIVE_GCS(ms);
 	}
+	else if (MI_IS_TITLE(mi))
+	{
+		gcs = ST_MENU_TITLE_GCS(ms);
+		off_gcs = ST_MENU_INACTIVE_GCS(ms);
+	}
 	else
 	{
 		gcs = ST_MENU_INACTIVE_GCS(ms);
@@ -397,6 +412,10 @@ void menuitem_paint(
 	if (is_item_selected)
 	{
 		cs = (ST_HAS_ACTIVE_CSET(ms)) ? ST_CSET_ACTIVE(ms) : -1;
+	}
+	else if (MI_IS_TITLE(mi))
+	{
+		cs = (ST_HAS_TITLE_CSET(ms)) ? ST_CSET_TITLE(ms) : -1;
 	}
 	else
 	{
@@ -424,7 +443,6 @@ void menuitem_paint(
 				relief_thickness;
 			lit_x_end = lit_x_start + MDIM_HILIGHT_WIDTH(*dim) -
 				2 * relief_thickness;
-			XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
 			if (ST_DO_HILIGHT_BACK(ms))
 			{
 				XFillRectangle(
@@ -463,6 +481,21 @@ void menuitem_paint(
 			mpip, x1, y_offset + d, x2 - x1,
 			y_height + relief_thickness - d);
 		item_cleared = True;
+	}
+	else if (MI_IS_TITLE(mi))
+	{
+		lit_x_start = MDIM_ITEM_X_OFFSET(*dim);
+		lit_x_end = lit_x_start + MDIM_ITEM_WIDTH(*dim);
+		/* Hilight the background. */
+		if (
+			MDIM_HILIGHT_WIDTH(*dim) > 0 &&
+			ST_DO_HILIGHT_TITLE_BACK(ms))
+		{
+			XFillRectangle(
+				dpy, mpip->w, gcs.back_gc, lit_x_start,
+				y_offset, lit_x_end - lit_x_start, y_height);
+			item_cleared = True;
+		}
 	}
 
 	MI_WAS_DESELECTED(mi) = False;
@@ -606,14 +639,14 @@ void menuitem_paint(
 	fws->win = mpip->w;
 	fws->y = text_y;
 	fws->flags.has_colorset = 0;
-	b.y = text_y - ST_PSTDFONT(ms)->ascent;
-	b.height = ST_PSTDFONT(ms)->height + 1; /* ? */
+	b.y = text_y - font->ascent;
+	b.height = font->height + 1; /* ? */
 	if (!item_cleared && mpip->ev)
 	{
 		int u,v;
 		if (!frect_get_seg_intersection(
-			mpip->ev->xexpose.y, mpip->ev->xexpose.height,
-			b.y, b.height, &u, &v))
+			    mpip->ev->xexpose.y, mpip->ev->xexpose.height,
+			    b.y, b.height, &u, &v))
 		{
 			/* empty intersection */
 			empty_inter = True;
@@ -651,15 +684,16 @@ void menuitem_paint(
 			fws->str = MI_LABEL(mi)[i];
 			b.x = fws->x = MI_LABEL_OFFSET(mi)[i];
 			b.width = text_width = FlocaleTextWidth(
-				ST_PSTDFONT(ms), fws->str, strlen(fws->str));
+				font, fws->str, strlen(fws->str));
+
 			if (!item_cleared && mpip->ev)
 			{
 				int s_x,s_w;
 				if (frect_get_seg_intersection(
-					mpip->ev->xexpose.x,
-					mpip->ev->xexpose.width,
-					fws->x, text_width,
-					&s_x, &s_w))
+					    mpip->ev->xexpose.x,
+					    mpip->ev->xexpose.width,
+					    fws->x, text_width,
+					    &s_x, &s_w))
 				{
 					b.x = s_x;
 					b.width = s_w;
@@ -685,8 +719,7 @@ void menuitem_paint(
 						mpip, b.x, b.y, b.width,
 						b.height);
 				}
-				FlocaleDrawString(
-					dpy, ST_PSTDFONT(ms), fws, 0);
+				FlocaleDrawString(dpy, font, fws, 0);
 
 				/* hot key */
 				if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
@@ -723,7 +756,7 @@ void menuitem_paint(
 		    is_item_selected)
 		{
 			/* triangle is in hilighted area */
-			if(ST_TRIANGLES_USE_FORE(ms))
+			if (ST_TRIANGLES_USE_FORE(ms))
 			{
 				tmp_gc = gcs.fore_gc;
 			}
@@ -735,7 +768,7 @@ void menuitem_paint(
 		else
 		{
 			/* triangle is in unhilighted area */
-			if(ST_TRIANGLES_USE_FORE(ms))
+			if (ST_TRIANGLES_USE_FORE(ms))
 			{
 				tmp_gc = off_gcs.fore_gc;
 			}
@@ -747,22 +780,22 @@ void menuitem_paint(
 		y = y_offset + (y_height - MENU_TRIANGLE_HEIGHT +
 				relief_thickness) / 2;
 
-		if(ST_TRIANGLES_USE_FORE(ms))
+		if (ST_TRIANGLES_USE_FORE(ms))
 		{
 			DrawTrianglePattern(
 				dpy, mpip->w, tmp_gc, tmp_gc, tmp_gc,
-				MDIM_TRIANGLE_X_OFFSET(*dim), y, 
+				MDIM_TRIANGLE_X_OFFSET(*dim), y,
 				MENU_TRIANGLE_WIDTH, MENU_TRIANGLE_HEIGHT, 0,
 				(mpip->flags.is_left_triangle) ? 'l' : 'r',
 				ST_HAS_TRIANGLE_RELIEF(ms),
 				!ST_HAS_TRIANGLE_RELIEF(ms), is_item_selected);
-	
+
 		}
 		else
 		{
 			DrawTrianglePattern(
 				dpy, mpip->w, gcs.hilight_gc, gcs.shadow_gc,
-				tmp_gc,	MDIM_TRIANGLE_X_OFFSET(*dim), y, 
+				tmp_gc,	MDIM_TRIANGLE_X_OFFSET(*dim), y,
 				MENU_TRIANGLE_WIDTH, MENU_TRIANGLE_HEIGHT, 0,
 				(mpip->flags.is_left_triangle) ? 'l' : 'r',
 				ST_HAS_TRIANGLE_RELIEF(ms),
@@ -806,19 +839,21 @@ void menuitem_paint(
 		if (!item_cleared && mpip->ev)
 		{
 			if (!frect_get_intersection(
-				mpip->ev->xexpose.x, mpip->ev->xexpose.y,
-				mpip->ev->xexpose.width,
-				mpip->ev->xexpose.height,
-				b.x, b.y, b.width, b.height, &b))
+				    mpip->ev->xexpose.x, mpip->ev->xexpose.y,
+				    mpip->ev->xexpose.width,
+				    mpip->ev->xexpose.height,
+				    b.x, b.y, b.width, b.height, &b))
 			{
 				draw_picture = False;
 			}
 		}
 		if (draw_picture)
 		{
-			if (!item_cleared && (MI_PICTURE(mi)->alpha != None ||
-			     (tmp_cs >=0 &&
-			      Colorset[tmp_cs].icon_alpha_percent < 100)))
+			if (
+				!item_cleared &&
+				(MI_PICTURE(mi)->alpha != None ||
+				 (tmp_cs >=0 &&
+				  Colorset[tmp_cs].icon_alpha_percent < 100)))
 			{
 				clear_menu_item_background(
 					mpip, b.x, b.y, b.width, b.height);
@@ -889,11 +924,11 @@ void menuitem_paint(
 			if (!item_cleared && mpip->ev)
 			{
 				if (!frect_get_intersection(
-					mpip->ev->xexpose.x,
-					mpip->ev->xexpose.y,
-					mpip->ev->xexpose.width,
-					mpip->ev->xexpose.height,
-					b.x, b.y, b.width, b.height, &b))
+					    mpip->ev->xexpose.x,
+					    mpip->ev->xexpose.y,
+					    mpip->ev->xexpose.width,
+					    mpip->ev->xexpose.height,
+					    b.x, b.y, b.width, b.height, &b))
 				{
 					draw_picture = False;
 				}
@@ -902,9 +937,9 @@ void menuitem_paint(
 			{
 				if (!item_cleared &&
 				    (MI_MINI_ICON(mi)[i]->alpha != None
-				    || (tmp_cs >=0 &&
-					Colorset[tmp_cs].icon_alpha_percent <
-					100)))
+				     || (tmp_cs >=0 &&
+					 Colorset[tmp_cs].icon_alpha_percent <
+					 100)))
 				{
 					clear_menu_item_background(
 						mpip,

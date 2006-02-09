@@ -1,3 +1,25 @@
+2006-02-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menus.c (size_menu_horizontally):
+	fix for drawing menus with sidepic on the right
+
+	* libs/Flocale.c (FlocaleFontStructDrawString)
+	(FlocaleDrawString):
+	set the foreground colour before drawing a string
+
+	* fvwm/menustyle.h:
+	* fvwm/menustyle.c (menustyle_get_styleopt_index):
+	(menustyle_free):
+	(menustyle_update):
+	(menustyle_parse_style):
+	(menustyle_copy):
+	* fvwm/menus.c (calculate_item_sizes):
+	(size_menu_vertically):
+	(UpdateMenuColorset):
+	* fvwm/menuitem.c (menuitem_paint):
+	Applied patch by David Maciver
+	new menu styles TitleColorset, HilightTitleBack and TitleFont
+
 2006-02-09  Renato Caldas  <seventhguardian@gmail.com>
 
 	* libs/Module.h:

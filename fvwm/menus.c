@@ -15,8 +15,6 @@
  */
 
 /*
- * This module is all original code
- * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -296,16 +294,18 @@ static Bool menu_get_outer_geometry(
 {
 	if (MR_IS_TEAR_OFF_MENU(mr))
 	{
-		return XGetGeometry(dpy,
+		return XGetGeometry(
+			dpy,
 			FW_W_FRAME(pmp->tear_off_root_menu_window),
 			root_return,x_return,y_return, width_return,
 			height_return, border_width_return, depth_return );
 	}
 	else
 	{
-	  	return menu_get_geometry(mr,root_return,x_return,y_return,
+	  	return menu_get_geometry(
+			mr,root_return,x_return,y_return,
 			width_return, height_return, border_width_return,
-			depth_return );
+			depth_return);
 	}
 }
 
@@ -449,7 +449,7 @@ static void animated_move_back(
  * tear-off menus are moved with their frame coordinates. */
 static void move_any_menu(
 	MenuRoot *mr, MenuParameters *pmp, int endX, int endY
-)
+	)
 {
 	if (MR_IS_TEAR_OFF_MENU(mr))
 	{
@@ -463,7 +463,7 @@ static void move_any_menu(
 	{
 		XMoveWindow(dpy, MR_WINDOW(mr), endX, endY);
 		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
-			CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
+		    CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
 	        {
 			MenuRepaintTransparentParameters mrtp;
 			get_menu_repaint_transparent_parameters(
@@ -1143,7 +1143,7 @@ static void menuShortcuts(
 		saction = SA_TEAROFF;
 		break;
 
-	/* menu-scroll */
+		/* menu-scroll */
 	case XK_KP_Add:      /* ScrollUp */
 		saction = SA_SCROLL;
 		direction = 1;
@@ -1353,18 +1353,20 @@ static void menuShortcuts(
 			direction *= -1;
 		}
 		if (!menu_get_outer_geometry(
-				mr, pmp, &JunkRoot, &menu_x, &menu_y,
-			    	&JunkWidth, &menu_height,
-			    	&JunkBW, &JunkDepth))
+			    mr, pmp, &JunkRoot, &menu_x, &menu_y,
+			    &JunkWidth, &menu_height,
+			    &JunkBW, &JunkDepth))
 		{
 			fvwm_msg(ERR, "menuShortcuts",
-				"can't get geometry of menu %s", MR_NAME(mr));
+				 "can't get geometry of menu %s", MR_NAME(mr));
 			return;
 		}
-		for (newItem = miCurrent; newItem &&
-		       ( !MI_IS_SELECTABLE(newItem) || newItem ==  miCurrent );
-		       newItem = (direction == 1) ?
-		                 MI_NEXT_ITEM(newItem) :  MI_PREV_ITEM(newItem))
+		for (
+			newItem = miCurrent; newItem && (
+				!MI_IS_SELECTABLE(newItem) ||
+				newItem ==  miCurrent );
+		     newItem = (direction == 1) ?
+			     MI_NEXT_ITEM(newItem) :  MI_PREV_ITEM(newItem))
 			; /* maybe use while insted... */
 
 		if (newItem)
@@ -1373,9 +1375,12 @@ static void menuShortcuts(
 			pmret->rc = MENU_NEWITEM;
 			/* Have to work with relative positions or tear off
 			 * menus will be hard to reposition */
-			if (FQueryPointer( dpy, MR_WINDOW(mr), &JunkRoot,
-			    	&JunkChild, &JunkX, &JunkY, &mx, &my, &JunkMask)
-			    	==  False)
+			if (
+				FQueryPointer(
+					dpy, MR_WINDOW(mr), &JunkRoot,
+					&JunkChild, &JunkX, &JunkY, &mx, &my,
+					&JunkMask)
+			    ==  False)
 			{
 				/* This should not happen */
 			    	mx = 0;
@@ -1387,11 +1392,12 @@ static void menuShortcuts(
 				if (event->type == ButtonRelease)
 				{
 
-				  	FWarpPointer(dpy, 0, 0, 0, 0, 0, 0, 0,
-						- my + menuitem_middle_y_offset(
+				  	FWarpPointer(
+						dpy, 0, 0, 0, 0, 0, 0, 0,
+						-my +
+						menuitem_middle_y_offset(
 							newItem,
 							MR_STYLE(mr)));
-
 				}
 				/* pointer wrapped elsewhere for key events */
 			}
@@ -1399,8 +1405,8 @@ static void menuShortcuts(
 			{
 
 				menu_y += my - menuitem_middle_y_offset(
-							newItem,
-							MR_STYLE(mr));
+					newItem,
+					MR_STYLE(mr));
 
 				if (!MST_SCROLL_OFF_PAGE(mr) &&
 				    menu_height < MR_SCREEN_HEIGHT(mr))
@@ -1415,12 +1421,13 @@ static void menuShortcuts(
 					if (menu_y + menu_height >
 					    MR_SCREEN_HEIGHT(mr))
 					{
-						FWarpPointer(dpy, 0, 0, 0, 0, 0,
-							0, 0,
-							MR_SCREEN_HEIGHT(mr)
-						        - menu_y - menu_height);
+						FWarpPointer(
+							dpy, 0, 0, 0, 0, 0, 0,
+							0,
+							MR_SCREEN_HEIGHT(mr) -
+							menu_y - menu_height);
 						menu_y = MR_SCREEN_HEIGHT(mr) -
-						  	 menu_height;
+							menu_height;
 					}
 				}
 				move_any_menu(mr,pmp,menu_x,menu_y);
@@ -1439,18 +1446,18 @@ static void menuShortcuts(
 	if (saction != SA_SCROLL && pmret->rc == MENU_NEWITEM)
 	{
 		if (!menu_get_outer_geometry(
-			mr, pmp, &JunkRoot, &menu_x, &menu_y,
-		    	&JunkWidth, &menu_height,
-		    	&JunkBW, &JunkDepth))
+			    mr, pmp, &JunkRoot, &menu_x, &menu_y,
+			    &JunkWidth, &menu_height,
+			    &JunkBW, &JunkDepth))
 		{
 			fvwm_msg(ERR, "menuShortcuts",
-				"can't get geometry of menu %s", MR_NAME(mr));
+				 "can't get geometry of menu %s", MR_NAME(mr));
 			return;
 		}
 		if (menu_y < 0 || menu_y + menu_height > MR_SCREEN_HEIGHT(mr))
 		{
-			menu_y =
-			  (menu_y < 0) ? 0 : MR_SCREEN_HEIGHT(mr) - menu_height;
+			menu_y = (menu_y < 0) ?
+				0 : MR_SCREEN_HEIGHT(mr) - menu_height;
 			move_any_menu(mr,pmp,menu_x,menu_y);
 		}
 	}
@@ -1746,7 +1753,7 @@ static void append_item_to_menu(
 			if (MI_NEXT_ITEM(MR_FIRST_ITEM(mr)) != NULL)
 			{
 				MI_PREV_ITEM(MI_NEXT_ITEM(
-					MR_FIRST_ITEM(mr))) = mi;
+						     MR_FIRST_ITEM(mr))) = mi;
 			}
 			MI_NEXT_ITEM(mi) = MI_NEXT_ITEM(MR_FIRST_ITEM(mr));
 			menuitem_free(MR_FIRST_ITEM(mr));
@@ -1813,9 +1820,18 @@ static void calculate_item_sizes(MenuSizingParameters *msp)
 	/* Calculate the widths for all columns of all items. */
 	for (mi = MR_FIRST_ITEM(msp->menu); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
-		menuitem_get_size(
-			mi, &mipst, MST_PSTDFONT(msp->menu),
-			do_reverse_icon_order);
+		if (MI_IS_TITLE(mi))
+		{
+			menuitem_get_size(
+				mi, &mipst, MST_PTITLEFONT(msp->menu),
+				do_reverse_icon_order);
+		}
+		else
+		{
+			menuitem_get_size(
+				mi, &mipst, MST_PSTDFONT(msp->menu),
+				do_reverse_icon_order);
+		}
 		/* adjust maximums */
 		if (msp->max.i.triangle_width < mipst.triangle_width)
 		{
@@ -1829,7 +1845,8 @@ static void calculate_item_sizes(MenuSizingParameters *msp)
 		{
 			if (msp->max.i.label_width[i] < mipst.label_width[i])
 			{
-				msp->max.i.label_width[i] = mipst.label_width[i];
+				msp->max.i.label_width[i] =
+					mipst.label_width[i];
 			}
 		}
 		if (msp->max.i.picture_width < mipst.picture_width)
@@ -2013,10 +2030,7 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 				}
 				x += gap_left;
 				MR_SIDEPIC_X_OFFSET(msp->menu) = x;
-				if (first)
-				{
-					sidepic_is_left = True;
-				}
+				sidepic_is_left = first;
 				sidepic_space = msp->max.sidepic_width +
 					((sidepic_is_left) ?
 					 gap_left : gap_right);
@@ -2225,8 +2239,7 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	}
 	if (!relief_begin_placed)
 	{
-		MR_HILIGHT_X_OFFSET(msp->menu) =
-			MR_ITEM_X_OFFSET(msp->menu);
+		MR_HILIGHT_X_OFFSET(msp->menu) = MR_ITEM_X_OFFSET(msp->menu);
 	}
 	if (relief_end_placed)
 	{
@@ -2327,9 +2340,9 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			MENU_SEPARATOR_HEIGHT + relief_thickness :
 			MENU_SEPARATOR_TOTAL_HEIGHT;
 		MI_Y_OFFSET(mi) = y;
-		if (MI_IS_TITLE(mi) && MI_IS_TITLE_CENTERED(mi))
+		if (MI_IS_TITLE(mi))
 		{
-			MI_HEIGHT(mi) = MST_PSTDFONT(msp->menu)->height +
+			MI_HEIGHT(mi) = MST_PTITLEFONT(msp->menu)->height +
 				MST_TITLE_GAP_ABOVE(msp->menu) +
 				MST_TITLE_GAP_BELOW(msp->menu);
 		}
@@ -2768,7 +2781,7 @@ static MenuRoot *copy_menu_root(MenuRoot *mr)
  *
  *  Procedure:
  *      clone_menu - duplicates an existing menu in newly allocated
-	memory.  The new menu is independent of the original.
+ memory.  The new menu is independent of the original.
  *
  *  Returned Value:
  *      (MenuRoot *)
@@ -4875,8 +4888,8 @@ static mloop_ret_code_t __mloop_handle_event(
 				   (*pmp->pexc)->x.elast->xbutton.button == 5))
 			{
 				menuShortcuts(med->mrMi, pmp, pmret,
-					  (*pmp->pexc)->x.elast,
-					  &med->mi,pdkp);
+					      (*pmp->pexc)->x.elast,
+					      &med->mi,pdkp);
 				if (pmret->rc == MENU_NOP)
 				{
                         	 	return MENU_MLOOP_RET_LOOP;
@@ -6946,7 +6959,7 @@ void repaint_transparent_menu(
 		XClearArea(
 			dpy, MR_WINDOW(mr), MR_SIDEPIC_X_OFFSET(mr),
 			MST_BORDER_WIDTH(mr), sidePic->width,
-			   MR_HEIGHT(mr) - 2 * MST_BORDER_WIDTH(mr), 0);
+			MR_HEIGHT(mr) - 2 * MST_BORDER_WIDTH(mr), 0);
 		paint_side_pic(mr, NULL);
 	}
 }
@@ -7482,7 +7495,8 @@ void UpdateMenuColorset(int cset)
 	{
 		if ((ST_HAS_MENU_CSET(ms) && ST_CSET_MENU(ms) == cset) ||
 		    (ST_HAS_ACTIVE_CSET(ms) && ST_CSET_ACTIVE(ms) == cset) ||
-		    (ST_HAS_GREYED_CSET(ms) && ST_CSET_GREYED(ms) == cset))
+		    (ST_HAS_GREYED_CSET(ms) && ST_CSET_GREYED(ms) == cset) ||
+		    (ST_HAS_TITLE_CSET(ms) && ST_CSET_TITLE(ms) == cset))
 		{
 			menustyle_update(ms);
 		}
@@ -8172,137 +8186,139 @@ typedef struct
 mloop_trigger_type_t __mloop_get_trigger(
 	mloop_trigger_t *ret_trigger, mloop_timeouts_t *io_timeouts,
 	const mloop_get_trigger_input_t * const in,
-{
-	if (in_out->in_flags->do_propagate_event_down)
 	{
-		return MTR_PROPAGATE_XEVENT_DOWN;
-	}
-	else if (in_out->in_flags->do_propagate_event_up)
-	{
-		if (a != b)
+		if (in_out->in_flags->do_propagate_event_down)
 		{
-			return MTR_PROPAGATE_XEVENT_UP;
+			return MTR_PROPAGATE_XEVENT_DOWN;
 		}
-		else
+		else if (in_out->in_flags->do_propagate_event_up)
 		{
+			if (a != b)
+			{
+				return MTR_PROPAGATE_XEVENT_UP;
+			}
+			else
+			{
+			}
+			/*!!!return propagate up*/
+			/*!!!*/
 		}
-		/*!!!return propagate up*/
-		/*!!!*/
-	}
-	/*!!!read event or wait for timeout*/
-	while (0/*!!!not finished*/)
-	{
-		/*!!!rc = 0*/
-		if (0/*!!!wait for tiomeout*/)
+		/*!!!read event or wait for timeout*/
+		while (0/*!!!not finished*/)
 		{
-			/*!!!check for event*/
+			/*!!!rc = 0*/
+			if (0/*!!!wait for tiomeout*/)
+			{
+				/*!!!check for event*/
+			}
+			else
+			{
+				/*!!!block for event*/
+			}
+			if (0/*got event*/)
+			{
+				/*!!!rc = MTR_XEVENT*/
+			}
+			if (0/*!!!popup timed out;break*/)
+			{
+				/*!!!rc = MTR_POPUP;break*/
+			}
+			if (0/*!!!popdown timed out;break*/)
+			{
+				/*!!!rc = MTR_POPDOWN;break*/
+			}
+			/*!!!sleep*/
 		}
-		else
+		if (0/*!!!rc == MTR_XEVENT && evtype == MotionNotify*/)
 		{
-			/*!!!block for event*/
+			/*!!!eat up further MotionNotify events*/
 		}
-		if (0/*got event*/)
-		{
-			/*!!!rc = MTR_XEVENT*/
-		}
-		if (0/*!!!popup timed out;break*/)
-		{
-			/*!!!rc = MTR_POPUP;break*/
-		}
-		if (0/*!!!popdown timed out;break*/)
-		{
-			/*!!!rc = MTR_POPDOWN;break*/
-		}
-		/*!!!sleep*/
-	}
-	if (0/*!!!rc == MTR_XEVENT && evtype == MotionNotify*/)
-	{
-		/*!!!eat up further MotionNotify events*/
+
+		return 0/*!!!rc*/;
 	}
 
-	return 0/*!!!rc*/;
-}
-
-/*!!!static*/
-void __menu_loop_new(
-	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp)
-{
-	mloop_evh_input_t mei;
+	/*!!!static*/
+	void __menu_loop_new(
+		MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp)
+	{
+		mloop_evh_input_t mei;
 #if 0
-	mloop_ret_code_t mloop_ret;
+		mloop_ret_code_t mloop_ret;
 #endif
-	mloop_evh_data_t med;
-	mloop_static_info_t msi;
-	MenuOptions mops;
-	Bool is_finished;
+		mloop_evh_data_t med;
+		mloop_static_info_t msi;
+		MenuOptions mops;
+		Bool is_finished;
 
-	/*!!!init menu loop*/
-	__mloop_init(pmp, pmret, &mei, &med, &msi, &mops);
-	for (is_finished = False; !is_finished; )
-	{
-		mloop_trigger_type_t mtr;
-
-		mtr = __mloop_get_trigger(pmp, pmret, &mei, &med, &msi);
-		switch (mtr)
+		/*!!!init menu loop*/
+		__mloop_init(pmp, pmret, &mei, &med, &msi, &mops);
+		for (is_finished = False; !is_finished; )
 		{
-		case MTR_XEVENT:
-			/*!!!handle event*/
-			break;
-		case MTR_FAKE_ENTER_ITEM:
-			/*!!!fake enter item*/
-			break;
-		case MTR_PROPAGATE_XEVENT_UP:
-			/*!!!handle propagation*/
-			break;
-		case MTR_PROPAGATE_XEVENT_DOWN:
-			/*!!!handle propagation*/
-			break;
-		case MTR_POPUP_TIMEOUT:
-			/*!!!handle popup*/
-			break;
-		case MTR_POPDOWN_TIMEOUT:
-			/*!!!handle popdown*/
-			break;
-		}
+			mloop_trigger_type_t mtr;
+
+			mtr = __mloop_get_trigger(pmp, pmret, &mei, &med, &msi);
+			switch (mtr)
+			{
+			case MTR_XEVENT:
+				/*!!!handle event*/
+				break;
+			case MTR_FAKE_ENTER_ITEM:
+				/*!!!fake enter item*/
+				break;
+			case MTR_PROPAGATE_XEVENT_UP:
+				/*!!!handle propagation*/
+				break;
+			case MTR_PROPAGATE_XEVENT_DOWN:
+				/*!!!handle propagation*/
+				break;
+			case MTR_POPUP_TIMEOUT:
+				/*!!!handle popup*/
+				break;
+			case MTR_POPDOWN_TIMEOUT:
+				/*!!!handle popdown*/
+				break;
+			}
 
 
 
 
 
 #if 0
-		mloop_ret = __mloop_handle_event(
-			pmp, pmret, pdkp, &mei, &med, &msi);
-		switch (mloop_ret)
-		{
-		case MENU_MLOOP_RET_LOOP:
-			continue;
-		case MENU_MLOOP_RET_END:
-			is_finished = True;
-			break;
-		default:
-			break;
-		}
-		/* Now handle new menu items, whether it is from a keypress or
-		 * a pointer motion event. */
-		if (med.mi != NULL)
-		{
-			mloop_ret = __mloop_handle_action_with_mi(
-				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
-		}
-		else
-		{
-			mloop_ret = __mloop_handle_action_without_mi(
-				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
-		}
-		if (mloop_ret == MENU_MLOOP_RET_END)
-		{
-			is_finished = True;
-		}
-		XFlush(dpy);
+			mloop_ret = __mloop_handle_event(
+				pmp, pmret, pdkp, &mei, &med, &msi);
+			switch (mloop_ret)
+			{
+			case MENU_MLOOP_RET_LOOP:
+				continue;
+			case MENU_MLOOP_RET_END:
+				is_finished = True;
+				break;
+			default:
+				break;
+			}
+			/* Now handle new menu items, whether it is from a keypress or
+			 * a pointer motion event. */
+			if (med.mi != NULL)
+			{
+				mloop_ret = __mloop_handle_action_with_mi(
+					pmp, pmret, pdkp, &mei, &med, &msi,
+					&mops);
+			}
+			else
+			{
+				mloop_ret = __mloop_handle_action_without_mi(
+					pmp, pmret, pdkp, &mei, &med, &msi,
+					&mops);
+			}
+			if (mloop_ret == MENU_MLOOP_RET_END)
+			{
+				is_finished = True;
+			}
+			XFlush(dpy);
 #endif
-	}
-	__mloop_exit(pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+		}
+		__mloop_exit(pmp, pmret, pdkp, &mei, &med, &msi, &mops);
 
-	return;
-}
+		return;
+	}
 #endif

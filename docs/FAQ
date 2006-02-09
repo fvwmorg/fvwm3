@@ -1882,6 +1882,14 @@ A: If you plan to write a patch, *please*, first of all fetch the
 
 A: First of all, please read the first section of the answer to Q5.1!
 
+   Please add proper entries to the ChangeLog file(s) and possibly to
+   NEWS and AUTHORS files whenever you submit a patch.  The ChangeLog
+   lists *all* changed files and functions along with a usefull
+   explanation of the change details.  The NEWS file mentions all
+   user-visible changes, including bug fixes.  Also, do not forget to
+   write a section for the man page if the patch includes new
+   features.
+
    Creating a patch against CVS sources (preferable) -
 
         1) Execute "cvs update -AdP" to ensure there are no conflicts

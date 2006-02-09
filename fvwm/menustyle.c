@@ -113,7 +113,7 @@ static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
 	case GradientMenu:
 		destmf->u.grad.xcs =
 			(XColor *)safemalloc(sizeof(XColor) *
-					    origmf->u.grad.npixels);
+					     origmf->u.grad.npixels);
 		memcpy(destmf->u.grad.xcs,
 		       origmf->u.grad.xcs,
 		       sizeof(XColor) * origmf->u.grad.npixels);
@@ -397,6 +397,8 @@ static int menustyle_get_styleopt_index(char *option)
 		"PopupIgnore", "PopupClose",
 		"MouseWheel", "ScrollOffPage",
 		"TrianglesUseFore",
+		"TitleColorset", "HilightTitleBack",
+		"TitleFont",
 		NULL
 	};
 
@@ -465,6 +467,22 @@ void menustyle_free(MenuStyle *ms)
 	{
 		XFreeGC(dpy, FORE_GC(ST_MENU_STIPPLE_GCS(ms)));
 	}
+	if (FORE_GC(ST_MENU_TITLE_GCS(ms)))
+	{
+		XFreeGC(dpy, FORE_GC(ST_MENU_TITLE_GCS(ms)));
+	}
+	if (BACK_GC(ST_MENU_TITLE_GCS(ms)))
+	{
+		XFreeGC(dpy, BACK_GC(ST_MENU_TITLE_GCS(ms)));
+	}
+	if (HILIGHT_GC(ST_MENU_TITLE_GCS(ms)))
+	{
+		XFreeGC(dpy, HILIGHT_GC(ST_MENU_TITLE_GCS(ms)));
+	}
+	if (SHADOW_GC(ST_MENU_TITLE_GCS(ms)))
+	{
+		XFreeGC(dpy, SHADOW_GC(ST_MENU_TITLE_GCS(ms)));
+	}
 	if (ST_SIDEPIC(ms))
 	{
 		PDestroyFvwmPicture(dpy, ST_SIDEPIC(ms));
@@ -476,6 +494,10 @@ void menustyle_free(MenuStyle *ms)
 	if (ST_PSTDFONT(ms) && !ST_USING_DEFAULT_FONT(ms))
 	{
 		FlocaleUnloadFont(dpy, ST_PSTDFONT(ms));
+	}
+	if (ST_PTITLEFONT(ms) && !ST_USING_DEFAULT_TITLEFONT(ms))
+	{
+		FlocaleUnloadFont(dpy, ST_PTITLEFONT(ms));
 	}
 	if (ST_ITEM_FORMAT(ms))
 	{
@@ -536,9 +558,11 @@ void menustyle_update(MenuStyle *ms)
 	color_quad c_inactive;
 	color_quad c_active;
 	color_quad c_stipple;
+	color_quad c_title;
 	colorset_t *menu_cs = &Colorset[ST_CSET_MENU(ms)];
 	colorset_t *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
 	colorset_t *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
+	colorset_t *title_cs = &Colorset[ST_CSET_TITLE(ms)];
 
 	if (ST_USAGE_COUNT(ms) != 0)
 	{
@@ -550,6 +574,10 @@ void menustyle_update(MenuStyle *ms)
 	if (ST_USING_DEFAULT_FONT(ms))
 	{
 		ST_PSTDFONT(ms) = Scr.DefaultFont;
+	}
+	if (ST_USING_DEFAULT_TITLEFONT(ms))
+	{
+		ST_PTITLEFONT(ms) = ST_PSTDFONT(ms);
 	}
 	/* calculate colors based on foreground */
 	if (!ST_HAS_ACTIVE_FORE(ms))
@@ -623,6 +651,20 @@ void menustyle_update(MenuStyle *ms)
 		c_stipple.fore = ST_MENU_STIPPLE_COLORS(ms).fore;
 		c_stipple.back = ST_MENU_STIPPLE_COLORS(ms).back;
 	}
+	if (ST_HAS_TITLE_CSET(ms))
+	{
+		c_title.fore = title_cs->fg;
+		c_title.back = title_cs->bg;
+		c_title.hilight = title_cs->hilite;
+		c_title.shadow = title_cs->shadow;
+	}
+	else
+	{
+		c_title.fore = c_inactive.fore;
+		c_title.back = c_inactive.back;
+		c_title.hilight = c_inactive.hilight;
+		c_title.shadow = c_inactive.shadow;
+	}
 	/* override hilighting colours if necessary */
 	if (!ST_DO_HILIGHT_FORE(ms))
 	{
@@ -633,6 +675,13 @@ void menustyle_update(MenuStyle *ms)
 		c_active.back = c_inactive.back;
 		c_active.hilight = c_inactive.hilight;
 		c_active.shadow = c_inactive.shadow;
+	}
+	if (!ST_DO_HILIGHT_TITLE_BACK(ms))
+	{
+		c_title.fore = c_inactive.fore;
+		c_title.back = c_inactive.back;
+		c_title.hilight = c_inactive.hilight;
+		c_title.shadow = c_inactive.shadow;
 	}
 	/* make GC's */
 	gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
@@ -667,6 +716,27 @@ void menustyle_update(MenuStyle *ms)
 	gcv.foreground = c_active.shadow;
 	gcv.background = c_active.hilight;
 	change_or_make_gc(&SHADOW_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
+	/* update title gcs */
+	if (ST_PTITLEFONT(ms)->font != NULL && ST_PSTDFONT(ms)->font == NULL)
+	{
+		if (ST_PSTDFONT(ms)->font == NULL)
+		{
+			gcm |= GCFont;
+		}
+		gcv.font = ST_PTITLEFONT(ms)->font->fid;
+	}
+	gcv.foreground = c_title.fore;
+	gcv.background = c_title.back;
+	change_or_make_gc(&FORE_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
+	gcv.foreground = c_title.back;
+	gcv.background = c_title.fore;
+	change_or_make_gc(&BACK_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
+	gcv.foreground = c_title.hilight;
+	gcv.background = c_title.shadow;
+	change_or_make_gc(&HILIGHT_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
+	gcv.foreground = c_title.shadow;
+	gcv.background = c_title.hilight;
+	change_or_make_gc(&SHADOW_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
 	/* update stipple menu gcs */
 	SHADOW_GC(ST_MENU_STIPPLE_GCS(ms)) =
 		SHADOW_GC(ST_MENU_INACTIVE_GCS(ms));
@@ -770,6 +840,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
 			ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
 			ST_SCROLL_OFF_PAGE(tmpms) = 1;
+			ST_DO_HILIGHT_TITLE_BACK(tmpms) = 0;
+			ST_USING_DEFAULT_TITLEFONT(tmpms) = True;
 			has_gc_changed = True;
 			option = "fvwm";
 		}
@@ -1375,9 +1447,10 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 					ST_MOUSE_WHEEL(tmpms) = MMW_OFF;
 				}
 				else if (StrEquals(arg1,
-					"ScrollsMenuBackwards"))
+						   "ScrollsMenuBackwards"))
 				{
-					ST_MOUSE_WHEEL(tmpms) = MMW_MENU_BACKWARDS;
+					ST_MOUSE_WHEEL(tmpms) =
+						MMW_MENU_BACKWARDS;
 				}
 				else if (StrEquals(arg1, "ScrollsMenu"))
 				{
@@ -1389,8 +1462,10 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 				}
 				else
 				{
-					fvwm_msg(ERR, "NewMenuStyle",
-					"unknown argument to MouseWheel '%s'",
+					fvwm_msg(
+						ERR, "NewMenuStyle",
+						"unknown argument to"
+						" MouseWheel '%s'",
 						 arg1);
 					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
 				}
@@ -1408,6 +1483,54 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 58: /* TrianglesUseFore */
 			ST_TRIANGLES_USE_FORE(tmpms) = on;
 			break;
+		case 59: /* TitleColorset */
+			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
+			    *val < 0)
+			{
+				ST_HAS_TITLE_CSET(tmpms) = 0;
+				ST_CSET_TITLE(tmpms) = 0;
+			}
+			else
+			{
+				ST_HAS_TITLE_CSET(tmpms) = 1;
+				ST_CSET_TITLE(tmpms) = *val;
+				alloc_colorset(*val);
+			}
+			has_gc_changed = True;
+			break;
+		case 60: /* TitleHilightBack */
+			ST_DO_HILIGHT_TITLE_BACK(tmpms) = on;
+			has_gc_changed = True;
+			break;
+		case 61: /* TitleFont */
+			if (arg1 != NULL &&
+			    !(new_font = FlocaleLoadFont(dpy, arg1, "FVWM")))
+			{
+				fvwm_msg(ERR, "NewMenuStyle",
+					 "Couldn't load font '%s'\n", arg1);
+				break;
+			}
+			if (
+				ST_PTITLEFONT(tmpms) &&
+				!ST_USING_DEFAULT_TITLEFONT(tmpms))
+			{
+				FlocaleUnloadFont(dpy, ST_PTITLEFONT(tmpms));
+			}
+			if (arg1 == NULL)
+			{
+				/* reset to screen font */
+				ST_PTITLEFONT(tmpms) = Scr.DefaultFont;
+				ST_USING_DEFAULT_TITLEFONT(tmpms) = True;
+			}
+			else
+			{
+				ST_PTITLEFONT(tmpms) = new_font;
+				ST_USING_DEFAULT_TITLEFONT(tmpms) = False;
+			}
+			has_gc_changed = True;
+			break;
+
+
 #if 0
 		case 99: /* PositionHints */
 			/* to be implemented */
@@ -1535,6 +1658,33 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 		ST_USING_DEFAULT_FONT(destms) = True;
 		ST_PSTDFONT(destms) = Scr.DefaultFont;
 	}
+	/* TitleFont */
+	if (ST_PTITLEFONT(destms) &&  !ST_USING_DEFAULT_TITLEFONT(destms))
+	{
+		FlocaleUnloadFont(dpy, ST_PTITLEFONT(destms));
+	}
+	if (ST_PTITLEFONT(origms) && !ST_USING_DEFAULT_TITLEFONT(origms))
+	{
+		if (
+			!(ST_PTITLEFONT(destms) = FlocaleLoadFont(
+				  dpy, ST_PTITLEFONT(origms)->name, "FVWM")))
+		{
+			ST_PTITLEFONT(destms) = Scr.DefaultFont;
+			ST_USING_DEFAULT_TITLEFONT(destms) = True;
+			fvwm_msg(ERR, "CopyMenuStyle",
+				 "Couldn't load font '%s' use Default Font\n",
+				 ST_PTITLEFONT(origms)->name);
+		}
+		else
+		{
+			ST_USING_DEFAULT_TITLEFONT(destms) = False;
+		}
+	}
+	else
+	{
+		ST_USING_DEFAULT_TITLEFONT(destms) = True;
+		ST_PTITLEFONT(destms) = Scr.DefaultFont;
+	}
 	/* MenuFace */
 	menustyle_copy_face(&ST_FACE(destms), &ST_FACE(origms));
 
@@ -1628,6 +1778,8 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	ST_SCROLL_OFF_PAGE(destms) = ST_SCROLL_OFF_PAGE(origms);
 	/* TrianglesUseFore */
 	ST_TRIANGLES_USE_FORE(destms) = ST_TRIANGLES_USE_FORE(origms);
+	/* Title */
+	ST_DO_HILIGHT_TITLE_BACK(destms) = ST_DO_HILIGHT_TITLE_BACK(origms);
 
 	menustyle_update(destms);
 
@@ -1727,7 +1879,7 @@ void CMD_MenuStyle(F_CMD_ARGS)
 	poption = option;
 	while (poption && poption[0] == '!')
 	{
-	  poption++;
+		poption++;
 	}
 	if (option == NULL || menustyle_get_styleopt_index(poption) != -1)
 	{

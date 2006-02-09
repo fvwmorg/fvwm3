@@ -2831,14 +2831,17 @@ Foreground,
 Background,
 Greyed,
 HilightBack / HilightBackOff,
+HilightTitleBack,
 ActiveFore / ActiveForeOff,
 MenuColorset,
 ActiveColorset,
 GreyedColorset,
+TitleColorset,
 Hilight3DThick / Hilight3DThin / Hilight3DOff,
 Hilight3DThickness,
 Animation / AnimationOff,
 Font,
+TitleFont,
 MenuFace,
 PopupDelay,
 PopupOffset,
@@ -2945,6 +2948,12 @@ the menu's background color.  The
 .I ActiveColorset
 option overrides the specified color.
 
+.I HilightTitleBack
+switches hilighting the background of menu titles on.  If a
+.I TitleColorset
+was used, the background colour is taken from there.  Otherwise
+the color is based on the menu's background color.
+
 .I ActiveFore " and " ActiveForeOff
 switch hilighting the foreground of the selected menu item on and
 off.  A specific foreground color may be used by providing the
@@ -3003,6 +3012,11 @@ the
 .I Greyed
 menu style.  No other parts of the colorset are used.
 
+.I TitleColorset
+works exactly like
+.IR MenuColorset ,
+but is user only for menu titles.
+
 .IR Hilight3DThick ", " Hilight3DThin " and " Hilight3DOff
 determine if the selected menu item is hilighted with a 3D
 relief. Thick reliefs are two pixels wide, thin reliefs are one
@@ -3019,10 +3033,12 @@ turn menu animation on or off.  When animation is on, sub menus
 that don't fit on the screen cause the parent menu to be shifted
 to the left so the sub menu can be seen.
 
-.I Font
-takes a font name as an argument.  If a font by this name exists
+.IR Font " and " TitleFont
+take a font name as an argument.  If a font by this name exists
 it is used for the text of all menu items.  If it does not exist
-or if the name is left blank the built-in default is used.
+or if the name is left blank the built-in default is used.  If a
+.I TitleFont
+is given, it is used for all menu titles instead of the normal font.
 
 .I MenuFace
 enforces a fancy background upon the menus.  You can use the same

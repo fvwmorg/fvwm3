@@ -5,9 +5,15 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.17 (not released yet)
 
+* New features:
+
+   - New MenuStyle options TitleFont, TitleColorset and
+     HilightTitleBack.
+
 * Bug Fixes:
 
    - Fixed detection of running non-ICCCM2 wm (bug #3151).
+   - Fixed drawing of menus with the sidepic on the right.
 
 -------------------------------------------------------------------
 
