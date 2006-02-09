@@ -1,3 +1,17 @@
+2006-02-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmButtons/button.h:
+	* FvwmButtons/draw.h:
+	* FvwmButtons/icons.c:
+	* FvwmButtons/icons.h:
+	* FvwmButtons/misc.c:
+	* FvwmButtons/misc.h:
+	* FvwmButtons/output.c:
+	* FvwmButtons/parse.c:
+	reformat FvwmButtons code to be more readable and consistent
+
 2006-02-10  Renato Caldas  <seventhguardian@gmail.com>
 
 	* FvwmTheme/FvwmTheme.c:

@@ -69,15 +69,15 @@ Bool GetIconPosition(button_info *b,
 #ifdef NO_ICONS
 	return False;
 #else
-	int x,y,width,height;
-	int xoff,yoff;
-	int framew,xpad,ypad;
+	int x, y, width, height;
+	int xoff, yoff;
+	int framew, xpad, ypad;
 	FlocaleFont *Ffont;
 	int BW,BH;
 	Bool has_title = (buttonTitle(b) != NULL ? True : False);
 
-	buttonInfo(b,&x,&y,&xpad,&ypad,&framew);
-	framew=abs(framew);
+	buttonInfo(b, &x, &y, &xpad, &ypad, &framew);
+	framew = abs(framew);
 	Ffont = buttonFont(b);
 
 	width = pic->width;
@@ -85,11 +85,12 @@ Bool GetIconPosition(button_info *b,
 	BW = buttonWidth(b);
 	BH = buttonHeight(b);
 
-	width=min(width,BW-2*(xpad+framew));
+	width = min(width, BW - 2 * (xpad + framew));
 
-	if (has_title == True && Ffont && !(buttonJustify(b)&b_Horizontal))
+	if (has_title == True && Ffont && !(buttonJustify(b) & b_Horizontal))
 	{
-		height = min(height,BH-2*(ypad+framew)-Ffont->ascent-Ffont->descent);
+		height = min(height, BH - 2 * (ypad + framew)
+			- Ffont->ascent - Ffont->descent);
 	}
 	else
 	{
@@ -97,26 +98,42 @@ Bool GetIconPosition(button_info *b,
 	}
 
 	if (b->flags.b_Right)
-		xoff = BW-framew-xpad-width;
+	{
+		xoff = BW-framew - xpad-width;
+	}
 	else if (b->flags.b_Left)
-		xoff = framew+xpad;
+	{
+		xoff = framew + xpad;
+	}
 	else
 	{
-		if(buttonJustify(b)&b_Horizontal)
-			xoff=0;
+		if (buttonJustify(b) & b_Horizontal)
+		{
+			xoff = 0;
+		}
 		else
-			xoff=(BW-width)>>1;
-		if(xoff < framew+xpad)
-			xoff = framew+xpad;
+		{
+			xoff = (BW - width) >> 1;
+		}
+		if (xoff < framew + xpad)
+		{
+			xoff = framew + xpad;
+		}
 	}
 
-	if (has_title == True && Ffont && !(buttonJustify(b)&b_Horizontal))
-		yoff=(BH-(height+Ffont->height))>>1;
+	if (has_title == True && Ffont && !(buttonJustify(b) & b_Horizontal))
+	{
+		yoff = (BH - (height + Ffont->height)) >> 1;
+	}
 	else
-		yoff=(BH-height)>>1;
+	{
+		yoff = (BH - height) >> 1;
+	}
 
-	if(yoff < framew+ypad)
-		yoff = framew+ypad;
+	if (yoff < framew + ypad)
+	{
+		yoff = framew + ypad;
+	}
 
 	x += xoff;
 	y += yoff;
@@ -133,18 +150,18 @@ Bool GetIconPosition(button_info *b,
 void DrawForegroundIcon(button_info *b, XEvent *pev)
 {
 #ifndef NO_ICONS
-	int x,y,w,h;
+	int x, y, w, h;
 	int cset;
 	XRectangle clip;
 	FvwmRenderAttributes fra;
 	FvwmPicture *pic = buttonIcon(b);
 
-	if (!GetIconPosition(b, pic, &x,&y,&w,&h))
+	if (!GetIconPosition(b, pic, &x, &y, &w, &h))
 	{
 		return;
 	}
 
-	if(w < 1 || h < 1)
+	if (w < 1 || h < 1)
 	{
 		return; /* No need drawing to this */
 	}

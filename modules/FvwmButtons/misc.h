@@ -17,4 +17,4 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp);
+void ConstrainSize(XSizeHints *hints, int *widthp, int *heightp);
