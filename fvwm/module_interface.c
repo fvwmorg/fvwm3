@@ -424,14 +424,6 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 			flib_unsetenv("FVWM_VISUALID");
 			flib_unsetenv("FVWM_COLORMAP");
 		}
-		if (pipeAlias[i] != NULL)
-		{
-			flib_putenv("FVWM_COLORMAP", pipeAlias[i]);
-		}
-		else
-		{
-			flib_unsetenv("FVWM_MODULE_ALIAS");
-		}
 
 		/* Why is this execvp??  We've already searched the module
 		 * path! */
