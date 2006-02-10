@@ -1,4 +1,4 @@
-The recognized commands for fvwm 2.5.8 (from cvs) as of 25-Oct-2003:
+The recognized commands for fvwm 2.5.17 (from cvs) as of 10-Feb-2006:
 
   #                     - Comment line (ignored)
   *                     - Module configuration line (no space after asterisk)
@@ -51,6 +51,7 @@ The recognized commands for fvwm 2.5.8 (from cvs) as of 25-Oct-2003:
   Direction             - Operate on the next window in the specified direction
   Echo                  - Print message to stderr, mainly for debugging
   EdgeCommand           - Bind one or another screen edge to an fvwm action
+  EdgeLeaveCommand      - Bind one or another screen edge to an fvwm action
   EdgeResistance        - Control viewport scrolling and window move over edge
   EdgeScroll            - Control how much of the viewport is scrolled if any
   EdgeThickness         - Control how closely to edge to run command/scrolling
@@ -61,6 +62,7 @@ The recognized commands for fvwm 2.5.8 (from cvs) as of 25-Oct-2003:
   Exec                  - Execute an external command
   ExecUseShell          - The shell to use to execute an external command
   FakeClick             - Generate a mouse click
+  FakeKeypress          - Send a keyboard event to a window
   FlipFocus             - Focus a window without rotating windowlist order
   Focus                 - Give focus to a window
   FocusStyle            - Configure focus and raise policy for windows

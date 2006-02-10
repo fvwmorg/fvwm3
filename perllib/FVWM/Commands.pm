@@ -4,8 +4,8 @@ package FVWM::Commands;
 
 use vars qw($VERS $TIME @LIST);
 
-$VERS = '2.5.8 (from cvs)';
-$TIME = 1067046743;
+$VERS = '2.5.17 (from cvs)';
+$TIME = 1139568168;
 
 @LIST = (
 	{
@@ -379,6 +379,12 @@ $TIME = 1067046743;
 		cursor => '',
 		window => 0,
 		descr => q{Generate a mouse click},
+	},
+	{
+		name => 'FakeKeypress',
+		cursor => '',
+		window => 0,
+		descr => q{Send a keyboard event to a window},
 	},
 	{
 		name => 'FlipFocus',

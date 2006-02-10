@@ -1884,7 +1884,7 @@ A: First of all, please read the first section of the answer to Q5.1!
 
    Please add proper entries to the ChangeLog file(s) and possibly to
    NEWS and AUTHORS files whenever you submit a patch.  The ChangeLog
-   lists *all* changed files and functions along with a usefull
+   lists *all* changed files and functions along with a useful
    explanation of the change details.  The NEWS file mentions all
    user-visible changes, including bug fixes.  Also, do not forget to
    write a section for the man page if the patch includes new

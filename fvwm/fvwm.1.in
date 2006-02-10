@@ -635,7 +635,7 @@ command.
 
 Xinerama support was designed to work out of the box with the same
 configuration file that would work on a single screen.  It may
-not perforrm very well if the involved screens use different screen
+not perform very well if the involved screens use different screen
 resolutions.  In this situation, windows may get stuck in the
 portion of the whole desktop that belongs to neither screen.  When
 this happens, the windows or icons can be retrieved with the
@@ -681,7 +681,7 @@ $HOME/.fvwm2rc
 /usr/local/share/fvwm/system.fvwm2rc
 /etc/system.fvwm2rc
 .EE
-Please note, the last 5 locations are not guarranteed to be
+Please note, the last 5 locations are not guaranteed to be
 supported in the future.
 
 If a configuration file is not found, the left mouse button, or
@@ -1130,7 +1130,7 @@ is supplied with the fvwm distribution.  It is well commented and
 can be used as a source of examples for fvwm configuration.
 It may be copied to /usr/local/share/fvwm/config file.
 
-Alternativelly, the built-in menu (accessible when no
+Alternatively, the built-in menu (accessible when no
 configuration file is found) has options to create an initial
 config file for the user.
 
@@ -1474,7 +1474,7 @@ and
 
 Fvwm supports session management according to the X Session
 Management Protocol.  It saves and restores window position, size,
-stacking order, desk, stickiness, shadedness, maximizedness,
+stacking order, desk, stickiness, shadiness, maximizedness,
 iconifiedness for all windows. Furthermore, some global state is
 saved.
 
@@ -1803,7 +1803,7 @@ The window's name, icon name, file name of its icon or mini icon
 defined with the
 .IR Icon " or " MiniIcon
 style including the path information if the file was found on
-disk, resource class or resource name respectivelly, or unexpanded
+disk, resource class or resource name respectively, or unexpanded
 "$[w.<attribute>]" string if no window is associated with the
 command.
 
@@ -2069,7 +2069,7 @@ part of a window.  The
 .B Popup
 command opens popup menus.  If the popup menu was invoked with a
 mouse button held down, it is closed when the button is released.
-THe item under the pointer is then activated and the associated
+The item under the pointer is then activated and the associated
 action is executed.
 
 .B Menu
@@ -2403,7 +2403,7 @@ commands as dynamic menu actions.  Chances are good that this will
 crash fvwm.
 
 There are several configurable scripts installed together with fvwm
-for automatical menu generation.  They have their own man pages.
+for automatic menu generation.  They have their own man pages.
 Some of them, specifically
 .BR fvwm-menu-directory " and " fvwm-menu-desktop ,
 may be used with
@@ -2602,7 +2602,7 @@ Deletes the menu style named
 and changes all menus using this style to the default style, you
 cannot destroy the default menu style.
 .EX
-DestroyMenuStyle pixamp1
+DestroyMenuStyle pixmap1
 .EE
 
 .TP
@@ -3222,7 +3222,7 @@ the mouse.  Depending on your menu style this may simplify
 navigating through the menu.  Any keystroke while a menu is posted
 reverts the menu back to the normal behavior.  With
 .I PopupClose
-the menu is cloed when a sub menu item is activated, and the menu
+the menu is closed when a sub menu item is activated, and the menu
 stays open if
 .I PopupIgnore
 is used (even if the menu was invoked with the
@@ -3453,7 +3453,7 @@ disables this behaviour.
 draws sub menu triangles with the foreground color of the menu colorset
 (normally drawn with the hilight color).
 .I !TrianglesUseFore
-disables this behaivour.
+disables this behaviour.
 
 Examples:
 .EX
@@ -3671,7 +3671,7 @@ makes fvwm try to raise the windows it manages over
 override_redirect windows.  This is used to cope with ill-mannered
 applications that use long-lived windows of this sort, contrary to
 .SM ICCCM
-conventions.  It is usefull with the
+conventions.  It is useful with the
 .I Unmanaged
 style option too.
 
@@ -3986,7 +3986,7 @@ second argument.
 The second is either the numeric value of the cursor as defined in
 the include file
 .I X11/cursorfont.h
-or its name (without the XC_ prefix). Alternativelly the xpm file
+or its name (without the XC_ prefix). Alternatively, the xpm file
 name may be specified.  This xpm file should contain a pixmap
 using 3 colors (None, black, white) and an optional hot-spot.  If
 no hot-spot is defined, the hot-spot is placed in the center of
@@ -4868,7 +4868,7 @@ debugging only.
 .BI "XSynchronize [" bool "]"
 The
 .B XSynchronize
-command controls wether X requests are sent to the X server
+command controls whether X requests are sent to the X server
 immediately or not.  Normally, requests are sent in larger batches
 to save unnecessary communication.  To send requests immediately,
 use "True" as the argument, to disable this use "False" or to
@@ -6106,17 +6106,17 @@ The special context 'M' for menus can only be used to control
 which mouse button is used to tear off menus.  See the section
 "Tear Off Menus" for details.
 
-The special context 'P' controls what buttons that can be used to place
-a window. When using this context no modifiers are allowed (
-.I Modifiers
+The special context 'P' controls what buttons that can be used to
+place a window. When using this context no modifiers are allowed
+.RI ( Modifiers
 must be N), no
 .I window
 is allowed, and the
 .I Function
 must be one of
-.IR PlaceWindow ", " PlaceWindowDrag ", " PlaceWindowInteractive ", "
-.IR CancelPlacement ", " CancelPlacementDrag ", " CancelPlacementInteractive
-.RI " or " - .
+.IR PlaceWindow ", " PlaceWindowDrag ", " PlaceWindowInteractive
+.RI ", " CancelPlacement ", " CancelPlacementDrag
+.RI ", " CancelPlacementInteractive " or " - .
 
 .I PlaceWindow
 makes
@@ -6125,9 +6125,9 @@ usable for window placement, both for interactive and drag move.
 .I CancelPlacement
 does the inverse. That is makes
 .I Button
-to cancel move for both interactive and drag move. It may however not
-override how new windows are resized after being placed. This is
-controlled by the
+to cancel move for both interactive and drag move. It may however
+not override how new windows are resized after being placed. This
+is controlled by the
 .B Emulate
 command. Also a window being dragged can always be placed
 by releasing the button hold while dragging, regardless of if it is
@@ -6155,11 +6155,11 @@ Mouse 3 P N CancelPlacement
 Mouse 1 P N CancelPlacementDrag
 .EE
 
-By default, the binding applies to all windows. You can specify that a
-binding only applies to specific windows by specifying the window name
-in brackets. The window name is a wildcard pattern specifying the
-class, resource or name of the window you want the binding to apply
-to.
+By default, the binding applies to all windows. You can specify
+that a binding only applies to specific windows by specifying the
+window name in brackets. The window name is a wildcard pattern
+specifying the class, resource or name of the window you want the
+binding to apply to.
 
 The following example shows how the same key-binding can be used to
 perform different functions depending on the window that is focused:
@@ -6170,8 +6170,9 @@ Key (*vim)  V A C --
 Key         V A C Echo ctrl-V-elsewhere
 .EE
 
-A '--' action indicates that the event should be propagated to the specified
-window to handle. This is only a valid action for window-specific bindings.
+A '--' action indicates that the event should be propagated to the
+specified window to handle. This is only a valid action for
+window-specific bindings.
 
 This example shows how to display the WindowList when Button 3 is
 pressed on an rxvt window:
@@ -6180,11 +6181,12 @@ Mouse (rxvt) 3 A A WindowList
 .EE
 
 Note that Fvwm actually intercepts all events for a window-specific
-binding and (if the focussed window doesn't match any of the bindings)
-sends a synthetic copy of the event to the window. This should be
-transparent to most applications, however (for security reasons) some programs
-ignore these synthetic events by default - xterm is one of them. To enable
-handling of these events, add the following line to your ~/.Xdefaults file:
+binding and (if the focused window doesn't match any of the
+bindings) sends a synthetic copy of the event to the window. This
+should be transparent to most applications, however (for security
+reasons) some programs ignore these synthetic events by default -
+xterm is one of them. To enable handling of these events, add the
+following line to your ~/.Xdefaults file:
 
 .EX
 XTerm*allowSendEvents:  true
@@ -8307,7 +8309,7 @@ style
 
 The styles
 .IR CirculateSkip " and " CirculateHit
-control wheter the window is considered by conditional commands,
+control whether the window is considered by conditional commands,
 for example
 .BR Next ", " Prev " or " All .
 Windows with
@@ -8330,7 +8332,7 @@ with
 .EX
 Style * CirculateSkipIcon, CirculateSkipShaded
 .EE
-only windows that are neither iconic nor shaded are selecte.
+only windows that are neither iconic nor shaded are selected.
 Note:  For historical reasons, the conditional commands understand
 the names of these styles as condition names.  Take care no to
 confuse them.
@@ -8433,14 +8435,14 @@ can be "ActiveUp", "ActiveDown", "InactiveUp" or "InactiveDown",
 or "Active" (the same as both "ActiveUp" and "ActiveDown")
 or "Inactive" (the same as both "InactiveUp" and "InactiveDown")
 or any of these 6 with "Toggled" prepended.
-The "Active" states apply to the focussed window, the "Inactive"
+The "Active" states apply to the focused window, the "Inactive"
 ones apply to all other windows. The "Up" states apply to the
 non pressed buttons, the "Down" ones apply to pressed buttons.
 The "Toggled" prefix refers to maximized, shaded or sticky windows
 that have the corresponding
 .I MwmDecor...
 button style set.
-Additionally, the following shotcuts may be used: "AllNormal",
+Additionally, the following shortcuts may be used: "AllNormal",
 "AllToggled", "AllActive", "AllInactive", "AllUp", "AllDown".
 They are actually different masks for 4 individual states from
 8 total.  These are supported too: "AllActiveUp", "AllActiveDown",
@@ -8701,7 +8703,7 @@ If
 .I InactiveDown
 argument is "False" (only applied when
 .I Inactive
-is "True"), the pressed titles and title buttons in non-focussed
+is "True"), the pressed titles and title buttons in non-focused
 windows are drawn using "InactiveUp" or "ActiveUp" states
 depending on the values of the other key words.
 
@@ -8747,7 +8749,7 @@ AddToDecor Default
  + ButtonStyle 6 - MwmDecorShade
 Mouse 0 6 N WindowShade
 .EE
-Additionally, the following shotcuts may be used: "AllNormal",
+Additionally, the following shortcuts may be used: "AllNormal",
 "AllToggled", "AllActive", "AllInactive", "AllUp", "AllDown".
 They are actually different masks for 4 individual states from
 8 total.  These are supported too: "AllActiveUp", "AllActiveDown",
@@ -8905,7 +8907,7 @@ argument is a percentage between 0 and 100. It causes fvwm to
 merge the colorset background onto the button using this
 percentage. If the percentage is 0 the colorset background is
 hidden and if it is 100 the colorset background is fully
-applied. The default is 100. So, the destructivity depends on the
+applied. The default is 100. So, the destructiveness depends on the
 .I alpha
 argument.
 
@@ -9434,7 +9436,7 @@ will be set to the value of
 Set
 .I xinerama-moving
 to zero to ignore individual screen edges.  Note that the center of
-the window being moved determines the xinarema screen on which the
+the window being moved determines the xinerama screen on which the
 window should be kept.
 
 .TP
@@ -10250,13 +10252,13 @@ command can be used.
 Fvwm stores windows in a ring internally.  Think of the focused
 window as a cursor on the current position in the ring.  The
 .B Next
-command and many other command searche forwards through the ring
+command and many other command search forwards through the ring
 for a matching window, and
 .B Prev
 searches backwards.  The windows in the ring are either ordered by
 creation time (if the
 .I FPSortWindowlistByFocus
-respecively
+respectively
 .IR NeverFocus " or " MouseFocus
 styles are used) or by the last time they had the focus.
 
@@ -10596,7 +10598,7 @@ The
 .IR "W file" ,
 .IR "X file" " and"
 .IR "I file"
-test-conditions test for existance of the given [F]ile (possibly
+test-conditions test for existence of the given [F]ile (possibly
 with [R]ead/[W]rite permissions), e[X]ecutable (in $PATH),
 or the [I]mage (in ImagePath).
 
@@ -10888,8 +10890,8 @@ activates the
 condition.
 
 The
-.IR CurrentPageAnyDesk " and " CurrentScrene
-conditions matche only windows that are on the current page of any
+.IR CurrentPageAnyDesk " and " CurrentScreen
+conditions match only windows that are on the current page of any
 desk.  If Xinerama support is enabled, they only match windows
 that are at least partially on the Xinerama screen containing the
 mouse pointer.
@@ -10926,7 +10928,7 @@ command but can be used with the other conditional commands.
 
 The
 .I HasHandles
-condition excludes all windoows that don't have resize handles.
+condition excludes all windows that don't have resize handles.
 
 The
 .I HasPointer
@@ -11581,7 +11583,7 @@ the background of a window. In the second case the transparency is
 relative to the parent window of the window on which the colorset
 is defined.  For example:
 .EX
-Colorset 12 VGradient 200 grey30 gery60
+Colorset 12 VGradient 200 grey30 grey60
 Colorset 17 Transparent
 *FvwmIconMan: Colorset 10
 *FvwmIconMan: PlainColorset 17

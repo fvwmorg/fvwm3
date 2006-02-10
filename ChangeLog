@@ -1,3 +1,8 @@
+2006-02-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.1.in:
+	spell check the whole file (dozens of typos)
+
 2006-02-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (do_execute_module):
