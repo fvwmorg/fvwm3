@@ -1015,6 +1015,19 @@ has the same syntax as described in
 above. Command may be any fvwm command with variables $var that
 are expanded if supported.
 
+.IP "PressButton \fIbutton_id\fP [\fImouse_button\fP]"
+where
+.I button_id
+is the id of the button to press as specified using the
+.B Id
+button option and
+.I mouse_button
+is the number of mouse button used to click on the button e.g "1" for left
+mouse button etc. Quotes around the number is not needed. If
+.I mouse_button
+option is omitted "1" assumed. This command behaves exactly like if
+the button in question was pressed using the mouse.
+
 .IP Silent
 This prefix may be specified before other actions. It disables
 all possible error and warning messages.

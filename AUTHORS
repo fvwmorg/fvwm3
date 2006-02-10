@@ -35,6 +35,7 @@ EdgeLeaveCommand
 
 George Potapov:
 ShowOnlyFocused option for FvwmIconMan.
+PressButton command in FvwmButtons
 
 Jim C. Brown:
 MailDir option in FvwmTaskBar.

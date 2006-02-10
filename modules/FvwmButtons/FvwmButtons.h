@@ -247,6 +247,9 @@ int LoadIconFile(const char *s, FvwmPicture **p, int cset);
 void SetTransparentBackground(button_info *ub, int w, int h);
 void exec_swallow(char *action, button_info *b);
 
+char *GetButtonAction(button_info*,int);
+void ButtonPressProcess(button_info *b, char **act);
+
 /* ----------------------------- global variables -------------------------- */
 
 extern Display *Dpy;

@@ -1,3 +1,17 @@
+2006-02-10  George Potapov <nephrite@inbox.ru>
+
+	* modules/FvwmButtons/FvwmButtons.1.in
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(ButtonPressProcess):
+	* modules/FvwmButtons/FvwmButtons.h
+	* FvwmButtons/dynamic.c (parse_message_line):
+	Added command PressButton to module FvwmButtons
+
+2006-02-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmSave/FvwmSave.1.in:
+	removed documentation referring to NoClutter from FvwmSave man page
+
 2006-02-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmButtons/FvwmButtons.c:

@@ -1,5 +1,10 @@
 2006-02-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/module_interface.c (do_execute_module):
+	unset envvars FVWM_VISUALID and FVWM_COLORMAP if they are not needed
+	pass the module alias in the envvar FVWM_MODULE_ALIAS. getenv() may
+	return either NULL or an empty string if no alias was used
+
 	* fvwm/menus.c (size_menu_horizontally):
 	fix for drawing menus with sidepic on the right
 

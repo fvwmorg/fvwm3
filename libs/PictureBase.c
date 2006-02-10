@@ -80,7 +80,7 @@ void PictureInitCMap(Display *dpy) {
 	Pdpy = dpy;
 	/* if fvwm has not set this env-var it is using the default visual */
 	envp = getenv("FVWM_VISUALID");
-	if ((envp != NULL) && (strlen(envp) > 0)) {
+	if (envp != NULL && *envp > 0) {
 		/* convert the env-vars to a visual and colormap */
 		int viscount;
 		XVisualInfo vizinfo, *xvi;
@@ -89,6 +89,7 @@ void PictureInitCMap(Display *dpy) {
 		xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
 		Pvisual = xvi->visual;
 		Pdepth = xvi->depth;
+		/* Note: if FVWM_VISUALID is set, FVWM_COLORMAP is set too */
 		sscanf(getenv("FVWM_COLORMAP"), "%lx", &Pcmap);
 		Pdefault = False;
 	} else {

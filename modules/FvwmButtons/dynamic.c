@@ -195,7 +195,7 @@ static button_info *parse_button_id(char **line)
 
 static char *actions[] =
 {
-	"Silent", "ChangeButton", "ExpandButtonVars", NULL
+	"Silent", "ChangeButton", "ExpandButtonVars", "PressButton", NULL
 };
 
 static char *button_options[] =
@@ -208,6 +208,9 @@ void parse_message_line(char *line)
 	char *rest;
 	int action = -1;
 	button_info *b;
+	char *act;
+	char *buttonn;
+	int mousebutton;
 
 	silent = False;
 	do
@@ -236,12 +239,12 @@ void parse_message_line(char *line)
 	{
 	case 1:
 		/* ChangeButton */
-		/* The dimensions of individual buttons (& the overall size of the
-		 * FvwmButtons window) is based on the initial configuration for the
-		 * module. In some configurations, dynamically adding/changing a
-		 * title/icon may mean it no longer fits on a button. Currently, there
-		 * are no checks for this occurance.
-		 */
+		/* The dimensions of individual buttons (& the overall size of
+		 * the FvwmButtons window) is based on the initial
+		 * configuration for the module. In some configurations,
+		 * dynamically adding/changing a title/icon may mean it no
+		 * longer fits on a button. Currently, there are no checks for
+		 * this occurance. */
 		while (rest && rest[0] != '\0')
 		{
 			char *option_pair;
@@ -275,7 +278,8 @@ void parse_message_line(char *line)
 
 			if (value == NULL)
 			{
-				show_error("No title/icon to change specified.\n");
+				show_error(
+					"No title/icon to change specified.\n");
 				continue;
 			}
 			switch (option)
@@ -302,8 +306,14 @@ void parse_message_line(char *line)
 				CopyString(&b->pressTitle, value);
 				break;
 			default:
-				if (LoadIconFile(value, &icon, b->colorset) == 0)
-					show_error("Cannot load icon \"%s\"\n", value);
+				if (
+					LoadIconFile(
+						value, &icon, b->colorset) == 0)
+				{
+					show_error(
+						"Cannot load icon \"%s\"\n",
+						value);
+				}
 				else
 				{
 				    switch (option)
@@ -312,30 +322,40 @@ void parse_message_line(char *line)
 						if (b->flags.b_Icon)
 						{
 							free(b->icon_file);
-							PDestroyFvwmPicture(Dpy, b->icon);
+							PDestroyFvwmPicture(
+								Dpy, b->icon);
 						}
 						b->flags.b_Icon = 1;
-						CopyString(&b->icon_file, value);
+						CopyString(
+							&b->icon_file, value);
 						b->icon = icon;
 						break;
 					case 3: /* ActiveIcon */
 						if (b->flags.b_ActiveIcon)
 						{
 							free(b->active_icon_file);
-							PDestroyFvwmPicture(Dpy, b->activeicon);
+							PDestroyFvwmPicture(
+								Dpy,
+								b->activeicon);
 						}
 						b->flags.b_ActiveIcon = 1;
-						CopyString(&b->active_icon_file, value);
+						CopyString(
+							&b->active_icon_file,
+							value);
 						b->activeicon = icon;
 						break;
 					case 5: /* PressIcon */
 						if (b->flags.b_PressIcon)
 						{
 							free(b->press_icon_file);
-							PDestroyFvwmPicture(Dpy, b->pressicon);
+							PDestroyFvwmPicture(
+								Dpy,
+								b->pressicon);
 						}
 						b->flags.b_PressIcon = 1;
-						CopyString(&b->press_icon_file, value);
+						CopyString(
+							&b->press_icon_file,
+							value);
 						b->pressicon = icon;
 						break;
 					}
@@ -364,6 +384,34 @@ void parse_message_line(char *line)
 			SendText(fd, line, 0);
 			free(line);
 		}
+		break;
+	case 3:
+		/* PressButton */
+		rest = GetQuotedString(rest, &buttonn, "", NULL, NULL, NULL);
+		if (buttonn)
+		{
+			mousebutton = atoi(buttonn);
+			free(buttonn);
+			if (
+				mousebutton <= 0 ||
+				mousebutton > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+			{
+				mousebutton = 1;
+			}
+		}
+		else
+		{
+			mousebutton = 1;
+		}
+		CurrentButton = b;
+		act = GetButtonAction(b, mousebutton);
+		ButtonPressProcess(b, &act);
+		if (act)
+		{
+			free(act);
+		}
+		CurrentButton = NULL;
+
 		break;
 	}
 

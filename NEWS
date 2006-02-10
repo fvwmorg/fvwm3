@@ -9,6 +9,8 @@ Changes in beta release 2.5.17 (not released yet)
 
    - New MenuStyle options TitleFont, TitleColorset and
      HilightTitleBack.
+   - New command PressButton in module FvwmButtons for being able
+     to emulate button press via other means.
 
 * Bug Fixes:
 

@@ -800,7 +800,8 @@ int main(int argc, char **argv)
 	maxy = 0;
 	RecursiveLoadData(UberButton, &maxx, &maxy);
 
-	/* now we can size the main window if pixels per button were specified */
+	/* now we can size the main window if pixels per button were specified
+	 */
 	if (has_button_geometry && button_width > 0 && button_height > 0)
 	{
 		w = button_width * UberButton->c->num_columns;
@@ -944,6 +945,124 @@ static button_info *handle_new_position(
 	return b;
 }
 
+void ButtonPressProcess (b, act)
+	button_info *b;
+	char **act;
+{
+	FlocaleNameString tmp;
+    	int i,i2;
+
+        memset(&tmp, 0, sizeof(tmp));
+	if (b && !*act && b->flags.b_Panel)
+	{
+		ActiveButton = b;
+	  	HandlePanelPress(b);
+		if (b->newflags.panel_mapped == 0)
+	  	{
+	    		if (is_transient)
+	    		{
+	      			/* terminate if transient and panel has been
+				 * unmapped */
+	      			exit(0);
+	    		}
+	    		else if (is_transient_panel)
+	    		{
+	      			XWithdrawWindow(Dpy, MyWindow, screen);
+	    		}
+	  	}
+	} /* panel */
+	else
+	{
+		if (!*act)
+	    		*act=GetButtonAction(b,0);
+	  	if (b && b == CurrentButton && *act)
+	  	{
+	    		if (strncasecmp(*act,"Exec",4) == 0 &&
+				isspace((*act)[4]))
+			{
+
+				/* Look for Exec "identifier", in which case
+				 * the button stays down until window
+				 * "identifier" materializes */
+				i = 4;
+				while(isspace((unsigned char)(*act)[i]))
+					i++;
+				if((*act)[i] == '"')
+				{
+					i2=i+1;
+					while((*act)[i2]!=0 && (*act)[i2]!='"')
+						i2++;
+
+					if(i2-i>1)
+					{
+						b->flags.b_Hangon = 1;
+						b->hangon = mymalloc(i2-i);
+						strncpy(
+							b->hangon, &(*act)[i+1],
+							i2-i-1);
+						b->hangon[i2-i-1] = 0;
+					}
+					i2++;
+				}
+				else
+					i2=i;
+
+				tmp.name = mymalloc(strlen(*act)+1);
+				strcpy(tmp.name, "Exec ");
+				while (
+					(*act)[i2]!=0 &&
+					isspace((unsigned char)(*act)[i2]))
+				{
+					i2++;
+				}
+				strcat(tmp.name ,&(*act)[i2]);
+				if (is_transient)
+				{
+					/* delete the window before continuing
+					 */
+					XDestroyWindow(Dpy, MyWindow);
+					XSync(Dpy, 0);
+				}
+				SendText(fd,tmp.name,0);
+				if (is_transient)
+				{
+					/* and exit */
+					exit(0);
+				}
+				if (is_transient_panel)
+				{
+					XWithdrawWindow(Dpy, MyWindow, screen);
+				}
+				free(tmp.name);
+			} /* exec */
+			else if(strncasecmp(*act,"DumpButtons",11)==0)
+				DumpButtons(UberButton);
+			else if(strncasecmp(*act,"SaveButtons",11)==0)
+				SaveButtons(UberButton);
+			else
+			{
+				if (is_transient)
+				{
+					/* delete the window before continuing
+					 */
+					XDestroyWindow(Dpy, MyWindow);
+					XSync(Dpy, 0);
+				}
+				SendText(fd,*act,0);
+				if (is_transient)
+				{
+					/* and exit */
+					exit(0);
+				}
+				if (is_transient_panel)
+				{
+					XWithdrawWindow(Dpy, MyWindow, screen);
+				}
+			}
+		} /* *act */
+	} /* !panel */
+}
+
 /* -------------------------------- Main Loop -------------------------------*/
 
 /**
@@ -954,7 +1073,7 @@ void Loop(void)
 	XEvent Event;
 	KeySym keysym;
 	char buffer[10], *act;
-	int i, i2, button;
+	int i, button;
 	int x;
 	int y;
 	button_info *ub, *b;
@@ -994,11 +1113,17 @@ void Loop(void)
 					}
 					ex = Event.xexpose.x;
 					ey = Event.xexpose.y;
-					ex2= Event.xexpose.x+Event.xexpose.width;
-					ey2= Event.xexpose.y+Event.xexpose.height;
-					while (FCheckTypedWindowEvent(Dpy, MyWindow, Expose, &Event))
+					ex2= Event.xexpose.x +
+						Event.xexpose.width;
+					ey2= Event.xexpose.y +
+						Event.xexpose.height;
+					while (
+						FCheckTypedWindowEvent(
+							Dpy, MyWindow, Expose,
+							&Event))
 					{
-					 /* maybe we should not purge here, this may interfere
+					 /* maybe we should not purge here,
+					  * this may interfere
 					  * with configure notify */
 					 ex = min(ex, Event.xexpose.x);
 					 ey = min(ey, Event.xexpose.y);
@@ -1150,7 +1275,9 @@ void Loop(void)
 	}
       case KeyPress:
 	XLookupString(&Event.xkey, buffer, 10, &keysym, 0);
-	if (keysym != XK_Return && keysym != XK_KP_Enter && keysym != XK_Linefeed)
+	if (
+		keysym != XK_Return && keysym != XK_KP_Enter &&
+		keysym != XK_Linefeed)
 	  break;                        /* fall through to ButtonPress */
 
       case ButtonPress:
@@ -1261,105 +1388,9 @@ void Loop(void)
 	    Event.xbutton.y, &x, &y, &dummy);
 	}
 	b = select_button(UberButton, x, y);
-	act = GetButtonAction(b, Event.xbutton.button);
-	if (b && !act && b->flags.b_Panel)
-	{
-	  ActiveButton = b;
-	  HandlePanelPress(b);
-	  if (b->newflags.panel_mapped == 0)
-	  {
-	    if (is_transient)
-	    {
-	      /* terminate if transient and panel has been unmapped */
-	      exit(0);
-	    }
-	    else if (is_transient_panel)
-	    {
-	      XWithdrawWindow(Dpy, MyWindow, screen);
-	    }
-	  }
-	} /* panel */
-	else
-	{
-	  if (!act)
-	    act = GetButtonAction(b, 0);
-	  if (b && b == CurrentButton && act)
-	  {
-	    if (strncasecmp(act, "Exec", 4) == 0 &&
-		isspace(act[4]))
-	    {
+	act = GetButtonAction(b,Event.xbutton.button);
 
-	      /* Look for Exec "identifier", in which case the button
-		 stays down until window "identifier" materializes */
-	      i = 4;
-	      while (isspace((unsigned char)act[i]))
-		i++;
-	      if (act[i] == '"')
-	      {
-		i2 = i + 1;
-		while (act[i2] != 0 && act[i2] != '"')
-		  i2++;
-
-		if (i2-i>1)
-		{
-		  b->flags.b_Hangon = 1;
-		  b->hangon = mymalloc(i2 - i);
-		  strncpy(b->hangon, &act[i+1], i2 - i - 1);
-		  b->hangon[i2 - i - 1] = 0;
-		}
-		i2++;
-	      }
-	      else
-		i2 = i;
-
-	      tmp.name = mymalloc(strlen(act) + 1);
-	      strcpy(tmp.name, "Exec ");
-	      while (act[i2] != 0 && isspace((unsigned char)act[i2]))
-		i2++;
-	      strcat(tmp.name, &act[i2]);
-	      if (is_transient)
-	      {
-		/* delete the window before continuing */
-		XDestroyWindow(Dpy, MyWindow);
-		XSync(Dpy, 0);
-	      }
-	      SendText(fd, tmp.name, 0);
-	      if (is_transient)
-	      {
-		/* and exit */
-		exit(0);
-	      }
-	      if (is_transient_panel)
-	      {
-		XWithdrawWindow(Dpy, MyWindow, screen);
-	      }
-	      free(tmp.name);
-	    } /* exec */
-	    else if (strncasecmp(act, "DumpButtons", 11) == 0)
-	      DumpButtons(UberButton);
-	    else if (strncasecmp(act, "SaveButtons", 11) == 0)
-	      SaveButtons(UberButton);
-	    else
-	    {
-	      if (is_transient)
-	      {
-		/* delete the window before continuing */
-		XDestroyWindow(Dpy, MyWindow);
-		XSync(Dpy, 0);
-	      }
-	      SendText(fd, act, 0);
-	      if (is_transient)
-	      {
-		/* and exit */
-		exit(0);
-	      }
-	      if (is_transient_panel)
-	      {
-		XWithdrawWindow(Dpy, MyWindow, screen);
-	      }
-	    }
-	  } /* act */
-	} /* !panel */
+	ButtonPressProcess(b, &act);
 
 	if (act != NULL)
 	{
@@ -1792,7 +1823,9 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   ix = iy = tx = ty = hix = hiy = htx = hty = pix = piy = ptx = pty = 0;
 
   /* Load the icon */
-  if (b->flags.b_Icon && LoadIconFile(b->icon_file, &b->icon, buttonColorset(b)))
+  if (
+	  b->flags.b_Icon &&
+	  LoadIconFile(b->icon_file, &b->icon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr, ", icon \"%s\"", b->icon_file);
