@@ -1076,7 +1076,7 @@ static Bool __place_get_wm_pos(
 		if (
 			FQueryPointer(
 				dpy, Scr.Root, &JunkRoot, &JunkChild, &mx, &my,
-				&JunkX, &JunkY, &JunkMask))
+				&JunkX, &JunkY, &JunkMask) == False)
 		{
 			/* pointer is on a different screen */
 			xl = 0;
