@@ -4936,7 +4936,7 @@ AddToFunc lower-to-bottom
 .EE
 
 .TP
-.B "Move [[screen \fIscreen\fP]
+.B "Move [[screen \fIscreen\fP]\
  [\fIw\fP\
  | \fIm\fP\
 ]\fIx\fP\
@@ -9440,7 +9440,8 @@ the window being moved determines the xinerama screen on which the
 window should be kept.
 
 .TP
-.BI "EdgeScroll " horizontal "[" p "] " vertical "[" p "]"
+.BI "EdgeScroll " horizontal "[" p "] " vertical "[" p "] [" \
+wrap "|" wrapx "|" wrapy "]"
 Specifies the percentage of a page to scroll when the cursor hits
 the edge of a page.  A trailing
 .RI ' p '
@@ -9465,13 +9466,15 @@ should be positive numbers.
 
 If the
 .IR horizontal " and " vertical
-percentages are multiplied by 1000 then scrolling wraps around at
-the edge of the desktop.  If
+percentages are multiplied by 1000 or one of the keywords 
+.IR wrap ", " wrapx " and " wrapy
+is given then scrolling wraps around at the edge of the desktop.
+If
 .EX
 EdgeScroll 100000 100000
 .EE
 is used fvwm scrolls by whole pages, wrapping around at the edge
-of the desktop.
+of the desktop. 
 
 .TP
 .BI "EdgeThickness " 0 | 1 | 2

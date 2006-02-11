@@ -11,11 +11,15 @@ Changes in beta release 2.5.17 (not released yet)
      HilightTitleBack.
    - New command PressButton in module FvwmButtons for being able
      to emulate button press via other means.
+   - New wrap options to EdgeScroll command for wrapping with pixel
+     distances.
 
 * Bug Fixes:
 
    - Fixed detection of running non-ICCCM2 wm (bug #3151).
    - Fixed drawing of menus with the sidepic on the right.
+   - EdgeScroll no longer divides pixel distances >1000 by 1000.
+     (bug #3162)
 
 -------------------------------------------------------------------
 

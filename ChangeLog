@@ -1,3 +1,11 @@
+2006-02-11  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS: 
+	* fvwm/fvwm.1.in (EdgeScroll): 
+	* fvwm/virtual.c (CMD_EdgeScroll): 
+	fixed EdgeScroll dividing pixel sizes by 1000 if > 1000 (bug 3162)
+	added wrap/wrapx/wrapy option to EdgeScroll
+
 2006-02-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.1.in:
