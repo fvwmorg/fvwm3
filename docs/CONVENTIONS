@@ -4,7 +4,7 @@ common practice or unspoken agreement.  It is hopefully useful for
 the fvwm development newbie.  Do not take these 'rules' as
 religious duties.  All of this can be discussed if need be.  If
 you add items to or modify items in this list, add your name and
-the resoning for the change.
+the reasoning for the change.
 
 ! = This rule *must* be followed
 * = Less strict rules
@@ -53,7 +53,7 @@ C. File Names
    [dv]
 
  * Files in the libs directory may begin with a capital 'F'.  This
-   letter is reserver for wrapper files for third party libraries
+   letter is reserved for wrapper files for third party libraries
    or modules.  For example, FShape is an abstraction of the
    XShape X server extension and FBidi is a wrapper for the
    fribidi library.  Do not use the 'F' for other purposes.
@@ -101,7 +101,7 @@ E. Code Formatting
 
  * Always keep code maintenance in mind.  Break down complex
    expressions into a series of smaller expressions and leave the
-   optimising work to the compiler.  It is of utmost importance
+   optimizing work to the compiler.  It is of utmost importance
    that your code is easy to understand.
    [dv]
 

@@ -48,8 +48,7 @@
 
 
 int fvwm_fd[2] = { -1, -1 };
-char *my_name = NULL;
-int my_name_len = 0;
+static ModuleArgs *module;
 char *image_path = NULL;
 GHashTable *widgets = NULL;
 GtkWidget *current = NULL;
@@ -280,9 +279,12 @@ void parse_config_line(char *buf)
 	{
 		buf[strlen(buf)-1] = '\0';
 	}
-	if (strncasecmp(buf, my_name, my_name_len) == 0)
+	if (
+		strncasecmp(
+			buf, CatString3("*",module->name,0),
+			module->namelen+1) == 0)
 	{
-		p = buf + my_name_len;
+		p = buf + module->namelen+1;
 		if ((e = FindToken(p, table, char*)))
 		{
 			p += strlen(*e);
@@ -292,7 +294,7 @@ void parse_config_line(char *buf)
 		else
 		{
 			fprintf(stderr, "%s: unknown command: %s\n",
-				my_name + 1, buf);
+				module->name, buf);
 		}
 	}
 	else if (strncasecmp(buf, "ImagePath", 9) == 0)
@@ -310,7 +312,8 @@ void parse_options(void)
 {
 	char *buf;
 
-	InitGetConfigLine(fvwm_fd,my_name);   /* only my config lines needed */
+	/* only my config lines needed */
+	InitGetConfigLine(fvwm_fd,CatString3("*",module->name,0));
 	while (GetConfigLine(fvwm_fd, &buf), buf != NULL)
 	{
 		parse_config_line(buf);
@@ -449,35 +452,17 @@ void read_fvwm_pipe(gpointer data, int source, GdkInputCondition cond)
 
 int main(int argc, char **argv)
 {
-	char *s;
-
-	if ((s = strrchr(argv[0], '/')))
+	module = ParseModuleArgs(argc,argv,1);
+	if (module == NULL)
 	{
-		s++;
-	}
-	else
-	{
-		s = argv[0];
-	}
-	if (argc == 7)
-	{
-		s = argv[6];
-	}
-	my_name_len = strlen(s) + 1;
-	my_name = safemalloc(my_name_len + 1);
-	*my_name = '*';
-	strcpy(my_name + 1, s);
-
-	if ((argc != 6) && (argc != 7)) /* Now MyName is defined */
-	{
-		fprintf(stderr,
-			"%s version %s should only be executed by fvwm!\n",
-			my_name + 1, VERSION);
+		fprintf(
+			stderr, "FvwmGtk version %s should only be executed by"
+			" fvwm!\n", VERSION);
 		exit(1);
 	}
 
-	fvwm_fd[0] = atoi(argv[1]);
-	fvwm_fd[1] = atoi(argv[2]);
+	fvwm_fd[0] = module->to_fvwm;
+	fvwm_fd[1] = module->from_fvwm;
 
 #ifdef GDK_IMLIB
 	gdk_init(&argc, &argv);

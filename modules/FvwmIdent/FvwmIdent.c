@@ -61,7 +61,7 @@
 
 static RETSIGTYPE TerminateHandler(int);
 
-static char *MyName;
+static ModuleArgs *module;
 static fd_set_size_t fd_width;
 static int fd[2];
 
@@ -88,7 +88,6 @@ static char *font_string = NULL;
 static Pixel fore_pix;
 static Pixel back_pix;
 static Window main_win;
-static Window app_win;
 static Bool UsePixmapDrawing = False; /* if True draw everything in a pixamp
 				       * and set the window background. Use
 				       * this with Xft */
@@ -125,31 +124,17 @@ static int my_layer = default_layer;
  */
 int main(int argc, char **argv)
 {
-	char *temp, *s;
 	char *display_name = NULL;
-	int Clength;
 	char *tline;
 
 	FlocaleInit(LC_CTYPE, "", "", "FvwmIdent");
 
-	/* Save the program name for error messages and config parsing */
-	temp = argv[0];
-	s=strrchr(argv[0], '/');
-	if (s != NULL)
-		temp = s + 1;
-
-	MyName = safemalloc(strlen(temp)+2);
-	strcpy(MyName,"*");
-	strcat(MyName, temp);
-	Clength = strlen(MyName);
-
-	if((argc != 6)&&(argc != 7))
+	module = ParseModuleArgs(argc,argv,0); /* no alias */
+	if (module == NULL)
 	{
 		fprintf(
-			stderr,
-			"%s Version %s should only be executed by fvwm!\n",
-			MyName,
-			VERSION);
+			stderr, "FvwmIdent Version %s should only be executed"
+			" by fvwm!\n", VERSION);
 		exit(1);
 	}
 
@@ -199,16 +184,13 @@ int main(int argc, char **argv)
 #endif
 #endif
 
-	fd[0] = atoi(argv[1]);
-	fd[1] = atoi(argv[2]);
-
-	/* An application window may have already been selected - look for it */
-	sscanf(argv[4],"%x",(unsigned int *)&app_win);
+	fd[0] = module->to_fvwm;
+	fd[1] = module->from_fvwm;
 
 	/* Open the Display */
 	if (!(dpy = XOpenDisplay(display_name)))
 	{
-		fprintf(stderr,"%s: can't open display %s", MyName,
+		fprintf(stderr,"%s: can't open display %s", module->name,
 			XDisplayName(display_name));
 		exit (1);
 	}
@@ -232,7 +214,7 @@ int main(int argc, char **argv)
 	/* scan config file for set-up parameters */
 	/* Colors and fonts */
 
-	InitGetConfigLine(fd,MyName);
+	InitGetConfigLine(fd,CatString3("*",module->name,0));
 	GetConfigLine(fd,&tline);
 
 	while (tline != (char *)0)
@@ -241,9 +223,11 @@ int main(int argc, char **argv)
 		{
 			continue;
 		}
-		if (strncasecmp(tline, MyName, Clength) == 0)
+		if (strncasecmp(tline,
+				CatString3("*",module->name,0),
+				module->namelen+1) == 0)
 		{
-			tline += Clength;
+			tline += (module->namelen +1);
 			if (strncasecmp(tline, "Font", 4) == 0)
 			{
 				CopyStringWithQuotes(&font_string, &tline[4]);
@@ -299,9 +283,10 @@ int main(int argc, char **argv)
 		GetConfigLine(fd, &tline);
 	}
 
-	if(app_win == 0)
+	if(module->window == 0)
 	{
-		fvwmlib_get_target_window(dpy, screen, MyName, &app_win, True);
+		fvwmlib_get_target_window(
+			dpy, screen, module->name, &(module->window), True);
 	}
 
 	fd_width = GetFdWidth();
@@ -313,7 +298,7 @@ int main(int argc, char **argv)
 
 	/* tell fvwm we're running */
 	SendFinishedStartupNotification(fd);
-	if (app_win == Root)
+	if (module->window == Root)
 	{
 		exit(0);
 	}
@@ -400,11 +385,15 @@ void list_configure(unsigned long *body)
 {
 	struct ConfigWinPacket  *cfgpacket = (void *) body;
 
-	if((app_win == cfgpacket->frame)||(app_win == cfgpacket->w)
-	   ||((cfgpacket->icon_w != 0)&&(app_win == cfgpacket->icon_w))
-	   ||((cfgpacket->icon_pixmap_w)&&(app_win == cfgpacket->icon_pixmap_w)))
+	if (
+		(module->window == cfgpacket->frame)||
+		(module->window == cfgpacket->w) ||
+		((cfgpacket->icon_w != 0)&&
+		 (module->window == cfgpacket->icon_w)) ||
+		((cfgpacket->icon_pixmap_w)&&
+		 (module->window == cfgpacket->icon_pixmap_w)))
 	{
-		app_win = cfgpacket->frame;
+		module->window = cfgpacket->frame;
 		target.id = cfgpacket->w;
 		target.frame = cfgpacket->frame;
 		target.frame_x = cfgpacket->frame_x;
@@ -442,7 +431,9 @@ void list_configure(unsigned long *body)
  */
 void list_window_name(unsigned long *body)
 {
-	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
+	if (
+		(module->window == (Window)body[1])||
+		(module->window == (Window)body[0]))
 	{
 		strncpy(target.name,(char *)&body[3],255);
 	}
@@ -455,7 +446,9 @@ void list_window_name(unsigned long *body)
  */
 void list_icon_name(unsigned long *body)
 {
-	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
+	if (
+		(module->window == (Window)body[1])||
+		(module->window == (Window)body[0]))
 	{
 		strncpy(target.icon_name,(char *)&body[3],255);
 	}
@@ -469,7 +462,9 @@ void list_icon_name(unsigned long *body)
  */
 void list_class(unsigned long *body)
 {
-	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
+	if (
+		(module->window == (Window)body[1])||
+		(module->window == (Window)body[0]))
 	{
 		strncpy(target.class,(char *)&body[3],255);
 	}
@@ -483,7 +478,8 @@ void list_class(unsigned long *body)
  */
 void list_res_name(unsigned long *body)
 {
-	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
+	if ((module->window == (Window)body[1])||
+	    (module->window == (Window)body[0]))
 	{
 		strncpy(target.res,(char *)&body[3],255);
 	}
@@ -646,8 +642,8 @@ int ProcessXEvent(int x, int y)
 					XDestroyWindow(dpy, main_win);
 					DestroyList();
 					fvwmlib_get_target_window(
-						dpy, screen, MyName, &app_win,
-						True);
+						dpy, screen, module->name,
+						 &(module->window), True);
 					found = 0;
 					return 1;
 				}
@@ -756,9 +752,11 @@ void list_end(void)
 	/* tell fvwm to only send config messages */
 	SetMessageMask(fd, M_CONFIG_INFO | M_SENDCONFIG);
 
-	if ((Ffont = FlocaleLoadFont(dpy, font_string, MyName)) == NULL)
+	if ((Ffont = FlocaleLoadFont(dpy, font_string, module->name)) == NULL)
 	{
-		fprintf(stderr,"%s: cannot load font, exiting\n", MyName);
+		fprintf(
+			stderr,"%s: cannot load font, exiting\n",
+			module->name);
 		exit(1);
 	}
 
@@ -867,7 +865,7 @@ void list_end(void)
 	}
 
 	XSelectInput(dpy, main_win, mw_events);
-	change_window_name(&MyName[1]);
+	change_window_name(module->name);
 
 	gcm = GCForeground;
 	gcv.foreground = fore_pix;
@@ -889,8 +887,8 @@ void list_end(void)
 	}
 	XMapWindow(dpy,main_win);
 
-	/* Window is created. Display it until the user clicks or deletes it. */
-	/* also grok any dynamic config changes */
+	/* Window is created. Display it until the user clicks or deletes it.
+	 * also grok any dynamic config changes */
 	while(1)
 	{
 		FvwmPacket* packet;
@@ -1006,7 +1004,8 @@ void PixmapDrawWindow(int w, int h)
 		}
 		else
 		{
-			pix = CreateTiledPixmap(dpy, cs_pix, 0,0,w,h,Pdepth, gc);
+			pix = CreateTiledPixmap(
+				dpy, cs_pix, 0,0,w,h,Pdepth, gc);
 			XFreePixmap(dpy, cs_pix);
 		}
 	}
@@ -1046,7 +1045,7 @@ void change_window_name(char *str)
 
 	if (XStringListToTextProperty(&str,1,&name) == 0)
 	{
-		fprintf(stderr,"%s: cannot allocate window name",MyName);
+		fprintf(stderr,"%s: cannot allocate window name",module->name);
 		return;
 	}
 	XSetWMName(dpy,main_win,&name);
@@ -1112,7 +1111,8 @@ void MakeList(void)
 	int bw,width,height,x1,y1,x2,y2;
 	char loc[20];
 	static char xstr[6],ystr[6];
-	/* GSFR - quick hack because the new macros depend on a prt reference  */
+	/* GSFR - quick hack because the new macros depend on a prt reference
+	 */
 	struct target_struct  *targ  =  &target;
 
 	ListSize = 0;
@@ -1428,6 +1428,6 @@ ErrorHandler(Display *d, XErrorEvent *event)
 	}
 #endif
 
-	PrintXErrorAndCoredump(d, event, MyName);
+	PrintXErrorAndCoredump(d, event, module->name);
 	return 0;
 }

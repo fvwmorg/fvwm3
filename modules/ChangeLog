@@ -1,3 +1,28 @@
+2006-02-11  Renato Caldas  <seventhguardian@gmail.com>
+
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmForm/FvwmForm.c:
+	* FvwmGtk/FvwmGtk.c:
+	Replaced global vars for name and name length for a ModuleArgs
+	struct pointed by "module".
+	main() changed to copy the global fd's for comunication with fvwm
+	from the struct.
+	main() changed to use ParseModuleArgs instead of the "manual"
+	parsing methods.
+	main() changed to use the struct's user_argc and user_argv for
+	parsing command line options.
+	Small misc changes to use module->name for error messages.
+
+	* FvwmIdent/FvwmIdent.c:
+	Replaced the app window global var (app_win) for module->window.
+
+	* FvwmForm/FvwmForm.c (ParseConfigLine):
+	(ReadConfig):
+	(ParseActiveMessage):
+	* FvwmGtk/FvwmGtk.c (parse_config_line):
+	(parse_options):
+	Changed functions to use CatString3 and module->name.
+
 2006-02-10  George Potapov <nephrite@inbox.ru>
 
 	* modules/FvwmButtons/FvwmButtons.1.in
