@@ -1890,6 +1890,10 @@ A: First of all, please read the first section of the answer to Q5.1!
    write a section for the man page if the patch includes new
    features.
 
+   You can find more detailed instructions for working with the
+   fvwm sources in the files doc/DEVELOPERS and doc/CONVENTIONS in
+   CVS or the tarballs.
+
    Creating a patch against CVS sources (preferable) -
 
         1) Execute "cvs update -AdP" to ensure there are no conflicts

@@ -34,11 +34,13 @@ configure fails, please look through `config.log' for clues.
 Development Rules of the Road
 -----------------------------
 
- 1) _Every_ change must be properly ChangeLogged.  If you use
-    Emacs, you can do this oh-so-trivially with the "C-x 4 a"
-    command; it will add a header (if it's a new day), the name of
-    the file, and even the name of the function you're currently
-    in.
+ 1) _Every_ change must be properly ChangeLogged, listing the name
+    of the changed function.  If you use Emacs, you can do this
+    oh-so-trivially with the "C-x 4 a" command; it will add a
+    header (if it's a new day), the name of the file, and even the
+    name of the function you're currently in.  There is a
+    vim-script utils/changelog.vim that does the same when yoi
+    type ":ChangeLog".
 
     If you start adding them as you change functions, it'll soon
     become second-nature and we'll get proper ChangeLogs.
