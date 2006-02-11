@@ -13,6 +13,7 @@ Changes in beta release 2.5.17 (not released yet)
      to emulate button press via other means.
    - New wrap options to EdgeScroll command for wrapping with pixel
      distances.
+   - New Style option UnderMousePlacement.
 
 * Bug Fixes:
 

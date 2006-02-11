@@ -1,8 +1,15 @@
+2006-02-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/style.c (style_parse_one_style_option):
+	* fvwm/placement.c (__place_get_wm_pos):
+	(__explain_placement):
+	new placement style UnderMousePlacement
+
 2006-02-11  Viktor Griph  <griph@dd.chalmers.se>
 
-	* NEWS: 
-	* fvwm/fvwm.1.in (EdgeScroll): 
-	* fvwm/virtual.c (CMD_EdgeScroll): 
+	* NEWS:
+	* fvwm/fvwm.1.in (EdgeScroll):
+	* fvwm/virtual.c (CMD_EdgeScroll):
 	fixed EdgeScroll dividing pixel sizes by 1000 if > 1000 (bug 3162)
 	added wrap/wrapx/wrapy option to EdgeScroll
 

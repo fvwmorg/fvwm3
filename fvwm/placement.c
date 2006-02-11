@@ -1068,6 +1068,51 @@ static Bool __place_get_wm_pos(
 			fw, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 0);
 		flags.is_smartly_placed = True;
 		break;
+	case PLACE_UNDERMOUSE:
+	{
+		int mx;
+		int my;
+
+		if (
+			FQueryPointer(
+				dpy, Scr.Root, &JunkRoot, &JunkChild, &mx, &my,
+				&JunkX, &JunkY, &JunkMask))
+		{
+			/* pointer is on a different screen */
+			xl = 0;
+			yt = 0;
+		}
+		else
+		{
+			xl = mx - (fw->frame_g.width / 2);
+			yt = my - (fw->frame_g.height / 2);
+			if (
+				xl + fw->frame_g.width >
+				screen_g.x + screen_g.width)
+			{
+				xl = screen_g.x + screen_g.width -
+					fw->frame_g.width;
+			}
+			if (
+				yt + fw->frame_g.height >
+				screen_g.y + screen_g.height)
+			{
+				yt = screen_g.y + screen_g.height -
+					fw->frame_g.height;
+			}
+			if (xl < screen_g.x)
+			{
+				xl = screen_g.x;
+			}
+			if (yt < screen_g.y)
+			{
+				yt = screen_g.y;
+			}
+		}
+		attr_g->x = xl;
+		attr_g->y = yt;
+		break;
+	}
 	default:
 		/* can't happen */
 		break;
@@ -1826,6 +1871,9 @@ static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 			break;
 		case PLACE_MINOVERLAP:
 			a = "MinOverlap";
+			break;
+		case PLACE_UNDERMOUSE:
+			a = "UnderMouse";
 			break;
 		default:
 			a = "bug";

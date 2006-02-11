@@ -6581,7 +6581,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StickyAcrossDesksIcon " / " !StickyAcrossDesksIcon ,
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
-.IR TileCascadePlacement , " / " CenterPlacement ,
+.IR TileCascadePlacement , " / " CenterPlacement , " / " UnderMousePlacement,
 .IR MinOverlapPlacementPenalties ,
 .IR MinOverlapPercentPlacementPenalties ,
 .IR DecorateTransient " / " NakedTransient ,
@@ -7613,7 +7613,7 @@ only for selected applications.
 Applications can place windows at a particular spot on the screen
 either by window manager hints or a geometry specification.  When
 they do neither, then the window manager steps in to find a place
-for the window.  Fvwm knows six ways to deal with this
+for the window.  Fvwm knows several ways to deal with this
 situation. The default is
 .IR TileCascadePlacement .
 
@@ -7636,6 +7636,9 @@ This is the same as
 but uses
 .IR ManualPlacement
 as the fall-back method.
+
+.I UnderMousePlacement
+automatically places new windows centered at the current cursor position.
 
 .I MinOverlapPlacement
 automatically places new windows in a location in which the
