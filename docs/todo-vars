@@ -1,0 +1,82 @@
+Specification of fvwm variables
+-------------------------------
+
+Anything that looks like $[VAR] in fvwm command is a variable and a subject
+for expanding. There are 2 kinds of variables, user defined and built-in.
+
+If the requested variable MY_VAR is not defined, it is not expanded in
+the command, i.e. the literal text "$[MY_VAR]" is left as is.
+
+User defined variables
+----------------------
+
+A user may manage his variables using SetEnv and UnsetEnv commands,
+and query them using Test command options EnvIsSet and EnvMatch.
+
+All shell variables that were defined on the fvwm startup are available,
+like $[HOME]. New invoked processes will inherit all these variables
+plus all new ones added by SetEnv. User variables containing non English
+alphanumeric characters, like "-" or "+", are not inherited by invoked
+processes, this may be used to create variables private to fvwm. Examples:
+
+  SetEnv USER nobody         # change existing variable
+  SetEnv my_name "Some One"  # create a new variable
+  SetEnv MY-NAME "Some One"  # only accessible in fvwm process, $[MY-NAME]
+
+Any variable name starting with a digit or containing a period is
+reserved by fvwm.
+
+Built-in variables
+------------------
+
+These are read-only variables set by fvwm, like $[cs.fg2] or $[w.class]
+or $[desk.n] or $[screen] or $[gt.some text] or $[.] or $[version.line].
+
+Positional variables
+--------------------
+
+These are variables available in functions only, they contain function
+parameter, like $[1] or $[12] (starting from 1). Additionally, $[*]
+contains the parameters text on the function invocation line (as is).
+
+It makes sense to support syntax $[2-4] (three parameters starting from
+the second) or $[2-] (all parameters starting from the second).
+
+Variable filters
+----------------
+
+By default, any variable $[VAR] is enclosed into single quotes and any
+single quote in it is escaped with a backslash. The exception is
+positional variables $[<number>]. Traditionally, variables like $[2] are
+replaced with their content without any quoting, by default at least.
+Another exception is $[*], also for backward compatibility. Examples:
+
+  Next Exec xmessage $[w.name]
+  Next Exec xmessage "Window name is $[w.name]"
+
+The last string is expanded to "Window name is 'FVWM Home Page - Firefox'".
+
+It's possible to change the default quoting by specifying explicit filters:
+
+  $[VAR]             - expanded to: 'My %^&* window'
+  $[VAR:quote]       - expanded to: 'My %^&* window'
+  $[VAR:dquote]      - expanded to: "My %^&* window"
+  $[VAR:noquote]     - expanded to: My %^&* window
+  $[VAR:glob]        - expanded to: 'My %^&** window'
+  $[VAR:menu]        - expanded to: 'My %%^&* window'
+
+More than one filter may be applied if needed, for example:
+
+  AddToMenu WindowOps 'Go to first desk, $[desk.name0:menu:dquote]'
+
+Escaping
+--------
+
+A backslash may be used to quote special chars. These are not variables:
+
+  Echo \$[VAR]
+  Echo $\[VAR]
+
+Here a colon is literal and does not denote filters:
+
+  Echo $[gt.Phone\:]
