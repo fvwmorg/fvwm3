@@ -267,7 +267,8 @@ void xdndSrcReceiveFinished(DragSource *ds, XEvent *xev) {
  * action - the action we are exporting
  * typelist - the types we support */
 
-Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) {
+Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist)
+{
   XEvent xev;
   float x_mouse, y_mouse, radiusSqr;
   int cacheTime = 0;
@@ -341,6 +342,14 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	      &root_return, &child_return, &xev.xmotion.x_root,
 	      &xev.xmotion.y_root, &xev.xmotion.x,
 	      &xev.xmotion.y, &mask_return);
+      if (retBool == False)
+      {
+	      /* pointer is on a different screen */
+	      xev.xmotion.x_root = 0;
+	      xev.xmotion.y_root = 0;
+	      xev.xmotion.x = 0;
+	      xev.xmotion.y = 0;
+      }
 
       if (trackWindow != child_return) {
 	/*Cancel old drag if initiated.*/
