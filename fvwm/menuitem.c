@@ -415,7 +415,7 @@ void menuitem_paint(
 	}
 	else if (MI_IS_TITLE(mi))
 	{
-		cs = (ST_HAS_TITLE_CSET(ms)) ? ST_CSET_TITLE(ms) : -1;
+		cs = (ST_HAS_TITLE_CSET(ms)) ? ST_CSET_TITLE(ms) : off_cs;
 	}
 	else
 	{

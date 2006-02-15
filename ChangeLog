@@ -1,3 +1,8 @@
+2006-02-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menuitem.c (menuitem_paint):
+	use the MenuColorset in all cases if TitleColorset is not given
+
 2006-02-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_one_style_option):
