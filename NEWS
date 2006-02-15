@@ -14,6 +14,7 @@ Changes in beta release 2.5.17 (not released yet)
    - New wrap options to EdgeScroll command for wrapping with pixel
      distances.
    - New Style option UnderMousePlacement.
+   - Unused arguments to Style options generate warnings.
 
 * Bug Fixes:
 

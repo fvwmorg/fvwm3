@@ -1,3 +1,13 @@
+2006-02-15  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS: 
+	* fvwm/style.c (parse_and_set_window_style) 
+	(style_parse_one_style_option, style_parse_icon_fill_style) 
+	(style_parse_icon_grid_style, style_parse_icon_box_style) 
+	(style_parse_icon_size_style, style_parse_focus_policy_style) 
+	(style_parse_button_style): 
+	warn if parts of style options are not consumed 
+
 2006-02-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (menuitem_paint):

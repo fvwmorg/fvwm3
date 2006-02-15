@@ -1193,13 +1193,14 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 	return;
 }
 
-static void style_parse_button_style(
+static char *style_parse_button_style(
 	window_style *ps, char *button_string, int on)
 {
 	int button;
+	char *rest;
 
 	button = -1;
-	GetIntegerArguments(button_string, NULL, &button, 1);
+	GetIntegerArguments(button_string, &rest, &button, 1);
 	button = BUTTON_INDEX(button);
 	if (button < 0 || button >= NUMBER_OF_TITLE_BUTTONS)
 	{
@@ -1223,13 +1224,17 @@ static void style_parse_button_style(
 		}
 	}
 
-	return;
+	return rest;
 }
 
 static Bool style_parse_focus_policy_style(
-	char *option, char *rest, Bool is_reversed, focus_policy_t *f,
-	focus_policy_t *m, focus_policy_t *c)
+	char *option, char *rest, char **ret_rest, Bool is_reversed, 
+	focus_policy_t *f, focus_policy_t *m, focus_policy_t *c)
 {
+	if (ret_rest)
+	{
+		*ret_rest = rest;
+	}
 	char *optlist[] = {
 		"SortWindowlistByFocus",
 		"FocusClickButtons",
@@ -1288,7 +1293,7 @@ static Bool style_parse_focus_policy_style(
 			found = False;
 			break;
 		}
-		token = PeekToken(rest, NULL);
+		token = PeekToken(rest, ret_rest);
 		val = 0;
 		for ( ; token != NULL && isdigit(*token); token++)
 		{
@@ -1333,7 +1338,7 @@ static Bool style_parse_focus_policy_style(
 			found = False;
 			break;
 		}
-		token = PeekToken(rest, NULL);
+		token = PeekToken(rest, ret_rest);
 		if (token == NULL ||
 		    modifiers_string_to_modmask(token, &val) == 1)
 		{
@@ -1517,7 +1522,7 @@ static Bool style_parse_focus_policy_style(
 	return found;
 }
 
-static void style_parse_icon_size_style(
+static char *style_parse_icon_size_style(
 	char *option, char *rest, window_style *ps)
 {
 	int vals[4];
@@ -1606,10 +1611,10 @@ static void style_parse_icon_size_style(
 		break;
 	}
 
-	return;
+	return rest;
 }
 
-static void style_parse_icon_box_style(
+static char *style_parse_icon_box_style(
 	icon_boxes **ret_ib, char *option, char *rest, window_style *ps)
 {
 	icon_boxes *IconBoxes = NULL;
@@ -1621,6 +1626,7 @@ static void style_parse_icon_box_style(
 	option = PeekToken(rest, NULL);
 	if (!option || StrEquals(option, "none"))
 	{
+		option = PeekToken(rest, &rest);
 		/* delete icon boxes from style */
 		if (SGET_ICON_BOXES(*ps))
 		{
@@ -1642,7 +1648,7 @@ static void style_parse_icon_box_style(
 		ps->flags.has_icon_boxes = 0;
 		ps->flag_mask.has_icon_boxes = 1;
 		ps->change_mask.has_icon_boxes = 1;
-		return;
+		return rest;
 	}
 
 	/* otherwise try to parse the icon box */
@@ -1717,17 +1723,19 @@ static void style_parse_icon_box_style(
 		option = PeekToken(rest, NULL);
 		if (!option)
 		{
-			return;
+			return rest;
 		}
 		l = strlen(option);
 		if (l > 0 && l < 24)
 		{
+			/* advance */
+			option = PeekToken(rest, &rest);
 			/* if word found, not too long */
 			geom_flags = FScreenParseGeometryWithScreen(
 				option, &IconBoxes->IconBox[0],
 				&IconBoxes->IconBox[1], &width, &height,
 				&IconBoxes->IconScreen);
-			if (width == 0)
+			if (width == 0 || !(geom_flags & WidthValue))
 			{
 				/* zero width is invalid */
 				fvwm_msg(
@@ -1803,10 +1811,10 @@ static void style_parse_icon_box_style(
 	ps->flag_mask.has_icon_boxes = 1;
 	ps->change_mask.has_icon_boxes = 1;
 
-	return;
+	return rest;
 }
 
-static void style_parse_icon_grid_style(
+static char *style_parse_icon_grid_style(
 	char *option, char *rest, window_style *ps, icon_boxes *ib)
 {
 	int val[4];
@@ -1821,11 +1829,11 @@ static void style_parse_icon_grid_style(
 			ERR,"CMD_Style",
 			"IconGrid must follow an IconBox in same Style"
 			" command");
-		return;
+		return rest;
 	}
 	/* have a place to grid */
 	/* 2 shorts */
-	num = GetIntegerArguments(rest, NULL, val, 2);
+	num = GetIntegerArguments(rest, &rest, val, 2);
 	if (num != 2 || val[0] < 1 || val[1] < 1)
 	{
 		fvwm_msg(
@@ -1849,10 +1857,10 @@ static void style_parse_icon_grid_style(
 		}
 	} /* end bad grid */
 
-	return;
+	return rest;
 }
 
-static void style_parse_icon_fill_style(
+static char *style_parse_icon_fill_style(
 	char *option, char *rest, window_style *ps, icon_boxes *ib)
 {
 	/* first  type direction parsed */
@@ -1869,7 +1877,7 @@ static void style_parse_icon_fill_style(
 			ERR,"CMD_Style",
 			"IconFill must follow an IconBox in same Style"
 			" command");
-		return;
+		return rest;
 	}
 	/* have a place to fill */
 	option = PeekToken(rest, &rest);
@@ -1885,7 +1893,7 @@ static void style_parse_icon_fill_style(
 			ERR,"CMD_Style",
 			"IconFill must be followed by T|B|R|L, found"
 			" %s.", option);
-		return;
+		return rest;
 	}
 	/* first word valid */
 
@@ -1903,7 +1911,7 @@ static void style_parse_icon_fill_style(
 			ERR,"CMD_Style",
 			"IconFill must be followed by T|B|R|L,"
 			" found %s.", option);
-		return;
+		return rest;
 	}
 	if ((IconFill_1 & ICONFILLHRZ) == (IconFill_2 & ICONFILLHRZ))
 	{
@@ -1911,7 +1919,7 @@ static void style_parse_icon_fill_style(
 			ERR, "CMD_Style",
 			"IconFill must specify a horizontal"
 			" and vertical direction.");
-		return;
+		return rest;
 	}
 	/* Its valid! */
 	/* merge in flags */
@@ -1921,12 +1929,12 @@ static void style_parse_icon_fill_style(
 	/* merge in flags */
 	ib->IconFlags |= IconFill_2;
 
-	return;
+	return rest;
 }
 
 static Bool style_parse_one_style_option(
-	char *token, char *rest, char *prefix, window_style *ps,
-	icon_boxes **cur_ib)
+	char *token, char *rest, char **ret_rest, char *prefix, 
+	window_style *ps, icon_boxes **cur_ib)
 {
 	window_style *add_style;
 	/* work area for button number */
@@ -2007,7 +2015,7 @@ static Bool style_parse_one_style_option(
 	case 'b':
 		if (StrEquals(token, "BackColor"))
 		{
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			if (token)
 			{
 				SAFEFREE(SGET_BACK_COLOR_NAME(*ps));
@@ -2029,11 +2037,11 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Button"))
 		{
-			style_parse_button_style(ps, rest, on);
+			rest = style_parse_button_style(ps, rest, on);
 		}
 		else if (StrEquals(token, "BorderWidth"))
 		{
-			if (GetIntegerArguments(rest, NULL, val, 1))
+			if (GetIntegerArguments(rest, &rest, val, 1))
 			{
 				SSET_BORDER_WIDTH(*ps, (short)*val);
 				ps->flags.has_border_width = 1;
@@ -2069,7 +2077,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "BorderColorset"))
 		{
 			*val = -1;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			SSET_BORDER_COLORSET(*ps, *val);
 			alloc_colorset(*val);
 			ps->flags.use_border_colorset = (*val >= 0);
@@ -2140,7 +2148,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "ColorSet"))
 		{
 			*val = -1;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			if (*val < 0)
 			{
 				*val = -1;
@@ -2225,7 +2233,7 @@ static Bool style_parse_one_style_option(
 				}
 			}
 
-			GetNextToken(rest, &token);
+			rest=GetNextToken(rest, &token);
 			if (!token)
 			{
 				fvwm_msg(
@@ -2408,7 +2416,7 @@ static Bool style_parse_one_style_option(
 		{
 			/* parse focus policy options */
 			found = style_parse_focus_policy_style(
-				token + 2, rest, (on) ? False : True,
+				token + 2, rest, &rest, (on) ? False : True,
 				&S_FOCUS_POLICY(SCF(*ps)),
 				&S_FOCUS_POLICY(SCM(*ps)),
 				&S_FOCUS_POLICY(SCC(*ps)));
@@ -2416,7 +2424,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "Font"))
 		{
 			SAFEFREE(SGET_WINDOW_FONT(*ps));
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			SSET_WINDOW_FONT(*ps, token);
 			S_SET_HAS_WINDOW_FONT(SCF(*ps), (token != NULL));
 			S_SET_HAS_WINDOW_FONT(SCM(*ps), 1);
@@ -2425,7 +2433,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "ForeColor"))
 		{
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			if (token)
 			{
 				SAFEFREE(SGET_FORE_COLOR_NAME(*ps));
@@ -2558,7 +2566,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "HandleWidth"))
 		{
-			if (GetIntegerArguments(rest, NULL, val, 1))
+			if (GetIntegerArguments(rest, &rest, val, 1))
 			{
 				SSET_HANDLE_WIDTH(*ps, (short)*val);
 				ps->flags.has_handle_width = 1;
@@ -2575,7 +2583,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "HilightFore"))
 		{
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			if (token)
 			{
 				SAFEFREE(SGET_FORE_COLOR_NAME_HI(*ps));
@@ -2597,7 +2605,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "HilightBack"))
 		{
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			if (token)
 			{
 				SAFEFREE(SGET_BACK_COLOR_NAME_HI(*ps));
@@ -2620,7 +2628,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "HilightColorset"))
 		{
 			*val = -1;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			SSET_COLORSET_HI(*ps, *val);
 			alloc_colorset(*val);
 			ps->flags.use_colorset_hi = (*val >= 0);
@@ -2630,7 +2638,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "HilightBorderColorset"))
 		{
 			*val = -1;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			SSET_BORDER_COLORSET_HI(*ps, *val);
 			alloc_colorset(*val);
 			ps->flags.use_border_colorset_hi = (*val >= 0);
@@ -2640,7 +2648,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "HilightIconTitleColorset"))
 		{
 			*val = -1;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			SSET_ICON_TITLE_COLORSET_HI(*ps, *val);
 			alloc_colorset(*val);
 			ps->flags.use_icon_title_colorset_hi = (*val >= 0);
@@ -2656,7 +2664,7 @@ static Bool style_parse_one_style_option(
 	case 'i':
 		if (StrEquals(token, "Icon"))
 		{
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 
 			SAFEFREE(SGET_ICON_NAME(*ps));
 			SSET_ICON_NAME(*ps,token);
@@ -2671,7 +2679,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "IconBackgroundColorset"))
 		{
 			*val = -1;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			SSET_ICON_BACKGROUND_COLORSET(*ps, *val);
 			alloc_colorset(*val);
 			ps->flags.use_icon_background_colorset = (*val >= 0);
@@ -2681,7 +2689,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "IconBackgroundPadding"))
 		{
 			*val = ICON_BACKGROUND_PADDING;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			if (*val < 0)
 			{
 				*val = 0;
@@ -2698,7 +2706,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "IconBackgroundRelief"))
 		{
 			*val = ICON_RELIEF_WIDTH;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			if (*val < -50)
 			{
 				*val = -50;
@@ -2715,7 +2723,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "IconFont"))
 		{
 			SAFEFREE(SGET_ICON_FONT(*ps));
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			SSET_ICON_FONT(*ps, token);
 			S_SET_HAS_ICON_FONT(SCF(*ps), (token != NULL));
 			S_SET_HAS_ICON_FONT(SCM(*ps), 1);
@@ -2743,7 +2751,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "IconTitleColorset"))
 		{
 			*val = -1;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest,&rest, val, 1);
 			SSET_ICON_TITLE_COLORSET(*ps, *val);
 			alloc_colorset(*val);
 			ps->flags.use_icon_title_colorset = (*val >= 0);
@@ -2753,7 +2761,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "IconTitleRelief"))
 		{
 			*val = ICON_RELIEF_WIDTH;
-			GetIntegerArguments(rest, NULL, val, 1);
+			GetIntegerArguments(rest, &rest, val, 1);
 			if (*val < -50)
 			{
 				*val = -50;
@@ -2769,19 +2777,22 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "IconSize"))
 		{
-			style_parse_icon_size_style(token, rest, ps);
+			rest = style_parse_icon_size_style(token, rest, ps);
 		}
 		else if (StrEquals(token, "IconBox"))
 		{
-			style_parse_icon_box_style(cur_ib, token, rest, ps);
+			rest = style_parse_icon_box_style(cur_ib, token, rest, 
+							  ps);
 		} /* end iconbox parameter */
 		else if (StrEquals(token, "ICONGRID"))
 		{
-			style_parse_icon_grid_style(token, rest, ps, *cur_ib);
+			rest = style_parse_icon_grid_style(token, rest, ps, 
+							   *cur_ib);
 		}
 		else if (StrEquals(token, "ICONFILL"))
 		{
-			style_parse_icon_fill_style(token, rest, ps, *cur_ib);
+			rest = style_parse_icon_fill_style(token, rest, ps,
+						    *cur_ib);
 		} /* end iconfill */
 		else if (StrEquals(token, "IconifyWindowGroups"))
 		{
@@ -2864,7 +2875,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "Layer"))
 		{
 			*val = -1;
-			if (GetIntegerArguments(rest, NULL, val, 1) &&
+			if (GetIntegerArguments(rest, &rest, val, 1) &&
 			    *val < 0)
 			{
 				fvwm_msg(ERR, "style_parse_one_style_option",
@@ -2953,6 +2964,7 @@ static Bool style_parse_one_style_option(
 					&f[1], &f[2], &f[3], &f[4], &f[5]);
 				for (i=0; i < num; i++)
 				{
+					PeekToken(rest,&rest);
 					if (f[i] < 0)
 						bad = True;
 				}
@@ -2988,7 +3000,7 @@ static Bool style_parse_one_style_option(
 		{
 			Bool bad = False;
 
-			num = GetIntegerArguments(rest, NULL, val, 4);
+			num = GetIntegerArguments(rest, &rest, val, 4);
 			for (i=0; i < num; i++)
 			{
 				if (val[i] < 0)
@@ -3030,7 +3042,7 @@ static Bool style_parse_one_style_option(
 			{
 				break;
 			}
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			if (token)
 			{
 				SAFEFREE(SGET_MINI_ICON_NAME(*ps));
@@ -3107,6 +3119,7 @@ static Bool style_parse_one_style_option(
 
 			num = GetTwoArguments(
 				rest, &val1, &val2, &val1_unit, &val2_unit);
+			rest = SkipNTokens(rest, num);
 			if (num != 2)
 			{
 				val1 = DEFAULT_MAX_MAX_WINDOW_WIDTH;
@@ -3149,7 +3162,7 @@ static Bool style_parse_one_style_option(
 				NULL
 			};
 
-			i = GetTokenIndex(rest, methodlist, 0, NULL);
+			i = GetTokenIndex(rest, methodlist, 0, &rest);
 			if (i == -1)
 			{
 				i = WS_CR_MOTION_METHOD_AUTO;
@@ -3271,7 +3284,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "NoButton"))
 		{
-			style_parse_button_style(ps, rest, !on);
+			rest = style_parse_button_style(ps, rest, !on);
 		}
 		else if (StrEquals(token, "NOOLDECOR"))
 		{
@@ -3522,6 +3535,7 @@ static Bool style_parse_one_style_option(
 			spargs = GetIntegerArguments(rest, NULL, tmpno, 1);
 			if (spargs == 1)
 			{
+				PeekToken(rest,&rest);
 				ps->flags.use_start_on_desk = 1;
 				ps->flag_mask.use_start_on_desk = 1;
 				ps->change_mask.use_start_on_desk = 1;
@@ -3540,7 +3554,9 @@ static Bool style_parse_one_style_option(
 		/* StartsOnPage is like StartsOnDesk-Plus */
 		else if (StrEquals(token, "STARTSONPAGE"))
 		{
-			spargs = GetIntegerArguments(rest, NULL, tmpno, 3);
+			char *ret_rest;
+			spargs = GetIntegerArguments(rest, &ret_rest,
+						     tmpno, 3);
 			if (spargs == 1 || spargs == 3)
 			{
 				/* We have a desk no., with or without page. */
@@ -3585,6 +3601,7 @@ static Bool style_parse_one_style_option(
 				ps->flag_mask.use_start_on_desk = 1;
 				ps->change_mask.use_start_on_desk = 1;
 			}
+			rest = ret_rest;
 		}
 		else if (StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
 		{
@@ -3603,6 +3620,7 @@ static Bool style_parse_one_style_option(
 			if (rest)
 			{
 				tmpno[0] = FScreenGetScreenArgument(rest, 'c');
+				PeekToken(rest,&rest);
 				ps->flags.use_start_on_screen = 1;
 				ps->flag_mask.use_start_on_screen = 1;
 				ps->change_mask.use_start_on_screen = 1;
@@ -3671,6 +3689,7 @@ static Bool style_parse_one_style_option(
 			spargs = GetIntegerArguments(rest, NULL, tmpno, 1);
 			if (spargs == 1 && tmpno[0] >= 0 && tmpno[0] <= 31)
 			{
+				PeekToken(rest,&rest);
 				states = S_USER_STATES(SCF(*ps));
 				mask = (1 << tmpno[0]);
 				if (on)
@@ -3806,7 +3825,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "UseDecor"))
 		{
 			SAFEFREE(SGET_DECOR_NAME(*ps));
-			GetNextToken(rest, &token);
+			rest = GetNextToken(rest, &token);
 			SSET_DECOR_NAME(*ps, token);
 			ps->flags.has_decor = (token != NULL);
 			ps->flag_mask.has_decor = 1;
@@ -3915,6 +3934,10 @@ static Bool style_parse_one_style_option(
 			{
 				val = 0;
 			}
+			else
+			{
+				PeekToken(rest,&rest);
+			}
 			/* we have a 'pixel' suffix if unit != 0; negative
 			 * values mean pixels */
 			val = (unit != 0) ? -val : val;
@@ -3981,6 +4004,10 @@ static Bool style_parse_one_style_option(
 	default:
 		found = False;
 		break;
+	}	
+	if (ret_rest)
+	{
+		*ret_rest = rest;	
 	}
 	if (token_l != NULL)
 	{
@@ -4024,7 +4051,7 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 		 * case, and use strcmp, but there aren't many caseless compares
 		 * because of this "switch" on the first letter. */
 		found = style_parse_one_style_option(
-			token, rest, prefix, ps, &cur_ib);
+			token, rest, &rest, prefix, ps, &cur_ib);
 
 		if (found == False)
 		{
@@ -4040,6 +4067,17 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 			 * want! Why should all the styles be thrown away if a
 			 * single one is mis-spelled? Let's just continue
 			 * parsing styles. */
+		}
+		else
+		{
+			rest = SkipSpaces(rest,NULL,0);
+			if (*rest)
+			{
+				fvwm_msg(WARN, 
+					 "style_parse_and_set_window_style",
+					 "Unconsumed argument in %s: %s", 
+					 option, rest);
+			}
 		}
 		free(option);
 	} /* end while still stuff on command */
