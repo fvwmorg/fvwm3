@@ -22,6 +22,8 @@ Changes in beta release 2.5.17 (not released yet)
    - Fixed drawing of menus with the sidepic on the right.
    - EdgeScroll no longer divides pixel distances >1000 by 1000.
      (bug #3162)
+   - The configure script can now cope with four-part version
+     numbers when detecting some libraries.
 
 -------------------------------------------------------------------
 

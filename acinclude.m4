@@ -379,11 +379,11 @@ AC_ARG_ENABLE(gtktest, [  --disable-gtktest       do not try to compile and run 
     GTK_CFLAGS=`$GTK_CONFIG $gtk_config_args --cflags`
     GTK_LIBS=`$GTK_CONFIG $gtk_config_args --libs`
     gtk_config_major_version=`$GTK_CONFIG $gtk_config_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+           sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
     gtk_config_minor_version=`$GTK_CONFIG $gtk_config_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+           sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
     gtk_config_micro_version=`$GTK_CONFIG $gtk_config_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+           sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\3/'`
     if test "x$enable_gtktest" = "xyes" ; then
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
@@ -573,9 +573,9 @@ AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest     do not try to compile and ru
     IMLIB_LIBS=`$IMLIBCONF $imlibconf_args --libs`
 
     imlib_major_version=`$IMLIBCONF $imlib_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+           sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
     imlib_minor_version=`$IMLIBCONF $imlib_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+           sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
     if test "x$enable_imlibtest" = "xyes" ; then
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
@@ -712,9 +712,9 @@ AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest     do not try to compile and ru
     GDK_IMLIB_LIBS=`$IMLIBCONF $imlibconf_args --libs-gdk`
 
     imlib_major_version=`$IMLIBCONF $imlib_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+           sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
     imlib_minor_version=`$IMLIBCONF $imlib_args --version | \
-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+           sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
     if test "x$enable_imlibtest" = "xyes" ; then
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
@@ -1095,17 +1095,17 @@ else
   FT2_CFLAGS=`$FT2_CONFIG $ft_config_args --cflags`
   FT2_LIBS=`$FT2_CONFIG $ft_config_args --libs`
   ft_config_major_version=`$FT2_CONFIG $ft_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
   ft_config_minor_version=`$FT2_CONFIG $ft_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
   ft_config_micro_version=`$FT2_CONFIG $ft_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\3/'`
   ft_min_major_version=`echo $min_ft_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
   ft_min_minor_version=`echo $min_ft_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
   ft_min_micro_version=`echo $min_ft_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\3/'`
   if test "x$enable_fttest" = "xyes" ; then
     ft_config_is_lt=no
     if test $ft_config_major_version -lt $ft_min_major_version ; then
@@ -1247,17 +1247,17 @@ else
   FC_CFLAGS=`$FC_CONFIG $fc_config_args --cflags`
   FC_LIBS=`$FC_CONFIG $fc_config_args --libs`
   fc_config_major_version=`$FC_CONFIG $fc_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
   fc_config_minor_version=`$FC_CONFIG $fc_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
   fc_config_micro_version=`$FC_CONFIG $fc_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\3/'`
   fc_min_major_version=`echo $min_fc_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
   fc_min_minor_version=`echo $min_fc_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
   fc_min_micro_version=`echo $min_fc_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\3/'`
   fc_config_is_lt=no
   if test $fc_config_major_version -lt $fc_min_major_version ; then
     fc_config_is_lt=yes
@@ -1403,17 +1403,17 @@ else
   XFT_CFLAGS=`$XFT_CONFIG $xft_config_args --cflags`
   XFT_LIBS=`$XFT_CONFIG $xft_config_args --libs`
   xft_config_major_version=`$XFT_CONFIG $xft_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
   xft_config_minor_version=`$XFT_CONFIG $xft_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
   xft_config_micro_version=`$XFT_CONFIG $xft_config_args --version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\3/'`
   xft_min_major_version=`echo $min_xft_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
   xft_min_minor_version=`echo $min_xft_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\2/'`
   xft_min_micro_version=`echo $min_xft_version | \
-         sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+         sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\3/'`
   xft_config_is_lt=no
   if test $xft_config_major_version -lt $xft_min_major_version ; then
     xft_config_is_lt=yes
