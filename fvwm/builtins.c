@@ -2254,8 +2254,9 @@ void CMD_CursorMove(F_CMD_ARGS)
 	{
 		y = pan_y;
 	}
-	FWarpPointer(dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-		     Scr.MyDisplayHeight, x, y);
+	FWarpPointerUpdateEvpos(
+		exc->x.elast, dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+		Scr.MyDisplayHeight, x, y);
 
 	return;
 }

@@ -24,6 +24,8 @@ Changes in beta release 2.5.17 (not released yet)
      (bug #3162)
    - The configure script can now cope with four-part version
      numbers when detecting some libraries.
+   - The WarpToWindow command followed by Move in a complex
+     function now uses the correct pointer position.
 
 -------------------------------------------------------------------
 

@@ -560,6 +560,24 @@ int FWarpPointer(
 	return rc;
 }
 
+int FWarpPointerUpdateEvpos(
+	XEvent *ev, Display *display, Window src_w, Window dest_w, int src_x,
+	int src_y, unsigned int src_width, unsigned int src_height,
+	int dest_x, int dest_y)
+{
+	int rc;
+
+	rc = XWarpPointer(
+		display, src_w, dest_w, src_x, src_y, src_width, src_height,
+		dest_x, dest_y);
+	if (ev != NULL && dest_w == DefaultRootWindow(display))
+	{
+		fev_set_evpos(ev, dest_x, dest_y);
+	}
+
+	return rc;
+}
+
 int FWindowEvent(
 	Display *display, Window w, long event_mask, XEvent *event_return)
 {

@@ -1,3 +1,15 @@
+2006-03-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/focus.c (__activate_window_by_command)
+	(warp_to_fvwm_window):
+	(CMD_WarpToWindow):
+	* fvwm/builtins.c (CMD_CursorMove):
+	set last pointer event position after warping the pointer
+
+	* libs/FEvent.h:
+	* libs/FEvent.c (FWarpPointerUpdateEvpos):
+	new function
+
 2006-03-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* acinclude.m4 (AM_PATH_GTK):

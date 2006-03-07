@@ -111,6 +111,10 @@ int FWarpPointer(
 	Display *display, Window src_w, Window dest_w, int src_x, int src_y,
 	unsigned int src_width, unsigned int src_height, int dest_x,
 	int dest_y);
+int FWarpPointerUpdateEvpos(
+	XEvent *ev, Display *display, Window src_w, Window dest_w, int src_x,
+	int src_y, unsigned int src_width, unsigned int src_height,
+	int dest_x, int dest_y);
 int FWindowEvent(
 	Display *display, Window w, long event_mask, XEvent *event_return);
 

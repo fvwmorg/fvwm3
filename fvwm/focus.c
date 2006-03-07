@@ -504,7 +504,8 @@ static void warp_to_fvwm_window(
 				(t->frame_g.height - 1) * (100 + warp_y) / 100;
 		}
 	}
-	FWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
+	FWarpPointerUpdateEvpos(
+		exc->x.elast, dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
 	RaiseWindow(t);
 	/* If the window is still not visible, make it visible! */
 	if (t->frame_g.x + t->frame_g.width  < 0 ||
@@ -514,7 +515,8 @@ static void warp_to_fvwm_window(
 	{
 		frame_setup_window(
 			t, 0, 0, t->frame_g.width, t->frame_g.height, False);
-		FWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
+		FWarpPointerUpdateEvpos(
+			exc->x.elast, dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
 	}
 
 	return;
@@ -672,8 +674,9 @@ static void __activate_window_by_command(
 			if (FP_DO_WARP_POINTER_ON_FOCUS_FUNC(
 				    FW_FOCUS_POLICY(fw)))
 			{
-				FWarpPointer(
-					dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
+				FWarpPointerUpdateEvpos(
+					exc->x.elast, dpy, None, Scr.Root, 0,
+					0, 0, 0, 2, 2);
 			}
 		}
 	}
@@ -1224,7 +1227,8 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 				y += wh;
 			}
 		}
-		FWarpPointer(dpy, None, exc->w.w, 0, 0, 0, 0, x, y);
+		FWarpPointerUpdateEvpos(
+			exc->x.elast, dpy, None, exc->w.w, 0, 0, 0, 0, x, y);
 	}
 
 	return;
