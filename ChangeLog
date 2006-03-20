@@ -1,3 +1,9 @@
+2006-03-20  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/events.c (HandlePropertyNotify): 
+	fix for bug 1557/3950 (possible free of Untilted constant or
+	already used name (if app reset the name already given to them))
+
 2006-03-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/focus.c (__activate_window_by_command)

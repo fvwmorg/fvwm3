@@ -3155,7 +3155,12 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		if (fw->name.name && strcmp(new_name.name, fw->name.name) == 0)
 		{
 			/* migo: some apps update their names every second */
-			FlocaleFreeNameProperty(&new_name);
+			/* griph: make sure we don't free the property if it
+			   is THE same name */
+			if (new_name.name != fw->name.name)
+			{
+				FlocaleFreeNameProperty(&new_name);
+			}
 			return;
 		}
 
@@ -3212,7 +3217,12 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			strcmp(new_name.name, fw->icon_name.name) == 0)
 		{
 			/* migo: some apps update their names every second */
-			FlocaleFreeNameProperty(&new_name);
+			/* griph: make sure we don't free the property if it
+			   is THE same name */
+			if (new_name.name != fw->icon_name.name)
+			{
+				FlocaleFreeNameProperty(&new_name);
+			}
 			return;
 		}
 
