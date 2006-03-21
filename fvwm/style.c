@@ -1231,10 +1231,6 @@ static Bool style_parse_focus_policy_style(
 	char *option, char *rest, char **ret_rest, Bool is_reversed, 
 	focus_policy_t *f, focus_policy_t *m, focus_policy_t *c)
 {
-	if (ret_rest)
-	{
-		*ret_rest = rest;
-	}
 	char *optlist[] = {
 		"SortWindowlistByFocus",
 		"FocusClickButtons",
@@ -1273,6 +1269,10 @@ static Bool style_parse_focus_policy_style(
 	int index;
 	char *token;
 
+	if (ret_rest)
+	{
+		*ret_rest = rest;
+	}
 	found = True;
 	val = !is_reversed;
 	GetNextTokenIndex(option, optlist, 0, &index);
