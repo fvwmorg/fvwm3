@@ -1,3 +1,43 @@
+2006-03-21  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmAnimate/FvwmAnimate.c:
+	corrected delay for Zoom3D animation effect
+
+	* FvwmConsole/FvwmConsoleC.pl.1.in:
+	* FvwmConsole/FvwmConsole.1.in:
+	replaced all `Cntl' modificator key mentions with `Ctrl' to be
+	consistent with rest of the documentation and because it's more
+	conventional abbreviation.
+
+	* FvwmForm/FvwmForm.1.in:
+	* FvwmForm/FvwmForm-Rlogin:
+	replaced all mentions of `rsh' with `ssh'. rsh is obsolete and 
+	inherently insecure. We shouldn't teach our users bad things,
+	should we?
+
+	* FvwmTaskBar/FvwmTaskBar.1.in:
+	slightly clarified the `StartName' option description
+	added the undocumented `MailDir' option description. Somebody 
+	violated section `K' of the convention list.
+
+	* FvwmBacker/FvwmBacker.1.in:
+	* FvwmDebug/FvwmGtkDebug.in:
+	* FvwmDebug/FvwmGtkDebug.1:
+	* FvwmEvent/FvwmEvent.1.in:
+	* FvwmForm/FvwmForm.1.in:
+	* FvwmIconMan/xmanager.c:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIdent/FvwmIdent.1.in:
+	* FvwmPerl/FvwmPerl.in:
+	* FvwmPerl/FvwmPerl.1:
+	* FvwmScript/FvwmScript.1.in:
+	* FvwmScript/Widgets/Menu.c:
+	* FvwmTabs/ConfigFvwmTabs:
+	* FvwmTabs/FvwmTabs-DefaultSetup:
+	* FvwmTaskBar/FvwmTaskBar.1.in:
+	* FvwmTheme/FvwmTheme.1.in:
+	corrected typos
+
 2006-02-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmDragWell/xdndDragSource.c (xdndSrcDoDrag):

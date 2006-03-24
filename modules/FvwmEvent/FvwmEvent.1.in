@@ -9,7 +9,7 @@
 It can in general be used to hook any \fIfvwm\fP function or program to any
 window manager event. E.g: Delete unwanted Netscape Pop ups or
 application error pop ups as they appear, play sounds, log events to a
-file and the like. Be creative, You'll find a use for it.
+file and the like. Be creative, you'll find a use for it.
 
 \fIFvwmEvent\fP is spawned by \fIfvwm\fP, so no command line invocation will
 work.  From within the \fI.fvwm2rc\fP file, \fIFvwmEvent\fP is spawned as
@@ -274,7 +274,7 @@ You can use FvwmEvent: StartDelay to fix this problem.
 This module has evolved of \fIFvwmAudio\fP, which in term is heavily based
 on a similar Fvwm module called \fIFvwmSound\fP by Mark
 Boyns. \fIFvwmAudio\fP simply took Mark's original program and
-extended it to make it generic enough to work with any Audio
+extended it to make it generic enough to work with any audio
 player. Due to different requests to do specific things on specific events,
 \fIFvwmEvent\fP took this one step further and now calls any
 \fIfvwm\fP function, or builtin-rplay. If \fIfvwm\fP's Exec function

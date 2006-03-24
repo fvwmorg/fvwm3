@@ -757,7 +757,7 @@ typedef struct FvwmWindow
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
 	 */
 	int Desk;
-	/* Where (if at all) was it focussed */
+	/* Where (if at all) was it focused */
 	int FocusDesk;
 	/* Desk to deiconify to, for StubbornIcons */
 	int DeIconifyDesk;

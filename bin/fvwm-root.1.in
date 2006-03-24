@@ -75,7 +75,7 @@ Causes fvwm-root to limit its color use to
 .I ncolors
 (if specified). This option is taken in account only with color depth  less
 or equal to 8 (and a TrueColor or GrayScale visual). The default is
-to use the same color limit than fvwm. So in normal situation this option
+to use the same color limit as fvwm. So in normal situation this option
 is not useful. However, if fvwm use a private colors map, as fvwm-root
 always use the default colors map you should use this option for
 limiting colors correctly. If

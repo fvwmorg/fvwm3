@@ -16,7 +16,7 @@ which was selected.
 .SH COPYRIGHTS
 The FvwmIdent program, and the concept for
 interfacing this module to the Window Manager, are all original work
-by Robert Nation Nobutaka Suzuki.
+by Robert Nation and Nobutaka Suzuki.
 
 Copyright 1994, Robert Nation and Nobutaka Suzuki. No guarantees or
 warranties or anything
@@ -45,7 +45,7 @@ to a menu or key-stroke in the .fvwm2rc file.  Fvwm will search
 directory specified in the ModulePath configuration option to
 attempt to locate FvwmIdent. Although nothing keeps you from
 launching FvwmIdent at start-up time, you probably don't want to.
-Clicking into the the FvwmIdent window or pressing a key while it
+Clicking into the FvwmIdent window or pressing a key while it
 has focus closes FvwmIdent. Pressing mouse button 2 in the window
 restarts FvwmIdent and asks for a new window to select.
 

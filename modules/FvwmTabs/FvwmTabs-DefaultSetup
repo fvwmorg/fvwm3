@@ -17,7 +17,7 @@ Test (Start) AddToMenu WindowOps "&Tabize" Popup TabbersMenu $[PopupStyle]
 
 # Key bindings for creating new FvwmTabbers, adding windows
 # to tabbers, switching b/w tabs, etc.
-# Note that most bindings only work when an FvwmTabs window is focussed.
+# Note that most bindings only work when an FvwmTabs window is focused.
 
 # Pick & add new window with CTRL-ALT-A.
 Key (FvwmTabs*) A		A	CM	Function AddTab

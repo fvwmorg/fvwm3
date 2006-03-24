@@ -58,7 +58,7 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
  * Return a FvwmPicture from the given data. The picture is added to the
- * FvwmPicture cache. This is not really usefull as it is not possible
+ * FvwmPicture cache. This is not really useful as it is not possible
  * to really cache a picture from the given data.
  * </description>
  */

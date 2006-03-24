@@ -179,9 +179,9 @@ AddToFunc FuncFvwmRloginXterm \
 DestroyFunc FuncFvwmRloginRxvt
 AddToFunc FuncFvwmRloginRxvt \
   I Exec rxvt -name $0 -n $0 -title $USER@$0 -e rlogin $0
-DestroyFunc FuncFvwmRloginRshRxvt
-AddToFunc FuncFvwmRloginRshRxvt \
-  I Exec Exec rsh $0 rxvt -display $HOSTDISPLAY
+DestroyFunc FuncFvwmRloginSshRxvt
+AddToFunc FuncFvwmRloginSshRxvt \
+  I Exec Exec ssh $0 rxvt -display $HOSTDISPLAY
 
 # be sure to fill these in with your correct machine names:
 DestroyMenu MenuFvwmLogins

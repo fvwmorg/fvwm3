@@ -257,7 +257,7 @@ $internalPods->{tutorial} = q{
 
 	:head2 On the module masks
 
-	In our example above we explicitelly defined Mask in constructor.
+	In our example above we explicitly defined Mask in constructor.
 	This is not really needed. If not specified, the event mask is
 	managed automatically (it is updated every time a new event handler
 	is added).

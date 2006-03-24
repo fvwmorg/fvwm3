@@ -262,7 +262,7 @@ This feature is useful for things like logout verification.
 .TP 4
 .B *FvwmForm: WarpPointer
 This option makes FvwmForm warp the mouse pointer into its window on startup.
-It saves the user some mouse-traveling.
+It saves the user some mouse-travelling.
 .TP 4
 .B *FvwmForm: Geometry \fIgeometry\fP
 Specifies the FvwmForm window location.  This is similar to what
@@ -296,7 +296,7 @@ Tells the module to use colorset \fIn\fP for items. See FvwmTheme.
 .B *FvwmForm: ItemBack \fIcolor\fP
 Specifies the background color for the text input windows, and
 the buttons.
-Buttons are displayed as 3D depressible buttons.
+Buttons are displayed as 3D depressable buttons.
 Inputs are displayed as 3D indented fields.
 Medium shade background colors work best.
 Switches off the ItemColorset option.
@@ -406,7 +406,7 @@ input value.
 Control-h moves backward in an input field erasing a character.
 Control-d and Delete delete the next character in an input field.
 Control-k erases for the cursor to the end of an input field.
-Control-U erases the entire input field.
+Control-u erases the entire input field.
 
 When a form executes a command, all the input values are saved in
 a ring of input history 50 items deep.
@@ -638,7 +638,7 @@ DestroyModuleConfig  FvwmForm-Rlogin: *
 *FvwmForm-Rlogin: Input        UserName        10      ""
 *FvwmForm-Rlogin: Line         expand
 *FvwmForm-Rlogin: Button       quit    "Login"         ^M
-*FvwmForm-Rlogin: Command      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
+*FvwmForm-Rlogin: Command      Exec exec ssh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
 # Before saving the data, remove any previously saved data:
 *FvwmForm-Rlogin: Command DestroyModuleConfig FvwmForm-RloginDefault: *
 # The "Login" button causes a login and a saving of the current data:

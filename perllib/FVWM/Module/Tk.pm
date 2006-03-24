@@ -235,7 +235,7 @@ etc.) may be passed in the hash of options using the I<TopWindow> named value.
 Other options in I<param-hash> are the same as described in L<FVWM::Module>.
 
 If no top-level window is specified in the constructor, such dummy window
-is created and immediatelly withdrawn. This top-level window is needed to
+is created and immediately withdrawn. This top-level window is needed to
 create Tk dialogs.
 
 =item B<eventLoop>

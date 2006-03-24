@@ -2042,7 +2042,7 @@ void draw_manager(WinManager *man)
   }
   if (force_draw || update_geometry)
   {
-    /* FIXME: maybe not usefull but safe */
+    /* FIXME: maybe not useful but safe */
     if (CSET_IS_TRANSPARENT_PR_PURE(man->colorsets[DEFAULT]))
       force_draw = True;
   }

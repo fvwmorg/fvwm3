@@ -163,13 +163,13 @@ AddToMenu Window-Ops2	"&Move"		Move
 +                       "Print Reverse" PrintReverseFunction
 
 # be sure to fill these in with your correct machine names:
-AddToMenu Remote-Logins	"dopey"	 Exec rsh dopey rxvt -display $HOSTDISPLAY &
-+			"snoopy" Exec rsh snoopy rxvt -display $HOSTDISPLAY &
-+			"grumpy" Exec rsh grumpy rxvt -display $HOSTDISPLAY &
-+			"happy"	 Exec rsh happy rxvt -display $HOSTDISPLAY &
-+			"bailey" Exec rsh bailey rxvt -display $HOSTDISPLAY &
-+			"barnum" Exec rsh barnum rxvt -display $HOSTDISPLAY &
-+			"joker"	 Exec rsh joker rxvt -display $HOSTDISPLAY &
+AddToMenu Remote-Logins	"dopey"	 Exec ssh dopey rxvt -display $HOSTDISPLAY &
++			"snoopy" Exec ssh snoopy rxvt -display $HOSTDISPLAY &
++			"grumpy" Exec ssh grumpy rxvt -display $HOSTDISPLAY &
++			"happy"	 Exec ssh happy rxvt -display $HOSTDISPLAY &
++			"bailey" Exec ssh bailey rxvt -display $HOSTDISPLAY &
++			"barnum" Exec ssh barnum rxvt -display $HOSTDISPLAY &
++			"joker"	 Exec ssh joker rxvt -display $HOSTDISPLAY &
 +			"signal" Exec rxterm signal
 
 AddToMenu Module-Popup	"FvwmModules"	Title

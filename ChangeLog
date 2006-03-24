@@ -1,3 +1,75 @@
+2006-03-21  Serge Koksharov  <gentoosiast dog yandex dot ru>
+ 
+ 	* fvwm/fvwm.1.in:
+ 	Removed duplicated 'NoIcon' style option description in the end
+ 	of the `The Style command...' section.
+ 	Removed `Recapture True' option setting in example of BusyCursor
+ 	description, because `Recapture' isn't valid option of `BusyCursor'
+ 	command anymore.
+ 	Updated ewmh specification URL (the old was 404)
+ 	Added URL to ICCCM 2.0 manual
+ 
+ 	* modules/FvwmAnimate/FvwmAnimate.c:
+ 	corrected delay for Zoom3D animation effect
+ 
+ 	* modules/FvwmConsole/FvwmConsoleC.pl.1.in:
+ 	* modules/FvwmConsole/FvwmConsole.1.in:
+ 	replaced all `Cntl' modificator key mentions with `Ctrl' to be
+ 	consistent with rest of the documentation and because it's more
+ 	conventional abbreviation.
+ 
+ 	* modules/FvwmTaskBar/FvwmTaskBar.1.in:
+ 	slightly clarified the `StartName' option description
+ 	added the undocumented `MailDir' option description. Somebody 
+ 	violated section `K' of the convention list.
+ 	
+ 	* fvwm/fvwm.1.in:
+ 	* fvwm/ConfigFvwmSetup:
+ 	* modules/FvwmForm/FvwmForm.1.in:
+ 	* modules/FvwmForm/FvwmForm-Rlogin:
+ 	* sample.fvwmrc/system.fvwm2rc:
+ 	* sample.fvwmrc/system.fvwm2rc-sample-1:
+ 	replaced all mentions of `rsh' with `ssh'. rsh is obsolete and 
+ 	inherently insecure. We shouldn't teach our users bad things,
+ 	should we?
+ 
+ 	* AUTHORS:
+ 	* Changelog:
+ 	* INSTALL.fvwm:
+ 	* NEWS:
+ 	* bin/fvwm-config.1.in:
+ 	* bin/fvwm-menu-headlines.1:
+ 	* bin/fvwm-menu-headlines.in:
+ 	* bin/fvwm-perllib.in:
+ 	* bin/fvwm-root.1.in:
+ 	* docs/CONVENTIONS:
+ 	* docs/FAQ:
+ 	* fvwm/fvwm.1.in:
+ 	* fvwm/fvwm.h:
+ 	* fvwm/virtual.c:
+ 	* libs/PictureGraphics.c:
+ 	* libs/Picture.h:
+ 	* modules/FvwmBacker/FvwmBacker.1.in:
+ 	* modules/FvwmDebug/FvwmGtkDebug.in:
+ 	* modules/FvwmDebug/FvwmGtkDebug.1:
+ 	* modules/FvwmEvent/FvwmEvent.1.in:
+ 	* modules/FvwmForm/FvwmForm.1.in:
+ 	* modules/FvwmIconMan/xmanager.c:
+ 	* modules/FvwmIdent/FvwmIdent.c:
+ 	* modules/FvwmIdent/FvwmIdent.1.in:
+ 	* modules/FvwmPerl/FvwmPerl.in:
+ 	* modules/FvwmPerl/FvwmPerl.1:
+ 	* modules/FvwmScript/FvwmScript.1.in:
+ 	* modules/FvwmScript/Widgets/Menu.c:
+ 	* modules/FvwmTabs/ConfigFvwmTabs:
+ 	* modules/FvwmTabs/FvwmTabs-DefaultSetup:
+ 	* modules/FvwmTaskBar/FvwmTaskBar.1.in:
+ 	* modules/FvwmTheme/FvwmTheme.1.in:
+ 	* perllib/FVWM/Module/Tk.pm:
+ 	* perllib/FVWM/Tracker.pm:
+ 	* perllib/FVWM/Module.pm.in:
+ 	corrected typos
+ 
 2006-03-21  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/style.c (style_parse_focus_policy_style): 
@@ -1428,7 +1500,7 @@
 	events during resizing and possibly other problems too
 
 	* fvwm/add_window.c (RestoreWithdrawnLocation):
-	fixed traveling windows if application changed gravity hint before
+	fixed travelling windows if application changed gravity hint before
 	recapture
 
 	* fvwm/frame.c (combine_decor_gravities):

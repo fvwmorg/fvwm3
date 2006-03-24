@@ -27,7 +27,7 @@ invoked. The followings are functions available and their
 default key bindings.
 .RS
 .IP \fBbind\fP 
-\fIMeta-k, Cntl-x Cntl-b\fP
+\fIMeta-k, Ctrl-x Ctrl-b\fP
 .br
 .\"Bind key to function or bind pattern to string for substitution.
 List up key bindings and substitutions.
@@ -39,36 +39,36 @@ Move to the beginning of history.
 Move to the beginning of history. If it is in search mode,
 continue.
 .IP \fBbol\fP
-\fIHome, Cntl-a\fP
+\fIHome, Ctrl-a\fP
 .br
 Move cursor to the beginning of the line.
-.IP "\fBbs[(n)]\fP \fIBackSpace, Cntl-h\fP"
+.IP "\fBbs[(n)]\fP \fIBackSpace, Ctrl-h\fP"
 .br
 Backspace n times. default of n is 1.
 .IP \fBcancel\fP
-\fICntl-x Cntl-k\fP
+\fICtrl-x Ctrl-k\fP
 .br
 Cancel the current input.
 .IP \fBdel_back_line\fP
 .br
 Delete the line from the beginning to the cursor.
-.IP "\fBdel_back_word\fP \fICntl-w\fP"
+.IP "\fBdel_back_word\fP \fICtrl-w\fP"
 .br
 Delete the word from the beginning to the cursor.
-.IP "\fBdel_char [(n)]\fP \fIDelete, Cntl-d\fP"
+.IP "\fBdel_char [(n)]\fP \fIDelete, Ctrl-d\fP"
 Delete n characters from the cursor to the right. Default of n
 is 1.
-.IP "\fBdel_forw_line\fP \fICntl-k\fP"
+.IP "\fBdel_forw_line\fP \fICtrl-k\fP"
 .br
 Delete the line from the cursor to the end.
 .IP "\fBdel_forw_word\fP \fIMeta-d\fP"
 .br
 Delete the word from the cursor to the end.
-.IP "\fBdel_line\fP \fICntl-u\fP"
+.IP "\fBdel_line\fP \fICtrl-u\fP"
 .br
 Delete the entire line.
 .IP \fBenter\fP
-\fIEnter, Cntl-j, Cntl-m\fP
+\fIEnter, Ctrl-j, Ctrl-m\fP
 .br
 Perform substitution if applicable and send the line to Fvwm.
 .IP "\fBenter_wo_subst\fP \fIMeta-Enter\fP"
@@ -81,7 +81,7 @@ Move to the end of history.
 .br
 Move to the end of history. If it is in search mode, continue.
 .IP \fBeol\fP
-\fIEnd, Cntl-e\fP
+\fIEnd, Ctrl-e\fP
 .br
 Move the cursor to the end of line.
 .IP "\fBins_char (str)\fP"
@@ -96,10 +96,10 @@ Insert the n-th argument of the previous command at the cursor.
 .IP "\fBlist_func\fP \fIMeta-l\fP"
 .br
 List up available editing functions.
-.IP "\fBnext_char\fP \fIRight, Cntl-f\fP"
+.IP "\fBnext_char\fP \fIRight, Ctrl-f\fP"
 .br
 Move the cursor to the next character.
-.IP "\fBnext_line\fP \fIDown, Cntl-n\fP"
+.IP "\fBnext_line\fP \fIDown, Ctrl-n\fP"
 .br
 Move to the next line in history.
 .IP "\fBnext_word\fP \fIMeta-f\fP"
@@ -108,24 +108,24 @@ Move the cursor to the next word.
 .IP \fBprefix\fP
 .br
 Wait for the next character typed in  for multi-key binding. 
-.IP "\fBprev_char\fP \fILeft, Cntl-b\fP"
+.IP "\fBprev_char\fP \fILeft, Ctrl-b\fP"
 .br
 Move the cursor to the previous character.
-.IP "\fBprev_line\fP \fIUp, Cntl-p\fP"
+.IP "\fBprev_line\fP \fIUp, Ctrl-p\fP"
 .br
 Move to the previous line in history.
 .IP "\fBprev_word\fP \fIMeta-b\fP"
 .br
 Move the cursor to the previous word.
 .IP \fBquote\fP
-\fICntl-q\fP
+\fICtrl-q\fP
 .br
 Insert the next character  typed  into  the  buffer literally.
 .IP \fBsearch\fP
-\fICntl-s\fP
+\fICtrl-s\fP
 .br
 Search pattern in history.
-.IP "\fBsearch_rev\fP \fICntl-r\fP"
+.IP "\fBsearch_rev\fP \fICtrl-r\fP"
 .br
 Search pattern in history in reverse order.
 .IP \fBsubst\fP

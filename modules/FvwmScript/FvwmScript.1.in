@@ -127,7 +127,7 @@ This option sets the default shadow color for all widgets.
 This option sets the default colorset for all widgets.
 
 .IP "Font {\fIfont\fP}"
-This option sets the default font color for all widgets.
+This option sets the default font for all widgets.
 
 .IP "UseGettext  [\fIlocale_path\fP]"
 Enable the use of the gettext mechanism which is used by the
@@ -241,7 +241,7 @@ PopupMenu and PushButton. The default is
 .I Center
 for ItemDraw and PushButton and
 .I Left
-for the others widgets.
+for the other widgets.
 
 LocaleTitle can be used in place of Title, for using the locale catalog(s)
 defined with UseGettext.

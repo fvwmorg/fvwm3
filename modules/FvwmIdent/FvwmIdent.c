@@ -88,7 +88,7 @@ static char *font_string = NULL;
 static Pixel fore_pix;
 static Pixel back_pix;
 static Window main_win;
-static Bool UsePixmapDrawing = False; /* if True draw everything in a pixamp
+static Bool UsePixmapDrawing = False; /* if True draw everything in a pixmap
 				       * and set the window background. Use
 				       * this with Xft */
 static int main_width;

@@ -307,7 +307,7 @@ must not be used. Moreover, in this case the
 .BR "-A" " and " "-S"
 options are forced. Note that XFree-4.2 pre-allocate 244 colors
 (if you use a driver with Render support) leaving only a few free
-colors. This may leads to some colors problems (and nothing can be
+colors. This may lead to some color problems (and nothing can be
 done). XFree-4.3 or better pre-allocate only 85 colors.  If no
 pre-allocated palette is auto detected the defaults are as follow:
 .EX
@@ -333,7 +333,7 @@ documentation. Note that some hardware can support two different
 depths on the same screen (typically depth 8 and depth 24). If
 depth 8 is the default, you can force fvwm to use the best depth
 by using the
-.B C
+.B -C
 option with
 .I TrueColor
 as argument.  So now we assume that you are forced to run in depth
@@ -341,7 +341,7 @@ as argument.  So now we assume that you are forced to run in depth
 better or because you need to use an application which needs to
 run under this mode (e.g., because this application needs
 read-write colors). What it should be understand is that you have
-only 256 colors and that all the applications which uses the
+only 256 colors and that all the applications which use the
 default color map must share these colors. The main problem is
 that there are applications which use a lot or even all the
 colors.  If you use such application you will have no more free
@@ -358,9 +358,9 @@ visually disturbing (see the
 .B ColormapFocus
 command for a better control of the color maps switching). The
 second method is to limit the number of colors that the
-applications used. Again, some applications have options to
+applications use. Again, some applications have options to
 specify a given color limit. With fvwm you may try various values,
-61 (a special "visual" palette), 56 (a 4x4x3 color cubes plus 6
+61 (a special "visual" palette), 56 (a 4x4x3 color cube plus 6
 grey), 29 (a 3x3x3 color cube plus 2 grey), 10 or 9. Also, you may
 use the
 .B "-L"
@@ -387,7 +387,7 @@ format (the last integer gives the number of times fvwm has
 allocated the colors).
 .TP
 .BR "-L" " | " "--strict-color-limit"
-If the screens display 256 colors (or less) and has a dynamic visual,
+If the screen displays 256 colors (or less) and has a dynamic visual,
 causes fvwm to use its palette for all the colors. By default, the
 palette is used only for images and gradients.
 .TP
@@ -409,9 +409,10 @@ option.
 If the screen displays 256 colors (or less) and has a dynamic
 visual this option causes fvwm to allocate all the colors of its
 palette at start up for reserving these colors for future
-use. This option forces the .B -static-palette option. By default,
-fvwm allocates (reserves) a color in its palette only if it needs
-this color.
+use. This option forces the
+.B -static-palette
+option. By default, fvwm allocates (reserves) a color in its palette
+only if it needs this color.
 .TP
 .BR "-S" " | " "--static-palette"
 If the screen displays 256 colors (or less) and has a dynamic
@@ -502,7 +503,7 @@ option has been added.
 .B Sticky
 windows are windows which transcend the virtual desktop by
 "Sticking to the screen's glass".  They always stay put on the
-screen. This is convenient for things like clocks and xbiff's, so
+screen. This is convenient for things like clocks and xbiffs, so
 you only need to run one such gadget and it always stays with you.
 Icons can also be made to stick to the glass, if desired.
 
@@ -595,7 +596,7 @@ This is not to be confused with Xinerama support.
 .SH XINERAMA SUPPORT
 
 Fvwm supports the Xinerama extension of newer X servers which
-is similar to multi head support (multiple screens) but allows for
+is similar to multi head support (multiple screens) but allows to
 move windows between screens.  If Xinerama support has been
 compiled into fvwm, it is used whenever fvwm runs on an X server
 that supports and uses multiple screens via Xinerama.  Without
@@ -700,7 +701,7 @@ may be
 .I unix:0.0
 or
 .IR ":0.0" ,
-which doesn't work too well when passed through rsh to another
+which doesn't work too well when passed through ssh to another
 machine, so
 .I $HOSTDISPLAY
 is set to a network-ready description of the display.
@@ -862,8 +863,8 @@ for fvwm and the module to communicate with.  The pipes are
 already open for the module when it starts and the file
 descriptors for the pipes are provided as command line arguments.
 
-Modules can be spawned during fvwm at any time during the X
-session by use of the
+Modules can be spawned by fvwm at any time during the X session by
+use of the
 .B Module
 command.  Modules can exist for the duration of the X
 session, or can perform a single task and exit.  If the module is
@@ -895,7 +896,9 @@ section for details.
 
 Fvwm attempts to be
 .SM ICCCM
-2.0 compliant.  In addition,
+2.0 compliant.  Check
+.BR http://tronche.com/gui/x/icccm/
+for more info. In addition,
 .SM ICCCM
 states that it should be possible for applications to receive any
 keystroke, which is not consistent with the keyboard shortcut
@@ -940,12 +943,13 @@ the last client in your
 file.
 
 Further additions are support for client-side colormap
-installation (see the .SM ICCCM for details) and the urgency hint.
-Clients can set this hint in the WM_HINTS property of their window
-and expect the window manager to attract the users attention to
-the window.  Fvwm has two re-definable functions for this purpose,
-"UrgencyFunc" and "UrgencyDoneFunc", which are executed when the
-flag is set/cleared.  Their default definitions are:
+installation (see the
+.SM ICCCM
+for details) and the urgency hint. Clients can set this hint in
+the WM_HINTS property of their window and expect the window manager
+to attract the user's attention to the window.  Fvwm has two re-definable
+functions for this purpose, "UrgencyFunc" and "UrgencyDoneFunc", which
+are executed when the flag is set/cleared.  Their default definitions are:
 .EX
 AddToFunc UrgencyFunc
  + I Iconify off
@@ -971,7 +975,7 @@ style can be used.
 
 Fvwm attempts to respect the extended window manager hints (ewmh
 or EWMH for short) specification:
-.BR http://www.freedesktop.org/standards/wm-spec.html
+.BR http://www.freedesktop.org/wiki/Standards_2fwm_2dspec
 and some extensions of this specification.  This allows fvwm to
 work with
 .SM KDE
@@ -1154,7 +1158,7 @@ package demonstrating the powerful fvwm functionality.
 The fonts used for the text of a window title, icon titles, menus
 and geometry window can be specified by using the Font and
 IconFont Style, the Font MenuStyle and the DefaultFont
-command. Also, all the Modules which use text have configuration
+commands. Also, all the Modules which use text have configuration
 command(s) to specify font(s). All these styles and commands take
 a font name as an argument. This section explains what is a font
 name for fvwm and which fonts fvwm loads.
@@ -1213,7 +1217,7 @@ Xft2. The first string which follows "xft:" is always considered
 as the family. With the second example Luxi Mono is the Family
 (Other XFree TTF families: "Luxi Serif", "Luxi Sans"), Medium is
 the Weight (other possible weights: Light, DemiBold, Bold, Black),
-Roman is the slant or the style (other possibility: Regular,
+Roman is the slant or the style (other possibilities: Regular,
 Oblique, Italic) size specifies the point size (for a pixel size
 use pixelsize=), encoding allows for enforce a charset (iso8859-1
 or iso10646-1 only; if no encoding is given the locale charset is
@@ -1479,7 +1483,7 @@ iconifiedness for all windows. Furthermore, some global state is
 saved.
 
 Fvwm doesn't save any information regarding styles, decors,
-functions or menus.  If you change any on these resources during a
+functions or menus.  If you change any of these resources during a
 session (e.g. by issuing
 .B Style
 commands or by using various modules), these changes are lost
@@ -2037,6 +2041,7 @@ usefulness to the newcomer.
 - Conditional commands
 - Module commands
 - Quit, restart and session management commands
+- Colorsets
 - Color gradients
 .EE
 
@@ -2436,7 +2441,7 @@ The keyword
 has a similar meaning.  It is executed whenever you try to pop up
 a sub menu that does not exist.  With this function you can define
 and destroy menus on the fly.  You can use any command after the
-keyword, but the name of an item (that is a submenu) defined with
+keyword, but if the name of an item (that is a submenu) defined with
 .B AddToFunc
 follows it, fvwm executes this command:
 .EX
@@ -2564,7 +2569,7 @@ delimiters.
 .BI "ChangeMenuStyle " "menustyle menu ..."
 Changes the menu style of
 .IR menu " to " menustyle .
-You may specified more than one menu in each call of
+You may specify more than one menu in each call of
 .BR ChangeMenuStyle .
 .EX
 ChangeMenuStyle pixmap1 \\
@@ -3197,7 +3202,7 @@ picture is drawn along the left side of the menu.  The
 .I SidePic
 option can be overridden by a menu specific side pixmap (see
 .BR AddToMenu ).
-If the file name is omitted an existing side pixmap is remove from
+If the file name is omitted an existing side pixmap is removed from
 the menu style.
 
 .I SideColor
@@ -3232,7 +3237,7 @@ command).
 is the default.
 
 .I RemoveSubmenus
-instructs fvwm to remove sub menus when you move back into the
+instructs fvwm to remove sub menu when you move back into the
 parent menu.  With
 .I HoldSubmenus
 the sub menu remains visible.  You probably want to use
@@ -3245,7 +3250,7 @@ affects menu navigation with the keyboard.
 
 .I SelectOnRelease
 takes an optional key name as an argument.  If the given key is
-release in a menu using this style, the current menu item is
+released in a menu using this style, the current menu item is
 selected.  This is intended for
 .SM Alt-Tab
 .B WindowList
@@ -3494,12 +3499,12 @@ which changes the appearance and operation of the menus.
 
 .IR Mwm " and " Win
 style menus popup sub menus automatically.
-.I win
+.I Win
 menus indicate the current menu item by changing the background to
 black.
-.I fvwm
+.I Fvwm
 sub menus overlap the parent menu,
-.IR Mwm " and " win
+.IR Mwm " and " Win
 style menus never overlap the parent menu.
 
 When the
@@ -3661,7 +3666,7 @@ turn it off.
 
 .I RaiseOverNativeWindows
 makes fvwm try to raise the windows it manages over native windows
-of the X servers host system.  This is needed for some X servers
+of the X server's host system.  This is needed for some X servers
 running under Windows or Windows NT.  Fvwm tries to detect if it
 is running under such an X server and initializes the flag
 accordingly.
@@ -4485,7 +4490,7 @@ AddToMenu   MenuFvwmWindowOps "$[gt.Window Ops]" Title
 + "$[gt.(Un)Ma&ximize]"      Maximize
 + "" Nop
 + "$[gt.&Close]"             Close
-+ "$[gt.&Destroy]"            Destroy
++ "$[gt.&Destroy]"           Destroy
 .EE
 gives a menu in the locale languages if translations are
 available.
@@ -4818,8 +4823,9 @@ is only useful if a desktop name is defined with the
 .B DesktopName
 command. It causes fvwm to not display the desktop number before
 the desktop name.  By default, the WindowList menu have a title
-which indicates the current desk or the selected desktop if the .I
-Desk condition is used. The
+which indicates the current desk or the selected desktop if the
+.I Desk
+condition is used. The
 .I NoCurrentDeskTitle
 option removes this title.
 .I TitleForAllDesks
@@ -4876,7 +4882,7 @@ toggle between both methods use "Toggle" or omit the
 .B bool
 argument.  Fvwm defaults to synchronized requests when started
 with the
-.B \-debug
+.B \--debug
 option.  This command is intended for debugging only.
 
 .TP
@@ -4967,7 +4973,7 @@ If the optional argument
 is specified the pointer is warped with the window.  If the single
 argument
 .I pointer
-is given, the top left corner of the window window is moved to the
+is given, the top left corner of the window is moved to the
 pointer position before starting the operation; this is mainly
 intended for internal use by modules like
 .BR FvwmPager .
@@ -5108,7 +5114,7 @@ beyond the border of the desktop. For example, with
 .IR wrapx ,
 when the window moves past the right edge of the desktop, it
 reappears on the left edge.  The options
-.IR nodesklimitx " and " nodesklimit
+.IR nodesklimitx " and " nodesklimity
 allow moving windows beyond the desk boundaries in x and y
 direction (disabling the
 .IR wrapx " and " wrapy
@@ -5762,7 +5768,7 @@ commands were issued inside a fvwm function.
 .TP
 .BI "RefreshWindow"
 Causes the chosen window to redraw itself. All pending updates of
-the window's style and looks are applied immediately.  E.g. if
+the window's style and look are applied immediately.  E.g. if
 .BR Style " or " TitleStyle
 commands were issued inside a fvwm function.
 
@@ -5820,10 +5826,10 @@ command.  Examples:
 .EX
 Style * WindowShadeShrinks, \\
 WindowShadeSteps 20, WindowShadeLazy
-Mouse 1 S - WindowShade North
-Mouse 1 S [ WindowShade West
-Mouse 1 S ] WindowShade E
-Mouse 1 S _ WindowShade S
+Mouse 1 - S WindowShade North
+Mouse 1 [ S WindowShade West
+Mouse 1 ] S WindowShade E
+Mouse 1 _ S WindowShade S
 .EE
 
 Note: When a window that has been shaded with a
@@ -6058,7 +6064,7 @@ command instead.  If you want to bind keys to a window with
 .IR SloppyFocus " or " ClickToFocus
 that are supposed to work when the pointer is not over the window,
 fvwm assumes the pointer is over the client window (i.e. you have
-to use the 'W' modifier).
+to use the 'W' context).
 
 The following example binds the built-in window list to pop up
 when
@@ -6219,7 +6225,7 @@ are numbered:
 .EE
 The highest odd numbered button which has an action bound to it
 determines the number of buttons drawn on the left side of the
-title bar.  The highest even number determines the number or right
+title bar.  The highest even number determines the number of right
 side buttons which are drawn.  Actions can be bound to either
 mouse buttons or keyboard keys.
 
@@ -6287,8 +6293,8 @@ or in a numeric pad grid like this:
 .EE
 The telephone grid is used by default, to use the numeric pad grid
 you should begin the sequence with a 'N'.  Note that a complex
-motion may gives several different sequences (see the "netscape"
-example below to handle such motion).  Moreover, sequence are
+motion may produce several different sequences (see the "netscape"
+example below to handle such motion).  Moreover, sequences are
 limited to 20 elements (with the present version of
 .BR libstroke ),
 however, in practice it is preferable to use sequence with less
@@ -6405,7 +6411,8 @@ binding.
 .I StrokeWidth
 takes an integer argument, which must be >= 0 and <= 100 and which
 defines the width of the line for the
-.I DrawMotion option.
+.I DrawMotion
+option.
 
 .I NotStayPressed
 works only if
@@ -6524,7 +6531,8 @@ Note: windows that have no name (WM_NAME) are given a name of
 res_class) are given class "NoClass" and those that don't have a
 resource (WM_CLASS, res_name) are given resource "NoResource".
 
-.I options is a comma separated list containing one or more of the
+.I options
+is a comma separated list containing one or more of the
 following keywords.  Each group of style names is separated by
 slashes ('/').  The last style in these groups is the default.
 .IR BorderWidth ", " HandleWidth ,
@@ -6532,11 +6540,11 @@ slashes ('/').  The last style in these groups is the default.
 .IR IconBox ", " IconGrid ", " IconFill ", " IconSize ,
 .IR NoTitle " / " Title ,
 .IR TitleAtBottom " / " TitleAtLeft " / " TitleAtRight " / " TitleAtTop ,
-.IR LeftTitleRotatedCW " / " LeftTitleRotatedCCW,
-.IR RightTitleRotatedCCW " / " RightTitleRotatedCW,
-.IR TopTitleRotated " / " TopTitleNotRotated,
-.IR BottomTitleRotated " / " BottomTitleNotRotated,
-.IR !UseTitleDecorRotation " / " UseTitleDecorRotation,
+.IR LeftTitleRotatedCW " / " LeftTitleRotatedCCW ,
+.IR RightTitleRotatedCCW " / " RightTitleRotatedCW ,
+.IR TopTitleRotated " / " TopTitleNotRotated ,
+.IR BottomTitleRotated " / " BottomTitleNotRotated ,
+.IR !UseTitleDecorRotation " / " UseTitleDecorRotation ,
 .IR StippledTitle " / " StippledTitleOff ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
@@ -6581,7 +6589,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StickyAcrossDesksIcon " / " !StickyAcrossDesksIcon ,
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
-.IR TileCascadePlacement , " / " CenterPlacement , " / " UnderMousePlacement,
+.IR TileCascadePlacement " / " CenterPlacement " / " UnderMousePlacement ,
 .IR MinOverlapPlacementPenalties ,
 .IR MinOverlapPercentPlacementPenalties ,
 .IR DecorateTransient " / " NakedTransient ,
@@ -6607,34 +6615,34 @@ slashes ('/').  The last style in these groups is the default.
 .IR GrabFocusTransientOff " / " GrabFocusTransient ,
 .IR FPFocusClickButtons ,
 .IR FPFocusClickModifiers ,
-.IR !FPSortWindowlistByFocus " / " FPSortWindowlistByFocus,
-.IR FPClickRaisesFocused " / " !FPClickRaisesFocused,
-.IR FPClickDecorRaisesFocused " / " !FPClickDecorRaisesFocused,
-.IR FPClickIconRaisesFocused " / " !FPClickIconRaisesFocused,
-.IR !FPClickRaisesUnfocused " / " FPClickRaisesUnfocused,
-.IR FPClickDecorRaisesUnfocused " / " !FPClickDecorRaisesUnfocused,
-.IR FPClickIconRaisesUnfocused " / " !FPClickIconRaisesUnfocused,
-.IR FPClickToFocus " / " !FPClickToFocus,
-.IR FPClickDecorToFocus " / " !FPClickDecorToFocus,
-.IR FPClickIconToFocus " / " !FPClickIconToFocus,
-.IR !FPEnterToFocus " / " FPEnterToFocus,
-.IR !FPLeaveToUnfocus " / " FPLeaveToUnfocus,
-.IR !FPFocusByProgram " / " FPFocusByProgram,
-.IR !FPFocusByFunction " / " FPFocusByFunction,
-.IR FPFocusByFunctionWarpPointer " / " !FPFocusByFunctionWarpPointer,
-.IR FPLenient " / " !FPLenient,
-.IR !FPPassFocusClick " / " FPPassFocusClick,
-.IR !FPPassRaiseClick " / " FPPassRaiseClick,
-.IR FPIgnoreFocusClickMotion " / " !FPIgnoreFocusClickMotion,
-.IR FPIgnoreRaiseClickMotion " / " !FPIgnoreRaiseClickMotion,
-.IR !FPAllowFocusClickFunction " / " FPAllowFocusClickFunction,
-.IR !FPAllowRaiseClickFunction " / " FPAllowRaiseClickFunction,
-.IR FPGrabFocus " / " !FPGrabFocus,
-.IR !FPGrabFocusTransient " / " FPGrabFocusTransient,
-.IR FPOverrideGrabFocus " / " !FPOverrideGrabFocus,
-.IR FPReleaseFocus " / " !FPReleaseFocus,
-.IR !FPReleaseFocusTransient " / " FPReleaseFocusTransient,
-.IR FPOverrideReleaseFocus " / " !FPOverrideReleaseFocus,
+.IR !FPSortWindowlistByFocus " / " FPSortWindowlistByFocus ,
+.IR FPClickRaisesFocused " / " !FPClickRaisesFocused ,
+.IR FPClickDecorRaisesFocused " / " !FPClickDecorRaisesFocused ,
+.IR FPClickIconRaisesFocused " / " !FPClickIconRaisesFocused ,
+.IR !FPClickRaisesUnfocused " / " FPClickRaisesUnfocused ,
+.IR FPClickDecorRaisesUnfocused " / " !FPClickDecorRaisesUnfocused ,
+.IR FPClickIconRaisesUnfocused " / " !FPClickIconRaisesUnfocused ,
+.IR FPClickToFocus " / " !FPClickToFocus ,
+.IR FPClickDecorToFocus " / " !FPClickDecorToFocus ,
+.IR FPClickIconToFocus " / " !FPClickIconToFocus ,
+.IR !FPEnterToFocus " / " FPEnterToFocus ,
+.IR !FPLeaveToUnfocus " / " FPLeaveToUnfocus ,
+.IR !FPFocusByProgram " / " FPFocusByProgram ,
+.IR !FPFocusByFunction " / " FPFocusByFunction ,
+.IR FPFocusByFunctionWarpPointer " / " !FPFocusByFunctionWarpPointer ,
+.IR FPLenient " / " !FPLenient ,
+.IR !FPPassFocusClick " / " FPPassFocusClick ,
+.IR !FPPassRaiseClick " / " FPPassRaiseClick ,
+.IR FPIgnoreFocusClickMotion " / " !FPIgnoreFocusClickMotion ,
+.IR FPIgnoreRaiseClickMotion " / " !FPIgnoreRaiseClickMotion ,
+.IR !FPAllowFocusClickFunction " / " FPAllowFocusClickFunction ,
+.IR !FPAllowRaiseClickFunction " / " FPAllowRaiseClickFunction ,
+.IR FPGrabFocus " / " !FPGrabFocus ,
+.IR !FPGrabFocusTransient " / " FPGrabFocusTransient ,
+.IR FPOverrideGrabFocus " / " !FPOverrideGrabFocus ,
+.IR FPReleaseFocus " / " !FPReleaseFocus ,
+.IR !FPReleaseFocusTransient " / " FPReleaseFocusTransient ,
+.IR FPOverrideReleaseFocus " / " !FPOverrideReleaseFocus ,
 .IR StartsLowered " / " StartsRaised ,
 .IR IgnoreRestack " / " AllowRestack ,
 .IR FixedPosition " / " VariablePosition ,
@@ -6667,7 +6675,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR EWMHIgnoreWindowType " / " !EWMHIgnoreWindowType ,
 .IR EWMHMaximizeIgnoreWorkingArea " / " EWMHMaximizeUseWorkingArea " / "
 .IR EWMHMaximizeUseDynamicWorkingArea ,
-.IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea
+.IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea " / "
 .IR EWMHPlacementUseDynamicWorkingArea ,
 .IR MoveByProgramMethod ,
 .IR Unmanaged ,
@@ -6829,6 +6837,7 @@ trigger a normal action that was bound to the window with the
 .B Mouse
 command.
 
+If the
 .IR FPIgnoreRaiseClickMotion
 style is used, clicking in a window and then dragging the pointer
 with the button held down does not count as the click to raise the
@@ -7108,7 +7117,7 @@ style enables them again.  Without borders, all other styles
 affecting window borders are meaningless.
 
 .I MwmBorder
-makes the 3-D bevel more closely match Mwm's.
+makes the 3D bevel more closely match Mwm's.
 .I FvwmBorder
 turns off the previous option.
 
@@ -7121,7 +7130,7 @@ the width from the
 .I BorderWidth
 style is used.  By default, or if
 .I Handles
-is is specified, the width from the
+is specified, the width from the
 .I HandleWidth
 style is used.
 
@@ -7415,7 +7424,7 @@ shading can be 50% slower than lazy shading, but the latter can
 look strange under some conditions, for example, if the window
 borders, buttons or the title are filled with a tiled pixmap.
 Also, the window handles are not drawn in lazy mode and the border
-relief may only be draw partially right before the window reaches
+relief may only be drawn partially right before the window reaches
 the shaded state or tight after leaves the unshaded state. By
 default, fvwm uses lazy mode if there are no bad visual effects
 (not counting the window handles) and busy mode otherwise.  Use
@@ -7469,7 +7478,7 @@ style.
 .I StickyIcon
 makes the window sticky when its iconified.  It de-iconifies on
 top the active desktop.
-.I SlipperIcon
+.I SlipperyIcon
 reverts back to the default.
 
 .I StickyIconPage
@@ -7489,7 +7498,7 @@ is active.
 make fvwm ignore attempts of the user to move the window.  It is
 still possible to move the window by resizing it.  To allow the
 user to move windows, use the
-.IR VariablePosition or VariableUSPosition
+.IR VariablePosition " or " VariableUSPosition
 style.
 
 .IR FixedSize " and " FixedUSSize
@@ -7540,7 +7549,7 @@ rule.
 
 .IR Closable
 enables the functions
-.I Close,
+.IR Close ,
 .I Delete
 and
 .I Destroy
@@ -7693,7 +7702,7 @@ factor affects the complement of the EWMH working area if the
 window being placed has the
 .I EWMHPlacementUseWorkingArea
 style and windows with an EWMH strut hint (i.e., a "please don't
-not cover me" hint) if the window being placed has the
+cover me" hint) if the window being placed has the
 .I EWMHPlacementUseDynamicWorkingArea
 style.  These factors represent the amount of area that these
 types of windows (or area) are counted as, when a new window is
@@ -8017,7 +8026,7 @@ decorations.
 .I NakedTransient
 (the default) causes transient windows not to be given the
 standard decorations. You can only bind keys or mouse buttons to
-the sides and the client window of an undecorated window ('S' and
+the sides and the client part of an undecorated window ('S' and
 \'W' contexts in bindings, see
 .BR Mouse " and " Key
 commands).
@@ -8165,7 +8174,7 @@ connection is slow (see also
 .I SaveUnder
 below).
 .I BackingStoreOff
-tells disables backing store for the window.  By default, fvwm
+disables backing store for the window.  By default, fvwm
 does not enable or disable backing store itself but leaves is as
 the window requested it.  To revert back to the application's
 choice, use the
@@ -8182,8 +8191,8 @@ below it in memory which is usually slower if the client runs on
 the same machine as the X server.
 .I SaveUnder
 may speed up fvwm if the connection to the X server is slow
-(e.g. over a modem link).  To disable backing store, use the
-.I BackingStoreOff
+(e.g. over a modem link).  To disable save under, use the
+.I SaveUnderOff
 style.  This is the default. See also
 .I BackingStore
 above.
@@ -8271,14 +8280,15 @@ style option are ignored by fvwm.  They are not decorated, can not
 be moved or resized, etc.  You probably want to use
 .B Bugopts RaiseOverUnmanaged
 too.  This option can be turned off with the
-.IR !Unmanaged style .
+.IR !Unmanaged
+style.
 However, windows that are already ignored at the time when the
 option is set must be recaptured with the
 .B Recapture
 command in order to become managed.
 
 .I State
-sets the initial value of of one of the 32 user defined states
+sets the initial value of one of the 32 user defined states
 which are associated with each window.  The state number ranges
 from 0 to 31 and must be given as an argument.  The states have no
 meaning in fvwm, but they can be checked in conditional commands
@@ -8305,7 +8315,7 @@ styles do not appear in the menu that is created with the
 command or the lists shown in several modules like
 .BR FvwmIconMan " or " FvwmWinList .
 In the modules, the style can usually be ignored with an option.
-Please refer to the man pages of the module in question for
+Please refer to the man page of the module in question for
 further information.  To disable this feature, use the default
 style
 .IR WindowListHit .
@@ -8321,7 +8331,7 @@ are never selected by conditional commands.  However, the styles
 can be overridden explicitly in the condition with the
 .IR CirculateHit ", " CirculateHitIcon " or " CirculateHitShaded
 conditions, and some conditional commands, e.g.
-.B Current " and " All ,
+.BR Current " and " All ,
 do this by default.
 The styles
 .IR CirculateSkipIcon ", " CirculateHitIcon ,
@@ -8337,7 +8347,7 @@ Style * CirculateSkipIcon, CirculateSkipShaded
 .EE
 only windows that are neither iconic nor shaded are selected.
 Note:  For historical reasons, the conditional commands understand
-the names of these styles as condition names.  Take care no to
+the names of these styles as condition names.  Take care not to
 confuse them.
 
 .\" +++++++++++++++ examples
@@ -8395,22 +8405,7 @@ via an exact window name match but also gets
 by a match to "Fvwm*".  It gets
 .I NoTitle
 by virtue of a match to "*".  If conflicting styles are specified
-for a window, then the last style specified are used.
-
-If the
-.I NoIcon
-attribute is set then the specified window simply disappears when
-it is iconified.  The window can be recovered through the
-window-list.  If
-.I Icon
-is set without an argument then the
-.I NoIcon
-attribute is cleared but no icon is specified.  An example which
-allows only the FvwmPager module icon to exist:
-.EX
-Style * NoIcon
-Style FvwmPager Icon
-.EE
+for a window, then the last style specified is used.
 
 .TP
 .BI "WindowStyle " "options"
@@ -8490,7 +8485,7 @@ before drawing the buttons.  Finally,
 .B AddButtonStyle
 is used to place additional pixmaps for both "ActiveUp" and
 "ActiveDown" states and a vector button style is drawn on top of
-all state.
+all states.
 
 .TP
 .B "AddTitleStyle [\fIstate\fP\
@@ -8738,7 +8733,8 @@ and "InactiveDown" states.
 The similar state names like just described, but with the "Toggled"
 prefix are used instead for title buttons which have one of the
 .IR MwmDecorMax ", " MwmDecorShade ", " MwmDecorStick " or " MwmDecorLayer
-hints, if the window is maximized, shaded or sticky, respectively.
+hints, if the window is maximized, shaded, sticky or placed on specific
+layer, respectively.
 .EX
 AddToDecor Default
  + ButtonStyle 6                   \\
@@ -8826,7 +8822,7 @@ inhibits the relief pattern from being drawn.
 
 .I UseTitleStyle
 causes the given button state to render the current title style
-before rendering the buttons own styles.  The
+before rendering the buttons' own styles.  The
 .IR Raised ", " Flat " and " Sunk
 .B TitleStyle
 flags are ignored since they are redundant in this context.
@@ -9160,7 +9156,7 @@ Sets attributes for the title-bar.  Justifications can be
 .I Height
 sets the title bar's height to an amount in pixels.
 .I MinHeight
-sets the minimal height in pixels of the title bar's.
+sets the minimal height in pixels of the title bar.
 Defaults are
 .IR Centered ,
 the window's font height and no minimal height.
@@ -9174,7 +9170,7 @@ keyword. The
 height is reseted by
 .I Height
 or if given with no argument.
-is Example:
+Example:
 .EX
 TitleStyle LeftJustified Height 24
 .EE
@@ -9376,11 +9372,11 @@ This command has been renamed.  Please see
 command.
 
 .TP
-.BI "DesktopName " desk name
+.BI "DesktopName " desk " name"
 Defines the name of the desktop number
 .I desk
 to
-.I name .
+.IR name .
 This name is used in the
 .B WindowList
 command and in the
@@ -9416,7 +9412,7 @@ screen a window's edge must move before it actually moves
 partially off the screen.  By default the viewport is moved a full
 page in the requested direction, but if you used
 .B EdgeScroll
-and set any values other than zero they is used instead.
+and set any values other than zero they are used instead.
 
 Note that, with
 .EX
@@ -9701,11 +9697,11 @@ values are expressed in percent of pages, so
 .EX
 Scroll 100 100
 .EE
-means to scroll down and left by one full page.
+means to scroll down and right by one full page.
 .EX
 Scroll 50 25
 .EE
-means to scroll left half a page and down a quarter of a page.
+means to scroll right half a page and down a quarter of a page.
 The
 .B Scroll
 function should not be called from pop-up menus.  Normally,
@@ -9732,7 +9728,7 @@ then the scroll amount is measured in pixels.
 .BI "Xinerama " bool
 Enables Xinerama support if the boolean argument is true and
 disables it if the argument is false.  Calling this command
-without arguments turns on Xinerama support it was disabled before
+without arguments turns on Xinerama support if it was disabled before
 and turns it off if it was enabled.  For example:
 .EX
 # Turn Xinerama support on, use primary screen 2
@@ -9772,7 +9768,7 @@ equal sized monitors in a rectangular grid.  The
 command turns SLS support on or off or toggles it to the opposite
 state, depending on if the boolean argument is "True", "False" or
 "toggle".  If no argument is given, this is treated like "toggle".
-The default layout uses 1 by one screens.  To configure the
+The default layout uses one by one screens.  To configure the
 layout, use the
 .BR XineramaSlsSize " or " XineramaSlsScreens
 command.
@@ -9783,14 +9779,14 @@ This command configures the layout of the Single Logical screen
 feature.  It takes two arguments,
 .IR Horizontal " and " Vertical
 which must be an integer value dividing evenly into the total
-desktop width, and height height.  For an example with two
+desktop width, and height.  For an example with two
 monitors side by side which appear as one screen through the
 X-Server with the right screen as the primary screen, use:
 .EX
 XineramaSlsSize 2x1
-XineramaSlsOn
+XineramaSls On
 XineramaPrimaryScreen 1
-XineramaOn
+Xinerama On
 .EE
 
 .TP
@@ -9804,10 +9800,10 @@ geometry format: "<width>x<height>+<x>+<y>" or as a space separated
 list of numbers: "x y width height". Both ways of describing
 screens can be mixed in a single command.  All four numbers must
 be supplied.  The
-.IR x and y
+.IR x " and " y
 values specify the origin of the screen in relation to the global
 screen's origin while
-.IR width and height
+.IR width " and " height
 specify the size of the screen in pixels.  No checks are done if
 the geometries make sense, so it is possible to define overlapping
 screens (with random results) or screens that are not visible at
@@ -9815,9 +9811,9 @@ all.
 .EX
 XineramaSlsScreens 3 \\
   512x768+0+0 512x300+512+0 512 300 512 468
-XineramaSlsOn
+XineramaSls On
 XineramaPrimaryScreen 1
-XineramaOn
+Xinerama On
 .EE
 
 
@@ -9837,7 +9833,7 @@ AddToFunc Move-or-Raise I Raise
  + M Move
  + D Lower
 .EE
-The function name is "Move-or-Raise", and could be invoked from a
+The function name is "Move-or-Raise", and it could be invoked from a
 menu or a mouse binding or key binding:
 .EX
 Mouse 1 TS A Move-or-Raise
@@ -9857,7 +9853,7 @@ invoked.
 stands for "Motion", i.e. if the user starts moving the mouse.
 .RI ' C '
 stands for "Click", i.e., if the user presses and releases the
-mouse.
+mouse button.
 .RI ' H '
 stands for "Hold", i.e. if the user presses a mouse button and
 holds it down for more than
@@ -9891,7 +9887,7 @@ and "MailFunction" is
 .EX
 AddToFunc MailFunction
  + I Next ($0) Iconify off
- + I Next (AcceptsFocus, $0) focus
+ + I Next (AcceptsFocus, $0) Focus
  + I None ($0) Exec exec $0 $1
 .EE
 Then the last line of the function becomes
@@ -9920,8 +9916,8 @@ number 6 (this is a minimize button for the win95 theme) to
 iconify all windows of the same resource:
 .EX
 AddToFunc FuncIconifySameResource "I" \\
-  All ($r) Iconify on
-Mouse 3 6 A FuncIconifySameResource
+  All ($0) Iconify on
+Mouse 3 6 A FuncIconifySameResource $[w.resource]
 .EE
 
 .TP
@@ -10120,7 +10116,7 @@ module.  For example:
 .EX
 SetEnv height HEIGHT
 .EE
-makes the FvwmM4-set variable
+makes the FvwmM4 set variable
 .I HEIGHT
 usable by processes started by fvwm as the environment variable
 .IR $height .
@@ -10189,7 +10185,7 @@ appears.  This is particularly useful in the "InitFunction" if you
 are trying to start windows on specific desktops:
 .EX
 AddToFunc InitFunction
- + I exec xterm -geometry 80x64+0+0
+ + I Exec exec xterm -geometry 80x64+0+0
  + I Wait xterm
  + I Desk 0 2
  + I Exec exec xmh -font fixed -geometry \\
@@ -10219,7 +10215,7 @@ command.
 
 .SS CONDITIONAL COMMANDS
 
-Conditional command are command that are only executed if certain
+Conditional commands are commands that are only executed if certain
 conditions are met.  Most conditional commands work on windows,
 like
 .BR Next ", " ThisWindow " or " All .
@@ -10258,12 +10254,12 @@ command can be used.
 Fvwm stores windows in a ring internally.  Think of the focused
 window as a cursor on the current position in the ring.  The
 .B Next
-command and many other command search forwards through the ring
+command and many other commands search forwards through the ring
 for a matching window, and
 .B Prev
 searches backwards.  The windows in the ring are either ordered by
 creation time (if the
-.I FPSortWindowlistByFocus
+.I !FPSortWindowlistByFocus
 respectively
 .IR NeverFocus " or " MouseFocus
 styles are used) or by the last time they had the focus.
@@ -10300,7 +10296,7 @@ terminated immediately.  Further commands of the function are not
 processed.  Normally, all nested invocations of complex functions
 are left.  An optional integer number
 .I levels
-may be given to break out of the given number of nested function
+may be given to break out of the given number of nested functions
 and continue execution of a higher level function.
 The
 .B Break
@@ -10569,7 +10565,7 @@ active. An edge is active, and can contain a pointer if either a
 command is bound to it or edge scroll is available in that
 direction. The direction may be one of
 .IR " Any", " North", " Top", " Up", " West", " Left", " South", " Bottom",
-.IR " Down", " Right" and " East" .
+.IR " Down", " Right" " and " " East" .
 If no direction is specified
 .I Any
 is assumed.
@@ -10617,8 +10613,8 @@ AddToFunc VerifyVersion
 + I TestRc (NoMatch) Test (!Version 2.6.*) Echo Future version
 + I TestRc (NoMatch) Echo 2.6.x is detected
 
-Test (f $[FVWM_USERDIR]/local-config) Read local-config
-Test (x xterm-utf16) Exec exec xterm-utf16
+Test (F $[FVWM_USERDIR]/local-config) Read local-config
+Test (X xterm-utf16) Exec exec xterm-utf16
 .EE
 
 .TP
@@ -10836,9 +10832,9 @@ Next (CurrentPage, AnyScreen) Focus
 The
 .IR CirculateHit " and " CirculateHitIcon
 options override the
-.I CirculateSkip
+.IR CirculateSkip " and " CirculateSkipIcon 
 .B Style
-attribute for normal or iconic windows.  The
+attributes for normal or iconic windows.  The
 .I CirculateHitShaded
 option overrides the
 .I CirculateSkipShaded
@@ -10876,7 +10872,7 @@ The
 .I CurrentGlobalPage
 condition matches only windows that are on the current page of the
 current desk, regardless of whether Xinerama support is enabled or
-not.  This conditions implicitly activates the
+not.  This condition implicitly activates the
 .I CurrentDesk
 condition.
 
@@ -10897,7 +10893,7 @@ condition.
 
 The
 .IR CurrentPageAnyDesk " and " CurrentScreen
-conditions match only windows that are on the current page of any
+conditions matches only windows that are on the current page of any
 desk.  If Xinerama support is enabled, they only match windows
 that are at least partially on the Xinerama screen containing the
 mouse pointer.
@@ -10927,7 +10923,7 @@ option
 
 The
 .I Focused
-matches on the the window that currently has the keyboard focus.
+matches on the window that currently has the keyboard focus.
 This is not useful for the
 .B Current
 command but can be used with the other conditional commands.
@@ -11049,7 +11045,7 @@ transient.
 
 The
 .I Visible
-conditions matches only windows that are at least partially
+condition matches only windows that are at least partially
 visible on the current viewport and not completely overlapped by
 other windows.
 
@@ -11146,8 +11142,6 @@ At the current time the available modules (included with fvwm) are
 .B FvwmAnimate
 (produces animation effects when a window is iconified or
 de-iconified),
-.B FvwmAudio
-(makes sounds to go with window manager actions),
 .B FvwmAuto
 (an auto raise module),
 .B FvwmBacker
@@ -11186,6 +11180,12 @@ with cpp),
 with m4),
 .B FvwmPager
 (a mini version of the desktop),
+.B FvwmPerl
+(a Perl manipulator and preprocessor),
+.B FvwmProxy
+(to locate and control obscured windows by using small proxy windows),
+.B FvwmRearrange
+(to rearrange windows),
 .B FvwmSave
 (saves the desktop state in .xinitrc style),
 .B FvwmSaveDesk
@@ -11194,14 +11194,18 @@ with m4),
 (another powerful dialog toolkit),
 .B FvwmScroll
 (puts scrollbars on any window),
+.B FvwmTabs
+(a generic tabbing module),
 .B FvwmTaskBar
 (a Windows like task bar),
 .B FvwmTheme
 (managed colorsets, obsolete),
-.B FvwmWinList
-(a window list),
 .B FvwmWharf
-(an AfterStep like button bar).  These modules have their own man
+(an AfterStep like button bar), 
+.B FvwmWindowMenu
+(a configurable fvwm menu listing current windows),
+.B FvwmWinList
+(a window list).  These modules have their own man
 pages.  There may be other modules out on there as well.
 
 
@@ -11246,7 +11250,7 @@ environment variable
 The
 .B ModuleSynchronous
 command is very similar to
-.BI Module .
+.BR Module .
 Fvwm stops processing any commands and user input until the module
 sends a string beginning with "NOP FINISHED STARTUP" back to fvwm.
 If the optional
@@ -11330,9 +11334,10 @@ This command should not have a trailing ampersand.  The command
 can have optional parameters with simple shell-like syntax.  You
 can use
 .I ~
-(is expanded to the user home directory) and environmental
+(is expanded to the user's home directory) and environmental
 variables
-.IR $VAR " or " ${VAR} . Here are several examples:
+.IR $VAR " or " ${VAR} .
+Here are several examples:
 .EX
 Key F1 R N Restart
 Key F1 R N Restart fvwm -s
@@ -11519,13 +11524,13 @@ option to get the "real" average color.  The background color is
 reset to the default value if the color name is omitted.
 
 .IR hi ", " Hilite " and " Hilight
-take a color name as as argument and set the highlight color.  If
+take a color name as an argument and set the highlight color.  If
 the highlight color is not explicitly set, the default is to
 calculate it from the background color.  To switch back to the
 default behavior the color name can be omitted.
 
-.I sh ", " Shade " and " Shadow
-take a color name as as argument and set the shadow color.  If the
+.IR sh ", " Shade " and " Shadow
+take a color name as an argument and set the shadow color.  If the
 shadow color is not explicitly set, the default is to calculate it
 from the background color.  To switch back to the default behavior
 the color name can be omitted.
@@ -11591,7 +11596,7 @@ is defined.  For example:
 .EX
 Colorset 12 VGradient 200 grey30 grey60
 Colorset 17 Transparent
-*FvwmIconMan: Colorset 10
+*FvwmIconMan: Colorset 12
 *FvwmIconMan: PlainColorset 17
 .EE
 gives an IconMan with a vertical grey gradient background and the
@@ -11874,8 +11879,8 @@ done
 .EE
 Makes colorset 7 blink.
 
-The color names used in colorsets are saved as fvwm variables can
-be substituted in any fvwm command. For example:
+The color names used in colorsets are saved as fvwm variables which
+can be substituted in any fvwm command. For example:
 .EX
 AddToFunc InitFunction
 + I Exec exec xterm -fg $[fg.cs0] -bg $[bg.cs0]
@@ -11955,12 +11960,12 @@ MenuStyle * MenuFace DGradient \\
 # 20% gradient from red to blue,
 # 30% from blue to black,
 # 50% from black to grey
-MenuStyle * DGradient 100 3 Red 20 Blue 30 \\
+MenuStyle * MenuFace DGradient 100 3 Red 20 Blue 30 \\
   Black 50 Grey
 
 # 50% from blue to green, then
 # 50% from yellow to red
-Colorset 0 Blue Red HGradient \\
+Colorset 0 HGradient \\
   128 3 Blue 1000 Green 1 Yellow 1000 Red
 .EE
 

@@ -12,7 +12,7 @@ DestroyModuleConfig  FvwmForm-Rlogin: *
 *FvwmForm-Rlogin: Input        UserName        10      ""
 *FvwmForm-Rlogin: Line         expand
 *FvwmForm-Rlogin: Button       quit    "Login"         ^M
-*FvwmForm-Rlogin: Command      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
+*FvwmForm-Rlogin: Command      Exec exec ssh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
 # Before saving the data, remove any previously saved data:
 *FvwmForm-Rlogin: Command DestroyModuleConfig FvwmForm-RloginDefault: *
 # The "Login" button causes a login and a saving of the current data:

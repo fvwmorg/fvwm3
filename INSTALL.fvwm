@@ -209,7 +209,7 @@ of the mouse). For more informations see the  LibStroke web page at
 http://www.etla.net/~willey/projects/libstroke/ and the fvwm man page.
 
 Gettext is included in glibc, so it may be a part of your system.
-Alternativelly, there is GNU gettext package available at
+Alternatively, there is GNU gettext package available at
 http://www.gnu.org/software/gettext/.
 
 If configure doesn't do the right thing, try one or more of the

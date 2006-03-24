@@ -1131,7 +1131,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 		 * of the stacking order up, to minimize the expose-redraw
 		 * overhead. Windows that will be moving into view will be
 		 * moved top down, for the same reason. Use the new
-		 * stacking-order chain, rather than the old last-focussed
+		 * stacking-order chain, rather than the old last-focused
 		 * chain.
 		 *
 		 * domivogt (29-Nov-1999): It's faster to first map windows

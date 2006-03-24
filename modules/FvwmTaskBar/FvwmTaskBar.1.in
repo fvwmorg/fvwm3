@@ -35,7 +35,7 @@ current time and the built-in incoming mail indicator.
 The FvwmTaskBar module is derived from Mike Finger's FvwmWinList.
 
 Copyright 1994, Mike Finger. The author makes no guarantees or warranties of
-any kind about the use of this module.  Use this modules at your own risk.
+any kind about the use of this module.  Use this module at your own risk.
 You may freely use this module or any portion of it for any purpose as long
 as the copyright is kept intact.
 
@@ -82,7 +82,7 @@ are not depressed. If not specified, fixed font is assumed.
 
 .IP "*FvwmTaskBar: SelFont \fIfont\fP"
 Specifies the font to be used for the depressed buttons. Note that the
-Start button will use always this font even if is not pressed. If this
+Start button will always use this font even if is not pressed. If this
 option is not specified, the default font is used instead.
 
 .IP "*FvwmTaskBar: StatusFont \fIfont\fP"
@@ -290,10 +290,14 @@ It is a value between 0 (no bell) and 100 (maximum volume).
 By default it is set to 20.
 
 .IP "*FvwmTaskBar: MailBox \fIpath\fP"
-This option instructs the module to look for mail at the specified place
+This option instructs the module to look for mail at the specified place.
 It is a full pathname to the user's mailbox.
 By default it is \fI/var/spool/mail/$USER_LOGIN\fP.
 A value of 'None' instructs the module not to have a mail indicator.
+
+.IP "*FvwmTaskBar: MailDir"
+By default format of the user's mailbox is mbox. If this option is
+specified, the maildir format is used instead.
 
 .IP "*FvwmTaskBar: MailCommand \fIcommand\fP"
 Specifies a \fIfvwm\fP command to be executed when double-clicking
@@ -343,7 +347,8 @@ To invoke different commands for different mouse clicks, use this syntax:
 
 .IP "*FvwmTaskBar: StartName \fIstring\fP"
 This option specifies the string displayed in the Start button.
-('Start' by default).
+('Start' by default). If the string is omitted no string is
+displayed.
 
 .IP "*FvwmTaskBar: StartMenu \fIstring\fP"
 This option specifies the pop up menu to invoke when the start button is
@@ -364,12 +369,12 @@ This option specifies the name of the icon to display at the left of the Start
 button.
 
 .IP "*FvwmTaskBar: NoDefaultStartButton"
-This option removes the defaults start button if no start button configuration
+This option removes the default start button if no start button configuration
 options are given. It is useful to remove the start button. Note that this is
 the default if you use the Button configuration option.
 
 .SH SAMPLE CONFIGURATION
-The following are excepts from a .fvwm2rc file which describe FvwmTaskBar
+The following are excerpts from a .fvwm2rc file which describe FvwmTaskBar
 initialization commands:
 
 .nf

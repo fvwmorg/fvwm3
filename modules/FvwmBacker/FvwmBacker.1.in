@@ -22,7 +22,7 @@ colors, etc.
 The FvwmBacker module is the original work of Mike Finger.
 
 Copyright 1994, Mike Finger. The author makes no guarantees or
-warranties of any kind about the use of this module.  Use this modules
+warranties of any kind about the use of this module.  Use this module
 at your own risk.  You may freely use this module or any portion of it
 for any purpose as long as the copyright is kept intact.
 
@@ -130,7 +130,7 @@ It is functionally equivalent to omitting the page coordinates with
 .fi
 
 .SH SAMPLE CONFIGURATION
-The following are excepts from an .fvwm2rc file which describe
+The following are excerpts from an .fvwm2rc file which describe
 FvwmBacker initialization commands:
 
 .nf

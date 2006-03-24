@@ -88,7 +88,7 @@ DestroyFunc SwallowNew
 AddToFunc SwallowNew
 + I SendToModule FvwmTabs swallowNext lastFocus Exec exec $*
 
-# SwallowNewIfFocussed - Run program $0. If a tabber is focussed, have
+# SwallowNewIfFocussed - Run program $0. If a tabber is focused, have
 # window immediately added to tabber.
 DestroyFunc SwallowNewIfFocused
 AddToFunc SwallowNewIfFocused

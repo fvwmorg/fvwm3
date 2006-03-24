@@ -1,3 +1,12 @@
+2006-03-02  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* fvwm-config.1.in:
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-headlines.in:
+	* fvwm-perllib.in:
+	* fvwm-root.1.in:
+	corrected typos
+
 2005-09-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-perllib.in:

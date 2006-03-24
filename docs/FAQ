@@ -754,7 +754,7 @@ A: The built in command WindowList provides a very close approximation
 
    A simpler style can be used with the following:
 
-      Key Tab A M WindowList Root c c CurrentDesk NoGeometry
+      Key Tab A M WindowList Root c c CurrentDesk, NoGeometry
 
    This will just list the windows on the current desk (titles only).
 

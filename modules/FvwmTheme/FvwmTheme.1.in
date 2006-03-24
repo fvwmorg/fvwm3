@@ -24,7 +24,7 @@ FvwmTheme \- an FVWM module for managing the appearance of FVWM and its modules
 ModuleSynchronous Timeout 5 FvwmTheme
 
 \fBFvwmTheme\fP can only be invoked by fvwm.
-Command line invocation of the FvwmAnimate module will not work.
+Command line invocation of the FvwmTheme module will not work.
 
 .SH DESCRIPTION
 FvwmTheme creates appearance resources that may be shared by FVWM and other
@@ -43,7 +43,7 @@ It is highly suggested that FvwmTheme is invoked before any other modules
 that use the colorsets provided by FvwmTheme.  Thus FvwmTheme has
 to be invoked with the 'ModuleSynchronous' command by inserting the
 line 'ModuleSynchronous Timeout 5 FvwmTheme' in the .fvwm2rc file
-right after the \fIImagePath\fP have been defined.
+right after the \fIImagePath\fP has been defined.
 Invoking FvwmTheme from the \fIInitFunction\fP, \fIStartFunction\fP
 or \fIRestartFunction\fP or later can cause excessive redrawing of
 already running modules.  It is highly suggested
@@ -66,7 +66,7 @@ gray.  The background and foreground are marked as "average" and "contrast"
 results.
 
 Warning: The highest colorset number used determines memory consumption.
-Thus if you define 'Colorset 100000', the memory for 100001 colorsets are
+Thus if you define 'Colorset 100000', the memory for 100001 colorsets is
 used.  Keep your colorset numbers as small as possible.
 
 \fIoptions\fP is a comma separated list containing some of the keywords:
@@ -95,12 +95,12 @@ color. You should use the
 option to get the "real" average color.
 The background color is reset to the default value if the color name is omitted.
 
-\fIhi\fP, \fIHilite\fP and \fIHilight\fP take a color name as as argument and
+\fIhi\fP, \fIHilite\fP and \fIHilight\fP take a color name as an argument and
 set the highlight color.  If the highlight color is not explicitly set,
 the default is to calculate it from the background color.  To switch back
 to the default behavior the color name can be omitted.
 
-\fIsh\fP, \fIShade\fP and \fIShadow\fP take a color name as as argument and
+\fIsh\fP, \fIShade\fP and \fIShadow\fP take a color name as an argument and
 set the shadow color.  If the shadow color is not explicitly set,
 the default is to calculate it from the background color.  To switch back
 to the default behavior the color name can be omitted.
@@ -154,9 +154,9 @@ background of a window. In the second case the transparency is
 relative to the parent window of the window on which the colorset is
 defined. For example:
 .EX
-Colorset 12 VGradient 200 grey30 gery60
+Colorset 12 VGradient 200 grey30 grey60
 Colorset 17 Transparent
-*FvwmIconMan: Colorset 10
+*FvwmIconMan: Colorset 12
 *FvwmIconMan: PlainColorset 17
 .EE
 gives an IconMan with a vertical grey gradient background and the
@@ -358,7 +358,7 @@ It is equivalent to use "Tint a_color rate" and "Alpha a" if a = 100
 and the bg color is a_color. This equivalence does not hold for IconAlpha
 and IconTint as the background can be an image or a gradient (and not a
 uniform color background).
-However, in some case you can achieve (almost) the same effect by using
+However, in some cases you can achieve (almost) the same effect by using
 IconTint in the place of IconAlpha. This is preferable as, in general,
 IconAlpha generates more redrawing than IconTint.
 

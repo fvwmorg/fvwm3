@@ -279,7 +279,7 @@ To return the tracker to the normal activity, call B<start> method.
 
 This is a shortcut method to B<stop> and then B<start> the tracker.
 The following scenatio is possible. You start the tracker, read its
-data and immediatelly stop it (to reduce event tracker to the module).
+data and immediately stop it (to reduce event tracker to the module).
 At some point you may want to read the updated data, so you restart the
 tracker and optionally stop it again.
 

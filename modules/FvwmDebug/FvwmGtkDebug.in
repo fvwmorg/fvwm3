@@ -665,13 +665,13 @@ B<FvwmGtkDebug>
 Long switches may be abbreviated to shorter switches.
 
 B<-m>|B<--mask> I<mask> - set the initial module mask, 31 bit integer.
-This mask may be changed interactivelly at any time.
+This mask may be changed interactively at any time.
 By default almost all events are monitored (except for some flood events
 like I<CONFIGURE_WINDOW> or I<FOCUS_WINDOW>. The special value of I<-1>
 sets the maximal mask.
 
 B<-x>|B<--xmask> I<mask> - set the initial module extended mask, 31 bit integer.
-This mask may be changed interactivelly at any time.
+This mask may be changed interactively at any time.
 By default almost all events are monitored (except for some flood events
 like I<ENTER_WINDOW> or I<LEAVE_WINDOW>. The special value of I<-1>
 sets the maximal extended mask.

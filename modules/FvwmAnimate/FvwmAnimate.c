@@ -479,7 +479,7 @@ void AnimateResizeZoom3D(
 	    XDrawLine(dpy, Scr.root, gc, (int) cx, ((int) cy + (int) ch), fx,
 			    (fy + fh));
 	    XFlush(dpy);
-	    usleep(Animate.delay);
+	    usleep(Animate.delay * 1000);
 	    XDrawRectangle(dpy, Scr.root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
 	    XDrawRectangle(dpy, Scr.root, gc, (int) fx, (int) fy, (int) fw,
@@ -511,7 +511,7 @@ void AnimateResizeZoom3D(
 	    XDrawLine(dpy, Scr.root, gc, (int) cx, ((int) cy + (int) ch), x,
 			    (y + h));
 	    XFlush(dpy);
-	    usleep(Animate.delay);
+	    usleep(Animate.delay * 1000);
 	    XDrawRectangle(dpy, Scr.root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
 	    XDrawRectangle(dpy, Scr.root, gc, x, y, w, h);

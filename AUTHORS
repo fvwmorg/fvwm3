@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Serge (gentoosiast) Koksharov:
+Documentation fixes, bug fix.
+
 Arwed von Merkatz:
 UnderMousePlacement style.
 
@@ -198,7 +201,7 @@ command; rewrite some scripts examples and new script examples.
 FvwmScroll: p option for a percentage reduction.  FvwmTaskBar: Focus,
 Rows, 3DFvwm, NoIconAction options, take in account the real border
 width for geometry computation, AutoHide amelioration; aliases
-support.  FvwmWinList: geometries fixes; aliases support. utile:
+support.  FvwmWinList: geometries fixes; aliases support. utils:
 fvwm-menu-desktop script for GNOME and KDE desktop menus.  fvwm-root
 improvement (root properties).
 Bugfixes!
@@ -222,9 +225,8 @@ Original idea for 'previous page' parameter (MoveToPage and
 GotoPage).
 
 Dan Espen:
-Color Limiting, Multiple IconBoxes, Iconification Animation, new
-3d hilight/shadow calc from scwm as a library routine, updated web
-docs, lots of improvements in FvwmForm, replacement of FvwmTalk
+Common-color Color Limiting, Multiple IconBoxes, Iconification Animation,
+lots of improvements in FvwmForm, replacement of FvwmTalk
 with FvwmForm, fvwm setup form.
 
 Tony Finch:
@@ -238,7 +240,7 @@ Fixes in the fvwmrc_convert script.
 
 German Gomez Garcia:
 Implemented new menu style definition, allowing multiple
-definitios and gradients and pixmaps 'ala' ButtonStyle. See
+definitions and gradients and pixmaps 'ala' ButtonStyle. See
 doc/README.styles for more info.
 
 Udo Grabowski:

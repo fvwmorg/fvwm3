@@ -1086,7 +1086,7 @@ from the event loop.
 =item B<emulateEvent> I<type data>
 
 This method emulates the event as returned by B<readPacket>. The given event
-is processed immeadeatelly if in the event loop, or just before the real
+is processed immediately if in the event loop, or just before the real
 B<readPacket> otherwise.
 
 The parameters are the same as in B<processPacket> and the same as in

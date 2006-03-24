@@ -123,9 +123,9 @@ F. Coding
    up the definition.
    [dv]
 
- o The names of local helper funtions with limited functionality
+ o The names of local helper functions with limited functionality
    may begin with two underscores.  For example
-   "__local_function".  These funtions *must* be declared static
+   "__local_function".  These functions *must* be declared static
    and *must not* be ever exported.
 
    Reasoning:  this is a visual aid for code maintenance.  When
@@ -183,7 +183,7 @@ H. Release Management
 
  * As you may conclude from above two items, try to never add
    experimental features close to the next stable release.  Once
-   the feature is made availabe in a stable version, it becomes
+   the feature is made available in a stable version, it becomes
    virtually impossible to back it out or change its syntax.
    [dv]
 

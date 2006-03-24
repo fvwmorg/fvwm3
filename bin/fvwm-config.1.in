@@ -110,7 +110,7 @@ prints nothing, returns: 0 if the
 is supported, 100 if not, 200 if unknown.
 All or supported feature names may be found using
 .IR --info " or " --supports
-respectivelly.
+respectively.
 .TP
 .B --is-final
 prints "yes" for final releases and "no" for cvs snapshots

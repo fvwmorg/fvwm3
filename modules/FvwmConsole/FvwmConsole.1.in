@@ -90,37 +90,37 @@ FvwmConsoleC.pl man page.
 .RS
 .PD 0
 .TP 8
-Cntl-A
+Ctrl-A
 - beginning of line
 .TP
-Cntl-B
+Ctrl-B
 - previous char
 .TP
-Cntl-D
+Ctrl-D
 - delete char
 .TP
-Cntl-E
+Ctrl-E
 - end of line
 .TP
-Cntl-F
+Ctrl-F
 - next char
 .TP
-Cntl-H
+Ctrl-H
 - backspace
 .TP
-Cntl-K
+Ctrl-K
 - erase to the end of line
 .TP
-Cntl-N
+Ctrl-N
 - next line
 .TP
-Cntl-P
+Ctrl-P
 - previous line
 .TP
-Cntl-R
+Ctrl-R
 - search reverse
 .TP
-Cntl-U
+Ctrl-U
 - delete line
 .TP
 Meta-B

@@ -468,7 +468,7 @@ or:
 
     ModuleSynchronize FvwmPerl [params]
 
-if you want to immediatelly start to send commands to FvwmPerl.
+if you want to immediately start to send commands to FvwmPerl.
 
 =head1 DESCRIPTION
 
@@ -554,7 +554,7 @@ configuration with embeded perl code to "FvwmPerl --preprocess".
 An alternative approach is to write a perl script that produces fvwm
 commands and sends them for execution, this script may be loaded using
 "FvwmPerl --load". There are hovewer intermediate solutions that
-preprocess only separate configuration lines (or alternativelly,
+preprocess only separate configuration lines (or alternatively,
 execute separate perl commands that produce fvwm commands).
 
 The following code snippet adds ability of arithmetics and string scripting

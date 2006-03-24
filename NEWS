@@ -78,7 +78,7 @@ Changes in beta release 2.5.14 (24-Aug-2005)
 
 * New features:
 
-   - Fvwm now officially supports 64-bit architertures.
+   - Fvwm now officially supports 64-bit architectures.
    - New Test conditions EnvIsSet, EnvMatch, EdgeHasPointer and
      EdgeIsActive.
    - New window condition FixedPosition.
@@ -108,11 +108,11 @@ Changes in beta release 2.5.14 (24-Aug-2005)
    - Transparent Animated menus with non-transparent popup were
      not animated correctly.
    - Supported euc-jp class of encodings.
-   - A window's default layer is no longer set to 0 durin a
+   - A window's default layer is no longer set to 0 during a
      restart.
    - Fixed an annoying MouseFocus/SloppyFocus problem in
      conjunction with EdgeResistance + EdgeScroll (sometimes a
-     window did noit get the focus as it should have). This
+     window did not get the focus as it should have). This
      problem first occured in 2.5.11.
 
 -------------------------------------------------------------------
@@ -845,7 +845,7 @@ Changes in stable release 2.4.19 (30-Sep-2004)
 
 * Fixed a relief drawing problem in FvwmWinList.
 
-* Fixed traveling windows on restart if a window used non NorthWest
+* Fixed travelling windows on restart if a window used non NorthWest
   gravity and changed that before the restart.
 
 * Fixed installation of FvwmGtk.1 for debian (with DESTDIR set).
@@ -923,7 +923,7 @@ Changes in stable release 2.4.16 (30-May-2003)
   toggles the pixel in the top left corner of the screen.
 
 * Fixed parsing of button geometries in FvwmButtons when the
-  geometry specificaiton appeared after another option with a comma
+  geometry specification appeared after another option with a comma
   at the end.
 
 * FvwmCommand works too when invoked without the DISPLAY variable
@@ -1164,7 +1164,7 @@ Changes in stable release 2.4.9 (11-Aug-2002)
 * Fixed potentially harmful change in module interface.
 
 * Fixed displaying menu items with icons when using the MenuStyle
-  SubmmenusLeft.
+  SubmenusLeft.
 
 * Fixed problems with the pointer moving off screen in a multi
   head setup.
@@ -1564,7 +1564,7 @@ Changes in stable release 2.4.1 (15-Sep-2001)
 * Fixed some exotic problems with window gravity and resizing
   windows.
 
-* Fixed a problem with maximizing windows with the vieport not
+* Fixed a problem with maximizing windows with the viewport not
   starting on a page boundary.
 
 * Fixed handling of parentheses in FvwmButtons button actions.
@@ -1590,7 +1590,7 @@ Changes in stable release 2.4.1 (15-Sep-2001)
 * Fixed prev option of the GotoDeskAndPage command.
 
 * Fixed calculations of X_RESOLUTION and Y_RESOLUTION for screen
-  dimmensions larger than 2147.
+  dimensions larger than 2147.
 
 * Fixed compatibility of the FvwmM4 modules on platforms that have
   a System V implementation of m4 (Solaris 2.6).
@@ -1838,10 +1838,10 @@ Changes in beta release 2.3.17 (May 2000)
 * It is suggested to put all personal fvwm files to $HOME/.fvwm;
   to simulate the old fvwm behaviour, export FVWM_USERDIR=$HOME.
 
-* Instalating fvwm goodies is now to share/fvwm (FVWM_DATADIR),
+* Installing fvwm goodies is now to share/fvwm (FVWM_DATADIR),
   not etc/fvwm.
 
-* fvwm-config utility can be used for querying fvwm instalation.
+* fvwm-config utility can be used for querying fvwm installation.
 
 -------------------------------------------------------------------
 
@@ -1958,7 +1958,7 @@ Changes in beta release 2.3.10 (December 1999)
 * New styles TitleAtBottom and TitleAtTop.
 
 * FvwmIconBox, FvwmIconMan, FvwmTaskBar and FvwmWinList support
-  animatation via FvwmAnimate.
+  animation via FvwmAnimate.
 
 * New command StrokeFunc to handle mouse stroke.
 
@@ -2132,7 +2132,7 @@ Changes in alpha release 2.3.5 (July 1999)
   functions. It is triggered when the button is pressed and held
   longer than ClickTime milliseconds.
 
-* The activedow-button and inactive-button configure options have
+* The activedown-button and inactive-button configure options have
   been replaced with the ButtonState built in command.
 
 * Most of the configure options have been removed.
@@ -2147,7 +2147,7 @@ Changes in alpha release 2.3.4 (June 1999)
 * Fvwm is GNOME compliant.
 
 * Dynamic menus enhancement: The special menu item name
-  'MissingSubmenuFunc' alows to create submenus on the fly. See
+  'MissingSubmenuFunc' allows to create submenus on the fly. See
   manpage on 'AddToMenu' for details.
 
 * The Restart command accepts simple shell-like syntax now.
@@ -2412,7 +2412,7 @@ Changes in alpha release 2.3.0 (February 1999)
 * Lots of changes to FvwmForm:
   No limits of form size.
   Fonts and colors can change anywhere in the form.
-  Form appearance can be configured globaly:
+  Form appearance can be configured globally:
     Form defaults are read from .FvwmForm.
     There is a built in Default setting/saving dialogue.
   Forms can be read in directly from a file.
@@ -2431,7 +2431,7 @@ Changes in alpha release 2.3.0 (February 1999)
 
 Changes in official release 2.2.5 (February 2001)
 
-* When fvwm is run remotely, startup is noticably faster.
+* When fvwm is run remotely, startup is noticeably faster.
 
 * Fixed the description of Focus in the man page.
 

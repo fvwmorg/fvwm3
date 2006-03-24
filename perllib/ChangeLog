@@ -1,3 +1,10 @@
+2006-03-21  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FVWM/Module/Tk.pm:
+	* FVWM/Tracker.pm:
+	* FVWM/Module.pm.in:
+	corrected typos
+
 2006-02-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Commands.pm:

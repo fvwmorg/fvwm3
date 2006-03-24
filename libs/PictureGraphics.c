@@ -1212,7 +1212,7 @@ Pixmap PGraphicsCreateTransprency(
 
 	if (parent_relative)
 	{
-		/* this block is not usefull if backing store ... */
+		/* this block is not useful if backing store ... */
 		if (!XGetGeometry(
 			dpy, win, &root, (int *)&junk, (int *)&junk,
 			(unsigned int *)&sw, (unsigned int *)&sh,
@@ -1338,7 +1338,7 @@ void PGraphicsTintRectangle(
 	}
 }
 
-#if 0 /* humm... maybe usefull one day with menus */
+#if 0 /* humm... maybe useful one day with menus */
 Pixmap PGraphicsCreateTranslucent(
 	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
 	int x, int y, int width, int height)

@@ -148,13 +148,13 @@ AddToMenu Window-Ops2	"Move"		Move-or-Raise
 +			"ScrollBar" 	Module FvwmScroll 2 2
 +			"Print"         PrintFunction
 
-AddToMenu Remote-Logins	"dopey"	 Exec rsh dopey rxvt -display $HOSTDISPLAY &
-+			"snoopy" Exec rsh snoopy rxvt -display $HOSTDISPLAY &
-+			"grumpy" Exec rsh grumpy rxvt -display $HOSTDISPLAY &
-+			"happy"	 Exec rsh happy rxvt -display $HOSTDISPLAY &
-+			"bailey" Exec rsh bailey rxvt -display $HOSTDISPLAY &
-+			"barnum" Exec rsh barnum rxvt -display $HOSTDISPLAY &
-+			"joker"	 Exec rsh joker rxvt -display $HOSTDISPLAY &
+AddToMenu Remote-Logins	"dopey"	 Exec ssh dopey rxvt -display $HOSTDISPLAY &
++			"snoopy" Exec ssh snoopy rxvt -display $HOSTDISPLAY &
++			"grumpy" Exec ssh grumpy rxvt -display $HOSTDISPLAY &
++			"happy"	 Exec ssh happy rxvt -display $HOSTDISPLAY &
++			"bailey" Exec ssh bailey rxvt -display $HOSTDISPLAY &
++			"barnum" Exec ssh barnum rxvt -display $HOSTDISPLAY &
++			"joker"	 Exec ssh joker rxvt -display $HOSTDISPLAY &
 +			"signal" Exec rxterm signal
 
 AddToMenu Module-Popup	"Modules"	Title
@@ -236,9 +236,9 @@ AddToFunc Iconify-and-Raise     I Iconify
 # Output re-direction is csh style, not sh style
 # You will want to substitute your own hosts here!
 
-*FvwmButtons Dopey   rterm.xpm	Exec "XTerm" rsh dopey "exec rxvt -T dopey -display $HOSTDISPLAY </dev/null >&/dev/null & "&
-*FvwmButtons Grumpy  rterm.xpm	Exec "XTerm" rsh grumpy "exec rxvt -T grumpy -display $HOSTDISPLAY </dev/null >&/dev/null & "&
-*FvwmButtons Snoopy  rterm.xpm	Exec "XTerm" rsh snoopy "exec rxvt -T snoopy -display $HOSTDISPLAY </dev/null >&/dev/null & "&
+*FvwmButtons Dopey   rterm.xpm	Exec "XTerm" ssh dopey "exec rxvt -T dopey -display $HOSTDISPLAY </dev/null >&/dev/null & "&
+*FvwmButtons Grumpy  rterm.xpm	Exec "XTerm" ssh grumpy "exec rxvt -T grumpy -display $HOSTDISPLAY </dev/null >&/dev/null & "&
+*FvwmButtons Snoopy  rterm.xpm	Exec "XTerm" ssh snoopy "exec rxvt -T snoopy -display $HOSTDISPLAY </dev/null >&/dev/null & "&
 *FvwmButtons signal rterm.xpm	Exec "XTerm" rxterm signal &
 *FvwmButtons mail    mail2.xpm    Function MailFunction xmh "-font fixed"
 
