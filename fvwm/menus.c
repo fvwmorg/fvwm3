@@ -4411,7 +4411,7 @@ static int pop_menu_up(
 	 * Warp the pointer
 	 */
 
-	if (!do_warp_to_item)
+	if (!do_warp_to_item && parent_menu != NULL)
 	{
 		MenuItem *mi;
 

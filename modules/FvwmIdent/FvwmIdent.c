@@ -1174,7 +1174,7 @@ void MakeList(void)
 		break;
 	case SouthWestGravity:
 		AddToList("Gravity:", "SouthWest");
-      break;
+		break;
 	case SouthGravity:
 		AddToList("Gravity:", "South");
 		break;

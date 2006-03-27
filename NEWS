@@ -26,6 +26,8 @@ Changes in beta release 2.5.17 (not released yet)
      numbers when detecting some libraries.
    - The WarpToWindow command followed by Move in a complex
      function now uses the correct pointer position.
+   - The menu style TitleWarp does no longer warp the pointer for
+     root menus (as it is documented).
 
 -------------------------------------------------------------------
 
