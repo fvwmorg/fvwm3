@@ -169,10 +169,11 @@ static Bool styles_have_same_id(window_style* s, window_style* t)
 
 static Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 {
-	if (SID_GET_HAS_NAME(s_id) &&
+	if (SID_GET_HAS_NAME(s_id) && (fw->style_name == NULL &&
 	    (matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) == TRUE ||
 	     matchWildcards(SID_GET_NAME(s_id), fw->class.res_name) == TRUE ||
-	     matchWildcards(SID_GET_NAME(s_id), fw->name.name) == TRUE))
+	     matchWildcards(SID_GET_NAME(s_id), fw->name.name) == TRUE)) ||
+	    matchWildcards(SID_GET_NAME(s_id), fw->style_name ) == TRUE)
 	{
 		return True;
 	}

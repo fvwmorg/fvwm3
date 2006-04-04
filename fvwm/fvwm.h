@@ -640,6 +640,9 @@ typedef struct FvwmWindow
 	FlocaleNameString icon_name;
 	char *visible_name;
 	char *visible_icon_name;
+	/* if non-null: Use this instead of any other names for matching 
+	   styles */
+	char *style_name;
 	int name_count;
 	int icon_name_count;
 	/* next fvwm window */

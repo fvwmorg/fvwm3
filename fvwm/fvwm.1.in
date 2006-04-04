@@ -6531,6 +6531,9 @@ Note: windows that have no name (WM_NAME) are given a name of
 res_class) are given class "NoClass" and those that don't have a
 resource (WM_CLASS, res_name) are given resource "NoResource".
 
+If a window has the resource "fvwmstyle" set the value of that resource
+will be used insead of any window name when selecting the style.
+
 .I options
 is a comma separated list containing one or more of the
 following keywords.  Each group of style names is separated by

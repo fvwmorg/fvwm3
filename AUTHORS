@@ -27,7 +27,8 @@ Viktor Griph:
 Patch for Perl modules on 64 bit machines. EdgeHasPointer and
 EdgeIsActive test conditions. Nested variable expansion. MouseWheel
 and ScrollOffPage menu style options. Simple placement mouse bindings
-and PlacedByButton window condition.
+and PlacedByButton window condition. Use of fvwmstyle resource. Warnings
+for unconsumed arguments to style options. Bug fixes. 
 
 Bjoern Steinbrink:
 Patch for FvwmScript tasks running too often.

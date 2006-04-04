@@ -1,3 +1,14 @@
+2006-04-05  Viktor Griph  <griph@dd.chalmers.se>
+
+	* AUTHORS: 
+	added some more suff to the list of what I've done.
+	* NEWS: 
+	* fvwm/fvwm.1.in: 
+	* fvwm/add_window.c (__add_window_handle_x_resources) 
+	(destroy_window, AddWindow): 
+	* fvwm/fvwm.h (FvwmWindow): 
+	added fvwmstyle resource to override style name
+
 2006-03-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (pop_menu_up):

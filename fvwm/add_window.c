@@ -1456,6 +1456,64 @@ static void setup_key_and_button_grabs(FvwmWindow *fw)
 	return;
 }
 
+static void __add_window_handle_x_resources(FvwmWindow *fw)
+{
+	int client_argc = 0;
+	char **client_argv = NULL;
+	XrmValue rm_value;
+	XrmDatabase db = NULL;
+	static XrmOptionDescRec table [] = {
+		{"-xrn", NULL, XrmoptionResArg, (caddr_t) NULL},
+		{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL},
+	};
+	/* Get global X resources */
+	MergeXResources(dpy, &db, False);
+	/* Find out if the client requested a specific style on the command
+	 * line.
+	 */
+	if (XGetCommand(dpy, FW_W(fw), &client_argv, &client_argc))
+	{
+		if (client_argc > 0 && client_argv != NULL)
+		{
+			/* command line takes precedence over all */
+			MergeCmdLineResources(
+				&db, table, 2, fw->class.res_name,
+				&client_argc, client_argv, True);
+		}
+	}
+
+	
+	/* parse the database values */
+	if (GetResourceString(db, "fvwmstyle", fw->class.res_name, &rm_value)
+	    && rm_value.size != 0)
+	{		
+		char *style_name;
+		int name_len;
+		style_name = rm_value.addr;
+		name_len = rm_value.size-1;
+		/* Trim spaces at the start of the name */
+		while (name_len>0 && isspace(*style_name))
+		{
+			style_name++;
+			name_len--;
+		}
+		/* Trim spaces at the end of the name */
+		while (name_len>0 && isspace(*(style_name+name_len-1)))
+		{
+			name_len--;
+		}
+		if (name_len>0) {
+			fw->style_name = (char*)safemalloc(sizeof(char)*
+							   (name_len+1));
+			memcpy(fw->style_name,style_name,name_len);
+			fw->style_name[name_len] = 0;
+		}		
+	}
+	XFreeStringList(client_argv);
+	XrmDestroyDatabase(db);
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------ */
 
 void setup_visible_name(FvwmWindow *fw, Bool is_icon)
@@ -2044,6 +2102,7 @@ FvwmWindow *AddWindow(
 	setup_class_and_resource(fw);
 
 	/****** style setup ******/
+	__add_window_handle_x_resources(fw);
 	/* get merged styles */
 	lookup_style(fw, &style);
 	sflags = SGET_FLAGS_POINTER(style);
@@ -2061,6 +2120,10 @@ FvwmWindow *AddWindow(
 				fw->class.res_class);
 		}
 		free_window_names(fw, True, True);
+		if (fw->style_name)
+		{
+			free(fw->style_name);
+		}
 		free(fw);
 		MyXUngrabServer(dpy);
 		return AW_UNMANAGED;
@@ -3066,6 +3129,11 @@ void destroy_window(FvwmWindow *fw)
 
 	free_window_names(fw, True, True);
 
+	if (fw->style_name)
+	{
+		free(fw->style_name);
+		fw->style_name = NULL;
+	}
 	if (fw->class.res_name && fw->class.res_name != NoResource)
 	{
 		XFree ((char *)fw->class.res_name);
