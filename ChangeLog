@@ -1,10 +1,10 @@
 2006-04-06  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/fvwm.1.in: 
-	changed description of the fvwmstyle resource usage 
+	* fvwm/fvwm.1.in:
+	changed description of the fvwmstyle resource usage
 	to state that it's used in addition to the other
 	matches
-	* fvwm/style.c (fw_match_style_id): 
+	* fvwm/style.c (fw_match_style_id):
 	fixed a typo in style_name matching
 
 2006-04-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
@@ -118,7 +118,6 @@
 	* fvwm/style.c (style_parse_focus_policy_style):
 	fix ISO C90 compability with unconsumed styleoption warnings
 
->>>>>>> 1.2682
 2006-03-20  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/events.c (HandlePropertyNotify):
