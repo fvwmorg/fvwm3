@@ -169,13 +169,28 @@ static Bool styles_have_same_id(window_style* s, window_style* t)
 
 static Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 {
-	if (SID_GET_HAS_NAME(s_id) && (fw->style_name == NULL &&
-	    (matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) == TRUE ||
-	     matchWildcards(SID_GET_NAME(s_id), fw->class.res_name) == TRUE ||
-	     matchWildcards(SID_GET_NAME(s_id), fw->name.name) == TRUE)) ||
-	    matchWildcards(SID_GET_NAME(s_id), fw->style_name ) == TRUE)
+	if (SID_GET_HAS_NAME(s_id))
 	{
-		return True;
+		if (matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) ==
+		    TRUE)
+		{
+			return True;
+		}
+		if (matchWildcards(SID_GET_NAME(s_id), fw->class.res_name) ==
+		    TRUE)
+		{
+			return True;
+		}
+		if (matchWildcards(SID_GET_NAME(s_id), fw->name.name) == TRUE)
+		{
+			return True;
+		}
+		if (fw->style_name == NULL &&
+		    matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) ==
+		    TRUE)
+		{
+			return True;
+		}
 	}
 	if (SID_GET_HAS_WINDOW_ID(s_id) &&
 	    SID_GET_WINDOW_ID(s_id) == (XID)FW_W(fw))
@@ -1229,7 +1244,7 @@ static char *style_parse_button_style(
 }
 
 static Bool style_parse_focus_policy_style(
-	char *option, char *rest, char **ret_rest, Bool is_reversed, 
+	char *option, char *rest, char **ret_rest, Bool is_reversed,
 	focus_policy_t *f, focus_policy_t *m, focus_policy_t *c)
 {
 	char *optlist[] = {
@@ -1934,7 +1949,7 @@ static char *style_parse_icon_fill_style(
 }
 
 static Bool style_parse_one_style_option(
-	char *token, char *rest, char **ret_rest, char *prefix, 
+	char *token, char *rest, char **ret_rest, char *prefix,
 	window_style *ps, icon_boxes **cur_ib)
 {
 	window_style *add_style;
@@ -2782,12 +2797,12 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "IconBox"))
 		{
-			rest = style_parse_icon_box_style(cur_ib, token, rest, 
+			rest = style_parse_icon_box_style(cur_ib, token, rest,
 							  ps);
 		} /* end iconbox parameter */
 		else if (StrEquals(token, "ICONGRID"))
 		{
-			rest = style_parse_icon_grid_style(token, rest, ps, 
+			rest = style_parse_icon_grid_style(token, rest, ps,
 							   *cur_ib);
 		}
 		else if (StrEquals(token, "ICONFILL"))
@@ -4005,10 +4020,10 @@ static Bool style_parse_one_style_option(
 	default:
 		found = False;
 		break;
-	}	
+	}
 	if (ret_rest)
 	{
-		*ret_rest = rest;	
+		*ret_rest = rest;
 	}
 	if (token_l != NULL)
 	{
@@ -4074,9 +4089,9 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 			rest = SkipSpaces(rest,NULL,0);
 			if (*rest)
 			{
-				fvwm_msg(WARN, 
+				fvwm_msg(WARN,
 					 "style_parse_and_set_window_style",
-					 "Unconsumed argument in %s: %s", 
+					 "Unconsumed argument in %s: %s",
 					 option, rest);
 			}
 		}

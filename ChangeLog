@@ -1,12 +1,30 @@
+2006-04-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/style.c (fw_match_style_id):
+	reformatted code and fixed a warning
+
+2006-04-04  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* ChangeLog:
+	* bin/ChangeLog:
+	* libs/Fft.c (FftGetFont):
+	* libs/System.c:
+	corrected typos
+
+	* libs/System.c (fvwm_mkstemp):
+	because of typo in the 'ifdef' pragma underlying OS's 'mkstemp'
+	function was never used, even if it was considered secure by configure
+	script.
+
 2006-04-05  Viktor Griph  <griph@dd.chalmers.se>
 
-	* AUTHORS: 
+	* AUTHORS:
 	added some more suff to the list of what I've done.
-	* NEWS: 
-	* fvwm/fvwm.1.in: 
-	* fvwm/add_window.c (__add_window_handle_x_resources) 
-	(destroy_window, AddWindow): 
-	* fvwm/fvwm.h (FvwmWindow): 
+	* NEWS:
+	* fvwm/fvwm.1.in:
+	* fvwm/add_window.c (__add_window_handle_x_resources)
+	(destroy_window, AddWindow):
+	* fvwm/fvwm.h (FvwmWindow):
 	added fvwmstyle resource to override style name
 
 2006-03-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
@@ -2385,7 +2403,7 @@
 2003-08-07  olicha  <olivier.chapuis@free.fr>
 
 	* configure.in:
-	* acinclude.m4 (AM_SAFTY_CHECK_MKSTEMP):
+	* acinclude.m4 (AM_SAFETY_CHECK_MKSTEMP):
 	* acconfig.h:
 	* libs/System.c (fvwm_mkstemp):
 	* libs/fvwmlib.h:

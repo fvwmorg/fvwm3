@@ -1,3 +1,8 @@
+2006-04-04  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* ChangeLog:
+	corrected typo
+
 2006-03-02  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* fvwm-config.1.in:
@@ -59,7 +64,7 @@
 2004-03-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-bug.in:
-	script safty patch; see
+	script safety patch; see
 	http://securitytracker.com/alerts/2004/Jan/1008781.html
 
 2004-01-01  Mikhael Goikhman  <migo@homemail.com>

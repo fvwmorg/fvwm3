@@ -15,7 +15,7 @@ Changes in beta release 2.5.17 (not released yet)
      distances.
    - New Style option UnderMousePlacement.
    - Unused arguments to Style options generate warnings.
-   - The name style names match against can be overridden by the 
+   - The name style names match against can be overridden by the
      X-resource "fvwmstyle"
 
 * Bug Fixes:
@@ -30,6 +30,7 @@ Changes in beta release 2.5.17 (not released yet)
      function now uses the correct pointer position.
    - The menu style TitleWarp does no longer warp the pointer for
      root menus (as it is documented).
+   - Fixed detection of safe system version of mkstemp.
 
 -------------------------------------------------------------------
 

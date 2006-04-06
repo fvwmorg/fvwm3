@@ -324,7 +324,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	{
 		goto bail;
 	}
-	/* safty check */
+	/* safety check */
 	if (FftPatternGetMatrix(
 		load_pat, FFT_MATRIX, 0, &a) == FftResultMatch && a)
 	{
@@ -357,7 +357,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 			}
 		}
 	}
-	/* FIXME: other safty checking ? */
+	/* FIXME: other safety checking ? */
 	fftfont = FftFontOpenPattern(dpy, load_pat);
 
 	if (!fftfont)
