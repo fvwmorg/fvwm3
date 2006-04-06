@@ -48,7 +48,7 @@
 .\" even if you haven't written the feature yet. dje 2/3/01
 .\" (3/Feb/2001).
 .\"
-.\" A note to everyone who needs to write dates.  Don't use 2/3/01
+.\" A note to everyone who needs to write dates.  Do Not use 2/3/01
 .\" notation, a non-american person simply can't parse such
 .\" sequence of digits.  Please use 3-Feb-2001 or 2001-02-03 forms.
 .\" migo 16/May/2001.
@@ -793,7 +793,7 @@ DestroyFunc SessionRestartFunction
 AddToFunc SessionRestartFunction
  + I Nop
 .EE
-You don't need to define all special functions if some are empty.
+You do not need to define all special functions if some are empty.
 Also note, all these special functions may be emulated now using
 .BR StartFunction " and " ExitFunction,
 like this:
@@ -1330,7 +1330,7 @@ StringEncoding=UTF-8:-*-pretty_font-*-12-*
 .EE
 
 In most cases, fvwm correctly determines the encoding of the
-font. However, some fonts don't end with valid encoding
+font. However, some fonts do not end with valid encoding
 names. When the font name isn't normal, for example:
 .EX
 -misc-fixed-*--20-*-my_utf8-36
@@ -1623,7 +1623,7 @@ Quotes are required only when needed to make fvwm consider two or
 more words to be a single argument.  Unnecessary quoting is
 allowed.  If you want a quote character in your text, you must
 escape it by using the backslash character.  For example, if you
-have a pop-up menu called "Window-Ops", then you don't need
+have a pop-up menu called "Window-Ops", then you do not need
 quotes:
 .EX
 Popup Window-Ops
@@ -3047,7 +3047,7 @@ The above three commands are equivalent to a thickness of 2, 1 and
 
 .IR Animation " and " AnimationOff
 turn menu animation on or off.  When animation is on, sub menus
-that don't fit on the screen cause the parent menu to be shifted
+that do not fit on the screen cause the parent menu to be shifted
 to the left so the sub menu can be seen.
 
 .IR Font " and " TitleFont
@@ -3310,7 +3310,7 @@ a background color or a relief (or both).  The second
 .B %|
 marks the end of this area.
 .B %|
-can be used up to twice in the string.  If you don't add one or
+can be used up to twice in the string.  If you do not add one or
 both of them, fvwm sets the margins to the margins of the whole
 item (not counting the side picture).
 .in -.3i
@@ -3359,7 +3359,7 @@ pixels after it.  You may leave out the
 .I left
 or the
 .I .right
-parts if you don't need them.  All values up to the screen width
+parts if you do not need them.  All values up to the screen width
 are allowed.  Even negative values can be used with care.  The
 .B p
 may be replaced with any other formatting directives described
@@ -3509,7 +3509,7 @@ style menus never overlap the parent menu.
 
 When the
 .I anim
-option is given, sub menus that don't fit on the screen cause the
+option is given, sub menus that do not fit on the screen cause the
 parent menu to be shifted to the left so the sub menu can be
 seen. See also
 .B SetAnimation
@@ -3871,7 +3871,7 @@ used in a window title-bar
 
 .BR "DEFAULT " (top_left_arrow)
 .in +.3i
-used in windows that don't set their cursor
+used in windows that do not set their cursor
 .in -.3i
 
 .BR "SYS " (hand2)
@@ -4049,7 +4049,7 @@ example, the hot-spot is in the second row, and second column.
 .B DefaultColors
 sets the default foreground and background colors used in
 miscellaneous windows created by fvwm, for example in the geometry
-feedback windows during a move or resize operation. If you don't
+feedback windows during a move or resize operation. If you do not
 want to change one color or the other, use - as its color name. To
 revert to the built-in default colors omit both color names. Note
 that the default colors are not used in menus, window titles or
@@ -6510,25 +6510,29 @@ immediately.  E.g. if
 commands were issued inside a fvwm function.
 
 .TP
-.BI "Style " "stylename options"
+.BI "Style " "stylename options ..."
 This command is intended to replace the old fvwm 1.xx global
 commands NoBorder, NoTitle, StartsOnDesk, Sticky, StaysOnTop,
 Icon, WindowListSkip, CirculateSkip, SuppressIcons, BoundaryWidth,
 NoBoundaryWidth, StdForeColor, and StdBackColor with a single
-flexible and comprehensive window specific command.  This command
-is used to set attributes of a window to values other than the
-default or to set the window manager default styles.
+flexible and comprehensive window specific command.  The
+.B Style
+command is used to set attributes of a window to values other than
+the default or to set the window manager default styles.
 
 .I stylename
 can be a window's name, class, or resource string.  It may contain
 the wildcards '*' and '?', which are matched in the usual Unix
-filename manner.  They are searched in the reverse order stated.
-When two conflicting styles apply to the same window, the style
-that was changed last wins.
+filename manner.  Multiple style options in a single
+.B Style
+command are read from left to right as if they were issued one
+after each other in separate commands.  A given style always
+overrides all conflicting styles that have been issued earlier (or
+further left on the same style line).
 
 Note: windows that have no name (WM_NAME) are given a name of
-"Untitled", and windows that don't have a class (WM_CLASS,
-res_class) are given class "NoClass" and those that don't have a
+"Untitled", and windows that do not have a class (WM_CLASS,
+res_class) are given class "NoClass" and those that do not have a
 resource (WM_CLASS, res_name) are given resource "NoResource".
 
 If a window has the resource "fvwmstyle" set, the value of that resource
@@ -7448,7 +7452,7 @@ style (default) negates the
 .I ResizeOpaque
 style.  Many applications do not like their windows being resized
 opaque, e.g. XEmacs, Netscape or terminals with a pixmap
-background. If you do not like the result, don't use the
+background. If you do not like the result, do not use the
 .I ResizeOpaque
 style for these windows.  To exempt certain windows from opaque
 resizing you could use these lines in your configuration file:
@@ -7520,7 +7524,7 @@ windows are created at strange places, try either the
 .IR VariablePPosition " or " NoPPosition
 styles.  The
 .I FixedPSize
-style may screw up window dimensions for some applications.  Don't
+style may screw up window dimensions for some applications.  Do Not
 use this style in this case.
 
 .IR MoveByProgramMethod
@@ -7592,7 +7596,7 @@ inhibits all windows that are not resizable from being maximized.
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
 size.  This can be handy for broken applications that refuse to be
-resized.  Don't use it if you don't need it.  The default
+resized.  Do Not use it if you do not need it.  The default
 (opposite) style is
 .I NoResizeOverride.
 
@@ -7704,7 +7708,7 @@ placed, the
 factor affects the complement of the EWMH working area if the
 window being placed has the
 .I EWMHPlacementUseWorkingArea
-style and windows with an EWMH strut hint (i.e., a "please don't
+style and windows with an EWMH strut hint (i.e., a "please do not
 cover me" hint) if the window being placed has the
 .I EWMHPlacementUseDynamicWorkingArea
 style.  These factors represent the amount of area that these
@@ -7855,7 +7859,7 @@ Style * ManualPlacementsHonorsStartsOnPageOff
 .I NoPPosition
 instructs fvwm to ignore the program specified position (PPosition
 hint) when adding new windows.  Using PPosition is required for
-some applications, but if you don't have one of those its a real
+some applications, but if you do not have one of those its a real
 headache.  Many programs set PPosition to something obnoxious like
 0,0 (upper left corner).
 
@@ -8395,7 +8399,7 @@ Style Maker       StartsOnDesk 1
 Style signal      StartsOnDesk 3
 
 # Fire up Netscape on the second desk, in the
-# middle of my 3x3 virtual desktop, and don't
+# middle of my 3x3 virtual desktop, and do not
 # bother me with it...
 Style Netscape* SkipMapping,              \\
                 StartsOnPage 1 1 1
@@ -9292,7 +9296,7 @@ are:
 .EE
 None of these are mandatory except for
 .I Main
-(or, if you don't define
+(or, if you do not define
 .IR Main ,
 you must define both
 .IR LeftMain " and " RightMain ")."
@@ -9407,7 +9411,7 @@ intended for people who use
 .EX
 EdgeScroll 100 100
 .EE
-but find themselves accidentally flipping pages when they don't
+but find themselves accidentally flipping pages when they do not
 want to.
 
 The second parameter tells how many pixels over the edge of the
@@ -9447,7 +9451,7 @@ wrap "|" wrapx "|" wrapy "]"
 Specifies the percentage of a page to scroll when the cursor hits
 the edge of a page.  A trailing
 .RI ' p '
-changes the interpretation to mean pixels.  If you don't want any
+changes the interpretation to mean pixels.  If you do not want any
 paging or scrolling when you hit the edge of a page include
 .EX
 EdgeScroll 0 0
@@ -9468,7 +9472,7 @@ should be positive numbers.
 
 If the
 .IR horizontal " and " vertical
-percentages are multiplied by 1000 or one of the keywords 
+percentages are multiplied by 1000 or one of the keywords
 .IR wrap ", " wrapx " and " wrapy
 is given then scrolling wraps around at the edge of the desktop.
 If
@@ -9476,7 +9480,7 @@ If
 EdgeScroll 100000 100000
 .EE
 is used fvwm scrolls by whole pages, wrapping around at the edge
-of the desktop. 
+of the desktop.
 
 .TP
 .BI "EdgeThickness " 0 | 1 | 2
@@ -9491,7 +9495,7 @@ window edge. Because of the way this works, they need to be at the
 top of the stack and eat mouse events, so if you have any kind of
 error along the lines of: "mouse clicks at the edge of the screen
 do the wrong thing" you're having trouble with the pan frames and
-(assuming you don't use the mouse to flip between pages) should
+(assuming you do not use the mouse to flip between pages) should
 set the EdgeThickness to 0.
 
 A value of
@@ -10166,7 +10170,7 @@ Examples:
 .EX
 Silent Move 0 0
 Silent User_defined_function
-# don't complain on keyboards without "Help" key
+# do not complain on keyboards without "Help" key
 Silent Key Help R A Popup HelpMenu
 .EE
 
@@ -10835,7 +10839,7 @@ Next (CurrentPage, AnyScreen) Focus
 The
 .IR CirculateHit " and " CirculateHitIcon
 options override the
-.IR CirculateSkip " and " CirculateSkipIcon 
+.IR CirculateSkip " and " CirculateSkipIcon
 .B Style
 attributes for normal or iconic windows.  The
 .I CirculateHitShaded
@@ -10903,7 +10907,7 @@ mouse pointer.
 
 The
 .I FixedPosition
-condition excludes all windows that don't have a fixed position,
+condition excludes all windows that do not have a fixed position,
 either set through WM hints or the
 .B Style
 option
@@ -10918,7 +10922,7 @@ AddToFunc   ToggleFixedGeometry
 
 The
 .I FixedSize
-condition excludes all windows that don't have a fixed size,
+condition excludes all windows that do not have a fixed size,
 either set through WM hints or the
 .B Style
 option
@@ -10933,7 +10937,7 @@ command but can be used with the other conditional commands.
 
 The
 .I HasHandles
-condition excludes all windows that don't have resize handles.
+condition excludes all windows that do not have resize handles.
 
 The
 .I HasPointer
@@ -11204,7 +11208,7 @@ with m4),
 .B FvwmTheme
 (managed colorsets, obsolete),
 .B FvwmWharf
-(an AfterStep like button bar), 
+(an AfterStep like button bar),
 .B FvwmWindowMenu
 (a configurable fvwm menu listing current windows),
 .B FvwmWinList
@@ -12032,7 +12036,7 @@ bugs. If we follow this to its logical conclusion we will have an
 infinite number of unidentified bugs before the number of bugs can
 start to diminish, at which point the program will be bug-free.
 Since this is a computer program infinity = 3.4028e+38 if you
-don't insist on double-precision.  At the current rate of bug
+do not insist on double-precision.  At the current rate of bug
 discovery we should expect to achieve this point in 4.27e+27
 years.  I guess we better plan on passing this thing on to our
 children...
