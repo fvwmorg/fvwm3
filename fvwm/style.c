@@ -186,8 +186,7 @@ static Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 			return True;
 		}
 		if (fw->style_name == NULL &&
-		    matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) ==
-		    TRUE)
+		    matchWildcards(SID_GET_NAME(s_id), fw->style_name) == TRUE)
 		{
 			return True;
 		}
@@ -1289,6 +1288,7 @@ static Bool style_parse_focus_policy_style(
 	{
 		*ret_rest = rest;
 	}
+
 	found = True;
 	val = !is_reversed;
 	GetNextTokenIndex(option, optlist, 0, &index);
