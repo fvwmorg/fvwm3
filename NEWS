@@ -15,8 +15,8 @@ Changes in beta release 2.5.17 (not released yet)
      distances.
    - New Style option UnderMousePlacement.
    - Unused arguments to Style options generate warnings.
-   - The name style names match against can be overridden by the
-     X-resource "fvwmstyle"
+   - The name style names match against can be augmented by the
+     X-resource "fvwmstyle".
 
 * Bug Fixes:
 

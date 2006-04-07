@@ -1252,7 +1252,7 @@ static void ParseButton(button_info **uberb, char *s)
 				b->flags.b_ActionIgnoresClientWindow = 1;
 				break;
 
-			case 10: /* ActionIgnoresClientWindow */
+			case 10: /* ActionOnPress */
 				b->flags.b_ActionOnPress = 1;
 				break;
 
