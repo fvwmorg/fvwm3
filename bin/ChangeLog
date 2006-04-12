@@ -1,3 +1,13 @@
+2006-04-07  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* fvwm-bug.in:
+	changed fallback editor from `emacs' to `vi' because it much
+	more widespread on non-Linux systems
+	fixed errors (because of incorrect syntax fallback entries were
+	not used)
+	now script honors `TMPDIR' env. variable and if it's not set it
+	fallback to `/tmp' directory when creating temporary file
+
 2006-04-04  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* ChangeLog:
