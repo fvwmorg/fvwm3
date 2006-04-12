@@ -228,6 +228,10 @@ To invoke different commands for different mouse clicks, use this syntax:
 Indicates the maximum width that window buttons should reach.
 (the minimum is hard coded at 32).
 
+.IP "*FvwmTaskBar: Pad \fIwidth\fP"
+Specifies the space (in pixels) between the window buttons. If this option is
+not specified, the default space is 3.
+
 .IP "*FvwmTaskBar: WindowButtonsLeftMargin \fImargin\fP"
 Specifies the space (in pixels) between the left side of the left-most window
 button and the right side of the start button or right-most shortcut 
