@@ -208,7 +208,7 @@ Bool GoodiesParseConfig(char *tline)
   char *option;
   int i;
 
-  option = tline + module->namelen;
+  option = tline + module->namelen+1;
   i = GetTokenIndex(option, goodyopts, -1, &rest);
   while (*rest && *rest != '\n' && isspace(*rest))
     rest++;

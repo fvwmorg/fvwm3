@@ -79,7 +79,7 @@ Bool StartButtonParseConfig(char *tline)
 	int mouseButton;
 	char **tmpStrPtr;
 
-	option = tline + module->namelen;
+	option = tline + module->namelen+1;
 	i = GetTokenIndex(option, startopts, -1, &rest);
 	while (*rest && *rest != '\n' && isspace(*rest))
 	{

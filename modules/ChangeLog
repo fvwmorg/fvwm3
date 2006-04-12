@@ -3,6 +3,16 @@
 	* FvwmTaskBar/FvwmTaskBar.1.in:
 	added another undocumented `Pad' option description.
 
+	* FvwmTaskBar/FvwmTaskBar.c:
+	fixed typos
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmTaskBar/Start.c:
+	Because of incorrect module->namelen calculation entire
+	FvwmTaskBar module was broken. _Test_ your changes before
+	commits.
+
 2006-03-21  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* FvwmAnimate/FvwmAnimate.c:
@@ -16,13 +26,13 @@
 
 	* FvwmForm/FvwmForm.1.in:
 	* FvwmForm/FvwmForm-Rlogin:
-	replaced all mentions of `rsh' with `ssh'. rsh is obsolete and 
+	replaced all mentions of `rsh' with `ssh'. rsh is obsolete and
 	inherently insecure. We shouldn't teach our users bad things,
 	should we?
 
 	* FvwmTaskBar/FvwmTaskBar.1.in:
 	slightly clarified the `StartName' option description
-	added the undocumented `MailDir' option description. Somebody 
+	added the undocumented `MailDir' option description. Somebody
 	violated section `K' of the convention list.
 
 	* FvwmBacker/FvwmBacker.1.in:

@@ -1089,7 +1089,7 @@ static void ParseConfigLine(char *tline)
 
   if (strncasecmp(tline, CatString3("*",module->name,0), module->namelen) != 0)
   {
-    /* Non module spcific option */
+    /* Non module specific options */
     index = GetTokenIndex(tline, configopts, -1, &rest);
     while (*rest && *rest != '\n' && isspace(*rest))
       rest++;
@@ -1119,8 +1119,8 @@ static void ParseConfigLine(char *tline)
   } /* if options */
   else
   {
-    /* option beginning with '*ModuleName' */
-    rest = tline + module->namelen;
+    /* options beginning with '*ModuleName' */
+    rest = tline + module->namelen+1;
     index = GetTokenIndex(rest, moduleopts, -1, &rest);
     while (*rest && *rest != '\n' && isspace(*rest))
       rest++;
