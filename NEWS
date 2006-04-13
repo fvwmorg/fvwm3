@@ -17,7 +17,7 @@ Changes in beta release 2.5.17 (not released yet)
    - Unused arguments to Style options generate warnings.
    - The name style names match against can be augmented by the
      X-resource "fvwmstyle".
-   - New option Reverse to All command.
+   - New options, Reverse and UseStack, to All command.
 
 * Bug Fixes:
 

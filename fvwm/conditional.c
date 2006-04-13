@@ -1470,16 +1470,29 @@ void CMD_All(F_CMD_ARGS)
 	Bool does_any_window_match = False;
 	char *token;
 	Bool do_reverse = False;
+	Bool use_stack = False;
 
 	token = PeekToken(action, &restofline);
 	if (StrEquals(token, "Reverse"))
 	{		
 		if (*restofline)
 		{
-			/* if not any more actions, then rverese probably is
+			/* if not any more actions, then Reverse probably is
 			 * some user function, so ignore it and do the old 
 			 * behaviour */
 			do_reverse = True;
+			action = restofline;
+			token = PeekToken(action, &restofline);
+		}
+	}
+	if (StrEquals(token, "UseStack"))
+	{		
+		if (*restofline)
+		{
+			/* if not any more actions, then UseStack probably is
+			 * some user function, so ignore it and do the old 
+			 * behaviour */
+			use_stack = True;
 			action = restofline;
 		}
 	}
@@ -1502,12 +1515,27 @@ void CMD_All(F_CMD_ARGS)
 	}
 	g = (FvwmWindow **)safemalloc(num * sizeof(FvwmWindow *));
 	num = 0;
-	for (t = Scr.FvwmRoot.next; t; t = t->next)
+	if (!use_stack)
 	{
-		if (MatchesConditionMask(t, &mask))
+		for (t = Scr.FvwmRoot.next; t; t = t->next)
 		{
-			g[num++] = t;
-			does_any_window_match = True;
+			if (MatchesConditionMask(t, &mask))
+			{
+				g[num++] = t;
+				does_any_window_match = True;
+			}
+		}
+	}
+	else
+	{
+		for (t = Scr.FvwmRoot.stack_next; t && t != &Scr.FvwmRoot;
+		     t = t->stack_next)
+		{
+			if (MatchesConditionMask(t, &mask))
+			{
+				g[num++] = t;
+				does_any_window_match = True;
+			}
 		}
 	}
 	if (do_reverse)
