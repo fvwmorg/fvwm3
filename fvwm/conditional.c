@@ -1468,6 +1468,21 @@ void CMD_All(F_CMD_ARGS)
 	char *flags;
 	int num, i;
 	Bool does_any_window_match = False;
+	char *token;
+	Bool do_reverse = False;
+
+	token = PeekToken(action, &restofline);
+	if (StrEquals(token, "Reverse"))
+	{		
+		if (*restofline)
+		{
+			/* if not any more actions, then rverese probably is
+			 * some user function, so ignore it and do the old 
+			 * behaviour */
+			do_reverse = True;
+			action = restofline;
+		}
+	}
 
 	flags = CreateFlagString(action, &restofline);
 	DefaultConditionMask(&mask);
@@ -1495,10 +1510,21 @@ void CMD_All(F_CMD_ARGS)
 			does_any_window_match = True;
 		}
 	}
-	for (i = 0; i < num; i++)
+	if (do_reverse)
 	{
-		execute_function_override_window(
-			cond_rc, exc, restofline, 0, g[i]);
+		for (i = num-1; i >= 0; i--)
+		{
+			execute_function_override_window(
+				cond_rc, exc, restofline, 0, g[i]);
+		}
+	}
+	else
+	{
+		for (i = 0; i < num; i++)
+		{
+			execute_function_override_window(
+				cond_rc, exc, restofline, 0, g[i]);
+		}
 	}
 	if (cond_rc != NULL && cond_rc->rc != COND_RC_BREAK)
 	{

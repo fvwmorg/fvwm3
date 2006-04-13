@@ -1,3 +1,10 @@
+2006-04-13  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* fvwm/fvwm.1.in (All): 
+	* fvwm/conditional.c (CMD_All): 
+	added reverse option to All command to do the action in opposite order
+
 2006-04-07  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* bin/fvwm-bug.in:
