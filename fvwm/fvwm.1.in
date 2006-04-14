@@ -10281,7 +10281,7 @@ on all windows meeting the conditions.  It returns 1 if any window
 matches the condition and 0 otherwise. The execution starts at the top of the
 window ring and continues towards the bottom. If the option 
 .I Reverse
-is given the exection order is reversed. The option
+is given the execution order is reversed. The option
 .I UseStack
 makes All use the stack order instead of the window ring when walking
 through windows.
