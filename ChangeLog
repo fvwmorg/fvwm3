@@ -1,3 +1,16 @@
+2006-04-16  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS: 
+	* fvwm/fvwm.1.in (WindowShade): 
+	* fvwm/windowshade.c (CMD_WindowShade): 
+	* fvwm/add_window.c (setup_window_structure): 
+	added last direction to WindowShade command.
+
+2006-04-14  Viktor Griph  <griph@dd.chalmers.se>
+
+        * fvwm/fvwm.1.in (All):
+        corrected typo
+	
 2006-04-13  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:

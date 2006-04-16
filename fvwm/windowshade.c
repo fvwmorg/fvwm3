@@ -87,13 +87,37 @@ void CMD_WindowShade(F_CMD_ARGS)
 	{
 		do_force_shading = True;
 		action = naction;
+		token = PeekToken(action, &naction);
 	}
 	else
 	{
 		do_force_shading = False;
 	}
 	/* parse arguments */
-	shade_dir = gravity_parse_dir_argument(action, NULL, -1);
+	if (StrEquals("Last", token))
+	{
+		/* last given instead of a direction will make 
+		 * fvwm to reuse the last used shading direction.
+		 * A new, nevershaded window will have 
+		 * USED_TITLE_DIR_FOR_SHADING set (in add_window.c: 
+		 * setup_window_structure)
+		 */
+		action = naction;
+		if (!USED_TITLE_DIR_FOR_SHADING(fw))
+		{
+			shade_dir = SHADED_DIR(fw);
+		}
+		else
+		{
+			shade_dir = DIR_NONE;
+		}
+	}
+	else
+	{
+		/* parse normal direction if last was not given */
+		shade_dir = gravity_parse_dir_argument(action, NULL, -1);
+	}
+
 	if (shade_dir >= 0 && shade_dir <= DIR_MASK)
 	{
 		has_dir = True;

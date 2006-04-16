@@ -5809,14 +5809,18 @@ is "False", then the window is forced to the non-shaded
 state.  To force shading in a certain direction, the
 .I direction
 argument can be used.  Any of the strings "North", "South",
-"West", "East", "NorthWest", "NorthEast", "SouthWest" or
-"SouthEast" can be given.  The direction can be abbreviated with
+"West", "East", "NorthWest", "NorthEast", "SouthWest",
+"SouthEast" or "Last" can be given. The direction can be abbreviated with
 the usual one or two letters "N", "NW", etc.  Using a direction on
 a window that was already shaded unshades the window.  To shade it
 in a different direction, use the
 .I ShadeAgain
-option.  Windows without titles can be shaded too.  Please refer
-also to the options
+option. The direction 
+.I Last
+will shade the window in the direction it last was shaded. If the
+window has never been shaded before it will be shaded as if no
+direction were given. Windows without titles can be shaded too.
+Please refer also to the options
 .IR WindowShadeSteps ", " WindowShadeShrinks ,
 .IR WindowShadeScrolls ", " WindowShadeLazy ,
 .IR WindowShadeAlwaysLazy " and " WindowShadeBusy .

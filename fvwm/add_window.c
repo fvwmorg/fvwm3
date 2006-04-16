@@ -475,6 +475,12 @@ static void setup_window_structure(
 		CLEAR_USER_STATES(*pfw, ~0);
 		SET_USER_STATES(*pfw, GET_USER_STATES(savewin));
 	}
+	else
+	{
+		/* make sure that new windows *remember* being shaded with 
+		 * title dir last */
+		SET_USED_TITLE_DIR_FOR_SHADING(*pfw,1);
+	}
 
 	(*pfw)->cmap_windows = (Window *)NULL;
 	if (FMiniIconsSupported)

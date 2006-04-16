@@ -18,6 +18,7 @@ Changes in beta release 2.5.17 (not released yet)
    - The name style names match against can be augmented by the
      X-resource "fvwmstyle".
    - New options, Reverse and UseStack, to All command.
+   - WindowShade can now reshade windows using the Last direction.
 
 * Bug Fixes:
 
