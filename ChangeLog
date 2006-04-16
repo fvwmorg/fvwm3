@@ -1,5 +1,10 @@
 2006-04-16  Viktor Griph  <griph@dd.chalmers.se>
 
+	* NEWS: 
+	* fvwm/fvwm.1.in (COMMAND EXPANSION): 
+	* fvwm/expand.c (expand_args_extended, expand_vars): 
+	added support for $[n], $[n-m], $[n-] and $[*] variable expansion.
+
 	* fvwm/conditional.c (CMD_All): 
 	* fvwm/fvwm.1.in (All): 
 	changed Reverse and UseStack options to have free order.

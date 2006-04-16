@@ -19,6 +19,8 @@ Changes in beta release 2.5.17 (not released yet)
      X-resource "fvwmstyle".
    - New options, Reverse and UseStack, to All command.
    - WindowShade can now reshade windows using the Last direction.
+   - Positional parameters to complex functions can now be expanded
+     using $[n], $[n-m], $[n-] and $[*] expressions.
 
 * Bug Fixes:
 

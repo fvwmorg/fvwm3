@@ -195,6 +195,105 @@ enum
 
 /* ---------------------------- local functions ---------------------------- */
 
+static signed int expand_args_extended(
+	char *input, char *argument_string, char *output)
+{
+	int n;
+	int lower;
+	int upper;
+	int l;
+	char *args_end;
+	char save_char;
+	if (*input == '*')
+	{
+		lower = 0;
+		upper = -1;
+	}
+	else 
+	{
+		if (*input < '0' || *input > '9')
+		{
+			/* not a positional argument */
+			return -1;
+		}
+		sscanf(input, "%d%n", &lower, &n);
+		input+=n;
+		if (*input == 0)
+		{
+			upper = lower;
+		}
+		else if (*input == '-')
+		{
+			/* A range */
+			input++;
+			if (*input == 0)
+			{
+				/* open end */
+				upper = -1;
+			}
+			else if (*input >= '0' && *input <= '9')
+			{
+				sscanf(input, "%d%n", &upper, &n);
+				input+=n;
+				if (*input != 0)
+				{
+					/* trailing characters - not good */
+					return -1;
+				}			
+				else if (upper < lower)
+				{
+					/* the range is reverse - not good */
+					return -1;
+				}
+			}
+			else
+			{
+				/* non-number at end of range - not good */
+				return -1;
+			}
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	if (!argument_string)
+	{
+		return 0;
+	}
+
+	/* Skip to the start of the requested argument range */
+	argument_string = SkipSpaces(SkipNTokens(argument_string,lower), 
+				     NULL, 0);
+	/* Skip to the end of the requested argument range */
+	if (upper>=0)
+	{		
+		args_end = SkipNTokens(argument_string,upper-lower+1);
+		/* back up to the end of the last token -
+		   avoid trailing whitespace*/
+		while (argument_string < args_end && isspace(*(args_end-1)))
+		{
+			args_end--;
+		}
+		save_char = *args_end;
+		*args_end = 0;
+		l = strlen(argument_string);
+		*args_end = save_char;
+	}
+	else
+	{
+		l = strlen(argument_string);		
+	}
+	if (output)
+	{
+		memcpy(output, argument_string, 
+		       (size_t)(l));
+		output[l] = 0;
+	}
+	return l;
+	
+}
+
 static signed int expand_vars_extended(
 	char *var_name, char *output, cond_rc_t *cond_rc,
 	const exec_context_t *exc)
@@ -806,9 +905,17 @@ char *expand_vars(
 								addto, ismod,
 								cond_rc, exc);
 						}
-						xlen = expand_vars_extended(
-							var, NULL, cond_rc,
-							exc);
+						xlen = expand_args_extended(
+							var, arguments ?
+							arguments[0] : NULL,
+							NULL);
+						if (xlen < 0)
+						{
+							xlen = 
+							  expand_vars_extended(
+								var, NULL, 
+								cond_rc, exc);
+						}
 						if (name_has_dollar)
 						{
 							free(var);
@@ -967,8 +1074,16 @@ char *expand_vars(
 							var, arguments,	addto,
 							ismod, cond_rc,	exc);
 					}
-					xlen = expand_vars_extended(
-						var, &out[j], cond_rc, exc);
+					xlen = expand_args_extended(
+						var, arguments ?
+						arguments[0] : NULL,
+						 &out[j]);
+					if (xlen < 0)
+					{
+						xlen = expand_vars_extended(
+							var, &out[j], cond_rc,
+							exc);
+					}
 					if (name_has_dollar)
 					{
 						free(var);
