@@ -10278,16 +10278,20 @@ styles are used) or by the last time they had the focus.
 .SS List of Conditional Commands
 
 .TP
-.BI "All [" Reverse "] [" UseStack "] [(" conditions ")] " command
+.BI "All [" options "] [(" conditions ")] " command
 Execute
 .I command
 on all windows meeting the conditions.  It returns 1 if any window
 matches the condition and 0 otherwise. The execution starts at the top of the
-window ring and continues towards the bottom. If the option 
+window ring and continues towards the bottom. The
+.I options
+can be any combination of 
+.IR Reverse " and " UseStack .
+If the option 
 .I Reverse
 is given the execution order is reversed. The option
 .I UseStack
-makes All use the stack order instead of the window ring when walking
+makes All use the stacking order instead of the window ring when walking
 through windows.
 .RB "See " Conditions " section below for a list of conditions."
 

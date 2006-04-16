@@ -1,5 +1,9 @@
 2006-04-16  Viktor Griph  <griph@dd.chalmers.se>
 
+	* fvwm/conditional.c (CMD_All): 
+	* fvwm/fvwm.1.in (All): 
+	changed Reverse and UseStack options to have free order.
+
 	* NEWS: 
 	* fvwm/fvwm.1.in (WindowShade): 
 	* fvwm/windowshade.c (CMD_WindowShade): 

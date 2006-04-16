@@ -1472,28 +1472,44 @@ void CMD_All(F_CMD_ARGS)
 	Bool do_reverse = False;
 	Bool use_stack = False;
 
-	token = PeekToken(action, &restofline);
-	if (StrEquals(token, "Reverse"))
-	{		
-		if (*restofline)
-		{
-			/* if not any more actions, then Reverse probably is
-			 * some user function, so ignore it and do the old 
-			 * behaviour */
-			do_reverse = True;
-			action = restofline;
-			token = PeekToken(action, &restofline);
+	while (True) /* break when a non-option is found */
+	{
+		token = PeekToken(action, &restofline);
+		if (StrEquals(token, "Reverse"))
+		{		
+			if (!*restofline)
+			{
+				/* if not any more actions, then Reverse 
+				 * probably is some user function, so ignore
+				 * it and do the old  behaviour */
+				break;
+			}
+			else
+			{
+				do_reverse = True;
+				action = restofline;
+			}
 		}
-	}
-	if (StrEquals(token, "UseStack"))
-	{		
-		if (*restofline)
+		else if (StrEquals(token, "UseStack"))
+		{		
+			if (!*restofline)
+			{
+				/* if not any more actions, then UseStack 
+				 * probably is some user function, so ignore
+				 * it and do the old behaviour */
+				break;
+			}
+			else
+			{
+				use_stack = True;
+				action = restofline;
+			}
+		}
+		else
 		{
-			/* if not any more actions, then UseStack probably is
-			 * some user function, so ignore it and do the old 
-			 * behaviour */
-			use_stack = True;
-			action = restofline;
+			/* No more options -- continue with flags and 
+			 * commands */
+			break;
 		}
 	}
 
