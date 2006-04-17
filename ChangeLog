@@ -1,3 +1,9 @@
+2006-04-17  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/fvwm.1.in (COMMAND EXPANSION): 
+	* fvwm/expand.c (expand_args_extended): 
+	fixed $[n] to work exactly as $n, i.e. dequote the expansion.
+
 2006-04-16  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS: 

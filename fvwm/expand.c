@@ -204,6 +204,7 @@ static signed int expand_args_extended(
 	int l;
 	char *args_end;
 	char save_char;
+	Bool is_single_arg = False;
 	if (*input == '*')
 	{
 		lower = 0;
@@ -220,7 +221,9 @@ static signed int expand_args_extended(
 		input+=n;
 		if (*input == 0)
 		{
-			upper = lower;
+			/* This is not equivalent of $[n-n] */
+			is_single_arg = True;
+			upper = -1;
 		}
 		else if (*input == '-')
 		{
@@ -265,6 +268,11 @@ static signed int expand_args_extended(
 	/* Skip to the start of the requested argument range */
 	argument_string = SkipSpaces(SkipNTokens(argument_string,lower), 
 				     NULL, 0);
+	if (is_single_arg)
+	{
+		/* single arguments should be dequoted if quoted already. */
+		argument_string = PeekToken(argument_string,NULL);
+	}	
 	/* Skip to the end of the requested argument range */
 	if (upper>=0)
 	{		

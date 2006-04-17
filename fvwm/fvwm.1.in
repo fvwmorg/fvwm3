@@ -1716,7 +1716,7 @@ The
 .IR n :th
 positional parameter given to a complex function, counting from 0.
 If the corresponding parameter is undefined, the "$[n]" is deleted
-from the command line.
+from the command line. The parameter will be expanded unquoted.
 .in -.3i
 .in -.5i
 
@@ -1730,7 +1730,8 @@ and ending with parameter
 If all the corresponding parameters are
 undefined, the "$[...]" is deleted from the command line. If only some of the
 parameters are defined, all defined parameters are expanded, and the remaining
-silently ignored.
+silently ignored. Any quoting used on the function call line will remain in
+the expanded arguments.
 .in -.3i
 .in -.5i
 
@@ -1741,7 +1742,8 @@ All the positional parameters given to a complex function, starting with
 parameter
 .IR n .
 If all the corresponding parameters are undefined, the "$[...]" is
-deleted from the command line.
+deleted from the command line. Any quoting used on the function call
+line will remain in the expanded arguments.
 .in -.3i
 .in -.5i
 
