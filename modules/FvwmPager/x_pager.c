@@ -137,6 +137,56 @@ Pixmap default_pixmap = None;
 #endif
 
 
+#define  MAX_UNPROCESSED_MESSAGES 1
+/* sums up pixels to scroll. If do_send_message is True a Scroll command is
+ * sent back to fvwm. The function shall be called with is_message_recieved
+ * True when the Scroll command has been processed by fvwm. This is checked
+ * by talking to ourself. */
+static void do_scroll(int sx, int sy, Bool do_send_message, 
+		      Bool is_message_recieved)
+{
+	static int psx = 0;
+	static int psy = 0;
+	static int messages_sent = 0;
+	static char *self_message = NULL;
+	char command[256];
+	psx+=sx;
+	psy+=sy;
+	if (is_message_recieved)
+	{
+		/* There might be other modules with the sme name, or someone
+		 minght send ScrollDone other then the module, so jost treat 
+		 any negative count as zero. */
+		if (--messages_sent < 0)
+		{
+			messages_sent = 0;
+		}
+		
+	}
+	if ((do_send_message || messages_sent < MAX_UNPROCESSED_MESSAGES) &&
+	    ( psx != 0 || psy != 0 ))
+	{
+		sprintf(command, "Scroll %dp %dp", psx, psy);
+		SendText(fd, command, 0);
+		if (self_message == NULL)
+		{
+			self_message = (char *)safemalloc(sizeof(char)*
+							  (strlen(MyName)+ 23));
+			sprintf(self_message, "SendToModule %s ScrollDone", 
+				MyName);
+		}
+		messages_sent++;
+		SendText(fd, self_message, 0);
+		psx = 0;
+		psy = 0;
+	}
+}
+
+void HandleScrollDone()
+{
+	do_scroll(0, 0, True, True);
+}
+
 /* discard certain events on a window */
 static void discard_events(long event_type, Window w, XEvent *last_ev)
 {
@@ -1074,6 +1124,8 @@ void DispatchEvent(XEvent *Event)
 	}
 	Scroll(icon_w, icon_h, x, y, 0, True);
       }
+      /* Flush any pending scroll operations */
+      do_scroll(0, 0, True, False); 
     }
     else if((Event->xbutton.button == 1)||
 	    (Event->xbutton.button == 2))
@@ -2249,7 +2301,6 @@ void Hilight(PagerWindow *t, int on)
 void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	    Bool do_scroll_icon)
 {
-	char command[256];
 	static int last_sx = -999999;
 	static int last_sy = -999999;
 	int sx;
@@ -2291,44 +2342,32 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	sy = 0;
 	if (window_w != 0)
 	{
-		sx = 100 * (x * Scr.VWidth / window_w - MyVx) /
-			Scr.MyDisplayWidth;
+		sx = (x * Scr.VWidth / window_w - MyVx);
 	}
 	if (window_h != 0)
 	{
-		sy = 100 * (y * Scr.VHeight / window_h - MyVy) /
-			Scr.MyDisplayHeight;
+		sy = (y * Scr.VHeight / window_h - MyVy);
 	}
 	MYFPRINTF((stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
 		y, sx, sy));
-	/* Make sure weExecuteCommandQueue(); don't get stuck a few pixels from
-	 * the top/left border. Since sx/sy are ints, values between 0 and 1 are
-	 * rounded down. */
-	if (sx == 0 && x == 0 && MyVx != 0)
-	{
-		sx = -1;
-	}
-	if (sy == 0 && y == 0 && MyVy != 0)
-	{
-		sy = -1;
-	}
 	if (sx == 0 && sy == 0)
 	{
 		return;
 	}
 	if (Wait == 0 || last_sx != sx || last_sy != sy)
 	{
-		sprintf(command, "Scroll %d %d", sx, sy);
-		SendText(fd, command, 0);
+		do_scroll(sx, sy, False, False);
+		
 		/* Here we need to track the view offset on the desk. */
-		/* sx/y are are a percent of the screen to scroll. */
+		/* sx/y are are pixels on the screen to scroll. */
 		/* We don't use Scr.Vx/y since they lag the true position. */
-		MyVx += Scr.MyDisplayWidth * sx / 100;
+		MyVx += sx;
 		if (MyVx < 0)
 		{
 			MyVx = 0;
 		}
-		MyVy += Scr.MyDisplayHeight * sy / 100;
+		MyVy += sy;
+
 		if (MyVy < 0)
 		{
 			MyVy = 0;

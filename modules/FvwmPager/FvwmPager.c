@@ -347,7 +347,8 @@ int main(int argc, char **argv)
 		 M_END_CONFIG_INFO|
 		 M_MINI_ICON|
 		 M_END_WINDOWLIST|
-		 M_RESTACK);
+		 M_RESTACK|
+	         M_STRING);
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE);
@@ -565,6 +566,10 @@ void process_message( FvwmPacket* packet )
       break;
     case MX_PROPERTY_CHANGE:
       list_property_change(body);
+      break;
+    case M_STRING:
+	    list_string(body);
+	    break;
     default:
       /* ignore unknown packet */
       break;
@@ -1426,6 +1431,17 @@ void list_property_change(unsigned long *body)
   {
     Swallowed = body[1];
   }
+}
+
+
+void list_string(unsigned long *body)
+{
+	char *tline;
+	tline = (char*)&(body[3]);
+	if (strcmp(tline, "ScrollDone") == 0)
+	{
+		HandleScrollDone();
+	}
 }
 
 /*

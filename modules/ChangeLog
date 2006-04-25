@@ -1,3 +1,12 @@
+2006-04-26  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPager/FvwmPag
+	* FvwmPager/FvwmPager.h (HandleScrollDone,list_string):
+	* FvwmPager/x_pager.c (Scroll, do_scroll, HandleScrollDone): 
+	Changed to pixel operation. Scrolling is summed up before sent to 
+	fvwm to speed up multiple subsequent scrollings that take place faster
+	than fvwm can change viewport.	
+
 2006-04-07  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* FvwmTaskBar/FvwmTaskBar.1.in:
