@@ -1712,7 +1712,7 @@ includes parameters that follow after "$9".
 .in +.5i
 .RI $[ n ]
 .in +.3i
-The 
+The
 .IR n :th
 positional parameter given to a complex function, counting from 0.
 If the corresponding parameter is undefined, the "$[n]" is deleted
@@ -3078,7 +3078,7 @@ menu style.  No other parts of the colorset are used.
 .I TitleColorset
 works exactly like
 .IR MenuColorset ,
-but is user only for menu titles.
+but is used only for menu titles.
 
 .IR Hilight3DThick ", " Hilight3DThin " and " Hilight3DOff
 determine if the selected menu item is hilighted with a 3D
@@ -5861,7 +5861,7 @@ the usual one or two letters "N", "NW", etc.  Using a direction on
 a window that was already shaded unshades the window.  To shade it
 in a different direction, use the
 .I ShadeAgain
-option. The direction 
+option. The direction
 .I Last
 will shade the window in the direction it last was shaded. If the
 window has never been shaded before it will be shaded as if no
@@ -7646,9 +7646,9 @@ inhibits all windows that are not resizable from being maximized.
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
 size.  This can be handy for broken applications that refuse to be
-resized.  Do Not use it if you do not need it.  The default
+resized.  Do not use it if you do not need it.  The default
 (opposite) style is
-.I NoResizeOverride.
+.IR NoResizeOverride .
 
 .I MaxWindowSize " [ width [ p ]  height [ p ] ]"
 Tells fvwm the maximum width and height of a window.  The values
@@ -10331,9 +10331,9 @@ on all windows meeting the conditions.  It returns 1 if any window
 matches the condition and 0 otherwise. The execution starts at the top of the
 window ring and continues towards the bottom. The
 .I options
-can be any combination of 
+can be any combination of
 .IR Reverse " and " UseStack .
-If the option 
+If the option
 .I Reverse
 is given the execution order is reversed. The option
 .I UseStack

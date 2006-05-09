@@ -1,3 +1,19 @@
+2006-05-09  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* fvwm/ewmh_events.c:
+	* fvwm/fvwm.1.in:
+	* fvwm/gnome.c:
+	* libs/FlocaleCharset.c:
+	corrected typos
+
+	* libs/Flocale.c:
+	corrected typos in warning messages
+
+	* libs/Colorset.c:
+	* libs/PictureGraphics.c:
+	* libs/PictureGraphics.h:
+	renamed function PGraphicsCreateTransprency to PGraphicsCreateTransparency
+
 2006-04-17  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/fvwm.1.in (COMMAND EXPANSION): 

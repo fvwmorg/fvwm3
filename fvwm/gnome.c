@@ -1070,7 +1070,7 @@ void GNOME_HandlePropRequest(
 	}
 	/*--------------------------------------------------------------------
 	  First change the props on the window so the gnome app knows we did
-	  somthing.
+	  something.
 	  --------------------------------------------------------------------*/
 #ifdef FVWM_DEBUG_MSGS
 	fvwm_msg(

@@ -1191,7 +1191,7 @@ FvwmPicture *PGraphicsCreateTiledPicture(
 	return q;
 }
 
-Pixmap PGraphicsCreateTransprency(
+Pixmap PGraphicsCreateTransparency(
 	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
 	int x, int y, int width, int height, Bool parent_relative)
 {
@@ -1325,7 +1325,7 @@ void PGraphicsTintRectangle(
 		fra.tint = tint;
 		fra.tint_percent = tint_percent;
 		fra.mask = FRAM_DEST_IS_A_WINDOW | FRAM_HAVE_TINT;
-		p = PGraphicsCreateTransprency(
+		p = PGraphicsCreateTransparency(
 			dpy, dest, &fra, gc, dest_x, dest_y, dest_w, dest_h,
 			False);
 		if (p)

@@ -386,7 +386,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		fra.tint = colorset->tint;
 		fra.tint_percent = colorset->tint_percent;
 		XGrabServer(dpy);
-		pixmap = PGraphicsCreateTransprency(
+		pixmap = PGraphicsCreateTransparency(
 			dpy, win, &fra, gc, 0, 0, width, height, True);
 		XUngrabServer(dpy);
 		if (pixmap == None)

@@ -1548,7 +1548,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		if (flf->fc == FlocaleCharsetGetUnknownCharset())
 		{
 			fprintf(stderr,"[%s][FlocaleLoadFont]: "
-				"WARNING -- Unkown charset for font\n\t'%s'\n",
+				"WARNING -- Unknown charset for font\n\t'%s'\n",
 				(module)? module: "FVWMlibs", flf->name);
 			flf->fc = FlocaleCharsetGetDefaultCharset(dpy, module);
 		}
@@ -1558,7 +1558,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			   flf->fftf.str_encoding != NULL)))
 		{
 			fprintf(stderr,"[%s][FlocaleLoadFont]: "
-				"WARNING -- Unkown string encoding for font\n"
+				"WARNING -- Unknown string encoding for font\n"
 				"\t'%s'\n",
 				(module)? module: "FVWMlibs", flf->name);
 		}

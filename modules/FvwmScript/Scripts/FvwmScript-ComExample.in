@@ -96,12 +96,12 @@ Property
     Position 30 100
     Size 150 20
     Type PushButton
-    Title {Send An Unkown Msg}
+    Title {Send An Unknown Msg}
 Main
 Case message of
     SingleClic :
     Begin
-	Set $tmp = (SendMsgAndGet $ComName {unkown} 1)
+	Set $tmp = (SendMsgAndGet $ComName {unknown} 1)
 	Set $tmp = {Returned value: }$tmp
 	ChangeTitle 31 $tmp
     End

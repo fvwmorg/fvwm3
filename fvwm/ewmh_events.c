@@ -1333,7 +1333,7 @@ int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 	unsigned int size;
 	CARD32 *val;
 
-	/* FIXME: After a (un)silde of kicker the geometry are wrong (not
+	/* FIXME: After a (un)slide of kicker the geometry are wrong (not
 	 * because we set the geometry just after the property notify).  This
 	 * does not happen with kwin */
 	val = ewmh_AtomGetByName(

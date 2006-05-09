@@ -317,7 +317,7 @@ char *euc_jp[]            = {"EUC-JP",
 #endif
 
 static
-FlocaleCharset UnkownCharset =
+FlocaleCharset UnknownCharset =
 	{"Unknown", nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, NULL};
 
 /* the table contains all Xorg "charset" plus some others */
@@ -663,7 +663,7 @@ void FlocaleCharsetSetFlocaleCharset(
 		}
 		else
 		{
-			CopyString(&fc->x, "Unkown"); /* for simplicity */
+			CopyString(&fc->x, "Unknown"); /* for simplicity */
 			fc->bidi = NULL;
 			fc->encoding_type = FLC_ENCODING_TYPE_FONT;
 		}
@@ -679,7 +679,7 @@ void FlocaleCharsetSetFlocaleCharset(
 	}
 	if (flf->fc == NULL)
 	{
-		flf->fc = &UnkownCharset;
+		flf->fc = &UnknownCharset;
 	}
 
 	/* now the string charset */
@@ -692,7 +692,7 @@ void FlocaleCharsetSetFlocaleCharset(
 		}
 		if (flf->str_fc == NULL)
 		{
-			flf->str_fc = &UnkownCharset;
+			flf->str_fc = &UnknownCharset;
 		}
 	}
 	else if (FftSupport && flf->fftf.fftfont != NULL)
@@ -708,7 +708,7 @@ void FlocaleCharsetSetFlocaleCharset(
 			}
 			if (flf->str_fc == NULL)
 			{
-				flf->str_fc = &UnkownCharset;
+				flf->str_fc = &UnknownCharset;
 			}
 		}
 		else
@@ -719,7 +719,7 @@ void FlocaleCharsetSetFlocaleCharset(
 	}
 	if (flf->str_fc == NULL)
 	{
-		if (flf->fc != &UnkownCharset)
+		if (flf->fc != &UnknownCharset)
 		{
 			flf->str_fc = flf->fc;
 		}
@@ -784,7 +784,7 @@ FlocaleCharset *FlocaleCharsetGetLocaleCharset(void)
 
 FlocaleCharset *FlocaleCharsetGetUnknownCharset(void)
 {
-	return &UnkownCharset;
+	return &UnknownCharset;
 }
 
 const char *FlocaleGetBidiCharset(Display *dpy, FlocaleCharset *fc)

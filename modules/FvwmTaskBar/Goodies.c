@@ -284,7 +284,7 @@ Bool GoodiesParseConfig(char *tline)
     using_MailDir = True;
     break;
   default:
-    /* unknow option */
+    /* unknown option */
     return False;
   } /* switch */
 
