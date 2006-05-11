@@ -150,7 +150,7 @@ static void combine_gravities(
 	ret_grav->decor_grav = gravity_combine_xy_grav(
 		grav_x->decor_grav, grav_y->decor_grav);
 	ret_grav->title_grav = gravity_combine_xy_grav(
-			grav_x->title_grav, grav_y->title_grav);
+		grav_x->title_grav, grav_y->title_grav);
 	ret_grav->lbutton_grav = gravity_combine_xy_grav(
 		grav_x->lbutton_grav, grav_y->lbutton_grav);
 	ret_grav->rbutton_grav = gravity_combine_xy_grav(
@@ -204,6 +204,7 @@ static void get_resize_decor_gravities_one_axis(
 	case FRAME_MR_SETUP:
 	case FRAME_MR_SETUP_BY_APP:
 		ret_grav->client_grav = neg_grav;
+		break;
 	case FRAME_MR_DONT_DRAW:
 		/* can not happen, just a dummy to keep -Wall happy */
 		break;
@@ -817,7 +818,8 @@ static void frame_mrs_hide_changing_parts(
 	int t_add;
 	int r_add;
 	int b_add;
-	int i;
+	int w;
+	int h;
 
 	t_add = 0;
 	l_add = 0;
@@ -863,26 +865,41 @@ static void frame_mrs_hide_changing_parts(
 		b_add = (mra->dstep_g.height < 0) ? -mra->dstep_g.height : 0;
 		b_add -= mra->minimal_h_offset;
 	}
-	/* cover top/left borders */
-	XMoveResizeWindow(
-		dpy, hide_wins.w[0], 0, 0, mra->current_g.width,
-		mra->b_g.top_left.height + t_add);
-	XMoveResizeWindow(
-		dpy, hide_wins.w[1], 0, 0, mra->b_g.top_left.width + l_add,
-		mra->current_g.height);
-	/* cover bottom/right borders and possibly part of the client */
-	XMoveResizeWindow(
-		dpy, hide_wins.w[2],
-		0,
-		mra->current_g.height - mra->b_g.bottom_right.height - b_add,
-		mra->current_g.width, mra->b_g.bottom_right.height + b_add);
-	XMoveResizeWindow(
-		dpy, hide_wins.w[3],
-		mra->current_g.width - mra->b_g.bottom_right.width - r_add, 0,
-		mra->b_g.bottom_right.width + r_add, mra->current_g.height);
-	for (i = 0; i < 4; i++)
+	/* cover top border */
+	w = mra->current_g.width;
+	h = mra->b_g.top_left.height + t_add;
+	if (w > 0 && h > 0)
 	{
-		XMapWindow(dpy, hide_wins.w[i]);
+		XMoveResizeWindow(dpy, hide_wins.w[0], 0, 0, w, h);
+		XMapWindow(dpy, hide_wins.w[0]);
+	}
+	/* cover left border */
+	w = mra->b_g.top_left.width + l_add;
+	h = mra->current_g.height;
+	if (w > 0 && h > 0)
+	{
+		XMoveResizeWindow(dpy, hide_wins.w[1], 0, 0, w, h);
+		XMapWindow(dpy, hide_wins.w[1]);
+	}
+	/* cover bottom border and possibly part of the client */
+	w = mra->current_g.width;
+	h = mra->b_g.bottom_right.height + b_add;
+	if (w > 0 && h > 0)
+	{
+		XMoveResizeWindow(
+			dpy, hide_wins.w[2], 0, mra->current_g.height -
+			mra->b_g.bottom_right.height - b_add, w, h);
+		XMapWindow(dpy, hide_wins.w[2]);
+	}
+	/* cover right border and possibly part of the client */
+	w = mra->b_g.bottom_right.width + r_add;
+	h = mra->current_g.height;
+	if (w > 0 && h > 0)
+	{
+		XMoveResizeWindow(
+			dpy, hide_wins.w[3], mra->current_g.width -
+			mra->b_g.bottom_right.width - r_add, 0, w, h);
+		XMapWindow(dpy, hide_wins.w[3]);
 	}
 
 	return;

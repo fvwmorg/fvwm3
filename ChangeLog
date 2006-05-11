@@ -1,3 +1,8 @@
+2006-05-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/frame.c (frame_mrs_hide_changing_parts):
+	do not map hide windows if their width or height is zero
+
 2006-05-09  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* fvwm/ewmh_events.c:
@@ -12,41 +17,42 @@
 	* libs/Colorset.c:
 	* libs/PictureGraphics.c:
 	* libs/PictureGraphics.h:
-	renamed function PGraphicsCreateTransprency to PGraphicsCreateTransparency
+	renamed function PGraphicsCreateTransprency to
+	PGraphicsCreateTransparency
 
 2006-04-17  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/fvwm.1.in (COMMAND EXPANSION): 
-	* fvwm/expand.c (expand_args_extended): 
+	* fvwm/fvwm.1.in (COMMAND EXPANSION):
+	* fvwm/expand.c (expand_args_extended):
 	fixed $[n] to work exactly as $n, i.e. dequote the expansion.
 
 2006-04-16  Viktor Griph  <griph@dd.chalmers.se>
 
-	* NEWS: 
-	* fvwm/fvwm.1.in (COMMAND EXPANSION): 
-	* fvwm/expand.c (expand_args_extended, expand_vars): 
+	* NEWS:
+	* fvwm/fvwm.1.in (COMMAND EXPANSION):
+	* fvwm/expand.c (expand_args_extended, expand_vars):
 	added support for $[n], $[n-m], $[n-] and $[*] variable expansion.
 
-	* fvwm/conditional.c (CMD_All): 
-	* fvwm/fvwm.1.in (All): 
+	* fvwm/conditional.c (CMD_All):
+	* fvwm/fvwm.1.in (All):
 	changed Reverse and UseStack options to have free order.
 
-	* NEWS: 
-	* fvwm/fvwm.1.in (WindowShade): 
-	* fvwm/windowshade.c (CMD_WindowShade): 
-	* fvwm/add_window.c (setup_window_structure): 
+	* NEWS:
+	* fvwm/fvwm.1.in (WindowShade):
+	* fvwm/windowshade.c (CMD_WindowShade):
+	* fvwm/add_window.c (setup_window_structure):
 	added last direction to WindowShade command.
 
 2006-04-14  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/fvwm.1.in (All):
 	corrected typo
-	
+
 2006-04-13  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
-	* fvwm/fvwm.1.in (All): 
-	* fvwm/conditional.c (CMD_All): 
+	* fvwm/fvwm.1.in (All):
+	* fvwm/conditional.c (CMD_All):
 	added reverse option to All command to do the action in opposite order
 	added UseStack option to All command to use the stack ring instead of
 	the window ring.
