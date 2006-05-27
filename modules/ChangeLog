@@ -1,3 +1,8 @@
+2006-05-27  Scott Smedley  <ss@aao.gov.au>
+
+	* FvwmTabs/ConfigFvwmTabs:
+	bugfix: FvwmTabs wasn't preserving state between restarts.
+
 2006-05-09  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* FvwmScript/Scripts/FvwmScript-ComExample.in:
