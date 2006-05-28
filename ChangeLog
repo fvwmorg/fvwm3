@@ -1,3 +1,8 @@
+2006-05-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/conditional.c (MatchesConditionMask):
+	fixed handling of some conditions (iconifiable, fixed, ...)
+
 2005-01-28  Scott Smedley  <scottie7@tpg.com.au>
 
 	* fvwm/fvwm.1.in:

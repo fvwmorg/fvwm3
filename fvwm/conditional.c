@@ -485,9 +485,11 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond,"PlacedByButton"))
 		{
-			int button, button_mask;
-			if (sscanf(tmp, "%d", &button) && 
-			    (button >= 1 && 
+			int button;
+			int button_mask;
+
+			if (sscanf(tmp, "%d", &button) &&
+			    (button >= 1 &&
 			     button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS))
 			{
 				free(condition);
@@ -496,16 +498,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			}
 			else
 			{
-				button_mask = 
+				button_mask =
 				     (1<<NUMBER_OF_EXTENDED_MOUSE_BUTTONS) - 1;
 			}
 			if (on)
-			{			
-				if (mask->placed_by_button_mask & 
-				    mask->placed_by_button_set_mask & 
+			{
+				if (mask->placed_by_button_mask &
+				    mask->placed_by_button_set_mask &
 				    ~button_mask)
 				{
-				  	  fvwm_msg(WARN, "PlacedByButton", 
+				  	  fvwm_msg(WARN, "PlacedByButton",
 						   "Condition always False.");
 				}
 				mask->placed_by_button_mask |= button_mask;
@@ -520,10 +522,10 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		{
 			if (on)
 			{
-				if (mask->placed_by_button_mask & 
+				if (mask->placed_by_button_mask &
 				    mask->placed_by_button_set_mask & ~(1<<2))
 				{
-				  	  fvwm_msg(WARN, "PlacedByButton3", 
+				  	  fvwm_msg(WARN, "PlacedByButton3",
 						   "Condition always False.");
 				}
 				mask->placed_by_button_mask |= (1<<2);
@@ -769,20 +771,18 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 	        return False;
 	}
-	SETM_SIZE_FIXED(mask, 0);
-	if (IS_FIXED(mask) && 
+	if (IS_FIXED(mask) &&
 	    mask->flag_mask.common.s.is_fixed &&
 	    is_function_allowed(F_MOVE, NULL, fw, True, False))
-	{       
+	{
 	        return False;
 	}
-	if (!IS_FIXED(mask) && 
+	if (!IS_FIXED(mask) &&
 	    mask->flag_mask.common.s.is_fixed &&
 	    !is_function_allowed(F_MOVE, NULL, fw, True, False))
-	{       
+	{
 	        return False;
 	}
-	SETM_FIXED(mask, 0);
 	if (IS_UNICONIFIABLE(mask) &&
 	    mask->flag_mask.common.s.is_uniconifiable &&
 	    is_function_allowed(F_ICONIFY,NULL,fw,True,False))
@@ -795,7 +795,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 	        return False;
 	}
-	SETM_IS_UNICONIFIABLE(mask, 0);
 	if (IS_UNMAXIMIZABLE(mask) &&
 	    mask->flag_mask.common.s.is_unmaximizable &&
 	    is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
@@ -808,7 +807,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 	        return False;
 	}
-	SETM_IS_UNMAXIMIZABLE(mask, 0);
 	if (IS_UNCLOSABLE(mask) &&
 	    mask->flag_mask.common.s.is_unclosable &&
 	    (is_function_allowed(F_CLOSE,NULL,fw,True,False) ||
@@ -825,7 +823,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 	        return False;
 	}
-	SETM_IS_UNCLOSABLE(mask, 0);
 	if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
 			  (char *)&(mask->flag_mask), sizeof(fw->flags)))
 	{
@@ -924,10 +921,10 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		}
 	}
 
-	for(pp=mask->name_condition; pp; pp=pp->next)
+	for (pp = mask->name_condition; pp; pp = pp->next)
 	{
 		does_match = 0;
-		for(p=pp->namelist; p; p=p->next)
+		for (p = pp->namelist; p; p = p->next)
 		{
 			name=p->name;
 			does_match |= matchWildcards(name, fw->name.name);
@@ -1479,10 +1476,10 @@ void CMD_All(F_CMD_ARGS)
 	{
 		token = PeekToken(action, &restofline);
 		if (StrEquals(token, "Reverse"))
-		{		
+		{
 			if (!*restofline)
 			{
-				/* if not any more actions, then Reverse 
+				/* if not any more actions, then Reverse
 				 * probably is some user function, so ignore
 				 * it and do the old  behaviour */
 				break;
@@ -1494,10 +1491,10 @@ void CMD_All(F_CMD_ARGS)
 			}
 		}
 		else if (StrEquals(token, "UseStack"))
-		{		
+		{
 			if (!*restofline)
 			{
-				/* if not any more actions, then UseStack 
+				/* if not any more actions, then UseStack
 				 * probably is some user function, so ignore
 				 * it and do the old behaviour */
 				break;
@@ -1510,7 +1507,7 @@ void CMD_All(F_CMD_ARGS)
 		}
 		else
 		{
-			/* No more options -- continue with flags and 
+			/* No more options -- continue with flags and
 			 * commands */
 			break;
 		}

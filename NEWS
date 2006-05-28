@@ -35,6 +35,8 @@ Changes in beta release 2.5.17 (not released yet)
    - The menu style TitleWarp does no longer warp the pointer for
      root menus (as it is documented).
    - Fixed detection of safe system version of mkstemp.
+   - Fixed the conditions Iconifiable, Fixed, FixedSize,
+     Maximizable and Closable.
 
 -------------------------------------------------------------------
 
