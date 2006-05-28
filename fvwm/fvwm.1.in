@@ -10591,7 +10591,7 @@ and are separated by commas or whitespace.  They include
 .IR W ,
 .IR X " and"
 .IR I .
-A test-condition prefixed with "!" is reverted.
+A test-condition prefixed with "!" is negated.
 
 The
 .I "Version operator x.y.z"

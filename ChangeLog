@@ -1,3 +1,12 @@
+2005-01-28  Scott Smedley  <scottie7@tpg.com.au>
+
+	* fvwm/fvwm.1.in:
+	s/reverted/negated/
+
+	* fvwm/conditional.c:
+	Output an error message if an unrecognised conditional is used
+	with the Test or TestRc commands.
+
 2006-05-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/frame.c (frame_mrs_hide_changing_parts):
