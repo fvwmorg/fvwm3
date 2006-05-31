@@ -366,6 +366,9 @@ sub showMenu ($$)
 			   -label => 'Add',
 			   -command => [\&pickAndAddClick, undef, $tId, '']);
 	$menu->add('command',
+			   -label => 'Add Next',
+			   -command => [\&swallowNext, $tId, '']);
+	$menu->add('command',
 			   -label => 'Multi Add',
 			   -command => [\&pickAndAddClick, undef, $tId, 'multi']);
 	$menu->add('command',
@@ -500,6 +503,7 @@ sub createNewTabber
 						   -borderwidth => 0,
 						   -relief => 'flat')->pack(@po);
 	$bAdd->Tk::bind('<ButtonRelease-1>', [\&pickAndAddClick, $tId, '']);
+	$bAdd->Tk::bind('<ButtonRelease-2>', [\&swallowNextClick, $tId]);
 	$bAdd->Tk::bind('<ButtonRelease-3>', [\&pickAndAddClick, $tId, 'multi']);
 
 	my $bRelease = $af->Button(-text => 'R',
@@ -753,7 +757,7 @@ $fvwm->addHandler(M_STRING, sub {
 	}
 	else
 	{
-		# handle createNewTabber, saveState & enableDND.
+		# handle createNewTabber, saveState, enableDND & swallowNext.
 		my @a = split(/\s+/, $event->args->{text});
 		my $fn = shift(@a);
 		if (!defined main->can($fn))
@@ -871,6 +875,9 @@ sub swallowNext
 	$fvwm->debug("fvwmCommand is @fvwmCommand");
 	$fvwm->send("@fvwmCommand");
 }
+
+# sub swallowNextClick ($$) { swallowNext($_[1], ''); }
+sub swallowNextClick ($$) { swallowNext(@_[1..$#_]); }
 
 $fvwm->addHandler(M_ADD_WINDOW, sub {
 	my ($self, $event) = @_;
@@ -1213,6 +1220,7 @@ sub pickAndAdd ($$)
 	$fvwm->send("Pick SendToModule " . $fvwm->name() . " addme $tId $arg");
 }
 
+# sub pickAndAddClick ($$$) { pickAndAdd(@_[1..$#_]); }
 sub pickAndAddClick ($$$)
 {
 	my ($b, $tId, $arg) = @_;

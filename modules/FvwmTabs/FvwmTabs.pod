@@ -372,7 +372,9 @@ I<Release All> will release all tabbed programs back to the window manager as st
 
 I<Release All (Iconify)> will release all tabbed programs back to the window manager as iconised standalone windows.
 
-I<Add> will add the next mouse-clicked window to a tab-manager.
+I<Add> will add the next mouse-clicked window to the tab-manager.
+
+I<Add Next> will add the next window that is created to the tab-manager.
 
 I<Multi Add> keeps adding mouse-clicked windows to a tab-manager until the escape key is pressed. Useful for adding multiple windows to a tab-manager at once.
 

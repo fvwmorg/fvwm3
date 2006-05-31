@@ -1,3 +1,10 @@
+2006-05-31  Scott Smedley  <ss@aao.gov.au>
+
+	* FvwmTabs/FvwmTabs.in:
+	* FvwmTabs/FvwmTabs.pod:
+	* FvwmTabs/FvwmTabs.1:
+	Added feature to swallow next new window that is created.
+
 2006-05-27  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/ConfigFvwmTabs:
