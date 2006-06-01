@@ -9766,8 +9766,8 @@ scrolling stops at the edge of the desktop.
 
 If the
 .IR horizontal " and " vertical
-percentages are multiplied by 1000 then scrolling wraps around at
-the edge of the desktop.  If
+percentages are 100 or more and are multiplied by 1000 then
+scrolling wraps around at the edge of the desktop.  If
 .EX
 Scroll 100000 0
 .EE
