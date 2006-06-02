@@ -4989,12 +4989,10 @@ AddToFunc lower-to-bottom
 
 .TP
 .B "Move [[screen \fIscreen\fP]\
- [\fIw\fP\
- | \fIm\fP\
+ [\fIw\fP|\fIm\fP\
 ]\fIx\fP\
 [\fIp\fP\
-] [\fIw\fP\
- | \fIm\fP\
+] [\fIw\fP|\fIm\fP\
 ]\fIy\fP\
 [\fIp\fP\
 ] [\fIWarp\fP\
