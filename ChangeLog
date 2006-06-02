@@ -1,3 +1,9 @@
+2006-06-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (ParseOneResizeArgument):
+	rewrote parsing of resize arguments
+	new prefix 'w' for resizing
+
 2006-05-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/conditional.c (MatchesConditionMask):

@@ -5255,13 +5255,9 @@ command) otherwise it is lowered.
 .TP
 .B "Resize [[\fIframe\fP] [direction \fIdir\fP [\fIwarptoborder\fP]] \
 [\fIfixeddirection\fP] \
-\fIwidth\fP \
-[\fIp\fP \
-| \fIc\fP\
-] \fIheight\fP \
-[\fIp\fP \
-| \fIc\fP\
-]] | [bottomright \
+[\fIw\fP]\fIwidth\fP[\fIp\fP|\fIc\fP] \
+[\fIw\fP]\fIheight\fP[\fIp\fP|\fIc\fP]] \
+| [bottomright \
 | br \fIx y\fP\
 ]"
 Allows for resizing a window.  If called from somewhere in a window
@@ -5289,7 +5285,19 @@ used.  So you can say
 Resize 80c 24c
 .EE
 to make a terminal window just big enough for 80x24
-characters. Both,
+characters.
+
+If the
+.IR width " or " height
+is prefixed with the letter
+.RI ' w '
+the size is not taken as an absolute value but added to the
+current size of the window.  Example:
+.EX
+# Enlarge window by one line
+Resize keep w+1c
+.EE
+Both,
 .IR width " and " height
 can be negative.  In this case the new size is the screen size
 minus the given value.  If either value is "keep", the
@@ -5370,10 +5378,14 @@ option which is not supported by the
 .B ResizeMove
 command.
 
-Example:
+Examples:
 .EX
-# Move the window to the top left corner
-ResizeMove w+0 -10p 0 -20p
+# Move window to top left corner and cover
+# most of the screen
+ResizeMove -10p -20p 0 0
+
+# Grow the focused window towards the top of screen
+Current Resize keep w+$[w.y]p keep 0
 .EE
 
 Note:  Fvwm may not be able to parse the command properly if the

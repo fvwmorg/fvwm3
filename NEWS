@@ -21,6 +21,9 @@ Changes in beta release 2.5.17 (not released yet)
    - WindowShade can now reshade windows using the Last direction.
    - Positional parameters to complex functions can now be expanded
      using $[n], $[n-m], $[n-] and $[*] expressions.
+   - The width and height arguments of the Resize command now
+     accept the prefix 'w' to allow resizing relative to the
+     current window size.
 
 * Bug Fixes:
 

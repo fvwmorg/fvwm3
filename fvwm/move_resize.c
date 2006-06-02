@@ -467,44 +467,59 @@ static int ParseOneResizeArgument(
 	char *arg, int scr_size, int base_size, int size_inc, int add_size,
 	int *ret_size)
 {
-	int unit_table[3];
-	int value;
-	int suffix;
+	float factor;
+	int val;
+	int add_base_size = 0;
+	int cch = strlen(arg);
 
+	if (cch == 0)
+	{
+		return 0;
+	}
 	if (StrEquals(arg, "keep"))
 	{
-		/* do not change width */
+		/* do not change size */
+		return 1;
+	}
+	if (arg[cch-1] == 'p')
+	{
+		factor = 1;
+		arg[cch-1] = '\0';
+	}
+	else if (arg[cch-1] == 'c')
+	{
+		factor = size_inc;
+		add_base_size = base_size;
+		arg[cch-1] = '\0';
 	}
 	else
 	{
-		if (GetSuffixedIntegerArguments(
-			    arg, NULL, &value, 1, "pc", &suffix) < 1)
-		{
-			return 0;
-		}
-		else
-		{
-			/* convert the value/suffix pairs to pixels */
-			unit_table[0] = scr_size;
-			unit_table[1] = 100;
-			unit_table[2] = 100 * size_inc;
-			*ret_size = SuffixToPercentValue(
-				value, suffix, unit_table);
-			if (*ret_size < 0)
-			{
-				*ret_size += scr_size;
-			}
-			else
-			{
-				if (suffix == 2)
-				{
-					/* account for base width and border
-					 * size */
-					*ret_size += base_size;
-				}
-				*ret_size += add_size;
-			}
-		}
+		factor = (float)scr_size / 100.0;
+	}
+	if (strcmp(arg,"w") == 0)
+	{
+		/* do not change size */
+	}
+	else if (sscanf(arg,"w-%d",&val) == 1)
+	{
+		*ret_size -= (int)(val * factor + 0.5);
+	}
+	else if (sscanf(arg,"w+%d",&val) == 1 || sscanf(arg,"w%d",&val) == 1)
+	{
+		*ret_size += (int)(val * factor + 0.5);
+	}
+	else if (sscanf(arg,"-%d",&val) == 1)
+	{
+		*ret_size = scr_size - (int)(val * factor + 0.5) + add_size;
+	}
+	else if (sscanf(arg,"+%d",&val) == 1 || sscanf(arg,"%d",&val) == 1)
+	{
+		*ret_size = (int)(val * factor + 0.5) +
+			add_size + add_base_size;
+	}
+	else
+	{
+		return 0;
 	}
 
 	return 1;
@@ -597,7 +612,7 @@ static int GetResizeArguments(
 		h_add = sb->total_size.height;
 	}
 	s1 = NULL;
-		if (token != NULL)
+	if (token != NULL)
 	{
 		s1 = safestrdup(token);
 	}
