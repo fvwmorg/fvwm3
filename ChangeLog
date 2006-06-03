@@ -1,3 +1,9 @@
+2006-06-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/expand.c (expand_vars_extended):
+	convert function to have a single return point; this is good to
+	implement doc/todo-vars filters in the futire
+
 2006-06-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/expand.c:

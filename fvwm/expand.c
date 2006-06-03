@@ -305,9 +305,8 @@ static signed int expand_vars_extended(
 	char *var_name, char *output, cond_rc_t *cond_rc,
 	const exec_context_t *exc)
 {
-	char *s;
 	char *rest;
-	char dummy[64];
+	char dummy[64] = "\0";
 	char *target = (output) ? output : dummy;
 	int cs = -1;
 	int n;
@@ -318,10 +317,13 @@ static signed int expand_vars_extended(
 	Pixel pixel = 0;
 	int val = -12345678;
 	const char *string = NULL;
+	char *allocated_string = NULL;
 	Bool is_numeric = False;
+	Bool is_target = False;
 	Bool is_x;
 	Window context_w = Scr.Root;
 	FvwmWindow *fw = exc->w.fw;
+	signed int len = -1;
 
 	/* allow partial matches for *.cs, gt, ... etc. variables */
 	switch ((i = GetTokenIndex(var_name, partial_function_vars, -1, &rest)))
@@ -368,22 +370,16 @@ static signed int expand_vars_extended(
 			pixel = Colorset[cs].fgsh;
 			break;
 		}
-		return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
+		is_target = True;
+		len = pixel_to_color_string(dpy, Pcmap, pixel, target, False);
+		goto GOT_STRING;
 	case VAR_GT_:
-	{
 		if (rest == NULL)
 		{
 			return -1;
 		}
 		string = _(rest);
-		l = strlen(string);
-		if (output)
-		{
-			strcpy(output, string);
-		}
-		return l;
-		break;
-	}
+		goto GOT_STRING;
 	case VAR_DESK_NAME:
 		if (sscanf(rest, "%d%n", &cs, &n) < 1)
 		{
@@ -394,28 +390,15 @@ static signed int expand_vars_extended(
 			/* trailing characters */
 			return -1;
 		}
-		s = GetDesktopName(cs);
-		if (s == NULL)
+		string = GetDesktopName(cs);
+		if (string == NULL)
 		{
 			const char *ddn = _("Desk");
-			s = (char *)safemalloc(19 + strlen(ddn));
-			sprintf(s, "%s %i", ddn, cs);
-			l = strlen(s);
-			if (output)
-			{
-				strcpy(output, s);
-			}
-			free(s);
+			allocated_string = (char *)safemalloc(19 + strlen(ddn));
+			sprintf(allocated_string, "%s %i", ddn, cs);
+			string = allocated_string;
 		}
-		else
-		{
-			l = strlen(s);
-			if (output)
-			{
-				strcpy(output, s);
-			}
-		}
-		return l;
+		goto GOT_STRING;
 	default:
 		break;
 	}
@@ -470,8 +453,8 @@ static signed int expand_vars_extended(
 	case VAR_W_ID:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			sprintf(dummy, "0x%x", (unsigned int)FW_W(fw));
-			string = dummy;
+			is_target = True;
+			sprintf(target, "0x%x", (unsigned int)FW_W(fw));
 		}
 		break;
 	case VAR_W_NAME:
@@ -799,9 +782,9 @@ static signed int expand_vars_extended(
 		string = Fvwm_VersionInfo;
 		break;
 	case VAR_FUNC_CONTEXT:
-		dummy[0] = wcontext_wcontext_to_char(exc->w.wcontext);
-		dummy[1] = 0;
-		string = dummy;
+		is_target = True;
+		target[0] = wcontext_wcontext_to_char(exc->w.wcontext);
+		target[1] = '\0';
 		break;
 	default:
 		/* unknown variable - try to find it in the environment */
@@ -821,19 +804,37 @@ static signed int expand_vars_extended(
 			return l;
 		}
 	}
+
+GOT_STRING:
 	if (is_numeric)
 	{
+		is_target = True;
 		sprintf(target, "%d", val);
-		return strlen(target);
+	}
+	if (is_target)
+	{
+		string = target;
 	}
 	else
 	{
-		if (output && string)
+		if (!string)
+		{
+			return -1;
+		}
+		if (output)
 		{
 			strcpy(output, string);
 		}
-		return string ? strlen(string) : -1;
 	}
+	if (len < 0)
+	{
+		len = strlen(string);
+	}
+	if (allocated_string)
+	{
+		free(allocated_string);
+	}
+	return len;
 }
 
 /* ---------------------------- interface functions ------------------------ */
