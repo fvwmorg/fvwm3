@@ -210,7 +210,7 @@ static signed int expand_args_extended(
 		lower = 0;
 		upper = -1;
 	}
-	else 
+	else
 	{
 		if (*input < '0' || *input > '9')
 		{
@@ -218,7 +218,7 @@ static signed int expand_args_extended(
 			return -1;
 		}
 		sscanf(input, "%d%n", &lower, &n);
-		input+=n;
+		input += n;
 		if (*input == 0)
 		{
 			/* This is not equivalent of $[n-n] */
@@ -237,7 +237,7 @@ static signed int expand_args_extended(
 			else if (*input >= '0' && *input <= '9')
 			{
 				sscanf(input, "%d%n", &upper, &n);
-				input+=n;
+				input += n;
 				if (*input != 0)
 				{
 					/* trailing characters - not good */
@@ -266,20 +266,20 @@ static signed int expand_args_extended(
 	}
 
 	/* Skip to the start of the requested argument range */
-	argument_string = SkipSpaces(SkipNTokens(argument_string,lower), 
-				     NULL, 0);
+	argument_string = SkipSpaces(
+		SkipNTokens(argument_string, lower), NULL, 0);
 	if (is_single_arg)
 	{
 		/* single arguments should be dequoted if quoted already. */
-		argument_string = PeekToken(argument_string,NULL);
+		argument_string = PeekToken(argument_string, NULL);
 	}	
 	/* Skip to the end of the requested argument range */
-	if (upper>=0)
+	if (upper >= 0)
 	{		
-		args_end = SkipNTokens(argument_string,upper-lower+1);
+		args_end = SkipNTokens(argument_string, upper - lower + 1);
 		/* back up to the end of the last token -
-		   avoid trailing whitespace*/
-		while (argument_string < args_end && isspace(*(args_end-1)))
+		 * avoid trailing whitespace */
+		while (argument_string < args_end && isspace(*(args_end - 1)))
 		{
 			args_end--;
 		}
@@ -294,8 +294,7 @@ static signed int expand_args_extended(
 	}
 	if (output)
 	{
-		memcpy(output, argument_string, 
-		       (size_t)(l));
+		memcpy(output, argument_string, (size_t)(l));
 		output[l] = 0;
 	}
 	return l;
@@ -495,13 +494,13 @@ static signed int expand_vars_extended(
 
 			t = (i == VAR_W_ICONFILE) ?
 				fw->icon_bitmap_file : fw->mini_pixmap_file;
-                        /* expand the path if possible */
-                        string = PictureFindImageFile(t, NULL, R_OK);
-                        if (!string)
-                        {
+			/* expand the path if possible */
+			string = PictureFindImageFile(t, NULL, R_OK);
+			if (!string)
+			{
 				string = t;
 			}
-                }
+		}
 		break;
 	case VAR_W_CLASS:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
@@ -809,7 +808,7 @@ static signed int expand_vars_extended(
 		string = getenv(var_name);
 		if (!string)
 		{
-			/* Replace it with unexpanded variable. This is needed 
+			/* Replace it with unexpanded variable. This is needed
 			 * since var_name might have been expanded */
 			l = strlen(var_name) + 3;
 			if (output)
@@ -819,7 +818,7 @@ static signed int expand_vars_extended(
 				output[l - 1] = ']';
 				output[l] = 0;
 			}
-			return l; 
+			return l;
 		}
 	}
 	if (is_numeric)
@@ -864,9 +863,9 @@ char *expand_vars(
 	i = 0;
 	while (i < l)
 	{
-		if (input[i] == '$' && (!ismod || !isalpha(input[i+1])))
+		if (input[i] == '$' && (!ismod || !isalpha(input[i + 1])))
 		{
-			switch (input[i+1])
+			switch (input[i + 1])
 			{
 			case '$':
 				/* skip the second $, it is not a part of
@@ -875,7 +874,7 @@ char *expand_vars(
 				break;
 			case '[':
 				/* extended variables */
-				var = &input[i+2];
+				var = &input[i + 2];
 				m = i + 2;
 				xlevel = 1;
 				name_has_dollar = False;
@@ -919,9 +918,9 @@ char *expand_vars(
 							NULL);
 						if (xlen < 0)
 						{
-							xlen = 
+							xlen =
 							  expand_vars_extended(
-								var, NULL, 
+								var, NULL,
 								cond_rc, exc);
 						}
 						if (name_has_dollar)
@@ -948,17 +947,17 @@ char *expand_vars(
 			case '8':
 			case '9':
 			case '*':
-				if (input[i+1] == '*')
+				if (input[i + 1] == '*')
 				{
 					n = 0;
 				}
 				else
 				{
-					n = input[i+1] - '0' + 1;
+					n = input[i + 1] - '0' + 1;
 				}
 				if (arguments[n] != NULL)
 				{
-					l2 += strlen(arguments[n])-2;
+					l2 += strlen(arguments[n]) - 2;
 					i++;
 				}
 				break;
@@ -977,7 +976,7 @@ char *expand_vars(
 			case 'n':
 				if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 				{
-					switch(input[i+1])
+					switch(input[i + 1])
 					{
 					case 'c':
 						if (fw->class.res_class &&
@@ -1029,14 +1028,14 @@ char *expand_vars(
 	}
 
 	/* Actually create expanded string */
-	i=0;
-	out = safemalloc(l2+1);
-	j=0;
-	while (i<l)
+	i = 0;
+	out = safemalloc(l2 + 1);
+	j = 0;
+	while (i < l)
 	{
-		if (input[i] == '$' && (!ismod || !isalpha(input[i+1])))
+		if (input[i] == '$' && (!ismod || !isalpha(input[i + 1])))
 		{
-			switch (input[i+1])
+			switch (input[i + 1])
 			{
 			case '[':
 				/* extended variables */
@@ -1047,7 +1046,7 @@ char *expand_vars(
 					out[j++] = input[i];
 					break;
 				}
-				var = &input[i+2];
+				var = &input[i + 2];
 				m = i + 2;
 				xlevel = 1;
 				name_has_dollar = False;
@@ -1085,7 +1084,7 @@ char *expand_vars(
 					xlen = expand_args_extended(
 						var, arguments ?
 						arguments[0] : NULL,
-						 &out[j]);
+						&out[j]);
 					if (xlen < 0)
 					{
 						xlen = expand_vars_extended(
@@ -1129,17 +1128,17 @@ char *expand_vars(
 			case '8':
 			case '9':
 			case '*':
-				if (input[i+1] == '*')
+				if (input[i + 1] == '*')
 				{
 					n = 0;
 				}
 				else
 				{
-					n = input[i+1] - '0' + 1;
+					n = input[i + 1] - '0' + 1;
 				}
 				if (arguments[n] != NULL)
 				{
-					for (k=0;arguments[n][k];k++)
+					for (k = 0; arguments[n][k]; k++)
 					{
 						out[j++] = arguments[n][k];
 					}
@@ -1152,15 +1151,6 @@ char *expand_vars(
 				else
 				{
 					i++;
-#if 0
-					/* DV: Whoa! Better live with the extra
-					 * whitespace. */
-					if (isspace(input[i+1]))
-					{
-						/*eliminates extra white space*/
-						i++;
-					}
-#endif
 				}
 				break;
 			case '.':
@@ -1177,7 +1167,7 @@ char *expand_vars(
 				}
 				else
 				{
-					sprintf(&out[j],"$w");
+					sprintf(&out[j], "$w");
 				}
 				j += strlen(&out[j]);
 				i++;
@@ -1209,7 +1199,7 @@ char *expand_vars(
 			case 'n':
 				if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 				{
-					switch(input[i+1])
+					switch(input[i + 1])
 					{
 					case 'c':
 						fvwm_msg(OLD, "expand_vars",
@@ -1265,18 +1255,6 @@ char *expand_vars(
 			} /* switch */
 			if (is_string && string)
 			{
-#if 0
-				out[j++] = '\'';
-				for (k = 0; string[k]; k++)
-				{
-					if (string[k] == '\'')
-					{
-						out[j++] = '\\';
-					}
-					out[j++] = string[k];
-				}
-				out[j++] = '\'';
-#endif
 				j = QuoteString(&out[j], string) - out;
 				string = NULL;
 				is_string = False;

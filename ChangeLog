@@ -1,3 +1,9 @@
+2006-06-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/expand.c:
+	multiple minor tweaks: remove trailing spaces and other
+	re-spacing and re-indenting, remove old "#if 0" code
+
 2006-06-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (ParseOneResizeArgument):
