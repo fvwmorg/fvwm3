@@ -2,7 +2,9 @@
 
 	* fvwm/expand.c (expand_vars_extended):
 	convert function to have a single return point; this is good to
-	implement doc/todo-vars filters in the futire
+	implement doc/todo-vars filters in the future;
+	fix $[w.name], $[w.iconname], $[w.class] and $[w.resource]
+	to behave like deprecated $n, $c and $r, i.e. quote them
 
 2006-06-03  Mikhael Goikhman  <migo@homemail.com>
 

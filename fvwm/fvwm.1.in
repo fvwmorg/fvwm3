@@ -1844,19 +1844,27 @@ with the command.
 .in +.5i
 $[w.name]
 $[w.iconname]
-$[w.iconfile]
-$[w.miniiconfile]
 $[w.class]
 $[w.resource]
+$[w.iconfile]
+$[w.miniiconfile]
 .in +.3i
-The window's name, icon name, file name of its icon or mini icon
-defined with the
+The window's name, icon name, resource class and resource name,
+file name of its icon or mini icon defined with the
 .IR Icon " or " MiniIcon
-style including the path information if the file was found on
-disk, resource class or resource name respectively, or unexpanded
-"$[w.<attribute>]" string if no window is associated with the
-command.
+style (including the full path if the file was found on disk),
+or unexpanded "$[w.<attribute>]" string if no window is associated
+with the command.
 
+Note, the first 4 variables may include any kind of characters, so
+these variables are quoted.  It means that the value is surrounded
+by single quote characters and any contained single quote is
+prefixed with a backslash.  This guarantees that commands like:
+
+  Style $[w.resource] Icon norm/network.png
+
+work correctly, regardless of any special symbols the value may
+contain, like spaces and different kinds of quotes.
 .in -.3i
 .in -.5i
 

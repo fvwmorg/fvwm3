@@ -318,6 +318,8 @@ static signed int expand_vars_extended(
 	int val = -12345678;
 	const char *string = NULL;
 	char *allocated_string = NULL;
+	char *quoted_string = NULL;
+	Bool should_quote = False;
 	Bool is_numeric = False;
 	Bool is_target = False;
 	Bool is_x;
@@ -461,12 +463,14 @@ static signed int expand_vars_extended(
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
 			string = fw->name.name;
+			should_quote = True;
 		}
 		break;
 	case VAR_W_ICONNAME:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
 			string = fw->icon_name.name;
+			should_quote = True;
 		}
 		break;
 	case VAR_W_ICONFILE:
@@ -489,12 +493,14 @@ static signed int expand_vars_extended(
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
 			string = fw->class.res_class;
+			should_quote = True;
 		}
 		break;
 	case VAR_W_RESOURCE:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
 			string = fw->class.res_name;
+			should_quote = True;
 		}
 		break;
 	case VAR_W_X:
@@ -829,6 +835,16 @@ GOT_STRING:
 	if (len < 0)
 	{
 		len = strlen(string);
+	}
+	if (should_quote)
+	{
+		quoted_string = (char *)safemalloc(len * 2 + 3);
+		len = QuoteString(quoted_string, string) - quoted_string;
+		if (output)
+		{
+			strcpy(output, quoted_string);
+		}
+		free(quoted_string);
 	}
 	if (allocated_string)
 	{
