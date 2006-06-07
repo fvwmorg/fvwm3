@@ -152,8 +152,8 @@ on any selected window.
 
 .IP "SendToModule FvwmProxy Circulate \fIcommand\fP"
 Tell FvwmProxy to run a conditional command and mark the result.
-The imbedded command \fISendToModule FvwmProxy Mark\fP is automatically
-appended after the optional condition, so supplying your own imbedded
+The builtin command \fISendToModule FvwmProxy Mark\fP is automatically
+appended after the optional condition, so supplying your own
 command will probably fail.
 An example argument to Circulate is
 \fIScanForWindow East South (CurrentPage)\fP.
