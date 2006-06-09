@@ -1,3 +1,13 @@
+2006-06-09  Scott Smedley  <ss@aao.gov.au>
+
+	* FvwmTabs/FvwmTabs.in:
+	Added "swallowIcon" option to provide visual feedback when tabber is
+	going to unconditionally swallow the next window to popup.
+	* FvwmTabs/FvwmTabs.pod:
+	* FvwmTabs/FvwmTabs.1:
+	Documented new "swallowIcon" option.
+	List all mouse bindings available with the toolbar icons.
+
 2006-05-31  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/FvwmTabs.in:

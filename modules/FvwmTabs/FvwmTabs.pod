@@ -35,7 +35,7 @@ B<FvwmTabs> can be invoked by inserting the line C<Module FvwmTabs> in your .fvw
 
 B<FvwmTabs> requires 2 CPAN modules (that are NOT distributed with FVWM) to be installed on your system. They are I<Tk> and I<X11::Protocol>.
 
-They are available at: L<http://search.cpan.org/CPAN/authors/id/N/NI/NI-S/Tk-804.027.tar.gz> and L<http://search.cpan.org/CPAN/authors/id/S/SM/SMCCAM/X11-Protocol-0.54.tar.gz>.
+They are available at: L<http://search.cpan.org/CPAN/authors/id/N/NI/NI-S/Tk-804.027.tar.gz> and L<http://search.cpan.org/CPAN/authors/id/S/SM/SMCCAM/X11-Protocol-0.55.tar.gz>.
 
 To install either package:
 
@@ -45,7 +45,7 @@ B<FvwmTabs> will tell you if you do not have these packages installed when you (
 
 =head1 CONFIGURATION OPTIONS
 
-B<FvwmTabs> reads the same .fvwmrc file as FVWM when it starts up.
+B<FvwmTabs> reads the same config file as FVWM when it starts up.
 
 The following options are recognised by B<FvwmTabs>:
 
@@ -189,6 +189,10 @@ Image to use on kill toolbar button. Default is I<none>.
 =item E<42>FvwmTabs: addIcon I<image>
 
 Image to use on add toolbar button. Default is I<none>.
+
+=item E<42>FvwmTabs: swallowIcon I<image>
+
+Image to use on add toolbar button when tabber will swallow next window to popup. Default is I<none>. By using a separate icon to I<addIcon>, this option provides visual feedback on when a tabber will unconditionally swallow the next window to popup.
 
 =item E<42>FvwmTabs: releaseIcon I<image>
 
@@ -356,6 +360,8 @@ SwapRight
 
 =head1 MOUSE BINDINGS
 
+=head2 Mouse bindings on Tab Buttons
+
 I<Mouse-1> on a tab-button displays the window associated with the tab.
 
 I<Mouse-2> on a tab-button releases the window associated with the tab back to the window manager as a standalone window.
@@ -363,6 +369,29 @@ I<Mouse-2> on a tab-button releases the window associated with the tab back to t
 I<Mouse-3> on a tab-button releases the window associated with the tab back to the window manager & iconifies it.
 
 The tab-buttons can be reordered with a drag-&-drop operation initiated with I<Ctrl-Mouse-2>. A dragged tab is inserted before the tab-button onto which it is dropped.
+
+=head2 Mouse bindings on Toolbar Icons
+
+I<Mouse-1> on the "menu" button will bring up a menu of options. See MENU BINDINGS.
+
+I<Mouse-1> on the "release" button will release the selected window from the tabber.
+
+I<Mouse-2> on the "release" button will release all windows from the tabber, and iconify them.
+
+I<Mouse-3> on the "release" button will release all windows from the tabber.
+
+I<Mouse-1> on the "add" button will add the next window you click on to the tabber.
+
+I<Mouse-2> on the "add" button will add the next window to popup to the tabber.
+
+I<Mouse-3> on the "add" button will add every window you click on (until you press Esc) to the tabber.
+
+I<Mouse-1> on the "kill" button will I<Close> the selected window.
+
+I<Mouse-2> on the "kill" button causes I<FvwmTabs> to try to kill the selected window itself.
+
+I<Mouse-3> on the "kill" button will I<Kill> the selected window.
+
 
 =head1 MENU BINDINGS
 

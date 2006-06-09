@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FVWMTABS 1"
-.TH FVWMTABS 1 "2006-05-31" "FvwmTabs" "FVWM Modules"
+.TH FVWMTABS 1 "2006-06-09" "FvwmTabs" "FVWM Modules"
 .SH "NAME"
 \&\fBFvwmTabs\fR \- a generic tabbing module for the FVWM window manager.
 .SH "SYNOPSIS"
@@ -147,7 +147,7 @@ Each tab-manager can store any number of windows, each in its own \fItab\fR. The
 .IX Header "INSTALLING DEPENDENCIES"
 \&\fBFvwmTabs\fR requires 2 \s-1CPAN\s0 modules (that are \s-1NOT\s0 distributed with \s-1FVWM\s0) to be installed on your system. They are \fITk\fR and \fIX11::Protocol\fR.
 .PP
-They are available at: <http://search.cpan.org/CPAN/authors/id/N/NI/NI\-S/Tk\-804.027.tar.gz> and <http://search.cpan.org/CPAN/authors/id/S/SM/SMCCAM/X11\-Protocol\-0.54.tar.gz>.
+They are available at: <http://search.cpan.org/CPAN/authors/id/N/NI/NI\-S/Tk\-804.027.tar.gz> and <http://search.cpan.org/CPAN/authors/id/S/SM/SMCCAM/X11\-Protocol\-0.55.tar.gz>.
 .PP
 To install either package:
 .PP
@@ -156,7 +156,7 @@ tar zxvf \f(CW$name\fR.tar.gz ; cd \f(CW$name\fR ; perl Makefile.PL ; make insta
 \&\fBFvwmTabs\fR will tell you if you do not have these packages installed when you (try to) start it.
 .SH "CONFIGURATION OPTIONS"
 .IX Header "CONFIGURATION OPTIONS"
-\&\fBFvwmTabs\fR reads the same .fvwmrc file as \s-1FVWM\s0 when it starts up.
+\&\fBFvwmTabs\fR reads the same config file as \s-1FVWM\s0 when it starts up.
 .PP
 The following options are recognised by \fBFvwmTabs\fR:
 .IP "*FvwmTabs: activeFG \fIcolor\fR" 4
@@ -269,6 +269,9 @@ Image to use on kill toolbar button. Default is \fInone\fR.
 .IP "*FvwmTabs: addIcon \fIimage\fR" 4
 .IX Item "*FvwmTabs: addIcon image"
 Image to use on add toolbar button. Default is \fInone\fR.
+.IP "*FvwmTabs: swallowIcon \fIimage\fR" 4
+.IX Item "*FvwmTabs: swallowIcon image"
+Image to use on add toolbar button when tabber will swallow next window to popup. Default is \fInone\fR. By using a separate icon to \fIaddIcon\fR, this option provides visual feedback on when a tabber will unconditionally swallow the next window to popup.
 .IP "*FvwmTabs: releaseIcon \fIimage\fR" 4
 .IX Item "*FvwmTabs: releaseIcon image"
 Image to use on release toolbar button. Default is \fInone\fR.
@@ -389,6 +392,8 @@ SwapLeft
 SwapRight
 .SH "MOUSE BINDINGS"
 .IX Header "MOUSE BINDINGS"
+.Sh "Mouse bindings on Tab Buttons"
+.IX Subsection "Mouse bindings on Tab Buttons"
 \&\fIMouse\-1\fR on a tab-button displays the window associated with the tab.
 .PP
 \&\fIMouse\-2\fR on a tab-button releases the window associated with the tab back to the window manager as a standalone window.
@@ -396,6 +401,27 @@ SwapRight
 \&\fIMouse\-3\fR on a tab-button releases the window associated with the tab back to the window manager & iconifies it.
 .PP
 The tab-buttons can be reordered with a drag\-&\-drop operation initiated with \fICtrl\-Mouse\-2\fR. A dragged tab is inserted before the tab-button onto which it is dropped.
+.Sh "Mouse bindings on Toolbar Icons"
+.IX Subsection "Mouse bindings on Toolbar Icons"
+\&\fIMouse\-1\fR on the \*(L"menu\*(R" button will bring up a menu of options. See \s-1MENU\s0 \s-1BINDINGS\s0.
+.PP
+\&\fIMouse\-1\fR on the \*(L"release\*(R" button will release the selected window from the tabber.
+.PP
+\&\fIMouse\-2\fR on the \*(L"release\*(R" button will release all windows from the tabber, and iconify them.
+.PP
+\&\fIMouse\-3\fR on the \*(L"release\*(R" button will release all windows from the tabber.
+.PP
+\&\fIMouse\-1\fR on the \*(L"add\*(R" button will add the next window you click on to the tabber.
+.PP
+\&\fIMouse\-2\fR on the \*(L"add\*(R" button will add the next window to popup to the tabber.
+.PP
+\&\fIMouse\-3\fR on the \*(L"add\*(R" button will add every window you click on (until you press Esc) to the tabber.
+.PP
+\&\fIMouse\-1\fR on the \*(L"kill\*(R" button will \fIClose\fR the selected window.
+.PP
+\&\fIMouse\-2\fR on the \*(L"kill\*(R" button causes \fIFvwmTabs\fR to try to kill the selected window itself.
+.PP
+\&\fIMouse\-3\fR on the \*(L"kill\*(R" button will \fIKill\fR the selected window.
 .SH "MENU BINDINGS"
 .IX Header "MENU BINDINGS"
 \&\fIMouse\-1\fR on the \*(L"menu\*(R" button will bring up a menu of options:

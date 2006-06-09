@@ -96,7 +96,8 @@ my $configTracker = $fvwm->track('ModuleConfig',
 					   killIcon => 'none',
 					   addIcon => 'none',
 					   releaseIcon => 'none',
-					   menuIcon => 'none'});
+					   menuIcon => 'none',
+					   swallowIcon => 'none'});
 
 my $pConfig = $configTracker->data;
 
@@ -199,7 +200,7 @@ $configTracker->observe("config line added", sub {
 			$tabWin{$tId}{useTMTitlebar} = $bOn;
 			setupMainTitlebar($tId, $bOn);
 		}
-		elsif ($p =~ /^(fontSelector|fixedSizeTabs|balloonMsg|stateFile|bBuggyFocus|swallowDNDTolerance)$/)
+		elsif ($p =~ /^(fontSelector|fixedSizeTabs|balloonMsg|stateFile|bBuggyFocus|swallowDNDTolerance|swallowIcon)$/)
 		{
 			# handled implicitly.
 			return;
@@ -505,6 +506,7 @@ sub createNewTabber
 	$bAdd->Tk::bind('<ButtonRelease-1>', [\&pickAndAddClick, $tId, '']);
 	$bAdd->Tk::bind('<ButtonRelease-2>', [\&swallowNextClick, $tId]);
 	$bAdd->Tk::bind('<ButtonRelease-3>', [\&pickAndAddClick, $tId, 'multi']);
+	$tabWin{$tId}{addButton} = $bAdd;
 
 	my $bRelease = $af->Button(-text => 'R',
 							   -image => createImage($pConfig->{releaseIcon}),
@@ -862,6 +864,11 @@ sub swallowCheck ($$)
 		}
 		return if (!$bFound);
 	}
+	elsif (exists $tabWin{$tId})
+	{
+		$tabWin{$tId}{addButton}->configure(-text => "A",
+			-image => createImage($pConfig->{addIcon}));
+	}
 	$tId = whichTabber($tId);
 	addTab($tId, $winId) if (defined $tId && exists $tabWin{$tId});
 	delete $global{swallowNext};
@@ -870,14 +877,18 @@ sub swallowCheck ($$)
 sub swallowNext
 {
 	my ($tId, @fvwmCommand) = @_;
-	$global{swallowNext} = $tId;
+	$tId = $global{swallowNext} = whichTabber($tId);
 	$fvwm->debug("Got swallowNext: $global{swallowNext}");
 	$fvwm->debug("fvwmCommand is @fvwmCommand");
+	if (exists $tabWin{$tId})
+	{
+		$tabWin{$tId}{addButton}->configure(-text => "Â",
+			-image => createImage($pConfig->{swallowIcon}));
+	}
 	$fvwm->send("@fvwmCommand");
 }
 
-# sub swallowNextClick ($$) { swallowNext($_[1], ''); }
-sub swallowNextClick ($$) { swallowNext(@_[1..$#_]); }
+sub swallowNextClick ($$) { swallowNext($_[1], ''); }
 
 $fvwm->addHandler(M_ADD_WINDOW, sub {
 	my ($self, $event) = @_;
