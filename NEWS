@@ -40,6 +40,8 @@ Changes in beta release 2.5.17 (not released yet)
    - Fixed detection of safe system version of mkstemp.
    - Fixed the conditions Iconifiable, Fixed, FixedSize,
      Maximizable and Closable.
+   - Fixed problem with window outline and placement position
+     running out of sync.
 
 -------------------------------------------------------------------
 
