@@ -2140,6 +2140,7 @@ Bool __move_loop(
 	int orig_icon_x = 0;
 	int orig_icon_y = 0;
 	Bool do_snap = True;
+	Bool was_snapped = False;
 	/* if Alt is initially pressed don't enable no-snap until Alt is
 	 * released */
 	Bool nosnap_enabled = False;
@@ -2269,6 +2270,7 @@ Bool __move_loop(
 				{
 					DoSnapAttract(
 						fw, Width, Height, &xl, &yt);
+					was_snapped = True;
 				}
 				fev_make_null_event(&e, dpy);
 				e.type = MotionNotify;
@@ -2463,7 +2465,9 @@ Bool __move_loop(
 				fw->placed_by_button = e.xbutton.button;
 			}
 			if (!do_move_opaque)
+			{
 				switch_move_resize_grid(False);
+			}
 			xl2 = e.xbutton.x_root + XOffset + x_virtual_offset;
 			yt2 = e.xbutton.y_root + YOffset + y_virtual_offset;
 			/* ignore the position of the button release if it was
@@ -2479,13 +2483,14 @@ Bool __move_loop(
 				yt = yt2;
 			}
 			if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx ||
-			    vy != Scr.Vy)
+			    vy != Scr.Vy || was_snapped)
 			{
 				/* only snap if the window actually moved! */
 				if (do_snap)
 				{
 					DoSnapAttract(
 						fw, Width, Height, &xl, &yt);
+					was_snapped = True;
 				}
 			}
 
@@ -2528,6 +2533,7 @@ Bool __move_loop(
 			if (do_snap)
 			{
 				DoSnapAttract(fw, Width, Height, &xl, &yt);
+				was_snapped = True;
 			}
 
 			/* check Paging request once and only once after
@@ -2586,6 +2592,7 @@ Bool __move_loop(
 						DoSnapAttract(
 							fw, Width, Height,
 							&xl, &yt);
+						was_snapped = True;
 					}
 					if (!delta_x && !delta_y)
 					{

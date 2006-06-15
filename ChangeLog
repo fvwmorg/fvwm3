@@ -1,3 +1,9 @@
+2006-06-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (__move_loop):
+	make sure a window is snapped in __move_loop when a button is released
+	if it was snapped before
+
 2006-06-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/expand.c (expand_vars_extended):
