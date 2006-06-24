@@ -24,6 +24,7 @@ Changes in beta release 2.5.17 (not released yet)
    - The width and height arguments of the Resize command now
      accept the prefix 'w' to allow resizing relative to the
      current window size.
+   - New command ModuleListenOnly
 
 * Bug Fixes:
 

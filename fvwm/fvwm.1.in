@@ -11305,6 +11305,18 @@ may be omitted if
 is distinct from all fvwm commands.
 
 .TP
+.BI "ModuleListenOnly " modulename " [" moduleparams ]
+This command works like the
+.B Module
+command, but fvwm never sends any messages to the module. This may
+be handy to write a module as a shell script that is triggered by
+external events without the burden to answer packets sent by
+fvwm. For example, a module written as a shell script may change
+labels of the
+.B FvwmButtons
+module to implement a simple clock.
+
+.TP
 .BI "ModulePath " path
 Specifies a colon separated list of directories in which to search
 for modules.  To find a module, fvwm searches each directory in

@@ -358,6 +358,9 @@ const func_t func_table[] =
 	CMD_ENT("module", CMD_Module, F_MODULE, 0, 0),
 	/* - Invoke an fvwm module */
 
+	CMD_ENT("modulelistenonly", CMD_ModuleListenOnly, F_MODULE_LISTEN_ONLY, 0, 0),
+	/* - Invoke an fvwm module */
+
 	CMD_ENT("modulepath", CMD_ModulePath, F_MODULE_PATH, 0, 0),
 	/* - Modify the directories to search for an fvwm module */
 

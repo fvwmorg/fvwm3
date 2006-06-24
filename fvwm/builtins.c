@@ -2769,7 +2769,6 @@ void CMD_ModulePath(F_CMD_ARGS)
 	return;
 }
 
-
 void CMD_ModuleTimeout(F_CMD_ARGS)
 {
 	int timeout;

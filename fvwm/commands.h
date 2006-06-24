@@ -83,6 +83,7 @@ enum
 	F_LOCALE_PATH,
 	F_MENUSTYLE,
 	F_MODULE,
+	F_MODULE_LISTEN_ONLY,
 	F_MODULE_PATH,
 	F_MODULE_SYNC,
 	F_MOUSE,
@@ -298,6 +299,7 @@ P(Maximize);
 P(Menu);
 P(MenuStyle);
 P(Module);
+P(ModuleListenOnly);
 P(ModulePath);
 P(ModuleSynchronous);
 P(ModuleTimeout);

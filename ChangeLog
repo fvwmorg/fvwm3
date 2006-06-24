@@ -1,3 +1,15 @@
+2006-06-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/commands.h:
+	* fvwm/module_interface.c (CMD_ModuleListenOnly):
+	(do_execute_module):
+	(PositiveWrite):
+	(ClosePipes):
+	(KillModule):
+	* fvwm/commands.h (enum):
+	* fvwm/functable.c (func_table):
+	new command ModuleListenOnly
+
 2006-06-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):

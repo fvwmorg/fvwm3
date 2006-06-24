@@ -175,6 +175,9 @@ void ClosePipes(void)
 		if (writePipes[i] > 0)
 		{
 			close(writePipes[i]);
+		}
+		if (readPipes[i] > 0)
+		{
 			close(readPipes[i]);
 		}
 		if (pipeName[i] != NULL)
@@ -196,7 +199,7 @@ void ClosePipes(void)
 	return;
 }
 
-static int do_execute_module(F_CMD_ARGS, Bool desperate)
+static int do_execute_module(F_CMD_ARGS, Bool desperate, Bool do_listen_only)
 {
 	int fvwm_to_app[2], app_to_fvwm[2];
 	int i, val, nargs = 0;
@@ -275,7 +278,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
 	/* Look for an available pipe slot */
 	i = 0;
-	while ((i<npipes) && (writePipes[i] >=0))
+	while (i < npipes && (writePipes[i] >=0 || readPipes[i] >= 0))
 	{
 		i++;
 	}
@@ -292,7 +295,12 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	/* I want one-ended pipes, so I open two two-ended pipes,
 	 * and close one end of each. I need one ended pipes so that
 	 * I can detect when the module crashes/malfunctions */
-	if (pipe(fvwm_to_app) != 0)
+	if (do_listen_only == True)
+	{
+		fvwm_to_app[0] = -1;
+		fvwm_to_app[1] = -1;
+	}
+	else if (pipe(fvwm_to_app) != 0)
 	{
 		fvwm_msg(ERR, "executeModule", "Failed to open pipe");
 		free(arg1);
@@ -305,6 +313,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 		fvwm_msg(ERR, "executeModule", "Failed to open pipe2");
 		free(arg1);
 		free(cptr);
+		/* dont't care that these may be -1 */
 		close(fvwm_to_app[0]);
 		close(fvwm_to_app[1]);
 		free(args);
@@ -353,6 +362,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 		/* close appropriate descriptors from each pipe so
 		 * that fvwm will be able to tell when the app dies */
 		close(app_to_fvwm[1]);
+		/* dont't care that this may be -1 */
 		close(fvwm_to_app[0]);
 
 		/* add these pipes to fvwm's active pipe list */
@@ -376,7 +386,10 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
 		/* make the PositiveWrite pipe non-blocking. Don't want to jam
 		 * up fvwm because of an uncooperative module */
-		fcntl(writePipes[i], F_SETFL, O_NONBLOCK);
+		if (writePipes[i] >= 0)
+		{
+			fcntl(writePipes[i], F_SETFL, O_NONBLOCK);
+		}
 		/* Mark the pipes close-on exec so other programs
 		 * won`t inherit them */
 		if (fcntl(readPipes[i], F_SETFD, 1) == -1)
@@ -385,7 +398,9 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 				ERR, "executeModule",
 				"module close-on-exec failed");
 		}
-		if (fcntl(writePipes[i], F_SETFD, 1) == -1)
+		if (
+			writePipes[i] >= 0 &&
+			fcntl(writePipes[i], F_SETFD, 1) == -1)
 		{
 			fvwm_msg(
 				ERR, "executeModule",
@@ -404,6 +419,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 		/* this is the child */
 		/* this fork execs the module */
 #ifdef FORK_CREATES_CHILD
+		/* dont't care that this may be -1 */
 		close(fvwm_to_app[1]);
 		close(app_to_fvwm[0]);
 #endif
@@ -433,6 +449,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 			arg1);
 		perror("");
 		close(app_to_fvwm[1]);
+		/* dont't care that this may be -1 */
 		close(fvwm_to_app[0]);
 #ifdef FORK_CREATES_CHILD
 		exit(1);
@@ -459,12 +476,20 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
 int executeModuleDesperate(F_CMD_ARGS)
 {
-	return do_execute_module(F_PASS_ARGS, True);
+	return do_execute_module(F_PASS_ARGS, True, False);
 }
 
 void CMD_Module(F_CMD_ARGS)
 {
-	do_execute_module(F_PASS_ARGS, False);
+	do_execute_module(F_PASS_ARGS, False, False);
+
+	return;
+}
+
+void CMD_ModuleListenOnly(F_CMD_ARGS)
+{
+	do_execute_module(F_PASS_ARGS, False, True);
+
 	return;
 }
 
@@ -522,7 +547,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		return;
 	}
 
-	pipe_slot = do_execute_module(F_PASS_ARGS, False);
+	pipe_slot = do_execute_module(F_PASS_ARGS, False, False);
 	if (pipe_slot == -1)
 	{
 		/* executing the module failed, just return */
@@ -810,11 +835,16 @@ RETSIGTYPE DeadPipe(int sig)
 
 void KillModule(int channel)
 {
-	close(readPipes[channel]);
-	close(writePipes[channel]);
-
-	readPipes[channel] = -1;
-	writePipes[channel] = -1;
+	if (readPipes[channel] >= 0)
+	{
+		close(readPipes[channel]);
+		readPipes[channel] = -1;
+	}
+	if (writePipes[channel] >= 0)
+	{
+		writePipes[channel] = -1;
+		close(writePipes[channel]);
+	}
 	pipeOn[channel] = -1;
 	while (!FQUEUE_IS_EMPTY(&pipeQueue[channel]))
 	{
@@ -1023,9 +1053,9 @@ SendPacket(int module, unsigned long event_type, unsigned long num_datum, ...)
 	va_start(ap, num_datum);
 	make_vpacket(body, event_type, num_datum, ap);
 	va_end(ap);
-
 	PositiveWrite(
-		module, body, (num_datum+FvwmPacketHeaderSize)*sizeof(body[0]));
+		module, body,
+		(num_datum+FvwmPacketHeaderSize)*sizeof(body[0]));
 
 	return;
 }
@@ -1040,7 +1070,6 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 	va_start(ap,num_datum);
 	make_vpacket(body, event_type, num_datum, ap);
 	va_end(ap);
-
 	for (i=0; i<npipes; i++)
 	{
 		PositiveWrite(
@@ -1065,7 +1094,6 @@ static void SendNewPacket(int module, unsigned long event_type,
 	va_start(ap,num_datum);
 	plen = make_new_vpacket(body, event_type, num_datum, ap);
 	va_end(ap);
-
 	PositiveWrite(module, (void *) &body, plen);
 
 	return;
@@ -1082,7 +1110,6 @@ static void BroadcastNewPacket(unsigned long event_type,
 	va_start(ap,num_datum);
 	plen = make_new_vpacket(body, event_type, num_datum, ap);
 	va_end(ap);
-
 	for (i=0; i<npipes; i++)
 	{
 		PositiveWrite(i, (void *) &body, plen);
@@ -1233,7 +1260,6 @@ SendName(int module, unsigned long event_type,
 	{
 		return;
 	}
-
 	body = make_named_packet(&l, event_type, name, 3, data1, data2, data3);
 	PositiveWrite(module, body, l*sizeof(unsigned long));
 	free(body);
@@ -1258,7 +1284,6 @@ BroadcastName(unsigned long event_type,
 	{
 		PositiveWrite(i, body, l*sizeof(unsigned long));
 	}
-
 	free(body);
 
 	return;
@@ -1322,7 +1347,6 @@ SendFvwmPicture(
 	body = make_named_packet(
 		&l, event_type, name, 9, data1, data2, data3, data4, data5,
 		data6, data7, data8, data9);
-
 	PositiveWrite(module, body, l*sizeof(unsigned long));
 	free(body);
 
@@ -1363,12 +1387,10 @@ BroadcastFvwmPicture(
 	body = make_named_packet(
 		&l, event_type, name, 9, data1, data2, data3, data4, data5,
 		data6, data7, data8, data9);
-
 	for (i=0; i < npipes; i++)
 	{
 		PositiveWrite(i, body, l*sizeof(unsigned long));
 	}
-
 	free(body);
 
 	return;
@@ -1531,6 +1553,10 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 	{
 		return;
 	}
+	if (writePipes[module] == -1)
+	{
+		return;
+	}
 	if (!IS_MESSAGE_IN_MASK(&PipeMask[module], ptr[1]))
 	{
 		return;
@@ -1563,8 +1589,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 		c->done = 0;
 		c->data = (unsigned long *)(c + 1);
 		memcpy((void*)c->data, (const void*)ptr, size);
-
-		fqueue_add_at_end(&pipeQueue[module], c);
+			fqueue_add_at_end(&pipeQueue[module], c);
 	}
 
 	/* dje, from afterstep, for FvwmAnimate, allows modules to sync with
@@ -1572,10 +1597,11 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 	 * deadlocks happen. M_LOCKONSEND has been replaced by a separated
 	 * mask which defines on which messages the fvwm-to-module
 	 * communication need to be lock on send. olicha Nov 13, 1999 */
-	/* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW */
+	/* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW
+	 */
 	/* dv (06-Jul-2002): added the !myxgrabcount again.  Deadlocks *do*
-	 * happen without it.  There must be another way to fix M_DESTROY_WINDOW
-	 * handling in FvwmEvent. */
+	 * happen without it.  There must be another way to fix
+	 * M_DESTROY_WINDOW handling in FvwmEvent. */
 	/*if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]))*/
 	if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]) && !myxgrabcount)
 	{
@@ -1600,7 +1626,8 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 			 * to be KILLED!
 			 *
 			 * NOTE: rather than impose an arbitrary timeout on the
-			 * user, we will make this a configuration parameter. */
+			 * user, we will make this a configuration parameter.
+			 */
 			do
 			{
 				timeout.tv_sec = moduleTimeout;
@@ -1610,12 +1637,13 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 
 				/* Wait for input to arrive on just one
 				 * descriptor, with a timeout (fvwmSelect <= 0)
-				 * or read() returning wrong size is bad news */
+				 * or read() returning wrong size is bad news
+				 */
 				rc = fvwmSelect(
 					channel + 1, &readSet, NULL, NULL,
 					&timeout);
 				/* retry if select() failed with EINTR */
-			} while ((rc < 0) && !isTerminated && (errno == EINTR));
+			} while (rc < 0 && !isTerminated && (errno == EINTR));
 
 			if ( isTerminated )
 			{
@@ -1661,9 +1689,10 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 			 * when a window is de-iconified from the IconMan,
 			 * queueing make s this happen too late. */
 		}
-		while (!HandleModuleInput(
-			       targetWindow, module, ModuleUnlockResponse,
-			       False));
+		while (
+			!HandleModuleInput(
+				targetWindow, module, ModuleUnlockResponse,
+				False));
 	}
 
 	return;
