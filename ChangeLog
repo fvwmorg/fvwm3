@@ -1,3 +1,9 @@
+2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS: 
+	Work around for Cygwin not requiering '_GNU_SOURCE' to use
+	stdio's getline; news entry.
+
 2006-06-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/commands.h:
