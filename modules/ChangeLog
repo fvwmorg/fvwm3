@@ -1,3 +1,10 @@
+2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmConsole/FvwmConsoleC.c (main): 
+	* FvwmConsole/getline.c: 
+	Renamed the function getline to get_line to not conflict with stdio's
+	getline. (bug #3772)
+
 2006-06-09  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/FvwmTabs.in:
