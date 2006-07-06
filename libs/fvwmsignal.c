@@ -33,9 +33,6 @@
 typedef enum { SIG_INIT=0, SIG_DONE } SIG_STATUS;
 
 volatile sig_atomic_t isTerminated = false;
-#ifdef FVWM_DEBUG_MSGS
-volatile sig_atomic_t debug_term_signal = 0;
-#endif
 
 static volatile sig_atomic_t canJump = false;
 #ifdef HAVE_SIGSETJMP
@@ -134,9 +131,6 @@ fvwmSetTerminate(int sig)
 	BSD_BLOCK_SIGNALS;
 
 	isTerminated = true;
-#ifdef DEBUG
-	debug_term_signal = sig;
-#endif
 
 	if (canJump)
 	{

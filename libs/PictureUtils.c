@@ -36,8 +36,6 @@
 
 /* ---------------------------- local definitions and macro ----------------- */
 
-#define PICTURE_DEBUG_COLORS_ALLOC_FAILURE 0
-
 #if 0
 /* dv: unused */
 /* form alloc_in_cmap from the xpm lib */

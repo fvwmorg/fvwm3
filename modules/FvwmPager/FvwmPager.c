@@ -50,9 +50,6 @@
 #include "libs/FRenderInit.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
-#ifdef DEBUG
-#  define FVWM_DEBUG_MSGS   /* Do we need this? */
-#endif
 #include "libs/fvwmsignal.h"
 
 #include "fvwm/fvwm.h"
@@ -324,10 +321,6 @@ int main(int argc, char **argv)
   /* make a temp window for any pixmaps, deleted later */
   initialize_viz_pager();
 
-#ifdef DEBUG
-  fprintf(stderr,"[main]: Connection to X server established.\n");
-#endif
-
   SetMessageMask(fd,
 		 M_VISIBLE_NAME |
 		 M_ADD_WINDOW|
@@ -352,9 +345,6 @@ int main(int argc, char **argv)
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE);
-#ifdef DEBUG
-  fprintf(stderr,"[main]: calling ParseOptions\n");
-#endif
   ParseOptions();
   if (is_transient)
   {
@@ -370,10 +360,6 @@ int main(int argc, char **argv)
     xneg = 0;
     yneg = 0;
   }
-#ifdef DEBUG
-  fprintf(stderr,
-	  "[main]: back from calling ParseOptions, calling init pager\n");
-#endif
 
   if (PagerFore == NULL)
     PagerFore = safestrdup("black");
@@ -401,17 +387,11 @@ int main(int argc, char **argv)
 
   /* open a pager window */
   initialize_pager();
-#ifdef DEBUG
-  fprintf(stderr,"[main]: back from init pager, getting window list\n");
-#endif
 
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
   SendInfo(fd,"Send_WindowList",0);
-#ifdef DEBUG
-  fprintf(stderr,"[main]: back from getting window list, looping\n");
-#endif
 
   if (is_transient)
   {
@@ -456,13 +436,13 @@ int main(int argc, char **argv)
   SendFinishedStartupNotification(fd);
 
   Loop(fd);
-#ifdef DEBUG
-  if (debug_term_signal)
+#ifdef FVWM_DEBUG_MSGS
+  if ( isTerminated )
   {
-    fprintf(stderr,"[main]: Terminated due to signal %d\n",
-		   debug_term_signal);
+    fprintf(stderr, "%s: Received signal: exiting...\n", module->name);
   }
 #endif
+
   return 0;
 }
 
@@ -1667,9 +1647,6 @@ void ParseOptions(void)
       }
       GetNextToken(next, &ImagePath);
 
-#ifdef DEBUG
-      fprintf(stderr, "[ParseOptions]: ImagePath = %s\n", ImagePath);
-#endif
       continue;
     }
     else if (StrEquals(token, "MoveThreshold"))
@@ -1950,11 +1927,6 @@ void ParseOptions(void)
 		dpy, Scr.Pager_w, ImagePath, arg2, fpa);
       }
 
-#ifdef DEBUG
-      fprintf(stderr,
-	      "[ParseOptions]: Desk %d: bgPixmap = %s\n",
-	      desk, arg2);
-#endif
     }
     else if (StrEquals(resource, "Pixmap"))
     {
@@ -1967,10 +1939,6 @@ void ParseOptions(void)
 
 	PixmapBack = PCacheFvwmPicture(
 		dpy, Scr.Pager_w, ImagePath, arg1, fpa);
-#ifdef DEBUG
-	fprintf(stderr,
-		"[ParseOptions]: Global: bgPixmap = %s\n", arg1);
-#endif
 
       }
     }
@@ -1985,11 +1953,6 @@ void ParseOptions(void)
 
 	HilightPixmap = PCacheFvwmPicture (
 		dpy, Scr.Pager_w, ImagePath, arg1, fpa);
-
-#ifdef DEBUG
-	fprintf(stderr,
-		"[ParseOptions]: HilightPixmap = %s\n", arg1);
-#endif
 
       }
     }

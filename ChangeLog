@@ -1,3 +1,21 @@
+2006-07-06  Renato Caldas  <seventhguardian@gmail.com>
+
+	* libs/PictureUtils.c (PICTURE_DEBUG_COLORS_ALLOC_FAILURE):
+	removed useles definition.
+
+	* modules/FvwmPager/FvwmPager.c (main):
+	(ParseOptions):
+	removed most of the debug code.
+	changed termination debug to use 'isTerminated' instead of
+	'debug_term_signal'.
+	changed termination debug to compile on FVWM_DEBUG_MSGS instead
+	of DEBUG.
+
+	* libs/fvwmsignal.h (FVWM_DEBUG_MSGS):
+	* libs/fvwmsignal.c (FVWM_DEBUG_MSGS):
+	(fvwmSetTerminate):
+	removed unused debug_term_signal.
+
 2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS: 
