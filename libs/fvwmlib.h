@@ -14,66 +14,6 @@
 #include "fvwmrect.h"
 
 /*
- * Generic debugging
- */
-
-#ifdef NDEBUG
-/* Make everything evaluates to empty.  */
-# define DB_IS_LEVEL(_l) 0
-# define DBL(_l,_x)
-# define DB(_x)
-#else
-/* Define it all!  */
-# define FVWM_DB_FILE   "FVWM_DB_FILE"
-# define FVWM_DB_LEVEL  "FVWM_DB_LEVEL"
-
-# ifndef __FILE__
-#  define __FILE__ 0
-# endif
-# ifndef __LINE__
-#  define __LINE__ -1
-# endif
-# if __GNUC__ < 2 || __STRICT_ANSI__
-#  define __PRETTY_FUNCTION__ 0
-# endif
-# ifndef DB_MODULE
-#  define DB_MODULE 0
-# endif
-
-# define DB_IS_LEVEL(_l)    ((_l)<=f_db_level)
-# define DBL(_l,_x) \
-	do if (DB_IS_LEVEL(_l)) { \
-		f_db_info.filenm=__FILE__;\
-		f_db_info.funcnm=__PRETTY_FUNCTION__;\
-		f_db_info.module=DB_MODULE;\
-		f_db_info.lineno=__LINE__;\
-		f_db_print _x; \
-	} while(0)
-# define DB(_x) DBL(2,_x)
-
-struct f_db_info
-{
-	const char *filenm;
-	const char *funcnm;
-	const char *module;
-	long lineno;
-};
-
-extern struct f_db_info f_db_info;
-extern int f_db_level;
-
-extern void f_db_print(const char *fmt, ...)
-	__attribute__ ((__format__ (__printf__, 1, 2)));
-#endif
-
-
-
-/*
- * typedefs
- */
-
-
-/*
  * Replacements for missing system calls.
  */
 

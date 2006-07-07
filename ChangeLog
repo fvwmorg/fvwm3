@@ -1,3 +1,21 @@
+2006-07-07  Renato Caldas  <seventhguardian@gmail.com>
+
+	* libs/debug.c:
+	removed the old unused file
+
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	removed the reference to debug.c
+
+	* libs/fvwmlib.h:
+	removed the code related to libs/debug.c
+
+	* fvwm/module_interface.c (make_named_packet)
+	removed the #if 0'ed debug code related to debug.c
+
+	fvwm/focus.h (DEBUG_FOCUS)
+	removed the #ifdef'ed to 0 debug code related to debug.c
+
+
 2006-07-06  Renato Caldas  <seventhguardian@gmail.com>
 
 	* libs/PictureUtils.c (PICTURE_DEBUG_COLORS_ALLOC_FAILURE):

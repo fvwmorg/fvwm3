@@ -1239,12 +1239,6 @@ make_named_packet(
 		(*len - FvwmPacketHeaderSize - num)*sizeof(unsigned long) - 1);
 	body[2] = *len;
 
-#if 0
-	DB(("Packet (%lu): %lu %lu %lu `%s'", *len,
-	    body[FvwmPacketHeaderSize], body[FvwmPacketHeaderSize+1],
-	    body[FvwmPacketHeaderSize+2], name));
-#endif
-
 	return (body);
 }
 

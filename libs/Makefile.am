@@ -21,7 +21,7 @@ libfvwm_a_SOURCES = \
 	FRender.c Ficonv.c envvar.c Fft.c  gravity.c \
 	XResource.c FEvent.c FImage.c WinMagic.c Target.c Picture.c XError.c \
 	queue.c fvwmsignal.c System.c PictureBase.c Cursor.c Strings.c \
-	fvwmrect.c FRenderInit.c debug.c safemalloc.c  FBidi.c \
+	fvwmrect.c FRenderInit.c safemalloc.c  FBidi.c \
 	wild.c Grab.c Event.c ClientMsg.c setpgrp.c FShape.c \
 	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
 	modifiers.c fsm.c FTips.c
