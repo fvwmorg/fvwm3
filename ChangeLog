@@ -1,3 +1,11 @@
+2006-07-08  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/fvwm.c (main):
+	removed warning about obsolete -blackout
+
+	* fvwm/fvwm.1.in:
+	removed the reference to obsolete -blackout
+
 2006-07-07  Renato Caldas  <seventhguardian@gmail.com>
 
 	* libs/debug.c:
