@@ -6,6 +6,9 @@
 	* fvwm/fvwm.1.in:
 	removed the reference to obsolete -blackout
 
+	*libs/alloca.c (DEBUG_I00FUNC)
+	removed old debug code
+
 2006-07-07  Renato Caldas  <seventhguardian@gmail.com>
 
 	* libs/debug.c:

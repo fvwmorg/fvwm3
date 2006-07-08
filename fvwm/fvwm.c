@@ -2034,7 +2034,7 @@ int main(int argc, char **argv)
 		if (dn == NULL)
 		{
 			fvwm_msg(
-				ERR, "main", "Cannot found default display (%s)",
+				ERR, "main", "couldn't find default display (%s)",
 				XDisplayName(dn));
 		}
 		else

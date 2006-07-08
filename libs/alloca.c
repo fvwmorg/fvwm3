@@ -241,10 +241,6 @@ alloca (size)
 
 #if defined (CRAY) && defined (CRAY_STACKSEG_END)
 
-#ifdef DEBUG_I00AFUNC
-#include <stdio.h>
-#endif
-
 #ifndef CRAY_STACK
 #define CRAY_STACK
 #ifndef CRAY2
@@ -471,9 +467,6 @@ i00afunc (long address)
 
   while (!(this_segment <= address && address <= stkl))
     {
-#ifdef DEBUG_I00AFUNC
-      fprintf (stderr, "%011o %011o %011o\n", this_segment, address, stkl);
-#endif
       if (pseg == 0)
 	break;
       stkl = stkl - pseg;
@@ -492,9 +485,6 @@ i00afunc (long address)
 
   while (pseg != 0)
     {
-#ifdef DEBUG_I00AFUNC
-      fprintf (stderr, "%011o %011o\n", pseg, size);
-#endif
       stkl = stkl - pseg;
       ssptr = (struct stack_segment_linkage *) stkl;
       size = ssptr->sssize;
