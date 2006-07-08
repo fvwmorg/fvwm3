@@ -44,6 +44,7 @@ Changes in beta release 2.5.17 (not released yet)
    - Fixed problem with window outline and placement position
      running out of sync.
    - FvwmConsole no longer conflicts with Cygwin stdio (bug #3772).
+   - FvwmGtk now configures correctly on Cygwin (bug #3772).
 
 -------------------------------------------------------------------
 

@@ -1112,7 +1112,7 @@ AC_ARG_ENABLE(
 	enable_gtktest="$enableval", enable_gtktest=yes)
 if test x"$enable_gtktest" = xyes; then
 	AM_PATH_GTK(1.1.0,[
-		FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)
+		FVWMGTK="FvwmGtk$EXEEXT" AC_SUBST(FVWMGTK)
 		MANFVWMGTK=FvwmGtk.1 AC_SUBST(MANFVWMGTK)
 	],)
 	if test x"$no_gtk" = x; then

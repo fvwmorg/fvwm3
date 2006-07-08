@@ -1,3 +1,9 @@
+2006-07-08  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* configure.ac: 
+	added $EXEEXT to FvwmGtk in order to compile on Cygwin (bug #3772).
+
 2006-07-08  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/fvwm.c (main):
