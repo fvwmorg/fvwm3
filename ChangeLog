@@ -7,10 +7,10 @@
 2006-07-08  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/fvwm.c (main):
-	removed warning about obsolete -blackout
+	removed warning about unexistant option -blackout
 
 	* fvwm/fvwm.1.in:
-	removed the reference to obsolete -blackout
+	removed the reference to unexistant option -blackout
 
 	*libs/alloca.c (DEBUG_I00FUNC)
 	removed old debug code
