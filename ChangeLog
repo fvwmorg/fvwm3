@@ -1,3 +1,11 @@
+2006-07-09  Renato Caldas  <seventhguardian@gmail.com>
+
+	*fvwm/fvwm.c (main):
+	changed the -blackout warning to say it will be removed in 3.0
+
+	*fvwm/fvwm.1.in (-blackout):
+	updated the manual regarding the future remotion of -blackout
+
 2006-07-08  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
@@ -5,12 +13,6 @@
 	added $EXEEXT to FvwmGtk in order to compile on Cygwin (bug #3772).
 
 2006-07-08  Renato Caldas  <seventhguardian@gmail.com>
-
-	* fvwm/fvwm.c (main):
-	removed warning about unexistant option -blackout
-
-	* fvwm/fvwm.1.in:
-	removed the reference to unexistant option -blackout
 
 	*libs/alloca.c (DEBUG_I00FUNC)
 	removed old debug code

@@ -1880,6 +1880,14 @@ int main(int argc, char **argv)
 			usage(1);
 			exit(0);
 		}
+		else if (strcmp(argv[i], "-blackout") == 0)
+		{
+			/* obsolete option */
+			fvwm_msg(
+				WARN, "main",
+				"The -blackout option is obsolete, it will be "
+				"removed in 3.0.");
+		}
 		else if (strcmp(argv[i], "-r") == 0 ||
 			 strcmp(argv[i], "-replace") == 0 ||
 			 strcmp(argv[i], "--replace") == 0)

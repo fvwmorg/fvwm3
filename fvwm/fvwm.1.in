@@ -115,6 +115,7 @@ fvwm \- @FVWMNAMELONG@ for X11
 .RB [ \-F
 .IR       state-file ]
 .RB [ \-\-debug-stack-ring ]
+.RB [ \-blackout ]
 .SH DESCRIPTION
 
 Fvwm is a window manager for X11.  It is designed to minimize
@@ -419,6 +420,11 @@ visual this option causes fvwm to never free the colors in its
 palette. By default, when fvwm does not need a color any more it
 frees this color so that a new color can be used. This option may
 speed up image loading and save a few bits of memory.
+.TP
+.BI "-blackout"
+This option is provided for backward compatibility only.  Blacking
+out the screen during startup is not necessary (and doesn't work)
+anymore. This option will be removed in the future.
 .TP
 .BI "--debug-stack-ring"
 Enables stack ring debugging.  This option is only intended for
