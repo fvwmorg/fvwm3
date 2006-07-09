@@ -54,3 +54,4 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  42.3) Add additional pan frames?  If some screens have different
        sizes, part of a pan frame may be in the void and some
        screen edges won't allow paging.
+ 43) Remove the -blackout option.
