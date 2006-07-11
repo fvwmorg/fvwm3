@@ -4614,7 +4614,7 @@ menu  or the
 command is executed again.
 
 .TP
-.BI "Schedule " "delay_ms [command_id] command"
+.BI "Schedule " "[Periodic] delay_ms [command_id] command"
 The
 .I command
 is executed after about
@@ -4649,6 +4649,26 @@ Example:
 .EX
 Current Schedule 1000 $[w.id] WindowShade
 .EE
+
+The
+.B Schedule
+command also supports the optional keyword
+.I Periodic
+which indicates that the
+.I command
+should be executed every
+.IR delay_ms .  
+Example:
+.EX
+Schedule Periodic 10000 PipeRead '[ -N "$MAIL" ] && echo \\
+	Echo You have mail'
+.EE
+Use the
+.B Deschedule
+command to stop periodic commands.
+
+
+
 
 .TP
 .BI "State " state " [" bool "]"

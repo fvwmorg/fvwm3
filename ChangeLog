@@ -1,3 +1,10 @@
+2006-07-12  Scott Smedley  <ss@aao.gov.au>
+	* fvwm/schedule.c:
+	* NEWS:
+	* AUTHORS:
+	* fvwm/fvwm.1.in:
+	Added "Periodic" option to Schedule command.
+
 2006-07-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (KillModule, ClosePipes):

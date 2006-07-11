@@ -69,7 +69,8 @@ Scott Smedley:
 Wrote FvwmTabs module. Improved Perl module support. FakeKeyPress
 command. Window-specific key/mouse bindings. FvwmButtons: ActiveIcon,
 ActiveTitle, ActiveColorset, PressIcon, PressTitle & PressColorset options.
-FvwmWindowMenu: rewrote to use WindowList tracker.
+FvwmWindowMenu: rewrote to use WindowList tracker; Version test condition.
+Added "Periodic" option to Schedule command.
 
 Francis Litterio:
 Fixed building FvwmScript under cygwin.  Added CenterPlacement style.

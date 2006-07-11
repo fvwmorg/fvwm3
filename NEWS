@@ -25,6 +25,7 @@ Changes in beta release 2.5.17 (not released yet)
      accept the prefix 'w' to allow resizing relative to the
      current window size.
    - New command ModuleListenOnly.
+   - New "Periodic" option added to Schedule command.
 
 * Bug Fixes:
 

@@ -38,6 +38,7 @@ typedef struct
 	Time time_to_execute;
 	Window window;
 	char *command;
+	int period; // in milliseconds
 } sq_object_type;
 
 static int last_schedule_id = 0;
@@ -121,7 +122,8 @@ static void deschedule(int *pid)
 }
 
 static void schedule(
-	Window window, char *command, Time time_to_execute, int *pid)
+	Window window, char *command, Time time_to_execute, int *pid,
+	int period)
 {
 	sq_object_type *new_obj;
 
@@ -135,6 +137,7 @@ static void schedule(
 	new_obj->window = window;
 	new_obj->command = safestrdup(command);
 	new_obj->time_to_execute = time_to_execute;
+	new_obj->period = period; /* 0 if this is not a periodic command */
 	/* set the job group id */
 	if (pid != NULL)
 	{
@@ -188,6 +191,16 @@ static void execute_obj_func(void *object, void *args)
 		exc = exc_create_context(&ecc, mask);
 		execute_function(NULL, exc, obj->command, 0);
 		exc_destroy_context(exc);
+	}
+	if (obj->period > 0)
+	{
+		/* This is a periodic function, so reschedule it. */
+		sq_object_type *new_obj = (sq_object_type *)safemalloc(sizeof(sq_object_type));
+		memcpy(new_obj, obj, sizeof(sq_object_type));
+		obj->command = NULL; /* new_obj->command now points to cmd. */
+		new_obj->time_to_execute = fev_get_evtime() + new_obj->period;
+		/* insert into schedule queue */
+		fqueue_add_inside(&sq, new_obj, cmp_object_time, NULL);
 	}
 	XFlush(dpy);
 
@@ -251,12 +264,20 @@ void CMD_Schedule(F_CMD_ARGS)
 	Window xw;
 	Time time;
 	Time current_time;
-	char *taction;
+	char *taction, *arg, *tmp;
 	int ms;
 	int id;
 	int *pid;
 	int n;
 	FvwmWindow * const fw = exc->w.fw;
+	Bool is_periodic = False;
+
+	arg = PeekToken(action, tmp);
+	if (arg && strcasecmp(arg, "periodic") == 0)
+	{
+		is_periodic = True;
+		action = GetNextToken(action, &tmp);
+	}
 
 	/* get the time to execute */
 	n = GetIntegerArguments(action, &action, &ms, 1);
@@ -300,7 +321,7 @@ void CMD_Schedule(F_CMD_ARGS)
 		xw = None;
 	}
 	/* schedule the job */
-	schedule(xw, action, time, pid);
+	schedule(xw, action, time, pid, (is_periodic == True ? ms : 0));
 
 	return;
 }
