@@ -1070,6 +1070,7 @@ AC_CHECK_FUNCS(gettimeofday mkfifo putenv setvbuf socket waitpid)
 AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
 AC_CHECK_FUNCS(sigaction siginterrupt getpwuid)
 AC_CHECK_FUNCS(setpgrp setpgid)
+AC_CHECK_FUNCS(lstat)
 
 
 

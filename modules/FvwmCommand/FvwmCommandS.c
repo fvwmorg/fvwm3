@@ -164,7 +164,10 @@ void server (char *name)
 
   if (name == NULL)
   {
-    f_stem = fifos_get_default_name();
+     if ((f_stem = fifos_get_default_name()) == NULL)
+     {
+	exit(-1);
+     }
   }
   else
   {
@@ -383,7 +386,11 @@ int open_fifos(const char *f_stem)
   strcat(FfdM_name, "M");
 
   /* check to see if another FvwmCommandS is running by trying to talk to it */
-  FfdC = open(FfdC_name, O_RDWR | O_NONBLOCK);
+  FfdC = open(FfdC_name, O_RDWR | O_NONBLOCK
+#ifdef O_NOFOLLOW
+	      | O_NOFOLLOW
+#endif
+     );
   /* remove the fifo's if they exist */
   unlink(FfdM_name);
   unlink(FfdC_name);
@@ -409,12 +416,20 @@ int open_fifos(const char *f_stem)
     return -1;
   }
 
-  if ((FfdM = open(FfdM_name, O_RDWR | O_NONBLOCK)) < 0)
+  if ((FfdM = open(FfdM_name, O_RDWR | O_NONBLOCK
+#ifdef O_NOFOLLOW
+		   | O_NOFOLLOW
+#endif
+	  )) < 0)
   {
     err_msg("opening message fifo");
     return -1;
   }
-  if ((FfdC = open(FfdC_name, O_RDWR | O_NONBLOCK)) < 0)
+  if ((FfdC = open(FfdC_name, O_RDWR | O_NONBLOCK
+#ifdef O_NOFOLLOW
+		   | O_NOFOLLOW
+#endif
+	  )) < 0)
   {
     err_msg("opening command fifo");
     return -1;

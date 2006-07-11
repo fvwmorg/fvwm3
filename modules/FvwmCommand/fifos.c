@@ -31,6 +31,7 @@
 
 char * fifos_get_default_name()
 {
+	char file_suffix[] = { 'R', 'C', 'M', '\0' };
 	char *f_stem;
 	char *dpy_name;
 	char dpy_name_add[3];
@@ -38,6 +39,9 @@ char * fifos_get_default_name()
 	int i;
 	struct stat stat_buf;
 	char hostname[MAXHOSTNAME];
+	int type_pos;
+	uid_t owner;
+	Bool is_path_valid;
 
 	/* default name */
 	dpy_name = getenv("DISPLAY");
@@ -76,9 +80,13 @@ char * fifos_get_default_name()
 			    strlen(dpy_name) + strlen(dpy_name_add));
 
 	if ((stat("/var/tmp", &stat_buf) == 0) && (stat_buf.st_mode & S_IFDIR))
+	{
 		strcpy (f_stem, "/var/tmp/");
+	}
 	else
+	{
 		strcpy (f_stem, "/tmp/");
+	}
 	strcat(f_stem, F_NAME);
 
 	/* Make it unique */
@@ -90,5 +98,72 @@ char * fifos_get_default_name()
 	}
 	strcat(f_stem, dpy_name);
 	strcat(f_stem, dpy_name_add);
+
+	/* Verify that all files are either non-symlinks owned by the current 
+	 * user or non-existing. If not: use FVWM_USERDIR as base instead. */
+
+	type_pos = strlen(f_stem);
+	owner = geteuid();
+	is_path_valid = True;
+
+	f_stem[type_pos+1] = 0;
+	
+	for (c = file_suffix; *c != 0 && is_path_valid; c++)
+	{
+		f_stem[type_pos] = *c;
+#ifdef HAVE_LSTAT
+		if (!lstat(f_stem, &stat_buf))
+#else
+		if (!stat(f_stem, &stat_buf))
+#endif
+		{
+			/* stat successful */
+			if (stat_buf.st_uid != owner || stat_buf.st_nlink > 1
+			    || S_ISDIR(stat_buf.st_mode)
+#ifdef S_ISLNK
+			    || S_ISLNK(stat_buf.st_mode)
+#elif defined S_IFLNK
+			    || ((stat_buf.st_mode & S_IFLNK)==S_IFLNK)
+#endif
+				)
+			{
+				is_path_valid = False;
+			}
+			break;
+		}
+		else if (errno != ENOENT)
+		{
+			is_path_valid = False;
+		}
+	}
+	f_stem[type_pos] = 0;
+	if (!is_path_valid)
+	{
+		char *userdir;
+		char *tailname;
+		char *tmp;
+		tmp = f_stem;
+
+		if (f_stem[1] == 't') /* /tmp/ */
+		{
+			tailname = f_stem + 4;
+		}
+		else /* /var/tmp/ */
+		{
+			tailname = f_stem + 8;
+		}
+		
+		userdir = getenv("FVWM_USERDIR");
+		if (userdir == NULL)
+		{
+			free(tmp);
+			return NULL;
+		}
+		f_stem = safemalloc(strlen(userdir) + strlen(tailname));
+		strcpy(f_stem, userdir);
+		strcat(f_stem, tailname);
+		free(tmp);
+	}
+
 	return f_stem;
 }

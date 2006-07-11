@@ -1,5 +1,16 @@
 2006-07-11  Viktor Griph  <griph@dd.chalmers.se>
 
+	* FvwmCommand/FvwmCommand.1.in:
+	Documented the FVWM_USERDIR fallback.
+	
+	* FvwmCommand/FvwmCommandS.c (server): 
+	* FvwmCommand/FvwmCommand.c (main): 
+	Exit if no name coude be decided on. (Only if FVWM_USERDIR is unset.)
+	Open files with O_NOFOLLOW if defined.
+	* FvwmCommand/fifos.c (fifos_get_default_name):
+	Make sure that the name returned either referre to files owned by
+	the process owner or does not exist. Use FVWM_USERDIR as fallback.
+	
 	* FvwmCommand/FvwmCommandS.c (server): 
 	* FvwmCommand/FvwmCommand.c (main): 
 	* FvwmCommand/FvwmCommand.h

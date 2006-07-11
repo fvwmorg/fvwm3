@@ -1,3 +1,10 @@
+2006-07-11  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	Fix for tempfile vulnerabilities in FvwmCommand.
+	* configure.ac: 
+	Added check for lstat.
+
 2006-07-12  Scott Smedley  <ss@aao.gov.au>
 	* fvwm/schedule.c:
 	* NEWS:

@@ -81,7 +81,8 @@ option, is 2 or 3.
 Specifies an alternative FIFO set to communicate with a server.
 The default FIFO set is /var/tmp/FvwmCommand-${DISPLAY}C, in which
 FvwmCommand..C is used to send commands and FvwmCommand..M is to receive
-messages.
+messages. If that path is unusable ${FVWM_USERDIR}/FvwmCommand-${DISPLAY}
+will be used instead.
 FvwmCommandS must have been invoked with the same <name> as its first argument
 prior to FvwmCommand invocation.
 Alternatively, option -S can be used. Refer option -S.
