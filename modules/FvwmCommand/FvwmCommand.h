@@ -34,3 +34,6 @@ extern char *sys_errlist[];
 #ifndef HAVE_MKFIFO
 #define mkfifo(path, mode) ((errno = ENOSYS) - ENOSYS - 1)
 #endif
+
+
+char * fifos_get_default_name();

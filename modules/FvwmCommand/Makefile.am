@@ -9,8 +9,8 @@ moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmCommandS
 module_DATA = FvwmCommand.sh FvwmCommand.pm
 
-FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
-FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
+FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h fifos.c
+FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h fifos.c
 
 FvwmCommand.sh: findcmd.pl $(top_srcdir)/fvwm/functable.c
 	if test -n "$(PERL)" -a -x "$(PERL)"; then \

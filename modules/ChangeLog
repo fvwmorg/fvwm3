@@ -1,3 +1,13 @@
+2006-07-11  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmCommand/FvwmCommandS.c (server): 
+	* FvwmCommand/FvwmCommand.c (main): 
+	* FvwmCommand/FvwmCommand.h
+	* FvwmCommand/fifos.c: 
+	* FvwmCommand/Makefile.am: 
+	Make sure FvwmCommandS and FvwmCommand use the same default names
+	by moving the code from FvwmCommand to a separate common function.
+
 2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmConsole/FvwmConsoleC.c (main): 
