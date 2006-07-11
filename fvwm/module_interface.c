@@ -172,13 +172,15 @@ void ClosePipes(void)
 	int i;
 	for (i=0; i<npipes; ++i)
 	{
-		if (writePipes[i] > 0)
+		if (writePipes[i] >= 0)
 		{
 			close(writePipes[i]);
+			writePipes[i] = -1;
 		}
-		if (readPipes[i] > 0)
+		if (readPipes[i] >= 0)
 		{
 			close(readPipes[i]);
+			readPipes[i] = -1;
 		}
 		if (pipeName[i] != NULL)
 		{
@@ -842,8 +844,8 @@ void KillModule(int channel)
 	}
 	if (writePipes[channel] >= 0)
 	{
-		writePipes[channel] = -1;
 		close(writePipes[channel]);
+		writePipes[channel] = -1;
 	}
 	pipeOn[channel] = -1;
 	while (!FQUEUE_IS_EMPTY(&pipeQueue[channel]))

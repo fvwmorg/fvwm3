@@ -1,9 +1,15 @@
+2006-07-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/module_interface.c (KillModule, ClosePipes):
+	fixed KillModule
+
+
 2006-07-09  Renato Caldas  <seventhguardian@gmail.com>
 
-	*fvwm/fvwm.c (main):
+	* fvwm/fvwm.c (main):
 	changed the -blackout warning to say it will be removed in 3.0
 
-	*fvwm/fvwm.1.in (-blackout):
+	* fvwm/fvwm.1.in (-blackout):
 	updated the manual regarding the future remotion of -blackout
 
 2006-07-08  Viktor Griph  <griph@dd.chalmers.se>
