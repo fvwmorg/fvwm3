@@ -264,7 +264,9 @@ void CMD_Schedule(F_CMD_ARGS)
 	Window xw;
 	Time time;
 	Time current_time;
-	char *taction, *arg, *tmp;
+	char *taction;
+	char *token;
+	char *next;
 	int ms;
 	int id;
 	int *pid;
@@ -272,13 +274,12 @@ void CMD_Schedule(F_CMD_ARGS)
 	FvwmWindow * const fw = exc->w.fw;
 	Bool is_periodic = False;
 
-	arg = PeekToken(action, tmp);
-	if (arg && strcasecmp(arg, "periodic") == 0)
+	token = PeekToken(action, &next);
+	if (token && strcasecmp(token, "periodic") == 0)
 	{
 		is_periodic = True;
-		action = GetNextToken(action, &tmp);
+		action = next;
 	}
-
 	/* get the time to execute */
 	n = GetIntegerArguments(action, &action, &ms, 1);
 	if (n <= 0)

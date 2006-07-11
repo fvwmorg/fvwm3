@@ -1,8 +1,13 @@
+2006-07-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/schedule.c (CMD_Schedule):
+	Fixed parsing of "Periodic" option.
+
 2006-07-11  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
 	Fix for tempfile vulnerabilities in FvwmCommand.
-	* configure.ac: 
+	* configure.ac:
 	Added check for lstat.
 
 2006-07-12  Scott Smedley  <ss@aao.gov.au>
@@ -29,7 +34,7 @@
 2006-07-08  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
-	* configure.ac: 
+	* configure.ac:
 	added $EXEEXT to FvwmGtk in order to compile on Cygwin (bug #3772).
 
 2006-07-08  Renato Caldas  <seventhguardian@gmail.com>
@@ -75,7 +80,7 @@
 
 2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
 
-	* NEWS: 
+	* NEWS:
 	Work around for Cygwin not requiering '_GNU_SOURCE' to use
 	stdio's getline; news entry.
 
