@@ -439,7 +439,7 @@ int main(int argc, char **argv)
 #ifdef FVWM_DEBUG_MSGS
   if ( isTerminated )
   {
-    fprintf(stderr, "%s: Received signal: exiting...\n", module->name);
+    fprintf(stderr, "%s: Received signal: exiting...\n", MyName);
   }
 #endif
 
