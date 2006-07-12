@@ -81,7 +81,7 @@ char * fifos_get_default_name()
 
 	if (
 		(stat("/var/tmp", &stat_buf) == 0) &&
-		(stat_buf.st_mode & FVWM_S_IFDIR))
+		(stat_buf.st_mode & S_IFDIR))
 	{
 		strcpy (f_stem, "/var/tmp/");
 	}
@@ -129,7 +129,7 @@ char * fifos_get_default_name()
 			if (
 				stat_buf.st_uid != owner ||
 				stat_buf.st_nlink > 1 ||
-				FVWM_S_ISDIR(stat_buf.st_mode) ||
+				S_ISDIR(stat_buf.st_mode) ||
 				FVWM_S_ISLNK(stat_buf.st_mode) ||
 				(stat_buf.st_mode & FVWM_S_IFLNK) != 0)
 			{
