@@ -1284,6 +1284,9 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #ifdef HAVE_MALLOC_H
 #  include <malloc.h>
 #endif
+#ifdef HAVE_FCNTL_H
+#  include <fcntl.h>
+#endif
 #ifndef HAVE_STRCHR
 #  define strchr(_s,_c)   index((_s),(_c))
 #  define strrchr(_s,_c)  rindex((_s),(_c))
@@ -1319,8 +1322,21 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #ifndef FEVENT_C
 #include <X11/Xlib.h>
 #include "libs/FEvent.h"
-#endif])
+#endif
 
+#ifndef O_NOFOLLOW
+#define O_NOFOLLOW 0
+#endif
+
+#ifdef HAVE_LSTAT
+#define DO_USE_LSTAT 1
+#define fvwm_lstat(x,y) lstat(x,y)
+#else
+#define DO_USE_LSTAT 0
+#define fvwm_lstat(x,y) -1
+#endif
+
+])
 
 # mainly for fvwm-config
 AC_SUBST(with_bidi)

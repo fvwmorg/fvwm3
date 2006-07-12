@@ -1,8 +1,6 @@
 /* -*-c-*- */
 #include <unistd.h>
 #include <stdio.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <sys/types.h>
 #include "libs/ftime.h"
 #include <sys/wait.h>
@@ -17,6 +15,7 @@
 #include <libs/fvwmlib.h>
 #include <fvwm/fvwm.h>
 #include <libs/vpacket.h>
+#include <libs/fvwm_sys_stat.h>
 
 #ifndef HAVE_STRERROR
 extern char *sys_errlist[];

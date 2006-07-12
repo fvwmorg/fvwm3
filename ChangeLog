@@ -1,3 +1,12 @@
+2006-07-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	* libs/fvwm_sys_stat.h:
+	added compat file
+
+	* configure.ac:
+	added O_NOFOLLOW replacement and always include fcntl.h
+
 2006-07-12  Scott Smedley  <ss@aao.gov.au>
 	* libs/Parse.c:
 	Added DV's mailing-list comments about how PeekToken & GetNextToken

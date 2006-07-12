@@ -12,8 +12,8 @@ libfvwm_a_SOURCES = \
 	PictureGraphics.h PictureImageLoader.h PictureUtils.h Strings.h \
 	defaults.h envvar.h flist.h fsm.h ftime.h fvwmlib.h fvwmrect.h \
 	fvwmsignal.h gravity.c gravity.h lang-strings.h queue.h safemalloc.h \
-	setpgrp.h vpacket.h wild.h Rectangles.h timeout.h charmap.h wcontext.h \
-	modifiers.h \
+	setpgrp.h vpacket.h wild.h Rectangles.h timeout.h charmap.h \
+	wcontext.h modifiers.h fvwm_sys_stat.h \
 	\
 	BidiJoin.c Flocale.c PictureUtils.c FScreen.c Graphics.c \
 	PictureGraphics.c Bindings.c FlocaleCharset.c Parse.c \

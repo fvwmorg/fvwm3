@@ -76,10 +76,12 @@ char * fifos_get_default_name()
 		/* append screen number */
 		strcpy(dpy_name_add, ".0");
 	}
-	f_stem = safemalloc(11 + strlen(F_NAME) + MAXHOSTNAME + 
+	f_stem = safemalloc(11 + strlen(F_NAME) + MAXHOSTNAME +
 			    strlen(dpy_name) + strlen(dpy_name_add));
 
-	if ((stat("/var/tmp", &stat_buf) == 0) && (stat_buf.st_mode & S_IFDIR))
+	if (
+		(stat("/var/tmp", &stat_buf) == 0) &&
+		(stat_buf.st_mode & FVWM_S_IFDIR))
 	{
 		strcpy (f_stem, "/var/tmp/");
 	}
@@ -99,7 +101,7 @@ char * fifos_get_default_name()
 	strcat(f_stem, dpy_name);
 	strcat(f_stem, dpy_name_add);
 
-	/* Verify that all files are either non-symlinks owned by the current 
+	/* Verify that all files are either non-symlinks owned by the current
 	 * user or non-existing. If not: use FVWM_USERDIR as base instead. */
 
 	type_pos = strlen(f_stem);
@@ -107,25 +109,29 @@ char * fifos_get_default_name()
 	is_path_valid = True;
 
 	f_stem[type_pos+1] = 0;
-	
+
 	for (c = file_suffix; *c != 0 && is_path_valid; c++)
 	{
+		int rc;
+
 		f_stem[type_pos] = *c;
-#ifdef HAVE_LSTAT
-		if (!lstat(f_stem, &stat_buf))
-#else
-		if (!stat(f_stem, &stat_buf))
-#endif
+		if (DO_USE_LSTAT)
+		{
+			rc = fvwm_lstat(f_stem, &stat_buf);
+		}
+		else
+		{
+			rc = stat(f_stem, &stat_buf);
+		}
+		if (rc == 0)
 		{
 			/* stat successful */
-			if (stat_buf.st_uid != owner || stat_buf.st_nlink > 1
-			    || S_ISDIR(stat_buf.st_mode)
-#ifdef S_ISLNK
-			    || S_ISLNK(stat_buf.st_mode)
-#elif defined S_IFLNK
-			    || ((stat_buf.st_mode & S_IFLNK)==S_IFLNK)
-#endif
-				)
+			if (
+				stat_buf.st_uid != owner ||
+				stat_buf.st_nlink > 1 ||
+				FVWM_S_ISDIR(stat_buf.st_mode) ||
+				FVWM_S_ISLNK(stat_buf.st_mode) ||
+				(stat_buf.st_mode & FVWM_S_IFLNK) != 0)
 			{
 				is_path_valid = False;
 			}
@@ -152,7 +158,7 @@ char * fifos_get_default_name()
 		{
 			tailname = f_stem + 8;
 		}
-		
+
 		userdir = getenv("FVWM_USERDIR");
 		if (userdir == NULL)
 		{

@@ -1,3 +1,11 @@
+2006-07-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmCommand/fifos.c (fifos_get_default_name):
+	replaced ifdefs
+
+	* FvwmCommand/FvwmCommand.h:
+	use libs/fvwm_sys_stat.h
+
 2006-07-12  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* modules/FvwmPager/FvwmPager.c:
@@ -7,27 +15,27 @@
 
 	* FvwmCommand/FvwmCommand.1.in:
 	Documented the FVWM_USERDIR fallback.
-	
-	* FvwmCommand/FvwmCommandS.c (server): 
-	* FvwmCommand/FvwmCommand.c (main): 
+
+	* FvwmCommand/FvwmCommandS.c (server):
+	* FvwmCommand/FvwmCommand.c (main):
 	Exit if no name coude be decided on. (Only if FVWM_USERDIR is unset.)
 	Open files with O_NOFOLLOW if defined.
 	* FvwmCommand/fifos.c (fifos_get_default_name):
 	Make sure that the name returned either referre to files owned by
 	the process owner or does not exist. Use FVWM_USERDIR as fallback.
-	
-	* FvwmCommand/FvwmCommandS.c (server): 
-	* FvwmCommand/FvwmCommand.c (main): 
+
+	* FvwmCommand/FvwmCommandS.c (server):
+	* FvwmCommand/FvwmCommand.c (main):
 	* FvwmCommand/FvwmCommand.h
-	* FvwmCommand/fifos.c: 
-	* FvwmCommand/Makefile.am: 
+	* FvwmCommand/fifos.c:
+	* FvwmCommand/Makefile.am:
 	Make sure FvwmCommandS and FvwmCommand use the same default names
 	by moving the code from FvwmCommand to a separate common function.
 
 2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
 
-	* FvwmConsole/FvwmConsoleC.c (main): 
-	* FvwmConsole/getline.c: 
+	* FvwmConsole/FvwmConsoleC.c (main):
+	* FvwmConsole/getline.c:
 	Renamed the function getline to get_line to not conflict with stdio's
 	getline. (bug #3772)
 
@@ -63,10 +71,10 @@
 
 	* FvwmPager/FvwmPag
 	* FvwmPager/FvwmPager.h (HandleScrollDone,list_string):
-	* FvwmPager/x_pager.c (Scroll, do_scroll, HandleScrollDone): 
-	Changed to pixel operation. Scrolling is summed up before sent to 
+	* FvwmPager/x_pager.c (Scroll, do_scroll, HandleScrollDone):
+	Changed to pixel operation. Scrolling is summed up before sent to
 	fvwm to speed up multiple subsequent scrollings that take place faster
-	than fvwm can change viewport.	
+	than fvwm can change viewport.
 
 2006-04-07  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
