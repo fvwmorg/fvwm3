@@ -1676,7 +1676,10 @@ static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 	s = explanation;
 	strcat(s, "placed new window 0x%x '%s':\n");
 	s += strlen(s);
-	/* desk */
+	sprintf(
+		s, "  initial size %dx%d\n", fw->frame_g.width,
+		fw->frame_g.height);
+	s += strlen(s);
 	switch (reason->desk.reason)
 	{
 	case PR_DESK_CURRENT:
