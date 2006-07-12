@@ -301,12 +301,11 @@ char *SkipSpaces(char *indata, char *spaces, int snum)
 }
 
 /*
-** PeekToken:
 ** DoPeekToken: returns next token from string, leaving string intact
 **		(you must not free returned string)
 **
 ** WARNING: The returned pointer points to a static array that will be
-**	     overwritten all functions in this file!
+**	     overwritten in all functions in this file!
 **
 ** For a description of the parameters see DoGetNextToken below. DoPeekToken
 ** is a bit faster.
@@ -347,6 +346,13 @@ char *DoPeekToken(
 	return end;
 }
 
+/*
+ * PeekToken takes the input string "indata" and returns a pointer to the
+ * token, stored in a static char array.  The pointer is invalidated by
+ * the next call to PeekToken.  If "outdata" is not NULL, the pointer
+ * to the first character after the token is returned through
+ * *outdata. (Note that outdata is a char **, not just a char *).
+ */
 char *PeekToken(char *indata, char **outdata)
 {
 	char *dummy;
@@ -480,6 +486,15 @@ char *DoGetNextToken(
 	return end;
 }
 
+/*
+ * GetNextToken works similarly to PeekToken, but: stores the token in
+ * *token, & returns a pointer to the first character after the token
+ * in *token. The memory in *token is allocated with malloc and the
+ * calling function has to free() it.
+ *
+ * If possible, use PeekToken because it's faster and does not risk
+ * creating memory leaks.
+ */
 char *GetNextToken(char *indata, char **token)
 {
 	return DoGetNextToken(indata, token, NULL, NULL, NULL);

@@ -1,3 +1,8 @@
+2006-07-12  Scott Smedley  <ss@aao.gov.au>
+	* libs/Parse.c:
+	Added DV's mailing-list comments about how PeekToken & GetNextToken
+	work as comments to the source code. (slightly modified)
+
 2006-07-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/schedule.c (CMD_Schedule):
