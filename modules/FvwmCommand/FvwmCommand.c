@@ -224,11 +224,7 @@ int main ( int argc, char *argv[])
   strcpy(s,f_stem);
   strcat(s, "R");
 
-  Fdrun = open(s, O_WRONLY | O_CREAT | O_EXCL
-#ifdef O_NOFOLLOW
-	       | O_NOFOLLOW
-#endif
-	       , 0600);
+  Fdrun = open(s, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW, 0600);
   if (Fdrun < 0)
   {
     FILE *f;
@@ -271,11 +267,7 @@ int main ( int argc, char *argv[])
 
   Fdr = Fdw = -1;
   count = 0;
-  while ((Fdr=open (fm_name, O_RDONLY
-#ifdef O_NOFOLLOW
-		    | O_NOFOLLOW
-#endif
-	     )) < 0)
+  while ((Fdr=open (fm_name, O_RDONLY | O_NOFOLLOW)) < 0)
   {
     if (count++>5)
     {
@@ -284,11 +276,7 @@ int main ( int argc, char *argv[])
     sleep(1);
   }
   count = 0;
-  while ((Fdw=open (fc_name, O_WRONLY
-#ifdef O_NOFOLLOW
-		    | O_NOFOLLOW
-#endif
-	     )) < 0)
+  while ((Fdw=open (fc_name, O_WRONLY | O_NOFOLLOW)) < 0)
   {
     if (count++>2)
     {

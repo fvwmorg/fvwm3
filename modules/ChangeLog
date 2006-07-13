@@ -1,3 +1,9 @@
+2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmCommand/FvwmCommand.c (main): 
+	* FvwmCommand/FvwmCommandS.c (open_fifos): 
+	removed ifdefs for O_NOFOLLOW.
+
 2006-07-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmCommand/fifos.c (fifos_get_default_name):
