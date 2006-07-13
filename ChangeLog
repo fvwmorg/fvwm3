@@ -1,3 +1,10 @@
+2006-07-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/expand.c (__eae_parse_range):
+	bugfixes
+	(expand_vars):
+	reformatted
+
 2006-07-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/expand.c (expand_args_extended):

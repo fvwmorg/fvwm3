@@ -220,7 +220,7 @@ int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
 		rc = sscanf(input, "%u%n", lower, &n);
 		if (rc >= 1)
 		{
-			upper = lower;
+			*upper = *lower;
 		}
 	}
 	if (rc < 1)
@@ -234,7 +234,7 @@ int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
 		/* trailing characters - not good */
 		return -1;
 	}
-	if (upper < lower)
+	if (*upper < *lower)
 	{
 		/* the range is reverse - not good */
 		return -1;
@@ -920,34 +920,34 @@ char *expand_vars(
 					input[m] = 0;
 					/* handle variable name */
 					k = strlen(var);
-					if (!addto)
+					if (addto)
 					{
-						if (name_has_dollar)
-						{
-							var = expand_vars(
-								var, arguments,
-								addto, ismod,
-								cond_rc, exc);
-						}
-						xlen = expand_args_extended(
-							var, arguments ?
-							arguments[0] : NULL,
-							NULL);
-						if (xlen < 0)
-						{
-							xlen =
-							  expand_vars_extended(
-								var, NULL,
-								cond_rc, exc);
-						}
-						if (name_has_dollar)
-						{
-							free(var);
-						}
-						if (xlen >= 0)
-						{
-							l2 += xlen - (k + 2);
-						}
+						i += k + 2;
+						input[m] = ']';
+						break;
+					}
+					if (name_has_dollar)
+					{
+						var = expand_vars(
+							var, arguments, addto,
+							ismod, cond_rc, exc);
+					}
+					xlen = expand_args_extended(
+						var, arguments ? arguments[0] :
+						NULL, NULL);
+					if (xlen < 0)
+					{
+						xlen = expand_vars_extended(
+							var, NULL, cond_rc,
+							exc);
+					}
+					if (name_has_dollar)
+					{
+						free(var);
+					}
+					if (xlen >= 0)
+					{
+						l2 += xlen - (k + 2);
 					}
 					i += k + 2;
 					input[m] = ']';
