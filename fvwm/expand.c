@@ -195,120 +195,110 @@ enum
 
 /* ---------------------------- local functions ---------------------------- */
 
-static signed int expand_args_extended(
-	char *input, char *argument_string, char *output)
+int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
 {
+	int rc;
 	int n;
-	int lower;
-	int upper;
-	int l;
-	char *args_end;
-	char save_char;
-	Bool is_single_arg = False;
+
+	*lower = 0;
+	*upper = (unsigned int)-1;
 	if (*input == '*')
-	{
-		lower = 0;
-		upper = -1;
-	}
-	else
-	{
-		if (*input < '0' || *input > '9')
-		{
-			/* not a positional argument */
-			return -1;
-		}
-		sscanf(input, "%d%n", &lower, &n);
-		input += n;
-		if (*input == 0)
-		{
-			/* Single argument - for compatibility with $n */
-			/* this is not equivalent of $[n-n] */
-			is_single_arg = True;
-		}
-		else if (*input == '-')
-		{
-			/* A range */
-			input++;
-			if (*input == 0)
-			{
-				/* open end */
-				upper = -1;
-			}
-			else if (*input >= '0' && *input <= '9')
-			{
-				sscanf(input, "%d%n", &upper, &n);
-				input += n;
-				if (*input != 0)
-				{
-					/* trailing characters - not good */
-					return -1;
-				}
-				else if (upper < lower)
-				{
-					/* the range is reverse - not good */
-					return -1;
-				}
-			}
-			else
-			{
-				/* non-number at end of range - not good */
-				return -1;
-			}
-		}
-		else
-		{
-			return -1;
-		}
-	}
-	if (!argument_string)
 	{
 		return 0;
 	}
-
-	/* Skip to the start of the requested argument range 
-	 * by skipping 'lower' tokens and all trailing spaces */
-	argument_string = SkipSpaces(
-		SkipNTokens(argument_string, lower), NULL, 0);
-	if (is_single_arg)
+	rc = sscanf(input, "%u-%u%n", lower, upper, &n);
+	if (rc < 2)
 	{
-		/* single arguments should be dequoted if quoted already.
-		 * this is the way to old $n works. */
-		argument_string = PeekToken(argument_string, NULL);
-		if (!argument_string)
+		rc = sscanf(input, "%u-%n", lower, &n);
+	}
+	if (rc < 1)
+	{
+		rc = sscanf(input, "-%u%n", upper, &n);
+	}
+	if (rc < 1)
+	{
+		rc = sscanf(input, "%u%n", lower, &n);
+		if (rc >= 1)
 		{
-			return 0;
+			upper = lower;
 		}
-		l = strlen(argument_string);
 	}
-	else if (upper >= 0)
+	if (rc < 1)
 	{
-		/* Skip to the end of the requested argument range. */
-		args_end = SkipNTokens(argument_string, upper - lower + 1);
-		/* back up to the end of the last token -
-		 * avoid trailing whitespace */
-		while (argument_string < args_end && isspace(*(args_end - 1)))
-		{
-			args_end--;
-		}
-		/* get the lenght of the parameter string by temporary 
-		 * terminating it and using strlen */
-		save_char = *args_end;
-		*args_end = 0;
-		l = strlen(argument_string);
-		*args_end = save_char;
+		/* not a positional argument */
+		return -1;
 	}
-	else
+	input += n;
+	if (*input != 0)
 	{
-		/* The entire remaining string should be used. */
-		l = strlen(argument_string);
+		/* trailing characters - not good */
+		return -1;
 	}
-	if (output)
+	if (upper < lower)
 	{
-		memcpy(output, argument_string, (size_t)(l));
-		output[l] = 0;
+		/* the range is reverse - not good */
+		return -1;
 	}
 
-	return l;
+	return 0;
+}
+
+static signed int expand_args_extended(
+	char *input, char *argument_string, char *output)
+{
+	int rc;
+	unsigned int lower;
+	unsigned int upper;
+	unsigned int i;
+	size_t len;
+
+	rc = __eae_parse_range(input, &lower, &upper);
+	if (rc == -1)
+	{
+		return -1;
+	}
+	/* Skip to the start of the requested argument range */
+	if (lower > 0)
+	{
+		argument_string = SkipNTokens(argument_string, lower);
+	}
+	if (!argument_string)
+	{
+		/* replace with empty string */
+		return 0;
+	}
+	/* TODO: optimise handling of $[0] to $[9] which have already been
+	 * parsed */
+	for (i = lower, len = 0; i < upper; i++)
+	{
+		char *token;
+		size_t tlen;
+
+		token = PeekToken(argument_string, &argument_string);
+		if (token == NULL)
+		{
+			break;
+		}
+		/* copy the token */
+		if (i > lower)
+		{
+			if (output != NULL)
+			{
+				*output = ' ';
+				output++;
+			}
+			len++;
+		}
+		tlen = strlen(token);
+		if (output != NULL && tlen > 0)
+		{
+			memcpy(output, token, tlen);
+			output += tlen;
+		}
+		len += tlen;
+	}
+
+	return (int)len;
 }
 
 static signed int expand_vars_extended(

@@ -11,6 +11,9 @@
 	* fvwm/expand.c (expand_args_extended):
 	fixed core dump
 	added range check for positional parameters
+	(expand_args_extended, __eae_parse_range):
+	cleaned up and simplified parsing code
+	properly unquote arguments when expanding
 
 2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
 
