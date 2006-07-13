@@ -218,16 +218,12 @@ static signed int expand_args_extended(
 			return -1;
 		}
 		sscanf(input, "%d%n", &lower, &n);
-		if (lower < 0 || lower > 9)
-		{
-			return -1;
-		}
 		input += n;
 		if (*input == 0)
 		{
-			/* This is not equivalent of $[n-n] */
+			/* Single argument - for compatibility with $n */
+			/* this is not equivalent of $[n-n] */
 			is_single_arg = True;
-			upper = -1;
 		}
 		else if (*input == '-')
 		{
@@ -241,10 +237,6 @@ static signed int expand_args_extended(
 			else if (*input >= '0' && *input <= '9')
 			{
 				sscanf(input, "%d%n", &upper, &n);
-				if (upper < 0 || upper > 9)
-				{
-					return -1;
-				}
 				input += n;
 				if (*input != 0)
 				{
@@ -273,21 +265,24 @@ static signed int expand_args_extended(
 		return 0;
 	}
 
-	/* Skip to the start of the requested argument range */
+	/* Skip to the start of the requested argument range 
+	 * by skipping 'lower' tokens and all trailing spaces */
 	argument_string = SkipSpaces(
 		SkipNTokens(argument_string, lower), NULL, 0);
 	if (is_single_arg)
 	{
-		/* single arguments should be dequoted if quoted already. */
-		GetNextToken(argument_string, &argument_string);
+		/* single arguments should be dequoted if quoted already.
+		 * this is the way to old $n works. */
+		argument_string = PeekToken(argument_string, NULL);
 		if (!argument_string)
 		{
 			return 0;
 		}
+		l = strlen(argument_string);
 	}
-	/* Skip to the end of the requested argument range */
-	if (upper >= 0)
+	else if (upper >= 0)
 	{
+		/* Skip to the end of the requested argument range. */
 		args_end = SkipNTokens(argument_string, upper - lower + 1);
 		/* back up to the end of the last token -
 		 * avoid trailing whitespace */
@@ -295,6 +290,8 @@ static signed int expand_args_extended(
 		{
 			args_end--;
 		}
+		/* get the lenght of the parameter string by temporary 
+		 * terminating it and using strlen */
 		save_char = *args_end;
 		*args_end = 0;
 		l = strlen(argument_string);
@@ -302,6 +299,7 @@ static signed int expand_args_extended(
 	}
 	else
 	{
+		/* The entire remaining string should be used. */
 		l = strlen(argument_string);
 	}
 	if (output)
@@ -309,13 +307,8 @@ static signed int expand_args_extended(
 		memcpy(output, argument_string, (size_t)(l));
 		output[l] = 0;
 	}
-	if (is_single_arg)
-	{
-		free(argument_string);
-	}
 
 	return l;
-
 }
 
 static signed int expand_vars_extended(

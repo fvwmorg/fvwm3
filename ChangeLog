@@ -1,3 +1,11 @@
+2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/expand.c (expand_args_extended): 
+	removed range check for positional parameters
+	make single arguments not use the 'upper' variable
+	changed back to PeekToken for single arguemnts.
+	improved some comments.
+
 2006-07-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/expand.c (expand_args_extended):

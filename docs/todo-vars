@@ -69,6 +69,9 @@ More than one filter may be applied if needed, for example:
 
   AddToMenu WindowOps 'Go to first desk, $[desk.name0:menu:dquote]'
 
+It makes sence to allow a raw-filter for positional parameters, which is the
+one used by default for $[*].
+
 Escaping
 --------
 
