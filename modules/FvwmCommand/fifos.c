@@ -165,7 +165,7 @@ char * fifos_get_default_name()
 			free(tmp);
 			return NULL;
 		}
-		f_stem = safemalloc(strlen(userdir) + strlen(tailname));
+		f_stem = safemalloc(strlen(userdir) + strlen(tailname) + 1);
 		strcpy(f_stem, userdir);
 		strcat(f_stem, tailname);
 		free(tmp);
