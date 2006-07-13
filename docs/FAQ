@@ -3021,7 +3021,7 @@ your applications request.
 
      # Start FvwmAuto
      AddToFunc StartFunction
-     + I Module FvwmAuto FvwmAutohide -menter enter_handler
+     + I Module FvwmAuto 1 -menter enter_handler
 
      # Add the windows you want to autohide
      AddToFunc enter_handler
@@ -3063,7 +3063,7 @@ your applications request.
      + I Schedule $0 $[w.id] Deschedule -$[w.id]
 
      AddToFunc StartFunction
-     + I Module FvwmAuto FvwmAutohide -menter enter_handler
+     + I Module FvwmAuto 1 -menter enter_handler
 
      AddToFunc enter_handler
      + I autohide FvwmButtons 250 500 S
