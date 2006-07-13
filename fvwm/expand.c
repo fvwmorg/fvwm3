@@ -218,6 +218,10 @@ static signed int expand_args_extended(
 			return -1;
 		}
 		sscanf(input, "%d%n", &lower, &n);
+		if (lower < 0 || lower > 9)
+		{
+			return -1;
+		}
 		input += n;
 		if (*input == 0)
 		{
@@ -237,12 +241,16 @@ static signed int expand_args_extended(
 			else if (*input >= '0' && *input <= '9')
 			{
 				sscanf(input, "%d%n", &upper, &n);
+				if (upper < 0 || upper > 9)
+				{
+					return -1;
+				}
 				input += n;
 				if (*input != 0)
 				{
 					/* trailing characters - not good */
 					return -1;
-				}			
+				}
 				else if (upper < lower)
 				{
 					/* the range is reverse - not good */
@@ -271,16 +279,15 @@ static signed int expand_args_extended(
 	if (is_single_arg)
 	{
 		/* single arguments should be dequoted if quoted already. */
-		argument_string = PeekToken(argument_string, NULL);
-		/* empty argument string returns NULL */
+		GetNextToken(argument_string, &argument_string);
 		if (!argument_string)
 		{
 			return 0;
 		}
-	}	
+	}
 	/* Skip to the end of the requested argument range */
 	if (upper >= 0)
-	{		
+	{
 		args_end = SkipNTokens(argument_string, upper - lower + 1);
 		/* back up to the end of the last token -
 		 * avoid trailing whitespace */
@@ -302,8 +309,13 @@ static signed int expand_args_extended(
 		memcpy(output, argument_string, (size_t)(l));
 		output[l] = 0;
 	}
+	if (is_single_arg)
+	{
+		free(argument_string);
+	}
+
 	return l;
-	
+
 }
 
 static signed int expand_vars_extended(

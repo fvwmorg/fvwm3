@@ -1,6 +1,12 @@
+2006-07-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/expand.c (expand_args_extended):
+	fixed core dump
+	added range check for positional parameters
+
 2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/expand.c (expand_args_extended): 
+	* fvwm/expand.c (expand_args_extended):
 	Fix segfault when called with a tokenless string for single arguments.
 
 2006-07-12  Scott Smedley  <ss@aao.gov.au>
