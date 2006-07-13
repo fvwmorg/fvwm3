@@ -272,6 +272,11 @@ static signed int expand_args_extended(
 	{
 		/* single arguments should be dequoted if quoted already. */
 		argument_string = PeekToken(argument_string, NULL);
+		/* empty argument string returns NULL */
+		if (!argument_string)
+		{
+			return 0;
+		}
 	}	
 	/* Skip to the end of the requested argument range */
 	if (upper >= 0)
@@ -290,7 +295,7 @@ static signed int expand_args_extended(
 	}
 	else
 	{
-		l = strlen(argument_string);		
+		l = strlen(argument_string);
 	}
 	if (output)
 	{

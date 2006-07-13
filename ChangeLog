@@ -1,3 +1,8 @@
+2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/expand.c (expand_args_extended): 
+	Fix segfault when called with a tokenless string for single arguments.
+
 2006-07-12  Scott Smedley  <ss@aao.gov.au>
 	* docs/FAQ:
 	Usage of FvwmAuto module in FAQ 7.17 was incorrect.
