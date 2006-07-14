@@ -1,6 +1,12 @@
 2006-07-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/expand.c (__eae_parse_range):
+	reject everything that does not begin with a digit
+
+	* libs/Parse.c (SkipNTokens):
+	stop skipping tokens at the end of input
+
+	* fvwm/expand.c (__eae_parse_range):
 	bugfixes
 	(expand_vars):
 	reformatted

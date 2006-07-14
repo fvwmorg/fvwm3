@@ -206,6 +206,10 @@ int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
 	{
 		return 0;
 	}
+	if (!isdigit(*input))
+	{
+		return -1;
+	}
 	rc = sscanf(input, "%u-%u%n", lower, upper, &n);
 	if (rc < 2)
 	{
