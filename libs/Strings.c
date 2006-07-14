@@ -235,3 +235,52 @@ char *QuoteString(char *dest, const char *source)
 
 	return dest;
 }
+
+/*
+ * Adds delim around the source and escapes all characters in escape with
+ * the corresponding escaper. The dest string must be preallocated.
+ * delim should be included in escape with a proper escaper.
+ * Returns a pointer to the end of dest.
+ */
+
+char *QuoteEscapeString(char *dest, const char *source, char delim, 
+			const char *escape, const char *escaper)
+{
+	*dest++ = delim;
+	while (*source)
+	{
+		char *esc;
+		esc = strchr(escape, *source);
+		if (esc != NULL)
+		{
+			*dest++ = escaper[(int)(esc-escape)];
+		}
+		*dest++ = *source++;
+	}
+	*dest++ = delim;
+	*dest = '\0';
+
+	return dest;
+}
+
+/*
+ * Calculates the lenght needed by a escaped by QuoteEscapeString
+ * the corresponding escaper.
+ */
+
+unsigned int QuoteEscapeStringLength(const char *source, const char *escape)
+{
+	unsigned int len = 2;
+	
+	while (*source)
+	{
+		if (strchr(escape, *source) != NULL)
+		{
+			len++;
+		}
+		len++;
+		source++;
+	}
+
+	return len;
+}

@@ -57,4 +57,19 @@ int StrHasPrefix( const char* string, const char* prefix );
  **/
 char *QuoteString(char *dest, const char *source);
 
+/**
+ * Adds delim around the source and escapes all characters in escape with
+ * the corresponding escaper. The dest string must be preallocated.
+ * delim should be included in escape with a proper escaper.
+ * Returns a pointer to the end of dest.
+ **/
+char *QuoteEscapeString(char *dest, const char *source, char delim, 
+			const char *escape, const char *escaper);
+
+/**
+ * Calculates the lenght needed by a escaped by QuoteEscapeString
+ * the corresponding escaper.
+ **/
+unsigned int QuoteEscapeStringLength(const char *source, const char *escape);
+
 #endif

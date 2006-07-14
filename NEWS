@@ -26,6 +26,8 @@ Changes in beta release 2.5.17 (not released yet)
      current window size.
    - New command ModuleListenOnly.
    - New "Periodic" option added to Schedule command.
+   - Long parameters now support quotation filters.
+   - Backslash is now an escape character within long parameter names.
 
 * Bug Fixes:
 

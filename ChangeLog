@@ -1,4 +1,23 @@
+2006-07-15  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS: 
+	News blurb for variable filters and backslash-escaping.
+	* fvwm/fvwm.1.in: 
+	documentation of variable filters.
+
 2006-07-14  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/expand.c (check_first_filter, apply_filters) 
+	(expand_args_extended, expand_vars_extended, expand_vars): 
+	implemented variable filters.
+	
+	* fvwm/expand.c (expand_vars):
+	made backslash work as escape character within extended variables.
+
+	* libs/Strings.h (QuoteEscapeString, QuoteEscapeStringLength): 
+	* libs/Strings.c (QuoteEscapeString, QuoteEscapeStringLength): 
+	new functions: QuoteEscapeString and QuoteEscapeStringLength for 
+	generic quoting.
 
 	* fvwm/expand.c (expand_args_extended): 
 	make upper limit inclusive.

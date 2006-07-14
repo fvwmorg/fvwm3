@@ -1650,6 +1650,14 @@ to a string indicated by the parameter name.  Unknown parameters
 are left untouched.  Parameter expansion is performed before
 quoting.  To get a literal '$' use "$$".
 
+The longer variables may contain variables inside the name, which are
+expanded before the outer variable. They also feature a filter system
+to allow specification another quoting style than default. Filters are
+joined to the parameter name with a ':'. Multiple filters can be applied
+after each other. They are applied from left to right and separated by ':'.
+Within the brackets backslash work as an escape character, so to get a 
+literal ':' use "\\:".
+
 In the past, some single letter variables were supported.  It is
 deprecated now, since they cause a number of problems.  You should
 use the longer substitutes instead.
@@ -2043,6 +2051,62 @@ If the string within the braces is neither of the above, fvwm
 tries to find an environment variable with this name and replaces
 its value if one is found (e.g. "$[PAGER]" could be replaced by
 "more").  Otherwise the string is left as is.
+.in -.3i
+.in -.5i
+
+The filters known by fvwm are:
+
+.in +.5i
+quote
+.in +.3i
+Enclose the string in single quote characters and escape the string with
+backslash within. This is the default for many string-valued parameters.
+.in -.3i
+.in -.5i
+
+.in +.5i
+dquote
+.in +.3i
+Enclose the string in double quote characters and escape the string with
+backslash within.
+.in -.3i
+.in -.5i
+
+.in +.5i
+noquote
+.in +.3i
+No quoting is performed. This is the default for positional parameters except 
+$*.
+.in -.3i
+.in -.5i
+
+.in +.5i
+glob
+.in +.3i
+Quote and escape the string with single quotes and escape any '*' as "**".
+.in -.3i
+.in -.5i
+
+.in +.5i
+menu
+.in +.3i
+Quote and escape the string with single quotes and escape any '%' as "%%".
+.in -.3i
+.in -.5i
+
+.in +.5i
+single
+.in +.3i
+Only as first filter for positional parameters. This instructs the filtering
+to be done on the entire range of parameters as one single token.
+.in -.3i
+.in -.5i
+
+.in +.5i
+multi
+.in +.3i
+Only as first filter for positional parameters. This instructs the filtering
+to be done on each token in a range separately.
 .in -.3i
 .in -.5i
 
