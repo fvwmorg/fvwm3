@@ -4,6 +4,8 @@
 	bugfixes
 	(expand_vars):
 	reformatted
+	(__eae_parse_range):
+	fixed parsing of $[n-]
 
 2006-07-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 

@@ -209,24 +209,22 @@ int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
 	rc = sscanf(input, "%u-%u%n", lower, upper, &n);
 	if (rc < 2)
 	{
-		rc = sscanf(input, "%u-%n", lower, &n);
-	}
-	if (rc < 1)
-	{
-		rc = sscanf(input, "-%u%n", upper, &n);
-	}
-	if (rc < 1)
-	{
 		rc = sscanf(input, "%u%n", lower, &n);
-		if (rc >= 1)
+		if (rc < 1)
 		{
+			/* not a positional argument */
+			return -1;
+		}
+		if (input[n] == '-')
+		{
+			/* $[n- */
+			n++;
+		}
+		else
+		{
+			/* $[n */
 			*upper = *lower;
 		}
-	}
-	if (rc < 1)
-	{
-		/* not a positional argument */
-		return -1;
 	}
 	input += n;
 	if (*input != 0)
