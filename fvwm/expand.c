@@ -271,7 +271,7 @@ static signed int expand_args_extended(
 	}
 	/* TODO: optimise handling of $[0] to $[9] which have already been
 	 * parsed */
-	for (i = lower, len = 0; i < upper; i++)
+	for (i = lower, len = 0; i <= upper; i++)
 	{
 		char *token;
 		size_t tlen;
