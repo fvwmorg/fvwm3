@@ -506,11 +506,13 @@ static void __execute_function(
 		func_rc = cond_rc;
 	}
 
-	function = PeekToken(taction, NULL);
+	GetNextToken(taction, &function);
 	if (function)
 	{
+		char *tmp = function;
 		function = expand_vars(
 			function, arguments, False, False, func_rc, exc);
+		free(tmp);
 	}
 	if (function && function[0] != '*')
 	{

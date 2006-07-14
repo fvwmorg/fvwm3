@@ -1,5 +1,8 @@
 2006-07-14  Viktor Griph  <griph@dd.chalmers.se>
 
+	* fvwm/functions.c (__execute_function): 
+	Changed PeekToken to GetNextToken before expand_vars call.
+
 	* fvwm/fvwm.1.in: 
 	updated documentation regarding quoting in expand_args_extended
 
