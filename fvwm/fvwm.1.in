@@ -1731,8 +1731,7 @@ and ending with parameter
 If all the corresponding parameters are
 undefined, the "$[...]" is deleted from the command line. If only some of the
 parameters are defined, all defined parameters are expanded, and the remaining
-silently ignored. Any quoting used on the function call line will remain in
-the expanded arguments.
+silently ignored. All parameters will be expanded unquoted.
 .in -.3i
 .in -.5i
 
@@ -1743,8 +1742,7 @@ All the positional parameters given to a complex function, starting with
 parameter
 .IR n .
 If all the corresponding parameters are undefined, the "$[...]" is
-deleted from the command line. Any quoting used on the function call
-line will remain in the expanded arguments.
+deleted from the command line. All parameters will be expanded unquoted.
 .in -.3i
 .in -.5i
 
