@@ -108,34 +108,54 @@ AddToFunc SwallowNextStatus
 DestroyFunc AddToTabber
 AddToFunc AddToTabber I Current Function Tabize $0
 
-# TabbersMenu - best invoked from the menu that pops up when you click
-# on the left button in the titlebar of a window. It lists all tabbers
-# currently running on the system & automatically adds the window to the
-# tabber the user selects.
+# CreateTabberWithWin will put the focused window into a new tabber,
+# creating it at the same position as the window.
+DestroyFunc CreateTabberWithWin
+AddToFunc CreateTabberWithWin
++ I Current (!FvwmTabs) SetEnv CTWW_ID $[w.id]
++ I TestRc (NoMatch) Break
++ I PipeRead 'echo SetEnv CTWW_COUNT $(( $CTWW_COUNT+1 ))'
++ I NewTabber --geometry=+$[w.x]+$[w.y] .$[CTWW_COUNT]
++ I Wait "FvwmTabs*"
++ I WindowId $[CTWW_ID] Tabize .$[CTWW_COUNT]
 
 DestroyFunc MakeTabbersMenu
 AddToFunc MakeTabbersMenu
 + I DestroyMenu recreate TabbersMenu
 + I AddToMenu TabbersMenu "FvwmTabs tab-managers" Title
++ I AddToMenu TabbersMenu "Create tab-manager with this window" Function CreateTabberWithWin
 + I All ("FvwmTabs [*]") AddToMenu TabbersMenu "$$$$[w.name]" Function AddToTabber $$$$[w.id]
 
+# TabbersMenu - best invoked from the menu that pops up when you click
+# on the left button in the titlebar of a window. It lists all tabbers
+# currently running on the system & automatically adds the window to the
+# tabber the user selects.
 DestroyMenu TabbersMenu
 AddToMenu TabbersMenu
 + DynamicPopupAction Function MakeTabbersMenu
 
+# === Once ===
 
-
-# Make sure "SaveState" is only added to ExitFunction once.
+# Once - only execute an action if it has not been executed already.
 # This looks complicated mostly because environment variable
 # values are preserved between restarts.
-Test (!EnvIsSet FvwmTabs_AddedSaveStateHook) AddToFunc ExitFunction I Test (ToRestart) Function SaveState
-TestRc (Match) AddToFunc ExitFunction I Test (ToRestart) UnsetEnv FvwmTabs_AddedSaveStateHook
-SetEnv FvwmTabs_AddedSaveStateHook
+# Requires FVWM >= 2.5.17 or CVS >= 16-July-2006
+DestroyFunc Once
+AddToFunc Once
++ I Test (EnvIsSet $[0]) Break
++ I SetEnv $[0]
++ I AddToFunc Once_ClearEnvVars I UnsetEnv $[0]
++ I $[1-]
+
+Once ONCE_INIT AddToFunc ExitFunction I Test (ToRestart) Once_ClearEnvVars
+
+# === === ===
+
+# Make sure "SaveState" is only added to ExitFunction once.
+Once FvwmTabs_AddSaveStateHook AddToFunc ExitFunction I Test (ToRestart) Function SaveState
 
 # FvwmTabs-DefaultSetup has some useful key-bindings for FvwmTabs.
 # Source this file unless the $FvwmTabs_NoDefaultSetup environment
 # variable is set, in which case the user probably wants to define their
 # own bindings.
-Test (!EnvIsSet FvwmTabs_NoDefaultSetup) Read FvwmTabs-DefaultSetup
-TestRc (Match) AddToFunc ExitFunction I Test (ToRestart) UnsetEnv FvwmTabs_NoDefaultSetup
-SetEnv FvwmTabs_NoDefaultSetup
+Once FvwmTabs_NoDefaultSetup Read FvwmTabs-DefaultSetup

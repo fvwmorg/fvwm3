@@ -525,14 +525,6 @@ sub createNewTabber
 	$bMenu->Tk::bind('<ButtonRelease-1>', [\&showMenu, $tId]);
 	$bMenu->Tk::bind('<ButtonRelease-2>', [\&tabInfo, $tId]);
 
-
-
-	# ===
-	$tabFrame->waitVisibility();
-	# $tabFrame->packPropagate(0);
-	# $tabFrame->configure(-height => 28, -width => $af->reqwidth());
-	$tabFrame->configure(-width => $af->reqwidth());
-
 	$tabWin{$tId}{menu} = $tl->Menu(-tearoff => 0,
 									-font => $pConfig->{menuFont});
 
@@ -542,11 +534,18 @@ sub createNewTabber
 	$tabWin{$tId}{winFrame} = $winFrame;
 	$tabWin{$tId}{currentTab} = undef;
 	$tabWin{$tId}{lastId} = undef;
+	$tabWin{$tId}{balloonMsg} = '?';
 	$tabWin{$tId}{parent} = hex($winFrame->id);
+
+	# ===
+	$tabFrame->waitVisibility();
+	# $tabFrame->packPropagate(0);
+	# $tabFrame->configure(-height => 28, -width => $af->reqwidth());
+	$tabFrame->configure(-width => $af->reqwidth());
+
 	$winFrame->waitVisibility();
 	my ($root, $parent, @kids) = $xServer->QueryTree($tabWin{$tId}{toplevelId});
 	$tabWin{$tId}{selfId} = $parent;
-	$tabWin{$tId}{balloonMsg} = '?';
 
 	$tl->protocol('WM_DELETE_WINDOW', [\&closeTabber, $tId]);
 	$tl->protocol('WM_TAKE_FOCUS', [\&takeFocus, $tId]);
@@ -740,7 +739,7 @@ $fvwm->addHandler(M_STRING, sub {
 	{
 		# fn <fnName> <winId> <optArgs>
 		my $tId = winIdToTId(hex($2));
-		print(STDERR "focus not in tabber. ($2)\n"), return if (!defined $tId);
+		print(STDERR $self->name() . ": focus not in tabber. ($2)\n"), return if (!defined $tId);
 		no strict;
 		&$1($tId, split(/\s+/, $3));
 	}
@@ -984,7 +983,7 @@ sub eventHandler
 			$tId = $_, last if (getWrapperWinId($_) == $event{event});
 		}
 
-		print(STDERR "BUG: EnterNotify\n"), return if (!defined $tId);
+		return if (!defined $tId);
 		$tabWin{$tId}{focusTimestamp} = $event{time};
 		$fvwm->debug("focusTimestamp set to $tabWin{$tId}{focusTimestamp}");
 		takeFocus($tId);
@@ -1057,7 +1056,7 @@ sub createImage ($)
 		}
 		return '' if (!$bFound);
 	}
-	print(STDERR "Creating icon from $filename\n");
+	print(STDERR $fvwm->name() . ": Creating icon from $filename\n");
 	my $img = eval { $TOP->Photo(-file => $filename); };
 	return '' if (!defined $img);
 	$global{imageCache}{$orig} = $img;
@@ -1122,7 +1121,7 @@ sub addTab ($$)
 {
 	my ($tId, $winId) = @_;
 
-	if ($winId == $tabWin{$tId}{selfId})
+	if (defined $tabWin{$tId}{selfId} && $winId == $tabWin{$tId}{selfId})
 	{
 		# can't make tabber a child of itself
 		$fvwm->send("Beep");

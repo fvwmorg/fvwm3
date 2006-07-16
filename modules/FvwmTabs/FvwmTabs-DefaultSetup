@@ -13,7 +13,7 @@
 # Make sure you have a line like this in your .fvwm2rc file (your menu
 # might not be called 'WindowOps'):
 #	Mouse 0 1 A Function PopUp WindowOps
-Test (Start) AddToMenu WindowOps "&Tabize" Popup TabbersMenu $[PopupStyle]
+Once FvwmTabs_AddTabizeMenuItem AddToMenu WindowOps "&Tabize" Popup TabbersMenu Item 85 c
 
 # Key bindings for creating new FvwmTabbers, adding windows
 # to tabbers, switching b/w tabs, etc.
@@ -40,6 +40,7 @@ Key (FvwmTabs*) R		A	SCM	Function ReleaseAllTabs
 Key T		A	CM	Function NewTabber
 Key X		A	CM	Function SwallowNewIfFocused rxvt
 Key X		A	SCM	Function SwallowNew rxvt
+Key Z		A	CM	Function CreateTabberWithWin
 # Move tab position left.
 Key (FvwmTabs*) Left	A	CM	Function SwapLeft
 # Move tab position right.

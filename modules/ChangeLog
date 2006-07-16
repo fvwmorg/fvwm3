@@ -1,3 +1,12 @@
+2006-07-16  Scott Smedley  <ss@aao.gov.au>
+
+	* FvwmTabs/FvwmTabs.in:
+	* FvwmTabs/ConfigFvwmTabs:
+	* FvwmTabs/FvwmTabs-DefaultSetup:
+	Bugfix: wasn't adding "Tabize" menu item to menu.
+	Created "CreateTabberWithWin" function to put focused window into
+	a new tabber at the same position as the window.
+
 2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmCommand/fifos.c (fifos_get_default_name): 
