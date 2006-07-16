@@ -158,4 +158,4 @@ Once FvwmTabs_AddSaveStateHook AddToFunc ExitFunction I Test (ToRestart) Functio
 # Source this file unless the $FvwmTabs_NoDefaultSetup environment
 # variable is set, in which case the user probably wants to define their
 # own bindings.
-Once FvwmTabs_NoDefaultSetup Read FvwmTabs-DefaultSetup
+Test (!EnvIsSet FvwmTabs_NoDefaultSetup) Read FvwmTabs-DefaultSetup
