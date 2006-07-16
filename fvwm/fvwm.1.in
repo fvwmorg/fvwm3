@@ -1,4 +1,4 @@
-.\"                                                                  -*-nroff-*-
+.\"                                                                 -*-nroff-*-
 .\"
 .\"
 .\"
@@ -1650,17 +1650,18 @@ to a string indicated by the parameter name.  Unknown parameters
 are left untouched.  Parameter expansion is performed before
 quoting.  To get a literal '$' use "$$".
 
-The longer variables may contain variables inside the name, which are
-expanded before the outer variable. They also feature a filter system
-to allow specification another quoting style than default. Filters are
-joined to the parameter name with a ':'. Multiple filters can be applied
-after each other. They are applied from left to right and separated by ':'.
-Within the brackets backslash work as an escape character, so to get a 
-literal ':' use "\\:".
+The longer variables may contain variables inside the name, which
+are expanded before the outer variable. They also feature a filter
+system to allow specification another quoting style than default.
+Filters are joined to the parameter name with a ':'.  Multiple
+filters can be applied after each other. They are applied from
+left to right and separated by ':'.  Within the brackets the
+backslash can be used as an escape character, so to get a literal
+':' use "\\:".
 
-In the past, some single letter variables were supported.  It is
-deprecated now, since they cause a number of problems.  You should
-use the longer substitutes instead.
+In earlier versions of fvwm, some single letter variables were
+supported.  It is deprecated now, since they cause a number of
+problems.  You should use the longer substitutes instead.
 
 Example:
 
@@ -1732,13 +1733,14 @@ from the command line. The parameter will be expanded unquoted.
 .in +.5i
 .RI $[ n - m ]
 .in +.3i
-The positional parameters given to a complex function, starting with parameter
+The positional parameters given to a complex function, starting
+with parameter
 .I n
 and ending with parameter
 .IR m .
-If all the corresponding parameters are
-undefined, the "$[...]" is deleted from the command line. If only some of the
-parameters are defined, all defined parameters are expanded, and the remaining
+If all the corresponding parameters are undefined, the "$[...]" is
+deleted from the command line. If only some of the parameters are
+defined, all defined parameters are expanded, and the remaining
 silently ignored. All parameters will be expanded unquoted.
 .in -.3i
 .in -.5i
@@ -1746,19 +1748,20 @@ silently ignored. All parameters will be expanded unquoted.
 .in +.5i
 .RI $[ n -]
 .in +.3i
-All the positional parameters given to a complex function, starting with
-parameter
+All the positional parameters given to a complex function,
+starting with parameter
 .IR n .
 If all the corresponding parameters are undefined, the "$[...]" is
-deleted from the command line. All parameters will be expanded unquoted.
+deleted from the command line. All parameters will be expanded
+unquoted.
 .in -.3i
 .in -.5i
 
 .in +.5i
 $[*]
 .in +.3i
-All the positional parameters given to a complex function. This is equivalent
-of $[0-].
+All the positional parameters given to a complex function. This is
+equivalent of $[0-].
 .in -.3i
 .in -.5i
 
@@ -2035,10 +2038,10 @@ $[gt.str]
 .in +.3i
 return the translation of
 .I str
-by looking in the current locale catalog(s). If no translation is
+by looking in the current locale catalogs. If no translation is
 found
 .I str
-is returned as is. See the
+is returned as is.  See the
 .B LocalePath
 command.
 .in -.3i
@@ -2059,46 +2062,50 @@ The filters known by fvwm are:
 .in +.5i
 quote
 .in +.3i
-Enclose the string in single quote characters and escape the string with
-backslash within. This is the default for many string-valued parameters.
+Enclose the string in single quote characters and escape the
+string with backslash within.  This is the default for many
+string-valued parameters.
 .in -.3i
 .in -.5i
 
 .in +.5i
 dquote
 .in +.3i
-Enclose the string in double quote characters and escape the string with
-backslash within.
+Enclose the string in double quote characters and escape the
+string with backslash within.
 .in -.3i
 .in -.5i
 
 .in +.5i
 noquote
 .in +.3i
-No quoting is performed. This is the default for positional parameters except 
-$*.
+No quoting is performed. This is the default for positional
+parameters except $*.
 .in -.3i
 .in -.5i
 
 .in +.5i
 glob
 .in +.3i
-Quote and escape the string with single quotes and escape any '*' as "**".
+Quote and escape the string with single quotes and escape any '*'
+as "**".
 .in -.3i
 .in -.5i
 
 .in +.5i
 menu
 .in +.3i
-Quote and escape the string with single quotes and escape any '%' as "%%".
+Quote and escape the string with single quotes and escape any '%'
+as "%%".
 .in -.3i
 .in -.5i
 
 .in +.5i
 single
 .in +.3i
-Only as first filter for positional parameters. This instructs the filtering
-to be done on the entire range of parameters as one single token.
+Only as first filter for positional parameters. This instructs the
+filtering to be done on the entire range of parameters as one
+single token.
 .in -.3i
 .in -.5i
 
@@ -2637,10 +2644,11 @@ Omits the "Calculator" label, but leaves the picture.
 
 If the menu-label contains a sub-string which is set off by
 percent signs, then the text between the percent signs is expected
-to be the name of image file (a so called mini
-icon to insert to the left of the menu label.  A second mini icon
-that is drawn at the right side of the menu can be given in the
-same way.  To get a literal '%', insert "%%". For example
+to be the name of image file (a so called mini icon to insert to
+the left of the menu label.  A second mini icon that is drawn at
+the right side of the menu can be given in the same way.  To get a
+literal '%', insert "%%". For example
+
 .EX
  + Calculator%xcalc.xpm% Exec exec xcalc
 .EE
@@ -2651,6 +2659,7 @@ calculator to the left.  The following:
 .EE
 Omits the "Calculator" label, but leaves the picture.  The
 pictures used with this feature should be small (perhaps 16x16).
+
 If the menu-name (not the label) contains a sub-string which is
 set off by at signs ('@'), then the text between them is expected
 to be the name of an xpm or bitmap file to draw along the left
@@ -4719,7 +4728,7 @@ command also supports the optional keyword
 which indicates that the
 .I command
 should be executed every
-.IR delay_ms .  
+.IR delay_ms .
 Example:
 .EX
 Schedule Periodic 10000 PipeRead '[ -N "$MAIL" ] && echo \\
