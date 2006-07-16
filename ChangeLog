@@ -1,3 +1,13 @@
+2006-07-16  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/fvwm.1.in (COMMAND EXPANSION):
+	removed documentation of filters.
+
+	* NEWS: 
+	* fvwm/expand.c (check_first_filter, apply_filters) 
+	(expand_args_extended, expand_vars_extended, expand_vars): 
+	removed variable filter implementation and backslash-escaping.
+
 2006-07-15  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS: 

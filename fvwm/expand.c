@@ -191,116 +191,9 @@ enum
 	VAR_W_LAYER
 } extended_vars;
 
-static char *filter_functions[] = {
-	"quote",
-	"dquote",
-	"noquote",
-	"glob",
-	"menu",
-	"single",
-	"multi",
-	NULL
-};
-
-typedef enum
-{
-	FILTER_NONE = -1,
-	FILTER_QUOTE = 0,
-	FILTER_DQUOTE = 1,
-	FILTER_NOQUOTE = 2,
-	FILTER_GLOB = 3,
-	FILTER_MENU = 4,
-	FILTER_SINGLE = 5,
-	FILTER_MULTI = 6
-} var_filter_t;
-
-
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
-
-var_filter_t check_first_filter(char *filters, var_filter_t allowed[], 
-				char **rest)
-{
-	char *filter;
-	var_filter_t  i;
-	*rest = DoPeekToken(filters, &filter, NULL, ":", NULL);
-	i = (var_filter_t)GetTokenIndex(filter, filter_functions, 0, NULL);
-	while (*allowed != FILTER_NONE)
-	{
-		if (*allowed == i)
-		{
-			return i;
-		}
-		allowed++;
-	}
-	*rest = filters;
-	return FILTER_NONE;
-}
-
-static signed int apply_filters(const char *input, char *filters, char *output)
-{
-	char *string;
-	char *filtered_string = NULL;
-	unsigned int len;
-	
-	string = safestrdup(input);
-	len = strlen(string);
-
-	while (filters && *filters)
-	{		
-		/* Handle filters */
-		char *filter;
-		filters = DoPeekToken(filters, &filter, NULL, ":", NULL);
-		switch (GetTokenIndex(filter, filter_functions, 0, NULL))
-		{
-		case FILTER_QUOTE:
-			len = QuoteEscapeStringLength(string, "'\\");
-			filtered_string = (char *)safemalloc(len+1);
-			QuoteEscapeString(filtered_string, string, '\'', "'\\",
-					  "\\\\");
-			break;
-		case FILTER_DQUOTE:
-			len = QuoteEscapeStringLength(string, "\"\\");
-			filtered_string = (char *)safemalloc(len+1);
-			QuoteEscapeString(filtered_string, string, '"', "\"\\",
-					  "\\\\");
-			break;
-		case FILTER_NOQUOTE:			
-			break;
-		case FILTER_GLOB:
-			len = QuoteEscapeStringLength(string, "\\'*");
-			filtered_string = (char *)safemalloc(len+1);
-			QuoteEscapeString(filtered_string,string,'\'',"\'\\*",
-					  "\\\\*");
-			break;
-		case FILTER_MENU:
-			len = QuoteEscapeStringLength(string, "\\'%");
-			filtered_string = (char *)safemalloc(len+1);
-			QuoteEscapeString(filtered_string,string,'\'',"\'\\%",
-					  "\\\\%");
-			break;
-		case FILTER_SINGLE:
-		case FILTER_MULTI:
-		default:
-			free(string);
-			return -1;
-		}
-		if (filtered_string)
-		{
-			free(string);				
-			string = filtered_string;
-			filtered_string = NULL;
-		}
-	}
-	if (output)
-	{
-		memcpy(output, string, len);
-	}
-	free(string);
-
-	return len;
-}
 
 int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
 {
@@ -353,39 +246,19 @@ int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
 }
 
 static signed int expand_args_extended(
-	char *input, char *argument_string, char *output, char *filters)
+	char *input, char *argument_string, char *output)
 {
 	int rc;
 	unsigned int lower;
 	unsigned int upper;
 	unsigned int i;
 	size_t len;
-	Bool do_filter_each_arg = False;
-	var_filter_t prefilters[] = {FILTER_SINGLE, FILTER_MULTI, FILTER_NONE};
 
 	rc = __eae_parse_range(input, &lower, &upper);
 	if (rc == -1)
 	{
 		return -1;
 	}
-	/* Check for FILTER_SINGLE/FILTER_MULTI */
-	if (filters)
-	{
-		
-		switch (check_first_filter(filters, prefilters, &filters))
-		{
-		case FILTER_SINGLE:
-			do_filter_each_arg = False;
-			break;
-		case FILTER_MULTI:
-			do_filter_each_arg = True;
-			break;
-		default:
-			break;
-		}
-	}
-		
-
 	/* Skip to the start of the requested argument range */
 	if (lower > 0)
 	{
@@ -418,53 +291,21 @@ static signed int expand_args_extended(
 			}
 			len++;
 		}
-		if (do_filter_each_arg)
+		tlen = strlen(token);
+		if (output != NULL && tlen > 0)
 		{
-			tlen = apply_filters(token,filters,output);
-			if (tlen < 0)
-			{
-				return -1;
-			}
-			if (output != NULL)
-			{
-				output += tlen;
-			}
-		}
-		else
-		{
-			tlen = strlen(token);
-			if (output != NULL && tlen > 0)
-			{
-				memcpy(output, token, tlen);
-				output += tlen;
-			}
-			else if (output == NULL && tlen > 0)
-			{
-				/* The length is less than the one with filters
-				 * applied to each token. Need a beter way to 
-				 * find the length of the filtered total 
-				 * string.
-				 */
-				tlen = apply_filters(token,filters,NULL);
-				if (tlen < 0)
-				{
-					return -1;
-				}
-			}
+			memcpy(output, token, tlen);
+			output += tlen;
 		}
 		len += tlen;
 	}
-	if (output != NULL && filters && !do_filter_each_arg)
-	{
-		*output = 0;
-		len = apply_filters(output-len,filters,output-len);
-	}
+
 	return (int)len;
 }
 
 static signed int expand_vars_extended(
 	char *var_name, char *output, cond_rc_t *cond_rc,
-	const exec_context_t *exc, char *filters)
+	const exec_context_t *exc)
 {
 	char *rest;
 	char dummy[64] = "\0";
@@ -961,22 +802,10 @@ static signed int expand_vars_extended(
 			/* Replace it with unexpanded variable. This is needed
 			 * since var_name might have been expanded */
 			l = strlen(var_name) + 3;
-			if (filters)
-			{
-				l+=strlen(filters)+1;
-			}
 			if (output)
 			{
 				strcpy(output, "$[");
 				strcpy(output + 2, var_name);
-				if (filters)
-				{
-					int fl;
-					fl = strlen(filters);
-					l += fl + 1;
-					output[l - fl - 2] = ':';
-					strcpy(output + l - fl - 1, filters);
-				}
 				output[l - 1] = ']';
 				output[l] = 0;
 			}
@@ -1009,11 +838,7 @@ GOT_STRING:
 	{
 		len = strlen(string);
 	}
-	if (filters)
-	{
-		len = apply_filters(string,filters,output);
-	}
-	else if (should_quote)
+	if (should_quote)
 	{
 		quoted_string = (char *)safemalloc(len * 2 + 3);
 		len = QuoteString(quoted_string, string) - quoted_string;
@@ -1044,7 +869,6 @@ char *expand_vars(
 	const char *string = NULL;
 	Bool is_string = False;
 	FvwmWindow *fw = exc->w.fw;
-	char *filter;
 
 	l = strlen(input);
 	l2 = l;
@@ -1073,7 +897,6 @@ char *expand_vars(
 				var = &input[m];
 				xlevel = 1;
 				name_has_dollar = False;
-				filter = NULL;
 				while (m < l && xlevel && input[m])
 				{
 					/* handle nested variables */
@@ -1088,17 +911,6 @@ char *expand_vars(
 					else if (input[m] == '$')
 					{
 						name_has_dollar = True;
-					}
-					else if (input[m] == '\\')
-					{
-						/* skip next character */
-						m++;
-					}
-					else if (xlevel == 1 && 
-						 input[m] == ':' &&
-						 filter == NULL)
-					{
-						filter = &input[m];
 					}
 					if (xlevel)
 					{
@@ -1122,19 +934,14 @@ char *expand_vars(
 							var, arguments, addto,
 							ismod, cond_rc, exc);
 					}
-					if (filter != NULL)
-					{
-						*filter = 0;
-						filter++;
-					}
 					xlen = expand_args_extended(
 						var, arguments ? arguments[0] :
-						NULL, NULL, filter);
+						NULL, NULL);
 					if (xlen < 0)
 					{
 						xlen = expand_vars_extended(
 							var, NULL, cond_rc,
-							exc, filter);
+							exc);
 					}
 					if (name_has_dollar)
 					{
@@ -1145,10 +952,6 @@ char *expand_vars(
 						l2 += xlen - (k + 2);
 					}
 					i += k + 2;
-					if (filter != NULL)
-					{
-						*(filter-1) = ':';
-					}
 					input[m] = ']';
 				}
 				break;
@@ -1262,11 +1065,10 @@ char *expand_vars(
 					out[j++] = input[i];
 					break;
 				}
-				var = &input[i + 2];
 				m = i + 2;
+				var = &input[m];
 				xlevel = 1;
 				name_has_dollar = False;
-				filter = NULL;
 				while (m < l && xlevel && input[m])
 				{
 					/* handle nested variables */
@@ -1281,17 +1083,6 @@ char *expand_vars(
 					else if (input[m] == '$')
 					{
 						name_has_dollar = True;
-					}
-					else if (input[m] == '\\')
-					{
-						/* skip next character */
-						m++;
-					}
-					else if (xlevel == 1 && 
-						 input[m] == ':' &&
-						 filter == NULL)
-					{
-						filter = &input[m];
 					}
 					if (xlevel)
 					{
@@ -1309,30 +1100,21 @@ char *expand_vars(
 							var, arguments,	addto,
 							ismod, cond_rc,	exc);
 					}
-					if (filter != NULL)
-					{
-						*filter = 0;
-						filter++;
-					}
 					xlen = expand_args_extended(
 						var, arguments ?
 						arguments[0] : NULL,
-						&out[j], filter);
+						&out[j]);
 					if (xlen < 0)
 					{
 						xlen = expand_vars_extended(
 							var, &out[j], cond_rc,
-							exc, filter);
+							exc);
 					}
 					if (name_has_dollar)
 					{
 						free(var);
 					}
 					input[m] = ']';
-					if (filter != NULL)
-					{
-						*(filter - 1) = ':';
-					}
 					if (xlen >= 0)
 					{
 						j += xlen;
