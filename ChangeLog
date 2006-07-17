@@ -1,3 +1,8 @@
+2006-07-17  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* fvwm/menustyle.c (menustyle_copy):
+	Now 'TitleColorset' also copied by 'CopyMenuStyle' command.
+
 2006-07-17  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/fvwm.1.in (NoTitle, StippledTitleOff, NoHandles styles):
@@ -10,39 +15,39 @@
 	* fvwm/fvwm.1.in (COMMAND EXPANSION):
 	removed documentation of filters.
 
-	* NEWS: 
-	* fvwm/expand.c (check_first_filter, apply_filters) 
-	(expand_args_extended, expand_vars_extended, expand_vars): 
+	* NEWS:
+	* fvwm/expand.c (check_first_filter, apply_filters)
+	(expand_args_extended, expand_vars_extended, expand_vars):
 	removed variable filter implementation and backslash-escaping.
 
 2006-07-15  Viktor Griph  <griph@dd.chalmers.se>
 
-	* NEWS: 
+	* NEWS:
 	News blurb for variable filters and backslash-escaping.
-	* fvwm/fvwm.1.in: 
+	* fvwm/fvwm.1.in:
 	documentation of variable filters.
 
 2006-07-14  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/expand.c (check_first_filter, apply_filters) 
-	(expand_args_extended, expand_vars_extended, expand_vars): 
+	* fvwm/expand.c (check_first_filter, apply_filters)
+	(expand_args_extended, expand_vars_extended, expand_vars):
 	implemented variable filters.
-	
+
 	* fvwm/expand.c (expand_vars):
 	made backslash work as escape character within extended variables.
 
-	* libs/Strings.h (QuoteEscapeString, QuoteEscapeStringLength): 
-	* libs/Strings.c (QuoteEscapeString, QuoteEscapeStringLength): 
-	new functions: QuoteEscapeString and QuoteEscapeStringLength for 
+	* libs/Strings.h (QuoteEscapeString, QuoteEscapeStringLength):
+	* libs/Strings.c (QuoteEscapeString, QuoteEscapeStringLength):
+	new functions: QuoteEscapeString and QuoteEscapeStringLength for
 	generic quoting.
 
-	* fvwm/expand.c (expand_args_extended): 
+	* fvwm/expand.c (expand_args_extended):
 	make upper limit inclusive.
 
-	* fvwm/functions.c (__execute_function): 
+	* fvwm/functions.c (__execute_function):
 	Changed PeekToken to GetNextToken before expand_vars call.
 
-	* fvwm/fvwm.1.in: 
+	* fvwm/fvwm.1.in:
 	updated documentation regarding quoting in expand_args_extended
 
 2006-07-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>

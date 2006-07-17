@@ -1766,6 +1766,9 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	/* MenuColorset */
 	ST_HAS_GREYED_CSET(destms) = ST_HAS_GREYED_CSET(origms);
 	ST_CSET_GREYED(destms) = ST_CSET_GREYED(origms);
+	/* TitleColorset */
+	ST_HAS_TITLE_CSET(destms) = ST_HAS_TITLE_CSET(origms);
+	ST_CSET_TITLE(destms) = ST_CSET_TITLE(origms);
 	/* SelectOnRelease */
 	ST_SELECT_ON_RELEASE_KEY(destms) = ST_SELECT_ON_RELEASE_KEY(origms);
 	/* PopdownImmediately */
