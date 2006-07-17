@@ -2363,11 +2363,11 @@ To remove borders and buttons from a tear-off menu but keep the
 menu title, you can use
 
 .EX
-Style fvwm_menu NoButton 0, NoButton 1
-Style fvwm_menu NoButton 2, NoButton 3
-Style fvwm_menu NoButton 4, NoButton 5
-Style fvwm_menu NoButton 6, NoButton 7
-Style fvwm_menu NoButton 8, NoButton 9
+Style fvwm_menu !Button 0, !Button 1
+Style fvwm_menu !Button 2, !Button 3
+Style fvwm_menu !Button 4, !Button 5
+Style fvwm_menu !Button 6, !Button 7
+Style fvwm_menu !Button 8, !Button 9
 Style fvwm_menu Title, HandleWidth 0
 .EE
 
@@ -6675,13 +6675,13 @@ slashes ('/').  The last style in these groups is the default.
 .IR CaptureHonorsStartsOnPage " / " CaptureIgnoresStartsOnPage ,
 .IR RecaptureHonorsStartsOnPage " / " RecaptureIgnoresStartsOnPage ,
 .IR StartsOnPageIncludesTransients " / " StartsOnPageIgnoresTransients ,
-.IR IconTitle " / " NoIconTitle ,
+.IR IconTitle " / " !IconTitle ,
 .IR MwmButtons " / " FvwmButtons ,
 .IR MwmBorder " / " FvwmBorder ,
 .IR MwmDecor " / " NoDecorHint ,
 .IR MwmFunctions " / " NoFuncHint ,
 .IR HintOverride " / " NoOverride ,
-.IR NoButton " / " Button ,
+.IR !Button " / " Button ,
 .IR ResizeHintOverride " / " NoResizeOverride ,
 .IR OLDecor " / " NoOLDecor ,
 .IR GNOMEUseHints " / " GNOMEIgnoreHints ,
@@ -7020,7 +7020,7 @@ default all windows have a title-bar.
 .I NoTitle
 is equivalent to
 .I !Title
-, but is deprecated.
+but is deprecated.
 
 Windows with the
 .IR TitleAtBottom ", " TitleAtLeft " or " TitleAtRight
@@ -7073,7 +7073,7 @@ reverts back to normal titles.
 .I StippledTitleOff
 is equivalent to
 .I !StippledTitle
-, but is deprecated.
+but is deprecated.
 
 .I Color
 takes two arguments.  The first is the window-label text color and
@@ -7117,10 +7117,14 @@ style option works similarly to
 .IR BorderColorset
 but is used when the window has the focus.
 
-.I NoIconTitle
+.I !IconTitle
 disables displaying icon labels while the opposite style
 .I IconTitle
 enables icon labels (default behaviour).
+.I NoIconTitle
+is equivalent to
+.I !IconTitle
+but is deprecated.
 
 .IR IconTitleColorset
 takes the colorset number as its sole argument and overrides the
@@ -7200,9 +7204,13 @@ styles but for the icon titles.
 .\" +++++++++++++++ styles affecting title buttons
 .TP
 .B Title buttons
-.IR Button " and " NoButton
+.IR Button " and " !Button
 take a numeric argument which is the number of the title-bar
 button which is to be included/omitted.
+.IR NoButton
+is equivalent to
+.IR !Button
+but is deprecated.
 
 .I MwmButtons
 makes the
@@ -7243,9 +7251,9 @@ is specified, the width from the
 .I HandleWidth
 style is used.
 .I NoHandles
-works the same as
+is equivalent to
 .I !Handles
-, but is deprecated.
+but is deprecated.
 
 .I HandleWidth
 takes a numeric argument which is the width of the border to place
