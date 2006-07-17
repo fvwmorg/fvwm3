@@ -1573,6 +1573,10 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		{
 			w = FW_W_ICON_TITLE(fw);
 		}
+		if (w == None && (mode == MOVE_PAGE || mode == MOVE_SCREEN))
+		{
+			w = FW_W_FRAME(fw);
+		}
 	}
 	if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, &width, &height,
 			  &JunkBW, &JunkDepth))

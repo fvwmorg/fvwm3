@@ -1,3 +1,9 @@
+2006-07-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (__move_window):
+	allow moving a window without an icon while it's iconified based on the
+	frame geometry
+
 2006-07-17  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* fvwm/menustyle.c (menustyle_copy):
