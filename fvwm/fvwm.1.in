@@ -4360,7 +4360,7 @@ Style * MouseFocusClickRaises
 
 GlobalOpts NoStipledTitles
   -->
-Style * StippledTitleOff
+Style * !StippledTitle
 
 GlobalOpts StipledTitles
   -->
@@ -6639,18 +6639,18 @@ slashes ('/').  The last style in these groups is the default.
 .IR BorderWidth ", " HandleWidth ,
 .IR NoIcon " / " Icon ", " MiniIcon ,
 .IR IconBox ", " IconGrid ", " IconFill ", " IconSize ,
-.IR NoTitle " / " Title ,
+.IR !Title " / " Title ,
 .IR TitleAtBottom " / " TitleAtLeft " / " TitleAtRight " / " TitleAtTop ,
 .IR LeftTitleRotatedCW " / " LeftTitleRotatedCCW ,
 .IR RightTitleRotatedCCW " / " RightTitleRotatedCW ,
 .IR TopTitleRotated " / " TopTitleNotRotated ,
 .IR BottomTitleRotated " / " BottomTitleNotRotated ,
 .IR !UseTitleDecorRotation " / " UseTitleDecorRotation ,
-.IR StippledTitle " / " StippledTitleOff ,
+.IR StippledTitle " / " !StippledTitle ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
 .IR !Borders " / " Borders ,
-.IR NoHandles " / " Handles ,
+.IR !Handles " / " Handles ,
 .IR WindowListSkip " / " WindowListHit ,
 .IR CirculateSkip " / " CirculateHit ,
 .IR CirculateSkipShaded " / " CirculateHitShaded ,
@@ -7014,9 +7014,13 @@ is equivalent to the new style
 .TP
 .B Window title
 The
-.IR Title " and " NoTitle
+.IR Title " and " !Title
 options determine if the window has a title-bar or not.  By
 default all windows have a title-bar.
+.I NoTitle
+is equivalent to
+.I !Title
+, but is deprecated.
 
 Windows with the
 .IR TitleAtBottom ", " TitleAtLeft " or " TitleAtRight
@@ -7024,7 +7028,7 @@ style have a title-bar below, to the left or to the right of the
 window instead of above as usual.  The
 .I TitleAtTop
 style restores the default placement.  Even if the window has the
-.I NoTitle
+.I !Title
 style set, this affects the
 .I WindowShade
 command.  Please check the
@@ -7064,8 +7068,12 @@ style, titles are drawn with the same effect that is usually
 reserved for windows with the
 .IR Sticky ", " StickyAcrossPages " or " StickyAcrossDesks
 style.
-.I StippledTitleOff
+.I !StippledTitle
 reverts back to normal titles.
+.I StippledTitleOff
+is equivalent to
+.I !StippledTitle
+, but is deprecated.
 
 .I Color
 takes two arguments.  The first is the window-label text color and
@@ -7223,10 +7231,10 @@ makes the 3D bevel more closely match Mwm's.
 turns off the previous option.
 
 With the
-.I NoHandles
+.I !Handles
 style, the window does not get the handles in the window corners
 that are commonly used to resize it.  With
-.IR NoHandles ,
+.IR !Handles ,
 the width from the
 .I BorderWidth
 style is used.  By default, or if
@@ -7234,6 +7242,10 @@ style is used.  By default, or if
 is specified, the width from the
 .I HandleWidth
 style is used.
+.I NoHandles
+works the same as
+.I !Handles
+, but is deprecated.
 
 .I HandleWidth
 takes a numeric argument which is the width of the border to place
@@ -7243,7 +7255,7 @@ the window if it does have resize-handles.
 takes a numeric argument which is the width of the border to place
 the window if it does not have resize-handles.  It is used only if
 the
-.I NoHandles
+.I !Handles
 style is specified too.
 
 .I DepressableBorder
@@ -8457,22 +8469,22 @@ confuse them.
 .EX
 # Change default fvwm behavior to no title-
 # bars on windows! Also define a default icon.
-Style *             NoTitle,               \\
+Style *             !Title,                \\
                     Icon unknown1.xpm,     \\
                     BorderWidth 4,         \\
                     HandleWidth 5
 
 # now, window specific changes:
-Style Fvwm*       NoHandles, Sticky,       \\
+Style Fvwm*       !Handles, Sticky,        \\
                   WindowListSkip,          \\
                   BorderWidth 0
 Style FvwmPager   StaysOnTop, BorderWidth 0
-Style *lock       NoHandles, Sticky,       \\
+Style *lock       !Handles, Sticky,        \\
                   StaysOnTop, WindowListSkip
 Style xbiff       Sticky, WindowListSkip
-Style FvwmButtons NoHandles, Sticky,       \\
+Style FvwmButtons !Handles, Sticky,        \\
                   WindowListSkip
-Style sxpm        NoHandles
+Style sxpm        !Handles
 
 # Put title-bars back on xterms only!
 Style xterm     Title, Color black/grey
@@ -8502,9 +8514,9 @@ Note that all properties for a window are or'ed together.  In the
 above example "FvwmPager" gets the property
 .I StaysOnTop
 via an exact window name match but also gets
-.IR NoHandles ", " Sticky " and " WindowListSkip
+.IR !Handles ", " Sticky " and " WindowListSkip
 by a match to "Fvwm*".  It gets
-.I NoTitle
+.I !Title
 by virtue of a match to "*".  If conflicting styles are specified
 for a window, then the last style specified is used.
 

@@ -1,3 +1,10 @@
+2006-07-17  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/fvwm.1.in (NoTitle, StippledTitleOff, NoHandles styles):
+	changed the manpage to reflect the prefered negation method
+	(that is, using the !* negation sign).
+	marked "No*" and "*Off" as deprecated in favour of !*
+
 2006-07-16  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/fvwm.1.in (COMMAND EXPANSION):
