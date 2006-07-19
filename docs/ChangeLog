@@ -1,6 +1,11 @@
+2006-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* ANNOUNCE:
+	updated for 2.5.17 release
+
 2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
 
-	* todo-vars: 
+	* todo-vars:
 	add a line indicating the need for a 'raw'-filter.
 
 2006-03-21  Serge Koksharov  <gentoosiast dog yandex dot ru>

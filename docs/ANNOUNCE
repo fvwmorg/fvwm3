@@ -1,19 +1,52 @@
-Fvwm is a powerful window manager.  Version 2.5.16 is a beta
-release that fixes some build problems in the prior 2.5.15
-release.  Please be aware that any features introduced in the
-2.5.x development versions may be renamed, changed or removed
-without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.17 is a beta
+release that adds a number of features and fixes some bugs.
+Please be aware that any features introduced in the 2.5.x
+development versions may be renamed, changed or removed without
+notice before 2.6.0.
 
-Upgrading from 2.5.15 is necessary if one of these problems was
-encountered.  Otherwise, upgrading is optional.
+Upgrading from earlier 2.5.x versions is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
-New features:
+* New features:
 
-   - If the pointer can not be grabbed in functions, a message is
-     printed to the console instead of beeping.
+   - New MenuStyle options TitleFont, TitleColorset and
+     HilightTitleBack.
+   - New command PressButton in module FvwmButtons for being able
+     to emulate button press via other means than the mouse.
+   - New wrap options to EdgeScroll command for wrapping with pixel
+     distances.
+   - New Style option UnderMousePlacement.
+   - Unused arguments to Style options generate warnings.
+   - The name style names match against can be augmented by the
+     X-resource "fvwmstyle".
+   - New options, Reverse and UseStack, to All command.
+   - WindowShade can now reshade windows using the Last direction.
+   - Positional parameters to complex functions can now be expanded
+     using $[n], $[n-m], $[n-] and $[*] expressions.
+   - The width and height arguments of the Resize command now
+     accept the prefix 'w' to allow resizing relative to the
+     current window size.
+   - New command ModuleListenOnly.
+   - New "Periodic" option added to Schedule command.
 
 * Bug Fixes:
 
-   - Fixed a couple of build problems introduced in 2.5.15.
+   - Fixed detection of running non-ICCCM2 wm (bug #3151).
+   - Fixed drawing of menus with the sidepic on the right.
+   - EdgeScroll no longer divides pixel distances >1000 by 1000.
+     (bug #3162).
+   - The configure script can now cope with four-part version
+     numbers when detecting some libraries.
+   - The WarpToWindow command followed by Move in a complex
+     function now uses the correct pointer position.
+   - The menu style TitleWarp does no longer warp the pointer for
+     root menus (as it is documented).
+   - Fixed detection of safe system version of mkstemp.
+   - Fixed the conditions Iconifiable, Fixed, FixedSize,
+     Maximizable and Closable.
+   - Fixed problem with window outline and placement position
+     running out of sync.
+   - FvwmConsole no longer conflicts with Cygwin stdio (bug #3772).
+   - FvwmGtk now configures correctly on Cygwin (bug #3772).
+   - Fixed tempfile vulnerabilities in FvwmCommand.
