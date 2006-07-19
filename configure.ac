@@ -4,8 +4,8 @@ AC_PREREQ(2.53)
 AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED=yes
-version=2.5.17
+ISRELEASED=no
+version=2.5.18
 VERSIONINFO=""
 
 dnl date of the released version (please zero pad the day in the last 2 dates)

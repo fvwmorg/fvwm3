@@ -2,6 +2,11 @@
 
 	* NEWS:
 	* configure.ac:
+	increased version to 2.5.18
+	released 2.5.17
+
+	* NEWS:
+	* configure.ac:
 	updated for 2.5.17 release
 
 2006-07-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
