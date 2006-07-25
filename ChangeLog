@@ -1,3 +1,11 @@
+2006-07-17  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/fvwm.1.in (MenuStyle):
+	added a reference to the prefered ! style negation flag,
+	and listed the other deprecated negative forms in one place.
+	(AutomaticHotkeysOff, HilightBackOff, TitleWarpOff):
+	changed to the ! negation form and listed as deprecated.
+
 2006-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:

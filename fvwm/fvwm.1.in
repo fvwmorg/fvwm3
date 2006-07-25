@@ -2907,7 +2907,7 @@ BorderWidth,
 Foreground,
 Background,
 Greyed,
-HilightBack / HilightBackOff,
+HilightBack / !HilightBack,
 HilightTitleBack,
 ActiveFore / ActiveForeOff,
 MenuColorset,
@@ -2922,7 +2922,7 @@ TitleFont,
 MenuFace,
 PopupDelay,
 PopupOffset,
-TitleWarp / TitleWarpOff,
+TitleWarp / !TitleWarp,
 TitleUnderlines0 / TitleUnderlines1 / TitleUnderlines2,
 SeparatorsLong / SeparatorsShort,
 TrianglesSolid / TrianglesRelief,
@@ -2939,7 +2939,7 @@ SelectOnRelease,
 ItemFormat,
 VerticalItemSpacing,
 VerticalTitleSpacing,
-AutomaticHotkeys / AutomaticHotkeysOff,
+AutomaticHotkeys / !AutomaticHotkeys,
 MouseWheel,
 ScrollOffPage / !ScrollOffPage,
 TrianglesUseFore / !TrianglesUseFore.
@@ -2948,6 +2948,13 @@ In the above list some options are listed as option pairs or
 triples with a '/' in between.  These options exclude each other.
 All paired options can be negated to have the effect of the
 counterpart option by prefixing ! to the option.
+
+Some options are now negated by prefixing ! to the option. This
+will soon be the preferred form for all such options. The other
+negative forms are now deprecated and will be removed in the future.
+
+This is a list of MenuStyle deprecated negative options:
+AutomaticHotkeysOff, HilightBackOff, TitleWarpOff
 
 .IR Fvwm ", " Mwm ", " Win
 reset all options to the style with the same name in former
@@ -2971,32 +2978,32 @@ sub menus overlap the parent menu,
 style menus never overlap the parent menu.
 
 .I Fvwm
-style is equivalent to HilightBackOff, Hilight3DThin,
+style is equivalent to !HilightBack, Hilight3DThin,
 ActiveForeOff, ActiveBackOff,
 AnimationOff, Font, MenuFace, PopupOffset 0 67,
 TitleWarp, TitleUnderlines1, SeparatorsShort, TrianglesRelief,
 PopupDelayed, PopdownDelayed, PopupDelay 150, PopdownDelay 150,
 PopupAsSubmenu, HoldSubmenus,
-SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
+SubmenusRight, BorderWidth 2, !AutomaticHotkeys,
 PopupActiveArea 75.
 
 .I Mwm
-style is equivalent to HilightBackOff, Hilight3DThick,
+style is equivalent to !HilightBack, Hilight3DThick,
 ActiveForeOff, ActiveBackOff,
 AnimationOff, Font, MenuFace, PopupOffset -3 100,
-TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
+!TitleWarp, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopdownDelayed, PopdownDelay 150,
 PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
-AutomaticHotkeysOff, PopupActiveArea 75.
+!AutomaticHotkeys, PopupActiveArea 75.
 
 .I Win
 style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
 ActiveBack,
-AnimationOff, Font, MenuFace, PopupOffset -5 100, TitleWarpOff,
+AnimationOff, Font, MenuFace, PopupOffset -5 100, !TitleWarp,
 TitleUnderlines1, SeparatorsShort, TrianglesSolid,
 PopupImmediately, PopdownDelayed, PopdownDelay 150,
 PopupAsSubmenu, RemoveSubmenus, SubmenusRight, BorderWidth 2,
-AutomaticHotkeysOff, PopupActiveArea 75.
+!AutomaticHotkeys, PopupActiveArea 75.
 
 .I BorderWidth
 takes the thickness of the border around the menus in pixels. It
@@ -3015,7 +3022,7 @@ by the Mwm hints which an application has specified. If the color
 is omitted the color of greyed menu entries is based on the
 background color of the menu.
 
-.IR HilightBack " and " HilightBackOff
+.IR HilightBack " and " !HilightBack
 switch hilighting the background of the selected menu item on and
 off.  A specific background color may be used by providing the
 color name as an argument to
@@ -3078,7 +3085,7 @@ menu style too).  If specified, the hilight and shadow colors
 from the colorset are used too.  The pixmap and shape mask from
 the colorset are not used.  Hilighting the background or
 foreground can be turned off individually with the
-.IR ActiveForeOff " or " HilightBackOff
+.IR ActiveForeOff " or " !HilightBack
 menu styles.
 
 .I GreyedColorset
@@ -3150,7 +3157,7 @@ performance you can try one or all of the following:
 Turn hilighting of the active menu item other than foreground
 color off:
 .EX
-MenuStyle <style> Hilight3DOff, HilightBackOff
+MenuStyle <style> Hilight3DOff, !HilightBack
 MenuStyle <style> ActiveFore <preferred color>
 .EE
 Make sure sub menus do not overlap the parent menu. This can
@@ -3231,7 +3238,7 @@ Setting this value to 100 disables this kind of automatic popups
 altogether.  The default value is restored if no or an illegal
 value is given.
 
-.IR TitleWarp " and " TitleWarpOff
+.IR TitleWarp " and " !TitleWarp
 affect if the pointer warps to the menu title when a sub menu is
 opened or not. Note that regardless of this setting the pointer is
 not warped if the menu does not pop up under the pointer.
@@ -3489,7 +3496,7 @@ as context rectangle and position hints using
 .I m
 offsets.
 
-.IR AutomaticHotkeys " and " AutomaticHotkeysOff
+.IR AutomaticHotkeys " and " !AutomaticHotkeys
 control the menu's ability to automatically provide hot-keys on
 the first character of each menu item's label.  This behavior is
 always overridden if an explicit hot-key is assigned in the
@@ -3525,7 +3532,7 @@ Examples:
 MenuStyle * Mwm
 MenuStyle * Foreground Black, Background gray40
 MenuStyle * Greyed gray70, ActiveFore White
-MenuStyle * HilightBackOff, Hilight3DOff
+MenuStyle * !HilightBack, Hilight3DOff
 MenuStyle * Font lucidasanstypewriter-14
 MenuStyle * MenuFace DGradient 64 darkgray \\
   MidnightBlue
@@ -3534,7 +3541,7 @@ MenuStyle red Mwm
 MenuStyle red Foreground Yellow
 MenuStyle red Background Maroon
 MenuStyle red Greyed Red, ActiveFore Red
-MenuStyle red HilightBackOff, Hilight3DOff
+MenuStyle red !HilightBack, Hilight3DOff
 MenuStyle red Font lucidasanstypewriter-12
 MenuStyle red MenuFace DGradient 64 Red Black
 .EE
