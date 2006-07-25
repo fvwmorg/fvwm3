@@ -6789,15 +6789,6 @@ slashes ('/').  The last style in these groups is the default.
 .IR Unmanaged ,
 .IR State .
 
-All paired options above can be negated to have the effect of the
-counterpart option by prefixing ! to the option. Some options are
-now negated by prefixing ! to the option. This will soon be the
-preferred form for all such options. The other negative forms are
-now deprecated and will be removed in the future.
-
-This is a list of MenuStyle deprecated negative options:
-NoButton, NoIconTitle, NoHandles, NoTitle, StippledTitleOff
-	
 .\" +++++++++++++++ general notes
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -7033,6 +7024,10 @@ The
 .IR Title " and " !Title
 options determine if the window has a title-bar or not.  By
 default all windows have a title-bar.
+.I NoTitle
+is equivalent to
+.I !Title
+but is deprecated.
 
 Windows with the
 .IR TitleAtBottom ", " TitleAtLeft " or " TitleAtRight
@@ -7082,6 +7077,10 @@ reserved for windows with the
 style.
 .I !StippledTitle
 reverts back to normal titles.
+.I StippledTitleOff
+is equivalent to
+.I !StippledTitle
+but is deprecated.
 
 .I Color
 takes two arguments.  The first is the window-label text color and
@@ -7129,6 +7128,10 @@ but is used when the window has the focus.
 disables displaying icon labels while the opposite style
 .I IconTitle
 enables icon labels (default behaviour).
+.I NoIconTitle
+is equivalent to
+.I !IconTitle
+but is deprecated.
 
 .IR IconTitleColorset
 takes the colorset number as its sole argument and overrides the
@@ -7211,6 +7214,10 @@ styles but for the icon titles.
 .IR Button " and " !Button
 take a numeric argument which is the number of the title-bar
 button which is to be included/omitted.
+.IR NoButton
+is equivalent to
+.IR !Button
+but is deprecated.
 
 .I MwmButtons
 makes the
@@ -7250,6 +7257,10 @@ style is used.  By default, or if
 is specified, the width from the
 .I HandleWidth
 style is used.
+.I NoHandles
+is equivalent to
+.I !Handles
+but is deprecated.
 
 .I HandleWidth
 takes a numeric argument which is the width of the border to place

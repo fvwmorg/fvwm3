@@ -1,14 +1,11 @@
 2006-07-17  Renato Caldas  <seventhguardian@gmail.com>
 
-	* fvwm/fvwm.1.in (MenuStyle, Style):
+	* fvwm/fvwm.1.in (MenuStyle):
 	added a reference to the prefered ! style negation flag,
 	and listed the other deprecated negative forms in one place.
 	(ActiveForeOff, AnimationOff, AutomaticHotkeysOff):
 	(HilightBackOff, TitleWarpOff):
 	changed to the ! negation form and listed as deprecated.
-	(NoTitle, StippledTitleOff, NoHandles):
-	(NoButton, NoIconTitle):
-	moved the deprecated reference to a centralized place
 	(ActiveBack):
 	removed relics from the man page
 
