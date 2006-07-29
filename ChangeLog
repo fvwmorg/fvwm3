@@ -1,3 +1,9 @@
+2006-07-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
+	always unmaximize and resize window when leaving fullscreen state,
+	not just if it did not start as fullscreen
+
 2006-07-17  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/fvwm.1.in (MenuStyle):

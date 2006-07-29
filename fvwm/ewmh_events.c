@@ -554,28 +554,17 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 		}
 		else
 		{
-			if (HAS_EWMH_INIT_FULLSCREEN_STATE(fw) !=
+			if (HAS_EWMH_INIT_FULLSCREEN_STATE(fw) ==
 			    EWMH_STATE_HAS_HINT)
-			{
-				/* unmaximize will restore is_ewmh_fullscreen,
-				 * layer and apply_decor_change */
-				execute_function_override_window(
-					NULL, NULL, "Maximize off", 0, fw);
-			}
-			else
 			{
 				/* the application started fullscreen */
 				SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
 					fw, EWMH_STATE_NO_HINT);
-				SET_EWMH_FULLSCREEN(fw, False);
-				if (DO_EWMH_USE_STACKING_HINTS(fw))
-				{
-					new_layer(
-						fw, fw->ewmh_normal_layer);
-				}
-				apply_decor_change(fw);
-				/* the client should resize itself */
 			}
+			/* unmaximize will restore is_ewmh_fullscreen,
+			 * layer and apply_decor_change */
+			execute_function_override_window(
+				NULL, NULL, "Maximize off", 0, fw);
 		}
 		if ((IS_EWMH_FULLSCREEN(fw) &&
 		     !DO_EWMH_USE_STACKING_HINTS(fw)) ||

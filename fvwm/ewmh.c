@@ -1930,8 +1930,7 @@ void EWMH_fullscreen(FvwmWindow *fw)
 		new_layer(fw, Scr.TopLayer);
 		if (sl == 0)
 		{
-			fw->ewmh_normal_layer =
-				Scr.DefaultLayer;
+			fw->ewmh_normal_layer = Scr.DefaultLayer;
 		}
 		else
 		{
