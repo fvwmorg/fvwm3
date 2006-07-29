@@ -11,6 +11,8 @@ Changes in beta release 2.5.18 (not released yet)
 
    - If a window started fullscreen, leaving fullscreen state now
      properly unmaximizes and resizes the window.
+   - Fixed the ForeColor/HilightFore styles that were broken in
+     2.5.17.
 
 -------------------------------------------------------------------
 

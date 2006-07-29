@@ -607,7 +607,7 @@ void FlocaleFontStructDrawString(
 	{
 		FlocaleInitGstpArgs(&gstp_args, flf, fws, x, y);
 		/* normal drawing */
-		if (flf->shadow_size != 0 && has_fg_pixels)
+		if (flf->shadow_size != 0 && has_fg_pixels == True)
 		{
 			XSetForeground(dpy, fws->gc, fgsh);
 			while (FlocaleGetShadowTextPosition(
@@ -618,7 +618,7 @@ void FlocaleFontStructDrawString(
 					fws->e_str, fws->str2b, len);
 			}
 		}
-		if (has_fg_pixels)
+		if (has_fg_pixels == True)
 		{
 			XSetForeground(dpy, gc, fg);
 		}
@@ -655,9 +655,13 @@ void FlocaleRotateDrawString(
 	char buf[4];
 
 	if (fws->str == NULL || len < 1)
+	{
 		return;
+	}
 	if (fws->flags.text_rotation == ROTATION_0)
+	{
 		return; /* should not happen */
+	}
 
 	if (my_gc == None)
 	{
@@ -902,7 +906,7 @@ void FlocaleRotateDrawString(
 	XSetFillStyle(dpy, my_gc, FillStippled);
 	XSetStipple(dpy, my_gc, rotated_pix);
 	FlocaleInitGstpArgs(&gstp_args, flf, fws, xpfg, ypfg);
-	if (flf->shadow_size != 0 && has_fg_pixels)
+	if (flf->shadow_size != 0 && has_fg_pixels == True)
 	{
 		XSetForeground(dpy, my_gc, fgsh);
 		while (FlocaleGetShadowTextPosition(&xpsh, &ypsh, &gstp_args))
@@ -1936,7 +1940,10 @@ void FlocaleDrawString(
 					xt, yt, fws->e_str, len);
 			}
 		}
-		XSetForeground(dpy, fws->gc, fg);
+		if (has_fg_pixels == True)
+		{
+			XSetForeground(dpy, fws->gc, fg);
+		}
 		xt = gstp_args.orig_x;
 		yt = gstp_args.orig_y;
 		XmbDrawString(
@@ -1988,8 +1995,9 @@ void FlocaleDrawString(
 			{
 			        int xt = fws->x;
 				int yt = fws->y;
-				FlocaleInitGstpArgs(&gstp_args, flf, fws,
-						    fws->x, fws->y);
+
+				FlocaleInitGstpArgs(
+					&gstp_args, flf, fws, fws->x, fws->y);
 				if (flf->shadow_size != 0)
 				{
 					XSetForeground(dpy, fws->gc, fgsh);
@@ -2012,7 +2020,7 @@ void FlocaleDrawString(
 					dpy, fws->win, flf->fontset, fws->gc,
 					xt + offset, yt, buf2, strlen(buf2));
 			}
-			else if(flf->font != None)
+			else if (flf->font != None)
 			{
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{

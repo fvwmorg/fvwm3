@@ -1,5 +1,10 @@
 2006-07-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/Flocale.c (FlocaleFontStructDrawString)
+	(FlocaleRotateDrawString):
+	(FlocaleDrawString):
+	fixed drawing of forecolor/hilightfore
+
 	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
 	always unmaximize and resize window when leaving fullscreen state,
 	not just if it did not start as fullscreen
