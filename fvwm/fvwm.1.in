@@ -1650,7 +1650,7 @@ to a string indicated by the parameter name.  Unknown parameters
 are left untouched.  Parameter expansion is performed before
 quoting.  To get a literal '$' use "$$".
 
-The longer variables may contain additional variables inside the 
+The longer variables may contain additional variables inside the
 name, which are expanded before the outer variable.
 
 In earlier versions of fvwm, some single letter variables were
@@ -6612,11 +6612,7 @@ commands were issued inside a fvwm function.
 
 .TP
 .BI "Style " "stylename options ..."
-This command is intended to replace the old fvwm 1.xx global
-commands NoBorder, NoTitle, StartsOnDesk, Sticky, StaysOnTop,
-Icon, WindowListSkip, CirculateSkip, SuppressIcons, BoundaryWidth,
-NoBoundaryWidth, StdForeColor, and StdBackColor with a single
-flexible and comprehensive window specific command.  The
+The
 .B Style
 command is used to set attributes of a window to values other than
 the default or to set the window manager default styles.
@@ -6636,8 +6632,9 @@ Note: windows that have no name (WM_NAME) are given a name of
 res_class) are given class "NoClass" and those that do not have a
 resource (WM_CLASS, res_name) are given resource "NoResource".
 
-If a window has the resource "fvwmstyle" set, the value of that resource
-will be used in addition to any window names when selecting the style.
+If a window has the resource "fvwmstyle" set, the value of that
+resource will be used in addition to any window names when
+selecting the style.
 
 .I options
 is a comma separated list containing one or more of the
