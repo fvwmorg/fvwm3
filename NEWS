@@ -9,6 +9,9 @@ Changes in beta release 2.5.18 (not released yet)
 
 * Bug Fixes:
 
+   - If a window started fullscreen, leaving fullscreen state now
+     properly unmaximizes and resizes the window.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.17 (19-Jul-2006)
