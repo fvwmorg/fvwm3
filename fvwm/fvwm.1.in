@@ -10301,22 +10301,23 @@ then is removed from the environment array inherited by processes
 started directly by fvwm.
 
 .TP
-.BI "Wait " windowname
+.BI "Wait " window
 This command is intended to be used in fvwm functions only.  It
-causes execution of a function to pause until a new window with
-the title
-.I windowname
-appears.  This is particularly useful in the "InitFunction" if you
-are trying to start windows on specific desktops:
+causes execution of a function to pause until a new window matching
+.I window
+appears.  This can be a window's name, class, or resource string.
+It may contain the wildcards '*' and '?', which are matched in the
+usual Unix filename manner.  This is particularly useful in the
+"InitFunction" if you are trying to start windows on specific desktops:
 .EX
 AddToFunc InitFunction
  + I Exec exec xterm -geometry 80x64+0+0
  + I Wait xterm
- + I Desk 0 2
+ + I GotoDesk 0 2
  + I Exec exec xmh -font fixed -geometry \\
        507x750+0+0
  + I Wait xmh
- + I Desk 0 0
+ + I GotoDesk 0 0
 .EE
 The above function starts an xterm on the current desk, waits for
 it to map itself, then switches to desk 2 and starts an xmh.

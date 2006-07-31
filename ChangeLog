@@ -1,3 +1,8 @@
+2006-07-31  Scott Smedley  <ss@aao.gov.au>
+
+	* fvwm/fvwm.1.in:
+	Updated description of Wait command in man page.
+
 2006-07-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Flocale.c (FlocaleFontStructDrawString)
