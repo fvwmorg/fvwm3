@@ -210,6 +210,7 @@ extern char preload_yorn;
 extern Item *item;                             /* current during parse */
 extern Item *cur_sel, *cur_button;             /* current during parse */
 extern Display *dpy;
+extern Atom wm_del_win;
 extern int fd_x;                  /* fd for X connection */
 extern Window root, ref;
 extern int screen;

@@ -1714,7 +1714,7 @@ void read_in_resources()
 	p = read_next_cmd(READ_ARG);
 	if (!p) {
 	  ConsoleMessage("Bad line: %s\n", current_line);
-	  ConsoleMessage("Need argument to followfocus\n");
+	  ConsoleMessage("Need argument to shape\n");
 	  continue;
 	}
 	if (!strcasecmp(p, "true")) {

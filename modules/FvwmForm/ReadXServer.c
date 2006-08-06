@@ -79,6 +79,15 @@ void ReadXServer ()
     FNextEvent(dpy, &event);
     if (event.xany.window == CF.frame) {
       switch (event.type) {
+      case ClientMessage:
+      {
+	      if(event.xclient.format == 32 &&
+		 event.xclient.data.l[0] == wm_del_win)
+	      {
+		      exit(0);
+	      }
+      }
+      break;
       case ConfigureNotify:             /* has window be reconfigured */
       {
 	      XEvent tmpe;

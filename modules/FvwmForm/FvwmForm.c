@@ -66,6 +66,7 @@ Item *item;                             /* current during parse */
 Item *cur_sel, *cur_button;             /* current during parse */
 Item *timer = NULL;                     /* timeout tracking */
 Display *dpy;
+Atom wm_del_win;
 int fd_x;                  /* fd for X connection */
 Window root, ref;
 int screen;
@@ -2178,6 +2179,8 @@ static void OpenWindows(void)
   CF.frame = XCreateWindow(dpy, root, x, y, CF.max_width, CF.total_height, 0,
 			   Pdepth, InputOutput, Pvisual,
 			   CWColormap | CWBackPixel | CWBorderPixel, &xswa);
+  wm_del_win = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+  XSetWMProtocols(dpy, CF.frame, &wm_del_win, 1);
   XSelectInput(dpy, CF.frame,
 	       KeyPressMask | ExposureMask | StructureNotifyMask |
 	       VisibilityChangeMask);

@@ -1,3 +1,20 @@
+2006-08-05  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmIconMan/FvwmIconMan.1.in:
+	documented ShowOnlyFocused option.
+	fixed typo.
+
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	corrected warning message when an argument to Shape option is
+	omitted.
+
+2006-08-05  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmForm/FvwmForm.c (OpenWindows):
+	* FvwmForm/FvwmForm.h:
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	added WM_DELETE_WINDOW support.
+
 2006-07-16  Scott Smedley  <ss@aao.gov.au>
 
 	* FvwmTabs/FvwmTabs.in:
@@ -9,11 +26,11 @@
 
 2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
 
-	* FvwmCommand/fifos.c (fifos_get_default_name): 
+	* FvwmCommand/fifos.c (fifos_get_default_name):
 	fix allocation when using FVWM_USERDIR
 
-	* FvwmCommand/FvwmCommand.c (main): 
-	* FvwmCommand/FvwmCommandS.c (open_fifos): 
+	* FvwmCommand/FvwmCommand.c (main):
+	* FvwmCommand/FvwmCommandS.c (open_fifos):
 	removed ifdefs for O_NOFOLLOW.
 
 2006-07-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>

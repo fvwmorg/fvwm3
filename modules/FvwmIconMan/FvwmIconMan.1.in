@@ -118,8 +118,9 @@ SelectColorset
 Shape           use shape extension        false
 Show            list of windows to show
 ShowOnlyIcons   only icons visible         false
-ShowNoIcons     icons are not displayer    false
+ShowNoIcons     icons are not displayed    false
 ShowTransient   transient windows visible  false
+ShowOnlyFocused only focused visible       false
 Sort            keep managers sorted       name
 SortWeight      weight for sorting
 Tips            Tool Tips mode             none
@@ -407,6 +408,9 @@ Only iconified windows are shown if \fIboolean\fP is true.
 
 .IP "*FvwmIconMan: [id] ShowNoIcons \fIboolean\fP"
 Only windows that are not iconified are shown if \fIboolean\fP is true.
+
+.IP "*FvwmIconMan: [id] ShowOnlyFocused \fIboolean\fP"
+Only window with the focus is shown if \fIboolean\fP is true.
 
 
 .PP 
