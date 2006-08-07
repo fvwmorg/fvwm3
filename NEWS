@@ -13,6 +13,7 @@ Changes in beta release 2.5.18 (not released yet)
      properly unmaximizes and resizes the window.
    - Fixed the ForeColor/HilightFore styles that were broken in
      2.5.17.
+   - FvwmPager can now move icons with the !IconTitle style.
 
 -------------------------------------------------------------------
 

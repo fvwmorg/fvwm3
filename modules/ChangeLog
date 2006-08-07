@@ -1,3 +1,8 @@
+2006-08-07  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPager/x_pager.c (IconMoveWindow, MoveWindow) 
+	make icons with !IconTitle style moveable.
+
 2006-08-05  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* FvwmIconMan/FvwmIconMan.1.in:

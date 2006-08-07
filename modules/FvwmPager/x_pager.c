@@ -2488,7 +2488,8 @@ void MoveWindow(XEvent *Event)
     NewDesk = Scr.CurrentDesk;
     if(NewDesk != t->desk)
     {
-      XMoveWindow(dpy, IS_ICONIFIED(t) ? t->icon_w : t->w,
+      XMoveWindow(dpy, IS_ICONIFIED(t) ? 
+		  (t->icon_w != None ? t->icon_w : t->icon_pixmap_w) : t->w,
 		  Scr.VWidth, Scr.VHeight);
       XSync(dpy, False);
     }
@@ -2604,7 +2605,8 @@ void MoveWindow(XEvent *Event)
       {
 	if(IS_ICONIFIED(t))
 	{
-	  XMoveWindow(dpy,t->icon_w,x,y);
+	  XMoveWindow(dpy, t->icon_w != None ? t->icon_w : t->icon_pixmap_w,
+		      x, y);
 	}
 	else
 	{
@@ -2977,9 +2979,14 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     if(moved)
     {
       if(IS_ICONIFIED(t))
-	XMoveWindow(dpy,t->icon_w,x,y);
+      {
+	XMoveWindow(dpy, t->icon_w != None ? t->icon_w : t->icon_pixmap_w,
+		    x, y);
+      }
       else
+      {
 	XMoveWindow(dpy,t->w,x,y);
+      }
       XSync(dpy,0);
     }
     else
