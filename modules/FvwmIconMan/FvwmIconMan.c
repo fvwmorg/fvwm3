@@ -92,7 +92,7 @@ void Free(void *p)
 
 void PrintMemuse(void)
 {
-	ConsoleDebug(CORE, "Memory used: %d\n", MemUsed);
+	ConsoleDebug(CORE, "Memory used: %ld\n", MemUsed);
 }
 
 #else
@@ -205,41 +205,16 @@ main(int argc, char **argv)
 	char *s;
 	int i;
 
-#ifdef ELECTRIC_FENCE
+#ifdef HAVE_LIBEFENCE
 	extern int EF_PROTECT_BELOW, EF_PROTECT_FREE;
 
 	EF_PROTECT_BELOW = 1;
 	EF_PROTECT_FREE = 1;
 #endif
 
-#ifdef DEBUG_ATTACH
-	{
-		char buf[256];
-		sprintf(buf, "%d", getpid());
-		if (fork() == 0)
-		{
-			chdir("/home/bradym/src/FvwmIconMan");
-			execl(
-				"/usr/local/bin/ddd", "/usr/local/bin/ddd",
-				"FvwmIconMan", buf, NULL);
-		}
-		else
-		{
-			int i, done = 0;
-			for (i = 0; i < (1 << 27) && !done; i++) ;
-		}
-	}
-#endif
-
 	FlocaleInit(LC_CTYPE, "", "", "FvwmIconMan");
 
 	OpenConsole(OUTPUT_FILE);
-
-#if 0
-	ConsoleMessage("PID = %d\n", getpid());
-	ConsoleMessage("Waiting for GDB to attach\n");
-	sleep(10);
-#endif
 
 	init_globals();
 	init_winlists();

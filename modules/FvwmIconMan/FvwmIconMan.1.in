@@ -101,7 +101,7 @@ FollowFocus     show which win has focus   false
 Font                                       8x13
 Foreground      default text color         white
 Format          describes button label     "%c: %i"
-IconName        manger icon name           FvwmIconMan
+IconName        manager icon name          FvwmIconMan
 IconButton      style for icon buttons     up black grey
 IconColorset
 ManagerGeometry size of manager in buttons 0x1
@@ -150,7 +150,7 @@ To specify that the \fIOptionName\fP takes the value \fIOptionValue\fP
 for all managers.
 .IP "*FvwmIconMan: ManagerId OptionName OptionValue"
 To specify that the option \fIOptionName\fP takes the value \fIOptionValue\fP
-for manager \fIManagerId\fP. \fIMangerId\fP may either be a positive integer,
+for manager \fIManagerId\fP. \fIManagerId\fP may either be a positive integer,
 or the string "transient". An integer id refers to managers which FvwmIconMan
 creates when running normally, and an id of "transient" refers to the single
 manager which FvwmIconMan creates when running transiently.
@@ -578,11 +578,27 @@ to do so.)
 .IP "print \fIString\fP"
 Prints \fIString\fP to the console. Useful for debugging actions.
 
+.IP "printdebug"
+Prints defined actions to the console. Should only be used by developers.
+To enable this command, set CONFIG and FUNCTIONS variables to '1' in the
+modules/FvwmIconMan/debuglevels.h and recompile this module.
+
 .IP "quit"
 Quits FvwmIconMan.
 
+.IP "refresh"
+Causes all manager windows to redraw themselves.
+
 .IP "ret"
 Stop executing the entire action.
+
+.IP "searchback \fIString\fP"
+Sets button to button before the current one whose printed string in the
+manager window matches specified \fIString\fP, which may contain wildcards.
+
+.IP "searchforward \fIString\fP"
+Sets button to button after the current one whose printed string in the
+manager window matches specified \fIString\fP, which may contain wildcards.
 
 .IP "select"
 Selects the current button, if any. If a select action has been specified,

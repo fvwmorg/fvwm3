@@ -81,11 +81,6 @@ FunctionType builtin_functions[] = {
 
 static int num_builtins = sizeof(builtin_functions) / sizeof(FunctionType);
 
-#if FVWM_VERSION == 1
-static FILE *config_fp = NULL;
-#endif
-
-
 /* This is only used for printing out the .fvwmrc line if an error
    occured */
 
@@ -112,7 +107,7 @@ static void save_current_line(char *s)
 
 void print_args(int numargs, BuiltinArg *args)
 {
-#ifdef PRINT_DEBUG
+#ifdef FVWM_DEBUG_MSGS
 	int i;
 
 	for (i = 0; i < numargs; i++) {
@@ -168,13 +163,13 @@ void print_args(int numargs, BuiltinArg *args)
 #endif
 }
 
-#ifdef PRINT_DEBUG
+#ifdef FVWM_DEBUG_MSGS
 static void print_binding(Binding *binding)
 {
 	int i;
 	Function *func;
 
-	if (binding->type == MOUSE_BINDING)
+	if (binding->type == BIND_BUTTONPRESS)
 	{
 		ConsoleDebug(CONFIG, "\tMouse: %d\n", binding->Button_Key);
 	}
@@ -186,8 +181,9 @@ static void print_binding(Binding *binding)
 	}
 
 	ConsoleDebug(CONFIG, "\tModifiers: %d\n", binding->Modifier);
-	ConsoleDebug(CONFIG, "\tAction: %s\n", binding->Action);
-	ConsoleDebug(CONFIG, "\tFunction struct: 0x%x\n", binding->Action2);
+	ConsoleDebug(CONFIG, "\tAction: %s\n", (char *) binding->Action);
+	ConsoleDebug(CONFIG, "\tFunction struct: 0x%x\n",
+		(unsigned int) binding->Action2);
 	func = (Function *)(binding->Action2);
 	while (func)
 	{
@@ -197,7 +193,8 @@ static void print_binding(Binding *binding)
 			{
 				ConsoleDebug(
 					CONFIG, "\tFunction: %s 0x%x ",
-					builtin_functions[i].name, func->func);
+					builtin_functions[i].name,
+					(unsigned int) func->func);
 				break;
 			}
 		}
@@ -205,7 +202,7 @@ static void print_binding(Binding *binding)
 		{
 			ConsoleDebug(
 				CONFIG, "\tFunction: not found 0x%x ",
-				func->func);
+				(unsigned int) func->func);
 		}
 		print_args(func->numargs, func->args);
 		func = func->next;
@@ -1037,7 +1034,7 @@ static NameType parse_format_dependencies(char *format)
 			}
 		}
 	}
-#ifdef PRINT_DEBUG
+#ifdef FVWM_DEBUG_MSGS
 	ConsoleDebug(CONFIG, "Format depends on: ");
 	if (flags & ICON_NAME)
 	{

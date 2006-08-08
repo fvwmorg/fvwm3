@@ -1,3 +1,52 @@
+2006-08-07  Serge Koksharov  <gentoosiast dog yandex dot ru>
+ 
+	* FvwmIconMan/FvwmIconMan.1.in:
+	documented printdebug, refresh, searchback and searchforward builtin
+	commands.
+	fixed typos.
+
+	* FvwmIconMan/FvwmIconMan.c (main):
+	changed ifdef from ELECTRIC_FENCE to HAVE_LIBEFENCE.
+	removed now useless 'ifdef DEBUG_ATTACH' construction with hardcoded
+	paths.
+	removed now useless 'if 0' construction.
+	(PrintMemuse):
+	fixed compiler warning.
+
+	* FvwmIconMan/FvwmIconMan.h:
+	changed ifdef from DMALLOC to HAVE_DMALLOC_H.
+
+	* FvwmIconMan/debug.c (ConsoleDebug):
+	* FvwmIconMan/globals.c (print_managers):
+	* FvwmIconMan/readconfig.c (parse_format_dependencies):
+	(print_args):
+	(print_binding):
+	* FvwmIconMan/winlist.c (iconmanager_show):
+	* FvwmIconMan/xmanager.c (check_managers_consistency):
+	(print_button_info):
+	changed ifdefs from PRINT_DEBUG to FVWM_DEBUG_MSGS.
+
+	* FvwmIconMan/debug.h:
+	removed now useless 'if 0' construction.
+
+	* FvwmIconMan/globals.c:
+	removed useless commented definitions of Module & ModuleLen which now
+	aren't hardcoded.
+	
+	* FvwmIconMan/readconfig.c:
+	removed ancient 'if FVWM_VERSION == 1' construction.
+	(print_binding):
+	compilation fix.
+	fixed compiler warnings.
+	
+	* FvwmIconMan/xmanager.c (print_buttons):
+	removed (this function defined but isn't used anywhere in the
+	code and its functionality superseded by print_button_info
+	function).
+	fixed compiler warnings.
+	(print_button_info):
+	fixed compiler warnings.
+
 2006-08-07  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmPager/x_pager.c (IconMoveWindow, MoveWindow) 

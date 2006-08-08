@@ -221,7 +221,7 @@ int builtin_gotomanager(int numargs, BuiltinArg *args)
 	case SelectButton:
 	case FocusButton:
 		ConsoleMessage(
-			"gotomanger: \"select\" or \"focus\" does not specify"
+			"gotomanager: \"select\" or \"focus\" does not specify"
 			" a manager\n");
 		break;
 

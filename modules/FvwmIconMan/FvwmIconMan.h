@@ -47,8 +47,7 @@ struct malloc_header {
 
 #endif
 
-#ifdef DMALLOC
-/*  What the heck is this??  */
+#ifdef HAVE_DMALLOC_H
 #include <dmalloc.h>
 #endif
 

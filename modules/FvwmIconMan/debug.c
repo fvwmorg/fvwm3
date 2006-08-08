@@ -60,7 +60,7 @@ ConsoleDebug(int flag, const char *fmt, ...)
 {
 	assert(console != NULL);
 
-#ifdef PRINT_DEBUG
+#ifdef FVWM_DEBUG_MSGS
 	if (flag)
 	{
 		va_list args;

@@ -2638,7 +2638,7 @@ void tips_update_label(WinManager *man)
 
 void check_managers_consistency(void)
 {
-#ifdef PRINT_DEBUG
+#ifdef FVWM_DEBUG_MSGS
   int i, j;
   Button **b;
 
@@ -2662,33 +2662,16 @@ void check_managers_consistency(void)
 
 static void print_button_info(Button *b)
 {
-#ifdef PRINT_DEBUG
+#ifdef FVWM_DEBUG_MSGS
   ConsoleMessage("button: %d\n", b->index);
-  ConsoleMessage("win: 0x%x\n", b->drawn_state.win);
+  ConsoleMessage("win: 0x%x\n", (unsigned int) b->drawn_state.win);
   ConsoleMessage("dirty: 0x%x\n", b->drawn_state.dirty_flags);
   if (b->drawn_state.win) {
     ConsoleMessage("name: %s\n", b->drawn_state.display_string);
     ConsoleMessage("iconified: %d state %d\n", b->drawn_state.iconified,
 		    b->drawn_state.state);
-    ConsoleMessage("win->button: 0x%x\n", b->drawn_state.win->button);
+    ConsoleMessage("win->button: 0x%x\n",
+		    (unsigned int) b->drawn_state.win->button);
   }
 #endif
 }
-
-#ifdef PRINT_DEBUG
-static void print_buttons(WinManager *man)
-{
-  int i;
-  Button *b;
-
-  ConsoleMessage("Buttons for manager: %s\n", man->titlename);
-
-  for (i = 0; i < man->buttons.num_buttons; i++) {
-    b = man->buttons.buttons[i];
-    ConsoleMessage("Button: %d, index = %d\n", i, b->index);
-    ConsoleMessage("\tdirty flags: 0x%x\n", b->drawn_state.dirty_flags);
-    ConsoleMessage("\twin: 0x%x\n", b->drawn_state.win);
-  }
-}
-#endif
-

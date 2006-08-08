@@ -206,14 +206,14 @@ static int iconmanager_show (WinManager *man, char *tname, char *iname,
 
   assert (man);
 
-#ifdef PRINT_DEBUG
+#ifdef FVWM_DEBUG_MSGS
   ConsoleDebug (WINLIST, "In iconmanager_show: %s:%s : %s %s\n", tname, iname,
 		rname, cname);
   ConsoleDebug (WINLIST, "dontshow:\n");
   print_stringlist (&man->dontshow);
   ConsoleDebug (WINLIST, "show:\n");
   print_stringlist (&man->show);
-#endif /*PRINT_DEBUG*/
+#endif /* FVWM_DEBUG_MSGS */
 
   for (string = man->dontshow.list; string; string = string->next) {
     ConsoleDebug (WINLIST, "Matching: %s\n", string->string);

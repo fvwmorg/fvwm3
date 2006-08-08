@@ -3,10 +3,6 @@
 #define IN_DEBUG_H
 
 #if 0
-# define PRINT_DEBUG
-#endif
-
-#if 0
 # define OUTPUT_FILE "/dev/console"
 /* # define OUTPUT_FILE "/tmp/FvwmIconMan" */
 #else
