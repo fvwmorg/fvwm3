@@ -154,8 +154,8 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	psy+=sy;
 	if (is_message_recieved)
 	{
-		/* There might be other modules with the sme name, or someone
-		 minght send ScrollDone other then the module, so jost treat 
+		/* There might be other modules with the same name, or someone
+		 might send ScrollDone other than the module, so just treat
 		 any negative count as zero. */
 		if (--messages_sent < 0)
 		{
@@ -1124,7 +1124,7 @@ void DispatchEvent(XEvent *Event)
 	Scroll(icon_w, icon_h, x, y, 0, True);
       }
       /* Flush any pending scroll operations */
-      do_scroll(0, 0, True, False); 
+      do_scroll(0, 0, True, False);
     }
     else if((Event->xbutton.button == 1)||
 	    (Event->xbutton.button == 2))
