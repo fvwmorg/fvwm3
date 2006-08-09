@@ -1,3 +1,10 @@
+2006-08-09  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPager/x_pager.c (Scroll):
+	spacing
+	(MoveWindow, IconMoveWindow):
+	reindented and respaced
+
 2006-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmDragWell/fvwmDragWell.c (XStartup):
