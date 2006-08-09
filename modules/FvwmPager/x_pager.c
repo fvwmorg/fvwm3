@@ -2645,13 +2645,8 @@ void MoveWindow(XEvent *Event)
 					ChangeDeskForWindow(t,Scr.CurrentDesk);
 				}
 			}
-			else if (NewDesk + desk1 != Scr.CurrentDesk
-				 || IS_ICONIFIED(t))
+			else if (NewDesk + desk1 != Scr.CurrentDesk)
 			{
-				/* FIXME? iconic windows should not have
-				 * to be moved to the desk before the move 
-				 * in order to work, but some fvwm bug
-				 * makes that a must. */
 				sprintf(command, "Silent MoveToDesk 0 %d",
 					NewDesk + desk1);
 				SendText(fd, command, t->w);

@@ -1526,11 +1526,6 @@ void __move_icon(
 	if (has_icon_picture)
 	{
 		XMoveWindow(dpy, FW_W_ICON_PIXMAP(fw), gp.x, gp.y);
-		XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
-		if (has_icon_title)
-		{
-			XMapWindow(dpy, FW_W_ICON_TITLE(fw));
-		}
 	}
 	if (do_warp_pointer)
 	{
