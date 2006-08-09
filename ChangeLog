@@ -1,6 +1,12 @@
+2006-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (__move_icon):
+	*do* map icon windows for pictured icons on move, but only if they end
+	up on the current desk
+
 2006-08-09  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/move_resize.c (__move_icon): 
+	* fvwm/move_resize.c (__move_icon):
 	don't map icon windows for pictured icons on move
 
 2006-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
