@@ -339,8 +339,8 @@ static void hide_screen(
  *              put a fvwm frame on the window
  *
  *  Returned Value:
- *      TRUE    - go ahead and frame the window
- *      FALSE   - don't frame the window
+ *      1   - go ahead and frame the window
+ *      0   - don't frame the window
  *
  *  Inputs:
  *      w       - the window to check
@@ -359,7 +359,7 @@ static int MappedNotOverride(
 	win_opts->initial_state = DontCareState;
 	if ((w==Scr.NoFocusWin)||(!XGetWindowAttributes(dpy, w, &wa)))
 	{
-		return False;
+		return 0;
 	}
 	if (XGetWindowProperty(
 		    dpy,w,_XA_WM_STATE,0L,3L,False,_XA_WM_STATE,
@@ -376,6 +376,7 @@ static int MappedNotOverride(
 		XSelectInput(dpy, w, XEVMASK_ORW);
 		XFlush(dpy);
 	}
+
 	return (((win_opts->initial_state == IconicState) ||
 		 (wa.map_state != IsUnmapped)) &&
 		(wa.override_redirect != True));
@@ -477,7 +478,7 @@ static void setup_window_structure(
 	}
 	else
 	{
-		/* make sure that new windows *remember* being shaded with 
+		/* make sure that new windows *remember* being shaded with
 		 * title dir last */
 		SET_USED_TITLE_DIR_FOR_SHADING(*pfw,1);
 	}
@@ -1488,11 +1489,11 @@ static void __add_window_handle_x_resources(FvwmWindow *fw)
 		}
 	}
 
-	
+
 	/* parse the database values */
 	if (GetResourceString(db, "fvwmstyle", fw->class.res_name, &rm_value)
 	    && rm_value.size != 0)
-	{		
+	{
 		char *style_name;
 		int name_len;
 		style_name = rm_value.addr;
@@ -1513,7 +1514,7 @@ static void __add_window_handle_x_resources(FvwmWindow *fw)
 							   (name_len+1));
 			memcpy(fw->style_name,style_name,name_len);
 			fw->style_name[name_len] = 0;
-		}		
+		}
 	}
 	XFreeStringList(client_argv);
 	XrmDestroyDatabase(db);
@@ -2178,7 +2179,7 @@ FvwmWindow *AddWindow(
 	SET_MAXIMIZED(fw, 0);
 	/*
 	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
-	 * Set the map state to FALSE to prevent a transition back to
+	 * Set the map state to 0 to prevent a transition back to
 	 * WithdrawnState in HandleUnmapNotify.  Map state gets set corrected
 	 * again in HandleMapNotify.
 	 */

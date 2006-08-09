@@ -1,6 +1,28 @@
+2006-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/style.c (remove_all_of_style_from_list):
+	(__simplify_style_list, blockor, blockand, blockunmask)
+	(blockissubset, style_ids_are_equal, style_id_equals_id)
+	(styles_have_same_id, fw_match_style_id)
+	(one_fw_can_match_both_ids):
+	(check_window_style_change):
+	use int/0/1 instead of Bool/False/True
+
+	* fvwm/move_resize.c (stick_across_pages):
+	use False instead of FALSE
+
+	* fvwm/style.c (fw_match_style_id):
+	* fvwm/read.c (run_command_file, push_read_file):
+	* fvwm/add_window.c (MappedNotOverride):
+	* libs/wild.c (matchWildcards):
+	use 0 and 1 instead of FALSE and TRUE
+
+	* fvwm/fvwm.h:
+	removed TRUE and FALSE
+
 2006-08-07  Viktor Griph  <griph@dd.chalmers.se>
 
-	* NEWS: 
+	* NEWS:
 	FvwmPager !IconTitle style bugfix.
 
 2006-07-31  Scott Smedley  <ss@aao.gov.au>

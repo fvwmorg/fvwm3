@@ -279,7 +279,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist)
   int version = 0;
   Atom retAction = None;
   Atom target;
-  short doneDrag = False;
+  short doneDrag = 0;
 
 
   /* User releases the mouse button without any motion->do nothing*/
@@ -430,7 +430,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist)
 	  }
 	}
       } else {
-	doneDrag = TRUE;
+	doneDrag = 1;
       }
       XUngrabPointer(ds->display,CurrentTime);
       break;
@@ -464,7 +464,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist)
 	xdndSrcReceiveStatus(ds,&xev,0,0,cacheTime);
       } else if (xev.xclient.message_type==ds->atomSel->xdndFinished) {
 	xdndSrcReceiveFinished(ds,&xev);
-	doneDrag = TRUE;
+	doneDrag = 1;
       } else {
 	fprintf(stderr,"FvwmQFS:xdndDrag:Unknown client message in dragSource\n");
       }
@@ -491,7 +491,7 @@ int xdndErrorHandler(Display *dpy, XErrorEvent *errEv)
     /* Well, the specification for Xdnd states that we should handle
      * "BadWindow" errors with an error handler.  I'm not real sure how to go
      * beyond this point. One option is to use "goto".  Another is to make
-     * doneDrag in the xdndSrcDoDrag a global, and set it to TRUE here, but
+     * doneDrag in the xdndSrcDoDrag a global, and set it to 1 here, but
      * that is more dangerous.  For now, we will just exit */
     exit(1);
     /*goto gotoLabelDone;*/

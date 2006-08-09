@@ -1,5 +1,20 @@
+2006-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmDragWell/fvwmDragWell.c (XStartup):
+	* FvwmDragWell/xdndDragSource.c (xdndSrcDoDrag)
+	(xdndErrorHandler, xdndSrcDoDrag):
+	* FvwmM4/FvwmM4.c (main):
+	* FvwmTaskBar/Start.c (StartButtonParseConfig)
+	(MouseInStartButton, StartAndLaunchButtonItemInit)
+	(StartButtonInit, MouseInStartButton):
+	* FvwmTaskBar/FvwmTaskBar.c:
+	use False/True instead of FALSE/TRUE
+
+	* FvwmDragWell/fvwmDragWell.c (mouseInButton):
+	use 0/1 instead of FALSE/TRUE
+
 2006-08-07  Serge Koksharov  <gentoosiast dog yandex dot ru>
- 
+
 	* FvwmIconMan/FvwmIconMan.1.in:
 	documented printdebug, refresh, searchback and searchforward builtin
 	commands.
@@ -32,13 +47,13 @@
 	* FvwmIconMan/globals.c:
 	removed useless commented definitions of Module & ModuleLen which now
 	aren't hardcoded.
-	
+
 	* FvwmIconMan/readconfig.c:
 	removed ancient 'if FVWM_VERSION == 1' construction.
 	(print_binding):
 	compilation fix.
 	fixed compiler warnings.
-	
+
 	* FvwmIconMan/xmanager.c (print_buttons):
 	removed (this function defined but isn't used anywhere in the
 	code and its functionality superseded by print_button_info
@@ -49,7 +64,7 @@
 
 2006-08-07  Viktor Griph  <griph@dd.chalmers.se>
 
-	* FvwmPager/x_pager.c (IconMoveWindow, MoveWindow) 
+	* FvwmPager/x_pager.c (IconMoveWindow, MoveWindow)
 	make icons with !IconTitle style moveable.
 
 2006-08-05  Serge Koksharov  <gentoosiast dog yandex dot ru>

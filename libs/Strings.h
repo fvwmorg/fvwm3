@@ -39,13 +39,13 @@ char *stripcpy( const char *source );
 
 
 /**
- * Return TRUE if the two strings are equal.  Case is ignored.
+ * Return 1 if the two strings are equal.  Case is ignored.
  **/
 int StrEquals( const char *s1, const char *s2 );
 
 
 /**
- * Return TRUE if the string has the given prefix.  Case is ignored.
+ * Return 1 if the string has the given prefix.  Case is ignored.
  **/
 int StrHasPrefix( const char* string, const char* prefix );
 
@@ -63,7 +63,7 @@ char *QuoteString(char *dest, const char *source);
  * delim should be included in escape with a proper escaper.
  * Returns a pointer to the end of dest.
  **/
-char *QuoteEscapeString(char *dest, const char *source, char delim, 
+char *QuoteEscapeString(char *dest, const char *source, char delim,
 			const char *escape, const char *escaper);
 
 /**

@@ -4642,7 +4642,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
 		{
 			action = "";
-			__move_window(F_PASS_ARGS, FALSE, MOVE_PAGE);
+			__move_window(F_PASS_ARGS, False, MOVE_PAGE);
 		}
 		SET_STICKY_ACROSS_PAGES(fw, 1);
 	}

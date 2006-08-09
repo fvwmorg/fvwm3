@@ -18,11 +18,6 @@
 
 #include <stdio.h>
 
-#ifndef TRUE
-#define TRUE    1
-#define FALSE   0
-#endif
-
 #include "wild.h"
 
 /*
@@ -39,14 +34,14 @@ int matchWildcards(const char *pattern, const char *string)
 	if(string == NULL)
 	{
 		if(pattern == NULL)
-			return TRUE;
+			return 1;
 		else if(strcmp(pattern,"*")==0)
-			return TRUE;
+			return 1;
 		else
-			return FALSE;
+			return 0;
 	}
 	if(pattern == NULL)
-		return TRUE;
+		return 1;
 
 	while (*string && *pattern)
 	{
@@ -63,17 +58,17 @@ int matchWildcards(const char *pattern, const char *string)
 			pattern += 1;
 			if (*pattern == 0)
 			{
-				return TRUE; /* trailing * must match rest */
+				return 1; /* trailing * must match rest */
 			}
 			while (*string)
 			{
 				if (matchWildcards(pattern,string))
 				{
-					return TRUE;
+					return 1;
 				}
 				string++;
 			}
-			return FALSE;
+			return 0;
 		}
 		else
 		{
@@ -85,14 +80,15 @@ int matchWildcards(const char *pattern, const char *string)
 			}
 			if  (*pattern++ != *string++)
 			{
-				return FALSE;
+				return 0;
 			}
 		}
 	}
 	if((*pattern == 0)&&(*string == 0))
-		return TRUE;
+		return 1;
 	if((*string == 0)&&(strcmp(pattern,"*")==0))
-		return TRUE;
-	return FALSE;
+		return 1;
+
+	return 0;
 }
 

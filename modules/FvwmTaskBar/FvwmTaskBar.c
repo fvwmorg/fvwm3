@@ -171,7 +171,7 @@ static volatile sig_atomic_t stick_taskbar_alarm = False;
 int UpdateInterval = 30;
 
 int whichButton = -1;
-Bool startButtonPressed = FALSE;
+Bool startButtonPressed = False;
 
 ButtonArray buttons;
 List windows;

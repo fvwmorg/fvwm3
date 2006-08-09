@@ -159,11 +159,11 @@ int main(int argc, char **argv)
     {
       if(strcasecmp(argv[i],"-m4-prefix") == 0)
 	{
-	  m4_prefix = TRUE;
+	  m4_prefix = True;
 	}
       else if(strcasecmp(argv[i],"-m4-prefix-defines") == 0)
 	{
-	  m4_prefix_defines = TRUE;
+	  m4_prefix_defines = True;
 	}
       else if(strcasecmp(argv[i],"-m4opt") == 0)
 	{

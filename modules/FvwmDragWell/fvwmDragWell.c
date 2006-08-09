@@ -186,12 +186,13 @@ void drawDragWellButton(DragWellButton *but)
 
 
 /* mouseInButton - returns true if the pointer is in a DragWellButton
- *   returns TRUE(1) if in button and FALSE(0) otherwise.
+ *   returns 1 if in button and 0 otherwise.
  * Arguments:
  *   but - the button to be drawn
  *   x,y - the pointer coords in (DragWellButton->win) coords
  */
-int mouseInButton(DragWellButton *but, int x, int y) {
+int mouseInButton(DragWellButton *but, int x, int y)
+{
   if ((but->wx <=x)&&(x<=(but->wx+but->w)))
     if ((but->wy <=y)&&(y<=(but->wy+but->h)))
       return 1;
@@ -260,7 +261,7 @@ void veryLongLoop()
 	      if (mg.dragDataType==DRAG_DATA_TYPE_PATH)
 		mg.typelist[0] = mg.textUriAtom;
 	      else
-		mg.typelist[0] = XInternAtom(xg.dpy,mg.dragTypeStr,FALSE);
+		mg.typelist[0] = XInternAtom(xg.dpy,mg.dragTypeStr,False);
 	      xdndSrcDoDrag(&dsg,xg.win,mg.action,mg.typelist);
 	    }
 	  }
@@ -493,7 +494,7 @@ void XStartup(char *appName)
   dragSrcInit(&dsg,xg.dpy,xg.root,xg.win);
 
   mg.action = dsg.atomSel->xdndActionMove;
-  mg.textUriAtom = XInternAtom(xg.dpy,"text/uri-list",FALSE);
+  mg.textUriAtom = XInternAtom(xg.dpy,"text/uri-list",False);
   mg.typelist = (Atom *) malloc(4*sizeof(Atom));
   mg.typelist[1] = None;
   mg.typelist[2] = None;
