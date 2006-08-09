@@ -2392,7 +2392,7 @@ void MoveWindow(XEvent *Event)
 	int m, n1, m1;
 	int NewDesk, KeepMoving = 0;
 	int moved = 0;
-	int row,column;
+	int row, column;
 	Window JunkRoot, JunkChild;
 	int JunkX, JunkY;
 	unsigned JunkMask;
@@ -2501,6 +2501,9 @@ void MoveWindow(XEvent *Event)
 	if (KeepMoving)
 	{
 		NewDesk = Scr.CurrentDesk;
+#if 0
+		/* griph: Why does it move the windows off screen if the
+		 * desk has been changed? */
 		if (NewDesk != t->desk)
 		{
 			XMoveWindow(dpy, IS_ICONIFIED(t) ?
@@ -2509,6 +2512,7 @@ void MoveWindow(XEvent *Event)
 				    Scr.VWidth, Scr.VHeight);
 			XSync(dpy, False);
 		}
+#endif
 		if (NewDesk >= desk1 && NewDesk <= desk2)
 		{
 			XReparentWindow(dpy, t->PagerView,
@@ -2528,12 +2532,20 @@ void MoveWindow(XEvent *Event)
 		}
 		XUngrabPointer(dpy,CurrentTime);
 		XSync(dpy,0);
+#if 0
+		/* griph: isn't this almost what Move Pointer does later? */
 		sprintf(command, "Silent Move %dp %dp", x, y);
 		SendText(fd, command, t->w);
+#endif
 		if (NewDesk != t->desk)
 		{
-			sprintf(command, "Silent MoveToDesk 0 %d", NewDesk);
-			SendText(fd, command, t->w);
+			/* griph: This used to move to NewDesk, but NewDesk
+			 * is current desk, and if fvwm is on another
+			 * desk (due to async operation) we have to move
+			 * the window to it anyway or "Move Pointer" will
+			 * move an invisible window. */
+
+			SendText(fd, "Silent MoveToDesk", t->w);
 			t->desk = NewDesk;
 		}
 		SendText(fd, "Silent Raise", t->w);
@@ -2633,8 +2645,13 @@ void MoveWindow(XEvent *Event)
 					ChangeDeskForWindow(t,Scr.CurrentDesk);
 				}
 			}
-			else if (NewDesk + desk1 != Scr.CurrentDesk)
+			else if (NewDesk + desk1 != Scr.CurrentDesk
+				 || IS_ICONIFIED(t))
 			{
+				/* FIXME? iconic windows should not have
+				 * to be moved to the desk before the move 
+				 * in order to work, but some fvwm bug
+				 * makes that a must. */
 				sprintf(command, "Silent MoveToDesk 0 %d",
 					NewDesk + desk1);
 				SendText(fd, command, t->w);
@@ -2680,12 +2697,9 @@ void MoveWindow(XEvent *Event)
 						t->title_height;
 				}
 
-				sprintf(buf, "Silent Move +%dp +%dp",
-					tx, ty);
+				sprintf(buf, "Silent Move +%dp +%dp", tx, ty);
 #else
-				sprintf(buf, "Silent Move +%dp +%dp",
-					x, y);
-
+				sprintf(buf, "Silent Move +%dp +%dp", x, y);
 #endif
 				SendText(fd, buf, t->w);
 				XSync(dpy,0);
@@ -3003,7 +3017,9 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 
 	if (KeepMoving)
 	{
+#if 0
 		char command[48];
+#endif
 
 		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
@@ -3014,8 +3030,12 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		}
 		XUngrabPointer(dpy, CurrentTime);
 		XSync(dpy, 0);
+#if 0
+		/* griph: is't this moving to almost where "Move Pointer"
+		 * will move the window next? */
 		sprintf(command, "Silent Move %dp %dp", x, y);
 		SendText(fd, command, t->w);
+#endif
 		SendText(fd, "Silent Raise", t->w);
 		SendText(fd, "Silent Move Pointer", t->w);
 	}
@@ -3066,16 +3086,9 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		}
 		if (moved)
 		{
-			if (IS_ICONIFIED(t))
-			{
-				XMoveWindow(dpy, t->icon_w != None ?
-					    t->icon_w : t->icon_pixmap_w,
-					    x, y);
-			}
-			else
-			{
-				XMoveWindow(dpy, t->w, x, y);
-			}
+			char buf[64];
+			sprintf(buf, "Silent Move +%dp +%dp", x, y);
+			SendText(fd, buf, t->w);
 			XSync(dpy, 0);
 		}
 		else
