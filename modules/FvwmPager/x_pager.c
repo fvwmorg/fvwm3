@@ -2492,8 +2492,8 @@ void MoveWindow(XEvent *Event)
 
 	if (moved)
 	{
-		if ((x - xi < MoveThreshold) && (y - yi < MoveThreshold) &&
-		   (x - xi > -MoveThreshold) && (y - yi > -MoveThreshold))
+		if (abs(x - xi) < MoveThreshold &&
+		    abs(y - yi) < MoveThreshold)
 		{
 			moved = 0;
 		}
@@ -2654,33 +2654,40 @@ void MoveWindow(XEvent *Event)
 			XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
 			if (moved)
 			{
+				char buf[64];
+#if 0
+				/* This used to move icon windows with
+				 * XMoveWindow, and non-icons with
+				 * Silent Move, negative coordinates
+				 * corrected by display width and
+				 * border width and title hight added.
+				 *
+				 * The if 0:ed code works as before but with
+				 * fvwm moving the icons. I believe it's
+				 * incorrectly using at least the title
+				 * height /griph */
+				int tx;
+				int ty;
 				if (IS_ICONIFIED(t))
 				{
-					XMoveWindow(dpy, t->icon_w != None ?
-						    t->icon_w :
-						    t->icon_pixmap_w, x, y);
+					tx = x;
+					ty = y;
 				}
 				else
 				{
-					char buf[64];
-					int tx = x + t->border_width;
-					int ty = y + t->title_height +
-						t->border_width;
-
-					if (tx < 0)
-					{
-						tx += t->width -
-							Scr.MyDisplayWidth;
-					}
-					if (ty < 0)
-					{
-						ty += t->height -
-							Scr.MyDisplayHeight;
-					}
-					sprintf(buf, "Silent Move %dp %dp",
-						tx, ty);
-					SendText(fd, buf, t->w);
+					tx = x + t->border_width;
+					ty = y + t->border_width +
+						t->title_height;
 				}
+
+				sprintf(buf, "Silent Move +%dp +%dp",
+					tx, ty);
+#else
+				sprintf(buf, "Silent Move +%dp +%dp",
+					x, y);
+
+#endif
+				SendText(fd, buf, t->w);
 				XSync(dpy,0);
 			}
 			else
@@ -2987,8 +2994,8 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 
 	if (moved)
 	{
-		if ((x - xi < MoveThreshold) && (y - yi < MoveThreshold) &&
-		   (x - xi > -MoveThreshold) && (y -yi > -MoveThreshold))
+		if (abs(x - xi) < MoveThreshold &&
+		    abs(y - yi) < MoveThreshold)
 		{
 			moved = 0;
 		}

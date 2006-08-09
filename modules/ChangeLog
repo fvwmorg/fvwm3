@@ -4,6 +4,9 @@
 	spacing
 	(MoveWindow, IconMoveWindow):
 	reindented and respaced
+	(MoveWindow): 
+	make icon move use fvwm function
+	don't add border width and title hight to coordinates.
 
 2006-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
