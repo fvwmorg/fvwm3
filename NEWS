@@ -15,6 +15,10 @@ Changes in beta release 2.5.18 (not released yet)
      2.5.17.
    - FvwmPager can now move icons with the !IconTitle style.
    - Fixed drawing of icons that are moved to a different desk.
+   - FvwmPager no longer tries to move non-movable windows.
+   - FvwmPager now moves all windows as user requests.
+   - FvwmPager no longer displaces windows with title and border
+     sizes on moves.
 
 -------------------------------------------------------------------
 

@@ -71,6 +71,7 @@ typedef struct pager_window
   struct
   {
     unsigned is_mapped : 1;
+    unsigned is_movable : 1;
   } myflags;
   Window icon_w;
   Window icon_pixmap_w;

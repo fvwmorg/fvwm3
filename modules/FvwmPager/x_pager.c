@@ -86,6 +86,9 @@ extern PagerWindow *Start;
 extern PagerWindow *FocusWin;
 static Atom wm_del_win;
 
+static Atom ewmh_allowed_actions;
+static Atom ewmh_action_move;
+
 extern char *MyName;
 
 extern int desk1, desk2, ndesks;
@@ -184,6 +187,38 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 void HandleScrollDone()
 {
 	do_scroll(0, 0, True, True);
+}
+
+void update_ewmh_allowed_actions(PagerWindow *t)
+{
+	Atom type_return;
+	int format_return;
+	unsigned long nitems_return;
+	unsigned long bytes_after_return;
+	unsigned char *prop_return;
+
+	t->myflags.is_movable = 0;
+	if (XGetWindowProperty(dpy, t->w, ewmh_allowed_actions, 0, 10, False,
+			       XA_ATOM, &type_return, &format_return,
+			       &nitems_return, &bytes_after_return,
+			       &prop_return ) == Success)
+	{
+		if (type_return == XA_ATOM && nitems_return > 0)
+		{
+			Atom *prop = (Atom *)prop_return;
+
+			while (nitems_return--)
+			{
+				if (*prop == ewmh_action_move)
+				{
+					t->myflags.is_movable = 1;
+					break;
+				}
+				prop++;
+			}
+			XFree(prop_return);
+		}
+	}
 }
 
 /* discard certain events on a window */
@@ -497,6 +532,9 @@ void initialize_pager(void)
   XSetErrorHandler(FvwmErrorHandler);
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
+
+  ewmh_allowed_actions = XInternAtom(dpy, "_NET_WM_ALLOWED_ACTIONS", False);
+  ewmh_action_move = XInternAtom(dpy, "_NET_WM_ACTION_MOVE", False);
 
   /* load the font */
   /* Note: "font" is always created, whether labels are used or not
@@ -1232,6 +1270,35 @@ void DispatchEvent(XEvent *Event)
       ExitPager();
     }
     break;
+
+  case PropertyNotify:
+	  if (Event->xproperty.atom == ewmh_allowed_actions)
+	  {
+		  PagerWindow *t = Start;
+		  while (t != NULL && t->w != Event->xproperty.window)
+		  {
+			  t = t->next;
+		  }
+		  if (t != NULL)
+		  {
+			  if (Event->xproperty.state == PropertyDelete)
+			  {
+				  t->myflags.is_movable = 0;
+			  }
+			  else
+			  {
+				  update_ewmh_allowed_actions(t);
+			  }
+		  }
+		  else
+		  {
+			  /* We don't want events for window we don't handle
+			   * this shouldn't happen, but if it does, don't let
+			   * it happen again. */
+			  XSelectInput(dpy, Event->xproperty.window, 0);
+		  }
+	  }
+	  break;
   }
 }
 
@@ -2054,6 +2121,10 @@ void AddNewWindow(PagerWindow *t)
 	}
 	Hilight(t,False);
 
+
+	XSelectInput(dpy, t->w, PropertyChangeMask);
+	update_ewmh_allowed_actions(t);
+
 	return;
 }
 
@@ -2418,7 +2489,7 @@ void MoveWindow(XEvent *Event)
 		}
 	}
 
-	if (t == NULL)
+	if (t == NULL || !t->myflags.is_movable)
 	{
 		return;
 	}
@@ -2501,18 +2572,7 @@ void MoveWindow(XEvent *Event)
 	if (KeepMoving)
 	{
 		NewDesk = Scr.CurrentDesk;
-#if 0
-		/* griph: Why does it move the windows off screen if the
-		 * desk has been changed? */
-		if (NewDesk != t->desk)
-		{
-			XMoveWindow(dpy, IS_ICONIFIED(t) ?
-				    (t->icon_w != None ? t->icon_w :
-				     t->icon_pixmap_w) : t->w,
-				    Scr.VWidth, Scr.VHeight);
-			XSync(dpy, False);
-		}
-#endif
+
 		if (NewDesk >= desk1 && NewDesk <= desk2)
 		{
 			XReparentWindow(dpy, t->PagerView,
@@ -2532,11 +2592,7 @@ void MoveWindow(XEvent *Event)
 		}
 		XUngrabPointer(dpy,CurrentTime);
 		XSync(dpy,0);
-#if 0
-		/* griph: isn't this almost what Move Pointer does later? */
-		sprintf(command, "Silent Move %dp %dp", x, y);
-		SendText(fd, command, t->w);
-#endif
+
 		if (NewDesk != t->desk)
 		{
 			/* griph: This used to move to NewDesk, but NewDesk
@@ -2667,35 +2723,8 @@ void MoveWindow(XEvent *Event)
 			if (moved)
 			{
 				char buf[64];
-#if 0
-				/* This used to move icon windows with
-				 * XMoveWindow, and non-icons with
-				 * Silent Move, negative coordinates
-				 * corrected by display width and
-				 * border width and title hight added.
-				 *
-				 * The if 0:ed code works as before but with
-				 * fvwm moving the icons. I believe it's
-				 * incorrectly using at least the title
-				 * height /griph */
-				int tx;
-				int ty;
-				if (IS_ICONIFIED(t))
-				{
-					tx = x;
-					ty = y;
-				}
-				else
-				{
-					tx = x + t->border_width;
-					ty = y + t->border_width +
-						t->title_height;
-				}
-
-				sprintf(buf, "Silent Move +%dp +%dp", tx, ty);
-#else
 				sprintf(buf, "Silent Move +%dp +%dp", x, y);
-#endif
+
 				SendText(fd, buf, t->w);
 				XSync(dpy,0);
 			}
@@ -2947,7 +2976,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 	int JunkX, JunkY;
 	unsigned JunkMask;
 
-	if (t == NULL)
+	if (t == NULL || !t->myflags.is_movable)
 	{
 		return;
 	}
@@ -3012,10 +3041,6 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 
 	if (KeepMoving)
 	{
-#if 0
-		char command[48];
-#endif
-
 		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
 		{
@@ -3025,12 +3050,6 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		}
 		XUngrabPointer(dpy, CurrentTime);
 		XSync(dpy, 0);
-#if 0
-		/* griph: is't this moving to almost where "Move Pointer"
-		 * will move the window next? */
-		sprintf(command, "Silent Move %dp %dp", x, y);
-		SendText(fd, command, t->w);
-#endif
 		SendText(fd, "Silent Raise", t->w);
 		SendText(fd, "Silent Move Pointer", t->w);
 	}
