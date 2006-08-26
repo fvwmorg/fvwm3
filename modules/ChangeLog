@@ -1,8 +1,17 @@
+2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPager/FvwmPager.h (pager_window):
+	* FvwmPager/FvwmPager.c (list_configure):
+	* FvwmPager/x_pager.c (update_ewmh_allowed_actions)
+	(initialize_pager, DispatchEvent, AddNewWindow, MoveWindow)
+	(IconMoveWindow):
+	read allowed actions from fvwm instead of using ewmh.
+
 2006-08-10  Viktor Griph  <griph@dd.chalmers.se>
 
-	* FvwmPager/FvwmPager.h (pager_window): 
-	* FvwmPager/x_pager.c (update_ewmh_allowed_actions) 
-	(initialize_pager, DispatchEvent, AddNewWindow, MoveWindow) 
+	* FvwmPager/FvwmPager.h (pager_window):
+	* FvwmPager/x_pager.c (update_ewmh_allowed_actions)
+	(initialize_pager, DispatchEvent, AddNewWindow, MoveWindow)
 	(IconMoveWindow):
 	use ewmh allowed actions to track window movability.
 	(MoveWindow, IconMoveWindow):

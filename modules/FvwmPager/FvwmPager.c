@@ -674,6 +674,8 @@ void list_configure(unsigned long *body)
   t->title_height = cfgpacket->title_height;
   t->border_width = cfgpacket->border_width;
   memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
+  memcpy(&(t->allowed_actions), &(cfgpacket->allowed_actions),
+	 sizeof(cfgpacket->allowed_actions));
   t->icon_w = cfgpacket->icon_w;
   t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
 

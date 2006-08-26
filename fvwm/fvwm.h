@@ -395,6 +395,20 @@ typedef struct
 	unsigned has_ewmh_init_wm_desktop : 2;
 } window_flags;
 
+
+/* Actions allowed by modules. */
+typedef struct action_flags
+{
+	unsigned is_movable : 1;
+	unsigned is_deletable : 1;
+	unsigned is_destroyable : 1;
+	unsigned is_closable : 1;
+	unsigned is_maximizable : 1;
+	unsigned is_resizable : 1;
+	unsigned is_iconifiable : 1;
+} action_flags;
+
+
 /* Window name data structure for window conditions: a list of lists
    of names to match, the boolean operation on the matches being an
    AND of ORs. */

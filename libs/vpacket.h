@@ -67,6 +67,7 @@ typedef struct ConfigWinPacket
 
 	/*** Put structures here ***/
 	window_flags       flags;
+	action_flags       allowed_actions;
 
 } ConfigWinPacket;
 

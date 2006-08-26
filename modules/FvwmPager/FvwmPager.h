@@ -68,10 +68,10 @@ typedef struct pager_window
   Pixel text;
   Pixel back;
   window_flags flags;
+  action_flags allowed_actions;
   struct
   {
     unsigned is_mapped : 1;
-    unsigned is_movable : 1;
   } myflags;
   Window icon_w;
   Window icon_pixmap_w;

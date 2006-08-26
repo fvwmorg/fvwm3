@@ -614,7 +614,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 	return;
 }
 
-static Bool __is_resize_allowed(FvwmWindow *t, int functions,
+static Bool __is_resize_allowed(const FvwmWindow *t, int functions,
 				Bool is_user_request)
 {
         if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
@@ -644,8 +644,8 @@ static Bool __is_resize_allowed(FvwmWindow *t, int functions,
 ** combined them here and made them wrapper functions instead.
 */
 Bool is_function_allowed(
-	int function, char *action_string, FvwmWindow *t, Bool is_user_request,
-	Bool do_allow_override_mwm_hints)
+	int function, char *action_string, const FvwmWindow *t,
+	Bool is_user_request, Bool do_allow_override_mwm_hints)
 {
 	unsigned int functions;
 	char *functionlist[] = {

@@ -52,6 +52,8 @@
 #include "events.h"
 #include "geometry.h"
 #include "fvwmsignal.h"
+#include "decorations.h"
+#include "commands.h"
 
 /*
  * Use POSIX behaviour if we can, otherwise use SysV instead
@@ -1120,6 +1122,25 @@ static void BroadcastNewPacket(unsigned long event_type,
 	return;
 }
 
+action_flags *__get_allowed_actions(const FvwmWindow *fw)
+{
+	static action_flags act;
+	act.is_movable = is_function_allowed(F_MOVE, NULL, fw, True, False);
+	act.is_deletable = is_function_allowed(F_DELETE, NULL, fw, True,
+					       False);
+	act.is_destroyable = is_function_allowed(F_DESTROY, NULL, fw, True,
+						 False);
+	act.is_closable = is_function_allowed(F_CLOSE, NULL, fw, True, False);
+	act.is_maximizable = is_function_allowed(F_MAXIMIZE, NULL, fw, True,
+						 False);
+	act.is_resizable = is_function_allowed(F_RESIZE, NULL, fw, True,
+					       False);
+	act.is_iconifiable = is_function_allowed(F_ICONIFY, NULL, fw, True,
+						 False);
+
+	return &act;
+}
+
 /*
     RBW - 04/16/1999 - new version for GSFR --
 	- args are now pairs:
@@ -1130,7 +1151,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	as a dummy to preserve alignment of the other fields in the
 	old packet: we should drop this before the next release.
 */
-#define CONFIGARGS(_fw) 30,\
+#define CONFIGARGS(_fw) 31,\
 		(unsigned long)(-sizeof(Window)),	\
 		&FW_W(*(_fw)),				\
 		(unsigned long)(-sizeof(Window)),	\
@@ -1190,7 +1211,9 @@ static void BroadcastNewPacket(unsigned long event_type,
 		(unsigned long)(sizeof(short)),		\
 		&dummy,					\
 		(unsigned long)(sizeof((*(_fw))->flags)),	\
-		&(*(_fw))->flags
+		&(*(_fw))->flags,                       \
+		(unsigned long)(sizeof(action_flags)),  \
+		__get_allowed_actions((*(_fw)))
 
 void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {

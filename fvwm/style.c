@@ -4526,6 +4526,7 @@ void check_window_style_change(
 	{
 		flags->do_resize_window = 1;
 		flags->do_update_ewmh_allowed_actions = 1;
+		flags->do_update_modules_flags = 1;
 	}
 
 	/* has_color_back
@@ -4622,6 +4623,7 @@ void check_window_style_change(
 	{
 		flags->do_redecorate = 1;
 		flags->do_update_ewmh_allowed_actions = 1;
+		flags->do_update_modules_flags = 1;
 	}
 
 	if (ret_style->change_mask.do_save_under ||
@@ -4687,6 +4689,7 @@ void check_window_style_change(
 	    S_HAS_OVERRIDE_SIZE(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_allowed_actions = 1;
+		flags->do_update_modules_flags = 1;
 	}
 
 	/* cr_motion_method */
