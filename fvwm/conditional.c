@@ -1366,7 +1366,7 @@ static int __rc_matches_rcstring_consume(
 		}
 		else if (StrEquals(flags, "-2") || StrEquals(flags, "break"))
 		{
-			match_rc = COND_RC_ERROR;
+			match_rc = COND_RC_BREAK;
 		}
 		else
 		{

@@ -724,6 +724,7 @@ static signed int expand_vars_extended(
 		case COND_RC_OK:
 		case COND_RC_NO_MATCH:
 		case COND_RC_ERROR:
+		case COND_RC_BREAK:
 			val = (int)(cond_rc->rc);
 			break;
 		default:

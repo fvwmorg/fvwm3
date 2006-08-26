@@ -1,5 +1,13 @@
 2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
 
+	* NEWS:
+	* fvwm/expand.c (expand_vars_extended):
+	correctly expand break.
+	* fvwm/conditional.c (__rc_matches_rcstring_consume):
+	fix matching break.
+
+2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
+
 	* fvwm/decorations.h (is_function_allowed):
 	* fvwm/decorations.c (__is_resize_allowed, is_function_allowed):
 	work on 'const FvwmWindow *'

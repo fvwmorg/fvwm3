@@ -19,6 +19,8 @@ Changes in beta release 2.5.18 (not released yet)
    - FvwmPager now moves all windows as user requests.
    - FvwmPager no longer displaces windows with title and border
      sizes on moves.
+   - TestRc now correctly matches Break, and $[cond.rc] is
+     expanded for Break.
 
 -------------------------------------------------------------------
 
