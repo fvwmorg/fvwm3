@@ -463,8 +463,8 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 				{
 					XGetWindowProperty(
 						dpy,event.xselection.requestor,
-						event.xselection.property,0,
-						8192,False,
+						event.xselection.property,0L,
+						8192L,False,
 						event.xselection.target,&type,
 						&format, &longueur,
 						&octets_restant,&donnees);

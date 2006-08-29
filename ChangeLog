@@ -1,3 +1,8 @@
+2006-08-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* **/*:
+	Applied 64-bit/XGetWindowProperty patch by Harald Dunkel
+
 2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:

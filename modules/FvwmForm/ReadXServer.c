@@ -678,7 +678,7 @@ static void process_paste_request (XEvent *event, Item *item) {
     if (XGetWindowProperty (dpy,
 			    DefaultRootWindow (dpy),
 			    XA_CUT_BUFFER0,
-			    nread/4, 1024,   /* offset, length */
+			    nread/4, 1024L,   /* offset, length */
 			    False,           /* delete */
 			    AnyPropertyType, /* request type */
 			    &actual_type,

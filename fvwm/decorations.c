@@ -129,7 +129,7 @@ void GetMwmHints(FvwmWindow *t)
 		t->mwm_hints = NULL;
 	}
 	if (XGetWindowProperty(
-		    dpy, FW_W(t), _XA_MwmAtom, 0L, 32, False,
+		    dpy, FW_W(t), _XA_MwmAtom, 0L, 32L, False,
 		    _XA_MwmAtom, &actual_type, &actual_format, &nitems,
 		    &bytesafter,(unsigned char **)&t->mwm_hints)==Success)
 	{
@@ -183,7 +183,7 @@ void GetOlHints(FvwmWindow *t)
 	t->ol_hints = OL_DECOR_ALL;
 
 	if (XGetWindowProperty(
-		    dpy, FW_W(t), _XA_OL_WIN_ATTR, 0L, 32, False,
+		    dpy, FW_W(t), _XA_OL_WIN_ATTR, 0L, 32L, False,
 		    _XA_OL_WIN_ATTR, &actual_type, &actual_format,
 		    &nitems, &bytesafter, (unsigned char **)&hints) == Success)
 	{
@@ -243,7 +243,7 @@ void GetOlHints(FvwmWindow *t)
 	}
 
 	if (XGetWindowProperty(
-		    dpy, FW_W(t), _XA_OL_DECOR_ADD, 0L, 32, False,
+		    dpy, FW_W(t), _XA_OL_DECOR_ADD, 0L, 32L, False,
 		    XA_ATOM, &actual_type, &actual_format, &nitems,
 		    &bytesafter,(unsigned char **)&hints)==Success)
 	{
@@ -274,7 +274,7 @@ void GetOlHints(FvwmWindow *t)
 	}
 
 	if (XGetWindowProperty(
-		    dpy, FW_W(t), _XA_OL_DECOR_DEL, 0L, 32, False,
+		    dpy, FW_W(t), _XA_OL_DECOR_DEL, 0L, 32L, False,
 		    XA_ATOM, &actual_type, &actual_format, &nitems,
 		    &bytesafter,(unsigned char **)&hints)==Success)
 	{

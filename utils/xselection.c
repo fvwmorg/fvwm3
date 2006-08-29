@@ -43,7 +43,7 @@ void paste_primary(Display *dpy, int window, int property, int delete)
   h = buf;
   do
     {
-      if (XGetWindowProperty (dpy, window, property, nread/4, 1024,
+      if (XGetWindowProperty (dpy, window, property, nread/4, 1024L,
 			      delete, AnyPropertyType, &actual_type,
 			      &actual_format, &nitems, &bytes_after,
 			      (unsigned char **)&data) != Success)

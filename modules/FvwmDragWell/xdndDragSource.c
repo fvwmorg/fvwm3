@@ -565,7 +565,7 @@ int xdndSrcQueryDndAware (DragSource *ds, Window window, int *version,
   *version = 0;
 
   XGetWindowProperty(
-	  ds->display, window, ds->atomSel->xdndAware, 0, 0x8000000L, False,
+	  ds->display, window, ds->atomSel->xdndAware, 0L, 0x8000000L, False,
 	  XA_ATOM, &actual, &format, &count, &remaining, &data);
   if (actual != XA_ATOM || format != 32 || count == 0 || !data) {
     /* not supported */

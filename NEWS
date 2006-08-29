@@ -21,6 +21,9 @@ Changes in beta release 2.5.18 (not released yet)
      sizes on moves.
    - TestRc now correctly matches Break, and $[cond.rc] is
      expanded for Break.
+   - Fixed several 64-bit architecture problems with
+     XGetWindowProperty().  Xine works much better on 64-bit
+     machines.
 
 -------------------------------------------------------------------
 

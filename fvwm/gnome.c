@@ -281,7 +281,7 @@ AtomGet(Window win, Atom to_get, Atom type, int *size)
 	retval = NULL;
 	length = 0x7fffffff;
 	XGetWindowProperty(
-		dpy, win, to_get, 0, length, False, type, &type_ret,
+		dpy, win, to_get, 0L, length, False, type, &type_ret,
 		&format_ret, &num_ret, &bytes_after, &retval);
 
 	if ((retval) && (num_ret > 0) && (format_ret > 0))

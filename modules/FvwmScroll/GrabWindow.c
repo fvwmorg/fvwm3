@@ -570,8 +570,8 @@ void LoopOnEvents(Window target)
 			{
 				if (XGetWindowProperty (
 					dpy,
-					target, Event.xproperty.atom, 0,
-					MAX_ICON_NAME_LEN, False, XA_STRING,
+					target, Event.xproperty.atom, 0L,
+					(long)MAX_ICON_NAME_LEN, False, XA_STRING,
 					&actual,&actual_format, &nitems,
 					&bytesafter, (unsigned char **) &prop)
 				    == Success && (prop != NULL))
@@ -902,8 +902,8 @@ void GrabWindow(Window target)
   if(XFetchName(dpy, target, &temp)==0)
     temp = NULL;
   if (XGetWindowProperty (dpy,
-			  target, XA_WM_ICON_NAME, 0,
-			  MAX_ICON_NAME_LEN, False, XA_STRING,
+			  target, XA_WM_ICON_NAME, 0L,
+			  (long)MAX_ICON_NAME_LEN, False, XA_STRING,
 			  &actual,&actual_format, &nitems,
 			  &bytesafter, (unsigned char **) &prop)
       == Success && (prop != NULL))

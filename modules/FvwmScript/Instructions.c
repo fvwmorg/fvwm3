@@ -739,7 +739,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
     {
       XGetWindowProperty(dpy,event.xselection.requestor,
 			 event.xselection.property,
-			 0,8192,False,event.xselection.target,&type,&format,
+			 0L,8192L,False,event.xselection.target,&type,&format,
 			 &longueur,&octets_restant,&donnees);
       if (longueur > 0)
       {
