@@ -1,5 +1,9 @@
 2006-08-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/ewmh.c (ewmh_HandleDesktop):
+	fixed handling of ClickToFocusPassesClick with the EWMH desktop
+	window
+
 	* **/*:
 	Applied 64-bit/XGetWindowProperty patch by Harald Dunkel
 

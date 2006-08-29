@@ -24,6 +24,8 @@ Changes in beta release 2.5.18 (not released yet)
    - Fixed several 64-bit architecture problems with
      XGetWindowProperty().  Xine works much better on 64-bit
      machines.
+   - Fixed handling of ClickToFocusPassesClick with the EWMH
+     desktop (e.g. using nautilus).
 
 -------------------------------------------------------------------
 
