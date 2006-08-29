@@ -4,8 +4,13 @@
 	fixed handling of ClickToFocusPassesClick with the EWMH desktop
 	window
 
-	* **/*:
-	Applied 64-bit/XGetWindowProperty patch by Harald Dunkel
+2006-08-29  Harald Dunkel  <harald.dunkel@t-online.de>
+
+	* fvwm/icccm2.c:
+	* fvwm/gnome.c:
+	* fvwm/decorations.c:
+	fix offset and length args for XGetWindowProperty() (to support 64bit
+	architectures)
 
 2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
 

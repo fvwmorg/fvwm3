@@ -1,3 +1,14 @@
+2006-08-29  Harald Dunkel  <harald.dunkel@t-online.de>
+
+	* FvwmScroll/GrabWindow.c:
+	* FvwmScript/Widgets/TextField.c:
+	* FvwmScript/Instructions.c:
+	* FvwmPager/x_pager.c:
+	* FvwmForm/ReadXServer.c:
+	* FvwmDragWell/xdndDragSource.c:
+	  change offset and length args for XGetWindowProperty() to long
+	  (to support 64bit architectures)
+	
 2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmPager/FvwmPager.h (pager_window):
