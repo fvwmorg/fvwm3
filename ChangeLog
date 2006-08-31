@@ -1,3 +1,18 @@
+2006-08-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/ewmh.c (atom_get):
+	fix offset and length args for XGetWindowProperty() (to support 64bit
+	architectures)
+
+2006-08-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (HandleUnmapNotify):
+	immediately handle MapRequests after unmapping a window while we still
+	have the context fvwm window; this is necessary to allow the client to
+	re-map a window before fvwm can reparent it to the root window
+	(HandleMapRequestKeepRaised):
+	cleaned up
+
 2006-08-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh.c (ewmh_HandleDesktop):

@@ -2790,12 +2790,15 @@ void HandleMapRequestKeepRaised(
 	ew = ea->exc->w.w;
 	if (ReuseWin == NULL)
 	{
+		Window pw;
+
+		pw = ea->exc->x.etrigger->xmaprequest.parent;
 		if (XFindContext(dpy, ew, FvwmContext, (caddr_t *)&fw) ==
 		    XCNOENT)
 		{
 			fw = NULL;
 		}
-		else if (IS_MAP_PENDING(fw))
+		if (fw != NULL && IS_MAP_PENDING(fw))
 		{
 			/* The window is already going to be mapped, no need to
 			 * do that twice */
@@ -3512,11 +3515,15 @@ void HandleUnmapNotify(const evh_args_t *ea)
 	int dstx, dsty;
 	Window dumwin;
 	XEvent dummy;
+	XEvent map_event;
 	const XEvent *te = ea->exc->x.etrigger;
 	int weMustUnmap;
 	Bool focus_grabbed;
 	Bool must_return = False;
+	Bool do_map = False;
 	FvwmWindow * const fw = ea->exc->w.fw;
+	Window pw;
+	Window cw;
 
 	DBUG("HandleUnmapNotify", "Routine Entered");
 
@@ -3545,6 +3552,8 @@ void HandleUnmapNotify(const evh_args_t *ea)
 			return;
 		}
 	}
+	cw = FW_W(fw);
+	pw = FW_W_PARENT(fw);
 	if (te->xunmap.window == FW_W_FRAME(fw))
 	{
 		SET_ICONIFY_PENDING(fw , 0);
@@ -3635,6 +3644,12 @@ void HandleUnmapNotify(const evh_args_t *ea)
 		}
 		XSync(dpy, 0);
 		MyXUngrabServer(dpy);
+		if (FCheckTypedWindowEvent(dpy, pw, MapRequest, &map_event))
+		{
+			/* the client tried to map the window again while it
+			 * was still inside the decoration windows */
+		        do_map = True;
+		}
 	}
 	destroy_window(fw);
 	if (focus_grabbed == True)
@@ -3644,6 +3659,14 @@ void HandleUnmapNotify(const evh_args_t *ea)
 	EWMH_ManageKdeSysTray(te->xunmap.window, te->type);
 	EWMH_WindowDestroyed();
 	GNOME_SetClientList();
+	if (do_map == True)
+	{
+		map_event.xmaprequest.window = cw;
+		map_event.xmaprequest.parent = Scr.Root;
+		dispatch_event(&map_event);
+		/* note: we really should handle all map and unmap notify
+		 * events for that window in a loop here */
+	}
 
 	return;
 }

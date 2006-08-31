@@ -26,6 +26,8 @@ Changes in beta release 2.5.18 (not released yet)
      machines.
    - Fixed handling of ClickToFocusPassesClick with the EWMH
      desktop (e.g. using nautilus).
+   - Fixed handling of windows that are unmapped and mapped again
+     too fast (e.g. fpga_editor).
 
 -------------------------------------------------------------------
 
