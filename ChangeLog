@@ -2,6 +2,7 @@
 
 	* acinclude.m4:
 	removed the unused test for imlib
+	removed the Imlib.h header from gdk_imlib test programs
 
 2006-08-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 

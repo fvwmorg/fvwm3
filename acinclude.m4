@@ -578,7 +578,6 @@ dnl
       AC_TRY_RUN([
 #include <stdio.h>
 #include <stdlib.h>
-#include <Imlib.h>
 #include <gdk_imlib.h>
 
 /* migo: originally it was GdkImLibColor with incorrect spelling */
@@ -644,7 +643,6 @@ int main ()
           LIBS="$LIBS $GDK_IMLIB_LIBS"
           AC_TRY_LINK([
 #include <stdio.h>
-#include <Imlib.h>
 #include <gdk_imlib.h>
 ],      [ return 0; ],
         [                 (echo "*** The test program compiled, but did not run. This usually means" >&5) 2>/dev/null || \
