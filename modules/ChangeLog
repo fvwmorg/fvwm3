@@ -1,3 +1,10 @@
+2006-09-12  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmCommand/FvwmCommand.c (process_message):
+	print config_info on separate lines
+	* FvwmCommand/FvwmCommandS.c (relay_packet):
+	relay 0-length packages.
+
 2006-08-29  Harald Dunkel  <harald.dunkel@t-online.de>
 
 	* FvwmScroll/GrabWindow.c:
@@ -8,7 +15,7 @@
 	* FvwmDragWell/xdndDragSource.c:
 	  change offset and length args for XGetWindowProperty() to long
 	  (to support 64bit architectures)
-	
+
 2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmPager/FvwmPager.h (pager_window):
