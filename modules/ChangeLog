@@ -1,5 +1,8 @@
 2006-09-12  Viktor Griph  <griph@dd.chalmers.se>
 
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	correctly handle trailing whitespace after geometry
+
 	* FvwmCommand/FvwmCommand.c (process_message):
 	print config_info on separate lines
 	* FvwmCommand/FvwmCommandS.c (relay_packet):

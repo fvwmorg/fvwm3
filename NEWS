@@ -10,6 +10,8 @@ Changes in beta release 2.5.19 (not released yet)
 * Bug Fixes:
    - FvwmCommand now reports "end windowlist" and "end configinfo".
    - FvwmCommand now prints config info split on lines.
+   - FvwmTaskBar no longer gets lost with trailing whitespace after
+     geometry specification.
 
 -------------------------------------------------------------------
 

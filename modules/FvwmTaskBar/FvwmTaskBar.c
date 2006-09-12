@@ -1135,7 +1135,7 @@ static void ParseConfigLine(char *tline)
     case 2: /* Geometry */
       while (isspace((unsigned char)*rest) && *rest != '\n' && *rest != 0)
 	rest++;
-      UpdateString(&geometry, rest);
+      UpdateString(&geometry, PeekToken(rest, NULL));
       break;
     case 3: /* Fore */
       CopyString(&ForeColor, rest);
