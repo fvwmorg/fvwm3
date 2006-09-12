@@ -607,7 +607,7 @@ void process_message( void )
       break;
 
     case M_CONFIG_INFO:
-      printf( "%s", (char *)&body[3] );
+      printf( "%s\n", (char *)&body[3] );
       break;
 
     default:

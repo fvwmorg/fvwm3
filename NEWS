@@ -8,6 +8,8 @@ Changes in beta release 2.5.19 (not released yet)
 * New features:
 
 * Bug Fixes:
+   - FvwmCommand now reports "end windowlist" and "end configinfo".
+   - FvwmCommand now prints config info split on lines.
 
 -------------------------------------------------------------------
 
