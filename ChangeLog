@@ -1,3 +1,9 @@
+2006-09-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/geometry.c (constrain_size):
+	repeat aspect-resizing in a loop to get a stable result that does not
+	change the next time the frame is set up
+
 2006-09-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:

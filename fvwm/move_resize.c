@@ -3996,7 +3996,6 @@ static Bool __resize_window(F_CMD_ARGS)
 	update_absolute_geometry(fw);
 	maximize_adjust_offset(fw);
 	GNOME_SetWinArea(fw);
-
 	if (is_aborted)
 	{
 		return False;

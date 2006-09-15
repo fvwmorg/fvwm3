@@ -12,6 +12,8 @@ Changes in beta release 2.5.19 (not released yet)
    - FvwmCommand now prints config info split on lines.
    - FvwmTaskBar no longer gets lost with trailing whitespace after
      geometry specification.
+   - Fixed a window size problem if the aspect ratio is set (e.g.
+     mplayer).
 
 -------------------------------------------------------------------
 

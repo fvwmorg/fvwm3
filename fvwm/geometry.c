@@ -846,6 +846,8 @@ void constrain_size(
 	{
 		double odefect;
 		double defect;
+		double maxratio;
+		double minratio;
 		int ow;
 		int oh;
 
@@ -864,71 +866,62 @@ void constrain_size(
 			maxHeight -= baseHeight;
 			minHeight -= baseHeight;
 		}
-		ow = dwidth;
-		oh = dheight;
-		odefect = 0;
-		if (minAspectX * dheight > minAspectY * dwidth)
+		minratio = (double)minAspectX / (double)minAspectY;
+		maxratio = (double)maxAspectX / (double)maxAspectY;
+		do
 		{
-			odefect = ((double)minAspectX / (double)minAspectY -
-				   (double)dwidth / (double)dheight);
-		}
-		else if (maxAspectX * dheight < maxAspectY * dwidth)
-		{
-			odefect = ((double)dwidth / (double)dheight -
-				   (double)maxAspectX / (double)maxAspectY);
-		}
-		if ((minAspectX * dheight > minAspectY * dwidth) &&
-		    (xmotion == 0))
-		{
-			/* Change width to match */
-			delta = MAKEMULT(
-				minAspectX * dheight / minAspectY - dwidth,
-				xinc);
-			if (dwidth + delta <= maxWidth)
+			ow = dwidth;
+			oh = dheight;
+			odefect = 0;
+			if (minAspectX * dheight > minAspectY * dwidth)
 			{
-				dwidth += delta;
+				odefect =
+					minratio -
+					(double)dwidth / (double)dheight;
 			}
-		}
-		if (minAspectX * dheight > minAspectY * dwidth)
-		{
-			delta = MAKEMULT(
-				dheight - dwidth*minAspectY/minAspectX, yinc);
-			if (dheight - delta >= minHeight)
+			else if (maxAspectX * dheight < maxAspectY * dwidth)
 			{
-				dheight -= delta;
+				odefect = (double)dwidth / (double)dheight -
+					maxratio;
 			}
-			else
+			if (
+				minAspectX * dheight > minAspectY * dwidth &&
+				xmotion == 0)
 			{
+				/* Change width to match */
 				delta = MAKEMULT(
-					minAspectX*dheight / minAspectY -
+					minAspectX * dheight / minAspectY -
 					dwidth, xinc);
 				if (dwidth + delta <= maxWidth)
 				{
 					dwidth += delta;
 				}
 			}
-		}
+			if (minAspectX * dheight > minAspectY * dwidth)
+			{
+				delta = MAKEMULT(
+					dheight -
+					dwidth * minAspectY / minAspectX,
+					yinc);
+				if (dheight - delta >= minHeight)
+				{
+					dheight -= delta;
+				}
+				else
+				{
+					delta = MAKEMULT(
+						minAspectX * dheight /
+						minAspectY - dwidth, xinc);
+					if (dwidth + delta <= maxWidth)
+					{
+						dwidth += delta;
+					}
+				}
+			}
 
-		if ((maxAspectX * dheight < maxAspectY * dwidth) &&
-		    (ymotion == 0))
-		{
-			delta = MAKEMULT(
-				dwidth * maxAspectY / maxAspectX - dheight,
-				yinc);
-			if (dheight + delta <= maxHeight)
-			{
-				dheight += delta;
-			}
-		}
-		if ((maxAspectX * dheight < maxAspectY * dwidth))
-		{
-			delta = MAKEMULT(dwidth - maxAspectX*dheight/maxAspectY,
-					 xinc);
-			if (dwidth - delta >= minWidth)
-			{
-				dwidth -= delta;
-			}
-			else
+			if (
+				maxAspectX * dheight < maxAspectY * dwidth &&
+				ymotion == 0)
 			{
 				delta = MAKEMULT(
 					dwidth * maxAspectY / maxAspectX -
@@ -938,30 +931,48 @@ void constrain_size(
 					dheight += delta;
 				}
 			}
-		}
-		defect = 0;
-		if (minAspectX * dheight > minAspectY * dwidth)
-		{
-			defect = ((double)minAspectX / (double)minAspectY -
-				  (double)dwidth / (double)dheight);
-		}
-		else if (maxAspectX * dheight < maxAspectY * dwidth)
-		{
-			defect = ((double)dwidth / (double)dheight -
-				  (double)maxAspectX / (double)maxAspectY);
-		}
-		if (odefect <= defect)
-		{
-			dwidth = ow;
-			dheight = oh;
-		}
+			if ((maxAspectX * dheight < maxAspectY * dwidth))
+			{
+				delta = MAKEMULT(
+					dwidth - maxAspectX*dheight/maxAspectY,
+					xinc);
+				if (dwidth - delta >= minWidth)
+				{
+					dwidth -= delta;
+				}
+				else
+				{
+					delta = MAKEMULT(
+						dwidth * maxAspectY /
+						maxAspectX - dheight, yinc);
+					if (dheight + delta <= maxHeight)
+					{
+						dheight += delta;
+					}
+				}
+			}
+			defect = 0;
+			if (minAspectX * dheight > minAspectY * dwidth)
+			{
+				defect =
+					minratio -
+					(double)dwidth / (double)dheight;
+			}
+			else if (maxAspectX * dheight < maxAspectY * dwidth)
+			{
+				defect =
+					(double)dwidth / (double)dheight -
+					maxratio;
+			}
+		} while (odefect > defect);
+		dwidth = ow;
+		dheight = oh;
 		if (fw->hints.flags & PBaseSize)
 		{
 			dwidth += baseWidth;
 			dheight += baseHeight;
 		}
 	}
-
 
 	/*
 	 * Fourth, account for border width and title height
