@@ -1,3 +1,10 @@
+2006-09-17  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/events.c (HandleFocusIn, HandleFocusOut):
+	* fvwm/focus.c (__set_focus_to_fwin):
+	fix focus decoration when unmanaged are focused, unless
+	FlickeringQtDialogsWorkaround is on. Closes bug #758.
+
 2006-09-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/geometry.c (constrain_size):

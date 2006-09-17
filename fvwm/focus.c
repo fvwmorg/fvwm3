@@ -307,6 +307,7 @@ static void __set_focus_to_fwin(
 	{
 		FOCUS_SET(Scr.NoFocusWin);
 		set_focus_window(NULL);
+		Scr.UnknownWinFocused = None;
 		XFlush(dpy);
 		return;
 	}
@@ -341,6 +342,14 @@ static void __set_focus_to_fwin(
 	else if (focus_does_accept_input_focus(fw))
 	{
 		/* Window will accept input focus */
+		if (Scr.StolenFocusWin == w && Scr.UnknownWinFocused != None)
+		{
+			/* Without this FocusIn is not generated on the
+			 * window if it was focuesed when the unmanaged
+			 * window took focus. */
+			FOCUS_SET(Scr.NoFocusWin);
+
+		}
 		FOCUS_SET(w);
 		set_focus_window(fw);
 		if (fw)

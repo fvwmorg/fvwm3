@@ -14,6 +14,8 @@ Changes in beta release 2.5.19 (not released yet)
      geometry specification.
    - Fixed a window size problem if the aspect ratio is set (e.g.
      mplayer).
+   - Decorations now update when unmanaged windows take focus, and
+     not FlickeringQtDialogsWorkaround is enabled.
 
 -------------------------------------------------------------------
 

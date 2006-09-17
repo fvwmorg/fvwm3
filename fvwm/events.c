@@ -2292,7 +2292,11 @@ void HandleFocusIn(const evh_args_t *ea)
 			focus_w = w;
 			is_unmanaged_focused = True;
 		}
-		else
+		/* Only show a non-focused window as focused,
+		 * if the focus is on unmanaged and flickering qt dialogs
+		 * workaround is on. */
+		if (!Scr.bo.do_enable_flickering_qt_dialogs_workaround ||
+		    !is_unmanaged_focused)
 		{
 			border_draw_decorations(
 				Scr.Hilite, PART_ALL, False, True, CLEAR_ALL,
@@ -2384,8 +2388,11 @@ void HandleFocusOut(const evh_args_t *ea)
 	    ea->exc->x.etrigger->xfocus.window == Scr.UnknownWinFocused)
 	{
 		FOCUS_SET(Scr.StolenFocusWin);
+		ea->exc->x.etrigger->xfocus.window = Scr.StolenFocusWin;
+		ea->exc->x.etrigger->type = FocusIn;
 		Scr.UnknownWinFocused = None;
 		Scr.StolenFocusWin = None;
+		dispatch_event(ea->exc->x.etrigger);
 	}
 
 	return;
