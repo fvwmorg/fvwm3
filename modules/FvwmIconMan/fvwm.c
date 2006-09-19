@@ -659,7 +659,8 @@ static void property_change(FvwmPacketBody *body)
 		{
 			unsigned long u;
 
-			if (sscanf(body->property_data.str,"%lu",&u) == 1)
+			if (sscanf((char *)body->property_data.str, "%lu",
+				   &u) == 1)
 			{
 				man->swallower_win = (Window)u;
 			}

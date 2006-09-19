@@ -911,10 +911,10 @@ Bool CalculateGradientDimensions(
  * None the gradient is drawn into it. The d_width, d_height, d_x and d_y
  * describe the traget rectangle within the drawable. */
 Drawable CreateGradientPixmap(
-	Display *dpy, Drawable d, GC gc, int type, int g_width, int g_height,
-	int ncolors, XColor *xcs, int dither, Pixel **d_pixels, int *d_npixels,
-	Drawable in_drawable, int d_x, int d_y, int d_width, int d_height,
-	XRectangle *rclip)
+	Display *dpy, Drawable d, GC gc, int type, unsigned int g_width,
+	unsigned int g_height, int ncolors, XColor *xcs, int dither, Pixel **d_pixels,
+	unsigned int *d_npixels, Drawable in_drawable, int d_x, int d_y,
+	unsigned int d_width, unsigned int d_height, XRectangle *rclip)
 {
 	Pixmap pixmap = None;
 	PictureImageColorAllocator *pica = NULL;

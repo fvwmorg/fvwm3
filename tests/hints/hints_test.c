@@ -216,7 +216,9 @@ int main(int argc, char **argv)
 	int state_count = 0;
 	Atom states[10];
 	Atom type = 0;
-	int i,x_r,y_r,h_r,w_r,ret;
+	int i,x_r,y_r;
+	unsigned int h_r,w_r;
+	int ret;
 	int ewmh_state_arg = 0;
 	int ewmh_type_arg = 0;
 	int mwm_func_arg = 0;

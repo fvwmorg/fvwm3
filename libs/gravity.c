@@ -127,7 +127,7 @@ void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff)
 /* Moves a child rectangle taking its gravity into accout as if the parent
  * rectangle was moved and resized. */
 void gravity_move_resize_parent_child(
-	int child_gravity, rectangle *parent_diff_r, rectangle *child_r)
+	int child_gravity, signed_rectangle *parent_diff_r, rectangle *child_r)
 {
 	int xoff;
 	int yoff;

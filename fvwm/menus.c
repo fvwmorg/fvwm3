@@ -2701,8 +2701,8 @@ static void make_menu(MenuRoot *mr, Bool is_tear_off)
  * changed. */
 static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 {
-	int sw;
-	int sh;
+	unsigned int sw;
+	unsigned int sh;
 	Bool has_screen_size_changed = False;
 	fscreen_scr_arg fscr;
 
@@ -3852,7 +3852,8 @@ static int pop_menu_up(
 	unsigned int prev_width;
 	unsigned int prev_height;
 	unsigned int event_mask;
-	int scr_x, scr_y, scr_w, scr_h;
+	int scr_x, scr_y;
+	unsigned int scr_w, scr_h;
 
 	mr = *pmenu;
 	if (!mr ||
@@ -6506,7 +6507,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	static int x_start;
 	static int y_start;
 	static Bool has_mouse_moved = False;
-	int scr_x, scr_y, scr_w, scr_h;
+	int scr_x, scr_y;
+	unsigned int scr_w, scr_h;
 
 	pmret->rc = MENU_NOP;
 	if (pmp->flags.is_sticky && !pmp->flags.is_submenu)
@@ -7781,8 +7783,8 @@ char *get_menu_options(
 			int screen;
 			int sx;
 			int sy;
-			int sw;
-			int sh;
+			unsigned int sw;
+			unsigned int sh;
 
 			/* parse the rectangle */
 			free(tok);

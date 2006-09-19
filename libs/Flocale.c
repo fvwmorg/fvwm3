@@ -188,17 +188,17 @@ int FlocaleChar2bOneCharToUtf8(XChar2b c, char *buf)
 
 /* return number of bytes of character at current position
    (pointed to by str) */
-int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
+int FlocaleStringNumberOfBytes(FlocaleFont *flf, const char *str)
 {
         int bytes = 0;
         if(FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
 	        /* handle UTF-8 */
-	        if(str[0] <= 0x7f)
+	        if ((str[0] & 0x80) == 0)
 	        {
 		        bytes = 1;
 	        }
-		else if(str[0] <= 0xdf)
+		else if((str[0] & ~0xdf) == 0)
 		{
 		        bytes = 2;
 		}
@@ -211,7 +211,7 @@ int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 	else if(flf->flags.is_mb)
 	{
 	        /* non-UTF-8 multibyte encoding */
-	        if(str[0] <= 0x7f)
+	        if ((str[0] & 0x80) == 0)
 		{
 			bytes = 1;
 		}
@@ -230,10 +230,10 @@ int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 
 /* given a string, font specifying its locale and a byte offset gives
    character offset */
-int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
+int FlocaleStringByteToCharOffset(FlocaleFont *flf, const char *str,
 				  int offset)
 {
-	const unsigned char *curr_ptr = str;
+	const char *curr_ptr = str;
 	int i = 0;
 	int len = strlen(str);
 	int coffset = 0;
@@ -250,10 +250,10 @@ int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
 
 /* like above but reversed, ie. return byte offset corresponding to given
    charater offset */
-int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
+int FlocaleStringCharToByteOffset(FlocaleFont *flf, const char *str,
 				  int coffset)
 {
-	const unsigned char *curr_ptr = str;
+	const char *curr_ptr = str;
 	int i;
 	int len = strlen(str);
 	int offset = 0;
@@ -269,7 +269,7 @@ int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
 }
 
 /* return length of string in characters */
-int FlocaleStringCharLength(FlocaleFont *flf, const unsigned char *str)
+int FlocaleStringCharLength(FlocaleFont *flf, const char *str)
 {
 	int i, len;
 	int str_len = strlen(str);
@@ -279,7 +279,7 @@ int FlocaleStringCharLength(FlocaleFont *flf, const unsigned char *str)
 }
 
 static
-XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
+XChar2b *FlocaleUtf8ToUnicodeStr2b(char *str, int len, int *nl)
 {
 	XChar2b *str2b = NULL;
 	int i = 0, j = 0, t;
@@ -287,12 +287,12 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
 	str2b = (XChar2b *)safemalloc((len+1)*sizeof(XChar2b));
 	while (i < len && str[i] != 0)
 	{
-		if (str[i] <= 0x7f)
+		if ((str[i] & 0x80) == 0)
 		{
 			str2b[j].byte2 = str[i];
 			str2b[j].byte1 = 0;
 		}
-		else if (str[i] <= 0xdf && i+1 < len)
+		else if ((str[i] & ~0xdf) == 0 && i+1 < len)
 		{
 			t = ((str[i] & 0x1f) << 6) + (str[i+1] & 0x3f);
 			str2b[j].byte2 = (unsigned char)(t & 0xff);
@@ -322,7 +322,7 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
  * big5hkscs-0, and cns-11643- */
 static
 XChar2b *FlocaleStringToString2b(
-	Display *dpy, FlocaleFont *flf, unsigned char *str, int len, int *nl)
+	Display *dpy, FlocaleFont *flf, char *str, int len, int *nl)
 {
 	XChar2b *str2b = NULL;
 	char *tmp = NULL;
@@ -352,7 +352,7 @@ XChar2b *FlocaleStringToString2b(
 	{
 		while (i < len && str[i] != 0)
 		{
-			if (str[i] <= 0x7f)
+			if ((str[i] & 0x80) == 0)
 			{
 				/* seems ok with KSC5601 and GB2312 as we get
 				 * almost the ascii. I do no try
@@ -381,7 +381,7 @@ XChar2b *FlocaleStringToString2b(
 	{
 		while (i < len && str[i] != 0)
 		{
-			if (str[i] <= 0x7f)
+			if ((str[i] & 0x80) == 0)
 			{
 				/* we should convert to ascii */
 #if 0
@@ -442,15 +442,14 @@ char *FlocaleEncodeString(
 
 	        /* first process combining characters */
 	        tmp_str = FiconvCharsetToUtf8(
-			dpy,
-			flf->str_fc,
-			(const char *)str,len);
+			dpy, flf->str_fc, (const char *)str,len);
 		/* if conversion to UTF-8 failed str1 will be NULL */
 		if(tmp_str != NULL)
 		{
 			/* do combining */
-			len = CombineChars(tmp_str,strlen(tmp_str),
-					    comb_chars, l_to_v);
+			len = CombineChars((unsigned char *)tmp_str,
+					   strlen(tmp_str), comb_chars,
+					   l_to_v);
 			/* returns the length of the resulting UTF-8 string */
 			/* convert back to current charset */
 			str1 = FiconvUtf8ToCharset(
@@ -1377,7 +1376,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	char *str, *opt_str, *encoding= NULL, *fn = NULL;
 	int shadow_size = 0;
 	int shadow_offset = 0;
-	int shadow_dir;
+	int shadow_dir = MULTI_DIR_SE;
 	int i;
 
 	/* removing quoting for modules */

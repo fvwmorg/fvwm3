@@ -743,7 +743,7 @@ typedef struct FvwmWindow
 	/* pixmap for the icon mask */
 	Pixmap icon_maskPixmap;
 	Pixmap icon_alphaPixmap;
-	int icon_nalloc_pixels;
+	unsigned int icon_nalloc_pixels;
 	Pixel *icon_alloc_pixels;
 	int icon_no_limit;
 	FlocaleFont *icon_font;

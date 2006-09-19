@@ -274,7 +274,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist)
   int cacheTime = 0;
   XdndCursor *cursorPtr;
   Window trackWindow, root_return, child_return;
-  int mask_return;
+  unsigned int mask_return;
   Bool retBool;
   int version = 0;
   Atom retAction = None;
@@ -445,8 +445,8 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist)
 	  target = xev.xselectionrequest.target;
 	  ds->dropTargProperty = xev.xselectionrequest.property;
 	  XChangeProperty(
-		  ds->display,ds->dragSrcWin,ds->dropTargProperty,target,8,
-		  PropModeReplace,dropData,strlen(dropData)+1);
+		  ds->display, ds->dragSrcWin, ds->dropTargProperty, target, 8,
+		  PropModeReplace, (unsigned char*)dropData, strlen(dropData)+1);
 	  memset(&xev, 0, sizeof (XEvent));
 
 	  xev.xany.type = SelectionNotify;

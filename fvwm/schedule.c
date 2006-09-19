@@ -38,7 +38,7 @@ typedef struct
 	Time time_to_execute;
 	Window window;
 	char *command;
-	int period; // in milliseconds
+	int period; /* in milliseconds */
 } sq_object_type;
 
 static int last_schedule_id = 0;

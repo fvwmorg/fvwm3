@@ -2545,7 +2545,7 @@ FvwmWindow *AddWindow(
 void FetchWmProtocols(FvwmWindow *tmp)
 {
 	Atom *protocols = NULL, *ap;
-	long *l_protocols;
+	unsigned long *l_protocols;
 	int i, n;
 	Atom atype;
 	int aformat;

@@ -169,7 +169,7 @@ typedef struct MenuRootDynamic
 	struct
 	{
 		Pixel *d_pixels;
-		int d_npixels;
+		unsigned int d_npixels;
 	} stored_pixels; /* alloc pixels when dithering is used for gradients */
 } MenuRootDynamic;
 

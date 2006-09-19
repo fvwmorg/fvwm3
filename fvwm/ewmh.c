@@ -1028,13 +1028,14 @@ void EWMH_UpdateWorkArea(void)
 }
 
 void EWMH_GetWorkAreaIntersection(
-	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type)
+	FvwmWindow *fw, int *x, int *y, unsigned int *w, unsigned int *h,
+	int type)
 {
 	int nx,ny,nw,nh;
 	int area_x = Scr.Desktops->ewmh_working_area.x;
 	int area_y = Scr.Desktops->ewmh_working_area.y;
-	int area_w = Scr.Desktops->ewmh_working_area.width;
-	int area_h = Scr.Desktops->ewmh_working_area.height;
+	unsigned int area_w = Scr.Desktops->ewmh_working_area.width;
+	unsigned int area_h = Scr.Desktops->ewmh_working_area.height;
 	Bool is_dynamic = False;
 
 	switch(type)

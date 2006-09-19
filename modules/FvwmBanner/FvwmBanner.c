@@ -60,8 +60,8 @@
 typedef struct _PImageIcon {
 	Pixmap pixmap;
 	Pixmap mask;
-	int width;
-	int height;
+	unsigned int width;
+	unsigned int height;
 	int depth;
 }        PImageIcon;
 

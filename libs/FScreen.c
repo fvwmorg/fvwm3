@@ -94,8 +94,8 @@ typedef struct
 	int   screen_number;
 	short x_org;
 	short y_org;
-	short width;
-	short height;
+	unsigned short width;
+	unsigned short height;
 } XineramaScreenInfo;
 #endif
 
@@ -594,7 +594,9 @@ Bool FScreenConfigureSLSScreens(int nscreens, char *args)
 		{
 			break;
 		}
-		if (XParseGeometry(token, &val[0], &val[1], &val[2], &val[3]) ==
+		if (XParseGeometry(token, &val[0], &val[1],
+				   (unsigned int *)&val[2],
+				   (unsigned int *)&val[3]) ==
 		    (XValue|YValue|WidthValue|HeightValue) ||
 		    GetIntegerArguments(args, &next, val, 4) == 4)
 		{
@@ -855,8 +857,8 @@ static int FindScreen(
  * one screen is configured.  Otherwise it returns True.
  */
 Bool FScreenGetScrRect(
-	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y, int *w,
-	int *h)
+	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y,
+	unsigned int *w, unsigned int *h)
 {
 	screen = FindScreen(arg, screen);
 	if (screen < first_to_check || screen > last_to_check)
@@ -931,8 +933,8 @@ int FScreenClipToScreen(
 {
 	int sx;
 	int sy;
-	int sw;
-	int sh;
+	unsigned int sw;
+	unsigned int sh;
 	int lx = (x) ? *x : 0;
 	int ly = (y) ? *y : 0;
 	int x_grav = GRAV_POS;
@@ -978,8 +980,8 @@ void FScreenCenterOnScreen(
 {
 	int sx;
 	int sy;
-	int sw;
-	int sh;
+	unsigned int sw;
+	unsigned int sh;
 	int lx;
 	int ly;
 
@@ -1005,7 +1007,8 @@ void FScreenCenterOnScreen(
 }
 
 void FScreenGetResistanceRect(
-	int wx, int wy, int ww, int wh, int *x0, int *y0, int *x1, int *y1)
+	int wx, int wy, unsigned int ww, unsigned int wh, int *x0, int *y0,
+	unsigned int *x1, unsigned int *y1)
 {
 	fscreen_scr_arg arg;
 
@@ -1024,8 +1027,8 @@ Bool FScreenIsRectangleOnScreen(
 {
 	int sx;
 	int sy;
-	int sw;
-	int sh;
+	unsigned int sw;
+	unsigned int sh;
 
 	FScreenGetScrRect(arg, screen, &sx, &sy, &sw, &sh);
 
@@ -1287,10 +1290,12 @@ int FScreenGetGeometry(
 {
 	int   ret;
 	int   saved;
-	int   x, y, w=0, h=0;
+	int   x, y;
+	unsigned int w = 0, h = 0;
 	int   grav, x_grav, y_grav;
 	int   scr = default_geometry_scr;
-	int   scr_x, scr_y, scr_w, scr_h;
+	int   scr_x, scr_y;
+	unsigned int scr_w, scr_h;
 
 	/* I. Do the parsing and strip off extra bits */
 	ret = FScreenParseGeometryWithScreen(parsestring, &x, &y, &w, &h, &scr);

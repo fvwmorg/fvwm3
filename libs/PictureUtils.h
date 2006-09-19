@@ -20,8 +20,8 @@ PictureImageColorAllocator *PictureOpenImageColorAllocator(
 	Display *dpy, Colormap cmap, int x, int y, Bool no_limit,
 	Bool save_pixels, int dither, Bool is_8);
 void PictureCloseImageColorAllocator(
-	Display *dpy, PictureImageColorAllocator *pica, int *nalloc_pixels,
-	Pixel **alloc_pixels, int *no_limit);
+	Display *dpy, PictureImageColorAllocator *pica,
+	unsigned int *nalloc_pixels, Pixel **alloc_pixels, int *no_limit);
 void PictureFreeColors(
 	Display *dpy, Colormap cmap, Pixel *pixels, int n,
 	unsigned long planes, Bool no_limit);

@@ -148,7 +148,7 @@ void set_iconv_charset_index(FlocaleCharset *fc)
 
 static
 char *convert_charsets(const char *in_charset, const char *out_charset,
-		       const unsigned char *in, unsigned int in_size)
+		       const char *in, unsigned int in_size)
 {
 	static int error_count = 0;
 	Ficonv_t cd;

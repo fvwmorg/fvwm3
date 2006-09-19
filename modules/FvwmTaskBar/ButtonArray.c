@@ -827,7 +827,8 @@ void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc)
 	*yc = y;
 }
 
-void ButtonDimensions(ButtonArray *array, int *width, int *height)
+void ButtonDimensions(ButtonArray *array, unsigned int *width,
+		      unsigned int *height)
 {
 	*width = array->tw;
 	*height = RowHeight+2;

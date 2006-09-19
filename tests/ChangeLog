@@ -1,3 +1,8 @@
+2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
+
+	* hints/hints_test.c (main):
+	change dimensions and allocation counts to unsigned types.
+
 2005-11-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* hints/hints_test.c:

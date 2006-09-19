@@ -3912,6 +3912,10 @@ static void border_rotate_titlebar_descr(
 #define ROTATE_RECTANGLE(rot, r, vs_frame, vs_titlebar, vs_title) \
 	{ \
 		rectangle tr; \
+		tr.x = r->x; \
+		tr.y = r->y; \
+		tr.width = r->width; \
+		tr.height = r->height; \
 		switch(rot) \
 		{ \
 		case ROTATION_270: /* ccw */ \
@@ -3979,9 +3983,6 @@ static void border_rotate_titlebar_descr(
 			{ \
 				tr.x = r->x; \
 			} \
-			tr.y = r->y; \
-			tr.width = r->width; \
-			tr.height = r->height; \
 			break; \
 		case ROTATION_0: \
 			break; \

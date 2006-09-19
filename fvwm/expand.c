@@ -130,7 +130,7 @@ enum
 	VAR_FGSH_CS,
 	VAR_GT_,
 	VAR_HILIGHT_CS,
-	VAR_SHADOW_CS,
+	VAR_SHADOW_CS
 } partial_extended_vars;
 
 enum

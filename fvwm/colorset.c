@@ -602,8 +602,8 @@ void cleanup_colorsets(void)
 void parse_colorset(int n, char *line)
 {
 	int i;
-	int w;
-	int h;
+	unsigned int w;
+	unsigned int h;
 	int tmp;
 	int percent;
 	colorset_t *cs;
@@ -1093,14 +1093,14 @@ void parse_colorset(int n, char *line)
 
 			if (average_pix == root_pic.pixmap)
 			{
-				int w,h;
+				unsigned int w,h;
 				XID dummy;
 
 				XGrabServer(dpy);
 				if (!XGetGeometry(
 				    dpy, average_pix, &dummy,
 				    (int *)&dummy, (int *)&dummy,
-				    (unsigned int *)&w, (unsigned int *)&h,
+				    &w, &h,
 				    (unsigned int *)&dummy,
 				    (unsigned int *)&dummy))
 				{

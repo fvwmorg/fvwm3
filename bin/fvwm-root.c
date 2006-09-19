@@ -62,8 +62,9 @@ void usage(int verbose)
 int SetRootWindow(char *tline)
 {
 	Pixmap shapeMask = None, temp_pix = None, alpha = None;
-	int w, h, depth;
-	int nalloc_pixels = 0;
+	unsigned int w, h;
+	int depth;
+	unsigned int nalloc_pixels = 0;
 	Pixel *alloc_pixels = NULL;
 	char *file_path;
 	FvwmPictureAttributes fpa;

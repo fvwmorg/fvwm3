@@ -221,7 +221,7 @@ static void LinkAction(char *string)
 			free(action_list[PROXY_ACTION_MODIFIER_RELEASE]);
 		}
 
-		modifiers_string_to_modmask(token,&watched_modifiers);
+		modifiers_string_to_modmask(token, (int *)&watched_modifiers);
 		action_list[PROXY_ACTION_MODIFIER_RELEASE] = safestrdup(string);
 	}
 
@@ -880,8 +880,8 @@ static void ConfigureWindow(FvwmPacket *packet)
 		firstProxy = proxy;
 		proxy->window=target;
 
-		// unreliable on existing windows
-		// on 2.5.10, reporting false just after M_ICONIFY
+		/* unreliable on existing windows
+		 * on 2.5.10, reporting false just after M_ICONIFY */
 		proxy->flags.is_iconified = !!IS_ICONIFIED(cfgpacket);
 	}
 	proxy->x=wx;
@@ -972,7 +972,7 @@ static void IconifyWindow(Window w, int is_iconified)
 	{
 		if (are_windows_shown)
 		{
-//			ReshuffleWindows();
+/*			ReshuffleWindows();*/
 			OpenOneWindow(proxy);
 		}
 	}

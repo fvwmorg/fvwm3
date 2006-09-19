@@ -1,3 +1,95 @@
+2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
+
+	* libs/fvwmrect.h (fvwmrect_subtract_rectangles, size_rect, rectangle)
+	(signed_rectangle):
+	* libs/fvwmrect.c (fvwmrect_subtract_rectangles):
+	* libs/gravity.h (gravity_move_resize_parent_child):
+	* libs/gravity.c (gravity_move_resize_parent_child):
+	* fvwm/frame.h (frame_get_titlebar_dimensions)
+	* fvwm/frame.c (frame_get_titlebar_dimensions_only)
+	(frame_get_resize_decor_gravities, mr_args_internal):
+	(frame_setup_border, frame_setup_titlebar)
+	(frame_get_resize_decor_gravities, frame_get_titlebar_dimensions):
+	split rectangle into a signed size and an unsigned size type.
+
+	* fvwm/screen.h (ScreenInfo):
+	* libs/FScreen.h (FScreenGetScrRect, FScreenGetResistanceRect):
+	* libs/FScreen.c (XineramaScreenInfo, FScreenGetGeometry)
+	(FScreenGetScrRect, FScreenClipToScreen, FScreenCenterOnScreen)
+	(FScreenGetResistanceRect, FScreenIsRectangleOnScreen):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/screen.h (DecorFace):
+	* libs/fvwmlib.h (CreateGradientPixmap):
+	* libs/Graphics.c (CreateGradientPixmap):
+	* libs/PictureUtils.h (PictureCloseImageColorAllocator):
+	* libs/PictureUtils.c (PictureCloseImageColorAllocator):
+	* libs/PictureImageLoader.h (PImageCreatePixmapFromArgbData)
+	(PImageLoadPixmapFromFile, PImageLoadPixmapFromXpmData):
+	* libs/PictureImageLoader.c (FIMAGE_CMD_ARGS)
+	(PImageCreatePixmapFromArgbData, PImageLoadPixmapFromFile)
+	(PImageLoadFvwmPictureFromFile, PImageLoadPixmapFromXpmData):
+	* libs/PictureGraphics.c (PGraphicsRenderPixmaps):
+	* fvwm/ewmh_icons.c (EWMH_DeleteWmIcon, EWMH_SetIconFromWMIcon):
+	* fvwm/ewmh.h (EWMH_GetWorkAreaIntersection):
+	* fvwm/ewmh.c (EWMH_GetWorkAreaIntersection):
+	* fvwm/colorset.c (parse_colorset):
+	* fvwm/icons.c (DrawIconTitleWindow, AutoPlaceIcon)
+	(do_all_iconboxes):
+	* fvwm/menus.h (MenuRootDynamic):
+	* fvwm/menus.c (update_menu, pop_menu_up, do_menu)
+	(get_menu_options):
+	* fvwm/move_resize.c (GetMoveArguments, ParseOneResizeArgument)
+	(GetResizeArguments, GetResizeMoveArguments, DoSnapAttract)
+	(__move_loop, CMD_Maximize):
+	change dimensions and allocation counts to unsigned types.
+
+	* libs/Flocale.h (FlocaleStringNumberOfBytes)
+	(FlocaleStringByteToCharOffset, FlocaleStringCharToByteOffset)
+	(FlocaleStringCharLength)
+	* libs/Flocale.c (FlocaleStringNumberOfBytes)
+	(FlocaleStringByteToCharOffset, FlocaleStringCharToByteOffset)
+	(FlocaleStringCharLength, FlocaleUtf8ToUnicodeStr2b)
+	(FlocaleStringToString2b, FlocaleEncodeString):
+	* libs/Ficonv.c (convert_charsets):
+	change most string types to char* from unsigned char* to match
+	with system headers without casts.
+
+	* libs/Flocale.c (FlocaleLoadFont):
+	init shadow_dir to make gcc 4 happy.
+
+	* libs/Colorset.h (CSETS_IS_TRANSPARENT_PR_TINT)
+	(CSETS_IS_TRANSPARENT_ROOT_TRAN, CSETS_IS_TRANSPARENT_ROOT_PURE)
+	(CSETS_IS_TRANSPARENT_PR_PURE, CSETS_IS_TRANSPARENT_ROOT)
+	(CSETS_IS_TRANSPARENT):
+	compare pointer with NULL, not >= 0.
+
+	* libs/FTips.h (ftips_position_t):
+	* fvwm/expand.c (partial_extended_vars):
+	* fvwm/placement.c (preason_screen_t):
+	remove comma last in enums.
+
+	* fvwm/style.c (style_parse_focus_policy_style):
+	change 0xffffffff to ~0 to silience truncation warning.
+
+	* fvwm/session.h (mwtsm_state_args):
+	make flags unsigned.
+
+	* fvwm/schedule.c (sq_object_type):
+	change // to /* ... */
+
+	* libs/Fft.c (FftGetFontWidths, FftTextWidth):
+	* libs/FScreen.c (FScreenConfigureSLSScreens):
+	* fvwm/ewmh_names.c (EWMH_SetVisibleName, EWMH_SetDesktopNames):
+	* fvwm/fvwm.c (LoadDefaultLeftButton, LoadDefaultRightButton):
+	* fvwm/builtins.c (ReadDecorFace, CMD_State):
+	silence signedness warnings by casts.
+
+	* fvwm/borders.c (ROTATE_RECTANGLE):
+	make sure tr is initialized.
+
+	* fvwm/add_window.c (FetchWmProtocols):
+	use unsigned type for l_protocols.
+
 2006-09-17  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/events.c (HandleFocusIn, HandleFocusOut):

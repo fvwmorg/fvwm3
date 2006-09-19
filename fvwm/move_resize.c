@@ -366,8 +366,8 @@ static int GetMoveArguments(
 	char *naction;
 	int scr_x = 0;
 	int scr_y = 0;
-	int scr_w = Scr.MyDisplayWidth;
-	int scr_h = Scr.MyDisplayHeight;
+	unsigned int scr_w = Scr.MyDisplayWidth;
+	unsigned int scr_h = Scr.MyDisplayHeight;
 	int retval = 0;
 
 	if (!paction)
@@ -465,12 +465,13 @@ static int GetMoveArguments(
 
 static int ParseOneResizeArgument(
 	char *arg, int scr_size, int base_size, int size_inc, int add_size,
-	int *ret_size)
+	unsigned int *ret_size)
 {
 	float factor;
 	int val;
 	int add_base_size = 0;
 	int cch = strlen(arg);
+	int tmp_size;
 
 	if (cch == 0)
 	{
@@ -502,20 +503,51 @@ static int ParseOneResizeArgument(
 	}
 	else if (sscanf(arg,"w-%d",&val) == 1)
 	{
-		*ret_size -= (int)(val * factor + 0.5);
+		tmp_size = (int)(val * factor + 0.5);
+		if (tmp_size < *ret_size)
+		{
+			*ret_size -= tmp_size;
+		}
+		else
+		{
+			*ret_size = 0;
+		}
 	}
 	else if (sscanf(arg,"w+%d",&val) == 1 || sscanf(arg,"w%d",&val) == 1)
 	{
-		*ret_size += (int)(val * factor + 0.5);
+		tmp_size = (int)(val * factor + 0.5);
+		if (-tmp_size < *ret_size)
+		{
+			*ret_size += tmp_size;
+		}
+		else
+		{
+			*ret_size = 0;
+		}
 	}
 	else if (sscanf(arg,"-%d",&val) == 1)
 	{
-		*ret_size = scr_size - (int)(val * factor + 0.5) + add_size;
+		tmp_size = (int)(val * factor + 0.5);
+		if (tmp_size < scr_size + add_size)
+		{
+			*ret_size = scr_size - tmp_size + add_size;
+		}
+		else
+		{
+			*ret_size = 0;
+		}
 	}
 	else if (sscanf(arg,"+%d",&val) == 1 || sscanf(arg,"%d",&val) == 1)
 	{
-		*ret_size = (int)(val * factor + 0.5) +
-			add_size + add_base_size;
+		tmp_size = (int)(val * factor + 0.5);
+		if (-tmp_size < add_size + add_base_size)
+		{
+			*ret_size = tmp_size + add_size + add_base_size;
+		}
+		else
+		{
+			*ret_size = 0;
+		}
 	}
 	else
 	{
@@ -527,8 +559,8 @@ static int ParseOneResizeArgument(
 
 static int GetResizeArguments(
 	char **paction, int x, int y, int w_base, int h_base, int w_inc,
-	int h_inc, size_borders *sb, int *pFinalW, int *pFinalH,
-	direction_t *ret_dir, Bool *is_direction_fixed,
+	int h_inc, size_borders *sb, unsigned int *pFinalW,
+	unsigned int *pFinalH, direction_t *ret_dir, Bool *is_direction_fixed,
 	Bool *do_warp_to_border)
 {
 	int n;
@@ -650,8 +682,9 @@ static int GetResizeArguments(
 
 static int GetResizeMoveArguments(
 	char **paction, int w_base, int h_base, int w_inc, int h_inc,
-	size_borders *sb, int *pFinalX, int *pFinalY, int *pFinalW,
-	int *pFinalH, Bool *fWarp, Bool *fPointer)
+	size_borders *sb, int *pFinalX, int *pFinalY,
+	unsigned int *pFinalW, unsigned int *pFinalH, Bool *fWarp,
+	Bool *fPointer)
 {
 	char *action = *paction;
 	direction_t dir;
@@ -905,8 +938,8 @@ static Bool resize_move_window(F_CMD_ARGS)
 {
 	int FinalX = 0;
 	int FinalY = 0;
-	int FinalW = 0;
-	int FinalH = 0;
+	unsigned int FinalW = 0;
+	unsigned int FinalH = 0;
 	int n;
 	int x,y;
 	Bool fWarp = False;
@@ -2063,7 +2096,8 @@ static void DoSnapAttract(
 	/* Resist moving windows between xineramascreens */
 	if (Scr.XiMoveResistance > 0 && FScreenIsEnabled())
 	{
-		int scr_x0, scr_y0, scr_x1, scr_y1;
+		int scr_x0, scr_y0;
+		unsigned int scr_x1, scr_y1;
 		Bool do_recalc_rectangle = False;
 
 		FScreenGetResistanceRect(
@@ -2235,8 +2269,9 @@ Bool __move_loop(
 
 	memset(&e, 0, sizeof(e));
 
-	// Unset the placed by button mask.
-	// If the move is canceled this will remain as zero.
+	/* Unset the placed by button mask.
+	 * If the move is canceled this will remain as zero.
+	 */
 	fw->placed_by_button = 0;
 	while (!finished && bad_window != FW_W(fw))
 	{
@@ -4323,7 +4358,8 @@ void CMD_Maximize(F_CMD_ARGS)
 	Bool ignore_working_area = False;
 	int layers[2] = { -1, -1 };
 	Bool global_flag_parsed = False;
-	int  scr_x, scr_y, scr_w, scr_h;
+	int  scr_x, scr_y;
+	unsigned int scr_w, scr_h;
 	rectangle new_g;
 	FvwmWindow *fw = exc->w.fw;
 

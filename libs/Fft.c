@@ -252,11 +252,13 @@ void FftGetFontWidths(
 	/* FIXME:  max_char_width should not be use in the all fvwm! */
 	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		FftTextExtentsUtf8(fftdpy, flf->fftf.fftfont, "W", 1, &extents);
+		FftTextExtentsUtf8(fftdpy, flf->fftf.fftfont, (FftChar8*)"W",
+				   1, &extents);
 	}
 	else
 	{
-		FftTextExtents8(fftdpy, flf->fftf.fftfont, "W", 1, &extents);
+		FftTextExtents8(fftdpy, flf->fftf.fftfont, (FftChar8*)"W", 1,
+				&extents);
 	}
 	*max_char_width = extents.xOff;
 
@@ -571,7 +573,8 @@ int FftTextWidth(FlocaleFont *flf, char *str, int len)
 	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
 		FftTextExtentsUtf8(
-				fftdpy, flf->fftf.fftfont, str, len, &extents);
+				fftdpy, flf->fftf.fftfont, (FftChar8*)str, len,
+				&extents);
 		result = extents.xOff;
 	}
 	else if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))

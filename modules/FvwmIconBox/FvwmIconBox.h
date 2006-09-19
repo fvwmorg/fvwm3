@@ -104,13 +104,13 @@ struct icon_info
 	char *icon_file;
 	int x;
 	int y;
-	int icon_w;
-	int icon_h;
+	unsigned int icon_w;
+	unsigned int icon_h;
 	Pixmap iconPixmap;            /* pixmap for the icon */
 	Pixmap icon_maskPixmap;
 	Pixmap icon_alphaPixmap;
 	int icon_depth;
-	int icon_nalloc_pixels;
+	unsigned int icon_nalloc_pixels;
 	Pixel *icon_alloc_pixels;
 	int icon_no_limit;
 	Window IconWin;

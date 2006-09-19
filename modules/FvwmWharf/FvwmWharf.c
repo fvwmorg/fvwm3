@@ -524,7 +524,8 @@ void Loop(void)
 	if (Event.xbutton.button != Button1) {
 	  if (Event.xbutton.button == Button2) {
 	    static int LastX, LastY;
-	    static int scr_x, scr_y, scr_w, scr_h;
+	    static int scr_x, scr_y;
+	    static unsigned int scr_w, scr_h;
 
 	    if (LastMapped != -1) {
 	      CloseFolder(LastMapped);
@@ -1066,7 +1067,8 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
   else
   {
     int folderx, foldery, folderw, folderh;
-    int scr_x, scr_y, scr_w, scr_h;
+    int scr_x, scr_y;
+    unsigned int scr_w, scr_h;
     fscreen_scr_arg fscr;
 
     fscr.xypos.x = base_x;
@@ -2414,8 +2416,9 @@ void swallow(unsigned long *body)
 
 	}
 	if (Buttons[button].maxsize) {
-	  int width, height;
-	  int junk1, junk2, junk3, junk4;
+	  unsigned int width, height;
+	  int junk1, junk2;
+	  unsigned int junk3, junk4;
 	  Window root;
 	  if (XGetGeometry(dpy, Buttons[button].IconWin, &root,
 			   &junk1, &junk2, &width, &height, &junk3,

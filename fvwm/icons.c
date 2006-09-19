@@ -848,8 +848,8 @@ void DrawIconTitleWindow(
 	{
 		int sx;
 		int sy;
-		int sw;
-		int sh;
+		unsigned int sw;
+		unsigned int sh;
 
 		use_unexpanded_size = 0;
 		w_title_text_gap = ICON_TITLE_TEXT_GAP_EXPANDED;
@@ -1730,8 +1730,8 @@ void AutoPlaceIcon(
   {
     int sx;
     int sy;
-    int sw;
-    int sh;
+    unsigned int sw;
+    unsigned int sh;
     fscreen_scr_arg fscr;
     rectangle g;
 
@@ -2035,8 +2035,8 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 		/* if first time */
 		int sx;
 		int sy;
-		int sw;
-		int sh;
+		unsigned int sw;
+		unsigned int sh;
 		/* Right now, the global box is hard-coded, fills the primary
 		 * screen, uses an 80x80 grid, and fills top-bottom,
 		 * left-right */

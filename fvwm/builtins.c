@@ -1614,11 +1614,16 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 
 			vc->num = num_coords;
 			vc->use_fgbg = 0;
-			vc->x = safemalloc(sizeof(char) * num_coords);
-			vc->y = safemalloc(sizeof(char) * num_coords);
-			vc->xoff = safemalloc(sizeof(char) * num_coords);
-			vc->yoff = safemalloc(sizeof(char) * num_coords);
-			vc->c = safemalloc(sizeof(char) * num_coords);
+			vc->x = (signed char*)safemalloc(sizeof(char) *
+							 num_coords);
+			vc->y = (signed char*)safemalloc(sizeof(char) *
+							 num_coords);
+			vc->xoff = (signed char*)safemalloc(sizeof(char) *
+							    num_coords);
+			vc->yoff = (signed char*)safemalloc(sizeof(char) *
+							    num_coords);
+			vc->c = (signed char*)safemalloc(sizeof(char) *
+							 num_coords);
 
 			/* get the points */
 			for (i = 0; i < vc->num; ++i)
@@ -4393,7 +4398,7 @@ void CMD_State(F_CMD_ARGS)
 	int n;
 	FvwmWindow * const fw = exc->w.fw;
 
-	n = GetIntegerArguments(action, &action, &state, 1);
+	n = GetIntegerArguments(action, &action, (int *)&state, 1);
 	if (n <= 0)
 	{
 		return;

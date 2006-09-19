@@ -132,25 +132,25 @@ extern colorset_t *Colorset;
 
 /* some macro for transparency */
 #define CSETS_IS_TRANSPARENT(cset) \
-    (cset >= 0 && (cset->pixmap == ParentRelative || \
+    (cset != NULL && (cset->pixmap == ParentRelative || \
 		   (cset->pixmap != None && \
 		    (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
 		     cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))))
 #define CSETS_IS_TRANSPARENT_ROOT(cset) \
-    (cset >= 0 && cset->pixmap != None && \
+    (cset != NULL && cset->pixmap != None && \
      (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
       cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))
 #define CSETS_IS_TRANSPARENT_PR_PURE(cset) \
-    (cset >= 0 && cset->pixmap == ParentRelative && \
+    (cset != NULL && cset->pixmap == ParentRelative && \
      cset->tint_percent == 0)
 #define CSETS_IS_TRANSPARENT_ROOT_PURE(cset) \
-    (cset >= 0 && cset->pixmap != None && \
+    (cset != NULL && cset->pixmap != None && \
      cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE)
 #define CSETS_IS_TRANSPARENT_ROOT_TRAN(cset) \
-    (cset >= 0 && cset->pixmap != None && \
+    (cset != NULL && cset->pixmap != None && \
      cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
 #define CSETS_IS_TRANSPARENT_PR_TINT(cset) \
-    (cset >= 0 && cset->pixmap == ParentRelative && \
+    (cset != NULL && cset->pixmap == ParentRelative && \
      cset->tint_percent > 0)
 
 #ifndef FVWM_COLORSET_PRIVATE

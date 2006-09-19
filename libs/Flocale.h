@@ -347,20 +347,20 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose);
 
 /* return number of bytes of character at current position
    (pointed to by str) */
-int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str);
+int FlocaleStringNumberOfBytes(FlocaleFont *flf, const char *str);
 
 /* given a string, font specifying its locale and a byte offset gives
    character offset */
-int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
+int FlocaleStringByteToCharOffset(FlocaleFont *flf, const char *str,
 				  int offset);
 
-/* like above but reversed, ie. return byte offset corresponding to given 
+/* like above but reversed, ie. return byte offset corresponding to given
    charater offset */
-int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
+int FlocaleStringCharToByteOffset(FlocaleFont *flf, const char *str,
 				  int coffset);
 
 /* return length of string in characters */
-int FlocaleStringCharLength(FlocaleFont *flf, const unsigned char *str);
+int FlocaleStringCharLength(FlocaleFont *flf, const char *str);
 
 
 #endif /* FLOCALE_H */

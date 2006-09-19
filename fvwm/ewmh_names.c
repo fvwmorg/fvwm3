@@ -108,14 +108,14 @@ void EWMH_SetVisibleName(FvwmWindow *fw, Bool is_icon_name)
 		ewmh_ChangeProperty(
 			FW_W(fw), "_NET_WM_ICON_VISIBLE_NAME",
 			EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)val,
-			strlen(val));
+			strlen((char *)val));
 	}
 	else
 	{
 		ewmh_ChangeProperty(
 			FW_W(fw), "_NET_WM_VISIBLE_NAME",
 			EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)val,
-			strlen(val));
+			strlen((char *)val));
 	}
 	free(val);
 }
@@ -315,7 +315,7 @@ void EWMH_SetDesktopNames(void)
 			dpy, NULL, s->name, strlen(s->name));
 		if (names[i])
 		{
-			len += strlen(names[i]) + 1;
+			len += strlen((char *)names[i]) + 1;
 		}
 		else
 		{
@@ -328,8 +328,8 @@ void EWMH_SetDesktopNames(void)
 	{
 		if (names[i] != NULL)
 		{
-			memcpy(&val[j], names[i], strlen(names[i]));
-			j += strlen(names[i]);
+			memcpy(&val[j], names[i], strlen((char *)names[i]));
+			j += strlen((char *)names[i]);
 			free(names[i]);
 		}
 		val[j++] = '\0';

@@ -170,7 +170,7 @@ typedef struct DecorFace
 			XColor *xcs;
 			int do_dither;
 			Pixel *d_pixels;
-			int d_npixels;
+			unsigned int d_npixels;
 			char gradient_type;
 		} grad;
 		struct vector_coords
@@ -333,9 +333,9 @@ typedef struct ScreenInfo
 	/* number of screens on display */
 	int NumberOfScreens;
 	/* my copy of DisplayWidth(dpy, screen) */
-	int MyDisplayWidth;
+	unsigned int MyDisplayWidth;
 	/* my copy of DisplayHeight(dpy, screen) */
-	int MyDisplayHeight;
+	unsigned int MyDisplayHeight;
 
 	/* the head of the fvwm window list */
 	FvwmWindow FvwmRoot;

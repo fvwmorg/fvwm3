@@ -70,7 +70,7 @@ extern XFontStruct *font;
 
 typedef struct icon_info {
     char *file;
-    int w, h;
+    unsigned int w, h;
     Pixmap icon, mask, alpha;
     int depth;
 } icon_info;

@@ -2001,8 +2001,8 @@ PictureImageColorAllocator *PictureOpenImageColorAllocator(
 }
 
 void PictureCloseImageColorAllocator(
-	Display *dpy, PictureImageColorAllocator *pica, int *nalloc_pixels,
-	Pixel **alloc_pixels, Bool *no_limit)
+	Display *dpy, PictureImageColorAllocator *pica,
+	unsigned int *nalloc_pixels, Pixel **alloc_pixels, Bool *no_limit)
 {
 	if (nalloc_pixels)
 	{
@@ -2019,7 +2019,8 @@ void PictureCloseImageColorAllocator(
 	if (pica->pixels_table)
 	{
 		int i,j;
-		int k = 0, l = 0, np = 0;
+		int k = 0, l = 0;
+		unsigned int np = 0;
 		int free_num = 0;
 		Pixel *free_pixels = NULL;
 		Pixel *save_pixels = NULL;

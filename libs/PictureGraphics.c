@@ -956,6 +956,7 @@ void PGraphicsRenderPixmaps(
 	t_fra.added_alpha_percent = 100;
 	t_fra.tint_percent = 0;
 	t_fra.mask = 0;
+	t_fra.tint = None;
 
 	if (fra)
 	{

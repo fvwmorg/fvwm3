@@ -1,3 +1,32 @@
+2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmScript/Widgets/List.c (EvtMouseList):
+	make sure rectT.height is given a value.
+
+	* FvwmProxy/FvwmProxy.c (ConfigureWindow, IconifyWindow):
+	chagned // to /* ... */
+
+	* FvwmProxy/FvwmProxy.c (LinkAction):
+	* FvwmIconMan/fvwm.c (property_change):
+	silence gcc 4 signedness warning by cast.
+
+	* FvwmDragWell/xdndDragSource.c (xdndSrcDoDrag):
+	change mask_return to unsigned.
+	silence gcc 4 signedness warning by cast.
+
+	* FvwmWharf/icons.c (LoadIconFile):
+	* FvwmWharf/Wharf.h (icon_info):
+	* FvwmWharf/FvwmWharf.c (Loop, MapFolde, swallow):
+	* FvwmTaskBar/ButtonArray.h (ButtonArray, ButtonDimensions):
+	* FvwmTaskBar/ButtonArray.c (ButtonDimensions):
+	* FvwmScript/types.h (XObj):
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmIdent/FvwmIdent.c (list_end):
+	* FvwmIconBox/FvwmIconBox.h (icon_info):
+	* FvwmIconBox/icons.c (GetBackPixmap):
+	* FvwmBanner/FvwmBanner.c (PImageIcon):
+	change dimensions and allocation counts to unsigned types.
+
 2006-09-12  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):

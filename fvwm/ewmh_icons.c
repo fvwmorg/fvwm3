@@ -525,7 +525,8 @@ void EWMH_DeleteWmIcon(FvwmWindow *fw, Bool mini_icon, Bool icon)
 	CARD32 *list;
 	CARD32 *new_list = NULL;
 	int keep_start = 0, keep_length = 0;
-	int s,i;
+	unsigned int s;
+	int i;
 
 	if (mini_icon && icon)
 	{
@@ -693,7 +694,7 @@ int EWMH_SetIconFromWMIcon(
 	Pixmap alpha = None;
 	Bool free_list = False;
 	int have_alpha;
-	int nalloc_pixels;
+	unsigned int nalloc_pixels;
 	Pixel *alloc_pixels;
 	int no_limit;
 	FvwmPictureAttributes fpa;
@@ -728,6 +729,10 @@ int EWMH_SetIconFromWMIcon(
 		if (fw->cs >= 0 && Colorset[fw->cs].do_dither_icon)
 		{
 			fpa.mask = FPAM_DITHER;
+		}
+		else
+		{
+			fpa.mask = 0;
 		}
 	}
 

@@ -76,7 +76,7 @@ int fvwmrect_do_rectangles_intersect(rectangle *r, rectangle *s)
 /* Subtracts the values in s2_ from the ones in s1_g and stores the result in
  * diff_g. */
 void fvwmrect_subtract_rectangles(
-	rectangle *rdiff, rectangle *r1, rectangle *r2)
+	signed_rectangle *rdiff, rectangle *r1, rectangle *r2)
 {
 	rdiff->x = r1->x - r2->x;
 	rdiff->y = r1->y - r2->y;

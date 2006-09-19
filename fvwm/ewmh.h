@@ -37,7 +37,8 @@ void EWMH_SetClientList(void);
 void EWMH_SetClientListStacking(void);
 void EWMH_UpdateWorkArea(void);
 void EWMH_GetWorkAreaIntersection(
-	FvwmWindow *fw, int *x, int *y, int *h, int *w, int func);
+	FvwmWindow *fw, int *x, int *y, unsigned int *w, unsigned int *h,
+	int type);
 float EWMH_GetBaseStrutIntersection(
 	int x11, int y11, int x12, int y12, Bool use_percent);
 float EWMH_GetStrutIntersection(
