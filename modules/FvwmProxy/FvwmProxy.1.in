@@ -128,6 +128,69 @@ the specified modifiers are all released.  The modifiers are specified
 using the same syntax as in the Mouse command.
 The default is Nop.
 
+.IP "*FvwmProxy: Group \fIgroupname\fP \fIcommand\fP \fIpattern\fP"
+For the given named group, adjust inclusion of the windows matching
+the pattern.
+The groupname is a string identifier used to associate windows.
+The window pattern uses the same format as the Style command.
+The supported commands are Include, SoftInclude, and Exclude.
+Include and SoftInclude identifies a pattern to add windows
+to the group.
+Exclude identifies pattern to counteract inclusion pattern
+or auto-inclusion (see flags below).
+All exclusion checks follow all inclusion checks.
+Soft inclusion limits the windows in that pattern to only move
+when an non-soft window in the group moves.
+Moving or resizing these windows does not affect any other windows.
+They are also immune to edge effects.
+
+.IP "*FvwmProxy: Group \fIgroupname\fP \fIflag\fP
+For the given named group, activate the given flag.
+The supported flags are AutoInclude, AutoSoft, and IgnoreIDs.
+All window grouping is normally checked to only group windows
+that are in the same process or that have the same X11 client leader.
+IgnoreIDs deactivates this mechanism.
+AutoInclude automatically includes any window that matches
+the same process or client leader, without having to name them specifically.
+AutoSoft makes all AutoInclusions soft (see inclusion description above).
+
+.IP "*FvwmProxy: SlotWidth \fIw\fP"
+This specifies the width of the icons used in slots.
+The default is 16.
+
+.IP "*FvwmProxy: SlotHeight \fIh\fP"
+This specifies the height of the icons used in slots.
+The default is 16.
+
+.IP "*FvwmProxy: SlotSpace \fId\fP"
+This specifies the space between icons used in slots.
+The default is 4.
+
+.IP "*FvwmProxy: GroupSlot \fIn\fP"
+This specifies the first slot that represent a colored group.
+Group slots don't need icons as the are drawn by predetermined means.
+The default is 2.
+
+.IP "*FvwmProxy: GroupCount \fIn\fP"
+This specifies the number of group slots.
+The default is 6.
+
+.IP "*FvwmProxy: SlotStyle \fIn\fP \fIstyle\fP"
+For non-group slots, this defines the appears of the indicated slot.
+The style format matches ButtonStyle command.
+The default is nothing.
+
+.IP "*FvwmProxy: SlotAction \fIn\fP \fImouseaction\fP \fIresponse\fP"
+For non-group slots, this defines the behavior of the indicated slot.
+The mouse action and response is used the same as the FvwmProxy
+Action configuration.
+The default is Noop.
+
+.IP "*FvwmProxy: UndoLimit \fIn\fP"
+This specifies the number of entires in the undo buffer.
+this limits how far back you can undo.
+The default is 8.
+
 .SH COMMANDS
 
 .IP "SendToModule FvwmProxy Show"
@@ -152,15 +215,15 @@ on any selected window.
 
 .IP "SendToModule FvwmProxy Circulate \fIcommand\fP"
 Tell FvwmProxy to run a conditional command and mark the result.
-The builtin command \fISendToModule FvwmProxy Mark\fP is automatically
-appended after the optional condition, so supplying your own
+The imbedded command \fISendToModule FvwmProxy Mark\fP is automatically
+appended after the optional condition, so supplying your own imbedded
 command will probably fail.
 An example argument to Circulate is
 \fIScanForWindow East South (CurrentPage)\fP.
 If the proxies aren't already shown (such as with the Show command),
 any Circulate command will automatically show the proxies.
 
-.IP "SendToModule FvwmProxy Next (temporary)"
+.IP "SendToModule FvwmProxy Next (obsolete)"
 If a proxy window is selected, the next proxy is selected.
 Windows with the WindowListSkip option are ignored.
 The proxies are sorted left to right during the Show command.
@@ -171,12 +234,41 @@ the leftmost proxy is used.
 This nearly duplicates the functionality of
 Circulate ScanForWindow East South (CurrentPage).
 
-.IP "SendToModule FvwmProxy Prev (temporary)"
+.IP "SendToModule FvwmProxy Prev (obsolete)"
 If a proxy window is selected, the previous proxy is selected.
 The starting point is the same as with the Next command, except
 that the choice with no recent selection is the rightmost proxy.
 This nearly duplicates the functionality of
 Circulate ScanForWindow West North (CurrentPage).
+
+.IP "SendToModule FvwmProxy SoftToggle"
+Toggle the soft group inclusion setting for the selected window.
+This setting is the same that can be activated using the SoftInclude
+and AutoSoft commands inside the FvwmProxy Group configuration.
+
+.IP "SendToModule FvwmProxy IsolateToggle"
+Toggle the isolation setting for the selected window's group.
+Isolated groups only allow one member to not be iconified at a time.
+The members are also coerced to the same position and size,
+constrained by their size increment.
+
+.IP "SendToModule FvwmProxy PrevIsolated"
+If focused on a member of a isolating group,
+deiconify the member higher on list.
+If no member is higher, deiconify the last member.
+
+.IP "SendToModule FvwmProxy NextIsolated"
+If focused on a member of a isolating group,
+deiconify the member lower on list.
+If no member is higher, deiconify the first member.
+
+.IP "SendToModule FvwmProxy Undo"
+Attempt to undo the last window move and/or resize.
+
+.IP "SendToModule FvwmProxy Redo"
+Attempt to redo the most recent Undo.
+If another move or resize occurs since the previous undo,
+the redo buffer is cleared.
 
 .SH SAMPLE CONFIGURATION
 The following are excerpts from a .fvwm2rc file which describe
@@ -256,6 +348,72 @@ If you use ProxyIconified, you might consider adding Iconify actions.
     *FvwmProxy: Action Click2 Iconify
 .sp
 .fi
+
+You can set up some basic slots fairly easily.
+.nf
+.sp
+*FvwmProxy: GroupSlot 2
+*FvwmProxy: GroupCount 5
+
+*FvwmProxy: SlotStyle 1 MiniIcon
+*FvwmProxy: SlotStyle 7 Pixmap "squeeze.xpm"
+*FvwmProxy: SlotStyle 8 Pixmap "mini-up.xpm"
+*FvwmProxy: SlotStyle 9 Pixmap "mini-bball.xpm"
+*FvwmProxy: SlotStyle 10 Pixmap "mini-cross.xpm"
+
+*FvwmProxy: SlotAction 1 Click1 Popup WindowMenu
+*FvwmProxy: SlotAction 7 Click1 SendToModule FvwmProxy IsolateToggle
+*FvwmProxy: SlotAction 8 Click1 SendToModule FvwmProxy SoftToggle
+*FvwmProxy: SlotAction 9 Click1 Iconify
+*FvwmProxy: SlotAction 10 Click1 Delete
+.sp
+.fi
+In this example, WindowMenu is something you would have to define.
+If your proxy width is too small, some slots can get cut off.
+
+Undo and redo can be easily mapped to any keys.
+.nf
+.sp
+Key Z A 3 SendToModule FvwmProxy Undo
+Key R A 3 SendToModule FvwmProxy Redo
+.sp
+.fi
+
+You can rotate through an isolated group using any keys.
+For example, meta cursor-up and cursor-down could traverse the group.
+.nf
+.sp
+Key Up A 3 SendToModule FvwmProxy PrevIsolated
+Key Down A 3 SendToModule FvwmProxy NextIsolated
+.sp
+.fi
+
+A somewhat impractical example of a group definition using GIMP
+is as follows:
+.nf
+.sp
+*FvwmProxy: Group "GIMP" Include "The GIMP"
+*FvwmProxy: Group "GIMP" Include "Module Manager"
+*FvwmProxy: Group "GIMP" SoftInclude "Unit Editor"
+*FvwmProxy: Group "GIMP" AutoInclude
+*FvwmProxy: Group "GIMP" AutoSoft
+*FvwmProxy: Group "GIMP" Exclude "Preferences"
+.sp
+.fi
+
+This sets up a hard attachment between the windows "The GIMP"
+and "Module Manager".
+The "Unit Editor" is also in the group, but only responds
+to movement of one of the hard inclusions.
+Any window in the same process or with the same client leader
+is also associated, but they default to soft inclusion,
+except "Preferences" which is explicitly excluded.
+Note that in this case, the explicit soft inclusion of
+"Unit Editor" is redundant with the combination of
+AutoInclude and AutoSoft.
+However, if AutoSoft was not specified, the explicit
+SoftInclude would distinguish that pattern from the otherwise
+hard inclusion under just AutoInclude.
 
 .SH AUTHOR
 Jason Weber

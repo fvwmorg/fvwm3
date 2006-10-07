@@ -43,6 +43,7 @@
 
 /* defaults for things we put in a configuration file */
 
+#define PROXY_GROUP_DEBUG	True
 #define PROXY_KEY_POLLING	True
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
 #define PROXY_ICONIFIED		False	/* show proxy when iconified */
@@ -51,6 +52,11 @@
 #define PROXY_SEPARATION	10
 #define PROXY_MINWIDTH		15
 #define PROXY_MINHEIGHT		10
+#define PROXY_SLOT_SIZE		16
+#define PROXY_SLOT_SPACE	4
+#define PROXY_GROUP_SLOT	2
+#define PROXY_GROUP_COUNT	6
+#define PROXY_STAMP_LIMIT	8
 
 #define STARTUP_DEBUG		False	/* store output before log is opened */
 
@@ -71,6 +77,7 @@
 
 /* ---------------------------- local variables ----------------------------- */
 
+static char *ImagePath = NULL;
 static char *MyName;
 static int x_fd;
 static fd_set_size_t fd_width;
@@ -91,18 +98,28 @@ static ProxyWindow *lastProxy=NULL;
 static ProxyWindow *selectProxy=NULL;
 static ProxyWindow *startProxy=NULL;
 static ProxyWindow *enterProxy=NULL;
+static ProxyWindow *last_rotation_instigator=NULL;
+static ProxyGroup *firstProxyGroup=NULL;
+static FvwmPicture **pictureArray=NULL;
+static int numSlots=0;
+static int miniIconSlot=0;
 static XGCValues xgcv;
 static int are_windows_shown = 0;
 static int watching_modifiers = 0;
+static int waiting_to_config = 0;
+static int waiting_to_stamp = 0;
+static int pending_do = 0;
 static unsigned int held_modifiers=0;
-static unsigned int watched_modifiers=0;
+static int watched_modifiers=0;
 static FlocaleWinString *FwinString;
 
 static int cset_normal = 0;
 static int cset_select = 0;
 static int cset_iconified = 0;
 static char *font_name = NULL;
+static char *small_font_name = NULL;
 static FlocaleFont *Ffont;
+static FlocaleFont *Ffont_small;
 static int enterSelect=False;
 static int showMiniIcons=True;
 static int proxyIconified=PROXY_ICONIFIED;
@@ -110,15 +127,20 @@ static int proxyMove=PROXY_MOVE;
 static int proxyWidth=PROXY_WIDTH;
 static int proxyHeight=PROXY_HEIGHT;
 static int proxySeparation=PROXY_SEPARATION;
+static int slotWidth=PROXY_SLOT_SIZE;
+static int slotHeight=PROXY_SLOT_SIZE;
+static int slotSpace=PROXY_SLOT_SPACE;
+static int groupSlot=PROXY_GROUP_SLOT;
+static int groupCount=PROXY_GROUP_COUNT;
+static int stampLimit=PROXY_STAMP_LIMIT;
+
+static GeometryStamp* stampQueue=NULL;
+static int stamp= 0;
+static int stampMin=0;
+static int stampMax=0;
 
 static char commandBuffer[256];
-#if 0
-static char *show_command;
-static char *hide_command;
-static char *mark_command;
-static char *select_command;
-static char *abort_command;
-#endif
+static char resultBuffer[256];
 
 typedef enum
 {
@@ -135,7 +157,23 @@ typedef enum
 	NUMBER_OF_EXTENDED_MOUSE_BUTTONS
 } proxy_action_t;
 
+#define GROUP_COLORS 7
+static char* group_color[GROUP_COLORS][2] =
+{
+	{"#dddddd",	"#777777"},
+	{"#ffcccc",	"#ff0000"},
+	{"#ccffcc",	"#00ff00"},
+	{"#ccccff",	"#0000ff"},
+	{"#ffccff",	"#ff00ff"},
+	{"#ffffcc",	"#ffff00"},
+	{"#ccffff",	"#00ffff"}
+};
+
 char *action_list[PROXY_ACTION_LAST];
+char **slot_action_list[NUMBER_OF_EXTENDED_MOUSE_BUTTONS];
+
+static WindowName* new_WindowName(void);
+static ProxyGroup* FindProxyGroup(char* groupname);
 
 static int (*originalXErrorHandler)(Display *,XErrorEvent *);
 static int (*originalXIOErrorHandler)(Display *);
@@ -143,6 +181,62 @@ static int (*originalXIOErrorHandler)(Display *);
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions (options) ------------------- */
+
+static void ExpandSlots(int slots)
+{
+	int m;
+	int n;
+	if(slots>numSlots)
+	{
+		pictureArray=(FvwmPicture**)realloc(pictureArray,
+			sizeof(FvwmPicture*)*(slots));
+		for(m=0;m<NUMBER_OF_EXTENDED_MOUSE_BUTTONS;m++)
+		{
+			slot_action_list[m]=(char**)realloc(
+				slot_action_list[m],
+				sizeof(char*)*(slots));
+			for(n=numSlots;n<slots;n++)
+			{
+				slot_action_list[m][n]=NULL;
+			}
+		}
+		for(n=numSlots;n<slots;n++)
+		{
+			pictureArray[n]=NULL;
+		}
+		numSlots=slots;
+	}
+}
+
+static void LinkSlotAction(char *string)
+{
+	char *token;
+	int slot;
+
+	token = PeekToken(string, &string);
+	slot=atoi(token);
+
+	token = PeekToken(string, &string);
+	if (strncasecmp(token, "Click", 5) == 0)
+	{
+		int b;
+		int i;
+		i = sscanf(token + 5, "%d", &b);
+		if (i > 0 && b >=1 && b <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+		{
+			ExpandSlots(slot+1);
+			if (slot_action_list[b-1][slot] != NULL)
+			{
+				free(slot_action_list[b-1][slot]);
+			}
+			slot_action_list[b-1][slot] = safestrdup(string);
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,"slot_action_list[%d][%d]=\"%s\"\n",
+				b-1,slot,slot_action_list[b-1][slot]);
+#endif
+		}
+	}
+}
 
 static void LinkAction(char *string)
 {
@@ -245,6 +339,26 @@ static void parse_cmd(char **ret_cmd, char *cmd)
 }
 #endif
 
+FvwmPicture* loadPicture(char* name)
+{
+	FvwmPicture *picture=NULL;
+	FvwmPictureAttributes fpa;
+
+	if(!name)
+	{
+		return NULL;
+	}
+
+	fpa.mask = FPAM_NO_COLOR_LIMIT;
+	picture = PGetFvwmPicture(dpy, RootWindow(dpy,screen),
+		ImagePath, name, fpa);
+	if (!picture)
+	{
+		fprintf(stderr, "loadPixmap failed to load \"%s\"\n", name);
+	}
+	return picture;
+}
+
 static Bool parse_options(void)
 {
 	int m;
@@ -279,6 +393,15 @@ static Bool parse_options(void)
 			LoadColorset(next);
 			continue;
 		}
+		if (StrEquals(token, "ImagePath"))
+		{
+			if (ImagePath)
+			{
+				free(ImagePath);
+			}
+			CopyString(&ImagePath, next);
+			continue;
+		}
 
 		tline = GetModuleResource(tline, &resource, MyName);
 		if (resource == NULL)
@@ -292,6 +415,10 @@ static Bool parse_options(void)
 		if (!strncasecmp(resource,"Action",6))
 		{
 			LinkAction(tline);
+		}
+		else if (!strncasecmp(resource,"SlotAction",10))
+		{
+			LinkSlotAction(tline);
 		}
 		else if (StrEquals(resource, "Colorset"))
 		{
@@ -321,6 +448,14 @@ static Bool parse_options(void)
 				free(font_name);
 			}
 			font_name = safestrdup(tline);
+		}
+		else if (StrEquals(resource, "SmallFont"))
+		{
+			if (small_font_name != NULL)
+			{
+				free(small_font_name);
+			}
+			small_font_name = safestrdup(tline);
 		}
 		else if (StrEquals(resource, "ShowMiniIcons"))
 		{
@@ -352,6 +487,128 @@ static Bool parse_options(void)
 		{
 			if (sscanf(tline, "%d", &proxySeparation) < 1)
 				proxySeparation=False;
+		}
+		else if (StrEquals(resource, "UndoLimit"))
+		{
+			if (sscanf(tline, "%d", &stampLimit) < 1)
+				stampLimit=PROXY_STAMP_LIMIT;
+		}
+		else if (StrEquals(resource, "SlotWidth"))
+		{
+			if (sscanf(tline, "%d", &slotWidth) < 1)
+				slotWidth=PROXY_SLOT_SIZE;
+		}
+		else if (StrEquals(resource, "SlotHeight"))
+		{
+			if (sscanf(tline, "%d", &slotHeight) < 1)
+				slotHeight=PROXY_SLOT_SIZE;
+		}
+		else if (StrEquals(resource, "SlotSpace"))
+		{
+			if (sscanf(tline, "%d", &slotSpace) < 1)
+				slotSpace=PROXY_SLOT_SPACE;
+		}
+		else if (StrEquals(resource, "GroupSlot"))
+		{
+			if (sscanf(tline, "%d", &groupSlot) < 0)
+				groupSlot=PROXY_GROUP_SLOT;
+		}
+		else if (StrEquals(resource, "GroupCount"))
+		{
+			if (sscanf(tline, "%d", &groupCount) < 0)
+				groupCount=PROXY_GROUP_COUNT;
+		}
+		else if (StrEquals(resource, "SlotStyle"))
+		{
+			int slot= -1;
+			char style[128];
+			char name[128];
+			int bytes=0;
+			int args = sscanf(tline, "%d%s%*[^\"]\"%[^\"]\"%n",
+				&slot,style,name,&bytes);
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,
+				"SlotStyle: %d \"%s\" -> %d \"%s\" \"%s\"\n",
+				args,tline,slot,style,name);
+#endif
+			if (args>=3 && StrEquals(style, "Pixmap"))
+			{
+				ExpandSlots(slot+1);
+				pictureArray[slot]=loadPicture(name);
+			}
+			else if (args>=2 && StrEquals(style, "MiniIcon"))
+			{
+				miniIconSlot=slot;
+			}
+		}
+		else if (StrEquals(resource, "Group"))
+		{
+			char groupname[128];
+			char directive[128];
+			char tail[128];
+			char pattern[128];
+			int bytes=0;
+			int args = sscanf(tline, "\"%[^\"]\"%s%n",
+				groupname,directive,&bytes);
+			ProxyGroup* proxygroup;
+
+			strncpy(tail,&tline[bytes],128);
+			tail[127]=0;
+			args = sscanf(tail, "%*[^\"]\"%[^\"]\"",pattern);
+
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,
+				"Group: %d \"%s\" -> \"%s\" \"%s\" \"%s\"\n",
+				args,tline,groupname,directive,pattern);
+#endif
+
+			proxygroup=FindProxyGroup(groupname);
+			if (StrEquals(directive, "IgnoreIDs"))
+			{
+				proxygroup->flags.ignore_ids=1;
+			}
+			else if (StrEquals(directive, "AutoInclude"))
+			{
+				proxygroup->flags.auto_include=1;
+			}
+			else if (StrEquals(directive, "AutoSoft"))
+			{
+				proxygroup->flags.auto_include=1;
+				proxygroup->flags.auto_soft=1;
+			}
+			else if (StrEquals(directive, "Isolated"))
+			{
+				proxygroup->flags.isolated=1;
+			}
+			else if (StrEquals(directive, "Include") ||
+				StrEquals(directive, "SoftInclude"))
+			{
+				WindowName* include=new_WindowName();
+				include->name=strdup(pattern);
+				include->flags.is_soft=
+					StrEquals(directive, "SoftInclude");
+				include->next=proxygroup->includes;
+				proxygroup->includes=include;
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr,"Include \"%s\"\n",
+					pattern);
+#endif
+			}
+			else if (StrEquals(directive, "Exclude"))
+			{
+				WindowName* exclude=new_WindowName();
+				exclude->name=strdup(pattern);
+				exclude->next=proxygroup->excludes;
+				proxygroup->excludes=exclude;
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr,"Exclude \"%s\"\n",
+					pattern);
+#endif
+			}
+		}
+		else
+		{
+			fprintf(stderr,"Unknown: \"%s\"\n",tline);
 		}
 
 		free(resource);
@@ -392,6 +649,52 @@ static void delete_ProxyWindow(ProxyWindow *p)
 		{
 			XDestroyWindow(dpy, p->proxy);
 		}
+		free(p);
+	}
+}
+
+static void WindowName_WindowName(WindowName *p)
+{
+	memset(p, 0, sizeof *p);
+}
+
+static WindowName *new_WindowName(void)
+{
+	WindowName *p=(WindowName *)safemalloc(sizeof(WindowName));
+	WindowName_WindowName(p);
+	return p;
+}
+
+static void delete_WindowName(WindowName *p)
+{
+	if (p)
+	{
+		delete_WindowName(p->next);
+		free(p->name);
+		free(p);
+	}
+}
+
+static void ProxyGroup_ProxyGroup(ProxyGroup *p)
+{
+	memset(p, 0, sizeof *p);
+}
+
+static ProxyGroup *new_ProxyGroup(void)
+{
+	ProxyGroup *p=(ProxyGroup *)safemalloc(sizeof(ProxyGroup));
+	ProxyGroup_ProxyGroup(p);
+	return p;
+}
+
+static void delete_ProxyGroup(ProxyGroup *p)
+{
+	if (p)
+	{
+		delete_ProxyGroup(p->next);
+		delete_WindowName(p->includes);
+		delete_WindowName(p->excludes);
+		free(p->name);
 		free(p);
 	}
 }
@@ -441,6 +744,141 @@ static void send_command_to_fvwm(char *command, Window w)
 	return;
 }
 
+static int GetProperty(Window w,char* propertyname)
+{
+	Atom atom,actual_type;
+	char *atom_name;
+	int actual_format;
+	unsigned long nitems;
+	unsigned long bytes_after;
+	unsigned char *prop;
+	int status;
+	int result=0;
+	int byte;
+	int bytes;
+
+	atom = XInternAtom(dpy, propertyname, True);
+	atom_name = XGetAtomName (dpy,atom);
+
+	status = XGetWindowProperty(dpy, w, atom, 0, 1024,
+		False, AnyPropertyType,
+		&actual_type,
+		&actual_format, &nitems,
+		&bytes_after,
+		&prop);
+	if (status!=0)
+	{
+/*		fprintf(stderr,"GetProperty: cannot get %s\n",propertyname);
+*/
+		return 0;
+	}
+	if (!prop) {
+/*		fprintf(stderr,"GetProperty: no properties\n");
+*/
+		return 0;
+	}
+
+	bytes=actual_format/8;
+	for(byte=bytes-1;byte>=0;byte--)
+	{
+		result=result*256+prop[byte];
+	}
+	XFree(prop);
+	return result;
+}
+
+static int GetProcessId(Window w)
+{
+	return GetProperty(w, "_NET_WM_PID");
+}
+
+static int GetLeader(Window w)
+{
+	int result=GetProperty(w, "WM_CLIENT_LEADER");
+	if(!result)
+	{
+		XWMHints* hints=XGetWMHints(dpy,w);
+		if(hints && hints->flags&WindowGroupHint)
+		{
+			result=hints->window_group;
+			XFree(hints);
+		}
+	}
+	return result;
+}
+
+static int GetParentProcessId(int pid)
+{
+	int ppid=0;
+	int bytes;
+	FILE* statusfile;
+
+	sprintf(commandBuffer,"/proc/%d/stat",pid);
+	statusfile=fopen(commandBuffer,"r");
+	if(!statusfile)
+	{
+		return 0;
+	}
+	bytes=fread(resultBuffer,32,1,statusfile);
+	sscanf(resultBuffer,"%*d %*[^)]) %*s %d",&ppid);
+	fclose(statusfile);
+	return ppid;
+}
+
+static ProxyGroup* FindProxyGroup(char* groupname)
+{
+	ProxyGroup* proxygroup=firstProxyGroup;
+	while(proxygroup)
+	{
+		if(StrEquals(proxygroup->name, groupname))
+		{
+			return proxygroup;
+		}
+		proxygroup=proxygroup->next;
+	}
+	proxygroup=new_ProxyGroup();
+	proxygroup->next=firstProxyGroup;
+	proxygroup->name=strdup(groupname);
+	firstProxyGroup=proxygroup;
+	return proxygroup;
+}
+
+static int MatchWindowName(WindowName* namelist,char* name)
+{
+	WindowName* include=namelist;
+	while(include)
+	{
+		if(matchWildcards(include->name, name))
+		{
+			return 1;
+		}
+		include=include->next;
+	}
+
+	return 0;
+}
+
+static ProxyGroup* FindProxyGroupWithWindowName(char* name)
+{
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"FindProxyGroupWithWindowName(%s)\n",name);
+#endif
+
+	ProxyGroup* proxygroup=firstProxyGroup;
+	while(proxygroup)
+	{
+		if(MatchWindowName(proxygroup->includes, name))
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr," found in %s\n",proxygroup->name);
+#endif
+			return proxygroup;
+		}
+		proxygroup=proxygroup->next;
+	}
+
+	return NULL;
+}
 
 static ProxyWindow *FindProxy(Window window)
 {
@@ -484,6 +922,11 @@ static void DrawWindow(
 	int cset;
 	FvwmPicture *picture = &proxy->picture;
 	int drawMiniIcon=(showMiniIcons && proxy->picture.picture != None);
+	int group;
+	int m;
+	char *big_name;
+	char *small_name;
+	int overrun=0;
 
 	if (!proxy || proxy->proxy == None)
 	{
@@ -498,7 +941,7 @@ static void DrawWindow(
 	texty=(h+ Ffont->ascent - Ffont->descent)/2;	/* center */
 	if (drawMiniIcon)
 	{
-		texty+=8;				/* half icon height */
+		texty+=4;
 	}
 
 	maxy=h-Ffont->descent-4;
@@ -520,18 +963,33 @@ static void DrawWindow(
 		XClearWindow(dpy,proxy->proxy);
 	}
 	RelieveRectangle(dpy,proxy->proxy, 0,0, w - 1,h - 1, hi_gc,sh_gc, 2);
-	if (proxy->iconname != NULL)
+
+	big_name = proxy->iconname;
+	if(big_name==NULL || !big_name[0])
+	{
+		big_name = proxy->name;
+	}
+	small_name = proxy->name;
+	if(small_name == NULL)
+	{
+		small_name=big_name;
+	}
+	if (big_name != NULL && big_name[0])
 	{
 		int text_width = FlocaleTextWidth(
-			Ffont,proxy->iconname,strlen(proxy->iconname));
+			Ffont,big_name,strlen(big_name));
 		int edge=(w-text_width)/2;
 
 		if (edge<5)
 		{
 			edge=5;
 		}
+		if(w-text_width<5)
+		{
+			overrun=1;
+		}
 
-		FwinString->str = proxy->iconname;
+		FwinString->str = big_name;
 		FwinString->win = proxy->proxy;
 		FwinString->x = edge;
 		FwinString->y = texty;
@@ -544,9 +1002,85 @@ static void DrawWindow(
 		}
 		FlocaleDrawString(dpy, Ffont, FwinString, 0);
 	}
-	if (drawMiniIcon)
+	if (small_name != NULL && small_name[0] &&
+		(overrun || strcmp(small_name,big_name)) && Ffont_small!=NULL)
 	{
-		DrawPicture(proxy->proxy, (w-16)/2, 4, picture, cset);
+		int text_width = FlocaleTextWidth(
+			Ffont_small,small_name,strlen(small_name));
+		int edge=(w-text_width)/2;
+
+		if (edge<5)
+		{
+			edge=w-text_width-5;
+		}
+
+		FwinString->str = small_name;
+		FwinString->win = proxy->proxy;
+		FwinString->x = edge;
+		FwinString->y = h-Ffont_small->descent-3;
+		FwinString->gc = hi_gc;
+		FwinString->flags.has_colorset = False;
+		if (cset >= 0)
+		{
+			FwinString->colorset = &Colorset[cset];
+			FwinString->flags.has_colorset = True;
+		}
+		FlocaleDrawString(dpy, Ffont_small, FwinString, 0);
+	}
+	if (drawMiniIcon && miniIconSlot>0)
+	{
+		int widgetx=slotSpace+(slotWidth+slotSpace)*(miniIconSlot-1);
+		DrawPicture(proxy->proxy, widgetx, slotSpace, picture, cset);
+	}
+	for(group=1;group<groupCount+1;group++)
+	{
+		int lit=(proxy->group==group);
+		int widgetx=slotSpace+
+			(slotWidth+slotSpace)*(groupSlot+group-2);
+		int color_index=group%GROUP_COLORS;
+		int drawsoft=lit && proxy->flags.is_soft;
+		int drawisolated=lit && proxy->flags.is_isolated;
+
+		if(drawsoft)
+		{
+			XSetForeground(dpy,fg_gc,GetColor(
+				group_color[color_index][0]));
+			XFillRectangle(dpy,proxy->proxy,fg_gc,
+				widgetx,slotSpace,
+				slotWidth,slotHeight);
+
+			XSetForeground(dpy,sh_gc,GetColor("black"));
+			RelieveRectangle(dpy,proxy->proxy,
+				widgetx,slotSpace,
+				slotWidth,slotHeight/2,
+				hi_gc,sh_gc, 1);
+		}
+		XSetForeground(dpy,fg_gc,GetColor(
+			group_color[color_index][proxy->group==group]));
+		XFillRectangle(dpy,proxy->proxy,fg_gc,
+			widgetx,slotSpace,
+			slotWidth,
+			drawsoft? slotHeight/2: slotHeight);
+
+		XSetForeground(dpy,sh_gc,GetColor(lit? "black": "white"));
+		XSetForeground(dpy,hi_gc,GetColor(lit? "black": "white"));
+		RelieveRectangle(dpy,proxy->proxy,
+			widgetx,slotSpace,
+			slotWidth,slotHeight,
+			hi_gc,sh_gc, 2);
+		if(drawisolated)
+		{
+			RelieveRectangle(dpy,proxy->proxy,
+				widgetx+4,slotSpace+4,
+				slotWidth-8,slotHeight-8,
+				hi_gc,sh_gc, 2);
+		}
+	}
+	for(m=0;m<numSlots;m++)
+	{
+		int widgetx=slotSpace+(slotWidth+slotSpace)*(m-1);
+		DrawPicture(proxy->proxy, widgetx, slotSpace, pictureArray[m],
+			cset);
 	}
 }
 
@@ -671,6 +1205,7 @@ static Bool SortProxiesOnce(void)
 	ProxyWindow *next;
 
 	int x1,x2;
+	int y1,y2;
 
 	lastProxy=NULL;
 	for (proxy=firstProxy; proxy != NULL && proxy->next != NULL;
@@ -678,8 +1213,13 @@ static Bool SortProxiesOnce(void)
 	{
 		x1=proxy->proxyx;
 		x2=proxy->next->proxyx;
+		y1=proxy->proxyy;
+		y2=proxy->next->proxyy;
 
-		if ( x1>x2 || (x1==x2 && proxy->proxyy > proxy->next->proxyy) )
+		/* sort x, then y, then arbitrarily on pointer */
+		if ( x1>x2 || (x1==x2 && y1>y2) ||
+			(x1==x2 && y1==y2 &&
+			proxy->window>proxy->next->window))
 		{
 			change=True;
 			next=proxy->next;
@@ -737,7 +1277,7 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 			rc = True;
 			if (proxyWidth-dx<proxyHeight-dy)
 			{
-				if (proxy->proxyx<other->proxyx)
+				if (proxy->proxyx<=other->proxyx)
 				{
 					other->proxyx=
 						proxy->proxyx+ proxy->proxyw+
@@ -752,7 +1292,7 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 			}
 			else
 			{
-				if (proxy->proxyy<other->proxyy)
+				if (proxy->proxyy<=other->proxyy)
 				{
 					other->proxyy=
 						proxy->proxyy+ proxy->proxyh+
@@ -820,6 +1360,10 @@ static void ReshuffleWindows(void)
 {
 	ProxyWindow *proxy;
 
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "ReshuffleWindows\n");
+#endif
+
 	if (are_windows_shown)
 	{
 		CloseWindows();
@@ -853,6 +1397,1019 @@ static void UpdateOneWindow(ProxyWindow *proxy)
 	return;
 }
 
+static void SendResolve(ProxyWindow *proxy)
+{
+	SendFvwmPipe(fd, "SendToModule FvwmProxy Resolve",
+		proxy->window);
+}
+
+static void WaitToConfig(ProxyWindow *proxy)
+{
+	proxy->pending_config++;
+	if(!waiting_to_config)
+	{
+		waiting_to_config=1;
+		SendResolve(proxy);
+	}
+}
+
+static void IsolateGroup(ProxyWindow *instigator,int isolate)
+{
+	ProxyWindow *proxy;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "IsolateGroup %p %d\n",
+		instigator,isolate);
+#endif
+
+	if(!instigator->group)
+	{
+		return;
+	}
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator)
+		{
+			continue;
+		}
+		if (proxy->desk == deskNumber &&
+			proxy->group==instigator->group)
+		{
+			proxy->flags.is_isolated=isolate;
+
+			DrawProxyBackground(proxy);
+			DrawProxy(proxy);
+		}
+	}
+}
+
+static void IconifyGroup(ProxyWindow *instigator,int iconify)
+{
+	ProxyWindow *proxy;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "IconifyGroup %p %d\n",
+		instigator,iconify);
+#endif
+
+	if(!instigator->group)
+	{
+		return;
+	}
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator)
+		{
+			continue;
+		}
+		if (proxy->desk == deskNumber &&
+			proxy->group==instigator->group)
+		{
+			sprintf(commandBuffer,"Iconify %s",
+				iconify? "On": "Off");
+			SendText(fd,commandBuffer,proxy->window);
+		}
+	}
+}
+
+static void RaiseLowerGroup(Window w,int raise)
+{
+	ProxyWindow *instigator;
+	ProxyWindow *proxy;
+
+	instigator = FindProxy(w);
+	if(instigator==NULL || instigator->flags.is_isolated)
+	{
+		return;
+	}
+
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "RaiseLowerGroup %p %d %d\n",
+		instigator,raise,instigator->raised);
+#endif
+
+	if(abs(instigator->raised)>10)
+	{
+		exit(1);
+	}
+
+	if(instigator->raised == (raise? 1: -1))
+	{
+		return;
+	}
+
+	instigator->raised=0;
+
+	if(instigator->flags.is_iconified || !instigator->group)
+	{
+		return;
+	}
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator || proxy->raised == (raise? 1: -1))
+		{
+			continue;
+		}
+		if (proxy->desk == deskNumber &&
+			proxy->group==instigator->group)
+		{
+			if(raise)
+			{
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr, "Raise %p\n",proxy);
+#endif
+
+				proxy->raised=1;
+				XRaiseWindow(dpy, proxy->window);
+			}
+			else
+			{
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr, "Lower %p\n",proxy);
+#endif
+
+				proxy->raised= -1;
+				XLowerWindow(dpy, proxy->window);
+			}
+		}
+	}
+	/* make sure instigator ends on on top/bottom */
+	if(raise)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "ReRaise %p\n",instigator);
+#endif
+
+		instigator->raised=1;
+		XRaiseWindow(dpy, instigator->window);
+	}
+	else
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "ReLower %p\n",instigator);
+#endif
+
+		instigator->raised= -1;
+		XLowerWindow(dpy, instigator->window);
+	}
+}
+
+static void ClearRaised(void)
+{
+	ProxyWindow *proxy;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "ClearRaised\n");
+#endif
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		proxy->raised=0;
+	}
+}
+
+static void ShiftWindows(ProxyWindow *instigator,int dx,int dy)
+{
+	ProxyWindow *proxy;
+
+	if((are_windows_shown && !instigator->flags.is_isolated) ||
+		!instigator->group || instigator->flags.is_soft)
+	{
+		return;
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "ShiftWindows %d %d %d\n",
+		instigator->group,dx,dy);
+#endif
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator)
+		{
+			continue;
+		}
+		if (proxy->desk == deskNumber &&
+			proxy->group==instigator->group)
+		{
+			proxy->x+=dx;
+			proxy->y+=dy;
+/*
+			XMoveWindow(dpy, proxy->window,
+				proxy->x+proxy->border_width,
+				proxy->y+proxy->title_height+
+				proxy->border_width);
+*/
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr, "shift %d %d (%d %d)\n",
+				proxy->x,proxy->y, dx,dy);
+#endif
+			WaitToConfig(proxy);
+		}
+	}
+}
+
+static void CatchWindows(ProxyWindow *instigator,int vertical,int from,int to,
+	int direction)
+{
+	ProxyWindow *proxy;
+
+	if((are_windows_shown && !instigator->flags.is_isolated) ||
+		!instigator->group || instigator->flags.is_soft)
+	{
+		return;
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "CatchWindows %d %d %d %d\n",
+		instigator->group,vertical,from,to);
+#endif
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator)
+		{
+			continue;
+		}
+		if (proxy->desk == deskNumber &&
+			proxy->group==instigator->group &&
+			!proxy->flags.is_soft)
+		{
+			int changed=0;
+			int newx=proxy->x;
+			int newy=proxy->y;
+			int neww=proxy->goal_width;
+			int newh=proxy->goal_height;
+			const int incx=proxy->incx;
+			const int incy=proxy->incy;
+/*			int threshold=(vertical? incy: incx)-1;
+*/
+			int threshold=0;
+			int least=from;
+			int most=from;
+
+			if(direction<0)
+			{
+				least-=threshold;
+			}
+			else
+			{
+				most+=threshold;
+			}
+
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,
+				"check %p %d %d size %d %d"
+				" goal %d %d inc %d %d\n",
+				proxy,proxy->x,proxy->y,proxy->w,proxy->h,
+				proxy->goal_width,proxy->goal_height,
+				incx,incy);
+#endif
+
+			if(vertical)
+			{
+				if(newy>=least && newy<=most)
+				{
+					newy=to;
+					newh-=to-from;
+					changed=1;
+				}
+				else if(newy+newh>=least &&
+					newy+newh<=most)
+				{
+					newh=to-newy;
+					changed=1;
+				}
+			}
+			else
+			{
+				if(newx>=least && newx<=most)
+				{
+					newx=to;
+					neww-=to-from;
+					changed=1;
+				}
+				else if(newx+neww>=least &&
+					newx+neww<=most)
+				{
+					neww=to-newx;
+					changed=1;
+				}
+			}
+			if(changed)
+			{
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr, "change %d %d %d %d\n",
+					newx,newy,neww,newh);
+#endif
+				if(newx!=proxy->x || newy!=proxy->y)
+				{
+#if PROXY_GROUP_DEBUG
+					fprintf(stderr, "move\n");
+#endif
+/*
+					XMoveWindow(dpy, proxy->window,
+						newx+bw,
+						newy+th+bw);
+*/
+					WaitToConfig(proxy);
+
+					/*	in case more motion of instigator
+						precedes this window's config */
+					proxy->x=newx;
+					proxy->y=newy;
+				}
+				if(neww<proxy->w ||
+					neww>=proxy->w+incx ||
+					newh<proxy->h ||
+					newh>=proxy->h+incy)
+				{
+#if PROXY_GROUP_DEBUG
+					fprintf(stderr, "resize\n");
+#endif
+/*
+					XResizeWindow(dpy, proxy->window,
+						neww-2*bw,
+						newh-2*bw-th);
+*/
+					WaitToConfig(proxy);
+
+					/*	in case more motion of instigator
+						precedes this window's config */
+					if(neww<proxy->w)
+					{
+						proxy->w-=((proxy->w-neww-1)/
+							incx+1)*incx;
+					}
+					else if(neww>=proxy->w+incx)
+					{
+						proxy->w+=(neww-proxy->w)/incx
+							*incx;
+					}
+					if(newh<proxy->h)
+					{
+						proxy->h-=((proxy->h-newh-1)/
+							incy+1)*incy;
+					}
+					else if(newh>=proxy->h+incy)
+					{
+						proxy->h+=(newh-proxy->h)/incy
+							*incy;
+					}
+				}
+				proxy->goal_width=neww;
+				proxy->goal_height=newh;
+
+			}
+		}
+	}
+}
+
+static void MoveProxiedWindow(ProxyWindow* proxy,int x,int y,int w,int h)
+{
+#if 1
+	sprintf(commandBuffer,"ResizeMove frame %dp %dp %dp %dp",
+		w,
+		h,
+		x,
+		y);
+	SendText(fd,commandBuffer,proxy->window);
+#else
+	const int bw=proxy->border_width;
+	const int th=proxy->title_height;
+
+	XMoveResizeWindow(dpy, proxy->window,
+		x+bw,
+		y+th+bw,
+		w-2*bw,
+		h-2*bw-th);
+#endif
+}
+
+static void ResolvePendingWindows(void)
+{
+	ProxyWindow *proxy;
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy->pending_config)
+		{
+			MoveProxiedWindow(proxy,proxy->x,proxy->y,
+				proxy->goal_width,proxy->goal_height);
+		}
+	}
+}
+
+int FindUniqueGroup(int desk)
+{
+	ProxyWindow *proxy;
+
+	/* find unique group */
+	int group=1;
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if (proxy->desk == desk && proxy->group==group)
+		{
+			group++;
+			proxy=firstProxy;
+			continue;
+		}
+	}
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"FindUniqueGroup desk %d group %d\n",desk,group);
+#endif
+	return group;
+}
+
+static void MoveGroupToDesk(ProxyWindow *instigator,int desk)
+{
+	ProxyWindow *proxy;
+	int old_desk;
+	int old_group;
+	int group;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "MoveGroupToDesk %p %d\n",
+		instigator,desk);
+#endif
+
+	if(!instigator->group)
+	{
+		return;
+	}
+
+	old_desk=instigator->desk;
+	old_group=instigator->group;
+	group=FindUniqueGroup(desk);
+
+	sprintf(commandBuffer, "MoveToDesk 0 %d", desk);
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if (proxy->desk == old_desk &&
+			proxy->group==old_group)
+		{
+			proxy->desk=desk;
+			proxy->group=group;
+
+			SendText(fd, commandBuffer, proxy->window);
+
+			DrawProxyBackground(proxy);
+			DrawProxy(proxy);
+		}
+	}
+}
+
+
+static ProxyWindow* FindNeighborInGroup(ProxyWindow* instigator,
+	int not_iconified)
+{
+	ProxyWindow *proxy;
+
+	if(!instigator)
+	{
+		return NULL;
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"FindNeighborInGroup %p %p desk %d group %d\n",
+		instigator,instigator->proxy_group,instigator->desk,
+		instigator->group);
+#endif
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr," vs %p %p desk %d group %d\n",
+			proxy,proxy->proxy_group,proxy->desk,proxy->group);
+#endif
+		if (proxy!= instigator && proxy->desk == instigator->desk &&
+			proxy->group &&
+			proxy->group==instigator->group &&
+			(!not_iconified || !proxy->flags.is_iconified))
+		{
+			return proxy;
+		}
+	}
+
+	return NULL;
+}
+
+static ProxyWindow* FindNeighborForProxy(ProxyWindow* instigator)
+{
+	ProxyWindow *proxy;
+	ProxyWindow *neighbor=NULL;
+	int group;
+
+	if(!instigator)
+	{
+		return NULL;
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"FindNeighborForProxy %p %p desk %d\n",
+		instigator,instigator->proxy_group,instigator->desk);
+#endif
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr," vs %p %p desk %d group %d\n",
+			proxy,proxy->proxy_group,proxy->desk,proxy->group);
+#endif
+		if (proxy!= instigator && proxy->desk == instigator->desk &&
+			proxy->proxy_group==instigator->proxy_group)
+		{
+			if(proxy->proxy_group->flags.isolated &&
+				!instigator->flags.is_isolated)
+			{
+				SendFvwmPipe(fd,
+					"SendToModule FvwmProxy IsolateToggle",
+					proxy->window);
+			}
+			if(proxy->group)
+			{
+				return proxy;
+			}
+			neighbor=proxy;
+		}
+	}
+
+	if(!neighbor)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"not found\n");
+#endif
+		return NULL;
+	}
+
+	group=FindUniqueGroup(instigator->desk);
+
+	/* assign group to all proxies with given pid */
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if (proxy->desk == instigator->desk &&
+			proxy->proxy_group==instigator->proxy_group)
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,"unique group %d reassign %s\n",
+				group,proxy->name);
+#endif
+			proxy->group=group;
+		}
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"group %d\n",group);
+#endif
+	return neighbor;
+}
+
+static ProxyWindow* FindNeighborForProcess(ProxyWindow* proxy,
+	int desk,int pid,int ppid)
+{
+	ProxyWindow *other;
+	ProxyWindow *neighbor=NULL;
+	int group;
+	int auto_include=0;
+
+	if(!pid)
+	{
+		return 0;
+	}
+
+	/* find existing group for pid */
+	for (other=firstProxy; other != NULL; other=other->next)
+	{
+		if (other->desk == desk && other->proxy_group &&
+			(other->pid==pid || (ppid && other->pid==ppid) ||
+			other->ppid==pid) &&
+			(MatchWindowName(other->proxy_group->includes,
+				proxy->name) ||
+			(auto_include=other->proxy_group->flags.auto_include)))
+		{
+			proxy->flags.is_soft=auto_include &&
+				other->proxy_group->flags.auto_soft;
+			if(other->proxy_group->flags.isolated &&
+				!proxy->flags.is_isolated)
+			{
+				SendFvwmPipe(fd,
+					"SendToModule FvwmProxy IsolateToggle",
+					proxy->window);
+			}
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,
+				"pid %d %d found %d %d group %d soft %d\n",
+				pid,ppid,other->pid,other->ppid,
+				other->group,proxy->flags.is_soft);
+#endif
+			if(other->group)
+			{
+				return other;
+			}
+			neighbor=other;
+		}
+	}
+	if(!neighbor)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"FindNeighborForProcess pid %d %d not found\n",
+			pid,ppid);
+#endif
+		return NULL;
+	}
+
+	group=FindUniqueGroup(desk);
+
+	/* assign pid to all proxies with given pid */
+	for (other=firstProxy; other != NULL; other=other->next)
+	{
+		if (other->desk == desk && other->proxy_group &&
+			(other->pid==pid || (ppid && other->pid==ppid) ||
+			other->ppid==pid))
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,"unique group %d reassign %s\n",
+				group,other->name);
+#endif
+			other->group=group;
+		}
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"FindNeighborForProcess pid %d new %d\n",pid,group);
+#endif
+	return neighbor;
+}
+
+static ProxyWindow* FindNeighborForLeader(ProxyWindow* proxy,
+	int desk,int leader)
+{
+	ProxyWindow *other;
+	ProxyWindow *neighbor=NULL;
+	int group;
+	int auto_include=0;
+
+	if(!leader)
+	{
+		return 0;
+	}
+
+	/* find existing group for leader */
+	for (other=firstProxy; other != NULL; other=other->next)
+	{
+		if (other->desk == desk && other->proxy_group &&
+			other->leader==leader &&
+			(MatchWindowName(other->proxy_group->includes,
+				proxy->name) ||
+			(auto_include=other->proxy_group->flags.auto_include)))
+		{
+			proxy->flags.is_soft=auto_include &&
+				other->proxy_group->flags.auto_soft;
+			if(other->proxy_group->flags.isolated &&
+				!proxy->flags.is_isolated)
+			{
+				SendFvwmPipe(fd,
+					"SendToModule FvwmProxy IsolateToggle",
+					proxy->window);
+			}
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,"leader %d found %d group %d soft %d\n",
+				leader,other->leader,
+				other->group,proxy->flags.is_soft);
+#endif
+			if(other->group)
+			{
+				return other;
+			}
+			neighbor=other;
+		}
+	}
+	if(!neighbor)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"FindNeighborForLeader leader %d not found\n",
+			leader);
+#endif
+		return NULL;
+	}
+
+	group=FindUniqueGroup(desk);
+
+	/* assign leader to all proxies with given leader */
+	for (other=firstProxy; other != NULL; other=other->next)
+	{
+		if (other->desk == desk && other->leader==leader &&
+			other->proxy_group)
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,"unique group %d reassign %s\n",
+				group,other->name);
+			other->group=group;
+#endif
+		}
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"FindNeighborForLeader leader %x new %d\n",
+		leader,group);
+#endif
+	return neighbor;
+}
+
+static ProxyWindow* FindNeighborForApplication(ProxyWindow* proxy)
+{
+	ProxyWindow* neighbor=FindNeighborForLeader(proxy,proxy->desk,
+		proxy->leader);
+	if(!neighbor)
+	{
+		neighbor=FindNeighborForProcess(proxy,proxy->desk,
+			proxy->pid,proxy->ppid);
+	}
+	return neighbor;
+}
+
+static int ProxyGroupCheckSoft(ProxyGroup* proxy_group,
+	ProxyWindow* proxy)
+{
+	WindowName* include=proxy_group->includes;
+	while(include)
+	{
+		if(matchWildcards(include->name, proxy->name))
+		{
+			return include->flags.is_soft;
+		}
+		include=include->next;
+	}
+	return 0;
+}
+
+static void UpdateProxyGroup(ProxyWindow* proxy)
+{
+	ProxyWindow* neighbor;
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"UpdateProxyGroup %s\n",proxy->name);
+#endif
+
+	if(proxy->proxy_group)
+	{
+		return;
+	}
+	if(!proxy->proxy_group)
+	{
+		neighbor=FindNeighborForApplication(proxy);
+/*
+		proxy->group=0;
+*/
+		proxy->proxy_group=NULL;
+		if(neighbor && neighbor->proxy_group)
+		{
+			proxy->group=neighbor->group;
+			proxy->proxy_group=neighbor->proxy_group;
+		}
+	}
+	if(!proxy->proxy_group)
+	{
+		proxy->proxy_group=
+			FindProxyGroupWithWindowName(proxy->name);
+	}
+	if(proxy->proxy_group &&
+		MatchWindowName(proxy->proxy_group->excludes,proxy->name))
+	{
+		proxy->proxy_group=NULL;
+		proxy->group=0;
+	}
+	if(proxy->proxy_group && !proxy->group &&
+		proxy->proxy_group->flags.ignore_ids)
+	{
+		neighbor=FindNeighborForProxy(proxy);
+		if(neighbor)
+		{
+			proxy->group=neighbor->group;
+		}
+	}
+
+	if(proxy->proxy_group)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr," ProxyGroup %s\n",proxy->proxy_group->name);
+#endif
+
+		proxy->flags.is_soft=proxy->flags.is_soft ||
+			ProxyGroupCheckSoft(proxy->proxy_group,proxy);
+	}
+}
+
+static void UpdateProxyGroupForAll(void)
+{
+	ProxyWindow *proxy;
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		UpdateProxyGroup(proxy);
+	}
+}
+
+static void AdhereGroup(ProxyWindow *instigator)
+{
+	ProxyWindow *proxy;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "AdhereGroup %p\n", instigator);
+#endif
+
+	if(!instigator)
+	{
+		return;
+	}
+
+	if(!instigator->group || instigator->flags.is_soft)
+	{
+		return;
+	}
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator)
+		{
+			continue;
+		}
+		if (proxy->desk == instigator->desk &&
+			proxy->group==instigator->group)
+		{
+			if(!proxy->flags.is_soft &&
+				(proxy->x != instigator->x ||
+				proxy->y != instigator->y ||
+				proxy->goal_width != instigator->goal_width ||
+				proxy->goal_height != instigator->goal_height))
+			{
+				proxy->x=instigator->x;
+				proxy->y=instigator->y;
+				proxy->goal_width=instigator->goal_width;
+				proxy->goal_height=instigator->goal_height;
+
+				MoveProxiedWindow(proxy,proxy->x,proxy->y,
+					proxy->goal_width,proxy->goal_height);
+			}
+		}
+	}
+}
+
+static void SetGroup(ProxyWindow* proxy, int group)
+{
+	ProxyWindow *neighbor;
+
+	proxy->group=group;
+	if(group)
+	{
+		neighbor=FindNeighborInGroup(proxy,0);
+		if(neighbor)
+		{
+			proxy->flags.is_isolated = neighbor->flags.is_isolated;
+			if(proxy->flags.is_isolated)
+			{
+				AdhereGroup(neighbor);
+			}
+		}
+		if(proxy->flags.is_isolated && !proxy->flags.is_iconified)
+		{
+			IconifyGroup(proxy,1);
+		}
+	}
+	else
+	{
+		proxy->flags.is_soft=0;
+		proxy->flags.is_isolated=0;
+	}
+}
+
+void DumpStampQueue(void)
+{
+#if PROXY_GROUP_DEBUG
+	int m;
+
+	fprintf(stderr,"DumpStampQueue stamp %d min %d max %d\n",
+		stamp,stampMin,stampMax);
+	for(m=0;m<stampLimit;m++)
+	{
+		fprintf(stderr,"stampQueue[%d] %x %d %d %d %d\n",m,
+			(int)(stampQueue[m].window),
+			stampQueue[m].x,
+			stampQueue[m].y,
+			stampQueue[m].w,
+			stampQueue[m].h);
+	}
+#endif
+}
+
+void StoreStamp(Window window,int x,int y,int w,int h)
+{
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"StoreStamp %x %d %d %d %d\n",(int)window,x,y,w,h);
+#endif
+
+	stamp=(stamp+1)%stampLimit;
+	stampMax=stamp;
+	if(stampMin==stampMax)
+	{
+		stampMin=(stampMax+1)%stampLimit;
+	}
+
+	stampQueue[stamp].window=window;
+	stampQueue[stamp].x=x;
+	stampQueue[stamp].y=y;
+	stampQueue[stamp].w=w;
+	stampQueue[stamp].h=h;
+
+	DumpStampQueue();
+}
+
+void UndoStamp(void)
+{
+	ProxyWindow *proxy;
+
+	if(stamp==stampMin)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"UndoStamp empty, stamp %d min %d max %d\n",
+			stamp,stampMin,stampMax);
+#endif
+		return;
+	}
+	proxy = FindProxy(stampQueue[stamp].window);
+	if(!proxy)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"UndoStamp no proxy for window\n");
+#endif
+		return;
+	}
+
+	pending_do++;
+	MoveProxiedWindow(proxy,
+		stampQueue[stamp].x,
+		stampQueue[stamp].y,
+		stampQueue[stamp].w,
+		stampQueue[stamp].h);
+
+	stampQueue[stamp].window=proxy->window;
+	stampQueue[stamp].x=proxy->x;
+	stampQueue[stamp].y=proxy->y;
+	stampQueue[stamp].w=proxy->w;
+	stampQueue[stamp].h=proxy->h;
+
+	stamp=(stamp-1+stampLimit)%stampLimit;
+
+	DumpStampQueue();
+
+	SendResolve(proxy);
+}
+
+void RedoStamp(void)
+{
+	ProxyWindow *proxy;
+
+	if(stamp==stampMax)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"RedoStamp empty, stamp %d min %d max %d\n",
+			stamp,stampMin,stampMax);
+#endif
+		return;
+	}
+
+	stamp=(stamp+1)%stampLimit;
+
+	proxy = FindProxy(stampQueue[stamp].window);
+	if(!proxy)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"RedoStamp no proxy for window\n");
+#endif
+		return;
+	}
+
+	pending_do++;
+	MoveProxiedWindow(proxy,
+		stampQueue[stamp].x,
+		stampQueue[stamp].y,
+		stampQueue[stamp].w,
+		stampQueue[stamp].h);
+
+	stampQueue[stamp].window=proxy->window;
+	stampQueue[stamp].x=proxy->x;
+	stampQueue[stamp].y=proxy->y;
+	stampQueue[stamp].w=proxy->w;
+	stampQueue[stamp].h=proxy->h;
+
+	DumpStampQueue();
+
+	SendResolve(proxy);
+}
+
 static void ConfigureWindow(FvwmPacket *packet)
 {
 	unsigned long* body = packet->body;
@@ -863,7 +2420,14 @@ static void ConfigureWindow(FvwmPacket *packet)
 	int desk=cfgpacket->desk;
 	int wsx=cfgpacket->frame_width;
 	int wsy=cfgpacket->frame_height;
+	int border_width=cfgpacket->border_width;
+	int title_height=cfgpacket->title_height;
+	int incx=cfgpacket->hints_width_inc;
+	int incy=cfgpacket->hints_height_inc;
 	Window target=cfgpacket->w;
+	int leader;
+	int pid;
+	int ppid;
 	ProxyWindow *proxy;
 	int is_new_window = 0;
 
@@ -871,6 +2435,12 @@ static void ConfigureWindow(FvwmPacket *packet)
 	{
 		return;
 	}
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"\n");
+#endif
+	leader=GetLeader(target);
+	pid=GetProcessId(target);
+	ppid=GetParentProcessId(pid);
 	proxy = FindProxy(target);
 	if (proxy == NULL)
 	{
@@ -880,10 +2450,120 @@ static void ConfigureWindow(FvwmPacket *packet)
 		firstProxy = proxy;
 		proxy->window=target;
 
-		/* unreliable on existing windows
-		 * on 2.5.10, reporting false just after M_ICONIFY */
+		/*	unreliable on existing windows
+			on 2.5.10, reporting false just after M_ICONIFY */
 		proxy->flags.is_iconified = !!IS_ICONIFIED(cfgpacket);
 	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,
+		"Config %p %x ld %x pid=%d %d\n"
+		" pos %d %d sz %d %d"
+		" was %d %d sz %d %d goal %d %d"
+		" bdr %d %d pend %d %d\n",
+		proxy,(int)target,leader,pid,ppid,
+		wx,wy,wsx,wsy,
+		proxy->x,proxy->y,
+		proxy->w,proxy->h,
+		proxy->goal_width,proxy->goal_height,
+		border_width,title_height,
+		proxy->pending_config,
+		pending_do);
+#endif
+
+	if(proxy->pending_config)
+	{
+		proxy->pending_config=0;
+	}
+	else
+	{
+		if(!pending_do && !waiting_to_stamp &&
+			(is_new_window || proxy->x!=wx || proxy->y!=wy ||
+			proxy->w!=wsx || proxy->h!=wsy))
+		{
+			waiting_to_stamp=1;
+			sprintf(commandBuffer,
+				"SendToModule FvwmProxy Stamp %d %d %d %d",
+				proxy->x,proxy->y,proxy->w,proxy->h);
+			SendFvwmPipe(fd, commandBuffer, proxy->window);
+		}
+
+		if (is_new_window)
+		{
+			proxy->goal_width=wsx;
+			proxy->goal_height=wsy;
+		}
+		else
+		{
+			int shifted=0;
+			int wasx=proxy->x;
+			int wasy=proxy->y;
+			int wasw=proxy->w;
+			int wash=proxy->h;
+			int wasgw=proxy->goal_width;
+			int wasgh=proxy->goal_height;
+			if(proxy->x!=wx && proxy->w==wsx)
+			{
+				ShiftWindows(proxy,wx-proxy->x,wy-proxy->y);
+				shifted=1;
+			}
+			else
+			{
+				if(wasx!=wx)
+				{
+					CatchWindows(proxy,0,proxy->x,wx,-1);
+					proxy->goal_width=wsx;
+				}
+				if(wasx+wasw!=wx+wsx)
+				{
+					CatchWindows(proxy,0,
+						wasx+wasgw,
+						wx+wsx,1);
+					proxy->goal_width=wsx;
+				}
+			}
+
+			if(proxy->y!=wy && proxy->h==wsy)
+			{
+				if(!shifted)
+				{
+					ShiftWindows(proxy,0,wy-proxy->y);
+				}
+			}
+			else
+			{
+				if(wasy!=wy)
+				{
+					CatchWindows(proxy,1,proxy->y,wy,-1);
+					proxy->goal_height=wsy;
+				}
+				if(wasy+wash!=wy+wsy)
+				{
+					CatchWindows(proxy,1,
+						wasy+wasgh,
+						wy+wsy,1);
+					proxy->goal_height=wsy;
+				}
+			}
+/*
+			if(wx!=proxy->x || wy!=proxy->y ||
+				wsx!=proxy->w || wsy!=proxy->h)
+			{
+				StoreStamp(target,proxy->x,proxy->y,
+					proxy->w,proxy->h);
+			}
+*/
+		}
+	}
+
+	if(!is_new_window && proxy->desk!=desk)
+	{
+		MoveGroupToDesk(proxy,desk);
+	}
+
+	proxy->leader=leader;
+	proxy->pid=pid;
+	proxy->ppid=ppid;
 	proxy->x=wx;
 	proxy->y=wy;
 	proxy->desk=desk;
@@ -891,6 +2571,10 @@ static void ConfigureWindow(FvwmPacket *packet)
 	proxy->h=wsy;
 	proxy->proxyw=proxyWidth;
 	proxy->proxyh=proxyHeight;
+	proxy->border_width=border_width;
+	proxy->title_height=title_height;
+	proxy->incx=incx;
+	proxy->incy=incy;
 
 	RecenterProxy(proxy);
 	if (!is_new_window)
@@ -911,7 +2595,89 @@ static void ConfigureWindow(FvwmPacket *packet)
 		}
 	}
 
+	if(proxy->flags.is_isolated)
+	{
+		AdhereGroup(proxy);
+	}
+
 	return;
+}
+
+static void IconifyWindow(ProxyWindow *proxy, int is_iconified)
+{
+	if (proxy == NULL)
+	{
+		return;
+	}
+	is_iconified = !!is_iconified;
+	if(proxy->flags.is_iconified != is_iconified)
+	{
+		proxy->flags.is_iconified = is_iconified;
+		if (!proxyIconified && is_iconified)
+		{
+			if (proxy->flags.is_shown)
+			{
+				CloseOneWindow(proxy);
+			}
+		}
+		else
+		{
+			if (are_windows_shown)
+			{
+/*				ReshuffleWindows();
+*/
+				OpenOneWindow(proxy);
+			}
+		}
+
+		DrawProxyBackground(proxy);
+
+		if(proxy->flags.is_isolated)
+		{
+			if(!is_iconified)
+			{
+				IconifyGroup(proxy, 1);
+			}
+		}
+		else
+		{
+			IconifyGroup(proxy,is_iconified);
+		}
+	}
+
+	return;
+}
+
+static void IsolateCheck(ProxyWindow *instigator,int force_other)
+{
+	if(instigator->flags.is_isolated)
+	{
+		if(!force_other && !instigator->flags.is_iconified)
+		{
+			IconifyGroup(instigator,1);
+			AdhereGroup(instigator);
+		}
+		else
+		{
+			ProxyWindow *neighbor=
+				FindNeighborInGroup(instigator,1);
+			if(neighbor)
+			{
+				IconifyGroup(neighbor,1);
+			}
+			else
+			{
+				neighbor=FindNeighborInGroup(instigator,0);
+				if(neighbor && force_other)
+				{
+					sprintf(commandBuffer,"Iconify Off");
+					SendText(fd,commandBuffer,
+						neighbor->window);
+				}
+			}
+			AdhereGroup(neighbor);
+		}
+	}
 }
 
 static void DestroyWindow(Window w)
@@ -945,39 +2711,12 @@ static void DestroyWindow(Window w)
 	{
 		enterProxy = NULL;
 	}
+	if(!proxy->flags.is_iconified)
+	{
+		IsolateCheck(proxy,1);
+	}
 	CloseOneWindow(proxy);
 	delete_ProxyWindow(proxy);
-
-	return;
-}
-
-static void IconifyWindow(Window w, int is_iconified)
-{
-	ProxyWindow *proxy;
-
-	proxy = FindProxy(w);
-	if (proxy == NULL)
-	{
-		return;
-	}
-	proxy->flags.is_iconified = !!is_iconified;
-	if (!proxyIconified && is_iconified)
-	{
-		if (proxy->flags.is_shown)
-		{
-			CloseOneWindow(proxy);
-		}
-	}
-	else
-	{
-		if (are_windows_shown)
-		{
-/*			ReshuffleWindows();*/
-			OpenOneWindow(proxy);
-		}
-	}
-
-	DrawProxyBackground(proxy);
 
 	return;
 }
@@ -1105,6 +2844,76 @@ static void AbortProxies(void)
 	return;
 }
 
+static void RotateIsolated(ProxyWindow *instigator,int direction)
+{
+	int found=0;
+	ProxyWindow *proxy;
+	ProxyWindow *first=NULL;
+	ProxyWindow *adjacent=NULL;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr,"RotateIsolated %p %p %d\n",
+		instigator,last_rotation_instigator,direction);
+#endif
+
+	/* rotation can lose focus, so we store it */
+	if(!instigator || !instigator->group ||
+		!instigator->flags.is_isolated)
+	{
+		instigator=last_rotation_instigator;
+	}
+	if(!instigator || !instigator->group ||
+		!instigator->flags.is_isolated)
+	{
+		return;
+	}
+	last_rotation_instigator=instigator;
+
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy->desk == instigator->desk &&
+			proxy->group==instigator->group)
+		{
+			if(!proxy->flags.is_iconified)
+			{
+				if(direction<0 && adjacent)
+				{
+					break;
+				}
+				found=1;
+			}
+			else
+			{
+				if(direction<0)
+				{
+					adjacent=proxy;
+				}
+				else if(found)
+				{
+					adjacent=proxy;
+					break;
+				}
+				else if(!first)
+				{
+					first=proxy;
+				}
+			}
+		}
+	}
+
+	if(!adjacent)
+	{
+		adjacent=first;
+	}
+	if(adjacent)
+	{
+		sprintf(commandBuffer,"Iconify Off");
+		SendText(fd,commandBuffer,adjacent->window);
+	}
+
+	return;
+}
+
 static void change_cset(int cset)
 {
 	if (cset == cset_normal || cset == cset_iconified)
@@ -1130,6 +2939,17 @@ static void ProcessMessage(FvwmPacket* packet)
 	unsigned long* body = packet->body;
 	FvwmWinPacketBodyHeader *bh = (void *)body;
 	ProxyWindow *proxy;
+	int x=0;
+	int y=0;
+	int w=0;
+	int h=0;
+
+	if(type!=M_RAISE_WINDOW && type!=M_LOWER_WINDOW &&
+		type!=M_FOCUS_CHANGE && type!=M_ICON_NAME &&
+		type!=M_MINI_ICON && type!=M_STRING)
+	{
+		ClearRaised();
+	}
 
 	switch (type)
 	{
@@ -1141,10 +2961,16 @@ static void ProcessMessage(FvwmPacket* packet)
 		DestroyWindow(bh->w);
 		break;
 	case M_ICONIFY:
-		IconifyWindow(bh->w, 1);
+		IconifyWindow(FindProxy(bh->w), 1);
 		break;
 	case M_DEICONIFY:
-		IconifyWindow(bh->w, 0);
+		IconifyWindow(FindProxy(bh->w), 0);
+		break;
+	case M_RAISE_WINDOW:
+		RaiseLowerGroup(bh->w,1);
+		break;
+	case M_LOWER_WINDOW:
+		RaiseLowerGroup(bh->w,0);
 		break;
 	case M_WINDOW_NAME:
 		proxy = FindProxy(bh->w);
@@ -1155,9 +2981,11 @@ static void ProcessMessage(FvwmPacket* packet)
 				free(proxy->name);
 			}
 			proxy->name = safestrdup((char*)&body[3]);
-/*			UpdateOneWindow(proxy);
-*/
-			/*** window name not currently utilized anywhere */
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,"M_WINDOW_NAME %s\n",proxy->name);
+#endif
+			UpdateProxyGroup(proxy);
+			UpdateProxyGroupForAll();
 		}
 		break;
 	case M_ICON_NAME:
@@ -1169,6 +2997,9 @@ static void ProcessMessage(FvwmPacket* packet)
 				free(proxy->iconname);
 			}
 			proxy->iconname = safestrdup((char*)&body[3]);
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,"M_ICON_NAME %s\n",proxy->iconname);
+#endif
 /*			UpdateOneWindow(proxy);
 */
 			DrawProxyBackground(proxy);
@@ -1181,8 +3012,7 @@ static void ProcessMessage(FvwmPacket* packet)
 			deskNumber=body[0];
 			if (are_windows_shown)
 			{
-				CloseWindows();
-				OpenWindows();
+				ReshuffleWindows();
 			}
 		}
 		break;
@@ -1206,13 +3036,24 @@ static void ProcessMessage(FvwmPacket* packet)
 	case M_FOCUS_CHANGE:
 	{
 		focusWindow=bh->w;
+		if(bh->w != 0)
+		{
+			last_rotation_instigator=NULL;
+		}
 	}
+		break;
 	case M_STRING:
 	{
 		char *message=(char*)&body[3];
 		char *token;
 		char *next;
 		int prev;
+		int isolate_check=0;
+		int reshuffle=0;
+
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "M_STRING \"%s\"\n", message);
+#endif
 
 		token = PeekToken(message, &next);
 		prev=(StrEquals(token, "Prev"));
@@ -1315,6 +3156,84 @@ static void ProcessMessage(FvwmPacket* packet)
 			}
 			MarkProxy(proxy);
 		}
+		else if (StrEquals(token, "Resolve"))
+		{
+			waiting_to_config=0;
+			pending_do=0;
+			ResolvePendingWindows();
+			reshuffle=1;
+		}
+		else if (StrEquals(token, "Stamp"))
+		{
+			token = PeekToken(message, &next);
+			sscanf(next,"%d%d%d%d",&x,&y,&w,&h);
+
+			waiting_to_stamp=0;
+			proxy = FindProxy(bh->w);
+			if(proxy && w && h)
+			{
+				StoreStamp(bh->w,x,y,w,h);
+			}
+			reshuffle=1;
+		}
+		else if (StrEquals(token, "Undo"))
+		{
+			UndoStamp();
+			reshuffle=1;
+		}
+		else if (StrEquals(token, "Redo"))
+		{
+			RedoStamp();
+			reshuffle=1;
+		}
+		else if (StrEquals(token, "PrevIsolated"))
+		{
+			RotateIsolated(FindProxy(bh->w),-1);
+		}
+		else if (StrEquals(token, "NextIsolated"))
+		{
+			RotateIsolated(FindProxy(bh->w),1);
+		}
+		else if (StrEquals(token, "SoftToggle"))
+		{
+			proxy = FindProxy(bh->w);
+			if(proxy)
+			{
+				proxy->flags.is_soft= proxy->group?
+					!proxy->flags.is_soft: 0;
+				isolate_check=1;
+
+				DrawProxyBackground(proxy);
+				DrawProxy(proxy);
+			}
+		}
+		else if (StrEquals(token, "IsolateToggle"))
+		{
+			proxy = FindProxy(bh->w);
+			if(proxy)
+			{
+				proxy->flags.is_isolated= proxy->group?
+					!proxy->flags.is_isolated: 0;
+				IsolateGroup(proxy,proxy->flags.is_isolated);
+				isolate_check=1;
+
+				DrawProxyBackground(proxy);
+				DrawProxy(proxy);
+				reshuffle=1;
+			}
+		}
+		if(isolate_check)
+		{
+			IsolateCheck(proxy,0);
+		}
+		if(reshuffle)
+		{
+			/* windows may have moved, so update proxy windows */
+			if (are_windows_shown)
+			{
+				ReshuffleWindows();
+			}
+		}
 		break;
 	}
 	case M_CONFIG_INFO:
@@ -1403,13 +3322,43 @@ static void DispatchEvent(XEvent *pEvent)
 		if (proxy)
 		{
 			int button=pEvent->xbutton.button;
+			int wx=pEvent->xbutton.x;
+			int wy=pEvent->xbutton.y;
 			if (button >= 1 &&
-			    button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
+				button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 			{
-				SendFvwmPipe(
-					fd, action_list
-						[PROXY_ACTION_CLICK + button-1],
-					proxy->window);
+				if(wy < slotSpace+slotHeight)
+				{
+					int index=(wx-slotSpace)/
+						(slotWidth+slotSpace)+1;
+					int group=index-groupSlot+1;
+
+					if(index<numSlots)
+					{
+						char* action=slot_action_list[
+							button-1][index];
+						if(action)
+						{
+							SendFvwmPipe(fd,action,
+								proxy->window);
+						}
+					}
+					if(group && group<=groupCount)
+					{
+						SetGroup(proxy,
+							proxy->group==group?
+							0: group);
+						DrawProxyBackground(proxy);
+						DrawProxy(proxy);
+					}
+				}
+				else
+				{
+					SendFvwmPipe(fd,
+						action_list[PROXY_ACTION_CLICK
+							+ button-1],
+						proxy->window);
+				}
 			}
 		}
 		mousex=pEvent->xbutton.x_root;
@@ -1532,25 +3481,45 @@ int main(int argc, char **argv)
 	fd_width = GetFdWidth();
 
 	SetMessageMask(
-		fd, M_STRING| M_CONFIGURE_WINDOW| M_ADD_WINDOW| M_FOCUS_CHANGE|
+		fd, M_STRING| M_RAISE_WINDOW| M_LOWER_WINDOW|
+		M_CONFIGURE_WINDOW| M_ADD_WINDOW| M_FOCUS_CHANGE|
 		M_DESTROY_WINDOW| M_NEW_DESK| M_NEW_PAGE| M_ICON_NAME|
 		M_WINDOW_NAME| M_MINI_ICON| M_ICONIFY| M_DEICONIFY|
 		M_CONFIG_INFO| M_END_CONFIG_INFO);
 
 	if (parse_options() == False)
 		exit(1);
+	stampQueue=(GeometryStamp*)safemalloc(
+		sizeof(GeometryStamp)*stampLimit);
 	if ((Ffont = FlocaleLoadFont(dpy, font_name, MyName)) == NULL)
 	{
-		fprintf(stderr,"%s: Couldn't load font. Exiting!\n", MyName);
+		fprintf(stderr,"%s: Couldn't load font \"%s\". Exiting!\n",
+			MyName, font_name);
 		exit(1);
 	}
 	if (Ffont->font != NULL)
 	{
 		XSetFont(dpy,fg_gc,Ffont->font->fid);
 	}
+	Ffont_small=NULL;
+	if(small_font_name)
+	{
+		if((Ffont_small =
+			FlocaleLoadFont(dpy, small_font_name, MyName)) == NULL)
+		{
+			fprintf(stderr,
+				"%s: Couldn't load small font \"%s\"\n",
+				MyName, small_font_name);
+		}
+	}
+	if (Ffont_small != NULL && Ffont_small->font != NULL)
+	{
+		XSetFont(dpy,hi_gc,Ffont_small->font->fid);
+	}
 	SendInfo(fd,"Send_WindowList",0);
 	SendFinishedStartupNotification(fd);
 	Loop(fd);
 
+	free(stampQueue);
 	return 0;
 }

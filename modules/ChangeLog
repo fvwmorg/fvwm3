@@ -1,3 +1,7 @@
+2006-10-07  Jason Weber  <baboon@imonk.com>
+	* FvwmProxy/FvwmProxy.c:
+	added window groups and proxy slots
+
 2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmScript/Widgets/List.c (EvtMouseList):

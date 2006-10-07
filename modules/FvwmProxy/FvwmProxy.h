@@ -28,16 +28,60 @@
 #include "libs/vpacket.h"
 #include "libs/PictureBase.h"
 
+typedef struct sWindowName
+{
+	char			*name;
+	struct sWindowName	*next;
+	struct
+	{
+		unsigned is_soft : 1;
+	} flags;
+} WindowName;
+
+typedef struct sProxyGroup
+{
+	char			*name;
+	WindowName		*includes;
+	WindowName		*excludes;
+	struct sProxyGroup	*next;
+	struct
+	{
+		unsigned auto_include : 1;
+		unsigned auto_soft : 1;
+		unsigned isolated : 1;
+		unsigned ignore_ids : 1;
+	} flags;
+} ProxyGroup;
+
+typedef struct sGeometryStamp
+{
+	int			x,y;
+	int			w,h;
+	Window			window;
+} GeometryStamp;
+
 typedef struct sProxyWindow
 {
 	Window			window;
+	int			leader;
+	int			pid;
+	int			ppid;
 	int			x,y;
 	int			w,h;
+	int			border_width;
+	int			title_height;
+	int			goal_width;
+	int			goal_height;
+	int			incx,incy;
 	int			desk;
+	int			group;
+	ProxyGroup		*proxy_group;
 	Window			proxy;
 	int			proxyx,proxyy;
 	int			proxyw,proxyh;
 	int			tweakx,tweaky;
+	int			pending_config;
+	int			raised;
 	FvwmPicture		picture;
 	char			*name;
 	char			*iconname;
@@ -47,8 +91,9 @@ typedef struct sProxyWindow
 	{
 		unsigned is_shown : 1;
 		unsigned is_iconified : 1;
+		unsigned is_soft : 1;
+		unsigned is_isolated : 1;
 	} flags;
 } ProxyWindow;
-
 
 #endif	/* FvwmProxy_h */
