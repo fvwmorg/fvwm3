@@ -1,3 +1,8 @@
+2006-10-08  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmProxy/FvwmProxy.c (FindProxyGroupWithWindowName):
+	fix declaration after statement
+
 2006-10-07  Jason Weber  <baboon@imonk.com>
 	* FvwmProxy/FvwmProxy.c:
 	added window groups and proxy slots

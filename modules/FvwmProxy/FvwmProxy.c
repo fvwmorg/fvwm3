@@ -860,11 +860,11 @@ static int MatchWindowName(WindowName* namelist,char* name)
 
 static ProxyGroup* FindProxyGroupWithWindowName(char* name)
 {
+	ProxyGroup* proxygroup=firstProxyGroup;
 #if PROXY_GROUP_DEBUG
 	fprintf(stderr,"FindProxyGroupWithWindowName(%s)\n",name);
 #endif
 
-	ProxyGroup* proxygroup=firstProxyGroup;
 	while(proxygroup)
 	{
 		if(MatchWindowName(proxygroup->includes, name))
