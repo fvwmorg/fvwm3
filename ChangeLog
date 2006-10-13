@@ -1,3 +1,8 @@
+2006-10-13  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/misc.c (IsRectangleOnThisPage):
+	fix signedness problem with test introduced by gcc4 fix below.
+
 2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
 
 	* libs/fvwmrect.h (fvwmrect_subtract_rectangles, size_rect, rectangle)
