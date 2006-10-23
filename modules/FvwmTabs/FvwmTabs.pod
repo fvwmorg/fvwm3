@@ -35,7 +35,7 @@ B<FvwmTabs> can be invoked by inserting the line C<Module FvwmTabs> in your .fvw
 
 B<FvwmTabs> requires 2 CPAN modules (that are NOT distributed with FVWM) to be installed on your system. They are I<Tk> and I<X11::Protocol>.
 
-They are available at: L<http://search.cpan.org/CPAN/authors/id/N/NI/NI-S/Tk-804.027.tar.gz> and L<http://search.cpan.org/CPAN/authors/id/S/SM/SMCCAM/X11-Protocol-0.55.tar.gz>.
+They are available at: L<http://search.cpan.org/CPAN/authors/id/N/NI/NI-S/Tk-804.027.tar.gz> and L<http://search.cpan.org/~smccam/X11-Protocol-0.56/>.
 
 To install either package:
 
