@@ -1,3 +1,8 @@
+2006-11-13  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm-menu-directory.in: Use escapeFileName on directory name.
+	Security patch from Tavis Ormandy.
+
 2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm-root.c (SetRootWindow):

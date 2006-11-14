@@ -279,7 +279,7 @@ sub evalFolderLine ($$) {
 	my $itemStr = $dir && $itemF_eval? &evalItem($_name, $dir): $_name;
 	$itemStr = escapeItemName($itemStr);
 	my $act = !$dir || $checkSubdirs && !-x $dir? "Nop": !$reuse?
-		qq(Popup ") . escapeFvwmName($dir) . qq("$submenuPos):
+		qq(Popup ") . escapeFileName($dir) . qq("$submenuPos):
 		qq(PipeRead 'echo ") . escapeFileName($dir) . qq(" >$dirFile; )
 		. qq(echo Menu ") . escapeFvwmName($name) . qq(" WarpTitle');
 	return qq(+ "$iconDStr$itemStr" $act\n);
