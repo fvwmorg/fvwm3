@@ -516,9 +516,9 @@ int truncate_to_multiple (int x, int m)
 Bool IsRectangleOnThisPage(const rectangle *rec, int desk)
 {
 	return (desk == Scr.CurrentDesk &&
-		rec->x + rec->width > 0 &&
+		rec->x + (signed int)rec->width > 0 &&
 		(rec->x < 0 || rec->x < Scr.MyDisplayWidth) &&
-		rec->y + rec->height > 0 &&
+		rec->y + (signed int)rec->height > 0 &&
 		(rec->y < 0 || rec->y < Scr.MyDisplayHeight)) ?
 		True : False;
 }
