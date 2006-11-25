@@ -576,6 +576,76 @@ RETSIGTYPE DeadPipe(int nonsense)
   SIGNAL_RETURN;
 }
 
+
+/*
+ *  Procedure:
+ *	handle_config_win_package - updates a PagerWindow
+ *		with respect to a ConfigWinPacket
+ */
+void handle_config_win_package(PagerWindow *t,
+			       ConfigWinPacket *cfgpacket)
+{
+	if (t->w != None && t->w != cfgpacket->w)
+	{
+		/* Should never happen */
+		fprintf(stderr,"%s: Error: Internal window list corrupt\n",MyName);
+		/* might be a good idea to exit here */
+		return;
+	}
+	t->w = cfgpacket->w;
+	t->frame = cfgpacket->frame;
+	t->frame_x = cfgpacket->frame_x;
+	t->frame_y = cfgpacket->frame_y;
+	t->frame_width = cfgpacket->frame_width;
+	t->frame_height = cfgpacket->frame_height;
+
+	t->desk = cfgpacket->desk;
+
+	t->title_height = cfgpacket->title_height;
+	t->border_width = cfgpacket->border_width;
+
+	t->icon_w = cfgpacket->icon_w;
+	t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
+
+	memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
+	memcpy(&(t->allowed_actions), &(cfgpacket->allowed_actions),
+	       sizeof(cfgpacket->allowed_actions));
+
+	if (win_pix_set)
+	{
+		t->text = win_fore_pix;
+		t->back = win_back_pix;
+	}
+	else
+	{
+		t->text = cfgpacket->TextPixel;
+		t->back = cfgpacket->BackPixel;
+	}
+
+	if (IS_ICONIFIED(t))
+	{
+		/* For new windows icon_x and icon_y will be zero until
+		 * iconify message is recived
+		 */
+		t->x = t->icon_x;
+		t->y = t->icon_y;
+		t->width = t->icon_width;
+		t->height = t->icon_height;
+		if(IS_ICON_SUPPRESSED(t) || t->width == 0 || t->height == 0)
+		{
+			t->x = -32768;
+			t->y = -32768;
+		}
+	}
+	else
+	{
+		t->x = t->frame_x;
+		t->y = t->frame_y;
+		t->width = t->frame_width;
+		t->height = t->frame_height;
+	}
+}
+
 /*
  *
  *  Procedure:
@@ -604,41 +674,7 @@ void list_add(unsigned long *body)
 	}
 	*prev = (PagerWindow *)safemalloc(sizeof(PagerWindow));
 	memset(*prev, 0, sizeof(PagerWindow));
-	(*prev)->w = cfgpacket->w;
-	(*prev)->frame = cfgpacket->frame;
-	(*prev)->t = (char *) cfgpacket->fvwmwin;
-	(*prev)->x = cfgpacket->frame_x;
-	(*prev)->y = cfgpacket->frame_y;
-	(*prev)->width = cfgpacket->frame_width;
-	(*prev)->height = cfgpacket->frame_height;
-	(*prev)->desk = cfgpacket->desk;
-	memcpy(
-		&((*prev)->flags), &(cfgpacket->flags),
-		sizeof(cfgpacket->flags));
-	memcpy(&((*prev)->allowed_actions), &(cfgpacket->allowed_actions),
-		sizeof(cfgpacket->allowed_actions));
-
-	(*prev)->title_height = cfgpacket->title_height;
-	(*prev)->border_width = cfgpacket->border_width;
-	(*prev)->icon_w = cfgpacket->icon_w;
-	(*prev)->icon_pixmap_w = cfgpacket->icon_pixmap_w;
-	if (IS_ICONIFIED(*prev))
-	{
-		(*prev)->icon_x = 0;
-		(*prev)->icon_y = 0;
-		(*prev)->icon_width = 0;
-		(*prev)->icon_height = 0;
-	}
-	if (win_pix_set)
-	{
-		(*prev)->text = win_fore_pix;
-		(*prev)->back = win_back_pix;
-	}
-	else
-	{
-		(*prev)->text = cfgpacket->TextPixel;
-		(*prev)->back = cfgpacket->BackPixel;
-	}
+	handle_config_win_package(*prev, cfgpacket);
 	AddNewWindow(*prev);
 
 	return;
@@ -668,49 +704,8 @@ void list_configure(unsigned long *body)
     return;
   }
 
-  t->t = (char *) cfgpacket->fvwmwin;
-  t->frame = cfgpacket->frame;
-  t->frame_x = cfgpacket->frame_x;
-  t->frame_y = cfgpacket->frame_y;
-  t->frame_width = cfgpacket->frame_width;
-  t->frame_height = cfgpacket->frame_height;
-  t->title_height = cfgpacket->title_height;
-  t->border_width = cfgpacket->border_width;
-  memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
-  memcpy(&(t->allowed_actions), &(cfgpacket->allowed_actions),
-	 sizeof(cfgpacket->allowed_actions));
-  t->icon_w = cfgpacket->icon_w;
-  t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
+  handle_config_win_package(t, cfgpacket);
 
-  if (win_pix_set)
-  {
-    t->text = win_fore_pix;
-    t->back = win_back_pix;
-  }
-  else
-  {
-    t->text = cfgpacket->TextPixel;
-    t->back = cfgpacket->BackPixel;
-  }
-  if (IS_ICONIFIED(t))
-  {
-    t->x = t->icon_x;
-    t->y = t->icon_y;
-    t->width = t->icon_width;
-    t->height = t->icon_height;
-    if(IS_ICON_SUPPRESSED(t) || t->width == 0 || t->height == 0)
-    {
-      t->x = -32768;
-      t->y = -32768;
-    }
-  }
-  else
-  {
-    t->x = t->frame_x;
-    t->y = t->frame_y;
-    t->width = t->frame_width;
-    t->height = t->frame_height;
-  }
   if (t->desk != cfgpacket->desk)
   {
     ChangeDeskForWindow(t, cfgpacket->desk);

@@ -1,5 +1,10 @@
 2006-11-25  Viktor Griph  <griph@dd.chalmers.se>
 
+	* FvwmPager/FvwmPager.c (handle_config_win_package, list_add)
+	(list_configure):
+	join almost duplicate code handing ConfigWinPacket to a separate
+	function to avoid more bugs of the kind bellow.
+
 	* FvwmPager/FvwmPager.c (list_add):
 	make new windows handle allowed actions correctly.
 
