@@ -615,6 +615,9 @@ void list_add(unsigned long *body)
 	memcpy(
 		&((*prev)->flags), &(cfgpacket->flags),
 		sizeof(cfgpacket->flags));
+	memcpy(&((*prev)->allowed_actions), &(cfgpacket->allowed_actions),
+		sizeof(cfgpacket->allowed_actions));
+
 	(*prev)->title_height = cfgpacket->title_height;
 	(*prev)->border_width = cfgpacket->border_width;
 	(*prev)->icon_w = cfgpacket->icon_w;

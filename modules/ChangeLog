@@ -1,3 +1,8 @@
+2006-11-25  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPager/FvwmPager.c (list_add):
+	make new windows handle allowed actions correctly.
+
 2006-10-08  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmProxy/FvwmProxy.c (FindProxyGroupWithWindowName):

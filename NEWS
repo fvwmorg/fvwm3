@@ -16,6 +16,8 @@ Changes in beta release 2.5.19 (not released yet)
      mplayer).
    - Decorations now update when unmanaged windows take focus, and
      not FlickeringQtDialogsWorkaround is enabled.
+   - FvwmPager again allows movement of windows added before a
+     page change.
 
 -------------------------------------------------------------------
 
