@@ -18,6 +18,7 @@ Changes in beta release 2.5.19 (not released yet)
      not FlickeringQtDialogsWorkaround is enabled.
    - FvwmPager again allows movement of windows added before a
      page change.
+   - fvwm no longer crashes on 1 and 4 bit displays. (#1677)
 
 -------------------------------------------------------------------
 

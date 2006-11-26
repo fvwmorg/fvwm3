@@ -1851,7 +1851,7 @@ void init_static_colors_table(void)
 {
 	XColor colors[256];
 	int i;
-	int nbr_of_colors = max(256, (1 << Pdepth));
+	int nbr_of_colors = min(256, (1 << Pdepth));
 
 	PColorLimit = nbr_of_colors;
 	Pct = (PColor *)safemalloc((nbr_of_colors+1) * sizeof(PColor));

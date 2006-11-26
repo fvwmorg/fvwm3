@@ -1,3 +1,8 @@
+2006-11-26  Viktor Griph  <griph@dd.chalmers.se>
+
+	* libs/PictureUtils.c (init_static_colors_table):
+	fix fvwm for < 8 bit depth, bug #1677
+
 2006-11-20  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/misc.c (IsRectangleOnThisPage):
