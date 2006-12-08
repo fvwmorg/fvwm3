@@ -90,6 +90,7 @@ static Bool focus_get_fpol_context_flag(
 	switch (context)
 	{
 	case C_WINDOW:
+	case C_EWMH_DESKTOP:
 		flag = fpol_context->client;
 		break;
 	case C_ICON:

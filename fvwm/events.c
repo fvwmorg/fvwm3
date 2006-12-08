@@ -1320,10 +1320,11 @@ static void __check_click_to_focus_or_raise(
 	} f;
 
 	f.is_focused = !!focus_is_focused(fw);
-	f.is_client_click = (exc->w.wcontext == C_WINDOW);
+	f.is_client_click = (exc->w.wcontext == C_WINDOW ||
+			     exc->w.wcontext == C_EWMH_DESKTOP);
 	/* check if we need to raise and/or focus the window */
 	ret_args->do_focus = focus_query_click_to_focus(fw, exc->w.wcontext);
-	if (exc->w.wcontext == C_WINDOW && !ret_args->do_focus &&
+	if (f.is_client_click && !ret_args->do_focus &&
 	    !f.is_focused && FP_DO_FOCUS_BY_PROGRAM(FW_FOCUS_POLICY(fw)) &&
 	    !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)))
 	{
@@ -1465,6 +1466,7 @@ static Bool __handle_click_to_focus(const exec_context_t *exc)
 	switch (exc->w.wcontext)
 	{
 	case C_WINDOW:
+	case C_EWMH_DESKTOP:
 		set_by = FOCUS_SET_BY_CLICK_CLIENT;
 		break;
 	case C_ICON:
