@@ -192,7 +192,8 @@ enum
 	F_END_OF_LIST = 999,
 
 	/* Functions for use by modules only! */
-	F_SEND_WINDOW_LIST = 1000
+	F_SEND_WINDOW_LIST = 1000,
+	F_SEND_REPLY
 };
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -348,6 +349,7 @@ P(ScanForWindow);
 P(Schedule);
 P(Scroll);
 P(Send_ConfigInfo);
+P(Send_Reply);
 P(Send_WindowList);
 P(SendToModule);
 P(set_mask);

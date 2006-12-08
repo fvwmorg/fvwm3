@@ -610,6 +610,10 @@ void process_message( void )
       printf( "%s\n", (char *)&body[3] );
       break;
 
+    case MX_REPLY:
+      list(body, "reply");
+      break;
+
     default:
       if( Opt_info >=2 )
       {

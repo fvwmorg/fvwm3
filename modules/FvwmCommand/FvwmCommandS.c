@@ -181,6 +181,8 @@ void server (char *name)
 
   cix = 0;
 
+  /*Accept reply-messages */
+  SetMessageMask(Fd, MX_REPLY);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fd);
 
@@ -513,6 +515,7 @@ void process_message(unsigned long type,unsigned long *body)
   case M_ERROR:
   case M_STRING:
   case M_CONFIG_INFO:
+  case MX_REPLY:
     msglen = strlen((char *)&body[3]);
     relay_packet(type, msglen + 1 + 3 * SOL, body);
     break;

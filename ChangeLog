@@ -1,3 +1,11 @@
+2006-12-08  Viktor Griph  <griph@dd.chalmers.se>
+
+	* libs/Module.h (MX_REPLY, MAX_EXTENDED_MESSAGES, MAX_XMSG_MASK):
+	* fvwm/module_interface.c (CMD_Send_Reply):
+	* fvwm/functable.c (func_table):
+	* fvwm/commands.h:
+	Added Send_Reply module only command.
+
 2006-11-26  Viktor Griph  <griph@dd.chalmers.se>
 
 	* libs/PictureUtils.c (init_static_colors_table):

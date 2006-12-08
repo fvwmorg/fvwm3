@@ -1,3 +1,15 @@
+2006-12-08  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPager/FvwmPager.h:
+	* FvwmPager/x_pager.c (do_scroll):
+	* FvwmPager/FvwmPager.c (main, process_message, list_reply):
+	Use Send_Reply instead of SendToModule to ease scroll burden.
+
+	* FvwmCommand/FvwmCommand.1.in:
+	* FvwmCommand/FvwmCommand.c (process_message):
+	* FvwmCommand/FvwmCommandS.c (server, process_message):
+	recieve messages from Send_Reply, and print them on -i1.
+
 2006-11-25  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmPager/FvwmPager.c (handle_config_win_package, list_add)

@@ -116,7 +116,7 @@ cases like below since 'windowid' itself is a valid command.
 FvwmCommand -i 0 'windowid foo bar'
 .EE
 .IP 1
-Errors and window configuration information. This is the default.
+Errors, replies and window configuration information. This is the default.
 .EX
 FvwmCommand send_windowlist
 .EE

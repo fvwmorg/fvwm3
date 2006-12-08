@@ -1554,6 +1554,44 @@ void CMD_SendToModule(F_CMD_ARGS)
 	return;
 }
 
+/*
+** send an arbitrary string back to the calling module
+*/
+void CMD_Send_Reply(F_CMD_ARGS)
+{
+	unsigned long data0, data1, data2;
+	int module = exc->m.modnum;
+	FvwmWindow * const fw = exc->w.fw;
+
+	if (module < 0)
+	{
+		return;
+	}
+
+	if (!action)
+	{
+		return;
+	}
+
+	if (fw)
+	{
+		/* Modules may need to know which window this applies to */
+		data0 = FW_W(fw);
+		data1 = FW_W_FRAME(fw);
+		data2 = (unsigned long)fw;
+	}
+	else
+	{
+		data0 = 0;
+		data1 = 0;
+		data2 = 0;
+	}
+	SendName(module, MX_REPLY, data0, data1, data2, action);
+	FlushMessageQueue(module);
+
+	return;
+}
+
 /* This used to be marked "fvwm_inline".  I removed this
    when I added the lockonsend logic.  The routine seems too big to
    want to inline.  dje 9/4/98 */

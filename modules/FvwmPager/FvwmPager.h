@@ -165,7 +165,7 @@ void list_mini_icon(unsigned long *body);
 void list_restack(unsigned long *body, unsigned long length);
 void list_property_change(unsigned long *body);
 void list_end(void);
-void list_string(unsigned long *body);
+void list_reply(unsigned long *body);
 int My_XNextEvent(Display *dpy, XEvent *event);
 
 /* Stuff in x_pager.c */

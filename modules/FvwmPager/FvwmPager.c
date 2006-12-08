@@ -340,11 +340,11 @@ int main(int argc, char **argv)
 		 M_END_CONFIG_INFO|
 		 M_MINI_ICON|
 		 M_END_WINDOWLIST|
-		 M_RESTACK|
-	         M_STRING);
+		 M_RESTACK);
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
-		 MX_PROPERTY_CHANGE);
+		 MX_PROPERTY_CHANGE|
+		 MX_REPLY);
   ParseOptions();
   if (is_transient)
   {
@@ -547,8 +547,8 @@ void process_message( FvwmPacket* packet )
     case MX_PROPERTY_CHANGE:
       list_property_change(body);
       break;
-    case M_STRING:
-	    list_string(body);
+    case MX_REPLY:
+	    list_reply(body);
 	    break;
     default:
       /* ignore unknown packet */
@@ -1414,7 +1414,7 @@ void list_property_change(unsigned long *body)
 }
 
 
-void list_string(unsigned long *body)
+void list_reply(unsigned long *body)
 {
 	char *tline;
 	tline = (char*)&(body[3]);

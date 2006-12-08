@@ -522,6 +522,10 @@ const func_t func_table[] =
 		FUNC_DONT_REPEAT, 0),
 	/* - Internal, used for module communication */
 
+	CMD_ENT("send_reply", CMD_Send_Reply, F_SEND_REPLY,
+		FUNC_DONT_REPEAT, 0),
+	/* - Internal, used for module communication */
+
 	CMD_ENT("send_windowlist", CMD_Send_WindowList, F_SEND_WINDOW_LIST,
 		FUNC_DONT_REPEAT, 0),
 	/* - Internal, used for module communication */

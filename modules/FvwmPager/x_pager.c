@@ -148,7 +148,6 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	static int psx = 0;
 	static int psy = 0;
 	static int messages_sent = 0;
-	static char *self_message = NULL;
 	char command[256];
 	psx+=sx;
 	psy+=sy;
@@ -167,15 +166,8 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	{
 		sprintf(command, "Scroll %dp %dp", psx, psy);
 		SendText(fd, command, 0);
-		if (self_message == NULL)
-		{
-			self_message = (char *)safemalloc(sizeof(char)*
-							  (strlen(MyName)+ 23));
-			sprintf(self_message, "SendToModule %s ScrollDone",
-				MyName);
-		}
 		messages_sent++;
-		SendText(fd, self_message, 0);
+		SendText(fd, "Send_Reply ScrollDone", 0);
 		psx = 0;
 		psy = 0;
 	}
@@ -230,7 +222,7 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   virt2 = Scr.VWidth - 1 - virt;
   edge2 = (virt2 * win_w) / Scr.VWidth;
 
-  /* then mirror if back to get the real coordinate */
+  /* then mirror it back to get the real coordinate */
   edge2 = win_w - 1 - edge2;
 
   /* Calculate the mini-window's width by subtracting its LHS
