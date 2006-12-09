@@ -20,6 +20,7 @@ Changes in beta release 2.5.19 (not released yet)
      page change.
    - fvwm no longer crashes on 1 and 4 bit displays. (#1677)
    - EWMH desktops now correctly handles FPClickToFocus. (#1492)
+   - Security fix in fvwm-menu-directory. (CVE-2006-5969)
 
 -------------------------------------------------------------------
 

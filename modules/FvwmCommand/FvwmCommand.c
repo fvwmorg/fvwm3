@@ -229,7 +229,7 @@ int main ( int argc, char *argv[])
   {
     FILE *f;
 
-    if ((f = fopen (Fr_name,"r" )) != NULL)
+    if ((f = fopen (s,"r" )) != NULL)
     {
       *cmd = 0;
       fgets(cmd, 20, f);
