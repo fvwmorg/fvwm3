@@ -3,9 +3,18 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
+Changes in beta release 2.5.20 (not released yet)
+
+* New features:
+
+* Bug Fixes:
+
+-------------------------------------------------------------------
+
 Changes in beta release 2.5.19 (9-Dec-2006)
 
 * Bug Fixes:
+
    - FvwmCommand now reports "end windowlist" and "end configinfo".
    - FvwmCommand now prints config info split on lines.
    - FvwmTaskBar no longer gets lost with trailing whitespace after
