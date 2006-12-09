@@ -1,31 +1,25 @@
-Fvwm is a powerful window manager.  Version 2.5.18 is a bug fixing
-release for 2.5.17.  Please be aware that any features introduced
-in the 2.5.x development versions may be renamed, changed or
-removed without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.19 is a bug fixing
+release for the 2.5.x branch.  It contains a security bug fix and
+bug fixes over 2.5.18.  Please be aware that any features
+introduced in the 2.5.x development versions may be renamed,
+changed or removed without notice before 2.6.0.
 
-Upgrading from earlier 2.5.x versions is recommended.  Upgrading
-from 2.5.17 is strongly recommended.
+Upgrading from earlier 2.5.x versions is strongly recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * Bug Fixes:
 
-   - If a window started fullscreen, leaving fullscreen state now
-     properly unmaximizes and resizes the window.
-   - Fixed the ForeColor/HilightFore styles that were broken in
-     2.5.17.
-   - FvwmPager can now move icons with the !IconTitle style.
-   - Fixed drawing of icons that are moved to a different desk.
-   - FvwmPager no longer tries to move non-movable windows.
-   - FvwmPager now moves all windows as user requests.
-   - FvwmPager no longer displaces windows with title and border
-     sizes on moves.
-   - TestRc now correctly matches Break, and $[cond.rc] is
-     expanded for Break.
-   - Fixed several 64-bit architecture problems with
-     XGetWindowProperty().  Xine works much better on 64-bit
-     machines.
-   - Fixed handling of ClickToFocusPassesClick with the EWMH
-     desktop (e.g. using nautilus).
-   - Fixed handling of windows that are unmapped and mapped again
-     too fast (e.g. fpga_editor).
+   - FvwmCommand now reports "end windowlist" and "end configinfo".
+   - FvwmCommand now prints config info split on lines.
+   - FvwmTaskBar no longer gets lost with trailing whitespace after
+     geometry specification.
+   - Fixed a window size problem if the aspect ratio is set (e.g.
+     mplayer).
+   - Decorations now update when unmanaged windows take focus, and
+     not FlickeringQtDialogsWorkaround is enabled.
+   - FvwmPager again allows movement of windows added before a
+     page change.
+   - fvwm no longer crashes on 1 and 4 bit displays. (#1677)
+   - EWMH desktops now correctly handles FPClickToFocus. (#1492)
+   - Security fix in fvwm-menu-directory. (CVE-2006-5969)

@@ -1,11 +1,9 @@
 Note, the changes for the last STABLE release start with release
-2.4.19.
+2.4.20.
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.19 (not released yet)
-
-* New features:
+Changes in beta release 2.5.19 (9-Dec-2006)
 
 * Bug Fixes:
    - FvwmCommand now reports "end windowlist" and "end configinfo".
@@ -895,6 +893,33 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
 
 * New commands EWMHBaseStruts and EWMHNumberOfDesktops.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.20 (6-Dec-2006)
+
+* The configure script now correctly appends executable file
+  extensions to conditionally built binaries. Fixes building on
+  Cygwin.
+
+* FvwmConsole no longer conflicts with getline of Cygwin's stdio.
+
+* Fixed parsing of For loops in FvwmScript.
+
+* Fixed a possible endless loop when de-iconifying a transient
+  window.
+
+* Reject some invalid GNOME hints.
+
+* Fixed a loop when xterm changes its "active icon" size.
+
+* The configure script can now cope with four-part version numbers
+  when detecting some libraries.
+
+* Security fixes in
+
+     fvwm-menu-directory. (CVE-2006-5969)
+     FvwmCommand
 
 -------------------------------------------------------------------
 

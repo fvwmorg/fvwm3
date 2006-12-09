@@ -1,6 +1,13 @@
 2006-12-09  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:
+	* configure.ac:
+	updated for 2.5.19 release
+
+	* NEWS:
+	updated after 2.4.20 release
+
+	* NEWS:
 	* fvwm/focus.c (focus_get_fpol_context_flag):
 	* fvwm/events.c (__check_click_to_focus_or_raise)
 	(__handle_click_to_focus):
