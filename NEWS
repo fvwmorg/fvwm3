@@ -9,6 +9,9 @@ Changes in beta release 2.5.20 (not released yet)
 
 * Bug Fixes:
 
+   - FvwmWinList: fix problem with window name/button mixups during
+     Init/Restart of fvwm. (bug #1393)
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.19 (9-Dec-2006)

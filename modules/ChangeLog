@@ -1,6 +1,20 @@
+2006-12-10  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	Add buttons when items are added to make sure the lists are synced.
+
+	* FvwmWinList/ButtonArray.c (AddButton,ButtonNew):
+	Allow buttons to be created with NULL title.
+
+	* FvwmWinList/FvwmWinList.c (StartMeUp_I):
+	Make sure that win is None until created.
+
+	* FvwmWinList/ButtonArray.c (ButtonNew):
+	Initialized alloced memory to 0.
+
 2006-12-09  Viktor Griph  <griph@dd.chalmers.se>
 
-	* FvwmCommand/FvwmCommand.c (main): 
+	* FvwmCommand/FvwmCommand.c (main):
 	Fix reading lockfile.
 
 2006-12-08  Viktor Griph  <griph@dd.chalmers.se>

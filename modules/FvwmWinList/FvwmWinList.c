@@ -458,7 +458,17 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	break;
       }
       else
+      {
 	AddItem(&windows, cfgpacket);
+	/* Make sure the lists are synced in order
+	   If windows are created during a Send_WindowList strange things might happen
+	 */
+	AddButton(&buttons, NULL, NULL, 1);
+	i = FindItem(&windows,cfgpacket->w);
+	UpdateButtonDeskFlags(&buttons, i, cfgpacket->desk,
+			      IS_STICKY_ACROSS_DESKS(cfgpacket),
+			      DO_SKIP_WINDOW_LIST(cfgpacket));
+      }
       break;
     case M_DESTROY_WINDOW:
       cfgpacket = (void *) body;
@@ -1511,6 +1521,7 @@ void StartMeUp_I(void)
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
+  win = None;
 
   return;
 }

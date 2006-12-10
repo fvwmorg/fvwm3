@@ -71,8 +71,12 @@ Button *ButtonNew(char *title, FvwmPicture *p, int up)
   Button *new;
 
   new = (Button *)safemalloc(sizeof(Button));
-  new->title = safemalloc(strlen(title)+1);
-  strcpy(new->title, title);
+  memset(new, 0, sizeof(Button));
+  if (title != NULL)
+  {
+    new->title = safemalloc(strlen(title)+1);
+    strcpy(new->title, title);
+  }
   if (p != NULL)
   {
     new->p.picture = p->picture;
@@ -186,8 +190,10 @@ int AddButton(ButtonArray *array, char *title, FvwmPicture *p, int up)
   array->count++;
 
 /* in Taskbar this replaces below  ArrangeButtonArray (array);*/
-
-  new->tw=FlocaleTextWidth(FButtonFont,title,strlen(title));
+  if (title != NULL)
+  {
+    new->tw=FlocaleTextWidth(FButtonFont,title,strlen(title));
+  }
   new->truncatewidth=0;
   new->next=NULL;
   new->needsupdate=1;
