@@ -1,3 +1,8 @@
+2006-12-18  Viktor Griph  <griph@dd.chalmers.se>
+
+	* Makefile.am (man_MANS, EXTRA_DIST):
+	don't install fvwm-convert-2.2 man page
+
 2006-11-13  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm-menu-directory.in: Use escapeFileName on directory name.

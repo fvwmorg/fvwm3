@@ -13,10 +13,10 @@ bin_SCRIPTS = \
 
 man_MANS = \
 	fvwm-root.1 fvwm-config.1 fvwm-bug.1 fvwm-perllib.1 \
-	fvwm-convert-2.2.1 fvwm-convert-2.4.1 fvwm-convert-2.6.1 \
+	fvwm-convert-2.4.1 fvwm-convert-2.6.1 \
 	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
 	fvwm-menu-desktop.1 fvwm-menu-headlines.1
-EXTRA_DIST = fvwm-convert-2.2 $(man_MANS)
+EXTRA_DIST = fvwm-convert-2.2 fvwm-convert-2.2.1 $(man_MANS)
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(png_LIBS)
