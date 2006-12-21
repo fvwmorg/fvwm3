@@ -234,6 +234,10 @@ typedef struct
 		unsigned has_no_icon_title : 1;
 		unsigned has_override_size : 1;
 		unsigned has_stippled_title : 1;
+		unsigned has_stippled_icon_title : 1;
+		/* default has to be 0, therefore no_, not in macros */
+		unsigned has_no_sticky_stippled_title : 1;
+		unsigned has_no_sticky_stippled_icon_title : 1;
 		unsigned icon_override : 2;
 #define NO_ACTIVE_ICON_OVERRIDE 0
 #define ICON_OVERRIDE           1
@@ -242,10 +246,10 @@ typedef struct
 		unsigned is_bottom_title_rotated : 1;
 		unsigned is_fixed : 1;
 		unsigned is_fixed_ppos : 1;
-	        unsigned is_uniconifiable : 1;
-	        unsigned is_unmaximizable : 1;
-	        unsigned is_unclosable : 1;
-	        unsigned is_maximize_fixed_size_disallowed : 1;
+		unsigned is_uniconifiable : 1;
+		unsigned is_unmaximizable : 1;
+		unsigned is_unclosable : 1;
+		unsigned is_maximize_fixed_size_disallowed : 1;
 		unsigned is_icon_sticky_across_pages : 1;
 		unsigned is_icon_sticky_across_desks : 1;
 		unsigned is_icon_suppressed : 1;
@@ -843,7 +847,7 @@ typedef struct FvwmWindow
 	float placement_penalty[6];
 	int placement_percentage_penalty[4];
 
-        unsigned char placed_by_button;
+	unsigned char placed_by_button;
 
 #define EWMH_WINDOW_TYPE_NONE_ID      0
 #define EWMH_WINDOW_TYPE_DESKTOP_ID   1

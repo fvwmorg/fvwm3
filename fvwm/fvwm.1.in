@@ -6651,6 +6651,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR BottomTitleRotated " / " BottomTitleNotRotated ,
 .IR !UseTitleDecorRotation " / " UseTitleDecorRotation ,
 .IR StippledTitle " / " !StippledTitle ,
+.IR StippledIconTitle " / " !StippledIconTitle ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
 .IR !Borders " / " Borders ,
@@ -6664,6 +6665,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR Sticky " / " Slippery ,
 .IR StickyAcrossPages " / " !StickyAcrossPages ,
 .IR StickyAcrossDesks " / " !StickyAcrossDesks ,
+.IR !StickyStippledTitle " / " StickyStippledTitle ,
+.IR !StickyStippledIconTitle " / " StickyStippledIconTitle ,
 .IR StartIconic " / " StartNormal ,
 .IR Color ", " ForeColor ", " BackColor ", " Colorset ,
 .IR HilightFore ", " HilightBack ", " HilightColorset ,
@@ -7592,6 +7595,21 @@ but stick the window only across pages, not desks while
 .I StickyAcrossDesks " and " StickyAcrossDesksIcon
 works the other way round.
 
+Windows that have been marked as
+.IR Sticky " or "
+.IR StickyAcrossDesks " or "
+.IR StickyAcrossPages " will have stipples drawn "
+on the titlebar.  This can be negated with the
+.I !StickyStippledTitle
+style.  The style
+.I StickyStippledTitle
+puts back the stipples where that window has also been marked as
+.IR Sticky ".  Note that this is the default style for "
+.IR Sticky " windows.  Sticky icons will have stipples drawn "
+on the icon title. This can be disabled in the same way with the
+.I !StickyStippledIconTitle
+style.
+
 Windows with the
 .I StartIconic
 style are shown as icons initially.  Note that some applications
@@ -7612,6 +7630,12 @@ works like
 but sticks the icon only across pages, not desks while
 .I StickyIconDesk
 works the other way round.
+
+. I StippledIconTitle
+works like
+.IR StippledTitle
+in that it draws stipples on the titles of icons but doesn't
+make the icon sticky.
 
 .I IgnoreRestack
 makes fvwm ignore attempts of clients to raise or lower their own

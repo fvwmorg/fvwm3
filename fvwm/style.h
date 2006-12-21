@@ -227,6 +227,10 @@
 	((c).s.has_mwm_override)
 #define S_SET_HAS_MWM_OVERRIDE(c,x) \
 	((c).s.has_mwm_override = !!(x))
+#define S_HAS_NO_STICKY_STIPPLED_ICON_TITLE(c) \
+	((c).s.has_no_sticky_stippled_icon_title)
+#define S_SET_HAS_NO_STICKY_STIPPLED_ICON_TITLE(c,x) \
+	((c).s.has_no_sticky_stippled_icon_title = !!(x))
 #define S_HAS_NO_ICON_TITLE(c) \
 	((c).s.has_no_icon_title)
 #define S_SET_HAS_NO_ICON_TITLE(c,x) \
@@ -239,6 +243,14 @@
 	((c).s.has_stippled_title)
 #define S_SET_HAS_STIPPLED_TITLE(c,x) \
 	((c).s.has_stippled_title = !!(x))
+#define S_HAS_NO_STICKY_STIPPLED_TITLE(c) \
+	((c).s.has_no_sticky_stippled_title)
+#define S_SET_HAS_NO_STICKY_STIPPLED_TITLE(c,x) \
+	((c).s.has_no_sticky_stippled_title = !!(x))
+#define S_HAS_STIPPLED_ICON_TITLE(c) \
+	((c).s.has_stippled_icon_title)
+#define S_SET_HAS_STIPPLED_ICON_TITLE(c,x) \
+	((c).s.has_stippled_icon_title = !!(x))
 #define S_HAS_WINDOW_FONT(c) \
 	((c).has_window_font)
 #define S_SET_HAS_WINDOW_FONT(c,x) \
@@ -260,13 +272,13 @@
 #define S_SET_IS_FIXED_PPOS(c,x) \
 	((c).s.is_fixed_ppos = !!(x))
 #define S_SET_IS_UNICONIFIABLE(c,x) \
-        ((c).s.is_uniconifiable = !!(x))
+	((c).s.is_uniconifiable = !!(x))
 #define S_SET_IS_UNMAXIMIZABLE(c,x) \
-        ((c).s.is_unmaximizable = !!(x))
+	((c).s.is_unmaximizable = !!(x))
 #define S_SET_IS_UNCLOSABLE(c,x) \
-        ((c).s.is_unclosable = !!(x))
+	((c).s.is_unclosable = !!(x))
 #define S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(c,x) \
-        ((c).s.is_maximize_fixed_size_disallowed = !!(x))
+	((c).s.is_maximize_fixed_size_disallowed = !!(x))
 #define S_IS_ICON_STICKY_ACROSS_PAGES(c) \
 	((c).s.is_icon_sticky_across_pages)
 #define S_SET_IS_ICON_STICKY_ACROSS_PAGES(c,x) \
@@ -362,13 +374,13 @@
 #define SID_SET_WINDOW_ID(id,x) \
 	((id).window_id = (x))
 #define SID_SET_HAS_NAME(id,x) \
-        ((id).flags.has_name = !!(x))
+	((id).flags.has_name = !!(x))
 #define SID_GET_HAS_NAME(id) \
-        ((id).flags.has_name)
+	((id).flags.has_name)
 #define SID_SET_HAS_WINDOW_ID(id,x) \
-        ((id).flags.has_window_id = !!(x))
+	((id).flags.has_window_id = !!(x))
 #define SID_GET_HAS_WINDOW_ID(id) \
-        ((id).flags.has_window_id)
+	((id).flags.has_window_id)
 
 /* access to other parts of a style (call with the style itself) */
 #define SGET_NEXT_STYLE(s) \
@@ -380,7 +392,7 @@
 #define SSET_PREV_STYLE(s,x) \
 	((s).prev = (x))
 #define SGET_ID(s) \
-        ((s).id)
+	((s).id)
 #define SGET_NAME(s) \
 	SID_GET_NAME(SGET_ID(s))
 #define SSET_NAME(s,x) \
@@ -392,11 +404,11 @@
 #define SSET_ID_HAS_NAME(s,x) \
         SID_SET_HAS_NAME(SGET_ID(s), x)
 #define SGET_ID_HAS_NAME(s) \
-        SID_GET_HAS_NAME(SGET_ID(s))
+	SID_GET_HAS_NAME(SGET_ID(s))
 #define SSET_ID_HAS_WINDOW_ID(s,x) \
-        SID_SET_HAS_WINDOW_ID(SGET_ID(s),x)
+	SID_SET_HAS_WINDOW_ID(SGET_ID(s),x)
 #define SGET_ID_HAS_WINDOW_ID(s) \
-        SID_GET_HAS_WINDOW_ID(SGET_ID(s))
+	SID_GET_HAS_WINDOW_ID(SGET_ID(s))
 #define SGET_ICON_NAME(s) \
 	((s).icon_name)
 #define SSET_ICON_NAME(s,x) \

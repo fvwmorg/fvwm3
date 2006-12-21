@@ -81,6 +81,24 @@
 	(fw)->flags.common.s.has_stippled_title = !!(x)
 #define SETM_HAS_STIPPLED_TITLE(fw,x) \
 	(fw)->flag_mask.common.s.has_stippled_title = !!(x)
+#define HAS_STICKY_STIPPLED_TITLE(fw) \
+	!((fw)->flags.common.s.has_no_sticky_stippled_title)
+#define SET_HAS_STICKY_STIPPLED_TITLE(fw,x) \
+	(fw)->flags.common.s.has_no_sticky_stippled_title = !(x)
+#define SETM_HAS_STICKY_STIPPLED_TITLE(fw,x) \
+	(fw)->flag_mask.common.s.has_no_sticky_stippled_title = !!(x)
+#define HAS_STICKY_STIPPLED_ICON_TITLE(fw) \
+	!((fw)->flags.common.s.has_no_sticky_stippled_icon_title)
+#define SET_HAS_STICKY_STIPPLED_ICON_TITLE(fw,x) \
+	(fw)->flags.common.s.has_no_sticky_stippled_icon_title = !(x)
+#define SETM_HAS_STICKY_STIPPLED_ICON_TITLE(fw,x) \
+	(fw)->flag_mask.common.s.has_no_sticky_stippled_icon_title = !!(x)
+#define HAS_STIPPLED_ICON_TITLE(fw) \
+	((fw)->flags.common.s.has_stippled_icon_title)
+#define SET_HAS_STIPPLED_ICON_TITLE(fw,x) \
+	(fw)->flags.common.s.has_stippled_icon_title = !!(x)
+#define SETM_HAS_STIPPLED_ICON_TITLE(fw,x) \
+	(fw)->flag_mask.common.s.has_stippled_icon_title = !!(x)
 #define ICON_OVERRIDE_MODE(fw) \
 	((fw)->flags.common.s.icon_override)
 #define SET_ICON_OVERRIDE_MODE(fw,x) \
@@ -252,29 +270,29 @@
 #define SETM_PSIZE_FIXED(fw,x) \
 	(fw)->flag_mask.common.s.is_psize_fixed = !!(x)
 #define IS_UNICONIFIABLE(fw) \
-        ((fw)->flags.common.s.is_uniconifiable)
+	((fw)->flags.common.s.is_uniconifiable)
 #define SET_IS_UNICONIFIABLE(fw,x) \
-        (fw)->flags.common.s.is_uniconifiable = !!(x)
+	(fw)->flags.common.s.is_uniconifiable = !!(x)
 #define SETM_IS_UNICONIFIABLE(fw,x) \
-        (fw)->flag_mask.common.s.is_uniconifiable = !!(x)
+	(fw)->flag_mask.common.s.is_uniconifiable = !!(x)
 #define IS_UNMAXIMIZABLE(fw) \
-        ((fw)->flags.common.s.is_unmaximizable)
+	((fw)->flags.common.s.is_unmaximizable)
 #define SET_IS_UNMAXIMIZABLE(fw,x) \
-        (fw)->flags.common.s.is_unmaximizable = !!(x)
+	(fw)->flags.common.s.is_unmaximizable = !!(x)
 #define SETM_IS_UNMAXIMIZABLE(fw,x) \
-        (fw)->flag_mask.common.s.is_unmaximizable = !!(x)
+	(fw)->flag_mask.common.s.is_unmaximizable = !!(x)
 #define IS_UNCLOSABLE(fw) \
-        ((fw)->flags.common.s.is_unclosable)
+	((fw)->flags.common.s.is_unclosable)
 #define SET_IS_UNCLOSABLE(fw,x) \
-        (fw)->flags.common.s.is_unclosable = !!(x)
+	(fw)->flags.common.s.is_unclosable = !!(x)
 #define SETM_IS_UNCLOSABLE(fw,x) \
-        (fw)->flag_mask.common.s.is_unclosable = !!(x)
+	(fw)->flag_mask.common.s.is_unclosable = !!(x)
 #define IS_MAXIMIZE_FIXED_SIZE_DISALLOWED(fw) \
-        ((fw)->flags.common.s.is_maximize_fixed_size_disallowed)
+	((fw)->flags.common.s.is_maximize_fixed_size_disallowed)
 #define SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(fw,x) \
-        (fw)->flags.common.s.is_maximize_fixed_size_disallowed = !!(x)
+	(fw)->flags.common.s.is_maximize_fixed_size_disallowed = !!(x)
 #define SETM_MAXIMIZE_FIXED_SIZE_DISALLOWED(fw,x) \
-        (fw)->flag_mask.common.s.is_maximize_fixed_size_disallowed = !!(x)
+	(fw)->flag_mask.common.s.is_maximize_fixed_size_disallowed = !!(x)
 #define HAS_DEPRESSABLE_BORDER(fw) \
 	((fw)->flags.common.s.has_depressable_border)
 

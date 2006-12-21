@@ -837,6 +837,7 @@ void DrawIconTitleWindow(
 	int w_title_text_gap = 0;
 	int w_stipple = 0;
 	int is_sticky;
+	int is_stippled;
 	int use_unexpanded_size = 1;
 	Bool draw_string = True;
 
@@ -844,6 +845,8 @@ void DrawIconTitleWindow(
 		(IS_STICKY_ACROSS_PAGES(fw) || IS_ICON_STICKY_ACROSS_PAGES(fw));
 	is_sticky |=
 		(IS_STICKY_ACROSS_DESKS(fw) || IS_ICON_STICKY_ACROSS_DESKS(fw));
+	is_stippled = ((is_sticky && HAS_STICKY_STIPPLED_ICON_TITLE(fw)) ||
+		HAS_STIPPLED_ICON_TITLE(fw));
 	if (is_expanded && FW_W_ICON_PIXMAP(fw) != None)
 	{
 		int sx;
@@ -854,7 +857,7 @@ void DrawIconTitleWindow(
 		use_unexpanded_size = 0;
 		w_title_text_gap = ICON_TITLE_TEXT_GAP_EXPANDED;
 		x_title_min = w_title_text_gap + relief;
-		if (is_sticky)
+		if (is_stippled)
 		{
 			w_stipple = ICON_TITLE_STICK_MIN_WIDTH;
 			x_title_min +=
@@ -955,8 +958,9 @@ void DrawIconTitleWindow(
 	r.y = relief;
 	r.width = w_title_w - x_title - relief;
 	r.height = ICON_HEIGHT(fw) - 2*relief;
-	if (is_sticky)
+	if (is_stippled)
 	{
+
 		if (w_stipple == 0)
 		{
 			w_stipple = ((w_title_w - 2 *
@@ -980,7 +984,7 @@ void DrawIconTitleWindow(
 
 	memset(&fstr, 0, sizeof(fstr));
 
-	if (pev || is_sticky)
+	if (pev || is_stippled)
 	{
 		if (pev)
 		{
@@ -1029,9 +1033,9 @@ void DrawIconTitleWindow(
 				relief, relief, x_title - relief,
 				ICON_HEIGHT(fw) - 2*relief, False);
 		}
-		if (is_sticky)
+		if (is_stippled)
 		{
-			/* clear the sticky area after the text */
+			/* clear the stippled area after the text */
 			XClearArea(
 				dpy, FW_W_ICON_TITLE(fw),
 				w_title_w - x_stipple - w_stipple -1, relief,
@@ -1067,7 +1071,7 @@ void DrawIconTitleWindow(
 		fstr.y = fw->icon_g.title_w_g.height - relief
 			- fw->icon_font->height + fw->icon_font->ascent;
 		FlocaleDrawString(dpy, fw->icon_font, &fstr, 0);
-		if (pev || is_sticky)
+		if (pev || is_stippled)
 		{
 			XSetClipMask(dpy, Scr.TitleGC, None);
 			if (region)
@@ -1081,7 +1085,7 @@ void DrawIconTitleWindow(
 		ICON_HEIGHT(fw) - 1,
 		(fw->icon_title_relief > 0)? Relief:Shadow,
 		(fw->icon_title_relief > 0)? Shadow:Relief, relief);
-	if (is_sticky)
+	if (is_stippled)
 	{
 		/* an odd number of lines every 4 pixels */
 		int pseudo_height = ICON_HEIGHT(fw)- 2*relief + 2;

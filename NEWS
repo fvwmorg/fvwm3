@@ -6,6 +6,8 @@ Note, the changes for the last STABLE release start with release
 Changes in beta release 2.5.20 (not released yet)
 
 * New features:
+   - New Style options: StippledIconTitle, !StickyStippledTitle,
+     and !StickyStippledIconTitle.
 
 * Bug Fixes:
 

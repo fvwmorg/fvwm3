@@ -1,3 +1,17 @@
+2006-12-21  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS:
+	* AUTHORS:
+	* fvwm/window_flags.h:
+	* fvwm/style.h:
+	* fvwm/style.c (style_parse_one_style_option):
+	* fvwm/icons.c (DrawIconTitleWindow):
+	* fvwm/fvwm.h (common_flags_t):
+	* fvwm/fvwm.1.in (Style):
+	* fvwm/borders.c:
+	(border_draw_title_stick_lines):
+	Applied Stippled patch by Thomas Adam with some fixes.
+
 2006-12-10  Viktor Griph  <griph@dd.chalmers.se>
 
 	* NEWS:

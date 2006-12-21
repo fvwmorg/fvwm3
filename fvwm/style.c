@@ -302,19 +302,19 @@ static void cleanup_style_defaults(window_style *style)
 /* merge_styles - For a matching style, merge window_style to window_style
  *
  *  Returned Value:
- *      merged matching styles in callers window_style.
+ *	merged matching styles in callers window_style.
  *
  *  Inputs:
- *      merged_style - style resulting from the merge
- *      add_style    - the style to be added into the merge_style
- *      do_free_src_and_alloc_copy
- *                   - free allocated parts of merge_style that are replaced
- *                     from add_style.  Create a copy of of the replaced
- *                     styles in allocated memory.
+ *	merged_style - style resulting from the merge
+ *	add_style    - the style to be added into the merge_style
+ *	do_free_src_and_alloc_copy
+ *		     - free allocated parts of merge_style that are replaced
+ *		       from add_style.	Create a copy of of the replaced
+ *		       styles in allocated memory.
  *
  *  Note:
- *      The only trick here is that on and off flags/buttons are
- *      combined into the on flag/button. */
+ *	The only trick here is that on and off flags/buttons are
+ *	combined into the on flag/button. */
 static void merge_styles(
 	window_style *merged_style, window_style *add_style,
 	Bool do_free_src_and_alloc_copy)
@@ -639,7 +639,7 @@ static void merge_styles(
 	/* merge the style flags */
 
 	/*** ATTENTION:
-	 ***     This must be the last thing that is done in this function! */
+	 ***	 This must be the last thing that is done in this function! */
 	merge_flags = (char *)&(merged_style->flags);
 	add_flags = (char *)&(add_style->flags);
 	merge_mask = (char *)&(merged_style->flag_mask);
@@ -950,7 +950,7 @@ static int __simplify_style_list(void)
 				cmp = tmp;
 				has_modified = 1;
 			}
-			else if (
+			else if	(
 				!blocksintersect(
 					(char *)&cur->flag_mask,
 					(char *)&interflags,
@@ -2018,7 +2018,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "AllowMaximizeFixedSize"))
 		{
-		        S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(SCF(*ps), !on);
+			S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(SCF(*ps), !on);
 			S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(SCM(*ps), 1);
 			S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(SCC(*ps), 1);
 		}
@@ -2355,7 +2355,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Closable"))
 		{
-		        S_SET_IS_UNCLOSABLE(SCF(*ps), !on);
+			S_SET_IS_UNCLOSABLE(SCF(*ps), !on);
 			S_SET_IS_UNCLOSABLE(SCM(*ps), 1);
 			S_SET_IS_UNCLOSABLE(SCC(*ps), 1);
 		}
@@ -2824,7 +2824,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Iconifiable"))
 		{
-		        S_SET_IS_UNICONIFIABLE(SCF(*ps), !on);
+			S_SET_IS_UNICONIFIABLE(SCF(*ps), !on);
 			S_SET_IS_UNICONIFIABLE(SCM(*ps), 1);
 			S_SET_IS_UNICONIFIABLE(SCC(*ps), 1);
 		}
@@ -2949,9 +2949,9 @@ static Bool style_parse_one_style_option(
 			ps->change_mask.manual_placement_honors_starts_on_page
 				= 1;
 		}
-	        else if (StrEquals(token, "Maximizable"))
+		else if (StrEquals(token, "Maximizable"))
 		{
-		        S_SET_IS_UNMAXIMIZABLE(SCF(*ps), !on);
+			S_SET_IS_UNMAXIMIZABLE(SCF(*ps), !on);
 			S_SET_IS_UNMAXIMIZABLE(SCM(*ps), 1);
 			S_SET_IS_UNMAXIMIZABLE(SCC(*ps), 1);
 		}
@@ -3537,6 +3537,18 @@ static Bool style_parse_one_style_option(
 			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*ps), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*ps), 1);
 		}
+		else if (StrEquals(token, "StickyStippledTitle"))
+		{
+			S_SET_HAS_NO_STICKY_STIPPLED_TITLE(SCF(*ps), !on);
+			S_SET_HAS_NO_STICKY_STIPPLED_TITLE(SCM(*ps), 1);
+			S_SET_HAS_NO_STICKY_STIPPLED_TITLE(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "StickyStippledIconTitle"))
+		{
+			S_SET_HAS_NO_STICKY_STIPPLED_ICON_TITLE(SCF(*ps), !on);
+			S_SET_HAS_NO_STICKY_STIPPLED_ICON_TITLE(SCM(*ps), 1);
+			S_SET_HAS_NO_STICKY_STIPPLED_ICON_TITLE(SCC(*ps), 1);
+		}
 		else if (StrEquals(token, "Slippery"))
 		{
 			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*ps), !on);
@@ -3690,6 +3702,12 @@ static Bool style_parse_one_style_option(
 			S_SET_HAS_STIPPLED_TITLE(SCF(*ps), !on);
 			S_SET_HAS_STIPPLED_TITLE(SCM(*ps), 1);
 			S_SET_HAS_STIPPLED_TITLE(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "StippledIconTitle"))
+		{
+			S_SET_HAS_STIPPLED_ICON_TITLE(SCF(*ps), on);
+			S_SET_HAS_STIPPLED_ICON_TITLE(SCM(*ps), 1);
+			S_SET_HAS_STIPPLED_ICON_TITLE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "ScatterWindowGroups"))
 		{
@@ -4104,7 +4122,7 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 /* Process a style command.  First built up in a temp area.
  * If valid, added to the list in a malloced area.
  *
- *                    *** Important note ***
+ *		      *** Important note ***
  *
  * Remember that *all* styles need a flag, flag_mask and change_mask.
  * It is not enough to add the code for new styles in this function.
@@ -4197,14 +4215,14 @@ static void __style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
  * the mask.
  *
  *  Returned Value:
- *      zero if the flags are the same
- *      non-zero otherwise
+ *	zero if the flags are the same
+ *	non-zero otherwise
  *
  *  Inputs:
- *      flags1 - first byte array of flags to compare
- *      flags2 - second byte array of flags to compare
- *      mask   - byte array of flags to be considered for the comparison
- *      len    - number of bytes to compare */
+ *	flags1 - first byte array of flags to compare
+ *	flags2 - second byte array of flags to compare
+ *	mask   - byte array of flags to be considered for the comparison
+ *	len    - number of bytes to compare */
 Bool blockcmpmask(char *blk1, char *blk2, char *mask, int length)
 {
 	int i;
@@ -4253,11 +4271,11 @@ void simplify_style_list(void)
 /* lookup_style - look through a list for a window name, or class
  *
  *  Returned Value:
- *      merged matching styles in callers window_style.
+ *	merged matching styles in callers window_style.
  *
  *  Inputs:
- *      fw     - FvwmWindow structure to match against
- *      styles - callers return area
+ *	fw     - FvwmWindow structure to match against
+ *	styles - callers return area
  */
 void lookup_style(FvwmWindow *fw, window_style *styles)
 {
@@ -4412,7 +4430,10 @@ void check_window_style_change(
 	}
 
 	/* has_stippled_title */
-	if (S_HAS_STIPPLED_TITLE(SCC(*ret_style)))
+	if (S_HAS_STIPPLED_TITLE(SCC(*ret_style)) ||
+	    S_HAS_NO_STICKY_STIPPLED_TITLE(SCC(*ret_style)) ||
+	    S_HAS_STIPPLED_ICON_TITLE(SCC(*ret_style)) ||
+	    S_HAS_NO_STICKY_STIPPLED_ICON_TITLE(SCC(*ret_style)))
 	{
 		flags->do_redraw_decoration = 1;
 	}
