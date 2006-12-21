@@ -330,7 +330,7 @@ Changes in alpha release 2.5.9 (2-Mar-2004)
 * New option DisplayNewWindowNames to the BugOpts command.
 
 * Security fix for fvwm-menu-directory.
-  Se BugTraq id 9161.
+  See BugTraq id 9161.
 
 -------------------------------------------------------------------
 
