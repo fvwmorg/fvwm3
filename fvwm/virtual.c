@@ -502,7 +502,6 @@ int HandlePaging(
 	{
 		x = pev->xmotion.x_root;
 		y = pev->xmotion.y_root;
-		/* need to move the viewport */
 		if ((Scr.VxMax == 0 ||
 		     (x >= edge_thickness &&
 		      x < Scr.MyDisplayWidth  - edge_thickness)) &&
