@@ -1,5 +1,15 @@
 2006-12-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/virtual.c (HandlePaging):
+	removed bogus comment
+
+	* fvwm/move_resize.c (__move_loop):
+	cleanup
+	(__resize_window):
+	allow paging during resize with "EdgeScroll 0 0" as documented in the
+	man page
+	fixed disappearing windows with "maximize; resize - abort; unmaximize"
+
 	* fvwm/fvwm.h (FvwmWindow):
 	* fvwm/add_window.c (AddWindow):
 	* fvwm/add_window.c (setup_frame_window):

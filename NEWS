@@ -13,6 +13,10 @@ Changes in beta release 2.5.20 (not released yet)
 
    - FvwmWinList: fix problem with window name/button mixups during
      Init/Restart of fvwm. (bug #1393)
+   - It is now possible to switch the viewport while resizing
+     windows if "EdgeScroll 0 0" is set.
+   - Fixed disappearing windows when aborting interactive resizing
+     of maximized windows when unmaximizing them later.
 
 -------------------------------------------------------------------
 

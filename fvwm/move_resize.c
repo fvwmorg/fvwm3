@@ -2158,15 +2158,15 @@ Bool __move_loop(
 	int Height, int *FinalX, int *FinalY,Bool do_move_opaque)
 {
 	extern Window bad_window;
-	Bool finished = False;
-	Bool aborted = False;
+	Bool is_finished = False;
+	Bool is_aborted = False;
 	int xl,xl2,yt,yt2,delta_x,delta_y,paged;
 	unsigned int button_mask = 0;
 	FvwmWindow fw_copy;
 	int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
 	int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
-	int vx = Scr.Vx;
-	int vy = Scr.Vy;
+	const int vx = Scr.Vx;
+	const int vy = Scr.Vy;
 	int xl_orig = 0;
 	int yt_orig = 0;
 	int cnx = 0;
@@ -2273,7 +2273,7 @@ Bool __move_loop(
 	 * If the move is canceled this will remain as zero.
 	 */
 	fw->placed_by_button = 0;
-	while (!finished && bad_window != FW_W(fw))
+	while (!is_finished && bad_window != FW_W(fw))
 	{
 		int rc = 0;
 		int old_xl;
@@ -2426,8 +2426,8 @@ Bool __move_loop(
 					*FinalX = orig_icon_x;
 					*FinalY = orig_icon_y;
 				}
-				aborted = True;
-				finished = True;
+				is_aborted = True;
+				is_finished = True;
 			}
 			break;
 		case ButtonPress:
@@ -2496,8 +2496,8 @@ Bool __move_loop(
 						*FinalX = orig_icon_x;
 						*FinalY = orig_icon_y;
 					}
-					aborted = True;
-					finished = True;
+					is_aborted = True;
+					is_finished = True;
 				}
 				break;
 			}
@@ -2539,7 +2539,7 @@ Bool __move_loop(
 			*FinalX = xl;
 			*FinalY = yt;
 
-			finished = True;
+			is_finished = True;
 			break;
 
 		case MotionNotify:
@@ -2579,8 +2579,8 @@ Bool __move_loop(
 			}
 
 			/* check Paging request once and only once after
-			 * outline redrawn
-			 * redraw after paging if needed - mab */
+			 * outline redrawn redraw after paging if needed
+			 * - mab */
 			for (paged = 0; paged <= 1; paged++)
 			{
 				if (!do_move_opaque)
@@ -2717,19 +2717,19 @@ Bool __move_loop(
 				FlushAllMessageQueues();
 			}
 		}
-	} /* while (!finished) */
+	} /* while (!is_finished) */
 
 	if (!Scr.gs.do_hide_position_window)
 	{
 		XUnmapWindow(dpy,Scr.SizeWindow);
 	}
-	if (aborted || bad_window == FW_W(fw))
+	if (is_aborted || bad_window == FW_W(fw))
 	{
 		if (vx != Scr.Vx || vy != Scr.Vy)
 		{
 			MoveViewport(vx, vy, False);
 		}
-		if (aborted && do_move_opaque)
+		if (is_aborted && do_move_opaque)
 		{
 			XMoveWindow(dpy, move_w, x_bak, y_bak);
 			if (draw_parts != PART_NONE)
@@ -2745,10 +2745,11 @@ Bool __move_loop(
 		if (bad_window == FW_W(fw))
 		{
 			XUnmapWindow(dpy, move_w);
+			border_undraw_decorations(fw);
 			XBell(dpy, 0);
 		}
 	}
-	if (!aborted && bad_window != FW_W(fw) && IS_ICONIFIED(fw))
+	if (!is_aborted && bad_window != FW_W(fw) && IS_ICONIFIED(fw))
 	{
 		SET_ICON_MOVED(fw, 1);
 	}
@@ -3180,7 +3181,6 @@ static void __resize_get_refpos(
  *      y_root   - the Y corrdinate in the root window
  *      x_off    - x offset of pointer from border (input/output)
  *      y_off    - y offset of pointer from border (input/output)
- *      fw       - the current fvwm window
  *      drag     - resize internal structure
  *      orig     - resize internal structure
  *      xmotionp - pointer to xmotion in resize_window
@@ -3189,7 +3189,7 @@ static void __resize_get_refpos(
  */
 static void __resize_step(
 	const exec_context_t *exc, int x_root, int y_root, int *x_off,
-	int *y_off, rectangle *drag, rectangle *orig, int *xmotionp,
+	int *y_off, rectangle *drag, const rectangle *orig, int *xmotionp,
 	int *ymotionp, Bool do_resize_opaque, Bool is_direction_fixed)
 {
 	int action = 0;
@@ -3335,7 +3335,8 @@ static void __resize_step(
 static Bool __resize_window(F_CMD_ARGS)
 {
 	extern Window bad_window;
-	Bool finished = False, is_done = False, is_aborted = False;
+	FvwmWindow *fw = exc->w.fw;
+	Bool is_finished = False, is_done = False, is_aborted = False;
 	Bool do_send_cn = False;
 	Bool do_resize_opaque;
 	Bool do_warp_to_border;
@@ -3345,13 +3346,17 @@ static Bool __resize_window(F_CMD_ARGS)
 	Bool called_from_title = False;
 	int x,y,delta_x,delta_y,stashed_x,stashed_y;
 	Window ResizeWindow;
+	int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
+	int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
+	const int vx = Scr.Vx;
+	const int vy = Scr.Vy;
 	int n;
 	unsigned int button_mask = 0;
 	rectangle sdrag;
 	rectangle sorig;
 	rectangle *drag = &sdrag;
-	rectangle *orig = &sorig;
-	rectangle start_g;
+	const rectangle *orig = &sorig;
+	const window_g g_backup = fw->g;
 	int ymotion = 0;
 	int xmotion = 0;
 	int was_maximized;
@@ -3363,7 +3368,6 @@ static Bool __resize_window(F_CMD_ARGS)
 	size_borders b;
 	frame_move_resize_args mr_args = NULL;
 	long evmask;
-	FvwmWindow *fw = exc->w.fw;
 	XEvent ev;
 	int ref_x;
 	int ref_y;
@@ -3509,8 +3513,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	MyXGrabKeyboard(dpy);
 
-	*orig = *drag;
-	start_g = *drag;
+	sorig = *drag;
 	ymotion = 0;
 	xmotion = 0;
 
@@ -3520,7 +3523,7 @@ static Bool __resize_window(F_CMD_ARGS)
 		position_geometry_window(NULL);
 		XMapRaised(dpy, Scr.SizeWindow);
 	}
-	DisplaySize(fw, exc->x.elast, orig->width, orig->height,True,True);
+	DisplaySize(fw, exc->x.elast, orig->width, orig->height, True, True);
 
 	if (dir != DIR_NONE)
 	{
@@ -3681,7 +3684,7 @@ static Bool __resize_window(F_CMD_ARGS)
 
 	/* loop to resize */
 	memset(&ev, 0, sizeof(ev));
-	while (!finished && bad_window != FW_W(fw))
+	while (!is_finished && bad_window != FW_W(fw))
 	{
 		int rc = 0;
 
@@ -3690,8 +3693,8 @@ static Bool __resize_window(F_CMD_ARGS)
 		       (!FPending(dpy) || !FCheckMaskEvent(dpy, evmask, &ev)))
 		{
 			rc = HandlePaging(
-				&ev, Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
-				&delta_x, &delta_y, False, False, True);
+				&ev, dx, dy, &x, &y, &delta_x, &delta_y, False,
+				False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
@@ -3801,7 +3804,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			}
 			else
 			{
-				finished = True;
+				is_finished = True;
 				do_send_cn = True;
 				break;
 			}
@@ -3812,45 +3815,13 @@ static Bool __resize_window(F_CMD_ARGS)
 			{
 				is_aborted = True;
 				do_send_cn = True;
-				finished = True;
-				/* return pointer if aborted resize was invoked
-				 * with key */
-				if (stashed_x >= 0)
-				{
-					FWarpPointer(
-						dpy, None, Scr.Root, 0, 0, 0,
-						0, stashed_x, stashed_y);
-				}
-				if (was_maximized)
-				{
-					/* since we aborted the resize, the
-					 * window is still maximized */
-					SET_MAXIMIZED(fw, 1);
-				}
-				if (do_resize_opaque)
-				{
-					int xo;
-					int yo;
-
-					xo = 0;
-					yo = 0;
-					xmotion = 1;
-					ymotion = 1;
-					__resize_step(
-						exc, start_g.x, start_g.y,
-						&xo, &yo, &start_g, orig,
-						&xmotion, &ymotion,
-						do_resize_opaque, True);
-#if 1 /*!!!*/
-					/*!!!restore other geometries*/
-#endif
-				}
+				is_finished = True;
 			}
 			is_done = True;
 			break;
 
 		case ButtonRelease:
-			finished = True;
+			is_finished = True;
 			is_done = True;
 			break;
 
@@ -3871,15 +3842,14 @@ static Bool __resize_window(F_CMD_ARGS)
 					is_direction_fixed);
 				/* need to move the viewport */
 				HandlePaging(
-					&ev, Scr.EdgeScrollX, Scr.EdgeScrollY,
-					&x, &y, &delta_x, &delta_y, False,
-					False, False);
+					&ev, dx, dy, &x, &y, &delta_x,
+					&delta_y, False, False, False);
 			}
 			/* redraw outline if we paged - mab */
 			if (delta_x != 0 || delta_y != 0)
 			{
-				orig->x -= delta_x;
-				orig->y -= delta_y;
+				sorig.x -= delta_x;
+				sorig.y -= delta_y;
 				drag->x -= delta_x;
 				drag->y -= delta_y;
 
@@ -3946,7 +3916,50 @@ static Bool __resize_window(F_CMD_ARGS)
 	{
 		XUnmapWindow(dpy, Scr.SizeWindow);
 	}
-	if (!is_aborted && bad_window != FW_W(fw))
+	if (is_aborted || bad_window == FW_W(fw))
+	{
+		/* return pointer if aborted resize was invoked with key */
+		if (stashed_x >= 0)
+		{
+			FWarpPointer(
+				dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,
+				stashed_y);
+		}
+		if (was_maximized)
+		{
+			/* since we aborted the resize, the window is still
+			 * maximized */
+			SET_MAXIMIZED(fw, 1);
+		}
+		if (do_resize_opaque)
+		{
+			int xo;
+			int yo;
+			rectangle g;
+
+			xo = 0;
+			yo = 0;
+			xmotion = 1;
+			ymotion = 1;
+			g = sorig;
+			__resize_step(
+				exc, sorig.x, sorig.y, &xo, &yo, &g, orig,
+				&xmotion, &ymotion, do_resize_opaque, True);
+		}
+		if (vx != Scr.Vx || vy != Scr.Vy)
+		{
+			MoveViewport(vx, vy, False);
+		}
+		/* restore all geometry-related info */
+		fw->g = g_backup;
+		if (bad_window == FW_W(fw))
+		{
+			XUnmapWindow(dpy, FW_W_FRAME(fw));
+			border_undraw_decorations(fw);
+			XBell(dpy, 0);
+		}
+	}
+	else if (!is_aborted && bad_window != FW_W(fw))
 	{
 		rectangle new_g;
 
@@ -3986,12 +3999,6 @@ static Bool __resize_window(F_CMD_ARGS)
 			fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL,
 			NULL, NULL);
 	}
-	if (bad_window == FW_W(fw))
-	{
-		XUnmapWindow(dpy, FW_W_FRAME(fw));
-		border_undraw_decorations(fw);
-		XBell(dpy, 0);
-	}
 	if (Scr.bo.do_install_root_cmap)
 	{
 		UninstallRootColormap();
@@ -4018,7 +4025,7 @@ static Bool __resize_window(F_CMD_ARGS)
 
 		if (is_aborted)
 		{
-			g = start_g;
+			g = sorig;
 		}
 		else
 		{
