@@ -414,7 +414,7 @@ static void __remove_window_decors(F_CMD_ARGS, FvwmDecor *d)
 		{
 			/* remove the extra title height now because we delete
 			 * the current decor before calling ChangeDecor(). */
-			t->frame_g.height -= t->decor->title_height;
+			t->g.frame.height -= t->decor->title_height;
 			t->decor = NULL;
 			ecc.w.fw = t;
 			ecc.w.wcontext = C_WINDOW;

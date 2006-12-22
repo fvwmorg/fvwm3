@@ -992,8 +992,8 @@ static Bool resize_move_window(F_CMD_ARGS)
 			fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL,
 			NULL, NULL);
 	}
-	dx = FinalX - fw->frame_g.x;
-	dy = FinalY - fw->frame_g.y;
+	dx = FinalX - fw->g.frame.x;
+	dy = FinalY - fw->g.frame.y;
 	/* size will be less or equal to requested */
 	constrain_size(
 		fw, NULL, (unsigned int *)&FinalW, (unsigned int *)&FinalH, 0,
@@ -1001,7 +1001,7 @@ static Bool resize_move_window(F_CMD_ARGS)
 	if (IS_SHADED(fw))
 	{
 		frame_setup_window(
-			fw, FinalX, FinalY, FinalW, fw->frame_g.height, False);
+			fw, FinalX, FinalY, FinalW, fw->g.frame.height, False);
 	}
 	else
 	{
@@ -1014,13 +1014,13 @@ static Bool resize_move_window(F_CMD_ARGS)
 	}
 	if (IS_MAXIMIZED(fw))
 	{
-		fw->max_g.x += dx;
-		fw->max_g.y += dy;
+		fw->g.max.x += dx;
+		fw->g.max.y += dy;
 	}
 	else
 	{
-		fw->normal_g.x += dx;
-		fw->normal_g.y += dy;
+		fw->g.normal.x += dx;
+		fw->g.normal.y += dy;
 	}
 	has_focus = (fw == get_focus_window())? True : False;
 	update_absolute_geometry(fw);
@@ -1295,20 +1295,20 @@ static void AnimatedMoveAnyWindow(
 			 * about their location */
 			SendConfigureNotify(
 				fw, currentX, currentY,
-				fw->frame_g.width,
-				fw->frame_g.height, 0, False);
+				fw->g.frame.width,
+				fw->g.frame.height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
 			fvwm_msg(DBG,"AnimatedMoveAnyWindow",
 				 "Sent ConfigureNotify (w == %d, h == %d)",
-				 fw->frame_g.width,
-				 fw->frame_g.height);
+				 fw->g.frame.width,
+				 fw->g.frame.height);
 #endif
 		}
 		XFlush(dpy);
 		if (fw)
 		{
-			fw->frame_g.x = currentX;
-			fw->frame_g.y = currentY;
+			fw->g.frame.x = currentX;
+			fw->g.frame.y = currentY;
 			update_absolute_geometry(fw);
 			maximize_adjust_offset(fw);
 			BroadcastConfig(M_CONFIGURE_WINDOW, fw);
@@ -1698,16 +1698,16 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 
 	if (w == FW_W_FRAME(fw))
 	{
-		dx = FinalX - fw->frame_g.x;
-		dy = FinalY - fw->frame_g.y;
+		dx = FinalX - fw->g.frame.x;
+		dy = FinalY - fw->g.frame.y;
 		if (do_animate)
 		{
 			AnimatedMoveFvwmWindow(
 				fw, w, -1, -1, FinalX, FinalY, fWarp, -1, NULL);
 		}
 		frame_setup_window(
-			fw, FinalX, FinalY, fw->frame_g.width,
-			fw->frame_g.height, True);
+			fw, FinalX, FinalY, fw->g.frame.width,
+			fw->g.frame.height, True);
 		if (fWarp & !do_animate)
 		{
 			FWarpPointer(
@@ -1716,13 +1716,13 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		}
 		if (IS_MAXIMIZED(fw))
 		{
-			fw->max_g.x += dx;
-			fw->max_g.y += dy;
+			fw->g.max.x += dx;
+			fw->g.max.y += dy;
 		}
 		else
 		{
-			fw->normal_g.x += dx;
-			fw->normal_g.y += dy;
+			fw->g.normal.x += dx;
+			fw->g.normal.y += dy;
 		}
 		update_absolute_geometry(fw);
 		maximize_adjust_offset(fw);
@@ -2417,8 +2417,8 @@ Bool __move_loop(
 				{
 					if (do_move_opaque)
 					{
-						*FinalX = fw->frame_g.x;
-						*FinalY = fw->frame_g.y;
+						*FinalX = fw->g.frame.x;
+						*FinalY = fw->g.frame.y;
 					}
 				}
 				else
@@ -2488,8 +2488,8 @@ Bool __move_loop(
 					}
 					if (!IS_ICONIFIED(fw))
 					{
-						*FinalX = fw->frame_g.x;
-						*FinalY = fw->frame_g.y;
+						*FinalX = fw->g.frame.x;
+						*FinalY = fw->g.frame.y;
 					}
 					else
 					{
@@ -2693,8 +2693,8 @@ Bool __move_loop(
 		{
 			if (!IS_ICONIFIED(fw))
 			{
-				fw_copy.frame_g.x = xl;
-				fw_copy.frame_g.y = yt;
+				fw_copy.g.frame.x = xl;
+				fw_copy.g.frame.y = yt;
 			}
 			if (xl != old_xl || yt != old_yt)
 			{
@@ -3414,11 +3414,11 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 
 	/* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
-	drag->width = fw->frame_g.width;
-	drag->height = fw->frame_g.height;
+	drag->width = fw->g.frame.width;
+	drag->height = fw->g.frame.height;
 	get_window_borders(fw, &b);
 	n = GetResizeArguments(
-		&action, fw->frame_g.x, fw->frame_g.y,
+		&action, fw->g.frame.x, fw->g.frame.y,
 		fw->hints.base_width, fw->hints.base_height,
 		fw->hints.width_inc, fw->hints.height_inc,
 		&b, &(drag->width), &(drag->height),
@@ -3429,7 +3429,7 @@ static Bool __resize_window(F_CMD_ARGS)
 		rectangle new_g;
 
 		/* size will be less or equal to requested */
-		new_g = fw->frame_g;
+		new_g = fw->g.frame;
 		constrain_size(
 			fw, NULL, (unsigned int *)&drag->width,
 			(unsigned int *)&drag->height, xmotion, ymotion, 0);
@@ -3439,13 +3439,13 @@ static Bool __resize_window(F_CMD_ARGS)
 		if (IS_SHADED(fw))
 		{
 			frame_setup_window(
-				fw, fw->frame_g.x, fw->frame_g.y, drag->width,
-				fw->frame_g.height, False);
+				fw, fw->g.frame.x, fw->g.frame.y, drag->width,
+				fw->g.frame.height, False);
 		}
 		else
 		{
 			frame_setup_window(
-				fw, fw->frame_g.x, fw->frame_g.y, drag->width,
+				fw, fw->g.frame.x, fw->g.frame.y, drag->width,
 				drag->height, False);
 		}
 		update_absolute_geometry(fw);
@@ -3500,7 +3500,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	if (do_resize_opaque)
 	{
 		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_OPAQUE, &fw->frame_g, &fw->frame_g, 0,
+			fw, FRAME_MR_OPAQUE, &fw->g.frame, &fw->g.frame, 0,
 			DIR_NONE);
 	}
 	else
@@ -3618,8 +3618,8 @@ static Bool __resize_window(F_CMD_ARGS)
 			break;
 		}
 		__resize_get_refpos(
-			&ref_x, &ref_y, xmotion, ymotion, fw->frame_g.width,
-			fw->frame_g.height, fw);
+			&ref_x, &ref_y, xmotion, ymotion, fw->g.frame.width,
+			fw->g.frame.height, fw);
 	}
 	x_off = 0;
 	y_off = 0;
@@ -3841,6 +3841,9 @@ static Bool __resize_window(F_CMD_ARGS)
 						&xo, &yo, &start_g, orig,
 						&xmotion, &ymotion,
 						do_resize_opaque, True);
+#if 1 /*!!!*/
+					/*!!!restore other geometries*/
+#endif
 				}
 			}
 			is_done = True;
@@ -3972,8 +3975,8 @@ static Bool __resize_window(F_CMD_ARGS)
 		}
 		if (IS_SHADED(fw))
 		{
-			fw->normal_g.width = drag->width;
-			fw->normal_g.height = drag->height;
+			fw->g.normal.width = drag->width;
+			fw->g.normal.height = drag->height;
 		}
 	}
 	if (is_aborted && was_maximized)
@@ -4283,7 +4286,7 @@ static void unmaximize_fvwm_window(
 	rectangle new_g;
 
 	SET_MAXIMIZED(fw, 0);
-	get_relative_geometry(&new_g, &fw->normal_g);
+	get_relative_geometry(&new_g, &fw->g.normal);
 	if (IS_SHADED(fw))
 	{
 		get_shaded_geometry(fw, &new_g, &new_g);
@@ -4308,16 +4311,16 @@ static void maximize_fvwm_window(
 	FvwmWindow *fw, rectangle *geometry)
 {
 	SET_MAXIMIZED(fw, 1);
-	fw->max_g_defect.width = 0;
-	fw->max_g_defect.height = 0;
+	fw->g.max_defect.width = 0;
+	fw->g.max_defect.height = 0;
 	constrain_size(
 		fw, NULL, (unsigned int*)&(geometry->width),
 		(unsigned int *)&(geometry->height), 0, 0,
 		CS_UPDATE_MAX_DEFECT);
-	fw->max_g = *geometry;
+	fw->g.max = *geometry;
 	if (IS_SHADED(fw))
 	{
-		get_shaded_geometry(fw, geometry, &fw->max_g);
+		get_shaded_geometry(fw, geometry, &fw->g.max);
 	}
 	frame_setup_window(
 		fw, geometry->x, geometry->y, geometry->width,
@@ -4327,10 +4330,10 @@ static void maximize_fvwm_window(
 	update_absolute_geometry(fw);
 	/* remember the offset between old and new position in case the
 	 * maximized  window is moved more than the screen width/height. */
-	fw->max_offset.x = fw->normal_g.x - fw->max_g.x;
-	fw->max_offset.y = fw->normal_g.y - fw->max_g.y;
+	fw->g.max_offset.x = fw->g.normal.x - fw->g.max.x;
+	fw->g.max_offset.y = fw->g.normal.y - fw->g.max.y;
 #if 0
-fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d, %d %d %d %d\n", fw->max_g.x, fw->max_g.y, fw->max_g.width, fw->max_g.height, fw->max_offset.x, fw->max_offset.y, fw->normal_g.x,  fw->normal_g.y, fw->normal_g.width, fw->normal_g.height);
+fprintf(stderr,"%d %d %d %d, g.max_offset.x = %d, g.max_offset.y = %d, %d %d %d %d\n", fw->g.max.x, fw->g.max.y, fw->g.max.width, fw->g.max.height, fw->g.max_offset.x, fw->g.max_offset.y, fw->g.normal.x,  fw->g.normal.y, fw->g.normal.width, fw->g.normal.height);
 #endif
 
     return;
@@ -4432,10 +4435,10 @@ void CMD_Maximize(F_CMD_ARGS)
 	}
 
 	/* find the new page and geometry */
-	new_g.x = fw->frame_g.x;
-	new_g.y = fw->frame_g.y;
-	new_g.width = fw->frame_g.width;
-	new_g.height = fw->frame_g.height;
+	new_g.x = fw->g.frame.x;
+	new_g.y = fw->g.frame.y;
+	new_g.width = fw->g.frame.width;
+	new_g.height = fw->g.frame.height;
 	get_page_offset_check_visible(&page_x, &page_y, fw);
 
 	/* Check if we should constrain rectangle to some Xinerama screen */
@@ -4443,8 +4446,8 @@ void CMD_Maximize(F_CMD_ARGS)
 	{
 		fscreen_scr_arg fscr;
 
-		fscr.xypos.x = fw->frame_g.x + fw->frame_g.width  / 2 - page_x;
-		fscr.xypos.y = fw->frame_g.y + fw->frame_g.height / 2 - page_y;
+		fscr.xypos.x = fw->g.frame.x + fw->g.frame.width  / 2 - page_x;
+		fscr.xypos.y = fw->g.frame.y + fw->g.frame.height / 2 - page_y;
 		FScreenGetScrRect(
 			&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
 	}
@@ -4614,17 +4617,17 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	FvwmWindow *fw = exc->w.fw;
 
 	/* keep a copy of the old geometry */
-	normal_g = fw->normal_g;
+	normal_g = fw->g.normal;
 	/* resize the window normally */
 	was_resized = __resize_window(F_PASS_ARGS);
 	if (was_resized == True)
 	{
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
-		max_g = fw->normal_g;
+		max_g = fw->g.normal;
 		max_g.x -= Scr.Vx;
 		max_g.y -= Scr.Vy;
-		fw->normal_g = normal_g;
+		fw->g.normal = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
 	}
@@ -4641,17 +4644,17 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 	FvwmWindow *fw = exc->w.fw;
 
 	/* keep a copy of the old geometry */
-	normal_g = fw->normal_g;
+	normal_g = fw->g.normal;
 	/* resize the window normally */
 	was_resized = resize_move_window(F_PASS_ARGS);
 	if (was_resized == True)
 	{
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
-		max_g = fw->normal_g;
+		max_g = fw->g.normal;
 		max_g.x -= Scr.Vx;
 		max_g.y -= Scr.Vy;
-		fw->normal_g = normal_g;
+		fw->g.normal = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
 	}
@@ -4677,7 +4680,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 	}
 	else
 	{
-		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
+		if (!IsRectangleOnThisPage(&fw->g.frame, Scr.CurrentDesk))
 		{
 			action = "";
 			__move_window(F_PASS_ARGS, False, MOVE_PAGE);

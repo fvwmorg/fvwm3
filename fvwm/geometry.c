@@ -148,8 +148,8 @@ void get_title_geometry(
 
 	get_window_borders(fw, &b);
 	get_window_borders_no_title(fw, &nt);
-	w = (ret_g->width > 0) ? ret_g->width : fw->frame_g.width;
-	h = (ret_g->height > 0) ? ret_g->height : fw->frame_g.height;
+	w = (ret_g->width > 0) ? ret_g->width : fw->g.frame.width;
+	h = (ret_g->height > 0) ? ret_g->height : fw->g.frame.height;
 	ret_g->x = nt.top_left.width;
 	ret_g->y = nt.top_left.height;
 	switch (GET_TITLE_DIR(fw))
@@ -211,8 +211,8 @@ Bool get_title_button_geometry(
 		ret_g->width = 0;
 		ret_g->height = 0;
 		get_title_geometry(fw, ret_g);
-		ret_g->x += fw->frame_g.x;
-		ret_g->y += fw->frame_g.y;
+		ret_g->x += fw->g.frame.x;
+		ret_g->y += fw->g.frame.y;
 
 		return True;
 
@@ -314,18 +314,18 @@ void get_icon_corner(
 	{
 	case DIR_N:
 	case DIR_W:
-		ret_g->x = fw->frame_g.x;
-		ret_g->y = fw->frame_g.y;
+		ret_g->x = fw->g.frame.x;
+		ret_g->y = fw->g.frame.y;
 		break;
 	case DIR_S:
-		ret_g->x = fw->frame_g.x;
-		ret_g->y = fw->frame_g.y + fw->frame_g.height -
+		ret_g->x = fw->g.frame.x;
+		ret_g->y = fw->g.frame.y + fw->g.frame.height -
 			ret_g->height;
 		break;
 	case DIR_E:
-		ret_g->x = fw->frame_g.x + fw->frame_g.width -
+		ret_g->x = fw->g.frame.x + fw->g.frame.width -
 			ret_g->width;
-		ret_g->y = fw->frame_g.y;
+		ret_g->y = fw->g.frame.y;
 		break;
 	}
 
@@ -413,17 +413,17 @@ void get_unshaded_geometry(
 	{
 		if (IS_MAXIMIZED(fw))
 		{
-			*ret_g = fw->max_g;
+			*ret_g = fw->g.max;
 		}
 		else
 		{
-			*ret_g = fw->normal_g;
+			*ret_g = fw->g.normal;
 		}
 		get_relative_geometry(ret_g, ret_g);
 	}
 	else
 	{
-		*ret_g = fw->frame_g;
+		*ret_g = fw->g.frame;
 	}
 
 	return;
@@ -436,7 +436,7 @@ void get_shaded_client_window_pos(
 	size_borders b;
 
 	get_window_borders(fw, &b);
-	big_g = (IS_MAXIMIZED(fw)) ? fw->max_g : fw->normal_g;
+	big_g = (IS_MAXIMIZED(fw)) ? fw->g.max : fw->g.normal;
 	get_relative_geometry(&big_g, &big_g);
 	switch (SHADED_DIR(fw))
 	{
@@ -562,35 +562,35 @@ void get_client_geometry(
 	return;
 }
 
-/* update the frame_g according to the window's normal_g or max_g and shaded
+/* update the frame_g according to the window's g.normal or g.max and shaded
  * state */
 void update_relative_geometry(FvwmWindow *fw)
 {
 	get_relative_geometry(
-		&fw->frame_g,
-		(IS_MAXIMIZED(fw)) ? &fw->max_g : &fw->normal_g);
+		&fw->g.frame,
+		(IS_MAXIMIZED(fw)) ? &fw->g.max : &fw->g.normal);
 	if (IS_SHADED(fw))
 	{
 		get_shaded_geometry(
-			fw, &fw->frame_g, &fw->frame_g);
+			fw, &fw->g.frame, &fw->g.frame);
 	}
 
 	return;
 }
 
-/* update the normal_g or max_g according to the window's current position */
+/* update the g.normal or g.max according to the window's current position */
 void update_absolute_geometry(FvwmWindow *fw)
 {
 	rectangle *dest_g;
 	rectangle frame_g;
 
 	/* store orig values in absolute coords */
-	dest_g = (IS_MAXIMIZED(fw)) ? &fw->max_g : &fw->normal_g;
+	dest_g = (IS_MAXIMIZED(fw)) ? &fw->g.max : &fw->g.normal;
 	frame_g = *dest_g;
-	dest_g->x = fw->frame_g.x + Scr.Vx;
-	dest_g->y = fw->frame_g.y + Scr.Vy;
-	dest_g->width = fw->frame_g.width;
-	dest_g->height = fw->frame_g.height;
+	dest_g->x = fw->g.frame.x + Scr.Vx;
+	dest_g->y = fw->g.frame.y + Scr.Vy;
+	dest_g->width = fw->g.frame.width;
+	dest_g->height = fw->g.frame.height;
 	if (IS_SHADED(fw))
 	{
 		switch (SHADED_DIR(fw))
@@ -598,7 +598,7 @@ void update_absolute_geometry(FvwmWindow *fw)
 		case DIR_SW:
 		case DIR_S:
 		case DIR_SE:
-			dest_g->y += fw->frame_g.height - frame_g.height;
+			dest_g->y += fw->g.frame.height - frame_g.height;
 			/* fall through */
 		case DIR_NW:
 		case DIR_N:
@@ -611,7 +611,7 @@ void update_absolute_geometry(FvwmWindow *fw)
 		case DIR_NE:
 		case DIR_E:
 		case DIR_SE:
-			dest_g->x += fw->frame_g.width - frame_g.width;
+			dest_g->x += fw->g.frame.width - frame_g.width;
 			/* fall through */
 		case DIR_NW:
 		case DIR_W:
@@ -633,29 +633,29 @@ void maximize_adjust_offset(FvwmWindow *fw)
 
 	if (!IS_MAXIMIZED(fw))
 	{
-		/* otherwise we might corrupt the normal_g */
+		/* otherwise we might corrupt the g.normal */
 		return;
 	}
-	off_x = fw->normal_g.x - fw->max_g.x - fw->max_offset.x;
-	off_y = fw->normal_g.y - fw->max_g.y - fw->max_offset.y;
+	off_x = fw->g.normal.x - fw->g.max.x - fw->g.max_offset.x;
+	off_y = fw->g.normal.y - fw->g.max.y - fw->g.max_offset.y;
 	if (off_x >= Scr.MyDisplayWidth)
 	{
-		fw->normal_g.x -=
+		fw->g.normal.x -=
 			(off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
 	}
 	else if (off_x <= -Scr.MyDisplayWidth)
 	{
-		fw->normal_g.x +=
+		fw->g.normal.x +=
 			((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
 	}
 	if (off_y >= Scr.MyDisplayHeight)
 	{
-		fw->normal_g.y -=
+		fw->g.normal.y -=
 			(off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
 	}
 	else if (off_y <= -Scr.MyDisplayHeight)
 	{
-		fw->normal_g.y +=
+		fw->g.normal.y +=
 			((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
 	}
 
@@ -700,8 +700,8 @@ void constrain_size(
 	}
 	if (IS_MAXIMIZED(fw) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
-		*widthp += fw->max_g_defect.width;
-		*heightp += fw->max_g_defect.height;
+		*widthp += fw->g.max_defect.width;
+		*heightp += fw->g.max_defect.height;
 		old_w = *widthp;
 		old_h = *heightp;
 	}
@@ -982,8 +982,8 @@ void constrain_size(
 	if (IS_MAXIMIZED(fw) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		/* update size defect for maximized window */
-		fw->max_g_defect.width = old_w - *widthp;
-		fw->max_g_defect.height = old_h - *heightp;
+		fw->g.max_defect.width = old_w - *widthp;
+		fw->g.max_defect.height = old_h - *heightp;
 	}
 
 	return;
@@ -1003,10 +1003,10 @@ void gravity_constrain_size(
 	if (IS_MAXIMIZED(t) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		gravity_resize(
-			gravity, rect, t->max_g_defect.width,
-			t->max_g_defect.height);
-		t->max_g_defect.width = 0;
-		t->max_g_defect.height = 0;
+			gravity, rect, t->g.max_defect.width,
+			t->g.max_defect.height);
+		t->g.max_defect.width = 0;
+		t->g.max_defect.height = 0;
 		new_width = rect->width;
 		new_height = rect->height;
 	}
@@ -1154,7 +1154,7 @@ Bool get_visible_window_or_icon_geometry(
 	{
 		return get_visible_icon_geometry(fw, ret_g);
 	}
-	*ret_g = fw->frame_g;
+	*ret_g = fw->g.frame;
 
 	return True;
 }
@@ -1353,10 +1353,10 @@ void get_page_offset(
 {
 	rectangle r;
 
-	r.x = fw->frame_g.x;
-	r.y = fw->frame_g.y;
-	r.width = fw->frame_g.width;
-	r.height = fw->frame_g.height;
+	r.x = fw->g.frame.x;
+	r.y = fw->g.frame.y;
+	r.width = fw->g.frame.width;
+	r.height = fw->g.frame.height;
 	get_page_offset_rectangle(ret_page_x, ret_page_y, &r);
 
 	return;
@@ -1365,7 +1365,7 @@ void get_page_offset(
 void get_page_offset_check_visible(
 	int *ret_page_x, int *ret_page_y, FvwmWindow *fw)
 {
-	if (IsRectangleOnThisPage(&fw->frame_g, fw->Desk))
+	if (IsRectangleOnThisPage(&fw->g.frame, fw->Desk))
 	{
 		/* maximize on visible page if any part of the window is
 		 * visible */

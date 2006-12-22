@@ -838,22 +838,22 @@ GNOME_SetWinArea(FvwmWindow *w)
 
 	if (!DO_SKIP_WINDOW_LIST(w))
 	{
-		if (IsRectangleOnThisPage(&(w->frame_g), w->Desk))
+		if (IsRectangleOnThisPage(&(w->g.frame), w->Desk))
 		{
 			val[0] = Scr.Vx / Scr.MyDisplayWidth;
 			val[1] = Scr.Vy / Scr.MyDisplayHeight;
 		}
 		else
 		{
-			val[0] = (w->frame_g.x + Scr.Vx) / Scr.MyDisplayWidth;
+			val[0] = (w->g.frame.x + Scr.Vx) / Scr.MyDisplayWidth;
 			if (val[0] < 0 &&
-			    w->frame_g.x + Scr.Vx + w->frame_g.width > 0)
+			    w->g.frame.x + Scr.Vx + w->g.frame.width > 0)
 			{
 				val[0] = 0;
 			}
-			val[1] = (w->frame_g.y + Scr.Vy) / Scr.MyDisplayHeight;
+			val[1] = (w->g.frame.y + Scr.Vy) / Scr.MyDisplayHeight;
 			if (val[1] < 0 &&
-			    w->frame_g.y + Scr.Vy + w->frame_g.height > 0)
+			    w->g.frame.y + Scr.Vy + w->g.frame.height > 0)
 			{
 				val[1] = 0;
 			}

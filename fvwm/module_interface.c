@@ -1159,13 +1159,13 @@ action_flags *__get_allowed_actions(const FvwmWindow *fw)
 		(unsigned long)(-sizeof(void *)),	\
 		&(_fw),					\
 		(unsigned long)(0),			\
-		&(*(_fw))->frame_g.x,			\
+		&(*(_fw))->g.frame.x,			\
 		(unsigned long)(0),			\
-		&(*(_fw))->frame_g.y,			\
+		&(*(_fw))->g.frame.y,			\
 		(unsigned long)(0),			\
-		&(*(_fw))->frame_g.width,		\
+		&(*(_fw))->g.frame.width,		\
 		(unsigned long)(0),			\
-		&(*(_fw))->frame_g.height,		\
+		&(*(_fw))->g.frame.height,		\
 		(unsigned long)(0),			\
 		&(*(_fw))->Desk,			\
 		(unsigned long)(0),			\

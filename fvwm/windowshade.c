@@ -96,10 +96,10 @@ void CMD_WindowShade(F_CMD_ARGS)
 	/* parse arguments */
 	if (StrEquals("Last", token))
 	{
-		/* last given instead of a direction will make 
+		/* last given instead of a direction will make
 		 * fvwm to reuse the last used shading direction.
-		 * A new, nevershaded window will have 
-		 * USED_TITLE_DIR_FOR_SHADING set (in add_window.c: 
+		 * A new, nevershaded window will have
+		 * USED_TITLE_DIR_FOR_SHADING set (in add_window.c:
 		 * setup_window_structure)
 		 */
 		action = naction;
@@ -187,7 +187,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 		SET_USED_TITLE_DIR_FOR_SHADING(fw, !has_dir);
 	}
 	/* draw the animation */
-	start_g = fw->frame_g;
+	start_g = fw->g.frame;
 	get_unshaded_geometry(fw, &end_g);
 	if (toggle == 1)
 	{

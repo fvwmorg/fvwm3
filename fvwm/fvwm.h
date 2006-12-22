@@ -782,17 +782,20 @@ typedef struct FvwmWindow
 	FvwmPicture *mini_icon;
 	char *icon_bitmap_file;
 
-	rectangle frame_g;
-	/* absolute geometry when not maximized */
-	rectangle normal_g;
-	/* maximized window geometry */
-	rectangle max_g;
-	/* defect between maximized geometry before and after constraining
-	 * size. */
-	size_rect max_g_defect;
-	/* original delta between normalized and maximized window, used to
-	 * keep unmaximized window at same screen position */
-	position max_offset;
+	struct
+	{
+		rectangle frame;
+		/* absolute geometry when not maximized */
+		rectangle normal;
+		/* maximized window geometry */
+		rectangle max;
+		/* defect between maximized geometry before and after
+		 * constraining size. */
+		size_rect max_defect;
+		/* original delta between normalized and maximized window,
+		 * used to keep unmaximized window at same screen position */
+		position max_offset;
+	} g;
 	long *mwm_hints;
 	int ol_hints;
 	int functions;

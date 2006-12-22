@@ -90,10 +90,10 @@ static void apply_window_updates(
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
 
-	frame_g.x = t->frame_g.x;
-	frame_g.y = t->frame_g.y;
-	frame_g.width = t->frame_g.width;
-	frame_g.height = t->frame_g.height;
+	frame_g.x = t->g.frame.x;
+	frame_g.y = t->g.frame.y;
+	frame_g.width = t->g.frame.width;
+	frame_g.height = t->g.frame.height;
 	if (flags->do_setup_focus_policy)
 	{
 		setup_focus_policy(t);
@@ -234,14 +234,14 @@ static void apply_window_updates(
 			/* naked_g: geometry without decor */
 			gravity_get_naked_geometry(
 				old_t.hints.win_gravity, &old_t, &naked_g,
-				&t->normal_g);
+				&t->g.normal);
 			/* gravity without decor */
 			gravity_translate_to_northwest_geometry_no_bw(
 				old_t.hints.win_gravity, &old_t, &naked_g,
 				&naked_g);
-			/* set normal_g with the decor */
+			/* set g.normal with the decor */
 			gravity_add_decoration(
-				old_t.hints.win_gravity, t, &t->normal_g,
+				old_t.hints.win_gravity, t, &t->g.normal,
 				&naked_g);
 		}
 		if (flags->do_update_title_dir)
@@ -256,17 +256,17 @@ static void apply_window_updates(
 			dw = b_new.total_size.width - b_old.total_size.width;
 			dh = b_new.total_size.height - b_old.total_size.height;
 			gravity_resize(
-				t->hints.win_gravity, &t->normal_g, dw, dh);
+				t->hints.win_gravity, &t->g.normal, dw, dh);
 			gravity_constrain_size(
-				t->hints.win_gravity, t, &t->normal_g, 0);
+				t->hints.win_gravity, t, &t->g.normal, 0);
 		}
 
 		if (IS_MAXIMIZED(t))
 		{
 			if (flags->do_redecorate)
 			{
-				int off_x = old_t.normal_g.x - old_t.max_g.x;
-				int off_y = old_t.normal_g.y - old_t.max_g.y;
+				int off_x = old_t.g.normal.x - old_t.g.max.x;
+				int off_y = old_t.g.normal.y - old_t.g.max.y;
 				int new_off_x;
 				int new_off_y;
 
@@ -274,35 +274,35 @@ static void apply_window_updates(
 				 * have NorthWestGravity */
 				gravity_get_naked_geometry(
 					NorthWestGravity, &old_t, &naked_g,
-					&t->max_g);
+					&t->g.max);
 				gravity_translate_to_northwest_geometry_no_bw(
 					NorthWestGravity, &old_t, &naked_g,
 					&naked_g);
 				gravity_add_decoration(
-					NorthWestGravity, t, &t->max_g,
+					NorthWestGravity, t, &t->g.max,
 					&naked_g);
 				/* prevent random paging when unmaximizing
 				 * after e.g. the border width has changed */
-				new_off_x = t->normal_g.x - t->max_g.x;
-				new_off_y = t->normal_g.y - t->max_g.y;
-				t->max_offset.x += new_off_x - off_x;
-				t->max_offset.y += new_off_y - off_y;
+				new_off_x = t->g.normal.x - t->g.max.x;
+				new_off_y = t->g.normal.y - t->g.max.y;
+				t->g.max_offset.x += new_off_x - off_x;
+				t->g.max_offset.y += new_off_y - off_y;
 			}
 			if (flags->do_update_title_dir)
 			{
-				frame_g = t->max_g;
+				frame_g = t->g.max;
 				gravity_resize(
-					t->hints.win_gravity, &t->max_g, dw,
+					t->hints.win_gravity, &t->g.max, dw,
 					dh);
 				gravity_constrain_size(
-					t->hints.win_gravity, t, &t->max_g,
+					t->hints.win_gravity, t, &t->g.max,
 					CS_UPDATE_MAX_DEFECT);
 			}
-			new_g = &t->max_g;
+			new_g = &t->g.max;
 		}
 		else
 		{
-			new_g = &t->normal_g;
+			new_g = &t->g.normal;
 		}
 		if (IS_SHADED(t))
 		{
@@ -334,16 +334,16 @@ static void apply_window_updates(
 
 		setup_frame_size_limits(t, pstyle);
 		old_g = frame_g;
-		frame_g = t->normal_g;
+		frame_g = t->g.normal;
 		gravity_constrain_size(t->hints.win_gravity, t, &frame_g, 0);
-		t->normal_g = frame_g;
+		t->g.normal = frame_g;
 		if (IS_MAXIMIZED(t))
 		{
-			frame_g = t->max_g;
+			frame_g = t->g.max;
 			gravity_constrain_size(
 				t->hints.win_gravity, t, &frame_g,
 				CS_UPDATE_MAX_DEFECT);
-			t->max_g = frame_g;
+			t->g.max = frame_g;
 		}
 		frame_g = old_g;
 		gravity_constrain_size(

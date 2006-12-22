@@ -296,7 +296,7 @@ static void __set_focus_to_fwin(
 				w = Scr.NoFocusWin;
 			}
 		}
-		else if (!IsRectangleOnThisPage(&(fw->frame_g), fw->Desk))
+		else if (!IsRectangleOnThisPage(&(fw->g.frame), fw->Desk))
 		{
 			fw = NULL;
 			w = Scr.NoFocusWin;
@@ -452,8 +452,8 @@ static void warp_to_fvwm_window(
 	}
 	else
 	{
-		cx = t->frame_g.x + t->frame_g.width/2;
-		cy = t->frame_g.y + t->frame_g.height/2;
+		cx = t->g.frame.x + t->g.frame.width/2;
+		cy = t->g.frame.y + t->g.frame.height/2;
 	}
 	dx = (cx + Scr.Vx) / Scr.MyDisplayWidth * Scr.MyDisplayWidth;
 	dy = (cy + Scr.Vy) / Scr.MyDisplayHeight * Scr.MyDisplayHeight;
@@ -478,53 +478,53 @@ static void warp_to_fvwm_window(
 	{
 		if (x_unit != Scr.MyDisplayWidth && warp_x >= 0)
 		{
-			x = t->frame_g.x + warp_x;
+			x = t->g.frame.x + warp_x;
 		}
 		else if (x_unit != Scr.MyDisplayWidth)
 		{
-			x = t->frame_g.x + t->frame_g.width + warp_x;
+			x = t->g.frame.x + t->g.frame.width + warp_x;
 		}
 		else if (warp_x >= 0)
 		{
-			x = t->frame_g.x +
-				(t->frame_g.width - 1) * warp_x / 100;
+			x = t->g.frame.x +
+				(t->g.frame.width - 1) * warp_x / 100;
 		}
 		else
 		{
-			x = t->frame_g.x +
-				(t->frame_g.width - 1) * (100 + warp_x) / 100;
+			x = t->g.frame.x +
+				(t->g.frame.width - 1) * (100 + warp_x) / 100;
 		}
 
 		if (y_unit != Scr.MyDisplayHeight && warp_y >= 0)
 		{
-			y = t->frame_g.y + warp_y;
+			y = t->g.frame.y + warp_y;
 		}
 		else if (y_unit != Scr.MyDisplayHeight)
 		{
-			y = t->frame_g.y + t->frame_g.height + warp_y;
+			y = t->g.frame.y + t->g.frame.height + warp_y;
 		}
 		else if (warp_y >= 0)
 		{
-			y = t->frame_g.y +
-				(t->frame_g.height - 1) * warp_y / 100;
+			y = t->g.frame.y +
+				(t->g.frame.height - 1) * warp_y / 100;
 		}
 		else
 		{
-			y = t->frame_g.y +
-				(t->frame_g.height - 1) * (100 + warp_y) / 100;
+			y = t->g.frame.y +
+				(t->g.frame.height - 1) * (100 + warp_y) / 100;
 		}
 	}
 	FWarpPointerUpdateEvpos(
 		exc->x.elast, dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
 	RaiseWindow(t);
 	/* If the window is still not visible, make it visible! */
-	if (t->frame_g.x + t->frame_g.width  < 0 ||
-	    t->frame_g.y + t->frame_g.height < 0 ||
-	    t->frame_g.x >= Scr.MyDisplayWidth ||
-	    t->frame_g.y >= Scr.MyDisplayHeight)
+	if (t->g.frame.x + t->g.frame.width  < 0 ||
+	    t->g.frame.y + t->g.frame.height < 0 ||
+	    t->g.frame.x >= Scr.MyDisplayWidth ||
+	    t->g.frame.y >= Scr.MyDisplayHeight)
 	{
 		frame_setup_window(
-			t, 0, 0, t->frame_g.width, t->frame_g.height, False);
+			t, 0, 0, t->g.frame.width, t->g.frame.height, False);
 		FWarpPointerUpdateEvpos(
 			exc->x.elast, dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
 	}
@@ -666,20 +666,20 @@ static void __activate_window_by_command(
 		}
 		else
 		{
-			cx = fw->frame_g.x + fw->frame_g.width/2;
-			cy = fw->frame_g.y + fw->frame_g.height/2;
+			cx = fw->g.frame.x + fw->g.frame.width/2;
+			cy = fw->g.frame.y + fw->g.frame.height/2;
 		}
 		dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
 		dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
 		MoveViewport(dx,dy,True);
 		/* If the window is still not visible, make it visible! */
-		if (fw->frame_g.x + fw->frame_g.height < 0 ||
-		    fw->frame_g.y + fw->frame_g.width < 0 ||
-		    fw->frame_g.x > Scr.MyDisplayWidth ||
-		    fw->frame_g.y > Scr.MyDisplayHeight)
+		if (fw->g.frame.x + fw->g.frame.height < 0 ||
+		    fw->g.frame.y + fw->g.frame.width < 0 ||
+		    fw->g.frame.x > Scr.MyDisplayWidth ||
+		    fw->g.frame.y > Scr.MyDisplayHeight)
 		{
 			frame_setup_window(
-				fw, 0, 0, fw->frame_g.width, fw->frame_g.height,
+				fw, 0, 0, fw->g.frame.width, fw->g.frame.height,
 				False);
 			if (FP_DO_WARP_POINTER_ON_FOCUS_FUNC(
 				    FW_FOCUS_POLICY(fw)))

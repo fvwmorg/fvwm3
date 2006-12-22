@@ -493,7 +493,7 @@ static inline void __cr_get_static_position(
 	}
 	else
 	{
-		ret_g->x = fw->frame_g.x;
+		ret_g->x = fw->g.frame.x;
 	}
 	if (cre->value_mask & CWY)
 	{
@@ -501,7 +501,7 @@ static inline void __cr_get_static_position(
 	}
 	else
 	{
-		ret_g->y = fw->frame_g.y;
+		ret_g->y = fw->g.frame.y;
 	}
 
 	return;
@@ -521,7 +521,7 @@ static inline void __cr_get_grav_position(
 	}
 	else
 	{
-		ret_g->x = fw->frame_g.x;
+		ret_g->x = fw->g.frame.x;
 	}
 	if (cre->value_mask & CWY)
 	{
@@ -529,7 +529,7 @@ static inline void __cr_get_grav_position(
 	}
 	else
 	{
-		ret_g->y = fw->frame_g.y;
+		ret_g->y = fw->g.frame.y;
 	}
 
 	return;
@@ -654,10 +654,10 @@ static inline void __cr_detect_icccm_move(
 		}
 		return;
 	}
-	dg_g.x = grav_g.x - fw->frame_g.x;
-	dg_g.y = grav_g.y - fw->frame_g.y;
-	ds_g.x = static_g.x - fw->frame_g.x;
-	ds_g.y = static_g.y - fw->frame_g.y;
+	dg_g.x = grav_g.x - fw->g.frame.x;
+	dg_g.y = grav_g.y - fw->g.frame.y;
+	ds_g.x = static_g.x - fw->g.frame.x;
+	ds_g.y = static_g.y - fw->g.frame.y;
 	if (Scr.bo.do_debug_cr_motion_method == 1)
 	{
 		fprintf(
@@ -734,9 +734,9 @@ static inline void __cr_detect_icccm_move(
 	}
 	/* check placement near border */
 	w = (cre->value_mask & CWWidth) ?
-		cre->width + b->total_size.width : fw->frame_g.width;
+		cre->width + b->total_size.width : fw->g.frame.width;
 	h = (cre->value_mask & CWHeight) ?
-		cre->height + b->total_size.height : fw->frame_g.height;
+		cre->height + b->total_size.height : fw->g.frame.height;
 	if (!has_x)
 	{
 		mx = CR_MOTION_METHOD_AUTO;
@@ -1039,13 +1039,13 @@ static inline int __handle_cr_on_client(
 		{
 			ref_x = cre.x -
 				((grav_x + 1) * b.total_size.width) / 2;
-			d_g.x = ref_x - fw->frame_g.x;
+			d_g.x = ref_x - fw->g.frame.x;
 		}
 		if (cre.value_mask & CWY)
 		{
 			ref_y = cre.y -
 				((grav_y + 1) * b.total_size.height) / 2;
-			d_g.y = ref_y - fw->frame_g.y;
+			d_g.y = ref_y - fw->g.frame.y;
 		}
 	}
 	else /* ..._USE_GRAV or ..._AUTO */
@@ -1053,11 +1053,11 @@ static inline int __handle_cr_on_client(
 		/* default: traditional cr handling */
 		if (cre.value_mask & CWX)
 		{
-			d_g.x = cre.x - fw->frame_g.x - b.top_left.width;
+			d_g.x = cre.x - fw->g.frame.x - b.top_left.width;
 		}
 		if (cre.value_mask & CWY)
 		{
-			d_g.y = cre.y - fw->frame_g.y - b.top_left.height;
+			d_g.y = cre.y - fw->g.frame.y - b.top_left.height;
 		}
 	}
 	if (cre.value_mask & CWHeight)
@@ -1066,7 +1066,7 @@ static inline int __handle_cr_on_client(
 		    (WINDOW_FREAKED_OUT_SIZE - b.total_size.height))
 		{
 			d_g.height = cre.height -
-				(fw->frame_g.height - b.total_size.height);
+				(fw->g.frame.height - b.total_size.height);
 		}
 		else
 		{
@@ -1085,7 +1085,7 @@ static inline int __handle_cr_on_client(
 		if (cre.width < (WINDOW_FREAKED_OUT_SIZE - b.total_size.width))
 		{
 			d_g.width = cre.width -
-				(fw->frame_g.width - b.total_size.width);
+				(fw->g.frame.width - b.total_size.width);
 		}
 		else
 		{
@@ -1100,11 +1100,11 @@ static inline int __handle_cr_on_client(
 	 * the same as the requested client window width; the inner height is
 	 * the same as the requested client window height plus any title bar
 	 * slop. */
-	new_g = fw->frame_g;
+	new_g = fw->g.frame;
 	if (IS_SHADED(fw))
 	{
-		new_g.width = fw->normal_g.width;
-		new_g.height = fw->normal_g.height;
+		new_g.width = fw->g.normal.width;
+		new_g.height = fw->g.normal.height;
 	}
 	oldnew_dim.width = new_g.width + d_g.width;
 	oldnew_dim.height = new_g.height + d_g.height;
@@ -1118,12 +1118,12 @@ static inline int __handle_cr_on_client(
 	d_g.height += (constr_dim.height - oldnew_dim.height);
 	if ((cre.value_mask & CWX) && d_g.width)
 	{
-		new_g.x = fw->frame_g.x + d_g.x;
-		new_g.width = fw->frame_g.width + d_g.width;
+		new_g.x = fw->g.frame.x + d_g.x;
+		new_g.width = fw->g.frame.width + d_g.width;
 	}
 	else if ((cre.value_mask & CWX) && !d_g.width)
 	{
-		new_g.x = fw->frame_g.x + d_g.x;
+		new_g.x = fw->g.frame.x + d_g.x;
 	}
 	else if (!(cre.value_mask & CWX) && d_g.width)
 	{
@@ -1131,21 +1131,21 @@ static inline int __handle_cr_on_client(
 	}
 	if ((cre.value_mask & CWY) && d_g.height)
 	{
-		new_g.y = fw->frame_g.y + d_g.y;
-		new_g.height = fw->frame_g.height + d_g.height;
+		new_g.y = fw->g.frame.y + d_g.y;
+		new_g.height = fw->g.frame.height + d_g.height;
 	}
 	else if ((cre.value_mask & CWY) && !d_g.height)
 	{
-		new_g.y = fw->frame_g.y + d_g.y;
+		new_g.y = fw->g.frame.y + d_g.y;
 	}
 	else if (!(cre.value_mask & CWY) && d_g.height)
 	{
 		gravity_resize(fw->hints.win_gravity, &new_g, 0, d_g.height);
 	}
 
-	if (new_g.x == fw->frame_g.x && new_g.y == fw->frame_g.y &&
-	    new_g.width == fw->frame_g.width &&
-	    new_g.height == fw->frame_g.height)
+	if (new_g.x == fw->g.frame.x && new_g.y == fw->g.frame.y &&
+	    new_g.width == fw->g.frame.width &&
+	    new_g.height == fw->g.frame.height)
 	{
 		/* Window will not be moved or resized; send a synthetic
 		 * ConfigureNotify. */
@@ -1230,8 +1230,8 @@ void __handle_configure_request(
 	for ( ; cn_count > 0; cn_count--)
 	{
 		SendConfigureNotify(
-			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
-			fw->frame_g.height, 0, True);
+			fw, fw->g.frame.x, fw->g.frame.y, fw->g.frame.width,
+			fw->g.frame.height, 0, True);
 	}
 	if (do_send_event)
 	{
@@ -2694,7 +2694,7 @@ void HandleMapNotify(const evh_args_t *ea)
 
 	/* Make sure at least part of window is on this page before giving it
 	 * focus... */
-	is_on_this_page = IsRectangleOnThisPage(&(fw->frame_g), fw->Desk);
+	is_on_this_page = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
 
 	/*
 	 * Need to do the grab to avoid race condition of having server send
@@ -2852,7 +2852,7 @@ void HandleMapRequestKeepRaised(
 	 * Make sure at least part of window is on this page
 	 * before giving it focus...
 	 */
-	is_on_this_page = IsRectangleOnThisPage(&(fw->frame_g), fw->Desk);
+	is_on_this_page = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
 	if (KeepRaised != None)
 	{
 		XRaiseWindow(dpy, KeepRaised);
@@ -3135,7 +3135,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	 * Make sure at least part of window is on this page
 	 * before giving it focus...
 	 */
-	OnThisPage = IsRectangleOnThisPage(&(fw->frame_g), fw->Desk);
+	OnThisPage = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
 
 	switch (te->xproperty.atom)
 	{
@@ -3507,7 +3507,7 @@ void HandleShapeNotify(const evh_args_t *ea)
 			return;
 		}
 		frame_setup_shape(
-			fw, fw->frame_g.width, fw->frame_g.height, sev->shaped);
+			fw, fw->g.frame.width, fw->g.frame.height, sev->shaped);
 		GNOME_SetWinArea(fw);
 		EWMH_SetFrameStrut(fw);
 		if (!IS_ICONIFIED(fw))

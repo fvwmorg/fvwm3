@@ -862,12 +862,12 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		if (FScreenIsEnabled() && !mask->my_flags.do_not_check_screen)
 		{
 			is_on_page = !!FScreenIsRectangleOnScreen(
-				NULL, FSCREEN_CURRENT, &(fw->frame_g));
+				NULL, FSCREEN_CURRENT, &(fw->g.frame));
 		}
 		else
 		{
 			is_on_page = !!IsRectangleOnThisPage(
-				&(fw->frame_g), Scr.CurrentDesk);
+				&(fw->g.frame), Scr.CurrentDesk);
 		}
 	}
 	is_on_global_page = 1;
@@ -875,7 +875,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	    mask->my_flags.do_check_desk_and_global_page)
 	{
 		is_on_global_page = !!IsRectangleOnThisPage(
-			&(fw->frame_g), Scr.CurrentDesk);
+			&(fw->g.frame), Scr.CurrentDesk);
 	}
 
 	if (mask->my_flags.do_check_desk_and_page)

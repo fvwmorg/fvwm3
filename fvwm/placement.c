@@ -382,7 +382,7 @@ static int get_next_x(
 
 	/* Test window at far right of screen */
 	xnew = PageRight;
-	xtest = PageRight - t->frame_g.width;
+	xtest = PageRight - t->g.frame.width;
 	if (xtest > x)
 	{
 		xnew = MIN(xnew, xtest);
@@ -395,7 +395,7 @@ static int get_next_x(
 	}
 	xtest = PageLeft +
 		(Scr.Desktops->ewmh_working_area.x +
-		 Scr.Desktops->ewmh_working_area.width) - t->frame_g.width;
+		 Scr.Desktops->ewmh_working_area.width) - t->g.frame.width;
 	if (xtest > x)
 	{
 		xnew = MIN(xnew, xtest);
@@ -424,10 +424,10 @@ static int get_next_x(
 		{
 			rc = get_visible_icon_geometry(testw, &g);
 			if (rc == True && y < g.y + g.height - stickyy &&
-			    g.y - stickyy < t->frame_g.height + y)
+			    g.y - stickyy < t->g.frame.height + y)
 			{
 				win_left = PageLeft + g.x - stickyx -
-					t->frame_g.width;
+					t->g.frame.width;
 				for (i = start; i <= GET_NEXT_STEP; i++)
 				{
 					xtest = win_left + g.width *
@@ -452,28 +452,28 @@ static int get_next_x(
 		}
 		else if (
 			y <
-			testw->frame_g.height + testw->frame_g.y - stickyy &&
-			testw->frame_g.y - stickyy < t->frame_g.height + y &&
+			testw->g.frame.height + testw->g.frame.y - stickyy &&
+			testw->g.frame.y - stickyy < t->g.frame.height + y &&
 			PageLeft <
-			testw->frame_g.width + testw->frame_g.x - stickyx &&
-			testw->frame_g.x - stickyx < PageRight)
+			testw->g.frame.width + testw->g.frame.x - stickyx &&
+			testw->g.frame.x - stickyx < PageRight)
 		{
-			win_left = PageLeft + pdeltax + testw->frame_g.x -
-				stickyx - t->frame_g.width;
+			win_left = PageLeft + pdeltax + testw->g.frame.x -
+				stickyx - t->g.frame.width;
 			for(i=start; i <= GET_NEXT_STEP; i++)
 			{
-				xtest = (win_left) + (testw->frame_g.width) *
+				xtest = (win_left) + (testw->g.frame.width) *
 					(GET_NEXT_STEP - i)/GET_NEXT_STEP;
 				if (xtest > x)
 				{
 					xnew = MIN(xnew, xtest);
 				}
 			}
-			win_left = PageLeft + pdeltax + testw->frame_g.x -
+			win_left = PageLeft + pdeltax + testw->g.frame.x -
 				stickyx;
 			for(i=start; i <= GET_NEXT_STEP; i++)
 			{
-				xtest = (win_left) + (testw->frame_g.width) *
+				xtest = (win_left) + (testw->g.frame.width) *
 					i/GET_NEXT_STEP;
 				if (xtest > x)
 				{
@@ -511,7 +511,7 @@ static int get_next_y(
 
 	/* Test window at far bottom of screen */
 	ynew = PageBottom;
-	ytest = PageBottom - t->frame_g.height;
+	ytest = PageBottom - t->g.frame.height;
 	if (ytest > y)
 	{
 		ynew = MIN(ynew, ytest);
@@ -524,7 +524,7 @@ static int get_next_y(
 	}
 	ytest = screen_g->y +
 		(Scr.Desktops->ewmh_working_area.y +
-		 Scr.Desktops->ewmh_working_area.height) - t->frame_g.height;
+		 Scr.Desktops->ewmh_working_area.height) - t->g.frame.height;
 	if (ytest > y)
 		ynew = MIN(ynew, ytest);
 	/* Test the values of the bottom edge of every window */
@@ -558,7 +558,7 @@ static int get_next_y(
 					ynew = MIN(ynew, ytest);
 				}
 			}
-			win_top = g.y - stickyy - t->frame_g.height;
+			win_top = g.y - stickyy - t->g.frame.height;
 			for(i=start; i <= GET_NEXT_STEP; i++)
 			{
 				ytest = win_top + g.height *
@@ -571,21 +571,21 @@ static int get_next_y(
 		}
 		else
 		{
-			win_top = testw->frame_g.y - stickyy;;
+			win_top = testw->g.frame.y - stickyy;;
 			for(i=start; i <= GET_NEXT_STEP; i++)
 			{
-				ytest = (win_top) + (testw->frame_g.height) *
+				ytest = (win_top) + (testw->g.frame.height) *
 					i/GET_NEXT_STEP;
 				if (ytest > y)
 				{
 					ynew = MIN(ynew, ytest);
 				}
 			}
-			win_top = testw->frame_g.y - stickyy -
-				t->frame_g.height;
+			win_top = testw->g.frame.y - stickyy -
+				t->g.frame.height;
 			for(i=start; i <= GET_NEXT_STEP; i++)
 			{
-				ytest = win_top + (testw->frame_g.height) *
+				ytest = win_top + (testw->g.frame.height) *
 					(GET_NEXT_STEP - i)/GET_NEXT_STEP;
 				if (ytest > y)
 				{
@@ -626,8 +626,8 @@ static float test_fit(
 	rectangle g;
 	Bool rc;
 
-	x12 = x11 + t->frame_g.width;
-	y12 = y11 + t->frame_g.height;
+	x12 = x11 + t->g.frame.width;
+	y12 = y11 + t->g.frame.height;
 
 	if (y12 > PageBottom) /* No room in y direction */
 	{
@@ -906,8 +906,8 @@ static Bool __place_get_wm_pos(
 	switch (placement_mode)
 	{
 	case PLACE_CENTER:
-		attr_g->x = (screen_g.width - fw->frame_g.width) / 2;
-		attr_g->y = ((screen_g.height - fw->frame_g.height) / 2);
+		attr_g->x = (screen_g.width - fw->g.frame.width) / 2;
+		attr_g->y = ((screen_g.height - fw->g.frame.height) / 2);
 		/* Don't let the upper left corner be offscreen. */
 		if (attr_g->x < PageLeft)
 		{
@@ -920,7 +920,7 @@ static Bool __place_get_wm_pos(
 		break;
 	case PLACE_TILEMANUAL:
 		flags.is_smartly_placed = SmartPlacement(
-			fw, &screen_g, fw->frame_g.width, fw->frame_g.height,
+			fw, &screen_g, fw->g.frame.width, fw->g.frame.height,
 			&xl, &yt, pdeltax, pdeltay);
 		if (flags.is_smartly_placed)
 		{
@@ -954,8 +954,8 @@ static Bool __place_get_wm_pos(
 			}
 			SET_PLACED_BY_FVWM(fw,False);
 			MyXGrabKeyboard(dpy);
-			DragWidth = fw->frame_g.width;
-			DragHeight = fw->frame_g.height;
+			DragWidth = fw->g.frame.width;
+			DragHeight = fw->g.frame.height;
 
 			if (Scr.SizeWindow != None)
 			{
@@ -1005,7 +1005,7 @@ static Bool __place_get_wm_pos(
 		break;
 	case PLACE_TILECASCADE:
 		flags.is_smartly_placed = SmartPlacement(
-			fw, &screen_g, fw->frame_g.width, fw->frame_g.height,
+			fw, &screen_g, fw->g.frame.width, fw->g.frame.height,
 			&xl, &yt, pdeltax, pdeltay);
 		if (flags.is_smartly_placed)
 		{
@@ -1039,13 +1039,13 @@ static Bool __place_get_wm_pos(
 		attr_g->y = Scr.cascade_y + PageTop;
 		/* try to keep the window on the screen */
 		get_window_borders(fw, &b);
-		if (attr_g->x + fw->frame_g.width >= PageRight)
+		if (attr_g->x + fw->g.frame.width >= PageRight)
 		{
 			attr_g->x = PageRight - attr_g->width -
 				b.total_size.width;
 			Scr.cascade_x = fw->title_thickness;
 		}
-		if (attr_g->y + fw->frame_g.height >= PageBottom)
+		if (attr_g->y + fw->g.frame.height >= PageBottom)
 		{
 			attr_g->y = PageBottom - attr_g->height -
 				b.total_size.height;
@@ -1084,21 +1084,21 @@ static Bool __place_get_wm_pos(
 		}
 		else
 		{
-			xl = mx - (fw->frame_g.width / 2);
-			yt = my - (fw->frame_g.height / 2);
+			xl = mx - (fw->g.frame.width / 2);
+			yt = my - (fw->g.frame.height / 2);
 			if (
-				xl + fw->frame_g.width >
+				xl + fw->g.frame.width >
 				screen_g.x + screen_g.width)
 			{
 				xl = screen_g.x + screen_g.width -
-					fw->frame_g.width;
+					fw->g.frame.width;
 			}
 			if (
-				yt + fw->frame_g.height >
+				yt + fw->g.frame.height >
 				screen_g.y + screen_g.height)
 			{
 				yt = screen_g.y + screen_g.height -
-					fw->frame_g.height;
+					fw->g.frame.height;
 			}
 			if (xl < screen_g.x)
 			{
@@ -1677,8 +1677,8 @@ static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 	strcat(s, "placed new window 0x%x '%s':\n");
 	s += strlen(s);
 	sprintf(
-		s, "  initial size %dx%d\n", fw->frame_g.width,
-		fw->frame_g.height);
+		s, "  initial size %dx%d\n", fw->g.frame.width,
+		fw->g.frame.height);
 	s += strlen(s);
 	switch (reason->desk.reason)
 	{

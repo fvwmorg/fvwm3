@@ -544,7 +544,7 @@ static int border_get_parts_and_pos_to_draw(
 	draw_parts |= force_draw_parts;
 	if (old_g == NULL)
 	{
-		old_g = &fw->frame_g;
+		old_g = &fw->g.frame;
 	}
 	if ((draw_parts & PART_FRAME) == PART_FRAME)
 	{
@@ -1544,8 +1544,8 @@ static void border_draw_one_border_part(
 	}
 	p = border_create_decor_pixmap(cd, &part_g);
 	/* set the background tile */
-	relative_g.width = fw->frame_g.width;
-	relative_g.height = fw->frame_g.height;
+	relative_g.width = fw->g.frame.width;
+	relative_g.height = fw->g.frame.height;
 	relative_g.x = part_g.x;
 	relative_g.y = part_g.y;
 	border_get_border_background(
@@ -4009,7 +4009,8 @@ static void border_rotate_titlebar_descr(
 	switch(rotation)
 	{
 	case ROTATION_90:
-		td->offset = td->layout.title_g.height - td->offset - td->length;
+		td->offset =
+			td->layout.title_g.height - td->offset - td->length;
 		tmpi = td->left_end_length;
 		td->left_end_length = td->right_end_length;
 		td->right_end_length = tmpi;
@@ -4129,7 +4130,7 @@ static window_parts border_get_titlebar_descr(
 	ret_td->frame_g = *new_g;
 	if (old_g == NULL)
 	{
-		old_g = &fw->frame_g;
+		old_g = &fw->g.frame;
 	}
 	frame_get_titlebar_dimensions(fw, old_g, NULL, &ret_td->old_layout);
 	frame_get_titlebar_dimensions(fw, new_g, NULL, &ret_td->layout);
@@ -4765,7 +4766,7 @@ void border_draw_decorations(
 	pressed_parts = border_context_to_parts(context);
 	if (new_g == NULL)
 	{
-		new_g = &fw->frame_g;
+		new_g = &fw->g.frame;
 	}
 	if (do_redraw_titlebar)
 	{

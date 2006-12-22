@@ -799,8 +799,8 @@ static void setup_frame_window(
 	attributes.save_under = False;
 	/* create the frame window, child of root, grandparent of client */
 	FW_W_FRAME(fw) = XCreateWindow(
-		dpy, Scr.Root, fw->frame_g.x, fw->frame_g.y,
-		fw->frame_g.width, fw->frame_g.height, 0, CopyFromParent,
+		dpy, Scr.Root, fw->g.frame.x, fw->g.frame.y,
+		fw->g.frame.width, fw->g.frame.height, 0, CopyFromParent,
 		InputOutput, CopyFromParent, valuemask | CWCursor, &attributes);
 	XSaveContext(dpy, FW_W(fw), FvwmContext, (caddr_t) fw);
 	XSaveContext(dpy, FW_W_FRAME(fw), FvwmContext, (caddr_t) fw);
@@ -961,8 +961,8 @@ static void setup_parent_window(FvwmWindow *fw)
 	get_window_borders(fw, &b);
 	FW_W_PARENT(fw) = XCreateWindow(
 		dpy, FW_W_FRAME(fw), b.top_left.width, b.top_left.height,
-		fw->frame_g.width - b.total_size.width,
-		fw->frame_g.height - b.total_size.height,
+		fw->g.frame.width - b.total_size.width,
+		fw->g.frame.height - b.total_size.height,
 		0, CopyFromParent, InputOutput, CopyFromParent, valuemask,
 		&attributes);
 
@@ -2228,34 +2228,34 @@ FvwmWindow *AddWindow(
 	{
 		/* read the requested absolute geometry */
 		gravity_translate_to_northwest_geometry_no_bw(
-			fw->hints.win_gravity, fw, &fw->normal_g,
-			&fw->normal_g);
+			fw->hints.win_gravity, fw, &fw->g.normal,
+			&fw->g.normal);
 		gravity_resize(
-			fw->hints.win_gravity, &fw->normal_g,
+			fw->hints.win_gravity, &fw->g.normal,
 			b.total_size.width, b.total_size.height);
-		fw->frame_g = fw->normal_g;
-		fw->frame_g.x -= Scr.Vx;
-		fw->frame_g.y -= Scr.Vy;
+		fw->g.frame = fw->g.normal;
+		fw->g.frame.x -= Scr.Vx;
+		fw->g.frame.y -= Scr.Vy;
 
 		/****** calculate frame size ******/
 		setup_frame_size_limits(fw, &style);
 		constrain_size(
-			fw, NULL, (unsigned int *)&fw->frame_g.width,
-			(unsigned int *)&fw->frame_g.height, 0, 0, 0);
+			fw, NULL, (unsigned int *)&fw->g.frame.width,
+			(unsigned int *)&fw->g.frame.height, 0, 0, 0);
 
 		/****** maximize ******/
 		if (state_args.do_max)
 		{
 			SET_MAXIMIZED(fw, 1);
 			constrain_size(
-				fw, NULL, (unsigned int *)&fw->max_g.width,
-				(unsigned int *)&fw->max_g.height, 0, 0,
+				fw, NULL, (unsigned int *)&fw->g.max.width,
+				(unsigned int *)&fw->g.max.height, 0, 0,
 				CS_UPDATE_MAX_DEFECT);
-			get_relative_geometry(&fw->frame_g, &fw->max_g);
+			get_relative_geometry(&fw->g.frame, &fw->g.max);
 		}
 		else
 		{
-			get_relative_geometry(&fw->frame_g, &fw->normal_g);
+			get_relative_geometry(&fw->g.frame, &fw->g.normal);
 		}
 	}
 	else
@@ -2271,8 +2271,8 @@ FvwmWindow *AddWindow(
 			SET_SHADED(fw, 0);
 		}
 		/* Tentative size estimate */
-		fw->frame_g.width = wattr.width + b.total_size.width;
-		fw->frame_g.height = wattr.height + b.total_size.height;
+		fw->g.frame.width = wattr.width + b.total_size.width;
+		fw->g.frame.height = wattr.height + b.total_size.height;
 
 		/****** calculate frame size ******/
 		setup_frame_size_limits(fw, &style);
@@ -2291,12 +2291,12 @@ FvwmWindow *AddWindow(
 		wattr.y = attr_g.y;
 
 		/* set up geometry */
-		fw->frame_g.x = wattr.x;
-		fw->frame_g.y = wattr.y;
-		fw->frame_g.width = wattr.width + b.total_size.width;
-		fw->frame_g.height = wattr.height + b.total_size.height;
+		fw->g.frame.x = wattr.x;
+		fw->g.frame.y = wattr.y;
+		fw->g.frame.width = wattr.width + b.total_size.width;
+		fw->g.frame.height = wattr.height + b.total_size.height;
 		gravity_constrain_size(
-			fw->hints.win_gravity, fw, &fw->frame_g, 0);
+			fw->hints.win_gravity, fw, &fw->g.frame, 0);
 		update_absolute_geometry(fw);
 	}
 
@@ -2346,13 +2346,13 @@ FvwmWindow *AddWindow(
 		SET_FORCE_NEXT_PN(fw, 1);
 		mr_args = frame_create_move_resize_args(
 			fw, FRAME_MR_FORCE_SETUP_NO_W | FRAME_MR_DONT_DRAW,
-			NULL, &fw->frame_g, 0, DIR_NONE);
+			NULL, &fw->g.frame, 0, DIR_NONE);
 	}
 	else
 	{
 		mr_args = frame_create_move_resize_args(
 			fw, FRAME_MR_FORCE_SETUP | FRAME_MR_DONT_DRAW, NULL,
-			&fw->frame_g, 0, DIR_NONE);
+			&fw->g.frame, 0, DIR_NONE);
 	}
 	frame_move_resize(fw, mr_args);
 	frame_free_move_resize_args(fw, mr_args);
@@ -2400,7 +2400,7 @@ FvwmWindow *AddWindow(
 		stick_page = is_window_sticky_across_pages(fw);
 		stick_desk = is_window_sticky_across_desks(fw);
 		if ((stick_page &&
-		     !IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk)) ||
+		     !IsRectangleOnThisPage(&fw->g.frame, Scr.CurrentDesk)) ||
 		    (stick_desk && fw->Desk != Scr.CurrentDesk))
 		{
 			/* If it's sticky and the user didn't ask for an
@@ -2431,15 +2431,15 @@ FvwmWindow *AddWindow(
 		FWarpPointer(
 			dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 			Scr.MyDisplayHeight,
-			fw->frame_g.x + (fw->frame_g.width>>1),
-			fw->frame_g.y + (fw->frame_g.height>>1));
+			fw->g.frame.x + (fw->g.frame.width>>1),
+			fw->g.frame.y + (fw->g.frame.height>>1));
 		e.xany.type = ButtonPress;
 		e.xbutton.button = 1;
 		e.xbutton.state = Button1Mask;
-		e.xbutton.x_root = fw->frame_g.x + (fw->frame_g.width>>1);
-		e.xbutton.y_root = fw->frame_g.y + (fw->frame_g.height>>1);
-		e.xbutton.x = (fw->frame_g.width>>1);
-		e.xbutton.y = (fw->frame_g.height>>1);
+		e.xbutton.x_root = fw->g.frame.x + (fw->g.frame.width>>1);
+		e.xbutton.y_root = fw->g.frame.y + (fw->g.frame.height>>1);
+		e.xbutton.x = (fw->g.frame.width>>1);
+		e.xbutton.y = (fw->g.frame.height>>1);
 		e.xbutton.subwindow = None;
 		e.xany.window = FW_W(fw);
 		fev_fake_event(&e);
@@ -2476,7 +2476,7 @@ FvwmWindow *AddWindow(
 		{
 			state_args.shade_dir = GET_TITLE_DIR(fw);
 		}
-		big_g = (IS_MAXIMIZED(fw)) ? fw->max_g : fw->frame_g;
+		big_g = (IS_MAXIMIZED(fw)) ? fw->g.max : fw->g.frame;
 		new_g = big_g;
 		get_shaded_geometry_with_dir(
 			fw, &new_g, &new_g, state_args.shade_dir);
@@ -2494,8 +2494,8 @@ FvwmWindow *AddWindow(
 		 * simply mapped, the tk menus come up at funny Y coordinates.
 		 * Tell it it's geometry *again* to work around this problem. */
 		SendConfigureNotify(
-			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
-			fw->frame_g.height, 0, False);
+			fw, fw->g.frame.x, fw->g.frame.y, fw->g.frame.width,
+			fw->g.frame.height, 0, False);
 	}
 	if (HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
 	    HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)

@@ -1910,10 +1910,8 @@ void EWMH_fullscreen(FvwmWindow *fw)
 	}
 	SET_EWMH_FULLSCREEN(fw,True);
 	apply_decor_change(fw);
-	fscr.xypos.x =
-		fw->frame_g.x + fw->frame_g.width / 2;
-	fscr.xypos.y =
-		fw->frame_g.y + fw->frame_g.height / 2;
+	fscr.xypos.x = fw->g.frame.x + fw->g.frame.width / 2;
+	fscr.xypos.y = fw->g.frame.y + fw->g.frame.height / 2;
 	FScreenGetScrRect(
 		&fscr, FSCREEN_XYPOS, &scr_g.x, &scr_g.y,
 		&scr_g.width, &scr_g.height);

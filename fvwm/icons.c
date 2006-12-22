@@ -1656,25 +1656,25 @@ void AutoPlaceIcon(
     base_x = 0;
     base_y = 0;
     /*Also, if its a stickyWindow, put it on the current page! */
-    new_x = t->frame_g.x % Scr.MyDisplayWidth;
-    new_y = t->frame_g.y % Scr.MyDisplayHeight;
-    if (new_x + t->frame_g.width <= 0)
+    new_x = t->g.frame.x % Scr.MyDisplayWidth;
+    new_y = t->g.frame.y % Scr.MyDisplayHeight;
+    if (new_x + t->g.frame.width <= 0)
       new_x += Scr.MyDisplayWidth;
-    if (new_y + t->frame_g.height <= 0)
+    if (new_y + t->g.frame.height <= 0)
       new_y += Scr.MyDisplayHeight;
     frame_setup_window(
-	    t, new_x, new_y, t->frame_g.width, t->frame_g.height, False);
+	    t, new_x, new_y, t->g.frame.width, t->g.frame.height, False);
   }
-  else if (IsRectangleOnThisPage(&(t->frame_g), t->Desk))
+  else if (IsRectangleOnThisPage(&(t->g.frame), t->Desk))
   {
     base_x = 0;
     base_y = 0;
   }
   else
   {
-    base_x = ((t->frame_g.x + Scr.Vx + (t->frame_g.width >> 1)) /
+    base_x = ((t->g.frame.x + Scr.Vx + (t->g.frame.width >> 1)) /
       Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
-    base_y= ((t->frame_g.y + Scr.Vy + (t->frame_g.height >> 1)) /
+    base_y= ((t->g.frame.y + Scr.Vy + (t->g.frame.height >> 1)) /
       Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
     /* limit icon position to desktop */
     if (base_x > Scr.VxMax)
@@ -1787,8 +1787,8 @@ void AutoPlaceIcon(
 #define HRZ_FILL icon_boxes_ptr->IconFlags & ICONFILLHRZ
 
     /* needed later */
-    fscr.xypos.x = t->frame_g.x + (t->frame_g.width / 2) - base_x;
-    fscr.xypos.y = t->frame_g.y + (t->frame_g.height / 2) - base_y;
+    fscr.xypos.x = t->g.frame.x + (t->g.frame.width / 2) - base_x;
+    fscr.xypos.y = t->g.frame.y + (t->g.frame.height / 2) - base_y;
     get_icon_geometry(t, &g);
     /* unnecessary copy of width */
     width = g.width;
@@ -2346,21 +2346,21 @@ void DeIconify(FvwmWindow *fw)
 				update_absolute_geometry(t);
 				if (IsRectangleOnThisPage(&r, t->Desk) &&
 				    !IsRectangleOnThisPage(
-					    &(t->frame_g), t->Desk))
+					    &(t->g.frame), t->Desk))
 				{
 					/* Make sure we keep it on screen when
 					 * de-iconifying. */
-					t->frame_g.x -=
+					t->g.frame.x -=
 						truncate_to_multiple(
-							t->frame_g.x,
+							t->g.frame.x,
 							Scr.MyDisplayWidth);
-					t->frame_g.y -=
+					t->g.frame.y -=
 						truncate_to_multiple(
-							t->frame_g.y,
+							t->g.frame.y,
 							Scr.MyDisplayHeight);
 					XMoveWindow(
 						dpy, FW_W_FRAME(t),
-						t->frame_g.x, t->frame_g.y);
+						t->g.frame.x, t->g.frame.y);
 					update_absolute_geometry(t);
 					maximize_adjust_offset(t);
 				}
@@ -2383,10 +2383,10 @@ void DeIconify(FvwmWindow *fw)
 					(long)icon_rect.x, (long)icon_rect.y,
 					(long)icon_rect.width,
 					(long)icon_rect.height,
-					(long)t->frame_g.x,
-					(long)t->frame_g.y,
-					(long)t->frame_g.width,
-					(long)t->frame_g.height);
+					(long)t->g.frame.x,
+					(long)t->g.frame.y,
+					(long)t->g.frame.width,
+					(long)t->g.frame.height);
 			}
 			else
 			{
@@ -2602,8 +2602,8 @@ void Iconify(FvwmWindow *fw, initial_window_options_t *win_opts)
 		(unsigned long)fw, (long)icon_rect.x, (long)icon_rect.y,
 		(long)icon_rect.width, (long)icon_rect.height,
 		/* next 4 added for Animate module */
-		(long)fw->frame_g.x, (long)fw->frame_g.y,
-		(long)fw->frame_g.width, (long)fw->frame_g.height);
+		(long)fw->g.frame.x, (long)fw->g.frame.y,
+		(long)fw->g.frame.width, (long)fw->g.frame.height);
 	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 
 	if (win_opts->initial_state != IconicState ||
@@ -2630,8 +2630,6 @@ void Iconify(FvwmWindow *fw, initial_window_options_t *win_opts)
 
 	return;
 }
-
-
 
 /*
  *

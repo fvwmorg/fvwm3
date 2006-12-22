@@ -499,7 +499,7 @@ SaveWindowStates(FILE *f)
 
 		gravity_get_naked_geometry(
 			ewin->hints.win_gravity, ewin, &save_g,
-			&ewin->normal_g);
+			&ewin->g.normal);
 		if (IS_STICKY_ACROSS_PAGES(ewin))
 		{
 			save_g.x -= Scr.Vx;
@@ -510,13 +510,13 @@ SaveWindowStates(FILE *f)
 			f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i"
 			" %i %i %i\n",
 			save_g.x, save_g.y, save_g.width, save_g.height,
-			ewin->max_g.x, ewin->max_g.y, ewin->max_g.width,
-			ewin->max_g.height, ewin->max_g_defect.width,
-			ewin->max_g_defect.height,
+			ewin->g.max.x, ewin->g.max.y, ewin->g.max.width,
+			ewin->g.max.height, ewin->g.max_defect.width,
+			ewin->g.max_defect.height,
 			ig.x + ((!is_icon_sticky_across_pages) ? Scr.Vx : 0),
 			ig.y + ((!is_icon_sticky_across_pages) ? Scr.Vy : 0),
 			ewin->hints.win_gravity,
-			ewin->max_offset.x, ewin->max_offset.y);
+			ewin->g.max_offset.x, ewin->g.max_offset.y);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
 		/* set the layer to the default layer if the layer has been
 		 * set by an ewmh hint */
@@ -1533,19 +1533,19 @@ MatchWinToSM(
 					win_opts->initial_icon_y -= Scr.Vy;
 				}
 			}
-			ewin->normal_g.x = matches[i].x;
-			ewin->normal_g.y = matches[i].y;
-			ewin->normal_g.width = matches[i].w;
-			ewin->normal_g.height = matches[i].h;
-			ewin->max_g.x = matches[i].x_max;
-			ewin->max_g.y = matches[i].y_max;
-			ewin->max_g.width = matches[i].w_max;
-			ewin->max_g.height = matches[i].h_max;
-			ewin->max_g_defect.width = matches[i].width_defect_max;
-			ewin->max_g_defect.height =
+			ewin->g.normal.x = matches[i].x;
+			ewin->g.normal.y = matches[i].y;
+			ewin->g.normal.width = matches[i].w;
+			ewin->g.normal.height = matches[i].h;
+			ewin->g.max.x = matches[i].x_max;
+			ewin->g.max.y = matches[i].y_max;
+			ewin->g.max.width = matches[i].w_max;
+			ewin->g.max.height = matches[i].h_max;
+			ewin->g.max_defect.width = matches[i].width_defect_max;
+			ewin->g.max_defect.height =
 				matches[i].height_defect_max;
-			ewin->max_offset.x = matches[i].max_x_offset;
-			ewin->max_offset.y = matches[i].max_y_offset;
+			ewin->g.max_offset.x = matches[i].max_x_offset;
+			ewin->g.max_offset.y = matches[i].max_y_offset;
 			SET_STICKY_ACROSS_PAGES(
 				ewin, IS_STICKY_ACROSS_PAGES(&(matches[i])));
 			SET_STICKY_ACROSS_DESKS(

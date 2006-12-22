@@ -1143,18 +1143,18 @@ void MoveViewport(int newx, int newy, Bool grab)
 			/*
 			 * If the window is moving into the viewport...
 			 */
-			txl = t->frame_g.x;
-			tyt = t->frame_g.y;
-			txr = t->frame_g.x + t->frame_g.width - 1;
-			tyb = t->frame_g.y + t->frame_g.height - 1;
+			txl = t->g.frame.x;
+			tyt = t->g.frame.y;
+			txr = t->g.frame.x + t->g.frame.width - 1;
+			tyb = t->g.frame.y + t->g.frame.height - 1;
 			if (is_window_sticky_across_pages(t) &&
 			    !IS_VIEWPORT_MOVED(t))
 			{
 				/* the absolute position has changed */
-				t->normal_g.x -= deltax;
-				t->normal_g.y -= deltay;
-				t->max_g.x -= deltax;
-				t->max_g.y -= deltay;
+				t->g.normal.x -= deltax;
+				t->g.normal.y -= deltay;
+				t->g.max.x -= deltax;
+				t->g.max.y -= deltay;
 				/*  Block double move.  */
 				SET_VIEWPORT_MOVED(t, 1);
 			}
@@ -1179,10 +1179,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 							t, False);
 					}
 					frame_setup_window(
-						t, t->frame_g.x + deltax,
-						t->frame_g.y + deltay,
-						t->frame_g.width,
-						t->frame_g.height, False);
+						t, t->g.frame.x + deltax,
+						t->g.frame.y + deltay,
+						t->g.frame.width,
+						t->g.frame.height, False);
 				}
 			}
 			/*  Bump to next win...  */
@@ -1195,10 +1195,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 			 *If the window is not moving into the viewport...
 			 */
 			SET_VIEWPORT_MOVED(t, 1);
-			txl = t1->frame_g.x;
-			tyt = t1->frame_g.y;
-			txr = t1->frame_g.x + t1->frame_g.width - 1;
-			tyb = t1->frame_g.y + t1->frame_g.height - 1;
+			txl = t1->g.frame.x;
+			tyt = t1->g.frame.y;
+			txr = t1->g.frame.x + t1->g.frame.width - 1;
+			tyb = t1->g.frame.y + t1->g.frame.height - 1;
 			if (! (txr >= PageLeft && txl <= PageRight
 			       && tyb >= PageTop && tyt <= PageBottom)
 			    && !IS_VIEWPORT_MOVED(t1)
@@ -1218,10 +1218,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 							t1, False);
 					}
 					frame_setup_window(
-						t1, t1->frame_g.x + deltax,
-						t1->frame_g.y + deltay,
-						t1->frame_g.width,
-						t1->frame_g.height, False);
+						t1, t1->g.frame.x + deltax,
+						t1->g.frame.y + deltay,
+						t1->g.frame.width,
+						t1->g.frame.height, False);
 				}
 			}
 			/*  Bump to next win...  */
@@ -1826,7 +1826,7 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 			Scr.flags.do_edge_wrap_y = 1;
 		}
 	}
-	
+
 	Scr.EdgeScrollX = val1 * val1_unit / 100;
 	Scr.EdgeScrollY = val2 * val2_unit / 100;
 
