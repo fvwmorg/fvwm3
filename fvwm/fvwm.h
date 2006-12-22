@@ -642,6 +642,21 @@ typedef struct window_style
 	unsigned has_style_changed : 1;
 } window_style;
 
+typedef struct window_g
+{
+	rectangle frame;
+	/* absolute geometry when not maximized */
+	rectangle normal;
+	/* maximized window geometry */
+	rectangle max;
+	/* defect between maximized geometry before and after
+	 * constraining size. */
+	size_rect max_defect;
+	/* original delta between normalized and maximized window,
+	 * used to keep unmaximized window at same screen position */
+	position max_offset;
+} window_g;
+
 /* for each window that is on the display, one of these structures
  * is allocated and linked into a list
  */
@@ -782,20 +797,7 @@ typedef struct FvwmWindow
 	FvwmPicture *mini_icon;
 	char *icon_bitmap_file;
 
-	struct
-	{
-		rectangle frame;
-		/* absolute geometry when not maximized */
-		rectangle normal;
-		/* maximized window geometry */
-		rectangle max;
-		/* defect between maximized geometry before and after
-		 * constraining size. */
-		size_rect max_defect;
-		/* original delta between normalized and maximized window,
-		 * used to keep unmaximized window at same screen position */
-		position max_offset;
-	} g;
+	struct window_g g;
 	long *mwm_hints;
 	int ol_hints;
 	int functions;
