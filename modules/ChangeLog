@@ -1,3 +1,18 @@
+2006-12-22  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmProxy/FvwmProxy.c:
+	Changed PROXY_GROUP_DEBUG define directive to False.
+
+	(My_XNextEvent):
+	Removed useless exit message.
+
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmProxy/FvwmProxy.h:
+	Corrected VIM modelines.
+
+	* FvwmProxy/FvwmProxy.1.in:
+	Documentation fixes.
+
 2006-12-10  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):

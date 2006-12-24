@@ -1,5 +1,5 @@
 /* -*-c-*- */
-/* vim:ts=8:shiftwidth=8: */
+/* vim: set ts=8 shiftwidth=8: */
 
 #ifndef FvwmProxy_h
 #define FvwmProxy_h

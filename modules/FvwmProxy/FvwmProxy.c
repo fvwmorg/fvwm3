@@ -1,4 +1,5 @@
 /* -*-c-*- */
+/* vim: set ts=8 shiftwidth=8: */
 /* This module, FvwmProxy, is an original work by Jason Weber.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* vim:ts=8:shiftwidth=8: */
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -43,7 +43,7 @@
 
 /* defaults for things we put in a configuration file */
 
-#define PROXY_GROUP_DEBUG	True
+#define PROXY_GROUP_DEBUG	False
 #define PROXY_KEY_POLLING	True
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
 #define PROXY_ICONIFIED		False	/* show proxy when iconified */
@@ -3289,7 +3289,6 @@ static int My_XNextEvent(Display *dpy,XEvent *event)
 			FvwmPacket* packet = ReadFvwmPacket(fd[1]);
 			if (!packet)
 			{
-				fprintf(stderr, "\nNULL packet: exiting\n");
 				exit(0);
 			}
 

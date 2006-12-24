@@ -53,17 +53,31 @@ Specifies the color theme for proxy windows of iconified windows.
 This is only meaningful in conjuction with the ProxyIconified option on.
 
 .IP "*FvwmProxy: Font \fIfont\fP"
-Specifies the font used for all proxy window text.
+Specifies the font used for large proxy window text.
+This usually contains the icon string and is nearly vertically centered
+in the proxy.
+If there is no icon string, the title bar string is used.
+If this text exceeds the width of the proxy, it is cropped on the right.
+If no Font is specified, a default is used.
+
+.IP "*FvwmProxy: SmallFont \fIfont\fP"
+Specifies the font used for the auxillary proxy window text.
+This usually contains the title bar string, but is omitted if it
+is identical to the icon string and that text was not cropped.
+The text is drawn close to the bottom of the proxy and should
+probably be the smallest legible font available.
+If this text exceeds the width of the proxy, it is cropped on the left.
+If no SmallFont is specified, this text is never drawn.
 
 .IP "*FvwmProxy: Width \fIw\fP"
-Specifies the size in X of each proxy window.
+Specifies the size in X of each proxy window. The default is 180.
 
 .IP "*FvwmProxy: Height \fIh\fP"
-Specifies the size in Y of each proxy window.
+Specifies the size in Y of each proxy window. The default is 60.
 
 .IP "*FvwmProxy: Separation \fId\fP"
 Specifies the minimum distance between proxy windows when adjusting
-for collisions.
+for collisions. The default is 10.
 
 .IP "*FvwmProxy: ShowMiniIcons \fIbool\fP"
 If true, proxy windows show the mini icon for the window they represent,
@@ -77,12 +91,12 @@ The default is false.
 .IP "*FvwmProxy: ProxyMove \fIbool\fP"
 If true, moving a proxy window will move the window it represents.
 Currently, the proxied window doesn't recognize snap effects during
-this operation.
+this operation. The default is false.
 
 .IP "*FvwmProxy: ProxyIconified \fIbool\fP"
 If true, continue to proxy windows when they are iconified.
 In addition, consider adding click actions that Iconify on and off,
-such as on the middlemouse button.
+such as on the middlemouse button. The default is false.
 
 .IP "*FvwmProxy: Action \fImouseaction\fP \fIresponse\fP"
 Tells FvwmProxy to do the specified \fIresponse\fP when the given
@@ -184,10 +198,10 @@ The default is nothing.
 For non-group slots, this defines the behavior of the indicated slot.
 The mouse action and response is used the same as the FvwmProxy
 Action configuration.
-The default is Noop.
+The default is Nop.
 
 .IP "*FvwmProxy: UndoLimit \fIn\fP"
-This specifies the number of entires in the undo buffer.
+This specifies the number of entries in the undo buffer.
 this limits how far back you can undo.
 The default is 8.
 
@@ -268,7 +282,7 @@ Attempt to undo the last window move and/or resize.
 .IP "SendToModule FvwmProxy Redo"
 Attempt to redo the most recent Undo.
 If another move or resize occurs since the previous undo,
-the redo buffer is cleared.
+the redo buffer will be cleared.
 
 .SH SAMPLE CONFIGURATION
 The following are excerpts from a .fvwm2rc file which describe
