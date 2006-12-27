@@ -9,7 +9,7 @@ Changes in beta release 2.5.20 (not released yet)
    - New Style options: StippledIconTitle, !StickyStippledTitle,
      and !StickyStippledIconTitle.
    - Full support for menu context (M) key and mouse bindings.  See
-     the section Menu Actions in the man page for details.
+     the section Menu Bindings in the man page for details.
 
 * Changed features:
    - "Mouse n M N" is no longer used to disable or remap the
