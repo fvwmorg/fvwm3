@@ -2354,7 +2354,7 @@ the pointer to. Negative items are counted from the end of the menu.
 If the first argument is non-zero, the second argument must be omitted,
 and the first argument specifies a relative change in the selected item.
 The positions may be suffixed with a 's' to indicate that the items should
-referre only to the first items after separators.
+refer only to the first items after separators.
 
 .B MoveLeft
 enters a sub menu with the
@@ -2374,7 +2374,7 @@ triggers the action for the menu item.
 .BI "Scroll " n
 performs menu scrolling according to the
 .IR MouseWheel " menu style with " n " items.  The distance can be"
-suffixed with a 's' to indicate the items should referre only to the
+suffixed with a 's' to indicate the items should refer only to the
 first items after separators.
 
 .B TearOff
