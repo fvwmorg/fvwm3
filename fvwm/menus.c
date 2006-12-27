@@ -980,6 +980,7 @@ static void menuShortcuts(
 			}
 		}
 		index = 0;
+		ikeychar = 0;
 	}
 	else /* Should be KeyPressed */
 	{
