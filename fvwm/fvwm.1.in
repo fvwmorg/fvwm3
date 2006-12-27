@@ -2324,29 +2324,31 @@ opens the "More..." sub menu if any.
 tears off the menu.
 
 .TP
-.B Menu Actions
+.B Menu Bindings
 The keys and mouse buttons used to navigate the menu can be configured
 using the
 .BR Key " and " Mouse
 commands with the special context 'M', possible combined with 'T' for
 the menu title. The menu context used its own set
 of actions that can be bound to keys and mouse buttons. These are
-.IR Close ", " Continue ", " Enter ", " Leave, ", " Move ", " MoveLeft
-.RI ", " MoveRight ", " Select ", " Scroll " and " TearOff .
+.IR MenuClose ", " MenuEnterContinuation ", " MenuEnterSubmenu ", "
+.IR MenuLeaveSubmenu ", " MenuMoveCursor ", " MenuCursorLeft ", "
+.IR MenuCursorRight ", " MenuSelectItem ", " MenuScroll " and "
+.IR MenuTearOff .
 
-.B Close
+.B MenuClose
 exits from the current sequence of menus or destroy a tear off menu.
 
-.B Continue
+.B MenuEnterContinuation
 opens the "More..." sub menu if any.
 
-.B Enter
+.B MenuEnterSubmenu
 enters a sub menu.
 
-.B Leave
+.B MenuLeaveSubmenu
 returns to the prior menu.
 
-.B Move
+.B MenuMoveCursor
 .IB n " [" m ]
 moves the selection to another item.  If the first argument is zero
 the second argument specifies an absolute item in the menu to move
@@ -2356,28 +2358,28 @@ and the first argument specifies a relative change in the selected item.
 The positions may be suffixed with a 's' to indicate that the items should
 refer only to the first items after separators.
 
-.B MoveLeft
+.B MenuCursorLeft
 enters a sub menu with the
 .I SubmenusLeft
 menu style, and returns to the prior menu with the
 .IR SubmenusRight "menu style."
 
-.B MoveRight
+.B MenuCursorRight
 enters a sub menu with the
 .I SubmenusRight
 menu style, and returns to the prior menu with the
 .IR SubmenusLeft "menu style."
 
-.B Select
+.B MenuSelectItem
 triggers the action for the menu item.
 
-.BI "Scroll " n
+.BI "MenuScroll " n
 performs menu scrolling according to the
 .IR MouseWheel " menu style with " n " items.  The distance can be"
 suffixed with a 's' to indicate the items should refer only to the
 first items after separators.
 
-.B TearOff
+.B MenuTearOff
 turns a normal menu into a "torn off" menu. See 
 .B Tear Off Menus
 for details.
@@ -2410,7 +2412,7 @@ Key Backspace M A -
 .EE
 
 See the section
-.B Menu Actions
+.B Menu Bindings
 for details on how to assign other bindings for tear off.
 
 Note that prior to fvwm 2.5.20 the tear off mouse binding were
@@ -6234,7 +6236,7 @@ to use the 'W' context).
 
 The special context 'M' for menus can be used to (re)define the menu
 controls. It can only be used alone or together with 'T' for the menu
-title bar.  See the section "Menu Actions" for details.
+title bar.  See the section "Menu Bindings" for details.
 
 The following example binds the built-in window list to pop up
 when
@@ -6280,7 +6282,7 @@ are valid for an undecorated window.
 
 The special context 'M' for menus can be used to (re)define the menu
 controls. It can only be used alone or together with 'T' for the menu
-title bar.  See the section "Menu Actions" for details.
+title bar.  See the section "Menu Bindings" for details.
 
 The special context 'P' controls what buttons that can be used to
 place a window. When using this context no modifiers are allowed

@@ -771,16 +771,16 @@ static void parse_menu_action(MenuRoot *mr, char *action,
 			      Bool *do_skip_section)
 {
 	char *optlist[] = {
-		"Close",
-		"Continue",
-		"Enter",
-		"Leave",
-		"Move",
-		"MoveLeft",
-		"MoveRight",
-		"Select",
-		"Scroll",
-		"TearOff",
+		"MenuClose",
+		"MenuEnterContinuation",
+		"MenuEnterSubmenu",
+		"MenuLeaveSubmenu",
+		"MenuMoveCursor",
+		"MenuCursorLeft",
+		"MenuCursorRight",
+		"MenuSelectItem",
+		"MenuScroll",
+		"MenuTearOff",
 		NULL
 	};
 	int index;
@@ -791,20 +791,20 @@ static void parse_menu_action(MenuRoot *mr, char *action,
 
 	switch (index)
 	{
-	case 0: /* Close */
+	case 0: /* MenuClose */
 		*saction = SA_ABORT;
 		break;
-	case 1: /* Continue */
+	case 1: /* MenuEnterContinuation */
 		*saction = (MR_CONTINUATION_MENU(mr) != NULL) ?
 			SA_CONTINUE : SA_ENTER;
 		break;
-	case 2: /* Enter */
+	case 2: /* MenuEnterSubmenu */
 		*saction = SA_ENTER;
 		break;
-	case 3: /* Leave */
+	case 3: /* MenuLeaveSubmenu */
 		*saction = SA_LEAVE;
 		break;
-	case 4: /* Move */
+	case 4: /* MenuMoveCursor */
 		num = GetSuffixedIntegerArguments(options, NULL, count, 2,
 						  "s", suffix);
 		if (num == 2)
@@ -812,8 +812,8 @@ static void parse_menu_action(MenuRoot *mr, char *action,
 			if (suffix[0] != 0 || count[0] != 0)
 			{
 				fvwm_msg(ERR, "parse_menu_action",
-					 "invalid Move arguments '%s'",
-					 options);
+					 "invalid MenuMoveCursor arguments "
+					 "'%s'", options);
 				*saction = SA_NONE;
 				break;
 			}
@@ -845,22 +845,22 @@ static void parse_menu_action(MenuRoot *mr, char *action,
 		else
 		{
 			fvwm_msg(ERR, "parse_menu_action",
-				 "invalid Move arguments '%s'",
+				 "invalid MenuMoveCursor arguments '%s'",
 				 options);
 			*saction = SA_NONE;
 			break;
 		}
 		break;
-	case 5: /* MoveLeft */
+	case 5: /* MenuCursorLeft */
 		*saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_ENTER : SA_LEAVE;
 		break;
-	case 6: /* MoveRight */
+	case 6: /* MenuCursorRight */
 		*saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_LEAVE : SA_ENTER;
 		break;
-	case 7: /* Select */
+	case 7: /* MenuSelectItem */
 		*saction = SA_SELECT;
 		break;
-	case 8: /* Scroll */
+	case 8: /* MenuScroll */
 		if (MST_MOUSE_WHEEL(mr) == MMW_OFF)
 		{
 			*saction = SA_SELECT;
@@ -881,14 +881,14 @@ static void parse_menu_action(MenuRoot *mr, char *action,
 			else
 			{
 				fvwm_msg(ERR, "parse_menu_action",
-					 "invalid Scroll arguments '%s'",
+					 "invalid MenuScroll arguments '%s'",
 					 options);
 				*saction = SA_NONE;
 				break;
 			}
 		}
 		break;
-	case 9: /* TearOff */
+	case 9: /* MenuTearOff */
 		*saction = SA_TEAROFF;
 		break;
 	default:
@@ -8172,17 +8172,14 @@ int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
 			" ignored.");
 		modifier = AnyModifier;
 	}
-	/* Warn about Mouse n M N TearOff. This is a valid binding,
-	 * but the user most likely wanted Mouse n MT A TearOff instead,
-	 * together with Mouse 2 MT A -. Remove this warning before 2.6,
-	 * The old system has olny been in the 2.5 branch, an dis thus easier
-	 * to alter.*/
+	/* Warn about Mouse n M N TearOff. */
 	if (keysym == 0 && button != 0 && modifier == 0 &&
 		 strcasecmp(action,"tearoff") == 0 && context == C_MENU)
 	{
-		fvwm_msg(WARN, "menu_binding",
+		fvwm_msg(OLD, "menu_binding",
 			 "The syntax for disabling the tear off button has "
-			 "changed.");
+			 "changed. The TearOff action is no longer possible "
+			 "in menu bindings.");
 	}
 	return AddBinding(
 		dpy, &menu_bindings, type, STROKE_ARG(NULL) button, keysym,

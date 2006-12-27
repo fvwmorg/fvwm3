@@ -1,3 +1,14 @@
+2006-12-27  Viktor Griph  <griph@dd.chalmers.se>
+
+	* NEWS
+	* fvwm/ConfigFvwmMenuDefaults:
+	* fvwm/fvwm.c (SetRCDefaults):
+	* fvwm/menus.c (parse_menu_action):
+	* fvwm/fvwm.1.in:
+	rename menu action to menu bindings and make menu binding commands
+	more verbose.  Move "Mouse 0 M A MenuSelectItem" to SetRCDefaults to
+	ensure basic function with ConfigFvwmMenuDefaults missing.
+
 2006-12-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (menuShortcuts):

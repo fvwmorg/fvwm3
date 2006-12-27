@@ -1390,6 +1390,7 @@ static void SetRCDefaults(void)
 			"\" Quit"
 		},
 		{ "Mouse 1 R A Menu MenuFvwmRoot", "", "" },
+		{ "Mouse 0 M A MenuSelectItem", "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
 		{ NULL, NULL, NULL }
 	};

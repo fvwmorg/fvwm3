@@ -9,150 +9,152 @@
 # and handle_emacs_bindings in menus.c
 
 # Normal bindings
-Key Escape		M A Close
-Key Delete		M A Close
-Key KP_Separator	M A Close
+Key Escape		M A MenuClose
+Key Delete		M A MenuClose
+Key KP_Separator	M A MenuClose
 
-Key Space		M A Select
-Key Return		M A Select
-Key KP_Enter		M A Select
+Key Space		M A MenuSelectItem
+Key Return		M A MenuSelectItem
+Key KP_Enter		M A MenuSelectItem
 
 #  move to last entry of menu ('More...' if this exists) and
 # try to enter the menu.  Otherwise try to enter the current
 # submenu
-Key Insert		M A Continue
-Key KP_Insert		M A Continue
-Key KP_0		M A Continue
+Key Insert		M A MenuEnterContinuation
+Key KP_Insert		M A MenuEnterContinuation
+Key KP_0		M A MenuEnterContinuation
 
-Key Left		M A MoveLeft
-Key KP_Left		M A MoveLeft
-Key KP_4		M A MoveLeft
+Key Left		M A MenuCursorLeft
+Key KP_Left		M A MenuCursorLeft
+Key KP_4		M A MenuCursorLeft
 #vi left
-Key h			M A MoveLeft
+Key h			M A MenuCursorLeft
 
 
-Key Right		M A MoveRight
-Key KP_Right		M A MoveRight
-Key KP_6		M A MoveRight
+Key Right		M A MenuCursorRight
+Key KP_Right		M A MenuCursorRight
+Key KP_6		M A MenuCursorRight
 #vi right
-Key l			M A MoveRight
+Key l			M A MenuCursorRight
 
 #back
-Key b			M A Leave
+Key b			M A MenuLeaveSubmenu
 #forward
-Key f			M A Enter
+Key f			M A MenuEnterSubmenu
 
-Key Page_Up		M A Move -5
-Key KP_Prior		M A Move -5
-Key KP_9		M A Move -5
+Key Page_Up		M A MenuMoveCursor -5
+Key KP_Prior		M A MenuMoveCursor -5
+Key KP_9		M A MenuMoveCursor -5
 
-Key Page_Down		M A Move +5
-Key KP_Next		M A Move +5
-Key KP_3		M A Move +5
+Key Page_Down		M A MenuMoveCursor +5
+Key KP_Next		M A MenuMoveCursor +5
+Key KP_3		M A MenuMoveCursor +5
 
 
 # Up
-Key Up			M A Move -1
-Key KP_Up		M A Move -1
-Key KP_8		M A Move -1
+Key Up			M A MenuMoveCursor -1
+Key KP_Up		M A MenuMoveCursor -1
+Key KP_8		M A MenuMoveCursor -1
 #vi up
-Key k			M A Move -1
+Key k			M A MenuMoveCursor -1
 #prior
-Key p			M A Move -1
+Key p			M A MenuMoveCursor -1
 
-Key Up			M S Move 0 0
-Key KP_Up		M S Move 0 0
-Key KP_8		M S Move 0 0
+Key Up			M S MenuMoveCursor 0 0
+Key KP_Up		M S MenuMoveCursor 0 0
+Key KP_8		M S MenuMoveCursor 0 0
 #vi up
-Key k			M S Move 0 0
+Key k			M S MenuMoveCursor 0 0
 #prior
-Key p			M S Move 0 0
+Key p			M S MenuMoveCursor 0 0
 
-Key Up			M C Move -5
-Key KP_Up		M C Move -5
-Key KP_8		M C Move -5
+Key Up			M C MenuMoveCursor -5
+Key KP_Up		M C MenuMoveCursor -5
+Key KP_8		M C MenuMoveCursor -5
 #vi up
-Key k			M C Move -5
+Key k			M C MenuMoveCursor -5
 #prior
-Key p			M C Move -5
+Key p			M C MenuMoveCursor -5
 
-Key Up			M M Move -1s
-Key KP_Up		M M Move -1s
-Key KP_8		M M Move -1s
+Key Up			M M MenuMoveCursor -1s
+Key KP_Up		M M MenuMoveCursor -1s
+Key KP_8		M M MenuMoveCursor -1s
 #vi up
-Key k			M M Move -1s
+Key k			M M MenuMoveCursor -1s
 #prior
-Key p			M M Move -1s
+Key p			M M MenuMoveCursor -1s
 
 
 # Down
-Key Down		M A Move 1
-Key KP_Down		M A Move 1
-Key KP_2		M A Move 1
+Key Down		M A MenuMoveCursor 1
+Key KP_Down		M A MenuMoveCursor 1
+Key KP_2		M A MenuMoveCursor 1
 #vi down
-Key j			M A Move 1
+Key j			M A MenuMoveCursor 1
 #next
-Key n			M A Move 1
+Key n			M A MenuMoveCursor 1
 
-Key Down		M S Move 0 -1
-Key KP_Down		M S Move 0 -1
-Key KP_2		M S Move 0 -1
+Key Down		M S MenuMoveCursor 0 -1
+Key KP_Down		M S MenuMoveCursor 0 -1
+Key KP_2		M S MenuMoveCursor 0 -1
 #vi down
-Key j			M S Move 0 -1
+Key j			M S MenuMoveCursor 0 -1
 #next
-Key n			M S Move 0 -1
+Key n			M S MenuMoveCursor 0 -1
 
-Key Down		M C Move +5
-Key KP_Down		M C Move +5
-Key KP_2		M C Move +5
+Key Down		M C MenuMoveCursor +5
+Key KP_Down		M C MenuMoveCursor +5
+Key KP_2		M C MenuMoveCursor +5
 #vi down
-Key j			M C Move +5
+Key j			M C MenuMoveCursor +5
 #next
-Key n			M C Move +5
+Key n			M C MenuMoveCursor +5
 
-Key Down		M M Move +1s
-Key KP_Down		M M Move +1s
-Key KP_2		M M Move +1s
+Key Down		M M MenuMoveCursor +1s
+Key KP_Down		M M MenuMoveCursor +1s
+Key KP_2		M M MenuMoveCursor +1s
 #vi down
-Key j			M M Move +1s
+Key j			M M MenuMoveCursor +1s
 #next
-Key n			M M Move +1s
+Key n			M M MenuMoveCursor +1s
 
-Key Tab			M A Move +1
-Key Tab			M C Move +1s
-Key Tab			M MC Move +5
-Key Tab			M SA Move -1
-Key Tab			M SC Move -1s
-Key Tab			M SMC Move -5
+Key Tab			M A MenuMoveCursor +1
+Key Tab			M C MenuMoveCursor +1s
+Key Tab			M MC MenuMoveCursor +5
+Key Tab			M SA MenuMoveCursor -1
+Key Tab			M SC MenuMoveCursor -1s
+Key Tab			M SMC MenuMoveCursor -5
 
-Key Home		M A Move 0 0
-Key KP_Home		M A Move 0 0
-Key KP_7		M A Move 0 0
+Key Home		M A MenuMoveCursor 0 0
+Key KP_Home		M A MenuMoveCursor 0 0
+Key KP_7		M A MenuMoveCursor 0 0
 
-Key End			M A Move 0 -1
-Key KP_End		M A Move 0 -1
-Key KP_1		M A Move 0 -1
+Key End			M A MenuMoveCursor 0 -1
+Key KP_End		M A MenuMoveCursor 0 -1
+Key KP_1		M A MenuMoveCursor 0 -1
 
-Key BackSpace		M A TearOff
+Key BackSpace		M A MenuTearOff
 
-Key KP_Add		M A Scroll 1
-Key KP_Subtract		M A Scroll -1
+Key KP_Add		M A MenuScroll 1
+Key KP_Subtract		M A MenuScroll -1
 
 # emacs bindings
-Key a			M C Move 0 0
-Key e			M C Move 0 -1
-Key b			M C Move -1
-Key f			M C Move +1
-Key Left		M C Move -1s
-Key Right		M C Move +1s
-Key g			M C Close
+Key a			M C MenuMoveCursor 0 0
+Key e			M C MenuMoveCursor 0 -1
+Key b			M C MenuMoveCursor -1
+Key f			M C MenuMoveCursor +1
+Key Left		M C MenuMoveCursor -1s
+Key Right		M C MenuMoveCursor +1s
+Key g			M C MenuClose
 
 
 #Mouse bindings
-Mouse 0			M A Select
-Mouse 4			M A Scroll -1
-Mouse 5			M A Scroll +1
+# Mouse 0 is defined in SetRCDefaults for minimum menu interface with
+# missing config files
+#Mouse 0		M A MenuSelectItem
+Mouse 4			M A MenuScroll -1
+Mouse 5			M A MenuScroll +1
 
 
 # NB: Only on title -- changes syntax for remapping the TearOff functionality
-Mouse 2			MT A TearOff
+Mouse 2			MT A MenuTearOff
