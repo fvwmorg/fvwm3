@@ -61,3 +61,5 @@ AddToFunc FuncFvwmRaiseLowerX
 + I Raise
 + M $0
 + D Lower
+
+Read ConfigFvwmMenuDefaults

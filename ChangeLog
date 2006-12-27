@@ -1,3 +1,17 @@
+2006-12-27  Viktor Griph  <griph@dd.chalmers.se>
+
+	* AUTHORS:
+	* NEWS:
+	* fvwm/fvwm.1.in:
+	* fvwm/menus.h:
+	* fvwm/menus.c (handle_emacs_bindings, parse_menu_action)
+	(menuShortcuts, __mloop_handle_event, menu_binding):
+	* fvwm/bindings.c (ParseBinding):
+	* fvwm/Makefile.am (config_DATA):
+	* fvwm/ConfigFvwmDefaults:
+	* fvwm/ConfigFvwmMenuDefaults:
+	fully configurable mouse any key bindings for menu navigation.
+
 2006-12-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (HandlePaging):

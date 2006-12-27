@@ -6,7 +6,7 @@ bin_PROGRAMS = fvwm
 EXTRA_DIST = $(config_DATA)
 man_MANS = fvwm.1
 
-config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
+config_DATA = ConfigFvwmDefaults ConfigFvwmSetup ConfigFvwmMenuDefaults
 
 ## please keep .c file in largest first order to speed up parallel makes
 fvwm_SOURCES = \

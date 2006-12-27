@@ -494,12 +494,13 @@ static int ParseBinding(
 	}
 
 	/* short circuit menu bindings for now. */
-	if (context == C_MENU)
+	if ((context & C_MENU) == C_MENU)
 	{
-		return(menu_binding(button,keysym,modifier,action));
+		return(menu_binding(dpy, type, button, keysym, context,
+				    modifier, action, windowName));
 	}
 	/* short circuit placement bindings for now. */
-	if (context == C_PLACEMENT)
+	if ((context & C_PLACEMENT) == C_PLACEMENT)
 	{
 		return(placement_binding(button,keysym,modifier,action));
 	}

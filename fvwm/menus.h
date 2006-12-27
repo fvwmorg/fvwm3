@@ -35,6 +35,7 @@
 #include "menudim.h"
 #include "menustyle.h"
 #include "menuitem.h"
+#include "libs/Bindings.h"
 
 #define MENU_IS_LEFT  0x01
 #define MENU_IS_RIGHT 0x02
@@ -328,6 +329,7 @@ typedef struct
   ((x)==MENU_DONE || (x)==MENU_ABORTED || (x)==MENU_SUBMENU_TORN_OFF)
 
 
+
 /*
  * EXPORTED FUNCTIONS
  */
@@ -355,5 +357,6 @@ void repaint_transparent_menu(
 	MenuRepaintTransparentParameters *prtmp,
 	Bool first, int x, int y, int end_x, int end_y);
 Bool menu_expose(XEvent *event, FvwmWindow *fw);
-int menu_binding(int button,KeySym keysym,int modifier,char *action);
+int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
+	int context, int modifier, char *action, char *menuStyle);
 #endif /* _MENUS_ */

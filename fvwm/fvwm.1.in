@@ -2192,8 +2192,8 @@ section for details.
 Moving the pointer over a menu selects the item below it.
 Normally this is indicated by a 3d border around the item, but not
 all parts of a menu can be selected.  Pressing any mouse button
-while a menu is open activates the item below it.  Items of a
-popup menu are also activated by releasing a held mouse button.
+while a menu is open by default activates the item below it.  Items
+of a popup menu are also activated by releasing a held mouse button.
 In case of an item that hides a sub menu, the sub menu is
 displayed if the pointer hovers over the item long enough or moves
 close to the triangle indicating the sub menu.  This behaviour can
@@ -2245,7 +2245,7 @@ The most basic keys to navigate through menus are the cursor keys
 (activate item) and
 .SM Escape
 (close menu).  Numerous other keys can be used to navigate through
-menus:
+menus by default:
 
 .SM \fIEnter\fP,
 .SM \fIReturn\fP,
@@ -2324,6 +2324,65 @@ opens the "More..." sub menu if any.
 tears off the menu.
 
 .TP
+.B Menu Actions
+The keys and mouse buttons used to navigate the menu can be configured
+using the
+.BR Key " and " Mouse
+commands with the special context 'M', possible combined with 'T' for
+the menu title. The menu context used its own set
+of actions that can be bound to keys and mouse buttons. These are
+.IR Close ", " Continue ", " Enter ", " Leave, ", " Move ", " MoveLeft
+.RI ", " MoveRight ", " Select ", " Scroll " and " TearOff .
+
+.B Close
+exits from the current sequence of menus or destroy a tear off menu.
+
+.B Continue
+opens the "More..." sub menu if any.
+
+.B Enter
+enters a sub menu.
+
+.B Leave
+returns to the prior menu.
+
+.B Move
+.IB n " [" m ]
+moves the selection to another item.  If the first argument is zero
+the second argument specifies an absolute item in the menu to move
+the pointer to. Negative items are counted from the end of the menu.
+If the first argument is non-zero, the second argument must be omitted,
+and the first argument specifies a relative change in the selected item.
+The positions may be suffixed with a 's' to indicate that the items should
+referre only to the first items after separators.
+
+.B MoveLeft
+enters a sub menu with the
+.I SubmenusLeft
+menu style, and returns to the prior menu with the
+.IR SubmenusRight "menu style."
+
+.B MoveRight
+enters a sub menu with the
+.I SubmenusRight
+menu style, and returns to the prior menu with the
+.IR SubmenusLeft "menu style."
+
+.B Select
+triggers the action for the menu item.
+
+.BI "Scroll " n
+performs menu scrolling according to the
+.IR MouseWheel " menu style with " n " items.  The distance can be"
+suffixed with a 's' to indicate the items should referre only to the
+first items after separators.
+
+.B TearOff
+turns a normal menu into a "torn off" menu. See 
+.B Tear Off Menus
+for details.
+
+.TP
 .B Tear Off Menus
 
 A tear off menu is any menu that has been "torn off" the window it
@@ -2336,20 +2395,26 @@ broken line).  Tear off bars must be added to the menu as any
 other item by assigning them the command
 .BR TearMenuOff .
 
-The action taken with the backspace key cannot be overridden
-but the action of mouse button 2 on the title can.
-To remove the builtin mouse button 2 binding, use:
+The builtin tear off actions can be overridden by undefining the
+builtin menu actions boud to tear off. To remove the builtin mouse
+button 2 binding, use:
 
-Mouse 2 M N -
+.EX
+Mouse 2 MT A -
+.EE
 
-("M" is for "Menu" context)
+and to remove the buildin backspace binding, use:
 
-To assign some other button for tearoff, use:
+.EX
+Key Backspace M A -
+.EE
 
-Mouse 1 M N TearOff
+See the section
+.B Menu Actions
+for details on how to assign other bindings for tear off.
 
-Note that the Modifier, must be "N" (none) and that the
-notation "Mouse 0" (for any mouse button cannot be used.)
+Note that prior to fvwm 2.5.20 the tear off mouse binding were
+redefined in different way, which no longer work.
 
 The window containing the menu is placed as any other window would
 be.  If you find it confusing to have your tear off menus appear
@@ -6167,6 +6232,10 @@ that are supposed to work when the pointer is not over the window,
 fvwm assumes the pointer is over the client window (i.e. you have
 to use the 'W' context).
 
+The special context 'M' for menus can be used to (re)define the menu
+controls. It can only be used alone or together with 'T' for the menu
+title bar.  See the section "Menu Actions" for details.
+
 The following example binds the built-in window list to pop up
 when
 .SM Alt-Ctrl-Shift-F11
@@ -6209,9 +6278,9 @@ instance, a context of "FST" applies when the mouse is anywhere in
 a window's border except the title-bar buttons.  Only 'S' and 'W'
 are valid for an undecorated window.
 
-The special context 'M' for menus can only be used to control
-which mouse button is used to tear off menus.  See the section
-"Tear Off Menus" for details.
+The special context 'M' for menus can be used to (re)define the menu
+controls. It can only be used alone or together with 'T' for the menu
+title bar.  See the section "Menu Actions" for details.
 
 The special context 'P' controls what buttons that can be used to
 place a window. When using this context no modifiers are allowed

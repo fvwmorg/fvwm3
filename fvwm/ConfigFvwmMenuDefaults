@@ -1,0 +1,158 @@
+# This file gets installed in the "datadir" during fvwm
+# installation.  Do not remove or change this file.
+
+# Default menu bindings for fvwm.
+# This file is read from ConfigFvwmDefaults.
+# Editing this file may render fvwm menus unworkable.
+
+# Created by Viktor Griph on 26/Dec/2006 based on old menuShortcuts
+# and handle_emacs_bindings in menus.c
+
+# Normal bindings
+Key Escape		M A Close
+Key Delete		M A Close
+Key KP_Separator	M A Close
+
+Key Space		M A Select
+Key Return		M A Select
+Key KP_Enter		M A Select
+
+#  move to last entry of menu ('More...' if this exists) and
+# try to enter the menu.  Otherwise try to enter the current
+# submenu
+Key Insert		M A Continue
+Key KP_Insert		M A Continue
+Key KP_0		M A Continue
+
+Key Left		M A MoveLeft
+Key KP_Left		M A MoveLeft
+Key KP_4		M A MoveLeft
+#vi left
+Key h			M A MoveLeft
+
+
+Key Right		M A MoveRight
+Key KP_Right		M A MoveRight
+Key KP_6		M A MoveRight
+#vi right
+Key l			M A MoveRight
+
+#back
+Key b			M A Leave
+#forward
+Key f			M A Enter
+
+Key Page_Up		M A Move -5
+Key KP_Prior		M A Move -5
+Key KP_9		M A Move -5
+
+Key Page_Down		M A Move +5
+Key KP_Next		M A Move +5
+Key KP_3		M A Move +5
+
+
+# Up
+Key Up			M A Move -1
+Key KP_Up		M A Move -1
+Key KP_8		M A Move -1
+#vi up
+Key k			M A Move -1
+#prior
+Key p			M A Move -1
+
+Key Up			M S Move 0 0
+Key KP_Up		M S Move 0 0
+Key KP_8		M S Move 0 0
+#vi up
+Key k			M S Move 0 0
+#prior
+Key p			M S Move 0 0
+
+Key Up			M C Move -5
+Key KP_Up		M C Move -5
+Key KP_8		M C Move -5
+#vi up
+Key k			M C Move -5
+#prior
+Key p			M C Move -5
+
+Key Up			M M Move -1s
+Key KP_Up		M M Move -1s
+Key KP_8		M M Move -1s
+#vi up
+Key k			M M Move -1s
+#prior
+Key p			M M Move -1s
+
+
+# Down
+Key Down		M A Move 1
+Key KP_Down		M A Move 1
+Key KP_2		M A Move 1
+#vi down
+Key j			M A Move 1
+#next
+Key n			M A Move 1
+
+Key Down		M S Move 0 -1
+Key KP_Down		M S Move 0 -1
+Key KP_2		M S Move 0 -1
+#vi down
+Key j			M S Move 0 -1
+#next
+Key n			M S Move 0 -1
+
+Key Down		M C Move +5
+Key KP_Down		M C Move +5
+Key KP_2		M C Move +5
+#vi down
+Key j			M C Move +5
+#next
+Key n			M C Move +5
+
+Key Down		M M Move +1s
+Key KP_Down		M M Move +1s
+Key KP_2		M M Move +1s
+#vi down
+Key j			M M Move +1s
+#next
+Key n			M M Move +1s
+
+Key Tab			M A Move +1
+Key Tab			M C Move +1s
+Key Tab			M MC Move +5
+Key Tab			M SA Move -1
+Key Tab			M SC Move -1s
+Key Tab			M SMC Move -5
+
+Key Home		M A Move 0 0
+Key KP_Home		M A Move 0 0
+Key KP_7		M A Move 0 0
+
+Key End			M A Move 0 -1
+Key KP_End		M A Move 0 -1
+Key KP_1		M A Move 0 -1
+
+Key BackSpace		M A TearOff
+
+Key KP_Add		M A Scroll 1
+Key KP_Subtract		M A Scroll -1
+
+# emacs bindings
+Key a			M C Move 0 0
+Key e			M C Move 0 -1
+Key b			M C Move -1
+Key f			M C Move +1
+Key Left		M C Move -1s
+Key Right		M C Move +1s
+Key g			M C Close
+
+
+#Mouse bindings
+Mouse 0			M A Select
+Mouse 4			M A Scroll -1
+Mouse 5			M A Scroll +1
+
+
+# NB: Only on title -- changes syntax for remapping the TearOff functionality
+Mouse 2			MT A TearOff

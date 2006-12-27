@@ -55,6 +55,7 @@
 #include "colormaps.h"
 #include "geometry.h"
 #include "menus.h"
+#include "bindings.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -209,7 +210,10 @@ static saved_pos_hints last_saved_pos_hints =
 	{ 0, 0, 0.0, 0.0, 0, 0, False, False, False, False }
 };
 
-static int menu_tear_button = 2;
+/* menu bindings are kept in a local binding list separate from other
+ * bindings*/
+static Binding *menu_bindings = NULL;
+
 
 /* structures for menus */
 static MenuInfo Menus;
@@ -762,53 +766,136 @@ static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
 
 /* ---------------------------- keyboard shortcuts ------------------------- */
 
-/* Translate emacs style binding into normal fvwm bindings */
-static void handle_emacs_bindings(
-	KeySym *keysym, int *fControlKey, int *fShiftedKey, int *fMetaKey)
+static void parse_menu_action(MenuRoot *mr, char *action,
+			      shortcut_action *saction, int *items_to_move,
+			      Bool *do_skip_section)
 {
-	if (*fControlKey == 0 || *fShiftedKey != 0 || *fMetaKey != 0)
+	char *optlist[] = {
+		"Close",
+		"Continue",
+		"Enter",
+		"Leave",
+		"Move",
+		"MoveLeft",
+		"MoveRight",
+		"Select",
+		"Scroll",
+		"TearOff",
+		NULL
+	};
+	int index;
+	char *options = GetNextTokenIndex(action, optlist, 0, &index);
+	int num;
+	int suffix[2];
+	int count[2];
+
+	switch (index)
 	{
-		return;
-	}
-	/* remap keys */
-	switch (*keysym)
-	{
-	case XK_a:
-		*keysym = XK_Home;
-		*fControlKey = 0;
+	case 0: /* Close */
+		*saction = SA_ABORT;
 		break;
-	case XK_e:
-		*keysym = XK_End;
-		*fControlKey = 0;
+	case 1: /* Continue */
+		*saction = (MR_CONTINUATION_MENU(mr) != NULL) ?
+			SA_CONTINUE : SA_ENTER;
 		break;
-	case XK_b:
-		*keysym = XK_Up;
-		*fControlKey = 0;
+	case 2: /* Enter */
+		*saction = SA_ENTER;
 		break;
-	case XK_f:
-		*keysym = XK_Down;
-		*fControlKey = 0;
+	case 3: /* Leave */
+		*saction = SA_LEAVE;
 		break;
-	case XK_Left:
-		*keysym = XK_Up;
-		*fMetaKey = 1;
-		*fControlKey = 0;
+	case 4: /* Move */
+		num = GetSuffixedIntegerArguments(options, NULL, count, 2,
+						  "s", suffix);
+		if (num == 2)
+		{
+			if (suffix[0] != 0 || count[0] != 0)
+			{
+				fvwm_msg(ERR, "parse_menu_action",
+					 "invalid Move arguments '%s'",
+					 options);
+				*saction = SA_NONE;
+				break;
+			}
+			if (count[1] < 0)
+			{
+				*saction = SA_LAST;
+				*items_to_move = 1 + count[1];
+			}
+			else
+			{
+				*saction = SA_FIRST;
+				*items_to_move = count[1];
+			}
+
+			if (suffix[1] == 1)
+			{
+				*do_skip_section = True;
+			}
+		}
+		else if (num == 1)
+		{
+			*saction = SA_MOVE_ITEMS;
+			*items_to_move = count[0];
+			if (suffix[0] == 1)
+			{
+				*do_skip_section = True;
+			}
+		}
+		else
+		{
+			fvwm_msg(ERR, "parse_menu_action",
+				 "invalid Move arguments '%s'",
+				 options);
+			*saction = SA_NONE;
+			break;
+		}
 		break;
-	case XK_Right:
-		*keysym = XK_Down;
-		*fMetaKey = 1;
-		*fControlKey = 0;
+	case 5: /* MoveLeft */
+		*saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_ENTER : SA_LEAVE;
 		break;
-	case XK_g:
-		*keysym = XK_Escape;
-		*fControlKey = 0;
+	case 6: /* MoveRight */
+		*saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_LEAVE : SA_ENTER;
+		break;
+	case 7: /* Select */
+		*saction = SA_SELECT;
+		break;
+	case 8: /* Scroll */
+		if (MST_MOUSE_WHEEL(mr) == MMW_OFF)
+		{
+			*saction = SA_SELECT;
+		}
+		else
+		{
+			num = GetSuffixedIntegerArguments(options, NULL, count,
+							  1, "s", suffix);
+			if (num == 1)
+			{
+				*saction = SA_SCROLL;
+				*items_to_move = count[0];
+				if (suffix[0] == 1)
+				{
+					*do_skip_section = True;
+				}
+			}
+			else
+			{
+				fvwm_msg(ERR, "parse_menu_action",
+					 "invalid Scroll arguments '%s'",
+					 options);
+				*saction = SA_NONE;
+				break;
+			}
+		}
+		break;
+	case 9: /* TearOff */
+		*saction = SA_TEAROFF;
 		break;
 	default:
-		/* no match */
-		break;
+		fvwm_msg(ERR, "parse_menu_action", "unknown action '%s'",
+				 action);
+		*saction = SA_NONE;
 	}
-
-	return;
 }
 
 /*
@@ -843,9 +930,15 @@ static void menuShortcuts(
 	unsigned int menu_width;
 	unsigned int menu_height;
 	int items_to_move;
-	int direction = 0;
 	Bool fSkipSection = False;
 	shortcut_action saction = SA_NONE;
+	Binding *binding;
+	int context = C_MENU;
+
+	if (*pmiCurrent && MI_IS_TITLE(*pmiCurrent))
+	{
+		context |= C_TITLE;
+	}
 
 	if (event->type == KeyRelease)
 	{
@@ -854,25 +947,37 @@ static void menuShortcuts(
 		pmret->rc = MENU_SELECTED;
 		return;
 	}
-	/*** map mouse events to keysymb ***/
+
+	items_to_move = 0;
+	pmret->rc = MENU_NOP;
+
+	/*** handle mouse events ***/
 	if (event->type == ButtonRelease)
 	{
+		int real_mod = event->xbutton.state -
+			(1 << (7 + event->xbutton.button));
 	        /*** Read the control keys stats ***/
 		fControlKey = event->xbutton.state & ControlMask? True : False;
 		fShiftedKey = event->xbutton.state & ShiftMask? True: False;
 		fMetaKey = event->xbutton.state & Mod1Mask? True: False;
-		switch (event->xbutton.button)
-		{
-		case 4: /* ScrollUp -- Translate to NumPad - */
-			keysym = XK_KP_Subtract;
-		        break;
-		case 5: /* ScrollDown -- Translate to NumPad + */
-		        keysym = XK_KP_Add;
-       		        break;
-		default:
-			/* No mapped button */
-		  	pmret->rc = MENU_NOP;
-			return;
+
+		/** handle menu bindings **/
+		for (binding = menu_bindings; binding != NULL;
+		     binding = binding->NextBinding) {
+			if (BIND_IS_MOUSE_BINDING(binding->type) &&
+			    (binding->Button_Key == 0
+			     || event->xbutton.button == binding->Button_Key)
+			    && (binding->Modifier == AnyModifier ||
+				MaskUsedModifiers(binding->Modifier) ==
+				MaskUsedModifiers(real_mod)) &&
+			    (binding->Context == C_MENU ||
+			     (binding->Context & context) != C_MENU))
+			{
+				parse_menu_action(mr, binding->Action,
+						  &saction, &items_to_move,
+						  &fSkipSection);
+				break;
+			}
 		}
 		index = 0;
 	}
@@ -977,183 +1082,27 @@ static void menuShortcuts(
 		/* MMH mikehan@best.com 2/7/99 */
 	}
 
-	/*** handle emacs style bindings */
-
-	handle_emacs_bindings(&keysym, &fControlKey, &fShiftedKey, &fMetaKey);
-
 	/*** now determine the action to take ***/
 
-	items_to_move = 0;
-	pmret->rc = MENU_NOP;
-
-	switch(keysym)
+	/** handle menu key bindings **/
+	if (event->type == KeyPress)
 	{
-	case XK_Escape:
-	case XK_Delete:
-	case XK_KP_Separator:
-		/* abort */
-		saction = SA_ABORT;
-		break;
-
-	case XK_space:
-	case XK_Return:
-	case XK_KP_Enter:
-		/* select menu item */
-		saction = SA_SELECT;
-		break;
-
-	case XK_Insert:
-	case XK_KP_Insert:
-	case XK_KP_0:
-		/* move to last entry of menu ('More...' if this exists) and
-		 * try to enter the menu.  Otherwise try to enter the current
-		 * submenu */
-		saction = (MR_CONTINUATION_MENU(mr) != NULL) ?
-			SA_CONTINUE : SA_ENTER;
-		break;
-
-	case XK_Left:
-	case XK_KP_Left:
-	case XK_KP_4:
-	case XK_h: /* vi left */
-		/* leave or enter a submenu */
-		saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_ENTER : SA_LEAVE;
-		break;
-
-	case XK_Right:
-	case XK_KP_Right:
-	case XK_KP_6:
-	case XK_l: /* vi right */
-		/* enter or leave a submenu */
-		saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_LEAVE : SA_ENTER;
-		break;
-
-	case XK_b: /* back */
-		/* leave menu */
-		saction = SA_LEAVE;
-		break;
-
-	case XK_f: /* forward */
-		/* enter menu */
-		saction = SA_ENTER;
-		break;
-
-	case XK_Page_Up:
-	case XK_KP_Prior:
-	case XK_KP_9:
-		items_to_move = -5;
-		saction = SA_MOVE_ITEMS;
-		break;
-
-	case XK_Page_Down:
-	case XK_KP_Next:
-	case XK_KP_3:
-		items_to_move = 5;
-		saction = SA_MOVE_ITEMS;
-		break;
-
-	case XK_Up:
-	case XK_KP_Up:
-	case XK_KP_8:
-	case XK_k: /* vi up */
-	case XK_p: /* prior */
-		if (fShiftedKey && !fControlKey && !fMetaKey)
-		{
-			saction = SA_FIRST;
-			break;
+		for (binding = menu_bindings; binding != NULL;
+		     binding = binding->NextBinding) {
+			if (BIND_IS_KEY_BINDING(binding->type) &&
+			    event->xkey.keycode == binding->Button_Key &&
+			    (binding->Modifier == AnyModifier ||
+			     MaskUsedModifiers(binding->Modifier) ==
+			     MaskUsedModifiers(event->xkey.state)) &&
+			    (binding->Context == C_MENU ||
+			      (binding->Context & context) != C_MENU))
+			{
+				parse_menu_action(mr, binding->Action,
+						  &saction, &items_to_move,
+						  &fSkipSection);
+				break;
+			}
 		}
-		else if (fControlKey)
-			items_to_move = -5;
-		else if (fMetaKey)
-		{
-			items_to_move = -1;
-			fSkipSection = True;
-		}
-		else
-			items_to_move = -1;
-		saction = SA_MOVE_ITEMS;
-		break;
-
-	case XK_Down:
-	case XK_KP_Down:
-	case XK_KP_2:
-	case XK_j: /* vi down */
-	case XK_n: /* next */
-		if (fShiftedKey && !fControlKey && !fMetaKey)
-		{
-			saction = SA_LAST;
-			break;
-		}
-		else if (fControlKey)
-			items_to_move = 5;
-		else if (fMetaKey)
-		{
-			items_to_move = 1;
-			fSkipSection = True;
-		}
-		else
-			items_to_move = 1;
-		saction = SA_MOVE_ITEMS;
-		break;
-
-	case XK_Tab:
-#ifdef XK_XKB_KEYS
-	case XK_ISO_Left_Tab:
-#endif
-		/* Tab added mostly for Winlist */
-		items_to_move = 1;
-		switch (fMetaKey + 2 * fControlKey)
-		{
-		case 0:
-		case 1:
-			/* tab, alt-tab */
-			break;
-		case 2:
-			/* ctrl-tab */
-			fSkipSection = True;
-			break;
-		case 3:
-			/* ctrl-meta-tab */
-			items_to_move = 5;
-			break;
-		default:
-			break;
-		}
-		if (fShiftedKey)
-		{
-			/* shift reverses direction */
-			items_to_move = -items_to_move;
-		}
-		saction = SA_MOVE_ITEMS;
-		break;
-
-	case XK_Home:
-	case XK_KP_Home:
-	case XK_KP_7:
-		saction = SA_FIRST;
-		break;
-
-	case XK_End:
-	case XK_KP_End:
-	case XK_KP_1:
-		saction = SA_LAST;
-		break;
-
-	case XK_BackSpace:
-		saction = SA_TEAROFF;
-		break;
-
-		/* menu-scroll */
-	case XK_KP_Add:      /* ScrollUp */
-		saction = SA_SCROLL;
-		direction = 1;
-		break;
-	case XK_KP_Subtract: /* ScrollDown */
-		saction = SA_SCROLL;
-		direction = -1;
-		break;
-	default:
-		break;
 	}
 
 	if (!miCurrent &&
@@ -1216,10 +1165,18 @@ static void menuShortcuts(
 		pmret->rc =
 			(MR_IS_TEAR_OFF_MENU(mr)) ? MENU_NOP : MENU_POPDOWN;
 		break;
-
 	case SA_FIRST:
-		if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) !=
-		    NULL)
+		if (fSkipSection)
+		{
+			*pmiCurrent = get_selectable_item_from_section(mr,
+					items_to_move);
+		}
+		else
+		{
+			*pmiCurrent = get_selectable_item_from_index(
+				mr, items_to_move);
+		}
+		if (*pmiCurrent != NULL)
 		{
 			pmret->rc = MENU_NEWITEM;
 		}
@@ -1230,27 +1187,47 @@ static void menuShortcuts(
 		break;
 
 	case SA_LAST:
-		index = get_selectable_item_count(mr, NULL);
-		if (index > 0)
+		if (fSkipSection)
 		{
-			*pmiCurrent = get_selectable_item_from_index(mr, index);
-			pmret->rc = (*pmiCurrent) ? MENU_NEWITEM : MENU_NOP;
+			get_selectable_item_count(mr, &index);
+			index += items_to_move;
+			if (index < 0)
+			{
+				index = 0;
+			}
+			*pmiCurrent = get_selectable_item_from_section(mr,
+								       index);
+			if (*pmiCurrent != NULL)
+			{
+				pmret->rc = MENU_NEWITEM;
+			}
+			else
+			{
+				pmret->rc = MENU_NOP;
+			}
 		}
 		else
 		{
-			pmret->rc = MENU_NOP;
+			index = get_selectable_item_count(mr, NULL);
+			if (index > 0)
+			{
+				index += items_to_move;
+				if (index < 0)
+				{
+					index = 0;
+				}
+				*pmiCurrent = get_selectable_item_from_index(
+					mr, index);
+				pmret->rc = (*pmiCurrent) ?
+					MENU_NEWITEM : MENU_NOP;
+			}
+			else
+			{
+				pmret->rc = MENU_NOP;
+			}
 		}
 		break;
-
 	case SA_MOVE_ITEMS:
-		/* Need isascii here - isgraph might coredump! */
-		if (isascii(keysym) && isgraph(keysym))
-		{
-			/* don't use control modifier for j or n, since those
-			 * might be shortcuts too-- C-j, C-n will always work
-			 * to do a single down */
-			fControlKey = False;
-		}
 		if (fSkipSection)
 		{
 			int section;
@@ -1350,7 +1327,7 @@ static void menuShortcuts(
 	case SA_SCROLL:
 		if (MST_MOUSE_WHEEL(mr) == MMW_MENU)
 		{
-			direction *= -1;
+			items_to_move *= -1;
 		}
 		if (!menu_get_outer_geometry(
 			    mr, pmp, &JunkRoot, &menu_x, &menu_y,
@@ -1361,13 +1338,33 @@ static void menuShortcuts(
 				 "can't get geometry of menu %s", MR_NAME(mr));
 			return;
 		}
-		for (
-			newItem = miCurrent; newItem && (
-				!MI_IS_SELECTABLE(newItem) ||
-				newItem ==  miCurrent );
-		     newItem = (direction == 1) ?
-			     MI_NEXT_ITEM(newItem) :  MI_PREV_ITEM(newItem))
-			; /* maybe use while insted... */
+		if (fSkipSection)
+		{
+			int count;
+
+			get_selectable_item_count(mr, &count);
+			get_selectable_item_index(mr, miCurrent, &index);
+			index += items_to_move;
+			if (index < 0)
+			{
+				index = 0;
+			}
+			else if (index > count)
+			{
+				index = count;
+			}
+			newItem = get_selectable_item_from_section(mr, index);
+		}
+		else
+		{
+			index = get_selectable_item_index(mr, miCurrent, NULL);
+			if (items_to_move > 0 && !MI_IS_SELECTABLE(miCurrent))
+			{
+				index--;
+			}
+			index += items_to_move;
+			newItem = get_selectable_item_from_index(mr, index);
+		}
 
 		if (newItem)
 		{
@@ -4875,127 +4872,141 @@ static mloop_ret_code_t __mloop_handle_event(
 			pmp->flags.is_sticky = False;
 			return MENU_MLOOP_RET_LOOP;
 		}
-		if (med->mi != NULL)
+		if (med->mrMi != NULL)
 		{
-			if ((*pmp->pexc)->x.elast->xbutton.button ==
-			    menu_tear_button && MI_IS_TITLE(med->mi))
-			{
-				pmret->rc = MENU_TEAR_OFF;
-				return MENU_MLOOP_RET_END;
-			}
-			else if ( med->mrMi != NULL &&
-				  MST_MOUSE_WHEEL(med->mrMi) != MMW_OFF &&
-				  ((*pmp->pexc)->x.elast->xbutton.button == 4 ||
-				   (*pmp->pexc)->x.elast->xbutton.button == 5))
-			{
-				menuShortcuts(med->mrMi, pmp, pmret,
-					      (*pmp->pexc)->x.elast,
-					      &med->mi,pdkp);
-				if (pmret->rc == MENU_NOP)
-				{
-                        	 	return MENU_MLOOP_RET_LOOP;
-				}
-				else if (pmret->rc == MENU_NEWITEM)
-				{
-					/* umpost the menu if posted */
-					pmret->flags.is_menu_posted = 0;
-				}
-				break;
-			}
+			menuShortcuts(med->mrMi, pmp, pmret,
+				      (*pmp->pexc)->x.elast, &med->mi, pdkp);
 		}
-		in->mif.was_item_unposted = 0;
-		if (pmret->flags.is_menu_posted && med->mrMi != NULL)
+		else
 		{
-			if (pmret->flags.do_unpost_submenu)
-			{
-				pmret->flags.do_unpost_submenu = 0;
-				pmret->flags.is_menu_posted = 0;
-				/* just ignore the event */
-				return MENU_MLOOP_RET_LOOP;
-			}
-			else if (med->mi && MI_IS_POPUP(med->mi) &&
-				 med->mrMi == pmp->menu)
-			{
-				/* post menu - done below */
-			}
-			else if (MR_PARENT_ITEM(pmp->menu) &&
-				 med->mi == MR_PARENT_ITEM(pmp->menu))
-			{
-				/* propagate back to parent menu and unpost
-				 * current menu */
-				pmret->flags.do_unpost_submenu = 1;
-				pmret->rc = MENU_PROPAGATE_EVENT;
-				pmret->target_menu = med->mrMi;
-				return MENU_MLOOP_RET_END;
-			}
-			else if (med->mrMi != pmp->menu &&
-				 med->mrMi != in->mrPopup)
-			{
-				/* unpost and propagate back to ancestor */
-				pmret->flags.is_menu_posted = 0;
-				pmret->rc = MENU_PROPAGATE_EVENT;
-				pmret->target_menu = med->mrMi;
-				return MENU_MLOOP_RET_END;
-			}
-			else if (in->mrPopup && med->mrMi == in->mrPopup)
-			{
-				/* unpost and propagate into submenu */
-				in->mif.was_item_unposted = 1;
-				in->mif.do_propagate_event_into_submenu = True;
-				break;
-			}
-			else
-			{
-				/* simply unpost the menu */
-				pmret->flags.is_menu_posted = 0;
-			}
+			pmret->rc = MENU_SELECTED;
 		}
-		if (is_double_click(
-			    msi->t0, med->mi, pmp, pmret, pdkp,
-			    in->mif.has_mouse_moved))
+		switch (pmret->rc)
 		{
-			pmret->rc = MENU_DOUBLE_CLICKED;
+		case MENU_NOP:
+			return MENU_MLOOP_RET_LOOP;
+		case MENU_POPDOWN:
+		case MENU_ABORTED:
+		case MENU_DOUBLE_CLICKED:
+		case MENU_TEAR_OFF:
+		case MENU_KILL_TEAR_OFF_MENU:
 			return MENU_MLOOP_RET_END;
-		}
-		pmret->rc = (med->mi) ? MENU_SELECTED : MENU_ABORTED;
-		if (pmret->rc == MENU_SELECTED && med->mi &&
-		    MI_IS_POPUP(med->mi))
-		{
-			switch (MST_DO_POPUP_AS(pmp->menu))
+		case MENU_POPUP:
+			/* Allow for MoveLeft/MoveRight action to work with Mouse
+			 */
+			in->mif.do_popup_and_warp = True;
+		case MENU_NEWITEM:
+			/* unpost the menu if posted */
+			pmret->flags.is_menu_posted = 0;
+			return MENU_MLOOP_RET_NORMAL;
+		case MENU_SELECTED:
+			in->mif.was_item_unposted = 0;
+			if (pmret->flags.is_menu_posted &&
+			    med->mrMi != NULL)
 			{
-			case MDP_POST_MENU:
-				if (in->mif.was_item_unposted)
+				if (pmret->flags.do_unpost_submenu)
 				{
+					pmret->flags.do_unpost_submenu = 0;
 					pmret->flags.is_menu_posted = 0;
-					pmret->rc = MENU_UNPOST;
-					pmret->target_menu = NULL;
-					in->mif.do_popup_now = False;
+					/* just ignore the event */
+					return MENU_MLOOP_RET_LOOP;
+				}
+				else if (med->mi && MI_IS_POPUP(med->mi)
+					 && med->mrMi == pmp->menu)
+				{
+					/* post menu - done below */
+				}
+				else if (MR_PARENT_ITEM(pmp->menu) &&
+					 med->mi == MR_PARENT_ITEM(pmp->menu))
+				{
+					/* propagate back to parent menu
+					 * and unpost current menu */
+					pmret->flags.do_unpost_submenu = 1;
+					pmret->rc = MENU_PROPAGATE_EVENT;
+					pmret->target_menu = med->mrMi;
+					return MENU_MLOOP_RET_END;
+				}
+				else if (med->mrMi != pmp->menu &&
+					 med->mrMi != in->mrPopup)
+				{
+					/* unpost and propagate back to
+					 * ancestor */
+					pmret->flags.is_menu_posted = 0;
+					pmret->rc = MENU_PROPAGATE_EVENT;
+					pmret->target_menu = med->mrMi;
+					return MENU_MLOOP_RET_END;
+				}
+				else if (in->mrPopup && med->mrMi ==
+					 in->mrPopup)
+				{
+					/* unpost and propagate into
+					 * submenu */
+					in->mif.was_item_unposted = 1;
+					in->mif.do_propagate_event_into_submenu
+						= True;
+					break;
 				}
 				else
 				{
-					pmret->flags.is_menu_posted = 1;
-					pmret->rc = MENU_POST;
-					pmret->target_menu = NULL;
-					in->mif.do_popup_now = True;
-					if ((in->mrPopup || in->mrPopdown) &&
-					    med->mi !=
-					    MR_SELECTED_ITEM(pmp->menu))
-					{
-						in->mif.do_popdown_now = True;
-					}
+					/* simply unpost the menu */
+					pmret->flags.is_menu_posted = 0;
 				}
-				return MENU_MLOOP_RET_NORMAL;
-			case MDP_IGNORE:
-				pmret->rc = MENU_NOP;
-				return MENU_MLOOP_RET_NORMAL;
-			case MDP_CLOSE:
-				pmret->rc = MENU_ABORTED;
-				break;
-			case MDP_ROOT_MENU:
-			default:
-				break;
 			}
+			if (is_double_click(
+				    msi->t0, med->mi, pmp, pmret, pdkp,
+				    in->mif.has_mouse_moved))
+			{
+				pmret->rc = MENU_DOUBLE_CLICKED;
+				return MENU_MLOOP_RET_END;
+			}
+			if (med->mi == NULL)
+			{
+				pmret->rc = MENU_ABORTED;
+			}
+			else if (MI_IS_POPUP(med->mi))
+			{
+				switch (MST_DO_POPUP_AS(pmp->menu))
+				{
+				case MDP_POST_MENU:
+					if (in->mif.was_item_unposted)
+					{
+						pmret->flags.is_menu_posted = 0;
+						pmret->rc = MENU_UNPOST;
+						pmret->target_menu = NULL;
+						in->mif.do_popup_now = False;
+					}
+					else
+					{
+						pmret->flags.is_menu_posted = 1;
+						pmret->rc = MENU_POST;
+						pmret->target_menu = NULL;
+						in->mif.do_popup_now = True;
+						if ((in->mrPopup ||
+						     in->mrPopdown)
+						    && med->mi !=
+						    MR_SELECTED_ITEM(pmp->menu))
+						{
+							in->mif.do_popdown_now
+								= True;
+						}
+					}
+					return MENU_MLOOP_RET_NORMAL;
+				case MDP_IGNORE:
+					pmret->rc = MENU_NOP;
+					return MENU_MLOOP_RET_NORMAL;
+				case MDP_CLOSE:
+					pmret->rc = MENU_ABORTED;
+					break;
+				case MDP_ROOT_MENU:
+				default:
+					break;
+				}
+			}
+			break;
+		default:
+			break;
 		}
+
 		pdkp->timestamp = 0;
 		return MENU_MLOOP_RET_END;
 
@@ -6020,7 +6031,10 @@ static void __mloop_exit(
 	case MENU_PROPAGATE_EVENT:
 	case MENU_DOUBLE_CLICKED:
 		do_deselect = True;
-		if (in->mif.is_key_press && pmret->rc != MENU_DOUBLE_CLICKED)
+		/* Allow popdown to warp back pointer to main menu with mouse
+		   control. (MoveLeft/MoveRight on a mouse binding) */
+		if ((pmret->rc == MENU_POPDOWN || in->mif.is_key_press) &&
+		    pmret->rc != MENU_DOUBLE_CLICKED)
 		{
 			if (!pmp->flags.is_submenu)
 			{
@@ -8103,46 +8117,76 @@ char *get_menu_options(
 	return action;
 }
 
-int menu_binding(int button, KeySym keysym, int modifier, char *action)
+int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
+		 int context, int modifier, char *action, char *menuStyle)
 {
-	if (keysym != 0)
+	Binding *rmlist = NULL;
+	if (~(~context | C_MENU | C_TITLE) != 0)
 	{
-		/* fixme */
 		fvwm_msg(
 			ERR, "menu_binding",
-			"sorry, menu keybindings not allowed. yet.");
+			"invalid context in combination with menu context.");
 		return 1;
 	}
-	if (modifier != 0)
+	if (menuStyle != NULL)
 	{
-		/* fixme */
+		/* fixme - make either match a menuStyle or a menu name */
 		fvwm_msg(
 			ERR, "menu_binding",
-			"sorry, menu binding modifiers not allowed. yet.");
+			"a window name may not be specified with menu context."
+			);
 		return 1;
+	}
+
+	/*
+	** Remove the "old" bindings if any
+	*/
+	/* BEGIN remove */
+	CollectBindingList(
+		dpy, &menu_bindings, &rmlist, type, STROKE_ARG(NULL)
+		button, keysym, modifier, context, menuStyle);
+	if (rmlist != NULL)
+	{
+		FreeBindingList(rmlist);
+	}
+	else if (keysym == 0 && button != 0 && modifier == 0 &&
+		 strcmp(action,"-") == 0 && context == C_MENU)
+	{
+		/* Warn if Mouse n M N - occurs without removing any binding.
+		 The user most likely want Mouse n MT A - instead. */
+		fvwm_msg(WARN, "menu_binding",
+			 "The syntax for disabling the tear off button has "
+			 "changed.");
 	}
 	if (strcmp(action,"-") == 0)
 	{
-		if (keysym == 0) /* must be button binding */
-		{
-			menu_tear_button=-1;
-		}
+		return 0;
 	}
-	else if (strcasecmp(action,"tearoff") == 0)
-	{
-		if (keysym == 0) /* must be button binding */
-		{
-			menu_tear_button=button;
-		}
-	}
-	else
+	/* END remove */
+	if ((modifier & AnyModifier)&&(modifier&(~AnyModifier)))
 	{
 		fvwm_msg(
-			ERR, "menu_binding",
-			"invalid action, only tearoff or - allowed");
+			WARN, "menu_binding", "Binding specified AnyModifier"
+			" and other modifers too. Excess modifiers are"
+			" ignored.");
+		modifier = AnyModifier;
 	}
-
-	return 0;
+	/* Warn about Mouse n M N TearOff. This is a valid binding,
+	 * but the user most likely wanted Mouse n MT A TearOff instead,
+	 * together with Mouse 2 MT A -. Remove this warning before 2.6,
+	 * The old system has olny been in the 2.5 branch, an dis thus easier
+	 * to alter.*/
+	if (keysym == 0 && button != 0 && modifier == 0 &&
+		 strcasecmp(action,"tearoff") == 0 && context == C_MENU)
+	{
+		fvwm_msg(WARN, "menu_binding",
+			 "The syntax for disabling the tear off button has "
+			 "changed.");
+	}
+	return AddBinding(
+		dpy, &menu_bindings, type, STROKE_ARG(NULL) button, keysym,
+		NULL, modifier, context, (void *)action,
+		NULL, menuStyle);
 }
 
 /* ---------------------------- new menu loop code -------------------------- */
