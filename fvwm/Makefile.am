@@ -28,7 +28,7 @@ fvwm_SOURCES = \
 	menuitem.c ewmh_icons.c decorations.c update.c expand.c misc.c \
 	functable.c bindings.c cursor.c colormaps.c ewmh_conf.c modconf.c \
 	read.c menucmd.c ewmh_names.c icccm2.c schedule.c windowshade.c \
-	focus_policy.c repeat.c execcontext.c menudim.c condrc.c
+	focus_policy.c repeat.c execcontext.c menudim.c condrc.c menubindings.c
 
 fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

@@ -34,7 +34,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "focus.h"
-#include "menus.h"		/* for menu_binding */
+#include "menubindings.h"
 #include "move_resize.h"	/* for placement_binding */
 #ifdef HAVE_STROKE
 #include "stroke.h"

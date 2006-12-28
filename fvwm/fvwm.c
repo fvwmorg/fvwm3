@@ -76,6 +76,7 @@
 #include "move_resize.h"
 #include "frame.h"
 #include "menus.h"
+#include "menubindings.h"
 #include "libs/FGettext.h"
 
 /* ---------------------------- local definitions -------------------------- */

@@ -56,6 +56,7 @@
 #include "geometry.h"
 #include "menus.h"
 #include "bindings.h"
+#include "menubindings.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -209,11 +210,6 @@ static saved_pos_hints last_saved_pos_hints =
 	{ False, False },
 	{ 0, 0, 0.0, 0.0, 0, 0, False, False, False, False }
 };
-
-/* menu bindings are kept in a local binding list separate from other
- * bindings*/
-static Binding *menu_bindings = NULL;
-
 
 /* structures for menus */
 static MenuInfo Menus;
@@ -954,30 +950,18 @@ static void menuShortcuts(
 	/*** handle mouse events ***/
 	if (event->type == ButtonRelease)
 	{
-		int real_mod = event->xbutton.state -
-			(1 << (7 + event->xbutton.button));
 	        /*** Read the control keys stats ***/
 		fControlKey = event->xbutton.state & ControlMask? True : False;
 		fShiftedKey = event->xbutton.state & ShiftMask? True: False;
 		fMetaKey = event->xbutton.state & Mod1Mask? True: False;
 
 		/** handle menu bindings **/
-		for (binding = menu_bindings; binding != NULL;
-		     binding = binding->NextBinding) {
-			if (BIND_IS_MOUSE_BINDING(binding->type) &&
-			    (binding->Button_Key == 0
-			     || event->xbutton.button == binding->Button_Key)
-			    && (binding->Modifier == AnyModifier ||
-				MaskUsedModifiers(binding->Modifier) ==
-				MaskUsedModifiers(real_mod)) &&
-			    (binding->Context == C_MENU ||
-			     (binding->Context & context) != C_MENU))
-			{
-				parse_menu_action(mr, binding->Action,
-						  &saction, &items_to_move,
-						  &fSkipSection);
-				break;
-			}
+		binding = menu_binding_is_mouse(event, context);
+		if (binding != NULL)
+		{
+			parse_menu_action(
+				mr, binding->Action, &saction, &items_to_move,
+				&fSkipSection);
 		}
 		/* safe defaults - if no binding was found */
 		if (binding == NULL && event->xbutton.button == 1)
@@ -1097,25 +1081,16 @@ static void menuShortcuts(
 	{
 		/* Don't allow override of Escape with no modifiers */
 		saction = SA_ABORT;
-		
+
 	}
 	else if (event->type == KeyPress)
 	{
-		for (binding = menu_bindings; binding != NULL;
-		     binding = binding->NextBinding) {
-			if (BIND_IS_KEY_BINDING(binding->type) &&
-			    event->xkey.keycode == binding->Button_Key &&
-			    (binding->Modifier == AnyModifier ||
-			     MaskUsedModifiers(binding->Modifier) ==
-			     MaskUsedModifiers(event->xkey.state)) &&
-			    (binding->Context == C_MENU ||
-			      (binding->Context & context) != C_MENU))
-			{
-				parse_menu_action(mr, binding->Action,
-						  &saction, &items_to_move,
-						  &fSkipSection);
-				break;
-			}
+		binding = menu_binding_is_key(event, context);
+		if (binding != NULL)
+		{
+			parse_menu_action(
+				mr, binding->Action, &saction, &items_to_move,
+				&fSkipSection);
 		}
 		/* safe defaults */
 		if (binding == NULL)
@@ -8165,84 +8140,7 @@ char *get_menu_options(
 	return action;
 }
 
-int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
-		 int context, int modifier, char *action, char *menuStyle)
-{
-	Binding *rmlist = NULL;
-	if (~(~context | C_MENU | C_TITLE) != 0)
-	{
-		fvwm_msg(
-			ERR, "menu_binding",
-			"invalid context in combination with menu context.");
-		return 1;
-	}
-	if (menuStyle != NULL)
-	{
-		/* fixme - make either match a menuStyle or a menu name */
-		fvwm_msg(
-			ERR, "menu_binding",
-			"a window name may not be specified with menu context."
-			);
-		return 1;
-	}
-	if (modifier == 0 && BIND_IS_KEY_BINDING(type) && keysym == XK_Escape)
-	{
-		fvwm_msg(
-			ERR, "menu_binding",
-			"Key Escape M N menu binding can not be changed."
-			);
-		return 1;
-	}
-
-	/*
-	** Remove the "old" bindings if any
-	*/
-	/* BEGIN remove */
-	CollectBindingList(
-		dpy, &menu_bindings, &rmlist, type, STROKE_ARG(NULL)
-		button, keysym, modifier, context, menuStyle);
-	if (rmlist != NULL)
-	{
-		FreeBindingList(rmlist);
-	}
-	else if (keysym == 0 && button != 0 && modifier == 0 &&
-		 strcmp(action,"-") == 0 && context == C_MENU)
-	{
-		/* Warn if Mouse n M N - occurs without removing any binding.
-		 The user most likely want Mouse n MT A - instead. */
-		fvwm_msg(WARN, "menu_binding",
-			 "The syntax for disabling the tear off button has "
-			 "changed.");
-	}
-	if (strcmp(action,"-") == 0)
-	{
-		return 0;
-	}
-	/* END remove */
-	if ((modifier & AnyModifier)&&(modifier&(~AnyModifier)))
-	{
-		fvwm_msg(
-			WARN, "menu_binding", "Binding specified AnyModifier"
-			" and other modifers too. Excess modifiers are"
-			" ignored.");
-		modifier = AnyModifier;
-	}
-	/* Warn about Mouse n M N TearOff. */
-	if (keysym == 0 && button != 0 && modifier == 0 &&
-		 strcasecmp(action,"tearoff") == 0 && context == C_MENU)
-	{
-		fvwm_msg(OLD, "menu_binding",
-			 "The syntax for disabling the tear off button has "
-			 "changed. The TearOff action is no longer possible "
-			 "in menu bindings.");
-	}
-	return AddBinding(
-		dpy, &menu_bindings, type, STROKE_ARG(NULL) button, keysym,
-		NULL, modifier, context, (void *)action,
-		NULL, menuStyle);
-}
-
-/* ---------------------------- new menu loop code -------------------------- */
+/* ---------------------------- new menu loop code ------------------------- */
 
 #if 0
 /*!!!*/
