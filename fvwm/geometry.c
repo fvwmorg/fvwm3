@@ -630,6 +630,8 @@ void maximize_adjust_offset(FvwmWindow *fw)
 {
 	int off_x;
 	int off_y;
+	int dh;
+	int dw;
 
 	if (!IS_MAXIMIZED(fw))
 	{
@@ -638,25 +640,23 @@ void maximize_adjust_offset(FvwmWindow *fw)
 	}
 	off_x = fw->g.normal.x - fw->g.max.x - fw->g.max_offset.x;
 	off_y = fw->g.normal.y - fw->g.max.y - fw->g.max_offset.y;
-	if (off_x >= Scr.MyDisplayWidth)
+	dw = Scr.MyDisplayWidth;
+	dh = Scr.MyDisplayHeight;
+	if (off_x >= dw)
 	{
-		fw->g.normal.x -=
-			(off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+		fw->g.normal.x -= (off_x / dw) * dw;
 	}
-	else if (off_x <= -Scr.MyDisplayWidth)
+	else if (off_x <= -dw)
 	{
-		fw->g.normal.x +=
-			((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+		fw->g.normal.x += (-off_x / dw) * dw;
 	}
-	if (off_y >= Scr.MyDisplayHeight)
+	if (off_y >= dh)
 	{
-		fw->g.normal.y -=
-			(off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+		fw->g.normal.y -= (off_y / dh) * dh;
 	}
-	else if (off_y <= -Scr.MyDisplayHeight)
+	else if (off_y <= -dh)
 	{
-		fw->g.normal.y +=
-			((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+		fw->g.normal.y += (-off_y / dh) * dh;
 	}
 
 	return;

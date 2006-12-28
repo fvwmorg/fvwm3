@@ -24,6 +24,8 @@ Changes in beta release 2.5.20 (not released yet)
      windows if "EdgeScroll 0 0" is set.
    - Fixed disappearing windows when aborting interactive resizing
      of maximized windows when unmaximizing them later.
+   - Fixed disappearing windows when moving maximized windowsand
+     unmaximizing them later.
 
 -------------------------------------------------------------------
 
