@@ -760,7 +760,7 @@ static int GetProperty(Window w,char* propertyname)
 	atom = XInternAtom(dpy, propertyname, True);
 	atom_name = XGetAtomName (dpy,atom);
 
-	status = XGetWindowProperty(dpy, w, atom, 0, 1024,
+	status = XGetWindowProperty(dpy, w, atom, 0L, 1024,
 		False, AnyPropertyType,
 		&actual_type,
 		&actual_format, &nitems,

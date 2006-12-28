@@ -1,3 +1,8 @@
+2006-12-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmProxy/FvwmProxy.c (GetProperty):
+	64-bit fix
+
 2006-12-22  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* FvwmProxy/FvwmProxy.c:
