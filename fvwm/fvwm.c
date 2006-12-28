@@ -1393,6 +1393,14 @@ static void SetRCDefaults(void)
 		{ "Mouse 1 R A Menu MenuFvwmRoot", "", "" },
 		{ "Mouse 0 M A MenuSelectItem", "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
+		/* default menu navigation */
+		{ "Key Escape M A MenuClose", "", "" },
+		{ "Key Return M A MenuSelectItem", "", "" },
+		{ "Key Left M A MenuCursorLeft", "", "" },
+		{ "Key Right M A MenuCursorRight", "", "" },
+		{ "Key Up M A MenuMoveCursor -1", "", "" },
+		{ "Key Down M A MenuMoveCursor 1", "", "" },
+		{ "Mouse 1 M A MenuSelectItem", "", "" },
 		{ NULL, NULL, NULL }
 	};
 
@@ -1410,6 +1418,7 @@ static void SetRCDefaults(void)
 		execute_function(NULL, exc, cmd, 0);
 		exc_destroy_context(exc);
 	}
+	menu_bindings_startup_complete();
 
 	return;
 }

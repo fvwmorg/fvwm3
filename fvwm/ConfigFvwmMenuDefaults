@@ -8,13 +8,20 @@
 # Created by Viktor Griph on 26/Dec/2006 based on old menuShortcuts
 # and handle_emacs_bindings in menus.c
 
-# Normal bindings
+# hard coded defaults that can not be deleted
 Key Escape		M A MenuClose
+Key Return		M A MenuSelectItem
+Key Left		M A MenuCursorLeft
+Key Right		M A MenuCursorRight
+Key Up			M A MenuMoveCursor -1
+Key Down		M A MenuMoveCursor 1
+Mouse 1			M A MenuSelectItem
+
+# Normal bindings
 Key Delete		M A MenuClose
 Key KP_Separator	M A MenuClose
 
 Key Space		M A MenuSelectItem
-Key Return		M A MenuSelectItem
 Key KP_Enter		M A MenuSelectItem
 
 #  move to last entry of menu ('More...' if this exists) and
@@ -24,18 +31,11 @@ Key Insert		M A MenuEnterContinuation
 Key KP_Insert		M A MenuEnterContinuation
 Key KP_0		M A MenuEnterContinuation
 
-Key Left		M A MenuCursorLeft
 Key KP_Left		M A MenuCursorLeft
 Key KP_4		M A MenuCursorLeft
-#vi left
-Key h			M A MenuCursorLeft
 
-
-Key Right		M A MenuCursorRight
 Key KP_Right		M A MenuCursorRight
 Key KP_6		M A MenuCursorRight
-#vi right
-Key l			M A MenuCursorRight
 
 #back
 Key b			M A MenuLeaveSubmenu
@@ -50,71 +50,51 @@ Key Page_Down		M A MenuMoveCursor +5
 Key KP_Next		M A MenuMoveCursor +5
 Key KP_3		M A MenuMoveCursor +5
 
-
 # Up
-Key Up			M A MenuMoveCursor -1
 Key KP_Up		M A MenuMoveCursor -1
 Key KP_8		M A MenuMoveCursor -1
-#vi up
-Key k			M A MenuMoveCursor -1
 #prior
 Key p			M A MenuMoveCursor -1
 
 Key Up			M S MenuMoveCursor 0 0
 Key KP_Up		M S MenuMoveCursor 0 0
 Key KP_8		M S MenuMoveCursor 0 0
-#vi up
-Key k			M S MenuMoveCursor 0 0
 #prior
 Key p			M S MenuMoveCursor 0 0
 
 Key Up			M C MenuMoveCursor -5
 Key KP_Up		M C MenuMoveCursor -5
 Key KP_8		M C MenuMoveCursor -5
-#vi up
-Key k			M C MenuMoveCursor -5
 #prior
 Key p			M C MenuMoveCursor -5
 
 Key Up			M M MenuMoveCursor -1s
 Key KP_Up		M M MenuMoveCursor -1s
 Key KP_8		M M MenuMoveCursor -1s
-#vi up
-Key k			M M MenuMoveCursor -1s
 #prior
 Key p			M M MenuMoveCursor -1s
 
-
 # Down
-Key Down		M A MenuMoveCursor 1
 Key KP_Down		M A MenuMoveCursor 1
 Key KP_2		M A MenuMoveCursor 1
-#vi down
-Key j			M A MenuMoveCursor 1
 #next
 Key n			M A MenuMoveCursor 1
 
 Key Down		M S MenuMoveCursor 0 -1
 Key KP_Down		M S MenuMoveCursor 0 -1
 Key KP_2		M S MenuMoveCursor 0 -1
-#vi down
-Key j			M S MenuMoveCursor 0 -1
 #next
 Key n			M S MenuMoveCursor 0 -1
 
 Key Down		M C MenuMoveCursor +5
 Key KP_Down		M C MenuMoveCursor +5
 Key KP_2		M C MenuMoveCursor +5
-#vi down
-Key j			M C MenuMoveCursor +5
 #next
 Key n			M C MenuMoveCursor +5
 
 Key Down		M M MenuMoveCursor +1s
 Key KP_Down		M M MenuMoveCursor +1s
 Key KP_2		M M MenuMoveCursor +1s
-#vi down
-Key j			M M MenuMoveCursor +1s
 #next
 Key n			M M MenuMoveCursor +1s
 
@@ -138,6 +118,12 @@ Key BackSpace		M A MenuTearOff
 Key KP_Add		M A MenuScroll 1
 Key KP_Subtract		M A MenuScroll -1
 
+# vi bindings
+Key h			M A MenuCursorLeft
+Key l			M A MenuCursorRight
+Key k			M A MenuMoveCursor -1
+Key k			M S MenuMoveCursor 0 0
+
 # emacs bindings
 Key a			M C MenuMoveCursor 0 0
 Key e			M C MenuMoveCursor 0 -1
@@ -148,10 +134,7 @@ Key Right		M C MenuMoveCursor +1s
 Key g			M C MenuClose
 
 
-#Mouse bindings
-# Mouse 0 is defined in SetRCDefaults for minimum menu interface with
-# missing config files
-#Mouse 0		M A MenuSelectItem
+# Mouse bindings
 Mouse 4			M A MenuScroll -1
 Mouse 5			M A MenuScroll +1
 
