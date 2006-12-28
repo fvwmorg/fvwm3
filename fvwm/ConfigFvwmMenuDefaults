@@ -9,13 +9,13 @@
 # and handle_emacs_bindings in menus.c
 
 # hard coded defaults that can not be deleted
-Key Escape		M A MenuClose
-Key Return		M A MenuSelectItem
-Key Left		M A MenuCursorLeft
-Key Right		M A MenuCursorRight
-Key Up			M A MenuMoveCursor -1
-Key Down		M A MenuMoveCursor 1
-Mouse 1			M A MenuSelectItem
+#Key Escape		M A MenuClose
+#Key Return		M A MenuSelectItem
+#Key Left		M A MenuCursorLeft
+#Key Right		M A MenuCursorRight
+#Key Up			M A MenuMoveCursor -1
+#Key Down		M A MenuMoveCursor 1
+#Mouse 1		M A MenuSelectItem
 
 # Normal bindings
 Key Delete		M A MenuClose
