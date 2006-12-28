@@ -6,12 +6,14 @@ Note, the changes for the last STABLE release start with release
 Changes in beta release 2.5.20 (not released yet)
 
 * New features:
+
    - New Style options: StippledIconTitle, !StickyStippledTitle,
      and !StickyStippledIconTitle.
    - Full support for menu context (M) key and mouse bindings.  See
      the section Menu Bindings in the man page for details.
 
 * Changed features:
+
    - "Mouse n M N" is no longer used to disable or remap the
       builtin tear off menu button. See the section Tear Off Menus
       for details on replacement commands.
