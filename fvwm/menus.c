@@ -780,11 +780,12 @@ static void parse_menu_action(MenuRoot *mr, const char *action,
 		NULL
 	};
 	int index;
-	char *options = GetNextTokenIndex(action, optlist, 0, &index);
+	char *options;
 	int num;
 	int suffix[2];
 	int count[2];
 
+	options = GetNextTokenIndex((char *)action, optlist, 0, &index);
 	switch (index)
 	{
 	case 0: /* MenuClose */
