@@ -26,6 +26,8 @@ Changes in beta release 2.5.20 (not released yet)
      of maximized windows when unmaximizing them later.
    - Fixed disappearing windows when moving maximized windowsand
      unmaximizing them later.
+   - Fixed calculation of final location with MoveToPage and
+     MoveToScreen with windows to the left or top of the viewport.
 
 -------------------------------------------------------------------
 

@@ -115,7 +115,7 @@ int fvwmrect_move_into_rectangle(rectangle *move_rec, rectangle *target_rec)
 		    move_rec->x, move_rec->width, target_rec->x,
 		    target_rec->width))
 	{
-		move_rec->x = move_rec->x % target_rec->width;
+		move_rec->x = move_rec->x % (int)target_rec->width;
 		if (move_rec->x < 0)
 		{
 			move_rec->x += target_rec->width;
@@ -127,7 +127,7 @@ int fvwmrect_move_into_rectangle(rectangle *move_rec, rectangle *target_rec)
 		    move_rec->y, move_rec->height, target_rec->y,
 		    target_rec->height))
 	{
-		move_rec->y = move_rec->y % target_rec->height;
+		move_rec->y = move_rec->y % (int)target_rec->height;
 		if (move_rec->y < 0)
 		{
 			move_rec->y += target_rec->height;
