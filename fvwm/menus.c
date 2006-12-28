@@ -766,7 +766,7 @@ static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
 
 /* ---------------------------- keyboard shortcuts ------------------------- */
 
-static void parse_menu_action(MenuRoot *mr, char *action,
+static void parse_menu_action(MenuRoot *mr, const char *action,
 			      shortcut_action *saction, int *items_to_move,
 			      Bool *do_skip_section)
 {
@@ -979,6 +979,11 @@ static void menuShortcuts(
 				break;
 			}
 		}
+		/* safe defaults - if no binding was found */
+		if (binding == NULL && event->xbutton.button == 1)
+		{
+			saction = SA_SELECT;
+		}
 		index = 0;
 		ikeychar = 0;
 	}
@@ -1086,7 +1091,15 @@ static void menuShortcuts(
 	/*** now determine the action to take ***/
 
 	/** handle menu key bindings **/
-	if (event->type == KeyPress)
+	if (event->type == KeyPress && keysym == XK_Escape &&
+	    fControlKey == False && fShiftedKey == False &&
+	    fMetaKey == False)
+	{
+		/* Don't allow override of Escape with no modifiers */
+		saction = SA_ABORT;
+		
+	}
+	else if (event->type == KeyPress)
 	{
 		for (binding = menu_bindings; binding != NULL;
 		     binding = binding->NextBinding) {
@@ -1102,6 +1115,40 @@ static void menuShortcuts(
 						  &saction, &items_to_move,
 						  &fSkipSection);
 				break;
+			}
+		}
+		/* safe defaults */
+		if (binding == NULL)
+		{
+			const char *action = NULL;
+			switch (keysym)
+			{
+			case XK_Left:
+				action = "MenuCursorLeft";
+				break;
+			case XK_Right:
+				action = "MenuCursorRight";
+				break;
+			case XK_Return:
+				action = "MenuSelectItem";
+				break;
+			case XK_Escape:
+				action = "MenuClose";
+				break;
+			case XK_Up:
+				action = "MenuMoveCursor -1";
+				break;
+			case XK_Down:
+				action = "MenuMoveCursor 1";
+				break;
+			default:
+				break;
+			}
+			if (action != NULL)
+			{
+				parse_menu_action(mr, action,
+						  &saction, &items_to_move,
+						  &fSkipSection);
 			}
 		}
 	}
@@ -8135,6 +8182,14 @@ int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
 		fvwm_msg(
 			ERR, "menu_binding",
 			"a window name may not be specified with menu context."
+			);
+		return 1;
+	}
+	if (modifier == 0 && BIND_IS_KEY_BINDING(type) && keysym == XK_Escape)
+	{
+		fvwm_msg(
+			ERR, "menu_binding",
+			"Key Escape M N menu binding can not be changed."
 			);
 		return 1;
 	}

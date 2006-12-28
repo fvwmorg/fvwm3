@@ -2336,6 +2336,10 @@ of actions that can be bound to keys and mouse buttons. These are
 .IR MenuCursorRight ", " MenuSelectItem ", " MenuScroll " and "
 .IR MenuTearOff .
 
+It is not possible to override the key Escape with no modifiers for
+closing the menu. Neither is it possible to undefine mouse button 1,
+the arrow keys or the enter key for minimal navigation.
+
 .B MenuClose
 exits from the current sequence of menus or destroys a tear off menu.
 
