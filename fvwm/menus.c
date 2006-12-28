@@ -964,11 +964,6 @@ static void menuShortcuts(
 				mr, binding->Action, &saction, &items_to_move,
 				&fSkipSection);
 		}
-		/* safe defaults - if no binding was found */
-		if (binding == NULL && event->xbutton.button == 1)
-		{
-			saction = SA_SELECT;
-		}
 		index = 0;
 		ikeychar = 0;
 	}
@@ -1092,40 +1087,6 @@ static void menuShortcuts(
 			parse_menu_action(
 				mr, binding->Action, &saction, &items_to_move,
 				&fSkipSection);
-		}
-		/* safe defaults */
-		if (binding == NULL)
-		{
-			const char *action = NULL;
-			switch (keysym)
-			{
-			case XK_Left:
-				action = "MenuCursorLeft";
-				break;
-			case XK_Right:
-				action = "MenuCursorRight";
-				break;
-			case XK_Return:
-				action = "MenuSelectItem";
-				break;
-			case XK_Escape:
-				action = "MenuClose";
-				break;
-			case XK_Up:
-				action = "MenuMoveCursor -1";
-				break;
-			case XK_Down:
-				action = "MenuMoveCursor 1";
-				break;
-			default:
-				break;
-			}
-			if (action != NULL)
-			{
-				parse_menu_action(mr, action,
-						  &saction, &items_to_move,
-						  &fSkipSection);
-			}
 		}
 	}
 
