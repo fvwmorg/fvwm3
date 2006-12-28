@@ -2293,7 +2293,7 @@ move up five items.
 .SM \fICtrl-Cursor-Down\fP,
 .SM \fICtrl-J\fP
 .SM \fICtrl-N\fP,
-.SM \fICtrl-Meta-Tab\,P,
+.SM \fICtrl-Meta-Tab\fP,
 .SM \fIPage-Down\fP
 move down five items.
 
@@ -2329,7 +2329,7 @@ The keys and mouse buttons used to navigate the menu can be configured
 using the
 .BR Key " and " Mouse
 commands with the special context 'M', possible combined with 'T' for
-the menu title. The menu context used its own set
+the menu title. The menu context uses its own set
 of actions that can be bound to keys and mouse buttons. These are
 .IR MenuClose ", " MenuEnterContinuation ", " MenuEnterSubmenu ", "
 .IR MenuLeaveSubmenu ", " MenuMoveCursor ", " MenuCursorLeft ", "
@@ -2337,7 +2337,7 @@ of actions that can be bound to keys and mouse buttons. These are
 .IR MenuTearOff .
 
 .B MenuClose
-exits from the current sequence of menus or destroy a tear off menu.
+exits from the current sequence of menus or destroys a tear off menu.
 
 .B MenuEnterContinuation
 opens the "More..." sub menu if any.
@@ -2362,13 +2362,13 @@ refer only to the first items after separators.
 enters a sub menu with the
 .I SubmenusLeft
 menu style, and returns to the prior menu with the
-.IR SubmenusRight "menu style."
+.IR SubmenusRight " menu style."
 
 .B MenuCursorRight
 enters a sub menu with the
 .I SubmenusRight
 menu style, and returns to the prior menu with the
-.IR SubmenusLeft "menu style."
+.IR SubmenusLeft " menu style."
 
 .B MenuSelectItem
 triggers the action for the menu item.
@@ -2398,14 +2398,14 @@ other item by assigning them the command
 .BR TearMenuOff .
 
 The builtin tear off actions can be overridden by undefining the
-builtin menu actions boud to tear off. To remove the builtin mouse
+builtin menu actions bound to tear off. To remove the builtin mouse
 button 2 binding, use:
 
 .EX
 Mouse 2 MT A -
 .EE
 
-and to remove the buildin backspace binding, use:
+and to remove the builtin backspace binding, use:
 
 .EX
 Key Backspace M A -
@@ -2415,7 +2415,7 @@ See the section
 .B Menu Bindings
 for details on how to assign other bindings for tear off.
 
-Note that prior to fvwm 2.5.20 the tear off mouse binding were
+Note that prior to fvwm 2.5.20 the tear off mouse bindings were
 redefined in different way, which no longer work.
 
 The window containing the menu is placed as any other window would
