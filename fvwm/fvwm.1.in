@@ -2380,11 +2380,11 @@ triggers the action for the menu item.
 .BI "MenuScroll " n
 performs menu scrolling according to the
 .IR MouseWheel " menu style with " n " items.  The distance can be"
-suffixed with a 's' to indicate the items should refer only to the
+suffixed with an 's' to indicate the items should refer only to the
 first items after separators.
 
 .B MenuTearOff
-turns a normal menu into a "torn off" menu. See 
+turns a normal menu into a "torn off" menu. See
 .B Tear Off Menus
 for details.
 
