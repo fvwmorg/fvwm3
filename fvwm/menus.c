@@ -131,7 +131,7 @@ typedef enum
 	SA_TEAROFF,
 	SA_ABORT,
 	SA_SCROLL
-} shortcut_action;
+} menu_shortcut_action;
 
 /* ---------------------------- menu loop types ---------------------------- */
 
@@ -762,9 +762,9 @@ static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
 
 /* ---------------------------- keyboard shortcuts ------------------------- */
 
-static void parse_menu_action(MenuRoot *mr, const char *action,
-			      shortcut_action *saction, int *items_to_move,
-			      Bool *do_skip_section)
+static void parse_menu_action(
+	MenuRoot *mr, const char *action, menu_shortcut_action *saction,
+	int *items_to_move, Bool *do_skip_section)
 {
 	char *optlist[] = {
 		"MenuClose",
@@ -928,7 +928,7 @@ static void menuShortcuts(
 	unsigned int menu_height;
 	int items_to_move;
 	Bool fSkipSection = False;
-	shortcut_action saction = SA_NONE;
+	menu_shortcut_action saction = SA_NONE;
 	Binding *binding;
 	int context = C_MENU;
 
@@ -1240,7 +1240,8 @@ static void menuShortcuts(
 		}
 		else
 		{
-			index = get_selectable_item_index(mr, miCurrent, NULL) +
+			index = get_selectable_item_index(
+				mr, miCurrent, NULL) +
 				items_to_move;
 			/* correct for the case that we're between items */
 			if (!MI_IS_SELECTABLE(miCurrent))
@@ -1257,7 +1258,8 @@ static void menuShortcuts(
 			newItem = get_selectable_item_from_index(mr, index);
 			if (items_to_move > 0 && newItem == miCurrent)
 			{
-				newItem = get_selectable_item_from_index(mr, 0);
+				newItem =
+					get_selectable_item_from_index(mr, 0);
 			}
 		}
 		if (newItem)
@@ -1288,8 +1290,9 @@ static void menuShortcuts(
 
 	case SA_WARPBACK:
 		/* Warp the pointer back into the menu. */
-		FWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
-			     menudim_middle_x_offset(&MR_DIM(mr)), my - menu_y);
+		FWarpPointer(
+			dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
+			menudim_middle_x_offset(&MR_DIM(mr)), my - menu_y);
 		*pmiCurrent = find_entry(pmp, NULL, NULL, None, -1, -1);
 		pmret->rc = MENU_NEWITEM;
 		break;
@@ -1969,7 +1972,9 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 				{
 					break;
 				}
-				if (msp->max.i.label_width[columns_placed] <= 0)
+				if (
+					msp->max.i.label_width[columns_placed]
+					<= 0)
 				{
 					columns_placed++;
 					break;
@@ -2815,7 +2820,7 @@ static MenuRoot *clone_menu(MenuRoot *mr)
 	return new_mr;
 }
 
-/* ---------------------------- position hints ------------------------------ */
+/* ---------------------------- position hints ----------------------------- */
 
 static int float_to_int_with_tolerance(float f)
 {
@@ -2973,8 +2978,8 @@ static void get_popup_options(
 	pops->pos_hints.screen_origin_y = pmp->screen_origin_y;
 	/* just look past "Popup <name>" in the action */
 	get_menu_options(
-		SkipNTokens(MI_ACTION(mi), 2), MR_WINDOW(pmp->menu), NULL, NULL,
-		pmp->menu, mi, pops);
+		SkipNTokens(MI_ACTION(mi), 2), MR_WINDOW(pmp->menu), NULL,
+		NULL, pmp->menu, mi, pops);
 
 	return;
 }
@@ -3115,10 +3120,12 @@ static Bool paint_menu_gradient_background(
 
 			pmap = XCreatePixmap(
 				dpy, MR_WINDOW(mr), MR_WIDTH(mr),
-				DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS, Pdepth);
+				DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS,
+				Pdepth);
 			pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
 			dw = (float)
-				(bounds.width / ST_FACE(ms).u.grad.npixels) + 1;
+				(bounds.width / ST_FACE(ms).u.grad.npixels)
+				+ 1;
 			for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
 			{
 				unsigned short x = i * bounds.width /
@@ -3212,7 +3219,8 @@ static Bool paint_menu_gradient_background(
 			r.width = MR_WIDTH(mr) - 2 * bw;
 			r.height = MR_HEIGHT(mr) - 2 * bw;
 		}
-		XSetClipRectangles(dpy, Scr.TransMaskGC, 0, 0, &r, 1, Unsorted);
+		XSetClipRectangles(
+			dpy, Scr.TransMaskGC, 0, 0, &r, 1, Unsorted);
 		numLines = MR_WIDTH(mr) + MR_HEIGHT(mr) - 2 * bw;
 		for (i = 0; i < numLines; i++)
 		{
@@ -3249,8 +3257,8 @@ static Bool paint_menu_gradient_background(
 
 			/* let library take care of all other gradients */
 			pmap = XCreatePixmap(
-				dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-				Pdepth);
+				dpy, MR_WINDOW(mr), MR_WIDTH(mr),
+				MR_HEIGHT(mr), Pdepth);
 			pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
 
 			/* find out the size the pixmap should be */
@@ -3402,9 +3410,10 @@ static void paint_menu(
 		if (MR_IS_BACKGROUND_SET(mr) == False)
 		{
 			SetWindowBackground(
-				dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-				&Colorset[ST_CSET_MENU(ms)], Pdepth,
-				FORE_GC(ST_MENU_INACTIVE_GCS(ms)), True);
+				dpy, MR_WINDOW(mr), MR_WIDTH(mr),
+				MR_HEIGHT(mr), &Colorset[ST_CSET_MENU(ms)],
+				Pdepth, FORE_GC(ST_MENU_INACTIVE_GCS(ms)),
+				True);
 			MR_IS_BACKGROUND_SET(mr) = True;
 		}
 	}
@@ -3549,7 +3558,8 @@ static void select_menu_item(
 						dpy, Scr.NoFocusWin, mw, ih,
 						Pdepth);
 				XSetGraphicsExposures(
-					dpy, FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+					dpy,
+					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
 					True);
 				XSync(dpy, 0);
 				while (FCheckTypedEvent(dpy, NoExpose, &e))
@@ -3560,7 +3570,8 @@ static void select_menu_item(
 					dpy, MR_WINDOW(mr),
 					MR_STORED_ITEM(mr).stored,
 					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
-					MST_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
+					MST_BORDER_WIDTH(mr), iy, mw, ih, 0,
+					0);
 				XSync(dpy, 0);
 				if (FCheckTypedEvent(dpy, NoExpose, &e))
 				{
@@ -3571,14 +3582,16 @@ static void select_menu_item(
 				else
 				{
 					XFreePixmap(
-						dpy, MR_STORED_ITEM(mr).stored);
+						dpy,
+						MR_STORED_ITEM(mr).stored);
 					MR_STORED_ITEM(mr).stored = None;
 					MR_STORED_ITEM(mr).width = 0;
 					MR_STORED_ITEM(mr).height = 0;
 					MR_STORED_ITEM(mr).y = 0;
 				}
 				XSetGraphicsExposures(
-					dpy, FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+					dpy,
+					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
 					False);
 			}
 			else if (select == False &&
@@ -3644,7 +3657,8 @@ static void select_menu_item(
 				if (MR_STORED_ITEM(mr).stored != None)
 				{
 					XFreePixmap(
-						dpy, MR_STORED_ITEM(mr).stored);
+						dpy,
+						MR_STORED_ITEM(mr).stored);
 				}
 				MR_STORED_ITEM(mr).stored = None;
 				MR_STORED_ITEM(mr).width = 0;
@@ -3671,7 +3685,7 @@ static void select_menu_item(
 	return;
 }
 
-/* ---------------------------- popping menu up or down --------------------- */
+/* ---------------------------- popping menu up or down -------------------- */
 
 static int get_left_popup_x_position(MenuRoot *mr, MenuRoot *submenu, int x)
 {
@@ -3966,7 +3980,8 @@ static int pop_menu_up(
 		Bool has_context;
 		rectangle button_g;
 
-		has_context = get_title_button_geometry(fw, &button_g, context);
+		has_context = get_title_button_geometry(
+			fw, &button_g, context);
 		if (has_context)
 		{
 			fscreen_scr_arg fscr;
@@ -4213,11 +4228,13 @@ static int pop_menu_up(
 					int cy;
 
 					w = FW_W_FRAME(
-						pmp->tear_off_root_menu_window);
+						pmp->tear_off_root_menu_window
+						);
 					if (XGetGeometry(
-						    dpy, w, &JunkRoot, &cx, &cy,
-						    &JunkWidth, &JunkHeight,
-						    &JunkBW, &JunkDepth))
+						    dpy, w, &JunkRoot, &cx,
+						    &cy, &JunkWidth,
+						    &JunkHeight, &JunkBW,
+						    &JunkDepth))
 					{
 						end_x += (cx - prev_x );
 						prev_x = cx;
@@ -4539,7 +4556,8 @@ static void pop_menu_down_and_repaint_parent(
 			    &mr_height, &JunkBW, &JunkDepth) ||
 		    !menu_get_geometry(
 			    parent, &JunkRoot, &parent_x, &parent_y,
-			    &parent_width, &parent_height, &JunkBW, &JunkDepth))
+			    &parent_width, &parent_height, &JunkBW,
+			    &JunkDepth))
 		{
 			pop_menu_down(pmr, pmp);
 			paint_menu(parent, NULL, (*pmp->pexc)->w.fw);
@@ -4643,11 +4661,13 @@ static void __mloop_get_event_timeout_loop(
 		{
 			med->popdown_delay_10ms = MST_POPDOWN_DELAY(pmp->menu);
 		}
-		if (in->mif.do_force_popup ||
-		    (is_popup_timed_out &&
-		     (is_popdown_timed_out ||
-		      in->mif.is_item_entered_by_key_press ||
-		      !in->mrPopdown || MST_DO_POPDOWN_IMMEDIATELY(pmp->menu))))
+		if (
+			in->mif.do_force_popup ||
+			(is_popup_timed_out &&
+			 (is_popdown_timed_out ||
+			  in->mif.is_item_entered_by_key_press ||
+			  !in->mrPopdown ||
+			  MST_DO_POPDOWN_IMMEDIATELY(pmp->menu))))
 		{
 			in->mif.do_popup_now = True;
 			in->mif.do_force_popup = False;
@@ -4671,20 +4691,20 @@ static void __mloop_get_event_timeout_loop(
 					in->mif.do_popup_now = True;
 					in->mif.is_popped_up_by_timeout = True;
 				}
-				else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-					 in->mif.
-					 is_pointer_in_active_item_area)
+				else if (
+					!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+					in->mif.is_pointer_in_active_item_area)
 				{
 					in->mif.do_popup_now = True;
 					in->mif.is_popped_up_by_timeout = True;
 				}
-				else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-					 !MST_DO_POPDOWN_IMMEDIATELY(
-						 pmp->menu) &&
-					 MST_POPUP_DELAY(pmp->menu) <=
-					 MST_POPDOWN_DELAY(pmp->menu) &&
-					 med->popup_delay_10ms ==
-					 med->popdown_delay_10ms)
+				else if (
+					!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+					!MST_DO_POPDOWN_IMMEDIATELY(pmp->menu)
+					&& MST_POPUP_DELAY(pmp->menu) <=
+					MST_POPDOWN_DELAY(pmp->menu) &&
+					med->popup_delay_10ms ==
+					med->popdown_delay_10ms)
 				{
 					in->mif.do_popup_now = True;
 					in->mif.is_popped_up_by_timeout = True;
@@ -4877,8 +4897,8 @@ static mloop_ret_code_t __mloop_handle_event(
 		case MENU_KILL_TEAR_OFF_MENU:
 			return MENU_MLOOP_RET_END;
 		case MENU_POPUP:
-			/* Allow for MoveLeft/MoveRight action to work with Mouse
-			 */
+			/* Allow for MoveLeft/MoveRight action to work with
+			 * Mouse */
 			in->mif.do_popup_and_warp = True;
 		case MENU_NEWITEM:
 			/* unpost the menu if posted */
@@ -4955,21 +4975,24 @@ static mloop_ret_code_t __mloop_handle_event(
 				case MDP_POST_MENU:
 					if (in->mif.was_item_unposted)
 					{
-						pmret->flags.is_menu_posted = 0;
+						pmret->flags.is_menu_posted =
+							0;
 						pmret->rc = MENU_UNPOST;
 						pmret->target_menu = NULL;
 						in->mif.do_popup_now = False;
 					}
 					else
 					{
-						pmret->flags.is_menu_posted = 1;
+						pmret->flags.is_menu_posted =
+							1;
 						pmret->rc = MENU_POST;
 						pmret->target_menu = NULL;
 						in->mif.do_popup_now = True;
 						if ((in->mrPopup ||
 						     in->mrPopdown)
 						    && med->mi !=
-						    MR_SELECTED_ITEM(pmp->menu))
+						    MR_SELECTED_ITEM(
+							    pmp->menu))
 						{
 							in->mif.do_popdown_now
 								= True;
@@ -5133,8 +5156,8 @@ static mloop_ret_code_t __mloop_handle_event(
 			    p_ry - msi->y_init > Scr.MoveThreshold ||
 			    msi->y_init - p_ry > Scr.MoveThreshold)
 			{
-				/* global variable remember that this isn't just
-				 * a click any more since the pointer moved */
+				/* remember that this isn't just a click any
+				 * more since the pointer moved */
 				in->mif.has_mouse_moved = True;
 			}
 		}
@@ -5214,10 +5237,11 @@ static mloop_ret_code_t __mloop_handle_event(
 		break;
 
 	default:
-		/* We must not dispatch events here.  There is no guarantee that
-		 * dispatch_event doesn't destroy a window stored in the menu
-		 * structures.  Anyway, no events should ever get here except
-		 * to tear off menus and these must be handled individually. */
+		/* We must not dispatch events here.  There is no guarantee
+		 * that dispatch_event doesn't destroy a window stored in the
+		 * menu structures.  Anyway, no events should ever get here
+		 * except to tear off menus and these must be handled
+		 * individually. */
 #if 0
 		dispatch_event((*pmp->pexc)->x.elast);
 #endif
@@ -5436,7 +5460,8 @@ static mloop_ret_code_t __mloop_get_mi_actions(
 			in->mif.do_popdown = True;
 			in->mrPopdown = in->mrPopup;
 			med->popdown_delay_10ms = 0;
-			*pdoes_popdown_submenu_overlap = *pdoes_submenu_overlap;
+			*pdoes_popdown_submenu_overlap =
+				*pdoes_submenu_overlap;
 		}
 		else if (in->mrPopdown && in->mrPopdown != mrMiPopup)
 		{
@@ -5445,7 +5470,8 @@ static mloop_ret_code_t __mloop_get_mi_actions(
 		else if (in->mrPopdown && in->mrPopdown == mrMiPopup)
 		{
 			in->mrPopup = in->mrPopdown;
-			*pdoes_submenu_overlap = *pdoes_popdown_submenu_overlap;
+			*pdoes_submenu_overlap =
+				*pdoes_popdown_submenu_overlap;
 			in->mrPopdown = NULL;
 			in->mif.do_popup = False;
 			in->mif.do_popdown = False;
@@ -5553,8 +5579,8 @@ static mloop_ret_code_t __mloop_do_popup(
 	else
 	{
 		if (__mloop_make_popup(
-			    pmp, pmret, in, med, pops, pdoes_submenu_overlap) ==
-		    MENU_MLOOP_RET_END)
+			    pmp, pmret, in, med, pops, pdoes_submenu_overlap)
+		    == MENU_MLOOP_RET_END)
 		{
 			return MENU_MLOOP_RET_END;
 		}
@@ -5770,15 +5796,16 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 		mloop_ret_code_t rc;
 
 		rc = __mloop_do_menu(
-			pmp, pmret, pdkp, in, med, pops, pdoes_submenu_overlap);
+			pmp, pmret, pdkp, in, med, pops,
+			pdoes_submenu_overlap);
 		if (rc != MENU_MLOOP_RET_NORMAL)
 		{
 			return rc;
 		}
 	}
 	/* Now check whether we can animate the current popup menu back to the
-	 * original place to unobscure the current menu;  this happens only when
-	 * using animation */
+	 * original place to unobscure the current menu;  this happens only
+	 * when using animation */
 	if (in->mrPopup && MR_XANIMATION(in->mrPopup) &&
 	    (tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1))  &&
 	    (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
@@ -7854,7 +7881,8 @@ char *get_menu_options(
 				if (mr)
 				{
 					/* the parent menu */
-					pops->pos_hints.is_menu_relative = True;
+					pops->pos_hints.is_menu_relative =
+						True;
 					pops->pos_hints.menu_width =
 						MR_WIDTH(mr);
 				}
@@ -8003,7 +8031,8 @@ char *get_menu_options(
 		}
 		naction = get_one_menu_position_argument(
 			taction, y, height, &(pops->pos_hints.y), &dummy_int,
-			&(pops->pos_hints.y_factor), &dummy_float, &dummy_flag);
+			&(pops->pos_hints.y_factor), &dummy_float,
+			&dummy_flag);
 		if (naction == taction)
 		{
 			/* argument is missing or invalid */
@@ -8215,7 +8244,8 @@ mloop_trigger_type_t __mloop_get_trigger(
 		{
 			mloop_trigger_type_t mtr;
 
-			mtr = __mloop_get_trigger(pmp, pmret, &mei, &med, &msi);
+			mtr = __mloop_get_trigger(
+				pmp, pmret, &mei, &med, &msi);
 			switch (mtr)
 			{
 			case MTR_XEVENT:
@@ -8255,8 +8285,8 @@ mloop_trigger_type_t __mloop_get_trigger(
 			default:
 				break;
 			}
-			/* Now handle new menu items, whether it is from a keypress or
-			 * a pointer motion event. */
+			/* Now handle new menu items, whether it is from a
+			 * keypress or a pointer motion event. */
 			if (med.mi != NULL)
 			{
 				mloop_ret = __mloop_handle_action_with_mi(
