@@ -1415,6 +1415,7 @@ static void SetRCDefaults(void)
 		if (defaults[i][0] == RC_DEFAULTS_COMPLETE)
 		{
 			menu_bindings_startup_complete();
+			continue;
 		}
 		ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 		ecc.w.wcontext = C_ROOT;
