@@ -31,6 +31,7 @@ Changes in beta release 2.5.20 (not released yet)
    - Fixed calculation of final location with MoveToPage and
      MoveToScreen with windows to the left or top of the viewport.
    - 64-bit architecture fix in FvwmProxy.
+   - FvwmForm now work with balanced quoted command for Timeout.
 
 -------------------------------------------------------------------
 

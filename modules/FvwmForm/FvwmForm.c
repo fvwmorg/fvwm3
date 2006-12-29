@@ -885,7 +885,7 @@ static void ct_Timeout(char *cp)
   if (*cp == '\"') {
     item->timeout.command = CopyQuotedString(++cp);
     /* skip over the whole quoted string to continue parsing */
-    cp += strlen(item->timeout.command);
+    cp += strlen(item->timeout.command) + 1;
   }
   else {
     tmpbuf = safestrdup(cp);
