@@ -45,7 +45,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "menus.h"
-#include "move_resize.h"
+#include "menuparameters.h"
 #include "module_interface.h"
 #include "focus.h"
 #include "borders.h"
@@ -61,6 +61,7 @@
 #include "colormaps.h"
 #include "update.h"
 #include "stack.h"
+#include "move_resize.h"
 
 /* ----- move globals ----- */
 

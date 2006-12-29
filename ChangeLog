@@ -1,5 +1,78 @@
 2006-12-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/menubindings.c:
+	* fvwm/menubindings.h:
+	* fvwm/menucmd.c:
+	* fvwm/menudim.c:
+	* fvwm/menudim.h:
+	* fvwm/menugeometry.c:
+	* fvwm/menugeometry.h:
+	* fvwm/menuitem.c:
+	* fvwm/menuitem.h:
+	* fvwm/menuroot.h:
+	* fvwm/menus.c:
+	* fvwm/menus.h:
+	* fvwm/move_resize.c:
+	* fvwm/move_resize.h:
+	* fvwm/windowlist.c:
+	simplified including header files
+
+	* fvwm/menus.c (__mloop_handle_event):
+	* fvwm/menuparameters.h:
+	* fvwm/menubindings.c (menu_shortcuts):
+	do not call find_entry directly but return MENU_NEWITEM_FIND instead
+
+	* fvwm/menus.c (__mloop_handle_event):
+	* fvwm/menuparameters.h:
+	* fvwm/menubindings.c (menu_shortcuts):
+	do not call move_any_menu directly but return MENU_NEWITEM_MOVEMENU
+	instead
+
+	* fvwm/menus.h (MenuParameters):
+	(MenuOptions):
+	(MenuPosHints):
+	(MenuRC):
+	(MenuReturn):
+	(MenuRepaintTransparentParameters):
+	* fvwm/menuparameters.h (MenuParameters):
+	(MenuOptions):
+	(MenuPosHints):
+	(MenuRC):
+	(MenuReturn):
+	(MenuRepaintTransparentParameters):
+	moved to menuparameters.h
+
+	* fvwm/menus.h (MenuRoot):
+	(MenuRootDynamic):
+	(MenuRootStatic):
+	* fvwm/menutypes.h (MenuRoot):
+	(MenuRootDynamic):
+	(MenuRootStatic):
+	moved to menuroot.h
+
+	* fvwm/menus.c (menu_get_geometry):
+	(menu_get_outer_geometry):
+	* fvwm/menugeometry.c (menu_get_geometry):
+	(menu_get_outer_geometry):
+	moved to menugeometry.c
+
+	* fvwm/menuparameters.h:
+	* fvwm/menutypes.h:
+	* fvwm/menugeometry.c:
+	* fvwm/menugeometry.h:
+	* fvwm/Makefile.am:
+	new files
+
+	* fvwm/menubindings.h (enum):
+	* fvwm/menus.c (enum):
+	moved enum menu_shortcut_action to menubindings.h
+	(get_selectable_item_index):
+	(get_selectable_item_from_index):
+	(get_selectable_item_from_section):
+	(get_selectable_item_count):
+	(parse_menu_action):
+	moved to menubindings.c
+
 	* fvwm/menus.c (enum):
 	(parse_menu_action):
 	(menuShortcuts):

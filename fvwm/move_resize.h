@@ -3,13 +3,13 @@
 #ifndef _MOVE_RESIZE_
 #define _MOVE_RESIZE_
 
-#include "menus.h"
+struct MenuRepaintTransparentParameters;
 
 void switch_move_resize_grid(Bool state);
 void AnimatedMoveOfWindow(
 	Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
 	int cusDelay, float *ppctMovement,
-	MenuRepaintTransparentParameters *pmrtp);
+	struct MenuRepaintTransparentParameters *pmrtp);
 void AnimatedMoveFvwmWindow(
 	FvwmWindow *fw, Window w, int startX, int startY, int endX, int endY,
 	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);

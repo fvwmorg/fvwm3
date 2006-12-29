@@ -20,7 +20,17 @@
 
 #include <stdio.h>
 
+#include <X11/keysym.h>
+
+#include "fvwm.h"
+#include "externs.h"
+#include "execcontext.h"
+#include "misc.h"
+#include "screen.h"
 #include "menudim.h"
+#include "menuroot.h"
+#include "menuparameters.h"
+#include "menugeometry.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -42,13 +52,64 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-/*
- * functions dealing with coordinates
- */
-
-int menudim_middle_x_offset(struct MenuDimensions *mdim)
+Bool menu_get_geometry(
+	struct MenuRoot *mr, Window *root_return, int *x_return, int *y_return,
+	unsigned int *width_return, unsigned int *height_return,
+	unsigned int *border_width_return, unsigned int *depth_return)
 {
-	return MDIM_ITEM_X_OFFSET(*mdim) + MDIM_ITEM_WIDTH(*mdim) / 2;
+	Status rc;
+	Bool brc;
+	int root_x;
+	int root_y;
+
+	rc = XGetGeometry(
+		dpy, MR_WINDOW(mr), root_return, x_return, y_return,
+		width_return, height_return, border_width_return,
+		depth_return);
+	if (rc == 0)
+	{
+		return False;
+	}
+	if (!MR_IS_TEAR_OFF_MENU(mr))
+	{
+		return True;
+	}
+	brc = XTranslateCoordinates(
+		dpy, MR_WINDOW(mr), Scr.Root, *x_return, *y_return, &root_x,
+		&root_y, &JunkChild);
+	if (brc == True)
+	{
+		*x_return = root_x;
+		*y_return = root_y;
+	}
+	else
+	{
+		*x_return = 0;
+		*y_return = 0;
+	}
+
+	return brc;
 }
 
-/* hallo */
+Bool menu_get_outer_geometry(
+	struct MenuRoot *mr, struct MenuParameters *pmp, Window *root_return,
+	int *x_return, int *y_return, unsigned int *width_return,
+	unsigned int *height_return, unsigned int *border_width_return,
+	unsigned int *depth_return)
+{
+	if (MR_IS_TEAR_OFF_MENU(mr))
+	{
+		return XGetGeometry(
+			dpy,
+			FW_W_FRAME(pmp->tear_off_root_menu_window),
+			root_return,x_return,y_return, width_return,
+			height_return, border_width_return, depth_return );
+	}
+	else
+	{
+	  	return menu_get_geometry(
+			mr,root_return,x_return,y_return,
+			width_return, height_return, border_width_return,
+			depth_return);
+	}
+}

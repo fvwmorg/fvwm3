@@ -1,27 +1,92 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
-#ifndef _MENU_BINDINGS_
-#define _MENU_BINDINGS_
+#ifndef MENU_BINDINGS_H
+#define MENU_BINDINGS_H
 
+/* ---------------------------- included header files ---------------------- */
+
+/* Do not #include any files - the file including this file has to take care of
+ * it. */
+
+/* ---------------------------- global definitions ------------------------- */
+
+/* ---------------------------- global macros ------------------------------ */
+
+/* ---------------------------- forward declarations ----------------------- */
+
+struct MenuRoot;
+struct MenuParameters;
+struct MenuReturn;
+struct MenuItem;
+
+/* ---------------------------- type definitions --------------------------- */
+
+typedef struct
+{
+	unsigned int keystate;
+	unsigned int keycode;
+	Time timestamp;
+} double_keypress;
+
+typedef enum
+{
+	SA_NONE = 0,
+	SA_ENTER,
+	SA_LEAVE,
+	SA_MOVE_ITEMS,
+	SA_FIRST,
+	SA_LAST,
+	SA_CONTINUE,
+	SA_WARPBACK,
+	SA_SELECT,
+	SA_TEAROFF,
+	SA_ABORT,
+	SA_SCROLL
+} menu_shortcut_action;
+
+/* ---------------------------- exported variables (globals) --------------- */
+
+/* Do not use global variable.  Full stop. */
+
+/* ---------------------------- interface functions ------------------------ */
+
+/* Before this function is called, all menu bindings created through
+ * menu_binding() are permanent i.e. they can not be deleted (although
+ * overridden).  After calling it, new bindings are stored in the regular list
+ * and can be deleted by the user as usual.
+ *
+ * To be called by SetRCDefaults *only*. */
+void menu_bindings_startup_complete(void);
+
+/* Parse a menu binding and store it.
+ *
+ * To be called from bindings.c *only*. */
 int menu_binding(
 	Display *dpy, binding_t type, int button, KeySym keysym,
 	int context, int modifier, char *action, char *menuStyle);
+
+/* Checks if the given mouse or keyboard event in the given context
+ * corresponds to a menu binding.  If so, the binding is returned.  Otherwise
+ * NULL is returned.
+ *
+ * To be called from menus.c *only*.
+ */
 Binding *menu_binding_is_mouse(XEvent* event, int context);
 Binding *menu_binding_is_key(XEvent* event, int context);
-void menu_bindings_startup_complete(void);
 
-#endif /* _MENU_BINDINGS_ */
+/* Menu keyboard processing
+ *
+ * Function called instead of Keyboard_Shortcuts()
+ * when a KeyPress event is received.  If the key is alphanumeric,
+ * then the menu is scanned for a matching hot key.  Otherwise if
+ * it was the escape key then the menu processing is aborted.
+ * If none of these conditions are true, then the default processing
+ * routine is called.
+ * TKP - uses XLookupString so that keypad numbers work with windowlist
+ */
+void menu_shortcuts(
+	struct MenuRoot *mr, struct MenuParameters *pmp,
+	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmiCurrent,
+	double_keypress *pdkp, int *ret_menu_x, int *ret_menu_y);
+
+#endif /* MENU_BINDINGS_H */

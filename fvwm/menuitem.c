@@ -29,8 +29,8 @@
 #include "execcontext.h"
 #include "misc.h"
 #include "screen.h"
-#include "menustyle.h"
 #include "menudim.h"
+#include "menustyle.h"
 #include "menuitem.h"
 #include "decorations.h"
 
@@ -51,8 +51,7 @@
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
-void static
-clear_menu_item_background(
+static void clear_menu_item_background(
 	MenuPaintItemParameters *mpip, int x, int y, int w, int h)
 {
 	MenuStyle *ms = mpip->ms;
@@ -124,7 +123,7 @@ static void draw_tear_off_bar(
 /* ---------------------------- interface functions ------------------------ */
 
 /* Allocates a new, empty menu item */
-MenuItem *menuitem_create(void)
+struct MenuItem *menuitem_create(void)
 {
 	MenuItem *mi;
 
@@ -135,7 +134,7 @@ MenuItem *menuitem_create(void)
 }
 
 /* Frees a menu item and all of its allocated resources. */
-void menuitem_free(MenuItem *mi)
+void menuitem_free(struct MenuItem *mi)
 {
 	short i;
 
@@ -156,7 +155,7 @@ void menuitem_free(MenuItem *mi)
 	}
 	if (MI_PICTURE(mi))
 	{
-		PDestroyFvwmPicture(dpy,MI_PICTURE(mi));
+		PDestroyFvwmPicture(dpy, MI_PICTURE(mi));
 	}
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{
@@ -172,7 +171,7 @@ void menuitem_free(MenuItem *mi)
 
 /* Duplicate a menu item into newly allocated memory.  The new item is
  * completely independent of the old one. */
-MenuItem *menuitem_clone(MenuItem *mi)
+struct MenuItem *menuitem_clone(struct MenuItem *mi)
 {
 	MenuItem *new_mi;
 	int i;
@@ -214,8 +213,8 @@ MenuItem *menuitem_clone(MenuItem *mi)
 /* Calculate the size of the various parts of the item.  The sizes are returned
  * through mipst. */
 void menuitem_get_size(
-	MenuItem *mi, MenuItemPartSizesT *mipst, FlocaleFont *font,
-	Bool do_reverse_icon_order)
+	struct MenuItem *mi, struct MenuItemPartSizesT *mipst,
+	FlocaleFont *font, Bool do_reverse_icon_order)
 {
 	int i;
 	int j;
@@ -305,10 +304,10 @@ void menuitem_get_size(
  *
  */
 void menuitem_paint(
-	MenuItem *mi, MenuPaintItemParameters *mpip)
+	struct MenuItem *mi, struct MenuPaintItemParameters *mpip)
 {
-	MenuStyle *ms = mpip->ms;
-	MenuDimensions *dim = mpip->dim;
+	struct MenuStyle *ms = mpip->ms;
+	struct MenuDimensions *dim = mpip->dim;
 
 	static FlocaleWinString *fws = NULL;
 	int y_offset;
@@ -960,7 +959,7 @@ void menuitem_paint(
 }
 
 /* returns the center y coordinate of the menu item */
-int menuitem_middle_y_offset(MenuItem *mi, MenuStyle *ms)
+int menuitem_middle_y_offset(struct MenuItem *mi, struct MenuStyle *ms)
 {
 	int r;
 

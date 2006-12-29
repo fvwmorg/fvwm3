@@ -40,7 +40,12 @@
 #include "functions.h"
 #include "misc.h"
 #include "screen.h"
+#include "menudim.h"
+#include "menuitem.h"
+#include "menuroot.h"
+#include "menustyle.h"
 #include "menus.h"
+#include "menuparameters.h"
 #include "conditional.h"
 #include "stack.h"
 #include "focus.h"
@@ -193,8 +198,8 @@ static int compareReverse(const  FvwmWindow **a, const  FvwmWindow **b)
  * title directly. */
 void CMD_WindowList(F_CMD_ARGS)
 {
-	MenuRoot *mr;
-	MenuParameters mp;
+	struct MenuRoot *mr;
+	struct MenuParameters mp;
 	char* ret_action = NULL;
 	FvwmWindow *t;
 	FvwmWindow **windowList;

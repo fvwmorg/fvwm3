@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENUTYPES_H
-#define MENUTYPES_H
+#ifndef MENUDIM_H
+#define MENUDIM_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -24,7 +24,7 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef struct
+struct MenuDimensions
 {
 	/* width/height of the menu */
 	unsigned short width;
@@ -52,14 +52,14 @@ typedef struct
 	/*   the menu was mapped on */
 	unsigned short screen_height;
 	/* number of items in the menu */
-} MenuDimensions;
+};
 
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- interface functions ------------------------ */
 
-int menudim_middle_x_offset(MenuDimensions *mdim);
+int menudim_middle_x_offset(struct MenuDimensions *mdim);
 
 /* ---------------------------- builtin commands --------------------------- */
 
-#endif /* MENUTYPES_H */
+#endif /* MENUDIM_H */
