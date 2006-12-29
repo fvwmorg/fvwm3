@@ -135,8 +135,9 @@ Key g			M C MenuClose
 
 
 # Mouse bindings
-Mouse 4			M A MenuScroll -1
-Mouse 5			M A MenuScroll +1
+Mouse 0 		M A MenuSelectItem
+Silent Mouse 4		M A MenuScroll -1
+Silent Mouse 5		M A MenuScroll +1
 
 
 # NB: Only on title -- changes syntax for remapping the TearOff functionality
