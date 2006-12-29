@@ -1349,6 +1349,7 @@ static void setVersionInfo(void)
 /* Sets some initial style values & such */
 static void SetRCDefaults(void)
 {
+#define RC_DEFAULTS_COMPLETE ((char *)-1)
 	int i;
 	/* set up default colors, fonts, etc */
 	const char *defaults[][3] = {
@@ -1399,9 +1400,8 @@ static void SetRCDefaults(void)
 		{ "Key Up M A MenuMoveCursor -1", "", "" },
 		{ "Key Down M A MenuMoveCursor 1", "", "" },
 		{ "Mouse 1 M A MenuSelectItem", "", "" },
-		/* fixme: this also reads ConfigFvwmMenuDefaults, which should
-		 * not be done before menu_bindings_startup_complete is called
-		 */
+		/* don't add anything below */
+		{ RC_DEFAULTS_COMPLETE, "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
 		{ NULL, NULL, NULL }
 	};
@@ -1412,6 +1412,10 @@ static void SetRCDefaults(void)
 		exec_context_changes_t ecc;
 		char *cmd;
 
+		if (defaults[i][0] == RC_DEFAULTS_COMPLETE)
+		{
+			menu_bindings_startup_complete();
+		}
 		ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
@@ -1420,7 +1424,7 @@ static void SetRCDefaults(void)
 		execute_function(NULL, exc, cmd, 0);
 		exc_destroy_context(exc);
 	}
-	menu_bindings_startup_complete();
+#undef RC_DEFAULTS_COMPLETE
 
 	return;
 }
