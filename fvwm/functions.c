@@ -375,7 +375,6 @@ static void __execute_function(
 	extern Window PressedW;
 	Window dummy_w;
 
-/*!!!*/fprintf(stderr, "ef:   %s\n", action);
 	if (!action)
 	{
 		return;
