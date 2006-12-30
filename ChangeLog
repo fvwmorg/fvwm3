@@ -1,6 +1,11 @@
+2006-12-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/ConfigFvwmMenuDefaults:
+	all bindings are silent
+
 2006-12-30  Viktor Griph  <griph@dd.chalmers.se>
 
-	* fvwm/ConfigFvwmMenuDefaults: 
+	* fvwm/ConfigFvwmMenuDefaults:
 	make all numpad keys silent -- not all keyboads have a numpad
 	add KP_Separator for MenuClose
 
@@ -8,7 +13,7 @@
 
 	* fvwm/fvwm.1.in:
 	documented missing menu bindings.
-	
+
 	* fvwm/ConfigFvwmMenuDefaults:
 	fixed wrong menu bindings.
 
