@@ -2297,21 +2297,25 @@ move up five items.
 .SM \fIPage-Down\fP
 move down five items.
 
+.SM \fIShift-P\fP,
 .SM \fIHome\fP,
 .SM \fIShift-Cursor-Up\fP,
 .SM \fICtrl-A\fP
 move to the first item.
 
+.SM \fIShift-N\fP,
 .SM \fIEnd\fP,
 .SM \fIShift-Cursor-Down\fP,
 .SM \fICtrl-E\fP
 move to the last item.
 
+.SM \fIMeta-P\fP,
 .SM \fIMeta-Cursor-Up\fP,
 .SM \fICtrl-Cursor-Left\fP,
 .SM \fIShift-Ctrl-Tab\fP
 move up just below the next separator.
 
+.SM \fIMeta-N\fP,
 .SM \fIMeta-Cursor-Down\fP,
 .SM \fICtrl-Cursor-Right\fP,
 .SM \fICtrl-Tab\fP

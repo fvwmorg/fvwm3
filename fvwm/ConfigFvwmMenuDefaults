@@ -19,23 +19,24 @@
 
 # Normal bindings
 Key Delete		M A MenuClose
-Key KP_Separator	M A MenuClose
+Silent Key KP_Separator	M A MenuClose
+Silent Key KP_Decimal	M A MenuClose
 
 Key Space		M A MenuSelectItem
-Key KP_Enter		M A MenuSelectItem
+Silent Key KP_Enter	M A MenuSelectItem
 
 #  move to last entry of menu ('More...' if this exists) and
 # try to enter the menu.  Otherwise try to enter the current
 # submenu
 Key Insert		M A MenuEnterContinuation
-Key KP_Insert		M A MenuEnterContinuation
-Key KP_0		M A MenuEnterContinuation
+Silent Key KP_Insert	M A MenuEnterContinuation
+Silent Key KP_0		M A MenuEnterContinuation
 
-Key KP_Left		M A MenuCursorLeft
-Key KP_4		M A MenuCursorLeft
+Silent Key KP_Left	M A MenuCursorLeft
+Silent Key KP_4		M A MenuCursorLeft
 
-Key KP_Right		M A MenuCursorRight
-Key KP_6		M A MenuCursorRight
+Silent Key KP_Right	M A MenuCursorRight
+Silent Key KP_6		M A MenuCursorRight
 
 #back
 Key b			M A MenuLeaveSubmenu
@@ -43,86 +44,89 @@ Key b			M A MenuLeaveSubmenu
 Key f			M A MenuEnterSubmenu
 
 Key Page_Up		M A MenuMoveCursor -5
-Key KP_Prior		M A MenuMoveCursor -5
-Key KP_9		M A MenuMoveCursor -5
+Silent Key KP_Prior	M A MenuMoveCursor -5
+Silent Key KP_9		M A MenuMoveCursor -5
 
 Key Page_Down		M A MenuMoveCursor +5
-Key KP_Next		M A MenuMoveCursor +5
-Key KP_3		M A MenuMoveCursor +5
+Silent Key KP_Next	M A MenuMoveCursor +5
+Silent Key KP_3		M A MenuMoveCursor +5
 
 # Up
-Key KP_Up		M A MenuMoveCursor -1
-Key KP_8		M A MenuMoveCursor -1
+Silent Key KP_Up	M A MenuMoveCursor -1
+Silent Key KP_8		M A MenuMoveCursor -1
 #prior
-Key p			M A MenuMoveCursor -1
+Silent Key p		M A MenuMoveCursor -1
 
 Key Up			M S MenuMoveCursor 0 0
-Key KP_Up		M S MenuMoveCursor 0 0
-Key KP_8		M S MenuMoveCursor 0 0
+Silent Key KP_Up	M S MenuMoveCursor 0 0
+Silent Key KP_8		M S MenuMoveCursor 0 0
 #prior
 Key p			M S MenuMoveCursor 0 0
 
 Key Up			M C MenuMoveCursor -5
-Key KP_Up		M C MenuMoveCursor -5
-Key KP_8		M C MenuMoveCursor -5
+Silent Key KP_Up	M C MenuMoveCursor -5
+Silent Key KP_8		M C MenuMoveCursor -5
 #prior
 Key p			M C MenuMoveCursor -5
 
 Key Up			M M MenuMoveCursor -1s
-Key KP_Up		M M MenuMoveCursor -1s
-Key KP_8		M M MenuMoveCursor -1s
+Silent Key KP_Up	M M MenuMoveCursor -1s
+Silent Key KP_8		M M MenuMoveCursor -1s
 #prior
 Key p			M M MenuMoveCursor -1s
 
 # Down
-Key KP_Down		M A MenuMoveCursor 1
-Key KP_2		M A MenuMoveCursor 1
+Silent Key KP_Down	M A MenuMoveCursor 1
+Silent Key KP_2		M A MenuMoveCursor 1
 #next
 Key n			M A MenuMoveCursor 1
 
 Key Down		M S MenuMoveCursor 0 -1
-Key KP_Down		M S MenuMoveCursor 0 -1
-Key KP_2		M S MenuMoveCursor 0 -1
+Silent Key KP_Down	M S MenuMoveCursor 0 -1
+Silent Key KP_2		M S MenuMoveCursor 0 -1
 #next
 Key n			M S MenuMoveCursor 0 -1
 
 Key Down		M C MenuMoveCursor +5
-Key KP_Down		M C MenuMoveCursor +5
-Key KP_2		M C MenuMoveCursor +5
+Silent Key KP_Down	M C MenuMoveCursor +5
+Silent Key KP_2		M C MenuMoveCursor +5
 #next
 Key n			M C MenuMoveCursor +5
 
 Key Down		M M MenuMoveCursor +1s
-Key KP_Down		M M MenuMoveCursor +1s
-Key KP_2		M M MenuMoveCursor +1s
+Silent Key KP_Down	M M MenuMoveCursor +1s
+Silent Key KP_2		M M MenuMoveCursor +1s
 #next
 Key n			M M MenuMoveCursor +1s
 
 Key Tab			M A MenuMoveCursor +1
 Key Tab			M C MenuMoveCursor +1s
 Key Tab			M MC MenuMoveCursor +5
-Key Tab			M SA MenuMoveCursor -1
+Key Tab			M S MenuMoveCursor -1
+Key Tab			M SM MenuMoveCursor -1
 Key Tab			M SC MenuMoveCursor -1s
 Key Tab			M SMC MenuMoveCursor -5
 
 Key Home		M A MenuMoveCursor 0 0
-Key KP_Home		M A MenuMoveCursor 0 0
-Key KP_7		M A MenuMoveCursor 0 0
+Silent Key KP_Home	M A MenuMoveCursor 0 0
+Silent Key KP_7		M A MenuMoveCursor 0 0
 
 Key End			M A MenuMoveCursor 0 -1
-Key KP_End		M A MenuMoveCursor 0 -1
-Key KP_1		M A MenuMoveCursor 0 -1
+Silent Key KP_End	M A MenuMoveCursor 0 -1
+Silent Key KP_1		M A MenuMoveCursor 0 -1
 
 Key BackSpace		M A MenuTearOff
 
-Key KP_Add		M A MenuScroll 1
-Key KP_Subtract		M A MenuScroll -1
+Silent Key KP_Add	M A MenuScroll 1
+Silent Key KP_Subtract	M A MenuScroll -1
 
 # vi bindings
 Key h			M A MenuCursorLeft
 Key l			M A MenuCursorRight
 Key k			M A MenuMoveCursor -1
-Key k			M S MenuMoveCursor 0 0
+Key k			M C MenuMoveCursor -5
+Key j			M A MenuMoveCursor 1
+Key j			M C MenuMoveCursor 5
 
 # emacs bindings
 Key a			M C MenuMoveCursor 0 0
