@@ -375,6 +375,7 @@ static void __execute_function(
 	extern Window PressedW;
 	Window dummy_w;
 
+/*!!!*/fprintf(stderr, "ef:   %s\n", action);
 	if (!action)
 	{
 		return;
@@ -915,6 +916,7 @@ static void execute_complex_function(
 	int button;
 	XEvent *te;
 
+/*!!!*/fprintf(stderr, "ecf: %s\n", action);
 	if (cond_rc == NULL)
 	{
 		condrc_init(&tmp_rc);

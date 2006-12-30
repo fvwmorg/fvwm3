@@ -1541,6 +1541,7 @@ void StartupStuff(void)
 
 	/* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
 	initFuncName = getInitFunctionName(Restarting == True);
+/*!!!*/fprintf(stderr, "initfunc\n");
 	if (functions_is_complex_function(initFuncName))
 	{
 		char *action = safestrdup(
