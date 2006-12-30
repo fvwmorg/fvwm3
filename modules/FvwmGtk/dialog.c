@@ -445,7 +445,7 @@ dialog_entry (int argc, char **argv)
   g_return_if_fail (argc >= 1);
   item = gtk_entry_new ();
   gtk_widget_set_name (item, argv[0]);
-  if (argc >= 2)
+  if (argc >= 2 && strcmp(argv[1], "--") != 0)
     {
       gtk_entry_set_text (GTK_ENTRY (item), argv[1]);
     }
