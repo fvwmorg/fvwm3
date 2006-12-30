@@ -33,10 +33,6 @@
 #include "bindings.h"
 #include "wcontext.h"
 
-#if 1 /*!!!*/
-#include "menus.h"
-#endif
-
 #include "move_resize.h"
 #include "menudim.h"
 #include "menustyle.h"
