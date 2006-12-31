@@ -915,7 +915,6 @@ static void execute_complex_function(
 	int button;
 	XEvent *te;
 
-/*!!!*/fprintf(stderr, "ecf: %s\n", action);
 	if (cond_rc == NULL)
 	{
 		condrc_init(&tmp_rc);
