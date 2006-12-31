@@ -1,3 +1,9 @@
+2006-12-31  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/events.c (HandleEnterNotify):
+	restore focus to windows that had it stolen by
+	unmanaged windows on enter of any unmanaged windows.
+
 2006-12-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menubindings.c:

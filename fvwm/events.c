@@ -2059,6 +2059,12 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		{
 			DeleteFocus(True);
 		}
+		else if (Scr.UnknownWinFocused != None && sf != NULL
+			 && FW_W(sf) == Scr.StolenFocusWin)
+		{
+			/* restore focus stolen by unmanaged */
+			 SetFocusWindow(sf, True, FOCUS_SET_FORCE);
+		}
 		if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
 		{
 			InstallWindowColormaps(NULL);
@@ -2076,6 +2082,14 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	if (is_pan_frame(ewp->window))
 	{
 		char *edge_command = NULL;
+
+		if (Scr.UnknownWinFocused != None
+		    && (sf = get_focus_window()) != NULL
+		    && FW_W(sf) == Scr.StolenFocusWin)
+		{
+			/* restore focus stolen by unmanaged */
+			 SetFocusWindow(sf, True, FOCUS_SET_FORCE);
+		}
 
 		/* check for edge commands */
 		if (ewp->window == Scr.PanFrameTop.win)
@@ -2178,6 +2192,13 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 		/* Give the window a chance to grab the buttons needed for
 		 * raise-on-click */
 		focus_grab_buttons(sf);
+	}
+
+	if (Scr.UnknownWinFocused != None && sf != NULL
+		 && FW_W(sf) == Scr.StolenFocusWin)
+	{
+		/* restore focus stolen by unmanaged */
+		SetFocusWindow(sf, True, FOCUS_SET_FORCE);
 	}
 
 	/* We get an EnterNotify with mode == UnGrab when fvwm releases the
