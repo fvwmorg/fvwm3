@@ -1674,6 +1674,19 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	return;
 }
 
+/* restore focus stolen by unmanaged */
+static void __refocus_stolen_focus_win(const evh_args_t *ea)
+{
+	FOCUS_SET(Scr.StolenFocusWin);
+	ea->exc->x.etrigger->xfocus.window = Scr.StolenFocusWin;
+	ea->exc->x.etrigger->type = FocusIn;
+	Scr.UnknownWinFocused = None;
+	Scr.StolenFocusWin = None;
+	dispatch_event(ea->exc->x.etrigger);
+
+	return;
+}
+
 /* ---------------------------- event handlers ----------------------------- */
 
 void HandleButtonPress(const evh_args_t *ea)
@@ -2059,11 +2072,11 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		{
 			DeleteFocus(True);
 		}
-		else if (Scr.UnknownWinFocused != None && sf != NULL
-			 && FW_W(sf) == Scr.StolenFocusWin)
+		else if (
+			Scr.UnknownWinFocused != None && sf != NULL &&
+			FW_W(sf) == Scr.StolenFocusWin)
 		{
-			/* restore focus stolen by unmanaged */
-			 SetFocusWindow(sf, True, FOCUS_SET_FORCE);
+			__refocus_stolen_focus_win(ea);
 		}
 		if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
 		{
@@ -2083,14 +2096,13 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	{
 		char *edge_command = NULL;
 
-		if (Scr.UnknownWinFocused != None
-		    && (sf = get_focus_window()) != NULL
-		    && FW_W(sf) == Scr.StolenFocusWin)
+		if (
+			Scr.UnknownWinFocused != None &&
+			(sf = get_focus_window()) != NULL &&
+			FW_W(sf) == Scr.StolenFocusWin)
 		{
-			/* restore focus stolen by unmanaged */
-			 SetFocusWindow(sf, True, FOCUS_SET_FORCE);
+			__refocus_stolen_focus_win(ea);
 		}
-
 		/* check for edge commands */
 		if (ewp->window == Scr.PanFrameTop.win)
 		{
@@ -2165,18 +2177,20 @@ ENTER_DBG((stderr, "en: delete focus\n"));
 ENTER_DBG((stderr, "en: set mousey focus\n"));
                 if (ewp->window == FW_W(fw))
                 {
-                  /*  Event is for the client window...*/
+			/*  Event is for the client window...*/
 #ifndef EXPERIMENTAL_ROU_HANDLING_V2
-/*  RBW --  This may still be needed at times, I'm not sure yet.  */
-		  SetFocusWindowClientEntered(fw, True, FOCUS_SET_BY_ENTER);
+			/*  RBW --  This may still be needed at times, I'm not
+			 *sure yet.  */
+			SetFocusWindowClientEntered(
+				fw, True, FOCUS_SET_BY_ENTER);
 #else
-		  SetFocusWindow(fw, True, FOCUS_SET_BY_ENTER);
+			SetFocusWindow(fw, True, FOCUS_SET_BY_ENTER);
 #endif
                 }
                 else
                 {
-                  /*  Event is for the frame...*/
-		  SetFocusWindow(fw, True, FOCUS_SET_BY_ENTER);
+			/*  Event is for the frame...*/
+			SetFocusWindow(fw, True, FOCUS_SET_BY_ENTER);
                 }
 	}
 	else if (focus_is_focused(fw) && focus_does_accept_input_focus(fw))
@@ -2193,14 +2207,12 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 		 * raise-on-click */
 		focus_grab_buttons(sf);
 	}
-
-	if (Scr.UnknownWinFocused != None && sf != NULL
-		 && FW_W(sf) == Scr.StolenFocusWin)
+	if (
+		Scr.UnknownWinFocused != None && sf != NULL &&
+		FW_W(sf) == Scr.StolenFocusWin)
 	{
-		/* restore focus stolen by unmanaged */
-		SetFocusWindow(sf, True, FOCUS_SET_FORCE);
+			__refocus_stolen_focus_win(ea);
 	}
-
 	/* We get an EnterNotify with mode == UnGrab when fvwm releases the
 	 * grab held during iconification. We have to ignore this, or icon
 	 * title will be initially raised. */
@@ -2410,12 +2422,7 @@ void HandleFocusOut(const evh_args_t *ea)
 	if (Scr.UnknownWinFocused != None && Scr.StolenFocusWin != None &&
 	    ea->exc->x.etrigger->xfocus.window == Scr.UnknownWinFocused)
 	{
-		FOCUS_SET(Scr.StolenFocusWin);
-		ea->exc->x.etrigger->xfocus.window = Scr.StolenFocusWin;
-		ea->exc->x.etrigger->type = FocusIn;
-		Scr.UnknownWinFocused = None;
-		Scr.StolenFocusWin = None;
-		dispatch_event(ea->exc->x.etrigger);
+		__refocus_stolen_focus_win(ea);
 	}
 
 	return;
@@ -2472,10 +2479,11 @@ void __handle_key(const evh_args_t *ea, Bool is_press)
 	/* Searching the binding list with a different 'type' value
 	 * (ie. BIND_KEYPRESS vs BIND_PKEYPRESS) doesn't make a difference.
 	 * The different context value does though. */
-	action = CheckTwoBindings(&is_second_binding, Scr.AllBindings,
-		STROKE_ARG(0) kc, te->xkey.state, GetUnusedModifiers(), kcontext,
-		BIND_KEYPRESS, winClass1, name1, ea->exc->w.wcontext,
-		BIND_PKEYPRESS, winClass2, name2);
+	action = CheckTwoBindings(
+		&is_second_binding, Scr.AllBindings, STROKE_ARG(0) kc,
+		te->xkey.state, GetUnusedModifiers(), kcontext, BIND_KEYPRESS,
+		winClass1, name1, ea->exc->w.wcontext, BIND_PKEYPRESS,
+		winClass2, name2);
 
 	if (action != NULL)
 	{

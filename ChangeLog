@@ -1,3 +1,10 @@
+2006-12-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (HandleFocusOut):
+	(__refocus_stolen_focus_win):
+	(HandleEnterNotify):
+	less disruptive way of restoring focus to the window it was stolen from
+
 2006-12-31  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/events.c (HandleEnterNotify):
