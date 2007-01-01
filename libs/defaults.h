@@ -273,6 +273,8 @@
 #define MAX_HANDLE_WIDTH                   (MAX_BORDER_WIDTH)
 
 /*** module configuration ***/
+#define MAX_NUM_MODULES                  256
+#define MAX_MODULE_ALIAS_LEN             250
 #define DEFAULT_MODULE_TIMEOUT            30 /* seconds */
 
 /*** misc ***/

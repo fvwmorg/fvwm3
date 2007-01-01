@@ -670,7 +670,7 @@ static void __execute_function(
 			if (!bif && desperate)
 			{
 				if (executeModuleDesperate(
-					    func_rc, exc, runaction) == -1 &&
+					    func_rc, exc, runaction) == NULL &&
 				    *function != 0 && !set_silent)
 				{
 					fvwm_msg(

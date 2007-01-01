@@ -15,14 +15,6 @@
  */
 
 /*
- * This module is all original code
- * by Rob Nation
- * Copyright 1993, Robert Nation
- *     You may use this code for any purpose, as long as the original
- *     copyright remains in the source code and all documentation
- */
-
-/*
  *
  * code for processing module configuration commands
  *
@@ -30,7 +22,7 @@
  *
  * Created 09/23/98 by Dan Espen:
  *
- * - Some  of  this Logic   used to reside  in  "read.c",  preceeded by a
+ * - Some of this logic used to reside in "read.c", preceeded by a
  * comment about whether it belonged there.  Time tells.
  *
  * - Added  logic to  execute module config  commands by  passing to  the
@@ -74,7 +66,7 @@ struct moduleInfoList *modlistroot = NULL;
 
 static struct moduleInfoList *AddToModList(char *tline);
 static void SendConfigToModule(
-	int module, const struct moduleInfoList *entry, char *match,
+	fmodule *module, const struct moduleInfoList *entry, char *match,
 	int match_len);
 
 
@@ -89,7 +81,8 @@ static void SendConfigToModule(
  */
 void ModuleConfig(char *action)
 {
-	int module, end;
+	int end;
+	fmodule *module;
 	struct moduleInfoList *new_entry;
 
 	end = strlen(action) - 1;
@@ -98,17 +91,16 @@ void ModuleConfig(char *action)
 	/* save for config request */
 	new_entry = AddToModList(action);
 	/* look at all possible pipes */
-	for (module = 0; module < npipes; module++)
+	module = module_get_next(NULL);
+	for (; module != NULL; module = module_get_next(module))
 	{
 		if (IS_MESSAGE_SELECTED(module, M_SENDCONFIG))
 		{
 			/* module wants config cmds */
-			extern char **pipeName;
-			char *name = pipeName[module];
-			extern char **pipeAlias;
-			if (pipeAlias[module])
+			char *name = module->name;
+			if (module->alias)
 			{
-				name = pipeAlias[module];
+				name = module->alias;
 			}
 			SendConfigToModule(
 				module, new_entry, CatString2("*", name), 0);
@@ -245,14 +237,14 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS)
 	return;
 }
 
-static void send_xinerama_state(int modnum)
+static void send_xinerama_state(fmodule *module)
 {
-	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, FScreenGetConfiguration());
+	SendName(module, M_CONFIG_INFO, 0, 0, 0, FScreenGetConfiguration());
 
 	return;
 }
 
-static void send_desktop_names(int modnum)
+static void send_desktop_names(fmodule *module)
 {
 	DesktopsInfo *d;
 	char *name;
@@ -263,7 +255,7 @@ static void send_desktop_names(int modnum)
 		{
 			name = (char *)safemalloc(strlen(d->name) + 44);
 			sprintf(name,"DesktopName %d %s", d->desk, d->name);
-			SendName(modnum, M_CONFIG_INFO, 0, 0, 0, name);
+			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
 		}
 	}
@@ -271,18 +263,18 @@ static void send_desktop_names(int modnum)
 	return;
 }
 
-static void send_desktop_geometry(int modnum)
+static void send_desktop_geometry(fmodule *module)
 {
 	char msg[64];
 
 	sprintf(msg, "DesktopSize %d %d\n", Scr.VxMax / Scr.MyDisplayWidth + 1,
 		Scr.VyMax / Scr.MyDisplayHeight + 1);
-	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;
 }
 
-static void send_image_path(int modnum)
+static void send_image_path(fmodule *module)
 {
 	char *msg;
 	char *ImagePath = PictureGetImagePath();
@@ -291,25 +283,25 @@ static void send_image_path(int modnum)
 	{
 		msg = safemalloc(strlen(ImagePath) + 12);
 		sprintf(msg, "ImagePath %s\n", ImagePath);
-		SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+		SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 		free(msg);
 	}
 
 	return;
 }
 
-static void send_color_limit(int modnum)
+static void send_color_limit(fmodule *module)
 {
 #ifndef DISABLE_COLORLIMIT_CONFIG_INFO
 	char msg[64];
 
 	sprintf(msg, "ColorLimit %d\n", Scr.ColorLimit);
-	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 #endif
 	return;
 }
 
-static void send_colorsets(int modnum)
+static void send_colorsets(fmodule *module)
 {
 	int n;
 
@@ -317,14 +309,14 @@ static void send_colorsets(int modnum)
 	for (n = 0; n < nColorsets; n++)
 	{
 		SendName(
-			modnum, M_CONFIG_INFO, 0, 0, 0,
+			module, M_CONFIG_INFO, 0, 0, 0,
 			DumpColorset(n, &Colorset[n]));
 	}
 
 	return;
 }
 
-static void send_click_time(int modnum)
+static void send_click_time(fmodule *module)
 {
 	char msg[64];
 
@@ -332,27 +324,27 @@ static void send_click_time(int modnum)
 	 * 'not at all' during InitFunction and RestartFunction. */
 	sprintf(msg,"ClickTime %d\n", (Scr.ClickTime < 0) ?
 		-Scr.ClickTime : Scr.ClickTime);
-	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;
 }
 
-static void send_move_threshold(int modnum)
+static void send_move_threshold(fmodule *module)
 {
 	char msg[64];
 
 	sprintf(msg, "MoveThreshold %d\n", Scr.MoveThreshold);
-	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;
 }
 
-void send_ignore_modifiers(int modnum)
+void send_ignore_modifiers(fmodule *module)
 {
 	char msg[64];
 
 	sprintf(msg, "IgnoreModifiers %d\n", GetUnusedModifiers());
-	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;
 }
@@ -364,7 +356,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 	char *match;
 	/* get length once for efficiency */
 	int match_len = 0;
-	int mod = exc->m.modnum;
+	fmodule *mod = exc->m.module;
 
 	send_desktop_geometry(mod);
 	/* send ImagePath and ColorLimit first */
@@ -393,7 +385,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 }
 
 static void SendConfigToModule(
-	int module, const struct moduleInfoList *entry, char *match,
+	fmodule *module, const struct moduleInfoList *entry, char *match,
 	int match_len)
 {
 	if (match)

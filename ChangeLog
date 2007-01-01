@@ -1,3 +1,146 @@
+2007-01-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	END MODULE STRUCT PATCHES
+
+	* fvwm/module_interface.c (do_execute_module):
+	fixed another memory leak
+
+2007-01-01  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_interface.h:
+	* fvwm/module_interface.c:
+	* fvwm/modconf.c:
+	renamed struct module member "pipeName" and "pipeAlias" to "name"
+	and "alias"
+
+	* fvwm/module_interface.c (do_execute_module):
+	fixed possible memory leak
+
+2007-01-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_interface.c (module_alloc):
+	(do_execute_module):
+	(KillModule):
+	* fvwm/module_interface.h (fmodule):
+	replaced int with a flag struct
+
+	* fvwm/module_interface.h:
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_interface.c (module_alloc):
+	(module_free):
+	(module_insert):
+	(ClosePipes):
+	add new modules at front of list again
+	removed global variable init_fdset; use a flag in the module struct
+	instead
+	removed the now obsolete module slot count
+
+2007-01-01  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_interface.c (module_remove):
+	(KillModule):
+	moved module remotion code to module_remove()
+
+2007-01-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (My_XNextEvent):
+	fixed startup commands
+
+	* fvwm/module_interface.c (module_insert):
+	(module_free):
+	(KillModule):
+	(ClosePipes):
+	append modules at end of list
+
+	* fvwm/events.c (My_XNextEvent):
+	fixed core
+
+	* fvwm/module_interface.c (ExecuteModuleCommand):
+	(PositiveWrite):
+	(KillModuleByName):
+	(BroadcastPacket):
+	(BroadcastNewPacket):
+	(BroadcastName):
+	(BroadcastFvwmPicture):
+	(BroadcastColorset):
+	(BroadcastPropertyChange):
+	(BroadcastConfigInfoString):
+	(CMD_SendToModule):
+	(FlushAllMessageQueues):
+	(countModules):
+	(CMD_set_mask):
+	(CMD_set_sync_mask):
+	(CMD_set_nograb_mask):
+	cleanup
+	(skipModuleAliasToken):
+	use MAX_MODULE_ALIAS_LEN
+
+	* fvwm/module_interface.c (KillModule):
+	(do_execute_module):
+	(module_alloc):
+	added a "slot" member to the module struct to fix the init_fdset hack
+	for now
+
+	* libs/defaults.h (MAX_NUM_MODULES):
+	(MAX_MODULE_ALIAS_LEN):
+	new config values
+
+	* fvwm/module_interface.c (do_execute_module):
+	rewrote module struct initialization
+	(HandleModuleInput):
+	use %p to print module address, don't cast it to int
+
+	* fvwm/module_interface.c (ClosePipes):
+	(KillModule):
+	use free_module
+	(msg_mask_set):
+	(module_insert):
+	(module_alloc):
+	new functions()
+
+	* fvwm/module_interface.c (FreeModule):
+	(module_free):
+	renamed function
+
+	* fvwm/module_interface.c (KillModule):
+	(FreeModule):
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/execcontext.h:
+	* fvwm/modconf.c (CMD_Send_ConfigInfo):
+	(ModuleConfig):
+	* fvwm/stack.c (BroadcastRestack):
+	cleanup
+
+	* fvwm/module_interface.c (module_get_next):
+	* fvwm/module_interface.h:
+	new function
+
+2007-01-01  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/modconf.c (ModuleConfig):
+	(SendConfigToModule):
+	(send_xinerama_state):
+	(send_desktop_names):
+	(send_desktop_geometry):
+	(send_image_path):
+	(send_color_limit):
+	(send_colorsets):
+	(send_click_time):
+	(send_move_threshold):
+	(send_ignore_modifiers):
+	(CMD_Send_ConfigInfo):
+	* fvwm/functions.c (__execute_function):
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_interface.h (msg_masks_t):
+	(fmodule):
+	* fvwm/execcontext.c (__exc_change_context):
+	(exc_create_null_context):
+	* fvwm/execcontext.h:
+	Initial module struct patches
+
+	BEGIN MODULE STRUCT PATCHES
+
 2006-12-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleFocusOut):

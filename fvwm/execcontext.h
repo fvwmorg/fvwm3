@@ -45,9 +45,10 @@ typedef struct
 	unsigned long wcontext;
 } window_context_t;
 
+struct fmodule;
 typedef struct
 {
-	int modnum;
+	struct fmodule *module;
 } module_context_t;
 
 typedef struct
@@ -67,7 +68,7 @@ typedef enum
 	ECC_FW = 0x4,
 	ECC_W = 0x8,
 	ECC_WCONTEXT = 0x10,
-	ECC_MODNUM = 0x20
+	ECC_MODULE = 0x20
 } exec_context_change_mask_t;
 
 typedef struct

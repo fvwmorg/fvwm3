@@ -82,9 +82,9 @@ static void __exc_change_context(
 	{
 		exc->w.wcontext = ecc->w.wcontext;
 	}
-	if (mask & ECC_MODNUM)
+	if (mask & ECC_MODULE)
 	{
-		exc->m.modnum = ecc->m.modnum;
+		exc->m.module = ecc->m.module;
 	}
 
 	return;
@@ -110,7 +110,7 @@ fprintf(stderr, "0x%08x\n", (int)exc);
 	fev_make_null_event(&exc->private_data.te, dpy);
 	exc->x.etrigger = &exc->private_data.te;
 	exc->x.elast = fev_get_last_event_address();
-	exc->m.modnum = -1;
+	exc->m.module = NULL;
 
 	return exc;
 }
