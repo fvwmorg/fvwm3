@@ -116,10 +116,10 @@ void SendName(
 void PositiveWrite(fmodule *module, unsigned long *ptr, int size);
 void FlushAllMessageQueues(void);
 void FlushMessageQueue(fmodule *module);
-void ExecuteCommandQueue(void);
 
 /* packet receiving function */
 Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue);
+void ExecuteCommandQueue(void);
 
 /* dead pipe signal handler */
 RETSIGTYPE DeadPipe(int nonsense);
@@ -129,6 +129,6 @@ RETSIGTYPE DeadPipe(int nonsense);
  */
 char *skipModuleAliasToken(const char *string);
 /* not used anywhere - it is here for modconf.c, right?*/
-int is_message_selected(fmodule *module, unsigned long msg_mask);
+/*int is_message_selected(fmodule *module, unsigned long msg_mask);*/
 
 #endif /* MODULE_H */
