@@ -1,3 +1,14 @@
+2007-01-01  Renato Caldas  <seventhguardian@gmail.com>
+
+	* libs/defaults.h (MAX_NUM_MODULES):
+	* fvwm/module_interface.c (module_alloc):
+	(do_execute_module):
+	removed check for MAX_NUM_MODULES - not needed, done by the O.S.
+
+	* fvwm/module_interface.c (do_execute_module):
+	moved the allocation call to the end of the sanity checks and pipe
+	creation - better for performance
+
 2007-01-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	END MODULE STRUCT PATCHES

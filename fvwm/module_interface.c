@@ -92,12 +92,6 @@ static fmodule *module_alloc(void)
 {
 	fmodule *module;
 
-	if (num_modules >= MAX_NUM_MODULES)
-	{
-		/* maximum number of modules exceeded */
-
-		return NULL;
-	}
 	num_modules++;
 	module = (fmodule *)safemalloc(sizeof(fmodule));
 	module->flags.is_cmdline_module = 0;
@@ -298,19 +292,6 @@ static fmodule *do_execute_module(
 	FvwmWindow * const fw = exc->w.fw;
 	fmodule *module;
 
-	DBUG("executeModule", "creating the module record\n");
-	/* all ok, create the space and insert into the list */
-	module = module_alloc();
-	if (module == NULL)
-	{
-		fvwm_msg(
-			ERR, "executeModule",
-			"maximum number of modules exceeded (%d)",
-			MAX_NUM_MODULES);
-
-		return NULL;
-	}
-
 	args = (char **)safemalloc(7 * sizeof(char *));
 
 	/* Olivier: Why ? */
@@ -320,7 +301,6 @@ static fmodule *do_execute_module(
 	if (action == NULL)
 	{
 		free(args);
-		module_free(module);
 
 		return NULL;
 	}
@@ -338,7 +318,6 @@ static fmodule *do_execute_module(
 	if (!cptr)
 	{
 		free(args);
-		module_free(module);
 
 		return NULL;
 	}
@@ -360,7 +339,6 @@ static fmodule *do_execute_module(
 		}
 		free(args);
 		free(cptr);
-		module_free(module);
 
 		return NULL;
 	}
@@ -391,7 +369,6 @@ static fmodule *do_execute_module(
 		free(arg1);
 		free(cptr);
 		free(args);
-		module_free(module);
 
 		return NULL;
 	}
@@ -404,12 +381,14 @@ static fmodule *do_execute_module(
 		close(fvwm_to_app[0]);
 		close(fvwm_to_app[1]);
 		free(args);
-		module_free(module);
 
 		return NULL;
 	}
 
+	/* all ok, create the space and insert into the list */
+	module = module_alloc();
 	module_insert(module);
+
 	module->name = stripcpy(cptr);
 	free(cptr);
 	sprintf(arg2, "%d", app_to_fvwm[1]);
