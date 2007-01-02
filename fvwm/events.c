@@ -4070,15 +4070,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		module = module_get_next(NULL);
 		for (; module != NULL; module = module_get_next(module))
 		{
-			/* should we really do this test? */
-			if (module->readPipe >= 0)
-			{
-				FD_SET(module->readPipe, &in_fdset);
-			}
-			if (!FQUEUE_IS_EMPTY(&(module->pipeQueue)))
-			{
-				FD_SET(module->writePipe, &out_fdset);
-			}
+			module_add_to_fdsets(module, &in_fdset, &out_fdset);
 		}
 
 		DBUG("My_XNextEvent", "waiting for module input/output");

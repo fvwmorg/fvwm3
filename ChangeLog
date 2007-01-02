@@ -1,3 +1,13 @@
+2007-01-02  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_interface.c (module_add_to_fdsets):
+	* fvwm/module_interface.h:
+	created new function that also checks for too many open fds
+
+	* fvwm/module_interface.c (CMD_ModuleSynchronous):
+	* fvwm/events.c (My_XNextEvent):
+	now using module_add_to_fdset to add pipes to the fdsets
+
 2007-01-01  Renato Caldas  <seventhguardian@gmail.com>
 
 	* libs/defaults.h (MAX_NUM_MODULES):

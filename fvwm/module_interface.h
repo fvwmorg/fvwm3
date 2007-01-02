@@ -82,6 +82,8 @@ void KillModule(fmodule *module);
 fmodule *module_get_next(fmodule *prev);
 /* get the number of modules in memory - and hopefully in the list */
 int countModules(void);
+/* add the module pipes to the fdsets*/
+void module_add_to_fdsets(fmodule *module, fd_set *in, fd_set *out);
 
 /*
  *     module communication functions

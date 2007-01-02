@@ -248,6 +248,34 @@ static char *get_pipe_name(fmodule *module)
 	return name;
 }
 
+void module_add_to_fdsets(fmodule *module, fd_set *in, fd_set *out)
+{
+	if (module == NULL)
+	{
+		return;
+	}
+	if (
+		(module->readPipe > GetFdWidth()) ||
+		(module->writePipe > GetFdWidth())
+	)
+	{
+		fvwm_msg(ERR, "module_add_to_fdsets", "Too many fds open!");
+		/* kill it now, otherwise it will never be killed */
+		KillModule(module);
+		return;
+	}
+
+	if (module->readPipe >= 0)
+	{
+		FD_SET(module->readPipe, in);
+	}
+	if (!FQUEUE_IS_EMPTY(&(module->pipeQueue)))
+	{
+		FD_SET(module->writePipe, out);
+	}
+	return;
+}
+
 void initModules(void)
 {
 	DBUG("initModules", "initializing the module list header");
@@ -644,14 +672,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		{
 			FD_ZERO(&in_fdset);
 			FD_ZERO(&out_fdset);
-			if (module->readPipe >= 0)
-			{
-				FD_SET(module->readPipe, &in_fdset);
-			}
-			if (!FQUEUE_IS_EMPTY(&(module->pipeQueue)))
-			{
-				FD_SET(module->writePipe, &out_fdset);
-			}
+			module_add_to_fdsets(module, &in_fdset, &out_fdset);
 
 			timeout.tv_sec = 0;
 			timeout.tv_usec = 1;
