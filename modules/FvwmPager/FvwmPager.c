@@ -691,6 +691,7 @@ void list_configure(unsigned long *body)
   PagerWindow *t;
   Window target_w;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
+  Bool is_new_desk;
 
   target_w = cfgpacket->w;
   t = Start;
@@ -704,9 +705,10 @@ void list_configure(unsigned long *body)
     return;
   }
 
+  is_new_desk = (t->desk != cfgpacket->desk);
   handle_config_win_package(t, cfgpacket);
 
-  if (t->desk != cfgpacket->desk)
+  if (is_new_desk)
   {
     ChangeDeskForWindow(t, cfgpacket->desk);
   }

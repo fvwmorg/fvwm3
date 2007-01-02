@@ -1,3 +1,8 @@
+2007-01-02  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmPager/FvwmPager.c (list_configure):
+	fix updating window desk
+
 2006-12-30  Ben Kibbey <bjk@luxsci.net>
 
 	* FvwmGtk/dialog.c (dialog_entry):

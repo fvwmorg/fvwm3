@@ -32,6 +32,7 @@ Changes in beta release 2.5.20 (not released yet)
      MoveToScreen with windows to the left or top of the viewport.
    - 64-bit architecture fix in FvwmProxy.
    - FvwmForm now work with balanced quoted command for Timeout.
+   - FvwmPager correctly updates on window desk change.
 
 -------------------------------------------------------------------
 
