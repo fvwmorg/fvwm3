@@ -113,7 +113,6 @@ int current_y = 0;
 int current_colorset = -1;  /* the last matched command colorset or -1 */
 
 int Fvwm_fd[2];
-int fd_width;
 
 char *Module;        /* i.e. "FvwmBacker" */
 char *configPrefix;  /* i.e. "*FvwmBacker" */
@@ -203,8 +202,6 @@ int main(int argc, char **argv)
 
 	/* Parse the config file */
 	ParseConfig();
-
-	fd_width = GetFdWidth();
 
 	SetMessageMask(Fvwm_fd,
 		       M_NEW_PAGE | M_NEW_DESK | M_CONFIG_INFO |

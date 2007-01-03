@@ -108,7 +108,6 @@ int main(int argc, char **argv)
   int retval = 0;
   XEvent Event;
   fd_set in_fdset;
-  fd_set_size_t fd_width = GetFdWidth();
   struct timeval value;
   int fd[2];
   XSetWindowAttributes attr;
@@ -247,7 +246,7 @@ int main(int argc, char **argv)
 
     if(!FPending(dpy))
 
-      retval=select(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, &value);
+      retval=select(x_fd + 1,SELECT_FD_SET_CAST &in_fdset, 0, 0, &value);
 
     if (retval==0)
     {

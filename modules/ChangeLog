@@ -1,3 +1,12 @@
+2007-01-03  Renato Caldas  <seventhguardian@gmail.com>
+
+	* FvwmBacker/FvwmBacker.c:
+	* FvwmBacker/FvwmBanner.c:
+	removed unused variable fd_width;
+
+	* FvwmBacker/FvwmBanner.c (main):
+	replaced fd_width by x_fd+1 (the only fd) in the select() call
+
 2007-01-02  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmPager/FvwmPager.c (list_configure):
