@@ -1,3 +1,33 @@
+2007-01-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/fvwm.c (main):
+	close all open fds upon startup
+	reopen stdin, stdout and stderr if necessary
+	(reopen_fd):
+	new function
+
+	* fvwm/module_interface.c (do_execute_module):
+	simplified error handling
+	check maximum fd when creating modules
+
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/fvwm.c (main):
+	replaced fd_width with fvwmlib_max_fd
+
+	* libs/fvwmlib.h:
+	* libs/System.c (fvwmlib_init_max_fd):
+	added function and fvwmlib_max_fd
+
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_interface.c (CMD_ModuleSynchronous):
+	switch back to using FD_SET
+
+	* fvwm/events.c (My_XNextEvent:
+	* fvwm/module_interface.h:
+	* fvwm/module_interface.c:
+	hide module structure members with access macros and use them
+	everywhere
+
 2007-01-02  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_interface.c (module_add_to_fdsets):

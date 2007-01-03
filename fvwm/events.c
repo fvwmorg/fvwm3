@@ -3941,8 +3941,6 @@ void HandleEvents(void)
  */
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
-	extern fd_set_size_t fd_width;
-	extern int x_fd;
 	fd_set in_fdset, out_fdset;
 	Window targetWindow;
 	int num_fd;
@@ -3994,7 +3992,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		module = module_get_next(NULL);
 		for (; module != NULL; module = module_get_next(module))
 		{
-			if (module->flags.is_cmdline_module == 1)
+			if (MOD_IS_CMDLINE(module) == 1)
 			{
 				break;
 			}
@@ -4070,12 +4068,19 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		module = module_get_next(NULL);
 		for (; module != NULL; module = module_get_next(module))
 		{
-			module_add_to_fdsets(module, &in_fdset, &out_fdset);
-		}
+                        if (MOD_READFD(module) >= 0)
+                        {
+                                FD_SET(MOD_READFD(module), &in_fdset);
+                        }
+                        if (!FQUEUE_IS_EMPTY(&MOD_PIPEQUEUE(module)))
+                        {
+                                FD_SET(MOD_WRITEFD(module), &out_fdset);
+                        }
+                }
 
 		DBUG("My_XNextEvent", "waiting for module input/output");
 		num_fd = fvwmSelect(
-			fd_width, &in_fdset, &out_fdset, 0, timeoutP);
+			fvwmlib_max_fd, &in_fdset, &out_fdset, 0, timeoutP);
 		if (is_waiting_for_scheduled_command)
 		{
 			timeoutP = old_timeoutP;
@@ -4095,10 +4100,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		for (; module != NULL; module = module_get_next(module))
 		{
 			if (
-				module->readPipe >= 0 &&
-				FD_ISSET(module->readPipe, &in_fdset))
+				MOD_READFD(module) >= 0 &&
+				FD_ISSET(MOD_READFD(module), &in_fdset))
 			{
-				if (read(module->readPipe, &targetWindow,
+				if (read(MOD_READFD(module), &targetWindow,
 					 sizeof(Window)) > 0)
 				{
 					DBUG("My_XNextEvent",
@@ -4117,8 +4122,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 				}
 			}
 			if (
-				module->writePipe >= 0 &&
-				FD_ISSET(module->writePipe, &out_fdset))
+				MOD_WRITEFD(module) >= 0 &&
+				FD_ISSET(MOD_WRITEFD(module), &out_fdset))
 			{
 				DBUG("My_XNextEvent",
 				     "calling FlushMessageQueue");

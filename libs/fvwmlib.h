@@ -58,7 +58,10 @@ extern int matchWildcards(const char *pattern, const char *string);
  * Various system related utils
  */
 
-int GetFdWidth(void);
+fd_set_size_t GetFdWidth(void);
+extern fd_set_size_t fvwmlib_max_fd;
+void fvwmlib_init_max_fd(void);
+
 int getostype(char *buf, int max);
 
 /**

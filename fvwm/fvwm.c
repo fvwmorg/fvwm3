@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <errno.h>
 #include <sys/stat.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -165,7 +166,7 @@ char *state_filename = NULL;
 char *restart_state_filename = NULL;  /* $HOME/.fs-restart */
 
 Bool Restarting = False;
-int fd_width, x_fd;
+int x_fd;
 char *display_name = NULL;
 char *fvwm_userdir;
 char const *Fvwm_VersionInfo;
@@ -1693,6 +1694,34 @@ const char *getInitFunctionName(int n)
 	return initFunctionNames[n >= 0 && n < 3? n: 3];
 }
 
+#ifndef _PATH_DEVNULL
+#	define _PATH_DEVNULL "/dev/null"
+#endif
+static void reopen_fd(int fd, char* mode, FILE *of)
+{
+	struct stat sbuf;
+	FILE *f;
+	int rc;
+
+	errno = 0;
+	rc = fstat(fd, &sbuf);
+	if (rc == 0)
+	{
+		return;
+	}
+	else if (errno != EBADF)
+	{
+		exit(77);
+	}
+	f = freopen(_PATH_DEVNULL, mode, of);
+	if (f == 0 || fileno(f) != fd)
+	{
+		exit(88);
+	}
+
+	return;
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -1717,6 +1746,17 @@ int main(int argc, char **argv)
 	exec_context_changes_t ecc;
 
 	DBUG("main", "Entered, about to parse args");
+
+	fvwmlib_init_max_fd();
+	/* close open fds */
+	for (i = 3; i < fvwmlib_max_fd; i++)
+	{
+		close(i);
+	}
+	/* reopen stdin, stdout and stderr if necessary */
+	reopen_fd(0, "rb", stdin);
+	reopen_fd(1, "wb", stdout);
+	reopen_fd(2, "wb", stderr);
 
 	memset(&Scr, 0, sizeof(Scr));
 	/* for use on restart */
@@ -2060,7 +2100,8 @@ int main(int argc, char **argv)
 		if (dn == NULL)
 		{
 			fvwm_msg(
-				ERR, "main", "couldn't find default display (%s)",
+				ERR,
+				"main", "couldn't find default display (%s)",
 				XDisplayName(dn));
 		}
 		else
@@ -2135,7 +2176,6 @@ int main(int argc, char **argv)
 	}
 	FScreenInit(dpy);
 	x_fd = XConnectionNumber(dpy);
-	fd_width = GetFdWidth();
 
 #ifdef HAVE_X11_FD
 	if (fcntl(x_fd, F_SETFD, 1) == -1)

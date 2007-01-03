@@ -15,23 +15,33 @@ typedef struct msg_masks_t
 	unsigned long m2;
 } msg_masks_t;
 
-/* module linked list record*/
+/* module linked list record, only to be accessed by using the access macros
+ * below */
 typedef struct fmodule
 {
 	struct
 	{
 		unsigned is_cmdline_module;
-	} flags;
-	int readPipe;
-	int writePipe;
-	fqueue pipeQueue;
-	msg_masks_t PipeMask;
-	msg_masks_t NoGrabMask;
-	msg_masks_t SyncMask;
-	char *name;
-	char *alias;
-	struct fmodule *next;
+	} xflags;
+	int xreadPipe;
+	int xwritePipe;
+	fqueue xpipeQueue;
+	msg_masks_t xPipeMask;
+	msg_masks_t xNoGrabMask;
+	msg_masks_t xSyncMask;
+	char *xname;
+	char *xalias;
+	struct fmodule *xnext;
 } fmodule;
+
+#define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
+#define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
+#define MOD_READFD(m) ((m)->xreadPipe)
+#define MOD_WRITEFD(m) ((m)->xwritePipe)
+#define MOD_PIPEQUEUE(m) ((m)->xpipeQueue)
+#define MOD_PIPEMASK(m) ((m)->xPipeMask)
+#define MOD_NAME(m) ((m)->xname)
+#define MOD_ALIAS(m) ((m)->xalias)
 
 /*
  * I needed sendconfig off  to  identify open  pipes that want  config
@@ -57,7 +67,7 @@ typedef struct fmodule
  * Returns non zero if one of the specified messages is selected for the module
  */
 #define IS_MESSAGE_SELECTED(module, msg_mask) \
-	IS_MESSAGE_IN_MASK(&(module->PipeMask), (msg_mask))
+	IS_MESSAGE_IN_MASK(&(MOD_PIPEMASK(module)), (msg_mask))
 
 /*
  * M_SENDCONFIG for   modules to tell  fvwm that  they  want to  see each
@@ -82,8 +92,6 @@ void KillModule(fmodule *module);
 fmodule *module_get_next(fmodule *prev);
 /* get the number of modules in memory - and hopefully in the list */
 int countModules(void);
-/* add the module pipes to the fdsets*/
-void module_add_to_fdsets(fmodule *module, fd_set *in, fd_set *out);
 
 /*
  *     module communication functions

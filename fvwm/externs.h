@@ -40,6 +40,7 @@ extern XGCValues Globalgcv;
 extern unsigned long Globalgcm;
 extern int master_pid;
 extern Display *dpy;
+extern int x_fd;
 extern XContext FvwmContext;
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;

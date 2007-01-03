@@ -40,13 +40,22 @@
 #endif
 
 
-int GetFdWidth(void)
+fd_set_size_t fvwmlib_max_fd = (fd_set_size_t)-9999999;
+
+fd_set_size_t GetFdWidth(void)
 {
 #if HAVE_SYSCONF
 	return min(sysconf(_SC_OPEN_MAX),FD_SETSIZE);
 #else
 	return min(getdtablesize(),FD_SETSIZE);
 #endif
+}
+
+void fvwmlib_init_max_fd(void)
+{
+	fvwmlib_max_fd = GetFdWidth();
+
+	return;
 }
 
 
@@ -328,4 +337,5 @@ int fvwm_mkstemp (char *template)
 	__set_errno (EEXIST);
 	return -1;
 }
+
 #endif /* HAVE_SAFETY_MKSTEMP */
