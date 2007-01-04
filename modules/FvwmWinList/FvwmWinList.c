@@ -125,7 +125,7 @@ int win_border_y=0;
 int Clength;
 int Transient=0;
 int Pressed=0;
-int ButPressed;
+int ButPressed=-1;
 int Checked=0;
 int MinWidth=DEFMINWIDTH;
 int MaxWidth=DEFMAXWIDTH;

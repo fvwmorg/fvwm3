@@ -1,3 +1,8 @@
+2007-01-04  Viktor Griph  <griph@dd.chalmers.se>
+
+	* FvwmWinList/FvwmWinList.c:
+	init with no button pressed.
+
 2007-01-03  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* FvwmIconBox/FvwmIconBox.c (RedrawIcon):
