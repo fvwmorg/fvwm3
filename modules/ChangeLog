@@ -1,3 +1,11 @@
+2007-01-03  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmIconBox/FvwmIconBox.c (RedrawIcon):
+	bugfix: IconColorset's bg wasn't updated immediately.
+
+	(main):
+	fixed typo.
+
 2007-01-03  Renato Caldas  <seventhguardian@gmail.com>
 
 	* FvwmBacker/FvwmBacker.c:

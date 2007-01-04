@@ -1,3 +1,8 @@
+2007-01-03  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* NEWS:
+	FvwmIconBox IconColorset's bg wasn't updated immediately.
+
 2007-01-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.c (main):

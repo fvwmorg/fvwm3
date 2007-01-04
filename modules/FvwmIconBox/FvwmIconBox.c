@@ -227,7 +227,7 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  /* alise support */
+  /* aliases support */
   if (argc == 7 && argv[6] != NULL)
   {
     MyName = safemalloc(strlen(argv[6])+1);
@@ -805,6 +805,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 	else
 	{
 		cs = Iconcolorset;
+		XSetWindowBackground(dpy, item->IconWin, icon_back_pix);
 	}
 
 	/* icon pixmap */

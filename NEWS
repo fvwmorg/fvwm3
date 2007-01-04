@@ -33,6 +33,8 @@ Changes in beta release 2.5.20 (not released yet)
    - 64-bit architecture fix in FvwmProxy.
    - FvwmForm now work with balanced quoted command for Timeout.
    - FvwmPager correctly updates on window desk change.
+   - FvwmIconBox: fixed problem with IconColorset's background
+     color change not being applied immediately.
 
 -------------------------------------------------------------------
 
