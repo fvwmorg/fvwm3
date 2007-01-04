@@ -459,6 +459,8 @@
 	* fvwm/virtual.c (MoveViewport):
 	* fvwm/windowlist.c (CMD_WindowList):
 	* fvwm/windowshade.c (CMD_WindowShade):
+	put some of the window geometry members into a separate struct window_g
+	with members frame, normal, max, max_defect, max_offset
 
 2006-12-21  Viktor Griph  <griph@dd.chalmers.se>
 
