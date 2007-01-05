@@ -496,13 +496,20 @@ static int ParseBinding(
 	/* short circuit menu bindings for now. */
 	if ((context & C_MENU) == C_MENU)
 	{
-		return(menu_binding(dpy, type, button, keysym, context,
-				    modifier, action, windowName));
+		menu_binding(dpy, type, button, keysym, context,
+				    modifier, action, windowName);
+		/* ParseBinding returns the number of new bindings in pblist
+		 * menu bindings does not add to pblist, and should return 0 */
+		return 0;
 	}
 	/* short circuit placement bindings for now. */
 	if ((context & C_PLACEMENT) == C_PLACEMENT)
 	{
-		return(placement_binding(button,keysym,modifier,action));
+		placement_binding(button,keysym,modifier,action);
+		/* ParseBinding returns the number of new bindings in pblist
+		 * placement bindings does not add to pblist, and should
+		 * return 0 */
+		return 0;
 	}
 	/*
 	** Remove the "old" bindings if any
@@ -595,7 +602,8 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 		Scr.flags.has_mouse_binding_changed = 1;
 		Scr.buttons2grab = btg;
 	}
-	for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
+	for (b = Scr.AllBindings; count > 0 && b != NULL;
+	     count--, b = b->NextBinding)
 	{
 		activate_binding(b, type, True);
 	}

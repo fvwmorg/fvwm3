@@ -1,3 +1,11 @@
+2007-01-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* ChangeLog:
+	make my email less spider-friendly
+
+	* fvwm/bindings.c (binding_cmd, ParseBinding):
+	fix core
+
 2007-01-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/screen.h (ScreenInfo):
@@ -214,7 +222,7 @@
 	(HandleEnterNotify):
 	less disruptive way of restoring focus to the window it was stolen from
 
-2006-12-31  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-31  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/events.c (HandleEnterNotify):
 	restore focus to windows that had it stolen by
@@ -228,7 +236,7 @@
 	* fvwm/ConfigFvwmMenuDefaults:
 	all bindings are silent
 
-2006-12-30  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-30  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ConfigFvwmMenuDefaults:
 	make all numpad keys silent -- not all keyboads have a numpad
@@ -325,7 +333,7 @@
 	* fvwm/fvwm.c (SetRCDefaults):
 	read default config file after all other defaults
 
-2006-12-29  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ConfigFvwmMenuDefaults:
 	* fvwm/fvwm.c (SetRCDefaults):
@@ -361,7 +369,7 @@
 	* fvwm/geometry.c (maximize_adjust_offset):
 	fixed calculations of normal geometry when maximized
 
-2006-12-27  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/ConfigFvwmMenuDefaults:
@@ -377,7 +385,7 @@
 	* fvwm/menus.c (menuShortcuts):
 	fixed compiler warning.
 
-2006-12-27  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.1.in:
 	corrected mis-spelling
@@ -477,7 +485,7 @@
 	put some of the window geometry members into a separate struct window_g
 	with members frame, normal, max, max_defect, max_offset
 
-2006-12-21  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-21  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* AUTHORS:
@@ -491,12 +499,12 @@
 	(border_draw_title_stick_lines):
 	Applied Stippled patch by Thomas Adam with some fixes.
 
-2006-12-10  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	FvwmWinList button/list syncronization fixed (bug #1393)
 
-2006-12-09  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* configure.ac:
@@ -515,7 +523,7 @@
 	(__handle_click_to_focus):
 	Treat EWMH desktop as client window under click to focus. (#1492)
 
-2006-12-08  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* libs/Module.h (MX_REPLY, MAX_EXTENDED_MESSAGES, MAX_XMSG_MASK):
 	* fvwm/module_interface.c (CMD_Send_Reply):
@@ -523,22 +531,22 @@
 	* fvwm/commands.h:
 	Added Send_Reply module only command.
 
-2006-11-26  Viktor Griph  <griph@dd.chalmers.se>
+2006-11-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* libs/PictureUtils.c (init_static_colors_table):
 	fix fvwm for < 8 bit depth, bug #1677
 
-2006-11-20  Viktor Griph  <griph@dd.chalmers.se>
+2006-11-20  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/misc.c (IsRectangleOnThisPage):
 	new fix for signedness problems.
 
-2006-10-13  Viktor Griph  <griph@dd.chalmers.se>
+2006-10-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/misc.c (IsRectangleOnThisPage):
 	fix signedness problem with test introduced by gcc4 fix below.
 
-2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
+2006-09-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* libs/fvwmrect.h (fvwmrect_subtract_rectangles, size_rect, rectangle)
 	(signed_rectangle):
@@ -630,7 +638,7 @@
 	* fvwm/add_window.c (FetchWmProtocols):
 	use unsigned type for l_protocols.
 
-2006-09-17  Viktor Griph  <griph@dd.chalmers.se>
+2006-09-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/events.c (HandleFocusIn, HandleFocusOut):
 	* fvwm/focus.c (__set_focus_to_fwin):
@@ -689,7 +697,7 @@
 	fix offset and length args for XGetWindowProperty() (to support 64bit
 	architectures)
 
-2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/expand.c (expand_vars_extended):
@@ -697,7 +705,7 @@
 	* fvwm/conditional.c (__rc_matches_rcstring_consume):
 	fix matching break.
 
-2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/decorations.h (is_function_allowed):
 	* fvwm/decorations.c (__is_resize_allowed, is_function_allowed):
@@ -716,7 +724,7 @@
 	*do* map icon windows for pictured icons on move, but only if they end
 	up on the current desk
 
-2006-08-09  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/move_resize.c (__move_icon):
 	don't map icon windows for pictured icons on move
@@ -743,7 +751,7 @@
 	* fvwm/fvwm.h:
 	removed TRUE and FALSE
 
-2006-08-07  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	FvwmPager !IconTitle style bugfix.
@@ -804,7 +812,7 @@
 	changed the manpage to reflect the prefered style negation method,
 	that is, using the !* negation sign.
 
-2006-07-16  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.1.in (COMMAND EXPANSION):
 	removed documentation of filters.
@@ -814,14 +822,14 @@
 	(expand_args_extended, expand_vars_extended, expand_vars):
 	removed variable filter implementation and backslash-escaping.
 
-2006-07-15  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	News blurb for variable filters and backslash-escaping.
 	* fvwm/fvwm.1.in:
 	documentation of variable filters.
 
-2006-07-14  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/expand.c (check_first_filter, apply_filters)
 	(expand_args_extended, expand_vars_extended, expand_vars):
@@ -869,7 +877,7 @@
 	properly unquote arguments when expanding
 	removed the patch below
 
-2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/expand.c (expand_args_extended):
 	removed range check for positional parameters
@@ -877,7 +885,7 @@
 	changed back to PeekToken for single arguemnts.
 	improved some comments.
 
-2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/expand.c (expand_args_extended):
 	Fix segfault when called with a tokenless string for single arguments.
@@ -909,7 +917,7 @@
 	* fvwm/schedule.c (CMD_Schedule):
 	Fixed parsing of "Periodic" option.
 
-2006-07-11  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-11  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	Fix for tempfile vulnerabilities in FvwmCommand.
@@ -937,7 +945,7 @@
 	* fvwm/fvwm.1.in (-blackout):
 	updated the manual regarding the future remotion of -blackout
 
-2006-07-08  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* configure.ac:
@@ -984,7 +992,7 @@
 	(fvwmSetTerminate):
 	removed unused debug_term_signal.
 
-2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	Work around for Cygwin not requiering '_GNU_SOURCE' to use
@@ -1064,13 +1072,13 @@
 	renamed function PGraphicsCreateTransprency to
 	PGraphicsCreateTransparency
 
-2006-04-17  Viktor Griph  <griph@dd.chalmers.se>
+2006-04-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.1.in (COMMAND EXPANSION):
 	* fvwm/expand.c (expand_args_extended):
 	fixed $[n] to work exactly as $n, i.e. dequote the expansion.
 
-2006-04-16  Viktor Griph  <griph@dd.chalmers.se>
+2006-04-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/fvwm.1.in (COMMAND EXPANSION):
@@ -1087,12 +1095,12 @@
 	* fvwm/add_window.c (setup_window_structure):
 	added last direction to WindowShade command.
 
-2006-04-14  Viktor Griph  <griph@dd.chalmers.se>
+2006-04-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.1.in (All):
 	corrected typo
 
-2006-04-13  Viktor Griph  <griph@dd.chalmers.se>
+2006-04-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/fvwm.1.in (All):
@@ -1111,7 +1119,7 @@
 	now script honors `TMPDIR' env. variable and if it's not set it
 	fallback to `/tmp' directory when creating temporary file
 
-2006-04-06  Viktor Griph  <griph@dd.chalmers.se>
+2006-04-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.1.in:
 	changed description of the fvwmstyle resource usage
@@ -1138,7 +1146,7 @@
 	function was never used, even if it was considered secure by configure
 	script.
 
-2006-04-05  Viktor Griph  <griph@dd.chalmers.se>
+2006-04-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* AUTHORS:
 	added some more suff to the list of what I've done.
@@ -1226,12 +1234,12 @@
 	* perllib/FVWM/Module.pm.in:
 	corrected typos
 
-2006-03-21  Viktor Griph  <griph@dd.chalmers.se>
+2006-03-21  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/style.c (style_parse_focus_policy_style):
 	fix ISO C90 compability with unconsumed styleoption warnings
 
-2006-03-20  Viktor Griph  <griph@dd.chalmers.se>
+2006-03-20  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/events.c (HandlePropertyNotify):
 	fix for bug 1557/3950 (possible free of Untilted constant or
@@ -1259,7 +1267,7 @@
 	(AM_CHECK_FC):
 	fixed to cope with 4 digit version numbers
 
-2006-02-15  Viktor Griph  <griph@dd.chalmers.se>
+2006-02-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/style.c (parse_and_set_window_style)
@@ -1281,7 +1289,7 @@
 	(__explain_placement):
 	new placement style UnderMousePlacement
 
-2006-02-11  Viktor Griph  <griph@dd.chalmers.se>
+2006-02-11  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/fvwm.1.in (EdgeScroll):
@@ -1347,7 +1355,7 @@
 	* fvwm/add_window.c (MappedNotOverride):
 	Added XFlush after XSelectInput
 
-2006-01-28  Viktor Griph  <griph@dd.chalmers.se>
+2006-01-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/fvwm.c (main):
@@ -1373,7 +1381,7 @@
 	print a message to the console instead of ringing the bell when a
 	grab fails
 
-2006-01-14  Viktor Griph  <griph@dd.chalmers.se>
+2006-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	fixed typo (NEWS still said 2.5.15)
@@ -1433,19 +1441,19 @@
 	* acinclude.m4:
 	fixed aclocal warnings
 
-2006-01-01  Viktor Griph  <griph@dd.chalmers.se>
+2006-01-01  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/style.c (style_parse_button_style):
 	corrected typo in error message, and made errorous buttons not apply
 	(style_parse_one_style_option):
 	changed NoButton to use style_parse_button_style
 
-2005-12-23  Viktor Griph  <griph@dd.chalmers.se>
+2005-12-23  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* libs/Fft.h:
 	new fix for incompatible pointer type warning with gcc 3.4.
 
-2005-12-21  Viktor Griph  <griph@dd.chalmers.se>
+2005-12-21  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* AUTHORS:
@@ -1496,7 +1504,7 @@
 	* acconfig.h:
 	fixed detection of string.h/strings.h
 
-2005-11-26  Viktor Griph  <griph@dd.chalmers.se>
+2005-11-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* libs/Fft.c (FftGetFont):
 	fixed compiler warning with gcc 3.4.4
@@ -1531,7 +1539,7 @@
 	don't call get_menu_paint_item_parameters when the result is not used
 	(get_menu_paint_item_parameters):
 
-2005-11-10  Viktor Griph  <griph@dd.chalmers.se>
+2005-11-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ewmh.h (EWMH_CMD_Style):
 	* fvwm/ewmh_conf.c (EWMH_CMD_Style):
@@ -1554,7 +1562,7 @@
 	* fvwm/events.c (__handle_cr_on_icon):
 	properly handle icon border width; fixes an xterm active icon loop
 
-2005-10-27  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/borders.c (border_draw_one_border_part):
 	fix for the TiledPixmap borderstyle fix not to affect RootTransparent
@@ -1582,7 +1590,7 @@
 	* fvwm/frame.c (frame_reshape_border):
 	removed unused code
 
-2005-10-23  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-23  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/menustyle.c (menustyle_copy_face):
 	separated from menustyle_copy; color copies are reallocated.
@@ -1595,7 +1603,7 @@
 	* fvwm/colors.h (CopyColor):
 	added CopyColor
 
-2005-10-20  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-20  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/move_resize.c (__resize_window):
 	fix for not being able to finish resize with mouse when resizing on
@@ -1611,14 +1619,14 @@
 	* fvwm/menustyle.c (menustyle_copy):
 	fix for freeing color from sorce instead of destination.
 
-2005-10-19  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/functions.c (__execute_function):
 	fixed an error in yesterdays patch to complex fuctions. the commands
 	pressed window were not retored correctly after running move functions
 	without it, and functions would be run twice.
 
-2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-18  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.1.in:
 	added NoLayer to list of allowed options for WindowList command
@@ -1631,7 +1639,7 @@
 	(__run_complex_function_items, execute_complex_function):
 	fix for moving/resizing reference window usage with complex functions.
 
-2005-10-16  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/move_resize.c (__move_loop):
 	reimplemented a fix for the place with keyboard setting a button as
@@ -1643,13 +1651,13 @@
 	removed the previous patch as it breaks aborting window motion with the
 	escape key.
 
-2005-10-03  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-03  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/move_resize.c (__move_loop):
 	fixed bug where finishing movment with keyboard would set a random
 	button as used for placement.
 
-2005-09-30  Viktor Griph  <griph@dd.chalmers.se>
+2005-09-30  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS
 	* fvwm/frame.c (frame_setup_border):
@@ -1660,7 +1668,7 @@
 	* fvwm/frame.c (frame_setup_border):
 	fixed a Warning
 
-2005-09-29  Viktor Griph  <griph@dd.chalmers.se>
+2005-09-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/move_resize.c (__resize_window):
@@ -1675,7 +1683,7 @@
 	* fvwm/frame.c (frame_create_move_resize_args):
 	shaded windows use get_client_geometry for client geometry.
 
-2005-09-25  Viktor Griph  <griph@dd.chalmers.se>
+2005-09-25  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* AUTHORS:
@@ -1697,7 +1705,7 @@
 	Replaced window flag placed_wb3 with placed_by_button
 	FvwmWindow member. Added window condition PlacedByButton.
 
-2005-09-22  Viktor Griph  <griph@dd.chalmers.se>
+2005-09-22  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* AUTHORS:
@@ -1711,7 +1719,7 @@
 	* fvwm/fvwm.1.in:
 	added MouseWheel and ScrollOffPage menu styles
 
-2005-09-20  Viktor Griph  <griph@dd.chalmers.se>
+2005-09-20  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* fvwm/menus.c (append_item_to_menu):
@@ -1723,7 +1731,7 @@
 	* fvwm/expand.c (expand_vars):
 	warn on usage of obsolete one-letter variables
 
-2005-09-19  Viktor Griph  <griph@dd.chalmers.se>
+2005-09-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
 	* AUTHORS:
@@ -1812,7 +1820,7 @@
 	rename previously added Test conditions to EnvIsSet and EnvMatch,
 	tweak the logic when the variable is set, but empty
 
-2005-08-13  Viktor Griph  <griph@dd.chalmers.se>
+2005-08-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/conditional.c (CMD_Test):
 	* fvwm/fvwm.1.in:
