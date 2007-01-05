@@ -618,8 +618,6 @@ static FvwmWindow *__restore_focus_after_unmap(
 static void __activate_window_by_command(
 	F_CMD_ARGS, int is_focus_by_flip_focus_cmd)
 {
-	int dx;
-	int dy;
 	int cx;
 	int cy;
 	Bool do_not_warp;
@@ -669,26 +667,39 @@ static void __activate_window_by_command(
 			cx = fw->g.frame.x + fw->g.frame.width/2;
 			cy = fw->g.frame.y + fw->g.frame.height/2;
 		}
-		dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
-		dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
-		MoveViewport(dx,dy,True);
+		if (
+			cx < 0 || cx >= Scr.MyDisplayWidth ||
+			cy < 0 || cy >= Scr.MyDisplayHeight)
+		{
+			int dx;
+			int dy;
+
+			dx = ((cx + Scr.Vx) / Scr.MyDisplayWidth) *
+				Scr.MyDisplayWidth;
+			dy = ((cy + Scr.Vy) / Scr.MyDisplayHeight) *
+				Scr.MyDisplayHeight;
+			MoveViewport(dx, dy, True);
+		}
+#if 0 /* can not happen */
 		/* If the window is still not visible, make it visible! */
-		if (fw->g.frame.x + fw->g.frame.height < 0 ||
-		    fw->g.frame.y + fw->g.frame.width < 0 ||
-		    fw->g.frame.x > Scr.MyDisplayWidth ||
-		    fw->g.frame.y > Scr.MyDisplayHeight)
+		if (fw->g.frame.x + fw->g.frame.width < 0 ||
+		    fw->g.frame.y + fw->g.frame.height < 0 ||
+		    fw->g.frame.x >= Scr.MyDisplayWidth ||
+		    fw->g.frame.y >= Scr.MyDisplayHeight)
 		{
 			frame_setup_window(
-				fw, 0, 0, fw->g.frame.width, fw->g.frame.height,
-				False);
-			if (FP_DO_WARP_POINTER_ON_FOCUS_FUNC(
-				    FW_FOCUS_POLICY(fw)))
+				fw, 0, 0, fw->g.frame.width,
+				fw->g.frame.height, False);
+			if (
+				FP_DO_WARP_POINTER_ON_FOCUS_FUNC(
+					FW_FOCUS_POLICY(fw)))
 			{
 				FWarpPointerUpdateEvpos(
 					exc->x.elast, dpy, None, Scr.Root, 0,
 					0, 0, 0, 2, 2);
 			}
 		}
+#endif
 	}
 	UngrabEm(GRAB_NORMAL);
 

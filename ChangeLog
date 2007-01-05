@@ -1,3 +1,13 @@
+2007-01-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/screen.h (ScreenInfo):
+	made MyDisplayWidth and MyDisplayHeight signed integer values to avoid
+	casting signed values in calculations to be cast to unsigned
+
+	* fvwm/focus.c (__activate_window_by_command):
+	don't warp the viewport if the center of the window is already in view
+	fixed a bug in window positioning
+
 2007-01-03  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* NEWS:

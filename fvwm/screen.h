@@ -333,9 +333,9 @@ typedef struct ScreenInfo
 	/* number of screens on display */
 	int NumberOfScreens;
 	/* my copy of DisplayWidth(dpy, screen) */
-	unsigned int MyDisplayWidth;
+	int MyDisplayWidth;
 	/* my copy of DisplayHeight(dpy, screen) */
-	unsigned int MyDisplayHeight;
+	int MyDisplayHeight;
 
 	/* the head of the fvwm window list */
 	FvwmWindow FvwmRoot;
