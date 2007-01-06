@@ -1,9 +1,14 @@
-2006-12-09  Viktor Griph  <griph@dd.chalmers.se>
+2007-01-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* todo-2.6 (todo):
+	close C.5. Tested placement with gtk+2 sample app, works well.
+
+2006-12-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* ANNOUNCE:
 	updated for 2.5.19 release
 
-2006-12-08  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* todo-2.6 (todo):
 	added B11: bug #1647, default charset selection.
@@ -11,7 +16,7 @@
 	* FAQ:
 	updated some outdated URLs.
 
-2006-09-17  Viktor Griph  <griph@dd.chalmers.se>
+2006-09-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* todo-2.6:
 	finished C.23
@@ -26,7 +31,7 @@
 	* ANNOUNCE:
 	updated for 2.5.17 release
 
-2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* todo-vars:
 	add a line indicating the need for a 'raw'-filter.
@@ -67,12 +72,12 @@
 	* DEVELOPERS:
 	Updated.
 
-2005-10-24  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-24  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FAQ:
 	Changed CenterWindow function in Q7.14 to work with oversized windows.
 
-2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-18  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* DEVELOPERS (Preparations):
 	fixed a typo
