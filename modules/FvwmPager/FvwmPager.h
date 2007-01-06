@@ -1,7 +1,7 @@
 /* -*-c-*- */
-#include <libs/Picture.h>
-#include <libs/vpacket.h>
-#include <libs/Flocale.h>
+#include "libs/Picture.h"
+#include "libs/vpacket.h"
+#include "libs/Flocale.h"
 
 typedef struct ScreenInfo
 {
@@ -173,7 +173,6 @@ void change_colorset(int colorset);
 void initialize_pager(void);
 void initialize_viz_pager(void);
 Pixel GetColor(char *name);
-void nocolor(char *a, char *b);
 void DispatchEvent(XEvent *Event);
 void ReConfigure(void);
 void ReConfigureAll(void);

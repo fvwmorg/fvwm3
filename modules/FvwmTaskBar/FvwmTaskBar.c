@@ -79,7 +79,6 @@
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"
 #include "List.h"
-#include "Colors.h"
 #include "Mallocs.h"
 #include "Goodies.h"
 #include "Start.h"

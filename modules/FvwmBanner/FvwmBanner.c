@@ -342,11 +342,6 @@ void GetImageFile(char *file, char *path)
 	}
 }
 
-void nocolor(char *a, char *b)
-{
- fprintf(stderr,"FvwmBanner: can't %s %s\n", a,b);
-}
-
 static void parseOptions(int fd[2])
 {
   char *tline= NULL;

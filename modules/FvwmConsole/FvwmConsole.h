@@ -13,14 +13,13 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "time.h"
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <signal.h>
 #include <errno.h>
 
-#include <libs/fvwmlib.h>
-#include <libs/Module.h>
+#include "libs/fvwmlib.h"
+#include "libs/Module.h"
 #include "libs/fvwmsignal.h"
 
 #define S_NAME  "/.FvwmConsole-Socket"

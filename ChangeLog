@@ -1,3 +1,23 @@
+2007-01-05  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* fvwm/ewmh_intern.h:
+	compilation fix with EWMH_DEBUG enabled: include <sys/times.h>
+	instead of <time.h>.
+
+	* fvwm/windowlist.h:
+	removed unneeded file.
+
+	* fvwm/Makefile.am:
+	removed windowlist.h from build list.
+
+	* libs/PictureUtils.c:
+	include "ftime.h" instead of <time.h>.
+	fvwmlib.h header name should be in double quotes not in angle
+	brackets.
+
+	* libs/System.c:
+	include "ftime.h" instead of <sys/time.h>.
+
 2007-01-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* ChangeLog:

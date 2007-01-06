@@ -1,3 +1,58 @@
+2007-01-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmConsole/FvwmConsole.c (main):
+	don't check the return code of safemalloc - it either works or exits
+
+2007-01-05  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmConsole/FvwmConsole.c
+	removed prototype of `CloseSocket' function which isn't implemented
+	anywhere.
+
+	(server):
+	removed superfluous exit calls because ErrMsg already contains it.
+	fixed S_name allocated size.
+
+	* FvwmConsole/FvwmConsole.h:
+	removed unnedeed include "time.h".
+
+	* FvwmCpp/FvwmCpp.c:
+	* FvwmM4/FvwmM4.c:
+	removed unneeded include <sys/socket.h>.
+
+	* FvwmProxy/FvwmProxy.h:
+	removed unneeded include <sys/time.h>.
+
+	* FvwmIconBox/FvwmIconBox.h:
+	removed unnedeed include "fvwm/fvwm.h".
+
+	* FvwmConsole/FvwmConsole.h:
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmIdent/FvwmIdent.h:
+	* FvwmPager/FvwmPager.h:
+	* FvwmWharf/Wharf.h:
+	when including header files not from standard library their names
+	should be put in double quotes not in angle brackets.
+
+	* FvwmBanner/FvwmBanner.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmIdent/FvwmIdent.h:
+	* FvwmPager/FvwmPager.h:
+	* FvwmWharf/Wharf.h:
+	removed unused `nocolor' function.
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Goodies.c:
+	removed unneeded include "Colors.h".
+
+	* FvwmTaskBar/Makefile.am:
+	removed Colors.[ch] from build list.
+
+	* FvwmTaskBar/Colors.c:
+	* FvwmTaskBar/Colors.h:
+	removed files
+
 2007-01-04  Viktor Griph  <griph@dd.chalmers.se>
 
 	* FvwmWinList/FvwmWinList.c:

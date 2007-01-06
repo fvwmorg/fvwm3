@@ -9,7 +9,6 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <sys/time.h>
 #include <ctype.h>
 
 #include <X11/Xlib.h>

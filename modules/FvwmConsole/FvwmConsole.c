@@ -39,7 +39,6 @@ char *S_name;  /* socket name */
 
 void server(void);
 RETSIGTYPE DeadPipe(int);
-void CloseSocket(void);
 void ErrMsg(char *msg);
 void SigHandler(int);
 
@@ -98,10 +97,7 @@ int main(int argc, char *argv[])
   strcat(client, "C");
 
 
-  if ((eargv =(char **)safemalloc((argc+12)*sizeof(char *))) == NULL) {
-	ErrMsg("allocation");
-  }
-
+  eargv = (char **)safemalloc((argc+12)*sizeof(char *));
   /* copy arguments */
   eargv[0] = XTERM;
   j = 1;
@@ -195,12 +191,11 @@ void server (void)
   /* make a socket  */
   if ((s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0 ) {
 	ErrMsg("socket");
-	exit(1);
   }
 
   /* name the socket */
   home = getenv("FVWM_USERDIR");
-  S_name = safemalloc(strlen(home) + sizeof(S_NAME) + 11);
+  S_name = safemalloc(strlen(home) + sizeof(S_NAME) + 1);
   strcpy(S_name, home);
   strcat(S_name, S_NAME);
 
@@ -215,21 +210,18 @@ void server (void)
   umask(0077);
   if (bind(s, (struct sockaddr *)&sas,len) < 0) {
 	ErrMsg("bind");
-	exit(1);
   }
 
   /* listen to the socket */
   /* set backlog to 5 */
   if (listen(s,5) < 0) {
     ErrMsg("listen");
-	exit(1);
   }
 
   /* accept connections */
   clen = sizeof(csas);
   if ((Ns = accept(s, (struct sockaddr *)&csas, &clen)) < 0) {
 	ErrMsg("accept");
-	exit(1);
   }
 
   /* send config lines to Client */

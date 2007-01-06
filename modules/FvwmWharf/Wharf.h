@@ -1,6 +1,6 @@
 /* -*-c-*- */
 #include "config.h"
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
 
 /*
  *
@@ -10,7 +10,6 @@
 extern void   CreateWindow(void);
 extern void   CreateVizWindow(void);
 extern Pixel  GetColor(char *name);
-extern void   nocolor(char *a, char *b);
 extern void   RedrawWindow(Window *win, int firstbutton, int newbutton, int num_rows, int num_columns);
 extern void   match_string(char *tline);
 #ifdef ENABLE_SOUND

@@ -267,7 +267,7 @@ int fvwm_mkstemp (char *TEMPLATE)
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/time.h>
+#include "ftime.h"
 
 #define __set_errno(val) errno = (val)
 

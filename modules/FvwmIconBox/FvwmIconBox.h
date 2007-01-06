@@ -5,7 +5,7 @@
  *
  */
 #include "libs/fvwmlib.h"
-#include <libs/vpacket.h>
+#include "libs/vpacket.h"
 #include "libs/Flocale.h"
 
 struct icon_info;
@@ -15,7 +15,6 @@ extern void   CreateWindow(void);
 extern Pixel  GetColor(char *name);
 extern Pixel  GetHilite(Pixel background);
 extern Pixel  GetShadow(Pixel background);
-extern void   nocolor(char *a, char *b);
 extern void   RedrawWindow(XEvent *evp);
 extern void   match_string(char *tline);
 extern void   Loop(void);
@@ -164,8 +163,6 @@ extern int icon_relief;
 #define RIGHT 1
 #define TOP 2
 #define BOTTOM 3
-
-#include "fvwm/fvwm.h"
 
 #define NO_CLICK 0
 #define CLICK 1

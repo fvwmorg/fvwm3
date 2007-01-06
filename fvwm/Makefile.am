@@ -20,7 +20,7 @@ fvwm_SOURCES = \
 	misc.h modconf.h module_interface.h move_resize.h placement.h \
 	read.h repeat.h execcontext.h schedule.h screen.h session.h stack.h \
 	style.h \
-	update.h virtual.h window_flags.h windowlist.h frame.h colorset.h \
+	update.h virtual.h window_flags.h frame.h colorset.h \
 	\
 	menus.c style.c events.c move_resize.c add_window.c builtins.c \
 	borders.c icons.c fvwm.c module_interface.c frame.c virtual.c stack.c \

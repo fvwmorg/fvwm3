@@ -23,13 +23,13 @@
 #include <stdio.h>
 #include <signal.h>
 #include <ctype.h>
-#include <time.h>
 #include <math.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
 
-#include <fvwmlib.h>
+#include "fvwmlib.h"
+#include "ftime.h"
 #include "PictureBase.h"
 #include "PictureUtils.h"
 #include "PictureDitherMatrice.h"

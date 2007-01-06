@@ -9,7 +9,7 @@
 /* #define EWMH_DEBUG */
 #ifdef EWMH_DEBUG
 #include <stdarg.h>
-#include <time.h>
+#include <sys/times.h>
 #include "ftime.h"
 #endif
 

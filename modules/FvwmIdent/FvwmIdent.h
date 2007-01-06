@@ -1,7 +1,7 @@
 /* -*-c-*- */
 #include "libs/fvwmlib.h"
-#include <fvwm/fvwm.h>
-#include <libs/vpacket.h>
+#include "fvwm/fvwm.h"
+#include "libs/vpacket.h"
 
 struct target_struct
 {
@@ -49,7 +49,6 @@ void PixmapDrawWindow(int h, int w);
 void DrawItems(Drawable d, int x, int y, int w, int h);
 void change_window_name(char *str);
 Pixel GetColor(char *name);
-void nocolor(char *a, char *b);
 void DestroyList(void);
 void AddToList(char *, char *);
 void MakeList(void);

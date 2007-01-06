@@ -36,7 +36,6 @@
 #include <pwd.h>
 #include <sys/param.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
 
 #include <X11/Xlib.h>

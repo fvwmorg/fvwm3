@@ -1694,11 +1694,6 @@ void GetIconwinSize(int *dx, int *dy)
   *dy = icon_win_height - *dy;
 }
 
-void nocolor(char *a, char *b)
-{
- fprintf(stderr,"%s: can't %s %s\n", MyName, a,b);
-}
-
 void MySendFvwmPipe(int *fd, char *message, unsigned long window)
 {
   long w;
