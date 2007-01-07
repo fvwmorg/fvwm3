@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
 		eargv[j-1] = module->user_argv[i];
 	}
 	eargv[j] = NULL;
-	signal(SIGCHLD, ReapChildren);
+	signal(SIGCHLD, /*!!!ReapChildren*/SIG_DFL);
 	/* Dead pipes mean fvwm died */
 	signal(SIGPIPE, DeadPipe);
 	signal(SIGINT, SigHandler);

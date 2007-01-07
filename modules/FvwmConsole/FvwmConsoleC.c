@@ -36,9 +36,6 @@ void sclose(int foo)
 		fclose(sp);
 		sp = NULL;
 	}
-#if 1 /*!!!*/
-	fprintf(stderr, "C exit 1 (sig %d)\n", foo);
-#endif
 	exit(0);
 
 	SIGNAL_RETURN;
@@ -101,9 +98,6 @@ int main(int argc, char *argv[])
 	s = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (s < 0)
 	{
-#if 1 /*!!!*/
-		fprintf(stderr, "C errmsg 1\n");
-#endif
 		ErrMsg ("socket");
 	}
 	/* name the socket and obtain the size of it*/
@@ -113,25 +107,16 @@ int main(int argc, char *argv[])
 	rc = connect(s, (struct sockaddr *)&sas, len);
 	if (rc < 0)
 	{
-#if 1 /*!!!*/
-		fprintf(stderr, "C errmsg 2\n");
-#endif
 		ErrMsg("connect");
 	}
 	sp = fdopen(s, "r");
 	if (sp == NULL)
 	{
-#if 1 /*!!!*/
-		fprintf(stderr, "C errmsg 3\n");
-#endif
 		ErrMsg("fdopen");
 	}
 	pid = fork();
 	if (pid == -1)
 	{
-#if 1 /*!!!*/
-		fprintf(stderr, "C errmsg 4\n");
-#endif
 		ErrMsg("fork");
 	}
 	if (pid == 0)
