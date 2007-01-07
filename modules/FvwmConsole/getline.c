@@ -21,8 +21,20 @@
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
 #include <readline/history.h>
+#define fvwm_rl_bind_key(x, y) rl_bind_key(x, y)
+#define fvwm_readline(x) readline(x)
+#define fvwm_add_history(cmd) add_history(cmd)
+#define fvwm_append_history(x, y) append_history(x, y)
+#define fvwm_history_truncate_file(x, y) history_truncate_file(x, y)
+#define fvwm_read_history_range(x, y, z) read_history_range(x, y, z)
 #define USE_READLINE 1
 #else
+#define fvwm_rl_bind_key(x, y) -1
+#define fvwm_readline(x) NULL
+#define fvwm_add_history(cmd)
+#define fvwm_append_history(x, y) -1
+#define fvwm_history_truncate_file(x, y) -1
+#define fvwm_read_history_range(x, y, z) -1
 #define USE_READLINE 0
 #endif
 
@@ -52,7 +64,7 @@ char *get_line(void)
 	 */
 	if (!done_init)
 	{
-		rl_bind_key('\t', rl_insert);
+		(void)fvwm_rl_bind_key('\t', rl_insert);
 		/* get history from file */
 		home = getenv("FVWM_USERDIR");
 		h_file = safemalloc(strlen(home) + sizeof(HISTFILE) + 1);
@@ -69,7 +81,7 @@ char *get_line(void)
 		}
 		else
 		{
-			read_history_range(h_file, 0, HISTSIZE);
+			(void)fvwm_read_history_range(h_file, 0, HISTSIZE);
 		}
 		done_init = 1;
 	}
@@ -89,9 +101,11 @@ char *get_line(void)
 		}
 
 		/* Get a line from the user. */
-		line  = readline(prompt);
+		line  = fvwm_readline(prompt);
 		if (line == NULL)
+		{
 			return NULL;
+		}
 
 		/* Make sure we have enough space for the new line */
 		linelen = strlen(line);
@@ -101,7 +115,7 @@ char *get_line(void)
 				stderr, "line too long %d chars max %d \a\n",
 				len + linelen, MAX_COMMAND_SIZE - 2);
 			strncat(cmd, line, MAX_COMMAND_SIZE - len - 2);
-			add_history(cmd);
+			fvwm_add_history(cmd);
 			break;
 		}
 
@@ -123,9 +137,9 @@ char *get_line(void)
 	/* If the command has any text in it, save it on the history. */
 	if (*cmd != '\0')
 	{
-		add_history(cmd);
-		append_history(1, h_file);
-		history_truncate_file(h_file, HISTSIZE);
+		fvwm_add_history(cmd);
+		(void)fvwm_append_history(1, h_file);
+		(void)fvwm_history_truncate_file(h_file, HISTSIZE);
 	}
 	cmd[len]   = '\n';
 	cmd[len+1] = '\0';

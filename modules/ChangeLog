@@ -1,3 +1,8 @@
+2007-01-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmConsole/getline.c (get_line):
+	fixed compilation without readline
+
 2007-01-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmTaskBar/FvwmTaskBar.c (HandleButtonRelease):
