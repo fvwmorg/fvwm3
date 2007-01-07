@@ -1,5 +1,9 @@
 2007-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* ONEWS:
+	* NEWS:
+	moved the NEWS of 2.2.x and 2.3.x to ONEWS
+
 	* libs/fio.c (fvwm_send):
 	compile fixes
 
