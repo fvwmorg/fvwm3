@@ -37,6 +37,8 @@ Changes in beta release 2.5.20 (not released yet)
      color change not being applied immediately.
    - Allow FvwmConsole to run a terminal via rxvtc or urxvtc.
      FvwmConsole dies if no client connects within one minute.
+   - Expansion of variables in FvwmTaskBar launch button commands
+     fixed.
 
 -------------------------------------------------------------------
 

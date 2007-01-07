@@ -1,3 +1,18 @@
+2007-01-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* FvwmTaskBar/FvwmTaskBar.c (HandleButtonRelease):
+	expand variables for button commands. (In particluar default Start
+	action, which sent bad command to fvwm.)
+
+	* FvwmTaskBar/FvwmTaskBar.c (CheckForTip, HandleButtonRelease)
+	(HandleButtonRelease, HandleEvents, HandleEvents)
+	* FvwmTaskBar/Start.h (MouseInStartButton):
+	* FvwmTaskBar/Start.c (MouseInStartButton):
+	return found button x-position in MouseInStartButton
+
+	* FvwmTaskBar/Start.c (MouseInStartButton):
+	removed useless double loop
+
 2007-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmConsole/FvwmConsole.c (main):
@@ -70,7 +85,7 @@
 	* FvwmTaskBar/Colors.h:
 	removed files
 
-2007-01-04  Viktor Griph  <griph@dd.chalmers.se>
+2007-01-04  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmWinList/FvwmWinList.c:
 	init with no button pressed.
@@ -92,7 +107,7 @@
 	* FvwmBacker/FvwmBanner.c (main):
 	replaced fd_width by x_fd+1 (the only fd) in the select() call
 
-2007-01-02  Viktor Griph  <griph@dd.chalmers.se>
+2007-01-02  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/FvwmPager.c (list_configure):
 	fix updating window desk
@@ -102,7 +117,7 @@
 	* FvwmGtk/dialog.c (dialog_entry):
 	Fix entry widget options with no argv[1].
 
-2006-12-29  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmForm/FvwmForm.c (ct_Timeout):
 	fix parsing of quoted command in Timout
@@ -127,7 +142,7 @@
 	* FvwmProxy/FvwmProxy.1.in:
 	Documentation fixes.
 
-2006-12-10  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):
 	Add buttons when items are added to make sure the lists are synced.
@@ -141,12 +156,12 @@
 	* FvwmWinList/ButtonArray.c (ButtonNew):
 	Initialized alloced memory to 0.
 
-2006-12-09  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmCommand/FvwmCommand.c (main):
 	Fix reading lockfile.
 
-2006-12-08  Viktor Griph  <griph@dd.chalmers.se>
+2006-12-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/FvwmPager.h:
 	* FvwmPager/x_pager.c (do_scroll):
@@ -158,7 +173,7 @@
 	* FvwmCommand/FvwmCommandS.c (server, process_message):
 	recieve messages from Send_Reply, and print them on -i1.
 
-2006-11-25  Viktor Griph  <griph@dd.chalmers.se>
+2006-11-25  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/FvwmPager.c (handle_config_win_package, list_add)
 	(list_configure):
@@ -168,7 +183,7 @@
 	* FvwmPager/FvwmPager.c (list_add):
 	make new windows handle allowed actions correctly.
 
-2006-10-08  Viktor Griph  <griph@dd.chalmers.se>
+2006-10-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmProxy/FvwmProxy.c (FindProxyGroupWithWindowName):
 	fix declaration after statement
@@ -177,7 +192,7 @@
 	* FvwmProxy/FvwmProxy.c:
 	added window groups and proxy slots
 
-2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
+2006-09-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmScript/Widgets/List.c (EvtMouseList):
 	make sure rectT.height is given a value.
@@ -206,7 +221,7 @@
 	* FvwmBanner/FvwmBanner.c (PImageIcon):
 	change dimensions and allocation counts to unsigned types.
 
-2006-09-12  Viktor Griph  <griph@dd.chalmers.se>
+2006-09-12  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
 	correctly handle trailing whitespace after geometry
@@ -227,7 +242,7 @@
 	  change offset and length args for XGetWindowProperty() to long
 	  (to support 64bit architectures)
 
-2006-08-26  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/FvwmPager.h (pager_window):
 	* FvwmPager/FvwmPager.c (list_configure):
@@ -236,7 +251,7 @@
 	(IconMoveWindow):
 	read allowed actions from fvwm instead of using ewmh.
 
-2006-08-10  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/FvwmPager.h (pager_window):
 	* FvwmPager/x_pager.c (update_ewmh_allowed_actions)
@@ -246,12 +261,12 @@
 	(MoveWindow, IconMoveWindow):
 	removed my #if 0:ed code.
 
-2006-08-09  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/x_pager.c (MoveWindow):
 	remove non-working icon-bug workaround
 
-2006-08-09  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/x_pager.c (Scroll):
 	spacing
@@ -334,7 +349,7 @@
 	(print_button_info):
 	fixed compiler warnings.
 
-2006-08-07  Viktor Griph  <griph@dd.chalmers.se>
+2006-08-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/x_pager.c (IconMoveWindow, MoveWindow)
 	make icons with !IconTitle style moveable.
@@ -365,7 +380,7 @@
 	Created "CreateTabberWithWin" function to put focused window into
 	a new tabber at the same position as the window.
 
-2006-07-13  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmCommand/fifos.c (fifos_get_default_name):
 	fix allocation when using FVWM_USERDIR
@@ -387,7 +402,7 @@
 	* modules/FvwmPager/FvwmPager.c:
 	Compilation fix when --enable-debug-msgs configure option set.
 
-2006-07-11  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-11  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmCommand/FvwmCommand.1.in:
 	Documented the FVWM_USERDIR fallback.
@@ -408,7 +423,7 @@
 	Make sure FvwmCommandS and FvwmCommand use the same default names
 	by moving the code from FvwmCommand to a separate common function.
 
-2006-07-05  Viktor Griph  <griph@dd.chalmers.se>
+2006-07-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmConsole/FvwmConsoleC.c (main):
 	* FvwmConsole/getline.c:
@@ -443,7 +458,7 @@
 	* FvwmTaskBar/Goodies.c:
 	corrected typos
 
-2006-04-26  Viktor Griph  <griph@dd.chalmers.se>
+2006-04-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPager/FvwmPag
 	* FvwmPager/FvwmPager.h (HandleScrollDone,list_string):
@@ -718,13 +733,13 @@
 	(ParseButton):
 	fixed the "center" button option
 
-2005-10-18  Viktor Griph  <griph@dd.chalmers.se>
+2005-10-18  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPerl/FvwmPerl:
 	* FvwmPerl/FvwmPerl.in (Examples):
 	fixed typo (WrapToWindow -> WarpToWindow)
 
-2005-09-25  Viktor Griph  <griph@dd.chalmers.se>
+2005-09-25  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmCommand/FvwmCommand.c (list_configure):
 	removed print of removed placed_wb3 flag
@@ -802,7 +817,7 @@
 	relief; instead, shrink the relief for the moment, but remember the
 	original value
 
-2005-06-28  Viktor Griph  <griph@dd.chalmers.se>
+2005-06-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmDebug/FvwmDebug.in:
 	register handler for extended messages

@@ -1357,7 +1357,7 @@ void CheckForTip(int x, int y)
   int  num, bx, by, trunc;
   char *name;
 
-  if (MouseInStartButton(x, y, &whichButton, &startButtonPressed)) {
+  if (MouseInStartButton(x, y, &whichButton, &startButtonPressed, NULL)) {
     if((!whichButton) && (First_Start_Button->isStartButton))
     {
       if (Tip.type != START_TIP) PopupTipWindow(3, 0, _("Click here to start"));
@@ -1406,6 +1406,7 @@ void HandleButtonRelease(
 	XEvent *evp, Time *NewTimestamp, int *redraw)
 {
 	int  num = 0;
+	int tmp_x;
 	char *tmp;
 
 	*NewTimestamp = evp->xbutton.time;
@@ -1416,23 +1417,22 @@ void HandleButtonRelease(
 	{
 		if (MouseInStartButton(
 			evp->xbutton.x, evp->xbutton.y,
-			&whichButton, &startButtonPressed))
+			&whichButton, &startButtonPressed, &tmp_x))
 		{
 			if (whichButton == ButtonPressed)
 			{
+				rectangle r;
+				Window tmpw;
+				r.x = tmp_x;
+				r.y = 0;
+				r.width = StartAndLaunchButtonsWidth;
+				r.height = StartAndLaunchButtonsHeight;
+				XTranslateCoordinates(
+					dpy, win, Root, r.x, r.y,
+					&r.x, &r.y, &tmpw);
 				if ((First_Start_Button->buttonStartCommand
 				     != NULL) && (startButtonPressed))
 				{
-					rectangle r;
-					Window tmpw;
-					r.x = 0;
-					r.y = 0;
-					r.width =
-						StartAndLaunchButtonsWidth;
-					r.height = StartAndLaunchButtonsHeight;
-					XTranslateCoordinates(
-						dpy, win, Root, r.x, r.y,
-						&r.x, &r.y, &tmpw);
 					tmp = module_expand_action(
 						dpy, screen,
 						First_Start_Button->
@@ -1453,13 +1453,26 @@ void HandleButtonRelease(
 				}
 				else
 				{
+					char *tmp2;
 					tmp = (char *)safemalloc(
 						100 * sizeof(char));
-					/* fix this later */
+					*tmp = 0;
+
 					getButtonCommand(
 						whichButton, tmp,
 						evp->xbutton.button);
-					SendText(Fvwm_fd, tmp, 0);
+					tmp2 = module_expand_action(
+						dpy, screen, tmp, &r, NULL,
+						NULL);
+					if (tmp2)
+					{
+						SendText(Fvwm_fd, tmp2, 0);
+						free(tmp2);
+					}
+					else if (*tmp != 0)
+					{
+						SendText(Fvwm_fd, tmp, 0);
+					}
 					free(tmp);
 				}
 			}
@@ -1499,7 +1512,7 @@ void HandleButtonRelease(
 
 	if (MouseInStartButton(
 		evp->xbutton.x, evp->xbutton.y, &whichButton,
-		&startButtonPressed))
+		&startButtonPressed, NULL))
 	{
 		*redraw = 0;
 		usleep(50000);
@@ -1541,7 +1554,7 @@ void HandleEvents(
 						       * anymore */
 		if (MouseInStartButton(
 			evp->xbutton.x, evp->xbutton.y, &whichButton,
-			&startButtonPressed))
+			&startButtonPressed, NULL))
 		{
 			StartButtonUpdate(NULL, whichButton, BUTTON_DOWN);
 			ButtonPressed = whichButton;
@@ -1693,7 +1706,7 @@ void HandleEvents(
 		*NewTimestamp = evp->xmotion.time;
 		if (MouseInStartButton(
 			evp->xmotion.x, evp->xbutton.y, &whichButton,
-			&startButtonPressed))
+			&startButtonPressed, NULL))
 		{
 			CheckForTip(evp->xmotion.x, evp->xmotion.y);
 			break;

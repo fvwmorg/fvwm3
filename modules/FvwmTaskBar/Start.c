@@ -572,33 +572,29 @@ void StartButtonDraw(int force, XEvent *evp)
 
 /* Returns 1 if in the start or a minibutton, 0 if not; index of button
  * pressed put in startButtonPressed */
-int MouseInStartButton(int x, int y, int *whichButton, Bool *startButtonPressed)
+int MouseInStartButton(int x, int y, int *whichButton,
+		       Bool *startButtonPressed, int *button_x)
 {
-  int i=0, j=0;
+  int i = 0;
   int tempsum = 0;
 
   StartAndLaunchButtonItem *tempPtr = First_Start_Button;
-  StartAndLaunchButtonItem *tempPtr2 = First_Start_Button;
   *startButtonPressed = False;
 
   while(tempPtr != NULL)
     {
-      tempsum = 0;
-      j = 0;
-      tempPtr2 = First_Start_Button;
-      while((tempPtr2 != NULL) && (j<i))
-      {
-	tempsum+=tempPtr2->width;
-	tempPtr2 = tempPtr2->tail;
-	j++;
-      }
       if (x >= tempsum && x < tempsum+tempPtr->width && y > 0 && y < First_Start_Button->height)
       {
 	*whichButton = i;
+	if (button_x)
+	{
+		*button_x = tempsum;
+	}
 	if(tempPtr->isStartButton)
 	  *startButtonPressed = True;
 	return 1;
       }
+      tempsum += tempPtr->width;
       tempPtr = tempPtr->tail;
       i++;
     }
