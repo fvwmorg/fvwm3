@@ -35,6 +35,8 @@ Changes in beta release 2.5.20 (not released yet)
    - FvwmPager correctly updates on window desk change.
    - FvwmIconBox: fixed problem with IconColorset's background
      color change not being applied immediately.
+   - Allow FvwmConsole to run a terminal via rxvtc or urxvtc.
+     FvwmConsole dies if no client connects within one minute.
 
 -------------------------------------------------------------------
 
