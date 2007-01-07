@@ -30,16 +30,18 @@ ssize_t fvwm_send(int s, const void *buf, size_t len, int flags)
 {
 	int rc;
 	size_t offset;
+	const char *data;
 
+	data = buf;
 	offset = 0;
 	do
 	{
-		rc = send(s, buf + offset, len - offset, flags);
+		rc = send(s, (char *)data + offset, len - offset, flags);
 		if (rc > 0)
 		{
 			offset += rc;
 		}
-	} while (rc > 0 && (offset < len) || (rc == -1 && errno == EINTR));
+	} while ((rc > 0 && (offset < len)) || (rc == -1 && errno == EINTR));
 
 	return rc;
 }
