@@ -1,3 +1,10 @@
+2007-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/fio.c:
+	* libs/fio.h:
+	new utility files to wrap writing/reading standard lib functions that
+	might be interrupted
+
 2007-01-05  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* fvwm/ewmh_intern.h:
