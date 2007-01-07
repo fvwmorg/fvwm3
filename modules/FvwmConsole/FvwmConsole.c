@@ -83,9 +83,6 @@ RETSIGTYPE ReapChildren(int sig)
 {
 	fvwmReapChildren(sig);
 
-	clean_up();
-	exit(0);
-
 	SIGNAL_RETURN;
 }
 
@@ -154,11 +151,12 @@ int main(int argc, char *argv[])
 		eargv[j-1] = module->user_argv[i];
 	}
 	eargv[j] = NULL;
-	signal(SIGCHLD, /*!!!ReapChildren*/SIG_DFL);
+	signal(SIGCHLD, ReapChildren);
 	/* Dead pipes mean fvwm died */
 	signal(SIGPIPE, DeadPipe);
 	signal(SIGINT, SigHandler);
 	signal(SIGQUIT, SigHandler);
+	signal(SIGALRM, SigHandler);
 
 	Fd[0] = module->to_fvwm;
 	Fd[1] = module->from_fvwm;
@@ -214,30 +212,33 @@ void server(void)
 
 	sas.sun_family = AF_UNIX;
 	strcpy(sas.sun_path, S_name);
-	/* bind the above name to the socket */
-	/* first, erase the old socket */
+	/* bind the above name to the socket: first, erase the old socket */
 	unlink(S_name);
 	len = sizeof(sas) - sizeof(sas.sun_path) + strlen(sas.sun_path);
-
 	umask(0077);
 	rc = bind(s, (struct sockaddr *)&sas, len);
 	if (rc < 0)
 	{
 		ErrMsg("bind");
 	}
-	/* listen to the socket */
-	/* set backlog to 5 */
-	rc = listen(s, 5);
-	if (rc < 0)
+	else
 	{
-		ErrMsg("listen");
-	}
-	/* accept connections */
-	clen = sizeof(csas);
-	Ns = accept(s, (struct sockaddr *)&csas, &clen);
-	if (Ns < 0)
-	{
-		ErrMsg("accept");
+		/* don't wait forever for connections */
+		alarm(FVWMCONSOLE_CONNECTION_TO_SECS);
+		/* listen to the socket */
+		rc = listen(s, 5);
+		alarm(0);
+		if (rc < 0)
+		{
+			ErrMsg("listen");
+		}
+		/* accept connections */
+		clen = sizeof(csas);
+		Ns = accept(s, (struct sockaddr *)&csas, &clen);
+		if (Ns < 0)
+		{
+			ErrMsg("accept");
+		}
 	}
 	/* send config lines to Client */
 	tline = NULL;

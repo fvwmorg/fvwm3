@@ -1,5 +1,11 @@
 2007-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/fio.c (fvwm_send):
+	compile fixes
+
+	* libs/defaults.h (FVWMCONSOLE_CONNECTION_TO_SECS):
+	added macro
+
 	* libs/fio.c:
 	* libs/fio.h:
 	new utility files to wrap writing/reading standard lib functions that

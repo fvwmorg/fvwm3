@@ -276,6 +276,11 @@
 #define MAX_MODULE_ALIAS_LEN             250
 #define DEFAULT_MODULE_TIMEOUT            30 /* seconds */
 
+/*** FvwmConsole configuration */
+/* Maximum time FvwmConsole waits for the client to connect. */
+#define FVWMCONSOLE_CONNECTION_TO_SECS    60 /* seconds */
+
+
 /*** misc ***/
 #define DEFAULT_EMULATE_MWM            False
 #define DEFAULT_EMULATE_WIN            False

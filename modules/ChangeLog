@@ -1,5 +1,11 @@
 2007-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* FvwmConsole/FvwmConsole.c (main):
+	(server):
+	(ReapChildren):
+	don't exit on SIGCHLD; die if there are no connection attempts within
+	60 seconds
+
 	* FvwmConsole/FvwmConsole.c (server):
 	* FvwmConsole/FvwmConsoleC.c (main):
 	use fvwm_send() and fvwm_recv()
