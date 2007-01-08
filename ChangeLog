@@ -204,7 +204,7 @@
 
 	* fvwm/module_interface.c (ClosePipes):
 	(KillModule):
-	use free_module
+	use module_free
 	(msg_mask_set):
 	(module_insert):
 	(module_alloc):
