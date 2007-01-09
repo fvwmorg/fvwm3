@@ -1193,59 +1193,61 @@ int FScreenParseGeometry(
 	rc = FScreenParseGeometryWithScreen(
 		parsestring, x_return, y_return, width_return, height_return,
 		&scr);
-	switch (scr)
+	if (rc)
 	{
-	case FSCREEN_GLOBAL:
-		scr = 0;
-		break;
-	case FSCREEN_CURRENT:
-		GetMouseXY(NULL, &mx, &my);
-		scr = FindScreenOfXY(mx, my);
-		break;
-	case FSCREEN_PRIMARY:
-		scr = FScreenGetPrimaryScreen(NULL);
-		break;
-	default:
-		scr++;
-		break;
-	}
-	if (scr <= 0 || scr > last_to_check)
-	{
-		scr = 0;
-	}
-	else
-	{
-		/* adapt geometry to selected screen */
-		if (rc & XValue)
+		switch (scr)
 		{
-			if (rc & XNegative)
+		case FSCREEN_GLOBAL:
+			scr = 0;
+			break;
+		case FSCREEN_CURRENT:
+			GetMouseXY(NULL, &mx, &my);
+			scr = FindScreenOfXY(mx, my);
+			break;
+		case FSCREEN_PRIMARY:
+			scr = FScreenGetPrimaryScreen(NULL);
+			break;
+		default:
+			scr++;
+			break;
+		}
+		if (scr <= 0 || scr > last_to_check)
+		{
+			scr = 0;
+		}
+		else
+		{
+			/* adapt geometry to selected screen */
+			if (rc & XValue)
 			{
-				*x_return -=
-					(screens[0].width -
-					 screens[scr].width -
-					 screens[scr].x_org);
+				if (rc & XNegative)
+				{
+					*x_return -=
+						(screens[0].width -
+						 screens[scr].width -
+						 screens[scr].x_org);
+				}
+				else
+				{
+					*x_return += screens[scr].x_org;
+				}
 			}
-			else
+			if (rc & YValue)
 			{
-				*x_return += screens[scr].x_org;
+				if (rc & YNegative)
+				{
+					*y_return -=
+						(screens[0].height -
+						 screens[scr].height -
+						 screens[scr].y_org);
+				}
+				else
+				{
+					*y_return += screens[scr].y_org;
+				}
 			}
 		}
-		if (rc & YValue)
-		{
-			if (rc & YNegative)
-			{
-				*y_return -=
-					(screens[0].height -
-					 screens[scr].height -
-					 screens[scr].y_org);
-			}
-			else
-			{
-				*y_return += screens[scr].y_org;
-			}
-		}
 	}
-
 	return rc;
 }
 

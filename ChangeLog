@@ -1,3 +1,8 @@
+2007-01-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* libs/FScreen.c (FScreenParseGeometry):
+	don't look up screen info if screen is undefined
+
 2007-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* ONEWS:
