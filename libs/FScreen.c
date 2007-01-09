@@ -1153,7 +1153,9 @@ int FScreenParseGeometryWithScreen(
 
 	/* Safety net */
 	if (parsestring == NULL  ||  *parsestring == '\0')
+	{
 		return 0;
+	}
 
 	/* Make a local copy devoid of "@scr" */
 	s_size = strlen(parsestring) + 1;
@@ -1193,61 +1195,63 @@ int FScreenParseGeometry(
 	rc = FScreenParseGeometryWithScreen(
 		parsestring, x_return, y_return, width_return, height_return,
 		&scr);
-	if (rc)
+	if (rc == 0)
 	{
-		switch (scr)
+		return 0;
+	}
+	switch (scr)
+	{
+	case FSCREEN_GLOBAL:
+		scr = 0;
+		break;
+	case FSCREEN_CURRENT:
+		GetMouseXY(NULL, &mx, &my);
+		scr = FindScreenOfXY(mx, my);
+		break;
+	case FSCREEN_PRIMARY:
+		scr = FScreenGetPrimaryScreen(NULL);
+		break;
+	default:
+		scr++;
+		break;
+	}
+	if (scr <= 0 || scr > last_to_check)
+	{
+		scr = 0;
+	}
+	else
+	{
+		/* adapt geometry to selected screen */
+		if (rc & XValue)
 		{
-		case FSCREEN_GLOBAL:
-			scr = 0;
-			break;
-		case FSCREEN_CURRENT:
-			GetMouseXY(NULL, &mx, &my);
-			scr = FindScreenOfXY(mx, my);
-			break;
-		case FSCREEN_PRIMARY:
-			scr = FScreenGetPrimaryScreen(NULL);
-			break;
-		default:
-			scr++;
-			break;
-		}
-		if (scr <= 0 || scr > last_to_check)
-		{
-			scr = 0;
-		}
-		else
-		{
-			/* adapt geometry to selected screen */
-			if (rc & XValue)
+			if (rc & XNegative)
 			{
-				if (rc & XNegative)
-				{
-					*x_return -=
-						(screens[0].width -
-						 screens[scr].width -
-						 screens[scr].x_org);
-				}
-				else
-				{
-					*x_return += screens[scr].x_org;
-				}
+				*x_return -=
+					(screens[0].width -
+					 screens[scr].width -
+					 screens[scr].x_org);
 			}
-			if (rc & YValue)
+			else
 			{
-				if (rc & YNegative)
-				{
-					*y_return -=
-						(screens[0].height -
-						 screens[scr].height -
-						 screens[scr].y_org);
-				}
-				else
-				{
-					*y_return += screens[scr].y_org;
-				}
+				*x_return += screens[scr].x_org;
+			}
+		}
+		if (rc & YValue)
+		{
+			if (rc & YNegative)
+			{
+				*y_return -=
+					(screens[0].height -
+					 screens[scr].height -
+					 screens[scr].y_org);
+			}
+			else
+			{
+				*y_return += screens[scr].y_org;
 			}
 		}
 	}
+
 	return rc;
 }
 
