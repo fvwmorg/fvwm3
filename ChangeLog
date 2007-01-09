@@ -1,3 +1,11 @@
+2007-01-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/fvwm.1.in:
+	* fvwm/menustyle.c (menustyle_update):
+	make use of colorset TiledPixmap option with HiglightBack
+	and HiglightTitleBack menu styles.
+
 2007-01-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FScreen.c:

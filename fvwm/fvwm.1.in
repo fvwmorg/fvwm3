@@ -3105,13 +3105,15 @@ color name as an argument to
 If you use this option without an argument the color is based on
 the menu's background color.  The
 .I ActiveColorset
-option overrides the specified color.
+option overrides the specified color.  If the colorset has a
+TiledPixmap it is used for the hilighting.
 
 .I HilightTitleBack
 switches hilighting the background of menu titles on.  If a
 .I TitleColorset
 was used, the background colour is taken from there.  Otherwise
-the color is based on the menu's background color.
+the color is based on the menu's background color.  If the
+colorset has a TiledPixmap it is used for the hilighting.
 
 .I ActiveFore " and " !ActiveFore
 switch hilighting the foreground of the selected menu item on and

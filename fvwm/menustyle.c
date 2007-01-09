@@ -709,7 +709,23 @@ void menustyle_update(MenuStyle *ms)
 	change_or_make_gc(&FORE_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
 	gcv.foreground = c_active.back;
 	gcv.background = c_active.fore;
-	change_or_make_gc(&BACK_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
+
+	if (ST_HAS_ACTIVE_CSET(ms) && active_cs->pixmap &&
+	    active_cs->pixmap_type == PIXMAP_TILED)
+	{
+		gcv.tile = active_cs->pixmap;
+		gcv.fill_style = FillTiled;
+		change_or_make_gc(&BACK_GC(ST_MENU_ACTIVE_GCS(ms)),
+				  gcm | GCFillStyle | GCTile , &gcv);
+	}
+	else
+	{
+		gcv.fill_style = FillSolid;
+		change_or_make_gc(&BACK_GC(ST_MENU_ACTIVE_GCS(ms)),
+				  gcm | GCFillStyle , &gcv);
+	}
+
+
 	gcv.foreground = c_active.hilight;
 	gcv.background = c_active.shadow;
 	change_or_make_gc(&HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
@@ -730,7 +746,22 @@ void menustyle_update(MenuStyle *ms)
 	change_or_make_gc(&FORE_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
 	gcv.foreground = c_title.back;
 	gcv.background = c_title.fore;
-	change_or_make_gc(&BACK_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
+
+	if (ST_HAS_TITLE_CSET(ms) && title_cs->pixmap &&
+	    title_cs->pixmap_type == PIXMAP_TILED)
+	{
+		gcv.tile = title_cs->pixmap;
+		gcv.fill_style = FillTiled;
+		change_or_make_gc(&BACK_GC(ST_MENU_TITLE_GCS(ms)),
+				  gcm | GCFillStyle | GCTile , &gcv);
+	}
+	else
+	{
+		gcv.fill_style = FillSolid;
+		change_or_make_gc(&BACK_GC(ST_MENU_TITLE_GCS(ms)),
+				  gcm | GCFillStyle , &gcv);
+	}
+
 	gcv.foreground = c_title.hilight;
 	gcv.background = c_title.shadow;
 	change_or_make_gc(&HILIGHT_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);

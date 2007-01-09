@@ -11,6 +11,8 @@ Changes in beta release 2.5.20 (not released yet)
      and !StickyStippledIconTitle.
    - Full support for menu context (M) key and mouse bindings.  See
      the section Menu Bindings in the man page for details.
+   - Hilighted menu backgrounds now use tiled pixmaps from related
+     colorset.
 
 * Changed features:
 
