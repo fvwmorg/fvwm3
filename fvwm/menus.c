@@ -151,6 +151,7 @@ typedef struct
 	unsigned is_release_first : 1;
 	unsigned is_submenu_mapped : 1;
 	unsigned was_item_unposted : 1;
+	unsigned is_button_release : 1;
 } mloop_flags_t;
 
 typedef struct
@@ -3884,6 +3885,7 @@ static mloop_ret_code_t __mloop_get_event(
 	in->mif.do_popdown_now = False;
 	in->mif.do_propagate_event_into_submenu = False;
 	in->mif.is_key_press = False;
+	in->mif.is_button_release = 0;
 	if (pmp->event_propagate_to_submenu)
 	{
 		/* handle an event that was passed in from the parent menu */
@@ -4000,6 +4002,7 @@ static mloop_ret_code_t __mloop_handle_event(
 	switch ((*pmp->pexc)->x.elast->type)
 	{
 	case ButtonRelease:
+		in->mif.is_button_release = 1;
 		med->mi = find_entry(
 			pmp, &med->x_offset, &med->mrMi,
 			(*pmp->pexc)->x.elast->xbutton.subwindow,
@@ -5211,8 +5214,9 @@ static void __mloop_exit(
 	case MENU_DOUBLE_CLICKED:
 		do_deselect = True;
 		/* Allow popdown to warp back pointer to main menu with mouse
-		   control. (MoveLeft/MoveRight on a mouse binding) */
-		if ((pmret->rc == MENU_POPDOWN || in->mif.is_key_press) &&
+		   button control. (MoveLeft/MoveRight on a mouse binding) */
+		if (((pmret->rc == MENU_POPDOWN && in->mif.is_button_release)
+		     || in->mif.is_key_press) &&
 		    pmret->rc != MENU_DOUBLE_CLICKED)
 		{
 			if (!pmp->flags.is_submenu)

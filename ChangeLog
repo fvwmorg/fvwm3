@@ -1,5 +1,9 @@
 2007-01-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* fvwm/menus.c (__mloop_exit, struct, __mloop_get_event)
+	(__mloop_handle_event):
+	don't warp to parent item when entering other item with mouse.
+
 	* NEWS:
 	* fvwm/fvwm.1.in:
 	* fvwm/menustyle.c (menustyle_update):
