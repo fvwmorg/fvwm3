@@ -10,27 +10,25 @@ config_DATA = ConfigFvwmDefaults ConfigFvwmSetup ConfigFvwmMenuDefaults
 
 ## please keep .c file in largest first order to speed up parallel makes
 fvwm_SOURCES = \
-	add_window.h bindings.h borders.h builtins.h colormaps.h \
+	add_window.h bindings.h borders.h builtins.h colormaps.h colorset.h \
 	commands.h conditional.h condrc.h cursor.h decorations.h events.h \
-	eventhandler.h eventmask.h ewmh.h \
-	ewmh_intern.h expand.h externs.h focus.h functable.h functions.h \
-	fvwm.h geometry.h focus_policy.h gnome.h icccm2.h icons.h \
-	menubindings.h menugeometry.h menuitem.h menus.h menustyle.h \
-	menudim.h menuroot.h menuparameters.h \
-	misc.h modconf.h module_interface.h move_resize.h placement.h \
-	read.h repeat.h execcontext.h schedule.h screen.h session.h stack.h \
-	style.h \
-	update.h virtual.h window_flags.h frame.h colorset.h \
+	eventhandler.h eventmask.h ewmh.h ewmh_intern.h expand.h externs.h \
+	focus.h functable.h functions.h fvwm.h geometry.h focus_policy.h \
+	gnome.h icccm2.h icons.h menubindings.h menudim.h menugeometry.h \
+	menuitem.h menuroot.h menuparameters.h menus.h menustyle.h misc.h \
+	modconf.h module_interface.h module_list.h move_resize.h \
+	placement.h read.h repeat.h execcontext.h schedule.h screen.h \
+	session.h stack.h style.h update.h virtual.h window_flags.h frame.h \
 	\
-	menus.c style.c events.c move_resize.c add_window.c builtins.c \
-	borders.c icons.c fvwm.c module_interface.c frame.c virtual.c stack.c \
-	ewmh.c menustyle.c session.c colorset.c placement.c functions.c \
-	gnome.c focus.c conditional.c geometry.c ewmh_events.c windowlist.c \
-	menuitem.c ewmh_icons.c decorations.c update.c expand.c misc.c \
-	functable.c bindings.c cursor.c colormaps.c ewmh_conf.c modconf.c \
-	read.c menucmd.c ewmh_names.c icccm2.c schedule.c windowshade.c \
-	focus_policy.c repeat.c execcontext.c menudim.c condrc.c \
-	menubindings.c menugeometry.c
+	menus.c style.c borders.c events.c move_resize.c builtins.c \
+	add_window.c icons.c fvwm.c frame.c placement.c virtual.c \
+	menustyle.c conditional.c ewmh.c stack.c session.c colorset.c \
+	functions.c ewmh_events.c gnome.c geometry.c module_list.c focus.c \
+	windowlist.c functable.c menuitem.c expand.c module_interface.c \
+	menubindings.c decorations.c ewmh_icons.c update.c bindings.c misc.c \
+	cursor.c colormaps.c modconf.c  ewmh_conf.c read.c schedule.c \
+	menucmd.c ewmh_names.c icccm2.c windowshade.c focus_policy.c repeat.c \
+	execcontext.c menugeometry.c menudim.c condrc.c
 
 fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
