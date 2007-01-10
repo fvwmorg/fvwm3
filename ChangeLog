@@ -1,5 +1,8 @@
 2007-01-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* libs/Flocale.c (FlocaleGetFftFont):
+	add sanity check for NULL fontname.
+
 	* NEWS:
 	* fvwm/fvwm.1.in:
 	* fvwm/menuitem.c (menuitem_paint, draw_hilight_background):

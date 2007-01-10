@@ -1068,7 +1068,11 @@ FlocaleFont *FlocaleGetFftFont(
 	char *fn, *hints = NULL;
 
 	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
-	if (*fn == '\0')
+	if (fn == NULL)
+	{
+		fn = FLOCALE_FFT_FALLBACK_FONT;
+	}
+	else if (*fn == '\0')
 	{
 		free(fn);
 		fn = FLOCALE_FFT_FALLBACK_FONT;
