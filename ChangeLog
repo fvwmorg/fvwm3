@@ -1,3 +1,8 @@
+2007-01-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/menuitem.c (draw_higlight_background):
+	fix x-origin of HGradients
+
 2007-01-10  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_interface.c (FlushMessageQueues):

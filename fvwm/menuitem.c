@@ -152,6 +152,11 @@ static void draw_higlight_background(
 				gcv.ts_y_origin = y;
 				gcm|=GCTileStipYOrigin;
 			}
+			else if (cs->pixmap_type == PIXMAP_STRETCH_X)
+			{
+				gcv.ts_x_origin = x;
+				gcm|=GCTileStipXOrigin;
+			}
 
 			bgc = fvwmlib_XCreateGC(dpy, mpip->w, gcm, &gcv);
 			XFillRectangle(dpy, mpip->w, bgc, x, y, width, height);
