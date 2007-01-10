@@ -120,6 +120,57 @@ static void draw_tear_off_bar(
 	return;
 }
 
+static void draw_higlight_background(
+	struct MenuPaintItemParameters *mpip, int x, int y, int width,
+	int height, colorset_t *cs, GC gc)
+{
+	if (cs != NULL && cs->pixmap && cs->pixmap_type != PIXMAP_TILED)
+	{
+		Pixmap p;
+
+		p = CreateOffsetBackgroundPixmap(
+			dpy, mpip->w, x, y, width, height, cs, Pdepth, gc,
+			False);
+		switch (cs->pixmap_type)
+		{
+		case PIXMAP_STRETCH_X:
+			/* todo: optimize to only create one pixmap and gc per
+			 * mr. */
+		case PIXMAP_STRETCH_Y:
+		{
+			XGCValues gcv;
+			int gcm;
+			GC bgc;
+
+			gcv.tile = p;
+			gcv.fill_style = FillTiled;
+			gcm = GCFillStyle | GCTile;
+
+			/* vertcal gradients has to be aligned properly */
+			if (cs->pixmap_type == PIXMAP_STRETCH_Y)
+			{
+				gcv.ts_y_origin = y;
+				gcm|=GCTileStipYOrigin;
+			}
+
+			bgc = fvwmlib_XCreateGC(dpy, mpip->w, gcm, &gcv);
+			XFillRectangle(dpy, mpip->w, bgc, x, y, width, height);
+			XFreeGC(dpy, bgc);
+			break;
+		}
+		default:
+			XCopyArea(dpy, p, mpip->w, gc, 0, 0, width, height,
+				  x, y);
+			break;
+		}
+		XFreePixmap(dpy, p);
+	}
+	else
+	{
+		XFillRectangle(dpy, mpip->w, gc, x, y, width, height);
+	}
+}
+
 /* ---------------------------- interface functions ------------------------ */
 
 /* Allocates a new, empty menu item */
@@ -444,11 +495,13 @@ void menuitem_paint(
 				2 * relief_thickness;
 			if (ST_DO_HILIGHT_BACK(ms))
 			{
-				XFillRectangle(
-					dpy, mpip->w, gcs.back_gc, lit_x_start,
+				draw_higlight_background(
+					mpip, lit_x_start,
 					y_offset + relief_thickness,
 					lit_x_end - lit_x_start,
-					y_height - relief_thickness);
+					y_height - relief_thickness,
+					(cs >= 0 ? &Colorset[cs] : NULL),
+					gcs.back_gc);
 				item_cleared = True;
 			}
 		}
@@ -490,9 +543,13 @@ void menuitem_paint(
 			MDIM_HILIGHT_WIDTH(*dim) > 0 &&
 			ST_DO_HILIGHT_TITLE_BACK(ms))
 		{
-			XFillRectangle(
-				dpy, mpip->w, gcs.back_gc, lit_x_start,
-				y_offset, lit_x_end - lit_x_start, y_height);
+			draw_higlight_background(
+				mpip, lit_x_start,
+				y_offset + relief_thickness,
+				lit_x_end - lit_x_start,
+				y_height - relief_thickness,
+				(cs >= 0 ? &Colorset[cs] : NULL),
+				gcs.back_gc);
 			item_cleared = True;
 		}
 	}

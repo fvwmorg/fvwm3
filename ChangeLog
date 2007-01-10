@@ -1,3 +1,16 @@
+2007-01-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/fvwm.1.in:
+	* fvwm/menuitem.c (menuitem_paint, draw_hilight_background):
+	make all kinds of pixmaps work with hilight background
+
+	* libs/Colorset.h (CreateOffsetBackgroundPixmap):
+	* libs/Colorset.c (CreateOffsetBackgroundPixmap)
+	(CreateBackgroundPixmap):
+	added CreateOffsetBackgroundPixmap with the ability to create
+	transparent images at an offset relative to the window.
+
 2007-01-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/menus.c (__mloop_exit, struct, __mloop_get_event)

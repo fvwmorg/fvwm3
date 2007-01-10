@@ -164,6 +164,10 @@ char *DumpColorset(int n, colorset_t *colorset);
 /* load one */
 int LoadColorset(char *line);
 
+Pixmap CreateOffsetBackgroundPixmap(
+	Display *dpy, Window win, int x, int y, int width, int height,
+	colorset_t *colorset, unsigned int depth,
+	GC gc, Bool is_mask);
 Pixmap CreateBackgroundPixmap(
 	Display *dpy, Window win, int width, int height,
 	colorset_t *colorset, unsigned int depth,

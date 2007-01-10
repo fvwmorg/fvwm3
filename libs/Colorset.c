@@ -361,10 +361,11 @@ void GetWindowBackgroundPixmapSize(
 	}
 }
 
-/* create a pixmap suitable for plonking on the background of a window */
-Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
-			      colorset_t *colorset, unsigned int depth,
-			      GC gc, Bool is_shape_mask)
+/* create a pixmap suitable for plonking on the background of a part of a 
+ * window */
+Pixmap CreateOffsetBackgroundPixmap(
+	Display *dpy, Window win, int x, int y, int width, int height,
+	colorset_t *colorset, unsigned int depth, GC gc, Bool is_shape_mask)
 {
 	Pixmap pixmap = None;
 	Pixmap cs_pixmap = None;
@@ -387,7 +388,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		fra.tint_percent = colorset->tint_percent;
 		XGrabServer(dpy);
 		pixmap = PGraphicsCreateTransparency(
-			dpy, win, &fra, gc, 0, 0, width, height, True);
+			dpy, win, &fra, gc, x, y, width, height, True);
 		XUngrabServer(dpy);
 		if (pixmap == None)
 		{
@@ -428,7 +429,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 			}
 		}
 		XTranslateCoordinates(
-			dpy, win, DefaultRootWindow(dpy), 0, 0, &sx, &sy,
+			dpy, win, DefaultRootWindow(dpy), x, y, &sx, &sy,
 			&dummy);
 		pixmap = XCreatePixmap(dpy, win, width, height, Pdepth);
 		if (!pixmap)
@@ -599,6 +600,15 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	return pixmap;
 }
 
+/* create a pixmap suitable for plonking on the background of a window */
+Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
+			      colorset_t *colorset, unsigned int depth,
+			      GC gc, Bool is_shape_mask)
+{
+	return CreateOffsetBackgroundPixmap(
+		dpy, win, 0, 0, width, height, colorset, depth, gc,
+		is_shape_mask);
+}
 
 /* Draws a colorset background into the specified rectangle in the target
  * drawable. */
