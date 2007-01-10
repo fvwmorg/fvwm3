@@ -149,14 +149,9 @@ static void module_free(fmodule *module)
 	{
 		return;
 	}
-	if (MOD_WRITEFD(module) >= 0)
-	{
-		close(MOD_WRITEFD(module));
-	}
-	if (MOD_READFD(module) >= 0)
-	{
-		close(MOD_READFD(module));
-	}
+	close(MOD_WRITEFD(module));
+	close(MOD_READFD(module));
+
 	if (MOD_NAME(module) != NULL)
 	{
 		free(MOD_NAME(module));
@@ -327,9 +322,8 @@ static inline void module_remove(fmodule *module)
 		goto err_exit;
 	}
 
-	/* all ok, create the space and insert into the list */
+	/* all ok, create the space and fill up */
 	module = module_alloc();
-	module_insert(module);
 
 	MOD_NAME(module) = stripcpy(cptr);
 	free(cptr);
@@ -413,6 +407,9 @@ static inline void module_remove(fmodule *module)
 				ERR, "executeModule",
 				"module close-on-exec failed");
 		}
+		/* module struct is completed, insert into the list */
+		module_insert(module);
+
 		for (i = 6; i < nargs; i++)
 		{
 			if (args[i] != 0)
@@ -601,11 +598,6 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 		struct timeval timeout;
 
 		FlushMessageQueue(module);
-		if (MOD_READFD(module) < 0)
-		{
-			/* Module has died, break out */
-			return;
-		}
 
 		do
 		{
@@ -1143,10 +1135,9 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		{
 			FD_ZERO(&in_fdset);
 			FD_ZERO(&out_fdset);
-			if (MOD_READFD(module) >= 0)
-			{
-				FD_SET(MOD_READFD(module), &in_fdset);
-			}
+
+			FD_SET(MOD_READFD(module), &in_fdset);
+
 			if (!FQUEUE_IS_EMPTY(&MOD_PIPEQUEUE(module)))
 			{
 				FD_SET(MOD_WRITEFD(module), &out_fdset);
@@ -1166,8 +1157,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 
 		if (num_fd > 0)
 		{
-			if ((MOD_READFD(module) >= 0) &&
-			    FD_ISSET(MOD_READFD(module), &in_fdset))
+			if (FD_ISSET(MOD_READFD(module), &in_fdset))
 			{
 				/* Check for module input. */
 				if (read(MOD_READFD(module), &targetWindow,

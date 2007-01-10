@@ -4069,15 +4069,13 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		module = module_get_next(NULL);
 		for (; module != NULL; module = module_get_next(module))
 		{
-                        if (MOD_READFD(module) >= 0)
-                        {
-                                FD_SET(MOD_READFD(module), &in_fdset);
-                        }
-                        if (!FQUEUE_IS_EMPTY(&MOD_PIPEQUEUE(module)))
-                        {
-                                FD_SET(MOD_WRITEFD(module), &out_fdset);
-                        }
-                }
+			FD_SET(MOD_READFD(module), &in_fdset);
+			
+			if (!FQUEUE_IS_EMPTY(&MOD_PIPEQUEUE(module)))
+			{
+				FD_SET(MOD_WRITEFD(module), &out_fdset);
+			}
+		}
 
 		DBUG("My_XNextEvent", "waiting for module input/output");
 		num_fd = fvwmSelect(
@@ -4100,9 +4098,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		module = module_get_next(NULL);
 		for (; module != NULL; module = module_get_next(module))
 		{
-			if (
-				MOD_READFD(module) >= 0 &&
-				FD_ISSET(MOD_READFD(module), &in_fdset))
+			if (FD_ISSET(MOD_READFD(module), &in_fdset))
 			{
 				if (read(MOD_READFD(module), &targetWindow,
 					 sizeof(Window)) > 0)
