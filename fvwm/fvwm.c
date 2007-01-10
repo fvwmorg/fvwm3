@@ -58,7 +58,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "builtins.h"
-#include "module_interface.h"
+#include "module_list.h"
 #include "colorset.h"
 #include "events.h"
 #include "eventhandler.h"
@@ -708,7 +708,7 @@ void Done(int restart, char *command)
 	 * SubstructureRedirect selected on the root window ==> windows end up
 	 * in nirvana. This explicitly happened with windows unswallowed by
 	 * FvwmButtons. */
-	ClosePipes();
+	module_kill_all();
 
 	exit(0);
 }
@@ -1446,7 +1446,7 @@ static int CatchFatal(Display *dpy)
 	/* No action is taken because usually this action is caused by someone
 	   using "xlogout" to be able to switch between multiple window managers
 	*/
-	ClosePipes();
+	module_kill_all();
 	exit(1);
 
 	/* to make insure happy */
@@ -2480,7 +2480,7 @@ int main(int argc, char **argv)
 		Scr.FvwmRoot.cmap_windows = &Scr.NoFocusWin;
 	}
 	InitEventHandlerJumpTable();
-	initModules();
+	module_init_list();
 
 	Scr.gray_bitmap =
 		XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);

@@ -44,7 +44,7 @@
 #include "functable.h"
 #include "events.h"
 #include "modconf.h"
-#include "module_interface.h"
+#include "module_list.h"
 #include "misc.h"
 #include "screen.h"
 #include "repeat.h"

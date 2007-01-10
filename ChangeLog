@@ -51,6 +51,30 @@
 	added module_list.h and module_list.c
 	reorganized the c files by size
 
+	* fvwm/module_list.h:
+	* fvwm/module_list.c:
+	* fvwm/events.c:
+	* fvwm/fvwm.c:
+	* fvwm/session.c:
+	* fvwm/stack.c:
+	(initModules): (module_init_list):
+	(ClosePipes): (module_kill_all):
+	(KillModule): (module_kill):
+	(countModules): (module_count):
+	renamed functions to a unified style
+
+	* fvwm/module_interface.h:
+	* fvwm/module_interface.c:
+	* fvwm/fvwm.c:
+	* fvwm/events.c:
+	* fvwm/modconf.c
+	* fvwm/session.c:
+	* fvwm/stack.c:
+	* fvwm/windowshade.c:
+	* fvwm/functions.c:
+	* fvwm/move_resize.c:
+	include file cleanup
+
 2007-01-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/menuitem.c (draw_higlight_background):

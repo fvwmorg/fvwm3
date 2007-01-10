@@ -95,8 +95,7 @@ static inline void msg_mask_set(
 static void set_message_mask(msg_masks_t *mask, unsigned long msg);
 
 
-/*void module_init_list(void)*/
-void initModules(void)
+void module_init_list(void)
 {
 	DBUG("initModules", "initializing the module list header");
 	/* the list is empty */
@@ -105,8 +104,7 @@ void initModules(void)
 	return;
 }
 
-/*void module_kill_all(void);*/
-void ClosePipes(void)
+void module_kill_all(void)
 {
 	fmodule *module;
 
@@ -514,15 +512,14 @@ fmodule *executeModuleDesperate(F_CMD_ARGS)
 
 
 
-/*void module_kill(fmodule *module)*/
-void KillModule(fmodule *module)
+void module_kill(fmodule *module)
 {
 	module_remove(module);
 	module_free(module);
 	if (fFvwmInStartup)
 	{
 		/* remove from list of command line modules */
-		DBUG("KillModule", "ending command line module");
+		DBUG("module_kill", "ending command line module");
 		MOD_IS_CMDLINE(module) = 0;
 	}
 
@@ -661,7 +658,7 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 					 (FD_ISSET(channel, &readSet) ?
 					  'Y' : 'N'),
 					 isTerminated ? 'Y' : 'N');
-				KillModule(module);
+				module_kill(module);
 				break;
 			}
 
@@ -709,7 +706,7 @@ Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue)
 			ERR, "HandleModuleInput",
 			"Fail to read (Module: %p, read: %i, size: %i)",
 			module, n, (int)sizeof(size));
-		KillModule(module);
+		module_kill(module);
 		return False;
 	}
 
@@ -721,7 +718,7 @@ Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue)
 		/* The rest of the output from this module is going to be
 		 * scrambled so let's kill it rather than risk interpreting
 		 * garbage */
-		KillModule(module);
+		module_kill(module);
 		return False;
 	}
 
@@ -732,7 +729,7 @@ Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue)
 			ERR, "HandleModuleInput",
 			"Fail to read command (Module: %p, read: %i, size:"
 			" %ld)", module, n, size);
-		KillModule(module);
+		module_kill(module);
 		return False;
 	}
 	text[n] = '\0';
@@ -742,14 +739,14 @@ Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue)
 		fvwm_msg(ERR, "HandleModuleInput",
 			 "Module %p, Size Problems (read: %d, size: %d)",
 			 module, n, (int)sizeof(cont));
-		KillModule(module);
+		module_kill(module);
 		return False;
 	}
 	if (cont == 0)
 	{
 		/* this is documented as a valid way for a module to quit
 		 * so let's not complain */
-		KillModule(module);
+		module_kill(module);
 	}
 	if (strlen(text)>0)
 	{
@@ -784,8 +781,7 @@ fmodule *module_get_next(fmodule *prev)
 	}
 }
 
-/*int module_count(void)*/
-int countModules(void)
+int module_count(void)
 {
 	return num_modules;
 }
@@ -808,7 +804,7 @@ static void KillModuleByName(char *name, char *alias)
 				 MOD_ALIAS(module) &&
 				 matchWildcards(alias, MOD_ALIAS(module)))))
 		{
-			KillModule(module);
+			module_kill(module);
 		}
 	}
 
@@ -990,7 +986,7 @@ void FlushMessageQueue(fmodule *module)
 						"- terminate signal=%c\n",
 						name, rc, isTerminated ?
 						'Y' : 'N');
-					KillModule(module);
+					module_kill(module);
 					return;
 				}
 
@@ -999,7 +995,7 @@ void FlushMessageQueue(fmodule *module)
 			}
 			else if (errno != EINTR)
 			{
-				KillModule(module);
+				module_kill(module);
 				return;
 			}
 		}
@@ -1188,7 +1184,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 				}
 				else
 				{
-					KillModule(module);
+					module_kill(module);
 					done = True;
 				}
 			}

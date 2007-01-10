@@ -38,6 +38,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "session.h"
+#include "module_list.h"
 #include "module_interface.h"
 #include "stack.h"
 #include "icccm2.h"
@@ -1614,7 +1615,7 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 			"restart us.\n");
 #endif
 		/* Close all my pipes */
-		ClosePipes();
+		module_kill_all();
 
 		exit(0); /* let the SM restart us */
 	}

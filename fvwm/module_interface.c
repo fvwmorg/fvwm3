@@ -43,6 +43,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
+#include "module_list.h"
 #include "events.h"
 #include "geometry.h"
 #include "fvwmsignal.h"

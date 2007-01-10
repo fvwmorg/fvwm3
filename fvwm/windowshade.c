@@ -27,6 +27,7 @@
 #include "misc.h"
 #include "commands.h"
 #include "screen.h"
+#include "module_list.h"
 #include "module_interface.h"
 #include "geometry.h"
 #include "gnome.h"

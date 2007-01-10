@@ -73,6 +73,7 @@
 #include "eventhandler.h"
 #include "eventmask.h"
 #include "fvwmsignal.h"
+#include "module_list.h"
 #include "module_interface.h"
 #include "session.h"
 #include "borders.h"
@@ -4117,8 +4118,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 				else
 				{
 					DBUG("My_XNextEvent",
-					     "calling KillModule");
-					KillModule(module);
+					     "calling module_kill");
+					module_kill(module);
 				}
 			}
 			if (

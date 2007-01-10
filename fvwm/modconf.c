@@ -43,6 +43,7 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "module_list.h"
 #include "module_interface.h"
 #include "colorset.h"
 #include "libs/FScreen.h"

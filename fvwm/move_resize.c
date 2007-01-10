@@ -46,6 +46,7 @@
 #include "screen.h"
 #include "menus.h"
 #include "menuparameters.h"
+#include "module_list.h"
 #include "module_interface.h"
 #include "focus.h"
 #include "borders.h"

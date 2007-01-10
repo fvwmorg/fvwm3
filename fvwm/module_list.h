@@ -73,16 +73,13 @@ typedef struct fmodule
  */
 
 /* initialize the system */
-/*void module_init_list(void)*/
-void initModules(void);
+void module_init_list(void);
 
 /* terminate the system */
-/*void module_kill_all(void);*/
-void ClosePipes(void);
+void module_kill_all(void);
 
 /* terminate a module */
-/* void module_kill(fmodule *module) */
-void KillModule(fmodule *module);
+void module_kill(fmodule *module);
 
 /* execute a module - full function and wraper */
 /*fmodule *module_execute(F_CMD_ARGS, Bool desperate, Bool do_listen_only)*/
@@ -101,9 +98,7 @@ Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue);
 fmodule *module_get_next(fmodule *prev);
 
 /* count the modules on list - not true for now. counts allocated modules */
-/*int module_count(void);*/
-int countModules(void);
-
+int module_count(void);
 
 /* message queues */
 void FlushAllMessageQueues(void);
