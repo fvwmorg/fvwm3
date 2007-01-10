@@ -1,3 +1,8 @@
+2007-01-10  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_interface.c (FlushMessageQueues):
+	fixed not flushing the first module on the list
+
 2007-01-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* libs/Flocale.c (FlocaleGetFftFont):

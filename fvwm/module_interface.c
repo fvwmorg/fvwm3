@@ -1922,7 +1922,7 @@ void FlushAllMessageQueues(void)
 	module = module_get_next(NULL);
 	for (; module != NULL; module = module_get_next(module))
 	{
-		FlushMessageQueue(MOD_NEXT(module));
+		FlushMessageQueue(module);
 	}
 
 	return;
