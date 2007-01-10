@@ -1,3 +1,56 @@
+2007-01-10  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_list.h:
+	* fvwm/module_list.c:
+	new files for module handling code.
+
+	* fvwm/module_list.h:
+	* fvwm/module_interface.h:
+	* fvwm/module_list.c:
+	* fvwm/module_interface.c:
+	(struct mqueue_object_type):
+	(msg_mask_set):
+	(module_alloc):
+	(module_insert):
+	(module_remove):
+	(module_free):
+	(module_get_next):
+	(set_message_mask):
+	(get_pipe_name):
+	(initModules):
+	(ClosePipes):
+	(do_execute_module):
+	(executeModuleDesperate):
+	(CMD_Module):
+	(CMD_ModuleListenOnly):
+	(CMD_ModuleSynchronous):
+	(HandleModuleInput):
+	(DeadPipe):
+	(KillModule):
+	(KillModuleByName):
+	(CMD_KillModule):
+	(PositiveWrite):
+	(DeleteMessageQueueBuff):
+	(FlushMessageQueue):
+	(FlushAllMessageQueues):
+	(CMD_set_mask):
+	(CMD_set_sync_mask):
+	(CMD_set_nograb_mask):
+	(skipModuleAliasToken):
+	(countModules):
+	(struct msg_masks_t):
+	(struct fmodule):
+	moved from module_interface.c/h to module_list.c/h
+
+	* fvwm/module_list.h (do_execute_module):
+	* fvwm/module_interface.h (AddToCommandQueue):
+	(ExecuteModuleCommand):
+	initialy static functions are exposed for now. Should be fixed soon.
+
+	* fvwm/Makefile.am:
+	added module_list.h and module_list.c
+	reorganized the c files by size
+
 2007-01-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/menuitem.c (draw_higlight_background):
