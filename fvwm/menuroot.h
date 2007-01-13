@@ -35,7 +35,7 @@ typedef struct MenuRootStatic
 	/* name of root */
 	char *name;
 	struct MenuDimensions dim;
-	unsigned short items;
+	int items;
 	FvwmPicture *sidePic;
 	Pixel sideColor;
 	unsigned int used_mini_icons;

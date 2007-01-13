@@ -73,7 +73,7 @@ typedef enum {
 typedef struct
 {
 	int cs;
-	unsigned short alpha_percent;
+	int alpha_percent;
 } FvwmAcs;
 
 typedef struct
@@ -161,7 +161,7 @@ typedef struct DecorFace
 		struct
 		{
 			int cs;
-			unsigned short alpha_percent;
+			int alpha_percent;
 		} acs;
 		Pixel back;
 		struct

@@ -1848,7 +1848,7 @@ static char *style_parse_icon_grid_style(
 		return rest;
 	}
 	/* have a place to grid */
-	/* 2 shorts */
+	/* 2 ints */
 	num = GetIntegerArguments(rest, &rest, val, 2);
 	if (num != 2 || val[0] < 1 || val[1] < 1)
 	{
@@ -1864,11 +1864,6 @@ static char *style_parse_icon_grid_style(
 	{
 		for (i = 0; i < 2; i++)
 		{
-			/* make sure the value fits into a short */
-			if (val[i] > 32767)
-			{
-				val[i] = 32767;
-			}
 			ib->IconGrid[i] = val[i];
 		}
 	} /* end bad grid */

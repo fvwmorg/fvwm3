@@ -27,30 +27,30 @@
 struct MenuDimensions
 {
 	/* width/height of the menu */
-	unsigned short width;
-	unsigned short height;
+	int width;
+	int height;
 	/* width of the actual menu item */
-	unsigned short item_width;
+	int item_width;
 	/* offset of the sidepic */
-	unsigned short sidepic_x_offset;
+	int sidepic_x_offset;
 	/* offsets of the mini icons */
-	unsigned short icon_x_offset[MAX_MENU_ITEM_MINI_ICONS];
+	int icon_x_offset[MAX_MENU_ITEM_MINI_ICONS];
 	/* offset of the submenu triangle col */
-	unsigned short triangle_x_offset;
+	int triangle_x_offset;
 	/* offset of the actual menu item */
-	unsigned short item_text_x_offset;
+	int item_text_x_offset;
 	/* y offset for item text. */
-	unsigned short item_text_y_offset;
+	int item_text_y_offset;
 	/* start of the area to be hilighted */
-	unsigned short hilight_x_offset;
+	int hilight_x_offset;
 	/* width of the area to be hilighted */
-	unsigned short hilight_width;
+	int hilight_width;
 	/* y coordinate for item */
-	unsigned short y_offset;
+	int y_offset;
 	/* width and height of the last screen */
-	unsigned short screen_width;
+	int screen_width;
 	/*   the menu was mapped on */
-	unsigned short screen_height;
+	int screen_height;
 	/* number of items in the menu */
 };
 

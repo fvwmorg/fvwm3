@@ -192,7 +192,7 @@ struct MenuItem *menuitem_create(void)
 /* Frees a menu item and all of its allocated resources. */
 void menuitem_free(struct MenuItem *mi)
 {
-	short i;
+	int i;
 
 	if (!mi)
 	{
@@ -274,7 +274,7 @@ void menuitem_get_size(
 {
 	int i;
 	int j;
-	unsigned short w;
+	int w;
 
 	memset(mipst, 0, sizeof(MenuItemPartSizesT));
 	if (MI_IS_POPUP(mi))
@@ -379,7 +379,7 @@ void menuitem_paint(
 	int off_cs;
 	FvwmRenderAttributes fra;
 	/*Pixel fg, fgsh;*/
-	short relief_thickness = ST_RELIEF_THICKNESS(ms);
+	int relief_thickness = ST_RELIEF_THICKNESS(ms);
 	Bool is_item_selected;
 	Bool item_cleared = False;
 	Bool xft_clear = False;

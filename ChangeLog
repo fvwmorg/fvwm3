@@ -1,5 +1,42 @@
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/Flocale.c (FlocaleChar2bOneCharToUtf8):
+	* fvwm/colormaps.c (EnterSubWindowColormap):
+	(LeaveSubWindowColormap):
+	(FetchWmColormapWindows):
+	* libs/vpacket.h:
+	* libs/CombineChars.c (char_combclass):
+	use short instead of short int
+	use long instead of long int
+
+	* libs/PictureBase.h (FvwmPictureAttributes):
+	(FvwmRenderAttributes):
+	* libs/Flocale.h (FlocaleFont):
+	* fvwm/style.c (style_parse_icon_grid_style):
+	* fvwm/menus.c (size_menu_horizontally):
+	(size_menu_vertically)
+	(paint_menu, AddToMenu):
+	* fvwm/menuitem.c (menuitem_paint):
+	(menuitem_free):
+	* fvwm/menuitem.h (MenuItem):
+	* fvwm/geometry.c (set_window_border_size):
+	* fvwm/decorations.c (SelectDecor):
+	use int instead of short
+
+	* fvwm/screen.h (FvwmAcs):
+	(DecorFace):
+	* fvwm/menus.c (MenuSizingParameters):
+	(size_menu_horizontally):
+	(update_menu, paint_menu_gradient_background):
+	* fvwm/menuroot.h (MenuRootStatic):
+	* fvwm/menuitem.h (MenuItem):
+	(MenuItemPartSizesT):
+	* fvwm/menuitem.c (menuitem_get_size):
+	* fvwm/menudim.h (MenuDimensions):
+	use int instead of unsigned short
+
+2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* libs/gravity.h:
 	* libs/gravity.c (gravity_move_resize_parent_child):
 	* fvwm/frame.h:

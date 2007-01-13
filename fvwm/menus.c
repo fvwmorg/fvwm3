@@ -107,7 +107,7 @@ typedef struct
 	unsigned int used_mini_icons;
 	struct
 	{
-		unsigned short sidepic_width;
+		int sidepic_width;
 		MenuItemPartSizesT i;
 	} max;
 	struct
@@ -1007,17 +1007,17 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	Bool sidepic_is_left = True;
 	int total_width;
 	int sidepic_space = 0;
-	unsigned short label_offset[MAX_MENU_ITEM_LABELS];
+	int label_offset[MAX_MENU_ITEM_LABELS];
 	char lcr_column[MAX_MENU_ITEM_LABELS];
 	int i;
 	int d;
-	short relief_thickness = MST_RELIEF_THICKNESS(msp->menu);
-	unsigned short *item_order[MAX_MENU_ITEM_LABELS +
-				   MAX_MENU_ITEM_MINI_ICONS +
-				   1 /* triangle */ + 2 /* relief markers */];
-	short used_objects = 0;
-	short left_objects = 0;
-	short right_objects = 0;
+	int relief_thickness = MST_RELIEF_THICKNESS(msp->menu);
+	int *item_order[
+		MAX_MENU_ITEM_LABELS + MAX_MENU_ITEM_MINI_ICONS +
+		1 /* triangle */ + 2 /* relief markers */];
+	int used_objects = 0;
+	int left_objects = 0;
+	int right_objects = 0;
 	int x;
 	unsigned char icons_placed = 0;
 	Bool sidepic_placed = False;
@@ -1437,8 +1437,8 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	MenuItem *mi;
 	int y;
 	int cItems;
-	short relief_thickness = MST_RELIEF_THICKNESS(msp->menu);
-	short simple_entry_height;
+	int relief_thickness = MST_RELIEF_THICKNESS(msp->menu);
+	int simple_entry_height;
 	int i;
 	Bool has_continuation_menu = False;
 
@@ -1825,8 +1825,8 @@ static void make_menu(MenuRoot *mr, Bool is_tear_off)
  * changed. */
 static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 {
-	unsigned int sw;
-	unsigned int sh;
+	int sw;
+	int sh;
 	Bool has_screen_size_changed = False;
 	fscreen_scr_arg fscr;
 
@@ -1852,8 +1852,8 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 	if (sw != MR_SCREEN_WIDTH(mr) || sh != MR_SCREEN_HEIGHT(mr))
 	{
 		has_screen_size_changed = True;
-		MR_SCREEN_WIDTH(mr) = (unsigned short)sw;
-		MR_SCREEN_HEIGHT(mr) = (unsigned short)sh;
+		MR_SCREEN_WIDTH(mr) = sw;
+		MR_SCREEN_HEIGHT(mr) = sh;
 	}
 	if (MR_IS_UPDATED(mr) || has_screen_size_changed)
 	{
@@ -2265,7 +2265,9 @@ static Bool paint_menu_gradient_background(
 				+ 1;
 			for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
 			{
-				unsigned short x = i * bounds.width /
+				int x;
+
+				x = i * bounds.width /
 					ST_FACE(ms).u.grad.npixels;
 				XSetForeground(
 					dpy, pmapgc,
@@ -2310,7 +2312,9 @@ static Bool paint_menu_gradient_background(
 				      ST_FACE(ms).u.grad.npixels) + 1;
 			for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
 			{
-				unsigned short y = i * bounds.height /
+				int y;
+
+				y = i * bounds.height /
 					ST_FACE(ms).u.grad.npixels;
 				XSetForeground(
 					dpy, pmapgc,
@@ -2515,7 +2519,7 @@ static void paint_menu(
 	MenuStyle *ms = MR_STYLE(mr);
 	int bw = MST_BORDER_WIDTH(mr);
 	XGCValues gcv;
-	short relief_thickness = ST_RELIEF_THICKNESS(MR_STYLE(mr));
+	int relief_thickness = ST_RELIEF_THICKNESS(MR_STYLE(mr));
 
 	gcv.line_width = 3;
 	if (fw && !check_if_fvwm_window_exists(fw))
@@ -6354,7 +6358,7 @@ void AddToMenu(
 	char *token = NULL;
 	char *option = NULL;
 	int i;
-	short current_mini_icon = 0;
+	int current_mini_icon = 0;
 	int is_empty;
 	Bool do_replace_title;
 

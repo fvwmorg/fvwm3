@@ -26,16 +26,16 @@
 
 typedef struct char_combclass
 {
-	unsigned short int key;
+	unsigned short key;
 	int combclass;
 } char_combclass_t;
 
 
 typedef struct char_comb
 {
-	unsigned short int key;
-	unsigned short int first;
-	unsigned short int second;
+	unsigned short key;
+	unsigned short first;
+	unsigned short second;
 } char_comb_t;
 
 /* ---------------------------- static variables --------------------------- */
@@ -43,7 +43,7 @@ typedef struct char_comb
 /* would like to use the Unicode replacement character here, but that would
    result in expanding incoming UTF-8 strings when garbage characters occurs */
 /* so for the time being use '?' */
-static unsigned short int REPLACEMENT_CHARACTER = 0x3f;
+static unsigned short REPLACEMENT_CHARACTER = 0x3f;
 
 /* maps characters to combination classes (not in list => 0) */
 /* parsed from UnicodeData-3.2.0.txt */
@@ -1697,7 +1697,7 @@ static const char_comb_t comb_table[] =
 	{ 0xFB4C, 0x05D1, 0x05BF },
 	{ 0xFB4D, 0x05DB, 0x05BF },
 	{ 0xFB4E, 0x05E4, 0x05BF },
-	/* out of range of unsigned short int... */
+	/* out of range of unsigned short... */
 #if 0
 	{ 0x1D15E, 0x1D157, 0x1D165 },
 	{ 0x1D15F, 0x1D158, 0x1D165 },
@@ -1728,7 +1728,7 @@ static const char_comb_t comb_table[] =
 /* look-up functions, maybe theese should use binary search?
    would require a duplicate of comb_table to reverse map... */
 static int
-get_combining_class(unsigned short int ch)
+get_combining_class(unsigned short ch)
 {
 	int count;
 	int table_size = sizeof(combclass_table) / sizeof(combclass_table[0]);
@@ -1745,7 +1745,7 @@ get_combining_class(unsigned short int ch)
 }
 
 static const char_comb_t*
-get_comb_entry_decomposed(unsigned short int ch)
+get_comb_entry_decomposed(unsigned short ch)
 {
 	int count;
 	int table_size = sizeof(comb_table) / sizeof(comb_table[0]);
@@ -1761,8 +1761,8 @@ get_comb_entry_decomposed(unsigned short int ch)
 	return NULL;
 }
 
-static unsigned short int
-get_comb_entry_composed(unsigned short int first, unsigned short int second)
+static unsigned short
+get_comb_entry_composed(unsigned short first, unsigned short second)
 {
 	int count;
 	int table_size = sizeof(comb_table) / sizeof(comb_table[0]);
@@ -1776,12 +1776,12 @@ get_comb_entry_composed(unsigned short int first, unsigned short int second)
 		}
 	}
 
-	return (unsigned short int) 0;
+	return (unsigned short) 0;
 }
 
 static int
 convert_to_ucs2(
-	const unsigned char *str_utf8, unsigned short int *str_ucs2, int len)
+	const unsigned char *str_utf8, unsigned short *str_ucs2, int len)
 {
 	int in_pos = 0;
 	int out_pos = 0;
@@ -1790,7 +1790,7 @@ convert_to_ucs2(
 		if (str_utf8[in_pos] <= 0x7f)
 		{
 			str_ucs2[out_pos] =
-				(unsigned short int)str_utf8[in_pos];
+				(unsigned short)str_utf8[in_pos];
 			in_pos++;
 		}
 		else
@@ -1844,7 +1844,7 @@ convert_to_ucs2(
 
 static int
 convert_to_utf8(
-	const unsigned short int *str_ucs2, unsigned char *str_utf8, int len)
+	const unsigned short *str_ucs2, unsigned char *str_utf8, int len)
 {
 	int in_pos = 0;
 	int out_pos = 0;
@@ -1895,8 +1895,8 @@ CombineChars(
 	int **l_to_v)
 {
 	int i,j,k;  /* counters */
-	unsigned short int *source;
-	unsigned short int *dest;
+	unsigned short *source;
+	unsigned short *dest;
 	int *source_v_to_l;
 	int *dest_v_to_l;
 	int str_len;
@@ -1912,8 +1912,8 @@ CombineChars(
 	}
 
 	/* decompose composed characters */
-	source = (unsigned short int *)safemalloc(
-		(len + 1) * sizeof(unsigned short int));
+	source = (unsigned short *)safemalloc(
+		(len + 1) * sizeof(unsigned short));
 	/* convert from UTF-8-encoded text to internal 16-bit encoding */
 	str_len = convert_to_ucs2(str_visual,source,len);
 	in_str_len = str_len;
@@ -1921,8 +1921,8 @@ CombineChars(
 	   have string length */
 
 	/* be pessimistic, assume all characters are decomposed */
-	dest = (unsigned short int *)safemalloc(
-		(str_len + 1) * 2 * sizeof(unsigned short int));
+	dest = (unsigned short *)safemalloc(
+		(str_len + 1) * 2 * sizeof(unsigned short));
 	/* use theese to keep track of the mapping of characters from
 	   logical to visual */
 	source_v_to_l = (int *)safemalloc(str_len * sizeof(int));
@@ -1963,8 +1963,8 @@ CombineChars(
 		source = dest;
 		source_v_to_l = dest_v_to_l;
 		str_len = j;
-		dest = (unsigned short int *)safemalloc(
-			(str_len + 1) * 2 * sizeof(unsigned short int));
+		dest = (unsigned short *)safemalloc(
+			(str_len + 1) * 2 * sizeof(unsigned short));
 		dest_v_to_l = (int *)safemalloc(str_len * 2 * sizeof(int));
 	} while (has_changed);
 	/* source now holds decomposed string (got swapped before exiting
@@ -1989,7 +1989,7 @@ CombineChars(
 			int c2 = get_combining_class(source[i+1]);
 			if (c1 > c2 && c2 > 0)
 			{
-				unsigned short int temp = source[i];
+				unsigned short temp = source[i];
 				int temp_v_to_l = source_v_to_l[i];
 				source[i] = source[i+1];
 				source[i+1] = temp;
@@ -2003,14 +2003,14 @@ CombineChars(
 	/* compose */
 	do
 	{
-		unsigned short int *temp;
+		unsigned short *temp;
 		int *temp_v_to_l;
 		Bool last_changed = False;
 		has_changed = False;
 
 		for (i = 0, j = 0; i < str_len - 1; j++)
 		{
-			unsigned short int composed =
+			unsigned short composed =
 				get_comb_entry_composed(source[i],
 							source[i+1]);
 			dest_v_to_l[j] = source_v_to_l[i];

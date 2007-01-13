@@ -160,7 +160,7 @@ int FlocaleChar2bOneCharToUtf8(XChar2b c, char *buf)
         int len;
 	char byte1 = c.byte1;
 	char byte2 = c.byte2;
-	unsigned short ucs2 = ((unsigned short int)byte1 << 8) + byte2;
+	unsigned short ucs2 = ((unsigned short)byte1 << 8) + byte2;
 
         if(ucs2 <= 0x7f)
 	{

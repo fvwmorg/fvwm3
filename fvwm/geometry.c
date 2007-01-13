@@ -512,7 +512,7 @@ void get_window_borders_no_title(
 }
 
 void set_window_border_size(
-	FvwmWindow *fw, short used_width)
+	FvwmWindow *fw, int used_width)
 {
 	if (used_width <= 0)
 	{

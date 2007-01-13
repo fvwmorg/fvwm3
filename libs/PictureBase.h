@@ -125,7 +125,7 @@ typedef struct
 {
 	unsigned mask : 5;
 	XColor tint;
-	short tint_percent;
+        int tint_percent;
 } FvwmPictureAttributes;
 
 /* tint no yet implemented */
@@ -142,9 +142,9 @@ typedef struct
 typedef struct
 {
 	unsigned mask : 5;
-	short added_alpha_percent;
+	int added_alpha_percent;
 	Pixel tint;
-	short tint_percent;
+	int tint_percent;
 	Pixel uniform_pixel;
 	colorset_t *colorset;
 } FvwmRenderAttributes;

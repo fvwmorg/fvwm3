@@ -47,7 +47,7 @@ void get_window_borders(
 void get_window_borders_no_title(
 	const FvwmWindow *fw, size_borders *borders);
 void set_window_border_size(
-	FvwmWindow *fw, short used_width);
+	FvwmWindow *fw, int used_width);
 Bool is_window_border_minimal(
 	FvwmWindow *fw);
 void update_relative_geometry(FvwmWindow *fw);

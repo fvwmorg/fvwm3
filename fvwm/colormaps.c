@@ -352,7 +352,7 @@ void FetchWmColormapWindows (FvwmWindow *fw)
 {
 	XWindowAttributes getattribs;
 	XSetWindowAttributes setattribs;
-	long int i;
+	long i;
 	unsigned long valuemask;
 
 	if (fw->cmap_windows != (Window *)NULL)
@@ -394,7 +394,7 @@ void FetchWmColormapWindows (FvwmWindow *fw)
 void EnterSubWindowColormap(Window win)
 {
 	FvwmWindow         *t;
-	long int            i;
+	long                i;
 	XWindowAttributes   attribs;
 
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -424,7 +424,7 @@ void EnterSubWindowColormap(Window win)
 void LeaveSubWindowColormap(Window win)
 {
 	FvwmWindow *t;
-	long int i;
+	long i;
 	int bWinInList, bParentInList;
 
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)

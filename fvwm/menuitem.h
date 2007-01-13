@@ -55,9 +55,9 @@ typedef struct MenuItem
 	/* the strings displayed in the item */
 	char *label[MAX_MENU_ITEM_LABELS];
 	/* witdh of label[i] */
-	unsigned short label_offset[MAX_MENU_ITEM_LABELS];
+	int label_offset[MAX_MENU_ITEM_LABELS];
 	/* strlen(label[i]) */
-	unsigned short label_strlen[MAX_MENU_ITEM_LABELS];
+	int label_strlen[MAX_MENU_ITEM_LABELS];
 
 	/* Pixmap to show above label*/
 	FvwmPicture *picture;
@@ -65,15 +65,15 @@ typedef struct MenuItem
 	FvwmPicture *lpicture[MAX_MENU_ITEM_MINI_ICONS];
 
 	/* y offset and height for item */
-	short y_offset;
-	short height;
+	int y_offset;
+	int height;
 
 	/* action to be performed */
 	char *action;
 	/* type of built in function */
 	short func_type;
 	/* Hot key offset (pete@tecc.co.uk). */
-	short hotkey_coffset;
+	int hotkey_coffset;
 	/* The column number the hotkey is defined in*/
 	char hotkey_column;
 	struct
@@ -97,11 +97,11 @@ typedef struct MenuItem
 
 typedef struct MenuItemPartSizesT
 {
-	unsigned short label_width[MAX_MENU_ITEM_LABELS];
-	unsigned short icon_width[MAX_MENU_ITEM_MINI_ICONS];
-	unsigned short picture_width;
-	unsigned short triangle_width;
-	unsigned short title_width;
+	int label_width[MAX_MENU_ITEM_LABELS];
+	int icon_width[MAX_MENU_ITEM_MINI_ICONS];
+	int picture_width;
+	int triangle_width;
+	int title_width;
 } MenuItemPartSizesT;
 
 typedef struct MenuPaintItemParameters

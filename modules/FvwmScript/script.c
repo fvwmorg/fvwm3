@@ -1650,7 +1650,7 @@ yyparse (YYPARSE_PARAM_ARG)
 #endif
 
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
-		  (unsigned long int) yystacksize));
+		  (unsigned long) yystacksize));
 
       if (yyssp >= yyss + yystacksize - 1)
 	YYABORT;

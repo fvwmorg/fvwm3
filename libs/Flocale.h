@@ -138,8 +138,8 @@ typedef struct _FlocaleFont
 	int ascent;
 	int descent;
 	int max_char_width;
-	short shadow_size;
-	short shadow_offset;
+	int shadow_size;
+	int shadow_offset;
 	struct
 	{
 		unsigned shadow_dir : (DIR_ALL_MASK + 1);

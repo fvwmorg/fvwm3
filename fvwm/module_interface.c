@@ -239,7 +239,7 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 
 	/*
 	  Round up to a long word boundary. Most of the module interface
-	  still thinks in terms of an array of long ints, so let's humor it.
+	  still thinks in terms of an array of longss, so let's humor it.
 	*/
 	plen = (unsigned long) ((char *)bp - (char *)bp1);
 	plen = ((plen + (sizeof(long) - 1)) / sizeof(long)) * sizeof(long);

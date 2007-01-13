@@ -318,9 +318,9 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 {
 	int decor;
 	int i;
-	short border_width;
-	short handle_width;
-	short used_width;
+	int border_width;
+	int handle_width;
+	int used_width;
 	PropMwmHints *prop;
 	style_flags *sflags = &(pstyle->flags);
 
