@@ -1,3 +1,9 @@
+2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/placement.c (SmartPlacemen):
+	(__sp_test_window):
+	cleaned up SmartPlacement code
+
 2007-01-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ConfigFvwmMenuDefaults:
@@ -13,7 +19,7 @@
 	Add menu contexts 'I' (for items) 'S' '[', ']', '_', '-'.
 
 	* fvwm/menustyle.c (menustyle_parse_old_style):
-	add a message of deprication.
+	add a message of deprecation.
 
 2007-01-10  Renato Caldas  <seventhguardian@gmail.com>
 

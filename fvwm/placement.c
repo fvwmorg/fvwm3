@@ -170,189 +170,11 @@ typedef struct
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static int get_next_x(
-	FvwmWindow *t, rectangle *screen_g, int x, int y, int pdeltax,
-	int pdeltay, int use_percent);
-static int get_next_y(
-	FvwmWindow *t, rectangle *screen_g, int y, int pdeltay,
-	int use_percent);
-static float test_fit(
-	FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
-	int x11, int y11, float aoimin, int pdeltax, int pdeltay,
-	int use_percent);
-static void CleverPlacement(
-	FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
-	int *x, int *y, int pdeltax, int pdeltay, int use_percent);
-
 /* ---------------------------- local variables ---------------------------- */
 
 /* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ---------------------------- */
-
-static int SmartPlacement(
-	FvwmWindow *t, rectangle *screen_g,
-	int width, int height, int *x, int *y, int pdeltax, int pdeltay)
-{
-	int PageLeft   = screen_g->x - pdeltax;
-	int PageTop    = screen_g->y - pdeltay;
-	int PageRight  = PageLeft + screen_g->width;
-	int PageBottom = PageTop + screen_g->height;
-	int temp_h;
-	int temp_w;
-	int test_x = 0;
-	int test_y = 0;
-	int loc_ok = False;
-	int tw = 0;
-	int tx = 0;
-	int ty = 0;
-	int th = 0;
-	FvwmWindow *test_fw;
-	int stickyx;
-	int stickyy;
-	rectangle g;
-	Bool rc;
-
-	test_x = PageLeft;
-	test_y = PageTop;
-	temp_h = height;
-	temp_w = width;
-
-	for ( ; test_y + temp_h < PageBottom && !loc_ok; )
-	{
-		test_x = PageLeft;
-		while (test_x + temp_w < PageRight && !loc_ok)
-		{
-			loc_ok = True;
-			test_fw = Scr.FvwmRoot.next;
-			for ( ; test_fw != NULL && loc_ok;
-			      test_fw = test_fw->next)
-			{
-				if (t == test_fw ||
-				    IS_EWMH_DESKTOP(FW_W(test_fw)))
-				{
-					continue;
-				}
-				/*  RBW - account for sticky windows...  */
-				if (test_fw->Desk == t->Desk ||
-				    IS_STICKY_ACROSS_DESKS(test_fw))
-				{
-					if (IS_STICKY_ACROSS_PAGES(test_fw))
-					{
-						stickyx = pdeltax;
-						stickyy = pdeltay;
-					}
-					else
-					{
-						stickyx = 0;
-						stickyy = 0;
-					}
-					rc = get_visible_window_or_icon_geometry(
-						test_fw, &g);
-					if (rc == True &&
-					    (PLACEMENT_AVOID_ICON == 0 ||
-					     !IS_ICONIFIED(test_fw)))
-					{
-						tx = g.x - stickyx;
-						ty = g.y - stickyy;
-						tw = g.width;
-						th = g.height;
-						if (tx < test_x + width  &&
-						    test_x < tx + tw &&
-						    ty < test_y + height &&
-						    test_y < ty + th)
-						{
-							/* window overlaps,
-							 * look for a
-							 * different place */
-							loc_ok = False;
-							test_x = tx + tw - 1;
-						}
-					}
-				}
-			} /* for */
-			if (!loc_ok)
-			{
-				test_x +=1;
-			}
-		} /* while */
-		if (!loc_ok)
-		{
-			test_y +=1;
-		}
-	} /* while */
-	if (loc_ok == False)
-	{
-		return False;
-	}
-	*x = test_x;
-	*y = test_y;
-
-	return True;
-}
-
-
-/* CleverPlacement by Anthony Martin <amartin@engr.csulb.edu>
- * This function will place a new window such that there is a minimum amount
- * of interference with other windows.  If it can place a window without any
- * interference, fine.  Otherwise, it places it so that the area of of
- * interference between the new window and the other windows is minimized */
-static void CleverPlacement(
-	FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
-	int *x, int *y, int pdeltax, int pdeltay, int use_percent)
-{
-	int test_x;
-	int test_y;
-	int xbest;
-	int ybest;
-	/* area of interference */
-	float aoi;
-	float aoimin;
-	int PageLeft = screen_g->x - pdeltax;
-	int PageTop = screen_g->y - pdeltay;
-
-	test_x = PageLeft;
-	test_y = PageTop;
-	aoi = test_fit(
-		t, sflags, screen_g, test_x, test_y, -1, pdeltax, pdeltay,
-		use_percent);
-	aoimin = aoi;
-	xbest = test_x;
-	ybest = test_y;
-
-	while (aoi != 0 && aoi != -1)
-	{
-		if (aoi > 0)
-		{
-			/* Windows interfere.  Try next x. */
-			test_x = get_next_x(
-				t, screen_g, test_x, test_y, pdeltax, pdeltay,
-				use_percent);
-		}
-		else
-		{
-			/* Out of room in x direction. Try next y. Reset x.*/
-			test_x = PageLeft;
-			test_y = get_next_y(
-				t, screen_g, test_y, pdeltay, use_percent);
-		}
-		aoi = test_fit(
-			t, sflags, screen_g, test_x,test_y, aoimin, pdeltax,
-			pdeltay, use_percent);
-		/* I've added +0.0001 because whith my machine the < test fail
-		 * with certain *equal* float numbers! */
-		if (aoi >= 0 && aoi + 0.0001 < aoimin)
-		{
-			xbest = test_x;
-			ybest = test_y;
-			aoimin = aoi;
-		}
-	}
-	*x = xbest;
-	*y = ybest;
-
-	return;
-}
+/* ---------------------------- local functions (CleverPlacement) ---------- */
 
 #define GET_NEXT_STEP 5
 static int get_next_x(
@@ -775,6 +597,178 @@ static float test_fit(
 	}
 	return aoi;
 }
+
+/* CleverPlacement by Anthony Martin <amartin@engr.csulb.edu>
+ * This function will place a new window such that there is a minimum amount
+ * of interference with other windows.  If it can place a window without any
+ * interference, fine.  Otherwise, it places it so that the area of of
+ * interference between the new window and the other windows is minimized */
+static void CleverPlacement(
+	FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
+	int *x, int *y, int pdeltax, int pdeltay, int use_percent)
+{
+	int test_x;
+	int test_y;
+	int xbest;
+	int ybest;
+	/* area of interference */
+	float aoi;
+	float aoimin;
+	int PageLeft = screen_g->x - pdeltax;
+	int PageTop = screen_g->y - pdeltay;
+
+	test_x = PageLeft;
+	test_y = PageTop;
+	aoi = test_fit(
+		t, sflags, screen_g, test_x, test_y, -1, pdeltax, pdeltay,
+		use_percent);
+	aoimin = aoi;
+	xbest = test_x;
+	ybest = test_y;
+
+	while (aoi != 0 && aoi != -1)
+	{
+		if (aoi > 0)
+		{
+			/* Windows interfere.  Try next x. */
+			test_x = get_next_x(
+				t, screen_g, test_x, test_y, pdeltax, pdeltay,
+				use_percent);
+		}
+		else
+		{
+			/* Out of room in x direction. Try next y. Reset x.*/
+			test_x = PageLeft;
+			test_y = get_next_y(
+				t, screen_g, test_y, pdeltay, use_percent);
+		}
+		aoi = test_fit(
+			t, sflags, screen_g, test_x,test_y, aoimin, pdeltax,
+			pdeltay, use_percent);
+		/* I've added +0.0001 because whith my machine the < test fail
+		 * with certain *equal* float numbers! */
+		if (aoi >= 0 && aoi + 0.0001 < aoimin)
+		{
+			xbest = test_x;
+			ybest = test_y;
+			aoimin = aoi;
+		}
+	}
+	*x = xbest;
+	*y = ybest;
+
+	return;
+}
+
+/* ---------------------------- local functions (SmartPlacement) ----------- */
+
+/* returns -1 if windows do not overlap
+ * returns >= 0 (the window's next x position to try) if windows do overlap
+ */
+static inline int __sp_test_window(
+	FvwmWindow *place_fw, FvwmWindow *test_fw,
+	const signed_rectangle *place_g, int pdeltax, int pdeltay)
+{
+	Bool rc;
+	rectangle test_g;
+
+	if (place_fw == test_fw || IS_EWMH_DESKTOP(FW_W(test_fw)))
+	{
+		return -1;
+	}
+	/*  RBW - account for sticky windows...  */
+	if (
+		test_fw->Desk != place_fw->Desk &&
+		IS_STICKY_ACROSS_DESKS(test_fw) == 0)
+	{
+		return -1;
+	}
+	rc = get_visible_window_or_icon_geometry(test_fw, &test_g);
+	if (
+		rc == True &&
+		(PLACEMENT_AVOID_ICON == 0 || !IS_ICONIFIED(test_fw)))
+	{
+		if (IS_STICKY_ACROSS_PAGES(test_fw))
+		{
+			test_g.x -= pdeltax;
+			test_g.y -= pdeltay;
+		}
+		if (
+			test_g.x < place_g->x + place_g->width  &&
+			place_g->x < test_g.x + test_g.width &&
+			test_g.y < place_g->y + place_g->height &&
+			place_g->y < test_g.y + test_g.height)
+		{
+			/* window overlaps, look for a different place */
+			return test_g.x + test_g.width - 1;
+		}
+	}
+
+	return -1;
+}
+
+static int SmartPlacement(
+	FvwmWindow *t, rectangle *screen_g,
+	int width, int height, int *x, int *y, int pdeltax, int pdeltay)
+{
+	signed_rectangle place_g;
+	int PageLeft   = screen_g->x - pdeltax;
+	int PageTop    = screen_g->y - pdeltay;
+	int PageRight  = PageLeft + screen_g->width;
+	int PageBottom = PageTop + screen_g->height;
+	int loc_ok = False;
+	signed_rectangle place_g;
+
+	place_g.x = PageLeft;
+	place_g.y = PageTop;
+	place_g.width = width;
+	place_g.height = height;
+	for (; place_g.y + place_g.height < PageBottom && loc_ok == False; )
+	{
+		place_g.x = PageLeft;
+		while (
+			place_g.x + place_g.width < PageRight &&
+			loc_ok == False)
+		{
+			FvwmWindow *test_fw;
+
+			loc_ok = True;
+			for (
+				test_fw = Scr.FvwmRoot.next;
+				test_fw != NULL && loc_ok == False;
+				test_fw = test_fw->next)
+			{
+				int next_x;
+
+				next_x = __sp_test_window(
+					t, test_fw, &place_g, pdeltax,
+					pdeltay);
+				if (next_x >= 0)
+				{
+					loc_ok = False;
+					place_g.x = next_x;
+				}
+			}
+			if (loc_ok == False)
+			{
+				place_g.x += 1;
+			}
+		}
+		if (loc_ok == False)
+		{
+			place_g.y += 1;
+		}
+	}
+	if (loc_ok == True)
+	{
+		*x = place_g.x;
+		*y = place_g.y;
+	}
+
+	return loc_ok;
+}
+
+/* ---------------------------- local functions ---------------------------- */
 
 static void __place_get_placement_flags(
 	placement_flags_t *ret_flags, FvwmWindow *fw, style_flags *sflags,
