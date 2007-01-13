@@ -1,3 +1,11 @@
+2007-01-13  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_interface.c (struct cqueue_object_type):
+	* fvwm/module_list.h (struct fmodule_input):
+	reused cqueue_object_type as a struct to store module input data
+	renamed it to fmodule_input and moved it to module_list.h
+	typedef'ed it to cqueue_object_type in module_interface.c
+
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_icon_box_style):

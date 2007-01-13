@@ -37,6 +37,14 @@ typedef struct fmodule
 	struct fmodule *xnext;
 } fmodule;
 
+/* struct to store module input data (in the near future) */
+typedef struct fmodule_input
+{
+	Window window;
+	fmodule *module;
+	char *command;
+} fmodule_input;
+
 #define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
 #define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
 #define MOD_READFD(m) ((m)->xreadPipe)

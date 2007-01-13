@@ -794,12 +794,7 @@ void CMD_Send_Reply(F_CMD_ARGS)
 }
 
 /* A queue of commands from the modules */
-typedef struct
-{
-	Window window;
-	fmodule *module;
-	char *command;
-} cqueue_object_type;
+typedef struct fmodule_input cqueue_object_type;
 
 static fqueue cqueue = FQUEUE_INIT;
 
