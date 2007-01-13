@@ -666,41 +666,41 @@ static void CleverPlacement(
  * returns >= 0 (the window's next x position to try) if windows do overlap
  */
 static inline int __sp_test_window(
-	FvwmWindow *place_fw, FvwmWindow *test_fw,
+	FvwmWindow *place_fw, FvwmWindow *other_fw,
 	const signed_rectangle *place_g, int pdeltax, int pdeltay)
 {
 	Bool rc;
-	rectangle test_g;
+	rectangle other_g;
 
-	if (place_fw == test_fw || IS_EWMH_DESKTOP(FW_W(test_fw)))
+	if (place_fw == other_fw || IS_EWMH_DESKTOP(FW_W(other_fw)))
 	{
 		return -1;
 	}
 	/*  RBW - account for sticky windows...  */
 	if (
-		test_fw->Desk != place_fw->Desk &&
-		IS_STICKY_ACROSS_DESKS(test_fw) == 0)
+		other_fw->Desk != place_fw->Desk &&
+		IS_STICKY_ACROSS_DESKS(other_fw) == 0)
 	{
 		return -1;
 	}
-	rc = get_visible_window_or_icon_geometry(test_fw, &test_g);
+	rc = get_visible_window_or_icon_geometry(other_fw, &other_g);
 	if (
 		rc == True &&
-		(PLACEMENT_AVOID_ICON == 0 || !IS_ICONIFIED(test_fw)))
+		(PLACEMENT_AVOID_ICON == 0 || !IS_ICONIFIED(other_fw)))
 	{
-		if (IS_STICKY_ACROSS_PAGES(test_fw))
+		if (IS_STICKY_ACROSS_PAGES(other_fw))
 		{
-			test_g.x -= pdeltax;
-			test_g.y -= pdeltay;
+			other_g.x -= pdeltax;
+			other_g.y -= pdeltay;
 		}
 		if (
-			test_g.x < place_g->x + place_g->width  &&
-			place_g->x < test_g.x + test_g.width &&
-			test_g.y < place_g->y + place_g->height &&
-			place_g->y < test_g.y + test_g.height)
+			other_g.x < place_g->x + place_g->width  &&
+			place_g->x < other_g.x + other_g.width &&
+			other_g.y < place_g->y + place_g->height &&
+			place_g->y < other_g.y + other_g.height)
 		{
 			/* window overlaps, look for a different place */
-			return test_g.x + test_g.width - 1;
+			return other_g.x + other_g.width - 1;
 		}
 	}
 
@@ -708,7 +708,7 @@ static inline int __sp_test_window(
 }
 
 static int SmartPlacement(
-	FvwmWindow *t, rectangle *screen_g,
+	FvwmWindow *place_fw, rectangle *screen_g,
 	int width, int height, int *x, int *y, int pdeltax, int pdeltay)
 {
 	int PageLeft   = screen_g->x - pdeltax;
@@ -729,18 +729,18 @@ static int SmartPlacement(
 			place_g.x + place_g.width < PageRight &&
 			loc_ok == False)
 		{
-			FvwmWindow *test_fw;
+			FvwmWindow *other_fw;
 
 			loc_ok = True;
 			for (
-				test_fw = Scr.FvwmRoot.next;
-				test_fw != NULL && loc_ok == False;
-				test_fw = test_fw->next)
+				other_fw = Scr.FvwmRoot.next;
+				other_fw != NULL && loc_ok == False;
+				other_fw = other_fw->next)
 			{
 				int next_x;
 
 				next_x = __sp_test_window(
-					t, test_fw, &place_g, pdeltax,
+					place_fw, other_fw, &place_g, pdeltax,
 					pdeltay);
 				if (next_x >= 0)
 				{
