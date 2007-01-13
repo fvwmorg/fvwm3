@@ -1212,12 +1212,12 @@ void MakeList(void)
 	}
 	bw = 2*target.border_w;
 	cwidth = target.frame_w - bw;
-	if (target.title_dir == DIR_N || target.title_dir == DIR_S)
+	if (target.title_dir == DIR_W || target.title_dir == DIR_E)
 	{
 		cwidth -= target.title_h;
 	}
-	cheight = target.frame_h - target.title_h - bw;
-	if (target.title_dir == DIR_W || target.title_dir == DIR_E)
+	cheight = target.frame_h - bw;
+	if (target.title_dir == DIR_N || target.title_dir == DIR_S)
 	{
 		cheight -= target.title_h;
 	}

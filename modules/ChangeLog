@@ -1,3 +1,8 @@
+2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	fixed the size FvwmIdent reports
+
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIdent/FvwmIdent.c (MakeList):
