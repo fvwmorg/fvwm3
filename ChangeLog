@@ -1,6 +1,9 @@
 2007-01-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ConfigFvwmMenuDefaults:
+	Mouse 0 MS A MenuLeaveSubmenu instead.
+
+	* fvwm/ConfigFvwmMenuDefaults:
 	Mouse 0 MS A MenuClose to make sidepic and border behave as
 	before menu bindings.
 
