@@ -13,6 +13,8 @@ Changes in beta release 2.5.20 (not released yet)
      the section Menu Bindings in the man page for details.
    - Hilighted menu backgrounds now use pixmaps gradients and
      transparency from their related colorset.
+   - New window conditions: StickyIcon, StickyAcrossPagesIcon and
+     StickyAcrossDesksIcon.
 
 * Changed features:
 
