@@ -18,14 +18,6 @@ typedef struct
 	int y;
 	int width;
 	int height;
-} signed_rectangle;
-
-typedef struct
-{
-	int x;
-	int y;
-	unsigned int width;
-	unsigned int height;
 } rectangle;
 
 typedef struct
@@ -36,8 +28,8 @@ typedef struct
 
 typedef struct
 {
-	unsigned int width;
-	unsigned int height;
+	int width;
+	int height;
 } size_rect;
 
 typedef struct
@@ -56,7 +48,7 @@ int fvwmrect_do_rectangles_intersect(rectangle *r, rectangle *s);
 /* Subtracts the values in s2_ from the ones in s1_g and stores the result in
  * diff_g. */
 void fvwmrect_subtract_rectangles(
-	signed_rectangle *rdiff, rectangle *r1, rectangle *r2);
+	rectangle *rdiff, rectangle *r1, rectangle *r2);
 /* Returns 1 is the rectangles are identical and 0 if not */
 int fvwmrect_rectangles_equal(
 	rectangle *r1, rectangle *r2);

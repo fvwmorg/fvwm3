@@ -26,7 +26,6 @@
  */
 
 /* ---------------------------- included header files ---------------------- */
-
 #include "config.h"
 
 #include <stdio.h>
@@ -176,12 +175,28 @@ typedef struct
 
 /* ---------------------------- local functions (CleverPlacement) ---------- */
 
-#define GET_NEXT_STEP 5
-static int get_next_x(
-	FvwmWindow *t, rectangle *screen_g, int x, int y, int pdeltax,
-	int pdeltay, int use_percent)
+#define __CP_GET_NEXT_STEP 5
+
+typedef enum
 {
-	FvwmWindow *testw;
+	CP_LOOP_OK,
+	CP_LOOP_END,
+	CP_LOOP_CONT,
+	CP_LOOP_OUT_OF_SPACE_Y,
+	CP_LOOP_OUT_OF_SPACE_X
+} cp_loop_rc_t;
+
+typedef struct
+{
+	unsigned use_percent : 1;
+	unsigned use_ewmh_dynamic_working_areapercent : 1;
+} cp_flags_t;
+
+static inline int __cp_get_next_x(
+	FvwmWindow *place_fw, const rectangle *screen_g,
+	const cp_flags_t *cp_flags, int x, int y, int pdeltax, int pdeltay)
+{
+	FvwmWindow *other_fw;
 	int xnew;
 	int xtest;
 	int PageLeft = screen_g->x - pdeltax;
@@ -193,18 +208,18 @@ static int get_next_x(
 	rectangle g;
 	Bool rc;
 
-	if (use_percent)
+	if (cp_flags->use_percent == 1)
 	{
 		start = 0;
 	}
 	else
 	{
-		start = GET_NEXT_STEP;
+		start = __CP_GET_NEXT_STEP;
 	}
 
 	/* Test window at far right of screen */
 	xnew = PageRight;
-	xtest = PageRight - t->g.frame.width;
+	xtest = PageRight - place_fw->g.frame.width;
 	if (xtest > x)
 	{
 		xnew = MIN(xnew, xtest);
@@ -217,22 +232,26 @@ static int get_next_x(
 	}
 	xtest = PageLeft +
 		(Scr.Desktops->ewmh_working_area.x +
-		 Scr.Desktops->ewmh_working_area.width) - t->g.frame.width;
+		 Scr.Desktops->ewmh_working_area.width) -
+		place_fw->g.frame.width;
 	if (xtest > x)
 	{
 		xnew = MIN(xnew, xtest);
 	}
 	/* Test the values of the right edges of every window */
-	for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
+	for (
+		other_fw = Scr.FvwmRoot.next; other_fw != NULL;
+		other_fw = other_fw->next)
 	{
-		if (testw == t ||
-		    (testw->Desk != t->Desk &&
-		     !IS_STICKY_ACROSS_DESKS(testw)) ||
-		    IS_EWMH_DESKTOP(FW_W(testw)))
+		if (
+			other_fw == place_fw ||
+			(other_fw->Desk != place_fw->Desk &&
+			 !IS_STICKY_ACROSS_DESKS(other_fw)) ||
+			IS_EWMH_DESKTOP(FW_W(other_fw)))
 		{
 			continue;
 		}
-		if (IS_STICKY_ACROSS_PAGES(testw))
+		if (IS_STICKY_ACROSS_PAGES(other_fw))
 		{
 			stickyx = pdeltax;
 			stickyy = pdeltay;
@@ -242,29 +261,29 @@ static int get_next_x(
 			stickyx = 0;
 			stickyy = 0;
 		}
-		if (IS_ICONIFIED(testw))
+		if (IS_ICONIFIED(other_fw))
 		{
-			rc = get_visible_icon_geometry(testw, &g);
+			rc = get_visible_icon_geometry(other_fw, &g);
 			if (rc == True && y < g.y + g.height - stickyy &&
-			    g.y - stickyy < t->g.frame.height + y)
+			    g.y - stickyy < place_fw->g.frame.height + y)
 			{
 				win_left = PageLeft + g.x - stickyx -
-					t->g.frame.width;
-				for (i = start; i <= GET_NEXT_STEP; i++)
+					place_fw->g.frame.width;
+				for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 				{
 					xtest = win_left + g.width *
-						(GET_NEXT_STEP - i) /
-						GET_NEXT_STEP;
+						(__CP_GET_NEXT_STEP - i) /
+						__CP_GET_NEXT_STEP;
 					if (xtest > x)
 					{
 						xnew = MIN(xnew, xtest);
 					}
 				}
 				win_left = PageLeft + g.x - stickyx;
-				for(i=start; i <= GET_NEXT_STEP; i++)
+				for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 				{
 					xtest = (win_left) + g.width * i /
-						GET_NEXT_STEP;
+						__CP_GET_NEXT_STEP;
 					if (xtest > x)
 					{
 						xnew = MIN(xnew, xtest);
@@ -273,30 +292,32 @@ static int get_next_x(
 			}
 		}
 		else if (
-			y <
-			testw->g.frame.height + testw->g.frame.y - stickyy &&
-			testw->g.frame.y - stickyy < t->g.frame.height + y &&
-			PageLeft <
-			testw->g.frame.width + testw->g.frame.x - stickyx &&
-			testw->g.frame.x - stickyx < PageRight)
+			y < other_fw->g.frame.height + other_fw->g.frame.y -
+			stickyy &&
+			other_fw->g.frame.y - stickyy <
+			place_fw->g.frame.height + y &&
+			PageLeft < other_fw->g.frame.width +
+			other_fw->g.frame.x - stickyx &&
+			other_fw->g.frame.x - stickyx < PageRight)
 		{
-			win_left = PageLeft + pdeltax + testw->g.frame.x -
-				stickyx - t->g.frame.width;
-			for(i=start; i <= GET_NEXT_STEP; i++)
+			win_left = PageLeft + pdeltax + other_fw->g.frame.x -
+				stickyx - place_fw->g.frame.width;
+			for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 			{
-				xtest = (win_left) + (testw->g.frame.width) *
-					(GET_NEXT_STEP - i)/GET_NEXT_STEP;
+				xtest = win_left + other_fw->g.frame.width *
+					(__CP_GET_NEXT_STEP - i) /
+					__CP_GET_NEXT_STEP;
 				if (xtest > x)
 				{
 					xnew = MIN(xnew, xtest);
 				}
 			}
-			win_left = PageLeft + pdeltax + testw->g.frame.x -
+			win_left = PageLeft + pdeltax + other_fw->g.frame.x -
 				stickyx;
-			for(i=start; i <= GET_NEXT_STEP; i++)
+			for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 			{
-				xtest = (win_left) + (testw->g.frame.width) *
-					i/GET_NEXT_STEP;
+				xtest = win_left + other_fw->g.frame.width *
+					i / __CP_GET_NEXT_STEP;
 				if (xtest > x)
 				{
 					xnew = MIN(xnew, xtest);
@@ -308,11 +329,11 @@ static int get_next_x(
 	return xnew;
 }
 
-static int get_next_y(
-	FvwmWindow *t, rectangle *screen_g, int y, int pdeltay,
-	int use_percent)
+static inline int __cp_get_next_y(
+	FvwmWindow *place_fw, const rectangle *screen_g,
+	const cp_flags_t *cp_flags, int y, int pdeltay)
 {
-	FvwmWindow *testw;
+	FvwmWindow *other_fw;
 	int ynew;
 	int ytest;
 	int PageBottom = screen_g->y + screen_g->height - pdeltay;
@@ -322,18 +343,18 @@ static int get_next_y(
 	int i;
 	rectangle g;
 
-	if (use_percent)
+	if (cp_flags->use_percent == 1)
 	{
 		start = 0;
 	}
 	else
 	{
-		start = GET_NEXT_STEP;
+		start = __CP_GET_NEXT_STEP;
 	}
 
 	/* Test window at far bottom of screen */
 	ynew = PageBottom;
-	ytest = PageBottom - t->g.frame.height;
+	ytest = PageBottom - place_fw->g.frame.height;
 	if (ytest > y)
 	{
 		ynew = MIN(ynew, ytest);
@@ -346,20 +367,28 @@ static int get_next_y(
 	}
 	ytest = screen_g->y +
 		(Scr.Desktops->ewmh_working_area.y +
-		 Scr.Desktops->ewmh_working_area.height) - t->g.frame.height;
+		 Scr.Desktops->ewmh_working_area.height) -
+		place_fw->g.frame.height;
 	if (ytest > y)
-		ynew = MIN(ynew, ytest);
-	/* Test the values of the bottom edge of every window */
-	for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
 	{
-		if (testw == t ||
-		    (testw->Desk != t->Desk && !IS_STICKY_ACROSS_DESKS(testw))
-		    || IS_EWMH_DESKTOP(FW_W(testw)))
+		ynew = MIN(ynew, ytest);
+	}
+	/* Test the values of the bottom edge of every window */
+	for (
+		other_fw = Scr.FvwmRoot.next; other_fw != NULL;
+		other_fw = other_fw->next)
+	{
+		if (
+			other_fw == place_fw ||
+			(
+				other_fw->Desk != place_fw->Desk &&
+				!IS_STICKY_ACROSS_DESKS(other_fw)) ||
+			IS_EWMH_DESKTOP(FW_W(other_fw)))
 		{
 			continue;
 		}
 
-		if (IS_STICKY_ACROSS_PAGES(testw))
+		if (IS_STICKY_ACROSS_PAGES(other_fw))
 		{
 			stickyy = pdeltay;
 		}
@@ -368,23 +397,27 @@ static int get_next_y(
 			stickyy = 0;
 		}
 
-		if (IS_ICONIFIED(testw))
+		if (IS_ICONIFIED(other_fw))
 		{
-			get_visible_icon_geometry(testw, &g);
+			get_visible_icon_geometry(other_fw, &g);
 			win_top = g.y - stickyy;
-			for(i=start; i <= GET_NEXT_STEP; i++)
+			for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 			{
-				ytest = win_top + g.height * i / GET_NEXT_STEP;
+				ytest =
+					win_top + g.height * i /
+					__CP_GET_NEXT_STEP;
 				if (ytest > y)
 				{
 					ynew = MIN(ynew, ytest);
 				}
 			}
-			win_top = g.y - stickyy - t->g.frame.height;
-			for(i=start; i <= GET_NEXT_STEP; i++)
+			win_top = g.y - stickyy - place_fw->g.frame.height;
+			for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 			{
-				ytest = win_top + g.height *
-					(GET_NEXT_STEP - i) / GET_NEXT_STEP;
+				ytest =
+					win_top + g.height *
+					(__CP_GET_NEXT_STEP - i) /
+					__CP_GET_NEXT_STEP;
 				if (ytest > y)
 				{
 					ynew = MIN(ynew, ytest);
@@ -393,22 +426,25 @@ static int get_next_y(
 		}
 		else
 		{
-			win_top = testw->g.frame.y - stickyy;;
-			for(i=start; i <= GET_NEXT_STEP; i++)
+			win_top = other_fw->g.frame.y - stickyy;;
+			for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 			{
-				ytest = (win_top) + (testw->g.frame.height) *
-					i/GET_NEXT_STEP;
+				ytest =
+					win_top + other_fw->g.frame.height *
+					i / __CP_GET_NEXT_STEP;
 				if (ytest > y)
 				{
 					ynew = MIN(ynew, ytest);
 				}
 			}
-			win_top = testw->g.frame.y - stickyy -
-				t->g.frame.height;
-			for(i=start; i <= GET_NEXT_STEP; i++)
+			win_top = other_fw->g.frame.y - stickyy -
+				place_fw->g.frame.height;
+			for (i = start; i <= __CP_GET_NEXT_STEP; i++)
 			{
-				ytest = win_top + (testw->g.frame.height) *
-					(GET_NEXT_STEP - i)/GET_NEXT_STEP;
+				ytest =
+					win_top + other_fw->g.frame.height *
+					(__CP_GET_NEXT_STEP - i) /
+					__CP_GET_NEXT_STEP;
 				if (ytest > y)
 				{
 					ynew = MIN(ynew, ytest);
@@ -420,182 +456,230 @@ static int get_next_y(
 	return ynew;
 }
 
-static float test_fit(
-	FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
-	int x11, int y11, float aoimin, int pdeltax, int pdeltay,
-	int use_percent)
+static inline float __cp_get_avoidance_score(
+	FvwmWindow *place_fw, FvwmWindow *other_fw, const rectangle *place_g,
+	const rectangle *other_g, const cp_flags_t *cp_flags)
 {
-	FvwmWindow *testw;
-	int x12;
-	int x21;
-	int x22;
-	int y12;
-	int y21;
-	int y22;
-	/* xleft, xright, ytop, ybottom */
-	int xl;
-	int xr;
-	int yt;
-	int yb;
-	/* area of interference */
-	float aoi = 0;
 	float anew;
-	float cover_factor = 0;
 	float avoidance_factor;
-	int PageRight  = screen_g->x + screen_g->width - pdeltax;
-	int PageBottom = screen_g->y + screen_g->height - pdeltay;
-	int stickyx, stickyy;
-	rectangle g;
-	Bool rc;
+	position place_p2;
+	position other_p2;
 
-	x12 = x11 + t->g.frame.width;
-	y12 = y11 + t->g.frame.height;
+	place_p2.x = place_g->x + place_fw->g.frame.width;
+	place_p2.y = place_g->y + place_fw->g.frame.height;
+	other_p2.x = other_g->x + other_g->width;
+	other_p2.y = other_g->y + other_g->height;
+	{
+		long x1 = MAX(place_g->x, other_g->x);
+		long x2 = MIN(place_p2.x, other_p2.x);
+		long y1 = MAX(place_g->y, other_g->y);
+		long y2 = MIN(place_p2.y, other_p2.y);
 
-	if (y12 > PageBottom) /* No room in y direction */
-	{
-		return -1;
+		/* overlapping area in pixels (windows are guaranteed to
+		 * overlap when this function is called) */
+		anew = (x2 - x1) * (y2 - y1);
 	}
-	if (x12 > PageRight) /* No room in x direction */
+	if (IS_ICONIFIED(other_fw))
 	{
-		return -2;
+		avoidance_factor = ICON_PLACEMENT_PENALTY(other_fw);
 	}
-	for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
+	else if (compare_window_layers(other_fw, place_fw) > 0)
 	{
-		if (testw == t ||
-		    (testw->Desk != t->Desk && !IS_STICKY_ACROSS_DESKS(testw))
-		    || IS_EWMH_DESKTOP(FW_W(testw)))
+		avoidance_factor = ONTOP_PLACEMENT_PENALTY(other_fw);
+	}
+	else if (compare_window_layers(other_fw, place_fw) < 0)
+	{
+		avoidance_factor = BELOW_PLACEMENT_PENALTY(other_fw);
+	}
+	else if (
+		IS_STICKY_ACROSS_PAGES(other_fw) ||
+		IS_STICKY_ACROSS_DESKS(other_fw))
+	{
+		avoidance_factor = STICKY_PLACEMENT_PENALTY(other_fw);
+	}
+	else
+	{
+		avoidance_factor = NORMAL_PLACEMENT_PENALTY(other_fw);
+	}
+	if (cp_flags->use_percent == 1)
+	{
+		float cover_factor;
+		long other_area;
+		long place_area;
+
+		other_area = other_g->width * other_g->height;
+		place_area = place_g->width * place_g->height;
+		cover_factor = 0;
+		if (other_area != 0 && place_area != 0)
+		{
+			anew = 100 * MAX(anew / other_area, anew / place_area);
+			if (anew >= 99)
+			{
+				cover_factor = PERCENTAGE_99_PENALTY(other_fw);
+			}
+			else if (anew > 94)
+			{
+				cover_factor = PERCENTAGE_95_PENALTY(other_fw);
+			}
+			else if (anew > 84)
+			{
+				cover_factor = PERCENTAGE_85_PENALTY(other_fw);
+			}
+			else if (anew > 74)
+			{
+				cover_factor = PERCENTAGE_75_PENALTY(other_fw);
+			}
+		}
+		if (avoidance_factor >= 1)
+		{
+			avoidance_factor += cover_factor;
+		}
+	}
+	if (
+		cp_flags->use_ewmh_dynamic_working_areapercent == 1 &&
+		DO_EWMH_IGNORE_STRUT_HINTS(other_fw) == 0 &&
+		(
+			other_fw->dyn_strut.left > 0 ||
+			other_fw->dyn_strut.right > 0 ||
+			other_fw->dyn_strut.top > 0 ||
+			other_fw->dyn_strut.bottom > 0))
+	{
+		/* if we intersect a window which reserves space */
+		avoidance_factor += (avoidance_factor >= 1) ?
+			EWMH_STRUT_PLACEMENT_PENALTY(place_fw) : 0;
+	}
+	anew *= avoidance_factor;
+
+	return anew;
+}
+
+static inline cp_loop_rc_t __cp_test_fit(
+	float *ret_aoi, FvwmWindow *place_fw, const cp_flags_t *cp_flags,
+	const rectangle *screen_g, const rectangle *place_g, float aoibest,
+	int pdeltax, int pdeltay)
+{
+	FvwmWindow *other_fw;
+	position place_p2;
+	/* area of interference */
+	float aoi;
+
+	*ret_aoi = -1;
+	place_p2.x = place_g->x + place_g->width;
+	place_p2.y = place_g->y + place_g->height;
+	if (place_p2.y > screen_g->y + screen_g->height - pdeltay)
+	{
+		/* PageBottom */
+		return CP_LOOP_OUT_OF_SPACE_Y;
+	}
+	if (place_p2.x > screen_g->x + screen_g->width - pdeltax)
+	{
+		/* PageRight */
+		return CP_LOOP_OUT_OF_SPACE_X;
+	}
+	aoi = 0;
+	for (
+		other_fw = Scr.FvwmRoot.next; other_fw != NULL;
+		other_fw = other_fw->next)
+	{
+		rectangle other_g;
+		Bool rc;
+
+		if (place_fw == other_fw || IS_EWMH_DESKTOP(FW_W(other_fw)))
 		{
 			continue;
 		}
-
-		if (IS_STICKY_ACROSS_PAGES(testw))
+		/*  RBW - account for sticky windows...  */
+		if (
+			other_fw->Desk != place_fw->Desk &&
+			IS_STICKY_ACROSS_DESKS(other_fw) == 0)
 		{
-			stickyx = pdeltax;
-			stickyy = pdeltay;
+			continue;
 		}
-		else
+		rc = get_visible_window_or_icon_geometry(other_fw, &other_g);
+		if (IS_STICKY_ACROSS_PAGES(other_fw))
 		{
-			stickyx = 0;
-			stickyy = 0;
+			other_g.x -= pdeltax;
+			other_g.y -= pdeltay;
 		}
-
-		rc = get_visible_window_or_icon_geometry(testw, &g);
-		x21 = g.x - stickyx;
-		y21 = g.y - stickyy;
-		x22 = x21 + g.width;
-		y22 = y21 + g.height;
-		if (x11 < x22 && x12 > x21 &&
-		    y11 < y22 && y12 > y21)
+		if (
+			place_g->x < other_g.x + other_g.width &&
+			place_p2.x > other_g.x &&
+			place_g->y < other_g.y + other_g.height &&
+			place_p2.y > other_g.y)
 		{
-			/* Windows interfere */
-			xl = MAX(x11, x21);
-			xr = MIN(x12, x22);
-			yt = MAX(y11, y21);
-			yb = MIN(y12, y22);
-			anew = (xr - xl) * (yb - yt);
-			if (IS_ICONIFIED(testw))
-			{
-				avoidance_factor = ICON_PLACEMENT_PENALTY(
-					testw);
-			}
-			else if(compare_window_layers(testw, t) > 0)
-			{
-				avoidance_factor = ONTOP_PLACEMENT_PENALTY(
-					testw);
-			}
-			else if(compare_window_layers(testw, t) < 0)
-			{
-				avoidance_factor = BELOW_PLACEMENT_PENALTY(
-					testw);
-			}
-			else if(IS_STICKY_ACROSS_PAGES(testw) ||
-				IS_STICKY_ACROSS_DESKS(testw))
-			{
-				avoidance_factor = STICKY_PLACEMENT_PENALTY(
-					testw);
-			}
-			else
-			{
-				avoidance_factor = NORMAL_PLACEMENT_PENALTY(
-					testw);
-			}
+			float anew;
 
-			if (use_percent)
-			{
-				cover_factor = 0;
-				if ((x22 - x21) * (y22 - y21) != 0 &&
-				    (x12 - x11) * (y12 - y11) != 0)
-				{
-					anew = 100 * MAX(
-						anew / ((x22 - x21) *
-							(y22 - y21)),
-						anew / ((x12 - x11) *
-							(y12 - y11)));
-					if (anew >= 99)
-					{
-						cover_factor =
-							PERCENTAGE_99_PENALTY(
-								testw);
-					}
-					else if (anew > 94)
-					{
-						cover_factor =
-							PERCENTAGE_95_PENALTY(
-								testw);
-					}
-					else if (anew > 84)
-					{
-						cover_factor =
-							PERCENTAGE_85_PENALTY(
-								testw);
-					}
-					else if (anew > 74)
-					{
-						cover_factor =
-							PERCENTAGE_75_PENALTY(
-								testw);
-					}
-				}
-				avoidance_factor += (avoidance_factor >= 1) ?
-					cover_factor : 0;
-			}
-
-			if (SEWMH_PLACEMENT_MODE(sflags) ==
-			    EWMH_USE_DYNAMIC_WORKING_AREA &&
-			    !DO_EWMH_IGNORE_STRUT_HINTS(testw) &&
-			    (testw->dyn_strut.left > 0 ||
-			     testw->dyn_strut.right > 0 ||
-			     testw->dyn_strut.top > 0 ||
-			     testw->dyn_strut.bottom > 0))
-			{
-				/* if we intersect a window which reserves
-				 * space */
-				avoidance_factor += (avoidance_factor >= 1)?
-					EWMH_STRUT_PLACEMENT_PENALTY(t) : 0;
-			}
-
-			anew *= avoidance_factor;
+			anew = __cp_get_avoidance_score(
+				place_fw, other_fw, place_g, &other_g,
+				cp_flags);
 			aoi += anew;
-			if (aoi > aoimin && aoimin != -1)
+			if (aoi > aoibest && aoibest != -1)
 			{
-				return aoi;
+				*ret_aoi = aoi;
+
+				return CP_LOOP_OK;
 			}
 		}
 	}
 	/* now handle the working area */
-	if (SEWMH_PLACEMENT_MODE(sflags) == EWMH_USE_WORKING_AREA)
+	if (cp_flags->use_ewmh_dynamic_working_areapercent == 1)
 	{
-		aoi += EWMH_STRUT_PLACEMENT_PENALTY(t) *
+		aoi += EWMH_STRUT_PLACEMENT_PENALTY(place_fw) *
 			EWMH_GetStrutIntersection(
-				x11, y11, x12, y12, use_percent);
+				place_g->x, place_g->y, place_p2.x, place_p2.y,
+				cp_flags->use_percent);
 	}
 	else /* EWMH_USE_DYNAMIC_WORKING_AREA, count the base strut */
 	{
-		aoi +=  EWMH_STRUT_PLACEMENT_PENALTY(t) *
+		aoi +=  EWMH_STRUT_PLACEMENT_PENALTY(place_fw) *
 			EWMH_GetBaseStrutIntersection(
-				x11, y11, x12, y12, use_percent);
+				place_g->x, place_g->y, place_p2.x, place_p2.y,
+				cp_flags->use_percent);
 	}
-	return aoi;
+	*ret_aoi = aoi;
+
+	return CP_LOOP_OK;
+}
+
+static inline float test_fit(
+	float *ret_aoi, position *ret_next_p, FvwmWindow *place_fw,
+	const cp_flags_t *cp_flags, const rectangle *screen_g,
+	const rectangle *place_g, float aoibest, int pdeltax, int pdeltay)
+{
+	cp_loop_rc_t loop_rc;
+
+	loop_rc = __cp_test_fit(
+		ret_aoi, place_fw, cp_flags, screen_g, place_g, aoibest,
+		pdeltax, pdeltay);
+	switch (loop_rc)
+	{
+	case CP_LOOP_OK:
+		if (*ret_aoi > 0)
+		{
+			/* Windows interfere.  Try next x. */
+			ret_next_p->x = __cp_get_next_x(
+				place_fw, screen_g, cp_flags, place_g->x,
+				place_g->y, pdeltax, pdeltay);
+			ret_next_p->y = place_g->y;
+		}
+		break;
+	case CP_LOOP_OUT_OF_SPACE_X:
+		/* Out of room in x direction. Try next y. Reset x.*/
+		ret_next_p->x = screen_g->x - pdeltax;
+		ret_next_p->y = __cp_get_next_y(
+			place_fw, screen_g, cp_flags, place_g->y, pdeltay);
+		loop_rc = CP_LOOP_CONT;
+		break;
+	case CP_LOOP_OUT_OF_SPACE_Y:
+		loop_rc = CP_LOOP_END;
+		break;
+	case CP_LOOP_END:
+	case CP_LOOP_CONT:
+		/* bug */
+		break;
+	}
+
+	return loop_rc;
 }
 
 /* CleverPlacement by Anthony Martin <amartin@engr.csulb.edu>
@@ -604,56 +688,50 @@ static float test_fit(
  * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
 static void CleverPlacement(
-	FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
+	FvwmWindow *place_fw, style_flags *sflags, rectangle *screen_g,
 	int *x, int *y, int pdeltax, int pdeltay, int use_percent)
 {
-	int test_x;
-	int test_y;
+	rectangle place_g;
+	position next_p;
 	int xbest;
 	int ybest;
 	/* area of interference */
 	float aoi;
-	float aoimin;
-	int PageLeft = screen_g->x - pdeltax;
-	int PageTop = screen_g->y - pdeltay;
+	float aoibest;
+	cp_loop_rc_t loop_rc;
+	cp_flags_t cp_flags;
 
-	test_x = PageLeft;
-	test_y = PageTop;
-	aoi = test_fit(
-		t, sflags, screen_g, test_x, test_y, -1, pdeltax, pdeltay,
-		use_percent);
-	aoimin = aoi;
-	xbest = test_x;
-	ybest = test_y;
-
-	while (aoi != 0 && aoi != -1)
+	memset(&cp_flags, 0, sizeof(cp_flags));
+	cp_flags.use_percent = !!use_percent;
+	cp_flags.use_ewmh_dynamic_working_areapercent =
+		(SEWMH_PLACEMENT_MODE(sflags) == EWMH_USE_WORKING_AREA);
+	/* top left corner of page */
+	next_p.x = screen_g->x - pdeltax;
+	next_p.y = screen_g->y - pdeltay;
+	aoibest = -1;
+	xbest = next_p.x;
+	ybest = next_p.y;
+	place_g.width = place_fw->g.frame.width;
+	place_g.height = place_fw->g.frame.height;
+	do
 	{
-		if (aoi > 0)
+		do
 		{
-			/* Windows interfere.  Try next x. */
-			test_x = get_next_x(
-				t, screen_g, test_x, test_y, pdeltax, pdeltay,
-				use_percent);
-		}
-		else
-		{
-			/* Out of room in x direction. Try next y. Reset x.*/
-			test_x = PageLeft;
-			test_y = get_next_y(
-				t, screen_g, test_y, pdeltay, use_percent);
-		}
-		aoi = test_fit(
-			t, sflags, screen_g, test_x,test_y, aoimin, pdeltax,
-			pdeltay, use_percent);
-		/* I've added +0.0001 because whith my machine the < test fail
+			place_g.x = next_p.x;
+			place_g.y = next_p.y;
+			loop_rc = test_fit(
+				&aoi, &next_p, place_fw, &cp_flags, screen_g,
+				&place_g, aoibest, pdeltax, pdeltay);
+		} while (loop_rc == CP_LOOP_CONT);
+		/* I've added +0.0001 because with my machine the < test fail
 		 * with certain *equal* float numbers! */
-		if (aoi >= 0 && aoi + 0.0001 < aoimin)
+		if (aoi >= 0 && (aoibest < 0 || aoi + 0.0001 < aoibest))
 		{
-			xbest = test_x;
-			ybest = test_y;
-			aoimin = aoi;
+			xbest = place_g.x;
+			ybest = place_g.y;
+			aoibest = aoi;
 		}
-	}
+	} while (aoi != 0 && loop_rc != CP_LOOP_END);
 	*x = xbest;
 	*y = ybest;
 
@@ -667,7 +745,7 @@ static void CleverPlacement(
  */
 static inline int __sp_test_window(
 	FvwmWindow *place_fw, FvwmWindow *other_fw,
-	const signed_rectangle *place_g, int pdeltax, int pdeltay)
+	const rectangle *place_g, int pdeltax, int pdeltay)
 {
 	Bool rc;
 	rectangle other_g;
@@ -716,7 +794,7 @@ static int SmartPlacement(
 	int PageRight  = PageLeft + screen_g->width;
 	int PageBottom = PageTop + screen_g->height;
 	int loc_ok = False;
-	signed_rectangle place_g;
+	rectangle place_g;
 
 	place_g.x = PageLeft;
 	place_g.y = PageTop;

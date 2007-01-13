@@ -63,7 +63,7 @@ void gravity_get_offsets(int grav, int *xp,int *yp);
 void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff);
 void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff);
 void gravity_move_resize_parent_child(
-	int child_gravity, signed_rectangle *parent_diff_r, rectangle *child_r);
+	int child_gravity, rectangle *parent_diff_r, rectangle *child_r);
 direction_t gravity_grav_to_dir(
 	int grav);
 int gravity_dir_to_grav(

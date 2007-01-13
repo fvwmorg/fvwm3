@@ -69,7 +69,7 @@ typedef struct
 	rectangle curr_sidebar_g;
 	rectangle start_g;
 	rectangle end_g;
-	signed_rectangle delta_g;
+	rectangle delta_g;
 	rectangle current_g;
 	rectangle client_g;
 	int anim_steps;
@@ -96,7 +96,7 @@ typedef struct
 	int next_titlebar_compression;
 	rectangle next_sidebar_g;
 	rectangle next_g;
-	signed_rectangle dstep_g;
+	rectangle dstep_g;
 	size_rect parent_s;
 	int minimal_w_offset;
 	int minimal_h_offset;
@@ -253,7 +253,7 @@ static void frame_get_titlebar_dimensions_only(
 
 static void frame_setup_border(
 	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
-	signed_rectangle *diff_g)
+	rectangle *diff_g)
 {
 	XWindowChanges xwc;
 	Window w;
@@ -311,7 +311,7 @@ static void frame_setup_border(
 
 static void frame_setup_titlebar(
 	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
-	signed_rectangle *diff_g)
+	rectangle *diff_g)
 {
 	frame_title_layout_t title_layout;
 	int i;
@@ -521,7 +521,7 @@ static int frame_get_titlebar_compression(
  */
 static void frame_get_resize_decor_gravities(
 	frame_decor_gravities_type *ret_grav, direction_t title_dir,
-	frame_move_resize_mode rmode, signed_rectangle *delta_g)
+	frame_move_resize_mode rmode, rectangle *delta_g)
 {
 	frame_decor_gravities_type grav_x;
 	frame_decor_gravities_type grav_y;
@@ -1327,7 +1327,7 @@ void frame_destroyed_frame(
 }
 
 void frame_get_titlebar_dimensions(
-	FvwmWindow *fw, rectangle *frame_g, signed_rectangle *diff_g,
+	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
 	frame_title_layout_t *title_layout)
 {
 	size_borders b;

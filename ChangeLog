@@ -1,3 +1,36 @@
+2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/gravity.h:
+	* libs/gravity.c (gravity_move_resize_parent_child):
+	* fvwm/frame.h:
+	* fvwm/frame.c (mr_args_internal):
+	(frame_setup_border):
+	(frame_setup_titlebar):
+	(frame_get_resize_decor_gravities):
+	(frame_get_titlebar_dimensions):
+	use rectangle instead of signed_rectangle
+
+	* libs/fvwmrect.c (fvwmrect_subtract_rectangles):
+	* libs/fvwmrect.h (signed_rectangle):
+	removed type
+	(rectangle):
+	(size_rect):
+	widht and height are now signed values
+
+	* fvwm/placement.c (get_next_x):
+	(__cp_get_next_x):
+	(get_next_x):
+	(__cp_get_next_y):
+	(__test_fit):
+	(__cp_test_fit):
+	renamed functions
+
+	* fvwm/placement.c (get_next_x):
+	(get_next_y):
+	(test_fit):
+	(CleverPlacement):
+	cleanup
+
 2007-01-13  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
