@@ -383,7 +383,7 @@ TerminateHandler(int sig)
  */
 void list_configure(unsigned long *body)
 {
-	struct ConfigWinPacket  *cfgpacket = (void *) body;
+	struct ConfigWinPacket *cfgpacket = (void *) body;
 
 	if (
 		(module->window == cfgpacket->frame)||
@@ -406,6 +406,7 @@ void list_configure(unsigned long *body)
 		       &(cfgpacket->flags), sizeof(cfgpacket->flags));
 		target.title_h = cfgpacket->title_height;
 		target.border_w = cfgpacket->border_width;
+		target.title_dir = GET_TITLE_DIR(cfgpacket);
 		target.base_w = cfgpacket->hints_base_width;
 		target.base_h = cfgpacket->hints_base_height;
 		target.width_inc = cfgpacket->hints_width_inc;
@@ -1108,7 +1109,7 @@ void AddToList(char *s1, char* s2)
 
 void MakeList(void)
 {
-	int bw,width,height,x1,y1,x2,y2;
+	int bw,cwidth,cheight,x1,y1,x2,y2;
 	char loc[20];
 	static char xstr[6],ystr[6];
 	/* GSFR - quick hack because the new macros depend on a prt reference
@@ -1117,15 +1118,11 @@ void MakeList(void)
 
 	ListSize = 0;
 
-	bw = 2*target.border_w;
-	width = target.frame_w - bw;
-	height = target.frame_h - target.title_h - bw;
-
 	sprintf(desktop, "%ld",  target.desktop);
 	sprintf(layer,   "%ld",  target.layer);
 	sprintf(id,      "0x%x", (unsigned int)target.id);
-	sprintf(swidth,  "%d",   width);
-	sprintf(sheight, "%d",   height);
+	sprintf(swidth,  "%d",   (int)target.frame_w);
+	sprintf(sheight, "%d",   (int)target.frame_h);
 	sprintf(borderw, "%ld",  target.border_w);
 	sprintf(xstr,    "%ld",  target.frame_x);
 	sprintf(ystr,    "%ld",  target.frame_y);
@@ -1137,10 +1134,10 @@ void MakeList(void)
 	AddToList("Window ID:",     id);
 	AddToList("Desk:",          desktop);
 	AddToList("Layer:",         layer);
+	AddToList("X (on page):",   xstr);
+	AddToList("Y (on page):",   ystr);
 	AddToList("Width:",         swidth);
 	AddToList("Height:",        sheight);
-	AddToList("X (current page):",   xstr);
-	AddToList("Y (current page):",   ystr);
 	AddToList("Boundary Width:", borderw);
 
 	AddToList("StickyPage:",    (IS_STICKY_ACROSS_PAGES(targ) ? yes : no));
@@ -1213,10 +1210,21 @@ void MakeList(void)
 	{
 		y2 = 0;
 	}
-	width = (width - target.base_w)/target.width_inc;
-	height = (height - target.base_h)/target.height_inc;
+	bw = 2*target.border_w;
+	cwidth = target.frame_w - bw;
+	if (target.title_dir == DIR_N || target.title_dir == DIR_S)
+	{
+		cwidth -= target.title_h;
+	}
+	cheight = target.frame_h - target.title_h - bw;
+	if (target.title_dir == DIR_W || target.title_dir == DIR_E)
+	{
+		cheight -= target.title_h;
+	}
+	cwidth = (cwidth - target.base_w)/target.width_inc;
+	cheight = (cheight - target.base_h)/target.height_inc;
 
-	sprintf(loc,"%dx%d",width,height);
+	sprintf(loc,"%dx%d", cwidth, cheight);
 	strcpy(geometry, loc);
 
 	if ((target.gravity == EastGravity) ||

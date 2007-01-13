@@ -25,6 +25,7 @@ struct target_struct
   window_flags flags;
   long title_h;
   long border_w;
+  unsigned title_dir;
   long ewmh_hint_layer;
   unsigned long ewmh_hint_desktop;
   long ewmh_window_type;

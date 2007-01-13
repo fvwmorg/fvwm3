@@ -1,5 +1,10 @@
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	(list_configure):
+	* FvwmIdent/FvwmIdent.h:
+	fixed the size FvwmIdent reports
+
 	* FvwmScript/script.c (yyparse):
 	use long instead of long int
 
