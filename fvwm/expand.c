@@ -195,13 +195,13 @@ enum
 
 /* ---------------------------- local functions ---------------------------- */
 
-int __eae_parse_range(char *input, unsigned int *lower, unsigned int *upper)
+int __eae_parse_range(char *input, int *lower, int *upper)
 {
 	int rc;
 	int n;
 
 	*lower = 0;
-	*upper = (unsigned int)-1;
+	*upper = -1;
 	if (*input == '*')
 	{
 		return 0;
@@ -249,9 +249,9 @@ static signed int expand_args_extended(
 	char *input, char *argument_string, char *output)
 {
 	int rc;
-	unsigned int lower;
-	unsigned int upper;
-	unsigned int i;
+	int lower;
+	int upper;
+	int i;
 	size_t len;
 
 	rc = __eae_parse_range(input, &lower, &upper);
@@ -458,7 +458,7 @@ static signed int expand_vars_extended(
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
 			is_target = True;
-			sprintf(target, "0x%x", (unsigned int)FW_W(fw));
+			sprintf(target, "0x%x", (int)FW_W(fw));
 		}
 		break;
 	case VAR_W_NAME:
@@ -1183,7 +1183,7 @@ char *expand_vars(
 					fvwm_msg(OLD, "expand_vars",
 						"Use $[w.id] instead of $w");
 					sprintf(&out[j], "0x%x",
-						(unsigned int)FW_W(fw));
+						(int)FW_W(fw));
 				}
 				else
 				{

@@ -98,13 +98,13 @@ typedef struct MenuInfo
 	int n_destroyed_menus;
 } MenuInfo;
 
-typedef struct
+typedef struct MenuSizingParameters
 {
 	MenuRoot *menu;
 	/* number of item labels present in the item format */
-	unsigned int used_item_labels;
+	int used_item_labels;
 	/* same for mini icons */
-	unsigned int used_mini_icons;
+	int used_mini_icons;
 	struct
 	{
 		int sidepic_width;
@@ -175,7 +175,7 @@ typedef struct
 } mloop_evh_input_t;
 
 /* values that are set once when the menu loop is entered */
-typedef struct
+typedef struct mloop_static_info_t
 {
 	int x_init;
 	int y_init;
@@ -1703,8 +1703,8 @@ static void make_menu_window(MenuRoot *mr, Bool is_tear_off)
 {
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
-	unsigned int w;
-	unsigned int h;
+	int w;
+	int h;
 	unsigned int evmask;
 
 	w = MR_WIDTH(mr);
@@ -1762,8 +1762,8 @@ static void make_menu_window(MenuRoot *mr, Bool is_tear_off)
 		}
 		MR_WINDOW(mr) = XCreateWindow(
 			MR_CREATE_DPY(mr), Scr.Root, 0, 0, w, h,
-			(unsigned int)0, Pdepth, InputOutput, Pvisual,
-			valuemask, &attributes);
+			0, Pdepth, InputOutput, Pvisual, valuemask,
+			&attributes);
 		if (MR_CREATE_DPY(mr) != dpy)
 		{
 			/* We *must* synchronize the display here.  Otherwise
@@ -2288,8 +2288,8 @@ static Bool paint_menu_gradient_background(
 		{
 			register int i;
 			register int dh;
-			static unsigned int best_tile_width = 0;
-			unsigned int junk;
+			static int best_tile_width = 0;
+			int junk;
 
 			if (best_tile_width == 0)
 			{
@@ -2393,8 +2393,8 @@ static Bool paint_menu_gradient_background(
 	default:
 		if (MR_IS_BACKGROUND_SET(mr) == False)
 		{
-			unsigned int g_width;
-			unsigned int g_height;
+			int g_width;
+			int g_height;
 
 			/* let library take care of all other gradients */
 			pmap = XCreatePixmap(
@@ -2673,7 +2673,7 @@ static void select_menu_item(
 			{
 				int iy;
 				int ih;
-				unsigned int mw;
+				int mw;
 				XEvent e;
 
 				if (!MR_IS_PAINTED(mr))
@@ -2908,7 +2908,7 @@ static int do_menus_overlap(
 	int v_tolerance, int s_tolerance, Bool allow_popup_offset_tolerance)
 {
 	int prior_x, prior_y, x_overlap;
-	unsigned int prior_width, prior_height;
+	int prior_width, prior_height;
 
 	if (mr == NULL)
 	{
@@ -2986,11 +2986,11 @@ static int pop_menu_up(
 	int bwp = 0;
 	int prev_x;
 	int prev_y;
-	unsigned int prev_width;
-	unsigned int prev_height;
+	int prev_width;
+	int prev_height;
 	unsigned int event_mask;
 	int scr_x, scr_y;
-	unsigned int scr_w, scr_h;
+	int scr_w, scr_h;
 
 	mr = *pmenu;
 	if (!mr ||
@@ -3677,12 +3677,12 @@ static void pop_menu_down_and_repaint_parent(
 	XEvent event;
 	int mr_x;
 	int mr_y;
-	unsigned int mr_width;
-	unsigned int mr_height;
+	int mr_width;
+	int mr_height;
 	int parent_x;
 	int parent_y;
-	unsigned int parent_width;
-	unsigned int parent_height;
+	int parent_width;
+	int parent_height;
 
 	if (*fSubmenuOverlaps && parent)
 	{
@@ -5031,7 +5031,7 @@ static mloop_ret_code_t __mloop_handle_action_without_mi(
 	if (in->mrPopup)
 	{
 		int x, y, mx, my;
-		unsigned int mw, mh;
+		int mw, mh;
 
 		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
@@ -5709,7 +5709,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	static int y_start;
 	static Bool has_mouse_moved = False;
 	int scr_x, scr_y;
-	unsigned int scr_w, scr_h;
+	int scr_w, scr_h;
 
 	pmret->rc = MENU_NOP;
 	if (pmp->flags.is_sticky && !pmp->flags.is_submenu)
@@ -6811,8 +6811,8 @@ char *get_menu_options(
 	int y;
 	int button;
 	int gflags;
-	unsigned int width;
-	unsigned int height;
+	int width;
+	int height;
 	int dummy_int;
 	float dummy_float;
 	Bool dummy_flag;
@@ -6984,8 +6984,8 @@ char *get_menu_options(
 			int screen;
 			int sx;
 			int sy;
-			unsigned int sw;
-			unsigned int sh;
+			int sw;
+			int sh;
 
 			/* parse the rectangle */
 			free(tok);

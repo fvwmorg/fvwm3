@@ -122,7 +122,8 @@ static void dump_stack_ring(void)
 void verify_stack_ring_consistency(void)
 {
 	Window root, parent, *children;
-	unsigned int nchildren, i;
+	unsigned int nchildren;
+	int i;
 	FvwmWindow *t1, *t2;
 	int last_layer;
 	int last_index;
@@ -913,7 +914,8 @@ static Bool overlap(FvwmWindow *r, FvwmWindow *s)
 static void ResyncFvwmStackRing (void)
 {
 	Window root, parent, *children;
-	unsigned int nchildren, i;
+	unsigned int nchildren;
+	int i;
 	FvwmWindow *t1, *t2;
 
 	MyXGrabServer (dpy);

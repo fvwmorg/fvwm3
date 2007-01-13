@@ -125,7 +125,7 @@ void EWMH_SetVisibleName(FvwmWindow *fw, Bool is_icon_name)
  */
 int EWMH_WMIconName(EWMH_CMD_ARGS)
 {
-	unsigned int size = 0;
+	int size = 0;
 	char *val;
 	char *tmp_str;
 	FlocaleCharset *fc = NULL;
@@ -194,7 +194,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 
 int EWMH_WMName(EWMH_CMD_ARGS)
 {
-	unsigned int size = 0;
+	int size = 0;
 	char *val;
 	char *tmp_str;
 	FlocaleCharset *fc = NULL;

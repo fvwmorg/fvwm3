@@ -33,7 +33,7 @@ Bool StashEventTime(const XEvent *ev);
 void CoerceEnterNotifyOnCurrentWindow(void);
 void InitEventHandlerJumpTable(void);
 void SendConfigureNotify(
-	FvwmWindow *fw, int x, int y, unsigned int w, unsigned int h, int bw,
+	FvwmWindow *fw, int x, int y, int w, int h, int bw,
 	Bool send_for_frame_too);
 void WaitForButtonsUp(Bool do_handle_expose);
 int discard_events(long event_mask);

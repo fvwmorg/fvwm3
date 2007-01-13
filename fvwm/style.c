@@ -1732,8 +1732,8 @@ static char *style_parse_icon_box_style(
 		/* bigger than =32767x32767+32767+32767 */
 		int geom_flags;
 		int l;
-		unsigned int width;
-		unsigned int height;
+		int width;
+		int height;
 
 		/* read in 1 word w/o advancing */
 		option = PeekToken(rest, NULL);

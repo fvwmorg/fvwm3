@@ -309,8 +309,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 		{
 			Pixmap source, mask;
 			char *path;
-			unsigned int x;
-			unsigned int y;
+			int x;
+			int y;
 
 			path = PictureFindImageFile(newcursor, NULL, R_OK);
 			if (!path)
@@ -338,7 +338,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 			XQueryColors(dpy, Pcmap, colors, 2);
 			Scr.FvwmCursors[index] = XCreatePixmapCursor(
 				dpy, source, mask, &(colors[0]), &(colors[1]),
-				x, y);
+				(unsigned int)x, (unsigned int)y);
 
 			free(newcursor);
 			free(path);

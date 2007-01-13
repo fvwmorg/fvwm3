@@ -38,7 +38,7 @@ typedef struct MenuRootStatic
 	int items;
 	FvwmPicture *sidePic;
 	Pixel sideColor;
-	unsigned int used_mini_icons;
+	int used_mini_icons;
 	/* Menu Face */
 	struct MenuStyle *ms;
 	/* permanent flags */
@@ -143,7 +143,7 @@ typedef struct MenuRootDynamic
 	struct
 	{
 		Pixel *d_pixels;
-		unsigned int d_npixels;
+		int d_npixels;
 	} stored_pixels;
 	/* alloc pixels when dithering is used for gradients */
 } MenuRootDynamic;

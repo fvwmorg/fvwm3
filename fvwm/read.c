@@ -43,7 +43,7 @@
 #define MAX_READ_DEPTH 40
 static char *curr_read_file = NULL;
 static char *curr_read_dir = NULL;
-static unsigned int curr_read_depth = 0;
+static int curr_read_depth = 0;
 static char *prev_read_files[MAX_READ_DEPTH];
 
 static int push_read_file(const char *file)
@@ -240,7 +240,7 @@ int run_command_file(
  **/
 static void cursor_control(Bool grab)
 {
-	static unsigned int read_depth = 0;
+	static int read_depth = 0;
 	static Bool need_ungrab = False;
 
 	if (!(Scr.BusyCursor & BUSY_READ) && !need_ungrab)

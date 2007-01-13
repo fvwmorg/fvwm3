@@ -30,7 +30,7 @@
 
 /* If non-zero we are already repeating a function, so don't record the
  * command again. */
-static unsigned int repeat_depth = 0;
+static int repeat_depth = 0;
 
 #if 0
 typedef struct

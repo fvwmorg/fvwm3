@@ -89,12 +89,12 @@ extern ewmhInfo ewmhc;
 ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name);
 void ewmh_ChangeProperty(
 	Window w, const char *atom_name, ewmh_atom_list_name list,
-	unsigned char *data, unsigned int length);
+	unsigned char *data, int length);
 void ewmh_DeleteProperty(
 	Window w, const char *atom_name, ewmh_atom_list_name list);
 void *ewmh_AtomGetByName(
 	Window win, const char *atom_name, ewmh_atom_list_name list,
-	unsigned int *size);
+	int *size);
 
 int ewmh_HandleDesktop(EWMH_CMD_ARGS);
 int ewmh_HandleDialog(EWMH_CMD_ARGS);
@@ -148,7 +148,7 @@ Bool ewmh_AllowsResize(EWMH_CMD_ARGS);
 /* ewmh_icon */
 int ewmh_WMIcon(EWMH_CMD_ARGS);
 CARD32 *ewmh_SetWmIconFromPixmap(
-	FvwmWindow *fw, CARD32 *orig_icon, unsigned int *orig_size,
+	FvwmWindow *fw, CARD32 *orig_icon, int *orig_size,
 	Bool is_mini_icon);
 
 /* debugging */

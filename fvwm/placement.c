@@ -1015,8 +1015,7 @@ static Bool __place_get_wm_pos(
 			MyXGrabServer(dpy);
 			if (XGetGeometry(
 				    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-				    (unsigned int *)&DragWidth,
-				    (unsigned int *)&DragHeight, &JunkBW,
+				    &DragWidth, &DragHeight, &JunkBW,
 				    &JunkDepth) == 0)
 			{
 				MyXUngrabServer(dpy);

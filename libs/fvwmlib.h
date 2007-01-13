@@ -258,20 +258,20 @@ Bool IsGradientTypeSupported(char type);
 XColor *AllocAllGradientColors(
 	char *color_names[], int perc[], int nsegs, int ncolors, int dither);
 
-unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
-			   int **perc_return, int *nsegs_return);
+int ParseGradient(char *gradient, char **rest, char ***colors_return,
+		  int **perc_return, int *nsegs_return);
 
 Bool CalculateGradientDimensions(Display *dpy, Drawable d, int ncolors,
-				 char type, int dither, unsigned int *width_ret,
-				 unsigned int *height_ret);
+				 char type, int dither, int *width_ret,
+				 int *height_ret);
 Drawable CreateGradientPixmap(
-	Display *dpy, Drawable d, GC gc, int type, unsigned int g_width,
-	unsigned int g_height, int ncolors, XColor *xcs, int dither, Pixel **d_pixels,
-	unsigned int *d_npixels, Drawable in_drawable, int d_x, int d_y,
-	unsigned int d_width, unsigned int d_height, XRectangle *rclip);
+	Display *dpy, Drawable d, GC gc, int type, int g_width,
+	int g_height, int ncolors, XColor *xcs, int dither, Pixel **d_pixels,
+	int *d_npixels, Drawable in_drawable, int d_x, int d_y,
+	int d_width, int d_height, XRectangle *rclip);
 Pixmap CreateGradientPixmapFromString(
 	Display *dpy, Drawable d, GC gc, int type, char *action,
-	unsigned int *width_return, unsigned int *height_return,
+	int *width_return, int *height_return,
 	Pixel **alloc_pixels, int *nalloc_pixels, int dither);
 
 void DrawTrianglePattern(
@@ -286,8 +286,8 @@ void DrawTrianglePattern(
 
 void SlideWindow(
 	Display *dpy, Window win,
-	int s_x, int s_y, unsigned int s_w, unsigned int s_h,
-	int e_x, int e_y, unsigned int e_w, unsigned int e_h,
+	int s_x, int s_y, int s_w, int s_h,
+	int e_x, int e_y, int e_w, int e_h,
 	int steps, int delay_ms, float *ppctMovement,
 	Bool do_sync, Bool use_hints);
 

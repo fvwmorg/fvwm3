@@ -60,7 +60,7 @@
 
 /* ---------------------------- local variables ---------------------------- */
 
-static unsigned int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0, 0 };
+static int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0, 0 };
 
 /* ---------------------------- exported variables (globals) --------------- */
 

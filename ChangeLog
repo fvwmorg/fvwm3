@@ -1,5 +1,122 @@
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/style.c (style_parse_icon_box_style):
+	* fvwm/virtual.c (HandlePaging):
+	* fvwm/stack.c (verify_stack_ring_consistency):
+	(ResyncFvwmStackRing):
+	* fvwm/repeat.c:
+	* fvwm/read.c (cursor_control):
+	* fvwm/placement.c (__place_get_wm_pos):
+	* fvwm/move_resize.c (GetMoveArguments):
+	(ParseOneResizeArgument):
+	(GetResizeArguments):
+	(GetResizeMoveArguments):
+	(resize_move_window):
+	(resize_move_window):
+	(InteractiveMove):
+	(__move_window):
+	(DoSnapAttract):
+	(DoSnapAttract):
+	(__resize_step):
+	(__resize_window):
+	(__resize_window):
+	(__resize_window):
+	(MaximizeHeight):
+	(MaximizeWidth):
+	(maximize_fvwm_window):
+	(CMD_Maximize):
+	(CMD_Maximize):
+	* fvwm/misc.c:
+	* fvwm/menustyle.h (MenuStyle):
+	* fvwm/menus.c (MenuSizingParameters):
+	(make_menu_window):
+	(paint_menu_gradient_background):
+	(paint_menu_gradient_background):
+	(select_menu_item):
+	(do_menus_overlap):
+	(pop_menu_up):
+	(pop_menu_down_and_repaint_parent):
+	(__mloop_handle_action_without_mi):
+	(do_menu):
+	(get_menu_options):
+	(get_menu_options):
+	* fvwm/menuroot.h (MenuRootStatic):
+	(MenuRootDynamic):
+	* fvwm/menuitem.h (MenuPaintItemParameters):
+	* fvwm/menugeometry.h:
+	* fvwm/menubindings.c (menu_shortcuts):
+	* fvwm/icons.c (SetIconPixmapSize):
+	(GetIconPicture):
+	(DrawIconTitleWindow):
+	(AutoPlaceIcon):
+	(do_all_iconboxes):
+	(GetIconWindow):
+	(GetIconBitmap):
+	* fvwm/gnome.c (GNOME_GetHintIcons):
+	* fvwm/functions.c (FvwmFunction):
+	(__execute_function):
+	(__cf_cleanup):
+	(execute_complex_function):
+	* fvwm/fvwm.c (JunkWidth):
+	(JunkHeight):
+	(JunkBW):
+	(JunkDepth):
+	(JunkMask):
+	(main):
+	* fvwm/externs.h (JunkWidth):
+	(JunkHeight):
+	(JunkBW):
+	(JunkDepth):
+	(JunkMask):
+	* fvwm/focus.c (CMD_WarpToWindow):
+	* fvwm/expand.c (__eae_parse_range):
+	(expand_args_extended):
+	(expand_vars_extended):
+	(expand_vars_extended):
+	* fvwm/ewmh_names.c (EWMH_WMIconName):
+	(EWMH_WMName):
+	* fvwm/ewmh_intern.h:
+	* fvwm/ewmh_icons.c (ewmh_WMIcon):
+	(EWMH_DoUpdateWmIcon):
+	(ewmh_SetWmIconFromPixmap):
+	(ewmh_SetWmIconFromPixmap):
+	(EWMH_DeleteWmIcon):
+	(extract_wm_icon):
+	(extract_wm_icon):
+	(EWMH_SetIconFromWMIcon):
+	* fvwm/ewmh_events.c (ewmh_WMDesktop):
+	(ewmh_WMState):
+	(ewmh_WMIconGeometry):
+	(ewmh_WMStrut):
+	* fvwm/ewmh.h:
+	* fvwm/ewmh.c (ewmh_ChangeProperty):
+	(ewmh_ChangeProperty):
+	(atom_get):
+	(ewmh_AtomGetByName):
+	(ewmh_AddToKdeSysTray):
+	(EWMH_GetWorkAreaIntersection):
+	(ewmh_HandleWindowType):
+	(ewmh_check_wm_pid):
+	* fvwm/geometry.c (constrain_size):
+	* fvwm/geometry.h:
+	* fvwm/events.c (__handle_cr_on_client):
+	(WaitForButtonsUp):
+	* fvwm/events.h:
+	* libs/PictureImageLoader.c:
+	* libs/PictureImageLoader.h:
+	* libs/WinMagic.c:
+	* libs/fvwmlib.h:
+	* libs/Graphics.c (ParseGradient):
+	(CalculateGradientDimensions):
+	(CreateGradientPixmap):
+	(CreateGradientPixmapFromString):
+	* fvwm/colorset.c (update_root_pixmap):
+	* fvwm/builtins.c (CMD_Echo):
+	(CMD_State):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/screen.h (DecorFace):
+	use int instead of unsigned int
+
 	* libs/Flocale.c (FlocaleChar2bOneCharToUtf8):
 	* fvwm/colormaps.c (EnterSubWindowColormap):
 	(LeaveSubWindowColormap):
@@ -14,8 +131,9 @@
 	* libs/Flocale.h (FlocaleFont):
 	* fvwm/style.c (style_parse_icon_grid_style):
 	* fvwm/menus.c (size_menu_horizontally):
-	(size_menu_vertically)
-	(paint_menu, AddToMenu):
+	(size_menu_vertically):
+	(paint_menu):
+	(AddToMenu):
 	* fvwm/menuitem.c (menuitem_paint):
 	(menuitem_free):
 	* fvwm/menuitem.h (MenuItem):
@@ -27,7 +145,8 @@
 	(DecorFace):
 	* fvwm/menus.c (MenuSizingParameters):
 	(size_menu_horizontally):
-	(update_menu, paint_menu_gradient_background):
+	(update_menu):
+	(paint_menu_gradient_background):
 	* fvwm/menuroot.h (MenuRootStatic):
 	* fvwm/menuitem.h (MenuItem):
 	(MenuItemPartSizesT):
@@ -104,7 +223,8 @@
 
 	* fvwm/fvwm.1.in:
 	* libs/wcontext.h (enum):
-	* fvwm/menubindings.c (menu_binding, menu_shortcuts):
+	* fvwm/menubindings.c (menu_binding):
+	(menu_shortcuts):
 	Add menu contexts 'I' (for items) 'S' '[', ']', '_', '-'.
 
 	* fvwm/menustyle.c (menustyle_parse_old_style):
@@ -216,7 +336,8 @@
 
 	* NEWS:
 	* fvwm/fvwm.1.in:
-	* fvwm/menuitem.c (menuitem_paint, draw_hilight_background):
+	* fvwm/menuitem.c (menuitem_paint):
+	(draw_hilight_background):
 	make all kinds of pixmaps work with hilight background
 
 	* libs/Colorset.h (CreateOffsetBackgroundPixmap):
@@ -227,7 +348,9 @@
 
 2007-01-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
-	* fvwm/menus.c (__mloop_exit, struct, __mloop_get_event)
+	* fvwm/menus.c (__mloop_exit):
+	(struct):
+	(__mloop_get_event)
 	(__mloop_handle_event):
 	don't warp to parent item when entering other item with mouse.
 
@@ -289,7 +412,8 @@
 	* ChangeLog:
 	make my email less spider-friendly
 
-	* fvwm/bindings.c (binding_cmd, ParseBinding):
+	* fvwm/bindings.c (binding_cmd):
+	(ParseBinding):
 	fix core
 
 2007-01-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
@@ -680,8 +804,11 @@
 	* NEWS:
 	* fvwm/fvwm.1.in:
 	* fvwm/menus.h:
-	* fvwm/menus.c (handle_emacs_bindings, parse_menu_action)
-	(menuShortcuts, __mloop_handle_event, menu_binding):
+	* fvwm/menus.c (handle_emacs_bindings):
+	(parse_menu_action)
+	(menuShortcuts):
+	(__mloop_handle_event):
+	(menu_binding):
 	* fvwm/bindings.c (ParseBinding):
 	* fvwm/Makefile.am (config_DATA):
 	* fvwm/ConfigFvwmDefaults:
@@ -811,7 +938,9 @@
 
 2006-12-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
-	* libs/Module.h (MX_REPLY, MAX_EXTENDED_MESSAGES, MAX_XMSG_MASK):
+	* libs/Module.h (MX_REPLY):
+	(MAX_EXTENDED_MESSAGES):
+	(MAX_XMSG_MASK):
 	* fvwm/module_interface.c (CMD_Send_Reply):
 	* fvwm/functable.c (func_table):
 	* fvwm/commands.h:
@@ -834,23 +963,33 @@
 
 2006-09-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
-	* libs/fvwmrect.h (fvwmrect_subtract_rectangles, size_rect, rectangle)
+	* libs/fvwmrect.h (fvwmrect_subtract_rectangles):
+	(size_rect):
+	(rectangle)
 	(signed_rectangle):
 	* libs/fvwmrect.c (fvwmrect_subtract_rectangles):
 	* libs/gravity.h (gravity_move_resize_parent_child):
 	* libs/gravity.c (gravity_move_resize_parent_child):
 	* fvwm/frame.h (frame_get_titlebar_dimensions)
 	* fvwm/frame.c (frame_get_titlebar_dimensions_only)
-	(frame_get_resize_decor_gravities, mr_args_internal):
-	(frame_setup_border, frame_setup_titlebar)
-	(frame_get_resize_decor_gravities, frame_get_titlebar_dimensions):
+	(frame_get_resize_decor_gravities):
+	(mr_args_internal):
+	(frame_setup_border):
+	(frame_setup_titlebar)
+	(frame_get_resize_decor_gravities):
+	(frame_get_titlebar_dimensions):
 	split rectangle into a signed size and an unsigned size type.
 
 	* fvwm/screen.h (ScreenInfo):
-	* libs/FScreen.h (FScreenGetScrRect, FScreenGetResistanceRect):
-	* libs/FScreen.c (XineramaScreenInfo, FScreenGetGeometry)
-	(FScreenGetScrRect, FScreenClipToScreen, FScreenCenterOnScreen)
-	(FScreenGetResistanceRect, FScreenIsRectangleOnScreen):
+	* libs/FScreen.h (FScreenGetScrRect):
+	(FScreenGetResistanceRect):
+	* libs/FScreen.c (XineramaScreenInfo):
+	(FScreenGetGeometry)
+	(FScreenGetScrRect):
+	(FScreenClipToScreen):
+	(FScreenCenterOnScreen)
+	(FScreenGetResistanceRect):
+	(FScreenIsRectangleOnScreen):
 	* fvwm/fvwm.h (FvwmWindow):
 	* fvwm/screen.h (DecorFace):
 	* libs/fvwmlib.h (CreateGradientPixmap):
@@ -858,32 +997,47 @@
 	* libs/PictureUtils.h (PictureCloseImageColorAllocator):
 	* libs/PictureUtils.c (PictureCloseImageColorAllocator):
 	* libs/PictureImageLoader.h (PImageCreatePixmapFromArgbData)
-	(PImageLoadPixmapFromFile, PImageLoadPixmapFromXpmData):
+	(PImageLoadPixmapFromFile):
+	(PImageLoadPixmapFromXpmData):
 	* libs/PictureImageLoader.c (FIMAGE_CMD_ARGS)
-	(PImageCreatePixmapFromArgbData, PImageLoadPixmapFromFile)
-	(PImageLoadFvwmPictureFromFile, PImageLoadPixmapFromXpmData):
+	(PImageCreatePixmapFromArgbData):
+	(PImageLoadPixmapFromFile)
+	(PImageLoadFvwmPictureFromFile):
+	(PImageLoadPixmapFromXpmData):
 	* libs/PictureGraphics.c (PGraphicsRenderPixmaps):
-	* fvwm/ewmh_icons.c (EWMH_DeleteWmIcon, EWMH_SetIconFromWMIcon):
+	* fvwm/ewmh_icons.c (EWMH_DeleteWmIcon):
+	(EWMH_SetIconFromWMIcon):
 	* fvwm/ewmh.h (EWMH_GetWorkAreaIntersection):
 	* fvwm/ewmh.c (EWMH_GetWorkAreaIntersection):
 	* fvwm/colorset.c (parse_colorset):
-	* fvwm/icons.c (DrawIconTitleWindow, AutoPlaceIcon)
+	* fvwm/icons.c (DrawIconTitleWindow):
+	(AutoPlaceIcon)
 	(do_all_iconboxes):
 	* fvwm/menus.h (MenuRootDynamic):
-	* fvwm/menus.c (update_menu, pop_menu_up, do_menu)
+	* fvwm/menus.c (update_menu):
+	(pop_menu_up):
+	(do_menu)
 	(get_menu_options):
-	* fvwm/move_resize.c (GetMoveArguments, ParseOneResizeArgument)
-	(GetResizeArguments, GetResizeMoveArguments, DoSnapAttract)
-	(__move_loop, CMD_Maximize):
+	* fvwm/move_resize.c (GetMoveArguments):
+	(ParseOneResizeArgument)
+	(GetResizeArguments):
+	(GetResizeMoveArguments):
+	(DoSnapAttract)
+	(__move_loop):
+	(CMD_Maximize):
 	change dimensions and allocation counts to unsigned types.
 
 	* libs/Flocale.h (FlocaleStringNumberOfBytes)
-	(FlocaleStringByteToCharOffset, FlocaleStringCharToByteOffset)
+	(FlocaleStringByteToCharOffset):
+	(FlocaleStringCharToByteOffset)
 	(FlocaleStringCharLength)
 	* libs/Flocale.c (FlocaleStringNumberOfBytes)
-	(FlocaleStringByteToCharOffset, FlocaleStringCharToByteOffset)
-	(FlocaleStringCharLength, FlocaleUtf8ToUnicodeStr2b)
-	(FlocaleStringToString2b, FlocaleEncodeString):
+	(FlocaleStringByteToCharOffset):
+	(FlocaleStringCharToByteOffset)
+	(FlocaleStringCharLength):
+	(FlocaleUtf8ToUnicodeStr2b)
+	(FlocaleStringToString2b):
+	(FlocaleEncodeString):
 	* libs/Ficonv.c (convert_charsets):
 	change most string types to char* from unsigned char* to match
 	with system headers without casts.
@@ -892,8 +1046,10 @@
 	init shadow_dir to make gcc 4 happy.
 
 	* libs/Colorset.h (CSETS_IS_TRANSPARENT_PR_TINT)
-	(CSETS_IS_TRANSPARENT_ROOT_TRAN, CSETS_IS_TRANSPARENT_ROOT_PURE)
-	(CSETS_IS_TRANSPARENT_PR_PURE, CSETS_IS_TRANSPARENT_ROOT)
+	(CSETS_IS_TRANSPARENT_ROOT_TRAN):
+	(CSETS_IS_TRANSPARENT_ROOT_PURE)
+	(CSETS_IS_TRANSPARENT_PR_PURE):
+	(CSETS_IS_TRANSPARENT_ROOT)
 	(CSETS_IS_TRANSPARENT):
 	compare pointer with NULL, not >= 0.
 
@@ -911,11 +1067,15 @@
 	* fvwm/schedule.c (sq_object_type):
 	change // to /* ... */
 
-	* libs/Fft.c (FftGetFontWidths, FftTextWidth):
+	* libs/Fft.c (FftGetFontWidths):
+	(FftTextWidth):
 	* libs/FScreen.c (FScreenConfigureSLSScreens):
-	* fvwm/ewmh_names.c (EWMH_SetVisibleName, EWMH_SetDesktopNames):
-	* fvwm/fvwm.c (LoadDefaultLeftButton, LoadDefaultRightButton):
-	* fvwm/builtins.c (ReadDecorFace, CMD_State):
+	* fvwm/ewmh_names.c (EWMH_SetVisibleName):
+	(EWMH_SetDesktopNames):
+	* fvwm/fvwm.c (LoadDefaultLeftButton):
+	(LoadDefaultRightButton):
+	* fvwm/builtins.c (ReadDecorFace):
+	(CMD_State):
 	silence signedness warnings by casts.
 
 	* fvwm/borders.c (ROTATE_RECTANGLE):
@@ -926,7 +1086,8 @@
 
 2006-09-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
-	* fvwm/events.c (HandleFocusIn, HandleFocusOut):
+	* fvwm/events.c (HandleFocusIn):
+	(HandleFocusOut):
 	* fvwm/focus.c (__set_focus_to_fwin):
 	fix focus decoration when unmanaged are focused, unless
 	FlickeringQtDialogsWorkaround is on. Closes bug #758.
@@ -994,7 +1155,8 @@
 2006-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/decorations.h (is_function_allowed):
-	* fvwm/decorations.c (__is_resize_allowed, is_function_allowed):
+	* fvwm/decorations.c (__is_resize_allowed):
+	(is_function_allowed):
 	work on 'const FvwmWindow *'
 
 	* fvwm/fvwm.h (action_flags):
@@ -1018,9 +1180,15 @@
 2006-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (remove_all_of_style_from_list):
-	(__simplify_style_list, blockor, blockand, blockunmask)
-	(blockissubset, style_ids_are_equal, style_id_equals_id)
-	(styles_have_same_id, fw_match_style_id)
+	(__simplify_style_list):
+	(blockor):
+	(blockand):
+	(blockunmask)
+	(blockissubset):
+	(style_ids_are_equal):
+	(style_id_equals_id)
+	(styles_have_same_id):
+	(fw_match_style_id)
 	(one_fw_can_match_both_ids):
 	(check_window_style_change):
 	use int/0/1 instead of Bool/False/True
@@ -1029,7 +1197,8 @@
 	use False instead of FALSE
 
 	* fvwm/style.c (fw_match_style_id):
-	* fvwm/read.c (run_command_file, push_read_file):
+	* fvwm/read.c (run_command_file):
+	(push_read_file):
 	* fvwm/add_window.c (MappedNotOverride):
 	* libs/wild.c (matchWildcards):
 	use 0 and 1 instead of FALSE and TRUE
@@ -1063,8 +1232,11 @@
 	* fvwm/fvwm.1.in (MenuStyle):
 	added a reference to the prefered ! style negation flag,
 	and listed the other deprecated negative forms in one place.
-	(ActiveForeOff, AnimationOff, AutomaticHotkeysOff):
-	(HilightBackOff, TitleWarpOff):
+	(ActiveForeOff):
+	(AnimationOff):
+	(AutomaticHotkeysOff):
+	(HilightBackOff):
+	(TitleWarpOff):
 	changed to the ! negation form and listed as deprecated.
 	(ActiveBack):
 	removed relics from the man page
@@ -1093,8 +1265,8 @@
 
 2006-07-17  Renato Caldas  <seventhguardian@gmail.com>
 
-	* fvwm/fvwm.1.in (NoTitle, StippledTitleOff, NoHandles styles):
-	(NoButton, NoIconTitle styles):
+	* fvwm/fvwm.1.in:
+	NoTitle, StippledTitleOff, NoHandles, NoButton, NoIconTitle styles
 	changed the manpage to reflect the prefered style negation method,
 	that is, using the !* negation sign.
 
@@ -1104,8 +1276,11 @@
 	removed documentation of filters.
 
 	* NEWS:
-	* fvwm/expand.c (check_first_filter, apply_filters)
-	(expand_args_extended, expand_vars_extended, expand_vars):
+	* fvwm/expand.c (check_first_filter):
+	(apply_filters)
+	(expand_args_extended):
+	(expand_vars_extended):
+	(expand_vars):
 	removed variable filter implementation and backslash-escaping.
 
 2006-07-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
@@ -1117,15 +1292,21 @@
 
 2006-07-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
-	* fvwm/expand.c (check_first_filter, apply_filters)
-	(expand_args_extended, expand_vars_extended, expand_vars):
+	* fvwm/expand.c (chec):
+	(first_filter):
+	(apply_filters)
+	(expand_args_extended):
+	(expand_vars_extended):
+	(expand_vars):
 	implemented variable filters.
 
 	* fvwm/expand.c (expand_vars):
 	made backslash work as escape character within extended variables.
 
-	* libs/Strings.h (QuoteEscapeString, QuoteEscapeStringLength):
-	* libs/Strings.c (QuoteEscapeString, QuoteEscapeStringLength):
+	* libs/Strings.h (QuoteEscapeString):
+	(QuoteEscapeStringLength):
+	* libs/Strings.c (QuoteEscapeString):
+	(QuoteEscapeStringLength):
 	new functions: QuoteEscapeString and QuoteEscapeStringLength for
 	generic quoting.
 
@@ -1158,7 +1339,8 @@
 	* fvwm/expand.c (expand_args_extended):
 	fixed core dump
 	added range check for positional parameters
-	(expand_args_extended, __eae_parse_range):
+	(expand_args_extended):
+	(__eae_parse_range):
 	cleaned up and simplified parsing code
 	properly unquote arguments when expanding
 	removed the patch below
@@ -1219,7 +1401,8 @@
 
 2006-07-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
-	* fvwm/module_interface.c (KillModule, ClosePipes):
+	* fvwm/module_interface.c (KillModule):
+	(ClosePipes):
 	fixed KillModule
 
 
@@ -1368,7 +1551,8 @@
 
 	* NEWS:
 	* fvwm/fvwm.1.in (COMMAND EXPANSION):
-	* fvwm/expand.c (expand_args_extended, expand_vars):
+	* fvwm/expand.c (expand_args_extended):
+	(expand_vars):
 	added support for $[n], $[n-m], $[n-] and $[*] variable expansion.
 
 	* fvwm/conditional.c (CMD_All):
@@ -1439,7 +1623,8 @@
 	* NEWS:
 	* fvwm/fvwm.1.in:
 	* fvwm/add_window.c (__add_window_handle_x_resources)
-	(destroy_window, AddWindow):
+	(destroy_window):
+	(AddWindow):
 	* fvwm/fvwm.h (FvwmWindow):
 	added fvwmstyle resource to override style name
 
@@ -1557,9 +1742,12 @@
 
 	* NEWS:
 	* fvwm/style.c (parse_and_set_window_style)
-	(style_parse_one_style_option, style_parse_icon_fill_style)
-	(style_parse_icon_grid_style, style_parse_icon_box_style)
-	(style_parse_icon_size_style, style_parse_focus_policy_style)
+	(style_parse_one_style_option):
+	(style_parse_icon_fill_style)
+	(style_parse_icon_grid_style):
+	(style_parse_icon_box_style)
+	(style_parse_icon_size_style):
+	(style_parse_focus_policy_style)
 	(style_parse_button_style):
 	warn if parts of style options are not consumed
 
@@ -1922,7 +2110,8 @@
 
 	* NEWS:
 	* fvwm/functions.c (__execute_function)
-	(__run_complex_function_items, execute_complex_function):
+	(__run_complex_function_items):
+	(execute_complex_function):
 	fix for moving/resizing reference window usage with complex functions.
 
 2005-10-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
@@ -1973,14 +2162,21 @@
 
 	* NEWS:
 	* AUTHORS:
-	* fvwm/fvwm.h (window_flags, WindowConditionMask, FvwmWindow):
-	* fvwm/window_flags.h (IS_PLACED_BY_WB3, SET_PLACED_WB3)
+	* fvwm/fvwm.h (window_flags):
+	(WindowConditionMask):
+	(FvwmWindow):
+	* fvwm/window_flags.h (IS_PLACED_BY_WB3):
+	(SET_PLACED_WB3)
 	(SETM_PLACED_WB3):
-	* fvwm/session.c (_match, SaveWindowStates, LoadWindowStates):
-	* fvwm/conditional.c (MatchesConditionMask, CreateConditionMask):
+	* fvwm/session.c (_match):
+	(SaveWindowStates):
+	(LoadWindowStates):
+	* fvwm/conditional.c (MatchesConditionMask):
+	(CreateConditionMask):
 	* fvwm/add_window.c (setup_window_structure):
 	* fvwm/move_resize.h (placement_binding):
-	* fvwm/move_resize.c (__move_loop, placement_binding):
+	* fvwm/move_resize.c (__move_loop):
+	(placement_binding):
 	* fvwm/bindings.c (ParseBinding):
 	* libs/wcontext.c (win_contexts):
 	* libs/wcontext.h (enum):
@@ -1995,13 +2191,21 @@
 
 	* NEWS:
 	* AUTHORS:
-	* fvwm/menustyle.h (enum, MenuFeel, ST_DO_SCROLL, MST_DO_SCROLL)
-	(ST_SCROLL_OFF_PAGE, MST_SCROLL_OFF_PAGE):
+	* fvwm/menustyle.h (enum):
+	(MenuFeel):
+	(ST_DO_SCROLL):
+	(MST_DO_SCROLL)
+	(ST_SCROLL_OFF_PAGE):
+	(MST_SCROLL_OFF_PAGE):
 	* fvwm/menustyle.c (menustyle_copy):
 	(menustyle_get_styleopt_index):
-	(menustyle_parse_style, CMD_MenuStyle):
-	* fvwm/menus.c (menuShortcuts, enum, __mloop_handle_event):
-	(menu_get_outer_geometry, move_any_menu):
+	(menustyle_parse_style):
+	(CMD_MenuStyle):
+	* fvwm/menus.c (menuShortcuts):
+	(enum):
+	(__mloop_handle_event):
+	(menu_get_outer_geometry):
+	(move_any_menu):
 	* fvwm/fvwm.1.in:
 	added MouseWheel and ScrollOffPage menu styles
 
@@ -2021,7 +2225,8 @@
 
 	* NEWS:
 	* AUTHORS:
-	* fvwm/expand.c (expand_vars_extended, expand_vars):
+	* fvwm/expand.c (expand_vars_extended):
+	(expand_vars):
 	allow nesting of variables
 
 2005-09-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>

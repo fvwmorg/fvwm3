@@ -195,7 +195,8 @@ Pixmap get_root_pixmap(Atom prop)
 void update_root_pixmap(Atom prop)
 {
 	static Atom a_rootpix = None;
-	unsigned int w = 0, h = 0;
+	int w = 0;
+	int h = 0;
 	XID dummy;
 	Pixmap pix;
 
@@ -209,8 +210,8 @@ void update_root_pixmap(Atom prop)
 		pix = get_root_pixmap(prop);
 		if (pix && !XGetGeometry(
 			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
-			&w, &h, (unsigned int *)&dummy,
-			(unsigned int *)&dummy))
+			(unsigned int *)&w, (unsigned int *)&h,
+			(unsigned int *)&dummy, (unsigned int *)&dummy))
 		{
 			pix = None;
 		}
@@ -220,8 +221,8 @@ void update_root_pixmap(Atom prop)
 		pix = get_root_pixmap(a_rootpix);
 		if (pix && !XGetGeometry(
 			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
-			&w, &h, (unsigned int *)&dummy,
-			(unsigned int *)&dummy))
+			(unsigned int *)&w, (unsigned int *)&h,
+			(unsigned int *)&dummy, (unsigned int *)&dummy))
 		{
 			pix = None;
 		}
@@ -602,8 +603,8 @@ void cleanup_colorsets(void)
 void parse_colorset(int n, char *line)
 {
 	int i;
-	unsigned int w;
-	unsigned int h;
+	int w;
+	int h;
 	int tmp;
 	int percent;
 	colorset_t *cs;
@@ -1093,14 +1094,15 @@ void parse_colorset(int n, char *line)
 
 			if (average_pix == root_pic.pixmap)
 			{
-				unsigned int w,h;
+				int w;
+				int h;
 				XID dummy;
 
 				XGrabServer(dpy);
 				if (!XGetGeometry(
 				    dpy, average_pix, &dummy,
 				    (int *)&dummy, (int *)&dummy,
-				    &w, &h,
+				    (unsigned int *)&w, (unsigned int *)&h,
 				    (unsigned int *)&dummy,
 				    (unsigned int *)&dummy))
 				{

@@ -112,7 +112,7 @@ typedef struct MenuPaintItemParameters
 	struct MenuDimensions *dim;
 	FvwmWindow *fw;
 	XEvent *ev;
-	unsigned int used_mini_icons;
+	int used_mini_icons;
 	struct MenuRoot *cb_mr;
 	/* number of item labels present in the item format */
 	Bool (*cb_reset_bg)(struct MenuRoot *mr, XEvent *pevent);

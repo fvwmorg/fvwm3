@@ -49,7 +49,7 @@ extern Bool debugging_stack_ring;
 extern int GrabPointerState;
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
-extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
+extern int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 extern char *fvwm_userdir;
 extern char *display_name;
 extern Atom _XA_MIT_PRIORITY_COLORS;

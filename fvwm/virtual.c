@@ -78,12 +78,12 @@
  */
 static int edge_thickness = 2;
 static int last_edge_thickness = 2;
-static unsigned int prev_page_x = 0;
-static unsigned int prev_page_y = 0;
+static int prev_page_x = 0;
+static int prev_page_y = 0;
 static int prev_desk = 0;
 static int prev_desk_and_page_desk = 0;
-static unsigned int prev_desk_and_page_page_x = 0;
-static unsigned int prev_desk_and_page_page_y = 0;
+static int prev_desk_and_page_page_x = 0;
+static int prev_desk_and_page_page_y = 0;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -481,7 +481,7 @@ int HandlePaging(
 	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
 	Bool do_continue_previous)
 {
-	static unsigned int add_time = 0;
+	static int add_time = 0;
 	int x,y;
 	XEvent e;
 	static Time my_timestamp = 0;

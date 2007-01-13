@@ -368,8 +368,8 @@ static int GetMoveArguments(
 	char *naction;
 	int scr_x = 0;
 	int scr_y = 0;
-	unsigned int scr_w = Scr.MyDisplayWidth;
-	unsigned int scr_h = Scr.MyDisplayHeight;
+	int scr_w = Scr.MyDisplayWidth;
+	int scr_h = Scr.MyDisplayHeight;
 	int retval = 0;
 
 	if (!paction)
@@ -467,7 +467,7 @@ static int GetMoveArguments(
 
 static int ParseOneResizeArgument(
 	char *arg, int scr_size, int base_size, int size_inc, int add_size,
-	unsigned int *ret_size)
+	int *ret_size)
 {
 	float factor;
 	int val;
@@ -561,8 +561,8 @@ static int ParseOneResizeArgument(
 
 static int GetResizeArguments(
 	char **paction, int x, int y, int w_base, int h_base, int w_inc,
-	int h_inc, size_borders *sb, unsigned int *pFinalW,
-	unsigned int *pFinalH, direction_t *ret_dir, Bool *is_direction_fixed,
+	int h_inc, size_borders *sb, int *pFinalW, int *pFinalH,
+	direction_t *ret_dir, Bool *is_direction_fixed,
 	Bool *do_warp_to_border)
 {
 	int n;
@@ -685,8 +685,7 @@ static int GetResizeArguments(
 static int GetResizeMoveArguments(
 	char **paction, int w_base, int h_base, int w_inc, int h_inc,
 	size_borders *sb, int *pFinalX, int *pFinalY,
-	unsigned int *pFinalW, unsigned int *pFinalH, Bool *fWarp,
-	Bool *fPointer)
+	int *pFinalW, int *pFinalH, Bool *fWarp, Bool *fPointer)
 {
 	char *action = *paction;
 	direction_t dir;
@@ -940,8 +939,8 @@ static Bool resize_move_window(F_CMD_ARGS)
 {
 	int FinalX = 0;
 	int FinalY = 0;
-	unsigned int FinalW = 0;
-	unsigned int FinalH = 0;
+	int FinalW = 0;
+	int FinalH = 0;
 	int n;
 	int x,y;
 	Bool fWarp = False;
@@ -964,8 +963,9 @@ static Bool resize_move_window(F_CMD_ARGS)
 
 	/* gotta have a window */
 	w = FW_W_FRAME(fw);
-	if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, (unsigned int *)&FinalW,
-			  (unsigned int *)&FinalH, &JunkBW, &JunkDepth))
+	if (!XGetGeometry(
+		    dpy, w, &JunkRoot, &x, &y, &FinalW, &FinalH, &JunkBW,
+		    &JunkDepth))
 	{
 		XBell(dpy, 0);
 		return False;
@@ -997,9 +997,7 @@ static Bool resize_move_window(F_CMD_ARGS)
 	dx = FinalX - fw->g.frame.x;
 	dy = FinalY - fw->g.frame.y;
 	/* size will be less or equal to requested */
-	constrain_size(
-		fw, NULL, (unsigned int *)&FinalW, (unsigned int *)&FinalH, 0,
-		0, 0);
+	constrain_size(fw, NULL, &FinalW, &FinalH, 0, 0, 0);
 	if (IS_SHADED(fw))
 	{
 		frame_setup_window(
@@ -1094,9 +1092,8 @@ static void InteractiveMove(
 
 	MyXGrabServer(dpy);
 	if (!XGetGeometry(
-		    dpy, w, &JunkRoot, &origDragX, &origDragY,
-		    (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
-		    &JunkBW,  &JunkDepth))
+		    dpy, w, &JunkRoot, &origDragX, &origDragY, &DragWidth,
+		    &DragHeight, &JunkBW, &JunkDepth))
 	{
 		MyXUngrabServer(dpy);
 		return;
@@ -1585,7 +1582,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	int n;
 	int x;
 	int y;
-	unsigned int width, height;
+	int width, height;
 	int page_x, page_y;
 	Bool fWarp = False;
 	Bool fPointer = False;
@@ -1772,8 +1769,7 @@ void CMD_MoveToScreen(F_CMD_ARGS)
 /* This function does the SnapAttraction stuff. If takes x and y coordinates
  * (*px and *py) and returns the snapped values. */
 static void DoSnapAttract(
-	FvwmWindow *fw, unsigned int Width, unsigned int Height,
-	int *px, int *py)
+	FvwmWindow *fw, int Width, int Height, int *px, int *py)
 {
 	int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
 	rectangle self, other;
@@ -2099,7 +2095,7 @@ static void DoSnapAttract(
 	if (Scr.XiMoveResistance > 0 && FScreenIsEnabled())
 	{
 		int scr_x0, scr_y0;
-		unsigned int scr_x1, scr_y1;
+		int scr_x1, scr_y1;
 		Bool do_recalc_rectangle = False;
 
 		FScreenGetResistanceRect(
@@ -3301,8 +3297,7 @@ static void __resize_step(
 		/* round up to nearest OK size to keep pointer inside
 		 * rubberband */
 		constrain_size(
-			exc->w.fw, exc->x.elast, (unsigned int *)&drag->width,
-			(unsigned int *)&drag->height,
+			exc->w.fw, exc->x.elast, &drag->width, &drag->height,
 			*xmotionp, *ymotionp, CS_ROUND_UP);
 		if (*xmotionp == 1)
 		{
@@ -3437,8 +3432,8 @@ static Bool __resize_window(F_CMD_ARGS)
 		/* size will be less or equal to requested */
 		new_g = fw->g.frame;
 		constrain_size(
-			fw, NULL, (unsigned int *)&drag->width,
-			(unsigned int *)&drag->height, xmotion, ymotion, 0);
+			fw, NULL, &drag->width, &drag->height, xmotion,
+			ymotion, 0);
 		gravity_resize(
 			fw->hints.win_gravity, &new_g,
 			drag->width - new_g.width, drag->height - new_g.height);
@@ -3487,8 +3482,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	if (!XGetGeometry(
 		    dpy, (Drawable) ResizeWindow, &JunkRoot, &drag->x, &drag->y,
-		    (unsigned int *)&drag->width, (unsigned int *)&drag->height,
-		    &JunkBW, &JunkDepth))
+		    &drag->width, &drag->height, &JunkBW, &JunkDepth))
 	{
 		UngrabEm(GRAB_NORMAL);
 		if (!do_resize_opaque)
@@ -3967,9 +3961,8 @@ static Bool __resize_window(F_CMD_ARGS)
 
 		/* size will be >= to requested */
 		constrain_size(
-			fw, exc->x.elast, (unsigned int *)&drag->width,
-			(unsigned int *)&drag->height, xmotion, ymotion,
-			CS_ROUND_UP);
+			fw, exc->x.elast, &drag->width, &drag->height,
+			xmotion, ymotion, CS_ROUND_UP);
 		if (IS_SHADED(fw))
 		{
 			get_shaded_geometry(fw, &new_g, drag);
@@ -4140,9 +4133,9 @@ static void move_sticky_window_to_same_page(
 }
 
 static void MaximizeHeight(
-	FvwmWindow *win, unsigned int win_width, int win_x,
-	unsigned int *win_height, int *win_y, Bool grow_up, Bool grow_down,
-	int top_border, int bottom_border, int *layers)
+	FvwmWindow *win, int win_width, int win_x, int *win_height,
+	int *win_y, Bool grow_up, Bool grow_down, int top_border,
+	int bottom_border, int *layers)
 {
 	FvwmWindow *cwin;
 	int x11, x12, x21, x22;
@@ -4215,9 +4208,9 @@ static void MaximizeHeight(
 }
 
 static void MaximizeWidth(
-	FvwmWindow *win, unsigned int *win_width, int *win_x,
-	unsigned int win_height, int win_y, Bool grow_left, Bool grow_right,
-	int left_border, int right_border, int *layers)
+	FvwmWindow *win, int *win_width, int *win_x, int win_height,
+	int win_y, Bool grow_left, Bool grow_right, int left_border,
+	int right_border, int *layers)
 {
 	FvwmWindow *cwin;
 	int x11, x12, x21, x22;
@@ -4323,8 +4316,7 @@ static void maximize_fvwm_window(
 	fw->g.max_defect.width = 0;
 	fw->g.max_defect.height = 0;
 	constrain_size(
-		fw, NULL, (unsigned int*)&(geometry->width),
-		(unsigned int *)&(geometry->height), 0, 0,
+		fw, NULL, &geometry->width, &geometry->height, 0, 0,
 		CS_UPDATE_MAX_DEFECT);
 	fw->g.max = *geometry;
 	if (IS_SHADED(fw))
@@ -4371,7 +4363,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	int layers[2] = { -1, -1 };
 	Bool global_flag_parsed = False;
 	int  scr_x, scr_y;
-	unsigned int scr_w, scr_h;
+	int scr_w, scr_h;
 	rectangle new_g;
 	FvwmWindow *fw = exc->w.fw;
 
@@ -4573,9 +4565,8 @@ void CMD_Maximize(F_CMD_ARGS)
 		if (grow_up || grow_down)
 		{
 			MaximizeHeight(
-				fw, new_g.width, new_g.x,
-				(unsigned int *)&new_g.height, &new_g.y,
-				grow_up, grow_down, page_y + scr_y,
+				fw, new_g.width, new_g.x, &new_g.height,
+				&new_g.y, grow_up, grow_down, page_y + scr_y,
 				page_y + scr_y + scr_h, layers);
 		}
 		else if (val2 > 0)
@@ -4586,8 +4577,8 @@ void CMD_Maximize(F_CMD_ARGS)
 		if (grow_left || grow_right)
 		{
 			MaximizeWidth(
-				fw, (unsigned int *)&new_g.width, &new_g.x,
-				new_g.height, new_g.y, grow_left, grow_right,
+				fw, &new_g.width, &new_g.x, new_g.height,
+				new_g.y, grow_left, grow_right,
 				page_x + scr_x, page_x + scr_x + scr_w,
 				layers);
 		}

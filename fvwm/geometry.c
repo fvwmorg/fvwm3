@@ -674,8 +674,8 @@ void maximize_adjust_offset(FvwmWindow *fw)
  */
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 void constrain_size(
-	FvwmWindow *fw, const XEvent *e, unsigned int *widthp,
-	unsigned int *heightp, int xmotion, int ymotion, int flags)
+	FvwmWindow *fw, const XEvent *e, int *widthp,
+	int *heightp, int xmotion, int ymotion, int flags)
 {
 	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
 	int baseWidth, baseHeight;
@@ -1011,8 +1011,7 @@ void gravity_constrain_size(
 		new_height = rect->height;
 	}
 	constrain_size(
-		t, NULL, (unsigned int *)&new_width,
-		(unsigned int *)&new_height, 0, 0, flags);
+		t, NULL, &new_width, &new_height, 0, 0, flags);
 	if (rect->width != new_width || rect->height != new_height)
 	{
 		gravity_resize(

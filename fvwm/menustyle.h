@@ -313,7 +313,7 @@ typedef struct MenuStyle
 {
 	char *name;
 	struct MenuStyle *next_style;
-	unsigned int usage_count;
+	int usage_count;
 	MenuLook look;
 	MenuFeel feel;
 	struct

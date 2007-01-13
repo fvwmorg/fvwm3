@@ -54,8 +54,8 @@ void update_relative_geometry(FvwmWindow *fw);
 void update_absolute_geometry(FvwmWindow *fw);
 void maximize_adjust_offset(FvwmWindow *fw);
 void constrain_size(
-	FvwmWindow *fw, const XEvent *e, unsigned int *widthp,
-	unsigned int *heightp, int xmotion, int ymotion, int flags);
+	FvwmWindow *fw, const XEvent *e, int *widthp,
+	int *heightp, int xmotion, int ymotion, int flags);
 void gravity_constrain_size(
 	int gravity, FvwmWindow *t, rectangle *rect, int flags);
 Bool get_visible_window_or_icon_geometry(

@@ -254,7 +254,7 @@ static Window __button_proxy = 0;
 
 
 /* how many desks does gnome know about */
-static unsigned int gnome_max_desk = 1;
+static int gnome_max_desk = 1;
 
 static int atom_size(int format)
 {
@@ -312,7 +312,7 @@ GNOME_GetHintIcons(FvwmWindow *fwin)
 	Atom atom_get;
 	long *retval;
 	int size;
-	unsigned int i;
+	int i;
 	Pixmap pmap;
 	Pixmap mask;
 

@@ -481,8 +481,8 @@ void menu_shortcuts(
 	int my;
 	int menu_x;
 	int menu_y;
-	unsigned int menu_width;
-	unsigned int menu_height;
+	int menu_width;
+	int menu_height;
 	int items_to_move;
 	Bool fSkipSection = False;
 	menu_shortcut_action saction = SA_NONE;

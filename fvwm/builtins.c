@@ -2629,7 +2629,7 @@ void CMD_QuitScreen(F_CMD_ARGS)
 
 void CMD_Echo(F_CMD_ARGS)
 {
-	unsigned int len;
+	int len;
 
 	if (!action)
 	{

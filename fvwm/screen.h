@@ -170,7 +170,7 @@ typedef struct DecorFace
 			XColor *xcs;
 			int do_dither;
 			Pixel *d_pixels;
-			unsigned int d_npixels;
+			int d_npixels;
 			char gradient_type;
 		} grad;
 		struct vector_coords

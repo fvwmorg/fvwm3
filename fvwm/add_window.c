@@ -2240,17 +2240,16 @@ FvwmWindow *AddWindow(
 		/****** calculate frame size ******/
 		setup_frame_size_limits(fw, &style);
 		constrain_size(
-			fw, NULL, (unsigned int *)&fw->g.frame.width,
-			(unsigned int *)&fw->g.frame.height, 0, 0, 0);
+			fw, NULL, &fw->g.frame.width,
+			&fw->g.frame.height, 0, 0, 0);
 
 		/****** maximize ******/
 		if (state_args.do_max)
 		{
 			SET_MAXIMIZED(fw, 1);
 			constrain_size(
-				fw, NULL, (unsigned int *)&fw->g.max.width,
-				(unsigned int *)&fw->g.max.height, 0, 0,
-				CS_UPDATE_MAX_DEFECT);
+				fw, NULL, &fw->g.max.width, &fw->g.max.height,
+				0, 0, CS_UPDATE_MAX_DEFECT);
 			get_relative_geometry(&fw->g.frame, &fw->g.max);
 		}
 		else

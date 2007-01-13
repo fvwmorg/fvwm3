@@ -1111,8 +1111,7 @@ static inline int __handle_cr_on_client(
 	constr_dim.width = oldnew_dim.width;
 	constr_dim.height = oldnew_dim.height;
 	constrain_size(
-		fw, NULL, (unsigned int *)&constr_dim.width,
-		(unsigned int *)&constr_dim.height, 0, 0,
+		fw, NULL, &constr_dim.width, &constr_dim.height, 0, 0,
 		CS_UPDATE_MAX_DEFECT);
 	d_g.width += (constr_dim.width - oldnew_dim.width);
 	d_g.height += (constr_dim.height - oldnew_dim.height);
@@ -3746,8 +3745,8 @@ void HandleVisibilityNotify(const evh_args_t *ea)
  *  The input (frame) geometry will be translated to client geometry
  *  before sending. */
 void SendConfigureNotify(
-	FvwmWindow *fw, int x, int y, unsigned int w, unsigned int h,
-	int bw, Bool send_for_frame_too)
+	FvwmWindow *fw, int x, int y, int w, int h, int bw,
+	Bool send_for_frame_too)
 {
 	XEvent client_event;
 	size_borders b;
@@ -4070,7 +4069,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		for (; module != NULL; module = module_get_next(module))
 		{
 			FD_SET(MOD_READFD(module), &in_fdset);
-			
+
 			if (!FQUEUE_IS_EMPTY(&MOD_PIPEQUEUE(module)))
 			{
 				FD_SET(MOD_WRITEFD(module), &out_fdset);
@@ -4460,7 +4459,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	unsigned int bmask;
 	long evmask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
 		KeyPressMask|KeyReleaseMask;
-	unsigned int count;
+	int count;
 	int use_wait_cursor;
 	XEvent e;
 

@@ -181,10 +181,9 @@ void setup_icon_title_size(FvwmWindow *fw)
  *
  */
 static void SetIconPixmapSize(
-	Pixmap *icon, unsigned int width, unsigned int height,
-	unsigned int depth, unsigned int newWidth, unsigned int newHeight,
-	Bool force_centering, int resize_type, int *nrx, int *nry,
-	unsigned int freeOldPixmap)
+	Pixmap *icon, int width, int height, int depth, int newWidth,
+	int newHeight, Bool force_centering, int resize_type, int *nrx,
+	int *nry, int freeOldPixmap)
 {
 	Pixmap oldPixmap;
 	Pixmap resizedPixmap = None;
@@ -403,8 +402,8 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 	if ((IS_ICON_OURS(fw)) && fw->icon_g.picture_w_g.height > 0 &&
 	    fw->icon_g.picture_w_g.height > 0)
 	{
-		unsigned int newWidth = fw->icon_g.picture_w_g.width;
-		unsigned int newHeight = fw->icon_g.picture_w_g.height;
+		int newWidth = fw->icon_g.picture_w_g.width;
+		int newHeight = fw->icon_g.picture_w_g.height;
 		Boolean resize = False;
 
 		if (newWidth < fw->min_icon_width)
@@ -851,8 +850,8 @@ void DrawIconTitleWindow(
 	{
 		int sx;
 		int sy;
-		unsigned int sw;
-		unsigned int sh;
+		int sw;
+		int sh;
 
 		use_unexpanded_size = 0;
 		w_title_text_gap = ICON_TITLE_TEXT_GAP_EXPANDED;
@@ -1734,8 +1733,8 @@ void AutoPlaceIcon(
   {
     int sx;
     int sy;
-    unsigned int sw;
-    unsigned int sh;
+    int sw;
+    int sh;
     fscreen_scr_arg fscr;
     rectangle g;
 
@@ -2039,8 +2038,8 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 		/* if first time */
 		int sx;
 		int sy;
-		unsigned int sw;
-		unsigned int sh;
+		int sw;
+		int sh;
 		/* Right now, the global box is hard-coded, fills the primary
 		 * screen, uses an 80x80 grid, and fills top-bottom,
 		 * left-right */
@@ -2142,9 +2141,9 @@ static void GetIconFromFile(FvwmWindow *fw)
  */
 static void GetIconWindow(FvwmWindow *fw)
 {
-	unsigned int w;
-	unsigned int h;
-	unsigned int bw;
+	int w;
+	int h;
+	int bw;
 
 	fw->icon_g.picture_w_g.width = 0;
 	fw->icon_g.picture_w_g.height = 0;
@@ -2198,7 +2197,7 @@ static void GetIconWindow(FvwmWindow *fw)
  */
 static void GetIconBitmap(FvwmWindow *fw)
 {
-	unsigned int width, height, depth;
+	int width, height, depth;
 
 	fw->icon_g.picture_w_g.width = 0;
 	fw->icon_g.picture_w_g.height = 0;

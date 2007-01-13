@@ -152,7 +152,7 @@ XContext MenuContext;           /* context for fvwm menus */
 
 int JunkX = 0, JunkY = 0;
 Window JunkRoot, JunkChild;             /* junk window */
-unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
+int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 Bool debugging = False;
 Bool debugging_stack_ring = False;
@@ -2572,7 +2572,7 @@ int main(int argc, char **argv)
 	valuemask = CWBackPixel | CWColormap | CWBorderPixel;
 
 	Scr.SizeWindow = XCreateWindow(
-		dpy, Scr.Root, 0, 0, 1, 1, (unsigned int)0, Pdepth,
+		dpy, Scr.Root, 0, 0, 1, 1, 0, Pdepth,
 		InputOutput, Pvisual, valuemask, &attributes);
 	resize_geometry_window();
 	initPanFrames();

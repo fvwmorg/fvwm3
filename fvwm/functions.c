@@ -78,7 +78,7 @@ typedef struct FvwmFunction
 	FunctionItem *first_item;        /* first item in function */
 	FunctionItem *last_item;         /* last item in function */
 	char *name;                      /* function name */
-	unsigned int use_depth;
+	int use_depth;
 } FvwmFunction;
 
 /* Types of events for the FUNCTION builtin */
@@ -355,7 +355,7 @@ static void __execute_function(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags, char *args[], Bool has_ref_window_moved)
 {
-	static unsigned int func_depth = 0;
+	static int func_depth = 0;
 	cond_rc_t *func_rc = NULL;
 	cond_rc_t dummy_rc;
 	Window w;
@@ -863,7 +863,7 @@ static void __run_complex_function_items(
 }
 
 static void __cf_cleanup(
-	unsigned int *depth, char **arguments, cond_rc_t *cond_rc)
+	int *depth, char **arguments, cond_rc_t *cond_rc)
 {
 	int i;
 
@@ -907,7 +907,7 @@ static void execute_complex_function(
 	int x, y ,i;
 	XEvent d;
 	FvwmFunction *func;
-	static unsigned int depth = 0;
+	static int depth = 0;
 	const exec_context_t *exc2;
 	exec_context_changes_t ecc;
 	exec_context_change_mask_t mask;

@@ -54,8 +54,8 @@
 
 Bool menu_get_geometry(
 	struct MenuRoot *mr, Window *root_return, int *x_return, int *y_return,
-	unsigned int *width_return, unsigned int *height_return,
-	unsigned int *border_width_return, unsigned int *depth_return)
+	int *width_return, int *height_return, int *border_width_return,
+	int *depth_return)
 {
 	Status rc;
 	Bool brc;
@@ -93,9 +93,8 @@ Bool menu_get_geometry(
 
 Bool menu_get_outer_geometry(
 	struct MenuRoot *mr, struct MenuParameters *pmp, Window *root_return,
-	int *x_return, int *y_return, unsigned int *width_return,
-	unsigned int *height_return, unsigned int *border_width_return,
-	unsigned int *depth_return)
+	int *x_return, int *y_return, int *width_return, int *height_return,
+	int *border_width_return, int *depth_return)
 {
 	if (MR_IS_TEAR_OFF_MENU(mr))
 	{

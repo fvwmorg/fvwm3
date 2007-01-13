@@ -336,7 +336,7 @@ ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name)
 
 void ewmh_ChangeProperty(
 	Window w, const char *atom_name, ewmh_atom_list_name list,
-	unsigned char *data, unsigned int length)
+	unsigned char *data, int length)
 {
 	ewmh_atom *a;
 	int format = 32;
@@ -381,7 +381,7 @@ static int atom_size(int format)
 }
 
 static
-void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
+void *atom_get(Window win, Atom to_get, Atom type, int *size)
 {
 	unsigned char *retval;
 	Atom  type_ret;
@@ -434,7 +434,7 @@ void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
 
 void *ewmh_AtomGetByName(
 	Window win, const char *atom_name, ewmh_atom_list_name list,
-	unsigned int *size)
+	int *size)
 {
 	ewmh_atom *a;
 	void *data = NULL;
@@ -725,7 +725,7 @@ void set_kde_sys_tray(void)
 
 void ewmh_AddToKdeSysTray(FvwmWindow *fw)
 {
-	unsigned int size = 0;
+	int size = 0;
 	Atom *val;
 	KstItem *t;
 
@@ -1028,14 +1028,13 @@ void EWMH_UpdateWorkArea(void)
 }
 
 void EWMH_GetWorkAreaIntersection(
-	FvwmWindow *fw, int *x, int *y, unsigned int *w, unsigned int *h,
-	int type)
+	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type)
 {
 	int nx,ny,nw,nh;
 	int area_x = Scr.Desktops->ewmh_working_area.x;
 	int area_y = Scr.Desktops->ewmh_working_area.y;
-	unsigned int area_w = Scr.Desktops->ewmh_working_area.width;
-	unsigned int area_h = Scr.Desktops->ewmh_working_area.height;
+	int area_w = Scr.Desktops->ewmh_working_area.width;
+	int area_h = Scr.Desktops->ewmh_working_area.height;
 	Bool is_dynamic = False;
 
 	switch(type)
@@ -1507,7 +1506,7 @@ void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style)
 {
 	Atom *val;
 	ewmh_atom *list = ewmh_atom_window_type;
-	unsigned int size = 0;
+	int size = 0;
 	int i = 0;
 	Bool found = False;
 
@@ -1599,7 +1598,7 @@ void EWMH_GetStyle(FvwmWindow *fw, window_style *style)
 
 static void ewmh_check_wm_pid(FvwmWindow *fw)
 {
-	unsigned int size = 0;
+	int size = 0;
 	Atom *val;
 
 	fw->ewmh_window_type = 0;

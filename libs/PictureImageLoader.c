@@ -47,8 +47,8 @@
 /* ---------------------------- local definitions -------------------------- */
 #define FIMAGE_CMD_ARGS Display *dpy, Window win, char *path, \
 		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
-		  unsigned int *width, unsigned int *height, int *depth, \
-		  unsigned int *nalloc_pixels, \
+		  int *width, int *height, int *depth, \
+		  int *nalloc_pixels, \
 		  Pixel **alloc_pixels, int *no_limit, \
 		  FvwmPictureAttributes fpa
 
@@ -464,9 +464,9 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
  *
  */
 Bool PImageCreatePixmapFromArgbData(
-	Display *dpy, Window win, CARD32 *data, int start, unsigned int width,
-	unsigned int height, Pixmap pixmap, Pixmap mask, Pixmap alpha,
-	int *have_alpha, unsigned int *nalloc_pixels, Pixel **alloc_pixels,
+	Display *dpy, Window win, CARD32 *data, int start, int width,
+	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha,
+	int *have_alpha, int *nalloc_pixels, Pixel **alloc_pixels,
 	int *no_limit, FvwmPictureAttributes fpa)
 {
 	GC mono_gc = None;
@@ -604,8 +604,8 @@ Bool PImageCreatePixmapFromArgbData(
 
 Bool PImageLoadPixmapFromFile(
 	Display *dpy, Window win, char *path, Pixmap *pixmap, Pixmap *mask,
-	Pixmap *alpha, unsigned int *width, unsigned int *height, int *depth, 
-	unsigned int *nalloc_pixels, Pixel **alloc_pixels,
+	Pixmap *alpha, int *width, int *height, int *depth,
+	int *nalloc_pixels, Pixel **alloc_pixels,
 	int *no_limit, FvwmPictureAttributes fpa)
 {
 	int done = 0, i = 0, tried = -1;
@@ -669,9 +669,9 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 	Pixmap pixmap = None;
 	Pixmap mask = None;
 	Pixmap alpha = None;
-	unsigned int width = 0, height = 0;
+	int width = 0, height = 0;
 	int depth = 0, no_limit;
-	unsigned int nalloc_pixels = 0;
+	int nalloc_pixels = 0;
 	Pixel *alloc_pixels = NULL;
 
 	if (!PImageLoadPixmapFromFile(
@@ -703,7 +703,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 
 Bool PImageLoadCursorPixmapFromFile(
 	Display *dpy, Window win, char *path, Pixmap *source, Pixmap *mask,
-	unsigned int *x, unsigned int *y)
+	int *x, int *y)
 {
 
 	FxpmAttributes xpm_attributes;
@@ -741,7 +741,7 @@ Bool PImageLoadPixmapFromXpmData(
 	Display *dpy, Window win, int color_limit,
 	char **data,
 	Pixmap *pixmap, Pixmap *mask,
-	unsigned int *width, unsigned int *height, int *depth)
+	int *width, int *height, int *depth)
 {
 	FxpmAttributes xpm_attributes;
 

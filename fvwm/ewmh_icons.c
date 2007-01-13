@@ -47,7 +47,7 @@ int ewmh_WMIcon(EWMH_CMD_ARGS)
 	CARD32 *list = NULL;
 	CARD32 *new_list = NULL;
 	CARD32 *dummy = NULL;
-	unsigned int size = 0;
+	int size = 0;
 
 	if (ev != NULL && HAS_EWMH_WM_ICON_HINT(fw) == EWMH_FVWM_ICON)
 	{
@@ -125,7 +125,7 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fw, Bool mini_icon, Bool icon)
 	CARD32 *list = NULL;
 	CARD32 *new_list = NULL;
 	CARD32 *dummy = NULL;
-	unsigned int size = 0;
+	int size = 0;
 	Bool icon_too = False;
 
 	if (HAS_EWMH_WM_ICON_HINT(fw) == EWMH_TRUE_ICON)
@@ -194,13 +194,12 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fw, Bool mini_icon, Bool icon)
  * build and set a net icon from a pixmap
  */
 CARD32 *ewmh_SetWmIconFromPixmap(
-	FvwmWindow *fw, CARD32 *orig_icon, unsigned int *orig_size,
-	Bool is_mini_icon)
+	FvwmWindow *fw, CARD32 *orig_icon, int *orig_size, Bool is_mini_icon)
 {
 	CARD32 *new_icon = NULL;
 	int keep_start = 0, keep_length = 0;
 	int width = 0, height = 0;
-	unsigned int i,j,k,l,m;
+	int i,j,k,l,m;
 	int s;
 	Pixmap pixmap = None;
 	Pixmap mask = None;
@@ -525,7 +524,7 @@ void EWMH_DeleteWmIcon(FvwmWindow *fw, Bool mini_icon, Bool icon)
 	CARD32 *list;
 	CARD32 *new_list = NULL;
 	int keep_start = 0, keep_length = 0;
-	unsigned int s;
+	int s;
 	int i;
 
 	if (mini_icon && icon)
@@ -626,11 +625,11 @@ void EWMH_DeleteWmIcon(FvwmWindow *fw, Bool mini_icon, Bool icon)
 #define SQUARE(X) ((X)*(X))
 static
 void extract_wm_icon(
-	CARD32 *list, unsigned int size, int wanted_w, int wanted_h,
+	CARD32 *list, int size, int wanted_w, int wanted_h,
 	int *start_best, int *best_w, int *best_h)
 {
-	unsigned int i;
-	unsigned int dist = 0;
+	int i;
+	int dist = 0;
 
 	*start_best = 0;
 	*best_w = 0;
@@ -684,7 +683,7 @@ void extract_wm_icon(
 #define ICON_MAX_HEIGHT 100
 
 int EWMH_SetIconFromWMIcon(
-	FvwmWindow *fw, CARD32 *list, unsigned int size, Bool is_mini_icon)
+	FvwmWindow *fw, CARD32 *list, int size, Bool is_mini_icon)
 {
 	int start, width, height;
 	int wanted_w, wanted_h;
@@ -694,7 +693,7 @@ int EWMH_SetIconFromWMIcon(
 	Pixmap alpha = None;
 	Bool free_list = False;
 	int have_alpha;
-	unsigned int nalloc_pixels;
+	int nalloc_pixels;
 	Pixel *alloc_pixels;
 	int no_limit;
 	FvwmPictureAttributes fpa;

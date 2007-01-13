@@ -37,8 +37,7 @@ void EWMH_SetClientList(void);
 void EWMH_SetClientListStacking(void);
 void EWMH_UpdateWorkArea(void);
 void EWMH_GetWorkAreaIntersection(
-	FvwmWindow *fw, int *x, int *y, unsigned int *w, unsigned int *h,
-	int type);
+	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type);
 float EWMH_GetBaseStrutIntersection(
 	int x11, int y11, int x12, int y12, Bool use_percent);
 float EWMH_GetStrutIntersection(
@@ -66,7 +65,7 @@ void EWMH_ProcessPropertyNotify(const exec_context_t *exc);
 /* ewmh_icon.c */
 void EWMH_DeleteWmIcon(FvwmWindow *fw, Bool mini_icon, Bool icon);
 int EWMH_SetIconFromWMIcon(
-	FvwmWindow *fw, CARD32 *list, unsigned int size, Bool is_mini_icon);
+	FvwmWindow *fw, CARD32 *list, int size, Bool is_mini_icon);
 void EWMH_DoUpdateWmIcon(FvwmWindow *fw, Bool mini_icon, Bool icon);
 
 /* ewmh_name.c */

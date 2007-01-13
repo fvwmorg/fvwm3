@@ -270,7 +270,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 	{
 		/* start on desk */
 		unsigned long *val;
-		unsigned int size = 0;
+		int size = 0;
 
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
 		{
@@ -434,7 +434,7 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 	else if (style != NULL)
 	{
 		Atom *val;
-		unsigned int size = 0;
+		int size = 0;
 		int i;
 		ewmh_atom *list = ewmh_atom_wm_state;
 		int has_hint = 0;
@@ -1319,7 +1319,7 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
  */
 int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 {
-	unsigned int size;
+	int size;
 	CARD32 *val;
 
 	/* FIXME: After a (un)slide of kicker the geometry are wrong (not
@@ -1382,7 +1382,7 @@ void EWMH_GetIconGeometry(FvwmWindow *fw, rectangle *icon_rect)
 
 int ewmh_WMStrut(EWMH_CMD_ARGS)
 {
-	unsigned int size = 0;
+	int size = 0;
 	CARD32 *val;
 
 	if (ev == NULL)
