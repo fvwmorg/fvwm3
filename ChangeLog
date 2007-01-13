@@ -1,3 +1,16 @@
+2007-01-12  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* fvwm/conditional.c (CreateConditionMask):
+	added conditions StickyIcon, StickyAcrossPagesIcon and
+	StickyAcrossDesksIcon.
+
+	* fvwm/fvwm.1.in:
+	documented new conditional tests.
+	removed descriptions of styles StickyIconPage & StickyIconDesk which
+	actually don't exists in fvwm.
+	moved StickyIcon/SlipperyIcon descriptions immediately after
+	Sticky/Slippery description.
+
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (SmartPlacemen):

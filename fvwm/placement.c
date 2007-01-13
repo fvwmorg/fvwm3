@@ -711,7 +711,6 @@ static int SmartPlacement(
 	FvwmWindow *t, rectangle *screen_g,
 	int width, int height, int *x, int *y, int pdeltax, int pdeltay)
 {
-	signed_rectangle place_g;
 	int PageLeft   = screen_g->x - pdeltax;
 	int PageTop    = screen_g->y - pdeltay;
 	int PageRight  = PageLeft + screen_g->width;

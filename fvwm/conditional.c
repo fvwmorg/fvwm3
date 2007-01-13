@@ -558,6 +558,23 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SET_STICKY_ACROSS_DESKS(mask, on);
 			SETM_STICKY_ACROSS_DESKS(mask, 1);
 		}
+		else if (StrEquals(cond,"StickyIcon"))
+		{
+			SET_ICON_STICKY_ACROSS_PAGES(mask, on);
+			SET_ICON_STICKY_ACROSS_DESKS(mask, on);
+			SETM_ICON_STICKY_ACROSS_PAGES(mask, 1);
+			SETM_ICON_STICKY_ACROSS_DESKS(mask, 1);
+		}
+		else if (StrEquals(cond,"StickyAcrossPagesIcon"))
+		{
+			SET_ICON_STICKY_ACROSS_PAGES(mask, on);
+			SETM_ICON_STICKY_ACROSS_PAGES(mask, 1);
+		}
+		else if (StrEquals(cond,"StickyAcrossDesksIcon"))
+		{
+			SET_ICON_STICKY_ACROSS_DESKS(mask, on);
+			SETM_ICON_STICKY_ACROSS_DESKS(mask, 1);
+		}
 		else if (StrEquals(cond,"Maximized"))
 		{
 			SET_MAXIMIZED(mask, on);

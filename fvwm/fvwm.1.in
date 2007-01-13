@@ -7672,6 +7672,12 @@ and each desk.  The opposite style,
 .I Slippery
 reverts back to the default.
 
+.I StickyIcon
+makes the window sticky when its iconified.  It de-iconifies on
+top the active desktop.
+.I SlipperyIcon
+reverts back to the default.
+
 .IR StickyAcrossPages " and " StickyAcrossPagesIcon
 work like
 .IR Sticky " and " StickyIcon ,
@@ -7701,19 +7707,6 @@ counteract that by deiconifying themselves.  The default is to not
 iconify windows and can be set with the
 .I StartNormal
 style.
-
-.I StickyIcon
-makes the window sticky when its iconified.  It de-iconifies on
-top the active desktop.
-.I SlipperyIcon
-reverts back to the default.
-
-.I StickyIconPage
-works like
-.IR StickyIcon ,
-but sticks the icon only across pages, not desks while
-.I StickyIconDesk
-works the other way round.
 
 . I StippledIconTitle
 works like
@@ -11045,6 +11038,9 @@ directly in front of its name.
 .IR Sticky ,
 .IR StickyAcrossDesks ,
 .IR StickyAcrossPages ,
+.IR StickyIcon ,
+.IR StickyAcrossDesksIcon ,
+.IR StickyAcrossPagesIcon ,
 .IR Transient ,
 .IR Visible .
 
@@ -11277,6 +11273,11 @@ desks or sticky across all pages.  Please refer to the
 options with the same name and the commands
 .BR Stick ", " StickAcrossDesks " and " StickAcrossPages
 for details.
+
+The
+.IR StickyIcon ", " StickyAcrossDesksIcon " and " StickyAcrossPagesIcon
+match only windows that become sticky, sticky across all desks or sticky
+across all pages when they are in iconified state.
 
 The
 .I Transient

@@ -1,3 +1,9 @@
+2007-01-12  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	new information about windows: "StickyPageIcon", "StickyDeskIcon" and
+	"WindowListSkip".
+
 2007-01-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmConsole/getline.c (get_line):

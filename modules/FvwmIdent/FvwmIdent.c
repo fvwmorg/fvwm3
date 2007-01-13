@@ -1145,9 +1145,14 @@ void MakeList(void)
 
 	AddToList("StickyPage:",    (IS_STICKY_ACROSS_PAGES(targ) ? yes : no));
 	AddToList("StickyDesk:",    (IS_STICKY_ACROSS_DESKS(targ) ? yes : no));
+	AddToList("StickyPageIcon:",
+		(IS_ICON_STICKY_ACROSS_PAGES(targ) ? yes : no));
+	AddToList("StickyDeskIcon:",
+		(IS_ICON_STICKY_ACROSS_DESKS(targ) ? yes : no));
 	AddToList("NoTitle:",       (HAS_TITLE(targ)    ? no : yes));
 	AddToList("Iconified:",     (IS_ICONIFIED(targ) ? yes : no));
 	AddToList("Transient:",     (IS_TRANSIENT(targ) ? yes : no));
+	AddToList("WindowListSkip:", (DO_SKIP_WINDOW_LIST(targ) ? yes : no));
 
 	switch(target.gravity)
 	{
