@@ -394,7 +394,7 @@ int menu_binding(
 		menu_bindings = &menu_bindings_fallback;
 	}
 	rmlist = NULL;
-	if (~(~context | C_MENU | C_TITLE) != 0)
+	if (~(~context | C_MENU | C_TITLE | C_MENU_ITEM | C_SIDEBAR) != 0)
 	{
 		fvwm_msg(
 			ERR, "menu_binding",
@@ -488,10 +488,85 @@ void menu_shortcuts(
 	menu_shortcut_action saction = SA_NONE;
 	Binding *binding;
 	int context = C_MENU;
+	int is_geometry_known = 0;
 
-	if (*pmiCurrent && MI_IS_TITLE(*pmiCurrent))
+	if (miCurrent && MI_IS_TITLE(miCurrent))
 	{
 		context |= C_TITLE;
+	}
+	else if (miCurrent)
+	{
+		/* menu item context, possible use I (icon) for it */
+		context |= C_MENU_ITEM;
+	}
+	else
+	{
+		if (
+			menu_get_geometry(
+				mr, &JunkRoot, &menu_x, &menu_y, &menu_width,
+				&menu_height, &JunkBW, &JunkDepth))
+		{
+			is_geometry_known = 1;
+
+			if (FQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild,
+				    &mx, &my, &JunkX, &JunkY, &JunkMask) ==
+			    False)
+			{
+				/* pointer is on a different screen */
+				mx = 0;
+				my = 0;
+			}
+			else if (
+				mx >= menu_x && mx < menu_x + menu_width &&
+				my >= menu_y && my < menu_y + menu_height
+				)
+			{
+				/* pointer is on the meny somewhere not over
+				 * an item */
+				if (my < menu_y + MST_BORDER_WIDTH(mr))
+				{
+					/* upper border context (-)*/
+					context |= C_SB_TOP;
+				}
+				else if (my >= menu_y + menu_height -
+					 MST_BORDER_WIDTH(mr))
+				{
+					/* lower border context (_) */
+					context |= C_SB_BOTTOM;
+				}
+				else if (mx < menu_x + MR_ITEM_X_OFFSET(mr))
+				{
+					/* left border or left sidepic */
+					context |= C_SB_LEFT;
+				}
+				else if (
+					mx >= menu_x + MR_ITEM_X_OFFSET(mr) +
+					MR_ITEM_WIDTH(mr))
+				{
+					/* right sidepic or right border */
+					context |= C_SB_RIGHT;
+				}
+
+				if (mx < menu_x + MST_BORDER_WIDTH(mr))
+				{
+					/* left border context ([)*/
+					context |= C_SB_LEFT;
+				}
+				else if (mx >= menu_x + menu_width -
+					 MST_BORDER_WIDTH(mr))
+				{
+					/* right border context (])*/
+					context |= C_SB_RIGHT;
+				}
+			}
+		}
+		else
+		{
+			fvwm_msg(
+				ERR, "menu_shortcuts", "can't get geometry of"
+				" menu %s", MR_NAME(mr));
+		}
 	}
 
 	if (event->type == KeyRelease)
@@ -652,20 +727,8 @@ void menu_shortcuts(
 	    (saction == SA_ENTER || saction == SA_MOVE_ITEMS ||
 	     saction == SA_SELECT || saction == SA_SCROLL))
 	{
-		if (
-			menu_get_geometry(
-				mr, &JunkRoot, &menu_x, &menu_y, &menu_width,
-				&menu_height, &JunkBW, &JunkDepth))
+		if (is_geometry_known)
 		{
-			if (FQueryPointer(
-				    dpy, Scr.Root, &JunkRoot, &JunkChild,
-				    &mx, &my, &JunkX, &JunkY, &JunkMask) ==
-			    False)
-			{
-				/* pointer is on a different screen */
-				mx = 0;
-				my = 0;
-			}
 			if (my < menu_y + MST_BORDER_WIDTH(mr))
 			{
 				saction = SA_FIRST;
@@ -683,9 +746,6 @@ void menu_shortcuts(
 		else
 		{
 			saction = SA_FIRST;
-			fvwm_msg(
-				ERR, "menu_shortcuts", "can't get geometry of"
-				" menu %s", MR_NAME(mr));
 		}
 	}
 

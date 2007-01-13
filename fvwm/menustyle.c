@@ -329,6 +329,10 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 			style, fore, back, stipple, font,
 			(animated && StrEquals(animated, "anim")) ?
 			"Animation" : "AnimationOff");
+		fvwm_msg(OLD, "menustyle_parse_old_style",
+			 "The old MenuStyle snytax has been deprecated.  "
+			 "Use 'MenuStyle %s' instead of 'MenuStyle %s'\n",
+			 buffer, action);
 		action = buffer;
 		ms = menustyle_parse_style(F_PASS_ARGS);
 	}

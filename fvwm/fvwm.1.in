@@ -2333,8 +2333,11 @@ The keys and mouse buttons used to navigate the menu can be configured
 using the
 .BR Key " and " Mouse
 commands with the special context 'M', possible combined with 'T' for
-the menu title. The menu context uses its own set
-of actions that can be bound to keys and mouse buttons. These are
+the menu title, 'I' for other menu items, 'S' for any border or
+sidepic, '[' for left border including a left sidepic, ']' for right
+border including a right sidepic, '-' for top border, '_' for bottom
+border.  The menu context uses its own set of actions that can be bound
+to keys and mouse buttons.  These are
 .IR MenuClose ", " MenuEnterContinuation ", " MenuEnterSubmenu ", "
 .IR MenuLeaveSubmenu ", " MenuMoveCursor ", " MenuCursorLeft ", "
 .IR MenuCursorRight ", " MenuSelectItem ", " MenuScroll " and "

@@ -51,7 +51,8 @@ typedef enum
 	C_LALL = (C_L1|C_L2|C_L3|C_L4|C_L5),
 	C_DECOR = (C_LALL|C_RALL|C_TITLE|C_FRAME|C_SIDEBAR),
 	C_ALL = (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
-		 C_LALL|C_RALL|C_EWMH_DESKTOP)
+		 C_LALL|C_RALL|C_EWMH_DESKTOP),
+	C_MENU_ITEM = (C_ICON|C_MENU)
 } win_context_t;
 
 /* ---------------------------- forward declarations ----------------------- */

@@ -146,3 +146,5 @@ Silent Mouse 5		M A MenuScroll +1
 
 # NB: Only on title -- changes syntax for remapping the TearOff functionality
 Mouse 2			MT A MenuTearOff
+
+Mouse 0			MS A MenuClose
