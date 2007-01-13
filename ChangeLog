@@ -1,5 +1,14 @@
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/placement.c (__cp_get_next_x):
+	(__cp_get_next_y):
+	(__cp_get_first_pos):
+	(__cp_get_next_pos):
+	(__cp_get_avoidance_penalty):
+	(__cp_test_fit):
+	(CleverPlacement):
+	restructured and cleaned up CleverPlacement code
+
 	* fvwm/style.c (style_parse_icon_box_style):
 	* fvwm/virtual.c (HandlePaging):
 	* fvwm/stack.c (verify_stack_ring_consistency):
