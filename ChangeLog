@@ -37,7 +37,7 @@
 	NEWS entry for StickyIcon, StickyAcrossPagesIcon and
 	StickyAcrossDesksIcon.
 
-2007-01-12  Serge Koksharov  <gentoosiast dog yandex dot ru>
+2007-01-13  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* fvwm/conditional.c (CreateConditionMask):
 	added conditions StickyIcon, StickyAcrossPagesIcon and
