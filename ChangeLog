@@ -1,3 +1,10 @@
+2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/stack.c (__mark_group_member)
+	(is_transient_subtree_stacked_straight, __is_restack_needed)
+	(__restack_window, mark_transient_subtree):
+	don't raise or lower windows if they are already at the right place.
+
 2007-01-13  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_interface.c (struct cqueue_object_type):

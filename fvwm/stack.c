@@ -626,6 +626,258 @@ FvwmWindow *__get_window_to_insert_after(FvwmWindow *fw, stack_mode_t mode)
 	return s;
 }
 
+static void __mark_group_member(
+	FvwmWindow *fw, FvwmWindow *start, FvwmWindow *end)
+{
+	FvwmWindow *t;
+
+	for (t = start; t != end; t = t->stack_next)
+	{
+		if (FW_W(t) == fw->wmhints->window_group ||
+		    (t->wmhints && (t->wmhints->flags & WindowGroupHint) &&
+		     t->wmhints->window_group == fw->wmhints->window_group))
+		{
+			if (IS_IN_TRANSIENT_SUBTREE(t))
+			{
+				/* have to move this one too */
+				SET_IN_TRANSIENT_SUBTREE(fw, 1);
+			}
+		}
+	}
+
+	return;
+
+}
+
+/* heavaly borrowed from mark_transient_subtree.  This will mark a subtree as
+ * long as it is straight, and return true if the operation is succussful.  It
+ * will abort and return False as soon as some inconsitance is hit. */
+
+Bool is_transient_subtree_stacked_straight(
+	FvwmWindow *t, int layer, stack_mode_t mode, Bool do_ignore_icons,
+	Bool use_window_group_hint)
+{
+	FvwmWindow *s;
+	FvwmWindow *start;
+	FvwmWindow *end;
+	FvwmWindow *r;
+	int min_i;
+	Bool has_passed_root;
+	Bool is_in_gap;
+	int mark_mode;
+	switch (mode)
+	{
+	case SM_RAISE:
+		mark_mode = MARK_RAISE;
+		break;
+	case SM_LOWER:
+		mark_mode = MARK_LOWER;
+		break;
+	default:
+		return False;
+	}
+
+	if (layer >= 0 && t->layer != layer)
+	{
+		return True;
+	}
+	/* find out on which windows to operate */
+	/* iteration are done reverse (bottom up, since that's the way the
+	 * transients wil be stacked if all is well */
+	if (layer >= 0)
+	{
+		/* only work on the given layer */
+		start = &Scr.FvwmRoot;
+		end = &Scr.FvwmRoot;
+		for (
+			s = Scr.FvwmRoot.stack_prev;
+			s != &Scr.FvwmRoot && s->layer <= layer;
+			s = s->stack_prev)
+		{
+			if (s->layer == layer)
+			{
+				if (start == &Scr.FvwmRoot)
+				{
+					start = s;
+				}
+				end = s->stack_prev;
+			}
+		}
+	}
+	else
+	{
+		/* work on complete window list */
+		start = Scr.FvwmRoot.stack_prev;
+		end = &Scr.FvwmRoot;
+	}
+	/* clean the temporary flag in all windows and precalculate the
+	 * transient frame windows */
+	for (
+		s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot;
+		s = s->stack_next)
+	{
+		SET_IN_TRANSIENT_SUBTREE(s, 0);
+		if (IS_TRANSIENT(s) && (layer < 0 || layer == s->layer))
+		{
+			s->scratch.p = get_transientfor_fvwmwindow(s);
+		}
+		else
+		{
+			s->scratch.p = NULL;
+		}
+	}
+	/* Indicate that no cleening is needed */
+	Scr.FvwmRoot.scratch.i = 1;
+	/* now loop over the windows and mark the ones we need to move */
+	SET_IN_TRANSIENT_SUBTREE(t, 1);
+	min_i = t->scratch.i;
+	has_passed_root = False;
+	is_in_gap = False;
+
+	if (mode == SM_LOWER && t != start)
+	{
+		return False;
+	}
+
+	for (s = start; s != end && !(is_in_gap && mode == SM_RAISE);
+	     s = s->stack_prev)
+	{
+		Bool use_group_hint = False;
+
+		if (IS_IN_TRANSIENT_SUBTREE(s))
+		{
+			if (t == s)
+			{
+				has_passed_root = True;
+			}
+			else
+			{
+				/* should never happen */
+				if (!has_passed_root)
+				{
+					return False;
+				}
+				else if (s->scratch.i < min_i)
+				{
+					return False;
+				}
+			}
+			continue;
+		}
+		if (use_window_group_hint &&
+		    DO_ICONIFY_WINDOW_GROUPS(s) && s->wmhints &&
+		    (s->wmhints->flags & WindowGroupHint) &&
+		    (s->wmhints->window_group != None) &&
+		    (s->wmhints->window_group != FW_W(s)) &&
+		    (s->wmhints->window_group != Scr.Root))
+		{
+			use_group_hint = True;
+		}
+		if (!IS_TRANSIENT(s) && !use_group_hint)
+		{
+			if (has_passed_root)
+			{
+				is_in_gap = True;
+			}
+			continue;
+		}
+		if (do_ignore_icons && IS_ICONIFIED(s))
+		{
+			if (has_passed_root)
+			{
+				is_in_gap = True;
+			}
+			continue;
+		}
+		r = (FvwmWindow *)s->scratch.p;
+		if (IS_TRANSIENT(s))
+		{
+			if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
+			    ((mark_mode == MARK_ALL) ||
+			     __is_restack_transients_needed(
+				     r, (stack_mode_t)mark_mode) ==
+			     True))
+			{
+				if (is_in_gap || !has_passed_root)
+				{
+					return False;
+				}
+				/* have to move this one too */
+				SET_IN_TRANSIENT_SUBTREE(s, 1);
+				/* used for stacking transients */
+				/* It might be a bad idea to alter scratch
+				 * values here. At least if the
+				 * mark_transients are to start from scratch.*/
+				s->scratch.i += r->scratch.i + 1;
+				if (s->scratch.i < min_i)
+				{
+					return False;
+				}
+				min_i = s->scratch.i;
+				continue;
+			}
+		}
+		if (use_group_hint && !IS_IN_TRANSIENT_SUBTREE(s))
+		{
+			__mark_group_member(s, start, end);
+			if (IS_IN_TRANSIENT_SUBTREE(s))
+			{
+				if (
+					is_in_gap || !has_passed_root ||
+					s->scratch.i < min_i)
+				{
+					return False;
+				}
+				min_i = s->scratch.i;
+			}
+			else if (has_passed_root)
+			{
+				is_in_gap = True;
+			}
+			continue;
+		}
+	} /* for */
+	if (is_in_gap && mode == SM_RAISE)
+	{
+		return False;
+	}
+
+	return True;
+}
+
+/* function to test if all windows are at correct place from start. */
+static Bool __is_restack_needed(
+	FvwmWindow *t, stack_mode_t mode, Bool do_restack_transients,
+	Bool is_new_window)
+{
+	if (is_new_window)
+	{
+		return True;
+	}
+
+	if (mode == SM_RESTACK)
+	{
+		return True;
+	}
+	if (do_restack_transients)
+	{
+		return !is_transient_subtree_stacked_straight(
+			t, t->layer, mode, True, False);
+	}
+	else if (mode == SM_LOWER)
+	{
+		return (t->stack_next != &Scr.FvwmRoot &&
+			t->stack_next->layer == t->layer);
+	}
+	else if (mode == SM_RAISE)
+	{
+		return (t->stack_prev != &Scr.FvwmRoot &&
+			t->stack_prev->layer == t->layer);
+	}
+
+	return True;
+}
+
 static Bool __restack_window(
 	FvwmWindow *t, stack_mode_t mode, Bool do_restack_transients,
 	Bool is_new_window)
@@ -634,6 +886,12 @@ static Bool __restack_window(
 	FvwmWindow *r = NULL;
 	FvwmWindow tmp_r;
 	int count;
+
+	if (!__is_restack_needed(
+		    t, mode, do_restack_transients, is_new_window))
+	{
+		return False;
+	}
 
 	count = 0;
 	if (do_restack_transients)
@@ -1095,29 +1353,6 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 #endif
 
 	return;
-}
-
-static void __mark_group_member(
-	FvwmWindow *fw, FvwmWindow *start, FvwmWindow *end)
-{
-	FvwmWindow *t;
-
-	for (t = start; t != end; t = t->stack_next)
-	{
-		if (FW_W(t) == fw->wmhints->window_group ||
-		    (t->wmhints && (t->wmhints->flags & WindowGroupHint) &&
-		     t->wmhints->window_group == fw->wmhints->window_group))
-		{
-			if (IS_IN_TRANSIENT_SUBTREE(t))
-			{
-				/* have to move this one too */
-				SET_IN_TRANSIENT_SUBTREE(fw, 1);
-			}
-		}
-	}
-
-	return;
-
 }
 
 static int collect_transients_recursive(
@@ -1622,20 +1857,27 @@ void mark_transient_subtree(
 	}
 	/* clean the temporary flag in all windows and precalculate the
 	 * transient frame windows */
-	for (
-		s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot;
-		s = s->stack_next)
+	if (Scr.FvwmRoot.scratch.i == 0)
 	{
-		SET_IN_TRANSIENT_SUBTREE(s, 0);
-		if (IS_TRANSIENT(s) && (layer < 0 || layer == s->layer))
+		for (
+			s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot;
+			s = s->stack_next)
 		{
-			s->scratch.p = get_transientfor_fvwmwindow(s);
-		}
-		else
-		{
-			s->scratch.p = NULL;
+			SET_IN_TRANSIENT_SUBTREE(s, 0);
+			if (
+				IS_TRANSIENT(s) && 
+				(layer < 0 || layer == s->layer))
+			{
+				s->scratch.p = get_transientfor_fvwmwindow(s);
+			}
+			else
+			{
+				s->scratch.p = NULL;
+			}
 		}
 	}
+	Scr.FvwmRoot.scratch.i = 0;
+
 	/* now loop over the windows and mark the ones we need to move */
 	SET_IN_TRANSIENT_SUBTREE(t, 1);
 	is_finished = False;
