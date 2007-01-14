@@ -2631,33 +2631,26 @@ void GetWindowSizeHints(FvwmWindow *fw)
 	long supplied = 0;
 	char *broken_cause ="";
 	XSizeHints orig_hints;
-	XSizeHints new_hints;
 	Status rc;
 
-	rc = XGetWMNormalHints(dpy, FW_W(fw), &new_hints, &supplied);
+	rc = XGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
 	if (rc == 0)
 	{
 		fw->hints.flags = 0;
 		memset(&orig_hints, 0, sizeof(orig_hints));
 	}
-	else if (HAS_OVERRIDE_SIZE_HINTS(fw))
-	{
-		/* ignore the WMNormal hints */
-		fw->hints.flags = 0;
-		memset(&orig_hints, 0, sizeof(orig_hints));
-		if (new_hints.flags & PResizeInc)
-		{
-			/* but keep the resize_inc hint */
-			orig_hints.width_inc = new_hints.width_inc;
-			orig_hints.height_inc = new_hints.height_inc;
-			orig_hints.flags |= PResizeInc;
-		}
-	}
 	else
 	{
-		/* use the hints */
-		fw->hints = new_hints;
-		orig_hints = fw->hints;
+		fw->hints = orig_hints;
+		if (HAS_OVERRIDE_SIZE_HINTS(fw))
+		{
+			/* ignore the WMNormal hints */
+			fw->hints.flags &= ~(PMinSize | PMaxSize);
+			fw->hints.min_width = 0;
+			fw->hints.min_height = 0;
+			fw->hints.max_width = 0;
+			fw->hints.max_height = 0;
+		}
 	}
 
 	/* Beat up our copy of the hints, so that all important field are
