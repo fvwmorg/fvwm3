@@ -1,3 +1,13 @@
+2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/placement.c (CleverPlacement):
+	(SmartPlacement):
+	(__place_get_wm_pos):
+	(__place_get_nowm_pos):
+	(__place_window):
+	fixed smart placement
+	unified placement func interface
+
 2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:

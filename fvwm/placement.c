@@ -176,21 +176,6 @@ typedef struct
 	unsigned do_not_use_wm_placement : 1;
 } placement_flags_t;
 
-/*
- * CleverPlacement types
- */
-typedef enum
-{
-	CP_LOOP_END,
-	CP_LOOP_CONT
-} cp_loop_rc_t;
-
-typedef struct
-{
-	unsigned use_percent : 1;
-	unsigned use_ewmh_dynamic_working_areapercent : 1;
-} cp_flags_t;
-
 typedef struct
 {
 	FvwmWindow *place_fw;
@@ -200,10 +185,24 @@ typedef struct
 	position page_p1;
 	position page_p2;
 	position pdelta_p;
-	cp_flags_t flags;
+	struct
+	{
+		unsigned use_percent : 1;
+		unsigned use_ewmh_dynamic_working_areapercent : 1;
+	} flags;
 	position best_p;
 	float best_penalty;
-} cp_arg_t;
+} pl_arg_t;
+
+/*
+ * CleverPlacement types
+ */
+
+typedef enum
+{
+	CP_LOOP_END,
+	CP_LOOP_CONT
+} cp_loop_rc_t;
 
 /* ---------------------------- forward declarations ----------------------- */
 
@@ -213,7 +212,7 @@ typedef struct
 
 /* ---------------------------- local functions (CleverPlacement) ---------- */
 
-static inline int __cp_get_next_x(const cp_arg_t *arg)
+static inline int __cp_get_next_x(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int xnew;
@@ -351,7 +350,7 @@ static inline int __cp_get_next_x(const cp_arg_t *arg)
 	return xnew;
 }
 
-static inline int __cp_get_next_y(const cp_arg_t *arg)
+static inline int __cp_get_next_y(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int ynew;
@@ -478,7 +477,7 @@ static inline int __cp_get_next_y(const cp_arg_t *arg)
 }
 
 static inline cp_loop_rc_t __cp_get_first_pos(
-	position *ret_p, const cp_arg_t *arg)
+	position *ret_p, const pl_arg_t *arg)
 {
 	/* top left corner of page */
 	ret_p->x = arg->page_p1.x;
@@ -488,7 +487,7 @@ static inline cp_loop_rc_t __cp_get_first_pos(
 }
 
 static inline cp_loop_rc_t __cp_get_next_pos(
-	position *ret_p, const cp_arg_t *arg)
+	position *ret_p, const pl_arg_t *arg)
 {
 	ret_p->x = arg->place_g.x;
 	ret_p->y = arg->place_g.y;
@@ -514,7 +513,7 @@ static inline cp_loop_rc_t __cp_get_next_pos(
 }
 
 static inline float __cp_get_avoidance_penalty(
-	const cp_arg_t *arg, FvwmWindow *other_fw, const rectangle *other_g)
+	const pl_arg_t *arg, FvwmWindow *other_fw, const rectangle *other_g)
 {
 	float anew;
 	float avoidance_factor;
@@ -606,7 +605,7 @@ static inline float __cp_get_avoidance_penalty(
 	return anew;
 }
 
-static inline float __cp_test_fit(const cp_arg_t *arg)
+static inline float __cp_test_fit(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	float penalty;
@@ -686,67 +685,43 @@ static inline float __cp_test_fit(const cp_arg_t *arg)
  * of interference with other windows.  If it can place a window without any
  * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
-static void CleverPlacement(
-	FvwmWindow *place_fw, style_flags *sflags, rectangle *screen_g,
-	int *x, int *y, int pdeltax, int pdeltay, int use_percent)
+static void CleverPlacement(pl_arg_t *arg)
 {
 	position next_p;
 	/* area of interference */
 	float penalty;
 	cp_loop_rc_t loop_rc;
-	cp_arg_t arg;
 
-	{
-		memset(&arg, 0, sizeof(arg));
-		arg.place_fw = place_fw;
-		arg.place_g = place_fw->g.frame;
-		arg.screen_g = *screen_g;
-		arg.page_p1.x = arg.screen_g.x - pdeltax;
-		arg.page_p1.y = arg.screen_g.y - pdeltay;
-		arg.page_p2.x = arg.page_p1.x + screen_g->width;
-		arg.page_p2.y = arg.page_p1.y + screen_g->height;
-		arg.pdelta_p.x = pdeltax;
-		arg.pdelta_p.y = pdeltay;
-		arg.flags.use_percent = !!use_percent;
-		if (SEWMH_PLACEMENT_MODE(sflags) == EWMH_USE_WORKING_AREA)
-		{
-			arg.flags.use_ewmh_dynamic_working_areapercent = 1;
-		}
-		arg.best_penalty = -1.0;
-		loop_rc = __cp_get_first_pos(&next_p, &arg);
-		arg.place_g.x = next_p.x;
-		arg.place_g.y = next_p.y;
-		arg.best_p.x = next_p.x;
-		arg.best_p.y = next_p.y;
-	}
+	loop_rc = __cp_get_first_pos(&next_p, arg);
+	arg->place_g.x = next_p.x;
+	arg->place_g.y = next_p.y;
+	arg->best_p.x = next_p.x;
+	arg->best_p.y = next_p.y;
 	while (loop_rc != CP_LOOP_END)
 	{
-		arg.place_p2.x = arg.place_g.x + arg.place_g.width;
-		arg.place_p2.y =
-			arg.place_g.y + arg.place_g.height;
-		penalty = __cp_test_fit(&arg);
+		arg->place_p2.x = arg->place_g.x + arg->place_g.width;
+		arg->place_p2.y = arg->place_g.y + arg->place_g.height;
+		penalty = __cp_test_fit(arg);
 		/* I've added +0.0001 because with my machine the < test fail
 		 * with certain *equal* float numbers! */
 		if (
 			penalty >= 0 &&
 			(
-				arg.best_penalty < 0 ||
-				penalty + 0.0001 < arg.best_penalty))
+				arg->best_penalty < 0 ||
+				penalty + 0.0001 < arg->best_penalty))
 		{
-			arg.best_p.x = arg.place_g.x;
-			arg.best_p.y = arg.place_g.y;
-			arg.best_penalty = penalty;
+			arg->best_p.x = arg->place_g.x;
+			arg->best_p.y = arg->place_g.y;
+			arg->best_penalty = penalty;
 		}
 		if (penalty == 0)
 		{
 			break;
 		}
-		loop_rc = __cp_get_next_pos(&next_p, &arg);
-		arg.place_g.x = next_p.x;
-		arg.place_g.y = next_p.y;
+		loop_rc = __cp_get_next_pos(&next_p, arg);
+		arg->place_g.x = next_p.x;
+		arg->place_g.y = next_p.y;
 	}
-	*x = arg.best_p.x;
-	*y = arg.best_p.y;
 
 	return;
 }
@@ -798,27 +773,23 @@ static inline int __sp_test_window(
 	return -1;
 }
 
-static int SmartPlacement(
-	FvwmWindow *place_fw, rectangle *screen_g,
-	int width, int height, int *x, int *y, int pdeltax, int pdeltay)
+static void SmartPlacement(pl_arg_t *arg)
 {
-	int PageLeft   = screen_g->x - pdeltax;
-	int PageTop    = screen_g->y - pdeltay;
-	int PageRight  = PageLeft + screen_g->width;
-	int PageBottom = PageTop + screen_g->height;
 	int loc_ok = False;
-	rectangle place_g;
 
-	place_g.x = PageLeft;
-	place_g.y = PageTop;
-	place_g.width = width;
-	place_g.height = height;
-	for (; place_g.y + place_g.height < PageBottom && loc_ok == False; )
+	arg->place_g.x = arg->page_p1.x;
+	arg->place_g.y = arg->page_p1.y;
+	arg->place_g.width = arg->place_g.width;
+	arg->place_g.height = arg->place_g.height;
+	for (
+		; arg->place_g.y + arg->place_g.height < arg->page_p2.y;
+		arg->place_g.y += 1)
 	{
-		place_g.x = PageLeft;
-		while (
-			place_g.x + place_g.width < PageRight &&
-			loc_ok == False)
+		arg->place_g.x = arg->page_p1.x;
+		for (
+			;
+			arg->place_g.x + arg->place_g.width < arg->page_p2.x;
+			arg->place_g.x += 1)
 		{
 			FvwmWindow *other_fw;
 
@@ -831,31 +802,32 @@ static int SmartPlacement(
 				int next_x;
 
 				next_x = __sp_test_window(
-					place_fw, other_fw, &place_g, pdeltax,
-					pdeltay);
+					arg->place_fw, other_fw, &arg->place_g,
+					arg->pdelta_p.x, arg->pdelta_p.y);
 				if (next_x >= 0)
 				{
 					loc_ok = False;
-					place_g.x = next_x;
+					arg->place_g.x = next_x;
 				}
 			}
-			if (loc_ok == False)
+			if (loc_ok == True)
 			{
-				place_g.x += 1;
+				break;
 			}
 		}
-		if (loc_ok == False)
+		if (loc_ok == True)
 		{
-			place_g.y += 1;
+			break;
 		}
 	}
 	if (loc_ok == True)
 	{
-		*x = place_g.x;
-		*y = place_g.y;
+		arg->best_p.x = arg->place_g.x;
+		arg->best_p.y = arg->place_g.y;
+		arg->best_penalty = 0;
 	}
 
-	return loc_ok;
+	return;
 }
 
 /* ---------------------------- local functions ---------------------------- */
@@ -954,20 +926,31 @@ static Bool __place_get_wm_pos(
 	int DragWidth;
 	int DragHeight;
 	size_borders b;
-	int PageLeft;
-	int PageTop;
-	int PageRight;
-	int PageBottom;
 	int xl;
 	int yt;
+	pl_arg_t arg;
 
+	/* BEGIN init placement agrs */
+	memset(&arg, 0, sizeof(arg));
+	arg.place_fw = fw;
+	arg.place_g = fw->g.frame;
+	arg.screen_g = screen_g;
+	arg.page_p1.x = arg.screen_g.x - pdeltax;
+	arg.page_p1.y = arg.screen_g.y - pdeltay;
+	arg.page_p2.x = arg.page_p1.x + screen_g.width;
+	arg.page_p2.y = arg.page_p1.y + screen_g.height;
+	arg.pdelta_p.x = pdeltax;
+	arg.pdelta_p.y = pdeltay;
+	arg.flags.use_percent = 0;
+	if (SEWMH_PLACEMENT_MODE(sflags) == EWMH_USE_WORKING_AREA)
+	{
+		arg.flags.use_ewmh_dynamic_working_areapercent = 1;
+	}
+	arg.best_penalty = -1.0;
+	/* END init placement agrs */
 	rc = False;
-	PageLeft   = screen_g.x - pdeltax;
-	PageTop    = screen_g.y - pdeltay;
-	PageRight  = PageLeft + screen_g.width;
-	PageBottom = PageTop + screen_g.height;
 	xl = -1;
-	yt = PageTop;
+	yt = arg.page_p1.y;
 	/* override if Manual placement happen */
 	SET_PLACED_BY_FVWM(fw, True);
 	if (flags.do_forbid_manual_placement)
@@ -990,27 +973,32 @@ static Bool __place_get_wm_pos(
 	switch (placement_mode)
 	{
 	case PLACE_CENTER:
-		attr_g->x = (screen_g.width - fw->g.frame.width) / 2;
-		attr_g->y = ((screen_g.height - fw->g.frame.height) / 2);
+		attr_g->x = (arg.screen_g.width - fw->g.frame.width) / 2;
+		attr_g->y = ((arg.screen_g.height - fw->g.frame.height) / 2);
 		/* Don't let the upper left corner be offscreen. */
-		if (attr_g->x < PageLeft)
+		if (attr_g->x < arg.page_p1.x)
 		{
-			attr_g->x = PageLeft;
+			attr_g->x = arg.page_p1.x;
 		}
-		if (attr_g->y < PageTop)
+		if (attr_g->y < arg.page_p1.y)
 		{
-			attr_g->y = PageTop;
+			attr_g->y = arg.page_p1.y;
 		}
 		break;
 	case PLACE_TILEMANUAL:
-		flags.is_smartly_placed = SmartPlacement(
-			fw, &screen_g, fw->g.frame.width, fw->g.frame.height,
-			&xl, &yt, pdeltax, pdeltay);
-		if (flags.is_smartly_placed)
+		SmartPlacement(&arg);
+		if (arg.best_penalty == -1)
 		{
+			flags.is_smartly_placed = False;
+			reason->pos.has_tile_failed = 1;
+		}
+		else
+		{
+			flags.is_smartly_placed = True;
+			xl = arg.best_p.x;
+			yt = arg.best_p.y;
 			break;
 		}
-		reason->pos.has_tile_failed = 1;
 		/* fall through to manual placement */
 	case PLACE_MANUAL:
 	case PLACE_MANUAL_B:
@@ -1077,26 +1065,33 @@ static Bool __place_get_wm_pos(
 		}
 		if (flags.do_honor_starts_on_page)
 		{
-			xl -= pdeltax;
-			yt -= pdeltay;
+			xl -= arg.pdelta_p.x;
+			yt -= arg.pdelta_p.y;
 		}
 		attr_g->y = yt;
 		attr_g->x = xl;
 		break;
 	case PLACE_MINOVERLAPPERCENT:
-		CleverPlacement(
-			fw, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 1);
+		arg.flags.use_percent = 1;
+		CleverPlacement(&arg);
+		xl = arg.best_p.x;
+		yt = arg.best_p.y;
 		flags.is_smartly_placed = True;
 		break;
 	case PLACE_TILECASCADE:
-		flags.is_smartly_placed = SmartPlacement(
-			fw, &screen_g, fw->g.frame.width, fw->g.frame.height,
-			&xl, &yt, pdeltax, pdeltay);
-		if (flags.is_smartly_placed)
+		SmartPlacement(&arg);
+		if (arg.best_penalty == -1)
 		{
+			flags.is_smartly_placed = False;
+			reason->pos.has_tile_failed = 1;
+		}
+		else
+		{
+			flags.is_smartly_placed = True;
+			xl = arg.best_p.x;
+			yt = arg.best_p.y;
 			break;
 		}
-		reason->pos.has_tile_failed = 1;
 		/* fall through to cascade placement */
 	case PLACE_CASCADE:
 	case PLACE_CASCADE_B:
@@ -1112,45 +1107,47 @@ static Bool __place_get_wm_pos(
 			Scr.cascade_y += 2 * fw->title_thickness;
 		}
 		Scr.cascade_window = fw;
-		if (Scr.cascade_x > screen_g.width / 2)
+		if (Scr.cascade_x > arg.screen_g.width / 2)
 		{
 			Scr.cascade_x = fw->title_thickness;
 		}
-		if (Scr.cascade_y > screen_g.height / 2)
+		if (Scr.cascade_y > arg.screen_g.height / 2)
 		{
 			Scr.cascade_y = 2 * fw->title_thickness;
 		}
-		attr_g->x = Scr.cascade_x + PageLeft;
-		attr_g->y = Scr.cascade_y + PageTop;
+		attr_g->x = Scr.cascade_x + arg.page_p1.x;
+		attr_g->y = Scr.cascade_y + arg.page_p1.y;
 		/* try to keep the window on the screen */
 		get_window_borders(fw, &b);
-		if (attr_g->x + fw->g.frame.width >= PageRight)
+		if (attr_g->x + fw->g.frame.width >= arg.page_p2.x)
 		{
-			attr_g->x = PageRight - attr_g->width -
+			attr_g->x = arg.page_p2.x - attr_g->width -
 				b.total_size.width;
 			Scr.cascade_x = fw->title_thickness;
 		}
-		if (attr_g->y + fw->g.frame.height >= PageBottom)
+		if (attr_g->y + fw->g.frame.height >= arg.page_p2.y)
 		{
-			attr_g->y = PageBottom - attr_g->height -
+			attr_g->y = arg.page_p2.y - attr_g->height -
 				b.total_size.height;
 			Scr.cascade_y = 2 * fw->title_thickness;
 		}
 
 		/* the left and top sides are more important in huge
 		 * windows */
-		if (attr_g->x < PageLeft)
+		if (attr_g->x < arg.page_p1.x)
 		{
-			attr_g->x = PageLeft;
+			attr_g->x = arg.page_p1.x;
 		}
-		if (attr_g->y < PageTop)
+		if (attr_g->y < arg.page_p1.y)
 		{
-			attr_g->y = PageTop;
+			attr_g->y = arg.page_p1.y;
 		}
 		break;
 	case PLACE_MINOVERLAP:
-		CleverPlacement(
-			fw, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 0);
+		arg.flags.use_percent = 0;
+		CleverPlacement(&arg);
+		xl = arg.best_p.x;
+		yt = arg.best_p.y;
 		flags.is_smartly_placed = True;
 		break;
 	case PLACE_UNDERMOUSE:
@@ -1173,25 +1170,25 @@ static Bool __place_get_wm_pos(
 			yt = my - (fw->g.frame.height / 2);
 			if (
 				xl + fw->g.frame.width >
-				screen_g.x + screen_g.width)
+				arg.screen_g.x + arg.screen_g.width)
 			{
-				xl = screen_g.x + screen_g.width -
+				xl = arg.screen_g.x + arg.screen_g.width -
 					fw->g.frame.width;
 			}
 			if (
 				yt + fw->g.frame.height >
-				screen_g.y + screen_g.height)
+				arg.screen_g.y + arg.screen_g.height)
 			{
-				yt = screen_g.y + screen_g.height -
+				yt = arg.screen_g.y + arg.screen_g.height -
 					fw->g.frame.height;
 			}
-			if (xl < screen_g.x)
+			if (xl < arg.screen_g.x)
 			{
-				xl = screen_g.x;
+				xl = arg.screen_g.x;
 			}
-			if (yt < screen_g.y)
+			if (yt < arg.screen_g.y)
 			{
-				yt = screen_g.y;
+				yt = arg.screen_g.y;
 			}
 		}
 		attr_g->x = xl;
