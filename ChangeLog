@@ -1,5 +1,12 @@
 2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* fvwm/stack.c (is_transient_subtree_straight)
+	(is_transient_subtree_stack_straight):
+	use <= 32 character function name
+	(mark_transient_subtree, is_transient_subtree_straight)
+	(__mark_transient_subtree_test):
+	move common tests to function to avoid code duplication
+
 	* fvwm/fvwm.1.in (IconifyWindowGroups):
 	Correctly document that windows are iconified together if the are in
 	the same window group, not if the group leader is iconified.

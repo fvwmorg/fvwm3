@@ -650,22 +650,78 @@ static void __mark_group_member(
 
 }
 
+static Bool __mark_transient_subtree_test(
+	FvwmWindow *s, FvwmWindow *start, FvwmWindow *end, int mark_mode,
+	Bool do_ignore_icons, Bool use_window_group_hint)
+{
+	Bool use_group_hint = False;
+	FvwmWindow *r;
+
+	if (IS_IN_TRANSIENT_SUBTREE(s))
+	{
+		return False;
+	}
+	if (use_window_group_hint &&
+	    DO_ICONIFY_WINDOW_GROUPS(s) && s->wmhints &&
+	    (s->wmhints->flags & WindowGroupHint) &&
+	    (s->wmhints->window_group != None) &&
+	    (s->wmhints->window_group != FW_W(s)) &&
+	    (s->wmhints->window_group != Scr.Root))
+	{
+		use_group_hint = True;
+	}
+	if (!IS_TRANSIENT(s) && !use_group_hint)
+	{
+		return False;
+	}
+	if (do_ignore_icons && IS_ICONIFIED(s))
+	{
+		return False;
+	}
+	r = (FvwmWindow *)s->scratch.p;
+	if (IS_TRANSIENT(s))
+	{
+		if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
+		    ((mark_mode == MARK_ALL) ||
+		     __is_restack_transients_needed(
+			     r, (stack_mode_t)mark_mode) == True))
+		{
+			/* have to move this one too */
+			SET_IN_TRANSIENT_SUBTREE(s, 1);
+			/* used for stacking transients */
+			s->scratch.i += r->scratch.i + 1;
+			return True;
+		}
+	}
+	if (use_group_hint && !IS_IN_TRANSIENT_SUBTREE(s))
+	{
+		__mark_group_member(s, start, end);
+		if (IS_IN_TRANSIENT_SUBTREE(s))
+		{
+			/* need another scan through the list */
+			return True;
+		}
+	}
+
+	return False;
+}
+
 /* heavaly borrowed from mark_transient_subtree.  This will mark a subtree as
  * long as it is straight, and return true if the operation is succussful.  It
  * will abort and return False as soon as some inconsitance is hit. */
 
-Bool is_transient_subtree_stacked_straight(
+static Bool is_transient_subtree_straight(
 	FvwmWindow *t, int layer, stack_mode_t mode, Bool do_ignore_icons,
 	Bool use_window_group_hint)
 {
 	FvwmWindow *s;
 	FvwmWindow *start;
 	FvwmWindow *end;
-	FvwmWindow *r;
 	int min_i;
 	Bool has_passed_root;
 	Bool is_in_gap;
 	int mark_mode;
+
 	switch (mode)
 	{
 	case SM_RAISE:
@@ -743,18 +799,19 @@ Bool is_transient_subtree_stacked_straight(
 	for (s = start; s != end && !(is_in_gap && mode == SM_RAISE);
 	     s = s->stack_prev)
 	{
-		Bool use_group_hint = False;
-
-		if (IS_IN_TRANSIENT_SUBTREE(s))
+		if (t == s)
 		{
-			if (t == s)
+			has_passed_root = True;
+		}
+		else
+		{
+			if (
+				__mark_transient_subtree_test(
+					s, start, end, mark_mode,
+					do_ignore_icons,
+					use_window_group_hint))
 			{
-				has_passed_root = True;
-			}
-			else
-			{
-				/* should never happen */
-				if (!has_passed_root)
+				if (is_in_gap || !has_passed_root)
 				{
 					return False;
 				}
@@ -762,80 +819,15 @@ Bool is_transient_subtree_stacked_straight(
 				{
 					return False;
 				}
-			}
-			continue;
-		}
-		if (use_window_group_hint &&
-		    DO_ICONIFY_WINDOW_GROUPS(s) && s->wmhints &&
-		    (s->wmhints->flags & WindowGroupHint) &&
-		    (s->wmhints->window_group != None) &&
-		    (s->wmhints->window_group != FW_W(s)) &&
-		    (s->wmhints->window_group != Scr.Root))
-		{
-			use_group_hint = True;
-		}
-		if (!IS_TRANSIENT(s) && !use_group_hint)
-		{
-			if (has_passed_root)
-			{
-				is_in_gap = True;
-			}
-			continue;
-		}
-		if (do_ignore_icons && IS_ICONIFIED(s))
-		{
-			if (has_passed_root)
-			{
-				is_in_gap = True;
-			}
-			continue;
-		}
-		r = (FvwmWindow *)s->scratch.p;
-		if (IS_TRANSIENT(s))
-		{
-			if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
-			    ((mark_mode == MARK_ALL) ||
-			     __is_restack_transients_needed(
-				     r, (stack_mode_t)mark_mode) ==
-			     True))
-			{
-				if (is_in_gap || !has_passed_root)
-				{
-					return False;
-				}
-				/* have to move this one too */
-				SET_IN_TRANSIENT_SUBTREE(s, 1);
-				/* used for stacking transients */
-				/* It might be a bad idea to alter scratch
-				 * values here. At least if the
-				 * mark_transients are to start from scratch.*/
-				s->scratch.i += r->scratch.i + 1;
-				if (s->scratch.i < min_i)
-				{
-					return False;
-				}
-				min_i = s->scratch.i;
-				continue;
-			}
-		}
-		if (use_group_hint && !IS_IN_TRANSIENT_SUBTREE(s))
-		{
-			__mark_group_member(s, start, end);
-			if (IS_IN_TRANSIENT_SUBTREE(s))
-			{
-				if (
-					is_in_gap || !has_passed_root ||
-					s->scratch.i < min_i)
-				{
-					return False;
-				}
 				min_i = s->scratch.i;
 			}
-			else if (has_passed_root)
+			else
 			{
-				is_in_gap = True;
+				if (has_passed_root)
+				{
+					is_in_gap = True;
+				}
 			}
-			continue;
 		}
 	} /* for */
 	if (is_in_gap && mode == SM_RAISE)
@@ -862,7 +854,7 @@ static Bool __is_restack_needed(
 	}
 	if (do_restack_transients)
 	{
-		return !is_transient_subtree_stacked_straight(
+		return !is_transient_subtree_straight(
 			t, t->layer, mode, True, False);
 	}
 	else if (mode == SM_LOWER)
@@ -1898,61 +1890,18 @@ void mark_transient_subtree(
 	is_finished = False;
 	while (!is_finished)
 	{
-		FvwmWindow *r;
-
 		/* recursively search for all transient windows */
 		is_finished = True;
 		for (s = start; s != end; s = s->stack_next)
 		{
-			Bool use_group_hint = False;
 
-			if (IS_IN_TRANSIENT_SUBTREE(s))
+			if (
+				__mark_transient_subtree_test(
+					s, start, end, mark_mode,
+					do_ignore_icons,
+					use_window_group_hint))
 			{
-				continue;
-			}
-			if (use_window_group_hint &&
-			    DO_ICONIFY_WINDOW_GROUPS(s) && s->wmhints &&
-			    (s->wmhints->flags & WindowGroupHint) &&
-			    (s->wmhints->window_group != None) &&
-			    (s->wmhints->window_group != FW_W(s)) &&
-			    (s->wmhints->window_group != Scr.Root))
-			{
-				use_group_hint = True;
-			}
-			if (!IS_TRANSIENT(s) && !use_group_hint)
-			{
-				continue;
-			}
-			if (do_ignore_icons && IS_ICONIFIED(s))
-			{
-				continue;
-			}
-			r = (FvwmWindow *)s->scratch.p;
-			if (IS_TRANSIENT(s))
-			{
-				if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
-				    ((mark_mode == MARK_ALL) ||
-				     __is_restack_transients_needed(
-					     r, (stack_mode_t)mark_mode) ==
-				     True))
-				{
-					/* have to move this one too */
-					SET_IN_TRANSIENT_SUBTREE(s, 1);
-					/* used for stacking transients */
-					s->scratch.i += r->scratch.i + 1;
-					/* need another scan through the list */
-					is_finished = False;
-					continue;
-				}
-			}
-			if (use_group_hint && !IS_IN_TRANSIENT_SUBTREE(s))
-			{
-				__mark_group_member(s, start, end);
-				if (IS_IN_TRANSIENT_SUBTREE(s))
-				{
-					/* need another scan through the list */
-					is_finished = False;
-				}
+				is_finished = False;
 			}
 		} /* for */
 	} /* while */
