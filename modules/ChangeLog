@@ -1,6 +1,9 @@
 2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIdent/FvwmIdent.c (list_configure):
+	use the orig_hints_width_inc and orig_hints_height_inc
+
+	* FvwmIdent/FvwmIdent.c (list_configure):
 	(MakeList):
 	properly handle title dir in geometry reported by FvwmIdent
 

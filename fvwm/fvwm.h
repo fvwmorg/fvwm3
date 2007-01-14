@@ -780,6 +780,11 @@ typedef struct FvwmWindow
 	} attr_backup;
 	/* normal hints */
 	XSizeHints hints;
+	struct
+	{
+		int width_inc;
+		int height_inc;
+	} orig_hints;
 	/* WM hints */
 	XWMHints *wmhints;
 	XClassHint class;

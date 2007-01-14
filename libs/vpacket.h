@@ -42,6 +42,8 @@ typedef struct ConfigWinPacket
 	unsigned long  hints_base_height;
 	unsigned long  hints_width_inc;
 	unsigned long  hints_height_inc;
+	unsigned long  orig_hints_width_inc;
+	unsigned long  orig_hints_height_inc;
 	unsigned long  hints_min_width;
 	unsigned long  hints_min_height;
 	unsigned long  hints_max_width;

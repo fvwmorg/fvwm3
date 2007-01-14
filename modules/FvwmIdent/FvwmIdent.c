@@ -409,8 +409,8 @@ void list_configure(unsigned long *body)
 		target.border_w = cfgpacket->border_width;
 		target.base_w = cfgpacket->hints_base_width;
 		target.base_h = cfgpacket->hints_base_height;
-		target.width_inc = cfgpacket->hints_width_inc;
-		target.height_inc = cfgpacket->hints_height_inc;
+		target.width_inc = cfgpacket->orig_hints_width_inc;
+		target.height_inc = cfgpacket->orig_hints_height_inc;
 		target.gravity = cfgpacket->hints_win_gravity;
 		target.ewmh_hint_layer = cfgpacket->ewmh_hint_layer;
 		target.ewmh_hint_desktop = cfgpacket->ewmh_hint_desktop;

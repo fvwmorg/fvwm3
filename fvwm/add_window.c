@@ -2633,6 +2633,8 @@ void GetWindowSizeHints(FvwmWindow *fw)
 	XSizeHints orig_hints;
 	Status rc;
 
+	fw->orig_hints.width_inc = 1;
+	fw->orig_hints.height_inc = 1;
 	rc = XGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
 	if (rc == 0)
 	{
@@ -2642,6 +2644,11 @@ void GetWindowSizeHints(FvwmWindow *fw)
 	else
 	{
 		fw->hints = orig_hints;
+		if (fw->hints.flags & PResizeInc)
+		{
+			fw->orig_hints.width_inc = fw->hints.width_inc;
+			fw->orig_hints.height_inc = fw->hints.height_inc;
+		}
 		if (HAS_OVERRIDE_SIZE_HINTS(fw))
 		{
 			/* ignore the WMNormal hints */

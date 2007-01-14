@@ -1,5 +1,12 @@
 2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/add_window.c (GetWindowSizeHints):
+	* libs/vpacket.h (ConfigWinPacket):
+	* fvwm/module_interface.c (CONFIGARGS):
+	* fvwm/fvwm.h (FvwmWindow):
+	add orig_hints_width_inc and orig_hints_height_inc values to store the
+	original resize inc  for use in FvwmIdent
+
 	* fvwm/fvwm.1.in:
 	* fvwm/style.c (style_parse_one_style_option):
 	deprecated some "No..." styles
