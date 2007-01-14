@@ -64,8 +64,9 @@ Bool menu_get_geometry(
 
 	rc = XGetGeometry(
 		dpy, MR_WINDOW(mr), root_return, x_return, y_return,
-		width_return, height_return, border_width_return,
-		depth_return);
+		(unsigned int*)width_return, (unsigned int*)height_return,
+		(unsigned int*)border_width_return,
+		(unsigned int*)depth_return);
 	if (rc == 0)
 	{
 		return False;
@@ -101,8 +102,11 @@ Bool menu_get_outer_geometry(
 		return XGetGeometry(
 			dpy,
 			FW_W_FRAME(pmp->tear_off_root_menu_window),
-			root_return,x_return,y_return, width_return,
-			height_return, border_width_return, depth_return );
+			root_return,x_return,y_return,
+			(unsigned int*)width_return,
+			(unsigned int*)height_return,
+			(unsigned int*)border_width_return,
+			(unsigned int*)depth_return);
 	}
 	else
 	{

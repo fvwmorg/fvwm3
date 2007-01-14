@@ -1,3 +1,8 @@
+2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm-root.c (SetRootWindow): 
+	use int instead of unsigned int.
+
 2006-12-18  Viktor Griph  <griph@dd.chalmers.se>
 
 	* Makefile.am (man_MANS, EXTRA_DIST):

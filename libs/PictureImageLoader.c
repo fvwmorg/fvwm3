@@ -446,8 +446,9 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
 {
 	int l;
 
-	if (XReadBitmapFile(dpy, win, path, width, height, pixmap, &l, &l)
-	    == BitmapSuccess)
+	if (XReadBitmapFile(
+		    dpy, win, path, (unsigned int*)width,
+		    (unsigned int*)height, pixmap, &l, &l) == BitmapSuccess)
 	{
 		*mask = None;
 		*depth = 1;

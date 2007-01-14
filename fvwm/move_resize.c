@@ -964,8 +964,9 @@ static Bool resize_move_window(F_CMD_ARGS)
 	/* gotta have a window */
 	w = FW_W_FRAME(fw);
 	if (!XGetGeometry(
-		    dpy, w, &JunkRoot, &x, &y, &FinalW, &FinalH, &JunkBW,
-		    &JunkDepth))
+		    dpy, w, &JunkRoot, &x, &y, (unsigned int*)&FinalW,
+		    (unsigned int*)&FinalH, (unsigned int*)&JunkBW,
+		    (unsigned int*)&JunkDepth))
 	{
 		XBell(dpy, 0);
 		return False;
@@ -1092,8 +1093,9 @@ static void InteractiveMove(
 
 	MyXGrabServer(dpy);
 	if (!XGetGeometry(
-		    dpy, w, &JunkRoot, &origDragX, &origDragY, &DragWidth,
-		    &DragHeight, &JunkBW, &JunkDepth))
+		    dpy, w, &JunkRoot, &origDragX, &origDragY,
+		    (unsigned int*)&DragWidth, (unsigned int*)&DragHeight,
+		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
 		MyXUngrabServer(dpy);
 		return;
@@ -1206,8 +1208,13 @@ static void AnimatedMoveAnyWindow(
 
 	if (startX < 0 || startY < 0)
 	{
-		if (!XGetGeometry(dpy, w, &JunkRoot, &currentX, &currentY,
-				  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+		if (
+			!XGetGeometry(
+				dpy, w, &JunkRoot, &currentX, &currentY,
+				(unsigned int*)&JunkWidth,
+				(unsigned int*)&JunkHeight,
+				(unsigned int*)&JunkBW,
+				(unsigned int*)&JunkDepth))
 		{
 			XBell(dpy, 0);
 			return;
@@ -1613,8 +1620,11 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 			w = FW_W_FRAME(fw);
 		}
 	}
-	if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, &width, &height,
-			  &JunkBW, &JunkDepth))
+	if (
+		!XGetGeometry(
+			dpy, w, &JunkRoot, &x, &y, (unsigned int*)&width,
+			(unsigned int*)&height, (unsigned int*)&JunkBW,
+			(unsigned int*)&JunkDepth))
 	{
 		return;
 	}
@@ -2214,8 +2224,11 @@ Bool __move_loop(
 	{
 		move_w = FW_W_FRAME(fw);
 	}
-	if (!XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak,
-			  &JunkWidth, &JunkHeight, &JunkBW,&JunkDepth))
+	if (
+		!XGetGeometry(
+			dpy, move_w, &JunkRoot, &x_bak, &y_bak,
+			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
 		/* This is allright here since the window may not be mapped
 		 * yet. */
@@ -3481,8 +3494,9 @@ static Bool __resize_window(F_CMD_ARGS)
 		MyXGrabServer(dpy);
 	}
 	if (!XGetGeometry(
-		    dpy, (Drawable) ResizeWindow, &JunkRoot, &drag->x, &drag->y,
-		    &drag->width, &drag->height, &JunkBW, &JunkDepth))
+		    dpy, (Drawable)ResizeWindow, &JunkRoot, &drag->x, &drag->y,
+		    (unsigned int*)&drag->width, (unsigned int*)&drag->height,
+		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
 		UngrabEm(GRAB_NORMAL);
 		if (!do_resize_opaque)

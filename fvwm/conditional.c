@@ -1726,8 +1726,10 @@ void CMD_WindowId(F_CMD_ARGS)
 		}
 		else if (XGetGeometry(
 				 dpy, win, &JunkRoot, &JunkX, &JunkY,
-				 &JunkWidth, &JunkHeight, &JunkBW,
-				 &JunkDepth) != 0)
+				 (unsigned int*)&JunkWidth,
+				 (unsigned int*)&JunkHeight,
+				 (unsigned int*)&JunkBW,
+				 (unsigned int*)&JunkDepth) != 0)
 		{
 			if (cond_rc != NULL)
 			{

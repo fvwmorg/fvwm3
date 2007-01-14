@@ -846,7 +846,9 @@ Bool CalculateGradientDimensions(
 	/* get the best tile size (once) */
 	if (!best_width)
 	{
-		if (!XQueryBestTile(dpy, d, 1, 1, &best_width, &best_height))
+		if (!XQueryBestTile(
+			    dpy, d, 1, 1, (unsigned int*)&best_width,
+			    (unsigned int*)&best_height))
 		{
 			best_width = 0;
 			best_height = 0;

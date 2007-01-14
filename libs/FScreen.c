@@ -858,7 +858,7 @@ static int FindScreen(
  */
 Bool FScreenGetScrRect(
 	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y,
-	unsigned int *w, unsigned int *h)
+	int *w, int *h)
 {
 	screen = FindScreen(arg, screen);
 	if (screen < first_to_check || screen > last_to_check)
@@ -933,8 +933,8 @@ int FScreenClipToScreen(
 {
 	int sx;
 	int sy;
-	unsigned int sw;
-	unsigned int sh;
+	int sw;
+	int sh;
 	int lx = (x) ? *x : 0;
 	int ly = (y) ? *y : 0;
 	int x_grav = GRAV_POS;
@@ -980,8 +980,8 @@ void FScreenCenterOnScreen(
 {
 	int sx;
 	int sy;
-	unsigned int sw;
-	unsigned int sh;
+	int sw;
+	int sh;
 	int lx;
 	int ly;
 
@@ -1008,7 +1008,7 @@ void FScreenCenterOnScreen(
 
 void FScreenGetResistanceRect(
 	int wx, int wy, unsigned int ww, unsigned int wh, int *x0, int *y0,
-	unsigned int *x1, unsigned int *y1)
+	int *x1, int *y1)
 {
 	fscreen_scr_arg arg;
 
@@ -1027,8 +1027,8 @@ Bool FScreenIsRectangleOnScreen(
 {
 	int sx;
 	int sy;
-	unsigned int sw;
-	unsigned int sh;
+	int sw;
+	int sh;
 
 	FScreenGetScrRect(arg, screen, &sx, &sy, &sw, &sh);
 
@@ -1301,7 +1301,7 @@ int FScreenGetGeometry(
 	int   grav, x_grav, y_grav;
 	int   scr = default_geometry_scr;
 	int   scr_x, scr_y;
-	unsigned int scr_w, scr_h;
+	int scr_w, scr_h;
 
 	/* I. Do the parsing and strip off extra bits */
 	ret = FScreenParseGeometryWithScreen(parsestring, &x, &y, &w, &h, &scr);

@@ -436,7 +436,7 @@ Bool GetBackPixmap(void)
 	Pixmap maskPixmap;
 	char *path = NULL;
 	Pixmap tmp_pixmap;
-	unsigned int w=0, h=0;
+	int w=0, h=0;
 	int icon_depth = 0;
 	FvwmPictureAttributes fpa;
 

@@ -2297,7 +2297,8 @@ static Bool paint_menu_gradient_background(
 
 				if (!XQueryBestTile(
 					    dpy, Scr.screen, tw, tw,
-					    &best_tile_width, &junk))
+					    (unsigned int*)&best_tile_width,
+					    (unsigned int*)&junk))
 				{
 					/* call failed, use default and risk a
 					 * screwed up tile */
@@ -3373,9 +3374,11 @@ static int pop_menu_up(
 						);
 					if (XGetGeometry(
 						    dpy, w, &JunkRoot, &cx,
-						    &cy, &JunkWidth,
-						    &JunkHeight, &JunkBW,
-						    &JunkDepth))
+						    &cy,
+						    (unsigned int*)&JunkWidth,
+						    (unsigned int*)&JunkHeight,
+						    (unsigned int*)&JunkBW,
+						    (unsigned int*)&JunkDepth))
 					{
 						end_x += (cx - prev_x );
 						prev_x = cx;
@@ -7004,7 +7007,9 @@ char *get_menu_options(
 				return action;
 			}
 			flags = FScreenParseGeometryWithScreen(
-				tok, &x, &y, &width, &height, &screen);
+				tok, &x, &y,
+				(unsigned int*)&width,
+				(unsigned int*)&height, &screen);
 			if ((flags & (XValue | YValue)) != (XValue | YValue))
 			{
 				free(tok);
@@ -7097,8 +7102,10 @@ char *get_menu_options(
 			 (!fHasContext || !context_window ||
 			  !XGetGeometry(
 				  dpy, context_window, &JunkRoot, &JunkX,
-				  &JunkY, &width, &height, &JunkBW,
-				  &JunkDepth) ||
+				  &JunkY, (unsigned int*)&width,
+				  (unsigned int*)&height,
+				  (unsigned int*)&JunkBW,
+				  (unsigned int*)&JunkDepth) ||
 			  !XTranslateCoordinates(
 				  dpy, context_window, Scr.Root, 0, 0, &x, &y,
 				  &JunkChild)))

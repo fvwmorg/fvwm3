@@ -58,7 +58,7 @@ typedef struct window_item {
 /* vars */
 Display *dpy;
 int dx, dy;
-unsigned int dwidth, dheight;
+int dwidth, dheight;
 static ModuleArgs *module;
 int fd[2];
 fd_set_size_t fd_width;

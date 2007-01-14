@@ -1447,8 +1447,9 @@ static Bool __is_bpress_window_handled(const exec_context_t *exc)
 		return False;
 	}
 	if (!XGetGeometry(
-		    dpy, eventw, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-		    &JunkHeight, &JunkBW, &JunkDepth))
+		    dpy, eventw, &JunkRoot, &JunkX, &JunkY,
+		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
 		/* The window has already died. */
 		return False;
@@ -3153,8 +3154,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		return;
 	}
 	if (XGetGeometry(
-		    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-		    &JunkHeight, &JunkBW, &JunkDepth) == 0)
+		    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth) == 0)
 	{
 		return;
 	}

@@ -2152,7 +2152,8 @@ static void GetIconWindow(FvwmWindow *fw)
 	 * routine */
 	if (XGetGeometry(
 		    dpy, fw->wmhints->icon_window, &JunkRoot, &JunkX, &JunkY,
-		    &w, &h, &bw, &JunkDepth) == 0)
+		    (unsigned int*)&w, (unsigned int*)&h,(unsigned int*)&bw, 
+		    (unsigned int*)&JunkDepth) == 0)
 	{
 		fvwm_msg(
 			ERR,"GetIconWindow",
@@ -2204,8 +2205,10 @@ static void GetIconBitmap(FvwmWindow *fw)
 
 	/* We are guaranteed that wmhints is non-null when calling this routine
 	 */
-	if (!XGetGeometry(dpy, fw->wmhints->icon_pixmap, &JunkRoot,
-			  &JunkX, &JunkY, &width, &height, &JunkBW, &depth))
+	if (!XGetGeometry(
+		    dpy, fw->wmhints->icon_pixmap, &JunkRoot, &JunkX, &JunkY,
+		    (unsigned int*)&width, (unsigned int*)&height,
+		    (unsigned int*)&JunkBW, (unsigned int*)&depth))
 	{
 		fvwm_msg(
 			ERR,"GetIconBitmap",

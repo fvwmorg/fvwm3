@@ -53,7 +53,7 @@ void FScreenSetPrimaryScreen(int scr);
 /* Screen info */
 Bool FScreenGetScrRect(
 	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y,
-	unsigned int *w, unsigned int *h);
+	int *w, int *h);
 Bool FScreenGetScrId(
 	fscreen_scr_arg *arg, fscreen_scr_t screen);
 void FScreenTranslateCoordinates(
@@ -62,7 +62,7 @@ void FScreenTranslateCoordinates(
 	int *x, int *y);
 void FScreenGetResistanceRect(
 	int wx, int wy, unsigned int ww, unsigned int wh, int *x0, int *y0,
-	unsigned int *x1, unsigned int *y1);
+	int *x1, int *y1);
 Bool FScreenIsRectangleOnScreen(
 	fscreen_scr_arg *arg, fscreen_scr_t screen, rectangle *rec);
 void FScreenSpecToString(char *dest, int space, fscreen_scr_t screen);

@@ -1769,8 +1769,9 @@ frame_move_resize_args frame_create_move_resize_args(
 	{
 		rc = XGetGeometry(
 			dpy, FW_W(fw), &JunkRoot, &mra->client_g.x,
-			&mra->client_g.y, &mra->client_g.width,
-			&mra->client_g.height, &JunkBW,	&JunkDepth);
+			&mra->client_g.y, (unsigned int*)&mra->client_g.width,
+			(unsigned int*)&mra->client_g.height,
+			(unsigned int*)&JunkBW,	(unsigned int*)&JunkDepth);
 		if (rc == True)
 		{
 			rc = XTranslateCoordinates(

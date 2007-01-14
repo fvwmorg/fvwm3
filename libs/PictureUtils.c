@@ -2002,7 +2002,7 @@ PictureImageColorAllocator *PictureOpenImageColorAllocator(
 
 void PictureCloseImageColorAllocator(
 	Display *dpy, PictureImageColorAllocator *pica,
-	unsigned int *nalloc_pixels, Pixel **alloc_pixels, Bool *no_limit)
+	int *nalloc_pixels, Pixel **alloc_pixels, Bool *no_limit)
 {
 	if (nalloc_pixels)
 	{

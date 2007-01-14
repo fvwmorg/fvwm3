@@ -190,7 +190,7 @@ struct XObj
   GC gc;                        /* gc utilise pour les requetes: 4 octets */
   int id;                       /* Numero d'id */
   int x,y;                      /* Origine du bouton */
-  unsigned int height,width;             /* Hauteur et largeur */
+  int height,width;             /* Hauteur et largeur */
   char *title;                  /* Titre */
   char *swallow;                /* SwallowExec */
   char *icon;                   /* Icon */
@@ -204,8 +204,8 @@ struct XObj
   Pixmap icon_maskPixmap;       /* Icone masque */
   Pixmap icon_alphaPixmap;      /* alpha channel */
   Pixel  *alloc_pixels;
-  unsigned int nalloc_pixels;
-  unsigned int icon_w,icon_h;            /* Largeur et hauteur de l'icone */
+  int nalloc_pixels;
+  int icon_w,icon_h;            /* Largeur et hauteur de l'icone */
   FlocaleFont *Ffont;
   int value;                    /* Valeur courante */
   int value2;                   /* Valeur minimale */

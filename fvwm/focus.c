@@ -1218,8 +1218,10 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 			int wh;
 
 			if (!XGetGeometry(
-				    dpy, exc->w.w, &JunkRoot, &wx, &wy, &ww,
-				    &wh, &JunkBW, &JunkDepth))
+				    dpy, exc->w.w, &JunkRoot, &wx, &wy,
+				    (unsigned int*)&ww, (unsigned int*)&wh,
+				    (unsigned int*)&JunkBW,
+				    (unsigned int*)&JunkDepth))
 			{
 				return;
 			}

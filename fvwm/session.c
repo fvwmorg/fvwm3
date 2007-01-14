@@ -403,7 +403,10 @@ SaveWindowStates(FILE *f)
 
 		if (!XGetGeometry(
 			    dpy, FW_W(ewin), &JunkRoot, &JunkX, &JunkY,
-			    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+			    (unsigned int*)&JunkWidth,
+			    (unsigned int*)&JunkHeight,
+			    (unsigned int*)&JunkBW,
+			    (unsigned int*)&JunkDepth))
 		{
 			/* Don't save the state of windows that already died
 			 * (i.e. modules)! */

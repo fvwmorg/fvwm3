@@ -1028,8 +1028,10 @@ static Bool __place_get_wm_pos(
 			MyXGrabServer(dpy);
 			if (XGetGeometry(
 				    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-				    &DragWidth, &DragHeight, &JunkBW,
-				    &JunkDepth) == 0)
+				    (unsigned int*)&DragWidth,
+				    (unsigned int*)&DragHeight,
+				    (unsigned int*)&JunkBW,
+				    (unsigned int*)&JunkDepth) == 0)
 			{
 				MyXUngrabServer(dpy);
 				UngrabEm(GRAB_NORMAL);

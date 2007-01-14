@@ -38,7 +38,7 @@ typedef struct
   int count;
   Button *head, *tail;
   int x, y;
-  unsigned int w, h, tw;
+  int w, h, tw;
 } ButtonArray;
 
 /* Function Prototypes */
@@ -70,5 +70,4 @@ int LocateButton(ButtonArray *array, int xp,  int yp,
 void ArrangeButtonArray(ButtonArray *array);
 void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp);
 void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc);
-void ButtonDimensions(ButtonArray *array, unsigned int *width,
-		      unsigned int *height);
+void ButtonDimensions(ButtonArray *array, int *width, int *height);

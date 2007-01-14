@@ -60,8 +60,8 @@
 typedef struct _PImageIcon {
 	Pixmap pixmap;
 	Pixmap mask;
-	unsigned int width;
-	unsigned int height;
+	int width;
+	int height;
 	int depth;
 }        PImageIcon;
 
@@ -305,10 +305,9 @@ void GetXBMData(void)
 
 void GetXPMData(char **data)
 {
-  if(!PImageLoadPixmapFromXpmData(dpy, win, 0, data,
-				  &view.pixmap, &view.mask,
-				  &view.width, &view.height,
-				  &view.depth))
+  if(!PImageLoadPixmapFromXpmData(
+	     dpy, win, 0, data, &view.pixmap, &view.mask,
+	     &view.width, &view.height, &view.depth))
   {
     GetXBMData();
   }

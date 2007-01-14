@@ -162,8 +162,11 @@ static void CaptureOneWindow(
 	/* Grab the server to make sure the window does not die during the
 	 * recapture. */
 	MyXGrabServer(dpy);
-	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			  &JunkHeight, &JunkBW,  &JunkDepth))
+	if (
+		!XGetGeometry(
+			dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
 		/* The window has already died, do not recapture it! */
 		MyXUngrabServer(dpy);
@@ -2092,8 +2095,9 @@ FvwmWindow *AddWindow(
 	 * gotten one for anything up to here, however. ******/
 	MyXGrabServer(dpy);
 	if (XGetGeometry(
-		    dpy, w, &JunkRoot, &JunkX, &JunkY, &JunkWidth, &JunkHeight,
-		    &JunkBW,  &JunkDepth) == 0)
+		    dpy, w, &JunkRoot, &JunkX, &JunkY,
+		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth) == 0)
 	{
 		if (Scr.bo.do_display_new_window_names)
 		{
@@ -2518,8 +2522,10 @@ FvwmWindow *AddWindow(
 	{
 		EWMH_fullscreen(fw);
 	}
-	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			  &JunkHeight, &JunkBW,  &JunkDepth))
+	if (!XGetGeometry(
+		    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
 		/* The window has disappeared somehow.  For some reason we do
 		 * not always get a DestroyNotify on the window, so make sure

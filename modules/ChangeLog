@@ -1,3 +1,17 @@
+2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* FvwmWharf/Wharf.h:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/ButtonArray.h:
+	* FvwmTaskBar/ButtonArray.c:
+	* FvwmScript/types.h (struct XObj):
+	* FvwmBanner/FvwmBanner.c (GetXPMData):
+	* FvwmIconBox/icons.c (GetBackPixmap): 
+	* FvwmIconBox/FvwmIconBox.h (struct icon_info):
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmIdent/FvwmIdent.c (list_end):
+	int instead of unsigned int
+
 2007-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmScript/script.c (yyparse):

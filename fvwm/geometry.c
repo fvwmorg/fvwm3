@@ -224,7 +224,8 @@ Bool get_title_button_geometry(
 	}
 	if (XGetGeometry(
 		dpy, FW_W_BUTTON(fw, bnum), &JunkRoot, &ret_g->x, &ret_g->y,
-		&ret_g->width, &ret_g->height, &JunkBW, &JunkDepth) == 0)
+		(unsigned int*)&ret_g->width, (unsigned int*)&ret_g->height,
+		(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth) == 0)
 	{
 		return False;
 	}

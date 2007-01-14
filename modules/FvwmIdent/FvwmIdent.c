@@ -790,8 +790,8 @@ void list_end(void)
 	{
 		int sx;
 		int sy;
-		unsigned int sw;
-		unsigned int sh;
+		int sw;
+		int sh;
 		Window JunkW;
 		int JunkC;
 		unsigned int JunkM;

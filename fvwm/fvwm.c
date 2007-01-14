@@ -152,7 +152,8 @@ XContext MenuContext;           /* context for fvwm menus */
 
 int JunkX = 0, JunkY = 0;
 Window JunkRoot, JunkChild;             /* junk window */
-int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
+int JunkWidth, JunkHeight, JunkBW, JunkDepth;
+unsigned int JunkMask;
 
 Bool debugging = False;
 Bool debugging_stack_ring = False;

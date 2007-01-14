@@ -1749,7 +1749,8 @@ static char *style_parse_icon_box_style(
 			/* if word found, not too long */
 			geom_flags = FScreenParseGeometryWithScreen(
 				option, &IconBoxes->IconBox[0],
-				&IconBoxes->IconBox[1], &width, &height,
+				&IconBoxes->IconBox[1],	(unsigned int*)&width,
+				(unsigned int*)&height,
 				&IconBoxes->IconScreen);
 			if (width == 0 || !(geom_flags & WidthValue))
 			{

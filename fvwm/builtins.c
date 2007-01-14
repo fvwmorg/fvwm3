@@ -2315,8 +2315,12 @@ void CMD_Destroy(F_CMD_ARGS)
 		XBell(dpy, 0);
 		return;
 	}
-	if (XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) != 0)
+	if (
+		XGetGeometry(
+			dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth)
+		!= 0)
 	{
 		XKillClient(dpy, FW_W(fw));
 	}
@@ -2346,9 +2350,12 @@ void CMD_Close(F_CMD_ARGS)
 			dpy, FW_W(fw), _XA_WM_DELETE_WINDOW, CurrentTime);
 		return;
 	}
-	if (XGetGeometry(
-			 dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) != 0)
+	if (
+		XGetGeometry(
+			dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
+			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth)
+		!= 0)
 	{
 		XKillClient(dpy, FW_W(fw));
 	}
