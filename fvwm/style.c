@@ -2676,17 +2676,26 @@ static Bool style_parse_one_style_option(
 	case 'i':
 		if (StrEquals(token, "Icon"))
 		{
-			rest = GetNextToken(rest, &token);
+			if (on == 1)
+			{
+				rest = GetNextToken(rest, &token);
 
-			SAFEFREE(SGET_ICON_NAME(*ps));
-			SSET_ICON_NAME(*ps,token);
-			ps->flags.has_icon = (token != NULL);
-			ps->flag_mask.has_icon = 1;
-			ps->change_mask.has_icon = 1;
+				SAFEFREE(SGET_ICON_NAME(*ps));
+				SSET_ICON_NAME(*ps,token);
+				ps->flags.has_icon = (token != NULL);
+				ps->flag_mask.has_icon = 1;
+				ps->change_mask.has_icon = 1;
 
-			S_SET_IS_ICON_SUPPRESSED(SCF(*ps), 0);
-			S_SET_IS_ICON_SUPPRESSED(SCM(*ps), 1);
-			S_SET_IS_ICON_SUPPRESSED(SCC(*ps), 1);
+				S_SET_IS_ICON_SUPPRESSED(SCF(*ps), 0);
+				S_SET_IS_ICON_SUPPRESSED(SCM(*ps), 1);
+				S_SET_IS_ICON_SUPPRESSED(SCC(*ps), 1);
+			}
+			else
+			{
+				S_SET_IS_ICON_SUPPRESSED(SCF(*ps), 1);
+				S_SET_IS_ICON_SUPPRESSED(SCM(*ps), 1);
+				S_SET_IS_ICON_SUPPRESSED(SCC(*ps), 1);
+			}
 		}
 		else if (StrEquals(token, "IconBackgroundColorset"))
 		{

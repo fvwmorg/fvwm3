@@ -6725,7 +6725,7 @@ is a comma separated list containing one or more of the
 following keywords.  Each group of style names is separated by
 slashes ('/').  The last style in these groups is the default.
 .IR BorderWidth ", " HandleWidth ,
-.IR NoIcon " / " Icon ", " MiniIcon ,
+.IR !Icon " / " Icon ", " MiniIcon ,
 .IR IconBox ", " IconGrid ", " IconFill ", " IconSize ,
 .IR !Title " / " Title ,
 .IR TitleAtBottom " / " TitleAtLeft " / " TitleAtRight " / " TitleAtTop ,
@@ -6769,12 +6769,12 @@ slashes ('/').  The last style in these groups is the default.
 .IR IconTitle " / " !IconTitle ,
 .IR MwmButtons " / " FvwmButtons ,
 .IR MwmBorder " / " FvwmBorder ,
-.IR MwmDecor " / " NoDecorHint ,
-.IR MwmFunctions " / " NoFuncHint ,
-.IR HintOverride " / " NoOverride ,
+.IR MwmDecor " / " !DecorHint ,
+.IR MwmFunctions " / " !FuncHint ,
+.IR HintOverride " / " !Override ,
 .IR !Button " / " Button ,
-.IR ResizeHintOverride " / " NoResizeOverride ,
-.IR OLDecor " / " NoOLDecor ,
+.IR ResizeHintOverride " / " !ResizeHintOverride ,
+.IR OLDecor " / " !OLDecor ,
 .IR GNOMEUseHints " / " GNOMEIgnoreHints ,
 .IR StickyIcon " / " SlipperyIcon ,
 .IR StickyAcrossPagesIcon " / " !StickyAcrossPagesIcon ,
@@ -6792,12 +6792,14 @@ slashes ('/').  The last style in these groups is the default.
 .IR ScatterWindowGroups " / " KeepWindowGroupsOnDesk ,
 .IR UseDecor ,
 .IR UseStyle ,
-.IR NoPPosition " / " UsePPosition ,
-.IR NoUSPosition " / " UseUSPosition ,
-.IR NoTransientPPosition " / " UseTransientPPosition ,
-.IR NoTransientUSPosition " / " UseTransientUSPosition ,
-.IR NoIconPosition " / " UseIconPosition ,
-.IR Lenience " / " NoLenience ,
+.IR !UsePPosition " / " NoPPosition " / " UsePPosition ,
+.IR !UseUSPosition " / " NoUSPosition " / " UseUSPosition ,
+.IR !UseTransientPPosition " / " NoTransientPPosition " / "
+.IR UseTransientPPosition ,
+.IR !UseTransientUSPosition " / " NoTransientUSPosition " / "
+.IR UseTransientUSPosition ,
+.IR !UseIconPosition " / " NoIconPosition " / " UseIconPosition ,
+.IR Lenience " / " !Lenience ,
 .IR ClickToFocus " / " SloppyFocus " /"
 .IR MouseFocus | FocusFollowsMouse " / " NeverFocus ,
 .IR ClickToFocusPassesClickOff " / " ClickToFocusPassesClick ,
@@ -7297,7 +7299,7 @@ styles but for the icon titles.
 .B Title buttons
 .IR Button " and " !Button
 take a numeric argument which is the number of the title-bar
-button which is to be included/omitted.
+button which is to be shown or omitted.
 .IR NoButton
 is equivalent to
 .IR !Button
@@ -7817,7 +7819,7 @@ instructs fvwm to ignore the program supplied minimum and maximum
 size.  This can be handy for broken applications that refuse to be
 resized.  Do not use it if you do not need it.  The default
 (opposite) style is
-.IR NoResizeOverride .
+.IR !ResizeHintOverride .
 
 .I MaxWindowSize " [ width [ p ]  height [ p ] ]"
 Tells fvwm the maximum width and height of a window.  The values
@@ -8075,30 +8077,46 @@ Style * ManualPlacementsHonorsStartsOnPageOff
 .\" +++++++++++++++ placement options and stacking policy
 .TP
 .B Placement policy options and window stacking
-.I NoPPosition
+.I !UsePPosition
 instructs fvwm to ignore the program specified position (PPosition
 hint) when adding new windows.  Using PPosition is required for
 some applications, but if you do not have one of those its a real
 headache.  Many programs set PPosition to something obnoxious like
 0,0 (upper left corner).
+Note:
+.I !UsePPosition
+is equivalent to the deprecated option
+.IR NoPPosition .
 
-.I NoUSPosition
+.I !UseUSPosition
 works like
-.I NoPPosition
+.I !UsePPosition
 but applies suppresses using the user specified position indicated
 by the program (USPosition hint).  It is generally a bad thing to
 override the user's choice, but some applications misuse the
 USPosition hint to force their windows to a certain spot on the
 screen without the user's consent.
+Note:
+.I !UseUSPosition
+is equivalent to the deprecated option
+.IR NoUSPosition .
 
-.IR NoTransientPPosition " and " UseTransientPPosition
+.IR !UseTransientPPosition " and " UseTransientPPosition
 work like
-.IR NoPPosition " and " UsePPosition
+.IR !UsePPosition " and " UsePPosition
 but apply only to transient windows.
+Note:
+.I !UseTransientPPosition
+is equivalent to the deprecated option
+.IR NoTransientPPosition .
 
-.I NoIconPosition
+.I !UseIconPosition
 instructs fvwm to ignore the program specified icon position
 (IconPosition hint) when iconifying the window.
+Note:
+.I !UseIconPosition
+is equivalent to the deprecated option
+.IR NoIconPosition .
 
 .I StartsOnDesk
 takes a numeric argument which is the desktop number on which the
@@ -11055,6 +11073,10 @@ option of the
 command.  Also, all windows using the
 .I NeverFocus
 style are ignored.
+Note:
+.I !Lenience
+is equivalent to the deprecated option
+.IR NoLenience .
 
 With the
 .I AnyScreen
