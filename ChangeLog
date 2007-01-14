@@ -1,5 +1,12 @@
 2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* fvwm/stack.c (is_transient_subtree_stacked_straight):
+	fix detection of non needed lower operations
+	(__restack_window):
+	BroadcastRestack to modules even if non is done. (To cancel effect of
+	already sent M_RAISE/M_LOWER)
+	don't do raise hacks if no restack was done.
+
 	* fvwm/fvwm.h (FvwmWindow):
 	icon_nalloc_pixels is int instead of unsined int
 

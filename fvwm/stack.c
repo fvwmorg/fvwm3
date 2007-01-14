@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <stdarg.h>
+#include <limits.h>
 #include "ftime.h"
 
 #include "libs/fvwmlib.h"
@@ -730,7 +731,7 @@ Bool is_transient_subtree_stacked_straight(
 	Scr.FvwmRoot.scratch.i = 1;
 	/* now loop over the windows and mark the ones we need to move */
 	SET_IN_TRANSIENT_SUBTREE(t, 1);
-	min_i = t->scratch.i;
+	min_i = INT_MIN;
 	has_passed_root = False;
 	is_in_gap = False;
 
@@ -890,7 +891,21 @@ static Bool __restack_window(
 	if (!__is_restack_needed(
 		    t, mode, do_restack_transients, is_new_window))
 	{
-		return False;
+		/* need to cancel out the effect of any M_RAISE/M_LOWER that
+		 * might already be send out. This is ugly. Better would be to
+		 * not send the messages in the first place. */
+		if (do_restack_transients)
+		{
+			s = t->stack_next;
+			while (IS_IN_TRANSIENT_SUBTREE(s))
+			{
+				s = s->stack_next;
+			}
+			BroadcastRestack(t->stack_prev, s);
+		}
+
+		/* return True: no need to do raise hacks if nothing canged */
+		return True;
 	}
 
 	count = 0;
