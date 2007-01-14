@@ -7839,8 +7839,8 @@ the default).
 
 With
 .I IconifyWindowGroups
-all windows in the same window group are iconified at once when
-group leader is iconified.  The default is
+all windows in the same window group are iconified and deiconified
+at once when any window in the group is (de)iconified.  The default is
 .IR IconifyWindowGroupsOff ,
 which disables this behavior.  Although a number of applications
 use the window group hint, it is rarely used in a proper way, so

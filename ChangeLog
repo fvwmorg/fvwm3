@@ -1,3 +1,9 @@
+2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/fvwm.1.in (IconifyWindowGroups):
+	Correctly document that windows are iconified together if the are in
+	the same window group, not if the group leader is iconified.
+
 2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (GetWindowSizeHints):
