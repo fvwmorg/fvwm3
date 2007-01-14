@@ -2152,7 +2152,7 @@ static void GetIconWindow(FvwmWindow *fw)
 	 * routine */
 	if (XGetGeometry(
 		    dpy, fw->wmhints->icon_window, &JunkRoot, &JunkX, &JunkY,
-		    (unsigned int*)&w, (unsigned int*)&h,(unsigned int*)&bw, 
+		    (unsigned int*)&w, (unsigned int*)&h,(unsigned int*)&bw,
 		    (unsigned int*)&JunkDepth) == 0)
 	{
 		fvwm_msg(
@@ -2287,12 +2287,13 @@ void DeIconify(FvwmWindow *fw)
 	}
 	for (ofw = NULL; fw != ofw && IS_ICONIFIED_BY_PARENT(fw); )
 	{
-		ofw = fw;
 		t = get_transientfor_fvwmwindow(fw);
-		if (t != NULL)
+		if (t == NULL)
 		{
-			fw = t;
+			break;
 		}
+		ofw = fw;
+		fw = t;
 	}
 	if (IS_ICONIFIED_BY_PARENT(fw))
 	{

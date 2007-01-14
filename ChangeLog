@@ -1,5 +1,8 @@
 2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/icons.c (DeIconify):
+	corrected previous fix
+
 	* fvwm/placement.c (CleverPlacement):
 	(SmartPlacement):
 	(__place_get_wm_pos):
