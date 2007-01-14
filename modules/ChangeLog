@@ -1,3 +1,9 @@
+2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmIdent/FvwmIdent.c (list_configure):
+	(MakeList):
+	properly handle title dir in geometry reported by FvwmIdent
+
 2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmWharf/Wharf.h:
@@ -6,7 +12,7 @@
 	* FvwmTaskBar/ButtonArray.c:
 	* FvwmScript/types.h (struct XObj):
 	* FvwmBanner/FvwmBanner.c (GetXPMData):
-	* FvwmIconBox/icons.c (GetBackPixmap): 
+	* FvwmIconBox/icons.c (GetBackPixmap):
 	* FvwmIconBox/FvwmIconBox.h (struct icon_info):
 	* FvwmRearrange/FvwmRearrange.c:
 	* FvwmIdent/FvwmIdent.c (list_end):

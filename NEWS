@@ -45,6 +45,8 @@ Changes in beta release 2.5.20 (not released yet)
      fixed.
    - Fixed a race condition with applixations raising their own
      transient windows in certain ways. (Apple Shake, kphotoalbum)
+   - FvwmIdent reports the correct geometry if the window has its
+     title at the left or right side.
 
 -------------------------------------------------------------------
 
