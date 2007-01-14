@@ -3,6 +3,8 @@
 	* fvwm/fvwm.1.in:
 	* fvwm/style.c (style_parse_one_style_option):
 	deprecated some "No..." styles
+	(style_parse_one_style_option):
+	add a NoResizeHintOverride style
 
 	* fvwm/add_window.c (GetWindowSizeHints):
 	only ignore the min_width/min_height/max_width/max_height with the

@@ -3285,7 +3285,8 @@ static Bool style_parse_one_style_option(
 			S_SET_HAS_MWM_OVERRIDE(SCM(*ps), 1);
 			S_SET_HAS_MWM_OVERRIDE(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "NORESIZEOVERRIDE"))
+		else if (StrEquals(token, "NORESIZEOVERRIDE") ||
+			 StrEquals(token, "NORESIZEHINTOVERRIDE"))
 		{
 			S_SET_HAS_OVERRIDE_SIZE(SCF(*ps), !on);
 			S_SET_HAS_OVERRIDE_SIZE(SCM(*ps), 1);
