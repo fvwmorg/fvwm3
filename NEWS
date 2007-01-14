@@ -43,8 +43,6 @@ Changes in beta release 2.5.20 (not released yet)
      FvwmConsole dies if no client connects within one minute.
    - Expansion of variables in FvwmTaskBar launch button commands
      fixed.
-   - FvwmIdent reports the size of a window including the
-     decorations.
 
 -------------------------------------------------------------------
 
