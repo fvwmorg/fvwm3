@@ -47,6 +47,8 @@ Changes in beta release 2.5.20 (not released yet)
      transient windows in certain ways. (Apple Shake, kphotoalbum)
    - FvwmIdent reports the correct geometry if the window has its
      title at the left or right side.
+   - Fixed an infinite loop when deiconifying windows in a group
+     via an other window than the initially iconified.
 
 -------------------------------------------------------------------
 

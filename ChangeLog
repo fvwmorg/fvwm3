@@ -1,5 +1,9 @@
 2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* NEWS:
+	* fvwm/icons.c (DeIconify):
+	don't loop forever.
+
 	* fvwm/stack.c (is_transient_subtree_stacked_straight):
 	fix detection of non needed lower operations
 	(__restack_window):

@@ -2287,10 +2287,10 @@ void DeIconify(FvwmWindow *fw)
 	}
 	for (ofw = NULL; fw != ofw && IS_ICONIFIED_BY_PARENT(fw); )
 	{
+		ofw = fw;
 		t = get_transientfor_fvwmwindow(fw);
 		if (t != NULL)
 		{
-			ofw = fw;
 			fw = t;
 		}
 	}
