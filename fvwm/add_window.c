@@ -2645,11 +2645,13 @@ void GetWindowSizeHints(FvwmWindow *fw)
 		if (HAS_OVERRIDE_SIZE_HINTS(fw))
 		{
 			/* ignore the WMNormal hints */
-			fw->hints.flags &= ~(PMinSize | PMaxSize);
+			fw->hints.flags &= ~(PMinSize | PMaxSize | PResizeInc);
 			fw->hints.min_width = 0;
 			fw->hints.min_height = 0;
 			fw->hints.max_width = 0;
 			fw->hints.max_height = 0;
+			fw->hints.width_inc = 1;
+			fw->hints.height_inc = 1;
 		}
 	}
 

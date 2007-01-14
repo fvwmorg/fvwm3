@@ -7816,10 +7816,14 @@ inhibits all windows that are not resizable from being maximized.
 
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
-size.  This can be handy for broken applications that refuse to be
-resized.  Do not use it if you do not need it.  The default
-(opposite) style is
+size as well as the resize step size (the character size in many
+applications).  This can be handy for broken applications that
+refuse to be resized.  Do not use it if you do not need it.  The
+default (opposite) style is
 .IR !ResizeHintOverride .
+Note:  With this style,
+.BR FvwmIdent
+reports the window's geometry in pixels instead of characters.
 
 .I MaxWindowSize " [ width [ p ]  height [ p ] ]"
 Tells fvwm the maximum width and height of a window.  The values
