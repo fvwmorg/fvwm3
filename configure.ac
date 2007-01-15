@@ -625,7 +625,7 @@ fi
 AH_TEMPLATE([HAVE_PNG],[Define if ppm library is used.])
 if test x"$with_png" = xyes; then
   AC_DEFINE(HAVE_PNG)
-  png_LIBS="-lpng -lz"
+  png_LIBS="$png_LIBS -lz"
   problem_png=""
 else
   with_png=no

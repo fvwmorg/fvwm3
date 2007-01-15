@@ -1,4 +1,14 @@
+2007-01-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* configure.ac (HAVE_PNG):
+	don't mangle png_LIBS, use --with-png-library
+
 2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	removed news about previous change after move of version-2_5_20 tag
+	on ChangeLog and fvwm/stack.c to the last revision and rebuilt tar
+	balls.
 
 	* fvwm/stack.c (__restack_window):
 	fix so new transient windows with StackTransientParent on top layer
