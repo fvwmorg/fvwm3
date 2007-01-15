@@ -80,13 +80,10 @@ typedef struct fmodule_input
  * send a copy of the command in an M_CONFIG_INFO command.
  */
 
-/* initialize the system */
-void module_init_list(void);
-
-/* terminate the system */
+/* kill all modules */
 void module_kill_all(void);
 
-/* terminate a module */
+/* kill a module */
 void module_kill(fmodule *module);
 
 /* execute a module - full function and wraper */

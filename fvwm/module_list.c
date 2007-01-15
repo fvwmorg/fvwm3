@@ -76,7 +76,7 @@ typedef struct
 
 
 /* the linked list pointers to the first and last modules */
-static fmodule *module_list;
+static fmodule *module_list = NULL;
 static int num_modules = 0;
 
 /*
@@ -94,15 +94,6 @@ static inline void msg_mask_set(
 	msg_masks_t *msg_mask, unsigned long m1, unsigned long m2);
 static void set_message_mask(msg_masks_t *mask, unsigned long msg);
 
-
-void module_init_list(void)
-{
-	DBUG("initModules", "initializing the module list header");
-	/* the list is empty */
-	module_list = NULL;
-
-	return;
-}
 
 void module_kill_all(void)
 {

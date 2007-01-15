@@ -1,3 +1,13 @@
+2007-01-15  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/fvwm.c (main):
+	remove the call to module_init_list, the list head is instead set
+	to NULL upon declaration
+
+	* fvwm/module_list.h:
+	* fvwm/module_list.c (module_init_list):
+	removed function
+
 2007-01-14  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/stack.c (is_transient_subtree_straight)

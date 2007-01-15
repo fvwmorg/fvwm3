@@ -2481,7 +2481,6 @@ int main(int argc, char **argv)
 		Scr.FvwmRoot.cmap_windows = &Scr.NoFocusWin;
 	}
 	InitEventHandlerJumpTable();
-	module_init_list();
 
 	Scr.gray_bitmap =
 		XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
