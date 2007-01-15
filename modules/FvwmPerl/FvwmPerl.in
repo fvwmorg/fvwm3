@@ -23,7 +23,7 @@ use strict;
 BEGIN {
 	use vars qw($prefix $datarootdir $datadir);
 	$prefix = "@prefix@";
-	$datarootdir = "@datarootdir@"
+	$datarootdir = "@datarootdir@";
 	$datadir = "@datadir@";
 }
 

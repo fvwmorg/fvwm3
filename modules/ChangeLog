@@ -1,5 +1,8 @@
 2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* FvwmPerl/FvwmPerl.in:
+	fix missing semicolon in previous patch
+
 	* FvwmWindowMenu/FvwmWindowMenu.in:
 	* FvwmTabs/FvwmTabs.in:
 	* FvwmPerl/FvwmPerl.in:
