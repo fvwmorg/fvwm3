@@ -1,5 +1,9 @@
 2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* fvwm/stack.c (__restack_window):
+	fix so new transient windows with StackTransientParent on top layer
+	don't make all windows raise above the pan frames.
+
 	* NEWS:
  	* configure.ac:
 	increased version to 2.5.21

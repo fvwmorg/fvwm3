@@ -950,7 +950,10 @@ static Bool __restack_window(
 		 * sledge-hammer method, but the recursion ist too hard to
 		 * understand. */
 		ResyncXStackingOrder();
-		return True;
+
+		/* if the transient is on the top of the top layer pan frames
+		 * will have ended up under all windows after this. */
+		return (t->stack_prev != &Scr.FvwmRoot);
 	}
 	else
 	{
