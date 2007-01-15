@@ -2,6 +2,10 @@
 
 	* NEWS:
  	* configure.ac:
+	increased version to 2.5.21
+
+	* NEWS:
+ 	* configure.ac:
 	updated for 2.5.20 release
 
 2007-01-15  Renato Caldas  <seventhguardian@gmail.com>
