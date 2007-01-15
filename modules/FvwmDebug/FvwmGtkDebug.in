@@ -21,8 +21,9 @@ use 5.003;
 use strict;
 
 BEGIN {
-	use vars qw($prefix $datadir);
+	use vars qw($prefix $datarootdir $datadir);
 	$prefix = "@prefix@";
+	$datarootdir = "@datarootdir@";
 	$datadir = "@datadir@";
 }
 

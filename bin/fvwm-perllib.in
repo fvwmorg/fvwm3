@@ -6,8 +6,9 @@
 #use strict;  # comment to make it faster
 
 BEGIN {
-#	use vars qw($prefix $datadir $perllibdir);
+#	use vars qw($prefix $datarootdir $datadir $perllibdir);
 	$prefix = "@prefix@";
+	$datarootdir = "@datarootdir@";
 	$datadir = "@datadir@";
 	$perllibdir = "@FVWM_PERLLIBDIR@";
 

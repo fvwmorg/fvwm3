@@ -1,3 +1,12 @@
+2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* FvwmWindowMenu/FvwmWindowMenu.in:
+	* FvwmTabs/FvwmTabs.in:
+	* FvwmPerl/FvwmPerl.in:
+	* FvwmDebug/FvwmDebug.in:
+	* FvwmDebug/FvwmGtkDebug.in:
+	use datarootdir
+
 2007-01-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIdent/FvwmIdent.c (list_configure):

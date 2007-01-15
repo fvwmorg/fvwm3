@@ -20,6 +20,7 @@ Options:
 	[-P]	[--prefix]
 	[-E]	[--exec-prefix]
 	[-B]	[--bindir]
+	    	[--datarootdir]
 	[-D]	[--datadir]
 	[-L]	[--libexecdir]
 	[-S]	[--sysconfdir]
@@ -49,6 +50,7 @@ fi
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 bindir="@bindir@"
+datarootdir="@datarootdir@"
 datadir="@datadir@"
 libexecdir="@libexecdir@"
 sysconfdir="@sysconfdir@"
@@ -103,6 +105,9 @@ while test $# -gt 0; do
 
 		--bindir|-bindir|-B)
 			echo "$bindir" ;;
+
+		--datarootdir|-datarootdir)
+			echo "$datarootdir" ;;
 
 		--datadir|-datadir|-D)
 			echo "$datadir" ;;

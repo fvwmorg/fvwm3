@@ -21,8 +21,9 @@ use strict;
 use IO::File;
 
 BEGIN {
-	use vars qw($prefix $datadir);
+	use vars qw($prefix $datarootdir $datadir);
 	$prefix = "@prefix@";
+	$datarootdir = "@datarootdir@";
 	$datadir = "@datadir@";
 }
 

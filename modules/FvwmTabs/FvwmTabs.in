@@ -23,8 +23,9 @@
 # see the FvwmTabs(1) man page for how to use this module.
 
 BEGIN {
-    use vars qw($prefix $datadir);
+    use vars qw($prefix $datarootdir $datadir);
     $prefix = "@prefix@";
+    $datarootdir = "@datarootdir@";
     $datadir = "@datadir@";
 }
 
