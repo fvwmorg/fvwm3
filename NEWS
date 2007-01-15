@@ -3,7 +3,7 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.20 (not released yet)
+Changes in beta release 2.5.20 (15-Jan-2007)
 
 * New features:
 
@@ -30,7 +30,7 @@ Changes in beta release 2.5.20 (not released yet)
      windows if "EdgeScroll 0 0" is set.
    - Fixed disappearing windows when aborting interactive resizing
      of maximized windows when unmaximizing them later.
-   - Fixed disappearing windows when moving maximized windowsand
+   - Fixed disappearing windows when moving maximized windows and
      unmaximizing them later.
    - Fixed calculation of final location with MoveToPage and
      MoveToScreen with windows to the left or top of the viewport.
@@ -43,7 +43,7 @@ Changes in beta release 2.5.20 (not released yet)
      FvwmConsole dies if no client connects within one minute.
    - Expansion of variables in FvwmTaskBar launch button commands
      fixed.
-   - Fixed a race condition with applixations raising their own
+   - Fixed a race condition with applications raising their own
      transient windows in certain ways. (Apple Shake, kphotoalbum)
    - FvwmIdent reports the correct geometry if the window has its
      title at the left or right side.

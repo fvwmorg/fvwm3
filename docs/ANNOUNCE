@@ -1,25 +1,55 @@
-Fvwm is a powerful window manager.  Version 2.5.19 is a bug fixing
-release for the 2.5.x branch.  It contains a security bug fix and
-bug fixes over 2.5.18.  Please be aware that any features
-introduced in the 2.5.x development versions may be renamed,
-changed or removed without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.20 is a beta
+release that adds a number of features and fixes some bugs.
+Please be aware that any features introduced in the 2.5.x
+development versions may be renamed, changed or removed without
+notice before 2.6.0.
 
-Upgrading from earlier 2.5.x versions is strongly recommended.
+Upgrading from earlier 2.5.x versions is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
+* New features:
+
+   - New Style options: StippledIconTitle, !StickyStippledTitle,
+     and !StickyStippledIconTitle.
+   - Full support for menu context (M) key and mouse bindings.  See
+     the section Menu Bindings in the man page for details.
+   - Hilighted menu backgrounds now use pixmaps gradients and
+     transparency from their related colorset.
+   - New window conditions: StickyIcon, StickyAcrossPagesIcon and
+     StickyAcrossDesksIcon.
+
+* Changed features:
+
+   - "Mouse n M N" is no longer used to disable or remap the
+      builtin tear off menu button. See the section Tear Off Menus
+      for details on replacement commands.
+
 * Bug Fixes:
 
-   - FvwmCommand now reports "end windowlist" and "end configinfo".
-   - FvwmCommand now prints config info split on lines.
-   - FvwmTaskBar no longer gets lost with trailing whitespace after
-     geometry specification.
-   - Fixed a window size problem if the aspect ratio is set (e.g.
-     mplayer).
-   - Decorations now update when unmanaged windows take focus, and
-     not FlickeringQtDialogsWorkaround is enabled.
-   - FvwmPager again allows movement of windows added before a
-     page change.
-   - fvwm no longer crashes on 1 and 4 bit displays. (#1677)
-   - EWMH desktops now correctly handles FPClickToFocus. (#1492)
-   - Security fix in fvwm-menu-directory. (CVE-2006-5969)
+   - FvwmWinList: fix problem with window name/button mixups during
+     Init/Restart of fvwm. (bug #1393)
+   - It is now possible to switch the viewport while resizing
+     windows if "EdgeScroll 0 0" is set.
+   - Fixed disappearing windows when aborting interactive resizing
+     of maximized windows when unmaximizing them later.
+   - Fixed disappearing windows when moving maximized windowsand
+     unmaximizing them later.
+   - Fixed calculation of final location with MoveToPage and
+     MoveToScreen with windows to the left or top of the viewport.
+   - 64-bit architecture fix in FvwmProxy.
+   - FvwmForm now work with balanced quoted command for Timeout.
+   - FvwmPager correctly updates on window desk change.
+   - FvwmIconBox: fixed problem with IconColorset's background
+     color change not being applied immediately.
+   - Allow FvwmConsole to run a terminal via rxvtc or urxvtc.
+     FvwmConsole dies if no client connects within one minute.
+   - Expansion of variables in FvwmTaskBar launch button commands
+     fixed.
+   - Fixed a race condition with applixations raising their own
+     transient windows in certain ways. (Apple Shake, kphotoalbum)
+   - FvwmIdent reports the correct geometry if the window has its
+     title at the left or right side.
+   - Fixed an infinite loop when deiconifying windows in a group
+     via a different window than the initially iconified.
+
