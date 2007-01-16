@@ -3944,9 +3944,9 @@ void HandleEvents(void)
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
 	fd_set in_fdset, out_fdset;
-	Window targetWindow;
 	int num_fd;
 	fmodule *module;
+	fmodule_input *input;
 	static struct timeval timeout;
 	static struct timeval *timeoutP = &timeout;
 
@@ -4101,22 +4101,16 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		{
 			if (FD_ISSET(MOD_READFD(module), &in_fdset))
 			{
-				if (read(MOD_READFD(module), &targetWindow,
-					 sizeof(Window)) > 0)
+				input = module_receive(module);
+				/* enqueue the received command */
+				if (input != NULL)
 				{
-					DBUG("My_XNextEvent",
-					     "calling HandleModuleInput");
-					/* Add one module message to the queue
-					 */
-					HandleModuleInput(
-						targetWindow, module,
-						NULL, True);
-				}
-				else
-				{
-					DBUG("My_XNextEvent",
-					     "calling module_kill");
-					module_kill(module);
+/* fixme - should just pass the input struct */
+					AddToCommandQueue(input->window,
+							input->module,
+							input->command);
+/* fixme - shouldn't need to free the input data after enqueuing */
+				module_input_free(input);
 				}
 			}
 			if (

@@ -37,14 +37,6 @@ typedef struct fmodule
 	struct fmodule *xnext;
 } fmodule;
 
-/* struct to store module input data (in the near future) */
-typedef struct fmodule_input
-{
-	Window window;
-	fmodule *module;
-	char *command;
-} fmodule_input;
-
 #define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
 #define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
 #define MOD_READFD(m) ((m)->xreadPipe)
@@ -80,6 +72,19 @@ typedef struct fmodule_input
  * send a copy of the command in an M_CONFIG_INFO command.
  */
 
+/* struct to store module input data */
+typedef struct fmodule_input
+{
+	Window window;
+	fmodule *module;
+	char *command;
+} fmodule_input;
+
+
+/*
+ *	Basic Module Handling Functions
+ */
+
 /* kill all modules */
 void module_kill_all(void);
 
@@ -92,12 +97,29 @@ fmodule *do_execute_module(F_CMD_ARGS, Bool desperate, Bool do_listen_only);
 /* execute module wraper, desperate mode */
 fmodule *executeModuleDesperate(F_CMD_ARGS);
 
+
+/*
+ *	Basic Module Communication Functions
+ */
+
 /* send "raw" data to the module */
 /* module_send(fmodule *module, unsigned long *ptr, int size); */
 void PositiveWrite(fmodule *module, unsigned long *ptr, int size);
 
-/*Bool module_receive(Window w, fmodule *module, char *expect, Bool queue);*/
-Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue);
+/* returns a dynamicaly allocated struct with the received data
+ * or NULL on error */
+fmodule_input *module_receive(fmodule *module);
+
+/* frees an input data struct */
+void module_input_free(fmodule_input *input);
+
+/* returns true if received the "expect" string, false otherwise */
+Bool module_input_expect(fmodule_input *input, char *expect);
+
+
+/*
+ *	Utility Functions
+ */
 
 /* get the module placed after *prev, or the first if prev==NULL */
 fmodule *module_get_next(fmodule *prev);
@@ -105,16 +127,27 @@ fmodule *module_get_next(fmodule *prev);
 /* count the modules on list - not true for now. counts allocated modules */
 int module_count(void);
 
+
+/*
+ *	Message Queue Handling Functions
+ */
+
 /* message queues */
 void FlushAllMessageQueues(void);
 void FlushMessageQueue(fmodule *module);
 
-/* dead pipe signal handler - empty */
-RETSIGTYPE DeadPipe(int nonsense);
+
+/*
+ *	Misc Functions (should they be here?)
+ */
 
 /*
  * exposed to be used by modconf.c
  */
 char *skipModuleAliasToken(const char *string);
+
+
+/* dead pipe signal handler - empty */
+RETSIGTYPE DeadPipe(int nonsense);
 
 #endif /* MODULE_LIST_H */

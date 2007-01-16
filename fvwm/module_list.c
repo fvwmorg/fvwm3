@@ -74,7 +74,6 @@ typedef struct
 
 
 
-
 /* the linked list pointers to the first and last modules */
 static fmodule *module_list = NULL;
 static int num_modules = 0;
@@ -583,14 +582,15 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 		IS_MESSAGE_IN_MASK(
 			&(MOD_SYNCMASK(module)), ptr[1]) && !myxgrabcount)
 	{
-		Window targetWindow;
 		fd_set readSet;
 		int channel = MOD_READFD(module);
 		struct timeval timeout;
+		Bool done = False;
+		fmodule_input *input;
 
 		FlushMessageQueue(module);
 
-		do
+		while (!done)
 		{
 			int rc = 0;
 			/*
@@ -623,9 +623,27 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 				break;
 			}
 
-			if (rc <= 0 || read(channel, &targetWindow,
-					    sizeof(targetWindow))
-			    != sizeof(targetWindow))
+			if (rc > 0)
+			{
+				input = module_receive(module);
+				if (
+					input == NULL ||
+					module_input_expect(input,
+						ModuleUnlockResponse))
+				{
+					done = True;
+				}
+				else
+				{
+/* fixme - should be passing the input directly to ExecuteModuleCommand */
+                                        ExecuteModuleCommand(input->window,
+                                                        input->module,
+                                                        input->command);
+				}
+
+				module_input_free(input);
+			}
+			else
 			{
 				char *name;
 
@@ -645,6 +663,7 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 				break;
 			}
 
+
 			/* Execute all messages from the module until UNLOCK is
 			 * received N.B. This may cause recursion if a command
 			 * results in a sync message to another module, which
@@ -662,68 +681,69 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 			 * when a window is de-iconified from the IconMan,
 			 * queueing make s this happen too late. */
 		}
-		while (
-			!HandleModuleInput(
-				targetWindow, module, ModuleUnlockResponse,
-				False));
 	}
 
 	return;
 }
 
-/* read input from a module and either execute it or queue it
- * returns True and does NOP if the module input matches the expect string */
-Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue)
+fmodule_input *module_receive(fmodule *module)
 {
-	char text[MAX_MODULE_INPUT_TEXT_LEN];
 	unsigned long size;
 	unsigned long cont;
 	int n;
+	fmodule_input *input;
 
-	/* Already read a (possibly NULL) window id from the pipe,
-	 * Now read an fvwm bultin command line */
+	input = (fmodule_input *)safemalloc(sizeof(fmodule_input));
+	input->module = module;
+	input->command = NULL;
+
+	n = read(MOD_READFD(module), &(input->window), sizeof(Window));
+	if (n < sizeof(Window))
+	{
+		/* exit silently, module should have died.. */
+		goto err;
+	}
+
 	n = read(MOD_READFD(module), &size, sizeof(size));
 	if (n < sizeof(size))
 	{
 		fvwm_msg(
-			ERR, "HandleModuleInput",
-			"Fail to read (Module: %p, read: %i, size: %i)",
-			module, n, (int)sizeof(size));
-		module_kill(module);
-		return False;
+			ERR, "module_receive",
+			"Fail to read command size (Module: %p, read: %i, "
+			"size: %i)", module, n, (int)sizeof(size));
+		goto err;
 	}
 
-	if (size > sizeof(text))
+	if (size > MAX_MODULE_INPUT_TEXT_LEN)
 	{
-		fvwm_msg(ERR, "HandleModuleInput",
+		fvwm_msg(ERR, "module_receive",
 			 "Module(%p) command is too big (%ld), limit is %d",
-			 module, size, (int)sizeof(text));
+			 module, size, MAX_MODULE_INPUT_TEXT_LEN);
 		/* The rest of the output from this module is going to be
 		 * scrambled so let's kill it rather than risk interpreting
 		 * garbage */
-		module_kill(module);
-		return False;
+		goto err;
 	}
 
-	n = read(MOD_READFD(module), text, size);
+	/* also save space for the '\0' termination character */
+	input->command = (char *)safemalloc(sizeof(char)*size+1);
+	n = read(MOD_READFD(module), input->command, size);
 	if (n < size)
 	{
 		fvwm_msg(
-			ERR, "HandleModuleInput",
+			ERR, "module_receive",
 			"Fail to read command (Module: %p, read: %i, size:"
 			" %ld)", module, n, size);
-		module_kill(module);
-		return False;
+		goto err;
 	}
-	text[n] = '\0';
+	input->command[n] = '\0';
 	n = read(MOD_READFD(module), &cont, sizeof(cont));
 	if (n < sizeof(cont))
 	{
-		fvwm_msg(ERR, "HandleModuleInput",
+		fvwm_msg(ERR, "module_receive",
 			 "Module %p, Size Problems (read: %d, size: %d)",
 			 module, n, (int)sizeof(cont));
-		module_kill(module);
-		return False;
+		goto err;
 	}
 	if (cont == 0)
 	{
@@ -731,22 +751,44 @@ Bool HandleModuleInput(Window w, fmodule *module, char *expect, Bool queue)
 		 * so let's not complain */
 		module_kill(module);
 	}
-	if (strlen(text)>0)
-	{
-		if (expect && (strncasecmp(text, expect, strlen(expect)) == 0))
-		{
-			/* the module sent the expected string */
-			return True;
-		}
 
-		if (queue)
-		{
-			AddToCommandQueue(w, module, text);
-		}
-		else
-		{
-			ExecuteModuleCommand(w, module, text);
-		}
+	return input;
+err:
+	module_kill(module);
+	module_input_free(input);
+	return NULL;
+}
+
+/* frees the module input data struct */
+void module_input_free(fmodule_input *input)
+{
+	if (input==NULL)
+	{
+		return;
+	}
+
+	if (input->command != NULL)
+	{
+		free(input->command);
+	}
+	free(input);
+
+	/* this avoids problems when freeing the same input multiple times */
+	input=NULL;
+}
+
+/* returns true if the module command matches "expect", false otherwise */
+Bool module_input_expect(fmodule_input *input, char *expect)
+{
+	if (input == NULL || input->command == NULL || expect == NULL)
+	{
+		return False;
+	}
+
+	if (strncasecmp(input->command, expect, strlen(expect))	== 0)
+	{
+		/* the module sent the expected string */
+		return True;
 	}
 
 	return False;
@@ -1052,7 +1094,6 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 	fmodule *module;
 	fd_set in_fdset;
 	fd_set out_fdset;
-	Window targetWindow;
 	time_t start_time;
 	Bool done = False;
 	Bool need_ungrab = False;
@@ -1150,24 +1191,25 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		{
 			if (FD_ISSET(MOD_READFD(module), &in_fdset))
 			{
+				fmodule_input * input;
+
 				/* Check for module input. */
-				if (read(MOD_READFD(module), &targetWindow,
-					 sizeof(Window)) > 0)
+				input = module_receive(module);
+				if (
+					input == NULL ||
+					module_input_expect(input,expect))
 				{
-					if (HandleModuleInput(
-						    targetWindow, module,
-						    expect, False))
-					{
-						/* we got the message we were
-						 * waiting for */
-						done = True;
-					}
+					done = True;
 				}
 				else
 				{
-					module_kill(module);
-					done = True;
+/* fixme - should be passing the input directly to ExecuteModuleCommand */
+					ExecuteModuleCommand(input->window,
+							input->module,
+							input->command);
 				}
+
+				module_input_free(input);
 			}
 
 			if ((MOD_WRITEFD(module) >= 0) &&
@@ -1191,6 +1233,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 			int context;
 			XClassHint *class;
 			char *name;
+			Window targetWindow;
 
 			context = GetContext(
 				NULL, exc->w.fw, &tmpevent, &targetWindow);

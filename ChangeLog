@@ -1,3 +1,20 @@
+2007-01-16  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_list.h:
+	* fvwm/module_list.c (module_receive):
+	(module_input_free):
+	(module_input_expect):
+	new functions to deal with module input
+
+	* fvwm/module_list.h:
+	* fvwm/module_list.c (HandleModuleInput):
+	replaced by the above three functions
+
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_list.c (CMD_ModuleSynchronous):
+	(PositiveWrite):
+	adapted to use the above three functions instead of HandleModuleInput
+
 2007-01-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* configure.ac (HAVE_PNG):
