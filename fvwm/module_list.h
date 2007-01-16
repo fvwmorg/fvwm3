@@ -111,7 +111,7 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size);
 fmodule_input *module_receive(fmodule *module);
 
 /* frees an input data struct */
-void module_input_free(fmodule_input *input);
+void module_input_discard(fmodule_input *input);
 
 /* returns true if received the "expect" string, false otherwise */
 Bool module_input_expect(fmodule_input *input, char *expect);

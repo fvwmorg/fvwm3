@@ -641,7 +641,7 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
                                                         input->command);
 				}
 
-				module_input_free(input);
+				module_input_discard(input);
 			}
 			else
 			{
@@ -755,12 +755,12 @@ fmodule_input *module_receive(fmodule *module)
 	return input;
 err:
 	module_kill(module);
-	module_input_free(input);
+	module_input_discard(input);
 	return NULL;
 }
 
 /* frees the module input data struct */
-void module_input_free(fmodule_input *input)
+void module_input_discard(fmodule_input *input)
 {
 	if (input==NULL)
 	{
@@ -1209,7 +1209,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 							input->command);
 				}
 
-				module_input_free(input);
+				module_input_discard(input);
 			}
 
 			if ((MOD_WRITEFD(module) >= 0) &&

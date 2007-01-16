@@ -2,7 +2,7 @@
 
 	* fvwm/module_list.h:
 	* fvwm/module_list.c (module_receive):
-	(module_input_free):
+	(module_input_discard):
 	(module_input_expect):
 	new functions to deal with module input
 

@@ -4110,7 +4110,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 							input->module,
 							input->command);
 /* fixme - shouldn't need to free the input data after enqueuing */
-				module_input_free(input);
+				module_input_discard(input);
 				}
 			}
 			if (
