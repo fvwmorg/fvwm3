@@ -1,3 +1,10 @@
+2007-01-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/fvwm.h (window_style):
+	* fvwm/style.c (style_parse_one_style_option):
+	icon background relief and icon title relief changed to sigend char;
+	should fix problem with ppc and negative values for these.
+
 2007-01-16  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.h:

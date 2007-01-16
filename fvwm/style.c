@@ -2736,7 +2736,7 @@ static Bool style_parse_one_style_option(
 			{
 				*val = 50;
 			}
-			SSET_ICON_BACKGROUND_RELIEF(*ps, (unsigned char)*val);
+			SSET_ICON_BACKGROUND_RELIEF(*ps, (signed char)*val);
 			ps->flags.has_icon_background_relief = 1;
 			ps->flag_mask.has_icon_background_relief = 1;
 			ps->change_mask.has_icon_background_relief = 1;
@@ -2791,7 +2791,7 @@ static Bool style_parse_one_style_option(
 			{
 				*val = 50;
 			}
-			SSET_ICON_TITLE_RELIEF(*ps, (unsigned char)*val);
+			SSET_ICON_TITLE_RELIEF(*ps, (signed char)*val);
 			ps->flags.has_icon_title_relief = 1;
 			ps->flag_mask.has_icon_title_relief = 1;
 			ps->change_mask.has_icon_title_relief = 1;

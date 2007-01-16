@@ -605,8 +605,8 @@ typedef struct window_style
 #define ICON_RESIZE_TYPE_MASK      0x3
 	unsigned icon_resize_type : 2;
 	unsigned char icon_background_padding;
-	char icon_background_relief;
-	char icon_title_relief;
+	signed char icon_background_relief;
+	signed char icon_title_relief;
 	char *icon_font;
 	char *window_font;
 	char *fore_color_name;
