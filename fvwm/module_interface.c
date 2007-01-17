@@ -51,73 +51,10 @@
 #include "commands.h"
 #include "module_list.h"
 
+/* A queue of commands from the modules */
+static fqueue cqueue = FQUEUE_INIT;
+
 static const unsigned long dummy = 0;
-
-/*static*/ void AddToCommandQueue(Window w, fmodule *module, char * command);
-
-/* run the command as if it cames from a button press or release */
-/*static*/ void ExecuteModuleCommand(Window w, fmodule *module, char *text)
-{
-	XEvent e;
-	const exec_context_t *exc;
-	exec_context_changes_t ecc;
-	int flags;
-
-	memset(&e, 0, sizeof(e));
-	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&ecc.w.fw) == XCNOENT)
-	{
-		ecc.w.fw = NULL;
-		w = None;
-	}
-	/* Query the pointer, the pager-drag-out feature doesn't work properly.
-	 * This is OK now that the Pager uses "Move pointer"
-	 * A real fix would be for the modules to pass the button press coords
-	 */
-	if (FQueryPointer(
-		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-		    &e.xbutton.x_root, &e.xbutton.y_root, &e.xbutton.state) ==
-	    False)
-	{
-		/* pointer is not on this screen */
-		/* If a module does XUngrabPointer(), it can now get proper
-		 * Popups */
-		e.xbutton.window = Scr.Root;
-		ecc.w.fw = NULL;
-	}
-	else
-	{
-		e.xbutton.window = w;
-	}
-	e.xbutton.subwindow = None;
-	e.xbutton.button = 1;
-	/* If a module does XUngrabPointer(), it can now get proper Popups */
-	if (StrEquals(text, "popup"))
-	{
-		e.xbutton.type = ButtonPress;
-		e.xbutton.state |= Button1Mask;
-	}
-	else
-	{
-		e.xbutton.type = ButtonRelease;
-		e.xbutton.state &= (~(Button1Mask));
-	}
-	e.xbutton.x = 0;
-	e.xbutton.y = 0;
-	fev_fake_event(&e);
-	ecc.type = EXCT_MODULE;
-	ecc.w.w = w;
-	flags = (w == None) ? 0 : FUNC_DONT_DEFER;
-	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &w);
-	ecc.x.etrigger = &e;
-	ecc.m.module = module;
-	exc = exc_create_context(
-		&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT |
-		ECC_MODULE);
-	execute_function(NULL, exc, text, 0);
-	exc_destroy_context(exc);
-
-	return;
-}
 
 static unsigned long *
 make_vpacket(unsigned long *body, unsigned long event_type,
@@ -702,6 +639,116 @@ void broadcast_ignore_modifiers(void)
 	return;
 }
 
+/* run the input command as if it cames from a button press or release */
+void module_input_execute(struct fmodule_input *input)
+{
+	XEvent e;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
+	int flags;
+
+	memset(&e, 0, sizeof(e));
+	if (XFindContext(dpy, input->window, FvwmContext,
+				 (caddr_t *)&ecc.w.fw) == XCNOENT)
+	{
+		ecc.w.fw = NULL;
+		input->window = None;
+	}
+	/* Query the pointer, the pager-drag-out feature doesn't work properly.
+	 * This is OK now that the Pager uses "Move pointer"
+	 * A real fix would be for the modules to pass the button press coords
+	 */
+	if (FQueryPointer(
+		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
+		    &e.xbutton.x_root, &e.xbutton.y_root, &e.xbutton.state) ==
+	    False)
+	{
+		/* pointer is not on this screen */
+		/* If a module does XUngrabPointer(), it can now get proper
+		 * Popups */
+		e.xbutton.window = Scr.Root;
+		ecc.w.fw = NULL;
+	}
+	else
+	{
+		e.xbutton.window = input->window;
+	}
+	e.xbutton.subwindow = None;
+	e.xbutton.button = 1;
+	/* If a module does XUngrabPointer(), it can now get proper Popups */
+	if (StrEquals(input->command, "popup"))
+	{
+		e.xbutton.type = ButtonPress;
+		e.xbutton.state |= Button1Mask;
+	}
+	else
+	{
+		e.xbutton.type = ButtonRelease;
+		e.xbutton.state &= (~(Button1Mask));
+	}
+	e.xbutton.x = 0;
+	e.xbutton.y = 0;
+	fev_fake_event(&e);
+	ecc.type = EXCT_MODULE;
+	ecc.w.w = input->window;
+	flags = (input->window == None) ? 0 : FUNC_DONT_DEFER;
+	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &(input->window));
+	ecc.x.etrigger = &e;
+	ecc.m.module = input->module;
+	exc = exc_create_context(
+		&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT |
+		ECC_MODULE);
+	execute_function(NULL, exc, input->command, 0);
+	exc_destroy_context(exc);
+	module_input_discard(input);
+
+	return;
+}
+
+/* enqueue a module command on the command queue to be executed later  */
+void module_input_enqueue(struct fmodule_input *input)
+{
+	if (input == NULL)
+	{
+		return;
+	}
+
+	DBUG("module_input_enqueue", input->command);
+	fqueue_add_at_end(&cqueue, (void*)input);
+}
+
+/*
+ *
+ *  Procedure:
+ *      ExecuteCommandQueue - runs command from the module command queue
+ *      This may be called recursively if a module command runs a function
+ *      that does a Wait, so it must be re-entrant
+ *
+ */
+
+void ExecuteCommandQueue(void)
+{
+	fmodule_input *input;
+
+	while (fqueue_get_first(&cqueue, (void **)&input) == 1)
+	{
+		/* remove from queue */
+		fqueue_remove_or_operate_from_front(
+			&cqueue, NULL, NULL, NULL, NULL);
+		/* execute and destroy */
+		if (input->command)
+		{
+			DBUG("ExecuteCommandQueue", input->command);
+			module_input_execute(input);
+		}
+		else
+		{
+			module_input_discard(input);
+		}
+	}
+
+	return;
+}
 
 /*
 ** send an arbitrary string to all instances of a module
@@ -793,68 +840,6 @@ void CMD_Send_Reply(F_CMD_ARGS)
 	}
 	SendName(module, MX_REPLY, data0, data1, data2, action);
 	FlushMessageQueue(module);
-
-	return;
-}
-
-/* A queue of commands from the modules */
-typedef struct fmodule_input cqueue_object_type;
-
-static fqueue cqueue = FQUEUE_INIT;
-
-/*
- *
- *  Procedure:
- *      AddToCommandQueue - add a module command to the command queue
- *
- */
-
-/*static*/ void AddToCommandQueue(Window window, fmodule *module, char *command)
-{
-	cqueue_object_type *newqo;
-
-	if (!command)
-	{
-		return;
-	}
-
-	newqo = (cqueue_object_type *)safemalloc(sizeof(cqueue_object_type));
-	newqo->window = window;
-	newqo->module = module;
-	newqo->command = safestrdup(command);
-	DBUG("AddToCommandQueue", command);
-	fqueue_add_at_end(&cqueue, newqo);
-
-	return;
-}
-
-/*
- *
- *  Procedure:
- *      ExecuteCommandQueue - runs command from the module command queue
- *      This may be called recursively if a module command runs a function
- *      that does a Wait, so it must be re-entrant
- *
- */
-void ExecuteCommandQueue(void)
-{
-	cqueue_object_type *obj;
-
-	while (fqueue_get_first(&cqueue, (void **)&obj) == 1)
-	{
-		/* remove from queue */
-		fqueue_remove_or_operate_from_front(
-			&cqueue, NULL, NULL, NULL, NULL);
-		/* execute and destroy */
-		if (obj->command)
-		{
-			DBUG("EmptyCommandQueue", obj->command);
-			ExecuteModuleCommand(
-				obj->window, obj->module, obj->command);
-			free(obj->command);
-		}
-		free(obj);
-	}
 
 	return;
 }
@@ -978,3 +963,4 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 
 	return;
 }
+

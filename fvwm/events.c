@@ -4103,15 +4103,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 			{
 				input = module_receive(module);
 				/* enqueue the received command */
-				if (input != NULL)
-				{
-/* fixme - should just pass the input struct */
-					AddToCommandQueue(input->window,
-							input->module,
-							input->command);
-/* fixme - shouldn't need to free the input data after enqueuing */
-				module_input_discard(input);
-				}
+				module_input_enqueue(input);
 			}
 			if (
 				MOD_WRITEFD(module) >= 0 &&

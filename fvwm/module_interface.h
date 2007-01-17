@@ -6,6 +6,7 @@
 #include "Module.h"
 
 struct fmodule;
+struct fmodule_input;
 
 /* Packet sending functions */
 void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...);
@@ -33,11 +34,13 @@ void SendName(
 	struct fmodule *module, unsigned long event_type, unsigned long data1,
 	unsigned long data2, unsigned long data3, const char *name);
 
+
 /* command queue - module input */
-/*static*/ void AddToCommandQueue(
-		Window window, struct fmodule *module, char *command);
-/*static*/ void ExecuteModuleCommand(
-		Window w, struct fmodule *module, char *text);
+
+
+void module_input_enqueue(struct fmodule_input *input);
+void module_input_execute(struct fmodule_input *input);
+
 void ExecuteCommandQueue(void);
 
 #endif /* MODULE_INTERFACE_H */

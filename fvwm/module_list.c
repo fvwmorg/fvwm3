@@ -631,17 +631,14 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 					module_input_expect(input,
 						ModuleUnlockResponse))
 				{
+					module_input_discard(input);
 					done = True;
 				}
 				else
 				{
-/* fixme - should be passing the input directly to ExecuteModuleCommand */
-                                        ExecuteModuleCommand(input->window,
-                                                        input->module,
-                                                        input->command);
+					module_input_execute(input);
 				}
 
-				module_input_discard(input);
 			}
 			else
 			{
@@ -1199,17 +1196,14 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 					input == NULL ||
 					module_input_expect(input,expect))
 				{
+					module_input_discard(input);
 					done = True;
 				}
 				else
 				{
-/* fixme - should be passing the input directly to ExecuteModuleCommand */
-					ExecuteModuleCommand(input->window,
-							input->module,
-							input->command);
+					module_input_execute(input);
 				}
 
-				module_input_discard(input);
 			}
 
 			if ((MOD_WRITEFD(module) >= 0) &&
@@ -1233,10 +1227,10 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 			int context;
 			XClassHint *class;
 			char *name;
-			Window targetWindow;
+			Window w;
 
 			context = GetContext(
-				NULL, exc->w.fw, &tmpevent, &targetWindow);
+				NULL, exc->w.fw, &tmpevent, &w);
 			if (exc->w.fw != NULL)
 			{
 				class = &(exc->w.fw->class);
