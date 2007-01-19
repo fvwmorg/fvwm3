@@ -718,7 +718,6 @@ static Bool is_transient_subtree_straight(
 	FvwmWindow *start;
 	FvwmWindow *end;
 	int min_i;
-	Bool has_passed_root;
 	Bool is_in_gap;
 	int mark_mode;
 
@@ -788,7 +787,6 @@ static Bool is_transient_subtree_straight(
 	/* now loop over the windows and mark the ones we need to move */
 	SET_IN_TRANSIENT_SUBTREE(t, 1);
 	min_i = INT_MIN;
-	has_passed_root = False;
 	is_in_gap = False;
 
 	if (mode == SM_LOWER && t != start)
@@ -796,43 +794,47 @@ static Bool is_transient_subtree_straight(
 		return False;
 	}
 
-	for (s = start; s != end && !(is_in_gap && mode == SM_RAISE);
+	/* check that all transients above the window are in a sorted line
+	 * with no other windows between them */
+	for (s = t->stack_prev; s != end && !(is_in_gap && mode == SM_RAISE);
 	     s = s->stack_prev)
 	{
-		if (t == s)
+		if (
+			__mark_transient_subtree_test(
+				s, start, end, mark_mode,
+				do_ignore_icons,
+				use_window_group_hint))
 		{
-			has_passed_root = True;
+			if (is_in_gap)
+			{
+				return False;
+			}
+			else if (s->scratch.i < min_i)
+			{
+				return False;
+			}
+			min_i = s->scratch.i;
 		}
 		else
 		{
-			if (
-				__mark_transient_subtree_test(
-					s, start, end, mark_mode,
-					do_ignore_icons,
-					use_window_group_hint))
-			{
-				if (is_in_gap || !has_passed_root)
-				{
-					return False;
-				}
-				else if (s->scratch.i < min_i)
-				{
-					return False;
-				}
-				min_i = s->scratch.i;
-			}
-			else
-			{
-				if (has_passed_root)
-				{
-					is_in_gap = True;
-				}
-			}
+			is_in_gap = True;
 		}
 	} /* for */
 	if (is_in_gap && mode == SM_RAISE)
 	{
 		return False;
+	}
+	/* check that there are no transients left beneth the window */
+	for (s = start; s != t; s = s->stack_prev)
+	{
+		if (
+			__mark_transient_subtree_test(
+				s, start, end, mark_mode,
+				do_ignore_icons,
+				use_window_group_hint))
+		{
+			return False;
+		}
 	}
 
 	return True;
