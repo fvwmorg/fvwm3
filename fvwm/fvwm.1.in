@@ -7701,8 +7701,10 @@ puts back the stipples where that window has also been marked as
 .I Sticky .
 Note that this is the default style for
 .I Sticky
-windows.  Sticky icons have stipples drawn on the icon title. This
-can be disabled in the same way with the
+windows.
+.I Sticky
+icons have stipples drawn on the title. This can be disabled in
+the same way with the
 .I !StickyStippledIconTitle
 style.
 
