@@ -238,7 +238,7 @@ A short usage description is printed.
 .BR "-r" " | " "--replace"
 Try to take over from a previously running wm.  This does not work
 unless the other wm is
-.SM ICCCM
+.SM ICCCM2
 2.0 compliant.
 .TP
 .BR "-F" " | " "--restore "
@@ -263,9 +263,12 @@ multi-screen display.
 Prints the version of fvwm to
 .IR stderr .
 Also prints an information about the compiled in support for
-readline, rplay, stroke, xpm, png, gnome hints, EWMH hints,
-session management, bidirectional text, multibyte characters,
-xinerama and Xft aa font rendering.
+readline, rplay, stroke, xpm, png,
+.SM GNOME
+hints,
+.SM EWMH
+hints, session management, bidirectional text, multibyte
+characters, xinerama and Xft aa font rendering.
 .TP
 .BR "-C" " | " "--visual "
 .I visual-class
@@ -350,7 +353,10 @@ fail to start or are unusable. There are three things that can be
 done (and fvwm does not really play a particular role, all
 applications are concerned). The first is to run the applications
 which waste your (default) color map with a private color map. For
-example, run netscape with the -install option, run KDE/QT
+example, run netscape with the -install option, run
+.SM KDE
+or
+.SM QT
 applications with the --cmap option, use the
 .B "-C"
 option for fvwm. The disadvantage of this method is that it is
@@ -368,13 +374,16 @@ option.  However, limiting the number of colors is not the
 definitive solution. The definitive solution is to try cause
 applications which use a lot of colors use the same colors. This
 is a difficult task as there are no formal standards for this
-goal. However, some toolkits as QT and GTK use color cubes as
-palettes. So, the idea is to configure your applications/toolkits
-to all use the same color cube. Moreover, you can use the colors
-in this color cube in your X resources configuration files and/or
-as arguments to colors options.
-Fvwm can use any color cube of the form RxGxB with 2 <= R <= 6, R
-= G, R-1 =< B <= R and B >= 2. To get an RxGxB color cube give an
+goal. However, some toolkits as
+.SM QT
+and
+.SM GTK
+use color cubes as palettes. So, the idea is to configure your
+applications/toolkits to all use the same color cube. Moreover,
+you can use the colors in this color cube in your X resources
+configuration files and/or as arguments to colors options.  Fvwm
+can use any color cube of the form RxGxB with 2 <= R <= 6, R = G,
+R-1 =< B <= R and B >= 2. To get an RxGxB color cube give an
 argument to
 .B "-l"
 an integer c >= R*G*B and < (R+1)*(G+1)*B if B=R and < R*G*(B+1)
@@ -967,15 +976,18 @@ Fvwm attempts to be
 .SM GNOME
 (version 1) compliant.  Check
 .B http://www.gnome.org
-for what that may mean. To disable GNOME hints for some or all
-windows, the
+for what that may mean. To disable
+.SM GNOME
+hints for some or all windows, the
 .I GNOMEIgnoreHints
 style can be used.
 
 .SH EXTENDED WINDOW MANAGER HINTS
 
 Fvwm attempts to respect the extended window manager hints (ewmh
-or EWMH for short) specification:
+or
+.SM EWMH
+for short) specification:
 .BR http://www.freedesktop.org/wiki/Standards_2fwm_2dspec
 and some extensions of this specification.  This allows fvwm to
 work with
@@ -1178,12 +1190,15 @@ loaded in priority order. For example with
 .EX
 -adobe-courier-bold-r-normal--10-*
 .EE
-if the locale charset is ISO8859-1, then fvwm tries to load a
-font which matches
+if the locale is using an
+.SM ISO8859-1
+charset, fvwm tries to load a font which matches
 .EX
 -adobe-courier-bold-r-normal--10-*-ISO8859-1
 .EE
-with the locale charset ISO8859-15 fvwm tries to load
+with the locale charset
+.SM ISO8859-15
+fvwm tries to load
 .EX
 -adobe-courier-bold-r-normal--10-*-ISO8859-15.
 .EE
@@ -1219,9 +1234,11 @@ as the family. With the second example Luxi Mono is the Family
 the Weight (other possible weights: Light, DemiBold, Bold, Black),
 Roman is the slant or the style (other possibilities: Regular,
 Oblique, Italic) size specifies the point size (for a pixel size
-use pixelsize=), encoding allows for enforce a charset (iso8859-1
-or iso10646-1 only; if no encoding is given the locale charset is
-assumed).
+use pixelsize=), encoding allows for enforce a charset (
+.SM iso8859-1
+or
+.SM iso10646-1
+only; if no encoding is given the locale charset is assumed).
 An important parameter is "minspace=bool" where bool is True or
 False. If bool is False (the default?) Xft gives a greater font
 height to fvwm than if bool is True. This may modify text
@@ -1230,11 +1247,13 @@ FvwmIdent, button height in some fvwm modules ...etc.  With a LCD
 monitor you may try to add "rgba=mode" where mode is either rgb,
 bgr, vrgb or vbgr to enable subpixel rendering. The best mode
 depends on the way your LCD cells are arranged. You can pass other
-specifications in between ":", as "foundry=foundry_name",
-"spacing=type" where type can be monospace, proportional or
-charcell, "charwidth=integer", "charheight=integer" or
-"antialias=bool" where bool is True or False. It seems that these
-parameters are not always taken in account.
+specifications in between ":", as
+"foundry=foundry_name", "spacing=type" where type can be
+monospace, proportional or charcell,
+"charwidth=integer", "charheight=integer" or "antialias=bool"
+where bool is True or False. It seems that these parameters are
+not always taken in account.
+
 To determine which Xft fonts are really loaded you can export
 XFT_DEBUG=1 before starting fvwm and take a look to the error
 log. With Xft2 you may use fc-list to list the available
@@ -1258,21 +1277,27 @@ portable configuration files.
 Once a font is loaded, fvwm finds its encoding (or charset) using
 its name (the last two fields of the name). fvwm assumes that the
 strings which are displayed with this font use this encoding (an
-exception is that if an iso10646-1 font is loaded, then UTF-8 is
-assumed for string encoding).
-In a normal situation,
+exception is that if an
+.SM iso10646-1
+font is loaded, then
+.SM UTF-8
+ is assumed for string encoding).  In a normal situation,
 (i) a font is loaded by giving a font name without specifying the
 encoding,
 (ii) the encoding of the loaded font is the locale encoding, and
 then
 (iii) the strings in the fvwm configuration files should use the
 locale encoding as well as the window and icon name. With Xft the
-situation is bit different as Xft supports only iso10646-1 and
-iso8859-1. If you do not specify one of these encodings in the Xft
-font name, then fvwm does strings conversion using (iii). Note
-that with multibyte fonts (and in particular with "CJK" fonts) for
-good text rendering, the locale encoding should be the charset of
-the font.
+situation is bit different as Xft supports only
+.SM iso10646-1
+and
+.SM iso8859-1 charsets. If you do not specify one of these
+encodings in the Xft font name, then fvwm does strings conversion
+using (iii). Note that with multibyte fonts (and in particular
+with
+.SM CJK
+fonts) for good text rendering, the locale encoding should be the
+charset of the font.
 
 To override the previous rules, it is possible to specify the
 string encoding in the beginning of a font description as follow:
@@ -1282,14 +1307,27 @@ StringEncoding=enc:_full_font_name_
 where
 .B enc
 is an encoding supported by fvwm (usually font name charset plus some
-unicode encodings: UTF-8, USC-2, USC-4 and UTF-16).
+unicode encodings:
+.SM UTF-8
+,
+.SM USC-2
+,
+.SM USC-4
+and
+.SM UTF-16
+).
 
-For example, you may use an iso8859-1 locale charset and have an
-FvwmForm in Russian using koi8-r encoding. In this case, you just
-have to ask FvwmForm to load a koi8-r font by specifying the
-encoding in the font name. With a multibyte language, (as
-multibyte font works well only if the locale encoding is the
-charset of the font), you should use an iso10646-1 font:
+For example, you may use an
+.SM iso8859-1
+locale charset and have an FvwmForm in Russian using
+.SM koi8-r
+encoding. In this case, you just have to ask FvwmForm to load a
+.SM koi8-r
+font by specifying the encoding in the font name. With a multibyte
+language, (as multibyte font works well only if the locale
+encoding is the charset of the font), you should use an
+.SM iso10646-1
+font:
 .EX
 StringEncoding=jisx0208.1983-0:-*-fixed-medium-r-*-ja-*-iso10646-1
 .EE
@@ -1299,9 +1337,13 @@ or
 .EE
 if your
 .B FvwmForm
-configuration uses jisx0208.1983-0 encoding. Another possibility
-is to use UTF-8 encoding for your FvwmForm configuration and use
-an iso10646-1 font:
+configuration uses
+.SM jisx0208.1983-0
+encoding. Another possibility is to use
+.SM UTF-8
+encoding for your FvwmForm configuration and use an
+.SM iso10646-1
+font:
 .EX
 -*-fixed-medium-r-*-ja-*-iso10646-1
 .EE
@@ -1313,18 +1355,29 @@ or equivalently
 .EX
 "xft:Bitstream Cyberbit:encoding=iso10646-1"
 .EE
-In general iso10646-1 fonts together with UTF-8 string encoding
-allows the display of any characters in a given menu, FvwmForm
-...etc.
+In general
+.SM iso10646-1
+fonts together with
+.SM UTF-8
+string encoding allows the display of any characters in a given
+menu, FvwmForm etc.
 
-More and more, unicode is used and text files use UTF-8
+More and more, unicode is used and text files use
+.SM UTF-8
 encoding. However, in practice the characters used range over your
 locale charset (this is the case when you generate a menu with
-fvwm-menu-desktop with recent versions of KDE and GNOME). For
-saving memory (an iso10646-1 font may have a very large number of
-characters) or because you have a pretty font without an
-iso10646-1 charset, you can specify the string encoding to be
-UTF-8 and use a font in the locale charset:
+fvwm-menu-desktop with recent versions of the
+.SM KDE
+and
+.SM  GNOME
+desktop environments). For saving memory (an
+.SM iso10646-1
+font may have a very large number of characters) or because you
+have a pretty font without an
+.SM iso10646-1
+charset, you can specify the string encoding to be
+.SM UTF-8
+and use a font in the locale charset:
 .EX
 StringEncoding=UTF-8:-*-pretty_font-*-12-*
 .EE
@@ -1341,29 +1394,43 @@ a delimiter. For example:
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
 .EE
 If fvwm finds an encoding, fvwm uses the iconv system functions to
-do conversion between encodings. Unfortunately, there are no
-standards. For conversion between iso8859-1 and UTF-8: a GNU
-system uses "ISO-8859-1" and other systems use "iso881" to define
-the converters (these two names are supported by fvwm). Moreover,
-in some cases it may be necessary to use machine specific
-converters. So, if you experience problems you can try to get
-information on your iconv implementation ("man iconv" may help)
-and put the name which defines the converter between the font
-encoding and UTF-8 at the end of the font name after the encoding
-hint and a / (another possible solution is to use GNU
+do conversion between encodings.  Unfortunately, there are no
+standards.  For conversion between
+.SM iso8859-1
+and
+.SM UTF-8
+: a
+.SM GNU
+system uses
+.SM ISO-8859-1
+and other systems use
+.SM iso881
+to define the converters (these two names are supported by
+fvwm). Moreover, in some cases it may be necessary to use machine
+specific converters. So, if you experience problems you can try to
+get information on your iconv implementation ("man iconv" may
+help) and put the name which defines the converter between the
+font encoding and
+.SM UTF-8
+at the end of the font name after the encoding hint and a /
+(another possible solution is to use
+.SM GNU
 libiconv). For example use:
 .EX
 Style * Font -misc-fixed-*--14-*-iso8859-1/*/latin1
 .EE
-to use latin1 for defining the converter for the iso8859-1 encoding.
-The "*" in between the "/" says to fvwm to determine the
-encoding from the end of the font name. Use:
+to use latin1 for defining the converter for the
+.SM iso8859-1
+encoding.  The "*" in between the "/" says to fvwm to determine
+the encoding from the end of the font name.  Use:
 .EX
 Style * Font -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
 .EE
-to force fvwm to use the font with iso8859-6 as the encoding
-(this is useful for bi-directionality)
-and to use local_iso8859_6_iconv for defining the converters.
+to force fvwm to use the font with
+.SM iso8859-6
+as the encoding (this is useful for bi-directionality) and to use
+.SM local_iso8859_6_iconv
+for defining the converters.
 
 .SH FONT SHADOW EFFECTS
 
@@ -1437,8 +1504,14 @@ In fvwm this is done automatically in window titles, menus,
 module labels and other places if the fonts used for displaying the
 text are of one of the charsets that require
 .I bidi
-(bi-directional) support.  For example, this includes iso8859-6,
-iso8859-8 and iso10646-1 (unicode), but not other iso8859-* fonts.
+(bi-directional) support.  For example, this includes
+.SM iso8859-6,
+.SM iso8859-8
+and
+.SM iso10646-1
+(unicode), but not other
+.SM iso8859-*
+fonts.
 
 This bi-directional text support is done using the
 .I fribidi
@@ -1831,7 +1904,12 @@ $[page.nx]
 $[page.ny]
 .in +.3i
 The current page numbers, by X and Y axes, starting from 0.
-.IR page " is equivalent to " area " in the GNOME terminology."
+.I page
+is equivalent to
+.I area
+in the
+.SM GNOME
+terminology.
 .in -.3i
 .in -.5i
 
@@ -2548,7 +2626,11 @@ Some of them, specifically
 .BR fvwm-menu-directory " and " fvwm-menu-desktop ,
 may be used with
 .I DynamicPopupAction
-to create a directory listing or GNOME/KDE application listing.
+to create a directory listing or
+.SM GNOME
+or
+.SM KDE
+application listing.
 
 Example (File browser):
 .EX
@@ -3829,27 +3911,38 @@ style option too.
 
 .I FlickeringQtDialogsWorkaround
 suppresses flickering of the focused window in some modules when
-using KDE or Qt applications with application modal dialog
-windows.  By default this option is turned on.  This option may be
-visually disturbing for other applications using windows not
-managed by fvwm.  Since these applications are rare it is most
-likely safe to leave this option at its default.
+using
+.SM KDE
+or
+.SM QT
+applications with application modal dialog windows.  By default
+this option is turned on.  This option may be visually disturbing
+for other applications using windows not managed by fvwm.  Since
+these applications are rare it is most likely safe to leave this
+option at its default.
 
 .I EWMHIconicStateWorkaround
-is needed by EWMH compliant pagers or taskbars which represent
-windows which are on a different desktops as iconified. These
-pagers and taskbars use a version of the EWMH specification before
-version 1.2 (the current KDE2 & 3 versions).  These pagers and
-taskbars use the IconicState WM_STATE state to determine if an
-application is iconified.  This state, according to the
+is needed by
+.SM EWMH
+compliant pagers or taskbars which represent windows which are on
+a different desktops as iconified. These pagers and taskbars use a
+version of the
+.SM EWMH
+specification before version 1.2 (the current
+.SM KDE
+2 & 3 versions).  These pagers and taskbars use the IconicState
+.SM WM_STATE
+state to determine if an application is iconified.  This state,
+according to the
 .SM ICCCM ,
 does not imply that a window is iconified (in the usual sense).
 Turning on this option forces fvwm to establish an equivalence
-between the IconicState WM_STATE state and the iconified window.
-This violates
+between the IconicState
+.SM WM_STATE
+state and the iconified window.  This violates
 .SM ICCCM
-compliance but should not cause big problems.
-By default this option is off.
+compliance but should not cause big problems. By default this
+option is off.
 
 With the
 .I DisplayNewWindowNames
@@ -4648,8 +4741,9 @@ module has its own catalog and that the
 .B FvwmScript
 module has a set of special instructions for string
 translation. It is out of the scope of this discussion to explain
-how to build locale catalogs. Please refer to the GNU gettext
-documentation.
+how to build locale catalogs. Please refer to the
+.SM GNU
+gettext documentation.
 
 .TP
 .BI "PixmapPath " path
@@ -5854,7 +5948,9 @@ argument is a space separated list containing the following
 key words:
 .IR ewmhiwa ", " growonwindowlayer ", " growonlayers " and " screen .
 .I ewmhiwa
-causes fvwm to ignore the EWMH working area.
+causes fvwm to ignore the
+.SM EWMH
+working area.
 .I Growonwindowlayer
 causes the various grow methods to ignore windows with a layer
 other than the current layer of the window which is maximized.
@@ -7776,7 +7872,10 @@ options first and then use
 again.
 
 Note:  This option was introduced to alleviate a problem with the
-ICCCM2 specification.  The ICCCM2 clearly states that the
+.SM ICCCM
+specification.  The
+.SM ICCCM
+clearly states that the
 .I UseGravity
 option should be used, but traditionally applications ignored this
 rule.
@@ -7936,11 +8035,14 @@ factor affects sticky windows, the
 factor affects windows with a smaller layer than the window being
 placed, the
 .I strut
-factor affects the complement of the EWMH working area if the
-window being placed has the
+factor affects the complement of the
+.SM EWMH
+working area if the window being placed has the
 .I EWMHPlacementUseWorkingArea
-style and windows with an EWMH strut hint (i.e., a "please do not
-cover me" hint) if the window being placed has the
+style and windows with an
+.SM EWMH
+strut hint (i.e., a "please do not cover me" hint) if the window
+being placed has the
 .I EWMHPlacementUseDynamicWorkingArea
 style.  These factors represent the amount of area that these
 types of windows (or area) are counted as, when a new window is
@@ -8365,51 +8467,74 @@ style.
 restores the default.
 
 .I EWMHUseStackingOrderHints
-causes fvwm to use EWMH hints and respect EWMH hints which change
-the window layer.
+causes fvwm to use
+.SM EWMH
+hints and respect
+.SM EWMH
+hints which change the window layer.
 .I EWMHIgnoreStackingOrderHints
-causes fvwm to ignore EWMH layer hints.
+causes fvwm to ignore
+.SM EWMH
+layer hints.
 
 An application can ask for some reserved space on the desktop by a
-hint.  In the EWMH terminology such a hint is called a strut and
-it is used to compute the working area and may be used for window
-placement and in the maximize command.
+hint.  In the
+.SM EWMH
+terminology such a hint is called a strut and it is used to
+compute the working area and may be used for window placement and
+in the maximize command.
 .I EWMHIgnoreStrutHints
 causes fvwm to ignore such hints, as
 .IR EWMHUseStrutHints ,
 causes fvwm to use it which is the default.
 
 .I EWMHIgnoreStateHints
-causes fvwm to ignore initial EWMH state hints when a new window
-is mapped. The default
+causes fvwm to ignore initial
+.SM EWMH
+state hints when a new window is mapped. The default
 .I EWMHUseStateHints
 causes fvwm to accept such hints.
 
 .I EWMHIgnoreWindowType
-causes fvwm to ignore EWMH window type specification. The default
+causes fvwm to ignore
+.SM EWMH
+window type specification. The default
 .I !EWMHIgnoreWindowType
 causes fvwm to style windows of specified types as such.
 
 .I EWMHMaximizeIgnoreWorkingArea
-causes fvwm to ignore the EWMH working area when it executes a
+causes fvwm to ignore the
+.SM EWMH
+working area when it executes a
 .I Maximize
 command. With
 .I EWMHMaximizeUseWorkingArea
-the EWMH working area is used as with
+the
+.SM EWMH
+working area is used as with
 .I EWMHMaximizeUseDynamicWorkingArea
-the EWMH dynamic working area is used (the default).
+the
+.SM EWMH
+dynamic working area is used (the default).
 
 .I EWMHPlacementIgnoreWorkingArea
-causes fvwm to ignore the EWMH working area when it places (or
-places again) a window. With
+causes fvwm to ignore the
+.SM EWMH
+working area when it places (or places again) a window. With
 .I EWMHPlacementUseWorkingArea
-the EWMH working area is taken in account as with
+the
+.SM EWMH
+working area is taken in account as with
 .I EWMHPlacementUseDynamicWorkingArea
-the EWMH dynamic working area is taken in account (the default).
-Note that with the
+the
+.SM EWMH
+dynamic working area is taken in account (the default). Note that
+with the
 .IR MinOverlapPlacement " and " MinOverlapPercentPlacement
-placement policy, the way the EWMH (dynamic) working area is taken
-in account is configurable with the
+placement policy, the way the
+.SM EWMH
+(dynamic) working area is taken in account is configurable with
+the
 .I MinOverlapPlacementPenalties
 style.
 
@@ -8487,11 +8612,15 @@ this option off with
 
 With
 .I GNOMEIgnoreHints
-fvwm ignores all GNOME hints for the window, even if GNOME
+fvwm ignores all
+.SM GNOME
+hints for the window, even if
+.SM GNOME
 compliance is compiled in.  This is useful for those pesky
 applications that try to be more clever than the user and use
-GNOME hints to force the window manager to ignore the user's
-preferences.  The
+.SM GNOME
+ hints to force the window manager to ignore the user's
+ preferences.  The
 .I GNOMEUseHints
 style switches back to the default behavior.
 
@@ -9638,7 +9767,8 @@ command and in the
 where it override the
 .I Label
 configuration option. Moreover, if consecutive names starting from
-desktop 0 are defined, then these names can be used by any EWMH
+desktop 0 are defined, then these names can be used by any
+.SM EWMH
 compliant application (as a pager).
 
 .TP
@@ -11466,7 +11596,9 @@ with cpp),
 .B FvwmForm
 (to bring up dialogs),
 .B FvwmGtk
-(to bring up GTK menus and dialogs),
+(to bring up
+.SM GTK
+menus and dialogs),
 .B FvwmIconBox
 (like the mwm IconBox),
 .B FvwmIconMan
@@ -12324,8 +12456,9 @@ number of people on the fvwm-workers mailing list.
 .SH COPYRIGHT
 
 Fvwm and all the modules, scripts and other files coming with the
-distribution are subject to the GNU General Public License
-(GPL). Please refer to the
+distribution are subject to the
+.SM GNU
+General Public License (GPL). Please refer to the
 .I COPYING
 file that came with fvwm for details.
 
