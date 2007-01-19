@@ -202,7 +202,7 @@ module that sends back config commands.  All command line modules
 have to quit before fvwm proceeds on to the StartFunction and
 setting border decorations and styles.  There is a potential
 deadlock if you start a module other than FvwmCpp/FvwmM4/FvwmPerl
-but there is a timeout so fvwm will eventually get going.
+but there is a timeout so fvwm eventually gets going.
 
 As an example, starting the pager this way hangs fvwm until
 the timeout, but the following should work well:
@@ -397,8 +397,8 @@ visual, this option causes fvwm to use a palette designed for
 limiting the "visual" color distance between the points of the
 palette. Moreover, for better color sharing, if possible colors
 with a name in the X rgb data base are used for defining the
-colors (with the hope that applications and images will prefer to
-use named colors). If the
+colors (with the hope that applications and images prefer to use
+named colors). If the
 .B "-l"
 option is not used this palette has 61 colors. This palette is
 also automatically selected if  61 or 9 is used as argument to the
@@ -1053,8 +1053,7 @@ Most (perhaps all) Open Look applications have a strange notion of
 keyboard focus handling.  Although a lot of work went into fvwm to
 work well with these, you may still encounter problems.  It is
 recommended to use the NeverFocus focus policy and the NoLenience
-style for all such applications (the windows will still get the
-focus):
+style for all such applications (the windows still get the focus):
 .EX
 Style <application name> NeverFocus, NoLenience
 .EE
@@ -1665,8 +1664,8 @@ Example:
 Echo $[desk.n] $[page.nx] $[w.class]
 .EE
 
-Note: If the command is called outside a window context, it will
-print "$[w.class]" instead of the class name.  It is usually not
+Note: If the command is called outside a window context, it
+prints "$[w.class]" instead of the class name.  It is usually not
 enough to have the pointer over a window to have a context window.
 To force using the window with the focus, the
 .B Current
@@ -1720,7 +1719,7 @@ The
 .IR n :th
 positional parameter given to a complex function, counting from 0.
 If the corresponding parameter is undefined, the "$[n]" is deleted
-from the command line. The parameter will be expanded unquoted.
+from the command line. The parameter is expanded unquoted.
 .in -.3i
 .in -.5i
 
@@ -1735,7 +1734,7 @@ and ending with parameter
 If all the corresponding parameters are undefined, the "$[...]" is
 deleted from the command line. If only some of the parameters are
 defined, all defined parameters are expanded, and the remaining
-silently ignored. All parameters will be expanded unquoted.
+silently ignored. All parameters is expanded unquoted.
 .in -.3i
 .in -.5i
 
@@ -1746,7 +1745,7 @@ All the positional parameters given to a complex function,
 starting with parameter
 .IR n .
 If all the corresponding parameters are undefined, the "$[...]" is
-deleted from the command line. All parameters will be expanded
+deleted from the command line. All parameters is expanded
 unquoted.
 .in -.3i
 .in -.5i
@@ -2540,8 +2539,8 @@ command.
 
 Warning: Do not issue
 .B MenuStyle
-commands as dynamic menu actions.  Chances are good that this will
-crash fvwm.
+commands as dynamic menu actions.  Chances are good that this
+crashes fvwm.
 
 There are several configurable scripts installed together with fvwm
 for automatic menu generation.  They have their own man pages.
@@ -2875,11 +2874,12 @@ position before any other offsets are applied.  The menu and the
 rectangle are placed so that the pixel at <number> percent of the
 rectangle's width/height is right over the pixel at <number>
 percent of the menu's width/height. So "o0" means that the
-top/left borders of the menu and the rectangle overlap, with
-"o100" it's the bottom/right borders and if you use "o50" they are
-centered upon each other (try it and you will see it is much
-simpler than this description).  The default is "o0".  The prefix
-"o<number>" is an abbreviation for "+<number>-<number>m".
+top/left borders of the menu and the rectangle overlap,
+with "o100" it's the bottom/right borders and if you use "o50"
+they are centered upon each other (try it and you will see it is
+much simpler than this description).  The default is "o0".  The
+prefix "o<number>" is an abbreviation for "+<number>-<number>m".
+
 
 A prefix of
 .RI ' c '
@@ -3028,8 +3028,8 @@ All paired options can be negated to have the effect of the
 counterpart option by prefixing ! to the option.
 
 Some options are now negated by prefixing ! to the option. This
-will soon be the preferred form for all such options. The other
-negative forms are now deprecated and will be removed in the future.
+is the preferred form for all such options. The other negative
+forms are now deprecated and will be removed in the future.
 
 This is a list of MenuStyle deprecated negative options:
 ActiveForeOff, AnimationOff, AutomaticHotkeysOff, HilightBackOff,
@@ -5908,7 +5908,7 @@ Values larger than 100 can be used with caution.
 This command is obsolete and should not be used anymore.  Should
 you want to do something specific that you cannot do without it,
 please report this to the fvwm-workers mailing list
-(@FVWMWORKERSLIST@).  This command will be removed at some point
+(@FVWMWORKERSLIST@).  This command may be removed at some point
 in the future.  Please read the note at the end of the section
 .B "DELAYED EXECUTION OF COMMANDS"
 to learn about how to avoid the
@@ -5994,10 +5994,10 @@ in a different direction, use the
 .I ShadeAgain
 option. The direction
 .I Last
-will shade the window in the direction it last was shaded. If the
-window has never been shaded before it will be shaded as if no
-direction were given. Windows without titles can be shaded too.
-Please refer also to the options
+shades the window in the direction it last was shaded. If the
+window has never been shaded before it is shaded as if no
+direction had been given. Windows without titles can be shaded
+too.  Please refer also to the options
 .IR WindowShadeSteps ", " WindowShadeShrinks ,
 .IR WindowShadeScrolls ", " WindowShadeLazy ,
 .IR WindowShadeAlwaysLazy " and " WindowShadeBusy .
@@ -6717,8 +6717,8 @@ res_class) are given class "NoClass" and those that do not have a
 resource (WM_CLASS, res_name) are given resource "NoResource".
 
 If a window has the resource "fvwmstyle" set, the value of that
-resource will be used in addition to any window names when
-selecting the style.
+resource is used in addition to any window names when selecting
+the style.
 
 .I options
 is a comma separated list containing one or more of the
@@ -7072,7 +7072,7 @@ The above three styles are accompanied by
 .IR FPOverrideReleaseFocus .
 These control if the focus is returned to another window when the
 window is closed.  Otherwise no window or the window under the
-pointer will receive the focus.
+pointer receives the focus.
 
 .IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
 controls whether a mouse click to focus a window is sent to the
@@ -7595,7 +7595,7 @@ If only two arguments are passed to
 and
 .I height
 represent the absolute size of an icon.  Icons covered by this style
-will be padded or clipped to achieve the given size.
+are padded or clipped to achieve the given size.
 
 If no arguments are specified, the default values are used for each
 dimension.  This effectively places no limits on the size of an icon.
@@ -7688,17 +7688,21 @@ but stick the window only across pages, not desks while
 works the other way round.
 
 Windows that have been marked as
-.IR Sticky " or "
-.IR StickyAcrossDesks " or "
-.IR StickyAcrossPages " will have stipples drawn "
-on the titlebar.  This can be negated with the
+.I Sticky
+or
+.I StickyAcrossDesks
+or
+.I StickyAcrossPages
+have stipples drawn on the titlebar.  This can be negated with the
 .I !StickyStippledTitle
 style.  The style
 .I StickyStippledTitle
 puts back the stipples where that window has also been marked as
-.IR Sticky ".  Note that this is the default style for "
-.IR Sticky " windows.  Sticky icons will have stipples drawn "
-on the icon title. This can be disabled in the same way with the
+.I Sticky .
+Note that this is the default style for
+.I Sticky
+windows.  Sticky icons have stipples drawn on the icon title. This
+can be disabled in the same way with the
 .I !StickyStippledIconTitle
 style.
 
@@ -7710,10 +7714,10 @@ iconify windows and can be set with the
 .I StartNormal
 style.
 
-. I StippledIconTitle
+.I StippledIconTitle
 works like
-.IR StippledTitle
-in that it draws stipples on the titles of icons but doesn't
+.I StippledTitle
+in that it draws stipples on the titles of icons but does not
 make the icon sticky.
 
 .I IgnoreRestack
@@ -7941,7 +7945,7 @@ types of windows (or area) are counted as, when a new window is
 placed.  For example, by default the area of ontop windows is
 counted 5 times as much as normal windows.  So
 .IR MinOverlapPlacement " and "  MinOverlapPercentPlacement
-will cover 5 times as much area of another window before it will
+covers five times as much area of another window before it will
 cover an ontop window.  To treat ontop windows the same as other
 windows, set this to 1.  To really, really avoid putting windows
 under ontop windows, set this to a high value, say 1000. This
@@ -9678,7 +9682,7 @@ difficult but not impossible.  See also
 The optional third parameter does the same as the second, but for
 individual Xinerama screens.  If omitted,
 .I xinerama-moving
-will be set to the value of
+is set to the value of
 .IR moving .
 Set
 .I xinerama-moving
@@ -9974,20 +9978,25 @@ is appended to each coordinate
 .RI ( horizontal " and/or " vertical ),
 then the scroll amount is measured in pixels.
 
-If no argument or the string
-.RI ' reverse '
-is is fiven to the command interactive scrolling will take place.
-This will scroll the viewport as the mouse is moved. With the
-.RI ' reverse '
-option scrolling will be done in opposite direction of the mouse
-movement, and without it scrolling will be in the mouse motion direction.
+If no argument or the option
+.I reverse
+is is given interactive scrolling takes place.  The viewporst
+scrolls as the mouse is moved. With the
+.RI reverse
+option scrolling is done in opposite direction of the mouse
+movement, and without it scrolling is in the mouse motion
+direction.
 
 The binding
 .EX
-	Mouse 1 A CM Scroll reverse
+Mouse 1 A CM Scroll reverse
 .EE
-will give an effect of grabbing and dragging the viewport with button 1
-if Control and Meta is pressed.
+gives an effect of grabbing and dragging the viewport with button 1
+if
+.SM Control
+and
+.SM Meta
+is pressed.
 
 .TP
 .BI "Xinerama " bool
@@ -10764,12 +10773,12 @@ If
 .I direction2
 is not perfectly perpendicular to
 .IR direction ,
-ScanForWindow will return a failure.  When using ScanForWindow
-repeatedly with the same arguments, it is guaranteed that all
-windows matching the conditions will eventually be found.  If the
-focus reaches a limit along the primary axis, it will wrap around
-to the opposite side.  Returns -1 if an invalid direction was
-given.
+.B ScanForWindow
+returns a failure.  When using ScanForWindow repeatedly with the
+same arguments, it is guaranteed that all windows matching the
+conditions are eventually found.  If the focus reaches a limit
+along the primary axis, it wraps around to the opposite side.
+Returns -1 if an invalid direction was given.
 .RB "See " Conditions " section below for a list of conditions."
 
 .TP
@@ -12095,8 +12104,7 @@ with 256 colors or less). In depth 15 (32768 colors) and 16 (65536
 colors), the default is
 .IR NoDither ,
 however this effect can be useful with images which contain a lot
-of close colors. For example a fine gradient will look more
-smooth.
+of close colors. For example a fine gradient looks more smooth.
 
 .I IconTint
 takes 2 arguments, a color and a percentage between 0 and 100. It
