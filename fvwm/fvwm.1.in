@@ -344,7 +344,7 @@ read-write colors). What it should be understand is that you have
 only 256 colors and that all the applications which use the
 default color map must share these colors. The main problem is
 that there are applications which use a lot or even all the
-colors.  If you use such application you will have no more free
+colors.  If you use such application you may have no more free
 colors and some applications (which used only a few colors) may
 fail to start or are unusable. There are three things that can be
 done (and fvwm does not really play a particular role, all
@@ -2533,7 +2533,7 @@ option when destroying the menu), do not forget to add the dynamic
 action again.
 
 Note: Do not trigger actions that require user interaction. They
-will probably fail and may screw up your menus.  See the
+would probably fail and may screw up your menus.  See the
 .B Silent
 command.
 

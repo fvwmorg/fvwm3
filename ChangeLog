@@ -1,5 +1,8 @@
 2007-01-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/fvwm.1.in:
+	some cleanup
+
 	* fvwm/virtual.c:
 	fix compile error
 
