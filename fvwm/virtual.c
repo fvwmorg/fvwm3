@@ -33,6 +33,7 @@
 #include "screen.h"
 #include "virtual.h"
 #include "module_interface.h"
+#include "module_list.h"
 #include "focus.h"
 #include "gnome.h"
 #include "ewmh.h"
@@ -88,6 +89,151 @@ static int prev_desk_and_page_page_y = 0;
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
+
+
+static void __drag_viewport(const exec_context_t *exc, int scroll_speed)
+{
+	XEvent e;
+	int x;
+	int y;
+	unsigned int button_mask = 0;
+	Bool is_finished = False;
+
+	if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
+	{
+		XBell(dpy, 0);
+		return;
+	}
+
+	if (FQueryPointer(
+		    dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y,
+		    &JunkX, &JunkY, &button_mask) == False)
+	{
+		/* pointer is on a different screen */
+		/* Is this the best thing to do? */
+		UngrabEm(GRAB_NORMAL);
+		return;
+	}
+	MyXGrabKeyboard(dpy);
+	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
+	memset(&e, 0, sizeof(e));
+	while (!is_finished)
+	{
+		int old_x;
+		int old_y;
+
+		old_x = x;
+		old_y = y;
+		FMaskEvent(
+			dpy, ButtonPressMask | ButtonReleaseMask |
+			KeyPressMask | PointerMotionMask |
+			ButtonMotionMask | ExposureMask |
+			EnterWindowMask | LeaveWindowMask, &e);
+		/* discard extra events before a logical release */
+		if (e.type == MotionNotify ||
+		    e.type == EnterNotify || e.type == LeaveNotify)
+		{
+			while (FPending(dpy) > 0 &&
+			       FCheckMaskEvent(
+				       dpy, ButtonMotionMask |
+				       PointerMotionMask | ButtonPressMask |
+				       ButtonRelease | KeyPressMask |
+				       EnterWindowMask | LeaveWindowMask, &e))
+			{
+				if (e.type == ButtonPress ||
+				    e.type == ButtonRelease ||
+				    e.type == KeyPress)
+				{
+					break;
+				}
+			}
+		}
+		if (e.type == EnterNotify || e.type == LeaveNotify)
+		{
+			XEvent e2;
+			int px;
+			int py;
+
+			/* Query the pointer to catch the latest information.
+			 * This *is* necessary. */
+			if (FQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild, &px,
+				    &py, &JunkX, &JunkY, &JunkMask) == True)
+			{
+				fev_make_null_event(&e2, dpy);
+				e2.type = MotionNotify;
+				e2.xmotion.time = fev_get_evtime();
+				e2.xmotion.x_root = px;
+				e2.xmotion.y_root = py;
+				e2.xmotion.state = JunkMask;
+				e2.xmotion.same_screen = True;
+				e = e2;
+				fev_fake_event(&e);
+			}
+			else
+			{
+				/* pointer is on a different screen,
+				 * ignore event */
+			}
+		}
+		/* Handle a limited number of key press events to allow
+		 * mouseless operation */
+		if (e.type == KeyPress)
+		{
+			Keyboard_shortcuts(
+				&e, NULL, NULL, NULL, ButtonRelease);
+		}
+		switch (e.type)
+		{
+		case KeyPress:
+			/* simple code to bag out of move - CKH */
+			if (XLookupKeysym(&(e.xkey), 0) == XK_Escape)
+			{
+				is_finished = True;
+			}
+			break;
+		case ButtonPress:
+			if (e.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
+			    ((Button1Mask << (e.xbutton.button - 1)) &
+			     button_mask))
+			{
+				/* No new button was pressed, just a delayed
+				 * event */
+				break;
+			}
+			/* fall through */
+		case ButtonRelease:
+			x = e.xbutton.x_root;
+			y = e.xbutton.y_root;
+			is_finished = True;
+			break;
+		case MotionNotify:
+			if (e.xmotion.same_screen == False)
+			{
+				continue;
+			}
+			x = e.xmotion.x_root;
+			y = e.xmotion.y_root;
+			break;
+		case Expose:
+			dispatch_event(&e);
+			break;
+		default:
+			/* cannot happen */
+			break;
+		} /* switch */
+		if (x != old_x || y != old_y)
+		{
+			MoveViewport(
+				Scr.Vx + scroll_speed * (x - old_x),
+				Scr.Vy + scroll_speed * (y - old_y), False);
+			FlushAllMessageQueues();
+		}
+	} /* while*/
+	UngrabEm(GRAB_NORMAL);
+	MyXUngrabKeyboard(dpy);
+	WaitForButtonsUp(True);
+}
 
 /*
  *
@@ -2128,7 +2274,21 @@ void CMD_Scroll(F_CMD_ARGS)
 
 	if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
 	{
-		/* to few parameters */
+		/* less then two integer parameters implies interactive
+		 * scroll check if we are scrolling in reverse direction */
+		char *option;
+		int scroll_speed = 1;
+
+		option = PeekToken(action, NULL);
+		if (option != NULL)
+		{
+			if (StrEquals(option, "Reverse"))
+			{
+				scroll_speed *= -1;
+			}
+		}
+		__drag_viewport(exc, scroll_speed);
+
 		return;
 	}
 	if ((val1 > -100000)&&(val1 < 100000))

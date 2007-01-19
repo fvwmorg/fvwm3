@@ -5,6 +5,10 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.21 (not released yet)
 
+* New features:
+
+   - The command Scroll can now be used for interactive scrolling.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.20 (15-Jan-2007)

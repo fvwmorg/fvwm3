@@ -1,5 +1,10 @@
 2007-01-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* NEWS:
+	* fvwm/fvwm.1.in (Scroll):
+	* fvwm/virtual.c (__drag_viewport, CMD_Scroll):
+	add interactive scrolling.
+
 	* fvwm/stack.c (is_transient_subtree_straight):
 	check first above the tree root, then beneth it.
 

@@ -9929,16 +9929,18 @@ GotoPage +2p -1p
 .EE
 
 .TP
-.B "Scroll \fIhorizonal\fP \
+.B "Scroll [\fIhorizonal\fP \
 [\fIp\fP\
 ] \fIvertical\fP \
 [\fIp\fP\
+]] | [\fIreverse\fP\
 ]"
 Scrolls the virtual desktop's viewport by
 .I horizontal
 pages in the x-direction and
 .I vertical
-pages in the y-direction.  Either or both entries may be negative.
+pages in the y-direction or starts interactive scrolling of the viewport.
+Either or both entries may be negative.
 Both
 .IR horizontal " and " vertical
 values are expressed in percent of pages, so
@@ -9971,6 +9973,21 @@ If the letter
 is appended to each coordinate
 .RI ( horizontal " and/or " vertical ),
 then the scroll amount is measured in pixels.
+
+If no argument or the string
+.RI ' reverse '
+is is fiven to the command interactive scrolling will take place.
+This will scroll the viewport as the mouse is moved. With the
+.RI ' reverse '
+option scrolling will be done in opposite direction of the mouse
+movement, and without it scrolling will be in the mouse motion direction.
+
+The binding
+.EX
+	Mouse 1 A CM Scroll reverse
+.EE
+will give an effect of grabbing and dragging the viewport with button 1
+if Control and Meta is pressed.
 
 .TP
 .BI "Xinerama " bool
