@@ -484,10 +484,14 @@ static signed int expand_vars_extended(
 			t = (i == VAR_W_ICONFILE) ?
 				fw->icon_bitmap_file : fw->mini_pixmap_file;
 			/* expand the path if possible */
-			string = PictureFindImageFile(t, NULL, R_OK);
-			if (!string)
+			allocated_string = PictureFindImageFile(t, NULL, R_OK);
+			if (allocated_string == NULL)
 			{
 				string = t;
+			}
+			else
+			{
+				string = allocated_string;
 			}
 		}
 		break;
