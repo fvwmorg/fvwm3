@@ -1,3 +1,8 @@
+2007-01-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/virtual.c:
+	fix compile error
+
 2007-01-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:

@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 
+#include <X11/keysym.h>
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FGettext.h"
