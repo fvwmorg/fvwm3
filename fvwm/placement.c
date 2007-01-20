@@ -1274,8 +1274,8 @@ static int __place_get_wm_pos(
 			break;
 		}
 	}
-	/* first, try various "smart" placement */
 	reason->pos.algo = placement_mode;
+	/* first, try various "smart" placement */
 	num_algos = 0;
 	switch (placement_mode)
 	{
