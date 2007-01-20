@@ -1217,7 +1217,6 @@ static int __place_get_wm_pos(
 {
 	pl_algo_t *algos[MAX_NUM_PLACEMENT_ALGOS + 1];
 	unsigned int placement_mode = SPLACEMENT_MODE(sflags);
-	position p;
 	pl_arg_t arg;
 	pl_ret_t ret;
 	int i;
@@ -1244,9 +1243,7 @@ static int __place_get_wm_pos(
 	memset(&ret, 0, sizeof(ret));
 	ret.best_penalty = -1.0;
 	/* END init placement agrs and ret */
-	p.x = -1;
-	p.y = arg.page_p1.y;
-	/* override if Manual placement happen */
+	/* override if manual placement happens */
 	SET_PLACED_BY_FVWM(arg.place_fw, 1);
 	if (flags.do_forbid_manual_placement)
 	{
