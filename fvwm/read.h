@@ -1,7 +1,7 @@
 /* -*-c-*- */
 #ifndef FVWM_READ_H
 #define FVWM_READ_H
-
+#include <stdio.h>		/* for FILE below */
 
 /**
  * Full pathname of file read in progress, or NULL.
