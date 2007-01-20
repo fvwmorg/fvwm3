@@ -687,14 +687,11 @@ fmodule_input *module_receive(fmodule *module)
 {
 	unsigned long size;
 	unsigned long cont;
+	Window win;
 	int n;
-	fmodule_input *input;
+	fmodule_input *input = NULL;
 
-	input = (fmodule_input *)safemalloc(sizeof(fmodule_input));
-	input->module = module;
-	input->command = NULL;
-
-	n = read(MOD_READFD(module), &(input->window), sizeof(Window));
+	n = read(MOD_READFD(module), &win, sizeof(Window));
 	if (n < sizeof(Window))
 	{
 		/* exit silently, module should have died.. */
@@ -722,8 +719,15 @@ fmodule_input *module_receive(fmodule *module)
 		goto err;
 	}
 
+	/* allocate all storage at once */
 	/* also save space for the '\0' termination character */
-	input->command = (char *)safemalloc(sizeof(char)*size+1);
+	input = (fmodule_input *)safemalloc(
+		sizeof(fmodule_input) + sizeof(char)*(size + 1));
+
+	input->module = module;
+	input->window = win;
+	input->command = (char*)input + sizeof(fmodule_input);
+
 	n = read(MOD_READFD(module), input->command, size);
 	if (n < size)
 	{
@@ -763,15 +767,7 @@ void module_input_discard(fmodule_input *input)
 	{
 		return;
 	}
-
-	if (input->command != NULL)
-	{
-		free(input->command);
-	}
 	free(input);
-
-	/* this avoids problems when freeing the same input multiple times */
-	input=NULL;
 }
 
 /* returns true if the module command matches "expect", false otherwise */

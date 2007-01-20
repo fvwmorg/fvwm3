@@ -1,3 +1,9 @@
+2007-01-20  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_list.c (module_receive):
+	(module_input_discard):
+	allocate input data in just one call - better perfomance
+
 2007-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__place_get_wm_pos):
