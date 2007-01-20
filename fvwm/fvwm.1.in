@@ -10110,14 +10110,14 @@ is appended to each coordinate
 .RI ( horizontal " and/or " vertical ),
 then the scroll amount is measured in pixels.
 
-If no argument or the option
+Without arguments or the option
 .I reverse
-is is given interactive scrolling takes place.  The viewporst
+is given interactive scrolling takes place.  The viewporst
 scrolls as the mouse is moved. With the
 .RI reverse
 option scrolling is done in opposite direction of the mouse
-movement, and without it scrolling is in the mouse motion
-direction.
+movement, and without it scrolling in the same direction as th
+mouse.
 
 The binding
 .EX
