@@ -187,8 +187,9 @@ typedef struct
 	pl_loop_rc_t (*get_first_pos)(
 		position *ret_p, const struct pl_arg_t *arg);
 	pl_loop_rc_t (*get_next_pos)(
-		position *ret_p, const struct pl_arg_t *arg);
-	pl_penalty_t (*get_pos_penalty)(const struct pl_arg_t *arg);
+		position *ret_p, const struct pl_arg_t *arg, position hint_p);
+	pl_penalty_t (*get_pos_penalty)(
+		position *ret_hint_p, const struct pl_arg_t *arg);
 } pl_if_t;
 
 typedef struct pl_arg_t
@@ -212,16 +213,19 @@ typedef struct pl_arg_t
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static pl_loop_rc_t
-__cp_get_first_pos(position *ret_p, const struct pl_arg_t *arg);
-static pl_loop_rc_t
-__cp_get_next_pos(position *ret_p, const struct pl_arg_t *arg);
-static pl_penalty_t __cp_get_pos_penalty(const pl_arg_t *arg);
-static pl_loop_rc_t
-__sp_get_first_pos(position *ret_p, const struct pl_arg_t *arg);
-static pl_loop_rc_t
-__sp_get_next_pos(position *ret_p, const struct pl_arg_t *arg);
-static pl_penalty_t __sp_get_pos_penalty(const pl_arg_t *arg);
+static pl_loop_rc_t __cp_get_first_pos(
+	position *ret_p, const struct pl_arg_t *arg);
+static pl_loop_rc_t __cp_get_next_pos(
+	position *ret_p, const struct pl_arg_t *arg, position hint_p);
+static pl_penalty_t __cp_get_pos_penalty(
+	position *ret_hint_p, const pl_arg_t *arg);
+
+static pl_loop_rc_t __sp_get_first_pos(
+	position *ret_p, const struct pl_arg_t *arg);
+static pl_loop_rc_t __sp_get_next_pos(
+	position *ret_p, const struct pl_arg_t *arg, position hint_p);
+static pl_penalty_t __sp_get_pos_penalty(
+	position *ret_hint_p, const pl_arg_t *arg);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -522,7 +526,8 @@ static pl_loop_rc_t __cp_get_first_pos(position *ret_p, const pl_arg_t *arg)
 	return PL_LOOP_CONT;
 }
 
-static pl_loop_rc_t __cp_get_next_pos(position *ret_p, const pl_arg_t *arg)
+static pl_loop_rc_t __cp_get_next_pos(
+	position *ret_p, const struct pl_arg_t *arg, position hint_p)
 {
 	ret_p->x = arg->place_g.x;
 	ret_p->y = arg->place_g.y;
@@ -640,7 +645,8 @@ static pl_penalty_t __cp_get_avoidance_penalty(
 	return anew;
 }
 
-static pl_penalty_t __cp_get_pos_penalty(const struct pl_arg_t *arg)
+static pl_penalty_t __cp_get_pos_penalty(
+	position *ret_hint_p, const struct pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	pl_penalty_t penalty;
@@ -726,56 +732,50 @@ static pl_loop_rc_t __sp_get_first_pos(position *ret_p, const pl_arg_t *arg)
 	return PL_LOOP_CONT;
 }
 
-static pl_loop_rc_t __sp_get_next_pos(position *ret_p, const pl_arg_t *arg)
+static pl_loop_rc_t __sp_get_next_pos(
+	position *ret_p, const struct pl_arg_t *arg, position hint_p)
 {
-#if 0 /*!!!*/
+	ret_p->x = arg->place_g.x;
 	ret_p->y = arg->place_g.y;
-	if (ret_p->x + arg->place_g.width <= arg->page_p2.x)
+	/* next x position */
+	if (hint_p.x > ret_p->x)
 	{
-		/* try next x */
-		ret_p->x = __cp_get_next_x(arg);
-		ret_p->y = arg->place_g.y;
+		ret_p->x = hint_p.x;
 	}
-	if (ret_p->x + arg->place_g.width > arg->page_p2.x)
+	else
 	{
-		/* out of room in x direction. Try next y. Reset x.*/
-		ret_p->x = arg->page_p1.x;
-		ret_p->y = __cp_get_next_y(arg);
+		ret_p->x += 1;
 	}
-	if (ret_p->y + arg->place_g.height > arg->page_p2.y)
+	if (ret_p->x + arg->place_g.width < arg->page_p2.x)
 	{
-		/* PageBottom */
-		return PL_LOOP_END;
+		return PL_LOOP_CONT;
 	}
-#endif
+	/* next y position */
+	ret_p->x = arg->page_p1.x;
+	ret_p->y += 1;
+	if (ret_p->y + arg->place_g.height < arg->page_p2.y)
+	{
+		return PL_LOOP_CONT;
+	}
 
-	return PL_LOOP_CONT;
-}
-
-static pl_penalty_t __sp_get_pos_penalty(const struct pl_arg_t *arg)
-{
-	/*!!!*/
-
-	return -1/*!!!*/;
+	return PL_LOOP_END;
 }
 
 /* returns -1 if windows do not overlap
  * returns >= 0 (the window's next x position to try) if windows do overlap
  */
-static int __sp_test_window(
-	FvwmWindow *place_fw, FvwmWindow *other_fw,
-	const rectangle *place_g, int pdeltax, int pdeltay)
+static int __sp_test_window(const pl_arg_t *arg, FvwmWindow *other_fw)
 {
 	Bool rc;
 	rectangle other_g;
 
-	if (place_fw == other_fw || IS_EWMH_DESKTOP(FW_W(other_fw)))
+	if (arg->place_fw == other_fw || IS_EWMH_DESKTOP(FW_W(other_fw)))
 	{
 		return -1;
 	}
 	/*  RBW - account for sticky windows...  */
 	if (
-		other_fw->Desk != place_fw->Desk &&
+		other_fw->Desk != arg->place_fw->Desk &&
 		IS_STICKY_ACROSS_DESKS(other_fw) == 0)
 	{
 		return -1;
@@ -787,14 +787,14 @@ static int __sp_test_window(
 	{
 		if (IS_STICKY_ACROSS_PAGES(other_fw))
 		{
-			other_g.x -= pdeltax;
-			other_g.y -= pdeltay;
+			other_g.x -= arg->pdelta_p.x;
+			other_g.y -= arg->pdelta_p.y;
 		}
 		if (
-			other_g.x < place_g->x + place_g->width  &&
-			place_g->x < other_g.x + other_g.width &&
-			other_g.y < place_g->y + place_g->height &&
-			place_g->y < other_g.y + other_g.height)
+			other_g.x < arg->place_g.x + arg->place_g.width  &&
+			arg->place_g.x < other_g.x + other_g.width &&
+			other_g.y < arg->place_g.y + arg->place_g.height &&
+			arg->place_g.y < other_g.y + other_g.height)
 		{
 			/* window overlaps, look for a different place */
 			return other_g.x + other_g.width - 1;
@@ -804,55 +804,27 @@ static int __sp_test_window(
 	return -1;
 }
 
-static void SmartPlacement(pl_arg_t *arg)
+static pl_penalty_t __sp_get_pos_penalty(
+	position *ret_hint_p, const struct pl_arg_t *arg)
 {
-	int loc_ok = False;
+	FvwmWindow *other_fw;
 
-	arg->place_g.x = arg->page_p1.x;
-	arg->place_g.y = arg->page_p1.y;
-	arg->place_g.width = arg->place_g.width;
-	arg->place_g.height = arg->place_g.height;
 	for (
-		; arg->place_g.y + arg->place_g.height < arg->page_p2.y;
-		arg->place_g.y += 1)
+		other_fw = Scr.FvwmRoot.next; other_fw != NULL;
+		other_fw = other_fw->next)
 	{
-		arg->place_g.x = arg->page_p1.x;
-		for (
-			;
-			arg->place_g.x + arg->place_g.width < arg->page_p2.x;
-			arg->place_g.x += 1)
+		int next_x;
+
+		next_x = __sp_test_window(arg, other_fw);
+		if (next_x >= 0)
 		{
-			FvwmWindow *other_fw;
+			ret_hint_p->x = next_x;
 
-			loc_ok = True;
-			for (
-				other_fw = Scr.FvwmRoot.next;
-				other_fw != NULL && loc_ok == True;
-				other_fw = other_fw->next)
-			{
-				int next_x;
-
-				next_x = __sp_test_window(
-					arg->place_fw, other_fw, &arg->place_g,
-					arg->pdelta_p.x, arg->pdelta_p.y);
-				if (next_x >= 0)
-				{
-					loc_ok = False;
-					arg->place_g.x = next_x;
-				}
-			}
-			if (loc_ok == True)
-			{
-				arg->best_p.x = arg->place_g.x;
-				arg->best_p.y = arg->place_g.y;
-				arg->best_penalty = 0;
-
-				return;
-			}
+			return -1;
 		}
 	}
 
-	return;
+	return 0;
 }
 
 /* ---------------------------- local functions ---------------------------- */
@@ -860,7 +832,6 @@ static void SmartPlacement(pl_arg_t *arg)
 static void placement_loop(pl_arg_t *arg)
 {
 	position next_p;
-	/* area of interference */
 	pl_penalty_t penalty;
 	pl_loop_rc_t loop_rc;
 
@@ -871,9 +842,13 @@ static void placement_loop(pl_arg_t *arg)
 	arg->best_p.y = next_p.y;
 	while (loop_rc != PL_LOOP_END)
 	{
+		position hint_p;
+
 		arg->place_p2.x = arg->place_g.x + arg->place_g.width;
 		arg->place_p2.y = arg->place_g.y + arg->place_g.height;
-		penalty = arg->intf->get_pos_penalty(arg);
+		hint_p.x = arg->place_g.x;
+		hint_p.y = arg->place_g.y;
+		penalty = arg->intf->get_pos_penalty(&hint_p, arg);
 		/* I've added +0.0001 because with my machine the < test fail
 		 * with certain *equal* float numbers! */
 		if (
@@ -890,7 +865,7 @@ static void placement_loop(pl_arg_t *arg)
 		{
 			break;
 		}
-		loop_rc = arg->intf->get_next_pos(&next_p, arg);
+		loop_rc = arg->intf->get_next_pos(&next_p, arg, hint_p);
 		arg->place_g.x = next_p.x;
 		arg->place_g.y = next_p.y;
 	}
@@ -1054,7 +1029,8 @@ static Bool __place_get_wm_pos(
 		}
 		break;
 	case PLACE_TILEMANUAL:
-		SmartPlacement(&arg);
+		arg.intf = &smart_placement_if;
+		placement_loop(&arg);
 		if (arg.best_penalty != 0)
 		{
 			flags.is_smartly_placed = False;
@@ -1148,7 +1124,8 @@ static Bool __place_get_wm_pos(
 		flags.is_smartly_placed = True;
 		break;
 	case PLACE_TILECASCADE:
-		SmartPlacement(&arg);
+		arg.intf = &smart_placement_if;
+		placement_loop(&arg);
 		if (arg.best_penalty != 0)
 		{
 			flags.is_smartly_placed = False;

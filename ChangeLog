@@ -1,11 +1,21 @@
 2007-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/placement.c (__sp_get_first_pos):
+	(__sp_get_next_pos):
+	(__sp_get_pos_penalty):
+	(__place_get_wm_pos):
+	use new placement interface for SmartPlacement
+	(SmartPlacement):
+	removed function
+
 	* fvwm/placement.c:
 	don't use inline functions
 	(CleverPlacement):
 	(placement_loop):
 	renamed function and generalized the placement interface to deal with
 	any algorithm in the same way
+	(__place_get_wm_pos):
+	use new placement interface
 
 	* NEWS:
 	* configure.ac:
