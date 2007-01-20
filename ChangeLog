@@ -2,6 +2,10 @@
 
 	* NEWS:
 	* configure.ac:
+	increased version to 2.5.22
+
+	* NEWS:
+	* configure.ac:
 	updated for 2.5.21 release
 
 2007-01-19  Dan Espen  <dane@mk.telcordia.com>
@@ -99,7 +103,7 @@
 	don't make all windows raise above the pan frames.
 
 	* NEWS:
- 	* configure.ac:
+	* configure.ac:
 	increased version to 2.5.21
 
 	* NEWS:
