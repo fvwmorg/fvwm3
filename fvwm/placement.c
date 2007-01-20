@@ -192,7 +192,7 @@ typedef struct
 
 typedef struct pl_arg_t
 {
-	pl_algo_t *algo;
+	const pl_algo_t *algo;
 	const exec_context_t *exc;
 	pl_reason_t *reason;
 	FvwmWindow *place_fw;
@@ -252,7 +252,7 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 
 /* ---------------------------- local variables ---------------------------- */
 
-pl_algo_t clever_placement_algo =
+const pl_algo_t clever_placement_algo =
 {
 	NULL,
 	__pl_clever_get_first_pos,
@@ -260,7 +260,7 @@ pl_algo_t clever_placement_algo =
 	__pl_clever_get_pos_penalty
 };
 
-pl_algo_t smart_placement_algo =
+const pl_algo_t smart_placement_algo =
 {
 	NULL,
 	__pl_smart_get_first_pos,
@@ -268,22 +268,22 @@ pl_algo_t smart_placement_algo =
 	__pl_smart_get_pos_penalty
 };
 
-pl_algo_t center_placement_algo =
+const pl_algo_t center_placement_algo =
 {
 	__pl_center_get_pos_simple
 };
 
-pl_algo_t cascade_placement_algo =
+const pl_algo_t cascade_placement_algo =
 {
 	__pl_cascade_get_pos_simple
 };
 
-pl_algo_t under_mouse_placement_algo =
+const pl_algo_t under_mouse_placement_algo =
 {
 	__pl_under_mouse_get_pos_simple
 };
 
-pl_algo_t manual_placement_algo =
+const pl_algo_t manual_placement_algo =
 {
 	__pl_manual_get_pos_simple
 };
@@ -1209,13 +1209,27 @@ static void __place_get_placement_flags(
 	return;
 }
 
+static int __add_algo(
+	const pl_algo_t **algos, int num_algos, const pl_algo_t *new_algo)
+{
+	if (num_algos >= MAX_NUM_PLACEMENT_ALGOS)
+	{
+		return MAX_NUM_PLACEMENT_ALGOS;
+	}
+	algos[num_algos] = new_algo;
+	num_algos++;
+
+	return num_algos;
+}
+
 static int __place_get_wm_pos(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
 	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
 	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
 	int pdeltax, int pdeltay)
 {
-	pl_algo_t *algos[MAX_NUM_PLACEMENT_ALGOS + 1];
+	const pl_algo_t *algos[MAX_NUM_PLACEMENT_ALGOS + 1];
+	int num_algos;
 	unsigned int placement_mode = SPLACEMENT_MODE(sflags);
 	pl_arg_t arg;
 	pl_ret_t ret;
@@ -1262,45 +1276,52 @@ static int __place_get_wm_pos(
 	}
 	/* first, try various "smart" placement */
 	reason->pos.algo = placement_mode;
-	algos[1] = 0;
-	algos[2] = 0;
+	num_algos = 0;
 	switch (placement_mode)
 	{
 	case PLACE_CENTER:
-		algos[0] = &center_placement_algo;
+		num_algos = __add_algo(
+			algos, num_algos, &center_placement_algo);
 		break;
 	case PLACE_TILEMANUAL:
-		algos[0] = &smart_placement_algo;
-		algos[1] = &manual_placement_algo;
-		break;
-	case PLACE_MANUAL:
-	case PLACE_MANUAL_B:
-		algos[0] = &manual_placement_algo;
+		num_algos = __add_algo(
+			algos, num_algos, &smart_placement_algo);
+		num_algos = __add_algo(
+			algos, num_algos, &manual_placement_algo);
 		break;
 	case PLACE_MINOVERLAPPERCENT:
 		arg.flags.use_percent = 1;
 		/* fall through */
 	case PLACE_MINOVERLAP:
-		algos[0] = &clever_placement_algo;
+		num_algos = __add_algo(
+			algos, num_algos, &clever_placement_algo);
 		break;
 	case PLACE_TILECASCADE:
-		algos[0] = &smart_placement_algo;
-		algos[1] = &cascade_placement_algo;
+		num_algos = __add_algo(
+			algos, num_algos, &smart_placement_algo);
+		num_algos = __add_algo(
+			algos, num_algos, &cascade_placement_algo);
+		break;
+	case PLACE_MANUAL:
+	case PLACE_MANUAL_B:
+		num_algos = __add_algo(
+			algos, num_algos, &manual_placement_algo);
 		break;
 	case PLACE_CASCADE:
 	case PLACE_CASCADE_B:
-		algos[0] = &cascade_placement_algo;
+		num_algos = __add_algo(
+			algos, num_algos, &cascade_placement_algo);
 		break;
 	case PLACE_UNDERMOUSE:
-		algos[0] = &under_mouse_placement_algo;
+		num_algos = __add_algo(
+			algos, num_algos, &under_mouse_placement_algo);
 		break;
 	default:
 		/* can't happen */
-		algos[0] = 0;
 		break;
 	}
 	/* try all the placement algorithms */
-	for (i = 0 ; ret.best_penalty < 0 && algos[i] != NULL; i++)
+	for (i = 0 ; ret.best_penalty < 0 && i < num_algos; i++)
 	{
 		arg.algo = algos[i];
 		placement_loop(&ret, &arg);
