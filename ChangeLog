@@ -4850,8 +4850,8 @@
 
 2003-06-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
-	**/*.c:
-	**/*.h:
+	* **/*.c:
+	* **/*.h:
 	shortened some comments
 	removed GPL from .h files
 	added GPL to all .c files
