@@ -27,10 +27,6 @@
 
 /* ---------------------------- included header files ---------------------- */
 #include "config.h"
-#if 1 /*!!!*/
-#undef inline
-#define inline
-#endif
 
 #include <stdio.h>
 
@@ -157,7 +153,7 @@ typedef struct
 		int desk;
 		unsigned do_switch_desk : 1;
 	} desk;
-} placement_reason_t;
+} pl_reason_t;
 
 typedef struct
 {
@@ -165,7 +161,7 @@ typedef struct
 	int page_x;
 	int page_y;
 	int screen;
-} placement_start_style_t;
+} pl_start_style_t;
 
 typedef struct
 {
@@ -174,10 +170,30 @@ typedef struct
 	unsigned do_honor_starts_on_screen : 1;
 	unsigned is_smartly_placed : 1;
 	unsigned do_not_use_wm_placement : 1;
-} placement_flags_t;
+} pl_flags_t;
+
+typedef float pl_penalty_t;
+
+typedef enum
+{
+	PL_LOOP_END,
+	PL_LOOP_CONT
+} pl_loop_rc_t;
+
+struct pl_arg_t;
 
 typedef struct
 {
+	pl_loop_rc_t (*get_first_pos)(
+		position *ret_p, const struct pl_arg_t *arg);
+	pl_loop_rc_t (*get_next_pos)(
+		position *ret_p, const struct pl_arg_t *arg);
+	pl_penalty_t (*get_pos_penalty)(const struct pl_arg_t *arg);
+} pl_if_t;
+
+typedef struct pl_arg_t
+{
+	pl_if_t *intf;
 	FvwmWindow *place_fw;
 	rectangle place_g;
 	position place_p2;
@@ -191,28 +207,49 @@ typedef struct
 		unsigned use_ewmh_dynamic_working_areapercent : 1;
 	} flags;
 	position best_p;
-	float best_penalty;
+	pl_penalty_t best_penalty;
 } pl_arg_t;
-
-/*
- * CleverPlacement types
- */
-
-typedef enum
-{
-	CP_LOOP_END,
-	CP_LOOP_CONT
-} cp_loop_rc_t;
 
 /* ---------------------------- forward declarations ----------------------- */
 
+static pl_loop_rc_t
+__cp_get_first_pos(position *ret_p, const struct pl_arg_t *arg);
+static pl_loop_rc_t
+__cp_get_next_pos(position *ret_p, const struct pl_arg_t *arg);
+static pl_penalty_t __cp_get_pos_penalty(const pl_arg_t *arg);
+static pl_loop_rc_t
+__sp_get_first_pos(position *ret_p, const struct pl_arg_t *arg);
+static pl_loop_rc_t
+__sp_get_next_pos(position *ret_p, const struct pl_arg_t *arg);
+static pl_penalty_t __sp_get_pos_penalty(const pl_arg_t *arg);
+
 /* ---------------------------- local variables ---------------------------- */
+
+pl_if_t clever_placement_if =
+{
+	__cp_get_first_pos,
+	__cp_get_next_pos,
+	__cp_get_pos_penalty
+};
+
+pl_if_t smart_placement_if =
+{
+	__sp_get_first_pos,
+	__sp_get_next_pos,
+	__sp_get_pos_penalty
+};
 
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions (CleverPlacement) ---------- */
 
-static inline int __cp_get_next_x(const pl_arg_t *arg)
+/* CleverPlacement by Anthony Martin <amartin@engr.csulb.edu>
+ * This algorithm places a new window such that there is a minimum amount of
+ * interference with other windows.  If it can place a window without any
+ * interference, fine.  Otherwise, it places it so that the area of of
+ * interference between the new window and the other windows is minimized */
+
+static int __cp_get_next_x(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int xnew;
@@ -350,7 +387,7 @@ static inline int __cp_get_next_x(const pl_arg_t *arg)
 	return xnew;
 }
 
-static inline int __cp_get_next_y(const pl_arg_t *arg)
+static int __cp_get_next_y(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int ynew;
@@ -476,18 +513,16 @@ static inline int __cp_get_next_y(const pl_arg_t *arg)
 	return ynew;
 }
 
-static inline cp_loop_rc_t __cp_get_first_pos(
-	position *ret_p, const pl_arg_t *arg)
+static pl_loop_rc_t __cp_get_first_pos(position *ret_p, const pl_arg_t *arg)
 {
 	/* top left corner of page */
 	ret_p->x = arg->page_p1.x;
 	ret_p->y = arg->page_p1.y;
 
-	return CP_LOOP_CONT;
+	return PL_LOOP_CONT;
 }
 
-static inline cp_loop_rc_t __cp_get_next_pos(
-	position *ret_p, const pl_arg_t *arg)
+static pl_loop_rc_t __cp_get_next_pos(position *ret_p, const pl_arg_t *arg)
 {
 	ret_p->x = arg->place_g.x;
 	ret_p->y = arg->place_g.y;
@@ -506,17 +541,17 @@ static inline cp_loop_rc_t __cp_get_next_pos(
 	if (ret_p->y + arg->place_g.height > arg->page_p2.y)
 	{
 		/* PageBottom */
-		return CP_LOOP_END;
+		return PL_LOOP_END;
 	}
 
-	return CP_LOOP_CONT;
+	return PL_LOOP_CONT;
 }
 
-static inline float __cp_get_avoidance_penalty(
+static pl_penalty_t __cp_get_avoidance_penalty(
 	const pl_arg_t *arg, FvwmWindow *other_fw, const rectangle *other_g)
 {
-	float anew;
-	float avoidance_factor;
+	pl_penalty_t anew;
+	pl_penalty_t avoidance_factor;
 	position other_p2;
 
 	other_p2.x = other_g->x + other_g->width;
@@ -555,7 +590,7 @@ static inline float __cp_get_avoidance_penalty(
 	}
 	if (arg->flags.use_percent == 1)
 	{
-		float cover_factor;
+		pl_penalty_t cover_factor;
 		long other_area;
 		long place_area;
 
@@ -605,10 +640,10 @@ static inline float __cp_get_avoidance_penalty(
 	return anew;
 }
 
-static inline float __cp_test_fit(const pl_arg_t *arg)
+static pl_penalty_t __cp_get_pos_penalty(const struct pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
-	float penalty;
+	pl_penalty_t penalty;
 
 	penalty = 0;
 	for (
@@ -643,7 +678,7 @@ static inline float __cp_test_fit(const pl_arg_t *arg)
 			arg->place_g.y < other_g.y + other_g.height &&
 			arg->place_p2.y > other_g.y)
 		{
-			float anew;
+			pl_penalty_t anew;
 
 			anew = __cp_get_avoidance_penalty(
 				arg, other_fw, &other_g);
@@ -680,58 +715,54 @@ static inline float __cp_test_fit(const pl_arg_t *arg)
 	return penalty;
 }
 
-/* CleverPlacement by Anthony Martin <amartin@engr.csulb.edu>
- * This function will place a new window such that there is a minimum amount
- * of interference with other windows.  If it can place a window without any
- * interference, fine.  Otherwise, it places it so that the area of of
- * interference between the new window and the other windows is minimized */
-static void CleverPlacement(pl_arg_t *arg)
+/* ---------------------------- local functions (SmartPlacement) ----------- */
+
+static pl_loop_rc_t __sp_get_first_pos(position *ret_p, const pl_arg_t *arg)
 {
-	position next_p;
-	/* area of interference */
-	float penalty;
-	cp_loop_rc_t loop_rc;
+	/* top left corner of page */
+	ret_p->x = arg->page_p1.x;
+	ret_p->y = arg->page_p1.y;
 
-	loop_rc = __cp_get_first_pos(&next_p, arg);
-	arg->place_g.x = next_p.x;
-	arg->place_g.y = next_p.y;
-	arg->best_p.x = next_p.x;
-	arg->best_p.y = next_p.y;
-	while (loop_rc != CP_LOOP_END)
-	{
-		arg->place_p2.x = arg->place_g.x + arg->place_g.width;
-		arg->place_p2.y = arg->place_g.y + arg->place_g.height;
-		penalty = __cp_test_fit(arg);
-		/* I've added +0.0001 because with my machine the < test fail
-		 * with certain *equal* float numbers! */
-		if (
-			penalty >= 0 &&
-			(
-				arg->best_penalty < 0 ||
-				penalty + 0.0001 < arg->best_penalty))
-		{
-			arg->best_p.x = arg->place_g.x;
-			arg->best_p.y = arg->place_g.y;
-			arg->best_penalty = penalty;
-		}
-		if (penalty == 0)
-		{
-			break;
-		}
-		loop_rc = __cp_get_next_pos(&next_p, arg);
-		arg->place_g.x = next_p.x;
-		arg->place_g.y = next_p.y;
-	}
-
-	return;
+	return PL_LOOP_CONT;
 }
 
-/* ---------------------------- local functions (SmartPlacement) ----------- */
+static pl_loop_rc_t __sp_get_next_pos(position *ret_p, const pl_arg_t *arg)
+{
+#if 0 /*!!!*/
+	ret_p->y = arg->place_g.y;
+	if (ret_p->x + arg->place_g.width <= arg->page_p2.x)
+	{
+		/* try next x */
+		ret_p->x = __cp_get_next_x(arg);
+		ret_p->y = arg->place_g.y;
+	}
+	if (ret_p->x + arg->place_g.width > arg->page_p2.x)
+	{
+		/* out of room in x direction. Try next y. Reset x.*/
+		ret_p->x = arg->page_p1.x;
+		ret_p->y = __cp_get_next_y(arg);
+	}
+	if (ret_p->y + arg->place_g.height > arg->page_p2.y)
+	{
+		/* PageBottom */
+		return PL_LOOP_END;
+	}
+#endif
+
+	return PL_LOOP_CONT;
+}
+
+static pl_penalty_t __sp_get_pos_penalty(const struct pl_arg_t *arg)
+{
+	/*!!!*/
+
+	return -1/*!!!*/;
+}
 
 /* returns -1 if windows do not overlap
  * returns >= 0 (the window's next x position to try) if windows do overlap
  */
-static inline int __sp_test_window(
+static int __sp_test_window(
 	FvwmWindow *place_fw, FvwmWindow *other_fw,
 	const rectangle *place_g, int pdeltax, int pdeltay)
 {
@@ -812,19 +843,13 @@ static void SmartPlacement(pl_arg_t *arg)
 			}
 			if (loc_ok == True)
 			{
-				break;
+				arg->best_p.x = arg->place_g.x;
+				arg->best_p.y = arg->place_g.y;
+				arg->best_penalty = 0;
+
+				return;
 			}
 		}
-		if (loc_ok == True)
-		{
-			break;
-		}
-	}
-	if (loc_ok == True)
-	{
-		arg->best_p.x = arg->place_g.x;
-		arg->best_p.y = arg->place_g.y;
-		arg->best_penalty = 0;
 	}
 
 	return;
@@ -832,10 +857,54 @@ static void SmartPlacement(pl_arg_t *arg)
 
 /* ---------------------------- local functions ---------------------------- */
 
+static void placement_loop(pl_arg_t *arg)
+{
+	position next_p;
+	/* area of interference */
+	pl_penalty_t penalty;
+	pl_loop_rc_t loop_rc;
+
+	loop_rc = arg->intf->get_first_pos(&next_p, arg);
+	arg->place_g.x = next_p.x;
+	arg->place_g.y = next_p.y;
+	arg->best_p.x = next_p.x;
+	arg->best_p.y = next_p.y;
+	while (loop_rc != PL_LOOP_END)
+	{
+		arg->place_p2.x = arg->place_g.x + arg->place_g.width;
+		arg->place_p2.y = arg->place_g.y + arg->place_g.height;
+		penalty = arg->intf->get_pos_penalty(arg);
+		/* I've added +0.0001 because with my machine the < test fail
+		 * with certain *equal* float numbers! */
+		if (
+			penalty >= 0 &&
+			(
+				arg->best_penalty < 0 ||
+				penalty + 0.0001 < arg->best_penalty))
+		{
+			arg->best_p.x = arg->place_g.x;
+			arg->best_p.y = arg->place_g.y;
+			arg->best_penalty = penalty;
+		}
+		if (penalty == 0)
+		{
+			break;
+		}
+		loop_rc = arg->intf->get_next_pos(&next_p, arg);
+		arg->place_g.x = next_p.x;
+		arg->place_g.y = next_p.y;
+	}
+	if (arg->best_penalty < 0)
+	{
+		arg->best_penalty = -1;
+	}
+
+	return;
+}
+
 static void __place_get_placement_flags(
-	placement_flags_t *ret_flags, FvwmWindow *fw, style_flags *sflags,
-	initial_window_options_t *win_opts, int mode,
-	placement_reason_t *reason)
+	pl_flags_t *ret_flags, FvwmWindow *fw, style_flags *sflags,
+	initial_window_options_t *win_opts, int mode, pl_reason_t *reason)
 {
 	Bool override_ppos;
 	Bool override_uspos;
@@ -915,9 +984,8 @@ static void __place_get_placement_flags(
 
 static Bool __place_get_wm_pos(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
-	placement_flags_t flags, rectangle screen_g,
-	placement_start_style_t start_style, int mode,
-	initial_window_options_t *win_opts, placement_reason_t *reason,
+	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
+	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
 	int pdeltax, int pdeltay)
 {
 	unsigned int placement_mode = SPLACEMENT_MODE(sflags);
@@ -1073,7 +1141,8 @@ static Bool __place_get_wm_pos(
 		break;
 	case PLACE_MINOVERLAPPERCENT:
 		arg.flags.use_percent = 1;
-		CleverPlacement(&arg);
+		arg.intf = &clever_placement_if;
+		placement_loop(&arg);
 		xl = arg.best_p.x;
 		yt = arg.best_p.y;
 		flags.is_smartly_placed = True;
@@ -1145,7 +1214,8 @@ static Bool __place_get_wm_pos(
 		break;
 	case PLACE_MINOVERLAP:
 		arg.flags.use_percent = 0;
-		CleverPlacement(&arg);
+		arg.intf = &clever_placement_if;
+		placement_loop(&arg);
 		xl = arg.best_p.x;
 		yt = arg.best_p.y;
 		flags.is_smartly_placed = True;
@@ -1211,9 +1281,8 @@ static Bool __place_get_wm_pos(
 
 static Bool __place_get_nowm_pos(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
-	placement_flags_t flags, rectangle screen_g,
-	placement_start_style_t start_style, int mode,
-	initial_window_options_t *win_opts, placement_reason_t *reason,
+	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
+	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
 	int pdeltax, int pdeltay)
 {
 	FvwmWindow *fw = exc->w.fw;
@@ -1367,8 +1436,8 @@ static Bool __place_get_nowm_pos(
  *   2 = OK, window must be resized too */
 static Bool __place_window(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
-	placement_start_style_t start_style, int mode,
-	initial_window_options_t *win_opts, placement_reason_t *reason)
+	pl_start_style_t start_style, int mode,
+	initial_window_options_t *win_opts, pl_reason_t *reason)
 {
 	FvwmWindow *t;
 	int px = 0;
@@ -1377,7 +1446,7 @@ static Bool __place_window(
 	int pdeltay = 0;
 	rectangle screen_g;
 	Bool rc = False;
-	placement_flags_t flags;
+	pl_flags_t flags;
 	extern Bool Restarting;
 	FvwmWindow *fw = exc->w.fw;
 
@@ -1645,7 +1714,7 @@ static Bool __place_window(
 }
 
 static void __place_handle_x_resources(
-	FvwmWindow *fw, window_style *pstyle, placement_reason_t *reason)
+	FvwmWindow *fw, window_style *pstyle, pl_reason_t *reason)
 {
 	int client_argc = 0;
 	char **client_argv = NULL;
@@ -1745,7 +1814,7 @@ static void __place_handle_x_resources(
 	return;
 }
 
-static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
+static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 {
 	char explanation[2048];
 	char *r;
@@ -2015,8 +2084,8 @@ Bool setup_window_placement(
 	Bool rc;
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
-	placement_reason_t reason;
-	placement_start_style_t start_style;
+	pl_reason_t reason;
+	pl_start_style_t start_style;
 
 	memset(&reason, 0, sizeof(reason));
 	if (pstyle->flags.use_start_on_desk)

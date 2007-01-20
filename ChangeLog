@@ -1,5 +1,12 @@
 2007-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/placement.c:
+	don't use inline functions
+	(CleverPlacement):
+	(placement_loop):
+	renamed function and generalized the placement interface to deal with
+	any algorithm in the same way
+
 	* NEWS:
 	* configure.ac:
 	increased version to 2.5.22
