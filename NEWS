@@ -3,7 +3,7 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.21 (not released yet)
+Changes in beta release 2.5.21 (20-Jan-2007)
 
 * New features:
 
@@ -11,8 +11,8 @@ Changes in beta release 2.5.21 (not released yet)
 
 * Bug Fixes:
 
-   - Fixed Tile...Placements (aka SmartPlacement) that was broken
-     in 2.5.20.
+   - Fixed Tile...Placement styles (SmartPlacement) that were
+     broken in 2.5.20.
 
 -------------------------------------------------------------------
 
