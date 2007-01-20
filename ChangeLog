@@ -1,5 +1,20 @@
 2007-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/placement.c (__place_get_wm_pos):
+	simplified to a simple loop
+	(__explain_placement):
+	added explanation of new placement styles
+
+	* fvwm/placement.c (__place_get_wm_pos):
+	cleanup
+	(__pl_center_get_pos_simple):
+	(__pl_under_mouse_get_pos_simple):
+	(__pl_cascade_get_pos_simple):
+	(__pl_manual_get_pos_simple):
+	(__place_get_wm_pos):
+	use new placement interface for CenterPlacement, UnderMousePlacement,
+	ManualPlacement, CascadePlacement
+
 	* fvwm/placement.c (__sp_get_first_pos):
 	(__sp_get_next_pos):
 	(__sp_get_pos_penalty):

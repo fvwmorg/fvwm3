@@ -14,17 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- * This module is all new
- * by Rob Nation
- *
- * This code does smart-placement initial window placement stuff
- *
- * Copyright 1994 Robert Nation. No restrictions are placed on this code,
- * as long as the copyright notice is preserved . No guarantees or
- * warrantees of any sort whatsoever are given or implied or anything.
- */
-
 /* ---------------------------- included header files ---------------------- */
 #include "config.h"
 
@@ -52,9 +41,7 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-/*
- * CleverPlacement macros
- */
+#define MAX_NUM_PLACEMENT_ALGOS 31
 #define CP_GET_NEXT_STEP 5
 
 /* ---------------------------- local macros ------------------------------- */
@@ -129,6 +116,8 @@ typedef struct
 		unsigned do_adjust_off_page : 1;
 		unsigned has_tile_failed : 1;
 		unsigned has_manual_failed : 1;
+		unsigned has_under_mouse_failed : 1;
+		unsigned has_placement_failed : 1;
 	} pos;
 	struct
 	{
@@ -168,7 +157,6 @@ typedef struct
 	unsigned do_forbid_manual_placement : 1;
 	unsigned do_honor_starts_on_page : 1;
 	unsigned do_honor_starts_on_screen : 1;
-	unsigned is_smartly_placed : 1;
 	unsigned do_not_use_wm_placement : 1;
 } pl_flags_t;
 
@@ -181,20 +169,32 @@ typedef enum
 } pl_loop_rc_t;
 
 struct pl_arg_t;
+struct pl_ret_t;
 
 typedef struct
 {
+	/* If this funtion pointer is not NULL, use this function to return
+	 * the desired position in a single call */
+	pl_penalty_t (*get_pos_simple)(
+		position *ret_p, struct pl_ret_t *ret,
+		const struct pl_arg_t *arg);
+	/* otherwise use these three in a loop */
 	pl_loop_rc_t (*get_first_pos)(
-		position *ret_p, const struct pl_arg_t *arg);
+		position *ret_p, struct pl_ret_t *ret,
+		const struct pl_arg_t *arg);
 	pl_loop_rc_t (*get_next_pos)(
-		position *ret_p, const struct pl_arg_t *arg, position hint_p);
+		position *ret_p, struct pl_ret_t *ret,
+		const struct pl_arg_t *arg, position hint_p);
 	pl_penalty_t (*get_pos_penalty)(
-		position *ret_hint_p, const struct pl_arg_t *arg);
-} pl_if_t;
+		position *ret_hint_p, struct pl_ret_t *ret,
+		const struct pl_arg_t *arg);
+} pl_algo_t;
 
 typedef struct pl_arg_t
 {
-	pl_if_t *intf;
+	pl_algo_t *algo;
+	const exec_context_t *exc;
+	pl_reason_t *reason;
 	FvwmWindow *place_fw;
 	rectangle place_g;
 	position place_p2;
@@ -206,44 +206,277 @@ typedef struct pl_arg_t
 	{
 		unsigned use_percent : 1;
 		unsigned use_ewmh_dynamic_working_areapercent : 1;
+		unsigned do_honor_starts_on_page : 1;
 	} flags;
+} pl_arg_t;
+
+typedef struct pl_ret_t
+{
 	position best_p;
 	pl_penalty_t best_penalty;
-} pl_arg_t;
+	struct
+	{
+		unsigned do_resize_too : 1;
+	} flags;
+} pl_ret_t;
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static pl_loop_rc_t __cp_get_first_pos(
-	position *ret_p, const struct pl_arg_t *arg);
-static pl_loop_rc_t __cp_get_next_pos(
-	position *ret_p, const struct pl_arg_t *arg, position hint_p);
-static pl_penalty_t __cp_get_pos_penalty(
-	position *ret_hint_p, const pl_arg_t *arg);
+static pl_loop_rc_t __pl_clever_get_first_pos(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
+static pl_loop_rc_t __pl_clever_get_next_pos(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
+	position hint_p);
+static pl_penalty_t __pl_clever_get_pos_penalty(
+	position *ret_hint_p, struct pl_ret_t *ret, const pl_arg_t *arg);
 
-static pl_loop_rc_t __sp_get_first_pos(
-	position *ret_p, const struct pl_arg_t *arg);
-static pl_loop_rc_t __sp_get_next_pos(
-	position *ret_p, const struct pl_arg_t *arg, position hint_p);
-static pl_penalty_t __sp_get_pos_penalty(
-	position *ret_hint_p, const pl_arg_t *arg);
+static pl_loop_rc_t __pl_smart_get_first_pos(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
+static pl_loop_rc_t __pl_smart_get_next_pos(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
+	position hint_p);
+static pl_penalty_t __pl_smart_get_pos_penalty(
+	position *ret_hint_p, struct pl_ret_t *ret, const pl_arg_t *arg);
+
+static pl_penalty_t __pl_center_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
+
+static pl_penalty_t __pl_cascade_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
+
+static pl_penalty_t __pl_under_mouse_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
+
+static pl_penalty_t __pl_manual_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
 
 /* ---------------------------- local variables ---------------------------- */
 
-pl_if_t clever_placement_if =
+pl_algo_t clever_placement_algo =
 {
-	__cp_get_first_pos,
-	__cp_get_next_pos,
-	__cp_get_pos_penalty
+	NULL,
+	__pl_clever_get_first_pos,
+	__pl_clever_get_next_pos,
+	__pl_clever_get_pos_penalty
 };
 
-pl_if_t smart_placement_if =
+pl_algo_t smart_placement_algo =
 {
-	__sp_get_first_pos,
-	__sp_get_next_pos,
-	__sp_get_pos_penalty
+	NULL,
+	__pl_smart_get_first_pos,
+	__pl_smart_get_next_pos,
+	__pl_smart_get_pos_penalty
+};
+
+pl_algo_t center_placement_algo =
+{
+	__pl_center_get_pos_simple
+};
+
+pl_algo_t cascade_placement_algo =
+{
+	__pl_cascade_get_pos_simple
+};
+
+pl_algo_t under_mouse_placement_algo =
+{
+	__pl_under_mouse_get_pos_simple
+};
+
+pl_algo_t manual_placement_algo =
+{
+	__pl_manual_get_pos_simple
 };
 
 /* ---------------------------- exported variables (globals) --------------- */
+
+/* ---------------------------- local functions (CenterPlacement)----------- */
+
+static pl_penalty_t __pl_center_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
+{
+	ret_p->x = (arg->screen_g.width - arg->place_g.width) / 2;
+	ret_p->y = (arg->screen_g.height - arg->place_g.height) / 2;
+	/* Don't let the upper left corner be offscreen. */
+	if (ret_p->x < arg->page_p1.x)
+	{
+		ret_p->x = arg->page_p1.x;
+	}
+	if (ret_p->y < arg->page_p1.y)
+	{
+		ret_p->y = arg->page_p1.y;
+	}
+
+	return 0;
+}
+
+/* ---------------------------- local functions (CascadePlacement)---------- */
+
+static pl_penalty_t __pl_cascade_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
+{
+	size_borders b;
+
+	if (Scr.cascade_window != NULL)
+	{
+		Scr.cascade_x += arg->place_fw->title_thickness;
+		Scr.cascade_y += 2 * arg->place_fw->title_thickness;
+	}
+	Scr.cascade_window = arg->place_fw;
+	if (Scr.cascade_x > arg->screen_g.width / 2)
+	{
+		Scr.cascade_x = arg->place_fw->title_thickness;
+	}
+	if (Scr.cascade_y > arg->screen_g.height / 2)
+	{
+		Scr.cascade_y = 2 * arg->place_fw->title_thickness;
+	}
+	ret_p->x = Scr.cascade_x + arg->page_p1.x;
+	ret_p->y = Scr.cascade_y + arg->page_p1.y;
+	/* try to keep the window on the screen */
+	get_window_borders(arg->place_fw, &b);
+	if (ret_p->x + arg->place_g.width >= arg->page_p2.x)
+	{
+		ret_p->x = arg->page_p2.x - arg->place_g.width -
+			b.total_size.width;
+		Scr.cascade_x = arg->place_fw->title_thickness;
+	}
+	if (ret_p->y + arg->place_g.height >= arg->page_p2.y)
+	{
+		ret_p->y = arg->page_p2.y - arg->place_g.height -
+			b.total_size.height;
+		Scr.cascade_y = 2 * arg->place_fw->title_thickness;
+	}
+
+	/* the left and top sides are more important in huge windows */
+	if (ret_p->x < arg->page_p1.x)
+	{
+		ret_p->x = arg->page_p1.x;
+	}
+	if (ret_p->y < arg->page_p1.y)
+	{
+		ret_p->y = arg->page_p1.y;
+	}
+
+	return 0;
+}
+
+/* ---------------------------- local functions (UnderMousePlacement) ------ */
+
+static pl_penalty_t __pl_under_mouse_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
+{
+	int mx;
+	int my;
+
+	if (
+		FQueryPointer(
+			dpy, Scr.Root, &JunkRoot, &JunkChild, &mx, &my,
+			&JunkX, &JunkY, &JunkMask) == False)
+	{
+		/* pointer is on a different screen */
+		arg->reason->pos.has_under_mouse_failed = 1;
+
+		return -1;
+	}
+	ret_p->x = mx - (arg->place_g.width / 2);
+	ret_p->y = my - (arg->place_g.height / 2);
+	if (
+		ret_p->x + arg->place_g.width >
+		arg->screen_g.x + arg->screen_g.width)
+	{
+		ret_p->x = arg->screen_g.x + arg->screen_g.width -
+			arg->place_g.width;
+	}
+	if (
+		ret_p->y + arg->place_g.height >
+		arg->screen_g.y + arg->screen_g.height)
+	{
+		ret_p->y = arg->screen_g.y + arg->screen_g.height -
+			arg->place_g.height;
+	}
+	if (ret_p->x < arg->screen_g.x)
+	{
+		ret_p->x = arg->screen_g.x;
+	}
+	if (ret_p->y < arg->screen_g.y)
+	{
+		ret_p->y = arg->screen_g.y;
+	}
+
+	return 0;
+}
+
+/* ---------------------------- local functions (ManualPlacement)----------- */
+
+static pl_penalty_t __pl_manual_get_pos_simple(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
+{
+	ret_p->x = 0;
+	ret_p->y = 0;
+	if (GrabEm(CRS_POSITION, GRAB_NORMAL))
+	{
+		int DragWidth;
+		int DragHeight;
+		int mx;
+		int my;
+
+		/* Grabbed the pointer - continue */
+		MyXGrabServer(dpy);
+		if (
+			XGetGeometry(
+				dpy, FW_W(arg->place_fw), &JunkRoot, &JunkX,
+				&JunkY, (unsigned int*)&DragWidth,
+				(unsigned int*)&DragHeight,
+				(unsigned int*)&JunkBW,
+				(unsigned int*)&JunkDepth) == 0)
+		{
+			MyXUngrabServer(dpy);
+			UngrabEm(GRAB_NORMAL);
+
+			return -1;
+		}
+		SET_PLACED_BY_FVWM(arg->place_fw, 0);
+		MyXGrabKeyboard(dpy);
+		DragWidth = arg->place_g.width;
+		DragHeight = arg->place_g.height;
+
+		if (Scr.SizeWindow != None)
+		{
+			XMapRaised(dpy, Scr.SizeWindow);
+		}
+		FScreenGetScrRect(
+			NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
+		if (__move_loop(
+			    arg->exc, mx, my, DragWidth, DragHeight, &ret_p->x,
+			    &ret_p->y, False))
+		{
+			ret->flags.do_resize_too = 1;
+		}
+		if (Scr.SizeWindow != None)
+		{
+			XUnmapWindow(dpy, Scr.SizeWindow);
+		}
+		MyXUngrabKeyboard(dpy);
+		MyXUngrabServer(dpy);
+		UngrabEm(GRAB_NORMAL);
+	}
+	else
+	{
+		/* couldn't grab the pointer - better do something */
+		XBell(dpy, 0);
+		ret_p->x = 0;
+		ret_p->y = 0;
+		arg->reason->pos.has_manual_failed = 1;
+	}
+	if (arg->flags.do_honor_starts_on_page)
+	{
+		ret_p->x -= arg->pdelta_p.x;
+		ret_p->y -= arg->pdelta_p.y;
+	}
+
+	return 0;
+}
 
 /* ---------------------------- local functions (CleverPlacement) ---------- */
 
@@ -253,7 +486,7 @@ pl_if_t smart_placement_if =
  * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
 
-static int __cp_get_next_x(const pl_arg_t *arg)
+static int __pl_clever_get_next_x(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int xnew;
@@ -391,7 +624,7 @@ static int __cp_get_next_x(const pl_arg_t *arg)
 	return xnew;
 }
 
-static int __cp_get_next_y(const pl_arg_t *arg)
+static int __pl_clever_get_next_y(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int ynew;
@@ -517,7 +750,8 @@ static int __cp_get_next_y(const pl_arg_t *arg)
 	return ynew;
 }
 
-static pl_loop_rc_t __cp_get_first_pos(position *ret_p, const pl_arg_t *arg)
+static pl_loop_rc_t __pl_clever_get_first_pos(
+	position *ret_p, struct pl_ret_t *ret, const pl_arg_t *arg)
 {
 	/* top left corner of page */
 	ret_p->x = arg->page_p1.x;
@@ -526,22 +760,23 @@ static pl_loop_rc_t __cp_get_first_pos(position *ret_p, const pl_arg_t *arg)
 	return PL_LOOP_CONT;
 }
 
-static pl_loop_rc_t __cp_get_next_pos(
-	position *ret_p, const struct pl_arg_t *arg, position hint_p)
+static pl_loop_rc_t __pl_clever_get_next_pos(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
+	position hint_p)
 {
 	ret_p->x = arg->place_g.x;
 	ret_p->y = arg->place_g.y;
 	if (ret_p->x + arg->place_g.width <= arg->page_p2.x)
 	{
 		/* try next x */
-		ret_p->x = __cp_get_next_x(arg);
+		ret_p->x = __pl_clever_get_next_x(arg);
 		ret_p->y = arg->place_g.y;
 	}
 	if (ret_p->x + arg->place_g.width > arg->page_p2.x)
 	{
 		/* out of room in x direction. Try next y. Reset x.*/
 		ret_p->x = arg->page_p1.x;
-		ret_p->y = __cp_get_next_y(arg);
+		ret_p->y = __pl_clever_get_next_y(arg);
 	}
 	if (ret_p->y + arg->place_g.height > arg->page_p2.y)
 	{
@@ -552,7 +787,7 @@ static pl_loop_rc_t __cp_get_next_pos(
 	return PL_LOOP_CONT;
 }
 
-static pl_penalty_t __cp_get_avoidance_penalty(
+static pl_penalty_t __pl_clever_get_avoidance_penalty(
 	const pl_arg_t *arg, FvwmWindow *other_fw, const rectangle *other_g)
 {
 	pl_penalty_t anew;
@@ -645,8 +880,8 @@ static pl_penalty_t __cp_get_avoidance_penalty(
 	return anew;
 }
 
-static pl_penalty_t __cp_get_pos_penalty(
-	position *ret_hint_p, const struct pl_arg_t *arg)
+static pl_penalty_t __pl_clever_get_pos_penalty(
+	position *ret_hint_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	pl_penalty_t penalty;
@@ -686,12 +921,12 @@ static pl_penalty_t __cp_get_pos_penalty(
 		{
 			pl_penalty_t anew;
 
-			anew = __cp_get_avoidance_penalty(
+			anew = __pl_clever_get_avoidance_penalty(
 				arg, other_fw, &other_g);
 			penalty += anew;
 			if (
-				penalty > arg->best_penalty &&
-				arg->best_penalty != -1)
+				penalty > ret->best_penalty &&
+				ret->best_penalty != -1)
 			{
 				/* stop looking; the penalty is too high */
 				return penalty;
@@ -723,7 +958,8 @@ static pl_penalty_t __cp_get_pos_penalty(
 
 /* ---------------------------- local functions (SmartPlacement) ----------- */
 
-static pl_loop_rc_t __sp_get_first_pos(position *ret_p, const pl_arg_t *arg)
+static pl_loop_rc_t __pl_smart_get_first_pos(
+	position *ret_p, struct pl_ret_t *ret, const pl_arg_t *arg)
 {
 	/* top left corner of page */
 	ret_p->x = arg->page_p1.x;
@@ -732,8 +968,9 @@ static pl_loop_rc_t __sp_get_first_pos(position *ret_p, const pl_arg_t *arg)
 	return PL_LOOP_CONT;
 }
 
-static pl_loop_rc_t __sp_get_next_pos(
-	position *ret_p, const struct pl_arg_t *arg, position hint_p)
+static pl_loop_rc_t __pl_smart_get_next_pos(
+	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
+	position hint_p)
 {
 	ret_p->x = arg->place_g.x;
 	ret_p->y = arg->place_g.y;
@@ -764,7 +1001,7 @@ static pl_loop_rc_t __sp_get_next_pos(
 /* returns -1 if windows do not overlap
  * returns >= 0 (the window's next x position to try) if windows do overlap
  */
-static int __sp_test_window(const pl_arg_t *arg, FvwmWindow *other_fw)
+static int __pl_smart_test_window(const pl_arg_t *arg, FvwmWindow *other_fw)
 {
 	Bool rc;
 	rectangle other_g;
@@ -804,8 +1041,8 @@ static int __sp_test_window(const pl_arg_t *arg, FvwmWindow *other_fw)
 	return -1;
 }
 
-static pl_penalty_t __sp_get_pos_penalty(
-	position *ret_hint_p, const struct pl_arg_t *arg)
+static pl_penalty_t __pl_smart_get_pos_penalty(
+	position *ret_hint_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 
@@ -815,7 +1052,7 @@ static pl_penalty_t __sp_get_pos_penalty(
 	{
 		int next_x;
 
-		next_x = __sp_test_window(arg, other_fw);
+		next_x = __pl_smart_test_window(arg, other_fw);
 		if (next_x >= 0)
 		{
 			ret_hint_p->x = next_x;
@@ -829,17 +1066,32 @@ static pl_penalty_t __sp_get_pos_penalty(
 
 /* ---------------------------- local functions ---------------------------- */
 
-static void placement_loop(pl_arg_t *arg)
+static int placement_loop(pl_ret_t *ret, pl_arg_t *arg)
 {
 	position next_p;
 	pl_penalty_t penalty;
 	pl_loop_rc_t loop_rc;
 
-	loop_rc = arg->intf->get_first_pos(&next_p, arg);
-	arg->place_g.x = next_p.x;
-	arg->place_g.y = next_p.y;
-	arg->best_p.x = next_p.x;
-	arg->best_p.y = next_p.y;
+	if (arg->algo->get_pos_simple != NULL)
+	{
+		position pos;
+
+		penalty = arg->algo->get_pos_simple(&pos, ret, arg);
+		arg->place_g.x = pos.x;
+		arg->place_g.y = pos.y;
+		ret->best_penalty = penalty;
+		ret->best_p.x = pos.x;
+		ret->best_p.y = pos.y;
+		loop_rc = PL_LOOP_END;
+	}
+	else
+	{
+		loop_rc = arg->algo->get_first_pos(&next_p, ret, arg);
+		arg->place_g.x = next_p.x;
+		arg->place_g.y = next_p.y;
+		ret->best_p.x = next_p.x;
+		ret->best_p.y = next_p.y;
+	}
 	while (loop_rc != PL_LOOP_END)
 	{
 		position hint_p;
@@ -848,33 +1100,33 @@ static void placement_loop(pl_arg_t *arg)
 		arg->place_p2.y = arg->place_g.y + arg->place_g.height;
 		hint_p.x = arg->place_g.x;
 		hint_p.y = arg->place_g.y;
-		penalty = arg->intf->get_pos_penalty(&hint_p, arg);
+		penalty = arg->algo->get_pos_penalty(&hint_p, ret, arg);
 		/* I've added +0.0001 because with my machine the < test fail
 		 * with certain *equal* float numbers! */
 		if (
 			penalty >= 0 &&
 			(
-				arg->best_penalty < 0 ||
-				penalty + 0.0001 < arg->best_penalty))
+				ret->best_penalty < 0 ||
+				penalty + 0.0001 < ret->best_penalty))
 		{
-			arg->best_p.x = arg->place_g.x;
-			arg->best_p.y = arg->place_g.y;
-			arg->best_penalty = penalty;
+			ret->best_p.x = arg->place_g.x;
+			ret->best_p.y = arg->place_g.y;
+			ret->best_penalty = penalty;
 		}
 		if (penalty == 0)
 		{
 			break;
 		}
-		loop_rc = arg->intf->get_next_pos(&next_p, arg, hint_p);
+		loop_rc = arg->algo->get_next_pos(&next_p, ret, arg, hint_p);
 		arg->place_g.x = next_p.x;
 		arg->place_g.y = next_p.y;
 	}
-	if (arg->best_penalty < 0)
+	if (ret->best_penalty < 0)
 	{
-		arg->best_penalty = -1;
+		ret->best_penalty = -1;
 	}
 
-	return;
+	return (ret->best_penalty == -1) ? -1 : 0;
 }
 
 static void __place_get_placement_flags(
@@ -934,49 +1186,48 @@ static void __place_get_placement_flags(
 	}
 	if (mode == PLACE_AGAIN)
 	{
-		ret_flags->do_not_use_wm_placement = False;
+		ret_flags->do_not_use_wm_placement = 0;
 		reason->pos.reason = PR_POS_PLACE_AGAIN;
 	}
 	else if (has_ppos || has_uspos)
 	{
-		ret_flags->do_not_use_wm_placement = True;
+		ret_flags->do_not_use_wm_placement = 1;
 	}
 	else if (win_opts->flags.do_override_ppos)
 	{
-		ret_flags->do_not_use_wm_placement = True;
+		ret_flags->do_not_use_wm_placement = 1;
 		reason->pos.reason = PR_POS_CAPTURE;
 	}
 	else if (!ret_flags->do_honor_starts_on_page &&
 		 fw->wmhints && (fw->wmhints->flags & StateHint) &&
 		 fw->wmhints->initial_state == IconicState)
 	{
-		ret_flags->do_forbid_manual_placement = True;
+		ret_flags->do_forbid_manual_placement = 1;
 		reason->pos.do_not_manual_icon_placement = 1;
 	}
 
 	return;
 }
 
-static Bool __place_get_wm_pos(
+static int __place_get_wm_pos(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
 	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
 	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
 	int pdeltax, int pdeltay)
 {
+	pl_algo_t *algos[MAX_NUM_PLACEMENT_ALGOS + 1];
 	unsigned int placement_mode = SPLACEMENT_MODE(sflags);
-	FvwmWindow *fw = exc->w.fw;
-	Bool rc;
-	int DragWidth;
-	int DragHeight;
-	size_borders b;
-	int xl;
-	int yt;
+	position p;
 	pl_arg_t arg;
+	pl_ret_t ret;
+	int i;
 
-	/* BEGIN init placement agrs */
+	/* BEGIN init placement agrs and ret */
 	memset(&arg, 0, sizeof(arg));
-	arg.place_fw = fw;
-	arg.place_g = fw->g.frame;
+	arg.exc = exc;
+	arg.reason = reason;
+	arg.place_fw = exc->w.fw;
+	arg.place_g = arg.place_fw->g.frame;
 	arg.screen_g = screen_g;
 	arg.page_p1.x = arg.screen_g.x - pdeltax;
 	arg.page_p1.y = arg.screen_g.y - pdeltay;
@@ -985,17 +1236,18 @@ static Bool __place_get_wm_pos(
 	arg.pdelta_p.x = pdeltax;
 	arg.pdelta_p.y = pdeltay;
 	arg.flags.use_percent = 0;
+	arg.flags.do_honor_starts_on_page = flags.do_honor_starts_on_page;
 	if (SEWMH_PLACEMENT_MODE(sflags) == EWMH_USE_WORKING_AREA)
 	{
 		arg.flags.use_ewmh_dynamic_working_areapercent = 1;
 	}
-	arg.best_penalty = -1.0;
-	/* END init placement agrs */
-	rc = False;
-	xl = -1;
-	yt = arg.page_p1.y;
+	memset(&ret, 0, sizeof(ret));
+	ret.best_penalty = -1.0;
+	/* END init placement agrs and ret */
+	p.x = -1;
+	p.y = arg.page_p1.y;
 	/* override if Manual placement happen */
-	SET_PLACED_BY_FVWM(fw, True);
+	SET_PLACED_BY_FVWM(arg.place_fw, 1);
 	if (flags.do_forbid_manual_placement)
 	{
 		switch (placement_mode)
@@ -1013,250 +1265,67 @@ static Bool __place_get_wm_pos(
 	}
 	/* first, try various "smart" placement */
 	reason->pos.algo = placement_mode;
+	algos[1] = 0;
+	algos[2] = 0;
 	switch (placement_mode)
 	{
 	case PLACE_CENTER:
-		attr_g->x = (arg.screen_g.width - fw->g.frame.width) / 2;
-		attr_g->y = ((arg.screen_g.height - fw->g.frame.height) / 2);
-		/* Don't let the upper left corner be offscreen. */
-		if (attr_g->x < arg.page_p1.x)
-		{
-			attr_g->x = arg.page_p1.x;
-		}
-		if (attr_g->y < arg.page_p1.y)
-		{
-			attr_g->y = arg.page_p1.y;
-		}
+		algos[0] = &center_placement_algo;
 		break;
 	case PLACE_TILEMANUAL:
-		arg.intf = &smart_placement_if;
-		placement_loop(&arg);
-		if (arg.best_penalty != 0)
-		{
-			flags.is_smartly_placed = False;
-			reason->pos.has_tile_failed = 1;
-		}
-		else
-		{
-			flags.is_smartly_placed = True;
-			xl = arg.best_p.x;
-			yt = arg.best_p.y;
-			break;
-		}
-		/* fall through to manual placement */
+		algos[0] = &smart_placement_algo;
+		algos[1] = &manual_placement_algo;
+		break;
 	case PLACE_MANUAL:
 	case PLACE_MANUAL_B:
-		/* either "smart" placement fail and the second
-		 * choice is a manual placement (TileManual) or we
-		 * have a manual placement in any case (Manual) */
-		xl = 0;
-		yt = 0;
-		if (GrabEm(CRS_POSITION, GRAB_NORMAL))
-		{
-			int mx;
-			int my;
-
-			/* Grabbed the pointer - continue */
-			MyXGrabServer(dpy);
-			if (XGetGeometry(
-				    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-				    (unsigned int*)&DragWidth,
-				    (unsigned int*)&DragHeight,
-				    (unsigned int*)&JunkBW,
-				    (unsigned int*)&JunkDepth) == 0)
-			{
-				MyXUngrabServer(dpy);
-				UngrabEm(GRAB_NORMAL);
-				return False;
-			}
-			SET_PLACED_BY_FVWM(fw,False);
-			MyXGrabKeyboard(dpy);
-			DragWidth = fw->g.frame.width;
-			DragHeight = fw->g.frame.height;
-
-			if (Scr.SizeWindow != None)
-			{
-				XMapRaised(dpy, Scr.SizeWindow);
-			}
-			FScreenGetScrRect(
-				NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
-			if (__move_loop(
-				    exc, mx, my, DragWidth, DragHeight, &xl,
-				    &yt, False))
-			{
-				/* resize too */
-				rc = True;
-			}
-			else
-			{
-				rc = False;
-			}
-			if (Scr.SizeWindow != None)
-			{
-				XUnmapWindow(dpy, Scr.SizeWindow);
-			}
-			MyXUngrabKeyboard(dpy);
-			MyXUngrabServer(dpy);
-			UngrabEm(GRAB_NORMAL);
-		}
-		else
-		{
-			/* couldn't grab the pointer - better do something */
-			XBell(dpy, 0);
-			xl = 0;
-			yt = 0;
-			reason->pos.has_manual_failed = 1;
-		}
-		if (flags.do_honor_starts_on_page)
-		{
-			xl -= arg.pdelta_p.x;
-			yt -= arg.pdelta_p.y;
-		}
-		attr_g->y = yt;
-		attr_g->x = xl;
+		algos[0] = &manual_placement_algo;
 		break;
 	case PLACE_MINOVERLAPPERCENT:
 		arg.flags.use_percent = 1;
-		arg.intf = &clever_placement_if;
-		placement_loop(&arg);
-		xl = arg.best_p.x;
-		yt = arg.best_p.y;
-		flags.is_smartly_placed = True;
+		/* fall through */
+	case PLACE_MINOVERLAP:
+		algos[0] = &clever_placement_algo;
 		break;
 	case PLACE_TILECASCADE:
-		arg.intf = &smart_placement_if;
-		placement_loop(&arg);
-		if (arg.best_penalty != 0)
-		{
-			flags.is_smartly_placed = False;
-			reason->pos.has_tile_failed = 1;
-		}
-		else
-		{
-			flags.is_smartly_placed = True;
-			xl = arg.best_p.x;
-			yt = arg.best_p.y;
-			break;
-		}
-		/* fall through to cascade placement */
+		algos[0] = &smart_placement_algo;
+		algos[1] = &cascade_placement_algo;
+		break;
 	case PLACE_CASCADE:
 	case PLACE_CASCADE_B:
-		/* either "smart" placement fail and the second choice is
-		 * "cascade" placement (TileCascade) or we have a "cascade"
-		 * placement in any case (Cascade) or we have a crazy
-		 * SPLACEMENT_MODE(sflags) value set with the old Style
-		 * Dumb/Smart, Random/Active, Smart/SmartOff (i.e.:
-		 * Dumb+Random+Smart or Dumb+Active+Smart) */
-		if (Scr.cascade_window != NULL)
-		{
-			Scr.cascade_x += fw->title_thickness;
-			Scr.cascade_y += 2 * fw->title_thickness;
-		}
-		Scr.cascade_window = fw;
-		if (Scr.cascade_x > arg.screen_g.width / 2)
-		{
-			Scr.cascade_x = fw->title_thickness;
-		}
-		if (Scr.cascade_y > arg.screen_g.height / 2)
-		{
-			Scr.cascade_y = 2 * fw->title_thickness;
-		}
-		attr_g->x = Scr.cascade_x + arg.page_p1.x;
-		attr_g->y = Scr.cascade_y + arg.page_p1.y;
-		/* try to keep the window on the screen */
-		get_window_borders(fw, &b);
-		if (attr_g->x + fw->g.frame.width >= arg.page_p2.x)
-		{
-			attr_g->x = arg.page_p2.x - attr_g->width -
-				b.total_size.width;
-			Scr.cascade_x = fw->title_thickness;
-		}
-		if (attr_g->y + fw->g.frame.height >= arg.page_p2.y)
-		{
-			attr_g->y = arg.page_p2.y - attr_g->height -
-				b.total_size.height;
-			Scr.cascade_y = 2 * fw->title_thickness;
-		}
-
-		/* the left and top sides are more important in huge
-		 * windows */
-		if (attr_g->x < arg.page_p1.x)
-		{
-			attr_g->x = arg.page_p1.x;
-		}
-		if (attr_g->y < arg.page_p1.y)
-		{
-			attr_g->y = arg.page_p1.y;
-		}
-		break;
-	case PLACE_MINOVERLAP:
-		arg.flags.use_percent = 0;
-		arg.intf = &clever_placement_if;
-		placement_loop(&arg);
-		xl = arg.best_p.x;
-		yt = arg.best_p.y;
-		flags.is_smartly_placed = True;
+		algos[0] = &cascade_placement_algo;
 		break;
 	case PLACE_UNDERMOUSE:
-	{
-		int mx;
-		int my;
-
-		if (
-			FQueryPointer(
-				dpy, Scr.Root, &JunkRoot, &JunkChild, &mx, &my,
-				&JunkX, &JunkY, &JunkMask) == False)
-		{
-			/* pointer is on a different screen */
-			xl = 0;
-			yt = 0;
-		}
-		else
-		{
-			xl = mx - (fw->g.frame.width / 2);
-			yt = my - (fw->g.frame.height / 2);
-			if (
-				xl + fw->g.frame.width >
-				arg.screen_g.x + arg.screen_g.width)
-			{
-				xl = arg.screen_g.x + arg.screen_g.width -
-					fw->g.frame.width;
-			}
-			if (
-				yt + fw->g.frame.height >
-				arg.screen_g.y + arg.screen_g.height)
-			{
-				yt = arg.screen_g.y + arg.screen_g.height -
-					fw->g.frame.height;
-			}
-			if (xl < arg.screen_g.x)
-			{
-				xl = arg.screen_g.x;
-			}
-			if (yt < arg.screen_g.y)
-			{
-				yt = arg.screen_g.y;
-			}
-		}
-		attr_g->x = xl;
-		attr_g->y = yt;
+		algos[0] = &under_mouse_placement_algo;
 		break;
-	}
 	default:
 		/* can't happen */
+		algos[0] = 0;
 		break;
 	}
-	if (flags.is_smartly_placed)
+	/* try all the placement algorithms */
+	for (i = 0 ; ret.best_penalty < 0 && algos[i] != NULL; i++)
 	{
-		/* "smart" placement succed, we have done ... */
-		attr_g->x = xl;
-		attr_g->y = yt;
+		arg.algo = algos[i];
+		placement_loop(&ret, &arg);
+	}
+	if (ret.best_penalty >= 0)
+	{
+		/* placement succed */
+		attr_g->x = ret.best_p.x;
+		attr_g->y = ret.best_p.y;
+	}
+	else
+	{
+		/* fall back to default position */
+		attr_g->x = 0;
+		attr_g->y = 0;
+		reason->pos.has_placement_failed = 1;
 	}
 
-	return rc;
+	return ret.flags.do_resize_too;
 }
 
-static Bool __place_get_nowm_pos(
+static int __place_get_nowm_pos(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
 	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
 	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
@@ -1401,7 +1470,7 @@ static Bool __place_get_nowm_pos(
 		attr_g->y = final_g.y;
 	}
 
-	return False;
+	return 0;
 }
 
 /* Handles initial placement and sizing of a new window
@@ -1411,7 +1480,7 @@ static Bool __place_get_nowm_pos(
  *   0 = window lost
  *   1 = OK
  *   2 = OK, window must be resized too */
-static Bool __place_window(
+static int __place_window(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
 	pl_start_style_t start_style, int mode,
 	initial_window_options_t *win_opts, pl_reason_t *reason)
@@ -1422,7 +1491,7 @@ static Bool __place_window(
 	int pdeltax = 0;
 	int pdeltay = 0;
 	rectangle screen_g;
-	Bool rc = False;
+	int rc = 0;
 	pl_flags_t flags;
 	extern Bool Restarting;
 	FvwmWindow *fw = exc->w.fw;
@@ -2029,6 +2098,16 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 			sprintf(s, "    (manual placement failed)\n");
 			s += strlen(s);
 		}
+		if (reason->pos.has_under_mouse_failed == 1)
+		{
+			sprintf(s, "    (under mouse placement failed)\n");
+			s += strlen(s);
+		}
+		if (reason->pos.has_placement_failed == 1)
+		{
+			sprintf(s, "    (placement failed default pos 0 0)\n");
+			s += strlen(s);
+		}
 	}
 	else
 	{
@@ -2058,7 +2137,7 @@ Bool setup_window_placement(
 	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
 	initial_window_options_t *win_opts, placement_mode_t mode)
 {
-	Bool rc;
+	int rc;
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
 	pl_reason_t reason;
@@ -2097,7 +2176,7 @@ Bool setup_window_placement(
 		__explain_placement(fw, &reason);
 	}
 
-	return rc;
+	return (rc == 0) ? False : True;
 }
 
 /* ---------------------------- builtin commands --------------------------- */
