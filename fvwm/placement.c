@@ -796,7 +796,7 @@ static void SmartPlacement(pl_arg_t *arg)
 			loc_ok = True;
 			for (
 				other_fw = Scr.FvwmRoot.next;
-				other_fw != NULL && loc_ok == False;
+				other_fw != NULL && loc_ok == True;
 				other_fw = other_fw->next)
 			{
 				int next_x;
@@ -987,7 +987,7 @@ static Bool __place_get_wm_pos(
 		break;
 	case PLACE_TILEMANUAL:
 		SmartPlacement(&arg);
-		if (arg.best_penalty == -1)
+		if (arg.best_penalty != 0)
 		{
 			flags.is_smartly_placed = False;
 			reason->pos.has_tile_failed = 1;
@@ -1080,7 +1080,7 @@ static Bool __place_get_wm_pos(
 		break;
 	case PLACE_TILECASCADE:
 		SmartPlacement(&arg);
-		if (arg.best_penalty == -1)
+		if (arg.best_penalty != 0)
 		{
 			flags.is_smartly_placed = False;
 			reason->pos.has_tile_failed = 1;
