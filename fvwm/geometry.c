@@ -663,36 +663,150 @@ void maximize_adjust_offset(FvwmWindow *fw)
 	return;
 }
 
+#define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
+static void __cs_handle_aspect_ratio(
+	size_rect *ret_s, FvwmWindow *fw, size_rect s, const size_rect base,
+	const size_rect inc, size_rect min, size_rect max, int xmotion,
+	int ymotion, int flags)
+{
+	double odefect;
+	double defect;
+	double rmax;
+	double rmin;
+	int delta;
+	int ow;
+	int oh;
+
+	if (fw->hints.flags & PBaseSize)
+	{
+		/*
+		 * ICCCM 2 demands that aspect ratio should apply to width -
+		 * base_width. To prevent funny results, we reset PBaseSize in
+		 * GetWindowSizeHints, if base is not smaller than min.
+		 */
+		s.width -= base.width;
+		max.width -= base.width;
+		min.width -= base.width;
+		s.height -= base.height;
+		max.height -= base.height;
+		min.height -= base.height;
+	}
+	rmin = (double)fw->hints.min_aspect.x / (double)fw->hints.min_aspect.y;
+	rmax = (double)fw->hints.max_aspect.x / (double)fw->hints.max_aspect.y;
+	do
+	{
+		double r;
+
+		r = (double)s.width / (double)s.height;
+		ow = s.width;
+		oh = s.height;
+		odefect = 0;
+		if (r < rmin)
+		{
+			odefect = rmin - r;
+		}
+		else if (r > rmax)
+		{
+			odefect = r - rmax;
+		}
+		if (r < rmin && (flags & CS_ROUND_UP) && xmotion == 0)
+		{
+			/* change width to match */
+			delta = MAKEMULT(s.height * rmin - s.width, inc.width);
+			if (s.width + delta <= max.width)
+			{
+				s.width += delta;
+			}
+			r = (double)s.width / (double)s.height;
+		}
+		if (r < rmin)
+		{
+			/* change height to match */
+			delta = MAKEMULT(
+				s.height - s.width / rmin, inc.height);
+			if (s.height - delta >= min.height)
+			{
+				s.height -= delta;
+			}
+			else
+			{
+				delta = MAKEMULT(
+					s.height * rmin - s.width, inc.width);
+				if (s.width + delta <= max.width)
+				{
+					s.width += delta;
+				}
+			}
+			r = (double)s.width / (double)s.height;
+		}
+
+		if (r > rmax && (flags & CS_ROUND_UP) && ymotion == 0)
+		{
+			/* change height to match */
+			delta = MAKEMULT(s.width /rmax - s.height, inc.height);
+			if (s.height + delta <= max.height)
+			{
+				s.height += delta;
+			}
+			r = (double)s.width / (double)s.height;
+		}
+		if (r > rmax)
+		{
+			/* change width to match */
+			delta = MAKEMULT(s.width - s.height * rmax, inc.width);
+			if (s.width - delta >= min.width)
+			{
+				s.width -= delta;
+			}
+			else
+			{
+				delta = MAKEMULT(
+					s.width / rmax - s.height, inc.height);
+				if (s.height + delta <= max.height)
+				{
+					s.height += delta;
+				}
+			}
+			r = (double)s.width / (double)s.height;
+		}
+		defect = 0;
+		if (r < rmin)
+		{
+			defect = rmin - r;
+		}
+		else if (r > rmax)
+		{
+			defect = r - rmax;
+		}
+	} while (odefect > defect);
+	if (fw->hints.flags & PBaseSize)
+	{
+		ow += base.width;
+		oh += base.height;
+	}
+	ret_s->width = ow;
+	ret_s->height = oh;
+
+	return;
+}
+
 /*
  *
  *  Procedure:
  *      constrain_size - adjust the given width and height to account for the
  *              constraints imposed by size hints
- *
- *      The general algorithm, especially the aspect ratio stuff, is
- *      borrowed from uwm's CheckConsistency routine.
- *
  */
-#define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 void constrain_size(
 	FvwmWindow *fw, const XEvent *e, int *widthp, int *heightp,
 	int xmotion, int ymotion, int flags)
 {
-	int minWidth;
-	int minHeight;
-	int maxWidth;
-	int maxHeight;
-	int xinc;
-	int yinc;
-	int delta;
-	int baseWidth;
-	int baseHeight;
-	int dwidth;
-	int dheight;
-	int roundUpX = 0;
-	int roundUpY = 0;
-	int old_w = 0;
-	int old_h = 0;
+	size_rect min;
+	size_rect max;
+	size_rect inc;
+	size_rect base;
+	size_rect round_up;
+	size_rect d;
+	size_rect old;
 	size_borders b;
 
 	if (DO_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw) == 1)
@@ -710,55 +824,55 @@ void constrain_size(
 	{
 		*widthp += fw->g.max_defect.width;
 		*heightp += fw->g.max_defect.height;
-		old_w = *widthp;
-		old_h = *heightp;
+		old.width = *widthp;
+		old.height = *heightp;
 	}
-	dwidth = *widthp;
-	dheight = *heightp;
+	d.width = *widthp;
+	d.height = *heightp;
 	get_window_borders(fw, &b);
-	dwidth -= b.total_size.width;
-	dheight -= b.total_size.height;
+	d.width -= b.total_size.width;
+	d.height -= b.total_size.height;
 
-	minWidth = fw->hints.min_width;
-	minHeight = fw->hints.min_height;
+	min.width = fw->hints.min_width;
+	min.height = fw->hints.min_height;
 
-	maxWidth = fw->hints.max_width;
-	maxHeight =  fw->hints.max_height;
+	max.width = fw->hints.max_width;
+	max.height =  fw->hints.max_height;
 
-	if (maxWidth > fw->max_window_width - b.total_size.width)
+	if (max.width > fw->max_window_width - b.total_size.width)
 	{
-		maxWidth = fw->max_window_width - b.total_size.width;
+		max.width = fw->max_window_width - b.total_size.width;
 	}
-	if (maxHeight > fw->max_window_height - b.total_size.height)
+	if (max.height > fw->max_window_height - b.total_size.height)
 	{
-		maxHeight =
+		max.height =
 			fw->max_window_height - b.total_size.height;
 	}
 
-	baseWidth = fw->hints.base_width;
-	baseHeight = fw->hints.base_height;
+	base.width = fw->hints.base_width;
+	base.height = fw->hints.base_height;
 
-	xinc = fw->hints.width_inc;
-	yinc = fw->hints.height_inc;
+	inc.width = fw->hints.width_inc;
+	inc.height = fw->hints.height_inc;
 
 	/*
 	 * First, clamp to min and max values
 	 */
-	if (dwidth < minWidth)
+	if (d.width < min.width)
 	{
-		dwidth = minWidth;
+		d.width = min.width;
 	}
-	if (dheight < minHeight)
+	if (d.height < min.height)
 	{
-		dheight = minHeight;
+		d.height = min.height;
 	}
-	if (dwidth > maxWidth)
+	if (d.width > max.width)
 	{
-		dwidth = maxWidth;
+		d.width = max.width;
 	}
-	if (dheight > maxHeight)
+	if (d.height > max.height)
 	{
-		dheight = maxHeight;
+		d.height = max.height;
 	}
 
 	/*
@@ -767,19 +881,21 @@ void constrain_size(
 	 */
 	if (!(flags & CS_ROUND_UP))
 	{
-		dwidth = ((dwidth - baseWidth) / xinc) * xinc + baseWidth;
-		dheight = ((dheight - baseHeight) / yinc) * yinc + baseHeight;
+		d.width = ((d.width - base.width) / inc.width) *
+			inc.width + base.width;
+		d.height = ((d.height - base.height) / inc.height) *
+			inc.height + base.height;
 	}
 	else
 	{
-		roundUpX = dwidth;
-		roundUpY = dheight;
-		dwidth = (((dwidth - baseWidth + xinc - 1) / xinc) * xinc) +
-			baseWidth;
-		dheight = (((dheight - baseHeight + yinc - 1) / yinc) * yinc) +
-			baseHeight;
-		roundUpX = dwidth - roundUpX;
-		roundUpY = dheight - roundUpY;
+		round_up.width = d.width;
+		round_up.height = d.height;
+		d.width = ((d.width - base.width + inc.width - 1) /
+			   inc.width) * inc.width + base.width;
+		d.height = ((d.height - base.height + inc.height - 1) /
+			    inc.height) * inc.height + base.height;
+		round_up.width = d.width - round_up.width;
+		round_up.height = d.height - round_up.height;
 	}
 
 	/*
@@ -788,208 +904,68 @@ void constrain_size(
 	 */
 	if ((flags & CS_ROUND_UP) && e != NULL && e->type == MotionNotify)
 	{
-		if (xmotion > 0 && e->xmotion.x_root < roundUpX)
+		if (xmotion > 0 && e->xmotion.x_root < round_up.width)
 		{
-			dwidth -= xinc;
+			d.width -= inc.width;
 		}
-		else if (xmotion < 0 &&
-			 e->xmotion.x_root >= Scr.MyDisplayWidth - roundUpX)
+		else if (
+			xmotion < 0 && e->xmotion.x_root >=
+			Scr.MyDisplayWidth - round_up.width)
 		{
-			dwidth -= xinc;
+			d.width -= inc.width;
 		}
-		if (ymotion > 0 && e->xmotion.y_root < roundUpY)
+		if (ymotion > 0 && e->xmotion.y_root < round_up.height)
 		{
-			dheight -= yinc;
+			d.height -= inc.height;
 		}
-		else if (ymotion < 0 &&
-			 e->xmotion.y_root >= Scr.MyDisplayHeight - roundUpY)
+		else if (
+			ymotion < 0 && e->xmotion.y_root >=
+			Scr.MyDisplayHeight - round_up.height)
 		{
-			dheight -= yinc;
+			d.height -= inc.height;
 		}
 	}
 
 	/*
 	 * Step 2b: Check that we didn't violate min and max.
 	 */
-	if (dwidth < minWidth)
+	if (d.width < min.width)
 	{
-		dwidth += xinc;
+		d.width += inc.width;
 	}
-	if (dheight < minHeight)
+	if (d.height < min.height)
 	{
-		dheight += yinc;
+		d.height += inc.height;
 	}
-	if (dwidth > maxWidth)
+	if (d.width > max.width)
 	{
-		dwidth -= xinc;
+		d.width -= inc.width;
 	}
-	if (dheight > maxHeight)
+	if (d.height > max.height)
 	{
-		dheight -= yinc;
+		d.height -= inc.height;
 	}
 
 	/*
 	 * Third, adjust for aspect ratio
 	 */
-#define maxAspectX fw->hints.max_aspect.x
-#define maxAspectY fw->hints.max_aspect.y
-#define minAspectX fw->hints.min_aspect.x
-#define minAspectY fw->hints.min_aspect.y
-	/*
-	 * The math looks like this:
-	 *
-	 * minAspectX    dwidth     maxAspectX
-	 * ---------- <= ------- <= ----------
-	 * minAspectY    dheight    maxAspectY
-	 *
-	 * If that is multiplied out, then the width and height are
-	 * invalid in the following situations:
-	 *
-	 * minAspectX * dheight > minAspectY * dwidth
-	 * maxAspectX * dheight < maxAspectY * dwidth
-	 *
-	 */
-
 	if (fw->hints.flags & PAspect)
 	{
-		double odefect;
-		double defect;
-		double rmax;
-		double rmin;
-		int ow;
-		int oh;
-
-#if 1 /*!!!*/
-		fprintf(stderr, "rup? %d\n", (flags & CS_ROUND_UP));
-#endif
-		if (fw->hints.flags & PBaseSize)
-		{
-			/*
-			 * ICCCM 2 demands that aspect ratio should apply
-			 * to width - base_width. To prevent funny results,
-			 * we reset PBaseSize in GetWindowSizeHints, if
-			 * base is not smaller than min.
-			*/
-			dwidth -= baseWidth;
-			maxWidth -= baseWidth;
-			minWidth -= baseWidth;
-			dheight -= baseHeight;
-			maxHeight -= baseHeight;
-			minHeight -= baseHeight;
-		}
-		rmin = (double)minAspectX / (double)minAspectY;
-		rmax = (double)maxAspectX / (double)maxAspectY;
-		do
-		{
-			double r;
-
-			r = (double)dwidth / (double)dheight;
-			ow = dwidth;
-			oh = dheight;
-			odefect = 0;
-			if (r < rmin)
-			{
-				odefect = rmin - r;
-			}
-			else if (r > rmax)
-			{
-				odefect = r - rmax;
-			}
-			if (r < rmin && (flags & CS_ROUND_UP) && xmotion == 0)
-			{
-				/* change width to match */
-				delta = MAKEMULT(
-					dheight * rmin - dwidth, xinc);
-				if (dwidth + delta <= maxWidth)
-				{
-					dwidth += delta;
-				}
-				r = (double)dwidth / (double)dheight;
-			}
-			if (r < rmin)
-			{
-				/* change height to match */
-				delta = MAKEMULT(
-					dheight - dwidth / rmin, yinc);
-				if (dheight - delta >= minHeight)
-				{
-					dheight -= delta;
-				}
-				else
-				{
-					delta = MAKEMULT(
-						dheight * rmin - dwidth, xinc);
-					if (dwidth + delta <= maxWidth)
-					{
-						dwidth += delta;
-					}
-				}
-				r = (double)dwidth / (double)dheight;
-			}
-
-			if (r > rmax && (flags & CS_ROUND_UP) && ymotion == 0)
-			{
-				/* change height to match */
-				delta = MAKEMULT(dwidth /rmax - dheight, yinc);
-				if (dheight + delta <= maxHeight)
-				{
-					dheight += delta;
-				}
-				r = (double)dwidth / (double)dheight;
-			}
-			if (r > rmax)
-			{
-				/* change width to match */
-				delta = MAKEMULT(
-					dwidth - dheight * rmax, xinc);
-				if (dwidth - delta >= minWidth)
-				{
-					dwidth -= delta;
-				}
-				else
-				{
-					delta = MAKEMULT(
-						dwidth / rmax - dheight, yinc);
-					if (dheight + delta <= maxHeight)
-					{
-						dheight += delta;
-					}
-				}
-				r = (double)dwidth / (double)dheight;
-			}
-			defect = 0;
-			if (r < rmin)
-			{
-				defect = rmin - r;
-			}
-			else if (r > rmax)
-			{
-				defect = r - rmax;
-			}
-		} while (odefect > defect);
-		dwidth = ow;
-		dheight = oh;
-		if (fw->hints.flags & PBaseSize)
-		{
-			dwidth += baseWidth;
-			dheight += baseHeight;
-		}
+		__cs_handle_aspect_ratio(
+			&d, fw, d, base, inc, min, max, xmotion, ymotion,
+			flags);
 	}
-#undef maxAspectX
-#undef maxAspectY
-#undef minAspectX
-#undef minAspectY
 
 	/*
 	 * Fourth, account for border width and title height
 	 */
-	*widthp = dwidth + b.total_size.width;
-	*heightp = dheight + b.total_size.height;
+	*widthp = d.width + b.total_size.width;
+	*heightp = d.height + b.total_size.height;
 	if (IS_MAXIMIZED(fw) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		/* update size defect for maximized window */
-		fw->g.max_defect.width = old_w - *widthp;
-		fw->g.max_defect.height = old_h - *heightp;
+		fw->g.max_defect.width = old.width - *widthp;
+		fw->g.max_defect.height = old.height - *heightp;
 	}
 
 	return;

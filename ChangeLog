@@ -7,6 +7,9 @@
 	reindented and cleaned up
 	do not grow a window because of aspect ratio if this is not explicitly
 	allowed by the CS_ROUND_UP flag
+	(constrain_size):
+	(__cs_handle_aspect_ratio):
+	broken into separate functions and cleaned up
 
 2007-01-20  Renato Caldas  <seventhguardian@gmail.com>
 
