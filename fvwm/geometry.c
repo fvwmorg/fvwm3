@@ -675,11 +675,18 @@ void maximize_adjust_offset(FvwmWindow *fw)
  */
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 void constrain_size(
-	FvwmWindow *fw, const XEvent *e, int *widthp,
-	int *heightp, int xmotion, int ymotion, int flags)
+	FvwmWindow *fw, const XEvent *e, int *widthp, int *heightp,
+	int xmotion, int ymotion, int flags)
 {
-	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
-	int baseWidth, baseHeight;
+	int minWidth;
+	int minHeight;
+	int maxWidth;
+	int maxHeight;
+	int xinc;
+	int yinc;
+	int delta;
+	int baseWidth;
+	int baseHeight;
 	int dwidth;
 	int dheight;
 	int roundUpX = 0;
@@ -755,13 +762,13 @@ void constrain_size(
 	}
 
 	/*
-	 * Second, round to base + N * inc (up or down depending on resize type)
-	 * if rounding up store amount
+	 * Second, round to base + N * inc (up or down depending on resize
+	 * type) if rounding up store amount
 	 */
 	if (!(flags & CS_ROUND_UP))
 	{
-		dwidth = (((dwidth - baseWidth) / xinc) * xinc) + baseWidth;
-		dheight = (((dheight - baseHeight) / yinc) * yinc) + baseHeight;
+		dwidth = ((dwidth - baseWidth) / xinc) * xinc + baseWidth;
+		dheight = ((dheight - baseHeight) / yinc) * yinc + baseHeight;
 	}
 	else
 	{
@@ -847,11 +854,14 @@ void constrain_size(
 	{
 		double odefect;
 		double defect;
-		double maxratio;
-		double minratio;
+		double rmax;
+		double rmin;
 		int ow;
 		int oh;
 
+#if 1 /*!!!*/
+		fprintf(stderr, "rup? %d\n", (flags & CS_ROUND_UP));
+#endif
 		if (fw->hints.flags & PBaseSize)
 		{
 			/*
@@ -867,43 +877,40 @@ void constrain_size(
 			maxHeight -= baseHeight;
 			minHeight -= baseHeight;
 		}
-		minratio = (double)minAspectX / (double)minAspectY;
-		maxratio = (double)maxAspectX / (double)maxAspectY;
+		rmin = (double)minAspectX / (double)minAspectY;
+		rmax = (double)maxAspectX / (double)maxAspectY;
 		do
 		{
+			double r;
+
+			r = (double)dwidth / (double)dheight;
 			ow = dwidth;
 			oh = dheight;
 			odefect = 0;
-			if (minAspectX * dheight > minAspectY * dwidth)
+			if (r < rmin)
 			{
-				odefect =
-					minratio -
-					(double)dwidth / (double)dheight;
+				odefect = rmin - r;
 			}
-			else if (maxAspectX * dheight < maxAspectY * dwidth)
+			else if (r > rmax)
 			{
-				odefect = (double)dwidth / (double)dheight -
-					maxratio;
+				odefect = r - rmax;
 			}
-			if (
-				minAspectX * dheight > minAspectY * dwidth &&
-				xmotion == 0)
+			if (r < rmin && (flags & CS_ROUND_UP) && xmotion == 0)
 			{
-				/* Change width to match */
+				/* change width to match */
 				delta = MAKEMULT(
-					minAspectX * dheight / minAspectY -
-					dwidth, xinc);
+					dheight * rmin - dwidth, xinc);
 				if (dwidth + delta <= maxWidth)
 				{
 					dwidth += delta;
 				}
+				r = (double)dwidth / (double)dheight;
 			}
-			if (minAspectX * dheight > minAspectY * dwidth)
+			if (r < rmin)
 			{
+				/* change height to match */
 				delta = MAKEMULT(
-					dheight -
-					dwidth * minAspectY / minAspectX,
-					yinc);
+					dheight - dwidth / rmin, yinc);
 				if (dheight - delta >= minHeight)
 				{
 					dheight -= delta;
@@ -911,32 +918,30 @@ void constrain_size(
 				else
 				{
 					delta = MAKEMULT(
-						minAspectX * dheight /
-						minAspectY - dwidth, xinc);
+						dheight * rmin - dwidth, xinc);
 					if (dwidth + delta <= maxWidth)
 					{
 						dwidth += delta;
 					}
 				}
+				r = (double)dwidth / (double)dheight;
 			}
 
-			if (
-				maxAspectX * dheight < maxAspectY * dwidth &&
-				ymotion == 0)
+			if (r > rmax && (flags & CS_ROUND_UP) && ymotion == 0)
 			{
-				delta = MAKEMULT(
-					dwidth * maxAspectY / maxAspectX -
-					dheight, yinc);
+				/* change height to match */
+				delta = MAKEMULT(dwidth /rmax - dheight, yinc);
 				if (dheight + delta <= maxHeight)
 				{
 					dheight += delta;
 				}
+				r = (double)dwidth / (double)dheight;
 			}
-			if ((maxAspectX * dheight < maxAspectY * dwidth))
+			if (r > rmax)
 			{
+				/* change width to match */
 				delta = MAKEMULT(
-					dwidth - maxAspectX*dheight/maxAspectY,
-					xinc);
+					dwidth - dheight * rmax, xinc);
 				if (dwidth - delta >= minWidth)
 				{
 					dwidth -= delta;
@@ -944,26 +949,22 @@ void constrain_size(
 				else
 				{
 					delta = MAKEMULT(
-						dwidth * maxAspectY /
-						maxAspectX - dheight, yinc);
+						dwidth / rmax - dheight, yinc);
 					if (dheight + delta <= maxHeight)
 					{
 						dheight += delta;
 					}
 				}
+				r = (double)dwidth / (double)dheight;
 			}
 			defect = 0;
-			if (minAspectX * dheight > minAspectY * dwidth)
+			if (r < rmin)
 			{
-				defect =
-					minratio -
-					(double)dwidth / (double)dheight;
+				defect = rmin - r;
 			}
-			else if (maxAspectX * dheight < maxAspectY * dwidth)
+			else if (r > rmax)
 			{
-				defect =
-					(double)dwidth / (double)dheight -
-					maxratio;
+				defect = r - rmax;
 			}
 		} while (odefect > defect);
 		dwidth = ow;
@@ -974,6 +975,10 @@ void constrain_size(
 			dheight += baseHeight;
 		}
 	}
+#undef maxAspectX
+#undef maxAspectY
+#undef minAspectX
+#undef minAspectY
 
 	/*
 	 * Fourth, account for border width and title height

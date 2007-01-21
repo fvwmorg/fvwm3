@@ -2931,6 +2931,10 @@ void GetWindowSizeHints(FvwmWindow *fw)
 				}
 			}
 		}
+#undef maxAspectX
+#undef maxAspectY
+#undef minAspectX
+#undef minAspectY
 	}
 
 	if (*broken_cause != 0)

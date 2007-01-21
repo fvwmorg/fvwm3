@@ -1,3 +1,13 @@
+2007-01-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/add_window.c (GetWindowSizeHints):
+	* fvwm/geometry.c (constrain_size):
+	undefine macros after use
+	(constrain_size):
+	reindented and cleaned up
+	do not grow a window because of aspect ratio if this is not explicitly
+	allowed by the CS_ROUND_UP flag
+
 2007-01-20  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.c (module_receive):
