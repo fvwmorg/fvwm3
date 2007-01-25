@@ -1359,6 +1359,9 @@ AC_SUBST(with_xinerama)
 AC_SUBST(with_xrender)
 AC_SUBST(with_xpm)
 
+dnl with autoconf <2.60 this is needed
+AC_SUBST(datarootdir)
+
 LOCAL_BUGADDR=${FVWM_BUGADDR-${USER-${LOGNAME-`whoami`}}}
 AC_SUBST(LOCAL_BUGADDR)
 

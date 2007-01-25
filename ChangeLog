@@ -1,3 +1,8 @@
+2007-01-25  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* configure.ac:
+	always substiture datarootdir
+
 2007-01-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/add_window.c (GetWindowSizeHints):
