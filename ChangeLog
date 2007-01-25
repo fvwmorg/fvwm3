@@ -1,3 +1,14 @@
+2007-01-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/placement.c (__pl_cascade_get_pos_simple):
+	properly handle title direction with cascade placement
+
+	* libs/defaults.h (PLACEMENT_FALLBACK_CASCADE_STEP):
+	new default value
+
+	* fvwm/placement.c (__pl_center_get_pos_simple):
+	CenterPlacement properly handles Xinerama screens
+
 2007-01-25  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* configure.ac:

@@ -209,6 +209,7 @@
 #define PLACEMENT_AVOID_COVER_95           6
 #define PLACEMENT_AVOID_COVER_85           4
 #define PLACEMENT_AVOID_COVER_75           1
+#define PLACEMENT_FALLBACK_CASCADE_STEP   20
 
 /*** icon layout ***/
 /* width of the relief around the icon and icon title */

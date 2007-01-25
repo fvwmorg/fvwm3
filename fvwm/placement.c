@@ -295,16 +295,18 @@ const pl_algo_t manual_placement_algo =
 static pl_penalty_t __pl_center_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
-	ret_p->x = (arg->screen_g.width - arg->place_g.width) / 2;
-	ret_p->y = (arg->screen_g.height - arg->place_g.height) / 2;
+	ret_p->x = arg->screen_g.x +
+		(arg->screen_g.width - arg->place_g.width) / 2;
+	ret_p->y = arg->screen_g.y +
+		(arg->screen_g.height - arg->place_g.height) / 2;
 	/* Don't let the upper left corner be offscreen. */
-	if (ret_p->x < arg->page_p1.x)
+	if (ret_p->x < arg->screen_g.x)
 	{
-		ret_p->x = arg->page_p1.x;
+		ret_p->x = arg->screen_g.x;
 	}
-	if (ret_p->y < arg->page_p1.y)
+	if (ret_p->y < arg->screen_g.y)
 	{
-		ret_p->y = arg->page_p1.y;
+		ret_p->y = arg->screen_g.y;
 	}
 
 	return 0;
@@ -316,11 +318,38 @@ static pl_penalty_t __pl_cascade_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	size_borders b;
+	int w;
+	FvwmWindow *t;
+
+	t = (Scr.cascade_window != NULL) ? Scr.cascade_window : arg->place_fw;
+	w = t->title_thickness;
+	if (w == 0)
+	{
+		w = t->boundary_width;
+	}
+	if (w == 0)
+	{
+		w = PLACEMENT_FALLBACK_CASCADE_STEP;
+	}
 
 	if (Scr.cascade_window != NULL)
 	{
-		Scr.cascade_x += arg->place_fw->title_thickness;
-		Scr.cascade_y += 2 * arg->place_fw->title_thickness;
+
+		Scr.cascade_x += w;
+		Scr.cascade_y += w;
+		switch (GET_TITLE_DIR(t))
+		{
+		case DIR_S:
+		case DIR_N:
+			Scr.cascade_y += w;
+			break;
+		case DIR_E:
+		case DIR_W:
+			Scr.cascade_x += w;
+			break;
+		default:
+			break;
+		}
 	}
 	Scr.cascade_window = arg->place_fw;
 	if (Scr.cascade_x > arg->screen_g.width / 2)
@@ -340,12 +369,28 @@ static pl_penalty_t __pl_cascade_get_pos_simple(
 		ret_p->x = arg->page_p2.x - arg->place_g.width -
 			b.total_size.width;
 		Scr.cascade_x = arg->place_fw->title_thickness;
+		switch (GET_TITLE_DIR(t))
+		{
+		case DIR_E:
+		case DIR_W:
+			Scr.cascade_x += arg->place_fw->title_thickness;
+		default:
+			break;
+		}
 	}
 	if (ret_p->y + arg->place_g.height >= arg->page_p2.y)
 	{
 		ret_p->y = arg->page_p2.y - arg->place_g.height -
 			b.total_size.height;
-		Scr.cascade_y = 2 * arg->place_fw->title_thickness;
+		Scr.cascade_y = arg->place_fw->title_thickness;
+		switch (GET_TITLE_DIR(t))
+		{
+		case DIR_N:
+		case DIR_S:
+			Scr.cascade_y += arg->place_fw->title_thickness;
+		default:
+			break;
+		}
 	}
 
 	/* the left and top sides are more important in huge windows */
