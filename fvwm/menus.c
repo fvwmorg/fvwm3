@@ -2167,6 +2167,7 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 		return;
 	}
 
+
 	if (Pdepth < 2)
 	{
 		/* ? */
@@ -2188,6 +2189,34 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 		h = sidePic->height;
 		ys = 0;
 		yt = MR_HEIGHT(mr) - bw - sidePic->height;
+	}
+
+	if (pevent->type == Expose)
+	{
+		if (
+			pevent->xexpose.x + pevent->xexpose.width <
+			MR_SIDEPIC_X_OFFSET(mr)
+			|| pevent->xexpose.x > MR_SIDEPIC_X_OFFSET(mr)
+			+  sidePic->width)
+		{
+			/* out ov x-range for side bar */
+			return;
+		}
+		if (
+			pevent->xexpose.y + pevent->xexpose.height < bw
+			|| pevent->xexpose.y > bw + MR_HEIGHT(mr))
+		{
+			/* in the border */
+			return;
+		}
+		if (
+			!(MR_HAS_SIDECOLOR(mr) || MST_HAS_SIDE_COLOR(mr))
+			&& pevent->xexpose.y + pevent->xexpose.height < yt)
+		{
+			/* outside picture and no background */
+			return;
+		}
+
 	}
 
 	if (MR_HAS_SIDECOLOR(mr))
