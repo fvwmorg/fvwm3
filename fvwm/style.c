@@ -3825,6 +3825,22 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode = PLACE_MASK;
 			ps->change_mask.placement_mode = PLACE_MASK;
 		}
+		else if (StrEquals(
+				 token,
+				 "UnderMousePlacementHonorsStartsOnPage"))
+		{
+			ps->flags.um_placement_honors_starts_on_page = on;
+			ps->flag_mask.um_placement_honors_starts_on_page = 1;
+			ps->change_mask.um_placement_honors_starts_on_page = 1;
+		}
+		else if (StrEquals(
+				 token,
+				 "UnderMousePlacementIgnoresStartsOnPage"))
+		{
+			ps->flags.um_placement_honors_starts_on_page = !on;
+			ps->flag_mask.um_placement_honors_starts_on_page = 1;
+			ps->change_mask.um_placement_honors_starts_on_page = 1;
+		}
 		else if (StrEquals(token, "UsePPosition"))
 		{
 			ps->flags.use_no_pposition = !on;

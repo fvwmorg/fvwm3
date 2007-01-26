@@ -562,6 +562,7 @@ typedef struct
 	unsigned use_start_on_page_for_transient : 1;
 	unsigned use_start_on_screen : 1;
 	unsigned manual_placement_honors_starts_on_page : 1;
+	unsigned um_placement_honors_starts_on_page : 1;
 	unsigned capture_honors_starts_on_page : 1;
 	unsigned recapture_honors_starts_on_page : 1;
 	unsigned has_placement_penalty : 1;

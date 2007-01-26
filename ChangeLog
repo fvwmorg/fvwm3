@@ -1,5 +1,11 @@
 2007-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/placement.c (__place_window)
+	(__pl_under_mouse_get_pos_simple):
+	* fvwm/style.h (SUNDERMOUSE_PLACEMENT_HONORS_STARTS_ON_PAGE):
+	* fvwm/fvwm.1.in:
+	new style option UnderMousePlacementHonorsStartsOnPage
+
 	* fvwm/update.c (init_style):
 	don't forget stickyness when a window goes fullscreen (or when some
 	other style is changed)

@@ -448,6 +448,11 @@ static pl_penalty_t __pl_under_mouse_get_pos_simple(
 	{
 		ret_p->y = arg->screen_g.y;
 	}
+	if (arg->flags.do_honor_starts_on_page)
+	{
+		ret_p->x -= arg->pdelta_p.x;
+		ret_p->y -= arg->pdelta_p.y;
+	}
 
 	return 0;
 }
@@ -1549,6 +1554,7 @@ static int __place_window(
 	initial_window_options_t *win_opts, pl_reason_t *reason)
 {
 	FvwmWindow *t;
+	int is_skipmapping_forbidden;
 	int px = 0;
 	int py = 0;
 	int pdeltax = 0;
@@ -1604,12 +1610,30 @@ static int __place_window(
 		/*
 		 * it's ActivePlacement and SkipMapping, and that's disallowed.
 		 */
-		if (!win_opts->flags.do_override_ppos &&
-		    (DO_NOT_SHOW_ON_MAP(fw) &&
-		     (SPLACEMENT_MODE(sflags) == PLACE_MANUAL ||
-		      SPLACEMENT_MODE(sflags) == PLACE_MANUAL_B ||
-		      SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL) &&
-		     !SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags)))
+		switch (SPLACEMENT_MODE(sflags))
+		{
+		case PLACE_MANUAL:
+		case PLACE_MANUAL_B:
+		case PLACE_TILEMANUAL:
+			is_skipmapping_forbidden =
+				!SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(
+					sflags);
+			break;
+		case PLACE_UNDERMOUSE:
+			is_skipmapping_forbidden =
+				!SUNDERMOUSE_PLACEMENT_HONORS_STARTS_ON_PAGE(
+					sflags);
+			break;
+		default:
+			is_skipmapping_forbidden = 0;
+			break;
+		}
+		if (win_opts->flags.do_override_ppos ||
+		    !DO_NOT_SHOW_ON_MAP(fw))
+		{
+			is_skipmapping_forbidden = 0;
+		}
+		if (is_skipmapping_forbidden == 1)
 		{
 			flags.do_honor_starts_on_page = 0;
 			reason->page.reason = PR_PAGE_IGNORE_INVALID;
@@ -1618,7 +1642,8 @@ static int __place_window(
 				WARN, "__place_window",
 				"invalid style combination used: StartsOnPage"
 				"/StartsOnDesk and SkipMapping don't work with"
-				" ManualPlacement and TileManualPlacement."
+				" ManualPlacement, TileManualPlacement and"
+				" UnderMousePlacement."
 				" Putting window on current page, please use"
 				" another placement style or"
 				" ActivePlacementHonorsStartsOnPage.");

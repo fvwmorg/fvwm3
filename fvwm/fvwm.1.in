@@ -6859,6 +6859,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
 .IR StartsOnScreen ,
 .IR ManualPlacementHonorsStartsOnPage " / " ManualPlacementIgnoresStartsOnPage ,
+.IR UnderMousePlacementHonorsStartsOnPage " / " UnderMousePlacementIgnoresStartsOnPage ,
 .IR CaptureHonorsStartsOnPage " / " CaptureIgnoresStartsOnPage ,
 .IR RecaptureHonorsStartsOnPage " / " RecaptureIgnoresStartsOnPage ,
 .IR StartsOnPageIncludesTransients " / " StartsOnPageIgnoresTransients ,
@@ -8306,6 +8307,17 @@ perform interactive placement.  The default is
 matches the way the old
 .I StartsOnDesk
 style used to handle the situation.
+
+.I UnderMousePlacementIgnoresStartsOnPage
+and
+.I UnderMousePlacementHonorsStartsOnPage
+work just like
+.I ManualPlacementIgnoresStartsOnPage
+and
+.I ManualPlacementHonorsStartsOnPage
+but augment
+.I UnderMousePlacement
+instead.
 
 .I CaptureHonorsStartsOnPage
 causes the initial capture (of an already existing window) at
@@ -10116,7 +10128,7 @@ is given interactive scrolling takes place.  The viewporst
 scrolls as the mouse is moved. With the
 .RI reverse
 option scrolling is done in opposite direction of the mouse
-movement, and without it scrolling in the same direction as th
+movement, and without it scrolling in the same direction as the
 mouse.
 
 The binding

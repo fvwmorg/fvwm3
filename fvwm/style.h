@@ -91,6 +91,8 @@
 	((sf)->use_start_on_screen)
 #define SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
 	((sf)->manual_placement_honors_starts_on_page)
+#define SUNDERMOUSE_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
+	((sf)->um_placement_honors_starts_on_page)
 #define SCAPTURE_HONORS_STARTS_ON_PAGE(sf) \
 	((sf)->capture_honors_starts_on_page)
 #define SRECAPTURE_HONORS_STARTS_ON_PAGE(sf) \
