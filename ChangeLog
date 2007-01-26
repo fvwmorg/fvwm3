@@ -1,3 +1,12 @@
+2007-01-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/geometry.c (constrain_size):
+	silence gcc 4.1.1 warning.
+
+	* libs/System.c (searchPath):
+	search in pwd if no path is given.
+	return NULL if a file dosn't exist regardless if it's absolute path
+
 2007-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__place_window)

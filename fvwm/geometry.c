@@ -824,9 +824,12 @@ void constrain_size(
 	{
 		*widthp += fw->g.max_defect.width;
 		*heightp += fw->g.max_defect.height;
-		old.width = *widthp;
-		old.height = *heightp;
 	}
+	/* gcc 4.1.1 warns about these not being initialized at the end,
+	 * but the conditions for the use are the same...*/
+	old.width = *widthp;
+	old.height = *heightp;
+
 	d.width = *widthp;
 	d.height = *heightp;
 	get_window_borders(fw, &b);

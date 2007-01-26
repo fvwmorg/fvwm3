@@ -1,3 +1,8 @@
+2007-01-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm-root.c (SetRootWindow):
+	don't use image path in fvwm-root
+
 2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm-config.in:

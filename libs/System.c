@@ -129,6 +129,12 @@ char *searchPath(
 		return NULL;
 	}
 
+	if (pathlist == NULL || *pathlist == 0)
+	{
+		/* use pwd if no path list is given */
+		pathlist = ".";
+	}
+
 	filename_len = strlen(filename);
 	maxpath_len = (pathlist) ? strlen(pathlist) : 0;
 	maxpath_len += (suffix) ? strlen(suffix) : 0;
@@ -137,12 +143,23 @@ char *searchPath(
 	path = safemalloc(maxpath_len + filename_len + 2);
 	*path = '\0';
 
-	if (*filename == '/' || pathlist == NULL || *pathlist == '\0')
+	if (*filename == '/')
 	{
 		/* No search if filename begins with a slash */
-		/* No search if pathlist is empty */
 		strcpy(path, filename);
-		return path;
+
+		/* test if the path is accessable -- the module code assumes
+		 * this is done */
+		if (access(filename, type) == 0)
+		{
+			return path;
+		}
+
+		/* the file is not accessable (don't test suffixes with full
+		 * path), return NULL */
+		free(path);
+
+		return NULL;
 	}
 
 	/* Search each element of the pathlist for the file */
