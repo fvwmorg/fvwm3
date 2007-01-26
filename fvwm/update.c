@@ -74,6 +74,8 @@ static void init_style(
 	/* determine level of decoration */
 	setup_style_and_decor(t, pstyle, pbuttons);
 	/* restore some old values */
+	IS_STICKY_ACROSS_PAGES(t) = IS_STICKY_ACROSS_PAGES(old_t);
+	IS_STICKY_ACROSS_DESKS(t) = IS_STICKY_ACROSS_DESKS(old_t);
 	GET_USER_STATES(t) = GET_USER_STATES(old_t);
 
 	return;

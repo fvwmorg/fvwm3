@@ -1,3 +1,9 @@
+2007-01-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/update.c (init_style):
+	don't forget stickyness when a window goes fullscreen (or when some
+	other style is changed)
+
 2007-01-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__pl_cascade_get_pos_simple):
