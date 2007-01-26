@@ -90,8 +90,10 @@ int SetRootWindow(char *tline)
 		 * --color-limit option */
 		PictureInitCMap(dpy);
 	}
-	/* try built-in image path first */
-	file_path = PictureFindImageFile(tline, "", R_OK);
+	/* try built-in image path first, but not before pwd */
+	PictureSetImagePath(".:+");
+	file_path = PictureFindImageFile(tline, NULL, R_OK);
+
 	if (file_path == NULL)
 	{
 		file_path = tline;
