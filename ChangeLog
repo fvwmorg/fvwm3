@@ -1,3 +1,9 @@
+2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menus.c (paint_side_pic):
+	fixed previous patch
+	reindented function
+
 2007-01-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/menus.c (paint_side_pic):
