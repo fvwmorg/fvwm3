@@ -22,8 +22,7 @@
 #include <ctype.h>
 #include "libs/defaults.h"
 #include "Module.h"
-#include "safemalloc.h"
-
+#include "Parse.h"
 
 /*
  * Loop until count bytes are read, unless an error or end-of-file

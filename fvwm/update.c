@@ -22,6 +22,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
+#include "libs/Grab.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

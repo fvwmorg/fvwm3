@@ -15,6 +15,6 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 
-void send_clientmessage (Display *disp, Window w, Atom a, Time timestamp);
+void send_clientmessage(Display *disp, Window w, Atom a, Time timestamp);
 
 extern Atom _XA_WM_PROTOCOLS;

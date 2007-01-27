@@ -30,6 +30,8 @@
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 
 /* Globals */
 static ModuleArgs* module;

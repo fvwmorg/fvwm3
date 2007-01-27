@@ -46,7 +46,8 @@
 
 #include "defaults.h"
 #include "fvwmlib.h"
-#include "safemalloc.h"
+#include "Graphics.h"
+#include "ColorUtils.h"
 #include "Strings.h"
 #include "Parse.h"
 #include "PictureBase.h"

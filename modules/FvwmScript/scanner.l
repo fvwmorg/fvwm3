@@ -1,6 +1,8 @@
 %{
+# include "config.h"
 # include "script.h"
 # include "types.h"
+# include "libs/Parse.h"
 
 /* Suppress definition of yyunput(), as we do not use it. */
 #define YY_NO_UNPUT

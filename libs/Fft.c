@@ -23,7 +23,7 @@
 #include <X11/Xlib.h>
 
 #include "fvwmlib.h"
-#include "safemalloc.h"
+#include "wild.h"
 #include "Strings.h"
 #include "Flocale.h"
 #include "Fft.h"

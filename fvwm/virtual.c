@@ -24,6 +24,8 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FGettext.h"
+#include "libs/Grab.h"
+#include "libs/Parse.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

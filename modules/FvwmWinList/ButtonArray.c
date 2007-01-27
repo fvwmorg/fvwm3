@@ -42,6 +42,7 @@
 #include "Mallocs.h"
 #include "libs/PictureGraphics.h"
 #include "libs/Rectangles.h"
+#include "libs/Graphics.h"
 
 extern FlocaleFont *FButtonFont;
 extern FlocaleWinString *FwinString;

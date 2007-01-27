@@ -19,6 +19,10 @@
 
 #include <stdio.h>
 
+#include "libs/fvwmlib.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/ColorUtils.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

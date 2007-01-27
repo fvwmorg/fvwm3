@@ -28,12 +28,16 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <X11/Xatom.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Parse.h"
 #include "libs/PictureBase.h"
 #include "libs/FShape.h"
+#include "libs/ColorUtils.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
+#include "libs/Graphics.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRenderInit.h"
 #include "libs/Strings.h"

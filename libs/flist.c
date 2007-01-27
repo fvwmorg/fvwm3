@@ -29,8 +29,8 @@
 #include "config.h"
 #include <stdio.h>
 
-#include "flist.h"
 #include "safemalloc.h"
+#include "flist.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

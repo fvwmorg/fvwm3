@@ -1,5 +1,97 @@
 2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/bindings.c:
+	* fvwm/cursor.c:
+	* fvwm/decorations.c:
+	* fvwm/ewmh_conf.c:
+	* fvwm/ewmh_events.c:
+	* fvwm/ewmh_icons.c:
+	* fvwm/expand.c:
+	* fvwm/focus.c:
+	* fvwm/functions.c:
+	* fvwm/gnome.c:
+	* fvwm/menubindings.c:
+	* fvwm/menucmd.c:
+	* fvwm/menuitem.c:
+	* fvwm/misc.c:
+	* fvwm/modconf.c:
+	* fvwm/module_interface.c:
+	* fvwm/module_list.c:
+	* fvwm/read.c:
+	* fvwm/update.c:
+	* fvwm/windowlist.c:
+	* fvwm/windowshade.c:
+	* fvwm/colorset.c:
+	* fvwm/session.c:
+	* fvwm/stack.c:
+	* fvwm/ewmh.c:
+	* fvwm/conditional.c:
+	* fvwm/menustyle.c:
+	* fvwm/virtual.c:
+	* fvwm/placement.c:
+	* fvwm/frame.c:
+	* fvwm/fvwm.c:
+	* fvwm/icons.c:
+	* fvwm/add_window.c:
+	* fvwm/builtins.c:
+	* fvwm/move_resize.c:
+	* fvwm/borders.c:
+	* fvwm/style.c:
+	* fvwm/events.c:
+	* fvwm/menus.c:
+	* libs/FTips.c:
+	* libs/Picture.c:
+	* libs/Target.c:
+	* libs/gravity.c:
+	* fvwm/execcontext.c:
+	* libs/BidiJoin.c:
+	* libs/CombineChars.c:
+	* libs/FBidi.c:
+	* libs/FEvent.c:
+	* libs/Fft.c:
+	* libs/FGettext.c:
+	* libs/Ficonv.c:
+	* libs/FImage.c:
+	* libs/flist.c:
+	* libs/FlocaleCharset.c:
+	* libs/fsm.c:
+	* libs/Parse.c:
+	* libs/queue.c:
+	* libs/safemalloc.c:
+	* libs/strdup.c:
+	* libs/timeout.c:
+	* libs/Strings.c:
+	* libs/FRender.c:
+	* libs/Module.c:
+	* libs/ColorUtils.c:
+	* libs/Colorset.c:
+	* libs/PictureImageLoader.c:
+	* libs/PictureGraphics.c:
+	* libs/Graphics.c:
+	* libs/FScreen.c:
+	* libs/PictureUtils.c:
+	* libs/Flocale.c:
+	* libs/PictureBase.c:
+	use new header files
+
+	* libs/Graphics.h:
+	* libs/XResource.h:
+	* libs/Event.h:
+	* libs/XError.h:
+	* libs/ColorUtils.h:
+	* libs/PictureBase.h:
+	* libs/System.h:
+	* libs/defaults.h:
+	* libs/Cursor.h:
+	* libs/Target.h:
+	* libs/WinMagic.h:
+	* libs/fvwmlib.h:
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	moved declarations from fvwmlib.h to new/appropriate header files
+
+	* libs/XError.c:
+	reformatted
+
 	* fvwm/menus.c (paint_side_pic):
 	fixed previous patch
 	reindented function

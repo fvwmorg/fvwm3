@@ -5,6 +5,8 @@
 
 /* ---------------------------- included header files ---------------------- */
 
+#include "libs/Strings.h"
+
 /* ---------------------------- global definitions ------------------------- */
 
 #define MAX_TOKEN_LENGTH 1023

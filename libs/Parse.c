@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "safemalloc.h"
+#include "fvwmlib.h"
 #include "Strings.h"
 #include "Parse.h"
 

@@ -21,8 +21,8 @@
 
 #include <ctype.h>
 
-#include "Strings.h"
 #include "safemalloc.h"
+#include "Strings.h"
 
 
 #define CHUNK_SIZE 256
@@ -243,7 +243,7 @@ char *QuoteString(char *dest, const char *source)
  * Returns a pointer to the end of dest.
  */
 
-char *QuoteEscapeString(char *dest, const char *source, char delim, 
+char *QuoteEscapeString(char *dest, const char *source, char delim,
 			const char *escape, const char *escaper)
 {
 	*dest++ = delim;
@@ -271,7 +271,7 @@ char *QuoteEscapeString(char *dest, const char *source, char delim,
 unsigned int QuoteEscapeStringLength(const char *source, const char *escape)
 {
 	unsigned int len = 2;
-	
+
 	while (*source)
 	{
 		if (strchr(escape, *source) != NULL)

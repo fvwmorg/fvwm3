@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <X11/Xproto.h>                 /* for X functions in general */
 #include "fvwmlib.h"                    /* prototype GetShadow GetHilit */
+#include "Parse.h"
 #include "Colorset.h"
 #include "PictureBase.h"
 #include "PictureUtils.h"

@@ -19,6 +19,7 @@
 #define FEVENT_C
 #define FEVENT_PRIVILEGED_ACCESS
 #include "config.h"
+#include "libs/fvwmlib.h"
 #include <X11/Xlib.h>
 #include "FEvent.h"
 #undef FEVENT_C
@@ -27,7 +28,6 @@
 #include <stdio.h>
 
 #include "libs/ftime.h"
-#include "libs/safemalloc.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

@@ -24,6 +24,8 @@
 #include <libs/FScreen.h>
 #include <libs/FShape.h>
 #include <libs/Module.h>
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 
 /*
  *

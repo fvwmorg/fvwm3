@@ -25,6 +25,7 @@
 
 #include <fvwmlib.h>
 #include "PictureBase.h"
+#include "Graphics.h"
 #include "PictureGraphics.h"
 #include "FRenderInit.h"
 #include "FRender.h"

@@ -38,6 +38,10 @@
 #include "libs/Colorset.h"
 #include "libs/PictureBase.h"
 #include "libs/FRenderInit.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/Target.h"
+#include "libs/XError.h"
 #include "FvwmScroll.h"
 
 ModuleArgs *module;

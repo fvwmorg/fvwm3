@@ -28,6 +28,7 @@
 #include "Colorset.h"
 #include "FRenderInit.h"
 #include "FRenderInterface.h"
+#include "Graphics.h"
 #include "PictureGraphics.h"
 #include "PictureUtils.h"
 #include "FImage.h"

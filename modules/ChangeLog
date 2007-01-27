@@ -1,3 +1,77 @@
+2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	also include "config.h"
+
+	* FvwmWharf/stepgfx.c:
+	* FvwmWharf/icons.c:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTheme/FvwmTheme.c:
+	* FvwmTaskBar/Start.c:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmScroll/GrabWindow.c:
+	* FvwmScroll/FvwmScroll.c:
+	* FvwmScript/Widgets/VScrollBar.c:
+	* FvwmScript/Widgets/VDipstick.c:
+	* FvwmScript/Widgets/TextField.c:
+	* FvwmScript/Widgets/Swallow.c:
+	* FvwmScript/Widgets/Rectangle.c:
+	* FvwmScript/Widgets/RadioButton.c:
+	* FvwmScript/Widgets/PushButton.c:
+	* FvwmScript/Widgets/PopupMenu.c:
+	* FvwmScript/Widgets/MiniScroll.c:
+	* FvwmScript/Widgets/Menu.c:
+	* FvwmScript/Widgets/List.c:
+	* FvwmScript/Widgets/ItemDraw.c:
+	* FvwmScript/Widgets/HScrollBar.c:
+	* FvwmScript/Widgets/HDipstick.c:
+	* FvwmScript/Widgets/CheckBox.c:
+	* FvwmScript/scanner.c:
+	* FvwmScript/Instructions.c:
+	* FvwmScript/FvwmScript.c:
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmPager/x_pager.c:
+	* FvwmPager/FvwmPager.c:
+	* FvwmM4/FvwmM4.c:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIconMan/xmanager.c:
+	* FvwmIconMan/x.c:
+	* FvwmIconMan/winlist.c:
+	* FvwmIconMan/readconfig.c:
+	* FvwmIconMan/fvwm.c:
+	* FvwmIconMan/functions.c:
+	* FvwmIconBox/icons.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmGtk/windowlist.c:
+	* FvwmGtk/FvwmGtk.c:
+	* FvwmForm/FvwmForm.c:
+	* FvwmEvent/FvwmEvent.c:
+	* FvwmDragWell/xdndDragSource.c:
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmDebug/FvwmOldDebug.c:
+	* FvwmCpp/FvwmCpp.c:
+	* FvwmCommand/FvwmCommandS.c:
+	* FvwmButtons/parse.c:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/dynamic.c:
+	* FvwmButtons/draw.c:
+	* FvwmBanner/FvwmBanner.c:
+	* FvwmBacker/FvwmBacker.c:
+	* FvwmAuto/FvwmAuto.c:
+	* FvwmAnimate/FvwmAnimate.c:
+	* FvwmWinList/ButtonArray.c:
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmProxy/FvwmProxy.c:
+	use new library include files
+
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmTaskBar/ButtonArray.c:
+	* FvwmTaskBar/List.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	do not include safemalloc.h directly
+
+
 2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmPerl/FvwmPerl.in:

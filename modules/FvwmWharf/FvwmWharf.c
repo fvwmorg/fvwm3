@@ -75,6 +75,11 @@
 #include "libs/Module.h"
 #include "libs/PictureBase.h"
 #include "libs/Colorset.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/XError.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>

@@ -19,8 +19,10 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
+#include <X11/Xatom.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Parse.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

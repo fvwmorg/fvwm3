@@ -41,6 +41,8 @@
 #include <libs/fvwmlib.h>
 #include <fvwm/fvwm.h>
 #include <libs/vpacket.h>
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 
 #include "dialog.h"
 #include "menu.h"

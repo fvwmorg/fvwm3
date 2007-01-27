@@ -26,6 +26,8 @@
 #include "libs/PictureUtils.h"
 #include "libs/PictureImageLoader.h"
 #include "libs/FRenderInit.h"
+#include "libs/Graphics.h"
+#include "libs/Strings.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "window_flags.h"

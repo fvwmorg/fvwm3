@@ -15,6 +15,7 @@
 #include <X11/Xatom.h>
 #include <libs/fvwmlib.h>
 #include <libs/Picture.h>
+#include <libs/Graphics.h>
 
 int save_colors = 0;
 Display *dpy;

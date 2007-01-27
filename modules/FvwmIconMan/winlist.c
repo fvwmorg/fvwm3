@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <limits.h>
+#include "libs/wild.h"
 #include "FvwmIconMan.h"
 
 #define HASHTAB_SIZE 257

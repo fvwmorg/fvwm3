@@ -28,9 +28,11 @@
 
 #include <stdio.h>
 #include <X11/Xproto.h>
+#include <X11/Xatom.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/Parse.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

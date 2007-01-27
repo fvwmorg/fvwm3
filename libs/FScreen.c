@@ -63,7 +63,7 @@
 
 #include "defaults.h"
 #include "fvwmlib.h"
-#include "safemalloc.h"
+#include "Parse.h"
 #include "FScreen.h"
 #include "PictureBase.h"
 

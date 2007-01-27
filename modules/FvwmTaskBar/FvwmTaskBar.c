@@ -67,7 +67,6 @@
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
-#include "libs/safemalloc.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
@@ -75,6 +74,11 @@
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
 #include "libs/FGettext.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/XError.h"
 
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"

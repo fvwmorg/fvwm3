@@ -28,9 +28,12 @@
 #endif
 #include <signal.h>
 #include <fcntl.h>
+#include <X11/Xatom.h>
 
-#include "libs/FSMlib.h"
 #include "libs/fvwmlib.h"
+#include "libs/FSMlib.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

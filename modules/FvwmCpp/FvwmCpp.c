@@ -51,6 +51,8 @@
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"
 #include "libs/FSMlib.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #define Resolution(pixels, mm) ((((pixels) * 2000 / (mm)) + 1) / 2)

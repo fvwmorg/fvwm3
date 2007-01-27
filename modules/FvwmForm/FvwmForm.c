@@ -40,6 +40,14 @@
 #include "libs/Module.h"                /* for headersize, etc. */
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
+#include "libs/ColorUtils.h"
+#include "libs/Cursor.h"
+#include "libs/envvar.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/XError.h"
 
 #include <libs/PictureBase.h>            /* for PictureInitCMap */
 #include "libs/Colorset.h"

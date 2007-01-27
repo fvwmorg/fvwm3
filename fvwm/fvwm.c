@@ -42,8 +42,15 @@
 #endif
 
 #include <X11/Xproto.h>
+#include <X11/Xatom.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/envvar.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/Grab.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"

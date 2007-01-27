@@ -33,9 +33,14 @@
 #include "libs/FScreen.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
-#include "libs/safemalloc.h"
 #include "libs/charmap.h"
 #include "libs/modifiers.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/wild.h"
 
 #include "FvwmProxy.h"
 

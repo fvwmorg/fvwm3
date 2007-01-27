@@ -66,7 +66,11 @@
 #include "libs/gravity.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInterface.h"
-#include "libs/fvwmrect.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/XError.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"

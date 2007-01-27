@@ -59,6 +59,11 @@
 #include "libs/FShape.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/XError.h"
 
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"

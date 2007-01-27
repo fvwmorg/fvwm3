@@ -23,7 +23,6 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/safemalloc.h"
 #include "libs/PictureBase.h"
 #include "libs/FImage.h"
 
@@ -138,7 +137,7 @@ static void FShmSafeCreateImage(
  bail:
 	if (error)
 	{
-		
+
 		if (fim->im)
 		{
 			XDestroyImage (fim->im);

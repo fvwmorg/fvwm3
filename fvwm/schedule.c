@@ -22,6 +22,7 @@
 #include "libs/queue.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
+#include "libs/Parse.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"

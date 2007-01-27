@@ -23,8 +23,8 @@
 #include <X11/Xmd.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/fvwmrect.h"
 #include "libs/FScreen.h"
+#include "libs/Strings.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "functions.h"

@@ -50,6 +50,9 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/wild.h"
 
 /* here is the old double parens trick. */
 /* #define DEBUG */

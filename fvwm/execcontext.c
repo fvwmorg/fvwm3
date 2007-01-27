@@ -21,7 +21,6 @@
 #undef FEVENT_PRIVILEGED_ACCESS
 #include <stdio.h>
 
-#include "libs/safemalloc.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

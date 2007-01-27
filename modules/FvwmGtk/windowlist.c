@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/wild.h"
 
 #include "menu.h"
 #include "windowlist.h"

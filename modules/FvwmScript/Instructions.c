@@ -25,6 +25,8 @@
 #include "libs/wcontext.h"
 #include "libs/modifiers.h"
 #include "libs/Module.h"
+#include "libs/ColorUtils.h"
+#include "libs/Strings.h"
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif

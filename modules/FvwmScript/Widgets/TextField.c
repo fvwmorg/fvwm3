@@ -16,8 +16,10 @@
 
 #include "config.h"
 
-#include "Tools.h"
 #include "libs/Flocale.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "Tools.h"
 
 /*
  * Fonction for TextField
@@ -141,7 +143,7 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	int right=0;
 	int offset,offset2,offset3;
 	int end_value;
-	
+
 	fprintf(stderr,"DrawTextField: value %d value2 %d value3 %d\n",
 		xobj->value, xobj->value2, xobj->value3);
 
@@ -181,11 +183,11 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	while (l-nl >= 1 &&
 	       FlocaleTextWidth(xobj->Ffont,xobj->title + nl,
 				offset - nl) > (xobj->width-10))
-	{ 
+	{
 		nl += FlocaleStringNumberOfBytes(xobj->Ffont,xobj->title + nl);
 		fprintf(stderr,"nl: %d\n", nl);
 	}
-	/* now nl is the byte offset of the first the first visible 
+	/* now nl is the byte offset of the first the first visible
 	   character */
 	if (nl > offset3) /* the first visible character needs to be updated */
 	{
@@ -196,7 +198,7 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 		offset3 = nl;
 	}
 	else if (xobj->value3 > xobj->value)
-	{ 
+	{
 		xobj->value3--;
 		offset3 = FlocaleStringCharToByteOffset(xobj->Ffont,
 							xobj->title,
@@ -209,14 +211,14 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	/* increase string until it won't fit anymore into into the textbox */
 	right = offset3;
 	while(right < l && FlocaleTextWidth(xobj->Ffont, xobj->title + offset3,
-					    right - offset3) <= 
+					    right - offset3) <=
 	      xobj->width - 10)
 	{
 		right += FlocaleStringNumberOfBytes(xobj->Ffont,
 						    xobj->title + right);
 	}
 	/* the string didn't fit? */
-	if(FlocaleTextWidth(xobj->Ffont, xobj->title + offset3, 
+	if(FlocaleTextWidth(xobj->Ffont, xobj->title + offset3,
 			    right - offset3) >
 	   xobj->width - 10)
 	{
@@ -238,7 +240,7 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 		FlocaleTextWidth(xobj->Ffont,xobj->title + offset3,
 				 l - offset3 - right) > (xobj->width-10))
 	{
-	right += FlocaleStringNumberOfBytes(xobj->Ffont, 
+	right += FlocaleStringNumberOfBytes(xobj->Ffont,
 	xobj->title + right);
 		fprintf(stderr, "sl: %d\n", l - offset3 - right);
 		} */
@@ -337,7 +339,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 		/* byte offset corresponding to the above */
 		start_pos = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
 						     xobj->value3);
-		selection_pos = getByteOffsetBoundsCheck(xobj->Ffont, 
+		selection_pos = getByteOffsetBoundsCheck(xobj->Ffont,
 							 xobj->title,
 							 xobj->value3);
 		DrawPointTxt(xobj,xobj->TabColor[fore]);
@@ -365,8 +367,8 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 				{
 					curs_pos += FlocaleStringNumberOfBytes(
 							   xobj->Ffont,
-							   xobj->title + 
-							   start_pos + 
+							   xobj->title +
+							   start_pos +
 							   curs_pos);
 					PosCurs++;
 				}
@@ -396,7 +398,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 					xobj->value2 = PosCurs + xobj->value3;
 					DrawTextField(xobj,NULL);
 				}
-				else if (PosCurs < 
+				else if (PosCurs <
 					 (xobj->value2 - xobj->value3))
 				{
 					/* selection made "backwards" */
@@ -627,7 +629,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 			/* otherwise step forward as many bytes as the
 			   next charcter at the insertion point is wide */
 			else
-				NewPos += 
+				NewPos +=
 					FlocaleStringNumberOfBytes(
 					       xobj->Ffont,
 					       xobj->title + NewPos);
@@ -660,9 +662,9 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 				   multi-byte strings */
 				int PrevPos;
 				Size=strlen(xobj->title);
-				PrevPos = 
+				PrevPos =
 					FlocaleStringCharToByteOffset(
-					       xobj->Ffont, 
+					       xobj->Ffont,
 					       xobj->title,
 					       xobj->value - 1);
 				memmove(
@@ -671,7 +673,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 					Size-NewPos+1);
 				xobj->title=(char*)realloc(
 					xobj->title,
-					(Size - (NewPos - PrevPos) + 1) * 
+					(Size - (NewPos - PrevPos) + 1) *
 					sizeof(char));
 				NewPos = PrevPos;
 				SendMsg(xobj,SingleClic);

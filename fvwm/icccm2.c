@@ -20,6 +20,7 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
+#include <X11/Xatom.h>
 
 #include "fvwm.h"
 #include "externs.h"

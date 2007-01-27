@@ -50,6 +50,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Rectangles.h"
 #include "libs/FShape.h"	/* FShapesSupported */
+#include "libs/Graphics.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "icons.h" /* ConfigureIconWindow() */

@@ -32,6 +32,7 @@
 #include <X11/cursorfont.h>
 
 #include "fvwmlib.h"
+#include "Grab.h"
 
 void fvwmlib_keyboard_shortcuts(
 	Display *dpy, int screen, XEvent *Event, int x_move_size,

@@ -39,6 +39,7 @@
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
 #include "libs/PictureGraphics.h"
+#include "libs/Graphics.h"
 
 #include <stdio.h>
 #include <unistd.h>

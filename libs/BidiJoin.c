@@ -27,14 +27,14 @@
 
 #include "config.h"
 
-#include "BidiJoin.h"
-
 #if HAVE_BIDI
+
+#include "fvwmlib.h"
+#include "BidiJoin.h"
 
 /* ---------------------------- included header files ---------------------- */
 
 #include <stdio.h>
-#include "safemalloc.h"
 
 /* ---------------------------- local types -------------------------------- */
 

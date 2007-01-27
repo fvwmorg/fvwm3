@@ -50,6 +50,8 @@
 
 #include <libs/Module.h>
 #include <libs/fvwmlib.h>
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 
 /*
  * fvwm includes:

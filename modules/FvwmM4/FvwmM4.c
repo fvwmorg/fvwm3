@@ -45,6 +45,8 @@
 #include <X11/Intrinsic.h>
 
 #include "libs/Module.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
 
 #include "FvwmM4.h"
 #include "libs/fvwmlib.h"

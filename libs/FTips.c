@@ -24,12 +24,14 @@
 #include "libs/ftime.h"
 
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 #include "defaults.h"
 #include "fvwmlib.h"
 #include "Strings.h"
 #include "PictureBase.h"
 #include "Flocale.h"
+#include "Graphics.h"
 #include "Colorset.h"
 #include "libs/FScreen.h"
 #include "FTips.h"

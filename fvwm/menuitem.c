@@ -22,6 +22,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
+#include "libs/Graphics.h"
 #include "libs/PictureGraphics.h"
 #include "libs/Rectangles.h"
 #include "fvwm.h"

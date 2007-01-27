@@ -50,6 +50,9 @@
 #include "libs/Colorset.h"
 #include "libs/PictureBase.h"
 #include "libs/FScreen.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 
 #include "FvwmScroll.h"
 

@@ -16,8 +16,10 @@
 
 #include "config.h"
 
+#include "libs/fvwmlib.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
 #include "Tools.h"
-
 
 /*
  * Fonction pour Rectangle

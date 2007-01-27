@@ -42,6 +42,7 @@
 #include "libs/FShape.h"
 #include <libs/Module.h>
 #include "libs/Colorset.h"
+#include "libs/Graphics.h"
 #include "fvwm/fvwm.h"
 #include "libs/PictureGraphics.h"
 #include "FvwmPager.h"

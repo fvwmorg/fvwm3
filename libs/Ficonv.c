@@ -26,7 +26,6 @@
 
 #include <X11/Xlib.h>
 
-#include "safemalloc.h"
 #include "FlocaleCharset.h"
 #include "Ficonv.h"
 

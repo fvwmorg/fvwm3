@@ -25,6 +25,9 @@
 #include "libs/PictureUtils.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "libs/XError.h"
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|\
 	EnterWindowMask|LeaveWindowMask)
@@ -1177,7 +1180,7 @@ void change_colorset(int color)
 		if (man->tips_conf->colorset == color)
 		{
 			FTipsColorsetChanged(theDisplay, color);
-		} 
+		}
 	}
 }
 

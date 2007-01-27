@@ -16,6 +16,9 @@
 
 #include "config.h"
 
+#include "libs/fvwmlib.h"
+#include "libs/ColorUtils.h"
+#include "libs/Strings.h"
 #include "Tools.h"
 
 extern int fd[2];
@@ -77,7 +80,7 @@ void InitSwallow(struct XObj *xobj)
 	static char *orig_sm_env = NULL;
 	static int len = 0;
 	static Bool sm_initialized = False;
-	static Bool session_manager = False; 
+	static Bool session_manager = False;
 	char *cmd;
 
 	/* Enregistrement des couleurs et de la police */
@@ -135,7 +138,7 @@ void InitSwallow(struct XObj *xobj)
 		len = 45 + strlen(my_sm_env) + strlen(orig_sm_env);
 	}
 
-	cmd = safemalloc(len + strlen(xobj->swallow)); 
+	cmd = safemalloc(len + strlen(xobj->swallow));
 	sprintf(
 		cmd,
 		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",

@@ -21,6 +21,7 @@
 #include "xmanager.h"
 #include "x.h"
 #include "libs/Module.h"
+#include "libs/wild.h"
 
 static Button *get_select_button(void);
 

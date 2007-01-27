@@ -54,6 +54,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#include <X11/Xatom.h>
 
 #include "libs/FShape.h"
 #include "libs/Module.h"
@@ -61,6 +62,8 @@
 #include "libs/Parse.h"
 #include "libs/PictureBase.h"
 #include "libs/FRenderInit.h"
+#include "libs/Graphics.h"
+#include "libs/XError.h"
 #include "FvwmBacker.h"
 
 /* migo (22-Nov-1999): Temporarily until fvwm_msg is moved to libs */

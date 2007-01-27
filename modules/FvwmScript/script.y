@@ -1,4 +1,5 @@
 %{
+#include "config.h"
 #include "types.h"
 #include "libs/FGettext.h"
 

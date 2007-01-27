@@ -51,6 +51,10 @@
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
 #include "libs/fvwmsignal.h"
+#include "libs/Grab.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
 
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"

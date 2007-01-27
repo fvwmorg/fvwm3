@@ -44,6 +44,8 @@
 #include <X11/Intrinsic.h>
 
 #include "libs/Module.h"
+#include "libs/Grab.h"
+#include "libs/Graphics.h"
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>

@@ -63,6 +63,14 @@
 #include "libs/vpacket.h"
 #include "libs/FRender.h"
 #include "libs/fsm.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
+#include "libs/wild.h"
+#include "libs/WinMagic.h"
+#include "libs/XError.h"
 
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */

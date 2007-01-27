@@ -26,10 +26,10 @@
 
 #if HAVE_BIDI
 
+#include "safemalloc.h"
 #include "BidiJoin.h"
 #include <fribidi/fribidi.h>
 #include <fribidi/fribidi_types.h>
-#include "safemalloc.h"
 #include <stdio.h>
 
 Bool FBidiIsApplicable(const char *charset)
@@ -111,7 +111,7 @@ char *FBidiConvert(
 				pos_l_to_v[comb_chars[i].position] : 0;
 		}
 	}
-	
+
 	if (l_to_v != NULL)
 	{
 		/* values in the previuos mapping gives the position of

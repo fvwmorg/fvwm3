@@ -39,6 +39,7 @@
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
 #include "libs/vpacket.h"
+#include "libs/System.h"
 
 char *MyName;
 int fd_width;

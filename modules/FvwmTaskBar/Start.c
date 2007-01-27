@@ -25,6 +25,8 @@
 #include "libs/Flocale.h"
 #include "libs/Picture.h"
 #include "libs/Module.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 #include "ButtonArray.h"
 #include "Mallocs.h"
 #include "Start.h"

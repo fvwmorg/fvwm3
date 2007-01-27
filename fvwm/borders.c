@@ -40,6 +40,8 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Parse.h"
+#include "libs/Graphics.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRenderInit.h"

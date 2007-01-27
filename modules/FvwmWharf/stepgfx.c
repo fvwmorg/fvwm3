@@ -25,6 +25,7 @@ extern Window main_win;
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"
+#include "libs/Graphics.h"
 
 /* Masks to apply to color components when allocating colors
  * you may want to set them to 0xffff if your display supports 16bpp+

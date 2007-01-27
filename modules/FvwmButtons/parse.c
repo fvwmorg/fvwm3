@@ -40,6 +40,8 @@
 #include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 #include "FvwmButtons.h"
 #include "button.h"
 #include "parse.h"

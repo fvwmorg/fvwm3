@@ -17,7 +17,10 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <X11/Xatom.h>
+
 #include "libs/fvwmlib.h"
+#include "libs/Target.h"
 #include "dragSource.h"
 #include "cursorStuff.h"
 #include "fvwmDragWell.h"

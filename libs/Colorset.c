@@ -27,8 +27,8 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
-#include "libs/safemalloc.h"
 #include "libs/PictureBase.h"
+#include "libs/Graphics.h"
 #include "libs/PictureGraphics.h"
 
 /* globals */
@@ -361,7 +361,7 @@ void GetWindowBackgroundPixmapSize(
 	}
 }
 
-/* create a pixmap suitable for plonking on the background of a part of a 
+/* create a pixmap suitable for plonking on the background of a part of a
  * window */
 Pixmap CreateOffsetBackgroundPixmap(
 	Display *dpy, Window win, int x, int y, int width, int height,

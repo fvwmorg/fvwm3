@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include "safemalloc.h"
-
 char *strdup(const char *s)
 {
 	char   *d;

@@ -50,6 +50,9 @@
 #include <libs/FScreen.h>
 #include <libs/FShape.h>
 #include <libs/FRenderInit.h>
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 
 /* migo (16-Sep-1999): How about to do this configurable? */
 /*#include "fvwm-logo-old.xpm"*/

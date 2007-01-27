@@ -53,9 +53,14 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <X11/Xatom.h>
 
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
+#include "libs/System.h"
+#include "libs/Grab.h"
+#include "libs/Parse.h"
+#include "libs/ColorUtils.h"
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"
 #include "libs/Colorset.h"

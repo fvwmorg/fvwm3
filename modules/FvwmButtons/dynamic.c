@@ -29,6 +29,7 @@
 
 #include "libs/Module.h"
 #include "libs/Strings.h"
+#include "libs/Parse.h"
 #include "FvwmButtons.h"
 #include "button.h"
 #include "draw.h"

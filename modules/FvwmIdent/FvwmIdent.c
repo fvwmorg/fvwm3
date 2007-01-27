@@ -56,6 +56,10 @@
 #include "libs/Flocale.h"
 #include "libs/Parse.h"
 #include "libs/FRenderInit.h"
+#include "libs/Graphics.h"
+#include "libs/System.h"
+#include "libs/Target.h"
+#include "libs/XError.h"
 
 #include "FvwmIdent.h"
 

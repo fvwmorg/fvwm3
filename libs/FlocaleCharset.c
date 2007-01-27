@@ -23,7 +23,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
-#include "safemalloc.h"
 #include "Strings.h"
 #include "Parse.h"
 #include "Flocale.h"

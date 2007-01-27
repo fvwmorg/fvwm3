@@ -23,8 +23,11 @@
 #include <X11/keysym.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Parse.h"
+#include "libs/ColorUtils.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
+#include "libs/Graphics.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

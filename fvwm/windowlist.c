@@ -35,6 +35,8 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FGettext.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "functions.h"

@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <X11/keysym.h>
 
+#include "libs/Parse.h"
 #include "libs/Bindings.h"
 #include "libs/charmap.h"
 #include "libs/Flocale.h"

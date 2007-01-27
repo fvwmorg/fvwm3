@@ -25,6 +25,8 @@
 
 #include "libs/fvwmlib.h"
 #include <libs/gravity.h>
+#include <libs/Grab.h>
+#include <libs/Parse.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -1877,7 +1879,7 @@ void mark_transient_subtree(
 		{
 			SET_IN_TRANSIENT_SUBTREE(s, 0);
 			if (
-				IS_TRANSIENT(s) && 
+				IS_TRANSIENT(s) &&
 				(layer < 0 || layer == s->layer))
 			{
 				s->scratch.p = get_transientfor_fvwmwindow(s);

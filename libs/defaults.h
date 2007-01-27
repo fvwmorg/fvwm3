@@ -274,8 +274,9 @@
 #define MAX_HANDLE_WIDTH                   (MAX_BORDER_WIDTH)
 
 /*** module configuration ***/
-#define MAX_MODULE_ALIAS_LEN             250
+#define MAX_MODULE_ALIAS_LEN             250 /* bytes */
 #define DEFAULT_MODULE_TIMEOUT            30 /* seconds */
+#define MAX_MODULE_INPUT_TEXT_LEN       1000 /* bytes */
 
 /*** FvwmConsole configuration */
 /* Maximum time FvwmConsole waits for the client to connect. */

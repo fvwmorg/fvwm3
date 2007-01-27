@@ -16,8 +16,11 @@
 
 #include "config.h"
 
-#include "Tools.h"
 #include "libs/ftime.h"
+#include "libs/fvwmlib.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "Tools.h"
 
 /*
  * Fonction pour PopupMenu / function for PopupMenu

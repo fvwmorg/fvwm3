@@ -60,6 +60,10 @@
 #include "libs/PictureGraphics.h"
 #include "libs/PictureUtils.h"
 #include "libs/FRenderInit.h"
+#include "libs/Grab.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846

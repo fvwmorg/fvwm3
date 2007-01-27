@@ -36,6 +36,9 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/wild.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

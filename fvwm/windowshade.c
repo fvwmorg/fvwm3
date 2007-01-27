@@ -21,6 +21,8 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

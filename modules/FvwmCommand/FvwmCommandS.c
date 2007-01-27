@@ -29,6 +29,7 @@
 #include "FvwmCommand.h"
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
+#include "libs/Strings.h"
 
 #define MYNAME   "FvwmCommandS"
 

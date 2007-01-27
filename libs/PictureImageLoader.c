@@ -36,9 +36,11 @@
 #include <X11/Xmd.h>
 
 #include <fvwmlib.h>
-#include "safemalloc.h"
+#include "System.h"
+#include "Strings.h"
 #include "Picture.h"
 #include "PictureUtils.h"
+#include "Graphics.h"
 #include "Fxpm.h"
 #include "Fpng.h"
 #include "FRenderInit.h"

@@ -29,6 +29,8 @@
 #include <X11/Xmd.h>
 
 #include "fvwmlib.h"
+#include "envvar.h"
+#include "Parse.h"
 #include "ftime.h"
 #include "PictureBase.h"
 #include "PictureUtils.h"

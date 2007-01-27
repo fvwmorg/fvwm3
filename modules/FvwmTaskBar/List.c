@@ -29,7 +29,6 @@
 
 #include "config.h"
 #include "libs/Module.h"
-#include "libs/safemalloc.h"
 
 #include <stdio.h>
 

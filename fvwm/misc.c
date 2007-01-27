@@ -28,11 +28,14 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <X11/Xatom.h>
 
 #include "libs/ftime.h"
 #ifdef FVWM_DEBUG_TIME
 #include <sys/times.h>
 #endif
+#include "libs/Parse.h"
+#include "libs/Target.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

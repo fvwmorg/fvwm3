@@ -23,6 +23,8 @@
 #include <libs/fvwmlib.h>
 #include <libs/FScreen.h>
 #include <libs/Module.h>
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 
 static WinData *fvwm_focus_win = NULL;
 
@@ -275,7 +277,7 @@ static void focus_change(FvwmPacketBody *body)
 
 	if (fvwm_focus_win &&
 	    fvwm_focus_win->button &&
-	    fvwm_focus_win->manager->showonlyfocused) 
+	    fvwm_focus_win->manager->showonlyfocused)
 	  delete_windows_button(fvwm_focus_win);
 
 	if (fvwm_focus_win && win != fvwm_focus_win)

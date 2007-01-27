@@ -24,6 +24,10 @@
 #include "xmanager.h"
 #include "libs/PictureGraphics.h"
 #include "libs/PictureUtils.h"
+#include "libs/Grab.h"
+#include "libs/Graphics.h"
+#include "libs/Strings.h"
+#include "libs/wild.h"
 
 extern FlocaleWinString *FwinString;
 

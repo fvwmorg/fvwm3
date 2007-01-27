@@ -47,6 +47,7 @@
 #include "libs/Module.h"
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
+#include "libs/System.h"
 
 typedef struct window_item {
 	Window frame;

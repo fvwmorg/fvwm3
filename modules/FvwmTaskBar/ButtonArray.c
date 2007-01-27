@@ -37,7 +37,6 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
-#include "libs/safemalloc.h"
 #include "libs/Flocale.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"

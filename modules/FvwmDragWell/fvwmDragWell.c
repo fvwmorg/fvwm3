@@ -55,6 +55,11 @@
 #include "libs/fvwmsignal.h"
 #include "libs/FScreen.h"
 #include "libs/FRenderInit.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/System.h"
 
 #include "fvwmDragWell.h"
 #include "dragSource.h"

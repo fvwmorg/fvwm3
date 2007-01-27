@@ -20,7 +20,9 @@
 
 #include "config.h"
 #include "fvwmlib.h"
-
+#include "envvar.h"
+#include "System.h"
+#include "Strings.h"
 
 #if HAVE_UNAME
 #include <sys/utsname.h>

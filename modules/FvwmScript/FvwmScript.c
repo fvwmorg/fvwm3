@@ -20,6 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include "types.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
@@ -33,6 +35,11 @@
 #include "libs/Bindings.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
+#include "libs/ColorUtils.h"
+#include "libs/Graphics.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/XError.h"
 
 #ifdef MEMDEBUG                 /* For debugging */
 #include <unchecked.h>

@@ -59,6 +59,7 @@
 #include <X11/Intrinsic.h>
 
 #include "fvwmlib.h"
+#include "System.h"
 #include "Colorset.h"
 #include "Picture.h"
 #include "PictureUtils.h"

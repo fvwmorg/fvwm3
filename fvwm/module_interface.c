@@ -36,6 +36,10 @@
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/ColorUtils.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/wild.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "functions.h"
@@ -963,4 +967,3 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 
 	return;
 }
-

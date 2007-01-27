@@ -24,6 +24,8 @@
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "libs/modifiers.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

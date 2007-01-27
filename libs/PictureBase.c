@@ -52,7 +52,8 @@
 
 #include <X11/Xlib.h>
 
-#include <fvwmlib.h>
+#include "fvwmlib.h"
+#include "Graphics.h"
 #include "PictureBase.h"
 #include "PictureUtils.h"
 

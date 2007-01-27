@@ -54,6 +54,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <X11/Xatom.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"

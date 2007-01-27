@@ -42,8 +42,8 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 	msg[255] = 0;
 #ifdef USE_GET_ERROR_TEXT
 	/* can't call this from within an error handler! */
-	/* DV (21-Nov-2000): Well, actually we *can* call it in an error handler
-	 * since it does not trigger a protocol request. */
+	/* DV (21-Nov-2000): Well, actually we *can* call it in an error
+	 * handler since it does not trigger a protocol request. */
 	if (error->error_code >= FirstExtensionError)
 	{
 		suc = FRenderGetErrorText(error->error_code, msg);
@@ -69,8 +69,8 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 		error->request_code, request_name(error->request_code));
 	fprintf(stderr, "   Minor opcode of failed request:  %d \n",
 		error->minor_code);
-	/* error->resourceid may be uninitialised. This is no proble since we are
-	 * dumping core anyway. */
+	/* error->resourceid may be uninitialised. This is no proble since we
+	 * are dumping core anyway. */
 	fprintf(stderr, "   Resource id of failed request:  0x%lx \n",
 		error->resourceid);
 
@@ -102,7 +102,6 @@ static char *error_names[] = {
 	"BadLength",
 	"BadImplementation",
 };
-
 
 static char *error_name(unsigned char code)
 {
@@ -237,7 +236,6 @@ static char *code_names[] = {
 	"SetModifierMapping",
 	"GetModifierMapping",
 };
-
 
 static char *request_name(unsigned char code)
 {
