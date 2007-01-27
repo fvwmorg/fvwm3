@@ -2191,7 +2191,7 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 		yt = MR_HEIGHT(mr) - bw - sidePic->height;
 	}
 
-	if (pevent->type == Expose)
+	if (pevent != NULL && pevent->type == Expose)
 	{
 		if (
 			pevent->xexpose.x + pevent->xexpose.width <

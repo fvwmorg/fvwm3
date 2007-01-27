@@ -1,6 +1,9 @@
 2007-01-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/menus.c (paint_side_pic):
+	fix a core dump
+
+	* fvwm/menus.c (paint_side_pic):
 	use simple expose information to redraw sidepics less.
 
 2007-01-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
