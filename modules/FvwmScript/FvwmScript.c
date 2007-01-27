@@ -327,11 +327,7 @@ void Xinit(int IsFather)
   }
   screen = DefaultScreen(dpy);
   Root = RootWindow(dpy,screen);
-  PictureInitCMap(dpy);
-  FScreenInit(dpy);
-  AllocColorset(0);
-  FShapeInit(dpy);
-  FRenderInit(dpy);
+  flib_init_graphics(dpy);
   FlocaleAllocateWinString(&FwinString);
   XSetErrorHandler(myErrorHandler);
 

@@ -3468,10 +3468,7 @@ int main(int argc, char **argv)
 			" for window title");
 	}
 
-	PictureInitCMap(dpy);
-	FScreenInit(dpy);
-	FRenderInit(dpy);
-	AllocColorset(0);
+	flib_init_graphics(dpy);
 	FlocaleAllocateWinString(&FwinString);
 	screen = DefaultScreen(dpy);
 	rootWindow = RootWindow(dpy,screen);

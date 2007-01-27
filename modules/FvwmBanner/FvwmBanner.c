@@ -156,10 +156,7 @@ int main(int argc, char **argv)
   Root = RootWindow(dpy, screen);
   x_fd = XConnectionNumber(dpy);
 
-  PictureInitCMap(dpy);
-  FScreenInit(dpy);
-  FShapeInit(dpy);
-  FRenderInit(dpy);
+  flib_init_graphics(dpy);
   /* SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO  | M_SENDCONFIG); */
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO);
   parseOptions(fd);

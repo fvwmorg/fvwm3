@@ -2125,16 +2125,12 @@ void StartMeUp(void)
 	     XDisplayName(""));
      exit (1);
    }
-   PictureInitCMap(dpy);
-   FScreenInit(dpy);
+   flib_init_graphics(dpy);
    if (XineramaConfig)
    {
      FScreenConfigureModule(XineramaConfig);
      free(XineramaConfig);
    }
-   AllocColorset(0);
-   FShapeInit(dpy);
-   FRenderInit(dpy);
    FlocaleAllocateWinString(&FwinString);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);

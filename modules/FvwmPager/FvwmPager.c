@@ -314,11 +314,7 @@ int main(int argc, char **argv)
     }
 
   x_fd = XConnectionNumber(dpy);
-  PictureInitCMap(dpy);
-  FScreenInit(dpy);
-  AllocColorset(0);
-  FShapeInit(dpy);
-  FRenderInit(dpy);
+  flib_init_graphics(dpy);
 
   Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);

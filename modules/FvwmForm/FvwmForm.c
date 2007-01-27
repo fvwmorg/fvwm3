@@ -2667,12 +2667,7 @@ int main (int argc, char **argv)
   if (ref == 0) ref = None;
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
-  PictureInitCMap(dpy);
-  FScreenInit(dpy);
-  /* prevent core dumps if fvwm doesn't provide any colorsets */
-  AllocColorset(0);
-  FShapeInit(dpy);
-  FRenderInit(dpy);
+  flib_init_graphics(dpy);
 
   fd_x = XConnectionNumber(dpy);
 

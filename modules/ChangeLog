@@ -1,5 +1,22 @@
 2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* FvwmBacker/FvwmBacker.c (main):
+	* FvwmBanner/FvwmBanner.c (main):
+	* FvwmButtons/FvwmButtons.c (main):
+	* FvwmDragWell/fvwmDragWell.c (XStartup):
+	* FvwmForm/FvwmForm.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmIconMan/x.c (init_display):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmProxy/FvwmProxy.c (main):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmScript/FvwmScript.c (Xinit):
+	* FvwmScroll/FvwmScroll.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmWinList/FvwmWinList.c (StartMeUp_I):
+	use flib_init_graphics()
+
 	* FvwmScript/script.y:
 	* FvwmScript/scanner.l:
 	also include "config.h"

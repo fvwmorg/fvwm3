@@ -1516,11 +1516,7 @@ void StartMeUp_I(void)
       XDisplayName(""));
     exit (1);
   }
-  PictureInitCMap(dpy);
-  FScreenInit(dpy);
-  AllocColorset(0);
-  FShapeInit(dpy);
-  FRenderInit(dpy);
+  flib_init_graphics(dpy);
 
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);

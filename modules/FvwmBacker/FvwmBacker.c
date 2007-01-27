@@ -191,11 +191,7 @@ int main(int argc, char **argv)
 	MyDisplayHeight = DisplayHeight(dpy, screen);
 	MyDisplayWidth = DisplayWidth(dpy, screen);
 	XSetErrorHandler(ErrorHandler);
-	PictureInitCMap(dpy);
-	/* allocate default colorset */
-	AllocColorset(0);
-	FShapeInit(dpy);
-	FRenderInit(dpy);
+	flib_init_graphics(dpy);
 
 	XA_XSETROOT_ID = XInternAtom(dpy, "_XSETROOT_ID", False);
 	XA_ESETROOT_PMAP_ID = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);

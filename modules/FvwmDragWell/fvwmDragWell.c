@@ -449,11 +449,7 @@ void XStartup(char *appName)
 
   xg.appName = (char *) malloc(sizeof(char) * (strlen(appNameStart)+1));
   strcpy(xg.appName,appNameStart); /*save the name of the application*/
-  PictureInitCMap(xg.dpy);
-  FScreenInit(xg.dpy);
-  AllocColorset(0);
-  FShapeInit(xg.dpy);
-  FRenderInit(xg.dpy);
+  flib_init_graphics(xg.dpy);
 
   /*get X stuff*/
   xg.xfd = XConnectionNumber(xg.dpy);

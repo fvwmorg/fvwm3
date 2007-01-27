@@ -203,13 +203,8 @@ int main(int argc, char **argv)
 	Root = RootWindow(dpy, screen);
 	XSetErrorHandler(ErrorHandler);
 
-	PictureInitCMap(dpy);
-	FScreenInit(dpy);
-	/* prevent core dumps if fvwm doesn't provide any colorsets */
-	AllocColorset(0);
+	flib_init_graphics(dpy);
 	FlocaleAllocateWinString(&FwinString);
-	FShapeInit(dpy);
-	FRenderInit(dpy);
 
 	SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
 		       | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST |

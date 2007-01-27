@@ -706,12 +706,7 @@ int main(int argc, char **argv)
 			XDisplayName(NULL));
 		exit (1);
 	}
-	PictureInitCMap(Dpy);
-	FScreenInit(Dpy);
-	/* Initialise default colorset */
-	AllocColorset(0);
-	FShapeInit(Dpy);
-	FRenderInit(Dpy);
+	flib_init_graphics(Dpy);
 
 	x_fd = XConnectionNumber(Dpy);
 	fd_width = GetFdWidth();

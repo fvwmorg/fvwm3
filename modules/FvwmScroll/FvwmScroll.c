@@ -135,11 +135,7 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
   SetMessageMask(fd, MX_PROPERTY_CHANGE);
-  PictureInitCMap(dpy);
-  /* prevent core dumps if fvwm doesn't provide any colorsets */
-  AllocColorset(0);
-  FShapeInit(dpy);
-  FRenderInit(dpy);
+  flib_init_graphics(dpy);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */

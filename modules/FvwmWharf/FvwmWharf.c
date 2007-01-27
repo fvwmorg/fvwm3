@@ -284,12 +284,7 @@ int main(int argc, char **argv)
 	    XDisplayName(display_name));
     exit (1);
   }
-  PictureInitCMap(dpy);
-  FScreenInit(dpy);
-  /* Initialise default colorset */
-  AllocColorset(0);
-  FShapeInit(dpy);
-  FRenderInit(dpy);
+  flib_init_graphics(dpy);
   XSetErrorHandler(myErrorHandler);
 
   x_fd = XConnectionNumber(dpy);
