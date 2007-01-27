@@ -26,7 +26,7 @@ libfvwm_a_SOURCES = \
 	fvwmrect.c FRenderInit.c safemalloc.c  FBidi.c \
 	wild.c Grab.c Event.c ClientMsg.c setpgrp.c FShape.c \
 	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
-	modifiers.c fsm.c FTips.c fio.c
+	modifiers.c fsm.c FTips.c fio.c fvwmlib.c
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 

@@ -1,5 +1,8 @@
 2007-01-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	add fvwmlib.c
+
 	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
 	* fvwm/menus.c (move_any_menu)
 	set menu backgrounds before moving. Makes transparent menus move
