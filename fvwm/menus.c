@@ -2166,8 +2166,6 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 	{
 		return;
 	}
-
-
 	if (Pdepth < 2)
 	{
 		/* ? */
@@ -2177,7 +2175,6 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 	{
 		gc = FORE_GC(MST_MENU_INACTIVE_GCS(mr));
 	}
-
 	if (sidePic->height > MR_HEIGHT(mr) - 2 * bw)
 	{
 		h = MR_HEIGHT(mr) - 2 * bw;
@@ -2190,35 +2187,33 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 		ys = 0;
 		yt = MR_HEIGHT(mr) - bw - sidePic->height;
 	}
-
 	if (pevent != NULL && pevent->type == Expose)
 	{
 		if (
 			pevent->xexpose.x + pevent->xexpose.width <
-			MR_SIDEPIC_X_OFFSET(mr)
-			|| pevent->xexpose.x > MR_SIDEPIC_X_OFFSET(mr)
-			+  sidePic->width)
+			MR_SIDEPIC_X_OFFSET(mr) ||
+			pevent->xexpose.x >=
+			MR_SIDEPIC_X_OFFSET(mr) +  sidePic->width)
 		{
-			/* out ov x-range for side bar */
+			/* out of x-range for side bar */
 			return;
 		}
 		if (
-			pevent->xexpose.y + pevent->xexpose.height < bw
-			|| pevent->xexpose.y > bw + MR_HEIGHT(mr))
+			pevent->xexpose.y + pevent->xexpose.height < bw ||
+			pevent->xexpose.y >= bw + MR_HEIGHT(mr))
 		{
 			/* in the border */
 			return;
 		}
 		if (
-			!(MR_HAS_SIDECOLOR(mr) || MST_HAS_SIDE_COLOR(mr))
-			&& pevent->xexpose.y + pevent->xexpose.height < yt)
+			!(MR_HAS_SIDECOLOR(mr) || MST_HAS_SIDE_COLOR(mr)) &&
+			pevent->xexpose.y + pevent->xexpose.height < yt)
 		{
 			/* outside picture and no background */
 			return;
 		}
 
 	}
-
 	if (MR_HAS_SIDECOLOR(mr))
 	{
 		Globalgcv.foreground = MR_SIDECOLOR(mr);
@@ -2227,14 +2222,14 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 	{
 		Globalgcv.foreground = MST_SIDE_COLOR(mr);
 	}
-
 	if (MR_HAS_SIDECOLOR(mr) || MST_HAS_SIDE_COLOR(mr))
 	{
 		Globalgcm = GCForeground;
 		XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
-		XFillRectangle(dpy, MR_WINDOW(mr), Scr.ScratchGC1,
-			       MR_SIDEPIC_X_OFFSET(mr), bw,
-			       sidePic->width, MR_HEIGHT(mr) - 2 * bw);
+		XFillRectangle(
+			dpy, MR_WINDOW(mr), Scr.ScratchGC1,
+			MR_SIDEPIC_X_OFFSET(mr), bw, sidePic->width,
+			MR_HEIGHT(mr) - 2 * bw);
 	}
 	else if (sidePic->alpha != None)
 	{
@@ -2242,7 +2237,6 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 			dpy, MR_WINDOW(mr),
 			MR_SIDEPIC_X_OFFSET(mr), yt, sidePic->width, h, False);
 	}
-
 	PGraphicsRenderPicture(
 		dpy, MR_WINDOW(mr), sidePic, 0, MR_WINDOW(mr),
 		gc, Scr.MonoGC, Scr.AlphaGC,
