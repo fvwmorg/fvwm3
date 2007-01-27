@@ -12,6 +12,9 @@
 #include "fvwmrect.h"
 #include "safemalloc.h"
 
+/* Convenience function ti init all the graphics subsystems */
+void flib_init_graphics(Display *dpy);
+
 /*
  * Replacements for missing system calls.
  */
