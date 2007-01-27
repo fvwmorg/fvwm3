@@ -268,21 +268,9 @@ void SetWindowBackgroundWithOffset(
 	else
 	{
 
-		pixmap = CreateBackgroundPixmap(
-			dpy, win, width, height, colorset, depth, gc, False);
-		if (x_off != 0 || y_off != 0)
-		{
-			Pixmap p2;
-
-			p2 = ScrollPixmap(
-				dpy, pixmap, gc, x_off, y_off, width, height,
-				depth);
-			if (p2 != None && p2 != ParentRelative && p2 != pixmap)
-			{
-				XFreePixmap(dpy, pixmap);
-				pixmap = p2;
-			}
-		}
+		pixmap = CreateOffsetBackgroundPixmap(
+			dpy, win, x_off, y_off, width, height, colorset,
+			depth, gc, False);
 		if (pixmap)
 		{
 			XSetWindowBackgroundPixmap(dpy, win, pixmap);
@@ -595,6 +583,20 @@ Pixmap CreateOffsetBackgroundPixmap(
 		pixmap = CreateStretchPixmap(
 			dpy, cs_pixmap, cs_width, cs_height, depth, width,
 			height, gc);
+	}
+
+	if (x != 0 || y != 0)
+	{
+		Pixmap p2;
+
+		p2 = ScrollPixmap(
+			dpy, pixmap, gc, x, y, width, height,
+			depth);
+		if (p2 != None && p2 != ParentRelative && p2 != pixmap)
+		{
+			XFreePixmap(dpy, pixmap);
+			pixmap = p2;
+		}
 	}
 
 	return pixmap;

@@ -48,9 +48,13 @@ void change_mr_menu_style(struct MenuRoot *mr, char *stylename);
 void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
+void update_transparent_menu_bg(
+	struct MenuRepaintTransparentParameters *prtm,
+	int current_x, int current_y, int step_x, int step_y,
+	int end_x, int end_y);
 void repaint_transparent_menu(
 	struct MenuRepaintTransparentParameters *prtmp,
-	Bool first, int x, int y, int end_x, int end_y);
+	Bool first, int x, int y, int end_x, int end_y, Bool is_bg_set);
 Bool menu_expose(XEvent *event, FvwmWindow *fw);
 int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
 	int context, int modifier, char *action, char *menuStyle);

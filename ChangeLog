@@ -1,3 +1,25 @@
+2007-01-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	* fvwm/menus.c (move_any_menu)
+	set menu backgrounds before moving. Makes transparent menus move
+	more seamless.
+
+	* fvwm/menus.c (update_transparent_menu_bg, repaint_transparent_menu):
+	* fvwm/menus.c (update_transparent_menu_bg, repaint_transparent_menu):
+	add update_transparent_menu_bg to allow set of transparent menu
+	background before a move, and change repaint_transparent_menu to
+	allow for not setting the menu background.
+
+	* libs/Colorset.c (SetWindowBackgroundWithOffset):
+	create offset backgrounds with CreateOffsetBackgroundPixmap (works with
+	transparent colorsets)
+	(CreateOffsetBackgroundPixmap):
+	use offset also for non transparent backgrounds.
+
+	* fvwm/menubindings.c (menu_shortcuts):
+	don't move menus on scroll if they don't move
+
 2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c:

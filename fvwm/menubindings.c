@@ -1008,9 +1008,10 @@ void menu_shortcuts(
 			}
 			else
 			{
+				int old_y = menu_y;
+
 				menu_y += my - menuitem_middle_y_offset(
-					newItem,
-					MR_STYLE(mr));
+					newItem, MR_STYLE(mr));
 
 				if (
 					!MST_SCROLL_OFF_PAGE(mr) &&
@@ -1036,9 +1037,16 @@ void menu_shortcuts(
 							menu_height;
 					}
 				}
-				pmret->rc = MENU_NEWITEM_MOVEMENU;
-				*ret_menu_x = menu_x;
-				*ret_menu_y = menu_y;
+				if (old_y != menu_y)
+				{
+					pmret->rc = MENU_NEWITEM_MOVEMENU;
+					*ret_menu_x = menu_x;
+					*ret_menu_y = menu_y;
+				}
+				else
+				{
+					pmret->rc = MENU_NEWITEM;
+				}
 			}
 		}
 		else

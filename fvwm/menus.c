@@ -378,6 +378,10 @@ static void move_any_menu(
 	if (MR_IS_TEAR_OFF_MENU(mr))
 	{
 		float fFull = 1.0;
+
+		/* this moves the tearoff menu, updating of transparency
+		 * will not be as good as if menu repaint parameters
+		 * are used. */
 		AnimatedMoveFvwmWindow(
 			pmp->tear_off_root_menu_window,
 			FW_W_FRAME(pmp->tear_off_root_menu_window),
@@ -385,17 +389,33 @@ static void move_any_menu(
 	}
 	else
 	{
-		XMoveWindow(dpy, MR_WINDOW(mr), endX, endY);
+		int x;
+		int y;
+		int JunkDept;
+
+		menu_get_geometry(mr, &JunkRoot, &x, &y, &JunkWidth,
+				  &JunkHeight, &JunkBW, &JunkDept);
+		if (x == endX && y == endY)
+		{
+			return;
+		}
 		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
 		    CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
-	        {
+		{
 			MenuRepaintTransparentParameters mrtp;
 
 			get_menu_repaint_transparent_parameters(
 				&mrtp, mr, (*pmp->pexc)->w.fw);
+			update_transparent_menu_bg(
+				&mrtp, x, y, endX, endY, endX, endY);
+			XMoveWindow(dpy, MR_WINDOW(mr), endX, endY);
 			repaint_transparent_menu(
-				&mrtp,False, endX,endY, endX, endY);
+				&mrtp, False, endX,endY, endX, endY, True);
       	      	}
+		else
+		{
+			XMoveWindow(dpy, MR_WINDOW(mr), endX, endY);
+		}
 	}
 }
 
@@ -6080,6 +6100,45 @@ Bool menu_expose(XEvent *event, FvwmWindow *fw)
 /*
  *
  *  Procedure:
+ *      update_transparent_menu_bg - set the background of the menu to
+ *      match a forseen move of a menu. If the background is updated
+ *	for the target position before the move is done, and repainted
+ *	after the move, the move will look more seamless.
+ *
+ *	This method should be folleowd by a call to repaint_transparent_menu
+ *	with the same step_x, stey_y, end_x and any_y, with is_bg_set True
+ */
+void update_transparent_menu_bg(
+	MenuRepaintTransparentParameters *prtm,
+	int current_x, int current_y, int step_x, int step_y,
+	int end_x, int end_y)
+{
+	MenuRoot *mr;
+	MenuStyle *ms;
+	Bool last = False;
+
+	mr = prtm->mr;
+	ms = MR_STYLE(mr);
+	if (step_x == end_x && step_y == end_y)
+	{
+		last = True;
+	}
+	if (!last && CSET_IS_TRANSPARENT_PR_TINT(ST_CSET_MENU(ms)))
+	{
+		/* too slow ... */
+		return;
+	}
+	SetWindowBackgroundWithOffset(
+		dpy, MR_WINDOW(mr), step_x - current_x, step_y - current_y,
+		MR_WIDTH(mr), MR_HEIGHT(mr),
+		&Colorset[ST_CSET_MENU(ms)], Pdepth,
+		FORE_GC(MST_MENU_INACTIVE_GCS(mr)), False);
+}
+
+
+/*
+ *
+ *  Procedure:
  *      repaint_transparent_menu - repaint the menu background if it is
  *      tranparent during an animated move. Called in move_resize.c
  *      (AnimatedMoveAnyWindow). Performance improvement Welcome!
@@ -6091,7 +6150,7 @@ Bool menu_expose(XEvent *event, FvwmWindow *fw)
  */
 void repaint_transparent_menu(
 	MenuRepaintTransparentParameters *prtm,
-	Bool first, int x, int y, int end_x, int end_y)
+	Bool first, int x, int y, int end_x, int end_y, Bool is_bg_set)
 {
 	MenuItem *mi;
 	MenuRoot *mr;
@@ -6112,10 +6171,13 @@ void repaint_transparent_menu(
 		/* too slow ... */
 		return;
 	}
-	SetWindowBackground(
-		dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-		&Colorset[ST_CSET_MENU(ms)], Pdepth,
-		FORE_GC(MST_MENU_INACTIVE_GCS(mr)), False);
+	if (!is_bg_set)
+	{
+		SetWindowBackground(
+			dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
+			&Colorset[ST_CSET_MENU(ms)], Pdepth,
+			FORE_GC(MST_MENU_INACTIVE_GCS(mr)), False);
+	}
 	/* redraw the background of non active item */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{

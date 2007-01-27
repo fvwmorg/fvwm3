@@ -1259,12 +1259,18 @@ static void AnimatedMoveAnyWindow(
 			/* don't waste time in the same spot */
 			continue;
 		}
+		if (pmrtp != NULL)
+		{
+			update_transparent_menu_bg(
+				pmrtp, lastX, lastY, currentX, currentY,
+				endX, endY);
+		}
 		XMoveWindow(dpy,w,currentX,currentY);
 		if (pmrtp != NULL)
 		{
 			repaint_transparent_menu(
 				pmrtp, first,
-				currentX, currentY, endX, endY);
+				currentX, currentY, endX, endY, True);
 		}
 		else if (draw_parts != PART_NONE)
 		{
@@ -1337,12 +1343,18 @@ static void AnimatedMoveAnyWindow(
 			    &evdummy))
 		{
 			/* finish the move immediately */
+			if (pmrtp != NULL)
+			{
+				update_transparent_menu_bg(
+					pmrtp, lastX, lastY,
+					currentX, currentY, endX, endY);
+			}
 			XMoveWindow(dpy,w,endX,endY);
 			if (pmrtp != NULL)
 			{
 				repaint_transparent_menu(
 					pmrtp, first,
-					endX, endY, endX, endY);
+					endX, endY, endX, endY, True);
 			}
 			break;
 		}
