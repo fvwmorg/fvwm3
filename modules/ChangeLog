@@ -1,5 +1,10 @@
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	* FvwmScript/scanner.c:
+	added GPL notice
+
 	* FvwmCommand/FvwmCommand.h:
 	* FvwmGtk/FvwmGtk.c:
 	* FvwmSaveDesk/FvwmSaveDesk.h:

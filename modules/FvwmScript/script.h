@@ -242,7 +242,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 354 "script.y"
+#line 368 "script.y"
 typedef union YYSTYPE {  char *str;
           int number;
        } YYSTYPE;
