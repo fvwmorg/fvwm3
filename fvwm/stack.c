@@ -24,9 +24,9 @@
 #include "ftime.h"
 
 #include "libs/fvwmlib.h"
-#include <libs/gravity.h>
-#include <libs/Grab.h>
-#include <libs/Parse.h>
+#include "libs/gravity.h"
+#include "libs/Grab.h"
+#include "libs/Parse.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

@@ -35,7 +35,7 @@
  */
 
 #include "config.h"
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
 
 void UpdateString(char **string, const char *value)
 {

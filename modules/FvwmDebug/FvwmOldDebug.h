@@ -1,6 +1,6 @@
 /* -*-c-*- */
 #include "config.h"
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
 
 /*
  *

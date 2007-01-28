@@ -1,5 +1,5 @@
 /* -*-c-*- */
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
 
 /*
  *

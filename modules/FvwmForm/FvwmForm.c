@@ -49,7 +49,7 @@
 #include "libs/System.h"
 #include "libs/XError.h"
 
-#include <libs/PictureBase.h>            /* for PictureInitCMap */
+#include "libs/PictureBase.h"            /* for PictureInitCMap */
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"

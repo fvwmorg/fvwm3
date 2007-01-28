@@ -37,10 +37,10 @@
 #include <gdk_imlib.h>
 #endif
 
-#include <libs/Module.h>
-#include <libs/fvwmlib.h>
+#include "libs/Module.h"
+#include "libs/fvwmlib.h"
 #include <fvwm/fvwm.h>
-#include <libs/vpacket.h>
+#include "libs/vpacket.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 

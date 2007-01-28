@@ -20,9 +20,9 @@
 #include "x.h"
 #include "xmanager.h"
 
-#include <libs/fvwmlib.h>
-#include <libs/FScreen.h>
-#include <libs/Module.h>
+#include "libs/fvwmlib.h"
+#include "libs/FScreen.h"
+#include "libs/Module.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 

@@ -44,12 +44,12 @@
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 
-#include <libs/fvwmlib.h>
-#include <libs/Picture.h>
-#include <libs/Module.h>
-#include <libs/FScreen.h>
-#include <libs/FShape.h>
-#include <libs/FRenderInit.h>
+#include "libs/fvwmlib.h"
+#include "libs/Picture.h"
+#include "libs/Module.h"
+#include "libs/FScreen.h"
+#include "libs/FShape.h"
+#include "libs/FRenderInit.h"
 #include "libs/Graphics.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"

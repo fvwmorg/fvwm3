@@ -13,10 +13,10 @@
 #include <signal.h>
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
-#include <libs/fvwmlib.h>
-#include <libs/Picture.h>
-#include <libs/Graphics.h>
-#include <libs/Fsvg.h>
+#include "libs/fvwmlib.h"
+#include "libs/Picture.h"
+#include "libs/Graphics.h"
+#include "libs/Fsvg.h"
 
 int save_colors = 0;
 Display *dpy;

@@ -1,7 +1,7 @@
 /* -*-c-*- */
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
 #include <fvwm/fvwm.h>
-#include <libs/vpacket.h>
+#include "libs/vpacket.h"
 
 struct list
 {

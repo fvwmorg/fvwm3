@@ -29,9 +29,9 @@
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
 
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
 #include <fvwm/fvwm.h>
-#include <libs/vpacket.h>
+#include "libs/vpacket.h"
 
 /* Motif  window hints */
 typedef struct

@@ -13,7 +13,7 @@
  *  Things to do:  use graphics contexts from fvwm
  */
 
-#include <libs/Picture.h>
+#include "libs/Picture.h"
 
 #define MAX_COLOUR_SETS 4
 

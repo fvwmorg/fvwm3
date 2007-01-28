@@ -1,11 +1,14 @@
+2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/stack.c:
+	#includes from library path with "..." not <...>
+
 2007-01-28  Simon Griph	 <simon(at)griph(dot)se>
 
+	* NEWS:
 	* AUTHORS:
-
 	* INSTALL.fvwm:
 	documented new svg support
-
-	* NEWS:
 
 	* configure.ac:
 	added librsvg detection

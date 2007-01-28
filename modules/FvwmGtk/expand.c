@@ -18,7 +18,7 @@
 
 #include <gtk/gtk.h>
 
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
 
 
 typedef struct str_struct
