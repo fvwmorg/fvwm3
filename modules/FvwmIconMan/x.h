@@ -18,4 +18,5 @@ extern void X_init_manager (int man_id);
 extern void change_colorset(int color);
 extern void recreate_background(WinManager *man, Contexts i);
 extern void recreate_transparent_bgs(WinManager *man);
-#endif
+
+#endif /* IN_X_H */

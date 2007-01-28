@@ -145,6 +145,7 @@ The sections below explain these options.
   With With Shared memory for XImage?  shm           --disable-shm
   With Session Management support?     sm            --disable-sm
   With Mouse strokes (gestures)?       stroke        --with-stroke-*
+  With SVG image support?              rsvg          --disable-rsvg
   With Xinerama multi-head support?    xinerama      --disable-xinerama
   With Xft anti-alias font support?    xft           --enable-xft --with-xft-*
   With XPM image support?              xpm           --with-xpm-*
@@ -166,6 +167,7 @@ FVWM can optionally be compiled to use the following libraries:
 
 	xpm         (XPM image format)
 	png         (PNG image format)
+	rsvg	    (SVG image format)
 	rplay       (RPlay audio)
 	readline    (Command line editing using readline)
 	stroke      (Mouse strokes)
@@ -187,6 +189,11 @@ libpng web page at http://www.libpng.org/pub/png/libpng.html for all the
 latest info and links to source code. libpng is available as ANSI C source
 code and requires the zlib library. The zlib package can be found at
 http://www.gzip.org/zlib/
+
+Librsvg allows rendering of SVG (scalable vector graphics) image files.
+See the librsvg web page at http://librsvg.sourceforge.net/ for more
+information and links to source code. Librsvg uses the Cairo library as
+a rendering backend. Source code can be found at http://cairographics.org/
 
 Rplay is used in one module (FvwmEvent) to play sounds without invoking
 an external program.  This library appears to have been orphaned
@@ -366,6 +373,13 @@ support completely.
 FVWM uses the Xrender library for alpha-blend rendering and tinting. This
 library is contained in XFree version >= 4.0 and others recent X package.
 This option disables Xrender support completely.
+
+
+  --disable-rsvg                disable scalable vector graphics (SVG images)
+  ~~~~~~~~~~~~~~
+Fvwm can use the librsvg library to render SVG files into icons and
+images. You need a librsvg version >= 2.13.91 that uses Cairo as the
+rendering backend. This option disables SVG image loading support.
 
 
   --disable-shape               disable shape extensions

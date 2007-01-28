@@ -17,7 +17,7 @@ FvwmPager_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) $(X_LIBS) $(xpm_LIBS) \
-	$(png_LIBS) $(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 \
+	$(png_LIBS) $(rsvg_LIBS) $(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(Xrender_LIBS) $(iconv_LIBS) $(Bidi_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(png_CFLAGS) $(Xft_CFLAGS) \

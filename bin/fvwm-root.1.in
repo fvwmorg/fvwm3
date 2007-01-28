@@ -25,8 +25,12 @@ fvwm-root \- Sets the root window of the current X display to image
 .I fvwm-root
 reads the image file specified in the command line and displays it in the
 root window.  The supported image formats are
-.IR XBM ", " XPM " and " PNG
+.IR XBM ", " XPM ", " PNG " and " SVG
 if appropriated libraries are compiled in.
+
+SVG rendering options
+.RB " (as described in the " " ICONS AND IMAGES "
+section of the main fvwm documentation) can be utilized.
 
 .SH OPTIONS
 These command line options are recognized by fvwm-root:

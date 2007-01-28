@@ -1,3 +1,103 @@
+2007-01-27  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmIconMan/debug.c:
+	moved contents of `debuglevels.h' here.
+	don't include `debuglevels.h'.
+
+	* FvwmIconMan/FvwmIconMan.1.in:
+	updated description of `printdebug' option.
+
+	* FvwmIconMan/Makefile.am:
+	removed debuglevels.h from build list.
+
+	* FvwmIconMan/debuglevels.h:
+	removed file.
+
+	* FvwmIconMan/debug.c:
+	* FvwmIconMan/debug.h:
+	removed MEM debug flag which isn't used anywhere in the code.
+
+	* FvwmIconMan/FvwmIconMan.c (main):
+	s/SendInfo/SendText/.
+	use `GetFileNameFromPath' function from libs to get module name.
+	include "libs/Parse.h" which provides `GetFileNameFromPath' function.
+
+	* FvwmIconMan/readconfig.c:
+	put local header includes in double quotes instead of angle brackets.
+
+	* FvwmIconMan/readconfig.h:
+	* FvwmIconMan/FvwmIconMan.h:
+	prevented multiple inclusions of this header files.
+
+	* FvwmIconMan/xmanager.h:
+	removed `FONT_STRING' definition.
+
+	* FvwmIconMan/x.c (X_init_manager):
+	if font wasn't specified use fallback mechanism of FlocaleLoadFont,
+	not hardcoded FONT_STRING.
+
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/winlist.c (check_resolution):
+	* FvwmIconMan/xmanager.c (man_exposed):
+	Use `fvwmrect_do_rectangles_intersect' function from libs, instead of
+	own invention.
+
+	* FvwmIconMan/xmanager.c (iconify_box, draw_button):
+	Use `frect_get_intersection' function from libs, instead of own
+	invention.
+	include "libs/Rectangles.h" which provides `frect_get_intersection'
+	function.
+
+	* (GetRectangleIntersection):
+	removed now unneeded function.
+
+	* (set_num_buttons):
+	use `saferealloc' function from libs, instead of own invention.
+	don't check return value it either succeeds or exits.
+
+	* (Realloc):
+	removed now unneeded function.
+
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconMan/xmanager.c:
+	* FvwmIconMan/xmanager.h:
+	removed empty `init_boxes' function.
+
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconMan/debug.c (OpenConsole):
+	* FvwmIconMan/x.c (set_window_properties):
+	use MyName instead of Module when printing module name in diagnostic
+	messages.
+
+	* FvwmIconMan/FvwmIconMan.h:
+	removed prototype of `Malloc' function because it is not implemented
+	anywhere.
+
+	* FvwmIconMan/x.c (init_display):
+	* FvwmIconMan/FvwmIconMan.h:
+	removed `screen_g' rectangle which isn't assigned anywhere in the
+	code.
+
+2007-01-28  Simon Griph  <simon(at)griph(dot)se>
+
+	* FvwmAnimate/Makefile.am (LDADD):
+	* FvwmBacker/Makefile.am (LDADD):
+	* FvwmBanner/Makefile.am (LDADD):
+	* FvwmButtons/Makefile.am (LDADD):
+	* FvwmDragWell/Makefile.am (LDADD):
+	* FvwmForm/Makefile.am (LDADD):
+	* FvwmIconBox/Makefile.am (LDADD):
+	* FvwmIconMan/Makefile.am (LDADD):
+	* FvwmIdent/Makefile.am (LDADD):
+	* FvwmPager/Makefile.am (LDADD):
+	* FvwmProxy/Makefile.am (LDADD):
+	* FvwmScript/Makefile.am (LDADD):
+	* FvwmScroll/Makefile.am (LDADD):
+	* FvwmTaskBar/Makefile.am (LDADD):
+	* FvwmWharf/Makefile.am (LDADD):
+	* FvwmWinList/Makefile.am (LDADD):
+	added rsvg_LIBS
+
 2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmBacker/FvwmBacker.c (main):
@@ -87,7 +187,6 @@
 	* FvwmTaskBar/List.c:
 	* FvwmTaskBar/FvwmTaskBar.c:
 	do not include safemalloc.h directly
-
 
 2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 

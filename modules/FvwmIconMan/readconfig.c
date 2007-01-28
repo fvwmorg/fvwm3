@@ -19,11 +19,11 @@
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "xmanager.h"
-#include <libs/defaults.h>
-#include <libs/fvwmlib.h>
-#include <libs/FScreen.h>
-#include <libs/FShape.h>
-#include <libs/Module.h>
+#include "libs/defaults.h"
+#include "libs/fvwmlib.h"
+#include "libs/FScreen.h"
+#include "libs/FShape.h"
+#include "libs/Module.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 
@@ -862,14 +862,7 @@ static int GetConfigLineWrapper(int *fd, char **tline)
 			*temp = '\0';
 		}
 		/* grok the global config lines */
-/*
-		if (strncasecmp(*tline, DEFGRAPHSTR, DEFGRAPHLEN) == 0)
-		{
-			ParseGraphics(theDisplay, *tline, G);
-			SavePictureCMap(theDisplay, G->viz, G->cmap, G->depth);
-		}
-*/
-		/* add colorlimit in here */
+
 		return 1;
 	}
 
@@ -2295,7 +2288,7 @@ void process_dynamic_config_line(char *line)
 	}
 	manager--;
 
-	/* currently support only "resolution" */
+	/* currently supports only "resolution" and "tips" */
 	if (strcasecmp(token, "resolution") == 0)
 	{
 		int value;

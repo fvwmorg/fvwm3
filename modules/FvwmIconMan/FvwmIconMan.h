@@ -1,4 +1,7 @@
 /* -*-c-*- */
+#ifndef IN_FVWMICONMAN_H
+#define IN_FVWMICONMAN_H
+
 #include <assert.h>
 #include <stdio.h>
 
@@ -23,10 +26,6 @@
 #ifndef DEFAULT_ACTION
 #define DEFAULT_ACTION "Iconify"
 #endif
-
-#define RECTANGLES_INTERSECT(x1,y1,w1,h1,x2,y2,w2,h2) \
-	(((x1) + (w1) > (x2) && (x1) < (x2) + (w2)) && \
-	 ((y1) + (h1) > (y2) && (y1) < (y2) + (h2)))
 
 #define MAX_ARGS 3
 
@@ -351,7 +350,6 @@ typedef struct win_manager {
 typedef struct {
 	Ulong desknum;
 	Ulong x, y;             /* of the view window */
-	rectangle screen_g;     /* screen dimensions */
 	WinManager *managers;
 	int num_managers;
 	int transient;
@@ -381,7 +379,6 @@ extern ContextDefaults contextDefaults[];
 extern int mods_unused;
 
 extern void ReadFvwmPipe(void);
-extern void *Malloc (size_t size);
 extern void Free (void *p);
 extern void ShutMeDown (int flag) __attribute__ ((__noreturn__));
 extern RETSIGTYPE DeadPipe (int nothing);
@@ -411,3 +408,4 @@ extern WinManager *find_windows_manager (Window win);
 extern int win_in_viewport (WinData *win);
 extern WinData *id_to_win(Ulong id);
 
+#endif /* IN_FVWMICONMAN_H */

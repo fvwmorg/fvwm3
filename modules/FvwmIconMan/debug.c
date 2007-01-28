@@ -21,9 +21,18 @@
 
 #include "FvwmIconMan.h"
 
-#include "debuglevels.h"
-
 static FILE *console = NULL;
+
+/* I'm finding lots of the debugging is dereferencing pointers
+   to zero.  I fixed some of them, until I grew tired of the game.
+   If you want to turn these back on, be prepared for lots of core
+   dumps.  dje 11/15/98. */
+int CORE = 0;
+int FUNCTIONS = 0;
+int X11 = 0;
+int FVWM = 0;
+int CONFIG = 0;
+int WINLIST = 0;
 
 void
 ConsoleMessage(const char *fmt, ...)
@@ -48,7 +57,7 @@ OpenConsole(const char *filenm)
 	}
 	else if ((console = fopen(filenm, "w")) == NULL)
 	{
-		fprintf(stderr,"%s: cannot open %s\n", Module, filenm);
+		fprintf(stderr,"%s: cannot open %s\n", MyName, filenm);
 		return 0;
 	}
 

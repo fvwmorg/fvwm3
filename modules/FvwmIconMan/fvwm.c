@@ -742,7 +742,7 @@ static void ProcessMessage(Ulong type, FvwmPacketBody *body)
 		break;
 
 	case MX_VISIBLE_ICON_NAME:
-		ConsoleDebug(FVWM, "DEBUG::M_VISIBLE_ICON_NAME\n");
+		ConsoleDebug(FVWM, "DEBUG::MX_VISIBLE_ICON_NAME\n");
 		visible_icon_name(body);
 		break;
 

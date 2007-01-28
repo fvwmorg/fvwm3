@@ -1,3 +1,56 @@
+2007-01-28  Simon Griph	 <simon(at)griph(dot)se>
+
+	* AUTHORS:
+
+	* INSTALL.fvwm:
+	documented new svg support
+
+	* NEWS:
+
+	* configure.ac:
+	added librsvg detection
+
+	* fvwm/Makefile.am (LDADD, INCLUDES):
+	added rsvg_LIBS, rsvg_CFLAGS
+
+	* fvwm/expand.c (expand_vars_extended):
+	new extended variables
+	$[w.iconfile.svgopts] and $[w.miniiconfile.svgopts]
+
+	* fvwm/fvwm.1.in (OPTIONS):
+	(ICONS AND IMAGES):
+	documented new svg support
+	(COMMAND EXPANSION):
+	documented new extended variables
+
+	* fvwm/fvwm.c (setVersionInfo):
+	(main):
+	added Frsvg_init() call
+
+	* libs/Fsvg.h:
+	new file
+
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	added Fsvg.h
+	(INCLUDES):
+	added rsvg_CFLAGS
+
+	* libs/Picture.c (PCacheFvwmPicture):
+	hid svgopts from isFileStampChanged()
+
+	* libs/PictureBase.c (PictureFindImageFile):
+	hid svgopts from searchPath()
+
+	* libs/PictureBase.h:
+
+	* libs/PictureImageLoader.c (PImageLoadFvwmPictureFromFile):
+	hid svgopts from setFileStamp()
+	(PImageLoadSvg):
+	new svg image loader
+
+	* libs/fvwmlib.c (flib_init_graphics):
+	added Frsvg_init() call
+
 2007-01-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
@@ -33,6 +86,7 @@
 
 2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/fvwmlib.h:
 	* fvwm/bindings.c:
 	* fvwm/cursor.c:
 	* fvwm/decorations.c:

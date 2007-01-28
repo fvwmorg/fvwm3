@@ -2,7 +2,6 @@
 #ifndef IN_XMANAGER_H
 #define IN_XMANAGER_H
 
-#define FONT_STRING "-*-fixed-medium-r-normal--13-*"
 #define DEFAULT_BUTTON_WIDTH 200
 #define DEFAULT_BUTTON_HEIGHT 17
 #define DEFAULT_NUM_COLS  1
@@ -21,7 +20,6 @@ extern void resort_windows_button(WinData *win);
 
 extern void size_manager(WinManager *man);
 extern void init_button_array(ButtonArray *array);
-extern void init_boxes(void);
 extern void set_shape(WinManager *man);
 extern void draw_added_icon(WinManager *man);
 extern void draw_deleted_icon(WinManager *man);
@@ -54,4 +52,4 @@ void tips_on(WinManager *man, Button *b);
 void tips_cancel(WinManager *man);
 void tips_update_label(WinManager *man);
 
-#endif
+#endif /* IN_XMANAGER_H */

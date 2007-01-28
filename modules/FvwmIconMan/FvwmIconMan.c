@@ -27,6 +27,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 #include "libs/FTips.h"
+#include "libs/Parse.h"
 
 
 char *MyName;
@@ -202,7 +203,6 @@ main_loop(void)
 int
 main(int argc, char **argv)
 {
-	char *s;
 	int i;
 
 #ifdef HAVE_LIBEFENCE
@@ -219,12 +219,7 @@ main(int argc, char **argv)
 	init_globals();
 	init_winlists();
 
-	MyName = argv[0];
-	s = strrchr(argv[0], '/');
-	if (s != NULL)
-	{
-		MyName = s + 1;
-	}
+	MyName = GetFileNameFromPath(argv[0]);
 
 	if (argc == 7)
 	{
@@ -247,13 +242,12 @@ main(int argc, char **argv)
 	{
 		fprintf(stderr,
 			"%s version %s should only be executed by fvwm!\n",
-			Module, VERSION);
+			MyName, VERSION);
 		ShutMeDown(1);
 	}
 	fvwm_fd[0] = atoi(argv[1]);
 	fvwm_fd[1] = atoi(argv[2]);
 	init_display();
-	init_boxes();
 
 #ifdef HAVE_SIGACTION
 	{
@@ -322,7 +316,7 @@ main(int argc, char **argv)
   /* extended messages */
   SetMessageMask(fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
 
-  SendInfo(fvwm_fd, "Send_WindowList", 0);
+  SendText(fvwm_fd, "Send_WindowList", 0);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fvwm_fd);
@@ -335,4 +329,3 @@ main(int argc, char **argv)
 
   return 0;
 }
-

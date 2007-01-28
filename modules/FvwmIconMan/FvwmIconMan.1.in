@@ -298,7 +298,7 @@ window. \fIresolution\fP may take one of the following values:
 global, desk, page, screen, !desk, !page, or !screen. If global,
 then all windows of the appropriate type (see the show and
 dontshow options below) will be shown. If desk, then only those
-windows on the current desk are down. If page, then only those
+windows on the current desk are shown. If page, then only those
 windows on the current page are shown. If screen, then only those
 windows on the current Xinerama screen are shown. !desk reverses
 the sense of desk, displaying only those windows not on the
@@ -581,7 +581,7 @@ Prints \fIString\fP to the console. Useful for debugging actions.
 .IP "printdebug"
 Prints defined actions to the console. Should only be used by developers.
 To enable this command, set CONFIG and FUNCTIONS variables to '1' in the
-modules/FvwmIconMan/debuglevels.h and recompile this module.
+modules/FvwmIconMan/debug.h and recompile this module.
 
 .IP "quit"
 Quits FvwmIconMan.

@@ -24,6 +24,7 @@
 #include "xmanager.h"
 #include "libs/PictureGraphics.h"
 #include "libs/PictureUtils.h"
+#include "libs/Rectangles.h"
 #include "libs/Grab.h"
 #include "libs/Graphics.h"
 #include "libs/Strings.h"
@@ -108,26 +109,6 @@ static Region GetRegion(int x, int y, int w, int h)
   region = XCreateRegion();
   XUnionRectWithRegion(&rectangle, region, region);
   return region;
-}
-
-static void GetRectangleIntersection(
-	int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2,
-	XRectangle *r)
-{
-	if (RECTANGLES_INTERSECT(x1,y1,w1,h1,x2,y2,w2,h2))
-	{
-		r->x = max(x1,x2);
-		r->y = max(y1,y2);
-		r->width = min(x1+w1,x2+w2) - max(x1,x2);
-		r->height =min(y1+h1,y2+h2) - max(y1,y2);
-	}
-	else
-	{
-		r->x = 0;
-		r->y = 0;
-		r->width  = 0;
-		r->height = 0;
-	}
 }
 
 static int num_visible_rows(int n, int cols)
@@ -644,14 +625,6 @@ static void set_window_button(WinData *win, int index)
   win->button = b;
 }
 
-static void *Realloc(void *ptr, int size)
-{
-  if (ptr == NULL)
-    return safemalloc(size);
-  else
-    return realloc(ptr, size);
-}
-
 static void set_num_buttons(ButtonArray *buttons, int n)
 {
   int i;
@@ -660,12 +633,8 @@ static void set_num_buttons(ButtonArray *buttons, int n)
 
   if (n > buttons->num_buttons) {
     buttons->dirty_flags |= NUM_BUTTONS_CHANGED;
-    buttons->buttons = (Button **)Realloc(buttons->buttons,
+    buttons->buttons = (Button **)saferealloc((void *)buttons->buttons,
 					   n * sizeof(Button *));
-    if (buttons->buttons == NULL) {
-      ConsoleMessage("Realloc failed! Bailing out\n");
-      ShutMeDown(1);
-    }
 
     for (i = buttons->num_buttons; i < n; i++) {
       buttons->buttons[i] = (Button *)safemalloc(sizeof(Button));
@@ -1219,10 +1188,6 @@ void set_manager_window_mapping(WinManager *man, int flag)
  * Major exported functions
  */
 
-void init_boxes(void)
-{
-}
-
 void init_button_array(ButtonArray *array)
 {
   memset(array, 0, sizeof(ButtonArray));
@@ -1460,7 +1425,7 @@ static void iconify_box(WinManager *man, WinData *win, int box,
 	{
 		return;
 	}
-	GetRectangleIntersection(
+	frect_get_intersection(
 		bounding.x, bounding.y, bounding.width, bounding.height,
 		g->icon_x, g->icon_y, g->icon_w, g->icon_h,
 		&inter);
@@ -1828,7 +1793,7 @@ static void draw_button(WinManager *man, int button, int force)
 			{
 				XRectangle r;
 
-				GetRectangleIntersection(
+				frect_get_intersection(
 					bounding.x, bounding.y,
 					bounding.width, bounding.height,
 					g.icon_x, g.icon_y, g.icon_w, g.icon_h,
@@ -1887,7 +1852,7 @@ static void draw_button(WinManager *man, int button, int force)
 			{
 				XRectangle r;
 
-				GetRectangleIntersection(
+				frect_get_intersection(
 					bounding.x, bounding.y,
 					bounding.width, bounding.height,
 					g.text_x, g.text_y, g.text_w, g.text_h,
@@ -2448,20 +2413,19 @@ void move_highlight(WinManager *man, Button *b)
 
 void man_exposed(WinManager *man, XEvent *theEvent)
 {
-	int x1, y1, w1, h1;
-	int x2, y2, w2, h2;
+	rectangle r1, r2;
 	int i;
 	Button **bp;
 
 	ConsoleDebug(X11, "manager: %s, got expose\n", man->titlename);
 
-	x1 = theEvent->xexpose.x;
-	y1 = theEvent->xexpose.y;
-	w1 = theEvent->xexpose.width;
-	h1 = theEvent->xexpose.height;
+	r1.x = theEvent->xexpose.x;
+	r1.y = theEvent->xexpose.y;
+	r1.width = theEvent->xexpose.width;
+	r1.height = theEvent->xexpose.height;
 
-	w2 = man->geometry.boxwidth;
-	h2 = man->geometry.boxheight;
+	r2.width = man->geometry.boxwidth;
+	r2.height = man->geometry.boxheight;
 
 	bp = man->buttons.buttons;
 
@@ -2501,17 +2465,19 @@ void man_exposed(WinManager *man, XEvent *theEvent)
 	{
 		for (i = 0; i < man->buttons.num_windows; i++)
 		{
-			x2 = index_to_col(man, i) * w2;
-			y2 = index_to_row(man, i) * h2;
-			if (RECTANGLES_INTERSECT(
-				x1, y1, w1, h1, x2, y2, w2, h2))
+			r2.x = index_to_col(man, i) * r2.width;
+			r2.y = index_to_row(man, i) * r2.height;
+			if (fvwmrect_do_rectangles_intersect(
+				&r1, &r2))
 			{
-				bp[i]->drawn_state.ex = max(x1,x2);
-				bp[i]->drawn_state.ey = max(y1,y2);
+				bp[i]->drawn_state.ex = max(r1.x,r2.x);
+				bp[i]->drawn_state.ey = max(r1.y,r2.y);
 				bp[i]->drawn_state.ew =
-					min(x1+w1,x2+w2) - max(x1,x2);
+					min(r1.x+r1.width,r2.x+r2.width) - 
+						max(r1.x,r2.x);
 				bp[i]->drawn_state.eh =
-					min(y1+h1,y2+h2) - max(y1,y2);
+					min(r1.y+r1.height, r2.y+r2.height) -
+						max(r1.y,r2.y);
 				bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
 			}
 		}

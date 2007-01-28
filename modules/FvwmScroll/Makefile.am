@@ -15,6 +15,6 @@ FvwmScroll_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) \
-	$(Xrender_LIBS)
+	$(Xrender_LIBS) $(rsvg_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(Xrender_CFLAGS)

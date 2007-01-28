@@ -77,6 +77,7 @@ with_perllib=@with_perllib@
 with_png=@with_png@
 with_readline=@with_readline@
 with_rplay=@with_rplay@
+with_rsvg=@with_rsvg@
 with_shape=@with_shape@
 with_shm=@with_shm@
 with_sm=@with_sm@
@@ -153,6 +154,7 @@ while test $# -gt 0; do
 			test "$with_png"        = "yes" && echo "png"
 			test "$with_readline"   = "yes" && echo "readline"
 			test "$with_rplay"      = "yes" && echo "rplay"
+			test "$with_rsvg"       = "yes" && echo "rsvg"
 			test "$with_shape"      = "yes" && echo "shape"
 			test "$with_shm"        = "yes" && echo "shm"
 			test "$with_sm"         = "yes" && echo "sm"
@@ -209,6 +211,7 @@ while test $# -gt 0; do
 			echo "	shm (shared memory): $with_shm"
 			echo "	sm (session management): $with_sm"
 			echo "	stroke (mouse gestures): $with_stroke"
+			echo "	rsvg (SVG icons and images): $with_rsvg"
 			echo "	xinerama (multi-head): $with_xinerama"
 			echo "	xft (FreeType anti-alias font): $with_xft"
 			echo "	xpm: $with_xpm"

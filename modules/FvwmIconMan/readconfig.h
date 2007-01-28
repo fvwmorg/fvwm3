@@ -1,4 +1,9 @@
 /* -*-c-*- */
+#ifndef IN_READCONFIG_H
+#define IN_READCONFIG_H
+
+#define MODS_USED ((ALL_MODIFIERS) & ~(LockMask))
+
 typedef enum
 {
 	READ_LINE = 1,
@@ -15,4 +20,4 @@ extern Binding *ParseMouseEntry(char *tline);
 extern void run_function_list(Function *func);
 extern void run_binding(WinManager *man, Action action);
 
-#define MODS_USED ((ALL_MODIFIERS) & ~(LockMask))
+#endif /* IN_READCONFIG_H */

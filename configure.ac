@@ -636,6 +636,104 @@ AC_SUBST(png_CFLAGS)
 # ** needed by the png support
 AC_C_BIGENDIAN
 
+# ********* rsvg
+rsvg_min_version=2.13.91
+AH_TEMPLATE([HAVE_RSVG], [Define if librsvg library is used.])
+
+AC_ARG_ENABLE(rsvg,
+  [  --disable-rsvg          disable scalable vector graphics (SVG images)],
+  [ if test x"$enableval" = xno; then
+       with_rsvg=no
+       problem_rsvg=": Explicitly disabled"
+    fi ],
+)
+if test x"$with_rsvg" != xno; then
+   with_rsvg=no
+   if test x"$PKG_CONFIG" != xno ; then
+      AC_MSG_CHECKING(for librsvg - version >= $rsvg_min_version)
+      if $PKG_CONFIG --exists librsvg-2.0 ; then
+         if $PKG_CONFIG --exists "librsvg-2.0 >= $rsvg_min_version" ; then
+            AC_MSG_RESULT(yes)
+
+   	    AC_MSG_CHECKING(for cairo svg backend)
+            if $PKG_CONFIG --exists cairo-svg ; then
+               svg_packages="librsvg-2.0 cairo-svg"
+            elif $PKG_CONFIG --exists libsvg-cairo ; then
+               svg_packages="librsvg-2.0 libsvg-cairo"
+            elif $PKG_CONFIG --exists cairo ; then
+               svg_packages="librsvg-2.0 cairo"
+            else
+               svg_packages=""
+            fi
+            if test x"$svg_packages" != x ; then
+               AC_MSG_RESULT(yes)
+               rsvg_CFLAGS=`$PKG_CONFIG --cflags $svg_packages`
+               rsvg_LIBS=`$PKG_CONFIG --libs $svg_packages`
+               with_rsvg=yes
+            else
+               AC_MSG_RESULT(no)
+               AC_MSG_WARN([*** cairo was not found in the pkg-config search])
+               AC_MSG_WARN([*** path. Add the directory containing cairo.pc])
+               AC_MSG_WARN([*** to the PKG_CONFIG_PATH environment variable.])
+               problem_rsvg=": Cannot detect cairo backend"
+            fi
+         else
+            AC_MSG_RESULT(no)
+            AC_MSG_WARN([*** Your librsvg version is < $rsvg_min_version])
+            problem_rsvg=": Your librsvg version is too old"
+         fi
+      else
+         AC_MSG_RESULT(no)
+         AC_MSG_WARN([*** librsvg-2.0 was not found in the pkg-config search])
+         AC_MSG_WARN([*** path. Either librsvg is not installed or you need])
+         AC_MSG_WARN([*** to add the directory containing librsvg-2.0.pc to])
+         AC_MSG_WARN([*** the PKG_CONFIG_PATH environment variable.])
+         problem_rsvg=": librsvg library or header not found"
+      fi
+   else
+      problem_rsvg=": pkg-config not found"
+   fi
+fi
+if test x"$with_rsvg" = xyes ; then
+   AC_MSG_CHECKING(whether a librsvg program compiles and runs)
+   original_CFLAGS="$CFLAGS"
+   original_LIBS="$LIBS"
+   CFLAGS="$CFLAGS $rsvg_CFLAGS"
+   LIBS="$LIBS $rsvg_LIBS"
+   AC_TRY_RUN([
+      #include <librsvg/rsvg.h>
+      #include <librsvg/rsvg-cairo.h>
+      int main() {
+         RsvgHandle *rsvg;
+         g_type_init();
+         if(!(rsvg = rsvg_handle_new())) return 1;
+         g_object_unref(G_OBJECT(rsvg));
+         return 0;
+      }
+   ], [
+      AC_MSG_RESULT(yes)
+   ], [
+      AC_MSG_RESULT(no)
+      AC_MSG_WARN([*** The librsvg test program failed to run. If your system])
+      AC_MSG_WARN([*** has shared libraries outside the normal system library])
+      AC_MSG_WARN([*** path, you need to make sure that the LD_LIBRARY_PATH])
+      AC_MSG_WARN([*** (or the like) environment variable is correctly set.])
+      with_rsvg=no
+      problem_rsvg=": Failed to run test program"
+   ], [echo $ac_n "cross compiling; assumed OK... $ac_c"])
+   CFLAGS="$original_CFLAGS"
+   LIBS="$original_LIBS"
+fi
+if test x"$with_rsvg" = xyes ; then
+   AC_DEFINE(HAVE_RSVG)
+   problem_rsvg=""
+else
+   rsvg_CFLAGS=""
+   rsvg_LIBS=""
+fi
+AC_SUBST(rsvg_CFLAGS)
+AC_SUBST(rsvg_LIBS)
+
 # ********* rplay
 $UNSET ac_cv_header_rplay_h
 $UNSET ac_cv_lib_rplay_rplay_create
@@ -1348,6 +1446,7 @@ AC_SUBST(with_gnomelibs)
 AC_SUBST(with_iconv)
 AC_SUBST(with_perllib)
 AC_SUBST(with_png)
+AC_SUBST(with_rsvg)
 AC_SUBST(with_readline)
 AC_SUBST(with_rplay)
 AC_SUBST(with_shape)
@@ -1548,6 +1647,7 @@ FVWM Configuration:
   With Shaped window support?         $with_shape$problem_shape
   With Shared memory for XImage?      $with_shm$problem_shm
   With Session Management support?    $with_sm$problem_sm
+  With SVG image support?             $with_rsvg$problem_rsvg
   With Xinerama multi-head support?   $with_xinerama$problem_xinerama
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm

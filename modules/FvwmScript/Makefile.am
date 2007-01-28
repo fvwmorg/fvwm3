@@ -19,7 +19,7 @@ EXTRA_DIST = $(man_MANS) scanner.l script.y TODO
 LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) \
 	$(X_LIBS) $(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(Xrender_LIBS) $(iconv_LIBS) $(Bidi_LIBS) \
-	$(png_LIBS) $(intl_LIBS)
+	$(png_LIBS) $(rsvg_LIBS) $(intl_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(Xrender_CFLAGS) $(iconv_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS)

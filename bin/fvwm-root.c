@@ -16,6 +16,7 @@
 #include <libs/fvwmlib.h>
 #include <libs/Picture.h>
 #include <libs/Graphics.h>
+#include <libs/Fsvg.h>
 
 int save_colors = 0;
 Display *dpy;
@@ -39,6 +40,9 @@ void usage(int verbose)
 #endif
 #ifdef HAVE_PNG
 		", PNG"
+#endif
+#ifdef HAVE_RSVG
+		", SVG"
 #endif
 		"\n", VERSION);
 	fprintf(output,
@@ -91,6 +95,7 @@ int SetRootWindow(char *tline)
 		 * --color-limit option */
 		PictureInitCMap(dpy);
 	}
+	Frsvg_init();
 	/* try built-in image path first, but not before pwd */
 	PictureSetImagePath(".:+");
 	file_path = PictureFindImageFile(tline, NULL, R_OK);

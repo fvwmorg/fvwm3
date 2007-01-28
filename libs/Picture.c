@@ -63,6 +63,7 @@
 #include "Colorset.h"
 #include "Picture.h"
 #include "PictureUtils.h"
+#include "Fsvg.h"
 
 static FvwmPicture *FvwmPictureList=NULL;
 
@@ -110,12 +111,23 @@ FvwmPicture *PCacheFvwmPicture(
 	FvwmPictureAttributes fpa)
 {
 	char *path;
+	char *real_path;
 	FvwmPicture *p = FvwmPictureList;
 
 	/* First find the full pathname */
 	if ((path = PictureFindImageFile(name, ImagePath, R_OK)) == NULL)
 	{
 		return NULL;
+	}
+        /* Remove any svg rendering options from real_path */
+	if (USE_SVG && *path == ':' &&
+	    (real_path = strchr(path + 1, ':')))
+	{
+		real_path++;
+	}
+	else
+	{
+		real_path = path;
 	}
 
 	/* See if the picture is already cached */
@@ -132,8 +144,8 @@ FvwmPicture *PCacheFvwmPicture(
 		}
 
 		/* If we have found a picture with the wanted name and stamp */
-		if (!*p1 && !*p2 && !isFileStampChanged(&p->stamp, p->name) &&
-		    PICTURE_FPA_AGREE(p,fpa))
+		if (!*p1 && !*p2 && !isFileStampChanged(&p->stamp, real_path)
+		    && PICTURE_FPA_AGREE(p,fpa))
 		{
 			p->count++; /* Put another weight on the picture */
 			free(path);

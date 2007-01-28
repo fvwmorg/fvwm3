@@ -174,10 +174,7 @@ int check_resolution(WinManager *manager, WinData *win)
       flag = 1;
     } else if (win->desknum == globals.desknum) {
       /* win and screen intersect if they are not disjoint in x and y */
-      flag = RECTANGLES_INTERSECT(
-	g.x, g.y, g.width, g.height,
-	manager->managed_g.x, manager->managed_g.y,
-	manager->managed_g.width, manager->managed_g.height);
+      flag = fvwmrect_do_rectangles_intersect(&g, &manager->managed_g);
     }
     break;
 
@@ -187,10 +184,7 @@ int check_resolution(WinManager *manager, WinData *win)
   case SHOW_SCREEN:
     if (win->desknum == globals.desknum) {
       /* win and screen intersect if they are not disjoint in x and y */
-      flag = RECTANGLES_INTERSECT(
-	g.x, g.y, g.width, g.height,
-	manager->managed_g.x, manager->managed_g.y,
-	manager->managed_g.width, manager->managed_g.height);
+      flag = fvwmrect_do_rectangles_intersect(&g, &manager->managed_g);
     }
     break;
   }

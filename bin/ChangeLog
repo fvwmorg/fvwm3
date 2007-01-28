@@ -1,3 +1,15 @@
+2007-01-28  Simon Griph  <simon(at)griph(dot)se>
+
+	* Makefile.am (LDADD, INCLUDES):
+	added rsvg_LIBS, rsvg_CFLAGS
+
+	* fvwm-config.in:
+	* fvwm-root.1.in (DESCRIPTION):
+	* fvwm-root.c (usage):
+	documented new svg support
+	(SetRootWindow):
+	added Frsvg_init() call
+
 2007-01-27  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-root.c:

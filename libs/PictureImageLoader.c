@@ -43,6 +43,7 @@
 #include "Graphics.h"
 #include "Fxpm.h"
 #include "Fpng.h"
+#include "Fsvg.h"
 #include "FRenderInit.h"
 #include "FImage.h"
 
@@ -74,6 +75,7 @@ typedef struct PImageLoader
 
 /* ---------------------------- forward declarations ----------------------- */
 
+static Bool PImageLoadSvg(FIMAGE_CMD_ARGS);
 static Bool PImageLoadPng(FIMAGE_CMD_ARGS);
 static Bool PImageLoadXpm(FIMAGE_CMD_ARGS);
 static Bool PImageLoadBitmap(FIMAGE_CMD_ARGS);
@@ -83,6 +85,7 @@ static Bool PImageLoadBitmap(FIMAGE_CMD_ARGS);
 PImageLoader Loaders[] =
 {
 	{ "xpm", PImageLoadXpm },
+	{ "svg", PImageLoadSvg },
 	{ "png", PImageLoadPng },
 	{ "bmp", PImageLoadBitmap },
 	{NULL,0}
@@ -92,6 +95,235 @@ PImageLoader Loaders[] =
 
 /* ---------------------------- local functions ---------------------------- */
 
+
+/*
+ *
+ * svg loader
+ *
+ */
+static
+Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
+{
+	char *allocated_path;
+	char *render_opts;
+	FRsvgHandle *rsvg;
+	FRsvgDimensionData dim;
+	CARD32 *data;
+	Fcairo_surface_t *surface;
+	Fcairo_t *cr;
+	int have_alpha;
+	int i;
+	int j;
+	int b1;
+	int b2;
+	int w = 0;
+	int h = 0;
+	int dw = 0;
+	int dh = 0;
+	int w_sgn = 1;
+	int h_sgn = 1;
+	double angle = 0;
+	double scale = 1;
+	double buf;
+	unsigned char a_value;
+	unsigned char r_value;
+	unsigned char g_value;
+	unsigned char b_value;
+
+	if (!USE_SVG)
+	{
+		return False;
+	}
+
+	/* Separate rendering options from path */
+	render_opts = path = allocated_path = safestrdup(path);
+	if (*path == ':' && (path = strchr(path + 1, ':')))
+	{
+		*path = 0;
+		path ++;
+		render_opts ++;
+	}
+	else
+	{
+		render_opts = "";
+	}
+
+	if (!(rsvg = Frsvg_handle_new_from_file(path, NULL)))
+	{
+		free(allocated_path);
+
+		return False;
+	}
+
+	/* Parsing of rendering options */
+	while (*render_opts)
+	{
+		i = 0;
+		switch (*render_opts)
+		{
+		case '*':
+			if (sscanf(render_opts, "*%lf%n", &buf, &i) >= 1)
+			{
+				scale *= buf;
+			}
+			break;
+		case '/':
+			if (sscanf(render_opts, "/%lf%n", &buf, &i) >= 1 &&
+			    buf)
+			{
+				scale /= buf;
+			}
+			break;
+		case '@':
+			if (sscanf(render_opts, "@%lf%n", &buf, &i) >= 1)
+			{
+				angle += buf * M_PI / 180;
+			}
+			break;
+		default:
+			j = 0;
+			if (
+				sscanf(
+					render_opts, "%dx%n%d%n", &b1, &j, &b2,
+					&i) >= 2 &&
+				i > j)
+			{
+				w = b1;
+				h = b2;
+
+				if (w < 0 || (!w && render_opts[0] == '-'))
+				{
+					w *= (w_sgn = -1);
+				}
+				if (h < 0 || (!h && render_opts[j] == '-'))
+				{
+					h *= (h_sgn = -1);
+				}
+			}
+			else if (
+				sscanf(render_opts, "%d%d%n", &b1, &b2, &i) >=
+				2)
+			{
+				dw += b1;
+				dh += b2;
+			}
+		}
+		render_opts += i ? i : 1;
+	}
+	free(allocated_path);
+
+	/* Keep the original aspect ratio when either w or h is 0 */
+        Frsvg_handle_get_dimensions(rsvg, &dim);
+	if (!w && !h)
+	{
+		w = dim.width;
+		h = dim.height;
+	}
+	else if (!w)
+	{
+		w = h * dim.em / dim.ex;
+	}
+	else if (!h)
+	{
+		h = w * dim.ex / dim.em;
+	}
+
+	data = (CARD32 *)safemalloc(w * h * sizeof(CARD32));
+	memset(data, 0, w * h * sizeof(CARD32));
+	surface = Fcairo_image_surface_create_for_data((unsigned char *)data,
+		FCAIRO_FORMAT_ARGB32, w, h, w * sizeof(CARD32));
+	if (Fcairo_surface_status(surface) != FCAIRO_STATUS_SUCCESS)
+	{
+		Fg_object_unref(FG_OBJECT(rsvg));
+		free(data);
+		if (surface)
+		{
+		   	Fcairo_surface_destroy(surface);
+		}
+
+		return False;
+	}
+	cr = Fcairo_create(surface);
+	Fcairo_surface_destroy(surface);
+	if (Fcairo_status(cr) != FCAIRO_STATUS_SUCCESS)
+	{
+		Fg_object_unref(FG_OBJECT(rsvg));
+		free(data);
+		if (cr)
+		{
+			Fcairo_destroy(cr);
+		}
+
+		return False;
+	}
+
+	/* Affine transformations ...
+	 * mirroring, rotation, scaling and translation */
+	Fcairo_translate(cr, .5 * w + dw, .5 * h + dh);
+	Fcairo_scale(cr, scale, scale);
+	Fcairo_rotate(cr, angle);
+	Fcairo_translate(cr, -.5 * w * w_sgn, -.5 * h * h_sgn);
+	Fcairo_scale(cr, w * w_sgn / dim.em, h * h_sgn / dim.ex);
+
+	Frsvg_handle_render_cairo(rsvg, cr);
+	Fg_object_unref(FG_OBJECT(rsvg));
+	Fcairo_destroy(cr);
+
+	/* Cairo gave us alpha prescaled RGB values, hence we need
+	 * to rescale them for PImageCreatePixmapFromArgbData() */
+	for (i = 0; i < w * h; i++)
+	{
+		if ((a_value = (data[i] >> 030) & 0xff))
+		{
+			r_value = ((data[i] >> 020) & 0xff) * 0xff / a_value;
+			g_value = ((data[i] >> 010) & 0xff) * 0xff / a_value;
+			b_value =  (data[i]         & 0xff) * 0xff / a_value;
+
+			data[i] =
+				(a_value << 030) | (r_value << 020) |
+				(g_value << 010) | b_value;
+		}
+	}
+
+	*width = w;
+	*height = h;
+
+	/* The rest was copied from PImageLoadPng() */
+	*depth = Pdepth;
+	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
+	*mask = XCreatePixmap(dpy, win, w, h, 1);
+	if (alpha && !(fpa.mask & FPAM_NO_ALPHA) && FRenderGetAlphaDepth())
+	{
+		*alpha = XCreatePixmap(dpy, win, w, h, FRenderGetAlphaDepth());
+	}
+	if (!PImageCreatePixmapFromArgbData(
+		dpy, win, data, 0, w, h, *pixmap, *mask,
+		(alpha)? *alpha:0,
+		&have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
+	    || *pixmap == None)
+	{
+		if (*pixmap != None)
+			XFreePixmap(dpy, *pixmap);
+		if (alpha && *alpha != None)
+		{
+			XFreePixmap(dpy, *alpha);
+		}
+		if (*mask != None)
+			XFreePixmap(dpy, *mask);
+
+		free(data);
+
+		return False;
+	}
+	if (!have_alpha && alpha && *alpha != None)
+	{
+		XFreePixmap(dpy, *alpha);
+		*alpha = None;
+	}
+	free(data);
+
+	return True;
+}
 
 /*
  *
@@ -676,7 +908,18 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 	int depth = 0, no_limit;
 	int nalloc_pixels = 0;
 	Pixel *alloc_pixels = NULL;
+	char *real_path;
 
+        /* Remove any svg rendering options from real_path */
+	if (USE_SVG && *path == ':' &&
+	    (real_path = strchr(path + 1, ':')))
+	{
+		real_path ++;
+	}
+	else
+	{
+		real_path = path;
+	}
 	if (!PImageLoadPixmapFromFile(
 		dpy, win, path, &pixmap, &mask, &alpha, &width, &height,
 		&depth, &nalloc_pixels, &alloc_pixels, &no_limit, fpa))
@@ -690,7 +933,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 	p->name = path;
 	p->fpa_mask = fpa.mask;
 	p->next = NULL;
-	setFileStamp(&p->stamp, p->name);
+	setFileStamp(&p->stamp, real_path);
 	p->picture = pixmap;
 	p->mask = mask;
 	p->alpha = alpha;

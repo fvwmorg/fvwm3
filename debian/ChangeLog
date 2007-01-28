@@ -1,3 +1,8 @@
+2007-01-28  Simon Griph  <simon(at)griph(dot)se>
+
+	* control.in (Build-Depends):
+	added librsvg2-dev
+
 2006-12-18  Viktor Griph  <griph@dd.chalmers.se>
 
 	* control.in (Build-Depends):
