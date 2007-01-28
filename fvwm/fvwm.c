@@ -75,7 +75,7 @@
 #include "gnome.h"
 #include "ewmh.h"
 #include "add_window.h"
-#include "fvwmsignal.h"
+#include "libs/fvwmsignal.h"
 #include "stack.h"
 #include "virtual.h"
 #include "session.h"

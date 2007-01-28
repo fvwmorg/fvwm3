@@ -1,3 +1,7 @@
+2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* hints/Makefile.am (LDADD):
+
 2006-09-19  Viktor Griph  <griph@dd.chalmers.se>
 
 	* hints/hints_test.c (main):

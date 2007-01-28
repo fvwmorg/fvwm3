@@ -1,5 +1,17 @@
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/bindings.c:
+	* fvwm/decorations.c:
+	* fvwm/menubindings.c:
+	* fvwm/module_interface.c:
+	* fvwm/module_list.c:
+	* fvwm/fvwm.c:
+	* fvwm/module_list.h:
+	* fvwm/events.c:
+	* fvwm/module_interface.h:
+	* fvwm/Makefile.am:
+	dont include "libs" in include path
+
 	* libs/vpacket.h:
 	#includes from fvwm path with "..." not <...>
 

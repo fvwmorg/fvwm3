@@ -1,8 +1,12 @@
+2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* Makefile.am (LDADD):
+
 2006-08-29  Harald Dunkel  <harald.dunkel@t-online.de>
 
 	* xselection.c: change offset and length args for XGetWindowProperty()
 	  to long (to support 64bit architectures)
-	
+
 2006-02-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* changelog.vim:

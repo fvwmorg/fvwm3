@@ -25,6 +25,7 @@
 #include "libs/Bindings.h"
 #include "libs/charmap.h"
 #include "libs/Flocale.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -32,7 +33,6 @@
 #include "misc.h"
 #include "screen.h"
 #include "bindings.h"
-#include "wcontext.h"
 
 #include "move_resize.h"
 #include "menudim.h"

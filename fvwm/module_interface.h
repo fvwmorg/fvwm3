@@ -3,7 +3,7 @@
 #ifndef FVWM_MODULE_INTERFACE_H
 #define FVWM_MODULE_INTERFACE_H
 
-#include "Module.h"
+#include "libs/Module.h"
 
 struct fmodule;
 struct fmodule_input;

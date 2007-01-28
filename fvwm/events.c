@@ -77,7 +77,7 @@
 #include "events.h"
 #include "eventhandler.h"
 #include "eventmask.h"
-#include "fvwmsignal.h"
+#include "libs/fvwmsignal.h"
 #include "module_list.h"
 #include "module_interface.h"
 #include "session.h"

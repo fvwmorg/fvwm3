@@ -45,11 +45,11 @@
 /* for module syncronous */
 #include "libs/ftime.h"
 #include "libs/System.c"
-#include "envvar.h"
-#include "Parse.h"
-#include "Strings.h"
-#include "wild.h"
-#include "fvwmsignal.h"
+#include "libs/envvar.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/wild.h"
+#include "libs/fvwmsignal.h"
 #include "events.h"
 #include "bindings.h"
 

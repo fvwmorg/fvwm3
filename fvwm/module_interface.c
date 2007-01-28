@@ -50,7 +50,7 @@
 #include "module_list.h"
 #include "events.h"
 #include "geometry.h"
-#include "fvwmsignal.h"
+#include "libs/fvwmsignal.h"
 #include "decorations.h"
 #include "commands.h"
 #include "module_list.h"

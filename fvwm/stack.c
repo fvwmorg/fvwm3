@@ -21,12 +21,13 @@
 #include <signal.h>
 #include <stdarg.h>
 #include <limits.h>
-#include "ftime.h"
 
+#include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/gravity.h"
 #include "libs/Grab.h"
 #include "libs/Parse.h"
+#include "libs/defaults.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -34,7 +35,6 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "defaults.h"
 #include "module_list.h"
 #include "module_interface.h"
 #include "focus.h"

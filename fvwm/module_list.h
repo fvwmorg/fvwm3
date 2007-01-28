@@ -3,7 +3,7 @@
 #ifndef FVWM_MODULE_LIST_H
 #define FVWM_MODULE_LIST_H
 
-#include "Module.h"
+#include "libs/Module.h"
 #include "libs/queue.h"
 
 /* for F_CMD_ARGS */
