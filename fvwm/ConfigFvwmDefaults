@@ -62,8 +62,6 @@ AddToFunc FuncFvwmRaiseLowerX
 + M $0
 + D Lower
 
-Read ConfigFvwmMenuDefaults
-
 ######################
 # BEGIN MENU BINDINGS
 #
