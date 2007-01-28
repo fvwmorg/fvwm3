@@ -1,3 +1,10 @@
+2007-01-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/ConfigFvwmMenuDefaults:
+	* fvwm/fvwm.c (SetRCDefaults):
+	make default menu mouse bindings for MenuSelectItem and MenuScroll only
+	apply to menu item context.
+
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c:

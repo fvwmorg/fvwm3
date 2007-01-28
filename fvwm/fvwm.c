@@ -1412,7 +1412,7 @@ static void SetRCDefaults(void)
 		{ "Key Right M A MenuCursorRight", "", "" },
 		{ "Key Up M A MenuMoveCursor -1", "", "" },
 		{ "Key Down M A MenuMoveCursor 1", "", "" },
-		{ "Mouse 1 M A MenuSelectItem", "", "" },
+		{ "Mouse 1 MI A MenuSelectItem", "", "" },
 		/* don't add anything below */
 		{ RC_DEFAULTS_COMPLETE, "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
