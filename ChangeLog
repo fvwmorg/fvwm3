@@ -1,3 +1,12 @@
+2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/Makefile.am:
+	* fvwm/ConfigFvwmMenuDefaults:
+	removed file
+	* fvwm/ConfigFvwmDefaults:
+	* fvwm/ConfigFvwmMenuDefaults:
+	moved all settings from ConfigFvwmMenuDefaults to ConfigFvwmDefaults
+
 2007-01-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ConfigFvwmMenuDefaults:
