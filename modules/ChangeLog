@@ -1,5 +1,12 @@
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* FvwmCommand/FvwmCommand.h:
+	* FvwmGtk/FvwmGtk.c:
+	* FvwmSaveDesk/FvwmSaveDesk.h:
+	* FvwmSave/FvwmSave.h:
+	* FvwmWinList/FvwmWinList.h:
+	#includes from fvwm path with "..." not <...>
+
 	* FvwmBanner/FvwmBanner.c:
 	* FvwmButtons/FvwmButtons.c:
 	* FvwmCommand/FvwmCommand.h:

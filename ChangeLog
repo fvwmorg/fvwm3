@@ -1,5 +1,8 @@
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/vpacket.h:
+	#includes from fvwm path with "..." not <...>
+
 	* fvwm/stack.c:
 	#includes from library path with "..." not <...>
 

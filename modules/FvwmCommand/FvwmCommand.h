@@ -13,7 +13,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
-#include <fvwm/fvwm.h>
+#include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
 #include "libs/fvwm_sys_stat.h"
 

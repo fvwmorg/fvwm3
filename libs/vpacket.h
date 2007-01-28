@@ -2,7 +2,7 @@
 
 #ifndef _VPACKET_
 #define _VPACKET_
-#include <fvwm/window_flags.h>
+#include "fvwm/window_flags.h"
 
 /*
   All new-style module packets (i.e., those that are not simply arrays

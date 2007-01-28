@@ -30,7 +30,7 @@
 #include <X11/cursorfont.h>
 
 #include "libs/fvwmlib.h"
-#include <fvwm/fvwm.h>
+#include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
 
 /* Motif  window hints */
