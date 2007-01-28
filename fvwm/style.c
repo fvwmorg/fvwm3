@@ -45,6 +45,7 @@
 #include "colorset.h"
 #include "ewmh.h"
 #include "gnome.h"
+#include "placement.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -2981,7 +2982,7 @@ static Bool style_parse_one_style_option(
 			Bool bad = False;
 
 			num = 0;
-			if (rest != NULL)
+			if (on != 0 && rest != NULL)
 			{
 				num = sscanf(
 					rest, "%f %f %f %f %f %f", &f[0],
@@ -2990,7 +2991,9 @@ static Bool style_parse_one_style_option(
 				{
 					PeekToken(rest,&rest);
 					if (f[i] < 0)
+					{
 						bad = True;
+					}
 				}
 			}
 			if (bad)
@@ -3001,19 +3004,35 @@ static Bool style_parse_one_style_option(
 					"PlacementPenalties: %s", rest);
 				break;
 			}
-			SSET_NORMAL_PLACEMENT_PENALTY(*ps, 1);
-			SSET_ONTOP_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_ONTOP);
-			SSET_ICON_PLACEMENT_PENALTY(*ps, PLACEMENT_AVOID_ICON);
-			SSET_STICKY_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_STICKY);
-			SSET_BELOW_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_BELOW);
-			SSET_EWMH_STRUT_PLACEMENT_PENALTY(
-				*ps, PLACEMENT_AVOID_EWMH_STRUT);
-			for (i=0; i < num; i++)
 			{
-				(*ps).placement_penalty[i] = f[i];
+				pl_penalty_struct *p;
+
+				p = SGET_PLACEMENT_PENALTY_PTR(*ps);
+				*p = default_pl_penalty;
+			}
+			if (num > 0)
+			{
+				(*ps).pl_penalty.normal = f[0];
+			}
+			if (num > 1)
+			{
+				(*ps).pl_penalty.ontop = f[1];
+			}
+			if (num > 2)
+			{
+				(*ps).pl_penalty.icon = f[2];
+			}
+			if (num > 3)
+			{
+				(*ps).pl_penalty.sticky = f[3];
+			}
+			if (num > 4)
+			{
+				(*ps).pl_penalty.below = f[4];
+			}
+			if (num > 5)
+			{
+				(*ps).pl_penalty.strut = f[5];
 			}
 			ps->flags.has_placement_penalty = 1;
 			ps->flag_mask.has_placement_penalty = 1;
@@ -3024,11 +3043,15 @@ static Bool style_parse_one_style_option(
 		{
 			Bool bad = False;
 
-			num = GetIntegerArguments(rest, &rest, val, 4);
-			for (i=0; i < num; i++)
+			num = 0;
+			if (on != 0)
 			{
-				if (val[i] < 0)
-					bad = True;
+				num = GetIntegerArguments(rest, &rest, val, 4);
+				for (i=0; i < num; i++)
+				{
+					if (val[i] < 0)
+						bad = True;
+				}
 			}
 			if (bad)
 			{
@@ -3038,17 +3061,27 @@ static Bool style_parse_one_style_option(
 					"PlacementPenalties: %s", rest);
 				break;
 			}
-			SSET_99_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_99);
-			SSET_95_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_95);
-			SSET_85_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_85);
-			SSET_75_PLACEMENT_PERCENTAGE_PENALTY(
-				*ps, PLACEMENT_AVOID_COVER_75);
-			for (i=0; i < num; i++)
 			{
-				(*ps).placement_percentage_penalty[i] = val[i];
+				pl_percent_penalty_struct *p;
+
+				p = SGET_PLACEMENT_PERCENTAGE_PENALTY_PTR(*ps);
+				*p = default_pl_percent_penalty;
+			}
+			if (num > 0)
+			{
+				(*ps).pl_percent_penalty.p99 = val[0];
+			}
+			if (num > 1)
+			{
+				(*ps).pl_percent_penalty.p95 = val[1];
+			}
+			if (num > 2)
+			{
+				(*ps).pl_percent_penalty.p85 = val[2];
+			}
+			if (num > 3)
+			{
+				(*ps).pl_percent_penalty.p75 = val[3];
 			}
 			ps->flags.has_placement_percentage_penalty = 1;
 			ps->flag_mask.has_placement_percentage_penalty = 1;

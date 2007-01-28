@@ -1864,38 +1864,22 @@ void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 
 void setup_placement_penalty(FvwmWindow *fw, window_style *pstyle)
 {
-	int i;
-
 	if (!SHAS_PLACEMENT_PENALTY(&pstyle->flags))
 	{
-		SSET_NORMAL_PLACEMENT_PENALTY(*pstyle, 1);
-		SSET_ONTOP_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_ONTOP);
-		SSET_ICON_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_ICON);
-		SSET_STICKY_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_STICKY);
-		SSET_BELOW_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_BELOW);
-		SSET_EWMH_STRUT_PLACEMENT_PENALTY(
-			*pstyle, PLACEMENT_AVOID_EWMH_STRUT);
+		pl_penalty_struct *p;
+
+		p = SGET_PLACEMENT_PENALTY_PTR(*pstyle);
+		*p = default_pl_penalty;
 	}
 	if (!SHAS_PLACEMENT_PERCENTAGE_PENALTY(&pstyle->flags))
 	{
-		SSET_99_PLACEMENT_PERCENTAGE_PENALTY(
-			*pstyle, PLACEMENT_AVOID_COVER_99);
-		SSET_95_PLACEMENT_PERCENTAGE_PENALTY(
-			*pstyle, PLACEMENT_AVOID_COVER_95);
-		SSET_85_PLACEMENT_PERCENTAGE_PENALTY(
-			*pstyle, PLACEMENT_AVOID_COVER_85);
-		SSET_75_PLACEMENT_PERCENTAGE_PENALTY(
-			*pstyle, PLACEMENT_AVOID_COVER_75);
+		pl_percent_penalty_struct *p;
+
+		p = SGET_PLACEMENT_PERCENTAGE_PENALTY_PTR(*pstyle);
+		*p = default_pl_percent_penalty;
 	}
-	for (i = 0; i < 6; i++)
-	{
-		fw->placement_penalty[i] = (*pstyle).placement_penalty[i];
-	}
-	for (i = 0; i < 4; i++)
-	{
-		fw->placement_percentage_penalty[i] =
-			(*pstyle).placement_percentage_penalty[i];
-	}
+	fw->pl_penalty = (*pstyle).pl_penalty;
+	fw->pl_percent_penalty = (*pstyle).pl_percent_penalty;
 
 	return;
 }

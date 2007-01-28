@@ -468,6 +468,24 @@ typedef struct WindowConditionMask
 	int placed_by_button_set_mask;
 } WindowConditionMask;
 
+typedef struct pl_penalty_struct
+{
+	float normal;
+	float ontop;
+	float icon;
+	float sticky;
+	float below;
+	float strut;
+} pl_penalty_struct;
+
+typedef struct pl_percent_penalty_struct
+{
+	int p99;
+	int p95;
+	int p85;
+	int p75;
+} pl_percent_penalty_struct;
+
 /* only style.c and add_window.c are allowed to access this struct! */
 typedef struct
 {
@@ -634,8 +652,8 @@ typedef struct window_style
 	int shade_anim_steps;
 	icon_boxes *icon_boxes;
 	float norm_placement_penalty;
-	float placement_penalty[6];
-	int placement_percentage_penalty[4];
+	pl_penalty_struct pl_penalty;
+	pl_percent_penalty_struct pl_percent_penalty;
 	style_flags flags;
 	style_flags flag_default;
 	style_flags flag_mask;
@@ -855,8 +873,8 @@ typedef struct FvwmWindow
 #define FM_GLOBALLY_ACTIVE 3
 	unsigned char focus_model;
 
-	float placement_penalty[6];
-	int placement_percentage_penalty[4];
+	pl_penalty_struct pl_penalty;
+	pl_percent_penalty_struct pl_percent_penalty;
 
 	unsigned char placed_by_button;
 

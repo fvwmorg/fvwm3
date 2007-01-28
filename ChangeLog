@@ -7,6 +7,41 @@
 
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/placement.c (placement_loop):
+	(__pl_minoverlap_get_avoidance_penalty):
+	(__pl_smart_get_first_pos):
+	(__pl_smart_get_next_pos):
+	(__pl_smart_test_window):
+	(__pl_smart_get_pos_penalty):
+	rewrote SmartPlacement as a sub-mode of MinOverlapPlacement, i.e. it's
+	now less than ten lines of code.
+
+	* fvwm/add_window.c (setup_placement_penalty):
+	* fvwm/style.c (style_parse_one_style_option):
+	allow to reset the placement penalties with !
+
+	* fvwm/placement.h:
+	* fvwm/add_window.c (setup_placement_penalty):
+	* fvwm/style.h:
+	* fvwm/fvwm.h:
+	* fvwm/style.c (style_parse_one_style_option):
+	put placement penalty array in a struct
+
+	* fvwm/placement.c (__place_get_wm_pos):
+	(__pl_clever_get_next_x):
+	(__pl_clever_get_next_y):
+	(__pl_clever_get_first_pos):
+	(__pl_clever_get_next_pos):
+	(__pl_clever_get_avoidance_penalty):
+	(__pl_clever_get_pos_penalty):
+	(__pl_minoverlap_get_next_x):
+	(__pl_minoverlap_get_next_y):
+	(__pl_minoverlap_get_first_pos):
+	(__pl_minoverlap_get_next_pos):
+	(__pl_minoverlap_get_avoidance_penalty):
+	(__pl_minoverlap_get_pos_penalty):
+	renamed ...clever... functions to ...minoverlap...
+
 	* fvwm/bindings.c:
 	* fvwm/decorations.c:
 	* fvwm/menubindings.c:

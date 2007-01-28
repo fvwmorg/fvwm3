@@ -15,6 +15,7 @@
  */
 
 /* ---------------------------- included header files ---------------------- */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -55,6 +56,18 @@
 #ifndef MAX
 #define MAX(A,B) ((A)>(B)? (A):(B))
 #endif
+
+#define NORMAL_PLACEMENT_PENALTY(p)      (p->normal)
+#define ONTOP_PLACEMENT_PENALTY(p)       (p->ontop)
+#define ICON_PLACEMENT_PENALTY(p)        (p->icon)
+#define STICKY_PLACEMENT_PENALTY(p)      (p->sticky)
+#define BELOW_PLACEMENT_PENALTY(p)       (p->below)
+#define EWMH_STRUT_PLACEMENT_PENALTY(p)  (p->strut)
+
+#define PERCENTAGE_99_PENALTY(p) (p->p99)
+#define PERCENTAGE_95_PENALTY(p) (p->p95)
+#define PERCENTAGE_85_PENALTY(p) (p->p85)
+#define PERCENTAGE_75_PENALTY(p) (p->p75)
 
 /* ---------------------------- imports ------------------------------------ */
 
@@ -193,12 +206,19 @@ typedef struct
 		const struct pl_arg_t *arg);
 } pl_algo_t;
 
+typedef struct pl_scratch_t
+{
+	const pl_penalty_struct *pp;
+	const pl_percent_penalty_struct *ppp;
+} pl_scratch_t;
+
 typedef struct pl_arg_t
 {
 	const pl_algo_t *algo;
 	const exec_context_t *exc;
 	pl_reason_t *reason;
 	FvwmWindow *place_fw;
+	pl_scratch_t *scratch;
 	rectangle place_g;
 	position place_p2;
 	rectangle screen_g;
@@ -225,19 +245,14 @@ typedef struct pl_ret_t
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static pl_loop_rc_t __pl_clever_get_first_pos(
+static pl_loop_rc_t __pl_minoverlap_get_first_pos(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
-static pl_loop_rc_t __pl_clever_get_next_pos(
+static pl_loop_rc_t __pl_minoverlap_get_next_pos(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
 	position hint_p);
-static pl_penalty_t __pl_clever_get_pos_penalty(
+static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const pl_arg_t *arg);
 
-static pl_loop_rc_t __pl_smart_get_first_pos(
-	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
-static pl_loop_rc_t __pl_smart_get_next_pos(
-	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
-	position hint_p);
 static pl_penalty_t __pl_smart_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const pl_arg_t *arg);
 
@@ -255,19 +270,19 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 
 /* ---------------------------- local variables ---------------------------- */
 
-const pl_algo_t clever_placement_algo =
+const pl_algo_t minoverlap_placement_algo =
 {
 	NULL,
-	__pl_clever_get_first_pos,
-	__pl_clever_get_next_pos,
-	__pl_clever_get_pos_penalty
+	__pl_minoverlap_get_first_pos,
+	__pl_minoverlap_get_next_pos,
+	__pl_minoverlap_get_pos_penalty
 };
 
 const pl_algo_t smart_placement_algo =
 {
 	NULL,
-	__pl_smart_get_first_pos,
-	__pl_smart_get_next_pos,
+	__pl_minoverlap_get_first_pos,
+	__pl_minoverlap_get_next_pos,
 	__pl_smart_get_pos_penalty
 };
 
@@ -292,6 +307,24 @@ const pl_algo_t manual_placement_algo =
 };
 
 /* ---------------------------- exported variables (globals) --------------- */
+
+const pl_penalty_struct default_pl_penalty =
+{
+	1,
+	PLACEMENT_AVOID_ONTOP,
+	PLACEMENT_AVOID_ICON,
+	PLACEMENT_AVOID_STICKY,
+	PLACEMENT_AVOID_BELOW,
+	PLACEMENT_AVOID_EWMH_STRUT
+};
+
+const pl_percent_penalty_struct default_pl_percent_penalty =
+{
+	PLACEMENT_AVOID_COVER_99,
+	PLACEMENT_AVOID_COVER_95,
+	PLACEMENT_AVOID_COVER_85,
+	PLACEMENT_AVOID_COVER_75
+};
 
 /* ---------------------------- local functions (CenterPlacement)----------- */
 
@@ -531,15 +564,15 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 	return 0;
 }
 
-/* ---------------------------- local functions (CleverPlacement) ---------- */
+/* ---------------------------- local functions (MinoverlapPlacement) ------ */
 
-/* CleverPlacement by Anthony Martin <amartin@engr.csulb.edu>
+/* MinoverlapPlacement by Anthony Martin <amartin@engr.csulb.edu>
  * This algorithm places a new window such that there is a minimum amount of
  * interference with other windows.  If it can place a window without any
  * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
 
-static int __pl_clever_get_next_x(const pl_arg_t *arg)
+static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int xnew;
@@ -677,7 +710,7 @@ static int __pl_clever_get_next_x(const pl_arg_t *arg)
 	return xnew;
 }
 
-static int __pl_clever_get_next_y(const pl_arg_t *arg)
+static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int ynew;
@@ -803,7 +836,7 @@ static int __pl_clever_get_next_y(const pl_arg_t *arg)
 	return ynew;
 }
 
-static pl_loop_rc_t __pl_clever_get_first_pos(
+static pl_loop_rc_t __pl_minoverlap_get_first_pos(
 	position *ret_p, struct pl_ret_t *ret, const pl_arg_t *arg)
 {
 	/* top left corner of page */
@@ -813,7 +846,7 @@ static pl_loop_rc_t __pl_clever_get_first_pos(
 	return PL_LOOP_CONT;
 }
 
-static pl_loop_rc_t __pl_clever_get_next_pos(
+static pl_loop_rc_t __pl_minoverlap_get_next_pos(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
 	position hint_p)
 {
@@ -822,14 +855,14 @@ static pl_loop_rc_t __pl_clever_get_next_pos(
 	if (ret_p->x + arg->place_g.width <= arg->page_p2.x)
 	{
 		/* try next x */
-		ret_p->x = __pl_clever_get_next_x(arg);
+		ret_p->x = __pl_minoverlap_get_next_x(arg);
 		ret_p->y = arg->place_g.y;
 	}
 	if (ret_p->x + arg->place_g.width > arg->page_p2.x)
 	{
 		/* out of room in x direction. Try next y. Reset x.*/
 		ret_p->x = arg->page_p1.x;
-		ret_p->y = __pl_clever_get_next_y(arg);
+		ret_p->y = __pl_minoverlap_get_next_y(arg);
 	}
 	if (ret_p->y + arg->place_g.height > arg->page_p2.y)
 	{
@@ -840,13 +873,19 @@ static pl_loop_rc_t __pl_clever_get_next_pos(
 	return PL_LOOP_CONT;
 }
 
-static pl_penalty_t __pl_clever_get_avoidance_penalty(
+static pl_penalty_t __pl_minoverlap_get_avoidance_penalty(
 	const pl_arg_t *arg, FvwmWindow *other_fw, const rectangle *other_g)
 {
 	pl_penalty_t anew;
 	pl_penalty_t avoidance_factor;
 	position other_p2;
+	const pl_penalty_struct *opp;
+	const pl_percent_penalty_struct *oppp;
 
+	opp = (arg->scratch->pp != 0 && 0) ? arg->scratch->pp :
+		&other_fw->pl_penalty;
+	oppp = (arg->scratch->ppp != 0 && 0) ? arg->scratch->ppp :
+		&other_fw->pl_percent_penalty;
 	other_p2.x = other_g->x + other_g->width;
 	other_p2.y = other_g->y + other_g->height;
 	{
@@ -861,25 +900,25 @@ static pl_penalty_t __pl_clever_get_avoidance_penalty(
 	}
 	if (IS_ICONIFIED(other_fw))
 	{
-		avoidance_factor = ICON_PLACEMENT_PENALTY(other_fw);
+		avoidance_factor = ICON_PLACEMENT_PENALTY(opp);
 	}
 	else if (compare_window_layers(other_fw, arg->place_fw) > 0)
 	{
-		avoidance_factor = ONTOP_PLACEMENT_PENALTY(other_fw);
+		avoidance_factor = ONTOP_PLACEMENT_PENALTY(opp);
 	}
 	else if (compare_window_layers(other_fw, arg->place_fw) < 0)
 	{
-		avoidance_factor = BELOW_PLACEMENT_PENALTY(other_fw);
+		avoidance_factor = BELOW_PLACEMENT_PENALTY(opp);
 	}
 	else if (
 		IS_STICKY_ACROSS_PAGES(other_fw) ||
 		IS_STICKY_ACROSS_DESKS(other_fw))
 	{
-		avoidance_factor = STICKY_PLACEMENT_PENALTY(other_fw);
+		avoidance_factor = STICKY_PLACEMENT_PENALTY(opp);
 	}
 	else
 	{
-		avoidance_factor = NORMAL_PLACEMENT_PENALTY(other_fw);
+		avoidance_factor = NORMAL_PLACEMENT_PENALTY(opp);
 	}
 	if (arg->flags.use_percent == 1)
 	{
@@ -895,19 +934,19 @@ static pl_penalty_t __pl_clever_get_avoidance_penalty(
 			anew = 100 * MAX(anew / other_area, anew / place_area);
 			if (anew >= 99)
 			{
-				cover_factor = PERCENTAGE_99_PENALTY(other_fw);
+				cover_factor = PERCENTAGE_99_PENALTY(oppp);
 			}
 			else if (anew > 94)
 			{
-				cover_factor = PERCENTAGE_95_PENALTY(other_fw);
+				cover_factor = PERCENTAGE_95_PENALTY(oppp);
 			}
 			else if (anew > 84)
 			{
-				cover_factor = PERCENTAGE_85_PENALTY(other_fw);
+				cover_factor = PERCENTAGE_85_PENALTY(oppp);
 			}
 			else if (anew > 74)
 			{
-				cover_factor = PERCENTAGE_75_PENALTY(other_fw);
+				cover_factor = PERCENTAGE_75_PENALTY(oppp);
 			}
 		}
 		if (avoidance_factor >= 1)
@@ -924,16 +963,20 @@ static pl_penalty_t __pl_clever_get_avoidance_penalty(
 			other_fw->dyn_strut.top > 0 ||
 			other_fw->dyn_strut.bottom > 0))
 	{
+		const pl_penalty_struct *mypp;
+
+		mypp = (arg->scratch->pp != 0 && 0) ? arg->scratch->pp :
+			&arg->place_fw->pl_penalty;
 		/* if we intersect a window which reserves space */
 		avoidance_factor += (avoidance_factor >= 1) ?
-			EWMH_STRUT_PLACEMENT_PENALTY(arg->place_fw) : 0;
+			EWMH_STRUT_PLACEMENT_PENALTY(mypp) : 0;
 	}
 	anew *= avoidance_factor;
 
 	return anew;
 }
 
-static pl_penalty_t __pl_clever_get_pos_penalty(
+static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
@@ -974,7 +1017,7 @@ static pl_penalty_t __pl_clever_get_pos_penalty(
 		{
 			pl_penalty_t anew;
 
-			anew = __pl_clever_get_avoidance_penalty(
+			anew = __pl_minoverlap_get_avoidance_penalty(
 				arg, other_fw, &other_g);
 			penalty += anew;
 			if (
@@ -987,23 +1030,30 @@ static pl_penalty_t __pl_clever_get_pos_penalty(
 		}
 	}
 	/* now handle the working area */
-	if (arg->flags.use_ewmh_dynamic_working_areapercent == 1)
 	{
-		penalty += EWMH_STRUT_PLACEMENT_PENALTY(arg->place_fw) *
-			EWMH_GetStrutIntersection(
-				arg->place_g.x, arg->place_g.y,
-				arg->place_p2.x, arg->place_p2.y,
-				arg->flags.use_percent);
-	}
-	else
-	{
-		/* EWMH_USE_DYNAMIC_WORKING_AREA, count the base strut */
-		penalty +=
-			EWMH_STRUT_PLACEMENT_PENALTY(arg->place_fw) *
-			EWMH_GetBaseStrutIntersection(
-				arg->place_g.x, arg->place_g.y,
-				arg->place_p2.x, arg->place_p2.y,
-				arg->flags.use_percent);
+		const pl_penalty_struct *mypp;
+
+		mypp = (arg->scratch->pp != 0 && 0) ? arg->scratch->pp :
+			&arg->place_fw->pl_penalty;
+		if (arg->flags.use_ewmh_dynamic_working_areapercent == 1)
+		{
+			penalty += EWMH_STRUT_PLACEMENT_PENALTY(mypp) *
+				EWMH_GetStrutIntersection(
+					arg->place_g.x, arg->place_g.y,
+					arg->place_p2.x, arg->place_p2.y,
+					arg->flags.use_percent);
+		}
+		else
+		{
+			/* EWMH_USE_DYNAMIC_WORKING_AREA, count the base strut
+			 */
+			penalty +=
+				EWMH_STRUT_PLACEMENT_PENALTY(mypp) *
+				EWMH_GetBaseStrutIntersection(
+					arg->place_g.x, arg->place_g.y,
+					arg->place_p2.x, arg->place_p2.y,
+					arg->flags.use_percent);
+		}
 	}
 
 	return penalty;
@@ -1011,110 +1061,20 @@ static pl_penalty_t __pl_clever_get_pos_penalty(
 
 /* ---------------------------- local functions (SmartPlacement) ----------- */
 
-static pl_loop_rc_t __pl_smart_get_first_pos(
-	position *ret_p, struct pl_ret_t *ret, const pl_arg_t *arg)
-{
-	/* top left corner of page */
-	ret_p->x = arg->page_p1.x;
-	ret_p->y = arg->page_p1.y;
-
-	return PL_LOOP_CONT;
-}
-
-static pl_loop_rc_t __pl_smart_get_next_pos(
-	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
-	position hint_p)
-{
-	ret_p->x = arg->place_g.x;
-	ret_p->y = arg->place_g.y;
-	/* next x position */
-	if (hint_p.x > ret_p->x)
-	{
-		ret_p->x = hint_p.x;
-	}
-	else
-	{
-		ret_p->x += 1;
-	}
-	if (ret_p->x + arg->place_g.width < arg->page_p2.x)
-	{
-		return PL_LOOP_CONT;
-	}
-	/* next y position */
-	ret_p->x = arg->page_p1.x;
-	ret_p->y += 1;
-	if (ret_p->y + arg->place_g.height < arg->page_p2.y)
-	{
-		return PL_LOOP_CONT;
-	}
-
-	return PL_LOOP_END;
-}
-
-/* returns -1 if windows do not overlap
- * returns >= 0 (the window's next x position to try) if windows do overlap
- */
-static int __pl_smart_test_window(const pl_arg_t *arg, FvwmWindow *other_fw)
-{
-	Bool rc;
-	rectangle other_g;
-
-	if (arg->place_fw == other_fw || IS_EWMH_DESKTOP(FW_W(other_fw)))
-	{
-		return -1;
-	}
-	/*  RBW - account for sticky windows...  */
-	if (
-		other_fw->Desk != arg->place_fw->Desk &&
-		IS_STICKY_ACROSS_DESKS(other_fw) == 0)
-	{
-		return -1;
-	}
-	rc = get_visible_window_or_icon_geometry(other_fw, &other_g);
-	if (
-		rc == True &&
-		(PLACEMENT_AVOID_ICON == 0 || !IS_ICONIFIED(other_fw)))
-	{
-		if (IS_STICKY_ACROSS_PAGES(other_fw))
-		{
-			other_g.x -= arg->pdelta_p.x;
-			other_g.y -= arg->pdelta_p.y;
-		}
-		if (
-			other_g.x < arg->place_g.x + arg->place_g.width  &&
-			arg->place_g.x < other_g.x + other_g.width &&
-			other_g.y < arg->place_g.y + arg->place_g.height &&
-			arg->place_g.y < other_g.y + other_g.height)
-		{
-			/* window overlaps, look for a different place */
-			return other_g.x + other_g.width - 1;
-		}
-	}
-
-	return -1;
-}
-
 static pl_penalty_t __pl_smart_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
-	FvwmWindow *other_fw;
+	pl_penalty_t p;
 
-	for (
-		other_fw = Scr.FvwmRoot.next; other_fw != NULL;
-		other_fw = other_fw->next)
+	arg->scratch->pp = &default_pl_penalty;
+	arg->scratch->ppp = &default_pl_percent_penalty;
+	p = __pl_minoverlap_get_pos_penalty(ret_hint_p, ret, arg);
+	if (p != 0)
 	{
-		int next_x;
-
-		next_x = __pl_smart_test_window(arg, other_fw);
-		if (next_x >= 0)
-		{
-			ret_hint_p->x = next_x;
-
-			return -1;
-		}
+		p = -1;
 	}
 
-	return 0;
+	return p;
 }
 
 /* ---------------------------- local functions ---------------------------- */
@@ -1148,7 +1108,10 @@ static int placement_loop(pl_ret_t *ret, pl_arg_t *arg)
 	while (loop_rc != PL_LOOP_END)
 	{
 		position hint_p;
+		pl_scratch_t scratch;
 
+		memset(&scratch, 0, sizeof(scratch));
+		arg->scratch = &scratch;
 		arg->place_p2.x = arg->place_g.x + arg->place_g.width;
 		arg->place_p2.y = arg->place_g.y + arg->place_g.height;
 		hint_p.x = arg->place_g.x;
@@ -1347,7 +1310,7 @@ static int __place_get_wm_pos(
 		/* fall through */
 	case PLACE_MINOVERLAP:
 		num_algos = __add_algo(
-			algos, num_algos, &clever_placement_algo);
+			algos, num_algos, &minoverlap_placement_algo);
 		break;
 	case PLACE_TILECASCADE:
 		num_algos = __add_algo(

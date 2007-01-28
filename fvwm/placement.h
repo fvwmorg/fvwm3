@@ -9,18 +9,6 @@
 
 /* ---------------------------- global macros ------------------------------ */
 
-#define NORMAL_PLACEMENT_PENALTY(fw)      (fw->placement_penalty[0])
-#define ONTOP_PLACEMENT_PENALTY(fw)       (fw->placement_penalty[1])
-#define ICON_PLACEMENT_PENALTY(fw)        (fw->placement_penalty[2])
-#define STICKY_PLACEMENT_PENALTY(fw)      (fw->placement_penalty[3])
-#define BELOW_PLACEMENT_PENALTY(fw)       (fw->placement_penalty[4])
-#define EWMH_STRUT_PLACEMENT_PENALTY(fw)  (fw->placement_penalty[5])
-
-#define PERCENTAGE_99_PENALTY(fw) (fw->placement_percentage_penalty[0])
-#define PERCENTAGE_95_PENALTY(fw) (fw->placement_percentage_penalty[1])
-#define PERCENTAGE_85_PENALTY(fw) (fw->placement_percentage_penalty[2])
-#define PERCENTAGE_75_PENALTY(fw) (fw->placement_percentage_penalty[3])
-
 /* ---------------------------- type definitions --------------------------- */
 
 typedef enum
@@ -32,6 +20,9 @@ typedef enum
 /* ---------------------------- forward declarations ----------------------- */
 
 /* ---------------------------- exported variables (globals) --------------- */
+
+extern const pl_penalty_struct default_pl_penalty;
+extern const pl_percent_penalty_struct default_pl_percent_penalty;
 
 /* ---------------------------- interface functions ------------------------ */
 

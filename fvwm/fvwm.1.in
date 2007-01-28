@@ -8124,11 +8124,11 @@ takes at most 6 positive or null decimal arguments:
 .EX
 .I normal ontop icon sticky below strut
 .EE
-if trailing arguments are missing
-the default is used which is:
+if trailing arguments are missing the default is used which is:
 .EX
 1 5 10 1 0.05 50
 .EE
+To reset this style to the default values, prefix it with a '!'.
 This style configures the
 .IR MinOverlapPlacement " and " MinOverlapPercentPlacement
 placement policy.
@@ -8182,6 +8182,7 @@ which are:
 .EX
 12 6 4 1
 .EE
+To reset this style to the default values, prefix it with a '!'.
 This style affects the
 .I MinOverlapPercentPlacement
 placement policy and is similar to the

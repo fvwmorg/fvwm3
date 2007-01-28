@@ -555,46 +555,50 @@
 	((s).icon_boxes)
 #define SSET_ICON_BOXES(s,x) \
 	((s).icon_boxes = (x))
+#define SGET_PLACEMENT_PENALTY_PTR(s) \
+	(&(s).pl_penalty)
 #define SGET_NORMAL_PLACEMENT_PENALTY(s) \
-	((s).placement_penalty[0])
+	((s).pl_penalty.normal)
 #define SGET_ONTOP_PLACEMENT_PENALTY(s) \
-	((s).placement_penalty[1])
+	((s).pl_penalty.ontop)
 #define SGET_ICON_PLACEMENT_PENALTY(s) \
-	((s).placement_penalty[2])
+	((s).pl_penalty.icon)
 #define SGET_STICKY_PLACEMENT_PENALTY(s) \
-	((s).placement_penalty[3])
+	((s).pl_penalty.sticky)
 #define SGET_BELOW_PLACEMENT_PENALTY(s) \
-	((s).placement_penalty[4])
+	((s).pl_penalty.below)
 #define SGET_EWMH_STRUT_PLACEMENT_PENALTY(s) \
-	((s).placement_penalty[5])
+	((s).pl_penalty.strut)
 #define SSET_NORMAL_PLACEMENT_PENALTY(s,x) \
-	((s).placement_penalty[0] = (x))
+	((s).pl_penalty.normal = (x))
 #define SSET_ONTOP_PLACEMENT_PENALTY(s,x) \
-	((s).placement_penalty[1] = (x))
+	((s).pl_penalty.ontop = (x))
 #define SSET_ICON_PLACEMENT_PENALTY(s,x) \
-	((s).placement_penalty[2] = (x))
+	((s).pl_penalty.icon = (x))
 #define SSET_STICKY_PLACEMENT_PENALTY(s,x) \
-	((s).placement_penalty[3] = (x))
+	((s).pl_penalty.sticky = (x))
 #define SSET_BELOW_PLACEMENT_PENALTY(s,x) \
-	((s).placement_penalty[4] = (x))
+	((s).pl_penalty.below = (x))
 #define SSET_EWMH_STRUT_PLACEMENT_PENALTY(s,x) \
-	((s).placement_penalty[5] = (x))
+	((s).pl_penalty.strut = (x))
+#define SGET_PLACEMENT_PERCENTAGE_PENALTY_PTR(s) \
+	(&(s).pl_percent_penalty)
 #define SGET_99_PLACEMENT_PERCENTAGE_PENALTY(s) \
-	((s).placement_percentage_penalty[0])
+	((s).pl_percent_penalty.p99)
 #define SGET_95_PLACEMENT_PERCENTAGE_PENALTY(s) \
-	((s).placement_percentage_penalty[1])
+	((s).pl_percent_penalty.p95)
 #define SGET_85_PLACEMENT_PERCENTAGE_PENALTY(s) \
-	((s).placement_percentage_penalty[2])
+	((s).pl_percent_penalty.p85)
 #define SGET_75_PLACEMENT_PERCENTAGE_PENALTY(s) \
-	((s).placement_percentage_penalty[3])
+	((s).pl_percent_penalty.p75)
 #define SSET_99_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
-	((s).placement_percentage_penalty[0] = (x))
+	((s).pl_percent_penalty.p99 = (x))
 #define SSET_95_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
-	((s).placement_percentage_penalty[1] = (x))
+	((s).pl_percent_penalty.p95 = (x))
 #define SSET_85_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
-	((s).placement_percentage_penalty[2] = (x))
+	((s).pl_percent_penalty.p85 = (x))
 #define SSET_75_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
-	((s).placement_percentage_penalty[3] = (x))
+	((s).pl_percent_penalty.p75 = (x))
 
 /* function prototypes */
 void lookup_style(FvwmWindow *fw, window_style *styles);
