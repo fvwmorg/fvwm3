@@ -739,6 +739,12 @@ static Bool is_transient_subtree_straight(
 	{
 		return True;
 	}
+	if (t->stack_prev == NULL || t->stack_next == NULL)
+	{
+		/* the window is not placed correctly in the stack ring
+		* (probably about to be destroyed) */
+		return False;
+	}
 	/* find out on which windows to operate */
 	/* iteration are done reverse (bottom up, since that's the way the
 	 * transients wil be stacked if all is well */
@@ -851,6 +857,12 @@ static Bool __is_restack_needed(
 	{
 		return True;
 	}
+	else if (t->stack_prev == NULL || t->stack_next == NULL)
+	{
+		/* the window is about to be destroyed, and has been removed
+		 * from the stack ring. No need to restack. */
+		return False;
+	}
 
 	if (mode == SM_RESTACK)
 	{
@@ -893,6 +905,10 @@ static Bool __restack_window(
 		if (do_restack_transients)
 		{
 			s = t->stack_next;
+			if (s == NULL)
+			{
+				return True;
+			}
 			while (IS_IN_TRANSIENT_SUBTREE(s))
 			{
 				s = s->stack_next;

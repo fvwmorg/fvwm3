@@ -1,3 +1,11 @@
+2007-01-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/stack.c (__is_restack_needed)
+	(is_transient_subtree_straight):
+	(__restack_window):
+	fix crash when trying to restack destroyed window
+
 2007-01-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* libs/Makefile.am (libfvwm_a_SOURCES):
