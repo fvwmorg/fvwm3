@@ -1837,7 +1837,7 @@ prefix.
 
 Example:
 .EX
-Pick -Exec exec xmessage "$[w.name]"
+Pick -Exec exec xmessage '$[w.name]'
 .EE
 opens an xmessage dialog with "$[w.name]" unexpanded.
 
