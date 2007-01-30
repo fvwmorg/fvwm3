@@ -24,6 +24,7 @@ Changes in beta release 2.5.22 (not released yet)
    - Fixed CascadePlacement with title direction west and east
    - Windows no longer unstick when going to fullscreen mode.
    - Fixed crash when raising/lowering a destroyed window.
+   - Fixed expansion of $[n-] and $[*], broken in 2.5.20.
 
 -------------------------------------------------------------------
 

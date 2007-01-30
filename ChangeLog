@@ -1,3 +1,8 @@
+2007-01-30  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/expand.c (__eae_parse_range):
+	fix $[n-] and $[*] after unsigned int havoc
+
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/Makefile.am:

@@ -18,6 +18,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <limits.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
@@ -210,7 +211,7 @@ int __eae_parse_range(char *input, int *lower, int *upper)
 	int n;
 
 	*lower = 0;
-	*upper = -1;
+	*upper = INT_MAX;
 	if (*input == '*')
 	{
 		return 0;
@@ -219,10 +220,10 @@ int __eae_parse_range(char *input, int *lower, int *upper)
 	{
 		return -1;
 	}
-	rc = sscanf(input, "%u-%u%n", lower, upper, &n);
+	rc = sscanf(input, "%d-%d%n", lower, upper, &n);
 	if (rc < 2)
 	{
-		rc = sscanf(input, "%u%n", lower, &n);
+		rc = sscanf(input, "%d%n", lower, &n);
 		if (rc < 1)
 		{
 			/* not a positional argument */
