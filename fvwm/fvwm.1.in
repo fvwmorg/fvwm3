@@ -1827,8 +1827,19 @@ brackets ($[...]) or a single special character.  If fvwm
 encounters an unquoted parameter on the command line it expands it
 to a string indicated by the parameter name.  Unknown parameters
 are left untouched.  Parameter expansion is performed before
-quoting.  To get a literal '$' use "$$".  If a command is prefixed
-with a '-' parameter expansion isn't performed.
+quoting.  To get a literal '$' use "$$".
+
+If a command is prefixed with a '-' parameter expansion isn't
+performed.  This applies to the command immediately following the '-',
+in which the expansion normally would have taken place. When uesed
+together with other prefix commands it must be added before the other
+prefix.
+
+Example:
+.EX
+Pick -Exec exec xmessage "$[w.name]"
+.EE
+opens an xmessage dialog with "$[w.name]" unexpanded.
 
 The longer variables may contain additional variables inside the
 name, which are expanded before the outer variable.

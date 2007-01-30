@@ -1,6 +1,9 @@
 2007-01-30  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.1.in (COMMAND EXPANSION):
+	clarified previous patch
+
+	* fvwm/fvwm.1.in (COMMAND EXPANSION):
 	documented '-' command prefix
 
 	* fvwm/expand.c (__eae_parse_range):
