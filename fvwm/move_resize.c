@@ -3443,8 +3443,16 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 
 	/* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
-	drag->width = fw->g.frame.width;
-	drag->height = fw->g.frame.height;
+	if (IS_SHADED(fw))
+	{
+		/* ??? shoudld this just be g.normal? */
+		get_unshaded_geometry(fw, drag);
+	}
+	else
+	{
+		drag->width = fw->g.frame.width;
+		drag->height = fw->g.frame.height;
+	}
 	get_window_borders(fw, &b);
 	n = GetResizeArguments(
 		&action, fw->g.frame.x, fw->g.frame.y,
@@ -3458,7 +3466,15 @@ static Bool __resize_window(F_CMD_ARGS)
 		rectangle new_g;
 
 		/* size will be less or equal to requested */
-		new_g = fw->g.frame;
+		if (IS_SHADED(fw))
+		{
+			/* ??? shoudld this just be g.normal? */
+			get_unshaded_geometry(fw, &new_g);
+		}
+		else
+		{
+			new_g = fw->g.frame;
+		}
 		constrain_size(
 			fw, NULL, &drag->width, &drag->height, xmotion,
 			ymotion, 0);
@@ -3467,9 +3483,18 @@ static Bool __resize_window(F_CMD_ARGS)
 			drag->width - new_g.width, drag->height - new_g.height);
 		if (IS_SHADED(fw))
 		{
+			/* ??? should the position of the shaded area be
+			   changed to keep the top left corner of the
+			   unshaded area fixed? */
+			fw->g.normal.width = drag->width;
+			fw->g.normal.height = drag->height;
+
+			get_shaded_geometry(fw, &new_g, &fw->g.normal);
+
 			frame_setup_window(
-				fw, fw->g.frame.x, fw->g.frame.y, drag->width,
-				fw->g.frame.height, False);
+				fw, fw->g.frame.x, fw->g.frame.y, new_g.width,
+				new_g.height, False);
+
 		}
 		else
 		{
