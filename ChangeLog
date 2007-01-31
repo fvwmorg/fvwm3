@@ -2,6 +2,8 @@
 
 	* fvwm/move_resize.c (__resize_window):
 	some resizing/gravity fixes
+	properly handle maximized + shaded state when resizing
+	non-interactively
 
 2007-01-31  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 

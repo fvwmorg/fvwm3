@@ -3420,17 +3420,6 @@ static Bool __resize_window(F_CMD_ARGS)
 		return False;
 	}
 
-	was_maximized = IS_MAXIMIZED(fw);
-	SET_MAXIMIZED(fw, 0);
-	if (was_maximized)
-	{
-		/* must redraw the buttons now so that the 'maximize' button
-		 * does not stay depressed. */
-		border_draw_decorations(
-			fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL,
-			NULL, NULL);
-	}
-
 	if (IS_SHADED(fw) || !IS_MAPPED(fw))
 	{
 		do_resize_opaque = False;
@@ -3452,6 +3441,7 @@ static Bool __resize_window(F_CMD_ARGS)
 		drag->width = fw->g.frame.width;
 		drag->height = fw->g.frame.height;
 	}
+
 	get_window_borders(fw, &b);
 	n = GetResizeArguments(
 		&action, fw->g.frame.x, fw->g.frame.y,
@@ -3504,6 +3494,17 @@ static Bool __resize_window(F_CMD_ARGS)
 		GNOME_SetWinArea(fw);
 		ResizeWindow = None;
 		return True;
+	}
+
+	was_maximized = IS_MAXIMIZED(fw);
+	SET_MAXIMIZED(fw, 0);
+	if (was_maximized)
+	{
+		/* must redraw the buttons now so that the 'maximize' button
+		 * does not stay depressed. */
+		border_draw_decorations(
+			fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL,
+			NULL, NULL);
 	}
 
 	if (Scr.bo.do_install_root_cmap)
