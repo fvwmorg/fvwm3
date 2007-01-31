@@ -3445,7 +3445,6 @@ static Bool __resize_window(F_CMD_ARGS)
 	/* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
 	if (IS_SHADED(fw))
 	{
-		/* ??? shoudld this just be g.normal? */
 		get_unshaded_geometry(fw, drag);
 	}
 	else
@@ -3468,38 +3467,36 @@ static Bool __resize_window(F_CMD_ARGS)
 		/* size will be less or equal to requested */
 		if (IS_SHADED(fw))
 		{
-			/* ??? shoudld this just be g.normal? */
+			rectangle shaded_g;
+
 			get_unshaded_geometry(fw, &new_g);
+			SET_MAXIMIZED(fw, 0);
+			constrain_size(
+				fw, NULL, &drag->width, &drag->height, xmotion,
+				ymotion, 0);
+			gravity_resize(
+				fw->hints.win_gravity, &new_g,
+				drag->width - new_g.width,
+				drag->height - new_g.height);
+			fw->g.normal = new_g;
+			get_shaded_geometry(fw, &shaded_g, &new_g);
+			frame_setup_window(
+				fw, shaded_g.x, shaded_g.y, shaded_g.width,
+				shaded_g.height, False);
 		}
 		else
 		{
 			new_g = fw->g.frame;
-		}
-		constrain_size(
-			fw, NULL, &drag->width, &drag->height, xmotion,
-			ymotion, 0);
-		gravity_resize(
-			fw->hints.win_gravity, &new_g,
-			drag->width - new_g.width, drag->height - new_g.height);
-		if (IS_SHADED(fw))
-		{
-			/* ??? should the position of the shaded area be
-			   changed to keep the top left corner of the
-			   unshaded area fixed? */
-			fw->g.normal.width = drag->width;
-			fw->g.normal.height = drag->height;
-
-			get_shaded_geometry(fw, &new_g, &fw->g.normal);
-
+			SET_MAXIMIZED(fw, 0);
+			constrain_size(
+				fw, NULL, &drag->width, &drag->height, xmotion,
+				ymotion, 0);
+			gravity_resize(
+				fw->hints.win_gravity, &new_g,
+				drag->width - new_g.width,
+				drag->height - new_g.height);
 			frame_setup_window(
-				fw, fw->g.frame.x, fw->g.frame.y, new_g.width,
-				new_g.height, False);
-
-		}
-		else
-		{
-			frame_setup_window(
-				fw, fw->g.frame.x, fw->g.frame.y, drag->width,
+				fw, new_g.x, new_g.y, drag->width,
 				drag->height, False);
 		}
 		update_absolute_geometry(fw);
