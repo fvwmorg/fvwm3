@@ -198,8 +198,8 @@ Silent Key g		M C MenuClose
 
 # Mouse bindings
 Mouse 0 		MI A MenuSelectItem
-Silent Mouse 4		MI A MenuScroll -1
-Silent Mouse 5		MI A MenuScroll +1
+Silent Mouse 4		MIT A MenuScroll -1
+Silent Mouse 5		MIT A MenuScroll +1
 
 
 # NB: Only on title -- changes syntax for remapping the TearOff functionality

@@ -974,6 +974,17 @@ void menu_shortcuts(
 			newItem = get_selectable_item_from_index(mr, index);
 		}
 
+		if (
+			newItem &&
+			((items_to_move < 0 &&
+			  MI_Y_OFFSET(newItem) > MI_Y_OFFSET(miCurrent)) ||
+			 (items_to_move > 0 &&
+			  MI_Y_OFFSET(newItem) < MI_Y_OFFSET(miCurrent))))
+		{
+			/* never scroll in the "wrong" direction */
+			newItem = NULL;
+		}
+
 		if (newItem)
 		{
 			*pmiCurrent = newItem;
