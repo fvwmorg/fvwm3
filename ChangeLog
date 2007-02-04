@@ -1,5 +1,8 @@
 2007-02-04  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* fvwm/bindings.c (ParseBinding):
+	fix buffer overrun with >78 character window names.
+
 	* fvwm/fvwm.1.in (PositionPlacement):
 	fix typos
 

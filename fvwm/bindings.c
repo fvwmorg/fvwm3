@@ -271,7 +271,7 @@ static int ParseBinding(
 	if (*p == '(')
 	{
 		/* A window name has been specified for the binding. */
-		strcpy(buffer, p+1);
+		sscanf(p+1, "%79s",buffer);
 		p = buffer;
 		while (*p != ')')
 		{
