@@ -34,7 +34,7 @@
 extern int fd[2];
 extern Window ref;
 
-void (*TabCom[27]) (int NbArg,long *TabArg);
+void (*TabCom[29]) (int NbArg,long *TabArg);
 char *(*TabFunc[27]) (int *NbArg, long *TabArg);
 int (*TabComp[7]) (char *arg1,char *arg2);
 
@@ -1435,6 +1435,46 @@ static void ChangeColorset (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
+/* ChangeWindowTitle */
+static void ChangeWindowTitle(int NbArg,long * TabArg){
+
+  char *arg;
+  int tmpVal=NbArg-1;
+
+  arg=CalcArg(TabArg,&tmpVal);
+  XChangeProperty(
+	  dpy, x11base->win, XA_WM_NAME, XA_STRING, 8, PropModeReplace,
+	  (unsigned char*)arg, strlen(arg));
+  free(arg);
+}
+
+
+/* ChangeWindowTitleFromArg */
+static void ChangeWindowTitleFromArg(int NbArg,long * TabArg){
+
+  char *arg;
+  int argVal;  
+  int tmpVal=NbArg-1;
+
+  arg=CalcArg(TabArg,&tmpVal);
+  argVal = atoi(arg);
+  free(arg);
+
+  if(x11base->TabArg[argVal]!=NULL){
+    arg =  (char*)safecalloc(strlen(x11base->TabArg[argVal])+1,sizeof(char));
+    arg = strcpy(arg,x11base->TabArg[argVal]);
+  }else{
+    arg =  (char*)safecalloc(1,sizeof(char));
+    arg = strcpy(arg,"");
+  }
+
+  XChangeProperty(
+	  dpy, x11base->win, XA_WM_NAME, XA_STRING, 8, PropModeReplace,
+	  (unsigned char*)arg, strlen(arg));
+  free(arg);
+}
+
+
 /* SetVar */
 static void SetVar (int NbArg,long *TabArg)
 {
@@ -1890,6 +1930,8 @@ void InitCom(void)
   TabCom[24]=ChangeColorset;
   TabCom[25]=Key;
   TabCom[26]=ChangeLocaleTitle;
+  TabCom[27]=ChangeWindowTitle;
+  TabCom[28]=ChangeWindowTitleFromArg;
 
   /* Fonction */
   TabFunc[1]=FuncGetValue;

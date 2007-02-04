@@ -43,20 +43,22 @@ get		=
 {bl}		;
 {commentaire}	;
 
-^{bl}+UseGettext	{ return USEGETTEXT; }
-^{bl}+WindowTitle	{ return WINDOWTITLE; }
-^{bl}+WindowLocaleTitle	{ return WINDOWLOCALETITLE; }
-^{bl}+WindowSize	{ return WINDOWSIZE; }
-^{bl}+WindowPosition	{ return WINDOWPOSITION; }
-^{bl}+ForeColor		{ return FORECOLOR; }
-^{bl}+BackColor		{ return BACKCOLOR; }
-^{bl}+ShadowColor	{ return SHADCOLOR; }
-^{bl}+HilightColor	{ return LICOLOR; }
-^{bl}+Colorset		{ return COLORSET; }
-^{bl}+Widget		{ return OBJECT; }
-^{bl}+Property		{ return PROP; }
-^{bl}+Main		{ return MAIN; }
-^{bl}+End		{ return END; }
+^{bl}+UseGettext	       { return USEGETTEXT; }
+^{bl}+WindowTitle	       { return WINDOWTITLE; }
+^{bl}+ChangeWindowTitle	       { return CHWINDOWTITLE; }
+^{bl}+ChangeWindowTitleFromArg { return CHWINDOWTITLEFARG; }
+^{bl}+WindowLocaleTitle	       { return WINDOWLOCALETITLE; }
+^{bl}+WindowSize	       { return WINDOWSIZE; }
+^{bl}+WindowPosition	       { return WINDOWPOSITION; }
+^{bl}+ForeColor		       { return FORECOLOR; }
+^{bl}+BackColor		       { return BACKCOLOR; }
+^{bl}+ShadowColor	       { return SHADCOLOR; }
+^{bl}+HilightColor	       { return LICOLOR; }
+^{bl}+Colorset		       { return COLORSET; }
+^{bl}+Widget		       { return OBJECT; }
+^{bl}+Property		       { return PROP; }
+^{bl}+Main		       { return MAIN; }
+^{bl}+End		       { return END; }
 ^{bl}+Font.* {
   char *tmp,*rest;
 

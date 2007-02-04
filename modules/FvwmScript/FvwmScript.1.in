@@ -452,6 +452,12 @@ Set the minimum value of the widget numbered \fIid1\fP to \fIid2\fP.
 .IP "ChangeTitle \fIid1 id2\fP"
 Set the title of the widget numbered \fIid1\fP to \fIid2\fP.
 
+.IP "ChangeWindowTitle \fIstring\fP"
+Set the title of the window to \fIstring\fP.
+
+.IP "ChangeWindowTitleFromArg \fInumarg\fP"
+Set the title of the window to the value of the \fInumarg\fP-th script argument.
+
 .IP "ChangeLocaleTitle \fIid1 id2\fP"
 As ChangeTitle but use the locale catalog(s) defined with UseGettext.
 
@@ -751,6 +757,32 @@ SendToModule MyScript SendString 50 1 str
 .EE
 forces MyScript to exit if str is equal to "Quit" and if not it changes
 the title of Widget 33 to str.
+
+
+This command can be used to change the window title
+
+.RI "SendToModule " ScriptName " ChangeWindowTitle  " newTitle " " [oldTitle]
+
+it causes that any module with alias or name which matches
+.I  ScriptName
+changes its associated window title to \fInewTitle\fP. The optional argument
+\fIoldTitle\fP makes sense when there are several instances of
+the same script. It permits to avoid changing the name  of all these instances 
+by specifying the name of the window associated to the target script (see the 
+example below).
+
+.EX
++ I Module FvwmScript FvwmStorageSend "/dev/hda6"
++ I Wait FvwmStorageSend
++ I SendToModule FvwmStorageSend ChangeWindowTitle HDA6
++ I Module FvwmScript FvwmStorageSend "/dev/hda1"
++ I Wait FvwmStorageSend
++ I SendToModule FvwmStorageSend ChangeWindowTitle HDA1 FvwmStorageSend
+.EE
+
+Without the FvwmStorageSend argument in the last case, the SendToModule command would
+have changed to HDA1 the name of both instances of FvwmStorageSend.
+
 
 .SH EXAMPLES
 You will find examples of scripts in the fvwm configuration directory.

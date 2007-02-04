@@ -1,3 +1,27 @@
+2007-02-04  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* FvwmScript/FvwmScript.c (SendMsgAndString):
+	added some error checking
+
+	* FvwmScript/scanner.c:
+	* FvwmScript/script.h:
+	* FvwmScript/script.c:
+	regenerated
+
+2006-10-04  Julio José Teca Nemesio <julio_teca(at)fastmail(dot)fm>
+
+	* FvwmScript/FvwmScript.c:
+	added ChangeWindowTitle newTitle [<oldTitle>] message to
+	SendMsgAndString(char *action, char *type)
+	* FvwmScript/Instructions.c:
+	added ChangeWindowTitle(int NbArg,long * TabArg) and
+	ChangeWindowTitleFromArg(int NbArg,long * TabArg) commands
+	* FvwmScript/script.y:
+	added CHWINDOWTITLE and CHWINDOWTITLEFARG rules to instr and
+	oneinstr
+	* FvwmScript/scanner.l:
+	added ChangeWindowTitle and ChangeWindowTitleFromArg tokens
+
 2007-02-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIdent/FvwmIdent.c (MakeList):

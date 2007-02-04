@@ -704,42 +704,78 @@ void SendMsgAndString(char *action, char *type)
 {
   int val[2];
   char *token = NULL;
+  char *arg1 = NULL;
+  char *arg2 = NULL;
+  char *windowName;
   int i;
 
-  if (GetIntegerArguments(action, NULL, val, 2) == 2)
-  {
-    if (val[0] > 1000 || val[0] < 1)
-    {
-      fprintf(stderr,
-	"[%s][%s]: <<WARNING>> Widget id out of range: %i\n",
-	ScriptName,type,val[0]);
-      return;
-    }
-    i = TabIdObj[val[0]];
-    if (i != -1) {
-    /* skip the integer argument */
-      action = GetNextToken(action, &token);
-      action = GetNextToken(action, &token);
-      if (LastString != NULL) {
-	free(LastString);
-	LastString = NULL;
+  if(StrEquals(type,"SendString") || StrEquals(type,"CheckBinding")){
+    if (GetIntegerArguments(action, NULL, val, 2) == 2){
+      if (val[0] > 1000 || val[0] < 1){
+	fprintf(stderr,"[%s][%s]: <<WARNING>> Widget id out of range: %i\n",
+		ScriptName,type,val[0]);
+	return;
       }
-      if (action != NULL && strlen(action) > 0)
-	CopyString(&LastString,action);
-      SendMsg(tabxobj[i],val[1]);
+
+      i = TabIdObj[val[0]];
+      if (i != -1) {
+	/* skip the integer argument */
+	action = GetNextToken(action, &token);
+	action = GetNextToken(action, &token);
+	if (LastString != NULL) {
+	  free(LastString);
+	  LastString = NULL;
+	}
+	if (action != NULL && strlen(action) > 0)
+	  CopyString(&LastString,action);
+
+	SendMsg(tabxobj[i],val[1]);
+      }else{
+	fprintf(stderr,"[%s][%s]: <<WARNING>> no Widget %i\n",
+		ScriptName,type,val[0]);
+      }
+      if (token)
+	free(token);
+    }else{
+      fprintf(stderr,"[%s][%s]: <<WARNING>> Syntax Error: %s\n",
+	      ScriptName,type,action);
+    }
+  }else{
+
+    if(StrEquals(type,"ChangeWindowTitle")){
+      action=GetNextToken(action, &arg1);
+      action=GetNextToken(action, &arg2);
+
+      if(arg2 == NULL){
+
+	 XChangeProperty(
+		 dpy, x11base->win, XA_WM_NAME, XA_STRING, 8, PropModeReplace,
+		 (unsigned char*)arg1, strlen(arg1));
+
+      }else{
+	if(XFetchName(dpy, x11base->win, &windowName) == 0){
+		fprintf(
+			stderr,"[%s][SendMsgAndString]: <<ERROR>> "
+			"Can't find the title of a window\n", module->name);
+	}else{
+	  if(StrEquals(arg2,windowName)){
+	    XChangeProperty(
+		    dpy, x11base->win, XA_WM_NAME, XA_STRING, 8,
+		    PropModeReplace, (unsigned char*)arg1, strlen(arg1));
+	  }
+	}
+      }
     }
     else
     {
-	fprintf(stderr,"[%s][%s]: <<WARNING>> no Widget %i\n",
-		ScriptName,type,val[0]);
+	    fprintf(
+		    stderr,"[%s][SendMsgAndString]: <<ERROR>> "
+		    "Unknown SendToModule command: %s\n", module->name, type);
     }
-    if (token)
-      free(token);
-  }
-  else
-  {
-    fprintf(stderr,"[%s][%s]: <<WARNING>> Syntaxe Error: %s\n",
-	    ScriptName,type,action);
+
+    if(arg1) free(arg1);
+    if(arg2) free(arg2);
+
   }
 }
 
@@ -1245,9 +1281,9 @@ void MainLoop (void)
 	  char *action, *token;
 	  action = (char*)&(packet->body[3]);
 	  action = GetNextToken(action, &token);
-	  if (StrEquals(token,"SendString")) {
-	    SendMsgAndString(action, "SendString");
-	  }
+
+          SendMsgAndString(action, token);
+
 	  if (token)
 	    free(token);
 	}

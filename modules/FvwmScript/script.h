@@ -1,7 +1,9 @@
-/* A Bison parser, made by GNU Bison 1.875d.  */
+/* A Bison parser, made by GNU Bison 2.2.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+/* Skeleton interface for Bison's Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,13 +17,21 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -82,58 +92,61 @@
      CHFORECOLOR = 308,
      CHBACKCOLOR = 309,
      CHCOLORSET = 310,
-     KEY = 311,
-     GETVALUE = 312,
-     GETMINVALUE = 313,
-     GETMAXVALUE = 314,
-     GETFORE = 315,
-     GETBACK = 316,
-     GETHILIGHT = 317,
-     GETSHADOW = 318,
-     CHVALUE = 319,
-     CHVALUEMAX = 320,
-     CHVALUEMIN = 321,
-     ADD = 322,
-     DIV = 323,
-     MULT = 324,
-     GETTITLE = 325,
-     GETOUTPUT = 326,
-     STRCOPY = 327,
-     NUMTOHEX = 328,
-     HEXTONUM = 329,
-     QUIT = 330,
-     LAUNCHSCRIPT = 331,
-     GETSCRIPTFATHER = 332,
-     SENDTOSCRIPT = 333,
-     RECEIVFROMSCRIPT = 334,
-     GET = 335,
-     SET = 336,
-     SENDSIGN = 337,
-     REMAINDEROFDIV = 338,
-     GETTIME = 339,
-     GETSCRIPTARG = 340,
-     GETPID = 341,
-     SENDMSGANDGET = 342,
-     PARSE = 343,
-     LASTSTRING = 344,
-     GETTEXT = 345,
-     IF = 346,
-     THEN = 347,
-     ELSE = 348,
-     FOR = 349,
-     TO = 350,
-     DO = 351,
-     WHILE = 352,
-     BEGF = 353,
-     ENDF = 354,
-     EQUAL = 355,
-     INFEQ = 356,
-     SUPEQ = 357,
-     INF = 358,
-     SUP = 359,
-     DIFF = 360
+     CHWINDOWTITLE = 311,
+     CHWINDOWTITLEFARG = 312,
+     KEY = 313,
+     GETVALUE = 314,
+     GETMINVALUE = 315,
+     GETMAXVALUE = 316,
+     GETFORE = 317,
+     GETBACK = 318,
+     GETHILIGHT = 319,
+     GETSHADOW = 320,
+     CHVALUE = 321,
+     CHVALUEMAX = 322,
+     CHVALUEMIN = 323,
+     ADD = 324,
+     DIV = 325,
+     MULT = 326,
+     GETTITLE = 327,
+     GETOUTPUT = 328,
+     STRCOPY = 329,
+     NUMTOHEX = 330,
+     HEXTONUM = 331,
+     QUIT = 332,
+     LAUNCHSCRIPT = 333,
+     GETSCRIPTFATHER = 334,
+     SENDTOSCRIPT = 335,
+     RECEIVFROMSCRIPT = 336,
+     GET = 337,
+     SET = 338,
+     SENDSIGN = 339,
+     REMAINDEROFDIV = 340,
+     GETTIME = 341,
+     GETSCRIPTARG = 342,
+     GETPID = 343,
+     SENDMSGANDGET = 344,
+     PARSE = 345,
+     LASTSTRING = 346,
+     GETTEXT = 347,
+     IF = 348,
+     THEN = 349,
+     ELSE = 350,
+     FOR = 351,
+     TO = 352,
+     DO = 353,
+     WHILE = 354,
+     BEGF = 355,
+     ENDF = 356,
+     EQUAL = 357,
+     INFEQ = 358,
+     SUPEQ = 359,
+     INF = 360,
+     SUP = 361,
+     DIFF = 362
    };
 #endif
+/* Tokens.  */
 #define STR 258
 #define GSTR 259
 #define VAR 260
@@ -187,73 +200,75 @@
 #define CHFORECOLOR 308
 #define CHBACKCOLOR 309
 #define CHCOLORSET 310
-#define KEY 311
-#define GETVALUE 312
-#define GETMINVALUE 313
-#define GETMAXVALUE 314
-#define GETFORE 315
-#define GETBACK 316
-#define GETHILIGHT 317
-#define GETSHADOW 318
-#define CHVALUE 319
-#define CHVALUEMAX 320
-#define CHVALUEMIN 321
-#define ADD 322
-#define DIV 323
-#define MULT 324
-#define GETTITLE 325
-#define GETOUTPUT 326
-#define STRCOPY 327
-#define NUMTOHEX 328
-#define HEXTONUM 329
-#define QUIT 330
-#define LAUNCHSCRIPT 331
-#define GETSCRIPTFATHER 332
-#define SENDTOSCRIPT 333
-#define RECEIVFROMSCRIPT 334
-#define GET 335
-#define SET 336
-#define SENDSIGN 337
-#define REMAINDEROFDIV 338
-#define GETTIME 339
-#define GETSCRIPTARG 340
-#define GETPID 341
-#define SENDMSGANDGET 342
-#define PARSE 343
-#define LASTSTRING 344
-#define GETTEXT 345
-#define IF 346
-#define THEN 347
-#define ELSE 348
-#define FOR 349
-#define TO 350
-#define DO 351
-#define WHILE 352
-#define BEGF 353
-#define ENDF 354
-#define EQUAL 355
-#define INFEQ 356
-#define SUPEQ 357
-#define INF 358
-#define SUP 359
-#define DIFF 360
+#define CHWINDOWTITLE 311
+#define CHWINDOWTITLEFARG 312
+#define KEY 313
+#define GETVALUE 314
+#define GETMINVALUE 315
+#define GETMAXVALUE 316
+#define GETFORE 317
+#define GETBACK 318
+#define GETHILIGHT 319
+#define GETSHADOW 320
+#define CHVALUE 321
+#define CHVALUEMAX 322
+#define CHVALUEMIN 323
+#define ADD 324
+#define DIV 325
+#define MULT 326
+#define GETTITLE 327
+#define GETOUTPUT 328
+#define STRCOPY 329
+#define NUMTOHEX 330
+#define HEXTONUM 331
+#define QUIT 332
+#define LAUNCHSCRIPT 333
+#define GETSCRIPTFATHER 334
+#define SENDTOSCRIPT 335
+#define RECEIVFROMSCRIPT 336
+#define GET 337
+#define SET 338
+#define SENDSIGN 339
+#define REMAINDEROFDIV 340
+#define GETTIME 341
+#define GETSCRIPTARG 342
+#define GETPID 343
+#define SENDMSGANDGET 344
+#define PARSE 345
+#define LASTSTRING 346
+#define GETTEXT 347
+#define IF 348
+#define THEN 349
+#define ELSE 350
+#define FOR 351
+#define TO 352
+#define DO 353
+#define WHILE 354
+#define BEGF 355
+#define ENDF 356
+#define EQUAL 357
+#define INFEQ 358
+#define SUPEQ 359
+#define INF 360
+#define SUP 361
+#define DIFF 362
 
 
 
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
 #line 368 "script.y"
-typedef union YYSTYPE {  char *str;
+{  char *str;
           int number;
-       } YYSTYPE;
-/* Line 1285 of yacc.c.  */
-#line 251 "y.tab.h"
+       }
+/* Line 1528 of yacc.c.  */
+#line 267 "y.tab.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-
-
 
