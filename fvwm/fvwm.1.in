@@ -7580,14 +7580,18 @@ but is deprecated.
 
 .I HandleWidth
 takes a numeric argument which is the width of the border to place
-the window if it does have resize-handles.
+the window if it does have resize-handles.  Using
+.I HandleWidth
+without an argument restores the default.
 
 .I BorderWidth
 takes a numeric argument which is the width of the border to place
 the window if it does not have resize-handles.  It is used only if
 the
 .I !Handles
-style is specified too.
+style is specified too.  Using
+.I BorderWidth
+without an argument restores the default.
 
 .I DepressableBorder
 makes the border parts of the window decoration look sunken in
@@ -8100,7 +8104,7 @@ situation. The default is
 .IR PositionPlacement " [" Center | UnderMouse | move-arguments "]"
 When used without an argument, new windows are placed in the
 top left corner of the display.  With the argument
-.I Center ,
+.IR Center ,
 all new window appear at the center of the screen, and with
 .IR UnderMouse ,
 windows are centered under the mouse pointer.  If any other
@@ -8116,7 +8120,7 @@ Examples:
 # place new windows under pointer
 Style * PositionPlacement UnderMouse
 
-# place center of window at positio 500 300
+# place center of window at position 500 300
 Style * PositionPlacement 500p-50w 300p-50w
 .EE
 

@@ -2082,10 +2082,9 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"Style BorderWidth requires width"
-					" argument");
+				ps->flags.has_border_width = 0;
+				ps->flag_mask.has_border_width = 1;
+				ps->change_mask.has_border_width = 1;
 			}
 		}
 		else if (StrEquals(token, "BackingStore"))
@@ -2601,10 +2600,9 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"HandleWidth Style needs width"
-					" argument");
+				ps->flags.has_handle_width = 0;
+				ps->flag_mask.has_handle_width = 1;
+				ps->change_mask.has_handle_width = 1;
 			}
 		}
 		else if (StrEquals(token, "HilightFore"))
