@@ -282,68 +282,125 @@ static int GetOnePositionArgument(
 	char *s1, int x, int w, int *pFinalX, float factor, int max, int off,
 	Bool is_x)
 {
-	int val;
-	int cch = strlen(s1);
-	Bool add_pointer_position = False;
+	int is_first_shift;
+	float wfactor;
 
-	if (cch == 0)
+	if (s1 == 0 || *s1 == 0)
 	{
 		return 0;
 	}
-	if (s1[cch-1] == 'p')
+	wfactor = (float)w/100;
+	/* get start position */
+	is_first_shift = 1;
+	switch (*s1)
 	{
-		factor = 1;  /* Use pixels, so don't multiply by factor */
-		s1[cch-1] = '\0';
-	}
-	if (strcmp(s1,"w") == 0)
-	{
+	case 'w':
+	case 'W':
 		*pFinalX = x;
-	}
-	else if (sscanf(s1,"w-%d",&val) == 1)
+		s1++;
+		break;
+	case 'm':
+	case 'M':
 	{
-		*pFinalX = x - (int)(val*factor + 0.5);
-	}
-	else if (sscanf(s1,"w+%d",&val) == 1 || sscanf(s1,"w%d",&val) == 1 )
-	{
-		*pFinalX = x + (int)(val*factor + 0.5);
-	}
-	else if (sscanf(s1,"m-%d",&val) == 1)
-	{
-		add_pointer_position = True;
-		*pFinalX = -(int)(val*factor + 0.5);
-	}
-	else if (sscanf(s1,"m+%d",&val) == 1 || sscanf(s1,"m%d",&val) == 1 )
-	{
-		add_pointer_position = True;
-		*pFinalX = (int)(val*factor + 0.5);
-	}
-	else if (sscanf(s1,"-%d",&val) == 1)
-	{
-		*pFinalX = max-w - (int)(val*factor + 0.5) + off;
-	}
-	else if (sscanf(s1,"+%d",&val) == 1 || sscanf(s1,"%d",&val) == 1)
-	{
-		*pFinalX = (int)(val*factor + 0.5) + off;
-	}
-	else
-	{
-		return 0;
-	}
-	if (add_pointer_position)
-	{
-		int x = 0;
+	        int x = 0;
 		int y = 0;
 
+		is_first_shift = 0;
 		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,
 			    &JunkY, &x, &y, &JunkMask) == False)
 		{
 			/* pointer is on a different screen - that's okay here
 			 */
+			*pFinalX = 0;
 		}
 		else
 		{
-			*pFinalX += (is_x) ? x : y;
+			*pFinalX = (is_x) ? x : y;
+		}
+		s1++;
+		break;
+	}
+	default:
+		*pFinalX = 0;
+		break;
+	}
+	/* loop over shift arguments */
+	for (; *s1 != 0; is_first_shift = 0)
+	{
+		int val;
+		int n;
+		int is_pos;
+
+		/* parse value */
+		if (sscanf(s1, "-%d%n", &val, &n) >= 1)
+		{
+			if (is_first_shift == 1)
+			{
+				is_pos = 0;
+			}
+			else
+			{
+				val = -val;
+				is_pos = 1;
+			}
+			s1 += n;
+		}
+		else if (
+			sscanf(s1, "+%d%n", &val, &n) >= 1 ||
+			sscanf(s1, "%d%n", &val, &n) >= 1)
+		{
+			is_pos = 1;
+			s1 += n;
+		}
+		else
+		{
+			/* syntax error, ignore rest of string */
+			break;
+		}
+		/* parse suffix */
+		switch (*s1)
+		{
+		case 'p':
+		case 'P':
+			if (is_pos == 0)
+			{
+				*pFinalX += max - w - val;
+			}
+			else
+			{
+				*pFinalX += val;
+			}
+			s1++;
+			break;
+		case 'w':
+		case 'W':
+			if (is_pos == 0)
+			{
+				*pFinalX +=
+					max - w - (int)(val * wfactor + 0.5);
+			}
+			else
+			{
+				*pFinalX += (int)(val * wfactor + 0.5);
+			}
+			s1++;
+			break;
+		default:
+			if (is_first_shift == 1)
+			{
+				*pFinalX += off;
+			}
+			if (is_pos == 0)
+			{
+				*pFinalX +=
+					max - w - (int)(val * factor + 0.5);
+			}
+			else
+			{
+				*pFinalX += (int)(val * factor + 0.5);
+			}
+			break;
 		}
 	}
 
@@ -360,9 +417,9 @@ static int GetOnePositionArgument(
  *  w+5  w-10p       Pointer relative position, right 5%, up ten pixels
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
-static int GetMoveArguments(
+int GetMoveArguments(
 	char **paction, int w, int h, int *pFinalX, int *pFinalY,
-	Bool *fWarp, Bool *fPointer)
+	Bool *fWarp, Bool *fPointer, Bool fKeep)
 {
 	char *s1 = NULL;
 	char *s2 = NULL;
@@ -399,9 +456,6 @@ static int GetMoveArguments(
 		FScreenGetScrRect(NULL, scr, &scr_x, &scr_y, &scr_w, &scr_h);
 		action = GetNextToken(action, &s1);
 	}
-	else
-	{
-	}
 	action = GetNextToken(action, &s2);
 	if (fWarp)
 	{
@@ -416,23 +470,25 @@ static int GetMoveArguments(
 	if (s1 != NULL && s2 != NULL)
 	{
 		retval = 0;
-		if (StrEquals(s1, "keep"))
+		if (fKeep == True && StrEquals(s1, "keep"))
 		{
 			retval++;
 		}
-		else if (GetOnePositionArgument(
-				 s1, *pFinalX, w, pFinalX, (float)scr_w/100,
-				 scr_w, scr_x, True))
+		else if (
+			GetOnePositionArgument(
+				s1, *pFinalX, w, pFinalX, (float)scr_w/100,
+				scr_w, scr_x, True))
 		{
 			retval++;
 		}
-		if (StrEquals(s2, "keep"))
+		if (fKeep == True && StrEquals(s2, "keep"))
 		{
 			retval++;
 		}
-		else if (GetOnePositionArgument(
-				 s2, *pFinalY, h, pFinalY, (float)scr_h/100,
-				 scr_h, scr_y, False))
+		else if (
+			GetOnePositionArgument(
+				s2, *pFinalY, h, pFinalY, (float)scr_h/100,
+				scr_h, scr_y, False))
 		{
 			retval++;
 		}
@@ -594,7 +650,8 @@ static int GetResizeArguments(
 		int nx = x + *pFinalW - 1;
 		int ny = y + *pFinalH - 1;
 
-		n = GetMoveArguments(&naction, 0, 0, &nx, &ny, NULL, NULL);
+		n = GetMoveArguments(
+			&naction, 0, 0, &nx, &ny, NULL, NULL, True);
 		if (n < 2)
 		{
 			return 0;
@@ -706,7 +763,7 @@ static int GetResizeMoveArguments(
 	}
 	if (GetMoveArguments(
 		    &action, *pFinalW, *pFinalH, pFinalX, pFinalY, fWarp,
-		    NULL) < 2)
+		    NULL, True) < 2)
 	{
 		return 0;
 	}
@@ -1708,7 +1765,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		FinalY = y;
 		n = GetMoveArguments(
 			&action, width, height, &FinalX, &FinalY, &fWarp,
-			&fPointer);
+			&fPointer, True);
 
 		if (n != 2 || fPointer)
 		{
@@ -1727,7 +1784,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		if (do_animate)
 		{
 			AnimatedMoveFvwmWindow(
-				fw, w, -1, -1, FinalX, FinalY, fWarp, -1, NULL);
+				fw, w, -1, -1, FinalX, FinalY, fWarp, -1,
+				NULL);
 		}
 		frame_setup_window(
 			fw, FinalX, FinalY, fw->g.frame.width,
@@ -4386,7 +4444,7 @@ static void maximize_fvwm_window(
 	fw->g.max_offset.x = fw->g.normal.x - fw->g.max.x;
 	fw->g.max_offset.y = fw->g.normal.y - fw->g.max.y;
 #if 0
-fprintf(stderr,"%d %d %d %d, g.max_offset.x = %d, g.max_offset.y = %d, %d %d %d %d\n", fw->g.max.x, fw->g.max.y, fw->g.max.width, fw->g.max.height, fw->g.max_offset.x, fw->g.max_offset.y, fw->g.normal.x,  fw->g.normal.y, fw->g.normal.width, fw->g.normal.height);
+fprintf(stderr,"%d %d %d %d, g.max_offset.x = %d, g.max_offset.y = %d, %d %d %d %d\n", fw->g.max.x, fw->g.max.y, fw->g.max.width, fw->g.max.height, fw->g.max_offset.x, fw->g.max_offset.y, fw->g.normal.x, fw->g.normal.y, fw->g.normal.width, fw->g.normal.height);
 #endif
 
     return;

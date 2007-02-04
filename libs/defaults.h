@@ -185,7 +185,8 @@
 /* maximum number of segemnts in a vector button */
 #define MAX_TITLE_BUTTON_VECTOR_LINES 10000
 
-/*** window placement (MinOverlap(Percent)Placement) ***/
+/*** window placement ***/
+/** MinOverlap(Percent)Placement **/
 /** Now these values are configurable by using styles **/
 /* The following factors represent the amount of area that these types of
  * windows are counted as.  For example, by default the area of ONTOP windows
@@ -210,6 +211,11 @@
 #define PLACEMENT_AVOID_COVER_85           4
 #define PLACEMENT_AVOID_COVER_75           1
 #define PLACEMENT_FALLBACK_CASCADE_STEP   20
+/** Other placement related values **/
+/* default string for position placement */
+#define DEFAULT_PLACEMENT_POSITION_STRING   "0 0"
+#define DEFAULT_PLACEMENT_POS_CENTER_STRING "50-50w 50-50w"
+#define DEFAULT_PLACEMENT_POS_MOUSE_STRING  "m-50w m-50w"
 
 /*** icon layout ***/
 /* width of the relief around the icon and icon title */

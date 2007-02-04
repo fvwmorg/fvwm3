@@ -362,7 +362,8 @@ static void merge_styles(
 		else
 		{
 			SSET_MINI_ICON_NAME(
-				*merged_style, SGET_MINI_ICON_NAME(*add_style));
+				*merged_style,
+				SGET_MINI_ICON_NAME(*add_style));
 		}
 	}
 #ifdef USEDECOR
@@ -373,7 +374,8 @@ static void merge_styles(
 			SAFEFREE(SGET_DECOR_NAME(*merged_style));
 			SSET_DECOR_NAME(
 				*merged_style, (SGET_DECOR_NAME(*add_style)) ?
-				safestrdup(SGET_DECOR_NAME(*add_style)) : NULL);
+				safestrdup(SGET_DECOR_NAME(*add_style)) :
+				NULL);
 		}
 		else
 		{
@@ -502,11 +504,13 @@ static void merge_styles(
 	}
 	if (add_style->flags.has_border_width)
 	{
-		SSET_BORDER_WIDTH(*merged_style, SGET_BORDER_WIDTH(*add_style));
+		SSET_BORDER_WIDTH(
+			*merged_style, SGET_BORDER_WIDTH(*add_style));
 	}
 	if (add_style->flags.has_handle_width)
 	{
-		SSET_HANDLE_WIDTH(*merged_style, SGET_HANDLE_WIDTH(*add_style));
+		SSET_HANDLE_WIDTH(
+			*merged_style, SGET_HANDLE_WIDTH(*add_style));
 	}
 	if (add_style->flags.has_icon_size_limits)
 	{
@@ -531,12 +535,14 @@ static void merge_styles(
 	if (add_style->flags.has_icon_background_relief)
 	{
 		SSET_ICON_BACKGROUND_RELIEF(
-			*merged_style, SGET_ICON_BACKGROUND_RELIEF(*add_style));
+			*merged_style,
+			SGET_ICON_BACKGROUND_RELIEF(*add_style));
 	}
 	if (add_style->flags.has_icon_background_padding)
 	{
 		SSET_ICON_BACKGROUND_PADDING(
-			*merged_style, SGET_ICON_BACKGROUND_PADDING(*add_style));
+			*merged_style,
+			SGET_ICON_BACKGROUND_PADDING(*add_style));
 	}
 	if (add_style->flags.has_icon_title_relief)
 	{
@@ -603,7 +609,8 @@ static void merge_styles(
 	if (add_style->flags.use_icon_background_colorset)
 	{
 		SSET_ICON_BACKGROUND_COLORSET(
-			*merged_style,SGET_ICON_BACKGROUND_COLORSET(*add_style));
+			*merged_style,SGET_ICON_BACKGROUND_COLORSET(
+				*add_style));
 	}
 	if (add_style->flags.has_placement_penalty)
 	{
@@ -614,7 +621,8 @@ static void merge_styles(
 			*merged_style,
 			SGET_ONTOP_PLACEMENT_PENALTY(*add_style));
 		SSET_ICON_PLACEMENT_PENALTY(
-			*merged_style, SGET_ICON_PLACEMENT_PENALTY(*add_style));
+			*merged_style, SGET_ICON_PLACEMENT_PENALTY(
+				*add_style));
 		SSET_STICKY_PLACEMENT_PENALTY(
 			*merged_style,
 			SGET_STICKY_PLACEMENT_PENALTY(*add_style));
@@ -639,6 +647,13 @@ static void merge_styles(
 		SSET_75_PLACEMENT_PERCENTAGE_PENALTY(
 			*merged_style,
 			SGET_75_PLACEMENT_PERCENTAGE_PENALTY(*add_style));
+	}
+	if (add_style->flags.has_placement_position_string)
+	{
+		SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*merged_style));
+		SSET_PLACEMENT_POSITION_STRING(
+			*merged_style,
+			strdup(SGET_PLACEMENT_POSITION_STRING(*add_style)));
 	}
 	/* merge the style flags */
 
@@ -694,6 +709,7 @@ static void free_style(window_style *style)
 	SAFEFREE(SGET_ICON_NAME(*style));
 	SAFEFREE(SGET_MINI_ICON_NAME(*style));
 	remove_icon_boxes_from_style(style);
+	SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*style));
 
 	return;
 }
@@ -2125,13 +2141,7 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'c':
-		if (StrEquals(token, "CenterPlacement"))
-		{
-			ps->flags.placement_mode = PLACE_CENTER;
-			ps->flag_mask.placement_mode = PLACE_MASK;
-			ps->change_mask.placement_mode = PLACE_MASK;
-		}
-		else if (StrEquals(token, "CascadePlacement"))
+		if (StrEquals(token, "CascadePlacement"))
 		{
 			ps->flags.placement_mode = PLACE_CASCADE;
 			ps->flag_mask.placement_mode = PLACE_MASK;
@@ -3380,7 +3390,20 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'p':
-		if (StrEquals(token, "ParentalRelativity"))
+		if (StrEquals(token, "PositionPlacement"))
+		{
+			char *s;
+
+			ps->flags.placement_mode = PLACE_POSITION;
+			ps->flag_mask.placement_mode = PLACE_MASK;
+			ps->change_mask.placement_mode = PLACE_MASK;
+			s = (rest != NULL) ? strdup(rest) : NULL;
+			SSET_PLACEMENT_POSITION_STRING(*ps, s);
+			ps->flags.has_placement_position_string = 1;
+			ps->flag_mask.has_placement_position_string = 1;
+			ps->change_mask.has_placement_position_string = 1;
+		}
+		else if (StrEquals(token, "ParentalRelativity"))
 		{
 			ps->flags.use_parent_relative = on;
 			ps->flag_mask.use_parent_relative = 1;
@@ -3855,29 +3878,7 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'u':
-		if (StrEquals(token, "UnderMousePlacement"))
-		{
-			ps->flags.placement_mode = PLACE_UNDERMOUSE;
-			ps->flag_mask.placement_mode = PLACE_MASK;
-			ps->change_mask.placement_mode = PLACE_MASK;
-		}
-		else if (StrEquals(
-				 token,
-				 "UnderMousePlacementHonorsStartsOnPage"))
-		{
-			ps->flags.um_placement_honors_starts_on_page = on;
-			ps->flag_mask.um_placement_honors_starts_on_page = 1;
-			ps->change_mask.um_placement_honors_starts_on_page = 1;
-		}
-		else if (StrEquals(
-				 token,
-				 "UnderMousePlacementIgnoresStartsOnPage"))
-		{
-			ps->flags.um_placement_honors_starts_on_page = !on;
-			ps->flag_mask.um_placement_honors_starts_on_page = 1;
-			ps->change_mask.um_placement_honors_starts_on_page = 1;
-		}
-		else if (StrEquals(token, "UsePPosition"))
+		if (StrEquals(token, "UsePPosition"))
 		{
 			ps->flags.use_no_pposition = !on;
 			ps->flag_mask.use_no_pposition = 1;

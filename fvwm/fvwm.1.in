@@ -5328,11 +5328,11 @@ AddToFunc lower-to-bottom
 .B "Move [[screen \fIscreen\fP]\
  [\fIw\fP|\fIm\fP\
 ]\fIx\fP\
-[\fIp\fP\
+[\fIp\fP|\fIw\fP\
 ] [\fIw\fP|\fIm\fP\
-]\fIy\fP\
-[\fIp\fP\
-] [\fIWarp\fP\
+]...\fIy\fP\
+[\fIp\fP|\fIw\fP\
+]... [\fIWarp\fP\
 ]] | [\fIpointer\fP\
 ]"
 Allows the user to move a window.  If called from somewhere in a
@@ -5382,7 +5382,9 @@ position from either the left/top or right/bottom of the screen.
 By default, the numeric value given is interpreted as a percentage
 of the screen width/height, but a trailing
 .RI ' p '
-changes the interpretation to mean pixels.  To move the window
+changes the interpretation to mean pixels, while a trailing
+.RI ' w '
+means precent of the window width/height.  To move the window
 relative to its current position, add the
 .RI ' w '
 (for "window") prefix before the
@@ -5393,6 +5395,12 @@ location of the pointer, add the
 (for "mouse") prefix.  To leave either coordinate unchanged,
 "keep" can be specified in place of
 .IR x " or " y .
+
+For advanced uses, the arguments
+.IR x " and " y
+can be used multiple times, but without the prefix
+.RI ' m "' or'" w '.
+(See complex examples below).
 
 Simple Examples:
 .EX
@@ -5420,10 +5428,14 @@ Move w+5 50
 
 # Move window up 10 pixels, and so left edge
 # is at x=40 pixels
-Move 40p w-10p
+Move 40p w+-10p
 
 # Move window to the mouse pointer location
 Move m+0 m+0
+
+# Move window to center of screen (50% of screen
+# poition minus 50% of widow size).
+Move 50-50w 50-50w
 .EE
 See also the
 .B AnimatedMove
@@ -6981,7 +6993,6 @@ slashes ('/').  The last style in these groups is the default.
 .IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
 .IR StartsOnScreen ,
 .IR ManualPlacementHonorsStartsOnPage " / " ManualPlacementIgnoresStartsOnPage ,
-.IR UnderMousePlacementHonorsStartsOnPage " / " UnderMousePlacementIgnoresStartsOnPage ,
 .IR CaptureHonorsStartsOnPage " / " CaptureIgnoresStartsOnPage ,
 .IR RecaptureHonorsStartsOnPage " / " RecaptureIgnoresStartsOnPage ,
 .IR StartsOnPageIncludesTransients " / " StartsOnPageIgnoresTransients ,
@@ -7000,7 +7011,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StickyAcrossDesksIcon " / " !StickyAcrossDesksIcon ,
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
-.IR TileCascadePlacement " / " CenterPlacement " / " UnderMousePlacement ,
+.IR TileCascadePlacement " / " PositionPlacement ,
 .IR MinOverlapPlacementPenalties ,
 .IR MinOverlapPercentPlacementPenalties ,
 .IR DecorateTransient " / " NakedTransient ,
@@ -8086,8 +8097,28 @@ for the window.  Fvwm knows several ways to deal with this
 situation. The default is
 .IR TileCascadePlacement .
 
-.I CenterPlacement
-automatically places new windows in the center of the display.
+.IR PositionPlacement " [" Center | UnderMouse | move-arguments "]"
+When used without an argument, new windows are placed in the
+top left corner of the display.  With the argument
+.I Center ,
+all new window appear at the center of the screen, and with
+.IR UnderMouse ,
+windows are centered under the mouse pointer.  If any other
+.I move-arguments
+are given, they are interpreted exactly as the
+.B Move
+command does (with the exception that references to the current
+window position do not work as the window has not been placed
+yet).
+
+Examples:
+.EX
+# place new windows under pointer
+Style * PositionPlacement UnderMouse
+
+# place center of window at positio 500 300
+Style * PositionPlacement 500p-50w 300p-50w
+.EE
 
 .I CascadePlacement
 automatically place new windows in a cascading fashion.
@@ -8105,9 +8136,6 @@ This is the same as
 but uses
 .IR ManualPlacement
 as the fall-back method.
-
-.I UnderMousePlacement
-automatically places new windows centered at the current cursor position.
 
 .I MinOverlapPlacement
 automatically places new windows in a location in which the
@@ -8430,17 +8458,6 @@ perform interactive placement.  The default is
 matches the way the old
 .I StartsOnDesk
 style used to handle the situation.
-
-.I UnderMousePlacementIgnoresStartsOnPage
-and
-.I UnderMousePlacementHonorsStartsOnPage
-work just like
-.I ManualPlacementIgnoresStartsOnPage
-and
-.I ManualPlacementHonorsStartsOnPage
-but augment
-.I UnderMousePlacement
-instead.
 
 .I CaptureHonorsStartsOnPage
 causes the initial capture (of an already existing window) at

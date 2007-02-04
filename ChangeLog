@@ -1,3 +1,42 @@
+2007-02-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/fvwm.h (style_flags):
+	* fvwm/placement.c (__pl_under_mouse_get_pos_simple):
+	(__place_get_wm_pos):
+	(__place_window, __explain_placement):
+	* fvwm/style.c (style_parse_one_style_option):
+
+	* libs/defaults.h (DEFAULT_PLACEMENT_POS_CENTER_STRING)
+	(DEFAULT_PLACEMENT_POS_MOUSE_STRING)
+	(DEFAULT_PLACEMENT_POSITION_STRING):
+	new default strings
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	added 'w' suffix to Move arguments
+	allow multiple shifts from original position
+
+	* fvwm/style.c (style_parse_one_style_option):
+	(merge_styles)
+	(free_style):
+	* fvwm/placement.c (setup_window_placement)
+	(__place_get_placement_flags):
+	(__place_get_wm_pos):
+	(__place_get_nowm_pos):
+	(__place_window):
+	(__place_handle_x_resources):
+	(setup_window_placement):
+	* fvwm/fvwm.h (PLACE_CENTER):
+	(PLACE_POSITION):
+	replaced CenterPlacement with more flexibe PositionPlacement
+
+	* fvwm/move_resize.c (GetMoveArguments):
+	(GetResizeArguments):
+	(GetResizeMoveArguments):
+	(__move_window):
+	* fvwm/move_resize.h:
+	exported and enhanced function GetMoveArguments for use by placement
+	algorithm
+
 2007-02-01  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ConfigFvwmDefaults:

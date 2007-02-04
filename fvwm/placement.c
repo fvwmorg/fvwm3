@@ -127,12 +127,13 @@ typedef struct
 		int x;
 		int y;
 		int algo;
+		char *pl_position_string;
 		unsigned do_not_manual_icon_placement : 1;
 		unsigned do_adjust_off_screen : 1;
 		unsigned do_adjust_off_page : 1;
+		unsigned is_pl_position_string_invalid : 1;
 		unsigned has_tile_failed : 1;
 		unsigned has_manual_failed : 1;
-		unsigned has_under_mouse_failed : 1;
 		unsigned has_placement_failed : 1;
 	} pos;
 	struct
@@ -216,6 +217,7 @@ typedef struct pl_arg_t
 {
 	const pl_algo_t *algo;
 	const exec_context_t *exc;
+	const window_style *style;
 	pl_reason_t *reason;
 	FvwmWindow *place_fw;
 	pl_scratch_t *scratch;
@@ -256,13 +258,10 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 static pl_penalty_t __pl_smart_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const pl_arg_t *arg);
 
-static pl_penalty_t __pl_center_get_pos_simple(
+static pl_penalty_t __pl_position_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
 
 static pl_penalty_t __pl_cascade_get_pos_simple(
-	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
-
-static pl_penalty_t __pl_under_mouse_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
 
 static pl_penalty_t __pl_manual_get_pos_simple(
@@ -286,19 +285,14 @@ const pl_algo_t smart_placement_algo =
 	__pl_smart_get_pos_penalty
 };
 
-const pl_algo_t center_placement_algo =
+const pl_algo_t position_placement_algo =
 {
-	__pl_center_get_pos_simple
+	__pl_position_get_pos_simple
 };
 
 const pl_algo_t cascade_placement_algo =
 {
 	__pl_cascade_get_pos_simple
-};
-
-const pl_algo_t under_mouse_placement_algo =
-{
-	__pl_under_mouse_get_pos_simple
 };
 
 const pl_algo_t manual_placement_algo =
@@ -326,15 +320,56 @@ const pl_percent_penalty_struct default_pl_percent_penalty =
 	PLACEMENT_AVOID_COVER_75
 };
 
-/* ---------------------------- local functions (CenterPlacement)----------- */
+/* ---------------------------- local functions (PositionPlacement) -------- */
 
-static pl_penalty_t __pl_center_get_pos_simple(
+static pl_penalty_t __pl_position_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
-	ret_p->x = arg->screen_g.x +
-		(arg->screen_g.width - arg->place_g.width) / 2;
-	ret_p->y = arg->screen_g.y +
-		(arg->screen_g.height - arg->place_g.height) / 2;
+	char *spos;
+	Bool fPointer;
+	int n;
+	int i;
+
+	spos = SGET_PLACEMENT_POSITION_STRING(*arg->style);
+	if (spos == NULL || *spos == 0)
+	{
+		spos = DEFAULT_PLACEMENT_POSITION_STRING;
+		i = 1;
+	}
+	else if (StrEquals(spos, "Center"))
+	{
+		spos = DEFAULT_PLACEMENT_POS_CENTER_STRING;
+		i = 1;
+	}
+	else if (StrEquals(spos, "UnderMouse"))
+	{
+		spos = DEFAULT_PLACEMENT_POS_MOUSE_STRING;
+		i = 1;
+	}
+	else
+	{
+		i = 0;
+	}
+	arg->reason->pos.pl_position_string = spos;
+	for (n = -1; i < 2 && n < 2; i++)
+	{
+		fPointer = False;
+		ret_p->x = 0;
+		ret_p->y = 0;
+		n = GetMoveArguments(
+			&spos, arg->place_g.width, arg->place_g.height,
+			&ret_p->x, &ret_p->y, NULL, &fPointer, False);
+		spos = DEFAULT_PLACEMENT_POSITION_STRING;
+		if (n < 2)
+		{
+			arg->reason->pos.is_pl_position_string_invalid = 1;
+		}
+	}
+	if (n < 2)
+	{
+		/* bug */
+		abort();
+	}
 	/* Don't let the upper left corner be offscreen. */
 	if (ret_p->x < arg->screen_g.x)
 	{
@@ -437,57 +472,6 @@ static pl_penalty_t __pl_cascade_get_pos_simple(
 	if (ret_p->y < arg->page_p1.y)
 	{
 		ret_p->y = arg->page_p1.y;
-	}
-
-	return 0;
-}
-
-/* ---------------------------- local functions (UnderMousePlacement) ------ */
-
-static pl_penalty_t __pl_under_mouse_get_pos_simple(
-	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
-{
-	int mx;
-	int my;
-
-	if (
-		FQueryPointer(
-			dpy, Scr.Root, &JunkRoot, &JunkChild, &mx, &my,
-			&JunkX, &JunkY, &JunkMask) == False)
-	{
-		/* pointer is on a different screen */
-		arg->reason->pos.has_under_mouse_failed = 1;
-
-		return -1;
-	}
-	ret_p->x = mx - (arg->place_g.width / 2);
-	ret_p->y = my - (arg->place_g.height / 2);
-	if (
-		ret_p->x + arg->place_g.width >
-		arg->screen_g.x + arg->screen_g.width)
-	{
-		ret_p->x = arg->screen_g.x + arg->screen_g.width -
-			arg->place_g.width;
-	}
-	if (
-		ret_p->y + arg->place_g.height >
-		arg->screen_g.y + arg->screen_g.height)
-	{
-		ret_p->y = arg->screen_g.y + arg->screen_g.height -
-			arg->place_g.height;
-	}
-	if (ret_p->x < arg->screen_g.x)
-	{
-		ret_p->x = arg->screen_g.x;
-	}
-	if (ret_p->y < arg->screen_g.y)
-	{
-		ret_p->y = arg->screen_g.y;
-	}
-	if (arg->flags.do_honor_starts_on_page)
-	{
-		ret_p->x -= arg->pdelta_p.x;
-		ret_p->y -= arg->pdelta_p.y;
 	}
 
 	return 0;
@@ -1146,7 +1130,7 @@ static int placement_loop(pl_ret_t *ret, pl_arg_t *arg)
 }
 
 static void __place_get_placement_flags(
-	pl_flags_t *ret_flags, FvwmWindow *fw, style_flags *sflags,
+	pl_flags_t *ret_flags, FvwmWindow *fw, window_style *pstyle,
 	initial_window_options_t *win_opts, int mode, pl_reason_t *reason)
 {
 	Bool override_ppos;
@@ -1168,13 +1152,13 @@ static void __place_get_placement_flags(
 	 */
 	if (IS_TRANSIENT(fw))
 	{
-		override_ppos = SUSE_NO_TRANSIENT_PPOSITION(sflags);
-		override_uspos = SUSE_NO_TRANSIENT_USPOSITION(sflags);
+		override_ppos = SUSE_NO_TRANSIENT_PPOSITION(&pstyle->flags);
+		override_uspos = SUSE_NO_TRANSIENT_USPOSITION(&pstyle->flags);
 	}
 	else
 	{
-		override_ppos = SUSE_NO_PPOSITION(sflags);
-		override_uspos = SUSE_NO_USPOSITION(sflags);
+		override_ppos = SUSE_NO_PPOSITION(&pstyle->flags);
+		override_uspos = SUSE_NO_USPOSITION(&pstyle->flags);
 	}
 	if (fw->hints.flags & PPosition)
 	{
@@ -1239,14 +1223,14 @@ static int __add_algo(
 }
 
 static int __place_get_wm_pos(
-	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
+	const exec_context_t *exc, window_style *pstyle, rectangle *attr_g,
 	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
 	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
 	int pdeltax, int pdeltay)
 {
 	const pl_algo_t *algos[MAX_NUM_PLACEMENT_ALGOS + 1];
 	int num_algos;
-	unsigned int placement_mode = SPLACEMENT_MODE(sflags);
+	unsigned int placement_mode = SPLACEMENT_MODE(&pstyle->flags);
 	pl_arg_t arg;
 	pl_ret_t ret;
 	int i;
@@ -1254,6 +1238,7 @@ static int __place_get_wm_pos(
 	/* BEGIN init placement agrs and ret */
 	memset(&arg, 0, sizeof(arg));
 	arg.exc = exc;
+	arg.style = pstyle;
 	arg.reason = reason;
 	arg.place_fw = exc->w.fw;
 	arg.place_g = arg.place_fw->g.frame;
@@ -1266,7 +1251,7 @@ static int __place_get_wm_pos(
 	arg.pdelta_p.y = pdeltay;
 	arg.flags.use_percent = 0;
 	arg.flags.do_honor_starts_on_page = flags.do_honor_starts_on_page;
-	if (SEWMH_PLACEMENT_MODE(sflags) == EWMH_USE_WORKING_AREA)
+	if (SEWMH_PLACEMENT_MODE(&pstyle->flags) == EWMH_USE_WORKING_AREA)
 	{
 		arg.flags.use_ewmh_dynamic_working_areapercent = 1;
 	}
@@ -1295,9 +1280,9 @@ static int __place_get_wm_pos(
 	num_algos = 0;
 	switch (placement_mode)
 	{
-	case PLACE_CENTER:
+	case PLACE_POSITION:
 		num_algos = __add_algo(
-			algos, num_algos, &center_placement_algo);
+			algos, num_algos, &position_placement_algo);
 		break;
 	case PLACE_TILEMANUAL:
 		num_algos = __add_algo(
@@ -1328,10 +1313,6 @@ static int __place_get_wm_pos(
 		num_algos = __add_algo(
 			algos, num_algos, &cascade_placement_algo);
 		break;
-	case PLACE_UNDERMOUSE:
-		num_algos = __add_algo(
-			algos, num_algos, &under_mouse_placement_algo);
-		break;
 	default:
 		/* can't happen */
 		break;
@@ -1360,7 +1341,7 @@ static int __place_get_wm_pos(
 }
 
 static int __place_get_nowm_pos(
-	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
+	const exec_context_t *exc, window_style *pstyle, rectangle *attr_g,
 	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
 	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
 	int pdeltax, int pdeltay)
@@ -1374,7 +1355,9 @@ static int __place_get_nowm_pos(
 	}
 	/* the USPosition was specified, or the window is a transient, or it
 	 * starts iconic so place it automatically */
-	if (SUSE_START_ON_SCREEN(sflags) && flags.do_honor_starts_on_screen)
+	if (
+		SUSE_START_ON_SCREEN(&pstyle->flags) &&
+		flags.do_honor_starts_on_screen)
 	{
 		fscreen_scr_t mangle_screen;
 
@@ -1421,12 +1404,14 @@ static int __place_get_nowm_pos(
 	/* If SkipMapping, and other legalities are observed, adjust for
 	 * StartsOnPage. */
 	if (DO_NOT_SHOW_ON_MAP(fw) && flags.do_honor_starts_on_page &&
-	    (!IS_TRANSIENT(fw) || SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags))
+	    (!IS_TRANSIENT(fw) ||
+	     SUSE_START_ON_PAGE_FOR_TRANSIENT(&pstyle->flags))
 #if 0
 	    /* dv 08-Jul-2003:  Do not use this.  Instead, force the window on
 	     * the requested page even if the application requested a different
 	     * position. */
-	    && (SUSE_NO_PPOSITION(sflags) || !(fw->hints.flags & PPosition))
+	    && (SUSE_NO_PPOSITION(&pstyle->flags) ||
+		!(fw->hints.flags & PPosition))
 	    /* dv 08-Jul-2003:  This condition is always true because we
 	     * already checked for flags.do_honor_starts_on_page above. */
 	    /*  RBW - allow StartsOnPage to go through, even if iconic. */
@@ -1515,7 +1500,7 @@ static int __place_get_nowm_pos(
  *   1 = OK
  *   2 = OK, window must be resized too */
 static int __place_window(
-	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
+	const exec_context_t *exc, window_style *pstyle, rectangle *attr_g,
 	pl_start_style_t start_style, int mode,
 	initial_window_options_t *win_opts, pl_reason_t *reason)
 {
@@ -1542,7 +1527,9 @@ static int __place_window(
 	 * is used). */
 
 	/* Let's get the StartsOnDesk/Page tests out of the way first. */
-	if (SUSE_START_ON_DESK(sflags) || SUSE_START_ON_SCREEN(sflags))
+	if (
+		SUSE_START_ON_DESK(&pstyle->flags) ||
+		SUSE_START_ON_SCREEN(&pstyle->flags))
 	{
 		flags.do_honor_starts_on_page = 1;
 		flags.do_honor_starts_on_screen = 1;
@@ -1552,7 +1539,7 @@ static int __place_window(
 		 */
 		if (win_opts->flags.do_override_ppos &&
 		    (Restarting || (Scr.flags.are_windows_captured)) &&
-		    !SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags))
+		    !SRECAPTURE_HONORS_STARTS_ON_PAGE(&pstyle->flags))
 		{
 			flags.do_honor_starts_on_page = 0;
 			flags.do_honor_starts_on_screen = 0;
@@ -1565,7 +1552,7 @@ static int __place_window(
 		 */
 		if (win_opts->flags.do_override_ppos &&
 		    (!Restarting && !(Scr.flags.are_windows_captured)) &&
-		    !SCAPTURE_HONORS_STARTS_ON_PAGE(sflags))
+		    !SCAPTURE_HONORS_STARTS_ON_PAGE(&pstyle->flags))
 		{
 			flags.do_honor_starts_on_page = 0;
 			flags.do_honor_starts_on_screen = 0;
@@ -1576,19 +1563,14 @@ static int __place_window(
 		/*
 		 * it's ActivePlacement and SkipMapping, and that's disallowed.
 		 */
-		switch (SPLACEMENT_MODE(sflags))
+		switch (SPLACEMENT_MODE(&pstyle->flags))
 		{
 		case PLACE_MANUAL:
 		case PLACE_MANUAL_B:
 		case PLACE_TILEMANUAL:
 			is_skipmapping_forbidden =
 				!SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(
-					sflags);
-			break;
-		case PLACE_UNDERMOUSE:
-			is_skipmapping_forbidden =
-				!SUNDERMOUSE_PLACEMENT_HONORS_STARTS_ON_PAGE(
-					sflags);
+					&pstyle->flags);
 			break;
 		default:
 			is_skipmapping_forbidden = 0;
@@ -1608,22 +1590,22 @@ static int __place_window(
 				WARN, "__place_window",
 				"invalid style combination used: StartsOnPage"
 				"/StartsOnDesk and SkipMapping don't work with"
-				" ManualPlacement, TileManualPlacement and"
-				" UnderMousePlacement."
+				" ManualPlacement and TileManualPlacement."
 				" Putting window on current page, please use"
 				" another placement style or"
 				" ActivePlacementHonorsStartsOnPage.");
 		}
 	}
 	/* get the screen coordinates to place window on */
-	if (SUSE_START_ON_SCREEN(sflags))
+	if (SUSE_START_ON_SCREEN(&pstyle->flags))
 	{
 		if (flags.do_honor_starts_on_screen)
 		{
 			/* use screen from style */
 			FScreenGetScrRect(
 				NULL, start_style.screen, &screen_g.x,
-				&screen_g.y, &screen_g.width, &screen_g.height);
+				&screen_g.y, &screen_g.width,
+				&screen_g.height);
 			reason->screen.screen = start_style.screen;
 		}
 		else
@@ -1644,12 +1626,13 @@ static int __place_window(
 		reason->screen.screen = FSCREEN_CURRENT;
 	}
 
-	if (SPLACEMENT_MODE(sflags) != PLACE_MINOVERLAPPERCENT &&
-	    SPLACEMENT_MODE(sflags) != PLACE_MINOVERLAP)
+	if (SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAPPERCENT &&
+	    SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAP)
 	{
 		EWMH_GetWorkAreaIntersection(
 			fw, &screen_g.x, &screen_g.y, &screen_g.width,
-			&screen_g.height, SEWMH_PLACEMENT_MODE(sflags));
+			&screen_g.height,
+			SEWMH_PLACEMENT_MODE(&pstyle->flags));
 		reason->screen.was_modified_by_ewmh_workingarea = 1;
 	}
 	reason->screen.g = screen_g;
@@ -1663,12 +1646,12 @@ static int __place_window(
 	{
 		reason->desk.reason = PR_DESK_CAPTURE;
 	}
-	if (S_IS_STICKY_ACROSS_DESKS(SFC(*sflags)))
+	if (S_IS_STICKY_ACROSS_DESKS(SFC(pstyle->flags)))
 	{
 		fw->Desk = Scr.CurrentDesk;
 		reason->desk.reason = PR_DESK_STICKY;
 	}
-	else if (SUSE_START_ON_DESK(sflags) && start_style.desk &&
+	else if (SUSE_START_ON_DESK(&pstyle->flags) && start_style.desk &&
 		 flags.do_honor_starts_on_page)
 	{
 		fw->Desk = (start_style.desk > -1) ?
@@ -1718,7 +1701,8 @@ static int __place_window(
 				if (FW_W(t) == FW_W_TRANSIENTFOR(fw))
 				{
 					fw->Desk = t->Desk;
-					reason->desk.reason = PR_DESK_TRANSIENT;
+					reason->desk.reason =
+						PR_DESK_TRANSIENT;
 					break;
 				}
 			}
@@ -1764,11 +1748,11 @@ static int __place_window(
 	/* Don't move viewport if SkipMapping, or if recapturing the window,
 	 * adjust the coordinates later. Otherwise, just switch to the target
 	 * page - it's ever so much simpler. */
-	if (S_IS_STICKY_ACROSS_PAGES(SFC(*sflags)))
+	if (S_IS_STICKY_ACROSS_PAGES(SFC(pstyle->flags)))
 	{
 		reason->page.reason = PR_PAGE_STICKY;
 	}
-	else if (SUSE_START_ON_DESK(sflags))
+	else if (SUSE_START_ON_DESK(&pstyle->flags))
 	{
 		if (start_style.page_x != 0 && start_style.page_y != 0)
 		{
@@ -1794,17 +1778,18 @@ static int __place_window(
 	}
 
 	/* pick a location for the window. */
-	__place_get_placement_flags(&flags, fw, sflags, win_opts, mode, reason);
+	__place_get_placement_flags(
+		&flags, fw, pstyle, win_opts, mode, reason);
 	if (flags.do_not_use_wm_placement)
 	{
 		rc = __place_get_nowm_pos(
-			exc, sflags, attr_g, flags, screen_g, start_style,
+			exc, pstyle, attr_g, flags, screen_g, start_style,
 			mode, win_opts, reason, pdeltax, pdeltay);
 	}
 	else
 	{
 		rc = __place_get_wm_pos(
-			exc, sflags, attr_g, flags, screen_g, start_style,
+			exc, pstyle, attr_g, flags, screen_g, start_style,
 			mode, win_opts, reason, pdeltax, pdeltay);
 	}
 	reason->pos.x = attr_g->x;
@@ -1849,7 +1834,8 @@ static void __place_handle_x_resources(
 	MergeXResources(dpy, &db, False);
 	/* command line takes precedence over all */
 	MergeCmdLineResources(
-		&db, table, 4, client_argv[0], &client_argc, client_argv, True);
+		&db, table, 4, client_argv[0], &client_argc, client_argv,
+		True);
 	/* parse the database values */
 	if (GetResourceString(db, "desk", client_argv[0], &rm_value) &&
 	    rm_value.size != 0)
@@ -2100,11 +2086,14 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 	if (is_placed_by_algo == 1)
 	{
 		char *a;
+		char *b;
 
+		b = "";
 		switch (reason->pos.algo)
 		{
-		case PLACE_CENTER:
-			a = "Center";
+		case PLACE_POSITION:
+			a = "Position args: ";
+			b = reason->pos.pl_position_string;
 			break;
 		case PLACE_TILEMANUAL:
 			a = "TileManual";
@@ -2126,20 +2115,22 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		case PLACE_MINOVERLAP:
 			a = "MinOverlap";
 			break;
-		case PLACE_UNDERMOUSE:
-			a = "UnderMouse";
-			break;
 		default:
 			a = "bug";
 			break;
 		}
 		sprintf(s, ", placed by fvwm (%s)\n", r);
 		s += strlen(s);
-		sprintf(s, "    placement method: %s\n", a);
+		sprintf(s, "    placement method: %s%s\n", a, b);
 		s += strlen(s);
 		if (reason->pos.do_not_manual_icon_placement == 1)
 		{
 			sprintf(s, "    (icon not placed manually)\n");
+			s += strlen(s);
+		}
+		if (reason->pos.is_pl_position_string_invalid == 1)
+		{
+			sprintf(s, "    (invalid position string)\n");
 			s += strlen(s);
 		}
 		if (reason->pos.has_tile_failed == 1)
@@ -2150,11 +2141,6 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		if (reason->pos.has_manual_failed == 1)
 		{
 			sprintf(s, "    (manual placement failed)\n");
-			s += strlen(s);
-		}
-		if (reason->pos.has_under_mouse_failed == 1)
-		{
-			sprintf(s, "    (under mouse placement failed)\n");
 			s += strlen(s);
 		}
 		if (reason->pos.has_placement_failed == 1)
@@ -2222,8 +2208,7 @@ Bool setup_window_placement(
 	start_style.page_y = SGET_START_PAGE_Y(*pstyle);
 	start_style.screen = SGET_START_SCREEN(*pstyle);
 	rc = __place_window(
-		exc, &pstyle->flags, attr_g, start_style, mode, win_opts,
-		&reason);
+		exc, pstyle, attr_g, start_style, mode, win_opts, &reason);
 	exc_destroy_context(exc);
 	if (Scr.bo.do_explain_window_placement == 1)
 	{

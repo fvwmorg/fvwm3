@@ -91,8 +91,6 @@
 	((sf)->use_start_on_screen)
 #define SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
 	((sf)->manual_placement_honors_starts_on_page)
-#define SUNDERMOUSE_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
-	((sf)->um_placement_honors_starts_on_page)
 #define SCAPTURE_HONORS_STARTS_ON_PAGE(sf) \
 	((sf)->capture_honors_starts_on_page)
 #define SRECAPTURE_HONORS_STARTS_ON_PAGE(sf) \
@@ -101,6 +99,8 @@
 	((sf)->has_placement_penalty)
 #define SHAS_PLACEMENT_PERCENTAGE_PENALTY(sf) \
 	((sf)->has_placement_percentage_penalty)
+#define SHAS_PLACEMENT_POSITION_STRING(sf) \
+	((sf)->has_placement_position_string
 #define SCR_MOTION_METHOD(sf) \
 	((sf)->ws_cr_motion_method)
 
@@ -599,6 +599,10 @@
 	((s).pl_percent_penalty.p85 = (x))
 #define SSET_75_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
 	((s).pl_percent_penalty.p75 = (x))
+#define SGET_PLACEMENT_POSITION_STRING(s) \
+	((s).pl_position_string)
+#define SSET_PLACEMENT_POSITION_STRING(s,x)	\
+	((s).pl_position_string = (x))
 
 /* function prototypes */
 void lookup_style(FvwmWindow *fw, window_style *styles);

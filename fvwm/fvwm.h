@@ -487,7 +487,7 @@ typedef struct pl_percent_penalty_struct
 } pl_percent_penalty_struct;
 
 /* only style.c and add_window.c are allowed to access this struct! */
-typedef struct
+typedef struct style_flags
 {
 	common_flags_t common;
 	unsigned do_decorate_transient : 1;
@@ -519,8 +519,7 @@ typedef struct
 #define PLACE_TILECASCADE       0x5
 #define PLACE_CASCADE_B         0x6
 #define PLACE_MINOVERLAP        0x7
-#define PLACE_CENTER            0x8
-#define PLACE_UNDERMOUSE        0x9
+#define PLACE_POSITION          0x8
 #define PLACE_MASK              0xF
 	unsigned placement_mode : 4;
 	unsigned ewmh_placement_mode : 2; /* see ewmh.h */
@@ -585,9 +584,10 @@ typedef struct
 	unsigned recapture_honors_starts_on_page : 1;
 	unsigned has_placement_penalty : 1;
 	unsigned has_placement_percentage_penalty : 1;
+	unsigned has_placement_position_string : 1;
 } style_flags;
 
-typedef struct
+typedef struct style_id_t
 {
 	char *name;
 	XID window_id;
@@ -654,6 +654,7 @@ typedef struct window_style
 	float norm_placement_penalty;
 	pl_penalty_struct pl_penalty;
 	pl_percent_penalty_struct pl_percent_penalty;
+	char *pl_position_string;
 	style_flags flags;
 	style_flags flag_default;
 	style_flags flag_mask;
