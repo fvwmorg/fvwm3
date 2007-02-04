@@ -1128,14 +1128,6 @@ void MakeList(void)
 	{
 		height -= target.title_h;
 	}
-#define DEBUG_SIZE 0
-#if DEBUG_SIZE /*!!!*/
-	fprintf(
-		stderr, "frame %dx%d, bw %d, title %d(dir %d), client %dx%d\n",
-		(int)target.frame_w, (int)target.frame_h, (int)bw,
-		(int)target.title_h, (int)target.title_dir, (int)width,
-		(int)height);
-#endif
 
 	sprintf(desktop, "%ld",  target.desktop);
 	sprintf(layer,   "%ld",  target.layer);
@@ -1229,18 +1221,8 @@ void MakeList(void)
 	{
 		y2 = 0;
 	}
-#if DEBUG_SIZE /*!!!*/
-	fprintf(
-		stderr, "client %dx%d, base %dx%d, inc %dx%d\n",
-		(int)width, (int)height, (int)target.base_w,
-		(int)target.base_h, (int)target.width_inc,
-		(int)target.height_inc);
-#endif
 	width = (width - target.base_w)/target.width_inc;
 	height = (height - target.base_h)/target.height_inc;
-#if DEBUG_SIZE /*!!!*/
-	fprintf(stderr, "--> units %dx%d\n", (int)width, (int)height);
-#endif
 
 	sprintf(loc,"%dx%d",width,height);
 	strcpy(geometry, loc);

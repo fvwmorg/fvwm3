@@ -1,3 +1,10 @@
+2007-02-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions):
+	(CreateWindow):
+	removed debug code
+
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmScript/script.y:
