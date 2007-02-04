@@ -1209,7 +1209,7 @@ static void InteractiveMove(
 	}
 	__move_loop(
 		exc, XOffset, YOffset, DragWidth, DragHeight, FinalX, FinalY,
-		do_move_opaque);
+		do_move_opaque, CRS_MOVE);
 	if (!Scr.gs.do_hide_position_window)
 	{
 		XUnmapWindow(dpy,Scr.SizeWindow);
@@ -2236,7 +2236,7 @@ static void DoSnapAttract(
  */
 Bool __move_loop(
 	const exec_context_t *exc, int XOffset, int YOffset, int Width,
-	int Height, int *FinalX, int *FinalY,Bool do_move_opaque)
+	int Height, int *FinalX, int *FinalY, Bool do_move_opaque, int cursor)
 {
 	extern Window bad_window;
 	Bool is_finished = False;
@@ -2272,7 +2272,7 @@ Bool __move_loop(
 	unsigned int draw_parts = PART_NONE;
 	XEvent e;
 
-	if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
+	if (!GrabEm(cursor, GRAB_NORMAL))
 	{
 		XBell(dpy, 0);
 		return False;

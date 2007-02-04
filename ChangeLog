@@ -1,3 +1,14 @@
+2007-02-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/fvwm.c (main):
+	fixed ROOT CursorStyle context
+
+	* fvwm/placement.c (__pl_manual_get_pos_simple):
+	* fvwm/move_resize.h:
+	* fvwm/move_resize.c (__move_loop):
+	(InteractiveMove):
+	fixed long broken POSITION CursorStyle context
+
 2007-02-04  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/bindings.c (ParseBinding):

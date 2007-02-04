@@ -2404,6 +2404,7 @@ int main(int argc, char **argv)
 			XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
 	Scr.FvwmCursors = CreateCursors(dpy);
+	XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 	/* create a window which will accept the keyboard focus when no other
 	 * windows have it */
 	/* do this before any RC parsing as some GC's are created from this

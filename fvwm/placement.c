@@ -519,7 +519,7 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 			NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
 		if (__move_loop(
 			    arg->exc, mx, my, DragWidth, DragHeight, &ret_p->x,
-			    &ret_p->y, False))
+			    &ret_p->y, False, CRS_POSITION))
 		{
 			ret->flags.do_resize_too = 1;
 		}
