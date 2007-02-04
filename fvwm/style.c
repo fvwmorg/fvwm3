@@ -3396,6 +3396,7 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode = PLACE_MASK;
 			ps->change_mask.placement_mode = PLACE_MASK;
 			s = (rest != NULL) ? strdup(rest) : NULL;
+			rest = NULL; /* consume the entire string */
 			SSET_PLACEMENT_POSITION_STRING(*ps, s);
 			ps->flags.has_placement_position_string = 1;
 			ps->flag_mask.has_placement_position_string = 1;
@@ -4159,7 +4160,7 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 			 * single one is mis-spelled? Let's just continue
 			 * parsing styles. */
 		}
-		else
+		else if (rest != NULL)
 		{
 			rest = SkipSpaces(rest,NULL,0);
 			if (*rest)
