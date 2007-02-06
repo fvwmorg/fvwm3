@@ -1855,10 +1855,7 @@ static void DoSnapAttract(
 	FvwmWindow *fw, int Width, int Height, int *px, int *py)
 {
 	int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
-	rectangle self, other;
-	FvwmWindow *tmp;
-	rectangle g;
-	Bool rc;
+	rectangle self;
 
 	/* resist based on window edges */
 	closestTop = Scr.SnapAttraction;
@@ -1871,10 +1868,37 @@ static void DoSnapAttract(
 	self.y = *py;
 	self.width = Width;
 	self.height = Height;
-	rc = get_visible_icon_title_geometry(fw, &g);
-	if (rc == True)
 	{
-		self.height += g.height;
+		rectangle g;
+		Bool rc;
+
+		rc = get_visible_icon_title_geometry(fw, &g);
+		if (rc == True)
+		{
+			self.height += g.height;
+		}
+	}
+
+	/*
+	 * Snap grid handling
+	 */
+	if (Scr.SnapGridX > 1 && nxl == -99999)
+	{
+		if (*px != *px / Scr.SnapGridX * Scr.SnapGridX)
+		{
+			*px = (*px + ((*px >= 0) ?
+				      Scr.SnapGridX : -Scr.SnapGridX) / 2) /
+				Scr.SnapGridX * Scr.SnapGridX;
+		}
+	}
+	if (Scr.SnapGridY > 1 && nyt == -99999)
+	{
+		if (*py != *py / Scr.SnapGridY * Scr.SnapGridY)
+		{
+			*py = (*py + ((*py >= 0) ?
+				      Scr.SnapGridY : -Scr.SnapGridY) / 2) /
+				Scr.SnapGridY * Scr.SnapGridY;
+		}
 	}
 
 	/*
@@ -1884,8 +1908,12 @@ static void DoSnapAttract(
 	if ((Scr.SnapMode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) &&
 	    Scr.SnapAttraction > 0)
 	{
+		FvwmWindow *tmp;
+
 		for (tmp = Scr.FvwmRoot.next; tmp; tmp = tmp->next)
 		{
+			rectangle other;
+
 			if (fw->Desk != tmp->Desk || fw == tmp)
 			{
 				continue;
@@ -1930,100 +1958,96 @@ static void DoSnapAttract(
 				other.y -= Scr.SnapAttraction + 10000;
 				other.height += Scr.SnapAttraction + 10000;
 			}
-			if (other .x + other.width >= Scr.MyDisplayWidth)
+			if (other.x + other.width >= Scr.MyDisplayWidth)
 			{
 				other.width += Scr.SnapAttraction + 10000;
 			}
-			if (other .y + other.height >= Scr.MyDisplayHeight)
+			if (other.y + other.height >= Scr.MyDisplayHeight)
 			{
 				other.height += Scr.SnapAttraction + 10000;
 			}
 
 			/* snap horizontally */
-			if (!((other.y + (int)other.height) < (*py) ||
-			      (other.y) > (*py + (int)self.height) ))
+			if (
+				other.y + other.height > *py &&
+				other.y < *py + self.height)
 			{
-				dist = abs(other.x - (*px + (int)self.width));
+				dist = abs(other.x - (*px + self.width));
 				if (dist < closestRight)
 				{
 					closestRight = dist;
-					if (*px + (int)self.width >= other.x &&
-					    *px + (int)self.width <
+					if (*px + self.width >= other.x &&
+					    *px + self.width <
 					    other.x + Scr.SnapAttraction)
 					{
-						nxl = other.x - (int)self.width;
+						nxl = other.x - self.width;
 					}
-					if (*px + (int)self.width >=
+					if (*px + self.width >=
 					    other.x - Scr.SnapAttraction &&
-					    *px + (int)self.width < other.x)
+					    *px + self.width < other.x)
 					{
-						nxl = other.x - (int)self.width;
+						nxl = other.x - self.width;
 					}
 				}
-				dist = abs(other.x + (int)other.width - *px);
+				dist = abs(other.x + other.width - *px);
 				if (dist < closestLeft)
 				{
 					closestLeft = dist;
-					if (*px <= other.x + (int)other.width &&
-					    *px > other.x + (int)other.width -
+					if (*px <= other.x + other.width &&
+					    *px > other.x + other.width -
 					    Scr.SnapAttraction)
 					{
-						nxl = other.x +
-							(int)other.width;
+						nxl = other.x + other.width;
 					}
-					if (*px <= other.x + (int)other.width +
+					if (*px <= other.x + other.width +
 					    Scr.SnapAttraction &&
-					    *px > other.x + (int)other.width)
+					    *px > other.x + other.width)
 					{
-						nxl = other.x +
-							(int)other.width;
+						nxl = other.x + other.width;
 					}
 				}
-			} /* horizontally */
+			}
 			/* snap vertically */
-			if (!((other.x + (int)other.width) < (*px) ||
-			      (other.x) > (*px + (int)self.width)))
+			if (
+				other.x + other.width > *px &&
+				other.x < *px + self.width)
 			{
-				dist = abs(other.y - (*py + (int)self.height));
+				dist = abs(other.y - (*py + self.height));
 				if (dist < closestBottom)
 				{
 					closestBottom = dist;
-					if (*py + (int)self.height >= other.y &&
-					    *py + (int)self.height < other.y +
+					if (*py + self.height >= other.y &&
+					    *py + self.height < other.y +
 					    Scr.SnapAttraction)
 					{
-						nyt = other.y -
-							(int)self.height;
+						nyt = other.y - self.height;
 					}
-					if (*py + (int)self.height >=
+					if (*py + self.height >=
 					    other.y - Scr.SnapAttraction &&
-					    *py + (int)self.height < other.y)
+					    *py + self.height < other.y)
 					{
-						nyt = other.y -
-							(int)self.height;
+						nyt = other.y - self.height;
 					}
 				}
-				dist = abs(other.y + (int)other.height - *py);
+				dist = abs(other.y + other.height - *py);
 				if (dist < closestTop)
 				{
 					closestTop = dist;
 					if (*py <=
-					    other.y + (int)other.height &&
-					    *py > other.y + (int)other.height -
+					    other.y + other.height &&
+					    *py > other.y + other.height -
 					    Scr.SnapAttraction)
 					{
-						nyt = other.y +
-							(int)other.height;
+						nyt = other.y + other.height;
 					}
-					if (*py <= other.y + (int)other.height +
+					if (*py <= other.y + other.height +
 					    Scr.SnapAttraction &&
-					    *py > other.y + (int)other.height)
+					    *py > other.y + other.height)
 					{
-						nyt = other.y +
-							(int)other.height;
+						nyt = other.y + other.height;
 					}
 				}
-			} /* vertically */
+			}
 		} /* for */
 	} /* snap to other windows */
 
@@ -2032,28 +2056,26 @@ static void DoSnapAttract(
 	{
 		/* horizontally */
 		if (!(Scr.MyDisplayWidth < (*px) ||
-		      (*px + (int)self.width) < 0))
+		      (*px + self.width) < 0))
 		{
-			dist = abs(Scr.MyDisplayHeight -
-				   (*py + (int)self.height));
+			dist = abs(Scr.MyDisplayHeight - (*py + self.height));
 			if (dist < closestBottom)
 			{
 				closestBottom = dist;
-				if (*py + (int)self.height >=
+				if (*py + self.height >=
 				    Scr.MyDisplayHeight &&
-				    *py + (int)self.height <
+				    *py + self.height <
 				    Scr.MyDisplayHeight + Scr.SnapAttraction)
 				{
 					nyt = Scr.MyDisplayHeight -
-						(int)self.height;
+						self.height;
 				}
-				if (*py + (int)self.height >=
+				if (*py + self.height >=
 				    Scr.MyDisplayHeight - Scr.SnapAttraction &&
-				    *py + (int)self.height <
-				    Scr.MyDisplayHeight)
+				    *py + self.height < Scr.MyDisplayHeight)
 				{
 					nyt = Scr.MyDisplayHeight -
-						(int)self.height;
+						self.height;
 				}
 			}
 			dist = abs(*py);
@@ -2072,28 +2094,26 @@ static void DoSnapAttract(
 		} /* horizontally */
 		/* vertically */
 		if (!(Scr.MyDisplayHeight < (*py) ||
-		      (*py + (int)self.height) < 0))
+		      (*py + self.height) < 0))
 		{
-			dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
+			dist = abs(
+				Scr.MyDisplayWidth - (*px + self.width));
 			if (dist < closestRight)
 			{
 				closestRight = dist;
 
-				if (*px + (int)self.width >=
-				    Scr.MyDisplayWidth &&
-				    *px + (int)self.width <
+				if (*px + self.width >= Scr.MyDisplayWidth &&
+				    *px + self.width <
 				    Scr.MyDisplayWidth + Scr.SnapAttraction)
 				{
-					nxl = Scr.MyDisplayWidth -
-						(int)self.width;
+					nxl = Scr.MyDisplayWidth - self.width;
 				}
 
-				if (*px + (int)self.width >=
+				if (*px + self.width >=
 				    Scr.MyDisplayWidth - Scr.SnapAttraction &&
-				    *px + (int)self.width < Scr.MyDisplayWidth)
+				    *px + self.width < Scr.MyDisplayWidth)
 				{
-					nxl = Scr.MyDisplayWidth -
-						(int)self.width;
+					nxl = Scr.MyDisplayWidth - self.width;
 				}
 			}
 			dist = abs(*px);
@@ -2122,28 +2142,6 @@ static void DoSnapAttract(
 	if (nyt != -99999)
 	{
 		*py = nyt;
-	}
-
-	/*
-	 * Snap grid handling
-	 */
-	if (Scr.SnapGridX > 1 && nxl == -99999)
-	{
-		if (*px != *px / Scr.SnapGridX * Scr.SnapGridX)
-		{
-			*px = (*px + ((*px >= 0) ?
-				      Scr.SnapGridX : -Scr.SnapGridX) / 2) /
-				Scr.SnapGridX * Scr.SnapGridX;
-		}
-	}
-	if (Scr.SnapGridY > 1 && nyt == -99999)
-	{
-		if (*py != *py / Scr.SnapGridY * Scr.SnapGridY)
-		{
-			*py = (*py + ((*py >= 0) ?
-				      Scr.SnapGridY : -Scr.SnapGridY) / 2) /
-				Scr.SnapGridY * Scr.SnapGridY;
-		}
 	}
 
 	/*

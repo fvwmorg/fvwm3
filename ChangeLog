@@ -1,3 +1,14 @@
+2007-02-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (DoSnapAttract):
+	handle SnapGrid before SnapAttraction so that non-overlapping windows
+	do not snap edge to edge:
+	                            +---+
+	                            |   |
+	                            +---+---+
+	                                |   |
+	                                +---+
+
 2007-02-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/style.c (parse_and_set_window_style)
