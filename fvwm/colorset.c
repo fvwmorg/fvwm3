@@ -1426,7 +1426,8 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ---------- change the hilight colour ----------
 	 */
-	if (has_hi_changed || has_bg_changed)
+	if (has_hi_changed ||
+	    (has_bg_changed && !(cs->color_flags & HI_SUPPLIED)))
 	{
 		has_hi_changed = 1;
 		if ((cs->color_flags & HI_SUPPLIED) && hi != NULL)
@@ -1457,7 +1458,8 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ---------- change the shadow colour ----------
 	 */
-	if (has_sh_changed || has_bg_changed)
+	if (has_sh_changed ||
+	    (has_bg_changed && !(cs->color_flags & SH_SUPPLIED)))
 	{
 		has_sh_changed = 1;
 		if ((cs->color_flags & SH_SUPPLIED) && sh != NULL)
@@ -1488,7 +1490,9 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ---------- change the shadow foreground colour ----------
 	 */
-	if (has_fgsh_changed || has_fg_changed || has_bg_changed)
+	if (has_fgsh_changed ||
+	    ((has_fg_changed || has_bg_changed) &&
+	     !(cs->color_flags & FGSH_SUPPLIED)))
 	{
 		has_fgsh_changed = 1;
 		if ((cs->color_flags & FGSH_SUPPLIED) && fgsh != NULL)
