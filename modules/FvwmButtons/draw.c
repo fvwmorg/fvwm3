@@ -518,10 +518,9 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				False);
 			if (cs >= 0)
 			{
-				SetRectangleBackground(Dpy, MyWindow,
-					clip.x, clip.y, clip.width,
-					clip.height, &Colorset[cs],
-					Pdepth, NormalGC);
+				SetClippedRectangleBackground(
+					Dpy, MyWindow, x, y, BW, BH, &clip,
+					&Colorset[cs],Pdepth, NormalGC);
 			}
 			else if (b->flags.b_Back &&
 				!UberButton->c->flags.b_Colorset)
