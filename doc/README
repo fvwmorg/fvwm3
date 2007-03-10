@@ -9,6 +9,12 @@ If you do not want to produce this documentation please use:
 
 ./configure --disable-htmldoc
 
+Once it is built, you should be able to point your browser to:
+
+file:///usr/local/share/doc/fvwm/index.html
+
+(Change "/usr/local" if you use ./configure --prefix="...".)
+
 For developers, the XML source files supersede the old fvwm man page.
 Please make any documentation changes here & NOT in the fvwm/fvwm.1.in
 file.

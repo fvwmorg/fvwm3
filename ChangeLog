@@ -1,3 +1,10 @@
+2007-03-10  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* NEWS
+	* Everything in the 'doc' subdirectory.
+
+	XML source to generate man page & HTML documentation.
+
 2007-02-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:

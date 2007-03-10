@@ -1,7 +1,9 @@
 .\"                                                                 -*-nroff-*-
 .\"
-.\"
-.\"
+.\" XXX
+.\" FVWM Developers: manpage edits should now be made to the XML files in
+.\"                  the ../doc/ subdirectories. (Please read ../doc/README)
+.\" XXX
 .\"
 @MANPAGE_PREAMBLE@
 .\"

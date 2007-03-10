@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-  "/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd"
+  "../docbook-xml/docbookx.dtd"
 [
 <!ENTITY % myents SYSTEM "../fvwm.ent" >
 %myents;
