@@ -1,3 +1,9 @@
+2007-03-11  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* doc/Makefile.am
+
+	bugfix: 'make dist' failed cos I moved 'scott.notes' to util/ subdir.
+
 2007-03-10  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* NEWS
