@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Wait'>
+<title>Wait</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Wait window</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is intended to be used in fvwm functions only.  It
+causes execution of a function to pause until a new window matching
+<emphasis remap='I'>window</emphasis>
+appears.  This can be a window's name, class, or resource string.
+It may contain the wildcards '*' and '?', which are matched in the
+usual Unix filename manner.  This is particularly useful in the
+"InitFunction" if you are trying to start windows on specific desktops:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> InitFunction
+ + I <fvwmref cmd="Exec"/> exec xterm -geometry 80x64+0+0
+ + I Wait xterm
+ + I <fvwmref cmd="GotoDesk"/> 0 2
+ + I <fvwmref cmd="Exec"/> exec xmh -font fixed -geometry \
+       507x750+0+0
+ + I Wait xmh
+ + I <fvwmref cmd="GotoDesk"/> 0 0
+</programlisting>
+
+<para>The above function starts an xterm on the current desk, waits for
+it to map itself, then switches to desk 2 and starts an xmh.
+After the xmh window appears control moves to desk 0.</para>
+
+<para>Fvwm remains partially functional during a wait, but any input
+from the modules is queued up and processed only after the window
+appears or the command is aborted.  For example, windows can not
+be focused with FvwmTaskBar or FvwmWinList during a wait.</para>
+
+<para>You can escape from a
+<emphasis remap='B'>Wait</emphasis>
+pause by pressing
+<emphasis remap='SM'>Ctrl-Alt-Escape</emphasis>
+(where
+<emphasis remap='SM'>Alt</emphasis>
+is the first modifier).  To redefine this key sequence see the
+<fvwmref cmd="EscapeFunc"/>
+command.</para>
+
+
+</section>

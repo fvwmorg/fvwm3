@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='environment'>
+<title>Environment</title>
+
+&fixme; <!-- <thead> in <informaltable> output twice -->
+
+<informaltable frame="none">
+<tgroup cols='2' align='left' valign='top' colsep='10' rowsep='10'>
+<thead>
+<row>
+  <entry align="center">Environment Variable</entry>
+  <entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+	<entry>DISPLAY</entry>
+	<entry>Fvwm starts on this display unless the <option>-display</option> option is given.</entry>
+</row>
+<row>
+	<entry>FVWM_MODULEDIR</entry>
+	<entry>Set by fvwm to the directory containing the standard fvwm modules.</entry>
+</row>
+<row>
+	<entry>FVWM_USERDIR</entry>
+	<entry>Used to determine the user's data directory for reading and
+sometimes writing personal files. If this variable is not already
+set, it is set by fvwm to $HOME/.fvwm, which is the default user's
+data directory.</entry>
+</row>
+<row>
+	<entry>SESSION_MANAGER</entry>
+	<entry>Fvwm tries to contact this session manager.</entry>
+</row>
+<row>
+	<entry>SESSION_MANAGER_NAME</entry>
+	<entry>This is used mainly to determine xsm running to work around its
+bug. If this variable is set to "xsm", DiscardCommand is set as
+xsm expects it and not as XSMP requires.  If you run fvwm under
+xsm, you should set this variable to "xsm", otherwise old state
+files are not removed.</entry>
+</row>
+<row>
+	<entry>SM_SAVE_DIR</entry>
+	<entry>If this is set, fvwm saves its session data in this
+directory. Otherwise it uses
+<emphasis remap='I'>$HOME</emphasis>.
+Note, the state files are named
+<markup>.fs-??????</markup>
+and normally are removed automatically when not used anymore.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+
+</section>

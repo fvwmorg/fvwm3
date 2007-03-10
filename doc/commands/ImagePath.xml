@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ImagePath'>
+<title>ImagePath</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ImagePath path</arg>
+</cmdsynopsis>
+</command>
+
+<para>Specifies a colon separated list of directories in which to search
+for images (both monochrome and pixmap).  To find an image given
+by a relative pathname, fvwm looks into each directory listed in
+turn, and uses the first file found.</para>
+
+<para>If a directory is given in the form "/some/dir;.ext", this means
+all images in this directory have the extension ".ext" that should
+be forced.  The original image name (that may contain another
+extension or no extension at all) is not probed, instead ".ext" is
+added or replaces the original extension.  This is useful, for
+example, if a user has some image directories with ".xpm" images
+and other image directories with the same names, but ".png"
+images.</para>
+
+<para>The
+<emphasis remap='I'>path</emphasis>
+may contain environment variables such as
+<envar>$HOME</envar> (or <envar>${HOME}</envar>).
+Further, a '+' in the
+<emphasis remap='I'>path</emphasis>
+is expanded to the previous value of the path, allowing appending
+or prepending to the path easily.</para>
+
+<para>For example:</para>
+
+<programlisting>
+ImagePath $HOME/icons:+:/usr/include/X11/bitmaps
+</programlisting>
+
+<para>Note: if the
+<fvwmref mod="FvwmM4"/>
+module is used to parse your
+<emphasis remap='I'>config</emphasis>
+files, then m4 may want to mangle the word "include" which
+frequently shows up in the
+<emphasis remap='B'>ImagePath</emphasis>
+command.  To fix this one may add</para>
+
+<programlisting>
+undefine(`include')
+</programlisting>
+
+<para>prior to the
+<emphasis remap='B'>ImagePath</emphasis>
+command, or better: use the
+<option>-m4-prefix</option>
+option to force all
+<emphasis remap='B'>m4</emphasis>
+directives to have a prefix of "m4_" (see the
+<fvwmref mod="FvwmM4"/>
+man page).</para>
+
+</section>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='TitleStyle'>
+<title>TitleStyle</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>TitleStyle [justification] [Height [num]] [MinHeight [num]]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Sets attributes for the title-bar.  Justifications can be
+<emphasis remap='I'>Centered</emphasis>, <emphasis remap='I'>RightJustified</emphasis> or <emphasis remap='I'>LeftJustified</emphasis>.
+<emphasis remap='I'>Height</emphasis>
+sets the title bar's height to an amount in pixels.
+<emphasis remap='I'>MinHeight</emphasis>
+sets the minimal height in pixels of the title bar.
+Defaults are
+<emphasis remap='I'>Centered</emphasis>,
+the window's font height and no minimal height.
+To reset the font height to the
+default value, omit the
+<emphasis remap='I'>num</emphasis>
+argument after the
+<emphasis remap='I'>Height</emphasis>
+keyword. The
+<emphasis remap='I'>MinHeight</emphasis>
+height is reseted by
+<emphasis remap='I'>Height</emphasis>
+or if given with no argument.
+Example:</para>
+
+<programlisting>
+TitleStyle LeftJustified Height 24
+</programlisting>
+
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>TitleStyle [state] [style] [-- [!] flag ...]</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>Sets the style for the title-bar.
+See also
+<fvwmref cmd="AddTitleStyle"/> and <emphasis remap='B'>ButtonStyle</emphasis>.
+<emphasis remap='I'>state</emphasis>
+can be one of "ActiveUp", "ActiveDown", "InactiveUp",
+or "InactiveDown".  Shortcuts like "Active" and "Inactive" are
+allowed.  The states with the "Toggled" prefix are allowed too,
+the title itself does not use "Toggled" states, but these states
+are used for the buttons with
+<fvwmref cmd="ButtonStyle"/>
+<emphasis remap='I'>UseTitleStyle</emphasis>.
+If
+<emphasis remap='I'>state</emphasis>
+is omitted, then the
+<emphasis remap='I'>style</emphasis>
+is added to every state.  If parentheses are placed around the
+<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>,
+then multiple state definitions can be given per line.
+<emphasis remap='I'>style</emphasis>
+can be omitted so that flags can be set while not destroying the
+current style.</para>
+
+<para>If a
+'<emphasis remap='I'>!</emphasis>'
+is prefixed to any
+<emphasis remap='I'>flag</emphasis>,
+its behavior is negated.  Valid flags for each state include
+<emphasis remap='I'>Raised</emphasis>, <emphasis remap='I'>Flat</emphasis> and <emphasis remap='I'>Sunk</emphasis>
+(these are mutually exclusive).  The default is
+<emphasis remap='I'>Raised</emphasis>.
+See the note in
+<fvwmref cmd="ButtonStyle"/>
+regarding the "ActiveDown" state.  Examples:</para>
+
+<programlisting>
+TitleStyle ActiveUp HGradient 16 navy black
+TitleStyle ActiveDown (Solid red -- flat) \
+    Inactive (TiledPixmap wood.xpm)
+TitleStyle ActiveUp (-- Flat) ActiveDown  \
+    (-- Raised) InactiveUp (-- Flat) \
+    InactiveDown (-- Sunk)
+</programlisting>
+
+<para>This sets the "ActiveUp" state to a horizontal gradient, the
+"ActiveDown" state to solid red, and the "Inactive" states to a
+tiled wood pixmap. Finally, "ActiveUp" and "InactiveUp" are set
+to look flat, while "ActiveDown" set to be sunk (the
+<emphasis remap='I'>Raised</emphasis>
+flag for the "ActiveDown" state causes it to appear sunk due to
+relief inversion), and "InactiveDown" is set to look raised. An
+example which sets flags for all states:</para>
+
+<programlisting>
+TitleStyle -- flat
+</programlisting>
+
+<para>For a flattened look:</para>
+
+<programlisting>
+TitleStyle -- flat
+<fvwmref cmd="ButtonStyle"/> <fvwmref cmd="All"/> Active (-- flat) Inactive (-- flat)
+</programlisting>
+
+
+<para><emphasis remap='B'>TitleStyle</emphasis>
+accepts all the
+<fvwmref cmd="ButtonStyle"/>
+ styles and arguments:</para>
+
+<para><emphasis remap='I'>Simple</emphasis>, <emphasis remap='I'>Default</emphasis>, <emphasis remap='I'>Solid</emphasis>, <emphasis remap='I'>Colorset</emphasis>, <emphasis remap='I'>Vector</emphasis>,
+<emphasis remap='I'>?Gradient</emphasis>, <emphasis remap='I'>Pixmap</emphasis>, <emphasis remap='I'>AdjustedPixmap</emphasis>,
+<emphasis remap='I'>ShrunkPixmap</emphasis>, <emphasis remap='I'>StretchedPixmap</emphasis>, <emphasis remap='I'>TiledPixmap</emphasis>, <emphasis remap='I'>MiniIcon</emphasis>.</para>
+
+<para>See the
+<fvwmref cmd="ButtonStyle"/>
+command for a description of all these styles and their arguments.</para>
+
+<para>In addition to these styles
+<emphasis remap='B'>TitleStyle</emphasis>
+accepts a powerful
+<emphasis remap='B'>MultiPixmap</emphasis>
+option. This allows you to specify different pixmaps, colorsets or
+colors for different parts of the titlebar. Some of them are tiled or
+stretched to fit a particular space; others are discrete "transition"
+images. The definable
+<emphasis remap='I'>sections</emphasis>
+are:</para>
+
+<programlisting>
+<emphasis remap='I'>Main</emphasis>
+  The full titlebar
+<emphasis remap='I'>LeftMain</emphasis>
+  Left of title text
+<emphasis remap='I'>RightMain</emphasis>
+  Right of title text
+<emphasis remap='I'>UnderText</emphasis>
+  Underneath title text
+<emphasis remap='I'>LeftOfText</emphasis>
+  just to the left of the title text
+<emphasis remap='I'>RightOfText</emphasis>
+  just to the right of the title text
+<emphasis remap='I'>LeftEnd</emphasis>
+  at the far left end of the titlebar
+  (just after left buttons if any)
+<emphasis remap='I'>RightEnd</emphasis>
+  at the far right end of the titlebar
+  (just before right buttons if any)
+<emphasis remap='I'>Buttons</emphasis>
+  under buttons in case of UseTitleStyle
+<emphasis remap='I'>LeftButtons</emphasis>
+  under left buttons in case of UseTitleStyle
+<emphasis remap='I'>RightButtons</emphasis>
+  under right buttons in case of UseTitleStyle
+</programlisting>
+
+<para>None of these are mandatory except for
+<emphasis remap='I'>Main</emphasis>
+(or, if you do not define
+<emphasis remap='I'>Main</emphasis>,
+you must define both
+<emphasis remap='I'>LeftMain</emphasis> and <emphasis remap='I'>RightMain</emphasis>).
+If no
+<emphasis remap='I'>Buttons</emphasis>
+pixmaps are defined and
+<emphasis remap='I'>UseTitleStyle</emphasis>
+is specified for one or more buttons,
+<emphasis remap='I'>Main</emphasis>, <emphasis remap='I'>LeftMain</emphasis>, or <emphasis remap='I'>RightMain</emphasis>
+are used as appropriate.</para>
+
+<para>The syntax for this style type is:</para>
+
+<programlisting>
+MultiPixmap section style arg, ...
+</programlisting>
+
+<para>continuing for whatever you want to define. The
+<emphasis remap='I'>style</emphasis>
+can be either
+<emphasis remap='I'>TiledPixmap</emphasis>, <emphasis remap='I'>AdjustedPixmap</emphasis>, <emphasis remap='I'>Colorset</emphasis> or <emphasis remap='I'>Solid</emphasis>.
+See the
+<fvwmref cmd="ButtonStyle"/>
+command for the description of these styles.
+In the case of a transition section,
+<emphasis remap='I'>LeftEnd</emphasis>, <emphasis remap='I'>LeftOfText</emphasis>, <emphasis remap='I'>RightOfText</emphasis> or <emphasis remap='I'>RightEnd</emphasis>,
+<emphasis remap='I'>AdjustedPixmap</emphasis>
+only resize the pixmap in the "y" direction. For the
+<fvwmref cmd="Colorset"/> and <emphasis remap='I'>Solid</emphasis>
+styles a width of the half of the title bar height is assumed
+for the transition sections.</para>
+
+<para>An example:</para>
+
+<programlisting>
+MultiPixmap Main AdjustedPixmap foo.xpm, \
+            UnderText TiledPixmap bar.xpm, \
+            Buttons <fvwmref cmd="Colorset"/> 2
+</programlisting>
+
+<para>Note that the old syntax is still supported: if the style is omitted,
+<emphasis remap='I'>TiledPixmap</emphasis>
+is assumed and adding "(stretched)" between the section and the
+file name implies
+<emphasis remap='I'>AdjustedPixmap</emphasis>.</para>
+
+</section>

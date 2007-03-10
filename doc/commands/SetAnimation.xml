@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='SetAnimation'>
+<title>SetAnimation</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>SetAnimation</arg>
+    <arg choice='plain'>milliseconds-delay</arg>
+    <arg choice='opt'>fractions-to-move-list</arg>
+</cmdsynopsis>
+</command>
+
+<para>Sets the time between frames and the list of fractional offsets to
+customize the animated moves of the
+<fvwmref cmd="AnimatedMove"/>
+command and the animation of menus (if the menu style is set to
+animated; see
+<fvwmref cmd="MenuStyle"/>
+command).  If the
+<emphasis remap='I'>fractions-to-move-list</emphasis>
+is omitted, only the time between frames is altered.  The
+<emphasis remap='I'>fractions-to-move-list</emphasis>
+specifies how far the window should be offset at each successive
+frame as a fraction of the difference between the starting
+location and the ending location.  e.g.:</para>
+
+<programlisting>
+SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 \
+  .45 .6 .75 .85 .90 .94 .97 .99 1.0
+</programlisting>
+
+<para>Sets the delay between frames to 10 milliseconds, and sets the
+positions of the 16 frames of the animation motion.  Negative
+values are allowed, and in particular can be used to make the
+motion appear more cartoonish, by briefly moving slightly in the
+opposite direction of the main motion.  The above settings are the
+default.</para>
+
+</section>

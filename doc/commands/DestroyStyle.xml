@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DestroyStyle'>
+<title>DestroyStyle</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>DestroyStyle style</arg>
+</cmdsynopsis>
+</command>
+
+<para>deletes the style named
+<emphasis remap='I'>style</emphasis>.
+The changes take effect immediately.  Note that
+<emphasis remap='I'>style</emphasis>
+is not a wild-carded search string, but rather a case-sensitive
+string that should exactly match the original
+<fvwmref cmd="Style"/>
+command.</para>
+
+<para>Destroying style "*" can be done, but isn't really to be
+recommended. For example:</para>
+
+<programlisting>
+DestroyStyle Application*
+</programlisting>
+
+<para>This removes all settings for the style named "Application*", NOT
+all styles starting with "Application".</para>
+
+</section>

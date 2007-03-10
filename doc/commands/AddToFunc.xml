@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='AddToFunc'>
+<title>AddToFunc</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>AddToFunc</arg>
+    <arg choice='opt'>name <arg choice='opt'>I | M | C | H | D action</arg></arg>
+</cmdsynopsis>
+</command>
+
+<para>Begins or adds to a function definition.  Here is an example:</para>
+
+<programlisting>
+AddToFunc Move-or-Raise I <fvwmref cmd="Raise"/>
+ + M <fvwmref cmd="Move"/>
+ + D <fvwmref cmd="Lower"/>
+</programlisting>
+
+<para>The function name is "Move-or-Raise", and it could be invoked from a
+menu or a mouse binding or key binding:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 1 TS A Move-or-Raise
+</programlisting>
+
+<para>The
+<emphasis remap='I'>name</emphasis>
+must not contain embedded whitespace.  No guarantees are made
+whether function names with embedded whitespace work or not.  This
+behavior may also change in the future without further notice.
+The letter before the
+<emphasis remap='I'>action</emphasis>
+tells what kind of action triggers the command which follows it.
+'<emphasis remap='I'>I</emphasis>'
+stands for "Immediate", and is executed as soon as the function is
+invoked.
+'<emphasis remap='I'>M</emphasis>'
+stands for "Motion", i.e. if the user starts moving the mouse.
+'<emphasis remap='I'>C</emphasis>'
+stands for "Click", i.e., if the user presses and releases the
+mouse button.
+'<emphasis remap='I'>H</emphasis>'
+stands for "Hold", i.e. if the user presses a mouse button and
+holds it down for more than
+<emphasis remap='B'>ClickTime</emphasis>
+milliseconds.
+'<emphasis remap='I'>D</emphasis>'
+stands for "Double-click". The action
+'<emphasis remap='I'>I</emphasis>'
+causes an action to be performed on the button-press, if the
+function is invoked with prior knowledge of which window to act
+on.</para>
+
+<para>There is a number of predefined symbols that are replaced by
+certain values if they appear on the command line.  Please refer
+to the
+<fvwmref sect="expansion" opt="command_expansion" name="Command Expansion"/>
+section for details.</para>
+
+<warning>Please read the comments on executing complex functions
+in the section
+<fvwmref sect="scripting" opt="scripting_and_complex_functions" name="Scripting and Complex Functions"/>.
+</warning>
+
+<para>Examples:</para>
+
+<para>If you call</para>
+
+<programlisting>
+<fvwmref cmd="Key"/> F10 R A <fvwmref cmd="Function"/> MailFunction xmh "-font fixed"
+</programlisting>
+
+<para>and "MailFunction" is</para>
+
+<programlisting>
+AddToFunc MailFunction
+ + I <fvwmref cmd="Next"/> ($0) <fvwmref cmd="Iconify"/> off
+ + I <fvwmref cmd="Next"/> (AcceptsFocus, $0) <fvwmref cmd="Focus"/>
+ + I <fvwmref cmd="None"/> ($0) <fvwmref cmd="Exec"/> exec $0 $1
+</programlisting>
+
+<para>Then the last line of the function becomes</para>
+
+<programlisting>
+ + I <fvwmref cmd="None"/> (xmh) <fvwmref cmd="Exec"/> exec xmh -font fixed
+</programlisting>
+
+<para>The expansion is performed as the function is executed, so you can
+use the same function with all sorts of different arguments.  You
+could use</para>
+
+<programlisting>
+<fvwmref cmd="Key"/> F11 R A <fvwmref cmd="Function"/> MailFunction zmail "-bg pink"
+</programlisting>
+
+<para>in the same
+<emphasis remap='I'>config</emphasis>,
+if you wanted.  An example of using "$[w.id]" is:</para>
+
+<programlisting>
+AddToFunc PrintFunction
+ + I <fvwmref cmd="Raise"/>
+ + I <fvwmref cmd="Exec"/> xdpr -id $[w.id]
+</programlisting>
+
+<para>Note that "$$" is expanded to '$'.</para>
+
+<para>Another example: bind right mouse button within the window button
+number 6 (this is a minimize button for the win95 theme) to
+iconify all windows of the same resource:</para>
+
+<programlisting>
+AddToFunc FuncIconifySameResource "I" <fvwmref cmd="All"/> ($0) <fvwmref cmd="Iconify"/> on
+<fvwmref cmd="Mouse"/> 3 6 A FuncIconifySameResource $[w.resource]
+</programlisting>
+
+
+</section>

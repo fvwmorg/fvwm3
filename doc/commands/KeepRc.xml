@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='KeepRc'>
+<title>KeepRc</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>KeepRc command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Runs the
+<emphasis remap='I'>command</emphasis>
+but does not alter the return code of the previous command.  Note:
+<emphasis remap='B'>KeepRc</emphasis>
+is treated as a prefix to its
+<emphasis remap='I'>command</emphasis>.
+Expansion of the command line is done as if
+<emphasis remap='B'>KeepRc</emphasis>
+was not there.</para>
+
+</section>

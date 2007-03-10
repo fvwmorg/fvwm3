@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='EdgeLeaveCommand'>
+<title>EdgeLeaveCommand</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>EdgeLeaveCommand [direction [Function]]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Binds a specified fvwm command
+<fvwmref cmd="Function"/>
+to an edge of the screen. Direction may be one of
+"<fvwmopt cmd="EdgeLeaveCommand" opt="North"/>",
+"<fvwmopt cmd="EdgeLeaveCommand" opt="Top"/>",
+"<fvwmopt cmd="EdgeLeaveCommand" opt="West"/>",
+"<fvwmopt cmd="EdgeLeaveCommand" opt="Left"/>",
+"<fvwmopt cmd="EdgeLeaveCommand" opt="South"/>",
+"<fvwmopt cmd="EdgeLeaveCommand" opt="Bottom"/>",
+"<fvwmopt cmd="EdgeLeaveCommand" opt="Right"/>" and
+"<fvwmopt cmd="EdgeLeaveCommand" opt="East"/>".
+If
+<fvwmref cmd="Function"/>
+is omitted the binding for this edge is removed. If
+EdgeLeaveCommand is called without any arguments all edge bindings
+are removed.</para>
+
+<para><fvwmref cmd="Function"/>
+is executed when the mouse pointer
+leaves the invisible pan frames that surround the visible screen.
+The binding works only if
+<fvwmref cmd="EdgeThickness"/>
+is set to a value greater than 0.
+If a function is bound to an edge, scrolling specified by
+<fvwmref cmd="EdgeScroll"/>
+is disabled for this edge.
+It is possible to bind a function only to some edges
+and use the other edges for scrolling.
+This command is intended to raise or lower certain windows
+when the mouse pointer leaves an edge.
+<fvwmref mod="FvwmAuto"/>
+can be used get a delay when raising or lowering windows.
+See example for
+<fvwmref cmd="EdgeCommand"/></para>
+
+<para>Normally, the invisible pan frames are only on the screen edges
+that border virtual pages.  If a screen edge has a command bound
+to it, the pan frame is always created on that edge.</para>
+
+</section>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ButtonState'>
+<title>ButtonState</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>ButtonState</arg>
+    <arg choice='opt'>ActiveDown bool</arg>
+    <arg choice='opt'>Inactive bool</arg>
+    <arg choice='opt'>InactiveDown bool</arg>
+</cmdsynopsis>
+</command>
+
+<para>
+The
+<emphasis remap='B'>ButtonState</emphasis>
+command controls which states of the window titles and title
+buttons are used.  The default is to use all four states:
+"ActiveUp>",
+"ActiveDown>",
+"InactiveUp>" and
+"InactiveDown>" (see
+<fvwmref cmd="ButtonStyle"/> and
+<fvwmref cmd="TitleStyle"/>
+commands).  The
+<emphasis remap='I'>bool</emphasis>
+argument after the key word controls if the designated state is
+used ("True") or not ("False").  The "ActiveUp" state cannot be
+deactivated. If no arguments are provided or the given arguments
+are illegal, the default is restored.</para>
+
+<para>If
+<fvwmopt cmd="ButtonState" opt="ActiveDown"/>
+argument is "False", no different button style
+for the pressed down buttons used, instead "ActiveUp" state is
+used even when button is pressed.</para>
+
+<para>If
+<fvwmopt cmd="ButtonState" opt="Inactive"/>
+argument is "False", focused and unfocused windows
+look similarly, the corresponding "Active" states are always used.</para>
+
+<para>If
+<fvwmopt cmd="ButtonState" opt="InactiveDown"/>
+argument is "False" (only applied when
+<emphasis remap='I'>Inactive</emphasis>
+is "True"), the pressed titles and title buttons in non-focused
+windows are drawn using "InactiveUp" or "ActiveUp" states
+depending on the values of the other key words.</para>
+
+</section>

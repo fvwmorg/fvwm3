@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DesktopName'>
+<title>DesktopName</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DesktopName</arg>
+    <arg choice='plain'>desk name</arg>
+</cmdsynopsis>
+</command>
+
+<para>Defines the name of the desktop number
+<emphasis remap='I'>desk</emphasis>
+to
+<emphasis remap='I'>name</emphasis>.
+This name is used in the
+<emphasis remap='B'>WindowList</emphasis>
+command and in the
+<emphasis remap='B'>FvwmPager</emphasis>
+where it override the
+<emphasis remap='I'>Label</emphasis>
+configuration option. Moreover, if consecutive names starting from
+desktop 0 are defined, then these names can be used by any <acronym>EWMH</acronym>
+compliant application (as a pager).</para>
+
+</section>

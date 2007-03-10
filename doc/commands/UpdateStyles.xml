@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='UpdateStyles'>
+<title>UpdateStyles</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>UpdateStyles</arg>
+</cmdsynopsis>
+</command>
+
+<para>All pending updates of all windows' styles and looks are applied
+immediately.  E.g. if
+<fvwmref cmd="Style"/>,
+<fvwmref cmd="Style" opt="WindowStyle"/> or
+<fvwmref cmd="Style" opt="TitleStyle"/>
+commands were issued inside a fvwm function.</para>
+
+</section>

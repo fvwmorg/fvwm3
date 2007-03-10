@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='addtomenu'>
+<title>AddToMenu</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>AddToMenu</arg>
+    <arg choice='plain'>menu-name</arg>
+    <arg choice='opt'>menu-label action</arg>
+</cmdsynopsis>
+</command>
+
+<para>Begins or adds to a menu definition.  Typically a menu definition
+looks like this:</para>
+
+<programlisting>
+AddToMenu Utilities Utilities <fvwmref cmd="Title"/>
+ + Xterm           <fvwmref cmd="Exec"/>  exec xterm -e tcsh
+ + Rxvt            <fvwmref cmd="Exec"/>  exec rxvt
+ + "Remote Logins" <fvwmref cmd="Popup"/> Remote-Logins
+ + Top             <fvwmref cmd="Exec"/>  exec rxvt -T Top -n Top -e top
+ + Calculator      <fvwmref cmd="Exec"/>  exec xcalc
+ + Xman            <fvwmref cmd="Exec"/>  exec xman
+ + Xmag            <fvwmref cmd="Exec"/>  exec xmag
+ + emacs           <fvwmref cmd="Exec"/>  exec xemacs
+ + Mail            MailFunction xmh "-font fixed"
+ + ""              <fvwmref cmd="Nop"/>
+ + Modules         <fvwmref cmd="Popup"/> Module-Popup
+ + ""              <fvwmref cmd="Nop"/>
+ + Exit Fvwm       <fvwmref cmd="Popup"/> Quit-Verify
+</programlisting>
+
+<para>The menu could be invoked via</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 1 R A <fvwmref cmd="Menu"/> Utilities Nop
+</programlisting>
+
+<para>or</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 1 R A <fvwmref cmd="Popup"/> Utilities
+</programlisting>
+
+<para>There is no end-of-menu symbol.  Menus do not have to be defined
+in a contiguous region of the
+<emphasis remap='I'>config</emphasis>
+file.  The quoted (or first word)
+portion in the above examples is the menu label,
+which appears in the menu when the user pops it up.  The remaining
+portion is an fvwm command which is executed if the user
+selects that menu item.  An empty menu-label ("") and the
+<fvwmref cmd="Nop"/>
+function are used to insert a separator into the menu.</para>
+
+<para>The keywords
+<fvwmopt cmd="AddToMenu" opt="DynamicPopUpAction"/>
+and
+<fvwmopt cmd="AddToMenu" opt="DynamicPopDownAction"/>
+have a special meaning when used as the name of a menu item.  The
+action following the keyword is executed whenever the menu is
+popped up or down.  This way you can implement dynamic menus.  It
+is even possible to destroy itself with
+<fvwmref cmd="DestroyMenu"/>
+and the rebuild from scratch.  When the menu has been destroyed
+(unless you used the
+<fvwmopt cmd="AddToMenu" opt="recreate"/>
+option when destroying the menu), do not forget to add the dynamic
+action again.</para>
+
+<para>Note: Do not trigger actions that require user interaction. They
+may fail and may screw up your menus.  See the
+<fvwmref cmd="Silent"/>
+command.</para>
+
+<warning>Do not issue
+<fvwmref cmd="MenuStyle"/>
+commands as dynamic menu actions.  Chances are good that this
+crashes fvwm.</warning>
+
+
+<!-- TODO: add links to utility programs -->
+<para>There are several configurable scripts installed together with fvwm
+for automatic menu generation.  They have their own man pages.
+Some of them, specifically
+<command>fvwm-menu-directory</command> and
+<command>fvwm-menu-desktop</command>, may be used with
+<fvwmopt cmd="AddToMenu" opt="DynamicPopupAction"/>
+to create a directory listing or <acronym>GNOME</acronym>/<acronym>KDE</acronym>
+application listing.</para>
+
+<para>Example (File browser):</para>
+
+<programlisting>
+# You can find the shell script fvwm_make_browse_menu.sh
+# in the utils/ directory of the distribution.
+AddToMenu BrowseMenu
++ DynamicPopupAction <fvwmref cmd="PipeRead"/> 'fvwm_make_browse_menu.sh BrowseMenu'
+</programlisting> 
+
+<para>Example (Picture menu):</para>
+
+<programlisting>
+# Build a menu of all .jpg files in
+# $HOME/Pictures
+AddToMenu JpgMenu foo title
++ DynamicPopupAction <fvwmref cmd="Function"/> MakeJpgMenu
+
+<fvwmref cmd="AddToFunc"/> MakeJpgMenu
++ I <fvwmref cmd="DestroyMenu"/> recreate JpgMenu
++ I AddToMenu JpgMenu Pictures <fvwmref cmd="Title"/>
++ I <fvwmref cmd="PipeRead"/> 'for i in <envar>$HOME</envar>/Pictures/*.jpg; \
+  do echo AddToMenu JpgMenu "`basename $i`" <fvwmref cmd="Exec"/> xv $i; done'
+</programlisting>
+
+<para>The keyword
+<fvwmopt cmd="AddToMenu" opt="MissingSubmenuFunction"/>
+has a similar meaning.  It is executed whenever you try to pop up
+a sub menu that does not exist.  With this function you can define
+and destroy menus on the fly.  You can use any command after the
+keyword, but if the name of an item (that is a submenu) defined with
+<fvwmref cmd="AddToFunc"/>
+follows it, fvwm executes this command:</para>
+
+<programlisting><fvwmref cmd="Function"/> &lt;function-name&gt; &lt;submenu-name&gt;</programlisting>
+
+<para>i.e. the name is passed to the function as its first argument and
+can be referred to with "$0".</para>
+
+<para>The
+<command>fvwm-menu-directory</command>
+script mentioned above may be used with
+<emphasis remap='I'>MissingSubmenuFunction</emphasis>
+to create an up to date recursive directory listing.</para>
+
+<para>Example:</para>
+
+<programlisting>
+# There is another shell script fvwm_make_directory_menu.sh
+# in the utils/ directory of the distribution. To use it,
+# define this function in your configuration file:
+
+<fvwmref cmd="DestroyFunc"/> MakeMissingDirectoryMenu
+<fvwmref cmd="AddToFunc"/> MakeMissingDirectoryMenu
++ I <fvwmref cmd="PipeRead"/> fvwm_make_directory_menu.sh $0
+
+<fvwmref cmd="DestroyMenu"/> SomeMenu
+AddToMenu SomeMenu
++ MissingSubmenuFunction MakeMissingDirectoryMenu
++ "Root directory" <fvwmref cmd="Popup"/> /
+</programlisting>
+
+<para>This is another implementation of the file browser that uses
+sub menus for subdirectories.</para>
+
+<para>Titles can be used within the menu. If you add the option
+<fvwmopt cmd="AddToMenu" opt="top"/>
+behind the keyword
+<emphasis remap='B'>Title</emphasis>,
+the title is added to the top of the menu.  If there was a title
+already, it is overwritten.</para>
+
+<programlisting>AddToMenu Utilities Tools Title top</programlisting>
+
+<para>All text up to the first
+<emphasis remap='SM'>Tab</emphasis>
+in the menu label is aligned to the left side of the menu, all
+text right of the first
+<emphasis remap='SM'>Tab</emphasis>
+is aligned to the left in a second column and all text thereafter
+is placed right aligned in the third column.  <fvwmref cmd="All"/> other
+<emphasis remap='SM'>Tabs</emphasis>
+are replaced by spaces.  Note that you can change this format with
+the
+<fvwmref cmd="MenuStyle" opt="ItemFormat"/>
+option of the
+<fvwmref cmd="MenuStyle"/>
+command.</para>
+
+<para>If the menu-label contains an ampersand ('&amp;'), the next character
+is taken as a hot-key for the menu item.  Hot-keys are underlined
+in the label.  To get a literal '&amp;', insert "&amp;&amp;".  Pressing the
+hot-key moves through the list of menu items with this hot-key or
+selects an item that is the only one with this hot-key.</para>
+
+<para>If the menu-label contains a sub-string which is set off by stars,
+then the text between the stars is expected to be the name of an
+image file to insert in the menu.  To get a literal '*', insert "**".  For example</para>
+
+<programlisting>+ Calculator*xcalc.xpm* <fvwmref cmd="Exec"/> exec xcalc</programlisting>
+
+<para>inserts a menu item labeled "Calculator" with a picture of a
+calculator above it.  The following:</para>
+
+<programlisting>+ *xcalc.xpm*           <fvwmref cmd="Exec"/> exec xcalc</programlisting>
+
+<para>Omits the "Calculator" label, but leaves the picture.</para>
+
+<para>If the menu-label contains a sub-string which is set off by
+percent signs, then the text between the percent signs is expected
+to be the name of image file (a so called mini icon to insert to
+the left of the menu label.  A second mini icon that is drawn at
+the right side of the menu can be given in the same way.  To get a
+literal '%', insert "%%". For example</para>
+
+<programlisting>+ Calculator%xcalc.xpm% <fvwmref cmd="Exec"/> exec xcalc</programlisting>
+
+<para>inserts a menu item labeled "Calculator" with a picture of a
+calculator to the left.  The following:</para>
+
+<programlisting>+ %xcalc.xpm%           <fvwmref cmd="Exec"/> exec xcalc</programlisting>
+
+<para>Omits the "Calculator" label, but leaves the picture.  The
+pictures used with this feature should be small (perhaps 16x16).</para>
+
+<para>If the menu-name (not the label) contains a sub-string which is
+set off by at signs ('@'), then the text between them is expected
+to be the name of an xpm or bitmap file to draw along the left
+side of the menu (a side pixmap).  You may want to use the
+<emphasis remap='I'>SidePic</emphasis>
+option of the
+<fvwmref cmd="MenuStyle"/>
+command instead.  To get a literal '@', insert "@@".  For example</para>
+
+<programlisting>AddToMenu StartMenu@linux-menu.xpm@</programlisting>
+
+<para>creates a menu with a picture in its bottom left corner.</para>
+
+<para>If the menu-name also contains a sub-string surrounded by '^'s, then
+the text between '^'s is expected to be the name of an X11 color
+and the column containing the side picture is colored with that
+color.  You can set this color for a menu style using the
+<fvwmref cmd="MenuStyle" opt="SideColor"/>
+option of the
+<fvwmref cmd="MenuStyle"/>
+command.  To get a literal '^', insert "^^".  Example:</para>
+
+<programlisting>AddToMenu StartMenu@linux-menu.xpm@^blue^</programlisting>
+
+<para>creates a menu with a picture in its bottom left corner and
+colors with blue the region of the menu containing the picture.</para>
+
+<para>In all the above cases, the name of the resulting menu is name
+specified, stripped of the substrings between the various
+delimiters.</para>
+
+</section>

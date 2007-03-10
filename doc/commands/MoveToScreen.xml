@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='MoveToScreen'>
+<title>MoveToScreen</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>MoveToScreen</arg>
+    <arg choice='opt'>screen</arg>
+</cmdsynopsis>
+</command>
+
+<para>Moves the selected window to another Xinerama screen.  The
+<emphasis remap='I'>screen</emphasis>
+argument can be '<fvwmopt cmd="MoveToScreen" opt="p"/>' for the primary screen,
+'<fvwmopt cmd="MoveToScreen" opt="c"/>' for the current
+screen (containing the mouse pointer),
+'<fvwmopt cmd="MoveToScreen" opt="g"/>' for the global screen
+or the screen number itself (counting from zero).</para>
+
+</section>

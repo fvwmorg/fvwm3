@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='PrintInfo'>
+<title>PrintInfo</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>PrintInfo subject [verbose]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Print information on
+<emphasis remap='I'>subject</emphasis>
+on stderr.  An optional integer argument
+<emphasis remap='I'>verbose</emphasis>
+defines the level of information which is given.
+The current valid subjects are:</para>
+
+<para><fvwmopt cmd="PrintInfo" opt="Colors"/>
+which prints information about the colors used by fvwm. This useful
+on screens which can only display 256 (or less) colors at once.
+If
+<emphasis remap='I'>verbose</emphasis>
+is one or greater the palette used by fvwm is printed.
+If you have a limited color palette, and you run out of colors,
+this command might be helpful.</para>
+
+<para><fvwmopt cmd="PrintInfo" opt="Locale"/>
+which prints information on your locale and the fonts that fvwm
+used.
+<emphasis remap='I'>verbose</emphasis>
+can be 1 or 2.</para>
+
+<para><fvwmopt cmd="PrintInfo" opt="nls"/>
+which prints information on the locale catalogs that fvwm used</para>
+
+<para><fvwmopt cmd="PrintInfo" opt="style"/>
+which prints information on fvwm styles.
+<emphasis remap='I'>verbose</emphasis>
+can be 1.</para>
+
+</section>

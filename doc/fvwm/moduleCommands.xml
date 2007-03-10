@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='module_commands'>
+<title>Module Commands</title>
+
+
+<para>Fvwm maintains a database of module configuration lines in a form</para>
+
+<programlisting>
+<emphasis remap='B'>*</emphasis><emphasis remap='I'>&lt;ModuleName&gt;</emphasis><emphasis remap='B'>: </emphasis><emphasis remap='I'>&lt;Config-Resource&gt;</emphasis>
+</programlisting>
+
+<para>where
+<emphasis remap='I'>&lt;ModuleName&gt;</emphasis>
+is either a real module name or an alias.</para>
+
+<para>This database is initially filled from config file (or from
+output of
+<option>-cmd</option>
+config command), and can be later modified either by user (via
+<fvwmref mod="FvwmCommand"/>)
+or by modules.</para>
+
+<para>When modules are run, they read appropriate portion of database.
+(The concept of this database is similar to one used in X resource
+database).</para>
+
+<para>Commands for manipulating module configuration database are
+described below.</para>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Plus.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyModuleConfig.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/KillModule.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Module.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModuleListenOnly.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModulePath.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModuleSynchronous.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModuleTimeout.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SendToModule.xml" />
+
+
+</section>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='EdgeResistance'>
+<title>EdgeResistance</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>EdgeResistance scrolling moving [xinerama-moving]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Tells how hard it should be to change the desktop viewport by
+moving the mouse over the edge of the screen and how hard it
+should be to move a window over the edge of the screen.</para>
+
+<para>The first parameter tells how many milliseconds the pointer must
+spend on the screen edge before fvwm moves the viewport.  This is
+intended for people who use</para>
+
+<programlisting>
+<fvwmref cmd="EdgeScroll"/> 100 100
+</programlisting>
+
+<para>but find themselves accidentally flipping pages when they do not
+want to.</para>
+
+<para>The second parameter tells how many pixels over the edge of the
+screen a window's edge must move before it actually moves
+partially off the screen.  By default the viewport is moved a full
+page in the requested direction, but if you used
+<fvwmref cmd="EdgeScroll"/>
+and set any values other than zero they are used instead.</para>
+
+<para>Note that, with</para>
+
+<programlisting>
+<fvwmref cmd="EdgeScroll"/> 0 0
+</programlisting>
+
+<para>it is still possible to move or resize windows across the edge of
+the current screen.  By making the first parameter to
+<emphasis remap='B'>EdgeResistance</emphasis>
+10000 this type of motion is impossible.  With
+<emphasis remap='B'>EdgeResistance</emphasis>
+less than 10000 but greater than 0 moving over pages becomes
+difficult but not impossible.  See also
+<fvwmref cmd="EdgeThickness"/>.</para>
+
+<para>The optional third parameter does the same as the second, but for
+individual Xinerama screens.  If omitted,
+<emphasis remap='I'>xinerama-moving</emphasis>
+is set to the value of
+<emphasis remap='I'>moving</emphasis>.
+Set
+<emphasis remap='I'>xinerama-moving</emphasis>
+to zero to ignore individual screen edges.  Note that the center of
+the window being moved determines the xinerama screen on which the
+window should be kept.</para>
+
+</section>

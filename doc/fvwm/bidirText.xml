@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+
+<section id='bidirectional_text'>
+<title>Bi-directional Text</title>
+<para>Arabic and Hebrew text require bi-directional text support to be
+displayed correctly, this means that logical strings should be
+converted before their visual presentation, so left-to-right and
+right-to-left sub-strings are determined and reshuffled.
+In fvwm this is done automatically in window titles, menus,
+module labels and other places if the fonts used for displaying the
+text are of one of the charsets that require
+<emphasis remap='I'>bidi</emphasis>
+(bi-directional) support.  For example, this includes iso8859-6,
+iso8859-8 and iso10646-1 (unicode), but not other iso8859-* fonts.</para>
+
+<para>This bi-directional text support is done using the
+<emphasis remap='I'>fribidi</emphasis>
+library compile time option, see
+<emphasis remap='I'>INSTALL.fvwm</emphasis>.</para>
+
+</section>

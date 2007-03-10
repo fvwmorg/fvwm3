@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='controlling_window_styles'>
+<title>Controlling Window Styles</title>
+
+<para>For readability, the commands in this section are not sorted alphabetically.
+The description of the <fvwmref cmd="Style"/> command can be found at the end of this section.</para>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/FocusStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyWindowStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/UpdateStyles.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Style.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WindowStyle.xml" />
+
+
+</section>

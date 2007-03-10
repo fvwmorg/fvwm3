@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='mouse_key_and_stroke_bindings'>
+<title>Mouse, Key &amp; Stroke Bindings</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/IgnoreModifiers.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EdgeCommand.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EdgeLeaveCommand.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/GnomeButton.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Key.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Mouse.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/PointerKey.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Stroke.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/StrokeFunc.xml" />
+
+
+</section>

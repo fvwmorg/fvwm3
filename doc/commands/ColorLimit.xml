@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='ColorLimit'>
+<title>ColorLimit</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>ColorLimit</arg>
+    <arg choice='plain'>limit</arg>
+</cmdsynopsis>
+</command>
+
+<para>
+This command is obsolete. See the <option>--color-limit</option> option to fvwm.
+</para>
+
+</section>

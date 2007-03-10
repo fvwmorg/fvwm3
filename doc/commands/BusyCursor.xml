@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='BusyCursor'>
+<title>BusyCursor</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>BusyCursor</arg>
+    <arg choice='opt'>Option bool</arg>
+    <arg choice='plain'>, ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command controls the cursor during the execution of certain
+commands.
+<emphasis remap='I'>Option</emphasis>
+can be
+<emphasis>DynamicMenu</emphasis>,
+<fvwmopt cmd="BusyCursor" opt="ModuleSynchronous"/>,
+<emphasis>Read</emphasis>,
+<emphasis>Wait</emphasis> or
+<emphasis>*</emphasis>.
+An option must be followed by a boolean argument
+<emphasis remap='I'>bool</emphasis>.
+You can use commas to separate individual options.  If you set an
+option to "True", then when the corresponding command is run, fvwm
+displays the cursor of the
+<emphasis remap='I'>WAIT</emphasis>
+context of the
+<fvwmref cmd="CursorStyle"/>
+command.  "False" forces to not display the cursor.  The default is:</para>
+
+<programlisting>
+BusyCursor DynamicMenu False, ModuleSynchronous False, \
+  Read False, Recapture True, Wait False
+</programlisting>
+
+&fixme; <!-- BusyCursor Recapture ... is undocumented! -->
+		<!-- & no description for ModuleSynchronous option. -->
+
+<para>
+The <fvwmopt cmd="BusyCursor" opt="*"/> option
+refers to all available options.</para>
+
+<para>
+The <fvwmopt cmd="BusyCursor" opt="Read"/>
+option controls the <fvwmref cmd="PipeRead"/> command.</para>
+
+<para>
+The <fvwmopt cmd="BusyCursor" opt="DynamicMenu"/>
+option affects the <fvwmref cmd="AddToMenu" opt="DynamicPopupAction"/>
+and <fvwmref cmd="AddToMenu" opt="MissingSubmenuFunction"/>
+options of the <fvwmref cmd="AddToMenu"/>
+command.  If this option is set to "False", then the busy cursor
+is not displayed during a dynamic menu command even if this
+command is a <fvwmref cmd="Read"/> or <fvwmref cmd="PipeRead"/>
+command and the <fvwmopt cmd="BusyCursor" opt="Read"/>
+option is set to "True".</para>
+
+<para>
+The <fvwmopt cmd="BusyCursor" opt="Wait"/>
+option affects only the root cursor.  During a wait pause the root
+cursor is replaced by the busy cursor and fvwm is still fully
+functional (you can escape from the pause, see the
+<fvwmref cmd="EscapeFunc"/>
+command).  If you want to use this option and if you do not use
+the default root cursor, you must set your root cursor with the
+<fvwmref cmd="CursorStyle"/> command.</para>
+
+</section>

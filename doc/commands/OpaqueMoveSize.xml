@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='OpaqueMoveSize'>
+<title>OpaqueMoveSize</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>OpaqueMoveSize</arg>
+    <arg choice='opt'>percentage</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>Tells fvwm the maximum size window with which opaque window
+movement should be used.  The percentage is percent of the total
+screen area (may be greater than 100).  With</para>
+
+<programlisting>OpaqueMoveSize 0</programlisting>
+
+<para>all windows are moved using the traditional rubber-band
+outline. With</para>
+
+<programlisting>
+OpaqueMoveSize <fvwmopt cmd="OpaqueMoveSize" opt="unlimited"/>
+</programlisting>
+
+<para>or if a negative percentage is given
+all windows are moved as solid windows.  The default is</para>
+
+<programlisting>OpaqueMoveSize 5</programlisting>
+
+<para>which allows small windows to be moved in an opaque manner but
+large windows are moved as rubber-bands.  If
+<emphasis remap='I'>percentage</emphasis>
+is omitted or invalid the default value is set.  To resize windows
+in an opaque manner you can use the
+<fvwmref cmd="Style" opt="ResizeOpaque"/>
+style.  See
+the <fvwmref cmd="Style"/>
+command.</para>
+
+</section>

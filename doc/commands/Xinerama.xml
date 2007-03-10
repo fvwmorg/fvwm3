@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Xinerama'>
+<title>Xinerama</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Xinerama bool</arg>
+</cmdsynopsis>
+</command>
+
+<para>Enables Xinerama support if the boolean argument is true and
+disables it if the argument is false.  Calling this command
+without arguments turns on Xinerama support if it was disabled before
+and turns it off if it was enabled.  For example:</para>
+
+<programlisting>
+# Turn Xinerama support on, use primary screen 2
+<fvwmref cmd="XineramaPrimaryScreen"/> 2
+Xinerama on
+#Turn it off again
+Xinerama off
+</programlisting>
+
+
+</section>

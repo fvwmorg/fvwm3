@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='All'>
+<title>All</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>All</arg>
+    <arg choice='opt'>options</arg>
+    <arg choice='opt'>(conditions)</arg>
+    <arg choice='plain'>command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Execute
+<emphasis remap='I'>command</emphasis>
+on all windows meeting the conditions.  It returns 1 if any window
+matches the condition and 0 otherwise. The execution starts at the top of the
+window ring and continues towards the bottom. The
+<emphasis remap='I'>options</emphasis>
+can be any combination of
+<emphasis remap='I'>Reverse</emphasis> and <emphasis remap='I'>UseStack</emphasis>.
+If the option
+<emphasis remap='I'>Reverse</emphasis>
+is given the execution order is reversed. The option
+<emphasis remap='I'>UseStack</emphasis>
+makes All use the stacking order instead of the window ring when walking
+through windows.
+See the <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+<para>This command implies the conditions
+<emphasis remap='I'>CirculateHit</emphasis>, <emphasis remap='I'>CirculateHitIcon</emphasis> and <emphasis remap='I'>CirculateHitShaded</emphasis>.
+They can be turned off by specifying
+<emphasis remap='I'>!CirculateHit</emphasis>
+etc. explicitly.</para>
+</section>

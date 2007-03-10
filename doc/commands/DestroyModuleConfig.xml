@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DestroyModuleConfig'>
+<title>DestroyModuleConfig</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>DestroyModuleConfig module_config</arg>
+</cmdsynopsis>
+</command>
+
+<para>Deletes module configuration entries, so that new configuration
+lines may be entered instead.  This also sometimes the only way to
+turn back some module settings, previously defined.  This changes
+the way a module runs during a fvwm session without restarting.
+Wildcards can be used for portions of the name as well.</para>
+
+<para>The new non-conflicting syntax allows a delimiter, a colon and
+optional spaces between the module name and the rest of the line.
+In this case a module name (or alias) can't have wildcards.</para>
+
+<programlisting>
+DestroyModuleConfig FvwmButtons*
+DestroyModuleConfig FvwmForm: Fore
+DestroyModuleConfig FvwmIconBox: Max*
+</programlisting>
+
+
+</section>

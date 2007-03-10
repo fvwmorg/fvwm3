@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='configuration'>
+<title>Configuration</title>
+<section id='configuration_files'>
+<title>Configuration Files</title>
+<para>The configuration file is used to describe mouse and button
+bindings, colors, the virtual display size, and related items.
+The initialization configuration file is typically called
+<emphasis remap='I'>config</emphasis> (or <markup>.fvwm2rc</markup>).
+By using the
+<fvwmref cmd="Read"/>
+command, it is easy to read in new configuration files as you go.</para>
+
+<para>Lines beginning with '#' are ignored by fvwm.  Lines starting with '*'
+are expected to contain module configuration commands (rather
+than configuration commands for fvwm itself). Like in shell
+scripts embedded newlines in a configuration file line can be
+quoted by preceding them with a backslash.  All lines linked in
+this fashion are treated as a single line.  The newline itself is
+ignored.</para>
+
+<para>Fvwm makes no distinction between configuration commands and
+action commands, so anything mentioned in the fvwm commands
+section can be placed on a line by itself for fvwm to execute as
+it reads the configuration file, or it can be placed as an
+executable command in a menu or bound to a mouse button or a
+keyboard key.  It is left as an exercise for the user to decide
+which function make sense for initialization and which ones make
+sense for run-time.</para>
+
+</section>
+
+<section id='supplied_configuration'>
+<title>Supplied Configuration</title>
+<para>A sample configuration file,
+<emphasis remap='I'>system.fvwm2rc</emphasis>,
+is supplied with the fvwm distribution.  It is well commented and
+can be used as a source of examples for fvwm configuration.
+It may be copied to <filename>/usr/local/share/fvwm/config</filename> file.</para>
+
+<para>Alternatively, the built-in menu (accessible when no
+configuration file is found) has options to create an initial
+config file for the user.</para>
+
+<para>If you are new to FVWM, try
+<ulink url="http://fvwm-themes.sourceforge.net/">fvwm-themes</ulink>
+package demonstrating the powerful fvwm functionality.</para>
+
+</section>
+</section>

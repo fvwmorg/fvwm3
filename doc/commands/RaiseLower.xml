@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='RaiseLower'>
+<title>RaiseLower</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>RaiseLower</arg>
+</cmdsynopsis>
+</command>
+
+<para>Alternately raises and lowers a window.  The window is raised if
+it is obscured by any window (except for its own transients when
+<fvwmref cmd="Style" opt="RaiseTransient"/>
+style is used; see the
+<fvwmref cmd="Style"/>
+command) otherwise it is lowered.</para>
+
+</section>

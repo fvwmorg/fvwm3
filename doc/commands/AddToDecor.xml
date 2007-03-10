@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='AddToDecor'>
+<title>AddToDecor</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>AddToDecor</arg>
+    <arg choice='plain'>decor</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.</para>
+
+<para>Add or divert commands to the decor named
+<emphasis remap='I'>decor</emphasis>.
+A decor is a name given to the set of commands which affect button
+styles, title-bar styles and border styles.  If
+<emphasis remap='I'>decor</emphasis>
+does not exist it is created; otherwise the existing
+<emphasis remap='I'>decor</emphasis>
+is modified.  Note: Earlier versions allowed to use the
+<fvwmref cmd="HilightColor"/>, <fvwmref cmd="HilightColorset"/> and <fvwmref cmd="WindowFont"/>
+commands in decors.  This is no longer possible.  Please use the
+<fvwmref cmd="Style"/>
+command with the
+<emphasis remap='I'>Hilight...</emphasis> and <emphasis remap='I'>Font</emphasis>
+options.</para>
+
+<para>New decors start out exactly like the "default" decor without any
+style definitions.  A given decor may be applied to a set of
+windows with the
+<fvwmref cmd="Style" opt="UseDecor"/>
+option of the
+<fvwmref cmd="Style"/>
+command.  Modifying an existing decor affects all windows which
+are currently assigned to it.</para>
+
+<para><emphasis remap='B'>AddToDecor</emphasis>
+is similar in usage to the
+<fvwmref cmd="AddToMenu"/> and <fvwmref cmd="AddToFunc"/>
+commands, except that menus and functions are replaced by
+<fvwmref cmd="ButtonStyle"/>, <fvwmref cmd="AddButtonStyle"/>, <fvwmref cmd="TitleStyle"/>,
+<fvwmref cmd="AddTitleStyle"/> and <fvwmref cmd="BorderStyle"/>
+commands.  Decors created with
+<emphasis remap='B'>AddToDecor</emphasis>
+can be manipulated with
+<fvwmref cmd="ChangeDecor"/>, <fvwmref cmd="DestroyDecor"/>, <fvwmref cmd="UpdateDecor"/>
+and the
+<fvwmref cmd="Style"/>
+option.</para>
+
+<para>The following example creates a decor "FlatDecor" and style
+"FlatStyle".  They are distinct entities:</para>
+
+<programlisting>
+AddToDecor FlatDecor
++ <fvwmref cmd="ButtonStyle"/> All Active (-- flat) Inactive (-- flat)
++ <fvwmref cmd="TitleStyle"/>  -- flat
++ <fvwmref cmd="BorderStyle"/> -- HiddenHandles NoInset
+
+<fvwmref cmd="Style"/> FlatStyle UseDecor FlatDecor, HandleWidth 4, ForeColor white, BackColor grey40, HilightFore black, HilightBack grey70
+
+<fvwmref cmd="Style"/> xterm UseStyle FlatStyle
+</programlisting>
+
+<para>An existing window's decor may be reassigned with
+<fvwmref cmd="ChangeDecor"/>.
+A decor can be destroyed with
+<fvwmref cmd="DestroyDecor"/>.</para>
+
+<programlisting>
+<fvwmref cmd="DestroyDecor"/> FlatDecor
+AddToDecor FlatDecor ...
+
+<fvwmref cmd="Style"/> FlatStyle UseDecor FlatDecor
+</programlisting>
+
+<para>and now apply the style again:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> xterm UseStyle FlatStyle
+</programlisting>
+
+</section>

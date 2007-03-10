@@ -1,0 +1,23 @@
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DesktopSize'>
+<title>DesktopSize</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DesktopSize</arg>
+    <arg choice='plain'>Horizontal<emphasis>x</emphasis>Vertical</arg>
+</cmdsynopsis>
+</command>
+
+<para>Defines the virtual desktop size in units of the physical screen
+size.</para>
+
+</section>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Echo'>
+<title>Echo</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Echo string</arg>
+</cmdsynopsis>
+</command>
+
+<para>Prints a message to
+<emphasis remap='I'>stderr</emphasis>.
+Potentially useful for debugging things in your
+<emphasis remap='I'>config</emphasis>.</para>
+
+<programlisting>
+Echo Beginning style definitions...
+</programlisting>
+
+
+</section>

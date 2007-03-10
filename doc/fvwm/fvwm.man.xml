@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<article>
+<artheader>
+	<title>FVWM &version;</title>
+	<author>Scott Smedley</author>
+	<titleabbrev>fvwm</titleabbrev>
+	<date>&releasedate;</date>
+</artheader>
+
+<section id="name">
+<title>Name</title>
+<para>fvwm - F? Virtual Window Manager for X11</para>
+</section>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="synopsis.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="description.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="options.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="windowAnatomy.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="virtualDesktop.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="multiScreen.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="xinerama.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="initialization.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="compilation.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="images.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="modules.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="icccm.xml" />
+
+<section id="gnome">
+<title>Gnome Compliance</title>
+<para>Fvwm attempts to be <acronym>GNOME</acronym> (version 1) compliant.
+Check <ulink url='http://www.gnome.org'>http://www.gnome.org</ulink>
+for what that may mean. To disable <acronym>GNOME</acronym> hints for some
+or all windows, the
+<fvwmref cmd="GNOMEIgnoreHints"/>
+style can be used.</para>
+</section>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ewmh.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mwm.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="openLook.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="m4.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cpp.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="configuration.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="fonts.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bidirText.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="shortcuts.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="session.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="builtinBindings.xml" />
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="execution.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="quoting.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="expansion.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="scripting.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="commands.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="environment.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="authors.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="copyright.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bugs.xml" />
+
+
+</article>

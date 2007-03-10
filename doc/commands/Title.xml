@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Title'>
+<title>Title</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Title</arg>
+</cmdsynopsis>
+</command>
+
+<para>Does nothing This is used to insert a title line in a popup or menu.</para>
+
+</section>

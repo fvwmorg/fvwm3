@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Popup'>
+<title>Popup</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Popup</arg>
+    <arg choice='plain'>PopupName</arg>
+    <arg choice='opt'>position</arg>
+    <arg choice='opt'>default-action</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>This command has two purposes: to bind a menu to a key or mouse
+button, and to bind a sub menu into a menu.  The formats for the
+two purposes differ slightly.  The
+<emphasis remap='I'>position</emphasis>
+arguments are the same as for
+<fvwmref cmd="Menu"/>.
+The command
+<emphasis remap='I'>default-action</emphasis>
+is invoked if the user clicks a button to invoke the menu and
+releases it immediately again (or hits the key rapidly twice if
+the menu is bound to a key).  If the default action is not
+specified, double clicking on the menu does nothing.  However, if
+the menu begins with a menu item (i.e. not with a title or a
+separator) and the default action is not given, double clicking
+invokes the first item of the menu (but only if the pointer really
+was over the item).</para>
+
+<para>To bind a previously defined pop-up menu to a key or mouse button:</para>
+
+<!-- .in +.25i -->
+<para>The following example binds mouse buttons 2 and 3 to a pop-up
+called "Window Ops".  The menu pops up if the buttons 2 or 3 are
+pressed in the window frame, side-bar, or title-bar, with no
+modifiers (none of shift, control, or meta).</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 2 FST N Popup "Window Ops"
+<fvwmref cmd="Mouse"/> 3 FST N Popup "Window Ops"
+</programlisting>
+
+<para>Pop-ups can be bound to keys through the use of the
+<fvwmref cmd="Key"/>
+command.  Pop-ups can be operated without using the mouse by
+binding to keys and operating via the up arrow, down arrow, and
+enter keys.</para>
+<!-- .in \-.25i -->
+
+<para>To bind a previously defined pop-up menu to another menu, for use
+as a sub menu:</para>
+
+<!-- .in +.25i -->
+<para>The following example defines a sub menu "Quit-Verify" and binds
+it into a main menu, called "RootMenu":</para>
+
+<programlisting>
+<fvwmref cmd="AddToMenu"/> Quit-Verify
+ + "Really <fvwmref cmd="Quit"/> Fvwm?" <fvwmref cmd="Title"/>
+ + "Yes, Really Quit"  <fvwmref cmd="Quit"/>
+ + "Restart Fvwm"      <fvwmref cmd="Restart"/>
+ + "Restart Fvwm 1.xx" <fvwmref cmd="Restart"/> fvwm1 -s
+ + ""                  <fvwmref cmd="Nop"/>
+ + "No, Don't Quit"    <fvwmref cmd="Nop"/>
+
+<fvwmref cmd="AddToMenu"/> RootMenu "Root Menu" <fvwmref cmd="Title"/>
+ + "Open XTerm Window" Popup NewWindowMenu
+ + "Login as Root"     <fvwmref cmd="Exec"/> exec xterm -fg green -T Root -n Root -e su -
+ + "Login as Anyone"   <fvwmref cmd="Popup"/> AnyoneMenu
+ + "Remote Hosts"      <fvwmref cmd="Popup"/> HostMenu
+ + ""                  <fvwmref cmd="Nop"/>
+ + "X utilities"       Popup Xutils
+ + ""                  <fvwmref cmd="Nop"/>
+ + "Fvwm Modules"      Popup Module-Popup
+ + "Fvwm Window Ops"   Popup Window-Ops
+ + ""                  <fvwmref cmd="Nop"/>
+ + "Previous Focus"    <fvwmref cmd="Prev"/> (AcceptsFocus) <fvwmref cmd="Focus"/>
+ + "Next Focus"        <fvwmref cmd="Next"/> (AcceptsFocus) <fvwmref cmd="Focus"/>
+ + ""                  <fvwmref cmd="Nop"/>
+ + "Refresh screen"    <fvwmref cmd="Refresh"/>
+ + ""                  <fvwmref cmd="Nop"/>
+ + "Reset X defaults"  <fvwmref cmd="Exec"/> xrdb -load \
+                       $HOME/.Xdefaults
+ + ""                  <fvwmref cmd="Nop"/>
+ + ""                  <fvwmref cmd="Nop"/>
+ + <fvwmref cmd="Quit"/>                Popup Quit-Verify
+</programlisting>
+
+
+<para>Popup differs from
+<fvwmref cmd="Menu"/>
+in that pop-ups do not stay up if the user simply clicks.  These
+are popup-menus, which are a little hard on the wrist.
+<fvwmref cmd="Menu"/>
+menus stay up on a click action.  See the
+<fvwmref cmd="Menu"/>
+command for an explanation of the interactive behavior of menus. A
+menu can be open up to ten times at once, so a menu may even use
+itself or any of its predecessors as a sub menu.</para>
+
+</section>

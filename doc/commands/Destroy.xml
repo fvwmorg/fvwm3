@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Destroy'>
+<title>Destroy</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Destroy</arg>
+</cmdsynopsis>
+</command>
+
+<para>Destroys an application window, which usually causes the
+application to crash and burn.</para>
+
+</section>

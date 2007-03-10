@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='CursorStyle'>
+<title>CursorStyle</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>CursorStyle</arg>
+    <arg choice='plain'>context</arg>
+    <arg choice='opt'>number|name|xpm|None|Tiny <arg choice='opt'>fore back</arg></arg>
+</cmdsynopsis>
+</command>
+
+<para>Defines a new cursor for the specified context.  Note that this
+command can not control the shapes an applications uses, for
+example, to indicate that it is busy.  The various contexts are:</para>
+
+<informaltable>
+<tgroup cols='2' align='left' valign='top'>
+<tbody>
+<row>
+	<entry><emphasis remap='B'>POSITION </emphasis>(top_left_corner)</entry>
+	<entry>used when initially placing windows</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>TITLE </emphasis>(top_left_arrow)</entry>
+	<entry>used in a window title-bar</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>DEFAULT </emphasis>(top_left_arrow)</entry>
+	<entry>used in windows that do not set their cursor</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>SYS </emphasis>(hand2)</entry>
+	<entry>used in one of the title-bar buttons</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>MOVE </emphasis>(fleur)</entry>
+	<entry>used when moving or resizing windows</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>RESIZE </emphasis>(sizing)</entry>
+	<entry>used when moving or resizing windows</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>WAIT </emphasis>(watch)</entry>
+	<entry>used during certain fvwm commands (see <fvwmref cmd="BusyCursor"/> for details)</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>MENU </emphasis>(top_left_arrow)</entry>
+	<entry>used in menus</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>SELECT </emphasis>(crosshair)</entry>
+	<entry>used when the user is required to select a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>DESTROY </emphasis>(pirate)</entry>
+	<entry>used for <fvwmref cmd="Destroy"/>, <fvwmref cmd="Close"/>, and <fvwmref cmd="Delete"/> commands</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>TOP </emphasis>(top_side)</entry>
+	<entry>used in the top side-bar of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>RIGHT </emphasis>(right_side)</entry>
+	<entry>used in the right side-bar of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>BOTTOM </emphasis>(bottom_side)</entry>
+	<entry>used in the bottom side-bar of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>LEFT </emphasis>(left_side)</entry>
+	<entry>used in the left side-bar of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>TOP_LEFT </emphasis>(top_left_corner)</entry>
+	<entry>used in the top left corner of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>TOP_RIGHT </emphasis>(top_right_corner)</entry>
+	<entry>used in the top right corner of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>BOTTOM_LEFT </emphasis>(bottom_left_corner)</entry>
+	<entry>used in the bottom left corner of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>BOTTOM_RIGHT </emphasis>(bottom_right_corner)</entry>
+	<entry>used in the bottom right corner of a window</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>TOP_EDGE </emphasis>(top_side)</entry>
+	<entry>used at the top edge of the screen</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>RIGHT_EDGE </emphasis>(right_side)</entry>
+	<entry>used at the right edge of the screen</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>BOTTOM_EDGE </emphasis>(bottom_side)</entry>
+	<entry>used at the bottom edge of the screen</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>LEFT_EDGE </emphasis>(left_side)</entry>
+	<entry>used at the left edge of the screen</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>ROOT </emphasis>(left_ptr)</entry>
+	<entry>used as the root cursor</entry>
+</row>
+<row>
+	<entry><emphasis remap='B'>STROKE </emphasis>(plus)</entry>
+	<entry>used during a <fvwmref cmd="StrokeFunc"/> command.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+
+<para>The defaults are shown in parentheses above.  If you ever want to
+restore the default cursor for a specific context you can omit the
+second argument.</para>
+
+<para>The second is either the numeric value of the cursor as defined in
+the include file
+<emphasis remap='I'>X11/cursorfont.h</emphasis>
+or its name (without the XC_ prefix). Alternatively, the xpm file
+name may be specified.  This xpm file should contain a pixmap
+using 3 colors (None, black, white) and an optional hot-spot.  If
+no hot-spot is defined, the hot-spot is placed in the center of
+the image.  Furthermore the name can be
+<fvwmopt cmd="CursorStyle" opt="None"/>
+(no cursor) or
+<fvwmopt cmd="CursorStyle" opt="Tiny"/>
+(a single pixel as the cursor).  For example:</para>
+
+<programlisting>
+# make the kill cursor be XC_gumby (both forms work):
+CursorStyle DESTROY 56
+CursorStyle DESTROY gumby
+
+CursorStyle TOP_LEFT topl.xpm
+CursorStyle ROOT nice_arrow.xpm yellow black
+</programlisting>
+
+<para>The optional
+<fvwmopt cmd="CursorStyle" opt="fore"/> and <fvwmopt cmd="CursorStyle" opt="back"/>
+arguments specify the foreground and background colors for the
+cursor, defaulting to black and white.</para>
+
+<para>Here is an example pixmap file
+<emphasis remap='I'>nice_arrow.xpm</emphasis>:</para>
+
+<programlisting>
+/* XPM */
+static char *nice_arrow_xpm[] = {
+/* width height num_colors chars_per_pixel hot-spot */
+"    14    14        3            1          1 1",
+/* colors */
+"  c None",
+". c black",
+"# c white",
+/* pixels */
+"...           ",
+".##..         ",
+".####..       ",
+" .#####..     ",
+" .#######..   ",
+"  .########.. ",
+"  .##########.",
+"   .#######.. ",
+"   .######.   ",
+"    .######.  ",
+"    .###.###. ",
+"     .#. .###.",
+"     .#.  .#. ",
+"      .    .  ",
+};
+</programlisting>
+
+<para>The hot-spot coordinates are relative to zero, in the above
+example, the hot-spot is in the second row, and second column.</para>
+
+</section>

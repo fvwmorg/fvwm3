@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='extended_window_manager_hints'>
+<title>Extended Window Manager Hints</title>
+<para>Fvwm attempts to respect the extended window manager hints (ewmh
+or <acronym>EWMH</acronym> for short) specification:
+<ulink url='http://www.freedesktop.org/wiki/Standards_2fwm_2dspec'>http://www.freedesktop.org/wiki/Standards_2fwm_2dspec</ulink>
+and some extensions of this specification.  This allows fvwm to
+work with
+<acronym>KDE</acronym>
+version &gt;= 2,
+<acronym>GNOME</acronym>
+version 2 and other applications which respect this specification
+(any application based on
+<emphasis remap='SM'>GTK+</emphasis>
+version 2). Applications which respect this specification are
+called ewmh compliant applications.</para>
+
+<para>This support is configurable with styles and commands.
+These styles and commands have
+<acronym>EWMH</acronym>
+as the prefix (so you can find them easily in this man page).</para>
+
+<para>There is a new Context 'D' for the
+<fvwmref cmd="Key"/>,
+<fvwmref cmd="PointerKey"/>,
+<fvwmref cmd="Mouse"/> and
+<fvwmref cmd="Stroke"/>
+commands. This context is for desktop applications (such as
+kdesktop and Nautilus desktop).</para>
+
+<para>When a compliant taskbar asks fvwm to activate a window (typically
+when you click on a button which represents a window in such a
+taskbar), then fvwm calls the complex function
+<emphasis remap='B'>EWMHActivateWindowFunc</emphasis>
+which by default is Iconify Off, Focus and Raise. You can redefine
+this function.  For example:</para>
+
+<programlisting>
+<fvwmref cmd="DestroyFunc"/> EWMHActivateWindowFunc
+<fvwmref cmd="AddToFunc"/> EWMHActivateWindowFunc I <fvwmref cmd="Iconify"/> Off
++ I <fvwmref cmd="Focus"/>
++ I <fvwmref cmd="Raise"/>
++ I <fvwmref cmd="WarpToWindow"/> 50 50
+</programlisting>
+
+<para>additionally warps the pointer to the center of the window.</para>
+
+<para>The
+<acronym>EWMH</acronym>
+specification introduces the notion of Working Area.  Without ewmh
+support the Working Area is the full visible screen (or all your
+screens if you have a multi head setup and you use Xinerama).
+However, compliant applications (such as a panel) can ask to
+reserve space at the edge of the screen.  If this is the case, the
+Working Area is your full visible screen minus these reserved
+spaces. If a panel can be hidden by clicking on a button the
+Working Area does not change (as you can unhide the panel at any
+time), but the Dynamic Working Area is updated: the space reserved
+by the panel is removed (and added again if you pop up the
+panel). The Dynamic Working Area may be used when fvwm places or
+maximizes a window.  To know if an application reserves space you
+can type "xprop | grep _NET_WM_STRUT" in a terminal and select the
+application.  If four numbers appear then these numbers define the
+reserved space as explained in the
+<fvwmref cmd="EwmhBaseStruts"/>
+command.</para>
+
+</section>

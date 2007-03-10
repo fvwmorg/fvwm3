@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ModuleTimeout'>
+<title>ModuleTimeout</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ModuleTimeout timeout</arg>
+</cmdsynopsis>
+</command>
+
+<para>Specifies how many seconds fvwm waits for a module to respond. If
+the module does not respond within the time limit then fvwm kills
+it.
+<emphasis remap='I'>timeout</emphasis>
+must be greater than zero, or it is reset to the default value of
+30 seconds.</para>
+
+</section>

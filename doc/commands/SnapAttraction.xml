@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='SnapAttraction'>
+<title>SnapAttraction</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>SnapAttraction</arg>
+    <arg choice='opt'>proximity <arg choice='opt'>behaviour</arg><arg choice='opt'>Screen</arg></arg>
+</cmdsynopsis>
+</command>
+
+
+<para>If during an interactive move the window or icon comes within
+<emphasis remap='I'>proximity</emphasis>
+pixels of another the window or icon, it is moved to make the
+borders adjoin.  The default of 0 means that no snapping happens.
+Calling this command without arguments turns off snap attraction
+and restores the default behavior.  Please refer also to the
+<fvwmref cmd="SnapGrid"/>
+command.</para>
+
+<para>The
+<emphasis remap='I'>behavior</emphasis>
+argument is optional and may be set to one of the four following
+values:  With
+<fvwmopt cmd="SnapAttraction" opt="All"/>
+both icons and windows snap to other windows and other icons.
+<fvwmopt cmd="SnapAttraction" opt="SameType"/>
+lets snap windows only to other windows and icons only to other
+icons. With
+<fvwmopt cmd="SnapAttraction" opt="Windows"/>
+windows snap only to other windows.  Icons do not snap. Similarly
+with
+<fvwmopt cmd="SnapAttraction" opt="Icons"/>
+icons snap to only other icons and windows do not snap.</para>
+
+<para>If the
+<emphasis remap='I'>behavior</emphasis>
+option is not given, the snapping behavior is not changed.  The
+default behavior is
+<emphasis remap='I'>All</emphasis>.</para>
+
+<para>If the
+<fvwmopt cmd="SnapAttraction" opt="Screen"/>
+option is present windows and or icons are snapped to the screen
+edges too.</para>
+
+</section>

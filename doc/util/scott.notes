@@ -1,0 +1,62 @@
+
+# $Id$
+
+The docbook-xml & docbook-xsl subdirectories contain source files
+from other projects.
+
+
+Download DocBook DTDs from:
+
+	http://www.oasis-open.org/docbook/xml/4.5/docbook-xml-4.5.zip
+
+Download XSL stylesheets from:
+
+	http://sourceforge.net/project/showfiles.php?group_id=21935&package_id=16608
+
+	docbook-xsl-1.72.0.tar.bz2
+
+	Actually, I ended up using a snapshot (28-Feb-2007) from:
+
+	http://docbook.sourceforge.net/snapshots/
+
+Strip the XSL release:
+
+	subdir=~/fvwm/fvwm/doc/docbook-xsl
+	mkdir $subdir/html
+	cp -p --parents $(/bin/grep xsl:include docbook.xsl | cut -f 2 -d \") !$
+	cd ..
+	cp -p --parents html/docbook.xsl ~/fvwm/fvwm/doc/docbook-xsl
+	cp -p --parents highlighting/common.xsl !$
+	cp -rp manpages !$
+	cp -p --parents html/manifest.xsl !$
+	cp -rp common !$
+	cp -p --parents html/highlight.xsl !$
+	cd !$/common
+	rm -f $(grep ENTITY l10n.xml | cut -d \" -f 2 | grep -v en.xml)
+	vim l10n.xml # Just use en.xml -- comment out the rest.
+
+
+Hack the XSL release:
+
+	manpages/other.xsl:
+
+	We disable string substitution because it uses WAAAYYY too much
+	memory & instead post-process the output with a Perl script.
+
+	This is fixed in the 28-Feb-2007 snapshot, so we don't need to hack
+	this anymore.
+
+	<xsl:variable name="adjusted.content">
+      <xsl:call-template name="apply-string-subst-map">
+        <xsl:with-param name="content" select="$pre.adjusted.content"/>
+        <xsl:with-param name="map.contents" select="''"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+Other:
+
+	http://mail.gnome.org/archives/xslt/2007-February/msg00010.html
+	https://sourceforge.net/tracker/?func=detail&aid=1659625&group_id=21935&atid=373749
+
+	<thead> in <informaltable> output twice:
+	https://sourceforge.net/tracker/index.php?func=detail&aid=1673004&group_id=21935&atid=373747

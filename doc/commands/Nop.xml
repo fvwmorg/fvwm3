@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Nop'>
+<title>Nop</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Nop</arg>
+</cmdsynopsis>
+</command>
+
+<para>Does nothing.  This is used to insert a blank line or separator in
+a menu.  If the menu item specification is</para>
+
+<programlisting>
+<fvwmref cmd="AddToMenu"/> MyMenu " " Nop
+</programlisting>
+
+<para>then a blank line is inserted.  If it looks like</para>
+
+<programlisting>
++ "" Nop
+</programlisting>
+
+<para>then a separator line is inserted.  Can also be used as the
+double-click action for
+<fvwmref cmd="Menu"/> or <emphasis remap='B'>Popup</emphasis>.</para>
+
+</section>

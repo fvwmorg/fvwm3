@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='XineramaPrimaryScreen'>
+<title>XineramaPrimaryScreen</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>XineramaPrimaryScreen [primary-screen]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Takes an integer number or 'g' or 'c' as its argument.  A number
+is taken as the number of the Xinerama screen that is to be used
+as the primary screen.  The primary screen can be used as the
+preferred screen to place windows with</para>
+
+<programlisting>
+XineramaPrimaryScreen &lt;screen number&gt;
+<fvwmref cmd="Style"/> * StartsOnScreen p
+</programlisting>
+
+<para>The primary screen is used in some of the modules and for the
+default icon box too.  Any number that is zero or more is taken as
+the primary screen's number.  Instead, the letter 'c' indicates to
+use the current screen (containing the pointer) whenever the
+primary screen is used.  This may be very confusing under some
+circumstances.  With &acute;g', the global screen is used as the primary
+screen, effectively disabling the primary screen.  Calling this
+function with any other argument (including none) resets the
+primary screen to 0.</para>
+
+</section>

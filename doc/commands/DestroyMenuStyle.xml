@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DestroyMenuStyle'>
+<title>DestroyMenuStyle</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DestroyMenuStyle</arg>
+    <arg choice='plain'>menustyle</arg>
+</cmdsynopsis>
+</command>
+
+<para>Deletes the menu style named
+<emphasis remap='I'>menustyle</emphasis>
+and changes all menus using this style to the default style, you
+cannot destroy the default menu style.</para>
+
+<programlisting>DestroyMenuStyle pixmap1</programlisting>
+
+</section>

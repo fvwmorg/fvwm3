@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DefaultLayers'>
+<title>DefaultLayers</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DefaultLayers</arg>
+    <arg choice='plain'>bottom</arg>
+    <arg choice='plain'>put</arg>
+    <arg choice='plain'>top</arg>
+</cmdsynopsis>
+</command>
+
+<para>changes the layers that are used for the
+<fvwmref cmd="Style" opt="StaysOnBottom"/>,
+<fvwmref cmd="Style" opt="StaysPut"/>,
+<fvwmref cmd="Style" opt="StaysOnTop"/>
+<fvwmref cmd="Style"/>
+options.  Initially, the layers 2, 4 and 6 are used.</para>
+
+</section>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='GlobalOpts'>
+<title>GlobalOpts</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>GlobalOpts [options]</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is obsolete.  Please
+replace the global options in your configuration file according to
+the following table:</para>
+
+<programlisting>
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="WindowShadeShrinks"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="WindowShadeShrinks"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="WindowShadeScrolls"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="WindowShadeScrolls"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="SmartPlacementIsReallySmart"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="MinOverlapPlacement"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="SmartPlacementIsNormal"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="TileCascadePlacement"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="ClickToFocusDoesntPassClick"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="ClickToFocusPassesClickOff"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="ClickToFocusPassesClick"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="ClickToFocusPassesClick"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="ClickToFocusDoesntRaise"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="ClickToFocusRaisesOff"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="ClickToFocusRaises"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="ClickToFocusRaises"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="MouseFocusClickDoesntRaise"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="MouseFocusClickRaisesOff"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="MouseFocusClickRaises"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="MouseFocusClickRaises"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="NoStipledTitles"/>
+  -->
+<fvwmref cmd="Style"/> * !<fvwmref cmd="Style" opt="StippledTitle"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="StipledTitles"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="StippledTitle"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="CaptureHonorsStartsOnPage"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="CaptureHonorsStartsOnPage"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="CaptureIgnoresStartsOnPage"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="CaptureIgnoresStartsOnPage"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="RecaptureHonorsStartsOnPage"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="RecaptureHonorsStartsOnPage"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="RecaptureIgnoresStartsOnPage"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="RecaptureIgnoresStartsOnPage"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="ActivePlacementHonorsStartsOnPage"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="ManualPlacementHonorsStartsOnPage"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="ActivePlacementIgnoresStartsOnPage"/>
+  -->
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="ManualPlacementIgnoresStartsOnPage"/>
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="RaiseOverNativeWindows"/>
+  -->
+<fvwmref cmd="BugOpts"/> <fvwmref cmd="Style" opt="RaiseOverNativeWindows"/> on
+
+GlobalOpts <fvwmopt cmd="GlobalOpts" opt="IgnoreNativeWindows"/>
+  -->
+<fvwmref cmd="BugOpts"/> <fvwmref cmd="Style" opt="RaiseOverNativeWindows"/> off
+
+</programlisting>
+
+
+</section>

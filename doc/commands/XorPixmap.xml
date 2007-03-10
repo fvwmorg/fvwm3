@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='XorPixmap'>
+<title>XorPixmap</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>XorPixmap</arg>
+    <arg choice='opt'>pixmap</arg>
+</cmdsynopsis>
+</command>
+
+<para>Selects the pixmap with which bits are xor'ed when doing
+rubber-band window moving or resizing.  This has a better chance
+of making the rubber-band visible if
+<fvwmref cmd="XorValue"/>
+does not give good results.  An example pixmap
+<emphasis remap='I'>resize.rainbow.xpm</emphasis>
+is provided with the icon distribution.  To turn the
+<emphasis remap='B'>XorPixmap</emphasis>
+off again use the
+<fvwmref cmd="XorValue"/>
+command or omit the
+<emphasis remap='I'>pixmap</emphasis>
+argument.</para>
+
+</section>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ModuleSynchronous'>
+<title>ModuleSynchronous</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ModuleSynchronous [Expect string] [Timeout secs] modulename</arg>
+</cmdsynopsis>
+</command>
+
+<para>The
+<emphasis remap='B'>ModuleSynchronous</emphasis>
+command is very similar to
+<fvwmref cmd="Module"/>.
+Fvwm stops processing any commands and user input until the module
+sends a string beginning with "NOP FINISHED STARTUP" back to fvwm.
+If the optional
+<emphasis remap='I'>Timeout</emphasis>
+is given fvwm gives up if the module sent no input back to fvwm
+for
+<emphasis remap='I'>secs</emphasis>
+seconds.  If the
+<emphasis remap='I'>Expect</emphasis>
+option is given, fvwm waits for the given
+<emphasis remap='I'>string</emphasis>
+instead.
+<emphasis remap='B'>ModuleSynchronous</emphasis>
+should only be used during fvwm startup to enforce the order in
+which modules are started.  This command is intended for use with
+the (currently hypothetical) module that should be in place before
+other modules are started.</para>
+
+<para>Warning: It is quite easy to hang fvwm with this command, even if
+a timeout is given.  Be extra careful choosing the string to wait
+for. Although all modules in the fvwm distribution send back the
+"NOP FINISHED STARTUP" string once they have properly started up,
+this may not be the case for third party modules.  Moreover, you
+can try to escape from a locked
+<emphasis remap='B'>ModuleSynchronous</emphasis>
+command by using the key sequence
+<emphasis remap='SM'>Ctrl-Alt-Escape</emphasis>
+(see the
+<fvwmref cmd="EscapeFunc"/>).</para>
+
+</section>

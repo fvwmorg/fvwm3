@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='RefreshWindow'>
+<title>RefreshWindow</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>RefreshWindow</arg>
+</cmdsynopsis>
+</command>
+
+<para>Causes the chosen window to redraw itself. All pending updates of
+the window's style and look are applied immediately.  E.g. if
+<fvwmref cmd="Style"/> or
+<fvwmref cmd="TitleStyle"/>
+commands were issued inside a fvwm function.</para>
+
+</section>

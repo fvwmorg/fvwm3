@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='SaveSession'>
+<title>SaveSession</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>SaveSession</arg>
+</cmdsynopsis>
+</command>
+
+<para>Causes a session manager (if any) to save the session.  This
+command does not work for xsm, it seems that xsm does not
+implement this functionality.  Use Unix signals to manage xsm
+remotely.</para>
+
+</section>

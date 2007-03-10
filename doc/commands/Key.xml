@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Key'>
+<title>Key</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Key [(window)] Keyname Context Modifiers Function</arg>
+</cmdsynopsis>
+</command>
+
+<para>Binds a keyboard key to a specified fvwm command, or
+removes the binding if
+<fvwmref cmd="Function"/>
+is '-'.  The syntax is the same as for a
+<fvwmref cmd="Mouse"/>
+binding except that the mouse button number is replaced with a
+<emphasis remap='I'>Keyname</emphasis>.
+Normally, the key binding is activated when the key is pressed.
+<emphasis remap='I'>Keyname</emphasis>
+is a standard X11 key name as defined in
+<filename>/usr/include/X11/keysymdef.h</filename>,
+(without the
+<emphasis remap='I'>XK_</emphasis>
+prefix), or the keysym database
+<filename>/usr/X11R6/lib/X11/XKeysymDB</filename>.
+Only key names that are
+generated with no modifier keys or with just the
+<emphasis remap='SM'>Shift</emphasis>
+key held are guaranteed to work.  The
+<emphasis remap='I'>Context</emphasis> and <emphasis remap='I'>Modifiers</emphasis>
+fields are defined as in the
+<fvwmref cmd="Mouse"/>
+binding.  However, when you press a key the context window is the
+window that has the keyboard focus.  That is not necessarily the
+same as the window the pointer is over (with
+<fvwmref cmd="Style" opt="SloppyFocus"/> or
+<fvwmref cmd="Style" opt="ClickToFocus"/>).
+Note that key bindings with the '<fvwmopt cmd="Key" opt="R"/>' (root window) context do not
+work properly with
+<fvwmref cmd="Style" opt="SloppyFocus"/> and
+<fvwmref cmd="Style" opt="ClickToFocus"/>.
+If you encounter problems, use the
+<fvwmref cmd="PointerKey"/>
+command instead.  If you want to bind keys to a window with
+<fvwmref cmd="Style" opt="SloppyFocus"/> or
+<fvwmref cmd="Style" opt="ClickToFocus"/>
+that are supposed to work when the pointer is not over the window,
+fvwm assumes the pointer is over the client window (i.e. you have
+to use the 'W' context).</para>
+
+<para>The special context '<fvwmopt cmd="Key" opt="M"/>' for menus can be used to (re)define the menu
+controls. It can only be used alone or together with 'T' for the menu
+title bar.  See the
+<fvwmref sect="menus" opt="menu_bindings" name="Menu Bindings"/>
+section for details.</para>
+
+<para>The following example binds the built-in window list to pop up
+when
+<emphasis remap='SM'>Alt-Ctrl-Shift-F11</emphasis>
+is hit, no matter where the mouse pointer is:</para>
+
+<programlisting>
+Key F11 A SCM <fvwmref cmd="WindowList"/>
+</programlisting>
+
+<para>Binding a key to a title-bar button causes that button to appear.
+Please refer to the
+<fvwmref cmd="Mouse"/>
+command for details.</para>
+
+</section>

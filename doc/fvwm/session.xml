@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='session_management'>
+<title>Session Management</title>
+<para>Fvwm supports session management according to the X Session
+Management Protocol.  It saves and restores window position, size,
+stacking order, desk, stickiness, shadiness, maximizedness,
+iconifiedness for all windows. Furthermore, some global state is
+saved.</para>
+
+<para>Fvwm doesn't save any information regarding styles, decors,
+functions or menus.  If you change any of these resources during a
+session (e.g. by issuing
+<fvwmref cmd="Style"/>
+commands or by using various modules), these changes are lost
+after saving and restarting the session.  To become permanent,
+such changes have to be added to the configuration file.</para>
+
+<para>Note further that the current implementation has the following
+anomaly when used on a multi-screen display: Starting fvwm for the
+first time, fvwm manages all screens by forking a copy of itself
+for each screen.  Every copy knows its parent and issuing a
+<fvwmref cmd="Quit"/>
+command to any instance of fvwm kills the master and thus all
+copies of fvwm.  When you save and restart the session, the
+session manager brings up a copy of fvwm on each screen, but this
+time they are started as individual instances managing one screen
+only.  Thus a
+<fvwmref cmd="Quit"/>
+kills only the copy it was sent to.  This is probably not a very
+serious problem, since with session management, you are supposed
+to quit a session through the session manager anyway. If it is
+really needed,</para>
+
+<programlisting>
+<fvwmref cmd="Exec"/> exec killall fvwm
+</programlisting>
+
+<para>still kills all copies of fvwm.  Your system must have the
+<command>killall</command>
+command though.</para>
+
+</section>

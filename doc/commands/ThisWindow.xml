@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='ThisWindow'>
+<title>ThisWindow</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ThisWindow [(conditions)] command</arg>
+</cmdsynopsis>
+</command>
+
+<para><emphasis remap='B'>ThisWindow</emphasis>
+executes the specified
+<emphasis remap='I'>command</emphasis>
+in the context of the current operand window.  If there is no
+operand window (it is invoked in the root window), the command is
+ignored.
+<emphasis remap='B'>ThisWindow</emphasis>
+is never interactive.  The command is executed only if the given
+<emphasis remap='I'>conditions</emphasis>
+are met.  It returns -1 if used outside a window context.
+See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+<para>This command implies the conditions
+<emphasis remap='I'>CirculateHit</emphasis>, <emphasis remap='I'>CirculateHitIcon</emphasis> and <emphasis remap='I'>CirculateHitShaded</emphasis>.
+They can be turned off by specifying "!CirculateHit"
+etc. explicitly.</para>
+
+</section>

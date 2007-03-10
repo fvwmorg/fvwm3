@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='color_gradients'>
+<title>Color Gradients</title>
+
+<para>A color gradient is a background that changes its color gradually
+from one hue to a different one.  Color gradients can be used by
+various commands and modules of fvwm.  There are eight types of
+gradients:
+<emphasis remap='B'>HGradient</emphasis>
+is a horizontal gradient,
+<emphasis remap='B'>VGradient</emphasis>
+is vertical,
+<emphasis remap='B'>DGradient</emphasis>
+is diagonal from top left to bottom right,
+<emphasis remap='B'>BGradient</emphasis>
+is backwards diagonal from bottom left to top right,
+<emphasis remap='B'>SGradient</emphasis>
+is concentric squares,
+<emphasis remap='B'>CGradient</emphasis>
+is concentric circles,
+<emphasis remap='B'>RGradient</emphasis>
+is a radar like pattern and
+<emphasis remap='B'>YGradient</emphasis>
+is a Yin Yang style (but without the dots).</para>
+
+<para>The color gradient syntax has two forms:</para>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>?Gradient</arg>
+    <arg choice='plain'>colors</arg>
+    <arg choice='plain'>start-color</arg>
+    <arg choice='plain'>end-color</arg>
+</cmdsynopsis>
+</command>
+
+<para>This form specifies a linear gradient.  The arguments denote the
+total number of
+<emphasis remap='I'>colors</emphasis>
+to allocate (between 2 and 1000), the initial color and the final
+color.</para>
+
+<para>Example:</para>
+
+<programlisting>
+<fvwmref cmd="TitleStyle"/> VGradient 20 rgb:b8/ce/bc rgb:5b/85/d0
+</programlisting>
+
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>?Gradient</arg>
+    <arg choice='plain'>colors</arg>
+    <arg choice='plain'>segments</arg>
+    <arg choice='plain'>color</arg>
+    <arg choice='plain'>length</arg>
+    <arg choice='plain'>color</arg>
+    <arg choice='opt'>length color</arg>
+    <arg choice='plain'> ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>The second form specifies a nonlinear gradient.  The arguments are:
+the total number of
+<emphasis remap='I'>colors</emphasis>
+to allocate (between 2 and 1000), then the number of
+<emphasis remap='I'>segments</emphasis>.
+For each segment, specify the starting
+<emphasis remap='I'>color</emphasis>,
+a relative
+<emphasis remap='I'>length</emphasis>,
+then the ending color.  Each subsequent segment begins with the
+second color of the last segment.  The lengths may be any
+non-negative integers.  The length of one segment divided by the
+sum of all segments lengths is the fraction of the colors that
+are used for the segment.</para>
+
+<para>Examples:</para>
+
+<programlisting>
+<fvwmref cmd="MenuStyle"/> * MenuFace DGradient 128 2 lightgrey 50 blue 50 white
+
+# 20% gradient from red to blue,
+# 30% from blue to black,
+# 50% from black to grey
+<fvwmref cmd="MenuStyle"/> * MenuFace DGradient 100 3 Red 20 Blue 30 Black 50 Grey
+
+# 50% from blue to green, then
+# 50% from yellow to red
+<fvwmref cmd="Colorset"/> 0 HGradient 128 3 Blue 1000 Green 1 Yellow 1000 Red
+</programlisting>
+
+</section>

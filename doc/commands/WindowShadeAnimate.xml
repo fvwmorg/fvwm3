@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='WindowShadeAnimate'>
+<title>WindowShadeAnimate</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>WindowShadeAnimate [steps[p]]</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is obsolete.  Please use the
+<fvwmref cmd="Style" opt="WindowShadeSteps"/>
+option of the
+<fvwmref cmd="Style"/>
+command instead.</para>
+
+
+</section>

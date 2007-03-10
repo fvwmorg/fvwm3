@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='StrokeFunc'>
+<title>StrokeFunc</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>StrokeFunc [Options]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Causes fvwm to record a mouse stroke sequence and to execute the
+corresponding action as defined in a
+<fvwmref cmd="Stroke"/>
+command.  The cursor is modified to the
+<emphasis remap='I'>STROKE</emphasis>
+context of the
+<fvwmref cmd="CursorStyle"/>
+command during recording.  When the stroke is finished
+<emphasis remap='B'>StrokeFunc</emphasis>
+looks for a stroke binding of the form</para>
+
+<programlisting>
+<fvwmref cmd="Stroke"/> sequence 0 Context Modifiers action
+</programlisting>
+
+<para>and executes the corresponding action (Note the 0).  Normal use of
+this function is via a
+<fvwmref cmd="Mouse"/> or
+<fvwmref cmd="Key"/>
+command.  Examples:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 3 A M StrokeFunc
+<fvwmref cmd="Key"/> x R N StrokeFunc
+</programlisting>
+
+<para>If you press mouse button 3 and
+<emphasis remap='SM'>Alt</emphasis>
+anywhere (respectively, press the key x when the cursor is on the
+root window), then fvwm records the mouse motions until the mouse
+button 3 (respectively, the x key) is released and then check if
+the recorded
+<emphasis remap='I'>sequence</emphasis>
+corresponds to a stroke binding of the form</para>
+
+<programlisting>
+"Stroke <emphasis remap='I'>sequence</emphasis> 0 A M <emphasis remap='I'>action</emphasis>"
+"Stroke <emphasis remap='I'>sequence</emphasis> 0 R N <emphasis remap='I'>action</emphasis>"
+</programlisting>
+
+<para>Note that the
+<emphasis remap='I'>Context</emphasis> and <emphasis remap='I'>Modifiers</emphasis>
+are taken at the beginning of the execution of the
+<emphasis remap='B'>StrokeFunc</emphasis>
+command (so you can release the modifiers before the end of the
+stroke recording in the case of a mouse binding and if you used,
+say, a title-bar context the mouse motion can go through an
+application window).  The keys
+<emphasis remap='SM'>Escape</emphasis> and
+<emphasis remap='SM'>Delete</emphasis>
+allow you to abort the command.</para>
+
+<para>The
+<emphasis remap='B'>StrokeFunc</emphasis>
+command has five options:
+<emphasis remap='I'>NotStayPressed</emphasis>, <emphasis remap='I'>EchoSequence</emphasis>, <emphasis remap='I'>DrawMotion</emphasis>, 
+<emphasis remap='I'>FeedBack</emphasis> and <emphasis remap='I'>StrokeWidth</emphasis>.
+These options are disabled by default.
+<fvwmopt cmd="StrokeFunc" opt="EchoSequence"/>
+causes fvwm to Echo the recorded stroke sequence.
+<fvwmopt cmd="StrokeFunc" opt="DrawMotion"/>
+causes fvwm to draw the mouse motion on the screen.
+<fvwmopt cmd="StrokeFunc" opt="FeedBack"/>
+causes fvwm to display during a fraction of second the cursor of
+the
+<emphasis remap='I'>WAIT</emphasis>
+context of the
+<fvwmref cmd="CursorStyle"/>
+command if the recorded stroke sequence corresponds to a stroke
+binding.
+<fvwmopt cmd="StrokeFunc" opt="StrokeWidth"/>
+takes an integer argument, which must be &gt;= 0 and &lt;= 100 and which
+defines the width of the line for the
+<emphasis remap='I'>DrawMotion</emphasis>
+option.</para>
+
+<para>
+<fvwmopt cmd="StrokeFunc" opt="NotStayPressed"/>
+works only if
+<emphasis remap='B'>StrokeFunc</emphasis>
+is used via a
+<fvwmref cmd="Mouse"/>
+or a
+<fvwmref cmd="Key"/>
+command.  This option removes the need to have a button or the key
+pressed during the stroke, but you have to do a mouse click or
+press the
+<emphasis remap='SM'>Return</emphasis>
+or
+<emphasis remap='SM'>Space</emphasis>
+key to finish the mouse motion recording (these keys also work
+without the
+<emphasis remap='I'>NotStayPressed</emphasis>
+option).</para>
+
+<para>You can use the
+<emphasis remap='B'>StrokeFunc</emphasis>
+"alone".  In this case it works as above with the
+<emphasis remap='I'>NotStayPressed</emphasis>
+option enabled.  However,
+<emphasis remap='I'>Modifiers,</emphasis>
+in general, may not work as expected (i.e., in this case use 'A'
+or 'N' as
+<emphasis remap='I'>Modifiers</emphasis>
+in the stroke bindings).</para>
+
+<para>Note that some computers do not support key release events. If
+that is the case the
+<emphasis remap='B'>StrokeFunc</emphasis>
+used via a
+<fvwmref cmd="Key"/>
+command works as if the
+<emphasis remap='I'>NotStayPressed</emphasis>
+option is enabled.</para>
+
+
+</section>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='RestackTransients'>
+<title>RestackTransients</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>RestackTransients</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command regroups the transients of a window close to it in
+the stacking order as if the window had just been lowered and then
+raised.  The position of the window itself is not altered.  Only
+windows that use either the
+<fvwmref cmd="Style" opt="RaiseTransient"/> or
+<fvwmref cmd="Style" opt="LowerTransient"/>
+style are affected at all.  When
+<emphasis remap='B'>RestackTransients</emphasis>
+is used on a transient window with the
+<fvwmref cmd="Style" opt="StackTransientParent"/>
+style set, it is redirected to the parent window.</para>
+
+</section>

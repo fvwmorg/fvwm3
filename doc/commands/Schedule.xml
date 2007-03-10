@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='Schedule'>
+<title>Schedule</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Schedule [Periodic] delay_ms [command_id] command</arg>
+</cmdsynopsis>
+</command>
+
+<para>The
+<emphasis remap='I'>command</emphasis>
+is executed after about
+<emphasis remap='I'>delay_ms</emphasis>
+milliseconds.  This may be useful in some tricky setups.  The
+<emphasis remap='I'>command</emphasis>
+is executed in the same context window as the
+<emphasis remap='B'>Schedule</emphasis>
+command.  An optional integer argument
+<emphasis remap='I'>command_id</emphasis>
+may be given in decimal, hexadecimal or octal format.  This id can
+be used with the
+<fvwmref cmd="Deschedule"/>
+command to remove the scheduled command before it is executed.  If
+no id is given, fvwm uses negative id numbers, starting with -1
+and decreasing by one with each use of the
+<emphasis remap='B'>Schedule</emphasis>
+command.
+Note that the
+<emphasis remap='B'>Schedule</emphasis>
+command and its arguments undergo the usual command line
+expansion, and, when
+<emphasis remap='I'>command</emphasis>
+is finally executed, it is expanded again.  It may therefore be
+necessary to quote the parts of the command that must not be
+expanded twice.</para>
+
+<para>Note:  A window's id as it is returned with $[w.id] can be used as
+the
+<emphasis remap='I'>command_id</emphasis>.
+Example:</para>
+
+<programlisting>
+<fvwmref cmd="Current"/> Schedule 1000 $[w.id] <fvwmref cmd="WindowShade"/>
+</programlisting>
+
+
+<para>The
+<emphasis remap='B'>Schedule</emphasis>
+command also supports the optional keyword
+<fvwmopt cmd="Schedule" opt="Periodic"/>
+which indicates that the
+<emphasis remap='I'>command</emphasis>
+should be executed every
+<emphasis remap='I'>delay_ms</emphasis>.
+Example:</para>
+
+<programlisting>
+Schedule Periodic 10000 <fvwmref cmd="PipeRead"/> '[ -N "$MAIL" ] &amp;&amp; echo \
+     Echo You have mail'
+</programlisting>
+
+<para>Use the
+<fvwmref cmd="Deschedule"/>
+command to stop periodic commands.</para>
+
+
+
+
+</section>

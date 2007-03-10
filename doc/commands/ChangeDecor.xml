@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ChangeDecor'>
+<title>ChangeDecor</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>ChangeDecor</arg>
+    <arg choice='plain'>decor</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.</para>
+
+<para>Changes the decor of a window to
+<emphasis remap='I'>decor</emphasis>.
+<emphasis remap='I'>decor</emphasis>
+is "Default" or the name of a decor defined with
+<emphasis remap='B'>AddToDecor</emphasis>.
+If
+<emphasis remap='I'>decor</emphasis>
+is invalid, nothing occurs.  If called from somewhere in a window
+or its border, then that window is affected.  If called from the
+root window the user is allowed to select the target window.
+<emphasis remap='B'>ChangeDecor</emphasis>
+only affects attributes which can be set using the
+<emphasis remap='B'>AddToDecor</emphasis>
+command.</para>
+
+<programlisting>
+ChangeDecor CustomDecor1
+</programlisting>
+
+
+</section>

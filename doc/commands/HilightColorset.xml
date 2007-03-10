@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='HilightColorset'>
+<title>HilightColorset</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>HilightColorset [num]</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is obsoleted by the
+<fvwmref cmd="Style"/>
+option
+<fvwmref cmd="Style" opt="HilightColorset"/>.
+Please use</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="HilightColorset"/> num
+</programlisting>
+
+<para>instead.</para>
+
+</section>

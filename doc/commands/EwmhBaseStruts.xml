@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='EwmhBaseStruts'>
+<title>EwmhBaseStruts</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>EwmhBaseStruts left right top bottom</arg>
+</cmdsynopsis>
+</command>
+
+<para>Where left, right, top and bottom are positive or null integers
+which define bands at the edge of the screen.
+<emphasis remap='I'>left</emphasis>
+defines a band on the left of your screen of width
+<emphasis remap='I'>left</emphasis>,
+<emphasis remap='I'>right</emphasis>
+defines a band on the right of your screen of width
+<emphasis remap='I'>right</emphasis>,
+<emphasis remap='I'>top</emphasis>
+defines a band on the top of your screen of height
+<emphasis remap='I'>top</emphasis>
+and
+<emphasis remap='I'>bottom</emphasis>
+defines a band on the bottom of your screen of height
+<emphasis remap='I'>bottom</emphasis>.
+The unit is the pixel and the default is 0 0 0 0.  These areas
+define additional reserved space to the reserved space defined by
+some ewmh compliant applications. This is used to compute the
+Working Area. See the
+<fvwmref sect="ewmh" opt="extended_window_manager_hints" name="Extended Window Manager Hints"/>
+section for a definition of the Working Area.</para>
+
+</section>

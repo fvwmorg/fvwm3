@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='None'>
+<title>None</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>None [(conditions)] command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Performs
+<emphasis remap='I'>command</emphasis>
+if no window which satisfies all
+<emphasis remap='I'>conditions</emphasis>
+exists.  The command is run in the context of the root window.
+Returns 1 if no window matches the conditions and 0 otherwise.
+See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+<para>This command implies the conditions
+<emphasis remap='I'>CirculateHit</emphasis>, <emphasis remap='I'>CirculateHitIcon</emphasis> and <emphasis remap='I'>CirculateHitShaded</emphasis>.
+They can be turned off by specifying
+<emphasis remap='I'>!CirculateHit</emphasis>
+etc. explicitly.</para>
+
+</section>

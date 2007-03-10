@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='conditional_commands'>
+<title>Conditional Commands</title>
+
+
+<para>Conditional commands are commands that are only executed if certain
+conditions are met.  Most conditional commands work on windows,
+like
+<fvwmref cmd="Next"/>, <fvwmref cmd="ThisWindow"/> or <fvwmref cmd="All"/>.
+There is one conditional command,
+<fvwmref cmd="Test"/>,
+that works on global conditions unrelated to windows.  The syntax
+of the conditions is described below.  For readability, the list
+of conditions is located at the end of this section.</para>
+
+
+<section id="return_codes">
+<title>Return Codes</title>
+
+<para>All commands in this section (unless specifically stated for the
+command) also have a return code that can be 1 (if the condition
+was met) or 0 (if the condition was not met).  Some commands may
+return -1 which means that an error occurred and the return code
+is useless.  The
+<emphasis remap='B'>Break</emphasis>
+command returns -2.  Additionally, the return codes of commands
+run in a complex functions are passed to the invoking complex
+function.  The return code is used by the
+<fvwmref cmd="TestRc"/>
+command.  Please refer to the commands' description for examples.
+The return code can also be accessed through the variable
+<emphasis remap='I'>$[cond.rc]</emphasis>.
+Non conditional commands do not modify the return code of the last
+conditional command.  Important note:  return codes are only
+defined inside functions created with the
+<fvwmref cmd="AddToFunc"/>
+command and are not inherited by sub functions.  To run a command
+without altering the return code, the
+<fvwmref cmd="KeepRc"/>
+command can be used.</para>
+
+</section>
+
+<section id="ring_of_windows">
+<title>The Ring of Windows</title>
+
+<para>Fvwm stores windows in a ring internally.  Think of the focused
+window as a cursor on the current position in the ring.  The
+<fvwmref cmd="Next"/>
+command and many other commands search forwards through the ring
+for a matching window, and
+<fvwmref cmd="Prev"/>
+searches backwards.  The windows in the ring are either ordered by
+creation time (if the
+<emphasis remap='I'>!FPSortWindowlistByFocus</emphasis>,
+<emphasis remap='I'>NeverFocus</emphasis> or <emphasis remap='I'>MouseFocus</emphasis>
+styles are used) or by the last time they had the focus.</para>
+
+</section>
+
+<section id="list_of_conditional_commands">
+<title>List of Conditional Commands</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/All.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Any.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Break.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Current.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Direction.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/KeepRc.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Next.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/None.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/NoWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Pick.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/PointerWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Prev.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ScanForWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Test.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/TestRc.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ThisWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WindowId.xml" />
+</section>
+
+<section id="conditions">
+<title>Conditions</title>
+
+<para>The
+<emphasis remap='I'>conditions</emphasis>
+that may be given as an argument to any conditional command are a
+list of keywords separated by commas or whitespace, enclosed in
+parentheses.  Unless stated otherwise, conditional commands accept
+all the conditions listed below.  Note that earlier versions of
+fvwm required the conditions to be enclosed in brackets instead of
+parentheses (this is still supported for backward compatibility).</para>
+
+<para>In addition, the
+<emphasis remap='I'>conditions</emphasis>
+may include one or more window names to match to.  If more than
+one window name is given, all of them must match.  The window
+name, icon name, class, and resource are considered when
+attempting to find a match. Each name may include the wildcards
+'*' and '?', and may consist of two or more alternatives,
+separated by the character '|', which acts as an OR operator.  (If
+OR operators are used, they must not be separated by spaces from
+the names.)  Each window name can begin with '!', which prevents
+<emphasis remap='I'>command</emphasis>
+if any of the window name, icon name, class or resource match.
+However, '!' must not be applied to individual names in a group
+separated by OR operators; it may only be applied to the beginning
+of the group, and then it operates on the whole group.</para>
+
+<para>Examples:</para>
+
+<programlisting>
+<fvwmref cmd="Next"/> ("Netscape|konqueror|Mozilla*") <fvwmref cmd="WarpToWindow"/> 99 90
+</programlisting>
+
+<para>This goes to the next web browser window, no matter which of the
+three named web browsers is being used.</para>
+
+<programlisting>
+<fvwmref cmd="Next"/> ("Mozilla*", "Bookmark*") <fvwmref cmd="WarpToWindow"/> 99 90
+</programlisting>
+
+<para>This goes to Mozilla's bookmark manager window, ignoring other
+Mozilla windows and other browsers' bookmark windows.</para>
+
+<programlisting>
+<fvwmref cmd="All"/> ("XTerm|rxvt", !console) <fvwmref cmd="Iconify"/>
+</programlisting>
+
+<para>This iconifies all the xterm and rxvt windows on the current page,
+except that the one named "console" (with the -name option to xterm)
+is excluded.</para>
+
+<programlisting>
+<fvwmref cmd="Next"/> (!"<fvwmref mod="FvwmPager"/>|<fvwmref mod="FvwmForm"/>*|<fvwmref mod="FvwmButtons"/>") <fvwmref cmd="Raise"/>
+<fvwmref cmd="Next"/> (!<fvwmref mod="FvwmPager"/>, !<fvwmref mod="FvwmForm"/>*, !<fvwmref mod="FvwmButtons"/>) <fvwmref cmd="Raise"/>
+</programlisting>
+
+<para>These two commands are equivalent; either one raises the next window
+which is not one of the named fvwm modules.</para>
+
+<para>Any condition can be negated by using a an exclamation mark ('!')
+directly in front of its name.</para>
+
+<para><emphasis remap='I'>AcceptsFocus</emphasis>,
+<emphasis remap='I'>AnyScreen</emphasis>,
+<emphasis remap='I'>CirculateHit</emphasis>,
+<emphasis remap='I'>CirculateHitIcon</emphasis>,
+<emphasis remap='I'>CirculateHitShaded</emphasis>,
+<emphasis remap='I'>Closable</emphasis>,
+<emphasis remap='I'>CurrentDesk</emphasis>,
+<emphasis remap='I'>CurrentGlobalPage</emphasis>,
+<emphasis remap='I'>CurrentGlobalPageAnyDesk</emphasis>,
+<emphasis remap='I'>CurrentPage</emphasis>,
+<emphasis remap='I'>CurrentPageAnyDesk</emphasis>,
+<emphasis remap='I'>CurrentScreen</emphasis>,
+<emphasis remap='I'>FixedPosition</emphasis>,
+<emphasis remap='I'>FixedSize</emphasis>,
+<emphasis remap='I'>Focused</emphasis>,
+<emphasis remap='I'>HasHandles</emphasis>,
+<emphasis remap='I'>HasPointer</emphasis>,
+<emphasis remap='I'>Iconic</emphasis>,
+<emphasis remap='I'>Iconifiable</emphasis>,
+<emphasis remap='I'>Layer [n]</emphasis>,
+<emphasis remap='I'>Maximizable</emphasis>,
+<emphasis remap='I'>Maximized</emphasis>,
+<emphasis remap='I'>Overlapped</emphasis>,
+<emphasis remap='I'>PlacedByButton n</emphasis>,
+<emphasis remap='I'>PlacedByButton3</emphasis>,
+<emphasis remap='I'>PlacedByFvwm</emphasis>,
+<emphasis remap='I'>Raised</emphasis>,
+<emphasis remap='I'>Shaded</emphasis>,
+<emphasis remap='I'>State n</emphasis>,
+<emphasis remap='I'>Sticky</emphasis>,
+<emphasis remap='I'>StickyAcrossDesks</emphasis>,
+<emphasis remap='I'>StickyAcrossPages</emphasis>,
+<emphasis remap='I'>StickyIcon</emphasis>,
+<emphasis remap='I'>StickyAcrossDesksIcon</emphasis>,
+<emphasis remap='I'>StickyAcrossPagesIcon</emphasis>,
+<emphasis remap='I'>Transient</emphasis>,
+<emphasis remap='I'>Visible</emphasis>.</para>
+
+<para>The
+<emphasis remap='I'>AcceptsFocus</emphasis>
+condition excludes all windows that do not want the input focus
+(the application has set the "Input hints" for the window to
+False) and do not use the
+<emphasis remap='I'>Lenience</emphasis>
+option of the
+<emphasis remap='B'>Style</emphasis>
+command.  Also, all windows using the
+<emphasis remap='I'>NeverFocus</emphasis>
+style are ignored.
+Note:
+<emphasis>!Lenience</emphasis>
+is equivalent to the deprecated option
+<emphasis>NoLenience</emphasis>.</para>
+
+<para>With the
+<emphasis remap='I'>AnyScreen</emphasis>
+condition used together with any of the
+<emphasis remap='I'>Current...</emphasis>
+conditions, windows that do not intersect the Xinerama screen
+containing the mouse pointer are considered for a match too.  For
+example:</para>
+
+<programlisting>
+# Focus next window on current page,
+# regardless of Xinerama screen
+<fvwmref cmd="Next"/> (CurrentPage, AnyScreen) <fvwmref cmd="Focus"/>
+</programlisting>
+
+
+<para>The
+<emphasis remap='I'>CirculateHit</emphasis> and <emphasis remap='I'>CirculateHitIcon</emphasis>
+options override the
+<emphasis remap='I'>CirculateSkip</emphasis> and <emphasis remap='I'>CirculateSkipIcon</emphasis>
+<emphasis remap='B'>Style</emphasis>
+attributes for normal or iconic windows.  The
+<emphasis remap='I'>CirculateHitShaded</emphasis>
+option overrides the
+<emphasis remap='I'>CirculateSkipShaded</emphasis>
+<emphasis remap='B'>Style.</emphasis>
+All three options are turned on
+by default for the
+<fvwmref cmd="Current"/>
+command.  They can be turned off by specifying
+<emphasis remap='I'>!CirculateHit</emphasis>
+etc. explicitly.
+Note:  Do not confuse these conditions with the style options of
+the same name.  Specifically,</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> foo CirculateSkip
+<fvwmref cmd="Next"/> (foo, CirculateHit) ...
+</programlisting>
+
+<para>is not the same as</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> foo CirculateHit ...
+<fvwmref cmd="Next"/> (foo)
+</programlisting>
+
+<para>The prior selects windows with the name foo only in the Next
+command.  In the second example, these windows are always matched
+in all conditional commands.</para>
+
+<para>The
+<emphasis remap='I'>Closable</emphasis>
+condition matches only windows that are allowed to be closed.</para>
+
+<para>The
+<emphasis remap='I'>CurrentDesk</emphasis>
+condition matches only windows that are on the current desk.</para>
+
+<para>The
+<emphasis remap='I'>CurrentGlobalPage</emphasis>
+condition matches only windows that are on the current page of the
+current desk, regardless of whether Xinerama support is enabled or
+not.  This condition implicitly activates the
+<emphasis remap='I'>CurrentDesk</emphasis>
+condition.</para>
+
+<para>The
+<emphasis remap='I'>CurrentGlobalPageAnyDesk</emphasis>
+condition matches only windows that are on the current page of any
+desk, regardless of whether Xinerama support is enabled or not.</para>
+
+<para>The
+<emphasis remap='I'>CurrentPage</emphasis>
+condition matches only windows that are on the current page of the
+current desk.  If Xinerama support is enabled, it only matches
+windows that are at least partially on the Xinerama screen
+containing the mouse pointer.  This condition implicitly
+activates the
+<emphasis remap='I'>CurrentDesk</emphasis>
+condition.</para>
+
+<para>The
+<emphasis remap='I'>CurrentPageAnyDesk</emphasis> and <emphasis remap='I'>CurrentScreen</emphasis>
+conditions matches only windows that are on the current page of any
+desk.  If Xinerama support is enabled, they only match windows
+that are at least partially on the Xinerama screen containing the
+mouse pointer.</para>
+
+<para>The
+<emphasis remap='I'>FixedPosition</emphasis>
+condition excludes all windows that do not have a fixed position,
+either set through WM hints or the
+<emphasis remap='B'>Style</emphasis>
+option
+<emphasis remap='I'>FixedPosition</emphasis>.
+Example:</para>
+
+<programlisting>
+<fvwmref cmd="DestroyFunc"/> ToggleFixedGeometry
+<fvwmref cmd="AddToFunc"/>   ToggleFixedGeometry
++ I <fvwmref cmd="Pick"/> (FixedPosition) <fvwmref cmd="WindowStyle"/> VariablePosition, VariableSize
++ I <fvwmref cmd="TestRc"/> (NoMatch) <fvwmref cmd="WindowStyle"/> FixedPosition, FixedSize
+</programlisting>
+
+
+<para>The
+<emphasis remap='I'>FixedSize</emphasis>
+condition excludes all windows that do not have a fixed size,
+either set through WM hints or the
+<emphasis remap='B'>Style</emphasis>
+option
+<emphasis remap='I'>FixedSize</emphasis>.</para>
+
+<para>The
+<emphasis remap='I'>Focused</emphasis>
+matches on the window that currently has the keyboard focus.
+This is not useful for the
+<emphasis remap='B'>Current</emphasis>
+command but can be used with the other conditional commands.</para>
+
+<para>The
+<emphasis remap='I'>HasHandles</emphasis>
+condition excludes all windows that do not have resize handles.</para>
+
+<para>The
+<emphasis remap='I'>HasPointer</emphasis>
+condition excludes all windows that do not contain the pointer.</para>
+
+<para>The
+<emphasis remap='I'>Iconic</emphasis>
+condition matches only iconic windows.</para>
+
+<para>The
+<emphasis remap='I'>Iconifiable</emphasis>
+condition matches only windows that are allowed to be iconified.</para>
+
+<para>The
+<emphasis remap='I'>Layer [n]</emphasis>
+condition matches only windows on the specified layer.  The
+optional argument of the
+<emphasis remap='I'>Layer</emphasis>
+condition defaults to the layer of the focused window.  The
+negation
+<emphasis remap='I'>!Layer</emphasis>
+switches off the
+<emphasis remap='I'>Layer</emphasis>
+condition.</para>
+
+<para>The
+<emphasis remap='I'>Maximizable</emphasis>
+condition matches only windows that are allowed to be maximized.</para>
+
+<para>The
+<emphasis remap='I'>Maximized</emphasis>
+condition matches only maximized windows.</para>
+
+<para>The
+<emphasis remap='I'>Overlapped</emphasis>
+condition matches only windows that are overlapped by other windows
+on the same layer (or unmanaged windows if the option
+<emphasis remap='I'>RaiseOverUnmanaged</emphasis>
+of the
+<fvwmref cmd="BugOpts"/>
+command is used).  Note that this condition can be slow if you
+have many windows or if RaiseOverUnmanaged is used and the
+connection to the X server is slow.</para>
+
+<para>The
+<emphasis remap='I'>PlacedByButton n</emphasis>
+condition is fulfilled if the last interactive motion of the
+window (with the
+<fvwmref cmd="Move"/>
+command or as
+<emphasis remap='I'>ManualPlacement</emphasis>)
+was ended by pressing mouse button
+<emphasis remap='I'>n</emphasis>.
+Example:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/>   1 T     A       <fvwmref cmd="Function"/> MoveWindow
+
+<fvwmref cmd="DestroyFunc"/> MoveWindow
+<fvwmref cmd="AddToFunc"/> MoveWindow
++ C <fvwmref cmd="Move"/>
++ C <fvwmref cmd="ThisWindow"/> (PlacedByButton 5) <fvwmref cmd="WindowShade"/> off
++ C <fvwmref cmd="TestRc"/> (Match) <fvwmref cmd="Maximize"/> on 0 100
++ C <fvwmref cmd="ThisWindow"/> (PlacedByButton 4) <fvwmref cmd="WindowShade"/> on
+</programlisting>
+
+
+<para>The
+<emphasis remap='I'>PlacedByButton3</emphasis>
+condition has the same meaning as
+<emphasis remap='I'>PlacedByButton</emphasis>
+3. It remains only for backward compatibility.</para>
+
+<para>The
+<emphasis remap='I'>PlacedByFvwm</emphasis>
+condition excludes all windows that have been placed manually or
+by using the user or program position hint.</para>
+
+<para>The
+<emphasis remap='I'>Raised</emphasis>
+conditions matches only windows that are fully visible on the
+current viewport and not overlapped by any other window.</para>
+
+<para>The
+<emphasis remap='I'>Shaded</emphasis>
+conditions matches only shaded windows (see
+<fvwmref cmd="WindowShade"/>
+command).</para>
+
+<para>The
+<emphasis remap='I'>State n</emphasis> or <emphasis remap='I'>!State n</emphasis>
+conditions match only windows with the specified integer state set
+(or unset).  See the
+<fvwmref cmd="State"/>
+command for details.  The argument may range from 0 to 31.</para>
+
+<para>The
+<emphasis remap='I'>Sticky</emphasis>, <emphasis remap='I'>StickyAcrossDesks</emphasis> and <emphasis remap='I'>StickyAcrossPages</emphasis>
+match only windows that are currently sticky, sticky across all
+desks or sticky across all pages.  Please refer to the
+<fvwmref cmd="Style"/>
+options with the same name and the commands
+<fvwmref cmd="Stick"/>, <fvwmref cmd="StickAcrossDesks"/> and <fvwmref cmd="StickAcrossPages"/>
+for details.</para>
+
+<para>The
+<emphasis remap='I'>StickyIcon</emphasis>, <emphasis remap='I'>StickyAcrossDesksIcon</emphasis> and <emphasis remap='I'>StickyAcrossPagesIcon</emphasis>
+match only windows that become sticky, sticky across all desks or sticky
+across all pages when they are in iconified state.</para>
+
+<para>The
+<emphasis remap='I'>Transient</emphasis>
+condition matches only windows that have the "transient"
+property set by the application.  This it usually the case for
+application popup menus and dialogs.  The
+<fvwmref mod="FvwmIdent"/>
+module can be used to find out whether a specific window is
+transient.</para>
+
+<para>The
+<emphasis remap='I'>Visible</emphasis>
+condition matches only windows that are at least partially
+visible on the current viewport and not completely overlapped by
+other windows.</para>
+
+</section>
+
+
+
+</section>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='m4_preprocessing'>
+<title>M4 Preprocessing</title>
+<para>M4 pre-processing is handled by a module in fvwm.  To get more
+details, try man
+<fvwmref mod="FvwmM4"/>.
+In short, if you want fvwm to parse your files with m4, then
+replace the command
+<fvwmref cmd="Read"/>
+with
+<fvwmref mod="FvwmM4"/>
+in your
+<filename>~/.fvwm/config</filename>
+file (if it appears at all), and start fvwm with the command</para>
+
+<command>
+fvwm -cmd "<fvwmref mod="FvwmM4"/> config"
+</command>
+
+
+</section>

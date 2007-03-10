@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='fonts'>
+<title>Fonts</title>
+<section id='font_names_and_font_loading'>
+<title>Font names and font loading</title>
+<para>The fonts used for the text of a window title, icon titles, menus
+and geometry window can be specified by using the Font and
+IconFont <fvwmref cmd="Style"/>, the Font <fvwmref cmd="MenuStyle"/> and the <fvwmref cmd="DefaultFont"/>
+commands. Also, all the Modules which use text have configuration
+command(s) to specify font(s). All these styles and commands take
+a font name as an argument. This section explains what is a font
+name for fvwm and which fonts fvwm loads.</para>
+
+<para>First, you can use what we can call a usual font name, for
+example,</para>
+
+<programlisting>
+-adobe-courier-bold-r-normal--10-100-75-75-m-60-ISO8859-1
+-adobe-courier-bold-r-normal--10-*
+-*-fixed-medium-o-normal--14-*-ISO8859-15
+</programlisting>
+
+<para>That is, you can use an X Logical Font Description (XLFD for
+short).  Then the "first" font which matches the description is
+loaded and used. This "first" font depends of your font path and
+also of your locale. Fonts which match the locale charset are
+loaded in priority order. For example with</para>
+
+<programlisting>
+-adobe-courier-bold-r-normal--10-*
+</programlisting>
+
+<para>if the locale charset is ISO8859-1, then fvwm tries to load a
+font which matches</para>
+
+<programlisting>
+-adobe-courier-bold-r-normal--10-*-ISO8859-1
+</programlisting>
+
+<para>with the locale charset ISO8859-15 fvwm tries to load</para>
+
+<programlisting>
+-adobe-courier-bold-r-normal--10-*-ISO8859-15.
+</programlisting>
+
+
+<para>A font name can be given as an extended XLFD. This
+is a comma separated list of (simple) XLFD font names, for example:</para>
+
+<programlisting>
+-adobe-courier-bold-r-normal--14-*,-*-courier-medium-r-normal--14-*
+</programlisting>
+
+<para>Each simple font name is tried until a matching font with the
+locale charset is found and if this fails each simple font name is
+tried without constraint on the charset.</para>
+
+<para>More details on the XLFD can be found in the X manual page, the X
+Logical Font Description Conventions document (called xlfd) and
+the XLoadFont and XCreateFontSet manual pages. Some useful font
+utilities are: xlsfonts, xfontsel, xfd and xset.</para>
+
+<para>If you have Xft support you can specify an Xft font name
+(description) of a true type (or Type1) font prefixed by "xft:",
+for example:</para>
+
+<programlisting>
+"xft:Luxi Mono"
+"xft:Luxi Mono:Medium:Roman:size=14:encoding=iso8859-1"
+</programlisting>
+
+<para>The "first" font which matches the description is loaded.  This
+first font depends on the XftConfig configuration file with Xft1
+and on the /etc/fonts/fonts.conf file with Xft2.
+One may read the Xft manual page and the fontconfig man page with
+Xft2. The first string which follows "xft:" is always considered
+as the family. With the second example Luxi Mono is the Family
+(Other XFree TTF families: "Luxi Serif", "Luxi Sans"), Medium is
+the Weight (other possible weights: Light, DemiBold, Bold, Black),
+Roman is the slant or the style (other possibilities: Regular,
+Oblique, Italic) size specifies the point size (for a pixel size
+use pixelsize=), encoding allows for enforce a charset (iso8859-1
+or iso10646-1 only; if no encoding is given the locale charset is
+assumed).
+An important parameter is "minspace=bool" where bool is True or
+False. If bool is False (the default?) Xft gives a greater font
+height to fvwm than if bool is True. This may modify text
+placement, icon and window title height, line spacing in menus and
+<fvwmref mod="FvwmIdent"/>, button height in some fvwm modules ...etc.  With a LCD
+monitor you may try to add "rgba=mode" where mode is either rgb,
+bgr, vrgb or vbgr to enable subpixel rendering. The best mode
+depends on the way your LCD cells are arranged. You can pass other
+specifications in between ":", as "foundry=foundry_name",
+"spacing=type" where type can be monospace, proportional or
+charcell, "charwidth=integer", "charheight=integer" or
+"antialias=bool" where bool is True or False. It seems that these
+parameters are not always taken in account.
+To determine which Xft fonts are really loaded you can export
+XFT_DEBUG=1 before starting fvwm and take a look to the error
+log. With Xft2 you may use fc-list to list the available
+fonts. Anyway, Xft support is experimental (from the X and the
+fvwm point of view) and the quality of the rendering depends on
+number of parameters (the XFree and the freetype versions and your
+video card(s)).</para>
+
+<para>After an Xft font name you can add after a ";" an XLFD
+font name (simple or extended) as:</para>
+
+<programlisting>
+xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
+</programlisting>
+
+<para>then, if either loading the Xft font fails or fvwm has no Xft
+support, fvwm loads the font
+"-adobe-courier-bold-r-normal--14-*". This allows for writing
+portable configuration files.</para>
+
+</section>
+
+<section id='font_and_string_encoding'>
+<title>Font and string encoding</title>
+<para>Once a font is loaded, fvwm finds its encoding (or charset) using
+its name (the last two fields of the name). fvwm assumes that the
+strings which are displayed with this font use this encoding (an
+exception is that if an iso10646-1 font is loaded, then UTF-8 is
+assumed for string encoding).
+In a normal situation,
+(i) a font is loaded by giving a font name without specifying the
+encoding,
+(ii) the encoding of the loaded font is the locale encoding, and
+then
+(iii) the strings in the fvwm configuration files should use the
+locale encoding as well as the window and icon name. With Xft the
+situation is bit different as Xft supports only iso10646-1 and
+iso8859-1. If you do not specify one of these encodings in the Xft
+font name, then fvwm does strings conversion using (iii). Note
+that with multibyte fonts (and in particular with "CJK" fonts) for
+good text rendering, the locale encoding should be the charset of
+the font.</para>
+
+<para>To override the previous rules, it is possible to specify the
+string encoding in the beginning of a font description as follow:</para>
+
+<programlisting>
+StringEncoding=enc:_full_font_name_
+</programlisting>
+
+<para>where
+<emphasis remap='I'>enc</emphasis>
+is an encoding supported by fvwm (usually font name charset plus some
+unicode encodings: UTF-8, USC-2, USC-4 and UTF-16).</para>
+
+<para>For example, you may use an iso8859-1 locale charset and have an
+<fvwmref mod="FvwmForm"/> in Russian using koi8-r encoding. In this case, you just
+have to ask <fvwmref mod="FvwmForm"/> to load a koi8-r font by specifying the
+encoding in the font name. With a multibyte language, (as
+multibyte font works well only if the locale encoding is the
+charset of the font), you should use an iso10646-1 font:</para>
+
+<programlisting>
+StringEncoding=jisx0208.1983-0:-*-fixed-medium-r-*-ja-*-iso10646-1
+</programlisting>
+
+<para>or</para>
+
+<programlisting>
+"StringEncoding=jisx0208.1983-0:xft:Bitstream Cyberbit"
+</programlisting>
+
+<para>if your
+<fvwmref mod="FvwmForm"/>
+configuration uses jisx0208.1983-0 encoding. Another possibility
+is to use UTF-8 encoding for your <fvwmref mod="FvwmForm"/> configuration and use
+an iso10646-1 font:</para>
+
+<programlisting>
+-*-fixed-medium-r-*-ja-*-iso10646-1
+</programlisting>
+
+<para>or</para>
+
+<programlisting>
+"StringEncoding=UTF-8:xft:Bitstream Cyberbit"
+</programlisting>
+
+<para>or equivalently</para>
+
+<programlisting>
+"xft:Bitstream Cyberbit:encoding=iso10646-1"
+</programlisting>
+
+<para>In general iso10646-1 fonts together with UTF-8 string encoding
+allows the display of any characters in a given menu, <fvwmref mod="FvwmForm"/></para>
+<!-- ...etc. -->
+
+<para>More and more, unicode is used and text files use UTF-8
+encoding. However, in practice the characters used range over your
+locale charset (this is the case when you generate a menu with
+fvwm-menu-desktop with recent versions of <acronym>KDE</acronym> and
+<acronym>GNOME</acronym>). For
+saving memory (an iso10646-1 font may have a very large number of
+characters) or because you have a pretty font without an
+iso10646-1 charset, you can specify the string encoding to be
+UTF-8 and use a font in the locale charset:</para>
+
+<programlisting>
+StringEncoding=UTF-8:-*-pretty_font-*-12-*
+</programlisting>
+
+
+<para>In most cases, fvwm correctly determines the encoding of the
+font. However, some fonts do not end with valid encoding
+names. When the font name isn't normal, for example:</para>
+
+<programlisting>
+-misc-fixed-*--20-*-my_utf8-36
+</programlisting>
+
+<para>you need to add the encoding after the font name using a slash as
+a delimiter. For example:</para>
+
+<programlisting>
+<fvwmref cmd="MenuStyle"/> * <fvwmref cmd="MenuStyle" opt="Font"/> -misc-fixed-*--20-*-my_utf8-36/iso10646-1
+</programlisting>
+
+<para>If fvwm finds an encoding, fvwm uses the iconv system functions to
+do conversion between encodings. Unfortunately, there are no
+standards. For conversion between iso8859-1 and UTF-8: a GNU
+system uses "ISO-8859-1" and other systems use "iso881" to define
+the converters (these two names are supported by fvwm). Moreover,
+in some cases it may be necessary to use machine specific
+converters. So, if you experience problems you can try to get
+information on your iconv implementation ("man iconv" may help)
+and put the name which defines the converter between the font
+encoding and UTF-8 at the end of the font name after the encoding
+hint and a / (another possible solution is to use GNU
+libiconv). For example use:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="Font"/> -misc-fixed-*--14-*-iso8859-1/*/latin1
+</programlisting>
+
+<para>to use latin1 for defining the converter for the iso8859-1 encoding.
+The "*" in between the "/" says to fvwm to determine the
+encoding from the end of the font name. Use:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="Font"/> -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
+</programlisting>
+
+<para>to force fvwm to use the font with iso8859-6 as the encoding
+(this is useful for bi-directionality)
+and to use local_iso8859_6_iconv for defining the converters.</para>
+
+</section>
+
+<section id='font_shadow_effects'>
+<title>Font Shadow Effects</title>
+<para>Fonts can be given 3d effects. At the beginning of the font name
+(or just after a possible StringEncoding specification) add</para>
+
+<programlisting>
+Shadow=size [offset] [directions]:
+</programlisting>
+
+<para><emphasis remap='I'>size</emphasis>
+is a positive integer which specifies the number of pixels of shadow.
+<emphasis remap='I'>offset</emphasis>
+is an optional positive integer which defines the number of pixels
+to offset the shadow from the edge of the character.  The default
+offset is zero.
+<emphasis remap='I'>directions</emphasis>
+is an optional set of directions the shadow emanates from the
+character.  The
+<emphasis remap='I'>directions</emphasis>
+are a space separated list of fvwm directions:</para>
+
+<para><emphasis remap='I'>N</emphasis>, <emphasis remap='I'>North</emphasis>, <emphasis remap='I'>Top</emphasis>, <emphasis remap='I'>t</emphasis>, <emphasis remap='I'>Up</emphasis>, <emphasis remap='I'>u</emphasis>, <emphasis remap='I'>-</emphasis></para>
+
+<para><emphasis remap='I'>E</emphasis>, <emphasis remap='I'>East</emphasis>, <emphasis remap='I'>Right</emphasis>, <emphasis remap='I'>r</emphasis>, <emphasis remap='I'>Right</emphasis>, <emphasis remap='I'>r</emphasis>, <emphasis remap='I'>]</emphasis></para>
+
+<para><emphasis remap='I'>S</emphasis>, <emphasis remap='I'>South</emphasis>, <emphasis remap='I'>Bottom</emphasis>, <emphasis remap='I'>b</emphasis>, <emphasis remap='I'>Down</emphasis>, <emphasis remap='I'>d</emphasis>, <emphasis remap='I'>_</emphasis></para>
+
+<para><emphasis remap='I'>W</emphasis>, <emphasis remap='I'>West</emphasis>, <emphasis remap='I'>Left</emphasis>, <emphasis remap='I'>l</emphasis>, <emphasis remap='I'>Left</emphasis>, <emphasis remap='I'>l</emphasis>, <emphasis remap='I'>[</emphasis></para>
+
+<para><emphasis remap='I'>NE</emphasis>, <emphasis remap='I'>NorthEast</emphasis>, <emphasis remap='I'>TopRight</emphasis>, <emphasis remap='I'>tr</emphasis>, <emphasis remap='I'>UpRight</emphasis>, <emphasis remap='I'>ur</emphasis>, <emphasis remap='I'>^</emphasis></para>
+
+<para><emphasis remap='I'>SE</emphasis>, <emphasis remap='I'>SouthEast</emphasis>, <emphasis remap='I'>BottomRight</emphasis>, <emphasis remap='I'>br</emphasis>, <emphasis remap='I'>DownRight</emphasis>, <emphasis remap='I'>dr</emphasis>, <emphasis remap='I'>&gt;</emphasis></para>
+
+<para><emphasis remap='I'>SW</emphasis>, <emphasis remap='I'>SouthWest</emphasis>, <emphasis remap='I'>BottomLeft</emphasis>, <emphasis remap='I'>bl</emphasis>, <emphasis remap='I'>DownLeft</emphasis>, <emphasis remap='I'>dl</emphasis>, <emphasis remap='I'>v</emphasis></para>
+
+<para><emphasis remap='I'>NW</emphasis>, <emphasis remap='I'>NorthWest</emphasis>, <emphasis remap='I'>TopLeft</emphasis>, <emphasis remap='I'>tl</emphasis>, <emphasis remap='I'>UpLeft</emphasis>, <emphasis remap='I'>ul</emphasis>, <emphasis remap='I'>&lt;</emphasis></para>
+
+<para><emphasis remap='I'>C</emphasis>, <emphasis remap='I'>Center</emphasis>, <emphasis remap='I'>Centre</emphasis>, <literal>.</literal></para>
+
+<para>A shadow is displayed in each given direction.
+<fvwmref cmd="All"/>
+is equivalent to all the directions.  The default
+<emphasis remap='I'>direction</emphasis>
+is
+<emphasis remap='I'>BottomRight</emphasis>.
+With the
+<emphasis remap='I'>Center</emphasis>
+direction, the shadow surrounds the whole string.  Since this is a
+super set of all other directions, it is a waste of time to
+specify this along with any other directions.</para>
+
+<para>The shadow effect only works with colorsets.  The color of the
+shadow is defined by using the
+<emphasis remap='I'>fgsh</emphasis>
+option of the
+<fvwmref cmd="Colorset"/>
+command.  Please refer to the
+<fvwmref sect="colorsets" opt="colorsets" name="Colorsets"/>
+section for details about colorsets.</para>
+
+<para>Note: It can be difficult to find the font,
+<emphasis remap='I'>fg</emphasis>, <emphasis remap='I'>fgsh</emphasis> and <emphasis remap='I'>bg</emphasis>
+colors to make this effect look good, but it can look quite good.</para>
+
+</section>
+</section>

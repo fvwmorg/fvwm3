@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='synopsis'>
+<title>Synopsis</title>
+
+<cmdsynopsis>
+  <command>fvwm</command>    
+    <arg choice='opt'><arg choice='plain'>-c </arg><arg choice='plain'><replaceable>config-command</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>-d </arg><arg choice='plain'><replaceable>displayname</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>-f </arg><arg choice='plain'><replaceable>config-file</replaceable></arg></arg>
+    <arg choice='opt'>-r </arg>
+    <arg choice='opt'><arg choice='plain'>-s </arg><arg choice='opt'><replaceable>screen_num</replaceable></arg></arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><arg choice='plain'>-C </arg><group choice='plain'><arg choice='plain'><replaceable>visual-class</replaceable></arg><arg choice='plain'>-I </arg><arg choice='plain'><replaceable>visual-id</replaceable></arg></group></arg>
+    <arg choice='opt'><arg choice='plain'>-l </arg><arg choice='plain'><replaceable>colors</replaceable></arg><arg choice='opt'>-L </arg><arg choice='opt'>-A </arg><arg choice='opt'>-S </arg><arg choice='opt'>-P </arg></arg>
+    <arg choice='opt'>-D </arg>
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'><arg choice='plain'>-i </arg><arg choice='plain'><replaceable>client-id</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>-F </arg><arg choice='plain'><replaceable>state-file</replaceable></arg></arg>
+    <arg choice='opt'>--debug-stack-ring </arg>
+    <arg choice='opt'>-blackout </arg>
+</cmdsynopsis>
+</section>

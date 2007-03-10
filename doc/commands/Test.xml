@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='Test'>
+<title>Test</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Test [(test-conditions)] command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Performs <emphasis remap='I'>command</emphasis> if all
+<emphasis remap='I'>test-conditions</emphasis> are satisfied.  The
+<emphasis remap='I'>test-conditions</emphasis>
+are keywords with possible arguments from the list below
+and are separated by commas or whitespace.  They include:
+<emphasis remap='I'>Version operator x.y.z</emphasis>,
+<emphasis remap='I'>EnvIsSet varname</emphasis>,
+<emphasis remap='I'>EnvMatch varname pattern</emphasis>,
+<emphasis remap='I'>EdgeHasPointer direction</emphasis>,
+<emphasis remap='I'>EdgeIsActive direction</emphasis>,
+<emphasis remap='I'>Start</emphasis>,
+<emphasis remap='I'>Init</emphasis>,
+<emphasis remap='I'>Restart</emphasis>,
+<emphasis remap='I'>Exit</emphasis>,
+<emphasis remap='I'>Quit</emphasis>,
+<emphasis remap='I'>ToRestart</emphasis>,
+<emphasis remap='I'>True</emphasis>,
+<emphasis remap='I'>False</emphasis>,
+<emphasis remap='I'>F</emphasis>,
+<emphasis remap='I'>R</emphasis>,
+<emphasis remap='I'>W</emphasis>,
+<emphasis remap='I'>X</emphasis> and
+<emphasis remap='I'>I</emphasis>.
+A test-condition prefixed with "!" is negated.</para>
+
+<para>The
+<fvwmopt cmd="Test" opt="Version"/> <emphasis>operator x.y.z</emphasis>
+test-condition is fulfilled if the logical condition of the expression is
+true. Valid <emphasis remap='I'>operator</emphasis> values are:
+<emphasis remap='I'>&gt;=</emphasis>,
+<emphasis remap='I'>&gt;</emphasis>,
+<emphasis remap='I'>&lt;=</emphasis>,
+<emphasis remap='I'>&lt;</emphasis>,
+<emphasis remap='I'>==</emphasis>
+and
+<emphasis remap='I'>!=</emphasis>.</para>
+
+<para>Example:</para>
+
+<programlisting>
+Test (Version &gt;= 2.5.11) <fvwmref cmd="Echo"/> 2.5.11 or later.
+</programlisting>
+
+<para>The
+<fvwmopt cmd="Test" opt="EnvIsSet"/> <emphasis>varname</emphasis>
+test-condition is true if the given environment variable is set.
+The
+<fvwmopt cmd="Test" opt="EnvMatch"/> <emphasis>varname pattern</emphasis>
+test-condition is true if
+<emphasis remap='I'>pattern</emphasis>
+matches the given environment variable value.
+The pattern may contain special "*" and "?" chars.</para>
+
+<para>The
+<fvwmopt cmd="Test" opt="EdgeHasPointer"/> <emphasis remap='B'>[</emphasis><emphasis remap='I'>direction</emphasis><emphasis remap='B'>]</emphasis>
+test-condition is true if the edge in the given direction currently
+contains the pointer.
+The
+<fvwmopt cmd="Test" opt="EdgeIsActive"/> <emphasis remap='B'>[</emphasis><emphasis remap='I'>direction</emphasis><emphasis remap='B'>]</emphasis>
+test-condition is true if the edge in the given direction currently is
+active. An edge is active, and can contain a pointer if either a
+command is bound to it or edge scroll is available in that
+direction. The direction may be one of
+<emphasis remap='I'> Any</emphasis>,<emphasis remap='I'> North</emphasis>,<emphasis remap='I'> Top</emphasis>,<emphasis remap='I'> Up</emphasis>,<emphasis remap='I'> West</emphasis>,<emphasis remap='I'> Left</emphasis>,<emphasis remap='I'> South</emphasis>,<emphasis remap='I'> Bottom</emphasis>,
+<emphasis remap='I'> Down</emphasis>,<emphasis remap='I'> Right</emphasis> and <emphasis remap='I'> East</emphasis>.
+If no direction is specified <emphasis>Any</emphasis> is assumed.</para>
+
+<para>The
+<emphasis remap='I'><fvwmopt cmd="Test" opt="Start"/></emphasis>
+test-condition is the same as either
+<fvwmopt cmd="Test" opt="Init"/> or <fvwmopt cmd="Test" opt="Restart"/>.
+It is only true on startup or restart prior and during
+<emphasis remap='B'>StartFunction</emphasis>
+execution.
+The
+<fvwmopt cmd="Test" opt="Exit"/>
+test-condition is the same as either
+<fvwmopt cmd="Test" opt="Quit"/> or <fvwmopt cmd="Test" opt="ToRestart"/>.
+It is only valid on shutdown during
+<emphasis remap='B'>ExitFunction</emphasis>
+function execution.</para>
+
+<para>The <fvwmopt cmd="Test" opt="True"/> and <fvwmopt cmd="Test" opt="False"/>
+test-conditions are unconditionally true and false.</para>
+
+<para>Additionally, if a test-condition name is not recognized, the Error
+return code is set and the command is not executed.</para>
+
+<para>The
+<fvwmopt cmd="Test" opt="F"/> <emphasis>file</emphasis>,
+<fvwmopt cmd="Test" opt="R"/> <emphasis>file</emphasis>,
+<fvwmopt cmd="Test" opt="W"/> <emphasis>file</emphasis>,
+<fvwmopt cmd="Test" opt="X"/> <emphasis>file</emphasis> and
+<fvwmopt cmd="Test" opt="I"/> <emphasis>file</emphasis>
+test-conditions test for existence of the given [F]ile (possibly
+with [R]ead/[W]rite permissions), e[X]ecutable (in <envar>$PATH</envar>),
+or the [I]mage (in ImagePath).</para>
+
+<para>Example:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> StartFunction I Test (Init) <fvwmref cmd="Exec"/> exec xterm
+
+<fvwmref cmd="AddToFunc"/> VerifyVersion
++ I Test (Version 2.5.*) <fvwmref cmd="Echo"/> 2.5.x detected
++ I <fvwmref cmd="TestRc"/> (NoMatch) Test (!Version 2.6.*) <fvwmref cmd="Echo"/> Future version
++ I <fvwmref cmd="TestRc"/> (NoMatch) <fvwmref cmd="Echo"/> 2.6.x is detected
+
+Test (F $[FVWM_USERDIR]/local-config) <fvwmref cmd="Read"/> local-config
+Test (X xterm-utf16) <fvwmref cmd="Exec"/> exec xterm-utf16
+</programlisting>
+
+
+</section>

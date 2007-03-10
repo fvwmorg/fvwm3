@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ButtonStyle'>
+<title>ButtonStyle</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ButtonStyle</arg>
+	<arg choice='plain'>button</arg>
+    <arg choice='opt'>state</arg>
+    <arg choice='opt'>style</arg>
+    <arg choice='opt'>-- <arg choice='opt'>!</arg> flag ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>Sets the button style for a title-bar button.
+<emphasis remap='I'>button</emphasis>
+is the title-bar button number between 0 and 9, or one of
+"<fvwmopt cmd="ButtonStyle" opt="All"/>",
+"<fvwmopt cmd="ButtonStyle" opt="Left"/>",
+"<fvwmopt cmd="ButtonStyle" opt="Right"/>", or
+"<fvwmopt cmd="ButtonStyle" opt="Reset"/>".  Button numbering is described in the
+<emphasis remap='B'>Mouse</emphasis>
+command section.  If the
+<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+are enclosed in parentheses, then multiple
+<emphasis remap='I'>state</emphasis>
+definitions can be specified per line.</para>
+
+<para><emphasis remap='I'>state</emphasis>
+refers to which button state should be set.  Button states are
+defined as follows:
+"<fvwmopt cmd="ButtonStyle" opt="ActiveUp"/>" and
+"<fvwmopt cmd="ButtonStyle" opt="ActiveDown"/>" refer to the
+un-pressed and pressed states for buttons on active windows; while
+the "<fvwmopt cmd="ButtonStyle" opt="InactiveUp"/>" and
+"<fvwmopt cmd="ButtonStyle" opt="InactiveDown"/>" states denote buttons on
+inactive windows.  The shortcut
+"<fvwmopt cmd="ButtonStyle" opt="Active"/>" denotes both "ActiveUp" and
+"ActiveDown" states.  Shortcut
+"<fvwmopt cmd="ButtonStyle" opt="Inactive"/>" denotes both "InactiveUp"
+and "InactiveDown" states.
+The similar state names like just described, but with the "Toggled"
+prefix are used instead for title buttons which have one of the
+<emphasis remap='I'>MwmDecorMax</emphasis>, <emphasis remap='I'>MwmDecorShade</emphasis>, <emphasis remap='I'>MwmDecorStick</emphasis> or <emphasis remap='I'>MwmDecorLayer</emphasis>
+hints, if the window is maximized, shaded, sticky or placed on specific
+layer, respectively.</para>
+
+<programlisting>
+<fvwmref cmd="AddToDecor"/> Default
+ + ButtonStyle 6                   \
+   Vector 4 50x25@1 85x75@0 15x75@0 50x25@1
+ + ButtonStyle 6 ToggledActiveUp   \
+   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
+ + ButtonStyle 6 ToggledActiveDown \
+   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
+ + ButtonStyle 6 ToggledInactive   \
+   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
+ + ButtonStyle 6 - MwmDecorShade
+<fvwmref cmd="Mouse"/> 0 6 N <fvwmref cmd="WindowShade"/>
+</programlisting>
+
+<para>Additionally, the following shortcuts may be used:
+"<fvwmopt cmd="ButtonStyle" opt="AllNormal"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllToggled"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllActive"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllInactive"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllUp"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllDown"/>".
+They are actually different masks for 4 individual states from
+8 total.  These are supported too:
+"<fvwmopt cmd="ButtonStyle" opt="AllActiveUp"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllActiveDown"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllInactiveUp"/>",
+"<fvwmopt cmd="ButtonStyle" opt="AllInactiveDown"/>".</para>
+
+<para>If
+<emphasis remap='I'>state</emphasis>
+is specified,
+that particular button state is set.  If
+<emphasis remap='I'>state</emphasis>
+is omitted, every state is set.  Specifying a style destroys the
+current style (use
+<emphasis remap='B'>AddButtonStyle</emphasis>
+to avoid this).</para>
+
+<para>If
+<emphasis remap='I'>style</emphasis>
+is omitted, then state-dependent flags can be set for the primary
+button style without destroying the current style.  Examples (each
+line should be considered independent):</para>
+
+<programlisting>
+ButtonStyle Left -- flat
+ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+</programlisting>
+
+<para>The first line sets every state of the left buttons to flat, while
+the second sets only the "ActiveUp" and "Inactive" states of every
+button to flat (only flags are changed; the buttons' individual
+styles are not changed).</para>
+
+<para>If you want to reset all buttons to their defaults:</para>
+
+<programlisting>
+ButtonStyle <fvwmopt cmd="ButtonStyle" opt="Reset"/>
+</programlisting>
+
+<para>To reset the "ActiveUp" button state of button 1 to the default:</para>
+
+<programlisting>
+ButtonStyle 1 ActiveUp Default
+</programlisting>
+
+<para>To reset all button states of button 1 to the default of
+button number 2:</para>
+
+<programlisting>
+ButtonStyle 1 Default 2
+</programlisting>
+
+<para>For any button, multiple
+<emphasis remap='I'>state</emphasis>
+definitions can be given on one line by enclosing the
+<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+in parentheses.  If only one definition per line is given the
+parentheses can be omitted.</para>
+
+<para><emphasis remap='I'>flags</emphasis>
+affect the specified
+<emphasis remap='I'>state</emphasis>.
+If a
+'<emphasis remap='I'>!</emphasis>'
+is prefixed to any
+<emphasis remap='I'>flag</emphasis>,
+its behavior is negated.  The available state-dependent flags for
+all styles are described here (the
+<emphasis remap='B'>ButtonStyle</emphasis>
+entry deals with state-independent flags).</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="Raised"/>
+causes a raised relief pattern to be drawn.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="Sunk"/>
+causes a sunken relief pattern to be drawn.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="Flat"/>
+inhibits the relief pattern from being drawn.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="UseTitleStyle"/>
+causes the given button state to render the current title style
+before rendering the buttons' own styles.  The
+<emphasis remap='I'>Raised</emphasis>, <emphasis remap='I'>Flat</emphasis> and <emphasis remap='I'>Sunk</emphasis>
+<emphasis remap='B'>TitleStyle</emphasis>
+flags are ignored since they are redundant in this context.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="UseBorderStyle"/>
+causes the button to inherit the decorated
+<emphasis remap='B'>BorderStyle</emphasis>
+options.</para>
+
+<para>
+<emphasis remap='I'>Raised</emphasis>, <emphasis remap='I'>Sunk</emphasis> and <emphasis remap='I'>Flat</emphasis>
+are mutually exclusive, and can be specified for the initial
+<emphasis remap='B'>ButtonStyle</emphasis>
+only.
+<emphasis remap='I'>UseTitleStyle</emphasis> and <emphasis remap='I'>UseBorderStyle</emphasis>
+are also mutually exclusive (both can be off however).  The
+default is
+<emphasis remap='I'>Raised</emphasis>
+with both
+<emphasis remap='I'>UseBorderStyle  and  UseTitleStyle</emphasis>
+left unset.</para>
+
+<important>
+for the "ActiveDown" and "InactiveDown" states:  When a button is
+pressed, the relief is inverted.  Because of this, to obtain the
+raised look in "ActiveDown" or "InactiveDown" states you must
+specify the opposite of the desired relief (i.e.
+<emphasis remap='I'>Sunk</emphasis>
+for "ActiveDown" or "InactiveDown").  This behavior is consistent,
+but may seem confusing at first.  The same applies to the
+"Toggled" states.</important>
+
+<para>Button styles are classified as non-destructive, partially
+destructive, or fully destructive.  Non-destructive styles do not
+affect the image. Partially destructive styles can obscure some or
+all parts of the underlying image (i.e.
+<emphasis remap='I'>Pixmap</emphasis>).
+Fully destructive styles obscure the entire underlying image (i.e.
+<emphasis remap='I'>Solid</emphasis>
+or one of the
+<emphasis remap='I'>gradient</emphasis>
+styles).  Thus, if stacking styles with
+<emphasis remap='B'>AddButtonStyle</emphasis> (or <emphasis remap='B'>AddTitleStyle</emphasis>
+for title-bars), use care in sequencing styles to minimize redraw.</para>
+
+<para>The available styles are:</para>
+
+<para><emphasis remap='I'>Simple</emphasis>, <emphasis remap='I'>Default</emphasis>, <emphasis remap='I'>Solid</emphasis>, <emphasis remap='I'>Colorset</emphasis>, <emphasis remap='I'>Vector</emphasis>,
+<emphasis remap='I'>?Gradient</emphasis>, <emphasis remap='I'>Pixmap</emphasis>, <emphasis remap='I'>AdjustedPixmap</emphasis>,
+<emphasis remap='I'>ShrunkPixmap</emphasis>, <emphasis remap='I'>StretchedPixmap</emphasis>, <emphasis remap='I'>TiledPixmap</emphasis>, <emphasis remap='I'>MiniIcon</emphasis></para>
+
+<para>The description of these styles and their arguments follow:</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="Simple"/>
+style does nothing.  There are no arguments, and this style is an
+example of a non-destructive button style.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="Default"/>
+style conditionally accepts one argument: a number which specifies
+the default button number to load.  If the style command given is
+<emphasis remap='B'>ButtonStyle</emphasis> or <emphasis remap='B'>AddButtonStyle</emphasis>,
+the argument is optional (if given, it overrides the current button).
+If a command other than
+<emphasis remap='B'>ButtonStyle</emphasis> or <emphasis remap='B'>AddButtonStyle</emphasis>
+is used, the number must be specified.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="Solid"/>
+style fills the button with a solid color.  The relief border
+color is not affected.  The color is specified as a single
+argument.  This style is fully destructive.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="Colorset"/>
+<emphasis remap='I'>cs</emphasis> [<emphasis remap='I'>alpha</emphasis>]
+style fills the button with the Colorset
+<emphasis remap='I'>cs</emphasis>.
+The optional
+<emphasis remap='I'>alpha</emphasis>
+argument is a percentage between 0 and 100. It causes fvwm to
+merge the colorset background onto the button using this
+percentage. If the percentage is 0 the colorset background is
+hidden and if it is 100 the colorset background is fully
+applied. The default is 100. So, the destructiveness depends on the
+<emphasis remap='I'>alpha</emphasis>
+argument.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="Vector"/>
+num
+<emphasis remap='I'>X</emphasis><emphasis remap='B'>[</emphasis><emphasis remap='I'>offset</emphasis><emphasis remap='B'>p]x</emphasis><emphasis remap='I'>Y</emphasis><emphasis remap='B'>[</emphasis><emphasis remap='I'>offset</emphasis><emphasis remap='B'>p]@</emphasis><emphasis remap='I'>C</emphasis><emphasis remap='B'> ...</emphasis>
+style draws a line pattern.  Since this is a standard button style,
+the keyword
+<emphasis remap='I'>Vector</emphasis>
+is optional,
+<emphasis remap='I'>num</emphasis>
+is a number of point specifications of the form
+<emphasis remap='I'>X</emphasis><emphasis remap='B'>[</emphasis><emphasis remap='I'>offset</emphasis><emphasis remap='B'>p]x</emphasis><emphasis remap='I'>Y</emphasis><emphasis remap='B'>[</emphasis><emphasis remap='I'>offset</emphasis><emphasis remap='B'>p]@</emphasis><emphasis remap='I'>C</emphasis><emphasis remap='B'> ...</emphasis>
+<emphasis remap='I'>X</emphasis> and <emphasis remap='I'>Y</emphasis>
+are point coordinates inside the button, given in percents
+(from 0 to 100).  An optional absolute
+<emphasis remap='I'>offset</emphasis>
+in pixels, can be given as "+&lt;offset&gt;p" for a positive or
+"-&lt;offset&gt;p" for a negative offset.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="C"/>
+specifies a line color (0 - the shadow color, 1 - the highlight
+color, 2 - the background color, 3 - the foreground color, 4 -
+only move the point, do not draw).  The first point color is not
+used.  You can use up to 10000 points in a line pattern.  This
+style is partially destructive.</para>
+
+<para>The specification is a little cumbersome:</para>
+
+<programlisting>
+ButtonStyle 2 Vector 4 50x30@1 70x70@0 30x70@0 50x30@1
+</programlisting>
+
+<para>then the button 2 decoration uses a 4-point pattern consisting of
+a line from (x=50,y=30) to (70,70) in the shadow color (@0), and
+then to (30,70) in the shadow color, and finally to (50,30) in the
+highlight color (@1).  Is that too confusing?  See the fvwm web
+pages for some examples with screenshots.</para>
+
+<para>A more complex example of
+<emphasis remap='I'>Vector</emphasis>:</para>
+
+<programlisting>
+ButtonStyle 8 Vector 10 45x65@2 45x75@3 \
+  20x75@3 20x50@3 35x50@3 35x65@1 35x25@1 \
+  75x25@1 75x65@0 35x65@0
+ButtonStyle 0 Vector 10 45x65@2 45x75@0 \
+  20x75@0 20x50@1 45x50@1 45x65@0 75x65@3 \
+  75x25@3 35x25@3 35x47@3
+</programlisting>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="?Gradient"/>
+styles denote color gradients.  Fill in the question mark with any
+one of the defined gradient types.  Please refer to the
+<fvwmref sect="colorGradients" opt="color_gradients" name="Color Gradients"/>
+section for a description of the gradient syntax.  The gradient
+styles are fully destructive.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="Pixmap"/>
+style displays a pixmap.  A pixmap should be specified as an
+argument.  For example, the following would give button number 2
+the same pixmap for all 4 states (2 active and 2 inactive), and
+button number 4 all different pixmaps.</para>
+
+<programlisting>
+ButtonStyle 2 Pixmap my_pixmap.xpm
+ButtonStyle 4 ActiveUp (Pixmap activeup.xpm) ActiveDown (Pixmap activedown.xpm) Inactive (Pixmap inactiveup.xpm)
+ButtonStyle 4 InactiveDown Pixmap inactivedown.xpm
+</programlisting>
+
+<para>The pixmap specification can be given as an absolute or relative
+pathname (see
+<emphasis remap='B'>ImagePath</emphasis>).
+If the pixmap cannot be found, the button style reverts to
+<emphasis remap='I'>Simple</emphasis>.
+Flags specific to the
+<emphasis remap='I'>Pixmap</emphasis>
+style are
+<emphasis remap='I'>Left</emphasis>, <emphasis remap='I'>Right</emphasis>, 
+<emphasis remap='I'>Top</emphasis>, and <emphasis remap='I'>Bottom</emphasis>.
+These can be used to justify the pixmap (default is centered for
+both directions).  Pixmap transparency is used for the color
+"None."  This style is partially destructive.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="AdjustedPixmap"/>
+style is similar to the
+<emphasis remap='I'>Pixmap</emphasis>
+style. But the image is resized to exactly fit the button.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="ShrunkPixmap"/>
+style is similar to the
+<emphasis remap='I'>Pixmap</emphasis>
+style. But if the image is bigger than the button the image is
+resized to fit into the button.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="StretchedPixmap"/>
+style is similar to the
+<emphasis remap='I'>Pixmap</emphasis>
+style. But if the image is smaller than the button the image is
+resized to cover the button.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="TiledPixmap"/>
+style accepts a pixmap to be tiled as the button background. One
+pixmap is specified as an argument.  Pixmap transparency is not
+used.  This style is fully destructive.</para>
+
+<para>The
+<fvwmopt cmd="ButtonStyle" opt="MiniIcon"/>
+style draws the window's miniature icon in the button, which is
+specified with the
+<emphasis remap='I'>MiniIcon</emphasis>
+option of the
+<emphasis remap='B'>Style</emphasis>
+command.  This button style accepts no arguments.  Example:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> *     MiniIcon mini-bx2.xpm
+<fvwmref cmd="Style"/> xterm MiniIcon mini-term.xpm
+<fvwmref cmd="Style"/> Emacs MiniIcon mini-doc.xpm
+
+ButtonStyle 1 MiniIcon
+</programlisting>
+
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ButtonStyle button - [!]flag ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>Sets state-independent flags for the specified
+<emphasis remap='I'>button</emphasis>.
+State-independent flags affect button behavior.  Each
+<emphasis remap='I'>flag</emphasis>
+is separated by a space.  If a
+'<emphasis remap='I'>!</emphasis>'
+is prefixed to the flag then the behavior is negated.  The special
+flag
+<fvwmopt cmd="ButtonStyle" opt="Clear"/>
+clears any existing flags.</para>
+
+<para>The following flags are usually used to tell fvwm which buttons
+should be affected by mwm function hints (see
+<fvwmref cmd="Style" opt="MwmFunctions"/>
+option of the
+<fvwmref cmd="Style"/>
+command.  This is not done automatically since you might have
+buttons bound to complex functions, for instance.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="MwmDecorMenu"/>
+should be assigned to title-bar buttons which display a menu.  The
+default assignment is the leftmost button.  When a window with the
+<emphasis remap='I'>MwmFunctions</emphasis>
+<emphasis remap='B'>Style</emphasis>
+option requests not to show this button, it is hidden.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="MwmDecorMin"/>
+should be assigned to title-bar buttons which minimize or iconify
+the window.  The default assignment is the second button over from
+the rightmost button.  When a window with the
+<emphasis remap='I'>MwmFunctions</emphasis>
+<emphasis remap='B'>Style</emphasis>
+option requests not to show this button, it is hidden.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="MwmDecorMax"/>
+should be assigned to title-bar buttons which maximize the
+window. The default assignment is the rightmost button.  When a
+window with the
+<emphasis remap='I'>MwmFunctions</emphasis>
+<emphasis remap='B'>Style</emphasis>
+option requests not to show this button, it is hidden.  When the
+window is maximized, the vector pattern on the button looks
+pressed in.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="MwmDecorShade"/>
+should be assigned to title-bar buttons which shade the window
+(see
+<fvwmref cmd="WindowShade"/>
+command).  When the window is shaded, the vector pattern on the
+button looks pressed in.</para>
+
+<para>
+<fvwmopt cmd="ButtonStyle" opt="MwmDecorStick"/>
+should be assigned to title-bar buttons which make the window
+sticky. When the window is sticky, the vector pattern on the
+button looks pressed in.</para>
+
+<para>The flag
+<fvwmopt cmd="ButtonStyle" opt="MwmDecorLayer"/>
+<emphasis remap='B'>layer</emphasis>
+should be assigned to title-bar buttons which place the window in
+the layer numbered
+<emphasis remap='B'>layer</emphasis>.
+When the window is on that specific layer, the vector pattern on
+the button looks pressed in.</para>
+</section>

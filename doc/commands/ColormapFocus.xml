@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ColormapFocus'>
+<title>ColormapFocus</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>ColormapFocus</arg>
+    <arg choice='plain'>FollowsMouse | FollowsFocus</arg>
+</cmdsynopsis>
+</command>
+
+<para>By default, fvwm installs the colormap of the window that the
+cursor is in.  If you use</para>
+
+<programlisting>
+ColormapFocus <fvwmopt cmd="ColormapFocus" opt="FollowsFocus"/>
+</programlisting>
+
+<para>then the installed colormap is the one for the window that
+currently has the keyboard focus.</para>
+
+</section>

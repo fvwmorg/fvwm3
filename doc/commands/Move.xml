@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Move'>
+<title>Move</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Move</arg>
+    <arg choice='plain'>[[<emphasis>screen</emphasis> screen] [w|m]x[p|w] [w|m]...y[p|w]... [Warp]] | [pointer]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Allows the user to move a window.  If called from somewhere in a
+window or its border, then that window is moved.  If called from
+the root window then the user is allowed to select the target
+window.</para>
+
+<para>If the literal option <fvwmopt cmd="Move" opt="screen"/> followed by a
+<emphasis remap='I'>screen</emphasis>
+argument is specified, the coordinates are interpreted as relative
+to the given screen.  The width and height of the screen are used
+for the calculations instead of the display dimensions.  The
+<emphasis remap='I'>screen</emphasis>
+as interpreted as in the
+<fvwmref cmd="MoveToScreen"/>
+command.
+If the optional argument
+<fvwmopt cmd="Move" opt="Warp"/>
+is specified the pointer is warped with the window.  If the single
+argument
+<fvwmopt cmd="Move" opt="pointer"/>
+is given, the top left corner of the window is moved to the
+pointer position before starting the operation; this is mainly
+intended for internal use by modules like
+<fvwmref mod="FvwmPager"/>.</para>
+
+<para>The operation can be aborted with Escape or any mouse button not set
+to place the window. By default mouse button 2 is set to cancel the move
+operation. To change this you may use the
+<fvwmref cmd="Mouse"/>
+command with special context 'P' for Placement.</para>
+
+<para>The window condition
+<fvwmref cmd="Style" opt="PlacedByButton"/>
+can be used to check if a specific button was pressed to place the
+window (see
+<fvwmref cmd="Current"/>
+command).</para>
+
+<para>If the optional arguments
+<fvwmopt cmd="Move" opt="x"/> and
+<fvwmopt cmd="Move" opt="y"/>
+are provided, then the window is moved immediately without user
+interaction.  Each argument can specify an absolute or relative
+position from either the left/top or right/bottom of the screen.
+By default, the numeric value given is interpreted as a percentage
+of the screen width/height, but a trailing
+'<emphasis remap='I'>p</emphasis>'
+changes the interpretation to mean pixels, while a trailing
+'<emphasis>w</emphasis>'
+means precent of the window width/height.
+To move the window
+relative to its current position, add the
+'<fvwmopt cmd="Move" opt="w"/>'
+(for "window") prefix before the
+<emphasis remap='I'>x</emphasis> and/or <emphasis remap='I'>y</emphasis>
+value.  To move the window to a position relative to the current
+location of the pointer, add the
+'<fvwmopt cmd="Move" opt="m"/>'
+(for "mouse") prefix.  To leave either coordinate unchanged,
+"<fvwmopt cmd="Move" opt="keep"/>" can be specified in place of
+<emphasis remap='I'>x</emphasis> or <emphasis remap='I'>y</emphasis>.</para>
+
+For advanced uses, the arguments
+<emphasis>x</emphasis> and <emphasis>y</emphasis>
+can be used multiple times, but without the prefix
+'<emphasis>m</emphasis>' or '<emphasis>w</emphasis>'.
+(See complex examples below).
+
+<para>Simple Examples:</para>
+
+<programlisting>
+# Interactive move
+<fvwmref cmd="Mouse"/> 1 T A Move
+# Move window to top left is at (10%,10%)
+<fvwmref cmd="Mouse"/> 2 T A Move 10 10
+# Move top left to (10pixels,10pixels)
+<fvwmref cmd="Mouse"/> 3 T A Move 10p 10p
+</programlisting>
+
+<para>More complex examples (these can be bound as actions to
+keystrokes, etc.; only the command is shown, though):</para>
+
+<programlisting>
+# Move window so bottom right is at bottom
+# right of screen
+Move -0 -0
+
+# Move window so top left corner is 10 pixels
+# off the top left screen edge
+Move +-10 +-10
+
+# Move window 5% to the right, and to the
+# middle vertically
+Move w+5 50
+
+# Move window up 10 pixels, and so left edge
+# is at x=40 pixels
+Move 40p w+-10p
+
+# Move window to the mouse pointer location
+Move m+0 m+0
+
+# Move window to center of screen (50% of screen
+# poition minus 50% of widow size).
+Move 50-50w 50-50w
+</programlisting>
+
+<para>See also the
+<fvwmref cmd="AnimatedMove"/>
+command.</para>
+
+</section>

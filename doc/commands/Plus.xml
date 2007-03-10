@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Plus'>
+<title>Plus</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>+</arg>
+</cmdsynopsis>
+</command>
+
+<para>Used to continue adding to the last specified decor, function or
+menu. See the discussion for
+<fvwmref cmd="AddToDecor"/>,
+<fvwmref cmd="AddToFunc"/>, and
+<fvwmref cmd="AddToMenu"/>.</para>
+
+
+</section>

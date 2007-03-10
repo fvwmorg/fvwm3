@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+]>
+
+<section id='use_on_multiscreen_displays'>
+<title>Use on Multi-Screen Displays</title>
+<para>If the
+<option>-s</option>
+command line argument is not given, fvwm automatically starts up
+on every screen on the specified display.  After fvwm starts each
+screen is treated independently.  Restarts of fvwm need to be
+performed separately on each screen.  The use of</para>
+
+<programlisting>
+<fvwmref cmd="EdgeScroll"/> 0 0
+</programlisting>
+
+<para>is strongly recommended for multi-screen displays.  You may need
+to quit on each screen to quit from the X session completely.
+This is not to be confused with Xinerama support.</para>
+
+</section>

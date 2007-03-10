@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Module'>
+<title>Module</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Module modulename [moduleparams]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Specifies a module with its optional parameters which should be
+spawned. Currently several modules, including
+<fvwmref mod="FvwmButtons"/>,
+<fvwmref mod="FvwmEvent"/>,
+<fvwmref mod="FvwmForm"/>,
+<fvwmref mod="FvwmGtk"/>,
+<fvwmref mod="FvwmPager"/>,
+<fvwmref mod="FvwmScript"/>
+support aliases.  Aliases are useful if more than one instance of
+the module should be spawned.  Aliases may be configured
+separately using
+<emphasis remap='B'>*</emphasis>
+syntax.  To start a module
+<emphasis remap='B'>FvwmForm</emphasis>
+using an alias
+<emphasis remap='I'>MyForm</emphasis>,
+the following syntax may be used:</para>
+
+<programlisting>
+Module FvwmForm MyForm
+</programlisting>
+
+
+<para>At the current time the available modules (included with fvwm) are
+<fvwmref mod="FvwmAnimate"/> (produces animation effects when a window is iconified or de-iconified),
+<fvwmref mod="FvwmAuto"/> (an auto raise module),
+<fvwmref mod="FvwmBacker"/> (to change the background when you change desktops),
+<fvwmref mod="FvwmBanner"/> (to display a spiffy XPM, XBM or PNG),
+<fvwmref mod="FvwmButtons"/> (brings up a customizable tool bar),
+<fvwmref mod="FvwmCommandS"/> (a command server to use with shell's FvwmCommand client),
+<fvwmref mod="FvwmConsole"/> (to execute fvwm commands directly),
+<fvwmref mod="FvwmCpp"/> (to preprocess your <emphasis remap='I'>config</emphasis> with cpp),
+<fvwmref mod="FvwmDebug"/> (to help debug fvwm),
+<fvwmref mod="FvwmDragWell"/> (the place to drag&amp;drop to),
+<fvwmref mod="FvwmEvent"/> (trigger various actions by events),
+<fvwmref mod="FvwmForm"/> (to bring up dialogs),
+<fvwmref mod="FvwmGtk"/> (to bring up <acronym>GTK</acronym> menus and dialogs),
+<fvwmref mod="FvwmIconBox"/> (like the mwm IconBox),
+<fvwmref mod="FvwmIconMan"/> (a flexible icon manager),
+<fvwmref mod="FvwmIdent"/> (to get window info),
+<fvwmref mod="FvwmM4"/> (to preprocess your <emphasis remap='I'>config</emphasis> with m4),
+<fvwmref mod="FvwmPager"/> (a mini version of the desktop),
+<fvwmref mod="FvwmPerl"/> (a Perl manipulator and preprocessor),
+<fvwmref mod="FvwmProxy"/> (to locate and control obscured windows by using small proxy windows),
+<fvwmref mod="FvwmRearrange"/> (to rearrange windows),
+<fvwmref mod="FvwmSave"/> (saves the desktop state in .xinitrc style),
+<fvwmref mod="FvwmSaveDesk"/> (saves the desktop state in fvwm commands),
+<fvwmref mod="FvwmScript"/> (another powerful dialog toolkit),
+<fvwmref mod="FvwmScroll"/> (puts scrollbars on any window),
+<fvwmref mod="FvwmTabs"/> (a generic tabbing module),
+<fvwmref mod="FvwmTaskBar"/> (a Windows like task bar),
+<fvwmref mod="FvwmTheme"/> (managed colorsets, obsolete),
+<fvwmref mod="FvwmWharf"/> (an AfterStep like button bar),
+<fvwmref mod="FvwmWindowMenu"/> (a configurable fvwm menu listing current windows),
+<fvwmref mod="FvwmWinList"/> (a window list).
+These modules have their own man
+pages.  There may be other modules out on there as well.</para>
+
+
+<para>Modules can be short lived transient programs or, like
+<fvwmref mod="FvwmButtons"/>
+,
+can remain for the duration of the X session.  Modules are
+terminated by the window manager prior to restarts and quits, if
+possible.  See the introductory section on modules.  The keyword
+<emphasis remap='B'>Module</emphasis>
+may be omitted if
+<emphasis remap='I'>modulename</emphasis>
+is distinct from all fvwm commands.</para>
+
+</section>

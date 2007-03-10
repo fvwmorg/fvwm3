@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='IgnoreModifiers'>
+<title>IgnoreModifiers</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>IgnoreModifiers [Modifiers]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Tells fvwm which modifiers to ignore when matching Mouse or Key
+bindings.
+<emphasis remap='B'>IgnoreModifiers</emphasis>
+affects the
+<fvwmref cmd="Style" opt="ClickToFocus"/>
+style too.  This command belongs into your
+<emphasis remap='I'>config</emphasis>.
+If you issue it when your fvwm session is already up and running
+the results are unpredictable.  The should appear before any
+applications or modules are started in your
+<emphasis remap='I'>config</emphasis>
+file (e.g. with the
+<fvwmref cmd="Exec"/>
+command).</para>
+
+<para><emphasis remap='I'>Modifiers</emphasis>
+has the same syntax as in the
+<fvwmref cmd="Mouse"/> or <emphasis remap='B'>Key</emphasis>
+bindings, with the addition of 'L' meaning the
+<emphasis remap='SM'>caps lock</emphasis>
+key.  The default is "L".
+<emphasis remap='I'>Modifiers</emphasis>
+can be omitted, meaning no modifiers are ignored.  This command
+comes in handy if the
+<emphasis remap='SM'>num-lock</emphasis>
+and
+<emphasis remap='SM'>scroll-lock</emphasis>
+keys interfere with your shortcuts.  With XFree86 '2' usually is
+the
+<emphasis remap='SM'>num-lock</emphasis>
+modifier and '5' refers to the
+<emphasis remap='SM'>scroll-lock</emphasis>
+key. To turn all these pesky modifiers off you can use this
+command:</para>
+
+<programlisting>
+IgnoreModifiers L25
+</programlisting>
+
+<para>If the
+<emphasis remap='I'>Modifiers</emphasis>
+argument is the string "default", fvwm reverts back to the
+default value "L".</para>
+
+<para><emphasis remap='I'>Important Note:</emphasis>
+This command creates a lot of extra network traffic, depending on
+your CPU, network connection, the number of
+<fvwmref cmd="Key"/> or <emphasis remap='B'>Mouse</emphasis>
+commands in your configuration file and the number of modifiers
+you want to ignore.  If you do not have a lightning fast machine
+or very few bindings you should not ignore more than two
+modifiers. I.e. do not ignore
+<emphasis remap='SM'>scroll-lock</emphasis>
+if you have no problem with it.  In the
+<emphasis remap='I'>FAQ</emphasis>
+you can find a better solution of this problem.</para>
+
+</section>

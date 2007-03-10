@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='FakeKeypress'>
+<title>FakeKeypress</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>FakeKeypress [command value] ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is mainly intended for debugging fvwm and no
+guarantees are made that it works for you.
+<emphasis remap='B'>FakeKeypress</emphasis>
+can simulate key press and release events and pass them
+to fvwm or applications.  The parameters are a list of
+commands which consist of pairs of command tokens and values.
+The
+<fvwmopt cmd="FakeKeypress" opt="press"/> and
+<fvwmopt cmd="FakeKeypress" opt="release"/>
+commands are followed by a key name.
+The key name is a standard X11 key name as defined in
+<filename>/usr/include/X11/keysymdef.h</filename>,
+(without the
+<emphasis remap='I'>XK_</emphasis>
+prefix), or the keysym database
+<filename>/usr/X11R6/lib/X11/XKeysymDB</filename>.
+The
+<fvwmopt cmd="FakeKeypress" opt="wait"/>,
+<fvwmopt cmd="FakeKeypress" opt="modifiers"/> and
+<fvwmopt cmd="FakeKeypress" opt="depth"/>
+commands are the same as those used by
+<fvwmref cmd="FakeClick"/>.</para>
+
+<para>Save all GVim sessions with: "Esc:w\n"</para>
+
+<programlisting>
+<fvwmref cmd="All"/> (gvim) FakeKeypress press Escape \
+                        press colon \
+                        press w \
+                        press Return
+</programlisting>
+
+<para>Save &amp; exit all GVim sessions with: "Esc:wq\n"</para>
+
+<programlisting>
+<fvwmref cmd="All"/> (gvim) FakeKeypress press Escape \
+                        press colon \
+                        press w \
+                        press q \
+                        press Return
+</programlisting>
+
+<para>Send A to a specific window:</para>
+
+<programlisting>
+<fvwmref cmd="WindowId"/> 0x3800002 FakeKeypress press A
+</programlisting>
+
+<para>Note: all command names can be abbreviated with their first letter.</para>
+
+
+</section>

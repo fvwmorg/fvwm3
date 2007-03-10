@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='HideGeometryWindow'>
+<title>HideGeometryWindow</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>HideGeometryWindow</arg>
+    <arg choice='opt'>Never | Move | Resize</arg>
+</cmdsynopsis>
+</command>
+  
+<para>Hides the position or size window that is usually shown when a
+window is moved or resized interactively.  To switch it off only
+for move or resize operations the optional parameters
+<fvwmopt cmd="HideGeometryWindow" opt="Move"/> and
+<fvwmopt cmd="HideGeometryWindow" opt="Resize"/>
+can be used respectively.  To switch both on again use the
+<fvwmopt cmd="HideGeometryWindow" opt="Never"/>
+option.</para>
+
+</section>

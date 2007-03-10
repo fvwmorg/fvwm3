@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Exec'>
+<title>Exec</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Exec command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Executes
+<emphasis remap='I'>command</emphasis>.
+You should not use an ampersand '&amp;' at the end of the command. You
+probably want to use an additional "exec" at the beginning of
+<emphasis remap='I'>command</emphasis>.
+Without that, the shell that fvwm invokes to run your command
+stays until the command exits.  In effect, you'll have twice as
+many processes running as you need.  Note that some shells are
+smart enough to avoid this, but it never hurts to include the
+"exec" anyway.</para>
+
+<para>The following example binds function key
+<emphasis remap='SM'>F1</emphasis>
+in the root window, with no modifiers, to the exec function. The
+program rxvt is started with an assortment of options.</para>
+
+
+<programlisting>
+<fvwmref cmd="Key"/> F1 R N Exec exec rxvt -fg yellow -bg blue \
+  -e /bin/tcsh
+</programlisting>
+
+<para>Note that this function doesn't wait for
+<emphasis remap='I'>command</emphasis>
+to complete, so things like:</para>
+
+<programlisting>
+Exec "echo <fvwmref cmd="AddToMenu"/> ... &gt; /tmp/file"
+<fvwmref cmd="Read"/> /tmp/file
+</programlisting>
+
+<para>do not work reliably
+(see the
+<fvwmref cmd="PipeRead"/>
+command).</para>
+
+
+</section>

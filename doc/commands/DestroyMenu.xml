@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DestroyMenu'>
+<title>DestroyMenu</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DestroyMenu</arg>
+    <arg choice='opt'>recreate</arg>
+    <arg choice='plain'>menu</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>Deletes a menu, so that subsequent references to it are no longer
+valid.  You can use this to change the contents of a menu during
+an fvwm session.  The menu can be rebuilt using
+<fvwmref cmd="AddToMenu"/>.
+The optional parameter
+<emphasis remap='I'>recreate</emphasis>
+tells fvwm not to throw away the menu completely but to throw away
+all the menu items (including the title).</para>
+
+<programlisting>DestroyMenu Utilities</programlisting>
+
+</section>

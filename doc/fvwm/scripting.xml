@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='scripting_and_complex_functions'>
+<title>Scripting &amp; Complex Functions</title>
+
+<para>To achieve the more complex effects, fvwm has a number of
+commands that improve its scripting abilities.  Scripts can be
+read from a file with
+<fvwmref cmd="Read"/>,
+from the output of a command with
+<fvwmref cmd="PipeRead"/>
+or written as a complex function with the
+<fvwmref cmd="AddToFunc"/>
+command.  For the curious, section 7 of the fvwm FAQ shows some
+real life applications of scripting.  Please refer to the sections
+<fvwmref sect="userFunctions" opt="user_functions_and_shell_commands" name="User Functions and Shell Commands"/>
+and
+<fvwmref sect="conditionals" opt="conditional_commands" name="Conditional Commands"/>
+for details.  A word of warning:  during execution of complex
+functions, fvwm needs to take all input from the mouse pointer
+(the pointer is "grabbed" in the slang of X).  No other programs
+can receive any input from the pointer while a function is run.
+This can confuse some programs.  For example, the xwd program
+refuses to make screen shots when run from a complex function.  To
+achieve the same functionality you can use the
+<fvwmref cmd="Read"/>
+or
+<fvwmref cmd="PipeRead"/>
+command instead.</para>
+
+</section>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='virtual_desktop_commands'>
+<title>Controlling the Virtual Desktop</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Desk.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DesktopName.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DesktopSize.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EdgeResistance.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EdgeScroll.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EdgeThickness.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EwmhBaseStruts.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EWMHNumberOfDesktops.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/GotoDesk.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/GotoDeskAndPage.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/GotoPage.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Scroll.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Xinerama.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/XineramaPrimaryScreen.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/XineramaSls.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/XineramaSlsSize.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/XineramaSlsScreens.xml" />
+
+</section>

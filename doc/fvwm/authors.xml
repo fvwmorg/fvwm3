@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='authors'>
+<title>Authors</title>
+
+<para>Robert  Nation with help from many people, based on twm code, which was written by Tom LaStrange. After Robert Nation came Charles Hines, followed by Brady Montz. Currently fvwm is developed by a number of people on the fvwm-workers mailing list.</para>
+
+</section>

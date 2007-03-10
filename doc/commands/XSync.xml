@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='XSync'>
+<title>XSync</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>XSync </arg>
+</cmdsynopsis>
+</command>
+
+<para>When
+<emphasis remap='B'>XSync</emphasis>
+is called, the X function with the same name is used to send all
+pending X requests to the server.  This command is intended for
+debugging only.</para>
+
+</section>

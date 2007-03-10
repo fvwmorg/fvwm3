@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='KillModule'>
+<title>KillModule</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>KillModule modulename [modulealias]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Causes the module which was invoked with name
+<emphasis remap='I'>modulename</emphasis>
+to be killed.  The name may include wildcards. If
+<emphasis remap='I'>modulealias</emphasis>
+is given, only modules started with the given alias are killed.</para>
+
+<programlisting>
+KillModule FvwmPager  # kill all pagers
+
+<fvwmref cmd="Module"/> FvwmEvent SoundEvent
+KillModule FvwmEvent SoundEvent
+</programlisting>
+
+
+</section>

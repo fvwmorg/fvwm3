@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='window_styles'>
+<title>Window Styles</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddButtonStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddTitleStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddToDecor.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/BorderStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ButtonState.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ButtonStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ChangeDecor.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyDecor.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/TitleStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/UpdateDecor.xml" />
+
+
+</section>

@@ -1,0 +1,83 @@
+
+/* $Id$ */
+
+h3.fn,span.fn
+{
+	margin-left: 1cm;
+	text-indent: -1cm;
+}
+
+a:link
+{
+	color: #004faf;
+	text-decoration: none
+}
+
+a:visited
+{
+	color: #672967;
+	text-decoration: none
+}
+
+td.postheader
+{
+	font-family: sans-serif
+}
+
+tr.address
+{
+	font-family: sans-serif
+}
+
+th
+{
+	color: black;
+}
+
+body pre
+{
+	padding: 0.2em;
+	/* border: #e7e7e7 1px solid; */
+	border: #aeaeae 1px solid;
+	/* background: #f1f1f1; */
+	/* background: antiquewhite; */
+	background: #d3d3d3; /* lightgrey */
+	color: black
+}
+
+span.preprocessor, span.preprocessor a
+{
+	color: darkblue;
+}
+
+span.comment
+{
+	color: darkred;
+	font-style: italic
+}
+
+span.string,span.char
+{
+	color: darkgreen;
+}
+
+font.header
+{
+	color: #004faf;
+}
+
+font.obsolete
+{
+	color: red;
+}
+
+font.fvwmopt
+{
+	color: darkorange;
+}
+/*
+table
+{
+	background: #e5e5e5;
+}
+*/

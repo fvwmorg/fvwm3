@@ -76,14 +76,17 @@ AM_CONFIG_HEADER(config.h)
 # installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
 FVWM_DATASUBDIR=/${PACKAGE}
+FVWM_DOCSUBDIR=/doc/${PACKAGE}
 
 AC_ARG_ENABLE(package-subdirs,
   [  --disable-package-subdirs  do not create subdirs for modules and data],
   [if test x"$enableval" = xno; then FVWM_MODULESUBDIR=""; FVWM_DATASUBDIR="";
   fi], [])
 
+
 FVWM_MODULEDIR='${libexecdir}'"$FVWM_MODULESUBDIR"
 FVWM_DATADIR='${datadir}'"$FVWM_DATASUBDIR"
+FVWM_DOCDIR='${datadir}'"$FVWM_DOCSUBDIR"
 FVWM_PERLLIBDIR='${datadir}'"$FVWM_DATASUBDIR/perllib"
 FVWM_CONFDIR='${sysconfdir}'dnl used _only_ to search for system.fvwm2rc
 
@@ -91,6 +94,7 @@ AC_SUBST(FVWM_MODULEDIR)
 AC_SUBST(FVWM_DATADIR)
 AC_SUBST(FVWM_PERLLIBDIR)
 AC_SUBST(FVWM_CONFDIR)
+AC_SUBST(FVWM_DOCDIR)
 
 AH_TEMPLATE([FVWM_CONFIG],
   [Name of config filenames in FVWM_USERDIR and FVWM_DATADIR])
@@ -247,6 +251,34 @@ esac
 # unfortunately, we need pkg-config for the detection of certain libs:
 # - certain version of fontconfig (without fontconfig-config
 AM_CHECK_PKG_CONFIG
+
+
+# Building HTML documentation
+problem_htmldoc=""
+
+AC_ARG_ENABLE(htmldoc,
+  [  --disable-htmldoc       disable generation of HTML documentation],
+  [ if test x"$enableval" = xyes; then
+		with_htmldoc="yes, check"
+	else
+		with_htmldoc="no"
+		problem_htmldoc=": Explicitly disabled"
+	fi ],
+  [ with_htmldoc="not specified, check" ]
+)
+
+if test x"$with_htmldoc" != xno; then
+#	SCoTT was here
+	AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, "")
+	if test x"$XSLTPROC" = "x" ; then
+		with_htmldoc="no"
+		problem_htmldoc=": No xsltproc found in PATH"
+	else
+		with_htmldoc="yes"
+	fi
+fi
+AM_CONDITIONAL([FVWM_BUILD_HTMLDOC], [test x"$with_htmldoc" = xyes])
+
 
 # ********* session management
 # Check the availability of SM; we don't have to add any extra libraries,
@@ -1460,6 +1492,7 @@ AC_SUBST(with_xpm)
 
 dnl with autoconf <2.60 this is needed
 AC_SUBST(datarootdir)
+AC_SUBST(docdir)
 
 LOCAL_BUGADDR=${FVWM_BUGADDR-${USER-${LOGNAME-`whoami`}}}
 AC_SUBST(LOCAL_BUGADDR)
@@ -1538,6 +1571,13 @@ dnl
 	rpm/fvwm.spec
 	debian/Makefile
 	debian/control
+	doc/fvwm.ent
+	doc/footer.html
+	doc/Makefile
+	doc/fvwm/Makefile
+	doc/commands/Makefile
+	doc/modules/Makefile
+	doc/images/Makefile
 	docs/fvwm.lsm
 	docs/Makefile
 	sample.fvwmrc/Makefile
@@ -1612,6 +1652,7 @@ eval my_bindir="`eval echo ${bindir}`"
 eval my_mandir="`eval echo ${mandir}`"
 eval my_moddir="`eval echo ${FVWM_MODULEDIR}`"; eval my_moddir="$my_moddir"
 eval my_datdir="`eval echo ${FVWM_DATADIR}`"
+eval my_docdir="`eval echo ${FVWM_DOCDIR}`"
 eval my_plldir="`eval echo ${FVWM_PERLLIBDIR}`"
 test x"$FVWM_PERLLIB" = x && my_plldir="(Not installed) $my_plldir"
 eval my_localedir="`eval echo ${LOCALEDIR}`"
@@ -1633,6 +1674,7 @@ FVWM Configuration:
   Man pages:   $my_mandir
   Modules:     $my_moddir
   Data files:  $my_datdir
+  Doc files:   $my_docdir
   Perl lib:    $my_plldir
   Locale msg:  $my_localedir $INST_LINGUAS
 
@@ -1652,6 +1694,7 @@ FVWM Configuration:
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm
   With Xrender image support?         $with_xrender$problem_xrender
+  Build HTML documentation?           $with_htmldoc$problem_htmldoc
 
 See INSTALL.fvwm for the description of what this may mean."
 

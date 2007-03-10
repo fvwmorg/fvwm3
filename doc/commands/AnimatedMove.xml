@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='AnimatedMove'>
+<title>AnimatedMove</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>AnimatedMove</arg>
+    <arg choice='plain'>x</arg>
+    <arg choice='plain'>y</arg>
+    <arg choice='opt'>Warp</arg>
+</cmdsynopsis>
+</command>
+
+
+
+<para>Move a window in an animated fashion.  Similar to
+<fvwmref cmd="Move"/>
+command. The options are the same, except they are required,
+since it doesn't make sense to have a user move the window
+interactively and animatedly.  If the optional argument
+<fvwmopt cmd="AnimatedMove" opt="Warp"/>
+is specified the pointer is warped with the window.</para>
+
+</section>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DefaultColorset'>
+<title>DefaultColorset</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DefaultColorset</arg>
+    <arg choice='opt'>num</arg>
+</cmdsynopsis>
+</command>
+
+<para><emphasis remap='B'>DefaultColorset</emphasis>
+sets the colorset used by the windows controlled by the
+<emphasis remap='B'>DefaultColors</emphasis>
+command.  To revert back to the
+<emphasis remap='B'>DefaultColors</emphasis>
+colors use</para>
+
+<programlisting>
+DefaultColorset -1
+</programlisting>
+
+<para>or any variant of the
+<fvwmref cmd="DefaultColors"/>
+command.</para>
+
+</section>

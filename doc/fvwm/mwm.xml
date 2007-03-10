@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='mwm_compatibility'>
+<title>MWM Compatibility</title>
+<para>Fvwm provides options to emulate Motif Window Manager (Mwm) as
+well as possible.  Please refer to the
+<fvwmref cmd="Emulate"/>
+command as well as to the Mwm specific options of the
+<fvwmref cmd="Style"/> and
+<fvwmref cmd="MenuStyle"/>
+commands for details.</para>
+
+</section>

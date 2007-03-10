@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id="icons_and_images">
+<title>Icons and Images</title>
+<para>Fvwm can load <markup>.xbm,</markup> <markup>.xpm,</markup>
+<markup>.png</markup> and
+<markup>.svg</markup> images. <emphasis remap='B'>XBM</emphasis>
+images are monochrome.  Fvwm can always display
+<emphasis remap='B'>XBM</emphasis> files. <emphasis remap='B'>XPM</emphasis>
+and <emphasis remap='B'>PNG</emphasis> formats are color images.
+SVG is a vector graphics image format.
+Compile-time options determine whether fvwm can display
+<emphasis remap='B'>XPM</emphasis>, <emphasis remap='B'>PNG</emphasis> or
+<emphasis remap='B'>SVG</emphasis>
+icons and images. See the <emphasis remap='I'>INSTALL.fvwm</emphasis>
+file for more information.</para>
+
+<!-- TODO: Create a link to INSTALL.fvwm file? -->
+
+<para>The related <emphasis remap='B'>SHAPE</emphasis>
+compile-time option can make fvwm display spiffy shaped icons.</para>
+
+
+<section id='svg_rendering_options'>
+<title>SVG rendering options</title>
+
+<para>By default SVG images are rendered as the image creator intended
+them to. But since SVG is a vector graphics format, the images can
+be rendered at any choosen size and rotation, e.g. making it possible
+to use the same icon file rendered at diffrent sizes for the
+<fvwmref cmd="Style" opt="Icon"/>
+and
+<fvwmref cmd="Style" opt="MiniIcon"/>
+styles.</para>
+
+<para>The rendering options are specified as a string appended to the SVG
+filename as follows:</para>
+
+<htmlonly>
+&fixme; <!-- This looks crappy as HTML output. -->
+</htmlonly>
+
+<para>
+<emphasis remap='B'></emphasis><emphasis remap='I'>image.svg</emphasis><emphasis remap='P->B'>:</emphasis>[[-]<emphasis remap='I'>width</emphasis>x[-]<emphasis remap='I'>height</emphasis>][[+|-]<emphasis remap='I'>xpos</emphasis>[+|-]<emphasis remap='I'>ypos</emphasis>][@<emphasis remap='I'>angle</emphasis>][[*|/]<emphasis remap='I'>scale</emphasis>]
+</para>
+
+<para>The option string always starts with a colon (':') to separate it
+from the filename. An empty option string can skip this colon, but
+it might still be a good idea to include it to prevent ambiguity
+if the filename contains any colon.</para>
+
+<programlisting>
+filename_without_colon.svg
+filename:with:colon.svg:
+</programlisting>
+
+<para><emphasis remap='I'>width</emphasis>
+and
+<emphasis remap='I'>height</emphasis>
+specifies the dimensions of the rendering area in pixels, i.e. the
+dimensions of the resulting image.</para>
+
+<programlisting>
+image.svg:22x22
+</programlisting>
+
+<para>Use a
+<emphasis remap='I'>width</emphasis>
+or
+<emphasis remap='I'>height</emphasis>
+value of 0 to keep the aspect ratio.</para>
+
+<programlisting>
+image.svg:0x64
+image.svg:32x0
+</programlisting>
+
+<para>A '-' before
+<emphasis remap='I'>width</emphasis>
+mirrors the original image horizontally.</para>
+
+<programlisting>
+image.svg:-0x0
+</programlisting>
+
+<para>A '-' before
+<emphasis remap='I'>height</emphasis>
+mirrors the original image vertically.</para>
+
+<programlisting>
+image.svg:0x-0
+</programlisting>
+
+<para><emphasis remap='I'>xpos</emphasis>
+and
+<emphasis remap='I'>ypos</emphasis>
+specifies a translation of the image in pixels. A positive
+<emphasis remap='I'>xpos</emphasis>
+value moves the image to the right. A positive
+<emphasis remap='I'>ypos</emphasis>
+value moves it down. Moving it partially outside of the rendering
+area results in a cropped image.</para>
+
+<programlisting>
+image.svg:-10+0
+image.svg:+0+10
+image.svg:-7-7
+</programlisting>
+
+<para><emphasis remap='I'>angle</emphasis>
+specifies a rotation around the original image center in degrees.
+A positive value rotates the image clockwise. Floating point values
+are recognized.</para>
+
+<programlisting>
+image.svg:@90
+image.svg:@-90
+image.svg:@180
+image.svg:@57.3
+</programlisting>
+
+<para><emphasis remap='I'>scale</emphasis>
+specifes a scaling of the whole image. Scaling it up results in
+a cropped image. Floting point values are recognized. Division by
+zero is ignored.</para>
+
+<programlisting>
+image.svg:*0.5
+image.svg:/2
+</programlisting>
+
+<para>Scaling down a translated or rotated image can prevent cropping.</para>
+
+<programlisting>
+image.svg:@45*0.7
+</programlisting>
+
+<para>Repeated usage of translation, rotation, and scaling is allowed.
+Translation and rotation are additive. Scaling is multiplicative.</para>
+
+<programlisting>
+image.svg:*2/3
+</programlisting>
+
+<para>All of this can be combined. The following renders a horizontally
+mirrored 30 pixels wide and 40 pixels high image rotated 60 degrees
+counterclockwise in the lower left corner of a 75 pixels wide and
+100 pixels high rendering area.</para>
+
+<programlisting>
+image.svg:-75x100-10+20@-60*2/5
+</programlisting>
+
+
+</section>
+
+
+
+</section>
+
+

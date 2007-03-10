@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Silent'>
+<title>Silent</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Silent command</arg>
+</cmdsynopsis>
+</command>
+
+<para>A number of commands require a window to operate on.  If
+no window was selected when such a function is invoked the user is
+asked to select a window.  Sometimes this behavior is unwanted,
+for example if the function was called by a module and the window
+that was selected at first does not exist anymore.  You can
+prevent this by putting
+<emphasis remap='B'>Silent</emphasis>
+in front of the fvwm
+<emphasis remap='I'>command</emphasis>.
+If a function that needs a window is called with
+<emphasis remap='B'>Silent</emphasis>
+without a window selected, it simply returns without doing
+anything. If
+<emphasis remap='B'>Silent</emphasis>
+is used on a user defined function it affects all function and sub
+function calls until the original function exits.</para>
+
+<para>Another usage of
+<emphasis remap='B'>Silent</emphasis>
+is with binding commands
+<fvwmref cmd="Key"/>, <emphasis remap='B'>PointerKey</emphasis> and <emphasis remap='B'>Mouse</emphasis>,
+this disables error messages.</para>
+
+<para><emphasis remap='B'>Silent</emphasis>
+also disables the error message for non-existent commands.  Note:
+This command is treated as a prefix to its
+<emphasis remap='I'>command</emphasis>.
+Expansion of the command line is done as if
+<emphasis remap='B'>Silent</emphasis>
+was not there.</para>
+
+<para>Examples:</para>
+
+<programlisting>
+Silent <fvwmref cmd="Move"/> 0 0
+Silent User_defined_function
+# do not complain on keyboards without "Help" key
+Silent <fvwmref cmd="Key"/> Help R A <fvwmref cmd="Popup"/> HelpMenu
+</programlisting>
+
+
+</section>

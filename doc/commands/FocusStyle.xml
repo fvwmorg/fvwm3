@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='FocusStyle'>
+<title>FocusStyle</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>FocusStyle stylename options</arg>
+</cmdsynopsis>
+</command>
+
+<para>works exactly like the
+<fvwmref cmd="Style"/>
+command, but accepts only the focus policy related styles
+beginning with "FP".  The prefix can be removed, but at the cost
+of a little bit of time.
+<emphasis remap='B'>FocusStyle</emphasis>
+is meant to make the configuration file more readable.  Example:</para>
+
+<programlisting>
+FocusStyle * EnterToFocus, !LeaveToUnfocus
+</programlisting>
+
+<para>is equivalent to</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> * FPEnterToFocus, !FPLeaveToUnfocus
+</programlisting>
+
+
+</section>

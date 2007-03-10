@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "/usr/share/sgml/docbook/xml-dtd-4.4-1.0-26/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id="TODO">
+<title>TODO</title>
+<para>Not yet documented.</para>
+</section>

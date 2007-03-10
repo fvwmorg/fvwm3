@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='BorderStyle'>
+<title>BorderStyle</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>BorderStyle</arg>
+    <arg choice='plain'>state</arg>
+    <arg choice='opt'>style</arg>
+    <arg choice='opt'>-- <arg choice='opt'>!</arg> flag ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>Defines a border style for windows.
+<emphasis remap='I'>state</emphasis>
+can be either "<fvwmopt cmd="BorderStyle" opt="Active"/>" or "<fvwmopt cmd="BorderStyle" opt="Inactive"/>".  If
+<emphasis remap='I'>state</emphasis>
+is omitted, then the style is set for both states.  If the
+<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+are enclosed in parentheses, then multiple
+<emphasis remap='I'>state</emphasis>
+definitions can be specified per line.</para>
+
+<para><emphasis remap='I'>style</emphasis>
+is a subset of the available button styles, and can only be
+<fvwmopt cmd="BorderStyle" opt="TiledPixmap"/>
+(uniform pixmaps which match the bevel colors work best this
+way) or <fvwmopt cmd="BorderStyle" opt="Colorset"/>. If a
+'<emphasis remap='I'>!</emphasis>'
+is prefixed to any
+<emphasis remap='I'>flag</emphasis>,
+the behavior is negated.  If
+<emphasis remap='I'>style</emphasis>
+is not specified, then one can change flags without resetting the
+style.</para>
+
+<para>The
+<fvwmopt cmd="BorderStyle" opt="HiddenHandles"/>
+flag hides the corner handle dividing lines on windows with
+handles (this option has no effect for NoHandle windows).  By
+default,
+<emphasis remap='I'>HiddenHandles</emphasis>
+is disabled.</para>
+
+<para>The
+<fvwmopt cmd="BorderStyle" opt="NoInset"/>
+flag supplements
+<emphasis remap='I'>HiddenHandles</emphasis>.
+If given, the inner bevel around the window frame is not drawn.
+If
+<emphasis remap='I'>HiddenHandles</emphasis>
+is not specified, the frame looks a little strange.</para>
+
+<para>
+<fvwmopt cmd="BorderStyle" opt="Raised"/>
+causes a raised relief pattern to be drawn (default).
+<fvwmopt cmd="BorderStyle" opt="Sunk"/>
+causes a sunken relief pattern to be drawn.
+<fvwmopt cmd="BorderStyle" opt="Flat"/>
+inhibits the relief pattern from being drawn.</para>
+
+<para>To decorate the active and inactive window borders with a textured
+pixmap, one might specify:</para>
+
+<programlisting>
+BorderStyle Active TiledPixmap marble.xpm
+BorderStyle Inactive TiledPixmap granite.xpm
+BorderStyle Active -- HiddenHandles NoInset
+</programlisting>
+
+<para>To clear the style for both states:</para>
+
+<programlisting>
+BorderStyle <fvwmopt cmd="BorderStyle" opt="Simple"/>
+</programlisting>
+
+<para>To clear for a single state:</para>
+
+<programlisting>
+BorderStyle Active Simple
+</programlisting>
+
+<para>To unset a flag for a given state:</para>
+
+<programlisting>
+BorderStyle Inactive -- !NoInset
+</programlisting>
+
+<para>title-bar buttons can inherit the border style with the
+<fvwmref cmd="ButtonStyle" opt="UseBorderStyle"/>
+flag (see
+<fvwmref cmd="ButtonStyle"/>).</para>
+
+</section>

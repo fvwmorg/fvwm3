@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DefaultFont'>
+<title>DefaultFont</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DefaultFont</arg>
+    <arg choice='opt'>fontname</arg>
+</cmdsynopsis>
+</command>
+
+<para><emphasis remap='B'>DefaultFont</emphasis>
+sets the default font to font
+<emphasis remap='I'>fontname</emphasis>.
+The default font is used by fvwm whenever no other font has been
+specified.  To reset the default font to the built-in default,
+omit the argument.  The default font is used for menus, window
+titles, icon titles as well as the geometry feedback windows
+during a move or resize operation.  To override the default font
+in a specific context, use the
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="Font"/>,
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="IconFont"/>, or
+<fvwmref cmd="MenuStyle"/>
+commands.</para>
+
+</section>

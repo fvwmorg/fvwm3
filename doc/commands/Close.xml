@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Close'>
+<title>Close</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Close</arg>
+</cmdsynopsis>
+</command>
+
+<para>If the window accepts the delete window protocol a message is sent
+to the window asking it to gracefully remove itself.  If the
+window does not understand the delete window protocol then the
+window is destroyed as with the
+<emphasis remap='B'>Destroy</emphasis>
+command.  Note: if the window accepts the delete window protocol
+but does not close itself in response, the window is not deleted.</para>
+
+</section>

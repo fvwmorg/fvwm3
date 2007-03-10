@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DefaultIcon'>
+<title>DefaultIcon</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DefaultIcon</arg>
+    <arg choice='plain'>filename</arg>
+</cmdsynopsis>
+</command>
+
+<para>sets the default icon which is used if a window has neither an
+client-supplied icon nor an icon supplied via the
+<fvwmref cmd="Style" opt="Icon"/>
+option of the
+<fvwmref cmd="Style"/>
+command.</para>
+
+</section>

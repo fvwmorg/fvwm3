@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='modules'>
+<title>Modules</title>
+<para>A module is a separate program which runs as a separate Unix
+process but transmits commands to fvwm to execute.  Users can
+write their own modules to do any weird or bizarre manipulations
+without bloating or affecting the integrity of fvwm itself.</para>
+
+<para>Modules must be spawned by fvwm so that it can set up two pipes
+for fvwm and the module to communicate with.  The pipes are
+already open for the module when it starts and the file
+descriptors for the pipes are provided as command line arguments.</para>
+
+<para>Modules can be spawned by fvwm at any time during the X session by
+use of the
+<fvwmref cmd="Module"/>
+command.  Modules can exist for the duration of the X
+session, or can perform a single task and exit.  If the module is
+still active when fvwm is told to quit, then fvwm closes the
+communication pipes and waits to receive a SIGCHLD from the
+module, indicating that it has detected the pipe closure and has
+exited.  If modules fail to detect the pipe closure fvwm exits
+after approximately 30 seconds anyway.  The number of
+simultaneously executing modules is limited by the operating
+system's maximum number of simultaneously open files, usually
+between 60 and 256.</para>
+
+<para>Modules simply transmit commands to the fvwm command
+engine.  Commands are formatted just as in the case of a
+mouse binding in the
+<emphasis remap='I'>config</emphasis>
+setup file.  Certain auxiliary information is also transmitted, as
+in the sample module
+<fvwmref mod="FvwmButtons"/>.
+</para>
+<para>Please refer to the
+<fvwmref sect="moduleCommands" opt="module_commands" name="Module Commands"/>
+section for details.</para>
+
+</section>

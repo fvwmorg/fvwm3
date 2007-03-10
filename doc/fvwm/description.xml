@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+]>
+
+<section id='description'>
+<title>Description</title>
+<para>Fvwm is a window manager for X11.  It is designed to minimize
+memory consumption, provide a 3D look to window frames, and a
+virtual desktop.</para>
+
+<para>Note that there are several window managers around that have
+"fvwm" in their name.  In the past, version 2.x of fvwm was
+commonly called fvwm2 to distinguish it from the former version
+1.x (fvwm or even fvwm1).  Since version 1.x has been replaced by
+version 2.x a long time ago we simply call version 2.x and all
+versions to come, fvwm, throughout this document, and the
+executable program is named fvwm.  There is an fvwm offspring
+called fvwm95, it is mostly a patched version of fvwm-2.0.43.  The
+main goal of fvwm95 was to supply a Windows 95 like look and
+feel. Since then, fvwm has been greatly enhanced and practically
+all fvwm95 features can be achieved by fvwm.</para>
+
+<para>Fvwm provides both, a large
+<emphasis remap='I'>virtual desktop</emphasis>
+and
+<emphasis remap='I'>multiple disjoint desktops</emphasis>
+which can be used separately or together.  The virtual desktop
+allows you to pretend that your video screen is really quite
+large, and you can scroll around within the desktop.  The multiple
+disjoint desktops allow you to pretend that you really have
+several screens to work at, but each screen is completely
+unrelated to the others.</para>
+
+<para>Fvwm provides
+<emphasis remap='I'>keyboard accelerators</emphasis>
+which allow you to perform most window manager functions,
+including moving and resizing windows, and operating the menus,
+using keyboard shortcuts.</para>
+
+<para>Fvwm has also overcome the distinction between configuration
+commands and action commands that most window managers
+make. Configuration commands typically set fonts, colors, menu
+contents, key and mouse function bindings, while action commands
+do things like raise and lower windows.  Fvwm makes no such
+distinction, and allows anything to be changed at any time.</para>
+
+<para>Other noteworthy differences between fvwm and other X11 window
+managers are the introduction of the <fvwmref cmd="Style" opt="SloppyFocus"/> and <fvwmref cmd="Style" opt="NeverFocus"/>
+focus methods.  Focus policy can be separately specified for
+different window groups.  Windows using <fvwmref cmd="Style" opt="SloppyFocus"/> acquire focus when the pointer moves into them and retain focus
+until some other window acquires it.  Such windows do not lose
+focus when the pointer moves into the root window.  The
+<fvwmref cmd="Style" opt="NeverFocus"/>
+policy is provided for use with windows into which one never types
+(e.g. xclock, oclock, xbiff, xeyes, tuxeyes) - for example, if a
+SloppyFocus terminal window has focus, moving the pointer over a
+NeverFocus
+decoration window does not deprive the terminal of focus.</para>
+
+</section>

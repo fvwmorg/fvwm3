@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ResizeMoveMaximize'>
+<title>ResizeMoveMaximize</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>ResizeMoveMaximize</arg>
+    <arg choice='plain'>resize-arguments</arg>
+    <arg choice='plain'>move-arguments</arg>
+</cmdsynopsis>
+</command>
+
+<para>Combines the effects of
+<fvwmref cmd="ResizeMove"/>
+and
+<fvwmref cmd="Maximize"/>
+in a single command.  When used on a maximized window, the window
+is resized and moved and is still in the maximized state
+afterwards.  When used on an unmaximized window, the window is
+resized and put into the maximized state afterwards.  This is
+useful if the user wants to resize the window temporarily and then
+return to the original geometry.  The
+<emphasis remap='I'>resize-arguments</emphasis> and <emphasis remap='I'>move-arguments</emphasis>
+are the same as for the
+<fvwmref cmd="ResizeMove"/>
+command.</para>
+
+</section>

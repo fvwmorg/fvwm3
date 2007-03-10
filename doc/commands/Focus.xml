@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Focus'>
+<title>Focus</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Focus</arg>
+    <arg choice='opt'>NoWarp</arg>
+</cmdsynopsis>
+</command>
+
+<para>Sets the keyboard focus to the selected window.  If the
+<fvwmopt cmd="Focus" opt="NoWarp"/>
+argument is given, this is all it does.  Otherwise it also moves
+the viewport or window as needed to make the selected window
+visible. This command does not automatically raise the
+window. Does not warp the pointer into the selected window (see
+<fvwmref cmd="WarpToWindow"/>
+function).  Does not de-iconify.  This command does not alter the
+order of the
+<emphasis remap='B'>WindowList</emphasis>,
+it rotates the
+<emphasis remap='B'>WindowList</emphasis>
+around so that the target window is at the start.</para>
+
+<para>When the
+<emphasis remap='I'>NoWarp</emphasis>
+argument is given, Focus cannot transfer the keyboard focus to
+windows on other desks.</para>
+
+<para>To raise and/or warp a pointer to a window together with
+<emphasis remap='B'>Focus</emphasis> or <fvwmref cmd="FlipFocus"/>,
+use a function, like:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> SelectWindow
++ I Focus
++ I <fvwmref cmd="Iconify"/> false
++ I <fvwmref cmd="Raise"/>
++ I <fvwmref cmd="WarpToWindow"/> 50 8p
+</programlisting>
+
+</section>

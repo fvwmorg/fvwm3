@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='Direction'>
+<title>Direction</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Direction </arg>
+</cmdsynopsis>
+</command>
+
+<para>[<emphasis remap='I'>FromPointer</emphasis>] \
+<emphasis remap='I'>direction</emphasis> \
+[(<emphasis remap='I'>conditions</emphasis>)] \
+<emphasis remap='I'>command</emphasis>"
+Performs
+<emphasis remap='I'>command</emphasis>
+(typically
+<fvwmref cmd="Focus"/>)
+on a window in the given direction which satisfies all
+<emphasis remap='I'>conditions</emphasis>.
+Normally, the center of the currently focused window or the
+context window in which the command was invoked is taken as the
+starting point.  Lacking such a window, or when the
+<emphasis remap='I'>FromPointer</emphasis>
+option is given, the current position of the pointer is taken as
+the starting point.  The
+<emphasis remap='I'>direction</emphasis>
+may be one of "North", "Northeast", "East", "Southeast", "South",
+"Southwest", "West", "Northwest" and "Center".  Which window
+<emphasis remap='B'>Direction</emphasis>
+selects depends on angle and distance between the center points of
+the windows.  Closer windows are considered a better match than
+those farther away.  The
+<emphasis remap='I'>Center</emphasis>
+direction simply selects the window closest to the starting point.
+Returns -1 if an invalid direction was given.
+See the <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+</section>

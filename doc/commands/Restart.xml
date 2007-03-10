@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Restart'>
+<title>Restart</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Restart [window_manager [params]]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Causes fvwm to restart itself if
+<emphasis remap='I'>window_manager</emphasis>
+is left blank, or to switch to an alternate window manager (or
+other fvwm version) if
+<emphasis remap='I'>window_manager</emphasis>
+is specified.  If the window manager is not in your default search
+path, then you should use the full path name for
+<emphasis remap='I'>window_manager</emphasis>.</para>
+
+<para>This command should not have a trailing ampersand.  The command
+can have optional parameters with simple shell-like syntax.  You
+can use
+<emphasis remap='I'>~</emphasis>
+(is expanded to the user's home directory) and environmental
+variables
+<emphasis remap='I'>$VAR</emphasis> or <emphasis remap='I'>${VAR}</emphasis>.
+Here are several examples:</para>
+
+<programlisting>
+<fvwmref cmd="Key"/> F1 R N Restart
+<fvwmref cmd="Key"/> F1 R N Restart fvwm -s
+<fvwmref cmd="Key"/> F1 R N Restart ~/bin/fvwm -f $HOME/.fvwm/main
+<fvwmref cmd="Key"/> F1 R N Restart fvwm1 -s -f .fvwmrc
+<fvwmref cmd="Key"/> F1 R N Restart xterm -n '"X console"' \
+  -T \"X\&nbsp;console\" -e fvwm1 -s
+</programlisting>
+
+<para>If you need a native restart, we suggest only to use
+<emphasis remap='B'>Restart</emphasis>
+command without parameters unless there is a reason not to.  If you
+still use an old command 'Restart fvwm2' that was correct in 2.2.x,
+all current command line arguments are lost.  On a restart without
+parameters or with --pass-args, they are preserved.  Here are some
+cases when 'Restart fvwm2' or 'Restart fvwm' cause troubles:</para>
+
+<programlisting>
+* running fvwm under a session manager
+* running fvwm with multi headed displays
+* having command line arguments, like
+  -f themes-rc or -cmd
+* if the first fvwm2 in the $PATH is a
+  different one
+</programlisting>
+
+<para>This is why we are issuing a warning on an old usage. If you
+really want to restart to fvwm with no additional arguments, you
+may get rid of this warning by using "Restart fvwm -s" or
+"Restart /full/path/fvwm".</para>
+
+<para>Note, currently with multi headed displays, restart of fvwms on
+different screens works independently.</para>
+
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Restart --pass-args window_manager</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>The same as
+<emphasis remap='B'>Restart</emphasis>
+without parameters but the name for the current window manager is
+replaced with the specified
+<emphasis remap='I'>window_manager</emphasis>
+and original arguments are preserved.</para>
+
+<para>This command is useful if you use initial arguments like</para>
+
+<programlisting>
+-cmd FvwmCpp
+</programlisting>
+
+<para>and want to switch to another fvwm version without losing the
+initial arguments.</para>
+
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Restart --dont-preserve-state [other-params]</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>The same as</para>
+
+<programlisting>
+<emphasis remap='B'>Restart [</emphasis><emphasis remap='I'>other-params</emphasis><emphasis remap='B'>]</emphasis>
+</programlisting>
+
+<para>but it does not save any window states over the restart.</para>
+
+<para>Without this option,
+<emphasis remap='B'>Restart</emphasis>
+preserves most per-window state by writing it to a file named
+<markup>.fs-restart-$HOSTDISPLAY</markup>
+in the user's home directory.</para>
+
+</section>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='PointerKey'>
+<title>PointerKey</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>PointerKey [(window)] Keyname Context Modifiers Function</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command works exactly like the
+<fvwmref cmd="Key"/>
+command.  The only difference is that the binding operates on the
+window under the pointer.  Normal key bindings operate on the
+focused window instead.  The
+<emphasis remap='B'>PointerKey</emphasis>
+command can for example be used to bind keys to the root window if
+you are using
+<fvwmref cmd="Style" opt="SloppyFocus"/> or
+<fvwmref cmd="Style" opt="ClickToFocus"/>.
+However, some applications (xterm is one example) are unable to
+handle this key anymore, even if the pointer is over the xterm
+window.  It is recommended to use the
+<emphasis remap='B'>PointerKey</emphasis>
+command only for key combinations that are not needed in any
+application window.</para>
+
+<para>Example:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="SloppyFocus"/>
+PointerKey f1 a m <fvwmref cmd="Menu"/> MainMenu
+</programlisting>
+
+
+</section>

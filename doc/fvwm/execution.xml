@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='command_execution'>
+<title>Command Execution</title>
+
+<section id='module_and_function_commands'>
+<title>Module and Function Commands</title>
+
+<para>If fvwm encounters a command that it doesn't recognize,
+it checks to see if the
+specified command should have been</para>
+
+<programlisting>
+<fvwmref cmd="Function"/> (rest of command)
+</programlisting>
+
+<para>or</para>
+
+<programlisting>
+<fvwmref cmd="Module"/> (rest of command)
+</programlisting>
+
+<para>This allows complex functions or modules to be invoked in a manner
+which is fairly transparent to the configuration file.</para>
+
+<para>Example: the
+<emphasis remap='I'>config</emphasis>
+file contains the line</para>
+
+<programlisting>
+HelpMe
+</programlisting>
+
+<para>Fvwm looks for an fvwm command called "HelpMe", and fails.
+Next it looks for a user-defined complex function called "HelpMe".
+If no such function exists, fvwm tries to execute a
+module called "HelpMe".</para>
+
+</section>
+
+<section id='delayed_execution_of_commands'>
+<title>Delayed Execution of Commands</title>
+<para>Note: There are many commands that affect look and feel of
+specific, some or all windows, like
+<fvwmref cmd="Style"/>, <fvwmref cmd="Mouse"/>, <fvwmref cmd="Colorset"/>, <fvwmref cmd="TitleStyle"/>
+and many others.  For performance reasons such changes are
+not applied immediately but only when fvwm is idle, i.e. no user
+interaction or module input is pending.  Specifically, new
+<fvwmref cmd="Style"/>
+options that are set in a function are not applied until after the
+function has completed.  This can sometimes lead to unwanted
+effects.</para>
+
+<para>To force that all pending changes are applied immediately, use the
+<fvwmref cmd="UpdateStyles"/>, <fvwmref cmd="Refresh"/> or <fvwmref cmd="RefreshWindow"/>
+commands.</para>
+
+</section>
+
+</section>

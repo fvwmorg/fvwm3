@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+
+<section id='SnapGrid'>
+<title>SnapGrid</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>SnapGrid</arg>
+    <arg choice='opt'>x-grid-size y-grid-size</arg>
+</cmdsynopsis>
+</command>
+
+<para>During an interactive move a window or icon is positioned such
+that its location (top left corner) is coincident with the nearest
+grid point. The default
+<emphasis remap='I'>x-grid-size</emphasis> and <emphasis remap='I'>y-grid-size</emphasis>
+setting are both 1, which is effectively no grid all.  An
+interactive move with both
+<emphasis remap='B'>SnapGrid</emphasis> and <fvwmref cmd="SnapAttraction"/>
+results in the window being moved to be adjacent to the nearest
+window border (if within snap proximity) or grid position.  In
+other words, the window moves the shortest distance possible to
+satisfy both
+<emphasis remap='B'>SnapGrid</emphasis> and <fvwmref cmd="SnapAttraction"/>
+Note that the x and y coordinates are not coupled.  For example, a
+window may snap to another window on the x axis while snapping to
+a grid point on the y axis.  Calling this command without
+arguments reinstates the default settings.</para>
+
+</section>

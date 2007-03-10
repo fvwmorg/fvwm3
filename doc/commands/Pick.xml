@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='Pick'>
+<title>Pick</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Pick [(conditions)] command</arg>
+</cmdsynopsis>
+</command>
+
+<para><emphasis remap='B'>Pick</emphasis>
+works like
+<fvwmref cmd="Function"/>
+if invoked in the context of a window.  If invoked in the root
+window, it first asks the user to pick a window and then executes
+the
+<emphasis remap='I'>command</emphasis>
+in the context of that window.  This avoids annoying multiple
+selections with complex functions.  The command is executed only
+if the given
+<emphasis remap='I'>conditions</emphasis>
+are met.  Returns -1 if no window was selected.
+See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+<para>This command implies the conditions
+<emphasis remap='I'>CirculateHit</emphasis>, <emphasis remap='I'>CirculateHitIcon</emphasis> and <emphasis remap='I'>CirculateHitShaded</emphasis>.
+They can be turned off by specifying
+<emphasis remap='I'>!CirculateHit</emphasis>
+etc. explicitly.</para>
+
+</section>

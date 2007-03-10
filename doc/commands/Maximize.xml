@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Maximize'>
+<title>Maximize</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Maximize [flags] [bool] [horizontal[p]] [vertical [p]]</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>Without its optional arguments (or if the
+<emphasis remap='I'>bool</emphasis>
+bit has the value "<fvwmopt cmd="Maximize" opt="toggle"/>")
+<emphasis remap='B'>Maximize</emphasis>
+causes the window to alternately switch from a full-screen size to
+its normal size.  To force a window into maximized (normal) state
+you can use a "<fvwmopt cmd="Maximize" opt="True"/>" or "<fvwmopt cmd="Maximize" opt="False"/>" value for the
+<emphasis remap='I'>bool</emphasis>
+argument.</para>
+
+<para>With the optional arguments
+<emphasis remap='I'>horizontal</emphasis> and <emphasis remap='I'>vertical</emphasis>,
+which are expressed as percentage of a full screen, the user can
+control the new size of the window.  An optional suffix
+'<fvwmopt cmd="Maximize" opt="p"/>'
+can be used to indicate pixels instead of percents of the screen
+size.  If horizontal is greater than 0 then the horizontal
+dimension of the window is set to
+<emphasis remap='I'>horizontal</emphasis>*screen_width/100.
+If the value is smaller than 0 the size is subtracted from the
+screen width, i.e. -25 is the same as 75.  If
+<emphasis remap='I'>horizontal</emphasis>
+is "grow", it is maximized to current available space until
+finding any obstacle.  The vertical resizing is similar.  If both
+horizontal and vertical values are "grow", it expands vertically
+first, then horizontally to find space.  Instead of the horizontal
+"grow" argument, "growleft" or "growright" can be used
+respectively "growup" and "growdown".
+The optional
+<emphasis remap='I'>flags</emphasis>
+argument is a space separated list containing the following
+key words:
+<emphasis remap='I'>ewmhiwa</emphasis>, <emphasis remap='I'>growonwindowlayer</emphasis>, <emphasis remap='I'>growonlayers</emphasis> and <emphasis remap='I'>screen</emphasis>.
+<fvwmopt cmd="Maximize" opt="ewmhiwa"/>
+causes fvwm to ignore the <acronym>EWMH</acronym> working area.
+<fvwmopt cmd="Maximize" opt="growonwindowlayer"/>
+causes the various grow methods to ignore windows with a layer
+other than the current layer of the window which is maximized.
+The
+<fvwmopt cmd="Maximize" opt="growonlayers"/>
+option must have two integer arguments.  The first one is the
+minimum layer and the second one the maximum layer to use.
+Windows that are outside of this range of layers are ignored by
+the grow methods.  A negative value as the first or second
+argument means to assume no minimum or maximum layer.
+<fvwmopt cmd="Maximize" opt="screen"/>
+must have an argument which specifies the Xinerama screen on which
+to operate.
+It can be 'p' for the primary screen, 'c' for the current
+screen (containing the mouse pointer), 'g' for the global screen
+or the screen number itself (counting from zero).  This option is
+only useful with multiple Xinerama screens.</para>
+
+<para>Here are some examples.  The following adds a title-bar button to
+switch a window to the full vertical size of the screen:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 0 4 A Maximize 0 100
+</programlisting>
+
+<para>The following causes windows to be stretched to the full width:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 0 4 A Maximize 100 0
+</programlisting>
+
+<para>This makes a window that is half the screen size in each
+direction:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 0 4 A Maximize 50 50
+</programlisting>
+
+<para>To expand a window horizontally until any other window is found:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 0 4 A Maximize 0 grow
+</programlisting>
+
+<para>To expand a window until any other window on the same or a higher
+layer is hit.</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 0 4 A Maximize growonlayers $[w.layer] -1 grow grow
+</programlisting>
+
+<para>To expand a window but leave the lower 60 pixels of the screen
+unoccupied:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 0 4 A Maximize 100 -60p
+</programlisting>
+
+<para>Values larger than 100 can be used with caution.</para>
+
+</section>

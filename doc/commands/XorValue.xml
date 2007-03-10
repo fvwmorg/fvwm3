@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='XorValue'>
+<title>XorValue</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>XorValue</arg>
+    <arg choice='opt'>number</arg>
+</cmdsynopsis>
+</command>
+
+<para>Changes the value with which bits are xor'ed when doing
+rubber-band window moving or resizing.
+Valid values range from zero to the maximum value of an
+unsigned long integer on your system.
+Setting this value is a trial-and-error process.
+The default value 0 tries to find a
+value that gives a good contrast to black and white.
+The default value is used if the given
+<emphasis remap='I'>number</emphasis>
+is omitted or invalid.</para>
+
+</section>

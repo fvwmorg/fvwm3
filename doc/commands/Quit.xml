@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Quit'>
+<title>Quit</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Quit</arg>
+</cmdsynopsis>
+</command>
+
+<para>Exits fvwm, generally causing X to exit too.</para>
+
+</section>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='WindowShade'>
+<title>WindowShade</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>WindowShade [bool] | [[ShadeAgain] direction]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Toggles the window shade feature for titled windows.  Windows in
+the shaded state only display a title-bar.  If
+<emphasis remap='I'>bool</emphasis>
+is not given or "<fvwmopt cmd="WindowShade" opt="toggle"/>",
+the window shade state is toggled.  If
+<emphasis remap='I'>bool</emphasis>
+is "True", the window is forced to the shaded state.  If
+<emphasis remap='I'>bool</emphasis>
+is "False", then the window is forced to the non-shaded
+state.  To force shading in a certain direction, the
+<emphasis remap='I'>direction</emphasis>
+argument can be used.  Any of the strings
+"<fvwmopt cmd="WindowShade" opt="North"/>",
+"<fvwmopt cmd="WindowShade" opt="South"/>",
+"<fvwmopt cmd="WindowShade" opt="West"/>",
+"<fvwmopt cmd="WindowShade" opt="East"/>",
+"<fvwmopt cmd="WindowShade" opt="NorthWest"/>",
+"<fvwmopt cmd="WindowShade" opt="NorthEast"/>",
+"<fvwmopt cmd="WindowShade" opt="SouthWest"/>",
+"<fvwmopt cmd="WindowShade" opt="SouthEast"/>" or
+"<fvwmopt cmd="WindowShade" opt="Last"/>"
+can be given. The direction can be abbreviated with
+the usual one or two letters "<fvwmopt cmd="WindowShade" opt="N"/>", "<fvwmopt cmd="WindowShade" opt="NW"/>", etc.  Using a direction on
+a window that was already shaded unshades the window.  To shade it
+in a different direction, use the
+<fvwmopt cmd="WindowShade" opt="ShadeAgain"/>
+option. The direction
+<emphasis remap='I'>Last</emphasis>
+shades the window in the direction it last was shaded. If the
+window has never been shaded before it is shaded as if no
+direction had been given. Windows without titles can be shaded too.
+Please refer also to the options
+<fvwmref cmd="Style" opt="WindowShadeSteps"/>,
+<fvwmref cmd="Style" opt="WindowShadeShrinks"/>,
+<fvwmref cmd="Style" opt="WindowShadeScrolls"/>,
+<fvwmref cmd="Style" opt="WindowShadeLazy"/>,
+<fvwmref cmd="Style" opt="WindowShadeAlwaysLazy"/> and
+<fvwmref cmd="Style" opt="WindowShadeBusy"/>
+options of the
+<fvwmref cmd="Style"/>
+command.  Examples:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="WindowShadeShrinks"/>, <fvwmref cmd="Style" opt="WindowShadeSteps"/> 20, <fvwmref cmd="Style" opt="WindowShadeLazy"/>
+<fvwmref cmd="Mouse"/> 1 - S WindowShade North
+<fvwmref cmd="Mouse"/> 1 [ S WindowShade West
+<fvwmref cmd="Mouse"/> 1 ] S WindowShade E
+<fvwmref cmd="Mouse"/> 1 _ S WindowShade S
+</programlisting>
+
+
+<para>Note: When a window that has been shaded with a
+<emphasis remap='I'>direction</emphasis>
+argument changes the direction of the window title (see
+<fvwmref cmd="Style" opt="TitleAtTop"/>
+<fvwmref cmd="Style"/>
+option), the shading direction does not change.  This may look
+very strange.  Windows that were shaded without a
+<emphasis remap='I'>direction</emphasis>
+argument stay shaded in the direction of the title bar.</para>
+
+<para>For backward compatibility, the optional argument may also be 1 to
+signify "on", and 2 to signify "off". Note that this syntax is
+obsolete, and will be removed in the future.</para>
+
+</section>

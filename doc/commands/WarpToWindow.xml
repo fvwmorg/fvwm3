@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='WarpToWindow'>
+<title>WarpToWindow</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>WarpToWindow</arg>
+    <arg choice='plain'>x[p]</arg>
+    <arg choice='plain'>y[p]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Warps the cursor to the associated window.  The parameters
+<emphasis remap='I'>x</emphasis> and <emphasis remap='I'>y</emphasis>
+default to percentage of window down and in from the upper left
+hand corner (or number of pixels down and in if
+'<fvwmopt cmd="WarpToWindow" opt="p"/>'
+is appended to the numbers).  If a number is negative the opposite
+edge is used and the direction reversed.  This command works also
+with windows that are not managed by fvwm.  In this case fvwm does
+not bring the window onto the screen if it is not visible.  For
+example it is possible to warp the pointer to the center of the
+root window on screen 1:</para>
+
+<programlisting>
+<fvwmref cmd="WindowId"/> root 1 WarpToWindow 50 50
+</programlisting>
+
+</section>

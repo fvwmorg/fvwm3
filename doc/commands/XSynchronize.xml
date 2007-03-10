@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='XSynchronize'>
+<title>XSynchronize</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>XSynchronize [bool]</arg>
+</cmdsynopsis>
+</command>
+
+<para>The
+<emphasis remap='B'>XSynchronize</emphasis>
+command controls whether X requests are sent to the X server
+immediately or not.  Normally, requests are sent in larger batches
+to save unnecessary communication.  To send requests immediately,
+use "True" as the argument, to disable this use "False" or to
+toggle between both methods use "Toggle" or omit the
+<emphasis remap='B'>bool</emphasis>
+argument.  Fvwm defaults to synchronized requests when started
+with the
+<option>--debug</option>
+option.  This command is intended for debugging only.</para>
+
+</section>

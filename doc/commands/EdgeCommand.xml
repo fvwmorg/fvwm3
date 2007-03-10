@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='EdgeCommand'>
+<title>EdgeCommand</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>EdgeCommand [direction [Function]]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Binds a specified fvwm command
+<fvwmref cmd="Function"/>
+to an edge of the screen. Direction may be one of
+"<fvwmopt cmd="EdgeCommand" opt="North"/>",
+"<fvwmopt cmd="EdgeCommand" opt="Top"/>",
+"<fvwmopt cmd="EdgeCommand" opt="West"/>",
+"<fvwmopt cmd="EdgeCommand" opt="Left"/>",
+"<fvwmopt cmd="EdgeCommand" opt="South"/>",
+"<fvwmopt cmd="EdgeCommand" opt="Bottom"/>",
+"<fvwmopt cmd="EdgeCommand" opt="Right"/>" and
+"<fvwmopt cmd="EdgeCommand" opt="East"/>".
+If
+<fvwmref cmd="Function"/>
+is omitted the binding for this edge is removed. If EdgeCommand is
+called without any arguments all edge bindings are removed.</para>
+
+<para><fvwmref cmd="Function"/>
+is executed when the mouse pointer
+enters the invisible pan frames that surround the visible screen.
+The binding works only if
+<fvwmref cmd="EdgeThickness"/>
+is set to a value greater than 0.
+If a function is bound to an edge, scrolling specified by
+<fvwmref cmd="EdgeScroll"/>
+is disabled for this edge.
+It is possible to bind a function only to some edges
+and use the other edges for scrolling.
+This command is intended to raise or lower certain windows
+when the mouse pointer enters an edge.
+<fvwmref mod="FvwmAuto"/>
+can be used get a delay when raising or lowering windows.
+The following example raises
+<fvwmref mod="FvwmButtons"/>
+if the mouse pointer enters the top edge of the screen.</para>
+
+<programlisting>
+# Disable EdgeScrolling but make it possible
+# to move windows over the screen edge
+<fvwmref cmd="EdgeResistance"/> 10000 20
+
+# Set thickness of the edge of the screen to 1
+<fvwmref cmd="EdgeThickness"/> 1
+
+# Give focus to FvwmButtons if the mouse
+# hits top edge
+EdgeCommand Top <fvwmref cmd="Next"/> (FvwmButtons) <fvwmref cmd="Focus"/>
+# Make sure the <fvwmref cmd="Next"/> command matches the window
+<fvwmref cmd="Style"/> FvwmButtons CirculateHit
+
+<fvwmref cmd="Module"/> <fvwmref mod="FvwmButtons"/>
+<fvwmref cmd="Module"/> <fvwmref mod="FvwmAuto"/> 100 "Silent AutoRaiseFunction" \
+     "Silent AutoLowerFunction"
+
+# If any window except FvwmButtons has
+# focus when calling this function
+# FvwmButtons are lowered
+<fvwmref cmd="DestroyFunc"/> AutoLowerFunction
+<fvwmref cmd="AddToFunc"/> AutoLowerFunction
++ I <fvwmref cmd="Current"/> (!FvwmButtons) <fvwmref cmd="All"/> (FvwmButtons) <fvwmref cmd="Lower"/>
+
+# If FvwmButtons has focus when calling this function raise it
+<fvwmref cmd="DestroyFunc"/> AutoRaiseFunction
+<fvwmref cmd="AddToFunc"/> AutoRaiseFunction
++ I <fvwmref cmd="Current"/> (FvwmButtons) <fvwmref cmd="Raise"/>
+</programlisting>
+
+<para>Normally, the invisible pan frames are only on the screen edges
+that border virtual pages.  If a screen edge has a command bound
+to it, the pan frame is always created on that edge.</para>
+
+</section>

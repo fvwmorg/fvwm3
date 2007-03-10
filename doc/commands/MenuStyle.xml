@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='MenuStyle'>
+<title>MenuStyle</title>
+
+<cmdsynopsis>
+    <arg choice='plain'>MenuStyle</arg>
+    <arg choice='plain'>stylename</arg>
+    <arg choice='opt'>options</arg>
+</cmdsynopsis>
+
+<para>Sets a new menu style or changes a previously defined style.  The
+<emphasis remap='I'>stylename</emphasis>
+is the style name; if it contains spaces or tabs it has to be
+quoted.  The name "*" is reserved for the default menu style. The
+default menu style is used for every menu-like object (e.g. the
+window created by the
+<fvwmref cmd="WindowList"/>
+command) that had not be assigned a style using the
+<fvwmref cmd="ChangeMenuStyle"/>.
+See also
+<fvwmref cmd="DestroyMenuStyle"/>.
+When using monochrome color options are ignored.</para>
+
+<para><emphasis remap='I'>options</emphasis>
+is a comma separated list containing some of the keywords
+Fvwm / Mwm / Win,
+BorderWidth,
+Foreground,
+Background,
+Greyed,
+HilightBack / !HilightBack,
+HilightTitleBack,
+ActiveFore / !ActiveFore,
+MenuColorset,
+ActiveColorset,
+GreyedColorset,
+TitleColorset,
+Hilight3DThick / Hilight3DThin / Hilight3DOff,
+Hilight3DThickness,
+Animation / !Animation,
+Font,
+TitleFont,
+MenuFace,
+PopupDelay,
+PopupOffset,
+TitleWarp / !TitleWarp,
+TitleUnderlines0 / TitleUnderlines1 / TitleUnderlines2,
+SeparatorsLong / SeparatorsShort,
+TrianglesSolid / TrianglesRelief,
+PopupImmediately / PopupDelayed,
+PopdownImmediately / PopdownDelayed,
+PopupActiveArea,
+DoubleClickTime,
+SidePic,
+SideColor,
+PopupAsRootMenu / PopupAsSubmenu / PopupIgnore / PopupClose,
+RemoveSubmenus / HoldSubmenus,
+SubmenusRight / SubmenusLeft,
+SelectOnRelease,
+ItemFormat,
+VerticalItemSpacing,
+VerticalTitleSpacing,
+AutomaticHotkeys / !AutomaticHotkeys,
+MouseWheel,
+ScrollOffPage / !ScrollOffPage,
+TrianglesUseFore / !TrianglesUseFore.</para>
+
+<para>In the above list some options are listed as option pairs or
+triples with a '/' in between.  These options exclude each other.
+All paired options can be negated to have the effect of the
+counterpart option by prefixing ! to the option.</para>
+
+<para>Some options are now negated by prefixing ! to the option. This
+is the preferred form for all such options. The other negative
+forms are now deprecated and will be removed in the future.</para>
+
+<para>This is a list of MenuStyle deprecated negative options:
+ActiveForeOff, AnimationOff, AutomaticHotkeysOff, HilightBackOff,
+TitleWarpOff</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="Fvwm"/>,
+<fvwmopt cmd="MenuStyle" opt="Mwm"/>,
+<fvwmopt cmd="MenuStyle" opt="Win"/>
+reset all options to the style with the same name in former
+versions of fvwm.  The default for new menu styles is
+<emphasis remap='I'>Fvwm</emphasis>
+style.  These options override all others except
+<emphasis remap='I'>Foreground</emphasis>, <emphasis remap='I'>Background</emphasis>, <emphasis remap='I'>Greyed</emphasis>, <emphasis remap='I'>HilightBack</emphasis>, 
+<emphasis remap='I'>ActiveFore</emphasis> and <emphasis remap='I'>PopupDelay</emphasis>,
+so they should be used only as the first option specified for a
+menu style or to reset the style to defined behavior.  The same
+effect can be created by setting all the other options one by one.</para>
+
+<para><emphasis remap='I'>Mwm</emphasis> and <emphasis remap='I'>Win</emphasis>
+style menus popup sub menus automatically.
+<emphasis remap='I'>Win</emphasis>
+menus indicate the current menu item by changing the background to
+dark.
+<emphasis remap='I'>Fvwm</emphasis>
+sub menus overlap the parent menu,
+<emphasis remap='I'>Mwm</emphasis> and <emphasis remap='I'>Win</emphasis>
+style menus never overlap the parent menu.</para>
+
+<para><emphasis remap='I'>Fvwm</emphasis>
+style is equivalent to !HilightBack, Hilight3DThin,
+!ActiveFore,
+!Animation, Font, MenuFace, PopupOffset 0 67,
+TitleWarp, TitleUnderlines1, SeparatorsShort, TrianglesRelief,
+PopupDelayed, PopdownDelayed, PopupDelay 150, PopdownDelay 150,
+PopupAsSubmenu, HoldSubmenus,
+SubmenusRight, BorderWidth 2, !AutomaticHotkeys,
+PopupActiveArea 75.</para>
+
+<para><emphasis remap='I'>Mwm</emphasis>
+style is equivalent to !HilightBack, Hilight3DThick,
+!ActiveFore,
+!Animation, Font, MenuFace, PopupOffset -3 100,
+!TitleWarp, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
+PopupImmediately, PopdownDelayed, PopdownDelay 150,
+PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
+!AutomaticHotkeys, PopupActiveArea 75.</para>
+
+<para><emphasis remap='I'>Win</emphasis>
+style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
+!Animation, Font, MenuFace, PopupOffset -5 100, !TitleWarp,
+TitleUnderlines1, SeparatorsShort, TrianglesSolid,
+PopupImmediately, PopdownDelayed, PopdownDelay 150,
+PopupAsSubmenu, RemoveSubmenus, SubmenusRight, BorderWidth 2,
+!AutomaticHotkeys, PopupActiveArea 75.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="BorderWidth"/>
+takes the thickness of the border around the menus in pixels. It
+may be zero to 50 pixels.  The default is 2.  Using an illegal
+value reverts the border width to the default.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="Foreground"/> and
+<fvwmopt cmd="MenuStyle" opt="Background"/>
+may have a color name as an argument.  This color is used for menu
+text or the menu's background.  You can omit the color name to
+reset these colors to the built-in default.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="Greyed"/>
+may have a color name as an argument.  This color is the one used
+to draw a menu-selection which is prohibited (or not recommended)
+by the Mwm hints which an application has specified. If the color
+is omitted the color of greyed menu entries is based on the
+background color of the menu.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="HilightBack"/> and
+<emphasis remap='I'>!HilightBack</emphasis>
+switch hilighting the background of the selected menu item on and
+off.  A specific background color may be used by providing the
+color name as an argument to
+<emphasis remap='I'>HilightBack</emphasis>.
+If you use this option without an argument the color is based on
+the menu's background color.  The
+<emphasis remap='I'>ActiveColorset</emphasis>
+option overrides the specified color. If the colorset has a
+non solid background it is used for the hilighting.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="HilightTitleBack"/>
+switches hilighting the background of menu titles on.  If a
+<emphasis remap='I'>TitleColorset</emphasis>
+was used, the background colour is taken from there.  Otherwise
+the color is based on the menu's background color. If the colorset
+has a non solid background it is used for the hilighting.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="ActiveFore"/> and
+<emphasis>!ActiveFore</emphasis>
+switch hilighting the foreground of the selected menu item on and
+off.  A specific foreground color may be used by providing the
+color name as an argument to
+<emphasis remap='I'>ActiveFore</emphasis>.
+Omitting the color turns hilighting on when an
+<emphasis remap='I'>ActiveColorset</emphasis>
+is used.
+<emphasis remap='I'>ActiveFore</emphasis>
+turns off hilighting the foreground completely.  The
+<emphasis remap='I'>ActiveColorset</emphasis>
+option overrides the specified color.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="MenuColorset"/>
+controls if a colorset is used instead of the
+<emphasis remap='I'>Foreground</emphasis>, <emphasis remap='I'>Background</emphasis> and <emphasis remap='I'>MenuFace</emphasis>
+menu styles.  If the
+<emphasis remap='I'>MenuColorset</emphasis>
+keyword is followed by a number equal to zero or greater, this
+number is taken as the number of the colorset to use.  If the
+number is omitted, the colorset is switched off and the regular
+menu styles are used again.  The foreground and background colors
+of the menu items are replaced by the colors from the colorset. If
+the colorset has a pixmap defined, this pixmap is used as the
+background of the menu.  Note that the
+<emphasis remap='I'>MenuFace</emphasis>
+menu style has been optimized for memory consumption and may use
+less memory than the background from a colorset.  The shape mask
+from the colorset is used to shape the menu.  Please refer to the
+<fvwmref sect="colorsets" opt="colorsets" name="Colorsets"/>
+section for details about colorsets.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="ActiveColorset"/>
+works exactly like
+<emphasis remap='I'>MenuColorset</emphasis>,
+but the foreground from the colorset replaces the color given with
+the
+<emphasis remap='I'>ActiveFore</emphasis>
+menu style and the colorset's background color replaces the color
+given with the
+<emphasis remap='I'>HilightBack</emphasis>
+command (to turn on background hilighting you have to use the
+<emphasis remap='I'>HilightBack</emphasis>
+menu style too).  If specified, the hilight and shadow colors
+from the colorset are used too.  The pixmap and shape mask from
+the colorset are not used.  Hilighting the background or
+foreground can be turned off individually with the
+<emphasis remap='I'>!ActiveFore</emphasis> or <emphasis remap='I'>!HilightBack</emphasis>
+menu styles.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="GreyedColorset"/>
+works exactly like
+<emphasis remap='I'>MenuColorset</emphasis>,
+but the foreground from the colorset replaces the color given with
+the
+<emphasis remap='I'>Greyed</emphasis>
+menu style.  No other parts of the colorset are used.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="TitleColorset"/>
+works exactly like
+<emphasis remap='I'>MenuColorset</emphasis>,
+but is used only for menu titles.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="Hilight3DThick"/>,
+<fvwmopt cmd="MenuStyle" opt="Hilight3DThin"/> and
+<fvwmopt cmd="MenuStyle" opt="Hilight3DOff"/>
+determine if the selected menu item is hilighted with a 3D
+relief. Thick reliefs are two pixels wide, thin reliefs are one
+pixel wide.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="Hilight3DThickness"/>
+takes one numeric argument that may be between -50 and +50
+pixels. With negative values the menu item gets a pressed in look.
+The above three commands are equivalent to a thickness of 2, 1 and
+0.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="Animation"/> and
+<emphasis remap='I'>!Animation</emphasis>
+turn menu animation on or off.  When animation is on, sub menus
+that do not fit on the screen cause the parent menu to be shifted
+to the left so the sub menu can be seen.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="Font"/> and
+<fvwmopt cmd="MenuStyle" opt="TitleFont"/>
+take a font name as an argument.  If a font by this name exists
+it is used for the text of all menu items.  If it does not exist
+or if the name is left blank the built-in default is used.  If a
+<emphasis remap='I'>TitleFont</emphasis>
+is given, it is used for all menu titles instead of the normal font.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="MenuFace"/>
+enforces a fancy background upon the menus.  You can use the same
+options for
+<emphasis remap='I'>MenuFace</emphasis>
+as for the
+<fvwmref cmd="ButtonStyle"/>.
+See description of
+<fvwmref cmd="ButtonStyle"/>
+command and the
+
+<fvwmref sect="colorGradients" opt="color_gradients" name="Color Gradients"/>
+sections for more information.  If you use
+<emphasis remap='I'>MenuFace</emphasis>
+without arguments the style is reverted back to normal.</para>
+
+<para>Some examples of MenuFaces are:</para>
+
+
+<programlisting>
+MenuFace DGradient 128 2 lightgrey 50 blue 50 white
+MenuFace TiledPixmap texture10.xpm
+MenuFace HGradient 128 2 Red 40 Maroon 60 White
+MenuFace Solid Maroon
+</programlisting>
+
+<para>Note: The gradient styles H, V, B and D are optimized for high
+speed and low memory consumption in menus.  This is not the case
+for all the other gradient styles.  They may be slow and consume
+huge amounts of memory, so if you encounter performance problems
+with them you may be better off by not using them.  To improve
+performance you can try one or all of the following:</para>
+
+<para>Turn hilighting of the active menu item other than foreground
+color off:</para>
+
+<programlisting>
+MenuStyle &lt;style&gt; Hilight3DOff, !HilightBack
+MenuStyle &lt;style&gt; ActiveFore &lt;preferred color&gt;
+</programlisting>
+
+<para>Make sure sub menus do not overlap the parent menu. This can
+prevent menus being redrawn every time a sub menu pops up or down.</para>
+
+<programlisting>
+MenuStyle &lt;style&gt; PopupOffset 1 100
+</programlisting>
+
+<para>Run your X server with backing storage.  If your X Server is
+started with the -bs option, turn it off.  If not try the -wm
+and +bs options:</para>
+
+<command>startx -- -wm +bs</command>
+
+<para>You may have to adapt this example to your system (e.g. if you use
+xinit to start X).</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="PopupDelay"/>
+requires one numeric argument.  This value is the delay in
+milliseconds before a sub menu is popped up when the pointer moves
+over a menu item that has a sub menu.  If the value is zero no
+automatic pop up is done.  If the argument is omitted the built-in
+default is used. Note that the popup delay has no effect if the
+<emphasis remap='I'>PopupImmediately</emphasis>
+option is used since sub menus pop up immediately then.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="PopupImmediately"/>
+makes menu items with sub menus pop up it up as soon as the
+pointer enters the item.  The
+<emphasis remap='I'>PopupDelay option</emphasis>
+is ignored then.  If
+<emphasis remap='I'>PopupDelayed</emphasis>
+is used fvwm looks at the
+<emphasis remap='I'>PopupDelay</emphasis>
+option if or when this automatic popup happens.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="PopdownDelay"/>
+works exactly like
+<emphasis remap='I'>PopupDelay</emphasis>
+but determines the timeout of the
+<emphasis remap='I'>PopupDelayed</emphasis>
+style.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="PopdownImmediately"/>
+makes sub menus vanish as soon as the pointer leaves the sub menu
+and the correspondent item in the parent menu.  With the opposite
+option
+<emphasis remap='I'>PopdownDelayed</emphasis>
+the sub menu only pops down after the time specified with the
+<emphasis remap='I'>PopdownDelay</emphasis>
+option.  This comes handy when the pointer often strays off the
+menu item when trying to move into the sub menu.  Whenever there
+is a conflict between the
+<emphasis remap='I'>PopupImmediately</emphasis>, <emphasis remap='I'>PopupDelayed</emphasis>, <emphasis remap='I'>PopupDelay</emphasis>
+styles and the
+<emphasis remap='I'>PopdownImmediately</emphasis>, <emphasis remap='I'>PopdownDelayed</emphasis>, <emphasis remap='I'>PopdownDelay</emphasis>
+styles, the
+<emphasis remap='I'>Popup...</emphasis>
+styles win when using mouse navigation and the
+<emphasis remap='I'>Popdown...</emphasis>
+styles win when navigating with the keyboard.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="PopupOffset"/>
+requires two integer arguments.  Both values affect where sub
+menus are placed relative to the parent menu.  If both values are
+zero, the left edge of the sub menu overlaps the left edge of the
+parent menu.  If the first value is non-zero the sub menu is
+shifted that many pixels to the right (or left if negative).  If
+the second value is non-zero the menu is moved by that many
+percent of the parent menu's width to the right or left.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="PopupActiveArea"/>
+requires an integer value between 51 and 100.  Normally, when the
+pointer is over a menu item with a sub menu and the pointer enters
+the area that starts at 75% of the menu width, the sub menu is
+shown immediately.  This percentage can be changed with
+<emphasis remap='I'>PopupActiveArea</emphasis>.
+Setting this value to 100 disables this kind of automatic popups
+altogether.  The default value is restored if no or an illegal
+value is given.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="TitleWarp"/> and <emphasis remap='I'>!TitleWarp</emphasis>
+affect if the pointer warps to the menu title when a sub menu is
+opened or not. Note that regardless of this setting the pointer is
+not warped if the menu does not pop up under the pointer.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="TitleUnderlines0"/>,
+<fvwmopt cmd="MenuStyle" opt="TitleUnderlines1"/> and
+<fvwmopt cmd="MenuStyle" opt="TitleUnderlines2"/>
+specify how many lines are drawn below a menu title.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="SeparatorsLong"/> and
+<fvwmopt cmd="MenuStyle" opt="SeparatorsShort"/>
+set the length of menu separators.  Long separators run from the
+left edge all the way to the right edge.  Short separators leave a
+few pixels to the edges of the menu.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="TrianglesSolid"/> and
+<fvwmopt cmd="MenuStyle" opt="TrianglesRelief"/>
+affect how the small triangles for sub menus is drawn.  Solid
+triangles are filled with a color while relief triangles are
+hollow.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="DoubleClickTime"/>
+requires one numeric argument.  This value is the time in
+milliseconds between two mouse clicks in a menu to be considered
+as a double click.  The default is 450 milliseconds.  If the
+argument is omitted the double click time is reset to this
+default.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="SidePic"/>
+takes the name of an image file as an argument. The
+picture is drawn along the left side of the menu.  The
+<emphasis remap='I'>SidePic</emphasis>
+option can be overridden by a menu specific side pixmap (see
+<fvwmref cmd="AddToMenu"/>).
+If the file name is omitted an existing side pixmap is removed from
+the menu style.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="SideColor"/>
+takes the name of an X11 color as an argument. This color is used
+to color the column containing the side picture (see
+above). The SideColor option can be overridden by a menu specific
+side color (see
+<fvwmref cmd="AddToMenu"/>).
+If the color name is omitted the side color option is switched off.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="PopupAsRootMenu"/>,
+<fvwmopt cmd="MenuStyle" opt="PopupAsSubmenu"/>,
+<fvwmopt cmd="MenuStyle" opt="PopupIgnore"/> and
+<fvwmopt cmd="MenuStyle" opt="PopupClose"/>
+change the behavior when you click on a menu item that opens a
+sub menu. With
+<emphasis remap='I'>PopupAsRootMenu</emphasis>
+the original menu is closed before the sub menu appears, with
+<emphasis remap='I'>PopupAsSubmenu</emphasis>
+it is not, so you can navigate back into the
+parent menu.  Furthermore, with
+<emphasis remap='I'>PopupAsSubmenu</emphasis>
+the sub menu is held open (posted) regardless of where you move
+the mouse.  Depending on your menu style this may simplify
+navigating through the menu.  <fvwmref cmd="Any"/> keystroke while a menu is posted
+reverts the menu back to the normal behavior.  With
+<emphasis remap='I'>PopupClose</emphasis>
+the menu is closed when a sub menu item is activated, and the menu
+stays open if
+<emphasis remap='I'>PopupIgnore</emphasis>
+is used (even if the menu was invoked with the
+<fvwmref cmd="Popup"/>
+command).
+<emphasis remap='I'>PopupAsSubmenu</emphasis>
+is the default.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="RemoveSubmenus"/>
+instructs fvwm to remove sub menu when you move back into the
+parent menu.  With
+<fvwmopt cmd="MenuStyle" opt="HoldSubmenus"/>
+the sub menu remains visible.  You probably want to use
+<emphasis remap='I'>HoldSubmenus</emphasis>
+if you are using the
+<emphasis remap='I'>PopupDelayed</emphasis>
+style.
+<emphasis remap='I'>RemoveSubmenus</emphasis>
+affects menu navigation with the keyboard.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="SelectOnRelease"/>
+takes an optional key name as an argument.  If the given key is
+released in a menu using this style, the current menu item is
+selected.  This is intended for
+<emphasis remap='SM'>Alt-Tab</emphasis>
+<fvwmref cmd="WindowList"/>
+navigation.
+The key name is a standard X11 key name as defined in
+<filename>/usr/include/X11/keysymdef.h</filename>,
+(without the
+<emphasis remap='I'>XK_</emphasis>
+prefix), or the keysym database
+<filename>/usr/X11R6/lib/X11/XKeysymDB</filename>.
+To disable this behavior, omit
+the key name.</para>
+
+<para>Note: Some X servers do not support KeyRelease events.
+<emphasis remap='I'>SelectOnRelease</emphasis>
+does not work on such a machine.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="ItemFormat"/>
+takes a special string as its argument that determines the layout
+of the menu items.  Think of the format string as if it were a
+menu item. All you have to do is tell fvwm where to place the
+different parts of the menu item (i.e. the labels, the triangle
+denoting a sub menu, the mini icons and the side pic) in the blank
+area.  The string consists of spaces,
+<emphasis remap='SM'>Tab</emphasis>
+characters and formatting directives beginning with '%'. Any
+illegal characters and formatting directives are silently ignored:</para>
+
+
+<informaltable>
+<tgroup cols='2' align='left' colsep='10' rowsep='10'>
+<thead>
+<row>
+  <entry align="center">Formatting Directive</entry>
+  <entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+	<entry><emphasis>%l</emphasis>, <emphasis>%c</emphasis> &amp; <emphasis>%r</emphasis></entry>
+	<entry>Insert the next item label. Up to three labels can be used. The item column is left-aligned (<emphasis>%l</emphasis>), centered (<emphasis>%c</emphasis>) or right-aligned (<emphasis>%r</emphasis>).</entry>
+</row>
+<row>
+	<entry><emphasis>%i</emphasis></entry>
+	<entry>Inserts the mini icon.</entry>
+</row>
+<row>
+	<entry><emphasis>%&gt;</emphasis> &amp; <emphasis>%&lt;</emphasis></entry>
+	<entry>Insert the sub menu triangle pointing either to the right (<emphasis>%&gt;</emphasis>) or to the left (<emphasis>%&lt;</emphasis>).</entry>
+</row>
+<row>
+	<entry><emphasis>%|</emphasis></entry>
+	<entry>The first %| denotes the beginning of the area that is highlighted either with a background color or a relief (or both). The second <emphasis>%|</emphasis> marks the end of this area.  <emphasis>%|</emphasis> can be used up to twice in the string.  If you do not add one or both of them, fvwm sets the margins to the margins of the whole item (not counting the side picture).</entry>
+</row>
+<row>
+	<entry><emphasis>%s</emphasis></entry>
+	<entry>Places the side picture either at the beginning or the end of the menu. This directive may be used only once and only as the first or last in the format string. If the <emphasis>%s</emphasis> is not at the beginning of the string, menus are not drawn properly.</entry>
+</row>
+<row>
+	<entry><emphasis>Space</emphasis>, <emphasis>Tab</emphasis>, <emphasis>%Space</emphasis> &amp; <emphasis>%Tab</emphasis></entry>
+	<entry>Add gap of one space, or a tab, using the width of the menu font. When using a tab, the size of the gap can be one to 8 spaces since the tab position is a multiple of 8 from the edge of the menu. The whole string must be quoted if spaces or tabs are used.</entry>
+</row>
+<row>
+	<entry><emphasis>%p</emphasis></entry>
+	<entry>Like Space and Tab <emphasis>%p</emphasis> inserts an empty area into the item, but with better control of its size (see below).</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+
+
+
+<para>You can define an additional space before and after each of the
+objects like this:</para>
+
+<programlisting>
+<emphasis remap='B'>%</emphasis>left<emphasis>.</emphasis>right<emphasis>p</emphasis>
+</programlisting>
+
+
+<para>This means: if the object is defined in the menu (e.g. if it is
+<emphasis remap='B'>%s</emphasis>
+and you use a side picture, or it is
+<emphasis remap='B'>%l</emphasis>
+for the third column and there are items defined that actually
+have a third column), then add
+<emphasis remap='I'>left</emphasis>
+pixels before the object and
+<emphasis remap='I'>right</emphasis>
+pixels after it.  You may leave out the
+<emphasis remap='I'>left</emphasis>
+or the <emphasis>.right</emphasis>
+parts if you do not need them.  All values up to the screen width
+are allowed.  Even negative values can be used with care.  The
+<emphasis remap='B'>p</emphasis>
+may be replaced with any other formatting directives described
+above.</para>
+
+<para>Note: Only items defined in the format string are visible in the
+menus. So if you do not put a
+<emphasis remap='B'>%s</emphasis>
+in there you do not see a side picture, even if one is specified.</para>
+
+<para>Note: The
+<emphasis remap='I'>SubmenusLeft</emphasis>
+style changes the default
+<emphasis remap='I'>ItemFormat</emphasis>
+string, but if it was set manually it is not modified.</para>
+
+<para>Note: If any unformatted title of the menu is wider than the
+widest menu item, the spaces between the different parts of the
+menu items are enlarged to match the width of the title.  Leading
+left aligned objects in the format string
+(<emphasis remap='B'>%l</emphasis>, <emphasis remap='B'>%i</emphasis>, <emphasis remap='B'>%&lt;</emphasis>, first <emphasis remap='B'>%|</emphasis>)
+stick to the left edge of the menu and trailing right aligned
+objects
+(<emphasis remap='B'>%r</emphasis>, <emphasis remap='B'>%i</emphasis>, <emphasis remap='B'>%&gt;</emphasis>, second <emphasis remap='B'>%|</emphasis>)
+stick to the right edge.  The gaps between the remaining items are
+enlarged equally.</para>
+
+<para>Examples:</para>
+
+<programlisting>
+MenuStyle * ItemFormat "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3&gt;%1|"
+</programlisting>
+
+<para>Is the default string used by fvwm: (side picture + 4 pixels gap)
+(beginning of the hilighted area + 1 pixel gap) (mini icon + 5p)
+(first column left aligned + 5p) (second column left aligned + 5p)
+(third column right aligned + 5p) (second mini icon + 5p) (2p +
+sub menu triangle + 3p) (1p + end of hilighted area).</para>
+
+<programlisting>
+MenuStyle * ItemFormat "%.1|%3.2&lt;%5i%5l%5l%5r%5i%1|%4s"
+</programlisting>
+
+<para>Is used by fvwm with the
+<emphasis remap='I'>SubmenusLeft</emphasis>
+option below.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="VerticalItemSpacing"/> and
+<fvwmopt cmd="MenuStyle" opt="VerticalTitleSpacing"/>
+control the vertical spacing of menu items and titles like
+<emphasis remap='I'>ItemFormat</emphasis>
+controls the horizontal spacing.  Both take two numeric arguments
+that may range from -100 to +100.  The first is the gap in pixels
+above a normal menu item (or a menu title), the second is the gap
+in pixels below it.  Negative numbers do not make much sense and
+may screw up the menu completely.  If no arguments are given or
+the given arguments are invalid, the built-in defaults are used:
+one pixel above the item or title and two below.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="SubmenusLeft"/>
+mirrors the menu layout and behavior.  Sub menus pop up to the
+left, the sub menu triangle is drawn left and the mini icon and
+side picture are drawn at the right side of the menu.  The default
+is
+<fvwmopt cmd="MenuStyle" opt="SubmenusRight"/>.
+The position hints of a menu are also affected by this setting,
+i.e. position hints using
+<emphasis remap='I'>item</emphasis> or <emphasis remap='I'>menu</emphasis>
+as context rectangle and position hints using
+<emphasis remap='I'>m</emphasis>
+offsets.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="AutomaticHotkeys"/> and
+<emphasis remap='I'>!AutomaticHotkeys</emphasis>
+control the menu's ability to automatically provide hot-keys on
+the first character of each menu item's label.  This behavior is
+always overridden if an explicit hot-key is assigned in the
+<emphasis remap='B'>AddToMenu</emphasis>
+command.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="MouseWheel"/>
+controls the ability to scroll the menu using a mouse wheel. It takes
+one argument, that can be one of
+ScrollsPointer, ScrollsMenu, ScrollsMenuBackwards or ActivatesItem.
+ScrollsPointer makes the mouse wheel scroll the pointer over a menu.
+This is the default. ScrollsMenu and ScrollsMenuBackwards scroll the menu
+beneath the pointer. ActivatesItem disables scrolling by mouse wheel and
+makes the use of a mouse wheel act as if the menu was clicked.
+If no argument is supplied the default setting is restored.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="ScrollOffPage"/>
+allows a menu to be scrolled out of the visible area if
+<emphasis remap='I'>MouseWheel</emphasis>
+is set to ScrollsMenu or ScrollsMenuBackwards. This is the default.
+The opposite,
+<emphasis remap='I'>!ScrollOffPage</emphasis>
+disables this behaviour.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="TrianglesUseFore"/>
+draws sub menu triangles with the foreground color of the menu colorset
+(normally drawn with the hilight color).
+<emphasis remap='I'>!TrianglesUseFore</emphasis>
+disables this behaviour.</para>
+
+<para>Examples:</para>
+
+<programlisting>
+MenuStyle * Mwm
+MenuStyle * Foreground Black, Background gray40
+MenuStyle * Greyed gray70, ActiveFore White
+MenuStyle * !HilightBack, Hilight3DOff
+MenuStyle * Font lucidasanstypewriter-14
+MenuStyle * MenuFace DGradient 64 darkgray MidnightBlue
+
+MenuStyle red Mwm
+MenuStyle red Foreground Yellow
+MenuStyle red Background Maroon
+MenuStyle red Greyed Red, ActiveFore Red
+MenuStyle red !HilightBack, Hilight3DOff
+MenuStyle red Font lucidasanstypewriter-12
+MenuStyle red MenuFace DGradient 64 Red Black
+</programlisting>
+
+<para>Note that all style options could be placed on a single line for
+each style name.</para>
+
+<cmdsynopsis>
+    <arg choice='plain'>MenuStyle</arg>
+    <arg choice='plain'>forecolor</arg>
+    <arg choice='plain'>backcolor</arg>
+    <arg choice='plain'>shadecolor</arg>
+    <arg choice='plain'>font</arg>
+    <arg choice='plain'>style</arg>
+    <arg choice='opt'>anim</arg>
+</cmdsynopsis>
+
+<para>This is the old syntax of the
+<emphasis remap='B'>MenuStyle</emphasis>
+command.  It is obsolete and may be removed in the future.  Please
+use the new syntax as described above.</para>
+
+<para>Sets the menu style.  When using monochrome the colors are
+ignored.  The
+<emphasis remap='I'>shadecolor</emphasis>
+is the one used to draw a menu-selection which is prohibited (or
+not recommended) by the Mwm hints which an application has
+specified.  The style option is either
+<emphasis remap='I'>Fvwm</emphasis>, <emphasis remap='I'>Mwm</emphasis> or <emphasis remap='I'>Win</emphasis>,
+which changes the appearance and operation of the menus.</para>
+
+<para><emphasis remap='I'>Mwm</emphasis> and <emphasis remap='I'>Win</emphasis>
+style menus popup sub menus automatically.
+<emphasis remap='I'>Win</emphasis>
+menus indicate the current menu item by changing the background to
+black.
+<emphasis remap='I'>Fvwm</emphasis>
+sub menus overlap the parent menu,
+<emphasis remap='I'>Mwm</emphasis> and <emphasis remap='I'>Win</emphasis>
+style menus never overlap the parent menu.</para>
+
+<para>When the
+<emphasis remap='I'>anim</emphasis>
+option is given, sub menus that do not fit on the screen cause the
+parent menu to be shifted to the left so the sub menu can be
+seen. See also
+<fvwmref cmd="SetAnimation"/>
+command.</para>
+
+</section>

@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='menus'>
+<title>Menus</title>
+
+<para>Before a menu can be opened, it has to be populated with menu
+items using the
+<fvwmref cmd="AddToMenu"/>
+command and bound to a key or mouse button with the
+<fvwmref cmd="Key"/>,
+<fvwmref cmd="PointerKey"/> or 
+<fvwmref cmd="Mouse"/>
+command (there are many other ways to invoke a menu too).  This is
+usually done in the configuration file.</para>
+
+<para>Fvwm menus are extremely configurable in look and feel.  Even the
+slightest nuances can be changed to the user's liking, including
+the menu item fonts, the background, delays before popping up sub
+menus, generating menus dynamically and many other features.
+Please refer to the
+<fvwmref cmd="MenuStyle"/>
+command to learn more.</para>
+
+<section id="menu_types">
+<title>Types of Menus</title>
+
+<para>In fvwm there are four slightly different types of menus:</para>
+
+<para><fvwmref cmd="Popup"/> menus
+can appear everywhere on the screen on their own or attached to a
+part of a window.  The
+<fvwmref cmd="Popup"/> 
+command opens popup menus.  If the popup menu was invoked with a
+mouse button held down, it is closed when the button is released.
+The item under the pointer is then activated and the associated
+action is executed.</para>
+
+<para><fvwmref cmd="Menu"/>
+is a very similar command, but the menus it opens are slightly less
+transient.  When invoked by clicking a mouse button, it stays open
+and can be navigated with no button held.  But if it is invoked by
+a button press followed by mouse motion, it behaves exactly like a
+popup menu.</para>
+
+<para><emphasis remap='I'>Tear off menus</emphasis> or <emphasis remap='I'>Pin up menus</emphasis>
+are menus from either of the above two commands that have been
+"torn off" their original context and pinned on the desktop like a
+normal window.  They are created from other menus by certain key
+presses or mouse sequences or with the
+<fvwmref cmd="TearMenuOff"/>
+command from inside a menu.</para>
+
+<para><emphasis remap='I'>Sub menus</emphasis>
+are menus inside menus.  When a menu item that has the
+<fvwmref cmd="Popup"/>
+command as its action is selected, the named menu is opened as an
+inferior menu to the parent.  Any type of menu can have sub menus.</para>
+</section>
+
+
+
+<section id="menu_anatomy">
+<title>Menu Anatomy</title>
+
+<para>Menus consist of any number of titles which are inactive menu
+items that usually appear at the top of the menu, normal items
+triggering various actions when selected, separator lines between
+the items, tear off bars (a horizontal broken line) that tear off
+the menu when selected, and sub menu items indicated with a
+triangle pointing left or right, depending on the direction in
+which the sub menu appears.  All the above menu items are
+optional.</para>
+
+<para>Additionally, if the menu is too long to fit on the screen, the
+excess menu items are put in a continuation menu and a sub menu
+with the string "More..." is placed at the bottom of the menu.
+Finally, there may be a picture running up either side of the menu
+(a "side bar").</para>
+
+</section>
+
+
+
+
+<section id="menu_navigation">
+<title>Menu Navigation</title>
+
+<para>Menus can be navigated either with the keyboard or with the
+mouse.  Many people prefer to use the mouse, but it can be rather
+tedious.  Once you get the hang of it, keyboard navigation can be
+much faster.  While fvwm displays a menu, it can do nothing else.
+For example, new windows do not appear before the menu is closed.
+However, this is not exactly true for tear off menus.  See the
+<fvwmref sect="menus" opt="tearoff_menus" name="Tear Off Menus"/>
+section for details.</para>
+
+</section>
+
+
+
+<section id="mouse_navigation">
+<title>Mouse Navigation</title>
+
+<para>Moving the pointer over a menu selects the item below it.
+Normally this is indicated by a 3d border around the item, but not
+all parts of a menu can be selected.  Pressing any mouse button
+while a menu is open by default activates the item below it.  Items of a
+popup menu are also activated by releasing a held mouse button.
+In case of an item that hides a sub menu, the sub menu is
+displayed if the pointer hovers over the item long enough or moves
+close to the triangle indicating the sub menu.  This behaviour can
+be tuned with menu styles.</para>
+
+<para>Scrolling a mouse wheel over a menu either wraps the pointer along the
+menu (default), scrolls the menu under the pointer or act as if the
+menu was clicked depending on the
+<emphasis remap='I'>MouseWheel</emphasis>
+menu style.</para>
+
+<para>Clicking on a selected item activates it - what happens exactly
+depends on the type of the item.</para>
+
+<para>Clicking on a title, a separator, the side bar, or outside the
+menu closes the menu (exception:  tear off menus can not be closed
+this way).  Pressing mouse button 2 over a menu title or
+activating a tear off bar creates a tear off menu from the current
+menu.  Clicking on a normal menu item invokes the command that is
+bound to it, and clicking on a sub menu item either closes all
+open menus and replaces them with the sub menu or posts the menu
+(default).</para>
+
+<para>Posting menus is meant to ease mouse navigation.  Once a sub menu
+is posted, only items from that sub menu can be selected.  This
+can be very useful to navigate the menu if the pointer tends to
+stray off the menu.  To unpost the menu and revert back to normal
+operation, either click on the same sub menu item or press any
+key.</para>
+
+</section>
+
+
+
+
+<section id="keyboard_navigation">
+<title>Keyboard Navigation</title>
+
+<para>Just like with mouse navigation, the item below the pointer is
+selected.  This is achieved by warping the pointer to the menu
+items when necessary.  While a menu is open, all key presses are
+intercepted by the menu.  No other application can get keyboard
+input (although this is not the case for tear off menus).</para>
+
+<para>Items can be selected directly by pressing a hotkey that can be
+configured individually for each menu item.  The hotkey is
+indicated by underlining it in the menu item label.  With the
+<emphasis remap='I'>AutomaticHotkeys</emphasis>
+menu style fvwm automatically assigns hotkeys to all menu items.</para>
+
+<para>The most basic keys to navigate through menus are the cursor keys
+(move up or down one item, enter or leave a sub menu),
+<emphasis remap='SM'>Space</emphasis>
+(activate item) and
+<emphasis remap='SM'>Escape</emphasis>
+(close menu).  Numerous other keys can be used to navigate through
+menus by default:</para>
+
+<para><emphasis remap='I'>Enter</emphasis>,
+<emphasis remap='I'>Return</emphasis>,
+<emphasis remap='I'>Space</emphasis>
+activate the current item.</para>
+
+<para><emphasis remap='I'>Escape</emphasis>,
+<emphasis remap='I'>Delete</emphasis>,
+<emphasis remap='I'>Ctrl-G</emphasis>
+exit the current sequence of menus or destroy a tear off menu.</para>
+
+<para><emphasis remap='I'>J</emphasis>,
+<emphasis remap='I'>N</emphasis>,
+<emphasis remap='I'>Cursor-Down</emphasis>,
+<emphasis remap='I'>Tab</emphasis>,
+<emphasis remap='I'>Meta-Tab</emphasis>,
+<emphasis remap='I'>Ctrl-F</emphasis>,
+move to the next item.</para>
+
+<para><emphasis remap='I'>K</emphasis>,
+<emphasis remap='I'>P</emphasis>,
+<emphasis remap='I'>Cursor-Up</emphasis>,
+<emphasis remap='I'>Shift-Tab</emphasis>,
+<emphasis remap='I'>Shift-Meta-Tab</emphasis>,
+<emphasis remap='I'>Ctrl-B</emphasis>,
+move to the prior item.</para>
+
+<para><emphasis remap='I'>L</emphasis>,
+<emphasis remap='I'>Cursor-Right</emphasis>,
+<emphasis remap='I'>F</emphasis>
+enter a sub menu.</para>
+
+<para><emphasis remap='I'>H</emphasis>,
+<emphasis remap='I'>Cursor-Left</emphasis>,
+<emphasis remap='I'>B</emphasis>
+return to the prior menu.</para>
+
+<para><emphasis remap='I'>Ctrl-Cursor-Up</emphasis>,
+<emphasis remap='I'>Ctrl-K</emphasis>
+<emphasis remap='I'>Ctrl-P</emphasis>,
+<emphasis remap='I'>Shift-Ctrl-Meta-Tab</emphasis>,
+<emphasis remap='I'>Page-Up</emphasis>
+move up five items.</para>
+
+<para><emphasis remap='I'>Ctrl-Cursor-Down</emphasis>,
+<emphasis remap='I'>Ctrl-J</emphasis>
+<emphasis remap='I'>Ctrl-N</emphasis>,
+<emphasis remap='I'>Ctrl-Meta-Tab</emphasis>
+<emphasis remap='I'>Page-Down</emphasis>
+move down five items.</para>
+
+<para>
+<emphasis remap='I'>Shift-P</emphasis>,
+<emphasis remap='I'>Home</emphasis>,
+<emphasis remap='I'>Shift-Cursor-Up</emphasis>,
+<emphasis remap='I'>Ctrl-A</emphasis>
+move to the first item.</para>
+
+<para>
+<emphasis remap='I'>Shift-N</emphasis>,
+<emphasis remap='I'>End</emphasis>,
+<emphasis remap='I'>Shift-Cursor-Down</emphasis>,
+<emphasis remap='I'>Ctrl-E</emphasis>
+move to the last item.</para>
+
+<para>
+<emphasis remap='I'>Meta-P</emphasis>,
+<emphasis remap='I'>Meta-Cursor-Up</emphasis>,
+<emphasis remap='I'>Ctrl-Cursor-Left</emphasis>,
+<emphasis remap='I'>Shift-Ctrl-Tab</emphasis>,
+move up just below the next separator.</para>
+
+<para>
+<emphasis remap='I'>Meta-N</emphasis>,
+<emphasis remap='I'>Meta-Cursor-Down</emphasis>,
+<emphasis remap='I'>Ctrl-Cursor-Right</emphasis>,
+<emphasis remap='I'>Ctrl-Tab</emphasis>,
+move down just below the next separator.</para>
+
+<para><emphasis remap='I'>Insert</emphasis>
+opens the "More..." sub menu if any.</para>
+
+<para><emphasis remap='I'>Backspace</emphasis>
+tears off the menu.</para>
+</section>
+
+<section id="menu_bindings">
+<title>Menu Bindings</title>
+
+<para>The keys and mouse buttons used to navigate the menu can be configured
+using the
+<fvwmref cmd="Key"/>
+and
+<fvwmref cmd="Mouse"/>
+commands with the special context 'M', possible combined with 'T' for
+the menu title, 'I' for other menu items, 'S' for any border or
+sidepic, '[' for left border including a left sidepic, ']' for right
+border including a right sidepic, '-' for top border, '_' for bottom
+border.  The menu context uses its own set of actions that can be bound
+to keys and mouse buttons.  These are
+<emphasis remap='I'>MenuClose</emphasis>,
+<emphasis remap='I'>MenuEnterContinuation</emphasis>,
+<emphasis remap='I'>MenuEnterSubmenu</emphasis>, 
+<emphasis remap='I'>MenuLeaveSubmenu</emphasis>,
+<emphasis remap='I'>MenuMoveCursor</emphasis>,
+<emphasis remap='I'>MenuCursorLeft</emphasis>, 
+<emphasis remap='I'>MenuCursorRight</emphasis>,
+<emphasis remap='I'>MenuSelectItem</emphasis>,
+<emphasis remap='I'>MenuScroll</emphasis> and 
+<emphasis remap='I'>MenuTearOff</emphasis>.</para>
+
+<para>It is not possible to override the key Escape with no modifiers for
+closing the menu. Neither is it possible to undefine mouse button 1,
+the arrow keys or the enter key for minimal navigation.</para>
+
+<para><emphasis remap='B'>MenuClose</emphasis>
+exits from the current sequence of menus or destroys a tear off menu.</para>
+
+<para><emphasis remap='B'>MenuEnterContinuation</emphasis>
+opens the "More..." sub menu if any.</para>
+
+<para><emphasis remap='B'>MenuEnterSubmenu</emphasis>
+enters a sub menu.</para>
+
+<para><emphasis remap='B'>MenuLeaveSubmenu</emphasis>
+returns to the prior menu.</para>
+
+
+<para><emphasis remap='B'>MenuMoveCursor</emphasis>
+<emphasis remap='I'>n</emphasis><emphasis remap='B'> [</emphasis><emphasis remap='I'>m</emphasis><emphasis remap='B'>]</emphasis>
+moves the selection to another item.  If the first argument is zero
+the second argument specifies an absolute item in the menu to move
+the pointer to. Negative items are counted from the end of the menu.
+If the first argument is non-zero, the second argument must be omitted,
+and the first argument specifies a relative change in the selected item.
+The positions may be suffixed with a 's' to indicate that the items should
+refer only to the first items after separators.</para>
+
+<para><emphasis remap='B'>MenuCursorLeft</emphasis>
+enters a sub menu with the
+<emphasis remap='I'>SubmenusLeft</emphasis>
+menu style, and returns to the prior menu with the
+<emphasis remap='I'>SubmenusRight</emphasis> menu style.</para>
+
+<para><emphasis remap='B'>MenuCursorRight</emphasis>
+enters a sub menu with the
+<emphasis remap='I'>SubmenusRight</emphasis>
+menu style, and returns to the prior menu with the
+<emphasis remap='I'>SubmenusLeft</emphasis> menu style.</para>
+
+<para><emphasis remap='B'>MenuSelectItem</emphasis>
+triggers the action for the menu item.</para>
+
+<para><emphasis remap='B'>MenuScroll </emphasis><emphasis remap='I'>n</emphasis>
+performs menu scrolling according to the
+<emphasis remap='I'>MouseWheel</emphasis> menu style with <emphasis remap='I'>n</emphasis> items.  The distance can be
+suffixed with an 's' to indicate the items should refer only to the
+first items after separators.</para>
+
+<para><emphasis remap='B'>MenuTearOff</emphasis>
+turns a normal menu into a "torn off" menu. See
+<emphasis remap='B'>Tear Off Menus</emphasis>
+for details.</para>
+
+</section>
+
+
+
+<section id="tearoff_menus">
+<title>Tear Off Menus</title>
+
+<para>A tear off menu is any menu that has been "torn off" the window it
+was attached to and pinned to the root window.  There are three
+ways to tear off a menu:  click on the menu title with mouse
+button 2, press
+<emphasis remap='SM'>Backspace</emphasis>
+in the menu or activate its tear off bar (a horizontal bar with a
+broken line).  Tear off bars must be added to the menu as any
+other item by assigning them the command
+<fvwmref cmd="TearMenuOff"/>.</para>
+
+<para>The builtin tear off actions can be overridden by undefining the
+builtin menu actions bound to tear off. To remove the builtin mouse
+button 2 binding, use:</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 2 MT A -
+</programlisting>
+
+<para>and to remove the builtin backspace binding, use:</para>
+
+<programlisting>
+<fvwmref cmd="Key"/> Backspace M A -
+</programlisting>
+
+<para>See the section
+<fvwmref sect="menus" opt="menu_bindings" name="Menu Bindings"/>
+for details on how to assign other bindings for tear off.</para>
+
+<para>Note that prior to fvwm 2.5.20 the tear off mouse bindings were
+redefined in different way, which no longer work.</para>
+
+
+<para>The window containing the menu is placed as any other window would
+be.  If you find it confusing to have your tear off menus appear
+at random positions on the screen, put this line in your
+configuration file:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> fvwm_menu <fvwmref cmd="Style" opt="UsePPosition"/>
+</programlisting>
+
+
+<para>To remove borders and buttons from a tear-off menu but keep the
+menu title, you can use</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> fvwm_menu !<fvwmref cmd="Style" opt="Button"/> 0, !<fvwmref cmd="Style" opt="Button"/> 1
+<fvwmref cmd="Style"/> fvwm_menu !<fvwmref cmd="Style" opt="Button"/> 2, !<fvwmref cmd="Style" opt="Button"/> 3
+<fvwmref cmd="Style"/> fvwm_menu !<fvwmref cmd="Style" opt="Button"/> 4, !<fvwmref cmd="Style" opt="Button"/> 5
+<fvwmref cmd="Style"/> fvwm_menu !<fvwmref cmd="Style" opt="Button"/> 6, !<fvwmref cmd="Style" opt="Button"/> 7
+<fvwmref cmd="Style"/> fvwm_menu !<fvwmref cmd="Style" opt="Button"/> 8, !<fvwmref cmd="Style" opt="Button"/> 9
+<fvwmref cmd="Style"/> fvwm_menu <fvwmref cmd="Style" opt="Title"/>, <fvwmref cmd="Style" opt="HandleWidth"/> 0
+</programlisting>
+
+
+<para>A tear off menu is a cross breeding between a window and a menu.
+The menu is swallowed by a window and its title is stripped off
+and displayed in the window title.  The main advantage is that the
+menu becomes permanent - activating an item does not close the
+menu.  Therefore, it can be used multiple times without reopening
+it.  To destroy such a menu, close its window or press the
+<emphasis remap='SM'>Escape</emphasis>
+key.</para>
+
+<para>Tear off menus behave somewhat differently than normal menus and
+windows.  They do not take the keyboard focus, but while the
+pointer is over one of them, all key presses are sent to the
+menu.  Other fvwm key bindings are disabled as long as the pointer
+is inside the tear off menu or one of its sub menus.  When the
+pointer leaves this area, all sub menus are closed immediately.
+Note that the window containing a tear off menu is never hilighted
+as if it had the focus.</para>
+
+<para>A tear off menu is an independent copy of the menu it originated
+from.  As such, it is not affected by adding items to that menu or
+changing its menu style.</para>
+
+<para>To create a tear off menu without opening the normal menu first,
+the option
+<emphasis remap='I'>TearOffImmediately</emphasis>
+can be added to the
+<fvwmref cmd="Menu"/> or <fvwmref cmd="Popup"/>
+command.</para>
+</section>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddToMenu.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ChangeMenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/CopyMenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyMenu.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyMenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Menu.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/MenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Popup.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/TearMenuOff.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Title.xml" />
+
+
+</section>

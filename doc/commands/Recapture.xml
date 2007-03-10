@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Recapture'>
+<title>Recapture</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Recapture</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is obsolete and should not be used anymore.  Should
+you want to do something specific that you cannot do without it,
+please report this to the fvwm-workers mailing list
+<email>fvwm-workers@fvwm.org</email>.  This command may be removed at some point
+in the future.  Please read the note at the end of the section
+<fvwmref sect="execution" opt="delayed_execution_of_commands" name="Delayed Execution of Commands"/>
+to learn about how to avoid the
+<emphasis remap='B'>Recapture</emphasis>
+command.</para>
+
+<para>Causes fvwm to recapture all of its windows.  This ensures that
+the latest style parameters are used.  The recapture operation is
+visually disturbing.</para>
+
+<para>Since fvwm version 2.4 only a very few
+<fvwmref cmd="Style"/>
+options need a
+<emphasis remap='B'>Recapture</emphasis>
+to take effect (e.g.
+<emphasis remap='I'>UseStyle</emphasis>).</para>
+
+</section>

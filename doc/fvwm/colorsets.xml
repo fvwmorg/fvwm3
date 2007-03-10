@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='colorsets'>
+<title>Colorsets</title>
+
+<para>Colorsets are a powerful method to control colors. Colorsets
+create appearance resources that are shared by fvwm and its
+modules.  When a colorset is modified all parts of fvwm react to
+that change. A colorset includes a foreground color, background
+color, shadow and highlight color (often based on the background
+color), background face (this includes images and all kinds of
+gradients).  There is a way to render background face and specify
+other color operations.</para>
+
+<para>In the 2.4.x versions a special module
+<fvwmref mod="FvwmTheme"/>
+was introduced to manage colorsets.  Starting with the 2.5.x beta
+version, the <fvwmref mod="FvwmTheme"/> functionality was moved to the core fvwm,
+so this module became obsolete.</para>
+
+<para>The old syntax:</para>
+
+<programlisting>
+<fvwmref cmd="DestroyModuleConfig"/> <fvwmref mod="FvwmTheme"/>: *
+*<fvwmref mod="FvwmTheme"/>: <fvwmref cmd="Colorset"/> 0 fg black, bg rgb:b4/aa/94
+*<fvwmref mod="FvwmTheme"/>: <fvwmref cmd="Colorset"/> 1 fg black, bg rgb:a1/b2/c8
+</programlisting>
+
+<para>corresponds to the new syntax:</para>
+
+<programlisting>
+<fvwmref cmd="CleanupColorsets"/>
+<fvwmref cmd="Colorset"/> 0 fg black, bg rgb:b4/aa/94
+<fvwmref cmd="Colorset"/> 1 fg black, bg rgb:a1/b2/c8
+</programlisting>
+
+
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Colorset.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/CleanupColorsets.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../fvwm/colorGradients.xml" />
+
+
+</section>

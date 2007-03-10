@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='GotoDeskAndPage'>
+<title>GotoDeskAndPage</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>GotoDeskAndPage prev | desk xpage ypage</arg>
+</cmdsynopsis>
+</command>
+
+<para>Switches the current viewport to another desktop and page, similar
+to the
+<fvwmref cmd="GotoDesk"/> and <emphasis remap='B'>GotoPage</emphasis>
+commands.  The new desk is
+<emphasis remap='I'>desk</emphasis>
+and the new page is
+(<emphasis remap='I'>xpage</emphasis>,<emphasis remap='I'>ypage</emphasis>).</para>
+
+</section>

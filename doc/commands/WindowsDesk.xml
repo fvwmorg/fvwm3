@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='WindowsDesk'>
+<title>WindowsDesk</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>WindowsDesk</arg>
+    <arg choice='plain'>arg1</arg>
+    <arg choice='opt'>arg2</arg>
+</cmdsynopsis>
+</command>
+
+<para>Moves the selected window to another desktop.</para>
+
+<para>This command has been removed and must be replaced by
+<fvwmref cmd="MoveToDesk"/>,
+the arguments for which are the same as for the
+<fvwmref cmd="GotoDesk"/>
+command.</para>
+
+<important>
+You cannot simply change the name of the command: the syntax has
+changed.  If you used:
+
+<programlisting>
+WindowsDesk n
+</programlisting>
+
+<para>to move a window to desk n, you have to change it to:</para>
+
+<programlisting>
+<fvwmref cmd="MoveToDesk"/> 0 n
+</programlisting>
+</important>
+
+</section>

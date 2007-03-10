@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='PointerWindow'>
+<title>PointerWindow</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>PointerWindow [(conditions)] command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Performs
+<emphasis remap='I'>command</emphasis>
+if the window under the pointer satisfies all
+<emphasis remap='I'>conditions</emphasis>.
+Returns -1 if there is no window under the pointer.
+See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+<para>This command implies the conditions
+<emphasis remap='I'>CirculateHit</emphasis>, <emphasis remap='I'>CirculateHitIcon</emphasis> and <emphasis remap='I'>CirculateHitShaded</emphasis>.
+They can be turned off by specifying
+<emphasis remap='I'>!CirculateHit</emphasis>
+etc. explicitly.</para>
+
+</section>

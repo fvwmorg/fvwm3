@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='builtin_key_and_mouse_bindings'>
+<title>Builtin Key and Mouse Bindings</title>
+<para>The following commands are built-in to fvwm:</para>
+
+<programlisting><fvwmref cmd="Key"/> Tab A M -</programlisting>
+<programlisting>
+<fvwmref cmd="Key"/> Help R A <fvwmref cmd="Popup"/> MenuFvwmRoot
+<fvwmref cmd="Key"/> F1 R A <fvwmref cmd="Popup"/> MenuFvwmRoot
+<fvwmref cmd="Key"/> Tab A M <fvwmref cmd="WindowList"/> Root c c NoDeskSort
+<fvwmref cmd="Key"/> Escape A MC <fvwmref cmd="EscapeFunc"/>
+<fvwmref cmd="Mouse"/> 1 R A <fvwmref cmd="Menu"/> MenuFvwmRoot
+<fvwmref cmd="Mouse"/> 1 T   A FuncFvwmRaiseLowerX <fvwmref cmd="Move"/>
+<fvwmref cmd="Mouse"/> 1 FS  A FuncFvwmRaiseLowerX <fvwmref cmd="Resize"/>
+<fvwmref cmd="Mouse"/> 2 FST A FuncFvwmRaiseLowerX <fvwmref cmd="Move"/>
+<fvwmref cmd="AddToFunc"/> FuncFvwmRaiseLowerX
++ I <fvwmref cmd="Raise"/>
++ M $0
++ D <fvwmref cmd="Lower"/>
+</programlisting>
+
+
+<para>The
+<emphasis remap='SM'>Help</emphasis>
+and
+<emphasis remap='SM'>F1</emphasis>
+keys invoke a built-in menu that fvwm creates.  This is primarily
+for new users that have not created their own configuration
+file. Either key on the root (background) window pops up an menu
+to help you get started.</para>
+
+<para>The
+<emphasis remap='SM'>Tab</emphasis>
+key pressed anywhere with the
+<emphasis remap='SM'>Meta</emphasis>
+key (same as the
+<emphasis remap='SM'>Alt</emphasis>
+key on PC keyboards) held down pop-ups a window list.</para>
+
+<para>Mouse button 1 on the title-bar or side frame can move, raise or
+lower a window.</para>
+
+<para>Mouse button 1 on the window corners can resize, raise or lower a
+window.</para>
+
+<para>You can override or remove these bindings. To remove the window
+list binding, use this:</para>
+
+<programlisting>
+<fvwmref cmd="Key"/> Tab A M -
+</programlisting>
+
+
+</section>

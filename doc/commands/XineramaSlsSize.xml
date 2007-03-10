@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='XineramaSlsSize'>
+<title>XineramaSlsSize</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>XineramaSlsSize HorizontalxVertical</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command configures the layout of the Single Logical screen
+feature.  It takes two arguments,
+<emphasis remap='I'>Horizontal</emphasis> and <emphasis remap='I'>Vertical</emphasis>
+which must be an integer value dividing evenly into the total
+desktop width, and height.  For an example with two
+monitors side by side which appear as one screen through the
+X-Server with the right screen as the primary screen, use:</para>
+
+<programlisting>
+XineramaSlsSize 2x1
+<fvwmref cmd="XineramaSls"/> On
+<fvwmref cmd="XineramaPrimaryScreen"/> 1
+<fvwmref cmd="Xinerama"/> On
+</programlisting>
+
+
+</section>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ModulePath'>
+<title>ModulePath</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ModulePath path</arg>
+</cmdsynopsis>
+</command>
+
+<para>Specifies a colon separated list of directories in which to search
+for modules.  To find a module, fvwm searches each directory in
+turn and uses the first file found.  Directory names on the list
+do not need trailing slashes.</para>
+
+<para>The
+<emphasis remap='B'>ModulePath</emphasis>
+may contain environment variables such as
+<emphasis remap='I'>$HOME</emphasis> (or <emphasis remap='I'>${HOME}</emphasis>).
+Further, a '+' in the
+<emphasis remap='I'>path</emphasis>
+is expanded to the previous value of the
+<emphasis remap='I'>path</emphasis>,
+allowing easy appending or prepending to the
+<emphasis remap='I'>path</emphasis>.</para>
+
+<para>For example:</para>
+
+<programlisting>
+ModulePath ${HOME}/lib/fvwm/modules:+
+</programlisting>
+
+<para>The directory containing the standard modules is available via the
+environment variable
+<emphasis remap='I'>$FVWM_MODULEDIR</emphasis>.</para>
+
+</section>

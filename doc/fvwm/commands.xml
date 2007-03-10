@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='list_of_fvwm_commands'>
+<title>List of FVWM Commands</title>
+
+<para>The command descriptions below are grouped together in the
+following sections.  The sections are hopefully sorted in order of
+usefulness to the newcomer.</para>
+
+<itemizedlist>
+<listitem><simpara><fvwmref sect="menus" opt="menus" name="Menu commands"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="miscCommands" opt="miscellaneous_commands" name="Miscellaneous commands"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="windowMovement" opt="window_movement_and_placement" name="Commands affecting window movement and placement"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="focus" opt="focus_and_mouse_movement" name="Commands for focus and mouse movement"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="windowState" opt="window_state" name="Commands controlling window state"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="bindings" opt="mouse_key_and_stroke_bindings" name="Commands for mouse, key and stroke bindings"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="styleCommands" opt="controlling_window_styles" name="The Style command (controlling window styles)"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="windowStyles" opt="window_styles" name="Other commands controlling window styles"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="virtualDesktopCommands" opt="virtual_desktop" name="Commands controlling the virtual desktop"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="userFunctions" opt="user_functions_and_shell_commands" name="Commands for user functions and shell commands"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="conditionals" opt="conditional_commands" name="Conditional commands"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="moduleCommands" opt="module_commands" name="Module commands"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="sessionCommands" opt="session_management_commands" name="Quit, restart and session management commands"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="colorsets" opt="colorsets" name="Colorsets"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="colorGradients" opt="color_gradients" name="Color gradients"/></simpara></listitem>
+</itemizedlist>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="menus.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="miscCommands.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="windowMovement.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="focus.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="windowState.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bindings.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="styleCommands.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="windowStyles.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="virtualDesktopCommands.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="userFunctions.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="conditionals.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="moduleCommands.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sessionCommands.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="colorsets.xml" />
+
+</section>

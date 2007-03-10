@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Function'>
+<title>Function</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Function FunctionName</arg>
+</cmdsynopsis>
+</command>
+
+<para>Used to bind a previously defined function to a key or mouse
+button. The following example binds mouse button 1 to a function
+called "Move-or-Raise", whose definition was provided as an
+example earlier in this man page.  After performing this binding
+fvwm executes the "move-or-raise" function whenever button 1 is
+pressed in a window's title-bar.</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 1 T A Function Move-or-Raise
+</programlisting>
+
+<para>The keyword
+<emphasis remap='B'>Function</emphasis>
+may be omitted if
+<emphasis remap='I'>FunctionName</emphasis>
+does not coincide with an fvwm command.</para>
+
+<para>Warning:  Please read the comments on executing complex functions
+in the section
+<emphasis remap='B'>SCRIPTING AND COMPLEX FUNCTIONS</emphasis>.</para>
+
+</section>

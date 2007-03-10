@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='AddButtonStyle'>
+<title>AddButtonStyle</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>AddButtonStyle</arg>
+    <arg choice='plain'>button</arg>
+    <arg choice='opt'>state</arg>
+    <arg choice='opt'>style</arg>
+    <arg choice='opt'>-- <arg choice='opt'>!</arg> flag ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>Adds a button style to
+<emphasis remap='I'>button</emphasis>.
+<emphasis remap='I'>button</emphasis>
+can be a button number, or one of
+"<fvwmopt cmd="AddButtonStyle" opt="All"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="Left"/>" or
+"<fvwmopt cmd="AddButtonStyle" opt="Right"/>".
+<emphasis remap='I'>state</emphasis>
+can be
+"<fvwmopt cmd="AddButtonStyle" opt="ActiveUp"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="ActiveDown"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="InactiveUp"/>" or
+"<fvwmopt cmd="AddButtonStyle" opt="InactiveDown"/>", or
+"<fvwmopt cmd="AddButtonStyle" opt="Active"/>" (the same as both "ActiveUp" and "ActiveDown") or
+"<fvwmopt cmd="AddButtonStyle" opt="Inactive"/>" (the same as both "InactiveUp" and "InactiveDown")
+or any of these 6 with
+"<fvwmopt cmd="AddButtonStyle" opt="Toggled"/>" prepended.
+The "Active" states apply to the focused window, the "Inactive"
+ones apply to all other windows. The "Up" states apply to the
+non pressed buttons, the "Down" ones apply to pressed buttons.
+The "Toggled" prefix refers to maximized, shaded or sticky windows
+that have the corresponding
+<emphasis remap='I'>MwmDecor...</emphasis>
+button style set.
+Additionally, the following shortcuts may be used:
+"<fvwmopt cmd="AddButtonStyle" opt="AllNormal"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllToggled"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllActive"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllInactive"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllUp"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllDown"/>".
+They are actually different masks for 4 individual states from
+8 total.  These are supported too:
+"<fvwmopt cmd="AddButtonStyle" opt="AllActiveUp"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllActiveDown"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllInactiveUp"/>",
+"<fvwmopt cmd="AddButtonStyle" opt="AllInactiveDown"/>".</para>
+
+<para>If
+<emphasis remap='I'>state</emphasis>
+is omitted, then the style is added to every state.  If the
+<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+are enclosed in parentheses, then multiple
+<emphasis remap='I'>state</emphasis>
+definitions can be placed on a single line.
+<emphasis remap='I'>Flags</emphasis>
+for additional button styles cannot be changed after definition.</para>
+
+<para>Buttons are drawn in the order of definition, beginning with the
+most recent button style, followed by those added with
+<emphasis remap='B'>AddButtonStyle</emphasis>.
+To clear the button style stack, change style flags, or for
+descriptions of available styles and flags, see the
+<fvwmref cmd="ButtonStyle"/>
+command.  Examples:</para>
+
+<programlisting>
+<fvwmref cmd="ButtonStyle"/> 1 Pixmap led.xpm -- Top Left
+<fvwmref cmd="ButtonStyle"/> 1 ActiveDown HGradient 8 grey black
+<fvwmref cmd="ButtonStyle"/> <fvwmref cmd="All"/> --  UseTitleStyle
+AddButtonStyle 1 ActiveUp (Pixmap a.xpm) ActiveDown (Pixmap b.xpm -- Top)
+AddButtonStyle 1 Vector 4 50x30@1 70x70@0 30x70@0 50x30@1
+</programlisting>
+
+<para>Initially for this example all button states are set to a pixmap.
+The second line replaces the "ActiveDown" state with a gradient
+(it overrides the pixmap assigned to it in the line before, which
+assigned the same style to every state).  Then, the
+<emphasis remap='I'>UseTitleStyle</emphasis>
+flag is set for all buttons, which causes fvwm to draw any styles
+set with
+<fvwmref cmd="TitleStyle"/>
+before drawing the buttons.  Finally,
+<emphasis remap='B'>AddButtonStyle</emphasis>
+is used to place additional pixmaps for both "ActiveUp" and
+"ActiveDown" states and a vector button style is drawn on top of
+all states.</para>
+
+</section>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='AddTitleStyle'>
+<title>AddTitleStyle</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>AddTitleStyle</arg>
+	<arg choice='opt'>state</arg>
+	<arg choice='opt'>state</arg>
+	<arg choice='opt'>style</arg>
+	<arg choice='opt'>-- <arg choice='opt'>!</arg> flag ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>Adds a title style to the title-bar.
+<emphasis remap='I'>state</emphasis> can be
+"<fvwmopt cmd="AddTitleStyle" opt="ActiveUp"/>",
+"<fvwmopt cmd="AddTitleStyle" opt="ActiveDown"/>",
+"<fvwmopt cmd="AddTitleStyle" opt="InactiveUp"/>" or
+"<fvwmopt cmd="AddTitleStyle" opt="InactiveDown"/>", or
+"<fvwmopt cmd="AddTitleStyle" opt="Active"/>" (the same as both "ActiveUp" and "ActiveDown") or
+"<fvwmopt cmd="AddTitleStyle" opt="Inactive"/>" (the same as both "InactiveUp" and "InactiveDown")
+or any of these 6 with "Toggled" prepended.  If
+<emphasis remap='I'>state</emphasis>
+is omitted, then the style is added to every state.  If the
+<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+are enclosed in parentheses, then multiple
+<emphasis remap='I'>state</emphasis>
+definitions can be placed on a single line.  This command is quite
+similar to the
+<fvwmref cmd="AddButtonStyle"/>
+command.</para>
+
+<para>Title-bars are drawn in the order of definition, beginning with
+the most recent
+<fvwmref cmd="TitleStyle"/>,
+followed by those added with
+<emphasis remap='B'>AddTitleStyle</emphasis>.
+To clear the title style stack, change style flags, or for the
+descriptions of available styles and flags, see the
+<fvwmref cmd="TitleStyle"/> and
+<fvwmref cmd="ButtonStyle"/>
+commands.</para>
+
+</section>

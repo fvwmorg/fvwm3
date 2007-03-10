@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='EdgeScroll'>
+<title>EdgeScroll</title>
+
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>EdgeScroll horizontal[p] vertical[p] [wrap|wrapx|wrapy]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Specifies the percentage of a page to scroll when the cursor hits
+the edge of a page.  A trailing
+'<emphasis remap='I'>p</emphasis>'
+changes the interpretation to mean pixels.  If you do not want any
+paging or scrolling when you hit the edge of a page include</para>
+
+<programlisting>
+EdgeScroll 0 0
+</programlisting>
+
+<para>in your
+<emphasis remap='I'>config</emphasis>
+file, or possibly better, set the
+<emphasis remap='B'>EdgeThickness</emphasis>
+to zero.  See the
+<emphasis remap='B'>EdgeThickness</emphasis>
+command. If you want whole pages, use</para>
+
+<programlisting>
+EdgeScroll 100 100
+</programlisting>
+
+<para>Both
+<emphasis remap='I'>horizontal</emphasis> and <emphasis remap='I'>vertical</emphasis>
+should be positive numbers.</para>
+
+<para>If the
+<emphasis remap='I'>horizontal</emphasis> and <emphasis remap='I'>vertical</emphasis>
+percentages are multiplied by 1000 or one of the keywords
+<emphasis remap='I'>wrap</emphasis>, <emphasis remap='I'>wrapx</emphasis> and <emphasis remap='I'>wrapy</emphasis>
+is given then scrolling wraps around at the edge of the desktop.
+If</para>
+
+<programlisting>
+EdgeScroll 100000 100000
+</programlisting>
+
+<para>is used fvwm scrolls by whole pages, wrapping around at the edge
+of the desktop.</para>
+
+</section>

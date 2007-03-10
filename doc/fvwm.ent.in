@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!ENTITY version "@VERSION@@VERSIONINFO@">
+<!ENTITY releasedate "@RELDATESHORT@">
+<!ENTITY % htmlonly "INCLUDE">
+<!ENTITY % manonly "IGNORE">
+<!ENTITY fixme "<caution><title color='red'>FIXME</title></caution>">

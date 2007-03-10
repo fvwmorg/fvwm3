@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='UnsetEnv'>
+<title>UnsetEnv</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>UnsetEnv variable</arg>
+</cmdsynopsis>
+</command>
+
+<para>Unset an environment variable, similar to shell's export or
+unsetenv command. The
+<emphasis remap='I'>variable</emphasis>
+then is removed from the environment array inherited by processes
+started directly by fvwm.</para>
+
+</section>

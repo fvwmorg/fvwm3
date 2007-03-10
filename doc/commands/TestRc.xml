@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='TestRc'>
+<title>TestRc</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>TestRc [([!]returncode)] command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Performs
+<emphasis remap='I'>command</emphasis>
+if the last conditional command returned the value
+<emphasis remap='I'>returncode</emphasis>.
+Instead of the numeric values 0 (no match), 1 (match), -1 (error),
+and -2 (break) the symbolic names "<fvwmopt cmd="Style" opt="NoMatch"/>",
+"<fvwmopt cmd="Style" opt="Match"/>", "<fvwmopt cmd="Style" opt="Error"/>" and
+"<fvwmopt cmd="Style" opt="Break"/>" can be used.  If no
+<emphasis remap='I'>returncode</emphasis>
+is given, the default 0 is assumed.  If the return code is
+prefixed with '!', the command is executed if
+<emphasis remap='I'>returncode</emphasis>
+does not match the value returned by the conditional command.
+<emphasis remap='B'>TestRc</emphasis>
+command can only be used inside functions.  If the
+<emphasis remap='I'>command</emphasis>
+is another conditional command, the previous return code is
+replaced by the new one.  Example:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> ToggleXterm
++ I <fvwmref cmd="All"/> (my_xtermwindow) <fvwmref cmd="Close"/>
++ I TestRc (NoMatch) <fvwmref cmd="Exec"/> xterm -T my_xtermwindow
+</programlisting>
+
+
+</section>

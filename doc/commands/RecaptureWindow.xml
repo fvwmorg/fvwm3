@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='RecaptureWindow'>
+<title>RecaptureWindow</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>RecaptureWindow</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is obsolete and should not be used anymore.  See
+<fvwmref cmd="Recapture"/>
+For details.</para>
+
+<para>Causes fvwm to recapture the chosen window.</para>
+
+</section>

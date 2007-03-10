@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ExecUseShell'>
+<title>ExecUseShell</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ExecUseShell [shell]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Makes the
+<fvwmref cmd="Exec"/>
+command use the specified shell, or the value of the
+<emphasis remap='I'>$SHELL</emphasis>
+environment variable if no shell is specified, instead of the
+default Bourne shell
+(<filename>/bin/sh</filename>).</para>
+
+<programlisting>
+ExecUseShell
+ExecUseShell /usr/local/bin/tcsh
+</programlisting>
+
+
+</section>

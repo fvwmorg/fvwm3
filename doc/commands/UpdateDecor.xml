@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='UpdateDecor'>
+<title>UpdateDecor</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>UpdateDecor [decor]</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.</para>
+
+<para>This command is kept mainly for backward compatibility.  Since
+all elements of a decor are updated immediately when they are
+changed, this command is mostly useless.</para>
+
+<para>Updates window decorations.
+<emphasis remap='I'>decor</emphasis>
+is an optional argument which specifies the
+<emphasis remap='I'>decor</emphasis>
+to update.  If given, only windows which are assigned to that
+particular
+<emphasis remap='I'>decor</emphasis>
+are updated.  This command is useful, for instance, after a
+<fvwmref cmd="ButtonStyle"/>, <emphasis remap='B'>TitleStyle</emphasis> or <emphasis remap='B'>BorderStyle</emphasis>
+(possibly used in conjunction with
+<fvwmref cmd="AddToDecor"/>).
+Specifying an invalid decor results in all windows being
+updated.  This command is less disturbing than
+<fvwmref cmd="Recapture"/>,
+but does not affect window style options as
+<fvwmref cmd="Recapture"/>
+does.</para>
+
+
+</section>

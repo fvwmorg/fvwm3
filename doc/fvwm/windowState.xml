@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='window_state'>
+<title>Window State</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Close.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Delete.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Destroy.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Iconify.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Maximize.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Recapture.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/RecaptureWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Refresh.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/RefreshWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Stick.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/StickAcrossPages.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/StickAcrossDesks.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WindowShade.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WindowShadeAnimate.xml" />
+
+</section>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Read'>
+<title>Read</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Read filename [quiet]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Causes fvwm to read commands from the file named
+<emphasis remap='I'>filename</emphasis>.
+If the keyword
+<emphasis remap='I'>Quiet</emphasis>
+follows the command no message is produced if the file is not
+found.  If the file name does not begin with a slash ('/'), fvwm
+looks in the user's data directory, then the system data
+directory.  The user's data directory is by default
+<emphasis remap='I'>$HOME/.fvwm</emphasis>.
+It can be overridden by exporting
+<emphasis remap='I'>FVWM_USERDIR</emphasis>
+set to any other directory.  The
+<emphasis remap='B'>Read</emphasis>
+command returns 1 if the given file could be read or -1 if not
+(see the section
+<fvwmref sect="conditionals" opt="conditional_commands" name="Conditional Commands"/>
+for the meaning of return codes).</para>
+
+
+</section>

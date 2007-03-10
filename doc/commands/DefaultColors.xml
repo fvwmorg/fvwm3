@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DefaultColors'>
+<title>DefaultColors</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>DefaultColors</arg>
+    <arg choice='opt'>foreground background</arg>
+</cmdsynopsis>
+</command>
+
+<para><emphasis remap='B'>DefaultColors</emphasis>
+sets the default foreground and background colors used in
+miscellaneous windows created by fvwm, for example in the geometry
+feedback windows during a move or resize operation. If you do not
+want to change one color or the other, use - as its color name. To
+revert to the built-in default colors omit both color names. Note
+that the default colors are not used in menus, window titles or
+icon titles.</para>
+
+</section>

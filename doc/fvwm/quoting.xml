@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='quoting'>
+<title>Quoting</title>
+
+<para>Quotes are required only when needed to make fvwm consider two or
+more words to be a single argument.  Unnecessary quoting is
+allowed.  If you want a quote character in your text, you must
+escape it by using the backslash character.  For example, if you
+have a pop-up menu called "Window-Ops", then you do not need
+quotes:</para>
+
+<programlisting>
+<fvwmref cmd="Popup"/> Window-Ops
+</programlisting>
+
+<para>but if you replace the dash with a space, then you need
+quotes:</para>
+
+<programlisting>
+<fvwmref cmd="Popup"/> "Window Ops"
+</programlisting>
+
+<para>The supported quoting characters are double quotes, single quotes
+and reverse single quotes.  All three kinds of quotes are treated
+in the same way.  Single characters can be quoted with a preceding
+backslash.  Quoting single characters works even inside other
+kinds of quotes.</para>
+
+</section>

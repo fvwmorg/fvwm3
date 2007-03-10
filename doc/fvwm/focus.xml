@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='focus_and_mouse_movement'>
+<title>Focus &amp; Mouse Movement</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/CursorMove.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/FlipFocus.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Focus.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WarpToWindow.xml" />
+
+
+</section>

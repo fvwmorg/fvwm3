@@ -1,0 +1,2162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='Style'>
+<title>Style</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Style stylename options ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>The
+<emphasis remap='B'>Style</emphasis>
+command is used to set attributes of a window to values other than
+the default or to set the window manager default styles.</para>
+
+<para><emphasis remap='I'>stylename</emphasis>
+can be a window's name, class, or resource string.  It may contain
+the wildcards '*' and '?', which are matched in the usual Unix
+filename manner.  Multiple style options in a single
+<emphasis remap='B'>Style</emphasis>
+command are read from left to right as if they were issued one
+after each other in separate commands.  A given style always
+overrides all conflicting styles that have been issued earlier (or
+further left on the same style line).</para>
+
+<para>Note: windows that have no name (WM_NAME) are given a name of
+"Untitled", and windows that do not have a class (WM_CLASS,
+res_class) are given class "NoClass" and those that do not have a
+resource (WM_CLASS, res_name) are given resource "NoResource".</para>
+
+<para>If a window has the resource "fvwmstyle" set, the value of that
+resource is used in addition to any window names when
+selecting the style.</para>
+
+<para><emphasis remap='I'>options</emphasis>
+is a comma separated list containing one or more of the
+following keywords.  Each group of style names is separated by
+slashes ('/').  The last style in these groups is the default.
+<emphasis remap='I'>BorderWidth</emphasis>, <emphasis remap='I'>HandleWidth</emphasis>,
+<emphasis remap='I'>!Icon</emphasis> / <emphasis remap='I'>Icon</emphasis>, <emphasis remap='I'>MiniIcon</emphasis>,
+<emphasis remap='I'>IconBox</emphasis>, <emphasis remap='I'>IconGrid</emphasis>, <emphasis remap='I'>IconFill</emphasis>, <emphasis remap='I'>IconSize</emphasis>,
+<emphasis remap='I'>!Title</emphasis> / <emphasis remap='I'>Title</emphasis>,
+<emphasis remap='I'>TitleAtBottom</emphasis> / <emphasis remap='I'>TitleAtLeft</emphasis> / <emphasis remap='I'>TitleAtRight</emphasis> / <emphasis remap='I'>TitleAtTop</emphasis>,
+<emphasis remap='I'>LeftTitleRotatedCW</emphasis> / <emphasis remap='I'>LeftTitleRotatedCCW</emphasis>,
+<emphasis remap='I'>RightTitleRotatedCCW</emphasis> / <emphasis remap='I'>RightTitleRotatedCW</emphasis>,
+<emphasis remap='I'>TopTitleRotated</emphasis> / <emphasis remap='I'>TopTitleNotRotated</emphasis>,
+<emphasis remap='I'>BottomTitleRotated</emphasis> / <emphasis remap='I'>BottomTitleNotRotated</emphasis>,
+<emphasis remap='I'>!UseTitleDecorRotation</emphasis> / <emphasis remap='I'>UseTitleDecorRotation</emphasis>,
+<emphasis remap='I'>StippledTitle</emphasis> / <emphasis remap='I'>!StippledTitle</emphasis>,
+<emphasis remap='I'>StippledIconTitle</emphasis> / <emphasis remap='I'>!StippledIconTitle</emphasis>,
+<emphasis remap='I'>IndexedWindowName</emphasis> / <emphasis remap='I'>ExactWindowName</emphasis>,
+<emphasis remap='I'>IndexedIconName</emphasis> / <emphasis remap='I'>ExactIconName</emphasis>,
+<emphasis remap='I'>!Borders</emphasis> / <emphasis remap='I'>Borders</emphasis>,
+<emphasis remap='I'>!Handles</emphasis> / <emphasis remap='I'>Handles</emphasis>,
+<emphasis remap='I'>WindowListSkip</emphasis> / <emphasis remap='I'>WindowListHit</emphasis>,
+<emphasis remap='I'>CirculateSkip</emphasis> / <emphasis remap='I'>CirculateHit</emphasis>,
+<emphasis remap='I'>CirculateSkipShaded</emphasis> / <emphasis remap='I'>CirculateHitShaded</emphasis>,
+<emphasis remap='I'>CirculateSkipIcon</emphasis> / <emphasis remap='I'>CirculateHitIcon</emphasis>,
+<emphasis remap='I'>Layer</emphasis>,
+<emphasis remap='I'>StaysOnTop</emphasis> / <emphasis remap='I'>StaysOnBottom</emphasis> / <emphasis remap='I'>StaysPut</emphasis>,
+<emphasis remap='I'>Sticky</emphasis> / <emphasis remap='I'>Slippery</emphasis>,
+<emphasis remap='I'>StickyAcrossPages</emphasis> / <emphasis remap='I'>!StickyAcrossPages</emphasis>,
+<emphasis remap='I'>StickyAcrossDesks</emphasis> / <emphasis remap='I'>!StickyAcrossDesks</emphasis>,
+<emphasis remap='I'>!StickyStippledTitle</emphasis> / <emphasis remap='I'>StickyStippledTitle</emphasis>,
+<emphasis remap='I'>!StickyStippledIconTitle</emphasis> / <emphasis remap='I'>StickyStippledIconTitle</emphasis>,
+<emphasis remap='I'>StartIconic</emphasis> / <emphasis remap='I'>StartNormal</emphasis>,
+<emphasis remap='I'>Color</emphasis>, <emphasis remap='I'>ForeColor</emphasis>, <emphasis remap='I'>BackColor</emphasis>, <emphasis remap='I'>Colorset</emphasis>,
+<emphasis remap='I'>HilightFore</emphasis>, <emphasis remap='I'>HilightBack</emphasis>, <emphasis remap='I'>HilightColorset</emphasis>,
+<emphasis remap='I'>BorderColorset</emphasis>, <emphasis remap='I'>HilightBorderColorset</emphasis>,
+<emphasis remap='I'>IconTitleColorset</emphasis>, <emphasis remap='I'>HilightIconTitleColorset</emphasis>,
+<emphasis remap='I'>IconBackgroundColorset</emphasis>,
+<emphasis remap='I'>IconTitleRelief</emphasis>, <emphasis remap='I'>IconBackgroundRelief</emphasis>, <emphasis remap='I'>IconBackgroundPadding</emphasis>,
+<emphasis remap='I'>Font</emphasis>,
+<emphasis remap='I'>IconFont</emphasis>,
+<emphasis remap='I'>StartsOnDesk</emphasis> / <emphasis remap='I'>StartsOnPage</emphasis> / <emphasis remap='I'>StartsAnyWhere</emphasis>,
+<emphasis remap='I'>StartsOnScreen</emphasis>,
+<emphasis remap='I'>ManualPlacementHonorsStartsOnPage</emphasis> / <emphasis remap='I'>ManualPlacementIgnoresStartsOnPage</emphasis>,
+<emphasis remap='I'>CaptureHonorsStartsOnPage</emphasis> / <emphasis remap='I'>CaptureIgnoresStartsOnPage</emphasis>,
+<emphasis remap='I'>RecaptureHonorsStartsOnPage</emphasis> / <emphasis remap='I'>RecaptureIgnoresStartsOnPage</emphasis>,
+<emphasis remap='I'>StartsOnPageIncludesTransients</emphasis> / <emphasis remap='I'>StartsOnPageIgnoresTransients</emphasis>,
+<emphasis remap='I'>IconTitle</emphasis> / <emphasis remap='I'>!IconTitle</emphasis>,
+<emphasis remap='I'>MwmButtons</emphasis> / <emphasis remap='I'>FvwmButtons</emphasis>,
+<emphasis remap='I'>MwmBorder</emphasis> / <emphasis remap='I'>FvwmBorder</emphasis>,
+<emphasis remap='I'>MwmDecor</emphasis> / <emphasis remap='I'>!DecorHint</emphasis>,
+<emphasis remap='I'>MwmFunctions</emphasis> / <emphasis remap='I'>!FuncHint</emphasis>,
+<emphasis remap='I'>HintOverride</emphasis> / <emphasis remap='I'>!Override</emphasis>,
+<emphasis remap='I'>!Button</emphasis> / <emphasis remap='I'>Button</emphasis>,
+<emphasis remap='I'>ResizeHintOverride</emphasis> / <emphasis remap='I'>!ResizeOverride</emphasis>,
+<emphasis remap='I'>OLDecor</emphasis> / <emphasis remap='I'>!OLDecor</emphasis>,
+<emphasis remap='I'>GNOMEUseHints</emphasis> / <emphasis remap='I'>GNOMEIgnoreHints</emphasis>,
+<emphasis remap='I'>StickyIcon</emphasis> / <emphasis remap='I'>SlipperyIcon</emphasis>,
+<emphasis remap='I'>StickyAcrossPagesIcon</emphasis> / <emphasis remap='I'>!StickyAcrossPagesIcon</emphasis>,
+<emphasis remap='I'>StickyAcrossDesksIcon</emphasis> / <emphasis remap='I'>!StickyAcrossDesksIcon</emphasis>,
+<emphasis remap='I'>ManualPlacement</emphasis> / <emphasis remap='I'>CascadePlacement</emphasis> / <emphasis remap='I'>MinOverlapPlacement</emphasis> / 
+<emphasis remap='I'>MinOverlapPercentPlacement</emphasis> / <emphasis remap='I'>TileManualPlacement</emphasis> / 
+<emphasis remap='I'>TileCascadePlacement</emphasis> / <emphasis remap='I'>PositionPlacement</emphasis>,
+<emphasis remap='I'>MinOverlapPlacementPenalties</emphasis>,
+<emphasis remap='I'>MinOverlapPercentPlacementPenalties</emphasis>,
+<emphasis remap='I'>DecorateTransient</emphasis> / <emphasis remap='I'>NakedTransient</emphasis>,
+<emphasis remap='I'>DontRaiseTransient</emphasis> / <emphasis remap='I'>RaiseTransient</emphasis>,
+<emphasis remap='I'>DontLowerTransient</emphasis> / <emphasis remap='I'>LowerTransient</emphasis>,
+<emphasis remap='I'>DontStackTransientParent</emphasis> / <emphasis remap='I'>StackTransientParent</emphasis>,
+<emphasis remap='I'>SkipMapping</emphasis> / <emphasis remap='I'>ShowMapping</emphasis>,
+<emphasis remap='I'>ScatterWindowGroups</emphasis> / <emphasis remap='I'>KeepWindowGroupsOnDesk</emphasis>,
+<emphasis remap='I'>UseDecor</emphasis>,
+<emphasis remap='I'>UseStyle</emphasis>,
+<emphasis remap='I'>!UsePPosition</emphasis> / <emphasis remap='I'>NoPPosition</emphasis> / <emphasis remap='I'>UsePPosition</emphasis>,
+<emphasis remap='I'>!UseUSPosition</emphasis>, <emphasis remap='I'>NoUSPosition</emphasis> / <emphasis remap='I'>UseUSPosition</emphasis>,
+<emphasis remap='I'>!UseTransientPPosition</emphasis>, <emphasis remap='I'>NoTransientPPosition</emphasis> / <emphasis remap='I'>UseTransientPPosition</emphasis>,
+<emphasis remap='I'>!UseTransientUSPosition</emphasis> / <emphasis remap='I'>NoTransientUSPosition</emphasis> / <emphasis remap='I'>UseTransientUSPosition</emphasis>,
+<emphasis remap='I'>!UseIconPosition</emphasis> / <emphasis remap='I'>NoIconPosition</emphasis> / <emphasis remap='I'>UseIconPosition</emphasis>,
+<emphasis remap='I'>Lenience</emphasis> / <emphasis remap='I'>!Lenience</emphasis>,
+<emphasis remap='I'>ClickToFocus</emphasis> / <emphasis remap='I'>SloppyFocus</emphasis> /
+<emphasis remap='I'>MouseFocus</emphasis>|<emphasis remap='I'>FocusFollowsMouse</emphasis> / <emphasis remap='I'>NeverFocus</emphasis>,
+<emphasis remap='I'>ClickToFocusPassesClickOff</emphasis> / <emphasis remap='I'>ClickToFocusPassesClick</emphasis>,
+<emphasis remap='I'>ClickToFocusRaisesOff</emphasis> / <emphasis remap='I'>ClickToFocusRaises</emphasis>,
+<emphasis remap='I'>MouseFocusClickRaises</emphasis> / <emphasis remap='I'>MouseFocusClickRaisesOff</emphasis>,
+<emphasis remap='I'>GrabFocus</emphasis> / <emphasis remap='I'>GrabFocusOff</emphasis>,
+<emphasis remap='I'>GrabFocusTransientOff</emphasis> / <emphasis remap='I'>GrabFocusTransient</emphasis>,
+<emphasis remap='I'>FPFocusClickButtons</emphasis>,
+<emphasis remap='I'>FPFocusClickModifiers</emphasis>,
+<emphasis remap='I'>!FPSortWindowlistByFocus</emphasis> / <emphasis remap='I'>FPSortWindowlistByFocus</emphasis>,
+<emphasis remap='I'>FPClickRaisesFocused</emphasis> / <emphasis remap='I'>!FPClickRaisesFocused</emphasis>,
+<emphasis remap='I'>FPClickDecorRaisesFocused</emphasis> / <emphasis remap='I'>!FPClickDecorRaisesFocused</emphasis>,
+<emphasis remap='I'>FPClickIconRaisesFocused</emphasis> / <emphasis remap='I'>!FPClickIconRaisesFocused</emphasis>,
+<emphasis remap='I'>!FPClickRaisesUnfocused</emphasis> / <emphasis remap='I'>FPClickRaisesUnfocused</emphasis>,
+<emphasis remap='I'>FPClickDecorRaisesUnfocused</emphasis> / <emphasis remap='I'>!FPClickDecorRaisesUnfocused</emphasis>,
+<emphasis remap='I'>FPClickIconRaisesUnfocused</emphasis> / <emphasis remap='I'>!FPClickIconRaisesUnfocused</emphasis>,
+<emphasis remap='I'>FPClickToFocus</emphasis> / <emphasis remap='I'>!FPClickToFocus</emphasis>,
+<emphasis remap='I'>FPClickDecorToFocus</emphasis> / <emphasis remap='I'>!FPClickDecorToFocus</emphasis>,
+<emphasis remap='I'>FPClickIconToFocus</emphasis> / <emphasis remap='I'>!FPClickIconToFocus</emphasis>,
+<emphasis remap='I'>!FPEnterToFocus</emphasis> / <emphasis remap='I'>FPEnterToFocus</emphasis>,
+<emphasis remap='I'>!FPLeaveToUnfocus</emphasis> / <emphasis remap='I'>FPLeaveToUnfocus</emphasis>,
+<emphasis remap='I'>!FPFocusByProgram</emphasis> / <emphasis remap='I'>FPFocusByProgram</emphasis>,
+<emphasis remap='I'>!FPFocusByFunction</emphasis> / <emphasis remap='I'>FPFocusByFunction</emphasis>,
+<emphasis remap='I'>FPFocusByFunctionWarpPointer</emphasis> / <emphasis remap='I'>!FPFocusByFunctionWarpPointer</emphasis>,
+<emphasis remap='I'>FPLenient</emphasis> / <emphasis remap='I'>!FPLenient</emphasis>,
+<emphasis remap='I'>!FPPassFocusClick</emphasis> / <emphasis remap='I'>FPPassFocusClick</emphasis>,
+<emphasis remap='I'>!FPPassRaiseClick</emphasis> / <emphasis remap='I'>FPPassRaiseClick</emphasis>,
+<emphasis remap='I'>FPIgnoreFocusClickMotion</emphasis> / <emphasis remap='I'>!FPIgnoreFocusClickMotion</emphasis>,
+<emphasis remap='I'>FPIgnoreRaiseClickMotion</emphasis> / <emphasis remap='I'>!FPIgnoreRaiseClickMotion</emphasis>,
+<emphasis remap='I'>!FPAllowFocusClickFunction</emphasis> / <emphasis remap='I'>FPAllowFocusClickFunction</emphasis>,
+<emphasis remap='I'>!FPAllowRaiseClickFunction</emphasis> / <emphasis remap='I'>FPAllowRaiseClickFunction</emphasis>,
+<emphasis remap='I'>FPGrabFocus</emphasis> / <emphasis remap='I'>!FPGrabFocus</emphasis>,
+<emphasis remap='I'>!FPGrabFocusTransient</emphasis> / <emphasis remap='I'>FPGrabFocusTransient</emphasis>,
+<emphasis remap='I'>FPOverrideGrabFocus</emphasis> / <emphasis remap='I'>!FPOverrideGrabFocus</emphasis>,
+<emphasis remap='I'>FPReleaseFocus</emphasis> / <emphasis remap='I'>!FPReleaseFocus</emphasis>,
+<emphasis remap='I'>!FPReleaseFocusTransient</emphasis> / <emphasis remap='I'>FPReleaseFocusTransient</emphasis>,
+<emphasis remap='I'>FPOverrideReleaseFocus</emphasis> / <emphasis remap='I'>!FPOverrideReleaseFocus</emphasis>,
+<emphasis remap='I'>StartsLowered</emphasis> / <emphasis remap='I'>StartsRaised</emphasis>,
+<emphasis remap='I'>IgnoreRestack</emphasis> / <emphasis remap='I'>AllowRestack</emphasis>,
+<emphasis remap='I'>FixedPosition</emphasis> / <emphasis remap='I'>VariablePosition</emphasis>,
+<emphasis remap='I'>FixedUSPosition</emphasis> / <emphasis remap='I'>VariableUSPosition</emphasis>,
+<emphasis remap='I'>FixedPPosition</emphasis> / <emphasis remap='I'>VariablePPosition</emphasis>,
+<emphasis remap='I'>FixedSize</emphasis> / <emphasis remap='I'>VariableSize</emphasis>,
+<emphasis remap='I'>FixedUSSize</emphasis> / <emphasis remap='I'>VariableUSSize</emphasis>,
+<emphasis remap='I'>FixedPSize</emphasis> / <emphasis remap='I'>VariablePSize</emphasis>,
+<emphasis remap='I'>!Closable</emphasis> / <emphasis remap='I'>Closable</emphasis>,
+<emphasis remap='I'>!Iconifiable</emphasis> / <emphasis remap='I'>Iconifiable</emphasis>,
+<emphasis remap='I'>!Maximizable</emphasis> / <emphasis remap='I'>Maximizable</emphasis>,
+<emphasis remap='I'>!AllowMaximizeFixedSize</emphasis> / <emphasis remap='I'>AllowMaximizeFixedSize</emphasis>,
+<emphasis remap='I'>IconOverride</emphasis> / <emphasis remap='I'>NoIconOverride</emphasis> / <emphasis remap='I'>NoActiveIconOverride</emphasis>,
+<emphasis remap='I'>DepressableBorder</emphasis> / <emphasis remap='I'>FirmBorder</emphasis>,
+<emphasis remap='I'>MaxWindowSize</emphasis>,
+<emphasis remap='I'>IconifyWindowGroups</emphasis> / <emphasis remap='I'>IconifyWindowGroupsOff</emphasis>,
+<emphasis remap='I'>ResizeOpaque</emphasis> / <emphasis remap='I'>ResizeOutline</emphasis>,
+<emphasis remap='I'>BackingStore</emphasis> / <emphasis remap='I'>BackingStoreOff</emphasis> / <emphasis remap='I'>BackingStoreWindowDefault</emphasis>,
+<emphasis remap='I'>Opacity</emphasis> / <emphasis remap='I'>ParentalRelativity</emphasis>,
+<emphasis remap='I'>SaveUnder</emphasis> / <emphasis remap='I'>SaveUnderOff</emphasis>,
+<emphasis remap='I'>WindowShadeShrinks</emphasis> / <emphasis remap='I'>WindowShadeScrolls</emphasis>,
+<emphasis remap='I'>WindowShadeSteps</emphasis>,
+<emphasis remap='I'>WindowShadeAlwaysLazy</emphasis> / <emphasis remap='I'>WindowShadeBusy</emphasis> / <emphasis remap='I'>WindowShadeLazy,</emphasis>
+<emphasis remap='I'>EWMHDonateIcon</emphasis> / <emphasis remap='I'>EWMHDontDonateIcon</emphasis>,
+<emphasis remap='I'>EWMHDonateMiniIcon</emphasis> / <emphasis remap='I'>EWMHDontDonateMiniIcon</emphasis>,
+<emphasis remap='I'>EWMHMiniIconOverride</emphasis> / <emphasis remap='I'>EWMHNoMiniIconOverride</emphasis>,
+<emphasis remap='I'>EWMHUseStackingOrderHints</emphasis> / <emphasis remap='I'>EWMHIgnoreStackingOrderHints</emphasis>,
+<emphasis remap='I'>EWMHIgnoreStateHints</emphasis> / <emphasis remap='I'>EWMHUseStateHints</emphasis>,
+<emphasis remap='I'>EWMHIgnoreStrutHints</emphasis> / <emphasis remap='I'>EWMHUseStrutHints</emphasis>,
+<emphasis remap='I'>EWMHIgnoreWindowType</emphasis> / <emphasis remap='I'>!EWMHIgnoreWindowType</emphasis>,
+<emphasis remap='I'>EWMHMaximizeIgnoreWorkingArea</emphasis> / <emphasis remap='I'>EWMHMaximizeUseWorkingArea</emphasis> / 
+<emphasis remap='I'>EWMHMaximizeUseDynamicWorkingArea</emphasis>,
+<emphasis remap='I'>EWMHPlacementIgnoreWorkingArea</emphasis> / <emphasis remap='I'>EWMHPlacementUseWorkingArea</emphasis> / 
+<emphasis remap='I'>EWMHPlacementUseDynamicWorkingArea</emphasis>,
+<emphasis remap='I'>MoveByProgramMethod</emphasis>,
+<emphasis remap='I'>Unmanaged</emphasis>,
+<emphasis remap='I'>State</emphasis>.</para>
+
+
+<!--  +++++++++++++++ general notes -->
+<para>In the above list some options are listed as
+style-option/opposite-style-option.  The opposite-style-option for
+entries that have them describes the fvwm default behavior and can
+be used if you want to change the fvwm default behavior.</para>
+
+<!--  +++++++++++++++ focus policy -->
+<section id="focus_policy">
+<title>Focus policy</title>
+
+<para><fvwmopt cmd="Style" opt="ClickToFocus"/>
+instructs fvwm to give the focus to a window when it is clicked
+in.  The default
+<fvwmopt cmd="Style" opt="MouseFocus"/>
+(or its alias
+<fvwmopt cmd="Style" opt="FocusFollowsMouse"/>)
+tells fvwm to give a window the focus as soon as the pointer
+enters the window, and take it away when the pointer leaves the
+window.
+<fvwmopt cmd="Style" opt="SloppyFocus"/>
+is similar, but doesn't give up the focus if the pointer leaves
+the window to pass over the root window or a ClickToFocus window
+(unless you click on it, that is), which makes it possible to move
+the mouse out of the way without losing focus.  A window with the
+style
+<fvwmopt cmd="Style" opt="NeverFocus"/>
+never receives the focus.  This is useful for modules like
+<fvwmref mod="FvwmButtons"/>.
+for example.
+Note:  Once any of the "FP..." styles has been used, the defaults
+that come with the basic focus policies are not restored when the
+latter are used again.  For example, once !FPGrabFocus has been
+used, using ClickToFocus does not restore FPGrabFocus.</para>
+
+<para>The focus model can be augmented with several additional options.
+In fvwm-2.5.3 and later, there are a large number of advanced
+options beginning with "FP" or "!FP".  These options shall replace
+the older options one day and are described first.  Using any of
+these new options may limit compatibility with older releases.  In
+general, options beginning with "FP" turn a feature on, while
+those beginning with "!FP" turn it off.</para>
+
+</section>
+
+
+
+
+
+
+
+<section id="window_focus">
+<title>Focusing the window</title>
+
+<para>With
+<fvwmopt cmd="Style" opt="FPEnterToFocus"/>,
+when the pointer enters a window it receives focus.</para>
+
+<para>With
+<fvwmopt cmd="Style" opt="FPLeaveToUnfocus"/>
+a window loses focus when the pointer leaves it.</para>
+
+<para>With
+<fvwmopt cmd="Style" opt="FPClickToFocus"/>,
+<fvwmopt cmd="Style" opt="FPClickDecorToFocus"/> or
+<fvwmopt cmd="Style" opt="FPClickIconToFocus"/>,
+a window receives focus when the inside of the window or the
+decorations or its icon is clicked.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="FPFocusByProgram"/>
+style allows windows to take the focus themselves.</para>
+
+<para>The
+!<fvwmopt cmd="Style" opt="FPFocusByFunction"/>
+style forbids that a window receives the focus via the
+<fvwmref cmd="Focus"/> and <fvwmref cmd="FlipFocus"/>
+commands.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="FPFocusByFunctionWarpPointer"/>
+style controls if the pointer is warped to a selected window
+when the
+<fvwmref cmd="Focus"/>
+command is used.</para>
+
+<para><fvwmopt cmd="Style" opt="FPLenient"/>
+allows focus on windows that do not want it, like
+<fvwmref mod="FvwmPager"/>
+or xclock.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="FPFocusClickButtons"/>
+style takes a list of mouse buttons that can be clicked to focus
+or raise a window when the appropriate style is used.  The default
+is to use the first three buttons ("123").</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="FPFocusClickModifiers"/>
+style takes a list of modifier keys just like the
+<fvwmref cmd="Key"/>
+command.  The exact combination of modifier keys must be pressed
+for the click to focus or raise a window to work.  The default is
+to use no modifiers ("N").</para>
+
+<para>With the
+<fvwmopt cmd="Style" opt="FPPassFocusClick"/>
+style, the click that was used to focus a window is passed to
+the application.</para>
+
+<para>With the
+<fvwmopt cmd="Style" opt="FPAllowFocusClickFunction"/>
+style, the click that was used to focus a window can also
+trigger a normal action that was bound to the window with the
+<fvwmref cmd="Mouse"/>
+command).</para>
+
+<para>If the
+<fvwmopt cmd="Style" opt="FPIgnoreFocusClickMotion"/>
+style is used, clicking in a window and then dragging the pointer
+with the button held down does not count as the click to focus the
+window.  Instead, the application processes these events
+normally.  This is useful to select text in a terminal window with
+the mouse without raising the window.  However, mouse bindings on
+the client window are not guaranteed to work anymore (see
+<fvwmref cmd="Mouse"/>
+command).  This style forces the initial click to be
+passed to the application.  The distance that the pointer must be
+moved to trigger this is controlled by the
+<fvwmref cmd="MoveThreshold"/>
+command.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="FPSortWindowlistByFocus"/> and !<fvwmopt cmd="Style" opt="FPSortWindowlistByFocus"/>
+styles control whether the internal window list is sorted in the
+order the windows were focused or in the order they were created.
+The latter is the default for
+<emphasis remap='I'>ClickToFocus</emphasis> and <emphasis remap='I'>SloppyFocus</emphasis>.</para>
+
+
+<para><emphasis remap='B'>Clicking the window to raise</emphasis></para>
+
+<para>The styles
+<fvwmopt cmd="Style" opt="FPClickRaisesFocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesFocused"/> and 
+<fvwmopt cmd="Style" opt="FPClickIconRaisesFocused"/>
+allow to raise the window when the interior or the decorations or
+the icon of the window is clicked while the window is already
+focused.</para>
+
+<para>The styles
+<fvwmopt cmd="Style" opt="FPClickRaisesUnfocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesUnfocused"/> and 
+<fvwmopt cmd="Style" opt="FPClickIconRaisesUnfocused"/>
+allow to raise the window when the interior or the decorations or
+the icon of the window is clicked while the window is not yet
+focused.</para>
+
+<para>With the
+<fvwmopt cmd="Style" opt="FPPassRaiseClick"/>
+style, the click that was used to raise the window is passed to
+the application.</para>
+
+<para>With the
+<fvwmopt cmd="Style" opt="FPAllowRaiseClickFunction"/>
+style, the click that was used to raise the window can also
+trigger a normal action that was bound to the window with the
+<fvwmref cmd="Mouse"/>
+command.</para>
+
+<para>If the
+<fvwmopt cmd="Style" opt="FPIgnoreRaiseClickMotion"/>
+style is used, clicking in a window and then dragging the pointer
+with the button held down does not count as the click to raise the
+window.  Instead, the application processes these events
+normally.  This is useful to select text in a terminal window with
+the mouse without raising the window.  However, mouse bindings on
+the client window are not guaranteed to work anymore (see
+<fvwmref cmd="Mouse"/>
+command.  Note that this style forces that the initial click is
+passed to the application.  The distance that the pointer must be
+moved to trigger this is controlled by the
+<fvwmref cmd="MoveThreshold"/>
+command.</para>
+
+<para><emphasis remap='B'>Grabbing the focus when a new window is created</emphasis></para>
+
+<para>New normal or transient windows with the
+<fvwmopt cmd="Style" opt="FPGrabFocus"/> or <fvwmopt cmd="Style" opt="FPGrabFocusTransient"/>
+style automatically receive the focus when they are created.
+<fvwmopt cmd="Style" opt="FPGrabFocus"/>
+is the default for windows with the
+<emphasis remap='I'>ClickToFocus</emphasis>
+style.  Note that even if these styles are disabled, the
+application may take the focus itself.  Fvwm can not prevent this.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="OverrideGrabFocus"/>
+style instructs fvwm to never take away the focus from such a
+window via the
+<fvwmopt cmd="Style" opt="GrabFocus"/> or <fvwmopt cmd="Style" opt="GrabFocusTransient"/>
+styles.  This can be useful if you like to have transient windows
+receive the focus immediately, for example in a web browser, but
+not while you are working in a terminal window or a text
+processor.</para>
+
+<para>The above three styles are accompanied by
+<fvwmopt cmd="Style" opt="FPReleaseFocus"/>, <fvwmopt cmd="Style" opt="FPReleaseFocusTransient"/> and 
+<fvwmopt cmd="Style" opt="FPOverrideReleaseFocus"/>.
+These control if the focus is returned to another window when the
+window is closed.  Otherwise no window or the window under the
+pointer receives the focus.</para>
+
+<para><fvwmopt cmd="Style" opt="ClickToFocusPassesClickOff"/> and <fvwmopt cmd="Style" opt="ClickToFocusPassesClick"/>
+controls whether a mouse click to focus a window is sent to the
+application or not.  Similarly,
+<fvwmopt cmd="Style" opt="ClickToFocusRaisesOff"/>/<fvwmopt cmd="Style" opt="MouseFocusClickRaisesOff"/>
+and
+<fvwmopt cmd="Style" opt="ClickToFocusRaises"/>/<fvwmopt cmd="Style" opt="MouseFocusClickRaises"/>
+control if the window is raised (but depending on the focus
+model).</para>
+
+<para>Note: in fvwm versions prior to
+2.5.3, the "Click..." options applied only to windows with
+<emphasis remap='I'>ClickToFocus</emphasis>
+while the "Mouse..." options applied to windows with a different
+focus policy.  This is no longer the case.</para>
+
+<para>The old
+<fvwmopt cmd="Style" opt="GrabFocus"/>
+style is equivalent to using
+<emphasis remap='I'>FPGrabFocus</emphasis> + <emphasis remap='I'>FPReleaseFocus</emphasis>.</para>
+
+<para>The old
+<fvwmopt cmd="Style" opt="GrabFocusTransient"/>
+style is equivalent to using
+<fvwmopt cmd="Style" opt="FPGrabFocusTransient"/> + <fvwmopt cmd="Style" opt="FPReleaseFocusTransient"/>.</para>
+
+<para><fvwmopt cmd="Style" opt="Lenience"/>
+is equivalent to the new style
+<emphasis remap='I'>FPLenient</emphasis>.</para>
+
+<!--  +++++++++++++++ styles affecting the window title -->
+</section>
+
+
+<section id="window_title">
+<title>Window title</title>
+
+<para>The
+<fvwmopt cmd="Style" opt="Title"/> and !Title
+options determine if the window has a title-bar or not.  By
+default all windows have a title-bar.
+<fvwmopt cmd="Style" opt="NoTitle"/>
+is equivalent to
+<emphasis remap='I'>!Title</emphasis>
+but is deprecated.</para>
+
+<para>Windows with the
+<fvwmopt cmd="Style" opt="TitleAtBottom"/>, <fvwmopt cmd="Style" opt="TitleAtLeft"/> or <fvwmopt cmd="Style" opt="TitleAtRight"/>
+style have a title-bar below, to the left or to the right of the
+window instead of above as usual.  The
+<fvwmopt cmd="Style" opt="TitleAtTop"/>
+style restores the default placement.  Even if the window has the
+<emphasis remap='I'>!Title</emphasis>
+style set, this affects the
+<fvwmref cmd="WindowShade"/>
+command.  Please check the
+<fvwmref cmd="WindowShade"/>
+command for interactions between that command and these styles.
+Titles on the left or right side of the windows are augmented by
+the following styles:</para>
+
+<para>Normally, the text in titles on the left side of a window is
+rotated counterclockwise by 90 degrees from the normal upright
+position and 90 degrees clockwise for titles on the right side.
+It can also be rotated in the opposite directions with
+<fvwmopt cmd="Style" opt="LeftTitleRotatedCW"/> if <fvwmopt cmd="Style" opt="TitleAtLeft"/>
+is used, and with
+<fvwmopt cmd="Style" opt="RightTitleRotatedCCW"/> if <fvwmopt cmd="Style" opt="TitleAtRight"/>
+is used.  The defaults can be restored with
+<fvwmopt cmd="Style" opt="LeftTitleRotatedCCW"/> and <fvwmopt cmd="Style" opt="RightTitleRotatedCW"/>.
+A normal horizontal text may be rotated as well with
+<fvwmopt cmd="Style" opt="TopTitleRotated"/> if <emphasis remap='I'>TitleAtTop</emphasis>
+is used, and with
+<fvwmopt cmd="Style" opt="BottomTitleRotated"/> if <fvwmopt cmd="Style" opt="TitleAtBottom"/>
+is used.  The defaults can be restored with
+<fvwmopt cmd="Style" opt="TopTitleNotRotated"/> and <fvwmopt cmd="Style" opt="BottomTitleNotRotated"/>.</para>
+
+<para>By default the title bar decoration defined using the
+<fvwmref cmd="TitleStyle"/>
+command is rotated following the title text rotation (see the
+previous paragraph). This can be disabled by using the
+!<fvwmopt cmd="Style" opt="UseTitleDecorRotation"/>
+style.
+<emphasis remap='I'>UseTitleDecorRotation</emphasis>
+reverts back to the default.</para>
+
+<para>With the
+<fvwmopt cmd="Style" opt="StippledTitle"/>
+style, titles are drawn with the same effect that is usually
+reserved for windows with the
+<fvwmopt cmd="Style" opt="Sticky"/>, <fvwmopt cmd="Style" opt="StickyAcrossPages"/> or <fvwmopt cmd="Style" opt="StickyAcrossDesks"/>
+style.
+<emphasis remap='I'>!StippledTitle</emphasis>
+reverts back to normal titles.
+<fvwmopt cmd="Style" opt="StippledTitleOff"/>
+is equivalent to
+<emphasis remap='I'>!StippledTitle</emphasis>
+but is deprecated.</para>
+
+<para><fvwmopt cmd="Style" opt="Color"/>
+takes two arguments.  The first is the window-label text color and
+the second is the window decorations normal background color. The
+two colors are separated with a slash.  If the use of a slash
+causes problems then the separate
+<fvwmopt cmd="Style" opt="ForeColor"/> and <fvwmopt cmd="Style" opt="BackColor"/>
+options can be used.</para>
+
+<para><fvwmref cmd="Colorset"/>
+takes the colorset number as its sole argument and overrides the
+colors set by
+<emphasis remap='I'>Color</emphasis>.
+Instead, the corresponding colors from the given colorset are
+used.  Note that all other features of a colorset are not used.
+Use the
+<fvwmref cmd="Colorset"/>
+decoration style in the
+<fvwmref cmd="TitleStyle"/> and <fvwmopt cmd="Style" opt="ButtonStyle"/>
+command for that.
+To stop using the colorset, the colorset number is omitted.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="HilightFore"/>, <fvwmopt cmd="Style" opt="HilightBack"/> and <fvwmopt cmd="Style" opt="HilightColorset"/>
+style options work exactly like
+<fvwmopt cmd="Style" opt="ForeColor"/>, <fvwmopt cmd="Style" opt="BackColor"/> and <emphasis remap='I'>Colorset</emphasis>
+but are used only if the window has the focus.  These styles
+replace the old commands
+<fvwmref cmd="HilightColor"/> and <fvwmopt cmd="Style" opt="HilightColorset"/>.</para>
+
+<para><fvwmopt cmd="Style" opt="BorderColorset"/>
+takes the colorset number as its sole argument and overrides the
+colors set by
+<emphasis remap='I'>Color</emphasis> or <emphasis remap='I'>Colorset</emphasis>.
+for the window border.  To stop using a colorset, the argument is
+omitted.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="HilightBorderColorset"/>
+style option works similarly to
+<emphasis remap='I'>BorderColorset</emphasis>
+but is used when the window has the focus.</para>
+
+<para>!<fvwmopt cmd="Style" opt="IconTitle"/>
+disables displaying icon labels while the opposite style
+<emphasis remap='I'>IconTitle</emphasis>
+enables icon labels (default behaviour).
+<fvwmopt cmd="Style" opt="NoIconTitle"/>
+is equivalent to
+<emphasis remap='I'>!IconTitle</emphasis>
+but is deprecated.</para>
+
+<para><fvwmopt cmd="Style" opt="IconTitleColorset"/>
+takes the colorset number as its sole argument and overrides the
+colors set by
+<emphasis remap='I'>Color</emphasis> or <emphasis remap='I'>Colorset</emphasis>.
+To stop using this colorset, the argument is omitted.</para>
+
+<para><fvwmopt cmd="Style" opt="HilightIconTitleColorset"/>
+takes the colorset number as its sole argument and overrides the
+colors set by
+<fvwmref cmd="HilightColor"/> or <emphasis remap='I'>HilightColorset</emphasis>.
+To stop using this colorset, the argument is omitted.</para>
+
+<para><fvwmopt cmd="Style" opt="IconBackgroundColorset"/>
+takes the colorset number as its sole argument and uses it to set
+a background for the icon picture. By default the icon picture is
+not drawn onto a background image. To restore the default, the
+argument is omitted.</para>
+
+<para><fvwmopt cmd="Style" opt="IconTitleRelief"/>
+takes one numeric argument that may be between -50 and +50 pixels
+and defines the thickness of the 3D relief drawn around the icon
+title. With negative values the icon title gets a pressed in
+look. The default is 2 and it is restored if the argument is
+omitted.</para>
+
+<para><fvwmopt cmd="Style" opt="IconBackgroundRelief"/>
+takes one numeric argument that may be between -50 and +50 pixels
+and defines the thickness of the 3D relief drawn around the icon
+picture background (if any). With negative values the icon
+background gets a pressed in look.  The default is 2 and it is
+restored if the argument is omitted.</para>
+
+<para><fvwmopt cmd="Style" opt="IconBackgroundPadding"/>
+takes one numeric argument that may be between 0 and 50 pixels and
+defines the amount of free space between the relief of the icon
+background picture (if any) and the icon picture. The default is 2
+and it is restored if the argument is omitted.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="Font"/> and <fvwmopt cmd="Style" opt="IconFont"/>
+options take the name of a font as their sole argument. This font
+is used in the window or icon title.  By default the font given in
+the
+<fvwmref cmd="DefaultFont"/>
+command is used.  To revert back to the default, use the style
+without the name argument.  These styles replace the older
+<fvwmref cmd="WindowFont"/> and <fvwmopt cmd="Style" opt="IconFont"/>
+commands.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="IndexedWindowName"/>
+style causes fvwm to use window titles in the form</para>
+
+<programlisting>
+name (i)
+</programlisting>
+
+<para>where
+<fvwmopt cmd="Style" opt="name"/>
+is the exact window name and
+<fvwmopt cmd="Style" opt="i"/>
+is an integer which represents the
+<emphasis remap='I'>i th</emphasis>
+window with
+<emphasis remap='I'>name</emphasis>
+as window name.
+<fvwmopt cmd="Style" opt="ExactWindowName"/>
+restores the default which is to use the exact window name.
+<fvwmopt cmd="Style" opt="IndexedIconName"/>
+and
+<fvwmopt cmd="Style" opt="ExactIconName"/>
+work the same as
+<emphasis remap='I'>IndexedWindowName</emphasis>
+and
+<emphasis remap='I'>ExactWindowName</emphasis>
+styles but for the icon titles.</para>
+
+<!--  +++++++++++++++ styles affecting title buttons -->
+</section>
+
+
+
+
+
+
+<section id="title_buttons">
+<title>Title buttons</title>
+
+<para><fvwmopt cmd="Style" opt="Button"/> and !<fvwmopt cmd="Style" opt="Button"/>
+take a numeric argument which is the number of the title-bar
+button which is to be shown or omitted.
+<fvwmopt cmd="Style" opt="NoButton"/>
+is equivalent to
+<emphasis remap='I'>!Button</emphasis>
+but is deprecated.</para>
+
+<para><fvwmopt cmd="Style" opt="MwmButtons"/>
+makes the
+<fvwmref cmd="Maximize"/>
+button look pressed-in when the window is maximized.  See the
+<fvwmref cmd="ButtonStyle" opt="MwmDecorMax"/>
+flag in
+<fvwmref cmd="ButtonStyle"/>
+for more information.  To switch this style off again, use the
+<fvwmref mod="FvwmButtons"/>
+style.</para>
+
+<!--  +++++++++++++++ styles affecting borders -->
+</section>
+  
+
+
+
+
+
+
+
+<section id="borders">
+<title>Borders</title>
+
+<para>!<fvwmopt cmd="Style" opt="Borders"/>
+suppresses the window border (but not the title) completely.  The
+<emphasis remap='I'>Borders</emphasis>
+style enables them again.  Without borders, all other styles
+affecting window borders are meaningless.</para>
+
+<para><fvwmopt cmd="Style" opt="MwmBorder"/>
+makes the 3D bevel more closely match Mwm's.
+<fvwmopt cmd="Style" opt="FvwmBorder"/>
+turns off the previous option.</para>
+
+<para>With the
+!<fvwmopt cmd="Style" opt="Handles"/>
+style, the window does not get the handles in the window corners
+that are commonly used to resize it.  With
+<emphasis remap='I'>!Handles</emphasis>,
+the width from the
+<emphasis>BorderWidth</emphasis>
+style is used.  By default, or if
+<emphasis remap='I'>Handles</emphasis>
+is specified, the width from the
+<emphasis>HandleWidth</emphasis>
+style is used.
+<fvwmopt cmd="Style" opt="NoHandles"/>
+is equivalent to
+<emphasis remap='I'>!Handles</emphasis>
+but is deprecated.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="HandleWidth"/>
+takes a numeric argument which is the width of the border to place
+the window if it does have resize-handles. Using HandleWidth
+without an argument restores the default.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="BorderWidth"/>
+takes a numeric argument which is the width of the border to place
+the window if it does not have resize-handles.  It is used only if
+the
+<emphasis remap='I'>!Handles</emphasis>
+style is specified too. Using BorderWidth
+without an argument restores the default.</para>
+
+<para><fvwmopt cmd="Style" opt="DepressableBorder"/>
+makes the border parts of the window decoration look sunken in
+when a button is pressed over them.  This can be disabled again
+with the
+<fvwmopt cmd="Style" opt="FirmBorder"/>
+style.</para>
+
+<!--  +++++++++++++++ icons, shading, maximizing, movement, resizing -->
+</section>
+
+
+
+
+
+
+
+<section id="icons_shading_maximising_movement_resizing">
+<title>Icons, shading, maximizing, movement, resizing</title>
+
+<para><fvwmopt cmd="Style" opt="Icon"/>
+takes an (optional) unquoted string argument which is the icon
+bitmap or pixmap to use. Icons specified this way override pixmap
+icons, but not icon windows or the ewmh icon, provided by the
+client in the application (with the WM_HINTS property or with the
+ewmh _NET_WM_ICON property).  The
+<fvwmopt cmd="Style" opt="IconOverride"/>
+style changes the behavior to override any client-provided icons;
+the
+<fvwmopt cmd="Style" opt="NoIconOverride"/>
+style changes the behavior to not override any client-provided
+icons; the default overriding behavior can be activated with the
+<fvwmopt cmd="Style" opt="NoActiveIconOverride"/>
+style.  With this style, fvwm uses application provided icons if
+the icon is changed but uses the icon provided in the
+configuration file until then.</para>
+
+<para>There is one exception to these rules, namely</para>
+
+<programlisting>
+Style * Icon unknown.xpm
+</programlisting> 
+
+<para>doesn't force the unknown.xpm icon on every window, it just sets
+the default icon like the DefaultIcon command. If you really want
+all windows to have the same icon, you can use</para>
+
+<programlisting>
+Style ** Icon unknown.xpm
+</programlisting> 
+
+<para>If the
+<fvwmopt cmd="Style" opt="NoIcon"/>
+attribute is set then the specified window simply disappears when
+it is iconified.  The window can be recovered through the
+window-list.  If
+<emphasis remap='I'>Icon</emphasis>
+is set without an argument then the
+<emphasis remap='I'>NoIcon</emphasis>
+attribute is cleared but no icon is specified.  An example which
+allows only the
+<emphasis remap='B'>FvwmPager</emphasis>
+module icon to exist:</para>
+
+<programlisting>
+Style * NoIcon
+Style FvwmPager Icon
+</programlisting> 
+
+
+<para><fvwmopt cmd="Style" opt="IconBox"/>
+takes no argument, four numeric arguments (plus optionally a
+screen specification), an X11 geometry string or the string
+"none":</para>
+
+<programlisting>
+IconBox<emphasis remap='I'> [</emphasis>screen scr-spec<emphasis remap='I'>] </emphasis>l t r b
+</programlisting> 
+
+<para>or</para>
+
+<programlisting>
+IconBox geometry
+</programlisting> 
+
+<para>Where
+<fvwmopt cmd="Style" opt="l"/>
+is the left coordinate,
+<fvwmopt cmd="Style" opt="t"/>
+is the top,
+<fvwmopt cmd="Style" opt="r"/>
+is right and
+<fvwmopt cmd="Style" opt="b"/>
+is bottom.  Negative coordinates indicate distance from the right
+or bottom of the screen.
+If the first argument is the word
+<fvwmopt cmd="Style" opt="screen"/>,
+the
+<fvwmopt cmd="Style" opt="scr-spec"/>
+argument specifies the Xinerama screen on which the IconBox is
+defined.  It can be the usual screen Xinerama specification, 'p',
+&acute;c', 'g', a screen number or the additional 'w' for the screen
+where the window center is located.  This is only useful with
+multiple Xinerama screens.
+The "l t r b" specification is more flexible than an X11 geometry.
+For example:</para>
+
+<programlisting>
+IconBox -80 240 -1 -1
+</programlisting> 
+
+<para>defines a box that is 80 pixels wide from the right edge,
+240 pixels down from the top, and continues to the bottom of
+the screen.</para>
+
+<para>Perhaps it is easier to use is an X11
+geometry string though:</para>
+
+<programlisting>
+IconBox 1000x70-1-1
+</programlisting> 
+
+<para>places an 1000 by 70 pixel icon box on the bottom of the screen
+starting in the lower right  hand corner of the screen.
+One way to figure out a geometry like this is to use a window
+that resizes in pixel increments, for example, xv.
+Then resize and place the xv window where you want the iconbox.
+Then use FvwmIdent to read the windows geometry.
+The icon box is a region of the screen
+where fvwm attempts to put icons for any matching window, as long
+as they do not overlap other icons.
+Multiple icon boxes can be
+defined as overflow areas.  When the first icon box is full, the
+second one is filled.  All the icon boxes for one style must be
+defined in one
+<emphasis remap='B'>Style</emphasis>
+command.  For example:</para>
+
+<programlisting>
+Style * IconBox -80 240 -1 -1, \
+        IconBox 1000x70-1-1
+</programlisting> 
+
+<para>A Style command with the IconBox option replaces any icon box
+defined previously by another Style command for the same style.
+Thats why the backslash in the previous example is required.</para>
+
+<para>Note: The geometry for the icon box command takes the additional
+screen specifier "@w" in case a Xinerama setup is used.  This
+designates the screen where the window center is located.  The
+additional screen specifier is not allowed anywhere else.</para>
+
+<para>If you never define an icon box, or you fill all the icon boxes,
+fvwm has a default icon box that covers the screen, it fills top
+to bottom, then left to right, and has an 80x80 pixel grid.  To
+disable all but the default icon box you can use IconBox without
+arguments in a separate
+<emphasis remap='B'>Style</emphasis>
+command.  To disable all icon boxes including the default icon
+box, the argument "none" can be specified.</para>
+
+<para>Hint: You can auto arrange your icons in the icon box with a
+simple fvwm function.  Put the "DeiconifyAndRearrange" function
+below in your configuration file:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> DeiconifyAndRearrange
+ + C <fvwmref cmd="Iconify"/> off
+ + C <fvwmref cmd="All"/> (CurrentPage, Iconic) <fvwmref cmd="PlaceAgain"/> Icon
+</programlisting> 
+
+<para>And then replace all places where you call the
+<fvwmref cmd="Iconify"/>
+command to de-iconify an icon with a call to the new
+function.  For example replace</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> IconFunc
+ + C <fvwmref cmd="Iconify"/> off
+ + M <fvwmref cmd="Raise"/>
+ + M <fvwmref cmd="Move"/>
+ + D <fvwmref cmd="Iconify"/> off
+
+<fvwmref cmd="Mouse"/> 1 I A <fvwmref cmd="Iconify"/> off
+</programlisting> 
+
+<para>with</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> IconFunc
+ + C DeiconifyAndRearrange
+ + M <fvwmref cmd="Raise"/>
+ + M <fvwmref cmd="Move"/>
+ + D DeiconifyAndRearrange
+
+<fvwmref cmd="Mouse"/> 1 I A DeiconifyAndRearrange
+</programlisting> 
+
+<para><fvwmopt cmd="Style" opt="IconGrid"/>
+takes 2 numeric arguments greater than zero.</para>
+
+<programlisting>
+<emphasis remap='I'>IconGrid x y</emphasis>
+</programlisting> 
+
+<para>Icons are placed in an icon box by stepping through the icon box
+using the
+<fvwmopt cmd="Style" opt="x"/> and <fvwmopt cmd="Style" opt="y"/>
+values for the icon grid, looking for a free space. The default
+grid is 3 by 3 pixels which gives a tightly packed appearance. To
+get a more regular appearance use a grid larger than your largest
+icon. Use the
+<emphasis>IconSize</emphasis>
+definition to clip an icon to a maximum size. An
+<emphasis remap='I'>IconGrid</emphasis>
+definition must follow the
+<emphasis remap='B'>IconBox</emphasis>
+definition that it applies to:</para>
+
+<programlisting>
+Style * IconBox -80x240-1-1, IconGrid 90 90
+</programlisting> 
+
+<para><fvwmopt cmd="Style" opt="IconFill"/>
+takes 2 arguments.</para>
+
+<programlisting>
+IconFill <emphasis remap='I'>Bottom Right</emphasis>
+</programlisting> 
+
+<para>Icons are placed in an icon box by stepping through the icon box
+using these arguments to control the direction the box is filled
+in. By default the direction is left to right, then top to bottom.
+This would be expressed as:</para>
+
+<programlisting>
+IconFill left top
+</programlisting> 
+
+<para>To fill an icon box in columns instead of rows, specify the
+vertical direction (top or bottom) first. The directions can be
+abbreviated or spelled out as follows: "t", "top", "b", "bot",
+"bottom", "l", "lft", "left", "r", "rgt", "right". An
+<emphasis remap='B'>IconFill</emphasis>
+definition must follow the
+<emphasis remap='B'>IconBox</emphasis>
+definition that it applies to:</para>
+
+<programlisting>
+Style * IconBox -80x240-1-1, IconFill b r
+</programlisting> 
+
+<para>
+<fvwmopt cmd="Style" opt="IconSize"/>
+sets limits on the size of an icon image.  Both user-provided
+and application-provided icon images are affected.</para>
+
+<programlisting>
+IconSize<emphasis remap='I'> [ </emphasis>width<emphasis remap='I'> </emphasis>height<emphasis remap='I'> [ </emphasis>maxwidth<emphasis remap='I'> </emphasis>maxheight<emphasis remap='I'> ] ]</emphasis>
+</programlisting> 
+
+<para>All arguments are measured in pixels.  When all four arguments are
+passed to
+<emphasis>IconSize,</emphasis>
+<emphasis>width</emphasis>
+and
+<emphasis>height</emphasis>
+represent the minimum size of an icon, and
+<emphasis>maxwidth</emphasis>
+and
+<emphasis>maxheight</emphasis>
+represent the maximum size of an icon.  Icon images that are smaller
+than the minimum size are padded.  Icon images that are bigger than
+the maximum size are clipped.</para>
+
+<para>If only two arguments are passed to
+<emphasis remap='I'>IconSize,</emphasis>
+<emphasis remap='I'>width</emphasis>
+and
+<emphasis remap='I'>height</emphasis>
+represent the absolute size of an icon.  Icons covered by this style
+are padded or clipped to achieve the given size.</para>
+
+<para>If no arguments are specified, the default values are used for each
+dimension.  This effectively places no limits on the size of an icon.</para>
+
+<para>The value of "-1" can be used in place of any of the arguments to
+specify the default value for that dimension.</para>
+
+<para>Note that application-provided icon windows are not affected.</para>
+
+<para><fvwmopt cmd="Style" opt="MiniIcon"/>
+specifies a pixmap to use as the miniature icon for the
+window. This miniature icon can be drawn in a title-bar button
+(see
+<fvwmref cmd="ButtonStyle"/>),
+and can be used by various fvwm modules
+(<fvwmref mod="FvwmWinList"/>, <fvwmref mod="FvwmIconMan"/> and <fvwmref mod="FvwmTaskBar"/>).
+It takes the name of a pixmap as an argument.</para>
+
+<para><fvwmopt cmd="Style" opt="WindowShadeShrinks"/> and <fvwmopt cmd="Style" opt="WindowShadeScrolls"/>
+control if the contents of a window that is being shaded with the
+<fvwmref cmd="WindowShade"/>
+command are scrolled (default) or if they stay in place.  The
+shrinking mode is a bit faster</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="WindowShadeSteps"/>
+option selects the number of steps for animation when shading a
+window with
+<fvwmref cmd="WindowShade"/>.
+It takes one number as its argument.  If the number has a trailing
+'<fvwmopt cmd="Style" opt="p"/>'
+it sets the number of pixels to use as the step size instead of
+a fixed number of steps.  0 disables the animation.  This happens
+too if the argument is omitted or invalid.</para>
+
+<para>The
+<fvwmref cmd="WindowShade"/>
+command has two modes of operation: busy and lazy shading.  Busy
+shading can be 50% slower than lazy shading, but the latter can
+look strange under some conditions, for example, if the window
+borders, buttons or the title are filled with a tiled pixmap.
+Also, the window handles are not drawn in lazy mode and the border
+relief may only be drawn partially right before the window reaches
+the shaded state or tight after leaves the unshaded state. By
+default, fvwm uses lazy mode if there are no bad visual effects
+(not counting the window handles) and busy mode otherwise.  Use
+the
+<emphasis remap='I'>WindowShadeAlwaysLazy  or  WindowShadeBusy</emphasis>
+to force using the lazy or busy mode.  The default setting is
+restored with
+<fvwmopt cmd="Style" opt="WindowShadeLazy"/>.</para>
+
+<para><fvwmopt cmd="Style" opt="ResizeOpaque"/>
+instructs fvwm to resize the corresponding windows with their
+contents visible instead of using an outline.  Since this causes
+the application to redraw frequently it can be quite slow and make
+the window flicker excessively, depending on the amount of
+graphics the application redraws.  The
+<fvwmopt cmd="Style" opt="ResizeOutline"/>
+style (default) negates the
+<emphasis remap='I'>ResizeOpaque</emphasis>
+style.  Many applications do not like their windows being resized
+opaque, e.g. XEmacs, Netscape or terminals with a pixmap
+background. If you do not like the result, do not use the
+<emphasis remap='I'>ResizeOpaque</emphasis>
+style for these windows.  To exempt certain windows from opaque
+resizing you could use these lines in your configuration file:</para>
+
+<programlisting>
+Style * ResizeOpaque
+Style rxvt ResizeOutline
+Style emacs ResizeOutline
+</programlisting> 
+
+<para><fvwmopt cmd="Style" opt="Sticky"/>
+makes the window sticky, i.e. it is always visible on each page
+and each desk.  The opposite style,
+<fvwmopt cmd="Style" opt="Slippery"/>
+reverts back to the default.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="StickyIcon"/>
+makes the window sticky when its iconified.  It de-iconifies on
+top the active desktop.
+<fvwmopt cmd="Style" opt="SlipperyIcon"/>
+reverts back to the default.
+</para>
+
+<para><fvwmopt cmd="Style" opt="StickyAcrossPages"/> and <fvwmopt cmd="Style" opt="StickyAcrossPagesIcon"/>
+work like
+<emphasis remap='I'>Sticky</emphasis> and <emphasis remap='I'>StickyIcon</emphasis>,
+but stick the window only across pages, not desks while
+<emphasis remap='I'>StickyAcrossDesks  and  StickyAcrossDesksIcon</emphasis>
+works the other way round.</para>
+
+<para>Windows that have been marked as
+<emphasis remap='I'>Sticky</emphasis> or 
+<fvwmopt cmd="Style" opt="StickyAcrossDesks"/> or 
+<emphasis remap='I'>StickyAcrossPages</emphasis> will have stipples drawn 
+on the titlebar.  This can be negated with the
+!<fvwmopt cmd="Style" opt="StickyStippledTitle"/>
+style.  The style
+<emphasis remap='I'>StickyStippledTitle</emphasis>
+puts back the stipples where that window has also been marked as
+<emphasis remap='I'>Sticky</emphasis>.  Note that this is the default style for 
+<emphasis remap='I'>Sticky</emphasis> windows.  Sticky icons will have stipples drawn 
+on the icon title. This can be disabled in the same way with the
+!<fvwmopt cmd="Style" opt="StickyStippledIconTitle"/>
+style.</para>
+
+<para>Windows with the
+<fvwmopt cmd="Style" opt="StartIconic"/>
+style are shown as icons initially.  Note that some applications
+counteract that by deiconifying themselves.  The default is to not
+iconify windows and can be set with the
+<fvwmopt cmd="Style" opt="StartNormal"/>
+style.</para>
+
+<para><fvwmopt cmd="Style" opt="StickyIcon"/>
+makes the window sticky when its iconified.  It de-iconifies on
+top the active desktop.
+<fvwmopt cmd="Style" opt="SlipperyIcon"/>
+reverts back to the default.</para>
+
+<para><fvwmopt cmd="Style" opt="StickyIconPage"/>
+works like
+<emphasis remap='I'>StickyIcon</emphasis>,
+but sticks the icon only across pages, not desks while
+<fvwmopt cmd="Style" opt="StickyIconDesk"/>
+works the other way round.</para>
+
+<para><fvwmopt cmd="Style" opt="StippledIconTitle"/>
+works like
+<emphasis remap='I'>StippledTitle</emphasis>
+in that it draws stipples on the titles of icons but doesn't
+make the icon sticky.</para>
+
+<para><fvwmopt cmd="Style" opt="IgnoreRestack"/>
+makes fvwm ignore attempts of clients to raise or lower their own
+windows.  By default, the opposite style,
+<fvwmopt cmd="Style" opt="AllowRestack"/>
+is active.</para>
+
+<para><fvwmopt cmd="Style" opt="FixedPosition"/> and <fvwmopt cmd="Style" opt="FixedUSPosition"/>
+make fvwm ignore attempts of the user to move the window.  It is
+still possible to move the window by resizing it.  To allow the
+user to move windows, use the
+<fvwmopt cmd="Style" opt="VariablePosition"/> or <fvwmopt cmd="Style" opt="VariableUSPosition"/>
+style.</para>
+
+<para><fvwmopt cmd="Style" opt="FixedSize"/> and <fvwmopt cmd="Style" opt="FixedUSSize"/>
+make fvwm ignore attempts of the user to resize the window.  To
+allow the user to resize windows, use the
+<fvwmopt cmd="Style" opt="VariableSize"/> or <fvwmopt cmd="Style" opt="VariableUSSize"/>
+style.</para>
+
+<para><fvwmopt cmd="Style" opt="FixedPPosition"/> and <fvwmopt cmd="Style" opt="FixedPSize"/>
+make fvwm ignore attempts of the program to move or resize its
+windows.  To allow this kind of actions, use the
+<fvwmopt cmd="Style" opt="VariablePPosition"/> or <fvwmopt cmd="Style" opt="VariablePSize"/>
+style.  These styles may sometimes affect the initial placement
+and dimensions of new windows (depending on the application).  If
+windows are created at strange places, try either the
+<fvwmopt cmd="Style" opt="VariablePPosition"/> or <fvwmopt cmd="Style" opt="NoPPosition"/>
+styles.  The
+<fvwmopt cmd="Style" opt="FixedPSize"/>
+style may screw up window dimensions for some applications.  Do Not
+use this style in this case.</para>
+
+<para><fvwmopt cmd="Style" opt="MoveByProgramMethod"/>
+affects how fvwm reacts to requests by the application to move its
+windows.  By default, fvwm tries to detect which method to use,
+but it sometimes detects the wrong method.  You may come across a
+window that travels across the screen by a few pixels when the
+application resizes it, moves to a screen border with the frame
+decorations off screen, that remembers its position for the next
+time it starts but appears in a slighly shifted position, or that
+attepmts to become full screen but has the.  Try out both options,
+<fvwmopt cmd="Style" opt="UseGravity"/> and <fvwmopt cmd="Style" opt="IgnoreGravity"/>
+on the window (and that window only) and see if that helps.  By
+default, fvwm uses the
+<fvwmopt cmd="Style" opt="AutoDetect"/>
+method.  Once the method was detected, it is never changed again.
+As long as fvwm can not detect the proper method, it uses
+<fvwmopt cmd="Style" opt="IgnoreGravity"/>.
+To force fvwm to retry the detection, use one of the other two
+options first and then use
+<emphasis remap='I'>AutoDetect</emphasis>
+again.</para>
+
+<para>Note:  This option was introduced to alleviate a problem with the
+<acronym>ICCCM</acronym> specification.  The <acronym>ICCCM</acronym> clearly states that the
+<fvwmopt cmd="Style" opt="UseGravity"/>
+option should be used, but traditionally applications ignored this
+rule.</para>
+
+<para><fvwmopt cmd="Style" opt="Closable"/>
+enables the functions
+<fvwmref cmd="Close"/>,
+<fvwmref cmd="Delete"/>
+and
+<fvwmref cmd="Destroy"/>
+to be performed on the windows. This is on by default.
+The opposite,
+<emphasis remap='I'>!Closable</emphasis>,
+inhibits the window to be closed.</para>
+
+<para><fvwmopt cmd="Style" opt="Iconifiable"/>
+enables the function
+<fvwmref cmd="Iconify"/>
+to be performed on the windows.
+This is on by default.
+The opposite,
+<emphasis remap='I'>!Iconifiable</emphasis>,
+inhibits the window from being iconified.</para>
+
+<para><fvwmopt cmd="Style" opt="Maximizable"/>
+enables the function
+<fvwmref cmd="Maximize"/>
+to be performed on the windows.
+This is on by default.
+The opposite,
+<emphasis remap='I'>!Maximizable</emphasis>,
+inhibits the window from being maximized.</para>
+
+<para><fvwmopt cmd="Style" opt="AllowMaximizeFixedSize"/>
+enables the function
+<fvwmref cmd="Maximize"/>
+to be performed on windows that are not resizable, unless
+maximization has been disabled either using the style
+<emphasis remap='I'>!Maximizable</emphasis>
+or through WM hints.  This is on by default.  The opposite,
+<emphasis remap='I'>!AllowMaximizeFixedSize</emphasis>,
+inhibits all windows that are not resizable from being maximized.</para>
+
+<para><fvwmopt cmd="Style" opt="ResizeHintOverride"/>
+instructs fvwm to ignore the program supplied minimum and maximum
+size as well as the resize step size (the character size in many
+applications).
+This can be handy for broken applications that refuse to be
+resized.  Do not use it if you do not need it.  The default
+(opposite) style is
+<fvwmopt cmd="Style" opt="NoResizeOverride"/>.</para>
+
+<para><emphasis remap='I'>MaxWindowSize  [ width [ p ]  height [ p ] ]</emphasis>
+Tells fvwm the maximum width and height of a window.  The values
+are the percentage of the total screen area.  If the letter
+'<emphasis remap='I'>p</emphasis>'
+is appended to either of the values, the numbers are interpreted
+as pixels. This command is useful to force large application
+windows to be fully visible.  Neither
+<emphasis remap='I'>height</emphasis> nor <emphasis remap='I'>width</emphasis>
+may be less than 100 pixels.  If you omit the parameters or their
+values are invalid, both limits are set to 32767 pixels (which is
+the default).</para>
+
+<para>With
+<fvwmopt cmd="Style" opt="IconifyWindowGroups"/>
+all windows in the same window group are iconified and deiconified
+at once when any window in the group is (de)iconified.
+ The default is
+<fvwmopt cmd="Style" opt="IconifyWindowGroupsOff"/>,
+which disables this behavior.  Although a number of applications
+use the window group hint, it is rarely used in a proper way, so
+it is probably best to use
+<emphasis remap='I'>IconifyWindowGroups</emphasis>
+only for selected applications.</para>
+
+</section>
+
+
+<section id="window_manager_placement">
+<title>Window Manager placement</title>
+
+<para>Applications can place windows at a particular spot on the screen
+either by window manager hints or a geometry specification.  When
+they do neither, then the window manager steps in to find a place
+for the window.  Fvwm knows several ways to deal with this
+situation. The default is
+<emphasis>TileCascadePlacement</emphasis>.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="PositionPlacement"/>
+[<emphasis remap='I'>Center</emphasis>|<emphasis remap='I'>UnderMouse</emphasis>|<emphasis remap='I'>move-arguments</emphasis>]
+When used without an argument, new windows are placed in the
+top left corner of the display.  With the argument
+<emphasis remap='I'>Center</emphasis>,
+all new window appear at the center of the screen, and with
+<emphasis remap='I'>UnderMouse</emphasis>,
+windows are centered under the mouse pointer.  If any other
+<emphasis remap='I'>move-arguments</emphasis>
+are given, they are interpreted exactly as the
+<emphasis remap='B'>Move</emphasis>
+command does (with the exception that references to the current
+window position do not work as the window has not been placed
+yet).</para>
+
+
+<para><fvwmopt cmd="Style" opt="CascadePlacement"/>
+automatically place new windows in a cascading fashion.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="TileCascadePlacement"/>
+automatically places new windows in a smart location - a location
+in which they do not overlap any other windows on the screen.  If
+no such position can be found
+<emphasis remap='I'>CascadePlacement</emphasis>
+is used as a fall-back method.</para>
+
+<para><fvwmopt cmd="Style" opt="TileManualPlacement"/>
+This is the same as
+<emphasis remap='I'>TileCascadePlacement</emphasis>,
+but uses
+<emphasis>ManualPlacement</emphasis>
+as the fall-back method.</para>
+
+<para><fvwmopt cmd="Style" opt="MinOverlapPlacement"/>
+automatically places new windows in a location in which the
+overlapping area in pixels of other windows is minimized.
+By default this placement policy tries to avoid
+overlapping icons and windows on higher layers.
+This can be configured with the
+<fvwmopt cmd="Style" opt="MinOverlapPlacementPenalties"/>
+style.</para>
+
+<para><fvwmopt cmd="Style" opt="MinOverlapPercentPlacement"/>
+is similar to
+<emphasis remap='I'>MinOverlapPlacement</emphasis>
+but tries to minimize the overlapped percentages of other windows
+instead of the overlapped area in pixels.  This placement policy
+tries to avoid covering other windows completely and tries even
+harder not to cover small windows.
+This can be configured with the
+<emphasis remap='I'>MinOverlapPlacementPenalties</emphasis>
+and
+<fvwmopt cmd="Style" opt="MinOverlapPercentPlacementPenalties"/>
+styles.</para>
+
+<para><emphasis remap='I'>MinOverlapPlacementPenalties</emphasis>
+takes at most 6 positive or null decimal arguments:</para>
+
+<programlisting>
+<emphasis remap='I'>normal ontop icon sticky below strut</emphasis>
+</programlisting>
+
+<para>if trailing arguments are missing the default is used which is:</para>
+
+<programlisting>
+1 5 10 1 0.05 50
+</programlisting> 
+
+<para>To reset this style to the default values, prefix it with a '!'. This style configures the
+<emphasis remap='I'>MinOverlapPlacement</emphasis> and <emphasis remap='I'>MinOverlapPercentPlacement</emphasis>
+placement policy.
+The
+<emphasis>normal</emphasis>
+factor affects normal windows, the
+<emphasis>ontop</emphasis>
+factor affects windows with a greater layer than the window being
+placed, the
+<emphasis>icon</emphasis>
+factor affects icons, the
+<emphasis>sticky</emphasis>
+factor affects sticky windows, the
+<emphasis>below</emphasis>
+factor affects windows with a smaller layer than the window being
+placed, the
+<emphasis>strut</emphasis>
+factor affects the complement of the <acronym>EWMH</acronym> working area if the
+window being placed has the
+<fvwmopt cmd="Style" opt="EWMHPlacementUseWorkingArea"/>
+style and windows with an <acronym>EWMH</acronym> strut hint (i.e., a "please do not
+cover me" hint) if the window being placed has the
+<fvwmopt cmd="Style" opt="EWMHPlacementUseDynamicWorkingArea"/>
+style.  These factors represent the amount of area that these
+types of windows (or area) are counted as, when a new window is
+placed.  For example, by default the area of ontop windows is
+counted 5 times as much as normal windows.  So
+<emphasis remap='I'>MinOverlapPlacement</emphasis> and <emphasis remap='I'>MinOverlapPercentPlacement</emphasis>
+covers 5 times as much area of another window before it will
+cover an ontop window.  To treat ontop windows the same as other
+windows, set this to 1.  To really, really avoid putting windows
+under ontop windows, set this to a high value, say 1000. This
+style affects the window already mapped and not the window which
+is currently placed. There is one exception to this rule: in the
+case of the window being placed has the
+<emphasis remap='I'>EWMHPlacementUseWorkingArea</emphasis>
+style the
+<emphasis remap='I'>strut</emphasis>
+factor affects the placed window.</para>
+
+<para><emphasis remap='I'>MinOverlapPercentPlacementPenalties</emphasis>
+takes at most 4 positive or null integer arguments:</para>
+
+<programlisting>
+<emphasis remap='I'>cover_100 cover_95 cover_85 cover_75</emphasis>
+</programlisting> 
+
+<para>if trailing arguments are missing the defaults are used
+which are:</para>
+
+<programlisting>
+12 6 4 1
+</programlisting> 
+
+<para>To reset this style to the default values, prefix it with a '!'.
+
+This style affects the
+<emphasis remap='I'>MinOverlapPercentPlacement</emphasis>
+placement policy and is similar to the
+<emphasis remap='I'>MinOverlapPlacementPenalties</emphasis>
+style. The
+<emphasis>cover_xx</emphasis>
+factor is used when the window being placed covers at least
+<emphasis>xx</emphasis>
+percent of the window. This factor is added to the factor
+determined by the
+<emphasis remap='I'>MinOverlapPlacementPenalties</emphasis>
+style.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="ManualPlacement"/>
+(aka active placement). The user is required to place every new
+window manually.  The window only shows as a rubber band until a
+place is selected manually. The window is placed when a mouse
+button or any key except
+<fvwmopt cmd="Style" opt="Escape"/>
+is pressed.  Escape aborts manual placement which places the
+window in the top left corner of the screen. If mouse button 2 is
+pressed during the initial placement of a window (respectively
+<fvwmopt cmd="Style" opt="Shift"/>
+and mouse button 1 in case Mwm emulation has been enabled with the
+<fvwmref cmd="Emulate"/>
+command), the user is asked to resize the window too.</para>
+
+<para>It is possible to define buttons usable to place windows with the
+<fvwmref cmd="Move"/>
+command and the special context 'P' for placement (see
+<fvwmref cmd="Move"/>
+command). However, you can't redefine the way to also resize the
+window other than the way it is affected by the
+<fvwmref cmd="Emulate"/>
+command. The button used for placing the window can be checked with
+the
+<fvwmopt cmd="Style" opt="PlacedByButton"/>
+condition (see
+<fvwmref cmd="Current"/>
+command).</para>
+
+<para>Example:</para>
+
+<programlisting>
+Style * ManualPlacement
+
+*FvwmEvent: PassID
+*FvwmEvent: add_window GrowDownFunc
+<fvwmref cmd="AddToFunc"/> StartFunction
++ I FvwmEvent
+
+<fvwmref cmd="AddToFunc"/> GrowDownFunc
++ I windowid $0 (PlacedByButton 3) \
+  <fvwmref cmd="Resize"/> bottomright keep -0p
+</programlisting> 
+
+
+<para>Now, whenever a window is created and the user presses button 3 to
+finish initial placement, the window is automatically enlarged
+until it hits the bottom screen border.</para>
+
+<para><emphasis remap='I'>Old placement styles</emphasis>
+DumbPlacement / SmartPlacement / SmartPlacementOff,
+CleverPlacement / CleverPlacementOff,
+ActivePlacement / RandomPlacement,
+ActivePlacementsHonorsStartsOnPage /
+ActivePlacementsHonorsStartsOnPageOff, GlobalOpts
+SmartPlacementIsReallySmart / GlobalOpts SmartPlacementIsNormal
+are still supported but will be removed in the future. The old and
+new styles can be translated according to the following table:</para>
+
+<programlisting>
+<fvwmref cmd="GlobalOpts"/> SmartPlacementIsReallySmart
+Style * SmartPlacement
+-->
+Style * SmartPlacement, CleverPlacement
+
+<fvwmref cmd="GlobalOpts"/> SmartPlacementIsNormal
+Style * SmartPlacement
+  -->
+Style * SmartPlacement, CleverPlacementOff
+
+Style * DumbPlacement, RandomPlacement
+  -->
+Style * CascadePlacement
+
+Style * DumbPlacement, ActivePlacement
+  -->
+Style * ManualPlacement
+
+Style * SmartPlacement, \
+RandomPlacement, CleverPlacementOff
+  -->
+Style * TileCascadePlacement
+
+Style * SmartPlacement, \
+ActivePlacement, CleverPlacementOff
+  -->
+Style * TileManualPlacement
+
+Style * SmartPlacement, CleverPlacement
+  -->
+Style * MinOverlapPlacement
+
+Style * SmartPlacement, \
+ActivePlacement, CleverPlacement
+  -->
+Style * MinOverlapPercentPlacement
+
+Style * ActivePlacementsHonorsStartsOnPage
+  -->
+Style * ManualPlacementsHonorsStartsOnPage
+
+Style * ActivePlacementsHonorsStartsOnPageOff
+  -->
+Style * ManualPlacementsHonorsStartsOnPageOff
+</programlisting> 
+
+</section>
+
+
+
+
+
+
+<!--  +++++++++++++++ placement options and stacking policy -->
+<section id="placement_policy_and_window_stacking">
+<title>Placement policy options and window stacking</title>
+
+<para><fvwmopt cmd="Style" opt="NoUsePPosition"/>
+instructs fvwm to ignore the program specified position (PPosition
+hint) when adding new windows.  Using PPosition is required for
+some applications, but if you do not have one of those its a real
+headache.  Many programs set PPosition to something obnoxious like
+0,0 (upper left corner).
+Note: <emphasis>!UsePPosition</emphasis>
+is equivalent to the deprecated option
+<emphasis>NoPPosition</emphasis></para>
+
+<para><fvwmopt cmd="Style" opt="NoUseUSPosition"/>
+works like
+<emphasis remap='I'>!UsePPosition</emphasis>
+but applies suppresses using the user specified position indicated
+by the program (USPosition hint).  It is generally a bad thing to
+override the user's choice, but some applications misuse the
+USPosition hint to force their windows to a certain spot on the
+screen without the user's consent.
+Note: <emphasis>!UseUSPosition</emphasis>
+is equivalent to the deprecated option
+<emphasis>!USPosition</emphasis></para>
+
+<para>
+<fvwmopt cmd="Style" opt="NoUseTransientPPosition"/> and
+<fvwmopt cmd="Style" opt="UseTransientPPosition"/>
+work like
+<emphasis remap='I'>!UsePPosition</emphasis> and
+<emphasis remap='I'>UsePPosition</emphasis>
+but apply only to transient windows.
+Note: <emphasis>!UseTransientPPosition</emphasis>
+is equivalent to the deprecated option
+<emphasis>!TransientPPosition</emphasis></para>
+
+<para><fvwmopt cmd="Style" opt="NoUseIconPosition"/>
+instructs fvwm to ignore the program specified icon position
+(IconPosition hint) when iconifying the window.
+Note: <emphasis>!UseIconPosition</emphasis>
+is equivalent to the deprecated option
+<emphasis>!IconPosition</emphasis></para>
+
+<para><fvwmopt cmd="Style" opt="StartsOnDesk"/>
+takes a numeric argument which is the desktop number on which the
+window should be initially placed.  Note that standard Xt programs
+can also specify this via a resource (e.g. "-xrm '*Desk: 1'").</para>
+
+<para><fvwmopt cmd="Style" opt="StartsOnPage"/>
+takes 1, 2, or 3 numeric arguments.  If one or three arguments are
+given, the first (or only) argument is the desktop number. If
+three arguments are given, the 2nd and 3rd arguments identify the
+x,y page position on the virtual window.  If two arguments are
+given, they specify the page position, and indicate no desk
+preference.  If only one argument is given,
+<emphasis remap='I'>StartsOnPage</emphasis>
+functions exactly like
+<emphasis remap='I'>StartsOnDesk</emphasis>.
+For those standard Xt programs which understand this usage, the
+starting desk/page can also be specified via a resource (e.g.,
+"-xrm '*page: 1 0 2'").
+<emphasis remap='I'>StartsOnPage</emphasis>
+in conjunction with
+<fvwmopt cmd="Style" opt="SkipMapping"/>
+is a useful technique when you want to start an app on some other
+page and continue with what you were doing, rather than waiting
+for it to appear.</para>
+
+<para><fvwmopt cmd="Style" opt="StartsOnScreen"/>
+takes one argument.  It can be 'p' for the primary screen, 'c' for
+the current screen (containing the mouse pointer), 'g' for the
+global screen or the screen number itself (counting from zero).  A
+new window is placed on the specified Xinerama screen.  The
+default is to place windows on the screen that contains the mouse
+pointer at the time the window is created.  However, those windows
+which are not placed by fvwm (i.e., those with a USPosition hint
+from a user specified geometry) are normally placed in a position
+relative to the global screen.  The
+<emphasis remap='I'>StartsOnScreen</emphasis>
+style is also useful to cause these windows to be placed relative
+to a specific Xinerama screen.  For example:</para>
+
+<programlisting>
+Style * StartsOnScreen c
+</programlisting> 
+
+<para>Would cause all windows, including those with their own geometry
+to be placed relative to the current Xinerama screen rather than
+the global screen.  For those standard Xt programs which
+understand this usage, the starting desk/page can also be
+specified via a resource (e.g., "-xrm '*fvwmscreen: c'").
+('fvwmscreen' was chosen because some applications already use
+&acute;.screen' for other purposes.)</para>
+
+<para><fvwmopt cmd="Style" opt="StartsOnPageIncludesTransients"/>
+causes the
+<emphasis remap='I'>StartsOnPage</emphasis>
+style to be applied even for transient windows.  This is not
+usually useful, since transients are usually pop ups that you want
+to appear in your visible viewport; but occasionally an
+application uses a transient for something like a startup window
+that needs to be coerced into place.</para>
+
+<para><fvwmopt cmd="Style" opt="ManualPlacementIgnoresStartsOnPage"/>
+suppresses
+<emphasis remap='I'>StartsOnPage</emphasis> or <emphasis remap='I'>StartsOnDesk</emphasis>
+placement in the event that both
+<emphasis remap='I'>ManualPlacement</emphasis> and <emphasis remap='I'>SkipMapping</emphasis>
+are in effect when a window is created.  This prevents you from
+interactively placing a window and then wondering where it
+disappeared to, because it got placed on a different desk or page.
+<fvwmopt cmd="Style" opt="ManualPlacementHonorsStartsOnPage"/>
+allows this to happen anyway.  The option has no effect if
+<emphasis remap='I'>SkipMapping</emphasis>
+is not in effect, because fvwm switches to the proper desk/page to
+perform interactive placement.  The default is
+<emphasis remap='I'>ManualPlacementIgnoresStartsOnPage</emphasis>; 
+<emphasis remap='I'>ManualPlacementHonorsStartsOnPage</emphasis>
+matches the way the old
+<emphasis remap='I'>StartsOnDesk</emphasis>
+style used to handle the situation.</para>
+
+<para><fvwmopt cmd="Style" opt="CaptureHonorsStartsOnPage"/>
+causes the initial capture (of an already existing window) at
+startup to place the window according to the
+<emphasis remap='I'>StartsOnPage</emphasis> and <emphasis remap='I'>StartsOnScreen</emphasis>
+desk, page and Xinerama screen specification.
+<fvwmopt cmd="Style" opt="CaptureIgnoresStartsOnPage"/>
+causes fvwm to ignore these settings (including
+<emphasis remap='I'>StartsOnDesk</emphasis>)
+on initial capture.  The default is
+<emphasis remap='I'>CaptureIgnoresStartsOnPage</emphasis>.</para>
+
+<para><fvwmopt cmd="Style" opt="RecaptureHonorsStartsOnPage"/>
+causes a window to be placed according to, or revert to, the
+<emphasis remap='I'>StartsOnPage</emphasis> and <emphasis remap='I'>StartsOnScreen</emphasis>
+desk, page and Xinerama screen specification on
+<fvwmref cmd="Restart"/> or <fvwmopt cmd="Style" opt="Recapture"/>.
+<fvwmopt cmd="Style" opt="RecaptureIgnoresStartsOnPage"/>
+causes fvwm to respect the current window position on
+<fvwmref cmd="Restart"/> or <fvwmref cmd="Recapture"/>.
+The default is
+<emphasis remap='I'>RecaptureIgnoresStartsOnPage</emphasis>.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="Layer"/>
+accepts one optional argument: a non-negative integer.  This is
+the layer the window is put in.  If no argument is given, any
+previously set value is deleted and the default layer is implied.</para>
+
+<para><fvwmopt cmd="Style" opt="StaysOnTop"/>
+puts the window in the top layer.  This layer can be changed by
+the command
+<fvwmref cmd="DefaultLayers"/>;
+the default is 6.</para>
+
+<para><fvwmopt cmd="Style" opt="StaysPut"/>
+puts the window in the put layer.  This layer can be changed by
+the command
+<fvwmref cmd="DefaultLayers"/>;
+the default is 4.</para>
+
+<para><fvwmopt cmd="Style" opt="StaysOnBottom"/>
+puts the window in the bottom layer.  This layer can be changed by
+the command
+<fvwmref cmd="DefaultLayers"/>;
+the default is 2.</para>
+
+<para><fvwmopt cmd="Style" opt="StartsLowered"/>
+instructs fvwm to put the window initially at the bottom of its
+layer rather than the default
+<fvwmopt cmd="Style" opt="StartsRaised"/>.</para>
+
+<para><emphasis remap='I'>SkipMapping</emphasis>
+tells fvwm not to switch to the desk the window is on when it gets
+mapped initially (useful with
+<emphasis remap='I'>StartsOnDesk</emphasis> or <emphasis remap='I'>StartsOnPage</emphasis>).</para>
+
+<para><fvwmopt cmd="Style" opt="KeepWindowGroupsOnDesk"/>
+makes new windows that have the window group hint set appear on
+the same desk as the other windows of the same group.  Since this
+behavior may be confusing, the default setting is
+<fvwmopt cmd="Style" opt="ScatterWindowGroups"/>.
+The window group hint is ignored when placing windows in this
+case.</para>
+
+</section>
+
+
+
+
+
+
+
+<!--  +++++++++++++++ transient windows -->
+<section id="transient_windows">
+<title>Transient windows</title>
+
+<para><fvwmopt cmd="Style" opt="DecorateTransient"/>
+causes transient windows, which are normally left undecorated, to
+be given the usual fvwm decorations (title bar, buttons,
+etc.). Note that some pop-up windows, such as the xterm menus, are
+not managed by the window manager and still do not receive
+decorations.
+<fvwmopt cmd="Style" opt="NakedTransient"/>
+(the default) causes transient windows not to be given the
+standard decorations. You can only bind keys or mouse buttons to
+the sides and the client part of an undecorated window ('S' and
+&acute;W' contexts in bindings, see
+<fvwmref cmd="Mouse"/> and <fvwmopt cmd="Style" opt="Key"/>
+commands).</para>
+
+<para>A window with the
+<fvwmopt cmd="Style" opt="RaiseTransient"/>
+style that has transient windows raises all its transients when it
+is raised.  The
+<fvwmopt cmd="Style" opt="DontRaiseTransient"/>
+style disables this behavior.  All windows are then treated as if
+they had no transients.</para>
+
+<para>A window with the
+<fvwmopt cmd="Style" opt="LowerTransient"/>
+style that has transient windows lowers all its transients when it
+is lowered.  The
+<fvwmopt cmd="Style" opt="DontLowerTransient"/>
+style disables this behavior.  All windows are then treated as if
+they had no transients.</para>
+
+<para>The
+<fvwmopt cmd="Style" opt="StackTransientParent"/>
+style augments
+<emphasis remap='I'>RaiseTransient</emphasis> and <emphasis remap='I'>LowerTransient</emphasis>
+styles.  Raising a window with
+<emphasis remap='I'>StackTransientParent</emphasis>
+style transfers the raise action to the main window if the window
+being raised is a transient and its main window has
+<emphasis remap='I'>RaiseTransient</emphasis>
+style; this effect makes raise on a transient act just like raise
+on its main - the whole group is raised.  Similar behavior holds
+for lowering a whole group of transients when the main has
+<emphasis remap='I'>LowerTransient</emphasis>
+style.
+<fvwmopt cmd="Style" opt="DontStackTransientParent"/>
+turns this behavior off.
+<fvwmopt cmd="Style" opt="(Dont)StackTransientParent"/>
+has no effect if
+<emphasis remap='I'>RaiseTransient</emphasis> and <emphasis remap='I'>LowerTransient</emphasis>
+are not used.</para>
+
+<para>A reasonable emulation of Motif raise/lower on transients is
+possible like this</para>
+
+<programlisting>
+Style * RaiseTransient
+Style * LowerTransient
+Style * StackTransientParent
+</programlisting> 
+
+</section>
+
+
+
+
+
+
+
+<!--  +++++++++++++++ Extended WM Hints styles -->
+<section id="ewmh">
+<title>Extended Window Manager Hints styles</title>
+
+<para>To understand the used terminology in this sub section, please
+read the
+<fvwmref sect="ewmh" opt="extended_window_manager_hints" name="Extended Window Manager Hints"/>
+section.</para>
+
+<para><fvwmopt cmd="Style" opt="EWMHDonateIcon"/>
+instructs fvwm to set the application ewmh icon hint with the icon
+that is used by fvwm if the application does not provide such hint
+(and if the icon used by fvwm is not an icon window).
+<fvwmopt cmd="Style" opt="EWMHDonateMiniIcon"/>
+does the same thing for mini icons. This allows compliant pager,
+taskbar, iconbox ...etc to display the same (mini) icons as
+fvwm. Note that on some hardware (e.g., 8-bit displays) these
+styles can slow down window mapping and that in general only one
+of these styles is needed by a compliant application.
+<fvwmopt cmd="Style" opt="EWMHDontDonateIcon"/>
+and
+<fvwmopt cmd="Style" opt="EWMHDontDonateMiniIcon"/>
+restore the defaults which are to not set any ewmh (mini) icons
+hints.</para>
+
+<para>By default, if an application provides an ewmh icon hint of small
+size (i.e., height and width less than or equal to 22), then fvwm
+uses this icon as its mini icon.
+<fvwmopt cmd="Style" opt="EWMHMiniIconOverride"/>
+instructs fvwm to ignore ewmh icons and to use the mini icon
+provided by the
+<emphasis remap='I'>MiniIcon</emphasis>
+style.
+<fvwmopt cmd="Style" opt="EWMHNoMiniIconOverride"/>
+restores the default.</para>
+
+<para><fvwmopt cmd="Style" opt="EWMHUseStackingOrderHints"/>
+causes fvwm to use <acronym>EWMH</acronym> hints and respect <acronym>EWMH</acronym> hints which change
+the window layer.
+<fvwmopt cmd="Style" opt="EWMHIgnoreStackingOrderHints"/>
+causes fvwm to ignore EWMH layer hints.</para>
+
+<para>An application can ask for some reserved space on the desktop by a
+hint.  In the <acronym>EWMH</acronym> terminology such a hint is called a strut and
+it is used to compute the working area and may be used for window
+placement and in the maximize command.
+<fvwmopt cmd="Style" opt="EWMHIgnoreStrutHints"/>
+causes fvwm to ignore such hints, as
+<fvwmopt cmd="Style" opt="EWMHUseStrutHints"/>,
+causes fvwm to use it which is the default.</para>
+
+<para><fvwmopt cmd="Style" opt="EWMHIgnoreStateHints"/>
+causes fvwm to ignore initial <acronym>EWMH</acronym> state hints when a new window
+is mapped. The default
+<fvwmopt cmd="Style" opt="EWMHUseStateHints"/>
+causes fvwm to accept such hints.</para>
+
+<para><fvwmopt cmd="Style" opt="EWMHIgnoreWindowType"/>
+causes fvwm to ignore <acronym>EWMH</acronym> window type specification. The default
+<emphasis remap='I'>!EWMHIgnoreWindowType</emphasis>
+causes fvwm to style windows of specified types as such.</para>
+
+<para><fvwmopt cmd="Style" opt="EWMHMaximizeIgnoreWorkingArea"/>
+causes fvwm to ignore the <acronym>EWMH</acronym> working area when it executes a
+<fvwmref cmd="Maximize"/>
+command. With
+<fvwmopt cmd="Style" opt="EWMHMaximizeUseWorkingArea"/>
+the <acronym>EWMH</acronym> working area is used as with
+<fvwmopt cmd="Style" opt="EWMHMaximizeUseDynamicWorkingArea"/>
+the <acronym>EWMH</acronym> dynamic working area is used (the default).</para>
+
+<para><fvwmopt cmd="Style" opt="EWMHPlacementIgnoreWorkingArea"/>
+causes fvwm to ignore the <acronym>EWMH</acronym> working area when it places (or
+places again) a window. With
+<emphasis remap='I'>EWMHPlacementUseWorkingArea</emphasis>
+the <acronym>EWMH</acronym> working area is taken in account as with
+<emphasis remap='I'>EWMHPlacementUseDynamicWorkingArea</emphasis>
+the <acronym>EWMH</acronym> dynamic working area is taken in account (the default).
+Note that with the
+<emphasis remap='I'>MinOverlapPlacement</emphasis> and <emphasis remap='I'>MinOverlapPercentPlacement</emphasis>
+placement policy, the way the <acronym>EWMH</acronym> (dynamic) working area is taken
+in account is configurable with the
+<emphasis remap='I'>MinOverlapPlacementPenalties</emphasis>
+style.</para>
+
+</section>
+
+
+
+
+
+<!--  +++++++++++++++ miscellaneous -->
+<section id="miscellaneous">
+<title>Miscellaneous</title>
+
+<para>The
+<fvwmopt cmd="Style" opt="BackingStore"/>, <fvwmopt cmd="Style" opt="BackingStoreOff"/> and <fvwmopt cmd="Style" opt="BackingStoreWindowDefault"/>
+determine if the X server uses backing store for the window or
+not.
+<fvwmopt cmd="Style" opt="BackingStore"/>
+means that the X server tries to keep the obscured parts of a
+window in memory.  This is usually slower if the client runs on
+the same machine as the X server, but can be much faster if the
+connection is slow (see also
+<emphasis>SaveUnder</emphasis>
+below).
+<fvwmopt cmd="Style" opt="BackingStoreOff"/>
+disables backing store for the window.  By default, fvwm
+does not enable or disable backing store itself but leaves is as
+the window requested it.  To revert back to the application's
+choice, use the
+<fvwmopt cmd="Style" opt="BackingStoreWindowDefault"/>
+style.</para>
+
+<para>Note: This style is useless if the X server does not allow backing
+store.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="SaveUnder"/>
+enables the corresponding window attribute in the X server.  For a
+window using this style, the X server tries to store the graphics
+below it in memory which is usually slower if the client runs on
+the same machine as the X server.
+<emphasis remap='I'>SaveUnder</emphasis>
+may speed up fvwm if the connection to the X server is slow
+(e.g. over a modem link).  To disable save under, use the
+<fvwmopt cmd="Style" opt="SaveUnderOff"/>
+style.  This is the default. See also
+<emphasis remap='I'>BackingStore</emphasis>
+above.</para>
+
+<para>Note: This style is useless if the X server does not allow save
+under.</para>
+
+<para><fvwmopt cmd="Style" opt="ParentalRelativity"/>
+enables clients that use a background pixmap of type
+<fvwmopt cmd="Style" opt="ParentRelative"/>
+to achieve transparency. Fvwm modules that support transparent
+colorsets require this setting.
+<fvwmopt cmd="Style" opt="Opacity"/>
+is the default and should be used for all non-transparent clients
+for better performance.</para>
+
+<para><fvwmopt cmd="Style" opt="MwmDecor"/>
+makes fvwm attempt to recognize and respect the mwm decoration
+hints that applications occasionally use.  To switch this style
+off, use the
+<fvwmopt cmd="Style" opt="NoDecorHint"/>
+style.</para>
+
+<para><fvwmopt cmd="Style" opt="MwmFunctions"/>
+makes fvwm attempt to recognize and respect the mwm prohibited
+operations hints that applications occasionally use.
+<fvwmopt cmd="Style" opt="HintOverride"/>
+makes fvwm shade out operations that mwm would prohibit, but it
+lets you perform the operation anyway.
+<fvwmopt cmd="Style" opt="NoFuncHint"/>
+allows turns off the mwm hints completely.</para>
+
+<para><fvwmopt cmd="Style" opt="OLDecor"/>
+makes fvwm attempt to recognize and respect the olwm and olvwm
+hints that many older XView and OLIT applications use.  Switch
+this option off with
+<fvwmopt cmd="Style" opt="NoOLDecor"/>.</para>
+
+<para>With
+<fvwmopt cmd="Style" opt="GNOMEIgnoreHints"/>
+fvwm ignores all <acronym>GNOME</acronym> hints for the window, even if <acronym>GNOME</acronym>
+compliance is compiled in.  This is useful for those pesky
+applications that try to be more clever than the user and use
+<acronym>GNOME</acronym> hints to force the window manager to ignore the user's
+preferences.  The
+<fvwmopt cmd="Style" opt="GNOMEUseHints"/>
+style switches back to the default behavior.</para>
+
+<para><fvwmopt cmd="Style" opt="UseDecor"/>
+This style is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.</para>
+
+<para><emphasis remap='I'>UseDecor</emphasis>
+accepts one argument: the name of a decor created with
+<fvwmref cmd="AddToDecor"/>.
+If no decor name is specified, the "Default" decor is
+used. Windows do not actually contain decors, but are always
+assigned to one.  If the decor is later modified with
+<fvwmref cmd="AddToDecor"/>,
+the changes are visible for all windows which are assigned to it.
+The decor for a window can be reassigned with
+<fvwmref cmd="ChangeDecor"/>.</para>
+
+<para><fvwmopt cmd="Style" opt="UseStyle"/>
+This style is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.</para>
+
+<para><emphasis remap='I'>UseStyle</emphasis>
+takes one arg, which is the name of another style.  That way you
+can have unrelated window names easily inherit similar traits
+without retyping.  For example:</para>
+
+<programlisting>
+  Style rxvt UseStyle XTerm
+</programlisting> 
+
+<para>Warning: If a style is built from one or more parent styles and
+the parent styles are changed, the derived style is not
+modified. To achieve this you have to issue the
+<emphasis remap='I'>UseStyle</emphasis>
+line again.</para>
+
+<para><fvwmopt cmd="Style" opt="Unmanaged"/>
+Windows with the
+<emphasis remap='I'>Unmanaged</emphasis>
+style option are ignored by fvwm.  They are not decorated, can not
+be moved or resized, etc.  You probably want to use
+<emphasis remap='B'>Bugopts RaiseOverUnmanaged</emphasis>
+too.  This option can be turned off with the
+<emphasis remap='I'>!Unmanaged</emphasis>
+style.
+However, windows that are already ignored at the time when the
+option is set must be recaptured with the
+<fvwmref cmd="Recapture"/>
+command in order to become managed.</para>
+
+<para>
+<fvwmopt cmd="Style" opt="State"/>
+sets the initial value of one of the 32 user defined states
+which are associated with each window.  The state number ranges
+from 0 to 31 and must be given as an argument.  The states have no
+meaning in fvwm, but they can be checked in conditional commands
+like
+<fvwmref cmd="Next"/>
+with the
+<emphasis>State</emphasis>
+condition and manipulated with the
+<fvwmref cmd="State"/>
+command.</para>
+
+<programlisting>
+# turn on state 11 for xterms ...
+Style xterm <fvwmref cmd="State"/> 11
+# ... but not for rxvts.
+Style rxvt !State 11
+</programlisting> 
+
+
+<!--  +++++++++++++++ styles affecting window selection -->
+
+<para>Windows with the
+<fvwmopt cmd="Style" opt="WindowListSkip"/>
+styles do not appear in the menu that is created with the
+<fvwmref cmd="WindowList"/>
+command or the lists shown in several modules like
+<fvwmref mod="FvwmIconMan"/> or <fvwmref mod="FvwmWinList"/>.
+In the modules, the style can usually be ignored with an option.
+Please refer to the man page of the module in question for
+further information.  To disable this feature, use the default
+style
+<fvwmopt cmd="Style" opt="WindowListHit"/>.</para>
+
+<para>The styles
+<fvwmopt cmd="Style" opt="CirculateSkip"/> and <fvwmopt cmd="Style" opt="CirculateHit"/>
+control whether the window is considered by conditional commands,
+for example
+<fvwmref cmd="Next"/>, <fvwmopt cmd="Style" opt="Prev"/> or <fvwmopt cmd="Style" opt="All"/>.
+Windows with
+<fvwmopt cmd="Style" opt="CirculateSkip"/>,
+are never selected by conditional commands.  However, the styles
+can be overridden explicitly in the condition with the
+<fvwmopt cmd="Style" opt="CirculateHit"/>, <fvwmopt cmd="Style" opt="CirculateHitIcon"/> or <fvwmopt cmd="Style" opt="CirculateHitShaded"/>
+conditions, and some conditional commands, e.g.
+<fvwmref cmd="Current"/> and <fvwmopt cmd="Style" opt="All"/>,
+do this by default.
+The styles
+<fvwmopt cmd="Style" opt="CirculateSkipIcon"/>, <fvwmopt cmd="Style" opt="CirculateHitIcon"/>,
+<fvwmopt cmd="Style" opt="CirculateSkipShaded"/> and <fvwmopt cmd="Style" opt="CirculateHitShaded"/>
+work like
+<emphasis remap='I'>CirculateSkip</emphasis> and <emphasis remap='I'>CirculateHit</emphasis>
+but apply only to iconic or shaded windows.
+Note: if multiple ...Skip... options are combined, windows are
+only selected if they match none of the given conditions.  So,
+with</para>
+
+<programlisting>
+Style * CirculateSkipIcon, CirculateSkipShaded
+</programlisting> 
+
+<para>only windows that are neither iconic nor shaded are selected.
+Note:  For historical reasons, the conditional commands understand
+the names of these styles as condition names.  Take care not to
+confuse them.</para>
+
+</section>
+
+
+
+
+
+
+<!--  +++++++++++++++ examples -->
+<section id="examples">
+<title>Examples</title>
+
+
+<programlisting>
+# Change default fvwm behavior to no title-
+# bars on windows! Also define a default icon.
+Style *             !Title,                \
+                    Icon unknown1.xpm,     \
+                    BorderWidth 4,         \
+                    HandleWidth 5
+
+# now, window specific changes:
+Style Fvwm*       !Handles, Sticky,        \
+                  WindowListSkip,          \
+                  BorderWidth 0
+Style FvwmPager   StaysOnTop, BorderWidth 0
+Style *lock       !Handles, Sticky,        \
+                  StaysOnTop, WindowListSkip
+Style xbiff       Sticky, WindowListSkip
+Style FvwmButtons !Handles, Sticky,        \
+                  WindowListSkip
+Style sxpm        !Handles
+
+# Put title-bars back on xterms only!
+Style xterm     Title, Color black/grey
+
+Style rxvt        Icon term.xpm
+Style xterm       Icon rterm.xpm
+Style xcalc       Icon xcalc.xpm
+Style xbiff       Icon mail1.xpm
+Style xmh         Icon mail1.xpm,         \
+                    StartsOnDesk 2
+Style xman        Icon xman.xpm
+Style matlab      Icon math4.xpm,         \
+                    StartsOnDesk 3
+Style xmag        Icon magnifying_glass2.xpm
+Style xgraph      Icon graphs.xpm
+Style FvwmButtons Icon toolbox.xpm
+Style Maker       StartsOnDesk 1
+Style signal      StartsOnDesk 3
+
+# Fire up Netscape on the second desk, in the
+# middle of my 3x3 virtual desktop, and do not
+# bother me with it...
+Style Netscape* SkipMapping,              \
+                StartsOnPage 1 1 1
+</programlisting> 
+
+<para>Note that all properties for a window are or'ed together.  In the
+above example "FvwmPager" gets the property
+<emphasis remap='I'>StaysOnTop</emphasis>
+via an exact window name match but also gets
+<emphasis remap='I'>!Handles</emphasis>, <emphasis remap='I'>Sticky</emphasis> and <emphasis remap='I'>WindowListSkip</emphasis>
+by a match to "Fvwm*".  It gets
+<emphasis remap='I'>!Title</emphasis>
+by virtue of a match to "*".  If conflicting styles are specified
+for a window, then the last style specified is used.</para>
+
+</section>
+
+
+</section>

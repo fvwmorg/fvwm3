@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='Current'>
+<title>Current</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Current</arg>
+    <arg choice='opt'>(conditions)</arg>
+    <arg choice='plain'>command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Performs
+<emphasis remap='I'>command</emphasis>
+on the currently focused window if it satisfies all
+<emphasis remap='I'>conditions</emphasis>.
+See the <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+<para>This command implies the conditions
+<emphasis remap='I'>CirculateHit</emphasis>, <emphasis remap='I'>CirculateHitIcon</emphasis> and <emphasis remap='I'>CirculateHitShaded</emphasis>.
+They can be turned off by specifying
+<emphasis remap='I'>!CirculateHit</emphasis>
+etc. explicitly.</para>
+
+</section>

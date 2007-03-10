@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='Any'>
+<title>Any</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Any</arg>
+    <arg choice='opt'>(conditions)</arg>
+    <arg choice='plain'>command</arg>
+</cmdsynopsis>
+</command>
+
+<para>Performs
+<emphasis remap='I'>command</emphasis>
+if any window which satisfies all
+<emphasis remap='I'>conditions</emphasis>
+exists.  The command is run in the context of the root window.
+See the <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+</section>

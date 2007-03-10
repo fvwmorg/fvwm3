@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='PlaceAgain'>
+<title>PlaceAgain</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>PlaceAgain</arg>
+    <arg choice='opt'>Anim</arg>
+    <arg choice='opt'>Icon</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>Causes the current window's position to be re-computed using the
+initial window placement logic.  The window is moved to where it
+would have been if it were a new window that had just appeared.
+Most useful with
+<emphasis remap='I'>Smart</emphasis> or <emphasis remap='I'>Clever</emphasis> (<emphasis remap='I'>ReallySmart</emphasis>)
+placement.  With the optional argument
+<fvwmopt cmd="PlaceAgain" opt="Anim"/>
+an animated move is used to place the window in its new position.
+With the additional option
+<fvwmopt cmd="PlaceAgain" opt="Icon"/>,
+the icon is placed again instead.</para>
+
+</section>

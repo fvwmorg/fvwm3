@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+]>
+
+<section id='virtual_desktop'>
+<title>The Virtual Desktop</title>
+<para>Fvwm provides multiple virtual desktops for users who wish to use
+them.  The screen is a viewport onto a
+<emphasis remap='I'>desktop</emphasis>
+which may be larger than the screen.  Several distinct desktops
+can be accessed (concept: one desktop for each project, or one
+desktop for each application, when view applications are
+distinct).  Since each desktop can be larger than the physical
+screen, divided into m by n
+<emphasis remap='I'>pages</emphasis>
+which are each the size of the physical screen, windows which are
+larger than the screen or large groups of related windows can
+easily be viewed.</para>
+
+<para>The (m by n) size (i.e. number of pages) of the virtual desktops
+can be changed any time, by using the
+<fvwmref cmd="DesktopSize"/>
+command.  All virtual desktops must be (are) the same
+size.  The total number of distinct desktops does not need to be
+specified, but is limited to approximately 4 billion total. All
+windows on a range of desktops can be viewed in the
+<fvwmref mod="FvwmPager"/>,
+a miniature view of the desktops.  The pager is an accessory
+program, called a module, which is not essential for the window
+manager to operate.  Windows may also be listed, along with their
+geometries, in a window list, accessible as a pop-up menu, or as a
+separate window, called the
+<fvwmref mod="FvwmWinList"/>
+(another module).</para>
+
+<para>Fvwm keeps the windows on the desktop in a layered stacking order;
+a window in a lower layer never obscures a window in a higher
+layer. The layer of a window can be changed by using the
+<fvwmref cmd="Layer"/>
+command.  The concept of layers is a generalization of the
+<fvwmref cmd="Style" opt="StaysOnTop"/>
+flag of older fvwm versions. The
+<fvwmref cmd="Style" opt="StaysOnTop"/> and
+<fvwmref cmd="Style" opt="StaysPut"/>
+<fvwmref cmd="Style"/>
+options are now implemented by putting the windows in suitable
+layers and the previously missing
+<fvwmref cmd="Style" opt="StaysOnBottom"/>
+<fvwmref cmd="Style"/>
+option has been added.</para>
+
+<para>
+<fvwmref cmd="Style" opt="Sticky"/>
+windows are windows which transcend the virtual desktop by
+"Sticking to the screen's glass".  They always stay put on the
+screen. This is convenient for things like clocks and xbiffs, so
+you only need to run one such gadget and it always stays with you.
+Icons can also be made to stick to the glass, if desired.</para>
+
+<para>Window geometries are specified relative to the current viewport.
+That is:</para>
+
+<command>xterm -geometry +0+0</command>
+
+<para>creates a window in the upper left hand corner of the visible
+portion of the screen.  It is permissible to specify geometries
+which place windows on the virtual desktop, but off the screen.
+For example, if the visible screen is 1000 by 1000 pixels, and the
+desktop size is 3x3, and the current viewport is at the upper left
+hand corner of the desktop, invoking:</para>
+
+<command>xterm -geometry +1000+1000</command>
+
+<para>places a window just off of the lower right hand corner of the
+screen.  It can be found by moving the mouse to the lower right
+hand corner of the screen and waiting for it to scroll into view.
+A geometry specified as something like:</para>
+
+<command>xterm -geometry -5-5</command>
+
+<para>places the window's lower right hand corner 5 pixels from the
+lower right corner of the visible portion of the screen.  Not all
+applications support window geometries with negative offsets.
+Some applications place the window's upper right hand corner 5
+pixels above and to the left of the upper left hand corner of the
+screen; others may do just plain bizarre things.</para>
+
+<para>There are several ways to cause a window to map onto a desktop or
+page other than the currently active one. The geometry technique
+mentioned above (specifying x,y coordinates larger than the
+physical screen size), however, suffers from the limitation of
+being interpreted relative to the current viewport: the window may
+not consistently appear on a specific page, unless you always
+invoke the application from the same page.</para>
+
+<para>A better way to place windows on a different page, screen or desk
+from the currently mapped viewport is to use the
+<fvwmref cmd="Style" opt="StartsOnPage"/> or
+<fvwmref cmd="Style" opt="StartsOnScreen"/>
+style specification (the successors to the older
+<fvwmref cmd="Style" opt="StartsOnDesk"/>
+style) in your
+<emphasis remap='I'>config</emphasis>
+file.  The placement is consistent: it does
+not depend on your current location on the virtual desktop.</para>
+
+<para>Some applications that understand standard Xt command line
+arguments and X resources, like xterm and xfontsel, allow the user
+to specify the start-up desk or page on the command line:</para>
+
+<command>xterm -xrm "*Desk:1"</command>
+
+<para>starts an xterm on desk number 1;</para>
+
+<command>xterm -xrm "*Page:3 2 1"</command>
+
+<para>starts an xterm two pages to the right and one down from the upper
+left hand page of desk number 3.  Not all applications understand
+the use of these options, however.  You could achieve the same
+results with the following lines in your
+<markup>.Xdefaults</markup>
+file:</para>
+
+<command>XTerm*Desk: 1</command>
+
+<para>or</para>
+
+<command>XTerm*Page: 3 2 1</command>
+
+</section>

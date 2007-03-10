@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='PipeRead'>
+<title>PipeRead</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>PipeRead command [quiet]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Causes fvwm to read commands from the output of the
+<emphasis remap='I'>command</emphasis>.
+This
+<emphasis remap='I'>command</emphasis>
+is executed by
+<filename>/bin/sh</filename>
+as if you typed it on the command line.  If the command consists
+of more than one word it must be quoted.  Useful for building up
+dynamic menu entries based on a directories contents, for
+example. If the keyword
+<emphasis remap='I'>Quiet</emphasis>
+follows the command no message is produced if the
+<emphasis remap='I'>command</emphasis>
+is not found.</para>
+
+<para>Example:</para>
+
+<programlisting>
+<fvwmref cmd="AddToMenu"/> HomeDirMenu
+PipeRead 'for i in $HOME/*; \
+  do echo "+ $i <fvwmref cmd="Exec"/> xterm -e vi $i"; done'
+</programlisting>
+
+
+<para>Note: The
+<emphasis remap='B'>PipeRead</emphasis>
+changes the pointer to a watch cursor by default during
+execution.  However, some commands, for example xwd, need to take
+control of the pointer themselves and do not work.  To disable the
+watch cursor, use the command prior to
+<emphasis remap='B'>PipeRead</emphasis></para>
+
+<programlisting>
+<fvwmref cmd="BusyCursor"/> <fvwmref cmd="Read"/> off
+</programlisting>
+
+
+<para>The
+<emphasis remap='B'>PipeRead</emphasis>
+command executes synchronously.  If you want to
+<fvwmref cmd="Exec"/>
+something, but need the command to run synchronously,
+you might do something like:</para>
+
+<programlisting>
+PipeRead 'command 1&gt;&amp;2'
+</programlisting>
+
+<para>The redirection causes any output from the program to go to stderr
+instead of being read as a sequence of commands by fvwm.
+<emphasis remap='B'>PipeRead</emphasis>
+returns 1 if the given command could be executed or -1 if not
+(see the section
+<fvwmref sect="conditionals" opt="conditional_commands" name="Conditional Commands"/>
+for the meaning of return codes).</para>
+
+</section>

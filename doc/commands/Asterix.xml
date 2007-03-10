@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Asterix'>
+<title>Asterix</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Asterix</arg>
+    <arg choice='plain'>module_config_line</arg>
+</cmdsynopsis>
+</command>
+
+<para>Defines a module configuration.
+<emphasis remap='I'>module_config_line</emphasis>
+consists of a module name (or a module alias) and a module
+resource line. The new syntax allows a delimiter, a colon and
+optional spaces, between the module name and the rest of the line,
+this is recommended to avoid conflicts.</para>
+
+<programlisting>
+*FvwmIconBox: MaxIconSize 48x48
+*FvwmPager: WindowBorderWidth 1
+*FvwmButtons-TopRight: Geometry 100x100-0+0
+*FvwmButtons-Bottom: Geometry +0-0
+</programlisting>
+
+</section>

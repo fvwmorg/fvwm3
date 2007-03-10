@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='GnomeButton'>
+<title>GnomeButton</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>GnomeButton</arg>
+</cmdsynopsis>
+</command>
+
+<para>Used in conjunction with
+<fvwmref cmd="Mouse"/>
+to pass mouse button presses on the root window to a
+<acronym>GNOME</acronym>
+program (such as GMC).  The following example passes presses of
+mouse buttons 1 and 3 to such a program.</para>
+
+<programlisting>
+<fvwmref cmd="Mouse"/> 1 R A GnomeButton
+<fvwmref cmd="Mouse"/> 3 R A GnomeButton
+</programlisting>
+
+
+</section>

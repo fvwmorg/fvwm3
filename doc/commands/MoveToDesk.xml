@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='MoveToDesk'>
+<title>MoveToDesk</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>MoveToDesk</arg>
+    <arg choice='opt'>
+		<arg choice='plain'>prev | arg1<arg choice='opt'>arg2</arg> <arg choice='opt'>min max</arg></arg>
+	</arg>
+</cmdsynopsis>
+</command>
+
+<para>Moves the selected window to another desktop.  The arguments are
+the same as for the
+<fvwmref cmd="GotoDesk"/>
+command.  Without any arguments, the window is moved to the
+current desk.
+<emphasis remap='B'>MoveToDesk</emphasis>
+is a replacement for the obsolete
+<emphasis remap='B'>WindowsDesk</emphasis>
+command, which can no longer be used.</para>
+
+</section>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Repeat'>
+<title>Repeat</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Repeat</arg>
+</cmdsynopsis>
+</command>
+
+<para>When the
+<emphasis remap='B'>Repeat</emphasis>
+command is invoked, the last command that was executed by fvwm is
+executed again.  This happens regardless of whether it was
+triggered by user interaction, a module or by an X event.
+Commands that are executed from a function defined with the
+<fvwmref cmd="Function"/>
+command, from the
+<fvwmref cmd="Read"/> or
+<fvwmref cmd="PipeRead"/>
+commands or by a menu are not repeated.  Instead, the function,
+menu or the
+<fvwmref cmd="Read"/> or
+<fvwmref cmd="PipeRead"/>
+command is executed again.</para>
+
+</section>

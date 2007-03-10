@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='XineramaSlsScreens'>
+<title>XineramaSlsScreens</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>XineramaSlsScreens number-of-screens screen-spec ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command configures the layout of the Single Logical screen
+feature.  Its first argument is the number of screens to use.  It
+must be followed by exactly this number of
+<emphasis remap='I'>screen-spec</emphasis>
+arguments.  Each of these can be written either in standard X
+geometry format: "&lt;width&gt;x&lt;height&gt;+&lt;x&gt;+&lt;y&gt;" or as a space separated
+list of numbers: "x y width height". Both ways of describing
+screens can be mixed in a single command.  All four numbers must
+be supplied.  The
+<emphasis remap='I'>x</emphasis> and <emphasis remap='I'>y</emphasis>
+values specify the origin of the screen in relation to the global
+screen's origin while
+<emphasis remap='I'>width</emphasis> and <emphasis remap='I'>height</emphasis>
+specify the size of the screen in pixels.  No checks are done if
+the geometries make sense, so it is possible to define overlapping
+screens (with random results) or screens that are not visible at
+all.</para>
+
+<programlisting>
+XineramaSlsScreens 3 \
+  512x768+0+0 512x300+512+0 512 300 512 468
+<fvwmref cmd="XineramaSls"/> On
+<fvwmref cmd="XineramaPrimaryScreen"/> 1
+<fvwmref cmd="Xinerama"/> On
+</programlisting>
+
+
+
+</section>

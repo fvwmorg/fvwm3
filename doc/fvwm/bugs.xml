@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='bugs'>
+<title>Bugs</title>
+
+
+<para>Known bugs can be found in the fvwm bug tracking system
+(accessible from the fvwm home page).</para>
+
+<para>Bug reports can be sent to the fvwm-workers mailing list at
+<email>fvwm-workers@fvwm.org</email>
+(see the <emphasis remap='I'>FAQ</emphasis>)
+or reported through the bug tracking system.</para>
+
+<para>The official fvwm homepage is
+<ulink url='http://fvwm.org/'>http://fvwm.org/</ulink>.</para>
+
+
+</section>

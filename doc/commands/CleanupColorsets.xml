@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='CleanupColorsets'>
+<title>CleanupColorsets</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>CleanupColorsets</arg>
+</cmdsynopsis>
+</command>
+
+<para>Resets a definition of all colorsets.</para>
+
+
+</section>

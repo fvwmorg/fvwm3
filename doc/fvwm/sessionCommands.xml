@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='session_management_commands'>
+<title>Session Management Commands</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Quit.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/QuitScreen.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Restart.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SaveSession.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SaveQuitSession.xml" />
+
+
+</section>

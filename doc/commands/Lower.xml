@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Lower'>
+<title>Lower</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Lower</arg>
+</cmdsynopsis>
+</command>
+
+<para>Allows the user to lower a window.  Note that this lowers a window
+only in its layer.  To bring a window to the absolute bottom, use</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> lower-to-bottom
+ + I <fvwmref cmd="Layer"/> 0 0
+ + I Lower
+</programlisting>
+
+</section>

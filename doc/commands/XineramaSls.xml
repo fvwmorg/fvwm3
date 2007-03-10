@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='XineramaSls'>
+<title>XineramaSls</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>XineramaSls [bool]</arg>
+</cmdsynopsis>
+</command>
+
+<para>For multi-screen implementations other than Xinerama, such as
+Single Logical Screen, it is possible to simulate a Xinerama
+configuration if the total screen seen by fvwm is made up of
+equal sized monitors in a rectangular grid.  The
+<emphasis remap='B'>XineramaSls</emphasis>
+command turns SLS support on or off or toggles it to the opposite
+state, depending on if the boolean argument is "True", "False" or
+"toggle".  If no argument is given, this is treated like "toggle".
+The default layout uses one by one screens.  To configure the
+layout, use the
+<fvwmref cmd="XineramaSlsSize"/> or <emphasis remap='B'>XineramaSlsScreens</emphasis>
+command.</para>
+
+</section>

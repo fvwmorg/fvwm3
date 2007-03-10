@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='BugOpts'>
+<title>BugOpts</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>BugOpts</arg>
+    <arg choice='opt'>option <arg choice='opt'>bool</arg></arg>
+    <arg choice='plain'>, ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command controls several workarounds for bugs in third party
+programs.  The individual options are separated by commas.  The
+optional argument
+<emphasis remap='I'>bool</emphasis>
+is a boolean argument and controls if the bug workaround is
+enabled or not.  It can either be "True" or "False" to turn the
+option on or off, or "toggle" to switch is back and forth.  If
+<emphasis remap='I'>bool</emphasis>
+is omitted, the default setting is restored.</para>
+
+<para><fvwmopt cmd="BugOpts" opt="FlickeringMoveWorkaround"/>
+disables ConfigureNotify events that are usually sent to an
+application while it is moved.  If some windows flicker annoyingly
+while being moved, this option may help you.  Note that if this
+problem occurs it is not an fvwm bug, it is a problem of the
+application.</para>
+
+<para><fvwmopt cmd="BugOpts" opt="MixedVisualWorkaround"/>
+makes fvwm install the root colormap before it does some
+operations using the root window visuals.  This is only useful
+when the
+<option>-visual</option>
+option is used to start fvwm and then only with some
+configurations of some servers (e.g. Exceed 6.0 with an 8 bit
+PseudoColor root and fvwm using a 24 bit TrueColor visual).</para>
+
+<para>The
+<fvwmopt cmd="BugOpts" opt="ModalityIsEvil"/>
+option controls whether Motif applications have the ability to
+have modal dialogs (dialogs that force you to close them first
+before you can do anything else).  The default is to not allow
+applications to have modal dialogs.  Use this option with
+care. Once this option is turned on, you have to restart fvwm to
+turn it off.</para>
+
+<para><fvwmopt cmd="BugOpts" opt="RaiseOverNativeWindows"/>
+makes fvwm try to raise the windows it manages over native windows
+of the X server's host system.  This is needed for some X servers
+running under Windows or Windows NT.  Fvwm tries to detect if it
+is running under such an X server and initializes the flag
+accordingly.</para>
+
+<para><fvwmopt cmd="BugOpts" opt="RaiseOverUnmanaged"/>
+makes fvwm try to raise the windows it manages over
+override_redirect windows.  This is used to cope with ill-mannered
+applications that use long-lived windows of this sort, contrary to
+<acronym>ICCCM</acronym>
+conventions.  It is useful with the
+<emphasis remap='I'>Unmanaged</emphasis>
+style option too.</para>
+
+<para><fvwmopt cmd="BugOpts" opt="FlickeringQtDialogsWorkaround"/>
+suppresses flickering of the focused window in some modules when
+using <acronym>KDE</acronym> or <acronym>QT</acronym> applications with application modal dialog
+windows.  By default this option is turned on.  This option may be
+visually disturbing for other applications using windows not
+managed by fvwm.  Since these applications are rare it is most
+likely safe to leave this option at its default.</para>
+
+<para><fvwmopt cmd="BugOpts" opt="EWMHIconicStateWorkaround"/>
+is needed by <acronym>EWMH</acronym> compliant pagers or taskbars which represent
+windows which are on a different desktops as iconified. These
+pagers and taskbars use a version of the <acronym>EWMH</acronym> specification before
+version 1.2 (the current <acronym>KDE</acronym> 2 &amp; 3 versions).  These pagers and
+taskbars use the IconicState WM_STATE state to determine if an
+application is iconified.  This state, according to the
+<acronym>ICCCM</acronym>,
+does not imply that a window is iconified (in the usual sense).
+Turning on this option forces fvwm to establish an equivalence
+between the IconicState WM_STATE state and the iconified window.
+This violates
+<acronym>ICCCM</acronym>
+compliance but should not cause big problems.
+By default this option is off.</para>
+
+<para>With the
+<fvwmopt cmd="BugOpts" opt="DisplayNewWindowNames"/>
+enabled, fvwm prints the name, icon name (if available), resource
+and class of new windows to the console.  This can help in finding
+the correct strings to use in the
+<fvwmref cmd="Style"/>
+command.</para>
+
+<para>When the
+<fvwmopt cmd="BugOpts" opt="ExplainWindowPlacement"/>
+option is enabled, fvwm prints a message to the console whenever a
+new window is placed or one of the commands
+<fvwmref cmd="PlaceAgain"/>,
+<fvwmref cmd="Recapture"/> or
+<fvwmref cmd="RecaptureWindow"/>
+is used.  The message explains on which desk, page, Xinerama
+screen and position it was placed and why.  This option can be
+used to figure out why a specific window does not appear where you
+think it should.</para>
+
+<para>The
+<fvwmopt cmd="BugOpts" opt="DebugCRMotionMethod"/>
+option enables some debugging code in the ConfigureRequest
+handling routines of fvwm.  It is not helpful for the user, but if
+you report a bug to the fvwm team we may ask you to enable this
+option.</para>
+
+</section>

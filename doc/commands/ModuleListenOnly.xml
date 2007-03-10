@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ModuleListenOnly'>
+<title>ModuleListenOnly</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ModuleListenOnly modulename [moduleparams]</arg>
+</cmdsynopsis>
+</command>
+
+<para>This command works like the
+<fvwmref cmd="Module"/>
+command, but fvwm never sends any messages to the module. This may
+be handy to write a module as a shell script that is triggered by
+external events without the burden to answer packets sent by
+fvwm. For example, a module written as a shell script may change
+labels of the
+<emphasis remap='B'>FvwmButtons</emphasis>
+module to implement a simple clock.</para>
+
+</section>

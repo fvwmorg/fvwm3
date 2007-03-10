@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='StickAcrossDesks'>
+<title>StickAcrossDesks</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>StickAcrossDesks [bool]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Works like
+<fvwmref cmd="Stick"/>
+but only sticks a window across desks, not across pages.</para>
+
+</section>

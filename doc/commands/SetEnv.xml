@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='SetEnv'>
+<title>SetEnv</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>SetEnv variable value</arg>
+</cmdsynopsis>
+</command>
+
+<para>Set an environment variable to a new value, similar to the shell's
+export or setenv command.  The
+<emphasis remap='I'>variable</emphasis>
+and its
+<emphasis remap='I'>value</emphasis>
+are inherited by processes started directly by fvwm.  This can be
+especially useful in conjunction with the
+<fvwmref mod="FvwmM4"/>
+module.  For example:</para>
+
+<programlisting>
+SetEnv height HEIGHT
+</programlisting>
+
+<para>makes the <fvwmref mod="FvwmM4"/> set variable
+<emphasis remap='I'>HEIGHT</emphasis>
+usable by processes started by fvwm as the environment variable
+<emphasis remap='I'>$height</emphasis>.
+If
+<emphasis remap='I'>value</emphasis>
+includes whitespace, you should enclose it in quotes.  If no
+<emphasis remap='I'>value</emphasis>
+is given, the variable is deleted.</para>
+
+</section>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='cpp_preprocessing'>
+<title>CPP Preprocessing</title>
+<para>Cpp is the C-language pre-processor.  fvwm offers cpp processing
+which mirrors the m4 pre-processing.  To find out about it,
+re-read the
+<fvwmref sect="m4" opt="m4_preprocessing" name="M4"/>
+section, but replace "m4" with "cpp".</para>
+
+</section>

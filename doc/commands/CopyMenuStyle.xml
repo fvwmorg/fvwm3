@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='CopyMenuStyle'>
+<title>CopyMenuStyle</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>CopyMenuStyle</arg>
+    <arg choice='plain'>orig-menustyle</arg>
+    <arg choice='plain'>dest-menustyle</arg>
+</cmdsynopsis>
+</command>
+
+
+
+<para>Copy
+<emphasis remap='I'>orig-menustyle</emphasis> to <emphasis remap='I'>dest-menustyle</emphasis>,
+where
+<emphasis remap='I'>orig-menustyle</emphasis>
+is an existing menu style.  If the menu style
+<emphasis remap='I'>dest_menustyle</emphasis>
+does not exist, then it is created.</para>
+
+</section>

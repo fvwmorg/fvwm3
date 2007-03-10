@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='WindowList'>
+<title>WindowList</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>WindowList [(conditions)] [position] [options] [double-click-action]</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>Generates a pop-up menu (and pops it up) in which the title and
+geometry of each of the windows currently on the desktop are
+shown.</para>
+
+<para>The format of the geometry part is:
+<emphasis remap='I'>desk</emphasis>(<emphasis remap='I'>layer</emphasis>): <emphasis remap='I'>x-geometry sticky</emphasis>,
+where
+<emphasis remap='I'>desk</emphasis> and <emphasis remap='I'>layer</emphasis>
+are the corresponding numbers and
+<emphasis remap='I'>sticky</emphasis>
+is empty or a capital S.  The geometry of iconified windows is
+shown in parentheses.  Selecting an item from the window list
+pop-up menu causes the interpreted function "WindowListFunc" to be
+run with the window id of that window passed in as $0. The default
+"WindowListFunc" looks like this:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> WindowListFunc
++ I <fvwmref cmd="Iconify"/> off
++ I <fvwmref cmd="FlipFocus"/>
++ I <fvwmref cmd="Raise"/>
++ I <fvwmref cmd="WarpToWindow"/> 5p 5p
+</programlisting>
+
+<para>You can destroy the built-in "WindowListFunc" and create your own
+if these defaults do not suit you.</para>
+
+<para>The window list menu uses the "WindowList" menu style if it is
+defined (see
+<fvwmref cmd="MenuStyle"/>
+command).  Otherwise the default menu style is used.  To switch
+back to the default menu style, issue the command</para>
+
+<programlisting>
+<fvwmref cmd="DestroyMenuStyle"/> WindowList
+</programlisting>
+
+<para>Example:</para>
+
+<programlisting>
+<fvwmref cmd="MenuStyle"/> WindowList SelectOnRelease Meta_L
+</programlisting>
+
+<para>The
+<emphasis remap='I'>conditions</emphasis>
+can be used to exclude certain windows from the window
+list. Please refer to the
+<fvwmref cmd="Current"/>
+command for details.  Only windows that match the given conditions
+are displayed in the window list.  The
+<emphasis remap='I'>options</emphasis>
+below work vice versa: windows that would otherwise not be
+included in the window list can be selected with them.  The
+<emphasis remap='I'>conditions</emphasis>
+always override the
+<emphasis remap='I'>options</emphasis>.</para>
+
+
+<para>The
+<emphasis remap='I'>position</emphasis>
+arguments are the same as for
+<emphasis remap='B'>Menu</emphasis>.
+The command
+<emphasis remap='I'>double-click-action</emphasis>
+is invoked if the user double-clicks (or hits the key rapidly
+twice if the menu is bound to a key) when bringing the window
+list.  The
+<emphasis remap='I'>double-click-action</emphasis>
+must be quoted if it consists of more than one word.</para>
+
+<para>The
+<emphasis remap='I'>double-click-action</emphasis>
+is useful to define a default window if you have bound the window
+list to a key (or button) like this:</para>
+
+<programlisting>
+# Here we call an existing function, but
+# it may be different.  See the default
+# WindowListFunc definition earlier in this
+# man page.
+<fvwmref cmd="AddToFunc"/> SwitchToWindow
++ I WindowListFunc
+
+<fvwmref cmd="Key"/> Tab A M WindowList "Prev SwitchToWindow"
+</programlisting>
+
+<para>Hitting
+<emphasis remap='SM'>Alt-Tab</emphasis>
+once it brings up the window list, if you hit it twice the focus
+is flipped between the current and the last focused window.  With
+the proper
+<emphasis remap='I'>SelectOnRelease</emphasis>
+menu style (see example above) a window is selected as soon as you
+release the
+<emphasis remap='SM'>Alt</emphasis>
+key.</para>
+
+<para>The
+<emphasis remap='I'>options</emphasis>
+passed to WindowList are separated by commas and can be
+<emphasis remap='I'>Geometry</emphasis> / <emphasis remap='I'>NoGeometry</emphasis> / <emphasis remap='I'>NoGeometryWithInfo</emphasis>,
+<emphasis remap='I'>NoDeskNum,</emphasis>
+<emphasis remap='I'>NoLayer,</emphasis>
+<emphasis remap='I'>NoNumInDeskTitle</emphasis>,
+<emphasis remap='I'>NoCurrentDeskTitle</emphasis>,
+<emphasis remap='I'>MaxLabelWidth width</emphasis>,
+<emphasis remap='I'>TitleForAllDesks</emphasis>,
+<emphasis remap='I'>Function funcname</emphasis>,
+<emphasis remap='I'>Desk desknum</emphasis>,
+<emphasis remap='I'>CurrentDesk</emphasis>,
+<emphasis remap='I'>NoIcons</emphasis> / <emphasis remap='I'>Icons</emphasis> / <emphasis remap='I'>OnlyIcons</emphasis>,
+<emphasis remap='I'>NoNormal</emphasis> / <emphasis remap='I'>Normal</emphasis> / <emphasis remap='I'>OnlyNormal</emphasis>,
+<emphasis remap='I'>NoSticky</emphasis> / <emphasis remap='I'>Sticky</emphasis> / <emphasis remap='I'>OnlySticky</emphasis>,
+<emphasis remap='I'>NoStickyAcrossPages</emphasis> / <emphasis remap='I'>StickyAcrossPages</emphasis> / <emphasis remap='I'>OnlyStickyAcrossPages</emphasis>,
+<emphasis remap='I'>NoStickyAcrossDesks</emphasis> / <emphasis remap='I'>StickyAcrossDesks</emphasis> / <emphasis remap='I'>OnlyStickyAcrossDesks</emphasis>,
+<emphasis remap='I'>NoOnTop</emphasis> / <emphasis remap='I'>OnTop</emphasis> / <emphasis remap='I'>OnlyOnTop</emphasis>,
+<emphasis remap='I'>NoOnBottom</emphasis> / <emphasis remap='I'>OnBottom</emphasis> / <emphasis remap='I'>OnlyOnBottom</emphasis>,
+<emphasis remap='I'>Layer m [n]</emphasis>,
+<emphasis remap='I'>UseListSkip</emphasis> / <emphasis remap='I'>OnlyListSkip</emphasis>,
+<emphasis remap='I'>NoDeskSort</emphasis>,
+<emphasis remap='I'>ReverseOrder</emphasis>,
+<emphasis remap='I'>CurrentAtEnd</emphasis>,
+<emphasis remap='I'>IconifiedAtEnd</emphasis>,
+<emphasis remap='I'>UseIconName</emphasis>,
+<emphasis remap='I'>Alphabetic</emphasis> / <emphasis remap='I'>NotAlphabetic</emphasis>,
+<emphasis remap='I'>SortByResource</emphasis>,
+<emphasis remap='I'>SortByClass</emphasis>,
+<emphasis remap='I'>NoHotkeys</emphasis>,
+<emphasis remap='I'>SelectOnRelease</emphasis>.</para>
+
+<para>(Note - normal means not iconic, sticky, or on top)</para>
+
+<para>With the
+<fvwmopt cmd="WindowList" opt="SortByResource"/>
+option windows are alphabetically sorted first by resource class,
+then by resource name and then by window name (or icon name if
+<fvwmopt cmd="WindowList" opt="UseIconName"/>
+is specified).
+<fvwmopt cmd="WindowList" opt="ReverseOrder"/>
+also works in the expected manner.</para>
+
+<para>With the
+<fvwmopt cmd="WindowList" opt="SortByClass"/>
+option windows are sorted just like with
+<emphasis remap='I'>SortByResource</emphasis>,
+but the resource name is not taken into account, only the resource
+class.</para>
+
+<para>The
+<fvwmopt cmd="WindowList" opt="SelectOnRelease"/>
+option works exactly like the
+<fvwmref cmd="MenuStyle"/>
+option with the same name, but overrides the option given in a
+menu style.  By default, this option is set to the left
+<emphasis remap='SM'>Alt</emphasis>
+key.  To switch it off, use
+<emphasis remap='I'>SelectOnRelease</emphasis>
+without a key name.</para>
+
+<para>If you pass in a function via
+<fvwmref cmd="Function"/> funcname,
+it is called within a window context of the selected window:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> IFunc I <fvwmref cmd="Iconify"/> toggle
+WindowList <fvwmref cmd="Function"/> IFunc, NoSticky, CurrentDesk, NoIcons
+</programlisting>
+
+<para>If you use the
+<fvwmopt cmd="WindowList" opt="Layer"/> m <emphasis remap='B'>[</emphasis><emphasis remap='I'>n</emphasis><emphasis remap='B'>]</emphasis>
+option, only windows in layers between m and n are displayed. n
+defaults to m.  With the
+<emphasis remap='I'>ReverseOrder</emphasis>
+option the order of the windows in the list is reversed.</para>
+
+<para>With the
+<fvwmopt cmd="WindowList" opt="CurrentAtEnd"/>
+option the currently focused window (if any) is shown at the
+bottom of the list.  This is mostly intended for simulating the
+Alt-Tab behavior in another GUI.</para>
+
+<para>
+<fvwmopt cmd="WindowList" opt="IconifiedAtEnd"/>
+makes iconified windows be moved to the end of the list.  This is
+also from another GUI.</para>
+
+<para>The
+<fvwmopt cmd="WindowList" opt="NoGeometry"/>
+option causes fvwm to not display the geometries as well as
+the separators which indicate the different desktops.
+<fvwmopt cmd="WindowList" opt="NoGeometryWithInfo"/>
+removes the geometries, but keep the desktop information
+and indicates iconic windows.
+<fvwmopt cmd="WindowList" opt="NoDeskNum"/>
+causes fvwm to not display the desktop number in the geometry
+or before the window title with the
+<fvwmopt cmd="WindowList" opt="NoGeometryWithInfo"/>
+option.
+<fvwmopt cmd="WindowList" opt="NoNumInDeskTitle"/>
+is only useful if a desktop name is defined with the
+<fvwmref cmd="DesktopName"/>
+command. It causes fvwm to not display the desktop number before
+the desktop name.  By default, the WindowList menu have a title
+which indicates the current desk or the selected desktop if the
+<fvwmopt cmd="WindowList" opt="Desk"/>
+condition is used. The
+<fvwmopt cmd="WindowList" opt="NoCurrentDeskTitle"/>
+option removes this title.
+<fvwmopt cmd="WindowList" opt="TitleForAllDesks"/>
+causes fvwm to add a menu title with the desk name and/or number
+before each group of windows on the same desk.
+With
+<fvwmopt cmd="WindowList" opt="NoLayer"/>,
+the layer of the window is not diplayed.  The options
+<fvwmopt cmd="WindowList" opt="ShowPage"/>,
+<fvwmopt cmd="WindowList" opt="ShowPageX"/> and
+<fvwmopt cmd="WindowList" opt="ShowPageY"/>
+enable displaying the page of the window rounded multiples of the
+display size.
+With
+<fvwmopt cmd="WindowList" opt="ShowScreen"/>,
+the window's Xinerama screen number is displayed.</para>
+
+<para>The
+<fvwmopt cmd="WindowList" opt="MaxLabelWidth"/>
+option takes the number of characters to print as its argument.
+No more than that many characters of the window name are visible.</para>
+
+<para>If you wanted to use the
+<emphasis remap='B'>WindowList</emphasis>
+as an icon manager, you could invoke the following:</para>
+
+<programlisting>
+WindowList OnlyIcons, Sticky, OnTop, Geometry
+</programlisting>
+
+<para>(Note - the
+<emphasis remap='I'>Only</emphasis>
+options essentially wipe out all other ones... but the
+<fvwmopt cmd="WindowList" opt="OnlyListSkip"/>
+option which just causes
+<emphasis remap='B'>WindowList</emphasis>
+to only consider the windows with
+<emphasis remap='I'>WindowListSkip</emphasis>
+style.)</para>
+
+</section>

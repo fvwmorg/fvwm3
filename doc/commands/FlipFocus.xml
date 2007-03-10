@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='FlipFocus'>
+<title>FlipFocus</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>FlipFocus</arg>
+    <arg choice='opt'>NoWarp</arg>
+</cmdsynopsis>
+</command>
+
+<para>Executes a
+<fvwmref cmd="Focus"/>
+command as if the user had used the pointer to select the
+window. This command alters the order of the WindowList in the
+same way as clicking in a window to focus, i.e. the target window
+is removed from the
+<emphasis remap='B'>WindowList</emphasis>
+and placed at the start. This command is recommended for use with
+the
+<fvwmref cmd="Direction"/>
+command and in the function invoked from
+<fvwmref cmd="WindowList"/>.</para>
+
+</section>

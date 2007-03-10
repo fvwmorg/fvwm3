@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='copyright'>
+<title>Copyright</title>
+
+<para>Fvwm and all the modules, scripts and other files coming with the  distribution  are  subject to the <acronym>GNU</acronym> General Public License (GPL). Please refer to the COPYING file that came with fvwm for details.</para>
+
+</section>

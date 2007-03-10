@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='WindowId'>
+<title>WindowId</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>WindowId [id] [(conditions)] | [root [screen]] command</arg>
+</cmdsynopsis>
+</command>
+
+
+<para>The
+<emphasis remap='B'>WindowId</emphasis>
+command looks for a specific window
+<emphasis remap='I'>id</emphasis>
+and runs the specified
+<emphasis remap='I'>command</emphasis>
+on it.  The second form of syntax retrieves the window id of the
+root window of the given
+<emphasis remap='I'>screen</emphasis>.
+If no
+<emphasis remap='I'>screen</emphasis>
+is given, the current screen is assumed.  The window indicated by
+<emphasis remap='I'>id</emphasis>
+may belong to a window not managed by fvwm or even a window on a
+different screen.  Although most commands can not operate on such
+windows, there are some exceptions, for example the
+<emphasis remap='B'>WarpToWindow</emphasis>
+command.
+Returns -1 if no window with the given id exists.
+See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
+
+<para>This command implies the conditions
+<emphasis remap='I'>CirculateHit</emphasis>, <emphasis remap='I'>CirculateHitIcon</emphasis> and <emphasis remap='I'>CirculateHitShaded</emphasis>.
+They can be turned off by specifying
+<emphasis remap='I'>!CirculateHit</emphasis>
+etc. explicitly.</para>
+
+<para>Examples:</para>
+
+<programlisting>
+WindowId 0x34567890 <fvwmref cmd="Raise"/>
+WindowId root 1 <fvwmref cmd="WarpToWindow"/> 50 50
+WindowId $0 (Silly_Popup) <fvwmref cmd="Delete"/>
+</programlisting>
+
+<para>In the past this command was mostly useful for functions used with
+the
+<emphasis remap='B'>WindowList</emphasis>
+command, or for selective processing of
+<emphasis remap='B'>FvwmEvent</emphasis>
+calls (as in the last example), but currently these handler functions
+are called within a window context, so this command is not really
+needed in these cases.  Still it may be useful if, for example, the
+window id should be stored in the environment variable for a further
+proceeding.</para>
+
+<programlisting>
+<fvwmref cmd="Pick"/> <fvwmref cmd="SetEnv"/> BOOKMARKED_WINDOW $[w.id]
+WindowId $[BOOKMARKED_WINDOW] <fvwmref cmd="WarpToWindow"/>
+</programlisting>
+
+</section>

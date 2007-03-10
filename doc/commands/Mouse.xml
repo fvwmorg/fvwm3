@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Mouse'>
+<title>Mouse</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>Mouse [(window)] Button Context Modifiers Function</arg>
+</cmdsynopsis>
+</command>
+
+<para>Defines a mouse binding, or removes the binding if
+<fvwmref cmd="Function"/>
+is '-'.
+<emphasis remap='I'>Button</emphasis>
+is the mouse button number.  If
+<emphasis remap='I'>Button</emphasis>
+is zero then any button performs the specified function.  Note
+that only mouse buttons 1 to 5 are fully supported by X11.  Any
+number above this works only partially.  Complex functions can not
+be used with these buttons and neither any operation that requires
+dragging the pointer with the button held.  This is due to
+limitations of X11.  By default, the highest allowed button number
+is 9.</para>
+
+<para><emphasis remap='I'>Context</emphasis>
+describes where the binding applies.  Valid contexts are
+'<fvwmopt cmd="Mouse" opt="R"/>' for the root window,
+'<fvwmopt cmd="Mouse" opt="W"/>' for an application window,
+'<fvwmopt cmd="Mouse" opt="D"/>' for a desktop application (as kdesktop or Nautilus desktop),
+'<fvwmopt cmd="Mouse" opt="T"/>' for a window title-bar,
+'<fvwmopt cmd="Mouse" opt="S"/>' for a window side, top, or bottom bar,
+'<fvwmopt cmd="Mouse" opt="["/>',
+'<fvwmopt cmd="Mouse" opt="]"/>',
+'<fvwmopt cmd="Mouse" opt="-"/>' and
+'<fvwmopt cmd="Mouse" opt="_"/>' for the left, right, top or bottom side only,
+'<fvwmopt cmd="Mouse" opt="F"/>' for a window frame (the corners),
+'&lt;', '^', '&gt;' and
+'<fvwmopt cmd="Mouse" opt="v"/>' for the top
+left, top right, bottom right or bottom left corner,
+'<fvwmopt cmd="Mouse" opt="I"/>' for an icon window, or
+'<fvwmopt cmd="Mouse" opt="0"/>' through
+'<fvwmopt cmd="Mouse" opt="9"/>' for title-bar buttons, or any combination of these letters.
+'<fvwmopt cmd="Mouse" opt="A"/>' is for any context.  For
+instance, a context of "FST" applies when the mouse is anywhere in
+a window's border except the title-bar buttons.  Only 'S' and 'W'
+are valid for an undecorated window.</para>
+
+<para>The special context '<fvwmopt cmd="Mouse" opt="M"/>' for menus can be used to (re)define the menu
+controls. It can only be used alone or together with 'T' for the menu
+title bar.  See the
+<fvwmref sect="menus" opt="menu_bindings" name="Menu Bindings"/>
+section for details.</para>
+
+<para>The special context '<fvwmopt cmd="Mouse" opt="P"/>' controls what buttons that can be used to
+place a window. When using this context no modifiers are allowed
+(<emphasis remap='I'>Modifiers</emphasis>
+must be N), no
+<emphasis remap='I'>window</emphasis>
+is allowed, and the
+<fvwmref cmd="Function"/>
+must be one of
+<emphasis remap='I'>PlaceWindow</emphasis>,
+<emphasis remap='I'>PlaceWindowDrag</emphasis>,
+<emphasis remap='I'>PlaceWindowInteractive</emphasis>,
+<emphasis remap='I'>CancelPlacement</emphasis>,
+<emphasis remap='I'>CancelPlacementDrag</emphasis>,
+<emphasis remap='I'>CancelPlacementInteractive</emphasis> or
+<emphasis remap='I'>-</emphasis>.</para>
+
+<para>
+<fvwmopt cmd="Mouse" opt="PlaceWindow"/>
+makes
+<emphasis remap='I'>Button</emphasis>
+usable for window placement, both for interactive and drag move.
+<fvwmopt cmd="Mouse" opt="CancelPlacement"/>
+does the inverse. That is makes
+<emphasis remap='I'>Button</emphasis>
+to cancel move for both interactive and drag move. It may however
+not override how new windows are resized after being placed. This
+is controlled by the
+<fvwmref cmd="Emulate"/>
+command. Also a window being dragged can always be placed
+by releasing the button hold while dragging, regardless of if it is
+set to
+<emphasis remap='I'>PlaceWindow</emphasis>
+or not.</para>
+
+<para>
+<fvwmopt cmd="Mouse" opt="PlaceWindowDrag"/> and
+<fvwmopt cmd="Mouse" opt="PlaceWindowInteractive"/>/<fvwmopt cmd="Mouse" opt="CancelPlacementDrag"/>
+and <fvwmopt cmd="Mouse" opt="CancelPlacementInteractive"/>
+work as
+<emphasis remap='I'>PlaceWindow</emphasis>/<emphasis remap='I'>CancelPlacement</emphasis>
+with the exception that they only affect either windows dragged /
+placed interactively.</para>
+
+<para>
+<fvwmopt cmd="Mouse" opt="-"/>
+is equivalent to
+<emphasis remap='I'>CancelPlacement</emphasis>.</para>
+
+<para>The following example makes all buttons but button 3 usable for
+interactive placement and makes drag moves started by other buttons
+than one cancel if button 1 is pressed before finishing the move:</para>
+
+<programlisting>
+Mouse 0 P N PlaceWindow
+Mouse 3 P N CancelPlacement
+Mouse 1 P N CancelPlacementDrag
+</programlisting>
+
+
+<para>By default, the binding applies to all windows. You can specify
+that a binding only applies to specific windows by specifying the
+window name in brackets. The window name is a wildcard pattern
+specifying the class, resource or name of the window you want the
+binding to apply to.</para>
+
+<para>The following example shows how the same key-binding can be used to
+perform different functions depending on the window that is focused:</para>
+
+<programlisting>
+<fvwmref cmd="Key"/> (rxvt)  V A C <fvwmref cmd="Echo"/> ctrl-V-in-RXVT
+<fvwmref cmd="Key"/> (*term) V A C <fvwmref cmd="Echo"/> ctrl-V-in-Term
+<fvwmref cmd="Key"/> (*vim)  V A C --
+<fvwmref cmd="Key"/>         V A C <fvwmref cmd="Echo"/> ctrl-V-elsewhere
+</programlisting>
+
+
+<para>A '<fvwmopt cmd="Mouse" opt="--"/>' action indicates that the event should be propagated to the
+specified window to handle. This is only a valid action for
+window-specific bindings.</para>
+
+<para>This example shows how to display the WindowList when Button 3 is
+pressed on an rxvt window:</para>
+
+<programlisting>
+Mouse (rxvt) 3 A A <fvwmref cmd="WindowList"/>
+</programlisting>
+
+
+<para>Note that Fvwm actually intercepts all events for a window-specific
+binding and (if the focused window doesn't match any of the
+bindings) sends a synthetic copy of the event to the window. This
+should be transparent to most applications, however (for security
+reasons) some programs ignore these synthetic events by default -
+xterm is one of them. To enable handling of these events, add the
+following line to your ~/.Xdefaults file:</para>
+
+
+<programlisting>
+XTerm*allowSendEvents:  true
+</programlisting>
+
+
+<para><emphasis remap='I'>Modifiers</emphasis>
+is any combination of
+'<fvwmopt cmd="Mouse" opt="N"/>' for no modifiers,
+'<fvwmopt cmd="Mouse" opt="C"/>' for control,
+'<fvwmopt cmd="Mouse" opt="S"/>' for shift,
+'<fvwmopt cmd="Mouse" opt="M"/>' for Meta,
+'<fvwmopt cmd="Mouse" opt="L"/>' for Caps-Lock or
+'<fvwmopt cmd="Mouse" opt="A"/>' for any
+modifier. For example, a modifier of "SM" applies when both the
+<emphasis remap='SM'>Meta</emphasis>
+and
+<emphasis remap='SM'>Shift</emphasis>
+keys are down.  X11 modifiers mod1 through mod5 are represented as
+the digits '1' through '5'.  The modifier 'L' is ignored by
+default.  To turn it on, use the
+<fvwmref cmd="IgnoreModifiers"/>
+command.</para>
+
+<para><fvwmref cmd="Function"/>
+is one of fvwm's commands.</para>
+
+<para>The title-bar buttons are numbered with odd numbered buttons on
+the left side of the title-bar and even numbers on the
+right. Smaller-numbered buttons are displayed toward the outside
+of the window while larger-numbered buttons appear toward the
+middle of the window (0 is short for 10).  In summary, the buttons
+are numbered:</para>
+
+<programlisting>
+1 3 5 7 9    0 8 6 4 2
+</programlisting>
+
+<para>The highest odd numbered button which has an action bound to it
+determines the number of buttons drawn on the left side of the
+title bar.  The highest even number determines the number of right
+side buttons which are drawn.  Actions can be bound to either
+mouse buttons or keyboard keys.</para>
+
+</section>

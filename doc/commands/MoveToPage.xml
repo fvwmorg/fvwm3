@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='MoveToPage'>
+<title>MoveToPage</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>MoveToPage</arg>
+    <arg choice='plain'>[options] [x[p|w] y[p|w]] | [prev]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Moves the selected window to another page (x,y).  The upper left
+page is (0,0), the upper right is (M,0), where M is one less than
+the current number of horizontal pages specified in the
+<fvwmref cmd="DesktopSize"/>
+command.  Similarly the lower left page is (0,N), and the lower
+right page is (M,N).  Negative page numbers refer to pages from
+the rightmost/lowest page.  If
+<fvwmopt cmd="MoveToPage" opt="x"/> and
+<fvwmopt cmd="MoveToPage" opt="y"/>
+are not given, the window is moved to the current page (a window
+that has the focus but is off-screen can be retrieved with this).
+Moving windows to a page relative to the current page can be
+achieved by adding a trailing
+'<fvwmopt cmd="MoveToPage" opt="p"/>'
+after any or both numerical arguments.  To move the window
+relative to its current location, add a trailing
+'<fvwmopt cmd="MoveToPage" opt="w"/>'.
+To move a window to the previous page use
+<fvwmopt cmd="MoveToPage" opt="prev"/>
+as the single argument.</para>
+
+<para>Windows are usually not moved beyond desk boundaries.</para>
+
+<para>Possible
+<emphasis remap='I'>options</emphasis>
+are
+<fvwmopt cmd="MoveToPage" opt="wrapx"/> and
+<fvwmopt cmd="MoveToPage" opt="wrapy"/>
+to wrap around the x or y coordinate when the window is moved
+beyond the border of the desktop. For example, with
+<emphasis remap='I'>wrapx</emphasis>,
+when the window moves past the right edge of the desktop, it
+reappears on the left edge.  The options
+<fvwmopt cmd="MoveToPage" opt="nodesklimitx"/> and
+<fvwmopt cmd="MoveToPage" opt="nodesklimity"/>
+allow moving windows beyond the desk boundaries in x and y
+direction (disabling the
+<emphasis remap='I'>wrapx</emphasis> and <emphasis remap='I'>wrapy</emphasis>
+options).</para>
+
+<para>Examples:</para>
+
+<programlisting>
+# <fvwmref cmd="Move"/> window to page (2,3)
+MoveToPage 2 3
+
+# <fvwmref cmd="Move"/> window to lowest and rightmost page
+MoveToPage -1 -1
+
+# <fvwmref cmd="Move"/> window to last page visited
+MoveToPage prev
+
+# <fvwmref cmd="Move"/> window two pages to the right and one
+# page up, wrap at desk boundaries
+MoveToPage wrapx wrapy +2p -1p
+</programlisting>
+
+</section>

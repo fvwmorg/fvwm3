@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Break'>
+<title>Break</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>Break</arg>
+    <arg choice='opt'>levels</arg>
+</cmdsynopsis>
+</command>
+
+<para>If the break command is used in a function, function execution is
+terminated immediately.  Further commands of the function are not
+processed.  Normally, all nested invocations of complex functions
+are left.  An optional integer number
+<emphasis remap='I'>levels</emphasis>
+may be given to break out of the given number of nested functions
+and continue execution of a higher level function.
+The
+<emphasis remap='B'>Break</emphasis>
+command always has the return code -2.  Example:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> PickWindowRaiseAndDeiconify
++ I <fvwmref cmd="Pick"/>
++ I <fvwmref cmd="TestRc"/> (Error) Break
++ I <fvwmref cmd="Raise"/>
++ I <fvwmref cmd="Iconify"/> off
+</programlisting>
+
+
+</section>

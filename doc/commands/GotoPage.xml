@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='GotoPage'>
+<title>GotoPage</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>GotoPage <emphasis>prev</emphasis> | [<emphasis remap='I'>options</emphasis>] <emphasis remap='I'>x</emphasis> [<emphasis remap='I'>p</emphasis>] <emphasis remap='I'>y</emphasis> [<emphasis remap='I'>p</emphasis>]
+	</arg>
+</cmdsynopsis>
+</command>
+
+<para>
+Moves the desktop viewport to page (x,y).  The upper left page is
+(0,0), the upper right is (M,0), where M is one less than the
+current number of horizontal pages specified in the
+<fvwmref cmd="DeskTopSize"/>
+command.  The lower left page is (0,N), and the lower right page
+is (M,N), where N is the desktop's vertical size as specified in the
+<fvwmref cmd="DeskTopSize"/>
+command.  To switch to a page relative to the current one add a
+trailing
+'<emphasis remap='I'>p</emphasis>'
+after any or both numerical arguments.</para>
+
+<para>Possible
+<emphasis remap='I'>options</emphasis>
+are
+<emphasis remap='I'>wrapx</emphasis> and <emphasis remap='I'>wrapy</emphasis>
+to wrap around the x or y coordinate when the viewport is moved
+beyond the border of the desktop.</para>
+
+<para>To go to the last visited page use
+<emphasis remap='I'>prev</emphasis>
+as the first argument.  The
+<emphasis remap='B'>GotoPage</emphasis>
+function should not be used in a pop-up menu.</para>
+
+<para>Examples:</para>
+
+<programlisting>
+# Go to page (2,3)
+GotoPage 2 3
+
+# Go to lowest and rightmost page
+GotoPage -1 -1
+
+# Go to last page visited
+GotoPage prev
+
+# Go two pages to the right and one page up
+GotoPage +2p -1p
+</programlisting>
+
+
+</section>

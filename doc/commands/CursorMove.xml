@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='CursorMove'>
+<title>CursorMove</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>CursorMove horizontal[p] vertical[p]</arg>
+</cmdsynopsis>
+</command>
+
+<para>Moves the mouse pointer by
+<emphasis remap='I'>horizontal</emphasis>
+pages in the X direction and
+<emphasis remap='I'>vertical</emphasis>
+pages in the Y direction.  Either or both entries may be
+negative. Both horizontal and vertical values are expressed in
+percent of pages, so</para>
+
+<programlisting>
+CursorMove 100 100
+</programlisting>
+
+<para>means to move down and right by one full page.</para>
+
+<programlisting>
+CursorMove 50 25
+</programlisting>
+
+<para>means to move right half a page and down a quarter of a
+page. Alternatively, the distance can be specified in pixels by
+appending a
+'<fvwmopt cmd="CursorMove" opt="p"/>'
+to the horizontal and/or vertical specification.  For example</para>
+
+<programlisting>
+CursorMove -10p -10p
+</programlisting>
+
+<para>means move ten pixels up and ten pixels left.  The CursorMove
+function should not be called from pop-up menus.</para>
+
+</section>

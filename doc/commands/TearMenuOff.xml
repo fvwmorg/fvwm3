@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='TearMenuOff'>
+<title>TearMenuOff</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>TearMenuOff</arg>
+</cmdsynopsis>
+</command>
+
+<para>When assigned to a menu item, it inserts a tear off bar into the
+menu (a horizontal broken line).  Activating that item tears off
+the menu.  If the menu item has a label, it is shown instead of
+the broken line.  If used outside menus, this command does
+nothing.  Examples:</para>
+
+<programlisting>
+<fvwmref cmd="AddToMenu"/> WindowMenu
++ I "" TearMenuOff
+
+<fvwmref cmd="AddToMenu"/> RootMenu
++ I "click here to tear me off" TearMenuOff
+</programlisting>
+
+</section>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='icccm_compliance'>
+<title>ICCCM Compliance</title>
+
+<para>Fvwm attempts to be
+<acronym>ICCCM</acronym>
+2.0 compliant.  Check
+<ulink url='http://tronche.com/gui/x/icccm/'>http://tronche.com/gui/x/icccm/</ulink> for more info. In addition,
+<acronym>ICCCM</acronym>
+states that it should be possible for applications to receive any
+keystroke, which is not consistent with the keyboard shortcut
+approach used in fvwm and most other window managers.  In
+particular you cannot have the same keyboard shortcuts working
+with your fvwm and another fvwm running within Xnest (a nested X
+server running in a window).  The same problem exists with mouse
+bindings.</para>
+
+<para>The
+<acronym>ICCCM</acronym>
+states that windows possessing the property</para>
+
+<literallayout remap='.nf'>
+WM_HINTS(WM_HINTS):
+    Client accepts input or input focus: False
+</literallayout>
+
+<para>should not be given the keyboard input focus by the window
+manager. These windows can take the input focus by themselves,
+however.  A number of applications set this property, and yet
+expect the window manager to give them the keyboard focus anyway,
+so fvwm provides a window style,
+<fvwmref cmd="Style" opt="Lenience"/>, 
+which allows fvwm to overlook this
+<acronym>ICCCM</acronym>
+rule.  Even with this window style it is not guaranteed that the
+application accepts focus.</para>
+
+<para>The differences between
+<acronym>ICCCM</acronym>
+1.1 and 2.0 include the ability to take over from a running
+<acronym>ICCCM</acronym>
+2.0 compliant window manager; thus</para>
+
+<command>fvwm; vi ~/.fvwm/config; fvwm -replace</command>
+
+<para>resembles the
+<fvwmref cmd="Restart"/>
+command.  It is not exactly the same, since killing the previously
+running wm may terminate your X session, if the wm was started as
+the last client in your
+<markup>.Xclients</markup> or <markup>.Xsession</markup>
+file.</para>
+
+<para>Further additions are support for client-side colormap
+installation (see the
+<acronym>ICCCM</acronym>
+for details) and the urgency hint. Clients can set this hint in
+the WM_HINTS property of their window and expect the window manager
+to attract the user's attention to the window.  Fvwm has two re-definable
+functions for this purpose, "UrgencyFunc" and "UrgencyDoneFunc", which
+are executed when the flag is set/cleared.  Their default definitions are:</para>
+
+<programlisting>
+<fvwmref cmd="AddToFunc"/> UrgencyFunc
+ + I <fvwmref cmd="Iconify"/> off
+ + I <fvwmref cmd="FlipFocus"/>
+ + I <fvwmref cmd="Raise"/>
+ + I <fvwmref cmd="WarpToWindow"/> 5p 5p
+<fvwmref cmd="AddToFunc"/> UrgencyDoneFunc
+ + I <fvwmref cmd="Nop"/>
+</programlisting>
+
+</section>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='ChangeMenuStyle'>
+<title>ChangeMenuStyle</title>
+
+<command>
+<cmdsynopsis>
+    <arg choice='plain'>ChangeMenuStyle</arg>
+    <arg choice='plain'>menustyle</arg>
+    <arg choice='plain'>menu ...</arg>
+</cmdsynopsis>
+</command>
+
+<para>Changes the menu style of
+<emphasis remap='I'>menu</emphasis> to <emphasis remap='I'>menustyle</emphasis>.
+You may specify more than one menu in each call of
+<emphasis remap='B'>ChangeMenuStyle</emphasis>.</para>
+
+</section>

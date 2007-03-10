@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='ClickTime'>
+<title>ClickTime</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>ClickTime</arg>
+	<arg choice='opt'>delay</arg>
+</cmdsynopsis>
+</command>
+
+<para>Specifies the maximum delay in milliseconds between a button press
+and a button release for the
+<fvwmref cmd="Function"/>
+command to consider the action a mouse click.  The default delay
+is 150 milliseconds.  Omitting the delay value resets the
+<emphasis remap='B'>ClickTime</emphasis>
+to the default.</para>
+
+</section>

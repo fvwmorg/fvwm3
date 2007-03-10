@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='LocalePath'>
+<title>LocalePath</title>
+
+<command>
+<cmdsynopsis>
+	<arg choice='plain'>LocalePath path</arg>
+</cmdsynopsis>
+</command>
+
+<para>Specifies a colon separated list of "locale path" in which to
+search for string translations. A locale path is constituted by a
+directory path and a text domain separated by a semicolon
+(';'). As an example the default locale path is:</para>
+
+<programlisting>
+/install_prefix/share/locale;fvwm
+</programlisting>
+
+<para>where install_prefix is the fvwm installation directory. With such
+a locale path translations are searched for in</para>
+
+<programlisting>
+/install_prefix/share/locale/lang/LC_MESSAGES/fvwm.mo
+</programlisting>
+
+<para>where
+<emphasis remap='I'>lang</emphasis>
+depends on the locale. If no directory is given the default
+directory path is assumed. If no text domain is given,
+<command>fvwm</command>
+is assumed. Without argument the default locale path is restored.</para>
+
+<para>As for the
+<fvwmref cmd="ImagePath"/>
+command,
+<emphasis remap='I'>path</emphasis>
+may contain environment variables and a '+' to append or prepend
+the locale path easily.</para>
+
+<para>For example, the fvwm-themes package uses</para>
+
+<programlisting>
+LocalePath ";fvwm-themes:+"
+</programlisting>
+
+<para>to add locale catalogs.</para>
+
+<para>The default fvwm catalog contains a few strings used by the fvwm
+executable itself (Desk and Geometry) and strings used in some
+default configuration files and
+<fvwmref mod="FvwmForm"/>
+configuration. You can take a look at the po/ subdirectory of the
+fvwm source to get the list of the strings with a possible
+translation in various languages. At present, very few languages
+are supported.</para>
+
+<para>The main use of locale catalogs is via the "$[gt.string]"
+parameter:</para>
+
+<programlisting>
+<fvwmref cmd="DestroyMenu"/> MenuFvwmWindowOps
+<fvwmref cmd="AddToMenu"/>   MenuFvwmWindowOps "$[gt.Window Ops]" <fvwmref cmd="Title"/>
++ "$[gt.&amp;Move]"              <fvwmref cmd="Move"/>
++ "$[gt.&amp;Resize]"            <fvwmref cmd="Resize"/>
++ "$[gt.R&amp;aise]"             <fvwmref cmd="Raise"/>
++ "$[gt.&amp;Lower]"             <fvwmref cmd="Lower"/>
++ "$[gt.(De)&amp;Iconify]"       <fvwmref cmd="Iconify"/>
++ "$[gt.(Un)&amp;Stick]"         <fvwmref cmd="Stick"/>
++ "$[gt.(Un)Ma&amp;ximize]"      <fvwmref cmd="Maximize"/>
++ "" <fvwmref cmd="Nop"/>
++ "$[gt.&amp;Close]"             <fvwmref cmd="Close"/>
++ "$[gt.&amp;Destroy]"           <fvwmref cmd="Destroy"/>
+</programlisting>
+
+<para>gives a menu in the locale languages if translations are
+available.</para>
+
+<para>Note that the
+<fvwmref mod="FvwmTaskBar"/>
+module has its own catalog and that the
+<fvwmref mod="FvwmScript"/>
+module has a set of special instructions for string
+translation. It is out of the scope of this discussion to explain
+how to build locale catalogs. Please refer to the <acronym>GNU</acronym> gettext
+documentation.</para>
+
+</section>
