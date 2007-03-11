@@ -1,8 +1,12 @@
 2007-03-11  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* doc/Makefile.am
+	* doc/fvwm/Makefile.am
+	* doc/commands/Makefile.am
+	* doc/modules/Makefile.am
 
 	bugfix: 'make dist' failed cos I moved 'scott.notes' to util/ subdir.
+	bugfix: out-of-tree builds failed due to broken dependency.
 
 2007-03-10  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 

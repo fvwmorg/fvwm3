@@ -27,13 +27,13 @@ clean:
 # All HTML output is generated from XML files.
 %.html : $(srcdir)/%.xml
 	$(QUIET) echo "Generating $@"
-	$(QUIET) $(XSLTPROC) --xinclude --stringparam html.stylesheet "../style.css" -o $@ $(XSL_FILE) $<
+	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" -o $@ $(XSL_FILE) $<
 
-fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(srcdir)/../fvwm.ent $(COMMAND_FILES)
+fvwm.man.html: $(XML_FILES) $(XSL_FILE) ../fvwm.ent $(COMMAND_FILES)
 	$(QUIET) echo "Generating $@"
-	$(QUIET) $(XSLTPROC) --xinclude --stringparam html.stylesheet "../style.css" --stringparam twdt 1 -o $@ $(XSL_FILE) $(srcdir)/fvwm.man.xml
+	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" --stringparam twdt 1 -o $@ $(XSL_FILE) $(srcdir)/fvwm.man.xml
 
 fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 	$(QUIET) echo "Generating $@ man page"
-	$(QUIET) $(XSLTPROC) --xinclude $(XSL_MAN_FILE) $(srcdir)/fvwm.man.xml
+	$(QUIET) $(XSLTPROC) --path .. --xinclude $(XSL_MAN_FILE) $(srcdir)/fvwm.man.xml
 #	$(QUIET) @PERL@ $(srcdir)/../util/string.subst.pl fvwm.1 > fvwm.1.s2 && mv fvwm.1.s2 fvwm.1

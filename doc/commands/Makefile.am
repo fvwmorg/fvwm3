@@ -21,4 +21,4 @@ clean:
 # All HTML output is generated from XML files.
 %.html : $(srcdir)/%.xml
 	$(QUIET) echo "Generating $@"
-	$(QUIET) $(XSLTPROC) --xinclude --stringparam html.stylesheet "../style.css" -o $@ $(XSL_FILE) $<
+	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" -o $@ $(XSL_FILE) $<
