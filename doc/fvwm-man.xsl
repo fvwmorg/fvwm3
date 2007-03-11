@@ -57,48 +57,62 @@
 </xsl:template>
 
 <xsl:template match="section">
-    <xsl:apply-templates/>
+	<xsl:apply-templates/>
 </xsl:template>
-<xsl:template match="title">
-  <xsl:text>.SH </xsl:text>
-  <xsl:apply-templates/>
-  <xsl:text>&#10;</xsl:text>
+
+
+<xsl:template match="section/title">
+	<xsl:text>.SH </xsl:text>
+	<xsl:call-template name="string.upper">
+		<xsl:with-param name="string">
+			<xsl:apply-templates/>
+		</xsl:with-param>
+	</xsl:call-template>
+	<xsl:text>&#10;</xsl:text>
 </xsl:template>
+
+
+<xsl:template match="section/section/title">
+	<xsl:text>.SS </xsl:text>
+	<xsl:apply-templates/>
+	<xsl:text>&#10;</xsl:text>
+</xsl:template>
+
 
 <!-- fvwmopt -->
 <xsl:template match="fvwmopt">
-  <xsl:text>\fI</xsl:text>
-  <xsl:value-of select="@opt"/>
-  <xsl:text>\fR</xsl:text>
+	<xsl:text>\fI</xsl:text>
+	<xsl:value-of select="@opt"/>
+	<xsl:text>\fR</xsl:text>
 </xsl:template>
 
 <!-- fvwmref -->
 <xsl:template match="fvwmref">
-  <xsl:choose>
-	  <xsl:when test="@sect">
-		<xsl:text>\fB</xsl:text>
-		<xsl:value-of select="@name"/>
+	<xsl:choose>
+		<xsl:when test="@sect">
+			<xsl:text>\fB</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>\fR</xsl:text>
+		</xsl:when>
+		<xsl:when test="@opt">
+			<xsl:text>\fI</xsl:text>
+			<xsl:value-of select="@opt"/>
+			<xsl:text>\fR</xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text>\fB</xsl:text>
+			<xsl:choose>
+				<xsl:when test="@cmd">
+					<xsl:value-of select="@cmd"/>
+				</xsl:when>
+				<xsl:when test="@mod">
+					<xsl:value-of select="@mod"/>
+				</xsl:when>
+				<!-- anything else should be an error -->
+			</xsl:choose>
 		<xsl:text>\fR</xsl:text>
-	  </xsl:when>
-	  <xsl:when test="@opt">
-		<xsl:text>\fI</xsl:text>
-		<xsl:value-of select="@opt"/>
-		<xsl:text>\fR</xsl:text>
-	  </xsl:when>
-	  <xsl:otherwise>
-		<xsl:text>\fB</xsl:text>
-		<xsl:choose>
-		  <xsl:when test="@cmd">
-			<xsl:value-of select="@cmd"/>
-		  </xsl:when>
-		  <xsl:when test="@mod">
-			<xsl:value-of select="@mod"/>
-		  </xsl:when>
-		  <!-- anything else should be an error -->
-		</xsl:choose>
-		<xsl:text>\fR</xsl:text>
-	  </xsl:otherwise>
-  </xsl:choose>
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 
 
@@ -120,7 +134,7 @@
 
 <xsl:template name="get.fvwm.metadata">
 <title>
-	<xsl:value-of select="artheader/title"/>
+	<xsl:value-of select="artheader/titleabbrev"/>
 </title>
 <section>
 	<xsl:text>1</xsl:text>
@@ -131,6 +145,7 @@
 <source>
 </source>
 <manual>
+	<xsl:value-of select="artheader/title"/>
 </manual>
 </xsl:template>
 
@@ -349,3 +364,6 @@
   </xsl:template>
 
 </xsl:stylesheet>
+
+<!-- vim:ts=2 sw=2
+-->

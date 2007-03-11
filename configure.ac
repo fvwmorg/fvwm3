@@ -253,23 +253,45 @@ esac
 AM_CHECK_PKG_CONFIG
 
 
-# Building HTML documentation
-problem_htmldoc=""
+# Building man pages & HTML documentation (from XML source).
+problem_mandoc=""
+AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, "")
 
+AC_ARG_ENABLE(mandoc,
+  [  --disable-mandoc       disable generation of man pages],
+  [ if test x"$enableval" = xyes; then
+		with_mandoc="yes, check"
+	else
+		with_mandoc="no"
+		problem_mandoc=": Explicitly disabled"
+	fi ],
+  [ with_mandoc="not specified, check" ]
+)
+
+if test x"$with_mandoc" != xno; then
+	if test x"$XSLTPROC" = "x" ; then
+		with_mandoc="no"
+		problem_mandoc=": No xsltproc found in PATH"
+	else
+		with_mandoc="yes"
+	fi
+fi
+AM_CONDITIONAL([FVWM_BUILD_MANDOC], [test x"$with_mandoc" = xyes])
+
+
+problem_htmldoc=""
 AC_ARG_ENABLE(htmldoc,
-  [  --disable-htmldoc       disable generation of HTML documentation],
+  [  --enable-htmldoc       disable generation of HTML documentation],
   [ if test x"$enableval" = xyes; then
 		with_htmldoc="yes, check"
 	else
 		with_htmldoc="no"
 		problem_htmldoc=": Explicitly disabled"
 	fi ],
-  [ with_htmldoc="not specified, check" ]
+  [ with_htmldoc="no" ]
 )
 
 if test x"$with_htmldoc" != xno; then
-#	SCoTT was here
-	AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, "")
 	if test x"$XSLTPROC" = "x" ; then
 		with_htmldoc="no"
 		problem_htmldoc=": No xsltproc found in PATH"
@@ -1694,6 +1716,7 @@ FVWM Configuration:
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm
   With Xrender image support?         $with_xrender$problem_xrender
+  Build man pages?                    $with_mandoc$problem_mandoc
   Build HTML documentation?           $with_htmldoc$problem_htmldoc
 
 See INSTALL.fvwm for the description of what this may mean."

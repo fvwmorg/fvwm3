@@ -1,16 +1,24 @@
 2007-03-11  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
-	* doc/Makefile.am
-	* doc/fvwm/Makefile.am
-	* doc/commands/Makefile.am
-	* doc/modules/Makefile.am
+	* doc/Makefile.am:
+	* doc/fvwm/Makefile.am:
+	* doc/commands/Makefile.am:
+	* doc/modules/Makefile.am:
+	* doc/README:
+	* configure.ac:
 
 	bugfix: 'make dist' failed cos I moved 'scott.notes' to util/ subdir.
 	bugfix: out-of-tree builds failed due to broken dependency.
+	Make man page have same header as old one.
+	Fix man page indentation.
+	Make text of top-level man page sections all uppercase.
+	Added --disable-mandoc option.
+	HTML doc generation is off by default: use --enable-htmldoc.
+	Added more info in doc/README about XML commands to use.
 
 2007-03-10  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
-	* NEWS
+	* NEWS:
 	* Everything in the 'doc' subdirectory.
 
 	XML source to generate man page & HTML documentation.
@@ -1943,7 +1951,7 @@
 	* NEWS:
 	FvwmPager !IconTitle style bugfix.
 
-2006-07-31  Scott Smedley  <ss@aao.gov.au>
+2006-07-31  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* fvwm/fvwm.1.in:
 	Updated description of Wait command in man page.
@@ -2090,7 +2098,7 @@
 	* fvwm/expand.c (expand_args_extended):
 	Fix segfault when called with a tokenless string for single arguments.
 
-2006-07-12  Scott Smedley  <ss@aao.gov.au>
+2006-07-12  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 	* docs/FAQ:
 	Usage of FvwmAuto module in FAQ 7.17 was incorrect.
 	Reported by Serge Koksharov.
@@ -2107,7 +2115,7 @@
 	* configure.ac:
 	added O_NOFOLLOW replacement and always include fcntl.h
 
-2006-07-12  Scott Smedley  <ss@aao.gov.au>
+2006-07-12  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 	* libs/Parse.c:
 	Added DV's mailing-list comments about how PeekToken & GetNextToken
 	work as comments to the source code. (slightly modified)
@@ -2124,7 +2132,7 @@
 	* configure.ac:
 	Added check for lstat.
 
-2006-07-12  Scott Smedley  <ss@aao.gov.au>
+2006-07-12  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 	* fvwm/schedule.c:
 	* NEWS:
 	* AUTHORS:

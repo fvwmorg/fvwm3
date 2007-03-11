@@ -13,12 +13,19 @@ COMMAND_FILES=$(shell ls $(srcdir)/../commands/*.xml)
 # SS: Hmmm, I'm not sure if all versions of make support patsubst.	
 HTML_FILES=$(patsubst %,%.html,$(SECTIONS))
 XML_FILES=$(patsubst %,$(srcdir)/%.xml,$(SECTIONS))
+EXTRA_DIST=$(XML_FILES)
+BUILD_FILES=
 
 if FVWM_BUILD_HTMLDOC
 doc_DATA=$(HTML_FILES)
-EXTRA_DIST=$(XML_FILES)
-all: $(HTML_FILES) fvwm.1
+BUILD_FILES+=$(HTML_FILES)
 endif
+
+if FVWM_BUILD_MANDOC
+BUILD_FILES+=fvwm.1
+endif
+
+all: $(BUILD_FILES)
 
 QUIET=@
 clean:
@@ -36,4 +43,3 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) ../fvwm.ent $(COMMAND_FILES)
 fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 	$(QUIET) echo "Generating $@ man page"
 	$(QUIET) $(XSLTPROC) --path .. --xinclude $(XSL_MAN_FILE) $(srcdir)/fvwm.man.xml
-#	$(QUIET) @PERL@ $(srcdir)/../util/string.subst.pl fvwm.1 > fvwm.1.s2 && mv fvwm.1.s2 fvwm.1

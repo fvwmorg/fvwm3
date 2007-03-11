@@ -2,9 +2,10 @@
 # $Id$
 
 docdir=@FVWM_DOCDIR@/images
+EXTRA_DIST=fvwm.logo.png fvwm.logo2.png m.logo.png
+
 if FVWM_BUILD_HTMLDOC
-doc_DATA=fvwm.logo.png fvwm.logo2.png m.logo.png
-EXTRA_DIST=$(doc_DATA)
+doc_DATA=$(EXTRA_DIST)
 endif
 
 all:

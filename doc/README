@@ -5,11 +5,16 @@ This directory contains FVWM XML documentation. It is configured to output
 an fvwm.1 man page & a plethora of HTML files - all from the same (XML)
 source.
 
-If you do not want to produce this documentation please use:
+By default, only the man page is generated. If you would like to
+generate the HTML documentation, use:
 
-./configure --disable-htmldoc
+./configure --enable-htmldoc
 
-Once it is built, you should be able to point your browser to:
+If you do not want to generate the man page, use:
+
+./configure --disable-mandoc
+
+Once it is built, you should be able to point your web browser to:
 
 file:///usr/local/share/doc/fvwm/index.html
 
@@ -28,7 +33,7 @@ The XML syntax is intuitive - a cursory inspection of a few XML
 files should suffice to allow even a novice user to make their changes.
 However, there are a few idiosyncrasies worth pointing out:
 
-* Use <fvwmref cmd="Command"> when referring to an FVWM command. eg:
+* Use <fvwmref cmd="Command"/> when referring to an FVWM command. eg:
 
   <fvwmref cmd="Style"/>
 
@@ -36,19 +41,33 @@ However, there are a few idiosyncrasies worth pointing out:
   Caveat: don't use <fvwmref> to reference commands that are actually
   being described. ie. In the Style.xml file, you won't see any
   <fvwmref>s to the Style command.
-* Use, <fvwmref cmd="Command" opt="Option"> when _referring_ to an FVWM
+* Use <fvwmref cmd="Command" opt="Option"/> when _referring_ to an FVWM
   command option. eg:
 
-  <fvwmref cmd="Style" opt="Font>
+  <fvwmref cmd="Style" opt="Font/>
 
   This will create a link to the Font option of the Style command.
-* Use, <fvwmopt cmd="Command" opt="Option"> when _describing_ an
+* Use <fvwmopt cmd="Command" opt="Option"> when _describing_ an
   option to a command. eg:
 
-	<fvwmopt cmd="Style" opt="Font">
+	<fvwmopt cmd="Style" opt="Font"/>
   This will highlight the option name & allow the option to be
   referenced elsewhere.
-* Use <htmlonly> when you only want the text to appear in HTML output.
-* Use <manonly> when you only want the text to appear in man-page output.
+* Use <fvwmref mod="Module"/> when referring to an FVWM module. eg:
 
+  <fvwmref mod="FvwmPager"/>
+
+  This will create a link to the FvwmPager module (in HTML output).
+* Use <fvwmref sect="filename" opt="option" name="text"/> when refering
+  to a different section.
+
+  <fvwmref sect="colorGradients" opt="color_gradients" name="Color Gradients"/>
+
+* Use <htmlonly> to wrap text that should only appear in HTML output.
+* Use <manonly> to wrap text that should only only appear in man-page output.
+* Use <filename> for filenames.
+* Use <envar> for environment variables.
+* Use <ulink> for links to web pages.
+* Use <acronym> for acronyms.
+* Use <emphasis> for key names.
 
