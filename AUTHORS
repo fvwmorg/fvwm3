@@ -83,7 +83,7 @@ command. Window-specific key/mouse bindings. FvwmButtons: ActiveIcon,
 ActiveTitle, ActiveColorset, PressIcon, PressTitle & PressColorset options.
 FvwmWindowMenu: rewrote to use WindowList tracker. Version test condition.
 Added "Periodic" option to Schedule command. Converted manpage into XML
-source to generate HTML documenation & (auto-generated) manpage.
+source to generate HTML documentation & (auto-generated) manpage.
 
 Francis Litterio:
 Fixed building FvwmScript under cygwin.  Added CenterPlacement style.

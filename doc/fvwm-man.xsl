@@ -149,6 +149,15 @@
 </manual>
 </xsl:template>
 
+<!-- escape special characters (as for <refentry>) -->
+<xsl:template match="//article//text()">
+  <xsl:call-template name="escape.roff.specials">
+    <xsl:with-param name="content">
+      <xsl:value-of select="."/>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:template>
+
 
   <!-- ==================================================================== -->
 

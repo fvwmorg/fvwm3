@@ -47,7 +47,9 @@ but there is a timeout so fvwm eventually gets going.</para>
 <para>As an example, starting the pager this way hangs fvwm until
 the timeout, but the following should work well:</para>
 
-<command>fvwm -c "<fvwmref cmd="AddToFunc"/> StartFunction I <fvwmref cmd="Module"/> <fvwmref mod="FvwmPager"/>"</command>
+<programlisting>
+fvwm -c "<fvwmref cmd="AddToFunc"/> StartFunction I <fvwmref cmd="Module"/> <fvwmref mod="FvwmPager"/>"
+</programlisting>
 
   </listitem>
   </varlistentry>
@@ -184,7 +186,6 @@ colors. This may lead to some color problems (and nothing can be
 done). XFree-4.3 or better pre-allocate only 85 colors.  If no
 pre-allocated palette is auto detected the defaults are as follow:</para>
 
-&fixme; <!-- <thead> in <informaltable> output twice -->
 
 <informaltable>
 <tgroup cols='3' align='left'>
