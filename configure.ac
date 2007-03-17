@@ -691,7 +691,7 @@ AC_SUBST(png_CFLAGS)
 AC_C_BIGENDIAN
 
 # ********* rsvg
-rsvg_min_version=2.13.91
+rsvg_min_version=2.13.92
 AH_TEMPLATE([HAVE_RSVG], [Define if librsvg library is used.])
 
 AC_ARG_ENABLE(rsvg,

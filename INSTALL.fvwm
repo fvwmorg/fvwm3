@@ -378,7 +378,7 @@ This option disables Xrender support completely.
   --disable-rsvg                disable scalable vector graphics (SVG images)
   ~~~~~~~~~~~~~~
 Fvwm can use the librsvg library to render SVG files into icons and
-images. You need a librsvg version >= 2.13.91 that uses Cairo as the
+images. You need a librsvg version >= 2.13.92 that uses Cairo as the
 rendering backend. This option disables SVG image loading support.
 
 

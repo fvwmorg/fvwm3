@@ -1,5 +1,12 @@
 2007-03-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* libs/PictureBase.c (PictureFindImageFile):
+	fix for segfault with svg-support enabled
+
+	* INSTALL.fvwm (http):
+	* configure.ac (png_CFLAGS):
+	raise librsvg dependeny due to bug with 2.13.91
+
 	* fvwm/cursor.c (CMD_CursorStyle):
 	remove unused static variable nocursor
 

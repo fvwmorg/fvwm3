@@ -257,6 +257,10 @@ char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
 	{
 		pathlist = imagePath;
 	}
+	if (icon == NULL)
+	{
+		return NULL;
+	}
 
 	full_filename = searchPath(pathlist, icon, ".gz", type);
 
