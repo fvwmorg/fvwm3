@@ -286,28 +286,22 @@ void CMD_CursorStyle(F_CMD_ARGS)
 		if (StrEquals("none", newcursor) ||
 		    StrEquals("tiny", newcursor))
 		{
-			static Pixmap nocursor = None;
 			XColor nccol;
 
-			if (nocursor == None)
+			if (Scr.FvwmCursors[index])
 			{
-				if (Scr.FvwmCursors[index])
-				{
-					XFreeCursor(
-						dpy, Scr.FvwmCursors[index]);
-				}
-				XSetForeground(
-					dpy, Scr.MonoGC,
-					(tolower(*newcursor) == 'n') ? 0 : 1);
-				XFillRectangle(
-					dpy, Scr.ScratchMonoPixmap, Scr.MonoGC,
-					0, 0, 1, 1);
-				Scr.FvwmCursors[index] = XCreatePixmapCursor(
-					dpy, Scr.ScratchMonoPixmap,
-					Scr.ScratchMonoPixmap, &nccol, &nccol,
-					0, 0);
-				free(newcursor);
+				XFreeCursor(dpy, Scr.FvwmCursors[index]);
 			}
+			XSetForeground(
+				dpy, Scr.MonoGC,
+				(tolower(*newcursor) == 'n') ? 0 : 1);
+			XFillRectangle(
+				dpy, Scr.ScratchMonoPixmap, Scr.MonoGC,
+				0, 0, 1, 1);
+			Scr.FvwmCursors[index] = XCreatePixmapCursor(
+				dpy, Scr.ScratchMonoPixmap,
+				Scr.ScratchMonoPixmap, &nccol, &nccol, 0, 0);
+			free(newcursor);
 		}
 		else
 		{

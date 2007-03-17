@@ -1,3 +1,8 @@
+2007-03-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/cursor.c (CMD_CursorStyle):
+	remove unused static variable nocursor
+
 2007-03-14  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* doc/fvwm-man.xsl:
