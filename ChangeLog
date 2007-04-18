@@ -1,7 +1,7 @@
 2007-04-17  Jesus Guerrero  <6thpink(at)terra(dot)es>
 
 	* fvwm/menus.c (size_menu_vertically):
-	* fvwm/fvwm.1.in (Menu Anatomy):
+	* doc/fvwm/menus.xml (menu_anatomy):
 	added localization of the "More&..." string
 
 2007-03-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>

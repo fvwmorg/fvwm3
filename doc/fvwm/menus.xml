@@ -81,8 +81,10 @@ optional.</para>
 
 <para>Additionally, if the menu is too long to fit on the screen, the
 excess menu items are put in a continuation menu and a sub menu
-with the string "More..." is placed at the bottom of the menu.
-Finally, there may be a picture running up either side of the menu
+with the string "More..." is placed at the bottom of the menu. The
+"More..." string honors the locale settings.</para>
+
+<para>Finally, there may be a picture running up either side of the menu
 (a "side bar").</para>
 
 </section>
