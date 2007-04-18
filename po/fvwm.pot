@@ -52,6 +52,10 @@ msgstr ""
 msgid "Desk: %d%s"
 msgstr ""
 
+#: ../fvwm/menus.c:1674
+msgid "More&..."
+msgstr ""
+
 #. ./fvwm/ConfigFvwmSetup: line 91
 msgid "Root Menu"
 msgstr ""

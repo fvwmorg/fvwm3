@@ -67,6 +67,7 @@
 #include "menugeometry.h"
 #include "menuparameters.h"
 #include "menus.h"
+#include "libs/FGettext.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1670,7 +1671,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			 * popdown actions */
 			/* And add the entry pointing to the new menu */
 			AddToMenu(
-				msp->menu, "More&...", tempname,
+				msp->menu, gettext("More&..."), tempname,
 				False /* no pixmap scan */, False, True);
 			free(tempname);
 			has_continuation_menu = True;

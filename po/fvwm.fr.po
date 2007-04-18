@@ -53,6 +53,10 @@ msgstr "\tGéometrie"
 msgid "Desk: %d%s"
 msgstr "Bureau: %d%s"
 
+#: ../fvwm/menus.c:1674
+msgid "More&..."
+msgstr "Plus&..."
+
 #. ./fvwm/ConfigFvwmSetup: line 91
 msgid "Root Menu"
 msgstr "Menu Principal"
