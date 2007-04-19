@@ -52,10 +52,6 @@ msgstr "\tالأبعاد"
 msgid "Desk: %d%s"
 msgstr "المكتب: %d%s"
 
-#: ../fvwm/menus.c:1674
-msgid "More&..."
-msgstr "أ�^�ثر"
-
 #. ./fvwm/ConfigFvwmSetup: line 91
 msgid "Root Menu"
 msgstr "القائمة الجذرية"
