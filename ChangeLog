@@ -1,3 +1,10 @@
+2007-04-27  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* fvwm/fvwm.1.in:
+	* doc/commands/WindowList.xml:
+
+	s/UseListSkip/UseSkipList/g etc.
+
 2007-04-17  Jesus Guerrero  <6thpink(at)terra(dot)es>
 
 	* fvwm/menus.c (size_menu_vertically):

@@ -5129,7 +5129,7 @@ passed to WindowList are separated by commas and can be
 .IR NoOnTop " / " OnTop " / " OnlyOnTop ,
 .IR NoOnBottom " / " OnBottom " / " OnlyOnBottom ,
 .IR "Layer m [n]" ,
-.IR UseListSkip " / " OnlyListSkip ,
+.IR UseSkipList " / " OnlySkipList ,
 .IR NoDeskSort ,
 .IR ReverseOrder ,
 .IR CurrentAtEnd ,

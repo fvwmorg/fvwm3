@@ -136,7 +136,7 @@ passed to WindowList are separated by commas and can be
 <emphasis remap='I'>NoOnTop</emphasis> / <emphasis remap='I'>OnTop</emphasis> / <emphasis remap='I'>OnlyOnTop</emphasis>,
 <emphasis remap='I'>NoOnBottom</emphasis> / <emphasis remap='I'>OnBottom</emphasis> / <emphasis remap='I'>OnlyOnBottom</emphasis>,
 <emphasis remap='I'>Layer m [n]</emphasis>,
-<emphasis remap='I'>UseListSkip</emphasis> / <emphasis remap='I'>OnlyListSkip</emphasis>,
+<emphasis remap='I'>UseSkipList</emphasis> / <emphasis remap='I'>OnlySkipList</emphasis>,
 <emphasis remap='I'>NoDeskSort</emphasis>,
 <emphasis remap='I'>ReverseOrder</emphasis>,
 <emphasis remap='I'>CurrentAtEnd</emphasis>,
