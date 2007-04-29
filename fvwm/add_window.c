@@ -2012,6 +2012,19 @@ Bool validate_transientfor(FvwmWindow *fw)
 			FW_W_TRANSIENTFOR(fw) = Scr.Root;
 			return False;
 		}
+		/* Check for transient loops */
+		while (XFindContext(
+			       dpy, FW_W_TRANSIENTFOR(cw), FvwmContext,
+			       (caddr_t *)&cw) != XCNOENT &&
+		       IS_TRANSIENT(cw))
+		{
+			if (FW_W_TRANSIENTFOR(cw) == FW_W(fw) || cw == fw)
+			{
+				/* loop detected, ignore the hint */
+				FW_W_TRANSIENTFOR(fw) = Scr.Root;
+				return False;
+			}
+		}
 	}
 	else if (!XGetWindowAttributes(dpy, w, &wa) ||
 		 wa.map_state != IsViewable)

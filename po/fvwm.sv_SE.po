@@ -53,6 +53,10 @@ msgstr "\tStorlek"
 msgid "Desk: %d%s"
 msgstr "Skrivbord: %d%s"
 
+#: ../fvwm/menus.c:1674
+msgid "More&..."
+msgstr "Mer&..."
+
 #. ./fvwm/ConfigFvwmSetup: line 91
 msgid "Root Menu"
 msgstr "Rotmeny"

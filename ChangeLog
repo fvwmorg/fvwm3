@@ -1,3 +1,9 @@
+2007-04-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/add_window.c (validate_transientfor):
+	detect and disallow circular transient-for hints
+
 2007-04-27  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* fvwm/fvwm.1.in:

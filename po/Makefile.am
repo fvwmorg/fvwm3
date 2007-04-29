@@ -5,7 +5,8 @@ FVWM_POT_FILES = \
      ../fvwm/fvwm.c \
      ../fvwm/expand.c \
      ../fvwm/windowlist.c \
-     ../fvwm/virtual.c
+     ../fvwm/virtual.c \
+     ../fvwm/menus.c
 
 FVWMRC_POT_FILES = \
      ../fvwm/ConfigFvwmSetup \

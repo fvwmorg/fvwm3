@@ -1,3 +1,11 @@
+2007-04-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* Makefile.am (FVWM_POT_FILES):
+	added ../fvwm/menus.c to FVWM_POT_FILES
+
+	* fvwm.sv_SE.po:
+	translated "More&..." to Swedish
+
 2007-04-17  Jesus Guerrero  <6thpink(at)terra(dot)es>
 
 	* po/fvwm.de.po:
