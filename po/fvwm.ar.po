@@ -52,6 +52,10 @@ msgstr "\tالأبعاد"
 msgid "Desk: %d%s"
 msgstr "المكتب: %d%s"
 
+#: ../fvwm/menus.c:1674
+msgid "More&..."
+msgstr ""
+
 #. ./fvwm/ConfigFvwmSetup: line 91
 msgid "Root Menu"
 msgstr "القائمة الجذرية"
@@ -316,4 +320,3 @@ msgstr "إنسخ ملفات التعريف"
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 66
 msgid "Restart fvwm"
 msgstr "أعد تشغيل fvwm"
-

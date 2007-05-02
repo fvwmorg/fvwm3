@@ -51,6 +51,10 @@ msgstr "\t几何"
 msgid "Desk: %d%s"
 msgstr "桌面：%d%s"
 
+#: ../fvwm/menus.c:1674
+msgid "More&..."
+msgstr ""
+
 #. ./fvwm/ConfigFvwmSetup: line 91
 msgid "Root Menu"
 msgstr "根菜单"
