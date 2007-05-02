@@ -233,7 +233,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	int low_layer = 0;  /* show all layers by default */
 	int high_layer = INT_MAX;
 	int max_label_width = 0;
-	int show_listskip = 0; /* do not show listskip by default */
+	int skiplist_mode = 0; /* do not show skiplist by default */
 	Bool use_hotkey = True;
 	KeyCode old_sor_keycode;
 	char sor_default_keyname[8] = { 'M', 'e', 't', 'a', '_', 'L' };
@@ -443,11 +443,23 @@ void CMD_WindowList(F_CMD_ARGS)
 			}
 			else if (StrEquals(tok,"UseListSkip"))
 			{
-				show_listskip = 1;
+				/* deprecated as of 02-May-2007 (SS) */
+				fprintf(stderr, "UseListSkip is deprecated. Please use \"UseSkipList\".\n");
+				skiplist_mode = 1;
+			}
+			else if (StrEquals(tok,"UseSkipList"))
+			{
+				skiplist_mode = 1;
 			}
 			else if (StrEquals(tok,"OnlyListSkip"))
 			{
-				show_listskip = 2;
+				/* deprecated as of 02-May-2007 (SS) */
+				fprintf(stderr, "OnlyListSkip is deprecated. Please use \"OnlySkipList\".\n");
+				skiplist_mode = 2;
+			}
+			else if (StrEquals(tok,"OnlySkipList"))
+			{
+				skiplist_mode = 2;
 			}
 			else if (StrEquals(tok,"NoDeskNum"))
 			{
@@ -742,15 +754,14 @@ void CMD_WindowList(F_CMD_ARGS)
 			{
 				continue;
 			}
-			if (!show_listskip && DO_SKIP_WINDOW_LIST(t))
+			if (skiplist_mode == 0 && DO_SKIP_WINDOW_LIST(t))
 			{
-				/* don't want listskip windows - skip */
+				/* don't want skiplist windows - skip */
 				continue;
 			}
-			if (show_listskip == 2 &&
-			    !DO_SKIP_WINDOW_LIST(t))
+			if (skiplist_mode == 2 && !DO_SKIP_WINDOW_LIST(t))
 			{
-				/* don't want no listskip one - skip */
+				/* don't want no skiplist one - skip */
 				continue;
 			}
 			if (use_condition && !MatchesConditionMask(t, &mask))

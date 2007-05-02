@@ -1,3 +1,11 @@
+2007-04-27  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	* NEWS:
+
+	Deprecated "UseListSkip" & "OnlyListSkip" - replaced with
+	"UseSkipList" & "OnlySkipList".
+
 2007-04-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
