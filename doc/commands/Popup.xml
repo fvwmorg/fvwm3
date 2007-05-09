@@ -40,7 +40,6 @@ was over the item).</para>
 
 <para>To bind a previously defined pop-up menu to a key or mouse button:</para>
 
-<!-- .in +.25i -->
 <para>The following example binds mouse buttons 2 and 3 to a pop-up
 called "Window Ops".  The menu pops up if the buttons 2 or 3 are
 pressed in the window frame, side-bar, or title-bar, with no
@@ -56,18 +55,16 @@ modifiers (none of shift, control, or meta).</para>
 command.  Pop-ups can be operated without using the mouse by
 binding to keys and operating via the up arrow, down arrow, and
 enter keys.</para>
-<!-- .in \-.25i -->
 
 <para>To bind a previously defined pop-up menu to another menu, for use
 as a sub menu:</para>
 
-<!-- .in +.25i -->
 <para>The following example defines a sub menu "Quit-Verify" and binds
 it into a main menu, called "RootMenu":</para>
 
 <programlisting>
 <fvwmref cmd="AddToMenu"/> Quit-Verify
- + "Really <fvwmref cmd="Quit"/> Fvwm?" <fvwmref cmd="Title"/>
+ + "Really Quit Fvwm?" <fvwmref cmd="Title"/>
  + "Yes, Really Quit"  <fvwmref cmd="Quit"/>
  + "Restart Fvwm"      <fvwmref cmd="Restart"/>
  + "Restart Fvwm 1.xx" <fvwmref cmd="Restart"/> fvwm1 -s
