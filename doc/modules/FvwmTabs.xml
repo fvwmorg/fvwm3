@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<article>
+<artheader>
+	<title>FvwmTabs</title>
+	<author>Scott Smedley</author>
+	<titleabbrev>FvwmTabs</titleabbrev>
+	<date>&releasedate;</date>
+</artheader>
+
+<section id="name">
+<title>Name</title>
+<para><emphasis remap='B'>FvwmTabs</emphasis> is a generic tabbing module for the FVWM window manager.</para>
+</section>
+
+
+<section id="synopsis">
+<title>Synopsis</title>
+<para><emphasis remap='B'>FvwmTabs</emphasis> is spawned by FVWM, so no command line invocation is possible.</para>
+</section>
+
+
+<section id="description">
+<title>Description</title>
+<para>The <emphasis remap='B'>FvwmTabs</emphasis> module is capable of swallowing any FVWM window &amp; treating it as a tab in a <emphasis>tab-manager</emphasis> window. A tab-manager is sometimes called a <emphasis>tabber</emphasis>. Each tab-manager can store any number of windows, each in its own <emphasis>tab</emphasis>. The number of tab-managers is limited only by system resources. Tab-managers can even be nested/swallowed within other tab-managers. (ie. a tab-manager can be added as an individual tab to another tab-manager.)</para>
+</section>
+
+<section id="invocation">
+<title>Invocation</title>
+<para><emphasis remap='B'>FvwmTabs</emphasis> can be invoked by inserting the line:</para>
+
+<programlisting>
+<fvwmref cmd="Module"/> FvwmTabs
+</programlisting>
+
+<para>in your .fvwmrc file. This can be placed on a line by itself, if <emphasis remap='B'>FvwmTabs</emphasis> is to be spawned during FVWM's initialization, or can be bound to a menu, mouse button or keystroke to invoke it later.</para>
+</section>
+
+<section id="dependencies">
+<title>Installing Dependencies</title>
+<para><emphasis remap='B'>FvwmTabs</emphasis> requires 2 CPAN modules (that are NOT distributed with FVWM) to be installed on your system. They are <emphasis>Tk</emphasis> and <emphasis>X11::Protocol</emphasis>.</para>
+
+<para>They are available at: <ulink>http://search.cpan.org/CPAN/authors/id/N/NI/NI-S/Tk-804.027.tar.gz</ulink> and <ulink>http://search.cpan.org/~smccam/X11-Protocol-0.56/</ulink>.</para>
+
+<para>To install either package:</para>
+<programlisting>
+tar zxvf $name.tar.gz ; cd $name ; perl Makefile.PL ; make install
+</programlisting>
+
+<para><emphasis remap='B'>FvwmTabs</emphasis> will tell you if you do not have these packages installed when you (try to) start it.</para>
+</section>
+
+<section id="options">
+<title>Configuration Options</title>
+<para><emphasis remap='B'>FvwmTabs</emphasis> reads the same config file as FVWM when it starts up.</para>
+
+<para>The following options are recognised by <emphasis remap='B'>FvwmTabs</emphasis>:</para>
+</section>
+
+
+
+<section id="todo">
+<title>Todo</title>
+<para>TODO</para>
+</section>
+
+</article>

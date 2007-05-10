@@ -1,6 +1,8 @@
 
 /* $Id$ */
 
+/* Author: Scott Smedley */
+
 h3.fn,span.fn
 {
 	margin-left: 1cm;
@@ -43,6 +45,11 @@ body pre
 	/* background: antiquewhite; */
 	background: #d3d3d3; /* lightgrey */
 	color: black
+}
+
+body
+{
+	background: white;
 }
 
 span.preprocessor, span.preprocessor a

@@ -5,6 +5,8 @@ docdir=@FVWM_DOCDIR@/modules
 XSLTPROC=@XSLTPROC@
 
 XSL_FILE=$(srcdir)/../fvwm.xsl
+XSL_MAN_FILE=$(srcdir)/../fvwm-man.xsl
+
 
 MODULES=FvwmAnimate FvwmAuto FvwmBacker FvwmBanner FvwmButtons FvwmCommand FvwmConsole FvwmCpp FvwmDebug FvwmDragWell FvwmEvent FvwmForm FvwmGtk FvwmIconBox FvwmIconMan FvwmIdent FvwmM4 FvwmPager FvwmPerl FvwmProxy FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript FvwmScroll FvwmTabs FvwmTaskBar FvwmTheme FvwmWharf FvwmWindowMenu FvwmWinList
 HTML_FILES=$(patsubst %,%.html,$(MODULES))
@@ -20,6 +22,17 @@ endif
 QUIET=@
 clean:
 	rm -f $(HTML_FILES)
+
+FvwmTabs.html: $(srcdir)/FvwmTabs.xml ../fvwm.ent
+	$(QUIET) echo "Generating $@"
+	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" -o $@ $(XSL_FILE) $<
+
+FvwmTabs.1: $(srcdir)/FvwmTabs.xml $(XSL_MAN_FILE)
+	$(QUIET) echo "Generating $@ man page"
+	$(QUIET) $(XSLTPROC) --path .. --xinclude $(XSL_MAN_FILE) $(srcdir)/FvwmTabs.xml
+
+
+
 
 # All HTML output is generated from XML files.
 # %.html : $(srcdir)/%.xml

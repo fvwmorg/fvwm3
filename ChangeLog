@@ -1,3 +1,22 @@
+2007-05-11  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* doc/allCommands.html:
+	* doc/groupedCommands.html:
+	* doc/header.html:
+	* doc/style.css:
+	* doc/fvwm/Makefile.am:
+	* doc/modules/Makefile.am:
+	* doc/modules/FvwmTabs.xml:
+	* doc/modules/modules.html:
+	* doc/images/fvwm.logo.png:
+	* doc/images/m.logo.png:
+
+	Number sections of HTML man page.
+	Use HTML character entity &sdot; (&#8901;)
+	Don't build separate sections of HTML man page (not being used ATM).
+	Make logos transparent so looks neat with non-white backgrounds.
+	Template FvwmTabs.xml file for man page.
+
 2007-04-27  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* fvwm/windowlist.c (CMD_WindowList):

@@ -11,7 +11,8 @@ SECTIONS=authors bidirText bindings bugs builtinBindings colorGradients colorset
 COMMAND_FILES=$(shell ls $(srcdir)/../commands/*.xml)
 
 # SS: Hmmm, I'm not sure if all versions of make support patsubst.	
-HTML_FILES=$(patsubst %,%.html,$(SECTIONS))
+# HTML_FILES=$(patsubst %,%.html,$(SECTIONS))
+HTML_FILES=fvwm.man.html
 XML_FILES=$(patsubst %,$(srcdir)/%.xml,$(SECTIONS))
 EXTRA_DIST=$(XML_FILES)
 BUILD_FILES=
@@ -43,3 +44,4 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) ../fvwm.ent $(COMMAND_FILES)
 fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 	$(QUIET) echo "Generating $@ man page"
 	$(QUIET) $(XSLTPROC) --path .. --xinclude $(XSL_MAN_FILE) $(srcdir)/fvwm.man.xml
+
