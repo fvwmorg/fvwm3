@@ -38,7 +38,7 @@ clean:
 
 fvwm.man.html: $(XML_FILES) $(XSL_FILE) ../fvwm.ent $(COMMAND_FILES)
 	$(QUIET) echo "Generating $@"
-	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" --stringparam twdt 1 -o $@ $(XSL_FILE) $(srcdir)/fvwm.man.xml
+	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" --stringparam twdt 1 --stringparam section.autolabel 1 -o $@ $(XSL_FILE) $(srcdir)/fvwm.man.xml
 
 fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 	$(QUIET) echo "Generating $@ man page"
