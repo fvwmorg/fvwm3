@@ -50,6 +50,8 @@ body pre
 body
 {
 	background: white;
+        margin-left: 0.7cm;
+        margin-right: 0.7cm;
 }
 
 span.preprocessor, span.preprocessor a

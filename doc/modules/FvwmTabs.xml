@@ -62,13 +62,460 @@ tar zxvf $name.tar.gz ; cd $name ; perl Makefile.PL ; make install
 <para><emphasis remap='B'>FvwmTabs</emphasis> reads the same config file as FVWM when it starts up.</para>
 
 <para>The following options are recognised by <emphasis remap='B'>FvwmTabs</emphasis>:</para>
+
+
+<variablelist>
+<varlistentry>
+<term>*FvwmTabs: <fvwmopt mod="FvwmTabs" opt="activeFG"/> <emphasis>color</emphasis></term>
+<listitem><simpara>The text color of the button for the visible tab. The default color is yellow.</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term>*FvwmTabs: <fvwmopt mod="FvwmTabs" opt="activeBG"/> <emphasis>color</emphasis></term>
+<listitem><simpara>The backgound color of the button for the visible tab. The default color is MidnightBlue.</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term>*FvwmTabs: <fvwmopt mod="FvwmTabs" opt="inactiveFG"/> <emphasis>color</emphasis></term>
+<listitem><simpara>The text color of the buttons for the invisible tabs. The default color is antiquewhite.</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term>*FvwmTabs: <fvwmopt mod="FvwmTabs" opt="inactiveBG"/> <emphasis>color</emphasis></term>
+<listitem><simpara>The backgound color of the buttons for the invisible tabs. The default color is royalblue.</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term>*FvwmTabs: <fvwmopt mod="FvwmTabs" opt="activeRelief"/> <emphasis>style</emphasis></term>
+<listitem><simpara>The relief style to use for active buttons. <emphasis>style</emphasis> can be either <emphasis>raised</emphasis>, <emphasis>flat</emphasis> or <emphasis>sunken</emphasis>. The default style is <emphasis>sunken</emphasis>.</simpara></listitem>
+</varlistentry>
+
+
+
+<varlistentry>
+<term>*FvwmTabs: inactiveRelief <emphasis>style</emphasis></term>
+<listitem><simpara>The relief style to use for inactive buttons. <emphasis>style</emphasis> can be either <emphasis>raised</emphasis>, <emphasis>flat</emphasis> or <emphasis>sunken</emphasis>. The default style is <emphasis>flat</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: buttonYPadding <emphasis>pixels</emphasis></term>
+<listitem><simpara>How much padding to use around top and bottom of tab buttons. The default value is <emphasis>3</emphasis> pixels.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: pollRate <emphasis>ms</emphasis></term>
+<listitem><simpara> Specifies how often to check for X events. <emphasis>ms</emphasis> is time in milliseconds. The default value, <emphasis>250</emphasis>, should be fine for most users. If you are on a very slow machine you may wish to increase this.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: buttonFont <emphasis>font</emphasis></term>
+<listitem><simpara> The font to use on the tab buttons. The default font is <emphasis>Helvetica -12 bold</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: titleFont <emphasis>font</emphasis></term>
+<listitem><simpara> The font to use on the titlebar. The default font is <emphasis>Helvetica -12</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: menuFont <emphasis>font</emphasis></term>
+<listitem><simpara> The font to use on the menus. The default font is <emphasis>Helvetica -12</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: fontSelector <emphasis>fontProgram</emphasis></term>
+<listitem><simpara> The external font chooser program to launch when dynamically changing fonts. The default <emphasis>fontProgram</emphasis> is <emphasis>gfontsel --print -f "%f"</emphasis>. Anti-gnome users might try <emphasis>xfontsel -print -pattern "%f"</emphasis>. If set to <emphasis>none</emphasis>, no font menu options will appear.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: autoSwallowClass <emphasis>className</emphasis> [<emphasis>tabManagerId</emphasis>], ...</term>
+</varlistentry>
+<varlistentry>
+<term>*FvwmTabs: autoSwallowResource <emphasis>resourceName</emphasis> [<emphasis>tabManagerId</emphasis>], ...</term>
+</varlistentry>
+<varlistentry>
+<term>*FvwmTabs: autoSwallowName <emphasis>name</emphasis> [<emphasis>tabManagerId</emphasis>], ...</term>
+<listitem><simpara> Specify windows to swallow automatically. These are comma-separated lists that specify the class/resource/name of a window and an optional tab-manager id into which the window should be swallowed. By default, the tab-manager id increments from zero - ie. 0 is the first tab-manager created, 1 the second, etc, but it may be overriden by specifying an argument to the <emphasis>NewTabber</emphasis> function. (No whitespace is allowed in tabber ids.) You can alternatively specify 'any' or 'lastFocus' which will put the window in the tab-manager with the least number of tabs or the last focused tab-manager, respectively. If no tab-manager number is specified, an implicit default value of 'any' is used. Note that <emphasis>className</emphasis>/<emphasis>resourceName</emphasis>/<emphasis>name</emphasis> can be a (Perl) regular expression.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: balloonBG <emphasis>color</emphasis></term>
+<listitem><simpara> The backgound color of the balloon popups that appear over the tab buttons. The default color is <emphasis>#C0C080</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: balloonFont <emphasis>font</emphasis></term>
+<listitem><simpara> The font to use on the balloon popups. The default font is <emphasis>Helvetica -12</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: balloonWait <emphasis>ms</emphasis></term>
+<listitem><simpara> How long the mouse cursor must pause (in milliseconds) over a tab button before the balloon pops up. The default value is <emphasis>250</emphasis>. </simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: balloonMsg <emphasis>msg</emphasis></term>
+<listitem><simpara> Message to display in balloon popups. The default value is <emphasis>%tabNo:\n%iconText\n%title</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: autoResize <emphasis>bool</emphasis></term>
+<listitem><simpara> <emphasis>bool</emphasis> can be either <emphasis>true</emphasis> or <emphasis>false</emphasis>. If true, windows in the tab-manager automatically resize to the dimensions of the largest window in the tab-manager. The default value is <emphasis>false</emphasis>. If the user performs an explicit resize of a tab-manager window, all windows in the tab-manager are resized to the new window size.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: stateFile <emphasis>file</emphasis></term>
+<listitem><simpara><emphasis remap='B'>FvwmTabs</emphasis> has the ability to preserve its state (ie. remember the windows it has swallowed as tabs) b/w FVWM restarts. <emphasis>file</emphasis> specifies the name of a temporary file to record the state in, so it can be reconstructed when <emphasis remap='B'>FvwmTabs</emphasis> restarts. The default file is <envar>$FVWM_USERDIR</envar>/.fvwmtabs.state.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: fixedSizeTabs <emphasis>bool</emphasis></term>
+<listitem><simpara> <emphasis>bool</emphasis> can be either <emphasis>true</emphasis> or <emphasis>false</emphasis>. If true, the tab-manager will ensure each tab-button has the same dimensions. If false, the selected tab is expanded so that it is fully visible. The default value is <emphasis>false</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: showTitlebar <emphasis>bool</emphasis></term>
+<listitem><simpara> Show internal titlebar. If set to <emphasis>true</emphasis> a titlebar appears below the row of tab-buttons and displays the title associated with the current window. This titlebar is capable of displaying long or multi-line titles. The default value is <emphasis>true</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: useTMTitlebar <emphasis>bool</emphasis></term>
+<listitem><simpara> Add the title associated with the selected tab to the tab-manager titlebar. (ie. the titlebar at the top of the window, distinct from the titlebar below the tab-buttons.) Default value is <emphasis>true</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: dragDropIcon <emphasis>imageFile</emphasis></term>
+<listitem><simpara> Specify the icon to display when performing a drag-&amp;-drop operation to reorder the tab-buttons. FvwmTabs will search the ImagePath for this image unless an absolute filename (ie. filename begins with '/') is specified. The default value is <emphasis>none</emphasis>. If <emphasis>none</emphasis> (or an invalid file) is specified a * is used.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: bBuggyFocus <emphasis>bool</emphasis></term>
+<listitem><simpara> FvwmTabs tries to work around a limitation in Perl/Tk (there is no way to access the timestamp associated with WM_TAKE_FOCUS events). On some systems this doesn't work and sometimes tab-managers have trouble acquiring the focus. If this happens to you, try setting this option to <emphasis>true</emphasis>. This can lead to focussing race-conditions (tab-managers temporarily "steal" focus in some situations) but this is less annoying than not being able to focus at all.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: enableSwallowDND <emphasis>bool</emphasis></term>
+<listitem><simpara> Swallow windows that (are moved to) overlap a tabber.</simpara>
+<simpara>Note: drag-&amp;-drop can be enabled for individual tabbers via the menu.
+The default value is <emphasis>true</emphasis>.</simpara>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: swallowDNDTolerance <emphasis>tol</emphasis></term>
+<listitem><simpara>Determines how much a window must overlap a tabber for it to be swallowed when drag-&amp;-drop is enabled. If the value has a %-sign appended to it, windows must overlap by the specified percentage of the current size of the tabber. If no %-sign is present, the value is treated in units of pixels. The default value is <emphasis>10</emphasis> (pixels).</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: useIconsOnTabs <emphasis>bool</emphasis></term>
+<listitem><simpara> Show the mini icon associated with each window on its tab button. Note: mini icons for apps that use EWMH icons look a bit distorted.  This is because of the poor image resizing algorithm used in Tk. This sinactiveBG hould be rectified in the near future. The default value is <emphasis>true</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: killIcon <emphasis>image</emphasis></term>
+<listitem><simpara>Image to use on kill toolbar button. Default is <emphasis>none</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: addIcon <emphasis>image</emphasis></term>
+<listitem><simpara>Image to use on add toolbar button. Default is <emphasis>none</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: swallowIcon <emphasis>image</emphasis></term>
+<listitem><simpara> Image to use on add toolbar button when tabber will swallow next window to popup. Default is <emphasis>none</emphasis>. By using a separate icon to <emphasis>addIcon</emphasis>, this option provides visual feedback on when a tabber will unconditionally swallow the next window to popup.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: releaseIcon <emphasis>image</emphasis></term>
+<listitem><simpara> Image to use on release toolbar button. Default is <emphasis>none</emphasis>.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>*FvwmTabs: menuIcon <emphasis>image</emphasis></term>
+<listitem><simpara> Image to use on menu toolbar button. Default is <emphasis>none</emphasis>.</simpara></listitem>
+</varlistentry>
+</variablelist>
+</section>
+
+
+<section id="functions">
+<title>Functions for Bindings</title>
+<para>A number of FVWM functions are available once the FvwmTabs module is started.</para>
+
+<variablelist>
+
+<varlistentry>
+<term>NewTabber</term>
+<listitem><simpara> Create a new tabber. Optional argument is tabber name. No whitespace is allowed in the tabber name. Can also prefix --geometry argument. Example:</simpara>
+
+<programlisting>
+NewTabber --geometry=+200+400 scottie
+</programlisting>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Tabize</term>
+<listitem><simpara> Add a window (as a tab) to a tabber.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>NextTab</term>
+<listitem><simpara> Show/select the next tab.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>PrevTab</term>
+<listitem><simpara> Show/select the previous tab.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>LastTab</term>
+<listitem><simpara> Show/select the last selected tab (if there was one).</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ReleaseTab</term>
+<listitem><simpara> Release a tabbed window back to FVWM.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ReleaseIconifyTab</term>
+<listitem><simpara> Release a tabbed window back to FVWM &amp; iconify it.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ReleaseAllTabs</term>
+<listitem><simpara> Release all windows in a tab-manager back to FVWM.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ReleaseIconifyAllTabs</term>
+<listitem><simpara> Release all windows in a tab-manager back to FVWM &amp; iconify them.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>CloseTabber</term>
+<listitem><simpara> Destroy a tab-manager. All windows in the tab-manager are released back to FVWM.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>AddTab</term>
+<listitem><simpara> Pick a new window to add to a tab-manager. Selecting this option &amp; clicking on a window will add the selected window to the tab-manager.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>MultiAddTab</term>
+<listitem><simpara> Pick &amp; add new windows to a tab-manager until ESC is pressed.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ShowTab <emphasis>tabNo</emphasis></term>
+<listitem><simpara> Show/select tab <emphasis>tabNo</emphasis> in the tab-manager. <emphasis>tabNo</emphasis> is zero-based. ie. 0 is the first tab, 1 is the second, etc.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>AddToTabber</term>
+<listitem><simpara> Add a window (as a tab) to a tab-manager.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>SwapLeft</term>
+<listitem><simpara> Swap the selected window with the window on its immediate left.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>SwapRight</term>
+<listitem><simpara> Swap the selected window with the window on its immediate right.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>SelectTabber</term>
+<listitem><simpara> Select a tab-manager for a new window to be added to.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>EnableDND</term>
+<listitem><simpara> Swallow windows that (are moved to) overlap a tabber.</simpara></listitem>
+</varlistentry>
+</variablelist>
 </section>
 
 
 
-<section id="todo">
-<title>Todo</title>
-<para>TODO</para>
+<section id="keyBindings">
+<title>Key Bindings</title>
+<para>By default, <emphasis remap='B'>FvwmTabs</emphasis> reads a default user configuration file <filename>FvwmTabs-DefaultSetup</filename> which defines several useful key-bindings for <emphasis remap='B'>FvwmTabs</emphasis>. You can tell <emphasis remap='B'>FvwmTabs</emphasis> NOT to read this file with:</para>
+<programlisting>
+<fvwmref cmd="SetEnv"/> FvwmTabs_NoDefaultSetup
+</programlisting>
+<para>This environment variable must be set <emphasis>before</emphasis> starting the module.
+</para>Then, pressing Ctrl-Alt-a (when the focus is in a tab-manager) will allow you to click on a window to add to the tab-manager.
+
+<para>All of the key bindings can be changed using the standard FVWM <fvwmref cmd="Key"/> command and making use of the aforementioned FVWM functions. ie.</para>
+<programlisting>
+<fvwmref cmd="Key"/> (FvwmTabs*) A A CM <fvwmref cmd="Function"/> AddTab
+</programlisting>
+
+<para>Then, pressing Ctrl-Alt-a (when the focus is in a tab-manager) will allow you to click on a window to add to the tab-manager.</para>
+
+<para>The default key bindings (set in the <filename>FvwmTabs-DefaultSetup</filename> file) are:</para>
+
+
+<variablelist>
+<varlistentry>
+<term>Ctrl-Alt-a</term>
+<listitem><simpara> AddTab</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-c</term>
+<listitem><simpara> CloseTabber</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-i</term>
+<listitem><simpara> ReleaseIconifyTab</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-Shift-I</term>
+<listitem><simpara> ReleaseIconifyAllTabs</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-l</term>
+<listitem><simpara> LastTab</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-m</term>
+<listitem><simpara> MultiAddTab</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-n &amp; Ctrl-Alt-Tab</term>
+<listitem><simpara> NextTab</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-p</term>
+<listitem><simpara> PrevTab</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-r</term>
+<listitem><simpara> ReleaseTab</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-Shift-R</term>
+<listitem><simpara> ReleaseAllTabs</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-t</term>
+<listitem><simpara> NewTabber</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-I&lt;num&gt;</term>
+<listitem><simpara> ShowTab &lt;num&gt;.</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-Left</term>
+<listitem><simpara> SwapLeft</simpara></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Ctrl-Alt-Right</term>
+<listitem><simpara> SwapRight</simpara></listitem>
+</varlistentry>
+</variablelist>
+</section>
+
+
+
+
+<section id="mouseBindings">
+<title>Mouse Bindings</title>
+<section id="tabMouseBindings">
+<title>Mouse Bindings on Tab Buttons</title>
+<para>Mouse-1 on a tab-button displays the window associated with the tab.</para>
+<para>Mouse-2 on a tab-button releases the window associated with the tab back to the window manager as a standalone window.</para>
+<para>Mouse-3 on a tab-button releases the window associated with the tab back to the window manager and iconifies it.</para>
+<para>The tab-buttons can be reordered with a drag-&amp;-drop operation initiated with Ctrl-Mouse-2. A dragged tab is inserted before the tab-button onto which it is dropped.</para>
+<para></para>
+</section>
+<section id="toolbarMouseBindings">
+<title>Mouse Bindings on Toolbar Icons</title>
+<para>Mouse-1 on the "menu" button will bring up a menu of options. See MENU BINDINGS. &fixme;</para>
+
+<para>Mouse-1 on the "release" button will release the selected window from the tabber.</para>
+
+<para>Mouse-2 on the "release" button will release all windows from the tabber, and iconify them.</para>
+
+<para>Mouse-3 on the "release" button will release all windows from the tabber.</para>
+
+<para>Mouse-1 on the "add" button will add the next window you click on to the tabber.</para>
+
+<para>Mouse-2 on the "add" button will add the next window to popup to the tabber.</para>
+
+<para>Mouse-3 on the "add" button will add every window you click on (until you press Esc) to the tabber.</para>
+
+<para>Mouse-1 on the "kill" button will <fvwmref cmd="Close"/> the selected window.</para>
+
+<para>Mouse-2 on the "kill" button causes FvwmTabs to try to kill the selected window itself.</para>
+
+<para>Mouse-3 on the "kill" button will <fvwmref cmd="Destroy"/> the selected window.</para>
+
+</section>
+</section>
+
+
+<section id="menu">
+<title>Menu Options</title>
+<para>Mouse-1 on the "menu" button will bring up a menu of options:</para>
+
+<para>Release All will release all tabbed programs back to the window manager as standalone windows.</para>
+
+<para>Release All (Iconify) will release all tabbed programs back to the window manager as iconised standalone windows.</para>
+
+<para>Add will add the next mouse-clicked window to the tab-manager.</para>
+
+<para>Add Next will add the next window that is created to the tab-manager.</para>
+
+<para>Multi Add keeps adding mouse-clicked windows to a tab-manager until the escape key is pressed. Useful for adding multiple windows to a tab-manager at once.</para>
+
+<para>Font shows a sub-menu enabling you to dynamically configure the button/title/menu fonts, using the external program identified by the <emphasis>fontSelector</emphasis> option.</para>
+
+<para>Show Titlebar toggles the display of the titlebar below the tab-buttons.</para>
+
+<para>Window Tabizer Dialog will popup a dialog box for specifying windows to swallow. Windows can be specified explicitly (by name) or by using a (Perl) regular expression matcher. (Note: / character is automatically escaped.)</para>
+
+<para>The menu options between the separators will display the window/tab associated with the text. (The menu text is actually the title associated with the window. The text on each tab-button is the icon name.)</para>
+
+<para>About pops up a dialog with version/developer information.</para>
+
+<para>Close will close the FvwmTabs window, invoking Release All in the process.</para>
+</section>
+
+
+<section id="bugs">
+<title>Known Bugs</title>
+<simpara>Tab-managers don't take focus when iconified.</simpara>
+<simpara>FvwmTabs doesn't obey <fvwmref cmd="ClickToFocus"/> mode.</simpara>
+<simpara>FvwmTabs has a problem swallowing shaded windows.</simpara>
+<simpara>Using <fvwmref cmd="Maximize"/> to resize tab-manager windows prevents dynamic resizing from working.</simpara>
+<para>Please send bug reports, feature requests and queries about FvwmTabs to the FVWM Mailing list: <email>fvwm@fvwm.org</email>. Be sure to include the word "FvwmTabs" somewhere in the subject line.</para>
+</section>
+
+<section id="licence">
+<title>Licence</title>
+<para>FvwmTabs is GPL software.</para>
+</section>
+
+<section id="author">
+<title>Author</title>
+<para>Scott Smedley <email>ss@aao.gov.au</email></para>
 </section>
 
 </article>

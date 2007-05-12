@@ -1,3 +1,11 @@
+2007-05-13  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* doc/modules/Makefile.am:
+        * doc/modules/FvwmTabs.xml:
+	* doc/style.css
+
+	Converted FvwmTabs man page to docbook format.
+
 2007-05-11  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* doc/allCommands.html:

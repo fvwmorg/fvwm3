@@ -25,7 +25,7 @@ clean:
 
 FvwmTabs.html: $(srcdir)/FvwmTabs.xml ../fvwm.ent
 	$(QUIET) echo "Generating $@"
-	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" -o $@ $(XSL_FILE) $<
+	$(QUIET) $(XSLTPROC) --path .. --xinclude --stringparam html.stylesheet "../style.css" --stringparam section.autolabel 1 -o $@ $(XSL_FILE) $<
 
 FvwmTabs.1: $(srcdir)/FvwmTabs.xml $(XSL_MAN_FILE)
 	$(QUIET) echo "Generating $@ man page"
