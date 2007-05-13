@@ -48,7 +48,9 @@
 
 /* defaults for things we put in a configuration file */
 
+#define PROXY_COMMAND_DEBUG	False
 #define PROXY_GROUP_DEBUG	False
+
 #define PROXY_KEY_POLLING	True
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
 #define PROXY_ICONIFIED		False	/* show proxy when iconified */
@@ -744,6 +746,9 @@ static void send_command_to_fvwm(char *command, Window w)
 	{
 		return;
 	}
+#if PROXY_COMMAND_DEBUG
+	fprintf(stderr,"SendText: \"%s\"\n", command);
+#endif
 	SendText(fd, command, w);
 
 	return;
@@ -1474,7 +1479,7 @@ static void IconifyGroup(ProxyWindow *instigator,int iconify)
 		{
 			sprintf(commandBuffer,"Iconify %s",
 				iconify? "On": "Off");
-			SendText(fd,commandBuffer,proxy->window);
+			send_command_to_fvwm(commandBuffer,proxy->window);
 		}
 	}
 }
@@ -1777,12 +1782,12 @@ static void CatchWindows(ProxyWindow *instigator,int vertical,int from,int to,
 static void MoveProxiedWindow(ProxyWindow* proxy,int x,int y,int w,int h)
 {
 #if 1
-	sprintf(commandBuffer,"ResizeMove frame %dp %dp %dp %dp",
+	sprintf(commandBuffer,"ResizeMove frame %dp %dp +%dp +%dp",
 		w,
 		h,
 		x,
 		y);
-	SendText(fd,commandBuffer,proxy->window);
+	send_command_to_fvwm(commandBuffer,proxy->window);
 #else
 	const int bw=proxy->border_width;
 	const int th=proxy->title_height;
@@ -1860,7 +1865,7 @@ static void MoveGroupToDesk(ProxyWindow *instigator,int desk)
 			proxy->desk=desk;
 			proxy->group=group;
 
-			SendText(fd, commandBuffer, proxy->window);
+			send_command_to_fvwm( commandBuffer, proxy->window);
 
 			DrawProxyBackground(proxy);
 			DrawProxy(proxy);
@@ -2676,7 +2681,7 @@ static void IsolateCheck(ProxyWindow *instigator,int force_other)
 				if(neighbor && force_other)
 				{
 					sprintf(commandBuffer,"Iconify Off");
-					SendText(fd,commandBuffer,
+					send_command_to_fvwm(commandBuffer,
 						neighbor->window);
 				}
 			}
@@ -2913,7 +2918,7 @@ static void RotateIsolated(ProxyWindow *instigator,int direction)
 	if(adjacent)
 	{
 		sprintf(commandBuffer,"Iconify Off");
-		SendText(fd,commandBuffer,adjacent->window);
+		send_command_to_fvwm(commandBuffer,adjacent->window);
 	}
 
 	return;
@@ -3374,8 +3379,8 @@ static void DispatchEvent(XEvent *pEvent)
 		dy=pEvent->xbutton.y_root-mousey;
 		if (proxy && proxyMove)
 		{
-			sprintf(commandBuffer,"Silent Move w%dp w%dp",dx,dy);
-			SendText(fd,commandBuffer,proxy->window);
+			sprintf(commandBuffer,"Silent Move w+%dp w+%dp",dx,dy);
+			send_command_to_fvwm(commandBuffer,proxy->window);
 		}
 
 		mousex=pEvent->xbutton.x_root;

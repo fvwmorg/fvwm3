@@ -1,3 +1,8 @@
+2007-05-13  Jason Weber  <baboon@imonk.com>
+
+	* FvwmProxy/FvwmProxy.c:
+	prefixed position arguments with + for Move and ResizeMove commands
+
 2007-02-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmButtons/draw.c (RedrawButton):
