@@ -1,3 +1,9 @@
+2007-05-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* FvwmConsole/getline.c (get_line):
+	enable build using BSD libedit compatible readline (Mac OS)
+	load the most recent commands if more than HISTSIZE commands in history
+
 2007-05-13  Jason Weber  <baboon@imonk.com>
 
 	* FvwmProxy/FvwmProxy.c:

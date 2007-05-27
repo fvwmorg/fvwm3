@@ -1,3 +1,9 @@
+2007-05-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* configure.ac (HAVE_GNU_READLINE):
+	detect full GNU readline API (vs BSD libedit readline compatibility
+	layer)
+
 2007-05-13  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* doc/modules/Makefile.am:

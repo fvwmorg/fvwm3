@@ -870,6 +870,11 @@ if test x"$with_ncurses" != xno -a ! "$readline_LIBS"; then
     AC_DEFINE(HAVE_READLINE)
   fi
 fi
+dnl We need to check if we have GNU readline or BSD editline
+AH_TEMPLATE([HAVE_GNU_READLINE],[Define if readline has full GNU interface])
+if test x"$with_readline" = xyes; then
+   AC_CHECK_LIB(readline, append_history, AC_DEFINE(HAVE_GNU_READLINE), [], $readline_LIBS)
+fi
 AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
 
