@@ -29,7 +29,7 @@
 
 #define MAXHOSTNAME 32
 
-char * fifos_get_default_name()
+char * fifos_get_default_name(void)
 {
 	char file_suffix[] = { 'R', 'C', 'M', '\0' };
 	char *f_stem;

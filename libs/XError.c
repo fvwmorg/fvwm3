@@ -25,6 +25,7 @@
 #include <X11/Xlib.h>
 #include <fvwmlib.h>
 #include "FRenderInit.h"
+#include "XError.h"
 
 #define USE_GET_ERROR_TEXT 1
 #ifndef USE_GET_ERROR_TEXT

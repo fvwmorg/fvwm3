@@ -803,7 +803,7 @@ static void AssignDrawTable(Item *adt_item)
 }
 
 /* input/output is global "item" - currently allocated last item */
-static void AddItem()
+static void AddItem(void)
 {
   Item *save_item;
   save_item = (Item *)item;             /* save current item */
@@ -1008,7 +1008,7 @@ static void ct_UseData(char *cp)
   /* Cant do the actual reading of the data file here,
      we are already in a readconfig loop. */
 }
-static void ReadFormData()
+static void ReadFormData(void)
 {
   int leading_len;
   char *line_buf;                       /* ptr to curr config line */

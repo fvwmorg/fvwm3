@@ -519,7 +519,7 @@ void CreateDateWindow(void)
   PopupTipWindow(win_width, 0, str);
 }
 
-void CreateMailTipWindow()
+void CreateMailTipWindow(void)
 {
 	const char *str;
 
@@ -719,7 +719,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   XFreePixmap(dpy, pchk);
 }
 
-void DestroyTipWindow()
+void DestroyTipWindow(void)
 {
   XFreePixmap(dpy, pmask);
   XFreePixmap(dpy, pclip);
@@ -878,7 +878,7 @@ void cool_get_inboxstatus_maildir(void)
 	free(newlist);
 }
 
-void cool_get_inboxstatus()
+void cool_get_inboxstatus(void)
 {
 	if (using_MailDir)
 	{

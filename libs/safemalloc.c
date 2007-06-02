@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include "safemalloc.h"
 
 static void alloc_failed(char *c, int length)
 {

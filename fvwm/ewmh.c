@@ -844,7 +844,7 @@ void EWMH_ManageKdeSysTray(Window w, int type)
 
 /**** Client lists ****/
 
-void EWMH_SetClientList()
+void EWMH_SetClientList(void)
 {
 	Window *wl = NULL;
 	FvwmWindow *fw;
@@ -874,7 +874,7 @@ void EWMH_SetClientList()
 	return;
 }
 
-void EWMH_SetClientListStacking()
+void EWMH_SetClientListStacking(void)
 {
 	Window *wl = NULL;
 	FvwmWindow *fw;

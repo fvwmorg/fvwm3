@@ -26,6 +26,7 @@
 #include <X11/Xlib.h>
 #include <fvwmlib.h>
 #include <stdio.h>
+#include "WinMagic.h"
 
 /* Continuously moves and resized window win from start geometry (s_?) to end
  * geometry (e_?). Waits for delay_ms milliseconds after each step except the

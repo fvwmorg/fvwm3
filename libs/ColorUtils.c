@@ -40,6 +40,7 @@
 #include "Colorset.h"
 #include "PictureBase.h"
 #include "PictureUtils.h"
+#include "ColorUtils.h"
 
 #define PCT_BRIGHTNESS                  (6 * 0xffff / 100)
 

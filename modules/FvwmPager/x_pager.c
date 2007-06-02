@@ -174,7 +174,7 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	}
 }
 
-void HandleScrollDone()
+void HandleScrollDone(void)
 {
 	do_scroll(0, 0, True, True);
 }
@@ -3299,7 +3299,7 @@ char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
 
 
 /* -- ric@giccs.georgetown.edu */
-void UnmapBalloonWindow ()
+void UnmapBalloonWindow (void)
 {
   XUnmapWindow(dpy, Scr.balloon_w);
   BalloonView = None;

@@ -65,7 +65,7 @@ static void ToggleChoice (Item *item);
 static void ResizeFrame (void);
 
 /* read an X event */
-void ReadXServer ()
+void ReadXServer (void)
 {
   static XEvent event;
   int old_cursor = 0, keypress;

@@ -36,6 +36,7 @@
 #include <ctype.h>
 
 #include "fvwmlib.h"
+#include "envvar.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

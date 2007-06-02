@@ -916,7 +916,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     RedrawWindow(redraw, NULL);
 }
 
-void redraw_buttons()
+void redraw_buttons(void)
 {
   Item *item;
 
@@ -2437,7 +2437,7 @@ static void SleepALittle(void)
 /*
  RevealTaskBar -- Make taskbar fully visible
 */
-void RevealTaskBar()
+void RevealTaskBar(void)
 {
   int new_win_y;
   int inc_y = 2;
@@ -2476,7 +2476,7 @@ void RevealTaskBar()
 /*
  HideTaskbar -- Make taskbar partially visible
 */
-void HideTaskBar()
+void HideTaskBar(void)
 {
   int new_win_y;
   int inc_y = 1;

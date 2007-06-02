@@ -28,6 +28,7 @@
 #include <X11/Xresource.h>
 
 #include "fvwmlib.h"
+#include "XResource.h"
 
 
 

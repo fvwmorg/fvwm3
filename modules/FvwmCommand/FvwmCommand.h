@@ -35,4 +35,4 @@ extern char *sys_errlist[];
 #endif
 
 
-char * fifos_get_default_name();
+char * fifos_get_default_name(void);

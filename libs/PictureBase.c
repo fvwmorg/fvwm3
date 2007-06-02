@@ -232,7 +232,7 @@ void PictureSetImagePath( const char* newpath )
 	return;
 }
 
-char* PictureGetImagePath()
+char* PictureGetImagePath(void)
 {
 	return imagePath;
 }

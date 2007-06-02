@@ -1182,7 +1182,7 @@ static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort)
 	++man->weighted_sorts_len;
 }
 
-void read_in_resources()
+void read_in_resources(void)
 {
   char *p, *q;
   int i, n, manager;

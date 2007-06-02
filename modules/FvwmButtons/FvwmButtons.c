@@ -948,9 +948,7 @@ static button_info *handle_new_position(
 	return b;
 }
 
-void ButtonPressProcess (b, act)
-	button_info *b;
-	char **act;
+void ButtonPressProcess (button_info *b, char **act)
 {
 	FlocaleNameString tmp;
     	int i,i2;

@@ -834,7 +834,7 @@ Bool FlocaleCharsetIsCharsetXLocale(Display *dpy, char *charset, char *module)
 #endif
 }
 
-void FlocaleCharsetPrintXOMInfo()
+void FlocaleCharsetPrintXOMInfo(void)
 {
 #ifdef HAVE_XOUTPUT_METHOD
 	int i;

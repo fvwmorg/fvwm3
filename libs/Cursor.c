@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "fvwmlib.h"
 #include <X11/cursorfont.h>
+#include "Cursor.h"
 
 /*
  *  fvwmCursorNameToIndex: return the number of a X11 cursor from its

@@ -561,7 +561,7 @@ int ParseConfigLine(char *line)
 /*
   ParseConfig - Parse the configuration file fvwm to us to use
 */
-void ParseConfig()
+void ParseConfig(void)
 {
 	char *line_start;
 	char *tline;

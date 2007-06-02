@@ -240,7 +240,7 @@ void dragwellAnimate(void)
 
 
 /* Main event loop*/
-void veryLongLoop()
+void veryLongLoop(void)
 {
   int x,y;
   XEvent xev;
@@ -510,7 +510,7 @@ void XStartup(char *appName)
 
 /*getReliefColors - sets up the colors for the dragwell
  *Arguments:*/
-void getReliefColors() {
+void getReliefColors(void) {
   if(xg.dpyDepth < 2) {
     /*for mono display, not well implemented...*/
     xg.fore = GetColor("white");
@@ -534,7 +534,7 @@ void getReliefColors() {
 
 /* createBackground - sets the background of the dragwell window
  *  Arguments:*/
-void createBackground() {
+void createBackground(void) {
   unsigned long gcm;
   XGCValues gcv;
   /*Graphic context stuff*/
@@ -878,7 +878,7 @@ int dummy(DragWellButton *but)
 
 /*createWindow - creates the drag window.
  * Arguments:*/
-void createWindow()
+void createWindow(void)
 {
   unsigned long valuemask;
   XSetWindowAttributes attributes;

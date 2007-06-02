@@ -1,3 +1,19 @@
+2007-05-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmTaskBar/Goodies.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmPager/x_pager.c:
+	* FvwmPager/FvwmPager.h:
+	* FvwmIconMan/readconfig.c:
+	* FvwmForm/ReadXServer.c:
+	* FvwmForm/FvwmForm.c:
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmCommand/fifos.c:
+	* FvwmCommand/FvwmCommand.h:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmBacker/FvwmBacker.c:
+	cleanup prototypes
+
 2007-05-27  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmConsole/getline.c (get_line):

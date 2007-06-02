@@ -205,4 +205,4 @@ void MoveStickyWindows(void);
 void MapBalloonWindow(PagerWindow *t, Bool is_icon_view);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(int i);
-void HandleScrollDone();
+void HandleScrollDone(void);
