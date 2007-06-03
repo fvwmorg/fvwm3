@@ -1,3 +1,8 @@
+2007-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmPager/x_pager.c (MoveStickyWindows):
+	properly handle StickyAcrossPages
+
 2007-05-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmTaskBar/Goodies.c:

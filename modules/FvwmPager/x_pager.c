@@ -2199,25 +2199,28 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 
 void MoveStickyWindows(void)
 {
-  PagerWindow *t;
+	PagerWindow *t;
 
-  t = Start;
-  while(t!= NULL)
-  {
-    if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY_ACROSS_DESKS(t)))||
-       (IS_STICKY_ACROSS_DESKS(t)))
-    {
-      if(t->desk != Scr.CurrentDesk)
-      {
-	ChangeDeskForWindow(t,Scr.CurrentDesk);
-      }
-      else
-      {
-	MoveResizePagerView(t, True);
-      }
-    }
-    t = t->next;
-  }
+	t = Start;
+	while (t!= NULL)
+	{
+		if (
+			(IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
+		        IS_STICKY_ACROSS_DESKS(t) ||
+			(IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_PAGES(t)) ||
+		        IS_STICKY_ACROSS_PAGES(t))
+		{
+			if (t->desk != Scr.CurrentDesk)
+			{
+				ChangeDeskForWindow(t,Scr.CurrentDesk);
+			}
+			else
+			{
+				MoveResizePagerView(t, True);
+			}
+		}
+		t = t->next;
+	}
 }
 
 void Hilight(PagerWindow *t, int on)
