@@ -1,3 +1,18 @@
+2007-06-03  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/icons.c (ChangeIconPixmap, DeIconify, Iconify):
+	* fvwm/focus.c (warp_to_fvwm_window):
+	* fvwm/events.c (__handle_cr_restack)
+	(__handle_bpress_on_managed, HandlePropertyNotify):
+	* fvwm/stack.h:
+	* fvwm/stack.c (__restack_window, __raise_lower_recursion)
+	(__raise_or_lower_window, raise_or_lower_window)
+	(position_new_window_in_stack_ring, RaiseWindow, LowerWindow)
+	(RestackWindow, HandleUnusualStackmodes, CMD_Raise, CMD_Lower)
+	(CMD_RestackTransients, CMD_RaiseLower):
+	do raise hacks even when the internal stack is intact, unless on a
+	client request
+
 2007-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* doc/commands/Style.xml:

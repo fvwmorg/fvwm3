@@ -520,7 +520,7 @@ static void warp_to_fvwm_window(
 	}
 	FWarpPointerUpdateEvpos(
 		exc->x.elast, dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
-	RaiseWindow(t);
+	RaiseWindow(t, False);
 	/* If the window is still not visible, make it visible! */
 	if (t->g.frame.x + t->g.frame.width  < 0 ||
 	    t->g.frame.y + t->g.frame.height < 0 ||

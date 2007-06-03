@@ -1568,7 +1568,7 @@ void ChangeIconPixmap(FvwmWindow *fw)
 
 		if (!IS_ICON_SUPPRESSED(fw))
 		{
-			LowerWindow(fw);
+			LowerWindow(fw, False);
 			AutoPlaceIcon(fw, NULL, True);
 			if (fw->Desk == Scr.CurrentDesk)
 			{
@@ -2425,7 +2425,7 @@ void DeIconify(FvwmWindow *fw)
 	}
 
 #if 1
-	RaiseWindow(fw); /* moved dje */
+	RaiseWindow(fw, False); /* moved dje */
 #endif
 	if (sf == fw)
 	{
@@ -2614,7 +2614,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_t *win_opts)
 	if (win_opts->initial_state != IconicState ||
 	    (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
 	{
-		LowerWindow(fw);
+		LowerWindow(fw, False);
 	}
 	if (IS_ICON_STICKY_ACROSS_DESKS(fw) || IS_STICKY_ACROSS_DESKS(fw))
 	{

@@ -77,10 +77,10 @@ typedef enum
 
 static void __raise_or_lower_window(
 	FvwmWindow *t, stack_mode_t mode, Bool allow_recursion,
-	Bool is_new_window);
+	Bool is_new_window, Bool is_client_request);
 static void raise_or_lower_window(
 	FvwmWindow *t, stack_mode_t mode, Bool allow_recursion,
-	Bool is_new_window);
+	Bool is_new_window, Bool is_client_request);
 #if 0
 static void ResyncFvwmStackRing(void);
 #endif
@@ -889,7 +889,7 @@ static Bool __is_restack_needed(
 
 static Bool __restack_window(
 	FvwmWindow *t, stack_mode_t mode, Bool do_restack_transients,
-	Bool is_new_window)
+	Bool is_new_window, Bool is_client_request)
 {
 	FvwmWindow *s = NULL;
 	FvwmWindow *r = NULL;
@@ -916,8 +916,10 @@ static Bool __restack_window(
 			BroadcastRestack(t->stack_prev, s);
 		}
 
-		/* return True: no need to do raise hacks if nothing canged */
-		return True;
+		/* native/unmanaged windows might have raised. However some
+		 * buggy clients will keep issuing requests if the raise hacks
+		 * are done after processing their requests. */
+		return is_client_request;
 	}
 
 	count = 0;
@@ -965,7 +967,7 @@ static Bool __restack_window(
 		/* now that the new transient is properly positioned in the
 		 * stack ring, raise/lower it again so that its parent is
 		 * raised/lowered too */
-		raise_or_lower_window(t, mode, True, False);
+		raise_or_lower_window(t, mode, True, False, is_client_request);
 		/* make sure the stacking order is correct - may be the
 		 * sledge-hammer method, but the recursion ist too hard to
 		 * understand. */
@@ -987,7 +989,7 @@ static Bool __restack_window(
 }
 
 static Bool __raise_lower_recursion(
-	FvwmWindow *t, stack_mode_t mode)
+	FvwmWindow *t, stack_mode_t mode, Bool is_client_request)
 {
 	FvwmWindow *t2;
 
@@ -1021,7 +1023,8 @@ static Bool __raise_lower_recursion(
 				 * other branches. */
 				t->scratch.i = MAX_TRANSIENTS_IN_BRANCH;
 			}
-			__raise_or_lower_window(t2, mode, True, False);
+			__raise_or_lower_window(
+				t2, mode, True, False, is_client_request);
 			if (__is_restack_transients_needed(t2, mode))
 			{
 				/* moving the parent moves our window already */
@@ -1035,7 +1038,7 @@ static Bool __raise_lower_recursion(
 
 static void __raise_or_lower_window(
 	FvwmWindow *t, stack_mode_t mode, Bool allow_recursion,
-	Bool is_new_window)
+	Bool is_new_window, Bool is_client_request)
 {
 	FvwmWindow *t2;
 	Bool do_move_transients;
@@ -1063,7 +1066,8 @@ static void __raise_or_lower_window(
 		 * window). */
 		if (IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
 		{
-			if (__raise_lower_recursion(t, mode) == True)
+			if (__raise_lower_recursion(
+				    t, mode, is_client_request) == True)
 			{
 				return;
 			}
@@ -1079,7 +1083,8 @@ static void __raise_or_lower_window(
 		do_move_transients = __must_move_transients(t, mode);
 	}
 	if (__restack_window(
-		    t, mode, do_move_transients, is_new_window) == True)
+		    t, mode, do_move_transients, is_new_window,
+		    is_client_request) == True)
 	{
 		return;
 	}
@@ -1126,7 +1131,7 @@ static void __raise_or_lower_window(
 #endif
 			for (t2 = t; t2 != &Scr.FvwmRoot; t2 = t2->stack_prev)
 			{
-				XRaiseWindow (dpy, FW_W_FRAME(t2));
+				XRaiseWindow(dpy, FW_W_FRAME(t2));
 			}
 		}
 		/*  This needs to be done after all the raise hacks.  */
@@ -1143,7 +1148,7 @@ static void __raise_or_lower_window(
 
 static void raise_or_lower_window(
 	FvwmWindow *t, stack_mode_t mode, Bool allow_recursion,
-	Bool is_new_window)
+	Bool is_new_window, Bool is_client_request)
 {
 	FvwmWindow *fw;
 
@@ -1152,7 +1157,8 @@ static void raise_or_lower_window(
 	{
 		fw->scratch.i = 0;
 	}
-	__raise_or_lower_window(t, mode, allow_recursion, is_new_window);
+	__raise_or_lower_window(
+		t, mode, allow_recursion, is_new_window, is_client_request);
 
 	return;
 }
@@ -1691,7 +1697,8 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
 		return False;
 	}
 	/* RaiseWindow/LowerWindow will put the window in its layer */
-	raise_or_lower_window(t, (do_lower) ? SM_LOWER : SM_RAISE, False, True);
+	raise_or_lower_window(
+		t, (do_lower) ? SM_LOWER : SM_RAISE, False, True, False);
 
 	return True;
 }
@@ -1699,12 +1706,12 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
 /* Raise t and its transients to the top of its layer. For the pager to work
  * properly it is necessary that RaiseWindow *always* sends a proper M_RESTACK
  * packet, even if the stacking order didn't change. */
-void RaiseWindow(FvwmWindow *t)
+void RaiseWindow(FvwmWindow *t, Bool is_client_request)
 {
 	BroadcastPacket(
 		M_RAISE_WINDOW, 3, (long)FW_W(t), (long)FW_W_FRAME(t),
 		(unsigned long)t);
-	raise_or_lower_window(t, SM_RAISE, True, False);
+	raise_or_lower_window(t, SM_RAISE, True, False, is_client_request);
 	focus_grab_buttons_on_layer(t->layer);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
@@ -1712,12 +1719,12 @@ void RaiseWindow(FvwmWindow *t)
 	return;
 }
 
-void LowerWindow(FvwmWindow *t)
+void LowerWindow(FvwmWindow *t, Bool is_client_request)
 {
 	BroadcastPacket(
 		M_LOWER_WINDOW, 3, (long)FW_W(t), (long)FW_W_FRAME(t),
 		(unsigned long)t);
-	raise_or_lower_window(t, SM_LOWER, True, False);
+	raise_or_lower_window(t, SM_LOWER, True, False, is_client_request);
 	focus_grab_buttons_on_layer(t->layer);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
@@ -1725,9 +1732,9 @@ void LowerWindow(FvwmWindow *t)
 	return;
 }
 
-void RestackWindow(FvwmWindow *t)
+void RestackWindow(FvwmWindow *t, Bool is_client_request)
 {
-	raise_or_lower_window(t, SM_RESTACK, True, False);
+	raise_or_lower_window(t, SM_RESTACK, True, False, is_client_request);
 	focus_grab_buttons_on_layer(t->layer);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
@@ -1766,7 +1773,7 @@ Bool HandleUnusualStackmodes(
 		}
 		if (do_restack)
 		{
-			RaiseWindow (r);
+			RaiseWindow (r, True);
 		}
 		break;
 	case BottomIf:
@@ -1778,7 +1785,7 @@ Bool HandleUnusualStackmodes(
 		}
 		if (do_restack)
 		{
-			LowerWindow (r);
+			LowerWindow (r, True);
 		}
 		break;
 	case Opposite:
@@ -2038,21 +2045,21 @@ Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 
 void CMD_Raise(F_CMD_ARGS)
 {
-	RaiseWindow(exc->w.fw);
+	RaiseWindow(exc->w.fw, False);
 
 	return;
 }
 
 void CMD_Lower(F_CMD_ARGS)
 {
-	LowerWindow(exc->w.fw);
+	LowerWindow(exc->w.fw, False);
 
 	return;
 }
 
 void CMD_RestackTransients(F_CMD_ARGS)
 {
-	RestackWindow(exc->w.fw);
+	RestackWindow(exc->w.fw, False);
 
 	return;
 }
@@ -2065,11 +2072,11 @@ void CMD_RaiseLower(F_CMD_ARGS)
 	ontop = is_on_top_of_layer_ignore_rom(fw);
 	if (ontop)
 	{
-		LowerWindow(fw);
+		LowerWindow(fw, False);
 	}
 	else
 	{
-		RaiseWindow(fw);
+		RaiseWindow(fw, False);
 	}
 
 	return;

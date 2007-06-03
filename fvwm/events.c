@@ -419,10 +419,10 @@ static inline void __handle_cr_restack(
 		switch (cre->detail)
 		{
 		case Above:
-			RaiseWindow(fw);
+			RaiseWindow(fw, True);
 			break;
 		case Below:
-			LowerWindow(fw);
+			LowerWindow(fw, True);
 			break;
 		}
 	}
@@ -1661,7 +1661,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 		 * dv (10-Aug-2002):  We can safely raise the window after
 		 * redrawing it since all the decorations are drawn in the
 		 * window background and no Expose event is generated. */
-		RaiseWindow(fw);
+		RaiseWindow(fw, False);
 		SET_SCHEDULED_FOR_RAISE(fw, 0);
 	}
 	/* clean up */
@@ -3178,7 +3178,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		flush_property_notify(XA_WM_TRANSIENT_FOR, FW_W(fw));
 		if (setup_transientfor(fw) == True)
 		{
-			RaiseWindow(fw);
+			RaiseWindow(fw, False);
 		}
 		break;
 

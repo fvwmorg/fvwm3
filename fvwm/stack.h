@@ -13,8 +13,8 @@ FvwmWindow *get_next_window_in_stack_ring(const FvwmWindow *t);
 FvwmWindow *get_prev_window_in_stack_ring(const FvwmWindow *t);
 FvwmWindow *get_transientfor_fvwmwindow(const FvwmWindow *t);
 Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower);
-void RaiseWindow(FvwmWindow *t);
-void LowerWindow(FvwmWindow *t);
+void RaiseWindow(FvwmWindow *t, Bool is_client_request);
+void LowerWindow(FvwmWindow *t, Bool is_client_request);
 Bool HandleUnusualStackmodes(
 	unsigned int stack_mode, FvwmWindow *r, Window rw, FvwmWindow *sib,
 	Window sibw);
