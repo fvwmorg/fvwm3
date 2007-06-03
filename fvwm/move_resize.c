@@ -4046,6 +4046,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			xmotion = 1;
 			ymotion = 1;
 			g = sorig;
+fprintf(stderr, "!!!D g %d %d %dx%d\n", g.x, g.y, g.width, g.height);
 			__resize_step(
 				exc, sorig.x, sorig.y, &xo, &yo, &g, orig,
 				&xmotion, &ymotion, do_resize_opaque, True);

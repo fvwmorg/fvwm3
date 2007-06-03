@@ -100,8 +100,8 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>StickyIcon</emphasis> / <emphasis remap='I'>SlipperyIcon</emphasis>,
 <emphasis remap='I'>StickyAcrossPagesIcon</emphasis> / <emphasis remap='I'>!StickyAcrossPagesIcon</emphasis>,
 <emphasis remap='I'>StickyAcrossDesksIcon</emphasis> / <emphasis remap='I'>!StickyAcrossDesksIcon</emphasis>,
-<emphasis remap='I'>ManualPlacement</emphasis> / <emphasis remap='I'>CascadePlacement</emphasis> / <emphasis remap='I'>MinOverlapPlacement</emphasis> / 
-<emphasis remap='I'>MinOverlapPercentPlacement</emphasis> / <emphasis remap='I'>TileManualPlacement</emphasis> / 
+<emphasis remap='I'>ManualPlacement</emphasis> / <emphasis remap='I'>CascadePlacement</emphasis> / <emphasis remap='I'>MinOverlapPlacement</emphasis> /
+<emphasis remap='I'>MinOverlapPercentPlacement</emphasis> / <emphasis remap='I'>TileManualPlacement</emphasis> /
 <emphasis remap='I'>TileCascadePlacement</emphasis> / <emphasis remap='I'>PositionPlacement</emphasis>,
 <emphasis remap='I'>MinOverlapPlacementPenalties</emphasis>,
 <emphasis remap='I'>MinOverlapPercentPlacementPenalties</emphasis>,
@@ -170,6 +170,7 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>!AllowMaximizeFixedSize</emphasis> / <emphasis remap='I'>AllowMaximizeFixedSize</emphasis>,
 <emphasis remap='I'>IconOverride</emphasis> / <emphasis remap='I'>NoIconOverride</emphasis> / <emphasis remap='I'>NoActiveIconOverride</emphasis>,
 <emphasis remap='I'>DepressableBorder</emphasis> / <emphasis remap='I'>FirmBorder</emphasis>,
+<emphasis remap='I'>MinWindowSize</emphasis>,
 <emphasis remap='I'>MaxWindowSize</emphasis>,
 <emphasis remap='I'>IconifyWindowGroups</emphasis> / <emphasis remap='I'>IconifyWindowGroupsOff</emphasis>,
 <emphasis remap='I'>ResizeOpaque</emphasis> / <emphasis remap='I'>ResizeOutline</emphasis>,
@@ -186,9 +187,9 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>EWMHIgnoreStateHints</emphasis> / <emphasis remap='I'>EWMHUseStateHints</emphasis>,
 <emphasis remap='I'>EWMHIgnoreStrutHints</emphasis> / <emphasis remap='I'>EWMHUseStrutHints</emphasis>,
 <emphasis remap='I'>EWMHIgnoreWindowType</emphasis> / <emphasis remap='I'>!EWMHIgnoreWindowType</emphasis>,
-<emphasis remap='I'>EWMHMaximizeIgnoreWorkingArea</emphasis> / <emphasis remap='I'>EWMHMaximizeUseWorkingArea</emphasis> / 
+<emphasis remap='I'>EWMHMaximizeIgnoreWorkingArea</emphasis> / <emphasis remap='I'>EWMHMaximizeUseWorkingArea</emphasis> /
 <emphasis remap='I'>EWMHMaximizeUseDynamicWorkingArea</emphasis>,
-<emphasis remap='I'>EWMHPlacementIgnoreWorkingArea</emphasis> / <emphasis remap='I'>EWMHPlacementUseWorkingArea</emphasis> / 
+<emphasis remap='I'>EWMHPlacementIgnoreWorkingArea</emphasis> / <emphasis remap='I'>EWMHPlacementUseWorkingArea</emphasis> /
 <emphasis remap='I'>EWMHPlacementUseDynamicWorkingArea</emphasis>,
 <emphasis remap='I'>MoveByProgramMethod</emphasis>,
 <emphasis remap='I'>Unmanaged</emphasis>,
@@ -337,14 +338,14 @@ The latter is the default for
 <para><emphasis remap='B'>Clicking the window to raise</emphasis></para>
 
 <para>The styles
-<fvwmopt cmd="Style" opt="FPClickRaisesFocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesFocused"/> and 
+<fvwmopt cmd="Style" opt="FPClickRaisesFocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesFocused"/> and
 <fvwmopt cmd="Style" opt="FPClickIconRaisesFocused"/>
 allow to raise the window when the interior or the decorations or
 the icon of the window is clicked while the window is already
 focused.</para>
 
 <para>The styles
-<fvwmopt cmd="Style" opt="FPClickRaisesUnfocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesUnfocused"/> and 
+<fvwmopt cmd="Style" opt="FPClickRaisesUnfocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesUnfocused"/> and
 <fvwmopt cmd="Style" opt="FPClickIconRaisesUnfocused"/>
 allow to raise the window when the interior or the decorations or
 the icon of the window is clicked while the window is not yet
@@ -399,7 +400,7 @@ not while you are working in a terminal window or a text
 processor.</para>
 
 <para>The above three styles are accompanied by
-<fvwmopt cmd="Style" opt="FPReleaseFocus"/>, <fvwmopt cmd="Style" opt="FPReleaseFocusTransient"/> and 
+<fvwmopt cmd="Style" opt="FPReleaseFocus"/>, <fvwmopt cmd="Style" opt="FPReleaseFocusTransient"/> and
 <fvwmopt cmd="Style" opt="FPOverrideReleaseFocus"/>.
 These control if the focus is returned to another window when the
 window is closed.  Otherwise no window or the window under the
@@ -663,7 +664,7 @@ style.</para>
 
 <!--  +++++++++++++++ styles affecting borders -->
 </section>
-  
+
 
 
 
@@ -757,7 +758,7 @@ configuration file until then.</para>
 
 <programlisting>
 Style * Icon unknown.xpm
-</programlisting> 
+</programlisting>
 
 <para>doesn't force the unknown.xpm icon on every window, it just sets
 the default icon like the DefaultIcon command. If you really want
@@ -765,7 +766,7 @@ all windows to have the same icon, you can use</para>
 
 <programlisting>
 Style ** Icon unknown.xpm
-</programlisting> 
+</programlisting>
 
 <para>If the
 <fvwmopt cmd="Style" opt="NoIcon"/>
@@ -783,7 +784,7 @@ module icon to exist:</para>
 <programlisting>
 Style * NoIcon
 Style FvwmPager Icon
-</programlisting> 
+</programlisting>
 
 
 <para><fvwmopt cmd="Style" opt="IconBox"/>
@@ -793,13 +794,13 @@ screen specification), an X11 geometry string or the string
 
 <programlisting>
 IconBox<emphasis remap='I'> [</emphasis>screen scr-spec<emphasis remap='I'>] </emphasis>l t r b
-</programlisting> 
+</programlisting>
 
 <para>or</para>
 
 <programlisting>
 IconBox geometry
-</programlisting> 
+</programlisting>
 
 <para>Where
 <fvwmopt cmd="Style" opt="l"/>
@@ -825,7 +826,7 @@ For example:</para>
 
 <programlisting>
 IconBox -80 240 -1 -1
-</programlisting> 
+</programlisting>
 
 <para>defines a box that is 80 pixels wide from the right edge,
 240 pixels down from the top, and continues to the bottom of
@@ -836,7 +837,7 @@ geometry string though:</para>
 
 <programlisting>
 IconBox 1000x70-1-1
-</programlisting> 
+</programlisting>
 
 <para>places an 1000 by 70 pixel icon box on the bottom of the screen
 starting in the lower right  hand corner of the screen.
@@ -857,7 +858,7 @@ command.  For example:</para>
 <programlisting>
 Style * IconBox -80 240 -1 -1, \
         IconBox 1000x70-1-1
-</programlisting> 
+</programlisting>
 
 <para>A Style command with the IconBox option replaces any icon box
 defined previously by another Style command for the same style.
@@ -885,7 +886,7 @@ below in your configuration file:</para>
 <fvwmref cmd="AddToFunc"/> DeiconifyAndRearrange
  + C <fvwmref cmd="Iconify"/> off
  + C <fvwmref cmd="All"/> (CurrentPage, Iconic) <fvwmref cmd="PlaceAgain"/> Icon
-</programlisting> 
+</programlisting>
 
 <para>And then replace all places where you call the
 <fvwmref cmd="Iconify"/>
@@ -900,7 +901,7 @@ function.  For example replace</para>
  + D <fvwmref cmd="Iconify"/> off
 
 <fvwmref cmd="Mouse"/> 1 I A <fvwmref cmd="Iconify"/> off
-</programlisting> 
+</programlisting>
 
 <para>with</para>
 
@@ -912,14 +913,14 @@ function.  For example replace</para>
  + D DeiconifyAndRearrange
 
 <fvwmref cmd="Mouse"/> 1 I A DeiconifyAndRearrange
-</programlisting> 
+</programlisting>
 
 <para><fvwmopt cmd="Style" opt="IconGrid"/>
 takes 2 numeric arguments greater than zero.</para>
 
 <programlisting>
 <emphasis remap='I'>IconGrid x y</emphasis>
-</programlisting> 
+</programlisting>
 
 <para>Icons are placed in an icon box by stepping through the icon box
 using the
@@ -937,14 +938,14 @@ definition that it applies to:</para>
 
 <programlisting>
 Style * IconBox -80x240-1-1, IconGrid 90 90
-</programlisting> 
+</programlisting>
 
 <para><fvwmopt cmd="Style" opt="IconFill"/>
 takes 2 arguments.</para>
 
 <programlisting>
 IconFill <emphasis remap='I'>Bottom Right</emphasis>
-</programlisting> 
+</programlisting>
 
 <para>Icons are placed in an icon box by stepping through the icon box
 using these arguments to control the direction the box is filled
@@ -953,7 +954,7 @@ This would be expressed as:</para>
 
 <programlisting>
 IconFill left top
-</programlisting> 
+</programlisting>
 
 <para>To fill an icon box in columns instead of rows, specify the
 vertical direction (top or bottom) first. The directions can be
@@ -966,7 +967,7 @@ definition that it applies to:</para>
 
 <programlisting>
 Style * IconBox -80x240-1-1, IconFill b r
-</programlisting> 
+</programlisting>
 
 <para>
 <fvwmopt cmd="Style" opt="IconSize"/>
@@ -975,7 +976,7 @@ and application-provided icon images are affected.</para>
 
 <programlisting>
 IconSize<emphasis remap='I'> [ </emphasis>width<emphasis remap='I'> </emphasis>height<emphasis remap='I'> [ </emphasis>maxwidth<emphasis remap='I'> </emphasis>maxheight<emphasis remap='I'> ] ]</emphasis>
-</programlisting> 
+</programlisting>
 
 <para>All arguments are measured in pixels.  When all four arguments are
 passed to
@@ -1070,7 +1071,7 @@ resizing you could use these lines in your configuration file:</para>
 Style * ResizeOpaque
 Style rxvt ResizeOutline
 Style emacs ResizeOutline
-</programlisting> 
+</programlisting>
 
 <para><fvwmopt cmd="Style" opt="Sticky"/>
 makes the window sticky, i.e. it is always visible on each page
@@ -1094,16 +1095,16 @@ but stick the window only across pages, not desks while
 works the other way round.</para>
 
 <para>Windows that have been marked as
-<emphasis remap='I'>Sticky</emphasis> or 
-<fvwmopt cmd="Style" opt="StickyAcrossDesks"/> or 
-<emphasis remap='I'>StickyAcrossPages</emphasis> will have stipples drawn 
+<emphasis remap='I'>Sticky</emphasis> or
+<fvwmopt cmd="Style" opt="StickyAcrossDesks"/> or
+<emphasis remap='I'>StickyAcrossPages</emphasis> will have stipples drawn
 on the titlebar.  This can be negated with the
 !<fvwmopt cmd="Style" opt="StickyStippledTitle"/>
 style.  The style
 <emphasis remap='I'>StickyStippledTitle</emphasis>
 puts back the stipples where that window has also been marked as
-<emphasis remap='I'>Sticky</emphasis>.  Note that this is the default style for 
-<emphasis remap='I'>Sticky</emphasis> windows.  Sticky icons will have stipples drawn 
+<emphasis remap='I'>Sticky</emphasis>.  Note that this is the default style for
+<emphasis remap='I'>Sticky</emphasis> windows.  Sticky icons will have stipples drawn
 on the icon title. This can be disabled in the same way with the
 !<fvwmopt cmd="Style" opt="StickyStippledIconTitle"/>
 style.</para>
@@ -1242,6 +1243,16 @@ resized.  Do not use it if you do not need it.  The default
 (opposite) style is
 <fvwmopt cmd="Style" opt="NoResizeOverride"/>.</para>
 
+<para><emphasis remap='I'>MinWindowSize  [ width [ p ]  height [ p ] ]</emphasis>
+Tells fvwm the minimum width and height of a window.  The values
+are the percentage of the total screen area.  If the letter
+'<emphasis remap='I'>p</emphasis>'
+is appended to either of the values, the numbers are interpreted
+as pixels. This command is useful for certain versions of xemacs
+which freak out if their windows become too small.  If you omit
+he parameters or their values are invalid, both limits are set to
+0 pixels (which is the default value).</para>
+
 <para><emphasis remap='I'>MaxWindowSize  [ width [ p ]  height [ p ] ]</emphasis>
 Tells fvwm the maximum width and height of a window.  The values
 are the percentage of the total screen area.  If the letter
@@ -1347,7 +1358,7 @@ takes at most 6 positive or null decimal arguments:</para>
 
 <programlisting>
 1 5 10 1 0.05 50
-</programlisting> 
+</programlisting>
 
 <para>To reset this style to the default values, prefix it with a '!'. This style configures the
 <emphasis remap='I'>MinOverlapPlacement</emphasis> and <emphasis remap='I'>MinOverlapPercentPlacement</emphasis>
@@ -1394,14 +1405,14 @@ takes at most 4 positive or null integer arguments:</para>
 
 <programlisting>
 <emphasis remap='I'>cover_100 cover_95 cover_85 cover_75</emphasis>
-</programlisting> 
+</programlisting>
 
 <para>if trailing arguments are missing the defaults are used
 which are:</para>
 
 <programlisting>
 12 6 4 1
-</programlisting> 
+</programlisting>
 
 <para>To reset this style to the default values, prefix it with a '!'.
 
@@ -1460,7 +1471,7 @@ Style * ManualPlacement
 <fvwmref cmd="AddToFunc"/> GrowDownFunc
 + I windowid $0 (PlacedByButton 3) \
   <fvwmref cmd="Resize"/> bottomright keep -0p
-</programlisting> 
+</programlisting>
 
 
 <para>Now, whenever a window is created and the user presses button 3 to
@@ -1522,7 +1533,7 @@ Style * ManualPlacementsHonorsStartsOnPage
 Style * ActivePlacementsHonorsStartsOnPageOff
   -->
 Style * ManualPlacementsHonorsStartsOnPageOff
-</programlisting> 
+</programlisting>
 
 </section>
 
@@ -1616,7 +1627,7 @@ to a specific Xinerama screen.  For example:</para>
 
 <programlisting>
 Style * StartsOnScreen c
-</programlisting> 
+</programlisting>
 
 <para>Would cause all windows, including those with their own geometry
 to be placed relative to the current Xinerama screen rather than
@@ -1648,7 +1659,7 @@ allows this to happen anyway.  The option has no effect if
 <emphasis remap='I'>SkipMapping</emphasis>
 is not in effect, because fvwm switches to the proper desk/page to
 perform interactive placement.  The default is
-<emphasis remap='I'>ManualPlacementIgnoresStartsOnPage</emphasis>; 
+<emphasis remap='I'>ManualPlacementIgnoresStartsOnPage</emphasis>;
 <emphasis remap='I'>ManualPlacementHonorsStartsOnPage</emphasis>
 matches the way the old
 <emphasis remap='I'>StartsOnDesk</emphasis>
@@ -1788,7 +1799,7 @@ possible like this</para>
 Style * RaiseTransient
 Style * LowerTransient
 Style * StackTransientParent
-</programlisting> 
+</programlisting>
 
 </section>
 
@@ -1999,7 +2010,7 @@ without retyping.  For example:</para>
 
 <programlisting>
   Style rxvt UseStyle XTerm
-</programlisting> 
+</programlisting>
 
 <para>Warning: If a style is built from one or more parent styles and
 the parent styles are changed, the derived style is not
@@ -2040,7 +2051,7 @@ command.</para>
 Style xterm <fvwmref cmd="State"/> 11
 # ... but not for rxvts.
 Style rxvt !State 11
-</programlisting> 
+</programlisting>
 
 
 <!--  +++++++++++++++ styles affecting window selection -->
@@ -2082,7 +2093,7 @@ with</para>
 
 <programlisting>
 Style * CirculateSkipIcon, CirculateSkipShaded
-</programlisting> 
+</programlisting>
 
 <para>only windows that are neither iconic nor shaded are selected.
 Note:  For historical reasons, the conditional commands understand
@@ -2144,7 +2155,7 @@ Style signal      StartsOnDesk 3
 # bother me with it...
 Style Netscape* SkipMapping,              \
                 StartsOnPage 1 1 1
-</programlisting> 
+</programlisting>
 
 <para>Note that all properties for a window are or'ed together.  In the
 above example "FvwmPager" gets the property

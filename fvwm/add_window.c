@@ -1848,6 +1848,16 @@ void change_icon_boxes(FvwmWindow *fw, window_style *pstyle)
 
 void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 {
+	if (SHAS_MIN_WINDOW_SIZE(&pstyle->flags))
+	{
+		fw->min_window_width = SGET_MIN_WINDOW_WIDTH(*pstyle);
+		fw->min_window_height = SGET_MIN_WINDOW_HEIGHT(*pstyle);
+	}
+	else
+	{
+		fw->min_window_width = 0;
+		fw->min_window_height = 0;
+	}
 	if (SHAS_MAX_WINDOW_SIZE(&pstyle->flags))
 	{
 		fw->max_window_width = SGET_MAX_WINDOW_WIDTH(*pstyle);

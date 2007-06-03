@@ -3774,6 +3774,15 @@ void SendConfigureNotify(
 	client_event.xconfigure.border_width = bw;
 	client_event.xconfigure.above = FW_W_FRAME(fw);
 	client_event.xconfigure.override_redirect = False;
+#if 0
+	fprintf(stderr,
+		"send cn: %d %d %dx%d fw 0x%08x w 0x%08x ew 0x%08x  '%s'\n",
+		client_event.xconfigure.x, client_event.xconfigure.y,
+		client_event.xconfigure.width, client_event.xconfigure.height,
+		(int)FW_W_FRAME(fw), (int)FW_W(fw),
+		(int)client_event.xconfigure.window,
+		(fw->name.name) ? fw->name.name : "");
+#endif
 	FSendEvent(
 		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
 	if (send_for_frame_too)

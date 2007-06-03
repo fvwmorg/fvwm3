@@ -838,10 +838,18 @@ void constrain_size(
 
 	min.width = fw->hints.min_width;
 	min.height = fw->hints.min_height;
+	if (min.width < fw->min_window_width - b.total_size.width)
+	{
+		min.width = fw->min_window_width - b.total_size.width;
+	}
+	if (min.height < fw->min_window_height - b.total_size.height)
+	{
+		min.height =
+			fw->min_window_height - b.total_size.height;
+	}
 
 	max.width = fw->hints.max_width;
 	max.height =  fw->hints.max_height;
-
 	if (max.width > fw->max_window_width - b.total_size.width)
 	{
 		max.width = fw->max_window_width - b.total_size.width;
@@ -850,6 +858,15 @@ void constrain_size(
 	{
 		max.height =
 			fw->max_window_height - b.total_size.height;
+	}
+
+	if (min.width > max.width)
+	{
+		min.width = max.width;
+	}
+	if (min.height > max.height)
+	{
+		min.height = max.height;
 	}
 
 	base.width = fw->hints.base_width;

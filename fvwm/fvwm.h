@@ -541,6 +541,7 @@ typedef struct style_flags
 	unsigned has_icon : 1;
 	unsigned has_icon_boxes : 1;
 	unsigned has_icon_size_limits : 1;
+	unsigned has_min_window_size : 1;
 	unsigned has_max_window_size : 1;
 	unsigned has_icon_background_padding : 1;
 	unsigned has_icon_background_relief : 1;
@@ -647,6 +648,8 @@ typedef struct window_style
 	int start_page_x;
 	int start_page_y;
 	int start_screen;
+	int min_window_width;
+	int min_window_height;
 	int max_window_width;
 	int max_window_height;
 	int shade_anim_steps;
@@ -863,6 +866,8 @@ typedef struct FvwmWindow
 	char icon_background_relief;
 	char icon_title_relief;
 
+	int min_window_width;
+	int min_window_height;
 	int max_window_width;
 	int max_window_height;
 	int shade_anim_steps;

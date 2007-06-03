@@ -525,6 +525,13 @@ static void merge_styles(
 		SSET_ICON_RESIZE_TYPE(
 			*merged_style, SGET_ICON_RESIZE_TYPE(*add_style));
 	}
+	if (add_style->flags.has_min_window_size)
+	{
+		SSET_MIN_WINDOW_WIDTH(
+			*merged_style, SGET_MIN_WINDOW_WIDTH(*add_style));
+		SSET_MIN_WINDOW_HEIGHT(
+			*merged_style, SGET_MIN_WINDOW_HEIGHT(*add_style));
+	}
 	if (add_style->flags.has_max_window_size)
 	{
 		SSET_MAX_WINDOW_WIDTH(
@@ -3175,6 +3182,40 @@ static Bool style_parse_one_style_option(
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
 				S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
+		else if (StrEquals(token, "MinWindowSize"))
+		{
+			int val1;
+			int val2;
+			int val1_unit;
+			int val2_unit;
+
+			num = GetTwoArguments(
+				rest, &val1, &val2, &val1_unit, &val2_unit);
+			rest = SkipNTokens(rest, num);
+			if (num != 2)
+			{
+				val1 = 0;
+				val2 = 0;
+			}
+			else
+			{
+				val1 = val1 * val1_unit / 100;
+				val2 = val2 * val2_unit / 100;
+			}
+			if (val1 < 0)
+			{
+				val1 = 0;
+			}
+			if (val2 < 0)
+			{
+				val2 = 0;
+			}
+			SSET_MIN_WINDOW_WIDTH(*ps, val1);
+			SSET_MIN_WINDOW_HEIGHT(*ps, val2);
+			ps->flags.has_min_window_size = 1;
+			ps->flag_mask.has_min_window_size = 1;
+			ps->change_mask.has_min_window_size = 1;
+		}
 		else if (StrEquals(token, "MaxWindowSize"))
 		{
 			int val1;
@@ -4600,7 +4641,14 @@ void check_window_style_change(
 		flags->do_update_ewmh_mini_icon = 1;
 	}
 
+	/* has_min_window_size */
 	/* has_max_window_size */
+	if (ret_style->change_mask.has_min_window_size)
+	{
+		flags->do_resize_window = 1;
+		flags->do_update_ewmh_allowed_actions = 1;
+		flags->do_update_modules_flags = 1;
+	}
 	if (ret_style->change_mask.has_max_window_size)
 	{
 		flags->do_resize_window = 1;

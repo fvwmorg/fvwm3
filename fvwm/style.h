@@ -31,6 +31,8 @@
 	((sf)->has_icon_background_relief)
 #define SHAS_ICON_TITLE_RELIEF(sf) \
 	((sf)->has_icon_title_relief)
+#define SHAS_MIN_WINDOW_SIZE(sf) \
+	((sf)->has_min_window_size)
 #define SHAS_MAX_WINDOW_SIZE(sf) \
 	((sf)->has_max_window_size)
 #define SHAS_WINDOW_SHADE_STEPS(sf) \
@@ -539,10 +541,18 @@
 	((s).icon_title_relief)
 #define SSET_ICON_TITLE_RELIEF(s,x) \
 	((s).icon_title_relief = (x))
+#define SGET_MIN_WINDOW_WIDTH(s) \
+	((s).min_window_width)
+#define SSET_MIN_WINDOW_WIDTH(s,x) \
+	((s).min_window_width = (x))
 #define SGET_MAX_WINDOW_WIDTH(s) \
 	((s).max_window_width)
 #define SSET_MAX_WINDOW_WIDTH(s,x) \
 	((s).max_window_width = (x))
+#define SGET_MIN_WINDOW_HEIGHT(s) \
+	((s).min_window_height)
+#define SSET_MIN_WINDOW_HEIGHT(s,x) \
+	((s).min_window_height = (x))
 #define SGET_MAX_WINDOW_HEIGHT(s) \
 	((s).max_window_height)
 #define SSET_MAX_WINDOW_HEIGHT(s,x) \

@@ -1,3 +1,14 @@
+2007-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* doc/commands/Style.xml:
+	* fvwm/style.c (check_window_style_change)
+	(style_parse_one_style_option):
+	* fvwm/style.h:
+	* fvwm/fvwm.h (window_style):
+	* fvwm/add_window.c (setup_frame_size_limits):
+	* fvwm/geometry.c (constrain_size):
+	new style MinWindowSize
+
 2007-05-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/System.h:
