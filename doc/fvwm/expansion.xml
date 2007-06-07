@@ -64,326 +64,382 @@ command can be used:</para>
 
 <para>The parameters known by fvwm are:</para>
 
-<!--<informaltable pgwide="1"> -->
-<informaltable>
-<tgroup cols='2' align='left' valign='top'>
-<tbody>
-<row>
-	<entry>$$</entry>
-	<entry>A literal '$'.</entry>
-</row>
-<row>
-	<entry>$.</entry>
-	<entry>
-The absolute directory of the currently Read file.  Intended for
-creating relative and relocatable configuration trees.  If used
-outside of any read file, the returned value is '.'.
-	</entry>
-</row>
-<row>
-	<entry>$0 to $9</entry>
-	<entry>
-The positional parameters given to a complex function (a function
-that has been defined with the
-<fvwmref cmd="AddToFunc"/>
-command).  "$0" is replaced with the first parameter, "$1" with
-the second parameter and so on.  If the corresponding parameter is
-undefined, the "$..." is deleted from the command line.
-	</entry>
-</row>
-<row>
-	<entry>$*</entry>
-	<entry>
-All positional parameters given to a complex function.  This
-includes parameters that follow after "$9".
-	</entry>
-</row>
-<row>
-	<entry>$[n]</entry>
-	<entry>
-The
-<emphasis remap='I'>n</emphasis>:th
-positional parameter given to a complex function, counting from 0.
-If the corresponding parameter is undefined, the "$[n]" is deleted
-from the command line. The parameter is expanded unquoted.
-	</entry>
-</row>
-<row>
-	<entry>$[n-m]</entry>
-	<entry>
-The positional parameters given to a complex function, starting
-with parameter
-<emphasis remap='I'>n</emphasis>
-and ending with parameter
-<emphasis remap='I'>m</emphasis>.
-If all the corresponding parameters are undefined, the "$[...]" is
-deleted from the command line. If only some of the parameters are
-defined, all defined parameters are expanded, and the remaining
-silently ignored. All parameters is expanded unquoted.
-	</entry>
-</row>
-<row>
-	<entry>$[n-]</entry>
-	<entry>
-All the positional parameters given to a complex function,
-starting with parameter
-<emphasis remap='I'>n</emphasis>.
-If all the corresponding parameters are undefined, the "$[...]" is
-deleted from the command line. All parameters are expanded
-unquoted.
-	</entry>
-</row>
-<row>
-	<entry>$[*]</entry>
-	<entry>
-All the positional parameters given to a complex function. This is
-equivalent of $[0-].
-	</entry>
-</row>
-<row>
-	<entry>$[version.num]</entry>
-	<entry>The version number, like "2.6.0".</entry>
-</row>
-<row>
-	<entry>$[version.info]</entry>
-	<entry>
-The version info, like " (from cvs)", empty for the official releases.
-	</entry>
-</row>
-<row>
-	<entry>$[version.line]</entry>
-	<entry>
-The first line printed by the --version command line option.
-	</entry>
-</row>
-<row>
-	<entry>$[vp.x] $[vp.y] $[vp.width] $[vp.height]</entry>
-	<entry>
-Either coordinate or the width or height of the current viewport.
-	</entry>
-</row>
-<row>
-	<entry>$[desk.n]</entry>
-	<entry>The current desk number.</entry>
-</row>
-<row>
-	<entry>$[desk.name&lt;n&gt;]</entry>
-	<entry>
-These parameters are replaced with the name of the desktop
-number &lt;n&gt; that is defined with the
-<fvwmref cmd="DesktopName"/>
-command. If no name is defined, then the default name is returned.
-	</entry>
-</row>
-<row>
-	<entry>$[desk.width] $[desk.height]</entry>
-	<entry>
-The width or height of the whole desktop, i.e. the width or height
-multiplied by the number of pages in x or y direction.
-	</entry>
-</row>
-<row>
-	<entry>$[desk.pagesx] $[desk.pagesy]</entry>
-	<entry>
-The number of total pages in a desk in x or y direction.
-This is the same as the values set by
-<fvwmref cmd="DesktopSize"/>.
-	</entry>
-</row>
-<row>
-	<entry>$[page.nx] $[page.ny]</entry>
-	<entry>
-The current page numbers, by X and Y axes, starting from 0.
-<emphasis remap='I'>page</emphasis> is equivalent to <emphasis remap='I'>area</emphasis> in the <acronym>GNOME</acronym> terminology.
-	</entry>
-</row>
-<row>
-	<entry>$[w.id]</entry>
-	<entry>
-The window-id (expressed in hex, e.g. 0x10023c) of the window the
-command was called for or "$[w.id]" if no window is associated
-with the command.
-	</entry>
-</row>
-<row>
-	<entry>$[w.name] $[w.iconname] $[w.class] $[w.resource] $[w.iconfile] $[w.miniiconfile] $[w.iconfile.svgopts] $[w.miniiconfile.svgopts]</entry>
+<variablelist remap='TP'>
+  <varlistentry>
+    <term>$$</term>
+    <listitem><para>A literal '$'.</para></listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$.</term>
+    <listitem>
+      <para>
+	The absolute directory of the currently Read file.  Intended for
+	creating relative and relocatable configuration trees.  If used
+	outside of any read file, the returned value is '.'.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$0 to $9</term>
+    <listitem>
+      <para>
+	The positional parameters given to a complex function (a function
+	that has been defined with the
+	<fvwmref cmd="AddToFunc"/>
+	command).  "$0" is replaced with the first parameter, "$1" with
+	the second parameter and so on.  If the corresponding parameter is
+	undefined, the "$..." is deleted from the command line.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$*</term>
+    <listitem>
+      <para>
+	All positional parameters given to a complex function.  This
+	includes parameters that follow after "$9".
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[<replaceable>n</replaceable>]</term>
+    <listitem>
+      <para>
+	The <replaceable>n</replaceable>:th
+	positional parameter given to a complex function, counting from 0.
+	If the corresponding parameter is undefined, the
+	"$[<replaceable>n</replaceable>]" is deleted
+	from the command line. The parameter is expanded unquoted.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+     <term>$[<replaceable>n</replaceable>-<replaceable>m</replaceable>]</term>
+     <listitem>
+       <para>
+	 The positional parameters given to a complex function, starting
+	 with parameter <replaceable>n</replaceable> and ending with parameter
+	 <replaceable>m</replaceable>.
+	 If all the corresponding parameters are undefined, the "$[...]" is
+	 deleted from the command line. If only some of the parameters are
+	 defined, all defined parameters are expanded, and the remaining
+	 silently ignored. All parameters are expanded unquoted.
+       </para>
+     </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[<replaceable>n</replaceable>-]</term>
+    <listitem>
+      <para>
+	All the positional parameters given to a complex function,
+	starting with parameter <replaceable>n</replaceable>.
+	If all the corresponding parameters are undefined, the "$[...]" is
+	deleted from the command line. All parameters are expanded
+	unquoted.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[*]</term>
+    <listitem>
+      <para>
+	All the positional parameters given to a complex function. This is
+	equivalent of $[0-].
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[version.num]</term>
+    <listitem>
+      <para>The version number, like "2.6.0".</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[version.info]</term>
+    <listitem>
+      <para>
+	The version info, like " (from cvs)", empty for the official releases.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[version.line]</term>
+    <listitem>
+      <para>
+	The first line printed by the --version command line option.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[vp.x] $[vp.y] $[vp.width] $[vp.height]</term>
+    <listitem>
+      <para>
+	Either coordinate or the width or height of the current viewport.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[desk.n]</term>
+    <listitem><para>The current desk number.</para></listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[desk.name&lt;n&gt;]</term>
+    <listitem>
+      <para>
+	These parameters are replaced with the name of the desktop
+	number &lt;n&gt; that is defined with the
+	<fvwmref cmd="DesktopName"/>
+	command. If no name is defined, then the default name is returned.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[desk.width] $[desk.height]</term>
+    <listitem>
+      <para>
+	The width or height of the whole desktop, i.e. the width or height
+	multiplied by the number of pages in x or y direction.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[desk.pagesx] $[desk.pagesy]</term>
+    <listitem>
+      <para>
+	The number of total pages in a desk in x or y direction.
+	This is the same as the values set by
+	<fvwmref cmd="DesktopSize"/>.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[page.nx] $[page.ny]</term>
+    <listitem>
+      <para>
+	The current page numbers, by X and Y axes, starting from 0.
+	<emphasis remap='I'>page</emphasis> is equivalent to
+	<emphasis remap='I'>area</emphasis> in the
+	<acronym>GNOME</acronym> terminology.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[w.id]</term>
+    <listitem>
+      <para>
+	The window-id (expressed in hex, e.g. 0x10023c) of the window the
+	command was called for or "$[w.id]" if no window is associated
+	with the command.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      $[w.name] $[w.iconname] $[w.class] $[w.resource]
+      $[w.iconfile] $[w.miniiconfile] $[w.iconfile.svgopts]
+      $[w.miniiconfile.svgopts]
+    </term>
+    <listitem>
+      <para>
+	The window's name, icon name, resource class and resource name,
+	file name of its icon or mini icon defined with the
+	<fvwmref cmd="Style" opt="Icon"/> or
+	<fvwmref cmd="Style" opt="MiniIcon"/>
+	style (including the full path if the file was found on disk),
+	and (if fvwm is compiled with <acronym>SVG</acronym> support)
+	the icon or mini icon svg rendering options (including the
+	leading colon),	or unexpanded "$[w.&lt;attribute&gt;]" string
+	if no window is associated with the command.
+      </para>
+      <para>
+	Note, the first 4 variables may include any kind of characters, so
+	these variables are quoted.  It means that the value is surrounded
+	by single quote characters and any contained single quote is
+	prefixed with a backslash.  This guarantees that commands like:
 
-	<entry>
-The window's name, icon name, resource class and resource name,
-file name of its icon or mini icon defined with the
-<fvwmref cmd="Style" opt="Icon"/> or <fvwmref cmd="Style" opt="MiniIcon"/>
-style (including the full path if the file was found on disk),
-and (if fvwm is compiled with SVG support) the icon or mini icon
-svg rendering options (including the leading colon),
-or unexpanded "$[w.&lt;attribute&gt;]" string if no window is associated
-with the command.
+	<programlisting><fvwmref cmd="Style"/> $[w.resource] <fvwmref cmd="Style" opt="Icon"/> norm/network.png</programlisting>
 
-
-Note, the first 4 variables may include any kind of characters, so
-these variables are quoted.  It means that the value is surrounded
-by single quote characters and any contained single quote is
-prefixed with a backslash.  This guarantees that commands like:
-
-
-<fvwmref cmd="Style"/> $[w.resource] <fvwmref cmd="Style" opt="Icon"/> norm/network.png
-
-
-work correctly, regardless of any special symbols the value may
-contain, like spaces and different kinds of quotes.
-	</entry>
-</row>
-<row>
-	<entry>$[w.x] $[w.y] $[w.width] $[w.height]</entry>
-	<entry>
-Either coordinate or the width or height of the current window if
-it is not iconified.  If no window is associated with the command
-or the window is iconified, the string is left as is.
-	</entry>
-</row>
-<row>
-	<entry>$[w.desk]</entry>
-	<entry>
-The number of the desk on which the window is shown.  If the
-window is sticky the current desk number is used.
-	</entry>
-</row>
-<row>
-	<entry>$[w.layer]</entry>
-	<entry>The layer of the window.</entry>
-</row>
-<row>
-	<entry>$[cw.x] $[cw.y] $[cw.width] $[cw.height]</entry>
-	<entry>
-These work like $[w....] but return the geometry of the client
-part of the window.  In other words: the border and title of the
-window is not taken into account.
-	</entry>
-</row>
-<row>
-	<entry>
-$[i.x], $[it.x], $[ip.x]
-$[i.y], $[it.y], $[ip.y]
-$[i.width], $[it.width], $[ip.width]
-$[i.height], $[it.height], $[ip.height]
-	</entry>
-	<entry>
-These work like $[w....] but return the geometry of the icon
-($[i....]), the icon title ($[it....]) or the icon picture
-($[ip....]).
-	</entry>
-</row>
-<row>
-	<entry>$[pointer.x] $[pointer.y]</entry>
-	<entry>
-These return the position of the pointer on the screen.  If the
-pointer is not on the screen, these variables are not expanded.
-	</entry>
-</row>
-<row>
-	<entry>$[pointer.cx] $[pointer.cy]</entry>
-	<entry>
-These return the position of the pointer in the client portion of
-the selected window.  If the pointer is not on the screen, the
-window is shaded or iconified or no window is selected, these
-variables are not expanded.
-	</entry>
-</row>
-<row>
-	<entry>$[screen]</entry>
-	<entry>
-The screen number fvwm is running on.  Useful for setups with
-multiple screens.
-	</entry>
-</row>
-<row>
-	<entry>
-$[fg.cs&lt;n&gt;]
-$[bg.cs&lt;n&gt;]
-$[hilight.cs&lt;n&gt;]
-$[shadow.cs&lt;n&gt;]
-	</entry>
-	<entry>
-These parameters are replaced with the name of the foreground
-(fg), background (bg), hilight (hilight) or shadow (shadow) color
-that is defined in colorset &lt;n&gt; (replace &lt;n&gt; with zero or a
-positive integer).  For example "$[fg.cs3]" is expanded to the
-name of the foreground color of colorset 3 (in rgb:rrrr/gggg/bbbb
-form).  Please refer to the
-<fvwmref sect="colorsets" opt="colorsets" name="Colorsets"/>
-section for details about colorsets.
-	</entry>
-</row>
-<row>
-	<entry>$[schedule.last]</entry>
-	<entry>
-This is replaced by the id of the last command that was scheduled
-with the
-<fvwmref cmd="Schedule"/>
-command, even if this command was already executed.
-	</entry>
-</row>
-<row>
-	<entry>$[schedule.next]</entry>
-	<entry>
-This is replaced by the id the next command used with
-<fvwmref cmd="Schedule"/>
-will get (unless a different id is specified explicitly).
-	</entry>
-</row>
-<row>
-	<entry>$[cond.rc]</entry>
-	<entry>
-The return code of the last conditional command.  This variable is
-only valid inside a function and can not be used in a conditional
-command.  Please refer to the section
-<fvwmref sect="conditionalCommands" opt="conditional_commands" name="Conditional Commands"/>
-in the command list.
-	</entry>
-</row>
-<row>
-	<entry>$[func.context]</entry>
-	<entry>
-
-The context character of the running command as used in the
-<fvwmref cmd="Mouse"/>,
-<fvwmref cmd="Key"/> or
-<fvwmref cmd="PointerKey"/>
-command.  This is useful for example with:
-
-
-<fvwmref cmd="Mouse"/> 3 FS N <fvwmref cmd="WindowShade"/> $$[func.context]
-<!--
-<programlisting>
-<fvwmref cmd="Mouse"/> 3 FS N <fvwmref cmd="WindowShade"/> $$[func.context]
-</programlisting>
--->
-	</entry>
-</row>
-<row>
-	<entry>$[gt.str]</entry>
-	<entry>
-return the translation of
-<emphasis remap='I'>str</emphasis>
-by looking in the current locale catalogs. If no translation is
-found
-<emphasis remap='I'>str</emphasis>
-is returned as is.  See the
-<fvwmref cmd="LocalePath"/>
-command.
-	</entry>
-</row>
-<row>
-	<entry>$[...]</entry>
-	<entry>
-If the string within the braces is neither of the above, fvwm
-tries to find an environment variable with this name and replaces
-its value if one is found (e.g. "$[PAGER]" could be replaced by
-"more").  Otherwise the string is left as is.
-	</entry>
-</row>
-</tbody>
-</tgroup>
-</informaltable>
+	work correctly, regardless of any special symbols the value may
+	contain, like spaces and different kinds of quotes.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[w.x] $[w.y] $[w.width] $[w.height]</term>
+    <listitem>
+      <para>
+	Either coordinate or the width or height of the current window if
+	it is not iconified.  If no window is associated with the command
+	or the window is iconified, the string is left as is.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[w.desk]</term>
+    <listitem>
+      <para>
+	The number of the desk on which the window is shown.  If the
+	window is sticky the current desk number is used.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[w.layer]</term>
+    <listitem><para>The layer of the window.</para></listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[cw.x] $[cw.y] $[cw.width] $[cw.height]</term>
+    <listitem>
+      <para>
+	These work like $[w....] but return the geometry of the client
+	part of the window.  In other words: the border and title of the
+	window is not taken into account.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      $[i.x], $[it.x], $[ip.x]
+      $[i.y], $[it.y], $[ip.y]
+      $[i.width], $[it.width], $[ip.width]
+      $[i.height], $[it.height], $[ip.height]
+    </term>
+    <listitem>
+      <para>
+	These work like $[w....] but return the geometry of the icon
+	($[i....]), the icon title ($[it....]) or the icon picture
+	($[ip....]).
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[pointer.x] $[pointer.y]</term>
+    <listitem>
+      <para>
+	These return the position of the pointer on the screen.  If the
+	pointer is not on the screen, these variables are not expanded.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[pointer.wx] $[pointer.wy]</term>
+    <listitem>
+      <para>
+	These return the position of the pointer in the selected window.  If
+	the pointer is not on the screen, the window is iconified 
+	or no window is selected, these variables are not expanded.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[pointer.cx] $[pointer.cy]</term>
+    <listitem>
+      <para>
+	These return the position of the pointer in the client portion of
+	the selected window.  If the pointer is not on the screen, the
+	window is shaded or iconified or no window is selected, these
+	variables are not expanded.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[screen]</term>
+    <listitem>
+      <para>
+	The screen number fvwm is running on.  Useful for setups with
+	multiple screens.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>
+      $[fg.cs&lt;n&gt;]
+      $[bg.cs&lt;n&gt;]
+      $[hilight.cs&lt;n&gt;]
+      $[shadow.cs&lt;n&gt;]
+    </term>
+    <listitem>
+      <para>
+	These parameters are replaced with the name of the foreground
+	(fg), background (bg), hilight (hilight) or shadow (shadow) color
+	that is defined in colorset &lt;n&gt; (replace &lt;n&gt; with zero
+	or a positive integer).  For example "$[fg.cs3]" is expanded to the
+	name of the foreground color of colorset 3 (in rgb:rrrr/gggg/bbbb
+	form).  Please refer to the
+	<fvwmref sect="colorsets" opt="colorsets" name="Colorsets"/>
+	section for details about colorsets.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[schedule.last]</term>
+    <listitem>
+      <para>
+	This is replaced by the id of the last command that was
+	scheduled with the <fvwmref cmd="Schedule"/> command, even if
+	this command was already executed.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[schedule.next]</term>
+    <listitem>
+      <para>
+	This is replaced by the id the next command used with
+	<fvwmref cmd="Schedule"/> will get (unless a different id is
+	specified explicitly).
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[cond.rc]</term>
+    <listitem>
+      <para>
+	The return code of the last conditional command.  This
+	variable is only valid inside a function and can not be used
+	in a conditional command.  Please refer to the section
+	<fvwmref sect="conditionalCommands" opt="conditional_commands"
+	name="Conditional Commands"/> in the command list.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[func.context]</term>
+    <listitem>
+      <para>
+	The context character of the running command as used in the
+	<fvwmref cmd="Mouse"/>,
+	<fvwmref cmd="Key"/> or
+	<fvwmref cmd="PointerKey"/>
+	command.  This is useful for example with:
+	<programlisting><fvwmref cmd="Mouse"/> 3 FS N <fvwmref cmd="WindowShade"/> $$[func.context]</programlisting>
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[gt.<replaceable>str</replaceable>]</term>
+    <listitem>
+      <para>
+	return the translation of
+	<replaceable>str</replaceable> by looking in the current
+	locale catalogs. If no translation is found
+	<replaceable>str</replaceable> is returned as is.  See the
+	<fvwmref cmd="LocalePath"/> command.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>$[...]</term>
+    <listitem>
+      <para>
+	If the string within the braces is neither of the above, fvwm
+	tries to find an environment variable with this name and replaces
+	its value if one is found (e.g. "$[PAGER]" could be replaced by
+	"more").  Otherwise the string is left as is.
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
 
 
 <para>Some examples can be found in the description of the

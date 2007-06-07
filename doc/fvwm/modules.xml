@@ -35,7 +35,7 @@ between 60 and 256.</para>
 <para>Modules simply transmit commands to the fvwm command
 engine.  Commands are formatted just as in the case of a
 mouse binding in the
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 setup file.  Certain auxiliary information is also transmitted, as
 in the sample module
 <fvwmref mod="FvwmButtons"/>.

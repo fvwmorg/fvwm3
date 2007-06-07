@@ -38,7 +38,7 @@
 Check <ulink url='http://www.gnome.org'>http://www.gnome.org</ulink>
 for what that may mean. To disable <acronym>GNOME</acronym> hints for some
 or all windows, the
-<fvwmref cmd="GNOMEIgnoreHints"/>
+<fvwmref cmd="Style" opt="GNOMEIgnoreHints"/>
 style can be used.</para>
 </section>
 

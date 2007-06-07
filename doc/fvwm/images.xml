@@ -47,9 +47,7 @@ filename as follows:</para>
 &fixme; <!-- This looks crappy as HTML output. -->
 </htmlonly>
 
-<para>
-<emphasis remap='B'></emphasis><emphasis remap='I'>image.svg</emphasis><emphasis remap='P->B'>:</emphasis>[[-]<emphasis remap='I'>width</emphasis>x[-]<emphasis remap='I'>height</emphasis>][[+|-]<emphasis remap='I'>xpos</emphasis>[+|-]<emphasis remap='I'>ypos</emphasis>][@<emphasis remap='I'>angle</emphasis>][[*|/]<emphasis remap='I'>scale</emphasis>]
-</para>
+<para><replaceable><filename>image.svg</filename></replaceable><emphasis remap='B'>:</emphasis><optional><optional><emphasis remap='B'>-</emphasis></optional><replaceable>width</replaceable><emphasis remap='B'>x</emphasis><optional><emphasis remap='B'>-</emphasis></optional><replaceable>height</replaceable></optional><optional><optional><emphasis remap='B'>+</emphasis>|<emphasis remap='B'>-</emphasis></optional><replaceable>xpos</replaceable><optional><emphasis remap='B'>+</emphasis>|<emphasis remap='B'>-</emphasis></optional><replaceable>ypos</replaceable></optional><optional><emphasis remap='B'>@</emphasis><replaceable>angle</replaceable></optional><optional><optional><emphasis remap='B'>*</emphasis>|<emphasis remap='B'>/</emphasis></optional><replaceable>scale</replaceable></optional></para>
 
 <para>The option string always starts with a colon (':') to separate it
 from the filename. An empty option string can skip this colon, but
@@ -61,9 +59,9 @@ filename_without_colon.svg
 filename:with:colon.svg:
 </programlisting>
 
-<para><emphasis remap='I'>width</emphasis>
+<para><replaceable>width</replaceable>
 and
-<emphasis remap='I'>height</emphasis>
+<replaceable>height</replaceable>
 specifies the dimensions of the rendering area in pixels, i.e. the
 dimensions of the resulting image.</para>
 
@@ -72,9 +70,9 @@ image.svg:22x22
 </programlisting>
 
 <para>Use a
-<emphasis remap='I'>width</emphasis>
+<replaceable>width</replaceable>
 or
-<emphasis remap='I'>height</emphasis>
+<replaceable>height</replaceable>
 value of 0 to keep the aspect ratio.</para>
 
 <programlisting>
@@ -83,7 +81,7 @@ image.svg:32x0
 </programlisting>
 
 <para>A '-' before
-<emphasis remap='I'>width</emphasis>
+<replaceable>width</replaceable>
 mirrors the original image horizontally.</para>
 
 <programlisting>
@@ -91,20 +89,20 @@ image.svg:-0x0
 </programlisting>
 
 <para>A '-' before
-<emphasis remap='I'>height</emphasis>
+<replaceable>height</replaceable>
 mirrors the original image vertically.</para>
 
 <programlisting>
 image.svg:0x-0
 </programlisting>
 
-<para><emphasis remap='I'>xpos</emphasis>
+<para><replaceable>xpos</replaceable>
 and
-<emphasis remap='I'>ypos</emphasis>
+<replaceable>ypos</replaceable>
 specifies a translation of the image in pixels. A positive
-<emphasis remap='I'>xpos</emphasis>
+<replaceable>xpos</replaceable>
 value moves the image to the right. A positive
-<emphasis remap='I'>ypos</emphasis>
+<replaceable>ypos</replaceable>
 value moves it down. Moving it partially outside of the rendering
 area results in a cropped image.</para>
 
@@ -114,7 +112,7 @@ image.svg:+0+10
 image.svg:-7-7
 </programlisting>
 
-<para><emphasis remap='I'>angle</emphasis>
+<para><replaceable>angle</replaceable>
 specifies a rotation around the original image center in degrees.
 A positive value rotates the image clockwise. Floating point values
 are recognized.</para>
@@ -126,7 +124,7 @@ image.svg:@180
 image.svg:@57.3
 </programlisting>
 
-<para><emphasis remap='I'>scale</emphasis>
+<para><replaceable>scale</replaceable>
 specifes a scaling of the whole image. Scaling it up results in
 a cropped image. Floting point values are recognized. Division by
 zero is ignored.</para>

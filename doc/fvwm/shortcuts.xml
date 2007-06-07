@@ -22,21 +22,21 @@ and any other command can be bound to keys.  Once a command
 is started the pointer is moved by using the up, down,
 left, and right arrows, and the action is terminated by pressing
 return.  Holding down the
-<emphasis remap='SM'>Shift</emphasis>
+<keysym>Shift</keysym>
 key causes the pointer movement to go in larger steps and holding
 down the
-<emphasis remap='SM'>control</emphasis>
+<keysym>control</keysym>
 key causes the pointer movement to go in smaller steps. Standard
 emacs and vi cursor movement controls (
-<emphasis remap='SM'>n,</emphasis>
-<emphasis remap='SM'>p,</emphasis>
-<emphasis remap='SM'>f,</emphasis>
-<emphasis remap='SM'>b,</emphasis>
+<keysym>n</keysym>,
+<keysym>p</keysym>,
+<keysym>f</keysym>,
+<keysym>b</keysym>,
 and
-<emphasis remap='SM'>j,</emphasis>
-<emphasis remap='SM'>k,</emphasis>
-<emphasis remap='SM'>h,</emphasis>
-<emphasis remap='SM'>l</emphasis>
+<keysym>j</keysym>,
+<keysym>k</keysym>,
+<keysym>h</keysym>,
+<keysym>l</keysym>
 ) can be used instead of the arrow keys.</para>
 
 </section>

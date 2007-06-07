@@ -5,7 +5,7 @@ pushpins).  Should you use any such application, please add the
 following line to your config:</para>
 
 <programlisting>
-<fvwmref cmd="Style"/> * OLDecor
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="OLDecor"/>
 </programlisting>
 
 <para>Most (perhaps all) Open Look applications have a strange notion of

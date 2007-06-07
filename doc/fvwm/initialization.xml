@@ -13,23 +13,22 @@ things. The format of these files is described later.  Fvwm first
 searches for configuration files using the command</para>
 
 <programlisting>
-<fvwmref cmd="Read"/> <emphasis remap='I'>config</emphasis>
+<fvwmref cmd="Read"/> <filename>config</filename>
 </programlisting>
 
 <para>This looks for file
-<emphasis remap='I'>config</emphasis> in <envar>$FVWM_USERDIR</envar> and <envar>$FVWM_DATADIR</envar>
+<filename>config</filename> in <envar>$FVWM_USERDIR</envar> and <envar>$FVWM_DATADIR</envar>
 directories, as described in
 <fvwmref cmd="Read"/>.  If this fails more files are queried for backward
 compatibility.  Here is the complete list of all file locations
 queried in the default installation (only the first found file
 is used):</para>
 
-<simplelist type='horiz' columns='1'>
+<simplelist>
 <member><envar>$HOME</envar>/.fvwm/config</member>
 <member>/usr/local/share/fvwm/config</member>
 </simplelist>
-<para></para>
-<simplelist type='horiz' columns='1'>
+<simplelist>
 <member><envar>$HOME</envar>/.fvwm/.fvwm2rc</member>
 <member><envar>$HOME</envar>/.fvwm2rc</member>
 <member>/usr/local/share/fvwm/.fvwm2rc</member>
@@ -41,9 +40,9 @@ is used):</para>
 supported in the future.</para>
 
 <para>If a configuration file is not found, the left mouse button, or
-<emphasis remap='SM'>Help</emphasis>
+<keysym>Help</keysym>
 or
-<emphasis remap='SM'>F1</emphasis>
+<keysym>F1</keysym>
 keys on the root window bring up menus and forms that can create
 a starting configuration file.</para>
 
@@ -81,7 +80,7 @@ can simply put</para>
 </programlisting>
 
 <para>into your
-<emphasis remap='I'>config</emphasis>,
+<filename>config</filename>,
 but it is not recommended; do this only if you know what you are
 doing. It is usually critical to start applications or modules
 after the entire config is read, because it contains styles or
@@ -93,7 +92,7 @@ up is to add them to an initialization function (usually
 <emphasis remap='B'>StartFunction</emphasis> or <emphasis remap='B'>InitFunction</emphasis>).
 This way they are only started after fvwm finishes to read and
 execute
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file.</para>
 
 <para>Fvwm has three special functions for initialization:
@@ -103,7 +102,7 @@ which is executed on startups and restarts;
 which are executed during initialization and restarts
 (respectively) just after StartFunction.  These functions may be
 customized in a user's
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file using the
 <fvwmref cmd="AddToFunc"/>
 command (described later) to start up modules, xterms, or whatever
@@ -118,7 +117,7 @@ It could be used to explicitly kill modules, etc.</para>
 <emphasis remap='B'>SessionInitFunction</emphasis> and <emphasis remap='B'>SessionRestartFunction</emphasis>
 are executed instead of InitFunction and RestartFunction.
 This helps to define the user's
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file to be good for both running under a session manager and
 without it.  Generally it is a bad idea to start xterms or other
 applications in "Session*" functions.  Also someone can decide to
@@ -137,7 +136,7 @@ is used instead of ExitFunction.</para>
 <fvwmref cmd="AddToFunc"/> InitFunction
  + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmBanner"/>
  + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmTaskBar"/>
- + I xsetroot -solid cyan
+ + I <fvwmref cmd="Exec"/> xsetroot -solid cyan
  + I <fvwmref cmd="Exec"/> xterm
  + I <fvwmref cmd="Exec"/> netscape
 
@@ -147,7 +146,7 @@ is used instead of ExitFunction.</para>
 
 <fvwmref cmd="DestroyFunc"/> SessionInitFunction
 <fvwmref cmd="AddToFunc"/> SessionInitFunction
- + I <fvwmref cmd="Module"/> FvwmBanner
+ + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmBanner"/>
 
 <fvwmref cmd="DestroyFunc"/> SessionRestartFunction
 <fvwmref cmd="AddToFunc"/> SessionRestartFunction

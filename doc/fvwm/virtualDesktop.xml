@@ -102,7 +102,7 @@ from the currently mapped viewport is to use the
 style specification (the successors to the older
 <fvwmref cmd="Style" opt="StartsOnDesk"/>
 style) in your
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file.  The placement is consistent: it does
 not depend on your current location on the virtual desktop.</para>
 
@@ -120,7 +120,7 @@ to specify the start-up desk or page on the command line:</para>
 left hand page of desk number 3.  Not all applications understand
 the use of these options, however.  You could achieve the same
 results with the following lines in your
-<markup>.Xdefaults</markup>
+<filename>.Xdefaults</filename>
 file:</para>
 
 <command>XTerm*Desk: 1</command>

@@ -12,7 +12,6 @@
 <title>Builtin Key and Mouse Bindings</title>
 <para>The following commands are built-in to fvwm:</para>
 
-<programlisting><fvwmref cmd="Key"/> Tab A M -</programlisting>
 <programlisting>
 <fvwmref cmd="Key"/> Help R A <fvwmref cmd="Popup"/> MenuFvwmRoot
 <fvwmref cmd="Key"/> F1 R A <fvwmref cmd="Popup"/> MenuFvwmRoot
@@ -30,20 +29,20 @@
 
 
 <para>The
-<emphasis remap='SM'>Help</emphasis>
+<keysym>Help</keysym>
 and
-<emphasis remap='SM'>F1</emphasis>
+<keysym>F1</keysym>
 keys invoke a built-in menu that fvwm creates.  This is primarily
 for new users that have not created their own configuration
 file. Either key on the root (background) window pops up an menu
 to help you get started.</para>
 
 <para>The
-<emphasis remap='SM'>Tab</emphasis>
+<keysym>Tab</keysym>
 key pressed anywhere with the
-<emphasis remap='SM'>Meta</emphasis>
+<keysym>Meta</keysym>
 key (same as the
-<emphasis remap='SM'>Alt</emphasis>
+<keysym>Alt</keysym>
 key on PC keyboards) held down pop-ups a window list.</para>
 
 <para>Mouse button 1 on the title-bar or side frame can move, raise or

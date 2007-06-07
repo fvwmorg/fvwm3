@@ -32,7 +32,7 @@ specified command should have been</para>
 which is fairly transparent to the configuration file.</para>
 
 <para>Example: the
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file contains the line</para>
 
 <programlisting>

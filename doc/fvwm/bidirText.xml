@@ -25,6 +25,6 @@ iso8859-8 and iso10646-1 (unicode), but not other iso8859-* fonts.</para>
 <para>This bi-directional text support is done using the
 <emphasis remap='I'>fribidi</emphasis>
 library compile time option, see
-<emphasis remap='I'>INSTALL.fvwm</emphasis>.</para>
+<filename>INSTALL.fvwm</filename>.</para>
 
 </section>

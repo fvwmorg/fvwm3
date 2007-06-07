@@ -66,7 +66,6 @@ inferior menu to the parent.  Any type of menu can have sub menus.</para>
 </section>
 
 
-
 <section id="menu_anatomy">
 <title>Menu Anatomy</title>
 
@@ -124,8 +123,7 @@ be tuned with menu styles.</para>
 <para>Scrolling a mouse wheel over a menu either wraps the pointer along the
 menu (default), scrolls the menu under the pointer or act as if the
 menu was clicked depending on the
-<emphasis remap='I'>MouseWheel</emphasis>
-menu style.</para>
+<fvwmref cmd="MenuStyle" opt="MouseWheel"/> menu style.</para>
 
 <para>Clicking on a selected item activates it - what happens exactly
 depends on the type of the item.</para>
@@ -163,14 +161,14 @@ input (although this is not the case for tear off menus).</para>
 <para>Items can be selected directly by pressing a hotkey that can be
 configured individually for each menu item.  The hotkey is
 indicated by underlining it in the menu item label.  With the
-<emphasis remap='I'>AutomaticHotkeys</emphasis>
+<fvwmref cmd="MenuStyle" opt="AutomaticHotkeys"/>
 menu style fvwm automatically assigns hotkeys to all menu items.</para>
 
 <para>The most basic keys to navigate through menus are the cursor keys
 (move up or down one item, enter or leave a sub menu),
-<emphasis remap='SM'>Space</emphasis>
+<keysym>Space</keysym>
 (activate item) and
-<emphasis remap='SM'>Escape</emphasis>
+<keysym>Escape</keysym>
 (close menu).  Numerous other keys can be used to navigate through
 menus by default:</para>
 
@@ -302,7 +300,8 @@ returns to the prior menu.</para>
 
 
 <para><emphasis remap='B'>MenuMoveCursor</emphasis>
-<emphasis remap='I'>n</emphasis><emphasis remap='B'> [</emphasis><emphasis remap='I'>m</emphasis><emphasis remap='B'>]</emphasis>
+<replaceable>n</replaceable>
+<optional><replaceable>m</replaceable></optional>
 moves the selection to another item.  If the first argument is zero
 the second argument specifies an absolute item in the menu to move
 the pointer to. Negative items are counted from the end of the menu.
@@ -313,28 +312,29 @@ refer only to the first items after separators.</para>
 
 <para><emphasis remap='B'>MenuCursorLeft</emphasis>
 enters a sub menu with the
-<emphasis remap='I'>SubmenusLeft</emphasis>
+<fvwmref cmd="MenuStyle" opt="SubmenusLeft"/>
 menu style, and returns to the prior menu with the
-<emphasis remap='I'>SubmenusRight</emphasis> menu style.</para>
+<fvwmref cmd="MenuStyle" opt="SubmenusRight"/> menu style.</para>
 
 <para><emphasis remap='B'>MenuCursorRight</emphasis>
 enters a sub menu with the
-<emphasis remap='I'>SubmenusRight</emphasis>
+<fvwmref cmd="MenuStyle" opt="SubmenusRight"/>
 menu style, and returns to the prior menu with the
-<emphasis remap='I'>SubmenusLeft</emphasis> menu style.</para>
+<fvwmref cmd="MenuStyle" opt="SubmenusLeft"/> menu style.</para>
 
 <para><emphasis remap='B'>MenuSelectItem</emphasis>
 triggers the action for the menu item.</para>
 
-<para><emphasis remap='B'>MenuScroll </emphasis><emphasis remap='I'>n</emphasis>
+<para><emphasis remap='B'>MenuScroll </emphasis><replaceable>n</replaceable>
 performs menu scrolling according to the
-<emphasis remap='I'>MouseWheel</emphasis> menu style with <emphasis remap='I'>n</emphasis> items.  The distance can be
+<fvwmref cmd="MenuStyle" opt="MouseWheel"/> menu style with
+<replaceable>n</replaceable> items.  The distance can be
 suffixed with an 's' to indicate the items should refer only to the
 first items after separators.</para>
 
 <para><emphasis remap='B'>MenuTearOff</emphasis>
 turns a normal menu into a "torn off" menu. See
-<emphasis remap='B'>Tear Off Menus</emphasis>
+<fvwmref sect="menus" opt="tearoff_menus" name="Tear Off Menus"/>
 for details.</para>
 
 </section>
@@ -348,7 +348,7 @@ for details.</para>
 was attached to and pinned to the root window.  There are three
 ways to tear off a menu:  click on the menu title with mouse
 button 2, press
-<emphasis remap='SM'>Backspace</emphasis>
+<keysym>Backspace</keysym>
 in the menu or activate its tear off bar (a horizontal bar with a
 broken line).  Tear off bars must be added to the menu as any
 other item by assigning them the command
@@ -405,7 +405,7 @@ and displayed in the window title.  The main advantage is that the
 menu becomes permanent - activating an item does not close the
 menu.  Therefore, it can be used multiple times without reopening
 it.  To destroy such a menu, close its window or press the
-<emphasis remap='SM'>Escape</emphasis>
+<keysym>Escape</keysym>
 key.</para>
 
 <para>Tear off menus behave somewhat differently than normal menus and
@@ -423,7 +423,7 @@ changing its menu style.</para>
 
 <para>To create a tear off menu without opening the normal menu first,
 the option
-<emphasis remap='I'>TearOffImmediately</emphasis>
+<fvwmref cmd="Menu" opt="TearOffImmediately"/>
 can be added to the
 <fvwmref cmd="Menu"/> or <fvwmref cmd="Popup"/>
 command.</para>

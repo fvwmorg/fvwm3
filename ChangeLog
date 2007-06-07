@@ -1,5 +1,45 @@
 2007-06-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* doc/fvwm-man.xsl:
+	make simplelist less spaced out
+	make keysym use .SM formatting and envar use italic (as before)
+
+	* doc/fvwm/xinerama.xml:
+	* doc/fvwm/virtualDesktop.xml:
+	* doc/fvwm/synopsis.xml:
+	* doc/fvwm/shortcuts.xml:
+	* doc/fvwm/options.xml:
+	* doc/fvwm/openLook.xml:
+	* doc/fvwm/menus.xml:
+	* doc/fvwm/initialization.xml:
+	* doc/fvwm/images.xml:
+	* doc/fvwm/icccm.xml:
+	* doc/fvwm/fonts.xml:
+	* doc/fvwm/expansion.xml:
+	* doc/fvwm/execution.xml:
+	* doc/fvwm/compilation.xml:
+	* doc/fvwm/builtinBindings.xml:
+	* doc/fvwm/bidirText.xml:
+	use docbook-tags that better reflect content. (i.e. filename instead
+	of emphasis, add more internal links.)
+
+	* doc/fvwm/options.xml:
+	move option parameters to the term-elements.
+
+	* doc/fvwm/fvwm.man.xml:
+	GNOMEIgnoreHInts is a Style, not a command.
+
+	* doc/fvwm/initialization.xml:
+	added a missing Exec before xsetroot
+
+	* doc/fvwm/builtinBindings.xml:
+	removed stray programlisting, copied from elsewhere in conversion
+
+	* doc/fvwm/expansion.xml:
+	changed variable descriptions from informaltable to variablelist.
+	put back documentation of $[pointer.wx] $[pointer.wy] that got lost
+	in the move to docbook.
+
 	* NEWS:
 	* fvwm/events.c (My_XNextEvent):
 	fix crash when a module closes down during input/output.

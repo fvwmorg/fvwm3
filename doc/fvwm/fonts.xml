@@ -151,11 +151,11 @@ the font.</para>
 string encoding in the beginning of a font description as follow:</para>
 
 <programlisting>
-StringEncoding=enc:_full_font_name_
+StringEncoding=<replaceable>enc</replaceable>:_full_font_name_
 </programlisting>
 
 <para>where
-<emphasis remap='I'>enc</emphasis>
+<replaceable>enc</replaceable>
 is an encoding supported by fvwm (usually font name charset plus some
 unicode encodings: UTF-8, USC-2, USC-4 and UTF-16).</para>
 
@@ -199,8 +199,8 @@ an iso10646-1 font:</para>
 </programlisting>
 
 <para>In general iso10646-1 fonts together with UTF-8 string encoding
-allows the display of any characters in a given menu, <fvwmref mod="FvwmForm"/></para>
-<!-- ...etc. -->
+allows the display of any characters in a given menu, <fvwmref mod="FvwmForm"/>
+etc.</para>
 
 <para>More and more, unicode is used and text files use UTF-8
 encoding. However, in practice the characters used range over your
@@ -269,19 +269,19 @@ and to use local_iso8859_6_iconv for defining the converters.</para>
 (or just after a possible StringEncoding specification) add</para>
 
 <programlisting>
-Shadow=size [offset] [directions]:
+Shadow=<replaceable>size</replaceable> <optional><replaceable>offset</replaceable></optional> <optional><replaceable>directions]</replaceable></optional>:
 </programlisting>
 
-<para><emphasis remap='I'>size</emphasis>
+<para><replaceable>size</replaceable>
 is a positive integer which specifies the number of pixels of shadow.
-<emphasis remap='I'>offset</emphasis>
+<replaceable>offset</replaceable>
 is an optional positive integer which defines the number of pixels
 to offset the shadow from the edge of the character.  The default
 offset is zero.
-<emphasis remap='I'>directions</emphasis>
+<replaceable>directions</replaceable>
 is an optional set of directions the shadow emanates from the
 character.  The
-<emphasis remap='I'>directions</emphasis>
+<replaceable>directions</replaceable>
 are a space separated list of fvwm directions:</para>
 
 <para><emphasis remap='I'>N</emphasis>, <emphasis remap='I'>North</emphasis>, <emphasis remap='I'>Top</emphasis>, <emphasis remap='I'>t</emphasis>, <emphasis remap='I'>Up</emphasis>, <emphasis remap='I'>u</emphasis>, <emphasis remap='I'>-</emphasis></para>
@@ -303,9 +303,9 @@ are a space separated list of fvwm directions:</para>
 <para><emphasis remap='I'>C</emphasis>, <emphasis remap='I'>Center</emphasis>, <emphasis remap='I'>Centre</emphasis>, <literal>.</literal></para>
 
 <para>A shadow is displayed in each given direction.
-<fvwmref cmd="All"/>
+<emphasis remap='I'>All</emphasis>
 is equivalent to all the directions.  The default
-<emphasis remap='I'>direction</emphasis>
+<replaceable>direction</replaceable>
 is
 <emphasis remap='I'>BottomRight</emphasis>.
 With the
@@ -316,7 +316,7 @@ specify this along with any other directions.</para>
 
 <para>The shadow effect only works with colorsets.  The color of the
 shadow is defined by using the
-<emphasis remap='I'>fgsh</emphasis>
+<fvwmref cmd="Colorset" opt="fgsh"/>
 option of the
 <fvwmref cmd="Colorset"/>
 command.  Please refer to the
@@ -324,7 +324,7 @@ command.  Please refer to the
 section for details about colorsets.</para>
 
 <para>Note: It can be difficult to find the font,
-<emphasis remap='I'>fg</emphasis>, <emphasis remap='I'>fgsh</emphasis> and <emphasis remap='I'>bg</emphasis>
+<fvwmref cmd="Colorset" opt="fg"/>, <fvwmref cmd="Colorset" opt="fgsh"/> and <fvwmref cmd="Colorset" opt="bg"/>
 colors to make this effect look good, but it can look quite good.</para>
 
 </section>

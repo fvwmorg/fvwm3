@@ -9,6 +9,6 @@
 <para>Fvwm has a number of compile-time options.  If you have trouble
 using a certain command or feature, check to see if support for it
 was included at compile time.  Optional features are described in
-the <emphasis remap='I'>config.h</emphasis> file that is generated
+the <filename>config.h</filename> file that is generated
 during compilation.</para>
 </section>

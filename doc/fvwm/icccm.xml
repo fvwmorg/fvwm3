@@ -55,7 +55,7 @@ application accepts focus.</para>
 command.  It is not exactly the same, since killing the previously
 running wm may terminate your X session, if the wm was started as
 the last client in your
-<markup>.Xclients</markup> or <markup>.Xsession</markup>
+<filename>.Xclients</filename> or <filename>.Xsession</filename>
 file.</para>
 
 <para>Further additions are support for client-side colormap

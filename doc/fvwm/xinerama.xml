@@ -36,7 +36,7 @@ or only one screen is used, the screen bit is ignored.</para>
 
 
 <programlisting>
-<fvwmref cmd="Style"/> * IconBox 64x300-0-0@p
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="IconBox"/> 64x300-0-0@p
 </programlisting>
 
 
@@ -60,7 +60,8 @@ command</para>
 </programlisting>
 
 
-<para>that can be entered in an FvwmConsole window or with FvwmCommand.</para>
+<para>that can be entered in an <fvwmref mod="FvwmConsole"/> window or
+with <fvwmref mod="FvwmCommand"/>.</para>
 
 <para>For multi-screen implementations other than Xinerama, such as
 Single Logical Screen, it is possible to simulate a Xinerama

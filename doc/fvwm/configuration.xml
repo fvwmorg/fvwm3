@@ -15,7 +15,7 @@
 <para>The configuration file is used to describe mouse and button
 bindings, colors, the virtual display size, and related items.
 The initialization configuration file is typically called
-<emphasis remap='I'>config</emphasis> (or <markup>.fvwm2rc</markup>).
+<filename>config</filename> (or <filename>.fvwm2rc</filename>).
 By using the
 <fvwmref cmd="Read"/>
 command, it is easy to read in new configuration files as you go.</para>
@@ -42,7 +42,7 @@ sense for run-time.</para>
 <section id='supplied_configuration'>
 <title>Supplied Configuration</title>
 <para>A sample configuration file,
-<emphasis remap='I'>system.fvwm2rc</emphasis>,
+<filename>system.fvwm2rc</filename>,
 is supplied with the fvwm distribution.  It is well commented and
 can be used as a source of examples for fvwm configuration.
 It may be copied to <filename>/usr/local/share/fvwm/config</filename> file.</para>

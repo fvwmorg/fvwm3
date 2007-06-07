@@ -14,24 +14,30 @@
 <para>These are the command line options that are recognized by fvwm:</para>
 <variablelist remap='TP'>
   <varlistentry>
-  <term><option>-i</option> | <option>--clientid</option></term>
+  <term>
+    <option>-i</option> | <option>--clientid</option>
+    <replaceable>id</replaceable>
+  </term>
   <listitem>
-<para><emphasis remap='I'>id</emphasis>
+<para>
 This option is used when fvwm is started by a session
 manager. Should not be used by a user.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-c</option> | <option>--cmd </option></term>
+  <term>
+    <option>-c</option> | <option>--cmd</option>
+    <replaceable>config-command</replaceable>
+  </term>
   <listitem>
-<para><emphasis remap='I'>config-command</emphasis>
+<para>
 Causes fvwm to use
-<emphasis remap='I'>config-command</emphasis>
+<replaceable>config-command</replaceable>
 instead of
 '<fvwmref cmd="Read"/>
 <emphasis remap='I'>config</emphasis>'
 (or '<fvwmref cmd="Read"/>
-<markup>.fvwm2rc</markup>')
+<emphasis remap='I'>.fvwm2rc</emphasis>')
 as its initialization command.  (Note that up to 10
 <option>-f</option> and <option>-c</option>
 parameters can be given, and they are executed in the order
@@ -54,17 +60,22 @@ fvwm -c "<fvwmref cmd="AddToFunc"/> StartFunction I <fvwmref cmd="Module"/> <fvw
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-d</option> | <option>--display </option></term>
+  <term>
+    <option>-d</option> | <option>--display</option>
+    <replaceable>displayname</replaceable>
+  </term>
   <listitem>
-<para><emphasis remap='I'>displayname</emphasis>
+<para>
 Manage the display called
-<emphasis remap='I'>displayname</emphasis>
+<replaceable>displayname</replaceable>
 instead of the name obtained from the environment variable
 <envar>$DISPLAY</envar>.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-D</option> | <option>--debug</option></term>
+  <term>
+    <option>-D</option> | <option>--debug</option>
+  </term>
   <listitem>
 <para>Puts X transactions in synchronous mode, which dramatically slows
 things down, but guarantees that fvwm's internal error messages
@@ -73,15 +84,18 @@ running.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-f </option><emphasis remap='I'>config-file</emphasis></term>
+  <term>
+    <option>-f</option>
+    <replaceable>config-file</replaceable>
+  </term>
   <listitem>
 <para>Causes fvwm to read
-<emphasis remap='I'>config-file</emphasis>
+<replaceable>config-file</replaceable>
 instead of
 <filename>~/.fvwm/config</filename>
 as its initialization file.  This is equivalent to
 -c '<fvwmref cmd="Read"/>
-<emphasis remap='I'>config-file'.</emphasis></para>
+<replaceable>config-file</replaceable>'.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -100,24 +114,30 @@ unless the other wm is
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-F</option> | <option>--restore </option></term>
+  <term>
+    <option>-F</option> | <option>--restore</option>
+    <replaceable>state-file</replaceable>
+  </term>
   <listitem>
-<para><emphasis remap='I'>state-file</emphasis>
+<para>
 This option is used when fvwm is started by a session manager.
 Should not be used by a user.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-s</option> | <option>--single-screen</option></term>
+  <term>
+    <option>-s</option> | <option>--single-screen</option>
+    <optional><replaceable>screen_num</replaceable></optional>
+  </term>
   <listitem>
-<para>[<emphasis remap='I'>screen_num</emphasis>]
+<para>
 On a multi-screen display, run fvwm only on the screen named in
 the
-<emphasis remap='I'>$DISPLAY</emphasis>
+<envar>$DISPLAY</envar>
 environment variable or provided through the
 <option>-d</option>
 option. The optional argument
-<emphasis remap='I'>screen_num</emphasis>
+<replaceable>screen_num</replaceable>
 should be positive or null and override the screen number.
 Normally, fvwm attempts to start up on all screens of a
 multi-screen display.</para>
@@ -127,7 +147,7 @@ multi-screen display.</para>
   <term><option>-V</option> | <option>--version</option></term>
   <listitem>
 <para>Prints the version of fvwm to
-<emphasis remap='I'>stderr</emphasis>.
+<filename>stderr</filename>.
 Also prints an information about the compiled in support for
 readline, rplay, stroke, xpm, png, svg, <acronym>GNOME</acronym> hints, <acronym>EWMH</acronym> hints,
 session management, bidirectional text, multibyte characters,
@@ -135,39 +155,48 @@ xinerama and Xft aa font rendering.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-C</option> | <option>--visual </option></term>
+  <term>
+    <option>-C</option> | <option>--visual</option>
+    <replaceable>visual-class</replaceable>
+  </term>
   <listitem>
-<para><emphasis remap='I'>visual-class</emphasis>
+<para>
 Causes fvwm to use
-<emphasis remap='I'>visual-class</emphasis>
+<replaceable>visual-class</replaceable>
 for the window borders and menus.
-<emphasis remap='I'>visual-class</emphasis>
+<replaceable>visual-class</replaceable>
 can be "StaticGray", "GrayScale", "StaticColor", "PseudoColor",
 "TrueColor" or "DirectColor".</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-I</option> | <option>--visualid </option></term>
+  <term>
+    <option>-I</option> | <option>--visualid</option>
+    <replaceable>id</replaceable>
+  </term>
   <listitem>
-<para><emphasis remap='I'>id</emphasis>
+<para>
 Causes fvwm to use
-<emphasis remap='I'>id</emphasis>
+<replaceable>id</replaceable>
 as the visual id for the window borders and menus.
-<emphasis remap='I'>id</emphasis>
+<replaceable>id</replaceable>
 can be specified as N for decimal or 0xN for hexadecimal. See man
 page of xdpyinfo for a list of supported visuals.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term><option>-l</option> | <option>--color-limit </option></term>
+  <term>
+    <option>-l</option> | <option>--color-limit</option>
+    <replaceable>limit</replaceable>
+  </term>
   <listitem>
-<para><emphasis remap='I'>limit</emphasis>
+<para>
 Specifies a
-<emphasis remap='I'>limit</emphasis>
+<replaceable>limit</replaceable>
 on the colors used in image, gradient and possibly simple colors
 used by fvwm. In fact, fvwm (and all the modules) uses a palette
 with at most
-<emphasis remap='I'>limit</emphasis>
+<replaceable>limit</replaceable>
 colors. This option is only useful with screens that display 256
 colors (or less) with a dynamic visual (PseudoColor, GrayScale or
 DirectColor). The default depends on your X server and how you run
@@ -216,6 +245,7 @@ pre-allocated palette is auto detected the defaults are as follow:</para>
 </tgroup>
 </informaltable>
 <para>where "I cc" means a "IxIxI color cube"</para>
+
 
 
 
@@ -281,7 +311,8 @@ an integer c &gt;= R*G*B and &lt; (R+1)*(G+1)*B if B=R and &lt; R*G*(B+1)
 if B &lt; R (and different from 61). If c &gt; R*G*B, then some grey may
 be added to the color cube. You can use the
 <fvwmref cmd="PrintInfo"/>
-<emphasis remap='I'>Colors</emphasis><emphasis remap='B'> </emphasis><emphasis remap='I'>[1]</emphasis>
+<emphasis remap='I'>Colors</emphasis>
+<optional><emphasis remap='I'>1</emphasis></optional>
 command to get information on your fvwm colors setting. In
 particular, this command prints the palette used by fvwm in rgb
 format (the last integer gives the number of times fvwm has
