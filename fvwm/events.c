@@ -4109,10 +4109,15 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 	if (num_fd > 0)
 	{
+		fmodule *next;
 		/* Check for module input. */
 		module = module_get_next(NULL);
-		for (; module != NULL; module = module_get_next(module))
+		for (; module != NULL; module = next)
 		{
+			/* module_receive and FlushMessageQueue might
+			 * destroy the module, we need to query the
+			 * next-reference before calling those. */
+			next =  module_get_next(module);
 			if (FD_ISSET(MOD_READFD(module), &in_fdset))
 			{
 				input = module_receive(module);
