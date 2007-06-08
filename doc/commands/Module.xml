@@ -11,11 +11,13 @@
 <section id='Module'>
 <title>Module</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Module modulename [moduleparams]</arg>
+	<command>Module</command>
+	<arg choice='plain'><replaceable>modulename</replaceable></arg>
+	<arg choice='opt'><replaceable>moduleparams</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Specifies a module with its optional parameters which should be
 spawned. Currently several modules, including
@@ -84,7 +86,7 @@ terminated by the window manager prior to restarts and quits, if
 possible.  See the introductory section on modules.  The keyword
 <emphasis remap='B'>Module</emphasis>
 may be omitted if
-<emphasis remap='I'>modulename</emphasis>
+<replaceable>modulename</replaceable>
 is distinct from all fvwm commands.</para>
 
 </section>

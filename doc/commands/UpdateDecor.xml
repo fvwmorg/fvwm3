@@ -11,11 +11,12 @@
 <section id='UpdateDecor'>
 <title>UpdateDecor</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>UpdateDecor [decor]</arg>
+	<command>UpdateDecor</command>
+	<arg choice='opt'><replaceable>decor</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.</para>
@@ -25,14 +26,14 @@ all elements of a decor are updated immediately when they are
 changed, this command is mostly useless.</para>
 
 <para>Updates window decorations.
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 is an optional argument which specifies the
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 to update.  If given, only windows which are assigned to that
 particular
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 are updated.  This command is useful, for instance, after a
-<fvwmref cmd="ButtonStyle"/>, <emphasis remap='B'>TitleStyle</emphasis> or <emphasis remap='B'>BorderStyle</emphasis>
+<fvwmref cmd="ButtonStyle"/>, <fvwmref cmd="TitleStyle"/> or <fvwmref cmd="BorderStyle"/>
 (possibly used in conjunction with
 <fvwmref cmd="AddToDecor"/>).
 Specifying an invalid decor results in all windows being

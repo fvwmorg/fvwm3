@@ -11,28 +11,47 @@
 <section id='Resize'>
 <title>Resize</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>Resize</arg>
-    <arg choice='plain'>[[frame] [direction dir [warptoborder]] [fixeddirection] [w]width[p|c] [w]height[p|c]] | [bottomright | br x y]</arg>
+    <command>Resize</command>
+    <group choice='plain'>
+      <arg choice='opt'>
+	<arg choice='opt'>frame</arg>
+	<arg choice='opt'>direction
+	  <replaceable>dir</replaceable>
+	  <optional>warptoborder</optional>
+	</arg>
+	<arg choice='opt'>fixeddirection</arg>
+	<arg choice='plain'><optional>w</optional><replaceable>width</replaceable><group choice='opt'><arg choice='plain'>p</arg><arg choice='plain'>c</arg></group></arg>
+	<arg choice='plain'><optional>w</optional><replaceable>height</replaceable><group choice='opt'><arg choice='plain'>p</arg><arg choice='plain'>c</arg></group></arg>
+      </arg>
+      <arg choice='opt'>
+	<group choice='plain'>
+	  <arg choice='plain'>bottomright</arg>
+	  <arg choice='plain'>br</arg>
+	</group>
+	<arg choice='plain'><replaceable>x</replaceable></arg>
+	<arg choice='plain'><replaceable>y</replaceable></arg>
+      </arg>
+    </group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 
 <para>Allows for resizing a window.  If called from somewhere in a window
 or its border, then that window is resized.  If called from the
 root window then the user is allowed to select the target window.</para>
 
-<para>The operation can be aborted with Escape or by pressing any mouse
-button (except button 1 which confirms it).</para>
+<para>The operation can be aborted with <keysym>Escape</keysym> or by pressing
+any mouse button (except button 1 which confirms it).</para>
 
 <para>If the optional arguments
-<emphasis remap='I'>width</emphasis> and <emphasis remap='I'>height</emphasis>
+<replaceable>width</replaceable> and <replaceable>height</replaceable>
 are provided, then the window is resized so that its dimensions
 are
-<emphasis remap='I'>width</emphasis> by <emphasis remap='I'>height</emphasis>.
+<replaceable>width</replaceable> by <replaceable>height</replaceable>.
 The units of
-<emphasis remap='I'>width</emphasis> and <emphasis remap='I'>height</emphasis>
+<replaceable>width</replaceable> and <replaceable>height</replaceable>
 are percent-of-screen, unless a letter
 '<fvwmopt cmd="Resize" opt="p"/>'
 is appended to one or both coordinates, in which case the location
@@ -47,7 +66,7 @@ used.  So you can say</para>
 characters.</para>
 
 <para>If the
-<emphasis remap='I'>width</emphasis> or <emphasis remap='I'>height</emphasis>
+<replaceable>width</replaceable> or <replaceable>height</replaceable>
 is prefixed with the letter
 '<fvwmopt cmd="Resize" opt="w"/>'
 the size is not taken as an absolute value but added to the
@@ -59,7 +78,7 @@ Resize keep w+1c
 </programlisting>
 
 <para>Both,
-<emphasis remap='I'>width</emphasis> and <emphasis remap='I'>height</emphasis>
+<replaceable>width</replaceable> and <replaceable>height</replaceable>
 can be negative.  In this case the new size is the screen size
 minus the given value.  If either value is "<fvwmopt cmd="Resize" opt="keep"/>", the
 corresponding dimension of the window is left untouched.  The new
@@ -71,18 +90,18 @@ size is the size of the client window, thus</para>
 on the size of the whole fvwm window, add the
 <fvwmopt cmd="Resize" opt="frame"/>
 option after the command.  The options
-<fvwmopt cmd="Resize" opt="fixeddirection"/>,
-<fvwmopt cmd="Resize" opt="direction"/> and
-<fvwmopt cmd="Resize" opt="warptoborder"/>
+<emphasis remap='I'>fixeddirection</emphasis>,
+<emphasis remap='I'>direction</emphasis> and
+<emphasis remap='I'>warptoborder</emphasis>
 are only used in interactive move operations.  With
-<emphasis remap='I'>fixeddirection</emphasis>
+<fvwmopt cmd="Resize" opt="fixeddirection"/>
 the same border is moved even if the pointer moves past the
 opposite border.  The
-<emphasis remap='I'>direction</emphasis>
+<fvwmopt cmd="Resize" opt="direction"/>
 option must be followed by a direction name such as "NorthWest",
 "South" or "East" (you get the idea).  Resizing is started
 immediately, even if the pointer is not on a border.  The
-<emphasis remap='I'>warptoborder</emphasis>
+<fvwmopt cmd="Resize" opt="warptoborder"/>
 option changes the behaviour of the
 <emphasis remap='I'>direction</emphasis>
 option so that the pointer is automatically warped to the border
@@ -100,10 +119,10 @@ is warped to the outer edge of the border.</para>
 <fvwmopt cmd="Resize" opt="bottomright"/> or in short
 <fvwmopt cmd="Resize" opt="br"/>
 follows the command name.  In this case, the arguments
-<emphasis remap='I'>x</emphasis> and <emphasis remap='I'>y</emphasis>
+<replaceable>x</replaceable> and <replaceable>y</replaceable>
 specify the desired position of the bottom right corner of the
 window.  They are interpreted exactly like the
-<emphasis remap='I'>x</emphasis> and <emphasis remap='I'>y</emphasis>
+<replaceable>x</replaceable> and <replaceable>y</replaceable>
 arguments of the
 <fvwmref cmd="Move"/>
 command.  Actually, any of the options accepted by the

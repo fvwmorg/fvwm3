@@ -11,15 +11,16 @@
 <section id='UnsetEnv'>
 <title>UnsetEnv</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>UnsetEnv variable</arg>
+	<command>UnsetEnv</command>
+	<arg coice='plain'><replaceable>variable</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Unset an environment variable, similar to shell's export or
 unsetenv command. The
-<emphasis remap='I'>variable</emphasis>
+<replaceable>variable</replaceable>
 then is removed from the environment array inherited by processes
 started directly by fvwm.</para>
 

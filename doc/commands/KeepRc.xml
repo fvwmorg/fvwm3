@@ -11,18 +11,19 @@
 <section id='KeepRc'>
 <title>KeepRc</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>KeepRc command</arg>
+	<command>KeepRc</command>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Runs the
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 but does not alter the return code of the previous command.  Note:
 <emphasis remap='B'>KeepRc</emphasis>
 is treated as a prefix to its
-<emphasis remap='I'>command</emphasis>.
+<replaceable>command</replaceable>.
 Expansion of the command line is done as if
 <emphasis remap='B'>KeepRc</emphasis>
 was not there.</para>

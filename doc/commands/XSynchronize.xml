@@ -11,11 +11,13 @@
 <section id='XSynchronize'>
 <title>XSynchronize</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>XSynchronize [bool]</arg>
+	<command>XSynchronize</command>
+	<!-- link bool to BOOLEAN ARGUMENTS section (missing) -->
+	<arg choice="opt">bool</arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>The
 <emphasis remap='B'>XSynchronize</emphasis>

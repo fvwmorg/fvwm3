@@ -11,16 +11,16 @@
 <section id='WarpToWindow'>
 <title>WarpToWindow</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>WarpToWindow</arg>
-    <arg choice='plain'>x[p]</arg>
-    <arg choice='plain'>y[p]</arg>
+  <command>WarpToWindow</command>
+  <arg choice='plain'><replaceable>x</replaceable><optional>p</optional></arg>
+  <arg choice='plain'><replaceable>y</replaceable><optional>p</optional></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Warps the cursor to the associated window.  The parameters
-<emphasis remap='I'>x</emphasis> and <emphasis remap='I'>y</emphasis>
+<replaceable>x</replaceable> and <replaceable>y</replaceable>
 default to percentage of window down and in from the upper left
 hand corner (or number of pixels down and in if
 '<fvwmopt cmd="WarpToWindow" opt="p"/>'

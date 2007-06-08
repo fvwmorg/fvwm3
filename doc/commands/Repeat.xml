@@ -11,11 +11,11 @@
 <section id='Repeat'>
 <title>Repeat</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Repeat</arg>
+	<command>Repeat</command>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>When the
 <emphasis remap='B'>Repeat</emphasis>

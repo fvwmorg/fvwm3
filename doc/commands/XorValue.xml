@@ -11,12 +11,12 @@
 <section id='XorValue'>
 <title>XorValue</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>XorValue</arg>
-    <arg choice='opt'>number</arg>
+    <command>XorValue</command>
+    <arg choice='opt'><replaceable>number</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Changes the value with which bits are xor'ed when doing
 rubber-band window moving or resizing.
@@ -26,7 +26,7 @@ Setting this value is a trial-and-error process.
 The default value 0 tries to find a
 value that gives a good contrast to black and white.
 The default value is used if the given
-<emphasis remap='I'>number</emphasis>
+<replaceable>number</replaceable>
 is omitted or invalid.</para>
 
 </section>

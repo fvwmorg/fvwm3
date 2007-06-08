@@ -11,20 +11,23 @@
 <section id='KillModule'>
 <title>KillModule</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>KillModule modulename [modulealias]</arg>
+	<command>KillModule</command>
+	<arg choice='plain'><replaceable>modulename</replaceable></arg>
+	<arg choice='opt'><replaceable>modulealias</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Causes the module which was invoked with name
-<emphasis remap='I'>modulename</emphasis>
+<replaceable>modulename</replaceable>
 to be killed.  The name may include wildcards. If
-<emphasis remap='I'>modulealias</emphasis>
+<replaceable>modulealias</replaceable>
 is given, only modules started with the given alias are killed.</para>
 
 <programlisting>
-KillModule FvwmPager  # kill all pagers
+# kill all pagers
+KillModule FvwmPager
 
 <fvwmref cmd="Module"/> FvwmEvent SoundEvent
 KillModule FvwmEvent SoundEvent

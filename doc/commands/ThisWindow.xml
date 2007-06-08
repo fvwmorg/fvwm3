@@ -11,21 +11,23 @@
 <section id='ThisWindow'>
 <title>ThisWindow</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>ThisWindow [(conditions)] command</arg>
+  <command>ThisWindow</command>
+	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+	<arg choice='plain'>command</arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para><emphasis remap='B'>ThisWindow</emphasis>
 executes the specified
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 in the context of the current operand window.  If there is no
 operand window (it is invoked in the root window), the command is
 ignored.
 <emphasis remap='B'>ThisWindow</emphasis>
 is never interactive.  The command is executed only if the given
-<emphasis remap='I'>conditions</emphasis>
+<replaceable>conditions</replaceable>
 are met.  It returns -1 if used outside a window context.
 See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
 

@@ -11,17 +11,18 @@
 <section id='StrokeFunc'>
 <title>StrokeFunc</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>StrokeFunc [Options]</arg>
+	<command>StrokeFunc</command>
+	<arg choice='opt'><replaceable>Options</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Causes fvwm to record a mouse stroke sequence and to execute the
 corresponding action as defined in a
 <fvwmref cmd="Stroke"/>
 command.  The cursor is modified to the
-<emphasis remap='I'>STROKE</emphasis>
+<fvwmref cmd="CursorStyle" opt="STROKE"/>
 context of the
 <fvwmref cmd="CursorStyle"/>
 command during recording.  When the stroke is finished
@@ -44,7 +45,7 @@ command.  Examples:</para>
 </programlisting>
 
 <para>If you press mouse button 3 and
-<emphasis remap='SM'>Alt</emphasis>
+<keysym>Alt</keysym>
 anywhere (respectively, press the key x when the cursor is on the
 root window), then fvwm records the mouse motions until the mouse
 button 3 (respectively, the x key) is released and then check if
@@ -53,20 +54,20 @@ the recorded
 corresponds to a stroke binding of the form</para>
 
 <programlisting>
-"Stroke <emphasis remap='I'>sequence</emphasis> 0 A M <emphasis remap='I'>action</emphasis>"
-"Stroke <emphasis remap='I'>sequence</emphasis> 0 R N <emphasis remap='I'>action</emphasis>"
+"Stroke <replaceable>sequence</replaceable> 0 A M <replaceable>action</replaceable>"
+"Stroke <replaceable>sequence</replaceable> 0 R N <replaceable>action</replaceable>"
 </programlisting>
 
 <para>Note that the
-<emphasis remap='I'>Context</emphasis> and <emphasis remap='I'>Modifiers</emphasis>
+<replaceable>Context</replaceable> and <replaceable>Modifiers</replaceable>
 are taken at the beginning of the execution of the
 <emphasis remap='B'>StrokeFunc</emphasis>
 command (so you can release the modifiers before the end of the
 stroke recording in the case of a mouse binding and if you used,
 say, a title-bar context the mouse motion can go through an
 application window).  The keys
-<emphasis remap='SM'>Escape</emphasis> and
-<emphasis remap='SM'>Delete</emphasis>
+<keysym>Escape</keysym> and
+<keysym>Delete</keysym>
 allow you to abort the command.</para>
 
 <para>The
@@ -82,7 +83,7 @@ causes fvwm to draw the mouse motion on the screen.
 <fvwmopt cmd="StrokeFunc" opt="FeedBack"/>
 causes fvwm to display during a fraction of second the cursor of
 the
-<emphasis remap='I'>WAIT</emphasis>
+<fvwmref cmd="CursorStyle" opt="WAIT"/>
 context of the
 <fvwmref cmd="CursorStyle"/>
 command if the recorded stroke sequence corresponds to a stroke
@@ -104,9 +105,9 @@ or a
 command.  This option removes the need to have a button or the key
 pressed during the stroke, but you have to do a mouse click or
 press the
-<emphasis remap='SM'>Return</emphasis>
+<keysym>Return</keysym>
 or
-<emphasis remap='SM'>Space</emphasis>
+<keysym>Space</keysym>
 key to finish the mouse motion recording (these keys also work
 without the
 <emphasis remap='I'>NotStayPressed</emphasis>
@@ -117,10 +118,10 @@ option).</para>
 "alone".  In this case it works as above with the
 <emphasis remap='I'>NotStayPressed</emphasis>
 option enabled.  However,
-<emphasis remap='I'>Modifiers,</emphasis>
+<replaceable>Modifiers</replaceable>,
 in general, may not work as expected (i.e., in this case use 'A'
 or 'N' as
-<emphasis remap='I'>Modifiers</emphasis>
+<replaceable>Modifiers</replaceable>
 in the stroke bindings).</para>
 
 <para>Note that some computers do not support key release events. If

@@ -11,11 +11,11 @@
 <section id='Recapture'>
 <title>Recapture</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Recapture</arg>
+	<command>Recapture</command>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command is obsolete and should not be used anymore.  Should
 you want to do something specific that you cannot do without it,
@@ -36,6 +36,6 @@ visually disturbing.</para>
 options need a
 <emphasis remap='B'>Recapture</emphasis>
 to take effect (e.g.
-<emphasis remap='I'>UseStyle</emphasis>).</para>
+<fvwmref cmd="Style" opt="UseStyle"/>).</para>
 
 </section>

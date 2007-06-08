@@ -11,12 +11,19 @@
 <section id='GotoPage'>
 <title>GotoPage</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>GotoPage <emphasis>prev</emphasis> | [<emphasis remap='I'>options</emphasis>] <emphasis remap='I'>x</emphasis> [<emphasis remap='I'>p</emphasis>] <emphasis remap='I'>y</emphasis> [<emphasis remap='I'>p</emphasis>]
-	</arg>
+	<command>GotoPage</command>
+	<group choice='plain'>
+		<arg choice='plain'>prev</arg>
+		<arg choice='plain'>
+			<arg choice='opt'><replaceable>options</replaceable></arg>
+			<arg choice='plain'><replaceable>x</replaceable><optional>p</optional></arg>
+			<arg choice='plain'><replaceable>y</replaceable><optional>p</optional></arg>
+		</arg>
+	</group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>
 Moves the desktop viewport to page (x,y).  The upper left page is
@@ -28,18 +35,18 @@ is (M,N), where N is the desktop's vertical size as specified in the
 <fvwmref cmd="DeskTopSize"/>
 command.  To switch to a page relative to the current one add a
 trailing
-'<emphasis remap='I'>p</emphasis>'
+'<fvwmopt cmd="GotoPage" opt="p"/>'
 after any or both numerical arguments.</para>
 
 <para>Possible
-<emphasis remap='I'>options</emphasis>
+<replaceable>options</replaceable>
 are
-<emphasis remap='I'>wrapx</emphasis> and <emphasis remap='I'>wrapy</emphasis>
+<fvwmopt cmd="GotoPage" opt="wrapx"/> and <fvwmopt cmd="GotoPage" opt="wrapy"/>
 to wrap around the x or y coordinate when the viewport is moved
 beyond the border of the desktop.</para>
 
 <para>To go to the last visited page use
-<emphasis remap='I'>prev</emphasis>
+<fvwmopt cmd="GotoPage" opt="prev"/>
 as the first argument.  The
 <emphasis remap='B'>GotoPage</emphasis>
 function should not be used in a pop-up menu.</para>

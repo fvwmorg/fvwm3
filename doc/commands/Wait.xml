@@ -11,15 +11,16 @@
 <section id='Wait'>
 <title>Wait</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Wait window</arg>
+	<command>Wait</command>
+	<arg choice='plain'><replaceable>window</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command is intended to be used in fvwm functions only.  It
 causes execution of a function to pause until a new window matching
-<emphasis remap='I'>window</emphasis>
+<replaceable>window</replaceable>
 appears.  This can be a window's name, class, or resource string.
 It may contain the wildcards '*' and '?', which are matched in the
 usual Unix filename manner.  This is particularly useful in the
@@ -43,14 +44,15 @@ After the xmh window appears control moves to desk 0.</para>
 <para>Fvwm remains partially functional during a wait, but any input
 from the modules is queued up and processed only after the window
 appears or the command is aborted.  For example, windows can not
-be focused with FvwmTaskBar or FvwmWinList during a wait.</para>
+be focused with <fvwmref mod="FvwmTaskBar"/> or 
+<fvwmref mod="FvwmWinList"/> during a wait.</para>
 
 <para>You can escape from a
 <emphasis remap='B'>Wait</emphasis>
 pause by pressing
-<emphasis remap='SM'>Ctrl-Alt-Escape</emphasis>
+<keysym>Ctrl-Alt-Escape</keysym>
 (where
-<emphasis remap='SM'>Alt</emphasis>
+<keysym>Alt</keysym>
 is the first modifier).  To redefine this key sequence see the
 <fvwmref cmd="EscapeFunc"/>
 command.</para>

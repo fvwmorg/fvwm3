@@ -11,11 +11,12 @@
 <section id='IgnoreModifiers'>
 <title>IgnoreModifiers</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>IgnoreModifiers [Modifiers]</arg>
+	<command>IgnoreModifiers</command>
+	<arg choice='opt'><replaceable>Modifiers</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Tells fvwm which modifiers to ignore when matching Mouse or Key
 bindings.
@@ -23,32 +24,32 @@ bindings.
 affects the
 <fvwmref cmd="Style" opt="ClickToFocus"/>
 style too.  This command belongs into your
-<emphasis remap='I'>config</emphasis>.
+<filename>config</filename>.
 If you issue it when your fvwm session is already up and running
 the results are unpredictable.  The should appear before any
 applications or modules are started in your
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file (e.g. with the
 <fvwmref cmd="Exec"/>
 command).</para>
 
-<para><emphasis remap='I'>Modifiers</emphasis>
+<para><replaceable>Modifiers</replaceable>
 has the same syntax as in the
-<fvwmref cmd="Mouse"/> or <emphasis remap='B'>Key</emphasis>
+<fvwmref cmd="Mouse"/> or <fvwmref cmd="Key"/>
 bindings, with the addition of 'L' meaning the
-<emphasis remap='SM'>caps lock</emphasis>
+<keysym>caps lock</keysym>
 key.  The default is "L".
-<emphasis remap='I'>Modifiers</emphasis>
+<replaceable>Modifiers</replaceable>
 can be omitted, meaning no modifiers are ignored.  This command
 comes in handy if the
-<emphasis remap='SM'>num-lock</emphasis>
+<keysym>num-lock</keysym>
 and
-<emphasis remap='SM'>scroll-lock</emphasis>
+<keysym>scroll-lock</keysym>
 keys interfere with your shortcuts.  With XFree86 '2' usually is
 the
-<emphasis remap='SM'>num-lock</emphasis>
+<keysym>num-lock</keysym>
 modifier and '5' refers to the
-<emphasis remap='SM'>scroll-lock</emphasis>
+<keysym>scroll-lock</keysym>
 key. To turn all these pesky modifiers off you can use this
 command:</para>
 
@@ -57,21 +58,21 @@ IgnoreModifiers L25
 </programlisting>
 
 <para>If the
-<emphasis remap='I'>Modifiers</emphasis>
-argument is the string "default", fvwm reverts back to the
+<replaceable>Modifiers</replaceable>
+argument is the string "<fvwmopt cmd="IgnoreModifiers" opt="default"/>", fvwm reverts back to the
 default value "L".</para>
 
-<para><emphasis remap='I'>Important Note:</emphasis>
+<para><important>
 This command creates a lot of extra network traffic, depending on
 your CPU, network connection, the number of
-<fvwmref cmd="Key"/> or <emphasis remap='B'>Mouse</emphasis>
+<fvwmref cmd="Key"/> or <fvwmref cmd="Mouse"/>
 commands in your configuration file and the number of modifiers
 you want to ignore.  If you do not have a lightning fast machine
 or very few bindings you should not ignore more than two
 modifiers. I.e. do not ignore
-<emphasis remap='SM'>scroll-lock</emphasis>
+<keysym>scroll-lock</keysym>
 if you have no problem with it.  In the
 <emphasis remap='I'>FAQ</emphasis>
-you can find a better solution of this problem.</para>
+you can find a better solution of this problem.</important></para>
 
 </section>

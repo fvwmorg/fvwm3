@@ -11,11 +11,11 @@
 <section id='SaveQuitSession'>
 <title>SaveQuitSession</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>SaveQuitSession</arg>
+	<command>SaveQuitSession</command>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Causes a session manager (if any) to save and then shutdown the
 session. This command does not work for xsm, it seems that xsm

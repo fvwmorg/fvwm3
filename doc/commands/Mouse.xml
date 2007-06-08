@@ -11,18 +11,23 @@
 <section id='Mouse'>
 <title>Mouse</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Mouse [(window)] Button Context Modifiers Function</arg>
+	<command>Mouse</command>
+	<arg choice='opt'>(<replaceable>window</replaceable>)</arg>
+	<arg choice='plain'><replaceable>Button</replaceable></arg>
+	<arg choice='plain'><replaceable>Context</replaceable></arg>
+	<arg choice='plain'><replaceable>Modifiers</replaceable></arg>
+	<arg choice='plain'><replaceable>Function</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Defines a mouse binding, or removes the binding if
-<fvwmref cmd="Function"/>
+<replaceable>Function</replaceable>
 is '-'.
-<emphasis remap='I'>Button</emphasis>
+<replaceable>Button</replaceable>
 is the mouse button number.  If
-<emphasis remap='I'>Button</emphasis>
+<replaceable>Button</replaceable>
 is zero then any button performs the specified function.  Note
 that only mouse buttons 1 to 5 are fully supported by X11.  Any
 number above this works only partially.  Complex functions can not
@@ -31,7 +36,7 @@ dragging the pointer with the button held.  This is due to
 limitations of X11.  By default, the highest allowed button number
 is 9.</para>
 
-<para><emphasis remap='I'>Context</emphasis>
+<para><replaceable>Context</replaceable>
 describes where the binding applies.  Valid contexts are
 '<fvwmopt cmd="Mouse" opt="R"/>' for the root window,
 '<fvwmopt cmd="Mouse" opt="W"/>' for an application window,
@@ -55,18 +60,17 @@ a window's border except the title-bar buttons.  Only 'S' and 'W'
 are valid for an undecorated window.</para>
 
 <para>The special context '<fvwmopt cmd="Mouse" opt="M"/>' for menus can be used to (re)define the menu
-controls. It can only be used alone or together with 'T' for the menu
-title bar.  See the
+controls. It can be used alone or together with 'T', 'S', 'I', '[', ']', '-' and '_'.  See the
 <fvwmref sect="menus" opt="menu_bindings" name="Menu Bindings"/>
 section for details.</para>
 
 <para>The special context '<fvwmopt cmd="Mouse" opt="P"/>' controls what buttons that can be used to
 place a window. When using this context no modifiers are allowed
-(<emphasis remap='I'>Modifiers</emphasis>
+(<replaceable>Modifiers</replaceable>
 must be N), no
-<emphasis remap='I'>window</emphasis>
+<replaceable>window</replaceable>
 is allowed, and the
-<fvwmref cmd="Function"/>
+<replaceable>Function</replaceable>
 must be one of
 <emphasis remap='I'>PlaceWindow</emphasis>,
 <emphasis remap='I'>PlaceWindowDrag</emphasis>,
@@ -79,11 +83,11 @@ must be one of
 <para>
 <fvwmopt cmd="Mouse" opt="PlaceWindow"/>
 makes
-<emphasis remap='I'>Button</emphasis>
+<replaceable>Button</replaceable>
 usable for window placement, both for interactive and drag move.
 <fvwmopt cmd="Mouse" opt="CancelPlacement"/>
 does the inverse. That is makes
-<emphasis remap='I'>Button</emphasis>
+<replaceable>Button</replaceable>
 to cancel move for both interactive and drag move. It may however
 not override how new windows are resized after being placed. This
 is controlled by the
@@ -154,7 +158,7 @@ bindings) sends a synthetic copy of the event to the window. This
 should be transparent to most applications, however (for security
 reasons) some programs ignore these synthetic events by default -
 xterm is one of them. To enable handling of these events, add the
-following line to your ~/.Xdefaults file:</para>
+following line to your <filename>~/.Xdefaults</filename> file:</para>
 
 
 <programlisting>
@@ -162,7 +166,7 @@ XTerm*allowSendEvents:  true
 </programlisting>
 
 
-<para><emphasis remap='I'>Modifiers</emphasis>
+<para><replaceable>Modifiers</replaceable>
 is any combination of
 '<fvwmopt cmd="Mouse" opt="N"/>' for no modifiers,
 '<fvwmopt cmd="Mouse" opt="C"/>' for control,
@@ -171,16 +175,16 @@ is any combination of
 '<fvwmopt cmd="Mouse" opt="L"/>' for Caps-Lock or
 '<fvwmopt cmd="Mouse" opt="A"/>' for any
 modifier. For example, a modifier of "SM" applies when both the
-<emphasis remap='SM'>Meta</emphasis>
+<keysym>Meta</keysym>
 and
-<emphasis remap='SM'>Shift</emphasis>
+<keysym>Shift</keysym>
 keys are down.  X11 modifiers mod1 through mod5 are represented as
 the digits '1' through '5'.  The modifier 'L' is ignored by
 default.  To turn it on, use the
 <fvwmref cmd="IgnoreModifiers"/>
 command.</para>
 
-<para><fvwmref cmd="Function"/>
+<para><replaceable>Function</replaceable>
 is one of fvwm's commands.</para>
 
 <para>The title-bar buttons are numbered with odd numbered buttons on

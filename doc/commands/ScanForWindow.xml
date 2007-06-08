@@ -11,45 +11,43 @@
 <section id='ScanForWindow'>
 <title>ScanForWindow</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>ScanForWindow </arg>
+	<command>ScanForWindow</command>
+	<arg choice='opt'>FromPointer</arg>
+	<arg choice='plain'><replaceable>direction</replaceable></arg>
+	<arg choice='plain'><replaceable>direction2</replaceable></arg>
+	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
-<para>[<emphasis remap='I'>FromPointer</emphasis>] \
-<emphasis remap='I'>direction</emphasis> \
-<emphasis remap='I'>direction2</emphasis> \
-[(<emphasis remap='I'>conditions</emphasis>)] \
-<emphasis remap='I'>command</emphasis>"
-Performs
-<emphasis remap='I'>command</emphasis>
-(typically
-<fvwmref cmd="Focus"/>)
+<para>Performs <replaceable>command</replaceable>
+(typically <fvwmref cmd="Focus"/>)
 on a window in the given direction which satisfies all
-<emphasis remap='I'>conditions</emphasis>.
+<replaceable>conditions</replaceable>.
 Normally, the center of the currently focused window or the
 context window in which the command was invoked is taken as the
 starting point.  Lacking such a window, or when the
-<emphasis remap='I'>FromPointer</emphasis>
+<fvwmopt cmd="ScanForWindow" opt="FromPointer"/>
 option is given, the current position of the pointer is taken as
 the starting point.  The
-<emphasis remap='I'>direction</emphasis>
+<replaceable>direction</replaceable>
 may be one of "North", "NorthEast", "East", "SouthEast", "South",
 "SouthWest", "West", and "NorthWest".  Which window
 <emphasis remap='B'>ScanForWindow</emphasis>
 selects depends first on the position along the primary axis given
 by
-<emphasis remap='I'>direction</emphasis>.
+<replaceable>direction</replaceable>.
 If any windows have the exact same coordinate along the primary
 axis, the secondary direction is used to order the windows.  The
-<emphasis remap='I'>direction2</emphasis>
+<replaceable>direction2</replaceable>
 may be one of the same set of values as
-<emphasis remap='I'>direction</emphasis>.
+<replaceable>direction</replaceable>.
 If
-<emphasis remap='I'>direction2</emphasis>
+<replaceable>direction2</replaceable>
 is not perfectly perpendicular to
-<emphasis remap='I'>direction</emphasis>,
+<replaceable>direction</replaceable>,
 ScanForWindow returns a failure.  When using ScanForWindow
 repeatedly with the same arguments, it is guaranteed that all
 windows matching the conditions will eventually be found.  If the

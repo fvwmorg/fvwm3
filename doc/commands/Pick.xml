@@ -11,11 +11,13 @@
 <section id='Pick'>
 <title>Pick</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Pick [(conditions)] command</arg>
+	<command>Pick</command>
+	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para><emphasis remap='B'>Pick</emphasis>
 works like
@@ -23,11 +25,11 @@ works like
 if invoked in the context of a window.  If invoked in the root
 window, it first asks the user to pick a window and then executes
 the
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 in the context of that window.  This avoids annoying multiple
 selections with complex functions.  The command is executed only
 if the given
-<emphasis remap='I'>conditions</emphasis>
+<replaceable>conditions</replaceable>
 are met.  Returns -1 if no window was selected.
 See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
 

@@ -11,12 +11,16 @@
 <section id='HideGeometryWindow'>
 <title>HideGeometryWindow</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>HideGeometryWindow</arg>
-    <arg choice='opt'>Never | Move | Resize</arg>
+    <command>HideGeometryWindow</command>
+    <group choice='opt'>
+      <arg choice='plain'>Never</arg>
+      <arg choice='plain'>Move</arg>
+      <arg choice='plain'>Resize</arg>
+    </group>
 </cmdsynopsis>
-</command>
+<!--/command-->
   
 <para>Hides the position or size window that is usually shown when a
 window is moved or resized interactively.  To switch it off only

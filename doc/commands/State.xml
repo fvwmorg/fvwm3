@@ -11,25 +11,27 @@
 <section id='State'>
 <title>State</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>State state [bool]</arg>
+	<command>State</command>
+	<arg choice='plain'><replaceable>state</replaceable></arg>
+	<arg choice='opt'><replaceable>bool</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Sets, clears or toggles one of the 32 user defined states which
 are associated with each window.  The
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 is a number ranging from 0 to 31.  The states have no meaning in
 fvwm, but they can be checked in conditional commands like
 <fvwmref cmd="Next"/>
 with the
 <emphasis remap='I'>State</emphasis>
 condition.  The optional argument
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 is a boolean argument.  "True" sets the given state, while "False"
 clears it.  Using "toggle" switches to the opposite state.  If the
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 argument is not given, the state is toggled.</para>
 
 </section>

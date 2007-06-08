@@ -11,14 +11,15 @@
 <section id='WindowStyle'>
 <title>WindowStyle</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>WindowStyle options</arg>
+	<command>WindowStyle</command>
+	<arg choice='plain'><replaceable>options</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>sets attributes (styles) on the selected window. The
-<emphasis remap='I'>options</emphasis>
+<replaceable>options</replaceable>
 are exactly the same as for the
 <fvwmref cmd="Style"/>
 command.</para>

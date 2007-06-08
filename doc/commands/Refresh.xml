@@ -11,11 +11,11 @@
 <section id='Refresh'>
 <title>Refresh</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Refresh</arg>
+	<command>Refresh</command>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Causes all windows on the screen to redraw themselves. All pending
 updates of all windows' styles and looks are applied immediately.

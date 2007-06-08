@@ -11,15 +11,15 @@
 <section id='MoveToScreen'>
 <title>MoveToScreen</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>MoveToScreen</arg>
-    <arg choice='opt'>screen</arg>
+    <command>MoveToScreen</command>
+    <arg choice='opt'><replaceable>screen</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Moves the selected window to another Xinerama screen.  The
-<emphasis remap='I'>screen</emphasis>
+<replaceable>screen</replaceable>
 argument can be '<fvwmopt cmd="MoveToScreen" opt="p"/>' for the primary screen,
 '<fvwmopt cmd="MoveToScreen" opt="c"/>' for the current
 screen (containing the mouse pointer),

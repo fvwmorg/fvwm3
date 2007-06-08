@@ -11,11 +11,12 @@
 <section id='ModulePath'>
 <title>ModulePath</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>ModulePath path</arg>
+	<command>ModulePath</command>
+	<arg choice='plain'><replaceable>path</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Specifies a colon separated list of directories in which to search
 for modules.  To find a module, fvwm searches each directory in
@@ -25,13 +26,13 @@ do not need trailing slashes.</para>
 <para>The
 <emphasis remap='B'>ModulePath</emphasis>
 may contain environment variables such as
-<emphasis remap='I'>$HOME</emphasis> (or <emphasis remap='I'>${HOME}</emphasis>).
+<envar>$HOME</envar> (or <envar>${HOME}</envar>).
 Further, a '+' in the
-<emphasis remap='I'>path</emphasis>
+<replaceable>path</replaceable>
 is expanded to the previous value of the
-<emphasis remap='I'>path</emphasis>,
+<replaceable>path</replaceable>,
 allowing easy appending or prepending to the
-<emphasis remap='I'>path</emphasis>.</para>
+<replaceable>path</replaceable>.</para>
 
 <para>For example:</para>
 
@@ -41,6 +42,6 @@ ModulePath ${HOME}/lib/fvwm/modules:+
 
 <para>The directory containing the standard modules is available via the
 environment variable
-<emphasis remap='I'>$FVWM_MODULEDIR</emphasis>.</para>
+<envar>$FVWM_MODULEDIR</envar>.</para>
 
 </section>

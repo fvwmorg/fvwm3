@@ -11,22 +11,26 @@
 <section id='Schedule'>
 <title>Schedule</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Schedule [Periodic] delay_ms [command_id] command</arg>
+	<command>Schedule</command>
+	<arg choice='opt'>Periodic</arg>
+	<arg choice='plain'><replaceable>delay_ms</replaceable></arg>
+	<arg choice='opt'><replaceable>command_id</replaceable></arg>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>The
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 is executed after about
-<emphasis remap='I'>delay_ms</emphasis>
+<replaceable>delay_ms</replaceable>
 milliseconds.  This may be useful in some tricky setups.  The
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 is executed in the same context window as the
 <emphasis remap='B'>Schedule</emphasis>
 command.  An optional integer argument
-<emphasis remap='I'>command_id</emphasis>
+<replaceable>command_id</replaceable>
 may be given in decimal, hexadecimal or octal format.  This id can
 be used with the
 <fvwmref cmd="Deschedule"/>
@@ -39,14 +43,14 @@ Note that the
 <emphasis remap='B'>Schedule</emphasis>
 command and its arguments undergo the usual command line
 expansion, and, when
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 is finally executed, it is expanded again.  It may therefore be
 necessary to quote the parts of the command that must not be
 expanded twice.</para>
 
 <para>Note:  A window's id as it is returned with $[w.id] can be used as
 the
-<emphasis remap='I'>command_id</emphasis>.
+<replaceable>command_id</replaceable>.
 Example:</para>
 
 <programlisting>
@@ -59,9 +63,9 @@ Example:</para>
 command also supports the optional keyword
 <fvwmopt cmd="Schedule" opt="Periodic"/>
 which indicates that the
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 should be executed every
-<emphasis remap='I'>delay_ms</emphasis>.
+<replaceable>delay_ms</replaceable>.
 Example:</para>
 
 <programlisting>

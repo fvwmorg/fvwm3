@@ -11,11 +11,11 @@
 <section id='Quit'>
 <title>Quit</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Quit</arg>
+	<command>Quit</command>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Exits fvwm, generally causing X to exit too.</para>
 

@@ -11,16 +11,18 @@
 <section id='SnapAttraction'>
 <title>SnapAttraction</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>SnapAttraction</arg>
-    <arg choice='opt'>proximity <arg choice='opt'>behaviour</arg><arg choice='opt'>Screen</arg></arg>
+    <command>SnapAttraction</command>
+    <arg choice='opt'><replaceable>proximity</replaceable>
+      <arg choice='opt'><replaceable>behaviour</replaceable></arg>
+      <arg choice='opt'>Screen</arg></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 
 <para>If during an interactive move the window or icon comes within
-<emphasis remap='I'>proximity</emphasis>
+<replaceable>proximity</replaceable>
 pixels of another the window or icon, it is moved to make the
 borders adjoin.  The default of 0 means that no snapping happens.
 Calling this command without arguments turns off snap attraction
@@ -29,7 +31,7 @@ and restores the default behavior.  Please refer also to the
 command.</para>
 
 <para>The
-<emphasis remap='I'>behavior</emphasis>
+<replaceable>behavior</replaceable>
 argument is optional and may be set to one of the four following
 values:  With
 <fvwmopt cmd="SnapAttraction" opt="All"/>
@@ -44,7 +46,7 @@ with
 icons snap to only other icons and windows do not snap.</para>
 
 <para>If the
-<emphasis remap='I'>behavior</emphasis>
+<replaceable>behavior</replaceable>
 option is not given, the snapping behavior is not changed.  The
 default behavior is
 <emphasis remap='I'>All</emphasis>.</para>

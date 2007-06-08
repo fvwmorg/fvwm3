@@ -11,12 +11,12 @@
 <section id='Focus'>
 <title>Focus</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>Focus</arg>
+    <command>Focus</command>
     <arg choice='opt'>NoWarp</arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Sets the keyboard focus to the selected window.  If the
 <fvwmopt cmd="Focus" opt="NoWarp"/>

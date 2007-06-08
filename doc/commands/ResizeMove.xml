@@ -11,13 +11,13 @@
 <section id='ResizeMove'>
 <title>ResizeMove</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>ResizeMove</arg>
-    <arg choice='plain'>resize-arguments </arg>
-    <arg choice='plain'>move-arguments</arg>
+    <command>ResizeMove</command>
+    <arg choice='plain'><replaceable>resize-arguments</replaceable></arg>
+    <arg choice='plain'><replaceable>move-arguments</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command does the same as the
 <fvwmref cmd="Resize"/>
@@ -25,15 +25,15 @@ and
 <fvwmref cmd="Move"/>
 commands, but in a single call which is less visually
 disturbing. The
-<emphasis remap='I'>resize-arguments</emphasis>
+<replaceable>resize-arguments</replaceable>
 are exactly the same arguments as for the
 <fvwmref cmd="Resize"/>
 command and the
-<emphasis remap='I'>move-arguments</emphasis>
+<replaceable>move-arguments</replaceable>
 are exactly the same arguments as for the
 <fvwmref cmd="Move"/>
 command except the
-<emphasis remap='I'>pointer</emphasis>
+<fvwmref cmd="Move" opt="pointer"/>
 option which is not supported by the
 <emphasis remap='B'>ResizeMove</emphasis>
 command.</para>
@@ -41,7 +41,7 @@ command.</para>
 <para>Examples:</para>
 
 <programlisting>
-# <fvwmref cmd="Move"/> window to top left corner and cover
+# Move window to top left corner and cover
 # most of the screen
 ResizeMove -10p -20p 0 0
 
@@ -51,7 +51,7 @@ ResizeMove -10p -20p 0 0
 
 <para>Note: Fvwm may not be able to parse the command properly if the
 option
-<emphasis remap='I'>bottomright</emphasis>
+<fvwmref cmd="Reize" opt="bottomright"/>
 of the
 <fvwmref cmd="Resize"/>
 command is used.</para>

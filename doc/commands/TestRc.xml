@@ -11,28 +11,30 @@
 <section id='TestRc'>
 <title>TestRc</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>TestRc [([!]returncode)] command</arg>
+	<command>TestRc</command>
+	<arg choice='opt'>(<optional>!</optional><replaceable>returncode</replaceable>)</arg>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Performs
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 if the last conditional command returned the value
-<emphasis remap='I'>returncode</emphasis>.
+<replaceable>returncode</replaceable>.
 Instead of the numeric values 0 (no match), 1 (match), -1 (error),
-and -2 (break) the symbolic names "<fvwmopt cmd="Style" opt="NoMatch"/>",
-"<fvwmopt cmd="Style" opt="Match"/>", "<fvwmopt cmd="Style" opt="Error"/>" and
-"<fvwmopt cmd="Style" opt="Break"/>" can be used.  If no
-<emphasis remap='I'>returncode</emphasis>
+and -2 (break) the symbolic names "<fvwmopt cmd="TestRc" opt="NoMatch"/>",
+"<fvwmopt cmd="TestRc" opt="Match"/>", "<fvwmopt cmd="TestRc" opt="Error"/>" and
+"<fvwmopt cmd="TestRc" opt="Break"/>" can be used.  If no
+<replaceable>returncode</replaceable>
 is given, the default 0 is assumed.  If the return code is
 prefixed with '!', the command is executed if
-<emphasis remap='I'>returncode</emphasis>
+<replaceable>returncode</replaceable>
 does not match the value returned by the conditional command.
 <emphasis remap='B'>TestRc</emphasis>
 command can only be used inside functions.  If the
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 is another conditional command, the previous return code is
 replaced by the new one.  Example:</para>
 

@@ -11,11 +11,15 @@
 <section id='WindowList'>
 <title>WindowList</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>WindowList [(conditions)] [position] [options] [double-click-action]</arg>
+	<command>WindowList</command>
+	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+	<arg choice='opt'><replaceable>position</replaceable></arg>
+	<arg choice='opt'><replaceable>options</replaceable></arg>
+	<arg choice='opt'><replaceable>double-click-action</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 
 <para>Generates a pop-up menu (and pops it up) in which the title and
@@ -23,11 +27,11 @@ geometry of each of the windows currently on the desktop are
 shown.</para>
 
 <para>The format of the geometry part is:
-<emphasis remap='I'>desk</emphasis>(<emphasis remap='I'>layer</emphasis>): <emphasis remap='I'>x-geometry sticky</emphasis>,
+<replaceable>desk</replaceable>(<replaceable>layer</replaceable>): <replaceable>x-geometry</replaceable> <replaceable>sticky</replaceable>,
 where
-<emphasis remap='I'>desk</emphasis> and <emphasis remap='I'>layer</emphasis>
+<replaceable>desk</replaceable> and <replaceable>layer</replaceable>
 are the corresponding numbers and
-<emphasis remap='I'>sticky</emphasis>
+<replaceable>sticky</replaceable>
 is empty or a capital S.  The geometry of iconified windows is
 shown in parentheses.  Selecting an item from the window list
 pop-up menu causes the interpreted function "WindowListFunc" to be
@@ -58,38 +62,38 @@ back to the default menu style, issue the command</para>
 <para>Example:</para>
 
 <programlisting>
-<fvwmref cmd="MenuStyle"/> WindowList SelectOnRelease Meta_L
+<fvwmref cmd="MenuStyle"/> WindowList <fvwmref cmd="MenuStyle" opt="SelectOnRelease"/> Meta_L
 </programlisting>
 
 <para>The
-<emphasis remap='I'>conditions</emphasis>
+<replaceable>conditions</replaceable>
 can be used to exclude certain windows from the window
 list. Please refer to the
 <fvwmref cmd="Current"/>
 command for details.  Only windows that match the given conditions
 are displayed in the window list.  The
-<emphasis remap='I'>options</emphasis>
+<replaceable>options</replaceable>
 below work vice versa: windows that would otherwise not be
 included in the window list can be selected with them.  The
-<emphasis remap='I'>conditions</emphasis>
+<replaceable>conditions</replaceable>
 always override the
-<emphasis remap='I'>options</emphasis>.</para>
+<replaceable>options</replaceable>.</para>
 
 
 <para>The
-<emphasis remap='I'>position</emphasis>
+<replaceable>position</replaceable>
 arguments are the same as for
-<emphasis remap='B'>Menu</emphasis>.
+<fvwmref cmd="Menu"/>.
 The command
-<emphasis remap='I'>double-click-action</emphasis>
+<replaceable>double-click-action</replaceable>
 is invoked if the user double-clicks (or hits the key rapidly
 twice if the menu is bound to a key) when bringing the window
 list.  The
-<emphasis remap='I'>double-click-action</emphasis>
+<replaceable>double-click-action</replaceable>
 must be quoted if it consists of more than one word.</para>
 
 <para>The
-<emphasis remap='I'>double-click-action</emphasis>
+<replaceable>double-click-action</replaceable>
 is useful to define a default window if you have bound the window
 list to a key (or button) like this:</para>
 
@@ -105,18 +109,18 @@ list to a key (or button) like this:</para>
 </programlisting>
 
 <para>Hitting
-<emphasis remap='SM'>Alt-Tab</emphasis>
+<keysym>Alt-Tab</keysym>
 once it brings up the window list, if you hit it twice the focus
 is flipped between the current and the last focused window.  With
 the proper
-<emphasis remap='I'>SelectOnRelease</emphasis>
+<fvwmref cmd="MenuStyle" opt="SelectOnRelease"/>
 menu style (see example above) a window is selected as soon as you
 release the
-<emphasis remap='SM'>Alt</emphasis>
+<keysym>Alt</keysym>
 key.</para>
 
 <para>The
-<emphasis remap='I'>options</emphasis>
+<replaceable>options</replaceable>
 passed to WindowList are separated by commas and can be
 <emphasis remap='I'>Geometry</emphasis> / <emphasis remap='I'>NoGeometry</emphasis> / <emphasis remap='I'>NoGeometryWithInfo</emphasis>,
 <emphasis remap='I'>NoDeskNum,</emphasis>
@@ -172,7 +176,7 @@ option works exactly like the
 <fvwmref cmd="MenuStyle"/>
 option with the same name, but overrides the option given in a
 menu style.  By default, this option is set to the left
-<emphasis remap='SM'>Alt</emphasis>
+<keysym>Alt</keysym>
 key.  To switch it off, use
 <emphasis remap='I'>SelectOnRelease</emphasis>
 without a key name.</para>
@@ -187,7 +191,9 @@ WindowList <fvwmref cmd="Function"/> IFunc, NoSticky, CurrentDesk, NoIcons
 </programlisting>
 
 <para>If you use the
-<fvwmopt cmd="WindowList" opt="Layer"/> m <emphasis remap='B'>[</emphasis><emphasis remap='I'>n</emphasis><emphasis remap='B'>]</emphasis>
+<fvwmopt cmd="WindowList" opt="Layer"/>
+<replaceable>m</replaceable>
+<optional><replaceable>n</replaceable></optional>
 option, only windows in layers between m and n are displayed. n
 defaults to m.  With the
 <emphasis remap='I'>ReverseOrder</emphasis>
@@ -261,7 +267,7 @@ options essentially wipe out all other ones... but the
 option which just causes
 <emphasis remap='B'>WindowList</emphasis>
 to only consider the windows with
-<emphasis remap='I'>WindowListSkip</emphasis>
+<fvwmref cmd="Style" opt="WindowListSkip"/>
 style.)</para>
 
 </section>

@@ -11,17 +11,19 @@
 <section id='SetEnv'>
 <title>SetEnv</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>SetEnv variable value</arg>
+	<command>SetEnv</command>
+	<arg choice='plain'><replaceable>variable</replaceable></arg>
+	<arg choice='plain'><replaceable>value</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Set an environment variable to a new value, similar to the shell's
 export or setenv command.  The
-<emphasis remap='I'>variable</emphasis>
+<replaceable>variable</replaceable>
 and its
-<emphasis remap='I'>value</emphasis>
+<replaceable>value</replaceable>
 are inherited by processes started directly by fvwm.  This can be
 especially useful in conjunction with the
 <fvwmref mod="FvwmM4"/>
@@ -36,9 +38,9 @@ SetEnv height HEIGHT
 usable by processes started by fvwm as the environment variable
 <emphasis remap='I'>$height</emphasis>.
 If
-<emphasis remap='I'>value</emphasis>
+<replaceable>value</replaceable>
 includes whitespace, you should enclose it in quotes.  If no
-<emphasis remap='I'>value</emphasis>
+<replaceable>value</replaceable>
 is given, the variable is deleted.</para>
 
 </section>

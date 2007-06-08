@@ -11,18 +11,20 @@
 <section id='Next'>
 <title>Next</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Next [(conditions)] command</arg>
+	<command>Next</command>
+	<arg choice="opt">(<replaceable>conditions</replaceable>)</arg>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Performs
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 (typically
 <fvwmref cmd="Focus"/>)
 on the next window which satisfies all
-<emphasis remap='I'>conditions</emphasis>.
+<replaceable>conditions</replaceable>.
 If the command is running in a window context, it starts looking
 for a matching window from there.  Otherwise it starts at the
 focused window.

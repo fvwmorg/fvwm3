@@ -11,28 +11,34 @@
 <section id='Stroke'>
 <title>Stroke</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Stroke [(window)] Sequence Button Context Modifiers Function</arg>
+	<command>Stroke</command>
+	<arg choice='opt'>(<replaceable>window</replaceable>)</arg>
+	<arg choice='plain'><replaceable>Sequence</replaceable></arg>
+	<arg choice='plain'><replaceable>Button</replaceable></arg>
+	<arg choice='plain'><replaceable>Context</replaceable></arg>
+	<arg choice='plain'><replaceable>Modifiers</replaceable></arg>
+	<arg choice='plain'><replaceable>Function</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Binds a mouse stroke sequence to a specified fvwm command,
 or removes the binding if
-<fvwmref cmd="Function"/>
+<replaceable>Function</replaceable>
 is '-'.  The syntax is the same as for a
 <fvwmref cmd="Mouse"/>
 binding except that
-<emphasis remap='I'>Sequence</emphasis>
+<replaceable>Sequence</replaceable>
 is inserted in front of the button number and a value of 0 for
-<emphasis remap='I'>Button</emphasis>
+<replaceable>Button</replaceable>
 concerns the
 <fvwmref cmd="StrokeFunc"/>
 command.  The
-<emphasis remap='I'>Context</emphasis> and <emphasis remap='I'>Modifiers</emphasis>
+<replaceable>Context</replaceable> and <replaceable>Modifiers</replaceable>
 fields are defined as in the
 <fvwmref cmd="Mouse"/>
-binding.  However, only the '<fvwmopt cmd="Stroke" opt="R"/>' Context really works (if you want
+binding.  However, only the '<fvwmref cmd="Mouse" opt="R"/>' Context really works (if you want
 to use other contexts you need to use the
 <fvwmref cmd="StrokeFunc"/>
 below).</para>
@@ -58,8 +64,9 @@ below).</para>
 </programlisting>
 
 <para>The telephone grid is used by default, to use the numeric pad grid
-you should begin the sequence with a 'N'.  Note that a complex
-motion may produce several different sequences (see the "netscape"
+you should begin the sequence with a '<fvwmopt cmd="Stroke" opt="N"/>'.
+Note that a complex motion may produce several different sequences
+(see the "netscape"
 example below to handle such motion).  Moreover, sequences are
 limited to 20 elements (with the present version of
 <emphasis remap='B'>libstroke</emphasis>),
@@ -102,8 +109,8 @@ Stroke 415963     3  R  N  <fvwmref cmd="Exec"/> exec netscape
 grid on your machine. Here an example:</para>
 
 <programlisting>
-Stroke N78963214   3  R  N  FvwmForm FvwmForm-QuitVerify
-Stroke N789632147  3  R  N  FvwmForm FvwmForm-QuitVerify
+Stroke N78963214   3  R  N <fvwmref mod="FvwmForm"/> FvwmForm-QuitVerify
+Stroke N789632147  3  R  N <fvwmref mod="FvwmForm"/> FvwmForm-QuitVerify
 </programlisting>
 
 <para>This example starts the "QuitVerify" form if you draw a box that
@@ -112,6 +119,7 @@ begins in the top left corner.</para>
 <para>Note: You need
 <emphasis remap='B'>libstroke</emphasis>
 installed and fvwm compiled with stroke support.
+<!-- This should really be in INSTALL.fvwm -->
 <emphasis remap='B'>libstroke</emphasis>
 can be obtained at
 <ulink url='http://www.etla.net/~willey/projects/libstroke/'>http://www.etla.net/~willey/projects/libstroke/</ulink>

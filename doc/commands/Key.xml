@@ -11,21 +11,26 @@
 <section id='Key'>
 <title>Key</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Key [(window)] Keyname Context Modifiers Function</arg>
+	<command>Key</command>
+	<arg choice='opt'>(<replaceable>window</replaceable>)</arg>
+	<arg choice='plain'><replaceable>Keyname</replaceable></arg>
+	<arg choice='plain'><replaceable>Context</replaceable></arg>
+	<arg choice='plain'><replaceable>Modifiers</replaceable></arg>
+	<arg choice='plain'><replaceable>Function</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Binds a keyboard key to a specified fvwm command, or
 removes the binding if
-<fvwmref cmd="Function"/>
+<replaceable>Function</replaceable>
 is '-'.  The syntax is the same as for a
 <fvwmref cmd="Mouse"/>
 binding except that the mouse button number is replaced with a
-<emphasis remap='I'>Keyname</emphasis>.
+<replaceable>Keyname</replaceable>.
 Normally, the key binding is activated when the key is pressed.
-<emphasis remap='I'>Keyname</emphasis>
+<replaceable>Keyname</replaceable>
 is a standard X11 key name as defined in
 <filename>/usr/include/X11/keysymdef.h</filename>,
 (without the
@@ -34,9 +39,9 @@ prefix), or the keysym database
 <filename>/usr/X11R6/lib/X11/XKeysymDB</filename>.
 Only key names that are
 generated with no modifier keys or with just the
-<emphasis remap='SM'>Shift</emphasis>
+<keysym>Shift</keysym>
 key held are guaranteed to work.  The
-<emphasis remap='I'>Context</emphasis> and <emphasis remap='I'>Modifiers</emphasis>
+<replaceable>Context</replaceable> and <replaceable>Modifiers</replaceable>
 fields are defined as in the
 <fvwmref cmd="Mouse"/>
 binding.  However, when you press a key the context window is the
@@ -58,14 +63,12 @@ fvwm assumes the pointer is over the client window (i.e. you have
 to use the 'W' context).</para>
 
 <para>The special context '<fvwmopt cmd="Key" opt="M"/>' for menus can be used to (re)define the menu
-controls. It can only be used alone or together with 'T' for the menu
-title bar.  See the
-<fvwmref sect="menus" opt="menu_bindings" name="Menu Bindings"/>
+controls. It be used alone or together with 'T', 'S', 'I', '[', ']', '-' and '_'.  See the <fvwmref sect="menus" opt="menu_bindings" name="Menu Bindings"/>
 section for details.</para>
 
 <para>The following example binds the built-in window list to pop up
 when
-<emphasis remap='SM'>Alt-Ctrl-Shift-F11</emphasis>
+<keysym>Alt-Ctrl-Shift-F11</keysym>
 is hit, no matter where the mouse pointer is:</para>
 
 <programlisting>

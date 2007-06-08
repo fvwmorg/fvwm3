@@ -11,12 +11,20 @@
 <section id='GotoDesk'>
 <title>GotoDesk</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>GotoDesk <emphasis>prev</emphasis> | <emphasis remap='I'>arg1</emphasis> [<emphasis remap='I'>arg2</emphasis>] [<emphasis remap='I'>min max</emphasis>]
-	</arg>
+	<command>GotoDesk</command>
+	<group choice='opt'>
+		<arg choice='plain'>prev</arg>
+		<arg choice='plain'>
+			<arg choice='plain'><replaceable>arg1</replaceable></arg>
+			<arg choice='opt'><replaceable>arg2</replaceable></arg>
+			<arg choice='opt'><replaceable>min</replaceable>
+				<replaceable>max</replaceable></arg>
+		</arg>
+	</group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>
 Switches the current viewport to another desktop (workspace, room).
@@ -29,30 +37,30 @@ arguments specify a relative desk and the minimum and maximum of
 the allowable range. Four arguments specify the relative,
 absolute, minimum and maximum values.  (Desktop numbers can be
 negative).  If a literal
-<emphasis remap='I'>prev</emphasis>
+<fvwmopt cmd="GotoDesk" opt="prev"/>
 is given as the single argument, the last visited desk number is
 used.</para>
 
 <para>If
-<emphasis remap='I'>arg1</emphasis>
+<replaceable>arg1</replaceable>
 is non zero then the next desktop number is the current desktop
 number plus
-<emphasis remap='I'>arg1</emphasis>.</para>
+<replaceable>arg1</replaceable>.</para>
 
 <para>If
-<emphasis remap='I'>arg1</emphasis>
+<replaceable>arg1</replaceable>
 is zero then the new desktop number is
-<emphasis remap='I'>arg2</emphasis>.
+<replaceable>arg2</replaceable>.
 (If
-<emphasis remap='I'>arg2</emphasis>
+<replaceable>arg2</replaceable>
 is not present, then the command has no effect.)</para>
 
 <para>If
-<emphasis remap='I'>min</emphasis> and <emphasis remap='I'>max</emphasis>
+<replaceable>min</replaceable> and <replaceable>max</replaceable>
 are given, the new desktop number is no smaller than
-<emphasis remap='I'>min</emphasis>
+<replaceable>min</replaceable>
 and no bigger than
-<emphasis remap='I'>max</emphasis>.
+<replaceable>max</replaceable>.
 Values out of this range are truncated (if you gave an absolute
 desk number) or wrapped around (if you gave a relative desk
 number).</para>

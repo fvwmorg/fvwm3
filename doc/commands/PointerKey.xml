@@ -11,11 +11,16 @@
 <section id='PointerKey'>
 <title>PointerKey</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>PointerKey [(window)] Keyname Context Modifiers Function</arg>
+	<command>PointerKey</command>
+	<arg choice='opt'>(<replaceable>window</replaceable>)</arg>
+	<arg choice='plain'><replaceable>Keyname</replaceable></arg>
+	<arg choice='plain'><replaceable>Context</replaceable></arg>
+	<arg choice='plain'><replaceable>Modifiers</replaceable></arg>
+	<arg choice='plain'><replaceable>Function</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command works exactly like the
 <fvwmref cmd="Key"/>

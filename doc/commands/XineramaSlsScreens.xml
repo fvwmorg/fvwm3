@@ -11,25 +11,27 @@
 <section id='XineramaSlsScreens'>
 <title>XineramaSlsScreens</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>XineramaSlsScreens number-of-screens screen-spec ...</arg>
+	<command>XineramaSlsScreens</command>
+	<arg choice='plain'>number-of-screens</arg>
+	<arg rep='repeat' choics='plain'><replaceable>screen-spec</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command configures the layout of the Single Logical screen
 feature.  Its first argument is the number of screens to use.  It
 must be followed by exactly this number of
-<emphasis remap='I'>screen-spec</emphasis>
+<replaceable>screen-spec</replaceable>
 arguments.  Each of these can be written either in standard X
 geometry format: "&lt;width&gt;x&lt;height&gt;+&lt;x&gt;+&lt;y&gt;" or as a space separated
 list of numbers: "x y width height". Both ways of describing
 screens can be mixed in a single command.  All four numbers must
 be supplied.  The
-<emphasis remap='I'>x</emphasis> and <emphasis remap='I'>y</emphasis>
+<replaceable>x</replaceable> and <replaceable>y</replaceable>
 values specify the origin of the screen in relation to the global
 screen's origin while
-<emphasis remap='I'>width</emphasis> and <emphasis remap='I'>height</emphasis>
+<replaceable>width</replaceable> and <replaceable>height</replaceable>
 specify the size of the screen in pixels.  No checks are done if
 the geometries make sense, so it is possible to define overlapping
 screens (with random results) or screens that are not visible at

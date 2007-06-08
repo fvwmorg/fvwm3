@@ -11,15 +11,17 @@
 <section id='SendToModule'>
 <title>SendToModule</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>SendToModule modulename string</arg>
+	<command>SendToModule</command>
+	<arg choice='plain'><replaceable>modulename</replaceable></arg>
+	<arg choice='plain'><replaceable>string</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Sends an arbitrary string (no quotes required) to all modules,
 whose alias or name matching
-<emphasis remap='I'>modulename</emphasis>,
+<replaceable>modulename</replaceable>,
 which may contain wildcards.  This only makes sense if the module
 is set up to understand and deal with these strings though. Can be
 used for module to module communication, or implementation of more

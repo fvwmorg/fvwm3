@@ -11,18 +11,26 @@
 <section id='GotoDeskAndPage'>
 <title>GotoDeskAndPage</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>GotoDeskAndPage prev | desk xpage ypage</arg>
+	<command>GotoDeskAndPage</command>
+	<group choice='plain'>
+		<arg choice='plain'>prev</arg>
+		<arg choice='plain'>
+			<arg choice='plain'><replaceable>desk</replaceable></arg>
+			<arg choice='plain'><replaceable>xpage</replaceable></arg>
+			<arg choice='plain'><replaceable>ypage</replaceable></arg>
+		</arg>
+	</group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Switches the current viewport to another desktop and page, similar
 to the
-<fvwmref cmd="GotoDesk"/> and <emphasis remap='B'>GotoPage</emphasis>
+<fvwmref cmd="GotoDesk"/> and <fvwmref cmd="GotoPage"/>
 commands.  The new desk is
-<emphasis remap='I'>desk</emphasis>
+<replaceable>desk</replaceable>
 and the new page is
-(<emphasis remap='I'>xpage</emphasis>,<emphasis remap='I'>ypage</emphasis>).</para>
+(<replaceable>xpage</replaceable>,<replaceable>ypage</replaceable>).</para>
 
 </section>

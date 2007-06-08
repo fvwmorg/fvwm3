@@ -11,13 +11,13 @@
 <section id='SetAnimation'>
 <title>SetAnimation</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>SetAnimation</arg>
-    <arg choice='plain'>milliseconds-delay</arg>
-    <arg choice='opt'>fractions-to-move-list</arg>
+    <command>SetAnimation</command>
+    <arg choice='plain'><replaceable>milliseconds-delay</replaceable></arg>
+    <arg choice='opt'><replaceable>fractions-to-move-list</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Sets the time between frames and the list of fractional offsets to
 customize the animated moves of the
@@ -26,9 +26,9 @@ command and the animation of menus (if the menu style is set to
 animated; see
 <fvwmref cmd="MenuStyle"/>
 command).  If the
-<emphasis remap='I'>fractions-to-move-list</emphasis>
+<replaceable>fractions-to-move-list</replaceable>
 is omitted, only the time between frames is altered.  The
-<emphasis remap='I'>fractions-to-move-list</emphasis>
+<replaceable>fractions-to-move-list</replaceable>
 specifies how far the window should be offset at each successive
 frame as a fraction of the difference between the starting
 location and the ending location.  e.g.:</para>

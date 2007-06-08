@@ -11,16 +11,32 @@
 <section id='MoveToPage'>
 <title>MoveToPage</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>MoveToPage</arg>
-    <arg choice='plain'>[options] [x[p|w] y[p|w]] | [prev]</arg>
+  <command>MoveToPage</command>
+  <group choice='plain'>
+    <arg choice='plain'>
+			<arg choice='opt'><replaceable>options</replaceable></arg>
+			<arg choice='opt'>
+				<arg choice='plain'>
+					<replaceable>x</replaceable><optional>p|w</optional>
+				</arg>
+				<arg choice='plain'>
+					<replaceable>y</replaceable><optional>p|w</optional>
+				</arg>
+			</arg>
+    </arg>
+    <arg choice='opt'>
+			prev
+    </arg>
+  </group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
-<para>Moves the selected window to another page (x,y).  The upper left
-page is (0,0), the upper right is (M,0), where M is one less than
-the current number of horizontal pages specified in the
+<para>Moves the selected window to another page
+(<replaceable>x</replaceable>,<replaceable>y</replaceable>). The
+upper left page is (0,0), the upper right is (M,0), where M is one
+less than the current number of horizontal pages specified in the
 <fvwmref cmd="DesktopSize"/>
 command.  Similarly the lower left page is (0,N), and the lower
 right page is (M,N).  Negative page numbers refer to pages from
@@ -42,7 +58,7 @@ as the single argument.</para>
 <para>Windows are usually not moved beyond desk boundaries.</para>
 
 <para>Possible
-<emphasis remap='I'>options</emphasis>
+<replaceable>options</replaceable>
 are
 <fvwmopt cmd="MoveToPage" opt="wrapx"/> and
 <fvwmopt cmd="MoveToPage" opt="wrapy"/>

@@ -12,13 +12,13 @@
 <title>MenuStyle</title>
 
 <cmdsynopsis>
-    <arg choice='plain'>MenuStyle</arg>
-    <arg choice='plain'>stylename</arg>
-    <arg choice='opt'>options</arg>
+    <command>MenuStyle</command>
+    <arg choice='plain'><replaceable>stylename</replaceable></arg>
+    <arg choice='opt'><replaceable>options</replaceable></arg>
 </cmdsynopsis>
 
 <para>Sets a new menu style or changes a previously defined style.  The
-<emphasis remap='I'>stylename</emphasis>
+<replaceable>stylename</replaceable>
 is the style name; if it contains spaces or tabs it has to be
 quoted.  The name "*" is reserved for the default menu style. The
 default menu style is used for every menu-like object (e.g. the
@@ -30,7 +30,7 @@ See also
 <fvwmref cmd="DestroyMenuStyle"/>.
 When using monochrome color options are ignored.</para>
 
-<para><emphasis remap='I'>options</emphasis>
+<para><replaceable>options</replaceable>
 is a comma separated list containing some of the keywords
 Fvwm / Mwm / Win,
 BorderWidth,
@@ -505,7 +505,7 @@ affects menu navigation with the keyboard.</para>
 takes an optional key name as an argument.  If the given key is
 released in a menu using this style, the current menu item is
 selected.  This is intended for
-<emphasis remap='SM'>Alt-Tab</emphasis>
+<keysym>Alt-Tab</keysym>
 <fvwmref cmd="WindowList"/>
 navigation.
 The key name is a standard X11 key name as defined in
@@ -529,11 +529,11 @@ menu item. All you have to do is tell fvwm where to place the
 different parts of the menu item (i.e. the labels, the triangle
 denoting a sub menu, the mini icons and the side pic) in the blank
 area.  The string consists of spaces,
-<emphasis remap='SM'>Tab</emphasis>
+<keysym>Tab</keysym>
 characters and formatting directives beginning with '%'. Any
 illegal characters and formatting directives are silently ignored:</para>
 
-
+<!-- possible use a variablelist instead -->
 <informaltable>
 <tgroup cols='2' align='left' colsep='10' rowsep='10'>
 <thead>

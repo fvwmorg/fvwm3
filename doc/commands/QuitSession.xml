@@ -11,11 +11,11 @@
 <section id='QuitSession'>
 <title>QuitSession</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>QuitSession</arg>
+	<command>QuitSession</command>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Causes a session manager (if any) to shutdown the session.  This
 command does not work for xsm, it seems that xsm does not

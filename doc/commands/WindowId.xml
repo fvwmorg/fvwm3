@@ -11,30 +11,43 @@
 <section id='WindowId'>
 <title>WindowId</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>WindowId [id] [(conditions)] | [root [screen]] command</arg>
+	<command>WindowId</command>
+	<group choice='plain'>
+		<arg choice='plain'>
+			<arg choice='opt'><replaceable>id</replaceable></arg>
+			<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+		</arg>
+		<arg choice='opt'>
+			root
+			<arg choice='opt'>
+				<replaceable>screen</replaceable>
+			</arg>
+		</arg>
+	</group>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 
 <para>The
 <emphasis remap='B'>WindowId</emphasis>
 command looks for a specific window
-<emphasis remap='I'>id</emphasis>
+<replaceable>id</replaceable>
 and runs the specified
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 on it.  The second form of syntax retrieves the window id of the
 root window of the given
-<emphasis remap='I'>screen</emphasis>.
+<replaceable>screen</replaceable>.
 If no
-<emphasis remap='I'>screen</emphasis>
+<replaceable>screen</replaceable>
 is given, the current screen is assumed.  The window indicated by
-<emphasis remap='I'>id</emphasis>
+<replaceable>id</replaceable>
 may belong to a window not managed by fvwm or even a window on a
 different screen.  Although most commands can not operate on such
 windows, there are some exceptions, for example the
-<emphasis remap='B'>WarpToWindow</emphasis>
+<fvwmref cmd="WarpToWindow"/>
 command.
 Returns -1 if no window with the given id exists.
 See <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
@@ -55,9 +68,9 @@ WindowId $0 (Silly_Popup) <fvwmref cmd="Delete"/>
 
 <para>In the past this command was mostly useful for functions used with
 the
-<emphasis remap='B'>WindowList</emphasis>
+<fvwmref cmd="WindowList"/>
 command, or for selective processing of
-<emphasis remap='B'>FvwmEvent</emphasis>
+<fvwmref mod="FvwmEvent"/>
 calls (as in the last example), but currently these handler functions
 are called within a window context, so this command is not really
 needed in these cases.  Still it may be useful if, for example, the

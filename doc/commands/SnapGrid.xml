@@ -12,17 +12,18 @@
 <section id='SnapGrid'>
 <title>SnapGrid</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>SnapGrid</arg>
-    <arg choice='opt'>x-grid-size y-grid-size</arg>
+    <command>SnapGrid</command>
+    <arg choice='opt'><replaceable>x-grid-size</replaceable>
+      <replaceable>y-grid-size</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>During an interactive move a window or icon is positioned such
 that its location (top left corner) is coincident with the nearest
 grid point. The default
-<emphasis remap='I'>x-grid-size</emphasis> and <emphasis remap='I'>y-grid-size</emphasis>
+<replaceable>x-grid-size</replaceable> and <replaceable>y-grid-size</replaceable>
 setting are both 1, which is effectively no grid all.  An
 interactive move with both
 <emphasis remap='B'>SnapGrid</emphasis> and <fvwmref cmd="SnapAttraction"/>

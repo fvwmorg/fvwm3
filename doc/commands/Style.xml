@@ -11,18 +11,20 @@
 <section id='Style'>
 <title>Style</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Style stylename options ...</arg>
+	<command>Style</command>
+	<arg choice='plain'><replaceable>stylename</replaceable></arg>
+	<arg choice='plain' rep='repeat'><replaceable>options</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>The
 <emphasis remap='B'>Style</emphasis>
 command is used to set attributes of a window to values other than
 the default or to set the window manager default styles.</para>
 
-<para><emphasis remap='I'>stylename</emphasis>
+<para><replaceable>stylename</replaceable>
 can be a window's name, class, or resource string.  It may contain
 the wildcards '*' and '?', which are matched in the usual Unix
 filename manner.  Multiple style options in a single
@@ -41,7 +43,7 @@ resource (WM_CLASS, res_name) are given resource "NoResource".</para>
 resource is used in addition to any window names when
 selecting the style.</para>
 
-<para><emphasis remap='I'>options</emphasis>
+<para><replaceable>options</replaceable>
 is a comma separated list containing one or more of the
 following keywords.  Each group of style names is separated by
 slashes ('/').  The last style in these groups is the default.

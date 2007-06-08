@@ -11,23 +11,25 @@
 <section id='Layer'>
 <title>Layer</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>Layer</arg>
-    <arg choice='opt'>arg1 arg2</arg>
-	<arg choice='plain'>|</arg>
-    <arg choice='opt'>default</arg>
+    <command>Layer</command>
+    <group choice='plain'>
+      <arg choice='opt'><replaceable>arg1</replaceable>
+	<replaceable>arg2</replaceable></arg>
+      <arg choice='opt'>default</arg>
+    </group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Puts the current window in a new layer.  If
-<emphasis remap='I'>arg1</emphasis>
+<replaceable>arg1</replaceable>
 is non zero then the next layer is the current layer number plus
-<emphasis remap='I'>arg1</emphasis>.
+<replaceable>arg1</replaceable>.
 If
-<emphasis remap='I'>arg1</emphasis>
+<replaceable>arg1</replaceable>
 is zero then the new layer is
-<emphasis remap='I'>arg2</emphasis>.</para>
+<replaceable>arg2</replaceable>.</para>
 
 <para>As a special case,
 <fvwmopt cmd="Layer" opt="default"/>

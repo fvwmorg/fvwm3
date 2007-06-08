@@ -11,20 +11,20 @@
 <section id='Menu'>
 <title>Menu</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>Menu</arg>
-    <arg choice='plain'>menu-name</arg>
-    <arg choice='opt'>position</arg>
-    <arg choice='opt'>double-click-action</arg>
+    <command>Menu</command>
+    <arg choice='plain'><replaceable>menu-name</replaceable></arg>
+    <arg choice='opt'><replaceable>position</replaceable></arg>
+    <arg choice='opt'><replaceable>double-click-action</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 
 <para>Causes a previously defined menu to be popped up in a sticky
 manner.  That is, if the user invokes the menu with a click action
 instead of a drag action, the menu stays up.  The command
-<emphasis remap='I'>double-click-action</emphasis>
+<replaceable>double-click-action</replaceable>
 is invoked if the user double-clicks a button (or hits the key
 rapidly twice if the menu is bound to a key) when bringing up the
 menu.  If the double click action is not specified, double
@@ -38,83 +38,84 @@ the item).</para>
 it was both invoked and closed with a keystroke.</para>
 
 <para>The
-<emphasis remap='I'>position</emphasis>
+<replaceable>position</replaceable>
 arguments allow placement of the menu somewhere on the screen, for
 example centered on the visible screen or above a title bar.
 Basically it works like this: you specify a
-<emphasis remap='I'>context-rectangle</emphasis>
+<replaceable>context-rectangle</replaceable>
 and an offset to this rectangle by which the upper left corner of
 the menu is moved from the upper left corner of the rectangle.
 The
-<emphasis remap='I'>position</emphasis>
+<replaceable>position</replaceable>
 arguments consist of several parts:</para>
 
 <cmdsynopsis>
-    <arg choice='opt'>context-rectangle</arg>
-    <arg choice='plain'>x</arg>
-    <arg choice='plain'>y</arg>
-    <arg choice='opt'>special-options</arg>
+    <arg choice='opt'><replaceable>context-rectangle</replaceable></arg>
+    <arg choice='plain'><replaceable>x</replaceable></arg>
+    <arg choice='plain'><replaceable>y</replaceable></arg>
+    <arg choice='opt'><replaceable>special-options</replaceable></arg>
 </cmdsynopsis>
 
 
 <para>The
-<emphasis remap='I'>context-rectangle</emphasis>
+<replaceable>context-rectangle</replaceable>
 can be one of:</para>
 
+<!-- possible change to variablelist to look more like the old manpage -->
 <informaltable>
 <tgroup cols='2'>
 <tbody>
 <row>
-	<entry>Root</entry>
+	<entry><fvwmopt cmd="Menu" opt="Root"/></entry>
 	<entry>the root window of the current screen.</entry>
 </row>	
 <row>
-	<entry>XineramaRoot</entry>
+	<entry><fvwmopt cmd="Menu" opt="XineramaRoot"/></entry>
 	<entry>the root window of the whole Xinerama screen.  Equivalent to "root" when Xinerama is not used.</entry>
 </row>	
 <row>
-	<entry>Mouse</entry>
+	<entry><fvwmopt cmd="Menu" opt="Mouse"/></entry>
 	<entry>a 1x1 rectangle at the mouse position.</entry>
 </row>	
 <row>
-	<entry>Window</entry>
+	<entry><fvwmopt cmd="Menu" opt="Window"/></entry>
 	<entry>the frame of the context window.</entry>
 </row>	
 <row>
-	<entry>Interior</entry>
+	<entry><fvwmopt cmd="Menu" opt="Interior"/></entry>
 	<entry>the inside of the context window.</entry>
 </row>	
 <row>
-	<entry>Title</entry>
+	<entry><fvwmopt cmd="Menu" opt="Title"/></entry>
 	<entry>the title of the context window or icon.</entry>
 </row>	
 <row>
-	<entry>Button&lt;n&gt;</entry>
+	<entry><fvwmopt cmd="Menu" opt="Button"/>&lt;n&gt;</entry>
 	<entry>button #n of the context window.</entry>
 </row>	
 <row>
-	<entry>Icon</entry>
+	<entry><fvwmopt cmd="Menu" opt="Icon"/></entry>
 	<entry>the icon of the context window.</entry>
 </row>	
 <row>
-	<entry>Menu</entry>
+	<entry><fvwmopt cmd="Menu" opt="Menu"/></entry>
 	<entry>the current menu.</entry>
 </row>	
 <row>
-	<entry>Item</entry>
+	<entry><fvwmopt cmd="Menu" opt="Item"/></entry>
 	<entry>the current menu item.</entry>
 </row>	
 <row>
-	<entry>Context</entry>
+	<entry><fvwmopt cmd="Menu" opt="Context"/></entry>
 	<entry>the current window, menu or icon.</entry>
 </row>	
 <row>
-	<entry>This</entry>
+	<entry><fvwmopt cmd="Menu" opt="This"/></entry>
 	<entry>whatever widget the pointer is on (e.g. a corner of a window or the root window).</entry>
 </row>	
 <row>
-	<entry>Rectangle &lt;geometry&gt;</entry>
-	<entry>the rectangle defined by &lt;<emphasis remap='I'>geometry</emphasis>&gt; in X geometry format.  Width and height default to 1 if omitted.</entry>
+	<entry><fvwmopt cmd="Menu" opt="Rectangle"/> &lt;<replaceable>geometry</replaceable>&gt;</entry>
+	<entry>the rectangle defined by &lt;<replaceable>geometry</replaceable>&gt; in X geometry format.  Width and height default to 1 if omitted.</entry>
 </row>	
 </tbody>
 </tgroup>
@@ -127,15 +128,15 @@ sense under all circumstances (e.g. "Icon" if the pointer is on a
 menu).</para>
 
 <para>The offset values
-<emphasis remap='I'>x</emphasis>
+<replaceable>x</replaceable>
 and
-<emphasis remap='I'>y</emphasis>
+<replaceable>y</replaceable>
 specify how far the menu is moved from it's default position.  By
 default, the numeric value given is interpreted as a percentage of
 the context rectangle's width (height), but with a trailing
-'<emphasis remap='I'>m</emphasis>'
+'<fvwmopt cmd="Menu" opt="m"/>'
 the menu's width (height) is used instead.  Furthermore a trailing
-'<emphasis remap='I'>p</emphasis>'
+'<fvwmopt cmd="Menu" opt="p"/>'
 changes the interpretation to mean pixels.</para>
 
 <para>Instead of a single value you can use a list of values.  All
@@ -143,8 +144,8 @@ additional numbers after the first one are separated from their
 predecessor by their sign.  Do not use any other separators.</para>
 
 <para>If
-<emphasis remap='I'>x</emphasis> or <emphasis remap='I'>y</emphasis>
-are prefixed with "o&lt;number&gt;" where &lt;number&gt; is an integer, the
+<replaceable>x</replaceable> or <replaceable>y</replaceable>
+are prefixed with "'<fvwmopt cmd="Menu" opt="o"/>&lt;number&gt;" where &lt;number&gt; is an integer, the
 menu and the rectangle are moved to overlap at the specified
 position before any other offsets are applied.  The menu and the
 rectangle are placed so that the pixel at &lt;number&gt; percent of the
@@ -157,7 +158,7 @@ simpler than this description).  The default is "o0".  The prefix
 "o&lt;number&gt;" is an abbreviation for "+&lt;number&gt;-&lt;number&gt;m".</para>
 
 <para>A prefix of
-'<emphasis remap='I'>c</emphasis>'
+''<fvwmopt cmd="Menu" opt="c"/>'
 is equivalent to "o50".  Examples:</para>
 
 <programlisting>
@@ -190,7 +191,7 @@ the pointer leaves the current menu in the general direction of
 the sub menu the menu stays up.</para>
 
 <para>The
-<emphasis remap='I'>special-options</emphasis>:</para>
+<replaceable>special-options</replaceable>:</para>
 
 <para>To create a tear off menu without opening the normal menu, add the
 option
@@ -208,10 +209,12 @@ Menu Root 0p 0p TearOffImmediately
 
 
 <para>The
-<emphasis remap='I'>animated</emphasis> and <emphasis remap='I'>Mwm</emphasis> or <emphasis remap='I'>Win</emphasis>
+<fvwmref cmd="MenuStyle" opt="Animated"/> and
+<fvwmref cmd="MenuStyle" opt="Mwm"/> or
+<fvwmref cmd="MenuStyle" opt="Win"/>
 menu styles may move a menu somewhere else on the screen.  If you
 do not want this you can add
-<emphasis remap='I'>Fixed</emphasis>
+<fvwmopt cmd="Menu" opt="Fixed"/>
 as an option.  This might happen for example if you want the menu
 always in the top right corner of the screen.</para>
 
@@ -222,20 +225,21 @@ you want it where the position arguments say, use the
 option.  If you want the pointer on the title of the menu, use
 <fvwmopt cmd="Menu" opt="SelectWarp"/>
 too.  Note that these options apply only if the
-<emphasis remap='I'>PopupAsRootMenu </emphasis><fvwmref cmd="MenuStyle"/>
+<fvwmref cmd="MenuStyle" opt="PopupAsRootMenu"/> <fvwmref cmd="MenuStyle"/>
 option is used.</para>
 
 <para>The pointer is warped to the title of a sub menu whenever the
 pointer would be on an item when the sub menu is popped up
 (<emphasis>fvwm</emphasis>
 menu style) or never warped to the title at all
-(<emphasis remap='I'>Mwm</emphasis> or <emphasis remap='I'>Win</emphasis>
+(<fvwmref cmd="MenuStyle" opt="Mwm"/> or
+<fvwmref cmd="MenuStyle" opt="Win"/>
 menu styles).  You can force (forbid) warping whenever the
 sub menu is opened with the
 <fvwmopt cmd="Menu" opt="WarpTitle"/> (<fvwmopt cmd="Menu" opt="NoWarp"/>) option.</para>
 
 <para>Note that the
-<emphasis remap='I'>special-options</emphasis>
+<replaceable>special-options</replaceable>
 do work with a normal menu that has no other position arguments.</para>
 
 </section>

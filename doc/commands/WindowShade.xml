@@ -11,11 +11,18 @@
 <section id='WindowShade'>
 <title>WindowShade</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>WindowShade [bool] | [[ShadeAgain] direction]</arg>
+	<command>WindowShade</command>
+	<group choice='plain'>
+		<arg choice='opt'>bool</arg>
+		<arg choice='opt'>
+			<arg choice='opt'>ShadeAgain</arg>
+			<arg choice='plain'><replaceable>direction</replaceable></arg>
+		</arg>
+	</group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Toggles the window shade feature for titled windows.  Windows in
 the shaded state only display a title-bar.  If
@@ -27,7 +34,7 @@ is "True", the window is forced to the shaded state.  If
 <emphasis remap='I'>bool</emphasis>
 is "False", then the window is forced to the non-shaded
 state.  To force shading in a certain direction, the
-<emphasis remap='I'>direction</emphasis>
+<replaceable>direction</replaceable>
 argument can be used.  Any of the strings
 "<fvwmopt cmd="WindowShade" opt="North"/>",
 "<fvwmopt cmd="WindowShade" opt="South"/>",
@@ -60,7 +67,8 @@ options of the
 command.  Examples:</para>
 
 <programlisting>
-<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="WindowShadeShrinks"/>, <fvwmref cmd="Style" opt="WindowShadeSteps"/> 20, <fvwmref cmd="Style" opt="WindowShadeLazy"/>
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="WindowShadeShrinks"/>, <fvwmref cmd="Style" opt="WindowShadeSteps"/> 20, \
+        <fvwmref cmd="Style" opt="WindowShadeLazy"/>
 <fvwmref cmd="Mouse"/> 1 - S WindowShade North
 <fvwmref cmd="Mouse"/> 1 [ S WindowShade West
 <fvwmref cmd="Mouse"/> 1 ] S WindowShade E
@@ -69,13 +77,13 @@ command.  Examples:</para>
 
 
 <para>Note: When a window that has been shaded with a
-<emphasis remap='I'>direction</emphasis>
+<replaceable>direction</replaceable>
 argument changes the direction of the window title (see
 <fvwmref cmd="Style" opt="TitleAtTop"/>
 <fvwmref cmd="Style"/>
 option), the shading direction does not change.  This may look
 very strange.  Windows that were shaded without a
-<emphasis remap='I'>direction</emphasis>
+<replaceable>direction</replaceable>
 argument stay shaded in the direction of the title bar.</para>
 
 <para>For backward compatibility, the optional argument may also be 1 to

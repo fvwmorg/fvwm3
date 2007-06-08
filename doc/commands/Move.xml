@@ -11,12 +11,26 @@
 <section id='Move'>
 <title>Move</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>Move</arg>
-    <arg choice='plain'>[[<emphasis>screen</emphasis> screen] [w|m]x[p|w] [w|m]...y[p|w]... [Warp]] | [pointer]</arg>
+  <command>Move</command>
+  <group choice='plain'>
+    <arg choice='opt'>
+			<arg choice='opt'>
+				screen <replaceable>screen</replaceable>
+			</arg>
+			<arg choice='plain' rep="repeat">
+				<optional>w|m</optional><replaceable>x</replaceable><optional>p|w</optional>
+			</arg>
+			<arg choice='plain' rep="repeat">
+				<optional>w|m</optional><replaceable>y</replaceable><optional>p|w</optional>
+			</arg>
+			<arg choice='opt'>Warp</arg>
+    </arg>
+    <arg choice='opt'>pointer</arg>
+  </group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window is moved.  If called from
@@ -24,11 +38,11 @@ the root window then the user is allowed to select the target
 window.</para>
 
 <para>If the literal option <fvwmopt cmd="Move" opt="screen"/> followed by a
-<emphasis remap='I'>screen</emphasis>
+<replaceable>screen</replaceable>
 argument is specified, the coordinates are interpreted as relative
 to the given screen.  The width and height of the screen are used
 for the calculations instead of the display dimensions.  The
-<emphasis remap='I'>screen</emphasis>
+<replaceable>screen</replaceable>
 as interpreted as in the
 <fvwmref cmd="MoveToScreen"/>
 command.
@@ -42,9 +56,9 @@ pointer position before starting the operation; this is mainly
 intended for internal use by modules like
 <fvwmref mod="FvwmPager"/>.</para>
 
-<para>The operation can be aborted with Escape or any mouse button not set
-to place the window. By default mouse button 2 is set to cancel the move
-operation. To change this you may use the
+<para>The operation can be aborted with <keysym>Escape</keysym> or any mouse
+button not set to place the window. By default mouse button 2 is set to cancel
+the move operation. To change this you may use the
 <fvwmref cmd="Mouse"/>
 command with special context 'P' for Placement.</para>
 
@@ -71,18 +85,18 @@ To move the window
 relative to its current position, add the
 '<fvwmopt cmd="Move" opt="w"/>'
 (for "window") prefix before the
-<emphasis remap='I'>x</emphasis> and/or <emphasis remap='I'>y</emphasis>
+<replaceable>x</replaceable> and/or <replaceable>y</replaceable>
 value.  To move the window to a position relative to the current
 location of the pointer, add the
 '<fvwmopt cmd="Move" opt="m"/>'
 (for "mouse") prefix.  To leave either coordinate unchanged,
 "<fvwmopt cmd="Move" opt="keep"/>" can be specified in place of
-<emphasis remap='I'>x</emphasis> or <emphasis remap='I'>y</emphasis>.</para>
+<replaceable>x</replaceable> or <replaceable>y</replaceable>.</para>
 
 For advanced uses, the arguments
-<emphasis>x</emphasis> and <emphasis>y</emphasis>
+<replaceable>x</replaceable> and <replaceable>y</replaceable>
 can be used multiple times, but without the prefix
-'<emphasis>m</emphasis>' or '<emphasis>w</emphasis>'.
+'<replaceable>m</replaceable>' or '<replaceable>w</replaceable>'.
 (See complex examples below).
 
 <para>Simple Examples:</para>

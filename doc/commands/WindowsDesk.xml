@@ -11,13 +11,13 @@
 <section id='WindowsDesk'>
 <title>WindowsDesk</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>WindowsDesk</arg>
-    <arg choice='plain'>arg1</arg>
-    <arg choice='opt'>arg2</arg>
+    <command>WindowsDesk</command>
+    <arg choice='plain'><replaceable>arg1</replaceable></arg>
+    <arg choice='opt'><replaceable>arg2</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Moves the selected window to another desktop.</para>
 

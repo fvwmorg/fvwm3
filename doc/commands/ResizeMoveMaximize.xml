@@ -11,13 +11,13 @@
 <section id='ResizeMoveMaximize'>
 <title>ResizeMoveMaximize</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>ResizeMoveMaximize</arg>
-    <arg choice='plain'>resize-arguments</arg>
-    <arg choice='plain'>move-arguments</arg>
+    <command>ResizeMoveMaximize</command>
+    <arg choice='plain'><replaceable>resize-arguments</replaceable></arg>
+    <arg choice='plain'><replaceable>move-arguments</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Combines the effects of
 <fvwmref cmd="ResizeMove"/>
@@ -29,7 +29,7 @@ afterwards.  When used on an unmaximized window, the window is
 resized and put into the maximized state afterwards.  This is
 useful if the user wants to resize the window temporarily and then
 return to the original geometry.  The
-<emphasis remap='I'>resize-arguments</emphasis> and <emphasis remap='I'>move-arguments</emphasis>
+<replaceable>resize-arguments</replaceable> and <replaceable>move-arguments</replaceable>
 are the same as for the
 <fvwmref cmd="ResizeMove"/>
 command.</para>

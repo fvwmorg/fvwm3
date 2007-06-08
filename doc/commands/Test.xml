@@ -11,15 +11,17 @@
 <section id='Test'>
 <title>Test</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Test [(test-conditions)] command</arg>
+	<command>Test</command>
+	<arg choice='opt'>(<replaceable>test-conditions</replaceable>)</arg>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
-<para>Performs <emphasis remap='I'>command</emphasis> if all
-<emphasis remap='I'>test-conditions</emphasis> are satisfied.  The
-<emphasis remap='I'>test-conditions</emphasis>
+<para>Performs <replaceable>command</replaceable> if all
+<replaceable>test-conditions</replaceable> are satisfied.  The
+<replaceable>test-conditions</replaceable>
 are keywords with possible arguments from the list below
 and are separated by commas or whitespace.  They include:
 <emphasis remap='I'>Version operator x.y.z</emphasis>,
@@ -71,11 +73,13 @@ matches the given environment variable value.
 The pattern may contain special "*" and "?" chars.</para>
 
 <para>The
-<fvwmopt cmd="Test" opt="EdgeHasPointer"/> <emphasis remap='B'>[</emphasis><emphasis remap='I'>direction</emphasis><emphasis remap='B'>]</emphasis>
+<fvwmopt cmd="Test" opt="EdgeHasPointer"/>
+<optional><replaceable>direction</replaceable></optional>
 test-condition is true if the edge in the given direction currently
 contains the pointer.
 The
-<fvwmopt cmd="Test" opt="EdgeIsActive"/> <emphasis remap='B'>[</emphasis><emphasis remap='I'>direction</emphasis><emphasis remap='B'>]</emphasis>
+<fvwmopt cmd="Test" opt="EdgeIsActive"/>
+<optional><replaceable>direction</replaceable></optional>
 test-condition is true if the edge in the given direction currently is
 active. An edge is active, and can contain a pointer if either a
 command is bound to it or edge scroll is available in that
@@ -85,7 +89,7 @@ direction. The direction may be one of
 If no direction is specified <emphasis>Any</emphasis> is assumed.</para>
 
 <para>The
-<emphasis remap='I'><fvwmopt cmd="Test" opt="Start"/></emphasis>
+<fvwmopt cmd="Test" opt="Start"/>
 test-condition is the same as either
 <fvwmopt cmd="Test" opt="Init"/> or <fvwmopt cmd="Test" opt="Restart"/>.
 It is only true on startup or restart prior and during
@@ -106,11 +110,11 @@ test-conditions are unconditionally true and false.</para>
 return code is set and the command is not executed.</para>
 
 <para>The
-<fvwmopt cmd="Test" opt="F"/> <emphasis>file</emphasis>,
-<fvwmopt cmd="Test" opt="R"/> <emphasis>file</emphasis>,
-<fvwmopt cmd="Test" opt="W"/> <emphasis>file</emphasis>,
-<fvwmopt cmd="Test" opt="X"/> <emphasis>file</emphasis> and
-<fvwmopt cmd="Test" opt="I"/> <emphasis>file</emphasis>
+<fvwmopt cmd="Test" opt="F"/> <replaceable>file</replaceable>,
+<fvwmopt cmd="Test" opt="R"/> <replaceable>file</replaceable>,
+<fvwmopt cmd="Test" opt="W"/> <replaceable>file</replaceable>,
+<fvwmopt cmd="Test" opt="X"/> <replaceable>file</replaceable> and
+<fvwmopt cmd="Test" opt="I"/> <replaceable>file</replaceable>
 test-conditions test for existence of the given [F]ile (possibly
 with [R]ead/[W]rite permissions), e[X]ecutable (in <envar>$PATH</envar>),
 or the [I]mage (in ImagePath).</para>

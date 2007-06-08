@@ -11,11 +11,12 @@
 <section id='ImagePath'>
 <title>ImagePath</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>ImagePath path</arg>
+	<command>ImagePath</command>
+	<arg choice='plain'><replaceable>path</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Specifies a colon separated list of directories in which to search
 for images (both monochrome and pixmap).  To find an image given
@@ -32,11 +33,11 @@ and other image directories with the same names, but ".png"
 images.</para>
 
 <para>The
-<emphasis remap='I'>path</emphasis>
+<replaceable>path</replaceable>
 may contain environment variables such as
 <envar>$HOME</envar> (or <envar>${HOME}</envar>).
 Further, a '+' in the
-<emphasis remap='I'>path</emphasis>
+<replaceable>path</replaceable>
 is expanded to the previous value of the path, allowing appending
 or prepending to the path easily.</para>
 
@@ -49,7 +50,7 @@ ImagePath $HOME/icons:+:/usr/include/X11/bitmaps
 <para>Note: if the
 <fvwmref mod="FvwmM4"/>
 module is used to parse your
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 files, then m4 may want to mangle the word "include" which
 frequently shows up in the
 <emphasis remap='B'>ImagePath</emphasis>

@@ -11,15 +11,16 @@
 <section id='Iconify'>
 <title>Iconify</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Iconify [bool]</arg>
+	<command>Iconify</command>
+	<arg choice='opt'><replaceable>bool</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Iconifies a window if it is not already iconified or de-iconifies
 it if it is already iconified.  The optional argument
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 is a boolean argument.  "<fvwmopt cmd="Iconify" opt="True"/>" means only iconification is
 allowed, while "<fvwmopt cmd="Iconify" opt="False"/>" forces de-iconification.  Using "<fvwmopt cmd="Iconify" opt="toggle"/>"
 switches between iconified and de-iconified states.</para>
@@ -27,7 +28,7 @@ switches between iconified and de-iconified states.</para>
 <para>There are a number of
 <fvwmref cmd="Style"/>
 options which influence the appearance and behavior of icons (e.g.
-<emphasis remap='I'>StickyIcon</emphasis>, <emphasis remap='I'>NoIcon</emphasis>).</para>
+<fvwmref cmd="Style" opt="StickyIcon" />, <fvwmref cmd="Style" opt="NoIcon"/>).</para>
 
 <para>For backward compatibility, the optional argument may also be a
 positive number instead of "True", or a negative number instead

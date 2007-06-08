@@ -11,11 +11,11 @@
 <section id='QuitScreen'>
 <title>QuitScreen</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>QuitScreen</arg>
+	<command>QuitScreen</command>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Causes fvwm to stop managing the screen on which the command was
 issued.</para>

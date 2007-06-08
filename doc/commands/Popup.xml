@@ -11,24 +11,24 @@
 <section id='Popup'>
 <title>Popup</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>Popup</arg>
-    <arg choice='plain'>PopupName</arg>
-    <arg choice='opt'>position</arg>
-    <arg choice='opt'>default-action</arg>
+    <command>Popup</command>
+    <arg choice='plain'><replaceable>PopupName</replaceable></arg>
+    <arg choice='opt'><replaceable>position</replaceable></arg>
+    <arg choice='opt'><replaceable>default-action</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 
 <para>This command has two purposes: to bind a menu to a key or mouse
 button, and to bind a sub menu into a menu.  The formats for the
 two purposes differ slightly.  The
-<emphasis remap='I'>position</emphasis>
+<replaceable>position</replaceable>
 arguments are the same as for
 <fvwmref cmd="Menu"/>.
 The command
-<emphasis remap='I'>default-action</emphasis>
+<replaceable>default-action</replaceable>
 is invoked if the user clicks a button to invoke the menu and
 releases it immediately again (or hits the key rapidly twice if
 the menu is bound to a key).  If the default action is not

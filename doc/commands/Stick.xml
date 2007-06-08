@@ -11,20 +11,21 @@
 <section id='Stick'>
 <title>Stick</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Stick [bool]</arg>
+	<command>Stick</command>
+	<arg choice='opt'><replaceable>bool</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>If the
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 argument is empty or "<fvwmopt cmd="Stick" opt="toggle"/>", the
 <emphasis remap='B'>Stick</emphasis>
 command makes a window sticky if it is not already sticky, or
 non-sticky if it is already sticky.  To make a window sticky
 regardless of its current state the
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 argument must be "True".  To make it non-sticky use "False".</para>
 
 </section>

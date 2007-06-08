@@ -11,11 +11,14 @@
 <section id='ModuleSynchronous'>
 <title>ModuleSynchronous</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>ModuleSynchronous [Expect string] [Timeout secs] modulename</arg>
+	<command>ModuleSynchronous</command>
+	<arg choice='opt'>Expect <replaceable>string</replaceable></arg>
+	<arg choice='opt'>Timeout <replaceable>secs</replaceable></arg>
+	<arg choice='plain'><replaceable>modulename</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>The
 <emphasis remap='B'>ModuleSynchronous</emphasis>
@@ -24,14 +27,14 @@ command is very similar to
 Fvwm stops processing any commands and user input until the module
 sends a string beginning with "NOP FINISHED STARTUP" back to fvwm.
 If the optional
-<emphasis remap='I'>Timeout</emphasis>
+<fvwmopt cmd="ModuleSynchronous" opt="Timeout"/>
 is given fvwm gives up if the module sent no input back to fvwm
 for
-<emphasis remap='I'>secs</emphasis>
+<replaceable>secs</replaceable>
 seconds.  If the
-<emphasis remap='I'>Expect</emphasis>
+<fvwmopt cmd="ModuleSynchronous" opt="Expect"/>
 option is given, fvwm waits for the given
-<emphasis remap='I'>string</emphasis>
+<replaceable>string</replaceable>
 instead.
 <emphasis remap='B'>ModuleSynchronous</emphasis>
 should only be used during fvwm startup to enforce the order in
@@ -47,7 +50,7 @@ this may not be the case for third party modules.  Moreover, you
 can try to escape from a locked
 <emphasis remap='B'>ModuleSynchronous</emphasis>
 command by using the key sequence
-<emphasis remap='SM'>Ctrl-Alt-Escape</emphasis>
+<keysym>Ctrl-Alt-Escape</keysym>
 (see the
 <fvwmref cmd="EscapeFunc"/>).</para>
 

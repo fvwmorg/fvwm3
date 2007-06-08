@@ -11,11 +11,12 @@
 <section id='Function'>
 <title>Function</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Function FunctionName</arg>
+	<command>Function</command>
+	<arg choice='plain'><replaceable>FunctionName</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Used to bind a previously defined function to a key or mouse
 button. The following example binds mouse button 1 to a function
@@ -31,11 +32,10 @@ pressed in a window's title-bar.</para>
 <para>The keyword
 <emphasis remap='B'>Function</emphasis>
 may be omitted if
-<emphasis remap='I'>FunctionName</emphasis>
+<replaceable>FunctionName</replaceable>
 does not coincide with an fvwm command.</para>
 
 <para>Warning:  Please read the comments on executing complex functions
-in the section
-<emphasis remap='B'>SCRIPTING AND COMPLEX FUNCTIONS</emphasis>.</para>
+in the section <fvwmref sect="scripting" opt="scripting_and_complex_functions" name="Scripting and Complex Functions"/>.</para>
 
 </section>

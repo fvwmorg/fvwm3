@@ -11,11 +11,12 @@
 <section id='XineramaPrimaryScreen'>
 <title>XineramaPrimaryScreen</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>XineramaPrimaryScreen [primary-screen]</arg>
+	<command>XineramaPrimaryScreen</command>
+	<arg choice='opt'>primary-screen</arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Takes an integer number or 'g' or 'c' as its argument.  A number
 is taken as the number of the Xinerama screen that is to be used
@@ -32,7 +33,7 @@ default icon box too.  Any number that is zero or more is taken as
 the primary screen's number.  Instead, the letter 'c' indicates to
 use the current screen (containing the pointer) whenever the
 primary screen is used.  This may be very confusing under some
-circumstances.  With &acute;g', the global screen is used as the primary
+circumstances.  With 'g', the global screen is used as the primary
 screen, effectively disabling the primary screen.  Calling this
 function with any other argument (including none) resets the
 primary screen to 0.</para>

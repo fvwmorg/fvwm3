@@ -11,23 +11,23 @@
 <section id='MoveThreshold'>
 <title>MoveThreshold</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>MoveThreshold</arg>
-    <arg choice='opt'>pixels</arg>
+    <command>MoveThreshold</command>
+    <arg choice='opt'><replaceable>pixels</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>When the user presses a mouse button upon an object fvwm waits to
 see if the action is a click or a drag.  If the mouse moves by
 more than
-<emphasis remap='I'>pixels</emphasis>
+<replaceable>pixels</replaceable>
 pixels it is assumed to be a drag.</para>
 
 <para>Previous versions of fvwm hardwired
-<emphasis remap='I'>pixels</emphasis>
+<replaceable>pixels</replaceable>
 to 3, which is now the default value.  If
-<emphasis remap='I'>pixels</emphasis>
+<replaceable>pixels</replaceable>
 is negative or omitted the default value (which might be increased
 when 16000x9000 pixel displays become affordable) is restored.</para>
 

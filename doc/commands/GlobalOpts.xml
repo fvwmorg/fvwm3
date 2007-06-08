@@ -11,11 +11,12 @@
 <section id='GlobalOpts'>
 <title>GlobalOpts</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>GlobalOpts [options]</arg>
+	<command>GlobalOpts</command>
+	<arg choice='opt'><replaceable>options</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command is obsolete.  Please
 replace the global options in your configuration file according to

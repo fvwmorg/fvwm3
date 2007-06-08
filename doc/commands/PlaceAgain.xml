@@ -11,13 +11,13 @@
 <section id='PlaceAgain'>
 <title>PlaceAgain</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-    <arg choice='plain'>PlaceAgain</arg>
+    <command>PlaceAgain</command>
     <arg choice='opt'>Anim</arg>
     <arg choice='opt'>Icon</arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 
 <para>Causes the current window's position to be re-computed using the

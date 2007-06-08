@@ -11,12 +11,18 @@
 <section id='Scroll'>
 <title>Scroll</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Scroll [<emphasis>horizonal</emphasis> [<emphasis remap='I'>p</emphasis>] <emphasis remap='I'>vertical</emphasis> [<emphasis remap='I'>p</emphasis>] | [<emphasis>reverse</emphasis>]
-	</arg>
+	<command>Scroll</command>
+	<group choice='opt'>
+		<arg choice='plain'>
+			<replaceable>horizonal</replaceable><optional>p</optional>
+			<replaceable>vertical</replaceable><optional>p</optional>
+		</arg>
+		<arg choice='plain'>reverse</arg>
+	</group>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>
 Scrolls the virtual desktop's viewport by
@@ -25,7 +31,7 @@ pages in the x-direction and
 <fvwmopt cmd="MenuStyle" opt="vertical"/>
 pages in the y-direction or starts interactive scrolling of the viewport.  Either or both entries may be negative.
 Both
-<emphasis remap='I'>horizontal</emphasis> and <emphasis remap='I'>vertical</emphasis>
+<replaceable>horizontal</replaceable> and <replaceable>vertical</replaceable>
 values are expressed in percent of pages, so</para>
 
 <programlisting>
@@ -45,7 +51,7 @@ function should not be called from pop-up menus.  Normally,
 scrolling stops at the edge of the desktop.</para>
 
 <para>If the
-<emphasis remap='I'>horizontal</emphasis> and <emphasis remap='I'>vertical</emphasis>
+<replaceable>horizontal</replaceable> and <replaceable>vertical</replaceable>
 percentages are 100 or more and are multiplied by 1000 then
 scrolling wraps around at the edge of the desktop.  If</para>
 
@@ -58,14 +64,14 @@ each execution and wraps around at the edge of the desktop, so
 that every page is hit in turn.</para>
 
 <para>If the letter
-'<emphasis remap='I'>p</emphasis>'
+'<fvwmopt cmd="Scroll" opt="p"/>'
 is appended to each coordinate
-(<emphasis remap='I'>horizontal</emphasis> and/or <emphasis remap='I'>vertical</emphasis>),
+(<replaceable>horizontal</replaceable> and/or <replaceable>vertical</replaceable>),
 then the scroll amount is measured in pixels.</para>
 
-<para>Without arguments or the option
-<emphasis remap='I'>reverse</emphasis>
-is given interactive scrolling takes place.  The viewporst
+<para>Without arguments or if the option
+<emphasis>reverse</emphasis>
+is given interactive scrolling takes place.  The viewport
 scrolls as the mouse is moved. With the
 <fvwmopt cmd="Scroll" opt="reverse"/>
 option scrolling is done in opposite direction of the mouse
@@ -80,9 +86,9 @@ mouse.</para>
 
 <para>gives an effect of grabbing and dragging the viewport with button 1
 if
-<emphasis remap='SM'>Control</emphasis>
+<keysym>Control</keysym>
 and
-<emphasis remap='SM'>Meta</emphasis>
+<keysym>Meta</keysym>
 is pressed.</para>
 
 </section>
