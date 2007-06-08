@@ -1,3 +1,8 @@
+2007-06-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* doc/fvwm/initialization.xml:
+	add htmlonly paragraph between the two simple lists in initialization.
+
 2007-06-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* doc/fvwm-man.xsl:

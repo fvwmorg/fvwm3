@@ -28,6 +28,7 @@ is used):</para>
 <member><envar>$HOME</envar>/.fvwm/config</member>
 <member>/usr/local/share/fvwm/config</member>
 </simplelist>
+<htmlonly><para></para></htmlonly>
 <simplelist>
 <member><envar>$HOME</envar>/.fvwm/.fvwm2rc</member>
 <member><envar>$HOME</envar>/.fvwm2rc</member>
