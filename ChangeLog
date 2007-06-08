@@ -1,5 +1,12 @@
 2007-06-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* doc/fvwm-man.xsl:
+	layout of subsubsections to mimic the old manpage
+	use synopsis for subsubsection-title if command match title
+
+	* doc/commands/AddToMenu.xml:
+	correct use of <command> tag (all other commands to do)
+
 	* doc/fvwm/initialization.xml:
 	add htmlonly paragraph between the two simple lists in initialization.
 

@@ -11,13 +11,14 @@
 <section id='addtomenu'>
 <title>AddToMenu</title>
 
-<command>
+<!--command-->
+<!-- Use of cmdsynopsis inside of command violates the docbook DTD -->
 <cmdsynopsis>
-    <arg choice='plain'>AddToMenu</arg>
-    <arg choice='plain'>menu-name</arg>
-    <arg choice='opt'>menu-label action</arg>
+    <command>AddToMenu</command>
+    <arg choice='plain'><replaceable>menu-name</replaceable></arg>
+    <arg choice='opt'><replaceable>menu-label</replaceable> <replaceable>action</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Begins or adds to a menu definition.  Typically a menu definition
 looks like this:</para>
@@ -104,7 +105,8 @@ application listing.</para>
 # You can find the shell script fvwm_make_browse_menu.sh
 # in the utils/ directory of the distribution.
 AddToMenu BrowseMenu
-+ DynamicPopupAction <fvwmref cmd="PipeRead"/> 'fvwm_make_browse_menu.sh BrowseMenu'
++ DynamicPopupAction <fvwmref cmd="PipeRead"/> \
+  'fvwm_make_browse_menu.sh BrowseMenu'
 </programlisting> 
 
 <para>Example (Picture menu):</para>
