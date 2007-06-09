@@ -11,11 +11,12 @@
 <section id='EdgeResistance'>
 <title>EdgeResistance</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>EdgeResistance scrolling moving [xinerama-moving]</arg>
+	<command>EdgeResistance</command>
+	<arg choice='plain'><replaceable>scrolling</replaceable></arg>
+	<arg choice='plain'><replaceable>moving</replaceable></arg>
+	<arg choice='opt'><replaceable>xinerama-scrolling</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Tells how hard it should be to change the desktop viewport by
 moving the mouse over the edge of the screen and how hard it
@@ -56,11 +57,11 @@ difficult but not impossible.  See also
 
 <para>The optional third parameter does the same as the second, but for
 individual Xinerama screens.  If omitted,
-<emphasis remap='I'>xinerama-moving</emphasis>
+<replaceable>xinerama-moving</replaceable>
 is set to the value of
-<emphasis remap='I'>moving</emphasis>.
+<replaceable>moving</replaceable>.
 Set
-<emphasis remap='I'>xinerama-moving</emphasis>
+<replaceable>xinerama-moving</replaceable>
 to zero to ignore individual screen edges.  Note that the center of
 the window being moved determines the xinerama screen on which the
 window should be kept.</para>

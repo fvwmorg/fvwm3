@@ -11,16 +11,14 @@
 <section id='Colorset'>
 <title>Colorset</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Colorset</arg>
-    <arg choice='plain'>num</arg>
-    <arg choice='opt'>options</arg>
+    <command>Colorset</command>
+    <arg choice='plain'><replaceable>num</replaceable></arg>
+    <arg choice='opt'><replaceable>options</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Creates or modifies colorset
-<emphasis remap='I'>num</emphasis>.
+<replaceable>num</replaceable>.
 Colorsets are identified by this number. The number can start at
 zero and can be a very large number.</para>
 
@@ -58,7 +56,7 @@ background of gray.  The background and foreground are marked as
 "average" and "contrast" (see later) so that just specifying a
 pixmap or gradient gives sensible results.</para>
 
-<para><emphasis remap='I'>options</emphasis>
+<para><replaceable>options</replaceable>
 is a comma separated list containing some of the keywords:
 fg, Fore, Foreground,
 bg, Back, Background,
@@ -164,7 +162,7 @@ depends on the program used to set the background.  If you use
 <fvwmref mod="FvwmBacker"/> with solid or colorset colors
 or a recent version of <command>Esetroot</command> (&gt;= 9.2) a background change is
 detected. If background changes are not detected (e.g., if you use
-<command>xv</command> or <command>xsetroot</command>) you can force detection by using the -d option of
+<command>xv</command> or <command>xsetroot</command>) you can force detection by using the <option>-d</option> option of
 fvwm-root:</para>
 
 <programlisting>
@@ -278,7 +276,7 @@ transparency it is more safe to use the
 option.</para>
 
 <para>
-<fvwmopt cmd="Colorset" opt="RootTransparent"/> [ <emphasis remap='I'>buffer</emphasis> ] 
+<fvwmopt cmd="Colorset" opt="RootTransparent"/> <optional> <emphasis remap='I'>buffer</emphasis> </optional>
 creates a root transparent background. To make this option work,
 you must use an <command>Esetroot</command> compatible program, fvwm-root with the
 --retain-pixmap option or <fvwmref mod="FvwmBacker"/> with the RetainPixmap option
@@ -426,8 +424,8 @@ into the colorset background with the specified color using a
 percentage. Here "icons" means, fvwm Icons, fvwm menu icons,
 MiniIcons which represent applications in various modules, images
 loaded by modules (e.g., images specified by the
-<emphasis remap='I'>Icon</emphasis>
-<emphasis remap='B'>FvwmButtons</emphasis>
+<fvwmref mod="FvwmButtons" opt="Icon"/>
+<fvwmref mod="FvwmButtons"/>
 button option) ...etc. With no arguments this option removes the
 icon tint.</para>
 

@@ -11,14 +11,16 @@
 <section id='EdgeLeaveCommand'>
 <title>EdgeLeaveCommand</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>EdgeLeaveCommand [direction [Function]]</arg>
+	<command>EdgeLeaveCommand</command>
+	<arg choice='opt'>
+		<arg choice='plain'><replaceable>direction</replaceable></arg>
+		<arg choice='opt'><replaceable>Function</replaceable></arg>
+	</arg>
 </cmdsynopsis>
-</command>
 
 <para>Binds a specified fvwm command
-<fvwmref cmd="Function"/>
+<replaceable>Function</replaceable>
 to an edge of the screen. Direction may be one of
 "<fvwmopt cmd="EdgeLeaveCommand" opt="North"/>",
 "<fvwmopt cmd="EdgeLeaveCommand" opt="Top"/>",
@@ -29,12 +31,12 @@ to an edge of the screen. Direction may be one of
 "<fvwmopt cmd="EdgeLeaveCommand" opt="Right"/>" and
 "<fvwmopt cmd="EdgeLeaveCommand" opt="East"/>".
 If
-<fvwmref cmd="Function"/>
+<replaceable>Function</replaceable>
 is omitted the binding for this edge is removed. If
 EdgeLeaveCommand is called without any arguments all edge bindings
 are removed.</para>
 
-<para><fvwmref cmd="Function"/>
+<para><replaceable>Function</replaceable>
 is executed when the mouse pointer
 leaves the invisible pan frames that surround the visible screen.
 The binding works only if

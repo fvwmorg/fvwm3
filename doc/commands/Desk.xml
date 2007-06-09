@@ -11,14 +11,13 @@
 <section id='Desk'>
 <title>Desk</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Desk</arg>
-    <arg choice='plain'>arg1</arg>
-    <arg choice='opt'>arg2</arg>
-    <arg choice='opt'>min max</arg>
+    <command>Desk</command>
+    <arg choice='plain'><replaceable>arg1</replaceable></arg>
+    <arg choice='opt'><replaceable>arg2</replaceable></arg>
+    <arg choice='opt'><replaceable>min</replaceable>
+        <replaceable>max</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>This command has been renamed.  Please see
 <fvwmref cmd="GotoDesk"/>

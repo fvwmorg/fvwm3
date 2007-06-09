@@ -11,16 +11,20 @@
 <section id='CursorMove'>
 <title>CursorMove</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>CursorMove horizontal[p] vertical[p]</arg>
+	<command>CursorMove</command>
+  <arg choice='plain'>
+		<replaceable>horizontal</replaceable><optional>p</optional>
+	</arg>
+	<arg choice='plain'>
+		<replaceable>vertical</replaceable><optional>p</optional>
+	</arg>
 </cmdsynopsis>
-</command>
 
 <para>Moves the mouse pointer by
-<emphasis remap='I'>horizontal</emphasis>
+<replaceable>horizontal</replaceable>
 pages in the X direction and
-<emphasis remap='I'>vertical</emphasis>
+<replaceable>vertical</replaceable>
 pages in the Y direction.  Either or both entries may be
 negative. Both horizontal and vertical values are expressed in
 percent of pages, so</para>

@@ -11,17 +11,18 @@
 <section id='Exec'>
 <title>Exec</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>Exec command</arg>
+	<command>Exec</command>
+	<arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>Executes
-<emphasis remap='I'>command</emphasis>.
+<replaceable>command</replaceable>.
 You should not use an ampersand '&amp;' at the end of the command. You
 probably want to use an additional "exec" at the beginning of
-<emphasis remap='I'>command</emphasis>.
+<replaceable>command</replaceable>.
 Without that, the shell that fvwm invokes to run your command
 stays until the command exits.  In effect, you'll have twice as
 many processes running as you need.  Note that some shells are
@@ -29,7 +30,7 @@ smart enough to avoid this, but it never hurts to include the
 "exec" anyway.</para>
 
 <para>The following example binds function key
-<emphasis remap='SM'>F1</emphasis>
+<keysym>F1</keysym>
 in the root window, with no modifiers, to the exec function. The
 program rxvt is started with an assortment of options.</para>
 
@@ -40,7 +41,7 @@ program rxvt is started with an assortment of options.</para>
 </programlisting>
 
 <para>Note that this function doesn't wait for
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 to complete, so things like:</para>
 
 <programlisting>

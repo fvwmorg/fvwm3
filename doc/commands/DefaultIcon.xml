@@ -11,12 +11,10 @@
 <section id='DefaultIcon'>
 <title>DefaultIcon</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>DefaultIcon</arg>
-    <arg choice='plain'>filename</arg>
+    <command>DefaultIcon</command>
+    <arg choice='plain'><replaceable>filename</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>sets the default icon which is used if a window has neither an
 client-supplied icon nor an icon supplied via the

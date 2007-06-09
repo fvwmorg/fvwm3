@@ -11,11 +11,11 @@
 <section id='DestroyFunc'>
 <title>DestroyFunc</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>DestroyFunc function</arg>
+	<command>DestroyFunc</command>
+	<arg choice='plain'><replaceable>function</replaceable></arg>
 </cmdsynopsis>
-</command>
+
 
 <para>Deletes a function, so that subsequent references to it are no
 longer valid.  You can use this to change the contents of a

@@ -11,11 +11,9 @@
 <section id='Delete'>
 <title>Delete</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Delete</arg>
+    <command>Delete</command>
 </cmdsynopsis>
-</command>
 
 <para>Sends a message to a window asking that it remove itself,
 frequently causing the application to exit.</para>

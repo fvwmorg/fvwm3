@@ -11,27 +11,29 @@
 <section id='EwmhBaseStruts'>
 <title>EwmhBaseStruts</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>EwmhBaseStruts left right top bottom</arg>
+	<command>EwmhBaseStruts</command>
+	<arg choice='plain'><replaceable>left</replaceable></arg>
+	<arg choice='plain'><replaceable>right</replaceable></arg>
+	<arg choice='plain'><replaceable>top</replaceable></arg>
+	<arg choice='plain'><replaceable>bottom</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Where left, right, top and bottom are positive or null integers
 which define bands at the edge of the screen.
-<emphasis remap='I'>left</emphasis>
+<replaceable>left</replaceable>
 defines a band on the left of your screen of width
-<emphasis remap='I'>left</emphasis>,
-<emphasis remap='I'>right</emphasis>
+<replaceable>left</replaceable>,
+<replaceable>right</replaceable>
 defines a band on the right of your screen of width
-<emphasis remap='I'>right</emphasis>,
-<emphasis remap='I'>top</emphasis>
+<replaceable>right</replaceable>,
+<replaceable>top</replaceable>
 defines a band on the top of your screen of height
-<emphasis remap='I'>top</emphasis>
+<replaceable>top</replaceable>
 and
-<emphasis remap='I'>bottom</emphasis>
+<replaceable>bottom</replaceable>
 defines a band on the bottom of your screen of height
-<emphasis remap='I'>bottom</emphasis>.
+<replaceable>bottom</replaceable>.
 The unit is the pixel and the default is 0 0 0 0.  These areas
 define additional reserved space to the reserved space defined by
 some ewmh compliant applications. This is used to compute the

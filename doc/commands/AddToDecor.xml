@@ -11,29 +11,27 @@
 <section id='AddToDecor'>
 <title>AddToDecor</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>AddToDecor</arg>
-    <arg choice='plain'>decor</arg>
+    <command>AddToDecor</command>
+    <arg choice='plain'><replaceable>decor</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.</para>
 
 <para>Add or divert commands to the decor named
-<emphasis remap='I'>decor</emphasis>.
+<replaceable>decor</replaceable>.
 A decor is a name given to the set of commands which affect button
 styles, title-bar styles and border styles.  If
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 does not exist it is created; otherwise the existing
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 is modified.  Note: Earlier versions allowed to use the
 <fvwmref cmd="HilightColor"/>, <fvwmref cmd="HilightColorset"/> and <fvwmref cmd="WindowFont"/>
 commands in decors.  This is no longer possible.  Please use the
 <fvwmref cmd="Style"/>
 command with the
-<emphasis remap='I'>Hilight...</emphasis> and <emphasis remap='I'>Font</emphasis>
+<emphasis remap='I'>Hilight...</emphasis> and <fvwmref cmd="Style" opt="Font"/>
 options.</para>
 
 <para>New decors start out exactly like the "default" decor without any

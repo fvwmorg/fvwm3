@@ -10,12 +10,10 @@
 <section id='DesktopSize'>
 <title>DesktopSize</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>DesktopSize</arg>
-    <arg choice='plain'>Horizontal<emphasis>x</emphasis>Vertical</arg>
+    <command>DesktopSize</command>
+    <arg choice='plain'><replaceable>Horizontal</replaceable>x<replaceable>Vertical</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Defines the virtual desktop size in units of the physical screen
 size.</para>

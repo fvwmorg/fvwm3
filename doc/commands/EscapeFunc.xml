@@ -11,14 +11,12 @@
 <section id='EscapeFunc'>
 <title>EscapeFunc</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>EscapeFunc</arg>
+	<command>EscapeFunc</command>
 </cmdsynopsis>
-</command>
 
 <para>By default the key sequence
-<emphasis remap='SM'>Ctrl-Alt-Escape</emphasis>
+<keysym>Ctrl-Alt-Escape</keysym>
 allows for escaping from a
 <fvwmref cmd="Wait"/>
 pause and from a locked
@@ -35,9 +33,9 @@ command allows for configuring this key sequence.  An example:</para>
 </programlisting>
 
 <para>replaces the
-<emphasis remap='SM'>Ctrl-Alt-Escape</emphasis>
+<keysym>Ctrl-Alt-Escape</keysym>
 key sequence with
-<emphasis remap='SM'>Shift-Escape</emphasis>
+<keysym>Shift-Escape</keysym>
 for aborting a
 <fvwmref cmd="Wait"/>
 pause and

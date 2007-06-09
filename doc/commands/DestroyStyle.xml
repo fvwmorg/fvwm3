@@ -11,16 +11,15 @@
 <section id='DestroyStyle'>
 <title>DestroyStyle</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>DestroyStyle style</arg>
+	<command>DestroyStyle</command>
+	<arg choice='plain'><replaceable>style</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>deletes the style named
-<emphasis remap='I'>style</emphasis>.
+<replaceable>style</replaceable>.
 The changes take effect immediately.  Note that
-<emphasis remap='I'>style</emphasis>
+<replaceable>style</replaceable>
 is not a wild-carded search string, but rather a case-sensitive
 string that should exactly match the original
 <fvwmref cmd="Style"/>

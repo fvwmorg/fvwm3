@@ -11,22 +11,22 @@
 <section id='BugOpts'>
 <title>BugOpts</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>BugOpts</arg>
-    <arg choice='opt'>option <arg choice='opt'>bool</arg></arg>
-    <arg choice='plain'>, ...</arg>
+    <command>BugOpts</command>
+    <arg choice='plain' rep='repeat'>
+      <arg choice='opt'><replaceable>option</replaceable>
+	<arg choice='opt'><replaceable>bool</replaceable></arg></arg>,
+    </arg>
 </cmdsynopsis>
-</command>
 
 <para>This command controls several workarounds for bugs in third party
 programs.  The individual options are separated by commas.  The
 optional argument
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 is a boolean argument and controls if the bug workaround is
 enabled or not.  It can either be "True" or "False" to turn the
 option on or off, or "toggle" to switch is back and forth.  If
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 is omitted, the default setting is restored.</para>
 
 <para><fvwmopt cmd="BugOpts" opt="FlickeringMoveWorkaround"/>
@@ -57,7 +57,7 @@ turn it off.</para>
 <para><fvwmopt cmd="BugOpts" opt="RaiseOverNativeWindows"/>
 makes fvwm try to raise the windows it manages over native windows
 of the X server's host system.  This is needed for some X servers
-running under Windows or Windows NT.  Fvwm tries to detect if it
+running under Windows, Windows NT or Mac OS X.  Fvwm tries to detect if it
 is running under such an X server and initializes the flag
 accordingly.</para>
 
@@ -67,7 +67,7 @@ override_redirect windows.  This is used to cope with ill-mannered
 applications that use long-lived windows of this sort, contrary to
 <acronym>ICCCM</acronym>
 conventions.  It is useful with the
-<emphasis remap='I'>Unmanaged</emphasis>
+<fvwmref cmd="Style" opt="Unmanaged"/>
 style option too.</para>
 
 <para><fvwmopt cmd="BugOpts" opt="FlickeringQtDialogsWorkaround"/>

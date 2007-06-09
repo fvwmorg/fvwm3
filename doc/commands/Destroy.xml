@@ -11,11 +11,9 @@
 <section id='Destroy'>
 <title>Destroy</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>Destroy</arg>
+	<command>Destroy</command>
 </cmdsynopsis>
-</command>
 
 <para>Destroys an application window, which usually causes the
 application to crash and burn.</para>

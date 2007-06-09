@@ -11,42 +11,41 @@
 <section id='BorderStyle'>
 <title>BorderStyle</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>BorderStyle</arg>
-    <arg choice='plain'>state</arg>
-    <arg choice='opt'>style</arg>
-    <arg choice='opt'>-- <arg choice='opt'>!</arg> flag ...</arg>
+	<command>BorderStyle</command>
+    <arg choice='plain'><replaceable>state</replaceable></arg>
+    <arg choice='opt'><replaceable>style</replaceable></arg>
+    <arg choice='opt'>--
+			<arg choice='plain' rep='repeat'><optional>!</optional><replaceable>flag</replaceable></arg>
+		</arg>
 </cmdsynopsis>
-</command>
 
 <para>Defines a border style for windows.
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 can be either "<fvwmopt cmd="BorderStyle" opt="Active"/>" or "<fvwmopt cmd="BorderStyle" opt="Inactive"/>".  If
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 is omitted, then the style is set for both states.  If the
-<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+<replaceable>style</replaceable> and <replaceable>flags</replaceable>
 are enclosed in parentheses, then multiple
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 definitions can be specified per line.</para>
 
-<para><emphasis remap='I'>style</emphasis>
+<para><replaceable>style</replaceable>
 is a subset of the available button styles, and can only be
 <fvwmopt cmd="BorderStyle" opt="TiledPixmap"/>
 (uniform pixmaps which match the bevel colors work best this
 way) or <fvwmopt cmd="BorderStyle" opt="Colorset"/>. If a
-'<emphasis remap='I'>!</emphasis>'
-is prefixed to any
-<emphasis remap='I'>flag</emphasis>,
+'!' is prefixed to any
+<replaceable>flag</replaceable>,
 the behavior is negated.  If
-<emphasis remap='I'>style</emphasis>
+<replaceable>style</replaceable>
 is not specified, then one can change flags without resetting the
 style.</para>
 
 <para>The
 <fvwmopt cmd="BorderStyle" opt="HiddenHandles"/>
 flag hides the corner handle dividing lines on windows with
-handles (this option has no effect for NoHandle windows).  By
+handles (this option has no effect for !<fvwmref cmd="Style" opt="Handles"/> windows).  By
 default,
 <emphasis remap='I'>HiddenHandles</emphasis>
 is disabled.</para>

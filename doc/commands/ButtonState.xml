@@ -11,14 +11,12 @@
 <section id='ButtonState'>
 <title>ButtonState</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>ButtonState</arg>
-    <arg choice='opt'>ActiveDown bool</arg>
-    <arg choice='opt'>Inactive bool</arg>
-    <arg choice='opt'>InactiveDown bool</arg>
+    <command>ButtonState</command>
+    <arg choice='opt'>ActiveDown <replaceable>bool</replaceable></arg>
+    <arg choice='opt'>Inactive <replaceable>bool</replaceable></arg>
+    <arg choice='opt'>InactiveDown <replaceable>bool</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>
 The
@@ -32,7 +30,7 @@ buttons are used.  The default is to use all four states:
 <fvwmref cmd="ButtonStyle"/> and
 <fvwmref cmd="TitleStyle"/>
 commands).  The
-<emphasis remap='I'>bool</emphasis>
+<replaceable>bool</replaceable>
 argument after the key word controls if the designated state is
 used ("True") or not ("False").  The "ActiveUp" state cannot be
 deactivated. If no arguments are provided or the given arguments

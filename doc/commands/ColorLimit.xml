@@ -11,12 +11,10 @@
 <section id='ColorLimit'>
 <title>ColorLimit</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>ColorLimit</arg>
-    <arg choice='plain'>limit</arg>
+    <command>ColorLimit</command>
+    <arg choice='plain'><replaceable>limit</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>
 This command is obsolete. See the <option>--color-limit</option> option to fvwm.

@@ -11,16 +11,14 @@
 <section id='ChangeMenuStyle'>
 <title>ChangeMenuStyle</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>ChangeMenuStyle</arg>
-    <arg choice='plain'>menustyle</arg>
-    <arg choice='plain'>menu ...</arg>
+    <command>ChangeMenuStyle</command>
+    <arg choice='plain'><replaceable>menustyle</replaceable></arg>
+    <arg choice='plain' rep='repeat'><replaceable>menu</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Changes the menu style of
-<emphasis remap='I'>menu</emphasis> to <emphasis remap='I'>menustyle</emphasis>.
+<replaceable>menu</replaceable> to <replaceable>menustyle</replaceable>.
 You may specify more than one menu in each call of
 <emphasis remap='B'>ChangeMenuStyle</emphasis>.</para>
 

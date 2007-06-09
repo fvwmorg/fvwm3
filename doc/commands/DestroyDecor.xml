@@ -11,32 +11,30 @@
 <section id='DestroyDecor'>
 <title>DestroyDecor</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>DestroyDecor</arg>
+    <command>DestroyDecor</command>
     <arg choice='opt'>recreate</arg>
-    <arg choice='plain'>decor</arg>
+    <arg choice='plain'><replaceable>decor</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.</para>
 
 <para>Deletes the
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 defined with
 <emphasis remap='B'>AddToDecor</emphasis>,
 so that subsequent references to it are no longer valid.  Windows
 using this
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 revert to the "Default" decor. The optional parameter
-<emphasis remap='I'>recreate</emphasis>
+<fvwmopt cmd="DestroyDecor" opt="recreate"/>
 tells fvwm not to throw away the decor completely but to throw
 away only its contents. If the decor is created again later,
 windows do not use it before the
-<emphasis remap='I'>UseDecor</emphasis>
+<fvwmref cmd="Style" opt="UseDecor"/>
 style is applied again unless the decor was destroyed with the
-<emphasis remap='I'>recreate</emphasis>
+<emphasis>recreate</emphasis>
 option.  The decor named "Default" cannot be destroyed.</para>
 
 <programlisting>

@@ -11,11 +11,14 @@
 <section id='Emulate'>
 <title>Emulate</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>Emulate Fvwm|Mwm|Win</arg>
+	<command>Emulate</command>
+	<group choice='plain'>
+	  <arg choice='plain'>Fvwm</arg>
+	  <arg choice='plain'>Mwm</arg>
+	  <arg choice='plain'>Win</arg>
+	</group>
 </cmdsynopsis>
-</command>
 
 <para>This command is a catch all for how miscellaneous things are done
 by fvwm. Right now this command affects where the move/resize

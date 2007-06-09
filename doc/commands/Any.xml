@@ -11,18 +11,16 @@
 <section id='Any'>
 <title>Any</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Any</arg>
-    <arg choice='opt'>(conditions)</arg>
-    <arg choice='plain'>command</arg>
+  <command>Any</command>
+  <arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+  <arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Performs
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 if any window which satisfies all
-<emphasis remap='I'>conditions</emphasis>
+<replaceable>conditions</replaceable>
 exists.  The command is run in the context of the root window.
 See the <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
 

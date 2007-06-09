@@ -36,7 +36,7 @@ database).</para>
 <para>Commands for manipulating module configuration database are
 described below.</para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Plus.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Asterix.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyModuleConfig.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/KillModule.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Module.xml" />

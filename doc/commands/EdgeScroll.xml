@@ -12,15 +12,24 @@
 <title>EdgeScroll</title>
 
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>EdgeScroll horizontal[p] vertical[p] [wrap|wrapx|wrapy]</arg>
+	<command>EdgeScroll</command>
+	<arg choice='plain'>
+		<replaceable>horizontal</replaceable><optional>p</optional>
+	</arg>
+	<arg choice='plain'>
+		<replaceable>vertical</replaceable><optional>p</optional>
+	</arg>
+	<group choice='opt'>
+		<arg choice='plain'>wrap</arg>
+		<arg choice='plain'>wrapx</arg>
+		<arg choice='plain'>wrapy</arg>
+	</group>
 </cmdsynopsis>
-</command>
 
 <para>Specifies the percentage of a page to scroll when the cursor hits
 the edge of a page.  A trailing
-'<emphasis remap='I'>p</emphasis>'
+'<fvwmopt cmd="EdgeScroll" opt="p"/>'
 changes the interpretation to mean pixels.  If you do not want any
 paging or scrolling when you hit the edge of a page include</para>
 
@@ -29,11 +38,11 @@ EdgeScroll 0 0
 </programlisting>
 
 <para>in your
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file, or possibly better, set the
-<emphasis remap='B'>EdgeThickness</emphasis>
+<fvwmref cmd="EdgeThickness"/>
 to zero.  See the
-<emphasis remap='B'>EdgeThickness</emphasis>
+<fvwmref cmd="EdgeThickness"/>
 command. If you want whole pages, use</para>
 
 <programlisting>
@@ -41,13 +50,14 @@ EdgeScroll 100 100
 </programlisting>
 
 <para>Both
-<emphasis remap='I'>horizontal</emphasis> and <emphasis remap='I'>vertical</emphasis>
+<replaceable>horizontal</replaceable> and <replaceable>vertical</replaceable>
 should be positive numbers.</para>
 
 <para>If the
-<emphasis remap='I'>horizontal</emphasis> and <emphasis remap='I'>vertical</emphasis>
+<replaceable>horizontal</replaceable> and <replaceable>vertical</replaceable>
 percentages are multiplied by 1000 or one of the keywords
-<emphasis remap='I'>wrap</emphasis>, <emphasis remap='I'>wrapx</emphasis> and <emphasis remap='I'>wrapy</emphasis>
+<fvwmopt cmd="EdgeScroll" opt="wrap"/>, <fvwmopt cmd="EdgeScroll" opt="wrapx"/>
+and <fvwmopt cmd="EdgeScroll" opt="wrapy"/>
 is given then scrolling wraps around at the edge of the desktop.
 If</para>
 

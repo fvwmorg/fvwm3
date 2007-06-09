@@ -11,27 +11,25 @@
 <section id='All'>
 <title>All</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>All</arg>
-    <arg choice='opt'>options</arg>
-    <arg choice='opt'>(conditions)</arg>
-    <arg choice='plain'>command</arg>
+	<command>All</command>
+  <arg choice='opt'><replaceable>options</replaceable></arg>
+  <arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+  <arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Execute
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 on all windows meeting the conditions.  It returns 1 if any window
 matches the condition and 0 otherwise. The execution starts at the top of the
 window ring and continues towards the bottom. The
-<emphasis remap='I'>options</emphasis>
+<replaceable>options</replaceable>
 can be any combination of
 <emphasis remap='I'>Reverse</emphasis> and <emphasis remap='I'>UseStack</emphasis>.
 If the option
-<emphasis remap='I'>Reverse</emphasis>
+<fvwmopt cmd="All" opt="Reverse"/>
 is given the execution order is reversed. The option
-<emphasis remap='I'>UseStack</emphasis>
+<fvwmopt cmd="All" opt="UseStack"/>
 makes All use the stacking order instead of the window ring when walking
 through windows.
 See the <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>

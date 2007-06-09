@@ -11,11 +11,9 @@
 <section id='DestroyWindowStyle'>
 <title>DestroyWindowStyle</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>DestroyWindowStyle</arg>
+	<command>DestroyWindowStyle</command>
 </cmdsynopsis>
-</command>
 
 <para>deletes the styles set by the
 <fvwmref cmd="WindowStyle"/>

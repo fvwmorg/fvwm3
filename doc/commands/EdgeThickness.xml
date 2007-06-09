@@ -11,11 +11,14 @@
 <section id='EdgeThickness'>
 <title>EdgeThickness</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>EdgeThickness 0|1|2</arg>
+	<command>EdgeThickness</command>
+	<group choice='plain'>
+		<arg choice='plain'>0</arg>
+		<arg choice='plain'>1</arg>
+		<arg choice='plain'>2</arg>
+	</group>
 </cmdsynopsis>
-</command>
 
 <para>This is the width or height of the invisible window that fvwm
 creates on the edges of the screen that are used for the edge

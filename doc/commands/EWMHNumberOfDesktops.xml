@@ -11,42 +11,44 @@
 <section id='EWMHNumberOfDesktops'>
 <title>EWMHNumberOfDesktops</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>EWMHNumberOfDesktops num [max]</arg>
+	<command>EWMHNumberOfDesktops</command>
+	<arg choice='plain'><replaceable>num</replaceable></arg>
+	<arg choice='opt'><replaceable>max</replaceable></arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command is useful only for an ewmh compliant pager or taskbar
-(as kpager or kicker taskbar) and not for fvwm modules (FvwmPager
-or FvwmIconMan). It causes a compliant application to consider at
-least
-<emphasis remap='I'>num</emphasis>
+(as kpager or kicker taskbar) and not for fvwm modules (
+<fvwmref mod="FvwmPager"/> or <fvwmref mod="FvwmIconMan"/>). It causes a
+compliant application to consider at least
+<replaceable>num</replaceable>
 desktops (desktop 0 to desktop
-<emphasis remap='I'>num</emphasis>-1).
+<replaceable>num</replaceable>-1).
 The optional argument
-<emphasis remap='I'>max</emphasis>
+<replaceable>max</replaceable>
 causes a compliant application to never consider more than
-<emphasis remap='I'>max</emphasis>
+<replaceable>max</replaceable>
 desktops. If
-<emphasis remap='I'>max</emphasis>
+<replaceable>max</replaceable>
 is 0 (the default) there is no limitation.  The actual number of
 desktops is determined dynamically.  It is at least
-<emphasis remap='I'>num</emphasis>,
+<replaceable>num</replaceable>,
 but it can be d if there is a window on desktop d-1 (or if the
 current desktop is desktop d-1) and d is less or equal to
-<emphasis remap='I'>max</emphasis>
+<replaceable>max</replaceable>
 or
-<emphasis remap='I'>max</emphasis>
+<replaceable>max</replaceable>
 is null.
 Moreover, a compliant pager can ask to change
-<emphasis remap='I'>num</emphasis>
+<replaceable>num</replaceable>
 itself.
 This is accepted by fvwm only if this number is
 less than or equal to
-<emphasis remap='I'>max</emphasis>
+<replaceable>max</replaceable>
 or if
-<emphasis remap='I'>max</emphasis>
+<replaceable>max</replaceable>
 is null.  Note that negative desktops are not supported by the
 ewmh specification.  The default is 4 0.</para>
 

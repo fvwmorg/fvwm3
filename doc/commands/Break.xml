@@ -11,18 +11,16 @@
 <section id='Break'>
 <title>Break</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Break</arg>
-    <arg choice='opt'>levels</arg>
+    <command>Break</command>
+    <arg choice='opt'><replaceable>levels</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>If the break command is used in a function, function execution is
 terminated immediately.  Further commands of the function are not
 processed.  Normally, all nested invocations of complex functions
 are left.  An optional integer number
-<emphasis remap='I'>levels</emphasis>
+<replaceable>levels</replaceable>
 may be given to break out of the given number of nested functions
 and continue execution of a higher level function.
 The

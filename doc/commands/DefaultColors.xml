@@ -11,12 +11,11 @@
 <section id='DefaultColors'>
 <title>DefaultColors</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>DefaultColors</arg>
-    <arg choice='opt'>foreground background</arg>
+    <command>DefaultColors</command>
+    <arg choice='opt'><replaceable>foreground</replaceable></arg>
+    <arg choice='opt'><replaceable>background</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para><emphasis remap='B'>DefaultColors</emphasis>
 sets the default foreground and background colors used in

@@ -11,11 +11,9 @@
 <section id='CleanupColorsets'>
 <title>CleanupColorsets</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>CleanupColorsets</arg>
+    <command>CleanupColorsets</command>
 </cmdsynopsis>
-</command>
 
 <para>Resets a definition of all colorsets.</para>
 

@@ -11,23 +11,22 @@
 <section id='DesktopName'>
 <title>DesktopName</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>DesktopName</arg>
-    <arg choice='plain'>desk name</arg>
+    <command>DesktopName</command>
+    <arg choice='plain'><replaceable>desk</replaceable></arg>
+    <arg choice='plain'><replaceable>name</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Defines the name of the desktop number
-<emphasis remap='I'>desk</emphasis>
+<replaceable>desk</replaceable>
 to
-<emphasis remap='I'>name</emphasis>.
+<replaceable>name</replaceable>.
 This name is used in the
-<emphasis remap='B'>WindowList</emphasis>
+<fvwmref cmd="WindowList"/>
 command and in the
-<emphasis remap='B'>FvwmPager</emphasis>
+<fvwmref mod="FvwmPager"/>
 where it override the
-<emphasis remap='I'>Label</emphasis>
+<fvwmref mod="FvmwPager" opt="Label"/>
 configuration option. Moreover, if consecutive names starting from
 desktop 0 are defined, then these names can be used by any <acronym>EWMH</acronym>
 compliant application (as a pager).</para>

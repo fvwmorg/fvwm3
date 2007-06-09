@@ -11,11 +11,10 @@
 <section id='DestroyModuleConfig'>
 <title>DestroyModuleConfig</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>DestroyModuleConfig module_config</arg>
+	<command>DestroyModuleConfig</command>
+	<arg choice='plain'><replaceable>module_config</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Deletes module configuration entries, so that new configuration
 lines may be entered instead.  This also sometimes the only way to

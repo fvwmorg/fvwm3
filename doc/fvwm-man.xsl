@@ -112,6 +112,8 @@
 <xsl:template match="section/section/section/title">
 
 	<xsl:choose>
+		<xsl:when test="parent::section//cmdsynopsis/@command = text()">
+		</xsl:when>
 		<xsl:when test="parent::section//cmdsynopsis/command/text() = text()">
 			<!-- this is no good when there are multiple cmdsynopsis children -->
 			<!--xsl:apply-templates select="parent::section//cmdsynopsis/*"/-->
@@ -132,7 +134,7 @@
 
 <xsl:template match="section/section/section//cmdsynopsis">
 	<xsl:choose>
-		<xsl:when test="parent::section/title/text() = command/text()">
+		<xsl:when test="parent::section/title/text() = command/text() or @command = parent::section/title/text()">
 			<xsl:if test="preceding-sibling::cmdsynopsis/command/text() = command/text()">
 				<xsl:text>.RE&#10;</xsl:text>
 			</xsl:if>

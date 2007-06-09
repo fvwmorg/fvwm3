@@ -11,24 +11,24 @@
 <section id='AddButtonStyle'>
 <title>AddButtonStyle</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>AddButtonStyle</arg>
-    <arg choice='plain'>button</arg>
-    <arg choice='opt'>state</arg>
-    <arg choice='opt'>style</arg>
-    <arg choice='opt'>-- <arg choice='opt'>!</arg> flag ...</arg>
+  <command>AddButtonStyle</command>
+  <arg choice='plain'>button</arg>
+	<arg choice='opt'><replaceable>state</replaceable></arg>
+	<arg choice='opt'><replaceable>style</replaceable></arg>
+	<arg choice='opt'>--
+		<arg choice='plain' rep='repeat'><optional>!</optional><replaceable>flag</replaceable></arg>
+	</arg>
 </cmdsynopsis>
-</command>
 
 <para>Adds a button style to
-<emphasis remap='I'>button</emphasis>.
-<emphasis remap='I'>button</emphasis>
+<replaceable>button</replaceable>.
+<replaceable>button</replaceable>
 can be a button number, or one of
 "<fvwmopt cmd="AddButtonStyle" opt="All"/>",
 "<fvwmopt cmd="AddButtonStyle" opt="Left"/>" or
 "<fvwmopt cmd="AddButtonStyle" opt="Right"/>".
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 can be
 "<fvwmopt cmd="AddButtonStyle" opt="ActiveUp"/>",
 "<fvwmopt cmd="AddButtonStyle" opt="ActiveDown"/>",
@@ -60,13 +60,13 @@ They are actually different masks for 4 individual states from
 "<fvwmopt cmd="AddButtonStyle" opt="AllInactiveDown"/>".</para>
 
 <para>If
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 is omitted, then the style is added to every state.  If the
-<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+<replaceable>style</replaceable> and <replaceable>flags</replaceable>
 are enclosed in parentheses, then multiple
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 definitions can be placed on a single line.
-<emphasis remap='I'>Flags</emphasis>
+<replaceable>Flags</replaceable>
 for additional button styles cannot be changed after definition.</para>
 
 <para>Buttons are drawn in the order of definition, beginning with the

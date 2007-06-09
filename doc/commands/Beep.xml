@@ -11,11 +11,9 @@
 <section id='Beep'>
 <title>Beep</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Beep</arg>
+    <command>Beep</command>
 </cmdsynopsis>
-</command>
 
 <para>As might be expected, this makes the terminal beep.</para>
 

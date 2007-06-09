@@ -11,11 +11,15 @@
 <section id='FakeClick'>
 <title>FakeClick</title>
 
-<command>
+<!--command-->
 <cmdsynopsis>
-	<arg choice='plain'>FakeClick [command value] ...</arg>
+	<command>FakeClick</command>
+	<arg choice='plain' rep='repeat'>
+		<optional><arg choice='plain'><replaceable>command</replaceable></arg>
+		<arg choice='plain'><replaceable>value</replaceable></arg></optional>
+	</arg>
 </cmdsynopsis>
-</command>
+<!--/command-->
 
 <para>This command is mainly intended for debugging fvwm and no
 guarantees are made that it works for you.
@@ -23,9 +27,9 @@ guarantees are made that it works for you.
 can simulate mouse button press and release events and pass them
 to fvwm or the applications.  The parameters are a list of
 commands which consist of pairs of
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 tokens and integer
-<emphasis remap='I'>values</emphasis>,
+<replaceable>values</replaceable>,
 The
 <fvwmopt cmd="FakeClick" opt="press"/> and <fvwmopt cmd="FakeClick" opt="release"/>
 commands are followed by the appropriate mouse button number and
@@ -36,14 +40,14 @@ commands pauses fvwm for the given number of milliseconds.  The
 <fvwmopt cmd="FakeClick" opt="modifiers"/>
 command simulates pressing or releasing modifier keys.  The values
 1 to 5 are mapped to
-<emphasis remap='SM'>Mod1</emphasis>
+<keysym>Mod1</keysym>
 to
-<emphasis remap='SM'>Mod5</emphasis>
+<keysym>Mod5</keysym>
 while 6, 7 and 8 are mapped to
-<emphasis remap='SM'>Shift,</emphasis>
-<emphasis remap='SM'>Lock</emphasis>
+<keysym>Shift</keysym>,
+<keysym>Lock</keysym>
 and
-<emphasis remap='SM'>Control.</emphasis>
+<keysym>Control</keysym>.
 The modifier is set for any further button events.  To release a
 modifier key, use the corresponding negative number.  The
 <fvwmopt cmd="FakeClick" opt="depth"/>

@@ -1,3 +1,82 @@
+2007-06-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* doc/commands/.cvsignore:
+	* doc/commands/Makefile.am (COMMANDS):
+	* doc/commands/AddDecor.xml:
+	removed documentation of unexisting AddDecor command
+
+	* doc/fvwm/moduleCommands.xml:
+	Include * instead of +
+
+	* doc/commands/AnimatedMove.xml:
+	* doc/commands/AddButtonStyle.xml:
+	* doc/commands/AddTitleStyle.xml:
+	* doc/commands/AddToDecor.xml:
+	* doc/commands/AddToFunc.xml:
+	* doc/commands/AddToMenu.xml:
+	* doc/commands/All.xml:
+	* doc/commands/Any.xml:
+	* doc/commands/Asterix.xml:
+	* doc/commands/Beep.xml:
+	* doc/commands/BorderStyle.xml:
+	* doc/commands/Break.xml:
+	* doc/commands/BugOpts.xml:
+	* doc/commands/BusyCursor.xml:
+	* doc/commands/ButtonState.xml:
+	* doc/commands/ButtonStyle.xml:
+	* doc/commands/ChangeDecor.xml:
+	* doc/commands/ChangeMenuStyle.xml:
+	* doc/commands/CleanupColorsets.xml:
+	* doc/commands/ClickTime.xml:
+	* doc/commands/Close.xml:
+	* doc/commands/ColorLimit.xml:
+	* doc/commands/ColormapFocus.xml:
+	* doc/commands/Colorset.xml:
+	* doc/commands/CopyMenuStyle.xml:
+	* doc/commands/Current.xml:
+	* doc/commands/CursorMove.xml:
+	* doc/commands/CursorStyle.xml:
+	* doc/commands/DefaultColorset.xml:
+	* doc/commands/DefaultColors.xml:
+	* doc/commands/DefaultFont.xml:
+	* doc/commands/DefaultIcon.xml:
+	* doc/commands/DefaultLayers.xml:
+	* doc/commands/Delete.xml:
+	* doc/commands/Deschedule.xml:
+	* doc/commands/DesktopName.xml:
+	* doc/commands/DesktopSize.xml:
+	* doc/commands/Desk.xml:
+	* doc/commands/DestroyDecor.xml:
+	* doc/commands/DestroyFunc.xml:
+	* doc/commands/DestroyMenuStyle.xml:
+	* doc/commands/DestroyMenu.xml:
+	* doc/commands/DestroyModuleConfig.xml:
+	* doc/commands/DestroyStyle.xml:
+	* doc/commands/DestroyWindowStyle.xml:
+	* doc/commands/Destroy.xml:
+	* doc/commands/Direction.xml:
+	* doc/commands/Echo.xml:
+	* doc/commands/EdgeCommand.xml:
+	* doc/commands/EdgeLeaveCommand.xml:
+	* doc/commands/EdgeResistance.xml:
+	* doc/commands/EdgeScroll.xml:
+	* doc/commands/EdgeThickness.xml:
+	* doc/commands/Emulate.xml:
+	* doc/commands/EscapeFunc.xml:
+	* doc/commands/EwmhBaseStruts.xml:
+	* doc/commands/EWMHNumberOfDesktops.xml:
+	* doc/commands/ExecUseShell.xml:
+	* doc/commands/Exec.xml:
+	* doc/commands/FakeClick.xml:
+	* doc/commands/FakeKeypress.xml:
+	correct use of <command>, more markup
+
+	* doc/commands/Plus.xml:
+	Use new command attribute to cmdsynopsis.
+
+	* doc/fvwm-man.xsl:
+	Allow for command title matches by a command attribute in <cmdsynopsis>
+
 2007-06-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* doc/commands/FlipFocus.xml:

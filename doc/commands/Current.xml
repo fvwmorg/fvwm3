@@ -11,18 +11,16 @@
 <section id='Current'>
 <title>Current</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Current</arg>
-    <arg choice='opt'>(conditions)</arg>
-    <arg choice='plain'>command</arg>
+    <command>Current</command>
+    <arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
+    <arg choice='plain'><replaceable>command</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Performs
-<emphasis remap='I'>command</emphasis>
+<replaceable>command</replaceable>
 on the currently focused window if it satisfies all
-<emphasis remap='I'>conditions</emphasis>.
+<replaceable>conditions</replaceable>.
 See the <fvwmref sect="conditionals" opt="conditions" name="Conditions"/> section for a list of conditions.</para>
 
 <para>This command implies the conditions

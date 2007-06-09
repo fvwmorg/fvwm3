@@ -11,12 +11,18 @@
 <section id='AddToFunc'>
 <title>AddToFunc</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>AddToFunc</arg>
-    <arg choice='opt'>name <arg choice='opt'>I | M | C | H | D action</arg></arg>
+  <command>AddToFunc</command>
+  <arg choice='opt'><replaceable>name</replaceable>
+		<arg choice='opt'><group choice='plain'>
+				<arg choice='plain'>I</arg>
+				<arg choice='plain'>M</arg>
+				<arg choice='plain'>C</arg>
+				<arg choice='plain'>H</arg>
+				<arg choice='plain'>D</arg>
+			</group>
+			<arg choice='plain'><replaceable>action</replaceable></arg></arg></arg>
 </cmdsynopsis>
-</command>
 
 <para>Begins or adds to a function definition.  Here is an example:</para>
 
@@ -34,27 +40,27 @@ menu or a mouse binding or key binding:</para>
 </programlisting>
 
 <para>The
-<emphasis remap='I'>name</emphasis>
+<replaceable>name</replaceable>
 must not contain embedded whitespace.  No guarantees are made
 whether function names with embedded whitespace work or not.  This
 behavior may also change in the future without further notice.
 The letter before the
-<emphasis remap='I'>action</emphasis>
+<replaceable>action</replaceable>
 tells what kind of action triggers the command which follows it.
-'<emphasis remap='I'>I</emphasis>'
+'<fvwmopt cmd="AddToFunc" opt="I"/>'
 stands for "Immediate", and is executed as soon as the function is
 invoked.
-'<emphasis remap='I'>M</emphasis>'
+'<fvwmopt cmd="AddToFunc" opt="M"/>'
 stands for "Motion", i.e. if the user starts moving the mouse.
-'<emphasis remap='I'>C</emphasis>'
+'<fvwmopt cmd="AddToFunc" opt="C"/>'
 stands for "Click", i.e., if the user presses and releases the
 mouse button.
-'<emphasis remap='I'>H</emphasis>'
+'<fvwmopt cmd="AddToFunc" opt="H"/>'
 stands for "Hold", i.e. if the user presses a mouse button and
 holds it down for more than
-<emphasis remap='B'>ClickTime</emphasis>
+<fvwmref cmd="ClickTime"/>
 milliseconds.
-'<emphasis remap='I'>D</emphasis>'
+'<fvwmopt cmd="AddToFunc" opt="D"/>'
 stands for "Double-click". The action
 '<emphasis remap='I'>I</emphasis>'
 causes an action to be performed on the button-press, if the
@@ -104,7 +110,7 @@ could use</para>
 </programlisting>
 
 <para>in the same
-<emphasis remap='I'>config</emphasis>,
+<filename>config</filename>,
 if you wanted.  An example of using "$[w.id]" is:</para>
 
 <programlisting>

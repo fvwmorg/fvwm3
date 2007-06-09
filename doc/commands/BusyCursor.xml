@@ -11,17 +11,17 @@
 <section id='BusyCursor'>
 <title>BusyCursor</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>BusyCursor</arg>
-    <arg choice='opt'>Option bool</arg>
-    <arg choice='plain'>, ...</arg>
+    <command>BusyCursor</command>
+    <arg choice='plain' rep='repeat'>
+      <arg choice='opt'><replaceable>Option</replaceable>
+	<replaceable>bool</replaceable></arg>,
+    </arg>
 </cmdsynopsis>
-</command>
 
 <para>This command controls the cursor during the execution of certain
 commands.
-<emphasis remap='I'>Option</emphasis>
+<replaceable>Option</replaceable>
 can be
 <emphasis>DynamicMenu</emphasis>,
 <fvwmopt cmd="BusyCursor" opt="ModuleSynchronous"/>,
@@ -29,11 +29,11 @@ can be
 <emphasis>Wait</emphasis> or
 <emphasis>*</emphasis>.
 An option must be followed by a boolean argument
-<emphasis remap='I'>bool</emphasis>.
+<replaceable>bool</replaceable>.
 You can use commas to separate individual options.  If you set an
 option to "True", then when the corresponding command is run, fvwm
 displays the cursor of the
-<emphasis remap='I'>WAIT</emphasis>
+<fvwmref cmd="CursorStyle" opt="WAIT"/>
 context of the
 <fvwmref cmd="CursorStyle"/>
 command.  "False" forces to not display the cursor.  The default is:</para>

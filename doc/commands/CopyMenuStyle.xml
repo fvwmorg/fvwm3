@@ -11,22 +11,21 @@
 <section id='CopyMenuStyle'>
 <title>CopyMenuStyle</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>CopyMenuStyle</arg>
-    <arg choice='plain'>orig-menustyle</arg>
-    <arg choice='plain'>dest-menustyle</arg>
+    <command>CopyMenuStyle</command>
+    <arg choice='plain'><replaceable>orig-menustyle</replaceable></arg>
+    <arg choice='plain'><replaceable>dest-menustyle</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 
 
 <para>Copy
-<emphasis remap='I'>orig-menustyle</emphasis> to <emphasis remap='I'>dest-menustyle</emphasis>,
+<replaceable>orig-menustyle</replaceable> to
+<replaceable>dest-menustyle</replaceable>,
 where
-<emphasis remap='I'>orig-menustyle</emphasis>
+<replaceable>orig-menustyle</replaceable>
 is an existing menu style.  If the menu style
-<emphasis remap='I'>dest_menustyle</emphasis>
+<replaceable>dest_menustyle</replaceable>
 does not exist, then it is created.</para>
 
 </section>

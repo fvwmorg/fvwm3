@@ -11,18 +11,19 @@
 <section id='AddTitleStyle'>
 <title>AddTitleStyle</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>AddTitleStyle</arg>
-	<arg choice='opt'>state</arg>
-	<arg choice='opt'>state</arg>
-	<arg choice='opt'>style</arg>
-	<arg choice='opt'>-- <arg choice='opt'>!</arg> flag ...</arg>
+	<command>AddTitleStyle</command>
+	<arg choice='opt'><replaceable>state</replaceable></arg>
+	<arg choice='opt'><replaceable>style</replaceable></arg>
+	<arg choice='opt'>--
+	  <arg choice='plain' rep='repeat'>
+	    <optional>!</optional><replaceable>flag</replaceable>
+	  </arg>
+	</arg>
 </cmdsynopsis>
-</command>
 
 <para>Adds a title style to the title-bar.
-<emphasis remap='I'>state</emphasis> can be
+<replaceable>state</replaceable> can be
 "<fvwmopt cmd="AddTitleStyle" opt="ActiveUp"/>",
 "<fvwmopt cmd="AddTitleStyle" opt="ActiveDown"/>",
 "<fvwmopt cmd="AddTitleStyle" opt="InactiveUp"/>" or
@@ -30,11 +31,11 @@
 "<fvwmopt cmd="AddTitleStyle" opt="Active"/>" (the same as both "ActiveUp" and "ActiveDown") or
 "<fvwmopt cmd="AddTitleStyle" opt="Inactive"/>" (the same as both "InactiveUp" and "InactiveDown")
 or any of these 6 with "Toggled" prepended.  If
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 is omitted, then the style is added to every state.  If the
-<emphasis remap='I'>style</emphasis> and <emphasis remap='I'>flags</emphasis>
+<replaceable>style</replaceable> and <replaceable>flags</replaceable>
 are enclosed in parentheses, then multiple
-<emphasis remap='I'>state</emphasis>
+<replaceable>state</replaceable>
 definitions can be placed on a single line.  This command is quite
 similar to the
 <fvwmref cmd="AddButtonStyle"/>

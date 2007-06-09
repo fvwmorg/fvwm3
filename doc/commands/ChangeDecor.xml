@@ -11,29 +11,27 @@
 <section id='ChangeDecor'>
 <title>ChangeDecor</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>ChangeDecor</arg>
-    <arg choice='plain'>decor</arg>
+    <command>ChangeDecor</command>
+    <arg choice='plain'><replaceable>decor</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.</para>
 
 <para>Changes the decor of a window to
-<emphasis remap='I'>decor</emphasis>.
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>.
+<replaceable>decor</replaceable>
 is "Default" or the name of a decor defined with
-<emphasis remap='B'>AddToDecor</emphasis>.
+<fvwmref cmd="AddToDecor"/>.
 If
-<emphasis remap='I'>decor</emphasis>
+<replaceable>decor</replaceable>
 is invalid, nothing occurs.  If called from somewhere in a window
 or its border, then that window is affected.  If called from the
 root window the user is allowed to select the target window.
 <emphasis remap='B'>ChangeDecor</emphasis>
 only affects attributes which can be set using the
-<emphasis remap='B'>AddToDecor</emphasis>
+<fvwmref cmd="AddToDecor"/>
 command.</para>
 
 <programlisting>

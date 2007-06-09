@@ -9,15 +9,11 @@
 <!-- $Id$ -->
 
 <section id='Plus'>
-<title><manonly>+</manonly><htmlonly>Plus</htmlonly></title>
+<title>Plus</title>
 
-<htmlonly>
-<!--command-->
-<cmdsynopsis>
+<cmdsynopsis command='Plus'>
 	<command>+</command>
 </cmdsynopsis>
-<!--/command-->
-</htmlonly>
 
 <para>Used to continue adding to the last specified decor, function or
 menu. See the discussion for

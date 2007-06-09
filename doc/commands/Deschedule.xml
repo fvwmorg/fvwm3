@@ -11,20 +11,18 @@
 <section id='Deschedule'>
 <title>Deschedule</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>Deschedule</arg>
-    <arg choice='opt'>command_id</arg>
+    <command>Deschedule</command>
+    <arg choice='opt'><replaceable>command_id</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Removes all commands that were scheduled with the id
-<emphasis remap='I'>command_id</emphasis>
+<replaceable>command_id</replaceable>
 with the
 <fvwmref cmd="Schedule"/>
 command from the list of commands to be executed unless they were
 already executed.  If the
-<emphasis remap='I'>command_id</emphasis>
+<replaceable>command_id</replaceable>
 is omitted, the value of the variable $[schedule.last] is used as
 the id.</para>
 

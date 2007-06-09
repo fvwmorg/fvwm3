@@ -11,12 +11,10 @@
 <section id='ClickTime'>
 <title>ClickTime</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>ClickTime</arg>
-	<arg choice='opt'>delay</arg>
+	<command>ClickTime</command>
+	<arg choice='opt'><replaceable>delay</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Specifies the maximum delay in milliseconds between a button press
 and a button release for the

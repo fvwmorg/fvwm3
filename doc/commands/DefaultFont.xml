@@ -11,16 +11,14 @@
 <section id='DefaultFont'>
 <title>DefaultFont</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>DefaultFont</arg>
-    <arg choice='opt'>fontname</arg>
+    <command>DefaultFont</command>
+    <arg choice='opt'><replaceable>fontname</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para><emphasis remap='B'>DefaultFont</emphasis>
 sets the default font to font
-<emphasis remap='I'>fontname</emphasis>.
+<replaceable>fontname</replaceable>.
 The default font is used by fvwm whenever no other font has been
 specified.  To reset the default font to the built-in default,
 omit the argument.  The default font is used for menus, window

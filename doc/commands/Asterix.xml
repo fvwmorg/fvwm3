@@ -11,15 +11,12 @@
 <section id='Asterix'>
 <title>Asterix</title>
 
-<command>
-<cmdsynopsis>
-    <arg choice='plain'>Asterix</arg>
-    <arg choice='plain'>module_config_line</arg>
+<cmdsynopsis command='Asterix'>
+	<command>*</command><arg choice='plain'><replaceable>module_config_line</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Defines a module configuration.
-<emphasis remap='I'>module_config_line</emphasis>
+<replaceable>module_config_line</replaceable>
 consists of a module name (or a module alias) and a module
 resource line. The new syntax allows a delimiter, a colon and
 optional spaces, between the module name and the rest of the line,

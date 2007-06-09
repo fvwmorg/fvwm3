@@ -11,16 +11,15 @@
 <section id='Echo'>
 <title>Echo</title>
 
-<command>
 <cmdsynopsis>
-	<arg choice='plain'>Echo string</arg>
+	<command>Echo</command>
+	<arg choice='plain'><replaceable>string</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 <para>Prints a message to
-<emphasis remap='I'>stderr</emphasis>.
+<filename>stderr</filename>.
 Potentially useful for debugging things in your
-<emphasis remap='I'>config</emphasis>.</para>
+<filename>config</filename>.</para>
 
 <programlisting>
 Echo Beginning style definitions...

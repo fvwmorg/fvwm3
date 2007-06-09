@@ -54,7 +54,7 @@ AddToMenu Utilities Utilities <fvwmref cmd="Title"/>
 
 <para>There is no end-of-menu symbol.  Menus do not have to be defined
 in a contiguous region of the
-<emphasis remap='I'>config</emphasis>
+<filename>config</filename>
 file.  The quoted (or first word)
 portion in the above examples is the menu label,
 which appears in the menu when the user pops it up.  The remaining
@@ -74,7 +74,7 @@ is even possible to destroy itself with
 <fvwmref cmd="DestroyMenu"/>
 and the rebuild from scratch.  When the menu has been destroyed
 (unless you used the
-<fvwmopt cmd="AddToMenu" opt="recreate"/>
+<fvwmref cmd="DestroyMenu" opt="recreate"/>
 option when destroying the menu), do not forget to add the dynamic
 action again.</para>
 
@@ -167,20 +167,20 @@ sub menus for subdirectories.</para>
 <para>Titles can be used within the menu. If you add the option
 <fvwmopt cmd="AddToMenu" opt="top"/>
 behind the keyword
-<emphasis remap='B'>Title</emphasis>,
+<fvwmref cmd="Title"/>,
 the title is added to the top of the menu.  If there was a title
 already, it is overwritten.</para>
 
 <programlisting>AddToMenu Utilities Tools Title top</programlisting>
 
 <para>All text up to the first
-<emphasis remap='SM'>Tab</emphasis>
+<keysym>Tab</keysym>
 in the menu label is aligned to the left side of the menu, all
 text right of the first
-<emphasis remap='SM'>Tab</emphasis>
+<keysym>Tab</keysym>
 is aligned to the left in a second column and all text thereafter
-is placed right aligned in the third column.  <fvwmref cmd="All"/> other
-<emphasis remap='SM'>Tabs</emphasis>
+is placed right aligned in the third column.  All other
+<keysym>Tab</keysym>s
 are replaced by spaces.  Note that you can change this format with
 the
 <fvwmref cmd="MenuStyle" opt="ItemFormat"/>

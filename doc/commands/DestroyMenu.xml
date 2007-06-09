@@ -11,13 +11,11 @@
 <section id='DestroyMenu'>
 <title>DestroyMenu</title>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>DestroyMenu</arg>
+    <command>DestroyMenu</command>
     <arg choice='opt'>recreate</arg>
-    <arg choice='plain'>menu</arg>
+    <arg choice='plain'><replaceable>menu</replaceable></arg>
 </cmdsynopsis>
-</command>
 
 
 <para>Deletes a menu, so that subsequent references to it are no longer
@@ -25,7 +23,7 @@ valid.  You can use this to change the contents of a menu during
 an fvwm session.  The menu can be rebuilt using
 <fvwmref cmd="AddToMenu"/>.
 The optional parameter
-<emphasis remap='I'>recreate</emphasis>
+<fvwmopt cmd="DestroyMenu" opt="recreate"/>
 tells fvwm not to throw away the menu completely but to throw away
 all the menu items (including the title).</para>
 
