@@ -43,9 +43,9 @@ styles.</para>
 <para>The rendering options are specified as a string appended to the SVG
 filename as follows:</para>
 
-<htmlonly>
+<para output="html">
 &fixme; <!-- This looks crappy as HTML output. -->
-</htmlonly>
+</para>
 
 <para><replaceable><filename>image.svg</filename></replaceable><emphasis remap='B'>:</emphasis><optional><optional><emphasis remap='B'>-</emphasis></optional><replaceable>width</replaceable><emphasis remap='B'>x</emphasis><optional><emphasis remap='B'>-</emphasis></optional><replaceable>height</replaceable></optional><optional><optional><emphasis remap='B'>+</emphasis>|<emphasis remap='B'>-</emphasis></optional><replaceable>xpos</replaceable><optional><emphasis remap='B'>+</emphasis>|<emphasis remap='B'>-</emphasis></optional><replaceable>ypos</replaceable></optional><optional><emphasis remap='B'>@</emphasis><replaceable>angle</replaceable></optional><optional><optional><emphasis remap='B'>*</emphasis>|<emphasis remap='B'>/</emphasis></optional><replaceable>scale</replaceable></optional></para>
 

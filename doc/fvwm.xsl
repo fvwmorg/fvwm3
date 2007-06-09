@@ -6,28 +6,12 @@
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
-<!--
-<xsl:output method="html"/>
-<xsl:include href="/usr/share/sgml/docbook/xsl-stylesheets/html/docbook.xsl"/>
-<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets/html/docbook.xsl"/>
--->
 <xsl:import href="docbook-xsl/html/docbook.xsl"/>
 
 <!-- twdt = The Whole Damn Thing ... ie. everything on a single page -->
 <xsl:param name="twdt" select="''"/>
 <xsl:param name="header.file" select="'../header.html'"/>
 <xsl:param name="footer.file" select="'../footer.html'"/>
-
-<!-- manonly -->
-<xsl:template match="manonly">
-</xsl:template>
-
-<!-- htmlonly -->
-<xsl:template match="htmlonly">
-	<xsl:apply-templates/>
-</xsl:template>
-
-
 
 <!-- fvwmref -->
 <xsl:template match="fvwmref">

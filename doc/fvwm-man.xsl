@@ -45,48 +45,6 @@
   <xsl:param name="tbl.font.title" select="$man.font.table.title"/>
 
   <!-- ==================================================================== -->
-<xsl:template match="simplelist">
-  <xsl:text>.nf&#10;</xsl:text>
-  <xsl:text>.IP ""</xsl:text>
-    <xsl:if test="not($list-indent = '')">
-      <xsl:text> </xsl:text>
-      <xsl:value-of select="$list-indent"/>
-    </xsl:if>
-    <xsl:text>&#10;</xsl:text>
-  <xsl:for-each select="member">
-    <xsl:variable name="content">
-      <xsl:apply-templates/>
-    </xsl:variable>
-    <xsl:value-of select="normalize-space($content)"/>
-    <xsl:text>&#10;</xsl:text>
-  </xsl:for-each>
-  <xsl:text>.fi&#10;</xsl:text>
-</xsl:template>
-
-<xsl:template mode="small" match="*">
-  <xsl:for-each select="node()">
-    <xsl:text>&#10;.SM </xsl:text>
-    <xsl:value-of select="normalize-space(.)"/>
-    <xsl:text>&#10;</xsl:text>
-  </xsl:for-each>
-</xsl:template>
-
-<xsl:template match="keysym">
-  <xsl:apply-templates mode="small" select="."/>
-</xsl:template>
-
-<xsl:template match="envar">
-  <xsl:apply-templates mode="italic" select="."/>
-</xsl:template>
-
-<!-- manonly -->
-<xsl:template match="manonly">
-	<xsl:apply-templates/>
-</xsl:template>
-
-<!-- htmlonly -->
-<xsl:template match="htmlonly">
-</xsl:template>
 
 <xsl:template match="section">
 	<xsl:apply-templates/>
@@ -147,6 +105,40 @@
 			<xsl:text>&#10;</xsl:text>
 		</xsl:otherwise>
 	</xsl:choose>
+</xsl:template>
+
+<xsl:template match="simplelist">
+  <xsl:text>.nf&#10;</xsl:text>
+  <xsl:text>.IP ""</xsl:text>
+    <xsl:if test="not($list-indent = '')">
+      <xsl:text> </xsl:text>
+      <xsl:value-of select="$list-indent"/>
+    </xsl:if>
+    <xsl:text>&#10;</xsl:text>
+  <xsl:for-each select="member">
+    <xsl:variable name="content">
+      <xsl:apply-templates/>
+    </xsl:variable>
+    <xsl:value-of select="normalize-space($content)"/>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:for-each>
+  <xsl:text>.fi&#10;</xsl:text>
+</xsl:template>
+
+<xsl:template mode="small" match="*">
+  <xsl:for-each select="node()">
+    <xsl:text>&#10;.SM </xsl:text>
+    <xsl:value-of select="normalize-space(.)"/>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template match="keysym">
+  <xsl:apply-templates mode="small" select="."/>
+</xsl:template>
+
+<xsl:template match="envar">
+  <xsl:apply-templates mode="italic" select="."/>
 </xsl:template>
 
 <!-- fvwmopt -->

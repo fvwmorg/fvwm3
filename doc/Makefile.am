@@ -3,7 +3,7 @@
 
 docdir=@FVWM_DOCDIR@
 
-HTML_FILES=index.html allCommands.html groupedCommands.html style.css
+HTML_FILES=index.html allCommands.html groupedCommands.html modules.html style.css
 EXTRA_DIST=fvwm.xsl fvwm-man.xsl header.html $(HTML_FILES)
 EXTRA_DIST+=$(shell find $(srcdir)/docbook-x?l -type f)
 

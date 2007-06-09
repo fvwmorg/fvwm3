@@ -1,6 +1,8 @@
 
 # $Id$
 
+# Author: Scott Smedley
+
 This directory contains FVWM XML documentation. It is configured to output
 an fvwm.1 man page & a plethora of HTML files - all from the same (XML)
 source.
@@ -63,11 +65,14 @@ However, there are a few idiosyncrasies worth pointing out:
 
   <fvwmref sect="colorGradients" opt="color_gradients" name="Color Gradients"/>
 
-* Use <htmlonly> to wrap text that should only appear in HTML output.
-* Use <manonly> to wrap text that should only only appear in man-page output.
+* Use <... output="html"> to wrap text that should only appear in HTML output.
+  Eg. <para output="html">This text only appears in HTML.</para>
+* Use <... output="man"> to wrap text that should only only appear in man-page
+  output.
+  Eg. <para output="man">This text only appears in man page.</para>
 * Use <filename> for filenames.
 * Use <envar> for environment variables.
 * Use <ulink> for links to web pages.
 * Use <acronym> for acronyms.
-* Use <emphasis> for key names.
+* Use <keysym> for key names.
 

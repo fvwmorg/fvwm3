@@ -1,3 +1,41 @@
+2007-06-10  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+	* doc/Makefile.am:
+	* doc/fvwm/Makefile.am:
+	* doc/commands/Makefile.am:
+	* doc/modules/Makefile.am:
+	* doc/docbook-xsl/profiling/profile.xsl: (new)
+	* doc/docbook-xsl/profiling/profile-mode.xsl: (new)
+	Use 2-pass profiling on all XML files.
+
+	* doc/README:
+	Use <keysym> (instead of <emphasis>) for key names.
+	Replaced <manonly> & <htmlonly> with <... output="html"> etc.
+
+	* doc/allCommands.html:
+	* doc/groupedCommands.html:
+	* doc/index.html:
+	* doc/modules/modules.html: (deleted)
+	* doc/modules.html: (new)
+	Moved modules.html.
+
+	* doc/fvwm.xsl:
+	* doc/fvwm-man.xsl:
+	Removed <manonly> & <htmlonly>.
+
+	* doc/fvwm/images.xml:
+	* doc/fvwm/initialization.xml:
+	Replaced use of <manonly> & <htmlonly> with <... output="...">.
+
+	* doc/modules/FvwmTabs.xml:
+	* doc/modules/images/FvwmTabs/menu.png: (new)
+	* doc/modules/images/FvwmTabs/green.png: (new)
+	* doc/modules/images/FvwmTabs/yellow.png: (new)
+	* doc/modules/images/FvwmTabs/red.png: (new)
+	* doc/modules/images/FvwmTabs/screenshot.png: (new)
+	* doc/modules/images/FvwmTabs/fvwmTabsEmpty.png: (new)
+	* doc/modules/images/FvwmTabs/logoFvwmTabs.png: (new)
+	Created FvwmTabs man page.
+
 2007-06-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* doc/commands/.cvsignore:
@@ -312,7 +350,7 @@
 2007-05-13  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* doc/modules/Makefile.am:
-        * doc/modules/FvwmTabs.xml:
+	* doc/modules/FvwmTabs.xml:
 	* doc/style.css
 
 	Converted FvwmTabs man page to docbook format.
