@@ -103,8 +103,9 @@ specifications in between ":", as "foundry=foundry_name",
 "spacing=type" where type can be monospace, proportional or
 charcell, "charwidth=integer", "charheight=integer" or
 "antialias=bool" where bool is True or False. It seems that these
-parameters are not always taken in account.
-To determine which Xft fonts are really loaded you can export
+parameters are not always taken in account.</para>
+
+<para>To determine which Xft fonts are really loaded you can export
 XFT_DEBUG=1 before starting fvwm and take a look to the error
 log. With Xft2 you may use fc-list to list the available
 fonts. Anyway, Xft support is experimental (from the X and the
@@ -300,7 +301,7 @@ are a space separated list of fvwm directions:</para>
 
 <para><emphasis remap='I'>NW</emphasis>, <emphasis remap='I'>NorthWest</emphasis>, <emphasis remap='I'>TopLeft</emphasis>, <emphasis remap='I'>tl</emphasis>, <emphasis remap='I'>UpLeft</emphasis>, <emphasis remap='I'>ul</emphasis>, <emphasis remap='I'>&lt;</emphasis></para>
 
-<para><emphasis remap='I'>C</emphasis>, <emphasis remap='I'>Center</emphasis>, <emphasis remap='I'>Centre</emphasis>, <literal>.</literal></para>
+<para><emphasis remap='I'>C</emphasis>, <emphasis remap='I'>Center</emphasis>, <emphasis remap='I'>Centre</emphasis>, <emphasis>.</emphasis></para>
 
 <para>A shadow is displayed in each given direction.
 <emphasis remap='I'>All</emphasis>

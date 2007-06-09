@@ -158,7 +158,7 @@ simpler than this description).  The default is "o0".  The prefix
 "o&lt;number&gt;" is an abbreviation for "+&lt;number&gt;-&lt;number&gt;m".</para>
 
 <para>A prefix of
-''<fvwmopt cmd="Menu" opt="c"/>'
+'<fvwmopt cmd="Menu" opt="c"/>'
 is equivalent to "o50".  Examples:</para>
 
 <programlisting>

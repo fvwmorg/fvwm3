@@ -731,13 +731,13 @@ MenuStyle red MenuFace DGradient 64 Red Black
 each style name.</para>
 
 <cmdsynopsis>
-    <arg choice='plain'>MenuStyle</arg>
-    <arg choice='plain'>forecolor</arg>
-    <arg choice='plain'>backcolor</arg>
-    <arg choice='plain'>shadecolor</arg>
-    <arg choice='plain'>font</arg>
-    <arg choice='plain'>style</arg>
-    <arg choice='opt'>anim</arg>
+    <command>MenuStyle</command>
+    <arg choice='plain'><replaceable>forecolor</replaceable></arg>
+    <arg choice='plain'><replaceable>backcolor</replaceable></arg>
+    <arg choice='plain'><replaceable>shadecolor</replaceable></arg>
+    <arg choice='plain'><replaceable>font</replaceable></arg>
+    <arg choice='plain'><replaceable>style</replaceable></arg>
+    <arg choice='opt'><replaceable>anim</replaceable></arg>
 </cmdsynopsis>
 
 <para>This is the old syntax of the
@@ -747,7 +747,7 @@ use the new syntax as described above.</para>
 
 <para>Sets the menu style.  When using monochrome the colors are
 ignored.  The
-<emphasis remap='I'>shadecolor</emphasis>
+<replaceable>shadecolor</replaceable>
 is the one used to draw a menu-selection which is prohibited (or
 not recommended) by the Mwm hints which an application has
 specified.  The style option is either
@@ -765,7 +765,7 @@ sub menus overlap the parent menu,
 style menus never overlap the parent menu.</para>
 
 <para>When the
-<emphasis remap='I'>anim</emphasis>
+<replaceable>anim</replaceable>
 option is given, sub menus that do not fit on the screen cause the
 parent menu to be shifted to the left so the sub menu can be
 seen. See also

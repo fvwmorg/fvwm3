@@ -1,3 +1,21 @@
+2007-06-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* doc/fvwm-man.xsl:
+	don't use .PP at the first paragraph in a subsub+section.
+	foce two spaces between sentences, and force no blank lines at start
+	of paragraphs
+	fix markup of non section header cmdsynopsis
+
+	* doc/commands/MenuStyle.xml:
+	use <command> for oldstyle syntax
+
+	* doc/commands/Menu.xml:
+	fixed typo
+
+	* doc/fvwm/fonts.xml:
+	insert paragraph brake as per old man page
+	make sure that the . alias for Center appears in man output
+
 2007-06-10  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 	* doc/Makefile.am:
 	* doc/fvwm/Makefile.am:
