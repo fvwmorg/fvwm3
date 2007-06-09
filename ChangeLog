@@ -16,6 +16,7 @@
 	* doc/index.html:
 	* doc/modules/modules.html: (deleted)
 	* doc/modules.html: (new)
+	* doc/header.html:
 	Moved modules.html.
 
 	* doc/fvwm.xsl:
