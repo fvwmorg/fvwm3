@@ -301,3 +301,43 @@ FvwmPicture *PCloneFvwmPicture(FvwmPicture *pic)
 	return pic;
 }
 
+void PicturePrintImageCache(int verbose)
+{
+	FvwmPicture *p;
+	unsigned int count = 0;
+	unsigned int hits = 0;
+	unsigned int num_alpha = 0;
+	unsigned int num_mask = 0;
+
+	fflush(stderr);
+	fflush(stdout);
+	fprintf(stderr, "FVWM info on Image cache:\n");
+
+	for (p = FvwmPictureList; p != NULL; p = p->next)
+	{
+		int num_pixmaps = 1;
+		if (p->mask != None)
+		{
+			num_mask++;
+			num_pixmaps++;
+		}
+		if (p->alpha != None)
+		{
+			num_alpha++;
+			num_pixmaps++;
+		}
+		if (verbose > 0)
+		{
+			fprintf(stderr,
+				"Image: %s (%d pixmaps; used %d times)\n",
+				p->name, num_pixmaps, p->count);
+		}
+		count++;
+		hits += p->count-1;
+	}
+
+	fprintf(stderr, "%u images in cache (%d reuses) "
+		"(%u masks, %u alpha channels => %u pixmaps)\n",
+		count, hits, num_mask, num_alpha, count + num_mask + num_alpha);
+	fflush(stderr);
+}

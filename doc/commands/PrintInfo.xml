@@ -35,6 +35,12 @@ is one or greater the palette used by fvwm is printed.
 If you have a limited color palette, and you run out of colors,
 this command might be helpful.</para>
 
+<para><fvwmopt cmd="PrintInfo" opt="ImageCache"/>
+which prints information about the images loaded by fvwm. If
+<replaceable>verbose</replaceable>
+is one or greater all images in the cache will be listed together
+with their respective reuse.</para>
+
 <para><fvwmopt cmd="PrintInfo" opt="Locale"/>
 which prints information on your locale and the fonts that fvwm
 used.

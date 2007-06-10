@@ -1,3 +1,12 @@
+2007-06-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* doc/commands/PrintInfo.xml:
+	* fvwm/builtins.c (CMD_PrintInfo):
+	* libs/Picture.h (PicturePrintImageCache):
+	* libs/Picture.c (PicturePrintImageCache):
+	add ImageCache subject to PrintInfo command
+
 2007-06-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* doc/fvwm-man.xsl:

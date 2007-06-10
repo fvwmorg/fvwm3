@@ -2688,6 +2688,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	{
 		print_styles(verbose);
 	}
+	else if (StrEquals(subject, "ImageCache"))
+	{
+		PicturePrintImageCache(verbose);
+	}
 	else
 	{
 		fvwm_msg(ERR, "PrintInfo",

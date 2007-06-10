@@ -83,4 +83,7 @@ void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p);
  */
 FvwmPicture *PCloneFvwmPicture(FvwmPicture *pic);
 
+
+void PicturePrintImageCache(int verbose);
+
 #endif
