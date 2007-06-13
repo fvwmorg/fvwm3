@@ -1,3 +1,8 @@
+2007-06-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm_make_browse_menu.sh:
+	fixed script
+
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* Makefile.am (LDADD):

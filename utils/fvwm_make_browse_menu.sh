@@ -28,6 +28,10 @@
 # the file containing the desired directory name
 DIRFILE="$HOME/.fvwm_browse_menu_cwd"
 
+# you may use the absolute path here if you have an alias like ls="ls -F"
+LS=ls
+SED=sed
+
 # the name of our menu
 MENU=`echo "$1" | $SED -e s:\"::g`
 
@@ -36,11 +40,6 @@ ACTION=vi
 
 # the terminal program to invoke
 TERMINAL="xterm -e"
-
-# you may use the absolute path here if you have an alias like ls="ls -F"
-LS=ls
-
-SED=sed
 
 #
 # you may customize this script below here.

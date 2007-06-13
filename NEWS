@@ -55,6 +55,7 @@ Changes in beta release 2.5.22 (not released yet)
    - FvwmPager now displays windows that are StickyAcrossPages
      correctly.
    - Fixed a possible crash with modules closing down.
+   - Fixed broken demo script fvwm_make_browse_menu.sh.
 
 -------------------------------------------------------------------
 
