@@ -169,7 +169,7 @@
 				<xsl:value-of select="substring-before($content,'&#10;&#10;')"/>
 			</xsl:variable>
 			<xsl:choose>
-				<xsl:when test="contains($pcontent,'. ')">
+				<xsl:when test="contains($pcontent,'. ') or contains($pcontent,'&#10; ')">
 					<xsl:call-template name="normalize-paragraph">
 						<xsl:with-param name="content" select="$pcontent"/>
 					</xsl:call-template>
@@ -189,6 +189,41 @@
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:when test="contains($rcontent,'&#10;&#10;') or contains($rcontent,'. ')">
+					<xsl:call-template name="normalize-paragraph">
+						<xsl:with-param name="content" select="$rcontent"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$rcontent"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:when>
+		<!-- spaces at the start of lines must be removed -->
+		<xsl:when test="contains($content,'&#10; ')">
+			<xsl:variable name='pcontent'>
+				<xsl:value-of select="substring-before($content,'&#10; ')"/>
+			</xsl:variable>
+			<xsl:choose>
+				<xsl:when test="contains($pcontent,'. ')">
+					<xsl:call-template name="normalize-paragraph">
+						<xsl:with-param name="content" select="$pcontent"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$pcontent"/>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:text>&#10;</xsl:text>
+			<xsl:variable name="rcontent">
+				<xsl:value-of select="substring-after($content,'&#10; ')"/>
+			</xsl:variable>
+			<xsl:choose>
+				<xsl:when test="starts-with($rcontent,'&#10;') or starts-with($rcontent,' ')">
+					<xsl:call-template name="normalize-paragraph">
+						<xsl:with-param name="content" select="substring($rcontent,2)"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="contains($rcontent,'&#10; ') or contains($rcontent,'&#10;&#10;') or contains($rcontent,'. ')">
 					<xsl:call-template name="normalize-paragraph">
 						<xsl:with-param name="content" select="$rcontent"/>
 					</xsl:call-template>
@@ -230,7 +265,7 @@
 
 <xsl:template match="para">
 	<!-- just &#10; is enough for most cases, and make less need for .RS
-			 in all places, however it reduces spaces in some less desireable
+	     in all places, however it reduces spaces in some less desireable
 			 places -->
 	<xsl:text>.PP&#10;</xsl:text>
 	<xsl:variable name="rawcontent">
@@ -241,9 +276,9 @@
     <xsl:value-of select="translate(normalize-space(translate($rawcontent,'&#10;','&#63743;')),'&#63743;','&#10;')"/>
   </xsl:variable>
 	<!-- * Add some check to remove double newlines within the paragraph
-			 * but keep single newlines since there might be formatting -->
+	     * but keep single newlines since there might be formatting -->
 	<xsl:choose>
-		<xsl:when test="contains($content,'&#10;&#10;') or starts-with($content,'&#10;') or contains($content,'. ')">
+		<xsl:when test="contains($content,'&#10; ') or contains($content,'&#10;&#10;') or starts-with($content,'&#10;') or contains($content,'. ')">
 			<xsl:call-template name="normalize-paragraph">
 				<xsl:with-param name="content" select="$content"/>
 			</xsl:call-template>

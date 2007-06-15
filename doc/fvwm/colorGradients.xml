@@ -34,14 +34,12 @@ is a Yin Yang style (but without the dots).</para>
 
 <para>The color gradient syntax has two forms:</para>
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>?Gradient</arg>
+    <option>?Gradient</option>
     <arg choice='plain'>colors</arg>
     <arg choice='plain'>start-color</arg>
     <arg choice='plain'>end-color</arg>
 </cmdsynopsis>
-</command>
 
 <para>This form specifies a linear gradient.  The arguments denote the
 total number of
@@ -56,9 +54,8 @@ color.</para>
 </programlisting>
 
 
-<command>
 <cmdsynopsis>
-    <arg choice='plain'>?Gradient</arg>
+    <option>?Gradient</option>
     <arg choice='plain'>colors</arg>
     <arg choice='plain'>segments</arg>
     <arg choice='plain'>color</arg>
@@ -67,7 +64,6 @@ color.</para>
     <arg choice='opt'>length color</arg>
     <arg choice='plain'> ...</arg>
 </cmdsynopsis>
-</command>
 
 <para>The second form specifies a nonlinear gradient.  The arguments are:
 the total number of
