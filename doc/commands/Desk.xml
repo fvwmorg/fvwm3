@@ -12,11 +12,17 @@
 <title>Desk</title>
 
 <cmdsynopsis>
-    <command>Desk</command>
-    <arg choice='plain'><replaceable>arg1</replaceable></arg>
-    <arg choice='opt'><replaceable>arg2</replaceable></arg>
-    <arg choice='opt'><replaceable>min</replaceable>
-        <replaceable>max</replaceable></arg>
+	<command>Desk</command
+	><arg choice='plain'
+		><replaceable>arg1</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>arg2</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>min</replaceable
+		> <replaceable>max</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>This command has been renamed.  Please see

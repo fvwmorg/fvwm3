@@ -11,12 +11,12 @@
 <section id='ExecUseShell'>
 <title>ExecUseShell</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>ExecUseShell</command>
-	<arg choice='opt'><replaceable>shell</replaceable></arg>
+	<command>ExecUseShell</command
+	><arg choice='opt'
+		><replaceable>shell</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Makes the
 <fvwmref cmd="Exec"/>

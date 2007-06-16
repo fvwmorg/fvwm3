@@ -12,13 +12,20 @@
 <title>AddButtonStyle</title>
 
 <cmdsynopsis>
-  <command>AddButtonStyle</command>
-  <arg choice='plain'>button</arg>
-	<arg choice='opt'><replaceable>state</replaceable></arg>
-	<arg choice='opt'><replaceable>style</replaceable></arg>
-	<arg choice='opt'>--
-		<arg choice='plain' rep='repeat'><optional>!</optional><replaceable>flag</replaceable></arg>
-	</arg>
+	<command>AddButtonStyle</command
+	><arg choice='plain'>button</arg
+	><arg choice='opt'
+		><replaceable>state</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>style</replaceable
+	></arg
+	><arg choice='opt'
+		>-- <arg choice='plain' rep='repeat'
+			><optional>!</optional
+			><replaceable>flag</replaceable
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Adds a button style to
@@ -81,7 +88,9 @@ command.  Examples:</para>
 <fvwmref cmd="ButtonStyle"/> 1 Pixmap led.xpm -- Top Left
 <fvwmref cmd="ButtonStyle"/> 1 ActiveDown HGradient 8 grey black
 <fvwmref cmd="ButtonStyle"/> <fvwmref cmd="All"/> --  UseTitleStyle
-AddButtonStyle 1 ActiveUp (Pixmap a.xpm) ActiveDown (Pixmap b.xpm -- Top)
+AddButtonStyle 1 \
+	ActiveUp (Pixmap a.xpm) \
+	ActiveDown (Pixmap b.xpm -- Top)
 AddButtonStyle 1 Vector 4 50x30@1 70x70@0 30x70@0 50x30@1
 </programlisting>
 

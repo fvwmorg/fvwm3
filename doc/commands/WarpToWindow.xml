@@ -11,13 +11,17 @@
 <section id='WarpToWindow'>
 <title>WarpToWindow</title>
 
-<!--command-->
 <cmdsynopsis>
-  <command>WarpToWindow</command>
-  <arg choice='plain'><replaceable>x</replaceable><optional>p</optional></arg>
-  <arg choice='plain'><replaceable>y</replaceable><optional>p</optional></arg>
+	<command>WarpToWindow</command
+	><arg choice='plain'
+		><replaceable>x</replaceable
+		><optional>p</optional
+	></arg
+	><arg choice='plain'
+		><replaceable>y</replaceable
+		><optional>p</optional
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Warps the cursor to the associated window.  The parameters
 <replaceable>x</replaceable> and <replaceable>y</replaceable>

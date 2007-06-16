@@ -11,11 +11,9 @@
 <section id='SaveSession'>
 <title>SaveSession</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>SaveSession</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Causes a session manager (if any) to save the session.  This
 command does not work for xsm, it seems that xsm does not

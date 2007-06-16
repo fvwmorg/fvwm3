@@ -11,11 +11,9 @@
 <section id='Title'>
 <title>Title</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>Title</command>
+	<command>Title</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Does nothing This is used to insert a title line in a popup or menu.</para>
 

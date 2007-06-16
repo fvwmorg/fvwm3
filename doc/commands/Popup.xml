@@ -11,14 +11,18 @@
 <section id='Popup'>
 <title>Popup</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>Popup</command>
-    <arg choice='plain'><replaceable>PopupName</replaceable></arg>
-    <arg choice='opt'><replaceable>position</replaceable></arg>
-    <arg choice='opt'><replaceable>default-action</replaceable></arg>
+	<command>Popup</command
+	><arg choice='plain'
+		><replaceable>PopupName</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>position</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>default-action</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>This command has two purposes: to bind a menu to a key or mouse
@@ -73,7 +77,7 @@ it into a main menu, called "RootMenu":</para>
 
 <fvwmref cmd="AddToMenu"/> RootMenu "Root Menu" <fvwmref cmd="Title"/>
  + "Open XTerm Window" Popup NewWindowMenu
- + "Login as Root"     <fvwmref cmd="Exec"/> exec xterm -fg green -T Root -n Root -e su -
+ + "Login as Root"     <fvwmref cmd="Exec"/> exec xterm -T Root -n Root -e su -
  + "Login as Anyone"   <fvwmref cmd="Popup"/> AnyoneMenu
  + "Remote Hosts"      <fvwmref cmd="Popup"/> HostMenu
  + ""                  <fvwmref cmd="Nop"/>

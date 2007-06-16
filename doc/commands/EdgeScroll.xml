@@ -13,18 +13,20 @@
 
 
 <cmdsynopsis>
-	<command>EdgeScroll</command>
-	<arg choice='plain'>
-		<replaceable>horizontal</replaceable><optional>p</optional>
-	</arg>
-	<arg choice='plain'>
-		<replaceable>vertical</replaceable><optional>p</optional>
-	</arg>
-	<group choice='opt'>
-		<arg choice='plain'>wrap</arg>
-		<arg choice='plain'>wrapx</arg>
-		<arg choice='plain'>wrapy</arg>
-	</group>
+	<command>EdgeScroll</command
+	><arg choice='plain'
+		><replaceable>horizontal</replaceable
+		><optional>p</optional
+	></arg
+	><arg choice='plain'
+		><replaceable>vertical</replaceable
+		><optional>p</optional>
+	</arg
+	><group choice='opt'
+		><arg choice='plain'>wrap</arg
+		><arg choice='plain'>wrapx</arg
+		><arg choice='plain'>wrapy</arg
+	></group>
 </cmdsynopsis>
 
 <para>Specifies the percentage of a page to scroll when the cursor hits

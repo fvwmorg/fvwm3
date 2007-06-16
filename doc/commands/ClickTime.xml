@@ -12,8 +12,10 @@
 <title>ClickTime</title>
 
 <cmdsynopsis>
-	<command>ClickTime</command>
-	<arg choice='opt'><replaceable>delay</replaceable></arg>
+	<command>ClickTime</command
+	><arg choice='opt'
+		><replaceable>delay</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Specifies the maximum delay in milliseconds between a button press

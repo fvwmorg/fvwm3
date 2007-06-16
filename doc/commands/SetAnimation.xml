@@ -11,13 +11,15 @@
 <section id='SetAnimation'>
 <title>SetAnimation</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>SetAnimation</command>
-    <arg choice='plain'><replaceable>milliseconds-delay</replaceable></arg>
-    <arg choice='opt'><replaceable>fractions-to-move-list</replaceable></arg>
+	<command>SetAnimation</command
+	><arg choice='plain'
+		><replaceable>milliseconds-delay</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>fractions-to-move-list</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Sets the time between frames and the list of fractional offsets to
 customize the animated moves of the

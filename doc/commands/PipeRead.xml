@@ -11,13 +11,13 @@
 <section id='PipeRead'>
 <title>PipeRead</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>PipeRead</command>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
-	<arg choice='opt'>quiet</arg>
+	<command>PipeRead</command
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg
+	><arg choice='opt'>quiet</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Causes fvwm to read commands from the output of the
 <replaceable>command</replaceable>.

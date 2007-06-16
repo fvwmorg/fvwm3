@@ -11,13 +11,15 @@
 <section id='None'>
 <title>None</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>None</command>
-	<arg choice="opt">(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>None</command
+	><arg choice="opt"
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Performs
 <replaceable>command</replaceable>

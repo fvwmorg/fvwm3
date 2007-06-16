@@ -11,12 +11,12 @@
 <section id='PixmapPath'>
 <title>PixmapPath</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>PixmapPath</command>
-	<arg choice='plain'><replaceable>path</replaceable></arg>
+	<command>PixmapPath</command
+	><arg choice='plain'
+		><replaceable>path</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is obsolete. Please use
 <fvwmref cmd="ImagePath"/>

@@ -11,13 +11,15 @@
 <section id='PointerWindow'>
 <title>PointerWindow</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>PointerWindow</command>
-	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>PointerWindow</command
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Performs
 <replaceable>command</replaceable>

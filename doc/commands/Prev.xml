@@ -11,13 +11,15 @@
 <section id='Prev'>
 <title>Prev</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Prev</command>
-	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Prev</command
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Performs
 <replaceable>command</replaceable>

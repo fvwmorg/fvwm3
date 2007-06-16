@@ -11,14 +11,16 @@
 <section id='addtomenu'>
 <title>AddToMenu</title>
 
-<!--command-->
-<!-- Use of cmdsynopsis inside of command violates the docbook DTD -->
 <cmdsynopsis>
-    <command>AddToMenu</command>
-    <arg choice='plain'><replaceable>menu-name</replaceable></arg>
-    <arg choice='opt'><replaceable>menu-label</replaceable> <replaceable>action</replaceable></arg>
+	<command>AddToMenu</command
+	><arg choice='plain'
+		><replaceable>menu-name</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>menu-label</replaceable
+		> <replaceable>action</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Begins or adds to a menu definition.  Typically a menu definition
 looks like this:</para>
@@ -226,9 +228,9 @@ pictures used with this feature should be small (perhaps 16x16).</para>
 
 <para>If the menu-name (not the label) contains a sub-string which is
 set off by at signs ('@'), then the text between them is expected
-to be the name of an xpm or bitmap file to draw along the left
+to be the name of an image file to draw along the left
 side of the menu (a side pixmap).  You may want to use the
-<emphasis remap='I'>SidePic</emphasis>
+<fvwmref cmd="MenuStyle" opt='SidePic' />
 option of the
 <fvwmref cmd="MenuStyle"/>
 command instead.  To get a literal '@', insert "@@".  For example</para>

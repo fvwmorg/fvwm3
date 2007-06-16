@@ -11,12 +11,12 @@
 <section id='OpaqueMoveSize'>
 <title>OpaqueMoveSize</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>OpaqueMoveSize</command>
-    <arg choice='opt'><replaceable>percentage</replaceable></arg>
+	<command>OpaqueMoveSize</command
+	><arg choice='opt'
+		><replaceable>percentage</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>Tells fvwm the maximum size window with which opaque window

@@ -35,15 +35,20 @@ is a Yin Yang style (but without the dots).</para>
 <para>The color gradient syntax has two forms:</para>
 
 <cmdsynopsis>
-    <option>?Gradient</option>
-    <arg choice='plain'>colors</arg>
-    <arg choice='plain'>start-color</arg>
-    <arg choice='plain'>end-color</arg>
+	<option>?Gradient</option
+	><arg choice='plain'
+		><replaceable>colors</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>start-color</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>end-color</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>This form specifies a linear gradient.  The arguments denote the
-total number of
-<emphasis remap='I'>colors</emphasis>
+total number of <replaceable>colors</replaceable>
 to allocate (between 2 and 1000), the initial color and the final
 color.</para>
 
@@ -55,25 +60,40 @@ color.</para>
 
 
 <cmdsynopsis>
-    <option>?Gradient</option>
-    <arg choice='plain'>colors</arg>
-    <arg choice='plain'>segments</arg>
-    <arg choice='plain'>color</arg>
-    <arg choice='plain'>length</arg>
-    <arg choice='plain'>color</arg>
-    <arg choice='opt'>length color</arg>
-    <arg choice='plain'> ...</arg>
+	<option>?Gradient</option
+	><arg choice='plain'
+		><replaceable>colors</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>segments</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>color</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>length</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>color</replaceable
+	></arg
+	><arg choice='plain' rep='repeat'
+		><arg choice='opt'
+			><arg choice='plain'
+				><replaceable>length</replaceable
+			></arg
+			><arg choice='plain'
+				><replaceable>color</replaceable
+			></arg
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>The second form specifies a nonlinear gradient.  The arguments are:
-the total number of
-<emphasis remap='I'>colors</emphasis>
+the total number of <replaceable>colors</replaceable>
 to allocate (between 2 and 1000), then the number of
-<emphasis remap='I'>segments</emphasis>.
-For each segment, specify the starting
-<emphasis remap='I'>color</emphasis>,
-a relative
-<emphasis remap='I'>length</emphasis>,
+<replaceable>segments</replaceable>.
+For each segment, specify the starting <replaceable>color</replaceable>,
+a relative <replaceable>length</replaceable>,
 then the ending color.  Each subsequent segment begins with the
 second color of the last segment.  The lengths may be any
 non-negative integers.  The length of one segment divided by the
@@ -83,12 +103,14 @@ are used for the segment.</para>
 <para>Examples:</para>
 
 <programlisting>
-<fvwmref cmd="MenuStyle"/> * MenuFace DGradient 128 2 lightgrey 50 blue 50 white
+<fvwmref cmd="MenuStyle"/> * <literal output='man'>\
+	</literal>MenuFace DGradient 128 2 lightgrey 50 blue 50 white
 
 # 20% gradient from red to blue,
 # 30% from blue to black,
 # 50% from black to grey
-<fvwmref cmd="MenuStyle"/> * MenuFace DGradient 100 3 Red 20 Blue 30 Black 50 Grey
+<fvwmref cmd="MenuStyle"/> * <literal output='man'>\
+	</literal>MenuFace DGradient 100 3 Red 20 Blue 30 Black 50 Grey
 
 # 50% from blue to green, then
 # 50% from yellow to red

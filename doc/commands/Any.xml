@@ -12,9 +12,13 @@
 <title>Any</title>
 
 <cmdsynopsis>
-  <command>Any</command>
-  <arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-  <arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Any</command
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Performs

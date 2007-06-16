@@ -11,12 +11,12 @@
 <section id='UpdateDecor'>
 <title>UpdateDecor</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>UpdateDecor</command>
-	<arg choice='opt'><replaceable>decor</replaceable></arg>
+	<command>UpdateDecor</command
+	><arg choice='opt'
+		><replaceable>decor</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.</para>

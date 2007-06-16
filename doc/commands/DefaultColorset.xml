@@ -12,8 +12,10 @@
 <title>DefaultColorset</title>
 
 <cmdsynopsis>
-    <command>DefaultColorset</command>
-    <arg choice='opt'><replaceable>num</replaceable></arg>
+	<command>DefaultColorset</command
+	><arg choice='opt'
+		><replaceable>num</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para><emphasis remap='B'>DefaultColorset</emphasis>

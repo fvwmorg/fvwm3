@@ -12,8 +12,10 @@
 <title>Echo</title>
 
 <cmdsynopsis>
-	<command>Echo</command>
-	<arg choice='plain'><replaceable>string</replaceable></arg>
+	<command>Echo</command
+	><arg choice='plain'
+		><replaceable>string</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Prints a message to

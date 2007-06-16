@@ -12,8 +12,10 @@
 <title>Break</title>
 
 <cmdsynopsis>
-    <command>Break</command>
-    <arg choice='opt'><replaceable>levels</replaceable></arg>
+	<command>Break</command>
+	<arg choice='opt'
+		><replaceable>levels</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>If the break command is used in a function, function execution is

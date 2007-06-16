@@ -11,12 +11,12 @@
 <section id='XorValue'>
 <title>XorValue</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>XorValue</command>
-    <arg choice='opt'><replaceable>number</replaceable></arg>
+	<command>XorValue</command
+	><arg choice='opt'
+		><replaceable>number</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Changes the value with which bits are xor'ed when doing
 rubber-band window moving or resizing.

@@ -12,8 +12,10 @@
 <title>DestroyModuleConfig</title>
 
 <cmdsynopsis>
-	<command>DestroyModuleConfig</command>
-	<arg choice='plain'><replaceable>module_config</replaceable></arg>
+	<command>DestroyModuleConfig</command
+	><arg choice='plain'
+		><replaceable>module_config</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Deletes module configuration entries, so that new configuration

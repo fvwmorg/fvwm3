@@ -12,9 +12,13 @@
 <title>Current</title>
 
 <cmdsynopsis>
-    <command>Current</command>
-    <arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-    <arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Current</command
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Performs

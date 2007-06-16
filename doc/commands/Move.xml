@@ -11,26 +11,48 @@
 <section id='Move'>
 <title>Move</title>
 
-<!--command-->
 <cmdsynopsis>
-  <command>Move</command>
-  <group choice='plain'>
-    <arg choice='opt'>
-			<arg choice='opt'>
-				screen <replaceable>screen</replaceable>
-			</arg>
-			<arg choice='plain' rep="repeat">
-				<optional>w|m</optional><replaceable>x</replaceable><optional>p|w</optional>
-			</arg>
-			<arg choice='plain' rep="repeat">
-				<optional>w|m</optional><replaceable>y</replaceable><optional>p|w</optional>
-			</arg>
-			<arg choice='opt'>Warp</arg>
-    </arg>
-    <arg choice='opt'>pointer</arg>
-  </group>
+	<command>Move</command
+	><group choice='plain'
+		><arg choice='opt'
+			><arg choice='opt'
+				>screen <replaceable>screen</replaceable
+			></arg
+			><arg choice='plain' rep="repeat"
+				><optional
+					><group choice='plain'
+						><arg choice='plain'>w</arg
+						><arg choice='plain'>m</arg
+					></group
+				></optional
+				><replaceable>x</replaceable
+				><optional
+					><group choice='plain'
+						><arg choice='plain'>p</arg
+						><arg choice='plain'>w</arg
+					></group
+				></optional
+			></arg
+			><arg choice='plain' rep="repeat"
+				><optional
+					><group choice='plain'
+						><arg choice='plain'>w</arg
+						><arg choice='plain'>m</arg
+					></group
+				></optional
+				><replaceable>y</replaceable
+				><optional
+					><group choice='plain'
+						><arg choice='plain'>p</arg
+						><arg choice='plain'>w</arg
+					></group
+				></optional
+			></arg
+			><arg choice='opt'>Warp</arg
+		></arg
+		><arg choice='opt'>pointer</arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window is moved.  If called from

@@ -11,13 +11,15 @@
 <section id='PrintInfo'>
 <title>PrintInfo</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>PrintInfo</command>
-	<arg choice='plain'><replaceable>subject</replaceable></arg>
-	<arg choice='opt'><replaceable>verbose</replaceable></arg>
+	<command>PrintInfo</command
+	><arg choice='plain'
+		><replaceable>subject</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>verbose</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Print information on
 <replaceable>subject</replaceable>

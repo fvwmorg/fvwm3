@@ -12,9 +12,11 @@
 <title>DestroyMenu</title>
 
 <cmdsynopsis>
-    <command>DestroyMenu</command>
-    <arg choice='opt'>recreate</arg>
-    <arg choice='plain'><replaceable>menu</replaceable></arg>
+	<command>DestroyMenu</command
+	><arg choice='opt'>recreate</arg
+	><arg choice='plain'
+		><replaceable>menu</replaceable
+	></arg>
 </cmdsynopsis>
 
 

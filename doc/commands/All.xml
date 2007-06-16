@@ -12,10 +12,16 @@
 <title>All</title>
 
 <cmdsynopsis>
-	<command>All</command>
-  <arg choice='opt'><replaceable>options</replaceable></arg>
-  <arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-  <arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>All</command
+	><arg choice='opt'
+		><replaceable>options</replaceable
+	></arg
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Execute

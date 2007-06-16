@@ -306,7 +306,8 @@ Example:</para>
 <programlisting>
 <fvwmref cmd="DestroyFunc"/> ToggleFixedGeometry
 <fvwmref cmd="AddToFunc"/>   ToggleFixedGeometry
-+ I <fvwmref cmd="Pick"/> (FixedPosition) <fvwmref cmd="WindowStyle"/> VariablePosition, VariableSize
++ I <fvwmref cmd="Pick"/> (FixedPosition) \
+	<fvwmref cmd="WindowStyle"/> VariablePosition, VariableSize
 + I <fvwmref cmd="TestRc"/> (NoMatch) <fvwmref cmd="WindowStyle"/> FixedPosition, FixedSize
 </programlisting>
 

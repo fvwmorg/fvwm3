@@ -10,23 +10,92 @@
 <title>Synopsis</title>
 
 <cmdsynopsis>
-  <command>fvwm</command>    
-    <arg choice='opt'><option>-c</option><arg choice='plain'><replaceable>config-command</replaceable></arg></arg>
-    <arg choice='opt'><option>-d</option><arg choice='plain'><replaceable>displayname</replaceable></arg></arg>
-    <arg choice='opt'><option>-f</option><arg choice='plain'><replaceable>config-file</replaceable></arg></arg>
-    <arg choice='opt'><option>-r</option></arg>
-    <arg choice='opt'><option>-s</option><arg choice='opt'><replaceable>screen_num</replaceable></arg></arg>
-    <arg choice='opt'><option>-V</option></arg>
-    <group>
-      <arg choice='plain'><option>-C</option><arg choice='plain'><replaceable>visual-class</replaceable></arg></arg>
-      <arg choice='plain'><option>-I</option><arg choice='plain'><replaceable>visual-id</replaceable></arg></arg>
-    </group>
-    <arg choice='opt'><option>-l</option><arg choice='plain'><replaceable>colors</replaceable></arg><arg choice='opt'><option>-L</option></arg><arg choice='opt'><option>-A</option></arg><arg choice='opt'><option>-S</option></arg><arg choice='opt'><option>-P</option></arg></arg>
-    <arg choice='opt'><option>-D</option></arg>
-    <arg choice='opt'><option>-h</option></arg>
-    <arg choice='opt'><option>-i</option><arg choice='plain'><replaceable>client-id</replaceable></arg></arg>
-    <arg choice='opt'><option>-F</option><arg choice='plain'><replaceable>state-file</replaceable></arg></arg>
-    <arg choice='opt'><option>--debug-stack-ring</option></arg>
-    <arg choice='opt'><option>-blackout</option></arg>
+	<command>fvwm</command
+	><arg choice='opt'
+		><option>-c</option
+		><arg choice='plain'
+			><replaceable>config-command</replaceable
+		></arg
+	></arg
+	><arg choice='opt'
+		><option>-d</option
+		><arg choice='plain'
+			><replaceable>displayname</replaceable
+		></arg
+	></arg
+	><arg choice='opt'
+		><option>-f</option
+		><arg choice='plain'
+			><replaceable>config-file</replaceable
+		></arg
+	></arg
+		><arg choice='opt'
+			><option>-r</option
+		></arg
+	><arg choice='opt'
+		><option>-s</option
+		><arg choice='opt'
+			><replaceable>screen_num</replaceable
+		></arg
+	></arg
+	><arg choice='opt'
+		><option>-V</option
+	></arg
+	><group
+		><arg choice='plain'
+			><option>-C</option
+			><arg choice='plain'
+				><replaceable>visual-class</replaceable
+			></arg
+		></arg
+		><arg choice='plain'
+			><option>-I</option
+			><arg choice='plain'
+				><replaceable>visual-id</replaceable
+			></arg
+		></arg
+	></group
+	><arg choice='opt'
+		><option>-l</option
+		><arg choice='plain'
+			><replaceable>colors</replaceable
+		></arg
+		><arg choice='opt'
+			><option>-L</option
+		></arg
+		><arg choice='opt'
+			><option>-A</option
+		></arg
+		><arg choice='opt'
+			><option>-S</option
+		></arg
+		><arg choice='opt'
+			><option>-P</option
+		></arg
+	></arg
+	><arg choice='opt'
+		><option>-D</option
+	></arg
+	><arg choice='opt'
+		><option>-h</option
+	></arg
+	><arg choice='opt'
+		><option>-i</option
+		><arg choice='plain'
+			><replaceable>client-id</replaceable
+		></arg
+	></arg
+	><arg choice='opt'
+		><option>-F</option
+		><arg choice='plain'
+			><replaceable>state-file</replaceable
+		></arg
+	></arg
+	><arg choice='opt'
+		><option>--debug-stack-ring</option
+	></arg
+	><arg choice='opt'
+		><option>-blackout</option
+	></arg>
 </cmdsynopsis>
 </section>

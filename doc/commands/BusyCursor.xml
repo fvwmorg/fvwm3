@@ -12,11 +12,13 @@
 <title>BusyCursor</title>
 
 <cmdsynopsis>
-    <command>BusyCursor</command>
-    <arg choice='plain' rep='repeat'>
-      <arg choice='opt'><replaceable>Option</replaceable>
-	<replaceable>bool</replaceable></arg>,
-    </arg>
+	<command>BusyCursor</command
+	><arg choice='plain' rep='repeat'
+		><arg choice='opt'
+			><replaceable>Option</replaceable
+			> <replaceable>bool</replaceable
+		></arg
+	>,</arg>
 </cmdsynopsis>
 
 <para>This command controls the cursor during the execution of certain

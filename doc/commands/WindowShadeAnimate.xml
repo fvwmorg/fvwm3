@@ -11,12 +11,13 @@
 <section id='WindowShadeAnimate'>
 <title>WindowShadeAnimate</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>WindowShadeAnimate</command>
-	<arg choice='opt'><replaceable>steps</replaceable><arg choice='opt'>p</arg></arg>
+	<command>WindowShadeAnimate</command
+	><arg choice='opt'
+		><replaceable>steps</replaceable
+		><arg choice='opt'>p</arg
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is obsolete.  Please use the
 <fvwmref cmd="Style" opt="WindowShadeSteps"/>

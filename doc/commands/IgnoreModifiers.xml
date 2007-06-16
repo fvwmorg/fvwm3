@@ -11,12 +11,12 @@
 <section id='IgnoreModifiers'>
 <title>IgnoreModifiers</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>IgnoreModifiers</command>
-	<arg choice='opt'><replaceable>Modifiers</replaceable></arg>
+	<command>IgnoreModifiers</command
+	><arg choice='opt'
+		><replaceable>Modifiers</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Tells fvwm which modifiers to ignore when matching Mouse or Key
 bindings.

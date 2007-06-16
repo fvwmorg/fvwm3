@@ -11,12 +11,10 @@
 <section id='Xinerama'>
 <title>Xinerama</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Xinerama</command>
-	<arg choice='opt'>bool</arg>
+	<command>Xinerama</command
+	><arg choice='opt'>bool</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Enables Xinerama support if the boolean argument is true and
 disables it if the argument is false.  Calling this command

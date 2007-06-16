@@ -12,8 +12,10 @@
 <title>Deschedule</title>
 
 <cmdsynopsis>
-    <command>Deschedule</command>
-    <arg choice='opt'><replaceable>command_id</replaceable></arg>
+	<command>Deschedule</command
+	><arg choice='opt'
+		><replaceable>command_id</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Removes all commands that were scheduled with the id

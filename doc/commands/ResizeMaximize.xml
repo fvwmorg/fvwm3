@@ -11,12 +11,12 @@
 <section id='ResizeMaximize'>
 <title>ResizeMaximize</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>ResizeMaximize</command>
-    <arg choice='opt'><replaceable>resize-arguments</replaceable></arg>
+	<command>ResizeMaximize</command
+	><arg choice='opt'
+		><replaceable>resize-arguments</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Combines the effects of
 <fvwmref cmd="Resize"/>

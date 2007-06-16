@@ -11,17 +11,27 @@
 <section id='Stroke'>
 <title>Stroke</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Stroke</command>
-	<arg choice='opt'>(<replaceable>window</replaceable>)</arg>
-	<arg choice='plain'><replaceable>Sequence</replaceable></arg>
-	<arg choice='plain'><replaceable>Button</replaceable></arg>
-	<arg choice='plain'><replaceable>Context</replaceable></arg>
-	<arg choice='plain'><replaceable>Modifiers</replaceable></arg>
-	<arg choice='plain'><replaceable>Function</replaceable></arg>
+	<command>Stroke</command
+	><arg choice='opt'
+		>(<replaceable>window</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>Sequence</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>Button</replaceable
+	></arg>
+	<arg choice='plain'
+		><replaceable>Context</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>Modifiers</replaceable
+	></arg>
+	<arg choice='plain'
+		><replaceable>Function</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Binds a mouse stroke sequence to a specified fvwm command,
 or removes the binding if

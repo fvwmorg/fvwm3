@@ -12,11 +12,15 @@
 <title>BugOpts</title>
 
 <cmdsynopsis>
-    <command>BugOpts</command>
-    <arg choice='plain' rep='repeat'>
-      <arg choice='opt'><replaceable>option</replaceable>
-	<arg choice='opt'><replaceable>bool</replaceable></arg></arg>,
-    </arg>
+	<command>BugOpts</command
+	><arg choice='plain' rep='repeat'
+		><arg choice='opt'
+			><replaceable>option</replaceable
+			><arg choice='opt'
+				><replaceable>bool</replaceable
+			></arg
+		></arg
+	>,</arg>
 </cmdsynopsis>
 
 <para>This command controls several workarounds for bugs in third party

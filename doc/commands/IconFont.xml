@@ -11,12 +11,12 @@
 <section id='IconFont'>
 <title>IconFont</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>IconFont</command>
-	<arg choice='opt'><replaceable>fontname</replaceable></arg>
+	<command>IconFont</command
+	><arg choice='opt'
+		><replaceable>fontname</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is obsoleted by the
 <fvwmref cmd="Style"/>

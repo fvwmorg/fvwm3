@@ -11,11 +11,9 @@
 <section id='Lower'>
 <title>Lower</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>Lower</command>
+	<command>Lower</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Allows the user to lower a window.  Note that this lowers a window
 only in its layer.  To bring a window to the absolute bottom, use</para>

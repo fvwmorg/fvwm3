@@ -12,7 +12,7 @@
 <title>Beep</title>
 
 <cmdsynopsis>
-    <command>Beep</command>
+	<command>Beep</command>
 </cmdsynopsis>
 
 <para>As might be expected, this makes the terminal beep.</para>

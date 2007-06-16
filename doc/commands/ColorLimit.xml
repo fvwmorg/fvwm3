@@ -12,8 +12,10 @@
 <title>ColorLimit</title>
 
 <cmdsynopsis>
-    <command>ColorLimit</command>
-    <arg choice='plain'><replaceable>limit</replaceable></arg>
+	<command>ColorLimit</command
+	><arg choice='plain'
+		><replaceable>limit</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>

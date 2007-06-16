@@ -46,6 +46,10 @@
 
   <!-- ==================================================================== -->
 
+<!--xsl:variable name="arg.or.sep">|</xsl:variable-->
+<xsl:variable name="arg.choice.plain.close.str"></xsl:variable>
+<xsl:variable name="arg.rep.repeat.str"> ...</xsl:variable>
+
 <xsl:template match="section">
 	<xsl:apply-templates/>
 </xsl:template>

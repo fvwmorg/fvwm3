@@ -11,12 +11,12 @@
 <section id='ImagePath'>
 <title>ImagePath</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>ImagePath</command>
-	<arg choice='plain'><replaceable>path</replaceable></arg>
+	<command>ImagePath</command
+	><arg choice='plain'
+		><replaceable>path</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Specifies a colon separated list of directories in which to search
 for images (both monochrome and pixmap).  To find an image given

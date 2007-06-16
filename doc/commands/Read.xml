@@ -11,13 +11,13 @@
 <section id='Read'>
 <title>Read</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Read</command>
-	<arg choice='plain'><replaceable>filename</replaceable></arg>
-	<arg choice='opt'>quiet</arg>
+	<command>Read</command
+	><arg choice='plain'
+		><replaceable>filename</replaceable
+	></arg
+	><arg choice='opt'>quiet</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Causes fvwm to read commands from the file named
 <replaceable>filename</replaceable>.

@@ -11,11 +11,9 @@
 <section id='XSync'>
 <title>XSync</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>XSync</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>When
 <emphasis remap='B'>XSync</emphasis>

@@ -11,11 +11,9 @@
 <section id='RestackTransients'>
 <title>RestackTransients</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>RestackTransients</command>
+	<command>RestackTransients</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command regroups the transients of a window close to it in
 the stacking order as if the window had just been lowered and then

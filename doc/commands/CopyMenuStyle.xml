@@ -12,9 +12,13 @@
 <title>CopyMenuStyle</title>
 
 <cmdsynopsis>
-    <command>CopyMenuStyle</command>
-    <arg choice='plain'><replaceable>orig-menustyle</replaceable></arg>
-    <arg choice='plain'><replaceable>dest-menustyle</replaceable></arg>
+	<command>CopyMenuStyle</command
+	><arg choice='plain'
+		><replaceable>orig-menustyle</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>dest-menustyle</replaceable
+	></arg>
 </cmdsynopsis>
 
 

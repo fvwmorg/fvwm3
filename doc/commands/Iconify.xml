@@ -11,12 +11,12 @@
 <section id='Iconify'>
 <title>Iconify</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Iconify</command>
-	<arg choice='opt'><replaceable>bool</replaceable></arg>
+	<command>Iconify</command
+	><arg choice='opt'
+		><replaceable>bool</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Iconifies a window if it is not already iconified or de-iconifies
 it if it is already iconified.  The optional argument

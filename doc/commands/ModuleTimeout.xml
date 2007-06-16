@@ -11,12 +11,12 @@
 <section id='ModuleTimeout'>
 <title>ModuleTimeout</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>ModuleTimeout</command>
-	<arg choice='plain'><replaceable>timeout</replaceable></arg>
+	<command>ModuleTimeout</command
+	><arg choice='plain'
+		><replaceable>timeout</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Specifies how many seconds fvwm waits for a module to respond. If
 the module does not respond within the time limit then fvwm kills

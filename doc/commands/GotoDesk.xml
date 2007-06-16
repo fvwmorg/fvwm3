@@ -11,20 +11,24 @@
 <section id='GotoDesk'>
 <title>GotoDesk</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>GotoDesk</command>
-	<group choice='opt'>
-		<arg choice='plain'>prev</arg>
-		<arg choice='plain'>
-			<arg choice='plain'><replaceable>arg1</replaceable></arg>
-			<arg choice='opt'><replaceable>arg2</replaceable></arg>
-			<arg choice='opt'><replaceable>min</replaceable>
-				<replaceable>max</replaceable></arg>
-		</arg>
-	</group>
+	<command>GotoDesk</command
+	><group choice='opt'
+		><arg choice='plain'>prev</arg
+		><arg choice='plain'
+			><arg choice='plain'
+				><replaceable>arg1</replaceable
+			></arg
+			><arg choice='opt'
+				><replaceable>arg2</replaceable
+			></arg
+			><arg choice='opt'
+				><replaceable>min</replaceable
+				> <replaceable>max</replaceable
+			></arg
+		></arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>
 Switches the current viewport to another desktop (workspace, room).

@@ -11,13 +11,15 @@
 <section id='Pick'>
 <title>Pick</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Pick</command>
-	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Pick</command
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para><emphasis remap='B'>Pick</emphasis>
 works like

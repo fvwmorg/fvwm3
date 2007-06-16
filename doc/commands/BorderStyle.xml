@@ -12,12 +12,19 @@
 <title>BorderStyle</title>
 
 <cmdsynopsis>
-	<command>BorderStyle</command>
-    <arg choice='plain'><replaceable>state</replaceable></arg>
-    <arg choice='opt'><replaceable>style</replaceable></arg>
-    <arg choice='opt'>--
-			<arg choice='plain' rep='repeat'><optional>!</optional><replaceable>flag</replaceable></arg>
-		</arg>
+	<command>BorderStyle</command
+	><arg choice='plain'
+		><replaceable>state</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>style</replaceable
+	></arg
+	><arg choice='opt'
+		>-- <arg choice='plain' rep='repeat'
+			><optional>!</optional
+			><replaceable>flag</replaceable
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Defines a border style for windows.

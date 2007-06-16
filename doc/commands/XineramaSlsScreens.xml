@@ -11,13 +11,13 @@
 <section id='XineramaSlsScreens'>
 <title>XineramaSlsScreens</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>XineramaSlsScreens</command>
-	<arg choice='plain'>number-of-screens</arg>
-	<arg rep='repeat' choics='plain'><replaceable>screen-spec</replaceable></arg>
+	<command>XineramaSlsScreens</command
+	><arg choice='plain'>number-of-screens</arg
+	><arg rep='repeat' choics='plain'
+		><replaceable>screen-spec</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command configures the layout of the Single Logical screen
 feature.  Its first argument is the number of screens to use.  It

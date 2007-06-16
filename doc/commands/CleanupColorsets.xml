@@ -12,7 +12,7 @@
 <title>CleanupColorsets</title>
 
 <cmdsynopsis>
-    <command>CleanupColorsets</command>
+	<command>CleanupColorsets</command>
 </cmdsynopsis>
 
 <para>Resets a definition of all colorsets.</para>

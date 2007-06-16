@@ -11,13 +11,15 @@
 <section id='Style'>
 <title>Style</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Style</command>
-	<arg choice='plain'><replaceable>stylename</replaceable></arg>
-	<arg choice='plain' rep='repeat'><replaceable>options</replaceable></arg>
+	<command>Style</command
+	><arg choice='plain'
+		><replaceable>stylename</replaceable
+	></arg
+	><arg choice='plain' rep='repeat'
+		><replaceable>options</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>The
 <emphasis remap='B'>Style</emphasis>

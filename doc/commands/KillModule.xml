@@ -11,13 +11,15 @@
 <section id='KillModule'>
 <title>KillModule</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>KillModule</command>
-	<arg choice='plain'><replaceable>modulename</replaceable></arg>
-	<arg choice='opt'><replaceable>modulealias</replaceable></arg>
+	<command>KillModule</command
+	><arg choice='plain'
+		><replaceable>modulename</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>modulealias</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Causes the module which was invoked with name
 <replaceable>modulename</replaceable>

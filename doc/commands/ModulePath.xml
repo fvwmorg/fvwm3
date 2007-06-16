@@ -11,12 +11,12 @@
 <section id='ModulePath'>
 <title>ModulePath</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>ModulePath</command>
-	<arg choice='plain'><replaceable>path</replaceable></arg>
+	<command>ModulePath</command
+	><arg choice='plain'
+		><replaceable>path</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Specifies a colon separated list of directories in which to search
 for modules.  To find a module, fvwm searches each directory in

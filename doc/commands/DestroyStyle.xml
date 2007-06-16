@@ -12,8 +12,10 @@
 <title>DestroyStyle</title>
 
 <cmdsynopsis>
-	<command>DestroyStyle</command>
-	<arg choice='plain'><replaceable>style</replaceable></arg>
+	<command>DestroyStyle</command
+	><arg choice='plain'
+		><replaceable>style</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>deletes the style named

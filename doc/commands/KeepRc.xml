@@ -11,12 +11,12 @@
 <section id='KeepRc'>
 <title>KeepRc</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>KeepRc</command>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>KeepRc</command
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Runs the
 <replaceable>command</replaceable>

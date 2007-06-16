@@ -11,13 +11,15 @@
 <section id='ModuleListenOnly'>
 <title>ModuleListenOnly</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>ModuleListenOnly</command>
-	<arg choice='plain'><replaceable>modulename</replaceable></arg>
-	<arg choice='opt'><replaceable>moduleparams</replaceable></arg>
+	<command>ModuleListenOnly</command
+	><arg choice='plain'
+		><replaceable>modulename</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>moduleparams</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command works like the
 <fvwmref cmd="Module"/>

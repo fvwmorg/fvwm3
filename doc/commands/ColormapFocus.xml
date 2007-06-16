@@ -12,11 +12,11 @@
 <title>ColormapFocus</title>
 
 <cmdsynopsis>
-  <command>ColormapFocus</command>
-	<group choice='plain'>
-		<arg choice='plain'>FollowsMouse</arg>
-    <arg choice='plain'>FollowsFocus</arg>
-	</group>
+	<command>ColormapFocus</command
+	><group choice='plain'
+		><arg choice='plain'>FollowsMouse</arg
+		><arg choice='plain'>FollowsFocus</arg
+	></group>
 </cmdsynopsis>
 
 <para>By default, fvwm installs the colormap of the window that the

@@ -12,8 +12,10 @@
 <title>ChangeDecor</title>
 
 <cmdsynopsis>
-    <command>ChangeDecor</command>
-    <arg choice='plain'><replaceable>decor</replaceable></arg>
+	<command>ChangeDecor</command
+	><arg choice='plain'
+		><replaceable>decor</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>This command is deprecated and will be removed in the future.  There

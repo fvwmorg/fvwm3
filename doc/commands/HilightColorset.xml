@@ -11,12 +11,12 @@
 <section id='HilightColorset'>
 <title>HilightColorset</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>HilightColorset</command>
-	<arg choice='opt'><replaceable>num</replaceable></arg>
+	<command>HilightColorset</command
+	><arg choice='opt'
+		><replaceable>num</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is obsoleted by the
 <fvwmref cmd="Style"/>

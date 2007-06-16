@@ -12,7 +12,7 @@
 <title>Delete</title>
 
 <cmdsynopsis>
-    <command>Delete</command>
+	<command>Delete</command>
 </cmdsynopsis>
 
 <para>Sends a message to a window asking that it remove itself,

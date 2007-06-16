@@ -12,16 +12,22 @@
 <title>AddToFunc</title>
 
 <cmdsynopsis>
-  <command>AddToFunc</command>
-  <arg choice='opt'><replaceable>name</replaceable>
-		<arg choice='opt'><group choice='plain'>
-				<arg choice='plain'>I</arg>
-				<arg choice='plain'>M</arg>
-				<arg choice='plain'>C</arg>
-				<arg choice='plain'>H</arg>
-				<arg choice='plain'>D</arg>
-			</group>
-			<arg choice='plain'><replaceable>action</replaceable></arg></arg></arg>
+	<command>AddToFunc</command
+	><arg choice='opt'
+		><replaceable>name</replaceable
+		><arg choice='opt'
+			><group choice='plain'
+				><arg choice='plain'>I</arg
+				><arg choice='plain'>M</arg
+				><arg choice='plain'>C</arg
+				><arg choice='plain'>H</arg
+				><arg choice='plain'>D</arg
+			></group
+			><arg choice='plain'
+				><replaceable>action</replaceable
+			></arg
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Begins or adds to a function definition.  Here is an example:</para>

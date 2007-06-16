@@ -11,12 +11,12 @@
 <section id='StickAcrossDesks'>
 <title>StickAcrossDesks</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>StickAcrossDesks</command>
-	<arg choice='opt'><replaceable>bool</replaceable></arg>
+	<command>StickAcrossDesks</command
+	><arg choice='opt'
+		><replaceable>bool</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Works like
 <fvwmref cmd="Stick"/>

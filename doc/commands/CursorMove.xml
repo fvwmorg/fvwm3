@@ -12,13 +12,15 @@
 <title>CursorMove</title>
 
 <cmdsynopsis>
-	<command>CursorMove</command>
-  <arg choice='plain'>
-		<replaceable>horizontal</replaceable><optional>p</optional>
-	</arg>
-	<arg choice='plain'>
-		<replaceable>vertical</replaceable><optional>p</optional>
-	</arg>
+	<command>CursorMove</command
+	><arg choice='plain'
+		><replaceable>horizontal</replaceable
+		><optional>p</optional
+	></arg
+	><arg choice='plain'
+		><replaceable>vertical</replaceable
+		><optional>p</optional
+	></arg>
 </cmdsynopsis>
 
 <para>Moves the mouse pointer by

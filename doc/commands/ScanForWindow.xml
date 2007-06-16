@@ -11,16 +11,22 @@
 <section id='ScanForWindow'>
 <title>ScanForWindow</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>ScanForWindow</command>
-	<arg choice='opt'>FromPointer</arg>
-	<arg choice='plain'><replaceable>direction</replaceable></arg>
-	<arg choice='plain'><replaceable>direction2</replaceable></arg>
-	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>ScanForWindow</command
+	><arg choice='opt'>FromPointer</arg
+	><arg choice='plain'
+		><replaceable>dir1</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>dir2</replaceable
+	></arg
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Performs <replaceable>command</replaceable>
 (typically <fvwmref cmd="Focus"/>)
@@ -31,23 +37,22 @@ context window in which the command was invoked is taken as the
 starting point.  Lacking such a window, or when the
 <fvwmopt cmd="ScanForWindow" opt="FromPointer"/>
 option is given, the current position of the pointer is taken as
-the starting point.  The
-<replaceable>direction</replaceable>
+the starting point.  The direction
+<replaceable>dir1</replaceable>
 may be one of "North", "NorthEast", "East", "SouthEast", "South",
 "SouthWest", "West", and "NorthWest".  Which window
 <emphasis remap='B'>ScanForWindow</emphasis>
 selects depends first on the position along the primary axis given
 by
-<replaceable>direction</replaceable>.
+<replaceable>dir1</replaceable>.
 If any windows have the exact same coordinate along the primary
 axis, the secondary direction is used to order the windows.  The
-<replaceable>direction2</replaceable>
+direction <replaceable>dir2</replaceable>
 may be one of the same set of values as
-<replaceable>direction</replaceable>.
-If
-<replaceable>direction2</replaceable>
+<replaceable>dir1</replaceable>.
+If <replaceable>dir2</replaceable>
 is not perfectly perpendicular to
-<replaceable>direction</replaceable>,
+<replaceable>dir1</replaceable>,
 ScanForWindow returns a failure.  When using ScanForWindow
 repeatedly with the same arguments, it is guaranteed that all
 windows matching the conditions will eventually be found.  If the

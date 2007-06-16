@@ -11,11 +11,9 @@
 <section id='GnomeButton'>
 <title>GnomeButton</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>GnomeButton</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Used in conjunction with
 <fvwmref cmd="Mouse"/>

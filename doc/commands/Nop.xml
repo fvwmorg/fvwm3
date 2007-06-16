@@ -11,11 +11,9 @@
 <section id='Nop'>
 <title>Nop</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>Nop</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Does nothing.  This is used to insert a blank line or separator in
 a menu.  If the menu item specification is</para>

@@ -12,9 +12,13 @@
 <title>DefaultColors</title>
 
 <cmdsynopsis>
-    <command>DefaultColors</command>
-    <arg choice='opt'><replaceable>foreground</replaceable></arg>
-    <arg choice='opt'><replaceable>background</replaceable></arg>
+	<command>DefaultColors</command
+	><arg choice='opt'
+		><replaceable>foreground</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>background</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para><emphasis remap='B'>DefaultColors</emphasis>

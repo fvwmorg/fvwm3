@@ -11,27 +11,41 @@
 <section id='MoveToPage'>
 <title>MoveToPage</title>
 
-<!--command-->
 <cmdsynopsis>
-  <command>MoveToPage</command>
-  <group choice='plain'>
-    <arg choice='plain'>
-			<arg choice='opt'><replaceable>options</replaceable></arg>
-			<arg choice='opt'>
-				<arg choice='plain'>
-					<replaceable>x</replaceable><optional>p|w</optional>
-				</arg>
-				<arg choice='plain'>
-					<replaceable>y</replaceable><optional>p|w</optional>
-				</arg>
-			</arg>
-    </arg>
-    <arg choice='opt'>
-			prev
-    </arg>
-  </group>
+	<command>MoveToPage</command
+	><group choice='plain'
+		><arg choice='plain'
+			><arg choice='opt'
+				><replaceable>options</replaceable
+			></arg
+			><arg choice='opt'
+				><arg choice='plain'
+					><replaceable>x</replaceable
+					><optional
+						><group choice='plain'
+							><arg choice='plain'
+								>p</arg
+							><arg choice='plain'
+								>w</arg
+						></group
+					></optional
+				></arg
+				><arg choice='plain'
+					><replaceable>y</replaceable
+					><optional
+						><group choice='plain'
+							><arg choice='plain'
+								>p</arg
+							><arg choice='plain'
+								>w</arg
+						></group
+					></optional
+				></arg
+			></arg
+		></arg
+		><arg choice='opt'>prev</arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Moves the selected window to another page
 (<replaceable>x</replaceable>,<replaceable>y</replaceable>). The

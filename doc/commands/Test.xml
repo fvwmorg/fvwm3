@@ -11,13 +11,15 @@
 <section id='Test'>
 <title>Test</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Test</command>
-	<arg choice='opt'>(<replaceable>test-conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Test</command
+	><arg choice='opt'
+		>(<replaceable>test-conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Performs <replaceable>command</replaceable> if all
 <replaceable>test-conditions</replaceable> are satisfied.  The
@@ -126,8 +128,10 @@ or the [I]mage (in ImagePath).</para>
 
 <fvwmref cmd="AddToFunc"/> VerifyVersion
 + I Test (Version 2.5.*) <fvwmref cmd="Echo"/> 2.5.x detected
-+ I <fvwmref cmd="TestRc"/> (NoMatch) Test (!Version 2.6.*) <fvwmref cmd="Echo"/> Future version
-+ I <fvwmref cmd="TestRc"/> (NoMatch) <fvwmref cmd="Echo"/> 2.6.x is detected
++ I <fvwmref cmd="TestRc"/> (NoMatch) \
+	Test (!Version 2.6.*) <fvwmref cmd="Echo"/> Future version
++ I <fvwmref cmd="TestRc"/> (NoMatch) \
+	<fvwmref cmd="Echo"/> 2.6.x is detected
 
 Test (F $[FVWM_USERDIR]/local-config) <fvwmref cmd="Read"/> local-config
 Test (X xterm-utf16) <fvwmref cmd="Exec"/> exec xterm-utf16

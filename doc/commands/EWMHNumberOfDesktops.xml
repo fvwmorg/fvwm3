@@ -11,13 +11,15 @@
 <section id='EWMHNumberOfDesktops'>
 <title>EWMHNumberOfDesktops</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>EWMHNumberOfDesktops</command>
-	<arg choice='plain'><replaceable>num</replaceable></arg>
-	<arg choice='opt'><replaceable>max</replaceable></arg>
+	<command>EWMHNumberOfDesktops</command
+	><arg choice='plain'
+		><replaceable>num</replaceable
+	></arg>
+	<arg choice='opt'
+		><replaceable>max</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is useful only for an ewmh compliant pager or taskbar
 (as kpager or kicker taskbar) and not for fvwm modules (

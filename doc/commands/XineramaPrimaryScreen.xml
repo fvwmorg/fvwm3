@@ -11,12 +11,10 @@
 <section id='XineramaPrimaryScreen'>
 <title>XineramaPrimaryScreen</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>XineramaPrimaryScreen</command>
-	<arg choice='opt'>primary-screen</arg>
+	<command>XineramaPrimaryScreen</command
+	><arg choice='opt'>primary-screen</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Takes an integer number or 'g' or 'c' as its argument.  A number
 is taken as the number of the Xinerama screen that is to be used

@@ -12,13 +12,20 @@
 <title>DefaultLayers</title>
 
 <cmdsynopsis>
-    <command>DefaultLayers</command>
-    <arg choice='plain'><replaceable>bottom</replaceable></arg>
-    <arg choice='plain'><replaceable>put</replaceable></arg>
-    <arg choice='plain'><replaceable>top</replaceable></arg>
+	<command>DefaultLayers</command
+	><arg choice='plain'
+		><replaceable>bottom</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>put</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>top</replaceable
+	></arg>
 </cmdsynopsis>
 
-<para>changes the layers that are used for the
+<para>
+Changes the layers that are used for the
 <fvwmref cmd="Style" opt="StaysOnBottom"/>,
 <fvwmref cmd="Style" opt="StaysPut"/>,
 <fvwmref cmd="Style" opt="StaysOnTop"/>

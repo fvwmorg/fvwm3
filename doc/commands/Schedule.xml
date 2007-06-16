@@ -11,15 +11,19 @@
 <section id='Schedule'>
 <title>Schedule</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Schedule</command>
-	<arg choice='opt'>Periodic</arg>
-	<arg choice='plain'><replaceable>delay_ms</replaceable></arg>
-	<arg choice='opt'><replaceable>command_id</replaceable></arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Schedule</command
+	><arg choice='opt'>Periodic</arg
+	><arg choice='plain'
+		><replaceable>delay_ms</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>command_id</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>The
 <replaceable>command</replaceable>

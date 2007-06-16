@@ -11,18 +11,22 @@
 <section id='TitleStyle'>
 <title>TitleStyle</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>TitleStyle</command>
-	<arg choice='opt'><replaceable>justification</replaceable></arg>
-	<arg choice='opt'>Height
-		<optional><replaceable>num</replaceable></optional>
-	</arg>
-	<arg choice='opt'>MinHeight
-		<optional><replaceable>num</replaceable></optional>
-	</arg>
+	<command>TitleStyle</command
+	><arg choice='opt'
+		><replaceable>justification</replaceable
+	></arg
+	><arg choice='opt'
+		>Height <optional
+			><replaceable>num</replaceable
+		></optional
+	></arg
+	><arg choice='opt'
+		>MinHeight <optional
+			><replaceable>num</replaceable
+		></optional
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Sets attributes for the title-bar.  Justifications can be
 <fvwmopt cmd="TitleStyle" opt="Centered"/>,
@@ -52,18 +56,21 @@ TitleStyle LeftJustified Height 24
 </programlisting>
 
 
-<!--command-->
 <cmdsynopsis>
-	<command>TitleStyle</command>
-	<arg choice='opt'><replaceable>state</replaceable></arg>
-	<arg choice='opt'><replaceable>style</replaceable></arg>
-	<arg choice='opt'>--
-		<arg choice='plain' rep='repeat'>
-			<optional>!</optional><replaceable>flag</replaceable>
-		</arg>
-	</arg>
+	<command>TitleStyle</command
+	><arg choice='opt'
+		><replaceable>state</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>style</replaceable
+	></arg
+	><arg choice='opt'
+		>-- <arg choice='plain' rep='repeat'
+			><optional>!</optional
+			><replaceable>flag</replaceable
+		></arg
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>Sets the style for the title-bar.
@@ -108,11 +115,14 @@ regarding the "<fvwmref cmd="ButtonStyle" opt="ActiveDown"/>" state.  Examples:<
 
 <programlisting>
 TitleStyle ActiveUp HGradient 16 navy black
-TitleStyle ActiveDown (Solid red -- flat) \
-    Inactive (TiledPixmap wood.xpm)
-TitleStyle ActiveUp (-- Flat) ActiveDown  \
-    (-- Raised) InactiveUp (-- Flat) \
-    InactiveDown (-- Sunk)
+TitleStyle \
+	ActiveDown (Solid red -- flat) \
+	Inactive (TiledPixmap wood.xpm)
+TitleStyle \
+	ActiveUp (-- Flat) \
+	ActiveDown (-- Raised) \
+	InactiveUp (-- Flat) \
+	InactiveDown (-- Sunk)
 </programlisting>
 
 <para>This sets the "ActiveUp" state to a horizontal gradient, the

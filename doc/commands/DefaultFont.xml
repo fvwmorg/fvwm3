@@ -12,8 +12,10 @@
 <title>DefaultFont</title>
 
 <cmdsynopsis>
-    <command>DefaultFont</command>
-    <arg choice='opt'><replaceable>fontname</replaceable></arg>
+	<command>DefaultFont</command
+	><arg choice='opt'
+		><replaceable>fontname</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para><emphasis remap='B'>DefaultFont</emphasis>

@@ -11,11 +11,9 @@
 <section id='RefreshWindow'>
 <title>RefreshWindow</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>RefreshWindow</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Causes the chosen window to redraw itself. All pending updates of
 the window's style and look are applied immediately.  E.g. if

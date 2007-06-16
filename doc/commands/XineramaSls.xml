@@ -11,12 +11,10 @@
 <section id='XineramaSls'>
 <title>XineramaSls</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>XineramaSls</command>
-	<arg choice='opt'>bool</arg>
+	<command>XineramaSls</command
+	><arg choice='opt'>bool</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>For multi-screen implementations other than Xinerama, such as
 Single Logical Screen, it is possible to simulate a Xinerama

@@ -11,11 +11,9 @@
 <section id='RaiseLower'>
 <title>RaiseLower</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>RaiseLower</command>
+	<command>RaiseLower</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Alternately raises and lowers a window.  The window is raised if
 it is obscured by any window (except for its own transients when

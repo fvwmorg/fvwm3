@@ -11,12 +11,15 @@
 <section id='XineramaSlsSize'>
 <title>XineramaSlsSize</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>XineramaSlsSize</command>
-	<arg choice='plain'><replaceable>Horizontal</replaceable></arg>x<arg choice='plain'><replaceable>Vertical</replaceable></arg>
+	<command>XineramaSlsSize</command
+	><arg choice='plain'
+		><replaceable>Horizontal</replaceable
+	></arg
+	>x<arg choice='plain'
+		><replaceable>Vertical</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command configures the layout of the Single Logical screen
 feature.  It takes two arguments,

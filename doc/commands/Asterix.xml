@@ -12,7 +12,10 @@
 <title>Asterix</title>
 
 <cmdsynopsis command='Asterix'>
-	<command>*</command><arg choice='plain'><replaceable>module_config_line</replaceable></arg>
+	<command>*</command
+	><arg choice='plain'
+		><replaceable>module_config_line</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Defines a module configuration.

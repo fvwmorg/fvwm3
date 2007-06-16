@@ -11,11 +11,9 @@
 <section id='TearMenuOff'>
 <title>TearMenuOff</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>TearMenuOff</command>
+	<command>TearMenuOff</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>When assigned to a menu item, it inserts a tear off bar into the
 menu (a horizontal broken line).  Activating that item tears off

@@ -11,15 +11,23 @@
 <section id='Maximize'>
 <title>Maximize</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Maximize</command>
-	<arg choice='opt'><replaceable>flags</replaceable></arg>
-	<arg choice='opt'><replaceable>bool</replaceable></arg>
-	<arg choice='opt'><replaceable>horizontal</replaceable><optional>p</optional></arg>
-	<arg choice='opt'><replaceable>vertical</replaceable><optional>p</optional></arg>
+	<command>Maximize</command
+	><arg choice='opt'
+		><replaceable>flags</replaceable
+	></arg>
+	<arg choice='opt'
+		><replaceable>bool</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>horizontal</replaceable
+		><optional>p</optional
+	></arg
+	><arg choice='opt'
+		><replaceable>vertical</replaceable
+		><optional>p</optional
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>Without its optional arguments (or if the

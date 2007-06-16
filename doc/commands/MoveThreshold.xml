@@ -11,12 +11,12 @@
 <section id='MoveThreshold'>
 <title>MoveThreshold</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>MoveThreshold</command>
-    <arg choice='opt'><replaceable>pixels</replaceable></arg>
+	<command>MoveThreshold</command
+	><arg choice='opt'
+		><replaceable>pixels</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>When the user presses a mouse button upon an object fvwm waits to
 see if the action is a click or a drag.  If the mouse moves by

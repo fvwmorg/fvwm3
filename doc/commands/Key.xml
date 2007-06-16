@@ -11,16 +11,24 @@
 <section id='Key'>
 <title>Key</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Key</command>
-	<arg choice='opt'>(<replaceable>window</replaceable>)</arg>
-	<arg choice='plain'><replaceable>Keyname</replaceable></arg>
-	<arg choice='plain'><replaceable>Context</replaceable></arg>
-	<arg choice='plain'><replaceable>Modifiers</replaceable></arg>
-	<arg choice='plain'><replaceable>Function</replaceable></arg>
+	<command>Key</command
+	><arg choice='opt'
+		>(<replaceable>window</replaceable
+	>)</arg>
+	<arg choice='plain'
+		><replaceable>Keyname</replaceable
+	></arg>
+	<arg choice='plain'
+		><replaceable>Context</replaceable
+	></arg>
+	<arg choice='plain'
+		><replaceable>Modifiers</replaceable
+	></arg>
+	<arg choice='plain'
+		><replaceable>Function</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Binds a keyboard key to a specified fvwm command, or
 removes the binding if

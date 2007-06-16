@@ -12,8 +12,10 @@
 <title>DestroyMenuStyle</title>
 
 <cmdsynopsis>
-    <command>DestroyMenuStyle</command>
-    <arg choice='plain'><replaceable>menustyle</replaceable></arg>
+	<command>DestroyMenuStyle</command
+	><arg choice='plain'
+		><replaceable>menustyle</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Deletes the menu style named

@@ -12,11 +12,15 @@
 <title>EdgeLeaveCommand</title>
 
 <cmdsynopsis>
-	<command>EdgeLeaveCommand</command>
-	<arg choice='opt'>
-		<arg choice='plain'><replaceable>direction</replaceable></arg>
-		<arg choice='opt'><replaceable>Function</replaceable></arg>
-	</arg>
+	<command>EdgeLeaveCommand</command
+	><arg choice='opt'
+		><arg choice='plain'
+			><replaceable>direction</replaceable
+		></arg>
+		<arg choice='opt'
+			><replaceable>Function</replaceable
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Binds a specified fvwm command

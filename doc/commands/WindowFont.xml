@@ -11,12 +11,12 @@
 <section id='WindowFont'>
 <title>WindowFont</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>WindowFont</command>
-	<arg choice='opt'><replaceable>fontname</replaceable></arg>
+	<command>WindowFont</command
+	><arg choice='opt'
+		><replaceable>fontname</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is obsoleted by the
 <fvwmref cmd="Style"/>

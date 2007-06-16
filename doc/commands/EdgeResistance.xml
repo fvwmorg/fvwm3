@@ -12,10 +12,16 @@
 <title>EdgeResistance</title>
 
 <cmdsynopsis>
-	<command>EdgeResistance</command>
-	<arg choice='plain'><replaceable>scrolling</replaceable></arg>
-	<arg choice='plain'><replaceable>moving</replaceable></arg>
-	<arg choice='opt'><replaceable>xinerama-scrolling</replaceable></arg>
+	<command>EdgeResistance</command
+	><arg choice='plain'
+		><replaceable>scrolling</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>moving</replaceable
+	></arg>
+	<arg choice='opt'
+		><replaceable>xinerama-scrolling</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Tells how hard it should be to change the desktop viewport by

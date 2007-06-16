@@ -12,9 +12,13 @@
 <title>Colorset</title>
 
 <cmdsynopsis>
-    <command>Colorset</command>
-    <arg choice='plain'><replaceable>num</replaceable></arg>
-    <arg choice='opt'><replaceable>options</replaceable></arg>
+	<command>Colorset</command
+	><arg choice='plain'
+		><replaceable>num</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>options</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Creates or modifies colorset
@@ -308,7 +312,9 @@ causes the bitmap to be stretched to fit whatever object the
 colorset is applied to and
 <emphasis remap='I'>AspectShape</emphasis>
 stretches to fit but retains the bitmap aspect ratio.  If the file
-is a pixmap in xpm format, the shape mask of the pixmap is used.</para>
+is a pixmap in xpm format the shape mask (all opaque pixels) of the
+pixmap is used.  For png and svg images, the shape mask is equivalent
+to all not completely transparent pixels (alpha > 0).</para>
 
 <warning>Due to the way X11 implements shapes you cannot take back
 making windows shaped. You may have to restart fvwm or the shaped

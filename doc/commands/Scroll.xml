@@ -11,18 +11,18 @@
 <section id='Scroll'>
 <title>Scroll</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Scroll</command>
-	<group choice='opt'>
-		<arg choice='plain'>
-			<replaceable>horizonal</replaceable><optional>p</optional>
-			<replaceable>vertical</replaceable><optional>p</optional>
-		</arg>
-		<arg choice='plain'>reverse</arg>
-	</group>
+	<command>Scroll</command
+	><group choice='opt'
+		><arg choice='plain'
+			><replaceable>horizonal</replaceable
+			><optional>p</optional
+			> <replaceable>vertical</replaceable
+			><optional>p</optional
+		></arg
+		><arg choice='plain'>reverse</arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>
 Scrolls the virtual desktop's viewport by

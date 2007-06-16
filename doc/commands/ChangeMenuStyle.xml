@@ -12,9 +12,13 @@
 <title>ChangeMenuStyle</title>
 
 <cmdsynopsis>
-    <command>ChangeMenuStyle</command>
-    <arg choice='plain'><replaceable>menustyle</replaceable></arg>
-    <arg choice='plain' rep='repeat'><replaceable>menu</replaceable></arg>
+	<command>ChangeMenuStyle</command>
+	<arg choice='plain'
+		><replaceable>menustyle</replaceable
+	></arg>
+	<arg choice='plain' rep='repeat'
+		><replaceable>menu</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Changes the menu style of

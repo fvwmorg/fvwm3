@@ -12,12 +12,12 @@
 <title>Emulate</title>
 
 <cmdsynopsis>
-	<command>Emulate</command>
-	<group choice='plain'>
-	  <arg choice='plain'>Fvwm</arg>
-	  <arg choice='plain'>Mwm</arg>
-	  <arg choice='plain'>Win</arg>
-	</group>
+	<command>Emulate</command
+	><group choice='plain'
+		><arg choice='plain'>Fvwm</arg
+		><arg choice='plain'>Mwm</arg
+		><arg choice='plain'>Win</arg
+	></group>
 </cmdsynopsis>
 
 <para>This command is a catch all for how miscellaneous things are done

@@ -11,12 +11,12 @@
 <section id='Wait'>
 <title>Wait</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Wait</command>
-	<arg choice='plain'><replaceable>window</replaceable></arg>
+	<command>Wait</command
+	><arg choice='plain'
+		><replaceable>window</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>This command is intended to be used in fvwm functions only.  It
 causes execution of a function to pause until a new window matching

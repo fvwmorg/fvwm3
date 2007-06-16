@@ -11,13 +11,15 @@
 <section id='Module'>
 <title>Module</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Module</command>
-	<arg choice='plain'><replaceable>modulename</replaceable></arg>
-	<arg choice='opt'><replaceable>moduleparams</replaceable></arg>
+	<command>Module</command
+	><arg choice='plain'
+		><replaceable>modulename</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>moduleparams</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Specifies a module with its optional parameters which should be
 spawned. Currently several modules, including
@@ -46,7 +48,7 @@ Module FvwmForm MyForm
 <fvwmref mod="FvwmAnimate"/> (produces animation effects when a window is iconified or de-iconified),
 <fvwmref mod="FvwmAuto"/> (an auto raise module),
 <fvwmref mod="FvwmBacker"/> (to change the background when you change desktops),
-<fvwmref mod="FvwmBanner"/> (to display a spiffy XPM, XBM or PNG),
+<fvwmref mod="FvwmBanner"/> (to display a spiffy XBM, XPM, PNG or SVG),
 <fvwmref mod="FvwmButtons"/> (brings up a customizable tool bar),
 <fvwmref mod="FvwmCommandS"/> (a command server to use with shell's FvwmCommand client),
 <fvwmref mod="FvwmConsole"/> (to execute fvwm commands directly),

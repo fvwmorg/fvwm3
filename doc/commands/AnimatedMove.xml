@@ -12,10 +12,14 @@
 <title>AnimatedMove</title>
 
 <cmdsynopsis>
-    <command>AnimatedMove</command>
-    <arg choice='plain'><replaceable>x</replaceable></arg>
-    <arg choice='plain'><replaceable>y</replaceable></arg>
-    <arg choice='opt'>Warp</arg>
+	<command>AnimatedMove</command
+	><arg choice='plain'
+		><replaceable>x</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>y</replaceable
+	></arg
+	><arg choice='opt'>Warp</arg>
 </cmdsynopsis>
 
 

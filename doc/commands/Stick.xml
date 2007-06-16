@@ -11,12 +11,12 @@
 <section id='Stick'>
 <title>Stick</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Stick</command>
-	<arg choice='opt'><replaceable>bool</replaceable></arg>
+	<command>Stick</command
+	><arg choice='opt'
+		><replaceable>bool</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>If the
 <replaceable>bool</replaceable>

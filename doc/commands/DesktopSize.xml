@@ -11,8 +11,11 @@
 <title>DesktopSize</title>
 
 <cmdsynopsis>
-    <command>DesktopSize</command>
-    <arg choice='plain'><replaceable>Horizontal</replaceable>x<replaceable>Vertical</replaceable></arg>
+	<command>DesktopSize</command
+	><arg choice='plain'
+		><replaceable>Horizontal</replaceable
+		>x<replaceable>Vertical</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Defines the virtual desktop size in units of the physical screen

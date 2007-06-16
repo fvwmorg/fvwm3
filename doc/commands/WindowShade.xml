@@ -11,18 +11,18 @@
 <section id='WindowShade'>
 <title>WindowShade</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>WindowShade</command>
-	<group choice='plain'>
-		<arg choice='opt'>bool</arg>
-		<arg choice='opt'>
-			<arg choice='opt'>ShadeAgain</arg>
-			<arg choice='plain'><replaceable>direction</replaceable></arg>
-		</arg>
-	</group>
+	<command>WindowShade</command
+	><group choice='plain'
+		><arg choice='opt'>bool</arg
+		><arg choice='opt'
+			><arg choice='opt'>ShadeAgain</arg
+			><arg choice='plain'
+				><replaceable>direction</replaceable
+			></arg
+		></arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Toggles the window shade feature for titled windows.  Windows in
 the shaded state only display a title-bar.  If

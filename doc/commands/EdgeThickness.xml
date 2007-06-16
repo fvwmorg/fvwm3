@@ -12,12 +12,12 @@
 <title>EdgeThickness</title>
 
 <cmdsynopsis>
-	<command>EdgeThickness</command>
-	<group choice='plain'>
-		<arg choice='plain'>0</arg>
-		<arg choice='plain'>1</arg>
-		<arg choice='plain'>2</arg>
-	</group>
+	<command>EdgeThickness</command
+	><group choice='plain'
+		><arg choice='plain'>0</arg
+		><arg choice='plain'>1</arg
+		><arg choice='plain'>2</arg
+	></group>
 </cmdsynopsis>
 
 <para>This is the width or height of the invisible window that fvwm

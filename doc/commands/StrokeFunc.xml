@@ -11,12 +11,12 @@
 <section id='StrokeFunc'>
 <title>StrokeFunc</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>StrokeFunc</command>
-	<arg choice='opt'><replaceable>Options</replaceable></arg>
+	<command>StrokeFunc</command
+	><arg choice='opt'
+		><replaceable>Options</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Causes fvwm to record a mouse stroke sequence and to execute the
 corresponding action as defined in a

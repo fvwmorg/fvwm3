@@ -11,16 +11,24 @@
 <section id='Mouse'>
 <title>Mouse</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Mouse</command>
-	<arg choice='opt'>(<replaceable>window</replaceable>)</arg>
-	<arg choice='plain'><replaceable>Button</replaceable></arg>
-	<arg choice='plain'><replaceable>Context</replaceable></arg>
-	<arg choice='plain'><replaceable>Modifiers</replaceable></arg>
-	<arg choice='plain'><replaceable>Function</replaceable></arg>
+	<command>Mouse</command
+	><arg choice='opt'
+		>(<replaceable>window</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>Button</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>Context</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>Modifiers</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>Function</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Defines a mouse binding, or removes the binding if
 <replaceable>Function</replaceable>

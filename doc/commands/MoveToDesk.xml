@@ -11,20 +11,24 @@
 <section id='MoveToDesk'>
 <title>MoveToDesk</title>
 
-<!--command-->
 <cmdsynopsis>
-  <command>MoveToDesk</command>
-  <group choice='opt'>
-		<arg choice='plain'>prev</arg>
-		<arg choice='plain'>
-			<arg choice='plain'><replaceable>arg1</replaceable></arg>
-			<arg choice='opt'><replaceable>arg2</replaceable></arg>
-			<arg choice='opt'><replaceable>min</replaceable>
-				<replaceable>max</replaceable></arg>
-		</arg>
-	</group>
+	<command>MoveToDesk</command
+	><group choice='opt'
+		><arg choice='plain'>prev</arg
+		><arg choice='plain'
+			><arg choice='plain'
+				><replaceable>arg1</replaceable
+			></arg
+			><arg choice='opt'
+				><replaceable>arg2</replaceable
+			></arg>
+			<arg choice='opt'
+				><replaceable>min</replaceable
+				> <replaceable>max</replaceable
+			></arg
+		></arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Moves the selected window to another desktop.  The arguments are
 the same as for the

@@ -12,14 +12,19 @@
 <title>AddTitleStyle</title>
 
 <cmdsynopsis>
-	<command>AddTitleStyle</command>
-	<arg choice='opt'><replaceable>state</replaceable></arg>
-	<arg choice='opt'><replaceable>style</replaceable></arg>
-	<arg choice='opt'>--
-	  <arg choice='plain' rep='repeat'>
-	    <optional>!</optional><replaceable>flag</replaceable>
-	  </arg>
-	</arg>
+	<command>AddTitleStyle</command
+	><arg choice='opt'
+		><replaceable>state</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>style</replaceable
+	></arg
+	><arg choice='opt'
+		>-- <arg choice='plain' rep='repeat'
+			><optional>!</optional
+			><replaceable>flag</replaceable
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Adds a title style to the title-bar.

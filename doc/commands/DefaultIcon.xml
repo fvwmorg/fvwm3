@@ -12,11 +12,14 @@
 <title>DefaultIcon</title>
 
 <cmdsynopsis>
-    <command>DefaultIcon</command>
-    <arg choice='plain'><replaceable>filename</replaceable></arg>
+	<command>DefaultIcon</command
+	><arg choice='plain'
+		><replaceable>filename</replaceable
+	></arg>
 </cmdsynopsis>
 
-<para>sets the default icon which is used if a window has neither an
+<para>
+Sets the default icon which is used if a window has neither an
 client-supplied icon nor an icon supplied via the
 <fvwmref cmd="Style" opt="Icon"/>
 option of the

@@ -255,7 +255,8 @@ The "*" in between the "/" says to fvwm to determine the
 encoding from the end of the font name. Use:</para>
 
 <programlisting>
-<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="Font"/> -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
+<fvwmref cmd="Style"/> * <fvwmref cmd="Style" opt="Font"/> <literal output='man'>\
+	</literal>-misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
 </programlisting>
 
 <para>to force fvwm to use the font with iso8859-6 as the encoding

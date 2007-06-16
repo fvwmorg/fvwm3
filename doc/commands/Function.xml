@@ -11,12 +11,12 @@
 <section id='Function'>
 <title>Function</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Function</command>
-	<arg choice='plain'><replaceable>FunctionName</replaceable></arg>
+	<command>Function</command
+	><arg choice='plain'
+		><replaceable>FunctionName</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Used to bind a previously defined function to a key or mouse
 button. The following example binds mouse button 1 to a function

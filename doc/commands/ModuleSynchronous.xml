@@ -11,14 +11,18 @@
 <section id='ModuleSynchronous'>
 <title>ModuleSynchronous</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>ModuleSynchronous</command>
-	<arg choice='opt'>Expect <replaceable>string</replaceable></arg>
-	<arg choice='opt'>Timeout <replaceable>secs</replaceable></arg>
-	<arg choice='plain'><replaceable>modulename</replaceable></arg>
+	<command>ModuleSynchronous</command
+	><arg choice='opt'
+		>Expect <replaceable>string</replaceable
+	></arg
+	><arg choice='opt'
+		>Timeout <replaceable>secs</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>modulename</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>The
 <emphasis remap='B'>ModuleSynchronous</emphasis>

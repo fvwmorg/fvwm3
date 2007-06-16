@@ -11,19 +11,23 @@
 <section id='GotoDeskAndPage'>
 <title>GotoDeskAndPage</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>GotoDeskAndPage</command>
-	<group choice='plain'>
-		<arg choice='plain'>prev</arg>
-		<arg choice='plain'>
-			<arg choice='plain'><replaceable>desk</replaceable></arg>
-			<arg choice='plain'><replaceable>xpage</replaceable></arg>
-			<arg choice='plain'><replaceable>ypage</replaceable></arg>
-		</arg>
-	</group>
+	<command>GotoDeskAndPage</command
+	><group choice='plain'
+		><arg choice='plain'>prev</arg
+		><arg choice='plain'
+			><arg choice='plain'
+				><replaceable>desk</replaceable
+			></arg
+			><arg choice='plain'
+				><replaceable>xpage</replaceable
+			></arg
+			><arg choice='plain'
+				><replaceable>ypage</replaceable
+			></arg
+		></arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Switches the current viewport to another desktop and page, similar
 to the

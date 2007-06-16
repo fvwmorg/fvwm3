@@ -11,15 +11,21 @@
 <section id='WindowList'>
 <title>WindowList</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>WindowList</command>
-	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='opt'><replaceable>position</replaceable></arg>
-	<arg choice='opt'><replaceable>options</replaceable></arg>
-	<arg choice='opt'><replaceable>double-click-action</replaceable></arg>
+	<command>WindowList</command
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='opt'
+		><replaceable>position</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>options</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>double-click-action</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>Generates a pop-up menu (and pops it up) in which the title and

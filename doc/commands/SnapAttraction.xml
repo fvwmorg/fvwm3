@@ -11,12 +11,15 @@
 <section id='SnapAttraction'>
 <title>SnapAttraction</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>SnapAttraction</command>
-    <arg choice='opt'><replaceable>proximity</replaceable>
-      <arg choice='opt'><replaceable>behaviour</replaceable></arg>
-      <arg choice='opt'>Screen</arg></arg>
+	<command>SnapAttraction</command
+	><arg choice='opt'
+		><replaceable>proximity</replaceable
+		><arg choice='opt'
+			><replaceable>behaviour</replaceable
+		></arg
+		><arg choice='opt'>Screen</arg
+	></arg>
 </cmdsynopsis>
 <!--/command-->
 

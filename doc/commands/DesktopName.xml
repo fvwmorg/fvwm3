@@ -12,9 +12,13 @@
 <title>DesktopName</title>
 
 <cmdsynopsis>
-    <command>DesktopName</command>
-    <arg choice='plain'><replaceable>desk</replaceable></arg>
-    <arg choice='plain'><replaceable>name</replaceable></arg>
+	<command>DesktopName</command
+	><arg choice='plain'
+		><replaceable>desk</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>name</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Defines the name of the desktop number

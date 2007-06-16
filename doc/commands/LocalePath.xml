@@ -11,12 +11,12 @@
 <section id='LocalePath'>
 <title>LocalePath</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>LocalePath</command>
-	<arg choice='plain'><replaceable>path</replaceable></arg>
+	<command>LocalePath</command
+	><arg choice='plain'
+		><replaceable>path</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Specifies a colon separated list of "locale path" in which to
 search for string translations. A locale path is constituted by a

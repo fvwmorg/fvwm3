@@ -11,12 +11,10 @@
 <section id='FlipFocus'>
 <title>FlipFocus</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>FlipFocus</command>
-    <arg choice='opt'>NoWarp</arg>
+	<command>FlipFocus</command
+	><arg choice='opt'>NoWarp</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Executes a
 <fvwmref cmd="Focus"/>

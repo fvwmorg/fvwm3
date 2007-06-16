@@ -11,12 +11,12 @@
 <section id='XorPixmap'>
 <title>XorPixmap</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>XorPixmap</command>
-    <arg choice='opt'><replaceable>pixmap</replaceable></arg>
+	<command>XorPixmap</command
+	><arg choice='opt'
+		><replaceable>pixmap</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Selects the pixmap with which bits are xor'ed when doing
 rubber-band window moving or resizing.  This has a better chance

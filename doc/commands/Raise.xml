@@ -11,11 +11,9 @@
 <section id='Raise'>
 <title>Raise</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>Raise</command>
+	<command>Raise</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Allows the user to raise a window. Note that this raises a window
 only in its layer. To bring a window to the absolute top, use</para>

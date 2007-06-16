@@ -12,9 +12,11 @@
 <title>DestroyDecor</title>
 
 <cmdsynopsis>
-    <command>DestroyDecor</command>
-    <arg choice='opt'>recreate</arg>
-    <arg choice='plain'><replaceable>decor</replaceable></arg>
+	<command>DestroyDecor</command
+	><arg choice='opt'>recreate</arg
+	><arg choice='plain'
+		><replaceable>decor</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>This command is deprecated and will be removed in the future.  There

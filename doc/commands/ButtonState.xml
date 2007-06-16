@@ -12,10 +12,16 @@
 <title>ButtonState</title>
 
 <cmdsynopsis>
-    <command>ButtonState</command>
-    <arg choice='opt'>ActiveDown <replaceable>bool</replaceable></arg>
-    <arg choice='opt'>Inactive <replaceable>bool</replaceable></arg>
-    <arg choice='opt'>InactiveDown <replaceable>bool</replaceable></arg>
+	<command>ButtonState</command
+	><arg choice='opt'
+		>ActiveDown <replaceable>bool</replaceable
+	></arg
+	><arg choice='opt'
+		>Inactive <replaceable>bool</replaceable
+	></arg
+	><arg choice='opt'
+		>InactiveDown <replaceable>bool</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>

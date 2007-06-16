@@ -11,12 +11,12 @@
 <section id='UnsetEnv'>
 <title>UnsetEnv</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>UnsetEnv</command>
-	<arg coice='plain'><replaceable>variable</replaceable></arg>
+	<command>UnsetEnv</command
+	><arg coice='plain'
+		><replaceable>variable</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Unset an environment variable, similar to shell's export or
 unsetenv command. The

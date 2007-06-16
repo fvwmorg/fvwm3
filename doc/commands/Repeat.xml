@@ -11,11 +11,9 @@
 <section id='Repeat'>
 <title>Repeat</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>Repeat</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>When the
 <emphasis remap='B'>Repeat</emphasis>

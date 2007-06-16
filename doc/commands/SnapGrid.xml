@@ -12,13 +12,13 @@
 <section id='SnapGrid'>
 <title>SnapGrid</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>SnapGrid</command>
-    <arg choice='opt'><replaceable>x-grid-size</replaceable>
-      <replaceable>y-grid-size</replaceable></arg>
+	<command>SnapGrid</command
+	><arg choice='opt'
+		><replaceable>x-grid-size</replaceable
+		> <replaceable>y-grid-size</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>During an interactive move a window or icon is positioned such
 that its location (top left corner) is coincident with the nearest

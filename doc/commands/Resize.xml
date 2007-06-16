@@ -11,31 +11,38 @@
 <section id='Resize'>
 <title>Resize</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>Resize</command>
-    <group choice='plain'>
-      <arg choice='opt'>
-	<arg choice='opt'>frame</arg>
-	<arg choice='opt'>direction
-	  <replaceable>dir</replaceable>
-	  <optional>warptoborder</optional>
-	</arg>
-	<arg choice='opt'>fixeddirection</arg>
-	<arg choice='plain'><optional>w</optional><replaceable>width</replaceable><group choice='opt'><arg choice='plain'>p</arg><arg choice='plain'>c</arg></group></arg>
-	<arg choice='plain'><optional>w</optional><replaceable>height</replaceable><group choice='opt'><arg choice='plain'>p</arg><arg choice='plain'>c</arg></group></arg>
-      </arg>
-      <arg choice='opt'>
-	<group choice='plain'>
-	  <arg choice='plain'>bottomright</arg>
-	  <arg choice='plain'>br</arg>
-	</group>
-	<arg choice='plain'><replaceable>x</replaceable></arg>
-	<arg choice='plain'><replaceable>y</replaceable></arg>
-      </arg>
-    </group>
+	<command>Resize</command
+	><group choice='plain'
+	/><optional
+		><arg choice='opt'>frame</arg
+		><arg choice='opt'
+			>direction <replaceable>dir</replaceable
+			><arg choice='opt'>warptoborder</arg
+		></arg
+		><arg choice='opt'>fixeddirection</arg
+		><arg choice='plain'
+			><optional>w</optional
+			><replaceable>width</replaceable
+			><optional
+				><group choice='plain'
+					><arg choice='plain'>p</arg
+					><arg choice='plain'>c</arg
+				></group
+			></optional
+		></arg
+		><arg choice='plain'
+			><optional>w</optional
+			><replaceable>height</replaceable
+			><optional
+				><group choice='plain'
+					><arg choice='plain'>p</arg
+					><arg choice='plain'>c</arg
+				></group
+			></optional
+		></arg
+	></optional>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>Allows for resizing a window.  If called from somewhere in a window
@@ -114,6 +121,22 @@ is warped to the outer edge of the border.</para>
 <fvwmref cmd="Mouse"/> 3 A M ResizeSE
 </programlisting>
 
+
+<cmdsynopsis>
+	<command>Resize</command
+		><arg choice='opt'
+			><group choice='plain'
+				><arg choice='plain'>bottomright</arg
+				><arg choice='plain'>br</arg
+			></group
+			><arg choice='plain'
+				><replaceable>x</replaceable
+			></arg
+			><arg choice='plain'
+				><replaceable>y</replaceable
+			></arg
+		></arg>
+</cmdsynopsis>
 
 <para>An alternate syntax is used if the keyword
 <fvwmopt cmd="Resize" opt="bottomright"/> or in short

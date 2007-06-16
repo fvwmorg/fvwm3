@@ -11,12 +11,12 @@
 <section id='Silent'>
 <title>Silent</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Silent</command>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Silent</command
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>A number of commands require a window to operate on.  If
 no window was selected when such a function is invoked the user is

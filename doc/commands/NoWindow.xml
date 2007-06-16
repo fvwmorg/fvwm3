@@ -11,12 +11,12 @@
 <section id='NoWindow'>
 <title>NoWindow</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>NoWindow</command>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>NoWindow</command
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Performs
 <replaceable>command</replaceable>,

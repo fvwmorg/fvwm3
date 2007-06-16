@@ -11,11 +11,9 @@
 <section id='UpdateStyles'>
 <title>UpdateStyles</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>UpdateStyles</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>All pending updates of all windows' styles and looks are applied
 immediately.  E.g. if

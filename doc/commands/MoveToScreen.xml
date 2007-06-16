@@ -11,12 +11,12 @@
 <section id='MoveToScreen'>
 <title>MoveToScreen</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>MoveToScreen</command>
-    <arg choice='opt'><replaceable>screen</replaceable></arg>
+	<command>MoveToScreen</command
+	><arg choice='opt'
+		><replaceable>screen</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Moves the selected window to another Xinerama screen.  The
 <replaceable>screen</replaceable>

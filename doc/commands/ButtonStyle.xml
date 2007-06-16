@@ -13,12 +13,19 @@
 
 <cmdsynopsis>
 	<command>ButtonStyle</command>
-	<arg choice='plain'><replaceable>button</replaceable></arg>
-  <arg choice='opt'><replaceable>state</replaceable></arg>
-  <arg choice='opt'><replaceable>style</replaceable></arg>
-  <arg choice='opt'>--
-		<arg choice='plain' rep='repeat'><optional>!</optional><replaceable>flag</replaceable></arg>
-	</arg>
+	><arg choice='plain'>button</arg
+	><arg choice='opt'
+		><replaceable>state</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>style</replaceable
+	></arg
+	><arg choice='opt'
+		>-- <arg choice='plain' rep='repeat'
+			><optional>!</optional
+			><replaceable>flag</replaceable
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Sets the button style for a title-bar button.
@@ -322,8 +329,12 @@ button number 4 all different pixmaps.</para>
 
 <programlisting>
 ButtonStyle 2 Pixmap my_pixmap.xpm
-ButtonStyle 4 ActiveUp (Pixmap activeup.xpm) ActiveDown (Pixmap activedown.xpm) Inactive (Pixmap inactiveup.xpm)
-ButtonStyle 4 InactiveDown Pixmap inactivedown.xpm
+ButtonStyle 4 \
+	ActiveUp (Pixmap activeup.xpm) \
+	ActiveDown (Pixmap activedown.xpm) \
+	Inactive (Pixmap inactiveup.xpm)
+ButtonStyle 4 \
+	InactiveDown Pixmap inactivedown.xpm
 </programlisting>
 
 <para>The pixmap specification can be given as an absolute or relative
@@ -385,12 +396,15 @@ ButtonStyle 1 MiniIcon
 
 
 <cmdsynopsis>
-	<command>ButtonStyle</command>
-	<arg choice='plain'><replaceable>button</replaceable></arg>
-	<arg choice='plain'>-</arg>
-	<arg choice='plain' rep='repeat'>
-		<optional>!</optional><replaceable>flag</replaceable>
-	</arg>
+	<command>ButtonStyle</command
+	><arg choice='plain'
+		><replaceable>button</replaceable
+	></arg
+	><arg choice='plain'>-</arg
+	><arg choice='plain' rep='repeat'
+		><optional>!</optional
+		><replaceable>flag</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Sets state-independent flags for the specified

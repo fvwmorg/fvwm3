@@ -11,24 +11,27 @@
 <section id='WindowId'>
 <title>WindowId</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>WindowId</command>
-	<group choice='plain'>
-		<arg choice='plain'>
-			<arg choice='opt'><replaceable>id</replaceable></arg>
-			<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-		</arg>
-		<arg choice='opt'>
-			root
-			<arg choice='opt'>
-				<replaceable>screen</replaceable>
-			</arg>
-		</arg>
-	</group>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>WindowId</command
+	><group choice='plain'
+		><arg choice='plain'
+			><arg choice='opt'
+				><replaceable>id</replaceable
+			></arg
+			><arg choice='opt'
+				>(<replaceable>conditions</replaceable
+			>)</arg
+		></arg
+		><arg choice='opt'
+			>root <arg choice='opt'
+				><replaceable>screen</replaceable
+			></arg
+		></arg
+	></group
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>The

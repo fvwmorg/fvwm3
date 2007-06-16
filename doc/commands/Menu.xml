@@ -11,14 +11,18 @@
 <section id='Menu'>
 <title>Menu</title>
 
-<!--command-->
 <cmdsynopsis>
-    <command>Menu</command>
-    <arg choice='plain'><replaceable>menu-name</replaceable></arg>
-    <arg choice='opt'><replaceable>position</replaceable></arg>
-    <arg choice='opt'><replaceable>double-click-action</replaceable></arg>
+	<command>Menu</command
+	><arg choice='plain'
+		><replaceable>menu-name</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>position</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>double-click-action</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>Causes a previously defined menu to be popped up in a sticky
@@ -50,10 +54,18 @@ The
 arguments consist of several parts:</para>
 
 <cmdsynopsis>
-    <arg choice='opt'><replaceable>context-rectangle</replaceable></arg>
-    <arg choice='plain'><replaceable>x</replaceable></arg>
-    <arg choice='plain'><replaceable>y</replaceable></arg>
-    <arg choice='opt'><replaceable>special-options</replaceable></arg>
+	<arg choice='opt'
+		><replaceable>context-rectangle</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>x</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>y</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>special-options</replaceable
+	></arg>
 </cmdsynopsis>
 
 

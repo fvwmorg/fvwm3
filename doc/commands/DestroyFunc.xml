@@ -12,8 +12,10 @@
 <title>DestroyFunc</title>
 
 <cmdsynopsis>
-	<command>DestroyFunc</command>
-	<arg choice='plain'><replaceable>function</replaceable></arg>
+	<command>DestroyFunc</command
+	><arg choice='plain'
+		><replaceable>function</replaceable
+	></arg>
 </cmdsynopsis>
 
 

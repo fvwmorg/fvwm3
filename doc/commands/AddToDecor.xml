@@ -12,8 +12,10 @@
 <title>AddToDecor</title>
 
 <cmdsynopsis>
-    <command>AddToDecor</command>
-    <arg choice='plain'><replaceable>decor</replaceable></arg>
+	<command>AddToDecor</command
+	><arg choice='plain'
+		><replaceable>decor</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>This command is deprecated and will be removed in the future.  There
@@ -66,7 +68,9 @@ AddToDecor FlatDecor
 + <fvwmref cmd="TitleStyle"/>  -- flat
 + <fvwmref cmd="BorderStyle"/> -- HiddenHandles NoInset
 
-<fvwmref cmd="Style"/> FlatStyle UseDecor FlatDecor, HandleWidth 4, ForeColor white, BackColor grey40, HilightFore black, HilightBack grey70
+<fvwmref cmd="Style"/> FlatStyle \
+	UseDecor FlatDecor, HandleWidth 4, ForeColor white, \
+	BackColor grey40, HilightFore black, HilightBack grey70
 
 <fvwmref cmd="Style"/> xterm UseStyle FlatStyle
 </programlisting>

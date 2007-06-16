@@ -12,9 +12,13 @@
 <title>MenuStyle</title>
 
 <cmdsynopsis>
-    <command>MenuStyle</command>
-    <arg choice='plain'><replaceable>stylename</replaceable></arg>
-    <arg choice='opt'><replaceable>options</replaceable></arg>
+	<command>MenuStyle</command
+	><arg choice='plain'
+		><replaceable>stylename</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>options</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Sets a new menu style or changes a previously defined style.  The
@@ -731,13 +735,25 @@ MenuStyle red MenuFace DGradient 64 Red Black
 each style name.</para>
 
 <cmdsynopsis>
-    <command>MenuStyle</command>
-    <arg choice='plain'><replaceable>forecolor</replaceable></arg>
-    <arg choice='plain'><replaceable>backcolor</replaceable></arg>
-    <arg choice='plain'><replaceable>shadecolor</replaceable></arg>
-    <arg choice='plain'><replaceable>font</replaceable></arg>
-    <arg choice='plain'><replaceable>style</replaceable></arg>
-    <arg choice='opt'><replaceable>anim</replaceable></arg>
+	<command>MenuStyle</command
+	><arg choice='plain'
+		><replaceable>forecolor</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>backcolor</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>shadecolor</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>font</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>style</replaceable
+	></arg
+	><arg choice='opt'
+		><replaceable>anim</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>This is the old syntax of the

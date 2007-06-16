@@ -11,12 +11,12 @@
 <section id='WindowStyle'>
 <title>WindowStyle</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>WindowStyle</command>
-	<arg choice='plain'><replaceable>options</replaceable></arg>
+	<command>WindowStyle</command
+	><arg choice='plain'
+		><replaceable>options</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>sets attributes (styles) on the selected window. The
 <replaceable>options</replaceable>

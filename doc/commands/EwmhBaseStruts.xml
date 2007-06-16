@@ -12,11 +12,19 @@
 <title>EwmhBaseStruts</title>
 
 <cmdsynopsis>
-	<command>EwmhBaseStruts</command>
-	<arg choice='plain'><replaceable>left</replaceable></arg>
-	<arg choice='plain'><replaceable>right</replaceable></arg>
-	<arg choice='plain'><replaceable>top</replaceable></arg>
-	<arg choice='plain'><replaceable>bottom</replaceable></arg>
+	<command>EwmhBaseStruts</command
+	><arg choice='plain'
+		><replaceable>left</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>right</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>top</replaceable
+	></arg
+	><arg choice='plain'
+		><replaceable>bottom</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Where left, right, top and bottom are positive or null integers

@@ -11,12 +11,12 @@
 <section id='StickAcrossPages'>
 <title>StickAcrossPages</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>StickAcrossPages</command>
-	<arg choice='opt'><replaceable>bool</replaceable></arg>
+	<command>StickAcrossPages</command
+	><arg choice='opt'
+		><replaceable>bool</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Works like
 <fvwmref cmd="Stick"/>

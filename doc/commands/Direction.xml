@@ -12,11 +12,17 @@
 <title>Direction</title>
 
 <cmdsynopsis>
-	<command>Direction</command>
-	<arg choice='opt'>FromPointer</arg>
-	<arg choice='plain'><replaceable>direction</replaceable></arg>
-	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Direction</command
+	><arg choice='opt'>FromPointer</arg
+	><arg choice='plain'
+		><replaceable>direction</replaceable
+	></arg
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
 
 <para>Performs

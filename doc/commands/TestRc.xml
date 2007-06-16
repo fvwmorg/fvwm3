@@ -11,11 +11,15 @@
 <section id='TestRc'>
 <title>TestRc</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>TestRc</command>
-	<arg choice='opt'>(<optional>!</optional><replaceable>returncode</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>TestRc</command
+	><arg choice='opt'
+		>(<optional>!</optional
+		><replaceable>returncode</replaceable
+	>)</arg
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
 <!--/command-->
 

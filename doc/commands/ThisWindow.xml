@@ -11,13 +11,13 @@
 <section id='ThisWindow'>
 <title>ThisWindow</title>
 
-<!--command-->
 <cmdsynopsis>
-  <command>ThisWindow</command>
-	<arg choice='opt'>(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'>command</arg>
+	<command>ThisWindow</command
+	><arg choice='opt'
+		>(<replaceable>conditions</replaceable
+	>)</arg
+	><arg choice='plain'>command</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para><emphasis remap='B'>ThisWindow</emphasis>
 executes the specified

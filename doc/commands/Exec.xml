@@ -11,12 +11,12 @@
 <section id='Exec'>
 <title>Exec</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Exec</command>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Exec</command
+	><arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Executes
 <replaceable>command</replaceable>.

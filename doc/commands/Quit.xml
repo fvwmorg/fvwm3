@@ -11,11 +11,9 @@
 <section id='Quit'>
 <title>Quit</title>
 
-<!--command-->
 <cmdsynopsis>
 	<command>Quit</command>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Exits fvwm, generally causing X to exit too.</para>
 

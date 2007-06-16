@@ -11,13 +11,15 @@
 <section id='FocusStyle'>
 <title>FocusStyle</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>FocusStyle</command>
-	<arg choice='plain'><replaceable>stylename</replaceable></arg>
-	<arg choice='plain'><replaceable>options</replaceable></arg>
+	<command>FocusStyle</command
+	><arg choice='plain'
+		><replaceable>stylename</replaceable
+	></arg
+	><arg choice='plain'><replaceable
+		>options</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>works exactly like the
 <fvwmref cmd="Style"/>

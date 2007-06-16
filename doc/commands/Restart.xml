@@ -11,14 +11,15 @@
 <section id='Restart'>
 <title>Restart</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Restart</command>
-	<arg choice='opt'><replaceable>window_manager</replaceable>
-		<arg choice='opt'><replaceable>params</replaceable></arg>
+	<command>Restart</command
+	><arg choice='opt'
+		><replaceable>window_manager</replaceable
+		><arg choice='opt'
+			><replaceable>params</replaceable
+		></arg>
 	</arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Causes fvwm to restart itself if
 <replaceable>window_manager</replaceable>
@@ -73,13 +74,15 @@ may get rid of this warning by using "Restart fvwm -s" or
 different screens works independently.</para>
 
 
-<!--command-->
 <cmdsynopsis>
-	<command>Restart</command>
-	<arg choice='plain'><option>--pass-args</option></arg>
-	<arg choice='plain'><replaceable>window_manager</replaceable></arg>
+	<command>Restart</command
+	><arg choice='plain'
+		><option>--pass-args</option
+	></arg
+	><arg choice='plain'
+		><replaceable>window_manager</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>The same as
@@ -99,13 +102,15 @@ and original arguments are preserved.</para>
 initial arguments.</para>
 
 
-<!--command-->
 <cmdsynopsis>
-	<command>Restart</command>
-	<arg choice='plain'><option>--dont-preserve-state</option></arg>
-	<arg choice='opt'><replaceable>other-params</replaceable></arg>
+	<command>Restart</command
+	><arg choice='plain'
+		><option>--dont-preserve-state</option
+	></arg
+	><arg choice='opt'
+		><replaceable>other-params</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 
 <para>The same as</para>

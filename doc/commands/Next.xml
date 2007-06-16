@@ -11,13 +11,15 @@
 <section id='Next'>
 <title>Next</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>Next</command>
-	<arg choice="opt">(<replaceable>conditions</replaceable>)</arg>
-	<arg choice='plain'><replaceable>command</replaceable></arg>
+	<command>Next</command
+	><arg choice="opt"
+		>(<replaceable>conditions</replaceable
+	>)</arg>
+	<arg choice='plain'
+		><replaceable>command</replaceable
+	></arg>
 </cmdsynopsis>
-<!--/command-->
 
 <para>Performs
 <replaceable>command</replaceable>

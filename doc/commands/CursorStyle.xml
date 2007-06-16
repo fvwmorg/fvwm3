@@ -12,19 +12,33 @@
 <title>CursorStyle</title>
 
 <cmdsynopsis>
-  <command>CursorStyle</command>
-  <arg choice='plain'><replaceable>context</replaceable></arg>
-  <arg choice='opt'>
-    <group choice='plain'>
-			<arg choice='plain'><replaceable>number</replaceable></arg>
-			<arg choice='plain'><replaceable>name</replaceable></arg>
-			<arg choice='plain'><replaceable>xpm</replaceable></arg>
-			<arg choice='plain'>None</arg>
-			<arg choice='plain'>Tiny</arg>
-    </group>
-    <arg choice='opt'><arg choice='plain'><replaceable>fore</replaceable></arg>
-			<arg choice='plain'><replaceable>back</replaceable></arg></arg>
-  </arg>
+	<command>CursorStyle</command
+	><arg choice='plain'
+		><replaceable>context</replaceable
+	></arg
+	><arg choice='opt'
+		><group choice='plain'
+			><arg choice='plain'
+				><replaceable>num</replaceable
+			></arg
+			><arg choice='plain'
+				><replaceable>name</replaceable
+			></arg
+			><arg choice='plain'
+				><replaceable>xpm</replaceable
+			></arg
+			><arg choice='plain'>None</arg
+			><arg choice='plain'>Tiny</arg
+		></group
+		><arg choice='opt'
+			><arg choice='plain'
+				><replaceable>fg</replaceable
+			></arg>
+			<arg choice='plain'
+				><replaceable>bg</replaceable
+			></arg
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Defines a new cursor for the specified context.  Note that this
@@ -136,13 +150,15 @@ example, to indicate that it is busy.  The various contexts are:</para>
 </informaltable>
 
 
-<para>The defaults are shown in parentheses above.  If you ever want to
+<para>
+The defaults are shown in parentheses above.  If you ever want to
 restore the default cursor for a specific context you can omit the
-second argument.</para>
+second argument.
+</para>
 
-<para>The second is either the numeric value of the cursor as defined in
-the include file
-<filename>X11/cursorfont.h</filename>
+<para>
+The second argument is either the numeric value of the cursor as
+defined in the include file <filename>X11/cursorfont.h</filename>
 or its name (without the XC_ prefix). Alternatively, the xpm file
 name may be specified.  This xpm file should contain a pixmap
 using 3 colors (None, black, white) and an optional hot-spot.  If
@@ -151,7 +167,7 @@ the image.  Furthermore the name can be
 <fvwmopt cmd="CursorStyle" opt="None"/>
 (no cursor) or
 <fvwmopt cmd="CursorStyle" opt="Tiny"/>
-(a single pixel as the cursor).  For example:</para>
+(a single pixel as the cursor).</para>
 
 <programlisting>
 # make the kill cursor be XC_gumby (both forms work):
@@ -163,9 +179,10 @@ CursorStyle ROOT nice_arrow.xpm yellow black
 </programlisting>
 
 <para>The optional
-<replaceable>fore</replaceable> and <replaceable>back</replaceable>
+<replaceable>fg</replaceable> and <replaceable>bg</replaceable>
 arguments specify the foreground and background colors for the
-cursor, defaulting to black and white.</para>
+cursor, defaulting to black and white (reverse video compared
+to the actual bitmap).</para>
 
 <para>Here is an example pixmap file
 <filename>nice_arrow.xpm</filename>:</para>

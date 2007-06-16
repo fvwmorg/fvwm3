@@ -11,19 +11,25 @@
 <section id='GotoPage'>
 <title>GotoPage</title>
 
-<!--command-->
 <cmdsynopsis>
-	<command>GotoPage</command>
-	<group choice='plain'>
-		<arg choice='plain'>prev</arg>
-		<arg choice='plain'>
-			<arg choice='opt'><replaceable>options</replaceable></arg>
-			<arg choice='plain'><replaceable>x</replaceable><optional>p</optional></arg>
-			<arg choice='plain'><replaceable>y</replaceable><optional>p</optional></arg>
-		</arg>
-	</group>
+	<command>GotoPage</command
+	><group choice='plain'
+		><arg choice='plain'>prev</arg
+		><arg choice='plain'
+			><arg choice='opt'
+				><replaceable>options</replaceable
+			></arg
+			><arg choice='plain'
+				><replaceable>x</replaceable
+				><optional>p</optional
+			></arg
+			><arg choice='plain'
+				><replaceable>y</replaceable
+				><optional>p</optional
+			></arg
+		></arg
+	></group>
 </cmdsynopsis>
-<!--/command-->
 
 <para>
 Moves the desktop viewport to page (x,y).  The upper left page is

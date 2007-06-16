@@ -12,11 +12,15 @@
 <title>EdgeCommand</title>
 
 <cmdsynopsis>
-	<command>EdgeCommand</command>
-	<arg choice='opt'>
-		<arg choice='plain'><replaceable>direction</replaceable></arg>
-		<arg choice='opt'><replaceable>Function</replaceable></arg>
-	</arg>
+	<command>EdgeCommand</command
+	><arg choice='opt'
+		><arg choice='plain'
+			><replaceable>direction</replaceable
+		></arg
+		><arg choice='opt'
+			><replaceable>Function</replaceable
+		></arg
+	></arg>
 </cmdsynopsis>
 
 <para>Binds a specified fvwm command
