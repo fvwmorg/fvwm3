@@ -53,8 +53,10 @@
 						<xsl:value-of select="@mod"/>
 					</xsl:when>
 					<xsl:when test="@sect">
-						<xsl:text>../fvwm/</xsl:text>
+						<xsl:text>../fvwm/fvwm.man</xsl:text>
+						<!-- not splitting into separate sections for now.
 						<xsl:value-of select="@sect"/>
+						-->
 					</xsl:when>
 					<!-- anything else should be an error -->
 				</xsl:choose>
