@@ -512,7 +512,6 @@ void module_kill(fmodule *module)
 	{
 		/* remove from list of command line modules */
 		DBUG("module_kill", "ending command line module");
-		MOD_IS_CMDLINE(module) = 0;
 	}
 
 	return;

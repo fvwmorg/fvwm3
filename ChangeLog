@@ -1,3 +1,8 @@
+2007-06-21  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_list.c (module_kill):
+	fix possible core dump when using startup modules
+
 2007-06-21  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* doc/fvwm.xsl:
