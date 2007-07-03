@@ -1,8 +1,10 @@
+2007-06-21  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* fvwm.xsl:
+	fix links to sections of "man" page. (fvwm.man.html)
+
 2007-06-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
-	
-	* fvwm-man.xsl:
-	add space before elipsis, no extra space after arguments
-	
+
 	* commands/AddButtonStyle.xml:
 	* commands/AddTitleStyle.xml:
 	* commands/AddToDecor.xml:
@@ -175,10 +177,10 @@
 	* commands/XorValue.xml:
 	* fvwm/colorGradients.xml:
 	* fvwm/synopsis.xml:
-	indent <cmdsynopsis> in a whitespace free way 
+	indent <cmdsynopsis> in a whitespace free way
 
 	* commands/AddButtonStyle.xml:
-	* commands/AddToDecor.xml:	
+	* commands/AddToDecor.xml:
 	* commands/ButtonStyle.xml:
 	* commands/TitleStyle.xml:
 	* commands/Test.xml:
@@ -186,7 +188,392 @@
 	* fvwm/conditionals.xml:
 	* fvwm/fonts.xml:
 	break long example lines
-	
+
 	* commands/Resize.xml:
 	Split synopsis into two to avoid a long non-breakable line in the
 	manpage output.
+
+2007-06-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/colorGradients.xml:
+	use <option> tag, don't use <command>
+
+	* fvwm-man.xsl:
+	fix formatting of <keysym> in man output
+
+2007-06-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* commands/PrintInfo.xml:
+	add ImageCache subject to PrintInfo command
+
+2007-06-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm-man.xsl:
+	don't use .PP at the first paragraph in a subsub+section.
+	foce two spaces between sentences, and force no blank lines at start
+	of paragraphs
+	fix markup of non section header cmdsynopsis
+
+	* commands/MenuStyle.xml:
+	use <command> for oldstyle syntax
+
+	* commands/Menu.xml:
+	fixed typo
+
+	* fvwm/fonts.xml:
+	insert paragraph brake as per old man page
+	make sure that the . alias for Center appears in man output
+
+2007-06-10  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+	* Makefile.am:
+	* fvwm/Makefile.am:
+	* commands/Makefile.am:
+	* modules/Makefile.am:
+	* docbook-xsl/profiling/profile.xsl: (new)
+	* docbook-xsl/profiling/profile-mode.xsl: (new)
+	Use 2-pass profiling on all XML files.
+
+	* README:
+	Use <keysym> (instead of <emphasis>) for key names.
+	Replaced <manonly> & <htmlonly> with <... output="html"> etc.
+
+	* allCommands.html:
+	* groupedCommands.html:
+	* index.html:
+	* modules/modules.html: (deleted)
+	* modules.html: (new)
+	* header.html:
+	Moved modules.html.
+
+	* fvwm.xsl:
+	* fvwm-man.xsl:
+	Removed <manonly> & <htmlonly>.
+
+	* fvwm/images.xml:
+	* fvwm/initialization.xml:
+	Replaced use of <manonly> & <htmlonly> with <... output="...">.
+
+	* modules/FvwmTabs.xml:
+	* modules/images/FvwmTabs/menu.png: (new)
+	* modules/images/FvwmTabs/green.png: (new)
+	* modules/images/FvwmTabs/yellow.png: (new)
+	* modules/images/FvwmTabs/red.png: (new)
+	* modules/images/FvwmTabs/screenshot.png: (new)
+	* modules/images/FvwmTabs/fvwmTabsEmpty.png: (new)
+	* modules/images/FvwmTabs/logoFvwmTabs.png: (new)
+	Created FvwmTabs man page.
+
+2007-06-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* commands/.cvsignore:
+	* commands/Makefile.am (COMMANDS):
+	* commands/AddDecor.xml:
+	removed documentation of unexisting AddDecor command
+
+	* fvwm/moduleCommands.xml:
+	Include * instead of +
+
+	* commands/AnimatedMove.xml:
+	* commands/AddButtonStyle.xml:
+	* commands/AddTitleStyle.xml:
+	* commands/AddToDecor.xml:
+	* commands/AddToFunc.xml:
+	* commands/AddToMenu.xml:
+	* commands/All.xml:
+	* commands/Any.xml:
+	* commands/Asterix.xml:
+	* commands/Beep.xml:
+	* commands/BorderStyle.xml:
+	* commands/Break.xml:
+	* commands/BugOpts.xml:
+	* commands/BusyCursor.xml:
+	* commands/ButtonState.xml:
+	* commands/ButtonStyle.xml:
+	* commands/ChangeDecor.xml:
+	* commands/ChangeMenuStyle.xml:
+	* commands/CleanupColorsets.xml:
+	* commands/ClickTime.xml:
+	* commands/Close.xml:
+	* commands/ColorLimit.xml:
+	* commands/ColormapFocus.xml:
+	* commands/Colorset.xml:
+	* commands/CopyMenuStyle.xml:
+	* commands/Current.xml:
+	* commands/CursorMove.xml:
+	* commands/CursorStyle.xml:
+	* commands/DefaultColorset.xml:
+	* commands/DefaultColors.xml:
+	* commands/DefaultFont.xml:
+	* commands/DefaultIcon.xml:
+	* commands/DefaultLayers.xml:
+	* commands/Delete.xml:
+	* commands/Deschedule.xml:
+	* commands/DesktopName.xml:
+	* commands/DesktopSize.xml:
+	* commands/Desk.xml:
+	* commands/DestroyDecor.xml:
+	* commands/DestroyFunc.xml:
+	* commands/DestroyMenuStyle.xml:
+	* commands/DestroyMenu.xml:
+	* commands/DestroyModuleConfig.xml:
+	* commands/DestroyStyle.xml:
+	* commands/DestroyWindowStyle.xml:
+	* commands/Destroy.xml:
+	* commands/Direction.xml:
+	* commands/Echo.xml:
+	* commands/EdgeCommand.xml:
+	* commands/EdgeLeaveCommand.xml:
+	* commands/EdgeResistance.xml:
+	* commands/EdgeScroll.xml:
+	* commands/EdgeThickness.xml:
+	* commands/Emulate.xml:
+	* commands/EscapeFunc.xml:
+	* commands/EwmhBaseStruts.xml:
+	* commands/EWMHNumberOfDesktops.xml:
+	* commands/ExecUseShell.xml:
+	* commands/Exec.xml:
+	* commands/FakeClick.xml:
+	* commands/FakeKeypress.xml:
+	correct use of <command>, more markup
+
+	* commands/Plus.xml:
+	Use new command attribute to cmdsynopsis.
+
+	* fvwm-man.xsl:
+	Allow for command title matches by a command attribute in <cmdsynopsis>
+
+2007-06-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* commands/FlipFocus.xml:
+	* commands/FocusStyle.xml:
+	* commands/Focus.xml:
+	* commands/Function.xml:
+	* commands/GlobalOpts.xml:
+	* commands/GnomeButton.xml:
+	* commands/GotoDeskAndPage.xml:
+	* commands/GotoDesk.xml:
+	* commands/GotoPage.xml:
+	* commands/HideGeometryWindow.xml:
+	* commands/HilightColorset.xml:
+	* commands/HilightColor.xml:
+	* commands/IconFont.xml:
+	* commands/Iconify.xml:
+	* commands/IconPath.xml:
+	* commands/IgnoreModifiers.xml:
+	* commands/ImagePath.xml:
+	* commands/KeepRc.xml:
+	* commands/Key.xml:
+	* commands/KillModule.xml:
+	* commands/Layer.xml:
+	* commands/LocalePath.xml:
+	* commands/Lower.xml:
+	* commands/Maximize.xml:
+	* commands/MenuStyle.xml:
+	* commands/Menu.xml:
+	* commands/ModuleListenOnly.xml:
+	* commands/ModulePath.xml:
+	* commands/ModuleSynchronous.xml:
+	* commands/ModuleTimeout.xml:
+	* commands/Module.xml:
+	* commands/Mouse.xml:
+	* commands/MoveThreshold.xml:
+	* commands/MoveToDesk.xml:
+	* commands/MoveToPage.xml:
+	* commands/MoveToScreen.xml:
+	* commands/Move.xml:
+	* commands/Next.xml:
+	* commands/None.xml:
+	* commands/Nop.xml:
+	* commands/NoWindow.xml:
+	* commands/OpaqueMoveSize.xml:
+	* commands/Pick.xml:
+	* commands/PipeRead.xml:
+	* commands/PixmapPath.xml:
+	* commands/PlaceAgain.xml:
+	* commands/Plus.xml:
+	* commands/PointerKey.xml:
+	* commands/PointerWindow.xml:
+	* commands/Popup.xml:
+	* commands/Prev.xml:
+	* commands/PrintInfo.xml:
+	* commands/QuitScreen.xml:
+	* commands/QuitSession.xml:
+	* commands/Quit.xml:
+	* commands/RaiseLower.xml:
+	* commands/Raise.xml:
+	* commands/Read.xml:
+	* commands/RecaptureWindow.xml:
+	* commands/Recapture.xml:
+	* commands/RefreshWindow.xml:
+	* commands/Refresh.xml:
+	* commands/Repeat.xml:
+	* commands/ResizeMaximize.xml:
+	* commands/ResizeMoveMaximize.xml:
+	* commands/ResizeMove.xml:
+	* commands/Resize.xml:
+	* commands/RestackTransients.xml:
+	* commands/Restart.xml:
+	* commands/SaveQuitSession.xml:
+	* commands/SaveSession.xml:
+	* commands/ScanForWindow.xml:
+	* commands/Schedule.xml:
+	* commands/Scroll.xml:
+	* commands/SendToModule.xml:
+	* commands/SetAnimation.xml:
+	* commands/SetEnv.xml:
+	* commands/Silent.xml:
+	* commands/SnapAttraction.xml:
+	* commands/SnapGrid.xml:
+	* commands/State.xml:
+	* commands/StickAcrossDesks.xml:
+	* commands/StickAcrossPages.xml:
+	* commands/Stick.xml:
+	* commands/StrokeFunc.xml:
+	* commands/Stroke.xml:
+	* commands/Style.xml:
+	* commands/TearMenuOff.xml:
+	* commands/TestRc.xml:
+	* commands/Test.xml:
+	* commands/ThisWindow.xml:
+	* commands/TitleStyle.xml:
+	* commands/Title.xml:
+	* commands/UnsetEnv.xml:
+	* commands/UpdateDecor.xml:
+	* commands/UpdateStyles.xml:
+	* commands/Wait.xml:
+	* commands/WarpToWindow.xml:
+	* commands/WindowFont.xml:
+	* commands/WindowId.xml:
+	* commands/WindowList.xml:
+	* commands/WindowsDesk.xml:
+	* commands/WindowShadeAnimate.xml:
+	* commands/WindowShade.xml:
+	* commands/WindowStyle.xml:
+	* commands/XineramaPrimaryScreen.xml:
+	* commands/XineramaSlsScreens.xml:
+	* commands/XineramaSlsSize.xml:
+	* commands/XineramaSls.xml:
+	* commands/Xinerama.xml:
+	* commands/XorPixmap.xml:
+	* commands/XorValue.xml:
+	* commands/XSynchronize.xml:
+	* commands/XSync.xml:
+	correct use of <command> tags and some additional formatting.
+	A*-FakeKeyPress left to do.
+
+	* fvwm-man.xsl:
+	make additional synopsis appear as section headers as well.
+
+	* fvwm-man.xsl:
+	layout of subsubsections to mimic the old manpage
+	use synopsis for subsubsection-title if command match title
+
+	* commands/AddToMenu.xml:
+	correct use of <command> tag (all other commands to do)
+
+	* fvwm/initialization.xml:
+	add htmlonly paragraph between the two simple lists in initialization.
+
+2007-06-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm-man.xsl:
+	make simplelist less spaced out
+	make keysym use .SM formatting and envar use italic (as before)
+
+	* fvwm/xinerama.xml:
+	* fvwm/virtualDesktop.xml:
+	* fvwm/synopsis.xml:
+	* fvwm/shortcuts.xml:
+	* fvwm/options.xml:
+	* fvwm/openLook.xml:
+	* fvwm/menus.xml:
+	* fvwm/initialization.xml:
+	* fvwm/images.xml:
+	* fvwm/icccm.xml:
+	* fvwm/fonts.xml:
+	* fvwm/expansion.xml:
+	* fvwm/execution.xml:
+	* fvwm/compilation.xml:
+	* fvwm/builtinBindings.xml:
+	* fvwm/bidirText.xml:
+	use docbook-tags that better reflect content. (i.e. filename instead
+	of emphasis, add more internal links.)
+
+	* fvwm/options.xml:
+	move option parameters to the term-elements.
+
+	* fvwm/fvwm.man.xml:
+	GNOMEIgnoreHInts is a Style, not a command.
+
+	* fvwm/initialization.xml:
+	added a missing Exec before xsetroot
+
+	* fvwm/builtinBindings.xml:
+	removed stray programlisting, copied from elsewhere in conversion
+
+	* fvwm/expansion.xml:
+	changed variable descriptions from informaltable to variablelist.
+	put back documentation of $[pointer.wx] $[pointer.wy] that got lost
+	in the move to docbook.
+
+2007-06-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* commands/Style.xml:
+	new style MinWindowSize
+
+2007-05-13  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* modules/Makefile.am:
+	* modules/FvwmTabs.xml:
+	* style.css
+
+	Converted FvwmTabs man page to docbook format.
+
+2007-05-11  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* allCommands.html:
+	* groupedCommands.html:
+	* header.html:
+	* style.css:
+	* fvwm/Makefile.am:
+	* modules/Makefile.am:
+	* modules/FvwmTabs.xml:
+	* modules/modules.html:
+	* images/fvwm.logo.png:
+	* images/m.logo.png:
+
+	Number sections of HTML man page.
+	Use HTML character entity &sdot; (&#8901;)
+	Don't build separate sections of HTML man page (not being used ATM).
+	Make logos transparent so looks neat with non-white backgrounds.
+	Template FvwmTabs.xml file for man page.
+
+2007-04-27  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* commands/WindowList.xml:
+	s/UseListSkip/UseSkipList/g etc.
+
+2007-04-17  Jesus Guerrero  <6thpink(at)terra(dot)es>
+
+	* fvwm/menus.xml (menu_anatomy):
+	added localization of the "More&..." string
+
+2007-03-14  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* fvwm-man.xsl:
+	bugfix: backslashes were not being escaped properly.
+
+	* fvwm/options.xml:
+	minor formatting error.
+
+2007-03-11  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* configure.ac:
+	bugfix: 'make dist' failed cos I moved 'scott.notes' to util/ subdir.
+	bugfix: out-of-tree builds failed due to broken dependency.
+	Make man page have same header as old one.
+	Fix man page indentation.
+	Make text of top-level man page sections all uppercase.
+	Added --disable-mandoc option.
+	HTML doc generation is off by default: use --enable-htmldoc.
+	Added more info in doc/README about XML commands to use.
