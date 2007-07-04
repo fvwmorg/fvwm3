@@ -1,6 +1,3 @@
-
-# $Id$
-
 docdir=@FVWM_DOCDIR@
 
 HTML_FILES=index.html allCommands.html groupedCommands.html modules.html style.css

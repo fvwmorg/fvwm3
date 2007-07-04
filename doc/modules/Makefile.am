@@ -18,7 +18,6 @@ EXTRA_DIST=$(XML_FILES)
 
 if FVWM_BUILD_HTMLDOC
 doc_DATA=$(HTML_FILES)
-all: $(HTML_FILES) imagedir
 endif
 
 QUIET=@
@@ -48,12 +47,12 @@ FvwmTabs.1: $(srcdir)/FvwmTabs.xml $(XSL_MAN_FILE)
 	$(QUIET) $(XSLTPROC) --path .. --xinclude \
 		$(XSL_MAN_FILE) $<.p && rm $<.p
 
-imagedir:
-	@ [ ! -d images ] && cp -rp $(srcdir)/images . || true
+if FVWM_BUILD_HTMLDOC
 
-install: install-am
-	@ cp -rp images $(docdir)
+install-data-local:
+	@ cp -rp $(srcdir)/images $(docdir)
 
+endif
 
 # All HTML output is generated from XML files.
 # %.html : $(srcdir)/%.xml
