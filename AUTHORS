@@ -23,7 +23,7 @@ David Maciver:
 Menu styles TitleColorset, HilightTitle and TitleFont.
 
 Renato Caldas:
-Cleaned up module initialization.
+Some cleanups. Module linked list mechanism.
 
 Malcolm Still:
 New MenuStyle option TrianglesUseFore.
