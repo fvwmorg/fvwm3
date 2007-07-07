@@ -1,3 +1,11 @@
+2007-07-07  Simon Griph  <simon(at)griph(dot)se>
+
+	* NEWS:
+	* fvwm/conditional.c (CreateConditionMask):
+	bugfix: Condition separation previously failed when a
+	single comma (no whitespace padding) was used directly
+	after a multi-worded condition.
+
 2007-06-21  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.c (module_kill):

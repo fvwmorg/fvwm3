@@ -95,11 +95,12 @@ styles are used) or by the last time they had the focus.</para>
 <para>The
 <emphasis remap='I'>conditions</emphasis>
 that may be given as an argument to any conditional command are a
-list of keywords separated by commas or whitespace, enclosed in
+list of keywords separated by commas, enclosed in
 parentheses.  Unless stated otherwise, conditional commands accept
 all the conditions listed below.  Note that earlier versions of
-fvwm required the conditions to be enclosed in brackets instead of
-parentheses (this is still supported for backward compatibility).</para>
+fvwm required the conditions to be separated by whitespace instead
+of commas and enclosed in brackets instead of parentheses
+(this is still supported for backward compatibility).</para>
 
 <para>In addition, the
 <emphasis remap='I'>conditions</emphasis>

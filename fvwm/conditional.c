@@ -429,8 +429,9 @@ void DefaultConditionMask(WindowConditionMask *mask)
  */
 void CreateConditionMask(char *flags, WindowConditionMask *mask)
 {
+	char *allocated_condition;
+	char *next_condition;
 	char *condition;
-	char *prev_condition = NULL;
 	char *tmp;
 	unsigned int state;
 
@@ -440,8 +441,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 	}
 
 	/* Next parse the flags in the string. */
-	tmp = flags;
-	tmp = GetNextSimpleOption(tmp, &condition);
+	next_condition = GetNextFullOption(flags, &allocated_condition);
+	condition = PeekToken(allocated_condition, &tmp);
 
 	while (condition)
 	{
@@ -494,8 +495,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			    (button >= 1 &&
 			     button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS))
 			{
-				free(condition);
-				tmp = GetNextToken (tmp, &condition);
+				tmp = SkipNTokens(tmp, 1);
 				button_mask = (1<<(button-1));
 			}
 			else
@@ -687,16 +687,14 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 					CLEAR_USER_STATES(mask, state);
 				}
 				SETM_USER_STATES(mask, state);
-				free(condition);
-				tmp = GetNextToken(tmp, &condition);
+				tmp = SkipNTokens(tmp, 1);
 			}
 		}
 		else if (StrEquals(condition, "Layer"))
 		{
 			if (sscanf(tmp, "%d", &mask->layer))
 			{
-				free(condition);
-				tmp = GetNextToken (tmp, &condition);
+				tmp = SkipNTokens(tmp, 1);
 				if (mask->layer < 0)
 				{
 					/* silently ignore invalid layers */
@@ -714,7 +712,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		{
 			struct name_condition *pp;
 			struct namelist *p;
-			char *condp;
+			char *condp = safestrdup(cond);
 
 			pp = (struct name_condition *)
 				safemalloc(sizeof(struct name_condition));
@@ -722,7 +720,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			pp->namelist = NULL;
 			pp->next = mask->name_condition;
 			mask->name_condition = pp;
-			for(condp=cond; ; )
+			for (;;)
 			{
 				p = (struct namelist *)
 					safemalloc(sizeof(struct namelist));
@@ -739,20 +737,29 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 				}
 				*condp++='\0';
 			}
-			condition = NULL;	/* so it won't be freed */
 		}
 
-		if (prev_condition)
+		if (tmp && *tmp)
 		{
-			free(prev_condition);
+			fvwm_msg(OLD, "CreateConditionMask",
+				 "Use comma instead of whitespace to "
+				 "separate conditions");
 		}
-
-		prev_condition = condition;
-		tmp = GetNextSimpleOption(tmp, &condition);
-	}
-	if (prev_condition)
-	{
-		free(prev_condition);
+		else
+		{
+			if (allocated_condition != NULL)
+			{
+				free(allocated_condition);
+				allocated_condition = NULL;
+			}
+			if (next_condition && *next_condition)
+			{
+				next_condition = GetNextFullOption(
+					next_condition, &allocated_condition);
+			}
+			tmp = allocated_condition;
+		}
+		condition = PeekToken(tmp, &tmp);
 	}
 
 	return;
