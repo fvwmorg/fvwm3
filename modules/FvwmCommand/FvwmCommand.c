@@ -210,6 +210,7 @@ int main ( int argc, char *argv[])
        fprintf (stderr, "\n%s can't decide on fifo-name. "
 	       "Make sure that $FVWM_USERDIR is set.\n",
 	       MYNAME );
+       exit(1);
     }
   }
 
