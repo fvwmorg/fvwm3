@@ -93,7 +93,7 @@ AddToFunc SwallowNew
 DestroyFunc SwallowNewIfFocused
 AddToFunc SwallowNewIfFocused
 + I Current (FvwmTabs) SwallowNew $*
-+ I TestRc (NoMatch) Exec exec $0
++ I TestRc (NoMatch) Exec exec $*
 
 # SwallowNextStatus - is used by the 'tab' (shell) command.
 DestroyFunc SwallowNextStatus
