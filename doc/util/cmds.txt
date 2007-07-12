@@ -47,6 +47,7 @@ DestroyStyle
 DestroyWindowStyle
 Direction
 Echo
+EchoFuncDefinition
 EdgeCommand
 EdgeLeaveCommand
 EdgeResistance

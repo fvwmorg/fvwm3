@@ -1,3 +1,10 @@
+2007-07-12  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* groupedCommands.html:
+	* util/cmds.txt:
+	* allCommands.html:
+	add EchoFuncDefinition to static html files
+
 2007-07-12  Renato Caldas  <seventhguardian@gmail.com>
 
 	* commands/Makefile.am:
