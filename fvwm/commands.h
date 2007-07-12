@@ -161,6 +161,7 @@ enum
 	F_DESTROY_MOD,
 	F_DESTROY_WINDOW_STYLE,
 	F_ECHO,
+	F_ECHO_FUNC_DEFINITION,
 	F_FLIP_FOCUS,
 	F_FOCUS,
 	F_ICONIFY,
@@ -261,6 +262,7 @@ P(DestroyWindowStyle);
 P(Direction);
 P(Dummy);
 P(Echo);
+P(EchoFuncDefinition);
 P(EdgeCommand);
 P(EdgeLeaveCommand);
 P(EdgeResistance);

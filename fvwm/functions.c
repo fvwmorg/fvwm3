@@ -1480,13 +1480,12 @@ void CMD_DestroyFunc(F_CMD_ARGS)
 	FvwmFunction *func;
 	char *token;
 
-	GetNextToken(action,&token);
+	PeekToken(action,&token);
 	if (!token)
 	{
 		return;
 	}
 	func = find_complex_function(token);
-	free(token);
 	if (!func)
 	{
 		return;
@@ -1550,6 +1549,55 @@ void CMD_Plus(F_CMD_ARGS)
 		AddToDecor(F_PASS_ARGS, tmp);
 	}
 #endif /* USEDECOR */
+
+	return;
+}
+
+void CMD_EchoFuncDefinition(F_CMD_ARGS)
+{
+	FvwmFunction *func;
+	const func_t *bif;
+	FunctionItem *fi;
+	char *token;
+
+	GetNextToken(action, &token);
+	if (!token)
+	{
+		fvwm_msg(ERR, "EchoFuncDefinition", "Missing argument");
+
+		return;
+	}
+	bif = find_builtin_function(token);
+	if (bif != NULL)
+	{
+		fvwm_msg(
+			INFO, "EchoFuncDefinition",
+			"function '%s' is a built in command", token);
+		free(token);
+
+		return;
+	}
+	func = find_complex_function(token);
+	if (!func)
+	{
+		fvwm_msg(
+			INFO, "EchoFuncDefinition",
+			"function '%s' not defined", token);
+		free(token);
+
+		return;
+	}
+	fvwm_msg(
+		INFO, "EchoFuncDefinition", "definition of function '%s':",
+		token);
+	for (fi = func->first_item; fi != NULL; fi = fi->next_item)
+	{
+		fvwm_msg(
+			INFO, "EchoFuncDefinition", "  %c %s", fi->condition,
+			(fi->action == 0) ? "(null)" : fi->action);
+	}
+	fvwm_msg(INFO, "EchoFuncDefinition", "end of definition");
+	free(token);
 
 	return;
 }

@@ -225,10 +225,15 @@ const func_t func_table[] =
 	CMD_ENT("echo", CMD_Echo, F_ECHO, 0, 0),
 	/* - Print message to stderr, mainly for debugging */
 
+	CMD_ENT("echofuncdefinition", CMD_EchoFuncDefinition,
+		F_ECHO_FUNC_DEFINITION, 0, 0),
+	/* - Print the definion of a function */
+
 	CMD_ENT("edgecommand", CMD_EdgeCommand, F_EDGE_COMMAND, 0, 0),
 	/* - Bind one or another screen edge to an fvwm action */
 
-	CMD_ENT("edgeleavecommand", CMD_EdgeLeaveCommand, F_EDGE_LEAVE_COMMAND, 0, 0),
+	CMD_ENT("edgeleavecommand", CMD_EdgeLeaveCommand, F_EDGE_LEAVE_COMMAND,
+		0, 0),
 	/* - Bind one or another screen edge to an fvwm action */
 
 	CMD_ENT("edgeresistance", CMD_EdgeResistance, F_EDGE_RES, 0, 0),
@@ -358,7 +363,8 @@ const func_t func_table[] =
 	CMD_ENT("module", CMD_Module, F_MODULE, 0, 0),
 	/* - Invoke an fvwm module */
 
-	CMD_ENT("modulelistenonly", CMD_ModuleListenOnly, F_MODULE_LISTEN_ONLY, 0, 0),
+	CMD_ENT("modulelistenonly", CMD_ModuleListenOnly, F_MODULE_LISTEN_ONLY,
+		0, 0),
 	/* - Invoke an fvwm module */
 
 	CMD_ENT("modulepath", CMD_ModulePath, F_MODULE_PATH, 0, 0),

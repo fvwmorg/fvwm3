@@ -1,3 +1,10 @@
+2007-07-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/functions.c (CMD_EchoFuncDefinition):
+	* fvwm/functable.c (func_table):
+	* fvwm/commands.h:
+	new command EchoFuncDefinition
+
 2007-07-07  Simon Griph  <simon(at)griph(dot)se>
 
 	* NEWS:
