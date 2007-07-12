@@ -15,6 +15,7 @@
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Beep.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyFunc.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Echo.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EchoFuncDefinition.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Exec.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ExecUseShell.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Function.xml" />

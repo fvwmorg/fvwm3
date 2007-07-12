@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='EchoFuncDefinition'>
+<title>EchoFuncDefinition</title>
+
+<cmdsynopsis>
+	<command>EchoFuncDefinition</command
+	><arg choice='plain'
+		><replaceable>function</replaceable
+	></arg>
+</cmdsynopsis>
+
+<para>The
+<emphasis remap='B'>EchoFuncDefinition</emphasis>
+is similar to the
+<fvwmref cmd="Echo"/>
+command but prints the definition for the given
+<replaceable>function</replaceable>
+to
+<filename>stderr</filename>.
+It is useful to find out how fvwm handles quoting and for
+debugging functions
+.</para>
+
+<programlisting>
+Echo StartFunc
+</programlisting>
+
+
+</section>

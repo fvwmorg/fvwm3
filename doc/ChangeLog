@@ -1,3 +1,13 @@
+2007-06-21  Renato Caldas  <seventhguardian@gmail.com>
+
+	* commands/Makefile.am:
+	break COMMANDS into multiple lines
+
+	* commands/EchoFuncDefinition.xml:
+	* commands/Makefile.am:
+	* fvwm/userFunctions.xml:
+	documented new command EchoFuncDefinition
+
 2007-07-07  Simon Griph  <simon(at)griph(dot)se>
 
 	* fvwm/conditionals.xml:
