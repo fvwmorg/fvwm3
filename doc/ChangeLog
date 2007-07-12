@@ -1,10 +1,14 @@
 2007-07-13  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* groupedCommands.html:
-	fix cut&paste error.
+	* commands/EchoFuncDefinition.xml:
+	fix cut&paste errors.
 
 	* Makefile.am:
 	Allow make to check build dependencies (of .html files) properly.
+
+	* README:
+	Added "HOWTO add documentation for a new FVWM command" section.
 
 2007-07-12  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 

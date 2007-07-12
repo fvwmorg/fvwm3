@@ -76,3 +76,22 @@ However, there are a few idiosyncrasies worth pointing out:
 * Use <acronym> for acronyms.
 * Use <keysym> for key names.
 
+
+
+HOWTO add documentation for a new FVWM command
+==============================================
+
+1. Copy a similar command. Eg.
+   cd doc/commands && cp Echo.xml EchoFuncDefinition.xml
+2. Edit contents appropriately. Make sure the section id, title and
+   cmdsynopsis are correct.
+3. Ensure the new command appears in the appropriate section of the
+   man page. Eg. this line is included in fvwm/userFunctions.xml:
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EchoFuncDefinition.xml" />
+4. Add the new file to the COMMANDS variable in commands/Makefile.am.
+5. Add the new command to groupedCommands.html.
+6. Add the new command to allCommands.html - this content is auto-generated
+   by a script in the util/ subdirectory. First add the command name to
+   the alphabetically sorted util/cmds.txt file, then run:
+   cd doc/util && ./genAllCommands.pl cmds.txt
+7. Add a ChangeLog entry to doc/ChangeLog.
