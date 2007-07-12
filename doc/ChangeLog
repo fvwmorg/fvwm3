@@ -1,4 +1,4 @@
-2007-06-21  Renato Caldas  <seventhguardian@gmail.com>
+2007-07-12  Renato Caldas  <seventhguardian@gmail.com>
 
 	* commands/Makefile.am:
 	break COMMANDS into multiple lines
