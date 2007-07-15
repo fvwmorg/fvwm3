@@ -11,6 +11,20 @@
 
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
+	* libs/PictureImageLoader.c
+	(PImageLoadSvg):
+	(PImageLoadPng):
+	(PImageLoadXpm):
+	now returns argb data instead of pixmaps
+	(PImageLoadPixmapFromFile):
+	(PImageLoadArgbDataFromFile):
+	moved first half of PImageLoadPixmapFromFile() into
+	the new local function PImageLoadArgbDataFromFile()
+	(PImageLoadBitmap):
+	removed function, code moved into PImageLoadPixmapFromFile()
+
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
 	* libs/PictureImageLoader.c (PImageLoadXpm):
 	revised to make use of PImageCreatePixmapFromArgbData()
 

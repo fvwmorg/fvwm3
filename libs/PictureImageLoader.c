@@ -48,12 +48,11 @@
 #include "FImage.h"
 
 /* ---------------------------- local definitions -------------------------- */
-#define FIMAGE_CMD_ARGS Display *dpy, Window win, char *path, \
-		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
-		  int *width, int *height, int *depth, \
-		  int *nalloc_pixels, \
-		  Pixel **alloc_pixels, int *no_limit, \
-		  FvwmPictureAttributes fpa
+#define FIMAGE_CMD_ARGS \
+	Display *dpy, char *path, CARD32 **argb_data, int *width, int *height
+
+#define FIMAGE_PASS_ARGS \
+	dpy, path, argb_data, width, height
 
 typedef struct PImageLoader
 {
@@ -78,7 +77,6 @@ typedef struct PImageLoader
 static Bool PImageLoadSvg(FIMAGE_CMD_ARGS);
 static Bool PImageLoadPng(FIMAGE_CMD_ARGS);
 static Bool PImageLoadXpm(FIMAGE_CMD_ARGS);
-static Bool PImageLoadBitmap(FIMAGE_CMD_ARGS);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -87,7 +85,6 @@ PImageLoader Loaders[] =
 	{ "xpm", PImageLoadXpm },
 	{ "svg", PImageLoadSvg },
 	{ "png", PImageLoadPng },
-	{ "bmp", PImageLoadBitmap },
 	{NULL,0}
 };
 
@@ -95,6 +92,46 @@ PImageLoader Loaders[] =
 
 /* ---------------------------- local functions ---------------------------- */
 
+static
+Bool PImageLoadArgbDataFromFile(FIMAGE_CMD_ARGS)
+{
+	int done = 0, i = 0, tried = -1;
+	char *ext = NULL;
+
+	if (path == NULL)
+		return False;
+
+	if (strlen(path) > 3)
+	{
+		ext = path + strlen(path) - 3;
+	}
+	/* first try to load by extension */
+	while(!done && ext != NULL && Loaders[i].extension != NULL)
+	{
+		if (StrEquals(Loaders[i].extension, ext))
+		{
+			if (Loaders[i].func(FIMAGE_PASS_ARGS))
+			{
+				return True;
+			}
+			tried = i;
+			done = 1;
+		}
+		i++;
+	}
+
+	i = 0;
+	while(Loaders[i].extension != NULL)
+	{
+		if (i != tried && Loaders[i].func(FIMAGE_PASS_ARGS))
+		{
+			return True;
+		}
+		i++;
+	}
+
+	return False;
+}
 
 /*
  *
@@ -286,19 +323,7 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 
 	*width = w;
 	*height = h;
-
-	/* The rest was copied from PImageLoadPng() */
-	*depth = Pdepth;
-	if (!PImageCreatePixmapFromArgbData(
-		dpy, win, data, 0, w, h, pixmap, mask, alpha,
-		nalloc_pixels, alloc_pixels, no_limit, fpa)
-		)
-	{
-		free(data);
-
-		return False;
-	}
-	free(data);
+	*argb_data = data;
 
 	return True;
 }
@@ -368,7 +393,6 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	interlace_type = 0; /* not used */
 	*width = w = (int) w32;
 	*height = h = (int) h32;
-	*depth = bit_depth;
 	if (color_type == FPNG_COLOR_TYPE_PALETTE)
 	{
 		Fpng_set_expand(Fpng_ptr);
@@ -427,19 +451,9 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	Fpng_read_end(Fpng_ptr, Finfo_ptr);
 	Fpng_destroy_read_struct(&Fpng_ptr, &Finfo_ptr, (png_infopp) NULL);
 	fclose(f);
-
-	*depth = Pdepth;
-	if (!PImageCreatePixmapFromArgbData(
-		dpy, win, data, 0, w, h, pixmap, mask, alpha,
-		nalloc_pixels, alloc_pixels, no_limit, fpa)
-		)
-	{
-		free(data);
-		free(lines);
-		return False;
-	}
 	free(lines);
-	free(data);
+	*argb_data = data;
+
 	return True;
 }
 
@@ -539,39 +553,9 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 		data[i] = colors[xpm_im.data[i]];
 	}
 	free(colors);
-	if (!PImageCreatePixmapFromArgbData(
-		dpy, win, data, 0, w, h, pixmap, mask, alpha,
-		nalloc_pixels, alloc_pixels, no_limit, fpa))
-	{
-		free(data);
-
-		return False;
-	}
-	free(data);
-	*depth = Pdepth;
+	*argb_data = data;
 
 	return True;
-}
-
-/*
- *
- * bitmap loader
- *
- */
-static
-Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
-{
-	int l;
-
-	if (XReadBitmapFile(
-		    dpy, win, path, (unsigned int*)width,
-		    (unsigned int*)height, pixmap, &l, &l) == BitmapSuccess)
-	{
-		*mask = None;
-		*depth = 1;
-		return True;
-	}
-	return False;
 }
 
 /*
@@ -738,44 +722,31 @@ Bool PImageLoadPixmapFromFile(
 	int *nalloc_pixels, Pixel **alloc_pixels,
 	int *no_limit, FvwmPictureAttributes fpa)
 {
-	int done = 0, i = 0, tried = -1;
-	char *ext = NULL;
+	CARD32 *data;
 
-	if (path == NULL)
-		return False;
-
-	if (strlen(path) > 3)
+	if(PImageLoadArgbDataFromFile(dpy, path, &data, width, height))
 	{
-		ext = path + strlen(path) - 3;
-	}
-	/* first try to load by extension */
-	while(!done && ext != NULL && Loaders[i].extension != NULL)
-	{
-		if (StrEquals(Loaders[i].extension, ext))
+		*depth = Pdepth;
+		if (PImageCreatePixmapFromArgbData(
+			dpy, win, data, 0, *width, *height, pixmap, mask,
+			alpha, nalloc_pixels, alloc_pixels, no_limit, fpa))
 		{
-			if (Loaders[i].func(
-				dpy, win, path, pixmap, mask, alpha, width,
-				height, depth, nalloc_pixels, alloc_pixels,
-				no_limit, fpa))
-			{
-				return True;
-			}
-			tried = i;
-			done = 1;
-		}
-		i++;
-	}
+			free(data);
 
-	i = 0;
-	while(Loaders[i].extension != NULL)
-	{
-		if (i != tried && Loaders[i].func(
-			dpy, win, path, pixmap, mask, alpha, width, height,
-			depth, nalloc_pixels, alloc_pixels, no_limit, fpa))
-		{
 			return True;
 		}
-		i++;
+		free(data);
+	}
+	/* Bitmap fallback */
+	else if (XReadBitmapFile(
+			dpy, win, path, (unsigned int *)width,
+			(unsigned int *)height, pixmap, NULL, NULL)
+		 == BitmapSuccess)
+	{
+		*depth = 1;
+		*mask = None;
+
+		return True;
 	}
 	pixmap = None;
 	mask = None;
