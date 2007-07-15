@@ -41,6 +41,7 @@
 #include "Picture.h"
 #include "PictureUtils.h"
 #include "Graphics.h"
+#include "ColorUtils.h"
 #include "Fxpm.h"
 #include "Fpng.h"
 #include "Fsvg.h"
@@ -616,15 +617,15 @@ Bool PImageCreatePixmapFromArgbData(
 	int i;
 	int j;
 	int a;
-	PictureImageColorAllocator *pica;
+	PictureImageColorAllocator *pica = NULL;
 	int alpha_limit = PICTURE_ALPHA_LIMIT;
 	int alpha_depth = FRenderGetAlphaDepth();
 	Bool have_mask = False;
 	Bool have_alpha = False;
 
-
 	fim = FCreateFImage(
-		dpy, Pvisual, Pdepth, ZPixmap, width, height);
+		dpy, Pvisual, (fpa.mask & FPAM_MONOCHROME) ? 1 : Pdepth,
+		ZPixmap, width, height);
 	if (!fim)
 	{
 		return False;
@@ -640,16 +641,17 @@ Bool PImageCreatePixmapFromArgbData(
 		a_fim = FCreateFImage(
 			dpy, Pvisual, alpha_depth, ZPixmap, width, height);
 	}
-
-	pica = PictureOpenImageColorAllocator(
-		dpy, Pcmap, width, height,
-		!!(fpa.mask & FPAM_NO_COLOR_LIMIT),
-		!!(fpa.mask & FPAM_NO_ALLOC_PIXELS),
-		!!(fpa.mask & FPAM_DITHER),
-		True);
-
+	if(!(fpa.mask & FPAM_MONOCHROME))
+	{
+		c.flags = DoRed | DoGreen | DoBlue;
+		pica = PictureOpenImageColorAllocator(
+			dpy, Pcmap, width, height,
+			!!(fpa.mask & FPAM_NO_COLOR_LIMIT),
+			!!(fpa.mask & FPAM_NO_ALLOC_PIXELS),
+			!!(fpa.mask & FPAM_DITHER),
+			True);
+	}
 	data += start;
-	c.flags = DoRed | DoGreen | DoBlue;
 	for (j = 0; j < height; j++)
 	{
 		for (i = 0; i < width; i++, data++)
@@ -660,11 +662,23 @@ Bool PImageCreatePixmapFromArgbData(
 				c.red   = (*data >> 16) & 0xff;
 				c.green = (*data >>  8) & 0xff;
 				c.blue  = (*data      ) & 0xff;
-
-				PictureAllocColorImage(
-					dpy, pica, &c, i, j);
-				XPutPixel(fim->im, i, j, c.pixel);
-
+				if (pica)
+				{
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
+					XPutPixel(fim->im, i, j, c.pixel);
+				}
+				/* Brightness threshold */
+				else if ((0x99  * c.red +
+					  0x12D * c.green +
+					  0x3A  * c.blue) >> 16)
+				{
+					XPutPixel(fim->im, i, j, 1);
+				}
+				else
+				{
+					XPutPixel(fim->im, i, j, 0);
+				}
 				if (m_fim)
 				{
 					XPutPixel(m_fim->im, i, j, 1);
@@ -685,7 +699,11 @@ Bool PImageCreatePixmapFromArgbData(
 			}
 		}
 	}
-	/* copy the image to the server */
+	if (pica)
+	{
+		PictureCloseImageColorAllocator(
+			dpy, pica, nalloc_pixels, alloc_pixels, no_limit);
+	}
 	*pixmap = PImageCreatePixmapFromFImage(dpy, win, fim);
 	if (have_alpha)
 	{
@@ -704,8 +722,7 @@ Bool PImageCreatePixmapFromArgbData(
 	{
 		FDestroyFImage(dpy, a_fim);
 	}
-	PictureCloseImageColorAllocator(
-		dpy, pica, nalloc_pixels, alloc_pixels, no_limit);
+
 	return True;
 }
 
@@ -726,7 +743,7 @@ Bool PImageLoadPixmapFromFile(
 
 	if(PImageLoadArgbDataFromFile(dpy, path, &data, width, height))
 	{
-		*depth = Pdepth;
+		*depth = (fpa.mask & FPAM_MONOCHROME) ? 1 : Pdepth;
 		if (PImageCreatePixmapFromArgbData(
 			dpy, win, data, 0, *width, *height, pixmap, mask,
 			alpha, nalloc_pixels, alloc_pixels, no_limit, fpa))
@@ -812,40 +829,69 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 	return p;
 }
 
-
-Bool PImageLoadCursorPixmapFromFile(
-	Display *dpy, Window win, char *path, Pixmap *source, Pixmap *mask,
-	int *x, int *y)
+Cursor PImageLoadCursorFromFile(
+	Display *dpy, Window win, char *path,
+	unsigned int x_hot, unsigned int y_hot)
 {
+	Cursor cursor = 0;
+	CARD32 *data;
+	int width;
+	int height;
 
-	FxpmAttributes xpm_attributes;
-
-	if (!XpmSupport)
-		return False;
-
-	/* we need source to be a bitmap */
-	xpm_attributes.depth = 1;
-	xpm_attributes.valuemask = FxpmSize | FxpmDepth | FxpmHotspot;
-	if (FxpmReadFileToPixmap(dpy, win, path, source, mask,
-				&xpm_attributes) != FxpmSuccess)
+	/* Get cursor data from the regular image loader */
+	if (PImageLoadArgbDataFromFile(dpy, path, &data, &width, &height))
 	{
-		fprintf(stderr, "[FVWM][PImageLoadCursorPixmapFromFile]"
-			" Error reading cursor xpm %s",
-			path);
-		return False;
+		Pixmap src;
+		Pixmap msk = None;
+		FvwmPictureAttributes fpa;
+
+		fpa.mask = FPAM_NO_ALPHA | FPAM_MONOCHROME;
+
+		/* Adjust the hot-spot if necessary */
+		if (x_hot >= width || y_hot >= height)
+		{
+			FxpmImage xpm_im = {0};
+			FxpmInfo xpm_info = {0};
+
+			if (XpmReadFileToXpmImage(path, &xpm_im, &xpm_info)
+			    == FxpmSuccess)
+			{
+				if (xpm_info.valuemask & FxpmHotspot)
+				{
+					x_hot = xpm_info.x_hotspot;
+					y_hot = xpm_info.y_hotspot;
+				}
+				FxpmFreeXpmImage(&xpm_im);
+				FxpmFreeXpmInfo(&xpm_info);
+			}
+			if (x_hot >= width)
+			{
+				x_hot = width / 2;
+			}
+			if (y_hot >= height)
+			{
+				y_hot = height / 2;
+			}
+		}
+		/* Create monochrome cursor from argb data */
+		if (PImageCreatePixmapFromArgbData(
+			dpy, win, data, 0, width, height,
+			&src, &msk, 0, 0, 0, 0, fpa))
+		{
+			XColor c[2];
+
+			c[0].pixel = GetColor(DEFAULT_CURSOR_FORE_COLOR);
+			c[1].pixel = GetColor(DEFAULT_CURSOR_BACK_COLOR);
+			XQueryColors(dpy, Pcmap, c, 2);
+			cursor = XCreatePixmapCursor(
+				dpy, src, msk, &(c[0]), &(c[1]), x_hot, y_hot);
+			XFreePixmap(dpy, src);
+			XFreePixmap(dpy, msk);
+		}
+		free(data);
 	}
 
-	*x = xpm_attributes.x_hotspot;
-	if (*x >= xpm_attributes.width)
-	{
-		*x = xpm_attributes.width / 2;
-	}
-	*y = xpm_attributes.y_hotspot;
-	if (*y >= xpm_attributes.height)
-	{
-		*y = xpm_attributes.height / 2;
-	}
-	return True;
+	return cursor;
 }
 
 /* FIXME: Use color limit */

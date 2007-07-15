@@ -114,23 +114,25 @@ Cursor *CreateCursors(Display *dpy)
 
 void CMD_CursorStyle(F_CMD_ARGS)
 {
-	char *cname=NULL, *newcursor=NULL;
+	char *cname=NULL;
+	char *newcursor=NULL;
 	char *errpos = NULL;
-	char *fore = NULL, *back = NULL;
+	char *fore = NULL;
+	char *back = NULL;
 	XColor colors[2];
-	int index,nc, i, my_nc;
+	int index;
+	int nc;
+	int i;
+	int my_nc;
 	FvwmWindow *fw2;
+	Cursor cursor;
 
-	action = GetNextToken(action, &cname);
-	action = GetNextToken(action, &newcursor);
-
+	cursor = 0;
+	action = PeekToken(action, &cname);
 	if (!cname)
 	{
 		fvwm_msg(ERR, "CursorStyle", "Bad cursor style");
-		if (cname)
-		{
-			free(cname);
-		}
+
 		return;
 	}
 	if (StrEquals("POSITION", cname))
@@ -232,13 +234,13 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	else
 	{
 		fvwm_msg(ERR, "CursorStyle", "Unknown cursor name %s", cname);
-		free(cname);
-		free(newcursor);
+
 		return;
 	}
-	free(cname);
+	cname = 0;
 
 	/* check if the cursor is given by X11 name */
+	action = GetNextToken(action, &newcursor);
 	if (newcursor)
 	{
 		my_nc = fvwmCursorNameToIndex(newcursor);
@@ -266,82 +268,77 @@ void CMD_CursorStyle(F_CMD_ARGS)
 		/* newcursor was a number or the name of a X11 cursor */
 		if ((nc < 0) || (nc >= XC_num_glyphs) || ((nc % 2) != 0))
 		{
-			fvwm_msg(ERR, "CursorStyle", "Bad cursor number %s",
-				 newcursor);
+			fvwm_msg(
+				ERR, "CursorStyle", "Bad cursor number %s",
+				newcursor);
 			free(newcursor);
+
 			return;
 		}
-		free(newcursor);
-
-		/* replace the cursor defn */
-		if (Scr.FvwmCursors[index])
-		{
-			XFreeCursor(dpy,Scr.FvwmCursors[index]);
-		}
-		Scr.FvwmCursors[index] = XCreateFontCursor(dpy,nc);
+		cursor = XCreateFontCursor(dpy, nc);
 	}
 	else
 	{
 		/* newcursor was not a number neither a X11 cursor name */
-		if (StrEquals("none", newcursor) ||
-		    StrEquals("tiny", newcursor))
+		if (
+			StrEquals("none", newcursor) ||
+			StrEquals("tiny", newcursor))
 		{
 			XColor nccol;
 
-			if (Scr.FvwmCursors[index])
-			{
-				XFreeCursor(dpy, Scr.FvwmCursors[index]);
-			}
 			XSetForeground(
 				dpy, Scr.MonoGC,
 				(tolower(*newcursor) == 'n') ? 0 : 1);
 			XFillRectangle(
 				dpy, Scr.ScratchMonoPixmap, Scr.MonoGC,
 				0, 0, 1, 1);
-			Scr.FvwmCursors[index] = XCreatePixmapCursor(
+			cursor = XCreatePixmapCursor(
 				dpy, Scr.ScratchMonoPixmap,
 				Scr.ScratchMonoPixmap, &nccol, &nccol, 0, 0);
-			free(newcursor);
 		}
 		else
 		{
-			Pixmap source, mask;
 			char *path;
-			int x;
-			int y;
+			char *tmp;
+			unsigned int hotspot[] = {-1,-1};
 
 			path = PictureFindImageFile(newcursor, NULL, R_OK);
 			if (!path)
 			{
-				fvwm_msg(ERR, "CursorStyle",
+				fvwm_msg(
+					ERR, "CursorStyle",
 					"Cursor %s not found", newcursor);
 				free(newcursor);
+
 				return;
 			}
-
-			if (!PImageLoadCursorPixmapFromFile(
-				dpy, Scr.Root, path, &source, &mask, &x, &y))
+			if (GetIntegerArguments(action, &tmp, hotspot, 2) == 2)
 			{
-				free(path);
-				free(newcursor);
-				return;
+				action = tmp;
 			}
-			if (Scr.FvwmCursors[index])
-			{
-				XFreeCursor(dpy, Scr.FvwmCursors[index]);
-			}
-
-			colors[0].pixel = GetColor(DEFAULT_CURSOR_FORE_COLOR);
-			colors[1].pixel = GetColor(DEFAULT_CURSOR_BACK_COLOR);
-			XQueryColors(dpy, Pcmap, colors, 2);
-			Scr.FvwmCursors[index] = XCreatePixmapCursor(
-				dpy, source, mask, &(colors[0]), &(colors[1]),
-				(unsigned int)x, (unsigned int)y);
-
-			free(newcursor);
+			cursor = PImageLoadCursorFromFile(
+				dpy, Scr.Root, path, hotspot[0], hotspot[1]);
 			free(path);
 		}
 	}
+	if (!cursor)
+	{
+		fvwm_msg(
+			ERR, "CursorStyle", "Cannot load cursor: %s",
+			newcursor);
+		free(newcursor);
+
+		return;
+	}
+	free(newcursor);
+	newcursor = 0;
+
+	/* replace the cursor defn */
+	if (Scr.FvwmCursors[index])
+	{
+		XFreeCursor(dpy, Scr.FvwmCursors[index]);
+	}
+	Scr.FvwmCursors[index] = cursor;
 
 	/* look for optional color arguments */
 	action = GetNextToken(action, &fore);

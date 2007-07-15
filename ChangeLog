@@ -11,6 +11,40 @@
 
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	* libs/PictureImageLoader.h (PImageCreatePixmapFromArgbData):
+	* libs/PictureImageLoader.c (PImageLoadSvg):
+	(PImageLoadPng):
+	(PImageCreatePixmapFromArgbData):
+	moved XCreatePixmap() calls into PImageCreatePixmapFromArgbData()
+	(PImageCreatePixmapFromFImage):
+	new local function
+
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
+	* NEWS:
+	updated
+
+	* libs/Fxpm.h:
+	added defs for FxpmInfo and FxpmFreeXpmInfo
+
+	* libs/PictureBase.h (FvwmPictureAttributes):
+	* libs/PictureImageLoader.c
+	(PImageCreatePixmapFromArgbData):
+	(PImageLoadPixmapFromFile):
+	added FPAM_MONOCHROME option to FvwmPictureAttributes bitmask
+	(PImageLoadCursorPixmapFromFile):
+	(PImageLoadCursorFromFile):
+	* libs/PictureImageLoader.h:
+	removed the xpm-specific PImageLoadCursorPixmapFromFile(),
+	replaced by the new general PImageLoadCursorFromFile()
+
+	* fvwm/cursor.c (CMD_CursorStyle):
+	handle new hot-spot arguments, use PImageLoadCursorFromFile()
+	instead of PImageLoadCursorPixmapFromFile(), less code duplication
+
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
 	* libs/PictureImageLoader.c
 	(PImageLoadSvg):
 	(PImageLoadPng):

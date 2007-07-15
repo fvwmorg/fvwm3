@@ -24,11 +24,19 @@
 			><arg choice='plain'
 				><replaceable>name</replaceable
 			></arg
-			><arg choice='plain'
-				><replaceable>xpm</replaceable
-			></arg
 			><arg choice='plain'>None</arg
 			><arg choice='plain'>Tiny</arg
+			><arg choice='plain'
+				><replaceable>file</replaceable
+				><arg choice='opt'
+					><arg choice='plain'
+						><replaceable>x</replaceable
+					></arg
+					><arg choice='plain'
+						><replaceable>y</replaceable
+					></arg
+				></arg
+			></arg
 		></group
 		><arg choice='opt'
 			><arg choice='plain'
@@ -160,10 +168,7 @@ second argument.
 The second argument is either the numeric value of the cursor as
 defined in the include file <filename>X11/cursorfont.h</filename>
 or its name (without the XC_ prefix). Alternatively, the xpm file
-name may be specified.  This xpm file should contain a pixmap
-using 3 colors (None, black, white) and an optional hot-spot.  If
-no hot-spot is defined, the hot-spot is placed in the center of
-the image.  Furthermore the name can be
+name may be specified.  The name can also be
 <fvwmopt cmd="CursorStyle" opt="None"/>
 (no cursor) or
 <fvwmopt cmd="CursorStyle" opt="Tiny"/>
@@ -173,9 +178,23 @@ the image.  Furthermore the name can be
 # make the kill cursor be XC_gumby (both forms work):
 CursorStyle DESTROY 56
 CursorStyle DESTROY gumby
+</programlisting>
 
-CursorStyle TOP_LEFT topl.xpm
-CursorStyle ROOT nice_arrow.xpm yellow black
+<para>
+Alternatively, the cursor can be loaded from an (XPM, PNG or SVG) image
+<replaceable>file</replaceable>.  The image is converted to monochrome.
+</para>
+
+<para>
+The optional <replaceable>x</replaceable> and <replaceable>y</replaceable>
+arguments (following a <replaceable>file</replaceable> argument) specifies
+the hot-spot coordinate with 0 0 as the top left corner of the image.
+Coordinates within the image boundary are valid and overrides any hot-spot
+defined in the (XPM) image file.  An invalid or undefined hot-spot
+is placed in the center of the image.</para>
+
+<programlisting>
+CursorStyle ROOT cursor_image.png 0 0
 </programlisting>
 
 <para>The optional
@@ -184,37 +203,8 @@ arguments specify the foreground and background colors for the
 cursor, defaulting to black and white (reverse video compared
 to the actual bitmap).</para>
 
-<para>Here is an example pixmap file
-<filename>nice_arrow.xpm</filename>:</para>
-
 <programlisting>
-/* XPM */
-static char *nice_arrow_xpm[] = {
-/* width height num_colors chars_per_pixel hot-spot */
-"    14    14        3            1          1 1",
-/* colors */
-"  c None",
-". c black",
-"# c white",
-/* pixels */
-"...           ",
-".##..         ",
-".####..       ",
-" .#####..     ",
-" .#######..   ",
-"  .########.. ",
-"  .##########.",
-"   .#######.. ",
-"   .######.   ",
-"    .######.  ",
-"    .###.###. ",
-"     .#. .###.",
-"     .#.  .#. ",
-"      .    .  ",
-};
+CursorStyle ROOT nice_arrow.xpm yellow black
 </programlisting>
-
-<para>The hot-spot coordinates are relative to zero, in the above
-example, the hot-spot is in the second row, and second column.</para>
 
 </section>

@@ -162,10 +162,11 @@ typedef struct
 #define FPAM_NO_ALPHA        (1 << 2)  /* do not return the alpha channel */
 #define FPAM_DITHER          (1 << 3)  /* dither the image */
 #define FPAM_TINT            (1 << 4)  /* tint the image */
+#define FPAM_MONOCHROME      (1 << 5)  /* reduce the color depth to 1-bit */
 
 typedef struct
 {
-	unsigned mask : 5;
+	unsigned mask : 6;
 	XColor tint;
         int tint_percent;
 } FvwmPictureAttributes;

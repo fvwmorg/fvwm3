@@ -52,9 +52,9 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
  * Create a cursor from a file.
  * </description>
  */
-Bool PImageLoadCursorPixmapFromFile(
-	Display *dpy, Window win, char *path, Pixmap *source, Pixmap *mask,
-	int *x, int *y);
+Cursor PImageLoadCursorFromFile(
+	Display *dpy, Window win, char *path,
+	unsigned int x_hot, unsigned int y_hot);
 
 /*
  * <pubfunc>PImageLoadPixmapFromFile
