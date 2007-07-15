@@ -9,6 +9,29 @@
 	(PImageCreatePixmapFromFImage):
 	new local function
 
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
+	* fvwm/colorset.c (parse_shape):
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	* libs/PictureImageLoader.h (PImageCreatePixmapFromArgbData):
+	* libs/PictureImageLoader.c
+	(PImageLoadSvg):
+	(PImageLoadPng):
+	(PImageCreatePixmapFromArgbData):
+	don't create a mask pixmap for fully opaque (all alpha == 0xff)
+	or translucent (0 < any alpha < 0xff) images.
+
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	* libs/PictureImageLoader.h (PImageCreatePixmapFromArgbData):
+	* libs/PictureImageLoader.c (PImageLoadSvg):
+	(PImageLoadPng):
+	(PImageCreatePixmapFromArgbData):
+	moved XCreatePixmap() calls into PImageCreatePixmapFromArgbData()
+	(PImageCreatePixmapFromFImage):
+	new local function
+
 2007-07-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c (CMD_EchoFuncDefinition):

@@ -498,7 +498,7 @@ static void parse_shape(Window win, colorset_t *cs, int i, char *args,
 	{
 		cs->shape_type = SHAPE_STRETCH;
 	}
-	fpa.mask = 0;
+	fpa.mask = FPAM_NO_ALPHA;
 
 	/* try to load the shape mask */
 	if (!token)

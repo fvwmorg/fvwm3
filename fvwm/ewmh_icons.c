@@ -694,7 +694,6 @@ int EWMH_SetIconFromWMIcon(
 	Pixmap mask = None;
 	Pixmap alpha = None;
 	Bool free_list = False;
-	int have_alpha;
 	int nalloc_pixels;
 	Pixel *alloc_pixels;
 	int no_limit;
@@ -750,7 +749,7 @@ int EWMH_SetIconFromWMIcon(
 
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, Scr.NoFocusWin, list, start, width, height,
-		&pixmap, &mask, &alpha, &have_alpha, &nalloc_pixels,
+		&pixmap, &mask, &alpha, &nalloc_pixels,
 		&alloc_pixels, &no_limit, fpa))
 	{
 		fvwm_msg(ERR, "EWMH_SetIconFromWMIcon",

@@ -111,7 +111,6 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	CARD32 *data;
 	Fcairo_surface_t *surface;
 	Fcairo_t *cr;
-	int have_alpha;
 	int i;
 	int j;
 	int b1;
@@ -292,7 +291,7 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	*depth = Pdepth;
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, win, data, 0, w, h, pixmap, mask, alpha,
-		&have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
+		nalloc_pixels, alloc_pixels, no_limit, fpa)
 		)
 	{
 		free(data);
@@ -323,7 +322,6 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	unsigned char buf[FPNG_BYTES_TO_CHECK];
 	unsigned char **lines;
 	int i;
-	int have_alpha;
 
 	if (!PngSupport)
 		return False;
@@ -433,7 +431,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	*depth = Pdepth;
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, win, data, 0, w, h, pixmap, mask, alpha,
-		&have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
+		nalloc_pixels, alloc_pixels, no_limit, fpa)
 		)
 	{
 		free(data);
@@ -660,18 +658,24 @@ Pixmap PImageCreatePixmapFromFImage(Display *dpy, Window win, FImage *fimage)
 {
 	GC gc;
 	Pixmap pixmap;
-	int w = fimage->im->width;
-	int h = fimage->im->height;
-	int depth = fimage->im->depth;
+	int w;
+	int h;
+	int depth;
+	int must_free_gc;
 
+	w = fimage->im->width;
+	h = fimage->im->height;
+	depth = fimage->im->depth;
 	pixmap = XCreatePixmap(dpy, win, w, h, depth);
 	if (depth == Pdepth)
 	{
 		gc = PictureDefaultGC(dpy, win);
+		must_free_gc = 0;
 	}
 	else
 	{
 		gc = fvwmlib_XCreateGC(dpy, pixmap, 0, NULL);
+		must_free_gc = 1;
 	}
 	FPutFImage(dpy, pixmap, gc, fimage, 0, 0, 0, 0, w, h);
 	if (depth != Pdepth)
@@ -692,20 +696,22 @@ Pixmap PImageCreatePixmapFromFImage(Display *dpy, Window win, FImage *fimage)
 Bool PImageCreatePixmapFromArgbData(
 	Display *dpy, Window win, CARD32 *data, int start, int width,
 	int height, Pixmap *pixmap, Pixmap *mask, Pixmap *alpha,
-	int *have_alpha, int *nalloc_pixels, Pixel **alloc_pixels,
-	int *no_limit, FvwmPictureAttributes fpa)
+	int *nalloc_pixels, Pixel **alloc_pixels, int *no_limit,
+	FvwmPictureAttributes fpa)
 {
-	register int i,j,k;
-	FImage *fim, *m_fim = NULL;
+	FImage *fim;
+	FImage *m_fim = NULL;
 	FImage *a_fim = NULL;
 	XColor c;
+	int i;
+	int j;
 	int a;
-	Bool use_alpha_pix = (alpha != None && !(fpa.mask & FPAM_NO_ALPHA)
-		&& FRenderGetAlphaDepth());
 	PictureImageColorAllocator *pica;
-	int alpha_limit = 0;
+	int alpha_limit = PICTURE_ALPHA_LIMIT;
+	int alpha_depth = FRenderGetAlphaDepth();
+	Bool have_mask = False;
+	Bool have_alpha = False;
 
-	*have_alpha = False;
 
 	fim = FCreateFImage(
 		dpy, Pvisual, Pdepth, ZPixmap, width, height);
@@ -718,11 +724,11 @@ Bool PImageCreatePixmapFromArgbData(
 		m_fim = FCreateFImage(
 			dpy, Pvisual, 1, ZPixmap, width, height);
 	}
-	if (use_alpha_pix)
+	if (alpha && !(fpa.mask & FPAM_NO_ALPHA) && alpha_depth)
 	{
+		alpha_limit = 0;
 		a_fim = FCreateFImage(
-			dpy, Pvisual, FRenderGetAlphaDepth(), ZPixmap,
-			width, height);
+			dpy, Pvisual, alpha_depth, ZPixmap, width, height);
 	}
 
 	pica = PictureOpenImageColorAllocator(
@@ -732,60 +738,59 @@ Bool PImageCreatePixmapFromArgbData(
 		!!(fpa.mask & FPAM_DITHER),
 		True);
 
-	k = start;
+	data += start;
 	c.flags = DoRed | DoGreen | DoBlue;
-	if (!use_alpha_pix)
-	{
-		alpha_limit = PICTURE_ALPHA_LIMIT;
-	}
 	for (j = 0; j < height; j++)
 	{
-		for (i = 0; i < width; i++)
+		for (i = 0; i < width; i++, data++)
 		{
-			c.blue = data[k] & 0xff;
-			c.green = (data[k] >> 8) & 0xff;
-			c.red = (data[k] >> 16) & 0xff;
-			a = (data[k] >> 24) & 0xff;;
-			k++;
+			a = (*data >> 030) & 0xff;
 			if (a > alpha_limit)
 			{
+				c.red   = (*data >> 16) & 0xff;
+				c.green = (*data >>  8) & 0xff;
+				c.blue  = (*data      ) & 0xff;
+
 				PictureAllocColorImage(
 					dpy, pica, &c, i, j);
+				XPutPixel(fim->im, i, j, c.pixel);
+
+				if (m_fim)
+				{
+					XPutPixel(m_fim->im, i, j, 1);
+				}
 			}
-			else
+			else if (m_fim != NULL)
 			{
-				c.pixel = 0;
+				XPutPixel(m_fim->im, i, j, 0);
+				have_mask = True;
 			}
-			XPutPixel(fim->im, i, j, c.pixel);
-			if (m_fim)
-			{
-				XPutPixel(
-					m_fim->im, i, j,
-					(a > alpha_limit)? 1:0);
-			}
-			if (use_alpha_pix && a_fim)
+			if (a_fim != NULL)
 			{
 				XPutPixel(a_fim->im, i, j, a);
-				*have_alpha |= (a < 255 && a > 0);
+				if (a > 0 && a < 0xff)
+				{
+					have_alpha = True;
+				}
 			}
 		}
 	}
 	/* copy the image to the server */
 	*pixmap = PImageCreatePixmapFromFImage(dpy, win, fim);
-	if (m_fim)
-	{
-		*mask = PImageCreatePixmapFromFImage(dpy, win, m_fim);
-	}
-	if (*have_alpha)
+	if (have_alpha)
 	{
 		*alpha = PImageCreatePixmapFromFImage(dpy, win, a_fim);
+	}
+	else if (have_mask)
+	{
+		*mask = PImageCreatePixmapFromFImage(dpy, win, m_fim);
 	}
 	FDestroyFImage(dpy, fim);
 	if (m_fim)
 	{
 		FDestroyFImage(dpy, m_fim);
 	}
-	if (use_alpha_pix && a_fim)
+	if (a_fim)
 	{
 		FDestroyFImage(dpy, a_fim);
 	}
