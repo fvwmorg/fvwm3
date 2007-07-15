@@ -128,7 +128,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	Cursor cursor;
 
 	cursor = 0;
-	action = PeekToken(action, &cname);
+	cname = PeekToken(action, &action);
 	if (!cname)
 	{
 		fvwm_msg(ERR, "CursorStyle", "Bad cursor style");

@@ -1,3 +1,8 @@
+2007-07-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/cursor.c (CMD_CursorStyle):
+	fix CursorStyle command parsing
+
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
 	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
