@@ -11,6 +11,11 @@
 
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
+	* libs/PictureImageLoader.c (PImageLoadXpm):
+	revised to make use of PImageCreatePixmapFromArgbData()
+
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
 	* fvwm/colorset.c (parse_shape):
 	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
 	* libs/PictureImageLoader.h (PImageCreatePixmapFromArgbData):

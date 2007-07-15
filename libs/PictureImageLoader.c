@@ -453,17 +453,14 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 {
 	FxpmImage xpm_im = {0};
 	FxpmColor *xpm_color;
+	XColor color;
+	CARD32 *colors;
+	CARD32 *data;
 	char *visual_color;
+	int i;
+	int w;
+	int h;
 	int rc;
-	FImage *fim, *fim_mask = NULL;
-	XColor *colors;
-	XColor tc;
-	int i,j,w,h;
-	int k = 0, m = 0;
-	char *color_mask;
-	char point_mask;
-	Bool have_mask = False;
-	PictureImageColorAllocator *pica;
 #ifdef HAVE_SIGACTION
 	struct sigaction defaultHandler;
 	struct sigaction originalHandler;
@@ -502,128 +499,57 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 		FxpmFreeXpmImage(&xpm_im);
 		return False;
 	}
-
-	w = xpm_im.width;
-	h = xpm_im.height;
-	fim = FCreateFImage(
-		dpy, Pvisual, Pdepth, ZPixmap, w, h);
-	if (!fim)
-	{
-		FxpmFreeXpmImage(&xpm_im);
-		return False;
-	}
-
-	colors = (XColor *)safemalloc(xpm_im.ncolors * sizeof(XColor));
-	color_mask = (char *)safemalloc(xpm_im.ncolors);
-	pica = PictureOpenImageColorAllocator(
-		dpy, Pcmap, w, h,
-		fpa.mask & FPAM_NO_COLOR_LIMIT,
-		fpa.mask & FPAM_NO_ALLOC_PIXELS,
-		fpa.mask & FPAM_DITHER,
-		False);
+	colors = (CARD32 *)safemalloc(xpm_im.ncolors * sizeof(CARD32));
 	for(i=0; i < xpm_im.ncolors; i++)
 	{
 		xpm_color = &xpm_im.colorTable[i];
 		if (xpm_color->c_color)
 		{
 			visual_color = xpm_color->c_color;
-		} else if (xpm_color->g_color) {
+		}
+		else if (xpm_color->g_color)
+		{
 			visual_color = xpm_color->g_color;
-		} else if (xpm_color->g4_color) {
+		}
+		else if (xpm_color->g4_color)
+		{
 			visual_color = xpm_color->g4_color;
-		} else {
-			visual_color = xpm_color->m_color;
-		}
-		if (strcasecmp(visual_color,"none") == 0)
-		{
-			have_mask = True;
-			colors[i].pixel = colors[i].red =
-				colors[i].green = colors[i].blue = 0;
-			color_mask[i] = 1;
-		}
-		else if (!XParseColor(
-			dpy, Pcmap, visual_color, &colors[i]))
-		{
-			colors[i].pixel = colors[i].red = colors[i].green =
-				colors[i].blue = 0;
-			color_mask[i] = 0;
-			k++;
 		}
 		else
 		{
-			color_mask[i] = 0;
-			if (!pica->dither)
-			{
-				PictureAllocColorImage(
-					dpy, pica, &colors[i], 0, 0);
-			}
-			k++;
+			visual_color = xpm_color->m_color;
 		}
-	}
-
-	if (have_mask)
-	{
-		fim_mask = FCreateFImage(
-			dpy, Pvisual, 1, ZPixmap, w, h);
-	}
-
-	m=0;
-	for(j=0; j < h; j++)
-	{
-		for (i = 0; i < w; i++)
+		if (XParseColor(dpy, Pcmap, visual_color, &color))
 		{
-			tc = colors[xpm_im.data[m]];
-			point_mask = color_mask[xpm_im.data[m]];
-			m++;
-			if (point_mask && fim_mask)
-			{
-				XPutPixel(fim_mask->im, i,j, 0);
-			}
-			else
-			{
-				if (pica->dither)
-				{
-					PictureAllocColorImage(
-						dpy, pica, &tc, i, j);
-				}
-				if (fim_mask)
-				{
-					XPutPixel(fim_mask->im, i,j, 1);
-				}
-			}
-			XPutPixel(fim->im, i,j, tc.pixel);
+			colors[i] = 0xff000000 |
+				((color.red  << 8) & 0xff0000) |
+				((color.green    ) & 0xff00) |
+				((color.blue >> 8) & 0xff);
+		}
+		else
+		{
+			colors[i] = 0;
 		}
 	}
-
-	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
-	FPutFImage(
-		dpy, *pixmap, PictureDefaultGC(dpy, win), fim,
-		0, 0, 0, 0, w, h);
-	if (fim_mask)
+	*width = w = xpm_im.width;
+	*height = h = xpm_im.height;
+	data = (CARD32 *)safemalloc(w * h * sizeof(CARD32));
+	for (i=0; i < w * h; i++)
 	{
-		GC mono_gc = None;
-		XGCValues xgcv;
-
-		*mask = XCreatePixmap(dpy, win, w, h, 1);
-		xgcv.foreground = 0;
-		xgcv.background = 1;
-		mono_gc = fvwmlib_XCreateGC(
-			dpy, *mask, GCForeground | GCBackground, &xgcv);
-		FPutFImage(dpy, *mask, mono_gc, fim_mask, 0, 0, 0, 0, w, h);
-		XFreeGC(dpy, mono_gc);
-		FDestroyFImage(dpy, fim_mask);
+		data[i] = colors[xpm_im.data[i]];
 	}
+	free(colors);
+	if (!PImageCreatePixmapFromArgbData(
+		dpy, win, data, 0, w, h, pixmap, mask, alpha,
+		nalloc_pixels, alloc_pixels, no_limit, fpa))
+	{
+		free(data);
 
-	FDestroyFImage(dpy, fim);
-	*width = w;
-	*height = h;
+		return False;
+	}
+	free(data);
 	*depth = Pdepth;
 
-	PictureCloseImageColorAllocator(
-		dpy, pica, nalloc_pixels, alloc_pixels, no_limit);
-	free(colors);
-	free(color_mask);
-	FxpmFreeXpmImage(&xpm_im);
 	return True;
 }
 
