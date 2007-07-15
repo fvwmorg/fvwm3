@@ -11,13 +11,14 @@ endif
 
 SUBDIRS=fvwm commands images modules
 
-# [ `pwd` != $(srcdir) ] && ...
-#all:
-#	@for f in $(doc_DATA) ; do \
-#		[ ! -f $$f ] && cp -p $(srcdir)/$$f $$f; \
-#	done ; true
+# [ `pwd` != `cd $(srcdir) && pwd` ] && ...
+all:
+	@for f in $(doc_DATA) ; do \
+		[ ! -f $$f ] && cp -p $(srcdir)/$$f $$f; \
+	done ; true
 
-all: $(HTML_FILES)
-
-%.html: $(srcdir)/$@
-	cp $(srcdir)/$@ $@
+# This isn't portable (ie. doesn't work with all versions of make)
+#all: $(doc_DATA)
+#
+#%.html: $(srcdir)/$@
+#	@ cp $(srcdir)/$@ $@
