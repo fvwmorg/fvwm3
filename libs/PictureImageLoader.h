@@ -22,7 +22,7 @@
  */
 Bool PImageCreatePixmapFromArgbData(
 	Display *dpy, Window win, CARD32 *data, int start, int width,
-	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha,
+	int height, Pixmap *pixmap, Pixmap *mask, Pixmap *alpha,
 	int *have_alpha, int *nalloc_pixels, Pixel **alloc_pixels,
 	int *no_limit, FvwmPictureAttributes fpa);
 /*

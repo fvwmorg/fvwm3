@@ -290,35 +290,14 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 
 	/* The rest was copied from PImageLoadPng() */
 	*depth = Pdepth;
-	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
-	*mask = XCreatePixmap(dpy, win, w, h, 1);
-	if (alpha && !(fpa.mask & FPAM_NO_ALPHA) && FRenderGetAlphaDepth())
-	{
-		*alpha = XCreatePixmap(dpy, win, w, h, FRenderGetAlphaDepth());
-	}
 	if (!PImageCreatePixmapFromArgbData(
-		dpy, win, data, 0, w, h, *pixmap, *mask,
-		(alpha)? *alpha:0,
+		dpy, win, data, 0, w, h, pixmap, mask, alpha,
 		&have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
-	    || *pixmap == None)
+		)
 	{
-		if (*pixmap != None)
-			XFreePixmap(dpy, *pixmap);
-		if (alpha && *alpha != None)
-		{
-			XFreePixmap(dpy, *alpha);
-		}
-		if (*mask != None)
-			XFreePixmap(dpy, *mask);
-
 		free(data);
 
 		return False;
-	}
-	if (!have_alpha && alpha && *alpha != None)
-	{
-		XFreePixmap(dpy, *alpha);
-		*alpha = None;
 	}
 	free(data);
 
@@ -452,34 +431,14 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	fclose(f);
 
 	*depth = Pdepth;
-	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
-	*mask = XCreatePixmap(dpy, win, w, h, 1);
-	if (alpha && !(fpa.mask & FPAM_NO_ALPHA) && FRenderGetAlphaDepth())
-	{
-		*alpha = XCreatePixmap(dpy, win, w, h, FRenderGetAlphaDepth());
-	}
 	if (!PImageCreatePixmapFromArgbData(
-		dpy, win, data, 0, w, h, *pixmap, *mask,
-		(alpha)? *alpha:0,
+		dpy, win, data, 0, w, h, pixmap, mask, alpha,
 		&have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
-	    || *pixmap == None)
+		)
 	{
-		if (*pixmap != None)
-			XFreePixmap(dpy, *pixmap);
-		if (alpha && *alpha != None)
-		{
-			XFreePixmap(dpy, *alpha);
-		}
-		if (*mask != None)
-			XFreePixmap(dpy, *mask);
 		free(data);
 		free(lines);
 		return False;
-	}
-	if (!have_alpha && alpha && *alpha != None)
-	{
-		XFreePixmap(dpy, *alpha);
-		*alpha = None;
 	}
 	free(lines);
 	free(data);
@@ -691,6 +650,38 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
 	return False;
 }
 
+/*
+ *
+ * copy image to server
+ *
+ */
+static
+Pixmap PImageCreatePixmapFromFImage(Display *dpy, Window win, FImage *fimage)
+{
+	GC gc;
+	Pixmap pixmap;
+	int w = fimage->im->width;
+	int h = fimage->im->height;
+	int depth = fimage->im->depth;
+
+	pixmap = XCreatePixmap(dpy, win, w, h, depth);
+	if (depth == Pdepth)
+	{
+		gc = PictureDefaultGC(dpy, win);
+	}
+	else
+	{
+		gc = fvwmlib_XCreateGC(dpy, pixmap, 0, NULL);
+	}
+	FPutFImage(dpy, pixmap, gc, fimage, 0, 0, 0, 0, w, h);
+	if (depth != Pdepth)
+	{
+		XFreeGC(dpy, gc);
+	}
+
+	return pixmap;
+}
+
 /* ---------------------------- interface functions ------------------------ */
 
 /*
@@ -700,13 +691,10 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
  */
 Bool PImageCreatePixmapFromArgbData(
 	Display *dpy, Window win, CARD32 *data, int start, int width,
-	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha,
+	int height, Pixmap *pixmap, Pixmap *mask, Pixmap *alpha,
 	int *have_alpha, int *nalloc_pixels, Pixel **alloc_pixels,
 	int *no_limit, FvwmPictureAttributes fpa)
 {
-	GC mono_gc = None;
-	GC a_gc = None;
-	XGCValues xgcv;
 	register int i,j,k;
 	FImage *fim, *m_fim = NULL;
 	FImage *a_fim = NULL;
@@ -718,28 +706,11 @@ Bool PImageCreatePixmapFromArgbData(
 	int alpha_limit = 0;
 
 	*have_alpha = False;
-	if (use_alpha_pix)
-	{
-		a_gc = fvwmlib_XCreateGC(dpy, alpha, 0, NULL);
-	}
-	if (mask)
-	{
-		xgcv.foreground = 0;
-		xgcv.background = 1;
-		mono_gc = fvwmlib_XCreateGC(dpy, mask,
-					    GCForeground | GCBackground, &xgcv);
-	}
 
 	fim = FCreateFImage(
 		dpy, Pvisual, Pdepth, ZPixmap, width, height);
 	if (!fim)
 	{
-		if (mono_gc != None)
-			XFreeGC(dpy, mono_gc);
-		if (a_gc != None)
-			XFreeGC(dpy, a_gc);
-		fprintf(stderr, "[FVWM][PImageCreatePixmapFromArgbData] "
-			"-- WARN cannot create an XImage\n");
 		return False;
 	}
 	if (mask)
@@ -800,17 +771,14 @@ Bool PImageCreatePixmapFromArgbData(
 		}
 	}
 	/* copy the image to the server */
-	FPutFImage(
-		dpy, pixmap, PictureDefaultGC(dpy, win), fim,
-		0, 0, 0, 0, width, height);
+	*pixmap = PImageCreatePixmapFromFImage(dpy, win, fim);
 	if (m_fim)
 	{
-		FPutFImage(
-			dpy, mask, mono_gc, m_fim, 0, 0, 0, 0, width, height);
+		*mask = PImageCreatePixmapFromFImage(dpy, win, m_fim);
 	}
 	if (*have_alpha)
 	{
-		FPutFImage(dpy, alpha, a_gc, a_fim, 0, 0, 0, 0, width, height);
+		*alpha = PImageCreatePixmapFromFImage(dpy, win, a_fim);
 	}
 	FDestroyFImage(dpy, fim);
 	if (m_fim)
@@ -821,10 +789,6 @@ Bool PImageCreatePixmapFromArgbData(
 	{
 		FDestroyFImage(dpy, a_fim);
 	}
-	if (mono_gc != None)
-		XFreeGC(dpy, mono_gc);
-	if (a_gc != None)
-		XFreeGC(dpy, a_gc);
 	PictureCloseImageColorAllocator(
 		dpy, pica, nalloc_pixels, alloc_pixels, no_limit);
 	return True;

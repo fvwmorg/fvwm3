@@ -748,43 +748,18 @@ int EWMH_SetIconFromWMIcon(
 		return 0;
 	}
 
-	pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
-	mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
-	if (FRenderGetAlphaDepth())
-	{
-		alpha = XCreatePixmap(
-			dpy, Scr.NoFocusWin, width, height,
-			FRenderGetAlphaDepth());
-	}
 	if (!PImageCreatePixmapFromArgbData(
-		    dpy, Scr.Root, list, start, width, height,
-		    pixmap, mask, alpha, &have_alpha, &nalloc_pixels,
-		    &alloc_pixels, &no_limit, fpa) || pixmap == None)
+		dpy, Scr.NoFocusWin, list, start, width, height,
+		&pixmap, &mask, &alpha, &have_alpha, &nalloc_pixels,
+		&alloc_pixels, &no_limit, fpa))
 	{
 		fvwm_msg(ERR, "EWMH_SetIconFromWMIcon",
 			 "fail to create a pixmap\n");
-		if (pixmap != None)
-		{
-			XFreePixmap(dpy, pixmap);
-		}
-		if (mask != None)
-		{
-			XFreePixmap(dpy, mask);
-		}
-		if (alpha != None)
-		{
-			XFreePixmap(dpy, alpha);
-		}
 		if (free_list)
 		{
 			free(list);
 		}
 		return 0;
-	}
-	if (!have_alpha && alpha != None)
-	{
-		XFreePixmap(dpy, alpha);
-		alpha = None;
 	}
 
 	if (width > max_w || height > max_h)
