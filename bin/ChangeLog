@@ -1,3 +1,9 @@
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
+	* fvwm-config.in:
+	* Makefile.am (LDADD):
+
+
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-convert-2.6.in:

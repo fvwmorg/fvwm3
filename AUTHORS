@@ -7,7 +7,7 @@ ChangeWindowTitle and ChangeWindowTitleFromArg FvwmScript instructions.
 ChangeWindowTitle FvwmScript command.
 
 Simon Griph:
-SVG image loader.
+SVG image loader.  ARGB/animated mouse cursor loading.
 
 Thomas Adam:
 Window style !StickyStippledTitle (and hence StickyStippledTitle).

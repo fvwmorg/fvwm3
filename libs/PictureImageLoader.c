@@ -46,6 +46,7 @@
 #include "Fpng.h"
 #include "Fsvg.h"
 #include "FRenderInit.h"
+#include "Fcursor.h"
 #include "FImage.h"
 
 /* ---------------------------- local definitions -------------------------- */
@@ -837,9 +838,28 @@ Cursor PImageLoadCursorFromFile(
 	CARD32 *data;
 	int width;
 	int height;
+	int i;
+	FcursorImages *fcis;
+	FcursorImage *fci;
 
+	/* First try the Xcursor loader (animated cursors) */
+	if ((fcis = FcursorFilenameLoadImages(
+		path, FcursorGetDefaultSize(dpy))))
+	{
+		for (i = 0; i < fcis->nimage; i++)
+		{
+			if (x_hot < fcis->images[i]->width &&
+			    y_hot < fcis->images[i]->height)
+			{
+				fcis->images[i]->xhot = x_hot;
+				fcis->images[i]->yhot = y_hot;
+			}
+		}
+		cursor = FcursorImagesLoadCursor(dpy, fcis);
+		FcursorImagesDestroy(fcis);
+	}
 	/* Get cursor data from the regular image loader */
-	if (PImageLoadArgbDataFromFile(dpy, path, &data, &width, &height))
+	else if (PImageLoadArgbDataFromFile(dpy, path, &data, &width, &height))
 	{
 		Pixmap src;
 		Pixmap msk = None;
@@ -873,8 +893,36 @@ Cursor PImageLoadCursorFromFile(
 				y_hot = height / 2;
 			}
 		}
+		/* Use the Xcursor library to create the argb cursor */
+		if ((fci = FcursorImageCreate(width, height)))
+		{
+			unsigned char alpha;
+			unsigned char red;
+			unsigned char green;
+			unsigned char blue;
+
+			/* Xcursor expects alpha prescaled RGB values */
+			for (i = 0; i < width * height; i++)
+			{
+				alpha = ((data[i] >> 24) & 0xff);
+				red   = ((data[i] >> 16) & 0xff) * alpha / 0xff;
+				green = ((data[i] >>  8) & 0xff) * alpha / 0xff;
+				blue  = ((data[i]      ) & 0xff) * alpha / 0xff;
+
+				data[i] =
+					(alpha << 24) | (red << 16) |
+					(green <<  8) | blue;
+			}
+
+			fci->xhot = x_hot;
+			fci->yhot = y_hot;
+			fci->delay = 0;
+			fci->pixels = (FcursorPixel *)data;
+			cursor = FcursorImageLoadCursor(dpy, fci);
+			FcursorImageDestroy(fci);
+		}
 		/* Create monochrome cursor from argb data */
-		if (PImageCreatePixmapFromArgbData(
+		else if (PImageCreatePixmapFromArgbData(
 			dpy, win, data, 0, width, height,
 			&src, &msk, 0, 0, 0, 0, fpa))
 		{

@@ -18,7 +18,7 @@ man_MANS = \
 	fvwm-menu-desktop.1 fvwm-menu-headlines.1
 EXTRA_DIST = fvwm-convert-2.2 fvwm-convert-2.2.1 $(man_MANS)
 
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(Xcursor_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(png_LIBS) $(rsvg_LIBS)
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 	$(rsvg_CFLAGS)

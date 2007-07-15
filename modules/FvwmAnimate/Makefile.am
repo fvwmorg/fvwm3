@@ -13,7 +13,7 @@ FvwmAnimate_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(rplay_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm $(png_LIBS) \
-	$(rsvg_LIBS) $(Xrender_LIBS)
+	$(rsvg_LIBS) $(Xrender_LIBS) $(Xcursor_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(rplay_CFLAGS) $(X_CFLAGS) \
 	$(png_CFLAGS) $(Xrender_CFLAGS)

@@ -32,7 +32,8 @@ Changes in beta release 2.5.22 (not released yet)
      definition to the console for debugging purposes.
    - The CursorStyle command can now load PNG and SVG images as
      mouse cursors.  New x and y arguments to specify the
-     hot spot.
+     hot spot.  Also, it is now possible to load non-monochrome
+     cursors and cursors with partial transparency.
 
 * New module features:
 

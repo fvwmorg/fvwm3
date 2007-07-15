@@ -1,3 +1,16 @@
+2007-06-17  Simon Griph  <simon(at)griph(dot)se>
+
+	* FvwmAnimate/Makefile.am (LDADD):
+	* FvwmBanner/Makefile.am (LDADD):
+	* FvwmButtons/Makefile.am (LDADD):
+	* FvwmIconBox/Makefile.am (LDADD):
+	* FvwmPager/Makefile.am (LDADD):
+	* FvwmProxy/Makefile.am (LDADD):
+	* FvwmScript/Makefile.am (LDADD):
+	* FvwmTaskBar/Makefile.am (LDADD):
+	* FvwmWharf/Makefile.am (LDADD):
+	added Xcursor_LIBS
+
 2007-07-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmCommand/FvwmCommand.c (main):

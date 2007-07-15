@@ -96,6 +96,7 @@ with_shape=@with_shape@
 with_shm=@with_shm@
 with_sm=@with_sm@
 with_stroke=@with_stroke@
+with_xcursor=@with_xcursor@
 with_xinerama=@with_xinerama@
 with_xft=@with_xft@
 with_xpm=@with_xpm@
@@ -173,6 +174,7 @@ while test $# -gt 0; do
 			test "$with_shm"        = "yes" && echo "shm"
 			test "$with_sm"         = "yes" && echo "sm"
 			test "$with_stroke"     = "yes" && echo "stroke"
+			test "$with_xcursor"    = "yes" && echo "xcursor"
 			test "$with_xinerama"   = "yes" && echo "xinerama"
 			test "$with_xft"        = "yes" && echo "xft"
 			test "$with_xpm"        = "yes" && echo "xpm"
@@ -226,6 +228,7 @@ while test $# -gt 0; do
 			echo "	sm (session management): $with_sm"
 			echo "	stroke (mouse gestures): $with_stroke"
 			echo "	rsvg (SVG icons and images): $with_rsvg"
+			echo "  xcursor (ARGB/animated cursors): $with_xcursor"
 			echo "	xinerama (multi-head): $with_xinerama"
 			echo "	xft (FreeType anti-alias font): $with_xft"
 			echo "	xpm: $with_xpm"

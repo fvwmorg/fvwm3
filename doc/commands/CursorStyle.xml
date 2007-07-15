@@ -182,7 +182,10 @@ CursorStyle DESTROY gumby
 
 <para>
 Alternatively, the cursor can be loaded from an (XPM, PNG or SVG) image
-<replaceable>file</replaceable>.  The image is converted to monochrome.
+<replaceable>file</replaceable>.  If fvwm is compiled with Xcursor support,
+full ARGB is used, and (possibly animated) cursor files made with the
+<command>xcursorgen</command> program can be loaded.  Otherwise the cursor
+is converted to monochrome.
 </para>
 
 <para>
@@ -190,7 +193,7 @@ The optional <replaceable>x</replaceable> and <replaceable>y</replaceable>
 arguments (following a <replaceable>file</replaceable> argument) specifies
 the hot-spot coordinate with 0 0 as the top left corner of the image.
 Coordinates within the image boundary are valid and overrides any hot-spot
-defined in the (XPM) image file.  An invalid or undefined hot-spot
+defined in the (XPM/Xcursor) image file.  An invalid or undefined hot-spot
 is placed in the center of the image.</para>
 
 <programlisting>
@@ -201,7 +204,8 @@ CursorStyle ROOT cursor_image.png 0 0
 <replaceable>fg</replaceable> and <replaceable>bg</replaceable>
 arguments specify the foreground and background colors for the
 cursor, defaulting to black and white (reverse video compared
-to the actual bitmap).</para>
+to the actual bitmap).  These colors are only used with monochrome
+cursors.  Otherwise they are silently ignored.</para>
 
 <programlisting>
 CursorStyle ROOT nice_arrow.xpm yellow black

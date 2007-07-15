@@ -146,6 +146,7 @@ The sections below explain these options.
   With Session Management support?     sm            --disable-sm
   With Mouse strokes (gestures)?       stroke        --with-stroke-*
   With SVG image support?              rsvg          --disable-rsvg
+  With Xcursor support?                xcursor       --disable-xcursor
   With Xinerama multi-head support?    xinerama      --disable-xinerama
   With Xft anti-alias font support?    xft           --enable-xft --with-xft-*
   With XPM image support?              xpm           --with-xpm-*
@@ -375,9 +376,17 @@ library is contained in XFree version >= 4.0 and others recent X package.
 This option disables Xrender support completely.
 
 
+  --disable-xcursor             disable Xcursor ARGB/animated cursor loading
+  ~~~~~~~~~~~~~~~~~
+
+FVWM can use the Xcursor library to load ARGB/animated mouse cursors. This
+library is contained in XFree version >= 4.3 and others recent X packages.
+This option disables Xcursor support.
+
+
   --disable-rsvg                disable scalable vector graphics (SVG images)
   ~~~~~~~~~~~~~~
-Fvwm can use the librsvg library to render SVG files into icons and
+FVWM can use the librsvg library to render SVG files into icons and
 images. You need a librsvg version >= 2.13.92 that uses Cairo as the
 rendering backend. This option disables SVG image loading support.
 

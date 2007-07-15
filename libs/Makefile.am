@@ -7,9 +7,9 @@ libfvwm_a_SOURCES = \
 	BidiJoin.h Bindings.h ClientMsg.h ColorUtils.h Colorset.h \
 	CombineChars.h Cursor.h Event.h FBidi.h FEvent.h FGettext.h FImage.h \
 	FRender.h FRenderInit.h FRenderInterface.h FSMlib.h FScreen.h \
-	FShape.h FShm.h FTips.h Fft.h FftInterface.h Ficonv.h Flocale.h \
-	FlocaleCharset.h Fpng.h Fsvg.h Fxpm.h Grab.h Graphics.h Module.h \
-	Parse.h Picture.h PictureBase.h PictureDitherMatrice.h \
+	FShape.h FShm.h FTips.h Fcursor.h Fft.h FftInterface.h Ficonv.h \
+	Flocale.h FlocaleCharset.h Fpng.h Fsvg.h Fxpm.h Grab.h Graphics.h \
+	Module.h Parse.h Picture.h PictureBase.h PictureDitherMatrice.h \
 	PictureGraphics.h PictureImageLoader.h PictureUtils.h Rectangles.h \
 	Strings.h System.h Target.h WinMagic.h XError.h XResource.h charmap.h \
 	defaults.h envvar.h fio.h flist.h fsm.h ftime.h fvwm_sys_stat.h \

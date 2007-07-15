@@ -1,3 +1,8 @@
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
+	* control.in (Build-Depends):
+	added libxcursor-dev
+
 2007-03-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* control.in (Build-Depends):

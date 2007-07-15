@@ -22,6 +22,29 @@
 
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
+	* AUTHORS:
+	* NEWS:
+	updated
+
+	* configure.ac:
+	added libXcursor detection
+
+	* fvwm/Makefile.am (LDADD):
+	added Xcursor_LIBS
+
+	* INSTALL.fvwm:
+
+	* libs/Fcursor.h:
+	new file
+
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	added Fcursor.h
+
+	* libs/PictureImageLoader.c (PImageLoadCursorFromFile):
+	added Xcursor support
+
+2007-06-22  Simon Griph  <simon(at)griph(dot)se>
+
 	* NEWS:
 	updated
 

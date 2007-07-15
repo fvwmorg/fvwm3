@@ -491,6 +491,44 @@ fi
 AC_SUBST(Xrender_LIBS)
 AC_SUBST(Xrender_CFLAGS)
 
+# ********* xcursor
+AH_TEMPLATE([HAVE_XCURSOR],[Define if Xcursor library is used.])
+xcursor_CFLAGS=""
+xcursor_LIBS=""
+AC_ARG_ENABLE(xcursor,
+  [  --disable-xcursor       disable Xcursor ARGB/animated cursor loading],
+  [ if test x"$enableval" = xno; then
+       with_xcursor=no
+       problem_xcursor=": Explicitly disabled"
+    fi ],
+)
+if test x"$with_xcursor" != xno; then
+   with_xcursor=no
+   if test x"$with_xrender" != xno; then
+      $UNSET ac_cv_lib_Xrender_XRenderCreateCursor
+      AC_CHECK_LIB(Xrender, XRenderCreateCursor, [
+         with_xcursor=yes
+      ],[
+         problem_xcursor=": Your libXrender version is too old"
+      ],)
+   else
+      problem_xcursor=": Need Xrender support"
+   fi
+fi
+if test x"$with_xcursor" = xyes ; then
+      $UNSET ac_cv_lib_Xcursor_XcursorImageLoadCursor
+      AC_CHECK_LIB(Xcursor, XcursorImageLoadCursor, [
+         AC_DEFINE(HAVE_XCURSOR)
+         Xcursor_LIBS=-lXcursor
+         problem_xcursor=""
+      ],[
+         with_xcursor=no
+         problem_xcursor=": Failed to detect libXcursor"
+      ],)
+fi
+AC_SUBST(Xcursor_CFLAGS)
+AC_SUBST(Xcursor_LIBS)
+
 # ********* xft
 problem_xft=""
 
@@ -1512,6 +1550,7 @@ AC_SUBST(with_shape)
 AC_SUBST(with_shm)
 AC_SUBST(with_sm)
 AC_SUBST(with_stroke)
+AC_SUBST(with_xcursor)
 AC_SUBST(with_xft)
 AC_SUBST(with_xinerama)
 AC_SUBST(with_xrender)
@@ -1717,6 +1756,7 @@ FVWM Configuration:
   With Shared memory for XImage?      $with_shm$problem_shm
   With Session Management support?    $with_sm$problem_sm
   With SVG image support?             $with_rsvg$problem_rsvg
+  With Xcursor support?               $with_xcursor$problem_xcursor
   With Xinerama multi-head support?   $with_xinerama$problem_xinerama
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm

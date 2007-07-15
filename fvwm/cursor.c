@@ -427,6 +427,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	{
 		SafeDefineCursor(Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 	}
+
+	return;
 }
 
 /* Defines in which cases fvwm "grab" the cursor during execution of certain
