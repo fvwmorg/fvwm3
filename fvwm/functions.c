@@ -718,7 +718,6 @@ static FvwmFunction *find_complex_function(const char *function_name)
 	{
 		return NULL;
 	}
-
 	func = Scr.functions;
 	while (func != NULL)
 	{
@@ -733,7 +732,6 @@ static FvwmFunction *find_complex_function(const char *function_name)
 	}
 
 	return NULL;
-
 }
 
 /*
@@ -1480,7 +1478,7 @@ void CMD_DestroyFunc(F_CMD_ARGS)
 	FvwmFunction *func;
 	char *token;
 
-	PeekToken(action,&token);
+	token = PeekToken(action, NULL);
 	if (!token)
 	{
 		return;

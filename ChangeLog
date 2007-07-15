@@ -1,3 +1,9 @@
+2007-07-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/PictureImageLoader.c (PImageLoadCursorFromFile):
+	* fvwm/cursor.c (CMD_CursorStyle):
+	fixed compiler warning
+
 2007-07-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/cursor.c (CMD_CursorStyle):

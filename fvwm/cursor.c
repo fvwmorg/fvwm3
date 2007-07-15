@@ -300,8 +300,10 @@ void CMD_CursorStyle(F_CMD_ARGS)
 		{
 			char *path;
 			char *tmp;
-			unsigned int hotspot[] = {-1,-1};
+			int hotspot[2];
 
+			hotspot[0] = -1;
+			hotspot[1] = -1;
 			path = PictureFindImageFile(newcursor, NULL, R_OK);
 			if (!path)
 			{

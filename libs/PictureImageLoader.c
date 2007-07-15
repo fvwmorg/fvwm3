@@ -831,8 +831,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 }
 
 Cursor PImageLoadCursorFromFile(
-	Display *dpy, Window win, char *path,
-	unsigned int x_hot, unsigned int y_hot)
+	Display *dpy, Window win, char *path, int x_hot, int y_hot)
 {
 	Cursor cursor = 0;
 	CARD32 *data;
@@ -848,8 +847,8 @@ Cursor PImageLoadCursorFromFile(
 	{
 		for (i = 0; i < fcis->nimage; i++)
 		{
-			if (x_hot < fcis->images[i]->width &&
-			    y_hot < fcis->images[i]->height)
+			if (x_hot < fcis->images[i]->width && x_hot >= 0 &&
+			    y_hot < fcis->images[i]->height && y_hot >= 0)
 			{
 				fcis->images[i]->xhot = x_hot;
 				fcis->images[i]->yhot = y_hot;
