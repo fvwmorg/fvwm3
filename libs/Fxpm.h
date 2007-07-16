@@ -101,7 +101,7 @@ typedef struct {
 	unsigned long valuemask;
 	unsigned int x_hotspot;
 	unsigned int y_hotspot;
-}      FxpmInfo
+}      FxpmInfo;
 #endif
 
 /* ---------------------------- global definitions ------------------------- */

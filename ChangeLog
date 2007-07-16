@@ -1,3 +1,9 @@
+2007-07-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* libs/Fxpm.h:
+	* libs/PictureImageLoader.c (PImageLoadCursorFromFile):
+	fix compilation without xpm library
+
 2007-07-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/PictureImageLoader.c (PImageLoadCursorFromFile):

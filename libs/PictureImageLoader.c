@@ -872,7 +872,7 @@ Cursor PImageLoadCursorFromFile(
 			FxpmImage xpm_im = {0};
 			FxpmInfo xpm_info = {0};
 
-			if (XpmReadFileToXpmImage(path, &xpm_im, &xpm_info)
+			if (FxpmReadFileToXpmImage(path, &xpm_im, &xpm_info)
 			    == FxpmSuccess)
 			{
 				if (xpm_info.valuemask & FxpmHotspot)
