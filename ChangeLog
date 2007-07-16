@@ -1,4 +1,4 @@
-2007-07-15  Simon Griph  <simon(at)griph(dot)se>
+2007-07-16  Simon Griph  <simon(at)griph(dot)se>
 
 	Committed by Scott.
 
@@ -7,6 +7,15 @@
 
 	* libs/PictureImageLoader.c (PImageLoadSvg):
 	added transposing and none uniform scaling to svg options
+
+2007-07-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+ 
+	* libs/PictureImageLoader.c:
+	cleanup
+	(PImageLoadCursorFromFile):
+	fixed compilation without xpm library
+	(PImageLoadPng):
+	fixed compiler warning without png library
 
 2007-07-16  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
