@@ -108,7 +108,7 @@ Bool PImageLoadArgbDataFromFile(FIMAGE_CMD_ARGS)
 		ext = path + strlen(path) - 3;
 	}
 	/* first try to load by extension */
-	while(!done && ext != NULL && Loaders[i].extension != NULL)
+	while (!done && ext != NULL && Loaders[i].extension != NULL)
 	{
 		if (StrEquals(Loaders[i].extension, ext))
 		{
@@ -123,7 +123,7 @@ Bool PImageLoadArgbDataFromFile(FIMAGE_CMD_ARGS)
 	}
 
 	i = 0;
-	while(Loaders[i].extension != NULL)
+	while (Loaders[i].extension != NULL)
 	{
 		if (i != tried && Loaders[i].func(FIMAGE_PASS_ARGS))
 		{
@@ -345,19 +345,24 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	int w, h;
 	char hasa = 0, hasg = 0;
 	FILE *f;
-	int bit_depth, color_type, interlace_type;
+	int bit_depth;
+	int color_type;
+	int interlace_type;
 	unsigned char buf[FPNG_BYTES_TO_CHECK];
 	unsigned char **lines;
 	int i;
 
 	if (!PngSupport)
-		return False;
+	{
+		/* suppress compiler warning */
+		bit_depth = 0;
 
+		return False;
+	}
 	if (!(f = fopen(path, "rb")))
 	{
 		return False;
 	}
-
 	fread(buf, 1, FPNG_BYTES_TO_CHECK, f);
 	if (!Fpng_check_sig(buf, FPNG_BYTES_TO_CHECK))
 	{
@@ -389,9 +394,10 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 #endif
 	Fpng_init_io(Fpng_ptr, f);
 	Fpng_read_info(Fpng_ptr, Finfo_ptr);
-	Fpng_get_IHDR(Fpng_ptr, Finfo_ptr, (Fpng_uint_32 *) (&w32),
-		     (Fpng_uint_32 *) (&h32), &bit_depth, &color_type,
-		     &interlace_type, NULL, NULL);
+	Fpng_get_IHDR(
+		Fpng_ptr, Finfo_ptr, (Fpng_uint_32 *) (&w32),
+		(Fpng_uint_32 *) (&h32), &bit_depth, &color_type,
+		&interlace_type, NULL, NULL);
 	interlace_type = 0; /* not used */
 	*width = w = (int) w32;
 	*height = h = (int) h32;
@@ -417,9 +423,9 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	/* we want ARGB */
 	/* note form raster:
 	* thanks to mustapha for helping debug this on PPC Linux remotely by
-	* sending across screenshots all the tiem and me figuring out form them
+	* sending across screenshots all the time and me figuring out form them
 	* what the hell was up with the colors
-	* now png loading shoudl work on big endian machines nicely   */
+	* now png loading should work on big endian machines nicely   */
 #ifdef WORDS_BIGENDIAN
 	Fpng_set_swap_alpha(Fpng_ptr);
 	Fpng_set_filler(Fpng_ptr, 0xff, FPNG_FILLER_BEFORE);
@@ -432,7 +438,9 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	/* pack all pixels to byte boundaires */
 	Fpng_set_packing(Fpng_ptr);
 	if (Fpng_get_valid(Fpng_ptr, Finfo_ptr, FPNG_INFO_tRNS))
+	{
 		Fpng_set_expand(Fpng_ptr);
+	}
 
 	data = (CARD32 *)safemalloc(w * h * sizeof(CARD32));
 	lines = (unsigned char **) safemalloc(h * sizeof(unsigned char *));
@@ -447,7 +455,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	}
 	for (i = 0; i < h; i++)
 	{
-		lines[i] =((unsigned char *) (data)) + (i * w * sizeof(CARD32));
+		lines[i] = (unsigned char *)data + (i * w * sizeof(CARD32));
 	}
 	Fpng_read_image(Fpng_ptr, lines);
 	Fpng_read_end(Fpng_ptr, Finfo_ptr);
@@ -467,7 +475,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 static
 Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 {
-	FxpmImage xpm_im = {0};
+	FxpmImage xpm_im;
 	FxpmColor *xpm_color;
 	XColor color;
 	CARD32 *colors;
@@ -485,7 +493,10 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 #endif
 
 	if (!XpmSupport)
+	{
 		return False;
+	}
+	memset(&xpm_im, 0, sizeof(FxpmImage));
 
 #ifdef HAVE_SIGACTION
 	sigemptyset(&defaultHandler.sa_mask);
@@ -516,7 +527,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 		return False;
 	}
 	colors = (CARD32 *)safemalloc(xpm_im.ncolors * sizeof(CARD32));
-	for(i=0; i < xpm_im.ncolors; i++)
+	for (i=0; i < xpm_im.ncolors; i++)
 	{
 		xpm_color = &xpm_im.colorTable[i];
 		if (xpm_color->c_color)
@@ -642,7 +653,7 @@ Bool PImageCreatePixmapFromArgbData(
 		a_fim = FCreateFImage(
 			dpy, Pvisual, alpha_depth, ZPixmap, width, height);
 	}
-	if(!(fpa.mask & FPAM_MONOCHROME))
+	if (!(fpa.mask & FPAM_MONOCHROME))
 	{
 		c.flags = DoRed | DoGreen | DoBlue;
 		pica = PictureOpenImageColorAllocator(
@@ -742,7 +753,7 @@ Bool PImageLoadPixmapFromFile(
 {
 	CARD32 *data;
 
-	if(PImageLoadArgbDataFromFile(dpy, path, &data, width, height))
+	if (PImageLoadArgbDataFromFile(dpy, path, &data, width, height))
 	{
 		*depth = (fpa.mask & FPAM_MONOCHROME) ? 1 : Pdepth;
 		if (PImageCreatePixmapFromArgbData(
@@ -756,10 +767,11 @@ Bool PImageLoadPixmapFromFile(
 		free(data);
 	}
 	/* Bitmap fallback */
-	else if (XReadBitmapFile(
+	else if (
+		XReadBitmapFile(
 			dpy, win, path, (unsigned int *)width,
-			(unsigned int *)height, pixmap, NULL, NULL)
-		 == BitmapSuccess)
+			(unsigned int *)height, pixmap, NULL, NULL) ==
+		BitmapSuccess)
 	{
 		*depth = 1;
 		*mask = None;
@@ -869,9 +881,11 @@ Cursor PImageLoadCursorFromFile(
 		/* Adjust the hot-spot if necessary */
 		if (x_hot >= width || y_hot >= height)
 		{
-			FxpmImage xpm_im = {0};
-			FxpmInfo xpm_info = {0};
+			FxpmImage xpm_im;
+			FxpmInfo xpm_info;
 
+			memset(&xpm_im, 0, sizeof(FxpmImage));
+			memset(&xpm_info, 0, sizeof(FxpmInfo));
 			if (FxpmReadFileToXpmImage(path, &xpm_im, &xpm_info)
 			    == FxpmSuccess)
 			{
@@ -904,9 +918,9 @@ Cursor PImageLoadCursorFromFile(
 			for (i = 0; i < width * height; i++)
 			{
 				alpha = ((data[i] >> 24) & 0xff);
-				red   = ((data[i] >> 16) & 0xff) * alpha / 0xff;
-				green = ((data[i] >>  8) & 0xff) * alpha / 0xff;
-				blue  = ((data[i]      ) & 0xff) * alpha / 0xff;
+				red   = ((data[i] >> 16) & 0xff) * alpha/0xff;
+				green = ((data[i] >>  8) & 0xff) * alpha/0xff;
+				blue  = ((data[i]      ) & 0xff) * alpha/0xff;
 
 				data[i] =
 					(alpha << 24) | (red << 16) |
@@ -950,19 +964,29 @@ Bool PImageLoadPixmapFromXpmData(
 {
 	FxpmAttributes xpm_attributes;
 
+	if (!XpmSupport)
+	{
+		return False;
+	}
 	xpm_attributes.valuemask = FxpmCloseness |
 		FxpmExtensions | FxpmVisual | FxpmColormap | FxpmDepth;
 	xpm_attributes.closeness = 40000;
 	xpm_attributes.visual = Pvisual;
 	xpm_attributes.colormap = Pcmap;
 	xpm_attributes.depth = Pdepth;
-	if(FxpmCreatePixmapFromData(dpy, win, data, pixmap, mask,
-				   &xpm_attributes)!=FxpmSuccess)
+	/* suppress compiler warning if xpm library is not compiled in */
+	xpm_attributes.width = 0;
+	xpm_attributes.height = 0;
+	if (
+		FxpmCreatePixmapFromData(
+			dpy, win, data, pixmap, mask, &xpm_attributes) !=
+		FxpmSuccess)
 	{
 		return False;
 	}
 	*width = xpm_attributes.width;
 	*height = xpm_attributes.height;
 	*depth = Pdepth;
+
 	return True;
 }

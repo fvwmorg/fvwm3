@@ -1644,6 +1644,7 @@ dnl
 	doc/commands/Makefile
 	doc/modules/Makefile
 	doc/images/Makefile
+	doc/images/svg_rendering/Makefile
 	docs/fvwm.lsm
 	docs/Makefile
 	sample.fvwmrc/Makefile

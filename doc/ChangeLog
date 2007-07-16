@@ -1,3 +1,17 @@
+2007-07-17  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* doc/Makefile.am:
+	* doc/images/Makefile.am:
+	fix dependency checking.
+
+	* doc/images/svg_rendering/*:
+	Added Simon's SVG documentation.
+
+2007-07-15  Simon Griph  <simon(at)griph(dot)se>
+
+	* fvwm/images.xml:
+	added descriptive images to html output
+
 2007-07-13  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
 
 	* groupedCommands.html:
