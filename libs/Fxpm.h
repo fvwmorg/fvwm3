@@ -28,12 +28,12 @@ typedef struct {
 	char *name;
 	char *value;
 	Pixel pixel;
-}      FxpmColorSymbol;
+} FxpmColorSymbol;
 typedef struct {
 	char *name;
 	unsigned int nlines;
 	char **lines;
-}      FxpmExtension;
+} FxpmExtension;
 typedef struct {
 	char *string;
 	char *symbolic;
@@ -41,7 +41,7 @@ typedef struct {
 	char *g4_color;
 	char *g_color;
 	char *c_color;
-}      FxpmColor;
+} FxpmColor;
 typedef int (*FxpmAllocColorFunc)(
 #ifdef __STDC__
 	Display*,Colormap,char*,XColor*,void*
@@ -88,7 +88,7 @@ typedef struct {
 	FxpmAllocColorFunc alloc_color;
 	FxpmFreeColorsFunc free_colors;
 	void *color_closure;
-}      FxpmAttributes;
+} FxpmAttributes;
 typedef struct {
 	unsigned int width;
 	unsigned int height;
@@ -96,12 +96,12 @@ typedef struct {
 	unsigned int ncolors;
 	FxpmColor *colorTable;
 	unsigned int *data;
-}      FxpmImage;
+} FxpmImage;
 typedef struct {
 	unsigned long valuemask;
 	unsigned int x_hotspot;
 	unsigned int y_hotspot;
-}      FxpmInfo;
+} FxpmInfo;
 #endif
 
 /* ---------------------------- global definitions ------------------------- */
