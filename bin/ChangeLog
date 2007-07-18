@@ -1,8 +1,12 @@
+2007-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* Makefile.am (LDADD):
+	fixed building with libXcursor
+
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
 	* fvwm-config.in:
 	* Makefile.am (LDADD):
-
 
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 

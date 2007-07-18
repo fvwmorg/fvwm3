@@ -510,7 +510,8 @@ if test x"$with_xcursor" != xno; then
          with_xcursor=yes
       ],[
          problem_xcursor=": Your libXrender version is too old"
-      ],)
+      ],
+      [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
    else
       problem_xcursor=": Need Xrender support"
    fi

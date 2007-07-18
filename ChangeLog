@@ -1,3 +1,8 @@
+2007-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* configure.ac:
+	fixed liXcursor detection
+
 2007-07-16  Simon Griph  <simon(at)griph(dot)se>
 
 	Committed by Scott.
@@ -9,7 +14,7 @@
 	added transposing and none uniform scaling to svg options
 
 2007-07-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
- 
+
 	* libs/PictureImageLoader.c:
 	cleanup
 	(PImageLoadCursorFromFile):
