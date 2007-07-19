@@ -932,7 +932,7 @@ Cursor PImageLoadCursorFromFile(
 		fpa.mask = FPAM_NO_ALPHA | FPAM_MONOCHROME;
 
 		/* Adjust the hot-spot if necessary */
-		if (x_hot >= width || y_hot >= height)
+		if (x_hot < 0 || x_hot >= width || y_hot < 0 || y_hot >= height)
 		{
 			FxpmImage xpm_im;
 			FxpmInfo xpm_info;
@@ -950,11 +950,11 @@ Cursor PImageLoadCursorFromFile(
 				FxpmFreeXpmImage(&xpm_im);
 				FxpmFreeXpmInfo(&xpm_info);
 			}
-			if (x_hot >= width)
+			if (x_hot < 0 || x_hot >= width)
 			{
 				x_hot = width / 2;
 			}
-			if (y_hot >= height)
+			if (y_hot < 0 || y_hot >= height)
 			{
 				y_hot = height / 2;
 			}

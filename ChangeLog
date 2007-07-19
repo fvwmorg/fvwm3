@@ -1,3 +1,11 @@
+2007-07-20  Simon Griph  <simon(at)griph(dot)se>
+
+	Committed by Scott.
+
+	* libs/PictureImageLoader.c:
+	Someone missed to add extra conditions when changing from
+	unsigned to signed.
+
 2007-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.ac:
