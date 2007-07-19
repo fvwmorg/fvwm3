@@ -14,5 +14,6 @@ endif
 all: $(doc_DATA)
 
 %.png: $(srcdir)/$@
-	@ cp $(srcdir)/$@ $@
+	test x"$(top_srcdir)" = x"$(top_builddir)" || \
+	cp $(srcdir)/$@ $(top_builddir)/doc/images/svg_rendering/$@
 

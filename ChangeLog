@@ -2,7 +2,7 @@
 
 	Committed by Scott.
 
-	* libs/PictureImageLoader.c:
+	* libs/PictureImageLoader.c (PImageLoadCursorFromFile):
 	Someone missed to add extra conditions when changing from
 	unsigned to signed.
 

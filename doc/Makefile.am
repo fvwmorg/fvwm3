@@ -20,4 +20,5 @@ SUBDIRS=fvwm commands images modules
 all: $(doc_DATA)
 
 %.html: $(srcdir)/$@
-	@cp $(srcdir)/$@ $(top_builddir)/doc/$@
+	test x"$(top_srcdir)" = x"$(top_builddir)" || \
+	cp $(srcdir)/$@ $(top_builddir)/doc/$@
