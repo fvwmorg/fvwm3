@@ -3,36 +3,44 @@
 
 # Author: Scott Smedley
 
-docdir=@FVWM_DOCDIR@/fvwm
-XSLTPROC=@XSLTPROC@
+docdir = @FVWM_DOCDIR@/fvwm
+XSLTPROC = @XSLTPROC@
 
-XSL_FILE=$(srcdir)/../fvwm.xsl
-XSL_MAN_FILE=$(srcdir)/../fvwm-man.xsl
-XSL_PROFILE=$(srcdir)/../docbook-xsl/profiling/profile.xsl
+XSL_FILE = $(srcdir)/../fvwm.xsl
+XSL_MAN_FILE = $(srcdir)/../fvwm-man.xsl
+XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
 
-SECTIONS=authors bidirText bindings bugs builtinBindings colorGradients colorsets commands compilation conditionals configuration copyright cpp description environment ewmh execution expansion focus fonts fvwm.man icccm images initialization m4 menus miscCommands moduleCommands modules multiScreen mwm openLook options quoting scripting session sessionCommands shortcuts styleCommands synopsis userFunctions virtualDesktop virtualDesktopCommands windowAnatomy windowMovement windowState windowStyles xinerama
-COMMAND_FILES=$(shell ls $(srcdir)/../commands/*.xml)
+SECTIONS = \
+	authors bidirText bindings bugs builtinBindings colorGradients \
+	colorsets commands compilation conditionals configuration copyright \
+	cpp description environment ewmh execution expansion focus fonts \
+	fvwm.man icccm images initialization m4 menus miscCommands \
+	moduleCommands modules multiScreen mwm openLook options quoting \
+	scripting session sessionCommands shortcuts styleCommands synopsis \
+	userFunctions virtualDesktop virtualDesktopCommands windowAnatomy \
+	windowMovement windowState windowStyles xinerama
+COMMAND_FILES = $(shell ls $(srcdir)/../commands/*.xml)
 
-# SS: Hmmm, I'm not sure if all versions of make support patsubst.	
-# HTML_FILES=$(patsubst %,%.html,$(SECTIONS))
-HTML_FILES=fvwm.man.html
-XML_FILES=$(patsubst %,$(srcdir)/%.xml,$(SECTIONS))
-EXTRA_DIST=$(XML_FILES)
-BUILD_FILES=
+# SS: Hmmm, I'm not sure if all versions of make support patsubst.
+# HTML_FILES = $(patsubst %,%.html,$(SECTIONS))
+HTML_FILES = fvwm.man.html
+XML_FILES = $(patsubst %,$(srcdir)/%.xml,$(SECTIONS))
+EXTRA_DIST = $(XML_FILES)
+BUILD_FILES =
 
 if FVWM_BUILD_HTMLDOC
-doc_DATA=$(HTML_FILES)
-BUILD_FILES+=$(HTML_FILES)
+doc_DATA = $(HTML_FILES)
+BUILD_FILES += $(HTML_FILES)
 endif
 
 if FVWM_BUILD_MANDOC
-BUILD_FILES+=fvwm.1
+BUILD_FILES += fvwm.1
 endif
 
 all: $(BUILD_FILES)
 
-QUIET=@
+QUIET = @
 clean:
 	rm -f $(HTML_FILES) fvwm.1
 
@@ -70,3 +78,6 @@ fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 		$(XSL_PROFILE) $(srcdir)/fvwm.man.xml
 	$(QUIET) $(XSLTPROC) --path .. --xinclude \
 		$(XSL_MAN_FILE) fvwm.man.xml.p && rm fvwm.man.xml.p
+
+distclean-local:
+	rm -f $(top_builddir)/doc/fvwm/fvwm.1

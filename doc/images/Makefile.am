@@ -17,3 +17,7 @@ all: $(doc_DATA)
 %.png: $(srcdir)/$@
 	test x"$(top_srcdir)" = x"$(top_builddir)" || \
 	cp $(srcdir)/$@ $(top_builddir)/doc/images/$@
+
+distclean-local:
+	test x"$(top_srcdir)" = x"$(top_builddir)" || \
+	rm -f $(top_builddir)/doc/images/*.png

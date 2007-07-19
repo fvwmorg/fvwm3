@@ -1,8 +1,12 @@
 2007-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/Makefile.am (distclean-local):
 	* images/Makefile.am (%.png):
+	(distclean-local):
 	* images/svg_rendering/Makefile.am (%.png):
+	(distclean-local):
 	* Makefile.am (%.html):
+	(distclean-local):
 	fixed make distcheck
 
 2007-07-17  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
