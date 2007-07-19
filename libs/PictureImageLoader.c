@@ -161,8 +161,10 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	int w_sgn = 1;
 	int h_sgn = 1;
 	double angle = 0;
-	double scale = 1;
+	double w_scale = 1;
+	double h_scale = 1;
 	double buf;
+	Bool transpose = False;
 	unsigned char a_value;
 	unsigned char r_value;
 	unsigned char g_value;
@@ -199,23 +201,52 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 		i = 0;
 		switch (*render_opts)
 		{
+		case '!':
+			transpose = !transpose;
+			break;
 		case '*':
 			if (sscanf(render_opts, "*%lf%n", &buf, &i) >= 1)
 			{
-				scale *= buf;
+				switch (render_opts[i])
+				{
+				case 'x':
+					w_scale *= buf;
+					i ++;
+					break;
+				case 'y':
+					h_scale *= buf;
+					i ++;
+					break;
+				default:
+					w_scale *= buf;
+					h_scale *= buf;
+				}
 			}
 			break;
 		case '/':
 			if (sscanf(render_opts, "/%lf%n", &buf, &i) >= 1 &&
 			    buf)
 			{
-				scale /= buf;
+				switch (render_opts[i])
+				{
+				case 'x':
+					w_scale /= buf;
+					i ++;
+					break;
+				case 'y':
+					h_scale /= buf;
+					i ++;
+					break;
+				default:
+					w_scale /= buf;
+					h_scale /= buf;
+				}
 			}
 			break;
 		case '@':
 			if (sscanf(render_opts, "@%lf%n", &buf, &i) >= 1)
 			{
-				angle += buf * M_PI / 180;
+				angle += buf;
 			}
 			break;
 		default:
@@ -266,6 +297,26 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 		h = w * dim.ex / dim.em;
 	}
 
+	w_scale *= w;
+	h_scale *= h;
+
+	if (transpose)
+	{
+		b1 = w;
+		w = h;
+		h = b1;
+
+		b1 = w_sgn;
+		w_sgn = - h_sgn;
+		h_sgn = b1;
+
+		b1 = dw;
+		dw = - dh;
+		dh = b1;
+
+		angle += 90;
+	}
+
 	data = (CARD32 *)safemalloc(w * h * sizeof(CARD32));
 	memset(data, 0, w * h * sizeof(CARD32));
 	surface = Fcairo_image_surface_create_for_data((unsigned char *)data,
@@ -297,11 +348,13 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 
 	/* Affine transformations ...
 	 * mirroring, rotation, scaling and translation */
-	Fcairo_translate(cr, .5 * w + dw, .5 * h + dh);
-	Fcairo_scale(cr, scale, scale);
-	Fcairo_rotate(cr, angle);
-	Fcairo_translate(cr, -.5 * w * w_sgn, -.5 * h * h_sgn);
-	Fcairo_scale(cr, w * w_sgn / dim.em, h * h_sgn / dim.ex);
+	Fcairo_translate(cr, .5 * w, .5 * h);
+	Fcairo_scale(cr, w_sgn, h_sgn);
+	Fcairo_translate(cr, dw, dh);
+	Fcairo_rotate(cr, angle * M_PI / 180);
+	Fcairo_scale(cr, w_scale, h_scale);
+	Fcairo_translate(cr, -.5, -.5);
+	Fcairo_scale(cr, 1 / dim.em, 1 / dim.ex);
 
 	Frsvg_handle_render_cairo(rsvg, cr);
 	Fg_object_unref(FG_OBJECT(rsvg));

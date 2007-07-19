@@ -810,8 +810,16 @@ static Bool scanForPixmap(
 	{
 		/* work out the offset value */
 		tstart = s;
-		for (i = 0, s++; *s != identifier && *s != 0; i++, s++)
+		for (i = 0, s++; *s != 0; i++, s++)
 		{
+			if (*s == identifier)
+			{
+				if (s[1] != identifier)
+				{
+					break;
+				}
+				s++;
+			}
 			name[i] = *s;
 		}
 		name[i] = 0;
