@@ -4112,12 +4112,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		fmodule *next;
 		/* Check for module input. */
 		module = module_get_next(NULL);
-		for (; module != NULL; module = next)
+		for (; module != NULL; module = module_get_next(module))
 		{
-			/* module_receive and FlushMessageQueue might
-			 * destroy the module, we need to query the
-			 * next-reference before calling those. */
-			next =  module_get_next(module);
 			if (FD_ISSET(MOD_READFD(module), &in_fdset))
 			{
 				input = module_receive(module);
@@ -4133,6 +4129,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 				FlushMessageQueue(module);
 			}
 		}
+
+		/* cleanup dead modules */
+		module_cleanup();
 
 		/* execute any commands queued up */
 		DBUG("My_XNextEvent", "executing module comand queue");

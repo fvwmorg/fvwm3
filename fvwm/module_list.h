@@ -24,7 +24,8 @@ typedef struct fmodule
 {
 	struct
 	{
-		unsigned is_cmdline_module;
+		unsigned is_cmdline_module : 1;
+		unsigned is_removed : 1;
 	} xflags;
 	int xreadPipe;
 	int xwritePipe;
@@ -39,6 +40,8 @@ typedef struct fmodule
 
 #define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
 #define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
+#define MOD_IS_REMOVED(m) ((m)->xflags.is_removed)
+#define MOD_SET_REMOVED(m,on) ((m)->xflags.is_removed = !!(on))
 #define MOD_READFD(m) ((m)->xreadPipe)
 #define MOD_WRITEFD(m) ((m)->xwritePipe)
 #define MOD_PIPEQUEUE(m) ((m)->xpipeQueue)
@@ -126,6 +129,10 @@ fmodule *module_get_next(fmodule *prev);
 
 /* count the modules on list - not true for now. counts allocated modules */
 int module_count(void);
+
+/* free modules in the deathrow */
+void module_cleanup(void);
+
 
 
 /*

@@ -78,10 +78,19 @@ typedef struct
 } mqueue_object_type;
 
 
+typedef struct module_store
+{
+	fmodule *module;
+	struct module_store *next;
+} module_store;
+
 
 /* the linked list pointers to the first and last modules */
 static fmodule *module_list = NULL;
 static int num_modules = 0;
+
+/* keep to-be-deleted modules in a deathrow until they are deleted safely. */
+static module_store *death_row = NULL;
 
 /*
  * static functions
@@ -102,13 +111,15 @@ static void set_message_mask(msg_masks_t *mask, unsigned long msg);
 void module_kill_all(void)
 {
 	fmodule *module;
+	fmodule *next;
 
 /*
  * this improves speed, but having a single remotion routine should
  * help in mainainability.. replace by module_remove calls?
  */
-	for (module = module_list; module != NULL; module = MOD_NEXT(module))
+	for (module = module_list; module != NULL; module = next)
 	{
+		next = MOD_NEXT(module);
 		module_free(module);
 	}
 	module_list = NULL;
@@ -124,6 +135,7 @@ static fmodule *module_alloc(void)
 	num_modules++;
 	module = (fmodule *)safemalloc(sizeof(fmodule));
 	MOD_SET_CMDLINE(module, 0);
+	MOD_SET_REMOVED(module, 0);
 	MOD_READFD(module) = -1;
 	MOD_WRITEFD(module) = -1;
 	fqueue_init(&MOD_PIPEQUEUE(module));
@@ -135,6 +147,26 @@ static fmodule *module_alloc(void)
 	MOD_NEXT(module) = NULL;
 
 	return module;
+}
+
+/* adds a module to the death row */
+static void module_safefree(fmodule *module)
+{
+	module_store *new_store;
+	if (module == NULL)
+	{
+		return;
+	}
+	if (!MOD_IS_REMOVED(module))
+	{
+		module_remove(module);
+	}
+	new_store = (module_store*)safemalloc(sizeof(module_store));
+	new_store->module = module;
+	new_store->next = death_row;
+	death_row = new_store;
+
+	return;
 }
 
 /* closes the pipes and frees every data associated with a module record */
@@ -179,10 +211,19 @@ static inline void module_remove(fmodule *module)
 	{
 		return;
 	}
-	if (module == module_list)
+	if (MOD_IS_REMOVED(module))
+	{
+		fvwm_msg(
+			ERR, "module_remove",
+			"Tried to remove an already removed module!");
+
+		return;
+	}
+	else if (module == module_list)
 	{
 		DBUG("module_remove", "Removing from module list");
 		module_list = MOD_NEXT(module);
+		MOD_SET_REMOVED(module,1);
 	}
 	else
 	{
@@ -205,6 +246,7 @@ static inline void module_remove(fmodule *module)
 		{
 			DBUG("module_remove", "Removing from module list");
 			MOD_NEXT(parent) = MOD_NEXT(module);
+			MOD_SET_REMOVED(module,1);
 		}
 		else
 		{
@@ -467,7 +509,7 @@ static inline void module_remove(fmodule *module)
 		}
 		free(args);
 		module_remove(module);
-		module_free(module);
+		module_safefree(module);
 
 		return NULL;
 	}
@@ -507,7 +549,7 @@ fmodule *executeModuleDesperate(F_CMD_ARGS)
 void module_kill(fmodule *module)
 {
 	module_remove(module);
-	module_free(module);
+	module_safefree(module);
 	if (fFvwmInStartup)
 	{
 		/* remove from list of command line modules */
@@ -516,6 +558,25 @@ void module_kill(fmodule *module)
 
 	return;
 }
+
+/* free modules in the deathrow */
+void module_cleanup(void)
+{
+	module_store *m;
+	module_store *next;
+
+
+	for (m = death_row; m != NULL; m = next)
+	{
+		next = m->next;
+		module_free(m->module);
+		free(m);
+	}
+	death_row = NULL;
+
+	return;
+}
+
 
 /* void module_send(fmodule *module, unsigned long *ptr, int size) */
 /* This used to be marked "fvwm_inline".  I removed this
@@ -799,7 +860,14 @@ fmodule *module_get_next(fmodule *prev)
 	}
 	else
 	{
-		return MOD_NEXT(prev);
+		fmodule *next;
+
+		for (
+			next = MOD_NEXT(prev);
+			next != NULL && MOD_IS_REMOVED(next);
+			next = MOD_NEXT(next));
+
+		return next;
 	}
 }
 
@@ -945,6 +1013,10 @@ void FlushMessageQueue(fmodule *module)
 	int a;
 
 	if (module == NULL)
+	{
+		return;
+	}
+	if (MOD_IS_REMOVED(module))
 	{
 		return;
 	}
