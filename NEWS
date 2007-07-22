@@ -67,6 +67,8 @@ Changes in beta release 2.5.22 (not released yet)
    - The conditon following a comma separator without whitespace
      padding was previously ignored if the presiding condition was
      multi-worded.
+   - FvwmButtons now handles container specific ActiveColorset
+     correctly when neither ActiveIcon nor ActiveTitle is used.
 
 -------------------------------------------------------------------
 

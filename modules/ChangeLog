@@ -1,3 +1,9 @@
+2007-07-22  Simon Griph  <simon(at)griph(dot)se>
+
+	* FvwmButtons/FvwmButtons.c (handle_new_position):
+	make container specific ActiveColorset work without
+	ActiveIcon/ActiveTitle.
+
 2007-06-17  Simon Griph  <simon(at)griph(dot)se>
 
 	* FvwmAnimate/Makefile.am (LDADD):

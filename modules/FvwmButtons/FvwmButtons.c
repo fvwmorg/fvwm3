@@ -933,8 +933,11 @@ static button_info *handle_new_position(
 			ActiveButton = b;
 			RedrawButton(tmp, DRAW_FORCE, NULL);
 		}
-		if (b->flags.b_ActiveIcon || b->flags.b_ActiveTitle ||
-		    UberButton->c->flags.b_ActiveColorset)
+		if (
+			b->flags.b_ActiveIcon ||
+			b->flags.b_ActiveTitle ||
+			b->flags.b_ActiveColorset ||
+			UberButton->c->flags.b_ActiveColorset)
 		{
 			ActiveButton = b;
 			redraw = True;
