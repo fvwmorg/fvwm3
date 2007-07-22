@@ -879,30 +879,6 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-/* We get LeaveNotify events when the mouse enters a swallowed window of
-   FvwmButtons, but we're not interested in these situations. */
-static Bool reallyLeaveWindow(
-	const int x, const int y, const Window win, const button_info *b)
-{
-	if (x < 0 || x >= Width || y < 0 || y >= Height)
-	{
-		return True;
-	}
-
-	if (b == NULL)
-	{
-		b = select_button(UberButton, x, y);
-	}
-
-	/* TODO: fix situation when mouse enters window overlapping
-	   with a b_Swallow button. */
-	if (b->flags.b_Swallow)
-	{
-		return False;
-	}
-	return True;
-}
-
 static button_info *handle_new_position(
 	button_info *b, int pos_x, int pos_y)
 {
@@ -1260,9 +1236,19 @@ void Loop(void)
 		break;
 
 	case LeaveNotify:
-	{
-		if (reallyLeaveWindow(Event.xcrossing.x, Event.xcrossing.y,
-			Event.xcrossing.window, NULL))
+		if (
+			Event.xcrossing.x < 0 || Event.xcrossing.x >= Width ||
+			Event.xcrossing.y < 0 || Event.xcrossing.y >= Height ||
+
+			/* We get LeaveNotify events when the mouse enters
+			 * a swallowed window of FvwmButtons, but we're not
+			 * interested in these situations. */
+			!select_button(UberButton, x, y)->flags.b_Swallow ||
+
+			/* But we're interested in those situations when
+			 * the mouse enters a window which overlaps with
+			 * the swallowed window. */
+			Event.xcrossing.subwindow != None)
 		{
 			if (ActiveButton)
 			{
@@ -1276,7 +1262,7 @@ void Loop(void)
 			}
 		}
 		break;
-	}
+
       case KeyPress:
 	XLookupString(&Event.xkey, buffer, 10, &keysym, 0);
 	if (

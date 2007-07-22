@@ -1,5 +1,12 @@
 2007-07-22  Simon Griph  <simon(at)griph(dot)se>
 
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(reallyLeaveWindow):
+	don't ignore LeaveNotify when the pointer moves
+	from a swallowed window to an overlaping window.
+
+2007-07-22  Simon Griph  <simon(at)griph(dot)se>
+
 	* FvwmButtons/FvwmButtons.c (handle_new_position):
 	make container specific ActiveColorset work without
 	ActiveIcon/ActiveTitle.
