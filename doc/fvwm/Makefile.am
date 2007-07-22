@@ -26,8 +26,9 @@ COMMAND_FILES = $(shell ls $(srcdir)/../commands/*.xml)
 # HTML_FILES = $(patsubst %,%.html,$(SECTIONS))
 HTML_FILES = fvwm.man.html
 XML_FILES = $(patsubst %,$(srcdir)/%.xml,$(SECTIONS))
-EXTRA_DIST = $(XML_FILES)
+EXTRA_DIST = $(XML_FILES) $(man_MANS)
 BUILD_FILES =
+man_MANS = fvwm.1
 
 if FVWM_BUILD_HTMLDOC
 doc_DATA = $(HTML_FILES)
@@ -81,3 +82,8 @@ fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 
 distclean-local:
 	rm -f $(top_builddir)/doc/fvwm/fvwm.1
+
+install-data-local:
+	@rm -f $(DESTDIR)$(mandir)/man1/fvwm2.1
+	@$(LN_S) fvwm.1 $(DESTDIR)$(mandir)/man1/fvwm2.1 || \
+	echo "Minor warning: $(mandir)/man1/fvwm2.1 symlink was not created"

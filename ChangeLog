@@ -1,11 +1,16 @@
-2007-07-22  Viktor Griph  <griph@dd.chalmers.se>
+2007-07-22  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/Makefile.am:
+	don't install fvwm.1
 
 	* fvwm/events.c (My_XNextEvent):
+	remove unused varaible
 
+	* fvwm/events.c (My_XNextEvent):
 	* fvwm/module_list.h:
-	* fvwm/module_list.c (module_store, module_alloc) 
-	(module_kill_all, module_safefree, module_remove) 
-	(do_execute_module, module_kill, module_cleanup, module_get_next) 
+	* fvwm/module_list.c (module_store, module_alloc)
+	(module_kill_all, module_safefree, module_remove)
+	(do_execute_module, module_kill, module_cleanup, module_get_next)
 	(FlushMessageQueue):
 	Don't free module stuctures during module I/O. (Fixes segfault.)
 

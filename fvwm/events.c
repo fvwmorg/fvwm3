@@ -4109,7 +4109,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 	if (num_fd > 0)
 	{
-		fmodule *next;
 		/* Check for module input. */
 		module = module_get_next(NULL);
 		for (; module != NULL; module = module_get_next(module))

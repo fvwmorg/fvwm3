@@ -4,7 +4,7 @@ configdir = @FVWM_DATADIR@
 bin_PROGRAMS = fvwm
 
 EXTRA_DIST = $(config_DATA)
-man_MANS = fvwm.1
+# man_MANS = fvwm.1
 
 config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 
@@ -57,7 +57,7 @@ install-exec-local:
 	@$(LN_S) fvwm $(DESTDIR)$(bindir)/fvwm2 || \
 		echo "Minor warning: $(bindir)/fvwm2 symlink was not created"
 
-install-data-local:
-	@rm -f $(DESTDIR)$(mandir)/man1/fvwm2.1
-	@$(LN_S) fvwm.1 $(DESTDIR)$(mandir)/man1/fvwm2.1 || \
-	echo "Minor warning: $(mandir)/man1/fvwm2.1 symlink was not created"
+#install-data-local:
+#	@rm -f $(DESTDIR)$(mandir)/man1/fvwm2.1
+#	@$(LN_S) fvwm.1 $(DESTDIR)$(mandir)/man1/fvwm2.1 || \
+#	echo "Minor warning: $(mandir)/man1/fvwm2.1 symlink was not created"
