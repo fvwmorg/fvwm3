@@ -76,6 +76,15 @@
 
 /* ---------------------------- local macros ------------------------------- */
 
+#define SCTX_SET_MI(ctx,item)	((ctx).type = SCTX_MENU_ITEM, \
+				 (ctx).menu_item.menu_item = (item))
+#define SCTX_GET_MI(ctx)	((ctx).type == SCTX_MENU_ITEM ? \
+				 (ctx).menu_item.menu_item : NULL)
+#define SCTX_SET_MR(ctx,root)	((ctx).type = SCTX_MENU_ROOT, \
+				 (ctx).menu_root.menu_root = (root))
+#define SCTX_GET_MR(ctx)	((ctx).type == SCTX_MENU_ROOT ? \
+				 (ctx).menu_root.menu_root : NULL)
+
 /* ---------------------------- imports ------------------------------------ */
 
 /* This external is safe. It's written only during startup. */
@@ -120,6 +129,35 @@ typedef struct MenuSizingParameters
 		unsigned is_popup_indicator_used : 1;
 	} flags;
 } MenuSizingParameters;
+
+typedef enum
+{
+	SCTX_MENU_ROOT,
+	SCTX_MENU_ITEM
+} string_context_type_t;
+
+typedef union
+{
+	string_context_type_t type;
+	struct
+	{
+		string_context_type_t type;
+		MenuRoot *menu_root;
+	} menu_root;
+	struct
+	{
+		string_context_type_t type;
+		MenuItem *menu_item;
+	} menu_item;
+} string_context_t;
+
+typedef struct
+{
+	char delimiter;
+	Bool (*string_handler)(
+		char *string, char delimiter,
+		string_context_t *user_data);
+} string_def_t;
 
 /* ---------------------------- menu loop types ---------------------------- */
 
@@ -701,153 +739,212 @@ static void scanForHotkeys(
 	return;
 }
 
+/* This scans for strings within delimiters and calls a callback based
+   on the delimiter found for each found string */
+static void scanForStrings(
+	char *instring, const string_def_t *string_defs,
+	string_context_t *context)
+{
+	char *s;
+	int type;
+	int in_type;
+	char *string;
+
+	in_type = -1;
+	for (s = instring; *s != '\0'; s++)
+	{
+		if (in_type < 0)
+		{
+			/* look for starting delimiters */
+			for (
+				type = 0; string_defs[type].delimiter != '\0';
+				type++)
+			{
+				if (s[0] == string_defs[type].delimiter)
+				{
+					if (
+						s[1] !=
+						string_defs[type].delimiter)
+					{
+						/* start of a string */
+						in_type = type;
+						string = s + 1;
+					}
+					else
+					{
+						/* escaped delimiter, copy the
+						 * string down over it */
+						char *t;
+						for (t = s; *t != '\0'; t++)
+						{
+							t[0] = t[1];
+						}
+					}
+					break;
+				}
+			}
+		}
+		else if (s[0] == string_defs[in_type].delimiter)
+		{
+			if (s[1] != string_defs[in_type].delimiter)
+			{
+				/* end of string */
+				Bool is_valid;
+
+				s[0] = '\0';
+				is_valid = string_defs[in_type].string_handler(
+					string, string_defs[in_type].delimiter,
+					context);
+				s[0] = string_defs[in_type].delimiter;
+
+				if (is_valid)
+				{
+					/* the string was OK, remove from
+					 * instring */
+					char *t1;
+					char *t2;
+
+					for (
+						t1 = string - 1, t2 = s + 1;
+						*t2 != '\0'; t2++, t1++)
+					{
+						*t1 = *t2;
+					}
+					*t1 = '\0';
+					s = string - 2;
+				}
+
+				in_type = -1;
+			}
+			else
+			{
+				/* escaped delimiter, copy the string down over
+				 * it */
+				char *t;
+				for (t = s; *t != '\0'; t++)
+				{
+					t[0] = t[1];
+				}
+			}
+		}
+	}
+}
 
 /* Side picture support: this scans for a color int the menu name
    for colorization */
-static void scanForColor(
-	char *instring, Pixel *p, Bool *flag, char identifier)
+static Bool __scan_for_color(
+	char *name, char type, string_context_t *context)
 {
-	char *tstart;
-	char *s;
-	char *save_instring;
-	char *name;
-	char *t;
-	int i;
-	int len;
-
-	*flag = False;
-
-	len = strlen(instring) + 1;
-	/* save instring in case can't find pixmap */
-	save_instring = (char *)alloca(len);
-	name = (char *)alloca(len);
-	strcpy(save_instring, instring);
-
-	/* Scan whole string          */
-	for (s = instring; *s != '\0'; s++)
+	if (type != '^' || SCTX_GET_MR(*context) == NULL)
 	{
-		if (*s != identifier)
-		{
-			continue;
-		}
-		/* Just an escaped '^'  */
-		if (s[1] != identifier)
-		{
-			/* found the identifier */
-			break;
-		}
-		/* Copy the string down over it */
-		for (t = s; *t != '\0'; t++)
-		{
-			t[0] = t[1];
-		}
-	}
-	if (*s != 0)
-	{
-		/* work out the offset value */
-		tstart = s;
-		for (i = 0, s++; *s != identifier && *s != 0; i++, s++)
-		{
-			name[i] = *s;
-		}
-		name[i] = 0;
-		*p = GetColor(name);
-		*flag = True;
-		if (*s != '\0')
-		{
-			s++;
-		}
-		while (*s != '\0')
-		{
-			*tstart++ = *s++;
-		}
-		*tstart = 0;
+		abort();
 	}
 
-	return;
-}
-
-static Bool scanForPixmap(
-	char *instring, FvwmPicture **p, char identifier)
-{
-	char *tstart;
-	char *s;
-	char *t;
-	char *name;
-	int i;
-	FvwmPicture *pp;
-	FvwmPictureAttributes fpa;
-
-	*p = NULL;
-	fpa.mask = 0;
-	if (!instring)
+	if (MR_HAS_SIDECOLOR(SCTX_GET_MR(*context)))
 	{
 		return False;
 	}
-	name = (char *)safemalloc(strlen(instring)+1);
 
-	/* Scan whole string    */
-	for (s = instring; *s != '\0'; s++)
+	MR_SIDECOLOR(SCTX_GET_MR(*context)) = GetColor(name);
+	MR_HAS_SIDECOLOR(SCTX_GET_MR(*context)) = True;
+
+	return True;
+}
+
+static Bool __scan_for_pixmap(
+	char *name, char type, string_context_t *context)
+{
+	FvwmPicture *p;
+	FvwmPictureAttributes fpa;
+	int current_mini_icon;
+
+	/* check that more pictures are allowed before trying to load the
+	 * picture */
+	switch (type)
 	{
-		if (*s != identifier)
+	case '@':
+		if (SCTX_GET_MR(*context) == NULL)
 		{
-			continue;
+			abort();
 		}
-		/* A hotkey marker? */
-		/* Just an escaped &    */
-		if (s[1] != identifier)
+		if (MR_SIDEPIC(SCTX_GET_MR(*context)))
 		{
-			break;
+			return False;
 		}
 
-		/* copy the string down over it */
-		for (t = s; *t != '\0'; t++)
+		break;
+	case '*':
+		/* menu item picture, requires menu item */
+		if (SCTX_GET_MI(*context) == NULL)
 		{
-			t[0] = t[1];
+			abort();
 		}
-	}
-	if (*s != 0)
-	{
-		/* work out the offset value */
-		tstart = s;
-		for (i = 0, s++; *s != 0; i++, s++)
+		if (MI_PICTURE(SCTX_GET_MI(*context)))
 		{
-			if (*s == identifier)
+			return False;
+		}
+
+		break;
+	case '%':
+		/* mini icon - look for next free spot */
+		if (SCTX_GET_MI(*context) == NULL)
+		{
+			abort();
+		}
+		current_mini_icon  = 0;
+		while (current_mini_icon < MAX_MENU_ITEM_MINI_ICONS)
+		{
+			if (
+				MI_MINI_ICON(SCTX_GET_MI(*context))
+				[current_mini_icon])
 			{
-				if (s[1] != identifier)
-				{
-					break;
-				}
-				s++;
+				current_mini_icon++;
 			}
-			name[i] = *s;
+			else
+			{
+				break;
+			}
 		}
-		name[i] = 0;
-		/* Next, check for a color pixmap */
-		pp = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, name, fpa);
-		if (*s != '\0')
+		if (current_mini_icon == MAX_MENU_ITEM_MINI_ICONS)
 		{
-			s++;
+			return False;
 		}
-		while (*s != '\0')
-		{
-			*tstart++ = *s++;
-		}
-		*tstart = 0;
-		if (pp)
-		{
-			*p = pp;
-		}
-		else
-		{
-			fvwm_msg(WARN, "scanForPixmap",
-				 "Couldn't load image from %s", name);
-		}
-	}
-	free(name);
 
-	return (*p != NULL);
+		break;
+	}
+
+	fpa.mask = 0;
+	p = PCacheFvwmPicture(
+		dpy, Scr.NoFocusWin, NULL, name, fpa);
+	if (!p)
+	{
+		fvwm_msg(WARN, "scanForPixmap",
+			 "Couldn't load image from %s", name);
+
+		/* return true to make missing pictures not appear in the
+		 * label/name */
+		return True;
+	}
+
+	switch (type)
+	{
+	case '@':
+		MR_SIDEPIC(SCTX_GET_MR(*context)) = p;
+
+		break;
+	case '*':
+		MI_PICTURE(SCTX_GET_MI(*context)) = p;
+		MI_HAS_PICTURE(SCTX_GET_MI(*context)) = True;
+
+		break;
+	case '%':
+		MI_MINI_ICON(SCTX_GET_MI(*context))[current_mini_icon] = p;
+		MI_HAS_PICTURE(SCTX_GET_MI(*context)) = True;
+
+		break;
+	}
+
+	return True;
 }
 
 /* ---------------------------- item list handling ------------------------- */
@@ -6459,7 +6556,6 @@ void AddToMenu(
 	char *token = NULL;
 	char *option = NULL;
 	int i;
-	int current_mini_icon = 0;
 	int is_empty;
 	Bool do_replace_title;
 
@@ -6613,32 +6709,15 @@ void AddToMenu(
 		{
 			if (fPixmapsOk)
 			{
-				if (!MI_PICTURE(tmp))
-				{
-					if (scanForPixmap(
-						    MI_LABEL(tmp)[i],
-						    &MI_PICTURE(tmp), '*'))
-					{
-						MI_HAS_PICTURE(tmp) = True;
-					}
-				}
-				while (current_mini_icon <
-				       MAX_MENU_ITEM_MINI_ICONS)
-				{
-					if (scanForPixmap(
-						    MI_LABEL(tmp)[i],
-						    &(MI_MINI_ICON(tmp)
-						      [current_mini_icon]),
-						    '%'))
-					{
-						current_mini_icon++;
-						MI_HAS_PICTURE(tmp) = True;
-					}
-					else
-					{
-						break;
-					}
-				}
+				string_def_t item_pixmaps[] = {
+					{'*', __scan_for_pixmap},
+					{'%', __scan_for_pixmap},
+					{'\0', NULL}};
+				string_context_t ctx;
+
+				SCTX_SET_MI(ctx,tmp);
+				scanForStrings(
+					MI_LABEL(tmp)[i], item_pixmaps, &ctx);
 			}
 			if (!MI_HAS_HOTKEY(tmp))
 			{
@@ -6739,7 +6818,11 @@ void AddToMenu(
 MenuRoot *NewMenuRoot(char *name)
 {
 	MenuRoot *mr;
-	Bool flag;
+	string_def_t root_strings[] = {
+		{'@', __scan_for_pixmap},
+		{'^', __scan_for_color},
+		{'\0', NULL}};
+	string_context_t ctx;
 
 	mr = (MenuRoot *)safemalloc(sizeof(MenuRoot));
 	mr->s = (MenuRootStatic *)safemalloc(sizeof(MenuRootStatic));
@@ -6750,9 +6833,10 @@ MenuRoot *NewMenuRoot(char *name)
 	MR_NEXT_MENU(mr) = Menus.all;
 	MR_NAME(mr) = safestrdup(name);
 	MR_WINDOW(mr) = None;
-	scanForPixmap(MR_NAME(mr), &MR_SIDEPIC(mr), '@');
-	scanForColor(MR_NAME(mr), &MR_SIDECOLOR(mr), &flag,'^');
-	MR_HAS_SIDECOLOR(mr) = flag;
+	SCTX_SET_MR(ctx,mr);
+	MR_HAS_SIDECOLOR(mr) = False;
+	scanForStrings(
+		MR_NAME(mr), root_strings, &ctx);
 	MR_STYLE(mr) = menustyle_get_default_style();
 	MR_ORIGINAL_MENU(mr) = mr;
 	MR_COPIES(mr) = 1;

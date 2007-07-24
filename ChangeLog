@@ -1,3 +1,15 @@
+2007-07-24  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/fvwm.c (setVersionInfo):
+	add XCursor support to version output
+
+	* fvwm/menus.c (SCTX_SET_MI, SCTX_GET_MI, SCTX_SET_MR)
+	(SCTX_GET_MR, string_context_type_t, string_context_t)
+	(string_def_t, scanForColor, scanForPixmap, scanForStrings)
+	(__scan_for_color, __scan_for_pixmap, AddToMenu, NewMenuRoot):
+	reimplement pixmap and color scanning for menus to better handle
+	escaped delimiters.
+
 2007-07-22  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/Makefile.am:

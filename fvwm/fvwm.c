@@ -1336,6 +1336,9 @@ static void setVersionInfo(void)
 #ifdef HAVE_XRENDER
 	strcat(support_str, " XRender,");
 #endif
+#ifdef HAVE_XCURSOR
+	strcat(support_str, " XCursor,");
+#endif
 #ifdef HAVE_XFT
 	strcat(support_str, " XFT,");
 #endif
