@@ -1,3 +1,10 @@
+2007-07-23  Simon Griph  <simon(at)griph(dot)se>
+
+	* FvwmButtons/draw.h (RedrawButton):
+	* FvwmButtons/draw.c (RedrawButton):
+	(DrawTitle):
+	draw monochrome bimap icons with the correct colors.
+
 2007-07-22  Simon Griph  <simon(at)griph(dot)se>
 
 	* FvwmButtons/FvwmButtons.c (Loop):

@@ -525,9 +525,6 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 			else if (b->flags.b_Back &&
 				!UberButton->c->flags.b_Colorset)
 			{
-				gcv.background = b->bc;
-				XChangeGC(Dpy,NormalGC,GCBackground,
-					&gcv);
 				XFillRectangle(Dpy, MyWindow, NormalGC,
 					clip.x, clip.y, clip.width,
 					clip.height);
@@ -574,8 +571,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				}
 				if (buttonTitle(b))
 				{
-					DrawTitle(b, shapeMask, transGC, NULL,
-						True);
+					DrawTitle(b, shapeMask, transGC, NULL);
 				}
 				FShapeCombineMask(Dpy, MyWindow, FShapeBounding,
 					0, 0, shapeMask, FShapeSet);
@@ -586,9 +582,15 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	/* ------------------------------------------------------------------ */
 
 	title = buttonTitle(b);
-	if (cleaned && title)
+	if (cleaned)
 	{
-		DrawTitle(b,MyWindow,NormalGC,pev,False);
+		gcv.foreground = fc;
+		gcv.background = bc;
+		XChangeGC(Dpy, NormalGC, GCForeground | GCBackground, &gcv);
+		if (title)
+		{
+			DrawTitle(b, MyWindow, NormalGC, pev);
+		}
 	}
 
 	if (title == NULL && b->flags.b_Panel &&
@@ -689,8 +691,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 /**
 *** Writes out title.
 **/
-void DrawTitle(
-	button_info *b,Window win,GC gc, XEvent *pev, Bool do_not_modify_fg)
+void DrawTitle(button_info *b,Window win,GC gc, XEvent *pev)
 {
 	int BH;
 	int ix,iy,iw,ih;
@@ -700,8 +701,6 @@ void DrawTitle(
 	char *s = NULL;
 	int just=justify&b_TitleHoriz; /* Left, center, right */
 	XGCValues gcv;
-	unsigned long gcm;
-	int cset;
 	XRectangle clip;
 	Region region = None;
 	FvwmPicture *pic;
@@ -718,26 +717,11 @@ void DrawTitle(
 	if (!s || !Ffont)
 		return;
 
-	cset = buttonColorset(b);
-	gcm = 0;
-	if (do_not_modify_fg == False)
-	{
-		gcm |= GCForeground;
-		if (cset >= 0)
-		{
-			gcv.foreground = Colorset[cset].fg;
-		}
-		else
-		{
-			gcv.foreground = buttonFore(b);
-		}
-	}
 	if (Ffont->font)
 	{
 		gcv.font = Ffont->font->fid;
-		gcm |= GCFont;
+		XChangeGC(Dpy, gc, GCFont, &gcv);
 	}
-	XChangeGC(Dpy,gc,gcm,&gcv);
 
 	pic = buttonIcon(b);
 	bIconFlagSet = iconFlagSet(b);
