@@ -1,3 +1,12 @@
+2007-07-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menus.c (__scan_for_pixmap):
+	fixed compiler warning
+
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
+	(ewmh_RestackWindow):
+	honor FixedSize/FixedPosition styles in EWMH messages too
+
 2007-07-24  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/fvwm.c (setVersionInfo):

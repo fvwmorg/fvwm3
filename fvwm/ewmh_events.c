@@ -185,20 +185,32 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 {
 	XConfigureRequestEvent cre;
+	int func;
 
 	if (ev == NULL)
 	{
 		return 0;
 	}
-
-	cre.value_mask = ev->xclient.data.l[0];
-	cre.x = ev->xclient.data.l[1];
-	cre.y = ev->xclient.data.l[2];
-	cre.width = ev->xclient.data.l[3];
-	cre.height = ev->xclient.data.l[4];
-	cre.window = ev->xclient.window;
-
-	events_handle_configure_request(cre, fw, True);
+	if (
+		cre.width == fw->g.normal.width &&
+		cre.height == fw->g.normal.height)
+	{
+		func = F_MOVE;
+	}
+	else
+	{
+		func = F_RESIZE;
+	}
+	if (!is_function_allowed(func, NULL, fw, False, False))
+	{
+		cre.value_mask = ev->xclient.data.l[0];
+		cre.x = ev->xclient.data.l[1];
+		cre.y = ev->xclient.data.l[2];
+		cre.width = ev->xclient.data.l[3];
+		cre.height = ev->xclient.data.l[4];
+		cre.window = ev->xclient.window;
+		events_handle_configure_request(cre, fw, True);
+	}
 
 	return 0;
 }
@@ -211,13 +223,14 @@ int ewmh_RestackWindow(EWMH_CMD_ARGS)
 	{
 		return 0;
 	}
-
-	cre.value_mask = CWSibling | CWStackMode;
-	cre.above = ev->xclient.data.l[1];
-	cre.detail = ev->xclient.data.l[2];
-	cre.window = ev->xclient.window;
-
-	events_handle_configure_request(cre, fw, True);
+	if (DO_EWMH_USE_STACKING_HINTS(fw))
+	{
+		cre.value_mask = CWSibling | CWStackMode;
+		cre.above = ev->xclient.data.l[1];
+		cre.detail = ev->xclient.data.l[2];
+		cre.window = ev->xclient.window;
+		events_handle_configure_request(cre, fw, True);
+	}
 
 	return 0;
 }

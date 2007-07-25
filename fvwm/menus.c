@@ -740,7 +740,7 @@ static void scanForHotkeys(
 }
 
 /* This scans for strings within delimiters and calls a callback based
-   on the delimiter found for each found string */
+ * on the delimiter found for each found string */
 static void scanForStrings(
 	char *instring, const string_def_t *string_defs,
 	string_context_t *context)
@@ -821,6 +821,7 @@ static void scanForStrings(
 				/* escaped delimiter, copy the string down over
 				 * it */
 				char *t;
+
 				for (t = s; *t != '\0'; t++)
 				{
 					t[0] = t[1];
@@ -860,6 +861,7 @@ static Bool __scan_for_pixmap(
 
 	/* check that more pictures are allowed before trying to load the
 	 * picture */
+	current_mini_icon = -999999999;
 	switch (type)
 	{
 	case '@':
@@ -871,7 +873,6 @@ static Bool __scan_for_pixmap(
 		{
 			return False;
 		}
-
 		break;
 	case '*':
 		/* menu item picture, requires menu item */
@@ -883,7 +884,6 @@ static Bool __scan_for_pixmap(
 		{
 			return False;
 		}
-
 		break;
 	case '%':
 		/* mini icon - look for next free spot */
@@ -909,8 +909,9 @@ static Bool __scan_for_pixmap(
 		{
 			return False;
 		}
-
 		break;
+	default:
+		abort();
 	}
 
 	fpa.mask = 0;
