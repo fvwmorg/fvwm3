@@ -1,3 +1,10 @@
+2007-07-26  Viktor Griph  <griph@dd.chalmers.se>
+
+	* fvwm/menus.c (__copy_down, __check_for_delimiter)
+	(scanForStrings):
+	reduce indentation level
+	add comment to explain why suppressing the warning is right
+
 2007-07-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):

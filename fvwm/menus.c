@@ -739,6 +739,46 @@ static void scanForHotkeys(
 	return;
 }
 
+static void __copy_down(char *remove_from, char *remove_to)
+{
+	char *t1;
+	char *t2;
+
+	for (t1 = remove_from, t2 = remove_to; *t2 != '\0'; t2++, t1++)
+	{
+		*t1 = *t2;
+	}
+	*t1 = '\0';
+
+	return;
+}
+
+static int __check_for_delimiter(char *s, const string_def_t *string_defs)
+{
+	int type;
+
+	for (type = 0; string_defs[type].delimiter != '\0'; type++)
+	{
+		if (s[0] == string_defs[type].delimiter)
+		{
+			if (s[1] != string_defs[type].delimiter)
+			{
+				return type;
+			}
+			else
+			{
+				/* escaped delimiter, copy the
+				 * string down over it */
+				__copy_down(s, s+1);
+
+				return -1;
+			}
+		}
+	}
+
+	return -1;
+}
+
 /* This scans for strings within delimiters and calls a callback based
  * on the delimiter found for each found string */
 static void scanForStrings(
@@ -747,87 +787,55 @@ static void scanForStrings(
 {
 	char *s;
 	int type;
-	int in_type;
 	char *string;
 
+	type = -1;
+	/* string is set whenever type >= 0, and unused otherwise
+	 * set to NULL to supress compiler warning */
 	string = NULL;
-	in_type = -1;
 	for (s = instring; *s != '\0'; s++)
 	{
-		if (in_type < 0)
+		if (type < 0)
 		{
 			/* look for starting delimiters */
-			for (
-				type = 0; string_defs[type].delimiter != '\0';
-				type++)
+			type = __check_for_delimiter(s, string_defs);
+			if (type >= 0)
 			{
-				if (s[0] == string_defs[type].delimiter)
-				{
-					if (
-						s[1] !=
-						string_defs[type].delimiter)
-					{
-						/* start of a string */
-						in_type = type;
-						string = s + 1;
-					}
-					else
-					{
-						/* escaped delimiter, copy the
-						 * string down over it */
-						char *t;
-						for (t = s; *t != '\0'; t++)
-						{
-							t[0] = t[1];
-						}
-					}
-					break;
-				}
+				/* start of a string */
+				string = s + 1;
 			}
 		}
-		else if (s[0] == string_defs[in_type].delimiter)
+		else if (
+			s[0] == string_defs[type].delimiter &&
+			s[1] != string_defs[type].delimiter)
 		{
-			if (s[1] != string_defs[in_type].delimiter)
+			/* found ending delimiter */
+			Bool is_valid;
+
+			/* terminate the string pointer */
+			s[0] = '\0';
+			is_valid = string_defs[type].string_handler(
+				string, string_defs[type].delimiter, context);
+			/* restore the string */
+			s[0] = string_defs[type].delimiter;
+
+			if (is_valid)
 			{
-				/* end of string */
-				Bool is_valid;
-
-				s[0] = '\0';
-				is_valid = string_defs[in_type].string_handler(
-					string, string_defs[in_type].delimiter,
-					context);
-				s[0] = string_defs[in_type].delimiter;
-
-				if (is_valid)
-				{
-					/* the string was OK, remove from
-					 * instring */
-					char *t1;
-					char *t2;
-
-					for (
-						t1 = string - 1, t2 = s + 1;
-						*t2 != '\0'; t2++, t1++)
-					{
-						*t1 = *t2;
-					}
-					*t1 = '\0';
-					s = string - 2;
-				}
-
-				in_type = -1;
+				/* the string was OK, remove it from
+				 * instring */
+				__copy_down(string - 1, s + 1);
+				/* continue next iteration at the
+				 * first character after the string */
+				s = string - 2;
 			}
-			else
-			{
-				/* escaped delimiter, copy the string down over
-				 * it */
-				char *t;
 
-				for (t = s; *t != '\0'; t++)
-				{
-					t[0] = t[1];
-				}
-			}
+			type = -1;
+		}
+		else if (s[0] == string_defs[type].delimiter)
+		{
+			/* escaped delimiter, copy the string down over
+			 * it */
+			__copy_down(s, s + 1);
 		}
 	}
 }
