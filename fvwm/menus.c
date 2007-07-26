@@ -750,6 +750,7 @@ static void scanForStrings(
 	int in_type;
 	char *string;
 
+	string = NULL;
 	in_type = -1;
 	for (s = instring; *s != '\0'; s++)
 	{

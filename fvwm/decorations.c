@@ -43,6 +43,7 @@
 #include "update.h"
 #include "style.h"
 #include "geometry.h"
+#include "decorations.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -616,8 +617,8 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 	return;
 }
 
-static Bool __is_resize_allowed(const FvwmWindow *t, int functions,
-				Bool is_user_request)
+static Bool __is_resize_allowed(
+	const FvwmWindow *t, int functions, request_origin_t request_origin)
 {
         if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
 	    t->hints.min_width == t->hints.max_width &&
@@ -625,18 +626,19 @@ static Bool __is_resize_allowed(const FvwmWindow *t, int functions,
 	{
 	        return False;
 	}
-	if (is_user_request && IS_SIZE_FIXED(t))
+	if (request_origin && IS_SIZE_FIXED(t))
 	{
 	        return False;
 	}
-	else if (!is_user_request && IS_PSIZE_FIXED(t))
+	else if (!request_origin && IS_PSIZE_FIXED(t))
 	{
 	        return False;
 	}
-	if (is_user_request && !(functions & MWM_FUNC_RESIZE))
+	if (request_origin && !(functions & MWM_FUNC_RESIZE))
 	{
 	        return False;
 	}
+
 	return True;
 }
 
@@ -647,7 +649,7 @@ static Bool __is_resize_allowed(const FvwmWindow *t, int functions,
 */
 Bool is_function_allowed(
 	int function, char *action_string, const FvwmWindow *t,
-	Bool is_user_request, Bool do_allow_override_mwm_hints)
+	request_origin_t request_origin, Bool do_allow_override_mwm_hints)
 {
 	unsigned int functions;
 	char *functionlist[] = {
@@ -774,7 +776,7 @@ Bool is_function_allowed(
 		}
 		break;
 	case F_RESIZE:
-	        if(!__is_resize_allowed(t,functions,is_user_request))
+	        if(!__is_resize_allowed(t, functions, request_origin))
 		{
 		        return False;
 		}
@@ -788,11 +790,11 @@ Bool is_function_allowed(
 		break;
 	case F_MAXIMIZE:
 	        if (IS_MAXIMIZE_FIXED_SIZE_DISALLOWED(t) &&
-		    !__is_resize_allowed(t,functions,is_user_request))
+		    !__is_resize_allowed(t, functions, request_origin))
 		{
 		       return False;
 		}
-		if ((is_user_request && !(functions & MWM_FUNC_MAXIMIZE)) ||
+		if ((request_origin && !(functions & MWM_FUNC_MAXIMIZE)) ||
 		    IS_UNMAXIMIZABLE(t))
 		{
 			return False;
@@ -801,15 +803,15 @@ Bool is_function_allowed(
 	case F_MOVE:
 		/* Move is a funny hint. Keeps it out of the menu, but you're
 		 * still allowed to move. */
-		if (is_user_request && IS_FIXED(t))
+		if (request_origin && IS_FIXED(t))
 		{
 			return False;
 		}
-		else if (!is_user_request && IS_FIXED_PPOS(t))
+		else if (!request_origin && IS_FIXED_PPOS(t))
 		{
 			return False;
 		}
-		if (is_user_request && !(functions & MWM_FUNC_MOVE))
+		if (request_origin && !(functions & MWM_FUNC_MOVE))
 		{
 			return False;
 		}

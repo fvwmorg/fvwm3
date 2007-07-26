@@ -787,65 +787,79 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	   hints etc.) */
 	if (IS_SIZE_FIXED(mask) &&
 	    mask->flag_mask.common.s.is_size_fixed &&
-	    is_function_allowed(F_RESIZE,NULL,fw,True,False))
+	    is_function_allowed(F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
 	if (!IS_SIZE_FIXED(mask) &&
 	    mask->flag_mask.common.s.is_size_fixed &&
-	    !is_function_allowed(F_RESIZE,NULL,fw,True,False))
+	    !is_function_allowed(F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
 	if (IS_FIXED(mask) &&
 	    mask->flag_mask.common.s.is_fixed &&
-	    is_function_allowed(F_MOVE, NULL, fw, True, False))
+	    is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
 	if (!IS_FIXED(mask) &&
 	    mask->flag_mask.common.s.is_fixed &&
-	    !is_function_allowed(F_MOVE, NULL, fw, True, False))
+	    !is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
 	if (IS_UNICONIFIABLE(mask) &&
 	    mask->flag_mask.common.s.is_uniconifiable &&
-	    is_function_allowed(F_ICONIFY,NULL,fw,True,False))
+	    is_function_allowed(F_ICONIFY, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
-	if (!IS_UNICONIFIABLE(mask) &&
-	    mask->flag_mask.common.s.is_uniconifiable &&
-	    !is_function_allowed(F_ICONIFY,NULL,fw,True,False))
+	if (
+		!IS_UNICONIFIABLE(mask) &&
+		mask->flag_mask.common.s.is_uniconifiable &&
+		!is_function_allowed(
+			F_ICONIFY, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
-	if (IS_UNMAXIMIZABLE(mask) &&
-	    mask->flag_mask.common.s.is_unmaximizable &&
-	    is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
+	if (
+		IS_UNMAXIMIZABLE(mask) &&
+		mask->flag_mask.common.s.is_unmaximizable &&
+		is_function_allowed(
+			F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
-	if (!IS_UNMAXIMIZABLE(mask) &&
-	    mask->flag_mask.common.s.is_unmaximizable &&
-	    !is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
+	if (
+		!IS_UNMAXIMIZABLE(mask) &&
+		mask->flag_mask.common.s.is_unmaximizable &&
+		!is_function_allowed(
+			F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 	        return False;
 	}
-	if (IS_UNCLOSABLE(mask) &&
-	    mask->flag_mask.common.s.is_unclosable &&
-	    (is_function_allowed(F_CLOSE,NULL,fw,True,False) ||
-	     is_function_allowed(F_DELETE,NULL,fw,True,False) ||
-	     is_function_allowed(F_DESTROY,NULL,fw,True,False)))
+	if (
+		IS_UNCLOSABLE(mask) &&
+		mask->flag_mask.common.s.is_unclosable &&
+		(is_function_allowed(
+			 F_CLOSE, NULL, fw, RQORIG_PROGRAM_US,False) ||
+		 is_function_allowed(
+			 F_DELETE, NULL, fw, RQORIG_PROGRAM_US,False) ||
+	     is_function_allowed(
+		     F_DESTROY, NULL, fw, RQORIG_PROGRAM_US, False)))
 	{
 	        return False;
 	}
-	if (!IS_UNCLOSABLE(mask) &&
-	    mask->flag_mask.common.s.is_unclosable &&
-	    (!is_function_allowed(F_CLOSE,NULL,fw,True,False) &&
-	     !is_function_allowed(F_DELETE,NULL,fw,True,False) &&
-	     !is_function_allowed(F_DESTROY,NULL,fw,True,False)))
+	if (
+		!IS_UNCLOSABLE(mask) &&
+		mask->flag_mask.common.s.is_unclosable &&
+		(!is_function_allowed(
+			 F_CLOSE, NULL, fw, RQORIG_PROGRAM_US,False) &&
+		 !is_function_allowed(
+			 F_DELETE, NULL, fw, RQORIG_PROGRAM_US,False) &&
+		 !is_function_allowed(
+			 F_DESTROY, NULL, fw, RQORIG_PROGRAM_US,False)))
 	{
 	        return False;
 	}

@@ -2702,10 +2702,13 @@ void CMD_Iconify(F_CMD_ARGS)
 		{
 			initial_window_options_t win_opts;
 
-			if (!is_function_allowed(
-				    F_ICONIFY, NULL, fw, False, True))
+			if (
+				!is_function_allowed(
+					F_ICONIFY, NULL, fw, RQORIG_PROGRAM,
+					True))
 			{
 				XBell(dpy, 0);
+
 				return;
 			}
 			memset(&win_opts, 0, sizeof(win_opts));

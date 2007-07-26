@@ -995,7 +995,7 @@ static inline int __handle_cr_on_client(
 		}
 	}
 	if (IS_SHADED(fw) ||
-	    !is_function_allowed(F_MOVE, NULL, fw, False, False))
+	    !is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM, False))
 	{
 		/* forbid shaded applications to move their windows */
 		cre.value_mask &= ~(CWX | CWY);
@@ -1011,7 +1011,9 @@ static inline int __handle_cr_on_client(
 		d_g.width = 0;
 		d_g.height = 0;
 	}
-	else if (!is_function_allowed(F_RESIZE, NULL, fw, False, False))
+	else if (
+		!is_function_allowed(
+			F_RESIZE, NULL, fw, RQORIG_PROGRAM, False))
 	{
 		cre.value_mask &= ~(CWWidth | CWHeight);
 		*ret_do_send_event = 1;

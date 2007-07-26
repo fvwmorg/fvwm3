@@ -2505,19 +2505,24 @@ FvwmWindow *AddWindow(
 	{
 		/* TK always wants some special treatment: If the window is
 		 * simply mapped, the tk menus come up at funny Y coordinates.
-		 * Tell it it's geometry *again* to work around this problem. */
+		 * Tell it it's geometry *again* to work around this problem.
+		 */
 		SendConfigureNotify(
 			fw, fw->g.frame.x, fw->g.frame.y, fw->g.frame.width,
 			fw->g.frame.height, 0, False);
 	}
-	if (HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
-	    HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)
+	if (
+		HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
+		HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)
 	{
 		int h;
 		int v;
 		char cmd[256];
 
-		if (is_function_allowed(F_MAXIMIZE, NULL, fw, True, False))
+		if (
+			is_function_allowed(
+				F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US,
+				False))
 		{
 			h = (HAS_EWMH_INIT_MAXHORIZ_STATE(fw) ==
 			     EWMH_STATE_HAS_HINT) ? 100 : 0;

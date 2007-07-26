@@ -271,18 +271,20 @@ static void BroadcastNewPacket(unsigned long event_type,
 action_flags *__get_allowed_actions(const FvwmWindow *fw)
 {
 	static action_flags act;
-	act.is_movable = is_function_allowed(F_MOVE, NULL, fw, True, False);
-	act.is_deletable = is_function_allowed(F_DELETE, NULL, fw, True,
-					       False);
-	act.is_destroyable = is_function_allowed(F_DESTROY, NULL, fw, True,
-						 False);
-	act.is_closable = is_function_allowed(F_CLOSE, NULL, fw, True, False);
-	act.is_maximizable = is_function_allowed(F_MAXIMIZE, NULL, fw, True,
-						 False);
-	act.is_resizable = is_function_allowed(F_RESIZE, NULL, fw, True,
-					       False);
-	act.is_iconifiable = is_function_allowed(F_ICONIFY, NULL, fw, True,
-						 False);
+	act.is_movable = is_function_allowed(
+		F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False);
+	act.is_deletable = is_function_allowed(
+		F_DELETE, NULL, fw, RQORIG_PROGRAM_US, False);
+	act.is_destroyable = is_function_allowed(
+		F_DESTROY, NULL, fw, RQORIG_PROGRAM_US, False);
+	act.is_closable = is_function_allowed(
+		F_CLOSE, NULL, fw, RQORIG_PROGRAM_US, False);
+	act.is_maximizable = is_function_allowed(
+		F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False);
+	act.is_resizable = is_function_allowed(
+		F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, False);
+	act.is_iconifiable = is_function_allowed(
+		F_ICONIFY, NULL, fw, RQORIG_PROGRAM_US, False);
 
 	return &act;
 }

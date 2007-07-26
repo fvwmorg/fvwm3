@@ -1,3 +1,42 @@
+2007-07-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
+	fixed using uninitialized variable
+
+	* fvwm/menus.c (scanForStrings):
+	suppress compiler warning for now
+
+	* fvwm/move_resize.c (resize_move_window):
+	(AnimatedMoveAnyWindow):
+	(__move_window):
+	(__resize_window):
+	(CMD_Maximize):
+	* fvwm/module_interface.c (__get_allowed_actions):
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/icons.c (CMD_Iconify):
+	* fvwm/gnome.c (GNOME_SetHints):
+	* fvwm/ewmh.c (ewmh_AllowsClose):
+	(ewmh_AllowsClose)
+	(ewmh_AllowsFullScreen):
+	(ewmh_AllowsMinimize)
+	(ewmh_AllowsMaximize):
+	(ewmh_AllowsMove):
+	(ewmh_AllowsResize)
+	(EWMH_fullscreen):
+	* fvwm/ewmh_events.c (ewmh_CloseWindow):
+	(ewmh_MoveResizeWindow):
+	(ewmh_MoveResize):
+	(ewmh_WMState):
+	(ewmh_WMStateHidden):
+	* fvwm/events.c (__handle_cr_on_client):
+	* fvwm/decorations.c (__is_resize_allowed):
+	(is_function_allowed):
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/builtins.c (CMD_Delete):
+	* fvwm/add_window.c (AddWindow):
+	is_function allowed now differentiates between US program actions and
+	actions initiated by interaction between fvwm and the user
+
 2007-07-25  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (__scan_for_pixmap):

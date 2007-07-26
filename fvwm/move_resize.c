@@ -1012,11 +1012,11 @@ static Bool resize_move_window(F_CMD_ARGS)
 	FvwmWindow *fw = exc->w.fw;
 	Window w = exc->w.w;
 
-	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
+	if (!is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 		return False;
 	}
-	if (!is_function_allowed(F_RESIZE, NULL, fw, True, True))
+	if (!is_function_allowed(F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, True))
 	{
 		return False;
 	}
@@ -1251,7 +1251,7 @@ static void AnimatedMoveAnyWindow(
 	XEvent evdummy;
 	unsigned int draw_parts = PART_NONE;
 
-	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
+	if (!is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 		return;
 	}
@@ -1670,7 +1670,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	FvwmWindow *fw = exc->w.fw;
 	Window w;
 
-	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
+	if (!is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 		return;
 	}
@@ -3470,7 +3470,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
-	if (!is_function_allowed(F_RESIZE, NULL, fw, True, True))
+	if (!is_function_allowed(F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, True))
 	{
 		XBell(dpy, 0);
 		return False;
@@ -4475,7 +4475,9 @@ void CMD_Maximize(F_CMD_ARGS)
 	rectangle new_g;
 	FvwmWindow *fw = exc->w.fw;
 
-	if (!is_function_allowed(F_MAXIMIZE, NULL, fw, True, False))
+	if (
+		!is_function_allowed(
+			F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 		XBell(dpy, 0);
 		return;

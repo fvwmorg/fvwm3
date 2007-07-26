@@ -2277,9 +2277,10 @@ void CMD_Delete(F_CMD_ARGS)
 {
 	FvwmWindow * const fw = exc->w.fw;
 
-	if (!is_function_allowed(F_DELETE, NULL, fw, True, True))
+	if (!is_function_allowed(F_DELETE, NULL, fw, RQORIG_PROGRAM_US, True))
 	{
 		XBell(dpy, 0);
+
 		return;
 	}
 	if (IS_TEAR_OFF_MENU(fw))
@@ -2291,12 +2292,14 @@ void CMD_Delete(F_CMD_ARGS)
 		send_clientmessage(
 			dpy, FW_W_PARENT(fw), _XA_WM_DELETE_WINDOW,
 			CurrentTime);
+
 		return;
 	}
 	if (WM_DELETES_WINDOW(fw))
 	{
 		send_clientmessage(
 			dpy, FW_W(fw), _XA_WM_DELETE_WINDOW, CurrentTime);
+
 		return;
 	}
 	else

@@ -525,12 +525,13 @@ GNOME_SetHints(FvwmWindow *fwin)
 	{
 		val |= WIN_STATE_SHADED;
 	}
-	if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
+	if (!is_function_allowed(F_MOVE, NULL, fwin, RQORIG_PROGRAM_US, False))
 	{
 		val |= WIN_STATE_FIXED_POSITION;
 	}
-	XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *)&val, 1);
+	XChangeProperty(
+		dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)&val, 1);
 
 	return;
 }

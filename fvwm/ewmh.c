@@ -1207,14 +1207,19 @@ Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_CLOSE, NULL, fw, True, False);
+	return is_function_allowed(
+		F_CLOSE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
 Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
 {
-	if (!is_function_allowed(F_MAXIMIZE, NULL, fw, True, False) ||
-	    !is_function_allowed(F_MOVE, NULL, fw, True, False) ||
-	    !is_function_allowed(F_RESIZE, NULL, fw, True, True))
+	if (
+		!is_function_allowed(
+			F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False) ||
+		!is_function_allowed(
+			F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False) ||
+		!is_function_allowed(
+			F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, True))
 	{
 		return False;
 	}
@@ -1224,22 +1229,22 @@ Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_ICONIFY, NULL, fw, True, False);
+	return is_function_allowed(F_ICONIFY, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_MAXIMIZE, NULL, fw, True, False);
+	return is_function_allowed(F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
 Bool ewmh_AllowsMove(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_MOVE, NULL, fw, True, False);
+	return is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
 Bool ewmh_AllowsResize(EWMH_CMD_ARGS)
 {
-	return is_function_allowed(F_RESIZE, NULL, fw, True, False);
+	return is_function_allowed(F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
 void EWMH_SetAllowedActions(FvwmWindow *fw)
@@ -1885,12 +1890,13 @@ void EWMH_fullscreen(FvwmWindow *fw)
 	char cmd[128] = "\0";
 
 	/* maximize with ResizeMoveMaximize */
-	if (!is_function_allowed(
-		    F_MAXIMIZE, NULL, fw, True, False) ||
-	    !is_function_allowed(
-		    F_MOVE, NULL, fw, True, False) ||
-	    !is_function_allowed(
-		    F_RESIZE, NULL, fw, True, True))
+	if (
+		!is_function_allowed(
+			F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False) ||
+		!is_function_allowed(
+			F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False) ||
+		!is_function_allowed(
+			F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, True))
 	{
 		return;
 	}

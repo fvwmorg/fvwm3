@@ -173,7 +173,7 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 	{
 		return 0;
 	}
-	if (!is_function_allowed(F_CLOSE, NULL, fw, True, False))
+	if (!is_function_allowed(F_CLOSE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
 		return 0;
 	}
@@ -192,8 +192,8 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 		return 0;
 	}
 	if (
-		cre.width == fw->g.normal.width &&
-		cre.height == fw->g.normal.height)
+		ev->xclient.data.l[3] == fw->g.normal.width &&
+		ev->xclient.data.l[4] == fw->g.normal.height)
 	{
 		func = F_MOVE;
 	}
@@ -201,7 +201,7 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 	{
 		func = F_RESIZE;
 	}
-	if (!is_function_allowed(func, NULL, fw, False, False))
+	if (!is_function_allowed(func, NULL, fw, RQORIG_PROGRAM, False))
 	{
 		cre.value_mask = ev->xclient.data.l[0];
 		cre.x = ev->xclient.data.l[1];
@@ -386,14 +386,18 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 
 	if (move)
 	{
-		if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
+		if (
+			!is_function_allowed(
+				F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
 		{
 			return 0;
 		}
 	}
 	else
 	{
-		if (!is_function_allowed(F_RESIZE, NULL, fw, True, False))
+		if (
+			!is_function_allowed(
+				F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, False))
 		{
 			return 0;
 		}
@@ -502,7 +506,8 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 		else
 		{
 			if (!is_function_allowed(
-				    F_MAXIMIZE, NULL, fw, True, False))
+				    F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US,
+				    False))
 			{
 				return 0;
 			}
@@ -654,8 +659,10 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
 		    bool_arg == NET_WM_STATE_ADD)
 		{
 			/* iconify */
-			if (!is_function_allowed(
-				    F_ICONIFY, NULL, fw, True, False))
+			if (
+				!is_function_allowed(
+					F_ICONIFY, NULL, fw, RQORIG_PROGRAM_US,
+					False))
 			{
 				return 0;
 			}
