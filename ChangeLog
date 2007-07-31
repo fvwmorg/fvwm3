@@ -1,3 +1,8 @@
+2007-07-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	fixed position calculation with the "w" prefix (move w-1 w-1).
+
 2007-07-26  Viktor Griph  <griph@dd.chalmers.se>
 
 	* fvwm/menus.c (__copy_down, __check_for_delimiter)

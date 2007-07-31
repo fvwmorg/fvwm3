@@ -296,6 +296,7 @@ static int GetOnePositionArgument(
 	{
 	case 'w':
 	case 'W':
+		is_first_shift = 0;
 		*pFinalX = x;
 		s1++;
 		break;
