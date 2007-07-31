@@ -35,7 +35,7 @@ is used):</para>
 <member>/usr/local/share/fvwm/.fvwm2rc</member>
 <member>/usr/local/share/fvwm/system.fvwm2rc</member>
 <member>/etc/system.fvwm2rc</member>
-</simplelist> 
+</simplelist>
 
 <para>Please note, the last 5 locations are not guaranteed to be
 supported in the future.</para>
@@ -83,7 +83,7 @@ can simply put</para>
 <para>into your
 <filename>config</filename>,
 but it is not recommended; do this only if you know what you are
-doing. It is usually critical to start applications or modules
+doing. It is usually important to start applications or modules
 after the entire config is read, because it contains styles or
 module configurations which can affect window appearance and
 functionality.</para>

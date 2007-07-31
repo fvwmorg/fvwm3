@@ -1,3 +1,8 @@
+2007-07-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/initialization.xml:
+	clarify startup
+
 2007-07-22  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/Makefile.am (man_MANS, EXTRA_DIST):
