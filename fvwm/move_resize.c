@@ -277,132 +277,130 @@ void switch_move_resize_grid(Bool state)
 	return;
 }
 
+static int ParsePositionArgumentSuffix(
+	float *ret_factor, char *suffix, float wfactor, float factor)
+{
+	int n;
+
+	switch (*suffix)
+	{
+	case 'p':
+	case 'P':
+		*ret_factor = 1.0;
+		n = 1;
+		break;
+	case 'w':
+	case 'W':
+		*ret_factor = wfactor;
+		n = 1;
+		break;
+	default:
+		*ret_factor = factor;
+		n = 0;
+		break;
+	}
+
+	return n;
+}
 /* The vars are named for the x-direction, but this is used for both x and y */
 static int GetOnePositionArgument(
-	char *s1, int x, int w, int *pFinalX, float factor, int max, int off,
-	Bool is_x)
+	char *s1, int pos, int size, int *pFinalPos, float factor, int max,
+	int off, Bool is_x)
 {
-	int is_first_shift;
 	float wfactor;
 
 	if (s1 == 0 || *s1 == 0)
 	{
 		return 0;
 	}
-	wfactor = (float)w/100;
+	wfactor = (float)size / 100;
 	/* get start position */
-	is_first_shift = 1;
 	switch (*s1)
 	{
 	case 'w':
 	case 'W':
-		is_first_shift = 0;
-		*pFinalX = x;
+		*pFinalPos = pos;
 		s1++;
 		break;
 	case 'm':
 	case 'M':
 	{
-	        int x = 0;
-		int y = 0;
+	        int x;
+		int y;
 
-		is_first_shift = 0;
-		if (FQueryPointer(
+		if (
+			FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,
 			    &JunkY, &x, &y, &JunkMask) == False)
 		{
 			/* pointer is on a different screen - that's okay here
 			 */
-			*pFinalX = 0;
+			*pFinalPos = 0;
 		}
 		else
 		{
-			*pFinalX = (is_x) ? x : y;
+			*pFinalPos = (is_x) ? x : y;
 		}
 		s1++;
 		break;
 	}
 	default:
-		*pFinalX = 0;
-		break;
-	}
-	/* loop over shift arguments */
-	for (; *s1 != 0; is_first_shift = 0)
-	{
-		int val;
-		int n;
-		int is_pos;
-
-		/* parse value */
-		if (sscanf(s1, "-%d%n", &val, &n) >= 1)
+		*pFinalPos = 0;
+		if (*s1 != 0)
 		{
-			if (is_first_shift == 1)
+			int val;
+			int n;
+			float f;
+
+			/* parse value */
+			if (sscanf(s1, "-%d%n", &val, &n) >= 1)
 			{
-				is_pos = 0;
+				/* i.e. -1, -+1 or --1 */
+				*pFinalPos += (max - size);
+				val = -val;
+			}
+			else if (
+				sscanf(s1, "+%d%n", &val, &n) >= 1 ||
+				sscanf(s1, "%d%n", &val, &n) >= 1)
+			{
+				/* i.e. 1, +1, ++1 or +-1 */
 			}
 			else
 			{
-				val = -val;
-				is_pos = 1;
+				/* syntax error, ignore rest of string */
+				break;
 			}
 			s1 += n;
-		}
-		else if (
-			sscanf(s1, "+%d%n", &val, &n) >= 1 ||
-			sscanf(s1, "%d%n", &val, &n) >= 1)
-		{
-			is_pos = 1;
+			/* parse suffix */
+			n = ParsePositionArgumentSuffix(
+				&f, s1, wfactor, factor);
 			s1 += n;
+			if (n == 0)
+			{
+				*pFinalPos += off;
+			}
+			*pFinalPos += (f == 1.0) ? val : (int)(val * f + 0.5);
 		}
-		else
+		break;
+	}
+	/* loop over shift arguments */
+	while (*s1 != 0)
+	{
+		int val;
+		int n;
+		float f;
+
+		/* parse value */
+		if (sscanf(s1, "%d%n", &val, &n) < 1)
 		{
 			/* syntax error, ignore rest of string */
 			break;
 		}
+		s1 += n;
 		/* parse suffix */
-		switch (*s1)
-		{
-		case 'p':
-		case 'P':
-			if (is_pos == 0)
-			{
-				*pFinalX += max - w - val;
-			}
-			else
-			{
-				*pFinalX += val;
-			}
-			s1++;
-			break;
-		case 'w':
-		case 'W':
-			if (is_pos == 0)
-			{
-				*pFinalX +=
-					max - w - (int)(val * wfactor + 0.5);
-			}
-			else
-			{
-				*pFinalX += (int)(val * wfactor + 0.5);
-			}
-			s1++;
-			break;
-		default:
-			if (is_first_shift == 1)
-			{
-				*pFinalX += off;
-			}
-			if (is_pos == 0)
-			{
-				*pFinalX +=
-					max - w - (int)(val * factor + 0.5);
-			}
-			else
-			{
-				*pFinalX += (int)(val * factor + 0.5);
-			}
-			break;
-		}
+		n = ParsePositionArgumentSuffix(&f, s1, wfactor, factor);
+		s1 += n;
+		*pFinalPos += (f == 1.0) ? val : (int)(val * f + 0.5);
 	}
 
 	return 1;
@@ -415,7 +413,7 @@ static int GetOnePositionArgument(
  *   10p 5p          Absolute pixel position
  *   10p -0p         Absolute pixel position, from bottom
  *  w+5  w-10p       Relative position, right 5%, up ten pixels
- *  w+5  w-10p       Pointer relative position, right 5%, up ten pixels
+ *  m+5  m-10p       Pointer relative position, right 5%, up ten pixels
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
 int GetMoveArguments(
@@ -477,7 +475,7 @@ int GetMoveArguments(
 		}
 		else if (
 			GetOnePositionArgument(
-				s1, *pFinalX, w, pFinalX, (float)scr_w/100,
+				s1, *pFinalX, w, pFinalX, (float)scr_w / 100,
 				scr_w, scr_x, True))
 		{
 			retval++;
@@ -488,7 +486,7 @@ int GetMoveArguments(
 		}
 		else if (
 			GetOnePositionArgument(
-				s2, *pFinalY, h, pFinalY, (float)scr_h/100,
+				s2, *pFinalY, h, pFinalY, (float)scr_h / 100,
 				scr_h, scr_y, False))
 		{
 			retval++;

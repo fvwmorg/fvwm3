@@ -2,6 +2,8 @@
 
 	* fvwm/move_resize.c (GetOnePositionArgument):
 	fixed position calculation with the "w" prefix (move w-1 w-1).
+	(GetOnePositionArgument):
+	code cleanup
 
 2007-07-26  Viktor Griph  <griph@dd.chalmers.se>
 
