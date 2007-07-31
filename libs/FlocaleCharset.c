@@ -519,13 +519,9 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 	{
 		XCloseOM(om);
 	}
-	for (i = FLCXOMCharsetList_num; i-- > 0; )
+	if (FLCXOMCharsetList_num > 0 && FLCXOMCharsetList[0])
 	{
-		if (FLCXOMCharsetList[i] != NULL)
-		{
-			FLCXOMCharset = FLCXOMCharsetList[i];
-			break;
-		}
+		FLCXOMCharset = FLCXOMCharsetList[0];
 	}
 #endif
 }
