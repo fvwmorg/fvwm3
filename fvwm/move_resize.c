@@ -278,7 +278,7 @@ void switch_move_resize_grid(Bool state)
 }
 
 static int ParsePositionArgumentSuffix(
-	float *ret_factor, char *suffix, float wfactor, float factor)
+	float *ret_factor, char *suffix, float wfactor, float sfactor)
 {
 	int n;
 
@@ -295,31 +295,49 @@ static int ParsePositionArgumentSuffix(
 		n = 1;
 		break;
 	default:
-		*ret_factor = factor;
+		*ret_factor = sfactor;
 		n = 0;
 		break;
 	}
 
 	return n;
 }
+
+static int __get_shift(int val, float factor)
+{
+	int shift;
+
+	if (val >= 0)
+	{
+		shift = (int)(val * factor + 0.5);
+	}
+	else
+	{
+		shift = (int)(val * factor - 0.5);
+	}
+
+	return shift;
+}
+
 /* The vars are named for the x-direction, but this is used for both x and y */
 static int GetOnePositionArgument(
-	char *s1, int pos, int size, int *pFinalPos, float factor, int max,
-	int off, Bool is_x)
+	char *s1, int window_pos, int window_size, int *pFinalPos,
+	float sfactor, int screen_size, int screen_pos, Bool is_x)
 {
+	int final_pos;
 	float wfactor;
 
 	if (s1 == 0 || *s1 == 0)
 	{
 		return 0;
 	}
-	wfactor = (float)size / 100;
+	wfactor = (float)window_size / 100;
 	/* get start position */
 	switch (*s1)
 	{
 	case 'w':
 	case 'W':
-		*pFinalPos = pos;
+		final_pos = window_pos;
 		s1++;
 		break;
 	case 'm':
@@ -335,17 +353,17 @@ static int GetOnePositionArgument(
 		{
 			/* pointer is on a different screen - that's okay here
 			 */
-			*pFinalPos = 0;
+			final_pos = 0;
 		}
 		else
 		{
-			*pFinalPos = (is_x) ? x : y;
+			final_pos = (is_x) ? x : y;
 		}
 		s1++;
 		break;
 	}
 	default:
-		*pFinalPos = 0;
+		final_pos = screen_pos;
 		if (*s1 != 0)
 		{
 			int val;
@@ -356,7 +374,7 @@ static int GetOnePositionArgument(
 			if (sscanf(s1, "-%d%n", &val, &n) >= 1)
 			{
 				/* i.e. -1, -+1 or --1 */
-				*pFinalPos += (max - size);
+				final_pos += (screen_size - window_size);
 				val = -val;
 			}
 			else if (
@@ -373,13 +391,9 @@ static int GetOnePositionArgument(
 			s1 += n;
 			/* parse suffix */
 			n = ParsePositionArgumentSuffix(
-				&f, s1, wfactor, factor);
+				&f, s1, wfactor, sfactor);
 			s1 += n;
-			if (n == 0)
-			{
-				*pFinalPos += off;
-			}
-			*pFinalPos += (f == 1.0) ? val : (int)(val * f + 0.5);
+			final_pos += __get_shift(val, f);
 		}
 		break;
 	}
@@ -398,10 +412,11 @@ static int GetOnePositionArgument(
 		}
 		s1 += n;
 		/* parse suffix */
-		n = ParsePositionArgumentSuffix(&f, s1, wfactor, factor);
+		n = ParsePositionArgumentSuffix(&f, s1, wfactor, sfactor);
 		s1 += n;
-		*pFinalPos += (f == 1.0) ? val : (int)(val * f + 0.5);
+		final_pos += __get_shift(val, f);
 	}
+	*pFinalPos = final_pos;
 
 	return 1;
 }

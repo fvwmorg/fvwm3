@@ -1,3 +1,10 @@
+2007-08-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	(__get_shift)
+	(ParsePositionArgumentSuffix):
+	code cleanup
+
 2007-07-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (GetOnePositionArgument):
