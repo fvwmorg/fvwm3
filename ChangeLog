@@ -45,6 +45,9 @@
 	changed list functions to use the list object instead of the
 	fmodule_store pointer.
 
+	* fvwm/events.c (My_XNextEvent):
+	moved module_cleanup to after ExecuteCommandQueue to avoid segfaults
+
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c:

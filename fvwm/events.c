@@ -4157,12 +4157,12 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 			}
 		}
 
-		/* cleanup dead modules */
-		module_cleanup();
-
 		/* execute any commands queued up */
 		DBUG("My_XNextEvent", "executing module comand queue");
 		ExecuteCommandQueue();
+
+		/* cleanup dead modules */
+		module_cleanup();
 
 		/* nothing is done here if fvwm was compiled without session
 		 * support */
