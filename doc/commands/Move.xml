@@ -150,7 +150,7 @@ Move w+5 50
 
 # Move window up 10 pixels, and so left edge
 # is at x=40 pixels
-Move 40p w+-10p
+Move 40p w-10p
 
 # Move window to the mouse pointer location
 Move m+0 m+0
