@@ -9,7 +9,6 @@ XSL_FILE = $(srcdir)/../fvwm.xsl
 XSL_MAN_FILE = $(srcdir)/../fvwm-man.xsl
 XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
-
 MODULES = \
 	FvwmAnimate FvwmAuto FvwmBacker FvwmBanner FvwmButtons FvwmCommand \
 	FvwmConsole FvwmCpp FvwmDebug FvwmDragWell FvwmEvent FvwmForm \

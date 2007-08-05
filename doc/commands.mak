@@ -29,3 +29,7 @@ COMMANDS = \
 	WindowList WindowsDesk WindowShadeAnimate WindowShade WindowStyle \
 	XineramaPrimaryScreen XineramaSlsScreens XineramaSlsSize XineramaSls \
 	Xinerama XorPixmap XorValue XSynchronize XSync
+
+XML_COMMANDS = $(patsubst %,%.xml,$(COMMANDS))
+HTML_COMMANDS = $(patsubst %,%.html,$(COMMANDS))
+

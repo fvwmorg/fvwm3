@@ -1,6 +1,10 @@
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.ac:
+	use subordinate Makefile.ams instead of iuncluding files from other
+	dirs
+
+	* configure.ac:
 	removed FVWMNAMEUCASE
 
 	* configure.ac:

@@ -1641,6 +1641,15 @@ dnl
 	doc/Makefile
 	doc/fvwm/Makefile
 	doc/commands/Makefile
+	doc/docbook-xml/Makefile
+	doc/docbook-xml/ent/Makefile
+	doc/docbook-xsl/Makefile
+	doc/docbook-xsl/common/Makefile
+	doc/docbook-xsl/manpages/Makefile
+	doc/docbook-xsl/profiling/Makefile
+	doc/docbook-xsl/highlighting/Makefile
+	doc/docbook-xsl/lib/Makefile
+	doc/docbook-xsl/html/Makefile
 	doc/modules/Makefile
 	doc/modules/images/Makefile
 	doc/modules/images/FvwmTabs/Makefile

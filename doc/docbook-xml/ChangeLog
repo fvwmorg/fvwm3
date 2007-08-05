@@ -1,3 +1,9 @@
+2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* ent/Makefile.am:
+	* Makefile.am:
+	new files
+
 2006-10-03 13:23  nwalsh
 
 	* trunk/docbook/sgml/catalog.xml, trunk/docbook/sgml/docbook.cat,

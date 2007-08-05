@@ -6,8 +6,6 @@ HTML_FILES = \
 	index.html allCommands.html groupedCommands.html modules.html style.css
 EXTRA_DIST = \
 	fvwm.xsl fvwm-man.xsl header.html commands.mak $(HTML_FILES)
-EXTRA_DIST += \
-	$(shell find $(srcdir)/docbook-x?l -type f)
 
 if FVWM_BUILD_HTMLDOC
 doc_DATA = \
@@ -15,6 +13,6 @@ doc_DATA = \
 endif
 
 
-SUBDIRS = fvwm commands images modules
+SUBDIRS = fvwm commands images modules docbook-xml docbook-xsl
 
 all: $(doc_DATA)

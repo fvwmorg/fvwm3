@@ -1,5 +1,20 @@
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* footer.html.in:
+	write fvwm in lower case
+
+	* Makefile.am:
+	use subordinate Makefile.ams instead of iuncluding files from other
+	dirs
+
+	* docbook-xsl/common/Makefile.am:
+	* docbook-xsl/html/Makefile.am:
+	* docbook-xsl/lib/Makefile.am:
+	* docbook-xsl/manpages/Makefile.am:
+	* docbook-xsl/profiling/Makefile.am:
+	* docbook-xsl/Makefile.am:
+	new files
+
 	* Makefile.am:
 	* commands.mak:
 	* fvwm/Makefile.am:

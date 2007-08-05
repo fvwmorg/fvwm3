@@ -6,17 +6,15 @@ XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
 include $(top_srcdir)/doc/commands.mak
 
-HTML_FILES = $(patsubst %,%.html,$(COMMANDS))
-XML_FILES = $(patsubst %,%.xml,$(COMMANDS))
-EXTRA_DIST = $(XML_FILES)
+EXTRA_DIST = $(XML_COMMANDS)
 
 if FVWM_BUILD_HTMLDOC
-doc_DATA = $(HTML_FILES)
-all: $(HTML_FILES)
+doc_DATA = $(HTML_COMMANDS)
+all: $(HTML_COMMANDS)
 endif
 
 clean:
-	rm -f x $(HTML_FILES)
+	rm -f x $(HTML_COMMANDS)
 
 distclean-local: clean
 
