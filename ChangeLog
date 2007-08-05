@@ -36,6 +36,15 @@
 	(do_execute_module):
 	removed useless is_cmdline_module stuff
 
+	* fvwm/module_list.h:
+	* fvwm/module_list.c (module_list_insert):
+	(module_list_remove):
+	(module_list_len):
+	new fmodule_list object representing a module list.
+	changed the module lists to the new object.
+	changed list functions to use the list object instead of the
+	fmodule_store pointer.
+
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c:

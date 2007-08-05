@@ -77,9 +77,9 @@ typedef struct
 
 
 /* the linked list pointers to the first and last modules */
-static fmodule_store *module_list = NULL;
+static fmodule_list module_list = NULL;
 /* keep to-be-deleted modules in a deathrow until they are deleted safely. */
-static fmodule_store *death_row = NULL;
+static fmodule_list death_row = NULL;
 
 /*
  * static functions
@@ -90,9 +90,9 @@ static void module_free(fmodule *module);
 /*
  * list handling functions
  */
-static inline void module_list_insert(fmodule *module, fmodule_store **list);
-static inline void module_list_remove(fmodule *module, fmodule_store **list);
-static inline int module_list_len(fmodule_store *list);
+static inline void module_list_insert(fmodule *module, fmodule_list *list);
+static inline void module_list_remove(fmodule *module, fmodule_list *list);
+static inline int module_list_len(fmodule_list *list);
 
 static void KillModuleByName(char *name, char *alias);
 static char *get_pipe_name(fmodule *module);
@@ -189,7 +189,7 @@ static void module_free(fmodule *module)
 	return;
 }
 
-static inline void module_list_insert(fmodule *module, fmodule_store **list)
+static inline void module_list_insert(fmodule *module, fmodule_list *list)
 {
 	fmodule_store *new_store;
 	DBUG("module_list_insert", "inserting module");
@@ -204,7 +204,7 @@ static inline void module_list_insert(fmodule *module, fmodule_store **list)
 	return;
 }
 
-static inline void module_list_remove(fmodule *module, fmodule_store **list)
+static inline void module_list_remove(fmodule *module, fmodule_list *list)
 {
 	fmodule_store *current;
 
@@ -871,10 +871,10 @@ fmodule_store *module_get_next(fmodule_store *prev)
 	return next;
 }
 
-int module_list_len(fmodule_store *list)
+int module_list_len(fmodule_list *list)
 {
 	int count=0;
-	fmodule_store *current=list;
+	fmodule_store *current=*list;
 	while (current != NULL)
 	{
 		current = current->next;

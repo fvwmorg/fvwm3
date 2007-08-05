@@ -42,6 +42,8 @@ typedef struct fmodule_store
 	struct fmodule_store *next;
 } fmodule_store;
 
+/* This defines the module list object */
+typedef fmodule_store* fmodule_list;
 
 #define MOD_IS_REMOVED(m) ((m)->xflags.is_removed)
 #define MOD_SET_REMOVED(m,on) ((m)->xflags.is_removed = !!(on))
