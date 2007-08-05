@@ -1,5 +1,38 @@
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* modules/images/FvwmTabs/Makefile.am:
+
+	* modules/images/Makefile.am:
+
+	* modules/Makefile.am:
+
+	* images/svg_rendering/Makefile.am:
+
+	* images/Makefile.am:
+	* fvwm/Makefile.am:
+	* commands/Makefile.am:
+	* Makefile.am:
+
+	* fvwm/Makefile.am (fvwm.1):
+	(fvwm.man.html):
+	* commands/Makefile.am (%.html):
+	* modules/Makefile.am (FvwmTabs.1):
+	(FvwmTabs.html):
+	fixed "make distcheck" errors
+
+	* fvwm/Makefile.am:
+	* commands/Makefile.am:
+	* modules/Makefile.am:
+	removed $(QUIET)
+
+	* modules/Makefile.am:
+	add FvwmTabs.xml to distribution
+
+	* commands/Makefile.am:
+	* fvwm/Makefile.am:
+	* images/Makefile.am:
+	remove CVS Id Tags
+
 	* commands/Move.xml:
 	updated example
 

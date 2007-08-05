@@ -1,13 +1,11 @@
-# $Id$
+docdir = @FVWM_DOCDIR@/commands
+XSLTPROC = @XSLTPROC@
 
-docdir=@FVWM_DOCDIR@/commands
-XSLTPROC=@XSLTPROC@
+XSL_FILE = $(srcdir)/../fvwm.xsl
+XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
-XSL_FILE=$(srcdir)/../fvwm.xsl
-XSL_PROFILE=$(srcdir)/../docbook-xsl/profiling/profile.xsl
-
-QUIET=@
-COMMANDS=AddButtonStyle AddTitleStyle AddToDecor AddToFunc AddToMenu All \
+COMMANDS = \
+	AddButtonStyle AddTitleStyle AddToDecor AddToFunc AddToMenu All \
 	AnimatedMove Any Asterix Beep BorderStyle Break BugOpts BusyCursor \
 	ButtonState ButtonStyle ChangeDecor ChangeMenuStyle CleanupColorsets \
 	ClickTime Close ColorLimit ColormapFocus Colorset CopyMenuStyle \
@@ -38,12 +36,12 @@ COMMANDS=AddButtonStyle AddTitleStyle AddToDecor AddToFunc AddToMenu All \
 	XineramaPrimaryScreen XineramaSlsScreens XineramaSlsSize XineramaSls \
 	Xinerama XorPixmap XorValue XSynchronize XSync
 
-HTML_FILES=$(patsubst %,%.html,$(COMMANDS))
-XML_FILES=$(patsubst %,%.xml,$(COMMANDS))
-EXTRA_DIST=$(XML_FILES)
+HTML_FILES = $(patsubst %,%.html,$(COMMANDS))
+XML_FILES = $(patsubst %,%.xml,$(COMMANDS))
+EXTRA_DIST = $(XML_FILES)
 
 if FVWM_BUILD_HTMLDOC
-doc_DATA=$(HTML_FILES)
+doc_DATA = $(HTML_FILES)
 all: $(HTML_FILES)
 endif
 
@@ -52,13 +50,12 @@ clean:
 
 # All HTML output is generated from XML files.
 %.html : $(srcdir)/%.xml
-	$(QUIET) echo "Generating $@"
-	$(QUIET) $(XSLTPROC) --path .. --xinclude \
+	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value html \
 		-o $(<F).p \
 		$(XSL_PROFILE) $<
-	$(QUIET) $(XSLTPROC) --path .. --xinclude \
-		--stringparam html.stylesheet "../style.css" \
+	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+		--stringparam html.stylesheet "$(srcdir)/../style.css" \
 		--stringparam header.file $(srcdir)/../header.html \
 		-o $@ $(XSL_FILE) $(<F).p && rm $(<F).p

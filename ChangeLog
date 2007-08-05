@@ -1,5 +1,11 @@
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* configure.ac:
+	make distcheck fix
+
+	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS):
+	force --enable-htmldoc on "make distcheck"
+
 	* fvwm/events.c (HandleEnterNotify):
 	(HandleLeaveNotify):
 	properly generate enter_window and leave_window events for FvwmEvent

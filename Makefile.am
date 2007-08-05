@@ -36,6 +36,8 @@ EXTRA_DIST = \
 #    make distcheck2  # instead of make distcheck
 #    make distclean2  # instead of make distclean
 
+DISTCHECK_CONFIGURE_FLAGS = --enable-htmldoc
+
 dist2: dist
 	gzip -dc $(distdir).tar.gz | bzip2 -9 >$(distdir).tar.bz2
 
