@@ -1,3 +1,8 @@
+2007-08-6  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/events.c (My_XNextEvent):
+	replaced module_get_next by module list iterator mechanism
+
 2007-08-5  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.h:
