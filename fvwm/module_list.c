@@ -862,6 +862,10 @@ void module_list_itr_init(fmodule_list_itr *itr)
 
 fmodule *module_list_itr_next(fmodule_list_itr *itr)
 {
+	if (itr->current==NULL)
+	{
+		return NULL;
+	}
 	fmodule *module = itr->current->module;
 	itr->current = itr->next;
 	itr->next = itr->next->next;
