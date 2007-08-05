@@ -67,8 +67,6 @@
 
 #define MOD_NOGRABMASK(m) ((m)->xNoGrabMask)
 #define MOD_SYNCMASK(m) ((m)->xSyncMask)
-#define MOD_NEXT(m) ((m)->xnext)
-
 
 typedef struct
 {
@@ -78,27 +76,24 @@ typedef struct
 } mqueue_object_type;
 
 
-typedef struct module_store
-{
-	fmodule *module;
-	struct module_store *next;
-} module_store;
-
-
 /* the linked list pointers to the first and last modules */
-static fmodule *module_list = NULL;
-static int num_modules = 0;
-
+static fmodule_store *module_list = NULL;
 /* keep to-be-deleted modules in a deathrow until they are deleted safely. */
-static module_store *death_row = NULL;
+static fmodule_store *death_row = NULL;
 
 /*
  * static functions
  */
 static fmodule *module_alloc(void);
 static void module_free(fmodule *module);
-static inline void module_insert(fmodule *module);
-static inline void module_remove(fmodule *module);
+
+/*
+ * list handling functions
+ */
+static inline void module_list_insert(fmodule *module, fmodule_store **list);
+static inline void module_list_remove(fmodule *module, fmodule_store **list);
+static inline int module_list_len(fmodule_store *list);
+
 static void KillModuleByName(char *name, char *alias);
 static char *get_pipe_name(fmodule *module);
 static void DeleteMessageQueueBuff(fmodule *module);
@@ -110,17 +105,18 @@ static void set_message_mask(msg_masks_t *mask, unsigned long msg);
 
 void module_kill_all(void)
 {
-	fmodule *module;
-	fmodule *next;
+	fmodule_store *current;
+	fmodule_store *next;
 
 /*
  * this improves speed, but having a single remotion routine should
- * help in mainainability.. replace by module_remove calls?
+ * help in mainainability.. replace by module_list_remove calls?
  */
-	for (module = module_list; module != NULL; module = next)
+	for (current = module_list; current != NULL; current = next)
 	{
-		next = MOD_NEXT(module);
-		module_free(module);
+		next = current->next;
+		module_free(current->module);
+		free(current);
 	}
 	module_list = NULL;
 
@@ -132,7 +128,6 @@ static fmodule *module_alloc(void)
 {
 	fmodule *module;
 
-	num_modules++;
 	module = (fmodule *)safemalloc(sizeof(fmodule));
 	MOD_SET_CMDLINE(module, 0);
 	MOD_SET_REMOVED(module, 0);
@@ -144,7 +139,6 @@ static fmodule *module_alloc(void)
 	msg_mask_set(&MOD_SYNCMASK(module), 0, 0);
 	MOD_NAME(module) = NULL;
 	MOD_ALIAS(module) = NULL;
-	MOD_NEXT(module) = NULL;
 
 	return module;
 }
@@ -152,16 +146,16 @@ static fmodule *module_alloc(void)
 /* adds a module to the death row */
 static void module_safefree(fmodule *module)
 {
-	module_store *new_store;
+	fmodule_store *new_store;
 	if (module == NULL)
 	{
 		return;
 	}
 	if (!MOD_IS_REMOVED(module))
 	{
-		module_remove(module);
+		module_list_remove(module, &module_list);
 	}
-	new_store = (module_store*)safemalloc(sizeof(module_store));
+	new_store = (fmodule_store*)safemalloc(sizeof(fmodule_store));
 	new_store->module = module;
 	new_store->next = death_row;
 	death_row = new_store;
@@ -191,22 +185,30 @@ static void module_free(fmodule *module)
 	{
 		DeleteMessageQueueBuff(module);
 	}
-	num_modules--;
 	free(module);
 
 	return;
 }
 
-static inline void module_insert(fmodule *module)
+static inline void module_list_insert(fmodule *module, fmodule_store **list)
 {
-	MOD_NEXT(module) = module_list;
-	module_list = module;
-
+	fmodule_store *new_store;
+	DBUG("module_list_insert", "inserting module");
+	if (module == NULL)
+	{
+		return;
+	}
+	new_store = (fmodule_store*)safemalloc(sizeof(fmodule_store));
+	new_store->module = module;
+	new_store->next = *list;
+	*list = new_store;
 	return;
 }
 
-static inline void module_remove(fmodule *module)
+static inline void module_list_remove(fmodule *module, fmodule_store **list)
 {
+	fmodule_store *current;
+
 	if (module == NULL)
 	{
 		return;
@@ -214,29 +216,30 @@ static inline void module_remove(fmodule *module)
 	if (MOD_IS_REMOVED(module))
 	{
 		fvwm_msg(
-			ERR, "module_remove",
+			ERR, "module_list_remove",
 			"Tried to remove an already removed module!");
 
 		return;
 	}
-	else if (module == module_list)
+	else if (module == (*list)->module)
 	{
-		DBUG("module_remove", "Removing from module list");
-		module_list = MOD_NEXT(module);
+		DBUG("module_list_remove", "Removing from module list");
+		current=*list;
+		*list = (*list)->next;
+		free(current);
 		MOD_SET_REMOVED(module,1);
 	}
 	else
 	{
-		fmodule *parent;
-		fmodule *current;
+		fmodule_store *parent;
 
 		/* find it*/
 		for (
-			current = MOD_NEXT(module_list), parent = module_list;
+			current = (*list)->next, parent = (*list);
 			current != NULL;
-			parent = current, current = MOD_NEXT(current))
+			parent = current, current = current->next)
 		{
-			if (current == module)
+			if (current->module == module)
 			{
 				break;
 			}
@@ -244,14 +247,15 @@ static inline void module_remove(fmodule *module)
 		/* remove from the list */
 		if (current != NULL)
 		{
-			DBUG("module_remove", "Removing from module list");
-			MOD_NEXT(parent) = MOD_NEXT(module);
+			DBUG("module_list_remove", "Removing from module list");
+			parent->next = current->next;
+			free(current);
 			MOD_SET_REMOVED(module,1);
 		}
 		else
 		{
 			fvwm_msg(
-				ERR, "module_remove",
+				ERR, "module_list_remove",
 				"Tried to remove a not listed module!");
 
 			return;
@@ -445,7 +449,7 @@ static inline void module_remove(fmodule *module)
 				"module close-on-exec failed");
 		}
 		/* module struct is completed, insert into the list */
-		module_insert(module);
+		module_list_insert(module, &module_list);
 
 		for (i = 6; i < nargs; i++)
 		{
@@ -508,7 +512,7 @@ static inline void module_remove(fmodule *module)
 			}
 		}
 		free(args);
-		module_remove(module);
+		module_list_remove(module, &module_list);
 		module_safefree(module);
 
 		return NULL;
@@ -548,7 +552,7 @@ fmodule *executeModuleDesperate(F_CMD_ARGS)
 
 void module_kill(fmodule *module)
 {
-	module_remove(module);
+	module_list_remove(module, &module_list);
 	module_safefree(module);
 	if (fFvwmInStartup)
 	{
@@ -562,8 +566,8 @@ void module_kill(fmodule *module)
 /* free modules in the deathrow */
 void module_cleanup(void)
 {
-	module_store *m;
-	module_store *next;
+	fmodule_store *m;
+	fmodule_store *next;
 
 
 	for (m = death_row; m != NULL; m = next)
@@ -852,49 +856,55 @@ Bool module_input_expect(fmodule_input *input, char *expect)
 	return False;
 }
 
-fmodule *module_get_next(fmodule *prev)
+fmodule_store *module_get_next(fmodule_store *prev)
 {
 	if (prev == NULL)
 	{
 		return module_list;
 	}
-	else
-	{
-		fmodule *next;
 
-		for (
-			next = MOD_NEXT(prev);
-			next != NULL && MOD_IS_REMOVED(next);
-			next = MOD_NEXT(next));
+	fmodule_store *next;
 
-		return next;
-	}
+	for (
+		next = prev->next;
+		next != NULL && MOD_IS_REMOVED(next->module);
+		next = next->next );
+
+	return next;
 }
 
-int module_count(void)
+int module_list_len(fmodule_store *list)
 {
-	return num_modules;
+	int count=0;
+	fmodule_store *current=list;
+	while (current != NULL)
+	{
+		current = current->next;
+		count++;
+	}
+	return count;
 }
 
 static void KillModuleByName(char *name, char *alias)
 {
-	fmodule *module;
+	fmodule_store *modstore;
 
 	if (name == NULL)
 	{
 		return;
 	}
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
 		if (
-			MOD_NAME(module) != NULL &&
-			matchWildcards(name, MOD_NAME(module)) &&
+			MOD_NAME(modstore->module) != NULL &&
+			matchWildcards(name, MOD_NAME(modstore->module)) &&
 			(!alias || (
-				 MOD_ALIAS(module) &&
-				 matchWildcards(alias, MOD_ALIAS(module)))))
+				 MOD_ALIAS(modstore->module) &&
+				 matchWildcards(alias, 
+					MOD_ALIAS(modstore->module)))))
 		{
-			module_kill(module);
+			module_kill(modstore->module);
 		}
 	}
 
@@ -1101,12 +1111,12 @@ void FlushMessageQueue(fmodule *module)
 
 void FlushAllMessageQueues(void)
 {
-	fmodule *module;
+	fmodule_store *modstore;
 
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		FlushMessageQueue(module);
+		FlushMessageQueue(modstore->module);
 	}
 
 	return;

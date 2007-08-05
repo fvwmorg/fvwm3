@@ -212,16 +212,16 @@ void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 {
 	unsigned long body[FvwmPacketMaxSize];
 	va_list ap;
-	fmodule *module;
+	fmodule_store *modstore;
 
 	va_start(ap,num_datum);
 	make_vpacket(body, event_type, num_datum, ap);
 	va_end(ap);
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
 		PositiveWrite(
-			module, body,
+			modstore->module, body,
 			(num_datum+FvwmPacketHeaderSize)*sizeof(body[0]));
 	}
 
@@ -253,16 +253,16 @@ static void BroadcastNewPacket(unsigned long event_type,
 {
 	unsigned char body[FvwmPacketMaxSize_byte];
 	va_list ap;
-	fmodule *module;
+	fmodule_store *modstore;
 	unsigned long plen;
 
 	va_start(ap,num_datum);
 	plen = make_new_vpacket(body, event_type, num_datum, ap);
 	va_end(ap);
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		PositiveWrite(module, (void *) &body, plen);
+		PositiveWrite(modstore->module, (void *) &body, plen);
 	}
 
 	return;
@@ -444,17 +444,17 @@ void BroadcastName(
 {
 	unsigned long *body;
 	int l;
-	fmodule *module;
+	fmodule_store *modstore;
 
 	if (name == NULL)
 	{
 		return;
 	}
 	body = make_named_packet(&l, event_type, name, 3, data1, data2, data3);
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		PositiveWrite(module, body, l*sizeof(unsigned long));
+		PositiveWrite(modstore->module, body, l*sizeof(unsigned long));
 	}
 	free(body);
 
@@ -530,7 +530,7 @@ void BroadcastFvwmPicture(
 	unsigned long *body;
 	unsigned long data4, data5, data6, data7, data8, data9;
 	int l;
-	fmodule *module;
+	fmodule_store *modstore;
 
 	if (!FMiniIconsSupported)
 	{
@@ -557,10 +557,10 @@ void BroadcastFvwmPicture(
 	body = make_named_packet(
 		&l, event_type, name, 9, data1, data2, data3, data4, data5,
 		data6, data7, data8, data9);
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		PositiveWrite(module, body, l*sizeof(unsigned long));
+		PositiveWrite(modstore->module, body, l*sizeof(unsigned long));
 	}
 	free(body);
 
@@ -572,14 +572,14 @@ void BroadcastFvwmPicture(
  */
 void BroadcastColorset(int n)
 {
-	fmodule *module;
+	fmodule_store *modstore;
 	char *buf;
 
 	buf = DumpColorset(n, &Colorset[n]);
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		SendName(module, M_CONFIG_INFO, 0, 0, 0, buf);
+		SendName(modstore->module, M_CONFIG_INFO, 0, 0, 0, buf);
 	}
 
 	return;
@@ -592,13 +592,13 @@ void BroadcastPropertyChange(
 	unsigned long argument, unsigned long data1, unsigned long data2,
 	char *string)
 {
-	fmodule *module;
+	fmodule_store *modstore;
 
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		SendName(module, MX_PROPERTY_CHANGE, argument, data1, data2,
-			 string);
+		SendName(modstore->module, MX_PROPERTY_CHANGE, argument,
+			 data1, data2, string);
 	}
 
 	return;
@@ -609,12 +609,12 @@ void BroadcastPropertyChange(
  */
 void BroadcastConfigInfoString(char *string)
 {
-	fmodule *module;
+	fmodule_store *modstore;
 
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		SendName(module, M_CONFIG_INFO, 0, 0, 0, string);
+		SendName(modstore->module, M_CONFIG_INFO, 0, 0, 0, string);
 	}
 
 	return;
@@ -763,7 +763,7 @@ void CMD_SendToModule(F_CMD_ARGS)
 {
 	char *name,*str;
 	unsigned long data0, data1, data2;
-	fmodule *module;
+	fmodule_store *modstore;
 	FvwmWindow * const fw = exc->w.fw;
 
 	/* FIXME: Without this, popup menus can't be implemented properly in
@@ -793,17 +793,18 @@ void CMD_SendToModule(F_CMD_ARGS)
 		data2 = 0;
 	}
 
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
 		if (
-			(MOD_NAME(module) != NULL &&
-			 matchWildcards(name,MOD_NAME(module))) ||
-			(MOD_ALIAS(module) &&
-			 matchWildcards(name, MOD_ALIAS(module))))
+			(MOD_NAME(modstore->module) != NULL &&
+			 matchWildcards(name,MOD_NAME(modstore->module))) ||
+			(MOD_ALIAS(modstore->module) &&
+			 matchWildcards(name, MOD_ALIAS(modstore->module))))
 		{
-			SendName(module,M_STRING,data0,data1,data2,str);
-			FlushMessageQueue(module);
+			SendName(modstore->module,M_STRING,data0,data1,data2,
+									str);
+			FlushMessageQueue(modstore->module);
 		}
 	}
 

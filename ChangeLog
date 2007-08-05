@@ -1,3 +1,35 @@
+2007-08-5  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_list.h:
+	* fvwm/module_list.c (struct fmodule):
+	(struct fmodule_store):
+	(module_insert):
+	(module_remove):
+	(module_count):
+	(module_get_next):
+	(FlushAllMessageQueues):
+	(KillModuleByName):
+	* fvwm/module_interface.c (BroadcastPacket):
+	(BroadcastNewPacket):
+	(BroadcastName):
+	(BroadcastFvwmPicture):
+	(BroadcastColorset):
+	(BroadcastProperyChange):
+	(BroadcastConfigInfoString):
+	(CMD_SendToModule):
+	* fvwm/event.c:	(My_XNextEvent):
+	* fvwm/stack.c:	(BroadcastRestack):
+	* fvwm/modconf.c: (ModuleConfig):
+	changed to work with generic list container
+
+	* fvwm/module_list.c (module_insert):
+	(module_list_insert):
+	(module_remove):
+	(module_list_remove):
+	(module_count):
+	(module_list_len):
+	renamed as list handling functions
+
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.ac:

@@ -86,7 +86,7 @@ static void SendConfigToModule(
 void ModuleConfig(char *action)
 {
 	int end;
-	fmodule *module;
+	fmodule_store *modstore;
 	struct moduleInfoList *new_entry;
 
 	end = strlen(action) - 1;
@@ -95,19 +95,20 @@ void ModuleConfig(char *action)
 	/* save for config request */
 	new_entry = AddToModList(action);
 	/* look at all possible pipes */
-	module = module_get_next(NULL);
-	for (; module != NULL; module = module_get_next(module))
+	modstore = module_get_next(NULL);
+	for (; modstore != NULL; modstore = module_get_next(modstore))
 	{
-		if (IS_MESSAGE_SELECTED(module, M_SENDCONFIG))
+		if (IS_MESSAGE_SELECTED(modstore->module, M_SENDCONFIG))
 		{
 			/* module wants config cmds */
-			char *name = MOD_NAME(module);
-			if (MOD_ALIAS(module))
+			char *name = MOD_NAME(modstore->module);
+			if (MOD_ALIAS(modstore->module))
 			{
-				name = MOD_ALIAS(module);
+				name = MOD_ALIAS(modstore->module);
 			}
 			SendConfigToModule(
-				module, new_entry, CatString2("*", name), 0);
+				modstore->module, new_entry,
+				CatString2("*", name), 0);
 		}
 	}
 

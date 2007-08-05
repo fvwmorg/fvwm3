@@ -35,8 +35,14 @@ typedef struct fmodule
 	msg_masks_t xSyncMask;
 	char *xname;
 	char *xalias;
-	struct fmodule *xnext;
 } fmodule;
+
+typedef struct fmodule_store
+{
+	fmodule *module;
+	struct fmodule_store *next;
+} fmodule_store;
+
 
 #define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
 #define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
@@ -125,10 +131,7 @@ Bool module_input_expect(fmodule_input *input, char *expect);
  */
 
 /* get the module placed after *prev, or the first if prev==NULL */
-fmodule *module_get_next(fmodule *prev);
-
-/* count the modules on list - not true for now. counts allocated modules */
-int module_count(void);
+fmodule_store *module_get_next(fmodule_store *prev);
 
 /* free modules in the deathrow */
 void module_cleanup(void);

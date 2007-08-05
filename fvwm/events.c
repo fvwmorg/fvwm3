@@ -3992,7 +3992,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 {
 	fd_set in_fdset, out_fdset;
 	int num_fd;
-	fmodule *module;
+	fmodule_store *modstore;
 	fmodule_input *input;
 	static struct timeval timeout;
 	static struct timeval *timeoutP = &timeout;
@@ -4038,15 +4038,15 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	/* check for termination of all startup modules */
 	if (fFvwmInStartup)
 	{
-		module = module_get_next(NULL);
-		for (; module != NULL; module = module_get_next(module))
+		modstore = module_get_next(NULL);
+		for (; modstore != NULL; modstore = module_get_next(modstore))
 		{
-			if (MOD_IS_CMDLINE(module) == 1)
+			if (MOD_IS_CMDLINE(modstore->module) == 1)
 			{
 				break;
 			}
 		}
-		if (module == NULL)
+		if (modstore == NULL)
 		{
 			/* last module */
 			DBUG(
@@ -4114,14 +4114,15 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 			FD_SET(sm_fd, &in_fdset);
 		}
 
-		module = module_get_next(NULL);
-		for (; module != NULL; module = module_get_next(module))
+		modstore = module_get_next(NULL);
+		for (; modstore != NULL; modstore = module_get_next(modstore))
 		{
-			FD_SET(MOD_READFD(module), &in_fdset);
+			FD_SET(MOD_READFD(modstore->module), &in_fdset);
 
-			if (!FQUEUE_IS_EMPTY(&MOD_PIPEQUEUE(module)))
+			if (!FQUEUE_IS_EMPTY(&MOD_PIPEQUEUE(modstore->module)))
 			{
-				FD_SET(MOD_WRITEFD(module), &out_fdset);
+				FD_SET(MOD_WRITEFD(modstore->module),
+							&out_fdset);
 			}
 		}
 
@@ -4143,22 +4144,23 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	if (num_fd > 0)
 	{
 		/* Check for module input. */
-		module = module_get_next(NULL);
-		for (; module != NULL; module = module_get_next(module))
+		modstore = module_get_next(NULL);
+		for (; modstore != NULL; modstore = module_get_next(modstore))
 		{
-			if (FD_ISSET(MOD_READFD(module), &in_fdset))
+			if (FD_ISSET(MOD_READFD(modstore->module), &in_fdset))
 			{
-				input = module_receive(module);
+				input = module_receive(modstore->module);
 				/* enqueue the received command */
 				module_input_enqueue(input);
 			}
 			if (
-				MOD_WRITEFD(module) >= 0 &&
-				FD_ISSET(MOD_WRITEFD(module), &out_fdset))
+				MOD_WRITEFD(modstore->module) >= 0 &&
+				FD_ISSET(MOD_WRITEFD(modstore->module),
+								&out_fdset))
 			{
 				DBUG("My_XNextEvent",
 				     "calling FlushMessageQueue");
-				FlushMessageQueue(module);
+				FlushMessageQueue(modstore->module);
 			}
 		}
 
