@@ -1,5 +1,5 @@
 Begin4
-Title:          @FVWMNAMEUCASE@ (@FVWMNAMELONG@)
+Title:          fvwm (@FVWMNAMELONG@)
 Version:        @VERSION@
 Entered-date:   @RELDATENUM@
 Description:    fvwm is an ICCCM-compliant X window manager providing a 3D

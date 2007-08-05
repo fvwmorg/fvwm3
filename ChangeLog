@@ -1,6 +1,9 @@
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.ac:
+	removed FVWMNAMEUCASE
+
+	* configure.ac:
 	make distcheck fix
 
 	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS):
