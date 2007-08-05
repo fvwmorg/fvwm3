@@ -1,3 +1,9 @@
+2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleLeaveNotify):
+	properly generate enter_window and leave_window events for FvwmEvent
+
 2007-08-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (GetOnePositionArgument):
