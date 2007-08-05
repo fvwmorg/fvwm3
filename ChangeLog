@@ -1491,10 +1491,14 @@
 	* fvwm/fvwm.c:
 	* fvwm/session.c:
 	* fvwm/stack.c:
-	(initModules): (module_init_list):
-	(ClosePipes): (module_kill_all):
-	(KillModule): (module_kill):
-	(countModules): (module_count):
+	(initModules):
+	(module_init_list):
+	(ClosePipes):
+	(module_kill_all):
+	(KillModule):
+	(module_kill):
+	(countModules):
+	(module_count):
 	renamed functions to a unified style
 
 	* fvwm/module_interface.h:
@@ -10434,7 +10438,7 @@
 	renamed function
 
 	* fvwm/focus_policy.c (fpol_query_allow_set_focus):
-	* fvwm/focus_policy.h: (fpol_set_focus_by_t):
+	* fvwm/focus_policy.h (fpol_set_focus_by_t):
 	* fvwm/style.c (parse_and_set_window_style):
 	(parse_and_set_window_style):
 	began implementing new focus control styles
