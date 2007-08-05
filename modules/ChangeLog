@@ -83,7 +83,7 @@
 	* FvwmScript/script.c:
 	regenerated
 
-2006-10-04  Julio José Teca Nemesio <julio_teca(at)fastmail(dot)fm>
+2006-10-04  Julio Jose Teca Nemesio <julio_teca(at)fastmail(dot)fm>
 
 	* FvwmScript/FvwmScript.c:
 	added ChangeWindowTitle newTitle [<oldTitle>] message to
