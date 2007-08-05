@@ -38,6 +38,10 @@
 
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/functions.c:
+	* fvwm/functable.c:
+	added empty functions to replace CMD_Dummy
+
 	* configure.ac:
 	use subordinate Makefile.ams instead of iuncluding files from other
 	dirs

@@ -1,6 +1,6 @@
 COMMANDS = \
 	AddButtonStyle AddTitleStyle AddToDecor AddToFunc AddToMenu All \
-	AnimatedMove Any Asterix Beep BorderStyle Break BugOpts BusyCursor \
+	AnimatedMove Any Asterisk Beep BorderStyle Break BugOpts BusyCursor \
 	ButtonState ButtonStyle ChangeDecor ChangeMenuStyle CleanupColorsets \
 	ClickTime Close ColorLimit ColormapFocus Colorset CopyMenuStyle \
 	Current CursorMove CursorStyle DefaultColorset DefaultColors \

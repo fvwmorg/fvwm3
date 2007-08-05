@@ -300,12 +300,6 @@ static Bool DeferExecution(
 	return False;
 }
 
-/* dummies */
-void CMD_Dummy(F_CMD_ARGS)
-{
-	return;
-}
-
 /*
 ** do binary search on func list
 */
@@ -1599,3 +1593,10 @@ void CMD_EchoFuncDefinition(F_CMD_ARGS)
 
 	return;
 }
+
+/* dummy commands */
+void CMD_Title(F_CMD_ARGS) { }
+void CMD_TearMenuOff(F_CMD_ARGS) { }
+void CMD_KeepRc(F_CMD_ARGS) { }
+void CMD_Silent(F_CMD_ARGS) { }
+void CMD_Function(F_CMD_ARGS) { }

@@ -8,10 +8,10 @@
 
 <!-- $Id$ -->
 
-<section id='Asterix'>
-<title>Asterix</title>
+<section id='Asterisk'>
+<title>Asterisk</title>
 
-<cmdsynopsis command='Asterix'>
+<cmdsynopsis command='Asterisk'>
 	<command>*</command
 	><arg choice='plain'
 		><replaceable>module_config_line</replaceable

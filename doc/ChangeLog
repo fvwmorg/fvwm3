@@ -142,7 +142,7 @@
 	* commands/All.xml:
 	* commands/AnimatedMove.xml:
 	* commands/Any.xml:
-	* commands/Asterix.xml:
+	* commands/Asterisk.xml:
 	* commands/Beep.xml:
 	* commands/BorderStyle.xml:
 	* commands/Break.xml:
@@ -410,7 +410,7 @@
 	* commands/AddToMenu.xml:
 	* commands/All.xml:
 	* commands/Any.xml:
-	* commands/Asterix.xml:
+	* commands/Asterisk.xml:
 	* commands/Beep.xml:
 	* commands/BorderStyle.xml:
 	* commands/Break.xml:
