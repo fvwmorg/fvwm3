@@ -28,32 +28,34 @@ doc_DATA = $(HTML_FILES)
 endif
 
 clean:
-	rm -f $(HTML_FILES)
+	rm -f x $(HTML_FILES)
 
-FvwmTabs.html: $(srcdir)/FvwmTabs.xml $(top_builddir)/doc/fvwm.ent
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+distclean-local: clean
+
+FvwmTabs.html: $(srcdir)/FvwmTabs.xml $(top_builddir)/doc/fvwm.ent $(srcdir)/../header.html $(srcdir)/../style.css
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value html \
 		-o FvwmTabs.xml.p \
 		$(XSL_PROFILE) $(srcdir)/FvwmTabs.xml
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		--stringparam html.stylesheet "$(srcdir)/../style.css" \
 		--stringparam section.autolabel 1 \
 		--stringparam header.file $(srcdir)/../header.html \
 		-o $@ $(XSL_FILE) FvwmTabs.xml.p && rm FvwmTabs.xml.p
 
 FvwmTabs.1: $(srcdir)/FvwmTabs.xml $(XSL_MAN_FILE)
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value man \
 		-o FvwmTabs.xml.p \
 		$(XSL_PROFILE) $(srcdir)/FvwmTabs.xml
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		$(XSL_MAN_FILE) FvwmTabs.xml.p && rm FvwmTabs.xml.p
 
 # All HTML output is generated from XML files.
 # %.html : $(srcdir)/%.xml
-%.html: $(srcdir)/todo.xml
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc \
+%.html: $(srcdir)/todo.xml $(srcdir)/../style.css
+	$(XSLTPROC) --path $(top_builddir)/doc \
 		--xinclude --stringparam \
 		html.stylesheet "$(srcdir)/../style.css" -o $@ $(XSL_FILE) $<

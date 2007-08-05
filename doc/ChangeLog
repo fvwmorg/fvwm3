@@ -1,17 +1,19 @@
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
-	* modules/images/FvwmTabs/Makefile.am:
-
-	* modules/images/Makefile.am:
-
-	* modules/Makefile.am:
-
-	* images/svg_rendering/Makefile.am:
-
-	* images/Makefile.am:
+	* Makefile.am:
+	* commands.mak:
 	* fvwm/Makefile.am:
 	* commands/Makefile.am:
+	Moved list of commands to separate file
+
+	* modules/images/FvwmTabs/Makefile.am:
+	* modules/images/Makefile.am:
+	* modules/Makefile.am:
+	* images/svg_rendering/Makefile.am:
+	* images/Makefile.am:
+	* commands/Makefile.am:
 	* Makefile.am:
+	fixed "make distcheck" errors
 
 	* fvwm/Makefile.am (fvwm.1):
 	(fvwm.man.html):

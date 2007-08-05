@@ -4,8 +4,8 @@ package FVWM::Commands;
 
 use vars qw($VERS $TIME @LIST);
 
-$VERS = '2.5.17 (from cvs)';
-$TIME = 1139568168;
+$VERS = '2.5.22 (from cvs)';
+$TIME = 1186321509;
 
 @LIST = (
 	{
@@ -309,6 +309,12 @@ $TIME = 1139568168;
 		descr => q{Print message to stderr, mainly for debugging},
 	},
 	{
+		name => 'EchoFuncDefinition',
+		cursor => '',
+		window => 0,
+		descr => q{Print the definion of a function},
+	},
+	{
 		name => 'EdgeCommand',
 		cursor => '',
 		window => 0,
@@ -550,6 +556,12 @@ $TIME = 1139568168;
 	},
 	{
 		name => 'Module',
+		cursor => '',
+		window => 0,
+		descr => q{Invoke an fvwm module},
+	},
+	{
+		name => 'ModuleListenOnly',
 		cursor => '',
 		window => 0,
 		descr => q{Invoke an fvwm module},
@@ -838,6 +850,12 @@ $TIME = 1139568168;
 	},
 	{
 		name => 'Send_ConfigInfo',
+		cursor => '',
+		window => 0,
+		descr => q{Internal, used for module communication},
+	},
+	{
+		name => 'Send_Reply',
 		cursor => '',
 		window => 0,
 		descr => q{Internal, used for module communication},

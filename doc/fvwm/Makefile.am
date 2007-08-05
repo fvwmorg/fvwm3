@@ -17,7 +17,9 @@ SECTIONS = \
 	scripting session sessionCommands shortcuts styleCommands synopsis \
 	userFunctions virtualDesktop virtualDesktopCommands windowAnatomy \
 	windowMovement windowState windowStyles xinerama
-COMMAND_FILES = $(wildcard $(srcdir)/../commands/*.xml)
+
+include $(top_srcdir)/doc/commands.mak
+COMMAND_FILES = $(patsubst %,$(top_srcdir)/doc/commands/%.xml,$(COMMANDS))
 
 # SS: Hmmm, I'm not sure if all versions of make support patsubst.
 # HTML_FILES = $(patsubst %,%.html,$(SECTIONS))
@@ -33,31 +35,33 @@ BUILD_FILES += $(HTML_FILES)
 endif
 
 if FVWM_BUILD_MANDOC
-BUILD_FILES += fvwm.1
+BUILD_FILES += $(man_MANS)
 endif
 
 all: $(BUILD_FILES)
 
 clean:
-	rm -f $(HTML_FILES) fvwm.1
+	rm -f x $(HTML_FILES) $(man_MANS)
 
-#%.html : $(srcdir)/%.xml
-#	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+distclean-local: clean
+
+#%.html : $(srcdir)/%.xml $(srcdir)/../style.css
+#	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 #		--stringparam profile.attribute output \
 #		--stringparam profile.value html \
 #		-o $(<F).p \
 #		$(XSL_PROFILE) $<
-#	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+#	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 #		--stringparam html.stylesheet "$(srcdir)/../style.css" \
 #		-o $@ $(XSL_FILE) $(<F).p && rm $(<F).p
 
-fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent $(COMMAND_FILES)
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent $(COMMAND_FILES) $(srcdir)/../header.html $(srcdir)/../style.css
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value html \
 		-o fvwm.man.xml.p \
 		$(XSL_PROFILE) $(srcdir)/fvwm.man.xml
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		--stringparam html.stylesheet "$(srcdir)/../style.css" \
 		--stringparam header.file $(srcdir)/../header.html \
 		--stringparam twdt 1 \
@@ -65,12 +69,12 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent $(COMMAND_F
 		-o $@ $(XSL_FILE) fvwm.man.xml.p && rm fvwm.man.xml.p
 
 fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value man \
 		-o fvwm.man.xml.p \
 		$(XSL_PROFILE) $(srcdir)/fvwm.man.xml
-	$(XSLTPROC) --path $(top_builddir)/doc:$(top_srcdir)/doc --xinclude \
+	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
 		$(XSL_MAN_FILE) fvwm.man.xml.p && rm fvwm.man.xml.p
 
 distclean-local:

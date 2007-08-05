@@ -1,4 +1,4 @@
-The recognized commands for fvwm 2.5.17 (from cvs) as of 10-Feb-2006:
+The recognized commands for fvwm 2.5.22 (from cvs) as of 05-Aug-2007:
 
   #                     - Comment line (ignored)
   *                     - Module configuration line (no space after asterisk)
@@ -50,6 +50,7 @@ The recognized commands for fvwm 2.5.17 (from cvs) as of 10-Feb-2006:
   DestroyWindowStyle    - Delete style defined using WindowStyle
   Direction             - Operate on the next window in the specified direction
   Echo                  - Print message to stderr, mainly for debugging
+  EchoFuncDefinition    - Print the definion of a function
   EdgeCommand           - Bind one or another screen edge to an fvwm action
   EdgeLeaveCommand      - Bind one or another screen edge to an fvwm action
   EdgeResistance        - Control viewport scrolling and window move over edge
@@ -91,6 +92,7 @@ The recognized commands for fvwm 2.5.17 (from cvs) as of 10-Feb-2006:
   Menu                  - Display (post) a menu
   MenuStyle             - Control appearance and behavior of a menu
   Module                - Invoke an fvwm module
+  ModuleListenOnly      - Invoke an fvwm module
   ModulePath            - Modify the directories to search for an fvwm module
   ModuleSynchronous     - Invoke an fvwm module synchronously
   ModuleTimeout         - Set timeout value for response from module
@@ -139,6 +141,7 @@ The recognized commands for fvwm 2.5.17 (from cvs) as of 10-Feb-2006:
   Schedule              - Run an fvwm command after a delay
   Scroll                - Scroll the desktop viewport
   Send_ConfigInfo       - Internal, used for module communication
+  Send_Reply            - Internal, used for module communication
   Send_WindowList       - Internal, used for module communication
   SendToModule          - Send a string (action) to a module
   set_mask              - Internal, used for module communication
