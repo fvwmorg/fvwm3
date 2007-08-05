@@ -1,8 +1,8 @@
 2007-08-5  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.h:
-	* fvwm/module_list.c (struct fmodule):
-	(struct fmodule_store):
+	* fvwm/module_list.c (fmodule):
+	(fmodule_store):
 	(module_insert):
 	(module_remove):
 	(module_count):
@@ -17,9 +17,9 @@
 	(BroadcastProperyChange):
 	(BroadcastConfigInfoString):
 	(CMD_SendToModule):
-	* fvwm/event.c:	(My_XNextEvent):
-	* fvwm/stack.c:	(BroadcastRestack):
-	* fvwm/modconf.c: (ModuleConfig):
+	* fvwm/event.c (My_XNextEvent):
+	* fvwm/stack.c (BroadcastRestack):
+	* fvwm/modconf.c (ModuleConfig):
 	changed to work with generic list container
 
 	* fvwm/module_list.c (module_insert):
