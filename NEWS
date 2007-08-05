@@ -56,7 +56,7 @@ Changes in beta release 2.5.22 (not released yet)
    - The hi, sh and fgsh colors in colorsets are no longer replaced
      by computed values if not explicit set on the same line as the
      bg, or for fgsh fg, changes. (bug #3359)
-   - FvwmButtons now redraws stretched button backgrounds correctly
+   - Fvwmlg Buttons now redraws stretched button backgrounds correctly
      on partial expose.
    - Windows with circular transient for hints may no longer crash
      fvwm with StackTransientParent style.
@@ -70,6 +70,8 @@ Changes in beta release 2.5.22 (not released yet)
    - Various FvwmButtons drawing problems.
    - Window movement or resizing triggered by an EWMH message now
      honours the FixedSize and FixedPosition window styles.
+   - Properly generate leave_window and enter_window events for
+     the root window in FvwmEvent.
 
 -------------------------------------------------------------------
 
