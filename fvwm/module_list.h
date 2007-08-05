@@ -45,6 +45,13 @@ typedef struct fmodule_store
 /* This defines the module list object */
 typedef fmodule_store* fmodule_list;
 
+/* this objects allows safe iteration over a module list */
+typedef struct fmodule_list_itr
+{
+	fmodule_store *current;
+	fmodule_store *next;
+} fmodule_list_itr;
+
 #define MOD_IS_REMOVED(m) ((m)->xflags.is_removed)
 #define MOD_SET_REMOVED(m,on) ((m)->xflags.is_removed = !!(on))
 #define MOD_READFD(m) ((m)->xreadPipe)
@@ -131,6 +138,10 @@ Bool module_input_expect(fmodule_input *input, char *expect);
 
 /* get the module placed after *prev, or the first if prev==NULL */
 fmodule_store *module_get_next(fmodule_store *prev);
+/* initializes the given iterator */
+void module_list_itr_init(fmodule_list_itr *itr);
+/* gets the next module on the list */
+fmodule *module_list_itr_next(fmodule_list_itr *itr);
 
 /* free modules in the deathrow */
 void module_cleanup(void);

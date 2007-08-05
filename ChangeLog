@@ -48,6 +48,12 @@
 	* fvwm/events.c (My_XNextEvent):
 	moved module_cleanup to after ExecuteCommandQueue to avoid segfaults
 
+	* fvwm/module_list.h (fmodule_list_itr):
+	* fvwm/module_list.c (fmodule_list_itr_init):
+	(fmodule_list_itr_next):
+	created a smart (safe) iterator mechanism to replace the
+	module_get_next	function
+
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c:
