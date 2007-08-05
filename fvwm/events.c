@@ -4039,13 +4039,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	if (fFvwmInStartup)
 	{
 		modstore = module_get_next(NULL);
-		for (; modstore != NULL; modstore = module_get_next(modstore))
-		{
-			if (MOD_IS_CMDLINE(modstore->module) == 1)
-			{
-				break;
-			}
-		}
 		if (modstore == NULL)
 		{
 			/* last module */

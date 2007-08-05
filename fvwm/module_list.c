@@ -129,7 +129,6 @@ static fmodule *module_alloc(void)
 	fmodule *module;
 
 	module = (fmodule *)safemalloc(sizeof(fmodule));
-	MOD_SET_CMDLINE(module, 0);
 	MOD_SET_REMOVED(module, 0);
 	MOD_READFD(module) = -1;
 	MOD_WRITEFD(module) = -1;
@@ -423,7 +422,6 @@ static inline void module_list_remove(fmodule *module, fmodule_store **list)
 		{
 			/* add to the list of command line modules */
 			DBUG("executeModule", "starting commandline module\n");
-			MOD_SET_CMDLINE(module, 1);
 		}
 
 		/* make the PositiveWrite pipe non-blocking. Don't want to jam

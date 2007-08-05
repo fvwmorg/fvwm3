@@ -24,7 +24,6 @@ typedef struct fmodule
 {
 	struct
 	{
-		unsigned is_cmdline_module : 1;
 		unsigned is_removed : 1;
 	} xflags;
 	int xreadPipe;
@@ -44,8 +43,6 @@ typedef struct fmodule_store
 } fmodule_store;
 
 
-#define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
-#define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
 #define MOD_IS_REMOVED(m) ((m)->xflags.is_removed)
 #define MOD_SET_REMOVED(m,on) ((m)->xflags.is_removed = !!(on))
 #define MOD_READFD(m) ((m)->xreadPipe)
