@@ -16,7 +16,7 @@ items using the
 <fvwmref cmd="AddToMenu"/>
 command and bound to a key or mouse button with the
 <fvwmref cmd="Key"/>,
-<fvwmref cmd="PointerKey"/> or 
+<fvwmref cmd="PointerKey"/> or
 <fvwmref cmd="Mouse"/>
 command (there are many other ways to invoke a menu too).  This is
 usually done in the configuration file.</para>
@@ -37,7 +37,7 @@ command to learn more.</para>
 <para><fvwmref cmd="Popup"/> menus
 can appear everywhere on the screen on their own or attached to a
 part of a window.  The
-<fvwmref cmd="Popup"/> 
+<fvwmref cmd="Popup"/>
 command opens popup menus.  If the popup menu was invoked with a
 mouse button held down, it is closed when the button is released.
 The item under the pointer is then activated and the associated
@@ -273,13 +273,13 @@ border.  The menu context uses its own set of actions that can be bound
 to keys and mouse buttons.  These are
 <emphasis remap='I'>MenuClose</emphasis>,
 <emphasis remap='I'>MenuEnterContinuation</emphasis>,
-<emphasis remap='I'>MenuEnterSubmenu</emphasis>, 
+<emphasis remap='I'>MenuEnterSubmenu</emphasis>,
 <emphasis remap='I'>MenuLeaveSubmenu</emphasis>,
 <emphasis remap='I'>MenuMoveCursor</emphasis>,
-<emphasis remap='I'>MenuCursorLeft</emphasis>, 
+<emphasis remap='I'>MenuCursorLeft</emphasis>,
 <emphasis remap='I'>MenuCursorRight</emphasis>,
 <emphasis remap='I'>MenuSelectItem</emphasis>,
-<emphasis remap='I'>MenuScroll</emphasis> and 
+<emphasis remap='I'>MenuScroll</emphasis> and
 <emphasis remap='I'>MenuTearOff</emphasis>.</para>
 
 <para>It is not possible to override the key Escape with no modifiers for
@@ -429,16 +429,16 @@ can be added to the
 command.</para>
 </section>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddToMenu.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ChangeMenuStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/CopyMenuStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyMenu.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyMenuStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Menu.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/MenuStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Popup.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/TearMenuOff.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Title.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="AddToMenu.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ChangeMenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="CopyMenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DestroyMenu.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DestroyMenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Menu.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="MenuStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Popup.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TearMenuOff.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Title.xml" />
 
 
 </section>

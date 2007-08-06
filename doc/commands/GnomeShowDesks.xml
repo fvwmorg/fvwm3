@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='GnomeShowDesks'>
+<title>GnomeShowDesks</title>
+
+<cmdsynopsis>
+	<command>GnomeShowDesks</command
+	><arg choice='plain'
+		><replaceable>number</replaceable
+	></arg>
+
+</cmdsynopsis>
+
+<para>
+This command tells <acronym>GNOME</acronym> compliant applications
+the <replaceable>number</replaceable> of desktops that are used by
+fvwm.
+</para>
+
+</section>

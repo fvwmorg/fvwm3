@@ -71,6 +71,79 @@ AC_SUBST(MANPAGE_PREAMBLE)
 AM_INIT_AUTOMAKE(fvwm, ${version})
 AM_CONFIG_HEADER(config.h)
 
+# extract command names
+DOC_COMMANDS=`
+	sed -n '
+	:findhead
+		/#.*define.*CMD_ENT/bfindcmd
+		n
+		bfindhead
+	:findcmd
+		n
+		/CMD_ENT/bfound
+		bfindcmd
+	:found
+		/"#"/bfindcmd
+		/"propertychange"/bfindcmd
+		/"readwritecolors"/bfindcmd
+		/"send_.*"/bfindcmd
+		/"set_.*"/bfindcmd
+		s/.*CMD_ENT.*CMD_//
+		s/,.*//
+		p
+		n
+		bfindcmd
+' < fvwm/functable.c`
+DOC_COMMANDS=`echo $DOC_COMMANDS`
+# with .xml suffix
+DOC_COMMANDS_XML=`for i in $DOC_COMMANDS; do echo ${i}.xml; done`
+DOC_COMMANDS_XML=`echo $DOC_COMMANDS_XML`
+# with .xml suffix and path
+DOC_COMMANDS_XML_PATH=`
+	for i in $DOC_COMMANDS; do
+		echo ../commands/${i}.xml;
+	done
+`
+DOC_COMMANDS_XML_PATH=`echo $DOC_COMMANDS_XML_PATH`
+# with .html suffix
+DOC_COMMANDS_HTML=`for i in $DOC_COMMANDS; do echo ${i}.html; done`
+DOC_COMMANDS_HTML=`echo $DOC_COMMANDS_HTML`
+AC_SUBST(DOC_COMMANDS)
+AC_SUBST(DOC_COMMANDS_XML)
+AC_SUBST(DOC_COMMANDS_XML_PATH)
+AC_SUBST(DOC_COMMANDS_HTML)
+# extract module names
+DOC_MODULES=`
+	for i in modules/*; do echo "$i"; done |
+	sed -n '
+	:search
+		/^modules.Fvwm/bfound
+		bnext
+	:found
+		s/modules.//
+		/FvwmTabs/bnext
+		p
+	:next
+		n
+		bsearch
+	'
+`
+DOC_MODULES=`echo $DOC_MODULES`
+DOC_MODULES_HTML=`for i in $DOC_MODULES; do echo ${i}.html; done`
+DOC_MODULES_HTML=`echo $DOC_MODULES_HTML`
+AC_SUBST(DOC_MODULES)
+AC_SUBST(DOC_MODULES_HTML)
+# extract man page section names
+DOC_SECTIONS=`cat doc/fvwm/sections`
+DOC_SECTIONS=`echo $DOC_SECTIONS`
+DOC_SECTIONS_XML=`for i in $DOC_SECTIONS; do echo ${i}.xml; done`
+DOC_SECTIONS_XML=`echo $DOC_SECTIONS_XML`
+DOC_SECTIONS_XML_PATH=`for i in $DOC_SECTIONS; do echo ${i}.xml; done`
+DOC_SECTIONS_XML_PATH=`echo $DOC_SECTIONS_XML`
+AC_SUBST(DOC_SECTIONS)
+AC_SUBST(DOC_SECTIONS_XML)
+AC_SUBST(DOC_SECTIONS_XML_PATH)
+
 # installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
 FVWM_DATASUBDIR=/${PACKAGE}

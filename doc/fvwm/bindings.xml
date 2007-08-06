@@ -11,15 +11,15 @@
 <section id='mouse_key_and_stroke_bindings'>
 <title>Mouse, Key &amp; Stroke Bindings</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/IgnoreModifiers.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EdgeCommand.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EdgeLeaveCommand.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/GnomeButton.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Key.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Mouse.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/PointerKey.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Stroke.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/StrokeFunc.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="IgnoreModifiers.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="EdgeCommand.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="EdgeLeaveCommand.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="GnomeButton.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Key.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Mouse.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="PointerKey.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Stroke.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="StrokeFunc.xml" />
 
 
 </section>

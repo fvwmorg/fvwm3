@@ -11,21 +11,21 @@
 <section id='user_functions_and_shell_commands'>
 <title>User Functions and Shell Commands</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddToFunc.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Beep.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyFunc.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Echo.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EchoFuncDefinition.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Exec.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ExecUseShell.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Function.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Nop.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/PipeRead.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Read.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SetEnv.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Silent.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/UnsetEnv.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Wait.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="AddToFunc.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Beep.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DestroyFunc.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Echo.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="EchoFuncDefinition.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Exec.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ExecUseShell.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Function.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Nop.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="PipeRead.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Read.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="SetEnv.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Silent.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="UnsetEnv.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Wait.xml" />
 
 
 </section>

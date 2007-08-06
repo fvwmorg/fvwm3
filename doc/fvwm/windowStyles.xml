@@ -11,16 +11,16 @@
 <section id='window_styles'>
 <title>Window Styles</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddButtonStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddTitleStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AddToDecor.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/BorderStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ButtonState.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ButtonStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ChangeDecor.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyDecor.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/TitleStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/UpdateDecor.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="AddButtonStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="AddTitleStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="AddToDecor.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="BorderStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ButtonState.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ButtonStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ChangeDecor.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DestroyDecor.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TitleStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="UpdateDecor.xml" />
 
 
 </section>

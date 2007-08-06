@@ -70,23 +70,23 @@ styles are used) or by the last time they had the focus.</para>
 <section id="list_of_conditional_commands">
 <title>List of Conditional Commands</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/All.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Any.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Break.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Current.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Direction.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/KeepRc.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Next.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/None.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/NoWindow.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Pick.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/PointerWindow.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Prev.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ScanForWindow.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Test.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/TestRc.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ThisWindow.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WindowId.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="All.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Any.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Break.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Current.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Direction.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="KeepRc.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Next.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="None.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="NoWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Pick.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="PointerWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Prev.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ScanForWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Test.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="TestRc.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ThisWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="WindowId.xml" />
 </section>
 
 <section id="conditions">

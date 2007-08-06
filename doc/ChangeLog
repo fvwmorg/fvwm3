@@ -1,3 +1,28 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* commands/GnomeShowDesks.xml:
+	* commands/EwmhNumberOfDesktops.xml:
+	* fvwm/sections:
+	* modules/Makefile.am:
+	* commands/Makefile.am:
+	* fvwm/Makefile.am:
+	* Makefile.am:
+	* fvwm/userFunctions.xml:
+	* fvwm/styleCommands.xml:
+	* fvwm/sessionCommands.xml:
+	* fvwm/windowStyles.xml:
+	* fvwm/miscCommands.xml:
+	* fvwm/menus.xml:
+	* fvwm/focus.xml:
+	* fvwm/windowState.xml:
+	* fvwm/windowMovement.xml:
+	* fvwm/virtualDesktopCommands.xml:
+	* fvwm/colorsets.xml:
+	* fvwm/bindings.xml:
+	* fvwm/conditionals.xml:
+	* fvwm/moduleCommands.xml:
+	fixed build without GNU make
+
 2007-08-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* footer.html.in:
@@ -178,7 +203,7 @@
 	* commands/DestroyModuleConfig.xml:
 	* commands/DestroyStyle.xml:
 	* commands/Direction.xml:
-	* commands/EWMHNumberOfDesktops.xml:
+	* commands/EwmhNumberOfDesktops.xml:
 	* commands/Echo.xml:
 	* commands/EdgeCommand.xml:
 	* commands/EdgeLeaveCommand.xml:
@@ -458,7 +483,7 @@
 	* commands/Emulate.xml:
 	* commands/EscapeFunc.xml:
 	* commands/EwmhBaseStruts.xml:
-	* commands/EWMHNumberOfDesktops.xml:
+	* commands/EwmhNumberOfDesktops.xml:
 	* commands/ExecUseShell.xml:
 	* commands/Exec.xml:
 	* commands/FakeClick.xml:

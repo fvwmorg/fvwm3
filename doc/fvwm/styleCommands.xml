@@ -14,12 +14,12 @@
 <para>For readability, the commands in this section are not sorted alphabetically.
 The description of the <fvwmref cmd="Style"/> command can be found at the end of this section.</para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/FocusStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyWindowStyle.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/UpdateStyles.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Style.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WindowStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="FocusStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DestroyStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DestroyWindowStyle.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="UpdateStyles.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Style.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="WindowStyle.xml" />
 
 
 </section>

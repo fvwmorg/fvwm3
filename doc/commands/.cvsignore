@@ -8,7 +8,7 @@ AddToMenu.html
 All.html
 AnimatedMove.html
 Any.html
-Asterix.html
+Asterisk.html
 Beep.html
 BorderStyle.html
 Break.html
@@ -47,7 +47,6 @@ DestroyModuleConfig.html
 DestroyStyle.html
 DestroyWindowStyle.html
 Direction.html
-EWMHNumberOfDesktops.html
 Echo.html
 EchoFuncDefinition.html
 EdgeCommand.html
@@ -58,6 +57,7 @@ EdgeThickness.html
 Emulate.html
 EscapeFunc.html
 EwmhBaseStruts.html
+EwmhNumberOfDesktops.html
 Exec.html
 ExecUseShell.html
 FakeClick.html
@@ -68,6 +68,7 @@ FocusStyle.html
 Function.html
 GlobalOpts.html
 GnomeButton.html
+GnomeShowDesks.html
 GotoDesk.html
 GotoDeskAndPage.html
 GotoPage.html

@@ -4,28 +4,26 @@ XSLTPROC = @XSLTPROC@
 XSL_FILE = $(srcdir)/../fvwm.xsl
 XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
-include $(top_srcdir)/doc/commands.mak
-
-EXTRA_DIST = $(XML_COMMANDS)
+EXTRA_DIST = @DOC_COMMANDS_XML@ WindowsDesk.xml
 
 if FVWM_BUILD_HTMLDOC
-doc_DATA = $(HTML_COMMANDS)
-all: $(HTML_COMMANDS)
+doc_DATA = @DOC_COMMANDS_HTML@
+all: @DOC_COMMANDS_HTML@
 endif
 
 clean:
-	rm -f x $(HTML_COMMANDS)
+	rm -f @DOC_COMMANDS_HTML@
 
 distclean-local: clean
 
 # All HTML output is generated from XML files.
 %.html : $(srcdir)/%.xml $(srcdir)/../header.html $(srcdir)/../style.css
-	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
+	$(XSLTPROC) --path "$(top_builddir)/doc" --xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value html \
 		-o $(<F).p \
 		$(XSL_PROFILE) $<
-	$(XSLTPROC) --path $(top_builddir)/doc --xinclude \
+	$(XSLTPROC) --path "$(top_builddir)/doc" --xinclude \
 		--stringparam html.stylesheet "$(srcdir)/../style.css" \
-		--stringparam header.file $(srcdir)/../header.html \
+		--stringparam header.file "$(srcdir)/../header.html" \
 		-o $@ $(XSL_FILE) $(<F).p && rm $(<F).p

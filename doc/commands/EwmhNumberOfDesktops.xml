@@ -8,11 +8,11 @@
 
 <!-- $Id$ -->
 
-<section id='EWMHNumberOfDesktops'>
-<title>EWMHNumberOfDesktops</title>
+<section id='EwmhNumberOfDesktops'>
+<title>EwmhNumberOfDesktops</title>
 
 <cmdsynopsis>
-	<command>EWMHNumberOfDesktops</command
+	<command>EwmhNumberOfDesktops</command
 	><arg choice='plain'
 		><replaceable>num</replaceable
 	></arg>

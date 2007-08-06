@@ -36,15 +36,15 @@ database).</para>
 <para>Commands for manipulating module configuration database are
 described below.</para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Asterisk.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/DestroyModuleConfig.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/KillModule.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Module.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModuleListenOnly.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModulePath.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModuleSynchronous.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ModuleTimeout.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SendToModule.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Asterisk.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DestroyModuleConfig.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="KillModule.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Module.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ModuleListenOnly.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ModulePath.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ModuleSynchronous.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ModuleTimeout.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="SendToModule.xml" />
 
 
 </section>

@@ -44,9 +44,9 @@ so this module became obsolete.</para>
 
 
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Colorset.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/CleanupColorsets.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../fvwm/colorGradients.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Colorset.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="CleanupColorsets.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="colorGradients.xml" />
 
 
 </section>

@@ -1,3 +1,8 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* configure.ac:
+	fixed build without GNU make
+
 2007-08-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Flocale.c (FlocaleChar2bOneCharToUtf8):
@@ -14438,8 +14443,8 @@
 	(CMD_Any):
 	* fvwm/fvwm.h (WindowConditionMask):
 	new conditions focused, !focused, haspointer, !haspointer
-	new command PointerWindow that works like Current but on the window that
-	currently contains the pointer
+	new command PointerWindow that works like Current but on the window
+	that currently contains the pointer
 	new command Any which works like None but inverts the condition
 	fixed parsing of conditions with more than one comma
 

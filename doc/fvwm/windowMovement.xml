@@ -11,30 +11,30 @@
 <section id='window_movement_and_placement'>
 <title>Window Movement and Placement</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/AnimatedMove.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/HideGeometryWindow.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Layer.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Lower.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Move.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/MoveToDesk.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/MoveThreshold.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/MoveToPage.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/MoveToScreen.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/OpaqueMoveSize.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/PlaceAgain.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Raise.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/RaiseLower.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/Resize.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ResizeMaximize.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ResizeMove.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/ResizeMoveMaximize.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/RestackTransients.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SetAnimation.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SnapAttraction.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/SnapGrid.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/WindowsDesk.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/XorPixmap.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/XorValue.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="AnimatedMove.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="HideGeometryWindow.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Layer.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Lower.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Move.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="MoveToDesk.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="MoveThreshold.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="MoveToPage.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="MoveToScreen.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="OpaqueMoveSize.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="PlaceAgain.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Raise.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="RaiseLower.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Resize.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ResizeMaximize.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ResizeMove.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ResizeMoveMaximize.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="RestackTransients.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="SetAnimation.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="SnapAttraction.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="SnapGrid.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="WindowsDesk.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="XorPixmap.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="XorValue.xml" />
 
 
 </section>
