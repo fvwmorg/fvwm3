@@ -1,7 +1,23 @@
 2007-08-6  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_list.c (KillModuleByName):
+	(FlushAllMessageQueues):
+	* fvwm/module_interface.c (BroadcastPacket):
+	(BroadcastNewPacket):
+	(BroadcastName):
+	(BroadcastFvwmPicture):
+	(BroadcastColorset):
+	(BroadcastProperyChange):
+	(BroadcastConfigInfoString):
+	(CMD_SendToModule):
+	* fvwm/modconf.c (ModuleConfig):
+	* fvwm/stack.c (BroadcastRestack):	
 	replaced module_get_next by module list iterator mechanism
+
+	* fvwm/module_list.h:
+	* fvwm/module_list.c (module_get_next):
+	removed function
 
 2007-08-5  Renato Caldas  <seventhguardian@gmail.com>
 

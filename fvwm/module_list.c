@@ -878,23 +878,6 @@ fmodule *module_list_itr_next(fmodule_list_itr *itr)
 	return module;
 }
 
-fmodule_store *module_get_next(fmodule_store *prev)
-{
-	if (prev == NULL)
-	{
-		return module_list;
-	}
-
-	fmodule_store *next;
-
-	for (
-		next = prev->next;
-		next != NULL && MOD_IS_REMOVED(next->module);
-		next = next->next );
-
-	return next;
-}
-
 int module_list_len(fmodule_list *list)
 {
 	int count=0;

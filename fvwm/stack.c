@@ -1316,7 +1316,8 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 	int num;
 	int i;
 	int n;
-	fmodule_store *modstore;
+	fmodule_list_itr moditr;
+	fmodule *module;
 	unsigned long *body, *bp, length;
 	unsigned long max_wins_per_packet;
 
@@ -1376,12 +1377,11 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 			*(bp++) = FW_W_FRAME(fw);
 			*(bp++) = (unsigned long)fw;
 		}
-		modstore = module_get_next(NULL);
-		for (; modstore != NULL; modstore = module_get_next(modstore))
+		module_list_itr_init(&moditr);
+		while ( (module = module_list_itr_next(&moditr)) != NULL)
 		{
 			PositiveWrite(
-				modstore->module, body,
-				length*sizeof(unsigned long));
+				module,body,length*sizeof(unsigned long));
 		}
 		free(body);
 	}

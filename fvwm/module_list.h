@@ -136,8 +136,6 @@ Bool module_input_expect(fmodule_input *input, char *expect);
  *	Utility Functions
  */
 
-/* get the module placed after *prev, or the first if prev==NULL */
-fmodule_store *module_get_next(fmodule_store *prev);
 /* initializes the given iterator */
 void module_list_itr_init(fmodule_list_itr *itr);
 /* gets the next module on the list */
