@@ -4000,17 +4000,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 	DBUG("My_XNextEvent", "Routine Entered");
 
-	/* include this next bit if HandleModuleInput() gets called anywhere
-	 * else with queueing turned on.  Because this routine is the only
-	 * place that queuing is on _and_ ExecuteCommandQueue is always called
-	 * immediately after it is impossible for there to be anything in the
-	 * queue at this point */
-#if 0
-	/* execute any commands queued up */
-	DBUG("My_XNextEvent", "executing module comand queue");
-	ExecuteCommandQueue();
-#endif
-
 	/* check for any X events already queued up.
 	 * Side effect: this does an XFlush if no events are queued
 	 * Make sure nothing between here and the select causes further
@@ -4024,17 +4013,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		FNextEvent(dpy, event);
 		return 1;
 	}
-
-	/* The SIGCHLD signal is sent every time one of our child processes
-	 * dies, and the SIGCHLD handler now reaps them automatically. We
-	 * should therefore never see a zombie */
-#if 0
-	DBUG("My_XNextEvent", "no X events waiting - about to reap children");
-	/* Zap all those zombies! */
-	/* If we get to here, then there are no X events waiting to be
-	 * processed. Just take a moment to check for dead children. */
-	ReapChildren();
-#endif
 
 	/* check for termination of all startup modules */
 	if (fFvwmInStartup)
