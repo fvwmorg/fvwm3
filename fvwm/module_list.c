@@ -909,24 +909,24 @@ int module_list_len(fmodule_list *list)
 
 static void KillModuleByName(char *name, char *alias)
 {
-	fmodule_store *modstore;
+	fmodule_list_itr moditr;
+	fmodule *module;
 
 	if (name == NULL)
 	{
 		return;
 	}
-	modstore = module_get_next(NULL);
-	for (; modstore != NULL; modstore = module_get_next(modstore))
+	module_list_itr_init(&moditr);
+	while ( (module = module_list_itr_next(&moditr)) != NULL)
 	{
 		if (
-			MOD_NAME(modstore->module) != NULL &&
-			matchWildcards(name, MOD_NAME(modstore->module)) &&
+			MOD_NAME(module) != NULL &&
+			matchWildcards(name, MOD_NAME(module)) &&
 			(!alias || (
-				 MOD_ALIAS(modstore->module) &&
-				 matchWildcards(alias, 
-					MOD_ALIAS(modstore->module)))))
+				 MOD_ALIAS(module) &&
+				 matchWildcards(alias, MOD_ALIAS(module)))))
 		{
-			module_kill(modstore->module);
+			module_kill(module);
 		}
 	}
 
@@ -1133,12 +1133,13 @@ void FlushMessageQueue(fmodule *module)
 
 void FlushAllMessageQueues(void)
 {
-	fmodule_store *modstore;
+	fmodule_list_itr moditr;
+	fmodule *module;
 
-	modstore = module_get_next(NULL);
-	for (; modstore != NULL; modstore = module_get_next(modstore))
+	module_list_itr_init(&moditr);
+	while ( (module = module_list_itr_next(&moditr)) != NULL)
 	{
-		FlushMessageQueue(modstore->module);
+		FlushMessageQueue(module);
 	}
 
 	return;
