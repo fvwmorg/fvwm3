@@ -53,7 +53,6 @@
 #include "libs/fvwmsignal.h"
 #include "decorations.h"
 #include "commands.h"
-#include "module_list.h"
 
 /* A queue of commands from the modules */
 static fqueue cqueue = FQUEUE_INIT;

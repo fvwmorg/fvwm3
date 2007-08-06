@@ -39,6 +39,8 @@
 /* for Scr global */
 #include "screen.h"
 
+#include "externs.h"
+
 /* for module syncronous */
 #include "libs/ftime.h"
 #include "libs/System.c"
