@@ -21,8 +21,11 @@
 	* fvwm/module_list.c (module_safefree):
 	removed function
 
-	*fvwm/events.c (My_XNextEvent):
+	* fvwm/events.c (My_XNextEvent):
 	remove old "#if 0" code
+
+	* fvwm/module_list.c (module_kill):
+	removed debug code
 
 2007-08-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 

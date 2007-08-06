@@ -829,13 +829,7 @@ static inline int __merge_cr_moveresize(
 	args.cr_value_mask = CR_MOVERESIZE_MASK;
 	args.ret_does_match = False;
 	args.ret_type = 0;
-#if 0
-	/* free some CPU */
-	/* dv (7 May 2002): No, it's better to not reschedule processes here
-	 * because some funny applications (XMMS, GTK) seem to expect that
-	 * ConfigureRequests are handled instantly or they freak out. */
-	usleep(1);
-#endif
+
 	for (cn_count = 0; 1; )
 	{
 		unsigned long vma;

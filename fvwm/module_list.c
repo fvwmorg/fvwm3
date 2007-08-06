@@ -31,9 +31,6 @@
 #include "misc.h"
 /* end of for debug message */
 
-/* for fFvwmInStartup */
-#include "externs.h"
-
 /* for get_current_read_file */
 #include "read.h"
 /* for busy cursor */
@@ -525,13 +522,6 @@ void module_kill(fmodule *module)
 {
 	module_list_remove(module, &module_list);
 	module_list_insert(module, &death_row);
-
-	if (fFvwmInStartup)
-	{
-		/* remove from list of command line modules */
-		DBUG("module_kill", "ending command line module");
-	}
-
 	return;
 }
 
