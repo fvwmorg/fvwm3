@@ -1,3 +1,8 @@
+2007-08-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/Flocale.c (FlocaleChar2bOneCharToUtf8):
+	fixed buffer overflow
+
 2007-08-6  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.h (fmodule_list_itr):
@@ -48,7 +53,7 @@
 	(BroadcastConfigInfoString):
 	(CMD_SendToModule):
 	* fvwm/modconf.c (ModuleConfig):
-	* fvwm/stack.c (BroadcastRestack):	
+	* fvwm/stack.c (BroadcastRestack):
 	replaced module_get_next by module list iterator mechanism
 
 	* fvwm/module_list.h:

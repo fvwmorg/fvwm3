@@ -182,7 +182,7 @@ int FlocaleChar2bOneCharToUtf8(XChar2b c, char *buf)
 		buf[0] = (ucs2 >> 12) | 0xe0;
 		buf[1] = ((ucs2 & 0xfff) >> 6) | 0x80;
 		buf[2] = (ucs2 & 0x3f) | 0x80;
-		buf[4] = 0;
+		buf[3] = 0;
 	}
 	return len;
 }
