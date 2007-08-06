@@ -856,19 +856,19 @@ Bool module_input_expect(fmodule_input *input, char *expect)
 
 void module_list_itr_init(fmodule_list_itr *itr)
 {
-	itr->next = module_list;
+	*itr = module_list;
 }
 
 fmodule *module_list_itr_next(fmodule_list_itr *itr)
 {
 	fmodule *module;
 
-	if (itr->next == NULL)
+	if (*itr == NULL)
 	{
 		return NULL;
 	}
-	module = itr->next->module;
-	itr->next = itr->next->next;
+	module = (*itr)->module;
+	*itr = (*itr)->next;
 
 	return module;
 }

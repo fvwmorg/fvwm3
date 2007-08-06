@@ -46,10 +46,7 @@ typedef struct fmodule_store
 typedef fmodule_store* fmodule_list;
 
 /* this objects allows safe iteration over a module list */
-typedef struct fmodule_list_itr
-{
-	fmodule_store *next;
-} fmodule_list_itr;
+typedef fmodule_store* fmodule_list_itr;
 
 #define MOD_IS_REMOVED(m) ((m)->xflags.is_removed)
 #define MOD_SET_REMOVED(m,on) ((m)->xflags.is_removed = !!(on))

@@ -1,3 +1,9 @@
+2007-08-6  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_list.h (fmodule_list_itr):
+	* fvwm/module_list.c (module_list_itr_init, module_list_itr_next):
+	replace iterator struct by typedef
+
 2007-08-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/module_list.h (fmodule_list_itr):
