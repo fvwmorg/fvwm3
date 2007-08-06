@@ -48,7 +48,6 @@ typedef fmodule_store* fmodule_list;
 /* this objects allows safe iteration over a module list */
 typedef struct fmodule_list_itr
 {
-	fmodule_store *current;
 	fmodule_store *next;
 } fmodule_list_itr;
 

@@ -1,3 +1,10 @@
+2007-08-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/module_list.h (fmodule_list_itr):
+	* fvwm/module_list.c (module_list_itr_init, module_list_itr_next):
+	don't store current pointer in module list iterators.
+	fix C89-compilance
+
 2007-08-6  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/events.c (My_XNextEvent):
