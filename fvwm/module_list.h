@@ -22,10 +22,6 @@ typedef struct msg_masks_t
  * below */
 typedef struct fmodule
 {
-	struct
-	{
-		unsigned is_removed : 1;
-	} xflags;
 	int xreadPipe;
 	int xwritePipe;
 	fqueue xpipeQueue;
@@ -48,8 +44,6 @@ typedef fmodule_store* fmodule_list;
 /* this objects allows safe iteration over a module list */
 typedef fmodule_store* fmodule_list_itr;
 
-#define MOD_IS_REMOVED(m) ((m)->xflags.is_removed)
-#define MOD_SET_REMOVED(m,on) ((m)->xflags.is_removed = !!(on))
 #define MOD_READFD(m) ((m)->xreadPipe)
 #define MOD_WRITEFD(m) ((m)->xwritePipe)
 #define MOD_PIPEQUEUE(m) ((m)->xpipeQueue)

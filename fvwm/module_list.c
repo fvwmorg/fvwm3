@@ -92,6 +92,7 @@ static void module_free(fmodule *module);
  */
 static inline void module_list_insert(fmodule *module, fmodule_list *list);
 static inline void module_list_remove(fmodule *module, fmodule_list *list);
+static inline void module_list_destroy(fmodule_list *list);
 static inline int module_list_len(fmodule_list *list);
 
 static void KillModuleByName(char *name, char *alias);
@@ -105,21 +106,7 @@ static void set_message_mask(msg_masks_t *mask, unsigned long msg);
 
 void module_kill_all(void)
 {
-	fmodule_store *current;
-	fmodule_store *next;
-
-/*
- * this improves speed, but having a single remotion routine should
- * help in mainainability.. replace by module_list_remove calls?
- */
-	for (current = module_list; current != NULL; current = next)
-	{
-		next = current->next;
-		module_free(current->module);
-		free(current);
-	}
-	module_list = NULL;
-
+	module_list_destroy(&module_list);
 	return;
 }
 
@@ -129,7 +116,6 @@ static fmodule *module_alloc(void)
 	fmodule *module;
 
 	module = (fmodule *)safemalloc(sizeof(fmodule));
-	MOD_SET_REMOVED(module, 0);
 	MOD_READFD(module) = -1;
 	MOD_WRITEFD(module) = -1;
 	fqueue_init(&MOD_PIPEQUEUE(module));
@@ -140,26 +126,6 @@ static fmodule *module_alloc(void)
 	MOD_ALIAS(module) = NULL;
 
 	return module;
-}
-
-/* adds a module to the death row */
-static void module_safefree(fmodule *module)
-{
-	fmodule_store *new_store;
-	if (module == NULL)
-	{
-		return;
-	}
-	if (!MOD_IS_REMOVED(module))
-	{
-		module_list_remove(module, &module_list);
-	}
-	new_store = (fmodule_store*)safemalloc(sizeof(fmodule_store));
-	new_store->module = module;
-	new_store->next = death_row;
-	death_row = new_store;
-
-	return;
 }
 
 /* closes the pipes and frees every data associated with a module record */
@@ -212,21 +178,12 @@ static inline void module_list_remove(fmodule *module, fmodule_list *list)
 	{
 		return;
 	}
-	if (MOD_IS_REMOVED(module))
-	{
-		fvwm_msg(
-			ERR, "module_list_remove",
-			"Tried to remove an already removed module!");
-
-		return;
-	}
-	else if (module == (*list)->module)
+	if (module == (*list)->module)
 	{
 		DBUG("module_list_remove", "Removing from module list");
 		current=*list;
 		*list = (*list)->next;
 		free(current);
-		MOD_SET_REMOVED(module,1);
 	}
 	else
 	{
@@ -249,7 +206,6 @@ static inline void module_list_remove(fmodule *module, fmodule_list *list)
 			DBUG("module_list_remove", "Removing from module list");
 			parent->next = current->next;
 			free(current);
-			MOD_SET_REMOVED(module,1);
 		}
 		else
 		{
@@ -261,6 +217,23 @@ static inline void module_list_remove(fmodule *module, fmodule_list *list)
 		}
 	}
 }
+
+static inline void module_list_destroy(fmodule_list *list)
+{
+	fmodule_store *current;
+	fmodule_store *next;
+
+	for (current = *list; current != NULL; current = next)
+	{
+		next = current->next;
+		module_free(current->module);
+		free(current);
+	}
+	*list = NULL;
+
+	return;
+}
+
 
 
 /*static*/ fmodule *do_execute_module(
@@ -511,7 +484,7 @@ static inline void module_list_remove(fmodule *module, fmodule_list *list)
 		}
 		free(args);
 		module_list_remove(module, &module_list);
-		module_safefree(module);
+		module_free(module);
 
 		return NULL;
 	}
@@ -551,7 +524,8 @@ fmodule *executeModuleDesperate(F_CMD_ARGS)
 void module_kill(fmodule *module)
 {
 	module_list_remove(module, &module_list);
-	module_safefree(module);
+	module_list_insert(module, &death_row);
+
 	if (fFvwmInStartup)
 	{
 		/* remove from list of command line modules */
@@ -564,18 +538,7 @@ void module_kill(fmodule *module)
 /* free modules in the deathrow */
 void module_cleanup(void)
 {
-	fmodule_store *m;
-	fmodule_store *next;
-
-
-	for (m = death_row; m != NULL; m = next)
-	{
-		next = m->next;
-		module_free(m->module);
-		free(m);
-	}
-	death_row = NULL;
-
+	module_list_destroy(&death_row);
 	return;
 }
 
@@ -1023,10 +986,6 @@ void FlushMessageQueue(fmodule *module)
 	int a;
 
 	if (module == NULL)
-	{
-		return;
-	}
-	if (MOD_IS_REMOVED(module))
 	{
 		return;
 	}

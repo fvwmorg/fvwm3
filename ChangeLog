@@ -4,6 +4,23 @@
 	* fvwm/module_list.c (module_list_itr_init, module_list_itr_next):
 	replace iterator struct by typedef
 
+	* fvwm/module_list.c (module_list_destroy):
+	(module_kill_all):
+	(module_cleanup):
+	new function to remove dup code
+
+	* fvwm/module_list.c (module_kill):
+	changed to move the module to the deathrow list
+
+	* fvwm/module_list.h (fmodule):
+	* fvwm/module_list.c (module_alloc):
+	(module_list_remove):
+	(FlushMessageQueue):
+	removed is_removed logic
+
+	* fvwm/module_list.c (module_safefree):
+	removed function
+
 2007-08-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/module_list.h (fmodule_list_itr):
