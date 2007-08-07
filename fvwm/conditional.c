@@ -400,7 +400,7 @@ void FreeConditionMask(WindowConditionMask *mask)
 			p2=p->next;
 			if(!p2)
 			{
-				free(p->name - (pp->invert ? 1 : 0));
+				free(p->name);
 			}
 			free(p);
 			p=p2;
