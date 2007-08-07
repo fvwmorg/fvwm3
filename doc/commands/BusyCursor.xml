@@ -26,7 +26,7 @@ commands.
 <replaceable>Option</replaceable>
 can be
 <emphasis>DynamicMenu</emphasis>,
-<fvwmopt cmd="BusyCursor" opt="ModuleSynchronous"/>,
+<emphasis>ModuleSynchronous</emphasis>,
 <emphasis>Read</emphasis>,
 <emphasis>Wait</emphasis> or
 <emphasis>*</emphasis>.
@@ -42,11 +42,8 @@ command.  "False" forces to not display the cursor.  The default is:</para>
 
 <programlisting>
 BusyCursor DynamicMenu False, ModuleSynchronous False, \
-  Read False, Recapture True, Wait False
+  Read False, Wait False
 </programlisting>
-
-&fixme; <!-- BusyCursor Recapture ... is undocumented! -->
-		<!-- & no description for ModuleSynchronous option. -->
 
 <para>
 The <fvwmopt cmd="BusyCursor" opt="*"/> option
@@ -64,8 +61,14 @@ options of the <fvwmref cmd="AddToMenu"/>
 command.  If this option is set to "False", then the busy cursor
 is not displayed during a dynamic menu command even if this
 command is a <fvwmref cmd="Read"/> or <fvwmref cmd="PipeRead"/>
-command and the <fvwmopt cmd="BusyCursor" opt="Read"/>
+command and the <emphasis>Read</emphasis>
 option is set to "True".</para>
+
+<para>The <fvwmopt cmd="BusyCursor" opt="ModuleSynchronous"/>
+option affects the <fvwmref cmd="ModuleSynchronous"/> command.
+If this option is set to "False", then the busy cursor is not
+displayed while fvwm waits for a module started by
+<fvwmref cmd="ModuleSynchronous"/> to complete its startup.</para>
 
 <para>
 The <fvwmopt cmd="BusyCursor" opt="Wait"/>

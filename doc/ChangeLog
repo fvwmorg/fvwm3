@@ -1,3 +1,12 @@
+2007-08-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* commands/BusyCursor.xml:
+	described ModuleSynchronious option and remove invalid context
+	"Recapture" from example.
+
+	* fvwm/environment.xml:
+	use variablelist instead of informaltable for environment section.
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* commands/GnomeShowDesks.xml:
