@@ -52,6 +52,7 @@ style can be used.</para>
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bidirText.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="shortcuts.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="session.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="booleanArgs.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="builtinBindings.xml" />
 
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="execution.xml" />

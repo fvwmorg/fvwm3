@@ -1,3 +1,13 @@
+2007-08-08  Scott Smedley  <ss(at)aao(dot)gov(dot)au>
+
+	* fvwm/fvwm.man.xml:
+	* fvwm/sections:
+	* fvwm/booleanArgs.xml:
+	Added "Boolean Arguments" section to manpage.
+
+	* fvwm/Makefile.am:
+	Change location of stylesheet.
+
 2007-08-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* commands/BusyCursor.xml:

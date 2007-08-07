@@ -1,3 +1,4 @@
+# $Id$
 # Author: Scott Smedley
 
 docdir = @FVWM_DOCDIR@/fvwm
@@ -41,7 +42,7 @@ distclean-local: clean
 #		--stringparam html.stylesheet "$(srcdir)/../style.css" \
 #		-o $@ $(XSL_FILE) $(<F).p && rm $(<F).p
 
-fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMANDS_XML_PATH@ $(srcdir)/../header.html $(srcdir)/../style.css
+fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMANDS_XML_PATH@ $(srcdir)/../header.html
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		--stringparam profile.attribute output \
@@ -50,7 +51,7 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMAN
 		$(XSL_PROFILE) "$(srcdir)/fvwm.man.xml"
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
-		--stringparam html.stylesheet "$(srcdir)/../style.css" \
+		--stringparam html.stylesheet "../style.css" \
 		--stringparam header.file "$(srcdir)/../header.html" \
 		--stringparam twdt 1 \
 		--stringparam section.autolabel 1 \

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+
+<section id='boolean_args'>
+<title>Boolean Arguments</title>
+
+
+<para>A number of commands take one or several boolean arguments. These take a few equivalent inputs: "yes", "on", "true", "t" and "y" all evaluate to true while "no", "off", "false", "f" and "n" evaluate to false. Some commands allow "toggle" too which means that the feature is disabled if it is currently enabled and vice versa.</para>
+
+</section>
