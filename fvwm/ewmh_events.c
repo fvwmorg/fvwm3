@@ -128,7 +128,7 @@ int ewmh_NumberOfDesktops(EWMH_CMD_ARGS)
 {
 	int d = ev->xclient.data.l[0];
 
-	/* not a lot of sinification for FVWM */
+	/* not a lot of sinification for fvwm */
 	if (d > 0 && (d <= ewmhc.MaxDesktops || ewmhc.MaxDesktops == 0))
 	{
 		ewmhc.NumberOfDesktops = d;

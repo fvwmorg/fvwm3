@@ -87,7 +87,7 @@ __END__
 =head1 DESCRIPTION
 
 This B<FVWM::Tracker> subclass provides an information about the current
-FVWM page and desk and screen dimensions. Like with all trackers, this
+fvwm page and desk and screen dimensions. Like with all trackers, this
 information is automatically brought up to the date for the entire tracker
 object life and may be retrieved by its C<data> method.
 
@@ -99,7 +99,7 @@ of work:
     "page only changed",
 
 =head1 SYNOPSYS
- 
+
 Using B<FVWM::Module> $module object:
 
     my $pageTracker = $module->track("PageInfo");

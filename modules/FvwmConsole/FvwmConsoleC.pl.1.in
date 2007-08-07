@@ -1,23 +1,23 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmConsoleC.pl 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmConsoleC.pl 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 
 .SH NAME
-FvwmConsoleC.pl \- Command editor for FVWM command input interface 
+FvwmConsoleC.pl \- Command editor for fvwm command input interface
 .SH SYNOPSIS
 FvwmConsole -e /usr/X11/lib/fvwm/FvwmConsoleC.pl
 
 .SH COPYRIGHT
 Copyright 1996, Toshi Isogai. No guarantees or warranties are provided.
 Use this program at your own risk. Permission to use this program for
-any purpose is given, as long as the copyright is kept intact. 
+any purpose is given, as long as the copyright is kept intact.
 
 
 .SH DESCRIPTION
 FvwmConsoleC.pl offers editing capabilities  while  the  user  is
 entering  the line.  By default, the line editing commands
-are similar to those of emacs. It also offers 
+are similar to those of emacs. It also offers
 .B substitution
 , which replaces a pattern to a string before it sends the command.
 
@@ -26,7 +26,7 @@ Functions are bound to a key or key combination to be
 invoked. The followings are functions available and their
 default key bindings.
 .RS
-.IP \fBbind\fP 
+.IP \fBbind\fP
 \fIMeta-k, Ctrl-x Ctrl-b\fP
 .br
 .\"Bind key to function or bind pattern to string for substitution.
@@ -70,10 +70,10 @@ Delete the entire line.
 .IP \fBenter\fP
 \fIEnter, Ctrl-j, Ctrl-m\fP
 .br
-Perform substitution if applicable and send the line to Fvwm.
+Perform substitution if applicable and send the line to fvwm.
 .IP "\fBenter_wo_subst\fP \fIMeta-Enter\fP"
 .br
-Send the line to Fvwm without any substitution.
+Send the line to fvwm without any substitution.
 .IP \fBeoh\fP
 .br
 Move to the end of history.
@@ -107,7 +107,7 @@ Move to the next line in history.
 Move the cursor to the next word.
 .IP \fBprefix\fP
 .br
-Wait for the next character typed in  for multi-key binding. 
+Wait for the next character typed in  for multi-key binding.
 .IP "\fBprev_char\fP \fILeft, Ctrl-b\fP"
 .br
 Move the cursor to the previous character.
@@ -133,7 +133,7 @@ Search pattern in history in reverse order.
 .br
 Substitute all patterns to strings and reprint the line.
 The substitutions are not nested and performed in the order
-that they are defined. 
+that they are defined.
 .RE
 
 .SH CONFIGURATION
@@ -151,7 +151,7 @@ In order to undefine, omit the last argument.
 *FvwmConsole: Key \\ck
 .RE
 
-Note that non-meta character is case sensitive. 
+Note that non-meta character is case sensitive.
 \\c means control key, \\e means escape, and \\m is alt key.
 .br
 It also accepts Subst configuration. Users often input long fvwm command
@@ -162,12 +162,12 @@ string. Example:
 *FvwmConsole: Subst '^bigx' 'Exec xterm -g 120x60+0+0 -fn 10x20 -fg black -bg lemonchiffon'
 .RE
 
-Typing 'bigx<return>' in FvwmConsole will launch xterm. '^' denotes 
-the beginning of line in 
-.B regular expression. 
+Typing 'bigx<return>' in FvwmConsole will launch xterm. '^' denotes
+the beginning of line in
+.B regular expression.
 \'pl\' in the middle
 of the command will not be replaced. Although the format looks different,
-it takes Perl regular expression. 
+it takes Perl regular expression.
 It just uses single or double quote as the delimiter.
 Single or double quotes have no difference, although they have to match,
 and cannot include itself in the string.
@@ -185,4 +185,4 @@ FvwmConsoleC.pl should be invoked by FvwmConsole.
 FvwmConsole(1x), perlre(1)
 
 .SH AUTHOR
-Toshi Isogai  
+Toshi Isogai

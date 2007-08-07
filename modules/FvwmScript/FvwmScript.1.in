@@ -14,7 +14,7 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FvwmScript 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmScript 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 
 .SH NAME
@@ -708,7 +708,7 @@ End
 .EE
 
 .SH COMMANDS
-The following FVWM command may be executed at any time
+The following fvwm command may be executed at any time
 
 .RI "SendToModule " ScriptName " SendString " id " " sig " " str
 
@@ -767,8 +767,8 @@ it causes that any module with alias or name which matches
 .I  ScriptName
 changes its associated window title to \fInewTitle\fP. The optional argument
 \fIoldTitle\fP makes sense when there are several instances of
-the same script. It permits to avoid changing the name  of all these instances 
-by specifying the name of the window associated to the target script (see the 
+the same script. It permits to avoid changing the name  of all these instances
+by specifying the name of the window associated to the target script (see the
 example below).
 
 .EX
@@ -848,7 +848,7 @@ for the communication, it should contain the process id of the script
 for a good implementation of the protocol (use the GetPid function and
 pass the
 .I comId
-via an option to the program). The protocol uses two fifos, in the FVWM user
+via an option to the program). The protocol uses two fifos, in the fvwm user
 directory, named:
 .RI ".tmp-com-in-" comId " and .tmp-com-out-" comId "."
 The program should create and listen on the
@@ -885,7 +885,7 @@ function to handle multiple lines as one line).
 A simple way to understand this protocol and to write scripts and
 programs that use it is to take a look at
 the (not useful) example FvwmScript-ComExample and
-fvwm-script-ComExample.pl (that can found in the FVWM data
+fvwm-script-ComExample.pl (that can found in the fvwm data
 directory). Moreover, this implementation of the protocol solves
 questions as: What to do if the script exits for a bad reason?
 What to do if the program exits for a bad reason? ...etc.

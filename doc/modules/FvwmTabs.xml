@@ -17,19 +17,19 @@
 
 <section id="name">
 <title>Name</title>
-<para><emphasis remap='B'>FvwmTabs</emphasis> is a generic tabbing module for the FVWM window manager.</para>
+<para><emphasis remap='B'>FvwmTabs</emphasis> is a generic tabbing module for the fvwm window manager.</para>
 </section>
 
 
 <section id="synopsis">
 <title>Synopsis</title>
-<para><emphasis remap='B'>FvwmTabs</emphasis> is spawned by FVWM, so no command line invocation is possible.</para>
+<para><emphasis remap='B'>FvwmTabs</emphasis> is spawned by fvwm, so no command line invocation is possible.</para>
 </section>
 
 
 <section id="description">
 <title>Description</title>
-<para>The <emphasis remap='B'>FvwmTabs</emphasis> module is capable of swallowing any FVWM window &amp; treating it as a tab in a <emphasis>tab-manager</emphasis> window. A tab-manager is sometimes called a <emphasis>tabber</emphasis>. Each tab-manager can store any number of windows, each in its own <emphasis>tab</emphasis>. The number of tab-managers is limited only by system resources. Tab-managers can even be nested/swallowed within other tab-managers. (ie. a tab-manager can be added as an individual tab to another tab-manager.)</para>
+<para>The <emphasis remap='B'>FvwmTabs</emphasis> module is capable of swallowing any fvwm window &amp; treating it as a tab in a <emphasis>tab-manager</emphasis> window. A tab-manager is sometimes called a <emphasis>tabber</emphasis>. Each tab-manager can store any number of windows, each in its own <emphasis>tab</emphasis>. The number of tab-managers is limited only by system resources. Tab-managers can even be nested/swallowed within other tab-managers. (ie. a tab-manager can be added as an individual tab to another tab-manager.)</para>
 
 <para output="html">Here is a screenshot of an FvwmTabs tab-manager with an rxvt window selected. Note the buttons at the top which allow switching between applications.</para>
 <imageobject output="html"><imagedata output="html" fileref="images/FvwmTabs/screenshot.png"/></imageobject>
@@ -44,12 +44,12 @@
 <fvwmref cmd="Module"/> FvwmTabs
 </programlisting>
 
-<para>in your .fvwmrc file. This can be placed on a line by itself, if <emphasis remap='B'>FvwmTabs</emphasis> is to be spawned during FVWM's initialization, or can be bound to a menu, mouse button or keystroke to invoke it later.</para>
+<para>in your .fvwmrc file. This can be placed on a line by itself, if <emphasis remap='B'>FvwmTabs</emphasis> is to be spawned during fvwm's initialization, or can be bound to a menu, mouse button or keystroke to invoke it later.</para>
 </section>
 
 <section id="dependencies">
 <title>Installing Dependencies</title>
-<para><emphasis remap='B'>FvwmTabs</emphasis> requires 2 CPAN modules (that are NOT distributed with FVWM) to be installed on your system. They are <emphasis>Tk</emphasis> and <emphasis>X11::Protocol</emphasis>.</para>
+<para><emphasis remap='B'>FvwmTabs</emphasis> requires 2 CPAN modules (that are NOT distributed with fvwm) to be installed on your system. They are <emphasis>Tk</emphasis> and <emphasis>X11::Protocol</emphasis>.</para>
 
 <para>They are available at: <ulink>http://search.cpan.org/CPAN/authors/id/N/NI/NI-S/Tk-804.027.tar.gz</ulink> and <ulink>http://search.cpan.org/~smccam/X11-Protocol-0.56/</ulink>.</para>
 
@@ -63,7 +63,7 @@ tar zxvf $name.tar.gz ; cd $name ; perl Makefile.PL ; make install
 
 <section id="options">
 <title>Configuration Options</title>
-<para><emphasis remap='B'>FvwmTabs</emphasis> reads the same config file as FVWM when it starts up.</para>
+<para><emphasis remap='B'>FvwmTabs</emphasis> reads the same config file as fvwm when it starts up.</para>
 
 <para>The following options are recognised by <emphasis remap='B'>FvwmTabs</emphasis>:</para>
 
@@ -165,7 +165,7 @@ tar zxvf $name.tar.gz ; cd $name ; perl Makefile.PL ; make install
 
 <varlistentry>
 <term>*FvwmTabs: <fvwmopt mod="FvwmTabs" opt="stateFile"/> <emphasis>file</emphasis></term>
-<listitem><simpara><emphasis remap='B'>FvwmTabs</emphasis> has the ability to preserve its state (ie. remember the windows it has swallowed as tabs) b/w FVWM restarts. <emphasis>file</emphasis> specifies the name of a temporary file to record the state in, so it can be reconstructed when <emphasis remap='B'>FvwmTabs</emphasis> restarts. The default file is <envar>$FVWM_USERDIR</envar>/.fvwmtabs.state.</simpara></listitem>
+<listitem><simpara><emphasis remap='B'>FvwmTabs</emphasis> has the ability to preserve its state (ie. remember the windows it has swallowed as tabs) b/w fvwm restarts. <emphasis>file</emphasis> specifies the name of a temporary file to record the state in, so it can be reconstructed when <emphasis remap='B'>FvwmTabs</emphasis> restarts. The default file is <envar>$FVWM_USERDIR</envar>/.fvwmtabs.state.</simpara></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -263,7 +263,7 @@ precmd () { setTitleAndIcon %n@%m %m }
 
 <section id="functions">
 <title>Functions for Bindings</title>
-<para>A number of FVWM functions are available once the FvwmTabs module is started.</para>
+<para>A number of fvwm functions are available once the FvwmTabs module is started.</para>
 
 <variablelist>
 
@@ -299,27 +299,27 @@ NewTabber --geometry=+200+400 scottie
 
 <varlistentry>
 <term><fvwmopt mod="FvwmTabs" opt="ReleaseTab"/></term>
-<listitem><simpara> Release a tabbed window back to FVWM.</simpara></listitem>
+<listitem><simpara> Release a tabbed window back to fvwm.</simpara></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><fvwmopt mod="FvwmTabs" opt="ReleaseIconifyTab"/></term>
-<listitem><simpara> Release a tabbed window back to FVWM &amp; iconify it.</simpara></listitem>
+<listitem><simpara> Release a tabbed window back to fvwm &amp; iconify it.</simpara></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><fvwmopt mod="FvwmTabs" opt="ReleaseAllTabs"/></term>
-<listitem><simpara> Release all windows in a tab-manager back to FVWM.</simpara></listitem>
+<listitem><simpara> Release all windows in a tab-manager back to fvwm.</simpara></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><fvwmopt mod="FvwmTabs" opt="ReleaseIconifyAllTabs"/></term>
-<listitem><simpara> Release all windows in a tab-manager back to FVWM &amp; iconify them.</simpara></listitem>
+<listitem><simpara> Release all windows in a tab-manager back to fvwm &amp; iconify them.</simpara></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><fvwmopt mod="FvwmTabs" opt="CloseTabber"/></term>
-<listitem><simpara> Destroy a tab-manager. All windows in the tab-manager are released back to FVWM.</simpara></listitem>
+<listitem><simpara> Destroy a tab-manager. All windows in the tab-manager are released back to fvwm.</simpara></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -375,7 +375,7 @@ NewTabber --geometry=+200+400 scottie
 <para>This environment variable must be set <emphasis>before</emphasis> starting the module.
 </para>Then, pressing Ctrl-Alt-a (when the focus is in a tab-manager) will allow you to click on a window to add to the tab-manager.
 
-<para>All of the key bindings can be changed using the standard FVWM <fvwmref cmd="Key"/> command and making use of the aforementioned FVWM functions. ie.</para>
+<para>All of the key bindings can be changed using the standard fvwm <fvwmref cmd="Key"/> command and making use of the aforementioned fvwm functions. ie.</para>
 <programlisting>
 <fvwmref cmd="Key"/> (FvwmTabs*) A A CM <fvwmref cmd="Function"/> AddTab
 </programlisting>
@@ -688,7 +688,7 @@ tab.zsh gnome-calculator
 The xterm and calculator window will automatically be swallowed into the tabber that last had the focus.
 </listitem>
 
-<listitem>Invoke the FVWM SwallowNew function. Syntax is:
+<listitem>Invoke the fvwm SwallowNew function. Syntax is:
 <programlisting>
 <fvwmref cmd="Function"/> SwallowNew tabberId <emphasis>fvwmCommand</emphasis>
 </programlisting>
@@ -698,7 +698,7 @@ For example:
 <fvwmref cmd="Function"/> SwallowNew lastFocus <fvwmref cmd="Exec"/> exec rxvt
 <fvwmref cmd="Function"/> SwallowNew 2 <fvwmref cmd="Exec"/> exec gvim header.hh
 </programlisting>
-The FVWM command is executed when the tabber is ready to swallow the next window that is created.
+The fvwm command is executed when the tabber is ready to swallow the next window that is created.
 </listitem>
 </itemizedlist>
 
@@ -734,7 +734,7 @@ The first two release the selected window. The last two release the window the t
 <simpara>FvwmTabs doesn't obey <fvwmref cmd="ClickToFocus"/> mode.</simpara>
 <simpara>FvwmTabs has a problem swallowing shaded windows.</simpara>
 <simpara>Using <fvwmref cmd="Maximize"/> to resize tab-manager windows prevents dynamic resizing from working.</simpara>
-<para>Please send bug reports, feature requests and queries about FvwmTabs to the FVWM Mailing list: <email>fvwm@fvwm.org</email>. Be sure to include the word "FvwmTabs" somewhere in the subject line.</para>
+<para>Please send bug reports, feature requests and queries about FvwmTabs to the fvwm mailing list: <email>fvwm@fvwm.org</email>. Be sure to include the word "FvwmTabs" somewhere in the subject line.</para>
 </section>
 
 <section id="licence">

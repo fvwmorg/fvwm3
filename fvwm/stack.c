@@ -275,7 +275,7 @@ static FvwmWindow *get_transientfor_top_fvwmwindow(FvwmWindow *t)
 }
 
 /*
- * Raise a target and all higher FVWM-managed windows above any
+ * Raise a target and all higher fvwm-managed windows above any
  *  override_redirects:
  *  - locate the highest override_redirect above our target
  *  - put all the FvwmWindows from the target to the highest FvwmWindow
@@ -1091,7 +1091,7 @@ static void __raise_or_lower_window(
 
 	if (mode == SM_RAISE)
 	{
-		/* This hack raises the target and all higher FVWM windows over
+		/* This hack raises the target and all higher fvwm windows over
 		 * any style grabfocusoff override_redirect windows that may be
 		 * above it. This is used to cope with ill-behaved applications
 		 * that insist on using long-lived override_redirects. */
@@ -1200,7 +1200,7 @@ static Bool overlap(FvwmWindow *r, FvwmWindow *s)
 #if 0
 /*
   ResyncFvwmStackRing -
-  Rebuilds the stacking order ring of FVWM-managed windows. For use in cases
+  Rebuilds the stacking order ring of fvwm-managed windows. For use in cases
   where apps raise/lower their own windows in a way that makes it difficult
   to determine exactly where they ended up in the stacking order.
   - Based on code from Matthias Clasen.

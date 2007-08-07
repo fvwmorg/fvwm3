@@ -1869,7 +1869,7 @@ static int ver (char *str)
 	return v;
 }
 
-/* match_version() - compare $version against this version of FVWM
+/* match_version() - compare $version against this version of fvwm
  * using the operator specified by $operator. */
 static Bool match_version(char *version, char *operator)
 {

@@ -7,16 +7,16 @@
 .in +.5i
 ..
 .de EE
-.fi   
+.fi
 .in -.5i
 .if n .sp 1
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH fvwm-config 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH fvwm-config 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-fvwm-config \- query an existing FVWM installation
+fvwm-config \- query an existing fvwm installation
 .SH SYNOPSIS
 .B fvwm-config
 .RI [ --help ]
@@ -43,7 +43,7 @@ fvwm-config \- query an existing FVWM installation
 .RI [ --release-date ]
 .SH DESCRIPTION
 .B fvwm-config
-is a shell script that provides an information about the FVWM version,
+is a shell script that provides an information about the fvwm version,
 installation directories, built-in paths and supported features.
 .SH OPTIONS
 .B fvwm-config

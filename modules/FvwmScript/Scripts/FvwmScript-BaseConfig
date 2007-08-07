@@ -1401,7 +1401,7 @@ End
 
 Widget 60
 Property
- Title {FVWM}
+ Title {Fvwm}
  Position 410 290
  Flags NoReliefString
  Type RadioButton

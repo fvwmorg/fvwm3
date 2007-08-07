@@ -29,16 +29,16 @@ msgid "Setup 95 Script"
 msgstr "Ställ in 95 skript"
 
 #: ../fvwm/fvwm.c:1371
-msgid "Issue FVWM commands"
-msgstr "Utför FVWM-kommandon"
+msgid "Issue fvwm commands"
+msgstr "Utför fvwm-kommandon"
 
 #: ../fvwm/fvwm.c:1374
-msgid "Restart FVWM"
-msgstr "Starta om FVWM"
+msgid "Restart fvwm"
+msgstr "Starta om fvwm"
 
 #: ../fvwm/fvwm.c:1375
-msgid "Exit FVWM"
-msgstr "Avsluta FVWM"
+msgid "Exit fvwm"
+msgstr "Avsluta fvwm"
 
 #: ../fvwm/expand.c:255 ../fvwm/virtual.c:2042
 msgid "Desk"
@@ -317,7 +317,3 @@ msgstr "Återvänd - Avsluta"
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 55
 msgid "Copy Config File(s)"
 msgstr "Kopiera konfigurationsfil(er)"
-
-#. ./modules/FvwmForm/FvwmForm-Setup.in: line 66
-msgid "Restart fvwm"
-msgstr "Starta om fvwm"

@@ -1,7 +1,7 @@
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH fvwm-bug 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH fvwm-bug 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .SH NAME
-fvwm-bug \- report a bug in FVWM
+fvwm-bug \- report a bug in fvwm
 .SH SYNOPSIS
 \fBfvwm-bug\fP
 [\fI--help\fP]
@@ -10,7 +10,7 @@ fvwm-bug \- report a bug in FVWM
 .SH DESCRIPTION
 .B fvwm-bug
 is a shell script to help the user compose and mail bug reports
-concerning FVWM in a standard format.
+concerning fvwm in a standard format.
 .B fvwm-bug
 invokes the editor specified by the environment variable
 .SM
@@ -18,14 +18,14 @@ invokes the editor specified by the environment variable
 on a temporary copy of the bug report format outline. The user must
 fill in the appropriate fields and exit the editor.
 .B fvwm-bug
-then mails the completed report to the local FVWM maintainer, the FVWM workers list
+then mails the completed report to the local fvwm maintainer, the fvwm workers list
 \fIfvwm-workers@fvwm.org\fP, or
 \fIaddress\fP.  If the report cannot be mailed, it is saved in the
 file \fIdead.fvwm-bug\fP in the invoking user's home directory.
 .PP
 The bug report format outline consists of several sections.  The first
 section provides information about the machine, operating system, the
-FVWM version, and the compilation environment.  The second section
+fvwm version, and the compilation environment.  The second section
 should be filled in with a description of the bug.  The third section
 should be a description of how to reproduce the bug.  The optional
 fourth section is for a proposed fix.  Fixes are encouraged.

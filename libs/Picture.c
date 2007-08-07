@@ -311,7 +311,7 @@ void PicturePrintImageCache(int verbose)
 
 	fflush(stderr);
 	fflush(stdout);
-	fprintf(stderr, "FVWM info on Image cache:\n");
+	fprintf(stderr, "fvwm info on Image cache:\n");
 
 	for (p = FvwmPictureList; p != NULL; p = p->next)
 	{

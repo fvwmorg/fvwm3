@@ -16,13 +16,13 @@ FvwmCommand.sh: findcmd.pl $(top_srcdir)/fvwm/functable.c
 	if test -n "$(PERL)" -a -x "$(PERL)"; then \
 		$(PERL) $(srcdir)/findcmd.pl $(bindir) -sh \
 		< $(top_srcdir)/fvwm/functable.c > $@; \
-	else echo '# Did not find perl during FVWM install' > $@; fi
+	else echo '# Did not find perl during fvwm install' > $@; fi
 
 FvwmCommand.pm: findcmd.pl $(top_srcdir)/fvwm/functable.c
 	if test -n "$(PERL)" -a -x "$(PERL)"; then \
 		$(PERL) $(srcdir)/findcmd.pl $(bindir) \
 		< $(top_srcdir)/fvwm/functable.c > $@; \
-	else echo '# Did not find perl during FVWM install' > $@; fi
+	else echo '# Did not find perl during fvwm install' > $@; fi
 
 CLEANFILES = FvwmCommand.sh FvwmCommand.pm
 

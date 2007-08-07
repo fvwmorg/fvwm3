@@ -29,16 +29,16 @@ msgid "Setup 95 Script"
 msgstr "Configuration avec Script95"
 
 #: ../fvwm/fvwm.c:1371
-msgid "Issue FVWM commands"
-msgstr "Executer des commandes FVWM"
+msgid "Issue fvwm commands"
+msgstr "Executer des commandes fvwm"
 
 #: ../fvwm/fvwm.c:1374
-msgid "Restart FVWM"
-msgstr "Redémarrer FVWM"
+msgid "Restart fvwm"
+msgstr "Redémarrer fvwm"
 
 #: ../fvwm/fvwm.c:1375
-msgid "Exit FVWM"
-msgstr "Quitter FVWM"
+msgid "Exit fvwm"
+msgstr "Quitter fvwm"
 
 #: ../fvwm/expand.c:255 ../fvwm/virtual.c:2042
 msgid "Desk"
@@ -100,7 +100,7 @@ msgstr "Recapturer l'écran"
 
 #. ./fvwm/ConfigFvwmSetup: line 106
 msgid "Exit Fvwm"
-msgstr "Quitter FVWM"
+msgstr "Quitter fvwm"
 
 #. ./fvwm/ConfigFvwmSetup: line 121
 msgid "Reset X defaults"
@@ -318,7 +318,3 @@ msgstr "Quitter"
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 55
 msgid "Copy Config File(s)"
 msgstr "Copier les Fichiers"
-
-#. ./modules/FvwmForm/FvwmForm-Setup.in: line 66
-msgid "Restart fvwm"
-msgstr "Redémarrer fvwm"

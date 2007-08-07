@@ -1,9 +1,9 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmWinList 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmWinList 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmWinList \- the FVWM window list module
+FvwmWinList \- the fvwm window list module
 .SH SYNOPSIS
 \fBFvwmWinList\fP [\fIname\fP]
 
@@ -11,7 +11,7 @@ FvwmWinList is spawned by fvwm, so no command line invocation will work.
 
 .SH DESCRIPTION
 The FvwmWinList module provides a window list made up of buttons, each
-corresponding to a window that FVWM is managing.  Clicking on the buttons
+corresponding to a window that fvwm is managing.  Clicking on the buttons
 with any of the three mouse buttons will either do a default action or
 can be user configured.  Like the other modules, FvwmWinList only works
 when fvwm is used as the window manager.
@@ -26,7 +26,7 @@ as the copyright is kept intact.
 
 .SH INITIALIZATION
 During initialization, \fIFvwmWinList\fP gets config info from \fBfvwm\fP's
-module configuration database (see 
+module configuration database (see
 .IR fvwm (1),
 section
 .BR "MODULE COMMANDS" ).
@@ -97,8 +97,8 @@ input focus as pressed in. This option disables that feature.
 Specify the width of the 3D borders around the buttons in FvwmWinList.
 
 .IP "*FvwmWinList: FollowWindowList"
-Specifies that FvwmWinList will keep its list in the same order as FVWM.
-This is the order displayed by the "WindowList NoDeskSort" FVWM command.
+Specifies that FvwmWinList will keep its list in the same order as fvwm.
+This is the order displayed by the "WindowList NoDeskSort" fvwm command.
 This is not the default as it is more visually disturbing when the focus
 changes.
 

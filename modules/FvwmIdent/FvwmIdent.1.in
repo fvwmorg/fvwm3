@@ -1,9 +1,9 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmIdent 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmIdent 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmIdent \- the FVWM identify-window module
+FvwmIdent \- the Fvwm identify-window module
 .SH SYNOPSIS
 FvwmIdent is spawned by fvwm, so no command line invocation will work.
 
@@ -27,7 +27,7 @@ as long as the copyright is kept intact.
 
 .SH INITIALIZATION
 During initialization, \fIFvwmIdent\fP gets config info from \fBfvwm\fP's
-module configuration database (see 
+module configuration database (see
 .IR fvwm (1),
 section
 .BR "MODULE COMMANDS" )

@@ -535,7 +535,7 @@ char *get_display_name(char *display_name, int screen_num)
 /*
  *
  *  Procedure:
- *      Done - tells FVWM to clean up and exit
+ *      Done - tells fvwm to clean up and exit
  *
  */
 /* if restart is true, command must not be NULL... */
@@ -817,9 +817,9 @@ InstallSignals(void)
 #endif
 #endif
 
-	/* When FVWM restarts, the SIGCHLD handler is automatically reset
+	/* When fvwm restarts, the SIGCHLD handler is automatically reset
 	 * to the default handler. This means that Zombies left over from
-	 * the previous instance of FVWM could still be roaming the process
+	 * the previous instance of fvwm could still be roaming the process
 	 * table if they exited while the default handler was in place.
 	 * We fix this by invoking the SIGCHLD handler NOW, so that they
 	 * may finally rest in peace. */
@@ -1394,17 +1394,17 @@ static void SetRCDefaults(void)
 		},
 		{
 			"+ \"&4. ",
-			_("Issue FVWM commands"),
+			_("Issue fvwm commands"),
 			"\" Module FvwmConsole"
 		},
 		{
 			"+ \"&R. ",
-			_("Restart FVWM"),
+			_("Restart fvwm"),
 			"\" Restart"
 		},
 		{
 			"+ \"&X. ",
-			_("Exit FVWM"),
+			_("Exit fvwm"),
 			"\" Quit"
 		},
 		{ "Mouse 1 R A Menu MenuFvwmRoot", "", "" },
@@ -1783,8 +1783,8 @@ int main(int argc, char **argv)
 	}
 	g_argv[g_argc] = NULL;
 
-	FlocaleInit(LC_CTYPE, "", "", "FVWM");
-	FGettextInit("fvwm", LOCALEDIR, "FVWM");
+	FlocaleInit(LC_CTYPE, "", "", "fvwm");
+	FGettextInit("fvwm", LOCALEDIR, "fvwm");
 
 	setVersionInfo();
 	/* Put the default module directory into the environment so it can be
@@ -2610,7 +2610,7 @@ int main(int argc, char **argv)
 		Done(1, "");       /* does not return */
 
 	default:
-		DBUG("main", "Unknown FVWM run-state");
+		DBUG("main", "Unknown fvwm run-state");
 	}
 
 	exit(0);

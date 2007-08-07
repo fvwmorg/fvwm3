@@ -372,7 +372,7 @@ void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 		t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec, time_taken);
 #endif
 
-	strcpy(fvwm_id, "FVWM");
+	strcpy(fvwm_id, "fvwm");
 	if (Scr.NumberOfScreens > 1)
 	{
 		sprintf(&fvwm_id[strlen(fvwm_id)], ".%d", (int)Scr.screen);

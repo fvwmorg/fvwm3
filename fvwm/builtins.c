@@ -2996,7 +2996,7 @@ void CMD_DefaultFont(F_CMD_ARGS)
 	{
 		/* Try 'fixed', pass NULL font name */
 	}
-	if (!(new_font = FlocaleLoadFont(dpy, font, "FVWM")))
+	if (!(new_font = FlocaleLoadFont(dpy, font, "fvwm")))
 	{
 		if (Scr.DefaultFont == NULL)
 		{

@@ -1132,7 +1132,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 15: /* Font */
 			if (arg1 != NULL &&
-			    !(new_font = FlocaleLoadFont(dpy, arg1, "FVWM")))
+			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
 			{
 				fvwm_msg(ERR, "NewMenuStyle",
 					 "Couldn't load font '%s'\n", arg1);
@@ -1542,7 +1542,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 		case 61: /* TitleFont */
 			if (arg1 != NULL &&
-			    !(new_font = FlocaleLoadFont(dpy, arg1, "FVWM")))
+			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
 			{
 				fvwm_msg(ERR, "NewMenuStyle",
 					 "Couldn't load font '%s'\n", arg1);
@@ -1678,7 +1678,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	if (ST_PSTDFONT(origms) && !ST_USING_DEFAULT_FONT(origms))
 	{
 		if (!(ST_PSTDFONT(destms) =
-		      FlocaleLoadFont(dpy, ST_PSTDFONT(origms)->name, "FVWM")))
+		      FlocaleLoadFont(dpy, ST_PSTDFONT(origms)->name, "fvwm")))
 		{
 			ST_PSTDFONT(destms) = Scr.DefaultFont;
 			ST_USING_DEFAULT_FONT(destms) = True;
@@ -1705,7 +1705,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	{
 		if (
 			!(ST_PTITLEFONT(destms) = FlocaleLoadFont(
-				  dpy, ST_PTITLEFONT(origms)->name, "FVWM")))
+				  dpy, ST_PTITLEFONT(origms)->name, "fvwm")))
 		{
 			ST_PTITLEFONT(destms) = Scr.DefaultFont;
 			ST_USING_DEFAULT_TITLEFONT(destms) = True;

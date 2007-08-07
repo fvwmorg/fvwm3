@@ -1769,7 +1769,7 @@ int PictureAllocColorTable(
 	if (Pct == NULL)
 	{
 		fprintf(stderr,
-			"[FVWM] ERR -- Cannot get Black and White. exiting!\n");
+			"[fvwm] ERR -- Cannot get Black and White. exiting!\n");
 		exit(2);
 	}
 	return PColorLimit;
@@ -2379,7 +2379,7 @@ void PicturePrintColorInfo(int verbose)
 {
 	unsigned long nbr_of_colors = 1 << Pdepth;
 
-	fprintf(stderr, "FVWM info on colors\n");
+	fprintf(stderr, "fvwm info on colors\n");
 	fprintf(stderr, "  Visual ID: 0x%x, Default?: %s, Class: ",
 		(int)(Pvisual->visualid),
 		(Pdefault)? "Yes":"No");

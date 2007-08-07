@@ -13,10 +13,10 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH FvwmRearrange 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmRearrange 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmRearrange \- rearrange FVWM windows
+FvwmRearrange \- rearrange fvwm windows
 .SH SYNOPSIS
 FvwmRearrange is spawned by fvwm, so no command line invocation will work.
 

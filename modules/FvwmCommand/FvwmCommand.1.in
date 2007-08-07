@@ -14,10 +14,10 @@
 .if t .sp .5
 ..
 .ta .2i .4i .6i .8i
-.TH FvwmCommand 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmCommand 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmCommand \- FVWM command external interface
+FvwmCommand \- fvwm command external interface
 
 .SH SYNOPSIS
 FvwmCommand [-cmrvw] [-S name] [-i level] [-f name] [-F level] [command...]
@@ -105,7 +105,7 @@ FvwmCommand -i 0 foobar
 .EE
 will return,
 .EX
-[FVWM][executeModule]: <<ERROR>> No such module
+[fvwm][executeModule]: <<ERROR>> No such module
 \'foobar\' in ModulePath '/usr/lib/X11/fvwm'
 .EE
 

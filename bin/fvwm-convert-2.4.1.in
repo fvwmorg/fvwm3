@@ -1,8 +1,8 @@
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH fvwm-convert-2.4 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH fvwm-convert-2.4 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .SH NAME
 
-fvwm-convert-2.4 \- convert FVWM 2.2.x configuration file to FVWM 2.4 syntax
+fvwm-convert-2.4 \- convert fvwm 2.2.x configuration file to fvwm 2.4 syntax
 .SH SYNOPSIS
 
 .B fvwm-convert-2.4
@@ -11,7 +11,7 @@ fvwm-convert-2.4 \- convert FVWM 2.2.x configuration file to FVWM 2.4 syntax
 .SH DESCRIPTION
 
 .B fvwm-convert-2.4
-converts an FVWM 2.2.x configuration file into an FVWM 2.4
+converts an fvwm 2.2.x configuration file into an fvwm 2.4
 compatible syntax.  It is not suitable to convert older 1.x
 configuration files.  Please use
 .B fvwm-convert-2.2

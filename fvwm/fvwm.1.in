@@ -1,7 +1,7 @@
 .\"                                                                 -*-nroff-*-
 .\"
 .\" XXX
-.\" FVWM Developers: manpage edits should now be made to the XML files in
+.\" Fvwm Developers: manpage edits should now be made to the XML files in
 .\"                  the ../doc/ subdirectories. (Please read ../doc/README)
 .\" XXX
 .\"
@@ -82,7 +82,7 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM 1 "@RELDATELONG@" FVWM "FVWM @VERSION@@VERSIONINFO@"
+.TH Fvwm 1 "@RELDATELONG@" Fvwm "Fvwm @VERSION@@VERSIONINFO@"
 .UC
 .SH NAME
 

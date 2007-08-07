@@ -441,7 +441,7 @@ AddToFunc ChangeDefaultFocus I Style * $0
 *QuitVerify: ItemBack Gray50
 # begin items
 *QuitVerify: Line          center
-*QuitVerify: Text          "Do you really want to exit FVWM?"
+*QuitVerify: Text          "Do you really want to exit fvwm?"
 *QuitVerify: Line          expand
 *QuitVerify: Button   quit      " Exit "
 *QuitVerify: Command  Quit

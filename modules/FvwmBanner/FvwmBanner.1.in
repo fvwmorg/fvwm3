@@ -14,10 +14,10 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH FvwmBanner 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmBanner 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmBanner \- the FVWM Banner module
+FvwmBanner \- the Fvwm Banner module
 .SH SYNOPSIS
 Module FvwmBanner
 

@@ -44,7 +44,7 @@ void FScreenSLSOnOff(Bool do_enable);
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
 void FScreenConfigureModule(char *args);
-const char* FScreenGetConfiguration(void); /* For use by FVWM */
+const char* FScreenGetConfiguration(void); /* For use by fvwm */
 void FScreenSetDefaultModuleScreen(char *scr_spec);
 void FScreenDisableRandR(void);
 

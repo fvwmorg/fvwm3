@@ -4,17 +4,17 @@
 
 # 	FvwmTabs
 #	Copyright (C) 2002-2006 Scott Smedley ss@aao.gov.au
-#	
+#
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
 #	the Free Software Foundation; either version 2 of the License, or
 #	(at your option) any later version.
-#	
+#
 #	This program is distributed in the hope that it will be useful,
 #	but WITHOUT ANY WARRANTY; without even the implied warranty of
 #	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #	GNU General Public License for more details.
-#	
+#
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -58,7 +58,7 @@ sub ver ($)
 
 if (ver($fvwm->version()) < ver('2.5.11'))
 {
-	print(STDERR $fvwm->name() . " requires FVWM >= 2.5.11 - exiting.\n");
+	print(STDERR $fvwm->name() . " requires fvwm >= 2.5.11 - exiting.\n");
 	exit;
 }
 
@@ -164,7 +164,7 @@ $configTracker->observe("config line added", sub {
 				for (my $i = 0; $i < $tabWin{$tId}{nTabs}; $i++)
 				{
 					setButtonAttr($tabWin{$tId}{tab}[$i]{button}, 'pady', $p);
-				}	
+				}
 			}
 		}
 		elsif ($p =~ /^title(FG|BG)$/)
@@ -247,20 +247,20 @@ sub toPixels ($$)
 		return ($1 / 100.0) * min($tabWin{$tId}{winFrame}->height(),
 								  $tabWin{$tId}{winFrame}->width());
 	}
-	return $tol;	
+	return $tol;
 }
 
 my $winTracker = $fvwm->track("WindowList", "!stack icons names winfo");
 $winTracker->observe("window moved", sub {
 	my ($fvwm, $tracker, $z, $winId, $old) = @_;
-	
+
 	return if (ignoreWin($winId));
 
 	$fvwm->debug("swallow win move: $winId");
 
 	my $p = $tracker->data($winId);
 	return if (defined winIdToTId($winId)); # ignore tabbers moving.
-	
+
 	foreach my $tId (sort(keys(%tabWin)))
 	{
 		# window must overlap tabber by at least $tol pixels to be
@@ -280,7 +280,7 @@ $winTracker->observe("window moved", sub {
 		# If OpaqueMoveSize is in use, we need to ensure the window
 		# isn't swallowed already.
 		return if (defined getTabNo($tId, $winId));
-		
+
 		# ok, we've got a match - this tabber should swallow the window.
 		addTab($tId, $winId);
 		return;
@@ -902,7 +902,7 @@ $fvwm->addHandler(M_ADD_WINDOW, sub {
 
 # ON_EXIT handler is invoked just before this module terminates.
 $fvwm->addHandler(ON_EXIT, sub {
-	my ($self, $event) = @_; 
+	my ($self, $event) = @_;
 	print($fvwm->name() . ": Got ON_EXIT event.\n");
 	cleanup();
 });
@@ -968,7 +968,7 @@ sub eventHandler
 			# (if any) to fit into the new space.
 			return if (!defined $tabWin{$tId}{currentTab});
 			my $winId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
-			
+
 			$xServer->ConfigureWindow($winId,
 									  "height" => $h, # $event{height},
 									  "width" => $event{width});
@@ -1288,7 +1288,7 @@ sub findWin ($)
 	}
 	return undef;
 }
-		
+
 
 # return the tabNo for the specified window ID or undef if the window is
 # not part of the tabber.
@@ -1526,7 +1526,7 @@ sub setFont ($$$)
 		for (my $tabNo = 0; $tabNo < $tabWin{$tId}{nTabs}; $tabNo++)
 		{
 			$tabWin{$tId}{tab}[$tabNo]{button}->configure(-font => $font);
-		}	
+		}
 	}
 	elsif ($type eq 'title')
 	{
@@ -1575,7 +1575,7 @@ sub reorderTab ($$$)
 	{
 		$tabWin{$tId}{tab}[$i]{button}->pack('forget');
 	}
-	
+
 	my $currentWinId = $tabWin{$tId}{tab}[$tabWin{$tId}{currentTab}]{winId};
 
 	my $mover = $tabWin{$tId}{tab}[$tabNo];
@@ -1710,7 +1710,7 @@ sub createThingy ($$$;@)
 	$lb->Subwidget('choices')->configure(-bg => 'yellow');
 	return $lb;
 }
- 
+
 sub createSwallowDialog ($)
 {
 	my ($main) = @_;

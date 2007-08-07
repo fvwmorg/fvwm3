@@ -717,7 +717,7 @@ void FScreenConfigureModule(char *args)
 	return;
 }
 
-/* Here's the function used by FVWM to generate the string which
+/* Here's the function used by fvwm to generate the string which
  * FScreenConfigureModule expects to receive back as its argument.
  */
 const char *FScreenGetConfiguration(void)

@@ -1792,7 +1792,7 @@ void EWMH_Init(void)
 		Scr.NoFocusWin, "_NET_SUPPORTING_WM_CHECK",
 		EWMH_ATOM_LIST_FVWM_ROOT, (unsigned char *)&val, 1);
 
-	names[0] = "FVWM";
+	names[0] = "fvwm";
 	classhints.res_name= "fvwm";
 	classhints.res_class= "FVWM";
 

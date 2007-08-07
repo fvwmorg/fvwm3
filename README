@@ -1,36 +1,36 @@
-Welcome to FVWM version 2.5.x  FVWM is a multiple large virtual desktop
+Welcome to fvwm version 2.5.x.  Fvwm is a multiple large virtual desktop
 window manager, originally (a looooong time ago!) derived from twm.
 
-FVWM is intended to have a small memory footprint but a rich feature
+Fvwm is intended to have a small memory footprint but a rich feature
 set, be extremely customizable and extendible, and have a high degree of
 Motif mwm compatibility.
 
-For users of the old FVWM 1.xx, please be aware that version 2.2 has a
+For users of the old fvwm 1.xx, please be aware that version 2.2 has a
 lot of differences.
 
-For users of the FVWM 2.0.x betas, please be aware that version 2.2 uses
+For users of the fvwm 2.0.x betas, please be aware that version 2.2 uses
 GNU autoconf/automake rather than Imake, so things will install in
 different places by default.
 
-For users of the FVWM 2.2.x, please read the files ANNOUNCE and NEWS to
+For users of the fvwm 2.2.x, please read the files ANNOUNCE and NEWS to
 figure out all changes and new features in this release.
 
-FVWM's original author, Rob Nation (THANKS ROB!), has "retired" from
+Fvwm's original author, Rob Nation (THANKS ROB!), has "retired" from
 work on it, so please don't bother him with silly little things like bug
-reports or enhancement requests.  Care and feeding of FVWM is now
+reports or enhancement requests.  Care and feeding of fvwm is now
 handled by a group of people on the fvwm-workers mailing list, with many
 contributions by fans everywhere.
 
 If you have any questions, concerns, bug reports, enhancement requests,
 etc., please read the files in the docs/ subdirectory first.  In
-particular the FAQ, BUGS, and TODO lists.  Also, check the FVWM man page
-carefully.  Next, try the FVWM mailing list.  Another excellent resource
+particular the FAQ, BUGS, and TODO lists.  Also, check the fvwm man page
+carefully.  Next, try the fvwm mailing list.  Another excellent resource
 is the official WWW page http://www.fvwm.org and the mailing list archives
 found there.
 
-For information on compiling and installing FVWM, see the INSTALL and
+For information on compiling and installing fvwm, see the INSTALL and
 INSTALL.fvwm files (INSTALL is the boilerplate autoconf instruction
-file; INSTALL.fvwm contains FVWM-specific details).
+file; INSTALL.fvwm contains fvwm-specific details).
 
 Generally, you should run:
 
@@ -39,7 +39,7 @@ Generally, you should run:
   make install  # as a user with proper file system permissions
 
 It is very important to make the last step (make install) to ensure that
-FVWM works properly.
+fvwm works properly.
 
 For known bugs, check out the BUGS, FAQ and TODO files.
 

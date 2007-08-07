@@ -1,10 +1,10 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmConsole 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmConsole 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 
 .SH NAME
-FvwmConsole \- an FVWM command input interface
+FvwmConsole \- an fvwm command input interface
 
 .SH SYNOPSIS
 Module FvwmConsole [options]

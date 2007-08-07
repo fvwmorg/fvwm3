@@ -1,8 +1,8 @@
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmButtons 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmButtons 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmButtons \- the FVWM buttonbox module
+FvwmButtons \- the fvwm buttonbox module
 .SH SYNOPSIS
 .nf
 Module FvwmButtons [-g geometry] [-transient | -transientpanel] [name[configfile]]

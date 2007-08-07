@@ -4100,7 +4100,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 			timeoutP = old_timeoutP;
 		}
 
-		/* Express route out of FVWM ... */
+		/* Express route out of fvwm ... */
 		if (isTerminated)
 		{
 			return 0;

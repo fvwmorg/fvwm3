@@ -1,9 +1,9 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmSaveDesk 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmSaveDesk 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmSaveDesk \- another FVWM desktop-layout saving module
+FvwmSaveDesk \- another fvwm desktop-layout saving module
 .SH SYNOPSIS
 FvwmSaveDesk is spawned by fvwm, so no command line invocation will work.
 
@@ -49,7 +49,7 @@ m4_include(`.fvwm2desk') .
 .sp
 .fi
 .SH SETUP USING FVWMCPP MODULE
-With the FVWMCPP you may have the problem that the preprocessor
+With the FvwmCpp you may have the problem that the preprocessor
 directives starts with the comment character '#' and will
 complain about unknown directives, if you have comments in your .fvwm2rc.
 .nf

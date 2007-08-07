@@ -1,9 +1,9 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmBacker 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmBacker 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmBacker \- the FVWM background changer module
+FvwmBacker \- the fvwm background changer module
 .SH SYNOPSIS
 Module FvwmBacker
 
@@ -48,7 +48,7 @@ FvwmBacker can be started using a 'Module FvwmBacker' command or stopped
 using a 'KillModule FvwmBacker' command at any time when fvwm is running.
 
 FvwmBacker must reside in a directory that is listed in the ModulePath
-option of FVWM for it to be executed by FVWM.
+option of fvwm for it to be executed by fvwm.
 
 .SH CONFIGURATION OPTIONS
 The following options can be placed in the .fvwm2rc file

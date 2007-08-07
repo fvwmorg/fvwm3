@@ -1,17 +1,17 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmTaskBar 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmTaskBar 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmTaskBar \- the FVWM taskbar module
+FvwmTaskBar \- the fvwm taskbar module
 .SH SYNOPSIS
 \fBFvwmTaskBar\fP [\fIname\fP]
 
-FvwmTaskBar is spawned by FVWM, so no command line invocation will work.
+FvwmTaskBar is spawned by fvwm, so no command line invocation will work.
 
 .SH DESCRIPTION
 The FvwmTaskBar module provides a taskbar made up of buttons arranged by
-rows, each corresponding to a window that FVWM is managing.
+rows, each corresponding to a window that fvwm is managing.
 Clicking on first button gives focus to the corresponding top level window;
 clicking on the middle button will hide a top level window; third mouse button
 is reserved for a future extension (context menu).
@@ -25,7 +25,7 @@ will auto position itself at the top or bottom of the screen, and can be
 dragged from one position to another with a normal move operation.
 
 The first button of the taskbar, labelled "Start" sends a "Popup
-StartMenu" command to the FVWM, which can be used to pop-up a
+StartMenu" command to the fvwm, which can be used to pop-up a
 general-purpose menu when the button is pressed.
 
 The FvwmTaskBar also displays at the right side a window showing the
@@ -41,7 +41,7 @@ as the copyright is kept intact.
 
 .SH INITIALIZATION
 During initialization, \fIFvwmTaskBar\fP gets configuration information
-from FVWM to find the options that pertain to it.
+from fvwm to find the options that pertain to it.
 These options are discussed in a later section.
 
 .SH INVOCATION
@@ -49,7 +49,7 @@ FvwmTaskBar can be invoked by fvwm during initialization by inserting the
 line 'Module FvwmTaskBar' in the .fvwm2rc file.
 
 FvwmTaskBar must reside in a directory that is listed in the ModulePath
-option of FVWM for it to be executed by FVWM.
+option of fvwm for it to be executed by fvwm.
 
 .SH CONFIGURATION OPTIONS
 The following options can be placed in the .fvwm2rc file
@@ -212,7 +212,7 @@ any quoting characters. To get a literal '$' use the string '$$'.
 Tells FvwmTaskBar to put a shortcut minibutton in the taskbar that does
 \fIaction\fP when clicked.  The icon can have a caption denoted by \fItitle\fP,
 an icon denoted by \fIicon\fP, or a combination of the two.  The icons will
-appear to the immediate right of the start button, and will appear in the 
+appear to the immediate right of the start button, and will appear in the
 order that they are declared in the .fvwm2rc file.
 
 To invoke different commands for different mouse clicks, use this syntax:
@@ -234,17 +234,17 @@ not specified, the default space is 3.
 
 .IP "*FvwmTaskBar: WindowButtonsLeftMargin \fImargin\fP"
 Specifies the space (in pixels) between the left side of the left-most window
-button and the right side of the start button or right-most shortcut 
+button and the right side of the start button or right-most shortcut
 minibutton.  If this option is not specified, the default margin is 4.
 
 .IP "*FvwmTaskBar: WindowButtonsRightMargin \fImargin\fP"
-Specifies the space (in pixels) between the right side of the right-most 
-window button and the left side of the clock and tip window.  If this option 
+Specifies the space (in pixels) between the right side of the right-most
+window button and the left side of the clock and tip window.  If this option
 is not specified, the default margin is 2.
 
 .IP "*FvwmTaskBar: StartButtonRightMargin \fImargin\fP"
-Specifies the space (in pixels) between the right side of the start button 
-and the left side of the left-most shortcut minibutton.  If this option is 
+Specifies the space (in pixels) between the right side of the start button
+and the left side of the left-most shortcut minibutton.  If this option is
 not specified, the default margin is 0.
 
 .IP "*FvwmTaskBar: 3DFvwm"

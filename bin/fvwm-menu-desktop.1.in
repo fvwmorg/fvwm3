@@ -14,10 +14,10 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH fvwm-menu-desktop 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH fvwm-menu-desktop 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-fvwm-menu-desktop \- builds GNOME and KDE menus and style commands for FVWM
+fvwm-menu-desktop \- builds GNOME and KDE menus and style commands for fvwm
 
 .SH SYNOPSIS
 
@@ -64,7 +64,7 @@ fvwm-menu-desktop
 
 .SH DESCRIPTION
 This is a perl script which parses GNOME or KDE menus definitions to build
-corresponding FVWM or FvwmGtk menus. The script can also
+corresponding fvwm or FvwmGtk menus. The script can also
 build icon and mini\-icon style commands for the applications.
 
 .SH USAGE
@@ -80,9 +80,9 @@ PipeRead 'fvwm-menu-desktop --desktop kde-sys'
 .EE
 For KDE2 you may have to add --utf8 or --uniconv "charset" (see below).
 Moreover, with KDE2 you can add --merge-user-menu.
-If you use KDE version 1 (see below for KDE2) and you want mini\-icons 
+If you use KDE version 1 (see below for KDE2) and you want mini\-icons
 in the menu and if the KDE mini\-icons are in "mini/"
-relative to your FVWM ImagePath add the option \-\-enable-mini\-icons.
+relative to your fvwm ImagePath add the option \-\-enable-mini\-icons.
 (if the KDE mini\-icons are in some other place
 use the \-\-mini\-icons\-path option, e.g., they are in your
 ImagePath plus \-\-mini\-icons\-path). If you want to build Icon and
@@ -133,13 +133,13 @@ You can specify FvwmGtk alias: Module FvwmGtk MyGnomeMenu.
 In this case you must pass an additional parameter to fvwm-menu-desktop:
 \-\-fvwmgtk-alias MyGnomeMenu.
 
-Of course you can build FVWM (i.e., no FvwmGtk) GNOME menus.
-GNOME and KDE2 use PNG icons which are not supported by FVWM menu.
-However, if you have XPM version of the GNOME or of the KDE2 (mini-)icons 
-you can build FVWM menus and style commands with these icons using the 
+Of course you can build fvwm (i.e., no FvwmGtk) GNOME menus.
+GNOME and KDE2 use PNG icons which are not supported by fvwm menu.
+However, if you have XPM version of the GNOME or of the KDE2 (mini-)icons
+you can build fvwm menus and style commands with these icons using the
 option \-\-enable-tran-mini\-icons and \-\-enable\-tran\-style. The
-FVWM Themes package (http://fvwm-themes.sourceforge.net/) contains
-an utility, fvwm-themes-images, which can convert automatically 
+Fvwm Themes package (http://fvwm-themes.sourceforge.net/) contains
+an utility, fvwm-themes-images, which can convert automatically
 (with the help of ImageMagick) all GNOME and KDE2 icons to XPM
 icons.
 
@@ -152,7 +152,7 @@ redirection to see the submenu names.
 
 If you think that fvwm-menu-desktop slows your startup too much do
 not use PipeRead.  Instead run  fvwm-menu-desktop
-and 
+and
 redirect the menu to a file and Read that file in
 your .fvwm2rc file.
 Another possibility is to use DynamicPopupAction
@@ -209,7 +209,7 @@ kde\-sys for the KDE system menu and kde\-user for
 the KDE user menu. It may be useful to use KDE or GNOME as a flag with
 the \-\-dir option.
 .IP "\fB\-\-type\fR \fINAME\fR"
-If NAME is fvwm, a native FVWM menu will be built (this is
+If NAME is fvwm, a native fvwm menu will be built (this is
 the default). If NAME is gtk, a FvwmGtk menu will be built.
 .IP "\fB\-\-fvwmgtk-alias\fR \fINAME\fR"
 The name for then FvwmGtk module to use instead of default FvwmGtk.
@@ -243,7 +243,7 @@ the \-\-mini\-icons\-path and the \-\-png\-icons\-path to specify
 the good paths. By using the \-\-icon-* options below you
 can control mini\-icons in menus.
 .IP "\fB\-\-enable\-tran\-mini\-icons\fR"
-This option applies only to fvwm menus and is useful to build GNOME or KDE2 
+This option applies only to fvwm menus and is useful to build GNOME or KDE2
 menus with mini\-icons (and if you have XPM version of the GNOME or KDE2
 PNG icons).
 If this option is used any
@@ -266,7 +266,7 @@ a good way).
 Where PATH is a list of directories with ":" as a separator. Then,
 fvwm-menu-desktop checks that the mini icons actually exist in one of
 these directories (this check is not done for the translated mini icons).
- 
+
 .IP Comments
 
 To control  mini\-icons in menus you can use the 4 following options
@@ -286,7 +286,7 @@ or \-\-tran\-mini\-icons\-path (i.e., you just have to
 specify the icon, the path is computed). For the sidepic you need to
 give the complete relative path from your ImagePath.
 
-Note that for the FVWM menu (without the \-\-enable\-tran\-mini\-icons option)
+Note that for the fvwm menu (without the \-\-enable\-tran\-mini\-icons option)
 a .png icon hint is
 considered as an empty hint, so for the system menu use no=dh and re=ow
 (you may use .xpm icons in a user menu). If
@@ -306,7 +306,7 @@ containing the sidepic picture.
 
 When you use an option below, if an icon, a law ...etc is not
 specified (i.e., empty) the default is used (e.g, if you want,
-for an FVWM menu, the icon folder.xpm on the left of the top title
+for an fvwm menu, the icon folder.xpm on the left of the top title
 and the sidepic fvwm2.xpm on the left of this menu
 use the following: \-\-icon\-toptitle :ow::fvwm2.xpm).
 
@@ -368,7 +368,7 @@ are gnome\-default.xpm.
 The paths to mini\-icons are the same as those for the menus. The
 path to the icons is computed from the mini\-icons path: they are one
 directory up to the corresponding mini\-icons path (so the "defaults"
-are "" and this is consistent with KDE1 and XPM icons builded by 
+are "" and this is consistent with KDE1 and XPM icons builded by
 fvwm-themes-images).
 .IP "\fB\-\-icons\-path\fR \fIDIR\fR"
 Not useful in a normal situation.
@@ -409,8 +409,8 @@ $HOME/.gnome/apps\-mdk  if \-\-desktop is gnome\-mandriva,
 $KDEDIR/share/applink if \-\-desktop is kde\-sys and
 $HOME/.kde/share/applnk if\-\-desktop is sys\-user.
 .IP "\fB\-\-destroy\-type\fR \fIflag\fR"
-flag may be "y(es)", "no", "d(ynamic)". Default is "yes" with FVWM menus,
-"no" with FvwmGtk menus and dynamic applies only with FVWM menus.
+flag may be "y(es)", "no", "d(ynamic)". Default is "yes" with fvwm menus,
+"no" with FvwmGtk menus and dynamic applies only with fvwm menus.
 If "yes" is used the top menu will be destroyed (DestroyMenu "name"),
 if "no" is used the top menu will not be destroyed (useful for FvwmGtk
 menus called by another menu via FvwmGtkSubMenu or to give the same
@@ -428,7 +428,7 @@ language. Also useful if fvwm-menu-desktop gives bad result with your language.
 .IP "\fB\-\-utf8\fR"
 Assume that the desktop entries used UTF-8 encoding. This is the case
 with KDE version 2 and will be probably the case with GNOME version 2.
-At the present time this option work only if you have perl version 5.6 
+At the present time this option work only if you have perl version 5.6
 or better and if your language use latin-1 font. If one of these conditions
 is not satisfied, then this option is equivalent to \-\-lang en. For other
 languages/charsets use the \-\-uniconv option. The advantage of this option
@@ -443,14 +443,14 @@ appropriate font using the MenuStyle command. Also, $LANG (or --lang xx)
 must be compatible with the charset. Note, if you don't use an internal
 method, fvwm-menu-desktop is very slow with this option: you probably need
 to use the --time-limit option and you should redirect the result into a
-file and read this file in your FVWM configuration.
+file and read this file in your fvwm configuration.
 .IP "\fB\-\-uniconv-exec\fR \fIexec\fR"
 Where exec is either iconv or uniconv or internal. Allows to choose the
 program which perform the UTF8 translation in the case of the \-\-uniconv
 option. The internal method is only available with perl 5.8.0 and better.
 The default is either internal (if available) or iconv.
 .IP "\fB\-\-menu-style\fR \fIname\fR"
-By default the generated FVWM menus use the default MenuStyle (i.e., the
+By default the generated fvwm menus use the default MenuStyle (i.e., the
 MenuStyle "*"). You can specify another MenuStyle name using this option.
 .IP "\fB\-\-[no]check-app\fR"
 Either check or don't check that applications to execute are in your path.
@@ -473,5 +473,5 @@ Olivier Chapuis <olivier.chapuis@free.fr>
 Mikhael Goikhman <migo@homemail.com> - some changes
 
 .SH COPYING
-The script is distributed by the same terms as FVWM itself.
+The script is distributed by the same terms as fvwm itself.
 See GNU General Public License for details.

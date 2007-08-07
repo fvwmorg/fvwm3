@@ -204,7 +204,7 @@ void GetOlHints(FvwmWindow *t)
 			}
 
 			/* got this from olvwm and sort of mapped it to
-			 * FVWM/MWM hints */
+			 * fvwm/MWM hints */
 			if (win_type == _XA_OL_WT_BASE)
 			{
 				t->ol_hints = OL_DECOR_ALL;

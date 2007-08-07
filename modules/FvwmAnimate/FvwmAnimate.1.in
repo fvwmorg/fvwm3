@@ -1,8 +1,8 @@
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmAnimate 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmAnimate 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-\fBFvwmAnimate\fP \- the Fvwm Animate module
+\fBFvwmAnimate\fP \- the fvwm animate module
 .SH SYNOPSIS
 Module FvwmAnimate [ModuleAlias]
 
@@ -55,7 +55,7 @@ the \fBFvwmAnimate\fP module, you don't really have to know what any
 of the configuration commands are.  This section describes them anyway.
 
 \fBFvwmAnimate\fP gets configuration info from \fBfvwm\fP's module configuration
-database (see 
+database (see
 .IR fvwm (1),
 section
 .BR "MODULE COMMANDS" ).

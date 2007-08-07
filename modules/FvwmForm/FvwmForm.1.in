@@ -13,7 +13,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH FvwmForm 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmForm 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .SH NAME
 FvwmForm - input form module for Fvwm
 .SH SYNOPSIS
@@ -146,8 +146,8 @@ An example of what this file might contain after a save is:
   *FvwmFormDefault: ButtonPointerBack gray
   *FvwmFormDefault: ButtonInPointerFore gray
   *FvwmFormDefault: ButtonInPointerBack blue
-  *FvwmFormDefault: InputPointerFore 
-  *FvwmFormDefault: InputPointerBack 
+  *FvwmFormDefault: InputPointerFore
+  *FvwmFormDefault: InputPointerBack
 .EE
 The commands in this file are just like any other FvwmForm
 command except that they start with "*FvwmFormDefault".
@@ -217,8 +217,8 @@ InputPointer
 ItemBack
 ItemColorset
 ItemFore
-InputPointerFore 
-InputPointerBack 
+InputPointerFore
+InputPointerBack
 Line
 Message
 PadVText

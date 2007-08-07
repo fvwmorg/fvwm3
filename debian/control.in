@@ -1,9 +1,9 @@
 Source: fvwm
 Section: x11
 Priority: optional
-Maintainer: FVWM Workers <@FVWMWORKERSLIST@>
+Maintainer: Fvwm Workers <@FVWMWORKERSLIST@>
 Build-Depends: debhelper (>>4.0.0), file, autotools-dev, xlibs-dev,
-	libgtk1.2-dev || libgtk1.4-dev, libncurses5-dev, libreadline5-dev, 
+	libgtk1.2-dev || libgtk1.4-dev, libncurses5-dev, libreadline5-dev,
 	libpng3-dev, libimlib2-dev, gdk-imlib1-dev | gdk-imlib-dev,
 	libstroke0-dev, libfribidi-dev, libxft-dev, libfreetype6-dev,
 	librsvg2-dev (>= 2.13.92), libxcursor-dev
@@ -15,7 +15,7 @@ Depends: ${shlibs:Depends}, perl (>= @REQUIRED_PERL_VERSION@)
 Suggests: fvwm-themes, m4, cpp, menu (>=1.5)
 Provides: x-window-manager
 Description: F(?) Virtual Window Manager
- FVWM is a powerful ICCCM-compliant multiple virtual desktop window manager
+ Fvwm is a powerful ICCCM-compliant multiple virtual desktop window manager
  for the X Window System.
  .
  This 2.5 version includes new features like full support of the EWMH

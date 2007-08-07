@@ -1,7 +1,7 @@
 #!@PERL@
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "FVWM Utilities" fvwm-menu-headlines | nroff -man | less -e
+#   pod2man -c "Fvwm Utilities" fvwm-menu-headlines | nroff -man | less -e
 
 require 5.002;
 use strict;
@@ -926,7 +926,7 @@ __END__
 
 =head1 NAME
 
-fvwm-menu-headlines - builds headlines menu definition for FVWM
+fvwm-menu-headlines - builds headlines menu definition for fvwm
 
 =head1 SYNOPSIS
 
@@ -1189,7 +1189,7 @@ This script is inspired by WMHeadlines v1.3 by:
   Jeff Meininger <jeffm@boxybutgood.com>
   (http://rive.boxybutgood.com/WMHeadlines/).
 
-Reimplemented for FVWM and heavily enhanced by:
+Reimplemented for fvwm and heavily enhanced by:
 
   Mikhael Goikhman <migo@homemail.com>, 16 Dec 1999.
 

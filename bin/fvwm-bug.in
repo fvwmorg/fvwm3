@@ -3,7 +3,7 @@
 # fvwm-bug - create a bug report and mail it to the bug address
 #          - adapted from equivalent `bashbug' script
 #
-# The bug address could depend on the release status of FVWM.  Currently
+# The bug address could depend on the release status of fvwm.  Currently
 # it doesn't.
 #
 
@@ -91,7 +91,7 @@ if test x"$address" = x; then
 
 	if test "$LOCAL"; then
 		echo "Do you want to send the report to the local maintainer <$LOCAL>,"
-		echo "the FVWM workers <$WORKERS>, or both?"
+		echo "the fvwm workers <$WORKERS>, or both?"
 		echo $n "Send report to (l)ocal, (w)orkers, (b)oth? " $c
 		read ans
 		case "$ans" in

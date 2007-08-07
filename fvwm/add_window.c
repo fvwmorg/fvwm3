@@ -1666,7 +1666,7 @@ void setup_window_font(
 		if (S_HAS_WINDOW_FONT(SCF(*pstyle)) &&
 		    SGET_WINDOW_FONT(*pstyle) &&
 		    (fw->title_font =
-		     FlocaleLoadFont(dpy, SGET_WINDOW_FONT(*pstyle), "FVWM")))
+		     FlocaleLoadFont(dpy, SGET_WINDOW_FONT(*pstyle), "fvwm")))
 		{
 			SET_USING_DEFAULT_WINDOW_FONT(fw, 0);
 		}
@@ -1710,7 +1710,7 @@ void setup_icon_font(
 	{
 		if (S_HAS_ICON_FONT(SCF(*pstyle)) && SGET_ICON_FONT(*pstyle) &&
 		    (fw->icon_font =
-		     FlocaleLoadFont(dpy, SGET_ICON_FONT(*pstyle), "FVWM")))
+		     FlocaleLoadFont(dpy, SGET_ICON_FONT(*pstyle), "fvwm")))
 		{
 			SET_USING_DEFAULT_ICON_FONT(fw, 0);
 		}

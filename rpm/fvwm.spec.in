@@ -19,7 +19,7 @@ Group:     User Interface/Desktops
 Source:    %{name}-%{version}.tar.gz
 URL:       http://www.fvwm.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Packager:  FVWM Workers <fvwm-workers@fvwm.org>
+Packager:  Fvwm Workers <fvwm-workers@fvwm.org>
 Autoreq:   1
 
 Requires:  libXpm.so.4
@@ -34,7 +34,7 @@ Provides:  fvwm
 Docdir:    %{prefix}/share/doc
 
 %description
-FVWM is a powerful ICCCM-compliant multiple virtual desktop window manager
+Fvwm is a powerful ICCCM-compliant multiple virtual desktop window manager
 for the X Window System.
 
 This 2.5 version includes new features like full support of the EWMH
@@ -44,7 +44,7 @@ asian text support, FreeType font support (antialiasing), image rendering,
 Perl based module library, support for PNG images, side titles and much more.
 
 %description -l fr
-FVWM est un gestionnaire de fenЙtres puissant et extrЙmement configurable
+Fvwm est un gestionnaire de fenЙtres puissant et extrЙmement configurable
 pour le systХme X Window.
 
 La version 2.5 contient un grand nombre de nouvelles fonctionnalitИs.
@@ -56,7 +56,7 @@ asian text support, FreeType font support (antialiasing), image rendering,
 Perl based module library, support for PNG images, side titles and much more.
 
 %description -l ru
-FVWM является мощным оконным менеджером для X Window System, соответствующим
+Fvwm является мощным оконным менеджером для X Window System, соответствующим
 стандартам ICCCM, с поддержкой множественных виртуальных десктопов.
 
 Версия 2.5 включает в себя новые особенности, такие как полная поддержка
@@ -99,7 +99,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %define date%(echo `LC_ALL="C" date +"%a %b %d %Y"`)
 %changelog
-* %{date} FVWM Workers <fvwm-workers@fvwm.org>
+* %{date} Fvwm Workers <fvwm-workers@fvwm.org>
   - Auto building %{version}-%{release}
 * Sun May 12 2000 Mikhael Goikhman <migo@homemail.com>
   - First try at making the package

@@ -128,24 +128,24 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "FVWMTABS 1"
-.TH FVWMTABS 1 "2006-10-23" "FvwmTabs" "FVWM Modules"
+.IX Title "FvwmTabs 1"
+.TH FvwmTabs 1 "2006-10-23" "FvwmTabs" "Fvwm Modules"
 .SH "NAME"
-\&\fBFvwmTabs\fR \- a generic tabbing module for the FVWM window manager.
+\&\fBFvwmTabs\fR \- a generic tabbing module for the fvwm window manager.
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-\&\fBFvwmTabs\fR is spawned by \s-1FVWM\s0, so no command line invocation is possible.
+\&\fBFvwmTabs\fR is spawned by \s-1fvwm\s0, so no command line invocation is possible.
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
-The \fBFvwmTabs\fR module is capable of swallowing any \s-1FVWM\s0 window & treating it as a tab in a \fItab-manager\fR window. A tab-manager is sometimes called a \fItabber\fR.
+The \fBFvwmTabs\fR module is capable of swallowing any \s-1fvwm\s0 window & treating it as a tab in a \fItab-manager\fR window. A tab-manager is sometimes called a \fItabber\fR.
 .PP
 Each tab-manager can store any number of windows, each in its own \fItab\fR. The number of tab-managers is limited only by system resources. Tab-managers can even be nested/swallowed within other tab\-managers. (ie. a tab-manager can be added as an individual tab to another tab\-manager.)
 .SH "INVOCATION"
 .IX Header "INVOCATION"
-\&\fBFvwmTabs\fR can be invoked by inserting the line \f(CW\*(C`Module FvwmTabs\*(C'\fR in your .fvwmrc file. This can be placed on a line by itself, if \fBFvwmTabs\fR is to be spawned during \s-1FVWM\s0's initialization, or can be bound to a menu or mouse button or keystroke to invoke it later.
+\&\fBFvwmTabs\fR can be invoked by inserting the line \f(CW\*(C`Module FvwmTabs\*(C'\fR in your .fvwmrc file. This can be placed on a line by itself, if \fBFvwmTabs\fR is to be spawned during \s-1fvwm\s0's initialization, or can be bound to a menu or mouse button or keystroke to invoke it later.
 .SH "INSTALLING DEPENDENCIES"
 .IX Header "INSTALLING DEPENDENCIES"
-\&\fBFvwmTabs\fR requires 2 \s-1CPAN\s0 modules (that are \s-1NOT\s0 distributed with \s-1FVWM\s0) to be installed on your system. They are \fITk\fR and \fIX11::Protocol\fR.
+\&\fBFvwmTabs\fR requires 2 \s-1CPAN\s0 modules (that are \s-1NOT\s0 distributed with \s-1fvwm\s0) to be installed on your system. They are \fITk\fR and \fIX11::Protocol\fR.
 .PP
 They are available at: <http://search.cpan.org/CPAN/authors/id/N/NI/NI\-S/Tk\-804.027.tar.gz> and <http://search.cpan.org/~smccam/X11\-Protocol\-0.56/>.
 .PP
@@ -156,7 +156,7 @@ tar zxvf \f(CW$name\fR.tar.gz ; cd \f(CW$name\fR ; perl Makefile.PL ; make insta
 \&\fBFvwmTabs\fR will tell you if you do not have these packages installed when you (try to) start it.
 .SH "CONFIGURATION OPTIONS"
 .IX Header "CONFIGURATION OPTIONS"
-\&\fBFvwmTabs\fR reads the same config file as \s-1FVWM\s0 when it starts up.
+\&\fBFvwmTabs\fR reads the same config file as \s-1fvwm\s0 when it starts up.
 .PP
 The following options are recognised by \fBFvwmTabs\fR:
 .IP "*FvwmTabs: activeFG \fIcolor\fR" 4
@@ -218,7 +218,7 @@ The backgound color of the balloon popups that appear over the tab buttons. The 
 The font to use on the balloon popups. The default font is \fIHelvetica \-12\fR.
 .IP "*FvwmTabs: balloonWait \fIms\fR" 4
 .IX Item "*FvwmTabs: balloonWait ms"
-How long the mouse cursor must pause (in milliseconds) over a tab button before the balloon pops up. The default value is \fI250\fR. 
+How long the mouse cursor must pause (in milliseconds) over a tab button before the balloon pops up. The default value is \fI250\fR.
 .IP "*FvwmTabs: balloonMsg \fImsg\fR" 4
 .IX Item "*FvwmTabs: balloonMsg msg"
 Message to display in balloon popups. The default value is \fI%tabNo:\en%iconText\en%title\fR.
@@ -227,7 +227,7 @@ Message to display in balloon popups. The default value is \fI%tabNo:\en%iconTex
 \&\fIbool\fR can be either \fItrue\fR or \fIfalse\fR. If true, windows in the tab-manager automatically resize to the dimensions of the largest window in the tab\-manager. The default value is \fIfalse\fR. If the user performs an explicit resize of a tab-manager window, all windows in the tab-manager are resized to the new window size.
 .IP "*FvwmTabs: stateFile \fIfile\fR" 4
 .IX Item "*FvwmTabs: stateFile file"
-\&\fBFvwmTabs\fR has the ability to preserve its state (ie. remember the windows it has swallowed as tabs) b/w \s-1FVWM\s0 restarts. \fIfile\fR specifies the name of a temporary file to record the state in, so it can be reconstructed when \fBFvwmTabs\fR restarts. The default file is \f(CW\*(C`$FVWM_USERDIR/.fvwmtabs.state\*(C'\fR.
+\&\fBFvwmTabs\fR has the ability to preserve its state (ie. remember the windows it has swallowed as tabs) b/w \s-1fvwm\s0 restarts. \fIfile\fR specifies the name of a temporary file to record the state in, so it can be reconstructed when \fBFvwmTabs\fR restarts. The default file is \f(CW\*(C`$FVWM_USERDIR/.fvwmtabs.state\*(C'\fR.
 .IP "*FvwmTabs: fixedSizeTabs \fIbool\fR" 4
 .IX Item "*FvwmTabs: fixedSizeTabs bool"
 \&\fIbool\fR can be either \fItrue\fR or \fIfalse\fR. If true, the tab-manager will ensure each tab-button has the same dimensions. If false, the selected tab is expanded so that it is fully visible. The default value is \fIfalse\fR.
@@ -280,7 +280,7 @@ Image to use on release toolbar button. Default is \fInone\fR.
 Image to use on menu toolbar button. Default is \fInone\fR.
 .SH "FVWM FUNCTIONS FOR KEY BINDINGS"
 .IX Header "FVWM FUNCTIONS FOR KEY BINDINGS"
-A number of \s-1FVWM\s0 functions are available once the \fBFvwmTabs\fR module is started.
+A number of \s-1fvwm\s0 functions are available once the \fBFvwmTabs\fR module is started.
 .IP "NewTabber" 4
 .IX Item "NewTabber"
 Create a new tabber. Optional argument is tabber name. No whitespace is allowed in the tabber name. Can also prefix \-\-geometry argument.
@@ -300,19 +300,19 @@ Show/select the previous tab.
 Show/select the last selected tab (if there was one).
 .IP "ReleaseTab" 4
 .IX Item "ReleaseTab"
-Release a tabbed window back to \s-1FVWM\s0.
+Release a tabbed window back to \s-1fvwm\s0.
 .IP "ReleaseIconifyTab" 4
 .IX Item "ReleaseIconifyTab"
-Release a tabbed window back to \s-1FVWM\s0 & iconify it.
+Release a tabbed window back to \s-1fvwm\s0 & iconify it.
 .IP "ReleaseAllTabs" 4
 .IX Item "ReleaseAllTabs"
-Release all windows in a tab-manager back to \s-1FVWM\s0.
+Release all windows in a tab-manager back to \s-1fvwm\s0.
 .IP "ReleaseIconifyAllTabs" 4
 .IX Item "ReleaseIconifyAllTabs"
-Release all windows in a tab-manager back to \s-1FVWM\s0 & iconify them.
+Release all windows in a tab-manager back to \s-1fvwm\s0 & iconify them.
 .IP "CloseTabber" 4
 .IX Item "CloseTabber"
-Destroy a tab\-manager. All windows in the tab-manager are released back to \s-1FVWM\s0.
+Destroy a tab\-manager. All windows in the tab-manager are released back to \s-1fvwm\s0.
 .IP "AddTab" 4
 .IX Item "AddTab"
 Pick a new window to add to a tab\-manager. Selecting this option & clicking on a window will add the selected window to the tab\-manager.
@@ -341,7 +341,7 @@ Swallow windows that (are moved to) overlap a tabber.
 .IX Header "KEY BINDINGS"
 By default, \fBFvwmTabs\fR reads a default user configuration file \fIFvwmTabs-DefaultSetup\fR which defines several useful key-bindings for \fBFvwmTabs\fR. You can tell \fBFvwmTabs\fR \s-1NOT\s0 to read this file with \f(CW\*(C`SetEnv FvwmTabs_NoDefaultSetup\*(C'\fR \- this environment variable must be set \fIbefore\fR starting the module.
 .PP
-All of the key bindings can be changed using the standard \s-1FVWM\s0 \fIKey\fR command & making use of the aforementioned \s-1FVWM\s0 functions. ie.
+All of the key bindings can be changed using the standard \s-1fvwm\s0 \fIKey\fR command & making use of the aforementioned \s-1fvwm\s0 functions. ie.
 .PP
 Key (FvwmTabs*) A A \s-1CM\s0 Function AddTab
 .PP
@@ -462,7 +462,7 @@ The menu options between the separators will display the window/tab associated w
 .IX Item "Using Maximise to resize tab-manager windows prevents dynamic resizing from working."
 .PD
 .PP
-Please send bug reports, feature requests & queries about \fBFvwmTabs\fR to the \s-1FVWM\s0 Mailing list: \fIfvwm@fvwm.org\fR. Be sure to include the word \*(L"FvwmTabs\*(R" somewhere in the subject line.
+Please send bug reports, feature requests & queries about \fBFvwmTabs\fR to the \s-1fvwm\s0 Mailing list: \fIfvwm@fvwm.org\fR. Be sure to include the word \*(L"FvwmTabs\*(R" somewhere in the subject line.
 .SH "TODO"
 .IX Header "TODO"
 Features to be added to \fBFvwmTabs\fR in the future (in no particular order):

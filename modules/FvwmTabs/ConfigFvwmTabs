@@ -1,6 +1,3 @@
-
-# $Id$
-
 # Author: Scott Smedley ss@aao.gov.au
 
 # See the FvwmTabs(1) man page for how to use the FvwmTabs module.
@@ -139,7 +136,7 @@ AddToMenu TabbersMenu
 # Once - only execute an action if it has not been executed already.
 # This looks complicated mostly because environment variable
 # values are preserved between restarts.
-# Requires FVWM >= 2.5.17 or CVS >= 16-July-2006
+# Requires fvwm >= 2.5.17 or CVS >= 16-July-2006
 DestroyFunc Once
 AddToFunc Once
 + I Test (EnvIsSet $[0]) Break

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# This is a simple FVWM module written in perl using the supplied perl library.
+# This is a simple fvwm module written in perl using the supplied perl library.
 # Iconifies new windows, auto-raises windows and terminates itself in 1 minute.
 # Either place this module in FVWM_MODULEDIR or run it using the full path.
 

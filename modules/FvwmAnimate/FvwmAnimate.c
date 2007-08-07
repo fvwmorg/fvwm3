@@ -1,6 +1,6 @@
 /* -*-c-*- */
 /*
- * FvwmAnimate! Animation module for Fvwm
+ * FvwmAnimate! Animation module for fvwm
  *
  * Copyright (c) 1997 Frank Scheelen <scheelen@worldonline.nl>
  * Copyright (c) 1996 Alfredo Kengi Kojima (kojima@inf.ufrgs.br)
@@ -793,7 +793,7 @@ int main(int argc, char **argv) {
 #endif
   signal(SIGTERM, HandleTerminate);
   signal(SIGINT,  HandleTerminate);
-  signal(SIGPIPE, HandleTerminate);     /* Dead pipe == Fvwm died */
+  signal(SIGPIPE, HandleTerminate);     /* Dead pipe == fvwm died */
 #ifdef HAVE_SIGINTERRUPT
   siginterrupt(SIGTERM, True);
   siginterrupt(SIGINT,  True);
@@ -847,7 +847,7 @@ static void Loop(void) {
   myfprintf((stderr,"Starting event loop\n"));
   while ( !isTerminated ) {
     if ( (packet = ReadFvwmPacket(Channel[1])) == NULL )
-	break;                    /* FVWM is gone */
+	break;                    /* fvwm is gone */
 
       switch (packet->type) {
       case M_NEW_PAGE:

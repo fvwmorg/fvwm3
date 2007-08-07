@@ -50,7 +50,7 @@ Init
    Set $OUTPUT=$FDIR {/.fvwm2rc}
    Set $T = $FDIR{/}
    ChangeTitle 11 $T
-   
+
    Set $DATADIR = {xFVWM_DATADIRx}
    Set $INPUT = $DATADIR {/system.fvwm2rc-sample-95}
    Set $Perl = {xPERLx}
@@ -89,8 +89,8 @@ Init
      HideWidget 91
      HideWidget 92
 
-     Set $SELEC = {0}  
-    
+     Set $SELEC = {0}
+
      # Set the variables
      Set $IP=1
      Set $SoundPath={/usr/share/sounds/}
@@ -113,7 +113,7 @@ Init
      Set $PanelStaysPut = 0
      Set $KfmIcons = 0
      Set $Cde = 0
-   
+
      # Check for KDE
      Set $KdeY=(GetOutput {echo "$KDEDIR"} 1 1)
      If $KdeY == {} Then
@@ -192,7 +192,7 @@ Property
  Position 10 47
  Flags NoReliefString
  Size 580 20
- Font fixed	
+ Font fixed
  Type ItemDraw
  Title {}
 Main
@@ -477,7 +477,7 @@ Property
  Position 155 105
  Flags NoReliefString
  Type PopupMenu
- Title {FVWM 95|FVWM}
+ Title {Fvwm 95|Fvwm}
 Main
  Case message of
   SingleClic :
@@ -848,7 +848,7 @@ Main
   End
 End
 
-##### No gnome-session on the machine 
+##### No gnome-session on the machine
 Widget 55
 Property
  Position 20 150
@@ -897,13 +897,13 @@ Main
   End
 End
 
-##### No FVWM support for gnome
+##### No fvwm support for gnome
 Widget 59
 Property
  Position 20 200
  Flags NoReliefString
  Type ItemDraw
- Title {Your FVWM version is built without support for GNOME hints}
+ Title {Your fvwm version is built without support for GNOME hints}
 Main
  Case message of
   SingleClic :
@@ -963,7 +963,7 @@ Main
   End
 End
 
-##### No KDE on the machine 
+##### No KDE on the machine
 Widget 63
 Property
  Position 20 240
@@ -1022,7 +1022,7 @@ Main
       HideWidget 31
       HideWidget 32
       HideWidget 33
-     
+
       ShowWidget 17
       ShowWidget 18
       ShowWidget 47
@@ -1134,7 +1134,7 @@ Main
       HideWidget 64
 
       HideWidget 4
- 
+
       ShowWidget 1
       ShowWidget 71
     End
@@ -1304,13 +1304,13 @@ Main
 End
 
 ############ Restart to apply
- 
+
 Widget 80
 Property
  Position 20 110
  Flags NoReliefString
  Type ItemDraw
- Title {Your new FVWM configuration file has been built and installed. For further FVWM cusomtization}
+ Title {Your new fvwm configuration file has been built and installed. For further fvwm cusomtization}
 Main
  Case message of
   SingleClic :
@@ -1323,7 +1323,7 @@ Property
  Position 20 130
  Flags NoReliefString
  Type ItemDraw
- Title {you can edit this file, read the FVWM man pages and the FAQ. Also, you will find a special}
+ Title {you can edit this file, read the fvwm man pages and the FAQ. Also, you will find a special}
 Main
  Case message of
   SingleClic :
@@ -1363,7 +1363,7 @@ End
 
 
 ############ Build the config
- 
+
 Widget 71
 Property
  Size 570 20
@@ -1391,7 +1391,7 @@ Main
   Begin
 
    # Create the fvwm user dir if needed.
-   # No, FVWM is responsible to create it. (And this command is not portable)
+   # No, fvwm is responsible to create it. (And this command is not portable)
    #Do {[Exec /bin/mkdir -p } $FDIR
 
    # Backup: fvwm-script-setup95.pl does that
@@ -1507,7 +1507,7 @@ Property
  Position 20 130
  Flags NoReliefString
  Type ItemDraw
- Title {fvwm2rc.system-sample-95 to your FVWM configuration directory.}
+ Title {fvwm2rc.system-sample-95 to your fvwm configuration directory.}
 Main
  Case message of
   SingleClic :
@@ -1531,7 +1531,7 @@ Main
    # Create the fvwm user home dir if need
    If $FDIR <> {} Then
       Do {PipeRead '/bin/mkdir -p } $FDIR
- 
+
    # Backup
    Set $DATE = {date +%Y%m%d-%H%M%S}
    Set $Backup = (GetOutput  $DATE 1 -1)

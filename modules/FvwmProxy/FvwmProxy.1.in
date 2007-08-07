@@ -1,9 +1,9 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmProxy 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmProxy 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmProxy \- the FVWM Proxy module
+FvwmProxy \- the fvwm proxy module
 .SH SYNOPSIS
 FvwmProxy is spawned by fvwm, so no command line invocation will work.
 

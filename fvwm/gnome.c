@@ -1,6 +1,6 @@
 /* -*-c-*- */
 /*
- * GNOME WM Compliance adapted for FVWM
+ * GNOME WM Compliance adapted for fvwm
  * Properties set on the root window (or desktop window)
  *
  * Even though the rest of fvwm is GPL consider this file
@@ -8,7 +8,7 @@
  * your WM GNOME compiant
  *
  * written by Raster
- * adapted for FVWM by Jay Painter <jpaint@gnu.org>
+ * adapted for fvwm by Jay Painter <jpaint@gnu.org>
  */
 #include "config.h"
 
@@ -1173,7 +1173,7 @@ GNOME_ProxyButtonEvent(const XEvent *ev)
 }
 
 
-/* this is the function entered into FVWM's functions table */
+/* this is the function entered into fvwm's functions table */
 void
 CMD_GnomeButton(F_CMD_ARGS)
 {

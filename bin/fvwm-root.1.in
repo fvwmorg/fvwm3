@@ -1,6 +1,6 @@
 '\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH fvwm-root 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH fvwm-root 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 
 .SH NAME
@@ -43,7 +43,7 @@ Pixmap on the background to simulate transparency (for example,
 Eterm and Aterm use this method). This option should also be used for the
 RootTransparent colorset option, refer to the COLORSETS section of fvwm(1).
 If this option is not used, fvwm-root sets the _XSETROOT_ID property to
-None, and some programs, like FVWM modules, may use this to update their
+None, and some programs, like fvwm modules, may use this to update their
 background if the background is transparent (Transparent colorset).
 
 Note, a well behaved program, like fvwm, should listen to both _XSETROOT_ID

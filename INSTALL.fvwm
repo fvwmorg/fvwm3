@@ -5,7 +5,7 @@ If you only need an information about all supported features skip to the
 VMS users: ignore this file, and follow the instructions in vms/README
 instead.
 
-This file details only configuration options peculiar to FVWM.  Please
+This file details only configuration options peculiar to fvwm.  Please
 read the generic instructions in INSTALL first.
 
 
@@ -43,7 +43,7 @@ What gets installed, and where
   FvwmForm & FvwmScript configurations and others
 * perl library is installed into ${datadir}/fvwm/perllib
 
-where VERSION is the version string of FVWM, typically something like
+where VERSION is the version string of fvwm, typically something like
 "2.4.0".  No other files are installed.  There are sample fvwm/config
 files which you may copy manually to ${datadir}/fvwm, see below.
 
@@ -57,7 +57,7 @@ Unless you used configure options,
 * ${sysconfdir} is ${prefix}/etc
 
 Thus the default locations are: /usr/local/bin, /usr/local/man/man1,
-/usr/local/libexec/fvwm/VERSION, and /usr/local/share/fvwm for the FVWM
+/usr/local/libexec/fvwm/VERSION, and /usr/local/share/fvwm for the fvwm
 executables, man pages, modules, and configuration files, respectively.
 
 Note that by default, none of the executables are stripped when they're
@@ -71,7 +71,7 @@ install-strip', which will continue past the failures.
 Configuration File
 ==================
 
-FVWM configures itself at runtime by reading one or more configuration
+Fvwm configures itself at runtime by reading one or more configuration
 files.  The default locations of the config file are ~/.fvwm/config and
 /usr/local/share/fvwm/config (if the user's file is not found).  The
 .fvwm2rc file names used in the past are supported too.
@@ -79,7 +79,7 @@ files.  The default locations of the config file are ~/.fvwm/config and
 Sample configuration files may be found in the sample.fvwmrc
 directory.  To avoid clobbering the current configuration, no
 configuration file is installed by default.  You must copy it manually
-the first time FVWM is installed.  But this is fully optional, FVWM
+the first time fvwm is installed.  But this is fully optional, fvwm
 can run without any configuration file and has an ability to install some
 configurations into the user home directory (precisely, FVWM_USERDIR).
 
@@ -107,7 +107,7 @@ There is also a web based bug reporting system, see the Home Page.
 CPP
 ===
 
-One of FVWM's modules, FvwmCpp, requires a C preprocessor program.  The
+One of fvwm's modules, FvwmCpp, requires a C preprocessor program.  The
 configuration will look in various common places for cpp.  If one is not
 found, FvwmCpp will still compile but you'll need to invoke it with the
 -cpppath option to tell it where to find cpp.  FvwmCpp will exit with an
@@ -122,7 +122,7 @@ environment variable before invoking configure:
 Supported Features
 ==================
 
-FVWM has several compile time features that may be switched on and off
+Fvwm has several compile time features that may be switched on and off
 using ./configure. To query what your installed fvwm supports run one of:
 
   % fvwm-config --info
@@ -161,10 +161,10 @@ It is safe *not* to compile in the following features:
   xinerama    (not needed if you or your users have only one monitor)
 
 
-Optional libraries used by FVWM
+Optional libraries used by fvwm
 ===============================
 
-FVWM can optionally be compiled to use the following libraries:
+Fvwm can optionally be compiled to use the following libraries:
 
 	xpm         (XPM image format)
 	png         (PNG image format)
@@ -175,7 +175,7 @@ FVWM can optionally be compiled to use the following libraries:
 	intl        (Internationalization and localization using gettext)
 
 By default, these are probed for, and used if found. If you want to use
-any of them, install the library before configuring FVWM. It is possible
+any of them, install the library before configuring fvwm. It is possible
 to explicitly tell configure to skip autoprobing of a given library and
 disable it (see below).
 
@@ -183,7 +183,7 @@ Xpm allows the use of coloured icons.  See the Xpm web page at
 http://www.inria.fr/koala/lehors/xpm.html for all the latest info and
 links to source code.  You can also get the source code from
 ftp://ftp.x.org/contrib/libraries/.  If you're having trouble building
-with XPM even after reading this, try Question 2.4 in the FVWM FAQ.
+with XPM even after reading this, try Question 2.4 in the fvwm FAQ.
 
 Png allows to load coloured icons from files in PNG format. See the
 libpng web page at http://www.libpng.org/pub/png/libpng.html for all the
@@ -247,7 +247,7 @@ Optional libraries used by FvwmGtk
 FvwmGtk module requires GTK+ and optionally GDK-Imlib and GNOME libraries.
 GDK-Imlib library that is a part of Imlib version 1 is used to have images.
 
-Note, FVWM itself has an ability to support GNOME Window Manager hints
+Note, fvwm itself has an ability to support GNOME Window Manager hints
 (which is enabled by default), this has nothing to do with GNOME library
 support compiled into FvwmGtk (which is autoprobed and used if passed).
 
@@ -268,7 +268,7 @@ Run './configure --help' for more information about configure options.
 Shared Libraries in Non-standard Places
 =======================================
 
-Note that at this time, autoconf and FVWM don't handle systems which
+Note that at this time, autoconf and fvwm don't handle systems which
 require a runtime library path separate from the link path very
 gracefully.  If you have such a system (e.g., Solaris) and you have
 installed the optional libraries in places not normally searched (e.g.,
@@ -282,14 +282,14 @@ runs to contain the -R option.  For example:
       --with-xpm-library=/opt/xpm/lib \
       --with-xpm-includes=/opt/xpm/include
 
-In the future, FVWM's configuration may perform this step automatically.
+In the future, fvwm's configuration may perform this step automatically.
 
 
 Compile-time Options
 ====================
 
-FVWM has several options selectable only at compile time.
-These are intended to keep FVWM's memory footprint small, by compiling
+Fvwm has several options selectable only at compile time.
+These are intended to keep fvwm's memory footprint small, by compiling
 in the code only if requested.
 
 Each such option, say "foo", is selectable by an "--enable-foo" or a
@@ -307,9 +307,9 @@ listed.
   --disable-package-subdirs     don't create subdirs for modules and data
   ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Usually FVWM is installed to common places, like /usr or /usr/local/X11,
+Usually fvwm is installed to common places, like /usr or /usr/local/X11,
 in this case it is essential to create the package subdirectories for
-modules and data files.  Hovewer, if FVWM is installed to its own prefix,
+modules and data files.  Hovewer, if fvwm is installed to its own prefix,
 like /opt/fvwm or /opt/fvwm-2.4, it's possible to disable them.
 
 With --enable-package-subdirs (default):
@@ -329,7 +329,7 @@ If you switch this option between builds, you need "make clean"!
   --enable-debug-msgs           enable debugging messages
   ~~~~~~~~~~~~~~~~~~~
 
-If you would like to see lots of debug messages from FVWM, for
+If you would like to see lots of debug messages from fvwm, for
 debugging purposes, enable this option.  When reporting bugs, please
 do not send the debug output.  It is almost never useful in this
 situation.
@@ -348,9 +348,9 @@ reach hours.
   --disable-sm                  disable session management support
   ~~~~~~~~~~~~
 
-FVWM has experimental session management support, which is autoconfigured
+Fvwm has experimental session management support, which is autoconfigured
 by searching for SM library, which is often shipped together with your
-X libraries.  Note, the session management support is activated when FVWM
+X libraries.  Note, the session management support is activated when fvwm
 is run under a session manager like xsm or gnome-session.
 This option disables session management support completely.
 
@@ -358,7 +358,7 @@ This option disables session management support completely.
   --disable-xft                 disable anti-aliased text rendering
   ~~~~~~~~~~~~~
 
-FVWM can use the Xft library (version 1 or 2) to perform anti-aliased
+Fvwm can use the Xft library (version 1 or 2) to perform anti-aliased
 text rendering in any text drawn by fvwm and modules.  By default, Xft
 library is probed and this support is enabled if Xft works. You need
 XFree version >= 4.1 and freetype2 version >= 6.1.0 (aka version
@@ -371,7 +371,7 @@ support completely.
   --disable-xrender             disable Xrender alpha-blend rendering
   ~~~~~~~~~~~~~~~~~
 
-FVWM uses the Xrender library for alpha-blend rendering and tinting. This
+Fvwm uses the Xrender library for alpha-blend rendering and tinting. This
 library is contained in XFree version >= 4.0 and others recent X package.
 This option disables Xrender support completely.
 
@@ -379,14 +379,14 @@ This option disables Xrender support completely.
   --disable-xcursor             disable Xcursor ARGB/animated cursor loading
   ~~~~~~~~~~~~~~~~~
 
-FVWM can use the Xcursor library to load ARGB/animated mouse cursors. This
+Fvwm can use the Xcursor library to load ARGB/animated mouse cursors. This
 library is contained in XFree version >= 4.3 and others recent X packages.
 This option disables Xcursor support.
 
 
   --disable-rsvg                disable scalable vector graphics (SVG images)
   ~~~~~~~~~~~~~~
-FVWM can use the librsvg library to render SVG files into icons and
+Fvwm can use the librsvg library to render SVG files into icons and
 images. You need a librsvg version >= 2.13.92 that uses Cairo as the
 rendering backend. This option disables SVG image loading support.
 
@@ -428,13 +428,13 @@ is determined using fribidi-config utility.  This option specifies a
 directory where fribidi-config is installed if it is not in the $PATH.
 
 
-  --disable-perllib             disable installing FVWM perl library
+  --disable-perllib             disable installing fvwm perl library
   ~~~~~~~~~~~~~~~~~
 
-By default the FVWM perl library is installed together with all other
-data files.  Perl library may be used to write FVWM modules in perl.
+By default the fvwm perl library is installed together with all other
+data files.  Perl library may be used to write fvwm modules in perl.
 Currently the FvwmPerl module uses it.  This option disables installing
-the FVWM perl library.
+the fvwm perl library.
 
 
   --with-gnome                  no, yes or prefix for GNOME files (FvwmGtk only)

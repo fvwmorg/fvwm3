@@ -1,7 +1,7 @@
 #!@PERL@
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "FVWM Utilities" fvwm-menu-directory | nroff -man | less -e
+#   pod2man -c "Fvwm Utilities" fvwm-menu-directory | nroff -man | less -e
 
 # To speed up the script, several optimizations were made: trying to minimize
 # the number of additional file operations, function calls and includes.
@@ -392,7 +392,7 @@ __END__
 
 =head1 NAME
 
-fvwm-menu-directory - builds a directory browsing menu for FVWM
+fvwm-menu-directory - builds a directory browsing menu for fvwm
 
 =head1 SYNOPSIS
 

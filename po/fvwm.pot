@@ -28,15 +28,15 @@ msgid "Setup 95 Script"
 msgstr ""
 
 #: ../fvwm/fvwm.c:1371
-msgid "Issue FVWM commands"
+msgid "Issue fvwm commands"
 msgstr ""
 
 #: ../fvwm/fvwm.c:1374
-msgid "Restart FVWM"
+msgid "Restart fvwm"
 msgstr ""
 
 #: ../fvwm/fvwm.c:1375
-msgid "Exit FVWM"
+msgid "Exit fvwm"
 msgstr ""
 
 #: ../fvwm/expand.c:255 ../fvwm/virtual.c:2042

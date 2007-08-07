@@ -28,16 +28,16 @@ msgid "Setup 95 Script"
 msgstr "Konfiguration mit Script95"
 
 #: ../fvwm/fvwm.c:1371
-msgid "Issue FVWM commands"
-msgstr "FVWM Konsole"
+msgid "Issue fvwm commands"
+msgstr "Fvwm-Konsole"
 
 #: ../fvwm/fvwm.c:1374
-msgid "Restart FVWM"
-msgstr "FVWM neustarten"
+msgid "Restart fvwm"
+msgstr "Fvwm neu starten"
 
 #: ../fvwm/fvwm.c:1375
-msgid "Exit FVWM"
-msgstr "FVWM beenden"
+msgid "Exit fvwm"
+msgstr "Fvwm beenden"
 
 #: ../fvwm/expand.c:255 ../fvwm/virtual.c:2042
 msgid "Desk"
@@ -99,7 +99,7 @@ msgstr "Bildschirm speichern"
 
 #. ./fvwm/ConfigFvwmSetup: line 106
 msgid "Exit Fvwm"
-msgstr "FVWM beenden"
+msgstr "Fvwm beenden"
 
 #. ./fvwm/ConfigFvwmSetup: line 121
 msgid "Reset X defaults"
@@ -215,11 +215,11 @@ msgstr "Arbeitsplatz"
 
 #. ./fvwm/ConfigFvwmSetup: line 210
 msgid "Stop Module Menu"
-msgstr "Halt Module Menu"
+msgstr "Fvwm-Module stoppen"
 
 #. ./fvwm/ConfigFvwmSetup: line 213
 msgid "Stop Fvwm Modules"
-msgstr "Halt FVWM Module"
+msgstr "Fvwm-Module stoppen"
 
 #. #-#-#-#-#  duplicate  #-#-#-#-#
 #. ./fvwm/ConfigFvwmSetup: line 214
@@ -244,11 +244,11 @@ msgstr "Stop"
 
 #. ./fvwm/ConfigFvwmSetup: line 241
 msgid "Really Quit Fvwm?"
-msgstr "FVWM beenden?"
+msgstr "Fvwm beenden?"
 
 #. ./fvwm/ConfigFvwmSetup: line 242
 msgid "Yes, Really Quit"
-msgstr "Ja, FVWM beenden"
+msgstr "Ja, fvwm beenden"
 
 #. ./fvwm/ConfigFvwmSetup: line 244
 msgid "Restart"
@@ -275,7 +275,7 @@ msgstr "XTerm"
 
 #. ./fvwm/ConfigFvwmSetup: line 255
 msgid "No, Don't Quit"
-msgstr "Nein, FVWM nicht beenden"
+msgstr "Nein, fvwm nicht beenden"
 
 # FvwmForm
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 8
@@ -317,7 +317,3 @@ msgstr "Annehmen - Schliessen"
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 55
 msgid "Copy Config File(s)"
 msgstr "Konfigurationsdateien kopieren"
-
-#. ./modules/FvwmForm/FvwmForm-Setup.in: line 66
-msgid "Restart fvwm"
-msgstr "Restart fvwm"

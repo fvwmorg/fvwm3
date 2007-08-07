@@ -46,7 +46,7 @@ static int positive_read(int fd, char *buf, int count)
 
 
 /*
- * Reads a single packet of info from FVWM.
+ * Reads a single packet of info from fvwm.
  * The packet is stored in static memory that is reused during
  * the next call.
  */
@@ -58,9 +58,9 @@ FvwmPacket *ReadFvwmPacket(int fd)
 	unsigned long length;
 
 	/* The `start flag' value supposedly exists to synchronize the
-	 * FVWM -> module communication.  However, the communication goes
+	 * fvwm -> module communication.  However, the communication goes
 	 * through a pipe.  I don't see how any data could ever get lost,
-	 * so how would FVWM & the module become unsynchronized?
+	 * so how would fvwm & the module become unsynchronized?
 	 */
 	do
 	{
@@ -293,8 +293,8 @@ ModuleArgs *ParseModuleArgs(int argc, char *argv[], int use_arg6_as_alias)
 
 	/* Need at least six arguments:
 	   [0] name of executable
-	   [1] file descriptor of module->FVWM pipe (write end)
-	   [2] file descriptor of FVWM->module pipe (read end)
+	   [1] file descriptor of module->fvwm pipe (write end)
+	   [2] file descriptor of fvwm->module pipe (read end)
 	   [3] pathname of last config file read (ignored, use Send_ConfigInfo)
 	   [4] application window context
 	   [5] window decoration context

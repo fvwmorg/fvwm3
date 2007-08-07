@@ -659,7 +659,7 @@ sub eventArgAliases ($) {
 
 =head1 NAME
 
-FVWM::EventNames - names and types of all FVWM event arguments
+FVWM::EventNames - names and types of all fvwm event arguments
 
 =head1 SYNOPSIS
 

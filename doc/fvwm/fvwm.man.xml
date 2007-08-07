@@ -9,7 +9,7 @@
 
 <article>
 <artheader>
-	<title>FVWM &version;</title>
+	<title>Fvwm &version;</title>
 	<author>Scott Smedley</author>
 	<titleabbrev>fvwm</titleabbrev>
 	<date>&releasedate;</date>
@@ -17,7 +17,7 @@
 
 <section id="name">
 <title>Name</title>
-<para>fvwm - F? Virtual Window Manager for X11</para>
+<para>Fvwm - F? Virtual Window Manager for X11</para>
 </section>
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="synopsis.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="description.xml" />

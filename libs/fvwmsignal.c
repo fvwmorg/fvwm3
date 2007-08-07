@@ -102,7 +102,7 @@ fvwmSetSignalMask(int sigmask)
 
 
 /*
- * fvwmGetSignalMask - get the set of signals that will terminate FVWM
+ * fvwmGetSignalMask - get the set of signals that will terminate fvwm
  *
  * NOTE: We don't need this if we have POSIX.1 since we can install
  *       a signal mask automatically using sigaction()

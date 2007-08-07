@@ -40,7 +40,7 @@ use Exporter;
 # The major version part indicates major API changes
 $VERSION = '1.2';
 
-# Set the FVWM search directories (used for non fully qualified file names)
+# Set the fvwm search directories (used for non fully qualified file names)
 $General::FileSystem::SAVE_FILE_DIR = $General::FileSystem::SAVE_FILE_DIR ||
 	__PACKAGE__->userDataDir();
 $General::FileSystem::LOAD_FILE_DIRS = $General::FileSystem::LOAD_FILE_DIRS ||
@@ -288,7 +288,7 @@ sub isInSyncMask ($$) {
 	return $type & ($mask || 0);
 }
 
-# by default the version of a module is the FVWM version
+# by default the version of a module is the fvwm version
 sub version ($) {
 	my $self = shift;
 	return "@VERSION@";
@@ -530,7 +530,7 @@ sub eventLoopPrepared ($@) {
 		$self->debug("entered event loop", 3 + $tracking);
 		$self->{isInEventLoop} = 1;
 	}
-	
+
 	# update module masks to handle trackers if needed
 	my $addMask  = 0;
 	my $addXMask = 0;
@@ -649,7 +649,7 @@ sub addDefaultErrorHandler ($) {
 	$self->addHandler(M_ERROR, sub {
 		my ($self, $type, @args) = @_;
 		my $error = $args[3];
-		print STDERR "[", $self->name, "]: got FVWM error: $error\n";
+		print STDERR "[", $self->name, "]: got fvwm error: $error\n";
 		#$self->terminate;
 	});
 }
@@ -673,7 +673,7 @@ __END__
 
 =head1 NAME
 
-FVWM::Module - the base class representing FVWM module
+FVWM::Module - the base class representing fvwm module
 
 =head1 SYNOPSIS
 
@@ -700,9 +700,9 @@ FVWM::Module - the base class representing FVWM module
 
 =head1 DESCRIPTION
 
-An FVWM module is a separate program that communicates with the main I<fvwm>
+An fvwm module is a separate program that communicates with the main I<fvwm>
 process, receives a module configuration and events and sends commands back.
-This class B<FVWM::Module> makes it easy to create FVWM modules in Perl.
+This class B<FVWM::Module> makes it easy to create fvwm modules in Perl.
 
 If you are interested in all module protocol details that this class tries
 to make invisible, visit the web page
@@ -711,12 +711,12 @@ You will need an information about packet arguments anyway to be able to
 write complex modules. This is however not obligatory for simple modules
 that only send commands back when something happens.
 
-A typical FVWM module has an initialization part including setting event
+A typical fvwm module has an initialization part including setting event
 handlers using B<addHandler> methods and entering an event loop using
 B<eventLoop> method. Most of the work is done in the event handlers although
 a module may define other execution ways, for example using C<$SIG{ALRM}>.
 
-An FVWM module receives 3 values from I<fvwm>: I<rcFile> - the file this
+An fvwm module receives 3 values from I<fvwm>: I<rcFile> - the file this
 module was called from or "none" if the module is called as a command from
 another module or from a binding/function (this value is not really useful),
 I<winId> - the window context of this module if it is called from window
@@ -822,11 +822,11 @@ command line arguments are available to the program using B<argv> method.
 
 =item B<version>
 
-Returns FVWM version string I<x.y.z>.
+Returns fvwm version string I<x.y.z>.
 
 =item B<versionInfo>
 
-Returns FVWM version info string, like " (from cvs)" or " (snap-YYYYMMDD)".
+Returns fvwm version info string, like " (from cvs)" or " (snap-YYYYMMDD)".
 This string is usually empty for the final version.
 
 =item B<argv>
@@ -910,7 +910,7 @@ This deletes all event handlers without exception.
 =item B<addHandler> I<mask code>
 
 Defines a handler (that is a I<code> subroutine) for the given I<mask> event
-(or several events). Usually the event type is one of the FVWM I<M_*> or
+(or several events). Usually the event type is one of the fvwm I<M_*> or
 I<MX_*> constants (see B<FVWM::Constants>), but it may also be I<ON_EXIT>,
 this special event is called just before the event loop is terminated.
 
@@ -1107,7 +1107,7 @@ received for a possible future use.
 
 =item B<isEventExtended> I<type>
 
-For technical reasons there are 2 categories of FVWM events, regular and
+For technical reasons there are 2 categories of fvwm events, regular and
 extended. This is done to enable more events. With introdution of the
 extended event types (with the highest bit set) it is now possible to have
 31+31=62 different event types rather than 32. This is a good point, the bad
@@ -1121,7 +1121,7 @@ Returns the user data directory, usually ~/.fvwm or set by $FVWM_USERDIR.
 
 =item B<siteDataDir>
 
-Returns the system-wide data directory, the one configured when FVWM is
+Returns the system-wide data directory, the one configured when fvwm is
 installed. It is also returned by `fvwm-config --fvwm-datadir`.
 
 =item B<searchDirs>

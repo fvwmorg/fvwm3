@@ -1,5 +1,5 @@
 ##########################################################################
-# FVWM - F? Virtual Window Manager, Version 2.x (fvwm) Configuration File
+# Fvwm - F? Virtual Window Manager, Version 2.x (fvwm) Configuration File
 # Created April 1996
 #
 
@@ -547,7 +547,7 @@ Key F8		A	MC	Prev (AcceptsFocus) focus
 *QuitVerifyItemBack Gray50
 # begin items
 *QuitVerifyLine          center
-*QuitVerifyText          "Do you really want to exit FVWM?"
+*QuitVerifyText          "Do you really want to exit fvwm?"
 *QuitVerifyLine          expand
 *QuitVerifyButton   quit      " Exit "
 *QuitVerifyCommand  Quit

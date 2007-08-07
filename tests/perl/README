@@ -1,8 +1,8 @@
-These are a number of small FVWM modules written in Perl:
+These are a number of small fvwm modules written in Perl:
 
 * module-example:
 	Beeps, auto-raises, auto-iconifies and auto-exits in one minute.
-	
+
 * module-flash:
 	Shows a flash window on every page switch. Mainly for tutorial.
 

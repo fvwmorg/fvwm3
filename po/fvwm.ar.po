@@ -28,16 +28,16 @@ msgid "Setup 95 Script"
 msgstr "ملف إعداد 95"
 
 #: ../fvwm/fvwm.c:1371
-msgid "Issue FVWM commands"
-msgstr "أصدر أوامر FVWM"
+msgid "Issue fvwm commands"
+msgstr "أصدر أوامر fvwm"
 
 #: ../fvwm/fvwm.c:1374
-msgid "Restart FVWM"
-msgstr "أعد تشغيل FVWM"
+msgid "Restart fvwm"
+msgstr "أعد تشغيل fvwm"
 
 #: ../fvwm/fvwm.c:1375
-msgid "Exit FVWM"
-msgstr "أخرج من FVWM"
+msgid "Exit fvwm"
+msgstr "أخرج من fvwm"
 
 #: ../fvwm/expand.c:255 ../fvwm/virtual.c:2042
 msgid "Desk"
@@ -316,7 +316,3 @@ msgstr "رجوع - خروج"
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 55
 msgid "Copy Config File(s)"
 msgstr "إنسخ ملفات التعريف"
-
-#. ./modules/FvwmForm/FvwmForm-Setup.in: line 66
-msgid "Restart fvwm"
-msgstr "أعد تشغيل fvwm"

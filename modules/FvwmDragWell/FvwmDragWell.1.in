@@ -1,6 +1,6 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmDragWell 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmDragWell 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
 FvwmDragWell \- A XDND drag well
@@ -16,7 +16,7 @@ drops of type "text/uri-list".
 
 .SH INITIALIZATION
 During initialization, \fIFvwmDragWell\fP gets config info from
-\fBfvwm\fP's module configuration database (see 
+\fBfvwm\fP's module configuration database (see
 .IR fvwm (1),
 section
 .BR "MODULE COMMANDS" ).

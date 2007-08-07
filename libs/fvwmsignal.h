@@ -5,7 +5,7 @@
 /* This module provides wrappers around system functions that could
  * potentially block, e.g. select(). These wrappers will check that
  * the "terminate" flag is still clear and then call the system
- * function in one atomic operation. This ensures that FVWM will not
+ * function in one atomic operation. This ensures that fvwm will not
  * block in a system function once it has received the signal to quit.
  *
  * This module was written by Chris Rankin,  rankinc@zipworld.com.au

@@ -1,7 +1,7 @@
 #!@PERL@
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "FVWM Utilities" fvwm-perllib | nroff -man | less -e
+#   pod2man -c "Fvwm Utilities" fvwm-perllib | nroff -man | less -e
 
 #use strict;  # comment to make it faster
 
@@ -64,7 +64,7 @@ $internalPods->{index} = qq{
 	:head1 DESCRIPTION
 
 	Recent I<fvwm> versions install the Perl library that makes creating
-	FVWM modules in Perl possible and easy.
+	fvwm modules in Perl possible and easy.
 
 	You may read the Perl library documentation locally by running:
 
@@ -89,7 +89,7 @@ $internalPods->{index} = qq{
 $internalPods->{tutorial} = q{
 	:head1 NAME
 
-	tutorial - common techniques for writting FVWM modules
+	tutorial - common techniques for writting fvwm modules
 
 	:head1 TUTORIAL
 
@@ -110,7 +110,7 @@ $internalPods->{tutorial} = q{
 	program that is intended to extend the window manager using a defined
 	module protocol.
 
-	FVWM modules are spawned by the main I<fvwm> executable. They
+	Fvwm modules are spawned by the main I<fvwm> executable. They
 	usually listen to the window manager events, do some useful work and
 	send back commands for execution. There are transient modules that
 	exit immediately or shortly, and persistent modules that exit
@@ -134,7 +134,7 @@ $internalPods->{tutorial} = q{
 	handlers. When an event is processed, the module enters the event
 	loop again.
 
-	In our case, we should listen to an FVWM event I<M_NEW_PAGE>. The list
+	In our case, we should listen to an fvwm event I<M_NEW_PAGE>. The list
 	of all events may be found in man page "events". When we receive
 	the event we want to get new page coordinates and display them
 	using our special xmessage window.
@@ -265,7 +265,7 @@ $internalPods->{tutorial} = q{
 
 	Note, there are actually two event masks, called "mask" and
 	"xmask" (extended mask). If you are interested in the details,
-	refer to the FVWM documentation or perllib sources.
+	refer to the fvwm documentation or perllib sources.
 
 	When trackers are added or removed, the module mask (and xmask)
 	are automatically tweaked underhand. In short, there is often no
@@ -369,7 +369,7 @@ $internalPods->{tutorial} = q{
 $internalPods->{events} = q{
 	:head1 NAME
 
-	events - list of all FVWM events with arguments
+	events - list of all fvwm events with arguments
 
 	:head1 DESCRIPTION
 
@@ -391,7 +391,7 @@ $internalPods->{events} = q{
 
 	:head1 ARGUMENT TYPE LEGEND
 
-	Here is a mapping of FVWM argument types to perl native types:
+	Here is a mapping of fvwm argument types to perl native types:
 
 	    number - integer
 	    bool   - boolean, true or false
@@ -448,8 +448,8 @@ if (exists $internalPods->{$topic}) {
 
 my $manConverter = $doMan? " | nroff -man | $pager": "";
 open(MANPIPE, $doCat? "| pod2text '$file' | $pager":
-	"| pod2man --section 3 --release 'FVWM $version$versionInfo'" .
-		" --center 'FVWM Perl library' '$file'" .
+	"| pod2man --section 3 --release 'fvwm $version$versionInfo'" .
+		" --center 'Fvwm Perl library' '$file'" .
 		" | sed 's/<STANDARD INPUT>/perllib/ig'$manConverter")
 	or die "Can't open pipe to pod/man viewer\n";
 print MANPIPE $text
@@ -461,12 +461,12 @@ close MANPIPE;
 sub showHelp {
 	print "Shows documentation of the supplied FVWM Perl library.\n\n";
 	print "Usage: fvwm-perllib man|cat\n";
-	print "\tAn introduction to the FVWM Perl library\n\n";
+	print "\tAn introduction to the Fvwm Perl library\n\n";
 	print "Usage: fvwm-perllib man|cat|raw <Perl::Class>\n";
 	print "\tManual page for <Perl::Class>, try: man FVWM::Module\n";
 	print "\t\$PAGER is used for a pager, the default is '$pager'\n\n";
 	print "Usage: fvwm-perllib dir\n";
-	print "\tFor use in FVWM modules written in Perl\n\n";
+	print "\tFor use in fvwm modules written in Perl\n\n";
 	print "Usage: fvwm-perllib [OPTIONS]\n";
 	print "Options:\n";
 	print "\t--help           show this help and exit\n";
@@ -490,7 +490,7 @@ __END__
 
 =head1 NAME
 
-fvwm-perllib - shows the documentation of the FVWM Perl library
+fvwm-perllib - shows the documentation of the Fvwm Perl library
 
 =head1 SYNOPSIS
 
@@ -505,8 +505,8 @@ B<fvwm-perllib>
 =head1 DESCRIPTION
 
 Starting from fvwm-2.5.x versions there is a built-in support for creating
-FVWM modules in Perl. This B<fvwm-perllib> utility provides help services
-for the FVWM Perl library.
+fvwm modules in Perl. This B<fvwm-perllib> utility provides help services
+for the Fvwm Perl library.
 
 =head1 OPTIONS
 
@@ -530,11 +530,11 @@ B<--dir> or B<dir>
 
 =head1 USAGE
 
-Use this in the FVWM modules written in Perl:
+Use this in the fvwm modules written in Perl:
 
     use lib `fvwm-perllib dir`;
 
-Introduction to the FVWM Perl library:
+Introduction to the Fvwm Perl library:
 
     % fvwm-perllib man
 

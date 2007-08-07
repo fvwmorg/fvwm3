@@ -14,11 +14,11 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FvwmTheme 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmTheme 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 
 .SH NAME
-FvwmTheme \- an FVWM module for managing the appearance of FVWM and its modules
+FvwmTheme \- an fvwm module for managing the appearance of fvwm and its modules
 
 .SH SYNOPSIS
 ModuleSynchronous Timeout 5 FvwmTheme
@@ -27,9 +27,9 @@ ModuleSynchronous Timeout 5 FvwmTheme
 Command line invocation of the FvwmTheme module will not work.
 
 .SH DESCRIPTION
-FvwmTheme creates appearance resources that may be shared by FVWM and other
+FvwmTheme creates appearance resources that may be shared by fvwm and other
 modules.  It reads an initial configuration and also reacts to configuration
-commands and messages sent from FVWM so that the resources can be dynamically
+commands and messages sent from fvwm so that the resources can be dynamically
 changed.
 
 .SH INVOCATION

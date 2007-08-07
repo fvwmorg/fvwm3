@@ -386,7 +386,8 @@ static void visible_icon_name(FvwmPacketBody *body)
 	}
 
 	copy_string(&win->visible_icon_name, (char *)name);
-	ConsoleDebug(FVWM, "new visible icon name: %s\n", win->visible_icon_name);
+	ConsoleDebug(
+		FVWM, "new visible icon name: %s\n", win->visible_icon_name);
 	if (change_windows_manager(win) == 0 && win->button &&
 		(win->manager->format_depend & ICON_NAME))
 	{
@@ -678,7 +679,7 @@ static void ProcessMessage(Ulong type, FvwmPacketBody *body)
 {
 	int i;
 
-	ConsoleDebug(FVWM, "FVWM Message type: %ld\n", type);
+	ConsoleDebug(FVWM, "fvwm message type: %ld\n", type);
 
 	switch(type)
 	{

@@ -12,4 +12,4 @@ man_MANS = FvwmTabs.1
 config_DATA = ConfigFvwmTabs FvwmTabs-DefaultSetup
 
 _FvwmTabs.1: $(srcdir)/FvwmTabs.pod
-	pod2man -c "FVWM Modules" -r "@VERSION@@VERSIONINFO@" $(srcdir)/FvwmTabs.pod > FvwmTabs.1
+	pod2man -c "Fvwm Modules" -r "@VERSION@@VERSIONINFO@" $(srcdir)/FvwmTabs.pod > FvwmTabs.1

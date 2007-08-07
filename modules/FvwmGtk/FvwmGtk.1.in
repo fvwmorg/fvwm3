@@ -12,10 +12,10 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH FvwmGtk 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmGtk 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-\fBFvwmGtk\fP \- the Fvwm GTK module
+\fBFvwmGtk\fP \- the fvwm GTK module
 .SH SYNOPSIS
 \fBFvwmGtk\fP is spawned by fvwm, so no command line invocation will work.
 From within the	fvwm's configuration file, \fBFvwmGtk\fP is spawned as follows:
@@ -47,7 +47,7 @@ This includes the labels and pixmaps to show; configuration of the appearance
 must be done through the GTK rc file mechanism.
 
 \fBFvwmGtk\fP gets config info from \fBfvwm\fP's module configuration
-database (see 
+database (see
 .IR fvwm (1),
 section
 .BR "MODULE COMMANDS" )

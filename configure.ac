@@ -1180,7 +1180,7 @@ with_perllib="yes"
 problem_perllib=""
 FVWM_PERLLIB=perllib
 AC_ARG_ENABLE(perllib,
-	[  --disable-perllib       disable installing FVWM perl library],
+	[  --disable-perllib       disable installing fvwm perl library],
 	[ if test x"$enableval" = xno; then
 		with_perllib="no"
 		problem_perllib=": Explicitly disabled"
@@ -1816,7 +1816,7 @@ case "$with_gtk" in
 esac
 
 echo "
-FVWM Configuration:
+Fvwm Configuration:
 
   Version:     $VERSION$VERSIONINFO
 

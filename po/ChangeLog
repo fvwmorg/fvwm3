@@ -1,3 +1,13 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm.pot:
+	* fvwm.sv_SE.po:
+	* fvwm.fr.po:
+	* fvwm.zh_CN.po:
+	* fvwm.ar.po:
+	* fvwm.de.po:
+	write fvwm in lower case
+
 2007-04-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* Makefile.am (FVWM_POT_FILES):

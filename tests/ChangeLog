@@ -1,3 +1,10 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* perl/module-winlist:
+	* perl/README:
+	* perl/module-example:
+	write fvwm in lower case
+
 2007-01-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* hints/Makefile.am (LDADD):

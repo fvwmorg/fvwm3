@@ -1,5 +1,5 @@
 ======================================================================
-                   FVWM Frequently Asked Questions
+                   Fvwm Frequently Asked Questions
 ======================================================================
 
 Last updated 7 Aug 2003 for unstable release 2.5.7 and stable
@@ -16,11 +16,11 @@ Contents
 
 1. About Fvwm
 
-     1.1  What does FVWM stand for?
+     1.1  What does fvwm stand for?
      1.2  Where do I find the current versions of fvwm?
-     1.3  Any WWW Sites about FVWM?
-     1.4  Where do I ask questions about FVWM?
-     1.5  What are the differences between FVWM 1.xx and 2.xx?
+     1.3  Any WWW Sites about fvwm?
+     1.4  Where do I ask questions about fvwm?
+     1.5  What are the differences between fvwm 1.xx and 2.xx?
      1.6  What's the relative memory usage for the various window
           managers out there?
      1.7  Why the rename of the various files (fvwm2, .fvwm2rc,
@@ -29,11 +29,11 @@ Contents
 
 2. Installation
 
-     2.1  I want to use FVWM, but I don't have root access on my
+     2.1  I want to use fvwm, but I don't have root access on my
           machine.  Can I still install and run it?
      2.2  I'm trying to use fvwm under CDE/COSE, but encountering
           difficulties.  Any suggestions?
-     2.3  I'm trying to compile FVWM under SunOS using cc, but the
+     2.3  I'm trying to compile fvwm under SunOS using cc, but the
           compiler is having lots of problems.  What gives?
      2.4  I want colored icons, but they won't work.  Why not?
           When I run configure, it reports "no" to "Have XPM
@@ -44,14 +44,14 @@ Contents
      2.6  I'm a sysadmin, and if I wanted fvwm to look for all of
           its rc files in a hidden directory, say ~/.fvwm, much
           like CDE does, how could I do that?
-     2.7  How can I use FVWM with GNOME version <= 1?
-     2.8  How can I use FVWM with GNOME version >= 2 or KDE
+     2.7  How can I use fvwm with GNOME version <= 1?
+     2.8  How can I use fvwm with GNOME version >= 2 or KDE
           version >= 2?
 
 3. Features, Configuration, Functions & Commands
 
-     3.1  I use FVWM on a RedHat Linux system and can't figure out
-          how to change my FVWM configuration.  I've read the FVWM
+     3.1  I use fvwm on a RedHat Linux system and can't figure out
+          how to change my fvwm configuration.  I've read the fvwm
           man page but when I edit my .fvwm2rc nothing seems to
           happen.  What's going on?
      3.2  Is it possible to raise a window when I click into the
@@ -63,17 +63,17 @@ Contents
           mouse presses?
      3.6  I'd like to bind a key to paste/use the current
           selection, how can I do that?
-     3.7  Will FVWM ever support a separate colormap for each
+     3.7  Will fvwm ever support a separate colormap for each
           desktop?
      3.8  I really like the horizontal bars that appear on the
           title bars of sticky windows.  Can I get those on other
           windows as well?
-     3.9  How do I set the Sun keyboard key xxxx to an FVWM
+     3.9  How do I set the Sun keyboard key xxxx to an fvwm
           command? Or more generally, I'm having problems defining
-          key bindings for FVWM - what can I do?
+          key bindings for fvwm - what can I do?
     3.10  My .fvwmrc from version 1.xx no longer works.  What do I
           do?
-    3.11  What happened to the FVWM 1.xx 'include' command?
+    3.11  What happened to the fvwm 1.xx 'include' command?
     3.12  How do I get window titles on sub windows of ...
     3.13  I just upgraded to version >= 2.3.2, and my
           configuration settings disappeared!  How do I get them
@@ -119,7 +119,7 @@ Contents
           with the FvwmM4/Cpp module...
      4.4  I heard about this FvwmFileMgr module.  Where can I find
           it?
-     4.5  I used to use GoodStuff in FVWM 1.xx, but it's not in
+     4.5  I used to use GoodStuff in fvwm 1.xx, but it's not in
           the 2.xx distribution.  What do I use now?
      4.6  I want to have the sub panels in FvwmButtons not at
           their default position near the button but somewhere
@@ -130,12 +130,12 @@ Contents
 5. Development, Known Problems & Bug Reports
 
      5.1  I'd really like to see neat feature XYZ in
-          FVWM. Wouldn't that be cool?  I even have a patch.  When
+          fvwm. Wouldn't that be cool?  I even have a patch.  When
           can it be added?
      5.2  How do I create/submit/apply patches?
      5.3  How do I submit a bug report?
      5.4  I have a window that is behaving unexpectedly under
-          FVWM, but just fine under (whatever other window
+          fvwm, but just fine under (whatever other window
           manager), or I have just some random bug.  What do I do?
      5.5  Why do NumLock, CapsLock and ScrollLock interfere with
           ClickToFocus and/or my mouse bindings?
@@ -144,7 +144,7 @@ Contents
      5.7  Why won't the StartIconic style work with {Netscape,
           etc.}?
      5.8  How do I capture the output (e.g. errors) of fvwm?
-     5.9  I try to run some program under FVWM, but it dies with
+     5.9  I try to run some program under fvwm, but it dies with
           an X11 error like BadAccess.  The same program works
           just fine under MWM or OLWM.  What's going on?
     5.10  Every time I update my install, my currently running
@@ -170,7 +170,7 @@ Contents
           you going to support that?
      6.3  Where can I get more XPMs for icons?
      6.4  Linux XF86 virtual screen size & fvwm interaction...
-     6.5  I know this question doesn't have to do with FVWM, but
+     6.5  I know this question doesn't have to do with fvwm, but
           what happened to to rxvt and rclock which Rob Nation
           used to support?  Where can I find them now?
      6.6  How do I set the background with fvwm?
@@ -255,15 +255,15 @@ A: See questions 3.23, 3.24, 3.25, 3.26 that deal with transparency.
                             1 - About Fvwm
 ======================================================================
 
-1.1  What does FVWM stand for?
+1.1  What does fvwm stand for?
 
 A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
-   Virtual Window Manager".  Rob Nation (the original Author of FVWM)
+   Virtual Window Manager".  Rob Nation (the original Author of fvwm)
    doesn't really remember what the F stood for originally, so we
    have several potential answers:
 
      Feeble, Fabulous, Famous, Fast, Foobar, Fantastic, Flexible,
-     F!@#$%, Flashy, FVWM (the GNU recursive approach), Free, Final,
+     F!@#$%, Flashy, fvwm (the GNU recursive approach), Free, Final,
      Funky, Fred's (who the heck is Fred?), Freakin', Flawed,
      Father-of-all, Feivel (the mouse from "An American Tail"),
      Frungy (hey, where does that come from?), Floppy, Foxy,
@@ -309,7 +309,7 @@ A: New main distribution site (official + beta code):
 
 ----------------------------------------------------------------------
 
-1.3  Any WWW Sites about FVWM?
+1.3  Any WWW Sites about fvwm?
 
 A: Yup.  The official site is:
 
@@ -319,11 +319,11 @@ A: Yup.  The official site is:
 
 ----------------------------------------------------------------------
 
-1.4  Where do I ask questions about FVWM?
+1.4  Where do I ask questions about fvwm?
 
-A: If your local FVWM maintainer can't help you, then the newsgroup
+A: If your local fvwm maintainer can't help you, then the newsgroup
    comp.windows.x.apps is a good place, but the fvwm mailing list is
-   usually better.  The new FVWM discussion mailing list address is:
+   usually better.  The new fvwm discussion mailing list address is:
 
                            fvwm@fvwm.org
 
@@ -349,7 +349,7 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    Description
    -----------
 
-   This list is for discussion relating to the FVWM window manager,
+   This list is for discussion relating to the fvwm window manager,
    which is intended to have a small memory footprint and a rich
    feature set, be extremely customizable and extendable and have a
    high degree of Motif MWM compatibility.  All relevant discussion
@@ -369,7 +369,7 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    fvwm-request@fvwm.org.  If you have problems with the mailing list
    itself and need to talk to a human, send mail to
    fvwm-owner@fvwm.org. This address is for mailing list issues only;
-   reports on the FVWM software will be sent to /dev/null.
+   reports on the fvwm software will be sent to /dev/null.
 
    Archives of previous messages are available; to get them send the
    above mentioned help message and investigate the "index" and "get"
@@ -379,21 +379,21 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
 
    (fvwm-announce)
 
-   This list is for announcements relating to the FVWM window manager,
+   This list is for announcements relating to the fvwm window manager,
    which is intended to have a small memory footprint and a rich
    feature set, be extremely customizable and extendable and have a
    high degree of Motif MWM compatibility.
 
    Replies to messages from this list are set by default to go the
-   FVWM discussion list, fvwm@fvwm.org.
+   fvwm discussion list, fvwm@fvwm.org.
 
-   The current FVWM distribution is available for ftp at
+   The current fvwm distribution is available for ftp at
    ftp://ftp.fvwm.org/pub/fvwm/
    ------------------------------------------------------------------
 
 ----------------------------------------------------------------------
 
-1.5  What are the differences between FVWM 1.xx and 2.xx?
+1.5  What are the differences between fvwm 1.xx and 2.xx?
 
 A: A lot.  To name a few general ones:
         - Bug fixes.  1.xx is not worked on at all any more.
@@ -463,7 +463,7 @@ A: This is always a difficult question to answer.  We work on fvwm on
                            2 - Installation
 ======================================================================
 
-2.1  I want to use FVWM, but I don't have root access on my machine.
+2.1  I want to use fvwm, but I don't have root access on my machine.
      Can I still install and run it?
 
 A: Very easily, using the '--prefix' flag at configure time.
@@ -516,7 +516,7 @@ A: Sure - here's one from Graeme McCaffery:
 
 ----------------------------------------------------------------------
 
-2.3  I'm trying to compile FVWM under SunOS using cc, but the compiler
+2.3  I'm trying to compile fvwm under SunOS using cc, but the compiler
      is having lots of problems.  What gives?
 
 A: cc under SunOS is not an ANSI C compiler.  Try using acc or gcc
@@ -528,7 +528,7 @@ A: cc under SunOS is not an ANSI C compiler.  Try using acc or gcc
      When I run configure, it reports "no" to "Have XPM support?"  How
      can I get XPM support?
 
-A: FVWM uses the XPM (X PixMap) library to provide support for colored
+A: Fvwm uses the XPM (X PixMap) library to provide support for colored
    and shaped icons.  XPM doesn't ship with the basic X distribution
    as provided by The Open Group or XFree86.  However, many vendors
    will bundle it as a standard component anyway.  If not, you can get
@@ -545,7 +545,7 @@ A: FVWM uses the XPM (X PixMap) library to provide support for colored
    INSTALL.fvwm).  Typically configure will say "Xpm library or header
    not found" if this is the problem.
 
-   Second, your version of XPM may be too old.  FVWM requires XPM 3.4g
+   Second, your version of XPM may be too old.  Fvwm requires XPM 3.4g
    or better.  Typically configure will say "Xpm library version is
    too old!" if this is the problem.  In that case, you'll need to
    install a newer version.
@@ -562,7 +562,7 @@ A: FVWM uses the XPM (X PixMap) library to provide support for colored
    some notes about building using shared libraries in the
    INSTALL.fvwm file.
 
-   If you can't figure it out, contact the FVWM mailing list.  Please
+   If you can't figure it out, contact the fvwm mailing list.  Please
    be sure to provide the type of hardware and operating system you're
    using, how you invoked configure, and extract the lines dealing
    with XPM from the config.log file and include that.
@@ -583,7 +583,7 @@ A: Well, you could probably do something like this.  Have the first
      files in a hidden directory, say ~/.fvwm, much like CDE does, how
      could I do that?
 
-A: FVWM now supports ~/.fvwm search directory by default.
+A: Fvwm now supports ~/.fvwm search directory by default.
 
    This could be probably done similarly to Q2.5 above.  The system rc
    "$datadir"/fvwm/config (or system.fvwm2rc) could do something like:
@@ -603,28 +603,28 @@ A: FVWM now supports ~/.fvwm search directory by default.
 
 ----------------------------------------------------------------------
 
-2.7  How can I use FVWM with GNOME (version <= 1)?
+2.7  How can I use fvwm with GNOME (version <= 1)?
 
 A: Since the latest fvwm versions are mostly GNOME compliant, you may
    simply run GNOME applications, like panel, gmc, gnome-terminal and
-   all others with FVWM.
+   all others with fvwm.
 
    The included fvwm-menu-desktop script (with a massive man page)
    will help you build fvwm menus for gnome applications.
 
-   To ensure you run FVWM and not gnome-session, create .Xclients file
+   To ensure you run fvwm and not gnome-session, create .Xclients file
    in your home directory and put a call to fvwm in it. The file
    ~/.xinitrc can be used for the same purpose if you want to bypass
    any system-wide logic installed by your distributor or sysadmin.
 
-   An alternative solution is to run FVWM inside of
+   An alternative solution is to run fvwm inside of
    /usr/bin/gnome-session. After you start gnome-session (don't start
-   FVWM yourself), go to the foot menu in the GNOME panel, then choose
+   fvwm yourself), go to the foot menu in the GNOME panel, then choose
 
 
      System menus / Settings / Desktop / Window Manager
 
-   and create an entry for FVWM.  FVWM supports session management.
+   and create an entry for fvwm.  Fvwm supports session management.
 
    If you run gnome-session, SessionInitFunction and
    SessionRestartFunction are called instead of InitFunction and
@@ -634,7 +634,7 @@ A: Since the latest fvwm versions are mostly GNOME compliant, you may
 
 
    Here are examples of the GNOME Window Manager hints support in
-   FVWM:
+   fvwm:
 
    o If you run gnome panel inside fvwm without GNOME support, you
      can't fully use GNOME pager applets (if at all); with GNOME
@@ -648,14 +648,14 @@ A: Since the latest fvwm versions are mostly GNOME compliant, you may
 
 ----------------------------------------------------------------------
 
-2.8 How can I use FVWM with GNOME version >= 2 or KDE version >= 2?
+2.8 How can I use fvwm with GNOME version >= 2 or KDE version >= 2?
 
 A: Most standard applications work as any other application with
-   FVWM. However, some features and special applications such as
+   fvwm. However, some features and special applications such as
    panels, pagers, taskbars and desktops need a special
    support. Interaction between the window manager, the desktop
    environment and applications is standardized in the Extended Window
-   Manager Hints specification. FVWM supports this specification since
+   Manager Hints specification. fvwm supports this specification since
    the 2.5.x series (GNOME, GTK, KDE and QT since their version
    2). See the "Extended Window Manager Hints" section of the fvwm
    manual page and the commands and styles which start with "EWMH" for
@@ -695,8 +695,8 @@ A: Most standard applications work as any other application with
           3 - Features, Configuration, Functions & Commands
 ======================================================================
 
-3.1  I use FVWM on a RedHat Linux system and can't figure out how to
-     change my FVWM configuration.  I've read the FVWM man page but
+3.1  I use fvwm on a RedHat Linux system and can't figure out how to
+     change my fvwm configuration.  I've read the fvwm man page but
      when I edit my .fvwm2rc nothing seems to happen.  What's going
      on?
 
@@ -904,7 +904,7 @@ A: You can't directly with fvwm, but there may be a solution that is
 
 ----------------------------------------------------------------------
 
-3.7  Will FVWM ever support a separate colormap for each desktop?
+3.7  Will fvwm ever support a separate colormap for each desktop?
 
 A: Doubtful, although I'd like to see it too.  I believe that it'd be
    possible to change the default colormap whenever you switch desks,
@@ -939,11 +939,11 @@ A: Yes.  For release 2.3.14 and after, put the line
 
 ----------------------------------------------------------------------
 
-3.9  How do I set the Sun keyboard key xxxx to an FVWM command?  Or
+3.9  How do I set the Sun keyboard key xxxx to an fvwm command?  Or
      more generally, I'm having problems defining key bindings for
-     FVWM - what can I do?
+     fvwm - what can I do?
 
-A: From Jon Mountjoy, one of FVWM's users:
+A: From Jon Mountjoy, one of fvwm's users:
      - Function keys on Sun Keyboard on Top Row are F1 - F8
      - Keys on the function keypad on the Left of the Sun Keyboard
        are F11 == Stop, F12 == Again, ..., F20 == Cut
@@ -1146,7 +1146,7 @@ A: Start with a new one or convert your old one.  This can be done by
 
 ----------------------------------------------------------------------
 
-3.11  What happened to the FVWM 1.xx 'include' command?
+3.11  What happened to the fvwm 1.xx 'include' command?
 
 A: It was actually part of the M4 preprocessing.  You can use the
    'Read' builtin to get the same effect, or use the FvwmM4 module.
@@ -1174,9 +1174,9 @@ A: These windows are known as 'transient' windows because of their
 A: The directory for system-wide configuration files changed from
    ${sysconfdir} (/usr/local/etc, unless set otherwise at configure
    time) to a subdirectory, ${sysconfdir}/fvwm.  Move your config
-   files by hand and restart FVWM.
+   files by hand and restart fvwm.
 
-   This change was made because FVWM now installs several files into
+   This change was made because fvwm now installs several files into
    this directory.
 
 ----------------------------------------------------------------------
@@ -1253,7 +1253,7 @@ A: Write a little shell script to run the shutdown command.
    Set up the sudoers config file to allow you, your wife, etc. to run
    that script with root permissions.
 
-   Add a menu item to your FVWM root menu (or wherever) that invokes
+   Add a menu item to your fvwm root menu (or wherever) that invokes
    "sudo /my/script/name".
 
 ----------------------------------------------------------------------
@@ -1295,7 +1295,7 @@ A: The following discusses a general solution, you should substitute
    This approach has 3 problems:
      1) You need to use StartKedit function to start your application,
         this will not work if you start it from the command line.
-     2) If for some reason the application is not started, FVWM waits
+     2) If for some reason the application is not started, fvwm waits
         for it in Wait, you will need to press Ctrl-Alt-Esc.
      3) If you have more than one kedit window, it is not guaranteed
         that the right one is resized.
@@ -1404,7 +1404,7 @@ A: Please read the answer to the previous question to understand
 3.20  I have a multi head setup (multiple screens used under X).  How
       can I tell fvwm to use different configurations for the screens?
 
-A: FVWM spawns itself into all found screens unless -s command line
+A: Fvwm spawns itself into all found screens unless -s command line
    parameter is specified, as explained in the man page.  All spawned
    fvwm processes by default use the same configuration on each
    screen. There are several ways to change the default behavior.
@@ -1616,7 +1616,7 @@ A: See question 3.23 to learn how to define a transparent colorset.
 
 3.26  How about transparent applications too?
 
-A: This is not really an FVWM related question, you should find X
+A: This is not really an fvwm related question, you should find X
    applications supporting transparency and read their documentation.
 
    Depending on the application you should set the root image in one
@@ -1733,7 +1733,7 @@ A: Yes, with the alpha release 2.5.0 or any later release.  For older
      FvwmM4/Cpp module...
 
 A: Yup, I imagine that you might be.  Things like the InitFunction not
-   being called or windows that were running before FVWM started not
+   being called or windows that were running before fvwm started not
    getting their Borders & Style options set, etc.
 
    The reason for all this is because of the fact that FvwmM4 is a
@@ -1759,7 +1759,7 @@ A: The FvwmFileMgr module disappeared because a file manager doesn't
 
 ----------------------------------------------------------------------
 
-4.5  I used to use GoodStuff in FVWM 1.xx, but it's not in the 2.xx
+4.5  I used to use GoodStuff in fvwm 1.xx, but it's not in the 2.xx
      distribution.  What do I use now?
 
 A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
@@ -1826,7 +1826,7 @@ A: FvwmButtons does not support keyboard shortcuts itself.  Since
             5 - Development, Known Problems & Bug Reports
 ======================================================================
 
-5.1  I'd really like to see neat feature XYZ in FVWM.  Wouldn't
+5.1  I'd really like to see neat feature XYZ in fvwm.  Wouldn't
      that be cool?  I even have a patch.  When can it be added?
 
 A: If you plan to write a patch, *please*, first of all fetch the
@@ -1846,7 +1846,7 @@ A: If you plan to write a patch, *please*, first of all fetch the
    feature has actually been indirectly implemented via several
    appearance-affecting features).
 
-   I'd like to make a statement about this.  FVWM is supposed to be
+   I'd like to make a statement about this.  fvwm is supposed to be
    small, fast, powerful, and flexible, and sometimes tradeoffs have
    to be made here.  The module interface helps here, as a lot of
    features that not everyone wants or needs don't have to be in the
@@ -1969,18 +1969,18 @@ A: Please do not report any 'bugs' related to XMMS in the fvwm bug
                 xprop
                 FvwmIdent
                 xdpyinfo (maybe)
-        - What exact version of FVWM you are running.
+        - What exact version of fvwm you are running.
         - What OS & version you are running under
         - What version of X11 are you running under, and is it an MIT
           server or a vendor specific server (e.g. the OpenWindow X
           server under SunOS)
-        - How was FVWM compiled (compiler & version, options, etc)
+        - How was fvwm compiled (compiler & version, options, etc)
         - What settings do you have in your config file that may be
           pertinent.
 
 ----------------------------------------------------------------------
 
-5.4  I have a window that is behaving unexpectedly under FVWM, but
+5.4  I have a window that is behaving unexpectedly under fvwm, but
      just fine under (whatever other window manager), or I have just
      some random bug.  What do I do?
 
@@ -2089,7 +2089,7 @@ A: The flickering is caused by fvwm constantly redrawing the menus
 5.7  Why won't the StartIconic style work with {Netscape, etc.}?
 
 A: The application won't allow it.  This has only been observed with
-   Netscape.  When Netscape starts up, FVWM starts the main window in
+   Netscape.  When Netscape starts up, fvwm starts the main window in
    the iconic state.  Netscape immediately issues another MapRequest,
    to which the window manager must respond by de-iconifying the
    window, according to the ICCCM rules.  (Netscape can be persuaded
@@ -2110,7 +2110,7 @@ A: Errors are reported to the standard error file.  You can redirect
 
 ----------------------------------------------------------------------
 
-5.9  I try to run some program under FVWM, but it dies with an X11
+5.9  I try to run some program under fvwm, but it dies with an X11
      error like BadAccess.  The same program works just fine under MWM
      or OLWM.  What's going on?
 
@@ -2125,10 +2125,10 @@ A: The error message usually looks something like this:
    Well, this is telling you that there is a conflict in key/button
    assignments.  In your config you have bound some key/button that
    this program really wants to bind to an action, but it can't since
-   FVWM has already done so (but you weren't doing it in the rc file
+   fvwm has already done so (but you weren't doing it in the rc file
    for your previous window manager).  Figure out what the offending
    key binding is and remove it from your fvwm/config, or temporarily
-   via "FvwmForm FvwmForm-Talk" by removing the FVWM binding (see the
+   via "FvwmForm FvwmForm-Talk" by removing the fvwm binding (see the
    man page for the Key & Mouse commands).
 
 ----------------------------------------------------------------------
@@ -2188,7 +2188,7 @@ A: Many applications request a specific position where they want to
 
 A: You may see the following error message on the console:
 
-     [FVWM][PositiveWrite]: <<ERROR>> Failed to read descriptor:
+     [fvwm][PositiveWrite]: <<ERROR>> Failed to read descriptor:
      - data available=N
      - terminate signal=N
 
@@ -2214,18 +2214,18 @@ A: This problem might occur on other applications besides the one
 
    The symptoms as reported by Raymond Toy are:
 
-     I've been using FVWM for ages and it's always worked for me just
-     fine.  However, I've started using Rational Rose for Solaris.  FVWM
+     I've been using fvwm for ages and it's always worked for me just
+     fine.  However, I've started using Rational Rose for Solaris.  fvwm
      seems to get completely confused.
 
-     o FVWM doesn't draw any frames around the Rose window like it
+     o Fvwm doesn't draw any frames around the Rose window like it
        does for all other windows (except for those I explicit said
        not to).
 
      o The Rose window is always on top.  Nothing I do can bring
        another window above the Rose window.
 
-     o Using FVWM's identify window module shows nothing.  No identify
+     o Using fvwm's identify window module shows nothing.  No identify
        window pops up showing the window info.
 
      o Focus sometimes seems to be lost.  (I have focus follows
@@ -2235,7 +2235,7 @@ A: This problem might occur on other applications besides the one
 
      The annoying thing is that this all seems to work with CDE and
      dtwm. I don't want to have to switch to dtwm so any hints or
-     pointers on where to look to get FVWM to understand this window
+     pointers on where to look to get fvwm to understand this window
      would help me a lot.
 
 
@@ -2412,7 +2412,7 @@ A: Turn off the Linux Virtual Screen stuff in your XF86Config file if
 
 ----------------------------------------------------------------------
 
-6.5  I know this question doesn't have to do with FVWM, but what
+6.5  I know this question doesn't have to do with fvwm, but what
      happened to to rxvt and rclock which Rob Nation used to support?
      Where can I find them now?
 
@@ -2947,8 +2947,8 @@ your applications request.
 
    Also, GNOME and KDE have desktop icon applications gmc and kfm,
    which enable this functionality.  These applications may be run
-   under FVWM. Nautilus (version >= 2) and kdesktop may be run under
-   FVWM version 2.5.1 or better.
+   under fvwm. Nautilus (version >= 2) and kdesktop may be run under
+   fvwm version 2.5.1 or better.
 
 ----------------------------------------------------------------------
 

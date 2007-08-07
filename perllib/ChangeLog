@@ -1,3 +1,15 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FVWM/EventNames.pm:
+	* FVWM/create-constants:
+	* FVWM/Event.pm:
+	* FVWM/Commands.pm:
+	* FVWM/Tracker/PageInfo.pm:
+	* FVWM/Module.pm.in:
+	* FVWM/create-commands:
+	* FVWM/Module/Toolkit.pm:
+	write fvwm in lower case
+
 2007-01-15  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FVWM/Module.pm.in:

@@ -1,5 +1,5 @@
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmWharf 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmWharf 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
 FvwmWharf \- the AfterStep application "dock" module ported to
@@ -14,7 +14,7 @@ more applications, among other things.  The user can press the first
 button at any time to trigger invocation of one of these functions, or
 the user can press button two in order to cause the entire Wharf
 to withdraw to the nearest corner in an iconified state.  FvwmWharf only
-works when Fvwm is used as the window manager.
+works when fvwm is used as the window manager.
 
 .SH COPYRIGHTS
 The FvwmWharf module is copyright 1995 and 1996 by a variety of contributors.
@@ -33,7 +33,7 @@ as long as the copyright is kept intact.
 
 .SH INITIALIZATION
 During initialization, \fIFvwmWharf\fP gets config info from \fBfvwm\fP's
-module configuration database (see 
+module configuration database (see
 .IR fvwm (1),
 section
 .BR "MODULE COMMANDS" )
@@ -48,7 +48,7 @@ button-bars can be used.
 
 .SH INVOCATION
 FvwmWharf should be invoked in the same way as other
-Fvwm modules.
+fvwm modules.
 
 .SH CONFIGURATION OPTIONS
 .IP "*FvwmWharfAnimate"
@@ -139,10 +139,10 @@ find the icon file.
 NOTE: Icons must have one transparent pixel or the definition of
 a transparent color in order to be valid.
 
-If \fIcommand\fP is an Fvwm Exec command, then the button will
+If \fIcommand\fP is an fvwm Exec command, then the button will
 appear pushed in until the mouse button is released.
 
-A single extension to the Fvwm built-in command set is provided.
+A single extension to the fvwm built-in command set is provided.
 A command of the form:
 .nf
 .sp

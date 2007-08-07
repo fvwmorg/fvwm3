@@ -1,3 +1,56 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmWindowMenu/Makefile.am:
+	* FvwmTabs/FvwmTabs.pod:
+	* FvwmTabs/ConfigFvwmTabs:
+	* FvwmTabs/FvwmTabs.1:
+	* FvwmTabs/FvwmTabs.in:
+	* FvwmTabs/Makefile.am:
+	* FvwmAnimate/FvwmAnimate.c:
+	* FvwmAnimate/FvwmAnimate.1.in:
+	* FvwmWinList/FvwmWinList.1.in:
+	* FvwmTheme/FvwmTheme.1.in:
+	* FvwmRearrange/FvwmRearrange.1.in:
+	* FvwmWharf/FvwmWharf.1.in:
+	* FvwmEvent/FvwmEvent.1.in:
+	* FvwmForm/FvwmForm.1.in:
+	* FvwmIconBox/FvwmIconBox.1.in:
+	* FvwmGtk/FvwmGtk.1.in:
+	* FvwmScript/FvwmScript.1.in:
+	* FvwmScript/Scripts/FvwmScript-Setup95.in:
+	* FvwmScript/Scripts/FvwmScript-BaseConfig:
+	* FvwmCommand/FvwmCommand.1.in:
+	* FvwmCommand/Makefile.am:
+	* FvwmButtons/FvwmButtons.1.in:
+	* FvwmProxy/FvwmProxy.1.in:
+	* FvwmPerl/FvwmPerl.1:
+	* FvwmPerl/FvwmPerl.in:
+	* FvwmPerl/Makefile.am:
+	* FvwmIconMan/FvwmIconMan.1.in:
+	* FvwmIconMan/fvwm.c (ProcessMessage):
+	* FvwmDragWell/FvwmDragWell.1.in:
+	* FvwmM4/FvwmM4.1.in:
+	* FvwmWindowMenu/FvwmWindowMenu.in:
+	* FvwmWindowMenu/FvwmWindowMenu.1:
+	* FvwmBacker/FvwmBacker.1.in:
+	* FvwmBacker/FvwmBacker.c:
+	* FvwmScroll/FvwmScroll.1.in:
+	* FvwmConsole/FvwmConsole.1.in:
+	* FvwmAuto/FvwmAuto.1.in:
+	* FvwmSaveDesk/FvwmSaveDesk.1.in:
+	* FvwmDebug/FvwmGtkDebug.1:
+	* FvwmDebug/FvwmOldDebug.1:
+	* FvwmDebug/FvwmGtkDebug.in:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmDebug/FvwmDebug.in:
+	* FvwmPager/FvwmPager.1.in:
+	* FvwmTaskBar/FvwmTaskBar.1.in:
+	* FvwmSave/FvwmSave.1.in:
+	* FvwmCpp/FvwmCpp.1.in:
+	* FvwmIdent/FvwmIdent.1.in:
+	* FvwmBanner/FvwmBanner.1.in:
+	write fvwm in lower case
+
 2007-07-23  Simon Griph  <simon(at)griph(dot)se>
 
 	* FvwmButtons/draw.h (RedrawButton):

@@ -6,6 +6,51 @@
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.ac:
+	* README:
+	* NEWS:
+	* INSTALL.fvwm:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	* libs/Picture.c (PicturePrintImageCache):
+	* libs/Module.c:
+	* libs/FGettext.c (FGettextPrintLocalePath):
+	* libs/fvwmsignal.c:
+	* libs/Module.h:
+	* libs/PictureUtils.c (PictureAllocColorTable)
+	(PicturePrintColorInfo):
+	* libs/FScreen.h:
+	* libs/fvwmsignal.h:
+	* libs/Bindings.c:
+	* libs/FScreen.c:
+	* libs/Ficonv.c (convert_charsets):
+	(FiconvSetupConversion):
+	* fvwm/decorations.c:
+	* fvwm/gnome.h:
+	* fvwm/events.c:
+	* fvwm/add_window.c (setup_window_font):
+	(setup_icon_font):
+	* fvwm/fvwm.1.in:
+	* fvwm/session.h:
+	* fvwm/conditional.c:
+	* fvwm/fvwm.c (SetRCDefaults):
+	(main):
+	* fvwm/ewmh_events.c:
+	* fvwm/stack.c:
+	* fvwm/gnome.c:
+	* fvwm/menustyle.c (menustyle_parse_style):
+	(menustyle_copy):
+	* fvwm/ewmh.c (EWMH_Init):
+	* libs/Flocale.c (FlocaleParseShadow):
+	(FlocaleGetFontSet):
+	(FlocaleLoadFont):
+	(FlocalePrintLocaleInfo):
+	* fvwm/misc.c (fvwm_msg):
+	* vms/README:
+	* vms/vms.c:
+	write fvwm in lower case
+
+	* configure.ac:
 	fixed build without GNU make
 
 2007-08-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>

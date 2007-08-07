@@ -13,7 +13,7 @@
 ----------------------------------------------------------------------------------------------------------------------------------*/
 #include "config.h"
 
-#include <stdio.h>
+#include <stdio.h>^
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
@@ -392,7 +392,7 @@ void VMS_msg(int type,char *id,char *msg,...) {
       break;
   }
 
-  sprintf(buffer1,"[FVWM-%d/%d-%s-%s] ", time(NULL), clock(), typestr, id);
+  sprintf(buffer1,"[fvwm-%d/%d-%s-%s] ", time(NULL), clock(), typestr, id);
 
   va_start(args,msg);
   vsprintf(buffer2, msg, args);

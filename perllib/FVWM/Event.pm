@@ -158,7 +158,7 @@ sub dump ($) {
 
 sub AUTOLOAD ($;@) {
 	my $self = shift;
-	my @params = @_; 
+	my @params = @_;
 
 	my $method = $FVWM::Event::AUTOLOAD;
 
@@ -185,7 +185,7 @@ sub AUTOLOAD ($;@) {
 
 =head1 NAME
 
-FVWM::Event - the FVWM event object passed to event handlers
+FVWM::Event - the fvwm event object passed to event handlers
 
 =head1 SYNOPSIS
 
@@ -269,7 +269,7 @@ Returns hash ref of the named event argument values.
 
 =item B<isExtended>
 
-For technical reasons there are 2 categories of FVWM events, regular and
+For technical reasons there are 2 categories of fvwm events, regular and
 extended. This was done to enable more events. With introdution of the
 extended event types (with the highest bit set) it is now possible to have
 31+31=62 different event types rather than 32. This is a good point, the bad

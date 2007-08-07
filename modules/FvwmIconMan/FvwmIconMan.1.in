@@ -13,10 +13,10 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH FvwmIconMan 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmIconMan 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmIconMan \- an Fvwm Icon Manager
+FvwmIconMan \- an fvwm icon manager
 .SH SYNOPSIS
 FvwmIconMan is spawned by fvwm, so no command line invocation will work.
 
@@ -413,14 +413,14 @@ Only windows that are not iconified are shown if \fIboolean\fP is true.
 Only window with the focus is shown if \fIboolean\fP is true.
 
 
-.PP 
+.PP
 The following two options control tips.
 
 .IP "*FvwmIconMan: [id] Tips \fIvalue\fP"
 where \fIvalue\fP can be always, needed or false. Default is false,
 no tips are displayed. With always, tips are enabled. With needed,
 a tip is displayed only if either the button string is truncated or
-the tip string is not equal to the button string. 
+the tip string is not equal to the button string.
 This configuration line is respected when FvwmIconMan is running
 as well.
 
@@ -450,7 +450,7 @@ Specifies the border width (in pixels) of the tips window. Default is 1.
 .IP "*FvwmIconMan: [id] TipsPlacement \fIvalue\fP"
 where \fIvalue\fP can be up, down, right, left, updown or
 leftright. This value specifies the position of the tips window
-relative to its button. 
+relative to its button.
 Default is updown where buttons on the top half of the screen
 get tips below the button, otherwise the tips
 are above the button.

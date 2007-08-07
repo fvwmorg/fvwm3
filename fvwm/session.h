@@ -12,7 +12,7 @@
 
 
 /*
-**  Load and save the 'global', ie not window-related, state of FVWM
+**  Load and save the 'global', ie not window-related, state of fvwm
 **  into a file.
 */
 void LoadGlobalState(char *filename);

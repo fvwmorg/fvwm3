@@ -1,12 +1,10 @@
-# $Id$
-#
 # Generate this man page with:
 #
-# pod2man -c "FVWM Modules" -r "FvwmTabs" FvwmTabs.pod >! FvwmTabs.1
+# pod2man -c "Fvwm Modules" -r "FvwmTabs" FvwmTabs.pod >! FvwmTabs.1
 #
 # View this man page with:
 #
-# pod2man -c "FVWM Modules" -r "FvwmTabs" FvwmTabs.pod | nroff -man | less
+# pod2man -c "Fvwm Modules" -r "FvwmTabs" FvwmTabs.pod | nroff -man | less
 #
 # Generate a HTML version of the man page with:
 #
@@ -15,25 +13,25 @@
 
 =head1 NAME
 
-B<FvwmTabs> - a generic tabbing module for the FVWM window manager.
+B<FvwmTabs> - a generic tabbing module for the fvwm window manager.
 
 =head1 SYNOPSIS
 
-B<FvwmTabs> is spawned by FVWM, so no command line invocation is possible.
+B<FvwmTabs> is spawned by fvwm, so no command line invocation is possible.
 
 =head1 DESCRIPTION
 
-The B<FvwmTabs> module is capable of swallowing any FVWM window & treating it as a tab in a I<tab-manager> window. A tab-manager is sometimes called a I<tabber>.
+The B<FvwmTabs> module is capable of swallowing any fvwm window & treating it as a tab in a I<tab-manager> window. A tab-manager is sometimes called a I<tabber>.
 
 Each tab-manager can store any number of windows, each in its own I<tab>. The number of tab-managers is limited only by system resources. Tab-managers can even be nested/swallowed within other tab-managers. (ie. a tab-manager can be added as an individual tab to another tab-manager.)
 
 =head1 INVOCATION
 
-B<FvwmTabs> can be invoked by inserting the line C<Module FvwmTabs> in your .fvwmrc file. This can be placed on a line by itself, if B<FvwmTabs> is to be spawned during FVWM's initialization, or can be bound to a menu or mouse button or keystroke to invoke it later.
+B<FvwmTabs> can be invoked by inserting the line C<Module FvwmTabs> in your .fvwmrc file. This can be placed on a line by itself, if B<FvwmTabs> is to be spawned during fvwm's initialization, or can be bound to a menu or mouse button or keystroke to invoke it later.
 
 =head1 INSTALLING DEPENDENCIES
 
-B<FvwmTabs> requires 2 CPAN modules (that are NOT distributed with FVWM) to be installed on your system. They are I<Tk> and I<X11::Protocol>.
+B<FvwmTabs> requires 2 CPAN modules (that are NOT distributed with fvwm) to be installed on your system. They are I<Tk> and I<X11::Protocol>.
 
 They are available at: L<http://search.cpan.org/CPAN/authors/id/N/NI/NI-S/Tk-804.027.tar.gz> and L<http://search.cpan.org/~smccam/X11-Protocol-0.56/>.
 
@@ -45,7 +43,7 @@ B<FvwmTabs> will tell you if you do not have these packages installed when you (
 
 =head1 CONFIGURATION OPTIONS
 
-B<FvwmTabs> reads the same config file as FVWM when it starts up.
+B<FvwmTabs> reads the same config file as fvwm when it starts up.
 
 The following options are recognised by B<FvwmTabs>:
 
@@ -125,7 +123,7 @@ The font to use on the balloon popups. The default font is I<Helvetica -12>.
 
 =item E<42>FvwmTabs: balloonWait I<ms>
 
-How long the mouse cursor must pause (in milliseconds) over a tab button before the balloon pops up. The default value is I<250>. 
+How long the mouse cursor must pause (in milliseconds) over a tab button before the balloon pops up. The default value is I<250>.
 
 =item E<42>FvwmTabs: balloonMsg I<msg>
 
@@ -137,7 +135,7 @@ I<bool> can be either I<true> or I<false>. If true, windows in the tab-manager a
 
 =item E<42>FvwmTabs: stateFile I<file>
 
-B<FvwmTabs> has the ability to preserve its state (ie. remember the windows it has swallowed as tabs) b/w FVWM restarts. I<file> specifies the name of a temporary file to record the state in, so it can be reconstructed when B<FvwmTabs> restarts. The default file is C<$FVWM_USERDIR/.fvwmtabs.state>.
+B<FvwmTabs> has the ability to preserve its state (ie. remember the windows it has swallowed as tabs) b/w fvwm restarts. I<file> specifies the name of a temporary file to record the state in, so it can be reconstructed when B<FvwmTabs> restarts. The default file is C<$FVWM_USERDIR/.fvwmtabs.state>.
 
 =item E<42>FvwmTabs: fixedSizeTabs I<bool>
 
@@ -206,7 +204,7 @@ Image to use on menu toolbar button. Default is I<none>.
 
 =head1 FVWM FUNCTIONS FOR KEY BINDINGS
 
-A number of FVWM functions are available once the B<FvwmTabs> module is started.
+A number of fvwm functions are available once the B<FvwmTabs> module is started.
 
 =over
 
@@ -234,23 +232,23 @@ Show/select the last selected tab (if there was one).
 
 =item ReleaseTab
 
-Release a tabbed window back to FVWM.
+Release a tabbed window back to fvwm.
 
 =item ReleaseIconifyTab
 
-Release a tabbed window back to FVWM & iconify it.
+Release a tabbed window back to fvwm & iconify it.
 
 =item ReleaseAllTabs
 
-Release all windows in a tab-manager back to FVWM.
+Release all windows in a tab-manager back to fvwm.
 
 =item ReleaseIconifyAllTabs
 
-Release all windows in a tab-manager back to FVWM & iconify them.
+Release all windows in a tab-manager back to fvwm & iconify them.
 
 =item CloseTabber
 
-Destroy a tab-manager. All windows in the tab-manager are released back to FVWM.
+Destroy a tab-manager. All windows in the tab-manager are released back to fvwm.
 
 =item AddTab
 
@@ -284,13 +282,13 @@ Select a tab-manager for a new window to be added to.
 
 Swallow windows that (are moved to) overlap a tabber.
 
-=back 
+=back
 
 =head1 KEY BINDINGS
 
 By default, B<FvwmTabs> reads a default user configuration file F<FvwmTabs-DefaultSetup> which defines several useful key-bindings for B<FvwmTabs>. You can tell B<FvwmTabs> NOT to read this file with C<SetEnv FvwmTabs_NoDefaultSetup> - this environment variable must be set I<before> starting the module.
 
-All of the key bindings can be changed using the standard FVWM I<Key> command & making use of the aforementioned FVWM functions. ie.
+All of the key bindings can be changed using the standard fvwm I<Key> command & making use of the aforementioned fvwm functions. ie.
 
 Key (FvwmTabs*) A A CM Function AddTab
 
@@ -429,7 +427,7 @@ Tab-managers don't take focus when iconified.
 =item *
 FvwmTabs doesn't obey C<ClickToFocus> mode.
 
-=item * 
+=item *
 FvwmTabs has a problem swallowing shaded windows.
 
 =item *
@@ -437,7 +435,7 @@ Using C<Maximise> to resize tab-manager windows prevents dynamic resizing from w
 
 =back
 
-Please send bug reports, feature requests & queries about B<FvwmTabs> to the FVWM Mailing list: I<fvwm@fvwm.org>. Be sure to include the word "FvwmTabs" somewhere in the subject line.
+Please send bug reports, feature requests & queries about B<FvwmTabs> to the fvwm mailing list: I<fvwm@fvwm.org>. Be sure to include the word "FvwmTabs" somewhere in the subject line.
 
 =head1 TODO
 

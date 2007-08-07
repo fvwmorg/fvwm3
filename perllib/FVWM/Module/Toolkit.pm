@@ -66,7 +66,7 @@ sub import ($@) {
 	}
 	if ($error) {
 		my $scriptName = $0; $scriptName =~ s|.*/||;
-		my $errorTitle = 'FVWM Perl library error';
+		my $errorTitle = 'Fvwm Perl library error';
 		my $errorMsg = "$scriptName requires Perl package $name to be installed.\n\n";
 		$errorMsg .= "You may either find it as a binary package for your distribution\n";
 		$errorMsg .= "or download it from CPAN, http://cpan.org/modules/by-module/ .\n";
@@ -136,7 +136,7 @@ sub addDefaultErrorHandler ($) {
 
 	$self->addHandler(M_ERROR, sub {
 		my ($self, $event) = @_;
-		$self->showError($event->_text, "FVWM Error");
+		$self->showError($event->_text, "fvwm error");
 	});
 }
 
@@ -256,7 +256,7 @@ May be good for module debugging or any other purpose.
 =item B<addDefaultErrorHandler>
 
 This methods adds a M_ERROR handler to automatically notify you that an error
-has been reported by FVWM. The M_ERROR handler then calls C<showError()>
+has been reported by fvwm. The M_ERROR handler then calls C<showError()>
 with the received error text as a parameter to show it in a window.
 
 =back

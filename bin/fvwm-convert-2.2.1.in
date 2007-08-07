@@ -1,15 +1,15 @@
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH fvwm-convert-2.2 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH fvwm-convert-2.2 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .SH NAME
-fvwm-convert-2.2 \- convert FVWM 1.xx configuration file to FVWM 2.xx style
+fvwm-convert-2.2 \- convert fvwm 1.xx configuration file to fvwm 2.xx style
 .SH SYNOPSIS
 .B fvwm-convert-2.2
 .RI [ source ]
 .RI [ dest ]
 .SH DESCRIPTION
 .B fvwm-convert-2.2
-is a simple program that tries to convert an FVWM 1.xx configuration
-file into an FVWM 2.xx compatible format.  It is not perfect,
+is a simple program that tries to convert an fvwm 1.xx configuration
+file into an fvwm 2.xx compatible format.  It is not perfect,
 especially with regards to Mouse and Key commands, but it provides a
 basically-working \fI.fvwm2rc\fR file which can be further modified at
 leisure.

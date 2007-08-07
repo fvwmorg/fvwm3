@@ -1,5 +1,5 @@
 /* -*-c-*- */
-/* FvwmBacker Module for Fvwm.
+/* FvwmBacker Module for fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -9,7 +9,7 @@
  * and this and any other applicible copyrights are kept intact.
 
  * The functions in this source file that are based on part of the FvwmIdent
- * module for Fvwm are noted by a small copyright atop that function, all others
+ * module for fvwm are noted by a small copyright atop that function, all others
  * are copyrighted by Mike Finger.  For those functions modified/used, here is
  *  the full, origonal copyright:
  *
@@ -68,7 +68,7 @@
 
 /* migo (22-Nov-1999): Temporarily until fvwm_msg is moved to libs */
 #define ERR
-#define fvwm_msg(t,l,f) fprintf(stderr, "[FVWM][FvwmBacker]: <<ERROR>> %s\n", f)
+#define fvwm_msg(t,l,f) fprintf(stderr, "[fvwm][FvwmBacker]: <<ERROR>> %s\n", f)
 
 unsigned long BackerGetColor(char *color);
 
@@ -115,7 +115,7 @@ int current_x = 0;
 int current_y = 0;
 int current_colorset = -1;  /* the last matched command colorset or -1 */
 
-int Fvwm_fd[2];
+int fvwm_fd[2];
 
 char *Module;        /* i.e. "FvwmBacker" */
 char *configPrefix;  /* i.e. "*FvwmBacker" */
@@ -174,8 +174,8 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	Fvwm_fd[0] = atoi(argv[1]);
-	Fvwm_fd[1] = atoi(argv[2]);
+	fvwm_fd[0] = atoi(argv[1]);
+	fvwm_fd[1] = atoi(argv[2]);
 
 	/* Grab the X display information now. */
 
@@ -202,19 +202,19 @@ int main(int argc, char **argv)
 	/* Parse the config file */
 	ParseConfig();
 
-	SetMessageMask(Fvwm_fd,
+	SetMessageMask(fvwm_fd,
 		       M_NEW_PAGE | M_NEW_DESK | M_CONFIG_INFO |
 		       M_END_CONFIG_INFO | M_SENDCONFIG);
 
 	/*
 	** we really only want the current desk/page, and window list sends it
 	*/
-	SendInfo(Fvwm_fd, "Send_WindowList", 0);
+	SendInfo(fvwm_fd, "Send_WindowList", 0);
 
 	/* tell fvwm we're running */
-	SendFinishedStartupNotification(Fvwm_fd);
+	SendFinishedStartupNotification(fvwm_fd);
 
-	/* Recieve all messages from Fvwm */
+	/* Recieve all messages from fvwm */
 	EndLessLoop();
 
 	/* Should never get here! */
@@ -233,11 +233,11 @@ void EndLessLoop(void)
 }
 
 /*
-  ReadFvwmPipe - Read a single message from the pipe from Fvwm
+  ReadFvwmPipe - Read a single message from the pipe from fvwm
 */
 void ReadFvwmPipe(void)
 {
-	FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
+	FvwmPacket* packet = ReadFvwmPacket(fvwm_fd[1]);
 	if ( packet == NULL )
 	{
 		exit(0);
@@ -415,7 +415,7 @@ void SetDeskPageBackground(const Command *c)
 	default:
 		if(c->cmdStr != NULL)
 		{
-			SendFvwmPipe(Fvwm_fd, c->cmdStr, (unsigned long)0);
+			SendFvwmPipe(fvwm_fd, c->cmdStr, (unsigned long)0);
 		}
 		break;
 	}
@@ -461,7 +461,7 @@ void ExecuteMatchingCommands(int colorset, int changed)
 }
 
 /*
-  ProcessMessage - Process the message coming from Fvwm
+  ProcessMessage - Process the message coming from fvwm
 */
 void ProcessMessage(unsigned long type, unsigned long *body)
 {
@@ -570,13 +570,13 @@ void ParseConfig(void)
 	strcpy(line_start, "*");
 	strcat(line_start, Module);
 
-	InitGetConfigLine(Fvwm_fd, line_start);
-	GetConfigLine(Fvwm_fd, &tline);
+	InitGetConfigLine(fvwm_fd, line_start);
+	GetConfigLine(fvwm_fd, &tline);
 
 	while(tline != (char *)0)
 	{
 		ParseConfigLine(tline);
-		GetConfigLine(Fvwm_fd, &tline);
+		GetConfigLine(fvwm_fd, &tline);
 	}
 	free(line_start);
 }

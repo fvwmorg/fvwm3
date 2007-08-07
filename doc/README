@@ -1,94 +1,129 @@
 # Author: Scott Smedley
 
-This directory contains FVWM XML documentation. It is configured to output
-an fvwm.1 man page & a plethora of HTML files - all from the same (XML)
-source.
+This directory contains fvwm XML documentation. It is configured
+to output an fvwm.1 man page & a plethora of HTML files - all from
+the same (XML) source.
 
 By default, only the man page is generated. If you would like to
 generate the HTML documentation, use:
 
-./configure --enable-htmldoc
+  $ ./configure --enable-htmldoc
 
 If you do not want to generate the man page, use:
 
-./configure --disable-mandoc
+  $ ./configure --disable-mandoc
 
 Once it is built, you should be able to point your web browser to:
 
-file:///usr/local/share/doc/fvwm/index.html
+  file:///usr/local/share/doc/fvwm/index.html
 
 (Change "/usr/local" if you use ./configure --prefix="...".)
 
-For developers, the XML source files supersede the old fvwm man page.
-Please make any documentation changes here & NOT in the fvwm/fvwm.1.in
-file.
+For developers, the XML source files supersede the old fvwm man
+page.  Please make any documentation changes here & NOT in the
+fvwm/fvwm.1.in file.
 
-If you are editing the documentation for an FVWM command, you will
-find an XML file relating to that command in the doc/command/ directory.
-Any other documentation changes (eg. general description) will most
-likely need to be made in the doc/fvwm directory.
+If you are editing the documentation for an fvwm command, you will
+find an XML file relating to that command in the doc/command/
+directory.  Any other documentation changes (e.g. general
+description) will most likely need to be made in the doc/fvwm
+directory.
 
 The XML syntax is intuitive - a cursory inspection of a few XML
-files should suffice to allow even a novice user to make their changes.
-However, there are a few idiosyncrasies worth pointing out:
+files should suffice to allow even a novice user to make their
+changes.  However, there are a few idiosyncrasies worth pointing
+out:
 
-* Use <fvwmref cmd="Command"/> when referring to an FVWM command. eg:
+Formatting instructions
+=======================
 
-  <fvwmref cmd="Style"/>
+* The name fvwm is spelled "fvwm".  At the beginning of a sentence
+  or in other places where nouns are capitalized: "Fvwm".  It's
+  *never* spelled "FVWM".
+
+* Use <fvwmref cmd="Command"/> when referring to an fvwm
+  command, e.g.:
+
+    <fvwmref cmd="Style"/>
 
   This will create a link to the Style command (in HTML output).
-  Caveat: don't use <fvwmref> to reference commands that are actually
-  being described. ie. In the Style.xml file, you won't see any
-  <fvwmref>s to the Style command.
-* Use <fvwmref cmd="Command" opt="Option"/> when _referring_ to an FVWM
-  command option. eg:
+  Caveat: don't use <fvwmref> to reference commands that are
+  actually being described. ie. In the Style.xml file, you won't
+  see any <fvwmref>s to the Style command.
 
-  <fvwmref cmd="Style" opt="Font/>
+* Use <fvwmref cmd="Command" opt="Option"/> when _referring_ to an
+  fvwm command option, e.g.:
+
+    <fvwmref cmd="Style" opt="Font/>
 
   This will create a link to the Font option of the Style command.
-* Use <fvwmopt cmd="Command" opt="Option"> when _describing_ an
-  option to a command. eg:
 
-	<fvwmopt cmd="Style" opt="Font"/>
+* Use <fvwmopt cmd="Command" opt="Option"> when _describing_ an
+  option to a command, e.g.:
+
+    <fvwmopt cmd="Style" opt="Font"/>
+
   This will highlight the option name & allow the option to be
   referenced elsewhere.
-* Use <fvwmref mod="Module"/> when referring to an FVWM module. eg:
 
-  <fvwmref mod="FvwmPager"/>
+* Use <fvwmref mod="Module"/> when referring to an fvwm module, e.g.:
 
-  This will create a link to the FvwmPager module (in HTML output).
-* Use <fvwmref sect="filename" opt="option" name="text"/> when refering
-  to a different section.
+    <fvwmref mod="FvwmPager"/>
 
-  <fvwmref sect="colorGradients" opt="color_gradients" name="Color Gradients"/>
+  This will create a link to the FvwmPager module (in HTML
+  output).
 
-* Use <... output="html"> to wrap text that should only appear in HTML output.
-  Eg. <para output="html">This text only appears in HTML.</para>
-* Use <... output="man"> to wrap text that should only only appear in man-page
-  output.
-  Eg. <para output="man">This text only appears in man page.</para>
+* Use <fvwmref sect="filename" opt="option" name="text"/> when
+  refering to a different section.
+
+    <fvwmref sect="colorGradients" opt="color_gradients"
+     name="Color Gradients"/>
+
+* Use <... output="html"> to wrap text that should only appear in
+  HTML output.  E.g.
+
+    <para output="html">This text only appears in HTML.</para>
+
+* Use <... output="man"> to wrap text that should only only appear
+  in man-page output, e.g.
+
+    <para output="man">This text only appears in man page.</para>
+
 * Use <filename> for filenames.
+
 * Use <envar> for environment variables.
+
 * Use <ulink> for links to web pages.
+
 * Use <acronym> for acronyms.
+
 * Use <keysym> for key names.
 
 
+How to add documentation for a new fvwm command
+===============================================
 
-HOWTO add documentation for a new FVWM command
-==============================================
+1. Copy a similar command, e.g.
 
-1. Copy a similar command. Eg.
-   cd doc/commands && cp Echo.xml EchoFuncDefinition.xml
-2. Edit contents appropriately. Make sure the section id, title and
-   cmdsynopsis are correct.
+     $ cd doc/commands && cp Echo.xml EchoFuncDefinition.xml
+
+2. Edit contents appropriately. Make sure the section id, title
+   and cmdsynopsis are correct.
+
 3. Ensure the new command appears in the appropriate section of the
-   man page. Eg. this line is included in fvwm/userFunctions.xml:
-   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="../commands/EchoFuncDefinition.xml" />
-4. Add the new file to the COMMANDS variable in commands.mak.
-5. Add the new command to groupedCommands.html.
-6. Add the new command to allCommands.html - this content is auto-generated
-   by a script in the util/ subdirectory. First add the command name to
-   the alphabetically sorted util/cmds.txt file, then run:
-   cd doc/util && ./genAllCommands.pl cmds.txt
+   man page, e.g. this line is included in fvwm/userFunctions.xml:
+
+     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+      href="../commands/EchoFuncDefinition.xml" />
+
+4. Add the new command to groupedCommands.html.
+
+5. Add the new command to allCommands.html - this content is
+   auto-generated by a script in the util/ subdirectory.  First
+   add the command name to the alphabetically sorted util/cmds.txt
+   file, then run:
+
+     $ cd doc/util
+     $ ./genAllCommands.pl cmds.txt
+
 7. Add a ChangeLog entry to doc/ChangeLog.

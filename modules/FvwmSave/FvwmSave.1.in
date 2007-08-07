@@ -1,9 +1,9 @@
 .\" t
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH FvwmSave 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmSave 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-FvwmSave \- the FVWM desktop-layout saving module
+FvwmSave \- the Fvwm desktop-layout saving module
 .SH SYNOPSIS
 FvwmSave is spawned by fvwm, so no command line invocation will work.
 

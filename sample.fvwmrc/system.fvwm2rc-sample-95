@@ -18,7 +18,7 @@
 # parts of this file between the marks "#SEG foo" and "#SEG xyz" into a
 # file foo and add "Read foo" to this file (until the "#SEG END" mark).
 #
-# You do need the fvwm_icons distribution installed in the FVWM image path.
+# You do need the fvwm_icons distribution installed in the fvwm image path.
 # If they are installed in another directory use the ImagePath command
 # below or set this directory via the Setup95 Script.
 #
@@ -29,8 +29,8 @@
 # rplayd daemon must be run.
 #
 # The Setup95 Script asks you to choose between two looks, one is close
-# to Windows and the other one is close to a "classical" FVWM look.
-# For switching from the windows look to the FVWM one by hand, comment the
+# to Windows and the other one is close to a "classical" fvwm look.
+# For switching from the windows look to the fvwm one by hand, comment the
 # x lines that follow the #WIN x lines and uncomment the x lines that
 # follow the #FVWM x lines.
 #
@@ -53,7 +53,7 @@
 # in your BarButtons. To get it by hand, just uncomment the line that
 # follows #LAPTOP.
 #
-# GNOME and KDE menus: FVWM has a perl script that can build GNOME and
+# GNOME and KDE menus: fvwm has a perl script that can build GNOME and
 # KDE menus: fvwm-menu-desktop (man fvwm-menu-desktop for details). If GNOME
 # and/or KDE are installed in your machine, Setup95 will ask you which menus
 # you want to add to your Programs sub menus (G_SM_G/F means FvwmGtk/fvwm
@@ -74,17 +74,17 @@
 # The panel stays put option  (the line which follow #G_PANEL) try to put
 # the panel in the same layers as the other windows.
 # Note that it safe to "Build a config for gnome-session" for using with
-# a normal FVWM session.
+# a normal fvwm session.
 #
 # CDE: There is an elementary support for CDE (lines which follow #CDE).
 #
 # Note: for saving its state (the changes you do via settings-->* up to the
 # first separator) Sample-95 uses some files $FVWM_USERDIR/.start-* (see
-# section 5), $FVWM_USERDIR/.fvwm-layers (see section 6) and the usual FVWM
+# section 5), $FVWM_USERDIR/.fvwm-layers (see section 6) and the usual fvwm
 # config files: .FvwmAnimate, .FvwmForm, ~/.xinitrc-fvwm, .FvwmBaseConfig
 #
-# There are many comments, but a good reading of the FVWM FAQ, of the man
-# pages of FVWM and its modules is recommended. Also, you can read the
+# There are many comments, but a good reading of the fvwm FAQ, of the man
+# pages of fvwm and its modules is recommended. Also, you can read the
 # sample-95 MINI-FAQ that you can find at the end of this file.
 #
 #!D For the fvwm-workers. These lines will not appear if the Setup95 Script
@@ -332,7 +332,7 @@ Style * MouseFocusClickRaises
 Style * MinOverlapPlacement
 
 #
-# NoPPosition instructs FVWM to ignore the PPosition field in window
+# NoPPosition instructs fvwm to ignore the PPosition field in window
 # geometry hints. Emacs annoyingly sets PPosition to (0,0)!
 #
 
@@ -387,7 +387,7 @@ BusyCursor DynamicMenu True, Read True
 #------------------------------------------------------------------------------
 
 #
-# FVWM has a command for bogus applications. Here an example with KFM
+# fvwm has a command for bogus applications. Here an example with KFM
 #
 
 #KFM_ICONS 1 uncomment the next line if you use the KFM "icons"
@@ -434,7 +434,7 @@ AddToFunc StartFunction
 #G_M_G 1
 #+ I Module FvwmGtk
 
-# The InitFunction is used at FVWM start
+# The InitFunction is used at fvwm start
 
 AddToFunc InitFunction
 # Load the X Setup Scripts setting if we use it
@@ -447,7 +447,7 @@ AddToFunc RestartFunction
 #+ I Module FvwmButtons MyButtons
 
 #
-# When used with a session manager FVWM uses SessionInitFunction and
+# When used with a session manager fvwm uses SessionInitFunction and
 # SessionRestartFunction in the place of  InitFunction and RestartFunction
 #
 
@@ -1452,13 +1452,13 @@ AddToMenu   Utilities "Root Menu" Title
 + "&Shells%mini.term.xpm"		Popup Shells
 + "&Programs%mini.start.xpm%"		Popup Programs
 + ""					Nop
-+ "FVWM &Modules%mini.modules.xpm%"	Popup Module-Popup
++ "Fvwm &Modules%mini.modules.xpm%"	Popup Module-Popup
 + "&Settings%mini.desktop.xpm%"		Popup Settings
 + "&Documents%mini.books.xpm%"		Popup Documents
 + "&Screen Saver%mini.display.xpm%"	Popup Screen
 + ""					Nop
 + "&Restart%mini.turn.xpm%"		Popup Restart
-+ "&Quit FVWM%mini.stop.xpm%"		FvwmForm FvwmForm-QuitVerify
++ "&Quit fvwm%mini.stop.xpm%"		FvwmForm FvwmForm-QuitVerify
 
 DestroyFunc SetDebianMenu
 AddToFunc   SetDebianMenu
@@ -1474,7 +1474,7 @@ AddToFunc   SetDebianMenu
 + I + "&Shells%mini.term.xpm"		Popup /Debian/XShells
 + I + "&Programs%mini.start.xpm%"	Popup /Debian/Apps
 + I + ""				Nop
-+ I + "&FVWM Modules%mini.modules.xpm%"	Popup Module-Popup
++ I + "&Fvwm Modules%mini.modules.xpm%"	Popup Module-Popup
 + I + "&Settings%mini.desktop.xpm%"	Popup Settings
 + I + "&Documents%mini.books.xpm%"	Popup Documents
 + I + "&Help%mini.book1.xpm%"		Popup /Debian/Help
@@ -1482,7 +1482,7 @@ AddToFunc   SetDebianMenu
 + I + ""				Nop
 + I + "&Window Managers%mini.x2.xpm%"	Popup /Debian/WindowManagers
 + I + "&Restart%mini.turn.xpm%"		Restart
-+ I + "&Quit FVWM%mini.stop.xpm%"	FvwmForm FvwmForm-QuitVerify
++ I + "&Quit fvwm%mini.stop.xpm%"	FvwmForm FvwmForm-QuitVerify
 
 Test (f /etc/X11/fvwm/DebianMenu) SetDebianMenu
 
@@ -2114,7 +2114,7 @@ AddToMenu   Reload-Config
 
 DestroyMenu Load-Settings
 AddToMenu   Load-Settings
-+ "Show &FVWM Settings%mini.fvwm.xpm%"		ShowFvwmSettings
++ "Show &Fvwm Settings%mini.fvwm.xpm%"		ShowFvwmSettings
 + "Show Layers Settings%mini.window.xpm%"	ShowLayers
 + "Show &X Settings%mini.x2.xpm%"		ShowXSettings
 + "" Nop
@@ -2229,10 +2229,10 @@ AddToMenu "Background-Animation"
 DestroyMenu Documents
 AddToMenu   Documents
 + "&Xman%mini.book1.xpm%"	   Exec exec xman
-+ "&FVWM Home Page%mini.fvwm.xpm%" Exec exec mozilla http://www.fvwm.org/
-+ "&FVWM Themes Home Page%mini.icons.xpm%" Exec exec mozilla http://fvwm-themes.sourceforge.net/
++ "&Fvwm Home Page%mini.fvwm.xpm%" Exec exec mozilla http://www.fvwm.org/
++ "&Fvwm Themes Home Page%mini.icons.xpm%" Exec exec mozilla http://fvwm-themes.sourceforge.net/
 + "&Sample 95 MINI-FAQ%mini.book1.xpm%"	Exec exec xterm -bg white -fg black -g 80x35 -n "Sample-95 MINI-FAQ" -T "Sample-95 MINI-FAQ" -e less +?"-- Sample-95 MINI-FAQ --" $FVWM_USERDIR/.fvwm2rc
-+ "FVWM &Man Pages%mini.book1.xpm%"	Popup FvwmManPage
++ "Fvwm &Man Pages%mini.book1.xpm%"	Popup FvwmManPage
 + ""  Nop
 + "&Browser%mini.folder.xpm%"		Menu MenuBrowser
 + "Browser (&cached)%mini.folder.xpm%"	Menu MenuBrowserCached
@@ -2259,7 +2259,7 @@ AddToFunc   ViewManPage
 + I Exec exec xterm -g 80x40 -e man $0
 
 DestroyMenu FvwmManPage
-AddToMenu   FvwmManPage "FVWM Man Pages" Title
+AddToMenu   FvwmManPage "Fvwm Man Pages" Title
 + "%mini.book1.xpm%fvwm"                ViewManPage fvwm
 + "%mini.book1.xpm%FvwmAnimate"         ViewManPage FvwmAnimate
 + "%mini.book1.xpm%FvwmAuto"            ViewManPage FvwmAuto
@@ -3041,8 +3041,8 @@ DestroyModuleConfig FvwmWinList: *
 # * Some (mini-)icons are missing in menus and in some buttons!
 # * Does Sample-95 support themes?
 # * Can I use Sample-95 with GNOME?
-# * How can I load saved settings before starting FVWM?
-# * Can I use WindowMaker and AfterStep applets with FVWM?
+# * How can I load saved settings before starting fvwm?
+# * Can I use WindowMaker and AfterStep applets with fvwm?
 # * Who wrote this configuration file?
 #
 # ----------------------------------------------------------------------------
@@ -3050,7 +3050,7 @@ DestroyModuleConfig FvwmWinList: *
 # * Why doesn't this FAQ contain my question?
 #
 # Maybe because the answer is in the beginning of the configuration file
-# (i.e., this file!), in the FVWM FAQ or in the FVWM man pages.
+# (i.e., this file!), in the fvwm FAQ or in the fvwm man pages.
 #
 #                  ----------------------------------------
 #
@@ -3133,7 +3133,7 @@ DestroyModuleConfig FvwmWinList: *
 # Stroke bindings:
 # ---------------
 #
-# You need to have FVWM compiled with stroke support (these bindings
+# You need to have fvwm compiled with stroke support (these bindings
 # are defined only in this case) and libstroke installed.
 # Mouse button 3 is used (this button must be pressed during the stroke),
 # no modifiers are needed when you start your mouse motion on the root
@@ -3170,7 +3170,7 @@ DestroyModuleConfig FvwmWinList: *
 # is a symbolic link to a theme. A theme will be a file which look like
 # decorations plus the FvwmTheme configuration commands. Other technical
 # functions are needed as a function for switching between themes. This is
-# left to your own pleasure! Doing elaborated FVWM configurations is one of
+# left to your own pleasure! Doing elaborated fvwm configurations is one of
 # the better games under UNIX.
 #
 # If you want a powerful themes engine do not use Sample-95, it is not the
@@ -3182,14 +3182,14 @@ DestroyModuleConfig FvwmWinList: *
 #
 # * Can I use Sample-95 with GNOME?
 #
-# Yes. You "need" FVWM compiled with GNOME support and it is preferable to
-# run FVWM under gnome-session. Also, do not forget that you have to set
+# Yes. You "need" fvwm compiled with GNOME support and it is preferable to
+# run fvwm under gnome-session. Also, do not forget that you have to set
 # FVWM_USERDIR, so start the gnome-session as
 #	env FVWM_USERDIR="your FVWM_USERDIR" gnome-session
 # Of course, it is preferable to set the "build a file for gnome-session"
 # option of the Setup95 script. You may use the option "Try a Stays Put panel"
 # to put the panel in the same layer than the normal windows, but you may
-# have to leave GNOME/FVWM and start again X to avoid problems.
+# have to leave GNOME/fvwm and start again X to avoid problems.
 # Note that under session, Sample-95 does not load your "X settings" by
 # default (GNOME has its own method). Moreover, read the next question for
 # using a different setting when you use GNOME (you may also use the
@@ -3203,10 +3203,10 @@ DestroyModuleConfig FvwmWinList: *
 #
 #                  ----------------------------------------
 #
-# * How can I load saved settings before starting FVWM?
+# * How can I load saved settings before starting fvwm?
 #
-# Say, you want to use setting 1 under a normal FVWM session, setting 2
-# under a gnome-session and setting 3 under a normal FVWM session but the
+# Say, you want to use setting 1 under a normal fvwm session, setting 2
+# under a gnome-session and setting 3 under a normal fvwm session but the
 # shell test FOO is true. Then, your .xinitrc/.xsession file can look
 # as follows (where $1 is the "first" argument given by startx, or by kdm or
 # gdm ...).
@@ -3243,9 +3243,9 @@ DestroyModuleConfig FvwmWinList: *
 #
 #               ----------------------------------------
 #
-# * Can I use WindowMaker and AfterStep applets with FVWM?
+# * Can I use WindowMaker and AfterStep applets with fvwm?
 #
-# Yes most WM and AS applets are FVWM compliant. Moreover, sample-95 provides
+# Yes most WM and AS applets are fvwm compliant. Moreover, sample-95 provides
 # a FvwmButtons for you called WinMakerAppButtons. Of course, you have to
 # edit the configuration of this buttons to put your preferred applets. Note
 # that you have an applets panel under the 3 first applets. These panels are

@@ -10,7 +10,7 @@
 #include "libs/fvwmlib.h"
 
 /**
- * FVWM sends packets of this type to modules.
+ * fvwm sends packets of this type to modules.
  **/
 
 typedef struct
@@ -131,7 +131,7 @@ typedef struct
 #define MX_PROPERTY_CHANGE_SWALLOW     2
 
 /**
- * Reads a single packet of info from FVWM.
+ * Reads a single packet of info from fvwm.
  * The packet is stored into static memory that is reused during
  * the next call to ReadFvwmPacket.  Callers, therefore, must copy
  * needed data before the next call to ReadFvwmPacket.
@@ -224,7 +224,7 @@ char *module_expand_action(
 	char *forecolor, char *backcolor);
 
 /**
- * Parse the command line arguments given to the module by FVWM.
+ * Parse the command line arguments given to the module by fvwm.
  * Input is the argc & argv from main(), and a flag to indicate
  * if we accept a module alias as argument #6.
  *
@@ -238,9 +238,9 @@ typedef struct
 	char* name;
 	/* length of the module name */
 	int namelen;
-	/* file descriptor to send info back to FVWM */
+	/* file descriptor to send info back to fvwm */
 	int to_fvwm;
-	/* file descriptor to read packets from FVWM */
+	/* file descriptor to read packets from fvwm */
 	int from_fvwm;
 	/* window context of module */
 	Window window;

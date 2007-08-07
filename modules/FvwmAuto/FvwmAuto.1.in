@@ -15,10 +15,10 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FvwmAuto 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH FvwmAuto 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .UC
 .SH NAME
-\fIFvwmAuto\fP \- the FVWM auto-raise module
+\fIFvwmAuto\fP \- the fvwm auto-raise module
 .SH SYNOPSIS
 .nf
 Module FvwmAuto Timeout [-passid] [-menter|-menterleave|-mfocus] [EnterCommand [LeaveCommand]]

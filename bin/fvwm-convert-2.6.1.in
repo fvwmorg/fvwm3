@@ -1,7 +1,7 @@
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
-.TH fvwm-convert-2.6 1 "@RELDATELONG@ (@VERSION@)" FVWM "FVWM Modules"
+.TH fvwm-convert-2.6 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
 .SH NAME
-fvwm-convert-2.6 \- convert FVWM 2.4.x configuration file to FVWM 2.6.x style
+fvwm-convert-2.6 \- convert fvwm 2.4.x configuration file to fvwm 2.6.x style
 .SH SYNOPSIS
 .B fvwm-convert-2.6
 .RI [ source ]

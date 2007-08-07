@@ -1,3 +1,10 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* control.in:
+	* fvwm.menu:
+	* Makefile.am:
+	write fvwm in lower case
+
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
 	* control.in (Build-Depends):

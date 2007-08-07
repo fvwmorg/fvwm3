@@ -15,7 +15,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "FVWM Module" FvwmPerl | nroff -man | less -e
+#   pod2man -c "Fvwm Module" FvwmPerl | nroff -man | less -e
 
 require 5.004;
 use strict;
@@ -53,7 +53,7 @@ sub initPreprocessVars () {
 	$ppArgs->{quote} = $$ppMainQuoteRef if $ppMainQuoteRef;
 	$ppMainQuoteRef = \$ppArgs->{quote} unless $ppMainQuoteRef;
 	$ppFileCount = 0;
-	
+
 	$preprocessOptions = {
 		"c|cmd|command" => \$ppArgs->{command},
 		"q|quote=s"     => \$ppArgs->{quote},
@@ -455,7 +455,7 @@ __END__
 
 =head1 NAME
 
-FvwmPerl - the FVWM perl manipulator and preprocessor
+FvwmPerl - the fvwm perl manipulator and preprocessor
 
 =head1 SYNOPSIS
 
@@ -508,7 +508,7 @@ B<-p>|B<--preprocess> [ file ] - preprocess the given fvwm config file
 The following 5 options are only valid together with B<--preprocess>
 option.
 
-B<-c>|B<--cmd> line - an FVWM command to be preprocessed instead of file
+B<-c>|B<--cmd> line - an fvwm command to be preprocessed instead of file
 
 B<-q>|B<--quote> char - change the default '%' quote
 
@@ -613,7 +613,7 @@ with the I<[FvwmPerl][load]:> header prepended.
 =item B<preprocess> [-q|--quote char] [-c|--cmd] [I<line> | I<file>]
 
 Preprocess fvwm config I<file> or (if --cmd is given) I<line>.
-This file contains lines that are not touched (usually FVWM commands)
+This file contains lines that are not touched (usually fvwm commands)
 and specially preformatted perl code that is processed and replaced.
 Text enclosed in B<%{> ... B<}%> delimiters, that may start anywhere
 on the line and end anywhere on the same or an other line, is perl code.
@@ -934,14 +934,14 @@ Here are more pairs of equivalent lines:
 
 Warning, you may affect the way FvwmPerl works by evaluating appropriate
 perl code, this is considered a feature not a bug.  But please don't do this,
-write your own FVWM module in perl instead.
+write your own fvwm module in perl instead.
 
 =head1 SEE ALSO
 
 The fvwm(1) man page describes all available commands.
 
 Basically, in your perl code you may use any function or class method from
-the perl library installed with FVWM, see the man pages of perl packages
+the perl library installed with fvwm, see the man pages of perl packages
 B<General::FileSystem>, B<General::Parse> and B<FVWM::Module>.
 
 =head1 AUTHOR

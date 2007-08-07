@@ -56,11 +56,11 @@ __END__
 
 =head1 NAME
 
-FVWM::Constants - exports FVWM specific constants
+FVWM::Constants - exports fvwm specific constants
 
 =head1 DESCRIPTION
 
-This class is used to load FVWM constants into your perl script or class.
+This class is used to load fvwm constants into your perl script or class.
 Note, if you use I<FVWM::Module> the constants are automatically exported.
 So you usually do not need to include this class.
 

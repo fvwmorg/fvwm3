@@ -19,6 +19,16 @@
 
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* README:
+	* groupedCommands.html:
+	* index.html:
+	* modules/FvwmTabs.xml:
+	* allCommands.html:
+	* fvwm/configuration.xml:
+	* fvwm/fvwm.man.xml:
+	write fvwm in lower case
+
+	* fvwm/fvwm.man.xml:
 	* commands/GnomeShowDesks.xml:
 	* commands/EwmhNumberOfDesktops.xml:
 	* fvwm/sections:

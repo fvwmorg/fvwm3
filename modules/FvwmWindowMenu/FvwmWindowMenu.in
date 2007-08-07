@@ -15,7 +15,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "FVWM Module" FvwmWindowMenu | nroff -man | less -e
+#   pod2man -c "Fvwm Module" FvwmWindowMenu | nroff -man | less -e
 
 use 5.004;
 use strict;
@@ -223,7 +223,7 @@ sub AddToSection ($$) {
 	} else {
 		$format =~ s/%M//g;
 	}
-	
+
 	# now fix __%__ hack
 	$format =~ s/__%__/%/g;
 
@@ -244,7 +244,7 @@ sub Shorten ($) {
 	my $r = substr($string, 0, $length);
 	$r .= "..." if length($string) > $length;
 
-	# For some special characters, FVWM expects a double sequence to get
+	# For some special characters, fvwm expects a double sequence to get
 	# a literal character.
 	$r =~ s/([*&%^])/$1$1/g;
 

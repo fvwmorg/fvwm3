@@ -1,7 +1,28 @@
+2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm-menu-directory.1:
+	* fvwm-config.1.in:
+	* fvwm-convert-2.2.1.in:
+	* fvwm-bug.in:
+	* fvwm-menu-headlines.in:
+	* fvwm-convert-2.4.1.in:
+	* fvwm-root.1.in:
+	* fvwm-menu-xlock.1:
+	* fvwm-convert-2.6.1.in:
+	* fvwm-bug.1.in:
+	* fvwm-perllib.1:
+	* fvwm-perllib.in:
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-directory.in:
+	* fvwm-menu-desktop.1.in:
+	* fvwm-menu-xlock.in:
+	write fvwm in lower case
+
 2007-07-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* Makefile.am (LDADD):
 	fixed building with libXcursor
+
 
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 
