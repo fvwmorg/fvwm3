@@ -22,7 +22,7 @@ configuration file with the
 command.  Many modules and commands work nicely with Xinerama
 displays.</para>
 
-<para>Everywhere where a geometry in the usual X format can be supplied,
+<para>Whenever a geometry in the usual X format can be supplied,
 fvwm's Xinerama extension allows for specifying a screen in addition
 to the geometry (or even the screen alone).  To do this, a '@' is
 added to the end of the geometry string followed by either the
