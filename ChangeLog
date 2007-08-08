@@ -1,3 +1,8 @@
+2007-08-08  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/events.c (My_XNextEvent):
+	fixed hang with startup modules
+
 2007-08-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/conditional.c (FreeConditionMask):
@@ -61,7 +66,7 @@
 	* libs/Flocale.c (FlocaleChar2bOneCharToUtf8):
 	fixed buffer overflow
 
-2007-08-6  Renato Caldas  <seventhguardian@gmail.com>
+2007-08-06  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.h (fmodule_list_itr):
 	* fvwm/module_list.c (module_list_itr_init, module_list_itr_next):
@@ -97,7 +102,7 @@
 	don't store current pointer in module list iterators.
 	fix C89-compilance
 
-2007-08-6  Renato Caldas  <seventhguardian@gmail.com>
+2007-08-06  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/events.c (My_XNextEvent):
 	* fvwm/module_list.c (KillModuleByName):
@@ -118,7 +123,7 @@
 	* fvwm/module_list.c (module_get_next):
 	removed function
 
-2007-08-5  Renato Caldas  <seventhguardian@gmail.com>
+2007-08-05  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/module_list.h:
 	* fvwm/module_list.c (fmodule):
