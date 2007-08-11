@@ -4013,9 +4013,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	{
 		module_list_itr_init(&moditr);
 		module = module_list_itr_next(&moditr);
+		module_cleanup();
 		if (module == NULL)
 		{
-			module_cleanup();
 			/* last module */
 			DBUG(
 				"My_XNextEvent",
