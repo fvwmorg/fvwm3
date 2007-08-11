@@ -2118,8 +2118,8 @@ static ProxyWindow* FindNeighborForLeader(ProxyWindow* proxy,
 #if PROXY_GROUP_DEBUG
 			fprintf(stderr,"unique group %d reassign %s\n",
 				group,other->name);
-			other->group=group;
 #endif
+			other->group=group;
 		}
 	}
 

@@ -1,3 +1,8 @@
+2007-08-11  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* FvwmProxy/FvwmProxy.c (FindNeighborForLeader):
+	fixed proxy group functionality when debugging code compiled out.
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmWindowMenu/Makefile.am:
