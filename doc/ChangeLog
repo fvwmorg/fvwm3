@@ -1,3 +1,8 @@
+2007-08-12  Serge Koksharov  <gentoosiast dog yandex dot ru>
+
+	* groupedCommands.html:
+	fixed links for "Obsolete or Deprecated" commands
+
 2007-08-08  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/xinerama.xml:
