@@ -482,7 +482,6 @@ static inline void module_list_destroy(fmodule_list *list)
 			}
 		}
 		free(args);
-		module_list_remove(module, &module_list);
 		module_free(module);
 
 		return NULL;

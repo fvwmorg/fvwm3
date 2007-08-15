@@ -1,3 +1,8 @@
+2007-08-15  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/module_list.c (do_execute_module):
+	fixed possible crash when fork fails
+
 2007-08-08  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/events.c (My_XNextEvent):
