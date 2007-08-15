@@ -90,7 +90,7 @@ static void module_free(fmodule *module);
  * list handling functions
  */
 static inline void module_list_insert(fmodule *module, fmodule_list *list);
-static inline void module_list_remove(fmodule *module, fmodule_list *list);
+static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list);
 static inline void module_list_destroy(fmodule_list *list);
 static inline int module_list_len(fmodule_list *list);
 
@@ -108,7 +108,6 @@ void module_kill_all(void)
 	module_list_destroy(&module_list);
 	return;
 }
-
 
 static fmodule *module_alloc(void)
 {
@@ -169,13 +168,13 @@ static inline void module_list_insert(fmodule *module, fmodule_list *list)
 	return;
 }
 
-static inline void module_list_remove(fmodule *module, fmodule_list *list)
+static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list)
 {
 	fmodule_store *current;
 
 	if (module == NULL)
 	{
-		return;
+		return NULL;
 	}
 	if (module == (*list)->module)
 	{
@@ -208,13 +207,13 @@ static inline void module_list_remove(fmodule *module, fmodule_list *list)
 		}
 		else
 		{
-			fvwm_msg(
-				ERR, "module_list_remove",
+			DBUG("module_list_remove", 
 				"Tried to remove a not listed module!");
-
-			return;
+			return NULL;
 		}
 	}
+
+	return module;
 }
 
 static inline void module_list_destroy(fmodule_list *list)
@@ -521,8 +520,9 @@ fmodule *executeModuleDesperate(F_CMD_ARGS)
 
 void module_kill(fmodule *module)
 {
-	module_list_remove(module, &module_list);
-	module_list_insert(module, &death_row);
+	module_list_insert(
+			module_list_remove(module, &module_list),
+			&death_row);
 	return;
 }
 
