@@ -13,7 +13,8 @@
 
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="CursorMove.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="FlipFocus.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Focus.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	href="../commands/Focus.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="WarpToWindow.xml" />
 
 

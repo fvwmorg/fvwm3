@@ -1,3 +1,11 @@
+2007-08-17  Viktor Griph  <viktor@anarion.csbnet.se>
+
+	* fvwm/Makefile.am (fvwm.1):
+	run manpage through tbl ob build
+
+	* fvwm/focus.xml:
+	add path to Focus.xml since it caused conflicts with focus.xml
+
 2007-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/Makefile.am:
