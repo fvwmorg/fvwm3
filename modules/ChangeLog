@@ -1,7 +1,9 @@
 2007-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* FvwmM4/FvwmM4.c (m4_defs):
+	* FvwmCpp/FvwmCpp.c (cpp_defs):
 	* FvwmCommand/FvwmCommandS.c (open_fifos):
-	create fifos with permissions 0600 for security reasons
+	use constants from libs/fvwm_sys_stat.h
 
 2007-08-11  Serge Koksharov  <gentoosiast dog yandex dot ru>
 

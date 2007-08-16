@@ -27,7 +27,7 @@
 #if HAVE_UNAME
 #include <sys/utsname.h>
 #endif
-#include <sys/stat.h>
+#include "libs/fvwm_sys_stat.h"
 
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -339,8 +339,9 @@ int fvwm_mkstemp (char *template)
 		v /= 62;
 		XXXXXX[5] = letters[v % 62];
 
-		fd = open (template, O_RDWR | O_CREAT | O_EXCL, 0600);
-
+		fd = open(
+			template, O_RDWR | O_CREAT | O_EXCL,
+			FVWM_S_IRUSR | FVWM_S_IWUSR);
 		if (fd >= 0)
 		{
 			__set_errno (save_errno);

@@ -404,21 +404,15 @@ int open_fifos(const char *f_stem)
 
   /* now we can create the fifos knowing that they don't already exist
    * and any lingering FvwmCommandS will not share them or remove them */
+  if (mkfifo(FfdM_name, FVWM_S_IRUSR | FVWM_S_IWUSR) < 0)
   {
-    unsigned int mask;
-
-    mask = umask(0077);
-    if (mkfifo(FfdM_name, S_IRUSR | S_IWUSR) < 0)
-    {
-      err_msg(FfdM_name);
-      return -1;
-    }
-    if (mkfifo(FfdC_name, S_IRUSR | S_IWUSR) < 0)
-    {
-      err_msg(FfdC_name);
-      return -1;
-    }
-    umask(mask);
+    err_msg(FfdM_name);
+    return -1;
+  }
+  if (mkfifo(FfdC_name, FVWM_S_IRUSR | FVWM_S_IWUSR) < 0)
+  {
+    err_msg(FfdC_name);
+    return -1;
   }
 
   if ((FfdM = open(FfdM_name, O_RDWR | O_NONBLOCK | O_NOFOLLOW)) < 0)
