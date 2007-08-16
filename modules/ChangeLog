@@ -1,3 +1,8 @@
+2007-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmCommand/FvwmCommandS.c (open_fifos):
+	create fifos with permissions 0600 for security reasons
+
 2007-08-11  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* FvwmProxy/FvwmProxy.c (FindNeighborForLeader):
