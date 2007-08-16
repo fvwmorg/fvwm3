@@ -1,4 +1,3 @@
-# $Id$
 # Author: Scott Smedley
 
 docdir = @FVWM_DOCDIR@/fvwm
@@ -11,22 +10,25 @@ XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 HTML_FILES = fvwm.man.html
 XML_FILES = @DOC_SECTIONS_XML_PATH@
 EXTRA_DIST = @DOC_SECTIONS_XML@ $(man_MANS) sections
-BUILD_FILES =
 man_MANS = fvwm.1
 
 if FVWM_BUILD_HTMLDOC
 doc_DATA = $(HTML_FILES)
-BUILD_FILES += $(HTML_FILES)
+BUILD_HTML_FILES = $(HTML_FILES)
+else
+BUILD_HTML_FILES =
 endif
 
 if FVWM_BUILD_MANDOC
-BUILD_FILES += $(man_MANS)
+BUILD_MANS = $(man_MANS)
+else
+BUILD_MANS =
 endif
 
-all: $(BUILD_FILES)
+all: $(BUILD_HTML_FILES) $(BUILD_MANS)
 
 clean:
-	rm -f $(BUILD_FILES)
+	rm -f $(BUILD_HTML_FILES) $(BUILD_MANS)
 
 distclean-local: clean
 

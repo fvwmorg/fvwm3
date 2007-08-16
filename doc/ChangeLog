@@ -1,3 +1,8 @@
+2007-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/Makefile.am:
+	tried to fix automake on macos
+
 2007-08-12  Serge Koksharov  <gentoosiast dog yandex dot ru>
 
 	* groupedCommands.html:
