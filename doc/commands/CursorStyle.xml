@@ -53,109 +53,104 @@
 command can not control the shapes an applications uses, for
 example, to indicate that it is busy.  The various contexts are:</para>
 
-<!-- possible use variablelist instead of table -->
-<informaltable>
-<tgroup cols='2' align='left' valign='top'>
-<tbody>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="POSITION"/> (top_left_corner)</entry>
-	<entry>used when initially placing windows</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="TITLE"/> (top_left_arrow)</entry>
-	<entry>used in a window title-bar</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="DEFAULT"/> (top_left_arrow)</entry>
-	<entry>used in windows that do not set their cursor</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="SYS"/> (hand2)</entry>
-	<entry>used in one of the title-bar buttons</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="MOVE"/> (fleur)</entry>
-	<entry>used when moving or resizing windows</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="RESIZE"/> (sizing)</entry>
-	<entry>used when moving or resizing windows</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="WAIT"/> (watch)</entry>
-	<entry>used during certain fvwm commands (see <fvwmref cmd="BusyCursor"/> for details)</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="MENU"/> (top_left_arrow)</entry>
-	<entry>used in menus</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="SELECT"/> (crosshair)</entry>
-	<entry>used when the user is required to select a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="DESTROY"/> (pirate)</entry>
-	<entry>used for <fvwmref cmd="Destroy"/>, <fvwmref cmd="Close"/>, and <fvwmref cmd="Delete"/> commands</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="TOP"/> (top_side)</entry>
-	<entry>used in the top side-bar of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="RIGHT"/> (right_side)</entry>
-	<entry>used in the right side-bar of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="BOTTOM"/> (bottom_side)</entry>
-	<entry>used in the bottom side-bar of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="LEFT"/> (left_side)</entry>
-	<entry>used in the left side-bar of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="TOP_LEFT"/> (top_left_corner)</entry>
-	<entry>used in the top left corner of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="TOP_RIGHT"/> (top_right_corner)</entry>
-	<entry>used in the top right corner of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="BOTTOM_LEFT"/> (bottom_left_corner)</entry>
-	<entry>used in the bottom left corner of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="BOTTOM_RIGHT"/> (bottom_right_corner)</entry>
-	<entry>used in the bottom right corner of a window</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="TOP_EDGE"/> (top_side)</entry>
-	<entry>used at the top edge of the screen</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="RIGHT_EDGE"/> (right_side)</entry>
-	<entry>used at the right edge of the screen</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="BOTTOM_EDGE"/> (bottom_side)</entry>
-	<entry>used at the bottom edge of the screen</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="LEFT_EDGE"/> (left_side)</entry>
-	<entry>used at the left edge of the screen</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="ROOT"/> (left_ptr)</entry>
-	<entry>used as the root cursor</entry>
-</row>
-<row>
-	<entry><fvwmopt cmd="CursorStyle" opt="STROKE"/> (plus)</entry>
-	<entry>used during a <fvwmref cmd="StrokeFunc"/> command.</entry>
-</row>
-</tbody>
-</tgroup>
-</informaltable>
+<variablelist>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="POSITION"/> (top_left_corner)</term>
+	<listitem><para>used when initially placing windows</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="TITLE"/> (top_left_arrow)</term>
+	<listitem><para>used in a window title-bar</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="DEFAULT"/> (top_left_arrow)</term>
+	<listitem><para>used in windows that do not set their cursor</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="SYS"/> (hand2)</term>
+	<listitem><para>used in one of the title-bar buttons</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="MOVE"/> (fleur)</term>
+	<listitem><para>used when moving or resizing windows</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="RESIZE"/> (sizing)</term>
+	<listitem><para>used when moving or resizing windows</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="WAIT"/> (watch)</term>
+	<listitem><para>used during certain fvwm commands (see <fvwmref cmd="BusyCursor"/> for details)</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="MENU"/> (top_left_arrow)</term>
+	<listitem><para>used in menus</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="SELECT"/> (crosshair)</term>
+	<listitem><para>used when the user is required to select a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="DESTROY"/> (pirate)</term>
+	<listitem><para>used for <fvwmref cmd="Destroy"/>, <fvwmref cmd="Close"/>, and <fvwmref cmd="Delete"/> commands</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="TOP"/> (top_side)</term>
+	<listitem><para>used in the top side-bar of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="RIGHT"/> (right_side)</term>
+	<listitem><para>used in the right side-bar of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="BOTTOM"/> (bottom_side)</term>
+	<listitem><para>used in the bottom side-bar of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="LEFT"/> (left_side)</term>
+	<listitem><para>used in the left side-bar of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="TOP_LEFT"/> (top_left_corner)</term>
+	<listitem><para>used in the top left corner of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="TOP_RIGHT"/> (top_right_corner)</term>
+	<listitem><para>used in the top right corner of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="BOTTOM_LEFT"/> (bottom_left_corner)</term>
+	<listitem><para>used in the bottom left corner of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="BOTTOM_RIGHT"/> (bottom_right_corner)</term>
+	<listitem><para>used in the bottom right corner of a window</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="TOP_EDGE"/> (top_side)</term>
+	<listitem><para>used at the top edge of the screen</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="RIGHT_EDGE"/> (right_side)</term>
+	<listitem><para>used at the right edge of the screen</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="BOTTOM_EDGE"/> (bottom_side)</term>
+	<listitem><para>used at the bottom edge of the screen</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="LEFT_EDGE"/> (left_side)</term>
+	<listitem><para>used at the left edge of the screen</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="ROOT"/> (left_ptr)</term>
+	<listitem><para>used as the root cursor</para></listitem>
+</varlistentry>
+<varlistentry>
+	<term><fvwmopt cmd="CursorStyle" opt="STROKE"/> (plus)</term>
+	<listitem><para>used during a <fvwmref cmd="StrokeFunc"/> command.</para></listitem>
+</varlistentry>
+</variablelist>
 
 
 <para>

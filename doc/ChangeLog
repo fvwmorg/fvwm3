@@ -1,3 +1,9 @@
+2007-08-18  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* commands/CursorStyle.xml:
+	* commands/MenuStyle.xml:
+	use variablelist instead of table
+	
 2007-08-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm-man.xsl (import, include, escape.apostrophe):
