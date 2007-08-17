@@ -548,7 +548,7 @@ illegal characters and formatting directives are silently ignored:</para>
 </thead>
 <tbody>
 <row>
-	<entry><emphasis>%l</emphasis>, <emphasis>%c</emphasis> &amp; <emphasis>%r</emphasis></entry>
+	<entry><emphasis>%l</emphasis>, <emphasis>%c</emphasis> and <emphasis>%r</emphasis></entry>
 	<entry>Insert the next item label. Up to three labels can be used. The item column is left-aligned (<emphasis>%l</emphasis>), centered (<emphasis>%c</emphasis>) or right-aligned (<emphasis>%r</emphasis>).</entry>
 </row>
 <row>
@@ -556,7 +556,7 @@ illegal characters and formatting directives are silently ignored:</para>
 	<entry>Inserts the mini icon.</entry>
 </row>
 <row>
-	<entry><emphasis>%&gt;</emphasis> &amp; <emphasis>%&lt;</emphasis></entry>
+	<entry><emphasis>%&gt;</emphasis> and <emphasis>%&lt;</emphasis></entry>
 	<entry>Insert the sub menu triangle pointing either to the right (<emphasis>%&gt;</emphasis>) or to the left (<emphasis>%&lt;</emphasis>).</entry>
 </row>
 <row>
@@ -568,7 +568,7 @@ illegal characters and formatting directives are silently ignored:</para>
 	<entry>Places the side picture either at the beginning or the end of the menu. This directive may be used only once and only as the first or last in the format string. If the <emphasis>%s</emphasis> is not at the beginning of the string, menus are not drawn properly.</entry>
 </row>
 <row>
-	<entry><emphasis>Space</emphasis>, <emphasis>Tab</emphasis>, <emphasis>%Space</emphasis> &amp; <emphasis>%Tab</emphasis></entry>
+	<entry><emphasis>Space</emphasis>, <emphasis>Tab</emphasis>, <emphasis>%Space</emphasis> and <emphasis>%Tab</emphasis></entry>
 	<entry>Add gap of one space, or a tab, using the width of the menu font. When using a tab, the size of the gap can be one to 8 spaces since the tab position is a multiple of 8 from the edge of the menu. The whole string must be quoted if spaces or tabs are used.</entry>
 </row>
 <row>

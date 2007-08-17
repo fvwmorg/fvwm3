@@ -1,3 +1,8 @@
+2007-08-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* commands/MenuStyle.xml:
+	replace &amp; with and, as it was before
+
 2007-08-17  Viktor Griph  <viktor@anarion.csbnet.se>
 
 	* fvwm/Makefile.am (fvwm.1):
