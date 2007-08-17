@@ -12,6 +12,9 @@
   <xsl:import href="docbook-xsl/manpages/html-synop.xsl"/>
   <xsl:import href="docbook-xsl/manpages/synop.xsl"/>
   <xsl:import href="docbook-xsl/manpages/lists.xsl"/>
+  <!-- we need to overrade apostroph escapment defined in other.xsl -->
+  <xsl:import href="docbook-xsl/manpages/other.xsl"/>
+
   <xsl:output method="text"
               encoding="UTF-8"
               indent="no"/>
@@ -31,7 +34,6 @@
   <xsl:include href="docbook-xsl/manpages/param.xsl"/>
   <xsl:include href="docbook-xsl/manpages/utility.xsl"/>
   <xsl:include href="docbook-xsl/manpages/info.xsl"/>
-  <xsl:include href="docbook-xsl/manpages/other.xsl"/>
   <xsl:include href="docbook-xsl/manpages/refentry.xsl"/>
   <xsl:include href="docbook-xsl/manpages/block.xsl"/>
   <xsl:include href="docbook-xsl/manpages/inline.xsl"/>
@@ -52,6 +54,17 @@
 
 <xsl:template match="section">
 	<xsl:apply-templates/>
+</xsl:template>
+
+<!-- don't escape apostrophs, but put them on the previous line if they start
+     one -->
+<xsl:template name="escape.apostrophe">
+  <xsl:param name="content"/>
+  <xsl:call-template name="string.subst">
+    <xsl:with-param name="string" select="$content"/>
+    <xsl:with-param name="target">&#10;'</xsl:with-param>
+    <xsl:with-param name="replacement"> '</xsl:with-param>
+  </xsl:call-template>
 </xsl:template>
 
 

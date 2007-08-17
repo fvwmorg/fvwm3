@@ -1,9 +1,15 @@
+2007-08-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm-man.xsl (import, include, escape.apostrophe):
+	override template escape.apostroph to not escape ', but to
+	never have them fist on a line.
+
 2007-08-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* commands/MenuStyle.xml:
 	replace &amp; with and, as it was before
 
-2007-08-17  Viktor Griph  <viktor@anarion.csbnet.se>
+2007-08-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/Makefile.am (fvwm.1):
 	run manpage through tbl ob build
