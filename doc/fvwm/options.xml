@@ -190,30 +190,26 @@ page of xdpyinfo for a list of supported visuals.</para>
     <replaceable>limit</replaceable>
   </term>
   <listitem>
-<para>
-Specifies a
-<replaceable>limit</replaceable>
-on the colors used in image, gradient and possibly simple colors
-used by fvwm. In fact, fvwm (and all the modules) uses a palette
-with at most
-<replaceable>limit</replaceable>
-colors. This option is only useful with screens that display 256
-colors (or less) with a dynamic visual (PseudoColor, GrayScale or
-DirectColor). The default depends on your X server and how you run
-fvwm. In most case this default is reasonable. The
-<option>-l</option>
-option should be used only if you encounter problems with colors.
-By default, fvwm tries to detect "large" pre-allocated
-palettes. If such a palette is detected fvwm uses it and a priori
-the
-<option>-l</option>
-must not be used. Moreover, in this case the
-<option>-A</option> and <option>-S</option>
-options are forced. Note that XFree-4.2 pre-allocate 244 colors
-(if you use a driver with Render support) leaving only a few free
-colors. This may lead to some color problems (and nothing can be
+
+<para>Specifies a <replaceable>limit</replaceable> on the colors
+used in image, gradient and possibly simple colors used by
+fvwm. In fact, fvwm (and all the modules) uses a palette with at
+most <replaceable>limit</replaceable> colors. This option is only
+useful with screens that display 256 colors (or less) with a
+dynamic visual (PseudoColor, GrayScale or DirectColor). The
+default depends on your X server and how you run fvwm. In most
+case this default is reasonable. The <option>-l</option> option
+should be used only if you encounter problems with colors.  By
+default, fvwm tries to detect large pre-allocated palettes. If
+such a palette is detected fvwm uses it and a priori the
+<option>-l</option> must not be used. Moreover, in this case the
+<option>-A</option> and <option>-S</option> options are
+forced. Note that XFree-4.2 pre-allocates 244 colors (if you use a
+driver with Render support) leaving only a few free colors. This
+may lead to some color problems (and nothing can be
 done). XFree-4.3 or better pre-allocate only 85 colors.  If no
-pre-allocated palette is auto detected the defaults are as follow:</para>
+pre-allocated palette is auto detected the defaults are as
+follow:</para>
 
 
 <informaltable>
@@ -228,8 +224,8 @@ pre-allocated palette is auto detected the defaults are as follow:</para>
 <tbody>
 <row>
 	<entry>PseudoColor</entry>
-	<entry>68 (4 cc + 4 grey)</entry>
-	<entry>10 (2 cc + 2 grey)</entry>
+	<entry>68 (4x4x4 color cube + 4 grey)</entry>
+	<entry>10 (2x2x2 color cube + 2 grey)</entry>
 </row>
 <row>
 	<entry>GrayScale</entry>
@@ -238,21 +234,17 @@ pre-allocated palette is auto detected the defaults are as follow:</para>
 </row>
 <row>
 	<entry>DirectColor</entry>
-	<entry>32 (3 cc + 5 grey)</entry>
-	<entry>10 (2 cc + 2 grey)</entry>
+	<entry>32 (3x3x3 color cube + 5 grey)</entry>
+	<entry>10 (2x2x2 color cube + 2 grey)</entry>
 </row>
 </tbody>
 </tgroup>
 </informaltable>
-<para>where "I cc" means a "IxIxI color cube"</para>
 
-
-
-
-<para>These defaults may change before version 2.6. Note that if you use a
-private color map (i.e., fvwm is started with the
-<option>-C</option> or the <option>-I</option>
-options), then others defaults are used.</para>
+<para>These defaults may change before version 2.6. Note that if
+you use a private color map (i.e., fvwm is started with the
+<option>-C</option> or the <option>-I</option> options), then
+other defaults are used.</para>
 
 <para>Now what to do if you encounter problems with colors? The first
 thing to do is to check if you really cannot run your X server
