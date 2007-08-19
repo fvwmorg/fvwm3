@@ -1,10 +1,17 @@
 2007-08-19 Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* modules/Makefile.am:
+	fix building FvwmTabs.1
+
 	* fvwm/Makefile.am:
 	comment out tbl stuff
 
+	* modules/FvwmTabs.xml:
+	replace keybinding table with list
+	
+	* commands/Menu.xml: 
 	* fvwm/options.xml:
-	replace last table with lists
+	replace last tables in main manpage with lists
 
 2007-08-18  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 

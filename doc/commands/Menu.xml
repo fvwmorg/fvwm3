@@ -74,64 +74,60 @@ arguments consist of several parts:</para>
 can be one of:</para>
 
 <!-- possible change to variablelist to look more like the old manpage -->
-<informaltable>
-<tgroup cols='2'>
-<tbody>
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Root"/></entry>
-	<entry>the root window of the current screen.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="XineramaRoot"/></entry>
-	<entry>the root window of the whole Xinerama screen.  Equivalent to "root" when Xinerama is not used.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Mouse"/></entry>
-	<entry>a 1x1 rectangle at the mouse position.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Window"/></entry>
-	<entry>the frame of the context window.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Interior"/></entry>
-	<entry>the inside of the context window.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Title"/></entry>
-	<entry>the title of the context window or icon.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Button"/>&lt;n&gt;</entry>
-	<entry>button #n of the context window.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Icon"/></entry>
-	<entry>the icon of the context window.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Menu"/></entry>
-	<entry>the current menu.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Item"/></entry>
-	<entry>the current menu item.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Context"/></entry>
-	<entry>the current window, menu or icon.</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="This"/></entry>
-	<entry>whatever widget the pointer is on (e.g. a corner of a window or the root window).</entry>
-</row>	
-<row>
-	<entry><fvwmopt cmd="Menu" opt="Rectangle"/> &lt;<replaceable>geometry</replaceable>&gt;</entry>
-	<entry>the rectangle defined by &lt;<replaceable>geometry</replaceable>&gt; in X geometry format.  Width and height default to 1 if omitted.</entry>
-</row>	
-</tbody>
-</tgroup>
-</informaltable>
+<variablelist>
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Root"/></term>
+	<listitem><para>the root window of the current screen.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="XineramaRoot"/></term>
+	<listitem><para>the root window of the whole Xinerama screen.  Equivalent to "root" when Xinerama is not used.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Mouse"/></term>
+	<listitem><para>a 1x1 rectangle at the mouse position.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Window"/></term>
+	<listitem><para>the frame of the context window.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Interior"/></term>
+	<listitem><para>the inside of the context window.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Title"/></term>
+	<listitem><para>the title of the context window or icon.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Button"/>&lt;n&gt;</term>
+	<listitem><para>button #n of the context window.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Icon"/></term>
+	<listitem><para>the icon of the context window.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Menu"/></term>
+	<listitem><para>the current menu.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Item"/></term>
+	<listitem><para>the current menu item.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Context"/></term>
+	<listitem><para>the current window, menu or icon.</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="This"/></term>
+	<listitem><para>whatever widget the pointer is on (e.g. a corner of a window or the root window).</para></listitem>
+</varlistentry>	
+<varlistentry>
+	<term><fvwmopt cmd="Menu" opt="Rectangle"/> &lt;<replaceable>geometry</replaceable>&gt;</term>
+	<listitem><para>the rectangle defined by &lt;<replaceable>geometry</replaceable>&gt; in X geometry format.  Width and height default to 1 if omitted.</para></listitem>
+</varlistentry>	
+</variablelist>
 
 
 <para>If the context-rectangle is omitted or illegal (e.g. "item" on a

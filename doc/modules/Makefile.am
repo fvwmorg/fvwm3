@@ -5,9 +5,9 @@ SUBDIRS = images
 docdir = @FVWM_DOCDIR@/modules
 XSLTPROC = @XSLTPROC@
 
-XSL_FILE = "$(srcdir)/../fvwm.xsl"
-XSL_MAN_FILE = "$(srcdir)/../fvwm-man.xsl"
-XSL_PROFILE = "$(srcdir)/../docbook-xsl/profiling/profile.xsl"
+XSL_FILE = $(srcdir)/../fvwm.xsl
+XSL_MAN_FILE = $(srcdir)/../fvwm-man.xsl
+XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
 MODULES = \
 	FvwmAnimate FvwmAuto FvwmBacker FvwmBanner FvwmButtons FvwmCommand \
