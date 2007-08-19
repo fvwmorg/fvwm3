@@ -1,3 +1,11 @@
+2007-08-19 Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/Makefile.am:
+	comment out tbl stuff
+
+	* fvwm/options.xml:
+	replace last table with lists
+
 2007-08-18  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* commands/CursorStyle.xml:

@@ -1,3 +1,8 @@
+2007-08-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* configure.ac:
+	don't check for tbl
+
 2007-08-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.ac:

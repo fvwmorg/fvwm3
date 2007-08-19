@@ -69,8 +69,8 @@ fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		$(XSL_MAN_FILE) fvwm.man.xml.p && rm fvwm.man.xml.p
-	mv fvwm.1 fvwm.1.pre
-	tbl fvwm.1.pre | sed '/^\.T[SE]$$/d' > fvwm.1 && rm fvwm.1.pre
+#	mv fvwm.1 fvwm.1.pre
+#	tbl fvwm.1.pre | sed '/^\.T[SE]$$/d' > fvwm.1 && rm fvwm.1.pre
 
 install-data-local:
 	@rm -f "$(DESTDIR)$(mandir)/man1/fvwm2.1"

@@ -211,35 +211,28 @@ done). XFree-4.3 or better pre-allocate only 85 colors.  If no
 pre-allocated palette is auto detected the defaults are as
 follow:</para>
 
-
-<informaltable>
-<tgroup cols='3' align='left'>
-<thead>
-<row>
-	<entry></entry>
-	<entry>depth 8 (256 colors)</entry>
-	<entry>depth 4 (16 colors)</entry>
-</row>
-</thead>
-<tbody>
-<row>
-	<entry>PseudoColor</entry>
-	<entry>68 (4x4x4 color cube + 4 grey)</entry>
-	<entry>10 (2x2x2 color cube + 2 grey)</entry>
-</row>
-<row>
-	<entry>GrayScale</entry>
-	<entry>64 regular grey</entry>
-	<entry>8 regular grey</entry>
-</row>
-<row>
-	<entry>DirectColor</entry>
-	<entry>32 (3x3x3 color cube + 5 grey)</entry>
-	<entry>10 (2x2x2 color cube + 2 grey)</entry>
-</row>
-</tbody>
-</tgroup>
-</informaltable>
+<variablelist>
+  <varlistentry>
+    <term>Display depth 8 (256 colors)</term>
+    <listitem>
+      <simplelist>
+	<member>PseudoColor: 68 (4x4x4 color cube + 4 grey)</member>
+	<member>GrayScale: 64 regular grey</member>
+	<member>DirectColor: 32 (3x3x3 color cube + 5 grey)</member>
+      </simplelist>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Display depth 4 (16 colors)</term>
+    <listitem>
+      <simplelist>
+	<member>PseudoColor: 10 (2x2x2 color cube + 2 grey)</member>
+	<member>GrayScale: 8 regular grey</member>
+	<member>DirectColor: 10 (2x2x2 color cube + 2 grey)</member>
+      </simplelist>
+    </listitem>
+  </varlistentry>
+</variablelist>
 
 <para>These defaults may change before version 2.6. Note that if
 you use a private color map (i.e., fvwm is started with the

@@ -74,7 +74,7 @@ AM_CONFIG_HEADER(config.h)
 # check for programs needed to build html docs
 AC_CHECK_PROG(SED, sed, sed, "")
 AC_CHECK_PROG(PERL, perl, perl, "")
-AC_CHECK_PROG(TBL, tbl, tbl, "")
+dnl AC_CHECK_PROG(TBL, tbl, tbl, "")
 
 # installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
@@ -367,9 +367,9 @@ if test x"$with_mandoc" != xno; then
 	elif test x"$PERL" = x ; then
 		with_mandoc="no"
 		problem_mandoc=": No perl found in PATH"
-	elif test x"$TBL" = x ; then
-		with_mandoc="no"
-		problem_mandoc=": No tbl found in PATH"
+#	elif test x"$TBL" = x ; then
+#		with_mandoc="no"
+#		problem_mandoc=": No tbl found in PATH"
 	else
 		with_mandoc="yes"
 	fi
@@ -399,9 +399,6 @@ if test x"$with_htmldoc" != xno; then
 	elif test x"$PERL" = x ; then
 		with_htmldoc="no"
 		problem_htmldoc=": No perl found in PATH"
-	elif test x"$TBL" = x ; then
-		with_htmldoc="no"
-		problem_htmldoc=": No tbl found in PATH"
 	else
 		with_htmldoc="yes"
 	fi
