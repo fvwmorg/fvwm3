@@ -30,9 +30,9 @@
 <table bgcolor="antiquewhite" bgcolor="#e5e5e5" border="0" cellpadding="2" cellspacing="1" width="100%">
 <tbody>
 	<tr>
-		<th bgcolor="#b5a7ec" width="25%">Keyboard &amp; Mouse Bindings</th>
-		<th bgcolor="#b5a7ec" width="25%">Modules</th>
-		<th bgcolor="#b5a7ec" width="25%">Menus</th>
+        <th bgcolor="#b5a7ec" width="25%">Keyboard &amp; Mouse Bindings</th>
+        <th bgcolor="#b5a7ec" width="25%">Modules</th>
+        <th bgcolor="#b5a7ec" width="25%">Menus</th>
         <th bgcolor="#b5a7ec" width="25%">Session Management</th>
 	</tr>
 	<tr>
@@ -67,14 +67,17 @@
         <td valign="top">
         <ul>
         <li><a href="commands/AddToMenu.html">AddToMenu</a></li>
+        <li><a href="commands/ChangeMenuStyle">ChangeMenuStyle</a></li>
+        <li><a href="commands/CopyMenuStyle.html">CopyMenuStyle</a></li>
         <li><a href="commands/DestroyMenu.html">DestroyMenu</a></li>
+        <li><a href="commands/DestroyMenuStyle.html">DestroyMenuStyle</a></li>
         <li><a href="commands/Menu.html">Menu</a></li>
+        <li><a href="commands/MenuStyle.html">MenuStyle</a></li>
         <li><a href="commands/Popup.html">Popup</a></li>
         <li><a href="commands/TearMenuOff.html">TearMenuOff</a></li>
         <li><a href="commands/Title.html">Title</a></li>
         <li><a href="commands/WindowList.html">WindowList</a></li>
         </ul>
-        </td>
         </td>
         <td valign="top">
         <ul>
@@ -88,10 +91,10 @@
         </td>
         </tr>
         <tr>
-        <th bgcolor="#b5a7ec">Style</th>
+        <th bgcolor="#b5a7ec">Style &amp; Decor</th>
         <th bgcolor="#b5a7ec">Window Movement &amp; Placement</th>
+        <th bgcolor="#b5a7ec">Window State</th>
         <th bgcolor="#b5a7ec">Conditionals</th>
-        <th bgcolor="#b5a7ec">User Functions &amp; Shell Commands</th>
         </tr>
         <tr>
         <td valign="top">
@@ -103,14 +106,12 @@
         <li><a href="commands/ButtonStyle.html">ButtonStyle</a></li>
         <li><a href="commands/ButtonState.html">ButtonState</a></li>
         <li><a href="commands/ChangeDecor.html">ChangeDecor</a></li>
-        <li><a href="commands/ChangeMenuStyle">ChangeMenuStyle</a></li>
-        <li><a href="commands/CopyMenuStyle.html">CopyMenuStyle</a></li>
         <li><a href="commands/CursorStyle.html">CursorStyle</a></li>
         <li><a href="commands/DestroyDecor.html">DestroyDecor</a></li>
-        <li><a href="commands/DestroyMenuStyle.html">DestroyMenuStyle</a></li>
         <li><a href="commands/DestroyStyle.html">DestroyStyle</a></li>
         <li><a href="commands/DestroyWindowStyle.html">DestroyWindowStyle</a></li>
-        <li><a href="commands/MenuStyle.html">MenuStyle</a></li>
+        <li><a href="commands/Refresh.html">Refresh</a></li>
+        <li><a href="commands/RefreshWindow.html">RefreshWindow</a></li>
         <li><a href="commands/Style.html">Style</a></li>
         <li><a href="commands/TitleStyle.html">TitleStyle</a></li>
         <li><a href="commands/UpdateDecor.html">UpdateDecor</a></li>
@@ -121,33 +122,41 @@
         <td valign="top">
         <ul>
         <li><a href="commands/AnimatedMove.html">AnimatedMove</a></li>
-        <li><a href="commands/Close.html">Close</a></li>
-        <li><a href="commands/Delete.html">Delete</a></li>
-        <li><a href="commands/Destroy.html">Destroy</a></li>
-        <li><a href="commands/Iconify.html">Iconify</a></li>
-        <li><a href="commands/Lower.html">Lower</a></li>
-        <li><a href="commands/Maximize.html">Maximize</a></li>
+        <li><a href="commands/HideGeometryWindow.html">HideGeometryWindow</a></li>
         <li><a href="commands/Move.html">Move</a></li>
+        <li><a href="commands/MoveThreshold.html">MoveThreshold</a></li>
+        <li><a href="commands/MoveToDesk.html">MoveToDesk</a></li>
+        <li><a href="commands/MoveToPage.html">MoveToPage</a></li>
+        <li><a href="commands/MoveToScreen.html">MoveToScreen</a></li>
         <li><a href="commands/OpaqueMoveSize.html">OpaqueMoveSize</a></li>
         <li><a href="commands/PlaceAgain.html">PlaceAgain</a></li>
-        <li><a href="commands/Raise.html">Raise</a></li>
-        <li><a href="commands/RaiseLower.html">RaiseLower</a></li>
-        <li><a href="commands/Refresh.html">Refresh</a></li>
-        <li><a href="commands/RefreshWindow.html">RefreshWindow</a></li>
         <li><a href="commands/Resize.html">Resize</a></li>
         <li><a href="commands/ResizeMaximize.html">ResizeMaximize</a></li>
         <li><a href="commands/ResizeMove.html">ResizeMove</a></li>
         <li><a href="commands/ResizeMoveMaximize.html">ResizeMoveMaximize</a></li>
-        <li><a href="commands/RestackTransients.html">RestackTransients</a></li>
         <li><a href="commands/SetAnimation.html">SetAnimation</a></li>
         <li><a href="commands/SnapAttraction.html">SnapAttraction</a></li>
         <li><a href="commands/SnapGrid.html">SnapGrid</a></li>
+        <li><a href="commands/XorPixmap.html">XorPixmap</a></li>
+        <li><a href="commands/XorValue.html">XorValue</a></li>
+        </ul>
+        </td>
+        <td valign="top">
+        <ul>
+        <li><a href="commands/Close.html">Close</a></li>
+        <li><a href="commands/Delete.html">Delete</a></li>
+        <li><a href="commands/Destroy.html">Destroy</a></li>
+        <li><a href="commands/Iconify.html">Iconify</a></li>
+        <li><a href="commands/Layer.html">Layer</a></li>
+        <li><a href="commands/Lower.html">Lower</a></li>
+        <li><a href="commands/Maximize.html">Maximize</a></li>
+        <li><a href="commands/Raise.html">Raise</a></li>
+        <li><a href="commands/RaiseLower.html">RaiseLower</a></li>
+        <li><a href="commands/RestackTransients.html">RestackTransients</a></li>
         <li><a href="commands/Stick.html">Stick</a></li>
         <li><a href="commands/StickAcrossDesks.html">StickAcrossDesks</a></li>
         <li><a href="commands/StickAcrossPages.html">StickAcrossPages</a></li>
         <li><a href="commands/WindowShade.html">WindowShade</a></li>
-        <li><a href="commands/XorPixmap.html">XorPixmap</a></li>
-        <li><a href="commands/XorValue.html">XorValue</a></li>
         </ul>
         </td>
         <td valign="top">
@@ -165,16 +174,26 @@
         <li><a href="commands/PointerWindow.html">PointerWindow</a></li>
         <li><a href="commands/Prev.html">Prev</a></li>
         <li><a href="commands/ScanForWindow.html">ScanForWindow</a></li>
+        <li><a href="commands/State.html">State</a></li>
         <li><a href="commands/Test.html">Test</a></li>
         <li><a href="commands/TestRc.html">TestRc</a></li>
         <li><a href="commands/ThisWindow.html">ThisWindow</a></li>
         <li><a href="commands/WindowId.html">WindowId</a></li>
         </ul>
         </td>
+        </tr>
+        <tr>
+        <th bgcolor="#b5a7ec">User Functions &amp; Shell Commands</th>
+        <th bgcolor="#b5a7ec">Colors &amp; Colorsets</th>
+        <th bgcolor="#b5a7ec">EWMH &amp; GNOME</th>
+        <th bgcolor="#b5a7ec">Virtual Desktop</th>
+        </tr>
+        <tr>
         <td valign="top">
         <ul>
         <li><a href="commands/AddToFunc.html">AddToFunc</a></li>
         <li><a href="commands/Beep.html">Beep</a></li>
+        <li><a href="commands/ClickTime.html">ClickTime</a></li>
         <li><a href="commands/DestroyFunc.html">DestroyFunc</a></li>
         <li><a href="commands/Echo.html">Echo</a></li>
         <li><a href="commands/EchoFuncDefinition.html">EchoFuncDefinition</a></li>
@@ -190,14 +209,6 @@
         <li><a href="commands/Wait.html">Wait</a></li>
         </ul>
         </td>
-        </tr>
-        <tr>
-        <th bgcolor="#b5a7ec">Colors &amp; Colorsets</th>
-        <th bgcolor="#b5a7ec">EWMH</th>
-        <th bgcolor="#b5a7ec">Virtual Desktop</th>
-        <th bgcolor="#b5a7ec">Focus &amp; Mouse Movement</th>
-        </tr>
-        <tr>
         <td valign="top">
         <ul>
         <li><a href="commands/CleanupColorsets.html">CleanupColorsets</a></li>
@@ -212,6 +223,7 @@
         <ul>
         <li><a href="commands/EwmhBaseStruts.html">EwmhBaseStruts</a></li>
         <li><a href="commands/EwmhNumberOfDesktops.html">EwmhNumberOfDesktops</a></li>
+        <li><a href="commands/GnomeShowDesks.html">GnomeShowDesks</a></li>
         </ul>
         </td>
         <td valign="top">
@@ -222,6 +234,9 @@
         <li><a href="commands/EdgeResistance.html">EdgeResistance</a></li>
         <li><a href="commands/EdgeScroll.html">EdgeScroll</a></li>
         <li><a href="commands/EdgeThickness.html">EdgeThickness</a></li>
+        <li><a href="commands/GotoDesk.html">GotoDesk</a></li>
+        <li><a href="commands/GotoDeskAndPage.html">GotoDeskAndPage</a></li>
+        <li><a href="commands/GotoPage.html">GotoPage</a></li>
         <li><a href="commands/Scroll.html">Scroll</a></li>
         <li><a href="commands/Xinerama.html">Xinerama</a></li>
         <li><a href="commands/XineramaPrimaryScreen.html">XineramaPrimaryScreen</a></li>
@@ -230,70 +245,55 @@
         <li><a href="commands/XineramaSlsSize.html">XineramaSlsSize</a></li>
         </ul>
         </td>
+        </tr>
+        <tr>
+        <th bgcolor="#b5a7ec">Focus &amp; Mouse Movement</th>
+        <th bgcolor="#b5a7ec">Miscellaneous</th>
+        <th bgcolor="#b5a7ec">Obsolete or Deprecated</th>
+        <th bgcolor="#b5a7ec">???</th>
+        </tr>
+        <tr>
         <td valign="top">
         <ul>
         <li><a href="commands/CursorMove.html">CursorMove</a></li>
         <li><a href="commands/FlipFocus.html">FlipFocus</a></li>
         <li><a href="commands/Focus.html">Focus</a></li>
         <li><a href="commands/FocusStyle.html">FocusStyle</a></li>
-        <li><a href="commands/GotoDesk.html">GotoDesk</a></li>
-        <li><a href="commands/GotoDeskAndPage.html">GotoDeskAndPage</a></li>
-        <li><a href="commands/GotoPage.html">GotoPage</a></li>
-        <li><a href="commands/HideGeometryWindow.html">HideGeometryWindow</a></li>
-        <li><a href="commands/Layer.html">Layer</a></li>
-        <li><a href="commands/MoveThreshold.html">MoveThreshold</a></li>
-        <li><a href="commands/MoveToDesk.html">MoveToDesk</a></li>
-        <li><a href="commands/MoveToPage.html">MoveToPage</a></li>
-        <li><a href="commands/MoveToScreen.html">MoveToScreen</a></li>
         <li><a href="commands/WarpToWindow.html">WarpToWindow</a></li>
         </ul>
-        </tr>
-        <tr>
-        <th bgcolor="#b5a7ec">Miscellaneous</th>
-        <th bgcolor="#b5a7ec">Obsolete or Deprecated</th>
-        <th bgcolor="#b5a7ec">Undocumented?</th>
-        <th bgcolor="#b5a7ec">???</th>
-        </tr>
-        <tr>
+        </td>
         <td valign="top">
         <ul>
-		<li><a href="commands/BugOpts.html">BugOpts</a></li>
-		<li><a href="commands/BusyCursor.html">BusyCursor</a></li>
-		<li><a href="commands/ClickTime.html">ClickTime</a></li>
-		<li><a href="commands/DefaultFont.html">DefaultFont</a></li>
-		<li><a href="commands/DefaultIcon.html">DefaultIcon</a></li>
-		<li><a href="commands/DefaultLayers.html">DefaultLayers</a></li>
-		<li><a href="commands/Deschedule.html">Deschedule</a></li>
-		<li><a href="commands/Emulate.html">Emulate</a></li>
-		<li><a href="commands/ImagePath.html">ImagePath</a></li>
-		<li><a href="commands/LocalePath.html">LocalePath</a></li>
+	<li><a href="commands/BugOpts.html">BugOpts</a></li>
+	<li><a href="commands/BusyCursor.html">BusyCursor</a></li>
+	<li><a href="commands/DefaultFont.html">DefaultFont</a></li>
+	<li><a href="commands/DefaultIcon.html">DefaultIcon</a></li>
+	<li><a href="commands/DefaultLayers.html">DefaultLayers</a></li>
+	<li><a href="commands/Deschedule.html">Deschedule</a></li>
+	<li><a href="commands/Emulate.html">Emulate</a></li>
+	<li><a href="commands/ImagePath.html">ImagePath</a></li>
+	<li><a href="commands/LocalePath.html">LocalePath</a></li>
         <li><a href="commands/PrintInfo.html">PrintInfo</a></li>
         <li><a href="commands/Repeat.html">Repeat</a></li>
-		<li><a href="commands/Schedule.html">Schedule</a></li>
-		<li><a href="commands/State.html">State</a></li>
-		<li><a href="commands/XSync.html">XSync</a></li>
-		<li><a href="commands/XSynchronize.html">XSynchronize</a></li>
+	<li><a href="commands/Schedule.html">Schedule</a></li>
+	<li><a href="commands/XSync.html">XSync</a></li>
+	<li><a href="commands/XSynchronize.html">XSynchronize</a></li>
         </ul>
         </td>
         <td valign="top">
         <ul>
-		<li><a href="commands/ColorLimit.html"><font class="obsolete">ColorLimit</font></a></li>
-		<li><a href="commands/GlobalOpts.html"><font class="obsolete">GlobalOpts</font></a></li>
+	<li><a href="commands/ColorLimit.html"><font class="obsolete">ColorLimit</font></a></li>
+	<li><a href="commands/GlobalOpts.html"><font class="obsolete">GlobalOpts</font></a></li>
         <li><a href="commands/HilightColor.html"><font class="obsolete">HilightColor</font></a></li>
         <li><a href="commands/HilightColorset.html"><font class="obsolete">HilightColorset</font></a></li>
-		<li><a href="commands/IconFont.html"><font class="obsolete">IconFont</font></a></li>
-		<li><a href="commands/IconPath.html"><font class="obsolete">IconPath</font></a></li>
-		<li><a href="commands/PixmapPath.html"><font class="obsolete">PixmapPath</font></a></li>
-		<li><a href="commands/Recapture.html"><font class="obsolete">Recapture</font></a></li>
-		<li><a href="commands/RecaptureWindow.html"><font class="obsolete">RecaptureWindow</font></a></li>
-		<li><a href="commands/WindowFont.html"><font class="obsolete">WindowFont</font></a></li>
-		<li><a href="commands/WindowsDesk.html"><font class="obsolete">WindowsDesk</font></a></li>
+	<li><a href="commands/IconFont.html"><font class="obsolete">IconFont</font></a></li>
+	<li><a href="commands/IconPath.html"><font class="obsolete">IconPath</font></a></li>
+	<li><a href="commands/PixmapPath.html"><font class="obsolete">PixmapPath</font></a></li>
+	<li><a href="commands/Recapture.html"><font class="obsolete">Recapture</font></a></li>
+	<li><a href="commands/RecaptureWindow.html"><font class="obsolete">RecaptureWindow</font></a></li>
+	<li><a href="commands/WindowFont.html"><font class="obsolete">WindowFont</font></a></li>
+	<li><a href="commands/WindowsDesk.html"><font class="obsolete">WindowsDesk</font></a></li>
         <li><a href="commands/WindowShadeAnimate.html"><font class="obsolete">WindowShadeAnimate</font></a></li>
-        </ul>
-        </td>
-        <td valign="top">
-        <ul>
-		<li><a href="commands/GnomeShowDesks.html">GnomeShowDesks</a></li>
         </ul>
         </td>
         </tr>

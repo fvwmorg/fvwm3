@@ -1,3 +1,8 @@
+2007-08-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* groupedCommands.html:
+	reworked grouping
+
 2007-08-19 Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* modules/Makefile.am:
@@ -8,8 +13,8 @@
 
 	* modules/FvwmTabs.xml:
 	replace keybinding table with list
-	
-	* commands/Menu.xml: 
+
+	* commands/Menu.xml:
 	* fvwm/options.xml:
 	replace last tables in main manpage with lists
 
@@ -18,7 +23,7 @@
 	* commands/CursorStyle.xml:
 	* commands/MenuStyle.xml:
 	use variablelist instead of table
-	
+
 2007-08-17  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm-man.xsl (import, include, escape.apostrophe):
