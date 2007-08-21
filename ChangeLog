@@ -1,5 +1,18 @@
 2007-08-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/module_list.c (module_kill):
+	(executeModuleDesperate):
+	(module_list_itr_init):
+	re-indented
+
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_list.c (module_alloc):
+	(do_execute_module):
+	* fvwm/module_list.h (fmodule):
+	(MOD_IS_CMDLINE):
+	(MOD_SET_CMDLINE):
+	restored *not* useless is_cmdline_module stuff
+
 	* fvwm/functions.h:
 	add constants for command group tagging
 

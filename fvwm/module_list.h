@@ -22,6 +22,10 @@ typedef struct msg_masks_t
  * below */
 typedef struct fmodule
 {
+        struct
+        {
+		unsigned is_cmdline_module : 1;
+        } xflags;
 	int xreadPipe;
 	int xwritePipe;
 	fqueue xpipeQueue;
@@ -31,6 +35,9 @@ typedef struct fmodule
 	char *xname;
 	char *xalias;
 } fmodule;
+
+#define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
+#define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
 
 typedef struct fmodule_store
 {

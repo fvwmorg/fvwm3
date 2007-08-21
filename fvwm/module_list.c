@@ -114,6 +114,7 @@ static fmodule *module_alloc(void)
 	fmodule *module;
 
 	module = (fmodule *)safemalloc(sizeof(fmodule));
+	MOD_SET_CMDLINE(module, 0);
 	MOD_READFD(module) = -1;
 	MOD_WRITEFD(module) = -1;
 	fqueue_init(&MOD_PIPEQUEUE(module));
@@ -207,7 +208,7 @@ static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list)
 		}
 		else
 		{
-			DBUG("module_list_remove", 
+			DBUG("module_list_remove",
 				"Tried to remove a not listed module!");
 			return NULL;
 		}
@@ -393,6 +394,7 @@ static inline void module_list_destroy(fmodule_list *list)
 		{
 			/* add to the list of command line modules */
 			DBUG("executeModule", "starting commandline module\n");
+			MOD_SET_CMDLINE(module, 1);
 		}
 
 		/* make the PositiveWrite pipe non-blocking. Don't want to jam
@@ -513,7 +515,11 @@ static inline void module_list_destroy(fmodule_list *list)
 
 fmodule *executeModuleDesperate(F_CMD_ARGS)
 {
-	return do_execute_module(F_PASS_ARGS, True, False);
+	fmodule *m;
+
+	m = do_execute_module(F_PASS_ARGS, True, False);
+
+	return m;
 }
 
 
@@ -521,8 +527,8 @@ fmodule *executeModuleDesperate(F_CMD_ARGS)
 void module_kill(fmodule *module)
 {
 	module_list_insert(
-			module_list_remove(module, &module_list),
-			&death_row);
+		module_list_remove(module, &module_list), &death_row);
+
 	return;
 }
 
@@ -530,6 +536,7 @@ void module_kill(fmodule *module)
 void module_cleanup(void)
 {
 	module_list_destroy(&death_row);
+
 	return;
 }
 
@@ -811,6 +818,8 @@ Bool module_input_expect(fmodule_input *input, char *expect)
 void module_list_itr_init(fmodule_list_itr *itr)
 {
 	*itr = module_list;
+
+	return;
 }
 
 fmodule *module_list_itr_next(fmodule_list_itr *itr)

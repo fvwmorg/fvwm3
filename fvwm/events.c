@@ -4013,6 +4013,13 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	{
 		module_list_itr_init(&moditr);
 		module = module_list_itr_next(&moditr);
+		for (; module != NULL; module = module_list_itr_next(&moditr))
+		{
+			if (MOD_IS_CMDLINE(module) == 1)
+			{
+				break;
+			}
+		}
 		module_cleanup();
 		if (module == NULL)
 		{
