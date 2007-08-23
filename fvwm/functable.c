@@ -64,13 +64,11 @@ const func_t func_table[] =
 	CMD_ENT("+", CMD_Plus, F_ADDMENU2, 0, 0),
 	/* + - Continue the last AddToFunc, AddToMenu or AddToDecor */
 
-	CMD_ENT(
-		"addbuttonstyle", CMD_AddButtonStyle, F_ADD_BUTTON_STYLE,
+	CMD_ENT("addbuttonstyle", CMD_AddButtonStyle, F_ADD_BUTTON_STYLE,
 		FUNC_DECOR, 0),
 	/* - Add to a button style (see ButtonStyle) */
 
-	CMD_ENT(
-		"addtitlestyle", CMD_AddTitleStyle, F_ADD_TITLE_STYLE,
+	CMD_ENT("addtitlestyle", CMD_AddTitleStyle, F_ADD_TITLE_STYLE,
 		FUNC_DECOR, 0),
 	/* - Add to a title style (see TitleStyle) */
 

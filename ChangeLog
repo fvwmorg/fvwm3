@@ -1,3 +1,8 @@
+2007-08-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/functable.c:
+	fixed command table parsing
+
 2007-08-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_list.c (module_kill):
