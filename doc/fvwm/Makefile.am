@@ -49,7 +49,7 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMAN
 		--xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value html \
-		-o fvwm.man.xml.p \
+		-o fvwm.man.html.tmp \
 		$(XSL_PROFILE) "$(srcdir)/fvwm.man.xml"
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
@@ -57,18 +57,18 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMAN
 		--stringparam header.file "$(srcdir)/../header.html" \
 		--stringparam twdt 1 \
 		--stringparam section.autolabel 1 \
-		-o $@ $(XSL_FILE) fvwm.man.xml.p && rm fvwm.man.xml.p
+		-o $@ $(XSL_FILE) fvwm.man.html.tmp && rm fvwm.man.html.tmp
 
 fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value man \
-		-o fvwm.man.xml.p2 \
+		-o fvwm.1.tmp \
 		$(XSL_PROFILE) "$(srcdir)/fvwm.man.xml"
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
-		$(XSL_MAN_FILE) fvwm.man.xml.p2 && rm fvwm.man.xml.p2
+		$(XSL_MAN_FILE) fvwm.1.tmp && rm fvwm.1.tmp
 #	mv fvwm.1 fvwm.1.pre
 #	tbl fvwm.1.pre | sed '/^\.T[SE]$$/d' > fvwm.1 && rm fvwm.1.pre
 
