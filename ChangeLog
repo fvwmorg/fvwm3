@@ -1,4 +1,9 @@
-2007-08-15  Renato Caldas  <seventhguardian@gmail.com>
+2007-08-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/builtins.c (CMD_PropertyChange):
+	fixed completely broken parsing of PropertyChange arguments
+
+2007-08-28  Renato Caldas  <seventhguardian@gmail.com>
 
 	* NEWS:
 	* configure.ac:

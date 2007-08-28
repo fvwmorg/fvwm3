@@ -2894,22 +2894,54 @@ void CMD_AddTitleStyle(F_CMD_ARGS)
 
 void CMD_PropertyChange(F_CMD_ARGS)
 {
-	char string[256] = "\0";
+	char string[256];
+	char *token;
+	char *rest;
 	int ret;
-	unsigned long argument, data1 = 0, data2 = 0;
+	unsigned long argument;
+	unsigned long data1;
+	unsigned long data2;
 
-	if (action == NULL || action[0] == '\0')
+	/* argument */
+	token = PeekToken(action, &rest);
+	if (token == NULL)
 	{
 		return;
 	}
-	ret = sscanf(
-		action,"%lu %lu %lu %255c", &argument, &data1, &data2, string);
+	ret = sscanf(token, "%lu", &argument);
 	if (ret < 1)
 	{
 		return;
 	}
-	BroadcastPropertyChange(
-		argument, data1, data2, (string == NULL)? "":string);
+	/* data1 */
+	data1 = 0;
+	token = PeekToken(rest, &rest);
+	if (token != NULL)
+	{
+		ret = sscanf(token, "%lu", &data1);
+		if (ret < 1)
+		{
+			rest = NULL;
+		}
+	}
+	/* data2 */
+	data2 = 0;
+	token = PeekToken(rest, &rest);
+	if (token != NULL)
+	{
+		ret = sscanf(token, "%lu", &data2);
+		if (ret < 1)
+		{
+			rest = NULL;
+		}
+	}
+	/* string */
+	memset(string, 0, 256);
+	if (rest != NULL)
+	{
+		ret = sscanf(rest, "%255c", &(string[0]));
+	}
+	BroadcastPropertyChange(argument, data1, data2, string);
 
 	return;
 }
