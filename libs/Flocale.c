@@ -86,6 +86,12 @@ static FlocaleFont *FlocaleFontList = NULL;
 static char *Flocale = NULL;
 static char *Fmodifiers = NULL;
 
+/* TODO: make these (static const char *) */
+static char *fft_fallback_font = FLOCALE_FFT_FALLBACK_FONT;
+static char *mb_fallback_font = FLOCALE_MB_FALLBACK_FONT;
+static char *fallback_font = FLOCALE_FALLBACK_FONT;
+
+
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
@@ -1071,17 +1077,17 @@ FlocaleFont *FlocaleGetFftFont(
 	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
 	if (fn == NULL)
 	{
-		fn = FLOCALE_FFT_FALLBACK_FONT;
+		fn = fft_fallback_font;
 	}
 	else if (*fn == '\0')
 	{
 		free(fn);
-		fn = FLOCALE_FFT_FALLBACK_FONT;
+		fn = fft_fallback_font;
 	}
 	fftf = FftGetFont(dpy, fn, module);
 	if (fftf == NULL)
 	{
-		if (fn != NULL && fn != FLOCALE_FFT_FALLBACK_FONT)
+		if (fn != NULL && fn != fft_fallback_font)
 		{
 			free(fn);
 		}
@@ -1096,7 +1102,7 @@ FlocaleFont *FlocaleGetFftFont(
 		&flf->fftf, &flf->height, &flf->ascent, &flf->descent);
 	FftGetFontWidths(flf, &flf->max_char_width);
 	free(fftf);
-	if (fn != NULL && fn != FLOCALE_FFT_FALLBACK_FONT)
+	if (fn != NULL && fn != fft_fallback_font)
 	{
 		free(fn);
 	}
@@ -1121,11 +1127,11 @@ FlocaleFont *FlocaleGetFontSet(
 	if (*fn == '\0')
 	{
 		free(fn);
-		fn = fn_fixed = FLOCALE_MB_FALLBACK_FONT;
+		fn = fn_fixed = mb_fallback_font;
 	}
 	else if (!(fn_fixed = FlocaleFixNameForFontSet(dpy, fn, module)))
 	{
-		if (fn != NULL && fn != FLOCALE_MB_FALLBACK_FONT)
+		if (fn != NULL && fn != mb_fallback_font)
 		{
 			free(fn);
 		}
@@ -1137,7 +1143,7 @@ FlocaleFont *FlocaleGetFontSet(
 		{
 			free(fn_fixed);
 		}
-		if (fn != NULL && fn != FLOCALE_MB_FALLBACK_FONT)
+		if (fn != NULL && fn != mb_fallback_font)
 		{
 			free(fn);
 		}
@@ -1186,7 +1192,7 @@ FlocaleFont *FlocaleGetFontSet(
 	{
 		free(fn_fixed);
 	}
-	if (fn != NULL && fn != FLOCALE_MB_FALLBACK_FONT)
+	if (fn != NULL && fn != mb_fallback_font)
 	{
 		free(fn);
 	}
@@ -1210,10 +1216,10 @@ FlocaleFont *FlocaleGetFont(
 		if (*fn == '\0')
 		{
 			free(fn);
-			fn = FLOCALE_FALLBACK_FONT;
+			fn = fallback_font;
 		}
 		font = XLoadQueryFont(dpy, fn);
-		if (fn != NULL && fn != FLOCALE_FALLBACK_FONT)
+		if (fn != NULL && fn != fallback_font)
 		{
 			free(fn);
 			fn = NULL;
@@ -1225,7 +1231,7 @@ FlocaleFont *FlocaleGetFont(
 	}
 	if (font == NULL)
 	{
-		if (fn != NULL && fn != FLOCALE_FALLBACK_FONT)
+		if (fn != NULL && fn != fallback_font)
 		{
 			free(fn);
 		}
@@ -1249,7 +1255,7 @@ FlocaleFont *FlocaleGetFont(
 	flf->max_char_width = font->max_bounds.width;
 	if (flf->font->max_byte1 > 0)
 		flf->flags.is_mb = True;
-	if (fn != NULL && fn != FLOCALE_FALLBACK_FONT)
+	if (fn != NULL && fn != fallback_font)
 	{
 		free(fn);
 	}
@@ -1292,13 +1298,13 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 	}
 	if (flf && fontname)
 	{
-		if (StrEquals(fullname, FLOCALE_MB_FALLBACK_FONT))
+		if (StrEquals(fullname, mb_fallback_font))
 		{
-			flf->name = FLOCALE_MB_FALLBACK_FONT;
+			flf->name = mb_fallback_font;
 		}
-		else if (StrEquals(fullname, FLOCALE_FALLBACK_FONT))
+		else if (StrEquals(fullname, fallback_font))
 		{
-			flf->name = FLOCALE_FALLBACK_FONT;
+			flf->name = fallback_font;
 		}
 		else
 		{
@@ -1396,7 +1402,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	if (fontname == NULL || *fontname == 0)
 	{
 		ask_default = True;
-		fontname = FLOCALE_MB_FALLBACK_FONT;
+		fontname = mb_fallback_font;
 	}
 
 	while (flf)
@@ -1455,14 +1461,14 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	}
 	else
 	{
-		fn = FLOCALE_MB_FALLBACK_FONT;
+		fn = mb_fallback_font;
 	}
 	while (!flf && (fn && *fn))
 	{
 		flf = FlocaleGetFontOrFontSet(
 			dpy, fn, encoding, fontname, module);
-		if (fn != NULL && fn != FLOCALE_MB_FALLBACK_FONT &&
-		    fn != FLOCALE_FALLBACK_FONT)
+		if (fn != NULL && fn != mb_fallback_font &&
+		    fn != fallback_font)
 		{
 			free(fn);
 			fn = NULL;
@@ -1472,8 +1478,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			str = GetQuotedString(str, &fn, ";", NULL, NULL, NULL);
 		}
 	}
-	if (fn != NULL && fn != FLOCALE_MB_FALLBACK_FONT &&
-	    fn != FLOCALE_FALLBACK_FONT)
+	if (fn != NULL && fn != mb_fallback_font &&
+	    fn != fallback_font)
 	{
 		free(fn);
 	}
@@ -1497,13 +1503,13 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			if (!ask_default)
 			{
 				fprintf(stderr, "\t%s\n",
-					FLOCALE_MB_FALLBACK_FONT);
+					mb_fallback_font);
 			}
 			if ((flf = FlocaleGetFontSet(
-				     dpy, FLOCALE_MB_FALLBACK_FONT, NULL,
+				     dpy, mb_fallback_font, NULL,
 				     module)) != NULL)
 			{
-				flf->name = FLOCALE_MB_FALLBACK_FONT;
+				flf->name = mb_fallback_font;
 			}
 		}
 		if (flf == NULL)
@@ -1511,14 +1517,14 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			if (!ask_default)
 			{
 				fprintf(stderr,"\t%s\n",
-					FLOCALE_FALLBACK_FONT);
+					fallback_font);
 			}
 			if ((flf =
 			     FlocaleGetFont(
-				     dpy, FLOCALE_FALLBACK_FONT, NULL,
+				     dpy, fallback_font, NULL,
 				     module)) != NULL)
 			{
-				flf->name = FLOCALE_FALLBACK_FONT;
+				flf->name = fallback_font;
 			}
 			else if (!ask_default)
 			{
@@ -1534,9 +1540,9 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 					" -- can't load default font:\n",
 					(module)? module: "fvwmlibs");
 				fprintf(stderr, "\t%s\n",
-					FLOCALE_MB_FALLBACK_FONT);
+					mb_fallback_font);
 				fprintf(stderr, "\t%s\n",
-					FLOCALE_FALLBACK_FONT);
+					fallback_font);
 			}
 		}
 	}
@@ -1602,8 +1608,8 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	}
 
 	if (flf->name != NULL &&
-	    !StrEquals(flf->name, FLOCALE_MB_FALLBACK_FONT) &&
-	    !StrEquals(flf->name, FLOCALE_FALLBACK_FONT))
+	    !StrEquals(flf->name, mb_fallback_font) &&
+	    !StrEquals(flf->name, fallback_font))
 	{
 		free(flf->name);
 	}

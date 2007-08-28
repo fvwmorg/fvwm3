@@ -2898,7 +2898,7 @@ void CMD_PropertyChange(F_CMD_ARGS)
 	int ret;
 	unsigned long argument, data1 = 0, data2 = 0;
 
-	if (action == NULL || action == "\0")
+	if (action == NULL || action[0] == '\0')
 	{
 		return;
 	}

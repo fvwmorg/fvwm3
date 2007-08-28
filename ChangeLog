@@ -4,6 +4,15 @@
 	* configure.ac:
 	updated for 2.5.21 release
 
+	* fvwm/builtins.c (CMD_PropertyChange):
+	* libs/Flocale.c (FlocaleGetFftFont):
+	(FlocaleGetFontSet):
+	(FlocaleGetFont):
+	(FlocaleGetFontOrFontSet):
+	(FlocaleLoadFont):
+	(FlocaleUnloadFont):
+	fix compiler warnings
+
 2007-08-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functable.c:
