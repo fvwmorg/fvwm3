@@ -75,3 +75,4 @@ This release is available at the home page: http://www.fvwm.org/.
    - Properly generate leave_window and enter_window events for
      the root window in FvwmEvent.
    - Fixed crash in UTF8 code.
+   - Fixed parsing of the PropertyChange command.
