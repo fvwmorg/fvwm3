@@ -1,5 +1,9 @@
 2007-08-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* configure.ac:
+	fixed perl check
+	use "test ! ... = ..." instead of "test ... != ..."
+
 	* fvwm/builtins.c (CMD_PropertyChange):
 	fixed completely broken parsing of PropertyChange arguments
 

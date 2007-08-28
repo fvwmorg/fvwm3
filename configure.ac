@@ -27,7 +27,7 @@ FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
 MANPAGE_PREAMBLE='.\" WARNING: This file was automatically generated.  Edit the .in file instead.'
 
-if test x"$ISRELEASED" != xyes; then
+if test ! x"$ISRELEASED" = xyes; then
 	VERSIONINFO=" (from cvs)"
 	RELDATELONG="(not released yet)"
 	RELDATESHORT="(not released yet)"
@@ -41,7 +41,7 @@ if test x"$ISRELEASED" != xyes; then
 #		for file in CVS/Entries */CVS/Entries; do
 #			changelog_date="`cat $file | grep /ChangeLog/ \
 #				| cut -d/ -f4`"
-#			test x"$changelog_date" != x && \
+#			test ! x"$changelog_date" = x && \
 #			date +%Y-%m-%d -d "$changelog_date" >>changelog_dates
 #		done
 #		changelog_date=`cat changelog_dates | sort -r -u | head -1`
@@ -73,8 +73,31 @@ AM_CONFIG_HEADER(config.h)
 
 # check for programs needed to build html docs
 AC_CHECK_PROG(SED, sed, sed, "")
-AC_CHECK_PROG(PERL, perl, perl, "")
-dnl AC_CHECK_PROG(TBL, tbl, tbl, "")
+
+#!!!
+PERL=""
+REQUIRED_PERL_VERSION=5.004
+AC_SUBST(REQUIRED_PERL_VERSION)
+if test x"$PERL" = x; then
+	AC_PATH_PROG(PERL, perl)
+fi
+if test ! x"$PERL" = x; then
+	AC_MSG_CHECKING([for perl $REQUIRED_PERL_VERSION or better])
+	HAVE_PERL_FOR_DOCS=1
+	if ("$PERL" -e "require $REQUIRED_PERL_VERSION;") 2>/dev/null; then
+		AC_MSG_RESULT(yes)
+	else
+		AC_MSG_RESULT(no)
+		AC_MSG_WARN([$PERL not found or too old])
+	fi
+else
+	HAVE_PERL_FOR_DOCS=0
+	AC_MSG_WARN([perl is not found, it is required for some scripts and modules])
+	AC_MSG_WARN([It is recommended to install perl $REQUIRED_PERL_VERSION or better later])
+	PERL=/usr/bin/perl
+fi
+AC_MSG_RESULT([assuming $PERL as perl location])
+AC_SUBST(PERL)
 
 # installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
@@ -357,19 +380,16 @@ AC_ARG_ENABLE(mandoc,
   [ with_mandoc="not specified, check" ]
 )
 
-if test x"$with_mandoc" != xno; then
+if test ! x"$with_mandoc" = xno; then
 	if test x"$XSLTPROC" = x ; then
 		with_mandoc="no"
 		problem_mandoc=": No xsltproc found in PATH"
 	elif test x"$SED" = x ; then
 		with_mandoc="no"
 		problem_mandoc=": No sed found in PATH"
-	elif test x"$PERL" = x ; then
+	elif test x"$HAVE_PERL_FOR_DOCS" = x0 ; then
 		with_mandoc="no"
 		problem_mandoc=": No perl found in PATH"
-#	elif test x"$TBL" = x ; then
-#		with_mandoc="no"
-#		problem_mandoc=": No tbl found in PATH"
 	else
 		with_mandoc="yes"
 	fi
@@ -389,14 +409,14 @@ AC_ARG_ENABLE(htmldoc,
   [ with_htmldoc="no" ]
 )
 
-if test x"$with_htmldoc" != xno; then
+if test ! x"$with_htmldoc" = xno; then
 	if test x"$XSLTPROC" = x ; then
 		with_htmldoc="no"
 		problem_htmldoc=": No xsltproc found in PATH"
 	elif test x"$SED" = x ; then
 		with_htmldoc="no"
 		problem_htmldoc=": No sed found in PATH"
-	elif test x"$PERL" = x ; then
+	elif test x"$HAVE_PERL_FOR_DOCS" = x0 ; then
 		with_htmldoc="no"
 		problem_htmldoc=": No perl found in PATH"
 	else
@@ -425,7 +445,7 @@ AC_ARG_ENABLE(sm,
   [ with_sm="not specified, check" ]
 )
 
-if test x"$with_sm" != xno; then
+if test ! x"$with_sm" = xno; then
   dnl Uncomment the following and comment out AC_CHECK_LIB to get --with-sm-*
   dnl $UNSET ac_cv_lib_SM_SmcOpenConnection
   dnl $UNSET ac_cv_header_X11_SM_SMlib_h
@@ -479,7 +499,7 @@ AH_TEMPLATE(SHAPE,
 
    Note: if it is compiled in, run time detection is used to make sure that
    the currently running X server supports it.])
-if test x"$with_shape" != xno; then
+if test ! x"$with_shape" = xno; then
   $UNSET ac_cv_lib_Xext_XShapeQueryExtension
   AC_CHECK_LIB(Xext, XShapeQueryExtension,
                with_shape=yes; AC_DEFINE(SHAPE),
@@ -501,7 +521,7 @@ AC_ARG_ENABLE(shm,
 )
 
 AH_TEMPLATE([HAVE_XSHM],[Define if  MIT Shared Memory extension is used.])
-if test x"$with_shm" != xno; then
+if test ! x"$with_shm" = xno; then
   $UNSET ac_cv_lib_Xext_XShmQueryExtension
   AC_CHECK_LIB(Xext, XShmQueryExtension,
                with_shm=yes; AC_DEFINE(HAVE_XSHM),
@@ -531,7 +551,7 @@ AH_TEMPLATE([HAVE_SOLARIS_XINERAMA],
 AH_TEMPLATE([HAVE_SOLARIS_XINERAMA_H],
   [Define if Solaris' X11/extensions/xinerama.h header is provided.
   (Solaris 9 and later)])
-if test x"$with_xinerama" != xno; then
+if test ! x"$with_xinerama" = xno; then
   $UNSET ac_cv_lib_Xinerama_XineramaIsActive
   _check_solaris_xinerama=no
   AC_CHECK_LIB(Xinerama, XineramaIsActive,
@@ -583,7 +603,7 @@ AC_ARG_ENABLE(xrender,
 )
 
 AH_TEMPLATE([HAVE_XRENDER],[Define if Xrender library is used.])
-if test x"$with_xrender" != xno; then
+if test ! x"$with_xrender" = xno; then
   $UNSET ac_cv_lib_Xrender_XRenderComposite
   AC_CHECK_LIB(Xrender, XRenderComposite,
     with_xrender=yes; Xrender_LIBS=-lXrender;
@@ -606,9 +626,9 @@ AC_ARG_ENABLE(xcursor,
        problem_xcursor=": Explicitly disabled"
     fi ],
 )
-if test x"$with_xcursor" != xno; then
+if test ! x"$with_xcursor" = xno; then
    with_xcursor=no
-   if test x"$with_xrender" != xno; then
+   if test ! x"$with_xrender" = xno; then
       $UNSET ac_cv_lib_Xrender_XRenderCreateCursor
       AC_CHECK_LIB(Xrender, XRenderCreateCursor, [
          with_xcursor=yes
@@ -653,7 +673,7 @@ AC_ARG_ENABLE(xft,
 AH_TEMPLATE([HAVE_XFT],[Define if Xft library is used.])
 AH_TEMPLATE([HAVE_XFT2],[Define if Xft 2 library is used.])
 AH_TEMPLATE([HAVE_XFT_UTF8],[Define if Xft library can handle utf8 encoding])
-if test x"$with_xft" != xno; then
+if test ! x"$with_xft" = xno; then
 
   # first check for freetype2
   have_freetype=no
@@ -667,7 +687,7 @@ if test x"$with_xft" != xno; then
 
   # check for fontconfig for Xft 2
   have_fontconfig=no
-  if test x"$have_freetype" != xno ; then
+  if test ! x"$have_freetype" = xno ; then
     AM_CHECK_FC(1.0.1)
     if test x"$no_fc" = x ; then
       have_fontconfig=yes
@@ -679,7 +699,7 @@ if test x"$with_xft" != xno; then
 
   # now check for Xft 2
   with_xft=no
-  if test x"$have_fontconfig" != xno ; then
+  if test ! x"$have_fontconfig" = xno ; then
     # Xft 2
     AM_CHECK_XFT(2.0.0)
     if test x"$no_xft" = x; then
@@ -696,7 +716,7 @@ if test x"$with_xft" != xno; then
   fi
 
   # if Xft2 not detected check for Xft1
-  if test x"$have_freetype" != xno -a x"$with_xft" != xyes; then
+  if test ! x"$have_freetype" = xno && test ! x"$with_xft" = xyes; then
     #Xft 1
     $UNSET ac_cv_lib_XftConfigSubstitute
     $UNSET ac_cv_lib_Xft_XftFontOpen
@@ -739,7 +759,7 @@ smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
     XpmReadFileToXpmImage, X11/xpm.h,
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS], $X_CFLAGS)
 
-if test x"$xpm_LIBS" != x; then
+if test ! x"$xpm_LIBS" = x; then
   # Check for proper version of Xpm -- from XEmacs 21.x configure.in
   AC_MSG_CHECKING([for Xpm 3.4g or better])
   my_CPPFLAGS="$CPPFLAGS"
@@ -792,7 +812,7 @@ $UNSET ac_cv_lib_png_png_read_info
 smr_CHECK_LIB(png, png, for coloured or shaped icons,
     png_read_info, png.h, -lz -lm,)
 
-if test x"$png_LIBS" != x; then
+if test ! x"$png_LIBS" = x; then
   # Check for proper version of png
   AC_MSG_CHECKING([for libpng 1.0.4a or better])
   my_CPPFLAGS="$CPPFLAGS"
@@ -844,9 +864,9 @@ AC_ARG_ENABLE(rsvg,
        problem_rsvg=": Explicitly disabled"
     fi ],
 )
-if test x"$with_rsvg" != xno; then
+if test ! x"$with_rsvg" = xno; then
    with_rsvg=no
-   if test x"$PKG_CONFIG" != xno ; then
+   if test ! x"$PKG_CONFIG" = xno ; then
       AC_MSG_CHECKING(for librsvg - version >= $rsvg_min_version)
       if $PKG_CONFIG --exists librsvg-2.0 ; then
          if $PKG_CONFIG --exists "librsvg-2.0 >= $rsvg_min_version" ; then
@@ -862,7 +882,7 @@ if test x"$with_rsvg" != xno; then
             else
                svg_packages=""
             fi
-            if test x"$svg_packages" != x ; then
+            if test ! x"$svg_packages" = x ; then
                AC_MSG_RESULT(yes)
                rsvg_CFLAGS=`$PKG_CONFIG --cflags $svg_packages`
                rsvg_LIBS=`$PKG_CONFIG --libs $svg_packages`
@@ -938,7 +958,7 @@ $UNSET ac_cv_lib_rplay_rplay_create
 smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h,
 	      $X_EXTRA_LIBS)
 AH_TEMPLATE([HAVE_RPLAY],[Define if rplay library is used.])
-test x"$rplay_LIBS" != x && AC_DEFINE(HAVE_RPLAY)
+test ! x"$rplay_LIBS" = x && AC_DEFINE(HAVE_RPLAY)
 AC_SUBST(rplay_LIBS)
 AC_SUBST(rplay_CFLAGS)
 
@@ -952,7 +972,7 @@ AH_TEMPLATE([HAVE_STROKE],[Define if stroke library is used.])
 smr_CHECK_LIB(stroke, , mouse strokes recognition,
 	stroke_init, stroke.h,
 	[$X_LIBS -lX11], $X_CFLAGS -I/usr/X11R6/include)
-test x"$stroke_LIBS" != x &&
+test ! x"$stroke_LIBS" = x &&
 AC_DEFINE(HAVE_STROKE)
 AH_VERBATIM([_HAVE_STROKE],
 [#ifdef HAVE_STROKE
@@ -972,21 +992,21 @@ problem_readline=": Both termcap and ncurses disabled"
 
 smr_ARG_WITHLIB(termcap, , to accomplish readline)
 AH_TEMPLATE([HAVE_READLINE],[Define if readline is available.])
-if test x"$with_termcap" != xno; then
+if test ! x"$with_termcap" = xno; then
   # Forget cached values, so user can re-run configure
   $UNSET ac_cv_header_readline_history_h
   $UNSET ac_cv_lib_readline_readline
   AC_MSG_CHECKING([with termcap])
   smr_CHECK_LIB(readline, , line editing/history, readline, readline/history.h,
     $termcap_LIBS)
-  if test x"$readline_LIBS" != x; then
+  if test ! x"$readline_LIBS" = x; then
     with_readline=yes
     readline_LIBS="$readline_LIBS $termcap_LIBS"
     AC_DEFINE(HAVE_READLINE)
   fi
 fi
 smr_ARG_WITHLIB(ncurses, , to accomplish readline)
-if test x"$with_ncurses" != xno -a ! "$readline_LIBS"; then
+if test ! x"$with_ncurses" = xno && test x"$readline_LIBS" = x; then
   # We couldn't use readline with termcap; try with ncurses?
   # Doesn't this seem a hacky way to do this??
   # unset cached values from last check...
@@ -1007,7 +1027,7 @@ if test x"$with_ncurses" != xno -a ! "$readline_LIBS"; then
   dnl fi
   smr_CHECK_LIB(readline, , line editing/history, readline, readline/history.h,
     $ncurses_LIBS)
-  if test x"$readline_LIBS" != x; then
+  if test ! x"$readline_LIBS" = x; then
     with_readline=yes
     readline_LIBS="$readline_LIBS $ncurses_LIBS"
     AC_DEFINE(HAVE_READLINE)
@@ -1047,13 +1067,13 @@ AH_TEMPLATE([USE_LIBICONV],
   native with recent glibc)])
 AH_TEMPLATE([HAVE_ICONV],
   [Define if iconv (in the libc) or libiconv is available])
-if test x"$ac_cv_iconv" != xno; then
+if test ! x"$ac_cv_iconv" = xno; then
   # * first check for gnu libiconv
   $UNSET ac_cv_header_libiconv_h
   $UNSET ac_cv_lib_libiconv_libiconv_open
   smr_CHECK_LIB(
   	iconv, , if not found sys iconv is used, libiconv_open, iconv.h)
-  if test x"$iconv_LIBS" != x; then
+  if test ! x"$iconv_LIBS" = x; then
      AC_DEFINE(USE_LIBICONV)
      with_lib_iconv=yes
   fi
@@ -1064,7 +1084,7 @@ if test x"$ac_cv_iconv" != xno; then
 
   AC_CHECK_FUNC(iconv_open, with_sys_iconv=yes)
 
-  if test x"$with_lib_iconv" = xyes -a x"$with_sys_iconv" = xyes; then
+  if test x"$with_lib_iconv" = xyes && test x"$with_sys_iconv" = xyes; then
      AC_MSG_WARN([***  Both system iconv and libiconv found: use libiconv])
      AC_MSG_WARN([***  Use --with-iconv-library=no to use the system iconv])
   fi
@@ -1123,7 +1143,7 @@ AC_ARG_ENABLE(bidi,
 	[ with_bidi="not specified, check" ]
 )
 
-if test x"$with_bidi" != xno; then
+if test ! x"$with_bidi" = xno; then
 	AC_ARG_WITH(fribidi-bindir,
 		[  --with-fribidi-bindir=DIR  directory of fribidi-config if not in PATH],
 		FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
@@ -1142,7 +1162,7 @@ if test x"$with_bidi" != xno; then
 	fi
 fi
 
-if test x"$with_bidi" != xno; then
+if test ! x"$with_bidi" = xno; then
 	fribidi_in_path=yes
 	ac_save_LIBS="$LIBS"
 	LIBS="$LIBS $Bidi_LIBS"
@@ -1159,7 +1179,7 @@ int main()
 }
 ], [:], [fribidi_in_path=no])
 	LIBS="$ac_save_LIBS"
-	if test x"$fribidi_in_path" != xyes; then
+	if test ! x"$fribidi_in_path" = xyes; then
 		ac_save_CFLAGS="$CFLAGS"
 		ac_save_LIBS="$LIBS"
 		CFLAGS="$CFLAGS $Bidi_CFLAGS"
@@ -1179,7 +1199,7 @@ int main()
 		CFLAGS="$ac_save_CFLAGS"
 		LIBS="$ac_save_LIBS"
 	fi
-	if test x"$fribidi_in_path" != xno; then
+	if test ! x"$fribidi_in_path" = xno; then
 		Bidi_CFLAGS=
 		Bidi_LIBS=-lfribidi
 	fi
@@ -1250,7 +1270,7 @@ AC_ARG_ENABLE(nls,
 AH_TEMPLATE([HAVE_NLS],
   [Define to 1 if translation of program messages to the user's native
   language is requested.])
-if test x"$with_gettext" != xno; then
+if test ! x"$with_gettext" = xno; then
   AM_GNU_FGETTEXT
   if test x"$USE_NLS" = "xyes"; then
     AC_DEFINE(HAVE_NLS, 1)
@@ -1325,28 +1345,6 @@ dnl lex+yacc now only needed for FvwmScript developers when syntax is changed
 dnl AM_PROG_LEX
 dnl AC_PROG_YACC
 
-REQUIRED_PERL_VERSION=5.004
-AC_SUBST(REQUIRED_PERL_VERSION)
-
-if test x"$PERL" = x; then
-	AC_PATH_PROG(PERL, perl)
-fi
-if test x"$PERL" != x; then
-	AC_MSG_CHECKING([for perl $REQUIRED_PERL_VERSION or better])
-	if ("$PERL" -e "require $REQUIRED_PERL_VERSION;") 2>/dev/null; then
-		AC_MSG_RESULT(yes)
-	else
-		AC_MSG_RESULT(no)
-		AC_MSG_WARN([$PERL not found or too old])
-	fi
-else
-	AC_MSG_WARN([perl is not found, it is required for some scripts and modules])
-	AC_MSG_WARN([It is recommended to install perl $REQUIRED_PERL_VERSION or better later])
-	PERL=/usr/bin/perl
-fi
-AC_MSG_RESULT([assuming $PERL as perl location])
-AC_SUBST(PERL)
-
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
@@ -1382,7 +1380,7 @@ if test x$ac_cv_func_setvbuf = xyes; then
 fi
 
 AC_FUNC_SELECT
-if test x$ac_cv_func_select != xyes; then
+if test ! x"$ac_cv_func_select" = xyes; then
   AC_MSG_ERROR([select required])
 fi
 
@@ -1446,7 +1444,7 @@ GNOME_INIT_HOOK
 
 # Unfortunately we have 2 gnome supports: WM hints and gnome libs.
 # The $with_gnomehints below refers to the first, not GNOME_INIT_HOOK.
-if test x"$enable_gnome_hints" != xno; then
+if test ! x"$enable_gnome_hints" = xno; then
   with_gnomehints=yes
   problem_gnomehints=""
 else
