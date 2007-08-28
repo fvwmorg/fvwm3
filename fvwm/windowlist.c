@@ -649,7 +649,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	}
 	if (iconified_at_end && ic > 0)
 	{
-		if (current_at_end)
+		if (current_at_end && ii > ic)
 		{
 			windowList[numWindows - 1] = windowList[--ii - ic];
 		}

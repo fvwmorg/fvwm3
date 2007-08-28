@@ -73,6 +73,8 @@ Changes in beta release 2.5.22 (28-Aug-2007)
      the root window in FvwmEvent.
    - Fixed crash in UTF8 code.
    - Fixed parsing of the PropertyChange command.
+   - Fixed windowlist crash when combining CurrentAtEnd with
+     IconifiedAtEnd and all windows are iconified.
 
 -------------------------------------------------------------------
 

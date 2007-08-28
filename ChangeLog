@@ -1,3 +1,9 @@
+2007-08-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	fixed crash when using CurrentAtEnd and IconifiedAtEnd with only
+	iconified windows.
+
 2007-08-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* configure.ac:
