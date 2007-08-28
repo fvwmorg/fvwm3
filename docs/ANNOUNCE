@@ -1,18 +1,77 @@
-Fvwm is a powerful window manager.  Version 2.5.21 is a beta
-release that fixes a bug in 2.5.20.  Please be aware that any
-features introduced in the 2.5.x development versions may be
-renamed, changed or removed without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.22 is a beta
+release that fixes some important bugs, and that introduces some
+new features.  Please be aware that any features introduced in
+the 2.5.x development versions may be renamed, changed or removed
+without notice before 2.6.0.
 
-Upgrading from 2.5.20 is strongly recommended; upgrading from
-earlier 2.5.x versions is recommended.
+Upgrading from earlier 2.5.x versions is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - The command Scroll can now be used for interactive scrolling.
+   - New Style command options:
+       UnderMousePlacementHonorsStartsOnPage
+       UnderMousePlacementIgnoresStartsOnPage
+       !MinOverlapPlacementPenalties
+       !MinOverlapPercentPlacementPenalties
+       MinWindowSize
+   - SVG (scalable vector graphics) image loading support.
+   - New extended variables
+       $[w.iconfile.svgopts]
+       $[w.miniiconfile.svgopts].
+   - Added suffix 'w' to the arguments of the Move command and
+     similar.  It is now possible to add multiple shifts to a
+     window position, e.g. "50-50w 50-50w" for the center of the
+     screen.
+   - Removed UnderMousePlacement and CenterPlacement.  Use
+     "PositionPlacement Center" and "PositionPlacement UnderMouse"
+     instead.
+   - Documentation in HTML format.
+   - Replaced "UseListSkip" with "UseSkipList" & "OnlyListSkip" with
+     "OnlySkipList" in WindowList command. (Old options deprecated.)
+   - New subject ImageCache for PrintInfo command.
+   - The new commad EchoFuncDefinition prints a function's
+     definition to the console for debugging purposes.
+   - The CursorStyle command can now load PNG and SVG images as
+     mouse cursors.  New x and y arguments to specify the
+     hot spot.  Also, it is now possible to load non-monochrome
+     cursors and cursors with partial transparency.
+
+* New module features:
+
+   - FvwmScript: New instructions: ChangeWindowTitle and
+     ChangeWindowTitleFromArg.
 
 * Bug Fixes:
 
-   - Fixed Tile...Placement styles (SmartPlacement) that were
-     broken in 2.5.20.
+   - Windows with aspect ratio no longer maximize past the screen
+     edges.
+   - Fixed CenterPlacement with Xinerama screens.
+   - Fixed CascadePlacement with title direction west and east
+   - Windows no longer unstick when going to fullscreen mode.
+   - Fixed crash when raising/lowering a destroyed window.
+   - Fixed expansion of $[n-] and $[*], broken in 2.5.20.
+   - Fixes for resizing shaded windows and windows with a gravity
+     other than northwest.
+   - Fixed CursorStyle POSITION, broken since 2.3.24.
+   - The hi, sh and fgsh colors in colorsets are no longer replaced
+     by computed values if not explicit set on the same line as the
+     bg, or for fgsh fg, changes. (bug #3359)
+   - FvwmButtons now redraws stretched button backgrounds correctly
+     on partial expose.
+   - Windows with circular transient for hints may no longer crash
+     fvwm with StackTransientParent style.
+   - FvwmPager now displays windows that are StickyAcrossPages
+     correctly.
+   - Fixed a possible crash with modules closing down.
+   - Fixed broken demo script fvwm_make_browse_menu.sh.
+   - The conditon following a comma separator without whitespace
+     padding was previously ignored if the presiding condition was
+     multi-worded.
+   - Various FvwmButtons drawing problems.
+   - Window movement or resizing triggered by an EWMH message now
+     honours the FixedSize and FixedPosition window styles.
+   - Properly generate leave_window and enter_window events for
+     the root window in FvwmEvent.
+   - Fixed crash in UTF8 code.

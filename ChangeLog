@@ -1,3 +1,9 @@
+2007-08-15  Renato Caldas  <seventhguardian@gmail.com>
+
+	* NEWS:
+	* configure.ac:
+	updated for 2.5.21 release
+
 2007-08-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functable.c:
