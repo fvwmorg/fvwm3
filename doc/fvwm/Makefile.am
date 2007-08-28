@@ -64,11 +64,11 @@ fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
 		--xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value man \
-		-o fvwm.man.xml.p \
+		-o fvwm.man.xml.p2 \
 		$(XSL_PROFILE) "$(srcdir)/fvwm.man.xml"
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
-		$(XSL_MAN_FILE) fvwm.man.xml.p && rm fvwm.man.xml.p
+		$(XSL_MAN_FILE) fvwm.man.xml.p2 && rm fvwm.man.xml.p2
 #	mv fvwm.1 fvwm.1.pre
 #	tbl fvwm.1.pre | sed '/^\.T[SE]$$/d' > fvwm.1 && rm fvwm.1.pre
 
