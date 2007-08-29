@@ -2,6 +2,10 @@
 
 	* NEWS:
 	* configure.ac:
+	increased version to 2.6.23
+
+	* NEWS:
+	* configure.ac:
 	fix the date for 2.5.22 release
 
 2007-08-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
