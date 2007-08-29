@@ -1,3 +1,9 @@
+2007-08-29  Renato Caldas  <seventhguardian@gmail.com>
+
+	* NEWS:
+	* configure.ac:
+	fix the date for 2.5.22 release
+
 2007-08-28  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/windowlist.c (CMD_WindowList):
@@ -17,7 +23,7 @@
 
 	* NEWS:
 	* configure.ac:
-	updated for 2.5.21 release
+	updated for 2.5.22 release
 
 	* fvwm/builtins.c (CMD_PropertyChange):
 	* libs/Flocale.c (FlocaleGetFftFont):

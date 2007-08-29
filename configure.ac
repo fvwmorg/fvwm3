@@ -11,9 +11,9 @@ VERSIONINFO=""
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
 dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="28 August 2007"
-RELDATESHORT="28-Aug-2007"
-RELDATENUM="2007-08-28"
+RELDATELONG="29 August 2007"
+RELDATESHORT="29-Aug-2007"
+RELDATENUM="2007-08-29"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"
