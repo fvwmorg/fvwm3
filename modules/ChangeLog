@@ -1,3 +1,9 @@
+2007-08-29  Renato Caldas  <seventhguardian@gmail.com>
+
+	* FvwmTaskBar/Start.c (StartButtonParseConfig):
+	* FvwmButtons/button.c (alloc_buttonlist):
+	fix compilation warnings
+
 2007-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmM4/FvwmM4.c (m4_defs):

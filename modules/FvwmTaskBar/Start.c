@@ -76,7 +76,7 @@ Bool StartButtonParseConfig(char *tline)
 	int i, j, k;
 	int titleRecorded = 0, iconRecorded = 0;
 	char *tokens[100];  /* This seems really big */
-	char *strtok_ptr;
+	char *strtok_ptr=NULL;
 	StartAndLaunchButtonItem *tempPtr;
 	int mouseButton;
 	char **tmpStrPtr;
