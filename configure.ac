@@ -1683,7 +1683,6 @@ dnl	bin/fvwm-menu-headlines.1
 dnl	bin/fvwm-menu-xlock.1
 dnl	bin/fvwm-perllib.1
 	bin/fvwm-root.1
-	fvwm/fvwm.1
 	modules/FvwmAnimate/FvwmAnimate.1
 	modules/FvwmAuto/FvwmAuto.1
 	modules/FvwmBacker/FvwmBacker.1

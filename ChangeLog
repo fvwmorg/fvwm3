@@ -1,8 +1,15 @@
+2007-08-30  Viktor Griph  <griph(at)student(dot)chalmers(dot)se>
+
+	* configure.ac:
+	* fvwm/fvwm.1.in
+	* fvwm/Makefile.am:
+	removed old fvwm manpage
+
 2007-08-29  Renato Caldas  <seventhguardian@gmail.com>
 
 	* NEWS:
 	* configure.ac:
-	increased version to 2.6.23
+	increased version to 2.5.23
 
 	* NEWS:
 	* configure.ac:
