@@ -426,7 +426,7 @@ char *FlocaleEncodeString(
 	int **l_to_v)
 {
 	char *str1, *str2, *str3;
-	int len1 = len, len2;
+	int len1 = len, len2 = 0;
 	int i;
 	Bool do_iconv = True;
 	const char *bidi_charset;
