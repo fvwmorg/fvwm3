@@ -426,11 +426,13 @@ char *FlocaleEncodeString(
 	int **l_to_v)
 {
 	char *str1, *str2, *str3;
-	int len1 = len, len2 = 0;
+	int len1;
+	int len2;
 	int i;
 	Bool do_iconv = True;
 	const char *bidi_charset;
 
+	len1 = len;
 	if (is_rtl != NULL)
 		*is_rtl = False;
 	*do_free = False;

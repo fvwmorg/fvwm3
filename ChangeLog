@@ -1,3 +1,14 @@
+2007-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/Flocale.c (FlocaleEncodeString):
+	removed previous warning fix
+
+2007-08-30 Thomas Adam <thomas@edulinux.homeunix.org>
+
+	* fvwm/style.c:
+	* fvwm/add_window.c:
+	Added new style option:  StartShaded.
+
 2007-08-30  Renato Caldas  <seventhguardian@gmail.com>
 
 	* libs/Flocale.c (FlocaleEncodeString):

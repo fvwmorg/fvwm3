@@ -87,6 +87,7 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>IconFont</emphasis>,
 <emphasis remap='I'>StartsOnDesk</emphasis> / <emphasis remap='I'>StartsOnPage</emphasis> / <emphasis remap='I'>StartsAnyWhere</emphasis>,
 <emphasis remap='I'>StartsOnScreen</emphasis>,
+<emphasis remap='I'>StartShaded</emphasis> / <emphasis remap='I'>!StartShaded</emphasis>,
 <emphasis remap='I'>ManualPlacementHonorsStartsOnPage</emphasis> / <emphasis remap='I'>ManualPlacementIgnoresStartsOnPage</emphasis>,
 <emphasis remap='I'>CaptureHonorsStartsOnPage</emphasis> / <emphasis remap='I'>CaptureIgnoresStartsOnPage</emphasis>,
 <emphasis remap='I'>RecaptureHonorsStartsOnPage</emphasis> / <emphasis remap='I'>RecaptureIgnoresStartsOnPage</emphasis>,
@@ -1720,6 +1721,19 @@ instructs fvwm to put the window initially at the bottom of its
 layer rather than the default
 <fvwmopt cmd="Style" opt="StartsRaised"/>.</para>
 
+<para><fvwmopt cmd="Style" opt="StartShaded"/>
+tells fvwm to shade the window.  An optional direction argument may be
+given, which can be one of
+"<fvwmopt cmd="WindowShade" opt="North"/>",
+"<fvwmopt cmd="WindowShade" opt="South"/>",
+"<fvwmopt cmd="WindowShade" opt="West"/>",
+"<fvwmopt cmd="WindowShade" opt="East"/>",
+"<fvwmopt cmd="WindowShade" opt="NorthWest"/>",
+"<fvwmopt cmd="WindowShade" opt="NorthEast"/>",
+"<fvwmopt cmd="WindowShade" opt="SouthWest"/>",
+"<fvwmopt cmd="WindowShade" opt="SouthEast"/>" or
+if no direction is given, the default is to shade north.</para>
+
 <para><emphasis remap='I'>SkipMapping</emphasis>
 tells fvwm not to switch to the desk the window is on when it gets
 mapped initially (useful with
@@ -2172,6 +2186,5 @@ by virtue of a match to "*".  If conflicting styles are specified
 for a window, then the last style specified is used.</para>
 
 </section>
-
 
 </section>

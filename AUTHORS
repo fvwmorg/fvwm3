@@ -12,6 +12,7 @@ SVG image loader.  ARGB/animated mouse cursor loading.
 Thomas Adam:
 Window style !StickyStippledTitle (and hence StickyStippledTitle).
 Icon style StippledIconTitle and !StickyStippledIconTitle.
+StartShaded style option.
 
 Serge (gentoosiast) Koksharov:
 Documentation fixes, bug fixes.

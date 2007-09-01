@@ -562,8 +562,8 @@ static void merge_styles(
 			*merged_style, SGET_WINDOW_SHADE_STEPS(*add_style));
 	}
 
-	/* Note:  Only one style cmd can define a window's iconboxes, the last one
-	 * encountered. */
+	/* Note:  Only one style cmd can define a window's iconboxes, the last
+	 * one encountered. */
 	if (SHAS_ICON_BOXES(&add_style->flag_mask))
 	{
 		/* If style has iconboxes */
@@ -584,6 +584,11 @@ static void merge_styles(
 	if (add_style->flags.use_layer)
 	{
 		SSET_LAYER(*merged_style, SGET_LAYER(*add_style));
+	}
+	if (add_style->flags.do_start_shaded)
+	{
+		SSET_STARTS_SHADED_DIR(
+			*merged_style, SGET_STARTS_SHADED_DIR(*add_style));
 	}
 	if (add_style->flags.use_colorset)
 	{
@@ -960,7 +965,7 @@ static int __simplify_style_list(void)
 				blockor((char *)&sumdflags,
 					(char *)&sumflags,
 					(char *)&cmp->flag_default,
-				sizeof(style_flags));
+					sizeof(style_flags));
 				/* merge cmp into cur and delete it
 				 * afterwards */
 				merge_styles(cmp, cur, True);
@@ -1617,8 +1622,8 @@ static char *style_parse_icon_size_style(
 					ERR, "CMD_Style",
 					"IconSize dimension (%d) not in valid"
 					" range (%d-%d)",
-					 vals[i], MIN_ALLOWABLE_ICON_DIMENSION,
-					 MAX_ALLOWABLE_ICON_DIMENSION);
+					vals[i], MIN_ALLOWABLE_ICON_DIMENSION,
+					MAX_ALLOWABLE_ICON_DIMENSION);
 				use_default = 1;
 			}
 
@@ -2832,7 +2837,7 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "ICONFILL"))
 		{
 			rest = style_parse_icon_fill_style(token, rest, ps,
-						    *cur_ib);
+							   *cur_ib);
 		} /* end iconfill */
 		else if (StrEquals(token, "IconifyWindowGroups"))
 		{
@@ -3784,6 +3789,37 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.do_start_lowered = 1;
 			ps->change_mask.do_start_lowered = 1;
 		}
+		else if (StrEquals(token, "StartShaded"))
+		{
+			token = PeekToken(rest, &rest);
+
+			if (token)
+			{
+				direction_t direction;
+
+				direction = gravity_parse_dir_argument(
+					token, &token, DIR_NONE);
+				if (direction >= 0 && direction <= DIR_MASK)
+				{
+					SSET_STARTS_SHADED_DIR(*ps, direction);
+				}
+				else
+				{
+					fvwm_msg(
+						ERR,
+						"style_parse_one_style_option",
+						"Option: %s is not valid with"
+						" StartShaded", token);
+				}
+			}
+			else
+			{
+				SSET_STARTS_SHADED_DIR(*ps, DIR_N);
+			}
+			ps->flags.do_start_shaded = on;
+			ps->flag_mask.do_start_shaded = 1;
+			ps->change_mask.do_start_shaded = 1;
+		}
 		else if (StrEquals(token, "SaveUnder"))
 		{
 			ps->flags.do_save_under = on;
@@ -4627,8 +4663,10 @@ void check_window_style_change(
 
 	/* has_mini_icon
 	 * do_ewmh_mini_icon_override */
-	if (FMiniIconsSupported && (ret_style->change_mask.has_mini_icon ||
-	    S_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ret_style))))
+	if (
+		FMiniIconsSupported && (
+			ret_style->change_mask.has_mini_icon ||
+			S_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ret_style))))
 	{
 		flags->do_update_mini_icon = 1;
 		flags->do_update_ewmh_mini_icon = 1;
@@ -4919,7 +4957,7 @@ void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 		fw->cs = -1;
 	}
 	if (SGET_FORE_COLOR_NAME(*pstyle) != NULL &&
-	   !SUSE_COLORSET(&pstyle->flags))
+	    !SUSE_COLORSET(&pstyle->flags))
 	{
 		fw->colors.fore = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
 	}
@@ -4928,7 +4966,7 @@ void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 		fw->colors.fore = Colorset[cs].fg;
 	}
 	if (SGET_BACK_COLOR_NAME(*pstyle) != NULL &&
-	   !SUSE_COLORSET(&pstyle->flags))
+	    !SUSE_COLORSET(&pstyle->flags))
 	{
 		fw->colors.back = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
 		fw->colors.shadow = GetShadow(fw->colors.back);
@@ -4970,8 +5008,9 @@ void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 	{
 		fw->cs_hi = -1;
 	}
-	if (SGET_FORE_COLOR_NAME_HI(*pstyle) != NULL &&
-	   !SUSE_COLORSET_HI(&pstyle->flags))
+	if (
+		SGET_FORE_COLOR_NAME_HI(*pstyle) != NULL &&
+		!SUSE_COLORSET_HI(&pstyle->flags))
 	{
 		fw->hicolors.fore = GetColor(SGET_FORE_COLOR_NAME_HI(*pstyle));
 	}
@@ -4979,8 +5018,9 @@ void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 	{
 		fw->hicolors.fore = Colorset[cs].fg;
 	}
-	if (SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL &&
-	   !SUSE_COLORSET_HI(&pstyle->flags))
+	if (
+		SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL &&
+		!SUSE_COLORSET_HI(&pstyle->flags))
 	{
 		fw->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
 		fw->hicolors.shadow = GetShadow(fw->hicolors.back);

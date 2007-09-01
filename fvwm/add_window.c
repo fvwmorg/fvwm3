@@ -6,31 +6,31 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 /* This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
  */
 /*
- *       Copyright 1988 by Evans & Sutherland Computer Corporation,
- *                          Salt Lake City, Utah
+ *	 Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *			    Salt Lake City, Utah
  *  Portions Copyright 1989 by the Massachusetts Institute of Technology
- *                        Cambridge, Massachusetts
+ *			  Cambridge, Massachusetts
  *
- *                           All Rights Reserved
+ *			     All Rights Reserved
  *
  *    Permission to use, copy, modify, and distribute this software and
- *    its documentation  for  any  purpose  and  without  fee is hereby
- *    granted, provided that the above copyright notice appear  in  all
- *    copies and that both  that  copyright  notice  and  this  permis-
- *    sion  notice appear in supporting  documentation,  and  that  the
+ *    its documentation	 for  any  purpose  and	 without  fee is hereby
+ *    granted, provided that the above copyright notice appear	in  all
+ *    copies and that both  that  copyright  notice  and  this	permis-
+ *    sion  notice appear in supporting	 documentation,	 and  that  the
  *    names of Evans & Sutherland and M.I.T. not be used in advertising
- *    in publicity pertaining to distribution of the  software  without
+ *    in publicity pertaining to distribution of the  software	without
  *    specific, written prior permission.
  *
  *    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD
@@ -39,7 +39,7 @@
  *    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-
  *    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA
  *    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- *    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE
+ *    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION	 WITH  THE  USE
  *    OR PERFORMANCE OF THIS SOFTWARE.
  */
 
@@ -131,8 +131,8 @@ static void delete_client_context(FvwmWindow *fw)
 /*
  *
  *  Procedure:
- *      CaptureOneWindow
- *      CaptureAllWindows
+ *	CaptureOneWindow
+ *	CaptureAllWindows
  *
  *   Decorates windows at start-up and during recaptures
  *
@@ -341,15 +341,15 @@ static void hide_screen(
 /*
  *
  *  Procedure:
- *      MappedNotOverride - checks to see if we should really
- *              put a fvwm frame on the window
+ *	MappedNotOverride - checks to see if we should really
+ *		put a fvwm frame on the window
  *
  *  Returned Value:
- *      1   - go ahead and frame the window
- *      0   - don't frame the window
+ *	1   - go ahead and frame the window
+ *	0   - don't frame the window
  *
  *  Inputs:
- *      w       - the window to check
+ *	w	- the window to check
  *
  */
 
@@ -408,7 +408,7 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 	 */
 	XAllowEvents(dpy, AsyncPointer, CurrentTime);
 	discard_events(
-		ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|\
+		ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|	\
 		PointerMotionMask|KeyPressMask|KeyReleaseMask);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
@@ -2065,7 +2065,7 @@ Bool setup_transientfor(FvwmWindow *fw)
 /*
  *
  *  Procedure:
- *      AddWindow - add a new window to the fvwm list
+ *	AddWindow - add a new window to the fvwm list
  *
  */
 FvwmWindow *AddWindow(
@@ -2099,7 +2099,7 @@ FvwmWindow *AddWindow(
 	fw = tmp;
 
 	/****** Make sure the client window still exists.  We don't want to
-	 * leave an orphan frame window if it doesn't.  Since we now have the
+	 * leave an orphan frame window if it doesn't.	Since we now have the
 	 * server grabbed, the window can't disappear later without having been
 	 * reparented, so we'll get a DestroyNotify for it.  We won't have
 	 * gotten one for anything up to here, however. ******/
@@ -2156,7 +2156,7 @@ FvwmWindow *AddWindow(
 
 	/****** basic style and decor ******/
 	/* If the window is in the NoTitle list, or is a transient, dont
-	 * decorate it.  If its a transient, and DecorateTransients was
+	 * decorate it.	 If its a transient, and DecorateTransients was
 	 * specified, decorate anyway. */
 	setup_transientfor(fw);
 	if (win_opts->flags.is_menu)
@@ -2194,7 +2194,7 @@ FvwmWindow *AddWindow(
 	/*
 	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
 	 * Set the map state to 0 to prevent a transition back to
-	 * WithdrawnState in HandleUnmapNotify.  Map state gets set corrected
+	 * WithdrawnState in HandleUnmapNotify.	 Map state gets set corrected
 	 * again in HandleMapNotify.
 	 */
 	SET_MAPPED(fw, 0);
@@ -2479,7 +2479,7 @@ FvwmWindow *AddWindow(
 	GNOME_SetWinArea(fw);
 
 	/****** windowshade ******/
-	if (state_args.do_shade)
+	if (state_args.do_shade || SDO_START_SHADED(sflags))
 	{
 		rectangle big_g;
 		rectangle new_g;
@@ -2488,6 +2488,13 @@ FvwmWindow *AddWindow(
 		if (state_args.used_title_dir_for_shading)
 		{
 			state_args.shade_dir = GET_TITLE_DIR(fw);
+		}
+		/* If we've set a style for StartShaded, ensure we override
+		 * the state for it here. -- TA.
+		 */
+		if (SDO_START_SHADED(sflags) && !state_args.do_shade)
+		{
+			state_args.shade_dir = SGET_STARTS_SHADED_DIR(style);
 		}
 		big_g = (IS_MAXIMIZED(fw)) ? fw->g.max : fw->g.frame;
 		new_g = big_g;
@@ -2542,7 +2549,7 @@ FvwmWindow *AddWindow(
 		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
 		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
-		/* The window has disappeared somehow.  For some reason we do
+		/* The window has disappeared somehow.	For some reason we do
 		 * not always get a DestroyNotify on the window, so make sure
 		 * it is destroyed. */
 		destroy_window(fw);
@@ -2556,10 +2563,10 @@ FvwmWindow *AddWindow(
 /*
  *
  *  Procedure:
- *      FetchWMProtocols - finds out which protocols the window supports
+ *	FetchWMProtocols - finds out which protocols the window supports
  *
  *  Inputs:
- *      tmp - the fvwm window structure to use
+ *	tmp - the fvwm window structure to use
  *
  */
 void FetchWmProtocols(FvwmWindow *tmp)
@@ -2634,10 +2641,10 @@ void FetchWmProtocols(FvwmWindow *tmp)
 /*
  *
  *  Procedure:
- *      GetWindowSizeHints - gets application supplied size info
+ *	GetWindowSizeHints - gets application supplied size info
  *
  *  Inputs:
- *      tmp - the fvwm window structure to use
+ *	tmp - the fvwm window structure to use
  *
  */
 
@@ -2872,13 +2879,13 @@ void GetWindowSizeHints(FvwmWindow *fw)
 		/*
 		** The math looks like this:
 		**
-		**   minAspectX    maxAspectX
+		**   minAspectX	   maxAspectX
 		**   ---------- <= ----------
-		**   minAspectY    maxAspectY
+		**   minAspectY	   maxAspectY
 		**
 		** If that is multiplied out, this must be satisfied:
 		**
-		**   minAspectX * maxAspectY <=  maxAspectX * minAspectY
+		**   minAspectX * maxAspectY <=	 maxAspectX * minAspectY
 		**
 		** So, what to do if this isn't met?  Ignoring it entirely
 		** seems safest.
@@ -3240,7 +3247,7 @@ void destroy_window(FvwmWindow *fw)
 /*
  *
  *  Procedure:
- *      RestoreWithdrawnLocation
+ *	RestoreWithdrawnLocation
  *
  *  Puts windows back where they were before fvwm took over
  *
@@ -3360,7 +3367,7 @@ void RestoreWithdrawnLocation(
 /*
  *
  *  Procedure:
- *      Reborder - Removes fvwm border windows
+ *	Reborder - Removes fvwm border windows
  *
  */
 void Reborder(void)

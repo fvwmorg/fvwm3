@@ -11,6 +11,8 @@
 	((sf)->do_save_under)
 #define SDO_START_LOWERED(sf) \
 	((sf)->do_start_lowered)
+#define SDO_START_SHADED(sf) \
+	((sf)->do_start_shaded)
 #define SHAS_BORDER_WIDTH(sf) \
 	((sf)->has_border_width)
 #define SHAS_COLOR_BACK(sf) \
@@ -509,6 +511,10 @@
 	((s).start_screen)
 #define SSET_START_SCREEN(s,x) \
 	((s).start_screen = (x))
+#define SSET_STARTS_SHADED_DIR(s,x) \
+	((s).flags.start_shaded_dir = (x))
+#define SGET_STARTS_SHADED_DIR(s)		\
+	((s).flags.start_shaded_dir)
 #define SGET_MIN_ICON_WIDTH(s) \
 	((s).min_icon_width)
 #define SSET_MIN_ICON_WIDTH(s,x) \

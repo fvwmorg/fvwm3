@@ -531,6 +531,8 @@ typedef struct style_flags
 	unsigned do_save_under : 1;
 	unsigned do_start_iconic : 1;
 	unsigned do_start_lowered : 1;
+ 	unsigned do_start_shaded : 1;
+ 	unsigned start_shaded_dir : 3;
 	unsigned has_border_width : 1;
 	unsigned has_color_back : 1;
 	unsigned has_color_fore : 1;

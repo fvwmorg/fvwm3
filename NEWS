@@ -3,13 +3,17 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.23 (unreleased)
+Changes in beta release 2.5.23 (not released yet)
 
 * New features:
 
+   - New Style command options:
+       StartShaded
 
 * Bug Fixes:
 
+   - Fixed FvwmButton's button placement algorithm broken in
+     2.5.22.
 
 -------------------------------------------------------------------
 

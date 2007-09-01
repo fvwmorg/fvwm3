@@ -1,7 +1,7 @@
 2007-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmTaskBar/Start.c (StartButtonParseConfig):
-	different fix for previous patch
+	removed previous warning fix;
 
 	* FvwmButtons/button.c (alloc_buttonlist):
 	fixed button allocation broken in previous commit
