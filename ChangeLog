@@ -2,6 +2,10 @@
 
 	* NEWS:
 	* configure.ac:
+	increased version to 2.5.24
+
+	* NEWS:
+	* configure.ac:
 	updated for 2.5.23 release
 
 	* libs/Flocale.c (FlocaleEncodeString):
