@@ -200,7 +200,7 @@ Configuration tests:
     this file by default).  Of course doing this for a development
     release won't hurt either.
   - Run
-     $ ./configure
+     $ ./configure --enable-htmldoc
   - Make sure configure detects all optional libraries except the
     ones that are recommended not to be used.  Repeat the previous
     step until configure finds everything.  Building a release
