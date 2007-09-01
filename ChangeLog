@@ -1,5 +1,9 @@
 2007-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* NEWS:
+	* configure.ac:
+	updated for 2.5.23 release
+
 	* libs/Flocale.c (FlocaleEncodeString):
 	removed previous warning fix
 
