@@ -1,3 +1,8 @@
+2007-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmButtons/button.c (alloc_buttonlist):
+	fixed button allocation broken in previous commit
+
 2007-08-29  Renato Caldas  <seventhguardian@gmail.com>
 
 	* FvwmTaskBar/Start.c (StartButtonParseConfig):
