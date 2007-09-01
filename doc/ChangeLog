@@ -1,3 +1,8 @@
+2007-09-01  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm.xsl:
+	output html in utf-8 encoding
+
 2007-08-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/Makefile.am:
