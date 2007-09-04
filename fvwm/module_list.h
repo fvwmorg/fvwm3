@@ -103,9 +103,6 @@ void module_kill_all(void);
 /* kill a module */
 void module_kill(fmodule *module);
 
-/* execute a module - full function and wraper */
-/*fmodule *module_execute(F_CMD_ARGS, Bool desperate, Bool do_listen_only)*/
-fmodule *do_execute_module(F_CMD_ARGS, Bool desperate, Bool do_listen_only);
 /* execute module wraper, desperate mode */
 fmodule *executeModuleDesperate(F_CMD_ARGS);
 

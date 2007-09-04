@@ -1,3 +1,9 @@
+2007-09-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/module_list.h:
+	* fvwm/module_list.c:
+	a little cleanup
+
 2007-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:

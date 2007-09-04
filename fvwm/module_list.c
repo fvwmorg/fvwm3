@@ -106,6 +106,7 @@ static void set_message_mask(msg_masks_t *mask, unsigned long msg);
 void module_kill_all(void)
 {
 	module_list_destroy(&module_list);
+
 	return;
 }
 
@@ -166,6 +167,7 @@ static inline void module_list_insert(fmodule *module, fmodule_list *list)
 	new_store->module = module;
 	new_store->next = *list;
 	*list = new_store;
+
 	return;
 }
 
@@ -210,6 +212,7 @@ static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list)
 		{
 			DBUG("module_list_remove",
 				"Tried to remove a not listed module!");
+
 			return NULL;
 		}
 	}
@@ -233,9 +236,7 @@ static inline void module_list_destroy(fmodule_list *list)
 	return;
 }
 
-
-
-/*static*/ fmodule *do_execute_module(
+static fmodule *do_execute_module(
 	F_CMD_ARGS, Bool desperate, Bool do_listen_only)
 {
 	int fvwm_to_app[2], app_to_fvwm[2];
@@ -522,8 +523,6 @@ fmodule *executeModuleDesperate(F_CMD_ARGS)
 	return m;
 }
 
-
-
 void module_kill(fmodule *module)
 {
 	module_list_insert(
@@ -539,7 +538,6 @@ void module_cleanup(void)
 
 	return;
 }
-
 
 /* void module_send(fmodule *module, unsigned long *ptr, int size) */
 /* This used to be marked "fvwm_inline".  I removed this
@@ -845,6 +843,7 @@ int module_list_len(fmodule_list *list)
 		current = current->next;
 		count++;
 	}
+
 	return count;
 }
 
@@ -1050,6 +1049,7 @@ void FlushMessageQueue(fmodule *module)
 						name, rc, isTerminated ?
 						'Y' : 'N');
 					module_kill(module);
+
 					return;
 				}
 
@@ -1059,6 +1059,7 @@ void FlushMessageQueue(fmodule *module)
 			else if (errno != EINTR)
 			{
 				module_kill(module);
+
 				return;
 			}
 		}
@@ -1093,7 +1094,7 @@ void CMD_Module(F_CMD_ARGS)
 {
 	do_execute_module(F_PASS_ARGS, False, False);
 
- return;
+	return;
 }
 
 void CMD_ModuleListenOnly(F_CMD_ARGS)
