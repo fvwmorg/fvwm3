@@ -1,3 +1,8 @@
+2007-09-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/virtual.c (HandlePaging):
+	dont't modify *xl and *yt unless we we really page
+
 2007-09-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_list.h:
@@ -11383,7 +11388,7 @@
 2002-06-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (CoerceEnterNotifyOnCurrentWindow):
-	fixed colorurmap focus problem
+	fixed colourmap focus problem
 
 	* **/*.[ch]:
 	tabified all files and removed all trailing spaces
