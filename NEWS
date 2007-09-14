@@ -5,6 +5,11 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.24 (not released yet)
 
+* Bug Fixes:
+
+   - Sometimes a window jumped by half the screen's size when
+     moving with the mouse and hitting the border of the desktop.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.23 (1-Sep-2007)
@@ -18,8 +23,6 @@ Changes in beta release 2.5.23 (1-Sep-2007)
 
    - Fixed FvwmButton's button placement algorithm broken in
      2.5.22.
-   - Sometimes a window jumped by half the screen's size when
-     moving with the mouse and hitting the border of the desktop.
 
 -------------------------------------------------------------------
 
