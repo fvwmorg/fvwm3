@@ -1,3 +1,9 @@
+2007-10-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/FScreen.c (FindScreenOfXY):
+	* fvwm/move_resize.c (GetMoveArguments):
+	fixed the "screen w" argument of the Move and other commands
+
 2007-09-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (HandlePaging):

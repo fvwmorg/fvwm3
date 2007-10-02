@@ -463,11 +463,23 @@ int GetMoveArguments(
 	{
 		char *token;
 		int scr;
+		fscreen_scr_arg arg;
+		fscreen_scr_arg* parg;
 
 		free(s1);
 		token = PeekToken(action, &action);
 		scr = FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
-		FScreenGetScrRect(NULL, scr, &scr_x, &scr_y, &scr_w, &scr_h);
+		if (scr == FSCREEN_XYPOS)
+		{
+			arg.xypos.x = *pFinalX;
+			arg.xypos.y = *pFinalY;
+			parg = &arg;
+		}
+		else
+		{
+			parg = NULL;
+		}
+		FScreenGetScrRect(parg, scr, &scr_x, &scr_y, &scr_w, &scr_h);
 		action = GetNextToken(action, &s1);
 	}
 	action = GetNextToken(action, &s2);
