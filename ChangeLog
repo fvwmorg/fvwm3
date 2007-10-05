@@ -1,3 +1,8 @@
+2007-10-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/ConfigFvwmDefaults:
+	restore default action of closing menus for menu titles
+
 2007-10-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FScreen.c (FindScreenOfXY):

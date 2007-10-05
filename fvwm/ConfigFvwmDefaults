@@ -198,14 +198,13 @@ Silent Key g		M C MenuClose
 
 # Mouse bindings
 Mouse 0 		MI A MenuSelectItem
+Mouse 0	     		MTS A MenuLeaveSubmenu
 Silent Mouse 4		MIT A MenuScroll -1
 Silent Mouse 5		MIT A MenuScroll +1
-
 
 # NB: Only on title -- changes syntax for remapping the TearOff functionality
 Mouse 2			MT A MenuTearOff
 
-Mouse 0			MS A MenuLeaveSubmenu
 #
 #
 # END MENU BINDINGS
