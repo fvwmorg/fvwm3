@@ -36,7 +36,7 @@ is given, the default 0 is assumed.  If the return code is
 prefixed with '!', the command is executed if
 <replaceable>returncode</replaceable>
 does not match the value returned by the conditional command.
-<emphasis remap='B'>TestRc</emphasis>
+The <emphasis remap='B'>TestRc</emphasis>
 command can only be used inside functions.  If the
 <replaceable>command</replaceable>
 is another conditional command, the previous return code is
