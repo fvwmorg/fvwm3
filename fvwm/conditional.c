@@ -1413,7 +1413,9 @@ static int __rc_matches_rcstring_consume(
 			match_rc = COND_RC_NO_MATCH;
 			/* Does anyone check for other numerical returncode
 			 * values? If so, this might have to be changed. */
-			fprintf(stderr, "Unrecognised condition \"%s\" in TestRc command.\n", flags);
+			fprintf(
+				stderr, "Unrecognised condition \"%s\" in"
+				" TestRc command.\n", flags);
 		}
 	}
 	if (orig_flags != NULL)
@@ -2061,11 +2063,13 @@ void CMD_Test(F_CMD_ARGS)
 		else if (StrEquals(cond, "EnvIsSet"))
 		{
 			char *var_name;
+
 			flags_ptr = GetNextSimpleOption(flags_ptr, &var_name);
 			if (var_name)
 			{
 				const char *value = getenv(var_name);
-				match = value != NULL;
+
+				match = (value != NULL) ? 1 : 0;
 			}
 			else
 			{
@@ -2075,6 +2079,7 @@ void CMD_Test(F_CMD_ARGS)
 		else if (StrEquals(cond, "EnvMatch"))
 		{
 			char *var_name;
+
 			flags_ptr = GetNextSimpleOption(flags_ptr, &var_name);
 			if (var_name)
 			{
@@ -2092,8 +2097,7 @@ void CMD_Test(F_CMD_ARGS)
 				{
 					match =
 						/* include empty string case */
-						(!pattern[0] && !value[0])
-						||
+						(!pattern[0] && !value[0]) ||
 						matchWildcards(pattern, value);
 				}
 				else
@@ -2216,7 +2220,9 @@ void CMD_Test(F_CMD_ARGS)
 		{
 			/* unrecognized condition */
 			error = 1;
-			fprintf(stderr, "Unrecognised condition \"%s\" in Test command.\n", cond);
+			fprintf(
+				stderr, "Unrecognised condition \"%s\" in"
+				" Test command.\n", cond);
 		}
 
 		if (reverse)

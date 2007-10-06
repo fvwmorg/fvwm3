@@ -1,3 +1,8 @@
+2007-10-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/conditional.c:
+	some reformatting
+
 2007-10-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/ConfigFvwmDefaults:
