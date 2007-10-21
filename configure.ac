@@ -105,7 +105,8 @@ FVWM_DATASUBDIR=/${PACKAGE}
 FVWM_DOCSUBDIR=/doc/${PACKAGE}
 
 AC_ARG_ENABLE(package-subdirs,
-  [  --disable-package-subdirs  do not create subdirs for modules and data],
+  AS_HELP_STRING([--disable-package-subdirs],
+    [do not create subdirs for modules and data]),
   [if test x"$enableval" = xno; then FVWM_MODULESUBDIR=""; FVWM_DATASUBDIR="";
   fi], [])
 
@@ -132,12 +133,14 @@ AC_DEFINE(FVWM2RC, ".fvwm2rc")
 # Various configure-time options
 
 AC_ARG_ENABLE(dmalloc,
-  [  --enable-dmalloc        enable support for the dmalloc debugging library],
+  AS_HELP_STRING([--enable-dmalloc],
+    [enable support for the dmalloc debugging library]),
   [ac_cv_dmalloc="$enableval"],
   [ac_cv_dmalloc="no"])
 
 AC_ARG_ENABLE(efence,
-  [  --enable-efence         enable support for the efence debugging library],
+  AS_HELP_STRING([--enable-efence],
+    [enable support for the efence debugging library]),
   [ac_cv_efence="$enableval"],
   [ac_cv_efence="no"])
 
@@ -182,7 +185,8 @@ fi
 AC_MSG_CHECKING(imagepath)
 val="/usr/include/X11/bitmaps:/usr/include/X11/pixmaps"
 AC_ARG_WITH(imagepath,
-[  --with-imagepath=PATH   colon-delimited search path for images],
+  AS_HELP_STRING([--with-imagepath=PATH],
+    [colon-delimited search path for images]),
 [ case "$withval" in
   no)
     AC_MSG_ERROR([Can not disable image path.])
@@ -370,7 +374,8 @@ problem_mandoc=""
 AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, "")
 
 AC_ARG_ENABLE(mandoc,
-  [  --disable-mandoc       disable generation of man pages],
+  AS_HELP_STRING([--disable-mandoc],
+    [disable generation of man pages]),
   [ if test x"$enableval" = xyes; then
 		with_mandoc="yes, check"
 	else
@@ -399,7 +404,7 @@ AM_CONDITIONAL([FVWM_BUILD_MANDOC], [test x"$with_mandoc" = xyes])
 
 problem_htmldoc=""
 AC_ARG_ENABLE(htmldoc,
-  [  --enable-htmldoc       disable generation of HTML documentation],
+  AS_HELP_STRING([--enable-htmldoc],[disable generation of HTML documentation]),
   [ if test x"$enableval" = xyes; then
 		with_htmldoc="yes, check"
 	else
@@ -435,7 +440,7 @@ dnl [old check]            [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 problem_sm=""
 
 AC_ARG_ENABLE(sm,
-  [  --disable-sm            disable session management support],
+  AS_HELP_STRING([--disable-sm],[disable session management support]),
   [ if test x"$enableval" = xyes; then
     with_sm="yes, check"
   else
@@ -473,7 +478,7 @@ dnl AC_SUBST(sm_CFLAGS)
 # ********* shape extension
 dnl smr_SWITCH(shape, shape extensions, on, SHAPE)
 AC_ARG_ENABLE(shape,
-  [  --disable-shape         disable shaped window support],
+  AS_HELP_STRING([--disable-shape],[disable shaped window support]),
   [ if test x"$enableval" = xyes; then
     with_shape="yes, check"
   else
@@ -510,7 +515,7 @@ fi
 
 # ********* MIT Shared Memory Extension
 AC_ARG_ENABLE(shm,
-  [  --disable-shm           disable MIT Shared Memory Extension],
+  AS_HELP_STRING([--disable-shm],[disable MIT Shared Memory Extension]),
   [ if test x"$enableval" = xyes; then
     with_shm="yes, check"
   else
@@ -534,7 +539,7 @@ fi
 problem_xinerama=""
 
 AC_ARG_ENABLE(xinerama,
-  [  --disable-xinerama      disable Xinerama multi screen support],
+  AS_HELP_STRING([--disable-xinerama],[disable Xinerama multi screen support]),
   [ if test x"$enableval" = xyes; then
     with_xinerama="yes, check"
   else
@@ -592,7 +597,7 @@ fi
 # ********* xrender
 problem_xrender=""
 AC_ARG_ENABLE(xrender,
-  [  --disable-xrender       disable Xrender alpha-blend rendering ],
+  AS_HELP_STRING([--disable-xrender],[disable Xrender alpha-blend rendering]),
   [ if test x"$enableval" = xyes; then
     with_xrender="yes, check"
   else
@@ -620,7 +625,8 @@ AH_TEMPLATE([HAVE_XCURSOR],[Define if Xcursor library is used.])
 xcursor_CFLAGS=""
 xcursor_LIBS=""
 AC_ARG_ENABLE(xcursor,
-  [  --disable-xcursor       disable Xcursor ARGB/animated cursor loading],
+  AS_HELP_STRING([--disable-xcursor],
+    [disable Xcursor ARGB/animated cursor loading]),
   [ if test x"$enableval" = xno; then
        with_xcursor=no
        problem_xcursor=": Explicitly disabled"
@@ -658,7 +664,7 @@ AC_SUBST(Xcursor_LIBS)
 problem_xft=""
 
 AC_ARG_ENABLE(xft,
-  [  --disable-xft           disable Xft anti-aliased font rendering],
+  AS_HELP_STRING([--disable-xft],[disable Xft anti-aliased font rendering]),
   [ if test x"$enableval" = xyes; then
     with_xft="yes, check"
   else
@@ -858,7 +864,8 @@ rsvg_min_version=2.13.92
 AH_TEMPLATE([HAVE_RSVG], [Define if librsvg library is used.])
 
 AC_ARG_ENABLE(rsvg,
-  [  --disable-rsvg          disable scalable vector graphics (SVG images)],
+  AS_HELP_STRING([--disable-rsvg],
+    [disable scalable vector graphics (SVG images)]),
   [ if test x"$enableval" = xno; then
        with_rsvg=no
        problem_rsvg=": Explicitly disabled"
@@ -1058,7 +1065,8 @@ with_sys_iconv=no
 problem_iconv=": Explicitly disabled"
 
 AC_ARG_ENABLE(iconv,
-  [  --disable-iconv         disable support for iconv character conversion],
+  AS_HELP_STRING([--disable-iconv],
+    [disable support for iconv character conversion]),
   [ac_cv_iconv="$enableval"],
   [ac_cv_iconv="yes"])
 
@@ -1133,40 +1141,41 @@ AC_MSG_RESULT($have_codeset)
 
 # ********* fribidi
 AC_ARG_ENABLE(bidi,
-	[  --disable-bidi          disable bi-directional text support],
-	[ if test x"$enableval" = xyes; then
-		with_bidi="yes, check"
-	else
-		with_bidi="no"
-		problem_bidi=": Explicitly disabled"
-	fi ],
-	[ with_bidi="not specified, check" ]
+  AS_HELP_STRING([--disable-bidi],[disable bi-directional text support]),
+  [ if test x"$enableval" = xyes; then
+    with_bidi="yes, check"
+  else
+    with_bidi="no"
+  problem_bidi=": Explicitly disabled"
+  fi ],
+  [ with_bidi="not specified, check" ]
 )
 
 if test ! x"$with_bidi" = xno; then
-	AC_ARG_WITH(fribidi-bindir,
-		[  --with-fribidi-bindir=DIR  directory of fribidi-config if not in PATH],
-		FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
-	AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
+  AC_ARG_WITH(fribidi-bindir,
+    AS_HELP_STRING([--with-fribidi-bindir=DIR],
+      [directory of fribidi-config if not in PATH]),
+    FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
+  AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
 
-	if test x"$FRIBIDI_CONFIG" = x; then
-		with_bidi=no
-		problem_bidi=": No fribidi-config found in PATH"
-	else
-		Bidi_CFLAGS=`$FRIBIDI_CONFIG --cflags`
-		Bidi_LIBS=`$FRIBIDI_CONFIG --libs`
-		AC_CHECK_LIB(fribidi, fribidi_log2vis,
-			with_bidi=yes; problem_bidi=,
-			with_bidi=no; problem_bidi=": No good libs via fribidi-config",
-			[$Bidi_LIBS $Bidi_CFLAGS])
-	fi
+  if test x"$FRIBIDI_CONFIG" = x; then
+    with_bidi=no
+    problem_bidi=": No fribidi-config found in PATH"
+  else
+    Bidi_CFLAGS=`$FRIBIDI_CONFIG --cflags`
+    Bidi_LIBS=`$FRIBIDI_CONFIG --libs`
+    AC_CHECK_LIB(fribidi, fribidi_log2vis,
+      with_bidi=yes; problem_bidi=,
+      with_bidi=no; problem_bidi=": No good libs via fribidi-config",
+      [$Bidi_LIBS $Bidi_CFLAGS])
+  fi
 fi
 
 if test ! x"$with_bidi" = xno; then
-	fribidi_in_path=yes
-	ac_save_LIBS="$LIBS"
-	LIBS="$LIBS $Bidi_LIBS"
-	AC_TRY_RUN([#include <stdlib.h>
+  fribidi_in_path=yes
+  ac_save_LIBS="$LIBS"
+  LIBS="$LIBS $Bidi_LIBS"
+  AC_TRY_RUN([#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
 {
@@ -1178,13 +1187,13 @@ int main()
 	return 0;
 }
 ], [:], [fribidi_in_path=no])
-	LIBS="$ac_save_LIBS"
-	if test ! x"$fribidi_in_path" = xyes; then
-		ac_save_CFLAGS="$CFLAGS"
-		ac_save_LIBS="$LIBS"
-		CFLAGS="$CFLAGS $Bidi_CFLAGS"
-		LIBS="$LIBS $Bidi_LIBS"
-	AC_TRY_RUN([#include <stdlib.h>
+  LIBS="$ac_save_LIBS"
+  if test ! x"$fribidi_in_path" = xyes; then
+    ac_save_CFLAGS="$CFLAGS"
+    ac_save_LIBS="$LIBS"
+    CFLAGS="$CFLAGS $Bidi_CFLAGS"
+    LIBS="$LIBS $Bidi_LIBS"
+  AC_TRY_RUN([#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
 {
@@ -1196,28 +1205,28 @@ int main()
 	return 0;
 }
 ], [:], [with_bidi=no; problem_bidi=": Bad fribidi version, see config.log"])
-		CFLAGS="$ac_save_CFLAGS"
-		LIBS="$ac_save_LIBS"
-	fi
-	if test ! x"$fribidi_in_path" = xno; then
-		Bidi_CFLAGS=
-		Bidi_LIBS=-lfribidi
-	fi
+    CFLAGS="$ac_save_CFLAGS"
+    LIBS="$ac_save_LIBS"
+  fi
+  if test ! x"$fribidi_in_path" = xno; then
+    Bidi_CFLAGS=
+    Bidi_LIBS=-lfribidi
+  fi
 fi
 
 AH_TEMPLATE([HAVE_BIDI],[Define if fribidi library is used.])
 AH_TEMPLATE([FRIBIDI_CHARSET_SPELLING],
   [Support fribidi-0.10.4 and older with "CHARSET" spelling.])
 if test x"$with_bidi" = xno; then
-	Bidi_CFLAGS=
-	Bidi_LIBS=
+  Bidi_CFLAGS=
+  Bidi_LIBS=
 else
-	AC_DEFINE(HAVE_BIDI)
-	AC_TRY_RUN([#include <fribidi/fribidi.h>
-		int main(int c, char **v) {
-			return FRIBIDI_CHARSET_NOT_FOUND * 0;
-		}
-	], [AC_DEFINE(FRIBIDI_CHARSET_SPELLING)])
+  AC_DEFINE(HAVE_BIDI)
+  AC_TRY_RUN([#include <fribidi/fribidi.h>
+    int main(int c, char **v) {
+      return FRIBIDI_CHARSET_NOT_FOUND * 0;
+    }
+  ], [AC_DEFINE(FRIBIDI_CHARSET_SPELLING)])
 fi
 AH_VERBATIM([_FRIBIDI_CHARSET_SPELLING],
 [#ifdef FRIBIDI_CHARSET_SPELLING
@@ -1233,12 +1242,12 @@ with_perllib="yes"
 problem_perllib=""
 FVWM_PERLLIB=perllib
 AC_ARG_ENABLE(perllib,
-	[  --disable-perllib       disable installing fvwm perl library],
-	[ if test x"$enableval" = xno; then
-		with_perllib="no"
-		problem_perllib=": Explicitly disabled"
-		FVWM_PERLLIB=""
-	fi ],
+  AS_HELP_STRING([--disable-perllib],[disable installing fvwm perl library]),
+  [ if test x"$enableval" = xno; then
+    with_perllib="no"
+    problem_perllib=": Explicitly disabled"
+    FVWM_PERLLIB=""
+  fi ],
 )
 AC_SUBST(FVWM_PERLLIB)
 
@@ -1260,11 +1269,11 @@ with_gettext="yes"
 problem_gettext=""
 
 AC_ARG_ENABLE(nls,
-	[  --disable-nls           do not use Native Language Support],
-	[ if test x"$enableval" = xno; then
-		with_gettext="no"
-		problem_gettext=": Explicitly disabled"
-	fi ],
+  AS_HELP_STRING([--disable-nls],[do not use Native Language Support]),
+  [ if test x"$enableval" = xno; then
+    with_gettext="no"
+    problem_gettext=": Explicitly disabled"
+  fi ],
 )
 
 AH_TEMPLATE([HAVE_NLS],
@@ -1406,25 +1415,24 @@ AC_CHECK_FUNCS(unsetenv)
 # Check the availability of gtk
 FVWMGTK=""
 MANFVWMGTK=""
-AC_ARG_ENABLE(
-	gtk,
-	[  --disable-gtk           do not build modules using gtk library],
-	enable_gtktest="$enableval", enable_gtktest=yes)
+AC_ARG_ENABLE(gtk,
+  AS_HELP_STRING([--disable-gtk],[do not build modules using gtk library]),
+    enable_gtktest="$enableval", enable_gtktest=yes)
 if test x"$enable_gtktest" = xyes; then
-	AM_PATH_GTK(1.1.0,[
-		FVWMGTK="FvwmGtk$EXEEXT" AC_SUBST(FVWMGTK)
-		MANFVWMGTK=FvwmGtk.1 AC_SUBST(MANFVWMGTK)
-	],)
-	if test x"$no_gtk" = x; then
-		with_gtk=yes
-		problem_gtk=""
-	else
-		with_gtk=no
-		problem_gtk=": Failed to detect GTK, see config.log"
-	fi
+  AM_PATH_GTK(1.1.0,[
+    FVWMGTK="FvwmGtk$EXEEXT" AC_SUBST(FVWMGTK)
+    MANFVWMGTK=FvwmGtk.1 AC_SUBST(MANFVWMGTK)
+  ],)
+  if test x"$no_gtk" = x; then
+    with_gtk=yes
+    problem_gtk=""
+  else
+    with_gtk=no
+    problem_gtk=": Failed to detect GTK, see config.log"
+  fi
 else
-	with_gtk=no
-	problem_gtk=": Explicitly disabled"
+  with_gtk=no
+  problem_gtk=": Explicitly disabled"
 fi
 AC_SUBST(FVWMGTK)
 AC_SUBST(MANFVWMGTK)

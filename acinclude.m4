@@ -189,8 +189,8 @@ ifelse($2, , smr_lib=[$1], smr_lib=[$2])
 
 AC_ARG_WITH([$1]-library,
 ifelse($3, ,
-[  --with-$1-library[=PATH]  use $1 library],
-[  --with-$1-library[=PATH]  use $1 library ($3)]),
+AS_HELP_STRING([--with-$1-library[=PATH]],[use $1 library]),
+AS_HELP_STRING([--with-$1-library[=PATH]],[use $1 library ($3)])),
 [
     if test "$withval" = yes; then
         with_[$1]=yes
@@ -233,7 +233,7 @@ dnl
 AC_DEFUN([smr_ARG_WITHINCLUDES], [
 
 AC_ARG_WITH([$1]-includes,
-[  --with-$1-includes=DIR  set directory for $1 headers],
+AS_HELP_STRING([--with-$1-includes=DIR],[set directory for $1 headers]),
 [
     if test -d "$withval"; then
         [$1]_CFLAGS="-I${withval}"
@@ -349,12 +349,13 @@ AC_DEFUN([AM_PATH_GTK],
 [dnl
 dnl Get the cflags and libraries from the gtk-config script
 dnl
-AC_ARG_WITH(gtk-prefix,[  --with-gtk-prefix=PFX   prefix for GTK files (optional)],
+AC_ARG_WITH(gtk-prefix,AS_HELP_STRING([--with-gtk-prefix=PFX],[prefix for GTK files (optional)]),
             gtk_config_prefix="$withval", gtk_config_prefix="")
-AC_ARG_WITH(gtk-exec-prefix,[  --with-gtk-exec-prefix=PFX  exec prefix for GTK files (optional)],
+AC_ARG_WITH(gtk-exec-prefix,AS_HELP_STRING([--with-gtk-exec-prefix=PFX],
+            [exec prefix for GTK files (optional)]),
             gtk_config_exec_prefix="$withval", gtk_config_exec_prefix="")
-AC_ARG_ENABLE(gtktest, [  --disable-gtktest       do not try to compile and run a test GTK program],
-		    , enable_gtktest=yes)
+AC_ARG_ENABLE(gtktest,AS_HELP_STRING([--disable-gtktest],
+              [do not try to compile and run a test GTK program]),, enable_gtktest=yes)
 
   if test x$gtk_config_exec_prefix != x ; then
      gtk_config_args="$gtk_config_args --exec-prefix=$gtk_config_exec_prefix"
@@ -531,11 +532,11 @@ AC_DEFUN([AM_PATH_GDK_IMLIB],
 [dnl
 dnl Get the cflags and libraries from the imlib-config script
 dnl
-AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (optional)],
+AC_ARG_WITH(imlib-prefix,AS_HELP_STRING([--with-imlib-prefix=PFX],[prefix for IMLIB files (optional)]),
             imlib_prefix="$withval", imlib_prefix="")
-AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
+AC_ARG_WITH(imlib-exec-prefix,AS_HELP_STRING([--with-imlib-exec-prefix=PFX],[exec prefix for IMLIB files (optional)]),
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
-AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest     do not try to compile and run a test IMLIB program],
+AC_ARG_ENABLE(imlibtest,AS_HELP_STRING([--disable-imlibtest],[do not try to compile and run a test IMLIB program]),
             , enable_imlibtest=yes)
 
   if test x$imlib_exec_prefix != x ; then
@@ -702,20 +703,21 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	AC_SUBST(GNOME_INCLUDEDIR)
 
 	AC_ARG_WITH(gnome-includes,
-	[  --with-gnome-includes   location of GNOME headers],[
+		AS_HELP_STRING([--with-gnome-includes],
+			[location of GNOME headers]),[
 	CFLAGS="$CFLAGS -I$withval"
 	])
 
 	gnome_prefix=$ac_default_prefix/lib
 
 	AC_ARG_WITH(gnome-libs,
-	[  --with-gnome-libs       location of GNOME libs],[
+	AS_HELP_STRING([--with-gnome-libs],[location of GNOME libs]),[
 	LDFLAGS="$LDFLAGS -L$withval"
 	gnome_prefix=$withval
 	])
 
 	AC_ARG_WITH(gnome,
-	[  --with-gnome            no, yes or prefix for GNOME files (for FvwmGtk only)],
+	AS_HELP_STRING([--with-gnome],[no, yes or prefix for GNOME files (for FvwmGtk only)]),
 		if test x$withval = xyes; then
 	    		with_gnomelibs=yes
 	    		dnl Note that an empty true branch is not
@@ -878,10 +880,10 @@ AC_DEFUN([AM_CHECK_PKG_CONFIG],
 dnl Get the cflags and libraries from the freetype-config script
 dnl
 AC_ARG_WITH(pkgconfig-prefix,
-[  --with-pkgconfig-prefix=PFX  prefix where pkg-config is installed],
+AS_HELP_STRING([--with-pkgconfig-prefix=PFX],[prefix where pkg-config is installed]),
             pkgconfig_config_prefix="$withval", pkgconfig_config_prefix="")
 AC_ARG_WITH(pkgconfig-exec-prefix,
-[  --with-pkgconfig-exec-prefix=PFX  exec prefix where pkg-config is installed],
+AS_HELP_STRING([--with-pkgconfig-exec-prefix=PFX],[exec prefix where pkg-config is installed]),
             pkgconfig_config_exec_prefix="$withval",pkgconfig_config_exec_prefix="")
 
 if test x$pkgconfig_config_exec_prefix != x ; then
@@ -911,13 +913,13 @@ AC_DEFUN([AM_CHECK_FT2],
 dnl Get the cflags and libraries from the freetype-config script
 dnl
 AC_ARG_WITH(freetype-prefix,
-[  --with-freetype-prefix=PFX  prefix where FreeType is installed (for Xft)],
+AS_HELP_STRING([--with-freetype-prefix=PFX],[prefix where FreeType is installed (for Xft)]),
             ft_config_prefix="$withval", ft_config_prefix="")
 AC_ARG_WITH(freetype-exec-prefix,
-[  --with-freetype-exec-prefix=PFX  exec prefix where FreeType is installed],
+AS_HELP_STRING([--with-freetype-exec-prefix=PFX],[exec prefix where FreeType is installed]),
             ft_config_exec_prefix="$withval", ft_config_exec_prefix="")
 AC_ARG_ENABLE(freetypetest,
-[  --disable-freetypetest  do not try to compile and run a test FreeType program],
+AS_HELP_STRING([--disable-freetypetest],[do not try to compile and run a test FreeType program]),
             [], enable_fttest=yes)
 
 if test x$ft_config_exec_prefix != x ; then
@@ -1046,13 +1048,13 @@ AC_DEFUN([AM_CHECK_FC],
 dnl Get the cflags and libraries from the fontconfig-config script
 dnl
 AC_ARG_WITH(fontconfig-prefix,
-[  --with-fontconfig-prefix=PFX  prefix where fontconfig is installed (for Xft2)],
+AS_HELP_STRING([--with-fontconfig-prefix=PFX],[prefix where fontconfig is installed (for Xft2)]),
             fc_config_prefix="$withval", fc_config_prefix="")
 AC_ARG_WITH(fontconfig-exec-prefix,
-[  --with-fontconfig-exec-prefix=PFX  exec prefix where fontconfig is installed],
+AS_HELP_STRING([--with-fontconfig-exec-prefix=PFX],[exec prefix where fontconfig is installed]),
             fc_config_exec_prefix="$withval", fc_config_exec_prefix="")
 AC_ARG_ENABLE(fontconfigtest,
-[  --disable-fontconfigtest  do not try to compile and run a test fontconfig program],
+AS_HELP_STRING([--disable-fontconfigtest],[do not try to compile and run a test fontconfig program]),
             [], enable_fctest=yes)
 
 if test x$fc_config_exec_prefix != x ; then
@@ -1202,13 +1204,13 @@ AC_DEFUN([AM_CHECK_XFT],
 dnl Get the cflags and libraries from the xft-config script
 dnl
 AC_ARG_WITH(xft-prefix,
-[  --with-xft-prefix=PFX    prefix where Xft2 is installed (optional)],
+AS_HELP_STRING([--with-xft-prefix=PFX],[prefix where Xft2 is installed (optional)]),
             xft_config_prefix="$withval", xft_config_prefix="")
 AC_ARG_WITH(xft-exec-prefix,
-[  --with-xft-exec-prefix=PFX  exec prefix where Xft2 is installed],
+AS_HELP_STRING([--with-xft-exec-prefix=PFX],[exec prefix where Xft2 is installed]),
             xft_config_exec_prefix="$withval", xft_config_exec_prefix="")
 AC_ARG_ENABLE(xfttest,
-[  --disable-xfttest       do not try to compile and run a test Xft program],
+AS_HELP_STRING([--disable-xfttest],[do not try to compile and run a test Xft program]),
             [], enable_xfttest=yes)
 
 if test x$xft_config_exec_prefix != x ; then
