@@ -571,7 +571,7 @@ static void apply_window_updates(
 			refresh_window(FW_W_FRAME(t), False);
 		}
 	}
-	t->shade_anim_steps = pstyle->shade_anim_steps;
+	setup_numeric_vals(t, pstyle);
 	if (flags->do_update_cr_motion_method)
 	{
 		switch (SCR_MOTION_METHOD(&pstyle->flags))

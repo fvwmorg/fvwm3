@@ -12,6 +12,20 @@ Changes in beta release 2.5.24 (not released yet)
    - Fixed the "screen w" argument of the Move and other commands.
    - Clicking on a menu title did not close the menu by default.
 
+* New features:
+
+   - Disabled paging during interactive resize operations by
+     default (see 2.5.20) as it is annoying to many people.
+   - New style command options:
+       EdgeMoveResistance
+       EdgeMoveDelay
+       EdgeResizeDelay
+       SnapGrid
+       SnapAttraction
+     that replace the now obsolete commands EdgeResistance,
+     SnapGrid and SnapAttraction.  The EdgeResistance command has
+     a new syntax with only one argument.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.23 (1-Sep-2007)

@@ -1136,13 +1136,7 @@ static void InitVariables(void)
 	Scr.CurrentDesk = 0;
 	Scr.EdgeScrollX = DEFAULT_EDGE_SCROLL * Scr.MyDisplayWidth / 100;
 	Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL * Scr.MyDisplayHeight / 100;
-	Scr.ScrollResistance = DEFAULT_SCROLL_RESISTANCE;
-	Scr.MoveResistance = DEFAULT_MOVE_RESISTANCE;
-	Scr.XiMoveResistance = DEFAULT_XIMOVE_RESISTANCE;
-	Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
-	Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
-	Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
-	Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
+	Scr.ScrollDelay = DEFAULT_SCROLL_DELAY;
 	Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
 	Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
 	/* ClickTime is set to the positive value upon entering the

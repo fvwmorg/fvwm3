@@ -1,3 +1,23 @@
+2007-11-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/add_window.c (setup_style_and_decor):
+	(setup_numeric_vals):
+	* fvwm/add_window.h:
+	* fvwm/style.h:
+	* libs/defaults.h:
+	* fvwm/events.c (HandleEnterNotify):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/screen.h:
+	* fvwm/session.c (SaveGlobalState):
+	(LoadGlobalState):
+	* fvwm/move_resize.c (DoSnapAttract):
+	(CMD_SnapGrid)
+	(DoSnapAttract):
+	The commands EdgeResistance, SnapGrid and SnapAttraction are obsolete
+	They have been replaced by the styles EdgeMoveResistance,
+	EdgeMoveDelay, EdgeResizeDelay, SnapGrid and SnapAttraction
+
 2007-10-21  Renato Caldas  <seventhguardian@gmail.com>
 
 	* acinclude.m4:

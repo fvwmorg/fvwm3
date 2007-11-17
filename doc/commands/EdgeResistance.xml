@@ -12,6 +12,11 @@
 <title>EdgeResistance</title>
 
 <cmdsynopsis>
+	<command>EdgeResistance</command>
+	<arg choice='plain'>
+		<replaceable>delay</replaceable>
+        </arg>
+
 	<command>EdgeResistance</command
 	><arg choice='plain'
 		><replaceable>scrolling</replaceable
@@ -25,51 +30,31 @@
 </cmdsynopsis>
 
 <para>Tells how hard it should be to change the desktop viewport by
-moving the mouse over the edge of the screen and how hard it
-should be to move a window over the edge of the screen.</para>
-
-<para>The first parameter tells how many milliseconds the pointer must
-spend on the screen edge before fvwm moves the viewport.  This is
-intended for people who use</para>
+moving the mouse over the edge of the screen. The parameter tells
+how many milliseconds the pointer must spend on the screen edge
+before fvwm moves the viewport.  This is intended for people who
+use</para>
 
 <programlisting>
 <fvwmref cmd="EdgeScroll"/> 100 100
 </programlisting>
 
-<para>but find themselves accidentally flipping pages when they do not
-want to.</para>
+<para>but find themselves accidentally flipping pages when they do
+not want to.  If -1 is given as the delay, scrolling is disabled
+completely.</para>
 
-<para>The second parameter tells how many pixels over the edge of the
-screen a window's edge must move before it actually moves
-partially off the screen.  By default the viewport is moved a full
-page in the requested direction, but if you used
-<fvwmref cmd="EdgeScroll"/>
-and set any values other than zero they are used instead.</para>
-
-<para>Note that, with</para>
+<para>The second form of invocation with two or three arguments is
+obsolete and should be replaced with the following three commands
+as needed:</para>
 
 <programlisting>
-<fvwmref cmd="EdgeScroll"/> 0 0
+<fvwmref cmd="EdgeResistance"/> <replaceable>scrolling</replaceable>
+<fvwmref cmd="Style"/> * EdgeMoveDelay <replaceable>scrolling</replaceable>
+<fvwmref cmd="Style"/> * EdgeMoveResistance <replaceable>moving</replaceable>
+or
+<fvwmref cmd="Style"/> * EdgeMoveResistance <replaceable>moving</replaceable> <replaceable>xinerama-scrolling</replaceable>
 </programlisting>
 
-<para>it is still possible to move or resize windows across the edge of
-the current screen.  By making the first parameter to
-<emphasis remap='B'>EdgeResistance</emphasis>
-10000 this type of motion is impossible.  With
-<emphasis remap='B'>EdgeResistance</emphasis>
-less than 10000 but greater than 0 moving over pages becomes
-difficult but not impossible.  See also
-<fvwmref cmd="EdgeThickness"/>.</para>
-
-<para>The optional third parameter does the same as the second, but for
-individual Xinerama screens.  If omitted,
-<replaceable>xinerama-moving</replaceable>
-is set to the value of
-<replaceable>moving</replaceable>.
-Set
-<replaceable>xinerama-moving</replaceable>
-to zero to ignore individual screen edges.  Note that the center of
-the window being moved determines the xinerama screen on which the
-window should be kept.</para>
+<para>Fvwm does this substitution automatically and prints a warning.</para>
 
 </section>

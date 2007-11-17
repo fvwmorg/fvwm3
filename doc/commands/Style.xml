@@ -198,7 +198,13 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>EWMHPlacementUseDynamicWorkingArea</emphasis>,
 <emphasis remap='I'>MoveByProgramMethod</emphasis>,
 <emphasis remap='I'>Unmanaged</emphasis>,
-<emphasis remap='I'>State</emphasis>.</para>
+<emphasis remap='I'>State</emphasis>,
+<emphasis remap='I'>SnapGrid</emphasis>,
+<emphasis remap='I'>SnapAttraction</emphasis>,
+<emphasis remap='I'>EdgeMoveDelay</emphasis>,
+<emphasis remap='I'>EdgeResizeDelay</emphasis>.
+<emphasis remap='I'>EdgeMoveResistance</emphasis>,
+</para>
 
 
 <!--  +++++++++++++++ general notes -->
@@ -440,9 +446,10 @@ style is equivalent to using
 is equivalent to the new style
 <emphasis remap='I'>FPLenient</emphasis>.</para>
 
-<!--  +++++++++++++++ styles affecting the window title -->
 </section>
 
+
+<!--  +++++++++++++++ styles affecting the window title -->
 
 <section id="window_title">
 <title>Window title</title>
@@ -637,13 +644,11 @@ and
 <emphasis remap='I'>ExactWindowName</emphasis>
 styles but for the icon titles.</para>
 
-<!--  +++++++++++++++ styles affecting title buttons -->
 </section>
 
 
 
-
-
+<!--  +++++++++++++++ styles affecting title buttons -->
 
 <section id="title_buttons">
 <title>Title buttons</title>
@@ -667,15 +672,11 @@ for more information.  To switch this style off again, use the
 <fvwmref mod="FvwmButtons"/>
 style.</para>
 
-<!--  +++++++++++++++ styles affecting borders -->
 </section>
 
 
 
-
-
-
-
+<!--  +++++++++++++++ styles affecting borders -->
 
 <section id="borders">
 <title>Borders</title>
@@ -730,14 +731,11 @@ with the
 <fvwmopt cmd="Style" opt="FirmBorder"/>
 style.</para>
 
-<!--  +++++++++++++++ icons, shading, maximizing, movement, resizing -->
 </section>
 
 
 
-
-
-
+<!--  +++++++++++++++ icons, shading, maximizing, movement, resizing -->
 
 <section id="icons_shading_maximising_movement_resizing">
 <title>Icons, shading, maximizing, movement, resizing</title>
@@ -1282,7 +1280,90 @@ it is probably best to use
 <emphasis remap='I'>IconifyWindowGroups</emphasis>
 only for selected applications.</para>
 
+<para>The option <fvwmopt cmd="Style" opt="SnapAttraction"/>
+affects interactive window movement:  If during an interactive
+move the window or icon comes within
+<replaceable>proximity</replaceable> pixels of another the window
+or icon, it is moved to make the borders adjoin.  The default of 0
+means that no snapping happens.  Calling this command without
+arguments turns off snap attraction and restores the default
+behavior.  Please refer also to the <fvwmref cmd="SnapGrid"/>
+command.</para>
+
+<para>The <replaceable>behavior</replaceable> argument is optional
+and may be set to one of the four following values:  With
+<replaceable>All</replaceable> both icons and windows snap to
+other windows and other icons. <replaceable>SameType</replaceable>
+lets snap windows only to other windows and icons only to other
+icons. With <replaceable>Windows</replaceable> windows snap only
+to other windows.  Icons do not snap. Similarly with
+<replaceable>Icons</replaceable> icons snap to only other icons
+and windows do not snap.</para>
+
+<para>If the <replaceable>behavior</replaceable> option is not
+given, the snapping behavior is not changed.  The default behavior
+is <emphasis remap='I'>All</emphasis>.</para>
+
+<para>If the <replaceable>Screen</replaceable> option is present
+windows and or icons are snapped to the screen edges too.</para>
+
+<para>The option <fvwmopt cmd="Style" opt="SnapGrid"/> defines an
+invisible grid on the screen.  During an interactive move a window
+or icon is positioned such that its location (top left corner) is
+coincident with the nearest grid point. The default
+<replaceable>x-grid-size</replaceable> and
+<replaceable>y-grid-size</replaceable> setting are both 1, which
+is effectively no grid all.</para>
+
+<para>An interactive move with both <fvwmref cmd="SnapGrid"/> and
+<fvwmref cmd="Style" opt="SnapAttraction"/> results in the window
+being moved to be adjacent to the nearest window border (if within
+snap proximity) or grid position. The window moves the shortest
+distance possible to satisfy both <fvwmref cmd="SnapGrid"/> and
+<fvwmref cmd="Style" opt="SnapAttraction"/>.  Note that the x and y
+coordinates are not coupled.  For example, a window may snap to
+another window on the x axis while snapping to a grid point on the
+y axis.  Using this style without arguments reinstates the default
+settings.</para>
+
+<para>The styles <fvwmopt cmd="Style" opt="EdgeMoveDelay"/> and
+<fvwmopt cmd="Style" opt="EdgeResizeDelay"/> tells how hard it
+should be to change the desktop viewport by moving or resizing a
+window over the edge of the screen. The parameter tells how many
+milliseconds the pointer must spend on the screen edge before fvwm
+moves the viewport.  The command <fvwmref cmd="EdgeScroll"/>
+determines how far the viewport is scrolled.  If -1 is given as
+the delay, page flipping is disabled completely.  The defaults are
+no delay for moving (0) and no flipping for resizing (-1).  Using
+these styles without any argument restores the default
+settings.  Note that, with</para>
+
+<programlisting>
+<fvwmref cmd="EdgeScroll"/> 0 0
+</programlisting>
+
+<para>it is still possible to move or resize windows across the
+edge of the current screen.  See also <fvwmref
+cmd="EdgeThickness"/>.</para>
+
+<para>The option <fvwmopt cmd="Style" opt="EdgeMoveResistance"/>
+makes it easier to place a window directly adjacent to the
+screen's or xinerama screen's border.  It takes one or two
+parameters.  The first parameter tells how many pixels over the
+edge of the screen a window's edge must move before it actually
+moves partially off the screen.  The optional second parameter
+does the same as the first, but for individual Xinerama screens.
+If omitted, the value of the first parameter is assumed for this
+type of movement.  Set the second parameter to 0 to zero to ignore
+individual xinerama screen edges.  Note that the center of the
+window being moved determines the xinerama screen on which the
+window should be kept.  Both values are 0 by default.  To restore
+the defaults, the option <fvwmopt cmd="Style"
+opt="EdgeMoveResistance"/> can be used without any
+parameters.</para>
+
 </section>
+
 
 
 <section id="window_manager_placement">
@@ -1544,9 +1625,6 @@ Style * ManualPlacementsHonorsStartsOnPageOff
 
 
 
-
-
-
 <!--  +++++++++++++++ placement options and stacking policy -->
 <section id="placement_policy_and_window_stacking">
 <title>Placement policy options and window stacking</title>
@@ -1751,10 +1829,6 @@ case.</para>
 
 
 
-
-
-
-
 <!--  +++++++++++++++ transient windows -->
 <section id="transient_windows">
 <title>Transient windows</title>
@@ -1820,10 +1894,6 @@ Style * StackTransientParent
 </programlisting>
 
 </section>
-
-
-
-
 
 
 
@@ -1913,8 +1983,6 @@ in account is configurable with the
 style.</para>
 
 </section>
-
-
 
 
 

@@ -6,21 +6,20 @@
 
 <section id='xinerama_support'>
 <title>Xinerama Support</title>
-<para>Fvwm supports the Xinerama extension of newer X servers which
-is similar to multi head support (multiple screens) but allows to
-move windows between screens.  If Xinerama support has been
-compiled into fvwm, it is used whenever fvwm runs on an X server
-that supports and uses multiple screens via Xinerama.  Without
-this option, the whole desktop is treated as one big screen.  For
-example, menus might pop up right between two screens.  The
-<fvwmref cmd="EdgeResistance"/>
-command allows for specifying an explicit resistance value for moving
-windows over the screen edge between two Xinerama screens.
-Xinerama support can be enabled or disabled on the fly or from the
-configuration file with the
-<fvwmref cmd="Xinerama"/>
-command.  Many modules and commands work nicely with Xinerama
-displays.</para>
+<para>Fvwm supports the Xinerama extension of newer X servers
+which is similar to multi head support (multiple screens) but
+allows to move windows between screens.  If Xinerama support has
+been compiled into fvwm, it is used whenever fvwm runs on an X
+server that supports and uses multiple screens via Xinerama.
+Without this option, the whole desktop is treated as one big
+screen.  For example, menus might pop up right between two
+screens.  The <fvwmref cmd="Style" opt="EdgeResistance"/> option
+of the <fvwmref cmd="Style"/> command command allows for specifying
+an explicit resistance value for moving windows over the screen
+edge between two Xinerama screens. Xinerama support can be enabled
+or disabled on the fly or from the configuration file with the
+<fvwmref cmd="Xinerama"/> command.  Many modules and commands work
+nicely with Xinerama displays.</para>
 
 <para>Whenever a geometry in the usual X format can be supplied,
 fvwm's Xinerama extension allows for specifying a screen in addition

@@ -66,14 +66,10 @@
 #include "update.h"
 #include "stack.h"
 #include "move_resize.h"
+#include "functions.h"
+#include "style.h"
 
 /* ----- move globals ----- */
-
-#define SNAP_NONE    0x00
-#define SNAP_WINDOWS 0x01
-#define SNAP_ICONS   0x02
-#define SNAP_SAME    0x04
-#define SNAP_SCREEN  0x08
 
 #define MOVE_NORMAL  0x00
 #define MOVE_PAGE    0x01
@@ -1884,10 +1880,10 @@ static void DoSnapAttract(
 	rectangle self;
 
 	/* resist based on window edges */
-	closestTop = Scr.SnapAttraction;
-	closestBottom = Scr.SnapAttraction;
-	closestRight = Scr.SnapAttraction;
-	closestLeft = Scr.SnapAttraction;
+	closestTop = fw->snap_proximity;
+	closestBottom = fw->snap_proximity;
+	closestRight = fw->snap_proximity;
+	closestLeft = fw->snap_proximity;
 	nxl = -99999;
 	nyt = -99999;
 	self.x = *px;
@@ -1908,22 +1904,22 @@ static void DoSnapAttract(
 	/*
 	 * Snap grid handling
 	 */
-	if (Scr.SnapGridX > 1 && nxl == -99999)
+	if (fw->snap_grid_x > 1 && nxl == -99999)
 	{
-		if (*px != *px / Scr.SnapGridX * Scr.SnapGridX)
+		if (*px != *px / fw->snap_grid_x * fw->snap_grid_x)
 		{
 			*px = (*px + ((*px >= 0) ?
-				      Scr.SnapGridX : -Scr.SnapGridX) / 2) /
-				Scr.SnapGridX * Scr.SnapGridX;
+				      fw->snap_grid_x : -fw->snap_grid_x) /
+			       2) / fw->snap_grid_x * fw->snap_grid_x;
 		}
 	}
-	if (Scr.SnapGridY > 1 && nyt == -99999)
+	if (fw->snap_grid_y > 1 && nyt == -99999)
 	{
-		if (*py != *py / Scr.SnapGridY * Scr.SnapGridY)
+		if (*py != *py / fw->snap_grid_y * fw->snap_grid_y)
 		{
 			*py = (*py + ((*py >= 0) ?
-				      Scr.SnapGridY : -Scr.SnapGridY) / 2) /
-				Scr.SnapGridY * Scr.SnapGridY;
+				      fw->snap_grid_y : -fw->snap_grid_y) /
+			       2) / fw->snap_grid_y * fw->snap_grid_y;
 		}
 	}
 
@@ -1931,8 +1927,8 @@ static void DoSnapAttract(
 	 * snap attraction
 	 */
 	/* snap to other windows */
-	if ((Scr.SnapMode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) &&
-	    Scr.SnapAttraction > 0)
+	if ((fw->snap_mode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) &&
+	    fw->snap_proximity > 0)
 	{
 		FvwmWindow *tmp;
 
@@ -1945,7 +1941,7 @@ static void DoSnapAttract(
 				continue;
 			}
 			/* check snapping type */
-			switch (Scr.SnapMode)
+			switch (fw->snap_mode)
 			{
 			case 1:  /* SameType */
 				if (IS_ICONIFIED(tmp) != IS_ICONIFIED(fw))
@@ -1976,21 +1972,21 @@ static void DoSnapAttract(
 			/* prevent that window snaps off screen */
 			if (other.x <= 0)
 			{
-				other.x -= Scr.SnapAttraction + 10000;
-				other.width += Scr.SnapAttraction + 10000;
+				other.x -= fw->snap_proximity + 10000;
+				other.width += fw->snap_proximity + 10000;
 			}
 			if (other.y <= 0)
 			{
-				other.y -= Scr.SnapAttraction + 10000;
-				other.height += Scr.SnapAttraction + 10000;
+				other.y -= fw->snap_proximity + 10000;
+				other.height += fw->snap_proximity + 10000;
 			}
 			if (other.x + other.width >= Scr.MyDisplayWidth)
 			{
-				other.width += Scr.SnapAttraction + 10000;
+				other.width += fw->snap_proximity + 10000;
 			}
 			if (other.y + other.height >= Scr.MyDisplayHeight)
 			{
-				other.height += Scr.SnapAttraction + 10000;
+				other.height += fw->snap_proximity + 10000;
 			}
 
 			/* snap horizontally */
@@ -2004,12 +2000,12 @@ static void DoSnapAttract(
 					closestRight = dist;
 					if (*px + self.width >= other.x &&
 					    *px + self.width <
-					    other.x + Scr.SnapAttraction)
+					    other.x + fw->snap_proximity)
 					{
 						nxl = other.x - self.width;
 					}
 					if (*px + self.width >=
-					    other.x - Scr.SnapAttraction &&
+					    other.x - fw->snap_proximity &&
 					    *px + self.width < other.x)
 					{
 						nxl = other.x - self.width;
@@ -2021,12 +2017,12 @@ static void DoSnapAttract(
 					closestLeft = dist;
 					if (*px <= other.x + other.width &&
 					    *px > other.x + other.width -
-					    Scr.SnapAttraction)
+					    fw->snap_proximity)
 					{
 						nxl = other.x + other.width;
 					}
 					if (*px <= other.x + other.width +
-					    Scr.SnapAttraction &&
+					    fw->snap_proximity &&
 					    *px > other.x + other.width)
 					{
 						nxl = other.x + other.width;
@@ -2044,12 +2040,12 @@ static void DoSnapAttract(
 					closestBottom = dist;
 					if (*py + self.height >= other.y &&
 					    *py + self.height < other.y +
-					    Scr.SnapAttraction)
+					    fw->snap_proximity)
 					{
 						nyt = other.y - self.height;
 					}
 					if (*py + self.height >=
-					    other.y - Scr.SnapAttraction &&
+					    other.y - fw->snap_proximity &&
 					    *py + self.height < other.y)
 					{
 						nyt = other.y - self.height;
@@ -2062,12 +2058,12 @@ static void DoSnapAttract(
 					if (*py <=
 					    other.y + other.height &&
 					    *py > other.y + other.height -
-					    Scr.SnapAttraction)
+					    fw->snap_proximity)
 					{
 						nyt = other.y + other.height;
 					}
 					if (*py <= other.y + other.height +
-					    Scr.SnapAttraction &&
+					    fw->snap_proximity &&
 					    *py > other.y + other.height)
 					{
 						nyt = other.y + other.height;
@@ -2078,7 +2074,7 @@ static void DoSnapAttract(
 	} /* snap to other windows */
 
 	/* snap to screen egdes */
-	if ((Scr.SnapMode & SNAP_SCREEN) && Scr.SnapAttraction > 0)
+	if ((fw->snap_mode & SNAP_SCREEN) && fw->snap_proximity > 0)
 	{
 		/* horizontally */
 		if (!(Scr.MyDisplayWidth < (*px) ||
@@ -2091,13 +2087,13 @@ static void DoSnapAttract(
 				if (*py + self.height >=
 				    Scr.MyDisplayHeight &&
 				    *py + self.height <
-				    Scr.MyDisplayHeight + Scr.SnapAttraction)
+				    Scr.MyDisplayHeight + fw->snap_proximity)
 				{
 					nyt = Scr.MyDisplayHeight -
 						self.height;
 				}
 				if (*py + self.height >=
-				    Scr.MyDisplayHeight - Scr.SnapAttraction &&
+				    Scr.MyDisplayHeight - fw->snap_proximity &&
 				    *py + self.height < Scr.MyDisplayHeight)
 				{
 					nyt = Scr.MyDisplayHeight -
@@ -2108,11 +2104,11 @@ static void DoSnapAttract(
 			if (dist < closestTop)
 			{
 				closestTop = dist;
-				if ((*py <= 0)&&(*py > - Scr.SnapAttraction))
+				if ((*py <= 0)&&(*py > - fw->snap_proximity))
 				{
 					nyt = 0;
 				}
-				if ((*py <=  Scr.SnapAttraction)&&(*py > 0))
+				if ((*py <=  fw->snap_proximity)&&(*py > 0))
 				{
 					nyt = 0;
 				}
@@ -2130,13 +2126,13 @@ static void DoSnapAttract(
 
 				if (*px + self.width >= Scr.MyDisplayWidth &&
 				    *px + self.width <
-				    Scr.MyDisplayWidth + Scr.SnapAttraction)
+				    Scr.MyDisplayWidth + fw->snap_proximity)
 				{
 					nxl = Scr.MyDisplayWidth - self.width;
 				}
 
 				if (*px + self.width >=
-				    Scr.MyDisplayWidth - Scr.SnapAttraction &&
+				    Scr.MyDisplayWidth - fw->snap_proximity &&
 				    *px + self.width < Scr.MyDisplayWidth)
 				{
 					nxl = Scr.MyDisplayWidth - self.width;
@@ -2148,11 +2144,11 @@ static void DoSnapAttract(
 				closestLeft = dist;
 
 				if ((*px <= 0) &&
-				    (*px > - Scr.SnapAttraction))
+				    (*px > - fw->snap_proximity))
 				{
 					nxl = 0;
 				}
-				if ((*px <= Scr.SnapAttraction) &&
+				if ((*px <= fw->snap_proximity) &&
 				    (*px > 0))
 				{
 					nxl = 0;
@@ -2173,33 +2169,37 @@ static void DoSnapAttract(
 	/*
 	 * Resist moving windows beyond the edge of the screen
 	 */
-	if (Scr.MoveResistance > 0)
+	if (fw->edge_resistance_move > 0)
 	{
 		/* snap to right edge */
-		if (*px + Width >= Scr.MyDisplayWidth &&
-		    *px + Width < Scr.MyDisplayWidth + Scr.MoveResistance)
+		if (
+			*px + Width >= Scr.MyDisplayWidth &&
+			*px + Width < Scr.MyDisplayWidth +
+			fw->edge_resistance_move)
 		{
 			*px = Scr.MyDisplayWidth - Width;
 		}
 		/* snap to left edge */
-		else if ((*px <= 0) && (*px > -Scr.MoveResistance))
+		else if ((*px <= 0) && (*px > -fw->edge_resistance_move))
 		{
 			*px = 0;
 		}
 		/* snap to bottom edge */
-		if (*py + Height >= Scr.MyDisplayHeight &&
-		    *py + Height < Scr.MyDisplayHeight + Scr.MoveResistance)
+		if (
+			*py + Height >= Scr.MyDisplayHeight &&
+			*py + Height < Scr.MyDisplayHeight +
+			fw->edge_resistance_move)
 		{
 			*py = Scr.MyDisplayHeight - Height;
 		}
 		/* snap to top edge */
-		else if (*py <= 0 && *py > -Scr.MoveResistance)
+		else if (*py <= 0 && *py > -fw->edge_delay_ms_move)
 		{
 			*py = 0;
 		}
 	}
 	/* Resist moving windows between xineramascreens */
-	if (Scr.XiMoveResistance > 0 && FScreenIsEnabled())
+	if (fw->edge_resistance_xinerama_move > 0 && FScreenIsEnabled())
 	{
 		int scr_x0, scr_y0;
 		int scr_x1, scr_y1;
@@ -2212,14 +2212,16 @@ static void DoSnapAttract(
 		/* snap to right edge */
 		if (scr_x1 < Scr.MyDisplayWidth &&
 		    *px + Width >= scr_x1 && *px + Width <
-		    scr_x1 + Scr.XiMoveResistance)
+		    scr_x1 + fw->edge_resistance_xinerama_move)
 		{
 			*px = scr_x1 - Width;
 			do_recalc_rectangle = True;
 		}
 		/* snap to left edge */
-		else if (scr_x0 > 0 &&
-			 *px <= scr_x0 && scr_x0 - *px < Scr.XiMoveResistance)
+		else if (
+			scr_x0 > 0 &&
+			*px <= scr_x0 && scr_x0 - *px <
+			fw->edge_resistance_xinerama_move)
 		{
 			*px = scr_x0;
 			do_recalc_rectangle = True;
@@ -2236,13 +2238,15 @@ static void DoSnapAttract(
 		/* snap to bottom edge */
 		if (scr_y1 < Scr.MyDisplayHeight &&
 		    *py + Height >= scr_y1 && *py + Height <
-		    scr_y1 + Scr.XiMoveResistance)
+		    scr_y1 + fw->edge_resistance_xinerama_move)
 		{
 			*py = scr_y1 - Height;
 		}
 		/* snap to top edge */
-		else if (scr_y0 > 0 &&
-			 *py <= scr_y0 && scr_y0 - *py < Scr.XiMoveResistance)
+		else if (
+			scr_y0 > 0 &&
+			*py <= scr_y0 && scr_y0 - *py <
+			fw->edge_resistance_xinerama_move)
 		{
 			*py = scr_y0;
 		}
@@ -2402,7 +2406,7 @@ Bool __move_loop(
 			fev_get_last_event(&le);
 			rc = HandlePaging(
 				&le, dx, dy, &xl, &yt, &delta_x, &delta_y,
-				False, False, True);
+				False, False, True, fw->edge_delay_ms_move);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
@@ -2726,7 +2730,8 @@ Bool __move_loop(
 					HandlePaging(
 						&le, dx, dy, &xl, &yt,
 						&delta_x, &delta_y, False,
-						False, False);
+						False, False,
+						fw->edge_delay_ms_move);
 					if (delta_x)
 					{
 						x_virtual_offset = 0;
@@ -2946,97 +2951,46 @@ void CMD_HideGeometryWindow(F_CMD_ARGS)
 	return;
 }
 
-
 void CMD_SnapAttraction(F_CMD_ARGS)
 {
-	int val;
-	char *token;
+	char *cmd;
+	size_t len;
 
-	if (GetIntegerArguments(action, &action, &val, 1) != 1)
-	{
-		Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
-		Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
-		return;
-	}
-	Scr.SnapAttraction = val;
-	if (val < 0)
-	{
-		Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
-	}
-	if (val == 0)
-	{
-		return;
-	}
-
-	token = PeekToken(action, &action);
-	if (token == NULL)
-	{
-		return;
-	}
-
-	if (StrEquals(token,"All"))
-	{
-		Scr.SnapMode = SNAP_ICONS | SNAP_WINDOWS;
-	}
-	else if (StrEquals(token,"SameType"))
-	{
-		Scr.SnapMode = SNAP_SAME;
-	}
-	else if (StrEquals(token,"Icons"))
-	{
-		Scr.SnapMode = SNAP_ICONS;
-	}
-	else if (StrEquals(token,"Windows"))
-	{
-		Scr.SnapMode = SNAP_WINDOWS;
-	}
-	if (Scr.SnapMode == 0)
-	{
-		Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
-	}
-	else
-	{
-		token = PeekToken(action, &action);
-		if (token == NULL)
-		{
-			return;
-		}
-	}
-
-	if (StrEquals(token, "Screen"))
-	{
-		Scr.SnapMode |= SNAP_SCREEN;
-	}
-	else
-	{
-		fvwm_msg(ERR, "SetSnapAttraction", "Invalid argument: %s",
-			 token);
-	}
+	len = strlen(action);
+	len += 99;
+	cmd = safemalloc(len);
+	sprintf(cmd, "Style * SnapAttraction %s", action);
+	fvwm_msg(
+		OLD, "CMD_SnapAttraction",
+		"The command SnapAttraction is obsolete. Please use the"
+		" following command instead:");
+	fvwm_msg(OLD, "", cmd);
+	execute_function(
+		cond_rc, exc, cmd,
+		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+	free(cmd);
 
 	return;
 }
 
 void CMD_SnapGrid(F_CMD_ARGS)
 {
-	int val[2];
+	char *cmd;
+	size_t len;
 
-	if (GetIntegerArguments(action, NULL, &val[0], 2) != 2)
-	{
-		Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
-		Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
-		return;
-	}
-
-	Scr.SnapGridX = val[0];
-	if (Scr.SnapGridX < 1)
-	{
-		Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
-	}
-	Scr.SnapGridY = val[1];
-	if (Scr.SnapGridY < 1)
-	{
-		Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
-	}
+	len = strlen(action);
+	len += 99;
+	cmd = safemalloc(len);
+	sprintf(cmd, "Style * SnapGrid %s", action);
+	fvwm_msg(
+		OLD, "CMD_SnapGrid",
+		"The command SnapGrid is obsolete. Please use the following"
+		" command instead:");
+	fvwm_msg(OLD, "", cmd);
+	execute_function(
+		cond_rc, exc, cmd,
+		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+	free(cmd);
 
 	return;
 }
@@ -3824,7 +3778,7 @@ static Bool __resize_window(F_CMD_ARGS)
 		{
 			rc = HandlePaging(
 				&ev, dx, dy, &x, &y, &delta_x, &delta_y, False,
-				False, True);
+				False, True, fw->edge_delay_ms_resize);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
@@ -3973,7 +3927,8 @@ static Bool __resize_window(F_CMD_ARGS)
 				/* need to move the viewport */
 				HandlePaging(
 					&ev, dx, dy, &x, &y, &delta_x,
-					&delta_y, False, False, False);
+					&delta_y, False, False, False,
+					fw->edge_delay_ms_resize);
 			}
 			/* redraw outline if we paged - mab */
 			if (delta_x != 0 || delta_y != 0)

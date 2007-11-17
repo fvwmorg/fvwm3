@@ -539,6 +539,10 @@ typedef struct style_flags
 	unsigned has_color_back_hi : 1;
 	unsigned has_color_fore_hi : 1;
 	unsigned has_decor : 1;
+	unsigned has_edge_delay_ms_move : 1;
+	unsigned has_edge_delay_ms_resize : 1;
+	unsigned has_edge_resistance_move : 1;
+	unsigned has_edge_resistance_xinerama_move : 1;
 	unsigned has_handle_width : 1;
 	unsigned has_icon : 1;
 	unsigned has_icon_boxes : 1;
@@ -555,6 +559,8 @@ typedef struct style_flags
 	unsigned has_no_handles : 1;
 	unsigned has_no_title : 1;
 	unsigned has_ol_decor : 1;
+	unsigned has_snap_grid : 1;
+	unsigned has_snap_attraction : 1;
 #if 0
 	unsigned has_condition_mask : 1;
 #endif
@@ -655,6 +661,19 @@ typedef struct window_style
 	int max_window_width;
 	int max_window_height;
 	int shade_anim_steps;
+#if 1 /*!!!*/
+	/* attractiveness of window edges */
+	int snap_proximity;
+	/* mode of snap attraction */
+	int snap_mode;
+	/* snap grid size */
+	int snap_grid_x;
+	int snap_grid_y;
+	int edge_delay_ms_move;
+	int edge_delay_ms_resize;
+	int edge_resistance_move;
+	int edge_resistance_xinerama_move;
+#endif
 	icon_boxes *icon_boxes;
 	float norm_placement_penalty;
 	pl_penalty_struct pl_penalty;
@@ -874,6 +893,19 @@ typedef struct FvwmWindow
 	int max_window_height;
 	int shade_anim_steps;
 	unsigned char grabbed_buttons;
+#if 1 /*!!!*/
+	/* attractiveness of window edges */
+	int snap_proximity;
+	/* mode of snap attraction */
+	int snap_mode;
+	/* snap grid size */
+	int snap_grid_x;
+	int snap_grid_y;
+	int edge_delay_ms_move;
+	int edge_delay_ms_resize;
+	int edge_resistance_move;
+	int edge_resistance_xinerama_move;
+#endif
 
 #define FM_NO_INPUT        0
 #define FM_PASSIVE         1

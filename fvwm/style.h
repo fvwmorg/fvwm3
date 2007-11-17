@@ -3,6 +3,12 @@
 #ifndef _STYLE_
 #define _STYLE_
 
+#define SNAP_NONE    0x00
+#define SNAP_WINDOWS 0x01
+#define SNAP_ICONS   0x02
+#define SNAP_SAME    0x04
+#define SNAP_SCREEN  0x08
+
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */
 #define SDO_DECORATE_TRANSIENT(sf) \
@@ -567,6 +573,38 @@
 	((s).shade_anim_steps)
 #define SSET_WINDOW_SHADE_STEPS(s,x) \
 	((s).shade_anim_steps = (x))
+#define SGET_SNAP_PROXIMITY(s) \
+	((s).snap_proximity)
+#define SSET_SNAP_PROXIMITY(s,x) \
+	((s).snap_proximity = (x))
+#define SGET_SNAP_MODE(s) \
+	((s).snap_mode)
+#define SSET_SNAP_MODE(s,x) \
+	((s).snap_mode = (x))
+#define SGET_SNAP_GRID_X(s) \
+	((s).snap_grid_x)
+#define SSET_SNAP_GRID_X(s,x) \
+	((s).snap_grid_x = (x))
+#define SGET_SNAP_GRID_Y(s) \
+	((s).snap_grid_y)
+#define SSET_SNAP_GRID_Y(s,x) \
+	((s).snap_grid_y = (x))
+#define SGET_EDGE_DELAY_MS_MOVE(s) \
+	((s).edge_delay_ms_move)
+#define SSET_EDGE_DELAY_MS_MOVE(s,x) \
+	((s).edge_delay_ms_move = (x))
+#define SGET_EDGE_DELAY_MS_RESIZE(s) \
+	((s).edge_delay_ms_resize)
+#define SSET_EDGE_DELAY_MS_RESIZE(s,x) \
+	((s).edge_delay_ms_resize = (x))
+#define SGET_EDGE_RESISTANCE_MOVE(s) \
+	((s).edge_resistance_move)
+#define SSET_EDGE_RESISTANCE_MOVE(s,x) \
+	((s).edge_resistance_move = (x))
+#define SGET_EDGE_RESISTANCE_XINERAMA_MOVE(s) \
+	((s).edge_resistance_xinerama_move)
+#define SSET_EDGE_RESISTANCE_XINERAMA_MOVE(s,x) \
+	((s).edge_resistance_xinerama_move = (x))
 #define SGET_ICON_BOXES(s) \
 	((s).icon_boxes)
 #define SSET_ICON_BOXES(s,x) \

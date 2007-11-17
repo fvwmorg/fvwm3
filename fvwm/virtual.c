@@ -46,6 +46,7 @@
 #include "geometry.h"
 #include "icons.h"
 #include "stack.h"
+#include "functions.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -628,7 +629,7 @@ static void MapDesk(int desk, Bool grab)
 int HandlePaging(
 	XEvent *pev, int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
-	Bool do_continue_previous)
+	Bool do_continue_previous, int delay)
 {
 	static int add_time = 0;
 	int x,y;
@@ -661,8 +662,7 @@ int HandlePaging(
 			return -1;
 		}
 	}
-	if (Scr.ScrollResistance >= 10000 ||
-	    (HorWarpSize == 0 && VertWarpSize==0))
+	if (delay < 0 || (HorWarpSize == 0 && VertWarpSize==0))
 	{
 		is_timestamp_valid = False;
 		add_time = 0;
@@ -746,11 +746,9 @@ int HandlePaging(
 		is_last_position_valid = True;
 		usleep(10000);
 		add_time += 10;
-	} while (fLoop &&
-		 fev_get_evtime() - my_timestamp + add_time <
-		 Scr.ScrollResistance);
+	} while (fLoop && fev_get_evtime() - my_timestamp + add_time < delay);
 
-	if (fev_get_evtime() - my_timestamp + add_time < Scr.ScrollResistance)
+	if (fev_get_evtime() - my_timestamp + add_time < delay)
 	{
 		return 0;
 	}
@@ -1988,16 +1986,63 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 	int val[3];
 	int n;
 
+	val[0] = 0;
 	n = GetIntegerArguments(action, NULL, val, 3);
-	if (n < 2 || n > 3)
+       	if (n > 1 && val[0] >= 10000)
 	{
-		fvwm_msg(ERR, "SetEdgeResistance",
-			 "EdgeResistance requires two or three arguments");
+		/* map val[0] >= 10000 in old syntax to -1 in new syntax */
+		val[0] = -1;
+	}
+	if (n == 1)
+	{
+		Scr.ScrollDelay = val[0];
+	}
+	else if (n >= 2 && n <= 3)
+	{
+		char cmd[99];
+		char stylecmd[99];
+		char stylecmd2[99];
+
+		Scr.ScrollDelay = val[0];
+		sprintf(cmd, "EdgeResistance %d", val[0]);
+		sprintf(stylecmd, "Style * EdgeMoveDelay %d", val[0]);
+		if (n == 2)
+		{
+			sprintf(
+				stylecmd2, "Style * EdgeMoveResistance %d",
+				val[1]);
+		}
+		else
+		{
+			sprintf(
+				stylecmd2, "Style * EdgeMoveResistance %d %d",
+				val[1], val[2]);
+		}
+		fvwm_msg(
+			OLD, "CMD_EdgeResistance",
+			"The command EdgeResistance with three arguments is"
+			" obsolete. Please use the following commands"
+			" instead:");
+		fvwm_msg(OLD, "", cmd);
+		fvwm_msg(OLD, "", stylecmd);
+		fvwm_msg(OLD, "", stylecmd2);
+		execute_function(
+			cond_rc, exc, cmd,
+			FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+		execute_function(
+			cond_rc, exc, stylecmd,
+			FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+		execute_function(
+			cond_rc, exc, stylecmd2,
+			FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+	}
+	else
+	{
+		fvwm_msg(
+			ERR, "CMD_EdgeResistance",
+			"EdgeResistance requires two or three arguments");
 		return;
 	}
-	Scr.ScrollResistance = val[0];
-	Scr.MoveResistance = val[1];
-	Scr.XiMoveResistance = (n < 3) ? val[1] : val[2];
 
 	return;
 }

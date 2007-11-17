@@ -59,7 +59,7 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMAN
 		--stringparam section.autolabel 1 \
 		-o $@ $(XSL_FILE) fvwm.man.html.tmp && rm fvwm.man.html.tmp
 
-fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE)
+fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE) @DOC_COMMANDS_XML_PATH@
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		--stringparam profile.attribute output \

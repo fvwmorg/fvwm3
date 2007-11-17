@@ -256,9 +256,9 @@
 /* Don't page if the pointer has moved for more than this many pixels between
  * two samples */
 #define MAX_PAGING_MOVE_DISTANCE           5 /* pixels */
-#define DEFAULT_MOVE_RESISTANCE            0 /* ms */
-#define DEFAULT_XIMOVE_RESISTANCE          0 /* pixels */
-#define DEFAULT_SCROLL_RESISTANCE          0 /* ms */
+#define DEFAULT_MOVE_DELAY                 0 /* ms */
+#define DEFAULT_RESIZE_DELAY               -1 /* pixels */
+#define DEFAULT_SCROLL_DELAY               0 /* ms */
 
 /*** layers ***/
 #define DEFAULT_BOTTOM_LAYER               2

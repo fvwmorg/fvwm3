@@ -60,7 +60,9 @@ if the mouse pointer enters the top edge of the screen.</para>
 <programlisting>
 # Disable EdgeScrolling but make it possible
 # to move windows over the screen edge
-<fvwmref cmd="EdgeResistance"/> 10000 20
+<fvwmref cmd="EdgeResistance"/> -1
+<fvwmref cmd="Style"/> * EdgeMoveDelay 250
+<fvwmref cmd="Style"/> * EdgeMoveResistance 20
 
 # Set thickness of the edge of the screen to 1
 <fvwmref cmd="EdgeThickness"/> 1

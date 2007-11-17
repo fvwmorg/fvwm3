@@ -23,40 +23,8 @@
 </cmdsynopsis>
 <!--/command-->
 
-
-<para>If during an interactive move the window or icon comes within
-<replaceable>proximity</replaceable>
-pixels of another the window or icon, it is moved to make the
-borders adjoin.  The default of 0 means that no snapping happens.
-Calling this command without arguments turns off snap attraction
-and restores the default behavior.  Please refer also to the
-<fvwmref cmd="SnapGrid"/>
-command.</para>
-
-<para>The
-<replaceable>behavior</replaceable>
-argument is optional and may be set to one of the four following
-values:  With
-<fvwmopt cmd="SnapAttraction" opt="All"/>
-both icons and windows snap to other windows and other icons.
-<fvwmopt cmd="SnapAttraction" opt="SameType"/>
-lets snap windows only to other windows and icons only to other
-icons. With
-<fvwmopt cmd="SnapAttraction" opt="Windows"/>
-windows snap only to other windows.  Icons do not snap. Similarly
-with
-<fvwmopt cmd="SnapAttraction" opt="Icons"/>
-icons snap to only other icons and windows do not snap.</para>
-
-<para>If the
-<replaceable>behavior</replaceable>
-option is not given, the snapping behavior is not changed.  The
-default behavior is
-<emphasis remap='I'>All</emphasis>.</para>
-
-<para>If the
-<fvwmopt cmd="SnapAttraction" opt="Screen"/>
-option is present windows and or icons are snapped to the screen
-edges too.</para>
+<para>The <fvwmref cmd="SnapAttraction"/> command is obsolete.  It has
+been replaced by the <fvwmref cmd="Style"/> command option
+<fvwmref cmd="Style" opt = "SnapAttraction"/>.</para>
 
 </section>

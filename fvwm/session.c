@@ -176,15 +176,14 @@ SaveGlobalState(FILE *f)
 	fprintf(f, "  [DESKTOP] %i\n", Scr.CurrentDesk);
 	fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
 		Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
-	fprintf(f, "  [SCROLL] %i %i %i %i %i %i\n",
-		Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollResistance,
-		Scr.MoveResistance,
+	fprintf(f, "  [SCROLL] %i %i %i %i %i\n",
+		Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollDelay,
 		!!(Scr.flags.do_edge_wrap_x), !!(Scr.flags.do_edge_wrap_y));
-	fprintf(f, "  [SNAP] %i %i %i %i\n",
-		Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
 	fprintf(f, "  [MISC] %i %i %i\n",
 		Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
-	fprintf(f, "  [STYLE] %i %i\n", Scr.gs.do_emulate_mwm, Scr.gs.do_emulate_win);
+	fprintf(
+		f, "  [STYLE] %i %i\n", Scr.gs.do_emulate_mwm,
+		Scr.gs.do_emulate_win);
 
 	return 1;
 }
@@ -1113,7 +1112,7 @@ LoadGlobalState(char *filename)
 	FILE *f;
 	char s[4096], s1[4096];
 	/* char s2[256]; */
-	int i1, i2, i3, i4, i5, i6;
+	int i1, i2, i3, i4, i5;
 
 	if (!does_file_version_match)
 	{
@@ -1130,7 +1129,11 @@ LoadGlobalState(char *filename)
 
 	while (fgets(s, sizeof(s), f))
 	{
-		i1 = 0; i2 = 0; i3 = 0; i4 = 0; i5 = 0; i6 = 0;
+		i1 = 0;
+		i2 = 0;
+		i3 = 0;
+		i4 = 0;
+		i5 = 0;
 		sscanf(s, "%4000s", s1);
 		/* If we are restarting, [REAL_STATE_FILENAME] points
 		 * to the file containing the true session state. */
@@ -1170,13 +1173,12 @@ LoadGlobalState(char *filename)
 			 * changed rc files. */
 			if (!strcmp(s1, "[SCROLL]"))
 			{
-				sscanf(s, "%*s %i %i %i %i %i %i", &i1,
-				       &i2, &i3, &i4, &i5, &i6);
+				sscanf(s, "%*s %i %i %i %i %i", &i1,
+				       &i2, &i3, &i4, &i5);
 				Scr.EdgeScrollX = i1;
 				Scr.EdgeScrollY = i2;
-				Scr.ScrollResistance = i3;
-				Scr.MoveResistance = i4;
-				if (i5)
+				Scr.ScrollDelay = i3;
+				if (i4)
 				{
 					Scr.flags.edge_wrap_x = 1;
 				}
@@ -1184,7 +1186,7 @@ LoadGlobalState(char *filename)
 				{
 					Scr.flags.edge_wrap_x = 0;
 				}
-				if (i6)
+				if (i3)
 				{
 					Scr.flags.edge_wrap_y = 1;
 				}
@@ -1192,15 +1194,6 @@ LoadGlobalState(char *filename)
 				{
 					Scr.flags.edge_wrap_y = 0;
 				}
-			}
-			else if (!strcmp(s1, "[SNAP]"))
-			{
-				sscanf(s, "%*s %i %i %i %i", &i1, &i2,
-				       &i3, &i4);
-				Scr.SnapAttraction = i1;
-				Scr.SnapMode = i2;
-				Scr.SnapGridX = i3;
-				Scr.SnapGridY = i4;
 			}
 			else if (!strcmp(s1, "[MISC]"))
 			{

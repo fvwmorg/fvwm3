@@ -1,3 +1,20 @@
+2007-11-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/xinerama.xml:
+	* commands/Style.xml:
+	* commands/SnapAttraction.xml:
+	* commands/SnapGrid.xml:
+	* commands/EdgeResistance.xml:
+	document new styles SnapGrid, SnapAttraction, EdgeMoveDelay,
+	EdgeMoveResistance and EdgeResizeDelay.
+
+	* fvwm/Makefile.am:
+	fixed build dependencies for fvwm.1
+
+	* docbook-xsl/manpages/charmap.groff.xsl:
+	replaced multiple exclamation marks in comments with pluses (I use
+	three exclamation marks are used to marked unfinished code)
+
 2007-09-01  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm.xsl:

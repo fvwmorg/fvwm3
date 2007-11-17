@@ -2154,7 +2154,8 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			e = *te;
 			HandlePaging(
 				&e, Scr.EdgeScrollX, Scr.EdgeScrollY, &JunkX,
-				&JunkY, &delta_x, &delta_y, True, True, False);
+				&JunkY, &delta_x, &delta_y, True, True, False,
+				Scr.ScrollDelay);
 			return;
 		}
 	}

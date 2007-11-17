@@ -22,12 +22,14 @@
 
 void setup_visible_name(FvwmWindow *fw, Bool is_icon);
 void setup_wm_hints(FvwmWindow *fw);
+void setup_snapping(FvwmWindow *fw, window_style *pstyle);
 void setup_placement_penalty(FvwmWindow *fw, window_style *pstyle);
 void setup_focus_policy(FvwmWindow *fw);
 Bool setup_transientfor(FvwmWindow *fw);
 void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle);
 void setup_icon_background_parameters(FvwmWindow *fw, window_style *pstyle);
 void setup_icon_title_parameters(FvwmWindow *fw, window_style *pstyle);
+void setup_numeric_vals(FvwmWindow *fw, window_style *pstyle);
 Bool validate_transientfor(FvwmWindow *fw);
 void setup_title_geometry(
 	FvwmWindow *fw, window_style *pstyle);

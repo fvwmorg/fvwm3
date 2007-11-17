@@ -561,6 +561,41 @@ static void merge_styles(
 		SSET_WINDOW_SHADE_STEPS(
 			*merged_style, SGET_WINDOW_SHADE_STEPS(*add_style));
 	}
+	if (add_style->flags.has_snap_attraction)
+	{
+		SSET_SNAP_PROXIMITY(
+			*merged_style, SGET_SNAP_PROXIMITY(*add_style));
+		SSET_SNAP_MODE(
+			*merged_style, SGET_SNAP_MODE(*add_style));
+	}
+	if (add_style->flags.has_snap_grid)
+	{
+		SSET_SNAP_GRID_X(
+			*merged_style, SGET_SNAP_GRID_X(*add_style));
+		SSET_SNAP_GRID_Y(
+			*merged_style, SGET_SNAP_GRID_Y(*add_style));
+	}
+	if (add_style->flags.has_edge_delay_ms_move)
+	{
+		SSET_EDGE_DELAY_MS_MOVE(
+			*merged_style, SGET_EDGE_DELAY_MS_MOVE(*add_style));
+	}
+	if (add_style->flags.has_edge_delay_ms_resize)
+	{
+		SSET_EDGE_DELAY_MS_RESIZE(
+			*merged_style, SGET_EDGE_DELAY_MS_RESIZE(*add_style));
+	}
+	if (add_style->flags.has_edge_resistance_move)
+	{
+		SSET_EDGE_RESISTANCE_MOVE(
+			*merged_style, SGET_EDGE_RESISTANCE_MOVE(*add_style));
+	}
+	if (add_style->flags.has_edge_resistance_xinerama_move)
+	{
+		SSET_EDGE_RESISTANCE_XINERAMA_MOVE(
+			*merged_style,
+			SGET_EDGE_RESISTANCE_XINERAMA_MOVE(*add_style));
+	}
 
 	/* Note:  Only one style cmd can define a window's iconboxes, the last
 	 * one encountered. */
@@ -2442,6 +2477,80 @@ static Bool style_parse_one_style_option(
 			S_SET_USE_INDEXED_ICON_NAME(SCM(*ps), 1);
 			S_SET_USE_INDEXED_ICON_NAME(SCC(*ps), 1);
 		}
+		else if (StrEquals(token, "EdgeMoveResistance"))
+		{
+			int num;
+			unsigned has_move;
+			unsigned has_xinerama_move;
+
+			num = GetIntegerArguments(rest, &rest, val, 2);
+			if (num == 1)
+			{
+				has_move = 1;
+				has_xinerama_move = 0;
+			}
+			else if (num == 2)
+			{
+				has_move = 1;
+				has_xinerama_move = 1;
+			}
+			else
+			{
+				val[0] = 0;
+				val[1] = 0;
+				has_move = 0;
+				has_xinerama_move = 0;
+			}
+			if (val[0] < 0)
+			{
+				val[0] = 0;
+			}
+			if (val[1] < 0)
+			{
+				val[1] = 0;
+			}
+			ps->flags.has_edge_resistance_move = has_move;
+			ps->flag_mask.has_edge_resistance_move = 1;
+			ps->change_mask.has_edge_resistance_move = 1;
+			SSET_EDGE_RESISTANCE_MOVE(*ps, val[0]);
+			ps->flags.has_edge_resistance_xinerama_move =
+				has_xinerama_move;
+			ps->flag_mask.has_edge_resistance_xinerama_move = 1;
+			ps->change_mask.has_edge_resistance_xinerama_move = 1;
+			SSET_EDGE_RESISTANCE_XINERAMA_MOVE(*ps, val[1]);
+		}
+		else if (StrEquals(token, "EdgeMoveDelay"))
+		{
+			if (GetIntegerArguments(rest, &rest, val, 1))
+			{
+				SSET_EDGE_DELAY_MS_MOVE(*ps, (short)*val);
+				ps->flags.has_edge_delay_ms_move = 1;
+				ps->flag_mask.has_edge_delay_ms_move = 1;
+				ps->change_mask.has_edge_delay_ms_move = 1;
+			}
+			else
+			{
+				ps->flags.has_edge_delay_ms_move = 0;
+				ps->flag_mask.has_edge_delay_ms_move = 1;
+				ps->change_mask.has_edge_delay_ms_move = 1;
+			}
+		}
+		else if (StrEquals(token, "EdgeResizeDelay"))
+		{
+			if (GetIntegerArguments(rest, &rest, val, 1))
+			{
+				SSET_EDGE_DELAY_MS_RESIZE(*ps, (short)*val);
+				ps->flags.has_edge_delay_ms_resize = 1;
+				ps->flag_mask.has_edge_delay_ms_resize = 1;
+				ps->change_mask.has_edge_delay_ms_resize = 1;
+			}
+			else
+			{
+				ps->flags.has_edge_delay_ms_resize = 0;
+				ps->flag_mask.has_edge_delay_ms_resize = 1;
+				ps->change_mask.has_edge_delay_ms_resize = 1;
+			}
+		}
 		else
 		{
 			found = EWMH_CMD_Style(token, ps, on);
@@ -3885,6 +3994,92 @@ static Bool style_parse_one_style_option(
 					ERR,"style_parse_one_style_option",
 					"bad State arg: %s", rest);
 			}
+		}
+		else if (StrEquals(token, "SnapAttraction"))
+		{
+			int val;
+			char *token;
+			int snap_proximity;
+			int snap_mode;
+
+			do
+			{
+				snap_proximity = DEFAULT_SNAP_ATTRACTION;
+				snap_mode = DEFAULT_SNAP_ATTRACTION_MODE;
+				if (
+					GetIntegerArguments(
+						rest, &rest, &val, 1) != 1)
+				{
+					break;
+				}
+				if (val >= 0)
+				{
+					snap_proximity = val;
+				}
+				if (val == 0)
+				{
+					break;
+				}
+				token = PeekToken(rest, &rest);
+				if (token == NULL)
+				{
+					break;
+				}
+				if (StrEquals(token, "All"))
+				{
+					snap_mode = SNAP_ICONS | SNAP_WINDOWS;
+				}
+				else if (StrEquals(token, "SameType"))
+				{
+					snap_mode = SNAP_SAME;
+				}
+				else if (StrEquals(token, "Icons"))
+				{
+					snap_mode = SNAP_ICONS;
+				}
+				else if (StrEquals(token, "Windows"))
+				{
+					snap_mode = SNAP_WINDOWS;
+				}
+				token = PeekToken(rest, &rest);
+				if (token == NULL)
+				{
+					break;
+				}
+				if (StrEquals(token, "Screen"))
+				{
+					snap_mode |= SNAP_SCREEN;
+				}
+			} while (0);
+			ps->flags.has_snap_attraction = 1;
+			ps->flag_mask.has_snap_attraction = 1;
+			ps->change_mask.has_snap_attraction = 1;
+			SSET_SNAP_PROXIMITY(*ps, snap_proximity);
+			SSET_SNAP_MODE(*ps, snap_mode);
+		}
+		else if (StrEquals(token, "SnapGrid"))
+		{
+			int num;
+
+			num = GetIntegerArguments(rest, &rest, val, 2);
+			if (num != 2)
+			{
+				val[0] = DEFAULT_SNAP_GRID_X;
+				val[1] = DEFAULT_SNAP_GRID_Y;
+			}
+			if (val[0] < 0)
+			{
+				val[0] = DEFAULT_SNAP_GRID_X;
+			}
+			if (val[1] < 0)
+			{
+				val[1] = DEFAULT_SNAP_GRID_Y;
+			}
+			ps->flags.has_snap_grid = 1;
+			ps->flag_mask.has_snap_grid = 1;
+			ps->change_mask.has_snap_grid = 1;
+			SSET_SNAP_GRID_X(*ps, val[0]);
+			SSET_SNAP_GRID_Y(*ps, val[1]);
 		}
 		else
 		{

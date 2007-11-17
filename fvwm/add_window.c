@@ -791,6 +791,39 @@ void setup_icon_title_parameters(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
+void setup_numeric_vals(FvwmWindow *fw, window_style *pstyle)
+{
+	/****** window shading ******/
+	fw->shade_anim_steps = pstyle->shade_anim_steps;
+
+	/****** snapattraction, snapgrid, paging ******/
+	fw->snap_proximity = pstyle->snap_proximity;
+	fw->snap_mode = pstyle->snap_mode;
+	fw->snap_grid_x = pstyle->snap_grid_x;
+	fw->snap_grid_y = pstyle->snap_grid_y;
+	if (pstyle->flags.has_edge_delay_ms_move)
+	{
+		fw->edge_delay_ms_move = pstyle->edge_delay_ms_move;
+	}
+	else
+	{
+		fw->edge_delay_ms_move = DEFAULT_MOVE_DELAY;
+	}
+	if (pstyle->flags.has_edge_delay_ms_resize)
+	{
+		fw->edge_delay_ms_resize = pstyle->edge_delay_ms_resize;
+	}
+	else
+	{
+		fw->edge_delay_ms_resize = DEFAULT_RESIZE_DELAY;
+	}
+	fw->edge_resistance_move = pstyle->edge_resistance_move;
+	fw->edge_resistance_xinerama_move =
+		pstyle->edge_resistance_xinerama_move;
+
+	return;
+}
+
 static void setup_frame_window(
 	FvwmWindow *fw)
 {
@@ -1820,8 +1853,8 @@ void setup_style_and_decor(
 	setup_icon_background_parameters(fw, pstyle);
 	setup_icon_title_parameters(fw, pstyle);
 
-	/****** window shading ******/
-	fw->shade_anim_steps = pstyle->shade_anim_steps;
+	/****** some numeric values ******/
+	setup_numeric_vals(fw, pstyle);
 
 	/****** GNOME style hints ******/
 	if (!S_DO_IGNORE_GNOME_HINTS(SCF(*pstyle)))
