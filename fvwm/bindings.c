@@ -229,6 +229,7 @@ static void __rebind_global_key(Binding **pblist, int Button_Key)
 		    (BIND_IS_PKEY_BINDING(b->type) || b->Context == C_ALL))
 		{
 			activate_binding(b, b->type, True);
+
 			return;
 		}
 	}
@@ -265,7 +266,9 @@ static int ParseBinding(
 	if (p == NULL)
 	{
 		fvwm_msg(
-			ERR, "ParseBinding", "empty %s binding, ignored\n",tline);
+			ERR, "ParseBinding", "empty %s binding, ignored\n",
+			tline);
+
 		return 0;
 	}
 	if (*p == '(')
@@ -284,6 +287,7 @@ static int ParseBinding(
 						"Syntax error in line %s -"
 						" missing ')'", tline);
 				}
+
 				return 0;
 			}
 			++p;
@@ -299,6 +303,7 @@ static int ParseBinding(
 					"Syntax error in line %s - trailing"
 					" text after specified window", tline);
 			}
+
 			return 0;
 		}
 		token = PeekToken(ptr, &ptr);
@@ -390,7 +395,8 @@ static int ParseBinding(
 						" this button.  To suppress"
 						" this warning, use:\n"
 						"  Silent Mouse %s", button,
-						NUMBER_OF_MOUSE_BUTTONS, tline);
+						NUMBER_OF_MOUSE_BUTTONS,
+						tline);
 				}
 			}
 		}
@@ -482,9 +488,13 @@ static int ParseBinding(
 				/* It doesn't make sense to have a pass-through
 				 * action on global bindings. */
 				if (!is_silent)
-					fvwm_msg(ERR, "ParseBinding",
-						 "Illegal action for global "
-						 "binding: %s", tline);
+				{
+					fvwm_msg(
+						ERR, "ParseBinding",
+						"Invalid action for global "
+						"binding: %s", tline);
+				}
+
 				return 0;
 			}
 		}
@@ -498,10 +508,12 @@ static int ParseBinding(
 	/* short circuit menu bindings for now. */
 	if ((context & C_MENU) == C_MENU)
 	{
-		menu_binding(dpy, type, button, keysym, context,
-				    modifier, action, windowName);
+		menu_binding(
+			dpy, type, button, keysym, context, modifier, action,
+			windowName);
 		/* ParseBinding returns the number of new bindings in pblist
 		 * menu bindings does not add to pblist, and should return 0 */
+
 		return 0;
 	}
 	/* short circuit placement bindings for now. */
@@ -511,6 +523,7 @@ static int ParseBinding(
 		/* ParseBinding returns the number of new bindings in pblist
 		 * placement bindings does not add to pblist, and should
 		 * return 0 */
+
 		return 0;
 	}
 	/*
@@ -536,7 +549,8 @@ static int ParseBinding(
 			}
 			if (rc)
 			{
-				__rebind_global_key(pblist, rmlist->Button_Key);
+				__rebind_global_key(
+					pblist, rmlist->Button_Key);
 			}
 		}
 		FreeBindingList(rmlist);
@@ -567,9 +581,11 @@ static int ParseBinding(
 			" ignored.");
 		modifier = AnyModifier;
 	}
-	if ((BIND_IS_MOUSE_BINDING(type) ||
-	     (BIND_IS_STROKE_BINDING(type) && button != 0)) &&
-	    (context & (C_WINDOW | C_EWMH_DESKTOP)) && buttons_grabbed != NULL)
+	if (
+		(BIND_IS_MOUSE_BINDING(type) ||
+		 (BIND_IS_STROKE_BINDING(type) && button != 0)) &&
+		(context & (C_WINDOW | C_EWMH_DESKTOP)) &&
+		buttons_grabbed != NULL)
 	{
 		if (button == 0)
 		{
@@ -604,8 +620,9 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 		Scr.flags.has_mouse_binding_changed = 1;
 		Scr.buttons2grab = btg;
 	}
-	for (b = Scr.AllBindings; count > 0 && b != NULL;
-	     count--, b = b->NextBinding)
+	for (
+		b = Scr.AllBindings; count > 0 && b != NULL;
+		count--, b = b->NextBinding)
 	{
 		activate_binding(b, type, True);
 	}

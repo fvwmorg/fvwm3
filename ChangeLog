@@ -1,3 +1,8 @@
+2007-11-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/bindings.c:
+	reindented some code
+
 2007-11-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/update.c (apply_window_updates):
