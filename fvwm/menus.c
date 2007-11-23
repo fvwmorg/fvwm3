@@ -4219,6 +4219,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		case MENU_DOUBLE_CLICKED:
 		case MENU_TEAR_OFF:
 		case MENU_KILL_TEAR_OFF_MENU:
+		case MENU_EXEC_CMD:
 			return MENU_MLOOP_RET_END;
 		case MENU_POPUP:
 			/* Allow for MoveLeft/MoveRight action to work with
@@ -4230,8 +4231,7 @@ static mloop_ret_code_t __mloop_handle_event(
 			return MENU_MLOOP_RET_NORMAL;
 		case MENU_SELECTED:
 			in->mif.was_item_unposted = 0;
-			if (pmret->flags.is_menu_posted &&
-			    med->mrMi != NULL)
+			if (pmret->flags.is_menu_posted && med->mrMi != NULL)
 			{
 				if (pmret->flags.do_unpost_submenu)
 				{
@@ -4338,8 +4338,8 @@ static mloop_ret_code_t __mloop_handle_event(
 		default:
 			break;
 		}
-
 		pdkp->timestamp = 0;
+
 		return MENU_MLOOP_RET_END;
 
 	case ButtonPress:
@@ -4448,6 +4448,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		case MENU_DOUBLE_CLICKED:
 		case MENU_TEAR_OFF:
 		case MENU_KILL_TEAR_OFF_MENU:
+		case MENU_EXEC_CMD:
 			return MENU_MLOOP_RET_END;
 		case MENU_NEWITEM:
 		case MENU_POPUP:
@@ -5317,22 +5318,29 @@ static void __mloop_exit_select_in_place(
 }
 
 static void __mloop_exit_selected(
-	MenuParameters *pmp, MenuReturn *pmret,
-	mloop_evh_data_t *med, MenuOptions *pops)
+	MenuParameters *pmp, MenuReturn *pmret, mloop_evh_data_t *med,
+	MenuOptions *pops)
 {
-	/* save action to execute so that the menu may be destroyed
-	 * now */
+	/* save action to execute so that the menu may be destroyed now */
 	if (pmp->ret_paction)
 	{
-		if (*pmp->ret_paction)
+		if (pmret->rc == MENU_EXEC_CMD)
 		{
-			free(*pmp->ret_paction);
+			*pmp->ret_paction = safestrdup(*pmp->ret_paction);
 		}
-		*pmp->ret_paction = (med->mi) ?
-			safestrdup(MI_ACTION(med->mi)) : NULL;
+		else
+		{
+			if (*pmp->ret_paction)
+			{
+				free(*pmp->ret_paction);
+			}
+			*pmp->ret_paction = (med->mi) ?
+				safestrdup(MI_ACTION(med->mi)) : NULL;
+		}
 	}
-	if (pmp->ret_paction && *pmp->ret_paction && med->mi &&
-	    MI_IS_POPUP(med->mi))
+	if (
+		pmp->ret_paction && *pmp->ret_paction &&
+		med->mi && MI_IS_POPUP(med->mi))
 	{
 		get_popup_options(pmp, med->mi, pops);
 		if (pops->flags.do_select_in_place)
@@ -5365,14 +5373,16 @@ static void __mloop_exit(
 		pop_menu_down_and_repaint_parent(&in->mrPopdown, &no, pmp);
 		MR_SUBMENU_ITEM(pmp->menu) = NULL;
 	}
-	if (pmret->rc == MENU_SELECTED && is_double_click(
-		    msi->t0, med->mi, pmp, pmret, pdkp,
-		    in->mif.has_mouse_moved))
+	if (
+		pmret->rc == MENU_SELECTED && is_double_click(
+			msi->t0, med->mi, pmp, pmret, pdkp,
+			in->mif.has_mouse_moved))
 	{
 		pmret->rc = MENU_DOUBLE_CLICKED;
 	}
-	if (pmret->rc == MENU_SELECTED && med->mi &&
-	    MI_FUNC_TYPE(med->mi) == F_TEARMENUOFF)
+	if (
+		pmret->rc == MENU_SELECTED && med->mi &&
+		MI_FUNC_TYPE(med->mi) == F_TEARMENUOFF)
 	{
 		pmret->rc = (MR_IS_TEAR_OFF_MENU(pmp->menu)) ?
 			MENU_KILL_TEAR_OFF_MENU : MENU_TEAR_OFF;
@@ -5403,10 +5413,10 @@ static void __mloop_exit(
 		do_deselect = True;
 		break;
 	case MENU_SELECTED:
+	case MENU_EXEC_CMD:
 		__mloop_exit_selected(pmp, pmret, med, pops);
 		pmret->rc = MENU_DONE;
 		break;
-
 	default:
 		break;
 	}
@@ -5462,6 +5472,7 @@ static void __menu_loop(
 		{
 		case MENU_MLOOP_RET_END:
 			is_finished = True;
+			continue;
 		case MENU_MLOOP_RET_LOOP:
 			continue;
 		default:

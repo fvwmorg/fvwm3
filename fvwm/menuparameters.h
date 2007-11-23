@@ -40,6 +40,7 @@ typedef enum MenuRC
 	MENU_TEAR_OFF,
 	MENU_SUBMENU_TORN_OFF,
 	MENU_KILL_TEAR_OFF_MENU,
+	MENU_EXEC_CMD,
 	/* propagate the event to a different menu */
 	MENU_PROPAGATE_EVENT
 } MenuRC;

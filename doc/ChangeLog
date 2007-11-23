@@ -1,3 +1,8 @@
+2007-11-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menus.xml:
+	document MenuCloseAndExec
+
 2007-11-17  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/xinerama.xml:

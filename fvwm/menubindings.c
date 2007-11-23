@@ -196,7 +196,7 @@ static Binding *__menu_binding_is_mouse(
 
 static void parse_menu_action(
 	struct MenuRoot *mr, const char *action, menu_shortcut_action *saction,
-	int *items_to_move, int *do_skip_section)
+	int *items_to_move, int *do_skip_section, char **ret_cmd)
 {
 	char *optlist[] = {
 		"MenuClose",
@@ -209,6 +209,7 @@ static void parse_menu_action(
 		"MenuSelectItem",
 		"MenuScroll",
 		"MenuTearOff",
+		"MenuCloseAndExec",
 		NULL
 	};
 	int index;
@@ -217,6 +218,7 @@ static void parse_menu_action(
 	int suffix[2];
 	int count[2];
 
+	*ret_cmd = NULL;
 	options = GetNextTokenIndex((char *)action, optlist, 0, &index);
 	switch (index)
 	{
@@ -320,9 +322,14 @@ static void parse_menu_action(
 	case 9: /* MenuTearOff */
 		*saction = SA_TEAROFF;
 		break;
+	case 10: /* MenuCloseAndExecute */
+		*saction = SA_EXEC_CMD;
+		*ret_cmd = options;
+		break;
 	default:
-		fvwm_msg(ERR, "parse_menu_action", "unknown action '%s'",
-				 action);
+		fvwm_msg(
+			ERR, "parse_menu_action", "unknown action '%s'",
+			action);
 		*saction = SA_NONE;
 	}
 
@@ -496,6 +503,7 @@ void menu_shortcuts(
 	Binding *binding;
 	int context;
 	int is_geometry_known;
+	char *command;
 
 	ckeychar = 0;
 	new_item = NULL;
@@ -505,6 +513,7 @@ void menu_shortcuts(
 	context = C_MENU;
 	is_geometry_known = 0;
 	context = C_MENU;
+	command = 0;
 	if (mi_current)
 	{
 		if (MI_IS_TITLE(mi_current))
@@ -612,7 +621,7 @@ void menu_shortcuts(
 		{
 			parse_menu_action(
 				mr, binding->Action, &saction, &items_to_move,
-				&do_skip_section);
+				&do_skip_section, &command);
 		}
 		index = 0;
 		ikeychar = 0;
@@ -742,7 +751,7 @@ void menu_shortcuts(
 		{
 			parse_menu_action(
 				mr, binding->Action, &saction, &items_to_move,
-				&do_skip_section);
+				&do_skip_section, &command);
 		}
 	}
 
@@ -1081,6 +1090,10 @@ void menu_shortcuts(
 		{
 			pmret->rc = MENU_NOP;
 		}
+		break;
+	case SA_EXEC_CMD:
+		pmret->rc = MENU_EXEC_CMD;
+		*pmp->ret_paction = command;
 		break;
 	case SA_NONE:
 	default:

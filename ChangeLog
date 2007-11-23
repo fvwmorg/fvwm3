@@ -1,5 +1,9 @@
 2007-11-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/menus.c (__mloop_exit):
+	* fvwm/menubindings.c (parse_menu_action):
+	* fvwm/menubindings.h:
+
 	* fvwm/menubindings.h:
 	* fvwm/menubindings.c:
 	* fvwm/bindings.c:
@@ -50,7 +54,7 @@
 2007-09-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/virtual.c (HandlePaging):
-	dont't modify *xl and *yt unless we we really page
+	don't modify *xl and *yt unless we we really page
 
 2007-09-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 

@@ -5,13 +5,6 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.24 (not released yet)
 
-* Bug Fixes:
-
-   - Sometimes a window jumped by half the screen's size when
-     moving with the mouse and hitting the border of the desktop.
-   - Fixed the "screen w" argument of the Move and other commands.
-   - Clicking on a menu title did not close the menu by default.
-
 * New features:
 
    - Disabled paging during interactive resize operations by
@@ -25,6 +18,19 @@ Changes in beta release 2.5.24 (not released yet)
      that replace the now obsolete commands EdgeResistance,
      SnapGrid and SnapAttraction.  The EdgeResistance command has
      a new syntax with only one argument.
+   - New command MenuCloseAndExec for menu bindinngs that can be
+     used to trigger certain commands from a menu without an
+     associated item.  For example, with
+       Key F1 MTI[]-_ A MenuCloseAndExec Menu RootMenu
+     the RootMenu can be opened from any other menu by pressing
+     F1.
+
+* Bug Fixes:
+
+   - Sometimes a window jumped by half the screen's size when
+     moving with the mouse and hitting the border of the desktop.
+   - Fixed the "screen w" argument of the Move and other commands.
+   - Clicking on a menu title did not close the menu by default.
 
 -------------------------------------------------------------------
 

@@ -272,6 +272,7 @@ border including a right sidepic, '-' for top border, '_' for bottom
 border.  The menu context uses its own set of actions that can be bound
 to keys and mouse buttons.  These are
 <emphasis remap='I'>MenuClose</emphasis>,
+<emphasis remap='I'>MenuCloseAndExec</emphasis>,
 <emphasis remap='I'>MenuEnterContinuation</emphasis>,
 <emphasis remap='I'>MenuEnterSubmenu</emphasis>,
 <emphasis remap='I'>MenuLeaveSubmenu</emphasis>,
@@ -289,6 +290,10 @@ the arrow keys or the enter key for minimal navigation.</para>
 <para><emphasis remap='B'>MenuClose</emphasis>
 exits from the current sequence of menus or destroys a tear off menu.</para>
 
+<para><emphasis remap='B'>MenuCloseAndExec</emphasis>
+exits from the current sequence of menus or destroys a tear off menu and
+executes the rest of the line as a command.</para>
+
 <para><emphasis remap='B'>MenuEnterContinuation</emphasis>
 opens the "More..." sub menu if any.</para>
 
@@ -297,7 +302,6 @@ enters a sub menu.</para>
 
 <para><emphasis remap='B'>MenuLeaveSubmenu</emphasis>
 returns to the prior menu.</para>
-
 
 <para><emphasis remap='B'>MenuMoveCursor</emphasis>
 <replaceable>n</replaceable>

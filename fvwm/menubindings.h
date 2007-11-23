@@ -41,7 +41,8 @@ typedef enum
 	SA_SELECT,
 	SA_TEAROFF,
 	SA_ABORT,
-	SA_SCROLL
+	SA_SCROLL,
+	SA_EXEC_CMD
 } menu_shortcut_action;
 
 /* ---------------------------- exported variables (globals) --------------- */
