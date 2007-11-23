@@ -78,7 +78,7 @@ static int get_selectable_item_index(
 	int i = 0;
 	int s = 0;
 	MenuItem *mi;
-	Bool last_selectable = False;
+	int is_last_selectable = 0;
 
 	for (mi = MR_FIRST_ITEM(mr); mi && mi != mi_target;
 	     mi = MI_NEXT_ITEM(mi))
@@ -86,12 +86,12 @@ static int get_selectable_item_index(
 		if (MI_IS_SELECTABLE(mi))
 		{
 			i++;
-			last_selectable = True;
+			is_last_selectable = 1;
 		}
-		else if (last_selectable)
+		else if (is_last_selectable == 1)
 		{
 			s++;
-			last_selectable = False;
+			is_last_selectable = 0;
 		}
 	}
 	if (ret_sections)
@@ -130,7 +130,7 @@ static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
 	int i = 0;
 	MenuItem *mi;
 	MenuItem *mi_last_ok = NULL;
-	Bool last_selectable = False;
+	int is_last_selectable = 0;
 
 	for (
 		mi = MR_FIRST_ITEM(mr);
@@ -139,16 +139,16 @@ static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
 	{
 		if (MI_IS_SELECTABLE(mi))
 		{
-			if (!last_selectable)
+			if (!is_last_selectable)
 			{
 				mi_last_ok = mi;
-				last_selectable = True;
+				is_last_selectable = 1;
 			}
 		}
-		else if (last_selectable)
+		else if (is_last_selectable)
 		{
 			i++;
-			last_selectable = False;
+			is_last_selectable = 0;
 		}
 	}
 
@@ -196,7 +196,7 @@ static Binding *__menu_binding_is_mouse(
 
 static void parse_menu_action(
 	struct MenuRoot *mr, const char *action, menu_shortcut_action *saction,
-	int *items_to_move, Bool *do_skip_section)
+	int *items_to_move, int *do_skip_section)
 {
 	char *optlist[] = {
 		"MenuClose",
@@ -209,6 +209,7 @@ static void parse_menu_action(
 		"MenuSelectItem",
 		"MenuScroll",
 		"MenuTearOff",
+		"MenuCloseAndExecute",
 		NULL
 	};
 	int index;
@@ -220,9 +221,6 @@ static void parse_menu_action(
 	options = GetNextTokenIndex((char *)action, optlist, 0, &index);
 	switch (index)
 	{
-	case 0: /* MenuClose */
-		*saction = SA_ABORT;
-		break;
 	case 1: /* MenuEnterContinuation */
 		*saction = (MR_CONTINUATION_MENU(mr) != NULL) ?
 			SA_CONTINUE : SA_ENTER;
@@ -259,7 +257,7 @@ static void parse_menu_action(
 
 			if (suffix[1] == 1)
 			{
-				*do_skip_section = True;
+				*do_skip_section = 1;
 			}
 		}
 		else if (num == 1)
@@ -268,7 +266,7 @@ static void parse_menu_action(
 			*items_to_move = count[0];
 			if (suffix[0] == 1)
 			{
-				*do_skip_section = True;
+				*do_skip_section = 1;
 			}
 		}
 		else
@@ -304,7 +302,7 @@ static void parse_menu_action(
 				*items_to_move = count[0];
 				if (suffix[0] == 1)
 				{
-					*do_skip_section = True;
+					*do_skip_section = 1;
 				}
 			}
 			else
@@ -475,14 +473,14 @@ void menu_shortcuts(
 	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmi_current,
 	double_keypress *pdkp, int *ret_menu_x, int *ret_menu_y)
 {
-	int fControlKey;
-	int fShiftedKey;
-	int fMetaKey;
+	int with_control;
+	int with_shift;
+	int with_meta;
 	KeySym keysym;
-	char ckeychar = 0;
+	char ckeychar;
 	int ikeychar;
-	MenuItem *new_item = NULL;
-	MenuItem *miCurrent = pmi_current ? *pmi_current : NULL;
+	MenuItem *new_item;
+	MenuItem *mi_current;
 	int index;
 	int mx;
 	int my;
@@ -491,20 +489,31 @@ void menu_shortcuts(
 	int menu_width;
 	int menu_height;
 	int items_to_move;
-	Bool fSkipSection = False;
-	menu_shortcut_action saction = SA_NONE;
+	int do_skip_section;
+	menu_shortcut_action saction;
 	Binding *binding;
-	int context = C_MENU;
-	int is_geometry_known = 0;
+	int context;
+	int is_geometry_known;
 
-	if (miCurrent && MI_IS_TITLE(miCurrent))
+	ckeychar = 0;
+	new_item = NULL;
+	mi_current = pmi_current ? *pmi_current : NULL;
+	do_skip_section = 0;
+	saction = SA_NONE;
+	context = C_MENU;
+	is_geometry_known = 0;
+	context = C_MENU;
+	if (mi_current)
 	{
-		context |= C_TITLE;
-	}
-	else if (miCurrent)
-	{
-		/* menu item context, possible use I (icon) for it */
-		context |= C_MENU_ITEM;
+		if (MI_IS_TITLE(mi_current))
+		{
+			context |= C_TITLE;
+		}
+		else
+		{
+			/* menu item context, use I (icon) for it */
+			context |= C_MENU_ITEM;
+		}
 	}
 	else
 	{
@@ -514,11 +523,11 @@ void menu_shortcuts(
 				&menu_height, &JunkBW, &JunkDepth))
 		{
 			is_geometry_known = 1;
-
-			if (FQueryPointer(
-				    dpy, Scr.Root, &JunkRoot, &JunkChild,
-				    &mx, &my, &JunkX, &JunkY, &JunkMask) ==
-			    False)
+			if (
+				FQueryPointer(
+					dpy, Scr.Root, &JunkRoot, &JunkChild,
+					&mx, &my, &JunkX, &JunkY, &JunkMask) ==
+				0)
 			{
 				/* pointer is on a different screen */
 				mx = 0;
@@ -526,8 +535,7 @@ void menu_shortcuts(
 			}
 			else if (
 				mx >= menu_x && mx < menu_x + menu_width &&
-				my >= menu_y && my < menu_y + menu_height
-				)
+				my >= menu_y && my < menu_y + menu_height)
 			{
 				/* pointer is on the meny somewhere not over
 				 * an item */
@@ -536,8 +544,9 @@ void menu_shortcuts(
 					/* upper border context (-)*/
 					context |= C_SB_TOP;
 				}
-				else if (my >= menu_y + menu_height -
-					 MST_BORDER_WIDTH(mr))
+				else if (
+					my >= menu_y + menu_height -
+					MST_BORDER_WIDTH(mr))
 				{
 					/* lower border context (_) */
 					context |= C_SB_BOTTOM;
@@ -547,6 +556,11 @@ void menu_shortcuts(
 					/* left border or left sidepic */
 					context |= C_SB_LEFT;
 				}
+				else if (mx < menu_x + MST_BORDER_WIDTH(mr))
+				{
+					/* left border context ([)*/
+					context |= C_SB_LEFT;
+				}
 				else if (
 					mx >= menu_x + MR_ITEM_X_OFFSET(mr) +
 					MR_ITEM_WIDTH(mr))
@@ -554,14 +568,9 @@ void menu_shortcuts(
 					/* right sidepic or right border */
 					context |= C_SB_RIGHT;
 				}
-
-				if (mx < menu_x + MST_BORDER_WIDTH(mr))
-				{
-					/* left border context ([)*/
-					context |= C_SB_LEFT;
-				}
-				else if (mx >= menu_x + menu_width -
-					 MST_BORDER_WIDTH(mr))
+				else if (
+					mx >= menu_x + menu_width -
+					MST_BORDER_WIDTH(mr))
 				{
 					/* right border context (])*/
 					context |= C_SB_RIGHT;
@@ -579,7 +588,7 @@ void menu_shortcuts(
 	if (event->type == KeyRelease)
 	{
 		/* This function is only called with a KeyRelease event if the
-		 * user released * the 'select' key (s)he configured. */
+		 * user released the 'select' key (s)he configured. */
 		pmret->rc = MENU_SELECTED;
 
 		return;
@@ -592,17 +601,16 @@ void menu_shortcuts(
 	if (event->type == ButtonRelease)
 	{
 	        /*** Read the control keys stats ***/
-		fControlKey = event->xbutton.state & ControlMask? True : False;
-		fShiftedKey = event->xbutton.state & ShiftMask? True: False;
-		fMetaKey = event->xbutton.state & Mod1Mask? True: False;
-
+		with_control = event->xbutton.state & ControlMask ? 1 : 0;
+		with_shift = event->xbutton.state & ShiftMask ? 1: 0;
+		with_meta = event->xbutton.state & Mod1Mask ? 1: 0;
 		/** handle menu bindings **/
 		binding = menu_binding_is_mouse(event, context);
 		if (binding != NULL)
 		{
 			parse_menu_action(
 				mr, binding->Action, &saction, &items_to_move,
-				&fSkipSection);
+				&do_skip_section);
 		}
 		index = 0;
 		ikeychar = 0;
@@ -610,9 +618,9 @@ void menu_shortcuts(
 	else /* Should be KeyPressed */
 	{
 	        /*** Read the control keys stats ***/
-		fControlKey = event->xkey.state & ControlMask? True : False;
-		fShiftedKey = event->xkey.state & ShiftMask? True: False;
-		fMetaKey = event->xkey.state & Mod1Mask? True: False;
+		with_control = event->xkey.state & ControlMask? 1 : 0;
+		with_shift = event->xkey.state & ShiftMask? 1: 0;
+		with_meta = event->xkey.state & Mod1Mask? 1: 0;
 
 		/*** handle double-keypress ***/
 
@@ -642,7 +650,7 @@ void menu_shortcuts(
 
 	/* Need isascii here - isgraph might coredump! */
 	if (index == 1 && isascii(ikeychar) && isgraph(ikeychar) &&
-	    fControlKey == False && fMetaKey == False)
+	    with_control == 0 && with_meta == 0)
 	{
 		/* allow any printable character to be a keysym, but be sure
 		 * control isn't pressed */
@@ -661,8 +669,8 @@ void menu_shortcuts(
 		 * Multiple hotkeys per menu
 		 * Search menu for matching hotkey;
 		 * remember how many we found and where we found it */
-		mi = (miCurrent == NULL || miCurrent == MR_LAST_ITEM(mr)) ?
-			MR_FIRST_ITEM(mr) : MI_NEXT_ITEM(miCurrent);
+		mi = (mi_current == NULL || mi_current == MR_LAST_ITEM(mr)) ?
+			MR_FIRST_ITEM(mr) : MI_NEXT_ITEM(mi_current);
 		mi1 = mi;
 		do
 		{
@@ -716,9 +724,10 @@ void menu_shortcuts(
 	/*** now determine the action to take ***/
 
 	/** handle menu key bindings **/
-	if (event->type == KeyPress && keysym == XK_Escape &&
-	    fControlKey == False && fShiftedKey == False &&
-	    fMetaKey == False)
+	if (
+		event->type == KeyPress && keysym == XK_Escape &&
+		with_control == 0 && with_shift == 0 &&
+		with_meta == 0)
 	{
 		/* Don't allow override of Escape with no modifiers */
 		saction = SA_ABORT;
@@ -731,13 +740,14 @@ void menu_shortcuts(
 		{
 			parse_menu_action(
 				mr, binding->Action, &saction, &items_to_move,
-				&fSkipSection);
+				&do_skip_section);
 		}
 	}
 
-	if (!miCurrent &&
-	    (saction == SA_ENTER || saction == SA_MOVE_ITEMS ||
-	     saction == SA_SELECT || saction == SA_SCROLL))
+	if (
+		!mi_current &&
+		(saction == SA_ENTER || saction == SA_MOVE_ITEMS ||
+		 saction == SA_SELECT || saction == SA_SCROLL))
 	{
 		if (is_geometry_known)
 		{
@@ -766,7 +776,7 @@ void menu_shortcuts(
 	switch (saction)
 	{
 	case SA_ENTER:
-		if (miCurrent && MI_IS_POPUP(miCurrent))
+		if (mi_current && MI_IS_POPUP(mi_current))
 		{
 			pmret->rc = MENU_POPUP;
 		}
@@ -781,7 +791,7 @@ void menu_shortcuts(
 			(MR_IS_TEAR_OFF_MENU(mr)) ? MENU_NOP : MENU_POPDOWN;
 		break;
 	case SA_FIRST:
-		if (fSkipSection)
+		if (do_skip_section)
 		{
 			*pmi_current = get_selectable_item_from_section(
 				mr, items_to_move);
@@ -801,7 +811,7 @@ void menu_shortcuts(
 		}
 		break;
 	case SA_LAST:
-		if (fSkipSection)
+		if (do_skip_section)
 		{
 			get_selectable_item_count(mr, &index);
 			index += items_to_move;
@@ -842,13 +852,13 @@ void menu_shortcuts(
 		}
 		break;
 	case SA_MOVE_ITEMS:
-		if (fSkipSection)
+		if (do_skip_section)
 		{
 			int section;
 			int count;
 
 			get_selectable_item_count(mr, &count);
-			get_selectable_item_index(mr, miCurrent, &section);
+			get_selectable_item_index(mr, mi_current, &section);
 			section += items_to_move;
 			if (section < 0)
 				section = count;
@@ -858,7 +868,8 @@ void menu_shortcuts(
 		}
 		else if (items_to_move < 0)
 		{
-			index = get_selectable_item_index(mr, miCurrent, NULL);
+			index = get_selectable_item_index(
+				mr, mi_current, NULL);
 			if (index == 0)
 				/* wraparound */
 				index = get_selectable_item_count(mr, NULL);
@@ -870,22 +881,22 @@ void menu_shortcuts(
 		else
 		{
 			index = get_selectable_item_index(
-				mr, miCurrent, NULL) +
+				mr, mi_current, NULL) +
 				items_to_move;
 			/* correct for the case that we're between items */
-			if (!MI_IS_SELECTABLE(miCurrent))
+			if (!MI_IS_SELECTABLE(mi_current))
 			{
 				index--;
 			}
 		}
-		if (fSkipSection)
+		if (do_skip_section)
 		{
 			new_item = get_selectable_item_from_section(mr, index);
 		}
 		else
 		{
 			new_item = get_selectable_item_from_index(mr, index);
-			if (items_to_move > 0 && new_item == miCurrent)
+			if (items_to_move > 0 && new_item == mi_current)
 			{
 				new_item =
 					get_selectable_item_from_index(mr, 0);
@@ -911,7 +922,7 @@ void menu_shortcuts(
 		else
 		{
 			/* do nothing */
-			*pmi_current = miCurrent;
+			*pmi_current = mi_current;
 			pmret->rc = MENU_NOP;
 		}
 		break;
@@ -950,12 +961,12 @@ void menu_shortcuts(
 				"can't get geometry of menu %s", MR_NAME(mr));
 			return;
 		}
-		if (fSkipSection)
+		if (do_skip_section)
 		{
 			int count;
 
 			get_selectable_item_count(mr, &count);
-			get_selectable_item_index(mr, miCurrent, &index);
+			get_selectable_item_index(mr, mi_current, &index);
 			index += items_to_move;
 			if (index < 0)
 			{
@@ -969,8 +980,9 @@ void menu_shortcuts(
 		}
 		else
 		{
-			index = get_selectable_item_index(mr, miCurrent, NULL);
-			if (items_to_move > 0 && !MI_IS_SELECTABLE(miCurrent))
+			index = get_selectable_item_index(
+				mr, mi_current, NULL);
+			if (items_to_move > 0 && !MI_IS_SELECTABLE(mi_current))
 			{
 				index--;
 			}
@@ -981,9 +993,9 @@ void menu_shortcuts(
 		if (
 			new_item &&
 			((items_to_move < 0 &&
-			  MI_Y_OFFSET(new_item) > MI_Y_OFFSET(miCurrent)) ||
+			  MI_Y_OFFSET(new_item) > MI_Y_OFFSET(mi_current)) ||
 			 (items_to_move > 0 &&
-			  MI_Y_OFFSET(new_item) < MI_Y_OFFSET(miCurrent))))
+			  MI_Y_OFFSET(new_item) < MI_Y_OFFSET(mi_current))))
 		{
 			/* never scroll in the "wrong" direction */
 			new_item = NULL;
@@ -999,8 +1011,7 @@ void menu_shortcuts(
 				FQueryPointer(
 					dpy, MR_WINDOW(mr), &JunkRoot,
 					&JunkChild, &JunkX, &JunkY, &mx, &my,
-					&JunkMask)
-			    ==  False)
+					&JunkMask) ==  0)
 			{
 				/* This should not happen */
 			    	mx = 0;

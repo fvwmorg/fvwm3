@@ -47,11 +47,10 @@ struct MenuDimensions
 	int hilight_width;
 	/* y coordinate for item */
 	int y_offset;
-	/* width and height of the last screen */
+	/* width and height of the last screen
+	 * the menu was mapped on */
 	int screen_width;
-	/*   the menu was mapped on */
 	int screen_height;
-	/* number of items in the menu */
 };
 
 /* ---------------------------- exported variables (globals) --------------- */
