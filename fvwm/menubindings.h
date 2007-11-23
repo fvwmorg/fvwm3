@@ -63,7 +63,7 @@ void menu_bindings_startup_complete(void);
  * To be called from bindings.c *only*. */
 int menu_binding(
 	Display *dpy, binding_t type, int button, KeySym keysym,
-	int context, int modifier, char *action, char *menuStyle);
+	int context, int modifier, char *action, char *menu_style);
 
 /* Checks if the given mouse or keyboard event in the given context
  * corresponds to a menu binding.  If so, the binding is returned.  Otherwise
@@ -86,7 +86,7 @@ Binding *menu_binding_is_key(XEvent* event, int context);
  */
 void menu_shortcuts(
 	struct MenuRoot *mr, struct MenuParameters *pmp,
-	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmiCurrent,
+	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmi_current,
 	double_keypress *pdkp, int *ret_menu_x, int *ret_menu_y);
 
 #endif /* MENU_BINDINGS_H */

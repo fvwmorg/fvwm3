@@ -73,14 +73,14 @@ static Binding **menu_bindings = NULL;
  * titles). The count begins with 0.
  */
 static int get_selectable_item_index(
-	MenuRoot *mr, MenuItem *miTarget, int *ret_sections)
+	MenuRoot *mr, MenuItem *mi_target, int *ret_sections)
 {
 	int i = 0;
 	int s = 0;
 	MenuItem *mi;
 	Bool last_selectable = False;
 
-	for (mi = MR_FIRST_ITEM(mr); mi && mi != miTarget;
+	for (mi = MR_FIRST_ITEM(mr); mi && mi != mi_target;
 	     mi = MI_NEXT_ITEM(mi))
 	{
 		if (MI_IS_SELECTABLE(mi))
@@ -98,10 +98,11 @@ static int get_selectable_item_index(
 	{
 		*ret_sections = s;
 	}
-	if (mi == miTarget)
+	if (mi == mi_target)
 	{
 		return i;
 	}
+
 	return -1;
 }
 
@@ -109,35 +110,38 @@ static MenuItem *get_selectable_item_from_index(MenuRoot *mr, int index)
 {
 	int i = -1;
 	MenuItem *mi;
-	MenuItem *miLastOk = NULL;
+	MenuItem *mi_last_ok = NULL;
 
-	for (mi = MR_FIRST_ITEM(mr); mi && (i < index || miLastOk == NULL);
+	for (mi = MR_FIRST_ITEM(mr); mi && (i < index || mi_last_ok == NULL);
 	     mi=MI_NEXT_ITEM(mi))
 	{
 		if (MI_IS_SELECTABLE(mi))
 		{
-			miLastOk = mi;
+			mi_last_ok = mi;
 			i++;
 		}
 	}
-	return miLastOk;
+
+	return mi_last_ok;
 }
 
 static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
 {
 	int i = 0;
 	MenuItem *mi;
-	MenuItem *miLastOk = NULL;
+	MenuItem *mi_last_ok = NULL;
 	Bool last_selectable = False;
 
-	for (mi = MR_FIRST_ITEM(mr); mi && (i <= section || miLastOk == NULL);
-	     mi=MI_NEXT_ITEM(mi))
+	for (
+		mi = MR_FIRST_ITEM(mr);
+		mi && (i <= section || mi_last_ok == NULL);
+		mi=MI_NEXT_ITEM(mi))
 	{
 		if (MI_IS_SELECTABLE(mi))
 		{
 			if (!last_selectable)
 			{
-				miLastOk = mi;
+				mi_last_ok = mi;
 				last_selectable = True;
 			}
 		}
@@ -148,7 +152,7 @@ static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
 		}
 	}
 
-	return miLastOk;
+	return mi_last_ok;
 }
 
 static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
@@ -321,6 +325,8 @@ static void parse_menu_action(
 				 action);
 		*saction = SA_NONE;
 	}
+
+	return;
 }
 
 static Binding *__menu_binding_is_key(
@@ -385,7 +391,7 @@ Binding *menu_binding_is_key(XEvent* event, int context)
 
 int menu_binding(
 	Display *dpy, binding_t type, int button, KeySym keysym,
-	int context, int modifier, char *action, char *menuStyle)
+	int context, int modifier, char *action, char *menu_style)
 {
 	Binding *rmlist;
 	int rc;
@@ -403,13 +409,12 @@ int menu_binding(
 
 		return 1;
 	}
-	if (menuStyle != NULL)
+	if (menu_style != NULL)
 	{
-		/* fixme - make either match a menuStyle or a menu name */
+		/*!!! fixme - make either match a menu style or a menu name */
 		fvwm_msg(
-			ERR, "menu_binding",
-			"a window name may not be specified with menu context."
-			);
+			ERR, "menu_binding", "a window name may not be"
+			" specified without a menu context.");
 
 		return 1;
 	}
@@ -419,7 +424,7 @@ int menu_binding(
 	/* BEGIN remove */
 	CollectBindingList(
 		dpy, menu_bindings, &rmlist, type, STROKE_ARG(NULL)
-		button, keysym, modifier, context, menuStyle);
+		button, keysym, modifier, context, menu_style);
 	if (rmlist != NULL)
 	{
 		FreeBindingList(rmlist);
@@ -430,9 +435,10 @@ int menu_binding(
 	{
 		/* Warn if Mouse n M N - occurs without removing any binding.
 		 The user most likely want Mouse n MT A - instead. */
-		fvwm_msg(WARN, "menu_binding",
-			 "The syntax for disabling the tear off button has "
-			 "changed.");
+		fvwm_msg(
+			WARN, "menu_binding",
+			"The syntax for disabling the tear off button has "
+			"changed.");
 	}
 	if (strcmp(action,"-") == 0)
 	{
@@ -459,14 +465,14 @@ int menu_binding(
 	}
 	rc = AddBinding(
 		dpy, menu_bindings, type, STROKE_ARG(NULL) button, keysym,
-		NULL, modifier, context, (void *)action, NULL, menuStyle);
+		NULL, modifier, context, (void *)action, NULL, menu_style);
 
 	return rc;
 }
 
 void menu_shortcuts(
 	struct MenuRoot *mr, struct MenuParameters *pmp,
-	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmiCurrent,
+	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmi_current,
 	double_keypress *pdkp, int *ret_menu_x, int *ret_menu_y)
 {
 	int fControlKey;
@@ -475,8 +481,8 @@ void menu_shortcuts(
 	KeySym keysym;
 	char ckeychar = 0;
 	int ikeychar;
-	MenuItem *newItem = NULL;
-	MenuItem *miCurrent = pmiCurrent ? *pmiCurrent : NULL;
+	MenuItem *new_item = NULL;
+	MenuItem *miCurrent = pmi_current ? *pmi_current : NULL;
 	int index;
 	int mx;
 	int my;
@@ -616,8 +622,9 @@ void menu_shortcuts(
 		    event->xkey.state == pdkp->keystate &&
 		    event->xkey.keycode == pdkp->keycode)
 		{
-			*pmiCurrent = NULL;
+			*pmi_current = NULL;
 			pmret->rc = MENU_DOUBLE_CLICKED;
+
 			return;
 		}
 		pdkp->timestamp = 0;
@@ -654,7 +661,7 @@ void menu_shortcuts(
 		 * Multiple hotkeys per menu
 		 * Search menu for matching hotkey;
 		 * remember how many we found and where we found it */
-		mi = ( miCurrent == NULL || miCurrent == MR_LAST_ITEM(mr)) ?
+		mi = (miCurrent == NULL || miCurrent == MR_LAST_ITEM(mr)) ?
 			MR_FIRST_ITEM(mr) : MI_NEXT_ITEM(miCurrent);
 		mi1 = mi;
 		do
@@ -666,10 +673,12 @@ void menu_shortcuts(
 				key = (MI_LABEL(mi)[(int)MI_HOTKEY_COLUMN(mi)])
 					[MI_HOTKEY_COFFSET(mi)];
 				key = tolower(key);
-				if ( ikeychar == key )
+				if (ikeychar == key)
 				{
-					if ( ++countHotkey == 1 )
-						newItem = mi;
+					if (++countHotkey == 1)
+					{
+						new_item = mi;
+					}
 				}
 			}
 			mi = (mi == MR_LAST_ITEM(mr)) ?
@@ -681,15 +690,16 @@ void menu_shortcuts(
 		 * selection */
 		if (countHotkey > 1)
 		{
-			*pmiCurrent = newItem;
+			*pmi_current = new_item;
 			pmret->rc = MENU_NEWITEM;
+
 			return;
 		}
 		/* Do things the old way for unique hotkeys in the menu */
 		else if (countHotkey == 1)
 		{
-			*pmiCurrent = newItem;
-			if (newItem && MI_IS_POPUP(newItem))
+			*pmi_current = new_item;
+			if (new_item && MI_IS_POPUP(new_item))
 			{
 				pmret->rc = MENU_POPUP;
 			}
@@ -697,6 +707,7 @@ void menu_shortcuts(
 			{
 				pmret->rc = MENU_SELECTED;
 			}
+
 			return;
 		}
 		/* MMH mikehan@best.com 2/7/99 */
@@ -772,15 +783,15 @@ void menu_shortcuts(
 	case SA_FIRST:
 		if (fSkipSection)
 		{
-			*pmiCurrent = get_selectable_item_from_section(
+			*pmi_current = get_selectable_item_from_section(
 				mr, items_to_move);
 		}
 		else
 		{
-			*pmiCurrent = get_selectable_item_from_index(
+			*pmi_current = get_selectable_item_from_index(
 				mr, items_to_move);
 		}
-		if (*pmiCurrent != NULL)
+		if (*pmi_current != NULL)
 		{
 			pmret->rc = MENU_NEWITEM;
 		}
@@ -789,7 +800,6 @@ void menu_shortcuts(
 			pmret->rc = MENU_NOP;
 		}
 		break;
-
 	case SA_LAST:
 		if (fSkipSection)
 		{
@@ -799,9 +809,9 @@ void menu_shortcuts(
 			{
 				index = 0;
 			}
-			*pmiCurrent = get_selectable_item_from_section(
+			*pmi_current = get_selectable_item_from_section(
 				mr, index);
-			if (*pmiCurrent != NULL)
+			if (*pmi_current != NULL)
 			{
 				pmret->rc = MENU_NEWITEM;
 			}
@@ -820,9 +830,9 @@ void menu_shortcuts(
 				{
 					index = 0;
 				}
-				*pmiCurrent = get_selectable_item_from_index(
+				*pmi_current = get_selectable_item_from_index(
 					mr, index);
-				pmret->rc = (*pmiCurrent) ?
+				pmret->rc = (*pmi_current) ?
 					MENU_NEWITEM : MENU_NOP;
 			}
 			else
@@ -870,20 +880,20 @@ void menu_shortcuts(
 		}
 		if (fSkipSection)
 		{
-			newItem = get_selectable_item_from_section(mr, index);
+			new_item = get_selectable_item_from_section(mr, index);
 		}
 		else
 		{
-			newItem = get_selectable_item_from_index(mr, index);
-			if (items_to_move > 0 && newItem == miCurrent)
+			new_item = get_selectable_item_from_index(mr, index);
+			if (items_to_move > 0 && new_item == miCurrent)
 			{
-				newItem =
+				new_item =
 					get_selectable_item_from_index(mr, 0);
 			}
 		}
-		if (newItem)
+		if (new_item)
 		{
-			*pmiCurrent = newItem;
+			*pmi_current = new_item;
 			pmret->rc = MENU_NEWITEM;
 		}
 		else
@@ -891,10 +901,9 @@ void menu_shortcuts(
 			pmret->rc = MENU_NOP;
 		}
 		break;
-
 	case SA_CONTINUE:
-		*pmiCurrent = MR_LAST_ITEM(mr);
-		if (*pmiCurrent && MI_IS_POPUP(*pmiCurrent))
+		*pmi_current = MR_LAST_ITEM(mr);
+		if (*pmi_current && MI_IS_POPUP(*pmi_current))
 		{
 			/* enter the submenu */
 			pmret->rc = MENU_POPUP;
@@ -902,11 +911,10 @@ void menu_shortcuts(
 		else
 		{
 			/* do nothing */
-			*pmiCurrent = miCurrent;
+			*pmi_current = miCurrent;
 			pmret->rc = MENU_NOP;
 		}
 		break;
-
 	case SA_WARPBACK:
 		/* Warp the pointer back into the menu. */
 		FWarpPointer(
@@ -914,22 +922,18 @@ void menu_shortcuts(
 			menudim_middle_x_offset(&MR_DIM(mr)), my - menu_y);
 		pmret->rc = MENU_NEWITEM_FIND;
 		break;
-
 	case SA_SELECT:
 		pmret->rc = MENU_SELECTED;
 		return;
-
 	case SA_ABORT:
 		pmret->rc =
 			(MR_IS_TEAR_OFF_MENU(mr)) ?
 			MENU_KILL_TEAR_OFF_MENU : MENU_ABORTED;
 		return;
-
 	case SA_TEAROFF:
 		pmret->rc =
 			(MR_IS_TEAR_OFF_MENU(mr)) ? MENU_NOP : MENU_TEAR_OFF;
 		return;
-
 	case SA_SCROLL:
 		if (MST_MOUSE_WHEEL(mr) == MMW_MENU)
 		{
@@ -961,7 +965,7 @@ void menu_shortcuts(
 			{
 				index = count;
 			}
-			newItem = get_selectable_item_from_section(mr, index);
+			new_item = get_selectable_item_from_section(mr, index);
 		}
 		else
 		{
@@ -971,23 +975,23 @@ void menu_shortcuts(
 				index--;
 			}
 			index += items_to_move;
-			newItem = get_selectable_item_from_index(mr, index);
+			new_item = get_selectable_item_from_index(mr, index);
 		}
 
 		if (
-			newItem &&
+			new_item &&
 			((items_to_move < 0 &&
-			  MI_Y_OFFSET(newItem) > MI_Y_OFFSET(miCurrent)) ||
+			  MI_Y_OFFSET(new_item) > MI_Y_OFFSET(miCurrent)) ||
 			 (items_to_move > 0 &&
-			  MI_Y_OFFSET(newItem) < MI_Y_OFFSET(miCurrent))))
+			  MI_Y_OFFSET(new_item) < MI_Y_OFFSET(miCurrent))))
 		{
 			/* never scroll in the "wrong" direction */
-			newItem = NULL;
+			new_item = NULL;
 		}
 
-		if (newItem)
+		if (new_item)
 		{
-			*pmiCurrent = newItem;
+			*pmi_current = new_item;
 			pmret->rc = MENU_NEWITEM;
 			/* Have to work with relative positions or tear off
 			 * menus will be hard to reposition */
@@ -1012,7 +1016,7 @@ void menu_shortcuts(
 						dpy, 0, 0, 0, 0, 0, 0, 0,
 						-my +
 						menuitem_middle_y_offset(
-							newItem,
+							new_item,
 							MR_STYLE(mr)));
 				}
 				/* pointer wrapped elsewhere for key events */
@@ -1022,7 +1026,7 @@ void menu_shortcuts(
 				int old_y = menu_y;
 
 				menu_y += my - menuitem_middle_y_offset(
-					newItem, MR_STYLE(mr));
+					new_item, MR_STYLE(mr));
 
 				if (
 					!MST_SCROLL_OFF_PAGE(mr) &&
@@ -1065,7 +1069,6 @@ void menu_shortcuts(
 			pmret->rc = MENU_NOP;
 		}
 		break;
-
 	case SA_NONE:
 	default:
 		pmret->rc = MENU_NOP;

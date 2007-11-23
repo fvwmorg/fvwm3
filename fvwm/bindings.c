@@ -243,10 +243,19 @@ static int ParseBinding(
 	int *nr_left_buttons, int *nr_right_buttons,
 	unsigned short *buttons_grabbed, Bool is_silent)
 {
-	char *action, context_string[20], modifier_string[20], *ptr, *token;
-	char key_string[201] = "", buffer[80], *windowName = NULL, *p;
+	char *action;
+	char context_string[20];
+	char modifier_string[20];
+	char *ptr;
+	char *token;
+	char key_string[201] = "";
+	char buffer[80];
+	char *window_name = NULL;
+	char *p;
 	int button = 0;
-	int n1=0,n2=0,n3=0;
+	int n1 = 0;
+	int n2 = 0;
+	int n3 = 0;
 	int context;
 	int modifier;
 	int rc;
@@ -257,7 +266,7 @@ static int ParseBinding(
 	Binding *b;
 	Binding *rmlist = NULL;
 	STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "");
-	STROKE_CODE(int n4=0);
+	STROKE_CODE(int n4 = 0);
 	STROKE_CODE(int i);
 
 	/* tline points after the key word "Mouse" or "Key" */
@@ -274,7 +283,7 @@ static int ParseBinding(
 	if (*p == '(')
 	{
 		/* A window name has been specified for the binding. */
-		sscanf(p+1, "%79s",buffer);
+		sscanf(p + 1, "%79s", buffer);
 		p = buffer;
 		while (*p != ')')
 		{
@@ -293,7 +302,7 @@ static int ParseBinding(
 			++p;
 		}
 		*p++ = '\0';
-		windowName = buffer;
+		window_name = buffer;
 		if (*p != '\0')
 		{
 			if (!is_silent)
@@ -483,7 +492,7 @@ static int ParseBinding(
 		{
 			/* pass-through actions indicate that the event be
 			 * allowed to pass through to the underlying window. */
-			if (windowName == NULL)
+			if (window_name == NULL)
 			{
 				/* It doesn't make sense to have a pass-through
 				 * action on global bindings. */
@@ -510,7 +519,7 @@ static int ParseBinding(
 	{
 		menu_binding(
 			dpy, type, button, keysym, context, modifier, action,
-			windowName);
+			window_name);
 		/* ParseBinding returns the number of new bindings in pblist
 		 * menu bindings does not add to pblist, and should return 0 */
 
@@ -532,7 +541,7 @@ static int ParseBinding(
 	/* BEGIN remove */
 	CollectBindingList(
 		dpy, pblist, &rmlist, type, STROKE_ARG((void *)stroke)
-		button, keysym, modifier, context, windowName);
+		button, keysym, modifier, context, window_name);
 	if (rmlist != NULL)
 	{
 		is_binding_removed = True;
@@ -600,7 +609,7 @@ static int ParseBinding(
 	rc = AddBinding(
 		dpy, pblist, type, STROKE_ARG((void *)stroke)
 		button, keysym, key_string, modifier, context, (void *)action,
-		NULL, windowName);
+		NULL, window_name);
 
 	return rc;
 }

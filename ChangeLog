@@ -1,7 +1,9 @@
 2007-11-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/menubindings.h:
+	* fvwm/menubindings.c:
 	* fvwm/bindings.c:
-	reindented some code
+	reindented and cleaned up some code
 
 2007-11-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
