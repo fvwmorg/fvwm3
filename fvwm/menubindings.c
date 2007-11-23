@@ -209,7 +209,6 @@ static void parse_menu_action(
 		"MenuSelectItem",
 		"MenuScroll",
 		"MenuTearOff",
-		"MenuCloseAndExecute",
 		NULL
 	};
 	int index;
@@ -221,6 +220,9 @@ static void parse_menu_action(
 	options = GetNextTokenIndex((char *)action, optlist, 0, &index);
 	switch (index)
 	{
+	case 0: /* MenuClose */
+		*saction = SA_ABORT;
+		break;
 	case 1: /* MenuEnterContinuation */
 		*saction = (MR_CONTINUATION_MENU(mr) != NULL) ?
 			SA_CONTINUE : SA_ENTER;
