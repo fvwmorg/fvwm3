@@ -2,6 +2,10 @@
 
 	* NEWS:
 	* configure.ac:
+	increased version to 2.5.25
+
+	* NEWS:
+	* configure.ac:
 	updated for 2.5.24 release
 
 2007-11-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
