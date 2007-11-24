@@ -1,20 +1,37 @@
-Fvwm is a powerful window manager.  Version 2.5.23 is a beta
-release that fixes a bug in 2.5.22 and introduces a new
-feature. Please be aware that any features introduced in the 2.5.x
+Fvwm is a powerful window manager.  Version 2.5.24 is a beta
+release that adds a couple of features and fixes a few bugs in
+2.5.23. Please be aware that any features introduced in the 2.5.x
 development versions may be renamed, changed or removed without
 notice before 2.6.0.
 
-Upgrading from 2.5.22 is very strongy recommended.
-Upgrading from earlier 2.5.x versions is recommended.
+Upgrading from 2.5.23 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - New Style command options:
-       StartShaded
+   - Disabled paging during interactive resize operations by
+     default (see 2.5.20) as it is annoying to many people.
+   - New style command options:
+       EdgeMoveResistance
+       EdgeMoveDelay
+       EdgeResizeDelay
+       SnapGrid
+       SnapAttraction
+     that replace the now obsolete commands EdgeResistance,
+     SnapGrid and SnapAttraction.  The EdgeResistance command has
+     a new syntax with only one argument.
+   - New command MenuCloseAndExec for menu bindinngs that can be
+     used to trigger certain commands from a menu without an
+     associated item.  For example, with
+       Key F1 MTI[]-_ A MenuCloseAndExec Menu RootMenu
+     the RootMenu can be opened from any other menu by pressing
+     F1.
 
 * Bug Fixes:
 
-   - Fixed FvwmButton's button placement algorithm broken in
-     2.5.22.
+   - Sometimes a window jumped by half the screen's size when
+     moving with the mouse and hitting the border of the desktop.
+   - Fixed the "screen w" argument of the Move and other commands.
+   - Clicking on a menu title did not close the menu by default.
+   - Temporary files in FvwmPerl overwrote each other.
