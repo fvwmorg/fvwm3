@@ -45,14 +45,15 @@ my $stay = 0;
 my $nolock = 0;
 my $debug = 0;
 my $detached = 0;
-my ($ppArgs, $ppFileCount, $preprocessOptions);
+my $ppArgs = undef;
+my $preprocessOptions = undef;
+my $ppFileCount = 0;
 my $ppMainQuoteRef = undef;
 
 sub initPreprocessVars () {
 	$ppArgs = {};
 	$ppArgs->{quote} = $$ppMainQuoteRef if $ppMainQuoteRef;
 	$ppMainQuoteRef = \$ppArgs->{quote} unless $ppMainQuoteRef;
-	$ppFileCount = 0;
 
 	$preprocessOptions = {
 		"c|cmd|command" => \$ppArgs->{command},

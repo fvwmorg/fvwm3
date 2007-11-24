@@ -1,3 +1,8 @@
+2007-11-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmPerl/FvwmPerl.in (initPreprocessVars):
+	fixed bug that caused temporary files to overwrite each other
+
 2007-09-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmTaskBar/Start.c (StartButtonParseConfig):
