@@ -1,3 +1,12 @@
+2007-12-03  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/events.c (HandleMapRequestKeepRaised)
+	(test_withdraw_request):
+	Don't map windows that request to be moved back to WithdrawnState
+	by the ICCCM2 method before they have been mapped. (Fixes bug with
+	disappearing windows.)
+
 2007-11-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:

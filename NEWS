@@ -5,6 +5,10 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.25 (not released yet)
 
+* Bug Fixes:
+   - Fixed problem with windows disappearing when created
+     unless Unmanaged style was used.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.24 (24-Nov-2007)

@@ -228,6 +228,33 @@ static Bool test_map_request(
 	return rc;
 }
 
+/* Test for ICCCM2 withdraw requests by syntetic events on the root window */
+static Bool test_withdraw_request(
+	Display *display, XEvent *event, XPointer arg)
+{
+	check_if_event_args *cie_args;
+	Bool rc;
+
+	cie_args = (check_if_event_args *)arg;
+	cie_args->ret_does_match = False;
+	if (event->type == UnmapNotify &&
+	    event->xunmap.window == cie_args->w &&
+	    event->xany.send_event == True &&
+	     event->xunmap.event == FW_W(&Scr.FvwmRoot))
+	{
+		cie_args->ret_type = UnmapNotify;
+		cie_args->ret_does_match = True;
+		rc = cie_args->do_return_true;
+	}
+	else
+	{
+		cie_args->ret_type = 0;
+		rc = False;
+	}
+
+	return rc;
+}
+
 Bool test_button_event(
 	Display *display, XEvent *event, XPointer arg)
 {
@@ -2897,6 +2924,22 @@ void HandleMapRequestKeepRaised(
 	/* If the window has never been mapped before ... */
 	if (!fw || (fw && DO_REUSE_DESTROYED(fw)))
 	{
+		Bool is_unmap_request_pending;
+		check_if_event_args args;
+		XEvent dummy;
+
+		args.w = ew;
+		args.do_return_true = True;
+		args.do_return_true_cr = False;
+		if (
+			FCheckIfEvent(
+				dpy, &dummy, test_withdraw_request,
+				(XPointer)&args)) {
+			/* The window is moved back to the WitdrawnState
+			 * immideately. Don't map it. */
+			return;
+		}
+
 		/* Add decorations. */
 		fw = AddWindow(ea->exc, ReuseWin, win_opts);
 		if (fw == AW_NO_WINDOW)
