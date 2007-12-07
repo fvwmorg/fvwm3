@@ -2193,7 +2193,7 @@ static void DoSnapAttract(
 			*py = Scr.MyDisplayHeight - Height;
 		}
 		/* snap to top edge */
-		else if (*py <= 0 && *py > -fw->edge_delay_ms_move)
+		else if (*py <= 0 && *py > -fw->edge_resistance_move)
 		{
 			*py = 0;
 		}

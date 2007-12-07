@@ -1,3 +1,9 @@
+2007-12-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/move_resize.c (DoSnapAttract):
+	Use edge move resistance, and not delay for top edge when moving
+	windoes.
+
 2007-12-03  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:

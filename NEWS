@@ -8,6 +8,7 @@ Changes in beta release 2.5.25 (not released yet)
 * Bug Fixes:
    - Fixed problem with windows disappearing when created
      unless Unmanaged style was used.
+   - Edge move delay was used as resistance for the top edge.
 
 -------------------------------------------------------------------
 
