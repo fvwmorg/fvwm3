@@ -7,8 +7,8 @@ XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 EXTRA_DIST = @DOC_COMMANDS_XML@ WindowsDesk.xml
 
 if FVWM_BUILD_HTMLDOC
-doc_DATA = @DOC_COMMANDS_HTML@
-all: @DOC_COMMANDS_HTML@
+doc_DATA = @DOC_COMMANDS_HTML@ WindowsDesk.html
+all: @DOC_COMMANDS_HTML@  WindowsDesk.html
 endif
 
 clean:

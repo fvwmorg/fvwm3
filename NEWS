@@ -12,6 +12,7 @@ Changes in beta release 2.5.25 (not released yet)
    - Edge move delay was used as resistance for the top edge.
    - Fixed a parsing problem of the screen argument of the
      SnapAttraction style.
+   - Some html documentation files were not installed.
 
 -------------------------------------------------------------------
 

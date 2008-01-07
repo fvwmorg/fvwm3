@@ -1,3 +1,8 @@
+2008-01-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	Some html documentation files were not installed.
+
 2008-01-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/style.c (style_parse_one_style_option):
