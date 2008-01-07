@@ -7,7 +7,7 @@
 
 	* fvwm/move_resize.c (DoSnapAttract):
 	Use edge move resistance, and not delay for top edge when moving
-	windoes.
+	windows.
 
 2007-12-03  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
@@ -32,10 +32,6 @@
 
 	* fvwm/menus.c (__mloop_exit):
 	* fvwm/menubindings.c (parse_menu_action):
-	* fvwm/menubindings.h:
-
-	* fvwm/menubindings.h:
-	* fvwm/menubindings.c:
 	* fvwm/bindings.c:
 	reindented and cleaned up some code
 
