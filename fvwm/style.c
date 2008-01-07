@@ -4028,20 +4028,23 @@ static Bool style_parse_one_style_option(
 				if (StrEquals(token, "All"))
 				{
 					snap_mode = SNAP_ICONS | SNAP_WINDOWS;
+					token = PeekToken(rest, &rest);
 				}
 				else if (StrEquals(token, "SameType"))
 				{
 					snap_mode = SNAP_SAME;
+					token = PeekToken(rest, &rest);
 				}
 				else if (StrEquals(token, "Icons"))
 				{
 					snap_mode = SNAP_ICONS;
+					token = PeekToken(rest, &rest);
 				}
 				else if (StrEquals(token, "Windows"))
 				{
 					snap_mode = SNAP_WINDOWS;
+					token = PeekToken(rest, &rest);
 				}
-				token = PeekToken(rest, &rest);
 				if (token == NULL)
 				{
 					break;
