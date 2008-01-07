@@ -6,9 +6,12 @@ Note, the changes for the last STABLE release start with release
 Changes in beta release 2.5.25 (not released yet)
 
 * Bug Fixes:
+
    - Fixed problem with windows disappearing when created
      unless Unmanaged style was used.
    - Edge move delay was used as resistance for the top edge.
+   - Fixed a parsing problem of the screen argument of the
+     SnapAttraction style.
 
 -------------------------------------------------------------------
 
