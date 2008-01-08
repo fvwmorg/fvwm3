@@ -721,7 +721,7 @@ The first two release the selected window. The last two release the window the t
 <section id="bugs">
 <title>Known Bugs</title>
 <simpara>Tab-managers don't take focus when iconified.</simpara>
-<simpara>FvwmTabs doesn't obey <fvwmref cmd="ClickToFocus"/> mode.</simpara>
+<simpara>FvwmTabs doesn't obey <fvwmref cmd="Style" opt="ClickToFocus"/> mode.</simpara>
 <simpara>FvwmTabs has a problem swallowing shaded windows.</simpara>
 <simpara>Using <fvwmref cmd="Maximize"/> to resize tab-manager windows prevents dynamic resizing from working.</simpara>
 <para>Please send bug reports, feature requests and queries about FvwmTabs to the fvwm mailing list: <email>fvwm@fvwm.org</email>. Be sure to include the word "FvwmTabs" somewhere in the subject line.</para>

@@ -1,5 +1,8 @@
 2008-01-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* modules/FvwmTabs.xml:
+	ClickToFocus is a style, not a command
+
 	* modules/Makefile.am:
 	correctly install FvwmTabs.html
 
