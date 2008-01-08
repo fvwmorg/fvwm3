@@ -298,6 +298,9 @@ Update fvwm-web:
     the fvwm location relative to fvwm-web.
      $ cd fvwm-web
      $ ./regenerate_pages
+  - Update the html documentation: go to the directory
+    doc and run the script
+    $ ./updatedoc
   - Generate the man pages: go to the directory
     documentation/manpages and run the script
      $ ./manpages2php
