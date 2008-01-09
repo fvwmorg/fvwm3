@@ -13,6 +13,7 @@ Changes in beta release 2.5.25 (not released yet)
    - Fixed a parsing problem of the screen argument of the
      SnapAttraction style.
    - Some html documentation files were not installed.
+   - Fixed a memory leak in internationalized font handling.
 
 -------------------------------------------------------------------
 

@@ -494,6 +494,10 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 	{
 		if (cs.charset_count > 0)
 		{
+			if (FLCXOMCharsetList != NULL)
+			{
+				free(FLCXOMCharsetList);
+			}
 			FLCXOMCharsetList_num = cs.charset_count;
 			FLCXOMCharsetList = (FlocaleCharset **)safemalloc(
 				sizeof(FlocaleCharset) * cs.charset_count);

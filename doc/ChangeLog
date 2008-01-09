@@ -1,3 +1,8 @@
+2008-01-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* commands/Style.xml:
+	cleaned up documentation of SnapAttraction style.
+
 2008-01-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* style.css:
