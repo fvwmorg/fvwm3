@@ -665,8 +665,8 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 			other_fw->g.frame.x - stickyx < arg->page_p2.x)
 		{
 			win_left =
-				arg->screen_g.x + other_fw->g.frame.x -
-				stickyx - arg->place_g.width;
+				other_fw->g.frame.x - stickyx -
+				arg->place_g.width;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				xtest = win_left + other_fw->g.frame.width *
@@ -677,8 +677,7 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 					xnew = MIN(xnew, xtest);
 				}
 			}
-			win_left = arg->screen_g.x + other_fw->g.frame.x -
-				stickyx;
+			win_left = other_fw->g.frame.x - stickyx;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				xtest = win_left + other_fw->g.frame.width *
@@ -790,7 +789,7 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 		}
 		else
 		{
-			win_top = other_fw->g.frame.y - stickyy;;
+			win_top = other_fw->g.frame.y - stickyy;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				ytest =
