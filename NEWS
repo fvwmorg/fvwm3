@@ -15,6 +15,7 @@ Changes in beta release 2.5.25 (not released yet)
    - Some html documentation files were not installed.
    - Fixed a memory leak in internationalized font handling.
    - Fixed a bug in MinOverlap placement.
+   - Fixed the StickyAcrossPages style in the FvwmPager.
 
 -------------------------------------------------------------------
 

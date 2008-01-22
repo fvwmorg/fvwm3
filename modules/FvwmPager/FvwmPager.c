@@ -833,7 +833,7 @@ void list_new_page(unsigned long *body)
     ReConfigure();
   }
   MovePage(False);
-  MoveStickyWindows();
+  MoveStickyWindow(True, False);
   Hilight(FocusWin,True);
 }
 
@@ -993,7 +993,7 @@ void list_new_desk(unsigned long *body)
   MovePage(True);
   DrawGrid(oldDesk - desk1, 1, None, NULL);
   DrawGrid(Scr.CurrentDesk - desk1, 1, None, NULL);
-  MoveStickyWindows();
+  MoveStickyWindow(False, True);
 /*
   Hilight(FocusWin,False);
 */

@@ -1,3 +1,11 @@
+2008-01-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmPager/FvwmPager.h:
+	* FvwmPager/x_pager.c (MoveStickyWindow):
+	* FvwmPager/FvwmPager.c (list_new_page):
+	(list_new_desk):
+	fixed stickyacrosspages in pager
+
 2007-11-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmPerl/FvwmPerl.in (initPreprocessVars):

@@ -2197,29 +2197,27 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 }
 
 
-void MoveStickyWindows(void)
+void MoveStickyWindow(Bool is_new_page, Bool is_new_desk)
 {
 	PagerWindow *t;
 
-	t = Start;
-	while (t!= NULL)
+	for (t = Start; t != NULL; t = t->next)
 	{
 		if (
-			(IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
-		        IS_STICKY_ACROSS_DESKS(t) ||
-			(IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_PAGES(t)) ||
-		        IS_STICKY_ACROSS_PAGES(t))
+			is_new_desk && t->desk != Scr.CurrentDesk &&
+			((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
+			 IS_STICKY_ACROSS_DESKS(t)))
 		{
-			if (t->desk != Scr.CurrentDesk)
-			{
-				ChangeDeskForWindow(t,Scr.CurrentDesk);
-			}
-			else
-			{
-				MoveResizePagerView(t, True);
-			}
+			ChangeDeskForWindow(t, Scr.CurrentDesk);
 		}
-		t = t->next;
+		else if (
+			is_new_page &&
+			((IS_ICONIFIED(t) &&
+			  IS_ICON_STICKY_ACROSS_PAGES(t)) ||
+			 IS_STICKY_ACROSS_PAGES(t)))
+		{
+			MoveResizePagerView(t, True);
+		}
 	}
 }
 

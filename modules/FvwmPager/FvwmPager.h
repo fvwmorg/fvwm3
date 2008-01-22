@@ -185,7 +185,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event);
 void AddNewWindow(PagerWindow *prev);
 void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw);
 void ChangeDeskForWindow(PagerWindow *t,long newdesk);
-void MoveStickyWindow(void);
+void MoveStickyWindow(Bool is_new_page, Bool is_new_desk);
 void Hilight(PagerWindow *, int);
 void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	    Bool do_scroll_icon);
@@ -201,7 +201,6 @@ void IconSwitchPage(XEvent *Event);
 void IconMoveWindow(XEvent *Event,PagerWindow *t);
 void HandleEnterNotify(XEvent *Event);
 void HandleExpose(XEvent *Event);
-void MoveStickyWindows(void);
 void MapBalloonWindow(PagerWindow *t, Bool is_icon_view);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(int i);
