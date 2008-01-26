@@ -525,7 +525,53 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 	}
 	if (FLCXOMCharsetList_num > 0 && FLCXOMCharsetList[0])
 	{
+		char *best_charset;
+
+		if (FLCLocaleCharset != NULL)
+		{
+			best_charset = FLCLocaleCharset->x;
+#if FLOCALE_DEBUG_CHARSET
+			fprintf(stderr,
+				"[FlocaleInitCharset] FLCLocaleCharset: %s\n",
+				best_charset);
+#endif
+		}
+		else
+		{
+			best_charset = FLOCALE_FALLBACK_XCHARSET;
+#if FLOCALE_DEBUG_CHARSET
+			fprintf(stderr,
+				"[FlocaleInitCharset] FALLBACK: %s\n",
+				best_charset);
+#endif
+		}
+
 		FLCXOMCharset = FLCXOMCharsetList[0];
+		if (best_charset == NULL)
+		{
+			/* should not happen */
+		}
+		else
+		{
+			for(i = 0; i <  FLCXOMCharsetList_num; i++)
+			{
+				if (StrEquals(
+					best_charset,
+					FLC_DEBUG_GET_X_CHARSET(
+						FLCXOMCharsetList[i])))
+				{
+					FLCXOMCharset = FLCXOMCharsetList[i];
+					break;
+				}
+			}
+		}
+#if FLOCALE_DEBUG_CHARSET
+		fprintf(stderr,
+			"[FlocaleInitCharset] XOM charset "
+			"%i: %s\n",
+			i,
+			FLC_DEBUG_GET_X_CHARSET(FLCXOMCharset));
+#endif
 	}
 #endif
 }
@@ -542,23 +588,46 @@ void FlocaleCharsetInit(Display *dpy, const char *module)
 		return;
 	}
 	initialized = True;
-	/* set the defaults X locale charsets */
-	FlocaleInit_X_Charset(dpy, module);
 
+	/* try to find the regular charset */
 	charset = getenv("CHARSET");
+#if FLOCALE_DEBUG_CHARSET
+	fprintf(stderr,
+		"[FlocaleInitCharset] CHARSET: %s\n", (!charset)? "null":charset);
+#endif
 	if ((!charset || strlen(charset) < 3) && FlocaleLibcharsetSupport)
 	{
 		charset = (char *)Flocale_charset();
+#if FLOCALE_DEBUG_CHARSET
+		fprintf(
+			stderr,
+			"[FlocaleInitCharset] FlocaleLibcharsetSupport: %s\n",
+			(!charset)? "null":charset);
+#endif
 	}
 	if ((!charset || strlen(charset) < 3) && FlocaleCodesetSupport)
 	{
 		charset = Fnl_langinfo(FCODESET);
+#if FLOCALE_DEBUG_CHARSET
+		fprintf(
+			stderr,
+			"[FlocaleInitCharset] Fnl_langinfo: %s\n",
+			(!charset)? "null":charset);
+#endif
 	}
 	if (charset != NULL && strlen(charset) > 2)
 	{
 		FLCLocaleCharset =
 			FlocaleCharsetOfLocaleCharset(charset);
+#if FLOCALE_DEBUG_CHARSET
+		fprintf(
+			stderr,
+			"[FlocaleInitCharset] FLCLocaleCharset: %s\n", charset);
+#endif
 	}
+
+	/* set the defaults X locale charsets */
+	FlocaleInit_X_Charset(dpy, module);
 
 	/* never null */
 	FLCUtf8Charset = FlocaleCharsetOfXCharset(FLOCALE_UTF8_XCHARSET);
@@ -762,11 +831,11 @@ FlocaleCharset *FlocaleCharsetGetDefaultCharset(Display *dpy, char *module)
 			(module != NULL)? module:"FVWMlibs",
 			"FlocaleGetDefaultCharset");
 		fprintf(stderr,"X Ouput Method ");
-		fprintf(stderr,"CHARSET env variable ");
+		fprintf(stderr,", CHARSET env variable");
 		if (FlocaleLibcharsetSupport)
-			fprintf(stderr,"locale_charset");
+			fprintf(stderr,", locale_charset");
 		if (FlocaleCodesetSupport)
-			fprintf(stderr," nl_langinfo");
+			fprintf(stderr,", nl_langinfo");
 		fprintf(stderr,"\n");
 		/* never null */
 		FLCLocaleCharset =

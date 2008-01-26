@@ -1,3 +1,10 @@
+2008-01-26  Olivier  <chapuis(at)lri(dot)fr>
+
+	* libs/FlocaleCharset.c: (FlocaleInit_X_Charset),
+	(FlocaleCharsetInit), (FlocaleCharsetGetDefaultCharset):
+	* NEWS:
+	Fixed the determination of the X charset on UTF-8 system
+	
 2008-01-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__pl_minoverlap_get_next_x):
