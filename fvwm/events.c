@@ -2924,7 +2924,6 @@ void HandleMapRequestKeepRaised(
 	/* If the window has never been mapped before ... */
 	if (!fw || (fw && DO_REUSE_DESTROYED(fw)))
 	{
-		Bool is_unmap_request_pending;
 		check_if_event_args args;
 		XEvent dummy;
 
