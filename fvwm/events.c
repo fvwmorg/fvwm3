@@ -1881,8 +1881,9 @@ void HandleConfigureRequest(const evh_args_t *ea)
 	{
 		fw = NULL;
 	}
-
 	__handle_configure_request(cre, ea, fw, False);
+
+	return;
 }
 
 void HandleDestroyNotify(const evh_args_t *ea)
@@ -3986,6 +3987,8 @@ void events_handle_configure_request(
 	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force)
 {
 	__handle_configure_request(cre, NULL, fw, force);
+
+	return;
 }
 
 void HandleEvents(void)

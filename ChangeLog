@@ -1,5 +1,16 @@
 2008-01-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/events.c (HandleConfigureRequest):
+	(events_handle_configure_request):
+	cleanup
+
+	* fvwm/ewmh_events.c (ewmh_RestackWindow):
+	(ewmh_MoveResizeWindow):
+	fixed crash when moving/resizing/restacking unmanaged windows through
+	an ewmh message
+
+2008-01-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* fvwm/events.c (HandleMapRequestKeepRaised):
 	fixed compiler warning
 
