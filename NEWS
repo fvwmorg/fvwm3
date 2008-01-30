@@ -16,7 +16,7 @@ Changes in beta release 2.5.25 (not released yet)
    - Fixed a memory leak in internationalized font handling.
    - Fixed a bug in MinOverlap placement.
    - Fixed the StickyAcrossPages style in the FvwmPager.
-   - Fixed the determination of the X charset on UTF-8 system
+   - Fixed the determination of the X charset on UTF-8 systems.
 
 -------------------------------------------------------------------
 
