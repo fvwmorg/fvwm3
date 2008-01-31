@@ -1,3 +1,11 @@
+2008-01-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/PictureGraphics.c (PGrabXImage):
+	fixed XImage memory leak
+	(PCreateRenderPixmap):
+	(PCreateDitherPixmap):
+	Properly handle return code of FgetFImage()
+
 2008-01-30  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleConfigureRequest):

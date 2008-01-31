@@ -19,6 +19,7 @@ Changes in beta release 2.5.25 (not released yet)
    - Fixed the determination of the X charset on UTF-8 systems.
    - Fixed a crash when certain EWMH messages were sent to
      unmanaged windows.
+   - Fixed a memory leak.
 
 -------------------------------------------------------------------
 

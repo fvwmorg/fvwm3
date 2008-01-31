@@ -313,7 +313,11 @@ FImage *PGrabXImage(
 #if 0
 			fprintf(stderr, "XGetImage error during the grab\n");
 #endif
-			fim = NULL;
+			if (fim != NULL)
+			{
+				FDestroyFImage(dpy, fim);
+				fim = NULL;
+			}
 		}
 		if (d_is_a_window)
 		{
@@ -403,6 +407,11 @@ Pixmap PCreateRenderPixmap(
 		mask_fim = FGetFImage(
 			dpy, mask, Pvisual, 1, src_x, src_y, src_w, src_h,
 			AllPlanes, ZPixmap);
+		if (!mask_fim)
+		{
+			error = True;
+			goto bail;
+		}
 		if (src_x != 0 || src_y != 0)
 			make_new_mask = True;
 	}
@@ -411,12 +420,18 @@ Pixmap PCreateRenderPixmap(
 		alpha_fim = FGetFImage(
 			dpy, alpha, Pvisual, FRenderGetAlphaDepth(), src_x,
 			src_y, src_w, src_h, AllPlanes, ZPixmap);
+		if (!alpha_fim)
+		{
+			error = True;
+			goto bail;
+		}
 	}
 
 	if (alpha != None || added_alpha_percent < 100)
 	{
 		dest_fim = PGrabXImage(
 			dpy, d, dest_x, dest_y, dest_w, dest_h, d_is_a_window);
+		/* accept this error */
 	}
 
 	if (dest_fim && do_repeat && (dest_w > src_w || dest_h > src_h))
@@ -828,6 +843,11 @@ Pixmap PCreateDitherPixmap(
 		mask_fim = FGetFImage(
 			dpy, mask, Pvisual, 1, 0, 0, in_width, in_height,
 			AllPlanes, ZPixmap);
+		if (!mask_fim)
+		{
+			FDestroyFImage(dpy, mask_fim);
+			return None;
+		}
 	}
 	out_pix = XCreatePixmap(dpy, win, out_width, out_height, Pdepth);
 	out_fim = FCreateFImage(

@@ -2166,6 +2166,9 @@ void update_fvwm_colorset(int cset)
 
 void CMD_Beep(F_CMD_ARGS)
 {
+#if 1 /*!!!*/
+parse_colorset(11, "RootTransparent");
+#endif
 	XBell(dpy, 0);
 
 	return;
