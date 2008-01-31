@@ -211,7 +211,7 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 			func = F_RESIZE;
 		}
 		do_reconfigure = !!is_function_allowed(
-			func, NULL, fw, RQORIG_PROGRAM, False))
+			func, NULL, fw, RQORIG_PROGRAM, False);
 	}
 	if (do_reconfigure == 1)
 	{
