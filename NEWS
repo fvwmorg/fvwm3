@@ -5,10 +5,15 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.25 (not released yet)
 
+* New features:
+
+   - Handle the STATE_ADD command of the EWMH _NET_WM_STATE
+     message from version 1.3 of the EWMH spec.
+
 * Bug Fixes:
 
    - Fixed problem with windows disappearing when created
-     unless Unmanaged style was used.
+     unless the style Unmanaged was used.
    - Edge move delay was used as resistance for the top edge.
    - Fixed a parsing problem of the screen argument of the
      SnapAttraction style.
@@ -19,10 +24,12 @@ Changes in beta release 2.5.25 (not released yet)
    - Fixed the determination of the X charset on UTF-8 systems.
    - Fixed a crash when certain EWMH messages were sent to
      unmanaged windows.
-   - Fixed a memory leak.
+   - Fixed a memory leak in multibyte codepage code.
    - Fixed a sporadic crash when the root background set by gnome,
      fvwm-root, esetroot etc. changes and a root transparent
      colour set is used.
+   - Ignore the EWMH staysontop and staysonbottom hints if the
+     EWMHIgnoreStackingOrderHints style is used.
 
 -------------------------------------------------------------------
 

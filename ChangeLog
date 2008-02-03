@@ -1,5 +1,16 @@
 2008-02-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/ewmh_events.c (ewmh_WMStateMaxVert):
+	(ewmh_WMStateMaxHoriz):
+	(ewmh_WMStateModal):
+	(ewmh_WMStateShaded):
+	(ewmh_WMStateStaysOnTop):
+	(ewmh_WMStateStaysOnBottom):
+	handle the STATE_ADD command of the EWMH _NET_WM_STATE message from
+	version 1.3
+	also ignore the EWMH staysontop and staysonbottom hints if the
+	EWMHIgnoreStackingOrderHints style is used
+
 	* fvwm/colorset.c (parse_colorset):
 	Fixed a sporadic crash when the root background set by gnome,
 	fvwm-root, esetroot etc. changes and a root transparent colour set

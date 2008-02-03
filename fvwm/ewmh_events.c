@@ -293,7 +293,8 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 				" (%ld)\n"
 				"  using an EWMH client message.\n"
 				"    fvwm is ignoring this request.\n",
-				fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+				fw ? FW_W(fw) : 0,
+				fw ? fw->name.name : "(none)",
 				ev->xclient.data.l[0]);
 			fvwm_msg_report_app_and_workers();
 		}
@@ -750,13 +751,18 @@ int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
 	if (ev != NULL)
 	{
 		/* client message */
-		int bool_arg = ev->xclient.data.l[0];
-		if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_MAXIMIZED(fw)) ||
-		    bool_arg == NET_WM_STATE_ADD)
+		int cmd_arg = ev->xclient.data.l[0];
+		if (
+			!IS_MAXIMIZED(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_ADD))
 		{
 			return EWMH_MAXIMIZE_HORIZ;
 		}
-		else
+		else if (
+			IS_MAXIMIZED(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_REMOVE))
 		{
 			return EWMH_MAXIMIZE_REMOVE;
 		}
@@ -815,13 +821,18 @@ int ewmh_WMStateMaxVert(EWMH_CMD_ARGS)
 	if (ev != NULL)
 	{
 		/* client message */
-		int bool_arg = ev->xclient.data.l[0];
-		if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_MAXIMIZED(fw)) ||
-		    bool_arg == NET_WM_STATE_ADD)
+		int cmd_arg = ev->xclient.data.l[0];
+		if (
+			!IS_MAXIMIZED(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_ADD))
 		{
 			return EWMH_MAXIMIZE_VERT;
 		}
-		else
+		else if (
+			IS_MAXIMIZED(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_REMOVE))
 		{
 			return EWMH_MAXIMIZE_REMOVE;
 		}
@@ -910,14 +921,28 @@ int ewmh_WMStateModal(EWMH_CMD_ARGS)
 	if (ev != NULL && fw != NULL)
 	{
 		/* client message: I do not think we can get such message */
-		int bool_arg = ev->xclient.data.l[0];
-		if ((bool_arg == NET_WM_STATE_TOGGLE &&
-		     !IS_EWMH_MODAL(fw)) || bool_arg == NET_WM_STATE_ADD)
+	    	/* java sends this message */
+		int cmd_arg = ev->xclient.data.l[0];
+		if (
+			!IS_EWMH_MODAL(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_ADD))
 		{
+		    /* ON */
 		}
-		else
+		else if (
+			IS_EWMH_MODAL(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_REMOVE))
 		{
+		    /* OFF */
 		}
+	/* 			!MODAL			MODAL
+	 * CMD
+	 * STATE_ADD		  ON			do nothing
+	 * STATE_TOGGLE		  ON			  OFF
+	 * STATE_REMOVE		  do nothing		  OFF
+	 */
 	}
 	return 0;
 }
@@ -980,14 +1005,19 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
 	if (ev != NULL)
 	{
 		/* client message */
-		int bool_arg = ev->xclient.data.l[0];
-		if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_SHADED(fw)) ||
-		    bool_arg == NET_WM_STATE_ADD)
+		int cmd_arg = ev->xclient.data.l[0];
+		if (
+			!IS_SHADED(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_ADD))
 		{
 			execute_function_override_window(
 				NULL, NULL, "Windowshade on", 0, fw);
 		}
-		else
+		else if (
+			IS_SHADED(fw) &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_REMOVE))
 		{
 			execute_function_override_window(
 				NULL, NULL, "Windowshade off", 0, fw);
@@ -1192,18 +1222,34 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 	if (ev != NULL)
 	{
 		/* client message */
-		int bool_arg = ev->xclient.data.l[0];
+		int cmd_arg = ev->xclient.data.l[0];
 
-		if ((bool_arg == NET_WM_STATE_TOGGLE &&
-		     fw->layer < Scr.TopLayer) ||
-		    bool_arg == NET_WM_STATE_ADD)
+		if (!DO_EWMH_USE_STACKING_HINTS(fw))
+		{
+		    	/* if we don't pay attention to the hints,
+			 * I don't think we should honor this request also
+			 */
+			return 0;
+		}
+		if (fw->layer < Scr.TopLayer &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+		     cmd_arg == NET_WM_STATE_ADD))
 		{
 			new_layer(fw, Scr.TopLayer);
 		}
-		else
+		else if (
+			fw->layer == Scr.TopLayer &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_REMOVE))
 		{
 			new_layer(fw, Scr.DefaultLayer);
 		}
+	/* 			layer < TopLayer	layer == TopLayer
+	 * CMD
+	 * STATE_ADD		new_layer(TOP)		   do nothing
+	 * STATE_TOGGLE		new_layer(TOP)		new_layer(DEFAULT)
+	 * STATE_REMOVE		  do nothing		new_layer(DEFAULT)
+	 */
 	}
 	return 0;
 }
@@ -1261,18 +1307,35 @@ int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS)
 	if (ev != NULL)
 	{
 		/* client message */
-		int bool_arg = ev->xclient.data.l[0];
+		int cmd_arg = ev->xclient.data.l[0];
 
-		if ((bool_arg == NET_WM_STATE_TOGGLE &&
-		     fw->layer > Scr.BottomLayer) ||
-		    bool_arg == NET_WM_STATE_ADD)
+		if (!DO_EWMH_USE_STACKING_HINTS(fw))
+		{
+		    	/* if we don't pay attention to the hints,
+			 * I don't think we should honor this request also
+			 */
+			return 0;
+		}
+		if (
+			fw->layer > Scr.BottomLayer &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_ADD))
 		{
 			new_layer(fw, Scr.BottomLayer);
 		}
-		else
+		else if (
+			fw->layer == Scr.BottomLayer &&
+			(cmd_arg == NET_WM_STATE_TOGGLE ||
+			 cmd_arg == NET_WM_STATE_REMOVE))
 		{
 			new_layer(fw, Scr.DefaultLayer);
 		}
+	/* 			layer > BottomLayer	layer == BottomLayer
+	 * CMD
+	 * STATE_ADD		new_layer(BOTTOM)	   do nothing
+	 * STATE_TOGGLE		new_layer(BOTTOM)	new_layer(DEFAULT)
+	 * STATE_REMOVE		  do nothing		new_layer(DEFAULT)
+	 */
 	}
 	return 0;
 }
