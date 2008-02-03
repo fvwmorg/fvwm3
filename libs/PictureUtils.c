@@ -652,9 +652,9 @@ int alloc_color_dynamic_no_limit(
 	}
 	else if (!alloc_color_in_cmap(c, False))
 	{
-		XGrabServer(dpy);
+		MyXGrabServer(dpy);
 		r = alloc_color_in_cmap(c, True);
-		XUngrabServer(dpy);
+		MyXUngrabServer(dpy);
 	}
 	else
 	{

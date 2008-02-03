@@ -1,3 +1,18 @@
+2008-02-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/colorset.c (parse_colorset):
+	Fixed a sporadic crash when the root background set by gnome,
+	fvwm-root, esetroot etc. changes and a root transparent colour set
+	is used.
+
+	* fvwm/colorset.c (parse_colorset):
+	* libs/PictureUtils.c (alloc_color_dynamic_no_limit):
+	* libs/Colorset.c (CreateOffsetBackgroundPixmap):
+	* libs/PictureGraphics.c (PGrabXImage)
+	(PGraphicsCreateTranslucent):
+	use MyXGrabserver and MyXUngrabServer instead of doing the X calls
+	directly!
+
 2008-01-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/PictureGraphics.c (PGrabXImage):

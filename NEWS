@@ -20,6 +20,9 @@ Changes in beta release 2.5.25 (not released yet)
    - Fixed a crash when certain EWMH messages were sent to
      unmanaged windows.
    - Fixed a memory leak.
+   - Fixed a sporadic crash when the root background set by gnome,
+     fvwm-root, esetroot etc. changes and a root transparent
+     colour set is used.
 
 -------------------------------------------------------------------
 

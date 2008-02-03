@@ -32,6 +32,7 @@
 #include "PictureGraphics.h"
 #include "PictureUtils.h"
 #include "FImage.h"
+#include "Grab.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -279,7 +280,7 @@ FImage *PGrabXImage(
 	PGrabImageError = 0;
 	if (d_is_a_window)
 	{
-		XGrabServer(dpy);
+		MyXGrabServer(dpy);
 		XGetWindowAttributes(dpy, d, &xwa);
 		XSync(dpy, False);
 
@@ -327,7 +328,7 @@ FImage *PGrabXImage(
 
 	if (d_is_a_window)
 	{
-		XUngrabServer(dpy);
+		MyXUngrabServer(dpy);
 	}
 	return fim;
 }
@@ -1431,11 +1432,11 @@ Pixmap PGraphicsCreateTranslucent(
 		root_pix = XCreatePixmap(dpy, win, gw, gh, Pdepth);
 		my_gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
 		XChangeGC(dpy, my_gc, valuemask, &values);
-		XGrabServer(dpy);
+		MyXGrabServer(dpy);
 		XCopyArea(
 			dpy, DefaultRootWindow(dpy), root_pix, my_gc,
 			gx, gy, gw, gh, 0, 0);
-		XUngrabServer(dpy);
+		MyXUngrabServer(dpy);
 		XFreeGC(dpy,my_gc);
 	}
 	if (XRenderSupport && FRenderGetExtensionSupported())
