@@ -1,5 +1,14 @@
 2008-02-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/Colorset.c (CreateOffsetBackgroundPixmap):
+	catch BadGC when updating root transparent window background
+
+	* libs/XError.c (do_coredump):
+	(ferror_set_temp_error_handler):
+	(ferror_reset_error_handler)
+	(ferror_call_next_error_handler):
+
+	new helper functions
 	* libs/XError.c (PrintXErrorAndCoredump):
 	try to dump core the hard way
 

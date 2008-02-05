@@ -29,7 +29,9 @@
 #include "libs/Colorset.h"
 #include "libs/PictureBase.h"
 #include "libs/Graphics.h"
+#include "libs/Grab.h"
 #include "libs/PictureGraphics.h"
+#include "libs/XError.h"
 
 /* globals */
 colorset_t *Colorset = NULL;
@@ -349,6 +351,26 @@ void GetWindowBackgroundPixmapSize(
 	}
 }
 
+static int is_bad_gc = 0;
+static int BadGCErrorHandler(Display *dpy, XErrorEvent *error)
+{
+	if (error->error_code == BadGC)
+	{
+		is_bad_gc = 1;
+
+		return 0;
+	}
+	else
+	{
+		int rc;
+
+		/* delegate error to original handler */
+		rc = ferror_call_next_error_handler(dpy, error);
+
+		return rc;
+	}
+}
+
 /* create a pixmap suitable for plonking on the background of a part of a
  * window */
 Pixmap CreateOffsetBackgroundPixmap(
@@ -447,11 +469,21 @@ Pixmap CreateOffsetBackgroundPixmap(
 		xgcv.ts_x_origin = cs_width-sx;
 		xgcv.ts_y_origin = cs_height-sy;
 		fill_gc = fvwmlib_XCreateGC(
-			dpy, win, GCTile | GCTileStipXOrigin | GCTileStipYOrigin
-			| GCFillStyle, &xgcv);
+			dpy, win, GCTile | GCTileStipXOrigin |
+			GCTileStipYOrigin | GCFillStyle, &xgcv);
+		if (fill_gc == None)
+		{
+			XFreePixmap(dpy, pixmap);
+			return None;
+		}
+		XSync(dpy, False);
+		is_bad_gc = 0;
+		ferror_set_temp_error_handler(BadGCErrorHandler);
 		XFillRectangle(dpy, pixmap, fill_gc, 0, 0, width, height);
-		if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset) &&
-		    colorset->tint_percent > 0)
+		if (
+			is_bad_gc == 0 &&
+			CSETS_IS_TRANSPARENT_ROOT_PURE(colorset) &&
+			colorset->tint_percent > 0)
 		{
 			FvwmRenderAttributes fra;
 
@@ -464,6 +496,14 @@ Pixmap CreateOffsetBackgroundPixmap(
 				fill_gc, None, None,
 				0, 0, width, height,
 				0, 0, width, height, False);
+		}
+		XSync(dpy, False);
+		ferror_reset_temp_error_handler();
+		if (is_bad_gc == 1)
+		{
+			is_bad_gc = 0;
+			XFreePixmap(dpy, pixmap);
+			pixmap = None;
 		}
 		XFreeGC(dpy,fill_gc);
 		return pixmap;

@@ -25,11 +25,13 @@ Changes in beta release 2.5.25 (not released yet)
    - Fixed a crash when certain EWMH messages were sent to
      unmanaged windows.
    - Fixed a memory leak in multibyte codepage code.
+   - Ignore the EWMH staysontop and staysonbottom hints if the
+     EWMHIgnoreStackingOrderHints style is used.
    - Fixed a sporadic crash when the root background set by gnome,
      fvwm-root, esetroot etc. changes and a root transparent
      colour set is used.
-   - Ignore the EWMH staysontop and staysonbottom hints if the
-     EWMHIgnoreStackingOrderHints style is used.
+   - Fixed spradic crash in modules with root transparent
+     background from colour sets.
 
 -------------------------------------------------------------------
 
