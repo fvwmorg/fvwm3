@@ -1,4 +1,12 @@
+2008-02-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/XError.c (PrintXErrorAndCoredump):
+	try to dump core the hard way
+
 2008-02-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/colorset.c (parse_colorset):
+	check for image != None before calling XDestroyImage
 
 	* fvwm/ewmh_events.c (ewmh_WMStateMaxVert):
 	(ewmh_WMStateMaxHoriz):

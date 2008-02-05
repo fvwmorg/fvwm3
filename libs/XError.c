@@ -77,6 +77,13 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 
 	/* leave a coredump */
 	fprintf(stderr, " Leaving a core dump now\n");
+	{
+		char *nullp;
+
+		nullp = NULL;
+
+		*nullp = 99;
+	}
 	abort();
 	/* exit if this fails */
 	exit(99);

@@ -1191,7 +1191,10 @@ void parse_colorset(int n, char *line)
 					ERR, "parse_colorset",
 					"error reading root background");
 			}
-			XDestroyImage(image);
+			if (image != None)
+			{
+				XDestroyImage(image);
+			}
 			if (mask_image != None)
 			{
 				XDestroyImage(mask_image);
