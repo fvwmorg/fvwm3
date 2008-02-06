@@ -1,3 +1,8 @@
+2008-02-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/PictureUtils.c (XPM_COLOR_CLOSENESS):
+	fixed compile error
+
 2008-02-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/Colorset.c (CreateOffsetBackgroundPixmap):

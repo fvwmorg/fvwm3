@@ -30,6 +30,7 @@
 
 #include "fvwmlib.h"
 #include "envvar.h"
+#include "Grab.h"
 #include "Parse.h"
 #include "ftime.h"
 #include "PictureBase.h"
