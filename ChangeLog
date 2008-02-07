@@ -1,3 +1,8 @@
+2008-02-07  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/add_window.c (setup_frame_window):
+	add CWCursor to window's valuemask (from Marc Lehmann's argb patch)
+
 2008-02-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/PictureUtils.c (XPM_COLOR_CLOSENESS):

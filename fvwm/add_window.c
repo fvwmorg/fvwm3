@@ -830,7 +830,8 @@ static void setup_frame_window(
 	XSetWindowAttributes attributes;
 	int valuemask;
 
-	valuemask = CWBackingStore | CWBackPixmap | CWEventMask | CWSaveUnder;
+	valuemask = CWBackingStore | CWBackPixmap | CWEventMask | CWSaveUnder
+		| CWCursor;
 	attributes.backing_store = NotUseful;
 	attributes.background_pixmap = None;
 	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
