@@ -9,6 +9,7 @@ Changes in beta release 2.5.25 (not released yet)
 
    - Handle the STATE_ADD command of the EWMH _NET_WM_STATE
      message from version 1.3 of the EWMH spec.
+   - Support transparency in ARGB windows
 
 * Bug Fixes:
 
