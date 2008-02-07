@@ -2,6 +2,8 @@
 
 	* fvwm/add_window.c (setup_frame_window):
 	add CWCursor to window's valuemask (from Marc Lehmann's argb patch)
+	add preliminary support for ARGB windows in fvwm (based on
+	Marc Lehman's argb patch)
 
 2008-02-06  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 

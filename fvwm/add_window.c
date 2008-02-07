@@ -829,9 +829,31 @@ static void setup_frame_window(
 {
 	XSetWindowAttributes attributes;
 	int valuemask;
+	int depth;
+	Visual *visual;
+	XRenderPictFormat *format;
 
 	valuemask = CWBackingStore | CWBackPixmap | CWEventMask | CWSaveUnder
 		| CWCursor;
+
+	/* This adds preliminary support for ARGB windows in fvwm. It should
+	   evolve to proper ARGB support in frames, menus and modules */
+	format=XRenderFindVisualFormat(dpy, fw->attr_backup.visual);
+	if (format->type==PictTypeDirect &&
+		format->direct.alphaMask > 0)
+	{
+		depth = fw->attr_backup.depth;
+		visual = fw->attr_backup.visual;
+		attributes.colormap = fw->attr_backup.colormap;
+		attributes.background_pixel = -1;
+		attributes.border_pixel = -1;
+		valuemask |= CWColormap | CWBackPixel | CWBorderPixel;
+	}
+	else
+	{
+		depth = CopyFromParent;
+		visual = CopyFromParent;
+	}
 	attributes.backing_store = NotUseful;
 	attributes.background_pixmap = None;
 	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
@@ -840,8 +862,8 @@ static void setup_frame_window(
 	/* create the frame window, child of root, grandparent of client */
 	FW_W_FRAME(fw) = XCreateWindow(
 		dpy, Scr.Root, fw->g.frame.x, fw->g.frame.y,
-		fw->g.frame.width, fw->g.frame.height, 0, CopyFromParent,
-		InputOutput, CopyFromParent, valuemask | CWCursor, &attributes);
+		fw->g.frame.width, fw->g.frame.height, 0, depth,
+		InputOutput, visual, valuemask, &attributes);
 	XSaveContext(dpy, FW_W(fw), FvwmContext, (caddr_t) fw);
 	XSaveContext(dpy, FW_W_FRAME(fw), FvwmContext, (caddr_t) fw);
 
