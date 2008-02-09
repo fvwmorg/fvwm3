@@ -33,6 +33,7 @@ Changes in beta release 2.5.25 (not released yet)
      colour set is used.
    - Fixed spradic crash in modules with root transparent
      background from colour sets.
+   - Fixed a possible crash if the last active module fails.
 
 -------------------------------------------------------------------
 

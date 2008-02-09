@@ -173,51 +173,35 @@ static inline void module_list_insert(fmodule *module, fmodule_list *list)
 
 static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list)
 {
-	fmodule_store *current;
+	fmodule_store **position;
 
 	if (module == NULL)
 	{
 		return NULL;
 	}
-	if (module == (*list)->module)
-	{
-		DBUG("module_list_remove", "Removing from module list");
-		current=*list;
-		*list = (*list)->next;
-		free(current);
-	}
-	else
-	{
-		fmodule_store *parent;
 
-		/* find it*/
-		for (
-			current = (*list)->next, parent = (*list);
-			current != NULL;
-			parent = current, current = current->next)
+	for (
+		position = list; *position != NULL;
+		position = &((*position)->next))
+	{
+		if ((*position)->module == module)
 		{
-			if (current->module == module)
-			{
-				break;
-			}
-		}
-		/* remove from the list */
-		if (current != NULL)
-		{
+			/* found it */
+			fmodule_store *current;
+
 			DBUG("module_list_remove", "Removing from module list");
-			parent->next = current->next;
+			current = *position;
+			*position = (*position)->next;
 			free(current);
-		}
-		else
-		{
-			DBUG("module_list_remove",
-				"Tried to remove a not listed module!");
 
-			return NULL;
+			return module;
 		}
 	}
 
-	return module;
+	/* module not found */
+	DBUG("module_list_remove", "Tried to remove a not listed module!");
+
+	return NULL;
 }
 
 static inline void module_list_destroy(fmodule_list *list)
