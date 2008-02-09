@@ -1,5 +1,10 @@
 2008-02-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* fvwm/events.c (register_event_group)
+	(InitEventHandlerJumpTable, dispatch_event):
+	use separate jump tables for events defined by X-extensions
+	to eliminate the need to ovverride the LASTEvent value.
+
 	* fvwm/module_list.c (module_list_remove):
 	include the case where the module is first in the list in
 	the loop, fixing a segmentaion fault when the list was empty.

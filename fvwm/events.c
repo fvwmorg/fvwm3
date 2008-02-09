@@ -109,15 +109,6 @@
 #define XUrgencyHint            (1L << 8)
 #endif
 
-/*
-** LASTEvent is the number of X events defined - it should be defined
-** in X.h (to be like 35), but since extension (eg SHAPE) events are
-** numbered beyond LASTEvent, we need to use a bigger number than the
-** default, so let's undefine the default and use 256 instead.
-*/
-#undef LASTEvent
-#define LASTEvent 256
-
 #define CR_MOVERESIZE_MASK (CWX | CWY | CWWidth | CWHeight | CWBorderWidth)
 
 /* ---------------------------- local macros ------------------------------- */
@@ -150,6 +141,14 @@ typedef struct
 	unsigned do_raise : 1;
 } hfrc_ret_t;
 
+typedef struct event_group
+{
+	int base;
+	int count;
+	PFEH *jump_table;
+	struct event_group *next;
+} event_group_t;
+
 /* ---------------------------- forward declarations ----------------------- */
 
 /* ---------------------------- local variables ---------------------------- */
@@ -158,7 +157,7 @@ static int Button = 0;
 static const FvwmWindow *xcrossing_last_grab_window = NULL;
 STROKE_CODE(static int send_motion);
 STROKE_CODE(static char sequence[STROKE_MAX_SEQUENCE + 1]);
-static PFEH EventHandlerJumpTable[LASTEvent];
+static event_group_t *base_event_group = NULL;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -3872,12 +3871,53 @@ void SendConfigureNotify(
 	return;
 }
 
+/* Add an event group to the event handler */
+int register_event_group(int event_base, int event_count, PFEH *jump_table)
+{
+	/* insert into the list */
+	event_group_t *group;
+	event_group_t *position = base_event_group;
+	event_group_t *prev_position = NULL;
+
+	while (
+		position != NULL &&
+		position->base + position->count < event_base)
+	{
+		prev_position = position;
+		position = position->next;
+	}
+	if ((position != NULL && position->base < event_base + event_count))
+	{
+		/* there is already an event group registered at the specified
+		 * event range, or the base is before the base X events */
+
+		return 1;
+	}
+	/* create the group structure (these are not freed until fvwm exits) */
+	group = (event_group_t*)safemalloc(sizeof(event_group_t));
+	group->base = event_base;
+	group->count = event_count;
+	group->jump_table = jump_table;
+	group->next = position;
+	if (prev_position != NULL)
+	{
+		prev_position->next = group;
+	}
+	else
+	{
+		base_event_group = group;
+	}
+
+	return 0;
+}
+
 /*
 ** Procedure:
 **   InitEventHandlerJumpTable
 */
 void InitEventHandlerJumpTable(void)
 {
+	static PFEH EventHandlerJumpTable[LASTEvent];
 	int i;
 
 	for (i=0; i<LASTEvent; i++)
@@ -3901,11 +3941,6 @@ void InitEventHandlerJumpTable(void)
 	EventHandlerJumpTable[KeyRelease] =       HandleKeyRelease;
 	EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
 	EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
-	if (FShapesSupported)
-	{
-		EventHandlerJumpTable[FShapeEventBase+FShapeNotify] =
-			HandleShapeNotify;
-	}
 	EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
 	EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
 	EventHandlerJumpTable[ReparentNotify] =   HandleReparentNotify;
@@ -3917,6 +3952,32 @@ void InitEventHandlerJumpTable(void)
 #else /* no MOUSE_DROPPINGS */
 	STROKE_CODE(stroke_init());
 #endif /* MOUSE_DROPPINGS */
+	if (register_event_group(0, LASTEvent, EventHandlerJumpTable))
+	{
+		/* should never happen */
+		fvwm_msg(ERR, "InitEventHandlerJumpTable",
+			 "Faild to initialize event handlers");
+		exit(1);
+	}
+	if (FShapesSupported)
+	{
+		static PFEH shape_jump_table[FShapeNumberEvents];
+
+		for (i = 0; i < FShapeNumberEvents; i++)
+		{
+			shape_jump_table[i] = NULL;
+		}
+		shape_jump_table[FShapeNotify] = HandleShapeNotify;
+		if (
+			register_event_group(
+				FShapeEventBase, FShapeNumberEvents,
+				shape_jump_table))
+		{
+			fvwm_msg(ERR, "InitEventHandlerJumpTable",
+				 "Faild to init Shape event handler");
+		}
+	}
+
 
 	return;
 }
@@ -3926,6 +3987,7 @@ void dispatch_event(XEvent *e)
 {
 	Window w = e->xany.window;
 	FvwmWindow *fw;
+	event_group_t *event_group;
 
 	DBUG("dispatch_event", "Routine Entered");
 
@@ -3953,7 +4015,16 @@ void dispatch_event(XEvent *e)
 		fw = NULL;
 	}
 	last_event_type = e->type;
-	if (EventHandlerJumpTable[e->type])
+	event_group = base_event_group;
+	while (event_group != NULL && event_group->base > e->type)
+	{
+		event_group = event_group->next;
+	}
+
+	if (
+		event_group != NULL &&
+		e->type - event_group->base < event_group->count &&
+		event_group->jump_table[e->type - event_group->base] != NULL)
 	{
 		evh_args_t ea;
 		exec_context_changes_t ecc;
@@ -3967,7 +4038,7 @@ void dispatch_event(XEvent *e)
 		ea.exc = exc_create_context(
 			&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W |
 			ECC_WCONTEXT);
-		(*EventHandlerJumpTable[e->type])(&ea);
+		(*event_group->jump_table[e->type - event_group->base])(&ea);
 		exc_destroy_context(ea.exc);
 	}
 
