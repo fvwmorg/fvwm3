@@ -1,3 +1,11 @@
+2008-02-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* commands/Style.xml:
+	corrected references to non existing styles:
+	!DecorHint -> !MwmDecor, !FuncHint -> !MwmFunctions,
+	!Override -> !HintOverride,
+	!ResizeOverride -> !ResizeHintOverride
+
 2008-01-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* commands/Style.xml:
