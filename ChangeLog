@@ -1,3 +1,8 @@
+2008-02-10  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/fvwm.c (main):
+	condense the X visual selection code
+
 2008-02-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/events.c (register_event_group)

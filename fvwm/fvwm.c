@@ -2243,29 +2243,45 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	if (visualClass != -1)
+	/* if a visual is specified, try to use it */
+	if (visualClass != -1 || visualId != -1)
 	{
-		/* grab the best visual of the required class */
-		XVisualInfo template, *vizinfo;
+		XVisualInfo template, *vinfo;
 		int total, i;
+		long mask;
 
 		Pdepth = 0;
 		template.screen = Scr.screen;
 		template.class = visualClass;
-		vizinfo = XGetVisualInfo(
-			dpy, VisualScreenMask | VisualClassMask, &template,
+		template.visualid = visualId;		
+		mask = VisualScreenMask;
+
+		if (visualClass != -1)
+		{
+			mask |= VisualClassMask;
+		}
+		else if (visualId != -1)
+		{
+			mask |= VisualIDMask;
+		}
+
+		vinfo = XGetVisualInfo(
+			dpy, mask, &template,
 			&total);
+
 		if (total)
 		{
+			/* visualID's are unique so there will only be one.
+			   Select the visualClass with the biggest depth */
 			for (i = 0; i < total; i++)
 			{
-				if (vizinfo[i].depth > Pdepth)
+				if (vinfo[i].depth > Pdepth)
 				{
-					Pvisual = vizinfo[i].visual;
-					Pdepth = vizinfo[i].depth;
+					Pvisual = vinfo[i].visual;
+					Pdepth = vinfo[i].depth;
 				}
 			}
-			XFree(vizinfo);
+			XFree(vinfo);
 			/* have to have a colormap for non-default visual
 			 * windows */
 			if (Pvisual->class == DirectColor)
@@ -2280,45 +2296,12 @@ int main(int argc, char **argv)
 			}
 			Pdefault = False;
 		}
-		else
+		else if (visualClass != -1)
 		{
 			fvwm_msg(
 				ERR, "main", "Cannot find visual class %d",
 				visualClass);
 			visualClass = -1;
-		}
-	}
-	else if (visualId != -1)
-	{
-		/* grab visual id asked for */
-		XVisualInfo template, *vizinfo;
-		int total;
-
-		Pdepth = 0;
-		template.screen = Scr.screen;
-		template.visualid = visualId;
-		vizinfo = XGetVisualInfo(
-			dpy, VisualScreenMask | VisualIDMask, &template,
-			&total);
-		if (total)
-		{
-			/* visualID's are unique so there will only be one */
-			Pvisual = vizinfo[0].visual;
-			Pdepth = vizinfo[0].depth;
-			XFree(vizinfo);
-			/* have to have a colormap for non-default visual
-			 * windows */
-			if (Pvisual->class == DirectColor)
-			{
-				Pcmap = XCreateColormap(
-					dpy, Scr.Root, Pvisual, AllocAll);
-			}
-			else
-			{
-				Pcmap = XCreateColormap(
-					dpy, Scr.Root, Pvisual, AllocNone);
-			}
-			Pdefault = False;
 		}
 		else
 		{
