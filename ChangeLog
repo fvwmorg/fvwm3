@@ -1,3 +1,8 @@
+2008-02-12  Renato Caldas  <seventhguardian@gmail.com>
+
+	* fvwm/fvwm.c (main):
+	further condense the X visual selection code
+
 2008-02-10  Renato Caldas  <seventhguardian@gmail.com>
 
 	* fvwm/fvwm.c (main):

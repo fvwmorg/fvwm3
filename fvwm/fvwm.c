@@ -2243,47 +2243,86 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	/* if a visual is specified, try to use it */
-	if (visualClass != -1 || visualId != -1)
 	{
-		XVisualInfo template, *vinfo;
+		XVisualInfo template, *vinfo = NULL;
 		int total, i;
-		long mask;
 
 		Pdepth = 0;
+		Pdefault = False;
+		total = 0;
 		template.screen = Scr.screen;
 		template.class = visualClass;
 		template.visualid = visualId;		
-		mask = VisualScreenMask;
-
 		if (visualClass != -1)
 		{
-			mask |= VisualClassMask;
+			vinfo = XGetVisualInfo(dpy,
+					VisualScreenMask|VisualClassMask,
+					&template, &total);
+			if (!total)
+			{
+				fvwm_msg(
+					ERR, "main",
+					"Cannot find visual class %d",
+					visualClass);
+			}
 		}
 		else if (visualId != -1)
 		{
-			mask |= VisualIDMask;
+			vinfo = XGetVisualInfo(dpy,
+					VisualScreenMask|VisualIDMask,
+					&template, &total);
+			if (!total)
+			{
+				fvwm_msg(
+					ERR, "main",
+					"VisualId 0x%x is not valid ",
+					visualId);
+			}
 		}
 
-		vinfo = XGetVisualInfo(
-			dpy, mask, &template,
-			&total);
-
-		if (total)
+		/* visualID's are unique so there will only be one.
+		   Select the visualClass with the biggest depth */
+		for (i = 0; i < total; i++)
 		{
-			/* visualID's are unique so there will only be one.
-			   Select the visualClass with the biggest depth */
-			for (i = 0; i < total; i++)
+			if (vinfo[i].depth > Pdepth)
 			{
-				if (vinfo[i].depth > Pdepth)
+				Pvisual = vinfo[i].visual;
+				Pdepth = vinfo[i].depth;
+			}
+		}
+		if (vinfo)
+		{
+			XFree(vinfo);
+		}
+
+		/* Detection of a card with 2 hardware colormaps (8+24) which
+		 * use depth 8 for the default. We can use our own depth 24
+		 * cmap without affecting other applications. */
+		if (Pdepth == 0 && DefaultDepth(dpy, Scr.screen) <= 8)
+		{
+			template.class = TrueColor;
+			vinfo = XGetVisualInfo(
+				dpy, VisualScreenMask|VisualClassMask,
+				&template, &total);
+
+			for(i = 0; i<total; i++)
+			{
+				if (Pdepth < vinfo[i].depth &&
+				    vinfo[i].depth > 8)
 				{
 					Pvisual = vinfo[i].visual;
 					Pdepth = vinfo[i].depth;
 				}
 			}
-			XFree(vinfo);
-			/* have to have a colormap for non-default visual
-			 * windows */
+			if (vinfo)
+			{
+				XFree(vinfo);
+			}
+		}
+
+		/* have to have a colormap for non-default visual windows */
+		if (Pdepth > 0)
+		{
 			if (Pvisual->class == DirectColor)
 			{
 				Pcmap = XCreateColormap(
@@ -2294,63 +2333,9 @@ int main(int argc, char **argv)
 				Pcmap = XCreateColormap(
 					dpy, Scr.Root, Pvisual, AllocNone);
 			}
-			Pdefault = False;
 		}
-		else if (visualClass != -1)
-		{
-			fvwm_msg(
-				ERR, "main", "Cannot find visual class %d",
-				visualClass);
-			visualClass = -1;
-		}
+		/* use default visuals if none found so far */
 		else
-		{
-			fvwm_msg(
-				ERR, "main", "VisualId 0x%x is not valid ",
-				visualId);
-			visualId = -1;
-		}
-	}
-
-	/* use default visuals if none found so far */
-	if (visualClass == -1 && visualId == -1)
-	{
-		Pdepth = 0;
-
-		/* Detection of a card with 2 hardware colormaps (8+24) which
-		 * use depth 8 for the default. We can use our own depth 24
-		 * cmap without affecting other applications. */
-		if (DefaultDepth(dpy, Scr.screen) <= 8)
-		{
-			XVisualInfo template, *vizinfo = NULL;
-			int total,i;
-
-			template.screen = Scr.screen;
-			template.class = TrueColor;
-			vizinfo = XGetVisualInfo(
-				dpy, VisualScreenMask|VisualClassMask,
-				&template, &total);
-			for(i = 0; i<total; i++)
-			{
-				if (Pdepth < vizinfo[i].depth &&
-				    vizinfo[i].depth > 8)
-				{
-					Pvisual = vizinfo[i].visual;
-					Pdepth = vizinfo[i].depth;
-				}
-			}
-			if (vizinfo)
-			{
-				XFree(vizinfo);
-			}
-			if (Pdepth > 0)
-			{
-				Pcmap = XCreateColormap(
-					dpy, Scr.Root, Pvisual, AllocNone);
-				Pdefault = False;
-			}
-		}
-		if (Pdepth == 0)
 		{
 			Pvisual = DefaultVisual(dpy, Scr.screen);
 			Pdepth = DefaultDepth(dpy, Scr.screen);
