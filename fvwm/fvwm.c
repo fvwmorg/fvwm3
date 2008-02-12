@@ -2251,30 +2251,28 @@ int main(int argc, char **argv)
 		Pdefault = False;
 		total = 0;
 		template.screen = Scr.screen;
-		template.class = visualClass;
-		template.visualid = visualId;		
 		if (visualClass != -1)
 		{
+			template.class = visualClass;
 			vinfo = XGetVisualInfo(dpy,
 					VisualScreenMask|VisualClassMask,
 					&template, &total);
 			if (!total)
 			{
-				fvwm_msg(
-					ERR, "main",
+				fvwm_msg(ERR, "main",
 					"Cannot find visual class %d",
 					visualClass);
 			}
 		}
 		else if (visualId != -1)
 		{
+			template.visualid = visualId;		
 			vinfo = XGetVisualInfo(dpy,
 					VisualScreenMask|VisualIDMask,
 					&template, &total);
 			if (!total)
 			{
-				fvwm_msg(
-					ERR, "main",
+				fvwm_msg(ERR, "main",
 					"VisualId 0x%x is not valid ",
 					visualId);
 			}
