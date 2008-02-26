@@ -1,3 +1,9 @@
+2008-02-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* modules/Makefile.am (clean):
+	* commands/Makefile.am (clean):
+	fixed "make distclean"
+
 2008-02-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* commands/Style.xml:

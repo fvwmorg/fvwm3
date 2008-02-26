@@ -12,7 +12,7 @@ all: @DOC_COMMANDS_HTML@  WindowsDesk.html
 endif
 
 clean:
-	rm -f @DOC_COMMANDS_HTML@
+	rm -f @DOC_COMMANDS_HTML@ WindowsDesk.html
 
 distclean-local: clean
 

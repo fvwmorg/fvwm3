@@ -25,7 +25,7 @@ doc_DATA = $(HTML_FILES) FvwmTabs.html
 endif
 
 clean:
-	rm -f $(HTML_FILES)
+	rm -f $(HTML_FILES) FvwmTabs.html
 
 distclean-local: clean
 
