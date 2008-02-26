@@ -1,5 +1,9 @@
 2008-02-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* NEWS:
+	* configure.ac:
+	increased version to 2.5.26
+
 	* ANNOUNCE:
 	* NEWS:
 	* configure.ac:
