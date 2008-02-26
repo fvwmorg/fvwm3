@@ -1,37 +1,39 @@
-Fvwm is a powerful window manager.  Version 2.5.24 is a beta
-release that adds a couple of features and fixes a few bugs in
-2.5.23. Please be aware that any features introduced in the 2.5.x
+Fvwm is a powerful window manager.  Version 2.5.25 is a beta
+maintenance release fixed a number of crashes and other
+bugs. Please be aware that any features introduced in the 2.5.x
 development versions may be renamed, changed or removed without
 notice before 2.6.0.
 
-Upgrading from 2.5.23 or earlier is recommended.
+Upgrading from 2.5.24 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - Disabled paging during interactive resize operations by
-     default (see 2.5.20) as it is annoying to many people.
-   - New style command options:
-       EdgeMoveResistance
-       EdgeMoveDelay
-       EdgeResizeDelay
-       SnapGrid
-       SnapAttraction
-     that replace the now obsolete commands EdgeResistance,
-     SnapGrid and SnapAttraction.  The EdgeResistance command has
-     a new syntax with only one argument.
-   - New command MenuCloseAndExec for menu bindinngs that can be
-     used to trigger certain commands from a menu without an
-     associated item.  For example, with
-       Key F1 MTI[]-_ A MenuCloseAndExec Menu RootMenu
-     the RootMenu can be opened from any other menu by pressing
-     F1.
+   - Handle the STATE_ADD command of the EWMH _NET_WM_STATE
+     message from version 1.3 of the EWMH spec.
+   - Support transparency in ARGB windows
 
 * Bug Fixes:
 
-   - Sometimes a window jumped by half the screen's size when
-     moving with the mouse and hitting the border of the desktop.
-   - Fixed the "screen w" argument of the Move and other commands.
-   - Clicking on a menu title did not close the menu by default.
-   - Temporary files in FvwmPerl overwrote each other.
+   - Fixed problem with windows disappearing when created
+     unless the style Unmanaged was used.
+   - Edge move delay was used as resistance for the top edge.
+   - Fixed a parsing problem of the screen argument of the
+     SnapAttraction style.
+   - Some html documentation files were not installed.
+   - Fixed a memory leak in internationalized font handling.
+   - Fixed a bug in MinOverlap placement.
+   - Fixed the StickyAcrossPages style in the FvwmPager.
+   - Fixed the determination of the X charset on UTF-8 systems.
+   - Fixed a crash when certain EWMH messages were sent to
+     unmanaged windows.
+   - Fixed a memory leak in multibyte codepage code.
+   - Ignore the EWMH staysontop and staysonbottom hints if the
+     EWMHIgnoreStackingOrderHints style is used.
+   - Fixed a sporadic crash when the root background set by gnome,
+     fvwm-root, esetroot etc. changes and a root transparent
+     colour set is used.
+   - Fixed spradic crash in modules with root transparent
+     background from colour sets.
+   - Fixed a possible crash if the last active module fails.
