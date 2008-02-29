@@ -1,3 +1,9 @@
+2008-02-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/add_window.c (setup_frame_window):
+	fix core dump with ARGB detection code
+	fix compilation without XRender
+
 2008-02-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:

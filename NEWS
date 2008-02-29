@@ -5,6 +5,11 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.26 (not released yet)
 
+* Bug fixes:
+
+   - Fix crash in ARGB visual detection code
+   - Fix compilation without XRender support
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.25 (26-Feb-2008)

@@ -831,15 +831,15 @@ static void setup_frame_window(
 	int valuemask;
 	int depth;
 	Visual *visual;
-	XRenderPictFormat *format;
+	FRenderPictFormat *format;
 
 	valuemask = CWBackingStore | CWBackPixmap | CWEventMask | CWSaveUnder
 		| CWCursor;
 
 	/* This adds preliminary support for ARGB windows in fvwm. It should
 	   evolve to proper ARGB support in frames, menus and modules */
-	format=XRenderFindVisualFormat(dpy, fw->attr_backup.visual);
-	if (format->type==PictTypeDirect &&
+	format=FRenderFindVisualFormat(dpy, fw->attr_backup.visual);
+	if (format != NULL && format->type==PictTypeDirect &&
 		format->direct.alphaMask > 0)
 	{
 		depth = fw->attr_backup.depth;
