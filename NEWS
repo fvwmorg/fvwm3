@@ -7,8 +7,9 @@ Changes in beta release 2.5.26 (not released yet)
 
 * Bug fixes:
 
-   - Fix crash in ARGB visual detection code
-   - Fix compilation without XRender support
+   - Fixed crash in ARGB visual detection code.
+   - Fixed compilation without XRender support.
+   - Fixed drawing of background pictures in menu items and titles.
 
 -------------------------------------------------------------------
 

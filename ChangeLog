@@ -1,3 +1,8 @@
+2008-03-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menuitem.c (draw_highlight_background):
+	fixed drawing of background pictures in menu items
+
 2008-02-29  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/add_window.c (setup_frame_window):

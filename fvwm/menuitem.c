@@ -121,7 +121,7 @@ static void draw_tear_off_bar(
 	return;
 }
 
-static void draw_higlight_background(
+static void draw_highlight_background(
 	struct MenuPaintItemParameters *mpip, int x, int y, int width,
 	int height, colorset_t *cs, GC gc)
 {
@@ -130,7 +130,7 @@ static void draw_higlight_background(
 		Pixmap p;
 
 		p = CreateOffsetBackgroundPixmap(
-			dpy, mpip->w, x, y, width, height, cs, Pdepth, gc,
+			dpy, mpip->w, 0, 0, width, height, cs, Pdepth, gc,
 			False);
 		switch (cs->pixmap_type)
 		{
@@ -158,7 +158,6 @@ static void draw_higlight_background(
 				gcv.ts_x_origin = x;
 				gcm|=GCTileStipXOrigin;
 			}
-
 			bgc = fvwmlib_XCreateGC(dpy, mpip->w, gcm, &gcv);
 			XFillRectangle(dpy, mpip->w, bgc, x, y, width, height);
 			XFreeGC(dpy, bgc);
@@ -503,7 +502,7 @@ void menuitem_paint(
 				2 * relief_thickness;
 			if (ST_DO_HILIGHT_BACK(ms))
 			{
-				draw_higlight_background(
+				draw_highlight_background(
 					mpip, lit_x_start,
 					y_offset + relief_thickness,
 					lit_x_end - lit_x_start,
@@ -551,7 +550,7 @@ void menuitem_paint(
 			MDIM_HILIGHT_WIDTH(*dim) > 0 &&
 			ST_DO_HILIGHT_TITLE_BACK(ms))
 		{
-			draw_higlight_background(
+			draw_highlight_background(
 				mpip, lit_x_start,
 				y_offset + relief_thickness,
 				lit_x_end - lit_x_start,
