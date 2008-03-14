@@ -173,6 +173,10 @@
 #define MST_ITEM_FORMAT(m)            ((m)->s->ms->feel.item_format)
 #define ST_SELECT_ON_RELEASE_KEY(s)   ((s)->feel.select_on_release_key)
 #define MST_SELECT_ON_RELEASE_KEY(m)  ((m)->s->ms->feel.select_on_release_key)
+#define ST_VERTICAL_MARGIN_TOP(s)     ((s)->look.vertical_margins.top)
+#define MST_VERTICAL_MARGIN_TOP(m)	  ((m)->s->ms->look.vertical_margins.top)
+#define ST_VERTICAL_MARGIN_BOTTOM(s)  ((s)->look.vertical_margins.bottom)
+#define MST_VERTICAL_MARGIN_BOTTOM(m)	((m)->s->ms->look.vertical_margins.bottom)
 
 /* ---------------------------- type definitions --------------------------- */
 
@@ -288,6 +292,11 @@ typedef struct MenuLook
 		signed char separator_above;
 		signed char separator_below;
 	} vertical_spacing;
+	struct
+	{
+		unsigned char top;
+		unsigned char bottom;
+	} vertical_margins;
 	struct
 	{
 		int menu;

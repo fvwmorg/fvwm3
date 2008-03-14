@@ -72,6 +72,7 @@ SubmenusRight / SubmenusLeft,
 SelectOnRelease,
 ItemFormat,
 VerticalItemSpacing,
+VerticalMargins,
 VerticalTitleSpacing,
 AutomaticHotkeys / !AutomaticHotkeys,
 MouseWheel,
@@ -99,7 +100,7 @@ reset all options to the style with the same name in former
 versions of fvwm.  The default for new menu styles is
 <emphasis remap='I'>Fvwm</emphasis>
 style.  These options override all others except
-<emphasis remap='I'>Foreground</emphasis>, <emphasis remap='I'>Background</emphasis>, <emphasis remap='I'>Greyed</emphasis>, <emphasis remap='I'>HilightBack</emphasis>, 
+<emphasis remap='I'>Foreground</emphasis>, <emphasis remap='I'>Background</emphasis>, <emphasis remap='I'>Greyed</emphasis>, <emphasis remap='I'>HilightBack</emphasis>,
 <emphasis remap='I'>ActiveFore</emphasis> and <emphasis remap='I'>PopupDelay</emphasis>,
 so they should be used only as the first option specified for a
 menu style or to reset the style to defined behavior.  The same
@@ -684,6 +685,15 @@ in pixels below it.  Negative numbers do not make much sense and
 may screw up the menu completely.  If no arguments are given or
 the given arguments are invalid, the built-in defaults are used:
 one pixel above the item or title and two below.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="VerticalMargins"/>
+can be used to add some padding at the top and bottom of menus.
+It takes two numeric arguments that must be positive integers (or
+zero).  If the number of arguments or its values are incorrect,
+fvwm defaults both to 0, which means no padding at all.  If the
+values are correct, the first one is used for the top margin, and
+the second one is used for the bottom margin.</para>
 
 <para>
 <fvwmopt cmd="MenuStyle" opt="SubmenusLeft"/>

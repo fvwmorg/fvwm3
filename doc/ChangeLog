@@ -1,3 +1,8 @@
+2008-03-12  Jes~s Guerrero  <i92guboj(at)terra(dot)es>
+
+	* doc/commands/MenuStyle.xml:
+	documentation for VerticalMargins
+
 2008-02-26  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* modules/Makefile.am (clean):

@@ -1,3 +1,32 @@
+2008-03-12  Jes~s Guerrero  <i92guboj(at)terra(dot)es>
+
+	* fvwm/menus.c (size_menu_vertically):
+	added paddings at the top and bottom of the menus
+
+	* fvwm/menustyle.c (parse_vertical_margins_line):
+	new function to parse the VerticalMargins new MenuStyle
+	command
+
+	* fvwm/menustyle.c (menustyle_get_styleopt_index):
+	added the VerticalMargins option to the list
+
+	* fvwm/menustyle.c (menustyle_parse_style):
+	added default values for the padding, and a case clause
+	for the specific case when you invoke the VerticalMargins
+	MenuStyle
+
+	* fvwm/menustyle.c (menustyle_copy):
+	added two lines to copy the menu styles from origin to destiny
+
+	* fvwm/menustyle.h:
+	added macros for the vertical padding stuff
+
+	* fvwm/menustyle.h (struct MenuLook):
+	added sub-structure to hold the VerticalMargins
+
+	* fvwm/libs/defaults.h:
+	added one define for MAX_MENU_MARGIN
+
 2008-03-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menuitem.c (draw_highlight_background):

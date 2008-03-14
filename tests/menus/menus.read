@@ -12,6 +12,7 @@ ImagePath /tmp:+
 # - TitleUnderlines0 / TitleUnderlines1 / TitleUnderlines2
 # - VerticalItemSpacing
 # - VerticalTitleSpacing
+# - VerticalMargins
 # - BorderWidth
 # - Hilight3DThickness / Hilight3DThick / Hilight3DThin / Hilight3DOff
 # - ItemFormat:
@@ -129,6 +130,24 @@ NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines1, verticalitemsp
 UseDefaultItems
 DoTest
 NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines1, verticalitemspacing 1 -1" "vis 1 -1" "vis 1 -1"
+UseDefaultItems
+DoTest
+NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines1, verticalmargins 10 20" "vis 10 20" "vis 10 20"
+UseDefaultItems
+DoTest
+NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines2, verticalmargins 0 0" "vis 10 20" "vis 10 20"
+UseDefaultItems
+DoTest
+NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines1, verticalmargins" "vis 10 20" "vis 10 20"
+UseDefaultItems
+DoTest
+NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines2, verticalmargins -10 -20" "vis 10 20" "vis 10 20"
+UseDefaultItems
+DoTest
+NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines1, verticalmargins -10 20" "vis 10 20" "vis 10 20"
+UseDefaultItems
+DoTest
+NewTest "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|" ", titleunderlines2, verticalmargins 10 -20" "vis 10 20" "vis 10 20"
 UseDefaultItems
 DoTest
 

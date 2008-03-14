@@ -1603,7 +1603,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 		separator_height = (last_item_has_relief) ?
 			MENU_SEPARATOR_HEIGHT + relief_thickness :
 			MENU_SEPARATOR_TOTAL_HEIGHT;
-		MI_Y_OFFSET(mi) = y;
+		MI_Y_OFFSET(mi) = y + MST_VERTICAL_MARGIN_TOP(msp->menu);
 		if (MI_IS_TITLE(mi))
 		{
 			MI_HEIGHT(mi) = MST_PTITLEFONT(msp->menu)->height +
@@ -1798,7 +1798,9 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	{
 		y += relief_thickness;
 	}
-	MR_HEIGHT(msp->menu) = y + MST_BORDER_WIDTH(msp->menu);
+	MR_HEIGHT(msp->menu) = y + MST_BORDER_WIDTH(msp->menu)
+		+ MST_VERTICAL_MARGIN_TOP(msp->menu)
+		+ MST_VERTICAL_MARGIN_BOTTOM(msp->menu);
 
 	return has_continuation_menu;
 }

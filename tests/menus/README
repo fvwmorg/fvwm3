@@ -23,6 +23,7 @@ functionality tested:
     TitleUnderlines0 / TitleUnderlines1 / TitleUnderlines2
     VerticalItemSpacing
     VerticalTitleSpacing
+    VerticalMargins
     BorderWidth
     Hilight3DThickness / Hilight3DThick / Hilight3DThin / Hilight3DOff
     ItemFormat:

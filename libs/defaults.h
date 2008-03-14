@@ -89,6 +89,8 @@
 #define MIN_VERTICAL_SPACING            -100 /* pixels */
 /* maximum for above value */
 #define MAX_VERTICAL_SPACING             100 /* pixels */
+/* maximum for above value */
+#define MAX_MENU_MARGIN                   50 /* pixels */
 /* width of a tab in the item format of a menu */
 #define MENU_TAB_WIDTH                     8 /* spaces */
 /* This is the tile width or height for V and H gradients. I guess this should

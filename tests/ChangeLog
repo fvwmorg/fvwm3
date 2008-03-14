@@ -1,3 +1,10 @@
+2008-03-12  Jes~s Guerrero  <i92guboj(at)terra(dot)es>
+
+	* tests/menus/menus.read:
+	* tests/menus/README:
+	* tests/purify/purify.fvwm2rc:
+	test stuff for VerticalMargins
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* perl/module-winlist:

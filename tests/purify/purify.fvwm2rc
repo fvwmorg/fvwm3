@@ -352,9 +352,13 @@ AddToFunc MenuStyle-Func
 # Attempt to use every option:
  + I MenuStyle FvwmStyle Fvwm, BorderWidth 10, Foreground black, Background Gray
  + I MenuStyle FvwmStyle Greyed blue,  HilightBack, ActiveFore, Hilight3DThick
+ + I MenuStyle FvwmStyle VerticalMargins 0 0
  + I MenuStyle FvwmStyle Animation, Font "xft:monospace;9x15bold/iso8859-1"
+ + I MenuStyle FvwmStyle VerticalMargins -1 1
  + I MenuStyle FvwmStyle PopupOffset 2 2, TitleWarp, DoubleClickTime 500
+ + I MenuStyle FvwmStyle VerticalMargins 1 -1
  + I MenuStyle FvwmStyle PopupImmediately, PopdownImmediately
+ + I MenuStyle FvwmStyle VerticalMargins -1 -1
  + I MenuStyle FvwmStyle TitleUnderlines0, SeparatorsLong, TrianglesSolid
  + I MenuStyle FvwmStyle AutomaticHotkeys, PopupAsRootMenu, RemoveSubmenus
  + I MenuStyle FvwmStyle SubmenusRight, SelectOnRelease Alt, VerticalItemSpacing -2

@@ -305,6 +305,27 @@ static void parse_vertical_spacing_line(
 	return;
 }
 
+static void parse_vertical_margins_line(
+	char *args, unsigned char *top, unsigned char *bottom,
+	signed char top_default, signed char bottom_default)
+{
+	int val[2];
+
+	if (GetIntegerArguments(args, NULL, val, 2) != 2 ||
+	    val[0] < 0 || val[0] > MAX_MENU_MARGIN ||
+	    val[1] < 0 || val[1] > MAX_MENU_MARGIN)
+	{
+		/* invalid or missing parameters, return to default */
+		*top = top_default;
+		*bottom = bottom_default;
+		return;
+	}
+	*top = val[0];
+	*bottom = val[1];
+
+	return;
+}
+
 static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 {
 	char *buffer, *rest;
@@ -406,6 +427,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"TrianglesUseFore",
 		"TitleColorset", "HilightTitleBack",
 		"TitleFont",
+		"VerticalMargins",
 		NULL
 	};
 
@@ -959,6 +981,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 
 			/* common settings */
+			ST_VERTICAL_MARGIN_TOP(tmpms) = 0;
+			ST_VERTICAL_MARGIN_BOTTOM(tmpms) = 0;
 			ST_CSET_MENU(tmpms) = 0;
 			ST_HAS_MENU_CSET(tmpms) = 0;
 			ST_CSET_ACTIVE(tmpms) = 0;
@@ -1567,7 +1591,12 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			has_gc_changed = True;
 			break;
-
+		case 62: /* VerticalMargins */
+			parse_vertical_margins_line(
+				args, &ST_VERTICAL_MARGIN_TOP(tmpms),
+				&ST_VERTICAL_MARGIN_BOTTOM(tmpms),
+				0, 0);
+			break;
 
 #if 0
 		case 99: /* PositionHints */
@@ -1743,6 +1772,9 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	ST_DO_POPUP_IMMEDIATELY(destms) = ST_DO_POPUP_IMMEDIATELY(origms);
 	/* DoubleClickTime */
 	ST_DOUBLE_CLICK_TIME(destms) = ST_DOUBLE_CLICK_TIME(origms);
+	/* VerticalMargins */
+	ST_VERTICAL_MARGIN_TOP(destms) = ST_VERTICAL_MARGIN_TOP(origms);
+	ST_VERTICAL_MARGIN_BOTTOM(destms) = ST_VERTICAL_MARGIN_BOTTOM(origms);
 
 	/* SidePic */
 	if (ST_SIDEPIC(destms))
