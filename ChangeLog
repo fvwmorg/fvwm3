@@ -1,3 +1,10 @@
+2008-03-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menus.c (calc_normal_item_height):
+	(calc_more_item_height):
+	(size_menu_vertically):
+	fix calculations so the menu fit on the screen height
+
 2008-03-12  Jes~s Guerrero  <i92guboj(at)terra(dot)es>
 
 	* fvwm/menus.c (size_menu_vertically):

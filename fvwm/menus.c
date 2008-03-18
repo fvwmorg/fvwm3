@@ -1565,6 +1565,38 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	return;
 }
 
+static int calc_more_item_height(MenuSizingParameters *msp)
+{
+	int height;
+
+	height =
+		MST_PSTDFONT(msp->menu)->height +
+		MST_ITEM_GAP_ABOVE(msp->menu) +
+		MST_ITEM_GAP_BELOW(msp->menu) +
+		MST_RELIEF_THICKNESS(msp->menu);
+
+	return height;
+}
+
+static int calc_normal_item_height(MenuSizingParameters *msp, MenuItem *mi)
+{
+	int height;
+
+	height =
+		MST_ITEM_GAP_ABOVE(msp->menu) +
+		MST_ITEM_GAP_BELOW(msp->menu) +
+		MST_RELIEF_THICKNESS(msp->menu);
+	/* Normal text entry or an entry with a sub menu triangle */
+	if (
+		(MI_HAS_TEXT(mi) && msp->used_item_labels) ||
+		(MI_IS_POPUP(mi) &&
+		 msp->flags.is_popup_indicator_used))
+	{
+		height += MST_PSTDFONT(msp->menu)->height;
+	}
+
+	return height;
+}
 
 /*
  *
@@ -1578,32 +1610,31 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	int y;
 	int cItems;
 	int relief_thickness = MST_RELIEF_THICKNESS(msp->menu);
-	int simple_entry_height;
 	int i;
 	Bool has_continuation_menu = False;
 
 	MR_ITEM_TEXT_Y_OFFSET(msp->menu) =
 		MST_PSTDFONT(msp->menu)->ascent + relief_thickness +
 		MST_ITEM_GAP_ABOVE(msp->menu);
-	simple_entry_height =   MST_PSTDFONT(msp->menu)->height +
-		MST_ITEM_GAP_ABOVE(msp->menu) + MST_ITEM_GAP_BELOW(msp->menu);
 
 	/* mi_prev trails one behind mi, since we need to move that
 	   into a newly-made menu if we run out of space */
-	y = MST_BORDER_WIDTH(msp->menu);
-	for (cItems = 0, mi = MR_FIRST_ITEM(msp->menu); mi != NULL;
-	     mi = MI_NEXT_ITEM(mi), cItems++)
+	y = MST_BORDER_WIDTH(msp->menu) + MST_VERTICAL_MARGIN_TOP(msp->menu);
+	for (
+		cItems = 0, mi = MR_FIRST_ITEM(msp->menu); mi != NULL;
+		mi = MI_NEXT_ITEM(mi), cItems++)
 	{
 		Bool last_item_has_relief =
 			(MI_PREV_ITEM(mi)) ?
 			MI_IS_SELECTABLE(MI_PREV_ITEM(mi)) : False;
 		Bool has_mini_icon = False;
 		int separator_height;
+		int menu_height;
 
 		separator_height = (last_item_has_relief) ?
 			MENU_SEPARATOR_HEIGHT + relief_thickness :
 			MENU_SEPARATOR_TOTAL_HEIGHT;
-		MI_Y_OFFSET(mi) = y + MST_VERTICAL_MARGIN_TOP(msp->menu);
+		MI_Y_OFFSET(mi) = y;
 		if (MI_IS_TITLE(mi))
 		{
 			MI_HEIGHT(mi) = MST_PTITLEFONT(msp->menu)->height +
@@ -1623,22 +1654,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 		}
 		else
 		{
-			/* Normal text entry or an entry with a sub menu
-			 * triangle */
-			if ((MI_HAS_TEXT(mi) && msp->used_item_labels) ||
-			    (MI_IS_POPUP(mi) &&
-			     msp->flags.is_popup_indicator_used))
-			{
-				MI_HEIGHT(mi) = simple_entry_height +
-					relief_thickness;
-			}
-			else
-			{
-				MI_HEIGHT(mi) =
-					MST_ITEM_GAP_ABOVE(msp->menu) +
-					MST_ITEM_GAP_BELOW(msp->menu) +
-					relief_thickness;
-			}
+			MI_HEIGHT(mi) = calc_normal_item_height(msp, mi);
 		}
 		if (MI_IS_TITLE(mi))
 		{
@@ -1702,35 +1718,37 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 		y += MI_HEIGHT(mi);
 		/* this item would have to be the last item, or else
 		 * we need to add a "More..." entry pointing to a new menu */
-		if (y + MST_BORDER_WIDTH(msp->menu) +
-		    ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0)
-		    > MR_SCREEN_HEIGHT(msp->menu))
+		menu_height =
+			y + MST_BORDER_WIDTH(msp->menu) +
+			MST_VERTICAL_MARGIN_BOTTOM(msp->menu) +
+			((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
+		if (menu_height > MR_SCREEN_HEIGHT(msp->menu))
 		{
 			/* Item does not fit on screen anymore. */
-			Bool does_fit = False;
 			char *t;
 			char *tempname;
 			MenuRoot *menuContinuation;
+			int more_item_height;
 
+			more_item_height = calc_more_item_height(msp);
 			/* Remove items form the menu until it fits (plus a
 			 * 'More' entry). */
-			while (MI_PREV_ITEM(mi) != NULL)
+			while (
+				MI_PREV_ITEM(mi) != NULL &&
+				menu_height > MR_SCREEN_HEIGHT(msp->menu))
 			{
 				/* Remove current item. */
 				y -= MI_HEIGHT(mi);
 				mi = MI_PREV_ITEM(mi);
 				cItems--;
-				if (y + MST_BORDER_WIDTH(msp->menu) +
-				    simple_entry_height +
-				    2 * relief_thickness <=
-				    MR_SCREEN_HEIGHT(msp->menu))
-				{
-					/* ok, it fits now */
-					does_fit = True;
-					break;
-				}
+				menu_height =
+					y + MST_BORDER_WIDTH(msp->menu) +
+					more_item_height + relief_thickness +
+					MST_VERTICAL_MARGIN_BOTTOM(msp->menu);
 			}
-			if (!does_fit || MI_PREV_ITEM(mi) == NULL)
+			if (
+				MI_PREV_ITEM(mi) == NULL ||
+				menu_height > MR_SCREEN_HEIGHT(msp->menu))
 			{
 				fvwm_msg(ERR, "size_menu_vertically",
 					 "Menu entry does not fit on screen");
@@ -1798,9 +1816,9 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	{
 		y += relief_thickness;
 	}
-	MR_HEIGHT(msp->menu) = y + MST_BORDER_WIDTH(msp->menu)
-		+ MST_VERTICAL_MARGIN_TOP(msp->menu)
-		+ MST_VERTICAL_MARGIN_BOTTOM(msp->menu);
+	MR_HEIGHT(msp->menu) =
+		y + MST_BORDER_WIDTH(msp->menu) +
+		MST_VERTICAL_MARGIN_BOTTOM(msp->menu);
 
 	return has_continuation_menu;
 }
