@@ -1,3 +1,8 @@
+2008-03-21  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/events.c (dispatch_event):
+	Fix handling of Shape events.
+
 2008-03-18  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (calc_normal_item_height):

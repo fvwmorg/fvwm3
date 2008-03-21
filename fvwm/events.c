@@ -4016,7 +4016,9 @@ void dispatch_event(XEvent *e)
 	}
 	last_event_type = e->type;
 	event_group = base_event_group;
-	while (event_group != NULL && event_group->base > e->type)
+	while (
+		event_group != NULL &&
+		event_group->base + event_group->count < e->type)
 	{
 		event_group = event_group->next;
 	}
