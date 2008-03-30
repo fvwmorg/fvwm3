@@ -279,7 +279,8 @@ esac
 
 # *** pkg-config
 # unfortunately, we need pkg-config for the detection of certain libs:
-# - certain version of fontconfig (without fontconfig-config
+# - version of fontconfig without fontconfig-config
+# - version of fribidi without fribidi-config
 AM_CHECK_PKG_CONFIG
 
 
@@ -1156,17 +1157,21 @@ if test ! x"$with_bidi" = xno; then
     AS_HELP_STRING([--with-fribidi-bindir=DIR],
       [directory of fribidi-config if not in PATH]),
     FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
-  AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
+  if test ! x"$PKG_CONFIG" = xno && $PKG_CONFIG fribidi --exists; then
+    FRIBIDI_CONFIG="$PKG_CONFIG fribidi"
+  else
+    AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
+  fi
 
   if test x"$FRIBIDI_CONFIG" = x; then
     with_bidi=no
-    problem_bidi=": No fribidi-config found in PATH"
+    problem_bidi=": No fribidi-config, pkg-config fribidi"
   else
     Bidi_CFLAGS=`$FRIBIDI_CONFIG --cflags`
     Bidi_LIBS=`$FRIBIDI_CONFIG --libs`
     AC_CHECK_LIB(fribidi, fribidi_log2vis,
       with_bidi=yes; problem_bidi=,
-      with_bidi=no; problem_bidi=": No good libs via fribidi-config",
+      with_bidi=no; problem_bidi=": No good libs via $FRIBIDI_CONFIG",
       [$Bidi_LIBS $Bidi_CFLAGS])
   fi
 fi

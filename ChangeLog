@@ -1,3 +1,12 @@
+2006-03-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.ac:
+	fix fribidi detection when it uses pkg-config and not fribidi-config
+
+	* libs/FBidi.c:
+	fix compilation with newer fribidi-0.19.1 (or also called fribidi2),
+	it now uses fribidi-types.h and not fribidi_types.h
+
 2008-03-21  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* fvwm/events.c (dispatch_event):

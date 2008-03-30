@@ -29,7 +29,6 @@
 #include "safemalloc.h"
 #include "BidiJoin.h"
 #include <fribidi/fribidi.h>
-#include <fribidi/fribidi_types.h>
 #include <stdio.h>
 
 Bool FBidiIsApplicable(const char *charset)
