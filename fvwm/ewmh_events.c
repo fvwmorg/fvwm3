@@ -305,7 +305,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 	if (style != NULL && ev == NULL)
 	{
 		/* start on desk */
-		unsigned long *val;
+		CARD32 *val;
 		int size = 0;
 
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -331,11 +331,11 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 #if DEBUG_EWMH_INIT_STATE
 		fprintf(
 			stderr, "ewmh WM_DESKTOP hint for window 0x%lx  "
-			"(%i,%lu,%lu)\n", FW_W(fw),
+			"(%i,%lu,%u)\n", FW_W(fw),
 			HAS_EWMH_INIT_WM_DESKTOP(fw),
 			fw->ewmh_hint_desktop, val[0]);
 #endif
-		if (val[0] == (unsigned long)-2 || val[0] == (unsigned long)-1)
+		if (val[0] == (CARD32)-2 || val[0] == (CARD32)-1)
 		{
 			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
 			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
@@ -473,7 +473,8 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 	}
 	else if (style != NULL)
 	{
-		Atom *val;
+		CARD32 *val;
+		unsigned int nitems;
 		int size = 0;
 		int i;
 		ewmh_atom *list = ewmh_atom_wm_state;
@@ -496,10 +497,11 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 				" _NET_WM_STATE hint\n",FW_W(fw));
 		}
 #endif
+		nitems = size / sizeof(CARD32);
 		while(list->name != NULL)
 		{
 			has_hint = 0;
-			for(i = 0; i < (size / (sizeof(Atom))); i++)
+			for(i = 0; i < nitems; i++)
 			{
 				if (list->atom == val[i])
 				{

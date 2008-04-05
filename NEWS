@@ -15,6 +15,7 @@ Changes in beta release 2.5.26 (not released yet)
    - Fixed compilation without XRender support.
    - Fixed drawing of background pictures in menu items and titles.
    - Fixed hadling of shaped windows.
+   - Fixed a 64-bit bug in the EWMH code.
 
 -------------------------------------------------------------------
 

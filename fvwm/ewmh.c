@@ -727,7 +727,7 @@ void set_kde_sys_tray(void)
 void ewmh_AddToKdeSysTray(FvwmWindow *fw)
 {
 	int size = 0;
-	Atom *val;
+	CARD32 *val;
 	KstItem *t;
 
 	val = ewmh_AtomGetByName(
@@ -1510,7 +1510,8 @@ int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 
 void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style)
 {
-	Atom *val;
+	CARD32 *val;
+	unsigned int nitems;
 	ewmh_atom *list = ewmh_atom_window_type;
 	int size = 0;
 	int i = 0;
@@ -1529,7 +1530,8 @@ void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style)
 		return;
 	}
 	/* we support only one window type: the first that we support */
-	while(i < size && !found)
+	nitems = size / sizeof(CARD32);
+	while(i < nitems && !found)
 	{
 		list = ewmh_atom_window_type;
 		while(list->name != NULL && !found)
@@ -1605,7 +1607,7 @@ void EWMH_GetStyle(FvwmWindow *fw, window_style *style)
 static void ewmh_check_wm_pid(FvwmWindow *fw)
 {
 	int size = 0;
-	Atom *val;
+	CARD32 *val;
 
 	fw->ewmh_window_type = 0;
 	val = ewmh_AtomGetByName(

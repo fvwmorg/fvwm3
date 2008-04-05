@@ -1,3 +1,14 @@
+2008-04-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/ewmh_events.c (ewmh_WMDesktop):
+	(ewmh_WMState):
+	* fvwm/ewmh.c (ewmh_AddToKdeSysTray):
+	(ewmh_HandleWindowType):
+	(ewmh_AddToKdeSysTray):
+	(ewmh_HandleWindowType):
+	(ewmh_check_wm_pid):
+	64-bit fix by Alexandre Julliard
+
 2006-03-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.ac:
