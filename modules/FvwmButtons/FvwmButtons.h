@@ -63,6 +63,7 @@ typedef struct
 	unsigned b_TransBack  : 1;     /* Transparent background */
 	unsigned b_Left       : 1;     /* Button is left-aligned */
 	unsigned b_Right      : 1;     /* Button is right-aligned */
+	unsigned b_Top        : 1;     /* Button is aligned at the top */
 	unsigned b_SizeFixed  : 1;     /* User provided rows/columns may not be
 	                                  altered */
 	unsigned b_PosFixed   : 1;     /* User provided button position */

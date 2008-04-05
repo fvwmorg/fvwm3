@@ -889,6 +889,7 @@ static void ParseButton(button_info **uberb, char *s)
 			"presstitle",
 			"activecolorset",
 			"presscolorset",
+			"top",
 			NULL
 		};
 		s = trimleft(s);
@@ -1628,6 +1629,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				break;
 
+			case 27: /* top */
+				b->flags.b_Top = 1;
+				break;
 			/* --------------- --------------- */
 			default:
 				t = seekright(&s);

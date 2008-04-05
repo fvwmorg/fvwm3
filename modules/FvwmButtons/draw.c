@@ -171,8 +171,9 @@ void MakeButton(button_info *b)
 	ix += iw-b->icon_w;
       else if (!b->flags.b_Left)
 	ix += (iw-b->icon_w)/2;
-      XMoveResizeWindow(Dpy,b->IconWin,ix,iy+(ih-b->icon_h)/2,
-			b->icon_w,b->icon_h);
+      if (!b->flags.b_Top)
+ 	iy += (ih-b->icon_h)/2;
+      XMoveResizeWindow(Dpy,b->IconWin,ix,iy,b->icon_w,b->icon_h);
     }
     else
     {

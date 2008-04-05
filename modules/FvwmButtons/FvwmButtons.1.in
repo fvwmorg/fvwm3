@@ -270,6 +270,10 @@ relief color and a shadow color are calculated from this.
 The contents of the button is centered on the button. This is the
 default but may be changed by \fILeft\fP or \fIRight\fP.
 
+.IP "Top"
+The contents of the button is vertically aligned at the top of the 
+button. The default is to vertically center it.
+
 .IP "Colorset \fIcolorset\fP"
 The given colorset can be applied to a container, a swallowed
 application and a simple button.  To apply it to a button or

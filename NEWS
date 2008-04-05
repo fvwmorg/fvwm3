@@ -9,6 +9,10 @@ Changes in beta release 2.5.26 (not released yet)
 
    - New MenuStyle option VerticalMargins.
 
+* New module features:
+
+   - FvwmButtons: New button alignment option: top.
+
 * Bug fixes:
 
    - Fixed crash in ARGB visual detection code.
