@@ -1,39 +1,26 @@
-Fvwm is a powerful window manager.  Version 2.5.25 is a beta
-maintenance release fixed a number of crashes and other
-bugs. Please be aware that any features introduced in the 2.5.x
-development versions may be renamed, changed or removed without
-notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.26 is a beta
+maintenance release that fixes a couple of bugs, including a
+problem with shaped windows that was introduced in 2.5.25.  Please
+be aware that any features introduced in the 2.5.x development
+versions may be renamed, changed or removed without notice before
+2.6.0.
 
-Upgrading from 2.5.24 or earlier is recommended.
+Upgrading from 2.5.25 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - Handle the STATE_ADD command of the EWMH _NET_WM_STATE
-     message from version 1.3 of the EWMH spec.
-   - Support transparency in ARGB windows
+   - New MenuStyle option VerticalMargins.
 
-* Bug Fixes:
+* New module features:
 
-   - Fixed problem with windows disappearing when created
-     unless the style Unmanaged was used.
-   - Edge move delay was used as resistance for the top edge.
-   - Fixed a parsing problem of the screen argument of the
-     SnapAttraction style.
-   - Some html documentation files were not installed.
-   - Fixed a memory leak in internationalized font handling.
-   - Fixed a bug in MinOverlap placement.
-   - Fixed the StickyAcrossPages style in the FvwmPager.
-   - Fixed the determination of the X charset on UTF-8 systems.
-   - Fixed a crash when certain EWMH messages were sent to
-     unmanaged windows.
-   - Fixed a memory leak in multibyte codepage code.
-   - Ignore the EWMH staysontop and staysonbottom hints if the
-     EWMHIgnoreStackingOrderHints style is used.
-   - Fixed a sporadic crash when the root background set by gnome,
-     fvwm-root, esetroot etc. changes and a root transparent
-     colour set is used.
-   - Fixed spradic crash in modules with root transparent
-     background from colour sets.
-   - Fixed a possible crash if the last active module fails.
+   - FvwmButtons: New button alignment option: top.
+
+* Bug fixes:
+
+   - Fixed crash in ARGB visual detection code.
+   - Fixed compilation without XRender support.
+   - Fixed drawing of background pictures in menu items and titles.
+   - Fixed hadling of shaped windows.
+   - Fixed a 64-bit bug in the EWMH code.

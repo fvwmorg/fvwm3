@@ -1,3 +1,10 @@
+2008-05-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* ANNOUNCE:
+	* NEWS:
+	* configure.ac:
+	updated for 2.5.26 release
+
 2008-04-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_WMDesktop):
