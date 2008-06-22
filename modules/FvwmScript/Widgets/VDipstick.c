@@ -23,7 +23,7 @@
 
 /*
  * Fonction pour VDipstick
- * Création d'une jauge verticale
+ * CrÃ©ation d'une jauge verticale
  * plusieurs options
  */
 void InitVDipstick(struct XObj *xobj)

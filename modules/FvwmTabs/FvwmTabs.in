@@ -882,7 +882,7 @@ sub swallowNext
 	$fvwm->debug("fvwmCommand is @fvwmCommand");
 	if (exists $tabWin{$tId})
 	{
-		$tabWin{$tId}{addButton}->configure(-text => "Â",
+		$tabWin{$tId}{addButton}->configure(-text => "Ã‚",
 			-image => createImage($pConfig->{swallowIcon}));
 	}
 	$fvwm->send("@fvwmCommand");

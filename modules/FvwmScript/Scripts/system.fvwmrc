@@ -246,7 +246,7 @@ AddToMenu "Utilities" "Tools" Nop
 +              "Clipboard" Exec exec xclipboard &
 +              "Lecture CD audio" Exec exec workman &
 +	       "Eject CD Rom" Exec exec eject &
-+	       "Réglage son" Exec exec xmix &
++	       "RÃ©glage son" Exec exec xmix &
 +	       "Format disquette" Exec exec /sbin/formatdos &
 +              "MemInfo" Exec meminfo &
 +	       "Restart fvwm" Restart fvwm

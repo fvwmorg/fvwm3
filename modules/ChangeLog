@@ -1,3 +1,18 @@
+2008-05-22  Adam Goode  <adam(at)spicenitz(dot)org>
+
+	* FvwmScript/FvwmScript.c
+	* FvwmScript/script.c
+	* FvwmScript/types.h
+	* FvwmScript/Scripts/system.fvwmrc
+	* FvwmScript/Widgets/HDipstick.c
+	* FvwmScript/Widgets/TextField.c
+	* FvwmScript/Widgets/Tools.c
+	* FvwmScript/Widgets/VDipstick.c
+	* FvwmTabs/FvwmTabs.in
+	* FvwmWharf/OffiX/DragAndDrop.h
+	* FvwmWharf/OffiX/DragAndDropTypes.h
+	Convert Latin-1 encodings to UTF-8
+
 2008-04-05  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmButtons/FvwmButtons.h:

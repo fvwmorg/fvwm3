@@ -133,7 +133,7 @@ typedef struct                  /* Type pour les boutons */
   char *shadcolor;
   char *hilicolor;
   int colorset;
-  char *font;                   /* Police utilisé */
+  char *font;                   /* Police utilisÃ© */
   int flags[5];                 /* Etat du bouton:invisible, inactif et actif */
   int value;
   int value2;

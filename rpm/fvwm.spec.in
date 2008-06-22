@@ -44,10 +44,10 @@ asian text support, FreeType font support (antialiasing), image rendering,
 Perl based module library, support for PNG images, side titles and much more.
 
 %description -l fr
-Fvwm est un gestionnaire de fenЙtres puissant et extrЙmement configurable
-pour le systХme X Window.
+Fvwm est un gestionnaire de fenц╙tres puissant et extrц╙mement configurable
+pour le systц╗me X Window.
 
-La version 2.5 contient un grand nombre de nouvelles fonctionnalitИs.
+La version 2.5 contient un grand nombre de nouvelles fonctionnalitц╘s.
 Voici quelques exemples:
 full support of the EWMH
 (Enhanced Window Manager Hints) specification, internationalization,
@@ -56,15 +56,15 @@ asian text support, FreeType font support (antialiasing), image rendering,
 Perl based module library, support for PNG images, side titles and much more.
 
 %description -l ru
-Fvwm является мощным оконным менеджером для X Window System, соответствующим
-стандартам ICCCM, с поддержкой множественных виртуальных десктопов.
+Fvwm я▐п╡п╩я▐п╣я┌я│я▐ п╪п╬я┴п╫я▀п╪ п╬п╨п╬п╫п╫я▀п╪ п╪п╣п╫п╣п╢п╤п╣я─п╬п╪ п╢п╩я▐ X Window System, я│п╬п╬я┌п╡п╣я┌я│я┌п╡я┐я▌я┴п╦п╪
+я│я┌п╟п╫п╢п╟я─я┌п╟п╪ ICCCM, я│ п©п╬п╢п╢п╣я─п╤п╨п╬п╧ п╪п╫п╬п╤п╣я│я┌п╡п╣п╫п╫я▀я┘ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀я┘ п╢п╣я│п╨я┌п╬п©п╬п╡.
 
-Версия 2.5 включает в себя новые особенности, такие как полная поддержка
-спецификации EWMH (Enhanced Window Manager Hints), интернационализация,
-улучшение оконных декораций (полное отсутствие мигания), поддержка
-дву-направленного азиатского текста, поддержка фонтов FreeType (сглаживание),
-фильтрование изображений, библиотека для написания модулей на Perl,
-поддержка изображений в формате PNG, боковые заголовки окон и многое другое.
+п▓п╣я─я│п╦я▐ 2.5 п╡п╨п╩я▌я┤п╟п╣я┌ п╡ я│п╣п╠я▐ п╫п╬п╡я▀п╣ п╬я│п╬п╠п╣п╫п╫п╬я│я┌п╦, я┌п╟п╨п╦п╣ п╨п╟п╨ п©п╬п╩п╫п╟я▐ п©п╬п╢п╢п╣я─п╤п╨п╟
+я│п©п╣я├п╦я└п╦п╨п╟я├п╦п╦ EWMH (Enhanced Window Manager Hints), п╦п╫я┌п╣я─п╫п╟я├п╦п╬п╫п╟п╩п╦п╥п╟я├п╦я▐,
+я┐п╩я┐я┤я┬п╣п╫п╦п╣ п╬п╨п╬п╫п╫я▀я┘ п╢п╣п╨п╬я─п╟я├п╦п╧ (п©п╬п╩п╫п╬п╣ п╬я┌я│я┐я┌я│я┌п╡п╦п╣ п╪п╦пЁп╟п╫п╦я▐), п©п╬п╢п╢п╣я─п╤п╨п╟
+п╢п╡я┐-п╫п╟п©я─п╟п╡п╩п╣п╫п╫п╬пЁп╬ п╟п╥п╦п╟я┌я│п╨п╬пЁп╬ я┌п╣п╨я│я┌п╟, п©п╬п╢п╢п╣я─п╤п╨п╟ я└п╬п╫я┌п╬п╡ FreeType (я│пЁп╩п╟п╤п╦п╡п╟п╫п╦п╣),
+я└п╦п╩я▄я┌я─п╬п╡п╟п╫п╦п╣ п╦п╥п╬п╠я─п╟п╤п╣п╫п╦п╧, п╠п╦п╠п╩п╦п╬я┌п╣п╨п╟ п╢п╩я▐ п╫п╟п©п╦я│п╟п╫п╦я▐ п╪п╬п╢я┐п╩п╣п╧ п╫п╟ Perl,
+п©п╬п╢п╢п╣я─п╤п╨п╟ п╦п╥п╬п╠я─п╟п╤п╣п╫п╦п╧ п╡ я└п╬я─п╪п╟я┌п╣ PNG, п╠п╬п╨п╬п╡я▀п╣ п╥п╟пЁп╬п╩п╬п╡п╨п╦ п╬п╨п╬п╫ п╦ п╪п╫п╬пЁп╬п╣ п╢я─я┐пЁп╬п╣.
 
 %prep
 %setup

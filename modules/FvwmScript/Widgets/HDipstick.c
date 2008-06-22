@@ -23,7 +23,7 @@
 
 /*
  * Fonction pour HDipstick
- * Création d'une jauge horizontale
+ * CrÃ©ation d'une jauge horizontale
  * plusieurs options
  */
 void InitHDipstick(struct XObj *xobj)

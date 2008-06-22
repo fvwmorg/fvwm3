@@ -4,7 +4,7 @@ ModulePath /fvwm_bindir/
 PixmapPath /fvwm_pixdir/
 IconPath /fvwm_icodir/
 
-# --- Boutons pour chaque fenêtre ---
+# --- Boutons pour chaque fenÃªtre ---
 # --- Configurations globales ---
 EdgeResistance 400 1
 EdgeScroll 100 100
@@ -35,7 +35,7 @@ MenuStyle MenuStyleMenuFenetres ActiveFore #a63230, Hilight3DOff, Animation, Fon
 MenuStyle MenuStyleMenuFenetres TitleWarpOff, TitleUnderlines0, SeparatorsShort, TrianglesSolid
 MenuStyle MenuStyleMenuFenetres MenuFace TiledPixmap slate.xpm
 
-# --- Style de fenêtres prédéfini standard ---
+# --- Style de fenÃªtres prÃ©dÃ©fini standard ---
 AddToDecor AllWindowsDecor
   + ButtonStyle 1 Vector  5 45x45@1 55x45@1 55x55@0 45x55@0 45x45@1
   + ButtonStyle 3 Vector 11 30x70@0 30x25@1 50x45@0 70x25@1 70x70@0 65x70@0 65x40@1 50x55@0 35x40@1 35x70@0 30x70@0
@@ -58,20 +58,20 @@ Style AllWindowsStyle ShowMapping, SloppyFocus, TileCascadePlacement, HintOverri
 Style AllWindowsStyle Font lucidasans-bolditalic-12, HilightFore white, HilightBack #606060
 
 
-# --- Style prédéfini pour les fenêtres creées par decWindow ---
+# --- Style prÃ©dÃ©fini pour les fenÃªtres creÃ©es par decWindow ---
 Style StyleDecWindow UseDecor AllWindowsDecor, Sticky, NoTitle, ClickToFocus, WindowListSkip
 
-# --- Style prédéfini pour les fenêtres d'outils desktop ---
+# --- Style prÃ©dÃ©fini pour les fenÃªtres d'outils desktop ---
 Style StyleDesktop UseDecor AllWindowsDecor, Sticky, NoTitle, ClickToFocus, WindowListSkip, BorderWidth 20
 
-# --- Style prédéfini discret ---
+# --- Style prÃ©dÃ©fini discret ---
 Style StyleDiscret UseDecor AllWindowsDecor, Sticky, NoTitle, NoHandles, BorderWidth 6, ClickToFocus, WindowListSkip
 
-# --- Style prédéfini pour les fenêtres FrontEnd (FvwmFrm) ---
+# --- Style prÃ©dÃ©fini pour les fenÃªtres FrontEnd (FvwmFrm) ---
 Style StyleFrontEnd color NoHandles, BorderWidth 18, NoTitle
 
 #-----------------------------------------------------------------------------------------------------------------------------------
-# --- Apparence des fenêtres ---
+# --- Apparence des fenÃªtres ---
 Style "*"               UseStyle AllWindowsStyle
 
 # --- Apparence des fenetres de DecWindow (Session mamanger et les menus punaises) ---
@@ -79,7 +79,7 @@ Style "*VUE$MASTER*"    UseStyle StyleDecWindow
 Style "*DECW$TERMINAL*" UseStyle AllWindowsStyle
 Style "*FileView*"      UseStyle AllWindowsStyle
 
-# --- Apparence des fenêtres autres ---
+# --- Apparence des fenÃªtres autres ---
 Style "Fvwm*"           UseStyle StyleDesktop
 Style "FvwmWinList*"    UseStyle StyleDesktop, SloppyFocus
 Style "Clock*"          UseStyle StyleDiscret
@@ -121,13 +121,13 @@ AddToFunc MoveIconify
  + "M" Move
  + "D" Iconify
 
-#		Où	Modif	Action
-# --- Control+Flêche n'importe où change de page ---
+#		OÃ¹	Modif	Action
+# --- Control+FlÃªche n'importe oÃ¹ change de page ---
  Key Left	A	C	Scroll -100000 +0
  Key Right	A	C	Scroll +100000 +0
  Key Up		A	C	Scroll +0      -100000
  Key Down	A	C	Scroll +0      +100000
-# --- Shift+Control+Flêche n'importe où bouge d'un dizième de page ---
+# --- Shift+Control+FlÃªche n'importe oÃ¹ bouge d'un diziÃ¨me de page ---
  Key Left	A	SC	Scroll -10 +0
  Key Right	A	SC	Scroll +10 +0
  Key Up		A	SC	Scroll +0  -10
@@ -135,7 +135,7 @@ AddToFunc MoveIconify
 # --- Essais
  Key Next       A       S       Next [ CurrentScreen CurrentDesk !iconic CirculateHit *DECW$TERMINAL* ] K_Focus
  Key Prev       A       S       Prev [ CurrentScreen CurrentDesk !iconic CirculateHit *DECW$TERMINAL* ] K_Focus
-# --- Le pavé numérique ---
+# --- Le pavÃ© numÃ©rique ---
  Key KP_7	A	C	GotoPage 0 0
  Key KP_8	A	C	GotoPage 1 0
  Key KP_9	A	C	GotoPage 2 0
@@ -149,7 +149,7 @@ AddToFunc MoveIconify
  Key Tab	A	S	WindowList Root c c CurrentDesk NoGeometry
  Key Tab	A	C	WindowList Root c c NoDeskSort
 
-# --- Souris dans la root window (sur le fond d'écran) ---
+# --- Souris dans la root window (sur le fond d'Ã©cran) ---
  Mouse 1  R    A   Menu MenuDuJour Nop
  Mouse 2  R    A   Menu MenuDesktop Nop
  Mouse 3  R    A   WindowList NoGeometry
@@ -162,7 +162,7 @@ AddToFunc MoveIconify
  Mouse 1  8    A   WindowShade
  Mouse 2  123  A   Move
  Mouse 2  468  A   Move
-# --- Souris sur les autres éléments de décoration ---
+# --- Souris sur les autres Ã©lÃ©ments de dÃ©coration ---
  Mouse 1  T    A   MoveRaiseShade
  Mouse 1  FS   A   ResizeRaise
  Mouse 1  I    A   MoveIconify
@@ -212,13 +212,13 @@ AddToMenu MenuDesktop
  + "Lock Life"              Exec Thor$Outils:XLock -mode life
  + ""                       Nop
  + "Refresh screen"         Refresh
- + "Arrêt de Fvwm2"         Quit
+ + "ArrÃªt de Fvwm2"         Quit
 ChangeMenuStyle MenuStyleDeBase MenuDesktop
 
 DestroyMenu MenuGraphique
 AddToMenu MenuGraphique
  + "XV direct"              Exec Thor$Outils:Xv
- + "XV paramètré"           Module FvwmForm FrontEnd_Xv_
+ + "XV paramÃ¨trÃ©"           Module FvwmForm FrontEnd_Xv_
  + "BitMap"                 Exec Decw$Utils:bitmap &
  + "XMag"                   Exec Decw$utils:xmag
  + "Xev"                    Exec Decw$Utils:Xev
@@ -302,7 +302,7 @@ ChangeMenuStyle MenuStyleMenuFenetres MenuActionsFenetres
 *FrontEnd_Xv_ItemBack #656570
 *FrontEnd_Xv_ItemFore White
 *FrontEnd_Xv_Line center
-*FrontEnd_Xv_Text "Fichiers à visualiser par xv"
+*FrontEnd_Xv_Text "Fichiers Ã  visualiser par xv"
 *FrontEnd_Xv_Line left
 *FrontEnd_Xv_Input Files 50 "/k/images/fab/*"
 *FrontEnd_Xv_Line expand

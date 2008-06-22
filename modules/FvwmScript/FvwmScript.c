@@ -998,7 +998,7 @@ void ReadXServer (void)
 	isTab = 2;
       if (event.xkey.subwindow!=0)
       {
-	/* Envoi de l'evt à l'objet */
+	/* Envoi de l'evt Ã  l'objet */
 	for (i=0; i<nbobj; i++)
 	{
 	  if (tabxobj[i]->win == event.xkey.subwindow)

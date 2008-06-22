@@ -542,7 +542,7 @@ int InsertText(struct XObj *xobj, char *str, int SizeStr)
 }
 
 /*
- * Lecture d'un morceau de texte de xobj->value à End
+ * Lecture d'un morceau de texte de xobj->value Ã  End
  */
 char *GetText(struct XObj *xobj, int End)
 {

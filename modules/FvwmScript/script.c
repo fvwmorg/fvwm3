@@ -600,7 +600,7 @@ void AddComBloc(int TypeCond, int NbLevelArg, int NbBloc)
  /* Ajout de l'instruction de teste comme d'une commande */
  AddCom(TypeCond, NbLevelArg);
 
- /* On initialise ensuite les deux champs reserve à bloc1 et bloc2 */
+ /* On initialise ensuite les deux champs reserve Ã  bloc1 et bloc2 */
  CurrInstr=PileBloc[TopPileB]->NbInstr;
  /* Attention NbArg peur changer si on utilise en arg une fonction */
  OldNA=PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg;

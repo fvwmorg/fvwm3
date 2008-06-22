@@ -1,6 +1,6 @@
 /* -*-c-*- */
 /*
-Copyright (C) 1996 César Crusius
+Copyright (C) 1996 CÃ©sar Crusius
 
 This file is part of the DND Library.  This library is free
 software; you can redistribute it and/or modify it under the terms of

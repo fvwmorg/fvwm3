@@ -71,7 +71,7 @@ void InitTextField(struct XObj *xobj)
 		XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
 	XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
-	/* value2 représente la fin de la zone selectionnee */
+	/* value2 reprÃ©sente la fin de la zone selectionnee */
 	/* value2 gives the end of the selected zone */
 	/* calculate number of characters in title */
 	num_chars = FlocaleStringCharLength(xobj->Ffont, xobj->title);

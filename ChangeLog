@@ -1,3 +1,11 @@
+2008-05-22  Adam Goode  <adam(at)spicenitz(dot)org>
+
+	* AUTHORS:
+	* ChangeLog-pre-2.4:
+	* rpm/fvwm.spec.in:
+	* vms/fvwmrc.dat:
+	Convert Latin-1 encodings to UTF-8
+
 2008-05-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS:
