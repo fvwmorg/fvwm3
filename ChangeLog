@@ -1,3 +1,9 @@
+2008-08-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/add_window.c (setup_frame_window):
+	fix compilation without XRender
+
 2008-05-22  Adam Goode  <adam(at)spicenitz(dot)org>
 
 	* AUTHORS:

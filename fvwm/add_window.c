@@ -839,7 +839,7 @@ static void setup_frame_window(
 	/* This adds preliminary support for ARGB windows in fvwm. It should
 	   evolve to proper ARGB support in frames, menus and modules */
 	format=FRenderFindVisualFormat(dpy, fw->attr_backup.visual);
-	if (format != NULL && format->type==PictTypeDirect &&
+	if (format != NULL && format->type == FRenderPictTypeDirect &&
 		format->direct.alphaMask > 0)
 	{
 		depth = fw->attr_backup.depth;
