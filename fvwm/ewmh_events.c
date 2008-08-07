@@ -186,11 +186,17 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 {
 	XConfigureRequestEvent cre;
 	int do_reconfigure;
+	int win_gravity;
+	int value_mask;
+	int source;
 
 	if (ev == NULL)
 	{
 		return 0;
 	}
+	win_gravity = ev->xclient.data.l[0] & 0xff;
+	value_mask = (ev->xclient.data.l[0] >> 8) & 0xf;
+	source = (ev->xclient.data.l[0] >> 12) & 0xf;
 	if (fw == NULL)
 	{
 		/* unmanaged window */
@@ -201,8 +207,10 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 		int func;
 
 		if (
-			ev->xclient.data.l[3] == fw->g.normal.width &&
-			ev->xclient.data.l[4] == fw->g.normal.height)
+			(value_mask & CWWidth == 0 ||
+			 ev->xclient.data.l[3] == fw->g.normal.width) &&
+			(value_mask & CWHeight == 0 ||
+			 ev->xclient.data.l[4] == fw->g.normal.height))
 		{
 			func = F_MOVE;
 		}
@@ -215,13 +223,13 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 	}
 	if (do_reconfigure == 1)
 	{
-		cre.value_mask = ev->xclient.data.l[0];
+		cre.value_mask = value_mask;
 		cre.x = ev->xclient.data.l[1];
 		cre.y = ev->xclient.data.l[2];
 		cre.width = ev->xclient.data.l[3];
 		cre.height = ev->xclient.data.l[4];
 		cre.window = ev->xclient.window;
-		events_handle_configure_request(cre, fw, True);
+		events_handle_configure_request(cre, fw, True, win_gravity);
 	}
 
 	return 0;
@@ -251,7 +259,7 @@ int ewmh_RestackWindow(EWMH_CMD_ARGS)
 		cre.above = ev->xclient.data.l[1];
 		cre.detail = ev->xclient.data.l[2];
 		cre.window = ev->xclient.window;
-		events_handle_configure_request(cre, fw, True);
+		events_handle_configure_request(cre, fw, True, ForgetGravity);
 	}
 
 	return 0;

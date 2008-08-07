@@ -641,16 +641,6 @@ static inline void __cr_detect_icccm_move(
 		}
 		return;
 	}
-	if (fw->hints.win_gravity == StaticGravity)
-	{
-		if (Scr.bo.do_debug_cr_motion_method == 1)
-		{
-			fprintf(
-				stderr, "_cdim: --- using StaticGravity"
-				" %p '%s'\n", fw, fw->visible_name);
-		}
-		return;
-	}
 	has_x = (cre->value_mask & CWX);
 	has_y = (cre->value_mask & CWY);
 	if (!has_x && !has_y)
@@ -933,7 +923,7 @@ static inline int __merge_cr_moveresize(
 
 static inline int __handle_cr_on_client(
 	int *ret_do_send_event, XConfigureRequestEvent cre,
-	const evh_args_t *ea, FvwmWindow *fw, Bool force)
+	const evh_args_t *ea, FvwmWindow *fw, Bool force, int force_gravity)
 {
 	rectangle new_g;
 	rectangle d_g;
@@ -941,6 +931,7 @@ static inline int __handle_cr_on_client(
 	size_rect oldnew_dim;
 	size_borders b;
 	int cn_count = 0;
+	int gravity;
 
 	if (ea)
 	{
@@ -1048,20 +1039,28 @@ static inline int __handle_cr_on_client(
 	{
 		__cr_detect_icccm_move(fw, &cre, &b);
 	}
+	if (force_gravity > ForgetGravity && force_gravity <= StaticGravity)
+	{
+		gravity = force_gravity;
+	}
+	else
+	{
+		gravity = fw->hints.win_gravity;
+	}
 	if (!(cre.value_mask & (CWX | CWY)))
 	{
 		/* nothing */
 	}
 	else if ((force ||
 		  CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_USE_GRAV) &&
-		 fw->hints.win_gravity != StaticGravity)
+		 gravity != StaticGravity)
 	{
 		int ref_x;
 		int ref_y;
 		int grav_x;
 		int grav_y;
 
-		gravity_get_offsets(fw->hints.win_gravity, &grav_x, &grav_y);
+		gravity_get_offsets(gravity, &grav_x, &grav_y);
 		if (cre.value_mask & CWX)
 		{
 			ref_x = cre.x -
@@ -1153,7 +1152,7 @@ static inline int __handle_cr_on_client(
 	}
 	else if (!(cre.value_mask & CWX) && d_g.width)
 	{
-		gravity_resize(fw->hints.win_gravity, &new_g, d_g.width, 0);
+		gravity_resize(gravity, &new_g, d_g.width, 0);
 	}
 	if ((cre.value_mask & CWY) && d_g.height)
 	{
@@ -1166,7 +1165,7 @@ static inline int __handle_cr_on_client(
 	}
 	else if (!(cre.value_mask & CWY) && d_g.height)
 	{
-		gravity_resize(fw->hints.win_gravity, &new_g, 0, d_g.height);
+		gravity_resize(gravity, &new_g, 0, d_g.height);
 	}
 
 	if (new_g.x == fw->g.frame.x && new_g.y == fw->g.frame.y &&
@@ -1204,7 +1203,7 @@ static inline int __handle_cr_on_client(
 
 void __handle_configure_request(
 	XConfigureRequestEvent cre, const evh_args_t *ea, FvwmWindow *fw,
-	Bool force)
+	Bool force, int force_gravity)
 {
 	int do_send_event = 0;
 	int cn_count = 0;
@@ -1231,7 +1230,7 @@ void __handle_configure_request(
 	if (fw != NULL && cre.window == FW_W(fw))
 	{
 		cn_count = __handle_cr_on_client(
-			&do_send_event, cre, ea, fw, force);
+			&do_send_event, cre, ea, fw, force, force_gravity);
 	}
 	/* Stacking order change requested.  Handle this *after* geometry
 	 * changes, since we need the new geometry in occlusion calculations */
@@ -1880,7 +1879,7 @@ void HandleConfigureRequest(const evh_args_t *ea)
 	{
 		fw = NULL;
 	}
-	__handle_configure_request(cre, ea, fw, False);
+	__handle_configure_request(cre, ea, fw, False, ForgetGravity);
 
 	return;
 }
@@ -4057,9 +4056,10 @@ void dispatch_event(XEvent *e)
 
 /* ewmh configure request */
 void events_handle_configure_request(
-	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force)
+	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force,
+	int force_gravity)
 {
-	__handle_configure_request(cre, NULL, fw, force);
+	__handle_configure_request(cre, NULL, fw, force, force_gravity);
 
 	return;
 }

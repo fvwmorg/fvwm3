@@ -1,3 +1,14 @@
+2008-08-07  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
+	* fvwm/events.h (events_handle_configure_request):
+	* fvwm/events.c (events_handle_configure_request, __handle_cr_on_client)
+	(__handle_configure_request):
+	fix handling of _NET_MOVERESIZE_WINDOW
+	(__cr_detect_icccm_move):
+	remove douplicate code
+
 2008-08-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
