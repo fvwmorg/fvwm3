@@ -207,9 +207,9 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 		int func;
 
 		if (
-			(value_mask & CWWidth == 0 ||
+			((value_mask & CWWidth) == 0 ||
 			 ev->xclient.data.l[3] == fw->g.normal.width) &&
-			(value_mask & CWHeight == 0 ||
+			((value_mask & CWHeight) == 0 ||
 			 ev->xclient.data.l[4] == fw->g.normal.height))
 		{
 			func = F_MOVE;

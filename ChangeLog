@@ -1,5 +1,8 @@
 2008-08-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
+	fixed compiler warning caused by a logic error in previous patch
+
 	* configure.ac:
 	applied png detection fix by Yuri Bushmelev for cross compiliation
 
