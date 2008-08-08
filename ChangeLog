@@ -1,5 +1,8 @@
 2008-08-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* configure.ac:
+	applied png detection fix by Yuri Bushmelev for cross compiliation
+
 	* fvwm/events.c (__handle_cr_on_client):
 	fixed event merging with auto motion detection
 

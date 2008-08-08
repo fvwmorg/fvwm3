@@ -792,7 +792,8 @@ if test ! x"$xpm_LIBS" = x; then
 	 problem_xpm=": Internal xpm detection logic error"
        fi
      fi],
-   [with_xpm=no; problem_xpm=": Xpm test error, see config.log"])
+   [with_xpm=no; problem_xpm=": Xpm test error, see config.log"],
+   [echo $ac_n "cross compiling; assumed OK... $ac_c"])
   AC_MSG_RESULT($with_xpm)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
@@ -840,7 +841,8 @@ if test ! x"$png_LIBS" = x; then
 	 problem_png=": Internal png detection logic error"
        fi
      fi],
-   [with_png="no"; problem_png=": png test error, see config.log"])
+   [with_png="no"; problem_png=": png test error, see config.log"],
+   [echo $ac_n "cross compiling; assumed OK... $ac_c"])
   AC_MSG_RESULT($with_png)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
