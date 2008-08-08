@@ -948,7 +948,7 @@ static inline int __handle_cr_on_client(
 	 * event.  However, we can not do this if the window uses the motion
 	 * method autodetection because the merged event might confuse the
 	 * detection code. */
-	if (ea && CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
+	if (ea && CR_MOTION_METHOD(fw) != CR_MOTION_METHOD_AUTO)
 	{
 		cn_count = __merge_cr_moveresize(ea, &cre, fw, &b);
 	}
