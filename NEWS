@@ -8,6 +8,8 @@ Changes in beta release 2.5.27 (not released yet)
 * Bug fixes:
    - Fixed compilation without XRender support.
    - Fixed handling of _NET_MOVERESIZE_WINDOWS requests.
+   - Fixed a bug in automatic detection mode of the style
+     MoveByProgramMethod.
    - Fixed png detection when cross compiling.
    - Fixed keeping fullscreen window mode over a restart.
 
