@@ -1,3 +1,11 @@
+2008-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/session.c (MatchWinToSM):
+	fixed keeping fullscreen state of windows over a restart; the old code
+	tried to do this through session management and effectively overwrote
+	the responsible ewmh hint; eventually, fvwm thought that the window
+	was fullscreen without actually making it fullscreen
+
 2008-08-08  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
