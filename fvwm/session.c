@@ -1561,9 +1561,6 @@ MatchWinToSM(
 			ewin->ewmh_hint_desktop = matches[i].ewmh_hint_desktop;
 			SET_HAS_EWMH_INIT_WM_DESKTOP(
 				ewin, HAS_EWMH_INIT_WM_DESKTOP(&(matches[i])));
-			SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
-				ewin, HAS_EWMH_INIT_FULLSCREEN_STATE(
-					&(matches[i])));
 			SET_HAS_EWMH_INIT_HIDDEN_STATE(
 				ewin, HAS_EWMH_INIT_HIDDEN_STATE(
 					&(matches[i])));
