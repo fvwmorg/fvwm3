@@ -1,3 +1,8 @@
+2008-08-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/placement.c (__pl_position_get_pos_simple):
+	position placement honours StartsOnPage
+
 2008-08-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/session.c (MatchWinToSM):

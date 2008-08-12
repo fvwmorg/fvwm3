@@ -12,6 +12,7 @@ Changes in beta release 2.5.27 (not released yet)
      MoveByProgramMethod.
    - Fixed png detection when cross compiling.
    - Fixed keeping fullscreen window mode over a restart.
+   - The style PositionPlacement now honours StartsOnPage.
 
 -------------------------------------------------------------------
 

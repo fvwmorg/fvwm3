@@ -379,6 +379,11 @@ static pl_penalty_t __pl_position_get_pos_simple(
 	{
 		ret_p->y = arg->screen_g.y;
 	}
+	if (arg->flags.do_honor_starts_on_page)
+	{
+		ret_p->x -= arg->pdelta_p.x;
+		ret_p->y -= arg->pdelta_p.y;
+	}
 
 	return 0;
 }
