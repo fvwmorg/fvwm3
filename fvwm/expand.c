@@ -122,6 +122,7 @@ static char *function_vars[] =
 	"w.id",
 	"w.name",
 	"w.resource",
+	"w.visiblename",
 	"w.width",
 	"w.x",
 	"w.y",
@@ -194,6 +195,7 @@ enum
 	VAR_W_ID,
 	VAR_W_NAME,
 	VAR_W_RESOURCE,
+	VAR_W_VISIBLE_NAME,
 	VAR_W_WIDTH,
 	VAR_W_X,
 	VAR_W_Y,
@@ -547,6 +549,13 @@ static signed int expand_vars_extended(
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
 			string = fw->class.res_name;
+			should_quote = True;
+		}
+		break;
+	case VAR_W_VISIBLE_NAME:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			string = fw->visible_name;
 			should_quote = True;
 		}
 		break;
@@ -1070,6 +1079,19 @@ char *expand_vars(
 				}
 				break;
 			case 'v':
+				if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+				{
+					switch(input[i + 1])
+					{
+						case 'v':
+							if(fw->visible_name)
+							{
+								string = fw->visible_name;
+							}
+							break;
+					}
+				}
+
 				if (Fvwm_VersionInfo)
 				{
 					l2 += strlen(Fvwm_VersionInfo) + 2;

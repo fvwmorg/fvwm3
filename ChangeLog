@@ -1,3 +1,8 @@
+2008-10-03  Thomas Adam  <thomas.adam22@gmail.com>
+	* AUTHORS:
+	* fvwm/expand.c:
+	Add $[w.visiblename] as an expansion parameter.
+
 2008-08-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/placement.c (__pl_position_get_pos_simple):

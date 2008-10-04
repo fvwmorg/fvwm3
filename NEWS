@@ -5,6 +5,11 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.27 (not released yet)
 
+* New features:
+
+   - New extended variable
+       $[w.visiblename]
+
 * Bug fixes:
    - Fixed compilation without XRender support.
    - Fixed handling of _NET_MOVERESIZE_WINDOWS requests.

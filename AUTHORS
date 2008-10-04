@@ -13,6 +13,7 @@ Thomas Adam:
 Window style !StickyStippledTitle (and hence StickyStippledTitle).
 Icon style StippledIconTitle and !StickyStippledIconTitle.
 StartShaded style option.
+Introduce the command expansion placeholder:  $[w.visible_name]
 
 Serge (gentoosiast) Koksharov:
 Documentation fixes, bug fixes.

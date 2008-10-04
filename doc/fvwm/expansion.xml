@@ -236,13 +236,13 @@ command can be used:</para>
   <varlistentry>
     <term>
       $[w.name] $[w.iconname] $[w.class] $[w.resource]
-      $[w.iconfile] $[w.miniiconfile] $[w.iconfile.svgopts]
-      $[w.miniiconfile.svgopts]
+      $[w.visiblename] $[w.iconfile] $[w.miniiconfile] 
+      $[w.iconfile.svgopts] $[w.miniiconfile.svgopts]
     </term>
     <listitem>
       <para>
 	The window's name, icon name, resource class and resource name,
-	file name of its icon or mini icon defined with the
+	visible name, file name of its icon or mini icon defined with the
 	<fvwmref cmd="Style" opt="Icon"/> or
 	<fvwmref cmd="Style" opt="MiniIcon"/>
 	style (including the full path if the file was found on disk),
@@ -252,7 +252,7 @@ command can be used:</para>
 	if no window is associated with the command.
       </para>
       <para>
-	Note, the first 4 variables may include any kind of characters, so
+	Note, the first 5 variables may include any kind of characters, so
 	these variables are quoted.  It means that the value is surrounded
 	by single quote characters and any contained single quote is
 	prefixed with a backslash.  This guarantees that commands like:
@@ -260,7 +260,16 @@ command can be used:</para>
 	<programlisting><fvwmref cmd="Style"/> $[w.resource] <fvwmref cmd="Style" opt="Icon"/> norm/network.png</programlisting>
 
 	work correctly, regardless of any special symbols the value may
-	contain, like spaces and different kinds of quotes.
+    contain, like spaces and different kinds of quotes.
+      </para>
+      <para>
+    In the case of the window's visible name, this is the value returned
+    from the literal title of the window shown in the titlebar.  Typically
+    this will be the same as $[w.name] once expanded, although
+    in the case of using <fvwmref cmd="Style" opt="IndexedWindowName"/> then
+    this is more useful a distinction, and allows for referencing the
+    specific window by its visible name for inclusion in things like 
+    <fvwmref cmd="Style"/> commands.
       </para>
     </listitem>
   </varlistentry>
