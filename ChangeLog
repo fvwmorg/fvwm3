@@ -2,11 +2,10 @@
 
 	* fvwm/style.c (fw_match_style_id):
 	Allow for the window's visible name to be considered when matching a
-	style line.  Given $[w.visiblename] is mostly interesting when applying
-	style, make it match before the actual window name is.  Whilst they're
-	generally always going to be the same, in the case of having
-	IndxedWindowName, if a style line matches this as a visible name, apply
-	it first of all.
+	style line.  It is possible to use $[w.visiblename] as the style name.
+	Whilst the normal name and the visible name are usually the same, in
+	the case of having IndxedWindowName, if a style line matches this as a
+	visible name, apply it first of all.
 
 2008-10-03  Thomas Adam  <thomas.adam22@gmail.com>
 	* AUTHORS:
