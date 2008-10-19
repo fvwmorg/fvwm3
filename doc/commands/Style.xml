@@ -27,7 +27,7 @@ command is used to set attributes of a window to values other than
 the default or to set the window manager default styles.</para>
 
 <para><replaceable>stylename</replaceable>
-can be a window's name, class, or resource string.  It may contain
+can be a window's name, class, visible name, or resource string.  It may contain
 the wildcards '*' and '?', which are matched in the usual Unix
 filename manner.  Multiple style options in a single
 <emphasis remap='B'>Style</emphasis>

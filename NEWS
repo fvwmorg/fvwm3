@@ -10,6 +10,14 @@ Changes in beta release 2.5.27 (not released yet)
    - New extended variable
        $[w.visiblename]
 
+   - Style matching now honours the window's visible name which means it can
+     be matched before the real name, hence:
+
+        Style $[w.visiblename] Colorset 5
+
+        ... is now honoured.  Useful with IndexedWindowName as a style
+        option.
+
 * Bug fixes:
    - Fixed compilation without XRender support.
    - Fixed handling of _NET_MOVERESIZE_WINDOWS requests.

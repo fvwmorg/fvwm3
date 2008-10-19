@@ -185,6 +185,10 @@ static int fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 		{
 			return 1;
 		}
+		if (matchWildcards(SID_GET_NAME(s_id), fw->visible_name) == 1)
+		{
+			return 1;
+		}
 		if (matchWildcards(SID_GET_NAME(s_id), fw->name.name) == 1)
 		{
 			return 1;
