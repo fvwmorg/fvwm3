@@ -1,3 +1,7 @@
+2008-11-07  Dan Espen  <despen@verizon.net>
+
+	* fvwm.spec.in: Copyright -> License
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm.spec.in:

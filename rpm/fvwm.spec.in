@@ -14,7 +14,7 @@ Summary:   F(?) Virtual Window Manager
 Name:      fvwm
 Version:   %{ver}
 Release:   %{rel}
-Copyright: GPL
+License:   GPL
 Group:     User Interface/Desktops
 Source:    %{name}-%{version}.tar.gz
 URL:       http://www.fvwm.org/
