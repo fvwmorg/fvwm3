@@ -424,6 +424,7 @@ static fmodule *do_execute_module(
 		close(fvwm_to_app[1]);
 		close(app_to_fvwm[0]);
 #endif
+		fvmm_deinstall_signals();
 		if (!Pdefault)
 		{
 			char visualid[32];

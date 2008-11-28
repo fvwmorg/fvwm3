@@ -2453,6 +2453,8 @@ void CMD_Exec(F_CMD_ARGS)
 	{
 		/* This is for fixing a problem with rox filer */
 		int fd;
+
+		fvmm_deinstall_signals();
 		fd = open("/dev/null", O_RDONLY, 0);
 		dup2(fd,STDIN_FILENO);
 		if (fvwm_setpgrp() == -1)

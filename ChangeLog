@@ -1,3 +1,10 @@
+2008-11-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/fvwm.h:
+	* fvwm/module_list.c (do_execute_module):
+	* fvwm/fvwm.c (fvmm_deinstall_signals):
+	restore default signal handlers before execl()/execvp()
+
 2008-10-05  Thomas Adam <thomas.adam22@gmail.com>
 
 	* fvwm/style.c (fw_match_style_id):

@@ -963,5 +963,6 @@ typedef struct FvwmWindow
 /* ---------------------------- interface functions ------------------------ */
 
 void SetMWM_INFO(Window window);
+void fvmm_deinstall_signals(void);
 
 #endif /* FVWM_H */

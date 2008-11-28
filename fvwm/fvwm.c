@@ -828,6 +828,19 @@ InstallSignals(void)
 	return;
 }
 
+void fvmm_deinstall_signals(void)
+{
+	signal(SIGCHLD, SIG_DFL);
+	signal(SIGHUP, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGPIPE, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGTERM, SIG_DFL);
+	signal(SIGUSR1, SIG_DFL);
+
+	return;
+}
+
 /***********************************************************************
  *
  *  LoadDefaultLeftButton -- loads default left button # into
@@ -2266,7 +2279,7 @@ int main(int argc, char **argv)
 		}
 		else if (visualId != -1)
 		{
-			template.visualid = visualId;		
+			template.visualid = visualId;
 			vinfo = XGetVisualInfo(dpy,
 					VisualScreenMask|VisualIDMask,
 					&template, &total);

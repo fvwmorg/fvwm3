@@ -19,6 +19,7 @@ Changes in beta release 2.5.27 (not released yet)
         option.
 
 * Bug fixes:
+
    - Fixed compilation without XRender support.
    - Fixed handling of _NET_MOVERESIZE_WINDOWS requests.
    - Fixed a bug in automatic detection mode of the style
@@ -26,6 +27,7 @@ Changes in beta release 2.5.27 (not released yet)
    - Fixed png detection when cross compiling.
    - Fixed keeping fullscreen window mode over a restart.
    - The style PositionPlacement now honours StartsOnPage.
+   - Reset signal handlers for executed modules and programs.
 
 -------------------------------------------------------------------
 
