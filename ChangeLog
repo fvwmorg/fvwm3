@@ -1,3 +1,10 @@
+2008-12-29  Alexandre Julliard  <julliard@winehq.org>
+
+	* fvwm/ewmh_events.c (ewmh_WMStateMaxHoriz):
+	Having either _NET_WM_STATE_MAXIMIZED_HORIZ or
+	_NET_WM_STATE_MAXIMIZED_HORZ should be enough to make the window
+	horizontally maximized.
+
 2008-11-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/fvwm.h:

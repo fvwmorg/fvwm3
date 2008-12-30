@@ -743,8 +743,13 @@ int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
 				fw, EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
-		if (HAS_EWMH_INIT_MAXHORIZ_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
+
+                /* If the initial state is STATE_NO_HINT we still want to
+                 * override it, since having just one of MAXIMIZED_HORIZ or
+                 * MAXIMIZED_HORZ is enough to make the window maximized.
+                 */
+		if (HAS_EWMH_INIT_MAXHORIZ_STATE(fw) ==
+		    EWMH_STATE_HAS_HINT)
 		{
 			return 0;
 		}

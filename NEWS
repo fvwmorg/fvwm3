@@ -28,6 +28,9 @@ Changes in beta release 2.5.27 (not released yet)
    - Fixed keeping fullscreen window mode over a restart.
    - The style PositionPlacement now honours StartsOnPage.
    - Reset signal handlers for executed modules and programs.
+   - Try to handle a bug an old version of the EWMH spec by
+     honouring both, the _NET_WM_STATE_MAXIMIZED_HORIZ hint and
+     the _NET_WM_STATE_MAXIMIZED_HORZ hitn.
 
 -------------------------------------------------------------------
 
