@@ -657,6 +657,10 @@
 	((s).pl_position_string)
 #define SSET_PLACEMENT_POSITION_STRING(s,x)	\
 	((s).pl_position_string = (x))
+#define SGET_INITIAL_MAP_COMMAND_STRING(s) \
+	((s).initial_map_command_string)
+#define SSET_INITIAL_MAP_COMMAND_STRING(s,x)	\
+	((s).initial_map_command_string = (x))
 
 /* function prototypes */
 void lookup_style(FvwmWindow *fw, window_style *styles);

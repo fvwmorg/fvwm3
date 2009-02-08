@@ -2125,8 +2125,8 @@ Bool setup_transientfor(FvwmWindow *fw)
  *
  */
 FvwmWindow *AddWindow(
-	const exec_context_t *exc, FvwmWindow *ReuseWin,
-	initial_window_options_t * win_opts)
+	const char **ret_initial_map_command, const exec_context_t *exc,
+	FvwmWindow *ReuseWin, initial_window_options_t * win_opts)
 {
 	/* new fvwm window structure */
 	register FvwmWindow *fw;
@@ -2241,6 +2241,11 @@ FvwmWindow *AddWindow(
 			"(unknown)" : fw->icon_name.name, fw->class.res_name,
 			fw->class.res_class);
 	}
+
+	/****** InitialMapCommand ******/
+	*ret_initial_map_command =
+		(style.flags.has_initial_map_command_string) ?
+		SGET_INITIAL_MAP_COMMAND_STRING(style) : NULL;
 
 	/****** state setup ******/
 	setup_icon_boxes(fw, &style);

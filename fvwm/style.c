@@ -706,6 +706,13 @@ static void merge_styles(
 			*merged_style,
 			strdup(SGET_PLACEMENT_POSITION_STRING(*add_style)));
 	}
+	if (add_style->flags.has_initial_map_command_string)
+	{
+		SAFEFREE(SGET_INITIAL_MAP_COMMAND_STRING(*merged_style));
+		SSET_INITIAL_MAP_COMMAND_STRING(
+			*merged_style,
+			strdup(SGET_INITIAL_MAP_COMMAND_STRING(*add_style)));
+	}
 	/* merge the style flags */
 
 	/*** ATTENTION:
@@ -761,6 +768,7 @@ static void free_style(window_style *style)
 	SAFEFREE(SGET_MINI_ICON_NAME(*style));
 	remove_icon_boxes_from_style(style);
 	SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*style));
+	SAFEFREE(SGET_INITIAL_MAP_COMMAND_STRING(*style));
 
 	return;
 }
@@ -2981,6 +2989,17 @@ static Bool style_parse_one_style_option(
 			S_SET_USE_INDEXED_ICON_NAME(SCF(*ps), on);
 			S_SET_USE_INDEXED_ICON_NAME(SCM(*ps), 1);
 			S_SET_USE_INDEXED_ICON_NAME(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "InitialMapCommand"))
+		{
+			char *s;
+
+			s = (rest != NULL) ? strdup(rest) : NULL;
+			SSET_INITIAL_MAP_COMMAND_STRING(*ps, s);
+			ps->flags.has_initial_map_command_string = on;
+			ps->flag_mask.has_initial_map_command_string = on;
+			ps->change_mask.has_initial_map_command_string = 1;
+			rest = NULL; /* consume the entire string */
 		}
 		else
 		{

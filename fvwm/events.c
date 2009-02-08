@@ -2878,7 +2878,9 @@ void HandleMapRequestKeepRaised(
 	initial_window_options_t win_opts_bak;
 	Window ew;
 	FvwmWindow *fw;
+	const char *initial_map_command;
 
+	initial_map_command = NULL;
 	if (win_opts == NULL)
 	{
 		memset(&win_opts_bak, 0, sizeof(win_opts_bak));
@@ -2939,7 +2941,8 @@ void HandleMapRequestKeepRaised(
 		}
 
 		/* Add decorations. */
-		fw = AddWindow(ea->exc, ReuseWin, win_opts);
+		fw = AddWindow(
+			&initial_map_command, ea->exc, ReuseWin, win_opts);
 		if (fw == AW_NO_WINDOW)
 		{
 			return;
@@ -3054,6 +3057,17 @@ void HandleMapRequestKeepRaised(
 					(long)FW_W_FRAME(fw),
 					(unsigned long)fw);
 #endif
+			}
+			/* TA:  20090125:  We *have* to handle
+			 * InitialMapCommand here and not in AddWindow() to
+			 * allow for correct timings when the window is truly
+			 * mapped. (c.f. things like Iconify.)
+			 */
+			if (initial_map_command != NULL)
+			{
+				execute_function_override_window(
+					NULL, ea->exc,
+					(char *)initial_map_command, 0, fw);
 			}
 			MyXUngrabServer(dpy);
 			break;

@@ -204,6 +204,7 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>EdgeMoveDelay</emphasis>,
 <emphasis remap='I'>EdgeResizeDelay</emphasis>.
 <emphasis remap='I'>EdgeMoveResistance</emphasis>,
+<emphasis remap='I'>InitialMapCommand</emphasis>
 </para>
 
 
@@ -1360,8 +1361,18 @@ the defaults, the option <fvwmopt cmd="Style"
 opt="EdgeMoveResistance"/> can be used without any
 parameters.</para>
 
+<para>The option <fvwmopt cmd="Style" opt="InitialMapCommand"/> allows
+for any valid fvwm command or function to run when the window is 
+initially mapped by fvwm.  Example:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> MyWindow StartsOnPage 0 0, InitialMapCommand Iconify
+</programlisting>
 </section>
 
+<para>This would hence place the window called <emphasis>MyWindow</emphasis>
+on page 0 0 for the current desk, and immediately run the <fvwmref cmd="Iconify"/>
+command on that window.</para>
 
 
 <section id="window_manager_placement">

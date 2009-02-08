@@ -58,8 +58,8 @@ void change_icon_boxes(
 void FetchWmProtocols(
 	FvwmWindow *);
 FvwmWindow *AddWindow(
-	const exec_context_t *exc, FvwmWindow *ReuseWin,
-	initial_window_options_t * win_opts);
+	const char **ret_initial_map_command, const exec_context_t *exc,
+	FvwmWindow *ReuseWin, initial_window_options_t * win_opts);
 void GetWindowSizeHints(
 	FvwmWindow *);
 void free_window_names(
