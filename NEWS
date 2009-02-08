@@ -18,9 +18,6 @@ Changes in beta release 2.5.27 (not released yet)
         is now honoured.  Useful with IndexedWindowName as a style
         option.
 
-   - New style InitialMapCommand allows to execute any command
-     when a window is mapped first.
-
 * Bug fixes:
 
    - Fixed compilation without XRender support.

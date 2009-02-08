@@ -3,14 +3,6 @@
 	* bin/fvwm-menu-desktop.in:
 	Fix the location prefix for GNOME application files.
 
-2009-02-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
-
-	* fvwm/events.c (HandleMapRequestKeepRaised):
-	* fvwm/add_window.c (AddWindow):
-	* fvwm/style.h:
-	* fvwm/style.c (style_parse_one_style_option):
-	add new style InitialMapCommand
-
 2008-12-29  Alexandre Julliard  <julliard@winehq.org>
 
 	* fvwm/ewmh_events.c (ewmh_WMStateMaxHoriz):
