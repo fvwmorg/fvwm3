@@ -1,3 +1,8 @@
+2008-02-08  Thomas Adam <thomas.adam22@gmail.com>
+
+	* bin/fvwm-menu-desktop.in:
+	Fix the location prefix for GNOME application files.
+
 2009-02-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):

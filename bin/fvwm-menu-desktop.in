@@ -32,7 +32,9 @@ my $version = "@VERSION@";
 
 my $GNOME_PREFIX = '/usr';		# gnome install-dir
 # Default is "gnome" since fvwm is gnome compliant and not kde compliant.
-my $APPS_DIR = "$GNOME_PREFIX/share/gnome/apps";
+my $APPS_DIR = -d "$GNOME_PREFIX/share/gnome/apps" ? 
+    "$GNOME_PREFIX/share/gnome/apps" :
+    "$GNOME_PREFIX/share/gnome/applications";
 my $GNOME_APPS = $APPS_DIR;
 my $KDE_PREFIX = $ENV{KDEDIR} || '/usr';
 my $KDE_APPS = "$KDE_PREFIX/share/applnk";

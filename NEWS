@@ -34,6 +34,7 @@ Changes in beta release 2.5.27 (not released yet)
    - Try to handle a bug an old version of the EWMH spec by
      honouring both, the _NET_WM_STATE_MAXIMIZED_HORIZ hint and
      the _NET_WM_STATE_MAXIMIZED_HORZ hitn.
+   - Fix the GNOME location prefix to application .desktop files.
 
 -------------------------------------------------------------------
 
