@@ -111,7 +111,7 @@
 	(ewmh_check_wm_pid):
 	64-bit fix by Alexandre Julliard
 
-2006-03-30  Mikhael Goikhman  <migo@homemail.com>
+2008-03-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.ac:
 	fix fribidi detection when it uses pkg-config and not fribidi-config
