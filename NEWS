@@ -35,6 +35,8 @@ Changes in beta release 2.5.27 (not released yet)
      honouring both, the _NET_WM_STATE_MAXIMIZED_HORIZ hint and
      the _NET_WM_STATE_MAXIMIZED_HORZ hitn.
    - Fix the GNOME location prefix to application .desktop files.
+   - 'PositionPlacement UnderMouse' now forces the window on-screen,
+     just like the old UnderMousePlacement style option used to.
 
 -------------------------------------------------------------------
 

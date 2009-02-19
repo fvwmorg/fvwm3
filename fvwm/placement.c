@@ -329,7 +329,9 @@ static pl_penalty_t __pl_position_get_pos_simple(
 	Bool fPointer;
 	int n;
 	int i;
+	Bool is_under_mouse;
 
+	is_under_mouse = False;
 	spos = SGET_PLACEMENT_POSITION_STRING(*arg->style);
 	if (spos == NULL || *spos == 0)
 	{
@@ -345,6 +347,7 @@ static pl_penalty_t __pl_position_get_pos_simple(
 	{
 		spos = DEFAULT_PLACEMENT_POS_MOUSE_STRING;
 		i = 1;
+		is_under_mouse = True;
 	}
 	else
 	{
@@ -370,6 +373,24 @@ static pl_penalty_t __pl_position_get_pos_simple(
 		/* bug */
 		abort();
 	}
+	if (is_under_mouse)
+	{
+		/* TA:  20090218:  Try and keep the window on-screen if we
+		 * can.
+		 */
+		if (ret_p->x + arg->place_fw->g.frame.width > arg->screen_g.x
+				+ arg->screen_g.width)
+		{
+			ret_p->x = (arg->screen_g.x + arg->screen_g.width) -
+				arg->place_fw->g.frame.width;
+		}
+		if (ret_p->y + arg->place_fw->g.frame.height > arg->screen_g.y
+				+ arg->screen_g.height)
+		{
+			ret_p->y = (arg->screen_g.y + arg->screen_g.height) -
+				arg->place_fw->g.frame.height;
+		}
+	}		
 	/* Don't let the upper left corner be offscreen. */
 	if (ret_p->x < arg->screen_g.x)
 	{

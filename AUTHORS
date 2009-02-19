@@ -15,6 +15,8 @@ Icon style StippledIconTitle and !StickyStippledIconTitle.
 StartShaded style option.
 Introduce the command expansion placeholder:  $[w.visiblename]
 Make style matching honour a window's visible name (c.f. $[w.visiblename])
+Force windows on-screen where applicable when using 
+"PositionPlacement UnderMouse".
 
 Serge (gentoosiast) Koksharov:
 Documentation fixes, bug fixes.

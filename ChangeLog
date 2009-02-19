@@ -1,3 +1,7 @@
+2009-02-19  Thomas Adam  <thomas.adam22@gmail.com>
+	* fvwm/placement.c (__pl_position_get_pos_simple):
+	Force the window on-screen if using PositionPlacement UnderMouse.
+
 2009-02-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):

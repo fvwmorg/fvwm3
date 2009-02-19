@@ -1393,7 +1393,9 @@ top left corner of the display.  With the argument
 <emphasis remap='I'>Center</emphasis>,
 all new window appear at the center of the screen, and with
 <emphasis remap='I'>UnderMouse</emphasis>,
-windows are centered under the mouse pointer.  If any other
+windows are centered under the mouse pointer where possible.  If the window
+is unable to fit on the screen because the pointer is at the edge of the
+screen, then the window is forced on-screen using this option.  If any other
 <emphasis remap='I'>move-arguments</emphasis>
 are given, they are interpreted exactly as the
 <emphasis remap='B'>Move</emphasis>
