@@ -1,3 +1,16 @@
+2009-02-05  Thomas Adam <thomas.adam22@gmail.com>
+	* libs/charmap.c (charmap_table_to_string):
+	* libs/charmap.h:
+	Introduce charmap_to_string function which is used to build up a
+	binding string, for use with PrintInfo.
+
+	* fvwm/bindings.c (print_bindings):
+	Introduce print_bindings to print all bindings known to fvwm.
+
+	* fvwm/builtins.c (CMD_PrintInfo):
+	* fvwm/builtins.h:
+	Add support for "binding" as an option to PrintInfo.
+
 2009-02-19  Thomas Adam  <thomas.adam22@gmail.com>
 	* fvwm/placement.c (__pl_position_get_pos_simple):
 	Force the window on-screen if using PositionPlacement UnderMouse.

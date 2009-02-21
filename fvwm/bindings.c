@@ -639,6 +639,76 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 	return;
 }
 
+void print_bindings(void)
+{
+	Binding *b;
+
+	fprintf(stderr, "Current list of bindings:\n\n");
+	for (b = Scr.AllBindings; b != NULL; b = b->NextBinding)
+	{
+		switch (b->type)
+		{
+		case BIND_KEYPRESS:
+			fprintf(stderr, "Key");
+			break;
+		case BIND_PKEYPRESS:
+			fprintf(stderr, "PointerKey");
+			break;
+		case BIND_BUTTONPRESS:
+		case BIND_BUTTONRELEASE:
+			fprintf(stderr, "Mouse");
+			break;
+		case BIND_STROKE:
+			fprintf(stderr, "Stroke");
+			break;
+		default:
+			fvwm_msg(
+				ERR, "print_bindings",
+				"invalid binding type %d", b->type);
+			continue;
+		}
+		if (b->windowName != NULL)
+		{
+			fprintf(stderr, " (%s)", b->windowName);
+		}
+		switch (b->type)
+		{
+		case BIND_KEYPRESS:
+			fprintf(stderr, "\t%s", b->key_name);
+			break;
+		case BIND_PKEYPRESS:
+			fprintf(stderr, "\t%s", b->key_name);
+			break;
+		case BIND_BUTTONPRESS:
+		case BIND_BUTTONRELEASE:
+			fprintf(stderr, "\t%d", b->Button_Key);
+			break;
+		case BIND_STROKE:
+			fprintf(
+				stderr, "\t%s\t%d", (char *)b->Stroke_Seq,
+				b->Button_Key);
+			break;
+		}
+		{
+			char *mod_string;
+			char *context_string;
+
+			mod_string = charmap_table_to_string(
+				MaskUsedModifiers(b->Modifier),key_modifiers);
+			context_string = charmap_table_to_string(
+				b->Context, win_contexts);
+			fprintf(
+				stderr, "\t%s\t%s\t%s\n", context_string,
+				mod_string,
+				(b->Action != NULL) ? (char *)b->Action : "");
+			free(mod_string);
+			free(context_string);
+		}
+	}
+
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------ */
 
 /* Removes all unused modifiers from in_modifiers */

@@ -21,6 +21,10 @@ Changes in beta release 2.5.27 (not released yet)
    - New style InitialMapCommand allows to execute any command
      when a window is mapped first.
 
+   - New option to PrintInfo, "bindings" which prints out all of
+     the Key, PointerKey, Mouse and Stroke bindings which fvwm
+     knows about.
+
 * Bug fixes:
 
    - Fixed compilation without XRender support.
@@ -35,8 +39,9 @@ Changes in beta release 2.5.27 (not released yet)
      honouring both, the _NET_WM_STATE_MAXIMIZED_HORIZ hint and
      the _NET_WM_STATE_MAXIMIZED_HORZ hitn.
    - Fix the GNOME location prefix to application .desktop files.
-   - 'PositionPlacement UnderMouse' now forces the window on-screen,
-     just like the old UnderMousePlacement style option used to.
+   - 'PositionPlacement UnderMouse' now forces the window
+     on-screen, just like the old UnderMousePlacement style option
+     used to.
 
 -------------------------------------------------------------------
 

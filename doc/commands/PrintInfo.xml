@@ -57,4 +57,10 @@ which prints information on fvwm styles.
 <replaceable>verbose</replaceable>
 can be 1.</para>
 
+<para><fvwmopt cms="PrintInfo" opt="bindings"/>
+which prints information on all the bindings fvwm has:  key, mouse and
+stroke bindings.
+<replaceable>verbose</replaceable>
+has no effect with this option.</para>
+
 </section>

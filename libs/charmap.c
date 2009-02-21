@@ -19,8 +19,10 @@
 #include "config.h"
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "charmap.h"
+#include "safemalloc.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -101,4 +103,31 @@ char charmap_mask_to_char(int mask, charmap_t *table)
 	}
 
 	return c;
+}
+
+/* Used from "PrintInfo Bindings". */
+char *charmap_table_to_string(int mask, charmap_t *table)
+{
+	char *allmods;
+	int modmask;
+
+	modmask = mask;
+	allmods = safecalloc(1, sizeof(charmap_t));
+	for (; table->key !=0; table++)
+	{
+		char *c;
+
+		c = safecalloc(1, sizeof(table->key));
+		strcpy(c, (char *)&table->key);
+		*c = toupper(*c);
+		if (modmask & table->value)
+		{
+			modmask |= table->value;
+			strcat(allmods, c);
+		}
+		modmask &= ~table->value;
+		free(c);
+	}
+
+	return allmods;
 }

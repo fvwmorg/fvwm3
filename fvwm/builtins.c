@@ -2700,6 +2700,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	{
 		PicturePrintImageCache(verbose);
 	}
+	else if (StrEquals(subject, "Bindings"))
+	{
+		print_bindings();
+	}
 	else
 	{
 		fvwm_msg(ERR, "PrintInfo",
