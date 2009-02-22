@@ -699,8 +699,7 @@ void print_bindings(void)
 				b->Context, win_contexts);
 			fprintf(
 				stderr, "\t%s\t%s\t%s\n", context_string,
-				mod_string,
-				(b->Action != NULL) ? (char *)b->Action : "");
+				mod_string, (char *)b->Action);
 			free(mod_string);
 			free(context_string);
 		}
