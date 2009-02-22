@@ -681,11 +681,13 @@ void print_bindings(void)
 		case BIND_BUTTONRELEASE:
 			fprintf(stderr, "\t%d", b->Button_Key);
 			break;
+#ifdef HAVE_STROKE
 		case BIND_STROKE:
 			fprintf(
 				stderr, "\t%s\t%d", (char *)b->Stroke_Seq,
 				b->Button_Key);
 			break;
+#endif
 		}
 		{
 			char *mod_string;

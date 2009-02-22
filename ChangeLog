@@ -1,3 +1,8 @@
+2009-02-23  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/bindings.c (print_bindings):
+	Fixed compilation of not having libstroke installed by using ifdefs
+	around stroke code.
+
 2009-02-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/bindings.c (print_bindings):
