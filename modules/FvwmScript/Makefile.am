@@ -37,7 +37,11 @@ YACC = yacc
 
 syntax:
 	rm -f lex.yy.c y.tab.c y.tab.h script.tab.c script.tab.h || true
-	$(LEX) $(AM_LFLAGS) $(LFLAGS) scanner.l && mv lex.yy.c scanner.c
+	if $(LEX) --nounput --help 2>/dev/null > /dev/null; then \
+		$(LEX) $(AM_LFLAGS) $(LFLAGS) --nounput scanner.l; \
+	else \
+		$(LEX) $(AM_LFLAGS) $(LFLAGS) scanner.l; \
+	fi && mv lex.yy.c scanner.c
 
 	@# detect and prefer bison; bison without -y uses file.tab.[ch] names
 	YACC=$(YACC); if which bison >/dev/null 2>&1; then YACC="bison -y"; fi; \

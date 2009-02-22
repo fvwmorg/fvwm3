@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.2.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
 
@@ -262,7 +262,7 @@ typedef union YYSTYPE
 {  char *str;
           int number;
        }
-/* Line 1528 of yacc.c.  */
+/* Line 1489 of yacc.c.  */
 #line 267 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

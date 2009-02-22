@@ -76,7 +76,6 @@ Bool StartButtonParseConfig(char *tline)
 	int i, j, k;
 	int titleRecorded = 0, iconRecorded = 0;
 	char *tokens[100];  /* This seems really big */
-	char *strtok_ptr;
 	StartAndLaunchButtonItem *tempPtr;
 	int mouseButton;
 	char **tmpStrPtr;
@@ -228,12 +227,16 @@ Bool StartButtonParseConfig(char *tline)
 		StartAndLaunchButtonItemInit(Last_Start_Button);
 		j=0;
 		titleRecorded = iconRecorded = 0;
-		tokens[j++] = strtok_r(rest, ",", &strtok_ptr);
-		while((tokens[j++] = strtok_r(NULL, ",", &strtok_ptr)))
 		{
-			while(isspace(*(tokens[j-1])))
+			char *strtok_ptr = 0;
+
+			tokens[j++] = strtok_r(rest, ",", &strtok_ptr);
+			while((tokens[j++] = strtok_r(NULL, ",", &strtok_ptr)))
 			{
-				tokens[j-1]+=sizeof(char);
+				while(isspace(*(tokens[j-1])))
+				{
+					tokens[j-1]+=sizeof(char);
+				}
 			}
 		}
 		j--;

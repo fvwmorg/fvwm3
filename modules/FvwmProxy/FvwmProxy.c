@@ -672,16 +672,6 @@ static WindowName *new_WindowName(void)
 	return p;
 }
 
-static void delete_WindowName(WindowName *p)
-{
-	if (p)
-	{
-		delete_WindowName(p->next);
-		free(p->name);
-		free(p);
-	}
-}
-
 static void ProxyGroup_ProxyGroup(ProxyGroup *p)
 {
 	memset(p, 0, sizeof *p);
@@ -692,18 +682,6 @@ static ProxyGroup *new_ProxyGroup(void)
 	ProxyGroup *p=(ProxyGroup *)safemalloc(sizeof(ProxyGroup));
 	ProxyGroup_ProxyGroup(p);
 	return p;
-}
-
-static void delete_ProxyGroup(ProxyGroup *p)
-{
-	if (p)
-	{
-		delete_ProxyGroup(p->next);
-		delete_WindowName(p->includes);
-		delete_WindowName(p->excludes);
-		free(p->name);
-		free(p);
-	}
 }
 
 /* ---------------------------- error handlers ------------------------------ */

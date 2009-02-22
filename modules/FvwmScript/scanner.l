@@ -18,8 +18,9 @@
 # include "types.h"
 # include "libs/Parse.h"
 
-/* Suppress definition of yyunput(), as we do not use it. */
+/* Suppress definition of yyunput() and yyinput(), as we do not use it. */
 #define YY_NO_UNPUT
+#define YY_NO_INPUT
 
 int numligne=1;
 %}

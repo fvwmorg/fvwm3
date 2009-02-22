@@ -485,11 +485,12 @@ byte buttonJustify(button_info *b)
 void alloc_buttonlist(button_info *ub,int num)
 {
   button_info **bb;
-  int i,old;
+  int i;
+  /* needed to prevent a gcc -O3 bug */
+  volatile int old;
 
   if(num>=ub->c->allocated_buttons)
   {
-    old=ub->c->allocated_buttons;
     if(num<old || old>(old+32)) /* test for num<old or for signed overflow */
     {
       fprintf(stderr,"%s: Too many buttons, integer overflow\n",MyName);
