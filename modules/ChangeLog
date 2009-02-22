@@ -1,3 +1,19 @@
+2009-02-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmTaskBar/Start.c (StartButtonParseConfig):
+	fixed compiler warning
+
+	* FvwmScript/Makefile.am (syntax):
+	* FvwmScript/script.y:
+	fixed a yacc warning
+
+	* FvwmProxy/FvwmProxy.c (delete_ProxyGroup):
+	(delete_WindowName):
+	removed unused functions to fixed compiler warning
+
+	* FvwmButtons/button.c (alloc_buttonlist):
+	fixed an optimizer bug
+
 2008-05-22  Adam Goode  <adam(at)spicenitz(dot)org>
 
 	* FvwmScript/FvwmScript.c
