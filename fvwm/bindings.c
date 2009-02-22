@@ -674,8 +674,6 @@ void print_bindings(void)
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
-			fprintf(stderr, "\t%s", b->key_name);
-			break;
 		case BIND_PKEYPRESS:
 			fprintf(stderr, "\t%s", b->key_name);
 			break;

@@ -110,21 +110,27 @@ char *charmap_table_to_string(int mask, charmap_t *table)
 {
 	char *allmods;
 	int modmask;
+	char c[2];
 
+	c[1] = 0;
 	modmask = mask;
-	allmods = safecalloc(1, sizeof(charmap_t));
+	allmods = safemalloc(sizeof(table->value) * 8 + 1);
+	*allmods = 0;
 	for (; table->key !=0; table++)
 	{
-		char c;
-
-		strcpy(&c, (char *)&table->key);
-		c = toupper(c);
-		if (modmask & table->value)
+		c[0] = toupper(table->key);
+		if (mask == table->value)
 		{
-			modmask |= table->value;
-			strcat(allmods, &c);
+			/* exact match */
+			strcpy(allmods, c);
+			break;
 		}
-		modmask &= ~table->value;
+		else if (modmask & table->value)
+		{
+			/* incremental match */
+			strcat(allmods, c);
+			modmask &= ~table->value;
+		}
 	}
 
 	return allmods;

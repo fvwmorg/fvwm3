@@ -1,8 +1,18 @@
-2009-02-22  Thomas Adam <thomas.adam22@gmail.com>
+2009-02-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/bindings.c (print_bindings):
+	slight cleanup
+
 	* libs/charmap.c (charmap_table_to_string):
-	Reduce memory management on the stack, by making only those variables to
-	be accessed outside of the function charmap_table_to_string() allocated
-	on the heap instead.
+	several memory menagement fixes.
+
+2009-02-22  Thomas Adam <thomas.adam22@gmail.com>
+
+	* libs/charmap.c (charmap_table_to_string):
+	Reduce memory management on the stack, by making only those variables
+	to be accessed outside of the function charmap_table_to_string()
+	allocated on the heap instead.
+
 	* fvwm/bindings.c (print_bindings):
 	b->Action was previously checked whether it was NULL or not before
 	printing its value to STDERR -- however, this caused a segfault when
@@ -10,6 +20,7 @@
 	checking if it's NULL.  This avoids segfaulting.
 
 2009-02-05  Thomas Adam <thomas.adam22@gmail.com>
+
 	* libs/charmap.c (charmap_table_to_string):
 	* libs/charmap.h:
 	Introduce charmap_to_string function which is used to build up a
@@ -23,6 +34,7 @@
 	Add support for "binding" as an option to PrintInfo.
 
 2009-02-19  Thomas Adam  <thomas.adam22@gmail.com>
+
 	* fvwm/placement.c (__pl_position_get_pos_simple):
 	Force the window on-screen if using PositionPlacement UnderMouse.
 
