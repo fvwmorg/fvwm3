@@ -1,3 +1,8 @@
+2009-02-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmButtons/button.c (alloc_buttonlist):
+	fixed crash in previus commit
+
 2009-02-22  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmTaskBar/Start.c (StartButtonParseConfig):
