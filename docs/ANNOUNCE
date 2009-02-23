@@ -1,26 +1,47 @@
-Fvwm is a powerful window manager.  Version 2.5.26 is a beta
-maintenance release that fixes a couple of bugs, including a
-problem with shaped windows that was introduced in 2.5.25.  Please
-be aware that any features introduced in the 2.5.x development
-versions may be renamed, changed or removed without notice before
-2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.27 is a beta
+maintenance release that fixes a couple of bugs and adds some
+minor features.  Please be aware that any features introduced in
+the 2.5.x development versions may be renamed, changed or removed
+without notice before 2.6.0.
 
-Upgrading from 2.5.25 or earlier is recommended.
+Upgrading from 2.5.26 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - New MenuStyle option VerticalMargins.
+   - New extended variable
+       $[w.visiblename]
 
-* New module features:
+   - Style matching now honours the window's visible name which
+     means it can be matched before the real name, hence:
 
-   - FvwmButtons: New button alignment option: top.
+        Style $[w.visiblename] Colorset 5
+
+        is now honoured.  Useful with IndexedWindowName as a style
+        option.
+
+   - New style InitialMapCommand allows to execute any command
+     when a window is mapped first.
+
+   - New option to PrintInfo, "bindings" which prints out all of
+     the Key, PointerKey, Mouse and Stroke bindings which fvwm
+     knows about.
 
 * Bug fixes:
 
-   - Fixed crash in ARGB visual detection code.
    - Fixed compilation without XRender support.
-   - Fixed drawing of background pictures in menu items and titles.
-   - Fixed hadling of shaped windows.
-   - Fixed a 64-bit bug in the EWMH code.
+   - Fixed handling of _NET_MOVERESIZE_WINDOWS requests.
+   - Fixed a bug in automatic detection mode of the style
+     MoveByProgramMethod.
+   - Fixed png detection when cross compiling.
+   - Fixed keeping fullscreen window mode over a restart.
+   - The style PositionPlacement now honours StartsOnPage.
+   - Reset signal handlers for executed modules and programs.
+   - Try to handle a bug an old version of the EWMH spec by
+     honouring both, the _NET_WM_STATE_MAXIMIZED_HORIZ hint and
+     the _NET_WM_STATE_MAXIMIZED_HORZ hitn.
+   - Fix the GNOME location prefix to application .desktop files.
+   - 'PositionPlacement UnderMouse' now forces the window
+     on-screen, just like the old UnderMousePlacement style option
+     used to.
