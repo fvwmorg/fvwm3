@@ -1,3 +1,10 @@
+2009-02-27  Thomas Adam   <thomas.adam22@gmail.com>
+	* todo-2.6:
+	Deprecate the "Closed recently" section, since this file is updated so
+	infrequently, the term "recently" was in 2005, when at the time of
+	writing, it's 2009.  Instead, add all closed bugs under "Closed" from
+	now on.
+
 2009-02-23  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* ANNOUNCE:
