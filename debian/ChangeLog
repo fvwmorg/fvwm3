@@ -1,5 +1,13 @@
 2009-03-10  Mikhael Goikhman  <migo@homemail.com>
 
+	* Makefile.am
+	pass --enable-htmldoc to configure
+
+	* README.Debian:
+	slightly update instruction
+
+2009-03-10  Mikhael Goikhman  <migo@homemail.com>
+
 	* control.in (Build-Depends):
 	drop forcing all library dependencies
 

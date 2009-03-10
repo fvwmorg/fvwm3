@@ -5,7 +5,7 @@ EXTRA_DIST = @PACKAGE@.spec
 
 version = @VERSION@
 release = 0.`date +%Y%m%d`
-cparams = --without-gnome --without-rplay-library --sysconfdir=/etc
+cparams = --without-gnome --without-rplay-library --sysconfdir=/etc --enable-htmldoc
 mparams = CFLAGS="-O2"
 
 this: @PACKAGE@.spec

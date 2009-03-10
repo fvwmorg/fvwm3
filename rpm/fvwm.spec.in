@@ -21,12 +21,7 @@ URL:       http://www.fvwm.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Packager:  Fvwm Workers <fvwm-workers@fvwm.org>
 Autoreq:   1
-
-Requires:  libXpm.so.4
-#Requires:  xpm >= 3.4g
 Requires:  perl >= @REQUIRED_PERL_VERSION@
-
-# GTK, Imlib, stroke
 
 # RedHat should stop using name "fvwm" to refer to fvwm1 package.
 Provides:  fvwm
@@ -90,12 +85,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/error_codes docs/fvwm.lsm
 %{prefix}/bin/*
 %{prefix}/libexec/*
-%{prefix}/share/*
-# the following correct lines somehow generate rpm-build errors, so own share/*
-#%{prefix}/share/doc/*
-#%{prefix}/share/fvwm
-#%{prefix}/share/man/*/*
-#%{prefix}/share/locale/*/*/*
+%{prefix}/share/doc/*
+%{prefix}/share/fvwm
+%{prefix}/share/man/*/*
+%{prefix}/share/locale/*/*/*
 
 %define date%(echo `LC_ALL="C" date +"%a %b %d %Y"`)
 %changelog
