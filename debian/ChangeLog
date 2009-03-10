@@ -1,3 +1,8 @@
+2009-03-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* control.in (Build-Depends):
+	drop forcing all library dependencies
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* control.in:
