@@ -192,7 +192,7 @@ my $site  = undef;
 my $name  = undef;
 my $title = undef;
 my $itemF = '%h\t%[(%Y-%m-%d %H:%M)]';
-my $execF = q(netscape -remote 'openURL(%u, new-window)' || netscape '%u');
+my $execF = q(firefox '%u');
 my $commF = undef;
 my $iconT = '';
 my $iconI = '';
@@ -501,7 +501,9 @@ sub processXml ($$$$) {
 	foreach ($doc =~ m!<$entryTag\b[^>]*>(.*?)</$entryTag>!sg) {
 		s/&amp;quot;/"/g;  # fix buggy html in some backends
 		# replace &#039; with single quote and &quot; with double quote
-		s/&(?:(\w+)|#(\d+));/ $1? $entityMap->{$1} || "{$1}": chr($2) /ge;
+		s/&(?:(\w+)|#(\d{2,})|#x([\da-fA-F]{2,4}));/
+			$1 ? $entityMap->{$1} || "{$1}" : chr($2 || hex($3))
+		/ge;
 
 		my $entry = {};
 
@@ -649,12 +651,15 @@ sub processFreeKDE () {
 }
 
 sub processRootPrompt () {
-	my $descToDate = sub ($) {
-		$_[0]->{'description'} =~ /^(\d+ \w{3} \d{4}):/; $1;
+	my $title_stripped = sub ($) {
+		$_[0]->{'title'} =~ /(.*) \([^\(\)]+\)$/ ? $1 : $_[0]->{'title'};
+	};
+	my $title_to_date = sub ($) {
+		$_[0]->{'title'} =~ / \((\d+ \w{3} \d{4})\)$/; $1;
 	};
 	return processXml(
 		'item',
-		{ 'h' => 'title', 'u' => 'link', 'd' => $descToDate },
+		{ 'h' => $title_stripped, 'u' => 'link', 'd' => $title_to_date },
 		sub ($) {
 			$_[0] =~ /(\d+) (\w+) (\d+)/;
 			($3, $smonthHash{$2}, $1);
@@ -681,7 +686,7 @@ sub processLinuxFr () {
 		$_[0]->{'link'} =~ m|/(\d\d\d\d/\d\d/\d\d)/|; $1;
 	};
 	my $hackForUrl = sub ($) {
-		# hack for netscape -remote openURL
+		# hack for mozilla -remote openURL
 		my $u = $_[0]->{'link'};
 		$u =~ s|,|\%2c|g; $u;
 	};
@@ -700,7 +705,7 @@ sub processLinuxFr_old () {
 		$_[0]->{'url'} =~ m|/(\d\d\d\d/\d\d/\d\d)/|; $1;
 	};
 	my $hackForUrl = sub ($) {
-		# hack for netscape -remote openURL
+		# hack for mozilla -remote openURL
 		my $u = $_[0]->{'url'};
 		$u =~ s|,|\%2c|g; $u;
 	};
@@ -1024,6 +1029,10 @@ chars, the num must be greater than 3, since the striped part is replaced
 with "...", example: %*30x. Both can be combined: %-10*-20x, this instructs to
 get only the 20 last characters, but if the length is less then 10 - to fill
 with up to 10 spaces on the right.
+
+Example:
+
+  --exec "iceweasel -remote 'openURL(%u, new-window)' || iceweasel '%u'"
 
 =item B<--command> command-format
 

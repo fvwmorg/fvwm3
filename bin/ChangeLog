@@ -1,3 +1,12 @@
+2009-03-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-config.in:
+	fix wrong spacing in the output caused by libXcursor patch
+
+	* fvwm-menu-headlines.in:
+	switch the default broswer from "netscape" to "firefox",
+	fix parsing of "&#xabcd;" entities in xml and RootPrompt site
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-menu-directory.1:
@@ -22,7 +31,6 @@
 
 	* Makefile.am (LDADD):
 	fixed building with libXcursor
-
 
 2007-06-22  Simon Griph  <simon(at)griph(dot)se>
 

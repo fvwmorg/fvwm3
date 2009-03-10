@@ -228,7 +228,7 @@ while test $# -gt 0; do
 			echo "	sm (session management): $with_sm"
 			echo "	stroke (mouse gestures): $with_stroke"
 			echo "	rsvg (SVG icons and images): $with_rsvg"
-			echo "  xcursor (ARGB/animated cursors): $with_xcursor"
+			echo "	xcursor (ARGB/animated cursors): $with_xcursor"
 			echo "	xinerama (multi-head): $with_xinerama"
 			echo "	xft (FreeType anti-alias font): $with_xft"
 			echo "	xpm: $with_xpm"
