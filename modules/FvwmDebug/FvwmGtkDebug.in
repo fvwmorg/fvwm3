@@ -30,7 +30,6 @@ BEGIN {
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module::Gtk;
 use FVWM::EventNames;
-use Gtk;
 init Gtk;
 
 my $defaultMask = MAX_MSG_MASK &

@@ -305,8 +305,8 @@ $internalPods->{tutorial} = q{
 
 	    use lib `fvwm-perllib dir`;
 	    use FVWM::Module::Gtk;
-	    use Gtk -init;
 	    use POSIX qw(SIGALRM);
+	    Gtk->init;
 
 	    my $format = "(%d, %d)";
 	    my $module = new FVWM::Module::Gtk;

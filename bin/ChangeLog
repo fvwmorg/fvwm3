@@ -1,5 +1,10 @@
 2009-03-10  Mikhael Goikhman  <migo@homemail.com>
 
+	* fvwm-perllib.in:
+	hide "use Gtk;" pseudo-dependency from annoying package builders
+
+2009-03-10  Mikhael Goikhman  <migo@homemail.com>
+
 	* fvwm-config.in:
 	fix wrong spacing in the output caused by libXcursor patch
 
