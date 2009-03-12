@@ -1,3 +1,11 @@
+2009-03-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmGtkDebug.in:
+	port the whole module from perl-Gtk1 to perl-Gtk2
+
+	* FvwmDebug/FvwmDebug.in:
+	add copyright line as required by GPL
+
 2009-03-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmGtkDebug.in:
