@@ -18,3 +18,5 @@ _Constants.pm: Makefile.am $(top_srcdir)/libs/Module.h
 _Commands.pm: Makefile $(top_srcdir)/fvwm/functable.c
 	cd $(top_builddir)/perllib/FVWM && \
 	(fvwm_libdir=$(top_builddir)/libs ./create-commands)
+
+regenerate: _Constants.pm _Commands.pm

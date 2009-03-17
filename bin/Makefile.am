@@ -28,38 +28,38 @@ INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 ## The long generation for *.1 is to make both pod2man and 'make -j' happy.
 
 _fvwm-menu-xlock.1: fvwm-menu-xlock.in
-	@TMP=tmp-$$$$ && (\
+	@TMP=tmp-$$$$ NAME=fvwm-menu-xlock && (\
 	mkdir $$TMP && \
-	cp fvwm-menu-xlock.in $$TMP/fvwm-menu-xlock && \
-	pod2man --center "Fvwm Utilities" $$TMP/fvwm-menu-xlock >$$TMP/fvwm-menu-xlock.1 2>/dev/null && \
-	mv $$TMP/fvwm-menu-xlock.1 .; \
+	cp $$NAME.in $$TMP/$$NAME && \
+	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 
 _fvwm-menu-directory.1: fvwm-menu-directory.in
-	@TMP=tmp-$$$$ && (\
+	@TMP=tmp-$$$$ NAME=fvwm-menu-directory && (\
 	mkdir $$TMP && \
-	cp fvwm-menu-directory.in $$TMP/fvwm-menu-directory && \
-	pod2man --center "Fvwm Utilities" $$TMP/fvwm-menu-directory >$$TMP/fvwm-menu-directory.1 2>/dev/null && \
-	mv $$TMP/fvwm-menu-directory.1 .; \
+	cp $$NAME.in $$TMP/$$NAME && \
+	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 
 _fvwm-menu-headlines.1: fvwm-menu-headlines.in
-	@TMP=tmp-$$$$ && (\
+	@TMP=tmp-$$$$ NAME=fvwm-menu-headlines && (\
 	mkdir $$TMP && \
-	cp fvwm-menu-headlines.in $$TMP/fvwm-menu-headlines && \
-	pod2man --center "Fvwm Utilities" $$TMP/fvwm-menu-headlines >$$TMP/fvwm-menu-headlines.1 2>/dev/null && \
-	mv $$TMP/fvwm-menu-headlines.1 .; \
+	cp $$NAME.in $$TMP/$$NAME && \
+	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 
 _fvwm-perllib.1: fvwm-perllib.in
-	@TMP=tmp-$$$$ && (\
+	@TMP=tmp-$$$$ NAME=fvwm-perllib && (\
 	mkdir $$TMP && \
-	cp fvwm-perllib.in $$TMP/fvwm-perllib && \
-	pod2man --center "Fvwm Utilities" $$TMP/fvwm-perllib >$$TMP/fvwm-perllib.1 2>/dev/null && \
-	mv $$TMP/fvwm-perllib.1 .; \
+	cp $$NAME.in $$TMP/$$NAME && \
+	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 
-pod2man: \
+regenerate: \
 	_fvwm-menu-xlock.1 _fvwm-menu-directory.1 _fvwm-menu-headlines.1 \
 	_fvwm-perllib.1
 

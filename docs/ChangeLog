@@ -1,4 +1,10 @@
+2009-03-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* COMMANDS:
+	regenerated (by create-commands)
+
 2009-02-27  Thomas Adam   <thomas.adam22@gmail.com>
+
 	* todo-2.6:
 	Deprecate the "Closed recently" section, since this file is updated so
 	infrequently, the term "recently" was in 2005, when at the time of

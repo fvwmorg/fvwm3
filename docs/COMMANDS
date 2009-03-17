@@ -1,4 +1,4 @@
-The recognized commands for fvwm 2.5.22 (from cvs) as of 05-Aug-2007:
+The recognized commands for fvwm 2.5.28 (from cvs) as of 17-Mar-2009:
 
   #                     - Comment line (ignored)
   *                     - Module configuration line (no space after asterisk)

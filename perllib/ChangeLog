@@ -21,6 +21,13 @@
 	* General/Parse.pm:
 	convert my old code to use var_name and function_name coding style
 
+	* FVWM/Constants.pm:
+	* FVWM/Commands.pm:
+	regenerated
+
+	* FVWM/Makefile.am:
+	add "regenerate" target
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FVWM/EventNames.pm:

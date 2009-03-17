@@ -4,8 +4,8 @@ package FVWM::Commands;
 
 use vars qw($VERS $TIME @LIST);
 
-$VERS = '2.5.22 (from cvs)';
-$TIME = 1186321509;
+$VERS = '2.5.28 (from cvs)';
+$TIME = 1237313570;
 
 @LIST = (
 	{
