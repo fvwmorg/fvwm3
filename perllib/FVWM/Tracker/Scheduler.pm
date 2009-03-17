@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,11 +33,11 @@ sub new ($$%) {
 
 	my $self = $class->FVWM::Tracker::new($module);
 
-	$self->{randomBaseNumber} = 8000000 + int(rand(900000));
-	$self->{sentStringPrefix} = "FVWM::Tracker::Scheduler alarm ";
-	$self->{moduleName} = $params{ModuleName} || $self->{module}->name;
-	$self->{useAlarm} = (exists $params{UseAlarm}?
-		$params{UseAlarm}: $module->isDummy)? 1: 0;
+	$self->{random_base_number} = 8000000 + int(rand(900000));
+	$self->{sent_string_prefix} = "FVWM::Tracker::Scheduler alarm ";
+	$self->{module_name} = $params{ModuleName} || $self->{module}->name;
+	$self->{use_alarm} = (exists $params{UseAlarm}?
+		$params{UseAlarm}: $module->is_dummy)? 1: 0;
 
 	return $self;
 }
@@ -49,26 +49,26 @@ sub start ($) {
 
 	my $result = $self->SUPER::start;
 
-	$self->{internalObserverId} ||= $self->observe(sub {
-		my $scheduleId = $_[3];
-		my $scheduleData = $self->data($scheduleId);
-		$self->{rescheduledSeconds} = -1;
+	$self->{internal_observer_id} ||= $self->observe(sub {
+		my $schedule_id = $_[3];
+		my $schedule_data = $self->data($schedule_id);
+		$self->{rescheduled_seconds} = -1;
 
-		&{$scheduleData->{callback}}($scheduleData, @{$scheduleData->{params}});
+		&{$schedule_data->{callback}}($schedule_data, @{$schedule_data->{params}});
 
-		my $newSeconds = $self->{rescheduledSeconds};
-		if ($newSeconds >= 0) {
-			$scheduleData->{seconds} = $newSeconds if $newSeconds;
-			$self->sendSchedule($scheduleId);
+		my $new_seconds = $self->{rescheduled_seconds};
+		if ($new_seconds >= 0) {
+			$schedule_data->{seconds} = $new_seconds if $new_seconds;
+			$self->send_schedule($schedule_id);
 		} else {
-			$self->deschedule($scheduleId);
+			$self->deschedule($schedule_id);
 		}
 	});
 
-	$self->addHandler(M_STRING, sub {
+	$self->add_handler(M_STRING, sub {
 		my $event = $_[1];
 		my $text = $event->_text;
-		return unless $text =~ /^$self->{sentStringPrefix}(\d+)/;
+		return unless $text =~ /^$self->{sent_string_prefix}(\d+)/;
 		$self->notify("main", $1);
 	});
 
@@ -79,68 +79,68 @@ sub stop ($) {
 	my $self = shift;
 
 	$self->SUPER::stop;
-	$self->descheduleAll;
+	$self->deschedule_all;
 }
 
-sub sendSchedule ($$) {
+sub send_schedule ($$) {
 	my $self = shift;
-	my $scheduleId = shift;
-	my $sd = $self->{data}->{$scheduleId};
+	my $schedule_id = shift;
+	my $sd = $self->{data}->{$schedule_id};
 
-	my $string = "$self->{sentStringPrefix}$scheduleId";
-	if ($self->{useAlarm}) {
+	my $string = "$self->{sent_string_prefix}$schedule_id";
+	if ($self->{use_alarm}) {
 		$SIG{ALRM} = sub {
-			$self->{module}->emulateEvent(M_STRING, [ 0, 0, 0, $string ]);
+			$self->{module}->emulate_event(M_STRING, [ 0, 0, 0, $string ]);
 		};
 		alarm($sd->{seconds});
 	} else {
-		my $mSeconds = $sd->{seconds} * 1000;
-		$self->{module}->send("Schedule $mSeconds $sd->{fvwmId} "
-			. "SendToModule $self->{moduleName} $string");
+		my $mseconds = $sd->{seconds} * 1000;
+		$self->{module}->send("Schedule $mseconds $sd->{fvwm_id} "
+			. "SendToModule $self->{module_name} $string");
 	}
-	$sd->{sentTime} = time();
+	$sd->{time_sent} = time();
 }
 
 sub schedule ($$$;$) {
 	my $self = shift;
-	my $seconds = shift || $self->internalDie("schedule: no seconds");
-	my $callback = shift || $self->internalDie("schedule: no callback");
+	my $seconds = shift || $self->internal_die("schedule: no seconds");
+	my $callback = shift || $self->internal_die("schedule: no callback");
 
-	my $scheduleId = ++$self->{lastScheduleNum};
-	my $fvwmId = $self->{randomBaseNumber} + $scheduleId;
-	my $scheduleData = {
-		sentTime => 0,
-		seconds  => $seconds,
-		fvwmId   => $fvwmId,
-		callback => $callback,
-		params   => [ @_ ],
+	my $schedule_id = ++$self->{last_schedule_num};
+	my $fvwm_id = $self->{random_base_number} + $schedule_id;
+	my $schedule_data = {
+		time_sent => 0,
+		seconds   => $seconds,
+		fvwm_id   => $fvwm_id,
+		callback  => $callback,
+		params    => [ @_ ],
 	};
 
-	$self->{data}->{$scheduleId} = $scheduleData;
-	$self->sendSchedule($scheduleId);
+	$self->{data}->{$schedule_id} = $schedule_data;
+	$self->send_schedule($schedule_id);
 
-	return $scheduleId;
+	return $schedule_id;
 }
 
 sub deschedule ($$) {
 	my $self = shift;
-	my $scheduleId = shift;
+	my $schedule_id = shift;
 	my $data = $self->{data};
-	next unless exists $data->{$scheduleId};
-	my $fvwmId = $data->{$scheduleId}->{fvwmId};
+	next unless exists $data->{$schedule_id};
+	my $fvwm_id = $data->{$schedule_id}->{fvwm_id};
 
-	$self->{module}->send("Deschedule $fvwmId")
+	$self->{module}->send("Deschedule $fvwm_id")
 		if defined $self->{module};  # ready for DESTROY
-	delete $data->{$scheduleId};
+	delete $data->{$schedule_id};
 }
 
 sub reschedule ($;$) {
 	my $self = shift;
 	my $seconds = shift || 0;
-	$self->{rescheduledSeconds} = $seconds;
+	$self->{rescheduled_seconds} = $seconds;
 }
 
-sub descheduleAll ($) {
+sub deschedule_all ($) {
 	my $self = shift;
 	my $data = $self->{data};
 	foreach (keys %$data) {
@@ -148,32 +148,32 @@ sub descheduleAll ($) {
 	}
 }
 
-sub toBeDisconnected ($) {
+sub to_be_disconnected ($) {
 	my $self = shift;
-	$self->descheduleAll();
+	$self->deschedule_all();
 }
 
 sub data ($;$) { 
 	my $self = shift;
-	my $scheduleId = shift;
+	my $schedule_id = shift;
 	my $data = $self->{data};
-	return $data unless defined $scheduleId;
-	return $data->{$scheduleId};
+	return $data unless defined $schedule_id;
+	return $data->{$schedule_id};
 }
 
 sub dump ($;$) { 
 	my $self = shift;
-	my $scheduleId = shift;
+	my $schedule_id = shift;
 	my $data = $self->{data};
-	my @ids = $scheduleId? $scheduleId: sort { $a <=> $b } keys %$data;
+	my @ids = $schedule_id ? $schedule_id : sort { $a <=> $b } keys %$data;
 
 	my $string = "";
 	foreach (@ids) {
 		my $sd = $data->{$_};
-		my $timeStr = localtime($sd->{sentTime});
-		$timeStr = "$5-$2-$3 $4" if $timeStr =~ /^([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+)$/;
+		my $time_str = localtime($sd->{time_sent});
+		$time_str = "$5-$2-$3 $4" if $time_str =~ /^([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+)$/;
 
-		$string .= "Schedule $_: $timeStr + $sd->{seconds} sec, use 'Deschedule $sd->{fvwmId}'\n";
+		$string .= "Schedule $_: $time_str + $sd->{seconds} sec, use 'Deschedule $sd->{fvwm_id}'\n";
 	}
 	return $string;
 }
@@ -237,7 +237,7 @@ same callback using the same or different number of I<seconds>.
 This may be useful when defining a periodical callback that should be,
 say, called every 10 minutes (600 seconds).
 
-=item descheduleAll
+=item deschedule_all
 
 Removes all previously scheduled callbacks.
 
@@ -247,18 +247,18 @@ Removes all previously scheduled callbacks.
 
 =over 4
 
-=item toBeDisconnected
+=item to_be_disconnected
 
-Calls B<descheduleAll>.
+Calls B<deschedule_all>.
 
 =item B<data> [I<sheduled-id>]
 
 Returns either array ref of hash refs, or one hash ref if
 I<sheduled-id> is given. The hash keys are:
 
-    sentTime   - unix time (seconds since 1970)
+    time_sent  - unix time (seconds since 1970)
     seconds    - requested alarm seconds
-    fvwmId     - internal I<fvwm>'s Schedule id
+    fvwm_id    - internal I<fvwm>'s Schedule id
     callback   - alarm callback, CODE ref
     params     - ARRAY ref of optional callback parameters
 

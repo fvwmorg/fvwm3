@@ -1,4 +1,4 @@
-# Copyright (c) 2003 Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ package FVWM::Module::Toolkit;
 
 use 5.004;
 use strict;
-use vars qw($VERSION @ISA $_dialogTool);
+use vars qw($VERSION @ISA $_dialog_tool);
 
 use FVWM::Module;
 
@@ -65,47 +65,47 @@ sub import ($@) {
 		}
 	}
 	if ($error) {
-		my $scriptName = $0; $scriptName =~ s|.*/||;
-		my $errorTitle = 'Fvwm Perl library error';
-		my $errorMsg = "$scriptName requires Perl package $name to be installed.\n\n";
-		$errorMsg .= "You may either find it as a binary package for your distribution\n";
-		$errorMsg .= "or download it from CPAN, http://cpan.org/modules/by-module/ .\n";
-		$class->showMessage($errorMsg, $errorTitle, 1);
-		print STDERR "[$errorTitle]: $errorMsg\n$@";
+		my $script_name = $0; $script_name =~ s|.*/||;
+		my $error_title = 'FVWM Perl library error';
+		my $error_msg = "$script_name requires Perl package $name to be installed.\n\n";
+		$error_msg .= "You may either find it as a binary package for your distribution\n";
+		$error_msg .= "or download it from CPAN, http://cpan.org/modules/by-module/ .\n";
+		$class->show_message($error_msg, $error_title, 1);
+		print STDERR "[$error_title]: $error_msg\n$@";
 		exit(1);
 	}
 }
 
-sub showError ($$;$) {
+sub show_error ($$;$) {
 	my $self = shift;
 	my $msg = shift;
 	my $title = shift || ($self->name . " Error");
 
-	$self->showMessage($msg, $title, 1);
+	$self->show_message($msg, $title, 1);
 	print STDERR "[$title]: $msg\n";
 }
 
-sub showMessage ($$;$) {
+sub show_message ($$;$) {
 	my $self = shift;
 	my $msg = shift;
 	my $title = shift || ($self->name . " Message");
-	my $noStderr = shift || 0;  # for private usage only
+	my $no_stderr = shift || 0;  # for private usage only
 
-	unless ($_dialogTool) {
+	unless ($_dialog_tool) {
 		my @dirs = split(':', $ENV{PATH});
 		# kdialog is last because at least v0.9 ignores --title
 		TOOL_CANDIDATE:
-		foreach (qw(gdialog Xdialog gtk-shell xmessage kdialog)) {
+		foreach (qw(gdialog Xdialog zenity gtk-shell xmessage kdialog)) {
 			foreach my $dir (@dirs) {
 				my $file = "$dir/$_";
 				if (-x $file) {
-					$_dialogTool = $_;
+					$_dialog_tool = $_;
 					last TOOL_CANDIDATE;
 				}
 			}
 		}
 	}
-	my $tool = $_dialogTool || "xterm";
+	my $tool = $_dialog_tool || "xterm";
 
 	$msg =~ s/'/'"'"'/sg;
 	$title =~ s/'/'"'"'/sg;
@@ -113,6 +113,8 @@ sub showMessage ($$;$) {
 		system("$tool --title '$title' --msgbox '$msg' 500 100 &");
 	} elsif ($tool eq "gtk-shell") {
 		system("gtk-shell --size 500 100 --title '$title' --label '$msg' --button Close &");
+	} elsif ($tool eq "zenity") {
+		system("zenity --title '$title' --info --text '$msg' --no-wrap &");
 	} elsif ($tool eq "xmessage") {
 		system("xmessage -name '$title' '$msg' &");
 	} else {
@@ -120,10 +122,10 @@ sub showMessage ($$;$) {
 		$msg =~ s/\n/\\n/sg;
 		system("xterm -g 70x10 -T '$title' -e \"echo '$msg'; sleep 600000\" &");
 	}
-	print STDERR "[$title]: $msg\n" if $! && !$noStderr;
+	print STDERR "[$title]: $msg\n" if $! && !$no_stderr;
 }
 
-sub showDebug ($$;$) {
+sub show_debug ($$;$) {
 	my $self = shift;
 	my $msg = shift;
 	my $title = shift || ($self->name . " Debug");
@@ -131,12 +133,12 @@ sub showDebug ($$;$) {
 	print STDERR "[$title]: $msg\n";
 }
 
-sub addDefaultErrorHandler ($) {
+sub add_default_error_handler ($) {
 	my $self = shift;
 
-	$self->addHandler(M_ERROR, sub {
+	$self->add_handler(M_ERROR, sub {
 		my ($self, $event) = @_;
-		$self->showError($event->_text, "fvwm error");
+		$self->show_error($event->_text, "fvwm error");
 	});
 }
 
@@ -160,7 +162,7 @@ the nice dialog if absent:
 There is the same syntactic sugar as in "perl -M", with an addition
 of ">=" being fully equivalent to "=". The ">=" form may look better for
 the user in the error message. If the required Perl class is absent,
-FVWM::Module::Toolkit->showMessage() is used to show the dialog and the
+FVWM::Module::Toolkit->show_message() is used to show the dialog and the
 application dies.
 
 2) This class should be uses to implement concrete toolkit subclasses.
@@ -170,7 +172,7 @@ A new toolkit subclass implementation may look like this:
     # this automatically sets the base class and tries "use SomeToolkit;"
     use FVWM::Module::Toolkit qw(base SomeToolkit);
 
-    sub showError ($$;$) {
+    sub show_error ($$;$) {
         my ($self, $error, $title) = @_;
         $title ||= $self->name . " Error";
 
@@ -182,23 +184,23 @@ A new toolkit subclass implementation may look like this:
         );
     }
 
-    sub eventLoop ($$) {
+    sub event_loop ($$) {
         my $self = shift;
         my @params = @_;
 
         # enter the SomeToolkit event loop with hooking $self->{istream}
-        $self->eventLoopPrepared(@params);
+        $self->event_loop_prepared(@params);
         fileevent($self->{istream},
             read => sub {
-                unless ($self->processPacket($self->readPacket)) {
+                unless ($self->process_packet($self->read_packet)) {
                     $self->disconnect;
                     $top->destroy;
                 }
-                $self->eventLoopPrepared(@params);
+                $self->event_loop_prepared(@params);
             }
         );
         SomeToolkit->MainLoop;
-        $self->eventLoopFinished(@params);
+        $self->event_loop_finished(@params);
     }
 
 =head1 DESCRIPTION
@@ -209,9 +211,9 @@ toolkit library, like Perl/Tk or Gtk-Perl. It does some common work to load
 widget toolkit libraries and to show an error in the external window like
 xmessage if the required libraries are not available.
 
-This class overloads one method B<addDefaultErrorHandler> and expects
-sub-classes to overload the methods B<showError>, B<showMessage> and
-B<showDebug> to use native widgets. These 3 methods are implemented in this
+This class overloads one method B<add_default_error_handler> and expects
+sub-classes to overload the methods B<show_error>, B<show_message> and
+B<show_debug> to use native widgets. These 3 methods are implemented in this
 class, they extend the superclass versions by adding a title parameter and
 using an external dialog tool to show error/message.
 
@@ -224,27 +226,27 @@ Only overloaded or new methods are covered here:
 
 =over 8
 
-=item B<showError> I<msg> [I<title>]
+=item B<show_error> I<msg> [I<title>]
 
 This method is intended to be overridden in subclasses to create a dialog box
 using the corresponding widgets. The default fall back implementation is
-similar to B<showMessage>, but the error message (with title) is also always
+similar to B<show_message>, but the error message (with title) is also always
 printed to STDERR.
 
 May be good for module diagnostics or any other purpose.
 
-=item B<showMessage> I<msg> [I<title>]
+=item B<show_message> I<msg> [I<title>]
 
 This method is intended to be overridden in subclasses to create a dialog
 box using the corresponding widgets. The default fall back implementation is
 to find a system message application to show the message. The potentially
-used applications are I<gdialog>, I<Xdialog>, I<gtk-shell>, I<xmessage>,
-I<kdialog>, or I<xterm> as the last resort. If not given, I<title> is based
-on the module name.
+used applications are I<gdialog>, I<Xdialog>, I<zenity>, I<gtk-shell>,
+I<xmessage>, I<kdialog>, or I<xterm> as the last resort. If not given,
+I<title> is based on the module name.
 
 May be good for module debugging or any other purpose.
 
-=item B<showDebug> I<msg> [I<title>]
+=item B<show_debug> I<msg> [I<title>]
 
 This method is intended to be overridden in subclasses to create a dialog box
 using the corresponding widgets. The default fall back implementation is
@@ -253,10 +255,10 @@ to STDERR.
 
 May be good for module debugging or any other purpose.
 
-=item B<addDefaultErrorHandler>
+=item B<add_default_error_handler>
 
 This methods adds a M_ERROR handler to automatically notify you that an error
-has been reported by fvwm. The M_ERROR handler then calls C<showError()>
+has been reported by fvwm. The M_ERROR handler then calls C<show_error()>
 with the received error text as a parameter to show it in a window.
 
 =back

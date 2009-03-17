@@ -1,3 +1,26 @@
+2009-03-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Commands.pm:
+	* FVWM/Event.pm:
+	* FVWM/EventNames.pm:
+	* FVWM/Module.pm.in:
+	* FVWM/Tracker.pm:
+	* FVWM/create-commands:
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Gtk2.pm:
+	* FVWM/Module/Terminal.pm:
+	* FVWM/Module/Tk.pm:
+	* FVWM/Module/Toolkit.pm:
+	* FVWM/Tracker/Colorsets.pm:
+	* FVWM/Tracker/GlobalConfig.pm:
+	* FVWM/Tracker/ModuleConfig.pm:
+	* FVWM/Tracker/PageInfo.pm:
+	* FVWM/Tracker/Scheduler.pm:
+	* FVWM/Tracker/WindowList.pm:
+	* General/FileSystem.pm:
+	* General/Parse.pm:
+	convert my old code to use var_name and function_name coding style
+
 2007-08-07  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FVWM/EventNames.pm:

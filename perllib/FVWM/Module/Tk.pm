@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,50 +30,50 @@ sub new ($@) {
 	$top = delete $params{TopWindow} if exists $params{TopWindow};
 	my $self = $class->SUPER::new(%params);
 
-	$self->internalDie("TopWindow given in constructor is not Tk::Toplevel")
+	$self->internal_die("TopWindow given in constructor is not Tk::Toplevel")
 		unless $top || UNIVERSAL::isa($top, "Tk::Toplevel");
 	unless ($top) {
 		$top = MainWindow->new;
 		$top->withdraw;
 	}
 
-	$self->{topWindow} = $top;
+	$self->{top_window} = $top;
 
 	return $self;
 }
 
-sub eventLoop ($) {
+sub event_loop ($) {
 	my $self = shift;
 	my @params = @_;
 
-	$self->eventLoopPrepared(@params);
-	my $top = $self->{topWindow};
+	$self->event_loop_prepared(@params);
+	my $top = $self->{top_window};
 	$top->fileevent($self->{istream},
 		readable => sub {
-			unless ($self->processPacket($self->readPacket)) {
+			unless ($self->process_packet($self->read_packet)) {
 				if ($self->{disconnected}) {
 					# Seems like something does not want to exit - force it.
 					# For example, a new Tk window is launched on ON_EXIT.
 					$top->destroy if defined $top && defined $top->{Configure};
-					$self->debug("Forced to exit to escape eventLoop, fix the module", 0);
+					$self->debug("Forced to exit to escape event_loop, fix the module", 0);
 					exit 1;
 				}
-				$self->eventLoopFinished(@params);
+				$self->event_loop_finished(@params);
 				$top->destroy;
 			} else {
-				$self->eventLoopPrepared(@params);
+				$self->event_loop_prepared(@params);
 			}
 		}
 	);
 	MainLoop;
 }
 
-sub showError ($$;$) {
+sub show_error ($$;$) {
 	my $self = shift;
 	my $error = shift;
 	my $title = shift || ($self->name . " Error");
 
-	my $top = $self->{topWindow};
+	my $top = $self->{top_window};
 
 	my $dialog = $top->Dialog(
 		-title => $title,
@@ -88,12 +88,12 @@ sub showError ($$;$) {
 	$self->send("All ('$title') Close") if $btn eq 'Close All Errors';
 }
 
-sub showMessage ($$;$) {
+sub show_message ($$;$) {
 	my $self = shift;
 	my $msg = shift;
 	my $title = shift || ($self->name . " Message");
 
-	$self->{topWindow}->messageBox(
+	$self->{top_window}->messageBox(
 		-icon => 'info',
 		-type => 'ok',
 		-title => $title,
@@ -101,17 +101,17 @@ sub showMessage ($$;$) {
 	);
 }
 
-sub showDebug ($$;$) {
+sub show_debug ($$;$) {
 	my $self = shift;
 	my $msg = shift;
 	my $title = shift || ($self->name . " Debug");
 
-	my $dialog = $self->{tkDebugDialog};
+	my $dialog = $self->{tk_debug_dialog};
 
-	my $top = $self->{topWindow};
+	my $top = $self->{top_window};
 	unless (defined $top && defined $top->{Configure}) {
 		# in the constructor (too early) or in destructor (too late)
-		$self->FVWM::Module::Toolkit::showDebug($msg, $title);
+		$self->FVWM::Module::Toolkit::show_debug($msg, $title);
 		return;
 	}
 
@@ -128,42 +128,42 @@ sub showDebug ($$;$) {
 		)->pack(-expand => 1, -fill => 'both');
 
 		$dialog->protocol('WM_DELETE_WINDOW', sub { $dialog->withdraw(); });
-		my @packOpts = (-side => 'left', -expand => 1, -fill => 'both');
+		my @pack_opts = (-side => 'left', -expand => 1, -fill => 'both');
 
 		$bottom->Button(
 			-text => 'Close',
 			-command => sub { $dialog->withdraw(); },
-		)->pack(@packOpts);
+		)->pack(@pack_opts);
 		$bottom->Button(
 			-text => 'Clear',
 			-command => sub { $text->delete('0.0', 'end'); },
-		)->pack(@packOpts);
+		)->pack(@pack_opts);
 		$bottom->Button(
 			-text => 'Save',
 			-command => sub {
 				my $file = $dialog->getSaveFile(-title => "Save $title");
 				return unless defined $file;
 				if (!open(OUT, ">$file")) {
-					$self->showError("Couldn't save $file: $!", 'Save Error');
+					$self->show_error("Couldn't save $file: $!", 'Save Error');
 					return;
 				}
 				print OUT $text->get('0.0', 'end');
 				close(OUT);
 			},
-		)->pack(@packOpts);
+		)->pack(@pack_opts);
 
-		$self->{tkDebugDialog} = $dialog;
-		$self->{tkDebugTextWg} = $text;
+		$self->{tk_debug_dialog} = $dialog;
+		$self->{tk_debug_text_wg} = $text;
 	} else {
 		$dialog->deiconify() if $dialog->state() eq 'withdrawn';
 	}
-	my $text = $self->{tkDebugTextWg};
+	my $text = $self->{tk_debug_text_wg};
 	$text->insert('end', "$msg\n");
 	$text->see('end');
 }
 
-sub topWindow ($) {
-	return shift->{topWindow};
+sub top_window ($) {
+	return shift->{top_window};
 }
 
 1;
@@ -196,24 +196,24 @@ Name this module TestModuleTk, make it executable and place in ModulePath:
         -text => "Close", -command => sub { $top->destroy; }
     )->pack;
 
-    $module->addDefaultErrorHandler;
-    $module->addHandler(M_ICONIFY, sub {
+    $module->add_default_error_handler;
+    $module->add_handler(M_ICONIFY, sub {
         my $id0 = $_[1]->_win_id;
         $module->send("Iconify off", $id) if $id0 == $id;
     });
     $module->track('Scheduler')->schedule(60, sub {
-        $module->showMessage("You run this module for 1 minute")
+        $module->show_message("You run this module for 1 minute")
     });
 
     $module->send('Style "*imple Test" Sticky');
-    $module->eventLoop;
+    $module->event_loop;
 
 =head1 DESCRIPTION
 
 The B<FVWM::Module::Tk> class is a sub-class of B<FVWM::Module::Toolkit>
-that overloads the methods B<new>, B<eventLoop>, B<showMessage>,
-B<showDebug> and B<showError> to manage Tk objects as well. It also adds new
-method B<topWindow>.
+that overloads the methods B<new>, B<event_loop>, B<show_message>,
+B<show_debug> and B<show_error> to manage Tk objects as well. It also adds new
+method B<top_window>.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
@@ -238,13 +238,13 @@ If no top-level window is specified in the constructor, such dummy window
 is created and immediately withdrawn. This top-level window is needed to
 create Tk dialogs.
 
-=item B<eventLoop>
+=item B<event_loop>
 
 From outward appearances, this methods operates just as the parent
-B<eventLoop> does. It is worth mentioning, however, that this version
+B<event_loop> does. It is worth mentioning, however, that this version
 enters into the Tk B<MainLoop> subroutine, ostensibly not to return.
 
-=item B<showError> I<msg> [I<title>]
+=item B<show_error> I<msg> [I<title>]
 
 This method creates a dialog box using the Tk widgets. The dialog has
 three buttons labeled "Close", "Close All Errors" and "Exit Module".
@@ -254,13 +254,13 @@ all error dialogs that may be open on the screen at that time.
 
 Good for diagnostics of a Tk based module.
 
-=item B<showMessage> I<msg> [I<title>]
+=item B<show_message> I<msg> [I<title>]
 
 Creates a message window with one "Ok" button.
 
 Useful for notices by a Tk based module.
 
-=item B<showDebug> I<msg> [I<title>]
+=item B<show_debug> I<msg> [I<title>]
 
 Creates a debug window with 3 buttons "Close", "Clear" and "Save".
 All debug messages are added to the debug window.
@@ -273,7 +273,7 @@ All debug messages are added to the debug window.
 
 Useful for debugging a Tk based module.
 
-=item B<topWindow>
+=item B<top_window>
 
 Returns the Tk toplevel that this object was created with.
 

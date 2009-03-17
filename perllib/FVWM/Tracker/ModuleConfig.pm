@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,10 +33,10 @@ sub new ($$%) {
 
 	my $self = $class->FVWM::Tracker::new($module);
 
-	$self->{isHash} = 1;
-	$self->{moduleName} = $self->{module}->name;
+	$self->{is_hash} = 1;
+	$self->{module_name} = $self->{module}->name;
 	$self->{filter} = 'spacefree';
-	$self->{defaultConfig} = {};
+	$self->{default_config} = {};
 
 	return $self->init(%params);
 }
@@ -46,13 +46,13 @@ sub init ($%) {
 	my %params = @_;
 
 	if ($params{ConfigType}) {
-		$self->{isHash} = $params{ConfigType} eq 'hash';
-		$self->{defaultConfig} = $self->{isHash}? {}: [];
+		$self->{is_hash} = $params{ConfigType} eq 'hash';
+		$self->{default_config} = $self->{is_hash} ? {} : [];
 	}
-	$self->{moduleName} = $params{ModuleName} if $params{ModuleName};
+	$self->{module_name} = $params{ModuleName} if $params{ModuleName};
 	$self->{filter} = $params{LineFilter} if $params{LineFilter};
-	$self->{defaultConfig} = $params{DefaultConfig}
-		if ref($self->{defaultConfig}) eq ref($params{DefaultConfig});
+	$self->{default_config} = $params{DefaultConfig}
+		if ref($self->{default_config}) eq ref($params{DefaultConfig});
 
 	return $self;
 }
@@ -60,24 +60,24 @@ sub init ($%) {
 sub start ($) {
 	my $self = shift;
 
-	my $default = $self->{defaultConfig};
-	$self->{data} = $self->{isHash}? { %$default }: [ @$default ];
+	my $default = $self->{default_config};
+	$self->{data} = $self->{is_hash} ? { %$default } : [ @$default ];
 
-	$self->addHandler(M_CONFIG_INFO, sub {
+	$self->add_handler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
-		$self->calculateInternals($event->args);
+		$self->calculate_internals($event->args);
 	});
 
-	$self->requestConfigInfoEvents($self->{moduleName});
+	$self->request_configinfo_events($self->{module_name});
 
 	my $result = $self->SUPER::start;
 
-	$self->deleteHandlers;
+	$self->delete_handlers;
 
-	$self->addHandler(M_CONFIG_INFO | M_SENDCONFIG, sub {
+	$self->add_handler(M_CONFIG_INFO | M_SENDCONFIG, sub {
 		my $event = $_[1];
 		return unless $event->type == M_CONFIG_INFO;
-		my $info = $self->calculateInternals($event->args);
+		my $info = $self->calculate_internals($event->args);
 		return unless defined $info;
 		$self->notify("config line added", $info);
 	});
@@ -85,21 +85,21 @@ sub start ($) {
 	return $result;
 }
 
-sub calculateInternals ($$) {
+sub calculate_internals ($$) {
 	my $self = shift;
 	my $args = shift;
 	my $data = $self->{data};
 
 	my $text = $args->{text};
-	$self->internalDie("No 'text' arg in M_CONFIG_INFO")
+	$self->internal_die("No 'text' arg in M_CONFIG_INFO")
 		unless defined $text;
-	return undef unless $text =~ /^\*$self->{moduleName}(\s*[^\s].*)$/i;
+	return undef unless $text =~ /^\*$self->{module_name}(\s*[^\s].*)$/i;
 
 	my $line = $1;
 	$line =~ s/^\s+// unless $self->{filter} eq 'asis';
 	$line =~ s/\s+$// unless $self->{filter} eq 'asis';
 
-	if ($self->{isHash}) {
+	if ($self->{is_hash}) {
 		my ($key, $value) = $line =~ /([^\s]+)\s*(.*)/;
 		$key = lc($key) if $self->{filter} eq 'lowerkeys';
 		$key = uc($key) if $self->{filter} eq 'upperkeys';
@@ -116,7 +116,7 @@ sub data ($;$) {
 	my $info = shift;
 	my $data = $self->{data};
 	return $data unless defined $info;
-	return $data->{$info} if $self->{isHash};
+	return $data->{$info} if $self->{is_hash};
 	return $data->[$info];
 }
 
@@ -125,12 +125,12 @@ sub dump ($;$) {
 	my $info = shift;
 	my $data = $self->{data};
 	my @infos = defined $info? ($info):
-		$self->{isHash}? sort keys %$data: (0 .. @$data - 1);
+		$self->{is_hash} ? sort keys %$data : (0 .. @$data - 1);
 
 	my $string = "";
 	foreach (@infos) {
-		my $lineData = $self->{isHash}? "$_ $data->{$_}": $data->[$_];
-		$string .= "\*$self->{moduleName}: $lineData\n";
+		my $line_data = $self->{is_hash} ? "$_ $data->{$_}" : $data->[$_];
+		$string .= "\*$self->{module_name}: $line_data\n";
 	}
 	return $string;
 }
@@ -153,15 +153,15 @@ This tracker defines the following observables:
  
 Using B<FVWM::Module> $module object:
 
-    my $configTracker = $module->track("ModuleConfig");
-    my $configHash = $configTracker->data;
-    my $font = $configHash->{Font} || 'fixed';
+    my $config_tracker = $module->track("ModuleConfig");
+    my $config_hash = $config_tracker->data;
+    my $font = $config_hash->{Font} || 'fixed';
 
 or:
 
-    my $configTracker = $module->track(
+    my $config_tracker = $module->track(
         "ModuleConfig", DefaultConfig => { Font => 'fixed' } );
-    my $font = $configTracker->data('Font');
+    my $font = $config_tracker->data('Font');
 
 =head1 NEW METHODS
 

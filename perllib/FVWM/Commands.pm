@@ -1184,7 +1184,7 @@ I<window> is true for commands that need a window.
 Example:
 
     # get command names only
-    @commandNames = map { $_->{name} } @FVWM::Commands::LIST;
+    @command_names = map { $_->{name} } @FVWM::Commands::LIST;
 
 =head1 AUTHOR
 

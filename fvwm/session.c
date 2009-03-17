@@ -101,15 +101,15 @@ typedef struct _match
 static char *previous_sm_client_id = NULL;
 static char *sm_client_id = NULL;
 static Bool sent_save_done = 0;
-static char *realStateFilename = NULL;
-static Bool goingToRestart = False;
+static char *real_state_filename = NULL;
+static Bool going_to_restart = False;
 static FIceIOErrorHandler prev_handler;
 static FSmcConn sm_conn = NULL;
 
 static int num_match = 0;
 static Match *matches = NULL;
 static Bool does_file_version_match = False;
-static Bool doPreserveState = True;
+static Bool do_preserve_state = True;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -188,22 +188,22 @@ SaveGlobalState(FILE *f)
 	return 1;
 }
 
-static void setRealStateFilename(char *filename)
+static void set_real_state_filename(char *filename)
 {
 	if (!SessionSupport)
 	{
 		return;
 	}
-	if (realStateFilename)
+	if (real_state_filename)
 	{
-		free(realStateFilename);
+		free(real_state_filename);
 	}
-	realStateFilename = safestrdup(filename);
+	real_state_filename = safestrdup(filename);
 
 	return;
 }
 
-static char *getUniqueStateFilename(void)
+static char *get_unique_state_filename(void)
 {
 	const char *path = getenv("SM_SAVE_DIR");
 	char *filename;
@@ -682,7 +682,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 	return found;
 }
 
-static int saveStateFile(char *filename)
+static int save_state_file(char *filename)
 {
 	FILE *f;
 	int success;
@@ -701,16 +701,16 @@ static int saveStateFile(char *filename)
 	fprintf(f, "# Normally, you must never delete this file,"
 		" it will be auto-deleted.\n\n");
 
-	if (SessionSupport && goingToRestart)
+	if (SessionSupport && going_to_restart)
 	{
-		fprintf(f, "[REAL_STATE_FILENAME] %s\n", realStateFilename);
-		goingToRestart = False;  /* not needed */
+		fprintf(f, "[REAL_STATE_FILENAME] %s\n", real_state_filename);
+		going_to_restart = False;  /* not needed */
 	}
 
-	success = doPreserveState?
-		SaveVersionInfo(f) && SaveWindowStates(f) && SaveGlobalState(f):
-		1;
-	doPreserveState = True;
+	success = do_preserve_state
+		? SaveVersionInfo(f) && SaveWindowStates(f) && SaveGlobalState(f)
+		: 1;
+	do_preserve_state = True;
 	if (fclose(f) != 0)
 		return 0;
 
@@ -727,7 +727,7 @@ static int saveStateFile(char *filename)
 }
 
 static void
-setSmProperties(FSmcConn sm_conn, char *filename, char hint)
+set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 {
 	FSmProp prop1, prop2, prop3, prop4, prop5, prop6, prop7, *props[7];
 	FSmPropValue prop1val, prop2val, prop3val, prop4val, prop7val;
@@ -735,7 +735,7 @@ setSmProperties(FSmcConn sm_conn, char *filename, char hint)
 	char *user_id;
 	char screen_num[32];
 	int numVals, i, priority = 30;
-	Bool xsmDetected = False;
+	Bool is_xsm_detected = False;
 
 	if (!SessionSupport)
 	{
@@ -743,8 +743,8 @@ setSmProperties(FSmcConn sm_conn, char *filename, char hint)
 	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][setSmProperties] state filename: %s%s\n",
-		(filename)? filename:"(null)", sm_conn? "": " - not connected");
+	fprintf(stderr, "[FVWM_SMDEBUG][set_sm_properties] state filename: %s%s\n",
+		filename ? filename : "(null)", sm_conn ? "" : " - not connected");
 #endif
 
 	if (!sm_conn)
@@ -866,9 +866,9 @@ setSmProperties(FSmcConn sm_conn, char *filename, char hint)
 
 		prop7.name = FSmDiscardCommand;
 
-		xsmDetected = StrEquals(getenv("SESSION_MANAGER_NAME"), "xsm");
+		is_xsm_detected = StrEquals(getenv("SESSION_MANAGER_NAME"), "xsm");
 
-		if (xsmDetected)
+		if (is_xsm_detected)
 		{
 			/* the protocol spec says that the discard command
 			   should be LISTofARRAY8 on posix systems, but xsm
@@ -912,7 +912,7 @@ setSmProperties(FSmcConn sm_conn, char *filename, char hint)
 		FSmcSetProperties (sm_conn, 7, props);
 
 		free ((char *) prop6.vals);
-		if (!xsmDetected)
+		if (!is_xsm_detected)
 		{
 			free ((char *) prop7.vals);
 		}
@@ -936,16 +936,16 @@ callback_save_yourself2(FSmcConn sm_conn, FSmPointer client_data)
 		return;
 	}
 
-	filename = getUniqueStateFilename();
+	filename = get_unique_state_filename();
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself2]\n");
 #endif
 
-	success = saveStateFile(filename);
+	success = save_state_file(filename);
 	if (success)
 	{
-		setSmProperties(sm_conn, filename, FSmRestartIfRunning);
-		setRealStateFilename(filename);
+		set_sm_properties(sm_conn, filename, FSmRestartIfRunning);
+		set_real_state_filename(filename);
 	}
 	free(filename);
 
@@ -1142,8 +1142,8 @@ LoadGlobalState(char *filename)
 			/* migo: temporarily (?) moved to
 			   LoadWindowStates (trick for gnome-session)
 			   sscanf(s, "%*s %s", s2);
-			   setFSmProperties (sm_conn, s2, FSmRestartIfRunning);
-			   setRealStateFilename(s2);
+			   set_sm_properties(sm_conn, s2, FSmRestartIfRunning);
+			   set_real_state_filename(s2);
 			*/
 		}
 		else if (!strcmp(s1, "[DESKTOP]"))
@@ -1243,7 +1243,7 @@ LoadWindowStates(char *filename)
 	{
 		return;
 	}
-	setRealStateFilename(filename);
+	set_real_state_filename(filename);
 	if ((f = fopen(filename, "r")) == NULL)
 	{
 		return;
@@ -1266,8 +1266,8 @@ LoadWindowStates(char *filename)
 		    !strcmp(s1, "[REAL_STATE_FILENAME]"))
 		{
 			sscanf(s, "%*s %s", s1);
-			setSmProperties (sm_conn, s1, FSmRestartIfRunning);
-			setRealStateFilename(s1);
+			set_sm_properties(sm_conn, s1, FSmRestartIfRunning);
+			set_real_state_filename(s1);
 		}
 		else if (!strcmp(s1, "[CLIENT]"))
 		{
@@ -1584,16 +1584,16 @@ MatchWinToSM(
 }
 
 void
-RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
+RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 {
-	doPreserveState = _doPreserveState;
+	do_preserve_state = _do_preserve_state;
 
-	if (SessionSupport && sm_conn && isNative)
+	if (SessionSupport && sm_conn && is_native)
 	{
-		goingToRestart = True;
+		going_to_restart = True;
 
-		saveStateFile(filename);
-		setSmProperties(sm_conn, filename, FSmRestartImmediately);
+		save_state_file(filename);
+		set_sm_properties(sm_conn, filename, FSmRestartImmediately);
 
 		MoveViewport(0, 0, False);
 		Reborder();
@@ -1616,7 +1616,7 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 		exit(0); /* let the SM restart us */
 	}
 
-	saveStateFile(filename);
+	save_state_file(filename);
 	/* return and let Done restart us */
 
 	return;
@@ -1688,12 +1688,12 @@ SessionInit(void)
 #ifdef FVWM_SM_DEBUG_PROTO
 		fprintf(stderr,"[FVWM_SMDEBUG] Connectecd to a SM\n");
 #endif
-		setInitFunctionName(0, "SessionInitFunction");
-		setInitFunctionName(1, "SessionRestartFunction");
-		setInitFunctionName(2, "SessionExitFunction");
+		set_init_function_name(0, "SessionInitFunction");
+		set_init_function_name(1, "SessionRestartFunction");
+		set_init_function_name(2, "SessionExitFunction");
 		/* basically to restet our restart style hint after a
 		 * restart */
-		setSmProperties(sm_conn, NULL, FSmRestartIfRunning);
+		set_sm_properties(sm_conn, NULL, FSmRestartIfRunning);
 	}
 
 	return;
@@ -1735,42 +1735,42 @@ ProcessICEMsgs(void)
  * Alternative implementation may use unix signals, but this does not work
  * with all session managers (also must suppose that SM runs locally).
  */
-int getSmPid(void)
+int get_sm_pid(void)
 {
-	const char *sessionManagerVar = getenv("SESSION_MANAGER");
-	const char *smPidStrPtr;
-	int smPid = 0;
+	const char *session_manager_var = getenv("SESSION_MANAGER");
+	const char *sm_pid_str_ptr;
+	int sm_pid = 0;
 
 	if (!SessionSupport)
 	{
 		return 0;
 	}
 
-	if (!sessionManagerVar)
+	if (!session_manager_var)
 	{
 		return 0;
 	}
-	smPidStrPtr = strchr(sessionManagerVar, ',');
-	if (!smPidStrPtr)
+	sm_pid_str_ptr = strchr(session_manager_var, ',');
+	if (!sm_pid_str_ptr)
 	{
 		return 0;
 	}
-	while (smPidStrPtr > sessionManagerVar && isdigit(*(--smPidStrPtr)))
+	while (sm_pid_str_ptr > session_manager_var && isdigit(*(--sm_pid_str_ptr)))
 	{
 		/* nothing */
 	}
-	while (isdigit(*(++smPidStrPtr)))
+	while (isdigit(*(++sm_pid_str_ptr)))
 	{
-		smPid = smPid * 10 + *smPidStrPtr - '0';
+		sm_pid = sm_pid * 10 + *sm_pid_str_ptr - '0';
 	}
 
-	return smPid;
+	return sm_pid;
 }
 
 /*
- * quitSession - hopefully shutdowns the session
+ * quit_session - hopefully shutdowns the session
  */
-Bool quitSession(void)
+Bool quit_session(void)
 {
 	if (!SessionSupport)
 	{
@@ -1789,16 +1789,16 @@ Bool quitSession(void)
 	/* migo: xsm does not support RequestSaveYourself, but supports
 	 * signals: */
 	/*
-	  int smPid = getSmPid();
-	  if (!smPid) return False;
-	  return kill(smPid, SIGTERM) == 0? True: False;
+	  int sm_pid = get_sm_pid();
+	  if (!sm_pid) return False;
+	  return kill(sm_pid, SIGTERM) == 0 ? True : False;
 	*/
 }
 
 /*
- * saveSession - hopefully saves the session
+ * save_session - hopefully saves the session
  */
-Bool saveSession(void)
+Bool save_session(void)
 {
 	if (!SessionSupport)
 	{
@@ -1817,16 +1817,16 @@ Bool saveSession(void)
 	/* migo: xsm does not support RequestSaveYourself, but supports
 	 * signals: */
 	/*
-	  int smPid = getSmPid();
-	  if (!smPid) return False;
-	  return kill(smPid, SIGUSR1) == 0? True: False;
+	  int sm_pid = get_sm_pid();
+	  if (!sm_pid) return False;
+	  return kill(sm_pid, SIGUSR1) == 0 ? True : False;
 	*/
 }
 
 /*
- * saveQuitSession - hopefully saves and shutdowns the session
+ * save_quit_session - hopefully saves and shutdowns the session
  */
-Bool saveQuitSession(void)
+Bool save_quit_session(void)
 {
 	if (!SessionSupport)
 	{
@@ -1846,9 +1846,9 @@ Bool saveQuitSession(void)
 	/* migo: xsm does not support RequestSaveYourself, but supports
 	 * signals: */
 	/*
-	  if (saveSession() == False) return False;
+	  if (save_session() == False) return False;
 	  sleep(3);  / * doesn't work anyway * /
-	  if (quitSession() == False) return False;
+	  if (quit_session() == False) return False;
 	  return True;
 	*/
 }
@@ -1857,21 +1857,21 @@ Bool saveQuitSession(void)
 
 void CMD_QuitSession(F_CMD_ARGS)
 {
-	quitSession();
+	quit_session();
 
 	return;
 }
 
 void CMD_SaveSession(F_CMD_ARGS)
 {
-	saveSession();
+	save_session();
 
 	return;
 }
 
 void CMD_SaveQuitSession(F_CMD_ARGS)
 {
-	saveQuitSession();
+	save_quit_session();
 
 	return;
 }

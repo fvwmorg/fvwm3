@@ -34,14 +34,14 @@ use FVWM::Module::Gtk2;
 use FVWM::EventNames;
 init Gtk2;
 
-my $defaultMask = MAX_MSG_MASK &
+my $default_mask = MAX_MSG_MASK &
 	~(M_FOCUS_CHANGE | M_CONFIGURE_WINDOW | M_VISIBLE_NAME | M_ICON_NAME);
-my $defaultXMask = MAX_XMSG_MASK &
+my $default_xmask = MAX_XMSG_MASK &
 	~(MX_ENTER_WINDOW | MX_LEAVE_WINDOW | MX_VISIBLE_ICON_NAME);
-$defaultXMask &= ~M_EXTENDED_MSG;
+$default_xmask &= ~M_EXTENDED_MSG;
 
-my $mask  = $defaultMask;
-my $xmask = $defaultXMask;
+my $mask  = $default_mask;
+my $xmask = $default_xmask;
 my $debug = 0;
 
 my $options = {
@@ -58,57 +58,57 @@ my $module = new FVWM::Module::Gtk2(
 
 $mask  = MAX_MSG_MASK  if $mask  == -1;
 $xmask = MAX_XMSG_MASK if $xmask == -1;
-my $newMask  = $mask;
-my $newXMask = $xmask;
+my $new_mask  = $mask;
+my $new_xmask = $xmask;
 
 # ----------------------------------------------------------------------------
 # functions
 
 my $monitoring = 0;
-my $storedEventDatas = [];
-my $currentEventNum = -1;
-my $eventListSizeChanged = 0;
-my $stickToLastEvent = 1;
+my $stored_event_datas = [];
+my $current_event_num = -1;
+my $event_list_size_changed = 0;
+my $stick_to_last_event = 1;
 
-sub eventArgTypeToName ($) {
+sub event_arg_type_to_name ($) {
 	my $type = shift;
 	return
-		$type == FVWM::EventNames::number? "number":
-		$type == FVWM::EventNames::bool? "boolean":
-		$type == FVWM::EventNames::window? "window":
-		$type == FVWM::EventNames::pixel? "color":
-		$type == FVWM::EventNames::string? "string":
-		$type == FVWM::EventNames::looped? "looped":
-		$type == FVWM::EventNames::wflags? "wflags":
+		$type == FVWM::EventNames::number ? "number" :
+		$type == FVWM::EventNames::bool ? "boolean" :
+		$type == FVWM::EventNames::window ? "window" :
+		$type == FVWM::EventNames::pixel ? "color" :
+		$type == FVWM::EventNames::string ? "string" :
+		$type == FVWM::EventNames::looped ? "looped" :
+		$type == FVWM::EventNames::wflags ? "wflags" :
 		"unknown";
 }
 
-sub storeEvent ($$) {
+sub store_event ($$) {
 	my ($module, $event) = @_;
 
-	my @argNames  = @{$event->argNames};
-	my @argTypes  = @{$event->argTypes};
-	my @argValues = @{$event->argValues};
+	my @arg_names  = @{$event->arg_names};
+	my @arg_types  = @{$event->arg_types};
+	my @arg_values = @{$event->arg_values};
 
 #	print STDERR $event->name, "\n";
 
-	my $eventData = {
+	my $event_data = {
 		type => $event->type,
 		name => $event->name,
 		time => time(),
 		args => [],
 	};
-	while (@argNames) {
-		my $name  = shift @argNames;
-		my $type  = shift @argTypes;
-		my $value = shift @argValues;
+	while (@arg_names) {
+		my $name  = shift @arg_names;
+		my $type  = shift @arg_types;
+		my $value = shift @arg_values;
 
 		my $text;
 		if ($type == FVWM::EventNames::number) {
 			$text = $value;
 			$text = "*undefined*" unless defined $value;
 		} elsif ($type == FVWM::EventNames::bool) {
-			$text = $value? "True": "False";
+			$text = $value ? "True" : "False";
 		} elsif ($type == FVWM::EventNames::window) {
 			$text = sprintf("0x%07lx", $value);
 		} elsif ($type == FVWM::EventNames::pixel) {
@@ -117,20 +117,20 @@ sub storeEvent ($$) {
 		} elsif ($type == FVWM::EventNames::string) {
 			$text = qq("$value");
 		} elsif ($type == FVWM::EventNames::looped) {
-			my $loopArgNames = $event->loopArgNames;
-			my $loopArgTypes = $event->loopArgTypes;
+			my $loop_arg_names = $event->loop_arg_names;
+			my $loop_arg_types = $event->loop_arg_types;
 			my $j = 0;
 			while ($j < @$value) {
 				my $k = 0;
-				foreach (@$loopArgNames) {
-					my $i = int($j / @$loopArgNames) + 1;
-					push @argNames, "[$i] $_";
-					push @argTypes, $loopArgTypes->[$k];
-					push @argValues, $value->[$j];
+				foreach (@$loop_arg_names) {
+					my $i = int($j / @$loop_arg_names) + 1;
+					push @arg_names, "[$i] $_";
+					push @arg_types, $loop_arg_types->[$k];
+					push @arg_values, $value->[$j];
 					$j++; $k++;
 				}
 			}
-			$text = sprintf("(%d)", @$value / @$loopArgNames);
+			$text = sprintf("(%d)", @$value / @$loop_arg_names);
 		} elsif ($type == FVWM::EventNames::wflags) {
 			my @words = unpack("l*", $value);
 			my $label = join(" ",
@@ -140,19 +140,19 @@ sub storeEvent ($$) {
 			$text = qq([unsupported arg type $type] "$value");
 		}
 
-		push @{$eventData->{args}}, {
+		push @{$event_data->{args}}, {
 			name => $name,
 			type => $type,
 			text => $text,
 		};
 
 	}
-	push @$storedEventDatas, $eventData;
-	$eventListSizeChanged = 1;
-	&updateCurrentEventWidgets();
+	push @$stored_event_datas, $event_data;
+	$event_list_size_changed = 1;
+	&update_current_event_widgets();
 }
 
-sub sendModuleEventMask () {
+sub send_module_event_mask () {
 	if ($monitoring) {
 		$module->mask($mask);
 		$module->xmask($xmask);
@@ -162,13 +162,13 @@ sub sendModuleEventMask () {
 	}
 }
 
-my $updateEventMaskButton;
-my $revertEventMaskButton;
+my $update_event_mask_button;
+my $revert_event_mask_button;
 
-sub updateEventMaskChangeButtons () {
-	my $isChanged = $mask != $newMask || $xmask != $newXMask;
-	$updateEventMaskButton->set_sensitive($isChanged);
-	$revertEventMaskButton->set_sensitive($isChanged);
+sub update_event_mask_change_buttons () {
+	my $is_changed = $mask != $new_mask || $xmask != $new_xmask;
+	$update_event_mask_button->set_sensitive($is_changed);
+	$revert_event_mask_button->set_sensitive($is_changed);
 }
 
 sub setup_button_size ($$) {
@@ -193,183 +193,185 @@ $notebook->set_tab_border(4);
 $window->add($notebook);
 
 # ---- setup page ----
-my $setupPage = new Gtk2::VBox(0, 0);
-$notebook->append_page($setupPage, new Gtk2::Label(" Setup "));
+my $setup_page = new Gtk2::VBox(0, 0);
+$notebook->append_page($setup_page, new Gtk2::Label(" Setup "));
 
-my $eventMaskBox = new Gtk2::HBox(0, 0);
-$setupPage->pack_start($eventMaskBox, 1, 1, 10);
+my $event_mask_box = new Gtk2::HBox(0, 0);
+$setup_page->pack_start($event_mask_box, 1, 1, 10);
 
-my $eventMaskScroll = new Gtk2::ScrolledWindow();
-$eventMaskScroll->set_policy("automatic", "always");
+my $event_mask_scroll = new Gtk2::ScrolledWindow();
+$event_mask_scroll->set_policy("automatic", "always");
 
-my $eventMaskScrollFrame = new Gtk2::Frame(" Event mask ");
-$tmp = new Gtk2::VBox(0, 0); $tmp->add($eventMaskScroll); $tmp->set_border_width(5);
-$eventMaskScrollFrame->add($tmp);
-$eventMaskBox->pack_start($eventMaskScrollFrame, 1, 1, 10);
+my $event_mask_scroll_frame = new Gtk2::Frame(" Event mask ");
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($event_mask_scroll); $tmp->set_border_width(5);
+$event_mask_scroll_frame->add($tmp);
+$event_mask_box->pack_start($event_mask_scroll_frame, 1, 1, 10);
 
-my $eventTypeBox = new Gtk2::VButtonBox();
-$eventTypeBox->set_spacing(0);
-my $eventTypeCheckButtons = {};
+my $event_type_box = new Gtk2::VButtonBox();
+$event_type_box->set_spacing(0);
+my $event_type_check_buttons = {};
 my $type;
-foreach $type (@{allEventTypes()}) {
-	my $checkButton = Gtk2::CheckButton->new_with_label(eventName($type));
-	$checkButton->set_border_width(0);
-	$checkButton->set_focus_on_click(0);
-	$eventTypeBox->pack_start($checkButton, 0, 0, 0);
-	$eventTypeCheckButtons->{$type} = $checkButton;
-	$checkButton->signal_connect("clicked", sub {
-		($type & M_EXTENDED_MSG? $newXMask: $newMask) ^=
+foreach $type (@{all_event_types()}) {
+	my $check_button = Gtk2::CheckButton->new_with_label(event_name($type));
+	$check_button->set_border_width(0);
+	$check_button->set_focus_on_click(0);
+	$event_type_box->pack_start($check_button, 0, 0, 0);
+	$event_type_check_buttons->{$type} = $check_button;
+	$check_button->signal_connect("clicked", sub {
+		($type & M_EXTENDED_MSG ? $new_xmask : $new_mask) ^=
 			($type & ~M_EXTENDED_MSG);
-		updateEventMaskChangeButtons();
+		update_event_mask_change_buttons();
 	});
 }
-$eventMaskScroll->add_with_viewport($eventTypeBox);
+$event_mask_scroll->add_with_viewport($event_type_box);
 
-sub updateCheckButtonsFromNewMask () {
-	my $curMask = $newMask; my $curXMask = $newXMask;
-	my ($type, $checkButton);
-	while (($type, $checkButton) = each %$eventTypeCheckButtons) {
-		$checkButton->set_active(($type & M_EXTENDED_MSG?
-			$newXMask: $newMask) & $type & ~M_EXTENDED_MSG);
+sub update_check_buttons_from_new_mask () {
+	my $current_mask = $new_mask; my $current_xmask = $new_xmask;
+	my ($type, $check_button);
+	while (($type, $check_button) = each %$event_type_check_buttons) {
+		$check_button->set_active(
+			($type & M_EXTENDED_MSG ? $new_xmask : $new_mask) &
+				$type & ~M_EXTENDED_MSG
+		);
 	}
 	# unfortunately set_active triggers "clicked" signal, so correct this
-	$newMask = $curMask; $newXMask = $curXMask;
-	updateEventMaskChangeButtons();
+	$new_mask = $current_mask; $new_xmask = $current_xmask;
+	update_event_mask_change_buttons();
 }
 
-my $eventMaskButtonBox = new Gtk2::VButtonBox();
-$eventMaskButtonBox->set_spacing(10);
-$eventMaskButtonBox->set_layout('start');
-$eventMaskBox->pack_start($eventMaskButtonBox, 0, 0, 10);
+my $event_mask_button_box = new Gtk2::VButtonBox();
+$event_mask_button_box->set_spacing(10);
+$event_mask_button_box->set_layout('start');
+$event_mask_box->pack_start($event_mask_button_box, 0, 0, 10);
 
-my $selectAllEventsButton = new Gtk2::Button(" Select _all events ");
-$eventMaskButtonBox->pack_start($selectAllEventsButton, 1, 1, 6);
-$selectAllEventsButton->signal_connect("clicked", sub {
-	$newMask = MAX_MSG_MASK; $newXMask = MAX_XMSG_MASK;
-	updateCheckButtonsFromNewMask();
+my $select_all_events_button = new Gtk2::Button(" Select _all events ");
+$event_mask_button_box->pack_start($select_all_events_button, 1, 1, 6);
+$select_all_events_button->signal_connect("clicked", sub {
+	$new_mask = MAX_MSG_MASK; $new_xmask = MAX_XMSG_MASK;
+	update_check_buttons_from_new_mask();
 });
 
-my $unselectAllEventsButton = new Gtk2::Button(" Unselect all _events ");
-$eventMaskButtonBox->pack_start($unselectAllEventsButton, 1, 1, 6);
-$unselectAllEventsButton->signal_connect("clicked", sub {
-	$newMask = 0; $newXMask = 0;
-	updateCheckButtonsFromNewMask();
+my $unselect_all_events_button = new Gtk2::Button(" Unselect all _events ");
+$event_mask_button_box->pack_start($unselect_all_events_button, 1, 1, 6);
+$unselect_all_events_button->signal_connect("clicked", sub {
+	$new_mask = 0; $new_xmask = 0;
+	update_check_buttons_from_new_mask();
 });
 
-my $setDefaultEventsButton = new Gtk2::Button(" Select _default events ");
-$eventMaskButtonBox->pack_start($setDefaultEventsButton, 1, 1, 6);
-$setDefaultEventsButton->signal_connect("clicked", sub {
-	$newMask = $defaultMask; $newXMask = $defaultXMask;
-	updateCheckButtonsFromNewMask();
+my $select_default_events_button = new Gtk2::Button(" Select _default events ");
+$event_mask_button_box->pack_start($select_default_events_button, 1, 1, 6);
+$select_default_events_button->signal_connect("clicked", sub {
+	$new_mask = $default_mask; $new_xmask = $default_xmask;
+	update_check_buttons_from_new_mask();
 });
 
-$revertEventMaskButton = new Gtk2::Button(" _Restore current events ");
-$eventMaskButtonBox->pack_start($revertEventMaskButton, 1, 1, 6);
-$revertEventMaskButton->signal_connect("clicked", sub {
-	$newMask = $mask; $newXMask = $xmask;
-	updateCheckButtonsFromNewMask();
+$revert_event_mask_button = new Gtk2::Button(" _Restore current events ");
+$event_mask_button_box->pack_start($revert_event_mask_button, 1, 1, 6);
+$revert_event_mask_button->signal_connect("clicked", sub {
+	$new_mask = $mask; $new_xmask = $xmask;
+	update_check_buttons_from_new_mask();
 });
 
-$eventMaskButtonBox->foreach(\&setup_button_size, 172);
+$event_mask_button_box->foreach(\&setup_button_size, 172);
 
-my $setupButtonBox = new Gtk2::HButtonBox();
-$setupButtonBox->set_border_width(10);
-$setupButtonBox->set_spacing(20);
-$setupButtonBox->set_layout('edge');
-$setupPage->pack_end($setupButtonBox, 0, 0, 0);
+my $setup_button_box = new Gtk2::HButtonBox();
+$setup_button_box->set_border_width(10);
+$setup_button_box->set_spacing(20);
+$setup_button_box->set_layout('edge');
+$setup_page->pack_end($setup_button_box, 0, 0, 0);
 
-$updateEventMaskButton = new Gtk2::Button(" _Update event mask ");
-$setupButtonBox->pack_start($updateEventMaskButton, 1, 1, 40);
-$updateEventMaskButton->signal_connect("clicked", sub {
-	$mask = $newMask; $xmask = $newXMask;
-	sendModuleEventMask() if $monitoring;
-	updateEventMaskChangeButtons();
+$update_event_mask_button = new Gtk2::Button(" _Update event mask ");
+$setup_button_box->pack_start($update_event_mask_button, 1, 1, 40);
+$update_event_mask_button->signal_connect("clicked", sub {
+	$mask = $new_mask; $xmask = $new_xmask;
+	send_module_event_mask() if $monitoring;
+	update_event_mask_change_buttons();
 });
 
-my $startMonitoringButton = new Gtk2::Button(" _Start watching events ");
-$setupButtonBox->pack_start($startMonitoringButton, 1, 1, 40);
-$startMonitoringButton->signal_connect("clicked", \&switchMonitoring);
+my $start_monitoring_button = new Gtk2::Button(" _Start watching events ");
+$setup_button_box->pack_start($start_monitoring_button, 1, 1, 40);
+$start_monitoring_button->signal_connect("clicked", \&switch_monitoring);
 
-$setupButtonBox->foreach(\&setup_button_size, 172);
+$setup_button_box->foreach(\&setup_button_size, 172);
 
 # ---- event page ----
-my $eventPage = new Gtk2::VBox(0, 0);
-$eventPage->set_border_width(10);
-$notebook->append_page($eventPage, new Gtk2::Label(" Stored Events "));
+my $event_page = new Gtk2::VBox(0, 0);
+$event_page->set_border_width(10);
+$notebook->append_page($event_page, new Gtk2::Label(" Stored Events "));
 
-my $eventNameLine = new Gtk2::HBox(0, 0);
-$eventPage->pack_start($eventNameLine, 0, 0, 0);
+my $event_name_line = new Gtk2::HBox(0, 0);
+$event_page->pack_start($event_name_line, 0, 0, 0);
 
-my $eventNumBox = new Gtk2::HBox(0, 0);
-$eventNumBox->set_border_width(5);
-my $eventNumFrame = new Gtk2::Frame(" Event num ");
-$eventNumFrame->add($eventNumBox);
-$eventNameLine->pack_start($eventNumFrame, 0, 0, 0);
+my $event_num_box = new Gtk2::HBox(0, 0);
+$event_num_box->set_border_width(5);
+my $event_num_frame = new Gtk2::Frame(" Event num ");
+$event_num_frame->add($event_num_box);
+$event_name_line->pack_start($event_num_frame, 0, 0, 0);
 
-my $eventNumAdj = new Gtk2::Adjustment(0, 0, 0, 1, 10, 0);
-my $eventNum = new Gtk2::SpinButton($eventNumAdj, 0, 1);
-$eventNum->configure($eventNumAdj, 0.5, 0);
-$eventNum->set_size_request(57, -1);
-$eventNum->signal_connect("changed", \&updateCurrentEventNumber);
-$eventNumBox->pack_start($eventNum, 0, 0, 0);
+my $event_num_adj = new Gtk2::Adjustment(0, 0, 0, 1, 10, 0);
+my $event_num = new Gtk2::SpinButton($event_num_adj, 0, 1);
+$event_num->configure($event_num_adj, 0.5, 0);
+$event_num->set_size_request(57, -1);
+$event_num->signal_connect("changed", \&update_current_event_number);
+$event_num_box->pack_start($event_num, 0, 0, 0);
 
-my $eventTotalNum = new Gtk2::Entry();
-$eventTotalNum->set_editable(0);
-$eventTotalNum->set_size_request(42, -1);
-$eventNumBox->pack_start($eventTotalNum, 0, 0, 0);
+my $event_total_num = new Gtk2::Entry();
+$event_total_num->set_editable(0);
+$event_total_num->set_size_request(42, -1);
+$event_num_box->pack_start($event_total_num, 0, 0, 0);
 
-my $eventName = new Gtk2::Entry();
-$eventName->set_editable(0);
-$eventName->set_size_request(154, -1);
+my $event_name = new Gtk2::Entry();
+$event_name->set_editable(0);
+$event_name->set_size_request(154, -1);
 
-my $eventNameFrame = new Gtk2::Frame(" Event type ");
-$tmp = new Gtk2::VBox(0, 0); $tmp->add($eventName); $tmp->set_border_width(5);
-$eventNameFrame->add($tmp);
-$eventNameLine->pack_start($eventNameFrame, 0, 0, 10);
+my $event_name_frame = new Gtk2::Frame(" Event type ");
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($event_name); $tmp->set_border_width(5);
+$event_name_frame->add($tmp);
+$event_name_line->pack_start($event_name_frame, 0, 0, 10);
 
-my $eventTime = new Gtk2::Entry();
-$eventTime->set_size_request(46, -1);
-$eventTime->set_editable(0);
+my $event_time = new Gtk2::Entry();
+$event_time->set_size_request(46, -1);
+$event_time->set_editable(0);
 
-my $eventTimeFrame = new Gtk2::Frame(" Time ");
-$tmp = new Gtk2::VBox(0, 0); $tmp->add($eventTime); $tmp->set_border_width(5);
-$eventTimeFrame->add($tmp);
-$eventNameLine->pack_start($eventTimeFrame, 0, 0, 0);
+my $event_time_frame = new Gtk2::Frame(" Time ");
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($event_time); $tmp->set_border_width(5);
+$event_time_frame->add($tmp);
+$event_name_line->pack_start($event_time_frame, 0, 0, 0);
 
-my $eventRunOptsButtonBox = new Gtk2::VButtonBox();
-$eventRunOptsButtonBox->set_spacing(0);
-$eventNameLine->pack_end($eventRunOptsButtonBox, 0, 0, 0);
+my $event_run_opts_button_box = new Gtk2::VButtonBox();
+$event_run_opts_button_box->set_spacing(0);
+$event_name_line->pack_end($event_run_opts_button_box, 0, 0, 0);
 
-my $activeCheckButton = new Gtk2::CheckButton("Active");
-$activeCheckButton->signal_connect("clicked", \&switchMonitoring);
-$eventRunOptsButtonBox->pack_start($activeCheckButton, 0, 0, 0);
+my $active_check_button = new Gtk2::CheckButton("Active");
+$active_check_button->signal_connect("clicked", \&switch_monitoring);
+$event_run_opts_button_box->pack_start($active_check_button, 0, 0, 0);
 
-my $stickCheckButton = new Gtk2::CheckButton("Stick to last");
-$stickCheckButton->set_active($stickToLastEvent);
-$stickCheckButton->signal_connect("clicked", sub {
-	$stickToLastEvent ^= 1;
-	&updateCurrentEventWidgets()
-		if $stickToLastEvent && $currentEventNum != @$storedEventDatas;
+my $stick_check_button = new Gtk2::CheckButton("Stick to last");
+$stick_check_button->set_active($stick_to_last_event);
+$stick_check_button->signal_connect("clicked", sub {
+	$stick_to_last_event ^= 1;
+	&update_current_event_widgets()
+		if $stick_to_last_event && $current_event_num != @$stored_event_datas;
 });
-$eventRunOptsButtonBox->pack_start($stickCheckButton, 0, 0, 0);
+$event_run_opts_button_box->pack_start($stick_check_button, 0, 0, 0);
 
 # ---- next event page row ----
-my $eventArgsListStore = Gtk2::ListStore->new('Glib::String', 'Glib::String');
-my $eventArgsList = Gtk2::TreeView->new($eventArgsListStore);
-$eventArgsList->set_rules_hint(1);
+my $event_args_list_store = Gtk2::ListStore->new('Glib::String', 'Glib::String');
+my $event_args_list = Gtk2::TreeView->new($event_args_list_store);
+$event_args_list->set_rules_hint(1);
 my $renderer = Gtk2::CellRendererText->new;
 my $column1 = Gtk2::TreeViewColumn->new_with_attributes('Name',  $renderer, text => 0);
 my $column2 = Gtk2::TreeViewColumn->new_with_attributes('Value', $renderer, text => 1);
 $column1->set_min_width(140);
 $column1->set_resizable(1);
-$eventArgsList->append_column($column1);
-$eventArgsList->append_column($column2);
+$event_args_list->append_column($column1);
+$event_args_list->append_column($column2);
 
-$eventArgsList->signal_connect("row-activated", sub {
+$event_args_list->signal_connect("row-activated", sub {
 	my ($widget, $path, $column) = @_;
-	$stickCheckButton->set_active(0);
+	$stick_check_button->set_active(0);
 	my $n = ($path->get_indices)[0];
-	my $data = $storedEventDatas->[$currentEventNum - 1]->{args}->[$n];
+	my $data = $stored_event_datas->[$current_event_num - 1]->{args}->[$n];
 	return unless ref($data) eq 'HASH';
 	my $text = $data->{text};
 	if (ref($text) eq 'HASH') {
@@ -377,207 +379,207 @@ $eventArgsList->signal_connect("row-activated", sub {
 			map { sprintf("\n%032b", $_) } @{$text->{value}}
 		);
 	}
-	$module->showMessage(
-		"$data->{name} (" . eventArgTypeToName($data->{type}) .
-		"): $text", $eventName->get_text() . " event argument"
+	$module->show_message(
+		"$data->{name} (" . event_arg_type_to_name($data->{type}) .
+		"): $text", $event_name->get_text() . " event argument"
 	);
 });
 
-my $eventArgsListScroll = new Gtk2::ScrolledWindow();
-$eventArgsListScroll->set_policy("automatic", "automatic");
-$eventArgsListScroll->add_with_viewport($eventArgsList);
+my $event_args_list_scroll = new Gtk2::ScrolledWindow();
+$event_args_list_scroll->set_policy("automatic", "automatic");
+$event_args_list_scroll->add_with_viewport($event_args_list);
 
-my $eventArgsListScrollFrame = new Gtk2::Frame(" Event arguments ");
-$tmp = new Gtk2::VBox(0, 0); $tmp->add($eventArgsListScroll); $tmp->set_border_width(5);
-$eventArgsListScrollFrame->add($tmp);
-$eventPage->pack_start($eventArgsListScrollFrame, 1, 1, 10);
+my $event_args_list_scroll_frame = new Gtk2::Frame(" Event arguments ");
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($event_args_list_scroll); $tmp->set_border_width(5);
+$event_args_list_scroll_frame->add($tmp);
+$event_page->pack_start($event_args_list_scroll_frame, 1, 1, 10);
 
-my $eventListButtonBox = new Gtk2::HButtonBox();
-$eventListButtonBox->set_spacing(2);
-$eventListButtonBox->set_layout('edge');
-$eventPage->pack_end($eventListButtonBox, 0, 0, 0);
+my $event_list_button_box = new Gtk2::HButtonBox();
+$event_list_button_box->set_spacing(2);
+$event_list_button_box->set_layout('edge');
+$event_page->pack_end($event_list_button_box, 0, 0, 0);
 
-my $currentEventPossiblyDirty = 0;
-sub filterStoredEvents ($) {
+my $current_event_possibly_dirty = 0;
+sub filter_stored_events ($) {
 	my $func = shift;
-	my $initialNum = @$storedEventDatas;
+	my $initial_num = @$stored_event_datas;
 	my $count = 0;
 	my $index = 0;
-	for ($count = 1; $count <= $initialNum; $count++) {
-		if (&$func($count, $storedEventDatas->[$index]->{type})) {
+	for ($count = 1; $count <= $initial_num; $count++) {
+		if (&$func($count, $stored_event_datas->[$index]->{type})) {
 			$index++;
 		} else {
-			splice(@$storedEventDatas, $index, 1);
+			splice(@$stored_event_datas, $index, 1);
 		}
 	}
-	if ($initialNum != @$storedEventDatas) {
-		$eventListSizeChanged = 1;
-		$currentEventPossiblyDirty = 1;
-		updateCurrentEventWidgets();
+	if ($initial_num != @$stored_event_datas) {
+		$event_list_size_changed = 1;
+		$current_event_possibly_dirty = 1;
+		update_current_event_widgets();
 	}
 }
 
-my $clearThisOneButton = new Gtk2::Button(" _Clear one ");
-$eventListButtonBox->pack_start($clearThisOneButton, 1, 1, 6);
-$clearThisOneButton->signal_connect("clicked", sub {
-	filterStoredEvents(sub { $_[0] != $currentEventNum });
+my $clear_this_one_button = new Gtk2::Button(" _Clear one ");
+$event_list_button_box->pack_start($clear_this_one_button, 1, 1, 6);
+$clear_this_one_button->signal_connect("clicked", sub {
+	filter_stored_events(sub { $_[0] != $current_event_num });
 });
 
-my $clearThisTypeButton = new Gtk2::Button(" Clear _type ");
-$eventListButtonBox->pack_start($clearThisTypeButton, 1, 1, 6);
-$clearThisTypeButton->signal_connect("clicked", sub {
-	my $currentType = $storedEventDatas->[$currentEventNum - 1]->{type};
-	filterStoredEvents(sub { $_[1] != $currentType });
+my $clear_this_type_button = new Gtk2::Button(" Clear _type ");
+$event_list_button_box->pack_start($clear_this_type_button, 1, 1, 6);
+$clear_this_type_button->signal_connect("clicked", sub {
+	my $current_type = $stored_event_datas->[$current_event_num - 1]->{type};
+	filter_stored_events(sub { $_[1] != $current_type });
 });
 
-my $clearAllButton = new Gtk2::Button(" Cl_ear all ");
-$eventListButtonBox->pack_start($clearAllButton, 1, 1, 6);
-$clearAllButton->signal_connect("clicked", sub {
-	filterStoredEvents(sub { 0 });
+my $clear_all_button = new Gtk2::Button(" Cl_ear all ");
+$event_list_button_box->pack_start($clear_all_button, 1, 1, 6);
+$clear_all_button->signal_connect("clicked", sub {
+	filter_stored_events(sub { 0 });
 });
 
-my $leaveThisTypeButton = new Gtk2::Button(" Leave t_ype ");
-$eventListButtonBox->pack_start($leaveThisTypeButton, 1, 1, 6);
-$leaveThisTypeButton->signal_connect("clicked", sub {
-	my $currentType = $storedEventDatas->[$currentEventNum - 1]->{type};
-	filterStoredEvents(sub { $_[1] == $currentType });
+my $leave_this_type_button = new Gtk2::Button(" Leave t_ype ");
+$event_list_button_box->pack_start($leave_this_type_button, 1, 1, 6);
+$leave_this_type_button->signal_connect("clicked", sub {
+	my $current_type = $stored_event_datas->[$current_event_num - 1]->{type};
+	filter_stored_events(sub { $_[1] == $current_type });
 });
 
-my $leaveThisOneButton = new Gtk2::Button(" _Leave one ");
-$eventListButtonBox->pack_start($leaveThisOneButton, 1, 1, 6);
-$leaveThisOneButton->signal_connect("clicked", sub {
-	filterStoredEvents(sub { $_[0] == $currentEventNum });
+my $leave_this_one_button = new Gtk2::Button(" _Leave one ");
+$event_list_button_box->pack_start($leave_this_one_button, 1, 1, 6);
+$leave_this_one_button->signal_connect("clicked", sub {
+	filter_stored_events(sub { $_[0] == $current_event_num });
 });
 
-$eventListButtonBox->foreach(\&setup_button_size, 80);
+$event_list_button_box->foreach(\&setup_button_size, 80);
 
-sub updateCurrentEventWidgets (;$) {
+sub update_current_event_widgets (;$) {
 	# update event number
-	my $maxNum = @$storedEventDatas;
-	my $minNum = $maxNum > 0 ? 1 : 0;
-	my $num = shift || ($stickToLastEvent? $maxNum: $currentEventNum);
+	my $max_num = @$stored_event_datas;
+	my $min_num = $max_num > 0 ? 1 : 0;
+	my $num = shift || ($stick_to_last_event ? $max_num : $current_event_num);
 	$num = 1 if $num <= 0;
-	$num = $maxNum if $num > $maxNum;
-	my $currentEventNumChanged = $currentEventNum != $num;
-	$currentEventNum = $num;
+	$num = $max_num if $num > $max_num;
+	my $current_event_num_changed = $current_event_num != $num;
+	$current_event_num = $num;
 	
-	$eventNumAdj->lower($minNum);
-	$eventNumAdj->upper($maxNum);
-	$eventNumAdj->set_value($num);
-	$eventNum->update;
-	$eventTotalNum->set_text($maxNum);
+	$event_num_adj->lower($min_num);
+	$event_num_adj->upper($max_num);
+	$event_num_adj->set_value($num);
+	$event_num->update;
+	$event_total_num->set_text($max_num);
 
-	return unless $currentEventNumChanged
-		|| $eventListSizeChanged || $currentEventPossiblyDirty;
-	$eventListSizeChanged = 0;
+	return unless $current_event_num_changed
+		|| $event_list_size_changed || $current_event_possibly_dirty;
+	$event_list_size_changed = 0;
 
 	# update event name
-	$eventName->set_text($num? $storedEventDatas->[$num - 1]->{name}: "");
+	$event_name->set_text($num ? $stored_event_datas->[$num - 1]->{name} : "");
 
 	# update event args
-	if ($currentEventNumChanged || $currentEventPossiblyDirty) {
-		$eventArgsListStore->clear;
-		foreach ($num? @{$storedEventDatas->[$num - 1]->{args}}: ()) {
+	if ($current_event_num_changed || $current_event_possibly_dirty) {
+		$event_args_list_store->clear;
+		foreach ($num ? @{$stored_event_datas->[$num - 1]->{args}} : ()) {
 			my $data = $_;
 			my $text = $data->{text};
 			$text = $text->{label} if ref($text) eq 'HASH';
-			my $iter = $eventArgsListStore->append;
-			$eventArgsListStore->set($iter, 0 => $data->{name}, 1 => $text);
+			my $iter = $event_args_list_store->append;
+			$event_args_list_store->set($iter, 0 => $data->{name}, 1 => $text);
 		}
-		$currentEventPossiblyDirty = 0;
+		$current_event_possibly_dirty = 0;
 	}
 
 	# update event time
-	my $timeString1 = "";
-	my $timeString2 = "";
+	my $time_string1 = "";
+	my $time_string2 = "";
 	if ($num) {
-		my $time = $storedEventDatas->[$num - 1]->{time};
+		my $time = $stored_event_datas->[$num - 1]->{time};
 		my ($sec, $min, $hour, $day, $mon, $year) = localtime($time);
 		$mon++; $year += 1900 if $year < 1900;
-		$timeString1 = sprintf("%02d:%02d", $hour, $min);
-		$timeString2 = sprintf("%s-%02d-%02d %02d:%02d:%02d",
+		$time_string1 = sprintf("%02d:%02d", $hour, $min);
+		$time_string2 = sprintf("%s-%02d-%02d %02d:%02d:%02d",
 			$year, $mon, $day, $hour, $min, $sec);
 	}
-	$eventTime->set_text($timeString1);
-	$tooltips->set_tip($eventTime, $timeString2);
+	$event_time->set_text($time_string1);
+	$tooltips->set_tip($event_time, $time_string2);
 
 	# update event buttons
-	my $currentType = $num? $storedEventDatas->[$num - 1]->{type}: 0;
-	my $hasOtherTypes = 0;
-	foreach ($num = 1; $num <= $maxNum; $num++) {
-		if ($currentType != $storedEventDatas->[$num - 1]->{type})
-			{ $hasOtherTypes = 1; last; }
+	my $current_type = $num ? $stored_event_datas->[$num - 1]->{type} : 0;
+	my $has_other_types = 0;
+	foreach ($num = 1; $num <= $max_num; $num++) {
+		if ($current_type != $stored_event_datas->[$num - 1]->{type})
+			{ $has_other_types = 1; last; }
 	}
-	$clearThisOneButton->set_sensitive($maxNum > 0);
-	$clearThisTypeButton->set_sensitive($maxNum > 0);
-	$clearAllButton->set_sensitive($maxNum > 0);
-	$leaveThisTypeButton->set_sensitive($hasOtherTypes);
-	$leaveThisOneButton->set_sensitive($maxNum > 1);
+	$clear_this_one_button->set_sensitive($max_num > 0);
+	$clear_this_type_button->set_sensitive($max_num > 0);
+	$clear_all_button->set_sensitive($max_num > 0);
+	$leave_this_type_button->set_sensitive($has_other_types);
+	$leave_this_one_button->set_sensitive($max_num > 1);
 }
 
-sub updateCurrentEventNumber () {
-	return if $eventNum->get_value == $currentEventNum;
-	updateCurrentEventWidgets($eventNum->get_value);
+sub update_current_event_number () {
+	return if $event_num->get_value == $current_event_num;
+	update_current_event_widgets($event_num->get_value);
 }
 
-my $inSwitchMonitoring = 0;
-sub switchMonitoring () {
-	return if $inSwitchMonitoring;
-	$inSwitchMonitoring = 1;
+my $in_switch_monitoring = 0;
+sub switch_monitoring () {
+	return if $in_switch_monitoring;
+	$in_switch_monitoring = 1;
 	$monitoring ^= 1;
-	sendModuleEventMask();
-	$startMonitoringButton->child->set_label($monitoring?
-		" _Stop watching events ": " _Start watching events ");
-	$activeCheckButton->set_active($monitoring);
-	$inSwitchMonitoring = 0;
+	send_module_event_mask();
+	$start_monitoring_button->child->set_label($monitoring
+		? " _Stop watching events " : " _Start watching events ");
+	$active_check_button->set_active($monitoring);
+	$in_switch_monitoring = 0;
 }
 
 # ---- tools page ----
-my $toolsPage = new Gtk2::VBox(0, 0);
-$toolsPage->set_border_width(10);
-$notebook->append_page($toolsPage, new Gtk2::Label(" Tools "));
+my $tools_page = new Gtk2::VBox(0, 0);
+$tools_page->set_border_width(10);
+$notebook->append_page($tools_page, new Gtk2::Label(" Tools "));
 
-my $requestButtonBox = new Gtk2::HButtonBox();
-$requestButtonBox->set_layout('edge');
+my $request_button_box = new Gtk2::HButtonBox();
+$request_button_box->set_layout('edge');
 
-my $requestButtonBoxFrame = new Gtk2::Frame(" Request module info ");
-$tmp = new Gtk2::VBox(0, 0); $tmp->add($requestButtonBox); $tmp->set_border_width(5);
-$requestButtonBoxFrame->add($tmp);
-$toolsPage->pack_start($requestButtonBoxFrame, 0, 0, 0);
+my $request_button_box_frame = new Gtk2::Frame(" Request module info ");
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($request_button_box); $tmp->set_border_width(5);
+$request_button_box_frame->add($tmp);
+$tools_page->pack_start($request_button_box_frame, 0, 0, 0);
 
-my $sendConfigInfoButton = new Gtk2::Button(" Send__ConfigInfo ");
-$requestButtonBox->pack_end($sendConfigInfoButton, 1, 1, 6);
-$sendConfigInfoButton->signal_connect("clicked", sub {
+my $send_configinfo_button = new Gtk2::Button(" Send__ConfigInfo ");
+$request_button_box->pack_end($send_configinfo_button, 1, 1, 6);
+$send_configinfo_button->signal_connect("clicked", sub {
 	$module->send("Send_ConfigInfo");
 });
 
-my $sendWindowListButton = new Gtk2::Button(" Send__WindowList ");
-$requestButtonBox->pack_end($sendWindowListButton, 1, 1, 6);
-$sendWindowListButton->signal_connect("clicked", sub {
+my $send_windowlist_button = new Gtk2::Button(" Send__WindowList ");
+$request_button_box->pack_end($send_windowlist_button, 1, 1, 6);
+$send_windowlist_button->signal_connect("clicked", sub {
 	$module->send("Send_WindowList");
 });
 
-my $commandToSend = new Gtk2::Entry();
-$commandToSend->signal_connect("activate", sub {
-	$module->send($commandToSend->get_text);
-	$commandToSend->set_text("");
+my $command_to_send = new Gtk2::Entry();
+$command_to_send->signal_connect("activate", sub {
+	$module->send($command_to_send->get_text);
+	$command_to_send->set_text("");
 });
 
-$requestButtonBox->foreach(\&setup_button_size, 172);
+$request_button_box->foreach(\&setup_button_size, 172);
 
-my $commandToSendFrame = new Gtk2::Frame(" Command console ");
-$tmp = new Gtk2::VBox(0, 0); $tmp->add($commandToSend); $tmp->set_border_width(5);
-$commandToSendFrame->add($tmp);
-$toolsPage->pack_start($commandToSendFrame, 0, 0, 10);
+my $command_to_send_frame = new Gtk2::Frame(" Command console ");
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($command_to_send); $tmp->set_border_width(5);
+$command_to_send_frame->add($tmp);
+$tools_page->pack_start($command_to_send_frame, 0, 0, 10);
 
-my $quitButtonBox = new Gtk2::HButtonBox();
-$quitButtonBox->set_layout('edge');
-$toolsPage->pack_end($quitButtonBox, 0, 0, 0);
+my $quit_button_box = new Gtk2::HButtonBox();
+$quit_button_box->set_layout('edge');
+$tools_page->pack_end($quit_button_box, 0, 0, 0);
 
-my $helpButton = new Gtk2::Button(" _Help ");
-$quitButtonBox->pack_end($helpButton, 1, 1, 6);
-$helpButton->signal_connect("clicked", sub {
-	$module->showMessage(<<ENDMSG, "FvwmGtkDebug Help");
+my $help_button = new Gtk2::Button(" _Help ");
+$quit_button_box->pack_end($help_button, 1, 1, 6);
+$help_button->signal_connect("clicked", sub {
+	$module->show_message(<<ENDMSG, "FvwmGtkDebug Help");
 This module captures the event information received from fvwm and shows it.
 You should configure events you want to receive and then activate the
 monitoring mode. The activation may be done either from the "Setup" or
@@ -595,15 +597,15 @@ it is safe. Good luck.
 ENDMSG
 });
 
-my $quitButton = new Gtk2::Button(" _Quit ");
-$quitButtonBox->pack_end($quitButton, 1, 1, 6);
-$quitButton->signal_connect("clicked", sub { Gtk2->main_quit; });
+my $quit_button = new Gtk2::Button(" _Quit ");
+$quit_button_box->pack_end($quit_button, 1, 1, 6);
+$quit_button->signal_connect("clicked", sub { Gtk2->main_quit; });
 
-$quitButtonBox->foreach(\&setup_button_size, 120);
+$quit_button_box->foreach(\&setup_button_size, 120);
 
 # ---- last GUI preparations ----
-updateCheckButtonsFromNewMask();
-updateCurrentEventWidgets();
+update_check_buttons_from_new_mask();
+update_current_event_widgets();
 
 $window->signal_connect("destroy" => \&Gtk2::main_quit);
 $window->set_default_size(500, 600);
@@ -612,32 +614,32 @@ $window->show_all;
 # ----------------------------------------------------------------------------
 # main
 
-sendModuleEventMask();
+send_module_event_mask();
 
-$module->addHandler(MAX_MSG_MASK, \&storeEvent);
-$module->addHandler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&storeEvent);
+$module->add_handler(MAX_MSG_MASK, \&store_event);
+$module->add_handler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&store_event);
 
-sub emulateSomeEvents () {
-	$module->emulateEvent(M_NEW_DESK, [ $currentEventNum ]);
-	$module->emulateEvent(M_MAP, [ 0x123, 0x456, 789 ]);
-	$module->emulateEvent(M_NEW_PAGE, [ 0, 0, 2, 800, 600, 3, 3 ]);
+sub emulate_some_events () {
+	$module->emulate_event(M_NEW_DESK, [ $current_event_num ]);
+	$module->emulate_event(M_MAP, [ 0x123, 0x456, 789 ]);
+	$module->emulate_event(M_NEW_PAGE, [ 0, 0, 2, 800, 600, 3, 3 ]);
 }
 
-if ($module->isDummy) {
-	$module->showMessage(
+if ($module->is_dummy) {
+	$module->show_message(
 		"This module is executed in the dummy mode.\n\n" .
 		"Every 20 seconds fake events are generated."
 	);
-	emulateSomeEvents();
-	emulateSomeEvents();
+	emulate_some_events();
+	emulate_some_events();
 	my $scheduler = $module->track('Scheduler');
 	$scheduler->schedule(20, sub {
-		emulateSomeEvents() if $monitoring;
+		emulate_some_events() if $monitoring;
 		$scheduler->reschedule;
 	});
 }
 
-$module->eventLoop;
+$module->event_loop;
 
 __END__
 

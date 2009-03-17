@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 BEGIN {
 	if ($ENV{FVWM_MODULE_TERMINAL_CLIENT}) {
-		my ($outFd, $inFd, $name, $prompt, $ornaments) = @ARGV;
+		my ($out_fd, $in_fd, $name, $prompt, $ornaments) = @ARGV;
 		$name ||= "FVWM::Module::Terminal";
 		$prompt ||= "";
 		$ornaments ||= 0;
@@ -32,10 +32,10 @@ BEGIN {
 		};
 		die "$name: $@" if $@;
 
-		my $ostream = new IO::File ">&$outFd"
-			or die "Can't write to file descriptor (&$outFd)\n";
-		my $istream = new IO::File "<&$inFd"
-			or die "Can't read from file descriptor (&$inFd)\n";
+		my $ostream = new IO::File ">&$out_fd"
+			or die "Can't write to file descriptor (&$out_fd)\n";
+		my $istream = new IO::File "<&$in_fd"
+			or die "Can't read from file descriptor (&$in_fd)\n";
 		$ostream->autoflush(1);
 		$istream->autoflush(1);
 # DEBUG
@@ -72,13 +72,13 @@ sub new ($@) {
 	my $ornaments = delete $params{Ornaments} || 0;
 	my $self = $class->SUPER::new(%params);
 
-	pipe(PARENT_IN, CHILD_OUT) || $self->internalDie("Can't pipe");
-	pipe(CHILD_IN, PARENT_OUT) || $self->internalDie("Can't pipe");
+	pipe(PARENT_IN, CHILD_OUT) || $self->internal_die("Can't pipe");
+	pipe(CHILD_IN, PARENT_OUT) || $self->internal_die("Can't pipe");
 	CHILD_OUT->autoflush;
 	PARENT_OUT->autoflush;
 
 	my $pid = fork;
-	$self->internalDie("Can't fork: $!") unless defined $pid;
+	$self->internal_die("Can't fork: $!") unless defined $pid;
 
 	if ($pid == 0) {
 		close PARENT_IN; close PARENT_OUT;
@@ -89,7 +89,7 @@ sub new ($@) {
 		$ENV{FVWM_MODULE_TERMINAL_CLIENT} = 1;
 		my @cmd = ($^X, "-w", __FILE__, $co, $ci, $self->name, $prompt, $ornaments);
 
-		unshift @cmd, getTokens($xterm);
+		unshift @cmd, get_tokens($xterm);
 # DEBUG
 my $ostream = new IO::File ">&$co"
 	or die "Can't write to file descriptor (&$co)\n";
@@ -97,47 +97,47 @@ $ostream->print("Asta la Vista\n");
 print join(", ", @cmd), "\n";
 
 		{ exec {$cmd[0]} @cmd }
-		$self->internalDie("Can't fork $cmd[0]");
+		$self->internal_die("Can't fork $cmd[0]");
 		close CHILD_IN; close CHILD_OUT;
 		exit 0;
 	}
 
 	close CHILD_IN; close CHILD_OUT;
 
-	$self->{termSelect} = new IO::Select($self->{istream}, \*PARENT_IN);
-	$self->{termOutput} = \*PARENT_OUT;
+	$self->{term_select} = new IO::Select($self->{istream}, \*PARENT_IN);
+	$self->{term_output} = \*PARENT_OUT;
 
 	return $self;
 }
 
-sub waitPacket ($) {
+sub wait_packet ($) {
 	my $self = shift;
 
 	while (1) {
-		my @handles = $self->{termSelect}->can_read();
-		my ($coreInput, $termInput);
+		my @handles = $self->{term_select}->can_read();
+		my ($core_input, $term_input);
 		foreach (@handles) {
-			($_ == $self->{istream}? $coreInput: $termInput) = $_;
+			($_ == $self->{istream}? $core_input: $term_input) = $_;
 		}
-		if ($termInput) {
-			my $line = $termInput->getline;
+		if ($term_input) {
+			my $line = $term_input->getline;
 			unless (defined $line) {
 				$self->debug("EOF from terminal client, terminating", 3);
 				$self->terminate;
 			}
 			chomp($line);
 			$self->debug("Got [$line] from terminal client", 4);
-			$self->processTermLine($line);
+			$self->process_term_line($line);
 		}
-		last if $coreInput;
+		last if $core_input;
 	}
 }
 
-sub processTermLine ($$) {
+sub process_term_line ($$) {
 	my $self = shift;
 	my $line = shift;
 
-	$self->showMessage("I got $line!");
+	$self->show_message("I got $line!");
 }
 
 1;
@@ -166,28 +166,28 @@ Name this module TestModuleTerminal, make it executable and place in ModulePath:
     my $id = undef;
     $module->send('Next (TestModuleTerminal) SendToModule myid $[w.id]');
 
-    $module->addDefaultErrorHandler;
-    $module->addHandler(M_STRING, sub {
+    $module->add_default_error_handler;
+    $module->add_handler(M_STRING, sub {
         $[1]->_text =~ /^myid (.*)$/ && $id = eval $1;
     };
-    $module->addHandler(M_ICONIFY, sub {
+    $module->add_handler(M_ICONIFY, sub {
         return unless defined $id;
         my $id0 = $_[1]->_win_id;
         $module->send("WindowId $id Iconify off") if $id0 == $id;
     });
     $module->track('Scheduler')->schedule(60, sub {
-        $module->showMessage("You run this module for 1 minute")
+        $module->show_message("You run this module for 1 minute")
     });
 
-    $module->eventLoop;
+    $module->event_loop;
 
 =head1 DESCRIPTION
 
 NOTE: This class is not functional yet.
 
 The B<FVWM::Module::Terminal> class is a sub-class of
-B<FVWM::Module::Toolkit> that overloads the methods B<waitPacket>,
-B<showError>, B<showMessage> and B<showDebug> to manage terminal
+B<FVWM::Module::Toolkit> that overloads the methods B<wait_packet>,
+B<show_error>, B<show_message> and B<show_debug> to manage terminal
 functionality.
 
 This manual page details only those differences. For details on the
@@ -199,23 +199,23 @@ Only overloaded or new methods are covered here:
 
 =over 8
 
-=item B<waitPacket>
+=item B<wait_packet>
 
 Listen to the terminal read-line while waiting for the packet from fvwm.
 
-=item B<showError> I<msg> [I<title>]
+=item B<show_error> I<msg> [I<title>]
 
 Shows the error message in terminal.
 
 Useful for diagnostics of a Terminal based module.
 
-=item B<showMessage> I<msg> [I<title>]
+=item B<show_message> I<msg> [I<title>]
 
 Shows the message in terminal.
 
 Useful for notices by a Terminal based module.
 
-=item B<showDebug> I<msg> [I<title>]
+=item B<show_debug> I<msg> [I<title>]
 
 Shows the debug info in terminal.
 

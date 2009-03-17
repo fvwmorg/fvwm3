@@ -1,4 +1,4 @@
-# Copyright (c) 2004 Mikhael Goikhman, Scott Smedley
+# Copyright (c) 2004-2009 Mikhael Goikhman, Scott Smedley
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@ use strict;
 
 use FVWM::Tracker qw(base);
 
-my $windowEvents = M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
+my $window_events = M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
 	M_ICONIFY | M_DEICONIFY;
-my $nameEvents = M_RES_NAME | M_RES_CLASS | M_WINDOW_NAME | M_VISIBLE_NAME |
+my $name_events = M_RES_NAME | M_RES_CLASS | M_WINDOW_NAME | M_VISIBLE_NAME |
 	M_ICON_NAME;
-my $nameXEvents = MX_VISIBLE_ICON_NAME;
-my $stackEvents = M_RESTACK | M_RAISE_WINDOW | M_LOWER_WINDOW;
-my $iconEvents = M_ICON_LOCATION | M_ICON_FILE | M_DEFAULTICON | M_MINI_ICON;
+my $name_xevents = MX_VISIBLE_ICON_NAME;
+my $stack_events = M_RESTACK | M_RAISE_WINDOW | M_LOWER_WINDOW;
+my $icon_events = M_ICON_LOCATION | M_ICON_FILE | M_DEFAULTICON | M_MINI_ICON;
 
 sub observables ($) {
 	return [
@@ -54,34 +54,34 @@ sub new ($$;$) {
 	return $self;
 }
 
-sub addRequestedInfoHandlers ($$) {
+sub add_requested_info_handlers ($$) {
 	my $self = shift;
 	my $handler = shift;
 
-	my $useWInfo = 1;
-	my $useNames = 1;
-	my $useStack = 0;
-	my $useIcons = 0;
+	my $use_winfo = 1;
+	my $use_names = 1;
+	my $use_stack = 0;
+	my $use_icons = 0;
 	foreach (@{$self->{options}}) {  
-		/^(\!?)winfo$/ and $useWInfo = $1 ne '!';
-		/^(\!?)names$/ and $useNames = $1 ne '!';
-		/^(\!?)stack$/ and $useStack = $1 ne '!';
-		/^(\!?)icons$/ and $useIcons = $1 ne '!';
+		/^(\!?)winfo$/ and $use_winfo = $1 ne '!';
+		/^(\!?)names$/ and $use_names = $1 ne '!';
+		/^(\!?)stack$/ and $use_stack = $1 ne '!';
+		/^(\!?)icons$/ and $use_icons = $1 ne '!';
 	}
 	my $mask  = 0;
-	$mask |= $windowEvents if $useWInfo;
-	$mask |= $nameEvents if $useNames;
-	$mask |= $stackEvents if $useStack;  
-	$mask |= $iconEvents if $useIcons;
+	$mask |= $window_events if $use_winfo;
+	$mask |= $name_events   if $use_names;
+	$mask |= $stack_events  if $use_stack;  
+	$mask |= $icon_events   if $use_icons;
 
 	my $xmask = 0;
-	$xmask |= $nameXEvents if $useNames;
+	$xmask |= $name_xevents if $use_names;
 
-	$self->addHandler($mask, $handler) if $mask;
-	$self->addHandler($xmask, $handler) if $xmask;
-	$self->addHandler(M_NEW_PAGE | M_NEW_DESK, sub {
-		$self->handlerPageInfo($_[1]);
-	}) if $useWInfo;
+	$self->add_handler($mask, $handler) if $mask;
+	$self->add_handler($xmask, $handler) if $xmask;
+	$self->add_handler(M_NEW_PAGE | M_NEW_DESK, sub {
+		$self->handler_page_info($_[1]);
+	}) if $use_winfo;
 }
 
 sub start ($) {
@@ -89,24 +89,24 @@ sub start ($) {
 
 	$self->{data} = {};
 
-	$self->addRequestedInfoHandlers(sub {
+	$self->add_requested_info_handlers(sub {
 		my $event = $_[1];
-		$self->calculateInternals($event);
+		$self->calculate_internals($event);
 	});
 
-	$self->requestWindowListEvents;
+	$self->request_windowlist_events;
 	my $result = $self->SUPER::start;
-	$self->deleteHandlers;
+	$self->delete_handlers;
 
-	$self->addRequestedInfoHandlers(sub {
+	$self->add_requested_info_handlers(sub {
 		my $event = $_[1];
-		my ($winId, $oldHash) = $self->calculateInternals($event);
-		return unless defined $winId;
+		my ($win_id, $old_hash) = $self->calculate_internals($event);
+		return unless defined $win_id;
 		my $type = $event->type();
 		my $observable = undef;
 
-		if ($self->{module}->isEventExtended($type)) {
-			if ($type & $nameXEvents) {
+		if ($self->{module}->is_event_extended($type)) {
+			if ($type & $name_xevents) {
 				$observable = "window name updated";
 			}
 		} elsif ($type & M_ADD_WINDOW) {
@@ -115,17 +115,17 @@ sub start ($) {
 			$observable = "window properties updated";
 
 			# this observable is too broad, try to narrow
-			if ($oldHash) {
-				my $win = $self->{data}->{$winId};
+			if ($old_hash) {
+				my $win = $self->{data}->{$win_id};
 
-				$self->notify("window resized", $winId, $oldHash)
-					if $win->{width} != $oldHash->{width}
-					|| $win->{height} != $oldHash->{height};
+				$self->notify("window resized", $win_id, $old_hash)
+					if $win->{width} != $old_hash->{width}
+					|| $win->{height} != $old_hash->{height};
 
-				$self->notify("window moved", $winId, $oldHash)
-					if $win->{desk} != $oldHash->{desk}
-					|| $win->{x} != $oldHash->{x}
-					|| $win->{y} != $oldHash->{y};
+				$self->notify("window moved", $win_id, $old_hash)
+					if $win->{desk} != $old_hash->{desk}
+					|| $win->{x} != $old_hash->{x}
+					|| $win->{y} != $old_hash->{y};
 			}
 		} elsif ($type & M_DESTROY_WINDOW) {
 			$observable = "window deleted";
@@ -133,31 +133,31 @@ sub start ($) {
 			$observable = "window iconified";
 		} elsif ($type & M_DEICONIFY) {
 			$observable = "window deiconified";
-		} elsif ($type & $nameEvents) {
+		} elsif ($type & $name_events) {
 			$observable = "window name updated";
-		} elsif ($type & $stackEvents) {
+		} elsif ($type & $stack_events) {
 			$observable = "window stack updated";
-		} elsif ($type & $iconEvents) {
+		} elsif ($type & $icon_events) {
 			$observable = "window icon updated";
 		}
-		$self->notify($observable, $winId, $oldHash) if $observable;
+		$self->notify($observable, $win_id, $old_hash) if $observable;
 	});
 
 	return $result;
 }
 
-sub calculateInternals ($$) {
+sub calculate_internals ($$) {
 	my $self = shift;
 	my $event = shift;
 	my $args = $event->args;
 	my $data = $self->{data};
-	my $winId = $args->{win_id};
+	my $win_id = $args->{win_id};
 
-	my $oldHash = undef;
-	$oldHash = { %{$data->{$winId}} } if defined $data->{$winId};
+	my $old_hash = undef;
+	$old_hash = { %{$data->{$win_id}} } if defined $data->{$win_id};
 
-	my $window = $data->{$winId} ||=
-		bless { id => $winId, iconified => 0, _tracker => $self },
+	my $window = $data->{$win_id} ||=
+		bless { id => $win_id, iconified => 0, _tracker => $self },
 		"FVWM::Window";
 
 	# There are some fields that are not unique to all events. To ensure
@@ -194,20 +194,20 @@ sub calculateInternals ($$) {
 	}
 
 	my $type = $event->type();
-	if (!$self->{module}->isEventExtended($type)) {
+	if (!$self->{module}->is_event_extended($type)) {
 		if ($type & M_DEICONIFY) {
 			$window->{iconified} = 0;
 		} elsif ($type & M_ICONIFY) {
 			$window->{iconified} = 1;
 		} elsif ($type & M_DESTROY_WINDOW) {
-			delete $data->{$winId};
+			delete $data->{$win_id};
 		}
 	}
 
-	return wantarray ? ($winId, $oldHash) : $winId;
+	return wantarray ? ($win_id, $old_hash) : $win_id;
 }
 
-sub handlerPageInfo ($$) {
+sub handler_page_info ($$) {
 	my $self = shift;
 	my $event = shift;
 	my $args = $event->args;
@@ -220,7 +220,7 @@ sub handlerPageInfo ($$) {
 	}
 }
 
-sub pageInfo ($;$) {
+sub page_info ($;$) {
 	my $self = shift;
 	my $id = shift;
 	my $data = $self->{page_info};
@@ -271,7 +271,7 @@ sub match ($$) {
 		if (/^iconified$/i) {
 			return 0 unless $opposite ^ $self->{iconified};
 		} elsif (/^current(page|desk)$/i) {
-			my $page = $self->{_tracker}->pageInfo;
+			my $page = $self->{_tracker}->page_info;
 			return 0 unless $opposite ^ ($self->{desk} == $page->{desk_n});
 			next if lc($1) eq "desk";
 			return 0 unless $opposite ^ (
@@ -339,9 +339,9 @@ or:
 
     my $tracker = $module->track("WindowList", $options);
     my $data = $tracker->data;
-    while (my ($winId, $window) = each %$data) {
+    while (my ($win_id, $window) = each %$data) {
         next unless $window->match("CurrentPage, Iconified");
-        $module->send("Iconify off", $winId);
+        $module->send("Iconify off", $win_id);
     }
 
 Default $options string is: "!stack !icons names winfo"
@@ -358,7 +358,7 @@ To be written.
 
 =item B<data> [I<window-id>]
 
-Returns array ref of window hash refs. or one window hash ref if
+Returns hash ref of window hash refs. or one window hash ref if
 I<window-id> is given.
 
 =item B<dump> [I<window-id>]
@@ -371,7 +371,7 @@ Works similarly to B<data>, but returns debug lines for one or all windows.
 
 =over 4
 
-=item B<pageInfo> [I<field>]
+=item B<page_info> [I<field>]
 
 Returns hash ref of page/desk info, or actual hash value using B<field> as a key (if specified).
 

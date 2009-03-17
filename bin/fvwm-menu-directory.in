@@ -1,5 +1,21 @@
 #!@PERL@
 
+# Copyright (c) 1999-2009 Mikhael Goikhman
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 # Filter this script to pod2man to get a man page:
 #   pod2man -c "Fvwm Utilities" fvwm-menu-directory | nroff -man | less -e
 
@@ -15,69 +31,69 @@ my $version = "@VERSION@";
 
 my $name  = "MenuBrowser";  # used only with --reuse
 my $title = "%*-40p";  # may contain specifiers %d, %p.
-my $itemF = "%n";      # may contain specifiers %n, %t, %T, %d, %D, %s.
-my $iconT = "";
-my $iconD = "";
-my $iconF = "";
-my $iconA = "";
+my $itemf = "%n";      # may contain specifiers %n, %t, %T, %d, %D, %s.
+my $icont = "";
+my $icond = "";
+my $iconf = "";
+my $icona = "";
 my $home  = $ENV{'HOME'} || '/tmp';
 my $dir   = $home;
 my $xterm = "xterm -e";              # the X terminal program to invoke
-my $execT = $ENV{'SHELL'} || '/bin/sh';
-my $execF = $ENV{'EDITOR'} || "vi";  # the command to execute on plain files
-my $execA = undef;
-my $commT = undef;
-my $commF = undef;
-my $commA = undef;
+my $exect = $ENV{'SHELL'} || '/bin/sh';
+my $execf = $ENV{'EDITOR'} || "vi";  # the command to execute on plain files
+my $execa = undef;
+my $commt = undef;
+my $commf = undef;
+my $comma = undef;
 my $all   = 0;  # whether show hidden files (like in 'ls -A')
 my $links = 0;  # whether follow linked dirs or not
 my $order = 5;  # -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6
 my $reuse = 0;  # non-popup mode
-my $wmIcons = 0;
-my $checkSubdirs = 0;  # whether check subdirs for +x permissions
-my $specialDirVal = undef;  # which of (.. ~ /) dirs include or none
-my $memoryForSpeed = 0;
-my $submenuPos = " item +100 c";  # " menu +0 +0"
-my $fvwmUserDir = $ENV{'FVWM_USERDIR'} || "$home/.fvwm";
-$fvwmUserDir = $home unless -d $fvwmUserDir;
-my $dirFile = "$fvwmUserDir/.fvwm-menu-directory.dir";
-my $changeMenuStyle = "";
-my $funcName = "FuncFvwmMenuDirectory";
+my $wm_icons = 0;
+my $check_subdirs = 0;  # whether check subdirs for +x permissions
+my $special_dir_val = undef;  # which of (.. ~ /) dirs include or none
+my $memory_for_speed = 0;
+my $submenu_pos = " item +100 c";  # " menu +0 +0"
+my $fvwm_user_dir = $ENV{'FVWM_USERDIR'} || "$home/.fvwm";
+$fvwm_user_dir = $home unless -d $fvwm_user_dir;
+my $dir_filename = "$fvwm_user_dir/.fvwm-menu-directory.dir";
+my $change_menu_style = "";
+my $func_name = "FuncFvwmMenuDirectory";
 
 GetOptions(
-	"help|h|?"     => \&showHelp,
-	"version|V"    => \&showVersion,
+	"help|h|?"     => \&show_help,
+	"version|V"    => \&show_version,
 	"name=s"       => \$name,
 	"title=s"      => \$title,
-	"item=s"       => \$itemF,
-	"icon-title=s" => \$iconT,
-	"icon-dir=s"   => \$iconD,
-	"icon-file=s"  => \$iconF,
-	"icon-app=s"   => \$iconA,
+	"item=s"       => \$itemf,
+	"icon-title=s" => \$icont,
+	"icon-dir=s"   => \$icond,
+	"icon-file=s"  => \$iconf,
+	"icon-app=s"   => \$icona,
 	"dir=s"        => \$dir,
 	"order=i"      => \$order,
 	"all!"         => \$all,
 	"links!"       => \$links,
 	"xterm=s"      => \$xterm,
-	"exec-title=s" => \$execT,
-	"exec-file=s"  => \$execF,
-	"exec-app:s"   => \$execA,
-	"command-title=s" => \$commT,
-	"command-file=s"  => \$commF,
-	"command-app=s"   => \$commA,
+	"exec-title=s" => \$exect,
+	"exec-file=s"  => \$execf,
+	"exec-app:s"   => \$execa,
+	"command-title=s" => \$commt,
+	"command-file=s"  => \$commf,
+	"command-app=s"   => \$comma,
 	"reuse!"       => \$reuse,
-	"wm-icons"     => \$wmIcons,
-	"check-subdirs!"    => \$checkSubdirs,
-	"special-dirs:s"    => \$specialDirVal,
-	"memory-for-speed!" => \$memoryForSpeed,
-	"menu-style=s" => \$changeMenuStyle,
-	"func-name=s"  => \$funcName,
-) || wrongUsage();
-wrongUsage() if @ARGV;
+	"wm-icons"     => \$wm_icons,
+	"check-subdirs!"    => \$check_subdirs,
+	"special-dirs:s"    => \$special_dir_val,
+	"memory-for-speed!" => \$memory_for_speed,
+	"menu-style=s" => \$change_menu_style,
+	"func-name=s"  => \$func_name,
+) || wrong_usage();
+wrong_usage() if @ARGV;
 
 $name = $dir unless $reuse;
 $dir =~ s:^~(/|$):$home$1:;
-chomp($dir = `cat "$dirFile"`) if $reuse && -f $dirFile;
+chomp($dir = `cat "$dir_filename"`) if $reuse && -f $dir_filename;
 
 unless (-d $dir) {
 	# the next line may be commented not to throw error
@@ -89,81 +105,81 @@ $links || !-l $dir || exit(-1);  # exit if linked directories are disabled
 chdir($dir) || exit(-1);  # exit if no execute permission on the directory
 
 # expand title
-&expandWidthSpecifier(\$title, 'd', (split('/', $dir))[-1] || '/')
+&expand_width_specifier(\$title, 'd', (split('/', $dir))[-1] || '/')
 	if $title =~ /%(-?\d+)?(\*-?\d+)?d/;
-&expandWidthSpecifier(\$title, 'p', $dir)
+&expand_width_specifier(\$title, 'p', $dir)
 	if $title =~ /%(-?\d+)?(\*-?\d+)?p/;
 $title =~ s/\\t/\t/g;
-$itemF =~ s/\\t/\t/g;
+$itemf =~ s/\\t/\t/g;
 
 # item format optimization variables
-my $itemF_eval = $itemF ne '%f';  # evaluation needed
-my $itemF_name = undef;
-my $itemF_stat = undef;  # stat() needed
-my $itemF_date = undef;
-my $itemF_size = undef;
-my $itemF_type = undef;
+my $itemf_eval = $itemf ne '%f';  # evaluation needed
+my $itemf_name = undef;
+my $itemf_stat = undef;  # stat() needed
+my $itemf_date = undef;
+my $itemf_size = undef;
+my $itemf_type = undef;
 
-if ($itemF_eval) {
-	$itemF_name = $itemF =~ /%(-?\d+)?(\*-?\d+)?[nN]/;
-	$itemF_date = $itemF =~ /%[dD]/;
-	$itemF_size = $itemF =~ /%(-?\d+)?(\*-?\d+)?s/;
-	$itemF_type = $itemF =~ /%[tT]/;
-	$itemF_stat = $itemF_size || $itemF_date || $itemF_size || $itemF_type;
+if ($itemf_eval) {
+	$itemf_name = $itemf =~ /%(-?\d+)?(\*-?\d+)?[nN]/;
+	$itemf_date = $itemf =~ /%[dD]/;
+	$itemf_size = $itemf =~ /%(-?\d+)?(\*-?\d+)?s/;
+	$itemf_type = $itemf =~ /%[tT]/;
+	$itemf_stat = $itemf_size || $itemf_date || $itemf_size || $itemf_type;
 }
 
 my @type1 = ("Sock", "Link", "File", "Blck", "Dir ", "Char", "Pipe");
 my @type2 = ("S", "L", "F", "B", "D", "C", "P");
 
-if ($wmIcons) {
-	$iconT ||= "menu/folder-open.xpm";
-	$iconD ||= "menu/folder.xpm";
-	$iconF ||= "menu/file.xpm";
-	$iconA ||= "menu/utility.xpm";
+if ($wm_icons) {
+	$icont ||= "menu/folder-open.xpm";
+	$icond ||= "menu/folder.xpm";
+	$iconf ||= "menu/file.xpm";
+	$icona ||= "menu/utility.xpm";
 }
 
-my $iconTStr = $iconT? "%$iconT%": "";
-my $iconDStr = $iconD? "%$iconD%": "";
-my $iconFStr = $iconF? "%$iconF%": "";
-my $iconAStr = $iconA? "%$iconA%": "";
+my $icont_str = $icont ? "%$icont%" : "";
+my $icond_str = $icond ? "%$icond%" : "";
+my $iconf_str = $iconf ? "%$iconf%" : "";
+my $icona_str = $icona ? "%$icona%" : "";
 
-$execT = undef if defined $execT && $execT eq '-';
-$execF = undef if defined $execF && $execF eq '-';
-$execA = undef if defined $execA && $execA eq '-';
+$exect = undef if defined $exect && $exect eq '-';
+$execf = undef if defined $execf && $execf eq '-';
+$execa = undef if defined $execa && $execa eq '-';
 
-$execT = $execT =~ /^\^(.*)$/? $1: "$xterm $execT" if defined $execT;
-$execF = $execF =~ /^\^(.*)$/? $1: "$xterm $execF" if defined $execF;
-$execA = $execA =~ /^\^(.*)$/? $1: "$xterm $execA" if defined $execA;
+$exect = $exect =~ /^\^(.*)$/ ? $1 : "$xterm $exect" if defined $exect;
+$execf = $execf =~ /^\^(.*)$/ ? $1 : "$xterm $execf" if defined $execf;
+$execa = $execa =~ /^\^(.*)$/ ? $1 : "$xterm $execa" if defined $execa;
 
-$commT = undef if defined $commT && $commT eq '-';
-$commF = undef if defined $commF && $commF eq '-';
-$commA = undef if defined $commA && $commA eq '-';
+$commt = undef if defined $commt && $commt eq '-';
+$commf = undef if defined $commf && $commf eq '-';
+$comma = undef if defined $comma && $comma eq '-';
 
-$commT = defined $execT? qq(Exec cd "%d"; $execT): "Nop" if !defined $commT;
-$commF = defined $execF? qq(Exec $execF "%f"):     "Nop" if !defined $commF;
-$commA = defined $execA? qq(Exec $execA "%f"):    $commF if !defined $commA;
+$commt = defined $exect ? qq(Exec cd "%d"; $exect): "Nop" if !defined $commt;
+$commf = defined $execf ? qq(Exec $execf "%f"):     "Nop" if !defined $commf;
+$comma = defined $execa ? qq(Exec $execa "%f"):    $commf if !defined $comma;
 
 # manage special directories if needed
-my ($specialDirLines, $specialDirPos, @specialDirs) = ("");
-$specialDirVal = "1,2" if defined $specialDirVal && $specialDirVal eq "";
-if ($specialDirVal && $specialDirVal =~ /([\d,]+)(-?)/) {
-	@specialDirs = grep(/^[1-3]$/, split(/,+/, $1));
-	$specialDirPos = $2? -1: 1;
+my ($special_dir_lines, $special_dir_pos, @special_dirs) = ("");
+$special_dir_val = "1,2" if defined $special_dir_val && $special_dir_val eq "";
+if ($special_dir_val && $special_dir_val =~ /([\d,]+)(-?)/) {
+	@special_dirs = grep(/^[1-3]$/, split(/,+/, $1));
+	$special_dir_pos = $2 ? -1 : 1;
 }
-if (@specialDirs) {
-	my $parentDir = $dir eq '/' || $dir !~ m!^(.*)/[^\/]+$!? undef: $1;
-	$parentDir = '/' if defined $parentDir && $parentDir eq '';
-	my @specialDirDef = (
-		[ '..' => $parentDir ],
+if (@special_dirs) {
+	my $parent_dir = $dir eq '/' || $dir !~ m!^(.*)/[^\/]+$! ? undef : $1;
+	$parent_dir = '/' if defined $parent_dir && $parent_dir eq '';
+	my @special_dir_def = (
+		[ '..' => $parent_dir ],
 		[ '~'  => $home ],
 		[ '/'  => '/' ],
 	);
-	foreach (@specialDirs) {
-		$specialDirLines .= qq(+ "" Nop\n) if $specialDirLines;
-		$specialDirLines .= &evalFolderLine(@{$specialDirDef[$_ - 1]});
+	foreach (@special_dirs) {
+		$special_dir_lines .= qq(+ "" Nop\n) if $special_dir_lines;
+		$special_dir_lines .= &eval_folder_line(@{$special_dir_def[$_ - 1]});
 	}
 } else {
-	$specialDirPos = 0;
+	$special_dir_pos = 0;
 }
 
 # create file listing
@@ -172,75 +188,75 @@ my @files = readdir(DIR);
 closedir(DIR);
 @files = grep /^[^.]/, @files unless $all;
 
-my $absOrder = abs($order);
+my $abs_order = abs($order);
 # To avoid warnings, '!!' must be added before '-d'. Will this slow things?
-my $sortSub =
-	$absOrder == 2? sub { -d $b <=> -d $a }:
-	$absOrder == 3? sub { -d $a <=> -d $b }:
-	$absOrder == 4? sub { $a cmp $b }:
-	$absOrder == 5? sub { -d $b <=> -d $a || $a cmp $b }:
-	$absOrder == 6? sub { -d $a <=> -d $b || $a cmp $b }:
+my $sort_sub =
+	$abs_order == 2 ? sub { -d $b <=> -d $a } :
+	$abs_order == 3 ? sub { -d $a <=> -d $b } :
+	$abs_order == 4 ? sub { $a cmp $b } :
+	$abs_order == 5 ? sub { -d $b <=> -d $a || $a cmp $b } :
+	$abs_order == 6 ? sub { -d $a <=> -d $b || $a cmp $b } :
 	sub { 0 };
-@files = sort $sortSub @files if $absOrder != 1;
+@files = sort $sort_sub @files if $abs_order != 1;
 @files = reverse @files if $order < 0;
 
 # dump all menu items and start adding new items
-my $menuName  = &escapeFvwmName($name);
-my $menuName2 = &escapeMenuName($name);
-print qq(DestroyMenu recreate "$menuName"\nAddToMenu "$menuName2"\n);
+my $menu_name  = &escape_fvwm_name($name);
+my $menu_name2 = &escape_menu_name($name);
+print qq(DestroyMenu recreate "$menu_name"\nAddToMenu "$menu_name2"\n);
 
 # destroy the menu after it is popped down
-print qq(+ DynamicPopDownAction DestroyMenu "$menuName"\n)
-	unless $memoryForSpeed || $reuse;
+print qq(+ DynamicPopDownAction DestroyMenu "$menu_name"\n)
+	unless $memory_for_speed || $reuse;
 
 # set the 'missing submenu function'
-print qq(+ MissingSubmenuFunction $funcName\n) unless $reuse;
+print qq(+ MissingSubmenuFunction $func_name\n) unless $reuse;
 
 # add a new title (item and separator, or real Title if no action)
-my $titleAct = $commT; $titleAct =~ s/%d/$dir/g;
+my $title_act = $commt; $title_act =~ s/%d/$dir/g;
 if ($title ne "") {
-	if ($titleAct eq "") {
-		print qq(+ "$iconTStr$title" Title\n);
+	if ($title_act eq "") {
+		print qq(+ "$icont_str$title" Title\n);
 	} else {
-		print qq(+ "$iconTStr$title" $titleAct\n+ "" Nop\n);
+		print qq(+ "$icont_str$title" $title_act\n+ "" Nop\n);
 	}
 }
 
 # add special dirs at the top if needed
-print qq($specialDirLines+ "" Nop\n) if $specialDirPos > 0;
+print qq($special_dir_lines+ "" Nop\n) if $special_dir_pos > 0;
 
 # add directory contents
 foreach (@files) {
 	next if $_ eq '.' or $_ eq '..';
-	my $filePath = "$dir/$_";
-	$filePath =~ s|/+|/|g;
+	my $file_path = "$dir/$_";
+	$file_path =~ s|/+|/|g;
 	if (-d) {
 		# it's a directory
-		print &evalFolderLine($_, $filePath);
+		print &eval_folder_line($_, $file_path);
 	} else {
 		# something else, apply editor to it or run itself
-		my $itemStr = $itemF_eval? &evalItem($_, $filePath): $_;
-		$itemStr = &escapeItemName($itemStr);
-		my $isApp = -x && -f;
-		my $iconStr = $isApp && $iconAStr? $iconAStr: $iconFStr;
-		my $fileAct = $isApp? $commA: $commF;
-		$fileAct =~ s/%f/&escapeFileName($filePath)/ge;
-		print qq(+ "$iconStr$itemStr" $fileAct\n);
+		my $item_str = $itemf_eval ? &eval_item($_, $file_path) : $_;
+		$item_str = &escape_item_name($item_str);
+		my $is_app = -x && -f;
+		my $icon_str = $is_app && $icona_str ? $icona_str : $iconf_str;
+		my $file_act = $is_app ? $comma : $commf;
+		$file_act =~ s/%f/&escape_file_name($file_path)/ge;
+		print qq(+ "$icon_str$item_str" $file_act\n);
 	}
 }
 
 # add special dirs at the bottom if needed
-print qq(+ "" Nop\n$specialDirLines) if $specialDirPos < 0;
+print qq(+ "" Nop\n$special_dir_lines) if $special_dir_pos < 0;
 
 # add style:
-if ($changeMenuStyle ne "") {
-	print qq(ChangeMenuStyle "$changeMenuStyle" "$menuName"\n);
+if ($change_menu_style ne "") {
+	print qq(ChangeMenuStyle "$change_menu_style" "$menu_name"\n);
 }
 exit(0);
 
 # ---------------------------------------------------------------------------
 
-sub escapeFvwmName ($) {
+sub escape_fvwm_name ($) {
 	my $name = shift;
 	$name =~ s/\\/\\\\/g;
 	$name =~ s/"/\\"/g;
@@ -248,16 +264,16 @@ sub escapeFvwmName ($) {
 	$name;
 }
 
-sub escapeMenuName ($) {
-	my $name = escapeFvwmName(shift());
+sub escape_menu_name ($) {
+	my $name = escape_fvwm_name(shift());
 	# fvwm is really inconsistent here
 	$name =~ s/\^/^^/g;
 	$name =~ s/@/@@/g;
 	$name;
 }
 
-sub escapeItemName ($) {
-	my $name = escapeFvwmName(shift());
+sub escape_item_name ($) {
+	my $name = escape_fvwm_name(shift());
 	$name =~ s/%/%%/g;
 	$name =~ s/&/&&/g;
 	$name =~ s/\*/**/g;
@@ -265,7 +281,7 @@ sub escapeItemName ($) {
 	$name;
 }
 
-sub escapeFileName ($) {
+sub escape_file_name ($) {
 	my $name = shift;
 	$name =~ s/\\/\\\\/g;
 	$name =~ s/"/\\"/g;
@@ -274,44 +290,44 @@ sub escapeFileName ($) {
 	$name;
 }
 
-sub evalFolderLine ($$) {
+sub eval_folder_line ($$) {
 	my ($_name, $dir) = @_;
-	my $itemStr = $dir && $itemF_eval? &evalItem($_name, $dir): $_name;
-	$itemStr = escapeItemName($itemStr);
-	my $act = !$dir || $checkSubdirs && !-x $dir? "Nop": !$reuse?
-		qq(Popup ") . escapeFileName($dir) . qq("$submenuPos):
-		qq(PipeRead 'echo ") . escapeFileName($dir) . qq(" >$dirFile; )
-		. qq(echo Menu ") . escapeFvwmName($name) . qq(" WarpTitle');
-	return qq(+ "$iconDStr$itemStr" $act\n);
+	my $item_str = $dir && $itemf_eval ? &eval_item($_name, $dir) : $_name;
+	$item_str = escape_item_name($item_str);
+	my $act = !$dir || $check_subdirs && !-x $dir ? "Nop" : !$reuse ?
+		qq(Popup ") . escape_file_name($dir) . qq("$submenu_pos) :
+		qq(PipeRead 'echo ") . escape_file_name($dir) . qq(" >$dir_filename; )
+		. qq(echo Menu ") . escape_fvwm_name($name) . qq(" WarpTitle');
+	return qq(+ "$icond_str$item_str" $act\n);
 }
 
-sub evalItem ($$) {
+sub eval_item ($$) {
 	my ($name, $file) = @_;
-	return $name unless $itemF_eval;
+	return $name unless $itemf_eval;
 
-	my $itemStr = "$itemF";
-	if ($itemF_name) {
-		&expandWidthSpecifier(\$itemStr, 'n', $name);
-		&expandWidthSpecifier(\$itemStr, 'N', $file);
+	my $item_str = "$itemf";
+	if ($itemf_name) {
+		&expand_width_specifier(\$item_str, 'n', $name);
+		&expand_width_specifier(\$item_str, 'N', $file);
 	}
-	return $itemStr unless $itemF_stat;
+	return $item_str unless $itemf_stat;
 
 	# / $dev, $ino, $mode, $nlink, $uid, $gid, $rdev,
 	# \ $size, $atime, $mtime, $ctime, $blksize, $blocks
 	my ($misc1, $misc2, $mode, $misc3, $misc4, $misc5, $misc6, $size,
 		$misc7, $time) = stat($file);
-	if ($itemF_date) {
-		eval 'use POSIX' unless defined $POSIX::VERSION;
+	if ($itemf_date) {
+		eval 'use POSIX qw(strftime);' unless defined $POSIX::VERSION;
 		my @time = localtime($time);
 		my $date1 = strftime("%Y-%m-%d %H:%M:%S", @time);
 		my $date2 = strftime("%Y-%m-%d", @time);
-		$itemStr =~ s/%d/$date1/g;
-		$itemStr =~ s/%D/$date2/g;
+		$item_str =~ s/%d/$date1/g;
+		$item_str =~ s/%D/$date2/g;
 	}
-	if ($itemF_size) {
-		&expandWidthSpecifier(\$itemStr, 's', $size);
+	if ($itemf_size) {
+		&expand_width_specifier(\$item_str, 's', $size);
 	}
-	if ($itemF_type) {
+	if ($itemf_type) {
 		my $type;
 #		$type = 2 if ($mode & 0100000);  # regular
 #		$type = 4 if ($mode & 0040000);  # directory
@@ -320,26 +336,26 @@ sub evalItem ($$) {
 #		$type = 3 if ($mode & 0060000);  # block
 #		$type = 5 if ($mode & 0020000);  # char-dev
 #		$type = 6 if ($mode & 0010000);  # fifo
-		$type = -p _? 6: -c _? 5: -b _? 3: -l $file? 1:
-			-S _? 0: -d _? 4: 2;
-		$itemStr =~ s/%t/$type1[$type]/g;
-		$itemStr =~ s/%T/$type2[$type]/g;
+		$type = -p _ ? 6 : -c _ ? 5 : -b _ ? 3 : -l $file ? 1 :
+			-S _ ? 0 : -d _ ? 4 : 2;
+		$item_str =~ s/%t/$type1[$type]/g;
+		$item_str =~ s/%T/$type2[$type]/g;
 	}
-	return $itemStr;
+	return $item_str;
 }
 
 # Substitutes all %N1*N2x in $name by properly stripped and justified $value.
-sub expandWidthSpecifier (\$$$) {
+sub expand_width_specifier (\$$$) {
 	my ($name, $char, $value) = @_;
 	$$name =~ s/%(-?\d+)?(\*(-?)(\d+))?$char/
-		my $value = !$2 || $4 <= 3 || $4 > length($value)? $value: $3?
-			"..." . substr($value, -$4 + 3, $4 - 3):
-			substr($value, 0, $4 - 3) . "...";
-		$1? sprintf("%$1s", $value): $value;
+		my $value = !$2 || $4 <= 3 || $4 > length($value) ? $value : $3
+			? "..." . substr($value, -$4 + 3, $4 - 3)
+			: substr($value, 0, $4 - 3) . "...";
+		$1 ? sprintf("%$1s", $value) : $value;
 	/ge;
 }
 
-sub showHelp {
+sub show_help {
 	print "A perl script that builds directory listing for fvwm.\n\n";
 	print "Usage: $0 [OPTIONS]\n";
 	print "Options:\n";
@@ -347,7 +363,7 @@ sub showHelp {
 	print "\t--version          show the version and exit\n";
 	print "\t--name=NAME        menu name,  default is '$name'\n";
 	print "\t--title=NAME       menu title, default is '$title'\n";
-	print "\t--item=NAME        menu item format, default is '$itemF'\n";
+	print "\t--item=NAME        menu item format, default is '$itemf'\n";
 	print "\t--icon-title=XPM   menu title icon, default is none\n";
 	print "\t--icon-dir=XPM     menu dir   icon, default is none\n";
 	print "\t--icon-file=XPM    menu file  icon, default is none\n";
@@ -361,8 +377,8 @@ sub showHelp {
 	print "\t--all              show hidden files, default is no\n";
 	print "\t--links            follow linked dirs, default is no\n";
 	print "\t--xterm=CMD        xterm call, default is '$xterm'\n";
-	print "\t--exec-title=CMD   title exec command, default is '$execT'\n";
-	print "\t--exec-file=CMD    file exec command, default is '$execF'\n";
+	print "\t--exec-title=CMD   title exec command, default is '$exect'\n";
+	print "\t--exec-file=CMD    file exec command, default is '$execf'\n";
 	print "\t--exec-app[=CMD]   +x files exec command, default is '-'\n";
 	print "\t--command-title=CMD title fvwm command, default is '-'\n";
 	print "\t--command-file=CMD file fvwm command, default is '-'\n";
@@ -376,12 +392,12 @@ sub showHelp {
 	exit 0;
 }
 
-sub showVersion {
+sub show_version {
 	print "$version\n";
 	exit 0;
 }
 
-sub wrongUsage {
+sub wrong_usage {
 	print STDERR "Try '$0 --help' for more information.\n";
 	exit -1;
 }

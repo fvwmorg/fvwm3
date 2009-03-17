@@ -1,18 +1,18 @@
 # Usage: SendToModule FvwmPerl preprocess xmessage.ppp
 
 %{
-	%windowSize = ( x => 300, y => 150 );
-	$borderWidth = 8;
-	$titleHeight = 20;  # several vertical points are not very important
-	$pos_x = ($WIDTH - $windowSize{x}) / 2 - $borderWidth;
-	$pos_y = ($HEIGHT - $windowSize{y} - $titleHeight) / 2 - $borderWidth;
+	%window_size = ( x => 300, y => 150 );
+	$border_width = 8;
+	$title_height = 20;  # several vertical points are not very important
+	$pos_x = ($WIDTH - $window_size{x}) / 2 - $border_width;
+	$pos_y = ($HEIGHT - $window_size{y} - $title_height) / 2 - $border_width;
 	""
 }%
 
-Style MyXMessage BorderWidth %{$borderWidth}%, NoHandles
+Style MyXMessage BorderWidth %{$border_width}%, NoHandles
 Style MyXMessage WindowShadeShrinks, WindowShadeSteps 80, WindowShadeBusy
 
-Exec xmessage -g %{"$windowSize{x}x$windowSize{y}"}%+%{$pos_x}%+%{$pos_y}% \
+Exec xmessage -g %{"$window_size{x}x$window_size{y}"}%+%{$pos_x}%+%{$pos_y}% \
 	-fg black -xrm "*textSink*font:lucidasans-18" \
 	-xrm "*form*background:rgb:c0/c0/a0" \
 	-xrm "*form*okay*background:rgb:90/90/7a" \

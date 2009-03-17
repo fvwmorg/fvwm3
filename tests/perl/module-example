@@ -8,7 +8,7 @@ use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module;
 
-my $newWindowHandler = sub {
+my $new_window_handler = sub {
 	my ($self, $event) = @_;
 	#$self->send("Echo M_ADD_WINDOW " . join(", ", %{$event->args}));
 
@@ -22,29 +22,29 @@ my $module = new FVWM::Module(
 );
 
 # do some funny harm
-$module->showMessage("started");
+$module->show_message("started");
 $module->send("Beep");
 $module->send("All (FvwmConsole) Iconify true");
 
 # undo harm
-my $onExit = sub { $_[0]->send("Beep\nAll (FvwmConsole) Iconify false") };
+my $on_exit = sub { $_[0]->send("Beep\nAll (FvwmConsole) Iconify false") };
 
 # auto-exit in 60 seconds; a mere die() in ALRM signal handler is ok too
 local $SIG{ALRM} = sub { $module->terminate(); };
 alarm(60);
 
 # auto-iconify new windows
-$module->addHandler(M_ADD_WINDOW, $newWindowHandler);
+$module->add_handler(M_ADD_WINDOW, $new_window_handler);
 # auto-raise all windows with delay of 500 msec
-$module->addHandler(M_FOCUS_CHANGE, sub {
-	my $winId = $_[1]->_win_id;
-	$_[0]->send("Deschedule 1234\nSchedule 500 1234 WindowId $winId Raise");
+$module->add_handler(M_FOCUS_CHANGE, sub {
+	my $win_id = $_[1]->_win_id;
+	$_[0]->send("Deschedule 1234\nSchedule 500 1234 WindowId $win_id Raise");
 });
 # do a clean-up on exit
-$module->addHandler(ON_EXIT, $onExit);
+$module->add_handler(ON_EXIT, $on_exit);
 
 # enter the main event loop
-$module->eventLoop();
+$module->event_loop();
 
 # this is only reached when the mutual connection with fvwm is lost
-$module->showMessage("finished");
+$module->show_message("finished");

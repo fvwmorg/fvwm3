@@ -1,4 +1,4 @@
-# Copyright (c) 2003 Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,34 +38,34 @@ use Exporter;
 @ISA = qw(Exporter);
 
 # The major version part indicates major API changes
-$VERSION = '1.2';
+$VERSION = '2.0';
 
 # Set the fvwm search directories (used for non fully qualified file names)
 $General::FileSystem::SAVE_FILE_DIR = $General::FileSystem::SAVE_FILE_DIR ||
-	__PACKAGE__->userDataDir();
+	__PACKAGE__->user_data_dir();
 $General::FileSystem::LOAD_FILE_DIRS = $General::FileSystem::LOAD_FILE_DIRS ||
-	[ __PACKAGE__->searchDirs() ];
+	[ __PACKAGE__->search_dirs() ];
 
-sub internalDie ($$) {
+sub internal_die ($$) {
 	my $self = shift;
 	my $msg = shift;
 	$msg =~ s/([^\.!?])$/$1./;
 	die $self->name . ": $msg Exiting.\n";
 }
 
-sub showError ($$) {
+sub show_error ($$) {
 	my $self = shift;
 	my $msg = shift;
 	print STDERR $self->name . ": $msg\n";
 }
 
-sub showMessage ($$) {
+sub show_message ($$) {
 	my $self = shift;
 	my $msg = shift;
 	print STDERR "[" . $self->name . "]: $msg\n";
 }
 
-sub showDebug ($$) {
+sub show_debug ($$) {
 	my $self = shift;
 	my $msg = shift;
 	print STDERR "[" . $self->name . "]: $msg\n";
@@ -76,17 +76,17 @@ sub debug ($$;$) {
 	my $msg = shift;
 	my $level = shift;
 	$level = 1 unless defined $level;
-	my $debugLevel = $self->{debug};
-	$debugLevel = $ENV{FVWM_MODULE_DEBUG} if exists $ENV{FVWM_MODULE_DEBUG};
-	return if $debugLevel < $level;
+	my $debug_level = $self->{debug};
+	$debug_level = $ENV{FVWM_MODULE_DEBUG} if exists $ENV{FVWM_MODULE_DEBUG};
+	return if $debug_level < $level;
 	$msg =~ s/\n$//s;
-	$self->showDebug($msg);
+	$self->show_debug($msg);
 }
 
-sub isEventExtended ($$) {
+sub is_event_extended ($$) {
 	my $self = shift;
 	my $type = shift;
-	return $type & M_EXTENDED_MSG? 1: 0;
+	return $type & M_EXTENDED_MSG ? 1 : 0;
 }
 
 sub new ($@) {
@@ -98,23 +98,23 @@ sub new ($@) {
 	$name = $params{'Name'} || $name;
 	my $mask = $params{'Mask'};
 	my $xmask = $params{'XMask'};
-	my $syncMask = $params{'SyncMask'};
-	my $syncXMask = $params{'SyncXMask'};
+	my $sync_mask = $params{'SyncMask'};
+	my $sync_xmask = $params{'SyncXMask'};
 
 	# initialize module from argv
-	my ($outFd, $inFd, $rcFile, $winId, $context);
+	my ($out_fd, $in_fd, $rc_file, $win_id, $context);
 	if (@ARGV >= 5 && $ARGV[0] =~ /^\d+$/ && $ARGV[1] =~ /^\d+$/) {
-		$self->{isDummy} = 0;
-		($outFd, $inFd, $rcFile, $winId, $context) = splice(@ARGV, 0, 5);
+		$self->{is_dummy} = 0;
+		($out_fd, $in_fd, $rc_file, $win_id, $context) = splice(@ARGV, 0, 5);
 	} else {
 		warn "$name should be spawned by fvwm normally.\n";
 		warn "Activating a dummy command line mode for 30 minutes (no events).\n";
 		warn "----------------------------------------------------------------\n";
 		open(DUMMYOUT, '| cat >/dev/null');
 		open(DUMMYIN, 'sleep 1800 |');
-		$self->{isDummy} = 1;
-		($outFd, $inFd) = (fileno(DUMMYOUT), fileno(DUMMYIN));
-		($rcFile, $winId, $context) = ("none", 0, 0);
+		$self->{is_dummy} = 1;
+		($out_fd, $in_fd) = (fileno(DUMMYOUT), fileno(DUMMYIN));
+		($rc_file, $win_id, $context) = ("none", 0, 0);
 	}
 
 	if (@ARGV && $params{'EnableAlias'} && $ARGV[0] =~ /^\w[\w\d\.\/-]*/) {
@@ -128,8 +128,8 @@ sub new ($@) {
 	}
 	my @argv = @ARGV;
 
-	$self->{rcFile} = $rcFile;
-	$self->{winId} = hex $winId;
+	$self->{rc_file} = $rc_file;
+	$self->{win_id} = hex $win_id;
 	$self->{context} = $context;
 	$self->{argv} = [@argv];
 
@@ -137,38 +137,38 @@ sub new ($@) {
 	autoflush STDOUT;
 	autoflush STDERR;
 
-	$self->{ostream} = new IO::File ">&$outFd"
-		or die "$name: Can't write to file descriptor (&$outFd)\n";
-	$self->{istream} = new IO::File "<&$inFd"
-		or die "$name: Can't read from file descriptor (&$inFd)\n";
+	$self->{ostream} = new IO::File ">&$out_fd"
+		or die "$name: Can't write to file descriptor (&$out_fd)\n";
+	$self->{istream} = new IO::File "<&$in_fd"
+		or die "$name: Can't read from file descriptor (&$in_fd)\n";
 	$self->{ostream}->autoflush(1);
 	$self->{istream}->autoflush(1);
 
 	$self->{disconnected} = 0;
 	$self->{debug} = $params{'Debug'} || 0;
 	$self->{debug} = ${$self->{debug}} if ref($self->{debug}) eq 'SCALAR';
-	$self->{lastPacket} = [];
+	$self->{last_packet} = [];
 	$self->{handlers} = {};
-	$self->{shouldSendUnlock} = 0;
-	$self->{shouldSendReady} = 1;
-	$self->{addMask} = 0;
-	$self->{addXMask} = 0;
-	$self->{maskWasSet} = defined $mask;
-	$self->{xmaskWasSet} = defined $xmask;
+	$self->{should_send_unlock} = 0;
+	$self->{should_send_ready} = 1;
+	$self->{add_mask} = 0;
+	$self->{add_xmask} = 0;
+	$self->{mask_was_set} = defined $mask;
+	$self->{xmask_was_set} = defined $xmask;
 
-	$self->{heldCommandArgs} = [];
-	$self->{syntheticEvents} = [];
-	$self->{usedTrackerClasses} = {};
+	$self->{held_command_args} = [];
+	$self->{synthetic_events} = [];
+	$self->{used_tracker_classes} = {};
 	$self->{trackers} = {};
 
 	# bless here, so die above does not run DESTROY
 	bless $self, $class;
 	$self->name($name);
-	$self->mask($mask || 0, $self->{maskWasSet});
-	$self->xmask($xmask, $self->{xmaskWasSet}) if $xmask;
-	$self->syncMask($syncMask || 0);
-	$self->syncXMask($syncXMask) if $syncXMask;
-	$self->resetHandlers;
+	$self->mask($mask || 0, $self->{mask_was_set});
+	$self->xmask($xmask, $self->{xmask_was_set}) if $xmask;
+	$self->sync_mask($sync_mask || 0);
+	$self->sync_xmask($sync_xmask) if $sync_xmask;
+	$self->reset_handlers;
 	return $self;
 }
 
@@ -179,7 +179,7 @@ sub disconnect ($) {
 	return if $self->{disconnected};
 
 	$self->{disconnected} = 1;
-	$self->invokeHandler(new FVWM::Event(ON_EXIT));
+	$self->invoke_handler(new FVWM::Event(ON_EXIT));
 
 	if (defined $self->{ostream} && $self->{ostream}->opened) {
 		# TODO: should wait until fvwm actually gets it
@@ -196,9 +196,9 @@ sub DESTROY ($) {
 	$self->disconnect;
 }
 
-sub isDummy ($) {
+sub is_dummy ($) {
 	my $self = shift;
-	return $self->{isDummy};
+	return $self->{is_dummy};
 }
 
 sub name ($;$) {
@@ -215,14 +215,14 @@ sub mask ($;$$) {
 	$explicit = 1 unless defined $explicit;
 
 	if (defined $mask) {
-		$self->internalDie("mask() can't get extended mask, use xmask()")
-			if $self->isEventExtended($mask);
-		my $oldMask = $self->{mask};
-		$self->sendMask($mask, $self->{addMask})
-			unless defined $oldMask && $oldMask == $mask;
+		$self->internal_die("mask() can't get extended mask, use xmask()")
+			if $self->is_event_extended($mask);
+		my $old_mask = $self->{mask};
+		$self->send_mask($mask, $self->{add_mask})
+			unless defined $old_mask && $old_mask == $mask;
 		$self->{mask} = $mask;
-		$self->{maskWasSet} = $explicit;
-		return $oldMask;
+		$self->{mask_was_set} = $explicit;
+		return $old_mask;
 	}
 	return $self->{mask} || 0;
 }
@@ -235,56 +235,56 @@ sub xmask ($;$$) {
 
 	if (defined $mask) {
 		$mask &= ~M_EXTENDED_MSG;
-		my $oldMask = $self->{xmask};
-		$self->sendMask($mask | M_EXTENDED_MSG, $self->{addXMask})
-			unless defined $oldMask && $oldMask == $mask;
+		my $old_mask = $self->{xmask};
+		$self->send_mask($mask | M_EXTENDED_MSG, $self->{add_xmask})
+			unless defined $old_mask && $old_mask == $mask;
 		$self->{xmask} = $mask;
-		$self->{xmaskWasSet} = $explicit;
-		return $oldMask;
+		$self->{xmask_was_set} = $explicit;
+		return $old_mask;
 	}
 	return $self->{xmask} || 0;
 }
 
-sub isInMask ($$) {
+sub is_in_mask ($$) {
 	my $self = shift;
 	my $type = shift;
-	my $mask = ($type & M_EXTENDED_MSG)? $self->{xmask}: $self->{mask};
+	my $mask = ($type & M_EXTENDED_MSG) ? $self->{xmask} : $self->{mask};
 	return $type & ($mask || 0);
 }
 
-sub syncMask ($;$) {
+sub sync_mask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
-		$self->internalDie("syncMask() can't get extended mask, use syncXMask()")
-			if $self->isEventExtended($mask);
-		my $oldMask = $self->{syncMask};
+		$self->internal_die("sync_mask() can't get extended mask, use sync_xmask()")
+			if $self->is_event_extended($mask);
+		my $old_mask = $self->{sync_mask};
 		$self->send("SET_SYNC_MASK $mask")
-			unless defined $oldMask && $oldMask == $mask;
-		$self->{syncMask} = $mask;
-		return $oldMask;
+			unless defined $old_mask && $old_mask == $mask;
+		$self->{sync_mask} = $mask;
+		return $old_mask;
 	}
-	return $self->{syncMask} || 0;
+	return $self->{sync_mask} || 0;
 }
 
-sub syncXMask ($;$) {
+sub sync_xmask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
 		$mask &= ~M_EXTENDED_MSG;
-		my $oldMask = $self->{syncXMask};
+		my $old_mask = $self->{sync_xmask};
 		$self->send("SET_SYNC_MASK " . ($mask | M_EXTENDED_MSG))
-			unless defined $oldMask && $oldMask == $mask;
-		$self->{syncXMask} = $mask;
-		return $oldMask;
+			unless defined $old_mask && $old_mask == $mask;
+		$self->{sync_xmask} = $mask;
+		return $old_mask;
 	}
-	return $self->{syncXMask} || 0;
+	return $self->{sync_xmask} || 0;
 }
 
-sub isInSyncMask ($$) {
+sub is_in_sync_mask ($$) {
 	my $self = shift;
 	my $type = shift;
-	my $mask = ($type & M_EXTENDED_MSG)? $self->{syncXMask}: $self->{syncMask};
+	my $mask = ($type & M_EXTENDED_MSG) ? $self->{sync_xmask} : $self->{sync_mask};
 	return $type & ($mask || 0);
 }
 
@@ -294,7 +294,7 @@ sub version ($) {
 	return "@VERSION@";
 }
 
-sub versionInfo ($) {
+sub version_info ($) {
 	my $self = shift;
 	return "@VERSIONINFO@";
 }
@@ -304,7 +304,7 @@ sub argv ($) {
 	return @{$self->{argv}};
 }
 
-sub resetHandlers ($) {
+sub reset_handlers ($) {
 	my $self = shift;
 
 	$self->{handlers}->{regular} = {};
@@ -312,41 +312,41 @@ sub resetHandlers ($) {
 	$self->{handlers}->{special} = {};
 }
 
-sub getHandlerCategory ($$) {
+sub get_handler_category ($$) {
 	my $self = shift;
 	my $type = shift;
 	return "special" if $type =~ /e/i;
-	return "extended" if $self->isEventExtended($type);
+	return "extended" if $self->is_event_extended($type);
 	return "regular";
 }
 
-sub postponeSend ($@) {
+sub postpone_send ($@) {
 	my $self = shift;
-	push @{$self->{heldCommandArgs}}, [ @_ ];
+	push @{$self->{held_command_args}}, [ @_ ];
 }
 
-# params: text, [winId], [continue=0/1]
+# params: text, [win_id], [continue=0/1]
 sub send ($$;$$) {
 	my $self = shift;
 	my $text = shift;
-	my $winId = shift || 0;
+	my $win_id = shift || 0;
 	my $continue = shift;
 	$continue = 1 unless defined $continue;
 
-	$self->internalDie("send requires at least text param")
+	$self->internal_die("send requires at least text param")
 		unless defined $text;
 
 	my @lines = split(/\n/s, $text);
 
-	my $lastLine = "";
+	my $last_line = "";
 	for my $line (@lines) {
 		# support continuation lines
-		$line = "$lastLine$line" if $lastLine ne "";
+		$line = "$last_line$line" if $last_line ne "";
 		if ($line =~ /^(.*)\\$/) {
-			$lastLine = $1;
+			$last_line = $1;
 			next;
 		} else {
-			$lastLine = "";
+			$last_line = "";
 		}
 		next if $line =~ /^\s*$/;
 
@@ -360,32 +360,32 @@ sub send ($$;$$) {
 			$self->debug("Failed send [$line]\n", 1);
 		};
 		$self->{ostream}->print(
-			pack("l!l!a${len}l!", $winId, $len, $line, $continue)
+			pack("l!l!a${len}l!", $win_id, $len, $line, $continue)
 		);
 	}
 	return $self;
 }
 
-sub sendReady ($) {
+sub send_ready ($) {
 	my $self = shift;
-	$self->send(RESPONSE_READY) if $self->{shouldSendReady};
-	$self->{shouldSendReady} = 0;
+	$self->send(RESPONSE_READY) if $self->{should_send_ready};
+	$self->{should_send_ready} = 0;
 	return $self;
 }
 
-sub sendUnlock ($) {
+sub send_unlock ($) {
 	my $self = shift;
-	$self->send(RESPONSE_UNLOCK) if $self->{shouldSendUnlock};
-	$self->{shouldSendUnlock} = 0;
+	$self->send(RESPONSE_UNLOCK) if $self->{should_send_unlock};
+	$self->{should_send_unlock} = 0;
 	return $self;
 }
 
-sub sendMask ($$;$) {
+sub send_mask ($$;$) {
 	my $self = shift;
 	my $mask = shift;
-	my $addMask = shift || 0;
+	my $add_mask = shift || 0;
 
-	$self->send("SET_MASK " . ($mask | $addMask));
+	$self->send("SET_MASK " . ($mask | $add_mask));
 }
 
 sub terminate ($;$) {
@@ -395,20 +395,20 @@ sub terminate ($;$) {
 	die "!next";
 }
 
-sub waitPacket ($) {
+sub wait_packet ($) {
 }
 
-sub readPacket ($) {
+sub read_packet ($) {
 	my $self = shift;
 
-	goto RETURN_PACKET if @{$self->{syntheticEvents}};
+	goto RETURN_PACKET if @{$self->{synthetic_events}};
 
-	$self->{lastPacket} = [];
+	$self->{last_packet} = [];
 
 	my $header = "";
 	my $packet = "";
 
-	$self->waitPacket;
+	$self->wait_packet;
 
 	# read a packet's header first, sizeof(int) * HEADER_SIZE bytes long
 	my $got;
@@ -420,13 +420,13 @@ sub readPacket ($) {
 
 	if ($got != (INTSIZE * HEADER_SIZE)) {
 		# module killed or other read error
-		$self->debug($got? "read packet error": "connection closed", 3);
+		$self->debug($got ? "read packet error" : "connection closed", 3);
 		return undef;
 	}
 
 	my ($magic, $type, $len, $timestamp) =
 		unpack(sprintf("L!%d", HEADER_SIZE), $header);
-	$self->internalDie("Bad magic number $magic in packet")
+	$self->internal_die("Bad magic number $magic in packet")
 		unless $magic == START_FLAG;
 
 	# $type should not be anything other than a 32-bit number
@@ -443,32 +443,32 @@ sub readPacket ($) {
 		while ($off < $len) {
 			$got = sysread($self->{istream}, $packet, $len, $off);
 			if (!defined $got) {
-				$self->internalDie("sysread error: $!");
+				$self->internal_die("sysread error: $!");
 			}
 			$off += $got;
 		}
-		$self->internalDie("Got packet len $off while expecting $len")
+		$self->internal_die("Got packet len $off while expecting $len")
 			if $off != $len;
 	}
 
 RETURN_PACKET:
-	($type, $packet) = @{shift @{$self->{syntheticEvents}}}
-		if @{$self->{syntheticEvents}};
-	$self->{lastPacket} = [$type, $packet];
+	($type, $packet) = @{shift @{$self->{synthetic_events}}}
+		if @{$self->{synthetic_events}};
+	$self->{last_packet} = [$type, $packet];
 	return ($type, $packet);
 }
 
-sub invokeHandler ($$) {
+sub invoke_handler ($$) {
 	my $self = shift;
 	my $event = shift;
 	my $type = $event->type;
 
-	my $category = $self->getHandlerCategory($type);
+	my $category = $self->get_handler_category($type);
 	my @masks = sort { $a <=> $b } keys %{$self->{handlers}->{$category}};
 	foreach my $mask (@masks) {
 		if ($type eq $mask || $type & $mask) {
 			foreach my $handler (@{$self->{handlers}->{$category}->{$mask}}) {
-				last unless $event->propagationAllowed;
+				last unless $event->propagation_allowed;
 				next unless defined $handler;  # skip deleted ones
 
 				eval { &$handler($self, $event); };
@@ -484,169 +484,169 @@ sub invokeHandler ($$) {
 	return 1;
 }
 
-sub processPacket ($;$$) {
+sub process_packet ($;$$) {
 	my $self = shift;
 	my ($type, $packet) = @_;
 
-	($type, $packet) = @{$self->{lastPacket}} unless defined $packet;
+	($type, $packet) = @{$self->{last_packet}} unless defined $packet;
 	return undef unless defined $packet;
 
 	my $event = eval { new FVWM::Event($type, $packet); };
-	$self->internalDie($@ || "Internal error") unless defined $event;
+	$self->internal_die($@ || "Internal error") unless defined $event;
 
 	if ($self->{debug}) {
 		my $msg = "got " . $event->name;
-		$msg .= " [" . $event->argValues->[-1] . "]"
-			if @{$event->argTypes} && $event->argTypes->[-1] == FVWM::EventNames::string();
+		$msg .= " [" . $event->arg_values->[-1] . "]"
+			if @{$event->arg_types} && $event->arg_types->[-1] == FVWM::EventNames::string();
 		$self->debug($msg, 2);
 	}
 
-	$self->{shouldSendUnlock} = 1 if $self->isInSyncMask($type);
+	$self->{should_send_unlock} = 1 if $self->is_in_sync_mask($type);
 
-	my $continue = $self->invokeHandler($event);
+	my $continue = $self->invoke_handler($event);
 
-	$self->sendUnlock if $self->{shouldSendUnlock};
+	$self->send_unlock if $self->{should_send_unlock};
 	return $continue;
 }
 
-sub emulateEvent ($$$) {
+sub emulate_event ($$$) {
 	my $self = shift;
 	my ($type, $packet) = @_;
 
-	if ($self->{isInEventLoop}) {
-		$self->invokeHandler(new FVWM::Event($type, $packet));
+	if ($self->{is_in_event_loop}) {
+		$self->invoke_handler(new FVWM::Event($type, $packet));
 		return;
 	}
 
-	push @{$self->{syntheticEvents}}, [$type, $packet];
+	push @{$self->{synthetic_events}}, [$type, $packet];
 }
 
-sub eventLoopPrepared ($@) {
+sub event_loop_prepared ($@) {
 	my $self = shift;
-	my $tracking = shift()? 1: 0;
+	my $tracking = shift() ? 1 : 0;
 
-	if (!$self->{isInEventLoop}) {
-		$self->sendReady unless $tracking;
+	if (!$self->{is_in_event_loop}) {
+		$self->send_ready unless $tracking;
 		$self->debug("entered event loop", 3 + $tracking);
-		$self->{isInEventLoop} = 1;
+		$self->{is_in_event_loop} = 1;
 	}
 
 	# update module masks to handle trackers if needed
-	my $addMask  = 0;
-	my $addXMask = 0;
+	my $add_mask  = 0;
+	my $add_xmask = 0;
 	foreach (values %{$self->{trackers}}) {
 		my ($mask, $xmask) = $_->masks;
-		$addMask  |= $mask;
-		$addXMask |= $xmask;
+		$add_mask  |= $mask;
+		$add_xmask |= $xmask;
 	}
-	$self->sendMask($self->mask, $self->{addMask} = $addMask)
-		if $addMask != $self->{addMask};
-	$self->sendMask($self->xmask | M_EXTENDED_MSG, $self->{addXMask} = $addXMask)
-		if $addXMask != $self->{addXMask};
+	$self->send_mask($self->mask, $self->{add_mask} = $add_mask)
+		if $add_mask != $self->{add_mask};
+	$self->send_mask($self->xmask | M_EXTENDED_MSG, $self->{add_xmask} = $add_xmask)
+		if $add_xmask != $self->{add_xmask};
 
 	# execute postponed commands if any
-	$self->send(@{shift @{$self->{heldCommandArgs}}})
-		while @{$self->{heldCommandArgs}};
+	$self->send(@{shift @{$self->{held_command_args}}})
+		while @{$self->{held_command_args}};
 
 	# fire emulated events if any
-	$self->processPacket(@{shift @{$self->{syntheticEvents}}})
-		while !$tracking && @{$self->{syntheticEvents}};
+	$self->process_packet(@{shift @{$self->{synthetic_events}}})
+		while !$tracking && @{$self->{synthetic_events}};
 }
 
-sub eventLoopFinished ($@) {
+sub event_loop_finished ($@) {
 	my $self = shift;
-	my $tracking = shift()? 1: 0;
+	my $tracking = shift() ? 1 : 0;
 
 	$self->debug("exited event loop", 3 + $tracking);
 
 	unless ($tracking) {
 		foreach my $tracker (values %{$self->{trackers}}) {
-			$tracker->toBeDisconnected;
+			$tracker->to_be_disconnected;
 		}
 		$self->disconnect;
 	}
 
-	$self->{isInEventLoop} = 0;
+	$self->{is_in_event_loop} = 0;
 }
 
-sub eventLoop ($@) {
+sub event_loop ($@) {
 	my $self = shift;
 
 	while (1) {
-		$self->eventLoopPrepared(@_);
+		$self->event_loop_prepared(@_);
 
 		# catch exceptions during read, for example from alarm() handler,
 		# but don't catch errors (or die) in event handlers
-		$self->processPacket(eval { $self->readPacket }) || last;
+		$self->process_packet(eval { $self->read_packet }) || last;
 	}
-	$self->eventLoopFinished(@_);
+	$self->event_loop_finished(@_);
 }
 
 sub track ($$;$@) {
 	my $self = shift;
-	my $params = ref($_[0]) eq 'HASH'? shift(): {};
-	my $trackerType = shift;
+	my $params = ref($_[0]) eq 'HASH' ? shift() : {};
+	my $tracker_type = shift;
 
-	my $trackerClass = $trackerType =~ /::/?
-		$trackerType: "FVWM::Tracker::$trackerType";
+	my $tracker_class = $tracker_type =~ /::/
+		? $tracker_type : "FVWM::Tracker::$tracker_type";
 	# load a tracker class if not yet
-	unless (defined $self->{usedTrackerClasses}->{$trackerType}) {
-		eval "use $trackerClass;"; die $@ if $@;
-		$self->{usedTrackerClasses}->{$trackerType} = 1;
+	unless (defined $self->{used_tracker_classes}->{$tracker_class}) {
+		eval "use $tracker_class;"; die $@ if $@;
+		$self->{used_tracker_classes}->{$tracker_class} = 1;
 	}
 
-	my $tracker = !$params->{NoReuse} && $self->{trackers}->{$trackerType}
-		|| $trackerClass->new($self, @_);
+	my $tracker = !$params->{NoReuse} && $self->{trackers}->{$tracker_type}
+		|| $tracker_class->new($self, @_);
 	if ($params->{NoReuse}) {
-		$trackerType .= "+" while exists $self->{trackers}->{$trackerType};
+		$tracker_type .= "+" while exists $self->{trackers}->{$tracker_type};
 	}
-	$self->{trackers}->{$trackerType} = $tracker;
+	$self->{trackers}->{$tracker_type} = $tracker;
 	$tracker->start unless $params->{NoStart};
 	return $tracker;
 }
 
-sub addHandler ($$$;$) {
+sub add_handler ($$$;$) {
 	my $self = shift;
 	my $type = shift;
 	my $handler = shift;
-	my $isTracking = shift || 0;
+	my $is_tracking = shift || 0;
 
-	$self->internalDie("addHandler: no handler type") unless defined $type;
-	$self->internalDie("addHandler: no handler code") unless ref($handler) eq 'CODE';
+	$self->internal_die("add_handler: no handler type") unless defined $type;
+	$self->internal_die("add_handler: no handler code") unless ref($handler) eq 'CODE';
 
-	my $category = $self->getHandlerCategory($type);
+	my $category = $self->get_handler_category($type);
 	$self->{handlers}->{$category}->{$type} = []
 		unless exists $self->{handlers}->{$category}->{$type};
 	push @{$self->{handlers}->{$category}->{$type}}, $handler;
 	my $index = @{$self->{handlers}->{$category}->{$type}} - 1;
 
-	unless ($isTracking) {
+	unless ($is_tracking) {
 		$self->mask($self->mask | $type, 0)
-			if !$self->{maskWasSet} && $category eq "regular";
+			if !$self->{mask_was_set} && $category eq "regular";
 		$self->xmask($self->xmask | $type, 0)
-			if !$self->{xmaskWasSet} && $category eq "extended";
+			if !$self->{xmask_was_set} && $category eq "extended";
 	}
 
 	return [$type, $index];
 }
 
-sub deleteHandler ($$) {
+sub delete_handler ($$) {
 	my $self = shift;
 	my $id = shift;
 
 	return 0 unless ref($id) eq 'ARRAY' && @$id == 2;
 	my ($type, $index) = @$id;
-	my $category = $self->getHandlerCategory($type);
+	my $category = $self->get_handler_category($type);
 	return 0 unless defined $self->{handlers}->{$category}->{$type}->[$index];
 
 	$self->{handlers}->{$category}->{$type}->[$index] = undef;
 	return 1;
 }
 
-sub addDefaultErrorHandler ($) {
+sub add_default_error_handler ($) {
 	my $self = shift;
 
-	$self->addHandler(M_ERROR, sub {
+	$self->add_handler(M_ERROR, sub {
 		my ($self, $type, @args) = @_;
 		my $error = $args[3];
 		print STDERR "[", $self->name, "]: got fvwm error: $error\n";
@@ -654,17 +654,37 @@ sub addDefaultErrorHandler ($) {
 	});
 }
 
-sub userDataDir ($) {
+sub user_data_dir ($) {
 	return $ENV{FVWM_USERDIR} || (($ENV{HOME} || "") . "/.fvwm");
 }
 
-sub siteDataDir ($) {
+sub site_data_dir ($) {
 	return "@FVWM_DATADIR@";
 }
 
-sub searchDirs ($) {
+sub search_dirs ($) {
 	my $this = shift;
-	return ($this->userDataDir, $this->siteDataDir);
+	return ($this->user_data_dir, $this->site_data_dir);
+}
+
+# support old API, like addHandler, dispatch to add_handler
+sub AUTOLOAD ($;@) {
+	my $self = shift;
+	my @params = @_; 
+
+	my $autoload_method = $AUTOLOAD;
+	my $method = $autoload_method;  
+
+	# remove the package name
+	$method =~ s/.*://g;
+
+	$method =~ s/XMask/Xmask/;
+	$method =~ s/([a-z])([A-Z])/${1}_\L$2/;
+
+	die "No method $method in $self as guessed from $autoload_method"
+		unless $self->can($method);
+
+	$self->$method(@params);
 }
 
 1;
@@ -685,18 +705,18 @@ FVWM::Module - the base class representing fvwm module
     $module->send("Beep");
 
     # auto-raise all windows
-    sub autoRaise { $_[0]->send("Raise", $_[1]->_win_id) };
-    $module->addHandler(M_FOCUS_CHANGE, \&autoRaise);
+    sub auto_raise { $_[0]->send("Raise", $_[1]->_win_id) };
+    $module->add_handler(M_FOCUS_CHANGE, \&auto_raise);
 
     # terminate itself after 5 minutes
     my $scheduler = $module->track('Scheduler');
     $scheduler->schedule(5 * 60, sub { $module->terminate; });
 
-    # print the current desk number ($pageTracker is auto updated)
-    my $pageTracker = $module->track("PageInfo");
-    $module->showMessage("Desk: " . $pageTracker->data->{desk_n});
+    # print the current desk number ($page_tracker is auto updated)
+    my $page_tracker = $module->track("PageInfo");
+    $module->show_message("Desk: " . $page_tracker->data->{desk_n});
 
-    $module->eventLoop;
+    $module->event_loop;
 
 =head1 DESCRIPTION
 
@@ -712,19 +732,19 @@ write complex modules. This is however not obligatory for simple modules
 that only send commands back when something happens.
 
 A typical fvwm module has an initialization part including setting event
-handlers using B<addHandler> methods and entering an event loop using
-B<eventLoop> method. Most of the work is done in the event handlers although
+handlers using B<add_handler> methods and entering an event loop using
+B<event_loop> method. Most of the work is done in the event handlers although
 a module may define other execution ways, for example using C<$SIG{ALRM}>.
 
-An fvwm module receives 3 values from I<fvwm>: I<rcFile> - the file this
+An fvwm module receives 3 values from I<fvwm>: I<rc_file> - the file this
 module was called from or "none" if the module is called as a command from
 another module or from a binding/function (this value is not really useful),
-I<winId> - the window context of this module if it is called from window
+I<win_id> - the window context of this module if it is called from window
 decoration bindings or window menu (the value is integer, 0 if there is no
 window context), and finally I<context> that indicates the place this module
 was called from, like menu or window title (see the fvwm documentation).
 All these values may be accessed as properties of the module object,
-like C<$module-E<gt>{winId}>.
+like C<$module-E<gt>{win_id}>.
 
 =head1 METHODS
 
@@ -732,52 +752,52 @@ The following methods are available:
 
 B<new>,
 B<version>,
-B<versionInfo>,
+B<version_info>,
 B<argv>,
 B<send>,
 B<track>,
-B<eventLoop>,
-B<sendReady>,
-B<sendUnlock>,
-B<postponeSend>,
+B<event_loop>,
+B<send_ready>,
+B<send_unlock>,
+B<postpone_send>,
 B<terminate>,
-B<resetHandlers>,
-B<addHandler>,
-B<deleteHandler>,
-B<addDefaultErrorHandler>,
+B<reset_handlers>,
+B<add_handler>,
+B<delete_handler>,
+B<add_default_error_handler>,
 B<debug>,
-B<showError>,
-B<showMessage>,
-B<showDebug>,
-B<isDummy>.
+B<show_error>,
+B<show_message>,
+B<show_debug>,
+B<is_dummy>.
 
 The following methods are called from other methods above, but may be useful
 in other situations as well:
 
-B<internalDie>,
+B<internal_die>,
 B<name>,
 B<mask>,
 B<xmask>,
-B<isInMask>,
-B<syncMask>,
-B<syncXMask>,
-B<isInSyncMask>,
+B<is_in_mask>,
+B<sync_mask>,
+B<sync_xmask>,
+B<is_in_sync_mask>,
 B<disconnect>,
-B<getHandlerCategory>,
-B<readPacket>,
-B<invokeHandler>,
-B<processPacket>,
-B<emulateEvent>.
+B<get_handler_category>,
+B<read_packet>,
+B<invoke_handler>,
+B<process_packet>,
+B<emulate_event>.
 
 These methods deal with a received packet (event):
 
-B<isEventExtended>
+B<is_event_extended>
 
 These methods deal with configuration directories:
 
-B<userDataDir>,
-B<siteDataDir>,
-B<searchDirs>
+B<user_data_dir>,
+B<site_data_dir>,
+B<search_dirs>
 
 =over 4
 
@@ -824,7 +844,7 @@ command line arguments are available to the program using B<argv> method.
 
 Returns fvwm version string I<x.y.z>.
 
-=item B<versionInfo>
+=item B<version_info>
 
 Returns fvwm version info string, like " (from cvs)" or " (snap-YYYYMMDD)".
 This string is usually empty for the final version.
@@ -857,10 +877,10 @@ I<param-hash> is specific to the tracker named I<name>. Every tracker class
 (a subclass of B<FVWM::Tracker>) has its own manual page, contact it for
 the tracker details and usage.
 
-=item B<eventLoop>
+=item B<event_loop>
 
 The main event loop. A module should define some event handlers using
-B<addHandler> before entering the event loop. When the event happens all
+B<add_handler> before entering the event loop. When the event happens all
 event handlers registered on this event are called, then a module returns
 to the event loop awaiting for new events forever.
 
@@ -877,25 +897,25 @@ called if defined and then B<disconnect> is called. So no communication is
 available after this method is finished. If you need a communication before
 the module exits, define an I<ON_EXIT> event handler.
 
-=item B<sendReady>
+=item B<send_ready>
 
-This is automatically called (if needed) when a module enters B<eventLoop>,
+This is automatically called (if needed) when a module enters B<event_loop>,
 but sometimes you may want to tell I<fvwm> that the module is fully ready
 earlier. This only makes sence if the module was run using
 B<ModuleSynchronous> command, in this case I<fvwm> gets locked until the module
 sends the "ready" notification.
 
-=item B<sendUnlock>
+=item B<send_unlock>
 
 When an event was configured to be sent to a module synchronously using
 I<SyncMask> and I<SyncXMask>, I<fvwm> gets locked until the module sends
 the "unlock" notification. This is automatically sent (if needed) when a
 handler is finished, but sometimes a handler should release I<fvwm> earlier.
 
-=item B<postponeSend> I<command> [I<window-id>] [I<continue-flag>]
+=item B<postpone_send> I<command> [I<window-id>] [I<continue-flag>]
 
 The same like B<send>, but the actual command sending is postponed
-until before the module enters the reading-from-fvwm phase in B<eventLoop>.
+until before the module enters the reading-from-fvwm phase in B<event_loop>.
 
 =item B<terminate> [I<continue>]
 
@@ -903,11 +923,11 @@ This method is used for 2 purposed, usually in event handlers. To terminate
 the entire event loop and to terminate only an execution of the current
 handler if I<continue> is set.
 
-=item B<resetHandlers>
+=item B<reset_handlers>
 
 This deletes all event handlers without exception.
 
-=item B<addHandler> I<mask code>
+=item B<add_handler> I<mask code>
 
 Defines a handler (that is a I<code> subroutine) for the given I<mask> event
 (or several events). Usually the event type is one of the fvwm I<M_*> or
@@ -936,18 +956,18 @@ calls other subroutines that need to terminate the primary one.
 
 If several event handlers are added for the same event type, they are
 executed in the added order. To forbid the further propagation of the
-same event, an event handler may call C<$event-E<gt>propagationAllowed(0)>.
+same event, an event handler may call C<$event-E<gt>propagation_allowed(0)>.
 
-The return value from B<addHandler> is an identifier the only purpose of
-which is to be passed to B<deleteHandler> in case the newly defined handler
+The return value from B<add_handler> is an identifier the only purpose of
+which is to be passed to B<delete_handler> in case the newly defined handler
 should be deleted at some point.
 
-=item B<deleteHandler> I<id>
+=item B<delete_handler> I<id>
 
 Removes the handler specified by I<id>. The return value is 1 if the handler
 is found and deleted, 0 otherwise.
 
-=item B<addDefaultErrorHandler>
+=item B<add_default_error_handler>
 
 This adds the default handler for I<M_ERROR> event. This class simply prints
 an error message to the standard error stream, but subclasses may define
@@ -962,10 +982,10 @@ output without specifying a level. The default module level is 0, so no
 debugging output of positive levels is shown.
 
 This module uses B<debug> internally (with I<level> 2) to dump all
-incoming and outgoing communication data in B<send> and B<processPacket>.
+incoming and outgoing communication data in B<send> and B<process_packet>.
 Apparently this output is only seen if I<Debug> is set to 2 or greater.
 
-=item B<showError> I<msg>
+=item B<show_error> I<msg>
 
 Writes I<msg> to the error stream (stderr). It is supposed that the argument
 has no traling end of line. May be used to signal non fatal error.
@@ -973,7 +993,7 @@ has no traling end of line. May be used to signal non fatal error.
 Subclasses may overwrite this method and, for example, show all error
 messages in separate windows or in the common error window.
 
-=item B<showMessage> I<msg>
+=item B<show_message> I<msg>
 
 Writes I<msg> to the message stream (stderr). It is supposed that the argument
 has no traling end of line. May be used to show a named output.
@@ -981,7 +1001,7 @@ has no traling end of line. May be used to show a named output.
 Subclasses may overwrite this method and, for example, show all
 messages in separate windows or in the common message window.
 
-=item B<showDebug> I<msg>
+=item B<show_debug> I<msg>
 
 Unconditionally writes I<msg> to the debug stream (stderr). It is supposed
 that the argument has no traling end of line. Used in B<debug> to actually
@@ -990,19 +1010,19 @@ show the message when the level is matched.
 Subclasses may overwrite this method and, for example, show all debugging
 messages in separate windows or in the common debug window.
 
-=item B<isDummy>
+=item B<is_dummy>
 
 Usually a module should be executed by I<fvwm> only. But to help creating
 GUI applications, the dummy mode is supported when the module is started
 from the command line. No events are received in this case, but with some
 effort they may be emulated:
 
-    $module->emulateEvent(M_NEW_DESK, [ 2 ]) if $module->isDummy;
+    $module->emulate_event(M_NEW_DESK, [ 2 ]) if $module->is_dummy;
 
-=item B<internalDie> I<msg>
+=item B<internal_die> I<msg>
 
 This may be used to end the module with the corresponding I<msg>.
-For a clean module exit use B<showError> and B<terminate> instead.
+For a clean module exit use B<show_error> and B<terminate> instead.
 
 =item B<name> [I<name>]
 
@@ -1025,17 +1045,17 @@ This class is smart to update the minimal module masks automatically if you
 never set them explicitly (either in constructor or using these methods).
 The I<explicit-flag> parameter should not be usually used, it defaults to 1.
 If you set it to 0 then the module is informed to continue to automatically
-update masks on the following B<addHandlers> calls even after the current
+update masks on the following B<add_handlers> calls even after the current
 mask setting.
 
-=item B<isInMask> I<type>
+=item B<is_in_mask> I<type>
 
 Returns true if the module mask matches the given I<type>.
 Good for both regular and extended event types as long as they are queried
 separately.
 
-=item B<syncMask> [I<mask>]
-=item B<syncXMask> [I<mask>]
+=item B<sync_mask> [I<mask>]
+=item B<sync_xmask> [I<mask>]
 
 The same as B<mask> and B<xmask>, but sets/returns the synchronization
 mask of the module.
@@ -1043,7 +1063,7 @@ mask of the module.
 The module is synchronized with I<fvwm> on all packets matching these 2
 module synchronization masks (regular and extended).
 
-=item B<isInSyncMask> I<type>
+=item B<is_in_sync_mask> I<type>
 
 Returns true if the module synchronization mask matches the given I<type>.
 Good for both regular and extended event types as long as they are queried
@@ -1052,60 +1072,60 @@ separately.
 =item B<disconnect>
 
 This method invokes I<ON_EXIT> handlers if any and closes communication.
-It is called automatically from B<eventLoop> before finishing.
+It is called automatically from B<event_loop> before finishing.
 It is safe to call this method more than once.
 
 This method may be called from signal handlers before I<exit>ing for the
 proper shutdown.
 
-=item B<getHandlerCategory> I<type>
+=item B<get_handler_category> I<type>
 
 Returns one of 3 string ids depending on the event handler I<type> that has
 the same meaning as the corresponding packet type ("regular" or "extended")
 with an addition of "special" category for I<ON_EXIT> handlers.
 
-=item B<readPacket>
+=item B<read_packet>
 
 This is a blocking method that waits until there is a packet on the
 communication end from I<fvwm>. Then it returns a list of 2 values,
 packet type and packet data (unpacked array of arguments).
 
-=item B<invokeHandler> I<event>
+=item B<invoke_handler> I<event>
 
 Dispatches the apropos event handlers with the event data.
 This method is called automatically, so you usually should not worry about it.
 
-=item B<processPacket> [I<type data>]
+=item B<process_packet> [I<type data>]
 
 This method constructs the event object from the packet data and calls
-B<invokeHandler> with it. Prints debug info if requested. Finally calls
-B<sendUnlock> if needed.
+B<invoke_handler> with it. Prints debug info if requested. Finally calls
+B<send_unlock> if needed.
 
 You should not really worry about this method, it is called automatically
 from the event loop.
 
-=item B<emulateEvent> I<type data>
+=item B<emulate_event> I<type data>
 
-This method emulates the event as returned by B<readPacket>. The given event
+This method emulates the event as returned by B<read_packet>. The given event
 is processed immediately if in the event loop, or just before the real
-B<readPacket> otherwise.
+B<read_packet> otherwise.
 
-The parameters are the same as in B<processPacket> and the same as in
+The parameters are the same as in B<process_packet> and the same as in
 L<FVWM::Event> constructor.
 
-=item B<eventLoopPrepared>
+=item B<event_loop_prepared>
 
-Called from B<eventLoop> every time before reading the packet for new data.
-Subclasses should pass this method the same arguments that B<eventLoop>
+Called from B<event_loop> every time before reading the packet for new data.
+Subclasses should pass this method the same arguments that B<event_loop>
 received for a possible future use.
 
-=item B<eventLoopFinished>
+=item B<event_loop_finished>
 
-Called from B<eventLoop> just before the return.
-Subclasses should pass this method the same arguments that B<eventLoop>
+Called from B<event_loop> just before the return.
+Subclasses should pass this method the same arguments that B<event_loop>
 received for a possible future use.
 
-=item B<isEventExtended> I<type>
+=item B<is_event_extended> I<type>
 
 For technical reasons there are 2 categories of fvwm events, regular and
 extended. This is done to enable more events. With introdution of the
@@ -1115,16 +1135,16 @@ point is that only event types of the same category may be masked (or-ed)
 together. This method returns 1 or 0 depending on whether the event I<type>
 is extended or not.
 
-=item B<userDataDir>
+=item B<user_data_dir>
 
 Returns the user data directory, usually ~/.fvwm or set by $FVWM_USERDIR.
 
-=item B<siteDataDir>
+=item B<site_data_dir>
 
 Returns the system-wide data directory, the one configured when fvwm is
 installed. It is also returned by `fvwm-config --fvwm-datadir`.
 
-=item B<searchDirs>
+=item B<search_dirs>
 
 It is a good practice for a module to search for the given configuration
 in one of 2 data directories, the user one and the system-wide. This method

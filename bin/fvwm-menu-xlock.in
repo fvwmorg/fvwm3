@@ -1,5 +1,21 @@
 #!@PERL@
 
+# Copyright (c) 1999-2009 Mikhael Goikhman
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 # Filter this script to pod2man to get a man page:
 #   pod2man -c "Fvwm Utilities" fvwm-menu-xlock | nroff -man | less -e
 
@@ -9,43 +25,43 @@ my $version = "@VERSION@";
 
 my $name  = 'XLockMenu';
 my $title = 'XLock Modes';
-my $itemF = '%n\t(%d)';  # may contain %n, %d, %D.
-my $iconT = '';
-my $iconI = '';
-my $wmIcons = 0;
-my $specialFirst = 0;
+my $itemf = '%n\t(%d)';  # may contain %n, %d, %D.
+my $icont = '';
+my $iconi = '';
+my $wm_icons = 0;
+my $special_first = 0;
 
 GetOptions(
-	"help|h|?"  => \&showHelp,
-	"version|V" => \&showVersion,
+	"help|h|?"  => \&show_help,
+	"version|V" => \&show_version,
 	"name=s"    => \$name,
 	"title=s"   => \$title,
-	"item=s"    => \$itemF,
-	"icon-title=s"  => \$iconT,
-	"icon-item=s"   => \$iconI,
-	"wm-icons"      => \$wmIcons,
-	"special-first" => \$specialFirst,
-) || wrongUsage();
+	"item=s"    => \$itemf,
+	"icon-title=s"  => \$icont,
+	"icon-item=s"   => \$iconi,
+	"wm-icons"      => \$wm_icons,
+	"special-first" => \$special_first,
+) || wrong_usage();
 
-if ($wmIcons) {
-	$iconT ||= "";
-	$iconI ||= "menu/lock.xpm";
+if ($wm_icons) {
+	$icont ||= "";
+	$iconi ||= "menu/lock.xpm";
 }
 
-my $iconTStr = $iconT? "%$iconT%": "";
-my $iconIStr = $iconI? "%$iconI%": "";
-my $params = @ARGV? ' ' . join(' ', @ARGV): '';
-my $dscLen = 36;
+my $icont_str = $icont ? "%$icont%" : "";
+my $iconi_str = $iconi ? "%$iconi%" : "";
+my $params = @ARGV ? ' ' . join(' ', @ARGV) : '';
 my $lines1 = "";  # non-special mode lines
 my $lines2 = "";  # special mode lines
 
 my $start = 0;
 my $special = 0;
-$itemF =~ s/\\t/\t/g;
-open(XL, "xlock -h 2>&1 |") || die "Exec echo 'Could not run xlock'\n";
+$itemf =~ s/\\t/\t/g;
+open(XL, "xlock -display NONE -help 2>&1 |")
+	|| die "Exec echo 'Could not run xlock'\n";
 
 print "DestroyMenu $name\n";
-print "AddToMenu $name \"$iconTStr$title\" Title\n";
+print "AddToMenu $name \"$icont_str$title\" Title\n";
 
 while (<XL>) {
 	chomp;
@@ -57,40 +73,40 @@ while (<XL>) {
 	if ($start && $_) {
 		my ($misc, $name, $dsc) = split(/\s+/, $_, 3);
 		next if $name =~ /^-/;
-		my $dsc2 = $dsc =~ /^Shows (.*)$/? $1: $dsc;
-		my $itemStr = $itemF;
-		$itemStr =~ s/\\t/\t/g;
-		&expandWidthSpecifier(\$itemStr, 'n', $name);
-		&expandWidthSpecifier(\$itemStr, 'd', $dsc);
-		&expandWidthSpecifier(\$itemStr, 'D', $dsc2);
+		my $dsc2 = $dsc =~ /^Shows (.*)$/ ? $1 : $dsc;
+		my $item_str = $itemf;
+		$item_str =~ s/\\t/\t/g;
+		&expand_width_specifier(\$item_str, 'n', $name);
+		&expand_width_specifier(\$item_str, 'd', $dsc);
+		&expand_width_specifier(\$item_str, 'D', $dsc2);
 
 		$special = 1 if !$special && $name eq 'blank';
-		($special? $lines2: $lines1) .=
-			qq(+ "$iconIStr$itemStr" Exec xlock$params -mode $name\n);
+		($special ? $lines2 : $lines1) .=
+			qq(+ "$iconi_str$item_str" Exec xlock$params -mode $name\n);
 	}
 }
 
 close XL;
-print $specialFirst?
-	qq($lines2+ "" Nop\n$lines1):
-	qq($lines1+ "" Nop\n$lines2);
+print $special_first
+	? qq($lines2+ "" Nop\n$lines1)
+	: qq($lines1+ "" Nop\n$lines2);
 
 exit(0);
 
 # ---------------------------------------------------------------------------
 
 # Substitutes all %N1*N2x in $name by properly stripped and justified $value.
-sub expandWidthSpecifier (\$$$) {
+sub expand_width_specifier (\$$$) {
 	my ($name, $char, $value) = @_;
 	$$name =~ s/%(-?\d+)?(\*(-?)(\d+))?$char/
-		my $value = !$2 || $4 <= 3 || $4 > length($value)? $value: $3?
-			"..." . substr($value, -$4 + 3, $4 - 3):
-			substr($value, 0, $4 - 3) . "...";
+		my $value = !$2 || $4 <= 3 || $4 > length($value) ? $value : $3
+			? "..." . substr($value, -$4 + 3, $4 - 3)
+			: substr($value, 0, $4 - 3) . "...";
 		$1? sprintf("%$1s", $value): $value;
 	/ge;
 }
 
-sub showHelp {
+sub show_help {
 	print "A small perl script which builds xlock menu for fvwm.\n\n";
 	print "Usage: $0 [OPTIONS] [-- XLOCK-OPTIONS]\n";
 	print "Options:\n";
@@ -98,7 +114,7 @@ sub showHelp {
 	print "\t--version        show the version and exit\n";
 	print "\t--name=NAME      menu name,  default is '$name'\n";
 	print "\t--title=NAME     menu title, default is '$title'\n";
-	print "\t--item=NAME      menu item format, default is '$itemF'\n";
+	print "\t--item=NAME      menu item format, default is '$itemf'\n";
 	print "\t--icon-title=XPM menu title icon, default is no\n";
 	print "\t--icon-item=XPM  menu item  icon, default is no\n";
 	print "\t--wm-icons       define icon names to use with wm-icons\n";
@@ -113,12 +129,12 @@ sub showHelp {
 	exit 0;
 }
 
-sub showVersion {
+sub show_version {
 	print "$version\n";
 	exit 0;
 }
 
-sub wrongUsage {
+sub wrong_usage {
 	print STDERR "Try '$0 --help' for more information.\n";
 	exit -1;
 }

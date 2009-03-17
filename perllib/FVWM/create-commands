@@ -7,12 +7,12 @@ use POSIX;
 
 chdir($FindBin::Bin) || die "Can't chmod $FindBin::Bin: $!\n";
 
-my $functableSrc = "../../fvwm/functable.c";
-my $contentRef = loadFile($functableSrc);
-die "No commands found, so Commands.pm is not generated.\n" unless $contentRef;
+my $functable_src = "../../fvwm/functable.c";
+my $content_ref = load_file($functable_src);
+die "No commands found, so Commands.pm is not generated.\n" unless $content_ref;
 
-my $commandEntriesCode = "";
-foreach my $entry ($$contentRef =~
+my $command_entries_code = "";
+foreach my $entry ($$content_ref =~
 	m{(?:/\* )?CMD_ENT\(\s*(?:"|PRE_).*?\),(?: \*/)?.*?/\* .*?- .*? \*/}sg)
 {
 	my ($name, $flags, $cursor, $name2, $descr) = $entry =~ m{
@@ -27,7 +27,7 @@ foreach my $entry ($$contentRef =~
 	$name = $name2 if $name2;
 	my $window = $flags =~ FUNC_NEEDS_WINDOW? 1: 0;
 	$cursor = "" if $cursor eq "0";
-	$commandEntriesCode .=
+	$command_entries_code .=
 		"\t{\n\t\tname => '$name',\n\t\tcursor => '$cursor',\n" .
 		"\t\twindow => $window,\n\t\tdescr => q{$descr},\n\t},\n";
 }
@@ -47,7 +47,7 @@ use vars qw(\$VERS \$TIME \@LIST);
 \$TIME = $time;
 
 \@LIST = (
-$commandEntriesCode);
+$command_entries_code);
 
 1;
 
@@ -113,7 +113,7 @@ I<window> is true for commands that need a window.
 Example:
 
     # get command names only
-    \@commandNames = map { \$_->{name} } \@FVWM::Commands::LIST;
+    \@command_names = map { \$_->{name} } \@FVWM::Commands::LIST;
 
 =head1 AUTHOR
 
@@ -130,7 +130,7 @@ ENDOUTPUT
 
 # ---------------------------------
 print "Creating Commands.pm\n";
-saveFile("Commands.pm", \$output);
+save_file("Commands.pm", \$output);
 
 # ---------------------------------
 print "Testing  Commands.pm\n";
@@ -149,4 +149,4 @@ foreach my $command (@FVWM::Commands::LIST = @FVWM::Commands::LIST) {
 
 # ---------------------------------
 print "Creating ../../docs/COMMANDS\n";
-saveFile("../../docs/COMMANDS", \$cmds);
+save_file("../../docs/COMMANDS", \$cmds);

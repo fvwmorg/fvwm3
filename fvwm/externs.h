@@ -30,8 +30,8 @@
 #define EXTERNS_H
 
 void Done(int, char *) __attribute__((__noreturn__));
-void setInitFunctionName(int n, const char *name);
-const char *getInitFunctionName(int n);
+void set_init_function_name(int n, const char *name);
+const char *get_init_function_name(int n);
 
 extern char NoName[];
 extern char NoClass[];

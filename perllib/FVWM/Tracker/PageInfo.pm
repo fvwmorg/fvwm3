@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,28 +32,28 @@ sub start ($) {
 	my $self = shift;
 
 	$self->{data} = {};
-	$self->addHandler(M_NEW_PAGE, sub {
+	$self->add_handler(M_NEW_PAGE, sub {
 		my $event = $_[1];
-		$self->calculateInternals($event->args);
+		$self->calculate_internals($event->args);
 	});
 
-	$self->requestWindowListEvents;
+	$self->request_windowlist_events;
 
 	my $result = $self->SUPER::start;
 
-	$self->deleteHandlers;
+	$self->delete_handlers;
 
-	$self->addHandler(M_NEW_PAGE | M_NEW_DESK, sub {
+	$self->add_handler(M_NEW_PAGE | M_NEW_DESK, sub {
 		my $event = $_[1];
 		if ($event->type == M_NEW_DESK) {
-			my $oldDeskN = $self->{data}->{desk_n};
-			my $newDeskN = $event->args->{desk_n};
-			$self->{data}->{desk_n} = $newDeskN;
-			my $reallyChanged = $oldDeskN != $newDeskN;
-			$self->notify("desk only changed", $reallyChanged);
-			return unless $reallyChanged;
+			my $old_desk_n = $self->{data}->{desk_n};
+			my $new_desk_n = $event->args->{desk_n};
+			$self->{data}->{desk_n} = $new_desk_n;
+			my $really_changed = $old_desk_n != $new_desk_n;
+			$self->notify("desk only changed", $really_changed);
+			return unless $really_changed;
 		} else {
-			$self->calculateInternals($event->args);
+			$self->calculate_internals($event->args);
 			$self->notify("page only changed");
 		}
 		$self->notify("desk/page changed");
@@ -62,7 +62,7 @@ sub start ($) {
 	return $result;
 }
 
-sub calculateInternals ($$) {
+sub calculate_internals ($$) {
 	my $self = shift;
 	my $args = shift;
 	my $data = $self->{data};
@@ -102,9 +102,9 @@ of work:
 
 Using B<FVWM::Module> $module object:
 
-    my $pageTracker = $module->track("PageInfo");
-    my $pageHash = $pageTracker->data;
-    my $currDesk = $pageHash->{'desk_n'};
+    my $page_tracker = $module->track("PageInfo");
+    my $page_hash = $page_tracker->data;
+    my $curr_desk = $page_hash->{'desk_n'};
 
 =head1 OVERRIDDEN METHODS
 

@@ -29,10 +29,10 @@ BEGIN {
 
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module;
-use General::Parse;
+use General::Parse qw(get_token);
 
-my $moduleType = "";
-my $moduleClass = "FVWM::Module";
+my $module_type = "";
+my $module_class = "FVWM::Module";
 if ($ARGV[5] && $ARGV[5] eq "-g") {
 	splice(@ARGV, 5, 1);
 	eval "use FVWM::Module::Gtk;";
@@ -41,8 +41,8 @@ if ($ARGV[5] && $ARGV[5] eq "-g") {
 		print STDERR "FvwmWindowMenu: Ignoring the -g switch\n";
 	} else {
 		Gtk->init;
-		$moduleType = "gtk";
-		$moduleClass = "FVWM::Module::Gtk";
+		$module_type = "gtk";
+		$module_class = "FVWM::Module::Gtk";
 	}
 }
 
@@ -50,7 +50,7 @@ if ($ARGV[5] && $ARGV[5] eq "-g") {
 # set Debug = 0 for no messages at all
 # set Debug = 1 to see messages about window decisions
 # set Debug = 2 to see also perllib messages about communication
-my $module = new $moduleClass(
+my $module = new $module_class(
 	Name => "FvwmWindowMenu",
 	Mask => M_STRING,
 	Debug => 0,
@@ -58,7 +58,7 @@ my $module = new $moduleClass(
 
 $module->debug("starting " . $module->name);
 
-my $configTracker = $module->track('ModuleConfig',
+my $config_tracker = $module->track('ModuleConfig',
 	DefaultConfig => {
 		OnlyIconified => 'off',
 		AllDesks => 'off',
@@ -78,17 +78,17 @@ my $configTracker = $module->track('ModuleConfig',
 	},
 );
 
-my $pConfig = $configTracker->data();
-my $winTracker = $module->track("WindowList", "!stack icons names winfo");
+my $config = $config_tracker->data;
+my $win_tracker = $module->track("WindowList", "!stack icons names winfo");
 
-$module->addHandler(M_STRING, sub {
+$module->add_handler(M_STRING, sub {
 	my ($module, $event) = @_;
-	my ($action, $args) = getToken($event->_text);
+	my ($action, $args) = get_token($event->_text);
 	return unless $action;
 	if ($action =~ /^Post|Menu|Popup$/i) {
 		PopupMenu($action, $args);
 	} elsif ($action =~ /^ShowBar$/i) {
-		if ($moduleType ne "gtk") {
+		if ($module_type ne "gtk") {
 			$module->debug("Not started with Gtk support", 0);
 			return;
 		}
@@ -103,123 +103,121 @@ sub PopupMenu ($$) {
 	my ($action, $args) = @_;
 	my $command = ($action =~ /^Popup$/i ? "Popup" : "Menu");
 
-	my @aSection;
+	my @sections;
 
 	# loop on list of all windows
-	my $pData = $winTracker->data();
-	foreach my $id (keys(%{$pData}))
-	{
-		my $p = $pData->{$id};
-		$module->debug("\t$id - " . $p->{name});
+	my $windows = $win_tracker->data;
+	while (my ($id, $w) = each %$windows) {
+		$module->debug("\twindow: " . $w->{name});
 
-		if ($pConfig->{AllDesks} =~ /off/i &&
-			$p->{desk} != $winTracker->pageInfo('desk_n'))
+		if ($config->{AllDesks} =~ /off/i &&
+			$w->{desk} != $win_tracker->page_info('desk_n'))
 		{
 			$module->debug("\t\tnot on this desk");
 			next;
 		}
 
-		if ($pConfig->{AllPages} =~ /off/i &&
-			($p->{page_nx} != $winTracker->pageInfo('page_nx') ||
-			 $p->{page_ny} != $winTracker->pageInfo('page_ny')))
+		if ($config->{AllPages} =~ /off/i &&
+			($w->{page_nx} != $win_tracker->page_info('page_nx') ||
+			 $w->{page_ny} != $win_tracker->page_info('page_ny')))
 		{
 			$module->debug("\t\tnot on this page");
 			next;
 		}
 
-		if ($pConfig->{OnlyIconified} =~ /on/i && !$p->{iconified})
+		if ($config->{OnlyIconified} =~ /on/i && !$w->{iconified})
 		{
 			$module->debug("\t\tnot iconified");
 			next;
 		}
 
  		my $section = 3;
-		if ($pConfig->{ShowName} ne '' &&
- 			$p->{name} =~ /$pConfig->{ShowName}/i) {
+		if ($config->{ShowName} ne '' &&
+ 			$w->{name} =~ /$config->{ShowName}/i) {
 			$section = 0;
-		} elsif ($pConfig->{ShowClass} ne '' &&
-			$p->{res_class_name} =~ /$pConfig->{ShowClass}/i) {
+		} elsif ($config->{ShowClass} ne '' &&
+			$w->{res_class_name} =~ /$config->{ShowClass}/i) {
 			$section = 1;
-		} elsif ($pConfig->{ShowResource} ne '' &&
-			$p->{res_name} =~ /$pConfig->{ShowResource}/i) {
+		} elsif ($config->{ShowResource} ne '' &&
+			$w->{res_name} =~ /$config->{ShowResource}/i) {
 			$section = 2;
 		}
 
 		if ($section == 3)
 		{
-			if (($pConfig->{DontShowName} ne '' &&
-				$p->{name} =~ /$pConfig->{DontShowName}/i) ||
-				($pConfig->{DontShowClass} ne '' &&
-				$p->{res_class_name} =~ /$pConfig->{DontShowClass}/i) ||
-				($pConfig->{DontShowResource} ne '' &&
-				$p->{res_name} =~ /$pConfig->{DontShowResource}/i))
+			if (($config->{DontShowName} ne '' &&
+				$w->{name} =~ /$config->{DontShowName}/i) ||
+				($config->{DontShowClass} ne '' &&
+				$w->{res_class_name} =~ /$config->{DontShowClass}/i) ||
+				($config->{DontShowResource} ne '' &&
+				$w->{res_name} =~ /$config->{DontShowResource}/i))
 			{
 				$module->debug("\t\tin dontshow list");
 				next;
 			}
 		}
 		$module->debug("\t\tadding to section $section");
-		AddToSection(\$aSection[$section], $id);
+		AddToSection(\$sections[$section], $id);
 	}
 
 	# tell fvwm to start the menu
-	$module->send("DestroyMenu recreate $pConfig->{MenuName}");
-	$module->send("AddToMenu " . $pConfig->{MenuName} . " 'Desk " .
-		$winTracker->pageInfo('desk_n') . ", Page " .
-		$winTracker->pageInfo('page_nx') . ' ' .
-		$winTracker->pageInfo('page_ny') . "' Title");
+	$module->send("DestroyMenu recreate $config->{MenuName}");
+	$module->send("AddToMenu " . $config->{MenuName} . " 'Desk " .
+		$win_tracker->page_info('desk_n') . ", Page " .
+		$win_tracker->page_info('page_nx') . ' ' .
+		$win_tracker->page_info('page_ny') . "' Title");
 
 	# now loop on sections sending menu entries to fvwm
-	while (@aSection) {
-		my $s = shift @aSection;
+	while (@sections) {
+		my $s = shift @sections;
 
 		if ($s) {
 			$module->send($s);
 			# add separator after section unless it is the last
-			$module->send("+ \"\" Nop") if @aSection;
+			$module->send("+ \"\" Nop") if @sections;
 		}
 	}
 
 	# set a menustyle if one given
-	$module->send("ChangeMenuStyle $pConfig->{MenuStyle} $pConfig->{MenuName}")
-		if ($pConfig->{MenuStyle} ne '');
+	$module->send("ChangeMenuStyle $config->{MenuStyle} $config->{MenuName}")
+		if ($config->{MenuStyle} ne '');
 
 	# popup the menu with args we were sent
-	$module->send("$command $pConfig->{MenuName} $args");
+	$module->send("$command $config->{MenuName} $args");
 }
 
 
 # build a line containing the fvwm menu entry for a window
-# then add it to the appropriate member of the global array @aSection
+# then add it to the appropriate member of the global array @sections
 # args: pointer to section, window id
 sub AddToSection ($$) {
 	my ($s, $id) = @_;
 
-	my $format = $pConfig->{ItemFormat};
-	my $p = $winTracker->data($id);
+	my $format = $config->{ItemFormat};
+	my $w = $win_tracker->data($id);
 
 	# hack: insert __%__ instead of % to avoid bogus substitution later
 	$format =~ s/%%/__%____%__/g;
 
 	# make format string substitutions
 	$format =~ s/%t/\t/g;
-	$format =~ s/%n/&Shorten($p->{name})/ge;
-	$format =~ s/%i/&Shorten($p->{icon_name})/ge;
-	$format =~ s/%c/&Shorten($p->{res_class_name})/ge;
-	$format =~ s/%r/&Shorten($p->{res_name})/ge;
-	$format =~ s/%X/$p->{X}/g;
-	$format =~ s/%Y/$p->{Y}/g;
-	$format =~ s/%x/$p->{x}/g;
-	$format =~ s/%y/$p->{y}/g;
-	$format =~ s/%d/$p->{desk}/g;
+	$format =~ s/%n/&Shorten($w->{name})/ge;
+	$format =~ s/%i/&Shorten($w->{icon_name})/ge;
+	$format =~ s/%c/&Shorten($w->{res_class_name})/ge;
+	$format =~ s/%r/&Shorten($w->{res_name})/ge;
+	$format =~ s/%X/$w->{X}/g;
+	$format =~ s/%Y/$w->{Y}/g;
+	$format =~ s/%x/$w->{x}/g;
+	$format =~ s/%y/$w->{y}/g;
+	$format =~ s/%d/$w->{desk}/g;
 
 	# TODO: doesn't handle EWMH icons yet.
-	$format =~ s/%m// if ($p->{mini_icon_name} eq 'ewmh_mini_icon');
-	$format =~ s/%m/__%__$p->{mini_icon_name}__%__/g;
+	$format =~ s/%m// if ($w->{mini_icon_name} eq 'ewmh_mini_icon');
+	$format =~ s/%m/__%__$w->{mini_icon_name}__%__/g;
 
 	# %M is strange - does anyone really want this behaviour? -- SS.
-	if ($p->{iconified}) {
-		$format =~ s/%M/__%__$p->{mini_icon_name}__%__/g;
+	if ($w->{iconified}) {
+		$format =~ s/%M/__%__$w->{mini_icon_name}__%__/g;
 	} else {
 		$format =~ s/%M//g;
 	}
@@ -232,14 +230,14 @@ sub AddToSection ($$) {
 
 	# add the entry to the section
 	# support two ways for now: window context (new), window id param (old)
-	$$s .= qq(+ "$format" WindowId $id $pConfig->{Function} $id\n);
+	$$s .= qq(+ "$format" WindowId $id $config->{Function} $id\n);
 }
 
 
 # shorten a string to given length and append ellipses
 sub Shorten ($) {
 	my ($string) = @_;
-	my $length = $pConfig->{MaxLen};
+	my $length = $config->{MaxLen};
 
 	my $r = substr($string, 0, $length);
 	$r .= "..." if length($string) > $length;
@@ -259,8 +257,8 @@ sub PopupTaskBar () {
 	$window->set_border_width(5);
 	$window->set_usize($w, $h);
 
-	my $screenW = $winTracker->pageInfo('vp_width');
-	my $screenH = $winTracker->pageInfo('vp_height');
+	my $screenW = $win_tracker->page_info('vp_width');
+	my $screenH = $win_tracker->page_info('vp_height');
 	$window->set_uposition(($screenW - $w) / 2, ($screenH - $h) / 2);
 
 	my $frame = new Gtk::Frame();
@@ -279,16 +277,16 @@ sub PopupTaskBar () {
 
 	$window->show_all;
 
-#	my $winId = $window->window->XWINDOW();
-#	$module->send("Schedule 2000 WindowId $winId Close");
+#	my $win_id = $window->window->XWINDOW();
+#	$module->send("Schedule 2000 WindowId $win_id Close");
 }
-
 
 $module->send(
 	"Style FvwmWindowMenuBar UsePPosition, !Title, !Borders, " .
 	"StaysOnTop, WindowListSkip, CascadePlacement, SloppyFocus"
-) if $moduleType eq "gtk";
-$module->eventLoop;
+) if $module_type eq "gtk";
+
+$module->event_loop;
 
 1;
 

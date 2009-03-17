@@ -137,7 +137,7 @@ static char *home_dir;
 
 static volatile sig_atomic_t fvwmRunState = FVWM_RUNNING;
 
-static const char *initFunctionNames[4] =
+static const char *init_function_names[4] =
 {
 	"InitFunction",
 	"RestartFunction",
@@ -319,7 +319,7 @@ SigDone(int sig)
 }
 
 /*
- * parseCommandArgs - parses a given command string into a given limited
+ * parse_command_args - parses a given command string into a given limited
  * argument array suitable for execv*. The parsing is similar to shell's.
  * Returns:
  *   positive number of parsed arguments - on success,
@@ -338,121 +338,121 @@ SigDone(int sig)
  * on the next function call. This can be changed using dynamic allocation,
  * in this case the caller must free the string pointed by argv[0].
  */
-static int parseCommandArgs(
-	const char *command, char **argv, int maxArgc, const char **errorMsg)
+static int parse_command_args(
+	const char *command, char **argv, int max_argc, const char **error_msg)
 {
 	/* It is impossible to guess the exact length because of expanding */
 #define MAX_TOTAL_ARG_LEN 256
-	/* char *argString = safemalloc(MAX_TOTAL_ARG_LEN); */
-	static char argString[MAX_TOTAL_ARG_LEN];
-	int totalArgLen = 0;
-	int errorCode = 0;
+	/* char *arg_string = safemalloc(MAX_TOTAL_ARG_LEN); */
+	static char arg_string[MAX_TOTAL_ARG_LEN];
+	int total_arg_len = 0;
+	int error_code = 0;
 	int argc;
-	char *aptr = argString;
+	char *aptr = arg_string;
 	const char *cptr = command;
 
-#define theChar (*cptr)
-#define advChar (cptr++)
-#define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
-#define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
-#define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
-#define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)
-#define canAddArgStr(str) (totalArgLen < MAX_TOTAL_ARG_LEN-strlen(str))
-#define addArgStr(str) \
+#define the_char (*cptr)
+#define adv_char (cptr++)
+#define top_char (*cptr     == '\\' ? *(cptr + 1) : *cptr)
+#define pop_char (*(cptr++) == '\\' ? *(cptr++) : *(cptr - 1))
+#define can_add_arg_char (total_arg_len < MAX_TOTAL_ARG_LEN-1)
+#define add_arg_char(ch) (++total_arg_len, *(aptr++) = ch)
+#define can_add_arg_str(str) (total_arg_len < MAX_TOTAL_ARG_LEN - strlen(str))
+#define add_arg_str(str) \
 {\
 	const char *tmp = str;\
 	while (*tmp)\
 	{\
-		addArgChar(*(tmp++));\
+		add_arg_char(*(tmp++));\
 	}\
 }
 
-	*errorMsg = "";
+	*error_msg = "";
 	if (!command)
 	{
-		*errorMsg = "No command";
+		*error_msg = "No command";
 		return -1;
 	}
-	for (argc = 0; argc < maxArgc - 1; argc++)
+	for (argc = 0; argc < max_argc - 1; argc++)
 	{
-		int sQuote = 0;
+		int s_quote = 0;
 		argv[argc] = aptr;
-		while (isspace(theChar))
+		while (isspace(the_char))
 		{
-			advChar;
+			adv_char;
 		}
-		if (theChar == '\0')
+		if (the_char == '\0')
 		{
 			break;
 		}
-		while ((sQuote || !isspace(theChar)) &&
-		       theChar != '\0' && canAddArgChar)
+		while ((s_quote || !isspace(the_char)) &&
+		       the_char != '\0' && can_add_arg_char)
 		{
-			if (theChar == '"')
+			if (the_char == '"')
 			{
-				if (sQuote)
+				if (s_quote)
 				{
-					sQuote = 0;
+					s_quote = 0;
 				}
 				else
 				{
-					sQuote = 1;
+					s_quote = 1;
 				}
-				advChar;
+				adv_char;
 			}
-			else if (!sQuote && theChar == '\'')
+			else if (!s_quote && the_char == '\'')
 			{
-				advChar;
-				while (theChar != '\'' && theChar != '\0' &&
-				       canAddArgChar)
+				adv_char;
+				while (the_char != '\'' && the_char != '\0' &&
+				       can_add_arg_char)
 				{
-					addArgChar(popChar);
+					add_arg_char(pop_char);
 				}
-				if (theChar == '\'')
+				if (the_char == '\'')
 				{
-					advChar;
+					adv_char;
 				}
-				else if (!canAddArgChar)
+				else if (!can_add_arg_char)
 				{
 					break;
 				}
 				else
 				{
-					*errorMsg = "No closing single quote";
-					errorCode = -3;
+					*error_msg = "No closing single quote";
+					error_code = -3;
 					break;
 				}
 			}
-			else if (!sQuote && theChar == '~')
+			else if (!s_quote && the_char == '~')
 			{
-				if (!canAddArgStr(home_dir))
+				if (!can_add_arg_str(home_dir))
 				{
 					break;
 				}
-				addArgStr(home_dir);
-				advChar;
+				add_arg_str(home_dir);
+				adv_char;
 			}
-			else if (theChar == '$')
+			else if (the_char == '$')
 			{
 				int beg, len;
 				const char *str = getFirstEnv(cptr, &beg, &len);
 
 				if (!str || beg)
 				{
-					addArgChar(theChar);
-					advChar;
+					add_arg_char(the_char);
+					adv_char;
 					continue;
 				}
-				if (!canAddArgStr(str))
+				if (!can_add_arg_str(str))
 				{
 					break;
 				}
-				addArgStr(str);
+				add_arg_str(str);
 				cptr += len;
 			}
 			else
 			{
-				if (addArgChar(popChar) == '\0')
+				if (add_arg_char(pop_char) == '\0')
 				{
 					break;
 				}
@@ -460,43 +460,43 @@ static int parseCommandArgs(
 		}
 		if (*(aptr-1) == '\0')
 		{
-			*errorMsg = "Unexpected last backslash";
-			errorCode = -2;
+			*error_msg = "Unexpected last backslash";
+			error_code = -2;
 			break;
 		}
-		if (errorCode)
+		if (error_code)
 		{
 			break;
 		}
-		if (theChar == '~' || theChar == '$' || !canAddArgChar)
+		if (the_char == '~' || the_char == '$' || !can_add_arg_char)
 		{
-			*errorMsg = "The command is too long";
-			errorCode = -argc - 100;
+			*error_msg = "The command is too long";
+			error_code = -argc - 100;
 			break;
 		}
-		if (sQuote)
+		if (s_quote)
 		{
-			*errorMsg = "No closing double quote";
-			errorCode = -4;
+			*error_msg = "No closing double quote";
+			error_code = -4;
 			break;
 		}
-		addArgChar('\0');
+		add_arg_char('\0');
 	}
-#undef theChar
-#undef advChar
-#undef topChar
-#undef popChar
-#undef canAddArgChar
-#undef addArgChar
-#undef canAddArgStr
-#undef addArgStr
+#undef the_char
+#undef adv_char
+#undef top_char
+#undef pop_char
+#undef can_add_arg_char
+#undef add_arg_char
+#undef can_add_arg_str
+#undef add_arg_str
 	argv[argc] = NULL;
-	if (argc == 0 && !errorCode)
+	if (argc == 0 && !error_code)
 	{
-		*errorMsg = "Void command";
+		*error_msg = "Void command";
 	}
 
-	return errorCode ? errorCode : argc;
+	return error_code ? error_code : argc;
 }
 
 /*
@@ -541,21 +541,21 @@ char *get_display_name(char *display_name, int screen_num)
 /* if restart is true, command must not be NULL... */
 void Done(int restart, char *command)
 {
-	const char *exitFuncName;
+	const char *exit_func_name;
 
 	if (!restart)
 	{
 		MoveViewport(0,0,False);
 	}
 	/* migo (03/Jul/1999): execute [Session]ExitFunction */
-	exitFuncName = getInitFunctionName(2);
-	if (functions_is_complex_function(exitFuncName))
+	exit_func_name = get_init_function_name(2);
+	if (functions_is_complex_function(exit_func_name))
 	{
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
 
 		char *action = safestrdup(
-			CatString2("Function ", exitFuncName));
+			CatString2("Function ", exit_func_name));
 		ecc.type = restart ? EXCT_TORESTART : EXCT_QUIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
@@ -574,7 +574,7 @@ void Done(int restart, char *command)
 	EWMH_ExitStuff();
 	if (restart)
 	{
-		Bool doPreserveState = True;
+		Bool do_preserve_state = True;
 		SaveDesktopState();
 
 		if (command)
@@ -585,7 +585,7 @@ void Done(int restart, char *command)
 			}
 			if (strncmp(command, "--dont-preserve-state", 21) == 0)
 			{
-				doPreserveState = False;
+				do_preserve_state = False;
 				command += 21;
 				while (isspace(command[0])) command++;
 			}
@@ -598,7 +598,7 @@ void Done(int restart, char *command)
 		/* won't return under SM on Restart without parameters */
 		RestartInSession(
 			restart_state_filename, command == NULL,
-			doPreserveState);
+			do_preserve_state);
 
 		/* RBW - 06/08/1999 - without this, windows will wander to
 		 * other pages on a Restart/Recapture because Restart gets the
@@ -622,16 +622,16 @@ void Done(int restart, char *command)
 		if (command)
 		{
 			char *my_argv[MAX_ARG_SIZE];
-			const char *errorMsg;
-			int n = parseCommandArgs(
-				command, my_argv, MAX_ARG_SIZE, &errorMsg);
+			const char *error_msg;
+			int n = parse_command_args(
+				command, my_argv, MAX_ARG_SIZE, &error_msg);
 
 			if (n <= 0)
 			{
 				fvwm_msg(
 					ERR, "Done",
 					"Restart command parsing error in"
-					" (%s): [%s]", command, errorMsg);
+					" (%s): [%s]", command, error_msg);
 			}
 			else if (strcmp(my_argv[0], "--pass-args") == 0)
 			{
@@ -1512,8 +1512,8 @@ static int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 /* Does initial window captures and runs init/restart function */
 void StartupStuff(void)
 {
-#define startFuncName "StartFunction"
-	const char *initFuncName;
+#define start_func_name "StartFunction"
+	const char *init_func_name;
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
 
@@ -1555,19 +1555,19 @@ void StartupStuff(void)
 #endif
 
 	/* migo (04-Sep-1999): execute StartFunction */
-	if (functions_is_complex_function(startFuncName))
+	if (functions_is_complex_function(start_func_name))
 	{
-		char *action = "Function " startFuncName;
+		char *action = "Function " start_func_name;
 
 		execute_function(NULL, exc, action, 0);
 	}
 
 	/* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
-	initFuncName = getInitFunctionName(Restarting == True);
-	if (functions_is_complex_function(initFuncName))
+	init_func_name = get_init_function_name(Restarting == True);
+	if (functions_is_complex_function(init_func_name))
 	{
 		char *action = safestrdup(
-			CatString2("Function ", initFuncName));
+			CatString2("Function ", init_func_name));
 
 		execute_function(NULL, exc, action, 0);
 		free(action);
@@ -1699,21 +1699,21 @@ void SetMWM_INFO(Window window)
 }
 
 /*
- * setInitFunctionName - sets one of the init, restart or exit function names
- * getInitFunctionName - gets one of the init, restart or exit function names
+ * set_init_function_name - sets one of the init, restart or exit function names
+ * get_init_function_name - gets one of the init, restart or exit function names
  *
  * First parameter defines a function type: 0 - init, 1 - restart, 2 - exit.
  */
-void setInitFunctionName(int n, const char *name)
+void set_init_function_name(int n, const char *name)
 {
-	initFunctionNames[n >= 0 && n < 3? n: 3] = name;
+	init_function_names[n >= 0 && n < 3? n: 3] = name;
 
 	return;
 }
 
-const char *getInitFunctionName(int n)
+const char *get_init_function_name(int n)
 {
-	return initFunctionNames[n >= 0 && n < 3? n: 3];
+	return init_function_names[n >= 0 && n < 3? n: 3];
 }
 
 #ifndef _PATH_DEVNULL

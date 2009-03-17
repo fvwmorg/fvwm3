@@ -1,4 +1,4 @@
-# Copyright (c) 2003 Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,22 +22,22 @@ use FVWM::EventNames;
 sub new ($$$) {
 	my $class = shift;
 	my $type = shift;
-	my $argValues = shift;
+	my $arg_values = shift;
 
-	my $isSpecial = defined $argValues? 0: 1;
-	my $isExtended = $type & M_EXTENDED_MSG? 1: 0;
+	my $is_special = defined $arg_values ? 0 : 1;
+	my $is_extended = $type & M_EXTENDED_MSG ? 1 : 0;
 
-	$argValues ||= [];
-	$argValues = eventArgValues($isSpecial? "faked": $type, $argValues)
-		unless ref($argValues);
+	$arg_values ||= [];
+	$arg_values = event_arg_values($is_special ? "faked" : $type, $arg_values)
+		unless ref($arg_values);
 
 	my $self = {
 		type => $type,
 		args => undef,  # lazy hash of event arguments
-		argValues => $argValues,
-		propagationAllowed => 1,
-		isSpecial => $isSpecial,
-		isExtended => $isExtended,
+		arg_values => $arg_values,
+		propagation_allowed => 1,
+		is_special => $is_special,
+		is_extended => $is_extended,
 	};
 
 	bless $self, $class;
@@ -50,53 +50,53 @@ sub type ($) {
 	return $self->{'type'};
 }
 
-sub argValues ($) {
+sub arg_values ($) {
 	my $self = shift;
-	return $self->{'argValues'};
+	return $self->{'arg_values'};
 }
 
-sub argNames ($) {
+sub arg_names ($) {
 	my $self = shift;
-	return eventArgNames($self->type, $self->argValues);
+	return event_arg_names($self->type, $self->arg_values);
 }
 
-sub argTypes ($) {
+sub arg_types ($) {
 	my $self = shift;
-	return eventArgTypes($self->type, $self->argValues);
+	return event_arg_types($self->type, $self->arg_values);
 }
 
-sub loopArgNames ($) {
+sub loop_arg_names ($) {
 	my $self = shift;
-	return eventLoopArgNames($self->type, $self->argValues);
+	return event_loop_arg_names($self->type, $self->arg_values);
 }
 
-sub loopArgTypes ($) {
+sub loop_arg_types ($) {
 	my $self = shift;
-	return eventLoopArgTypes($self->type, $self->argValues);
+	return event_loop_arg_types($self->type, $self->arg_values);
 }
 
 sub args ($) {
 	my $self = shift;
-	$self->{'args'} ||= eventArgs($self->type, $self->argValues);
+	$self->{'args'} ||= event_args($self->type, $self->arg_values);
 	return $self->{'args'};
 }
 
-sub isExtended ($) {
+sub is_extended ($) {
 	my $self = shift;
-	return $self->{'isExtended'};
+	return $self->{'is_extended'};
 }
 
 sub name ($) {
 	my $self = shift;
-	return eventName($self->type);
+	return event_name($self->type);
 }
 
-sub propagationAllowed ($;$) {
+sub propagation_allowed ($;$) {
 	my $self = shift;
 	my $value = shift;
-	$self->{'propagationAllowed'} = $value if defined $value;
+	$self->{'propagation_allowed'} = $value if defined $value;
 
-	return $self->{'propagationAllowed'};
+	return $self->{'propagation_allowed'};
 }
 
 sub dump ($) {
@@ -104,14 +104,14 @@ sub dump ($) {
 	my $args = $self->args;
 	my $string = $self->name . "\n";
 
-	my @argNames  = @{$self->argNames};
-	my @argTypes  = @{$self->argTypes};
-	my @argValues = @{$self->argValues};
+	my @arg_names  = @{$self->arg_names};
+	my @arg_types  = @{$self->arg_types};
+	my @arg_values = @{$self->arg_values};
 
-	while (@argNames) {
-		my $name  = shift @argNames;
-		my $type  = shift @argTypes;
-		my $value = shift @argValues;
+	while (@arg_names) {
+		my $name  = shift @arg_names;
+		my $type  = shift @arg_types;
+		my $value = shift @arg_values;
 
 		my $text;
 		if ($type == FVWM::EventNames::number) {
@@ -128,30 +128,30 @@ sub dump ($) {
 			$value =~ s/"/\\"/g;
 			$text = qq("$value");
 		} elsif ($type == FVWM::EventNames::looped) {
-			my $loopArgNames = $self->loopArgNames;
-			my $loopArgTypes = $self->loopArgTypes;
+			my $loop_arg_names = $self->loop_arg_names;
+			my $loop_arg_types = $self->loop_arg_types;
 			my $j = 0;
 			while ($j < @$value) {
 				my $k = 0;
-				foreach (@$loopArgNames) {
-					my $i = int($j / @$loopArgNames) + 1;
-					push @argNames, "[$i] $_";
-					push @argTypes, $loopArgTypes->[$k];
-					push @argValues, $value->[$j];
+				foreach (@$loop_arg_names) {
+					my $i = int($j / @$loop_arg_names) + 1;
+					push @arg_names, "[$i] $_";
+					push @arg_types, $loop_arg_types->[$k];
+					push @arg_values, $value->[$j];
 					$j++; $k++;
 				}
 			}
-			$text = sprintf("(%d)", @$value / @$loopArgNames);
+			$text = sprintf("(%d)", @$value / @$loop_arg_names);
 		} elsif ($type == FVWM::EventNames::wflags) {
 			$text = qq([window flags are not supported yet]);
 		} else {
 			$text = qq([unsupported arg type $type] "$value");
 		}
 
-		my $nameLen = 12;
-		$nameLen = int((length($name) + 5) / 6) * 6
-			if length($name) > $nameLen;
-		$string .= sprintf "\t%-${nameLen}s %s\n", $name, $text;
+		my $name_len = 12;
+		$name_len = int((length($name) + 5) / 6) * 6
+			if length($name) > $name_len;
+		$string .= sprintf "\t%-${name_len}s %s\n", $name, $text;
 	}
 	return $string;
 }
@@ -168,12 +168,12 @@ sub AUTOLOAD ($;@) {
 	return if $method eq 'DESTROY';
 
 	if ($method =~ s/^_//) {
-		my $argValue = $self->args->{$method};
-		return $argValue if defined $argValue;
+		my $arg_value = $self->args->{$method};
+		return $arg_value if defined $arg_value;
 
-		my $alias = eventArgAliases($self->type)->{$method} || '*none*';
-		$argValue = $self->args->{$alias};
-		return $argValue if defined $argValue;
+		my $alias = event_arg_aliases($self->type)->{$method} || '*none*';
+		$arg_value = $self->args->{$alias};
+		return $arg_value if defined $arg_value;
 
 		die "Unknown argument $method for event " . $self->name . "\n";
 	}
@@ -195,16 +195,16 @@ FVWM::Event - the fvwm event object passed to event handlers
   my $module = new FVWM::Module(Mask => M_FOCUS_CHANGE);
 
   # auto-raise all windows
-  sub autoRaise ($$) {
+  sub auto_raise ($$) {
       my ($module, $event) = @_;
       $module->debug("Got " . $event->name . "\n");
       $module->debug("\t$_: " . $event->args->{$_} . "\n")
           foreach sort keys %{$event->args};
       $module->send("Raise", $event->_win_id);
   }
-  $module->addHandler(M_FOCUS_CHANGE, \&autoRaise);
+  $module->add_handler(M_FOCUS_CHANGE, \&auto_raise);
 
-  $module->eventLoop;
+  $module->event_loop;
 
 =head1 DESCRIPTION
 
@@ -214,10 +214,10 @@ To be written.
 
 =over 4
 
-=item B<new> I<type> I<argValues>
+=item B<new> I<type> I<arg_values>
 
 Constructs event object of the given I<type>.
-I<argValues> is either an array ref of event's arguments (every event type
+I<arg_values> is either an array ref of event's arguments (every event type
 has its own argument list, see L<FVWM::EventNames>) or a packed string of
 these arguments as received from the I<fvwm> pipe.
 
@@ -225,31 +225,31 @@ these arguments as received from the I<fvwm> pipe.
 
 Returns event's type (usually long integer).
 
-=item B<argNames>
+=item B<arg_names>
 
 Returns an array ref of the event argument names.
 
-    print "$_ " foreach @{$event->argNames});
+    print "$_ " foreach @{$event->arg_names});
 
 Note that this array of names is statical for any given event type.
 
-=item B<argTypes>
+=item B<arg_types>
 
 Returns an array ref of the event argument types.
 
-    print "$_ " foreach @{$event->argTypes});
+    print "$_ " foreach @{$event->arg_types});
 
 Note that this array of types is statical for any given event type.
 
-=item B<loopArgNames>
+=item B<loop_arg_names>
 
 Returns an array ref of the looped argument names of the event (or undef).
 
-=item B<loopArgTypes>
+=item B<loop_arg_types>
 
 Returns an array ref of the looped argument types of the event (or undef).
 
-=item B<argValues>
+=item B<arg_values>
 
 Returns an array ref of the event argument values.
 In the previous versions of the library, all argument values were passed
@@ -267,7 +267,7 @@ Returns hash ref of the named event argument values.
     while (($name, $value) = each %{$event->args})
         { print "\t$name: $value\n"; }
 
-=item B<isExtended>
+=item B<is_extended>
 
 For technical reasons there are 2 categories of fvwm events, regular and
 extended. This was done to enable more events. With introdution of the
@@ -283,7 +283,7 @@ Returns a string representing the event name (like "M_ADD_WINDOW"), it is
 the same as the corresponding C/Perl constant. May be (and in fact is)
 used for debugging.
 
-=item B<propagationAllowed> [I<bool>]
+=item B<propagation_allowed> [I<bool>]
 
 Sets or returns a boolean value that indicates enabling or disabling of
 this event propagation.

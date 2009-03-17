@@ -1,3 +1,16 @@
+2009-03-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* perl/module-example:
+	* perl/module-flash:
+	* perl/module-gtkflash:
+	* perl/module-gtkwinlist:
+	* perl/module-tkdesker:
+	* perl/module-trackertest:
+	* perl/module-winlist:
+	* perl/xmessage.fpl:
+	* perl/xmessage.ppp:
+	convert my old code to use var_name and function_name coding style
+
 2008-03-12  Jes~s Guerrero  <i92guboj(at)terra(dot)es>
 
 	* tests/menus/menus.read:

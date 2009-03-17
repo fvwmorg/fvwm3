@@ -1,3 +1,12 @@
+2009-03-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-desktop.in:
+	* fvwm-menu-directory.in:
+	* fvwm-menu-headlines.in:
+	* fvwm-menu-xlock.in:
+	* fvwm-perllib.in:
+	convert my old code to use var_name and function_name coding style
+
 2009-03-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-perllib.in:

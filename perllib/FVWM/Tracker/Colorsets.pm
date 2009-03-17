@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package FVWM::Tracker::Colorsets;
 use strict;
 
 use FVWM::Tracker qw(base);
-use General::Parse;
+use General::Parse qw(get_tokens);
 
 use constant CS_FIELDS => qw(
 	fg bg hilite shadow fgsh tint icon_tint
@@ -44,58 +44,58 @@ sub start ($) {
 	my $self = shift;
 
 	# just an extra debug service for developers
-	$self->{module}->emulateEvent(M_CONFIG_INFO, [
+	$self->{module}->emulate_event(M_CONFIG_INFO, [
 		0, 0, 0,
 		"Colorset 0 0 00c0c0 00e0e0 00a0a0 007070 0 0 0 0 64 0 0 0 0 0 0 0 0 0 64"
-	])	if $self->{module}->isDummy;
+	])	if $self->{module}->is_dummy;
 
 	$self->{data} = {};
-	$self->addHandler(M_CONFIG_INFO, sub {
+	$self->add_handler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
-		$self->calculateInternals($event->args);
+		$self->calculate_internals($event->args);
 	});
 
-	$self->requestConfigInfoEvents;
+	$self->request_configinfo_events;
 
 	my $result = $self->SUPER::start;
 
-	$self->deleteHandlers;
+	$self->delete_handlers;
 
-	$self->addHandler(M_CONFIG_INFO, sub {
+	$self->add_handler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
-		my ($num, $oldHash) = $self->calculateInternals($event->args);
+		my ($num, $old_hash) = $self->calculate_internals($event->args);
 		return unless defined $num;
-		$self->notify("colorset changed", $num, $oldHash);
+		$self->notify("colorset changed", $num, $old_hash);
 	});
 
 	return $result;
 }
 
-sub calculateInternals ($$) {
+sub calculate_internals ($$) {
 	my $self = shift;
 	my $args = shift;
 	my $data = $self->{data};
 
 	my $text = $args->{text};
-	$self->internalDie("No 'text' arg in M_CONFIG_INFO")
+	$self->internal_die("No 'text' arg in M_CONFIG_INFO")
 		unless defined $text;
 	return undef if $text !~ /^colorset ([\da-f]+) ([\da-f ]+)$/i;
 
 	my $num = hex($1);
-	my @numbers = getTokens($2);
+	my @numbers = get_tokens($2);
 	return undef if @numbers != CS_FIELDS;
 
 	# memory used for keys may be optimized later
-	my $newHash = {};
+	my $new_hash = {};
 	my $i = 0;
 	foreach (CS_FIELDS) {
-		$newHash->{$_} = hex($numbers[$i++]);
+		$new_hash->{$_} = hex($numbers[$i++]);
 	}
 
-	my $oldHash = $data->{$num};
-	$data->{$num} = $newHash;
+	my $old_hash = $data->{$num};
+	$data->{$num} = $new_hash;
 
-	return wantarray? ($num, $oldHash): $num;
+	return wantarray? ($num, $old_hash): $num;
 }
 
 sub data ($;$) { 
@@ -116,11 +116,11 @@ sub dump ($;$) {
 
 	my $string = "";
 	foreach (@nums) {
-		my $csHash = $data->{$_};
+		my $cs_hash = $data->{$_};
 		$string .= "Colorset $_";
 		my $i = 0;
 		foreach (CS_FIELDS) {
-			my $value = $csHash->{$_};
+			my $value = $cs_hash->{$_};
 			$i++;
 			next if $i > 5 && ($value == 0 || /alpha_percent$/ && $value == 100);
 			$value = sprintf("#%06lx", $value) if $i <= 7;
@@ -152,19 +152,19 @@ old colorset data hash ref.
  
 Using B<FVWM::Module> $module object:
 
-    my $csTracker = $module->track("Colorsets");
-    my $csHash = $csTracker->data;
-    my $cs2_fg = $csHash->{2}->{fg} || 'black';
-    my $cs5_bg = $csTracker->data(5)->{bg} || 'gray';
+    my $cs_tracker = $module->track("Colorsets");
+    my $cs_hash = $cs_tracker->data;
+    my $cs2_fg = $cs_hash->{2}->{fg} || 'black';
+    my $cs5_bg = $cs_tracker->data(5)->{bg} || 'gray';
 
-    $csTracker->observe(sub {
-        my ($module, $tracker, $data, $num, $oldHash) = @_;
-        my $newHash = $data->{$num};
+    $cs_tracker->observe(sub {
+        my ($module, $tracker, $data, $num, $old_hash) = @_;
+        my $new_hash = $data->{$num};
 
-        if ($oldHash->{pixmap} == 0 && $newHash->{pixmap}) {
-            my $pixmapType = $newHash->{pixmap_type};
-            my $pixmapName = ($tracker->PIXMAP_TYPES)[$pixmapType];
-            $module->debug("Colorset: $num, Pixmap type: $pixmapName");
+        if ($old_hash->{pixmap} == 0 && $new_hash->{pixmap}) {
+            my $pixmap_type = $new_hash->{pixmap_type};
+            my $pixmap_name = ($tracker->PIXMAP_TYPES)[$pixmap_type];
+            $module->debug("Colorset: $num, Pixmap type: $pixmap_name");
         }
     };
 

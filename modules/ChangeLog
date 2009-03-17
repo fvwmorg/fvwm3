@@ -1,3 +1,11 @@
+2009-03-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmDebug.in:
+	* FvwmDebug/FvwmGtkDebug.in:
+	* FvwmPerl/FvwmPerl.in:
+	* FvwmWindowMenu/FvwmWindowMenu.in:
+	convert my old code to use var_name and function_name coding style
+
 2009-03-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmGtkDebug.in:

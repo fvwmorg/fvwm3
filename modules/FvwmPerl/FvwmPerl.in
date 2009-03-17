@@ -1,5 +1,7 @@
 #!@PERL@ -w
 
+# Copyright (C) 2002-2009 Mikhael Goikhman <migo@cpan.org>
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -36,45 +38,45 @@ use Getopt::Long;
 # ----------------------------------------------------------------------------
 # variables
 
-my $lineToEval = undef;
-my $fileToLoad = undef;
+my $line_to_eval = undef;
+my $file_to_load = undef;
 my $preprocess = 0;
-my $exportFuncNames = undef;
+my $export_func_names = undef;
 # whether continue running after --eval, --load or --preprocess, default is no
 my $stay = 0;
 my $nolock = 0;
 my $debug = 0;
 my $detached = 0;
-my $ppArgs = undef;
-my $preprocessOptions = undef;
-my $ppFileCount = 0;
-my $ppMainQuoteRef = undef;
+my $pp_args = undef;
+my $preprocess_options = undef;
+my $pp_file_count = 0;
+my $pp_main_quote_ref = undef;
 
-sub initPreprocessVars () {
-	$ppArgs = {};
-	$ppArgs->{quote} = $$ppMainQuoteRef if $ppMainQuoteRef;
-	$ppMainQuoteRef = \$ppArgs->{quote} unless $ppMainQuoteRef;
+sub init_preprocess_vars () {
+	$pp_args = {};
+	$pp_args->{quote} = $$pp_main_quote_ref if $pp_main_quote_ref;
+	$pp_main_quote_ref = \$pp_args->{quote} unless $pp_main_quote_ref;
 
-	$preprocessOptions = {
-		"c|cmd|command" => \$ppArgs->{command},
-		"q|quote=s"     => \$ppArgs->{quote},
-		"w|winid=s"     => \$ppArgs->{winid},
-		"nosend"        => \$ppArgs->{nosend},
-		"noremove"      => \$ppArgs->{noremove},
+	$preprocess_options = {
+		"c|cmd|command" => \$pp_args->{command},
+		"q|quote=s"     => \$pp_args->{quote},
+		"w|winid=s"     => \$pp_args->{winid},
+		"nosend"        => \$pp_args->{nosend},
+		"noremove"      => \$pp_args->{noremove},
 	};
 }
 
-initPreprocessVars();
+init_preprocess_vars();
 
 my $options = {
-	"e|eval=s"     => \$lineToEval,
-	"l|load=s"     => \$fileToLoad,
+	"e|eval=s"     => \$line_to_eval,
+	"l|load=s"     => \$file_to_load,
 	"p|preprocess" => \$preprocess,
-	"x|export:s"   => \$exportFuncNames,
+	"x|export:s"   => \$export_func_names,
 	"s|stay!"      => \$stay,
 	"nolock"       => \$nolock,
 	"debug=i"      => \$debug,
-	%$preprocessOptions,
+	%$preprocess_options,
 };
 
 my $module = new FVWM::Module(
@@ -86,12 +88,12 @@ my $module = new FVWM::Module(
 	Debug         => \$debug,  # $debug is not really ready yet
 );
 
-sub printActionError ($$) {
+sub print_action_error ($$) {
 	my $action = shift;
-	my $errMsg = shift;
-	return if $errMsg =~ /^!/;
-	$errMsg =~ s/\s+$//s;
-	print STDERR "[", $module->name, "][$action]: $errMsg\n";
+	my $err_msg = shift;
+	return if $err_msg =~ /^!/;
+	$err_msg =~ s/\s+$//s;
+	print STDERR "[", $module->name, "][$action]: $err_msg\n";
 }
 
 # ----------------------------------------------------------------------------
@@ -106,8 +108,8 @@ my (%a, %b, %c, %d, %e, %f, %g, %h, %i, %j, %k, %l, %m, %n, %o, %p);
 
 sub cmd ($;$) {
 	my $command = shift;
-	my $winId = shift;
-	$module->send($command, $winId);
+	my $win_id = shift;
+	$module->send($command, $win_id);
 }
 
 *command = \*cmd; *command = \*command;  # alias
@@ -124,7 +126,7 @@ sub skip () {
 
 sub unlock () {
 	# enable asynchronous evaluation
-	$module->sendUnlock;
+	$module->send_unlock;
 }
 
 sub detach () {
@@ -137,23 +139,23 @@ sub detach () {
 	$detached = 1;
 }
 
-sub showMessage ($;$$) {
+sub show_message ($;$$) {
 	require FVWM::Module::Toolkit;
-	FVWM::Module::Toolkit->showMessage(
+	FVWM::Module::Toolkit->show_message(
 		$_[0], $_[1] || "FvwmPerl user message", $_[2]
 	);
 }
 
 sub export ($;$) {
-	my $funcNames = shift || "";
-	my $doUnexport = shift || 0;
+	my $func_names = shift || "";
+	my $do_unexport = shift || 0;
 
-	my @funcNames = split(/[\s,]+/, $funcNames);
-	@funcNames = qw(Eval .) if $funcNames eq "";
+	my @func_names = split(/[\s,]+/, $func_names);
+	@func_names = qw(Eval .) if $func_names eq "";
 
 	my $name = $module->name;
 
-	foreach (@funcNames) {
+	foreach (@func_names) {
 		my $action =
 			/eval/i? 'eval':
 			/load/i? 'load':
@@ -162,7 +164,7 @@ sub export ($;$) {
 
 		$module->send(qq(
 			DestroyFunc $_
-		) . ($doUnexport ? "" : qq(
+		) . ($do_unexport ? "" : qq(
 			AddToFunc $_ I SendToModule $name $action \$*
 		)));
 	}
@@ -170,83 +172,83 @@ sub export ($;$) {
 
 sub load ($) {
 	my $filename = shift;
-	my $contents = loadFile($filename);
+	my $contents = load_file($filename);
 	if (!defined $contents) {
-		printActionError("load", "Can't find and read $filename: $!");
+		print_action_error("load", "Can't find and read $filename: $!");
 		return;
 	}
 	eval $$contents;
-	printActionError("load", "$@") if $@;
+	print_action_error("load", "$@") if $@;
 }
 
-sub doEval ($) {
+sub do_eval ($) {
 	my $string = shift;
 	eval $string;
-	printActionError("eval", "$@") if $@;
+	print_action_error("eval", "$@") if $@;
 	if ($detached) {
 		# let's hope we should not clean-up anything
 		exit(0);
 	}
 }
 
-sub preprocessDirectives ($;$) {
-	my $textRef = shift;
+sub preprocess_directives ($;$) {
+	my $text_ref = shift;
 	my $depth = shift || 0;
 
 	my $quote = $PreprocessNamespace::PPP_QUOTE1;
-	my $processedText = "";
+	my $processed_text = "";
 
-	my $errorSub = sub ($) {
-		printActionError("preprocess", "$_[0], preprocessing failed");
+	my $error_sub = sub ($) {
+		print_action_error("preprocess", "$_[0], preprocessing failed");
 	};
 	my ($start, $directive, $params, $end);
 
-	while ($$textRef =~ m{\A(.*?)^$quote(\w+)[ \t]*(.*?)\n(.*)\z}ms) {
+	while ($$text_ref =~ m{\A(.*?)^$quote(\w+)[ \t]*(.*?)\n(.*)\z}ms) {
 		($start, $directive, $params, $end) = ($1, $2, $3, $4);
-		$$textRef = "";
+		$$text_ref = "";
 		#print "\t$depth $directive $params\n";
 
 		if (eqi($directive, "End")) {
 			if ($depth == 0) {
-				$errorSub->("Unexpected ${quote}End");
+				$error_sub->("Unexpected ${quote}End");
 				return undef;
 			}
-			$$textRef = $processedText . $start;
+			$$text_ref = $processed_text . $start;
 			return $end;
 		}
 
 		my $subtext = $end;
 
 		if (eqi($directive, "Repeat")) {
-			my $count = getToken($params);
+			my $count = get_token($params);
 			unless (defined $count && $count =~ /^\d+$/) {
-				$errorSub->("Usage: ${quote}Repeat count");
+				$error_sub->("Usage: ${quote}Repeat count");
 				return undef;
 			}
-			$end = &preprocessDirectives(\$subtext, $depth + 1);
+			$end = &preprocess_directives(\$subtext, $depth + 1);
 			return undef unless defined $end;
 			$start .= $subtext x $count;
 			next;
 		}
 		my $prefix = undef;
 		if (eqi($directive, "ModuleConfig")) {
-			my ($moduleName, $destroy) = getTokens($params, 2);
-			unless (defined $moduleName) {
-				$errorSub->("Usage: ${quote}ModuleConfig module-name");
+			my ($module_name, $destroy) = get_tokens($params, 2);
+			unless (defined $module_name) {
+				$error_sub->("Usage: ${quote}ModuleConfig module-name");
 				return undef;
 			}
 			if (defined $destroy && eqi($destroy, "destroy")) {
-				$start .= "DestroyModuleConfig $moduleName: *\n";
+				$start .= "DestroyModuleConfig $module_name: *\n";
 			};
-			$prefix = "*$moduleName: ";
+			$prefix = "*$module_name: ";
 		}
 		if (defined $prefix || eqi($directive, "Prefix")) {
-			$prefix = getToken($params) unless defined $prefix;
+			$prefix = get_token($params) unless defined $prefix;
 			unless (defined $prefix) {
-				$errorSub->("Usage: ${quote}Prefix prefix");
+				$error_sub->("Usage: ${quote}Prefix prefix");
 				return undef;
 			}
-			$end = &preprocessDirectives(\$subtext, $depth + 1);
+			$end = &preprocess_directives(\$subtext, $depth + 1);
 			return undef unless defined $end;
 			foreach (split(/\n/s, $subtext)) {
 				$start .= "$prefix$_\n" unless /^\s*$/;
@@ -254,15 +256,15 @@ sub preprocessDirectives ($;$) {
 			next;
 		}
 	} continue {
-		$processedText .= $start;
-		$$textRef = $end;
+		$processed_text .= $start;
+		$$text_ref = $end;
 	}
 
 	if ($depth == 0) {
-		$$textRef = $processedText . $$textRef if $processedText ne "";
+		$$text_ref = $processed_text . $$text_ref if $processed_text ne "";
 		return "";
 	}
-	$errorSub->("No corresponding ${quote}End found");
+	$error_sub->("No corresponding ${quote}End found");
 	return undef;
 }
 
@@ -285,13 +287,13 @@ sub preprocess ($;$) {
 	my $depth = $args->{depth};
 	$depth ||= 0;
 	if ($depth > 20) {
-		printActionError("preprocess", "Too deep include depth=$depth");
+		print_action_error("preprocess", "Too deep include depth=$depth");
 		return;
 	}
 
-	my $textRef = $command? \$data: loadFile($data);
-	unless (defined $textRef) {
-		printActionError("preprocess", "No file to preprocess ($data)");
+	my $text_ref = $command? \$data: load_file($data);
+	unless (defined $text_ref) {
+		print_action_error("preprocess", "No file to preprocess ($data)");
 		return;
 	}
 
@@ -315,39 +317,39 @@ sub preprocess ($;$) {
 		$HEIGHT  = $HEIGHT  || $dimentions[1];
 		$FVWM_VERSION = $FVWM_VERSION || $version;
 		$FVWM_MODULEDIR = $FVWM_MODULEDIR || $ENV{FVWM_MODULEDIR};
-		$FVWM_DATADIR = $FVWM_DATADIR || $module->siteDataDir;
-		$FVWM_USERDIR = $FVWM_USERDIR || $module->userDataDir;
+		$FVWM_DATADIR = $FVWM_DATADIR || $module->site_data_dir;
+		$FVWM_USERDIR = $FVWM_USERDIR || $module->user_data_dir;
 	}
 
 	# perl code substitution first
-	$$textRef =~ s/\Q$quote1\E { ( .*? ) } \Q$quote2\E/
+	$$text_ref =~ s/\Q$quote1\E { ( .*? ) } \Q$quote2\E/
 		my $result = eval "
 			no strict;
 			package PreprocessNamespace;
 			$1
 		";
 		if ($@) {
-			printActionError("preprocess", $@);
+			print_action_error("preprocess", $@);
 			$result = "";
 		}
 		$result;
 	/sgex;
 
 	# line based directives
-	preprocessDirectives($textRef);
+	preprocess_directives($text_ref);
 
 	if ($command) {
-		$module->send($$textRef, $winid);
+		$module->send($$text_ref, $winid);
 		return;
 	}
 
-	my $tempFileName = $module->userDataDir . "/.FvwmPerl-preprocess-$$";
-	$tempFileName .= "-" . (++$ppFileCount);
-	saveFile($tempFileName, $textRef);
+	my $temp_filename = $module->user_data_dir . "/.FvwmPerl-preprocess-$$";
+	$temp_filename .= "-" . (++$pp_file_count);
+	save_file($temp_filename, $text_ref);
 
 	unless ($nosend) {
-		$module->send("Read $tempFileName", $winid);
-		$module->send("Exec rm -f '$tempFileName'")
+		$module->send("Read $temp_filename", $winid);
+		$module->send("Exec rm -f '$temp_filename'")
 			unless $noremove;
 	}
 }
@@ -366,7 +368,7 @@ sub PreprocessNamespace::include ($) {
 # ----------------------------------------------------------------------------
 # event handlers
 
-sub processMessage ($$) {
+sub process_message ($$) {
 	my $event = $_[1];
 	my $string = $event->_text;
 
@@ -377,25 +379,25 @@ sub processMessage ($$) {
 
 	if ($action eq "eval") {
 		return unless defined $rest;
-		doEval($rest);
+		do_eval($rest);
 	}
 
 	elsif ($action eq "load") {
 		return unless defined $rest;
-		load(getToken($rest));
+		load(get_token($rest));
 	}
 
 	elsif ($action eq "preprocess") {
 		@ARGV = split(/ /, $rest);
-		initPreprocessVars();
+		init_preprocess_vars();
 		my $parser = new Getopt::Long::Parser(
 			config => [qw(pass_through require_order)]
 		);
-		$parser->getoptions(%$preprocessOptions) || return;
-		$ppArgs->{winid} = $event->_win_id || undef
-			unless defined $ppArgs->{winid} && $ppArgs->{winid} =~ /^\d/;
+		$parser->getoptions(%$preprocess_options) || return;
+		$pp_args->{winid} = $event->_win_id || undef
+			unless defined $pp_args->{winid} && $pp_args->{winid} =~ /^\d/;
 
-		preprocess($ppArgs, join(" ", @ARGV));
+		preprocess($pp_args, join(" ", @ARGV));
 	}
 
 	elsif ($action eq "export") {
@@ -415,39 +417,39 @@ sub processMessage ($$) {
 	}
 
 	else {
-		printActionError("processMessage", "Unknown action ($action)");
+		print_action_error("process_message", "Unknown action ($action)");
 	}
 }
 
-$module->addHandler(M_STRING, \&processMessage);
+$module->add_handler(M_STRING, \&process_message);
 
 # ----------------------------------------------------------------------------
 # execution
 
 # unlock fvwm earlier if requested
-$module->sendReady if $nolock;
+$module->send_ready if $nolock;
 
-if (defined $exportFuncNames) {
-	export($exportFuncNames);
+if (defined $export_func_names) {
+	export($export_func_names);
 	$stay = 1;
 }
 
-if (defined $lineToEval) {
-	doEval($lineToEval);
+if (defined $line_to_eval) {
+	do_eval($line_to_eval);
 	exit(0) unless $stay;
 }
 
-if (defined $fileToLoad) {
-	load($fileToLoad);
+if (defined $file_to_load) {
+	load($file_to_load);
 	exit(0) unless $stay;
 }
 
 if ($preprocess) {
-	preprocess($ppArgs, join(" ", @ARGV));
+	preprocess($pp_args, join(" ", @ARGV));
 	exit(0) unless $stay;
 }
 
-$module->eventLoop;
+$module->event_loop;
 
 __END__
 
@@ -580,7 +582,7 @@ your first command so that other commands may be asked to be preprosessed.
 
     . Exec exec xmessage %{2 + 2}%           # simple calculator
 
-    . %{main::showMessage(2 + 2, "Yet another Calculator"); ""}%
+    . %{main::show_message(2 + 2, "Yet another Calculator"); ""}%
 
 =head1 ACTIONS
 
@@ -744,35 +746,35 @@ There are several functions that perl code may call:
 
 =over 4
 
-=item B<cmd(>I<$fvwmCommand>B<)>
+=item B<cmd(>I<$fvwm_command>B<)>
 
-In case of B<eval> or B<load> - send back to fvwm a string I<$fvwmCommand>.
-In case of B<preprocess> - append a string I<$fvwmCommand> to the output of
+In case of B<eval> or B<load> - send back to fvwm a string I<$fvwm_command>.
+In case of B<preprocess> - append a string I<$fvwm_command> to the output of
 the embedded perl code.
 
-=item B<doEval(>I<$perlCode>B<)>
+=item B<do_eval(>I<$perl_code>B<)>
 
 This function is equivalent to the B<eval> functionality
-on the string I<$perlCode>, described above.
+on the string I<$perl_code>, described above.
 
-=item B<load(>$fileNameB<)>
+=item B<load(>I<$filename>B<)>
 
 This function is equivalent to the B<load> functionality
-on the file $fileName, described above.
+on the file $filename, described above.
 
-=item B<preprocess(>I<@params, ["-c $command"] [$fileName]>B<)>
+=item B<preprocess(>I<@params, ["-c $command"] [$filename]>B<)>
 
 This function is equivalent to the B<preprocess> functionality
-with the given parameters and the file $fileName described above.
+with the given parameters and the file $filename described above.
 
-=item B<export(>I<$funcNames, [$doUnexport]>B<)>
+=item B<export(>I<$func_names, [$do_unexport]>B<)>
 
 This function is equivalent to the B<export> functionality
-with the given $funcNames, described above. May also B<unexport>
+with the given $func_names, described above. May also B<unexport>
 the function names if the second parameter is true.
 
 Function names should be separated by commas or/and whitespace.
-If I<$funcNames> is empty then functions "Eval" and "." are assumed.
+If I<$func_names> is empty then functions "Eval" and "." are assumed.
 
 =item B<stop()>
 
@@ -809,12 +811,12 @@ after the callback execution is finished.
 If you use detach(), better only send commands to fvwm in one process (the
 main one or the detached one), doing otherwise may often cause conflicts.
 
-=item B<showMessage(>$msg, $title[, $useStderrToo=1]B<)>
+=item B<show_message(>$msg, $title[, $use_stderr_too=1]B<)>
 
-Shows a dialog window with the given message, using whichever tool is find
-in the system.
+Shows a dialog window with the given message, using whichever X tool is
+found in the system.
 
-See B<FVWM::Module::Toolkit>::B<showMessage> for more information.
+See B<FVWM::Module::Toolkit>::B<show_message> for more information.
 
 =back
 
@@ -833,12 +835,12 @@ between different calls to FvwmPerl actions (B<eval> and B<load>).
 If you need more readable variable names, either write "no strict 'vars';"
 at the start of every perl code or use a hash for this, like:
 
-    $h{id} = $h{firstName} . " " . $h{secondName}
+    $h{id} = $h{first_name} . " " . $h{second_name}
 
 or use a package name, like:
 
     @MyMenu::terminals = qw( xterm rxvt );
-    $MyMenu::itemNum = @MyMenu::terminals;
+    $MyMenu::item_num = @MyMenu::terminals;
 
 There may be a configuration option to turn strictness on and off.
 

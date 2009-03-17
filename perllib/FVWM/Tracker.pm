@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009, Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,8 +51,8 @@ sub new ($$) {
 		module => $module,
 		data   => undef,
 		active => 0,
-		handlerTypes => {},
-		handlerIds => {},
+		handler_types => {},
+		handler_ids => {},
 		observers => {},
 	};
 	bless $self, $class;
@@ -64,37 +64,37 @@ sub masks ($) {
 	my $self = shift;
 	my $mask = 0;
 	my $xmask = 0;
-	while (my ($id, $type) = each %{$self->{handlerTypes}}) {
+	while (my ($id, $type) = each %{$self->{handler_types}}) {
 		(($type & M_EXTENDED_MSG)? $xmask: $mask) |= $type;
 	}
-	$self->internalDie("Inactive mask is not zero")
+	$self->internal_die("Inactive mask is not zero")
 		unless $self->{active} || !$mask && !$xmask;
 	my @list = ($mask, $xmask);
 	return wantarray? @list: \@list;
 }
 
-sub addHandler ($$$) {
+sub add_handler ($$$) {
 	my $self = shift;
 	my $type = shift;
 	my $handler = shift;
 
-	my $handlerId = $self->{module}->addHandler($type, $handler, 1);
-	$self->{handlerTypes}->{$handlerId} = $type;
-	$self->{handlerIds}->{$handlerId} = $handlerId;
-	return $handlerId;
+	my $handler_id = $self->{module}->add_handler($type, $handler, 1);
+	$self->{handler_types}->{$handler_id} = $type;
+	$self->{handler_ids}->{$handler_id} = $handler_id;
+	return $handler_id;
 }
 
-sub deleteHandlers ($;$) {
+sub delete_handlers ($;$) {
 	my $self = shift;
-	my $handlerIds = ref($_[0]) eq 'ARRAY'?
-		shift(): [ keys %{$self->{handlerIds}} ];
+	my $handler_ids = ref($_[0]) eq 'ARRAY'
+		? shift() : [ keys %{$self->{handler_ids}} ];
 
-	foreach (@$handlerIds) {
-		next unless defined delete $self->{handlerTypes}->{$_};
-		my $handlerId = delete $self->{handlerIds}->{$_}
+	foreach (@$handler_ids) {
+		next unless defined delete $self->{handler_types}->{$_};
+		my $handler_id = delete $self->{handler_ids}->{$_}
 			or die "Internal #1";
 		if ($self->{module}) {
-			$self->{module}->deleteHandler($handlerId)
+			$self->{module}->delete_handler($handler_id)
 				or die "Internal #2";
 		}
 	}
@@ -102,7 +102,7 @@ sub deleteHandlers ($;$) {
 
 sub observe ($$;$) {
 	my $self = shift;
-	my $observable = ref($_[0]) eq ""? shift: "main";
+	my $observable = ref($_[0]) eq "" ? shift : "main";
 	my $callback = shift;
 
 	my $observables = $self->observables;
@@ -119,8 +119,8 @@ sub observe ($$;$) {
 
 sub unobserve ($;$$) {
 	my $self = shift;
-	my $observable = ref($_) eq ""? shift: "*";
-	my $observerId = shift || "*";
+	my $observable = ref($_) eq "" ? shift : "*";
+	my $observer_id = shift || "*";
 
 	### TODO
 	#$self->{observers}->{$observable} = [];
@@ -153,8 +153,8 @@ sub start ($) {
 
 	$self->{active} = 1;
 
-	$self->{module}->FVWM::Module::eventLoop(1)
-		if %{$self->{handlerIds}};
+	$self->{module}->FVWM::Module::event_loop(1)
+		if %{$self->{handler_ids}};
 
 	return $self->data;
 }
@@ -162,7 +162,7 @@ sub start ($) {
 sub stop ($) {
 	my $self = shift;
 	return unless $self->{active};
-	$self->deleteHandlers;
+	$self->delete_handlers;
 	$self->{active} = 0;
 }
 
@@ -172,7 +172,7 @@ sub restart ($) {
 	$self->start;
 }
 
-sub toBeDisconnected ($) {
+sub to_be_disconnected ($) {
 }
 
 sub data ($) {
@@ -185,32 +185,32 @@ sub dump ($) {
 	return "";
 }
 
-sub requestWindowListEvents ($) {
+sub request_windowlist_events ($) {
 	my $self = shift;
 	my $module = $self->{module};
-	warn "requestWindowListEvents() called after start()" if $self->{active};
+	warn "request_windowlist_events() called after start()" if $self->{active};
 
-	$self->addHandler(M_END_WINDOWLIST, sub { $_[0]->terminate; });
-	$module->emulateEvent(M_END_WINDOWLIST, []) if $module->isDummy;
-	$module->postponeSend("Send_WindowList");
+	$self->add_handler(M_END_WINDOWLIST, sub { $_[0]->terminate; });
+	$module->emulate_event(M_END_WINDOWLIST, []) if $module->is_dummy;
+	$module->postpone_send("Send_WindowList");
 }
 
-sub requestConfigInfoEvents ($;$) {
+sub request_configinfo_events ($;$) {
 	my $self = shift;
 	my $name = shift;
 	my $module = $self->{module};
-	warn "requestConfigInfoEvents() called after start()" if $self->{active};
+	warn "request_configinfo_events() called after start()" if $self->{active};
 
-	$self->addHandler(M_END_CONFIG_INFO, sub { $_[0]->terminate; });
-	$module->emulateEvent(M_END_CONFIG_INFO, []) if $module->isDummy;
-	$module->postponeSend("Send_ConfigInfo" . ($name? " *$name": ""));
+	$self->add_handler(M_END_CONFIG_INFO, sub { $_[0]->terminate; });
+	$module->emulate_event(M_END_CONFIG_INFO, []) if $module->is_dummy;
+	$module->postpone_send("Send_ConfigInfo" . ($name? " *$name": ""));
 }
 
-sub internalDie ($$) {
+sub internal_die ($$) {
 	my $self = shift;
 	my $msg = shift;
 	my $class = ref($self);
-	$self->{module}->internalDie("$class: $msg")
+	$self->{module}->internal_die("$class: $msg")
 }
 
 sub DESTROY ($) {
@@ -221,6 +221,28 @@ sub DESTROY ($) {
 # class method, should be overwritten
 sub observables ($) {
 	return [];
+}
+
+use vars qw($AUTOLOAD);
+
+# support old API, like addHandler, dispatch to add_handler
+sub AUTOLOAD ($;@) {
+	my $self = shift;
+	my @params = @_; 
+
+	my $autoload_method = $AUTOLOAD;
+	my $method = $autoload_method;  
+
+	# remove the package name
+	$method =~ s/.*://g;
+
+	$method =~ s/XMask/Xmask/;
+	$method =~ s/([a-z])([A-Z])/${1}_\L$2/g;
+
+	die "No method $method in $self as guessed from $autoload_method"
+		unless $self->can($method);
+
+	$self->$method(@params);
 }
 
 1;
@@ -245,14 +267,14 @@ and to define high level events for the tracker caller to observe.
 Using B<FVWM::Module> $module object:
 
     my $tracker = $module->track("TrackerName", @params);
-    my $initialData = $tracker->data;
+    my $initial_data = $tracker->data;
     $tracker->observe("observable1", sub { shift->data });
     $tracker->observe("observable2", sub { shift->stop });
 
 In the future this syntax will probably work too:
 
     my $tracker = new FVWM::Tracker::TrackerName($module, @params);
-    my $initialData = $tracker->start;
+    my $initial_data = $tracker->start;
     $tracker->observe("observable1", sub { shift->data });
     $tracker->observe("observable2", sub { shift->stop });
 
@@ -345,14 +367,14 @@ in the I<SYNOPSYS> section instead.
 I<module> is an B<FVWM::Module> instance.
 I<param-hash> is specific to the concrete Tracker class.
 
-=item B<addHandler> I<type> I<handler>
+=item B<add_handler> I<type> I<handler>
 
-A wrapper to B<FVWM::Module>::B<addHandler>, has the same syntax, but stores
-all handlers so they may be deleted at once using B<deleteHandlers>.
+A wrapper to B<FVWM::Module>::B<add_handler>, has the same syntax, but stores
+all handlers so they may be deleted at once using B<delete_handlers>.
 
-=item B<deleteHandlers> [I<handler-ids>]
+=item B<delete_handlers> [I<handler-ids>]
 
-Deletes all handlers defined using addHandler or the ones specified
+Deletes all handlers defined using add_handler or the ones specified
 using an optional I<handler-ids> array ref.
 
 =item B<notify> I<observable> [I<observable-params>]
@@ -361,7 +383,7 @@ Notifies all listeners that were defined using B<observe>, by calling their
 observer function with the following parameters: $module, $tracker, $data,
 I<observable-params>.
 
-=item B<requestWindowListEvents>
+=item B<request_windowlist_events>
 
 Subclasses that work using I<fvwm> events sent in responce to
 B<Send_WindowList> command should call this shortcut method.
@@ -369,7 +391,7 @@ Automatically sends the needed command (after the tracker event mask is
 counted) and defines a handler that terminates the initial tracker event
 loop in response to I<M_END_WINDOWLIST> event.
 
-=item B<requestConfigInfoEvents>
+=item B<request_configinfo_events>
 
 Subclasses that work using I<fvwm> events sent in responce to
 B<Send_ConfigInfo> command should call this shortcut method.
@@ -377,12 +399,12 @@ Automatically sends the needed command (after a tracker event mask is
 counted) and defines a handler that terminates the initial tracker event
 loop in response to I<M_END_CONFIG_INFO> event.
 
-=item B<internalDie>
+=item B<internal_die>
 
 Subclasses may call this method when something wrong happens.
-This is a wrapper to B<FVWM::Module>::B<internalDie>.
+This is a wrapper to B<FVWM::Module>::B<internal_die>.
 
-=item B<toBeDisconnected>
+=item B<to_be_disconnected>
 
 Does nothing by default. Subclasses may implement this method if something
 should be sent to I<fvwm> just before the module disconnects itself.

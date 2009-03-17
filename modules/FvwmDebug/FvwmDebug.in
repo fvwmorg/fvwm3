@@ -32,36 +32,36 @@ BEGIN {
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module;
 
-my $defaultMask = MAX_MSG_MASK &
+my $default_mask = MAX_MSG_MASK &
 	~(M_FOCUS_CHANGE | M_CONFIGURE_WINDOW | M_VISIBLE_NAME | M_ICON_NAME);
-my $defaultXMask = MAX_XMSG_MASK &
+my $default_xmask = MAX_XMSG_MASK &
 	~(MX_ENTER_WINDOW | MX_LEAVE_WINDOW | MX_VISIBLE_ICON_NAME);
-$defaultXMask &= ~M_EXTENDED_MSG;
+$default_xmask &= ~M_EXTENDED_MSG;
 
-my $mask  = $defaultMask;
-my $xmask = $defaultXMask;
+my $mask  = $default_mask;
+my $xmask = $default_xmask;
 my $debug = 0;
-my $showArgs = 1;
-my $showEvents = undef;
-my $logFile = undef;
+my $show_args = 1;
+my $show_events = undef;
+my $log_file = undef;
 my $xconsole = 0;
-my $logStream = \*STDERR;
-my $sendConfigInfo = 0;
-my $sendWindowList = 0;
-my @trackerNames = ();
-my @moduleArgs = @ARGV;
+my $log_stream = \*STDERR;
+my $send_configinfo = 0;
+my $send_windowlist = 0;
+my @tracker_names = ();
+my @module_args = @ARGV;
 
 my $options = {
-	'args!'       => \$showArgs,
-	'events!'     => \$showEvents,
-	'l|log=s'     => \$logFile,
+	'args!'       => \$show_args,
+	'events!'     => \$show_events,
+	'l|log=s'     => \$log_file,
 	'xc|xconsole' => \$xconsole,
 	'm|mask=i'    => \$mask,
 	'x|xmask=i'   => \$xmask,
-	'sc|send-configinfo' => \$sendConfigInfo,
-	'sw|send-windowlist' => \$sendWindowList,
+	'sc|send-configinfo' => \$send_configinfo,
+	'sw|send-windowlist' => \$send_windowlist,
 	'd|debug=i'   => \$debug,
-	't|track=s'   => \@trackerNames,
+	't|track=s'   => \@tracker_names,
 };
 
 my $module = new FVWM::Module(
@@ -70,29 +70,29 @@ my $module = new FVWM::Module(
 	EnableOptions => $options,
 );
 
-$showEvents = (@trackerNames? 0: 1) unless defined $showEvents;
+$show_events = (@tracker_names ? 0 : 1) unless defined $show_events;
 $mask  = MAX_MSG_MASK  if $mask  == -1;
 $xmask = MAX_XMSG_MASK if $xmask == -1;
 
-$module->debug("argv = '" . join("', '", @moduleArgs) . "'\n");
+$module->debug("argv = '" . join("', '", @module_args) . "'\n");
 $module->mask($mask);
 $module->xmask($xmask);
 
-#$module->addHandler($mask, \&showEvent);
-#$module->addHandler($xmask | M_EXTENDED_MSG, \&showEvent);
-$module->addHandler(MAX_MSG_MASK, \&showEvent);
-$module->addHandler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&showEvent);
+#$module->add_handler($mask, \&show_event);
+#$module->add_handler($xmask | M_EXTENDED_MSG, \&show_event);
+$module->add_handler(MAX_MSG_MASK, \&show_event);
+$module->add_handler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&show_event);
 
-$module->addHandler(ON_EXIT, sub { system("killall xconsole"); }) if $xconsole;
-$logFile = '|xconsole -file /dev/stdin -geometry 600x400 -notify' if $xconsole;
+$module->add_handler(ON_EXIT, sub { system("killall xconsole"); }) if $xconsole;
+$log_file = '|xconsole -file /dev/stdin -geometry 600x400 -notify' if $xconsole;
 
-if ($logFile) {
+if ($log_file) {
 	# let's hope the system will close it automatically on exit
-	my $prefix = $logFile =~ /^\s*\|/? "": ">";
-	open $logStream, "$prefix$logFile";
+	my $prefix = $log_file =~ /^\s*\|/ ? "" : ">";
+	open $log_stream, "$prefix$log_file";
 }
 
-foreach my $name (@trackerNames) {
+foreach my $name (@tracker_names) {
 	my $tracker = $module->track($name);
 	$module->debug(
 		"$name: initialized\n" . $tracker->dump . ("-" x 74), 0
@@ -106,20 +106,20 @@ foreach my $name (@trackerNames) {
 	});
 }
 
-$module->send("Send_ConfigInfo") if $sendConfigInfo;
-$module->send("Send_WindowList") if $sendWindowList;
+$module->send("Send_ConfigInfo") if $send_configinfo;
+$module->send("Send_WindowList") if $send_windowlist;
 
-$module->eventLoop;
+$module->event_loop;
 
-sub showEvent ($$) {
-	return unless $showEvents;
+sub show_event ($$) {
+	return unless $show_events;
 	my ($module, $event) = @_;
 
-	unless ($showArgs) {
-		print $logStream $event->name, "\n";
+	unless ($show_args) {
+		print $log_stream $event->name, "\n";
 		return;
 	}
-	print $logStream $event->dump;
+	print $log_stream $event->dump;
 }
 
 __END__

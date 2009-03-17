@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009 Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,20 +30,20 @@ sub start ($) {
 	my $self = shift;
 
 	$self->{data} = {};
-	$self->addHandler(M_CONFIG_INFO, sub {
+	$self->add_handler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
-		$self->calculateInternals($event->args);
+		$self->calculate_internals($event->args);
 	});
 
-	$self->requestConfigInfoEvents;
+	$self->request_configinfo_events;
 
 	my $result = $self->SUPER::start;
 
-	$self->deleteHandlers;
+	$self->delete_handlers;
 
-	$self->addHandler(M_CONFIG_INFO, sub {
+	$self->add_handler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
-		my $name = $self->calculateInternals($event->args);
+		my $name = $self->calculate_internals($event->args);
 		return unless defined $name;
 		$self->notify("value changed", $name);
 	});
@@ -51,13 +51,13 @@ sub start ($) {
 	return $result;
 }
 
-sub calculateInternals ($$) {
+sub calculate_internals ($$) {
 	my $self = shift;
 	my $args = shift;
 	my $data = $self->{data};
 
 	my $text = $args->{text};
-	$self->internalDie("No 'text' arg in M_CONFIG_INFO")
+	$self->internal_die("No 'text' arg in M_CONFIG_INFO")
 		unless defined $text;
 	return undef if $text =~ /^(?:desktopsize|colorset|\*)/i;
 
@@ -106,15 +106,15 @@ FVWM configuration.
  
 Using B<FVWM::Module> $module object:
 
-    my $configTracker = $module->track("GlobalConfig");
-    my $configHash = $configTracker->data;
-    my $xineramaInfo = $configHash->{'ImagePath'};
+    my $config_tracker = $module->track("GlobalConfig");
+    my $config_hash = $config_tracker->data;
+    my $image_path = $config_hash->{'ImagePath'};
 
 or:
 
-    my $configTracker = $module->track("GlobalConfig");
-    my $xineramaInfo = $configTracker->data('XineramaConfig');
-    my $desktop2Name = $configTracker->data('DesktopName 2');
+    my $config_tracker = $module->track("GlobalConfig");
+    my $xinerama_info = $config_tracker->data('XineramaConfig');
+    my $desktop2_name = $config_tracker->data('DesktopName 2');
 
 =head1 OVERRIDDEN METHODS
 

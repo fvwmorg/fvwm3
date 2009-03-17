@@ -1,5 +1,21 @@
 #!@PERL@
 
+# Copyright (c) 2002-2009 Mikhael Goikhman
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 # Filter this script to pod2man to get a man page:
 #   pod2man -c "Fvwm Utilities" fvwm-perllib | nroff -man | less -e
 
@@ -24,39 +40,39 @@ use lib $perllibdir;
 use General::FileSystem '-die';
 
 my $version = "@VERSION@";
-my $versionInfo = "@VERSIONINFO@";
+my $version_info = "@VERSIONINFO@";
 
 my $pager = $ENV{PAGER} || "less -e";
-my $doMan = 0;
-my $doCat = 0;
-my $doRaw = 0;
+my $do_man = 0;
+my $do_cat = 0;
+my $do_raw = 0;
 
 GetOptions(
-	"help|h|?"    => \&showHelp,
-	"version|v|V" => \&showVersion,
-	"man"         => \$doMan,
-	"cat"         => \$doCat,
-	"raw"         => \$doRaw,
+	"help|h|?"    => \&show_help,
+	"version|v|V" => \&show_version,
+	"man"         => \$do_man,
+	"cat"         => \$do_cat,
+	"raw"         => \$do_raw,
 	"dir"         => sub { print $perllibdir; exit(0); },
-) || wrongUsage();
+) || wrong_usage();
 
 if ($ARGV[0] eq 'man') {
-	$doMan = 1;
+	$do_man = 1;
 	shift;
 } elsif ($ARGV[0] eq 'cat') {
-	$doCat = 1;
+	$do_cat = 1;
 	shift;
 } elsif ($ARGV[0] eq 'raw') {
-	$doRaw = 1;
+	$do_raw = 1;
 	shift;
 }
 
-wrongUsage() if !$doMan && !$doCat && !$doRaw || @ARGV > 1;
+wrong_usage() if !$do_man && !$do_cat && !$do_raw || @ARGV > 1;
 
-my $manOrCatStr = $doMan || $doRaw? "man": "cat";
-my $internalPods = {};
+my $man_or_cat_str = $do_man || $do_raw ? "man" : "cat";
+my $internal_pods = {};
 
-$internalPods->{index} = qq{
+$internal_pods->{index} = qq{
 	:head1 NAME
 
 	index - lists all available help topics
@@ -68,7 +84,7 @@ $internalPods->{index} = qq{
 
 	You may read the Perl library documentation locally by running:
 
-	    % fvwm-perllib $manOrCatStr <topic>
+	    % fvwm-perllib $man_or_cat_str <topic>
 
 	Available topics:
 
@@ -79,14 +95,14 @@ $internalPods->{index} = qq{
 
 	For example:
 
-	    % fvwm-perllib $manOrCatStr FVWM::Module
+	    % fvwm-perllib $man_or_cat_str FVWM::Module
 
 	:head1 AUTHOR
 
 	Mikhael Goikhman <migo\@homemail.com>.
 };
 
-$internalPods->{tutorial} = q{
+$internal_pods->{tutorial} = q{
 	:head1 NAME
 
 	tutorial - common techniques for writting fvwm modules
@@ -164,12 +180,12 @@ $internalPods->{tutorial} = q{
 	and to define two event handlers for I<M_NEW_PAGE>. But for our
 	purposes one I<M_NEW_PAGE> would be more than enough:
 
-	    $module->addHandler(M_NEW_PAGE, \&gotNewPage);
+	    $module->add_handler(M_NEW_PAGE, \&got_new_page);
 
-	It is a time to implement our C<gotNewPage> function that will be
+	It is a time to implement our C<got_new_page> function that will be
 	called every time the desktop page is changed.
 
-	    sub gotNewPage {
+	    sub got_new_page {
 	        my ($module, $event) = @_;
 
 	        my $width  = $event->_vp_width;
@@ -205,7 +221,7 @@ $internalPods->{tutorial} = q{
 
 	Finally, all persistent modules should enter the event loop:
 
-	    $module->eventLoop;
+	    $module->event_loop;
 
 	The full module source that we just wrote is available at
 	ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/module-flash .
@@ -288,10 +304,10 @@ $internalPods->{tutorial} = q{
 	    my $format = "(%d, %d)";  # the default format
 
 	    $module->mask($module->mask | M_STRING);
-	    $module->addHandler(M_STRING, sub {
+	    $module->add_handler(M_STRING, sub {
 	        my ($module, $event) = @_;
 	        my $line = $event->_text;
-	        my ($action, @args) = getTokens($line);
+	        my ($action, @args) = get_tokens($line);
 
 	        if ($action eq "stop") {
 	            $module->terminate;
@@ -344,7 +360,7 @@ $internalPods->{tutorial} = q{
 	        alarm(1);
 	    });
 
-	    $module->eventLoop;
+	    $module->event_loop;
 
 	The full module source that we just wrote is available at
 	ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/module-gtkflash .
@@ -366,7 +382,7 @@ $internalPods->{tutorial} = q{
 	Mikhael Goikhman <migo@homemail.com>.
 };
 
-$internalPods->{events} = q{
+$internal_pods->{events} = q{
 	:head1 NAME
 
 	events - list of all fvwm events with arguments
@@ -382,7 +398,7 @@ $internalPods->{events} = q{
 
 	There are several more ways to access arguments, like:
 
-	    $win_id = $event->argValues->[0];
+	    $win_id = $event->arg_values->[0];
 	    $text = $event->args->{text};
 
 	:head1 EVENTS WITH ARGUMENTS
@@ -415,15 +431,15 @@ $internalPods->{events} = q{
 my $topic = $ARGV[0] || "index";
 my $file = "-";
 my $text = "";
-if (exists $internalPods->{$topic}) {
-	$text = $internalPods->{$topic};
+if (exists $internal_pods->{$topic}) {
+	$text = $internal_pods->{$topic};
 	$text =~ s/^\t//mg;
 	$text =~ s/^:/=/mg;
 
 	if ($topic eq 'index') {
-		my @classNames = sort @{listFileNames($perllibdir, 1)};
-		@classNames = map { s!\.pm$!!; s!/!::!g; $_ } @classNames;
-		$text =~ s/{{CLASS_NAMES}}/join("\n    ", @classNames)/seg;
+		my @class_names = sort @{list_filenames($perllibdir, 1)};
+		@class_names = map { s!\.pm$!!; s!/!::!g; $_ } @class_names;
+		$text =~ s/{{CLASS_NAMES}}/join("\n    ", @class_names)/seg;
 	}
 
 	if ($topic eq 'events') {
@@ -446,11 +462,11 @@ if (exists $internalPods->{$topic}) {
 	die "No $file found.\n" unless -f $file;
 }
 
-my $manConverter = $doMan? " | nroff -man | $pager": "";
-open(MANPIPE, $doCat? "| pod2text '$file' | $pager":
-	"| pod2man --section 3 --release 'fvwm $version$versionInfo'" .
+my $man_converter = $do_man ? " | nroff -man | $pager" : "";
+open(MANPIPE, $do_cat ? "| pod2text '$file' | $pager" :
+	"| pod2man --section 3 --release 'fvwm $version$version_info'" .
 		" --center 'Fvwm Perl library' '$file'" .
-		" | sed 's/<STANDARD INPUT>/perllib/ig'$manConverter")
+		" | sed 's/<STANDARD INPUT>/perllib/ig'$man_converter")
 	or die "Can't open pipe to pod/man viewer\n";
 print MANPIPE $text
 	or die "Can't write to pod/man viewer\n";
@@ -458,10 +474,10 @@ close MANPIPE;
 
 # ---------------------------------------------------------------------------
 
-sub showHelp {
+sub show_help {
 	print "Shows documentation of the supplied FVWM Perl library.\n\n";
 	print "Usage: fvwm-perllib man|cat\n";
-	print "\tAn introduction to the Fvwm Perl library\n\n";
+	print "\tAn introduction to the FVWM Perl library\n\n";
 	print "Usage: fvwm-perllib man|cat|raw <Perl::Class>\n";
 	print "\tManual page for <Perl::Class>, try: man FVWM::Module\n";
 	print "\t\$PAGER is used for a pager, the default is '$pager'\n\n";
@@ -474,12 +490,12 @@ sub showHelp {
 	exit 0;
 }
 
-sub showVersion {
+sub show_version {
 	print "$version\n";
 	exit 0;
 }
 
-sub wrongUsage {
+sub wrong_usage {
 	print STDERR "Try '$0 --help' for more information.\n";
 	exit -1;
 }

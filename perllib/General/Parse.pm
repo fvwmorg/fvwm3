@@ -1,4 +1,4 @@
-# Copyright (c) 2002-2003, Mikhael Goikhman
+# Copyright (c) 2002-2009, Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@ use vars qw(@ISA @EXPORT);
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(
-	getToken cutToken getTokens cutTokens eqi nei
+	get_token cut_token get_tokens cut_tokens eqi nei
 );
 
 # currently backslashes are ignored and this is a bit buggy
-sub getToken ($) {
+sub get_token ($) {
 	my $line = shift;
 	my $token;
 
@@ -44,34 +44,34 @@ sub getToken ($) {
 		$token = $line;
 		$line = "";
 	}
-	return wantarray? ($token, $line): $token;
+	return wantarray ? ($token, $line) : $token;
 }
 
 # returns the next quoted token, modifies the parameter (ref to line)
-sub cutToken ($) {
-	my $lineRef = shift;
-	my ($token, $rest) = getToken($$lineRef);
-	$$lineRef = $rest;
+sub cut_token ($) {
+	my $line_ref = shift;
+	my ($token, $rest) = get_token($$line_ref);
+	$$line_ref = $rest;
 	return $token;
 }
 
-sub cutTokens ($$) {
-	my $lineRef = shift;
+sub cut_tokens ($$) {
+	my $line_ref = shift;
 	my $limit = shift;
 	my @tokens = ();
 
-	$$lineRef =~ s/^\s+//;
-	while ($$lineRef ne "" && $limit-- > 0) {
-		push @tokens, cutToken($lineRef);
+	$$line_ref =~ s/^\s+//;
+	while ($$line_ref ne "" && $limit-- > 0) {
+		push @tokens, cut_token($line_ref);
 	}
-	return wantarray? @tokens: \@tokens;
+	return wantarray ? @tokens : \@tokens;
 }
 
-sub getTokens ($;$) {
+sub get_tokens ($;$) {
 	my $line = shift;
 	my $limit = shift || 1000;
 
-	return cutTokens(\$line, $limit);
+	return cut_tokens(\$line, $limit);
 }
 
 sub eqi ($$) {
@@ -95,11 +95,11 @@ General::Parse - parsing functions
   use General::Parse;
 
   my $string = q{Some "not very long" string of 6 tokens.};
-  my $token1 = cutToken(\$string);          # $token1 = "Some";
-  my ($token2, $token3) = cutTokens(\$string, 2);
-  my @subtokens = getTokens($token2);       # ("not", "very", "long")
-  my $subtoken1 = getToken($token2);        # the same as $subtokens[0]
-  my $endingArrayRef = getTokens($string);  # ["of", "6", "tokens."]
+  my $token1 = cut_token(\$string);          # $token1 = "Some";
+  my ($token2, $token3) = cut_tokens(\$string, 2);
+  my @subtokens = get_tokens($token2);       # ("not", "very", "long")
+  my $subtoken1 = get_token($token2);        # the same as $subtokens[0]
+  my $ending_array_ref = get_tokens($string);  # ["of", "6", "tokens."]
 
 =head1 DESCRIPTION
 
@@ -108,7 +108,7 @@ This package may be used for parsing a string into tokens (quoted words).
 =head1 FUNCTIONS
 
 
-=head2 getToken
+=head2 get_token
 
 =over 4
 
@@ -133,7 +133,7 @@ Or, in array context, array of 2 scalars: token and the rest of string.
 =back
 
 
-=head2 cutToken
+=head2 cut_token
 
 =over 4
 
@@ -156,7 +156,7 @@ Token (scalar).
 =back
 
 
-=head2 getTokens
+=head2 get_tokens
 
 =over 4
 
@@ -184,7 +184,7 @@ Tokens (array of scalars or array ref of scalars depending on context).
 =back
 
 
-=head2 cutTokens
+=head2 cut_tokens
 
 =over 4
 

@@ -3,15 +3,14 @@
 use strict;
 use lib `fvwm-perllib dir`;
 use FVWM::Module;
-#use FVWM::Module::Gtk; init Gtk;
 
 my $module = new FVWM::Module(Debug => 2);
 
-my @trackerNames = qw(
+my @tracker_names = qw(
 	Colorsets GlobalConfig ModuleConfig PageInfo Scheduler WindowList
 );
 
-foreach my $name (@trackerNames) {
+foreach my $name (@tracker_names) {
 	my %params = ();
 	%params = ( ModuleName => $0 ) if $name eq "Scheduler";
 	%params = (
@@ -22,10 +21,10 @@ foreach my $name (@trackerNames) {
 	my $tracker = $module->track($name, %params);
 	if ($name eq "Scheduler") {
 		$tracker->schedule(30, sub {
-			my $oldTimeout = $_[0]->{seconds};
-			my $newTimeout = $oldTimeout - 10;
-			$module->terminate if $newTimeout <= 0;
-			$tracker->reschedule($newTimeout);
+			my $old_timeout = $_[0]->{seconds};
+			my $new_timeout = $old_timeout - 10;
+			$module->terminate if $new_timeout <= 0;
+			$tracker->reschedule($new_timeout);
 		});
 	}
 	$module->debug(
@@ -40,4 +39,4 @@ foreach my $name (@trackerNames) {
 	});
 }
 
-$module->eventLoop();
+$module->event_loop();

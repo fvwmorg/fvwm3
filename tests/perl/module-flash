@@ -9,26 +9,28 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module;
 
 # choose the flash command (install osd_cat from xosd, it is nice)
-my $flashCmd = "osd_cat -f 12x24 -A center -p middle -l 1 -s 2 -d 2 -c yellow";
-$flashCmd = "xmessage -name FlashWindow -bg rgb:50/a0/d0 -fg white -center " .
-	"-timeout 1 -buttons '' -xrm '*Margin: 12' -xrm '*cursorName: none' " .
-	"-xrm '*borderWidth: 2' -xrm '*borderColor: rgb:f0/f0/a0' -file -"
-	unless -x "/usr/bin/osd_cat";
+my $flash_cmd = -x '/usr/bin/osd_cat'
+	? "osd_cat -f 12x24 -A center -p middle -l 1 -s 2 -d 2 -c yellow"
+	: "xmessage -name FlashWindow -bg rgb:50/a0/d0 -fg white -center "
+	. "-timeout 1 -buttons '' -xrm '*Margin: 12' -xrm '*cursorName: none' "
+	. "-xrm '*borderWidth: 2' -xrm '*borderColor: rgb:f0/f0/a0' -file -";
 
 my $module = new FVWM::Module(Debug => 0);
 
 # show flash on every page switching
-my $pageTracker = $module->track("PageInfo");
+my $page_tracker = $module->track("PageInfo");
 
-$pageTracker->observe(sub {
+$page_tracker->observe(sub {
 	my ($module, $tracker, $info) = @_;
-	$module->send("Exec killall osd_cat xmessage 2>/dev/null; " .
+	$module->send(
+		"Exec killall osd_cat xmessage 2>/dev/null; " .
 		"echo 'Desk $info->{desk_n} " .
-		"($info->{page_nx}, $info->{page_ny})' | $flashCmd");
+		"($info->{page_nx}, $info->{page_ny})' | $flash_cmd"
+	);
 });
 
 # make the FlashWindow special: OnTop, without border, without focus and so on
 $module->send("Style FlashWindow UsePPosition, NoTitle, NoHandles, BorderWidth 10, StaysOnTop, WindowListSkip, NeverFocus");
 
 # finally enter event loop
-$module->eventLoop;
+$module->event_loop;

@@ -1,4 +1,4 @@
-# Copyright (c) 2003, Mikhael Goikhman
+# Copyright (c) 2003-2009, Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -456,13 +456,13 @@ use Exporter;
 use vars qw(@EXPORT @ISA $EVENT_TYPES $EVENT_NAMES $EVENT_TYPE_NAMES);
 @EXPORT = (
 	@FVWM::Constants::EXPORT,
-	qw(eventName eventArgNames eventArgTypes eventArgValues eventArgs),
-	qw(eventLoopArgNames eventLoopArgTypes),
-	qw(eventArgAliases allEventNames allEventTypes)
+	qw(event_name event_arg_names event_arg_types event_arg_values event_args),
+	qw(event_loop_arg_names event_loop_arg_types),
+	qw(event_arg_aliases all_event_names all_event_types)
 );
 @ISA = qw(Exporter);
 
-sub allEventTypeNames () {
+sub all_event_type_names () {
 	if (!defined $EVENT_TYPE_NAMES) {
 		$EVENT_TYPES = [];
 		$EVENT_NAMES = [];
@@ -482,177 +482,177 @@ sub allEventTypeNames () {
 	return $EVENT_TYPE_NAMES;
 }
 
-sub allEventNames () {
-	allEventTypeNames();
+sub all_event_names () {
+	all_event_type_names();
 	return wantarray? @$EVENT_NAMES: $EVENT_NAMES;
 }
 
-sub allEventTypes () {
-	allEventTypeNames();
+sub all_event_types () {
+	all_event_type_names();
 	return wantarray? @$EVENT_TYPES: $EVENT_TYPES;
 }
 
-sub eventName ($) {
+sub event_name ($) {
 	my $type = shift;
-	return allEventTypeNames()->{$type};
+	return all_event_type_names()->{$type};
 }
 
-sub eventTypeToBinary ($) {
+sub event_type_to_binary ($) {
 	my $type = shift || "no-event-type";
 
 	return $type unless $type =~ /^\d+$/;
 	return sprintf("%b", $type);
 }
 
-sub eventInfo ($) {
+sub event_info ($) {
 	my $type = shift;
 	unless (defined $EVENTS_INFO->{$type}) {
 		die "FVWM::EventNames: Unknown event type (" .
-			eventTypeToBinary($type) . ")\n";
+			event_type_to_binary($type) . ")\n";
 	}
 	return $EVENTS_INFO->{$type};
 }
 
-sub calculateInternals ($) {
+sub calculate_internals ($) {
 	my $type = shift;
 
-	my $eventInfo = eventInfo($type);
-	$eventInfo->{names} = [];
-	$eventInfo->{types} = [];
+	my $event_info = event_info($type);
+	$event_info->{names} = [];
+	$event_info->{types} = [];
 
 	my $i = 0;
-	foreach (@{$eventInfo->{fields}}) {
-		push @{$eventInfo->{names}}, $_ if ($i % 2) == 0;
-		push @{$eventInfo->{types}}, $_ if ($i % 2) == 1;
+	foreach (@{$event_info->{fields}}) {
+		push @{$event_info->{names}}, $_ if ($i % 2) == 0;
+		push @{$event_info->{types}}, $_ if ($i % 2) == 1;
 		$i++;
 	}
 
 	# handle loop args if any
-	return unless exists $eventInfo->{loop_fields};
-	$eventInfo->{loop_names} = [];
-	$eventInfo->{loop_types} = [];
+	return unless exists $event_info->{loop_fields};
+	$event_info->{loop_names} = [];
+	$event_info->{loop_types} = [];
 
 	$i = 0;
-	foreach (@{$eventInfo->{loop_fields}}) {
-		push @{$eventInfo->{loop_names}}, $_ if ($i % 2) == 0;
-		push @{$eventInfo->{loop_types}}, $_ if ($i % 2) == 1;
+	foreach (@{$event_info->{loop_fields}}) {
+		push @{$event_info->{loop_names}}, $_ if ($i % 2) == 0;
+		push @{$event_info->{loop_types}}, $_ if ($i % 2) == 1;
 		$i++;
 	}
 }
 
-sub eventArgNames ($$) {
+sub event_arg_names ($$) {
 	my $type = shift;
-	my $argValues = shift;
+	my $arg_values = shift;
 
-	my $eventInfo = eventInfo($type);
-	my $argNames = $eventInfo->{names};
-	return $argNames if defined $argNames;
-	calculateInternals($type);
-	return $eventInfo->{names};
+	my $event_info = event_info($type);
+	my $arg_names = $event_info->{names};
+	return $arg_names if defined $arg_names;
+	calculate_internals($type);
+	return $event_info->{names};
 }
 
-sub eventArgTypes ($$) {
+sub event_arg_types ($$) {
 	my $type = shift;
-	my $argValues = shift;
+	my $arg_values = shift;
 
-	my $eventInfo = eventInfo($type);
-	my $argTypes = $eventInfo->{types};
-	return $argTypes if defined $argTypes;
-	calculateInternals($type);
-	return $eventInfo->{types};
+	my $event_info = event_info($type);
+	my $arg_types = $event_info->{types};
+	return $arg_types if defined $arg_types;
+	calculate_internals($type);
+	return $event_info->{types};
 }
 
-sub eventArgValues ($$) {
+sub event_arg_values ($$) {
 	my $type = shift;
-	my $packedStr = shift;
+	my $packed_str = shift;
 
-	my $eventInfo = eventInfo($type);
-	my @argValues = unpack($eventInfo->{format}, $packedStr);
-	my $argFields = $eventInfo->{fields};
-	push @argValues, (undef) x ((@$argFields / 2) - @argValues);
+	my $event_info = event_info($type);
+	my @arg_values = unpack($event_info->{format}, $packed_str);
+	my $arg_fields = $event_info->{fields};
+	push @arg_values, (undef) x ((@$arg_fields / 2) - @arg_values);
 
 	# process looped args
-	if (@$argFields && $argFields->[@$argFields - 1] == looped) {
-		my @loopArgValues = ();
+	if (@$arg_fields && $arg_fields->[@$arg_fields - 1] == looped) {
+		my @loop_arg_values = ();
 
-		my $restStr = pop @argValues;
-		while ($restStr ne "") {
-			my @newArgValues = unpack($eventInfo->{loop_format}, $restStr);
-			die "Internal error, no loop args unpacked ($type)\n" unless @newArgValues > 1;
-			$restStr = pop @newArgValues;
-			push @loopArgValues, @newArgValues;
+		my $rest_str = pop @arg_values;
+		while ($rest_str ne "") {
+			my @new_arg_values = unpack($event_info->{loop_format}, $rest_str);
+			die "Internal error, no loop args unpacked ($type)\n" unless @new_arg_values > 1;
+			$rest_str = pop @new_arg_values;
+			push @loop_arg_values, @new_arg_values;
 		}
 
-		push @argValues, \@loopArgValues;
+		push @arg_values, \@loop_arg_values;
 	}
 
 	# strip everything past the first null (or newline) if needed
-	if (@$argFields && $argFields->[-1] == string) {
-		$argValues[-1] =~ s/\n*\0.*//s;
+	if (@$arg_fields && $arg_fields->[-1] == string) {
+		$arg_values[-1] =~ s/\n*\0.*//s;
 	}
 
-	return \@argValues;
+	return \@arg_values;
 }
 
-sub eventLoopArgNames ($$) {
+sub event_loop_arg_names ($$) {
 	my $type = shift;
-	my $argValues = shift;
+	my $arg_values = shift;
 
-	my $eventInfo = eventInfo($type);
-	my $argNames = $eventInfo->{loop_names};
-	return $argNames if defined $argNames;
-	calculateInternals($type);
-	return $eventInfo->{loop_names};
+	my $event_info = event_info($type);
+	my $arg_names = $event_info->{loop_names};
+	return $arg_names if defined $arg_names;
+	calculate_internals($type);
+	return $event_info->{loop_names};
 }
 
-sub eventLoopArgTypes ($$) {
+sub event_loop_arg_types ($$) {
 	my $type = shift;
-	my $argValues = shift;
+	my $arg_values = shift;
 
-	my $eventInfo = eventInfo($type);
-	my $argTypes = $eventInfo->{loop_types};
-	return $argTypes if defined $argTypes;
-	calculateInternals($type);
-	return $eventInfo->{loop_types};
+	my $event_info = event_info($type);
+	my $arg_types = $event_info->{loop_types};
+	return $arg_types if defined $arg_types;
+	calculate_internals($type);
+	return $event_info->{loop_types};
 }
 
-sub eventArgs ($$) {
+sub event_args ($$) {
 	my $type = shift;
-	my $argValues = shift;
+	my $arg_values = shift;
 
-	my $argNames = eventArgNames($type, $argValues);
+	my $arg_names = event_arg_names($type, $arg_values);
 
 	die sprintf "Internal error, event type %s (%d names, %d values)\n",
-		eventTypeToBinary($type), scalar @$argNames, scalar @$argValues
-		if @$argNames != @$argValues;
+		event_type_to_binary($type), scalar @$arg_names, scalar @$arg_values
+		if @$arg_names != @$arg_values;
 
-	my $loopArgNames = eventLoopArgNames($type, $argValues);
+	my $loop_arg_names = event_loop_arg_names($type, $arg_values);
 
 	die sprintf "Internal error, event type %s (%d loop names, non array)\n",
-		eventTypeToBinary($type), scalar @$loopArgNames
-		if $loopArgNames && ref($loopArgNames) ne 'ARRAY'
-			&& !@$loopArgNames && ref($argValues->[-1]) ne 'ARRAY';
+		event_type_to_binary($type), scalar @$loop_arg_names
+		if $loop_arg_names && ref($loop_arg_names) ne 'ARRAY'
+			&& !@$loop_arg_names && ref($arg_values->[-1]) ne 'ARRAY';
 
 	my $i = 0;
 	my %args = map {
 		my $value = $_;
-		$argNames->[$i++], ref($value) ne 'ARRAY'? $value: do {
-			my $loopValue = [];
+		$arg_names->[$i++], ref($value) ne 'ARRAY'? $value: do {
+			my $loop_value = [];
 			my $j = 0;
 			while ($j < @$value) {
-				my %loopHash = map { $_, $value->[$j++] } @$loopArgNames;
-				push @$loopValue, \%loopHash;
+				my %loop_hash = map { $_, $value->[$j++] } @$loop_arg_names;
+				push @$loop_value, \%loop_hash;
 			}
-			$loopValue
+			$loop_value
 		}
-	} @$argValues;
+	} @$arg_values;
 	return \%args;
 }
 
-sub eventArgAliases ($) {
+sub event_arg_aliases ($) {
 	my $type = shift;
 
-	return eventInfo($type)->{aliases} || {};
+	return event_info($type)->{aliases} || {};
 }
 
 # ----------------------------------------------------------------------------
@@ -665,14 +665,14 @@ FVWM::EventNames - names and types of all fvwm event arguments
 
   use FVWM::EventNames;
 
-  print "All event names: ", join(", ", @{allEventNames()}), "\n";
-  print "All event types: ", join(", ", @{allEventTypes()}), "\n";
+  print "All event names: ", join(", ", @{all_event_names()}), "\n";
+  print "All event types: ", join(", ", @{all_event_types()}), "\n";
 
-  my $name      = eventName     (M_ICON_LOCATION);
-  my $argValues = eventArgValues(M_ICON_LOCATION, $packedStr);
-  my $argNames  = eventArgNames (M_ICON_LOCATION, $argValues);
-  my $argTypes  = eventArgTypes (M_ICON_LOCATION, $argValues);
-  my $args      = eventArgs     (M_ICON_LOCATION, $argValues);
+  my $name       = event_name      (M_ICON_LOCATION);
+  my $arg_values = event_arg_values(M_ICON_LOCATION, $packed_str);
+  my $arg_names  = event_arg_names (M_ICON_LOCATION, $arg_values);
+  my $arg_types  = event_arg_types (M_ICON_LOCATION, $arg_values);
+  my $args       = event_args      (M_ICON_LOCATION, $arg_values);
 
 =head1 DESCRIPTION
 
@@ -695,67 +695,67 @@ reference for the names of the event arguments and their types.
 
 =over 4
 
-=item B<eventName> I<type>
+=item B<event_name> I<type>
 
 Returns the string representation of the numeric event I<type> constant,
 like I<M_RAISE_WINDOW> or I<MX_ENTER_WINDOW>.
 
-=item B<eventArgValues> I<type> I<packedStr>
+=item B<event_arg_values> I<type> I<packed_str>
 
 Constructs array ref of argument values for the event I<type>
-from the I<packedStr> (as received from I<fvwm>).
+from the I<packed_str> (as received from I<fvwm>).
 
 If the last argument type of the event is string, for convenience,
 everything past the first null (or newline) is automatically stripped
 from the last argument value.
 
-=item B<eventArgNames> I<type> I<argValues>
+=item B<event_arg_names> I<type> I<arg_values>
 
 Returns array ref of argument names of the event type.
 
-I<argValues> is either the real array ref of values (as returned by
-B<eventArgValues>) or a number of actual values.
+I<arg_values> is either the real array ref of values (as returned by
+B<event_arg_values>) or a number of actual values.
 The returned array has the same number of elements.
 
-=item B<eventArgTypes> I<type> I<argValues>
+=item B<event_arg_types> I<type> I<arg_values>
 
 Returns array ref of argument types of the event type.
 
-I<argValues> is either the real array ref of values (as returned by
-B<eventArgValues>) or a number of actual values.
+I<arg_values> is either the real array ref of values (as returned by
+B<event_arg_values>) or a number of actual values.
 The returned array has the same number of elements.
 
-=item B<eventLoopArgNames> I<type> I<argValues>
+=item B<event_loop_arg_names> I<type> I<arg_values>
 
 Returns array ref of looped argument names of the event type (or undef).
 
-=item B<eventLoopArgTypes> I<type> I<argValues>
+=item B<event_loop_arg_types> I<type> I<arg_values>
 
 Returns array ref of looped argument types of the event type (or undef).
 
-=item B<eventArgs> I<type> I<argValues>
+=item B<event_args> I<type> I<arg_values>
 
 Constructs hash ref of the named arguments for the event I<type>
-from the I<argValues> array ref (as returned by B<eventArgValues>).
+from the I<arg_values> array ref (as returned by B<event_arg_values>).
 
-=item B<eventArgAliases> I<type>
+=item B<event_arg_aliases> I<type>
 
 This method is provided for backward compatibility when argument names
 are changed. For example, in the past the argument name of I<M_NEW_DESK>
 was B<desk>, but now it is B<desk_n>. Using this method it is possible
 to make both names supported. Returns hash ref (old-name => new-name).
 
-=item B<allEventNames>
+=item B<all_event_names>
 
 Returns array ref of all known event names (strings).
 In the list context returns list of these names.
 
-=item B<allEventTypes>
+=item B<all_event_types>
 
 Returns array ref of all known event types (numbers).
 In the list context returns list of these types.
 
-=item B<allEventTypeNames>
+=item B<all_event_type_names>
 
 Returns hash ref of all known event names and types (type => name).
 

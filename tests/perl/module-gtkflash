@@ -7,17 +7,16 @@
 
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Gtk;
-use General::Parse;  # for getTokens()
-use Gtk; 
+use General::Parse qw(get_tokens);
 init Gtk;
 
 my $format = "(%d, %d)";
 my $module = new FVWM::Module::Gtk(Mask => M_NEW_PAGE | M_STRING);
 
-$module->addHandler(M_STRING, sub {
+$module->add_handler(M_STRING, sub {
 	my ($module, $event) = @_;
 	my $line = $event->_text;
-	my ($action, @args) = getTokens($line);
+	my ($action, @args) = get_tokens($line);
 
 	if ($action eq "stop") {
 		$module->terminate;
@@ -26,8 +25,8 @@ $module->addHandler(M_STRING, sub {
 	}
 });
 
-my $lastWindow = undef;
-$module->addHandler(M_NEW_PAGE, sub {
+my $last_window = undef;
+$module->add_handler(M_NEW_PAGE, sub {
 	my ($module, $event) = @_;
 
 	my $width  = $event->_vp_width; 
@@ -58,18 +57,18 @@ $module->addHandler(M_NEW_PAGE, sub {
 	$frame->add($label);
 	$window->show_all;
 
-	$lastWindow->destroy() if $lastWindow;
-	$lastWindow = $window;
+	$last_window->destroy() if $last_window;
+	$last_window = $window;
 
 	# alarm is not called in perl-5.8.0, but called in earlier perls!..
 	# probably some problem with Gtk-Perl and perl-5.8.0
 	$SIG{ALRM} = sub {
-		$lastWindow->destroy();
-		$lastWindow = undef;
+		$last_window->destroy();
+		$last_window = undef;
 	};
 	alarm(1);
 });
 
 $module->send("Style FlashWindow UsePPosition, NoTitle, NoHandles, BorderWidth 10, StaysOnTop, WindowListSkip, NeverFocus");
 
-$module->eventLoop;
+$module->event_loop;

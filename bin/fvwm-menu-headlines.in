@@ -1,12 +1,28 @@
 #!@PERL@
 
+# Copyright (c) 1999-2009 Mikhael Goikhman
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 # Filter this script to pod2man to get a man page:
 #   pod2man -c "Fvwm Utilities" fvwm-menu-headlines | nroff -man | less -e
 
 require 5.002;
 use strict;
-use vars qw($siteInfo @smonths @lmonths %smonthHash %lmonthHash);
-use vars qw($entityMap $errorMenuContent);
+use vars qw($site_info @smonths @lmonths %smonth_hash %lmonth_hash);
+use vars qw($entity_map $error_menu_content);
 use Getopt::Long;
 use Socket;
 use POSIX qw(strftime);
@@ -14,40 +30,40 @@ use Time::Local;
 
 my $version = "@VERSION@";
 
-local $siteInfo = {
+local $site_info = {
 	'freshmeat' => {
 		'name' => "FreshMeat",
 		'host' => "freshmeat.net",
 		'path' => "/backend/recentnews.txt",
-		'func' => \&processFreshMeat,
+		'func' => \&process_freshmeat,
 		'flds' => 'headline, date, url',
 	},
 	'slashdot' => {
 		'name' => "Slashdot",
 		'host' => "slashdot.org",
 		'path' => "/slashdot.xml",
-		'func' => \&processSlashdot,
+		'func' => \&process_slashdot,
 		'flds' => 'title, url, time, author, department, topic, comments, section, image',
 	},
 	'linuxtoday' => {
 		'name' => "LinuxToday",
 		'host' => "linuxtoday.com",
 		'path' => "/lthead.txt",
-		'func' => \&processLinuxToday,
+		'func' => \&process_linuxtoday,
 		'flds' => 'headline, url, date',
 	},
 	'old-segfault' => {
 		'name' => "Old-Segfault (empty now)",
 		'host' => "segfault.org",
 		'path' => "/stories.txt",
-		'func' => \&processSegfault,
+		'func' => \&process_segfault,
 		'flds' => 'headline, url, date, author_name, author_email, type',
 	},
 	'old-appwatch' => {
 		'name' => "Old-AppWatch (closed by ZDNet)",
 		'host' => "www.appwatch.com",
 		'path' => "/appwatch.rdf",
-		'func' => \&processPoorRdf,
+		'func' => \&process_poor_rdf,
 		'flds' => 'title, link, description',
 	},
 	'old-linuxapps' => {
@@ -61,14 +77,14 @@ local $siteInfo = {
 		'name' => "Old-JustLinux (no headlines?)",
 		'host' => "www.justlinux.com",
 		'path' => "/backend/discussion.rdf",
-		'func' => \&processPoorRdf,
+		'func' => \&process_poor_rdf,
 		'flds' => 'title, link',
 	},
 	'daemonnews' => {
 		'name' => "DaemonNews",
 		'host' => "daily.daemonnews.org",
 		'path' => "/ddn.rdf.php3",
-		'func' => \&processPoorRdf,
+		'func' => \&process_poor_rdf,
 		'flds' => 'title, link',
 	},
 	# this is now called FootNotes or GNOME Desktop News, was news.gnome.org
@@ -76,49 +92,49 @@ local $siteInfo = {
 		'name' => "GNOME-News",
 		'host' => "www.gnomedesktop.org",
 		'path' => "/backend.php",
-		'func' => \&processPoorRdf,
+		'func' => \&process_poor_rdf,
 		'flds' => 'title, link',
 	},
 	'kde-news' => {
 		'name' => "KDE-News",
 		'host' => "news.kde.org",
 		'path' => "/rdf",
-		'func' => \&processKDENews,
+		'func' => \&process_kde_news,
 		'flds' => 'title, link',
 	},
 	'old-freekde' => {
 		'name' => "Old-FreeKDE (taken off?)",
 		'host' => "freekde.org",
 		'path' => "/freekdeorg.rdf",
-		'func' => \&processFreeKDE,
+		'func' => \&process_freekde,
 		'flds' => 'title, link',
 	},
 	'rootprompt' => {
 		'name' => "RootPrompt",
 		'host' => "rootprompt.org",
 		'path' => "/rss/",
-		'func' => \&processRootPrompt,
+		'func' => \&process_rootprompt,
 		'flds' => 'title, link, description',
 	},
 	'newsforge' => {
 		'name' => "NewsForge",
 		'host' => "www.newsforge.com",
 		'path' => "/newsforge.xml",
-		'func' => \&processSlashdot,
+		'func' => \&process_slashdot,
 		'flds' => 'title, url, time, author, department, topic, comments, section, image',
 	},
 	'kuro5hin' => {
 		'name' => "Kuro5hin",
 		'host' => "www.kuro5hin.org",
 		'path' => "/backend.rdf",
-		'func' =>  \&processKuro5hin,
+		'func' =>  \&process_kuro5hin,
 		'flds' => 'title, link, description',
 	},
 	'bbspot' => {
 		'name' => "BBSpot",
 		'host' => "bbspot.com",
 		'path' => "/bbspot.rdf",
-		'func' => \&processPoorRdf,
+		'func' => \&process_poor_rdf,
 		'flds' => 'title, link',
 	},
 	'linuxfr' => {
@@ -126,7 +142,7 @@ local $siteInfo = {
 		'host' => "linuxfr.org",
 #		'path' => "/short.php3",
 		'path' => "/backend.rss",
-		'func' => \&processLinuxFr,
+		'func' => \&process_linuxfr,
 #		'flds' => 'headline, url, author_name, author_email, type',
 		'flds' => 'title, link',
 	},
@@ -134,14 +150,14 @@ local $siteInfo = {
 		'name' => "ThinkGeek",
 		'host' => "www.thinkgeek.com",
 		'path' => "/thinkgeek.rdf",
-		'func' => \&processPoorRdf,
+		'func' => \&process_poor_rdf,
 		'flds' => 'title, link',
 	},
 	'cnn' => {
 		'name' => "CNN",
 		'host' => "www.cnn.com",
 		'path' => "/desktop/content.html",
-		'func' => \&processCNN,
+		'func' => \&process_cnn,
 		'flds' => 'headline, url',
 	},
 	# to be removed
@@ -149,7 +165,7 @@ local $siteInfo = {
 		'name' => "BBC-World (obsolete)",
 		'host' => "news.bbc.co.uk",
 		'path' => "/low/english/world/default.stm",
-		'func' => \&processOldBBC,
+		'func' => \&process_old_bbc,
 		'flds' => 'headline, url, abstract',
 	},
 	# to be removed
@@ -157,14 +173,14 @@ local $siteInfo = {
 		'name' => "BBC-SciTech (obsolete)",
 		'host' => "news.bbc.co.uk",
 		'path' => "/low/english/sci/tech/default.stm",
-		'func' => \&processOldBBC,
+		'func' => \&process_old_bbc,
 		'flds' => 'headline, url, abstract',
 	},
 	'bbc' => {
 		'name' => "BBC",
 		'host' => "news.bbc.co.uk", 'host0' => "tickers.bbc.co.uk",
 		'path' => "/tickerdata/story2.dat",
-		'func' => \&processBBC,
+		'func' => \&process_bcc,
 		'flds' => 'story, headline, url',
 	},
 };
@@ -172,70 +188,70 @@ local $siteInfo = {
 # Site specific parsers may use these constants to convert month to unix time.
 local @smonths = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
 local @lmonths = qw(January February March April May June July August September October November December);
-local (%smonthHash, %lmonthHash) = ();
-foreach (0 .. 11) { $smonthHash{$smonths[$_]} = $_; $lmonthHash{$lmonths[$_]} = $_; }
+local (%smonth_hash, %lmonth_hash) = ();
+foreach (0 .. 11) { $smonth_hash{$smonths[$_]} = $_; $lmonth_hash{$lmonths[$_]} = $_; }
 
 my $TIMEFIELDS_DATE_TIME = 1;
 my $TIMEFIELDS_ONLY_DATE = 2;
 my $TIMEFIELDS_NONE = 3;
 
 my $home  = $ENV{'HOME'} || '/tmp';
-my $fvwmUserDir = $ENV{'FVWM_USERDIR'} || "$home/.fvwm";
-$fvwmUserDir = $home unless -d $fvwmUserDir;
-my $workHome = "$fvwmUserDir/.fvwm-menu-headlines";
+my $fvwm_user_dir = $ENV{'FVWM_USERDIR'} || "$home/.fvwm";
+$fvwm_user_dir = $home unless -d $fvwm_user_dir;
+my $work_home = "$fvwm_user_dir/.fvwm-menu-headlines";
 
-require "$workHome/extension.pl" if -r "$workHome/extension.pl";
+require "$work_home/extension.pl" if -r "$work_home/extension.pl";
 
 my $info  = undef;
-my $defaultSite = 'freshmeat';
+my $default_site = 'freshmeat';
 my $site  = undef;
 my $name  = undef;
 my $title = undef;
-my $itemF = '%h\t%[(%Y-%m-%d %H:%M)]';
-my $execF = q(firefox '%u');
-my $commF = undef;
-my $iconT = '';
-my $iconI = '';
-my $iconH = '';
-my $iconE = '';
-my $wmIcons = 0;
+my $itemf = '%h\t%[(%Y-%m-%d %H:%M)]';
+my $execf = q(firefox '%u');
+my $commf = undef;
+my $icont = '';
+my $iconi = '';
+my $iconh = '';
+my $icone = '';
+my $wm_icons = 0;
 
 my $proxy = undef;
 my $port  = 80;
 my $frontpage = undef;
 
 my @time  = localtime();
-my $menuFile = undef;
-my $fakeFile = undef;
+my $menu_filename = undef;
+my $fake_filename = undef;
 my $timeout = 20;
 my $endl = "\r\n";  # this is preferable for http sockets to "\n"
 
 GetOptions(
-	"help|h|?"  => \&showHelp,
-	"version|V" => \&showVersion,
+	"help|h|?"  => \&show_help,
+	"version|V" => \&show_version,
 	"info:s"    => \$info,
 	"site=s"    => \$site,
 	"name=s"    => \$name,
 	"title=s"   => \$title,
-	"item=s"    => \$itemF,
-	"exec=s"    => \$execF,
-	"command=s"    => \$commF,
-	"icon-title=s" => \$iconT,
-	"icon-item=s"  => \$iconI,
-	"icon-home=s"  => \$iconH,
-	"icon-error=s" => \$iconE,
-	"wm-icons"  => \$wmIcons,
+	"item=s"    => \$itemf,
+	"exec=s"    => \$execf,
+	"command=s"    => \$commf,
+	"icon-title=s" => \$icont,
+	"icon-item=s"  => \$iconi,
+	"icon-home=s"  => \$iconh,
+	"icon-error=s" => \$icone,
+	"wm-icons"  => \$wm_icons,
 	"proxy=s"   => \$proxy,
 	"frontpage:s" => \$frontpage,
-	"file:s"    => \$menuFile,
-	"fake:s"    => \$fakeFile,
+	"file:s"    => \$menu_filename,
+	"fake:s"    => \$fake_filename,
 	"timeout=i" => \$timeout,
-) || wrongUsage();
-wrongUsage() if @ARGV;
+) || wrong_usage();
+wrong_usage() if @ARGV;
 
 if (defined $info) {
 	if ($info) {
-		my $_info = $siteInfo->{lc($info)};
+		my $_info = $site_info->{lc($info)};
 		die "Unsupported site '$info'; try --info.\n" unless $_info;
 		my $host0 = $_info->{'host0'} || $_info->{'host'};
 		print
@@ -244,40 +260,40 @@ if (defined $info) {
 			"Headlines:\n\thttp://$host0$_info->{'path'}\n",
 			"Headline fields:\n\t$_info->{'flds'}\n";
 	} else {
-		print "All supported sites:\n\t", join(", ", &getAllSiteNames()),
+		print "All supported sites:\n\t", join(", ", &get_all_site_names()),
 			"\n\nSpecify a site name after --info to get a site headlines info.\n";
 	}
 	exit(0);
 }
 
-$site  ||= $defaultSite; $site = lc($site);
-die "Unsupported site '$site'; try --info.\n" unless exists $siteInfo->{$site};
-#$name ||= "MenuHeadlines$siteInfo->{$site}->{'name'}";
+$site  ||= $default_site; $site = lc($site);
+die "Unsupported site '$site'; try --info.\n" unless exists $site_info->{$site};
+#$name ||= "MenuHeadlines$site_info->{$site}->{'name'}";
 $name  ||= $site;
-$title ||= "$siteInfo->{$site}->{'name'} Headlines";
+$title ||= "$site_info->{$site}->{'name'} Headlines";
 
-my $siteName = $siteInfo->{$site}->{'name'};
-my $siteHost = $siteInfo->{$site}->{'host'};
-my $sitePath = $siteInfo->{$site}->{'path'};
-my $siteFunc = $siteInfo->{$site}->{'func'};
+my $site_name = $site_info->{$site}->{'name'};
+my $site_host = $site_info->{$site}->{'host'};
+my $site_path = $site_info->{$site}->{'path'};
+my $site_func = $site_info->{$site}->{'func'};
 
-$commF ||= "Exec $execF";
+$commf ||= "Exec $execf";
 
 $title =~ s/\\t/\t/g;
-$itemF =~ s/\\t/\t/g;
-$commF =~ s/\\t/\t/g;
+$itemf =~ s/\\t/\t/g;
+$commf =~ s/\\t/\t/g;
 
-if ($wmIcons) {
-	$iconT ||= "";
-	$iconI ||= "menu/information.xpm";
-	$iconH ||= "menu/home.xpm";
-	$iconE ||= "menu/choice-no.xpm";
+if ($wm_icons) {
+	$icont ||= "";
+	$iconi ||= "menu/information.xpm";
+	$iconh ||= "menu/home.xpm";
+	$icone ||= "menu/choice-no.xpm";
 }
 
-my $iconTStr = $iconT? "%$iconT%": "";
-my $iconIStr = $iconI? "%$iconI%": "";
-my $iconHStr = $iconH? "%$iconH%": "";
-my $iconEStr = $iconE? "%$iconE%": "";
+my $icont_str = $icont ? "%$icont%" : "";
+my $iconi_str = $iconi ? "%$iconi%" : "";
+my $iconh_str = $iconh ? "%$iconh%" : "";
+my $icone_str = $icone ? "%$icone%" : "";
 
 if (defined $proxy && $proxy =~ /^(.+):(\d+)$/) {
 	$proxy = $1;
@@ -288,41 +304,41 @@ if (defined $proxy && $proxy =~ /^(.+):(\d+)$/) {
 #   1) no --file option or value '-' specified (STDOUT is used)
 #   2) no or empty menu file in --file specified (the default name is used)
 #   3) non-empty menu file specified (use it)
-$menuFile = undef if defined $menuFile && $menuFile eq '-';
-if ($menuFile) {
-	$menuFile =~ s:^~(/|$):$home$1:;
-	$menuFile =~ m:^(.+)/[^/]+$:; $workHome = $1 || ".";
-} elsif (defined $menuFile) {
-	$menuFile = "$workHome/$site.menu";
+$menu_filename = undef if defined $menu_filename && $menu_filename eq '-';
+if ($menu_filename) {
+	$menu_filename =~ s:^~(/|$):$home$1:;
+	$menu_filename =~ m:^(.+)/[^/]+$:; $work_home = $1 || ".";
+} elsif (defined $menu_filename) {
+	$menu_filename = "$work_home/$site.menu";
 }
 
 my $content = "";
 
 $content .= qq(DestroyMenu $name\n);
-$content .= qq(AddToMenu $name "$iconTStr$title" Title\n);
-local $errorMenuContent = $content;
+$content .= qq(AddToMenu $name "$icont_str$title" Title\n);
+local $error_menu_content = $content;
 
-my $frontpageEntry = "";
+my $frontpage_entry = "";
 if (defined $frontpage) {
-	my $cmd = &expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
-	$frontpageEntry = qq(+ "$iconHStr$siteName Frontpage" $cmd\n);
-	$errorMenuContent .= qq($frontpageEntry\n+ "" Nop\n);
+	my $cmd = &expand_all_width_specifiers($commf, {'u' => "http://$site_host/"});
+	$frontpage_entry = qq(+ "$iconh_str$site_name Frontpage" $cmd\n);
+	$error_menu_content .= qq($frontpage_entry\n+ "" Nop\n);
 }
 
-$errorMenuContent .= "+ `$iconEStr<msg>` DestroyMenu $name\n";
+$error_menu_content .= "+ `$icone_str<msg>` DestroyMenu $name\n";
 
 if (defined $frontpage && $frontpage !~ /^b/) {
-	$content .= qq($frontpageEntry\n+ "" Nop\n);
+	$content .= qq($frontpage_entry\n+ "" Nop\n);
 }
 
-unless (defined $fakeFile) {
-	$siteHost = $siteInfo->{$site}->{'host0'}
-		if defined $siteInfo->{$site}->{'host0'};
-	my $redirectDepth = 0;
+unless (defined $fake_filename) {
+	$site_host = $site_info->{$site}->{'host0'}
+		if defined $site_info->{$site}->{'host0'};
+	my $redirect_depth = 0;
 
 HTTP_CONNECTION:
-	my $host = $proxy || $siteHost;
-	my $iaddr = inet_aton($host) || &dieNet("Can't resolve host $host");
+	my $host = $proxy || $site_host;
+	my $iaddr = inet_aton($host) || &die_net("Can't resolve host $host");
 	my $paddr = sockaddr_in($port, $iaddr);
 	my $proto = getprotobyname('tcp');
 
@@ -331,76 +347,76 @@ HTTP_CONNECTION:
 	eval {
 		socket(SOCK, PF_INET, SOCK_STREAM, $proto) &&
 		connect(SOCK, $paddr)
-	} || &dieNet("Can't connect host $host");
+	} || &die_net("Can't connect host $host");
 	alarm(0);
 	select(SOCK); $| = 1; select(STDOUT);
 
 	# do http request
-	my $httpHeaders = "$endl" .
-		"Host: $siteHost$endl" .
+	my $http_headers = "$endl" .
+		"Host: $site_host$endl" .
 		"Connection: close$endl" .
 		"User-Agent: fvwm-menu-headlines/$version$endl" .
 		"Pragma: no-cache$endl" .
 		"$endl";
 	if (defined $proxy) {
-		print SOCK "GET http://$siteHost$sitePath HTTP/1.1$httpHeaders";
+		print SOCK "GET http://$site_host$site_path HTTP/1.1$http_headers";
 	} else {
-		print SOCK "GET $sitePath HTTP/1.1$httpHeaders";
+		print SOCK "GET $site_path HTTP/1.1$http_headers";
 	}
 
-	unless (readLine() =~ m{HTTP/1\.\d (\d+) \w+}) {
-		&dieNet("Invalid HTTP response from http://$siteHost$sitePath", 0);
+	unless (read_line() =~ m{HTTP/1\.\d (\d+) \w+}) {
+		&die_net("Invalid HTTP response from http://$site_host$site_path", 0);
 	}
 	my $status = $1;
-	if ($status =~ /^301|302$/ && ++$redirectDepth < 5) {
+	if ($status =~ /^301|302$/ && ++$redirect_depth < 5) {
 		# redirection
 		while (1) {
-			my $line = readLine();
+			my $line = read_line();
 			$line =~ s/[\n\r]+$//s;
 			last unless $line;
 			if ($line =~ m{Location: http://([^/]+)(/.*)}i) {
-				$siteHost = $1;
-				$sitePath = $2;
+				$site_host = $1;
+				$site_path = $2;
 				goto HTTP_CONNECTION;
 			}
 		}
 	}
-	&dieNet("Unexpected HTTP response $status from http://$siteHost$sitePath", 0)
+	&die_net("Unexpected HTTP response $status from http://$site_host$site_path", 0)
 		unless $status eq "200";
 
 	# skip http response headers
-	while (readLine() !~ /^\r?\n?$/s) {}
+	while (read_line() !~ /^\r?\n?$/s) {}
 } else {
-	if ($fakeFile) {
-		$fakeFile =~ s:^~(/|$):$home$1:;
+	if ($fake_filename) {
+		$fake_filename =~ s:^~(/|$):$home$1:;
 	} else {
-		$fakeFile = "$workHome/$site.in";
+		$fake_filename = "$work_home/$site.in";
 	}
-	open(SOCK, "<$fakeFile") || &dieSys("Can't open $fakeFile");
+	open(SOCK, "<$fake_filename") || &die_sys("Can't open $fake_filename");
 }
 
-my $entries = &$siteFunc;
+my $entries = &$site_func;
 
-close(SOCK) || &dieNet("Error closing socket");
+close(SOCK) || &die_net("Error closing socket");
 
 foreach (@$entries) {
-	my $text = &expandAllWidthSpecifiers($itemF, $_);
-	my $comm = &expandAllWidthSpecifiers($commF, $_);
+	my $text = &expand_all_width_specifiers($itemf, $_);
+	my $comm = &expand_all_width_specifiers($commf, $_);
 	$text =~ s/"/\\"/g;
-	$content .= qq(+ "$iconIStr$text" $comm\n);
+	$content .= qq(+ "$iconi_str$text" $comm\n);
 }
 
 if (defined $frontpage && $frontpage =~ /^b/) {
-	$content .= qq(+ "" Nop\n$frontpageEntry);
+	$content .= qq(+ "" Nop\n$frontpage_entry);
 }
 
-if (defined $menuFile) {
-	unless (-d $workHome) {
-		mkdir($workHome, 0775) || &dieSys("Can't create $workHome");
+if (defined $menu_filename) {
+	unless (-d $work_home) {
+		mkdir($work_home, 0775) || &die_sys("Can't create $work_home");
 	}
-	open(MENU_FILE, ">$menuFile") || &dieSys("Can't open $menuFile");
+	open(MENU_FILE, ">$menu_filename") || &die_sys("Can't open $menu_filename");
 	print MENU_FILE $content;
-	close(MENU_FILE) || &dieSys("Can't close $menuFile");
+	close(MENU_FILE) || &die_sys("Can't close $menu_filename");
 } else {
 	print $content;
 }
@@ -409,26 +425,26 @@ exit();
 
 # ---------------------------------------------------------------------------
 
-sub readLine {
+sub read_line {
 	local $SIG{ALRM} = sub { die "timeout\n"; };
 	alarm($timeout);
 	my $line = eval { <SOCK> };
 	if ($@) {
-		&dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
-		&dieNet($@);
+		&die_net("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
+		&die_net($@);
 	}
 	alarm(0);
 	print STDERR $line if $ENV{"DEBUG_DUMP_RESPONSE"};
 	return $line;
 }
 
-sub readAllLines {
+sub read_all_lines {
 	local $SIG{ALRM} = sub { die "timeout\n"; };
 	alarm($timeout * 2);
 	my $lines = eval { join('', <SOCK>) };
 	if ($@) {
-		&dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
-		&dieNet($@);
+		&die_net("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
+		&die_net($@);
 	}
 	alarm(0);
 	print STDERR $lines if $ENV{"DEBUG_DUMP_RESPONSE"};
@@ -436,9 +452,9 @@ sub readAllLines {
 }
 
 # make unix time from year (2001 or 101), mon (0..11), day, hour, min, sec
-sub makeTime {  # ($$$$$$$)
-	my ($hourD, $year, $mon, $day, $hour, $min, $sec) = @_;
-	$hourD ||= 0;
+sub make_time {  # ($$$$$$$)
+	my ($h_offset, $year, $mon, $day, $hour, $min, $sec) = @_;
+	$h_offset ||= 0;
 	my $type = $TIMEFIELDS_DATE_TIME;
 
 	unless (defined $hour || defined $min) {
@@ -458,29 +474,29 @@ sub makeTime {  # ($$$$$$$)
 	$sec  = 0 unless $sec && $sec >= 0 && $sec < 60;
 
 	return [
-		timegm($sec, $min, $hour, $day, $mon, $year) - $hourD * 60 * 60,
+		timegm($sec, $min, $hour, $day, $mon, $year) - $h_offset * 60 * 60,
 		$type
 	];
 }
 
-sub setEntryAliasesAndTime ($$$$) {
+sub set_entry_aliases_and_time ($$$$) {
 	my $entry = shift;
 	my $aliases = shift;
-	my $timeSub = shift;
-	my $hOffset = shift;
+	my $time_func = shift;
+	my $h_offset = shift;
 
 	my ($alias, $orig);
 	while (($alias, $orig) = each %$aliases) {
-		$entry->{$alias} = !$orig? "":
-			ref($orig) eq 'CODE'? &{$orig}($entry): $entry->{$orig};
+		$entry->{$alias} = !$orig ? "" :
+			ref($orig) eq 'CODE' ? &{$orig}($entry) : $entry->{$orig};
 		$entry->{$alias} = "" unless defined $entry->{$alias};
 	}
 
-	$entry->{'_'} = makeTime($hOffset, &{$timeSub}($entry->{'d'}));
+	$entry->{'_'} = make_time($h_offset, &{$time_func}($entry->{'d'}));
 }
 
 BEGIN {
-	$entityMap = {
+	$entity_map = {
 		'gt'    => '>',
 		'lt'    => '<',
 		'quot'  => '"',
@@ -488,21 +504,21 @@ BEGIN {
 	};
 }
 
-sub processXml ($$$$) {
-	my $entryTag = shift;
+sub process_xml ($$$$) {
+	my $entry_tag = shift;
 	my $aliases = shift;
-	my $timeSub = shift;
-	my $hOffset = shift;
+	my $time_func = shift;
+	my $h_offset = shift;
 	my @entries = ();
 
-	my $doc = readAllLines();
+	my $doc = read_all_lines();
 
 	ENTRY:
-	foreach ($doc =~ m!<$entryTag\b[^>]*>(.*?)</$entryTag>!sg) {
+	foreach ($doc =~ m!<$entry_tag\b[^>]*>(.*?)</$entry_tag>!sg) {
 		s/&amp;quot;/"/g;  # fix buggy html in some backends
 		# replace &#039; with single quote and &quot; with double quote
 		s/&(?:(\w+)|#(\d{2,})|#x([\da-fA-F]{2,4}));/
-			$1 ? $entityMap->{$1} || "{$1}" : chr($2 || hex($3))
+			$1 ? $entity_map->{$1} || "{$1}" : chr($2 || hex($3))
 		/ge;
 
 		my $entry = {};
@@ -515,24 +531,24 @@ sub processXml ($$$$) {
 			$entry->{$1} = $2;
 		}
 
-		setEntryAliasesAndTime($entry, $aliases, $timeSub, $hOffset);
+		set_entry_aliases_and_time($entry, $aliases, $time_func, $h_offset);
 		push @entries, $entry;
 	}
 	return \@entries;
 }
 
-sub processText ($$$$) {
+sub process_text ($$$$) {
 	my $fields = shift;
 	my $aliases = shift;
-	my $timeSub = shift;
-	my $hOffset = shift;
+	my $time_func = shift;
+	my $h_offset = shift;
 	my @entries = ();
 
 	ENTRY:
 	while (1) {
 		my $entry = {};
 		foreach (@$fields) {
-			my $line = readLine();
+			my $line = read_line();
 			last ENTRY unless defined $line;
 			next if $_ eq '_ignore_';
 
@@ -543,14 +559,14 @@ sub processText ($$$$) {
 			$entry->{$_} = $line;
 		}
 
-		setEntryAliasesAndTime($entry, $aliases, $timeSub, $hOffset);
+		set_entry_aliases_and_time($entry, $aliases, $time_func, $h_offset);
 		push @entries, $entry;
 	}
 	return \@entries;
 }
 
-sub processSlashdot () {
-	return processXml(
+sub process_slashdot () {
+	return process_xml(
 		'story',
 		{ 'h' => 'title', 'u' => 'url', 'd' => 'time' },
 		sub ($) {
@@ -560,50 +576,50 @@ sub processSlashdot () {
 	);
 }
 
-sub processFreshMeat () {
-	return processText(
+sub process_freshmeat () {
+	return process_text(
 		[ qw( headline date url ) ],
 		{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
 		sub ($) {
 			$_[0] =~ /^(?:\w+, )?(\w+) (\d+)\w* (\d+),? (\d+):(\d+)/;
-			($3, $lmonthHash{$1}, $2, $4, $5, 0);
+			($3, $lmonth_hash{$1}, $2, $4, $5, 0);
 		}, -5 + (abs((localtime())[4] - 5.5) < 3),
 	);
 }
 
-sub processLinuxToday () {
+sub process_linuxtoday () {
 	my $line;
-	while ($line = readLine()) {
-		last if $line =~ /linuxtoday.com/;         # skip the text note
-		last if $line =~ /&&/ and readLine() x 3;  # if it was replaced
+	while ($line = read_line()) {
+		last if $line =~ /linuxtoday.com/;          # skip the text note
+		last if $line =~ /&&/ and read_line() x 3;  # if it was replaced
 	}
-	return processText(
+	return process_text(
 		[ qw( _ignore_ headline url date ) ],
 		{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
 		sub ($) {
 			$_[0] =~ /(\w+) (\d+), (\d+), (\d+):(\d+):(\d+)/;
-			($3, $smonthHash{$1}, $2, $4, $5, $6);
+			($3, $smonth_hash{$1}, $2, $4, $5, $6);
 		}, +0,
 	);
 }
 
-sub processSegfault () {
+sub process_segfault () {
 	my $line;
-	while ($line = readLine()) {
+	while ($line = read_line()) {
 		last if $line =~ /^%%/;  # skip the text note
 	}
-	return processText(
+	return process_text(
 		[ qw( headline url date author_name author_email type _ignore_ ) ],
 		{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
 		sub ($) {
 			$_[0] =~ /(\d+) (\w+) (\d+):(\d+):(\d+) (\d+)/;
-			($6, $smonthHash{$2}, $1, $3, $4, $5);
+			($6, $smonth_hash{$2}, $1, $3, $4, $5);
 		}, -8 + (abs((localtime())[4] - 5.5) < 3),
 	);
 }
 
-sub processPoorRdf () {
-	return processXml(
+sub process_poor_rdf () {
+	return process_xml(
 		'item',
 		{ 'h' => 'title', 'u' => 'link', 'd' => undef },
 		sub ($) {
@@ -614,35 +630,35 @@ sub processPoorRdf () {
 	);
 }
 
-sub processLinuxApps_old () {
-	return processText(
+sub process_linuxapps_old () {
+	return process_text(
 		[ qw( headline date url ) ],
 		{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
 		sub ($) {
 			$_[0] =~ /(\w+) (\d+) (\d+):(\d+):(\d+) \w+ (\d+)/;
-			($6, $smonthHash{$1}, $2, $3, $4, $5);
+			($6, $smonth_hash{$1}, $2, $3, $4, $5);
 		}, -5,
 	);
 }
 
-sub processKDENews () {
-	my $linkToTime = sub ($) { $_[0]->{'link'} =~ m|/(\d+)/?$|; $1; };
-	return processXml(
+sub process_kde_news () {
+	my $link_to_time = sub ($) { $_[0]->{'link'} =~ m|/(\d+)/?$|; $1; };
+	return process_xml(
 		'item',
-		{ 'h' => 'title', 'u' => 'link', 'd' => $linkToTime },
+		{ 'h' => 'title', 'u' => 'link', 'd' => $link_to_time },
 		sub ($) {
 			(gmtime($_[0]))[5,4,3,2,1,0];
 		}, +0,
 	);
 }
 
-sub processFreeKDE () {
-	my $linkToDate = sub ($) {
-		$_[0]->{'link'} =~ m|/(\d\d/\d\d/\d\d)/|; $1? "20$1": '';
+sub process_freekde () {
+	my $link_to_date = sub ($) {
+		$_[0]->{'link'} =~ m|/(\d\d/\d\d/\d\d)/|; $1 ? "20$1" : '';
 	};
-	return processXml(
+	return process_xml(
 		'item',
-		{ 'h' => 'title', 'u' => 'link', 'd' => $linkToDate },
+		{ 'h' => 'title', 'u' => 'link', 'd' => $link_to_date },
 		sub ($) {
 			$_[0] =~ m|(\d+)/(\d+)/(\d+)|;
 			($1, ($2 || 0) - 1, $3);
@@ -650,30 +666,30 @@ sub processFreeKDE () {
 	);
 }
 
-sub processRootPrompt () {
+sub process_rootprompt () {
 	my $title_stripped = sub ($) {
 		$_[0]->{'title'} =~ /(.*) \([^\(\)]+\)$/ ? $1 : $_[0]->{'title'};
 	};
 	my $title_to_date = sub ($) {
 		$_[0]->{'title'} =~ / \((\d+ \w{3} \d{4})\)$/; $1;
 	};
-	return processXml(
+	return process_xml(
 		'item',
 		{ 'h' => $title_stripped, 'u' => 'link', 'd' => $title_to_date },
 		sub ($) {
 			$_[0] =~ /(\d+) (\w+) (\d+)/;
-			($3, $smonthHash{$2}, $1);
+			($3, $smonth_hash{$2}, $1);
 		}, +0,
 	);
 }
 
-sub processKuro5hin () {
-	my $linkToDate = sub ($) {
+sub process_kuro5hin () {
+	my $link_to_date = sub ($) {
 		$_[0]->{'link'} =~ m|/(\d\d\d\d/\d{1,2}/\d{1,2})/|; $1;
 	};
-	return processXml(
+	return process_xml(
 		'item',
-		{ 'h' => 'title', 'u' => 'link', 'd' => $linkToDate },
+		{ 'h' => 'title', 'u' => 'link', 'd' => $link_to_date },
 		sub ($) {
 			$_[0] =~ m|(\d+)/(\d+)/(\d+)|;
 			($1, ($2 || 0) - 1, $3);
@@ -681,18 +697,18 @@ sub processKuro5hin () {
 	);
 }
 
-sub processLinuxFr () {
-	my $linkToDate = sub ($) {
+sub process_linuxfr () {
+	my $link_to_date = sub ($) {
 		$_[0]->{'link'} =~ m|/(\d\d\d\d/\d\d/\d\d)/|; $1;
 	};
-	my $hackForUrl = sub ($) {
+	my $hack_for_url = sub ($) {
 		# hack for mozilla -remote openURL
 		my $u = $_[0]->{'link'};
 		$u =~ s|,|\%2c|g; $u;
 	};
-	return processXml(
+	return process_xml(
 		'item',
-		{ 'h' => 'title', 'u' => $hackForUrl, 'd' => $linkToDate },
+		{ 'h' => 'title', 'u' => $hack_for_url, 'd' => $link_to_date },
 		sub ($) {
 			$_[0] =~ m|(\d+)/(\d+)/(\d+)|;
 			($1, ($2 || 0) - 1, $3);
@@ -700,22 +716,22 @@ sub processLinuxFr () {
 	);
 }
 
-sub processLinuxFr_old () {
-	my $linkToDate = sub ($) {
+sub process_linuxfr_old () {
+	my $link_to_date = sub ($) {
 		$_[0]->{'url'} =~ m|/(\d\d\d\d/\d\d/\d\d)/|; $1;
 	};
-	my $hackForUrl = sub ($) {
+	my $hack_for_url = sub ($) {
 		# hack for mozilla -remote openURL
 		my $u = $_[0]->{'url'};
 		$u =~ s|,|\%2c|g; $u;
 	};
 	my $line;
-	while ($line = readLine()) {
+	while ($line = read_line()) {
 		last if $line =~ /^%%/;  # skip the text note
 	}
-	return processText(
+	return process_text(
 		[ qw( headline url author_name author_email type _ignore_ ) ],
-		{ 'h' => 'headline', 'u' => $hackForUrl, 'd' => $linkToDate },
+		{ 'h' => 'headline', 'u' => $hack_for_url, 'd' => $link_to_date },
 		sub ($) {
 			$_[0] =~ m|(\d+)/(\d+)/(\d+)|;
 			($1, ($2 || 0) - 1, $3);
@@ -723,11 +739,11 @@ sub processLinuxFr_old () {
 	);
 }
 
-sub processCNN () {
-	my $contents = readAllLines();
+sub process_cnn () {
+	my $contents = read_all_lines();
 	my @entries = ();
 
-	my $linkToDate = sub ($) {
+	my $link_to_date = sub ($) {
 		$_[0]->{'url'} =~ m|/(\d\d\d\d).*?(/\d\d/\d\d)/|; "$1$2";
 	};
 
@@ -735,13 +751,13 @@ sub processCNN () {
 		my $entry = {};
 		$entry->{'url'} = "http://www.cnn.com$1";
 		$entry->{'headline'} = $2;
-		setEntryAliasesAndTime(
+		set_entry_aliases_and_time(
 			$entry,
-			{ 'h' => 'headline', 'u' => 'url', 'd' => $linkToDate },
+			{ 'h' => 'headline', 'u' => 'url', 'd' => $link_to_date },
 			sub ($) {
-				$_[0] =~ m|(\d+)/(\d+)/(\d+)|?
-					($1, ($2 || 0) - 1, $3):
-					();
+				$_[0] =~ m|(\d+)/(\d+)/(\d+)|
+					? ($1, ($2 || 0) - 1, $3)
+					: ();
 			}, -5,
 		);
 		push @entries, $entry;
@@ -751,8 +767,8 @@ sub processCNN () {
 	return \@entries;
 }
 
-sub processOldBBC () {
-	my $contents = readAllLines();
+sub process_old_bbc () {
+	my $contents = read_all_lines();
 	$contents =~ s!\r\n...\r\n!!sg;  # they insert this randomly!
 	$contents =~ s!\s*<(br|/h3|h3|span[^>]*|/span|img [^>]+)>[ \t\r]*\n?!!sig;
 	my @entries = ();
@@ -764,7 +780,7 @@ sub processOldBBC () {
 		$entry->{'abstract'} = $3;
 		$path =~ s|^(/\d+)?/low/|$1/hi/|;
 		$entry->{'url'} = "http://news.bbc.co.uk$path";
-		setEntryAliasesAndTime(
+		set_entry_aliases_and_time(
 			$entry,
 			{ 'h' => 'headline', 'u' => 'url', 'd' => undef },
 			sub ($) {
@@ -778,10 +794,10 @@ sub processOldBBC () {
 	return \@entries;
 }
 
-sub processBBC () {
-	readAllLines() =~ /STORY 1\nHEADLINE Last update at (\d+:\d+)\nURL \n(.*)$/s;
+sub process_bcc () {
+	read_all_lines() =~ /STORY 1\nHEADLINE Last update at (\d+:\d+)\nURL \n(.*)$/s;
 	my ($time, $contents) = ($1, $2);
-	dieNet("Parse error. Did BBC site change format?", "") unless defined $time;
+	die_net("Parse error. Did BBC site change format?", "") unless defined $time;
 	my @entries = ();
 
 	$contents =~ s{STORY (\d+)\nHEADLINE (.*?)\nURL (.*?)\n}{
@@ -799,13 +815,13 @@ sub processBBC () {
 		$url = "http://news.bbc.co.uk/" if $url eq "";
 		$entry->{'url'} = $url;
 		$entry->{'date'} = $date;
-		setEntryAliasesAndTime(
+		set_entry_aliases_and_time(
 			$entry,
 			{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
 			sub ($) {
 				return () unless defined $_[0] &&
 	         $_[0] =~ /^(\d+) (\w+) (\d+) (\d+):(\d+)/;
-	         ($3, $lmonthHash{$2}, $1, $4, $5);
+	         ($3, $lmonth_hash{$2}, $1, $4, $5);
 			}, +0,
 		);
 		push @entries, $entry;
@@ -817,7 +833,7 @@ sub processBBC () {
 
 # ---------------------------------------------------------------------------
 
-sub dieSys ($) {
+sub die_sys ($) {
 	my $msg = shift;
 	$msg = "$0: $msg: [$!]\n";
 
@@ -828,22 +844,22 @@ sub dieSys ($) {
 	exit(-1);
 }
 
-sub dieNet ($;$) {
+sub die_net ($;$) {
 	my $msg = shift;
-	my $checkNetworkMsg = @_? "": "; check network connection";
+	my $check_network_msg = @_ ? "" : "; check network connection";
 
-	#dieSys($msg);
-	$errorMenuContent =~ s/<msg>/$msg$checkNetworkMsg/;
-	print $errorMenuContent;
+	#die_sys($msg);
+	$error_menu_content =~ s/<msg>/$msg$check_network_msg/;
+	print $error_menu_content;
 	exit(-1);
 }
 
 # like strftime, but gets unix time, instead of sec/min/hour/day/mon/year.
-sub formatTime ($$) {
-	my ($fmt, $timePair) = @_;
+sub format_time ($$) {
+	my ($fmt, $time_pair) = @_;
 
-	$timePair = [] unless ref($timePair) eq 'ARRAY';
-	my ($time, $type) = @$timePair;
+	$time_pair = [] unless ref($time_pair) eq 'ARRAY';
+	my ($time, $type) = @$time_pair;
 	$time ||= time();
 	$type ||= $TIMEFIELDS_NONE;
 
@@ -860,36 +876,36 @@ sub formatTime ($$) {
 # Substitutes all %N1*N2x in $name by properly stripped and justified $values.
 # $name example: %[%d %b %y %H:%M], %*-7(some text), %-32*30h, %{url}.
 # $values is a hash of named values to substitute.
-sub expandAllWidthSpecifiers ($$) {
+sub expand_all_width_specifiers ($$) {
 	my ($name, $values) = @_;
 	$name =~ s/%(-?\d+)?(\*(-?)(\d+))?(\w|{\w+}|\(.*?\)|\[.*?\])/
 		my $tag = substr($5, 0, 1);
-		my $arg = length($5) == 1? $5: substr($5, 1, -1);
+		my $arg = length($5) == 1 ? $5 : substr($5, 1, -1);
 		my $value =
-			$tag eq '('? $arg:
-			$tag eq '['? formatTime($arg, $values->{'_'}):
+			$tag eq '(' ? $arg :
+			$tag eq '[' ? format_time($arg, $values->{'_'}) :
 			$values->{$arg};
 		$value = "(%$5 is not defined)" unless defined $value;
-		$value = !$2 || $4 <= 3 || $4 > length($value)? $value: $3?
+		$value = !$2 || $4 <= 3 || $4 > length($value) ? $value : $3?
 			"..." . substr($value, -$4 + 3, $4 - 3):
 			substr($value, 0, $4 - 3) . "...";
-		$1? sprintf("%$1s", $value): $value;
+		$1 ? sprintf("%$1s", $value) : $value;
 	/ge;
 	return $name;
 }
 
-sub getAllSiteNames () {
-	return sort map { $siteInfo->{$_}->{'name'} } keys %$siteInfo;
+sub get_all_site_names () {
+	return sort map { $site_info->{$_}->{'name'} } keys %$site_info;
 }
 
-sub showHelp {
-	$site  ||= $defaultSite;
-	#$name ||= "MenuHeadlines$siteInfo->{$site}->{'name'}";
+sub show_help {
+	$site  ||= $default_site;
+	#$name ||= "MenuHeadlines$site_info->{$site}->{'name'}";
 	$name  ||= $site;
-	$title ||= "$siteInfo->{$site}->{'name'} Headlines";
+	$title ||= "$site_info->{$site}->{'name'} Headlines";
 
 	print "A perl script which builds headlines menu for fvwm.\n";
-	print "Supported sites: ", join(', ', getAllSiteNames()), "\n\n";
+	print "Supported sites: ", join(', ', get_all_site_names()), "\n\n";
 	print "Usage: $0 [OPTIONS]\n";
 	print "Options:\n";
 	print "\t--help           show this help and exit\n";
@@ -898,8 +914,8 @@ sub showHelp {
 	print "\t--site=NAME      headlines site, default is $site\n";
 	print "\t--name=NAME      menu name,  default is '$name'\n";
 	print "\t--title=NAME     menu title, default is '$title'\n";
-	print "\t--item=FORMAT    menu item format, default is '$itemF'\n";
-	print "\t--exec=FORMAT    exec command, default is {$execF}\n";
+	print "\t--item=FORMAT    menu item format, default is '$itemf'\n";
+	print "\t--exec=FORMAT    exec command, default is {$execf}\n";
 	print "\t--command=FORMAT fvwm command, default is no\n";
 	print "\t--icon-title=XPM menu title icon, default is no\n";
 	print "\t--icon-item=XPM  menu item  icon, default is no\n";
@@ -908,19 +924,19 @@ sub showHelp {
 	print "\t--wm-icons       define icon names to use with wm-icons\n";
 	print "\t--frontpage[=V]  show frontpage item; values: top, bottom\n";
 	print "\t--proxy=host[:port] specify proxy host and port (80)\n";
-	print "\t--file[=FILE]    menu file, default is $workHome/$site.menu\n";
+	print "\t--file[=FILE]    menu file, default is $work_home/$site.menu\n";
 	print "\t--fake[=FILE]    don't connect, read input from file\n";
 	print "\t--timeout=SECS   timeout for a line reading from a socket\n";
 	print "Short options are ok if not ambiguous: -h, -t.\n";
 	exit 0;
 }
 
-sub showVersion {
+sub show_version {
 	print "$version\n";
 	exit 0;
 }
 
-sub wrongUsage {
+sub wrong_usage {
 	print STDERR "Try '$0 --help' for more information.\n";
 	exit -1;
 }
@@ -1168,17 +1184,17 @@ It is possible to add user defined site headlines without touching the script
 itself. Put your perl extensions to the file WORK_HOME/extension.pl.
 For each site add something similar to:
 
-  $siteInfo->{'myslashdot'} = {
+  $site_info->{'myslashdot'} = {
     'name' => "MySlashdot",
     'host' => "myslashdot.org",
     'path' => "/myslashdot.xml",
-    'func' => \&processMySlashdot,
+    'func' => \&process_my_slashdot,
     # the following string is only used in --info
     'flds' => 'time, title, department, topic, author, url',
   };
 
-  sub processMySlashdot () {
-    return processXml(
+  sub process_my_slashdot () {
+    return process_xml(
       'story',
       # mandatory 'h', 'u' and 'd' aliases or undef
       { 'h' => 'title', 'u' => 'url', 'd' => 'time' },

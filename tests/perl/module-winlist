@@ -5,24 +5,24 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module;
 use IO::File;
 
-my $runXmessage = 0;
+my $run_xmessage = 0;
 my $module = new FVWM::Module(
 	Name => "FvwmPerlBasedWinList",
 	Mask => M_WINDOW_NAME | M_END_WINDOWLIST,
-	EnableOptions => { "x" => \$runXmessage },
+	EnableOptions => { "x" => \$run_xmessage },
 );
-my $fh = $runXmessage?
-	new IO::File "| xmessage -geometry 240x300 -title 'Window List' -file -":
-	\*STDERR;
+my $fh = $run_xmessage
+	? new IO::File "| xmessage -geometry 240x300 -title 'Window List' -file -"
+	: \*STDERR;
 
 # Register the event handlers
-$module->addHandler(M_WINDOW_NAME, sub {
+$module->add_handler(M_WINDOW_NAME, sub {
 	my ($self, $event) = @_;
 	printf $fh " 0x%07lx | %s\n", $event->_win_id, $event->_name;
 });
 
 # This one signals that the module should be terminated
-$module->addHandler(M_END_WINDOWLIST, sub {
+$module->add_handler(M_END_WINDOWLIST, sub {
 	print $fh "-----------+--------------------\n";
 	close $fh;
 	$module->terminate;
@@ -36,4 +36,4 @@ print $fh "-----------+--------------------\n";
 $module->send("Send_WindowList");
 
 # Enter the main loop
-$module->eventLoop;
+$module->event_loop;

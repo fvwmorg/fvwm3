@@ -5,13 +5,13 @@ no strict;
 
 ($WIDTH, $HEIGHT) = `xdpyinfo | grep dimensions` =~ /(\d+)x(\d+)/;
 
-%windowSize = ( x => 300, y => 150 );
-$borderWidth = 8;
-$titleHeight = 20;  # several vertical points are not very important
-$pos_x = ($WIDTH - $windowSize{x}) / 2 - $borderWidth;
-$pos_y = ($HEIGHT - $windowSize{y} - $titleHeight) / 2 - $borderWidth;
+%window_size = ( x => 300, y => 150 );
+$border_width = 8;
+$title_height = 20;  # several vertical points are not very important
+$pos_x = ($WIDTH - $window_size{x}) / 2 - $border_width;
+$pos_y = ($HEIGHT - $window_size{y} - $title_height) / 2 - $border_width;
 
-$shadeCommands = "
+$shade_commands = "
 All (MyXMessage) WindowShade ShadeAgain NE
 All (MyXMessage) WindowShade ShadeAgain N
 All (MyXMessage) WindowShade ShadeAgain E
@@ -23,15 +23,15 @@ All (MyXMessage) WindowShade ShadeAgain W
 All (MyXMessage) WindowShade ShadeAgain NW
 All (MyXMessage) WindowShade Off
 ";
-$shadeFunction = "DestroyFunc ShadeMyXMessage\nAddToFunc ShadeMyXMessage\n";
-$shadeFunction .= "+ I None (MyXMessage) Wait MyXMessage\n";
-$shadeFunction .= join("\n+ I ", split(/\n/, $shadeCommands));
+$shade_function = "DestroyFunc ShadeMyXMessage\nAddToFunc ShadeMyXMessage\n";
+$shade_function .= "+ I None (MyXMessage) Wait MyXMessage\n";
+$shade_function .= join("\n+ I ", split(/\n/, $shade_commands));
 
 ::command(qq[
-	Style MyXMessage BorderWidth $borderWidth, NoHandles
+	Style MyXMessage BorderWidth $border_width, NoHandles
 	Style MyXMessage WindowShadeShrinks, WindowShadeSteps 80
 
-	Exec xmessage -g $windowSize{x}x$windowSize{y}+$pos_x+$pos_y \\
+	Exec xmessage -g $window_size{x}x$window_size{y}+$pos_x+$pos_y \\
 		-fg black -xrm "*textSink*font:lucidasans-18" \\
 		-xrm "*form*background:rgb:c0/c0/a0" \\
 		-xrm "*form*okay*background:rgb:90/90/7a" \\
@@ -45,6 +45,6 @@ $shadeFunction .= join("\n+ I ", split(/\n/, $shadeCommands));
 ::command(qq[
 	# Wait only works in functions or "Read file", but not in command()!
 	# So do it in a function.
-	$shadeFunction
+	$shade_function
 	ShadeMyXMessage
 ]);

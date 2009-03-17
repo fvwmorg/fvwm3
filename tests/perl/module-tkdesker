@@ -30,15 +30,15 @@ my $desker = new FVWM::Module::Tk($TOP,
 	Name => "FvwmPerlTkDesker",
 	Mask => (M_NEW_DESK | M_FOCUS_CHANGE | M_ERROR),
 );
-&ReadDeskerOptions($desker, $TOP);
+&read_desker_options($desker, $TOP);
 
 $frame = $TOP->Frame;
 $TOP->title($opts{Title} || $desker->name);
 $TOP->geometry($opts{Geometry}) if (defined $opts{Geometry});
-&makeButtons($frame, $desker);
+&make_buttons($frame, $desker);
 $frame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
 
-$desker->addHandler(M_NEW_DESK, sub {
+$desker->add_handler(M_NEW_DESK, sub {
 	my ($self, $event) = @_;
 	my $desk = $event->_desk;
 
@@ -47,26 +47,26 @@ $desker->addHandler(M_NEW_DESK, sub {
 	$current_desk = $desk;
 	&hilite($current_desk, $self);
 });
-$desker->addHandler(M_FOCUS_CHANGE, sub {
+$desker->add_handler(M_FOCUS_CHANGE, sub {
 	my ($self, $event) = @_;
 
 	$desk_focus[$current_desk] = $event->_win_id;
 });
-$desker->addDefaultErrorHandler;
+$desker->add_default_error_handler;
 
 #
 # Any signals we need to be wary of?
 #
 $SIG{PIPE} = sub { exit };
 
-$current_desk = &currentDesk($desker);
+$current_desk = &current_desk($desker);
 &hilite($current_desk);
 
-$desker->eventLoop; # Never returns
+$desker->event_loop; # Never returns
 
 exit;
 
-sub ReadDeskerOptions ($$) {
+sub read_desker_options ($$) {
 	my $mod = shift;
 	my $top = shift;
 
@@ -74,7 +74,7 @@ sub ReadDeskerOptions ($$) {
 
 	if (@args < 2) {
 		my $name = $mod->name;
-		$mod->showError("$name requires start and end params");
+		$mod->show_error("$name requires start and end params");
 		die "Usage: $0 #start #end [ -name name_string ]\n";
 	}
 
@@ -88,7 +88,7 @@ sub ReadDeskerOptions ($$) {
 	}
 
 	### To fix
-	%opts = ();  #$mod->getConfigInfo();
+	%opts = ();  #$mod->get_config_info();
 
 	$top->optionAdd('*foreground', $opts{Foreground})
 		if (exists $opts{Foreground});
@@ -102,7 +102,7 @@ sub ReadDeskerOptions ($$) {
 	$opts{'END'} = $END;
 }
 
-sub makeButtons ($$) {
+sub make_buttons ($$) {
 	my $top = shift;
 	my $mod = shift;
 
@@ -176,7 +176,7 @@ sub unhilite ($) {
 	}
 }
 
-sub currentDesk ($) {
+sub current_desk ($) {
 	my $mod = shift;
 
 	# not implemented
