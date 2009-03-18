@@ -46,7 +46,7 @@ $fvwm = new FVWM::Module::Tk($TOP,
 							 Debug => 0);
 
 $fvwm->debug("Debug level is: " . $fvwm->{debug});
-$fvwm->addDefaultErrorHandler();
+$fvwm->add_default_error_handler();
 $fvwm->send("Read ConfigFvwmTabs");
 
 sub ver ($)
@@ -448,12 +448,12 @@ sub createNewTabber
 	}
 	elsif (exists $tabWin{$tId})
 	{
-		$fvwm->showError("Tabber \"$tId\" already exists!");
+		$fvwm->show_error("Tabber \"$tId\" already exists!");
 		return;
 	}
 	elsif ($tId =~ /^(any|lastFocus)$/i)
 	{
-		$fvwm->showError("Tabber name \"$tId\" is illegal!");
+		$fvwm->show_error("Tabber name \"$tId\" is illegal!");
 		return;
 	}
 
@@ -729,7 +729,7 @@ sub winIdToTId ($)
 }
 
 # SendToModule commands arrive as M_STRING events.
-$fvwm->addHandler(M_STRING, sub {
+$fvwm->add_handler(M_STRING, sub {
 	my ($self, $event) = @_;
 
 	$fvwm->debug("M_STRING: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
@@ -890,7 +890,7 @@ sub swallowNext
 
 sub swallowNextClick ($$) { swallowNext($_[1], ''); }
 
-$fvwm->addHandler(M_ADD_WINDOW, sub {
+$fvwm->add_handler(M_ADD_WINDOW, sub {
 	my ($self, $event) = @_;
 
 	$fvwm->debug("Add Window: " . join(", ", map("$_ = " . $event->args->{$_}, keys(%{$event->args}))));
@@ -901,7 +901,7 @@ $fvwm->addHandler(M_ADD_WINDOW, sub {
 
 
 # ON_EXIT handler is invoked just before this module terminates.
-$fvwm->addHandler(ON_EXIT, sub {
+$fvwm->add_handler(ON_EXIT, sub {
 	my ($self, $event) = @_;
 	print($fvwm->name() . ": Got ON_EXIT event.\n");
 	cleanup();
@@ -1126,7 +1126,7 @@ sub addTab ($$)
 	{
 		# can't make tabber a child of itself
 		$fvwm->send("Beep");
-		$fvwm->showError("Can't add self to tabber!");
+		$fvwm->show_error("Can't add self to tabber!");
 		return;
 	}
 
@@ -1501,7 +1501,7 @@ sub selectFont ($$)
 	my $pipe = new FileHandle();
 	if (!$pipe->open("$cmd|"))
 	{
-		$fvwm->showError("Select font: command $cmd failed.");
+		$fvwm->show_error("Select font: command $cmd failed.");
 		return
 	}
 
@@ -1543,7 +1543,7 @@ sub about ($)
 	my ($tId) = @_;
 
 	my $info = $fvwm->name() . "\n\nby Scott Smedley\nss\@aao.gov.au";
-	$fvwm->showMessage($info, "About " . $fvwm->name());
+	$fvwm->show_message($info, "About " . $fvwm->name());
 }
 
 sub setBalloonMsg ($$)
@@ -1925,4 +1925,4 @@ sub toggleAutoResize ($)
 loadState();
 print($fvwm->name() . " started with: Perl " . join('.', map(ord($_), split(//, $^V))) . ", X11::Protocol " .  $X11::Protocol::VERSION . ", Tk $Tk::VERSION.\n");
 $fvwm->send("NOP FINISHED STARTUP");
-$fvwm->eventLoop();
+$fvwm->event_loop();
