@@ -1,7 +1,8 @@
 2009-03-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:
-	add new request_query method
+	add new request_query method;
+	fix small typo in the code to support old API
 
 	* FVWM/EventNames.pm:
 	add new event type MX_REPLY

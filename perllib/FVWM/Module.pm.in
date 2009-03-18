@@ -687,7 +687,7 @@ sub AUTOLOAD ($;@) {
 	$method =~ s/.*://g;
 
 	$method =~ s/XMask/Xmask/;
-	$method =~ s/([a-z])([A-Z])/${1}_\L$2/;
+	$method =~ s/([a-z])([A-Z])/${1}_\L$2/g;
 
 	die "No method $method in $self as guessed from $autoload_method"
 		unless $self->can($method);
@@ -767,6 +767,7 @@ B<track>,
 B<event_loop>,
 B<send_ready>,
 B<send_unlock>,
+B<request_reply>,
 B<postpone_send>,
 B<terminate>,
 B<reset_handlers>,
@@ -919,6 +920,12 @@ When an event was configured to be sent to a module synchronously using
 I<SyncMask> and I<SyncXMask>, I<fvwm> gets locked until the module sends
 the "unlock" notification. This is automatically sent (if needed) when a
 handler is finished, but sometimes a handler should release I<fvwm> earlier.
+
+=item B<request_reply> I<text> [I<win_id>]
+
+A module may request I<fvwm> to send the same text (but possibly
+interpolated) back to it using MX_REPLY event. This method sends special
+command I<Send_Reply>.
 
 =item B<postpone_send> I<command> [I<window-id>] [I<continue-flag>]
 
