@@ -1,3 +1,11 @@
+2009-03-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	add new request_query method
+
+	* FVWM/EventNames.pm:
+	add new event type MX_REPLY
+
 2009-03-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Commands.pm:

@@ -441,6 +441,16 @@ $EVENTS_INFO = {
 		},
 	},
 
+	&MX_REPLY               => {
+		format => "L!3a*",
+		fields => [
+			win_id       => window,
+			frame_id     => window,
+			ptr          => number,
+			text         => string,
+		],
+	},
+
 	"faked"                 => {
 		format => "",
 		fields => [

@@ -388,6 +388,14 @@ sub send_mask ($$;$) {
 	$self->send("SET_MASK " . ($mask | $add_mask));
 }
 
+sub request_reply ($$) {
+	my $self = shift;
+	my $text = shift;
+	my $win_id = shift;
+
+	$self->send("Send_Reply $text", $win_id);
+}
+
 sub terminate ($;$) {
 	my $self = shift;
 	my $continue = shift || 0;
