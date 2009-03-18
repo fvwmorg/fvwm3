@@ -221,6 +221,8 @@ Shows the debug info in terminal.
 
 Useful for debugging a Terminal based module.
 
+=back
+
 =head1 BUGS
 
 Awaiting for your reporting.

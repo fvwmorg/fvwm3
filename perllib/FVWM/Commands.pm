@@ -1186,6 +1186,8 @@ Example:
     # get command names only
     @command_names = map { $_->{name} } @FVWM::Commands::LIST;
 
+=back
+
 =head1 AUTHOR
 
 Mikhael Goikhman <migo@homemail.com>.
@@ -1193,7 +1195,5 @@ Mikhael Goikhman <migo@homemail.com>.
 =head1 SEE ALSO
 
 For more information about the commands themselves, see fvwm(1).
-
-=back
 
 =cut

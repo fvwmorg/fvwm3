@@ -36,8 +36,8 @@ sub new ($$%) {
 	$self->{random_base_number} = 8000000 + int(rand(900000));
 	$self->{sent_string_prefix} = "FVWM::Tracker::Scheduler alarm ";
 	$self->{module_name} = $params{ModuleName} || $self->{module}->name;
-	$self->{use_alarm} = (exists $params{UseAlarm}?
-		$params{UseAlarm}: $module->is_dummy)? 1: 0;
+	$self->{use_alarm} = (exists $params{UseAlarm}
+		? $params{UseAlarm} : $module->is_dummy) ? 1 : 0;
 
 	return $self;
 }
@@ -268,6 +268,8 @@ Works similarly to B<data>, but returns one or many debug lines (one line
 per scheduled alarm).
 
 If no scheduled callbacks are active, the empty string is returned as expected.
+
+=back
 
 =head1 AUTHOR
 

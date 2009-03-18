@@ -65,12 +65,12 @@ sub masks ($) {
 	my $mask = 0;
 	my $xmask = 0;
 	while (my ($id, $type) = each %{$self->{handler_types}}) {
-		(($type & M_EXTENDED_MSG)? $xmask: $mask) |= $type;
+		(($type & M_EXTENDED_MSG) ? $xmask : $mask) |= $type;
 	}
 	$self->internal_die("Inactive mask is not zero")
 		unless $self->{active} || !$mask && !$xmask;
 	my @list = ($mask, $xmask);
-	return wantarray? @list: \@list;
+	return wantarray ? @list : \@list;
 }
 
 sub add_handler ($$$) {
@@ -203,7 +203,7 @@ sub request_configinfo_events ($;$) {
 
 	$self->add_handler(M_END_CONFIG_INFO, sub { $_[0]->terminate; });
 	$module->emulate_event(M_END_CONFIG_INFO, []) if $module->is_dummy;
-	$module->postpone_send("Send_ConfigInfo" . ($name? " *$name": ""));
+	$module->postpone_send("Send_ConfigInfo" . ($name ? " *$name" : ""));
 }
 
 sub internal_die ($$) {

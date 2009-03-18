@@ -251,6 +251,8 @@ window is reused if found).
 
 Useful for debugging a GTK+ based module.
 
+=back
+
 =head1 BUGS
 
 Awaiting for your reporting.
