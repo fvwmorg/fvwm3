@@ -1,3 +1,15 @@
+2009-03-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmGtkDebug.in:
+	add several new features: request-reply frame, descriptive list
+	of all fvwm commands and auto command help, history of entered
+	commands synchronized with FvwmConsole, context window frame, now
+	commands may be executed with the window context, the window may
+	be set at module invocation and interactivelly
+
+	* FvwmDebug/Makefile.am:
+	add rules to regenerate man pages
+
 2009-03-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmDebug.in:

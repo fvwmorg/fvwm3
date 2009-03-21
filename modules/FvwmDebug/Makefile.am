@@ -19,3 +19,11 @@ LDADD = -L$(top_builddir)/libs -lfvwm
 # Despite not using X functions explicitly, the code includes
 # fvwmlib.h, which *does* include X headers and xpm.h!
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS)
+
+_FvwmDebug.1: FvwmDebug.in
+        pod2man --center "Fvwm Modules" --name FvwmDebug FvwmDebug >FvwmDebug.1
+
+_FvwmGtkDebug.1: FvwmGtkDebug.in
+        pod2man --center "Fvwm Modules" --name FvwmGtkDebug FvwmGtkDebug >FvwmGtkDebug.1
+
+regenerate: _FvwmDebug.1 _FvwmGtkDebug.1

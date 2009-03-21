@@ -31,6 +31,11 @@ Several modules require extra Perl packages from CPAN to be installed.
 
 Other files in this directory:
 
+* show-commands:
+	A test for FVWM::Commands module (used to generate docs/COMMANDS).
+	Show all fvwm commands with descriptions, on standard output (-t)
+	or using some X dialog (-x) or using gtk combo box (autodetected).
+
 * xmessage.fpl:
 	A test for the "FvwmPerl load" functionality.
 	SendToModule FvwmPerl load /path/to/xmessage.fpl

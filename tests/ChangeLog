@@ -1,3 +1,9 @@
+2009-03-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* perl/show-commands:
+	* perl/README:
+	add new example script to show all fvwm commands with descriptions
+
 2009-03-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* perl/module-example:

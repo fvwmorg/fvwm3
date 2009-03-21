@@ -32,6 +32,9 @@ BEGIN {
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module::Gtk2;
 use FVWM::EventNames;
+use FVWM::Commands;
+use FVWM::Tracker;
+use General::FileSystem qw(append_file);
 init Gtk2;
 
 my $default_mask = MAX_MSG_MASK &
@@ -61,6 +64,10 @@ $xmask = MAX_XMSG_MASK if $xmask == -1;
 my $new_mask  = $mask;
 my $new_xmask = $xmask;
 
+my $context_window_id = $module->{win_id};
+my $self_window_id = 0;  # until mapped
+my $is_dummy = $module->is_dummy;
+
 # ----------------------------------------------------------------------------
 # functions
 
@@ -69,6 +76,7 @@ my $stored_event_datas = [];
 my $current_event_num = -1;
 my $event_list_size_changed = 0;
 my $stick_to_last_event = 1;
+my ($request_button_box_frame, $request_reply_frame);
 
 sub event_arg_type_to_name ($) {
 	my $type = shift;
@@ -152,6 +160,17 @@ sub store_event ($$) {
 	&update_current_event_widgets();
 }
 
+sub update_frame_label ($$) {
+	my $frame = shift;
+	my $monitoring = shift;
+
+	my $not_monitoring_label = ' (not monitoring) ';
+	my $label = $frame->get_label;
+	$label =~ s/ \Q$not_monitoring_label\E$//;
+	$label .= $not_monitoring_label unless $monitoring;
+	$frame->set_label($label);
+}
+
 sub send_module_event_mask () {
 	if ($monitoring) {
 		$module->mask($mask);
@@ -160,6 +179,9 @@ sub send_module_event_mask () {
 		$module->mask(0);
 		$module->xmask(0);
 	}
+	update_frame_label($request_button_box_frame, $monitoring);
+	update_frame_label($request_reply_frame, $is_dummy
+		|| $monitoring && ($xmask & MX_REPLY));
 }
 
 my $update_event_mask_button;
@@ -288,7 +310,7 @@ $update_event_mask_button->signal_connect("clicked", sub {
 	update_event_mask_change_buttons();
 });
 
-my $start_monitoring_button = new Gtk2::Button(" _Start watching events ");
+my $start_monitoring_button = new Gtk2::Button(" _Start monitoring events ");
 $setup_button_box->pack_start($start_monitoring_button, 1, 1, 40);
 $start_monitoring_button->signal_connect("clicked", \&switch_monitoring);
 
@@ -529,7 +551,7 @@ sub switch_monitoring () {
 	$monitoring ^= 1;
 	send_module_event_mask();
 	$start_monitoring_button->child->set_label($monitoring
-		? " _Stop watching events " : " _Start watching events ");
+		? " _Stop monitoring events " : " _Start monitoring events ");
 	$active_check_button->set_active($monitoring);
 	$in_switch_monitoring = 0;
 }
@@ -542,7 +564,7 @@ $notebook->append_page($tools_page, new Gtk2::Label(" Tools "));
 my $request_button_box = new Gtk2::HButtonBox();
 $request_button_box->set_layout('edge');
 
-my $request_button_box_frame = new Gtk2::Frame(" Request module info ");
+$request_button_box_frame = new Gtk2::Frame(" Request module info ");
 $tmp = new Gtk2::VBox(0, 0); $tmp->add($request_button_box); $tmp->set_border_width(5);
 $request_button_box_frame->add($tmp);
 $tools_page->pack_start($request_button_box_frame, 0, 0, 0);
@@ -559,19 +581,204 @@ $send_windowlist_button->signal_connect("clicked", sub {
 	$module->send("Send_WindowList");
 });
 
-my $command_to_send = new Gtk2::Entry();
-$command_to_send->signal_connect("activate", sub {
-	$module->send($command_to_send->get_text);
-	$command_to_send->set_text("");
-});
-
 $request_button_box->foreach(\&setup_button_size, 172);
 
-my $command_to_send_frame = new Gtk2::Frame(" Command console ");
-$tmp = new Gtk2::VBox(0, 0); $tmp->add($command_to_send); $tmp->set_border_width(5);
-$command_to_send_frame->add($tmp);
-$tools_page->pack_start($command_to_send_frame, 0, 0, 10);
+my $reply_to_request = new Gtk2::Entry();
+$reply_to_request->signal_connect("activate", sub {
+	my $text = $reply_to_request->get_text;
+	$module->request_reply($text, $context_window_id);
+	$module->emulate_event(MX_REPLY, [ $context_window_id, 0, 12345, $text ])
+		if $is_dummy;
+	$reply_to_request->set_text("");
+});
 
+$request_reply_frame = new Gtk2::Frame(" Request reply ");
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($reply_to_request); $tmp->set_border_width(5);
+$request_reply_frame->add($tmp);
+$tools_page->pack_start($request_reply_frame, 0, 0, 10);
+
+# ---- fvwm commands ----
+my %cursor_to_stock_icon = (
+	''      => 'gtk-yes',
+	'-'     => 'gtk-about',
+	DESTROY => 'gtk-close',
+	SELECT  => 'gtk-find',
+	RESIZE  => 'gtk-fullscreen',
+	MOVE    => 'gtk-leave-fullscreen',
+);
+
+my $command_entries = Gtk2::ListStore->new(('Glib::String') x 3);
+my $i = 0; my (%command_name_indexes, @command_names);
+foreach ({ name => '', descr => 'Select fvwm command', cursor => '-' }, @FVWM::Commands::LIST) {
+	push @command_names, $_->{name};
+	$command_name_indexes{lc($_->{name})} = $i++;
+	$command_entries->set($command_entries->append,
+		0 => $cursor_to_stock_icon{$_->{cursor}} || 'gtk-no',
+		1 => $_->{name},
+		2 => $_->{descr},
+	);
+}
+
+my $command_entries_combo_box = Gtk2::ComboBox->new($command_entries);
+$renderer = Gtk2::CellRendererPixbuf->new;
+$command_entries_combo_box->pack_start($renderer, 0);
+$command_entries_combo_box->add_attribute($renderer, stock_id => 0);
+$renderer = Gtk2::CellRendererText->new;
+$command_entries_combo_box->pack_start($renderer, 1);
+$command_entries_combo_box->add_attribute($renderer, text => 1);
+$renderer = Gtk2::CellRendererText->new;
+$renderer->set(scale => 0.8);
+$command_entries_combo_box->pack_start($renderer, 0);
+$command_entries_combo_box->add_attribute($renderer, text => 2);
+$command_entries_combo_box->set_active(0);
+
+my $window_list_cmd =
+	'WindowList SortByResource, NoGeometry, NoDeskSort, NoCurrentDeskTitle, NoHotkeys';
+
+my $command_history_filename = $module->user_data_dir . '/.FvwmConsole-History';
+my @history_commands = -r $command_history_filename
+	? map { chomp; $_ } `cat $command_history_filename`
+	: ('Beep', $window_list_cmd);
+
+my $command_to_send_combo_box = Gtk2::ComboBoxEntry->new_text;
+$command_to_send_combo_box->prepend_text($_) foreach @history_commands;
+my $command_to_send = $command_to_send_combo_box->child;
+sub parse_command_to_send { $command_to_send->get_text =~ /^\s*(\W|\w+|)(.*)/ }
+$command_to_send->signal_connect("activate", sub {
+	my $text = $command_to_send->get_text;
+	$module->send($text, $context_window_id);
+	$command_to_send_combo_box->prepend_text($text);
+	$command_to_send->set_text("");
+	append_file($command_history_filename, \"$text\n");
+});
+$command_to_send->signal_connect("changed", sub {
+	my $command_name = (parse_command_to_send())[0];
+	my $index = $command_name_indexes{lc($command_name)} || 0;
+	$command_entries_combo_box->set_active($index);
+});
+$command_entries_combo_box->signal_connect("changed", sub {
+	my $command_name =
+		$command_names[$command_entries_combo_box->get_active] or return;
+	my ($name, $extra) = parse_command_to_send();
+	$extra = " $extra" if $extra =~ /^\S/ && length $command_name > 1;
+	$command_to_send->set_text($command_name . $extra);
+});
+
+my $extra_str = $is_dummy ? " (not connected to fvwm in dummy mode) " : "";
+my $command_console_frame = new Gtk2::Frame(" Command console " . $extra_str);
+$tmp = new Gtk2::VBox(0, 0); $tmp->add($command_to_send_combo_box);
+$tmp->add($command_entries_combo_box); $tmp->set_border_width(5);
+$command_console_frame->add($tmp);
+$tools_page->pack_start($command_console_frame, 0, 0, 0);
+
+# ---- context window ----
+my $set_window_cmd = qq(Send_Reply set_window);
+my $pick_window_cmd = qq(Pick $set_window_cmd);
+my $select_window_list_cmd = qq($window_list_cmd, Function '$set_window_cmd');
+
+my $context_window_name = "";
+my $context_window_id_label = new Gtk2::Label("Window id:");
+my $context_window_id_widget = new Gtk2::Label("");
+my $context_window_name_label = new Gtk2::Label("Name:");
+my $context_window_name_widget = new Gtk2::Label("");
+my ($unset_window_button, $set_self_window_button);
+
+sub update_context_window_widgets () {
+	$context_window_id_widget->set_label($context_window_id
+		? sprintf('0x%07lx', $context_window_id)
+		: '(no window)'
+	);
+	$context_window_name = "" unless $context_window_id;
+	$context_window_name_widget->set_label($context_window_name);
+	if ($context_window_name) {
+		$context_window_name_label->show;
+		$context_window_name_widget->show;
+	} else {
+		$context_window_name_label->hide;
+		$context_window_name_widget->hide;
+	}
+	$unset_window_button->set_sensitive($context_window_id);
+	$set_self_window_button->set_sensitive($context_window_id != $self_window_id);
+}
+
+sub start_content_window_reply_tracker ($) {
+	my $cmd_requesting_reply = shift;
+
+	return $module->show_message("This action is disabled in dummy mode")
+		if $is_dummy;
+
+#	my $tracker = FVWM::Tracker->new($module);
+	my $tracker = $module->track({ NoStart => 1 }, 'FVWM::Tracker');
+	$tracker->add_handler(MX_REPLY, sub {
+		my ($module, $event) = @_;
+		$module->terminate if $event->_text eq 'end';
+		my $selected_window_id = $event->_win_id;
+		return unless $selected_window_id
+			&& $context_window_id != $selected_window_id;
+		$context_window_id = $event->_win_id;
+		$context_window_name = "";
+		update_context_window_widgets();
+	});
+	$module->postpone_send("$cmd_requesting_reply\nSend_Reply end");
+	$tracker->start;
+	$tracker->stop;
+	delete $module->{trackers}->{'FVWM::Tracker'};
+}
+
+$module->add_handler(M_WINDOW_NAME, sub {
+	my ($module, $event) = @_;
+	if ($event->_win_id == $context_window_id) {
+		$context_window_name = $event->_name;
+		update_context_window_widgets();
+	}
+});
+
+my $context_window_box = new Gtk2::HBox(0, 0);
+$context_window_box->set_size_request(-1, 22);
+$context_window_box->pack_start($context_window_id_label, 0, 0, 8);
+$context_window_box->pack_start($context_window_id_widget, 0, 0, 0);
+$context_window_box->pack_start($context_window_name_label, 0, 0, 8);
+$context_window_box->pack_start($context_window_name_widget, 0, 0, 0);
+$context_window_id_widget->set_selectable(1);
+$context_window_name_widget->set_selectable(1);
+
+my $select_context_window_box = new Gtk2::HButtonBox();
+$select_context_window_box->set_layout('edge');
+
+my $select_window_list_button = new Gtk2::Button(" Select from list ");
+$select_context_window_box->pack_start($select_window_list_button, 0, 0, 0);
+$select_window_list_button->signal_connect("clicked", sub {
+	start_content_window_reply_tracker($select_window_list_cmd);
+});
+
+my $pick_window_button = new Gtk2::Button(" Pick ");
+$select_context_window_box->pack_start($pick_window_button, 0, 0, 0);
+$pick_window_button->signal_connect("clicked", sub {
+	start_content_window_reply_tracker($pick_window_cmd);
+});
+
+$set_self_window_button = new Gtk2::Button(" Set itself ");
+$select_context_window_box->pack_start($set_self_window_button, 0, 0, 0);
+$set_self_window_button->signal_connect("clicked", sub {
+	$context_window_id = $self_window_id;
+	$context_window_name = "";
+	update_context_window_widgets();
+});
+
+$unset_window_button = new Gtk2::Button(" Unset ");
+$select_context_window_box->pack_start($unset_window_button, 0, 0, 0);
+$unset_window_button->signal_connect("clicked", sub {
+	$context_window_id = 0;
+	update_context_window_widgets();
+});
+
+my $context_window_frame = new Gtk2::Frame(" Context window ");
+$tmp = new Gtk2::VBox(0, 10); $tmp->add($context_window_box);
+$tmp->add($select_context_window_box); $tmp->set_border_width(5);
+$context_window_frame->add($tmp);
+$tools_page->pack_start($context_window_frame, 0, 0, 10);
+
+# ---- help and quit ----
 my $quit_button_box = new Gtk2::HButtonBox();
 $quit_button_box->set_layout('edge');
 $tools_page->pack_end($quit_button_box, 0, 0, 0);
@@ -587,8 +794,9 @@ monitoring mode. The activation may be done either from the "Setup" or
 
 You may then browse the stored event data, compare it or remove it.
 
-Any module may request fvwm to send its config info or window list info.
-The module then receives the requested information using events.
+Any module may request fvwm to send its config info or window list info or
+any custom reply back. The module then receives the requested information
+using events. Don't forget to enable relevant events for this to work.
 
 Finally, you may send commands to fvwm, just like FvwmTalk does.
 
@@ -611,6 +819,9 @@ $window->signal_connect("destroy" => \&Gtk2::main_quit);
 $window->set_default_size(500, 600);
 $window->show_all;
 
+$self_window_id = $window->window->XWINDOW;
+update_context_window_widgets();
+
 # ----------------------------------------------------------------------------
 # main
 
@@ -625,7 +836,7 @@ sub emulate_some_events () {
 	$module->emulate_event(M_NEW_PAGE, [ 0, 0, 2, 800, 600, 3, 3 ]);
 }
 
-if ($module->is_dummy) {
+if ($is_dummy) {
 	$module->show_message(
 		"This module is executed in the dummy mode.\n\n" .
 		"Every 20 seconds fake events are generated."
@@ -660,13 +871,23 @@ To run this module, place this command somewhere in the configuration:
 
 To stop this module, just close the GUI window, the usual KillModule works too.
 
-You may also run this application in the dummy mode from the command line,
-but this only shows the GUI with dummy event data and not the real data.
+You may also run this application as a regular program from the command
+line shell.  But the communication with I<fvwm> is not established in this
+dummy mode, so commands are not really sent and there are no real events
+received.  However certain activity is emulated using dummy events.
 
 =head1 DESCRIPTION
 
 This module monitors all fvwm event information and shows it nicely in the
-interactive gtk+ application. Good for debugging purposes.
+interactive gtk+ application. Good for debugging and educational purposes.
+
+Among the features: command console with history and auto command help,
+requesting to send back ConfigInfo (configuration of I<fvwm> and all
+modules), WindowList (information about all windows) or custom Reply.
+
+The fvwm commands may be executed within the context of some window.
+The context window may be optionally set on invocation, like: "Next
+(Navigator) FvwmGtkDebug", and be set/unset interactively at any time.
 
 =head1 INVOCATION
 
@@ -696,7 +917,7 @@ The useful I<level>s are 2 to 4.
 
 =head1 SEE ALSO
 
-See also L<FvwmDebug>.
+See also L<FvwmDebug>, "fvwm-perllib man events".
 
 =head1 AUTHOR
 
