@@ -1,3 +1,14 @@
+2009-03-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	add fvwm version to automatically generated man pages
+
+	* fvwm-menu-directory.1:
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-xlock.1:
+	* fvwm-perllib.1:
+	regenerated
+
 2009-03-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-desktop.in:

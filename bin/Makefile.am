@@ -27,35 +27,39 @@ INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 
 ## The long generation for *.1 is to make both pod2man and 'make -j' happy.
 
-_fvwm-menu-xlock.1: fvwm-menu-xlock.in
+_fvwm-menu-xlock.1: fvwm-menu-xlock
 	@TMP=tmp-$$$$ NAME=fvwm-menu-xlock && (\
 	mkdir $$TMP && \
 	cp $$NAME.in $$TMP/$$NAME && \
-	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	pod2man --center "Fvwm Utilities" --release "@VERSION@@VERSIONINFO@" \
+		--name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 && \
 	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 
-_fvwm-menu-directory.1: fvwm-menu-directory.in
+_fvwm-menu-directory.1: fvwm-menu-directory
 	@TMP=tmp-$$$$ NAME=fvwm-menu-directory && (\
 	mkdir $$TMP && \
 	cp $$NAME.in $$TMP/$$NAME && \
-	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	pod2man --center "Fvwm Utilities" --release "@VERSION@@VERSIONINFO@" \
+		--name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 && \
 	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 
-_fvwm-menu-headlines.1: fvwm-menu-headlines.in
+_fvwm-menu-headlines.1: fvwm-menu-headlines
 	@TMP=tmp-$$$$ NAME=fvwm-menu-headlines && (\
 	mkdir $$TMP && \
 	cp $$NAME.in $$TMP/$$NAME && \
-	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	pod2man --center "Fvwm Utilities" --release "@VERSION@@VERSIONINFO@" \
+		--name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 && \
 	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 
-_fvwm-perllib.1: fvwm-perllib.in
+_fvwm-perllib.1: fvwm-perllib
 	@TMP=tmp-$$$$ NAME=fvwm-perllib && (\
 	mkdir $$TMP && \
 	cp $$NAME.in $$TMP/$$NAME && \
-	pod2man --center "Fvwm Utilities" --name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 2>/dev/null && \
+	pod2man --center "Fvwm Utilities" --release "@VERSION@@VERSIONINFO@" \
+		--name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 && \
 	mv $$TMP/$$NAME.1 .; \
 	rm -rf $$TMP)
 

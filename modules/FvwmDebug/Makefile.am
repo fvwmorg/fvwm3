@@ -20,10 +20,12 @@ LDADD = -L$(top_builddir)/libs -lfvwm
 # fvwmlib.h, which *does* include X headers and xpm.h!
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS)
 
-_FvwmDebug.1: FvwmDebug.in
-        pod2man --center "Fvwm Modules" --name FvwmDebug FvwmDebug >FvwmDebug.1
+_FvwmDebug.1: FvwmDebug
+	pod2man --center "Fvwm Modules" --release "@VERSION@@VERSIONINFO@" \
+		--name FvwmDebug FvwmDebug >FvwmDebug.1
 
-_FvwmGtkDebug.1: FvwmGtkDebug.in
-        pod2man --center "Fvwm Modules" --name FvwmGtkDebug FvwmGtkDebug >FvwmGtkDebug.1
+_FvwmGtkDebug.1: FvwmGtkDebug
+	pod2man --center "Fvwm Modules" --release "@VERSION@@VERSIONINFO@" \
+		--name FvwmGtkDebug FvwmGtkDebug >FvwmGtkDebug.1
 
 regenerate: _FvwmDebug.1 _FvwmGtkDebug.1

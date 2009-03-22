@@ -476,10 +476,10 @@ Hold this button while navigating using cursor keys, then release it.
 
 =head1 AUTHORS
 
-=item Ric Lister <http://cns.georgetown.edu/~ric/>
+Richard Lister <ric+lister@cns.georgetown.edu>.
 
-=item Scott Smedley
+Scott Smedley <ss@aao.gov.au>.
 
-=item Mikhael Goikhman
+Mikhael Goikhman <migo@homemail.com>.
 
 =cut

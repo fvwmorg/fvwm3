@@ -1,3 +1,18 @@
+2009-03-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/Makefile.am:
+	* FvwmPerl/Makefile.am:
+	* FvwmTabs/Makefile.am:
+	* FvwmWindowMenu/Makefile.am:
+	add fvwm version to automatically generated man pages
+
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmDebug/FvwmGtkDebug.1:
+	* FvwmPerl/FvwmPerl.1:
+	* FvwmTabs/FvwmTabs.1:
+	* FvwmWindowMenu/FvwmWindowMenu.1:
+	regenerated
+
 2009-03-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmGtkDebug.in:
