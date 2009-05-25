@@ -33,7 +33,32 @@ typedef struct sWindowName
 	struct sWindowName	*next;
 	struct
 	{
+		unsigned soft_raise : 2;
+		unsigned pad0 : 2;
+		unsigned hard_raise : 2;
+		unsigned pad1 : 2;
+
+		unsigned soft_desk : 2;
+		unsigned pad2 : 2;
+		unsigned hard_desk : 2;
+		unsigned pad3 : 2;
+
+		unsigned soft_drag : 2;
+		unsigned pad4 : 2;
+		unsigned hard_drag : 2;
+		unsigned pad5 : 2;
+
+		unsigned soft_icon : 2;
+		unsigned pad6 : 2;
+		unsigned hard_icon : 2;
+		unsigned pad7 : 2;
+
+		unsigned pad8 : 4;
+
 		unsigned is_soft : 1;
+		unsigned pad9 : 4;
+
+		unsigned is_weak : 1;
 	} flags;
 } WindowName;
 
@@ -45,9 +70,38 @@ typedef struct sProxyGroup
 	struct sProxyGroup	*next;
 	struct
 	{
+
+		unsigned soft_raise : 2;
+		unsigned pad0 : 2;
+		unsigned hard_raise : 2;
+		unsigned pad1 : 2;
+
+		unsigned soft_desk : 2;
+		unsigned pad2 : 2;
+		unsigned hard_desk : 2;
+		unsigned pad3 : 2;
+
+		unsigned soft_drag : 2;
+		unsigned pad4 : 2;
+		unsigned hard_drag : 2;
+		unsigned pad5 : 2;
+
+		unsigned soft_icon : 2;
+		unsigned pad6 : 2;
+		unsigned hard_icon : 2;
+		unsigned pad7 : 2;
+
+		unsigned pad8 : 4;
+
 		unsigned auto_include : 1;
+		unsigned pad9 : 3;
+
 		unsigned auto_soft : 1;
+		unsigned pad10 : 3;
+
 		unsigned isolated : 1;
+		unsigned pad11 : 3;
+
 		unsigned ignore_ids : 1;
 	} flags;
 } ProxyGroup;
@@ -73,6 +127,9 @@ typedef struct sProxyWindow
 	int			goal_height;
 	int			incx,incy;
 	int			desk;
+	int			stack;
+	int			stack_desired;
+	int			stack_tmp;
 	int			group;
 	ProxyGroup		*proxy_group;
 	Window			proxy;

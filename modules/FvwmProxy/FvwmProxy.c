@@ -46,14 +46,14 @@
 
 /* ---------------------------- local definitions --------------------------- */
 
-/* defaults for things we put in a configuration file */
-
 #define PROXY_COMMAND_DEBUG	False
 #define PROXY_GROUP_DEBUG	False
+#define PROXY_EVENT_DEBUG	False
 
 #define PROXY_KEY_POLLING	True
-#define PROXY_MOVE		False	/* move window when proxy is dragged */
-#define PROXY_ICONIFIED		False	/* show proxy when iconified */
+
+/* defaults for things we put in a configuration file */
+
 #define PROXY_WIDTH		180
 #define PROXY_HEIGHT		60
 #define PROXY_SEPARATION	10
@@ -129,8 +129,8 @@ static FlocaleFont *Ffont;
 static FlocaleFont *Ffont_small;
 static int enterSelect=False;
 static int showMiniIcons=True;
-static int proxyIconified=PROXY_ICONIFIED;
-static int proxyMove=PROXY_MOVE;
+static int proxyIconified=False;
+static int proxyMove=False;
 static int proxyWidth=PROXY_WIDTH;
 static int proxyHeight=PROXY_HEIGHT;
 static int proxySeparation=PROXY_SEPARATION;
@@ -163,6 +163,30 @@ typedef enum
 	PROXY_ACTION_LAST = PROXY_ACTION_CLICK +
 	NUMBER_OF_EXTENDED_MOUSE_BUTTONS
 } proxy_action_t;
+
+typedef enum
+{
+	PROXY_FOLLOW_OFF = 0,
+	PROXY_FOLLOW_ON,
+	PROXY_FOLLOW_INHERIT
+} proxy_follow_t;
+
+typedef enum
+{
+	PROXY_PROVOKE_RAISE = 1,
+	PROXY_PROVOKE_DESK,
+	PROXY_PROVOKE_DRAG,
+	PROXY_PROVOKE_ICON
+} proxy_provoke_t;
+
+typedef enum
+{
+	PROXY_SHOWONLY_ALL = 0,
+	PROXY_SHOWONLY_SELECT,
+	PROXY_SHOWONLY_COVER,
+	PROXY_SHOWONLY_GROUP
+} proxy_showonly_t;
+static proxy_showonly_t showOnly = PROXY_SHOWONLY_ALL;
 
 #define GROUP_COLORS 7
 static char* group_color[GROUP_COLORS][2] =
@@ -243,6 +267,21 @@ static void LinkSlotAction(char *string)
 #endif
 		}
 	}
+}
+
+static WindowName* FindWindowName(WindowName* namelist,char* name)
+{
+	WindowName* include=namelist;
+	while(include)
+	{
+		if(matchWildcards(include->name, name))
+		{
+			return include;
+		}
+		include=include->next;
+	}
+
+	return NULL;
 }
 
 static void LinkAction(char *string)
@@ -500,6 +539,28 @@ static Bool parse_options(void)
 			if (sscanf(tline, "%d", &stampLimit) < 1)
 				stampLimit=PROXY_STAMP_LIMIT;
 		}
+		else if (StrEquals(resource, "ShowOnly"))
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr, "ShowOnly: \"%s\"\n", tline);
+#endif
+			if(StrEquals(tline, "All"))
+			{
+				showOnly = PROXY_SHOWONLY_ALL;
+			}
+			else if(StrEquals(tline, "Selected"))
+			{
+				showOnly = PROXY_SHOWONLY_SELECT;
+			}
+			else if(StrEquals(tline, "Covered"))
+			{
+				showOnly = PROXY_SHOWONLY_COVER;
+			}
+			else if(StrEquals(tline, "Grouped"))
+			{
+				showOnly = PROXY_SHOWONLY_GROUP;
+			}
+		}
 		else if (StrEquals(resource, "SlotWidth"))
 		{
 			if (sscanf(tline, "%d", &slotWidth) < 1)
@@ -561,6 +622,7 @@ static Bool parse_options(void)
 
 			strncpy(tail,&tline[bytes],128);
 			tail[127]=0;
+			pattern[0]=0;
 			args = sscanf(tail, "%*[^\"]\"%[^\"]\"",pattern);
 
 #if PROXY_GROUP_DEBUG
@@ -588,12 +650,22 @@ static Bool parse_options(void)
 				proxygroup->flags.isolated=1;
 			}
 			else if (StrEquals(directive, "Include") ||
-				StrEquals(directive, "SoftInclude"))
+				StrEquals(directive, "WeakInclude") ||
+				StrEquals(directive, "SoftInclude") ||
+				StrEquals(directive, "WeakSoftInclude"))
 			{
 				WindowName* include=new_WindowName();
 				include->name=strdup(pattern);
 				include->flags.is_soft=
-					StrEquals(directive, "SoftInclude");
+					(StrEquals(directive,
+					"SoftInclude") ||
+					StrEquals(directive,
+					"WeakSoftInclude"));
+				include->flags.is_weak=
+					(StrEquals(directive,
+					"WeakInclude") ||
+					StrEquals(directive,
+					"WeakSoftInclude"));
 				include->next=proxygroup->includes;
 				proxygroup->includes=include;
 #if PROXY_GROUP_DEBUG
@@ -611,6 +683,168 @@ static Bool parse_options(void)
 				fprintf(stderr,"Exclude \"%s\"\n",
 					pattern);
 #endif
+			}
+			else
+			{
+/*
+			No Soft/Hard Raise/Desk/Drag
+*/
+				char* remainder = directive;
+
+				proxy_follow_t setting = PROXY_FOLLOW_ON;
+				if(StrHasPrefix(remainder,"No"))
+				{
+					setting = PROXY_FOLLOW_OFF;
+					remainder += 2;
+				}
+				if(StrHasPrefix(remainder,"Inherit"))
+				{
+					setting = PROXY_FOLLOW_INHERIT;
+					remainder += 7;
+				}
+
+				int soft = True;
+				int hard = True;
+				if(StrHasPrefix(remainder,"Soft"))
+				{
+					hard = False;
+					remainder += 4;
+				}
+				if(StrHasPrefix(remainder,"Hard"))
+				{
+					soft = False;
+					remainder += 4;
+				}
+
+				int raise = True;
+				int desk = True;
+				int drag = True;
+				int icon = True;
+				if(StrHasPrefix(remainder,"Raise"))
+				{
+					desk = False;
+					drag = False;
+					icon = False;
+					remainder += 5;
+				}
+				if(StrHasPrefix(remainder,"Desk"))
+				{
+					raise = False;
+					drag = False;
+					icon = False;
+					remainder += 4;
+				}
+				if(StrHasPrefix(remainder,"Drag"))
+				{
+					raise = False;
+					desk = False;
+					icon = False;
+					remainder += 4;
+				}
+				if(StrHasPrefix(remainder,"Icon"))
+				{
+					raise = False;
+					desk = False;
+					drag = False;
+					remainder += 4;
+				}
+				if(StrHasPrefix(remainder,"All"))
+				{
+					remainder += 3;
+				}
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr,"@@@ ");
+				fprintf(stderr,"Follow \"%s\"\n",
+					pattern);
+				fprintf(stderr,"@@@ ");
+				fprintf(stderr,"  setting %d soft %d hard %d\n",
+					setting, soft, hard);
+				fprintf(stderr,"@@@ ");
+				fprintf(stderr,"  raise %d desk %d",
+					raise, desk);
+				fprintf(stderr," drag %d icon %d\n",
+					drag, icon);
+#endif
+
+				if(pattern[0])
+				{
+					WindowName* windowName = FindWindowName(
+						proxygroup->includes, pattern);
+					if(windowName)
+					{
+						if(soft)
+						{
+							if(raise) windowName->
+								flags.
+								soft_raise =
+								setting;
+							if(desk) windowName->
+								flags.
+								soft_desk =
+								setting;
+							if(drag) windowName->
+								flags.
+								soft_drag =
+								setting;
+							if(icon) windowName->
+								flags.
+								soft_icon =
+								setting;
+						}
+						if(hard)
+						{
+							if(raise) windowName->
+								flags.
+								hard_raise =
+								setting;
+							if(desk) windowName->
+								flags.
+								hard_desk =
+								setting;
+							if(drag) windowName->
+								flags.
+								hard_drag =
+								setting;
+							if(icon) windowName->
+								flags.
+								hard_icon =
+								setting;
+						}
+					}
+				}
+				else
+				{
+					if(soft)
+					{
+						if(raise) proxygroup->
+							flags.soft_raise =
+							setting;
+						if(desk) proxygroup->
+							flags.soft_desk =
+							setting;
+						if(drag) proxygroup->
+							flags.soft_drag =
+							setting;
+						if(icon) proxygroup->
+							flags.soft_icon =
+							setting;
+					}
+					if(hard)
+					{
+						if(raise) proxygroup->
+							flags.hard_raise =
+							setting;
+						if(desk) proxygroup->
+							flags.hard_desk =
+							setting;
+						if(drag) proxygroup->
+							flags.hard_drag =
+							setting;
+						if(icon) proxygroup->
+							flags.hard_icon =
+							setting;
+					}
+				}
 			}
 		}
 		else
@@ -663,6 +897,15 @@ static void delete_ProxyWindow(ProxyWindow *p)
 static void WindowName_WindowName(WindowName *p)
 {
 	memset(p, 0, sizeof *p);
+
+	p->flags.soft_raise = PROXY_FOLLOW_INHERIT;
+	p->flags.soft_desk = PROXY_FOLLOW_INHERIT;
+	p->flags.soft_drag = PROXY_FOLLOW_INHERIT;
+	p->flags.soft_icon = PROXY_FOLLOW_INHERIT;
+	p->flags.hard_raise = PROXY_FOLLOW_INHERIT;
+	p->flags.hard_desk = PROXY_FOLLOW_INHERIT;
+	p->flags.hard_drag = PROXY_FOLLOW_INHERIT;
+	p->flags.hard_icon = PROXY_FOLLOW_INHERIT;
 }
 
 static WindowName *new_WindowName(void)
@@ -675,6 +918,15 @@ static WindowName *new_WindowName(void)
 static void ProxyGroup_ProxyGroup(ProxyGroup *p)
 {
 	memset(p, 0, sizeof *p);
+
+	p->flags.soft_raise = PROXY_FOLLOW_ON;
+	p->flags.soft_desk = PROXY_FOLLOW_ON;
+	p->flags.soft_drag = PROXY_FOLLOW_ON;
+	p->flags.soft_icon = PROXY_FOLLOW_ON;
+	p->flags.hard_raise = PROXY_FOLLOW_ON;
+	p->flags.hard_desk = PROXY_FOLLOW_ON;
+	p->flags.hard_drag = PROXY_FOLLOW_ON;
+	p->flags.hard_icon = PROXY_FOLLOW_ON;
 }
 
 static ProxyGroup *new_ProxyGroup(void)
@@ -833,17 +1085,8 @@ static ProxyGroup* FindProxyGroup(char* groupname)
 
 static int MatchWindowName(WindowName* namelist,char* name)
 {
-	WindowName* include=namelist;
-	while(include)
-	{
-		if(matchWildcards(include->name, name))
-		{
-			return 1;
-		}
-		include=include->next;
-	}
-
-	return 0;
+	WindowName* include=FindWindowName(namelist, name);
+	return (include != NULL);
 }
 
 static ProxyGroup* FindProxyGroupWithWindowName(char* name)
@@ -865,6 +1108,29 @@ static ProxyGroup* FindProxyGroupWithWindowName(char* name)
 		proxygroup=proxygroup->next;
 	}
 
+	return NULL;
+}
+
+static ProxyGroup* FindProxyGroupOfNeighbor(ProxyWindow* instigator)
+{
+	if(!instigator->group)
+	{
+		return NULL;
+	}
+
+	ProxyWindow *proxy;
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator)
+		{
+			continue;
+		}
+		if (proxy->desk == deskNumber &&
+			proxy->group==instigator->group && proxy->proxy_group)
+		{
+			return proxy->proxy_group;
+		}
+	}
 	return NULL;
 }
 
@@ -951,6 +1217,15 @@ static void DrawWindow(
 		XClearWindow(dpy,proxy->proxy);
 	}
 	RelieveRectangle(dpy,proxy->proxy, 0,0, w - 1,h - 1, hi_gc,sh_gc, 2);
+
+#if 1
+	if (proxy->iconname != NULL)
+	{
+		free(proxy->iconname);
+	}
+	proxy->iconname = safestrdup("    ");
+	sprintf(proxy->iconname, "%d", proxy->stack);
+#endif
 
 	big_name = proxy->iconname;
 	if(big_name==NULL || !big_name[0])
@@ -1105,18 +1380,47 @@ static void OpenOneWindow(ProxyWindow *proxy)
 	unsigned long valuemask=CWOverrideRedirect;
 	XSetWindowAttributes attributes;
 
-	if (proxy == NULL)
+	if (proxy == NULL ||
+		proxy->desk != deskNumber ||
+		(!proxyIconified && proxy->flags.is_iconified) ||
+		proxy->flags.is_shown)
 	{
 		return;
 	}
-	if (proxy->desk != deskNumber ||
-			(!proxyIconified && proxy->flags.is_iconified) )
+	if (showOnly)
 	{
-		return;
-	}
-	if (proxy->flags.is_shown)
-	{
-		return;
+		if (!focusWindow)
+		{
+			return;
+		}
+		if ((!selectProxy || proxy != selectProxy) &&
+			proxy->window != focusWindow)
+		{
+			if (showOnly == PROXY_SHOWONLY_SELECT)
+			{
+				return;
+			}
+			ProxyWindow *other = FindProxy(focusWindow);
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr, "OpenOneWindow"
+				" %d %d %d %d  %d %d %d %d  %d %d\n",
+				proxy->proxyx, proxy->proxyy,
+				proxy->proxyw, proxy->proxyh,
+				other->x, other->y,
+				other->w, other->h,
+				proxy->group, other->group);
+#endif
+			if ((showOnly == PROXY_SHOWONLY_COVER ||
+				!other->group ||
+				proxy->group != other->group) &&
+				(proxy->proxyx > other->x+other->w ||
+				proxy->proxyx+proxy->proxyw < other->x ||
+				proxy->proxyy > other->y+other->h ||
+				proxy->proxyy+proxy->proxyh < other->y))
+			{
+				return;
+			}
+		}
 	}
 	if (proxy->proxy == None)
 	{
@@ -1263,6 +1567,69 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 				dy<proxyHeight+proxySeparation )
 		{
 			rc = True;
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,
+				"AdjustOneWindow %d %d %d %d  %d %d %d %d\n",
+				proxy->proxyx, proxy->proxyy,
+				proxy->proxyw, proxy->proxyh,
+				other->proxyx, other->proxyy,
+				other->proxyw, other->proxyh);
+#endif
+			if (proxyWidth-dx<proxyHeight-dy)
+			{
+				if (proxy->proxyx<=other->proxyx)
+				{
+					int delta = proxy->proxyx +
+						proxy->proxyw +
+						proxySeparation -
+						other->proxyx;
+					proxy->proxyx -= delta/2;
+					other->proxyx += delta - delta/2;
+#if PROXY_GROUP_DEBUG
+					fprintf(stderr, "left %d\n", delta);
+#endif
+				}
+				else
+				{
+					int delta = other->proxyx +
+						other->proxyw +
+						proxySeparation -
+						proxy->proxyx;
+					other->proxyx -= delta/2;
+					proxy->proxyx += delta - delta/2;
+#if PROXY_GROUP_DEBUG
+					fprintf(stderr, "right %d\n", delta);
+#endif
+				}
+			}
+			else
+			{
+				if (proxy->proxyy<=other->proxyy)
+				{
+					int delta = proxy->proxyy +
+						proxy->proxyh +
+						proxySeparation -
+						other->proxyy;
+					proxy->proxyy -= delta/2;
+					other->proxyy += delta - delta/2;
+#if PROXY_GROUP_DEBUG
+					fprintf(stderr, "up %d\n", delta);
+#endif
+				}
+				else
+				{
+					int delta = other->proxyy +
+						other->proxyh +
+						proxySeparation -
+						proxy->proxyy;
+					other->proxyy -= delta/2;
+					proxy->proxyy += delta - delta/2;
+#if PROXY_GROUP_DEBUG
+					fprintf(stderr, "down %d\n", delta);
+#endif
+				}
+			}
+/*
 			if (proxyWidth-dx<proxyHeight-dy)
 			{
 				if (proxy->proxyx<=other->proxyx)
@@ -1293,6 +1660,7 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 						proxySeparation;
 				}
 			}
+*/
 		}
 	}
 
@@ -1401,6 +1769,102 @@ static void WaitToConfig(ProxyWindow *proxy)
 	}
 }
 
+static int Provokable(ProxyWindow *proxy,proxy_provoke_t provocation)
+{
+	int soft=proxy->flags.is_soft;
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "Provokable %p %s %x soft %d\n",
+		proxy,proxy->name,provocation,soft);
+#endif
+	ProxyGroup* proxy_group=proxy->proxy_group;
+	if(!proxy_group)
+	{
+		proxy_group=FindProxyGroupOfNeighbor(proxy);
+	}
+	if(!proxy_group)
+	{
+		return True;
+	}
+
+	proxy_follow_t follow=PROXY_FOLLOW_INHERIT;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "  group flags %x\n",proxy_group->flags);
+#endif
+	WindowName* include=FindWindowName(proxy_group->includes,proxy->name);
+	if(include)
+	{
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "  include flags %x\n",include->flags);
+#endif
+
+		switch(provocation)
+		{
+			case PROXY_PROVOKE_RAISE:
+				follow=soft? include->flags.soft_raise:
+					include->flags.hard_raise;
+			break;
+
+			case PROXY_PROVOKE_DESK:
+				follow=soft? include->flags.soft_desk:
+					include->flags.hard_desk;
+			break;
+
+			case PROXY_PROVOKE_DRAG:
+				follow=soft? include->flags.soft_drag:
+					include->flags.hard_drag;
+			break;
+
+			case PROXY_PROVOKE_ICON:
+				follow=soft? include->flags.soft_icon:
+					include->flags.hard_icon;
+			break;
+		}
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "  include follow %d\n",follow);
+#endif
+		if(follow!=PROXY_FOLLOW_INHERIT)
+		{
+			return (follow!=PROXY_FOLLOW_OFF);
+		}
+	}
+
+	follow=PROXY_FOLLOW_INHERIT;
+	switch(provocation)
+	{
+		case PROXY_PROVOKE_RAISE:
+			follow=soft? proxy_group->flags.soft_raise:
+				proxy_group->flags.hard_raise;
+		break;
+
+		case PROXY_PROVOKE_DESK:
+			follow=soft? proxy_group->flags.soft_desk:
+				proxy_group->flags.hard_desk;
+		break;
+
+		case PROXY_PROVOKE_DRAG:
+			follow=soft? proxy_group->flags.soft_drag:
+				proxy_group->flags.hard_drag;
+		break;
+
+		case PROXY_PROVOKE_ICON:
+			follow=soft? proxy_group->flags.soft_icon:
+				proxy_group->flags.hard_icon;
+		break;
+	}
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "  group follow %d\n",follow);
+#endif
+	return (follow!=PROXY_FOLLOW_OFF);
+}
+
+static int Provoked(ProxyWindow *instigator,ProxyWindow *proxy,
+	proxy_provoke_t provocation)
+{
+	return (Provokable(instigator,provocation) &&
+		Provokable(proxy,provocation));
+}
+
 static void IsolateGroup(ProxyWindow *instigator,int isolate)
 {
 	ProxyWindow *proxy;
@@ -1452,6 +1916,10 @@ static void IconifyGroup(ProxyWindow *instigator,int iconify)
 		{
 			continue;
 		}
+		if(!Provoked(instigator,proxy,PROXY_PROVOKE_ICON))
+		{
+			continue;
+		}
 		if (proxy->desk == deskNumber &&
 			proxy->group==instigator->group)
 		{
@@ -1462,12 +1930,312 @@ static void IconifyGroup(ProxyWindow *instigator,int iconify)
 	}
 }
 
+void RefineStack(int desired)
+{
+	ProxyWindow *proxy;
+	ProxyWindow *best = NULL;
+	int index = 0;
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "RefineStack %d\n", desired);
+#endif
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		proxy->stack_tmp = -1;
+	}
+	while(True)
+	{
+		best = NULL;
+		for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+		{
+			if(proxy->stack_tmp < 0 && (best == NULL ||
+				(desired? proxy->stack_desired: proxy->stack) <
+				(desired? best->stack_desired: best->stack)))
+			{
+				best = proxy;
+			}
+		}
+		if(best == NULL)
+		{
+			break;
+		}
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "%p %d %d -> %d %s\n", best,
+			best->stack, best->stack_desired,
+			index, best->name);
+#endif
+		best->stack_tmp = index++;
+	}
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(desired)
+		{
+			proxy->stack_desired = proxy->stack_tmp;
+		}
+		else
+		{
+			proxy->stack = proxy->stack_tmp;
+		}
+	}
+}
+
+/* doesn't work: non-fatal X error in X_ConfigureWindow */
+void RestackAtomic(int raise)
+{
+	RefineStack(False);
+	ProxyWindow *proxy;
+	int count = 0;
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		count++;
+	}
+	Window *windows = (Window *) safemalloc (count * sizeof (Window));
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		fprintf(stderr, "RestackAtomic %d %s\n",
+			proxy->stack, proxy->name);
+		windows[proxy->stack] = proxy->window;
+	}
+	XRestackWindows(dpy, windows, count);
+	free (windows);
+}
+
+void RestackIncremental(int raise)
+{
+	RefineStack(False);
+	RefineStack(True);
+
+	int changes = 0;
+	int changed = 1;
+	while(changed)
+	{
+		ProxyWindow *proxy;
+		ProxyWindow *best = NULL;
+		int next_delta = 0;
+		changed = 0;
+
+#if PROXY_GROUP_DEBUG
+		for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+		{
+			fprintf(stderr, "%2d ", proxy->stack);
+		}
+		fprintf(stderr, "\n");
+		for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+		{
+			fprintf(stderr, "%2d ", proxy->stack_desired);
+		}
+		fprintf(stderr, "\n");
+#endif
+		for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+		{
+			int delta = raise?
+				proxy->stack - proxy->stack_desired:
+				proxy->stack_desired - proxy->stack;
+			if(delta > 0 &&
+				(best == NULL || delta > next_delta))
+			{
+				best = proxy;
+				next_delta = delta;
+			}
+		}
+		if(best)
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,
+				"RestackIncremental Raise %p %s %d -> %d\n",
+				best, best->name,
+				best->stack, best->stack_desired);
+#endif
+			if(raise)
+			{
+				best->raised=1;
+				XRaiseWindow(dpy, best->window);
+				best->stack = INT_MIN;
+			}
+			else
+			{
+				best->raised= -1;
+				XLowerWindow(dpy, best->window);
+				best->stack = INT_MAX;
+			}
+			RefineStack(False);
+			changed = 1;
+		}
+		if(++changes > 32)
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr,
+				"RestackIncremental excessive changes (%d)\n",
+				changes);
+#endif
+			break;
+		}
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "*****************************************\n");
+		fprintf(stderr, "RestackIncremental(%d) %d changes\n",
+			raise, changes);
+#endif
+	}
+}
+
+void Restack(int raise)
+{
+	RestackIncremental(raise);
+}
+
+void ReadStack(unsigned long *body, unsigned long length)
+{
+	Window window;
+	ProxyWindow *proxy;
+	int i;
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "ReadStack %p %d-%d\n",
+		body, (int)length, FvwmPacketHeaderSize);
+#endif
+
+	ProxyWindow *instigator=NULL;
+	for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
+	{
+		instigator=FindProxy(body[0]);
+		if(instigator)
+		{
+			break;
+		}
+	}
+	if(!instigator)
+	{
+		return;
+	}
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy->stack>instigator->stack)
+		{
+			proxy->stack+=10000;
+		}
+	}
+
+	int index=instigator->stack;
+	for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
+	{
+		window = body[i];
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "  stack %d %d\n", i, (int)window);
+#endif
+		proxy = FindProxy(window);
+		if(proxy)
+		{
+#if PROXY_GROUP_DEBUG
+			fprintf(stderr, " %p %s",proxy,proxy->name);
+#endif
+			proxy->stack = index++;
+		}
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr, "\n");
+#endif
+	}
+	RefineStack(False);
+}
+
 static void RaiseLowerGroup(Window w,int raise)
 {
 	ProxyWindow *instigator;
 	ProxyWindow *proxy;
 
 	instigator = FindProxy(w);
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "RaiseLowerGroup %d %s\n", raise,
+			instigator? instigator->name: "<none>");
+#endif
+	if(instigator==NULL)
+	{
+		return;
+	}
+	instigator->stack = raise? INT_MIN: INT_MAX;
+	RefineStack(False);
+	if(instigator->flags.is_isolated)
+	{
+		return;
+	}
+	if(!Provokable(instigator,PROXY_PROVOKE_RAISE))
+	{
+		return;
+	}
+
+#if PROXY_GROUP_DEBUG
+	fprintf(stderr, "RaiseLowerGroup %p %d %d\n",
+		instigator,raise,instigator->raised);
+#endif
+
+	if(abs(instigator->raised)>10)
+	{
+		exit(1);
+	}
+
+	if(instigator->raised == (raise? 1: -1))
+	{
+		return;
+	}
+
+	instigator->raised=0;
+
+	if(instigator->flags.is_iconified || !instigator->group)
+	{
+		return;
+	}
+
+	instigator->stack = raise? INT_MIN: INT_MAX;
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		proxy->stack_desired = proxy->stack;
+	}
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy==instigator)
+		{
+			continue;
+		}
+		if(!Provokable(proxy,PROXY_PROVOKE_RAISE))
+		{
+			continue;
+		}
+		if (proxy->desk == deskNumber &&
+			proxy->group==instigator->group)
+		{
+			if(raise)
+			{
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr, "Raise %p\n",proxy);
+#endif
+
+				proxy->stack_desired-=10000;
+			}
+			else
+			{
+#if PROXY_GROUP_DEBUG
+				fprintf(stderr, "Lower %p\n",proxy);
+#endif
+
+				proxy->stack_desired+=10000;
+			}
+		}
+	}
+	Restack(raise);
+}
+
+/*
+static void RaiseLowerGroupOld(Window w,int raise)
+{
+	ProxyWindow *instigator;
+	ProxyWindow *proxy;
+
+	instigator = FindProxy(w);
+	fprintf(stderr, "RaiseLowerGroup %d %s\n", raise,
+			instigator? instigator->name: "<none>");
+	if(instigator)
+	{
+		instigator->stack = raise? INT_MIN: INT_MAX;
+		RefineStack(False);
+	}
 	if(instigator==NULL || instigator->flags.is_isolated)
 	{
 		return;
@@ -1525,7 +2293,6 @@ static void RaiseLowerGroup(Window w,int raise)
 			}
 		}
 	}
-	/* make sure instigator ends on on top/bottom */
 	if(raise)
 	{
 #if PROXY_GROUP_DEBUG
@@ -1545,6 +2312,7 @@ static void RaiseLowerGroup(Window w,int raise)
 		XLowerWindow(dpy, instigator->window);
 	}
 }
+*/
 
 static void ClearRaised(void)
 {
@@ -1578,6 +2346,11 @@ static void ShiftWindows(ProxyWindow *instigator,int dx,int dy)
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		if(proxy==instigator)
+		{
+			continue;
+		}
+		if(!instigator->flags.is_isolated &&
+			!Provoked(instigator,proxy,PROXY_PROVOKE_DRAG))
 		{
 			continue;
 		}
@@ -1620,6 +2393,10 @@ static void CatchWindows(ProxyWindow *instigator,int vertical,int from,int to,
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		if(proxy==instigator)
+		{
+			continue;
+		}
+		if(!Provoked(instigator,proxy,PROXY_PROVOKE_DRAG))
 		{
 			continue;
 		}
@@ -1837,6 +2614,10 @@ static void MoveGroupToDesk(ProxyWindow *instigator,int desk)
 	sprintf(commandBuffer, "MoveToDesk 0 %d", desk);
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
+		if(!Provoked(instigator,proxy,PROXY_PROVOKE_DESK))
+		{
+			continue;
+		}
 		if (proxy->desk == old_desk &&
 			proxy->group==old_group)
 		{
@@ -1964,6 +2745,11 @@ static ProxyWindow* FindNeighborForProcess(ProxyWindow* proxy,
 	int group;
 	int auto_include=0;
 
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"FindNeighborForProcess %p desk %d pid %d %d\n",
+			proxy, desk, ppid, pid);
+#endif
+
 	if(!pid)
 	{
 		return 0;
@@ -1979,8 +2765,8 @@ static ProxyWindow* FindNeighborForProcess(ProxyWindow* proxy,
 				proxy->name) ||
 			(auto_include=other->proxy_group->flags.auto_include)))
 		{
-			proxy->flags.is_soft=auto_include &&
-				other->proxy_group->flags.auto_soft;
+			proxy->flags.is_soft = (auto_include &&
+				other->proxy_group->flags.auto_soft);
 			if(other->proxy_group->flags.isolated &&
 				!proxy->flags.is_isolated)
 			{
@@ -2040,6 +2826,11 @@ static ProxyWindow* FindNeighborForLeader(ProxyWindow* proxy,
 	ProxyWindow *neighbor=NULL;
 	int group;
 	int auto_include=0;
+
+#if PROXY_GROUP_DEBUG
+		fprintf(stderr,"FindNeighborForLeader %p desk %d leader %d \n",
+			proxy, desk, leader);
+#endif
 
 	if(!leader)
 	{
@@ -2123,16 +2914,17 @@ static ProxyWindow* FindNeighborForApplication(ProxyWindow* proxy)
 static int ProxyGroupCheckSoft(ProxyGroup* proxy_group,
 	ProxyWindow* proxy)
 {
-	WindowName* include=proxy_group->includes;
-	while(include)
-	{
-		if(matchWildcards(include->name, proxy->name))
-		{
-			return include->flags.is_soft;
-		}
-		include=include->next;
-	}
-	return 0;
+	WindowName* include=FindWindowName(proxy_group->includes,
+		proxy->name);
+	return include? include->flags.is_soft: 0;
+}
+
+static int ProxyGroupCheckWeak(ProxyGroup* proxy_group,
+	ProxyWindow* proxy)
+{
+	WindowName* include=FindWindowName(proxy_group->includes,
+		proxy->name);
+	return include? include->flags.is_weak: 0;
 }
 
 static void UpdateProxyGroup(ProxyWindow* proxy)
@@ -2163,6 +2955,11 @@ static void UpdateProxyGroup(ProxyWindow* proxy)
 	{
 		proxy->proxy_group=
 			FindProxyGroupWithWindowName(proxy->name);
+		if(proxy->proxy_group &&
+			ProxyGroupCheckWeak(proxy->proxy_group,proxy))
+		{
+			proxy->proxy_group=NULL;
+		}
 	}
 	if(proxy->proxy_group &&
 		MatchWindowName(proxy->proxy_group->excludes,proxy->name))
@@ -2785,6 +3582,11 @@ static void MarkProxy(ProxyWindow *new_proxy)
 		send_command_to_fvwm(action_list[PROXY_ACTION_MARK],
 				selectProxy->window);
 
+	if(showOnly && are_windows_shown)
+	{
+		ReshuffleWindows();
+		selectProxy = new_proxy;
+	}
 	return;
 }
 
@@ -2924,6 +3726,7 @@ static void change_cset(int cset)
 static void ProcessMessage(FvwmPacket* packet)
 {
 	unsigned long type = packet->type;
+	unsigned long length = packet->size;
 	unsigned long* body = packet->body;
 	FvwmWinPacketBodyHeader *bh = (void *)body;
 	ProxyWindow *proxy;
@@ -2931,8 +3734,9 @@ static void ProcessMessage(FvwmPacket* packet)
 	int y=0;
 	int w=0;
 	int h=0;
+	int reshuffle=0;
 
-	if(type!=M_RAISE_WINDOW && type!=M_LOWER_WINDOW &&
+	if(type!=M_RAISE_WINDOW && type!=M_LOWER_WINDOW && type!=M_RESTACK &&
 		type!=M_FOCUS_CHANGE && type!=M_ICON_NAME &&
 		type!=M_MINI_ICON && type!=M_STRING)
 	{
@@ -2942,25 +3746,59 @@ static void ProcessMessage(FvwmPacket* packet)
 	switch (type)
 	{
 	case M_CONFIGURE_WINDOW:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_CONFIGURE_WINDOW\n");
+#endif
 	case M_ADD_WINDOW:
+#if PROXY_EVENT_DEBUG
+		if(type!=M_CONFIGURE_WINDOW)
+		{
+			fprintf(stderr,
+				"FvwmProxy ProcessMessage M_ADD_WINDOW\n");
+		}
+#endif
 		ConfigureWindow(packet);
 		break;
 	case M_DESTROY_WINDOW:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_DESTROY_WINDOW\n");
+#endif
 		DestroyWindow(bh->w);
 		break;
 	case M_ICONIFY:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_ICONIFY\n");
+#endif
 		IconifyWindow(FindProxy(bh->w), 1);
 		break;
 	case M_DEICONIFY:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_DEICONIFY\n");
+#endif
 		IconifyWindow(FindProxy(bh->w), 0);
 		break;
 	case M_RAISE_WINDOW:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_RAISE_WINDOW\n");
+#endif
 		RaiseLowerGroup(bh->w,1);
 		break;
 	case M_LOWER_WINDOW:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_LOWER_WINDOW\n");
+#endif
 		RaiseLowerGroup(bh->w,0);
 		break;
+	case M_RESTACK:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_RESTACK\n");
+#endif
+		ReadStack(body,length);
+		break;
 	case M_WINDOW_NAME:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_WINDOW_NAME\n");
+#endif
 		proxy = FindProxy(bh->w);
 		if (proxy != NULL)
 		{
@@ -2977,6 +3815,9 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_ICON_NAME:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_ICON_NAME\n");
+#endif
 		proxy = FindProxy(bh->w);
 		if (proxy != NULL)
 		{
@@ -2995,6 +3836,9 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_NEW_DESK:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_NEW_DESK\n");
+#endif
 		if (deskNumber!=body[0])
 		{
 			deskNumber=body[0];
@@ -3005,10 +3849,16 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_NEW_PAGE:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_NEW_PAGE\n");
+#endif
 		deskNumber=body[2];
 		ReshuffleWindows();
 		break;
 	case M_MINI_ICON:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_MINI_ICON\n");
+#endif
 		proxy = FindProxy(bh->w);
 		if (proxy != NULL)
 		{
@@ -3022,24 +3872,33 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_FOCUS_CHANGE:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_FOCUS_CHANGE\n");
+#endif
 	{
 		focusWindow=bh->w;
 		if(bh->w != 0)
 		{
 			last_rotation_instigator=NULL;
 		}
+		if(showOnly && !selectProxy)
+		{
+			reshuffle=1;
+		}
 	}
 		break;
 	case M_STRING:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_STRING\n");
+#endif
 	{
 		char *message=(char*)&body[3];
 		char *token;
 		char *next;
 		int prev;
 		int isolate_check=0;
-		int reshuffle=0;
 
-#if PROXY_GROUP_DEBUG
+#if PROXY_EVENT_DEBUG
 		fprintf(stderr, "M_STRING \"%s\"\n", message);
 #endif
 
@@ -3214,17 +4073,12 @@ static void ProcessMessage(FvwmPacket* packet)
 		{
 			IsolateCheck(proxy,0);
 		}
-		if(reshuffle)
-		{
-			/* windows may have moved, so update proxy windows */
-			if (are_windows_shown)
-			{
-				ReshuffleWindows();
-			}
-		}
 		break;
 	}
 	case M_CONFIG_INFO:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy ProcessMessage M_CONFIG_INFO\n");
+#endif
 	{
 		char *tline, *token;
 
@@ -3238,6 +4092,15 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	}
+	}
+
+	if(reshuffle)
+	{
+		/* windows may have moved, so update proxy windows */
+		if (are_windows_shown)
+		{
+			ReshuffleWindows();
+		}
 	}
 
 	return;
@@ -3296,6 +4159,9 @@ static void DispatchEvent(XEvent *pEvent)
 	switch(pEvent->xany.type)
 	{
 	case Expose:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy DispatchEvent Expose\n");
+#endif
 		proxy = FindProxy(window);
 		if (proxy != NULL)
 		{
@@ -3305,6 +4171,9 @@ static void DispatchEvent(XEvent *pEvent)
 		}
 		break;
 	case ButtonPress:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy DispatchEvent ButtonPress\n");
+#endif
 		proxy = FindProxy(window);
 		if (proxy)
 		{
@@ -3352,6 +4221,9 @@ static void DispatchEvent(XEvent *pEvent)
 		mousey=pEvent->xbutton.y_root;
 		break;
 	case MotionNotify:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy DispatchEvent MotionNotify\n");
+#endif
 		proxy = FindProxy(window);
 		dx=pEvent->xbutton.x_root-mousex;
 		dy=pEvent->xbutton.y_root-mousey;
@@ -3365,6 +4237,9 @@ static void DispatchEvent(XEvent *pEvent)
 		mousey=pEvent->xbutton.y_root;
 		break;
 	case EnterNotify:
+#if PROXY_EVENT_DEBUG
+		fprintf(stderr, "FvwmProxy DispatchEvent EnterNotify\n");
+#endif
 		proxy = FindProxy(pEvent->xcrossing.window);
 		if (pEvent->xcrossing.mode == NotifyNormal)
 		{
@@ -3469,7 +4344,7 @@ int main(int argc, char **argv)
 		M_CONFIGURE_WINDOW| M_ADD_WINDOW| M_FOCUS_CHANGE|
 		M_DESTROY_WINDOW| M_NEW_DESK| M_NEW_PAGE| M_ICON_NAME|
 		M_WINDOW_NAME| M_MINI_ICON| M_ICONIFY| M_DEICONIFY|
-		M_CONFIG_INFO| M_END_CONFIG_INFO);
+		M_CONFIG_INFO| M_END_CONFIG_INFO| M_RESTACK);
 
 	if (parse_options() == False)
 		exit(1);

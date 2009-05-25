@@ -1,3 +1,13 @@
+2009-05-25  Jason Weber  <baboon@imonk.com>
+	* FvwmProxy/FvwmProxy.1.in:
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmProxy/FvwmProxy.h:
+	better vertical centering of groups of proxies;
+	option to limit which proxies are shown based on focused/active;
+	don't reorder other windows in group when one of them is raised/lowered;
+	weak include: dodge starting a group for a common name;
+	custom group provocation of raise/lower, desk change, drag, and iconify
+
 2009-03-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/Makefile.am:
