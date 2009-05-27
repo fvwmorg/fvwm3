@@ -1218,7 +1218,7 @@ static void DrawWindow(
 	}
 	RelieveRectangle(dpy,proxy->proxy, 0,0, w - 1,h - 1, hi_gc,sh_gc, 2);
 
-#if 1
+#if 0
 	if (proxy->iconname != NULL)
 	{
 		free(proxy->iconname);
