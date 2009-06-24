@@ -1,3 +1,14 @@
+2009-06-24  Thomas Adam		<thomas.adam22@gmail.com>
+	* allCommands.html:
+	* groupedCommands.html:
+	* modules.html:
+	* commands/DesktopName.xml:
+	* commands/GotoPage.xml:
+	* commands/ResizeMove.xml:
+	* modules/Makefile.am:
+	Fix broken links from downstream patch via Debian's BTS.  (Thanks to
+	Manoj Srivastava).
+
 2008-03-12  Jes~s Guerrero  <i92guboj(at)terra(dot)es>
 
 	* doc/commands/MenuStyle.xml:
