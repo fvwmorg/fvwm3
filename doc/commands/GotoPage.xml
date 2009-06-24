@@ -35,10 +35,10 @@
 Moves the desktop viewport to page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the
 current number of horizontal pages specified in the
-<fvwmref cmd="DeskTopSize"/>
+<fvwmref cmd="DesktopSize"/>
 command.  The lower left page is (0,N), and the lower right page
 is (M,N), where N is the desktop's vertical size as specified in the
-<fvwmref cmd="DeskTopSize"/>
+<fvwmref cmd="DesktopSize"/>
 command.  To switch to a page relative to the current one add a
 trailing
 '<fvwmopt cmd="GotoPage" opt="p"/>'

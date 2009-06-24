@@ -30,7 +30,7 @@ This name is used in the
 command and in the
 <fvwmref mod="FvwmPager"/>
 where it override the
-<fvwmref mod="FvmwPager" opt="Label"/>
+<fvwmref mod="FvwmPager" opt="Label"/>
 configuration option. Moreover, if consecutive names starting from
 desktop 0 are defined, then these names can be used by any <acronym>EWMH</acronym>
 compliant application (as a pager).</para>

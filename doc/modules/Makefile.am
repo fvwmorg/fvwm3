@@ -16,7 +16,7 @@ MODULES = \
 	FvwmProxy FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript FvwmScroll \
 	FvwmTabs FvwmTaskBar FvwmTheme FvwmWharf FvwmWindowMenu FvwmWinList
 MODULES_XML = FvwmTabs.xml
-HTML_FILES = @DOC_MODULES_HTML@
+HTML_FILES = @DOC_MODULES_HTML@ todo.html
 XML_FILES = $(MODULES_XML) todo.xml
 EXTRA_DIST = $(XML_FILES)
 

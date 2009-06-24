@@ -53,7 +53,7 @@ ResizeMove -10p -20p 0 0
 
 <para>Note: Fvwm may not be able to parse the command properly if the
 option
-<fvwmref cmd="Reize" opt="bottomright"/>
+<fvwmref cmd="Resize" opt="bottomright"/>
 of the
 <fvwmref cmd="Resize"/>
 command is used.</para>
