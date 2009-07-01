@@ -332,11 +332,11 @@ Style * MouseFocusClickRaises
 Style * MinOverlapPlacement
 
 #
-# NoPPosition instructs fvwm to ignore the PPosition field in window
+# !UsePPosition instructs fvwm to ignore the PPosition field in window
 # geometry hints. Emacs annoyingly sets PPosition to (0,0)!
 #
 
-Style * NoPPosition
+Style * !UsePPosition
 
 Style * GrabFocusOff
 
@@ -472,25 +472,25 @@ AddToFunc SessionRestartFunction
 #
 #-----------------------------------------------------------------------------#
 
-Style *lock        NoTitle, NoHandles, Sticky, WindowListSkip
-Style xeyes        NoTitle, Sticky
-Style *biff*       NoTitle,            Sticky, WindowListSkip
-Style xsysinfo     NoTitle,            Sticky, WindowListSkip
-Style xload        NoTitle,            Sticky, WindowListSkip
+Style *lock        !Title, !Handles, Sticky, WindowListSkip
+Style xeyes        !Title, Sticky
+Style *biff*       !Title,            Sticky, WindowListSkip
+Style xsysinfo     !Title,            Sticky, WindowListSkip
+Style xload        !Title,            Sticky, WindowListSkip
 Style xconsole                         Sticky, StartIconic
 Style xpostit                                  WindowListSkip
 Style PostitNote                               WindowListSkip
-Style Postit       NoHandles,                  WindowListSkip
+Style Postit       !Handles,                  WindowListSkip
 # gnome panel & icons
-Style panel        Sticky, NoTitle, WindowListSkip, CirculateSkip
-Style desktop_icon CirculateSkip, WindowListSkip,  NoTitle
+Style panel        Sticky, !Title, WindowListSkip, CirculateSkip
+Style desktop_icon CirculateSkip, WindowListSkip,  !Title
 # Animation is broken in gnome panel 1.4 with GNOMEUseHints.
 # GNOMEIgnoreHints also disables panel moving itself from layer to layer.
 Style panel        GNOMEIgnoreHints
 # xsm panel
-Style xsm          Sticky, NoTitle, WindowListSkip, CirculateSkip
+Style xsm          Sticky, !Title, WindowListSkip, CirculateSkip
 
-Style FvwmForm-QuitVerify NoButton 1, NoButton 2, NoButton 4, NoButton 6, \
+Style FvwmForm-QuitVerify !Button 1, !Button 2, !Button 4, !Button 6, \
 				StaysOnTop, NoHandles, WindowListSkip
 
 # Some version of Netscape need the following if you want that the
@@ -678,7 +678,7 @@ Style FvwmForm-Form		MiniIcon mini.fvwm.xpm, Icon settings.xpm
 Style FvwmForm-Setup		MiniIcon mini.fvwm.xpm, Icon settings.xpm
 Style FormFvwmAnimate		MiniIcon mini.iconify.xpm, Icon settings.xpm
 Style xmessage			MiniIcon mini.question.xpm, Icon settings.xpm
-Style WinMakerAppButtons*	NoIcon
+Style WinMakerAppButtons*	!Icon
 
 # Help
 Style man	  	MiniIcon mini.book1.xpm, Icon help.xpm
@@ -1024,12 +1024,12 @@ AddToFunc  ChangeAppsMan
 
 DestroyFunc AppsManNone
 AddToFunc  AppsManNone
-+  I  Style * NoIcon
++  I  Style * !Icon
 + I KillModule FvwmTaskBar
 + I KillModule FvwmWinList
 + I KillModule FvwmIconMan
 + I KillModule FvwmIconBox
-+ I Exec echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager" > $FVWM_USERDIR/.start-apps-man
++ I Exec echo "AddToFunc StartFunction I Style * !Icon # No applications Manager" > $FVWM_USERDIR/.start-apps-man
 
 DestroyFunc UseIcons
 AddToFunc  UseIcons
@@ -1045,71 +1045,71 @@ AddToFunc  UseIcons
 
 DestroyFunc WinListDesk
 AddToFunc WinListDesk
-+ I Style * NoIcon
++ I Style * !Icon
 + I *FvwmWinList: ShowCurrentDesk
 + I Module FvwmWinList
 
 DestroyFunc WinListGlobal
 AddToFunc WinListGlobal
-+ I Style * NoIcon
++ I Style * !Icon
 + I DestroyModuleConfig FvwmWinList: ShowCurrent*
 + I Module FvwmWinList
 
 DestroyFunc TaskBarDesk
 AddToFunc TaskBarDesk
-+ I Style * NoIcon
++ I Style * !Icon
 + I DestroyModuleConfig FvwmTaskBar: AutoHid*
 + I *FvwmTaskBar: DeskOnly
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobal
 AddToFunc TaskBarGlobal
-+ I Style * NoIcon
++ I Style * !Icon
 + I DestroyModuleConfig FvwmTaskBar: AutoHid*
 + I DestroyModuleConfig FvwmTaskBar: Desk*
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarDeskAutoHide
 AddToFunc TaskBarDeskAutoHide
-+ I Style * NoIcon
++ I Style * !Icon
 + I *FvwmTaskBar: DeskOnly
 + I *FvwmTaskBar: AutoHide
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobalAutoHide
 AddToFunc TaskBarGlobalAutoHide
-+ I Style * NoIcon
++ I Style * !Icon
 + I DestroyModuleConfig FvwmTaskBar: Desk*
 + I *FvwmTaskBar: AutoHide
 + I Module FvwmTaskBar
 
 DestroyFunc IconManGlobal
 AddToFunc IconManGlobal
-+ I Style * NoIcon
++ I Style * !Icon
 + I *FvwmIconMan: Resolution global
 + I Module FvwmIconMan
 
 DestroyFunc IconManDesk
 AddToFunc IconManDesk
-+ I Style * NoIcon
++ I Style * !Icon
 + I *FvwmIconMan: Resolution desk
 + I Module FvwmIconMan
 
 DestroyFunc IconManPage
 AddToFunc IconManPage
-+ I Style * NoIcon
++ I Style * !Icon
 + I *FvwmIconMan: Resolution page
 + I Module FvwmIconMan
 
 DestroyFunc IconBoxDesk
 AddToFunc IconBoxDesk
-+ I Style * NoIcon
++ I Style * !Icon
 + I *FvwmIconBox: ResolutionDesk
 + I Module FvwmIconBox
 
 DestroyFunc IconBoxGlobal
 AddToFunc IconBoxGlobal
-+ I Style * NoIcon
++ I Style * !Icon
 + I DestroyModuleConfig FvwmIconBox: Reso*
 + I Module FvwmIconBox
 
@@ -1136,7 +1136,7 @@ AddToFunc ReloadIconStylesAndMenus
 + I Read iconstyles
 + I Read menus
 # Need to reload the NoIcon style
-+ I PipeRead 'if grep -qe AddToFunc $FVWM_USERDIR/.start-apps-man; then echo "Style * NoIcon"; fi'
++ I PipeRead 'if grep -qe AddToFunc $FVWM_USERDIR/.start-apps-man; then echo "Style * !Icon"; fi'
 
 #------------------------------------------------------------------------------
 # Functions for Loading/Saving/Showing Settings
@@ -2487,8 +2487,8 @@ AddToMenu   WindowGroupOps "Group Ops" Title
 DestroyMenu WindowStyle
 AddToMenu   WindowStyle
 + "%mini.window.xpm%Title&AtTop" Pick (CirculateHit) Style $n TitleAtTop
-+ "%mini.window.xpm%&NoTitle"	 Pick (CirculateHit) Style $n NoTitle
-+ "%mini.window.xpm%&Title"	 Pick (CirculateHit) Style $n NoTitle
++ "%mini.window.xpm%&NoTitle"	 Pick (CirculateHit) Style $n !Title
++ "%mini.window.xpm%&Title"	 Pick (CirculateHit) Style $n !Title
 + "%mini.window.xpm%TitleAt&Bottom" Pick (CirculateHit) Style $n TitleAtBottom
 + "" Nop
 + "%mini.raise2.xpm%StaysOn&Top" Pick (CirculateHit) StyleAndRecapture $n StaysOnTop
@@ -2500,7 +2500,7 @@ AddToMenu   WindowStyle
 + "%mini.window.xpm%&DepressableBorder"	Pick (CirculateHit) Style $n DepressableBorder
 + "%mini.window.xpm%&FirmBorder"	Pick (CirculateHit) Style $n FirmBorder
 + "%mini.window.xpm%&Handles"		Pick (CirculateHit) Style $n Handles
-+ "%mini.window.xpm%&NoHandles"		Pick (CirculateHit) Style $n NoHandles
++ "%mini.window.xpm%&NoHandles"		Pick (CirculateHit) Style $n !Handles
 + "%mini.window.xpm%BorderWidth &0" Pick (CirculateHit) Style $n BorderWidth 0
 + "%mini.window.xpm%BorderWidth &5" Pick (CirculateHit) Style $n BorderWidth 5
 + "%mini.window.xpm%HandleWidth &0" Pick (CirculateHit) Style $n HandleWidth 0
@@ -2550,14 +2550,14 @@ ChangeMenuStyle winops Window Window-Ops2 Window-Ops3 Move-Window WindowGroupOps
 #------------------------------------------------------------------------------
 #------------------ FvwmBanner
 #------------------------------------------------------------------------------
-Style FvwmBanner NoTitle, Sticky, StaysOnTop, WindowListSkip, CirculateSkip
+Style FvwmBanner !Title, Sticky, StaysOnTop, WindowListSkip, CirculateSkip
 *FvwmBannerTimeout 2
 
 #------------------------------------------------------------------------------
 #------------------ FvwmButtons: BarButtons
 #------------------------------------------------------------------------------
 
-Style BarButtons NoTitle, NoHandles, Sticky, WindowListSkip, \
+Style BarButtons !Title, !Handles, Sticky, WindowListSkip, \
 	BorderWidth 4, CirculateSkip
 
 DestroyModuleConfig BarButtons: *
@@ -2613,7 +2613,7 @@ DestroyModuleConfig BarButtons: *
 #------------------ FvwmButtons: MiniButtons
 #------------------------------------------------------------------------------
 
-Style "MiniButtons" NoTitle, NoHandles, Sticky, WindowListSkip, \
+Style "MiniButtons" !Title, !Handles, Sticky, WindowListSkip, \
 	BorderWidth 0, CirculateSkip
 
 DestroyModuleConfig MiniButtons*
@@ -2636,7 +2636,7 @@ DestroyModuleConfig MiniButtons*
 #------------------ FvwmButtons: DeskerPanelButtons
 #------------------------------------------------------------------------------
 
-Style "DeskerPanelButtons" NoTitle, NoHandles, Sticky, WindowListSkip, \
+Style "DeskerPanelButtons" !Title, !Handles, Sticky, WindowListSkip, \
 	BorderWidth 0, CirculateSkip
 #Style "DeskerPanelButtons"  StaysOnTop
 DestroyModuleConfig DeskerPanelButtons: *
@@ -2654,7 +2654,7 @@ DestroyModuleConfig DeskerPanelButtons: *
 #------------------------------------------------------------------------------
 #------------------ FvwmButtons: WinMakerAppButtons & WinMakerAppPanelCd
 #------------------------------------------------------------------------------
-Style "WinMakerApp*" NoTitle, NoHandles, BorderWidth 0, Sticky, \
+Style "WinMakerApp*" !Title, !Handles, BorderWidth 0, Sticky, \
 	WindowListSkip, CirculateSkip
 DestroyModuleConfig WinMakerAppButtons: *
 
@@ -2754,7 +2754,7 @@ DestroyModuleConfig FvwmEvent: *
 #------------------------------------------------------------------------------
 #------------------ IconBox
 #------------------------------------------------------------------------------
-Style "FvwmIconBox" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmIconBox" !Title, !Handles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmIconBox: *
 *FvwmIconBox: Back #c0c0c0
@@ -2803,7 +2803,7 @@ DestroyModuleConfig FvwmIconBox: *
 #------------------------------------------------------------------------------
 #------------------ IconMan
 #------------------------------------------------------------------------------
-Style "FvwmIconMan" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmIconMan" !Title, !Handles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmIconMan: *
 
@@ -2858,7 +2858,7 @@ DestroyModuleConfig FvwmIconMan: *
 #------------------------------------------------------------------------------
 #------------------ Identify
 #------------------------------------------------------------------------------
-Style "FvwmIdent" Sticky, NoButton 2, NoButton 4, NoButton 6
+Style "FvwmIdent" Sticky, !Button 2, !Button 4, !Button 6
 
 *FvwmIdent: Back Blue4
 *FvwmIdent: Fore Yellow
@@ -2867,7 +2867,7 @@ Style "FvwmIdent" Sticky, NoButton 2, NoButton 4, NoButton 6
 #------------------------------------------------------------------------------
 #------------------ FvwmPager:  Swallowed by ButtonBar
 #------------------------------------------------------------------------------
-Style "FvwmPagerPager" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmPagerPager" !Title, !Handles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmPagerPager: *
 *FvwmPagerPager: UseSkipList
@@ -2894,7 +2894,7 @@ DestroyModuleConfig FvwmPagerPager: *
 #------------------------------------------------------------------------------
 #------------------ FvwmPager: FvwmDesker, the panel of StartPagerButtons
 #------------------------------------------------------------------------------
-Style "FvwmDesker" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmDesker" !Title, !Handles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmDesker: *
 *FvwmDesker: UseSkipList
@@ -2931,7 +2931,7 @@ DestroyModuleConfig FvwmDesker: *
 #------------------ FvwmTaskBar
 #------------------------------------------------------------------------------
 
-Style "FvwmTaskBar" NoTitle, NoHandles, Sticky, WindowListSkip, \
+Style "FvwmTaskBar" !Title, !Handles, Sticky, WindowListSkip, \
 	CirculateSkip, TitleAtBottom
 # Note: Title at bottom is for shading.
 
@@ -2962,7 +2962,7 @@ Style "FvwmTaskBar" NoTitle, NoHandles, Sticky, WindowListSkip, \
 #------------------ FvwmWharf
 #------------------------------------------------------------------------------
 
-Style "FvwmWharf" NoTitle, NoHandles, Sticky, WindowListSkip, \
+Style "FvwmWharf" !Title, !Handles, Sticky, WindowListSkip, \
 	BorderWidth 2, CirculateSkip
 
 DestroyModuleConfig FvwmWharf: *
@@ -3003,7 +3003,7 @@ DestroyModuleConfig FvwmWharf: *
 #------------------------------------------------------------------------------
 #------------------ FvwmWinList
 #------------------------------------------------------------------------------
-Style "FvwmWinList" NoTitle, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmWinList" !Title, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmWinList: *
 *FvwmWinList: Back #c3c3c3

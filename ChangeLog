@@ -1,5 +1,14 @@
 2009-07-01  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* sample.fvwmrc/DecorMwm:
+	* sample.fvwmrc/DecorWin95:
+	* sample.fvwmrc/new-features:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/system.fvwm2rc-sample-1:
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	Use !-negation for styles instead of No...
+
 	* NEWS:
 	fix a typo
 

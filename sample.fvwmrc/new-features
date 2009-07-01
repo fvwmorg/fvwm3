@@ -189,22 +189,22 @@ Style "*" TileCascadePlacement
 Style "*" StickyIcon
 Style "*" IconBox	5 -50 -134 -5
 Style "*" BorderWidth 5, HandleWidth 5
-Style "*" NoPPosition
+Style "*" !UsePPosition
 Style "*" NakedTransient
 
 
 # Some Fvwm-Related Styles
-Style "Fvwm*"	NoTitle, NoHandles, Sticky, WindowListSkip
-Style "FvwmWinList"	NoTitle
+Style "Fvwm*"	!Title, !Handles, Sticky, WindowListSkip
+Style "FvwmWinList"	!Title
 Style "FvwmPager"	BorderWidth 0
 
 # My own settings
 style "XTerm"	BorderWidth 4, Handlewidth 4, Icon Monitor.xpm
 style "Netscape" BorderWidth 3, Handlewidth 3
-Style "*clock"	BorderWidth 0,NoTitle,NoHandles,WindowListSkip,Sticky
-Style "XMcd"	NoTitle
+Style "*clock"	BorderWidth 0,!Title,!Handles,WindowListSkip,Sticky
+Style "XMcd"	!Title
 Style "*Dialog_popup" WindowListSkip
-Style "*Download" WindowListSkip,NoTitle
+Style "*Download" WindowListSkip,!Title
 
 # Resources for Modules
 #

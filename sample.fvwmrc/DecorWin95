@@ -36,7 +36,7 @@ SetAnimation 1 .1 .2 .3 .4 .5 .6 .7 .8 .9 1.0
 # Undo things specific to this decor:
 DestroyFunc DecorRemoveHook
 AddToFunc DecorRemoveHook
-+ I Style "*" NoButton 1
-+ I Style "*" NoButton 2
-+ I Style "*" NoButton 4
-+ I Style "*" NoButton 6
++ I Style "*" !Button 1
++ I Style "*" !Button 2
++ I Style "*" !Button 4
++ I Style "*" !Button 6

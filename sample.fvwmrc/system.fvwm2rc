@@ -21,13 +21,13 @@ Style *           HilightFore black, HilightBack palevioletred
 Style *           BorderWidth 7, HandleWidth 7
 Style *           Icon unknown1.xpm, Color lightgrey/dimgrey
 Style *           MWMFunctions, MWMDecor, HintOverride
-Style *           DecorateTransient, NoPPosition
+Style *           DecorateTransient, !UsePPosition
 Style *           IconBox 0 -10 -280 -1
 Style *           FocusFollowsMouse
 Style *           TileCascadePlacement
 
 # Styles for various Fvwm modules:
-Style "Fvwm*"       NoTitle,  Sticky, WindowListSkip
+Style "Fvwm*"       !Title,  Sticky, WindowListSkip
 Style "Fvwm*"       BorderWidth 2, CirculateSkipIcon, CirculateSkip
 Style "FvwmPager"   StaysOnTop
 Style "FvwmBanner"  StaysOnTop
@@ -39,11 +39,11 @@ Style "rxvt"        Icon term.xpm, SloppyFocus, IconBox -70 1 -1 -140
 Style "rxvt"        MWMBorder, MWMButtons
 
 # Styles for various common programs:
-Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
-Style "xbiff"       NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xcalc"       Icon xcalc.xpm, NoButton 2,ClickToFocus
-Style "xmh"         Icon mail1.xpm, NoIconTitle,StickyIcon
-Style "xmh"	    NoButton 2
+Style "*lock"       !Title, !Handles, Sticky, WindowListSkip, ClickToFocus
+Style "xbiff"       !Title, Sticky, WindowListSkip, ClickToFocus
+Style "xcalc"       Icon xcalc.xpm, !Button 2,ClickToFocus
+Style "xmh"         Icon mail1.xpm, !IconTitle,StickyIcon
+Style "xmh"	    !Button 2
 Style "xman"	    Icon xman.xpm, ClickToFocus
 Style "xmag"	    Icon mag_glass.xpm, ClickToFocus
 Style "xgraph"      Icon graphs.xpm, ClickToFocus
@@ -348,8 +348,8 @@ AddToFunc ChangeDefaultFocus I Style * $0
 ############################################################
 ############################################################
 # Note that icons are shown in the module
-#    only if NoIcon commnand is applied.
-#Style     *  NoIcon
+#    only if !Icon commnand is applied.
+#Style     *  !Icon
 
 ############################################################
 *FvwmIconBox: IconBack    #cfcfcf

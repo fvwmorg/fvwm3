@@ -45,7 +45,7 @@ Style * IconFont        9x15
 Style * IconBox -215 200 -1 -100
 
 # If you don't want icons for some or all windows (or all of them!)
-# Style * NoIcon
+# Style * !Icon
 
 # If you want ALL icons to follow you around the desktop (Sticky)
 #Style * StickyIcon
@@ -108,24 +108,24 @@ Style * TileCascadePlacement
 # change the default width, set a global icon, and give borders to popups
 Style * BorderWidth 7, HandleWidth 7, Icon x.xpm, DecorateTransient
 
-Style "Fvwm*"		NoTitle, Sticky, WindowListSkip
-Style "*lock"		NoTitle, Sticky, WindowListSkip
-Style "xbiff"		NoTitle, Sticky, WindowListSkip
-Style "xload"		NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xsession"	NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xconsole"	NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xfsm"		NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xdaliclock"	NoTitle, Sticky, WindowListSkip, ClickToFocus
+Style "Fvwm*"		!Title, Sticky, WindowListSkip
+Style "*lock"		!Title, Sticky, WindowListSkip
+Style "xbiff"		!Title, Sticky, WindowListSkip
+Style "xload"		!Title, Sticky, WindowListSkip, ClickToFocus
+Style "xsession"	!Title, Sticky, WindowListSkip, ClickToFocus
+Style "xconsole"	!Title, Sticky, WindowListSkip, ClickToFocus
+Style "xfsm"		!Title, Sticky, WindowListSkip, ClickToFocus
+Style "xdaliclock"	!Title, Sticky, WindowListSkip, ClickToFocus
 Style "FvwmButtons"	ClickToFocus
-Style "Time 3D"		NoTitle, Sticky
+Style "Time 3D"		!Title, Sticky
 Style "*term"		Icon NeXT.xpm
 Style "xcalc"		Icon xcalc.xpm
 Style "xbiff"		Icon mail1.xpm
 Style "xman"		Icon xman.xpm
 Style "Demineur"	Icon jolifond.xpm
 Style "xneko"		Icon xnekocat.xpm
-Style "emacs"		NoPPosition
-Style "Mosaic"		NoPPosition
+Style "emacs"		!UsePPosition
+Style "Mosaic"		!UsePPosition
 Style "xmh"		Icon mail2.xpm StartsOnDesk 2
 
 #############################################################################
@@ -444,7 +444,7 @@ Key F8		A	MC	Prev (AcceptsFocus) focus
 ############################################################################
 # FvwmIconBox
 #
-# NOTE: Icons will only be shown in module if Style "??" NoIcon is set
+# NOTE: Icons will only be shown in module if Style "??" !Icon is set
 *FvwmIconBoxIconBack    #cfcfcf
 *FvwmIconBoxIconHiFore  black
 *FvwmIconBoxIconHiBack  LightSkyBlue

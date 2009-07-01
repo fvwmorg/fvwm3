@@ -27,6 +27,6 @@ Style *		HilightFore white, HilightBack cyan4
 # Undo things specific to this decor:
 DestroyFunc DecorRemoveHook
 AddToFunc DecorRemoveHook
-+ I Style "*" NoButton 1
-+ I Style "*" NoButton 2
-+ I Style "*" NoButton 4
++ I Style "*" !Button 1
++ I Style "*" !Button 2
++ I Style "*" !Button 4
