@@ -64,7 +64,7 @@ Changes in beta release 2.5.26 (7-May-2008)
    - Fixed crash in ARGB visual detection code.
    - Fixed compilation without XRender support.
    - Fixed drawing of background pictures in menu items and titles.
-   - Fixed hadling of shaped windows.
+   - Fixed handling of shaped windows.
    - Fixed a 64-bit bug in the EWMH code.
 
 -------------------------------------------------------------------

@@ -1428,7 +1428,7 @@ AddToMenu   StartMenu@side.fvwm2.xpm@^black^
 + "&Settings%settings.xpm%"	Popup Settings
 + "" Nop
 Test (f /etc/X11/fvwm/DebianMenu) + "&Debian Menu%programs.xpm%" Popup /Debian
-+ "&Module%modules.xpm"		Popup Module-Popup
++ "&Module%modules.xpm%"		Popup Module-Popup
 + "&Find%find1.xpm%"		FvwmScript FvwmScript-Find
 + "&Help%help.xpm%"		Exec exec  xman
 #PREF 1
@@ -1445,11 +1445,11 @@ DestroyMenu Utilities
 AddToMenu   Utilities "Root Menu" Title
 #PREF 3
 + "&Terminal%mini.term.xpm%"		Exec exec xterm
-+ "&Editor%mini.edit.xpm"		Exec exec emacs
++ "&Editor%mini.edit.xpm%"		Exec exec emacs
 + "&File Manager%mini.filemgr.xpm%"	Exec exec xfm
 + "&Top%mini.run.xpm%"			Exec exec xterm -geometry 80x40	-T Top -n Top -e top
 + ""					Nop
-+ "&Shells%mini.term.xpm"		Popup Shells
++ "&Shells%mini.term.xpm%"		Popup Shells
 + "&Programs%mini.start.xpm%"		Popup Programs
 + ""					Nop
 + "Fvwm &Modules%mini.modules.xpm%"	Popup Module-Popup
@@ -1553,8 +1553,8 @@ AddToMenu   Programs
 AddToMenu Programs
 + "&Accessories%mini.hammer.xpm%"		Popup Accessories
 + "&Applications%mini.pencil.xpm%"		Popup Applications
-+ "&Science%mini.question.xpm"			Popup Science
-+ "&System%mini.filemgr.xpm"			Popup System
++ "&Science%mini.question.xpm%"			Popup Science
++ "&System%mini.filemgr.xpm%"			Popup System
 + "&Editors%mini.edit.xpm%"			Popup Editors
 + "&Network%mini.telnet.xpm%"			Popup Network
 + "&Internet%mini.connect.xpm%"			Popup Internet
@@ -1589,7 +1589,7 @@ AddToMenu Programs
 #+ "Desktop &Help%mini.book1.xpm%"       Exec exec /usr/dt/bin/dthelpview -helpVolume browser
 #+ "Man Pages%mini.book1.xpm%"           Exec exec /usr/dt/bin/dthelpview -man
 #+ "&Mailer%mini.mail.xpm%"              Exec exec /usr/dt/bin/dtmail
-#+ "&Calandar%mini.calandar.xpm"         Exec exec /usr/dt/bin/dtcm
+#+ "&Calandar%mini.calandar.xpm%"         Exec exec /usr/dt/bin/dtcm
 #+ "&Calculator%mini.calc.xpm%"          Exec exec /usr/dt/bin/dtcalc
 #+ "&Icon Editor%mini.palette.xpm%"      Exec exec /usr/dt/bin/dticon
 #+ "&Print Manager%mini.fax.xpm%"	Exec exec /usr/dt/bin/dtprintinfo
@@ -1815,7 +1815,7 @@ AddToMenu   Kill-Module-Popup
 + "Desker &Panel%mini.pager.xpm%"	All (DeskerPanelButtons) Close
 + "Sound &effect%mini.sound.xpm%"	KillModule FvwmEvent
 + "&Talk%mini.telnet.xpm%"	        All (FvwmForm-Talk) Close
-+ "Task&Bar%mini.exp.xpm"	        KillModule FvwmTaskBar
++ "Task&Bar%mini.exp.xpm%"	        KillModule FvwmTaskBar
 + "Window &List%mini.windows.xpm%"	KillModule FvwmWinList
 + "&Wharf%mini.pencil.xpm%"		KillModule FvwmWharf
 
@@ -1837,7 +1837,7 @@ AddToMenu   Settings
 + "Desker &Panel%mini.pager.xpm%"		Popup DeskerPanel-settings
 + "S&ounds Effect%mini.audiovol.xpm%"		Popup Sound-Settings
 + "&WMaker Applets%mini.pencil.xpm%"		Popup WinMakerApp-Settings
-+ "Set &Layers%mini.windows.xpm"		Popup Layers-Settings
++ "Set &Layers%mini.windows.xpm%"		Popup Layers-Settings
 + "&X Setup Scripts%mini.x.xpm%"		Popup XsetupScripts
 + "&Show/Load/Save Settings%mini.turn.xpm%"	Popup Load-Settings
 + "" Nop
@@ -1856,7 +1856,7 @@ AddToMenu   Settings
 DestroyMenu FvwmConfig
 AddToMenu   FvwmConfig
 + "&Base Configuration%mini.fvwm.xpm%"		FvwmScript FvwmScript-BaseConfig
-+ "&Form Configuration%mini.fvwm.xpm"		FvwmForm FvwmForm-Form
++ "&Form Configuration%mini.fvwm.xpm%"		FvwmForm FvwmForm-Form
 + ""		Nop
 + "&Rebuild Sample 95%mini.fvwm.xpm%"		FvwmScript FvwmScript-Setup95
 + "&Load Default Sample%mini.fvwm.xpm%"		FvwmForm FvwmForm-Setup
@@ -2180,7 +2180,7 @@ AddToMenu   Bell-Settings
 
 DestroyMenu X-Settings
 AddToMenu   X-Settings
-+ "Back &Color%mini.colors.xpm"         Popup Backcolor
++ "Back &Color%mini.colors.xpm%"         Popup Backcolor
 + "Back &Animation%mini.fractal.xpm%"   Popup Background-Animation
 + "&Root Cursor Form%mini.xarchie.xpm%"	FvwmForm FvwmForm-RootCursor
 + "&Video tuning%mini.monitor.xpm%"	Exec exec xterm -T Xvidtune -e xvidtune
@@ -2390,8 +2390,8 @@ AddToMenu "Window" "Window Operations" Title
 + "R&aise%mini.raise2.xpm%"             Raise
 + "&Lower%mini.lower2.xpm%"             Lower
 + ""				Nop
-+ "&Delete%mini.cross.xpm"		Delete
-+ "&Close%mini.delete.xpm"		Close
++ "&Delete%mini.cross.xpm%"		Delete
++ "&Close%mini.delete.xpm%"		Close
 + "&Destroy%mini.bomb.xpm%"		Destroy
 + ""				Nop
 + "Move to &Page%mini.move1.xpm%"	Popup Move-window
@@ -2417,7 +2417,7 @@ AddToMenu "Window-Ops2"
 + "(Un)S&tick%mini.stick1.xpm%"			Stick
 #+ "R&aiseLower%mini.raise2.xpm%"		RaiseLower
 + ""			Nop
-+ "&Close%mini.delete.xpm"			Close
++ "&Close%mini.delete.xpm%"			Close
 + ""			Nop
 + "&Identify%mini.question.xpm%"		Module FvwmIdent
 + "More&...%mini.window.xpm%"			Menu Window This 0 0
@@ -2437,7 +2437,7 @@ AddToMenu "Window-Ops3"
 + "(Un)M&aximize%mini.maximize1.xpm%"		Maximize 95 95
 + "%mini.window.xpm%Scroll&Bar (75%% scr)"	Module FvwmScroll 75p 75p
 + ""			Nop
-+ "&Close%mini.delete.xpm"			Close
++ "&Close%mini.delete.xpm%"			Close
 + ""			Nop
 + "&Identify%mini.question.xpm%"		Module FvwmIdent
 + "More&...%mini.window.xpm%"			Menu Window This 0 0
@@ -2470,8 +2470,8 @@ AddToMenu   WindowGroupOps "Group Ops" Title
 + "R&aise%mini.raise2.xpm%"       Pick All ($c) Raise
 + "&Lower%mini.lower2.xpm%"       Pick All ($c) Lower
 + "" Nop
-+ "&Delete%mini.cross.xpm"	Pick Delete
-+ "&Close%mini.delete.xpm"	Pick Close
++ "&Delete%mini.cross.xpm%"	Pick Delete
++ "&Close%mini.delete.xpm%"	Pick Close
 + "&Destroy%mini.bomb.xpm%"	Pick Destroy
 + "&Quick move to ..." Title
 + 'Page &1%mini.move1.xpm%'	Pick All ($c) MoveToPage 0 0
@@ -2638,7 +2638,7 @@ DestroyModuleConfig MiniButtons*
 
 Style "DeskerPanelButtons" NoTitle, NoHandles, Sticky, WindowListSkip, \
 	BorderWidth 0, CirculateSkip
-#Style "DeskerPanelButtons"  StayOnTop
+#Style "DeskerPanelButtons"  StaysOnTop
 DestroyModuleConfig DeskerPanelButtons: *
 *DeskerPanelButtons: Fore Black
 *DeskerPanelButtons: Back grey57
