@@ -1,3 +1,10 @@
+2009-07-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	Make sure that a PropertyNotify on the WM_STATE property is always
+	sent out when a window is requested to be moved to the withdrawn
+	state. (Needed by QT)
+
 2009-07-01  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* sample.fvwmrc/DecorMwm:

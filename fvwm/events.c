@@ -2935,8 +2935,46 @@ void HandleMapRequestKeepRaised(
 			FCheckIfEvent(
 				dpy, &dummy, test_withdraw_request,
 				(XPointer)&args)) {
-			/* The window is moved back to the WitdrawnState
-			 * immideately. Don't map it. */
+			/* The window is moved back to the WithdrawnState
+			 * immideately. Don't map it.
+			 *
+			 * However, send make sure that a WM_STATE
+			 * PropertyNotify event is sent to the window.
+			 * QT needs this.
+			 */
+			Atom atype;
+			int aformat;
+			unsigned long nitems, bytes_remain;
+			unsigned char *prop;
+
+			if (
+				XGetWindowProperty(
+					dpy, ew, _XA_WM_STATE, 0L, 3L, False,
+					_XA_WM_STATE, &atype, &aformat,
+					&nitems,&bytes_remain,&prop)
+				== Success)
+			{
+				if (prop != NULL)
+				{
+					XFree(prop);
+					XDeleteProperty(dpy, ew, _XA_WM_STATE);
+				}
+				else
+				{
+					XPropertyEvent ev;
+					ev.type = PropertyNotify;
+					ev.display = dpy;
+					ev.window = ew;
+					ev.atom = _XA_WM_STATE;
+					ev.time = fev_get_evtime();
+					ev.state = PropertyDelete;
+					FSendEvent(
+						dpy, ew, True,
+						PropertyChangeMask,
+						(XEvent*)&ev);
+				}
+			}
+
 			return;
 		}
 

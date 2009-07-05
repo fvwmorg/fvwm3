@@ -5,6 +5,11 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.28 (not released yet)
 
+* Bug fixes:
+
+   - Fixed non-visible QT windows after a QT deferred map (e.g.
+     Skype profile windows).
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.27 (23-Feb-2009)
