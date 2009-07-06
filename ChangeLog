@@ -1,5 +1,12 @@
+2009-07-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/style.c (fw_match_style_id):
+	Fix fvwmstyle resource
+
 2009-07-05  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* NEWS:
 	* fvwm/events.c (HandleMapRequestKeepRaised):
 	Make sure that a PropertyNotify on the WM_STATE property is always
 	sent out when a window is requested to be moved to the withdrawn

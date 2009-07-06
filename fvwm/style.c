@@ -193,7 +193,7 @@ static int fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 		{
 			return 1;
 		}
-		if (fw->style_name == NULL &&
+		if (fw->style_name != NULL &&
 		    matchWildcards(SID_GET_NAME(s_id), fw->style_name) == 1)
 		{
 			return 1;
