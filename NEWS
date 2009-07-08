@@ -10,6 +10,10 @@ Changes in beta release 2.5.28 (not released yet)
    - Fixed non-visible QT windows after a QT deferred map (e.g.
      Skype profile windows).
    - Fixed the use of the X-resource "fvwmstyle".
+   - Fixed segmentation fault in FvwmEvent when parsing an
+     undefined event name.
+   - Fixed the events startup, shutdown and unknown in FvwmEvent.
+
 
 -------------------------------------------------------------------
 

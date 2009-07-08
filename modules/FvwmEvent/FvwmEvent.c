@@ -151,6 +151,8 @@ static event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
 	{ "enter_window", 0 },
 	{ "leave_window", 0 },
 	{ "property_change", 0},
+	{ "reply", 0}, /* FvwmEvent will never receive an MX_REPLY message,
+			  but the event is needed for counts to add up right */
 	/* built in events */
 #ifdef M_BELL
 	{ "beep", -1 },
