@@ -11,7 +11,8 @@ Changes in beta release 2.5.28 (not released yet)
      Skype profile windows).
    - Fixed the use of the X-resource "fvwmstyle".
    - Fixed segmentation fault in FvwmEvent when parsing an
-     undefined event name.
+     undefined event name, or an undefined environment variable
+     to the RPlayHost option.
    - Fixed the events startup, shutdown and unknown in FvwmEvent.
 
 

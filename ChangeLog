@@ -1,6 +1,12 @@
 2009-07-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:
+	fix for segfault with RPlatHost directive in FvwmEvent
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	* libs/Fplay.h:
+	add Fplay.h wrapper header for rplay.h
+
+	* NEWS:
 	fix debian bug #438132
 
 2009-07-06  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>

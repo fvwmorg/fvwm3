@@ -1,8 +1,15 @@
 2009-07-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* FvwmEvent/FvwmEvent.c:
+	change #ifdef HAVE_RPLAY to if(USE_FPLAY) style for always running
+	rplay code through the compiler.
+	(handle_config_line):
+	fix possible segmentation fault in RPlayHost argument parsing
+
 	* FvwmEvent/FvwmEvent.c (event_table):
 	make FvwmEvent aware of MX_REPLY events. Fixes segfault with unkown
 	event names and fixes built in event offset.
+
 
 2009-05-25  Jason Weber  <baboon@imonk.com>
 	* FvwmProxy/FvwmProxy.1.in:

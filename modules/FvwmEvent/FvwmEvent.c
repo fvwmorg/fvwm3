@@ -43,10 +43,7 @@
 /*
  * rplay includes:
  */
-#ifdef HAVE_RPLAY
-#include <rplay.h>
-#undef M_ERROR /* Solaris fix */
-#endif
+#include "libs/Fplay.h"
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
@@ -169,10 +166,8 @@ static event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
 /* define the action table  */
 static char *action_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
 
-#ifdef HAVE_RPLAY
 static int rplay_fd = -1;
-static RPLAY *rplay_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
-#endif
+static FPLAY *rplay_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
 
 static unsigned int m_selected = 0;
 static unsigned int mx_selected = 0;
@@ -409,21 +404,19 @@ int main(int argc, char **argv)
  */
 void execute_event(short event, unsigned long *body)
 {
-#ifdef HAVE_RPLAY
 	/* this is the sign that rplay is used */
 	if (rplay_fd != -1 && rplay_table[event])
 	{
-		if (rplay(rplay_fd, rplay_table[event]) >= 0)
+		if (Fplay(rplay_fd, rplay_table[event]) >= 0)
 		{
 			last_time = now;
 		}
 		else
 		{
-			rplay_perror("rplay");
+			Fplay_perror("rplay");
 		}
 		return;
 	}
-#endif
 
 	if (action_table[event])
 	{
@@ -529,10 +522,8 @@ void handle_config_line(char *buf, char **phost)
 	char **e;
 	int i;
 	int found;
-#ifdef HAVE_RPLAY
-	int volume   = RPLAY_DEFAULT_VOLUME;
-	int priority = RPLAY_DEFAULT_PRIORITY;
-#endif
+	int volume   = FPLAY_DEFAULT_VOLUME;
+	int priority = FPLAY_DEFAULT_PRIORITY;
 
 	p = buf + MyNameLen;
 	/* config option ? */
@@ -602,7 +593,6 @@ void handle_config_line(char *buf, char **phost)
 			PassID = True;
 			break;
 
-#ifdef HAVE_RPLAY
 		case 5:
 			/* RPlayHost */
 			if (*phost)
@@ -615,16 +605,18 @@ void handle_config_line(char *buf, char **phost)
 				/* Check for $HOSTDISPLAY */
 				char *c1 = (char *)getenv(token + 1);
 				char *c2;
-
-				*phost = safestrdup(c1);
-				c2 = *phost;
-				while (c1 && *c1 != ':')
+				if (c1 != NULL)
 				{
-					*c2++ = *c1++;
+					*phost = safestrdup(c1);
+					c2 = *phost;
+					while (c1 && *c1 != ':')
+					{
+						*c2++ = *c1++;
+					}
+					*c2 = '\0';
 				}
-				*c2 = '\0';
 			}
-			else
+			else if (token)
 			{
 				*phost = safestrdup(token);
 			}
@@ -645,7 +637,6 @@ void handle_config_line(char *buf, char **phost)
 				volume = atoi(token);
 			}
 			break;
-#endif
 
 		case 8:
 			/* StartDelay */
@@ -681,13 +672,17 @@ void handle_config_line(char *buf, char **phost)
 		{
 			if (MatchToken(event, event_table[i].name))
 			{
-#ifdef HAVE_RPLAY
-				rplay_table[i] = rplay_create(RPLAY_PLAY);
-				rplay_set(
-					rplay_table[i], RPLAY_APPEND,
-					RPLAY_SOUND, action, RPLAY_PRIORITY,
-					priority, RPLAY_VOLUME, volume, NULL);
-#endif
+				if (USE_FPLAY)
+				{
+					rplay_table[i] = Fplay_create(
+						FPLAY_PLAY);
+					Fplay_set(
+						rplay_table[i], FPLAY_APPEND,
+						FPLAY_SOUND, action,
+						FPLAY_PRIORITY, priority,
+						FPLAY_VOLUME, volume, NULL);
+				}
+
 				if (action_table[i])
 				{
 					free(action_table[i]);
@@ -729,17 +724,17 @@ void config(void)
 	int i;
 	char *host = NULL;
 
-#ifdef HAVE_RPLAY
-	host = safestrdup(rplay_default_host());
-#endif
+	if (USE_FPLAY)
+	{
+		host = safestrdup(Fplay_default_host());
+	}
+
 
 	/* Intialize all the actions */
 	for (i = 0; i < MAX_TOTAL_MESSAGES+MAX_BUILTIN; i++)
 	{
 		action_table[i] = NULL;
-#ifdef HAVE_RPLAY
 		rplay_table[i] = NULL;
-#endif
 	}
 
 	/* get config lines with my name */
@@ -759,18 +754,16 @@ void config(void)
 		}
 	}
 
-#ifdef HAVE_RPLAY
 	/* Builtin rplay support is enabled when
 	 * FvwmAudioPlayCmd == builtin-rplay. */
-	if (StrEquals(cmd_line, "builtin-rplay"))
+	if (USE_FPLAY && StrEquals(cmd_line, "builtin-rplay"))
 	{
-		if ((rplay_fd = rplay_open(host)) < 0)
+		if ((rplay_fd = Fplay_open(host)) < 0)
 		{
-			rplay_perror("rplay_open");
+			Fplay_perror("rplay_open");
 			exit(1);
 		}
 	}
-#endif
 
 	return;
 }
