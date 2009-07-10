@@ -146,8 +146,11 @@
 #	define Fplay(a,b) rplay(a,b)
 #	define Fplay_create(a) rplay_create(a)
 #	define Fplay_perror(a) rplay_perror(a)
-#	define Fplay_set(...) rplay_set(__VA_ARGS__)
-#	define Fplay_get(...) rplay_get(__VA_ARGS__)
+/* variadict macros appeared in C99, so we can't use them */
+#	define Fplay_set rplay_set
+#	define Fplay_get rplay_get
+#	define Frptp_putline rptp_putline
+#	define Frptp_async_putline rptp_async_putline
 #	define Fplay_destroy(a) rplay_destroy(a)
 #	define Fplay_default_host() rplay_default_host()
 #	define Fplay_display(a) rplay_display(a)
@@ -173,8 +176,6 @@
 #	define Frptp_write(a,b,c) rptp_write(a,b,c)
 #	define Frptp_close(a) rptp_close(a)
 #	define Frptp_perror(a) rptp_perror(a)
-#	define Frptp_putline(...) rptp_putline(__VA_ARGS__)
-#	define Frptp_async_putline(...) rptp_async_putline(__VA_ARGS__)
 #	define Frptp_getline(a,b,c) rptp_getline(a,b,c)
 #	define Frptp_command(a,b,c,d) rptp_command(a,b,c,d)
 #	define Frptp_parse(a,b) rptp_parse(a,b)
@@ -321,8 +322,17 @@
 #	define Fplay(a,b) 0
 #	define Fplay_create(a) 0
 #	define Fplay_perror(a)
+/* variadict macros appeared in C99, so we can't use them. */
+	static void Fplay_set(FPLAY *a, ...) {}
+	static int Fplay_get(FPLAY *a, ...) {return 0;}
+	static int Frptp_putline(int a, ...) {return 0;}
+#	define Frptp_async_putline Frptp_putline
+/*
 #	define Fplay_set(...)
 #	define Fplay_get(...) 0
+#	define Frptp_putline(...) 0
+#	define Frptp_async_putline(...) 0
+*/
 #	define Fplay_destroy(a)
 #	define Fplay_default_host() ""
 #	define Fplay_display(a) 0
@@ -348,8 +358,6 @@
 #	define Frptp_write(a,b,c) 0
 #	define Frptp_close(a) 0
 #	define Frptp_perror(a)
-#	define Frptp_putline(...) 0
-#	define Frptp_async_putline(...) 0
 #	define Frptp_getline(a,b,c) 0
 #	define Frptp_command(a,b,c,d) 0
 #	define Frptp_parse(a,b) NULL

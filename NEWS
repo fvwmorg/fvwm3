@@ -17,6 +17,7 @@ Changes in beta release 2.5.28 (not released yet)
    - Fvwm now retains utf8 window names when the WM_NAME changes,
      and the utf8 name converted to the default charset match
      the old WM_NAME.
+   - Fixed the options RPlayVolume and RPlayPriority in FvwmEvent.
 
 
 -------------------------------------------------------------------

@@ -61,9 +61,9 @@
 
 /* ---------------------------- local definitions --------------------------- */
 
-#define BUILTIN_STARTUP         (MAX_TOTAL_MESSAGES)
-#define BUILTIN_SHUTDOWN        (MAX_TOTAL_MESSAGES + 1)
-#define BUILTIN_UNKNOWN         (MAX_TOTAL_MESSAGES + 2)
+#define BUILTIN_STARTUP         0
+#define BUILTIN_SHUTDOWN        1
+#define BUILTIN_UNKNOWN         2
 #define MAX_BUILTIN             3
 #define MAX_RPLAY_HOSTNAME_LEN  MAX_MODULE_INPUT_TEXT_LEN
 #define SYNC_MASK_M             (M_DESTROY_WINDOW | M_LOWER_WINDOW | \
@@ -82,11 +82,16 @@ typedef struct
 {
 	char *name;
 	int action_arg;
+	union
+	{
+		char *action;
+		FPLAY *rplay;
+	} action;
 } event_entry;
 
 /* ---------------------------- forward declarations ------------------------ */
 
-void execute_event(short, unsigned long*);
+void execute_event(event_entry*, short, unsigned long*);
 void config(void);
 RETSIGTYPE DeadPipe(int);
 static RETSIGTYPE TerminateHandler(int);
@@ -110,65 +115,85 @@ static char *audio_play_dir = NULL;
 
 #define ARG_NO_WINID 1024  /* just a large number */
 
-static event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
+#define EVENT_ENTRY(name,action_arg) { name, action_arg, {NULL} }
+static event_entry message_event_table[] =
 {
-	{ "new_page", -1 },
-	{ "new_desk", 0 | ARG_NO_WINID },
-	{ "old_add_window", 0 },
-	{ "raise_window", 0 },
-	{ "lower_window", 0 },
-	{ "old_configure_window", 0 },
-	{ "focus_change", 0 },
-	{ "destroy_window", 0 },
-	{ "iconify", 0 },
-	{ "deiconify", 0 },
-	{ "window_name", 0 },
-	{ "icon_name", 0 },
-	{ "res_class", 0 },
-	{ "res_name", 0 },
-	{ "end_windowlist", -1 },
-	{ "icon_location", 0 },
-	{ "map", 0 },
-	{ "error", -1 },
-	{ "config_info", -1 },
-	{ "end_config_info", -1 },
-	{ "icon_file", 0 },
-	{ "default_icon", -1 },
-	{ "string", -1 },
-	{ "mini_icon", 0 },
-	{ "windowshade", 0 },
-	{ "dewindowshade", 0 },
-	{ "visible_name", 0 },
-	{ "sendconfig", -1 },
-	{ "restack", -1 },
-	{ "add_window", 0 },
-	{ "configure_window", 0 },
-	/* begin of extended message area */
-	{ "visible_icon_name", 0 },
-	{ "enter_window", 0 },
-	{ "leave_window", 0 },
-	{ "property_change", 0},
-	{ "reply", 0}, /* FvwmEvent will never receive an MX_REPLY message,
-			  but the event is needed for counts to add up right */
-	/* built in events */
-#ifdef M_BELL
-	{ "beep", -1 },
-#endif
-#ifdef M_TOGGLEPAGE
-	{ "toggle_paging", -1 },
-#endif
-	/* add builtins here */
-	{ "startup", -1 },
-	{ "shutdown", -1 },
-	{ "unknown", -1}
+	EVENT_ENTRY( "new_page", -1 ),
+	EVENT_ENTRY( "new_desk", 0 | ARG_NO_WINID ),
+	EVENT_ENTRY( "old_add_window", 0 ),
+	EVENT_ENTRY( "raise_window", 0 ),
+	EVENT_ENTRY( "lower_window", 0 ),
+	EVENT_ENTRY( "old_configure_window", 0 ),
+	EVENT_ENTRY( "focus_change", 0 ),
+	EVENT_ENTRY( "destroy_window", 0 ),
+	EVENT_ENTRY( "iconify", 0 ),
+	EVENT_ENTRY( "deiconify", 0 ),
+	EVENT_ENTRY( "window_name", 0 ),
+	EVENT_ENTRY( "icon_name", 0 ),
+	EVENT_ENTRY( "res_class", 0 ),
+	EVENT_ENTRY( "res_name", 0 ),
+	EVENT_ENTRY( "end_windowlist", -1 ),
+	EVENT_ENTRY( "icon_location", 0 ),
+	EVENT_ENTRY( "map", 0 ),
+	EVENT_ENTRY( "error", -1 ),
+	EVENT_ENTRY( "config_info", -1 ),
+	EVENT_ENTRY( "end_config_info", -1 ),
+	EVENT_ENTRY( "icon_file", 0 ),
+	EVENT_ENTRY( "default_icon", -1 ),
+	EVENT_ENTRY( "string", -1 ),
+	EVENT_ENTRY( "mini_icon", 0 ),
+	EVENT_ENTRY( "windowshade", 0 ),
+	EVENT_ENTRY( "dewindowshade", 0 ),
+	EVENT_ENTRY( "visible_name", 0 ),
+	EVENT_ENTRY( "sendconfig", -1 ),
+	EVENT_ENTRY( "restack", -1 ),
+	EVENT_ENTRY( "add_window", 0 ),
+	EVENT_ENTRY( "configure_window", 0 ),
+	EVENT_ENTRY(NULL,0)
+};
+static event_entry extended_message_event_table[] =
+{
+	EVENT_ENTRY( "visible_icon_name", 0 ),
+	EVENT_ENTRY( "enter_window", 0 ),
+	EVENT_ENTRY( "leave_window", 0 ),
+	EVENT_ENTRY( "property_change", 0),
+	EVENT_ENTRY( "reply", 0), /* FvwmEvent will never receive MX_REPLY */
+	EVENT_ENTRY(NULL,0)
+};
+static event_entry builtin_event_table[] =
+{
+	EVENT_ENTRY( "startup", -1 ),
+	EVENT_ENTRY( "shutdown", -1 ),
+	EVENT_ENTRY( "unknown", -1),
+	EVENT_ENTRY(NULL,0)
 };
 
-/* define the action table  */
-static char *action_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
+#if 0
+/* These are some events described in the man page, which does not exist in
+   fvwm. */
+static event_entry future_event_table[] =
+{
+#ifdef M_BELL
+	EVENT_ENTRY( "beep", -1 ),
+#endif
+#ifdef M_TOGGLEPAGE
+	EVENT_ENTRY( "toggle_paging", -1 ),
+#endif
+	EVENT_ENTRY(NULL,0)
+}
+#endif
+
+static event_entry* event_tables[] =
+{
+	message_event_table,
+	extended_message_event_table,
+	builtin_event_table,
+	NULL
+};
+
+#undef EVENT_ENTRY
 
 static int rplay_fd = -1;
-static FPLAY *rplay_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
-
 static unsigned int m_selected = 0;
 static unsigned int mx_selected = 0;
 static unsigned int m_sync = 0;
@@ -283,7 +308,7 @@ int main(int argc, char **argv)
 	/* configure events */
 	config();
 	/* Startup event */
-	execute_event(BUILTIN_STARTUP, NULL);
+	execute_event(builtin_event_table, BUILTIN_STARTUP, NULL);
 	if (start_audio_delay)
 	{
 		last_time = time(0);
@@ -311,6 +336,7 @@ int main(int argc, char **argv)
 	while (!isTerminated)
 	{
 		unsigned long msg_bit;
+		event_entry *event_table;
 
 		if ((count = read(fd[1], header, FvwmPacketHeaderSize_byte)) <=
 		    0)
@@ -370,26 +396,26 @@ int main(int argc, char **argv)
 			event++;
 			msg_bit >>= 1;
 		}
-		if (event == -1)
+		if (
+			event == -1 ||
+			(event >= MAX_MESSAGES && !is_extended_msg) ||
+			(event >= MAX_EXTENDED_MESSAGES && is_extended_msg))
 		{
-			event = BUILTIN_UNKNOWN;
-		}
-		else if (event >= MAX_MESSAGES && !is_extended_msg)
-		{
-			event = BUILTIN_UNKNOWN;
-		}
-		else if (event >= MAX_EXTENDED_MESSAGES && is_extended_msg)
-		{
+			event_table = builtin_event_table;
 			event = BUILTIN_UNKNOWN;
 		}
 		else if (is_extended_msg)
 		{
-			event += MAX_MESSAGES;
+			event_table = extended_message_event_table;
 		}
-		execute_event(event, body);
+		else
+		{
+			event_table = message_event_table;
+		}
+		execute_event(event_table, event, body);
 		unlock_event(header[1]);
 	} /* while */
-	execute_event(BUILTIN_SHUTDOWN, NULL);
+	execute_event(builtin_event_table, BUILTIN_SHUTDOWN, NULL);
 
 	return 0;
 }
@@ -402,12 +428,12 @@ int main(int argc, char **argv)
  *    execute_event - actually executes the actions from lookup table
  *
  */
-void execute_event(short event, unsigned long *body)
+void execute_event(event_entry *event_table, short event, unsigned long *body)
 {
 	/* this is the sign that rplay is used */
-	if (rplay_fd != -1 && rplay_table[event])
+	if (rplay_fd != -1 && event_table[event].action.rplay != NULL)
 	{
-		if (Fplay(rplay_fd, rplay_table[event]) >= 0)
+		if (Fplay(rplay_fd, event_table[event].action.rplay) >= 0)
 		{
 			last_time = now;
 		}
@@ -418,12 +444,14 @@ void execute_event(short event, unsigned long *body)
 		return;
 	}
 
-	if (action_table[event])
+	if (event_table[event].action.action != NULL)
 	{
 		char *buf = NULL;
 		int len = 0;
+		char *action;
 
-		len = strlen(cmd_line) + strlen(action_table[event]) + 32;
+		action = event_table[event].action.action;
+		len = strlen(cmd_line) + strlen(action) + 32;
 		if (audio_play_dir)
 		{
 			len += strlen(audio_play_dir);
@@ -434,15 +462,14 @@ void execute_event(short event, unsigned long *body)
 			/* Don't use audio_play_dir if it's NULL or if
 			 * the sound file is an absolute pathname. */
 			if (!audio_play_dir || audio_play_dir[0] == '\0' ||
-			    action_table[event][0] == '/')
+			    action[0] == '/')
 			{
-				sprintf(buf,"%s %s", cmd_line,
-					action_table[event]);
+				sprintf(buf,"%s %s", cmd_line, action);
 			}
 			else
 			{
 				sprintf(buf,"%s %s/%s &", cmd_line,
-					audio_play_dir, action_table[event]);
+					audio_play_dir, action);
 			}
 			if (!system(buf))
 			{
@@ -465,20 +492,17 @@ void execute_event(short event, unsigned long *body)
 				{
 					action_arg &= ~ARG_NO_WINID;
 					sprintf(buf, "%s %s %ld", cmd_line,
-						action_table[event],
-						body[action_arg]);
+						action,	body[action_arg]);
 				}
 				else
 				{
 					sprintf(buf, "%s %s 0x%lx", cmd_line,
-						action_table[event],
-						body[action_arg]);
+						action,	body[action_arg]);
 				}
 			}
 			else
 			{
-				sprintf(buf,"%s %s", cmd_line,
-					action_table[event]);
+				sprintf(buf,"%s %s", cmd_line, action);
 			}
 			/* let fvwm execute the function */
 			SendText(fd, buf, fw);
@@ -500,19 +524,8 @@ void execute_event(short event, unsigned long *body)
  *
  */
 
-char *table[]=
-{
-	"Cmd",
-	"Delay",
-	"Dir",
-	"PassID",
-	"PlayCmd",
-	"RplayHost",
-	"RplayPriority",
-	"RplayVolume",
-	"StartDelay"
-}; /* define entries here, if this list becomes unsorted, use FindToken */
-
+static int volume   = FPLAY_DEFAULT_VOLUME;
+static int priority = FPLAY_DEFAULT_PRIORITY;
 void handle_config_line(char *buf, char **phost)
 {
 	char *event;
@@ -522,8 +535,20 @@ void handle_config_line(char *buf, char **phost)
 	char **e;
 	int i;
 	int found;
-	int volume   = FPLAY_DEFAULT_VOLUME;
-	int priority = FPLAY_DEFAULT_PRIORITY;
+
+	char *table[]=
+	{
+		"Cmd",
+		"Delay",
+		"Dir",
+		"PassID",
+		"PlayCmd",
+		"RplayHost",
+		"RplayPriority",
+		"RplayVolume",
+		"StartDelay"
+	}; /* define entries here, if this list becomes unsorted, use FindToken */
+
 
 	p = buf + MyNameLen;
 	/* config option ? */
@@ -650,6 +675,8 @@ void handle_config_line(char *buf, char **phost)
 	}
 	else
 	{
+		event_entry **event_table;
+
 		/* test for isspace(*p) ??? */
 		p = GetNextSimpleOption(p, &event);
 		p = GetNextSimpleOption(p, &action);
@@ -667,38 +694,37 @@ void handle_config_line(char *buf, char **phost)
 				MyName + 1, buf);
 			return;
 		}
-		for (found = 0, i = 0;
-		     !found && i < MAX_TOTAL_MESSAGES + MAX_BUILTIN; i++)
+		event_table = event_tables;
+		found = 0;
+		while(found == 0 && *event_table != NULL)
 		{
-			if (MatchToken(event, event_table[i].name))
-			{
-				if (USE_FPLAY)
-				{
-					rplay_table[i] = Fplay_create(
-						FPLAY_PLAY);
-					Fplay_set(
-						rplay_table[i], FPLAY_APPEND,
-						FPLAY_SOUND, action,
-						FPLAY_PRIORITY, priority,
-						FPLAY_VOLUME, volume, NULL);
-				}
+			event_entry *loop_event;
 
-				if (action_table[i])
+			for (loop_event = *event_table, i = 0;
+			     found == 0 && loop_event->name != NULL;
+			     loop_event++, i++)
+			{
+				if (MatchToken(event, loop_event->name))
 				{
-					free(action_table[i]);
-				}
-				action_table[i] = action;
-				found = 1;
-				if (i < MAX_MESSAGES)
-				{
-					m_selected |= (1 << i);
-				}
-				else if (i < MAX_TOTAL_MESSAGES)
-				{
-					mx_selected |=
-						(1 << (i - MAX_MESSAGES));
+					if (loop_event->action.action != NULL)
+					{
+						free(loop_event->action.action);
+					}
+					loop_event->action.action = action;
+					found = 1;
+					if (*event_table == message_event_table)
+					{
+						m_selected |= (1 << i);
+					}
+					else if (
+						*event_table ==
+						extended_message_event_table)
+					{
+						mx_selected |= (1 << i);
+					}
 				}
 			}
+			event_table++;
 		}
 		if (!found)
 		{
@@ -729,14 +755,6 @@ void config(void)
 		host = safestrdup(Fplay_default_host());
 	}
 
-
-	/* Intialize all the actions */
-	for (i = 0; i < MAX_TOTAL_MESSAGES+MAX_BUILTIN; i++)
-	{
-		action_table[i] = NULL;
-		rplay_table[i] = NULL;
-	}
-
 	/* get config lines with my name */
 	InitGetConfigLine(fd,MyName);
 	while (GetConfigLine(fd,&buf), buf != NULL && *buf != 0)
@@ -758,10 +776,38 @@ void config(void)
 	 * FvwmAudioPlayCmd == builtin-rplay. */
 	if (USE_FPLAY && StrEquals(cmd_line, "builtin-rplay"))
 	{
+		event_entry **event_table;
+
 		if ((rplay_fd = Fplay_open(host)) < 0)
 		{
 			Fplay_perror("rplay_open");
 			exit(1);
+		}
+		/* change actions to rplay objects */
+		event_table = event_tables;
+		while(*event_table != NULL)
+		{
+			event_entry *loop_event;
+			for (loop_event = *event_table;
+			     loop_event->name != NULL; loop_event++)
+			{
+				if (loop_event->action.action != NULL)
+				{
+					char *tmp_action;
+					tmp_action = loop_event->action.action;
+					loop_event->action.rplay =
+						Fplay_create(
+							FPLAY_PLAY);
+					Fplay_set(
+						loop_event->action.rplay,
+						FPLAY_APPEND,
+						FPLAY_SOUND, tmp_action,
+						FPLAY_PRIORITY, priority,
+						FPLAY_VOLUME, volume, NULL);
+					free(tmp_action);
+				}
+			}
+			event_table++;
 		}
 	}
 
@@ -790,7 +836,7 @@ TerminateHandler(int nonsense)
  */
 RETSIGTYPE DeadPipe(int flag)
 {
-	execute_event(BUILTIN_SHUTDOWN, NULL);
+	execute_event(builtin_event_table, BUILTIN_SHUTDOWN, NULL);
 	exit(flag);
 	SIGNAL_RETURN;
 }
