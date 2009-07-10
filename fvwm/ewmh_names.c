@@ -161,6 +161,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 	{
 		tmp_str[MAX_ICON_NAME_LEN] = 0;
 	}
+	SET_HAS_EWMH_WM_ICON_NAME(fw, 1);
 	if (fw->icon_name.name && strcmp(tmp_str, fw->icon_name.name) == 0)
 	{
 		/* migo: some apps update their names every second */
@@ -176,7 +177,6 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 
 	fw->icon_name.name = tmp_str;
 
-	SET_HAS_EWMH_WM_ICON_NAME(fw, 1);
 	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
 
 	if (ev == NULL)

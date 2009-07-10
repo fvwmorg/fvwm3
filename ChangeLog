@@ -4,6 +4,8 @@
 	* fvwm/ewmh_names.c (EWMH_WMName):
 	set the HAS_EWMH_WM_NAME flag even if the window name on display
 	isn't changing.
+	(EWMH_WMIconName):
+	same for HAS_EWMH_WM_ICON_NAME
 
 2009-07-08  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
