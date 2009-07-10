@@ -228,6 +228,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 	{
 		tmp_str[MAX_WINDOW_NAME_LEN] = 0;
 	}
+	SET_HAS_EWMH_WM_NAME(fw, 1);
 	if (fw->name.name && strcmp(tmp_str, fw->name.name) == 0)
 	{
 		/* migo: some apps update their names every second */
@@ -242,7 +243,6 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 	}
 
 	fw->name.name = tmp_str;
-	SET_HAS_EWMH_WM_NAME(fw, 1);
 
 	if (ev == NULL)
 	{

@@ -14,6 +14,9 @@ Changes in beta release 2.5.28 (not released yet)
      undefined event name, or an undefined environment variable
      to the RPlayHost option.
    - Fixed the events startup, shutdown and unknown in FvwmEvent.
+   - Fvwm now retains utf8 window names when the WM_NAME changes,
+     and the utf8 name converted to the default charset match
+     the old WM_NAME.
 
 
 -------------------------------------------------------------------
