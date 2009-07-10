@@ -499,21 +499,32 @@ static void setup_window_structure(
 	return;
 }
 
-static void setup_window_name_count(FvwmWindow *fw)
+static void setup_name_count(FvwmWindow *fw, Bool is_icon)
 {
 	FvwmWindow *t;
 	int count = 0;
+	int win_count;
+	int win_count_counterpart;
 	Bool done = False;
+	FlocaleNameString *titlename, *title_counterpart;
+	FlocaleNameString *t_titlename, *t_title_counterpart;
 
-	if (!fw->name.name)
+	titlename = (is_icon) ?
+	&(fw->icon_name) : &(fw->name);
+	
+	title_counterpart = (is_icon) ?
+	&(fw->name) : &(fw->icon_name);
+	
+	if (!titlename->name)
 	{
 		done = True;
 	}
 
-	if (fw->icon_name.name &&
-	    strcmp(fw->name.name, fw->icon_name.name) == 0)
+	if (titlename->name && title_counterpart->name &&
+		strcmp(titlename->name, title_counterpart->name) == 0)
 	{
-		count = fw->icon_name_count;
+		count = is_icon ? fw->icon_name_count :
+			fw->name_count;
 	}
 
 	while (!done)
@@ -525,62 +536,38 @@ static void setup_window_name_count(FvwmWindow *fw)
 			{
 				continue;
 			}
-			if ((t->name.name &&
-			     strcmp(t->name.name, fw->name.name) == 0 &&
-			     t->name_count == count) ||
-			    (t->icon_name.name &&
-			     strcmp(t->icon_name.name, fw->name.name) == 0 &&
-			     t->icon_name_count == count))
+			win_count = is_icon ? t->icon_name_count :
+				t->name_count;
+			win_count_counterpart = is_icon ?
+				t->name_count : t->icon_name_count;
+			
+			t_titlename = is_icon ? &(t->icon_name) :
+				&(t->name);
+			t_title_counterpart = is_icon ? &(t->name) :
+				&(t->icon_name);
+
+			if ((t_titlename->name &&
+						strcmp(titlename->name, 
+							t_titlename->name) == 0 &&
+						win_count == count) ||
+					(t_title_counterpart->name &&
+					 strcmp(t_title_counterpart->name, 
+						 titlename->name) == 0 &&
+					 win_count_counterpart == count))
+
 			{
 				count++;
 				done = False;
 			}
 		}
 	}
-	fw->name_count = count;
-
-	return;
-}
-
-static void setup_icon_name_count(FvwmWindow *fw)
-{
-	FvwmWindow *t;
-	int count = 0;
-	Bool done = False;
-
-	if (!fw->icon_name.name)
+	
+	if (is_icon)
 	{
-		done = True;
+		fw->icon_name_count = count;
+	} else {
+		fw->name_count = count;
 	}
-	if (fw->name.name &&
-	    strcmp(fw->name.name, fw->icon_name.name) == 0)
-	{
-		count = fw->name_count;
-	}
-
-	while (!done)
-	{
-		done = True;
-		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-		{
-			if (t == fw)
-			{
-				continue;
-			}
-			if ((t->icon_name.name &&
-			     strcmp(t->icon_name.name,
-				    fw->icon_name.name) == 0 &&
-			     t->icon_name_count == count) ||
-			    (t->name.name &&
-			     strcmp(t->name.name, fw->icon_name.name) == 0 &&
-			     t->name_count == count))
-			{
-				count++;
-				done = False;
-			}
-		}
-	}
-	fw->icon_name_count = count;
 
 	return;
 }
@@ -1598,6 +1585,8 @@ void setup_visible_name(FvwmWindow *fw, Bool is_icon)
 		return;
 	}
 
+	setup_name_count(fw, is_icon);
+
 	if (is_icon)
 	{
 		if (fw->visible_icon_name != NULL &&
@@ -1609,7 +1598,6 @@ void setup_visible_name(FvwmWindow *fw, Bool is_icon)
 			fw->visible_icon_name = NULL;
 		}
 		name = fw->icon_name.name;
-		setup_icon_name_count(fw);
 		count = fw->icon_name_count;
 	}
 	else
@@ -1622,7 +1610,6 @@ void setup_visible_name(FvwmWindow *fw, Bool is_icon)
 			fw->visible_name = NULL;
 		}
 		name = fw->name.name;
-		setup_window_name_count(fw);
 		count = fw->name_count;
 	}
 
