@@ -1871,7 +1871,7 @@ void CMD_MoveToScreen(F_CMD_ARGS)
 	return;
 }
 
-/* This function does the SnapAttraction stuff. If takes x and y coordinates
+/* This function does the SnapAttraction stuff. It takes x and y coordinates
  * (*px and *py) and returns the snapped values. */
 static void DoSnapAttract(
 	FvwmWindow *fw, int Width, int Height, int *px, int *py)
@@ -1880,10 +1880,10 @@ static void DoSnapAttract(
 	rectangle self;
 
 	/* resist based on window edges */
-	closestTop = fw->snap_proximity;
-	closestBottom = fw->snap_proximity;
-	closestRight = fw->snap_proximity;
-	closestLeft = fw->snap_proximity;
+	closestTop = fw->snap_attraction.proximity;
+	closestBottom = fw->snap_attraction.proximity;
+	closestRight = fw->snap_attraction.proximity;
+	closestLeft = fw->snap_attraction.proximity;
 	nxl = -99999;
 	nyt = -99999;
 	self.x = *px;
@@ -1926,11 +1926,13 @@ static void DoSnapAttract(
 	/*
 	 * snap attraction
 	 */
-	/* snap to other windows */
-	if ((fw->snap_mode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) &&
-	    fw->snap_proximity > 0)
+	/* snap to other windows or icons*/
+	if (fw->snap_attraction.proximity > 0 &&
+		(fw->snap_attraction.mode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)))
 	{
 		FvwmWindow *tmp;
+		int maskout = (SNAP_SCREEN | SNAP_SCREEN_WINDOWS |
+				SNAP_SCREEN_ICONS | SNAP_SCREEN_ALL);
 
 		for (tmp = Scr.FvwmRoot.next; tmp; tmp = tmp->next)
 		{
@@ -1941,29 +1943,27 @@ static void DoSnapAttract(
 				continue;
 			}
 			/* check snapping type */
-			switch (fw->snap_mode)
+			switch (fw->snap_attraction.mode & ~(maskout))
 			{
-			case 1:  /* SameType */
-				if (IS_ICONIFIED(tmp) != IS_ICONIFIED(fw))
-				{
-					continue;
-				}
-				break;
-			case 2:  /* Icons */
-				if (!IS_ICONIFIED(tmp) ||
-				    !IS_ICONIFIED(fw))
-				{
-					continue;
-				}
-				break;
-			case 3:  /* Windows */
+			case SNAP_WINDOWS:  /* we only snap windows */
 				if (IS_ICONIFIED(tmp) || IS_ICONIFIED(fw))
 				{
 					continue;
 				}
 				break;
-			case 0:  /* All */
-			default:
+			case SNAP_ICONS:  /* we only snap icons */
+				if (!IS_ICONIFIED(tmp) || !IS_ICONIFIED(fw))
+				{
+					continue;
+				}
+				break;
+			case SNAP_SAME:  /* we don't snap unequal */
+				if (IS_ICONIFIED(tmp) != IS_ICONIFIED(fw))
+				{
+					continue;
+				}
+				break;
+			default:  /* All */
 				/* NOOP */
 				break;
 			}
@@ -1972,21 +1972,21 @@ static void DoSnapAttract(
 			/* prevent that window snaps off screen */
 			if (other.x <= 0)
 			{
-				other.x -= fw->snap_proximity + 10000;
-				other.width += fw->snap_proximity + 10000;
+				other.x -= fw->snap_attraction.proximity + 10000;
+				other.width += fw->snap_attraction.proximity + 10000;
 			}
 			if (other.y <= 0)
 			{
-				other.y -= fw->snap_proximity + 10000;
-				other.height += fw->snap_proximity + 10000;
+				other.y -= fw->snap_attraction.proximity + 10000;
+				other.height += fw->snap_attraction.proximity + 10000;
 			}
 			if (other.x + other.width >= Scr.MyDisplayWidth)
 			{
-				other.width += fw->snap_proximity + 10000;
+				other.width += fw->snap_attraction.proximity + 10000;
 			}
 			if (other.y + other.height >= Scr.MyDisplayHeight)
 			{
-				other.height += fw->snap_proximity + 10000;
+				other.height += fw->snap_attraction.proximity + 10000;
 			}
 
 			/* snap horizontally */
@@ -2000,12 +2000,12 @@ static void DoSnapAttract(
 					closestRight = dist;
 					if (*px + self.width >= other.x &&
 					    *px + self.width <
-					    other.x + fw->snap_proximity)
+					    other.x + fw->snap_attraction.proximity)
 					{
 						nxl = other.x - self.width;
 					}
 					if (*px + self.width >=
-					    other.x - fw->snap_proximity &&
+					    other.x - fw->snap_attraction.proximity &&
 					    *px + self.width < other.x)
 					{
 						nxl = other.x - self.width;
@@ -2017,12 +2017,12 @@ static void DoSnapAttract(
 					closestLeft = dist;
 					if (*px <= other.x + other.width &&
 					    *px > other.x + other.width -
-					    fw->snap_proximity)
+					    fw->snap_attraction.proximity)
 					{
 						nxl = other.x + other.width;
 					}
 					if (*px <= other.x + other.width +
-					    fw->snap_proximity &&
+					    fw->snap_attraction.proximity &&
 					    *px > other.x + other.width)
 					{
 						nxl = other.x + other.width;
@@ -2040,12 +2040,12 @@ static void DoSnapAttract(
 					closestBottom = dist;
 					if (*py + self.height >= other.y &&
 					    *py + self.height < other.y +
-					    fw->snap_proximity)
+					    fw->snap_attraction.proximity)
 					{
 						nyt = other.y - self.height;
 					}
 					if (*py + self.height >=
-					    other.y - fw->snap_proximity &&
+					    other.y - fw->snap_attraction.proximity &&
 					    *py + self.height < other.y)
 					{
 						nyt = other.y - self.height;
@@ -2058,12 +2058,12 @@ static void DoSnapAttract(
 					if (*py <=
 					    other.y + other.height &&
 					    *py > other.y + other.height -
-					    fw->snap_proximity)
+					    fw->snap_attraction.proximity)
 					{
 						nyt = other.y + other.height;
 					}
 					if (*py <= other.y + other.height +
-					    fw->snap_proximity &&
+					    fw->snap_attraction.proximity &&
 					    *py > other.y + other.height)
 					{
 						nyt = other.y + other.height;
@@ -2074,8 +2074,19 @@ static void DoSnapAttract(
 	} /* snap to other windows */
 
 	/* snap to screen egdes */
-	if ((fw->snap_mode & SNAP_SCREEN) && fw->snap_proximity > 0)
-	{
+	if (fw->snap_attraction.proximity > 0 && (
+			( fw->snap_attraction.mode & SNAP_SCREEN && (
+				fw->snap_attraction.mode & SNAP_SAME ||
+			( IS_ICONIFIED(fw) &&
+				fw->snap_attraction.mode & SNAP_ICONS ) ||
+			( !IS_ICONIFIED(fw) &&
+				fw->snap_attraction.mode & SNAP_WINDOWS ))) ||
+			( !IS_ICONIFIED(fw) &&
+				fw->snap_attraction.mode & SNAP_SCREEN_WINDOWS ) ||
+			( IS_ICONIFIED(fw) &&
+				fw->snap_attraction.mode & SNAP_SCREEN_ICONS ) ||
+			fw->snap_attraction.mode & SNAP_SCREEN_ALL ))
+		{
 		/* horizontally */
 		if (!(Scr.MyDisplayWidth < (*px) ||
 		      (*px + self.width) < 0))
@@ -2087,13 +2098,13 @@ static void DoSnapAttract(
 				if (*py + self.height >=
 				    Scr.MyDisplayHeight &&
 				    *py + self.height <
-				    Scr.MyDisplayHeight + fw->snap_proximity)
+				    Scr.MyDisplayHeight + fw->snap_attraction.proximity)
 				{
 					nyt = Scr.MyDisplayHeight -
 						self.height;
 				}
 				if (*py + self.height >=
-				    Scr.MyDisplayHeight - fw->snap_proximity &&
+				    Scr.MyDisplayHeight - fw->snap_attraction.proximity &&
 				    *py + self.height < Scr.MyDisplayHeight)
 				{
 					nyt = Scr.MyDisplayHeight -
@@ -2104,11 +2115,11 @@ static void DoSnapAttract(
 			if (dist < closestTop)
 			{
 				closestTop = dist;
-				if ((*py <= 0)&&(*py > - fw->snap_proximity))
+				if ((*py <= 0)&&(*py > - fw->snap_attraction.proximity))
 				{
 					nyt = 0;
 				}
-				if ((*py <=  fw->snap_proximity)&&(*py > 0))
+				if ((*py <=  fw->snap_attraction.proximity)&&(*py > 0))
 				{
 					nyt = 0;
 				}
@@ -2126,13 +2137,13 @@ static void DoSnapAttract(
 
 				if (*px + self.width >= Scr.MyDisplayWidth &&
 				    *px + self.width <
-				    Scr.MyDisplayWidth + fw->snap_proximity)
+				    Scr.MyDisplayWidth + fw->snap_attraction.proximity)
 				{
 					nxl = Scr.MyDisplayWidth - self.width;
 				}
 
 				if (*px + self.width >=
-				    Scr.MyDisplayWidth - fw->snap_proximity &&
+				    Scr.MyDisplayWidth - fw->snap_attraction.proximity &&
 				    *px + self.width < Scr.MyDisplayWidth)
 				{
 					nxl = Scr.MyDisplayWidth - self.width;
@@ -2144,11 +2155,11 @@ static void DoSnapAttract(
 				closestLeft = dist;
 
 				if ((*px <= 0) &&
-				    (*px > - fw->snap_proximity))
+				    (*px > - fw->snap_attraction.proximity))
 				{
 					nxl = 0;
 				}
-				if ((*px <= fw->snap_proximity) &&
+				if ((*px <= fw->snap_attraction.proximity) &&
 				    (*px > 0))
 				{
 					nxl = 0;

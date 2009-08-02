@@ -3,12 +3,6 @@
 #ifndef _STYLE_
 #define _STYLE_
 
-#define SNAP_NONE    0x00
-#define SNAP_WINDOWS 0x01
-#define SNAP_ICONS   0x02
-#define SNAP_SAME    0x04
-#define SNAP_SCREEN  0x08
-
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */
 #define SDO_DECORATE_TRANSIENT(sf) \
@@ -574,13 +568,13 @@
 #define SSET_WINDOW_SHADE_STEPS(s,x) \
 	((s).shade_anim_steps = (x))
 #define SGET_SNAP_PROXIMITY(s) \
-	((s).snap_proximity)
+	((s).snap_attraction.proximity)
 #define SSET_SNAP_PROXIMITY(s,x) \
-	((s).snap_proximity = (x))
+	((s).snap_attraction.proximity = (x))
 #define SGET_SNAP_MODE(s) \
-	((s).snap_mode)
+	((s).snap_attraction.mode)
 #define SSET_SNAP_MODE(s,x) \
-	((s).snap_mode = (x))
+	((s).snap_attraction.mode = (x))
 #define SGET_SNAP_GRID_X(s) \
 	((s).snap_grid_x)
 #define SSET_SNAP_GRID_X(s,x) \

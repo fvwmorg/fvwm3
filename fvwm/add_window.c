@@ -784,8 +784,8 @@ void setup_numeric_vals(FvwmWindow *fw, window_style *pstyle)
 	fw->shade_anim_steps = pstyle->shade_anim_steps;
 
 	/****** snapattraction, snapgrid, paging ******/
-	fw->snap_proximity = pstyle->snap_proximity;
-	fw->snap_mode = pstyle->snap_mode;
+	fw->snap_attraction.proximity = pstyle->snap_attraction.proximity;
+	fw->snap_attraction.mode = pstyle->snap_attraction.mode;
 	fw->snap_grid_x = pstyle->snap_grid_x;
 	fw->snap_grid_y = pstyle->snap_grid_y;
 	if (pstyle->flags.has_edge_delay_ms_move)

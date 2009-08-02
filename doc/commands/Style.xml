@@ -1291,20 +1291,30 @@ arguments turns off snap attraction and restores the default
 behavior.  Please refer also to the <fvwmref cmd="SnapGrid"/>
 command.</para>
 
-<para>The second argument determines is optional
-and may be set to one of the four following values:  With
-<replaceable>All</replaceable> both icons and windows snap to
-other windows and other icons. <replaceable>SameType</replaceable>
-lets snap windows only to other windows and icons only to other
-icons. With <replaceable>Windows</replaceable> windows snap only
-to other windows.  Icons do not snap.  Similarly with
-<replaceable>Icons</replaceable> icons snap to only other icons
-and windows do not snap.  The default behavior is
-<emphasis remap='I'>All</emphasis>.</para>
+<para>The second argument determined is optional and may be set to one of the
+five following values: With <replaceable>All</replaceable> both icons and
+windows snap to other windows and other icons.
+<replaceable>SameType</replaceable> lets windows snap only to windows, and
+icons snap only to icons. With <replaceable>Windows</replaceable> windows snap
+only to other windows. Similarly with <replaceable>Icons</replaceable> icons
+snap only to other icons. With <replaceable>None</replaceable> no snapping
+takes place. This option can be useful in conjunction with the following
+argument if you only want to snap against the screen edges. The default
+behavior is <emphasis remap='I'>All</emphasis>.</para>
 
-<para>If the option "Screen" option is added to at the last
-argument, windows and or icons snapp to the screen edges
-too.</para>
+<para>The third and last optional argument may be set to one of the
+four following values: 
+<itemizedlist>
+<listitem><para>With <replaceable>Screen</replaceable> the
+already snapping icons or windows, which is controlled by the second
+argument, will snap now also to the screen edges.</para></listitem>
+<listitem><para><replaceable>ScreenWindows</replaceable> snaps
+only windows to the screen edges.</para></listitem>
+<listitem><para><replaceable>ScreenIcons</replaceable> snaps
+only icons to the screen edges.</para></listitem>
+<listitem><para><replaceable>ScreenAll</replaceable> snaps
+windows and icons to the screen edges.</para></listitem>
+</itemizedlist></para>
 
 <para>The option <fvwmopt cmd="Style" opt="SnapGrid"/> defines an
 invisible grid on the screen.  During an interactive move a window

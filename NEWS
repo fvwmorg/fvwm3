@@ -5,6 +5,12 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.28 (not released yet)
 
+* New features:
+
+   - New differentiated options for SnapAttraction when snapping
+     against screen edges:
+       "None", "ScreenWindows", "ScreenIcons", "ScreenAll"
+
 * Bug fixes:
 
    - Fixed non-visible QT windows after a QT deferred map (e.g.
@@ -18,7 +24,9 @@ Changes in beta release 2.5.28 (not released yet)
      and the utf8 name converted to the default charset match
      the old WM_NAME.
    - Fixed the options RPlayVolume and RPlayPriority in FvwmEvent.
-
+   - Fixed SnapAttraction: Option SameType/Icons/Windows did
+     falsely not affect conditions of option "Screen" and option
+     "SameType" snapped falsely icons and windows together.
 
 -------------------------------------------------------------------
 

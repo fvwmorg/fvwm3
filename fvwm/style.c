@@ -4053,6 +4053,11 @@ static Bool style_parse_one_style_option(
 					snap_mode = SNAP_ICONS | SNAP_WINDOWS;
 					token = PeekToken(rest, &rest);
 				}
+				else if (StrEquals(token, "None"))
+				{
+					snap_mode = SNAP_NONE;
+					token = PeekToken(rest, &rest);
+				}
 				else if (StrEquals(token, "SameType"))
 				{
 					snap_mode = SNAP_SAME;
@@ -4075,6 +4080,18 @@ static Bool style_parse_one_style_option(
 				if (StrEquals(token, "Screen"))
 				{
 					snap_mode |= SNAP_SCREEN;
+				}
+				else if (StrEquals(token, "ScreenWindows"))
+				{
+					snap_mode |= SNAP_SCREEN_WINDOWS;
+				}
+				else if (StrEquals(token, "ScreenIcons"))
+				{
+					snap_mode |= SNAP_SCREEN_ICONS;
+				}
+				else if (StrEquals(token, "ScreenAll"))
+				{
+					snap_mode |= SNAP_SCREEN_ALL;
 				}
 			} while (0);
 			ps->flags.has_snap_attraction = 1;

@@ -1,3 +1,18 @@
+2009-07-31  Christoph Fritz <chris_honschu(at)gmx.de>
+    * fvwm/style.h:
+    * fvwm/fvwm.h:
+    * fvwm/add_window.c (setup_numeric_vals):
+    add "typedef struct snap_attraction_t"
+    * fvwm/style.c (style_parse_one_style_option):
+    add new SnapAttraction options "None", "ScreenWindows",
+    "ScreenIcons" and "ScreenAll"
+    * fvwm/move_resize.c (DoSnapAttract):
+    Bugfix, option SameType/Icons/Windows did falsely not affect
+    conditions of option "Screen" and option "SameType" snapped
+    falsely icons and windows together. Implement options
+    None/ScreenWindows/ScreenIcons/ScreenAll for differentiated
+    screen edge snapping.
+
 2009-07-10  Thomas Adam  <thomas.adam22@gmail.com>
 	* fvwm/add_window.c (setup_window_name_count):
 	* fvwm/add_window.c (setup_icon_name_count):

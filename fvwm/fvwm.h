@@ -608,6 +608,25 @@ typedef struct style_id_t
 	} flags;
 } style_id_t;
 
+typedef struct snap_attraction_t
+{
+	/* attractiveness of window edges */
+	int proximity;
+	/* mode of snap attraction */
+	int mode;
+	/* mode flags to do bit manipulation */
+	enum
+	{
+		SNAP_NONE = 0x00,
+		SNAP_WINDOWS = 0x01,
+		SNAP_ICONS = 0x02,
+		SNAP_SAME = 0x04,
+		SNAP_SCREEN = 0x08,
+		SNAP_SCREEN_WINDOWS = 0x10,
+		SNAP_SCREEN_ICONS = 0x20,
+		SNAP_SCREEN_ALL = 0x40,
+	} types;
+} snap_attraction_t;
 
 /* only style.c and add_window.c are allowed to access this struct! */
 typedef struct window_style
@@ -663,10 +682,7 @@ typedef struct window_style
 	int max_window_height;
 	int shade_anim_steps;
 #if 1 /*!!!*/
-	/* attractiveness of window edges */
-	int snap_proximity;
-	/* mode of snap attraction */
-	int snap_mode;
+	snap_attraction_t snap_attraction;
 	/* snap grid size */
 	int snap_grid_x;
 	int snap_grid_y;
@@ -896,10 +912,7 @@ typedef struct FvwmWindow
 	int shade_anim_steps;
 	unsigned char grabbed_buttons;
 #if 1 /*!!!*/
-	/* attractiveness of window edges */
-	int snap_proximity;
-	/* mode of snap attraction */
-	int snap_mode;
+	snap_attraction_t snap_attraction;
 	/* snap grid size */
 	int snap_grid_x;
 	int snap_grid_y;
