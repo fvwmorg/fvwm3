@@ -1,3 +1,10 @@
+2009-09-03  Thomas Adam <thomas.adam22@gmail.com>
+	* configure.ac:
+	Most *BSD platforms are deprecating malloc.h in favout of stdlib.h -- this
+	never used to produce compiler warnings, but things are starting to become
+	more vocal, so don't use this in our ./configure script if we're compiling
+	FVWM on a *BSD system.
+
 2009-07-31  Christoph Fritz <chris_honschu(at)gmx.de>
     * fvwm/style.h:
     * fvwm/fvwm.h:
