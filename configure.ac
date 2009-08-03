@@ -1595,7 +1595,11 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #ifdef HAVE_STDLIB_H
 #  include <stdlib.h>
 #endif
-#ifdef HAVE_MALLOC_H
+
+dnl TA:  20090803:  On *BSD, malloc.h is being deprecated, raising compiler
+dnl      warnings as a result to use stdlib.h.
+dnl
+#if defined (HAVE_MALLOC_H) && !defined (__FreeBSD__) && !defined (__OpenBSD__) && !defined(__NetBSD__)
 #  include <malloc.h>
 #endif
 #ifdef HAVE_FCNTL_H
