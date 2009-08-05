@@ -1,9 +1,9 @@
-2009-09-04  Thomas Adam <thomas.adam22@gmail.com>
+2009-08-04  Thomas Adam <thomas.adam22@gmail.com>
 	* configure.ac:
 	Remove dnl comments from configure.ac regarding malloc.h -- it's
 	self-explanatory anyway.
 
-2009-09-03  Thomas Adam <thomas.adam22@gmail.com>
+2009-08-03  Thomas Adam <thomas.adam22@gmail.com>
 	* configure.ac:
 	Most *BSD platforms are deprecating malloc.h in favout of stdlib.h -- this
 	never used to produce compiler warnings, but things are starting to become
