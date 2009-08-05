@@ -374,18 +374,6 @@ information from Fvwm2 from processes which are not Fvwm modules.
 
 
 
-Your comments will be appreciated.
-
-
-Toshi Isogai
-              isogai@ucsub.colorado.edu
-
-
-May 11 '98
-
-
-
-
 
 
 
@@ -393,6 +381,6 @@ May 11 '98
 fvwm
 
 .SH AUTHOR
-Toshi Isogai  isogai@ucsub.colorado.edu
+FvwmCommand is the original work of Toshi Isogai.
 
 

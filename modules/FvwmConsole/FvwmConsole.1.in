@@ -144,13 +144,8 @@ FvwmConsole can be stopped by entering the EOF character (usually CTRL-D).
 \fBNote!\fP Do not use the "quit" command, as this is an fvwm builtin:
 typing "quit" at the FvwmConsole command line will cause fvwm to exit.
 
-.SH COPYRIGHTS
-Copyright 1996, Toshi Isogai. No guarantees or warranties are provided.
-Use this program at your own risk. Permission to use this program for
-any purpose is given, as long as the copyright is kept intact.
-
 .SH SEE ALSO
 \fIxterm\fP(1), \fIFvwmConsoleC.pl\fP(1), GNU Readline library
 
 .SH AUTHOR
-Toshi Isogai
+FvwmConsole is the original work of Toshi Isogai.

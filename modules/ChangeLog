@@ -1,3 +1,10 @@
+2009-08-05  Thomas Adam  <thomas.adam22@gmail.com>
+	* FvwmCommand/FvwmCommand.1.in:
+	* FvwmConsole/FvwmConsole.1.in:
+	Removed COPYRIGHT section of manpages at the original author's request;
+	and in so doing, update the AUTHOR sections to reflect that these are
+	the "original works" of the author.
+
 2009-07-10  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmEvent/FvwmEvent.c:
