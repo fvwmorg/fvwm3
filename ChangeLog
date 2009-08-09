@@ -1,3 +1,10 @@
+2009-08-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/stack.c (BroadcastRestack):
+	Fix splitting or M_RESTACK packages causing weird window stacking
+	in modules when more than 83 windows are broadcast.
+
 2009-08-04  Thomas Adam <thomas.adam22@gmail.com>
 	* configure.ac:
 	Remove dnl comments from configure.ac regarding malloc.h -- it's

@@ -27,6 +27,8 @@ Changes in beta release 2.5.28 (not released yet)
    - Fixed SnapAttraction: Option SameType/Icons/Windows did
      falsely not affect conditions of option "Screen" and option
      "SameType" snapped falsely icons and windows together.
+   - Fixed a problem where modules would get incorrect stacking
+     information if many windows were restacked at the same time.
 
 -------------------------------------------------------------------
 

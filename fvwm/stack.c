@@ -1377,6 +1377,8 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 			*(bp++) = FW_W_FRAME(fw);
 			*(bp++) = (unsigned long)fw;
 		}
+		/* The last window has to be in the header of the next part */
+		fw = fw->stack_prev;
 		module_list_itr_init(&moditr);
 		while ( (module = module_list_itr_next(&moditr)) != NULL)
 		{
