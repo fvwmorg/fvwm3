@@ -10,10 +10,11 @@ Changes in beta release 2.5.28 (not released yet)
    - New differentiated options for SnapAttraction when snapping
      against screen edges:
        "None", "ScreenWindows", "ScreenIcons", "ScreenAll"
+   - New option to the BugOpts command: TransliterateUtf8.
 
 * Bug fixes:
 
-   - Fixed non-visible QT windows after a QT deferred map (e.g.
+   - Fixed non-visible Qt windows after a Qt deferred map (e.g.
      Skype profile windows).
    - Fixed the use of the X-resource "fvwmstyle".
    - Fixed segmentation fault in FvwmEvent when parsing an
@@ -29,6 +30,9 @@ Changes in beta release 2.5.28 (not released yet)
      "SameType" snapped falsely icons and windows together.
    - Fixed a problem where modules would get incorrect stacking
      information if many windows were restacked at the same time.
+   - Fixed BugOpts parsing of more than one option at a time and
+     restoring of default value for the last option
+     in the command line when omitted.
 
 -------------------------------------------------------------------
 

@@ -1,3 +1,24 @@
+2009-08-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* NEWS:
+	* fvwm/builtins.c (CMD_BugOpts):
+	Fix parsing of BugOpts options lists separated by ',', and
+	restoring to default value when the boolean option is omitted if
+	not inside a list.
+
+	* NEWS:
+	Change QT to Qt.
+
+	* NEWS:
+	* libs/Flocale.h:
+	* libs/Ficonv.h (FiconvSetTransliterateUtf8):
+	* libs/Ficonv.c (FiconvSetTransliterateUtf8, translit_csname)
+	(is_translit_supported, set_default_iconv_charsets)
+	(set_iconv_charset_index, FiconvUtf8ToCharset):
+	* fvwm/builtins.c (CMD_BugOpts):
+	Add TransliterateUtf8 bug opt for working around clients
+	which don't care about the WM_NAME value.
+
 2009-08-09  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:

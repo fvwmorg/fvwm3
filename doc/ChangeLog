@@ -1,3 +1,8 @@
+2009-08-19  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* commands/BugOpts.xml:
+	- New option to the BugOpts command: TransliterateUtf8.
+
 2009-06-24  Thomas Adam		<thomas.adam22@gmail.com>
 	* allCommands.html:
 	* groupedCommands.html:

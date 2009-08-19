@@ -28,6 +28,7 @@
 
 #include "FlocaleCharset.h"
 #include "Ficonv.h"
+#include "Strings.h"
 
 #if FiconvSupport
 #include <iconv.h>
@@ -57,6 +58,7 @@
 static Bool FiconvInitialized = False;
 static FlocaleCharset *FLCIconvUtf8Charset = NULL;       /* UTF-8 charset */
 static FlocaleCharset *FLCIconvDefaultCharset = NULL;
+static int do_transliterate_utf8 = 0;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -83,6 +85,37 @@ Bool is_iconv_supported(char *c1, char *c2)
 	return r;
 }
 
+#define TRANSLIT_SUFFIX "//TRANSLIT"
+static
+char *translit_csname(char *cs)
+{
+	return CatString2(cs, TRANSLIT_SUFFIX);
+}
+
+static
+int is_translit_supported(char *c1, char *c2)
+{
+	Ficonv_t cd;
+
+	if (!FiconvSupport || !c1 || !c2)
+		return 0;
+
+	cd = Ficonv_open(translit_csname(c1),c2);
+	if (cd == (Ficonv_t) -1)
+	{
+		return 0;
+	}
+	Ficonv_close(cd);
+	cd = Ficonv_open(translit_csname(c2),c1);
+	if (cd == (Ficonv_t) -1)
+	{
+		return 0;
+	}
+	Ficonv_close(cd);
+
+	return 1;
+}
+
 static
 int set_default_iconv_charsets(FlocaleCharset *fc)
 {
@@ -103,6 +136,21 @@ int set_default_iconv_charsets(FlocaleCharset *fc)
 			{
 				FLC_SET_ICONV_INDEX(FLCIconvUtf8Charset,i);
 				FLC_SET_ICONV_INDEX(fc,j);
+
+				if (is_translit_supported(
+					    FLC_GET_LOCALE_CHARSET(
+						    FLCIconvUtf8Charset,i),
+					    FLC_GET_LOCALE_CHARSET(fc,j)))
+				{
+					FLC_SET_ICONV_TRANSLIT_CHARSET(
+						fc, safestrdup(translit_csname(
+							FLC_GET_LOCALE_CHARSET(
+								fc,j))));
+				} else {
+					FLC_SET_ICONV_TRANSLIT_CHARSET(
+						fc, FLC_TRANSLIT_NOT_SUPPORTED);
+				}
+
 				return 1;
 			}
 			j++;
@@ -138,6 +186,19 @@ void set_iconv_charset_index(FlocaleCharset *fc)
 			FLC_GET_LOCALE_CHARSET(fc,i)))
 		{
 			FLC_SET_ICONV_INDEX(fc,i);
+			if (is_translit_supported(
+				    FLC_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
+				    FLC_GET_LOCALE_CHARSET(fc,i)))
+			{
+				FLC_SET_ICONV_TRANSLIT_CHARSET(
+					fc, safestrdup(
+						translit_csname(
+							FLC_GET_LOCALE_CHARSET(
+								fc,i))));
+			} else {
+				FLC_SET_ICONV_TRANSLIT_CHARSET(
+					fc, FLC_TRANSLIT_NOT_SUPPORTED);
+			}
 			return;
 		}
 		i++;
@@ -396,6 +457,25 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleCharset *fc)
 
 /* ---------------------------- interface functions ------------------------ */
 
+/* set transliteration state */
+void FiconvSetTransliterateUtf8(int toggle)
+{
+	switch (toggle)
+	{
+	case -1:
+		do_transliterate_utf8 ^= 1;
+		break;
+	case 0:
+	case 1:
+		do_transliterate_utf8 = toggle;
+		break;
+	default:
+		do_transliterate_utf8 = 0;
+	}
+
+}
+
+
 /* conversion from UTF8 to the "current" charset */
 char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,
 			  const char *in, unsigned int in_size)
@@ -430,9 +510,18 @@ char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,
 	}
 	else
 	{
+		char *to_cs;
+		if (do_transliterate_utf8 && FLC_IS_TRANSLIT_SUPPORTED(my_fc))
+		{
+			to_cs = FLC_GET_ICONV_TRANSLIT_CHARSET(my_fc);
+		}
+		else
+		{
+			to_cs = FLC_GET_ICONV_CHARSET(my_fc);
+		}
 		out = convert_charsets(
 				FLC_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
-				FLC_GET_ICONV_CHARSET(my_fc),
+				to_cs,
 				in, in_size);
 	}
 

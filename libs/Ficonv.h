@@ -39,6 +39,7 @@
 typedef void* Ficonv_t;
 
 /* ---------------------------- interface functions ------------------------ */
+void FiconvSetTransliterateUtf8(int toggle);
 char *FiconvUtf8ToCharset(
 	Display *dpy, FlocaleCharset *fc, const char *in,
 	unsigned int in_size);

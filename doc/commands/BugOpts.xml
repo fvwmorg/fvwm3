@@ -125,4 +125,12 @@ handling routines of fvwm.  It is not helpful for the user, but if
 you report a bug to the fvwm team we may ask you to enable this
 option.</para>
 
+<para>The <fvwmopt cmd="BugOpts" opt="TransliterateUtf8"/> option
+enables transliteration during conversions from utf-8 strings.  By
+default fvwm will not transliterate during conversion, but will fall
+back to alternate strings provided by the clients if conversion from
+utf-8 fails due to characters which have no direct correspondance in
+the target charecter set. Some clients however neglect to set non utf-8
+properties correctly in which case this option may help.</para>
+
 </section>

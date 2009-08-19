@@ -40,6 +40,8 @@
 #define FLC_INDEX_ICONV_CHARSET_NOT_FOUND         -1
 #define FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED   -2
 
+#define FLC_TRANSLIT_NOT_SUPPORTED ((char*)-1)
+
 #define FLOCALE_DEBUG_SETLOCALE 0
 #define FLOCALE_DEBUG_CHARSET   0
 #define FLOCALE_DEBUG_ICONV     0
@@ -71,6 +73,16 @@
 	((fc) != NULL && (fc)->iconv_index >= 0)? (fc)->locale[(fc)->iconv_index]:"None"
 #define FLC_DEBUG_GET_BIDI_CHARSET(fc) \
 	((fc) == NULL || (fc)->bidi == NULL)? "None":(fc)->bidi
+
+#define FLC_IS_TRANSLIT_SUPPORTED(fc) \
+	((fc) != NULL && (fc)->translit_csname != FLC_TRANSLIT_NOT_SUPPORTED \
+	 && (fc)->translit_csname != NULL)
+
+#define FLC_GET_ICONV_TRANSLIT_CHARSET(fc) \
+	((fc) != NULL && (fc)->translit_csname != FLC_TRANSLIT_NOT_SUPPORTED)?\
+	(fc)->translit_csname : NULL
+#define FLC_SET_ICONV_TRANSLIT_CHARSET(fs, csname) \
+	(fc)->translit_csname = csname
 
 #define FLF_MULTIDIR_HAS_UPPER(flf) \
 	(((flf)->flags.shadow_dir & MULTI_DIR_NW) || \
@@ -122,6 +134,7 @@ typedef struct FlocaleCharset
 	int iconv_index;       /* defines the iconv charset name */
 	char *bidi;            /* if not null a fribidi charset */
 	short encoding_type;   /* encoding: font, utf8 or usc2 */
+	char *translit_csname; /* iconv csname for transliteration */
 } FlocaleCharset;
 
 typedef struct _FlocaleFont

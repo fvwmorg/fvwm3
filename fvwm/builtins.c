@@ -49,6 +49,8 @@
 #include "libs/FGettext.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
+#include "libs/Flocale.h"
+#include "libs/Ficonv.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"
@@ -3535,25 +3537,28 @@ void CMD_BugOpts(F_CMD_ARGS)
 	char *opt;
 	char delim;
 	int toggle;
+	char *optstring;
+	char *toggle_option;
 
 	/* fvwm_msg(DBG,"SetGlobalOptions","init action == '%s'\n",action); */
-	while (action)
+	while (action && *action && *action != '\n')
 	{
-		action = DoGetNextToken(action, &opt, NULL, ",", &delim);
-		if (!opt)
+		action = GetNextFullOption(action, &optstring);
+		if (!optstring)
 		{
 			/* no more options */
 			return;
 		}
-		if (delim == '\n' || delim == ',')
+		toggle = ParseToggleArgument(
+			SkipNTokens(optstring,1), NULL, 2, False);
+		opt = PeekToken(optstring, NULL);
+		free(optstring);
+
+		if (!opt)
 		{
-			/* missing toggle argument */
-			toggle = 2;
+			return;
 		}
-		else
-		{
-			toggle = ParseToggleArgument(action, &action, 1, False);
-		}
+		/* toggle = ParseToggleArgument(rest, &rest, 2, False);*/
 
 		if (StrEquals(opt, "FlickeringMoveWorkaround"))
 		{
@@ -3707,12 +3712,15 @@ void CMD_BugOpts(F_CMD_ARGS)
 				break;
 			}
 		}
+		else if (StrEquals(opt, "TransliterateUtf8"))
+		{
+			FiconvSetTransliterateUtf8(toggle);
+		}
 		else
 		{
 			fvwm_msg(ERR, "SetBugOptions",
 				 "Unknown Bug Option '%s'", opt);
 		}
-		free(opt);
 	}
 
 	return;
