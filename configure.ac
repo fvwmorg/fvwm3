@@ -405,7 +405,7 @@ AM_CONDITIONAL([FVWM_BUILD_MANDOC], [test x"$with_mandoc" = xyes])
 
 problem_htmldoc=""
 AC_ARG_ENABLE(htmldoc,
-  AS_HELP_STRING([--enable-htmldoc],[disable generation of HTML documentation]),
+  AS_HELP_STRING([--enable-htmldoc],[enable generation of HTML documentation]),
   [ if test x"$enableval" = xyes; then
 		with_htmldoc="yes, check"
 	else
