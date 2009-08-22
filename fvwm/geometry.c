@@ -669,13 +669,13 @@ static void __cs_handle_aspect_ratio(
 	const size_rect inc, size_rect min, size_rect max, int xmotion,
 	int ymotion, int flags)
 {
-	double odefect;
-	double defect;
-	double rmax;
-	double rmin;
-	int delta;
-	int ow;
-	int oh;
+	volatile double odefect;
+	volatile double defect;
+	volatile double rmax;
+	volatile double rmin;
+	volatile int delta;
+	volatile int ow;
+	volatile int oh;
 
 	if (fw->hints.flags & PBaseSize)
 	{
