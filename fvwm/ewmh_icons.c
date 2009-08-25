@@ -304,7 +304,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(
 		int k_height = (is_mini_icon)?
 			fw->ewmh_icon_height : fw->ewmh_mini_icon_height;
 
-		for (i = 0; i < s - 1; )
+		for (i = 0; i < s - 1 && i >= 0; )
 		{
 			if (i + 1 + orig_icon[i]*orig_icon[i+1] < s)
 			{

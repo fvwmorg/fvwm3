@@ -335,6 +335,18 @@ ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name)
 	return NULL;
 }
 
+static int atom_size(int format)
+{
+	if (format == 32)
+	{
+		return sizeof(long);
+	}
+	else
+	{
+		return (format >> 3);
+	}
+}
+
 void ewmh_ChangeProperty(
 	Window w, const char *atom_name, ewmh_atom_list_name list,
 	unsigned char *data, int length)
@@ -344,13 +356,35 @@ void ewmh_ChangeProperty(
 
 	if ((a = get_ewmh_atom_by_name(atom_name, list)) != NULL)
 	{
+		int asize;
+		int free_data = 0;
+
 		if (a->atom_type == XA_UTF8_STRING)
 		{
 			format = 8;
 		}
+	       
+                asize = atom_size(format);
+                if (format == 32 && asize * 8 != format)
+		{
+			long *datacopy = (long*)safemalloc(asize * length);
+			int i;
+
+			for (i = 0; i < length; i++)
+			{
+				datacopy[i] = ((CARD32 *)data)[i];
+			}
+			data = (unsigned char*)datacopy;
+			free_data = 1;
+		}
 		XChangeProperty(
 			dpy, w, a->atom, a->atom_type , format,
 			PropModeReplace, data, length);
+
+		if (free_data)
+		{
+			free(data);
+		}
 	}
 
 	return;
@@ -367,18 +401,6 @@ void ewmh_DeleteProperty(
 	}
 
 	return;
-}
-
-static int atom_size(int format)
-{
-	if (format == 32)
-	{
-		return sizeof(long);
-	}
-	else
-	{
-		return (format >> 3);
-	}
 }
 
 static

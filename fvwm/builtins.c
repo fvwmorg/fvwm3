@@ -3535,10 +3535,8 @@ void CMD_GlobalOpts(F_CMD_ARGS)
 void CMD_BugOpts(F_CMD_ARGS)
 {
 	char *opt;
-	char delim;
 	int toggle;
 	char *optstring;
-	char *toggle_option;
 
 	/* fvwm_msg(DBG,"SetGlobalOptions","init action == '%s'\n",action); */
 	while (action && *action && *action != '\n')
