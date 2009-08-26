@@ -33,6 +33,7 @@ Changes in beta release 2.5.28 (not released yet)
    - Fixed BugOpts parsing of more than one option at a time and
      restoring of default value for the last option
      in the command line when omitted.
+   - 64 bit fix for setting EWMH properties on windows.
 
 -------------------------------------------------------------------
 

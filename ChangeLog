@@ -1,3 +1,15 @@
+2009-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* fvwm/builtins.c (CMD_BugOpts):
+	remove unused variables
+
+	* NEWS:
+	* fvwm/ewmh.c (ewmh_ChangeProperty):
+	fix storing of CARD32 arrays on 64 bit machines
+
+	* fvwm/ewmh_icons.c (ewmh_SetWmIconFromPixmap):
+	prevent segmentation fault when reading a bad _NET_WM_ICON hint
+
 2009-08-22	Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/geometry.c (__cs_handle_aspect_ratio):
 	Workaround gcc -O3, by declaring local vars as volatile.  This fixes an

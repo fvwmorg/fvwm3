@@ -22,6 +22,7 @@
 
 #include "config.h"
 #include <stdio.h>
+#include <limits.h>
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"

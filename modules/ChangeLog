@@ -1,3 +1,8 @@
+2009-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* FvwmProxy/FvwmProxy.c:
+	include limits.h
+
 2009-08-05  Thomas Adam  <thomas.adam22@gmail.com>
 	* FvwmCommand/FvwmCommand.1.in:
 	* FvwmConsole/FvwmConsole.1.in:
