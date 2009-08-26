@@ -1,3 +1,8 @@
+2009-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
+
+	* DEVELOPERS (Preparations):
+	Add note about using -Wdeclaration-after-statement when possible
+
 2009-03-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* COMMANDS:

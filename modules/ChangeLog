@@ -1,5 +1,13 @@
 2009-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* FvwmProxy/FvwmProxy.c (Provokable, parse_options)
+	(FindProxyGroupOfNeighbor, OpenOneWindow, RestackAtomic)
+	(ReadStack):
+	fix -Wdeclaration-after-statement warnings
+
+	* FvwmEvent/FvwmEvent.c (config):
+	remove unused variable i
+
 	* FvwmProxy/FvwmProxy.c:
 	include limits.h
 

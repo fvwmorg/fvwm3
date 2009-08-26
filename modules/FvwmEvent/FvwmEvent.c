@@ -747,7 +747,6 @@ void handle_config_line(char *buf, char **phost)
 void config(void)
 {
 	char *buf;
-	int i;
 	char *host = NULL;
 
 	if (USE_FPLAY)

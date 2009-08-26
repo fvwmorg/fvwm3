@@ -218,7 +218,9 @@ Compile tests:
     the output of the compilation run for warnings manually.  It
     is important to use the -O2 option because gcc can not
     generate some warnings without it.  If your gcc-version does
-    not know the option "-fno-strict-aliasing", remove it.
+    not know the option "-fno-strict-aliasing", remove it. If you
+    have gcc >= 3.4 you should also use -Wdeclaration-after-statement
+    since it will catch code that won't compile on all C89 compilers.
   - Fix all warnings and problems, commit the changes and repeat
     the previous step until no more warnings occur.
 

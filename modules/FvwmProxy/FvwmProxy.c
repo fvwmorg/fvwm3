@@ -691,6 +691,12 @@ static Bool parse_options(void)
 			No Soft/Hard Raise/Desk/Drag
 */
 				char* remainder = directive;
+				int soft;
+				int hard;
+				int raise;
+				int desk;
+				int drag;
+				int icon;
 
 				proxy_follow_t setting = PROXY_FOLLOW_ON;
 				if(StrHasPrefix(remainder,"No"))
@@ -704,8 +710,8 @@ static Bool parse_options(void)
 					remainder += 7;
 				}
 
-				int soft = True;
-				int hard = True;
+				soft = True;
+				hard = True;
 				if(StrHasPrefix(remainder,"Soft"))
 				{
 					hard = False;
@@ -717,10 +723,10 @@ static Bool parse_options(void)
 					remainder += 4;
 				}
 
-				int raise = True;
-				int desk = True;
-				int drag = True;
-				int icon = True;
+				raise = True;
+				desk = True;
+				drag = True;
+				icon = True;
 				if(StrHasPrefix(remainder,"Raise"))
 				{
 					desk = False;
@@ -1114,12 +1120,13 @@ static ProxyGroup* FindProxyGroupWithWindowName(char* name)
 
 static ProxyGroup* FindProxyGroupOfNeighbor(ProxyWindow* instigator)
 {
+	ProxyWindow *proxy;
+
 	if(!instigator->group)
 	{
 		return NULL;
 	}
 
-	ProxyWindow *proxy;
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		if(proxy==instigator)
@@ -1397,11 +1404,12 @@ static void OpenOneWindow(ProxyWindow *proxy)
 		if ((!selectProxy || proxy != selectProxy) &&
 			proxy->window != focusWindow)
 		{
+			ProxyWindow *other;
 			if (showOnly == PROXY_SHOWONLY_SELECT)
 			{
 				return;
 			}
-			ProxyWindow *other = FindProxy(focusWindow);
+			other = FindProxy(focusWindow);
 #if PROXY_GROUP_DEBUG
 			fprintf(stderr, "OpenOneWindow"
 				" %d %d %d %d  %d %d %d %d  %d %d\n",
@@ -1773,11 +1781,13 @@ static void WaitToConfig(ProxyWindow *proxy)
 static int Provokable(ProxyWindow *proxy,proxy_provoke_t provocation)
 {
 	int soft=proxy->flags.is_soft;
+	ProxyGroup* proxy_group=proxy->proxy_group;
+	proxy_follow_t follow;
+	WindowName* include;
 #if PROXY_GROUP_DEBUG
 	fprintf(stderr, "Provokable %p %s %x soft %d\n",
 		proxy,proxy->name,provocation,soft);
 #endif
-	ProxyGroup* proxy_group=proxy->proxy_group;
 	if(!proxy_group)
 	{
 		proxy_group=FindProxyGroupOfNeighbor(proxy);
@@ -1787,12 +1797,12 @@ static int Provokable(ProxyWindow *proxy,proxy_provoke_t provocation)
 		return True;
 	}
 
-	proxy_follow_t follow=PROXY_FOLLOW_INHERIT;
+	follow=PROXY_FOLLOW_INHERIT;
 
 #if PROXY_GROUP_DEBUG
 	fprintf(stderr, "  group flags %x\n",proxy_group->flags);
 #endif
-	WindowName* include=FindWindowName(proxy_group->includes,proxy->name);
+	include = FindWindowName(proxy_group->includes,proxy->name);
 	if(include)
 	{
 #if PROXY_GROUP_DEBUG
@@ -1982,14 +1992,16 @@ void RefineStack(int desired)
 /* doesn't work: non-fatal X error in X_ConfigureWindow */
 void RestackAtomic(int raise)
 {
-	RefineStack(False);
 	ProxyWindow *proxy;
 	int count = 0;
+	Window *windows;
+	RefineStack(False);
+
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		count++;
 	}
-	Window *windows = (Window *) safemalloc (count * sizeof (Window));
+	windows = (Window *) safemalloc (count * sizeof (Window));
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		fprintf(stderr, "RestackAtomic %d %s\n",
@@ -2002,11 +2014,12 @@ void RestackAtomic(int raise)
 
 void RestackIncremental(int raise)
 {
+	int changes = 0;
+	int changed = 1;
+
 	RefineStack(False);
 	RefineStack(True);
 
-	int changes = 0;
-	int changed = 1;
 	while(changed)
 	{
 		ProxyWindow *proxy;
@@ -2088,13 +2101,14 @@ void ReadStack(unsigned long *body, unsigned long length)
 	Window window;
 	ProxyWindow *proxy;
 	int i;
+	ProxyWindow *instigator=NULL;
+	int index;
 
 #if PROXY_GROUP_DEBUG
 	fprintf(stderr, "ReadStack %p %d-%d\n",
 		body, (int)length, FvwmPacketHeaderSize);
 #endif
 
-	ProxyWindow *instigator=NULL;
 	for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
 	{
 		instigator=FindProxy(body[0]);
@@ -2115,7 +2129,7 @@ void ReadStack(unsigned long *body, unsigned long length)
 		}
 	}
 
-	int index=instigator->stack;
+	index=instigator->stack;
 	for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
 	{
 		window = body[i];
