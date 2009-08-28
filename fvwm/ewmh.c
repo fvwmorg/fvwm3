@@ -365,7 +365,9 @@ void ewmh_ChangeProperty(
 		}
 	       
                 asize = atom_size(format);
-                if (format == 32 && asize * 8 != format)
+                if (
+		    format == 32 && asize * 8 != format &&
+		    strcmp(atom_name, "_NET_WM_ICON") == 0)
 		{
 			long *datacopy = (long*)safemalloc(asize * length);
 			int i;
