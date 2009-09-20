@@ -1,6 +1,9 @@
 2009-09-20  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
+	* NEWS:
 	* configure.ac:
+	increased version number to 2.5.29
+
 	* NEWS:
 	updated for 2.5.28 release
 
