@@ -1,47 +1,39 @@
-Fvwm is a powerful window manager.  Version 2.5.27 is a beta
+Fvwm is a powerful window manager.  Version 2.5.28 is a beta
 maintenance release that fixes a couple of bugs and adds some
 minor features.  Please be aware that any features introduced in
 the 2.5.x development versions may be renamed, changed or removed
 without notice before 2.6.0.
 
-Upgrading from 2.5.26 or earlier is recommended.
+Upgrading from 2.5.27 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - New extended variable
-       $[w.visiblename]
-
-   - Style matching now honours the window's visible name which
-     means it can be matched before the real name, hence:
-
-        Style $[w.visiblename] Colorset 5
-
-        is now honoured.  Useful with IndexedWindowName as a style
-        option.
-
-   - New style InitialMapCommand allows to execute any command
-     when a window is mapped first.
-
-   - New option to PrintInfo, "bindings" which prints out all of
-     the Key, PointerKey, Mouse and Stroke bindings which fvwm
-     knows about.
+   - New differentiated options for SnapAttraction when snapping
+     against screen edges:
+       "None", "ScreenWindows", "ScreenIcons", "ScreenAll"
+   - New option to the BugOpts command: TransliterateUtf8.
 
 * Bug fixes:
 
-   - Fixed compilation without XRender support.
-   - Fixed handling of _NET_MOVERESIZE_WINDOWS requests.
-   - Fixed a bug in automatic detection mode of the style
-     MoveByProgramMethod.
-   - Fixed png detection when cross compiling.
-   - Fixed keeping fullscreen window mode over a restart.
-   - The style PositionPlacement now honours StartsOnPage.
-   - Reset signal handlers for executed modules and programs.
-   - Try to handle a bug an old version of the EWMH spec by
-     honouring both, the _NET_WM_STATE_MAXIMIZED_HORIZ hint and
-     the _NET_WM_STATE_MAXIMIZED_HORZ hitn.
-   - Fix the GNOME location prefix to application .desktop files.
-   - 'PositionPlacement UnderMouse' now forces the window
-     on-screen, just like the old UnderMousePlacement style option
-     used to.
+   - Fixed non-visible Qt windows after a Qt deferred map (e.g.
+     Skype profile windows).
+   - Fixed the use of the X-resource "fvwmstyle".
+   - Fixed segmentation fault in FvwmEvent when parsing an
+     undefined event name, or an undefined environment variable
+     to the RPlayHost option.
+   - Fixed the events startup, shutdown and unknown in FvwmEvent.
+   - Fvwm now retains utf8 window names when the WM_NAME changes,
+     and the utf8 name converted to the default charset match
+     the old WM_NAME.
+   - Fixed the options RPlayVolume and RPlayPriority in FvwmEvent.
+   - Fixed SnapAttraction: Option SameType/Icons/Windows did
+     falsely not affect conditions of option "Screen" and option
+     "SameType" snapped falsely icons and windows together.
+   - Fixed a problem where modules would get incorrect stacking
+     information if many windows were restacked at the same time.
+   - Fixed BugOpts parsing of more than one option at a time and
+     restoring of default value for the last option
+     in the command line when omitted.
+   - 64 bit fix for setting EWMH _NET_WM_ICON property on windows.
