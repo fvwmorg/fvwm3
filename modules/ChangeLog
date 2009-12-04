@@ -1,3 +1,8 @@
+2009-12-04  Thomas Adam <thomas.adam22@gmail.com>
+
+	* FvwmTabs/FvwmTabs.in (swallowNew):
+	Remove UTF8 encoding from string, to just use empty string.
+
 2009-08-26  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* FvwmProxy/FvwmProxy.c (Provokable, parse_options)
