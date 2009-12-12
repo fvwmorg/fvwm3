@@ -1,3 +1,13 @@
+2009-12-12  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/fvwm.c (StartupStuff):
+	Reset the state of the "Restarting" flag to False when restarting FVWM.
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	Only run InitialMapCommand when FVWM isn't restarting and all windows
+	have been recaptured.  The window is already mapped by the time FVWM is
+	restarting, and running the InitialMapCommand again only serves to
+	"toggle" the window state (c.f. InitialMapCommand Iconic, etc.)
+
 2009-09-20  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* NEWS:

@@ -2878,6 +2878,7 @@ void HandleMapRequestKeepRaised(
 	initial_window_options_t win_opts_bak;
 	Window ew;
 	FvwmWindow *fw;
+	extern Bool Restarting;
 	const char *initial_map_command;
 
 	initial_map_command = NULL;
@@ -3101,7 +3102,17 @@ void HandleMapRequestKeepRaised(
 			 * allow for correct timings when the window is truly
 			 * mapped. (c.f. things like Iconify.)
 			 */
-			if (initial_map_command != NULL)
+
+			/* TA:  20091212:  But only do this when we're *not*
+			 * restarting -- the window is still mapped, but gets
+			 * recaptured -- we don't want to trigger this event
+			 * again.  Otherwise we end up toggling the state of
+			 * the window in situations where the
+			 * InitialMapCommand is Iconify or Maximize, for
+			 * instance.
+			 */
+			if ((initial_map_command != NULL) &&
+			   (!Restarting && Scr.flags.are_windows_captured))
 			{
 				execute_function_override_window(
 					NULL, ea->exc,

@@ -1590,6 +1590,11 @@ void StartupStuff(void)
 	}
 	exc_destroy_context(exc);
 
+	/* TA:  20091212:  If we get here, we're done restarting, so reset the
+	 * flag back to False!
+	 */
+	Restarting = False;
+
 	return;
 }
 
