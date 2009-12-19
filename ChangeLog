@@ -1,3 +1,7 @@
+2009-12-19  Thomas Adam <thomas.adam22@gmail.com>
+	* libs/Flocale.c (FlocaleEncodeString):
+	Pre-initialise "len2" to zero, to avoid GCC warning during compilation.
+
 2009-12-12  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/fvwm.c (StartupStuff):
 	Reset the state of the "Restarting" flag to False when restarting FVWM.

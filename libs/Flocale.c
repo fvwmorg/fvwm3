@@ -433,6 +433,8 @@ char *FlocaleEncodeString(
 	const char *bidi_charset;
 
 	len1 = len;
+	len2 = 0;
+
 	if (is_rtl != NULL)
 		*is_rtl = False;
 	*do_free = False;
