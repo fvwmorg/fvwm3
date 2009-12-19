@@ -7,6 +7,7 @@ Changes in beta release 2.5.29 (not released yet)
 * Bug fixes:
    - Fixed the InitialMapCommand style from running when FVWM 
      is restarting.
+   - Fix rendering of FvwmForm windows when initially mapped.
 
 Changes in beta release 2.5.28 (20-Sep-2009)
 
