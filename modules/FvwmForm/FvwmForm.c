@@ -2505,11 +2505,20 @@ static void MainLoop(void)
   fd_set_size_t fd_width = GetFdWidth();
 
   while ( !isTerminated ) {
+    /* TA:  20091219:  Automatically flush the buffer from the XServer and
+     * process each request as we receive them.
+     */
+    while(FPending(dpy))
+	    ReadXServer();
+
     FD_ZERO(&fds);
     FD_SET(Channel[1], &fds);
     FD_SET(fd_x, &fds);
 
-    XFlush(dpy);
+    /* TA:  20091219:  Using XFlush() here was always a nasty hack!  See
+     * comments above.
+     */
+    /*XFlush(dpy);*/
     if (fvwmSelect(fd_width, &fds, NULL, NULL, NULL) > 0) {
       if (FD_ISSET(Channel[1], &fds))
 	ReadFvwm();

@@ -1,3 +1,10 @@
+2009-12-19  Thomas Adam <thomas.adam22@gmail.com>
+	* FvwmForm/FvwmForm.c (MainLoop):
+	Stop relying on XSync() after FD_SET when using FPending() will
+	automatically return correctly for handling queued events.  This cures
+	the problem of the window appearing not to have drawn all its widgets
+	properly when it is initially mapped.
+
 2009-12-04  Thomas Adam <thomas.adam22@gmail.com>
 
 	* FvwmTabs/FvwmTabs.in (swallowNew):
