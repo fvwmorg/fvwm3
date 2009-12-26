@@ -1,3 +1,11 @@
+2009-12-26  Thomas Adam <thomas.adam22@gmail.com>
+	* NEWS:
+	* AUTHORS:
+	* bin/fvwm-convert-2.6.in:
+	* bin/fvwm-convert-2.6.1.in:
+	First pass at a fvwm-convert-2.6 script to convert fvwm-2.4 syntax
+	files.
+
 2009-12-19  Thomas Adam <thomas.adam22@gmail.com>
 	* libs/Flocale.c (FlocaleEncodeString):
 	Pre-initialise "len2" to zero, to avoid GCC warning during compilation.

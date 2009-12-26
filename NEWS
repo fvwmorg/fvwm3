@@ -4,6 +4,11 @@ Note, the changes for the last STABLE release start with release
 -------------------------------------------------------------------
 Changes in beta release 2.5.29 (not released yet)
 
+* New features:
+   
+   - Added new fvwm-convert-2.6 script to convert older fvwm 2.4.x config
+     files.
+
 * Bug fixes:
    - Fixed the InitialMapCommand style from running when FVWM 
      is restarting.

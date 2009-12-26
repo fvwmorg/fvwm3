@@ -23,6 +23,7 @@ Make style matching honour a window's visible name (c.f. $[w.visiblename])
 Added "bindings" option to PrintInfo command useful for debugging.
 Force windows on-screen where applicable when using
 "PositionPlacement UnderMouse".
+Wrote initial version of the fvwm-convert-2.6 script.
 Bug fixes.
 
 Serge (gentoosiast) Koksharov:

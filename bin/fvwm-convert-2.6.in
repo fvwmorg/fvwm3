@@ -2,7 +2,9 @@
 # -*-perl-*-
 
 # Convert .fvwm2rc from 2.4.x format to 2.6.x format.
-
+#
+# Original author:  Thomas Adam <thomas.adam22@gmail.com> Dec. 2009
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -17,3 +19,442 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+use strict;
+use Cwd;
+
+# Global array for all our converted lines.
+my @converted_lines = ();
+
+# Global softref for addtofunc continuations.
+my $last_func_ref;
+my %converted_funcs = ();
+
+# Global for additional files...
+my @additional_files = ();
+
+# Convert conditional command syntax correctly.
+sub __convert_conditionals
+{
+    my( $cond ) = @_;
+    my( $line ) = $cond->[-1];
+
+    $line = "$1 ". join( ', ', split( /\s+/, $2 ) ) . " $3" if $line =~
+    /(all|current|direction|next|none|prev|pick|thiswindow|windowid)\s*(\(.*?\))(.*)/i;
+
+    $cond->[-1] = $line;
+}
+
+# Process the files specified and output them to a destination file.
+sub process_files
+{
+    my( $files ) = @_;
+
+    no strict "refs";
+    foreach my $f ( @$files )
+    {
+        my( $s, $d ) = @$f;
+
+        if( (!defined $d or $d eq '') or
+            ! -e "$s.converted" ) 
+        {
+            $d = "$s.converted";
+        } elsif( -e $d ) {
+            die "Destination file:  $d exists\n";
+        }
+
+        open( my $in_file, '<', $s ) or die
+            "Unable to open source file:  $!\n";
+
+        while( <$in_file> )
+        {  
+            chomp;
+            dispatch_line($_);
+        }
+        
+        write_out_file($d);
+        @converted_lines = ();
+        %converted_funcs = ();
+    }
+}
+
+# Convert style syntax over where applicable.
+sub convert_styles
+{
+    my( $line ) = @_;
+    my @converted;
+
+    # At the very least, we can cheat and just negate everything.  Whilst it
+    # isn't deprecated yet, it will be -- so it won't hurt to do it here.
+
+    # Split the line out first of all, between the "Style foo" part, and the
+    # actual styles being applied.
+    my( @style_parts ) = ($line =~ /^(style\s+\"??[\w+*?]\"??)(.*)$/i);
+
+    # Convert the second part over.
+    foreach( split( /\s*,\s*/, $style_parts[1] ) )
+    {
+        # FIXME -- this should be flagged up as bugs in FVWM.
+        s/(?:No)(.*)/\!$1/ unless $_ =~ /nopposition/i;
+        push @converted, $_;
+    }
+
+    push @converted_lines, $style_parts[0] . join(', ',
+        @converted);
+}
+
+# Buckshot approach at turning fvwmthemes into colorsets.  Can't really do
+# much more than this, but at least gives the user something to go on.
+sub convert_fvwmtheme
+{
+    my( $line ) = @_;
+
+    $line =~ s/^\*fvwmtheme\s*:?//i;
+    $line = undef if $line =~ /modulesynchronous.*?fvwmtheme/i;
+
+    push @converted_lines, $line;
+}
+
+# Comment out the modulepath line -- grr.
+sub handle_modulepath
+{
+    my( $line ) = @_;
+    $line = "# " . $line;
+
+    push( @converted_lines, $line );
+}
+
+# This should have happened in the fvwm-2.4 convert script, but handle it
+# here anyway.
+sub convert_windowshadesteps
+{
+    my( $line ) = @_;
+    $line =~ /(\d+)p?/ ? 
+        $line = "Style * WindowShadeSteps $1" : 
+        $line = "Style * " . $line;
+
+    push( @converted_lines, $line );
+}
+
+sub convert_edge_resistance
+{
+    my( $line ) = @_;
+
+    # This gets converted into two parts.  One is the EdgeResistance
+    # command, the other is a style line.
+    #
+    # We could only ever have had two numbers as arguments to
+    # EdgeResistance.
+    my( $edge_res_arg, $move_res_arg ) = 
+        ( $line =~ /edgeresistance\s*(\d+)\s*(\d+)/i );
+
+    push( @converted_lines,
+        qq|
+        EdgeResistance $edge_res_arg
+        Style * EdgeMoveResistance $move_res_arg| );
+}
+
+sub convert_snapattraction
+{
+    my( $line ) = @_;
+
+    push( @converted_lines, "Style * " . $line );
+}
+
+sub convert_key_mouse_bindings
+{
+    my( $line ) = @_;
+    my @components = split( /\s+/, $line, 5 );
+
+    # Take the last component.  We no longer care for "[*]" as conditional
+    # command parameters.  But we shouldn't really put another conditional
+    # in its place, so we'll just remove it.
+    $components[-1] =~ s/\[\*\]//;
+
+    # Also, conditional commands should now be separated with commas and not
+    # whitespace, so try and fix these up where we can.  It's not the
+    # intention we'll catch them all, but at least try and do so based on
+    # where they're likely to be used.
+    __convert_conditionals(\@components);
+
+    push( @converted_lines, join ' ', @components );
+}
+
+sub handle_continuation
+{
+    no strict "refs"; # Yes, yes...
+    my( $line ) = @_;
+
+    return if !defined $last_func_ref || $last_func_ref eq '';
+
+    eval { &{$last_func_ref}($line) };
+
+    warn "$@\n" if $@;
+}
+
+sub handle_read_file
+{
+    my( $line ) = @_;
+    my @read_parts = split( /\s+/, $line );
+    # Crudely try and work out if the file is readable, and if it is add it
+    # to the list of further files to convert.
+    #
+    # This won't handle having to interpolate out any env vars set via
+    # SetEnv, or worse yet, outside of FVWM's environment.  The user will
+    # just have to run this script on that file manually.
+    my $fname = $read_parts[1];
+    return unless defined $fname and $fname ne '';
+
+    if( -e $fname )
+    {
+        push( @additional_files, [$fname] );
+        
+        # We're done.
+        return;
+    }
+
+    # If we have this:
+    #
+    # Read foo
+    #
+    # Or this:
+    #
+    # Read $./foo
+    #
+    # Then we assume FVWM_USERDIR ("$HOME/.fvwm/"), and if that file can't 
+    # be found there, try CWD, and if that fails we just give up.
+    
+    # Canonicalise the starting point by removing "$." -- we can guess what
+    # it ought to be replaced with.
+    $fname =~ s/^\$\.\/?//;
+
+    if( -e "$ENV{FVWM_USERDIR}/$fname" )
+    {
+        push( @additional_files,
+            ["$ENV{FVWM_USERDIR}/$fname"] );
+        return;
+    }
+
+    if( -e "$ENV{HOME}/.fvwm/$fname" )
+    {
+        push( @additional_files,
+            ["$ENV{HOME}/.fvwm/$fname"] );
+        return;
+    }
+
+    my $cwd_path = getcwd();
+
+    if( -e "$cwd_path/$fname" )
+    {
+        push( @additional_files, [$fname] );
+        return;
+    }
+
+    warn "Unable to follow:  $line\n";
+}
+
+sub check_func_definition
+{
+    my( $line ) = @_;
+
+    if( $line !~ /^addtofunc\s+(?:start|init|restart)function.*/i )
+    {
+        $last_func_ref = '';
+    }
+}
+
+sub convert_initfunc
+{
+    my( $line ) = @_;
+    $last_func_ref = "convert_initfunc";
+
+    if( $line =~ /addtofunc\s+initfunction\s+\"??[icmhd]{1}\"??\s+.*/i ||
+        $line =~ /addtofunc\s+initfunction\s*/i )
+    {
+        $line =~ s/addtofunc\s+initfunction\s*//i;
+    }
+
+    $line =~ s/^\s*\+//;
+
+    return if !defined $line || $line eq '';
+
+    # What we need to do now is convert this from:
+    #
+    # + I Foo
+    #
+    # to:
+    #
+    # + I Test (Init) Foo
+
+    my @func_cmd = split( /\s+/, $line, 3 );
+    unshift( @func_cmd, '' ) unless @func_cmd > 2;
+
+    # Remove any quotes around the action type --- they're not needed
+    # anymore.
+    $func_cmd[1] =~ s/\"//g;
+    $func_cmd[1] .= q| Test (Init) |;
+
+    # Run the command through the conditional function to ensure we
+    # handle those correctly.
+    __convert_conditionals( \@func_cmd );
+
+    push( @{ $converted_funcs{initfunction} }, join ' ', @func_cmd );
+}
+
+sub convert_restartfunc
+{
+    my( $line ) = @_;
+    $last_func_ref = "convert_restartfunc";
+    
+    # We treat this exactly like startfunction.
+    if( $line =~ /addtofunc\s+restartfunction\s+\"??[icmhd]{1}\"??\s+.*/i )
+    {
+        # Split this string.  We can throw away the "AddToFunc" part as this
+        # is irrelevant.  But we want the following result:
+        # ( 'I', 'Some Command' )
+        $line =~ s/addtofunc\s+restartfunction\s*//i;
+    }
+
+    $line =~ s/addtofunc\s+restartfunction\s*//i;
+    
+    return if $line eq '';
+
+    # Remove the continuation prefix as we can add this in when writing out
+    # the function definitions later. 
+    $line =~ s/^\s*\+//;
+    
+    my @func_cmd = split( /\s+/, $line, 2 );
+    $func_cmd[1] =~ s/\"//g;
+
+    # Run the command through the conditional function to ensure we
+    # handle those correctly.
+    __convert_conditionals( \@func_cmd );
+
+    push( @{ $converted_funcs{startfunction} }, join ' ', @func_cmd );
+}
+
+sub convert_startfunc
+{
+    my( $line ) = @_;
+
+    # Now, it's possible that we have something like this:
+    #
+    # AddToFunc StartFunction I Some Command
+    #
+    # Extract the command part, add it to the hash for our functions, and
+    # flag the fact we're dealing with StartFunction at this point for any
+    # continuation lines (+ I Foo) since we can't determine the context of
+    # them without such a thing.
+
+    if( $line =~ /addtofunc\s+startfunction\s+\"??[icmhd]{1}\"??\s+.*/i )
+    {
+        # Split this string.  We can throw away the "AddToFunc" part as this
+        # is irrelevant.  But we want the following result:
+        # ( 'I', 'Some Command' )
+        $line =~ s/addtofunc\s+startfunction\s*//i;
+    }
+    $line =~ s/addtofunc\s+startfunction\s*//i;
+    
+    # Remove the continuation prefix as we can add this in when writing out
+    # the function definitions later. 
+    $line =~ s/^\s*\+//;
+
+    return if !defined $line || $line eq '';
+    
+    my @func_cmd = split( /\s+/, $line, 2 );
+    $func_cmd[1] =~ s/\"//g;
+
+    # Run the command through the conditional function to ensure we
+    # handle those correctly.
+    __convert_conditionals( \@func_cmd );
+
+    push( @{ $converted_funcs{startfunction} }, join ' ', @func_cmd );
+    $last_func_ref = "convert_startfunc";
+}
+
+sub write_out_file
+{
+    my( $dest_file ) = @_;
+    open( my $f, '>', $dest_file ) or
+        die "Couldn't open $dest_file: $!\n";
+
+    # Write out most of the file.
+    print $f join( "\n", @converted_lines );
+
+    # Write out the functions.
+    print $f qq|\n\nDestroyFunc StartFunction\nAddToFunc StartFunction\n|;
+
+    # Put the Init stuff before anything else.
+    for( @{ $converted_funcs{initfunction} }, 
+         @{ $converted_funcs{startfunction } } )
+    {
+        print $f "+ $_\n";
+    }
+
+    close( $f );
+}
+
+sub dispatch_line
+{
+    my( $line ) = @_;
+
+    if( $line =~ /^style/i )
+    {
+        print "Converting style lines...\n";
+        convert_styles($line);
+    } elsif( $line =~ /^\s*\*fvwmtheme:??/i ) {
+        print "Converting FvwmTheme lines...\n";
+        convert_fvwmtheme($line);
+    } elsif( $line =~ /^\s*modulepath\s*/i ) {
+        print "Shooting the user for ever having changed ModulePath...\n";
+        handle_modulepath( $line );
+    } elsif( $line =~ /^\s*windowshadesteps.*/i ) {
+        convert_windowshadesteps($line);
+    } elsif( $line =~ /^\s*module(?:synchronous)?.*?fvwmtheme$/i ) {
+        convert_fvwmtheme($line);
+    } elsif( $line =~ /^\s*edgeresistance\s*\d+\s*\d+/i ) {
+        print "Converting EdgeResistance lines...\n";
+        convert_edge_resistance($line);
+    } elsif( $line =~ /^\s*key|mouse/i ) {
+        print "Converting key/mouse bindings...\n";
+        convert_key_mouse_bindings($line);
+    } elsif( $line =~ /^\s*snap(?:attraction|grid)/i ) {
+        print "Converting SnapAttraction...\n";
+        convert_snapattraction( $line );
+    } elsif( $line =~ /^\s*addtofunc\s+initfunction/i ) {
+        print "Converting InitFunction...\n";
+        convert_initfunc( $line );
+    } elsif( $line =~ /^\s*addtofunc\s+startfunction.*/i ) {
+        print "Converting StartFunction ...\n";
+        convert_startfunc( $line );
+    } elsif( $line =~ /^\s*addtofunc\s+restartfunction/i ) {
+        print "Converting RestartFunction...\n";
+        convert_restartfunc( $line );
+    } elsif( $line =~ /^\s*addtofunc\s+\w+.*/i ) {
+        check_func_definition( $line );
+    } elsif( $line =~ /^\s*\+\s*\"??[ichmd]{1}\s*\"??\s+.*/i ) {
+        handle_continuation( $line );
+    } elsif( $line =~ /^\s*read\s*[\/\w]+/i ) {
+        print "Following Read Command( $line ) ...\n";
+        handle_read_file( $line );
+    } else {
+        # Could be a comment, or a continuation, or simply something we
+        # don't need to convert.  As far as continuation lines are
+        # concerned, these are kept in order just by pushing them onto the
+        # array --- but converting continuation lines is tricky since we'd
+        # need to determine the context of the continuation.  I can't be
+        # bothered.
+        push( @converted_lines, $_ );
+    }
+}
+
+sub usage
+{
+    print "fvwm-convert-2.6 source-file destination-file\n";
+    exit;
+}
+
+usage() unless $#ARGV == 1;
+
+my @files = [@ARGV];
+process_files( \@files );
+process_files( \@additional_files ) if scalar @additional_files;
