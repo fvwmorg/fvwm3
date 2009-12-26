@@ -93,6 +93,9 @@ comments before in an odd spot.
 Continuation lines (those commands spanning multiple lines ending in a '\\')
 are not handled correctly.
 
+When converting over FvwmTheme lines, the colorset definitions might well be
+broken, but these cannot easily be converted.
+
 Bug reports can be sent to the fvwm-workers mailing list (see the
 .IR FAQ ).
 .SH AUTHOR

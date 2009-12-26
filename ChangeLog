@@ -1,4 +1,9 @@
 2009-12-26  Thomas Adam <thomas.adam22@gmail.com>
+	* bin/fvwm-convert-2.6.1.in:
+	Add in BUGS section a note that converting over FvwmTheme lines is
+	likely buggy.
+
+2009-12-26  Thomas Adam <thomas.adam22@gmail.com>
 	* NEWS:
 	* AUTHORS:
 	* bin/fvwm-convert-2.6.in:
