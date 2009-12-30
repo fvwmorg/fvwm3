@@ -990,6 +990,7 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 {
 	FvwmWindow *other_fw;
 	pl_penalty_t penalty;
+	size_borders b;
 
 	penalty = 0;
 	for (
@@ -998,6 +999,7 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 	{
 		rectangle other_g;
 		Bool rc;
+		get_window_borders(other_fw, &b);
 
 		if (
 			arg->place_fw == other_fw ||
@@ -1033,6 +1035,24 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 				penalty > ret->best_penalty &&
 				ret->best_penalty != -1)
 			{
+				/* TA:  20091230:  Fix over-zealous penalties
+				 * by explicitly forcing the window on-screen
+				 * here.  The y-axis is only affected here,
+				 * due to how the xoffset calculations happen
+				 * prior to setting the x-axis.  When we get
+				 * penalties which are "over-zealous" -- and
+				 * by not taking into account the size of the
+				 * window borders, the window was being placed
+				 * off screen.
+				 */
+				if (ret->best_p.y + arg->place_g.height >= arg->page_p2.y)
+				{
+					ret->best_p.y = 
+						(arg->page_p2.y - 
+						arg->place_g.height -
+						b.total_size.height);
+				}
+
 				/* stop looking; the penalty is too high */
 				return penalty;
 			}

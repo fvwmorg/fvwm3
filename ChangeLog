@@ -1,3 +1,9 @@
+2009-12-39  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/placement.c (__pl_minoverlap_get_pos_penalty):
+	Fix y-axis offset calculations when using MinOverlapPlacement, by
+	forcing the window on-screen when over-zealous penality calculations
+	don't take into account the size of the window borders.
+
 2009-12-26  Thomas Adam <thomas.adam22@gmail.com>
 	* bin/fvwm-convert-2.6.1.in:
 	Add in BUGS section a note that converting over FvwmTheme lines is
