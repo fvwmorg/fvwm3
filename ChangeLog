@@ -1,6 +1,11 @@
 2009-12-31  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/builtins.c (CMD_BugOpts):
+	Remove debug line.
+
+2009-12-31  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/builtins.c (CMD_BugOpts):
 	* fvwm/fvwm.c (InitVariables):
+	* fvwm/events.c (HandleClientMessage):
 	* fvwm/screen.h:
 	Add new BugOpts QtDragnDropWorkaround option to handle an oddity in how
 	Qt windows handle having ClientMessage events sent to them.
