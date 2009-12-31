@@ -1843,9 +1843,14 @@ void HandleClientMessage(const evh_args_t *ea)
 	 * sure this should be done or not, since every other window manager
 	 * I've looked at doesn't.  But it might be handy for a free drag and
 	 * drop setup being developed for Linux. */
+	/* TA:  20091231 - But this confuses QT Drag and Drop since it handles
+	 * processing XSendEvents in an odd order.  For now, workaround this
+	 * by using a BugOpts option.
+	 */
 	if (fw)
 	{
-		if (te->xclient.window != FW_W(fw))
+		if ((!Scr.bo.do_enable_qt_drag_n_drop_workaround) &&
+				(te->xclient.window != FW_W(fw)))
 		{
 			XEvent e;
 

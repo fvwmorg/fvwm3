@@ -477,6 +477,7 @@ typedef struct ScreenInfo
 		unsigned do_display_new_window_names : 1;
 		unsigned do_enable_ewmh_iconic_state_workaround : 1;
 		unsigned do_enable_flickering_qt_dialogs_workaround : 1;
+		unsigned do_enable_qt_drag_n_drop_workaround : 1;
 		unsigned do_explain_window_placement : 1;
 		unsigned do_install_root_cmap : 1;
 		unsigned do_raise_over_unmanaged : 1;

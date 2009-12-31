@@ -1,4 +1,11 @@
-2009-12-39  Thomas Adam <thomas.adam22@gmail.com>
+2009-12-31  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/builtins.c (CMD_BugOpts):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/screen.h:
+	Add new BugOpts QtDragnDropWorkaround option to handle an oddity in how
+	Qt windows handle having ClientMessage events sent to them.
+
+2009-12-30  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/placement.c (__pl_minoverlap_get_pos_penalty):
 	Fix y-axis offset calculations when using MinOverlapPlacement, by
 	forcing the window on-screen when over-zealous penality calculations

@@ -1211,6 +1211,7 @@ static void InitVariables(void)
 	Scr.bo.do_disable_configure_notify = 0;
 	Scr.bo.do_install_root_cmap = 0;
 	Scr.bo.do_enable_flickering_qt_dialogs_workaround = 1;
+	Scr.bo.do_enable_qt_drag_n_drop_workaround = 0;
 	Scr.bo.do_enable_ewmh_iconic_state_workaround = 0;
 
 	Scr.gs.do_emulate_mwm = DEFAULT_EMULATE_MWM;

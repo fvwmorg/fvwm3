@@ -3658,6 +3658,24 @@ void CMD_BugOpts(F_CMD_ARGS)
 				break;
 			}
 		}
+		else if (StrEquals(opt, "QtDragnDropWorkaround") )
+		{
+			switch (toggle)
+			{
+			case -1:
+				Scr.bo.do_enable_qt_drag_n_drop_workaround ^= 1;
+				break;
+			case 0:
+			case 1:
+				Scr.bo.do_enable_qt_drag_n_drop_workaround = toggle;
+				break;
+			default:
+				Scr.bo.do_enable_qt_drag_n_drop_workaround = 0;
+				break;
+			}
+			fprintf(stderr, "BugOpts QtDragnDropWorkaround:  %d\n",
+					Scr.bo.do_enable_qt_drag_n_drop_workaround);
+		}
 		else if (EWMH_BugOpts(opt, toggle))
 		{
 			/* work is done in EWMH_BugOpts */
