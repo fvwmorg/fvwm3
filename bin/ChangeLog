@@ -1,3 +1,8 @@
+2010-01-01  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in:
+	Fix command-line parsing, and allow for destination file to be honoured
+	-- stupid logic bug on my part.
+
 2009-03-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

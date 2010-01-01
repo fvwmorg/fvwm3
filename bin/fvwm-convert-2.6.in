@@ -54,7 +54,7 @@ sub process_files
     {
         my( $s, $d ) = @$f;
 
-        if( (!defined $d or $d eq '') or
+        if( (!defined $d or $d eq '') and
             ! -e "$s.converted" ) 
         {
             $d = "$s.converted";
@@ -453,7 +453,7 @@ sub usage
     exit;
 }
 
-usage() unless $#ARGV == 1;
+usage() unless( @ARGV > 0 and @ARGV <=2 );
 
 my @files = [@ARGV];
 process_files( \@files );
