@@ -4,8 +4,18 @@
 fvwm-convert-2.6 \- convert fvwm 2.4.x configuration file to fvwm 2.6 style
 .SH SYNOPSIS
 .B fvwm-convert-2.6
+.RI [ --follow-read | -f ]
+.RI [ --help | -h ]
 .RI source
 .RI [ dest ]
+.SH OPTIONS
+The following options are supported:
+.IP "\fB\-\-help\fR | \fB\-h\fR"
+Prints a usage message to the screen.
+.IP "\fB\-\-follow\-read\fR | \fB\-f\fR"
+Follows files found along with the
+.B Read
+command.
 .SH DESCRIPTION
 .B fvwm-convert-2.6
 converts an fvwm 2.4.x configuration file into a fvwm 2.6
@@ -75,10 +85,15 @@ redundant when StartFunction is read at both of these times.
 attempts to convert this.
 .TP 4
 .B Read
-Any files
+If 
+.B -f
+or
+.B --follow-read
+is given, any files
 .B fvwm-convert-2.6
-can detect and open will be converted automatically, else a warning is
-printed to STDERR.
+can detect and open will be converted automatically, else a list of files
+that could would have been followed are printed to the screen.
+
 .TP 4
 .SH BUGS
 

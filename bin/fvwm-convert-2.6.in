@@ -21,6 +21,7 @@
 
 use strict;
 use Cwd;
+use Getopt::Long;
 
 # Global array for all our converted lines.
 my @converted_lines = ();
@@ -31,6 +32,10 @@ my %converted_funcs = ();
 
 # Global for additional files...
 my @additional_files = ();
+
+# GetOpts
+my $follow_read = '';
+my $process_read = 0;
 
 # Convert conditional command syntax correctly.
 sub __convert_conditionals
@@ -53,6 +58,8 @@ sub process_files
     foreach my $f ( @$files )
     {
         my( $s, $d ) = @$f;
+
+        warn "Following:  Read $s...\n" if $process_read;
 
         if( (!defined $d or $d eq '') and
             ! -e "$s.converted" ) 
@@ -399,42 +406,32 @@ sub dispatch_line
 
     if( $line =~ /^style/i )
     {
-        print "Converting style lines...\n";
         convert_styles($line);
     } elsif( $line =~ /^\s*\*fvwmtheme:??/i ) {
-        print "Converting FvwmTheme lines...\n";
         convert_fvwmtheme($line);
     } elsif( $line =~ /^\s*modulepath\s*/i ) {
-        print "Shooting the user for ever having changed ModulePath...\n";
         handle_modulepath( $line );
     } elsif( $line =~ /^\s*windowshadesteps.*/i ) {
         convert_windowshadesteps($line);
     } elsif( $line =~ /^\s*module(?:synchronous)?.*?fvwmtheme$/i ) {
         convert_fvwmtheme($line);
     } elsif( $line =~ /^\s*edgeresistance\s*\d+\s*\d+/i ) {
-        print "Converting EdgeResistance lines...\n";
         convert_edge_resistance($line);
     } elsif( $line =~ /^\s*key|mouse/i ) {
-        print "Converting key/mouse bindings...\n";
         convert_key_mouse_bindings($line);
     } elsif( $line =~ /^\s*snap(?:attraction|grid)/i ) {
-        print "Converting SnapAttraction...\n";
         convert_snapattraction( $line );
     } elsif( $line =~ /^\s*addtofunc\s+initfunction/i ) {
-        print "Converting InitFunction...\n";
         convert_initfunc( $line );
     } elsif( $line =~ /^\s*addtofunc\s+startfunction.*/i ) {
-        print "Converting StartFunction ...\n";
         convert_startfunc( $line );
     } elsif( $line =~ /^\s*addtofunc\s+restartfunction/i ) {
-        print "Converting RestartFunction...\n";
         convert_restartfunc( $line );
     } elsif( $line =~ /^\s*addtofunc\s+\w+.*/i ) {
         check_func_definition( $line );
     } elsif( $line =~ /^\s*\+\s*\"??[ichmd]{1}\s*\"??\s+.*/i ) {
         handle_continuation( $line );
     } elsif( $line =~ /^\s*read\s*[\/\w]+/i ) {
-        print "Following Read Command( $line ) ...\n";
         handle_read_file( $line );
     } else {
         # Could be a comment, or a continuation, or simply something we
@@ -449,12 +446,31 @@ sub dispatch_line
 
 sub usage
 {
-    print "fvwm-convert-2.6 source-file destination-file\n";
+    print "fvwm-convert-2.6 [-f] [-h] source-file destination-file\n";
     exit;
 }
 
+GetOptions(
+    "help|h" => \&usage,
+    "follow-read|f" => \$follow_read,
+) || usage();
+
+# But we still require @ARGV to be populated with our filenames.
 usage() unless( @ARGV > 0 and @ARGV <=2 );
 
 my @files = [@ARGV];
 process_files( \@files );
-process_files( \@additional_files ) if scalar @additional_files;
+
+if( @additional_files && !$follow_read )
+{
+    print "The following files were detected, but not processed:\n\n",
+    join("\n", @$_ ) for @additional_files,;
+    print "\n";
+}
+
+# Only do this is we've been asked.
+if( @additional_files && $follow_read )
+{
+    $process_read = 1;
+    process_files( \@additional_files );
+}

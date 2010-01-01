@@ -1,5 +1,20 @@
 2010-01-01  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in:
+	* fvwm-convert-2.6.1.in:
+	Convert over to use GetOpt::Long and introduce -f and -h.
+
+	--follow-read|-f : Follow files found via "Read".
+	--help|-h : Print help message.
+
+	No longer allow fvwm-convert-2.6 to follow Read files automatically --
+	force this via -f instead.
+
+	In the case of -f not given, still print out files found on the command
+	line to make the user aware there's additional files that will need
+	processing.
+
+2010-01-01  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in:
 	Fix command-line parsing, and allow for destination file to be honoured
 	-- stupid logic bug on my part.
 
