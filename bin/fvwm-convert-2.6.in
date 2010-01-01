@@ -100,8 +100,9 @@ sub convert_styles
     # Convert the second part over.
     foreach( split( /\s*,\s*/, $style_parts[1] ) )
     {
-        # FIXME -- this should be flagged up as bugs in FVWM.
+        # There is no !PPosition style, but there is !UsePPosition
         s/(?:No)(.*)/\!$1/ unless $_ =~ /nopposition/i;
+        s/nopposition/!UsePPosition/i;
         push @converted, $_;
     }
 
