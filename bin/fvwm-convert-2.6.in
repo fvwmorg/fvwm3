@@ -202,6 +202,9 @@ sub handle_read_file
 {
     my( $line ) = @_;
     my @read_parts = split( /\s+/, $line );
+    
+    push( @converted_lines, $line );    
+
     # Crudely try and work out if the file is readable, and if it is add it
     # to the list of further files to convert.
     #
