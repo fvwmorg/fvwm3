@@ -75,6 +75,16 @@ sub process_files
         while( <$in_file> )
         {  
             chomp;
+
+            # We have to handle continuation lines here, such as:
+            #
+            # Style foo !Bar, !Baz, \
+            # NoSomethingElse
+            if( /\\\s*$/ )
+            {
+                $_ .= <$in_file>;
+                redo;
+            }
             dispatch_line($_);
         }
         
@@ -388,7 +398,11 @@ sub write_out_file
     open( my $f, '>', $dest_file ) or
         die "Couldn't open $dest_file: $!\n";
 
-    # Write out most of the file.
+    # If we had any continuation lines, preserve them as best we can.
+    @converted_lines = map {
+        join "\\\n", split /\\/, $_ 
+    } @converted_lines;
+    
     print $f join( "\n", @converted_lines );
 
     # Write out the functions.

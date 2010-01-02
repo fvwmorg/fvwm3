@@ -1,3 +1,12 @@
+2010-01-02  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in:
+	* fvwm-convert-2.6.1.in:
+	Handle continuation lines.
+
+	Process those lines ending in a backslash by prepending them to the
+	previous line and just shunting it to a common function.  When writing
+	out the file, ensure we preserve the split lines.
+
 2010-01-01  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in:
 	Use !UsePPosition over NoPPosition when negating style lines..
