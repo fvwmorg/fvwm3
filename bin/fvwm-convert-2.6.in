@@ -61,11 +61,12 @@ sub process_files
 
         warn "Following:  Read $s...\n" if $process_read;
 
-        if( (!defined $d or $d eq '') and
-            ! -e "$s.converted" ) 
+        if( !defined $d or $d eq '' ) 
         {
             $d = "$s.converted";
-        } elsif( -e $d ) {
+        }
+
+        if( -e $d ) {
             die "Destination file:  $d exists\n";
         }
 

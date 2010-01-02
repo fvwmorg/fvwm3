@@ -1,5 +1,12 @@
 2010-01-02  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in:
+	Be more strict in file handling when following Read statements.
+
+	Ensure we don't overwrite any previously defined file when following
+	Read files picked up by using "-f".
+	
+2010-01-02  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in:
 	* fvwm-convert-2.6.1.in:
 	Handle continuation lines.
 
