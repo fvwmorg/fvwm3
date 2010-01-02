@@ -4,15 +4,15 @@ Issues opened recently: 0
 Issues closed recently: 2 (B.11, F.4)
 
                              open / total
-A. Release stopping bugs:       0 / 1
+A. Release stopping bugs:       2 / 2
 B. Normal bugs:                 0 / 11
-C. To be verified:              1 / 27
+C. To be verified:              0 / 27
 D. To be discussed:             2 / 3
-E. To do:                       3 / 18
-F. Distribution issues:         3 / 4
+E. To do:                       0 / 18
+F. Distribution issues:         1 / 4
 G. Testing:                     3 / 5
 
-Total:                         12 / 69
+Total:                         8 / 69
 
 - When you add/close an item give dates
 
@@ -27,6 +27,13 @@ todo: Entries should look like this:
 A. Release stopping bugs
 ------------------------
 
+  F.1 Update the default config files, probably needs discussion...
+      [Thomas:  Something should be done.  Currently, the only thing was to
+                change style negation syntax.  Might be enough.  Needs
+                discussion.]
+
+  F.2 Update/complete fvwm-convert-2.6
+      [Thomas:  Started, as of 311209.  On-going.]
 
 B. Normal Bugs
 --------------
@@ -35,7 +42,6 @@ B. Normal Bugs
 C. To be verified
 -----------------
 
-  C.20 Erratic EdgeScroll behavior [#766,2.4,2001-08-21]. Fixed?
 
 D. To be discussed
 ------------------
@@ -44,6 +50,7 @@ D. To be discussed
       or release?  Seems to irritate a lot of users, but fixes a root window
       binding bug.
       [dv: added on 29-Mar-2003]
+      [Thomas:  20100102:  Not supported on all XServers.]
 
   D.3 Added the possibility "to grab fast and execute even if the grab fail"
       when executing a complex function.
@@ -52,30 +59,13 @@ D. To be discussed
 E. To do
 --------
 
-  E.6 Rename FvwmProxy
-      [dv: added on 02-Mar-2003]
-
-  E.7 Fix the FvwmProxy placement algorithm (it may loop and can place windows
-      off screen)
-      [dv: added on 02-Mar-2003]
-
-  E.16 Rename all "Pixmap" in the syntax to "Image" while supporting both.
-       Rename MultiPixmap to MultiPart, since it also accepts Solid and
-       Colorset options, not just images for different titlebar parts.
-       [Mikhael]
-       [dv: I wouldn't do that anymore.  That syntax will be removed soon after
-       the 2.6 release, so the clean up work is in vain.]
-       [Mikhael: if this was an objection, then please close this item.]
 
 F. Distribution issues
 ----------------------
-
-  F.1 Update the default config files, probably needs discussion...
-
-  F.2 Update/complete fvwm-convert-2.6
-
+`
   F.3 Check INSTALL.fvwm
       [Mikhael: already misses recently added features.]
+      [Thomas:  20100102:  Looks fairly complete to me.]
 
 G. Testing
 ----------
@@ -116,6 +106,9 @@ G. Testing
        FvwmIconMan
        [Olivier: unable to reproduce this]
 
+  C.20 Erratic EdgeScroll behavior [#766,2.4,2001-08-21]. Fixed?
+       [Thomas:  020110:  Seems to be.  I can't reproduce it.]
+
 ---- Closed recently ----------------------------------------------------------
 
 [Thomas:  2009-02-27:  This section is deprecated.  Please add all closed
@@ -128,6 +121,21 @@ entries under the "Closed" section.]
 
   E.15 Complete FvwmWindowMenu to be more functional.
        [Mikhael (with help of Richard Lister?)]
+
+  E.6 Rename FvwmProxy
+      [dv: added on 02-Mar-2003]
+
+  E.7 Fix the FvwmProxy placement algorithm (it may loop and can place windows
+      off screen)
+      [dv: added on 02-Mar-2003]
+
+  E.16 Rename all "Pixmap" in the syntax to "Image" while supporting both.
+       Rename MultiPixmap to MultiPart, since it also accepts Solid and
+       Colorset options, not just images for different titlebar parts.
+       [Mikhael]
+       [dv: I wouldn't do that anymore.  That syntax will be removed soon after
+       the 2.6 release, so the clean up work is in vain.]
+       [Mikhael: if this was an objection, then please close this item.]
 
 ---- Closed -------------------------------------------------------------------
 

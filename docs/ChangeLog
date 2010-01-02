@@ -1,3 +1,10 @@
+2010-01-02  Thomas Adam   <thomas.adam22@gmail.com>
+	* todo-2.6:
+	Update to reflect development status.
+
+	Move items around -- make fvwm-convert-2.6 and updating sample fvwm2rc
+	files release critical.  Mark some items as closed recently.
+
 2009-09-20  Viktor Griph  <griph(at)dd(dot)chalmers(dot)se>
 
 	* ANNOUNCE:
