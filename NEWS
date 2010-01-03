@@ -16,6 +16,7 @@ Changes in beta release 2.5.29 (not released yet)
      is restarting.
    - Fix rendering of FvwmForm windows when initially mapped.
    - Fix placement of windows when using MinoverlapPlacement and friends.
+   - Fix segfault when tearing off menus using a Pixmap background.
 
 Changes in beta release 2.5.28 (20-Sep-2009)
 

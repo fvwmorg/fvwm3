@@ -1,3 +1,12 @@
+2010-01-03  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/menustyle.c (menustyle_copy_face):
+	Fix segfault when creating a tearoff menu using a Pixmap background.
+
+	When we copy the original menustyle to the new torn-off menu which
+	contains a background image, don't then update the menu's pixel
+	background color, as this is already free()d for us by an earlier copy
+	call.
+
 2009-12-31  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/builtins.c (CMD_BugOpts):
 	Remove debug line.
