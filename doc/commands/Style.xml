@@ -1085,7 +1085,7 @@ reverts back to the default.</para>
 
 <para>
 <fvwmopt cmd="Style" opt="StickyIcon"/>
-makes the window sticky when its iconified.  It de-iconifies on
+makes the window sticky when it's iconified.  It de-iconifies on
 top the active desktop.
 <fvwmopt cmd="Style" opt="SlipperyIcon"/>
 reverts back to the default.
@@ -1122,7 +1122,7 @@ iconify windows and can be set with the
 style.</para>
 
 <para><fvwmopt cmd="Style" opt="StickyIcon"/>
-makes the window sticky when its iconified.  It de-iconifies on
+makes the window sticky when it's iconified.  It de-iconifies on
 top the active desktop.
 <fvwmopt cmd="Style" opt="SlipperyIcon"/>
 reverts back to the default.</para>
@@ -1653,7 +1653,7 @@ Style * ManualPlacementsHonorsStartsOnPageOff
 <para><fvwmopt cmd="Style" opt="NoUsePPosition"/>
 instructs fvwm to ignore the program specified position (PPosition
 hint) when adding new windows.  Using PPosition is required for
-some applications, but if you do not have one of those its a real
+some applications, but if you do not have one of those it's a real
 headache.  Many programs set PPosition to something obnoxious like
 0,0 (upper left corner).
 Note: <emphasis>!UsePPosition</emphasis>

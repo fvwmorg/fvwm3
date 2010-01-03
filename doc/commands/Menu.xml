@@ -139,7 +139,7 @@ menu).</para>
 <replaceable>x</replaceable>
 and
 <replaceable>y</replaceable>
-specify how far the menu is moved from it's default position.  By
+specify how far the menu is moved from its default position.  By
 default, the numeric value given is interpreted as a percentage of
 the context rectangle's width (height), but with a trailing
 '<fvwmopt cmd="Menu" opt="m"/>'
@@ -226,7 +226,7 @@ do not want this you can add
 as an option.  This might happen for example if you want the menu
 always in the top right corner of the screen.</para>
 
-<para>Where do you want a menu to appear when you click on it's menu
+<para>Where do you want a menu to appear when you click on its menu
 item? The default is to place the title under the cursor, but if
 you want it where the position arguments say, use the
 <fvwmopt cmd="Menu" opt="SelectInPlace"/>

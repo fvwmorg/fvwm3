@@ -1,3 +1,8 @@
+2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
+	* commands/Style.xml:
+	* commands/Menu.xml:
+	Minor grammatical fixups (P. Vojta).
+
 2009-12-31  Thomas Adam   <thomas.adam22@gmail.com>
 	* commands/BugOpts.xml:
 	New option "QtDragnDropWorkaround" to BugOpts.

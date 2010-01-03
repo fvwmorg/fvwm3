@@ -1454,7 +1454,7 @@ A: Instead of Maximize use "Maximize 100 -30p" where 30 is the width
 
 A: Fvwm has some builtin idea of what the buttons do, and some
    applications can request that certain buttons not be shown.
-   For example, its normal for Fvwm to suppress the iconify button
+   For example, it's normal for Fvwm to suppress the iconify button
    (builtin button 4, the second button from the right) on a
    transient (dialog) window.
 
@@ -2290,7 +2290,7 @@ A: This problem might occur on other applications besides the one
      up like a normal X app where  the WM draws the borders.
      With MWWM=MWM, it works ok too except that for the main
      window,  no borders are drawn  by the WM and Rose draws
-     it's own  borders (I  have  fvwm respecting   MWM decor
+     its own  borders (I  have  fvwm respecting   MWM decor
      hints).  (This   is     correct  as mentioned by    the
      Knowledgebase pages above.)   I don't  recall what Rose
      looks like with dtwm, but I suspect it's quite close to
@@ -2500,7 +2500,7 @@ A: Under this heading we've had questions about FvwmForm being all
    allocate colors.
 
    Older hardware uses something called 8 bit color.  You can also
-   mis-configure newer hardware so that its only using 8 bit color.
+   mis-configure newer hardware so that it's only using 8 bit color.
    When you use 8 bit color, your display can only have 256 colors on
    it at once.
 
@@ -3201,7 +3201,7 @@ your applications request.
      + I Iconify
 
    You can use FvwmEvent to remove the Icons when each window is
-   returned to it's non Iconic state.
+   returned to its non Iconic state.
 
      DestroyFunc DeThumbnail
      AddToFunc DeThumbnail
