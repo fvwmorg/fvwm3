@@ -21,6 +21,7 @@
 
 use strict;
 use Cwd;
+use File::Basename;
 use Getopt::Long;
 
 # Global array for all our converted lines.
@@ -58,12 +59,14 @@ sub process_files
     foreach my $f ( @$files )
     {
         my( $s, $d ) = @$f;
+        my $cwd_path = getcwd();
 
         warn "Following:  Read $s...\n" if $process_read;
 
         if( !defined $d or $d eq '' ) 
         {
-            $d = "$s.converted";
+            my $fbasename = basename( $s );
+            $d = "$cwd_path/$fbasename.converted";
         }
 
         if( -e $d ) {

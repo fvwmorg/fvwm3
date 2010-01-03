@@ -1,4 +1,11 @@
 2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in (write_out_file):
+	If no output filename given, put files in CWD.
+
+	Actually do what the man page says and put processed files in the CWD if
+	no output files are given (implied if -f is used for any Read files.)
+
+2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in (convert_key_mouse_bindings):
 	Retain white space between Mouse/Key fields.
 
