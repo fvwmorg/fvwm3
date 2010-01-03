@@ -206,10 +206,14 @@ sub handle_continuation
     no strict "refs"; # Yes, yes...
     my( $line ) = @_;
 
-    return if !defined $last_func_ref || $last_func_ref eq '';
+    if( !defined $last_func_ref || $last_func_ref eq '' )
+    {
+        # Retain the line, but we've nothing to callback on.
+        push( @converted_lines, $line );
+        return;
+    }
 
     eval { &{$last_func_ref}($line) };
-
     warn "$@\n" if $@;
 }
 
@@ -285,6 +289,8 @@ sub check_func_definition
     {
         $last_func_ref = '';
     }
+
+    push( @converted_lines, $line );
 }
 
 sub convert_initfunc

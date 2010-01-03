@@ -1,4 +1,13 @@
 2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in (check_func_definition):
+	* fvwm-convert-2.6.in (handle_continuation):
+	Handle "+ foo" lines correctly by not culling them.
+
+	Because of how we collate "+ foo" lines for startfunction, etc., we want
+	to also ensure we keep them around for functions we don't care to
+	explicitly convert over.
+
+2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in (write_out_file):
 	If no output filename given, put files in CWD.
 
