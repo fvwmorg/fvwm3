@@ -1,3 +1,10 @@
+2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in (convert_key_mouse_bindings):
+	Retain white space between Mouse/Key fields.
+
+	Don't cull any deliberate whitespace between fields if we end up
+	converting some of the options found.
+
 2010-01-02  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in:
 	Be more strict in file handling when following Read statements.

@@ -182,7 +182,7 @@ sub convert_snapattraction
 sub convert_key_mouse_bindings
 {
     my( $line ) = @_;
-    my @components = split( /\s+/, $line, 5 );
+    my @components = split( /(\s+)/, $line, 5 );
 
     # Take the last component.  We no longer care for "[*]" as conditional
     # command parameters.  But we shouldn't really put another conditional
@@ -195,7 +195,7 @@ sub convert_key_mouse_bindings
     # where they're likely to be used.
     __convert_conditionals(\@components);
 
-    push( @converted_lines, join ' ', @components );
+    push( @converted_lines, join '', @components );
 }
 
 sub handle_continuation
