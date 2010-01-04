@@ -2415,36 +2415,38 @@ Bool __move_loop(
 			XEvent le;
 
 			fev_get_last_event(&le);
+
+			xl -= XOffset;
+			yt -= YOffset;
+			
 			rc = HandlePaging(
 				&le, dx, dy, &xl, &yt, &delta_x, &delta_y,
 				False, False, True, fw->edge_delay_ms_move);
-			if (rc == 1)
+				
+			/* Fake an event to force window reposition */
+			if (delta_x)
 			{
-				/* Fake an event to force window reposition */
-				if (delta_x)
-				{
-					x_virtual_offset = 0;
-				}
-				xl += XOffset;
-				if (delta_y)
-				{
-					y_virtual_offset = 0;
-				}
-				yt += YOffset;
-				if (do_snap)
-				{
-					DoSnapAttract(
-						fw, Width, Height, &xl, &yt);
-					was_snapped = True;
-				}
-				fev_make_null_event(&e, dpy);
-				e.type = MotionNotify;
-				e.xmotion.time = fev_get_evtime();
-				e.xmotion.x_root = xl - XOffset;
-				e.xmotion.y_root = yt - YOffset;
-				e.xmotion.same_screen = True;
-				break;
+				x_virtual_offset = 0;
 			}
+			xl += XOffset;
+			if (delta_y)
+			{
+				y_virtual_offset = 0;
+			}
+			yt += YOffset;
+			if (do_snap)
+			{
+				DoSnapAttract(
+						fw, Width, Height, &xl, &yt);
+				was_snapped = True;
+			}
+			fev_make_null_event(&e, dpy);
+			e.type = MotionNotify;
+			e.xmotion.time = fev_get_evtime();
+			e.xmotion.x_root = xl - XOffset;
+			e.xmotion.y_root = yt - YOffset;
+			e.xmotion.same_screen = True;
+			break;
 		}
 		if (rc == -1)
 		{

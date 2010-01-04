@@ -1,3 +1,10 @@
+2009-03-01  David Fries <David@Fries.net>                                                                                    
+	* fvwm/virtual.c (HandlePaging):
+	Move no page detect check, it wasn't being hit.
+	* fvwm/move_resize.c (__move_loop):
+	Transform window position to pointer position and back when calling
+	HandlePaging.
+
 2010-01-03  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/menustyle.c (menustyle_copy_face):
 	Fix segfault when creating a tearoff menu using a Pixmap background.

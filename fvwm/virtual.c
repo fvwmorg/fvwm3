@@ -798,13 +798,6 @@ int HandlePaging(
 		*delta_y = 0;
 	}
 
-	is_timestamp_valid = False;
-	add_time = 0;
-	if (*delta_x == 0 && *delta_y == 0)
-	{
-		return 0;
-	}
-
 	/* Ouch! lots of bounds checking */
 	if (Scr.Vx + *delta_x < 0)
 	{
@@ -866,6 +859,14 @@ int HandlePaging(
 	else
 	{
 		*yt = y - *delta_y;
+	}
+
+	/* Check for paging -- and don't warp the pointer. */
+	is_timestamp_valid = False;
+	add_time = 0;
+	if (*delta_x == 0 && *delta_y == 0)
+	{
+		return 0;
 	}
 
 	/* make sure the pointer isn't warped into the panframes */
