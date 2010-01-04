@@ -1,4 +1,12 @@
-2009-03-01  David Fries <David@Fries.net>                                                                                    
+2010-01-04  David Fries <David@Fries.net>
+	* fvwm/events.c (test_typed_window_event):
+	* fvwm/events.c (flush_property_notify):
+	Efficiently handle flushing property events of the same type.
+	
+	* fvwm/events.h (test_typed_window_event_args):
+	Add XAtom type to struct.
+
+2010-01-04  David Fries <David@Fries.net>                                                                                    
 	* fvwm/virtual.c (HandlePaging):
 	Move no page detect check, it wasn't being hit.
 	* fvwm/move_resize.c (__move_loop):

@@ -15,6 +15,7 @@ typedef struct
 {
 	Window w;
 	int event_type;
+	Atom atom;
 } test_typed_window_event_args;
 
 /* ---------------------------- forward declarations ----------------------- */

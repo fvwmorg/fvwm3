@@ -17,7 +17,9 @@ Changes in beta release 2.5.29 (not released yet)
    - Fix rendering of FvwmForm windows when initially mapped.
    - Fix placement of windows when using MinoverlapPlacement and friends.
    - Fix segfault when tearing off menus using a Pixmap background.
-   - Fix "window jump" bug when moving a window across page boundaries. 
+   - Fix "window jump" bug when moving a window across page boundaries.
+   - Flush property events for same type in applications which repeatedly
+     set the same XAtom.  (Gnucash, Openoffice, etc.) 
 
 Changes in beta release 2.5.28 (20-Sep-2009)
 

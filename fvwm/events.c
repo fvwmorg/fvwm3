@@ -271,7 +271,8 @@ Bool test_typed_window_event(
 	test_typed_window_event_args *ta = (test_typed_window_event_args *)arg;
 
 	if (event->xany.window == ta->w &&
-	    event->xany.type == ta->event_type)
+	    event->xany.type == ta->event_type &&
+	    event->xproperty.atom == ta->atom)
 	{
 		return True;
 	}
@@ -4627,24 +4628,14 @@ int flush_property_notify(Atom atom, Window w)
 	int count;
 	test_typed_window_event_args args;
 
+	count = 0;
 	XSync(dpy, 0);
 	args.w = w;
 	args.event_type = PropertyNotify;
-	for (count = 0;
-	     FCheckPeekIfEvent(
-		     dpy, &e, test_typed_window_event, (XPointer)&args);
-	     count++)
-	{
-		Bool rc;
 
-		if (e.xproperty.atom != atom)
-		{
-			break;
-		}
-		/* remove the event from the queue */
-		rc = FCheckIfEvent(
-			dpy, &e, test_typed_window_event, (XPointer)&args);
-	}
+	/* Get rid of the events. */
+	while (FCheckIfEvent(dpy, &e, test_typed_window_event, (XPointer)&args))
+		count++;
 
 	return count;
 }
