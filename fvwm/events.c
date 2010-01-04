@@ -4631,6 +4631,7 @@ int flush_property_notify(Atom atom, Window w)
 	count = 0;
 	XSync(dpy, 0);
 	args.w = w;
+	args.atom = atom;
 	args.event_type = PropertyNotify;
 
 	/* Get rid of the events. */

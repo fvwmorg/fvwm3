@@ -1,3 +1,7 @@
+2010-01-04  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/events.c (flush_property_notify):
+	Add atom to struct so it is checked for by test_typed_window_event().
+
 2010-01-04  David Fries <David@Fries.net>
 	* fvwm/events.c (test_typed_window_event):
 	* fvwm/events.c (flush_property_notify):
