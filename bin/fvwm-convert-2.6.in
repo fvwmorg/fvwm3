@@ -44,6 +44,14 @@ sub __convert_conditionals
     my( $cond ) = @_;
     my( $line ) = $cond->[-1];
 
+    # Take the last component.  We no longer care for "[*]" as conditional
+    # command parameters.  But we shouldn't really put another conditional
+    # in its place, so we'll just remove it.
+    $line =~ s/\[\*\]//;
+    
+    # And convert over Next [$1] syntax.
+    $line =~ s/\[(.*?)\]/\($1\)/;
+    
     $line = "$1 ". join( ', ', split( /\s+/, $2 ) ) . " $3" if $line =~
     /(all|current|direction|next|none|prev|pick|thiswindow|windowid)\s*(\(.*?\))(.*)/i;
 
@@ -187,11 +195,6 @@ sub convert_key_mouse_bindings
     my( $line ) = @_;
     my @components = split( /(\s+)/, $line, 5 );
 
-    # Take the last component.  We no longer care for "[*]" as conditional
-    # command parameters.  But we shouldn't really put another conditional
-    # in its place, so we'll just remove it.
-    $components[-1] =~ s/\[\*\]//;
-
     # Also, conditional commands should now be separated with commas and not
     # whitespace, so try and fix these up where we can.  It's not the
     # intention we'll catch them all, but at least try and do so based on
@@ -208,8 +211,11 @@ sub handle_continuation
 
     if( !defined $last_func_ref || $last_func_ref eq '' )
     {
-        # Retain the line, but we've nothing to callback on.
-        push( @converted_lines, $line );
+        my @func_parts = split( /(\+\s*\"?(?:i|c|d|h|m)\"?\s*)/i, $line, 2 );
+
+        __convert_conditionals(\@func_parts);
+
+        push( @converted_lines, join '', @func_parts );
         return;
     }
 
@@ -290,7 +296,16 @@ sub check_func_definition
         $last_func_ref = '';
     }
 
-    push( @converted_lines, $line );
+    # Then we have a standard function line in the form:
+    #
+    # + I SomeCommand
+    #
+    # Ensure we run it all through __convert_conditionals()
+    my @func_parts = split( /(\s+)/, $line, 4 );
+    __convert_conditionals( \@func_parts );
+    
+    push( @converted_lines, join '', @func_parts );
+
 }
 
 sub convert_initfunc
@@ -420,7 +435,6 @@ sub write_out_file
         defined $converted_funcs{startfunction} )
     {
         print $f qq|\n\nDestroyFunc StartFunction\nAddToFunc StartFunction\n|;
-    
 
         # Put the Init stuff before anything else.
         for( @{ $converted_funcs{initfunction} }, 

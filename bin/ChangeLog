@@ -1,4 +1,11 @@
 2010-01-05  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in:
+	Convert all function lines where possible.
+
+	Ensure we run all function lines through __convert_conditionals() and
+	not just functions we're explicitly converting.
+
+2010-01-05  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in (write_out_file):
 	Don't write out StartFunction if not defined.
 
