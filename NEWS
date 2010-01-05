@@ -19,7 +19,9 @@ Changes in beta release 2.5.29 (not released yet)
    - Fix segfault when tearing off menus using a Pixmap background.
    - Fix "window jump" bug when moving a window across page boundaries.
    - Flush property events for same type in applications which repeatedly
-     set the same XAtom.  (Gnucash, Openoffice, etc.) 
+     set the same XAtom.  (Gnucash, Openoffice, etc.)
+   - Fix opening of files using Read/PipeRead to accept paths in the form
+     "./" to indicate CWD.  Fixes "fvwm -f ./some-fvwm2rc". 
 
 Changes in beta release 2.5.28 (20-Sep-2009)
 

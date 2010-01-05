@@ -206,7 +206,7 @@ int run_command_file(
 	char *full_filename;
 	FILE* f;
 
-	if (filename[0] == '/')
+	if (filename[0] == '.' || filename[0] == '/')
 	{             /* if absolute path */
 		f = fopen(filename,"r");
 		full_filename = filename;

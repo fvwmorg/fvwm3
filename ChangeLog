@@ -1,3 +1,12 @@
+2010-01-05  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/read.c (run_command_file):
+	Fix opening of files to Read/PipeRead to accept absolute paths.
+
+	Don't just assume "/" is a valid identifier for opening files.  "./" is
+	just as likely.  Fixes use-case of:
+
+	fvwm -f ./some_fvwm2rc
+
 2010-01-04  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/events.c (flush_property_notify):
 	Add atom to struct so it is checked for by test_typed_window_event().
