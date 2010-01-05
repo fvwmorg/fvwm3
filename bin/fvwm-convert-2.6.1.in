@@ -29,7 +29,7 @@ By default,
 .B fvwm-convert-2.6
 won't look for a given config file.  This must be specified as the first
 parameter to
-.B fvwm-convert-2.6
+.B fvwm-convert-2.6.  
 Different source and destination files may be given.
 If the destination file already exists, this program exits.
 If no destination file is given, then the filename is 
@@ -47,7 +47,7 @@ using NoFoo -- fvwm-convert-2.6 corrects this by now using !Foo.
 .B ModulePath
 In fvwm 2.4 and beyond, the ModulePath is compiled into fvwm.
 .B fvwm-convert-2.6
-removes any ModulePath commands it finds.
+comments out any ModulePath commands it finds.
 If you are using your own modules, (not the ones that come with fvwm),
 you will have to fix your configuration file after using
 .BR fvwm-convert-2.6 .
@@ -92,7 +92,7 @@ or
 is given, any files
 .B fvwm-convert-2.6
 can detect and open will be converted automatically, else a list of files
-that could would have been followed are printed to the screen.
+that can be followed are printed to the screen.
 
 .TP 4
 .SH BUGS
@@ -111,4 +111,4 @@ broken, but these cannot easily be converted.
 Bug reports can be sent to the fvwm-workers mailing list (see the
 .IR FAQ ).
 .SH AUTHOR
-Thomas Adam <thomas.adam22@gmail.com> .
+Thomas Adam <thomas.adam22@gmail.com>

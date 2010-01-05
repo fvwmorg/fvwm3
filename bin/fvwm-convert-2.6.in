@@ -123,7 +123,7 @@ sub convert_styles
     foreach( split( /\s*,\s*/, $style_parts[1] ) )
     {
         # There is no !PPosition style, but there is !UsePPosition
-        s/(?:No)(.*)/\!$1/ unless $_ =~ /nopposition/i;
+        s/(?:No)(.*)/\!$1/ unless /nopposition/i;
         s/nopposition/!UsePPosition/i;
         push @converted, $_;
     }
@@ -148,9 +148,8 @@ sub convert_fvwmtheme
 sub handle_modulepath
 {
     my( $line ) = @_;
-    $line = "# " . $line;
 
-    push( @converted_lines, $line );
+    push( @converted_lines, "# Commented out by fvwm-convert-2.6:  $line" );
 }
 
 # This should have happened in the fvwm-2.4 convert script, but handle it
@@ -179,8 +178,8 @@ sub convert_edge_resistance
 
     push( @converted_lines,
         qq|
-        EdgeResistance $edge_res_arg
-        Style * EdgeMoveResistance $move_res_arg| );
+EdgeResistance $edge_res_arg
+Style * EdgeMoveResistance $move_res_arg| );
 }
 
 sub convert_snapattraction

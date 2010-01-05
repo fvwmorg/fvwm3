@@ -1,5 +1,12 @@
 2010-01-05  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in:
+	* fvwm-convert-2.6.1.in:
+	Minor style cleanups.
+
+	Tidy up of some of the code.  Fix some odd wording in the man page.
+
+2010-01-05  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in:
 	Convert all function lines where possible.
 
 	Ensure we run all function lines through __convert_conditionals() and
