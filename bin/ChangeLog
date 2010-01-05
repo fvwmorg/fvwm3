@@ -1,3 +1,10 @@
+2010-01-05  Thomas Adam   <thomas.adam22@gmail.com>
+	* fvwm-convert-2.6.in (write_out_file):
+	Don't write out StartFunction if not defined.
+
+	Don't put a blank template for StartFunction if there isn't one in the
+	config file.
+
 2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in (check_func_definition):
 	* fvwm-convert-2.6.in (handle_continuation):

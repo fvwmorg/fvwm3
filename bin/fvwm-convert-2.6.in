@@ -416,13 +416,18 @@ sub write_out_file
     print $f join( "\n", @converted_lines );
 
     # Write out the functions.
-    print $f qq|\n\nDestroyFunc StartFunction\nAddToFunc StartFunction\n|;
-
-    # Put the Init stuff before anything else.
-    for( @{ $converted_funcs{initfunction} }, 
-         @{ $converted_funcs{startfunction } } )
+    if( defined $converted_funcs{initfunction} or
+        defined $converted_funcs{startfunction} )
     {
-        print $f "+ $_\n";
+        print $f qq|\n\nDestroyFunc StartFunction\nAddToFunc StartFunction\n|;
+    
+
+        # Put the Init stuff before anything else.
+        for( @{ $converted_funcs{initfunction} }, 
+            @{ $converted_funcs{startfunction } } )
+        {
+            print $f "+ $_\n";
+        }
     }
 
     close( $f );
