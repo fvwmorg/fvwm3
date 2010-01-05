@@ -1,4 +1,11 @@
 2010-01-05  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/menustyle.c (menustyle_copy_face):
+	Fix segfault setting MenuFace pixmap style for menus.
+
+	As with the tearoff bug from 2010-01-03, ensure we don't try and free a
+	non-existent pixmap from an invalid pointer.
+
+2010-01-05  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/read.c (run_command_file):
 	Fix opening of files to Read/PipeRead to accept absolute paths.
 

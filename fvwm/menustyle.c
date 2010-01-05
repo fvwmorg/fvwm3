@@ -134,19 +134,13 @@ static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
 	case TiledPixmapMenu:
 		fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
 	
-		/* Should never happen. */	
 		if (destmf->u.p) 
-		{
-			PDestroyFvwmPicture(dpy, destmf->u.p);
 			destmf->u.p = NULL;
-		}
 
 		if (origmf->u.p)
-		{
 			destmf->u.p = PCacheFvwmPicture(
 				dpy, Scr.NoFocusWin, NULL, origmf->u.p->name,
 				fpa);
-		}
 	
 		destmf->type = origmf->type;
 		break;

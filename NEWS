@@ -21,7 +21,9 @@ Changes in beta release 2.5.29 (not released yet)
    - Flush property events for same type in applications which repeatedly
      set the same XAtom.  (Gnucash, Openoffice, etc.)
    - Fix opening of files using Read/PipeRead to accept paths in the form
-     "./" to indicate CWD.  Fixes "fvwm -f ./some-fvwm2rc". 
+     "./" to indicate CWD.  Fixes "fvwm -f ./some-fvwm2rc".
+   - Fix further crash when copying menustyles with MenuFace involving
+     pixmaps. 
 
 Changes in beta release 2.5.28 (20-Sep-2009)
 
