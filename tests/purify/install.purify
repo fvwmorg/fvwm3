@@ -6,4 +6,4 @@ cp test3.xpm /tmp
 cp test.png /tmp
 cp xtrek_fed_e.xbm /tmp
 cp purify.read /tmp
-
+cp purify.fvwm2rc /tmp

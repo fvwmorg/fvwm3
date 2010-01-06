@@ -4,8 +4,7 @@ Instructions:
 
  - execute the shell script install.purify to copy some files needed by
    the config file to /tmp
- - copy purify.fvwm2rc over your .fvwm2rc (or execute it any way you like)
- - (re)start fvwm
+ - Start fvwm:  fvwm -f /tmp/purify.fvwm2rc 
  - Start the tests by using button 1 on the root.
    This brings up a menu,
    if you have a shell named "root-tail" you may want to use the menu
