@@ -1,3 +1,19 @@
+2010-01-07  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/read.c (run_command_file):
+	Restructure how we look for Read files slightly.
+
+	When searching for files with the Read command, check to see if the file
+	first of all has an absolute path and if so open it.  If it's relative
+	then search for it in either FVWM_USERDIR or FVWM_DATADIR as before.  If
+	the file still can't be found, try and open it outright.  This will
+	allow therefore:
+
+	../../some_file
+
+	as a valid filename -- of course this really only makes sense when
+	invoking fvwm with "-f" on the command-line, as relative paths to config
+	files in this way should be built up using "$."
+
 2010-01-05  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/menustyle.c (menustyle_copy_face):
 	Fix segfault setting MenuFace pixmap style for menus.
