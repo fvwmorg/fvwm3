@@ -23,7 +23,9 @@ Changes in beta release 2.5.29 (not released yet)
    - Fix opening of files using Read/PipeRead to accept paths in the form
      "./" to indicate CWD.  Fixes "fvwm -f ./some-fvwm2rc".
    - Fix further crash when copying menustyles with MenuFace involving
-     pixmaps. 
+     pixmaps.
+   - Make layer changes apply immediately via Style commands for any
+     currently mapped windows. 
 
 Changes in beta release 2.5.28 (20-Sep-2009)
 

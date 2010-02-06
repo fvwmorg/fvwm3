@@ -35,6 +35,7 @@ typedef struct
 	unsigned do_update_icon_title_cs : 1;
 	unsigned do_update_icon_title_cs_hi : 1;
 	unsigned do_update_mini_icon : 1;
+	unsigned do_update_layer : 1;
 	unsigned do_update_modules_flags : 1;
 	unsigned do_update_placement_penalty : 1;
 	unsigned do_update_rotated_title : 1;

@@ -592,6 +592,20 @@ static void apply_window_updates(
 		}
 	}
 
+	if (flags->do_update_layer)
+	{
+		int layer = get_layer(t);
+
+		if (SUSE_LAYER(&pstyle->flags))
+		{
+			/* use layer from style */
+			layer = SGET_LAYER(*pstyle);
+		}
+		
+		/* Set the layer, and modify the stack ring. */
+		new_layer(t, layer);
+	}
+
 	return;
 }
 

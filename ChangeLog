@@ -1,3 +1,17 @@
+2010-02-06  Thomas Adam <thomas.adam22@gmail.com>
+	* fvwm/style.c (check_window_style_change):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
+	Propagate Layer changes via Style command on-the-fly.
+
+	Until there's a distinction between initially-mapped styles and runtime
+	commands, and that currently, Style commands take effect immediately,
+	ensure that for any Layer requests received via Style commands, these
+	too are applied immediately.
+
+	The previous assumption was that this was only applicable when mapping a
+	new window, but goes against expectations from the user.
+
 2010-01-07  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/read.c (run_command_file):
 	Restructure how we look for Read files slightly.

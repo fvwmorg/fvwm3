@@ -4833,7 +4833,6 @@ void check_window_style_change(
 	 *   manual_placement_honors_starts_on_page
 	 *   capture_honors_starts_on_page
 	 *   recapture_honors_starts_on_page
-	 *   use_layer
 	 *   ewmh_placement_mode
 	 */
 
@@ -5007,6 +5006,12 @@ void check_window_style_change(
 		flags->do_update_icon_title = 1;
 		flags->do_update_icon = 1;
 		flags->do_redecorate = 1;
+	}
+
+	/* Changing layer. */
+	if (ret_style->change_mask.use_layer)
+	{
+		flags->do_update_layer = 1;
 	}
 
 	/* has_no_border
