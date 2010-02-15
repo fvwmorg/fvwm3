@@ -1378,12 +1378,11 @@ initially mapped by fvwm.  Example:</para>
 <programlisting>
 <fvwmref cmd="Style"/> MyWindow StartsOnPage 0 0, InitialMapCommand Iconify
 </programlisting>
-</section>
 
 <para>This would hence place the window called <emphasis>MyWindow</emphasis>
 on page 0 0 for the current desk, and immediately run the <fvwmref cmd="Iconify"/>
 command on that window.</para>
-
+</section>
 
 <section id="window_manager_placement">
 <title>Window Manager placement</title>

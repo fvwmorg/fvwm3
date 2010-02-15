@@ -1,3 +1,7 @@
+2010-02-13  Thomas Adam  <thomas.adam22@gmail.com>
+	* commands/Style.xml:
+	Fix formatting by not prematurely closing a <section>.
+
 2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
 	* commands/Style.xml:
 	* commands/Menu.xml:
