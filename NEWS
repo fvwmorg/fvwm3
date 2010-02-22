@@ -13,6 +13,7 @@ Changes in beta release 2.5.29 (not released yet)
      oddity in handling drag-n-drop events to Qt applications.
 
 * Bug fixes:
+
    - Fixed the InitialMapCommand style from running when FVWM is
      restarting.
    - Fix rendering of FvwmForm windows when initially mapped.
