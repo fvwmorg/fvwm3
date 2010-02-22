@@ -9,7 +9,7 @@ Changes in beta release 2.5.29 (not released yet)
 
    - Added new fvwm-convert-2.6 script to convert older fvwm 2.4.x
      config files.
-   - New option "BugOpts QtDragnDropWorkaround" to work around an
+   - New BugOpts option QtDragnDropWorkaround to work around an
      oddity in handling drag-n-drop events to Qt applications.
 
 * Bug fixes:
@@ -33,9 +33,9 @@ Changes in beta release 2.5.29 (not released yet)
    - Make layer changes apply immediately via Style commands for
      any currently mapped windows.
 
-Changes in beta release 2.5.28 (20-Sep-2009)
-
 -------------------------------------------------------------------
+
+Changes in beta release 2.5.28 (20-Sep-2009)
 
 * New features:
 
