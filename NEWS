@@ -2,32 +2,39 @@ Note, the changes for the last STABLE release start with release
 2.4.20.
 
 -------------------------------------------------------------------
+
 Changes in beta release 2.5.29 (not released yet)
 
 * New features:
-   
-   - Added new fvwm-convert-2.6 script to convert older fvwm 2.4.x config
-     files.
-   - New option "BugOpts QtDragnDropWorkaround" to work around an oddity in
-     handling drag-n-drop events to Qt applications.
+
+   - Added new fvwm-convert-2.6 script to convert older fvwm 2.4.x
+     config files.
+   - New option "BugOpts QtDragnDropWorkaround" to work around an
+     oddity in handling drag-n-drop events to Qt applications.
 
 * Bug fixes:
-   - Fixed the InitialMapCommand style from running when FVWM 
-     is restarting.
+   - Fixed the InitialMapCommand style from running when FVWM is
+     restarting.
    - Fix rendering of FvwmForm windows when initially mapped.
-   - Fix placement of windows when using MinoverlapPlacement and friends.
-   - Fix segfault when tearing off menus using a Pixmap background.
-   - Fix "window jump" bug when moving a window across page boundaries.
-   - Flush property events for same type in applications which repeatedly
-     set the same XAtom.  (Gnucash, Openoffice, etc.)
-   - Fix opening of files using Read/PipeRead to accept paths in the form
-     "./" to indicate CWD.  Fixes "fvwm -f ./some-fvwm2rc".
-   - Fix further crash when copying menustyles with MenuFace involving
-     pixmaps.
-   - Make layer changes apply immediately via Style commands for any
-     currently mapped windows. 
+   - Fix placement of windows when using MinoverlapPlacement and
+     friends.
+   - Fix segfault when tearing off menus using a Pixmap
+     background.
+   - Fix "window jump" bug when moving a window across page
+     boundaries.
+   - Flush property events for same type in applications which
+     repeatedly set the same XAtom.  (Gnucash, Openoffice, etc.)
+   - Fix opening of files using Read/PipeRead to accept paths in
+     the form "./" to indicate CWD.  Fixes
+       $ fvwm -f ./some-fvwm2rc
+   - Fix further crash when copying menustyles with MenuFace
+     involving pixmaps.
+   - Make layer changes apply immediately via Style commands for
+     any currently mapped windows.
 
 Changes in beta release 2.5.28 (20-Sep-2009)
+
+-------------------------------------------------------------------
 
 * New features:
 
