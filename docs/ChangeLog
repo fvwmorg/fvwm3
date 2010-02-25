@@ -1,3 +1,9 @@
+2010-02-25  Thomas Adam   <thomas@xteddy.org>
+	* todo-2.6:
+	Add release-stopping note for investigation into a possible
+	replacement/removal of fvwm-menu-desktop as the entire underying data
+	structure isn't true anymore.
+
 2010-01-03  Thomas Adam   <thomas.adam22@gmail.com>
 	* FAQ:
 	Minor grammatical corrections (P. Vojta).
