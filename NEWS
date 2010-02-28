@@ -32,7 +32,9 @@ Changes in beta release 2.5.29 (not released yet)
      involving pixmaps.
    - Make layer changes apply immediately via Style commands for
      any currently mapped windows.
-
+   - Fix flickering/incorrect location of the GeometryWindow with
+     Xinerama/TwinView when resizing windows.
+ 
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.28 (20-Sep-2009)
