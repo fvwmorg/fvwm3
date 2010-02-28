@@ -1,3 +1,18 @@
+2010-02-28  Thomas Adam <thomas@xteddy.org>
+	* fvwm/move_resize.c (__resize_step):
+	Don't explicitly send MotionNotify event during Resize (GeometryWindow)
+
+	When calling DisplaySize() from a resize event performed on a window,
+	ensure we use the window's last event (which will be MotionNotify
+	anyway) otherwise this completely confuses the GeometryWindow as it has
+	to then update itself each time.
+
+	When using Xinerama/TwinView, the effect is that the GeometryWindow
+	flickers and/or displays itself on the opposite screen to where the
+	pointer is, because the x/y positions don't take into account the
+	location of the pointer from the original hand-crafted event, but are
+	correct from the execute context the window being resized is called in.
+
 2010-02-06  Thomas Adam <thomas.adam22@gmail.com>
 	* fvwm/style.c (check_window_style_change):
 	* fvwm/update.c (apply_window_updates):

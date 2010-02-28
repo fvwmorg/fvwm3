@@ -3268,7 +3268,6 @@ static void __resize_step(
 	int *ymotionp, Bool do_resize_opaque, Bool is_direction_fixed)
 {
 	int action = 0;
-	XEvent e;
 	int x2;
 	int y2;
 	int xdir;
@@ -3397,10 +3396,7 @@ static void __resize_step(
 				drag->height, False);
 		}
 	}
-	e.type = MotionNotify;
-	e.xbutton.x_root = x_root;
-	e.xbutton.y_root = y_root;
-	DisplaySize(exc->w.fw, &e, drag->width, drag->height, False, False);
+	DisplaySize(exc->w.fw, exc->x.elast, drag->width, drag->height, False, False);
 
 	return;
 }
