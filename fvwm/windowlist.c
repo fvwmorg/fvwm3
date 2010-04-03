@@ -604,6 +604,7 @@ void CMD_WindowList(F_CMD_ARGS)
 		iconifiedList = malloc(numWindows*sizeof(t));
 		if (iconifiedList == NULL)
 		{
+			free(windowList);
 			return;
 		}
 	}

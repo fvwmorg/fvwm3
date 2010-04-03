@@ -5,6 +5,10 @@
 	Don't adjust a window's position unless it's actually greater than the
 	screen's dimension (i.e., potentially placed off screen.)
 
+	2010-03-30  Christoph Fritz <chf.fritz@googlemail.com>
+	* fvwm/windowlist.c (CMD_WindowList):
+	Free allocated memory.
+
 2010-02-28  Thomas Adam <thomas@xteddy.org>
 	* fvwm/move_resize.c (__resize_step):
 	Don't explicitly send MotionNotify event during Resize (GeometryWindow)
