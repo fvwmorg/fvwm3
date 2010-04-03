@@ -324,8 +324,11 @@
 #	define Fplay_perror(a)
 /* variadict macros appeared in C99, so we can't use them. */
 	static void Fplay_set(FPLAY *a, ...) {}
-	static int Fplay_get(FPLAY *a, ...) {return 0;}
+
+/*  TA:  20100403:  These aren't being used anymore. */
+/*	static int Fplay_get(FPLAY *a, ...) {return 0;}
 	static int Frptp_putline(int a, ...) {return 0;}
+*/
 #	define Frptp_async_putline Frptp_putline
 /*
 #	define Fplay_set(...)

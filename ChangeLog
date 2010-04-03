@@ -1,4 +1,11 @@
 2010-04-03  Thomas Adam <thomas@xteddy.org>
+	* libs/Fplay.h:
+	Cull unused functions when compiling against librplay.
+
+	When compiling with -Werror, ensure we're not trying to use unneeded
+	librplay static functions we ourselves declare.
+
+2010-04-03  Thomas Adam <thomas@xteddy.org>
 	* fvwm/placement.c (__pl_minoverlap_get_pos_penalty):
 	Tweak placement calculation for over-zealous windows.
 
