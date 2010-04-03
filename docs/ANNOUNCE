@@ -4,36 +4,36 @@ minor features.  Please be aware that any features introduced in
 the 2.5.x development versions may be renamed, changed or removed
 without notice before 2.6.0.
 
-Upgrading from 2.5.27 or earlier is recommended.
+Upgrading from 2.5.28 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - New differentiated options for SnapAttraction when snapping
-     against screen edges:
-       "None", "ScreenWindows", "ScreenIcons", "ScreenAll"
-   - New option to the BugOpts command: TransliterateUtf8.
+   - Added new fvwm-convert-2.6 script to convert older fvwm 2.4.x
+     config files.
+   - New BugOpts option QtDragnDropWorkaround to work around an
+     oddity in handling drag-n-drop events to Qt applications.
 
 * Bug fixes:
 
-   - Fixed non-visible Qt windows after a Qt deferred map (e.g.
-     Skype profile windows).
-   - Fixed the use of the X-resource "fvwmstyle".
-   - Fixed segmentation fault in FvwmEvent when parsing an
-     undefined event name, or an undefined environment variable
-     to the RPlayHost option.
-   - Fixed the events startup, shutdown and unknown in FvwmEvent.
-   - Fvwm now retains utf8 window names when the WM_NAME changes,
-     and the utf8 name converted to the default charset match
-     the old WM_NAME.
-   - Fixed the options RPlayVolume and RPlayPriority in FvwmEvent.
-   - Fixed SnapAttraction: Option SameType/Icons/Windows did
-     falsely not affect conditions of option "Screen" and option
-     "SameType" snapped falsely icons and windows together.
-   - Fixed a problem where modules would get incorrect stacking
-     information if many windows were restacked at the same time.
-   - Fixed BugOpts parsing of more than one option at a time and
-     restoring of default value for the last option
-     in the command line when omitted.
-   - 64 bit fix for setting EWMH _NET_WM_ICON property on windows.
+   - Fixed the InitialMapCommand style from running when FVWM is
+     restarting.
+   - Fix rendering of FvwmForm windows when initially mapped.
+   - Fix placement of windows when using MinoverlapPlacement and
+     friends.
+   - Fix segfault when tearing off menus using a Pixmap
+     background.
+   - Fix "window jump" bug when moving a window across page
+     boundaries.
+   - Flush property events for same type in applications which
+     repeatedly set the same XAtom.  (Gnucash, Openoffice, etc.)
+   - Fix opening of files using Read/PipeRead to accept paths in
+     the form "./" to indicate CWD.  Fixes
+       $ fvwm -f ./some-fvwm2rc
+   - Fix further crash when copying menustyles with MenuFace
+     involving pixmaps.
+   - Make layer changes apply immediately via Style commands for
+     any currently mapped windows.
+   - Fix flickering/incorrect location of the GeometryWindow with
+     Xinerama/TwinView when resizing windows.

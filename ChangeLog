@@ -1,4 +1,9 @@
 2010-04-03  Thomas Adam <thomas@xteddy.org>
+	* NEWS:
+	* configure.ac:
+	Updated for the FVWM 2.5.29 release.
+
+2010-04-03  Thomas Adam <thomas@xteddy.org>
 	* libs/Fplay.h:
 	Cull unused functions when compiling against librplay.
 

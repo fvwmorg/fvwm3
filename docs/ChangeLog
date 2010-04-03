@@ -1,4 +1,8 @@
 2010-04-03  Thomas Adam   <thomas@xteddy.org>
+	* ANNOUNCE:
+	Updated for the 2.5.29 release.
+
+2010-04-03  Thomas Adam   <thomas@xteddy.org>
 	* DEVELOPERS:
 	* DEVELOPER-CVS:
 	Add new file "DEVELOPER-CVS" -- a verbatim copy of cvs.html -- to
