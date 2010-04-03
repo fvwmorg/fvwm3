@@ -1045,12 +1045,15 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 				 * window borders, the window was being placed
 				 * off screen.
 				 */
-				if (ret->best_p.y + arg->place_g.height >= arg->page_p2.y)
+				if (ret->best_p.y + arg->place_g.height > arg->page_p2.y)
 				{
-					ret->best_p.y = 
+					ret->best_p.y =
 						(arg->page_p2.y - 
 						arg->place_g.height -
 						b.total_size.height);
+
+					ret->best_penalty = 0;
+					penalty = 0;
 				}
 
 				/* stop looking; the penalty is too high */

@@ -1,3 +1,10 @@
+2010-04-03  Thomas Adam <thomas@xteddy.org>
+	* fvwm/placement.c (__pl_minoverlap_get_pos_penalty):
+	Tweak placement calculation for over-zealous windows.
+
+	Don't adjust a window's position unless it's actually greater than the
+	screen's dimension (i.e., potentially placed off screen.)
+
 2010-02-28  Thomas Adam <thomas@xteddy.org>
 	* fvwm/move_resize.c (__resize_step):
 	Don't explicitly send MotionNotify event during Resize (GeometryWindow)
