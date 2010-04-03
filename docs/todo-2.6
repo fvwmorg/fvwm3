@@ -4,7 +4,7 @@ Issues opened recently: 0
 Issues closed recently: 2 (B.11, F.4)
 
                              open / total
-A. Release stopping bugs:       3 / 3
+A. Release stopping bugs:       4 / 4
 B. Normal bugs:                 0 / 11
 C. To be verified:              0 / 27
 D. To be discussed:             3 / 4 
@@ -12,7 +12,7 @@ E. To do:                       0 / 18
 F. Distribution issues:         1 / 4
 G. Testing:                     3 / 5
 
-Total:                         9 / 70
+Total:                         11 / 73
 
 - When you add/close an item give dates
 
@@ -38,6 +38,21 @@ A. Release stopping bugs
   F.3 Investigate removal of fvwm-menu-desktop and/or its replacement with
       xdg-menys.
       [Thomas/Dan]
+
+  F.4 Investigate limiting destructive/recursive commands by placing a limit
+      on them?  For example:
+      
+      Style foo InitialMapCommand Bar
+      DestroyFunc Bar
+      AddToFunc   Bar I Exec exec xterm -T Bar
+
+      Although we give the user enough rope here to hang themselves, the end
+      result is to quickly overload FVWM.   But I am not happy with
+      artificially limiting this either if it's what the user meant.
+
+      Note that this is not an isolated example, since there's any other
+      number of ways to do the same thing, but it needs considering.
+      [Thomas:  2010-04-03]
 
 B. Normal Bugs
 --------------
