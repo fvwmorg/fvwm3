@@ -1,0 +1,415 @@
+CVS INFORMATION
+---------------
+
+FVWM development uses a CVS server.
+
+Note: the state of code in the CVS repository fluctuates wildly. It will
+contain bugs, maybe ones that crash the program. It may not even compile for
+you. Consider it alpha-quality code. You have been warned.
+
+CONTENTS
+
+Before You Begin Initial Setup Checking Out Source Code Building The Tree
+Code Updates Starting a Project Hacking the Code Conflicts Getting Commit
+Access Committing Changes Adding Directories and Files Deleting Directories
+and Files Renaming/Moving Files Creating New Branches Creating New Source
+Trees Working on the fvwm-web Source Tree Before You Begin [top]
+
+To know what is going in with the source tree you should be reading mail on
+the Fvwm Workers List. See the Mailing List Info page for more information.
+
+To build FVWM from the CVS sources, you must have several GNU tools:
+
+the CVS client version 1.9 or better, GCC, GNU make, autoconf, version 2.13
+or better, and automake, version 1.4 or better.  Without these tools, you
+won't be able to build out of the CVS source tree. But don't despair:
+download one of the daily snapshots instead!
+
+INITIAL SETUP
+-------------
+
+To make life easier on yourself, create the file `~/.cvsrc', and insert the
+following lines. These set useful default options for the three most used
+CVS commands. Do this now before going any further.
+
+    diff -u 
+    checkout -P 
+    update -d -P 
+    cvs -q 
+
+The last line makes cvs operations quieter, but you still get full error
+messages.
+
+Also, if you are on a slow net link (like a dialup), you'll also want a line
+containing `cvs -z3' in this file. This turns on a useful compression level
+for all cvs commands. Setting it higher will only waste your CPU time.
+
+Before you can download development source code for the first time, you must
+login to the server:
+
+    cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm login
+
+The password is `guest'. The command outputs nothing if it works, and an
+error message if it failed. You only need to log in once; all subsequent CVS
+commands read the password stored in the file `~/.cvspass'.
+
+CHECKING OUT SOURCE CODE
+------------------------
+
+Next, you checkout the source code. First you must decide what version
+you're interested in. The structure of the CVS tree is as follows:
+
+The latest code is always available at the tip of the main branch.  All
+branches are labeled as branch-ver. So, for example, as development of the
+2.3.x (latest) code continues on the main branch, a branch branch-2_2 has
+been created for changes that would go into a 2.2.1 or future release.  At
+various points we decide to checkpoint the code with a version number
+change; there is always a label associated with every version number as
+well. The label will have the format version-ver; for example,
+version-2_1_13 or version-2_2_1.  Given these rules, you should be able to
+translate the version of you want to retrieve to a label for use with the
+checkout command below (or other CVS commands which might need them).
+
+You use the CVS checkout (or co) command to retrieve an initial copy of the
+code. The simplest form of this command, for retrieving the latest code,
+doesn't require any label:
+
+    cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm checkout fvwm
+
+This will create a new directory fvwm in your current directory, containing
+the latest, up-to-the-minute code.
+
+If you want to work on the latest code in the 2.2.x branch of the code, you
+can use the branch label on the checkout command line:
+
+    cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm co -r branch-2_2 fvwm
+
+This will put a copy of the very latest code on the 2.2.x branch into a
+subdirectory fvwm. If you're going to be working on multiple branches at the
+same time, or just feel like it, you can tell CVS to use a different name
+for the directory with the checkout -d option:
+
+    cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm co -r branch-2_2 \
+        -d fvwm-2.2.x fvwm
+
+Now the code will be checked out into a directory fvwm-2.2.x rather than
+fvwm. In this way you can keep multiple copies of the source around and
+"active" simultaneously. (It is also permissible to just checkout into fvwm
+and rename the directory yourself.)
+
+Finally, if you want to see a particular version of the sources you can use
+a version label instead of a branch label on the checkout command:
+
+    cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm co -r \
+        version-2_1_10 -d fvwm-2.1.10 fvwm
+
+Please note that if you check out a specific version, the update command
+will be useless in that copy: after all, the code for that version hasn't
+changed so there's nothing to update...
+
+The version and branch labels "stick" to your copy of the tree, so that if
+you check out a branch, all update commands will be handled with respect to
+that branch. These are called "sticky tags"; please see the CVS
+documentation for more details on these and how they work, or how to
+"un-stick" a checked out version if you need to.
+
+Note that when you are inside the working directory, you no longer need the
+"-d :pserver:..." argument when issuing CVS commands.
+
+CVS commands work from anywhere inside the source tree, and recurse
+downwards. So if you happen to issue an update from inside the `docs'
+subdirectory it will work fine, but only update the docs. In all of the
+following command examples, we assume that you have cd'd to the top of the
+source tree.
+
+BUILDING THE TREE
+-----------------
+
+So, you now have a copy of the code. Get in there and get to work!
+
+The first thing you need to do is create a configure script. The configure
+script will also need the Makefile.in files in order to generate the
+Makefiles. The autoconf and automake tools do this for you (you did remember
+to install autoconf and automake, right?)
+
+So, when you have a newly checked-out source tree the first thing to do is:
+
+    cd fvwm 
+    aclocal 
+    autoheader 
+    automake --add-missing 
+    autoreconf
+
+The last command is autoreconf, not autoconf. You will get some warning
+messages from autoreconf and possibly from automake. As long as you end up
+with a working configure script, you should ignore them.
+
+To automate this step we include a shell script
+
+    utils/configure_dev.sh
+
+in the cvs tree, it may be run with usual ./configure arguments instead of
+all auto commands above.
+
+Once that's done, you can proceed to build the code as discussed in the
+INSTALL.fvwm and INSTALL files:
+
+    ./configure make make install
+
+with appropriate options and arguments, as you like.
+
+CODE UPDATES
+------------ 
+
+From time to time, the dedicated FVWM Workers will make changes to the CVS
+repository. Announcements of this are automatically sent to the fvwm-workers
+list. You will want to be subscribed to this list!
+
+You can update your copy of the sources to match the master repository with
+the update command. Note it's not necessary to check out a new copy! Using
+update is significantly faster and simpler, as it will download only patches
+instead of entire files, only update files that have changed since your last
+update, and it will automatically merge any changes in the CVS repository
+with any local changes you may have made.
+
+    cvs update
+
+If you didn't use a tag when you checked out, this will update your sources
+to the latest version on the main branch. If you used a branch tag, it will
+update to the latest version on that branch. If you used a version tag, it
+won't do anything (see above).
+
+After updating the local source directory, it is usually enough to issue
+make to rebuild everything. It is safe to manually run aclocal, automake and
+autoconf if you think something should be rebuilt, but this sould be run
+automatically on make.
+
+STARTING A PROJECT
+------------------
+
+Discuss your ideas on the workers list before you start. Someone may be
+working on the same thing you have in mind. Or they may have good ideas
+about how to go about it.
+
+If you just have a small patch you want to make, you may just commit it to
+the main branch. If the change is large, and lots of other work is going on,
+you may want to do your changes on a "side branch" which will get merged
+into the main branch later on. Before creating a branch, you discuss the
+matter with the other workers. If you are new to CVS, you should read the
+CVS documentation several times, and ask for help. The documentation is
+sufficiently large and confusing that it is rather difficult to get right
+the first few times.
+
+HACKING THE CODE 
+----------------
+
+So you've found a bug you want to fix? Want to implement a feature from the
+Jitterbug list? Got a new feature to implement? Hacking the code couldn't be
+easier. Just edit your copy of the sources. No need to copy files to `.orig'
+or anything; CVS has copies of the originals.
+
+When you have the code in a working state, generate a patch against the
+current sources in the CVS repository.
+
+    cvs update 
+    cvs diff -u > patchfile
+
+Mail the patch to the fvwm-workers list with a description of what you did.
+But read the FAQ file about ChangeLog entries before doing so.
+
+CONFLICTS
+--------- 
+
+If someone else has been working on the same files as you have, you may find
+that you have made conflicting modifications. You'll discover this when you
+try to update your sources.
+
+    $ cvs update
+    RCS file: /home/cvs/fvwm/fvwm/fvwm/icons.c,v
+    retrieving revision 1.5
+    retrieving revision 1.6
+    Merging differences between 1.5 and 1.6 into icons.c
+    rcsmerge: warning: conflicts during merge
+    cvs server: conflicts found in fvwm/icons.c
+    C fvwm/icons.c
+
+Don't Panic! Your working file, as it existed before the update, is saved
+under the filename `.#icons.c.1.5'; hence you can always recover it, should
+things go horribly wrong. The file named `icons.c' now contains both the old
+(i.e. your) version and new version of lines that conflicted. You simply
+edit the file and resolve each conflict by deleting the unwanted version of
+the lines involved.
+
+    <<<<<<< icons.c
+    XpmImage    my_image = {0};  /* testing */
+    =======
+    >>>>>>> 1.6
+
+Don't forget to delete the lines with all the "<", "=", and ">" symbols.
+
+GETTING COMMIT ACCESS 
+---------------------
+
+Using the procedures described above, and being on the workers list are a
+prerequisite to gaining update access. We expect to have heard from you more
+than once on the fvwm-workers list so that we have some idea who you are.
+
+Doing some testing, submitting some patches, and getting involved in the
+discussions will help us know about you.
+
+After you have been involved for a while, if we don't suggest it, then ask.
+The FVWM development team is not a closed environment, we welcome new
+members. There are no required duties, all work is strictly voluntary.
+
+If there is agreement on the list that you should be given update access,
+you will need to choose a CVS user ID and provide an encrypted password. The
+latter can be obtained with the following Perl snippet:
+
+    perl -e 'print crypt("yourpass", join("", \
+        ((a..z, A..Z, 0..9)[rand(62), rand(62)]))), "\n"'
+
+Change yourpass to whatever you want your password to be. Send the encrypted
+password to Jason Tibbitts, (tibbs@math.uh.edu). Jason is the list
+maintainer, and provides our CVS repository.
+
+Once you have update access, re-do the login command above using your CVS
+user ID in place of anonymous and your password in place of guest, and you
+are on your way.
+
+COMMITTING CHANGES
+------------------
+
+Now that you have write permissions and have logged in with your CVS
+username, you can commit changes. This is done (surprise!) with the CVS
+commit command.
+
+Note it's usually a good idea to run a cvs update just before you commit, to
+make sure you've got the latest code. If you try to commit changes to a file
+that someone else has changed since you last updated, CVS will complain and
+not allow the commit. But, changes to other files could indirectly affect
+your new code, as well. In general if you're doing development it really
+pays to follow the old(?) adage, "Update early and often".
+
+To commit all the modified files in your workspace, use:
+
+    cvs commit
+
+CVS will pop up your favorite editor to allow you to enter comments about
+what changes you've made. These comments will appear in the email sent to
+fvwm-workers, so please write something useful.
+
+Also, you will see a complete list of files that CVS thinks you have
+changed. Please sanity-check this list! Make sure there's nothing you don't
+expect there, and everything you do expect.
+
+If you don't like the all-or-nothing approach, you can specify only certain
+files to be committed:
+
+    cvs commit fvwm/fvwm.1 modules/FvwmAuto/FvwmAuto.1
+
+Again, please sanity-check the list to be sure you have everything.
+
+Adding Directories and Files [top]
+
+First create the new directories and files locally. Then, assuming the new
+directory is named `newdir' and the new file is `newmod.c':
+
+    cvs add -m "New directory for ..." newdir
+    cd newdir
+    cvs add -m "File newmod.c is a module that ..." newmod.c
+  
+When adding new directories and files, please be sure to take a look at the
+relevant Makefile.am files and modify them as appropriate! See the
+DEVELOPERS file for more details on this.
+
+DELETING DIRECTORIES AND FILES
+------------------------------
+
+You don't directly delete directories, you delete all the files in a
+directory and the directory goes away during an `update -dP'. To delete one
+or more files:
+
+    cvs remove filename...  
+    cvs commit -m 'deleted files because' filename...
+
+Again, when removing directories or files please be sure to update the
+appropriate Makefile.am files. See DEVELOPERS.
+
+RENAMING/MOVING FILES 
+---------------------
+
+There is no perfect way to rename or move files in CVS. There are a few
+different methods, each with good and bad points. For FVWM, we've chosen the
+most straightforward method: remove the old file and add a new file. In
+order to preserve some kind of link, please include a pointer to the old
+file in the comments of the new file (and vice versa).
+
+Again, when renaming or moving files please be sure to update the
+appropriate Makefile.am files. See DEVELOPERS.
+
+CREATING NEW BRANCHES
+---------------------
+
+Please contact the fvwm-workers list and discuss any new branch you'd like
+to create, just so we have an idea about what and why.
+
+When creating a branch it's best to base it off of a previously-existing,
+labeled checkpoint. Here we'll use the example of creating a new branch for
+2.2.x development after the 2.2 release was made. Because of our rules, we
+know that the new branch name should be branch-2_2, but if you're creating a
+branch for a new feature you can use any valid label.
+
+Once you know where you want to branch from and what you want to call the
+new branch, use the cvs rtag command to create the branch (be sure you're in
+the root of your checkout):
+
+    cvs rtag -b -r version-2_2_0 branch-2_2 .
+
+The first thing you'll probably want to do on the new branch is edit the
+configure.in file to change the version number, so people know it's
+different. See the DEVELOPERS file for information on this.
+
+CREATING NEW SOURCE TREES 
+-------------------------
+
+Please contact the fvwm-workers list and discuss any new source trees you'd
+like to create, just so we have an idea about what and why.
+
+The source code for Fvwm is in the "fvwm" source tree. At the time this
+sentence was written, (September, 1999), there were 1 more source tree,
+"fvwm-web".
+
+If you have update access to "fvwm", you can also update the other source
+trees and create new source trees.
+
+WORKING ON THE FVWM-WEB SOURCE TREE
+-----------------------------------
+
+It's important to remember anything checked into the fvwm-web branch will
+automatically appear on the fvwm web pages. Be careful to check your work
+before you commit a change.
+
+You can check to see what your changes will look like before a commit, by
+using a "file:" URL to look at your changes with your browser. If you have
+the fvwm-web source in /home/my/fvwm-web, your browser should be able to
+view the source with the URL file:/home/my/fvwm-web. (This is one of the
+reasons you want to use relative URLs to link one page to another.)
+
+Some of the sub-directories in the fvwm-web branch can take a long time to
+checkout or commit due to their large size. This is especially true over
+dial-up connections. All of the CVS commands can be convinced to only work
+on one directory or sub-directory by using the -l argument.
+
+Some parts of the fvwm-web tree are generated from fvwm tree source files.
+The generated files are in the directories:
+
+    fvwm-web/authors/ 
+    fvwm-web/news/ 
+    fvwm-web/documentation/faq/
+    fvwm-web/documentation/manpages/ 
+    fvwm-web/documentation/perllib/ 
+
+Each directory has a script generating one or more php files. You would normally
+run these scripts (at least in the first 3 directories) whenever you made a
+change to fvwm/NEWS, fvwm/docs/FAQ or fvwm/AUTHORS that you want to appear
+on the fvwm web site. Instructions are in the scripts.

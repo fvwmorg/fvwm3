@@ -1,4 +1,10 @@
 2010-04-03  Thomas Adam   <thomas@xteddy.org>
+	* DEVELOPERS:
+	* DEVELOPER-CVS:
+	Add new file "DEVELOPER-CVS" -- a verbatim copy of cvs.html -- to
+	aggregate the information in one place.
+
+2010-04-03  Thomas Adam   <thomas@xteddy.org>
 	* todo-2.6:
 	Add discussion point for using XIM for UTF-8 mappings.
 

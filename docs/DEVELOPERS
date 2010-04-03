@@ -14,9 +14,9 @@ To build from the CVS sources, you will need:
   * automake (version >= 1.4)
 
 
-After the *initial* checkout of the sources, (see cvs.html) you
-will need to execute the following commands from the top of the
-source tree.
+After the *initial* checkout of the sources, (see DEVELOPER-CVS or
+cvs.html) you will need to execute the following commands from the
+top of the source tree.
 
     aclocal
     autoheader
@@ -87,8 +87,8 @@ Development Rules of the Road
 Dealing with CVS
 ----------------
 
-All details about dealing with CVS should be found in cvs.html.
-Go look there!
+All details about dealing with CVS should be found in cvs.html or
+DEVELOPER-CVS.  Go look there!
 
 
 Doing the JitterBug
