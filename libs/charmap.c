@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "charmap.h"
+#include "wcontext.h"
 #include "safemalloc.h"
 
 /* ---------------------------- local definitions -------------------------- */
@@ -119,17 +120,22 @@ char *charmap_table_to_string(int mask, charmap_t *table)
 	for (; table->key !=0; table++)
 	{
 		c[0] = toupper(table->key);
-		if (mask == table->value)
-		{
-			/* exact match */
-			strcpy(allmods, c);
-			break;
-		}
-		else if (modmask & table->value)
+
+		/* Don't explicitly match "A" for any context as doing so
+		 * means we never see the individual bindings.  Incremental
+		 * matching here for AnyContext is disasterous.*/
+		if ((modmask & table->value) &&
+			(table->value != C_ALL))
 		{
 			/* incremental match */
 			strcat(allmods, c);
 			modmask &= ~table->value;
+		}
+		else if (mask == table->value)
+		{
+			/* exact match */
+			strcpy(allmods, c);
+			break;
 		}
 	}
 

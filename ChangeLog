@@ -1,3 +1,11 @@
+2010-04-18  Thomas Adam <thomas@xteddy.org>
+	* libs/charmap.c (charmap_table_to_string):
+	Don't allow incremental matching of C_ALL for contexts.
+
+	When printing out bindings, ensure we allow "A" for any/all
+	contexts/modifiers to be matched exactly, so that the context column for
+	bindings matches with what the user put in their config file.
+
 2010-04-03  Thomas Adam <thomas@xteddy.org>
 	* NEWS:
 	* configure.ac:

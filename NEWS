@@ -5,6 +5,11 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.30 (not released yet)
 
+* Bug fixes:
+
+  - Don't lazy match AnyContext when printing out bindings and the
+    contexts they apply to with "PrintInfo Bindings".
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.29 (03-Apr-2010)
