@@ -1,3 +1,10 @@
+2010-04-24  Thomas Adam <thomas@xteddy.org>
+	* libs/Fpng.h:
+	Define version checks for conditional macros.
+
+	libpng 1.4.0 has different macros for previous version of the same
+	macros in libong 1.2.0, so check for them here.
+
 2010-04-18  Thomas Adam <thomas@xteddy.org>
 	* libs/charmap.c (charmap_table_to_string):
 	Don't allow incremental matching of C_ALL for contexts.
