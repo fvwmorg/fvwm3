@@ -429,7 +429,11 @@ typedef Fpng_struct  **Fpng_structpp;
 #define FPNG_FILLER_AFTER PNG_FILLER_AFTER
 #define FPNG_INFO_tRNS PNG_INFO_tRNS
 
+#if PNG_LIBPNG_VER >= 10400
+#define Fpng_check_sig(a,b) (!png_sig_cmp(a,0,b))
+#else
 #define Fpng_check_sig(a,b) png_check_sig(a,b)
+#endif
 #define Fpng_create_read_struct(a,b,c,d) png_create_read_struct(a,b,c,d)
 #define Fpng_create_info_struct(a) png_create_info_struct(a)
 #define Fpng_destroy_read_struct(a,b,c) png_destroy_read_struct(a,b,c)
@@ -444,7 +448,11 @@ typedef Fpng_struct  **Fpng_structpp;
 #define Fpng_set_packing(a) png_set_packing(a)
 #define Fpng_set_gray_to_rgb(a) png_set_gray_to_rgb(a)
 #define Fpng_get_bit_depth(a,b) png_get_bit_depth(a,b)
+#if PNG_LIBPNG_VER >= 10400
+#define Fpng_set_gray_1_2_4_to_8(a) png_set_expand_gray_1_2_4_to_8(a)
+#else
 #define Fpng_set_gray_1_2_4_to_8(a) png_set_gray_1_2_4_to_8(a)
+#endif
 #define Fpng_get_valid(a,b,c) png_get_valid(a,b,c)
 #define Fpng_read_end(a,b) png_read_end(a,b)
 #define Fpng_set_interlace_handling(a) png_set_interlace_handling(a)
