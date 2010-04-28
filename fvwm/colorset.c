@@ -1185,12 +1185,6 @@ void parse_colorset(int n, char *line)
 					}
 				}
 			}
-			else
-			{
-				fvwm_msg(
-					ERR, "parse_colorset",
-					"error reading root background");
-			}
 			if (image != None)
 			{
 				XDestroyImage(image);
