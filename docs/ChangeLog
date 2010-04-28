@@ -1,3 +1,7 @@
+2010-04-28  Thomas Adam   <thomas@xteddy.org>
+	* todo-3.0:
+	General tidy-up, as well as note for .in file via configure.
+
 2010-04-03  Thomas Adam   <thomas@xteddy.org>
 	* ANNOUNCE:
 	Updated for the 2.5.29 release.
