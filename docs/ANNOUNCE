@@ -4,36 +4,15 @@ minor features.  Please be aware that any features introduced in
 the 2.5.x development versions may be renamed, changed or removed
 without notice before 2.6.0.
 
-Upgrading from 2.5.28 or earlier is recommended.
+Upgrading from 2.5.29 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-   - Added new fvwm-convert-2.6 script to convert older fvwm 2.4.x
-     config files.
-   - New BugOpts option QtDragnDropWorkaround to work around an
-     oddity in handling drag-n-drop events to Qt applications.
+  - Support libpng 1.4.0's slightly newer API.
 
 * Bug fixes:
 
-   - Fixed the InitialMapCommand style from running when FVWM is
-     restarting.
-   - Fix rendering of FvwmForm windows when initially mapped.
-   - Fix placement of windows when using MinoverlapPlacement and
-     friends.
-   - Fix segfault when tearing off menus using a Pixmap
-     background.
-   - Fix "window jump" bug when moving a window across page
-     boundaries.
-   - Flush property events for same type in applications which
-     repeatedly set the same XAtom.  (Gnucash, Openoffice, etc.)
-   - Fix opening of files using Read/PipeRead to accept paths in
-     the form "./" to indicate CWD.  Fixes
-       $ fvwm -f ./some-fvwm2rc
-   - Fix further crash when copying menustyles with MenuFace
-     involving pixmaps.
-   - Make layer changes apply immediately via Style commands for
-     any currently mapped windows.
-   - Fix flickering/incorrect location of the GeometryWindow with
-     Xinerama/TwinView when resizing windows.
+  - Don't lazy match AnyContext when printing out bindings and the
+    contexts they apply to with "PrintInfo Bindings".

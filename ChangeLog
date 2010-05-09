@@ -1,3 +1,9 @@
+2010-04-03  Thomas Adam <thomas@xteddy.org>
+	* NEWS:
+	* configure.ac:
+	* docs/ANNOUNCE:
+	Updated for the FVWM 2.5.30 release.
+
 2010-05-09  Thomas Adam <thomas@xteddy.org>
 	* NEWS:
 	Cosmetic clean up for NEWS.
