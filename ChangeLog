@@ -1,3 +1,7 @@
+2010-05-09  Thomas Adam <thomas@xteddy.org>
+	* NEWS:
+	Cosmetic clean up for NEWS.
+
 2010-04-28  Dan Espen  <dane@mk.telcordia.com>
 	* fvwm/colorset.c (parse_colorset): Remove bogus error message.
 

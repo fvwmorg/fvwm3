@@ -6,6 +6,7 @@ Note, the changes for the last STABLE release start with release
 Changes in beta release 2.5.30 (not released yet)
 
 * New features:
+
   - Support libpng 1.4.0's slightly newer API.
 
 * Bug fixes:
