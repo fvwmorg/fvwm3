@@ -1,4 +1,9 @@
-2010-04-03  Thomas Adam <thomas@xteddy.org>
+2010-05-09  Thomas Adam <thomas@xteddy.org>
+	* NEWS:
+	* configure.ac:
+	Update CVS to use 2.5.31
+
+2010-05-09  Thomas Adam <thomas@xteddy.org>
 	* NEWS:
 	* configure.ac:
 	* docs/ANNOUNCE:
