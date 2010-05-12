@@ -52,7 +52,7 @@ sub __convert_conditionals
     # And convert over Next [$1] syntax.
     $line =~ s/\[(.*?)\]/\($1\)/;
     
-    $line = "$1 ". join( ', ', split( /\s+/, $2 ) ) . " $3" if $line =~
+    $line = "$1 ". join( ', ', split( /[^,](\s+)[^,]/, $2 ) ) . " $3" if $line =~
     /(all|current|direction|next|none|prev|pick|thiswindow|windowid)\s*(\(.*?\))(.*)/i;
 
     $cond->[-1] = $line;

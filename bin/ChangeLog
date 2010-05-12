@@ -1,3 +1,12 @@
+2010-05-12  Thomas Adam   <thomas@xteddy.org>
+	* fvwm-convert-2.6.in (__convert_conditionals):
+	Preserve comma-separated options in conditional commands.
+
+	If we encounter options in conditon commands already separated with
+	commas, ensure we don't double-up on commas when converting any further
+	options -- because the assumption was that options to conditional
+	commands were just whitespace-delimited.
+
 2010-01-05  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in:
 	* fvwm-convert-2.6.1.in:

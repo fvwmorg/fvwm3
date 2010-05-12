@@ -9,6 +9,9 @@ Changes in beta release 2.5.31 (not released yet)
 
 * Bug fixes:
 
+  - fvwm-convert-2.6:  Don't double-up comma separated options to
+    conditional commands if they're already delimited by commas.
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.30 (09-May-2010)
