@@ -43,6 +43,8 @@ sub __convert_conditionals
 {
     my( $cond ) = @_;
     my( $line ) = $cond->[-1];
+	my $condition_cmds = 
+		qr/(all|current|direction|next|none|prev|pick|thiswindow|windowid)/;
 
     # Take the last component.  We no longer care for "[*]" as conditional
     # command parameters.  But we shouldn't really put another conditional
@@ -50,10 +52,10 @@ sub __convert_conditionals
     $line =~ s/\[\*\]//;
     
     # And convert over Next [$1] syntax.
-    $line =~ s/\[(.*?)\]/\($1\)/;
+    $line =~ s/$condition_cmds\s*\[(.*?)\]/\($1\)/io;
     
     $line = "$1 ". join( ', ', split( /[^,](\s+)[^,]/, $2 ) ) . " $3" if $line =~
-    /(all|current|direction|next|none|prev|pick|thiswindow|windowid)\s*(\(.*?\))(.*)/i;
+    /$condition_cmds\s*(\(.*?\))(.*)/io;
 
     $cond->[-1] = $line;
 }

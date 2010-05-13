@@ -1,4 +1,13 @@
 2010-05-13  Thomas Adam   <thomas@xteddy.org>
+	* fvwm-convert-2.6.in (__convert_conditionals):
+	Be more specific about conditional command corrections.
+
+	When converting over "Foo [blah]", don't blindly substitute anything in
+	square brackets, as this will obliterate legitimate statements such as
+	"$[foo]" when referring to environment variable interpolation.  Instead,
+	ensure we only process this if it's preceeded by a conditional command.
+
+2010-05-13  Thomas Adam   <thomas@xteddy.org>
 	* fvwm-convert-2.6.in:
 	Remove trailing comma.
 
