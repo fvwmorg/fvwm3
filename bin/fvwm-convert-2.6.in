@@ -510,7 +510,7 @@ process_files( \@files );
 if( @additional_files && !$follow_read )
 {
     print "The following files were detected, but not processed:\n\n",
-    join("\n", @$_ ) for @additional_files,;
+    join("\n", @$_ ) for @additional_files;
     print "\n";
 }
 
