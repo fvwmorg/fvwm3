@@ -11,6 +11,8 @@ Changes in beta release 2.5.31 (not released yet)
 
   - fvwm-convert-2.6:  Don't double-up comma separated options to
     conditional commands if they're already delimited by commas.
+  - Correctly report a window's height and width if the window has
+    incomplete resize increment set.
 
 -------------------------------------------------------------------
 

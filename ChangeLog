@@ -1,3 +1,10 @@
+2010-05-22  Thomas Adam <thomas@xteddy.org>
+	* fvwm/windowlist.c (CMD_WindowList):
+	* NEWS:
+	When reporting on a window's width and height ensure we use the
+	orig_hints XSizeHints struct for calculating resize increment
+	geometries.
+
 2010-05-09  Thomas Adam <thomas@xteddy.org>
 	* NEWS:
 	* configure.ac:

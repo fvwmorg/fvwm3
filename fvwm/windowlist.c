@@ -973,10 +973,11 @@ void CMD_WindowList(F_CMD_ARGS)
 					b.total_size.height;
 				dwidth = t->g.frame.width -
 					b.total_size.width;
-				dwidth -= t->hints.base_width;
-				dheight -= t->hints.base_height;
-				dwidth /= t->hints.width_inc;
-				dheight /= t->hints.height_inc;
+
+				dwidth = (dwidth - t->hints.base_width)
+					  /t->orig_hints.width_inc;
+				dheight = (dheight - t->hints.base_height)
+					  /t->orig_hints.height_inc;
 
 				sprintf(loc,"%d",dwidth);
 				strcat(tname, loc);
