@@ -1382,6 +1382,18 @@ initially mapped by fvwm.  Example:</para>
 <para>This would hence place the window called <emphasis>MyWindow</emphasis>
 on page 0 0 for the current desk, and immediately run the <fvwmref cmd="Iconify"/>
 command on that window.</para>
+
+<para>Note that should <fvwmref cmd="Style" opt="InitialMapCommand" /> be
+used as a global option for all windows, but there is a need that some
+windows should not have this command applied, then an action of 
+<fvwmref cmd="Nop" /> can be used on those windows, as in the following
+example:</para>
+
+<programlisting>
+<fvwmref cmd="Style"/> * InitialMapCommand Iconify
+<fvwmref cmd="Style"/> XTeddy InitialMapCommand Nop
+</programlisting>
+
 </section>
 
 <section id="window_manager_placement">

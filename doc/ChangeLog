@@ -1,3 +1,11 @@
+2010-05-26  Thomas Adam  <thomas@xteddy.org>
+	* commands/Style.xml:
+	Explain how to turn off globally-matched InitialMapCommand
+
+	Document that "InitialMapCommand Nop" can be used on windows to stop an
+	action from running where a	globally-set InitialMapCommand would
+	otherwise have run on that window.
+
 2010-02-13  Thomas Adam  <thomas.adam22@gmail.com>
 	* commands/Style.xml:
 	Fix formatting by not prematurely closing a <section>.
