@@ -134,18 +134,6 @@ to install autoconf and automake, right?)
 
 So, when you have a newly checked-out source tree the first thing to do is:
 
-    cd fvwm 
-    aclocal 
-    autoheader 
-    automake --add-missing 
-    autoreconf
-
-The last command is autoreconf, not autoconf. You will get some warning
-messages from autoreconf and possibly from automake. As long as you end up
-with a working configure script, you should ignore them.
-
-To automate this step we include a shell script
-
     utils/configure_dev.sh
 
 in the cvs tree, it may be run with usual ./configure arguments instead of
@@ -154,7 +142,7 @@ all auto commands above.
 Once that's done, you can proceed to build the code as discussed in the
 INSTALL.fvwm and INSTALL files:
 
-    ./configure make make install
+    ./configure && make && make install
 
 with appropriate options and arguments, as you like.
 

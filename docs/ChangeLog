@@ -1,3 +1,10 @@
+2010-06-13  Thomas Adam   <thomas@xteddy.org>
+	* todo-2.6:
+	Correct minor typos.
+	* DEVELOPER-CVS:
+	Always suggest running utils/configure_dev.sh -- forget doing it by
+	hand.
+
 2010-04-28  Thomas Adam   <thomas@xteddy.org>
 	* todo-3.0:
 	General tidy-up, as well as note for .in file via configure.
