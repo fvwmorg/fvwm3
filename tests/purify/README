@@ -14,6 +14,10 @@ Instructions:
    unless the test directs otherwise.
  - the script will terminate fvwm after completion
 
+NOTE: The typos present in these tests are *deliberate* to see how FVWM
+handles incorrect options!  Be careful in correcting these -- actually --
+just don't fix them at all!
+
 NOTE: you can safely ignore all error messages, beeps, ...
 
 NOTE: This README was last updated for fvwm-2.3.29 and may not be correct.
