@@ -51,5 +51,6 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
        sizes, part of a pan frame may be in the void and some
        screen edges won't allow paging.
  41) Remove the -blackout option.
- 41) Investigate the use of .in files for code macros based on external libs
+ 42) Investigate the use of .in files for code macros based on external libs
      -- such as libpng (libs/Fpng.h), libstroke?, etc.
+ 43) XTest* to replace the use of XSendEvent? (Thomas Adam)

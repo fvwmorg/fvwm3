@@ -1,3 +1,7 @@
+2010-07-16  Thomas Adam   <thomas@xteddy.org>
+	* todo-3.0:
+	Added note regarding XTest replacing XSendEvent where applicable.
+
 2010-06-13  Thomas Adam   <thomas@xteddy.org>
 	* todo-2.6:
 	Added F5 - discussion about XChangeWindowAttribure().
