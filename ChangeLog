@@ -1,3 +1,11 @@
+2010-07-28  Thomas Adam <thomas@xteddy.org>
+	* fvwm/update.c (apply_window_updates):
+	* NEWS:
+	Copy over State settings on WindowStyle command.
+
+	When merging/updating style hints for recaptured windows, ensure we
+	preserve any State hints set on the window.
+
 2010-05-22  Thomas Adam <thomas@xteddy.org>
 	* fvwm/windowlist.c (CMD_WindowList):
 	* NEWS:

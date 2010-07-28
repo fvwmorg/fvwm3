@@ -97,6 +97,12 @@ static void apply_window_updates(
 	frame_g.y = t->g.frame.y;
 	frame_g.width = t->g.frame.width;
 	frame_g.height = t->g.frame.height;
+
+	/* TA:  2010-07-28:  Conditionally update window states if they're
+	 * present -- i.e., we're preserving states set via Windowstyle.
+	 */
+	GET_USER_STATES(t) = S_USER_STATES(SCF(*pstyle));
+
 	if (flags->do_setup_focus_policy)
 	{
 		setup_focus_policy(t);
