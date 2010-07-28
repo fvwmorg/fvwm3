@@ -1,4 +1,8 @@
 2010-07-28  Thomas Adam <thomas@xteddy.org>
+	* fvwm/builtins.c (CMD_Exec):
+	Close fd if it's not opened successfully.
+
+2010-07-28  Thomas Adam <thomas@xteddy.org>
 	* fvwm/update.c (apply_window_updates):
 	* NEWS:
 	Copy over State settings on WindowStyle command.
