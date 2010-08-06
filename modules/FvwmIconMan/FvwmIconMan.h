@@ -203,6 +203,8 @@ typedef struct win_data {
 	char *visible_icon_name;
 } WinData;
 
+#define WINDATA_ICONIFIED(win) ((win)->iconified)
+
 typedef struct button {
 	int index;      /* index into button array */
 	int x, y, w, h; /* current coords of button */

@@ -1,3 +1,13 @@
+2010-08-06  Chris Siebenmann <cks-fvwm@cs.toronto.edu>
+	* FvwmIconMan/fvwm.c (count_nonsticky_in_hashtable):
+	Correctly handle iconified windows with sticky icons.
+
+	When counting how many windows we expect configure window messages
+	for after changing to a new page, don't count iconified windows
+	with sticky icons (ones styled with StickyIcon or any of its
+	variants).
+
+
 2009-12-19  Thomas Adam <thomas.adam22@gmail.com>
 	* FvwmForm/FvwmForm.c (MainLoop):
 	Stop relying on XSync() after FD_SET when using FPending() will

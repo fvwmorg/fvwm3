@@ -92,10 +92,13 @@ static int count_nonsticky_in_hashtab(void *arg)
 	WinManager *man = the_manager;
 
 	if (!(IS_STICKY_ACROSS_DESKS(win) || IS_STICKY_ACROSS_PAGES(win)) &&
+	    !(WINDATA_ICONIFIED(win) && (IS_ICON_STICKY_ACROSS_PAGES(win) ||
+				 IS_ICON_STICKY_ACROSS_DESKS(win))) &&
 	    win->complete && win->manager == man)
 	{
 		return 1;
 	}
+
 	return 0;
 }
 
