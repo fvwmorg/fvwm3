@@ -1,3 +1,7 @@
+2010-08-07  Thomas Adam <thomas@xteddy.org>
+	* fvwm/builtins.c (CMD_Exec):
+	Remove extraneous whitespace.
+
 2010-07-28  Thomas Adam <thomas@xteddy.org>
 	* fvwm/builtins.c (CMD_Exec):
 	Close fd if it's not opened successfully.

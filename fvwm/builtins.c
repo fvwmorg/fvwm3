@@ -2459,10 +2459,10 @@ void CMD_Exec(F_CMD_ARGS)
 		fvmm_deinstall_signals();
 		fd = open("/dev/null", O_RDONLY, 0);
 		dup2(fd,STDIN_FILENO);
-		
+
 		if (fd != STDIN_FILENO)
 			close(fd);
-		
+
 		if (fvwm_setpgrp() == -1)
 		{
 			fvwm_msg(ERR, "exec_function", "setpgrp failed (%s)",
