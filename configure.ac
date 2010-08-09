@@ -4,16 +4,16 @@ AC_PREREQ(2.53)
 AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED=no
+ISRELEASED=yes
 version=2.5.31
 VERSIONINFO=""
 
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
 dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="09 May 2010"
-RELDATESHORT="09-May-2010"
-RELDATENUM="2010-05-09"
+RELDATELONG="09 August 2010"
+RELDATESHORT="09-August-2010"
+RELDATENUM="2010-08-09"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"

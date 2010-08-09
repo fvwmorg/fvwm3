@@ -4,15 +4,20 @@ minor features.  Please be aware that any features introduced in
 the 2.5.x development versions may be renamed, changed or removed
 without notice before 2.6.0.
 
-Upgrading from 2.5.29 or earlier is recommended.
+Upgrading from 2.5.30 or earlier is recommended.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 * New features:
 
-  - Support libpng 1.4.0's slightly newer API.
+  None.
 
 * Bug fixes:
 
-  - Don't lazy match AnyContext when printing out bindings and the
-    contexts they apply to with "PrintInfo Bindings".
+  - fvwm-convert-2.6:  Don't double-up comma separated options to
+    conditional commands if they're already delimited by commas.
+  - Correctly report a window's height and width if the window has
+    incomplete resize increments set.
+  - Maintain any State hints on a window when used with WindowStyle.
+  - FvwmIconMan now correctly handles sticky windows.
+

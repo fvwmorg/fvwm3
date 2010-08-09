@@ -1,3 +1,8 @@
+2010-08-09  Thomas Adam <thomas@xteddy.org>
+	* NEWS:
+	* configure.ac:
+	Updated for the FVWM 2.5.31 release.
+
 2010-08-07  Thomas Adam <thomas@xteddy.org>
 	* fvwm/builtins.c (CMD_Exec):
 	Remove extraneous whitespace.
