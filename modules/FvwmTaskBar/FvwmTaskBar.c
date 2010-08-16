@@ -489,8 +489,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       int nth;
 
       nb = (short)cfgpacket->border_width;
-      nw = screen_g.width - (win_border<<1);
-      nh = (int)cfgpacket->frame_height - (win_border<<1);
+      nw = screen_g.width - (nb<<1);
+      nh = (int)cfgpacket->frame_height - (nb<<1);
       nht = HAS_TITLE(cfgpacket);
       ntd = GET_TITLE_DIR(cfgpacket);
       nth = (int)cfgpacket->title_height;

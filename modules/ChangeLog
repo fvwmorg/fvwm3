@@ -1,3 +1,12 @@
+2010-08-16  Thomas Adam  <thomas@xteddy.org>
+	* FvwmTasBar/FvwmTaskBar.c (ProcessMessage):
+	Use the correct border hints to calculate screen width.
+
+	When calculating the size of the FvwmTaskBar, ensure we get the
+	information from the newer border size hints, and don't use the old one.
+	This fixes an incredibly long-standing bug in FvwmTaskBar.  I hope I win
+	a prize.  :)
+
 2010-08-06  Chris Siebenmann <cks-fvwm@cs.toronto.edu>
 	* FvwmIconMan/fvwm.c (count_nonsticky_in_hashtable):
 	Correctly handle iconified windows with sticky icons.

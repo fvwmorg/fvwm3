@@ -9,6 +9,9 @@ Changes in beta release 2.5.32 (not released yet)
 
 * Bug fixes:
 
+  - Fix width of FvwmTaskBar to fit on screen properly by using the correct
+    module information to determine the border size.
+
 -------------------------------------------------------------------
 
 -------------------------------------------------------------------
