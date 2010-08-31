@@ -1,3 +1,7 @@
+2010-08-31  Gerard Vermeulen <gav451@gmail.org>
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	Parse commands like 'Move w+-5p w+-2p'.
+
 2010-08-09  Thomas Adam <thomas@xteddy.org>
 	* NEWS:
 	* configure.ac:

@@ -401,7 +401,19 @@ static int GetOnePositionArgument(
 		float f;
 
 		/* parse value */
-		if (sscanf(s1, "%d%n", &val, &n) < 1)
+		if (sscanf(s1, "-%d%n", &val, &n) >= 1)
+		{
+			/* i.e. -1, -+1 or --1 */
+			final_pos += (screen_size - window_size);
+			val = -val;
+		}
+		else if (
+			sscanf(s1, "+%d%n", &val, &n) >= 1 ||
+			sscanf(s1, "%d%n", &val, &n) >= 1)
+		{
+			/* i.e. 1, +1, ++1 or +-1 */
+		}
+		else
 		{
 			/* syntax error, ignore rest of string */
 			break;
