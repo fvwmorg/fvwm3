@@ -104,6 +104,7 @@ Contents
     3.25  How to define transparent decorations?
     3.26  How about transparent applications too?
     3.27  How can I define emacs type multi-keystroke fvwm bindings?
+    3.28  How do I remove all decorations from a window?
 
 4. Modules
 
@@ -1686,6 +1687,27 @@ A: In emacs, keys can be set up as prefix keys, so that once
       *button-alias: (Id A, Title "My Button", Action (Mouse 1) \
          `Exec exec xcalc`)
 
+----------------------------------------------------------------------
+
+3.2.28  How do I remove all decorations from a window?
+
+
+A:  I see this a lot on IRC.  Most people try and do this:
+
+    Style * !Title, BorderWidth 0
+
+This doesn't always work because many forget about a window having
+having handles -- which sit on the border.  If a window has defined
+handles, then these effectively override any of border settings --
+especially the "BorderWidth" option.  But there are Handle
+equivalents, hence the correct way to remove decorations from a window
+would be:
+
+    Style * !Title, !Borders, !Handles
+
+To set the BorderWidth of a window which has handles:
+
+    Style * HandleWidth 5
    
 ======================================================================
                              4 - Modules

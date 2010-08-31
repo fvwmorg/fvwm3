@@ -1,3 +1,7 @@
+2010-08-31  Thomas Adam   <thomas@xteddy.org>
+	* FAQ:
+	Added note on how to remove window decorations.
+
 2010-07-16  Thomas Adam   <thomas@xteddy.org>
 	* todo-3.0:
 	Added note regarding XTest replacing XSendEvent where applicable.
