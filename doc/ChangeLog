@@ -1,3 +1,9 @@
+2010-09-14  Thomas Adam  <thomas@xteddy.org>
+	* commands/Move.xml:
+	Document that Alt during Move will disable SnapAttraction
+
+	This is useful to achieve interactive unconstrained moving of windows.
+
 2010-05-26  Thomas Adam  <thomas@xteddy.org>
 	* commands/Style.xml:
 	Explain how to turn off globally-matched InitialMapCommand

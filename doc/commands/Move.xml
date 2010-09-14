@@ -160,6 +160,11 @@ Move m+0 m+0
 Move 50-50w 50-50w
 </programlisting>
 
+<para>Note:  In order to obtain moving windows which do not snap
+to screen, with interactive move, hold down <emphasis>Alt</emphasis>
+whilst moving the window to disable snap attraction if it's defined.
+</para>
+
 <para>See also the
 <fvwmref cmd="AnimatedMove"/>
 command.</para>
