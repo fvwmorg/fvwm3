@@ -370,6 +370,7 @@ static int GetOnePositionArgument(
 			if (sscanf(s1, "-%d%n", &val, &n) >= 1)
 			{
 				/* i.e. -1, -+1 or --1 */
+				final_pos += (screen_size - window_size);
 				val = -val;
 			}
 			else if (
@@ -403,7 +404,6 @@ static int GetOnePositionArgument(
 		if (sscanf(s1, "-%d%n", &val, &n) >= 1)
 		{
 			/* i.e. -1, -+1 or --1 */
-			final_pos += (screen_size - window_size);
 			val = -val;
 		}
 		else if (
