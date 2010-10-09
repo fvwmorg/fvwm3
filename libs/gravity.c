@@ -305,10 +305,12 @@ int gravity_combine_xy_dir(
 {
 	switch (dir_x)
 	{
+	case DIR_W:
 	case DIR_NW:
 	case DIR_SW:
 		dir_x = DIR_W;
 		break;
+	case DIR_E:
 	case DIR_NE:
 	case DIR_SE:
 		dir_x = DIR_E;
@@ -319,10 +321,12 @@ int gravity_combine_xy_dir(
 	}
 	switch (dir_y)
 	{
+	case DIR_N:
 	case DIR_NW:
 	case DIR_NE:
 		dir_y = DIR_N;
 		break;
+	case DIR_S:
 	case DIR_SW:
 	case DIR_SE:
 		dir_y = DIR_S;
@@ -388,6 +392,42 @@ void gravity_split_xy_dir(
 		*ret_dir_y = DIR_NONE;
 		break;
 	}
+}
+
+static inline int __gravity_override_one_axis(int dir_orig, int dir_mod)
+{
+	int ret_dir;
+
+	if (dir_mod == DIR_NONE)
+	{
+		ret_dir = dir_orig;
+	}
+	else
+	{
+		ret_dir = dir_mod;
+	}
+
+	return ret_dir;
+}
+
+int gravity_override_dir(
+	int dir_orig, int dir_mod)
+{
+	int ret_dir;
+	int ret_x;
+	int ret_y;
+	int orig_x;
+	int orig_y;
+	int mod_x;
+	int mod_y;
+
+	gravity_split_xy_dir(&orig_x, &orig_y, dir_orig);
+	gravity_split_xy_dir(&mod_x, &mod_y, dir_mod);
+	ret_x = __gravity_override_one_axis(orig_x, mod_x);
+	ret_y = __gravity_override_one_axis(orig_y, mod_y);
+	ret_dir = gravity_combine_xy_dir(ret_x, ret_y);
+
+	return ret_dir;
 }
 
 int gravity_dir_to_sign_one_axis(

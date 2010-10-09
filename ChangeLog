@@ -1,3 +1,17 @@
+2010-10-09  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (__handle_cr_on_client):
+	fix resize of shaded windows with a shade direction that does not match
+	the window gravity
+
+	* libs/gravity.h:
+	* libs/gravity.c (__gravity_override_one_axis):
+	(gravity_override_dir):
+	new helper functions
+
+	* libs/gravity.c (gravity_combine_xy_dir):
+	fixed calculation with only one axis set
+
 2010-09-16  Sergey Vlasov <vsu@altlinux.ru>
 	* fvwm/move_resize.c (GetOnePositionArgument):
 	Fix parsing of commands like 'Move 50-50w 50-50w'.

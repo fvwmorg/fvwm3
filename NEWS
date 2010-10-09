@@ -9,8 +9,12 @@ Changes in beta release 2.5.32 (not released yet)
 
 * Bug fixes:
 
-  - Fix width of FvwmTaskBar to fit on screen properly by using the correct
-    module information to determine the border size.
+  - Fix width of FvwmTaskBar to fit on screen properly by using
+    the correct module information to determine the border size.
+  - Fix resizing shaded windows with a shade direction that does
+    not match the window's gravity.  Shaded windows might have
+    jumped to strange positions when being resized by the
+    application.
 
 -------------------------------------------------------------------
 
@@ -26,7 +30,8 @@ Changes in beta release 2.5.31 (09-Aug-2010)
     conditional commands if they're already delimited by commas.
   - Correctly report a window's height and width if the window has
     incomplete resize increment set.
-  - Maintain any State hints on a window when used with WindowStyle.
+  - Maintain any State hints on a window when used with
+    WindowStyle.
   - FvwmIconMan now correctly handles sticky windows.
 
 -------------------------------------------------------------------
@@ -75,7 +80,7 @@ Changes in beta release 2.5.29 (03-Apr-2010)
      any currently mapped windows.
    - Fix flickering/incorrect location of the GeometryWindow with
      Xinerama/TwinView when resizing windows.
- 
+
 -------------------------------------------------------------------
 
 Changes in beta release 2.5.28 (20-Sep-2009)

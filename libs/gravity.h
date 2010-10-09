@@ -76,6 +76,8 @@ int gravity_combine_xy_dir(
 	int dir_x, int dir_y);
 void gravity_split_xy_dir(
 	int *ret_dir_x, int *ret_dir_y, int in_dir);
+int gravity_override_dir(
+	int dir_orig, int dir_mod);
 int gravity_dir_to_sign_one_axis(
 	direction_t dir);
 direction_t gravity_parse_dir_argument(
