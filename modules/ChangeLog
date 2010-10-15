@@ -1,3 +1,12 @@
+2010-10-15  Thomas Adam <thomas@xteddy.org>
+	* FvwmIconMan/FvwmIconMan.c (main):
+	Allow Transient mode to accept explicit module alias.
+
+	When running FvwmIconMan in transient mode, allow for an explicit module
+	alias to be used, rather than defaulting to "FvwmIconMan".  This brings
+	FvwmIconMan in-line with other modules which provide similar
+	functionality.
+
 2010-08-16  Thomas Adam  <thomas@xteddy.org>
 	* FvwmTasBar/FvwmTaskBar.c (ProcessMessage):
 	Use the correct border hints to calculate screen width.

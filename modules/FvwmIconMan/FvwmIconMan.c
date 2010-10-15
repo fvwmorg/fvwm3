@@ -221,12 +221,18 @@ main(int argc, char **argv)
 
 	MyName = GetFileNameFromPath(argv[0]);
 
-	if (argc == 7)
+	if (argc >= 7)
 	{
 		if (strcasecmp(argv[6], "Transient")==0 ||
 			strcasecmp(argv[6], "-Transient") == 0)
 		{
 			globals.transient = 1;
+			
+			/* Optionally accept an alias to use as the transient
+			 * FvwmIconMan instance.
+			 */
+			if (argv[7])
+				MyName = argv[7];
 		}
 		else
 		{
