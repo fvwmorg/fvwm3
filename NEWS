@@ -17,6 +17,8 @@ Changes in beta release 2.5.32 (not released yet)
     application.
   - FvwmIconMan now accepts an optional module alias when running
     in transient mode.
+  - Use of the NoUSPosition style is now properly reported by
+    "BugOpts ExplainWindowPlacement on".
 
 -------------------------------------------------------------------
 

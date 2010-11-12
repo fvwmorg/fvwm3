@@ -1229,7 +1229,7 @@ static void __place_get_placement_flags(
 		}
 		else if (reason->pos.reason != PR_POS_USE_PPOS)
 		{
-			reason->pos.reason = PR_POS_USE_USPOS;
+			reason->pos.reason = PR_POS_IGNORE_USPOS;
 		}
 	}
 	if (mode == PLACE_AGAIN)
