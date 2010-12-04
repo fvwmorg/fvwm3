@@ -1,3 +1,7 @@
+2010-12-04    <despen@verizon.net>
+
+	* fvwm/ConfigFvwmSetup: Better colors in menus and active frames.
+
 2010-11-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 	* fvwm/placement.c (__place_get_placement_flags):
 	fix reporting of placement reason with nousposition style.

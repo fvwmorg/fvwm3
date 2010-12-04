@@ -7,7 +7,7 @@ EdgeScroll 100 100
 ClickTime 750
 
 DeskTopSize 2x2
-MenuStyle * fvwm, Foreground maroon, Background grey60, Greyed grey40
+MenuStyle * fvwm, Foreground white, Background cornflowerblue, Greyed grey40
 MenuStyle * Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
 
 ColormapFocus FollowsMouse
@@ -16,7 +16,7 @@ ColormapFocus FollowsMouse
 # make sure these fonts exist on your system:
 Style *           Font -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*
 Style *           IconFont -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*
-Style *           HilightFore black, HilightBack palevioletred
+Style *           HilightFore black, HilightBack cornflowerblue
 Style *           BorderWidth 7, HandleWidth 7
 Style *           Icon unknown1.xpm, Color lightgrey/dimgrey
 Style *           MWMFunctions, MWMDecor, HintOverride
