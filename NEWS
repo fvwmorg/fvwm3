@@ -19,6 +19,9 @@ Changes in beta release 2.5.32 (not released yet)
     in transient mode.
   - Use of the NoUSPosition style is now properly reported by
     "BugOpts ExplainWindowPlacement on".
+  - Fix the CursorMove command to no longer move the pointer beyond
+    the boundary of a page, if EdgeScroll was set to disable page
+    flipping.
 
 -------------------------------------------------------------------
 

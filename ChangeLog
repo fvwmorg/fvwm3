@@ -1,3 +1,8 @@
+2010-12-19  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/builtins.c (CMD_CursorMove):
+	Honour EdgeScroll settings to not flip pages when EdgeScroll is
+	disabled.
+
 2010-12-04    <despen@verizon.net>
 
 	* fvwm/ConfigFvwmSetup: Better colors in menus and active frames.

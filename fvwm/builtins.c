@@ -2190,8 +2190,8 @@ void CMD_CursorMove(F_CMD_ARGS)
 {
 	int x = 0, y = 0;
 	int val1, val2, val1_unit, val2_unit;
+	int x_unit, y_unit;
 	int virtual_x, virtual_y;
-	int pan_x, pan_y;
 	int x_pages, y_pages;
 
 	if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
@@ -2205,8 +2205,13 @@ void CMD_CursorMove(F_CMD_ARGS)
 		/* pointer is on a different screen */
 		return;
 	}
-	x = x + val1 * val1_unit / 100;
-	y = y + val2 * val2_unit / 100;
+
+	x_unit = val1 * val1_unit / 100;
+	y_unit = val2 * val2_unit / 100;
+
+	x += x_unit;
+	y += y_unit;
+
 	virtual_x = Scr.Vx;
 	virtual_y = Scr.Vy;
 	if (x >= 0)
@@ -2240,6 +2245,7 @@ void CMD_CursorMove(F_CMD_ARGS)
 	}
 	virtual_y += y_pages * Scr.MyDisplayHeight;
 	y -= y_pages * Scr.MyDisplayHeight;
+
 	if (virtual_y < 0)
 	{
 		y += virtual_y;
@@ -2250,27 +2256,33 @@ void CMD_CursorMove(F_CMD_ARGS)
 		y += virtual_y - Scr.VyMax;
 		virtual_y = Scr.VyMax;
 	}
-	if (virtual_x != Scr.Vx || virtual_y != Scr.Vy)
+
+	/* TA:  (2010/12/19):  Only move to the new page if scrolling is
+	 * enabled and the viewport is able to change based on where the
+	 * pointer is.
+	 */
+	if ((virtual_x != Scr.Vx && Scr.EdgeScrollX != 0) ||
+	    (virtual_y != Scr.Vy && Scr.EdgeScrollY != 0))
+	{
 		MoveViewport(virtual_x, virtual_y, True);
-	pan_x = (Scr.EdgeScrollX != 0) ? 2 : 0;
-	pan_y = (Scr.EdgeScrollY != 0) ? 2 : 0;
-	/* prevent paging if EdgeScroll is active */
-	if (x >= Scr.MyDisplayWidth - pan_x)
-	{
-		x = Scr.MyDisplayWidth - pan_x -1;
 	}
-	else if (x < pan_x)
-	{
-		x = pan_x;
-	}
-	if (y >= Scr.MyDisplayHeight - pan_y)
-	{
-		y = Scr.MyDisplayHeight - pan_y - 1;
-	}
-	else if (y < pan_y)
-	{
-		y = pan_y;
-	}
+
+	/* TA:  (2010/12/19):  If the cursor is about to enter a pan-window, or
+	 * is one, or the cursor's next step is to go beyond the page
+	 * boundary, stop the cursor from moving in that direction, *if* we've
+	 * disallowed edge scrolling.
+	 *
+	 * Whilst this stops the cursor short of the edge of the screen in a
+	 * given direction, this is the desired behaviour.
+	 */
+	if (Scr.EdgeScrollX == 0 && (x >= Scr.MyDisplayWidth ||
+	    x + x_unit >= Scr.MyDisplayWidth))
+		return;
+
+	if (Scr.EdgeScrollY == 0 && (y >= Scr.MyDisplayHeight ||
+	    y + y_unit >= Scr.MyDisplayHeight))
+		return;
+
 	FWarpPointerUpdateEvpos(
 		exc->x.elast, dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 		Scr.MyDisplayHeight, x, y);
