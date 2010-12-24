@@ -1,5 +1,41 @@
 #!@PERL@
+
+# Modification History
+
+# Changed on 11/30/10 by  (dane):
+# - changed DIR filehandles to scalars, they're stepping on each other.
+#   was a bug in xdg-menu.
+# - changed default (only) format to fvwm2 and removed logic for other wms.
+# - move mainline before all subs (move it back?).
+# - removed the xdg_menu cache logic.
+# - Remove $flag, $MENU_TYPE, $MENU_DESTROY for gtk vs. fvwm menu mode.
+#   Actually removed all GTK MENU logic.
+# - Added option to menu to regenerate the menus.
+# - Remove xdg option root_menu.
+# - Added fvwm-menu option to use Fvwm Icons package.
+# - Style options from fvwmmenudesktop not carried over,
+#   WM hints are sufficient to set mini-icon and icon.
+# - Removed prototypes.  None were needed.
 #
+# FIXME:
+# - No testing for wm_icons has been done (is that fvwm-themes?).
+# - Docs need to be updated.
+# - fvwm-icons: okay, maybe the cat isn't a good default for Exec...
+# - Running alacarte, I can see there are Application menus, and System menus.
+#   Figure out the options to get both.
+# - There are good programs like alacarte that are marked GNOME-ONLY.
+#   Figure out how to get them in menus.
+# - I think this should default to mini-icons enabled, but which
+#   icon package should be assumed.
+# - Need a way to select the /usr/share/icons icon sets with themes like
+#   default/hicolor and size like 16x16 and 24x24.
+# - Regenerate menus should prompt for a new command line.
+# - Fix root_command default.
+# - sidepics, etc not tested.
+# - iconname::: syntax needs investigation, I think some of it is obsolete,
+#   and a verifier, and some defaults.
+# - Check scope of filehandles.
+
 # ---------------------------------------------------------------------------
 #  fvwm-menu-desktop
 #  See the man page fvwm-menu-desktop.1 for instructions.
@@ -8,6 +44,7 @@
 #
 #  Updated on 15/08/1999 by Mikhael Goikhman
 #
+#  Update on Dec, 24, 2010 by Dan Espen for xdg menus (see copyright below)
 # ---------------------------------------------------------------------------
 # COPYING
 #
@@ -15,34 +52,53 @@
 # See GNU General Public License for details.
 #
 #----------------------------------------------------------------------------
-# The script: Main
 
-#--------
-# Modules
+# Based heavily on:
+# xdg-menu for archlinux. based on suse xdg-menu written by <nadvornik@suse.cz>
+# Sergej Pupykin <pupykin.s@gmail.com>
+#
+# >> Copyright (c) 2003 SuSE Linux AG, Nuernberg, Germany. All rights reserved.
+# >> 
+# >> Author: nadvornik@suse.cz
+
+use version '5.0008';
 use strict;
-# For command line options
+use warnings;
 use Getopt::Long;
+use Encode;
+use I18N::Langinfo qw(langinfo CODESET);
+use POSIX qw(locale_h);
+use Digest::MD5 qw(md5_hex);
+use XML::Parser;
 
-my $version = "@VERSION@";
+my $xdg_data_dirs = $ENV{XDG_DATA_DIRS};
+$xdg_data_dirs = '' if ! defined $xdg_data_dirs;
+my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS};
+$xdg_config_dirs = '' if ! defined $xdg_config_dirs;
 
-#--------
-# Defaults (most of them can be modified with the options)
+my $version = '@VERSION@';
+my $DefaultAppDirs;
+my $DefaultDirectoryDirs;
+my @KDELegacyDirs;
+my $desktop_name = 'fvwm2';
+my $language = '';
+my $charset = 'iso-8859-1';
+my $root_cmd = 'xdg_menu_su';
+my $die_on_error = 0;
+my $verbose = 0;
 
-# paths
+my @language_keys;
 
-my $GNOME_PREFIX = '/usr';		# gnome install-dir
-# Default is "gnome" since fvwm is gnome compliant and not kde compliant.
-my $APPS_DIR = -d "$GNOME_PREFIX/share/gnome/apps" ? 
-    "$GNOME_PREFIX/share/gnome/apps" :
-    "$GNOME_PREFIX/share/gnome/applications";
-my $GNOME_APPS = $APPS_DIR;
-my $KDE_PREFIX = $ENV{KDEDIR} || '/usr';
-my $KDE_APPS = "$KDE_PREFIX/share/applnk";
-my $KDE_MINI_ICONS = "$KDE_PREFIX/share/icons/mini/";
-my $KDE3_MINI_ICONS = "$KDE_PREFIX/share/icons/hicolor/16x16/apps/";
-my $KDE_ICONS = "$KDE_PREFIX/share/icons/";
-my $KDE3_ICONS = "$KDE_PREFIX/share/icons/hicolor/48x48/apps/";
-my $OPT_INSTALL_PREFIX = '';
+my @accessed_files;
+my @save_ARGV = @ARGV;
+my $TERM_CMD = "xterm -e";
+
+
+my %Desktop_entries;
+my %Directory_entries;
+
+my $root_menu;
+my $help;
 
 # Default for the mini-icons is mini/ (relatively to the ImagePath)
 my $MINI_ICONS_DIR = 'mini/';
@@ -51,49 +107,153 @@ my $MINI_ICONS_DIR = 'mini/';
 my $ICONS_DIR = '';
 # For png icons
 my $PNG_ICONS = '';
-# Default for mini-icons and icons translation
 my $TRAN_MINI_ICONS = 'mini/';
 my $TRAN_ICONS = '';
-
-#Unused path at the present time
-#$GNOME_ICONS = "$GNOME_PREFIX/share/pixmaps/";
-
-# Name
-my $MENU_TITLE = 'Gnome System Menu';  # default top title
-my $MENU_NAME  = 'gnome-sys';   # default top menu name
-my $MENU_TYPE  = 'fvwm';        # default menu type
-my $DESKTOP    = '';            # will contain Kde or Gnome if possible
-my $OPT_MENU_TITLE = '';
-my $OPT_MENU_NAME  = '';
-my $fvwmgtk_name = "FvwmGtk";   # FvwmGtk module name
-
-# Default "icon"
-
-# mini-icons default (app for application, folder for folder, title for
-# submenu title, toptitle for the top title, fvwm_ for fvwm menu, gtk_ for
-# FvwmGtk menu) the variable $flag will be fvwm_ or gtk_. Use kde
-# default icons for fvwm menus and gnome icons for gtk menus
+my $MINI_ICONS = 0;             # mini-icon disabled  (enable =1)
+my $TRAN       = 0;             # mini-icon translation disabled (enable =1)
+my $wm_icons   = 0;             # use wm-icons compatible menu icon names
+my $fvwm_icons   = 0;           # use fvwm-icons compatible menu icon names
+# check icons
+my $check_icons = "";
+my $check_mini_icons = "";
+my @check_icons_path = ();
+my @check_mini_icons_path = ();
 my %DI;
+my %dmicon;
+# Menu Style option
+my $MENU_STYLE = "";
+my @menus_for_style = ();
+# default for style
 
 $DI{fvwm_app}      = 'mini-x.xpm:dh:%::'; # micon:law:placement:unused
 $DI{fvwm_folder}   = 'folder.xpm:dh:%::'; # idem
 $DI{fvwm_title}    = 'folder.xpm:dh:%::'; # micon:law:place:spic:color
 $DI{fvwm_toptitle} = 'mini-k.xpm:no:%::'; # idem
-$DI{gtk_app}       = 'gnome-default.png:dh:::';	# idem
-$DI{gtk_folder}    = 'gnome-folder.png:dh:::';  # micon:law:unused
-$DI{gtk_title}     = 'gnome-folder.png:dh:::';  # idem
-$DI{gtk_toptitle}  = 'gnome-logo-icon-transparent.png:no:::'; # idem
+my $OPT_INSTALL_PREFIX = '';
 
-my @list=();
-my $i='';
+GetOptions("enable-mini-icons"        => \$MINI_ICONS,
+	   "enable-tran-mini-icons"   => \$TRAN,
+	   "mini-icons-path:s"        => \$MINI_ICONS_DIR,
+	   "png-icons-path:s"         => \$PNG_ICONS,
+	   "tran-mini-icons-path:s"   => \$TRAN_MINI_ICONS,
+	   "icon-toptitle:s"          => \$DI{"fvwm_toptitle"},
+	   "icon-title:s"             => \$DI{"fvwm_title"},
+	   "icon-folder:s"            => \$DI{"fvwm_folder"},
+	   "icon-app:s"               => \$DI{"fvwm_app"},
+	   "icon-style:s"             => \&obsolete,
+	   "icons-path:s"             => \$ICONS_DIR,
+	   "tran-icons-path:s"        => \$TRAN_ICONS,
+	   "wm-icons"                 => \$wm_icons,
+	   "fvwm-icons"               => \$fvwm_icons,
+	   "check-mini-icon=s"        => \$check_mini_icons,
+	   "check-icons=s"            => \$check_icons,
 
-my %dmicon;
-my %law;
-my %place;
-my %spic;
-my %scolor;
+	   "help|h|?"                 => \&show_help,
+	   "version|V"                => \&show_version,
+	   "install-prefix:s"         => $OPT_INSTALL_PREFIX,
+	   "type:s"                   => \&obsolete,
+	   "fvwmgtk-alias=s"          => \&obsolete,
+	   "title:s"                  => \&obsolete,
+	   "name:s"                   => \&obsolete,
+	   "enable-style"             => \&obsolete,
+	   "enable-tran-style"        => \&obsolete,
+	   "submenu-name-prefix:s"    => \&obsolete,
+	   "dir:s"                    => \&obsolete,
+	   "destroy-type:s"           => \&obsolete,
+	   "xterm:s"                  => \$TERM_CMD,
+	   "lang:s"                   => \$language,
+	   "utf8"                     => \&obsolete,
+	   "uniconv=s"                => \$charset,
+	   "uniconv-exec=s"           => \&obsolete,
+	   "menu-style=s"             => \$MENU_STYLE,
+	   "check-app!"               => \&obsolete,
+	   "time-limit=s"             => \&obsolete,
+	   "merge-user-menu"          => \&obsolete,
 
-foreach $i (keys(%DI)) {
+           "verbose" => \$verbose
+    );
+
+icon_init();
+
+$DefaultAppDirs = get_app_dirs();
+$DefaultDirectoryDirs = get_desktop_dirs();
+
+$root_menu = get_root_menu();
+print STDERR "root menu is $root_menu\n" if $verbose;
+
+@KDELegacyDirs = get_KDE_legacy_dirs();
+
+$charset = langinfo(CODESET);
+$language = setlocale(LC_MESSAGES);
+
+if ($verbose) {
+    print STDERR "charset is $charset, language is $language.\n";
+}
+
+$root_cmd = "/opt/gnome/bin/gnomesu" if -x '/opt/gnome/bin/gnomesu';
+$root_cmd = "/opt/kde3/bin/kdesu" if -x '/opt/kde3/bin/kdesu';
+
+@language_keys = prepare_language_keys($language);
+
+unless ( -f $root_menu)
+{
+    print STDERR "Can't find root menu file.\n";
+    exit 1;
+}
+
+my $tree = read_menu($root_menu);
+
+merge_menus($tree);
+move_menus($tree);
+
+my $menu = interpret_root($tree, '');
+
+remove_allocated($menu);
+preprocess_menu($menu);
+remove_empty_menus($menu);
+
+my $output;
+$output = output_fvwm2_menu($menu);
+print $output;
+
+# output the menu style
+if ($MENU_STYLE ne "") {
+    foreach (@menus_for_style) {
+	print qq(ChangeMenuStyle "$MENU_STYLE" "$_"\n);
+    }
+}
+
+
+exit 0;
+
+
+# Set DI to list of icons to use:
+sub icon_init {
+    my @list=();
+    my %law;
+    my %place;
+    my %spic;
+    my %scolor;
+    my $j = "";
+    my $l = "";
+    my $tmp_icon ="";
+    if ($wm_icons) {
+	$MINI_ICONS = 1;
+	$MINI_ICONS_DIR = "";
+	$DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
+	$DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
+	$DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
+	$DI{"fvwm_app"}      = "menu/utility.xpm:ow";
+    }
+    if ($fvwm_icons) {
+	$MINI_ICONS = 1;
+	$MINI_ICONS_DIR = "";
+	$DI{"fvwm_toptitle"} = "mini.fvwm.xpm::%";
+	$DI{"fvwm_title"}    = "mini.folder.xpm::%";
+	$DI{"fvwm_folder"}   = "mini.ofolder.xpm::%";
+	$DI{"fvwm_app"}      = "mini.cat.xpm::%";
+    }
+    foreach my $i (keys(%DI)) {
 	@list = split(':',$DI{$i});
 	$dmicon{$i} = $list[0];	# "default" mini-icon
 	$law{$i}    = $list[1];	# default law
@@ -101,657 +261,76 @@ foreach $i (keys(%DI)) {
 	$spic{$i}   = $list[3];	# sidepic icon
 	$scolor{$i} = $list[4];	# color for sidepic
 	$DI{$i} = '';
-}	
+    }
+    if ( $TRAN ) { $MINI_ICONS = 1 }
 
-my $MINI_ICONS = 0;             # mini-icon disabled  (enable =1)
-my $TRAN       = 0;             # mini-icon translation disabled (enable =1)
-my $wm_icons   = 0;             # use wm-icons compatible menu icon names
-
-
-# default for style
-my %dstyle;
-$dstyle{mini_icon} = 'mini-x.xpm'; # default MiniIcons Style
-$dstyle{gnome_mini_icon}  = 'gnome-default.xpm';
-$dstyle{icon}      = 'x.xpm';   # default Icons Style
-$dstyle{gnome_icon}       = 'gnome-default.xpm';
-my $style_law   = 'dh';         # default law
-my $addstyle    = '';           # a style to add every where
-my $STYLE       = 0;            # style is disable (enable =1)
-my $TRAN_STYLE  = 0;            # translation for style is disabled (enable =1)
-my $STYLEOUTPUT = '';           # The styles are in this variable
-my $ICON_STYLE  = '';
-
-
-# default term for runnig applications in a terminal
-my $TERM_CMD = "xterm -e";
-
-
-# Other stuff
-my $timelimit = 15;                    # limit runing time for the script
-my $LANG      = $ENV{LANG} || "";      # Internationalization support :o)
-my $UTF8      = 0;                     # KDE2 use UTF-8
-my $UTF8_TR   = "";                    # charset type for UTF-8 translation
-my $UNICONV   = "";                    # use a convert tool for UTF8 tr
-my $UNICONV_EXEC = "";                 # iconv, uniconv or internal
-my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
-my $CHECK     = 1;                     # we check by default
-my $MENU_DESTROY = '';
-my $DESC_DIR = '';
-my $SUBMENUS_PREFIX = '';
-
-# Menu Style option
-my $MENU_STYLE = "";
-my @menus_for_style = ();
-
-my $name = "";
-my $l = "";
-my $j = "";
-my $tmp_icon ="";
-my $level = 0;
-my $nlevel = 0;
-my $top_level = 0;
-my $cdir = "";
-my $dir = "";
-my @Rec_Dir_List = ();
-my @Main_List = ();
-my $flag = "";
-my $order ="";
-my $add = 1;
-# merge usr menu
-my $merge_user_menu = 0;
-my $merge_dir = "";
-my $merge_user_dir = "";
-my $sys_dir = "";
-my $merge_dir_type = "";
-my $user_menu_done = 0;
-# check icons
-my $check_icons = "";
-my $check_mini_icons = "";
-my @check_icons_path = ();
-my @check_mini_icons_path = ();
-
-#--------
-# Read the options
-
-GetOptions(
-	"help|h|?"                 => \&show_help,
-	"version|v|V"              => \&show_version,
-	"install-prefix:s"         => $OPT_INSTALL_PREFIX,
-	"desktop:s"                => \$MENU_NAME,
-	"type:s"                   => \$MENU_TYPE,
-	"fvwmgtk-alias=s"          => \$fvwmgtk_name,
-	"title:s"                  => \$OPT_MENU_TITLE,
-	"name:s"                   => \$OPT_MENU_NAME,
-	"enable-mini-icons"        => \$MINI_ICONS,
-	"enable-tran-mini-icons"   => \$TRAN,
-	"mini-icons-path:s"        => \$MINI_ICONS_DIR,
-	"png-icons-path:s"         => \$PNG_ICONS,
-	"tran-mini-icons-path:s"   => \$TRAN_MINI_ICONS,
-	"icon-toptitle:s"          => \$DI{"fvwm_toptitle"},
-	"icon-title:s"             => \$DI{"fvwm_title"},
-	"icon-folder:s"            => \$DI{"fvwm_folder"},
-	"icon-app:s"               => \$DI{"fvwm_app"},
-	"enable-style"             => \$STYLE,
-	"enable-tran-style"        => \$TRAN_STYLE,
-	"icon-style:s"             => \$ICON_STYLE,
-	"icons-path:s"             => \$ICONS_DIR,
-	"tran-icons-path:s"        => \$TRAN_ICONS,
-	"submenu-name-prefix:s"    => \$SUBMENUS_PREFIX,
-	"dir:s"                    => \$DESC_DIR,
-	"destroy-type:s"           => \$MENU_DESTROY,
-	"xterm:s"                  => \$TERM_CMD,
-	"lang:s"                   => \$LANG,
-	"utf8"                     => \$UTF8,
-	"uniconv=s"                => \$UNICONV,
-	"uniconv-exec=s"           => \$UNICONV_EXEC,
-	"menu-style=s"             => \$MENU_STYLE,
-	"check-app!"               => \$CHECK,
-	"wm-icons"                 => \$wm_icons,
-	"time-limit=s"             => \$timelimit,
-	"merge-user-menu"          => \$merge_user_menu,
-	"check-mini-icon=s"        => \$check_mini_icons,
-	"check-icons=s"            => \$check_icons,
-) || wrong_usage();
-wrong_usage() if @ARGV;
-
-die "fvwm-menu-desktop: Incorrect alias ($fvwmgtk_name) is given\n"
-	if $fvwmgtk_name !~ /^\w[\w\d\.-]*$/;
-
-sub print_module_config (@) {
-	foreach (@_) {
-		print "*${fvwmgtk_name}: $_\n";
-	}
-}
-
-#--------------------------------
-# INITIALISATION of the variables
-
-# for limiting running time to $timelimit
-my $startime = time;
-$timelimit = 300 if $timelimit <= 0 || $timelimit > 300;
-
-# see if we build a gnome or a kde menu.
-$DESKTOP = 'Kde'   if ( $MENU_NAME =~ /kde/ );
-$DESKTOP = 'Gnome' if ( $MENU_NAME =~ /gnome/ );
-
-if ( $OPT_INSTALL_PREFIX ne '' ) {
-	$APPS_DIR = $GNOME_APPS = "$OPT_INSTALL_PREFIX/share/gnome/apps";
-	$KDE_APPS = "$OPT_INSTALL_PREFIX/share/applnk";
-	$KDE_MINI_ICONS = "$OPT_INSTALL_PREFIX/share/icons/mini";
-	$KDE3_MINI_ICONS = "$OPT_INSTALL_PREFIX/share/icons/hicolor/16x16/apps/";
-	$KDE_ICONS = "$OPT_INSTALL_PREFIX/share/icons";
-	$KDE3_ICONS = "$OPT_INSTALL_PREFIX/share/icons/hicolor/48x48/apps/";
-	#$GNOME_ICONS = "$OPT_INSTALL_PREFIX/share/pixmaps";
-}
-
-if ( $MENU_TYPE eq 'gtk' ) {
-	$flag ='gtk_';
-	$MENU_DESTROY = 'no'  if ( ! $MENU_DESTROY =~ /^y/ );
-} else {
-	$flag ='fvwm_';
-	$MENU_DESTROY = 'yes' if ( !($MENU_DESTROY =~ /^n/
-		|| $MENU_DESTROY =~ /^d/) );
-}
-
-if ( $MENU_NAME eq 'gnome-sys' && $merge_user_menu) {
-	$merge_user_dir = "$ENV{HOME}/.gnome/apps";
-}
-
-if ( $MENU_NAME eq 'gnome-user' ) {
-	$APPS_DIR   = "$ENV{HOME}/.gnome/apps";
-	$MENU_TITLE = 'Gnome User Menu';
-}
-
-if ( $MENU_NAME eq 'gnome-redhat' ) {
-	$APPS_DIR   = "$ENV{HOME}/.gnome/apps-redhat";
-	$MENU_TITLE = 'Gnome RedHat Menu';
-}
-if ( $MENU_NAME eq 'gnome-mandriva' ) {
-	$APPS_DIR   = "$ENV{HOME}/.gnome/apps-mdk";
-	$MENU_TITLE = 'Gnome Mandriva Menu';
-}
-
-if (! -d $KDE_APPS)
-{
-	$KDE_PREFIX = '';
-}
-
-if ( $DESKTOP eq 'Kde' && $KDE_PREFIX eq '' && $DESC_DIR eq '') {
-	die "fvwm-menu-desktop: It seems that kde is _not_ installed on your\n"
-		. "machine! If it is, please use the --install-prefix or the\n"
-		. "--dir option (see the man page).\n";
-}
-
-if ( $MENU_NAME eq 'kde-sys' ) {
-	$APPS_DIR   = $KDE_APPS;
-	$MENU_TITLE = 'Kde System Menu';
-	if ($merge_user_menu) {
-		$merge_user_dir = "$ENV{HOME}/.kde/share/applnk";
-	}
-}
-
-if ( $MENU_NAME eq 'kde-user' ) {
-	$APPS_DIR   = "$ENV{HOME}/.kde/share/applnk";
-	$MENU_TITLE = 'Kde User Menu';
-}
-
-if ( $DESC_DIR ne '') {
-	$APPS_DIR   = $DESC_DIR;
-	$DESC_DIR   =~ s/\/*$//;
-	$name       = substr($DESC_DIR,rindex($DESC_DIR,'/')+1);
-	$DESKTOP    = 'Kde' if ( $DESC_DIR =~ /kde/ && $DESKTOP eq '');
-	$DESKTOP    = 'Gnome' if ( $DESC_DIR =~ /gnome/ && $DESKTOP eq '');
-	$MENU_NAME  = $MENU_TITLE = "$name";
-	if ( $DESKTOP ne '' ) {
-		$MENU_NAME  = "$DESKTOP-$MENU_NAME";
-		$MENU_TITLE = "$DESKTOP $name";
-	}
-}
-
-# Menu Title is recomputed later if $opt_menu_name is undefined
-# (try to use Desktop hints).
-$MENU_NAME  = $OPT_MENU_NAME  if ( $OPT_MENU_NAME ne '' );
-$MENU_TITLE = $OPT_MENU_TITLE if ( $OPT_MENU_TITLE ne '' );
-
-# Prefix for submenu:
-if ($SUBMENUS_PREFIX ne '')  { $SUBMENUS_PREFIX = "$SUBMENUS_PREFIX-" }
-else { $SUBMENUS_PREFIX = "$MENU_NAME-" }
-
-
-# ---------
-# Icon init
-
-if ($wm_icons) {
-	$MINI_ICONS = 1;
-	$MINI_ICONS_DIR = "";
-	$DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
-	$DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
-	$DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
-	$DI{"fvwm_app"}      = "menu/utility.xpm:ow";
-}
-
-if ( $TRAN ) { $MINI_ICONS = 1 }
-
-if ( $MINI_ICONS_DIR ne 'mini/' || $ICONS_DIR ne '') {
+    if ( $MINI_ICONS_DIR ne 'mini/' || $ICONS_DIR ne '') {
 	if ($MINI_ICONS_DIR ne '' ) { $MINI_ICONS_DIR =~ s/\/*$/\// };
 	if ( $ICONS_DIR eq '' ) {
-		$ICONS_DIR = up_directory($MINI_ICONS_DIR)
+	    $ICONS_DIR = up_directory($MINI_ICONS_DIR)
 	} else {
-		if ( $ICONS_DIR eq 'inpath' ) { $ICONS_DIR = '' }
-		else { $ICONS_DIR =~ s/\/*$/\//  if ($MINI_ICONS_DIR ne '' ) }
-	}
-}
+	    if ( $ICONS_DIR eq 'inpath' ) { $ICONS_DIR = '' }
+	    else { $ICONS_DIR =~ s/\/*$/\//  if ($MINI_ICONS_DIR ne '' ) }
+    }
+    }
 
-if ( $TRAN_MINI_ICONS ne 'mini/' || $TRAN_ICONS ne '' ) {
+    if ( $TRAN_MINI_ICONS ne 'mini/' || $TRAN_ICONS ne '' ) {
 	if ($TRAN_MINI_ICONS ne '' ) { $TRAN_MINI_ICONS =~ s/\/*$/\// };
 	if ( $TRAN_ICONS eq '' ) {
-		$TRAN_ICONS = up_directory($TRAN_MINI_ICONS)
+	    $TRAN_ICONS = up_directory($TRAN_MINI_ICONS)
 	} else {
-		if ( $TRAN_ICONS eq 'inpath' ) { $TRAN_ICONS = '' }
-		else { $TRAN_ICONS =~ s/\/*$/\// if ($TRAN_ICONS ne '' ) }
-	}
-}
+	    if ( $TRAN_ICONS eq 'inpath' ) { $TRAN_ICONS = '' }
+	    else { $TRAN_ICONS =~ s/\/*$/\// if ($TRAN_ICONS ne '' ) }
+    }
+    }
 
-$PNG_ICONS =~  s/\/*$/\// if ($PNG_ICONS ne '');
+    $PNG_ICONS =~  s/\/*$/\// if ($PNG_ICONS ne '');
 
 # init default mini-icons, law, place, sidepic, color
 
-foreach $i (qw(folder title toptitle app)) {
-	$DI{"gtk_$i"} =  $DI{"fvwm_$i"};
-}
-
-if ( $flag eq 'gtk_') {
-	foreach $i (qw(gtk_app gtk_folder gtk_title gtk_toptitle)) {
-		$dmicon{$i} = "$PNG_ICONS$dmicon{$i}";
-		@list       = split(':',$DI{$i});
-		$l = @list;
-		while ( $l <= 2 ) { push(@list,''); ++$l }
-		$law{$i} = $list[1] if  ($list[1] eq 'no'  || $list[1] eq 'ow'
-		    ||  $list[1] eq 're' || $list[1] eq 'dh' );
-		$dmicon{$i} = "$PNG_ICONS$list[0]" if ( $list[0] ne '' );
-		$dmicon{$i} = '' if ( $law{$i} eq 'no' || !$MINI_ICONS );
+    foreach my $i (qw(fvwm_app fvwm_folder fvwm_title fvwm_toptitle)) {
+	print STDERR "DEBUG: foreach $i.\n" if $verbose; # dje debug
+	# With the mini-icons-tran options we "use" gtk default
+	if ( $TRAN ) {
+	    $j = substr($i,index($i,'_'));
+	    $j = "gtk$j";
+	    $law{$i} = $law{$j};
+	    $tmp_icon  = $dmicon{$j};
+	    $tmp_icon  =~ s/\.png$/\.xpm/;
+	    $dmicon{$i} = "$TRAN_MINI_ICONS$tmp_icon";
+	} else {
+	    $dmicon{$i} = "$MINI_ICONS_DIR$dmicon{$i}";
 	}
-} else {
-	foreach $i (qw(fvwm_app fvwm_folder fvwm_title fvwm_toptitle)) {
-		# With the mini-icons-tran options we "use" gtk default
-		if ( $TRAN ) {
-			$j = substr($i,index($i,'_'));
-			$j = "gtk$j";
-			$law{$i} = $law{$j};
-			$tmp_icon  = $dmicon{$j};
-			$tmp_icon  =~ s/\.png$/\.xpm/;
-			$dmicon{$i} = "$TRAN_MINI_ICONS$tmp_icon";
-		} else {
-			$dmicon{$i} = "$MINI_ICONS_DIR$dmicon{$i}";
-		}
-		@list = split(':',$DI{$i});
-		$l = @list;
-		while ( $l <= 5 ) { push(@list,''); ++$l }
-		$law{$i}     = $list[1] if ($list[1] eq 'no'  || $list[1] eq 'ow'
-			|| $list[1] eq 're' || $list[1] eq 'dh' );
-		$dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if ( $list[0] ne '' );
-		$place{$i}   = '*' if ($list[2] eq 'up');
-		$dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
-		$dmicon{$i}  = '' if ($law{$i} eq 'no' || $MINI_ICONS == 0);
-		if ( $list[3] ne '' ) { $spic{$i}   = "\@$list[3]\@" }
-		else { $spic{$i}   = '' }
-		if ( $list[4] ne '' && $list[3] ne '' ) { $scolor{$i} = "\^$list[4]\^" }
-		else {$scolor{$i} = ''};
+	if ( $verbose ) {
+	    while ( my ($key,$value) = each %dmicon) {
+		print STDERR "INTERMEDIATE icons to use $key -> $value.\n";
+	    }
 	}
-}
-
-# style init
-if ( $TRAN_STYLE ) { $STYLE = 1 }
-
-if ( $STYLE ) {
-
-	@list= split(':',$ICON_STYLE);
+	@list = split(':',$DI{$i});
 	$l = @list;
-	while ( $l <= 4 ) { push(@list,''); ++$l }
-
-	if ( $TRAN_STYLE || $TRAN ) {
-		if ( $list[0] ne '' ) { $dstyle{mini_icon} = $TRAN_MINI_ICONS . $list[0] }
-		else { $dstyle{mini_icon} = $TRAN_MINI_ICONS . $dstyle{gnome_mini_icon} }
-		if ( $list[1] ne '' ) { $dstyle{icon} = $TRAN_ICONS . $list[1] }
-		else { $dstyle{icon} = $TRAN_ICONS . $dstyle{gnome_icon} }
-	} else {
-		if ( $list[0] ne '' ) { $dstyle{mini_icon} = $MINI_ICONS_DIR . $list[0] }
-		else { $dstyle{mini_icon} = $MINI_ICONS_DIR . $dstyle{mini_icon} }
-		if ( $list[1] ne '' ) { $dstyle{icon} = $ICONS_DIR . $list[1] }
-		else { $dstyle{icon} = $ICONS_DIR . $dstyle{icon} }
-	}
-
-	$style_law = $list[2] if ( $list[2] eq 'dh' ||   $list[2] eq 'ow'
-		|| $list[2] eq 're' );
-	$addstyle = $list[3] if ( $list[3] ne '' );
-
-}
-
-if ($check_mini_icons ne "") {
+	while ( $l <= 5 ) { push(@list,''); ++$l }
+	$law{$i}     = $list[1] if ($list[1] eq 'no'  || $list[1] eq 'ow'
+				    || $list[1] eq 're' || $list[1] eq 'dh' );
+	$dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if ( $list[0] ne '' );
+	$place{$i}   = '*' if ($list[2] eq 'up');
+	$dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
+	$dmicon{$i}  = '' if ($law{$i} eq 'no' || $MINI_ICONS == 0);
+	if ( $list[3] ne '' ) { $spic{$i}   = "\@$list[3]\@" }
+	else { $spic{$i}   = '' }
+	if ( $list[4] ne '' && $list[3] ne '' ) { $scolor{$i} = "\^$list[4]\^" }
+	else {$scolor{$i} = ''};
+    }
+    if ($check_mini_icons ne "") {
 	@check_mini_icons_path = split(":", $check_mini_icons);
-}
-if ($check_icons ne "") {
+    }
+    if ($check_icons ne "") {
 	@check_icons_path = split(":", $check_icons);
-}
-
-#----------------
-# LANG init for UTF-8
-if ($UTF8) {
-	# check if we have perl >= 5.6
-	if ($] < 5.006) {
-		$UTF8_TR = "";
-	} else {
-		my $l = substr($LANG,0,2);
-		# latin-1: not sure that all these lang are "latin1"!
-		$UTF8_TR = '$tmpLabel =~ tr/\0-\x{ff}//UC'
-			if " ca de es it fr gl hu is lt nl no pt sv " =~ / $l /;
+    }
+    if ( $verbose ) {
+	while ( my ($key, $value) = each %dmicon) {
+	    print STDERR "icons to use $key -> $value.\n";
 	}
-}
-
-if ($UNICONV ne "") {
-	# check whether internal method is available
-	if ($UNICONV_EXEC eq "" || $UNICONV_EXEC eq "internal") {
-		eval "use Encode 'from_to';";
-		if ($UNICONV_EXEC eq "internal" && $@) {
-			die "You don't have a good perl version to use" .
-				" 'internal' unicode conversion:\n$@";
-		}
-		$UNICONV_EXEC = $@? "iconv": "internal";
-	}
-	# setup unicode conversion
-	if ($UNICONV_EXEC eq "iconv") {
-		die "iconv not found in your path\n" 
-			unless check_app("iconv");
-		$UTF8_TR = q{
-			$tmpLabel =~ s/'/'\\\\''/g;
-			open(U, "echo '$tmpLabel' | iconv -f UTF8 -t $UNICONV |");
-			while (<U>) { chomp; $tmpLabel = $_ }
-			close(U);
-		};
-	} elsif ($UNICONV_EXEC eq "uniconv") {
-		die "uniconv not found in your path\n" 
-			unless check_app("uniconv");
-		$UTF8_TR = q{
-			$tmpLabel =~ s/'/'\\\\''/g;
-			open(U, "echo '$tmpLabel' | uniconv -I UTF8 -O $UNICONV |");
-			while (<U>) { chomp; $tmpLabel = $_ }
-			close(U);
-		};
-	} elsif ($UNICONV_EXEC eq "internal") {
-		$UTF8_TR = 'from_to($tmpLabel, "utf-8", "$UNICONV")';
-	} else {
-		die "--uniconv argument must be iconv, uniconv or internal\n";
-	}
-	$UTF8 = 1;
-}
-
-#----------------
-# "Main" variable: contains the directories to look at.
-# + is the "level" separator, the menu is built level by level
-# with a double loop
-if ($merge_user_menu && -d $merge_user_dir) {
-	@Rec_Dir_List = ("$merge_user_dir","+");
-} else {
-	@Rec_Dir_List = ("$APPS_DIR", "+");
-	$user_menu_done = 1;
-	$merge_user_menu = 0;
-}
-
-# init level
-# what is the function count("/", $dir) ?
-$level = 0;
-$cdir = $APPS_DIR;
-while ( $cdir =~ /\// ) {
-	$cdir =~ s/\///;
-	++$level;
-}
-$top_level = $level;
-$nlevel = $level +1;		# next level
-my $is_top_level = 1;
-
-#---------------------------------
-# Main loop (double loop)
-while( $Rec_Dir_List[0] ne '+') {
-
-	# construct a level (may add some .fvwm2rc comment here)
-	while( $Rec_Dir_List[0] ne '+') {
-
-		$dir = $Rec_Dir_List[0]; # current working directory
-		@Main_List=();	# will contain the list of the file and dir
-		#               # of $dir (in good order)
-		my $hidden = 0;
-		my @orderedList = ();
-		my @newDirList = ();
-
-		my @sList = ();
-		my @uList = ();
-		my @sDir = ();
-		my @uDir = ();
-		my @list = ();
-
-		if ($merge_user_menu) {
-			$merge_dir = $dir;
-			$sys_dir = $dir;
-			$merge_dir =~ s#^$APPS_DIR#$merge_user_dir#;
-			$sys_dir =~ s#^$merge_user_dir#$APPS_DIR#;
-			if ("$sys_dir" eq "$dir") { $merge_dir_type = "s"; }
-			else { $merge_dir_type = "u"; }
-		}
-
-		#--------
-		# Construct the Main_List:
-		# 1. look at an "order" hint and begin the list
-		# 2. complete the list
-
-		# 1. Look to the desktop order hint
-		# For gnome there is an .order file. For kde the order is in the
-		# .directory file.
-
-		# for gnome
-		if ( -f "$dir/.order" ) {
-			open(ORDER, "$dir/.order") || print STDERR
-			"fvwm-menu-desktop: Can't open $dir/.order: $!\n";
-			while( defined ($name = <ORDER>)) {
-				chomp($name);
-				push(@orderedList, "$dir/$name");
-			}
-			close(ORDER);
-		}
-
-		# for kde
-		# see if the user has over read the systeme .directory:
-		if ("$merge_dir_type" eq "s" && -f "$merge_dir/.directory") {
-			open(ORDER, "$merge_dir/.directory") || print STDERR
-			"fvwm-menu-desktop: Can't open $merge_dir/.directory: $!\n";
-			while(<ORDER>) {
-				$hidden = 1 if /^hidden=true/i;
-				if ( /^SortOrder=(.*)$/ ) {
-					@orderedList = ();
-					$order = "$1";
-					@list = split(/\s*,\s*/, "$order");
-					foreach $name (@list) {
-						next if -f "$merge_dir/$name" && is_hidden("$merge_dir/$name");
-						push(@orderedList, "$dir/$name"); 
-					}
-				}
-			}
-			close(ORDER);
-		} elsif ( -f "$dir/.directory" ) {
-			open(ORDER, "$dir/.directory") || print STDERR
-			"fvwm-menu-desktop: Can't open $dir/.directory: $!\n";
-			while(<ORDER>) {
-				$hidden = 1 if /^hidden=true/i;
-				if ( /^SortOrder=(.*)$/ ) {
-					@orderedList = ();
-					$order = "$1";
-					@list = split(/\s*[,;]\s*/, "$order");
-					foreach $name (@list) {
-						next if $merge_user_menu && -f "$merge_dir/$name" && 
-						  is_hidden("$merge_dir/$name");
-						push(@orderedList, "$dir/$name"); 
-					}
-				}
-			}
-			close(ORDER);
-		}
-		@orderedList = () if $hidden;
-
-		# 2. Add to @Main_List the items not in the order.
-		# AND WE UPDATE @Rec_Dir_List HERE
-
-		# a system submenu has a submenu in the user menu:
-		if ($merge_dir_type eq "s" && ! -d $dir && -d $merge_dir) {
-			foreach $name (read_dir($merge_dir)) {
-				next if $name =~ /^\./;
-				$add = (-f "$dir/$name") || is_dir_not_empty("$dir/$name");
-				if (-d "$merge_dir/$name") {
-					next if -f "$merge_dir/$name/.directory" && 
-					  is_hidden("$merge_dir/$name/.directory");
-					push(@uDir, "$dir/$name") if $add;
-				}
-				foreach $j (@orderedList) { $add=0 if "$dir/$name" eq "$j"; }
-				push(@uList, "$dir/$name") if $add ;
-			}
-		}
-
-		if (-d $dir) {
-			foreach $name (read_dir($dir)) {
-				next if $name =~ /^\./;
-				$add = (-f "$dir/$name") || is_dir_not_empty("$dir/$name");
-				if ( -d "$dir/$name" ) {
-					if ($merge_dir_type eq "s" && -f "$merge_dir/$name/.directory") {
-						next if is_hidden("$merge_dir/$name/.directory");
-					}
-					elsif ($merge_dir_type eq "u" && -d "$sys_dir/$name") {
-						next;
-					}
-					elsif ( -f "$dir/$name/.directory") {
-						next if is_hidden("$dir/$name/.directory");
-					}
-					push(@sDir, "$dir/$name") if $add;
-				} elsif ($merge_dir_type eq "s" && -f "$merge_dir/$name") {
-					next if is_hidden("$merge_dir/$name");
-				}
-				foreach $j  (@orderedList) {
-					$add=0 if ("$dir/$name" eq "$j");
-				}
-				push(@sList, "$dir/$name") if $add;
-			}
-			close(DIR);
-		}
-		# added user entries in a "system" submenu
-		if ($merge_dir_type eq "s" && -d "$merge_dir") {
-			foreach $name (read_dir("$merge_dir")) {
-				next if $name =~ /^\./;
-				next if -d "$dir/$name" || -f "$dir/$name";
-				next if "$dir" eq "$APPS_DIR";
-				if (-d "$merge_dir/$name") {
-					push(@uDir, "$dir/$name") if -d "$merge_dir/$name";
-				} elsif (-f "$merge_dir/$name") {
-					next if is_hidden("$merge_dir/$name");
-				}
-				$add = 1;
-				foreach $j (@orderedList) {
-					$add=0 if ("$dir/$name" eq "$j");
-				}
-				push(@uList, "$dir/$name") if $add;
-			}
-		}
- 
-		# ---------
-		# Build the menu of $dir
-		if (!$hidden) {
-			push @Rec_Dir_List, @uDir, @sDir;
-			push @Main_List, @orderedList, @uList, @sList;
-			build_a_level();
-		}
-
-		shift(@Rec_Dir_List);
-	}
-
-	# next level
-	$is_top_level = 0;
-	$level = $nlevel;
-	++$nlevel;
-	shift @Rec_Dir_List;	# push out the "+"
-	push( @Rec_Dir_List, '+' );	# add a level separator
-	if ($merge_user_menu && $Rec_Dir_List[0] eq '+' && !$user_menu_done) {
-		$user_menu_done = 1;
-		$is_top_level = 1;
-		@Rec_Dir_List = ("$APPS_DIR", "+");
-	}
-	# @Rec_Dir_List = (+) => END
-}
-
-# output the style
-print "$STYLEOUTPUT" if ( $STYLE );
-
-# output the menu style
-if ($MENU_STYLE ne "") {
-	foreach (@menus_for_style) {
-		print qq(ChangeMenuStyle "$MENU_STYLE" "$_"\n);
-	}
-}
-
-# end of main
-#----------------------------------------------------------------------------
-#----------------------------------------------------------------------------
-# Subroutines:
-#     read_dir
-#     is_hidden
-#     up_directory
-#     build_a_level (build a (sub)Menu)
-#     get_info (Read Desktop hints, compute icons)
-#     update_style
-#     check_app
-#
-#----------------------------------------------------------------------------
-#----------------------------------------------------------------------------
-# 
-sub read_dir {
-	my $dir = shift;
-			
-	opendir(DIR, $dir) || return ();
-	# put the dirs first ...
-	my @f = ();
-	my @d = ();
-	my @l = ();
-	foreach $name (readdir(DIR)) {
-		next if  $name =~ /^\./;
-		if (-d "$dir/$name") {
-			push (@d, "$name");
-		}
-		elsif (-f "$dir/$name") {
-			push (@f, "$name");
-		}
-	}
-	close(DIR);
-	return (@d, @f);
-}
-
-sub is_dir_not_empty {
-	my $dir = shift;
-
-	return 0 if (! -d $dir);
-	opendir(DIR, $dir) || return 0;
-	foreach $name (readdir(DIR)) {
-		next if $name =~ /^\./;
-		close(DIR);
-		return 1;
-	}
-	return 0;
-}
-
-sub is_hidden {
-	my $file = shift;
-	my $return = 0;
-
-	return 0 if ! -f $file;
-	open(ISHIDDEN, "$file") || print STDERR
-	  "fvwm-menu-desktop: Can't open $merge_dir/$file";
-	while(<ISHIDDEN>) { $return = 1 if /^hidden=true/i; }
-	close(ISHIDDEN);
-	return $return;
+    }
 }
 
 # Compute cd ..
@@ -765,421 +344,1349 @@ sub up_directory {
 	return $dir;
 }
 
-#----------------------------------------------------------------------------
-# Build a (sub)menu
-sub build_a_level {
-	my ($label, $exec, $mini_icon) = ('', '', '');
-	my ($style_mini_icon,$style_icon) = ('', '');
-	my $titletype;
-	my $tmp_name;
-	my $name;
-	my $item;
 
+sub check_file {
+    my ($file) = @_;
+    unless ( -e $file ) {
+        push @accessed_files, "X $file";
+        return '';
+    }
+    if ( -d $file ) {
+        push @accessed_files, "D $file";
+        return 'D';
+    }
+    else {
+        push @accessed_files, "F $file";
+        return 'F';
+    }
+}
+sub scan_AppDir {
+    my ( $pool, $dir, $topdir ) = @_;
 
-	# Head of the menu
-#	if ( $level == $top_level ) {
-	if ($is_top_level) {
-		$mini_icon = $dmicon{$flag .'toptitle'};
-		$name = $MENU_NAME;
-		if ($merge_dir_type eq "s" && -r "$merge_dir/.directory") {
-			($label, $mini_icon) = get_info("$merge_dir/.directory", 'toptitle')
-		}
-		if (-r "$dir/.directory") {
-			($label, $mini_icon) = get_info("$APPS_DIR/.directory", 'toptitle')
-		}
-		if ( $label eq '' || $OPT_MENU_TITLE ne '') { $label = $MENU_TITLE }
-		else { $label = "$DESKTOP $label" }
-		$titletype = 'toptitle';
-	} else {
-		$tmp_name = substr($dir,rindex ($dir,'/')+1);
-		$name = "$SUBMENUS_PREFIX$tmp_name-$level";
-		$mini_icon = $dmicon{$flag . 'title'};
-		if ($merge_dir_type eq "s" && -r "$merge_dir/.directory") {
-			($label, $mini_icon) = get_info("$merge_dir/.directory", 'title');
-		}
-		if (-r "$dir/.directory") {
-			($label, $mini_icon) = get_info("$dir/.directory", 'title');
-		}
-		$label = $tmp_name if ( $label eq '');
-		$titletype = 'title';
-	}
-
-	# Now we can print the Head of the (sub)menu
-	if (!($is_top_level && $merge_user_menu && $user_menu_done)) {
-		if ( $flag eq 'gtk_' ) {
-			print_module_config qq(Destroy "$name")
-			  if ( $level == $top_level && $MENU_DESTROY =~ /^y/ );
-			print_module_config qq(Menu "$name"),
-			qq(Title "$label" $mini_icon),
-			qq(Separator);
-		} else {
-		#		if ( $level != $top_level || $MENU_DESTROY =~ /^y/ ) {
-			if ( (!$is_top_level || $MENU_DESTROY =~ /^y/) ) {
-				print "DestroyMenu \"$name\"\n";
-			} elsif ( $MENU_DESTROY =~ /^d/ ) {
-				print "DestroyMenu recreate \"$name\"\n";
-			}
-			print "AddToMenu \"$name$spic{\"$flag$titletype\"}" .
-			  "$scolor{\"$flag$titletype\"}\" \"$label$mini_icon\" Title\n";
-			push @menus_for_style, $name;
-		}
-	} else {
-		if ( $flag eq 'gtk_' ) {
-			print_module_config qq(Menu "$name");
-		} else {
-			print "AddToMenu \"$name\" \n";
-		}
-	}
-
-	# Items of the menu
-	for $item (@Main_List) {
-
-		#PB (good place ??)
-		if ( time - $startime >= $timelimit ) {
-			die "fvwm-menu-desktop runs longer than time-limit; dying (see the man page)\n";
-		}
-		$label = '';
-		$tmp_name = substr($item,rindex ($item,'/')+1);
-
-		my $itemDD = "$item/.directory";
-		if ($merge_dir_type eq "s" && -r "$merge_dir/$tmp_name") {
-			$item = "$merge_dir/$tmp_name";
-			$itemDD = "$item/.directory" if -r "$item/.directory";
-		}
-
-		# If it is a dir --> a pop up (folder)
-		if ( -d "$item" ) {
-			$name = "$SUBMENUS_PREFIX$tmp_name-$nlevel";
-			($label, $mini_icon) = get_info("$itemDD", 'folder')
-				if (-r "$itemDD");
-			$label= $tmp_name if ( $label eq "");
-			if ( $flag eq 'gtk_' ) {
-				print_module_config qq(Destroy "$name"),
-					qq(SubMenu "$label" "$name" $mini_icon);
-			} else {
-				print "+ \"$label$mini_icon\" Popup \"$name\"\n";
-			}
-		}
-
-		# a file --> application
-		$exec = '';
-		if (-r $item ) {
-			($name, $mini_icon, $exec) = get_info($item, 'app');
-		}
-		if ( $exec ne '' ) {
-			if ( $flag  eq 'gtk_' ) {
-				print_module_config qq(Item "$name" "Exec exec $exec" $mini_icon);
-			} else {
-				print "+ \"$name$mini_icon\" Exec exec $exec\n";
-			}
-		}
-
-		# for kde
-		if ( $item eq "$dir/SEPARATOR") {
-			if  ( $flag  eq 'gtk_' ) {
-				print_module_config "Separator";
-			} else {
-				print qq(+ "" Nop\n);
-			}
-		}
-
-	}
+    check_file($dir);
+    $topdir = $dir unless defined $topdir;
+    return if ( check_file($dir) ne 'D' );
+    my $DIR;
+    opendir( $DIR, $dir ) or return;
+    foreach my $entry ( readdir($DIR) ) {
+        if ( -f "$dir/$entry" && $entry =~ /\.desktop$/ ) {
+            read_desktop_entry( $pool, "$dir/$entry", $topdir );
+        } elsif (-d "$dir/$entry"
+		 && $entry ne '.'
+		 && $entry ne '..'
+		 && $entry ne '.hidden' ) {
+            scan_AppDir( $pool, "$dir/$entry", $topdir );
+        }
+    }
+    closedir $DIR;
 }
 
+sub scan_DirectoryDir {
+    my ( $pool, $dir, $topdir ) = @_;
 
-# ---------------------------------------------------------------------------
-# Read Desktop hints, compute the (mini-)icon and build the STYLE (via a sub)
+    check_file($dir);
+    $topdir = $dir unless defined $topdir;
 
-sub get_info {
-	my($file,$which) = @_;
-	my($label, $mini_icon, $exec) = ('', '', '', '');
-	my($icon, $tran_icon, $tran_mini_icon) = ('', '', '', '');
-	my $term = 0;
-	my($deflabel, $onelabel) = ('', '');
-	my $exec_exec = '';
-	my($style_icon, $style_mini_icon) = ('', '');
+    my $DIR;
+    opendir( $DIR, $dir ) or return;
 
-	open(DESC,$file) || die "fvwm-menu-desktop: can't open $file: $!";
-	while(<DESC>) {
-		if ( /^Name\[$LANG.*\]\s*=\s*(.*)$/ ) { 
-			$label = $1;
-			if ($UTF8) {
-				my $tmpLabel = $label;
-				if ($UTF8_TR ne "") { eval $UTF8_TR; $label = $tmpLabel } 
-				else { $label = ""; }
-			}
-			#$label =~ s/%/%%/g;
-			#$label =~ s/&/&&/g;
-			#$label =~ s/\*/\*\*/g;
-			next;
-		}
-
-		if (/^Name\s*=\s*(.*)$/) {
-			$deflabel = $1;
-			if ($UTF8) {
-				my $tmpLabel = $deflabel;
-				# needed for user menu!
-				if ($UTF8_TR ne "") { eval $UTF8_TR; $deflabel = $tmpLabel } 
-			}
-			next;
-		}
-
-		# Mandrake creates lines like:
-		# Exec=NO_XALF command args...
-		if ( /^Exec\s*=\s*NO_XALF\s*((\S*).*$)/ ) {
-			#print STDERR "FOUND X_ALF EXEC $1 EXEC_EXEC $2\n";
-			$exec = $1;
-			$exec_exec = $2;
-			next;
-		}
-		if ( /^Exec\s*=\s*((\S*).*$)/ ) {
-			$exec = $1;
-			$exec_exec = $2;
-			next;
-		}
-
-		if (/^Terminal\s*=\s*1/) {
-			$term = 1;
-			next;
-		}
-
-		if ( /^Icon=(.*)$/ ) { 
-			$icon = substr($1,rindex($1,'/')+1);
-			next;
-		}
-
-		# kde gives sometimes a mini-icon hint
-		if ( /^MiniIcon=(.*)$/ ) { 
-			$mini_icon = substr($1,rindex($1,'/')+1);
-			next;
-		}
-	}
-	
-	close(DESC);
-	# kde2 give just the name of the icons and use png icons
-	# try a more general fix.
-	my $tmp = "png";
-	$icon = "$icon.$tmp" if $icon !~ /\....$/ && $icon ne '';
-	$mini_icon = "$mini_icon.$tmp" 
-	  if $mini_icon !~ /\....$/ && $mini_icon ne '';
-	#print STDERR "$icon,$mini_icon\n";
-
-	#----------------------
-	# See which info we get
-
-	$label = $deflabel if ( $label eq '');
-	$label = $onelabel if ( $label eq '');
-
-	if ( $which eq 'app' ) {
-		# kde introduce some %foo things after the executable for options
-		# "%c" is for the name (caption option)
-		# other things seems useless for us !
-		# (%i is for icon, %m is for mini-icon, %u is for ??user?? and
-		# %f is for file I presume, but what file ???)
-		# we use caption
-		$exec =~ s/\"\%c\"/\"$label\"/;
-		$exec =~ s/\%.//g;
-
-		# check the existence of the app
-		return('', '', '') if $CHECK && !check_app($exec_exec);
-
-		# term
-		$exec = "$TERM_CMD $exec" if $term;
-
-		#sometimes kde workers forget the icons and the mini-icons:
-		if ( $mini_icon eq '' && $APPS_DIR eq  $KDE_APPS) {
-			$mini_icon = "$exec_exec.xpm"
-				if ( -f "$KDE_MINI_ICONS$exec_exec.xpm");
-			$mini_icon = "$exec_exec.png"
-				if ( -f "$KDE3_MINI_ICONS$exec_exec.png");
-			$icon = "$exec_exec.xpm"
-				if ( -f "$KDE_ICONS$exec_exec.xpm" );
-			$icon = "$exec_exec.png"
-				if ( -f "$KDE3_ICONS$exec_exec.png" );
-		}
-	}
-
-	#----------------------------
-	# if no icons or ow and no style we can return now
-	return($label, $dmicon{$flag . $which}, $exec)
-		if ( ($law{"$flag$which"} eq 'ow'
-			|| $law{"$flag$which"} eq 'no'
-			|| !$MINI_ICONS) && !$STYLE );
-
-	#--------------
-	# now the icons
-
-	$mini_icon = $icon if ( $mini_icon eq '');
-	$icon = $mini_icon if  ( $icon eq '');
-
-
-	# Translation
-	# for mini-icons-tran && style(-tran) (we translate only the mini-icon
-	# since gnome do not specify mini icon ...).
-	if ( ($TRAN && $flag eq 'fvwm_') || ($TRAN_STYLE) ) {
-		$tmp_icon = $mini_icon;
-		if ( $tmp_icon =~ /\.png$/ ) {
-			$tmp_icon =~ s/\.png$/\.xpm/;
-			$tran_mini_icon = $tmp_icon if ( (-f "$TRAN_MINI_ICONS$tmp_icon")
-				|| !($TRAN_MINI_ICONS =~ /^\//) );
-			$tran_icon = $tmp_icon if ( (-f "$TRAN_ICONS$tran_mini_icon")
-				|| !($TRAN_ICONS =~ /^\//) );
-		}
-	}
-
-
-	# no .png icons with fvwm menu
-	#$mini_icon = '' if ( $flag eq 'fvwm_' && $mini_icon =~ /\.png$/ );
-
-	if ($check_mini_icons ne "" && $mini_icon ne "") {
-		my $ok = 0;
-		my $d;
-		foreach $d (@check_mini_icons_path) {
-			$ok = 1 if -f "$d/mini_icon";
-		}
-		$mini_icon = "" if !$ok;
-	}
-	if ($check_icons ne "" && $icon ne "") {
-		my $ok = 0;
-		my $d;
-		foreach $d (@check_icons_path) {
-			$ok = 1 if -f "$d/icon";
-		}
-		$icon = "" if !$ok;
-	}
-
-	# Ok the icons are computed except the path.
-
-	# Style
-	if ( $STYLE && $which eq 'app' ) {
-		if ( $tran_mini_icon ne '' )  {
-			$style_mini_icon = $tran_mini_icon;
-		} else {
-			$style_mini_icon = $mini_icon;
-		}
-		if ( $tran_icon ne '' ) {
-			$style_icon = $tran_icon
-		}
-		else {
-			$style_icon = $icon;
-		}
-		update_style($style_mini_icon, $style_icon, $exec_exec)
-	}
-
-	# Add the path
-	if ( $TRAN && $tran_mini_icon ne '' ) {
-		$mini_icon = "$TRAN_MINI_ICONS$tran_mini_icon";
-	} elsif ( $mini_icon ne '' ) {
-		$mini_icon = "$MINI_ICONS_DIR$mini_icon";
-		if ( $mini_icon =~ /\.png$/ ) { $mini_icon = "$PNG_ICONS$mini_icon" }
-		else { $mini_icon =  "$MINI_ICONS_DIR$mini_icon" }
-	}
-
-	#return the info with icon
-
-	return($label, $dmicon{$flag . $which}, $exec)
-		if ( $law{"$flag$which"} eq 'ow'
-			|| $law{"$flag$which"} eq 'no'
-			|| $MINI_ICONS == 0
-			|| ($mini_icon eq '' && $law{"$flag$which"} eq 're') );
-
-	return($label, $mini_icon, $exec)
-		if ($flag eq 'gtk_');
-
-	return($label,
-			 "$place{\"$flag$which\"}$mini_icon$place{\"$flag$which\"}",$exec)
-	if $mini_icon ne '';
-
-	return($label, '', $exec);
+    foreach my $entry ( readdir($DIR) ) {
+        if ( -f "$dir/$entry" && $entry =~ /\.directory$/ ) {
+            read_directory_entry( $pool, "$dir/$entry", $topdir );
+        } elsif (-d "$dir/$entry"
+		 && $entry ne '.'
+		 && $entry ne '..'
+		 && $entry ne '.hidden' ) {
+            scan_DirectoryDir( $pool, "$dir/$entry", $topdir );
+        }
+    }
+    closedir $DIR;
 }
 
+sub read_directory_entry {
+    my ( $pool, $file, $topdir ) = @_;
 
-# ---------------------------------------------------------------------------
-# Update style
-
-sub update_style {
-	my($style_mini_icon, $style_icon, $exec_exec) = @_;
-
-	# Gnome exception for $exec_exec, I probably forget some ...
-	# seems that there is a rule ...
-	$exec_exec = 'GnomeTerminal' if ( $exec_exec eq 'gnome-terminal' );
-	$exec_exec = 'Imlib Config Editor' if ( $exec_exec eq 'imlib_config' );
-	$exec_exec = 'GnomeHelpBrowser' if ( $exec_exec eq 'gnome-help-browser' );
-	$exec_exec = 'GQview' if ( $exec_exec eq 'gqview' );
-
-	# kde exceptions. Some families of apps have the same name, class, resource
-	# for windows manager, but kwm; (I try the caption and icon option with
-	# kcminfo but do not succeed ...)
-	# Anyway some of the concerned applications are kwm specifics.
-
-	if ( $exec_exec eq 'kfmclient' ) {
-		$style_icon = $style_mini_icon = 'kfm.xpm'; #kfm_home.xpm better ???
-		$exec_exec = 'kfm';
+    unless ( defined $Directory_entries{$file} ) {
+        check_file($file);
+	if ( $verbose ) {
+	    print STDERR "Read directory entry, opening file $file.\n";
 	}
-
-	$style_icon = $style_mini_icon = 'information_settings.xpm'
-		if ( $exec_exec =~ /^kcminfo/ );
-	$style_icon = $style_mini_icon = 'kcmkwm.xpm'
-		if ( $exec_exec =~ /^kcmdisplay/ );
-	$style_icon = $style_mini_icon = 'input_device_settings.xpm'
-		if ( $exec_exec =~ /^kcminput/ );
-	$style_icon = $style_mini_icon =  'kwm.xpm'
-		if ( $exec_exec =~ /^kcmkwm/ );
-
-	# Now we add the good path
-	if ( $TRAN_STYLE || $TRAN ) {
-		$style_mini_icon = "$TRAN_MINI_ICONS$style_mini_icon"
-			if ( $style_mini_icon ne '');
-		$style_icon = "$TRAN_ICONS$style_icon" if ( $style_icon ne '');
-	} else {
-		$style_mini_icon =  "$MINI_ICONS_DIR$style_mini_icon"
-			if ( $style_mini_icon ne '' );
-		$style_icon =  "$ICONS_DIR$style_icon"  if ( $style_icon ne '' );
-	}
-
-	if (($style_mini_icon eq '' && $style_law eq 're') || ($style_law eq 'ow')) {
-		$style_mini_icon = $dstyle{mini_icon};
-	}
-
-	if (($style_icon eq '' && $style_law eq 're') || ($style_law eq 'ow')) {
-		$style_icon = $dstyle{icon};
-	}
-
-	# Update $STYLEOUTPUT
-	if ( $style_mini_icon ne '' || $style_icon ne '' || $addstyle ne '' ) {
-		$STYLEOUTPUT .= "Style \"$exec_exec\" MiniIcon " . "$style_mini_icon\n"
-			if  ( $style_mini_icon ne '' );
-		$STYLEOUTPUT .= "Style \"$exec_exec\" Icon $style_icon\n"
-			if  ( $style_icon ne '' );
-		$STYLEOUTPUT .= "Style \"$exec_exec\" $addstyle\n"
-			if  ( $addstyle ne '' );
-	}
+        open( FILE, "<$file" ) or return;
+        my $in_desktop_entry = 0;
+        my %entry;
+        while (<FILE>) {
+            if (/^\[/) {
+                if (/^\[Desktop Entry\]/) {
+                    $in_desktop_entry = 1;
+                }
+                elsif (/^\[.*\]/) {
+                    $in_desktop_entry = 0;
+                }
+            }
+            elsif ( $in_desktop_entry && /^([^=]*)=([^[:cntrl:]]*)/ ) {
+                $entry{$1} = $2;
+            }
+        }
+        close(FILE);
+        my $id = $file;
+        $id =~ s/^$topdir//;
+        $id =~ s/^\/*//;
+        $id =~ s/\//-/g;
+        $entry{'id'} = $id;
+        $Directory_entries{$file} = \%entry;
+    }
+    my $entry = $Directory_entries{$file};
+    $pool->{'Directory_entries'}{ $entry->{'id'} } = $entry;
 }
 
+sub check_show_in {
+    my ($entry) = @_;
 
-#--------------------------------------------------------------------------
-# Check if application binary is executable and reachable
+    return 1 unless defined $entry;
 
-sub check_app {
-	my($app) = @_;
-       # If full path, dont use path, just check path
-	if ( substr($app,0,1) eq '/' and -x $app ) { return 1 };
-	# Check if an application is in the path
-	foreach $dir (@PATH_DIRS) {
-		if ( -x "$dir/$app" ) { return 1 }
-	}
-	return 0;
+    my %OnlyShowIn;
+    my %NotShowIn;
+
+    if ( defined $entry->{'OnlyShowIn'} ) {
+        foreach my $showin ( split /;/, $entry->{'OnlyShowIn'} ) {
+            $OnlyShowIn{$showin} = 1;
+        }
+        return 0 unless defined $OnlyShowIn{$desktop_name};
+    }
+    if ( defined $entry->{'NotShowIn'} ) {
+        foreach my $showin ( split /;/, $entry->{'NotShowIn'} ) {
+            $NotShowIn{$showin} = 1;
+        }
+        return 0 if defined $NotShowIn{$desktop_name};
+    }
+
+    return 1;
 }
 
+sub read_desktop_entry {
+    my ( $pool, $file, $topdir ) = @_;
 
-#----------------------------------------------------------------------------
-# Standard functions
+    unless ( defined $Desktop_entries{$file} ) {
+        check_file($file);
 
+	if ( $verbose ) {
+	    print STDERR "Read desktop entry, opening file $file.\n";
+	}
+        open( FILE, "<$file" ) or return;
+
+        my $in_desktop_entry = 0;
+        my %entry;
+        while (<FILE>) {
+            if (/^\[/) {
+                if (/^\[Desktop Entry\]/) {
+                    $in_desktop_entry = 1;
+                }
+                elsif (/^\[.*\]/) {
+                    $in_desktop_entry = 0;
+                }
+            }
+            elsif ( $in_desktop_entry && /^([^=]*)=([^[:cntrl:]]*)/ ) {
+                $entry{$1} = $2;
+            }
+        }
+        close(FILE);
+
+        my $id = $file;
+        $id =~ s/^$topdir//;
+        $id =~ s/^\/*//;
+        $id =~ s/\//-/g;
+        $entry{'id'} = $id;
+
+        $entry{'refcount'} = 0;
+        $Desktop_entries{$file} = \%entry;
+    }
+
+    my $entry = $Desktop_entries{$file};
+
+    return unless defined $entry->{'Name'};
+    return unless defined $entry->{'Exec'};
+    if ( defined $entry->{'Hidden'} &&
+	 $entry->{'Hidden'} eq 'true' ) {
+	return;
+    }
+#   FIXME, an option for this would be good
+   if ( defined $entry->{'NoDisplay'} &&
+	 $entry->{'NoDisplay'} eq 'true' ) {
+	return;
+    }
+    return unless check_show_in($entry);
+
+    return
+      if defined $entry->{'NotShowIn'}
+          && $entry->{'NotShowIn'} eq $desktop_name;
+
+    if ( defined $pool && defined $entry->{'Categories'} ) {
+        foreach my $category ( split /;/, $entry->{'Categories'} ) {
+            $pool->{'Categories'}{$category} = []
+              unless defined $pool->{'Categories'}{$category};
+            push @{ $pool->{'Categories'}{$category} }, $entry;
+        }
+        $pool->{'Desktop_entries'}{ $entry->{'id'} } = $entry;
+    }
+    return $entry;
+}
+
+sub read_desktop_entries {
+    my ( $directory_paths, $desktop_paths ) = @_;
+    my $pool = {
+        'Desktop_entries'   => {},
+        'Categories'        => {},
+        'Directory_entries' => {},
+        'Directory_paths'   => $directory_paths,
+        'Desktop_paths'     => $desktop_paths
+    };
+    foreach my $dir ( split /:/, $directory_paths ) {
+        next if $dir =~ /^\s*$/;
+        scan_DirectoryDir( $pool, $dir );
+    }
+    foreach my $dir ( split /:/, $desktop_paths ) {
+        next if $dir =~ /^\s*$/;
+        scan_AppDir( $pool, $dir );
+    }
+    return $pool;
+}
+
+# sub dump_entry_list ($) {
+#     my ($list) = @_;
+#     print "list: ";
+#     foreach my $entry (@$list) {
+#         print "$entry->{id} ";
+#     }
+#     print "\n";
+
+# }
+
+sub get_directory_entry {
+    my ( $entry, $pool ) = @_;
+    return $pool->{'Directory_entries'}{$entry};
+}
+
+sub interpret_Include {
+    my ( $tree, $entries, $pool ) = @_;
+    my %exist;
+    my @list = interpret_entry_node( $tree, 'Or', $pool );
+    foreach my $e (@$entries) {
+        if ( $e->{type} eq 'desktop' ) {
+            $exist{ $e->{desktop} } = 1;
+        }
+    }
+    #	dump_entry_list(\@list);
+    foreach my $entry (@list) {
+        next if $exist{$entry};
+        push @$entries, { type => 'desktop', desktop => $entry };
+        $entry->{'refcount'}++;
+        $exist{$entry} = 1;
+    }
+}
+
+sub interpret_Exclude {
+    my ( $tree, $entries, $pool ) = @_;
+    my @list = interpret_entry_node( $tree, 'Or', $pool );
+    foreach my $entry (@list) {
+        my $i = 0;
+        while ( defined $entries->[$i] ) {
+            my $exist = $entries->[$i];
+            if (   $exist->{type} eq 'desktop'
+                && $exist->{desktop} eq $entry )
+            {
+                splice @$entries, $i, 1;
+                $entry->{'refcount'}--;
+            } else {
+                $i++;
+            }
+        }
+    }
+}
+
+sub interpret_entry_node {
+    my ( $tree, $node, $pool ) = @_;
+    my $i = 0;
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    my @subtree;
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Filename' ) {
+            $i++;
+            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+                my $entry = $tree->[$i][2];
+                if ( defined $pool->{'Desktop_entries'}{$entry} ) {
+                    push @subtree, [ $pool->{'Desktop_entries'}{$entry} ];
+                } else {
+                    push @subtree, [];
+                }
+            } else {
+                print STDERR "Filename\n";
+                exit 1 if $die_on_error;
+            }
+            $i++;
+        } elsif ( $tree->[$i] eq 'Category' ) {
+            $i++;
+            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+                my $category = $tree->[$i][2];
+                if ( defined $pool->{'Categories'}{$category} ) {
+                    push @subtree, $pool->{'Categories'}{$category};
+                } else {
+                    push @subtree, [];
+                }
+            } else {
+                print STDERR "Category\n";
+                exit 1 if $die_on_error;
+            }
+            $i++;
+        } elsif ( $tree->[$i] eq 'All' ) {
+            $i++;
+            if ( values %{ $pool->{'Desktop_entries'} } > 0 ) {
+                push @subtree, [ values %{ $pool->{'Desktop_entries'} } ];
+            } else {
+                push @subtree, [];
+            }
+            $i++;
+        } elsif ( $tree->[$i] eq '0' ) {
+            $i++;
+            $i++;
+        } else {
+            my @res =
+              interpret_entry_node( $tree->[ $i + 1 ], $tree->[$i], $pool );
+            push @subtree, \@res;
+            $i++;
+            $i++;
+        }
+    }
+
+    if ( $node eq 'Or' ) {
+        #		print "or - \n";
+        my %used;
+        my @res;
+        foreach my $st (@subtree) {
+            #			print "  st: ";
+            #			dump_entry_list($st);
+            foreach my $entry (@$st) {
+                if ( !defined $used{$entry} ) {
+                    push @res, $entry;
+                    $used{$entry} = 1;
+                }
+            }
+        }
+        #		print " res: ";
+        #		dump_entry_list(\@res);
+        return @res;
+    } elsif ( $node eq 'And' ) {
+        my %used;
+        my @res;
+        #		print "and - \n";
+        my $cnt     = @subtree;
+        my $min     = @{ $subtree[0] };
+        my $min_idx = 0;
+        my $idx     = 0;
+        foreach my $st (@subtree) {
+            #			print "  st: ";
+            #			dump_entry_list($st);
+            my $num = @$st;
+            if ( $num < $min ) {
+                $min     = $num;
+                $min_idx = $idx;
+            }
+
+            my %dupes;
+            foreach my $entry (@$st) {
+                next if $dupes{$entry};
+                $dupes{$entry} = 1;
+
+                if ( !defined $used{$entry} ) {
+                    $used{$entry} = 1;
+                }
+                else {
+                    $used{$entry}++;
+                }
+            }
+
+            $idx++;
+        }
+        return () if $cnt == 0;
+        foreach my $entry ( @{ $subtree[$min_idx] } ) {
+            push @res, $entry if $used{$entry} == $cnt;
+        }
+
+        #		print " res: ";
+        #		dump_entry_list(\@res);
+        return @res;
+    }
+    elsif ( $node eq 'Not' ) {
+        my %used;
+        my @res;
+
+        #		print "not - \n";
+        my $cnt = @subtree;
+        foreach my $st (@subtree) {
+            #			print "  st: ";
+            #			dump_entry_list($st);
+            foreach my $entry (@$st) {
+                $used{$entry} = 1;
+            }
+        }
+        return if $cnt == 0;
+        foreach my $entry ( values %{ $pool->{'Desktop_entries'} } ) {
+            push @res, $entry if !defined $used{$entry};
+        }
+        #		print " res: ";
+        #		dump_entry_list(\@res);
+        return @res;
+    } else {
+        print STDERR "Can't use '$node' inside <Include> or <Exclude>\n";
+        exit 1 if $die_on_error;
+        return ();
+    }
+}
+
+sub interpret_root {
+    my ( $tree, $topdir ) = @_;
+    if ( $tree->[0] eq 'Menu' ) {
+        return interpret_menu( $tree->[1] );
+    }
+    else {
+        print STDERR "No toplevel Menu\n";
+        exit 1 if $die_on_error;
+        return;
+    }
+}
+
+sub interpret_menu {
+    my ( $tree, $directory_paths, $desktop_paths ) = @_;
+
+    $directory_paths = '' unless defined $directory_paths;
+    $desktop_paths   = '' unless defined $desktop_paths;
+
+    my %menu = (
+        'entries'         => [],
+        'OnlyUnallocated' => 0,
+        'DontShowIfEmpty' => 0,
+        'Deleted'         => 0
+    );
+
+    my $i = 0;
+
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'AppDir' ) {
+            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0' )
+            {
+                $desktop_paths .= ':' . $tree->[ $i + 1 ][2];
+                splice @$tree, $i, 2;
+            }
+            else {
+                print STDERR "wrong AppDir\n";
+                exit 1 if $die_on_error;
+                $i++;
+                $i++;
+            }
+        }
+        elsif ( $tree->[$i] eq 'DefaultAppDirs' ) {
+            $desktop_paths .= ':' . $DefaultAppDirs;
+            splice @$tree, $i, 2;
+        }
+        elsif ( $tree->[$i] eq 'DirectoryDir' ) {
+            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0' )
+            {
+                $directory_paths .= ':' . $tree->[ $i + 1 ][2];
+                splice @$tree, $i, 2;
+            }
+            else {
+                print STDERR "wrong DirectoryDir\n";
+                exit 1 if $die_on_error;
+                $i++;
+                $i++;
+            }
+        }
+        elsif ( $tree->[$i] eq 'DefaultDirectoryDirs' ) {
+            $directory_paths .= ':' . $DefaultDirectoryDirs;
+            splice @$tree, $i, 2;
+        }
+        else {
+            $i++;
+            $i++;
+        }
+    }
+
+    $menu{directory_paths} = $directory_paths;
+    $menu{desktop_paths}   = $desktop_paths;
+
+    my $pool = read_desktop_entries( $directory_paths, $desktop_paths );
+
+    $i = 0;
+
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Menu' ) {
+            $i++;
+            my $submenu =
+              interpret_menu( $tree->[$i], $directory_paths, $desktop_paths );
+            push @{ $menu{'entries'} }, { type => 'menu', menu => $submenu };
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'Name' ) {
+            $i++;
+            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+                $menu{'Name'} = $tree->[$i][2];
+            }
+            else {
+                print STDERR "wrong Name\n";
+                exit 1 if $die_on_error;
+            }
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'Directory' ) {
+            $i++;
+            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+                $menu{'Directory'} =
+                  get_directory_entry( $tree->[$i][2], $pool );
+
+                #				print "Directory " . $tree->[$i][2] . "\n";
+            }
+            else {
+                print STDERR "wrong Directory\n";
+                exit 1 if $die_on_error;
+            }
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'OnlyUnallocated' ) {
+            $menu{'OnlyUnallocated'} = 1;
+            $i++;
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'DontShowIfEmpty' ) {
+            $menu{'DontShowIfEmpty'} = 1;
+            $i++;
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'Deleted' ) {
+            $menu{'Deleted'} = 1;
+            $i++;
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'NotDeleted' ) {
+            $menu{'Deleted'} = 0;
+            $i++;
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'Include' ) {
+            $i++;
+            interpret_Include( $tree->[$i], $menu{'entries'}, $pool );
+            $i++;
+        }
+        elsif ( $tree->[$i] eq 'Exclude' ) {
+            $i++;
+            interpret_Exclude( $tree->[$i], $menu{'entries'}, $pool );
+            $i++;
+        }
+        elsif ( $tree->[$i] eq '0' ) {
+            $i++;
+            if ( $tree->[$i] !~ /^\s*$/ ) {
+                print STDERR "skip '$tree->[$i]'\n";
+                exit 1 if $die_on_error;
+            }
+            $i++;
+        }
+        else {
+            print STDERR "Unknown '$tree->[$i]':\n";
+            $i++;
+            print STDERR "        '@{$tree->[$i]}'\n";
+            $i++;
+            exit 1 if $die_on_error;
+        }
+    }
+
+    return \%menu;
+}
+
+sub read_menu {
+    my ( $file, $basedir ) = @_;
+
+    if ( $file !~ /^\// && defined $basedir ) {
+        $file = "$basedir/$file";
+    }
+
+    unless ( defined $basedir ) {
+        $basedir = $file;
+        $basedir =~ s/\/[^\/]*$//;
+    }
+
+    unless ( check_file($file) ) {
+        print STDERR "WARNING: '$file' does not exist\n";
+        return [ 'Menu', [ {} ] ];
+    }
+
+    print STDERR "reading '$file'\n" if $verbose;
+
+    my $parser = new XML::Parser( Style => 'Tree' );
+    my $tree = $parser->parsefile($file);
+
+    my $DefaultMergeDir = $file;
+    $DefaultMergeDir =~ s/^.*\///;
+    $DefaultMergeDir =~ s/\.menu$/-merged/;
+
+    read_includes( $tree, $basedir, $DefaultMergeDir );
+
+    return $tree;
+}
+
+sub read_menu_dir {
+    my ( $dir, $basedir ) = @_;
+
+    my @out;
+
+    if ( $dir !~ /^\// && defined $basedir ) {
+        $dir = "$basedir/$dir";
+    }
+
+    if ( check_file($dir) ne 'D' ) {
+        return [];
+    }
+
+    my $DIR;
+    opendir( $DIR, $dir );
+
+    foreach my $entry ( readdir($DIR) ) {
+
+        if ( -f "$dir/$entry" && $entry =~ /\.menu$/ ) {
+            my $menu = read_menu("$dir/$entry");
+            $menu = remove_toplevel_Menu($menu);
+            push @out, @$menu;
+        }
+    }
+    closedir $DIR;
+
+    return \@out;
+}
+
+sub quote_xml {
+    my ($txt) = @_;
+
+    $txt =~ s/&/&amp;/g;
+    $txt =~ s/</&lt;/g;
+    $txt =~ s/>/&gt;/g;
+    return $txt;
+}
+
+sub read_legacy_dir {
+    my ( $dir, $basedir ) = @_;
+    my $out;
+
+    $dir =~ s/\/*$//;
+
+    $basedir = $dir unless defined $basedir;
+
+    return "" if check_file($dir) ne 'D';
+
+    $out = "<Menu>\n";
+
+    if ( $dir eq $basedir ) {
+        my $xmldir = quote_xml($dir);
+
+        $out .= "<AppDir>$xmldir</AppDir>\n";
+        $out .= "<DirectoryDir>$xmldir</DirectoryDir>\n";
+    }
+    else {
+        my $name = $dir;
+        $name =~ s/\/*$//;
+        $name =~ s/^.*\///;
+
+        $name = quote_xml($name);
+
+        $out .= "<Name>$name</Name>\n";
+    }
+
+    if ( -f "$dir/.directory" ) {
+
+        my $dir_id = "$dir/.directory";
+        $dir_id =~ s/^$basedir//;
+        $dir_id =~ s/^\///;
+        $dir_id = quote_xml($dir_id);
+
+        $out .= "<Directory>$dir_id</Directory>\n";
+    }
+
+    my $DIR;
+    if ( opendir( $DIR, $dir ) ) {
+        foreach my $entry ( readdir($DIR) ) {
+
+            if ( -f "$dir/$entry" && $entry =~ /\.desktop$/ ) {
+                my $id = "$dir/$entry";
+                $id =~ s/^$basedir//;
+                $id =~ s/^\///;
+                $id =~ s/\//-/g;
+                $id = quote_xml($id);
+
+                my $desktop =
+                  read_desktop_entry( undef, "$dir/$entry", $basedir );
+                $out .= "<Include><Filename>$id</Filename></Include>\n"
+                  unless defined $desktop->{'Categories'};
+            }
+            elsif (-d "$dir/$entry"
+                && $entry ne '.'
+                && $entry ne '..'
+                && $entry ne '.hidden' )
+            {
+                $out .= read_legacy_dir( "$dir/$entry", $basedir );
+            }
+        }
+        closedir $DIR;
+    }
+    $out .= "</Menu>\n";
+    return $out;
+}
+
+sub remove_toplevel_Menu {
+    my ($tree) = @_;
+    if ( $tree->[0] eq 'Menu' ) {
+        shift @{ $tree->[1] } if ( ref( $tree->[1][0] ) eq 'HASH' );
+        return $tree->[1];
+    }
+    else {
+        print STDERR "No toplevel Menu\n";
+        exit 1 if $die_on_error;
+        return;
+    }
+}
+
+sub read_includes {
+    my ( $tree, $basedir, $DefaultMergeDir ) = @_;
+    my $i = 0;
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'MergeFile' ) {
+            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0' )
+            {
+                my $add_tree = read_menu( $tree->[ $i + 1 ][2], $basedir );
+                $add_tree = remove_toplevel_Menu($add_tree);
+
+                splice @$tree, $i, 2, @$add_tree;
+
+            } else {
+                print STDERR "wrong MergeFile\n";
+                exit 1 if $die_on_error;
+                $i++;
+                $i++;
+            }
+
+        } elsif ( $tree->[$i] eq 'MergeDir' ) {
+            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0' ) {
+                my $add_tree = read_menu_dir( $tree->[ $i + 1 ][2], $basedir );
+                splice @$tree, $i, 2, @$add_tree;
+            } else {
+                print STDERR "wrong MergeFile\n";
+                exit 1 if $die_on_error;
+                $i++;
+                $i++;
+            }
+        } elsif ( $tree->[$i] eq 'DefaultMergeDirs' ) {
+            my $add_tree = read_menu_dir( $DefaultMergeDir, $basedir );
+            splice @$tree, $i, 2, @$add_tree;
+        } elsif ( $tree->[$i] eq 'LegacyDir' ) {
+            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0' ) {
+                if ( -d $tree->[ $i + 1 ][2] ) {
+                    my $xml = read_legacy_dir( $tree->[ $i + 1 ][2] );
+                    print STDERR "reading legacy directory '"
+                      . $tree->[ $i + 1 ][2] . "'\n"
+                      if $verbose;
+                    my $parser = new XML::Parser( Style => 'Tree' );
+                    my $add_tree = $parser->parse($xml);
+                    $add_tree = remove_toplevel_Menu($add_tree);
+                    splice @$tree, $i, 2, @$add_tree;
+                } else {
+                    print STDERR "legacy directory '"
+                      . $tree->[ $i + 1 ][2]
+                      . "' not found\n"
+                      if $verbose;
+                    splice @$tree, $i, 2, ();
+                }
+            } else {
+                print STDERR "wrong LegacyDir\n";
+                exit 1 if $die_on_error;
+                $i++;
+                $i++;
+            }
+        } elsif ( $tree->[$i] eq 'KDELegacyDirs' ) {
+            my @out;
+            foreach my $dir (@KDELegacyDirs) {
+                my $xml = read_legacy_dir($dir);
+                print STDERR "reading legacy directory '$dir'\n" if $verbose;
+
+                my $parser = new XML::Parser( Style => 'Tree' );
+                my $add_tree = $parser->parse($xml);
+                $add_tree = remove_toplevel_Menu($add_tree);
+                push @out, @$add_tree;
+            }
+            splice @$tree, $i, 2, @out;
+        } elsif ( $tree->[$i] eq 'Menu' ) {
+            $i++;
+            read_includes( $tree->[$i], $basedir, $DefaultMergeDir );
+            $i++;
+        } else {
+            $i++;
+            $i++;
+        }
+    }
+}
+
+sub get_menu_name {
+    my ($tree) = @_;
+    my $name;
+
+    my $i = 0;
+
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Name' ) {
+            $i++;
+            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+                $name = $tree->[$i][2];
+                last;
+            }
+            else {
+                print STDERR "wrong Name\n";
+            }
+            $i++;
+        }
+        else {
+            $i++;
+            $i++;
+        }
+    }
+
+    unless ( defined $name ) {
+        print STDERR "Menu has no name element\n";
+    }
+    return $name;
+}
+
+sub append_menu {
+    my ( $target, $source ) = @_;
+
+    my $i = 0;
+
+    $i++ if ( ref( $source->[$i] ) eq 'HASH' );
+
+    while ( defined $source->[$i] ) {
+        if ( $source->[$i] ne 'Name' ) {
+            push @$target, $source->[$i];
+            push @$target, $source->[ $i + 1 ];
+        }
+
+        $i++;
+        $i++;
+    }
+}
+
+sub merge_menus {
+    my ($tree) = @_;
+
+    my %used;    #menu name already used
+
+    my $i = 0;
+
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Menu' ) {
+            my $name = get_menu_name( $tree->[ $i + 1 ] );
+            if ( defined $used{$name} ) {    #second menu with the same name
+                my $target = $used{$name};
+
+                append_menu( $tree->[$target], $tree->[ $i + 1 ] );
+
+                splice @$tree, $i, 2;
+            }
+            else {                           # first appearance
+                $used{$name} = $i + 1;
+                $i++;
+                $i++;
+            }
+        }
+        else {
+            $i++;
+            $i++;
+        }
+    }
+
+    $i = 0;
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Menu' ) {
+            merge_menus( $tree->[ $i + 1 ] );
+        }
+        $i++;
+        $i++;
+    }
+}
+
+sub read_Move {
+    my ( $tree, $hash ) = @_;
+    my $i = 0;
+    my $old = '';
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Old' ) {
+            $i++;
+            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+                $old = $tree->[$i][2];
+            } else {
+                print STDERR "wrong Old\n";
+                exit 1 if $die_on_error;
+            }
+            $i++;
+        }
+        if ( $tree->[$i] eq 'New' ) {
+            $i++;
+            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+                $hash->{$old} = $tree->[$i][2];
+            } else {
+                print STDERR "wrong New\n";
+                exit 1 if $die_on_error;
+            }
+            $i++;
+        } else {
+            $i++;
+            $i++;
+        }
+    }
+}
+
+sub find_menu_in_tree {
+    my ( $path, $tree ) = @_;
+
+    my $root = $path;
+    $root =~ s/\/.*$//;
+
+    my $subpath = $path;
+    $subpath =~ s/^[^\/]*\/*//;
+
+    my $i = 0;
+
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Menu' ) {
+            if ( $root eq get_menu_name( $tree->[ $i + 1 ] ) ) {
+
+                if ( $subpath eq '' ) {
+                    return {
+                        'parent' => $tree,
+                        'index'  => $i,
+                        'menu'   => $tree->[ $i + 1 ]
+                    };
+                }
+                return find_menu_in_tree( $subpath, $tree->[ $i + 1 ] );
+            }
+        }
+
+        $i++;
+        $i++;
+    }
+
+    return undef;
+}
+
+sub copy_menu {
+    my ( $path, $tree ) = @_;
+    my $tail;
+    my $child;
+    foreach my $elem ( reverse split( /\//, $path ) ) {
+        next if $elem eq '';
+        my $menu = [ {}, 'Name', [ {}, 0, $elem ] ];
+        push @$menu, ( 'Menu', $child ) if defined $child;
+        $tail = $menu unless defined $tail;
+        $child = $menu;
+    }
+    append_menu( $tail, $tree );
+    return $child;
+}
+
+sub move_menus {
+    my ($tree) = @_;
+    my %move;
+    my $i = 0;
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Move' ) {
+            read_Move( $tree->[ $i + 1 ], \%move );
+            splice @$tree, $i, 2;
+        }
+        else {
+            $i++;
+            $i++;
+        }
+    }
+    foreach my $source ( keys %move ) {
+        my $sourceinfo = find_menu_in_tree( $source, $tree );
+
+        if ( defined $sourceinfo ) {
+            my $target = copy_menu( $move{$source}, $sourceinfo->{'menu'} );
+            splice @{ $sourceinfo->{'parent'} }, $sourceinfo->{'index'}, 2;
+            push @$tree, ( 'Menu', $target );
+            merge_menus($tree);
+        }
+    }
+    $i = 0;
+    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    while ( defined $tree->[$i] ) {
+        if ( $tree->[$i] eq 'Menu' ) {
+            move_menus( $tree->[ $i + 1 ] );
+        }
+        $i++;
+        $i++;
+    }
+}
+
+sub remove_allocated {
+    my ($menu) = @_;
+
+    my $i = 0;
+    while ( $i < @{ $menu->{'entries'} } ) {
+        my $entry = $menu->{'entries'}[$i];
+
+        if ( $entry->{type} eq 'menu' ) {
+            remove_allocated( $entry->{menu} );
+            $i++;
+        }
+        elsif ($entry->{type} eq 'desktop'
+            && $menu->{'OnlyUnallocated'}
+            && $entry->{desktop}{'refcount'} > 1 )
+        {
+
+            $entry->{desktop}{'refcount'}--;
+            splice @{ $menu->{'entries'} }, $i, 1;
+        }
+        else {
+            $i++;
+        }
+    }
+    return 0;
+}
+
+sub remove_empty_menus {
+    my ($menu) = @_;
+
+    my $i = 0;
+    while ( $i < @{ $menu->{'entries'} } ) {
+        my $entry = $menu->{'entries'}[$i];
+
+        if ( $entry->{type} eq 'menu' && remove_empty_menus( $entry->{menu} ) )
+        {
+            splice @{ $menu->{'entries'} }, $i, 1;
+        }
+        else {
+            $i++;
+        }
+    }
+
+    return 1
+      if @{ $menu->{'entries'} } ==
+          0;    # && $menu->{'DontShowIfEmpty'}; #menu is empty
+
+    return 0;
+}
+
+sub prepare_exec {
+    my ( $exec, $desktop ) = @_;
+
+    # Take out filename flags, etc.
+    $exec =~ s/%f//g;
+    $exec =~ s/%F//g;
+    $exec =~ s/%u//g;
+    $exec =~ s/%U//g;
+    $exec =~ s/%d//g;
+    $exec =~ s/%D//g;
+    $exec =~ s/%n//g;
+    $exec =~ s/%N//g;
+    $exec =~ s/%i//g;
+    $exec =~ s/%k//g;
+    $exec =~ s/%v//g;
+    $exec =~ s/%m//g;
+
+    my $caption = $desktop->{Name};
+    $exec =~ s/%c/$caption/g;
+    $exec =~ s/%%/%/g;
+
+    if (defined $desktop->{Terminal} ) {
+	if ($desktop->{Terminal} eq '1' || $desktop->{Terminal} eq 'true') {
+	    $exec = "$TERM_CMD $exec";
+	}
+    }
+    if (defined $desktop->{'X-KDE-SubstituteUID'}) {
+	if ($desktop->{'X-KDE-SubstituteUID'} eq '1'
+	    || $desktop->{'X-KDE-SubstituteUID'} eq 'true') {
+	    $exec = "$root_cmd $exec"
+	}
+    }
+    return $exec;
+}
+
+sub get_loc_entry {
+    my ( $desktop, $entry ) = @_;
+
+    foreach my $key (@language_keys) {
+        my $loc_entry = $entry . "[$key]";
+        return $desktop->{$loc_entry}
+          if defined $desktop->{$loc_entry}
+              && $desktop->{$loc_entry} !~ /^\s*$/;
+    }
+
+    return $desktop->{$entry};
+}
+
+sub preprocess_menu {
+    # localize, sort, prepare_exec
+    my ($menu) = @_;
+    return 0 if $menu->{'Deleted'};
+    return 0 unless check_show_in( $menu->{'Directory'} );
+    return 0
+	if defined $menu->{'Directory'} && defined $menu->{'Directory'}->{'NoDisplay'} 
+            && $menu->{'Directory'}->{'NoDisplay'} eq 'true';
+    my $menu_name = $menu->{'Name'};
+    if ( defined $menu->{'Directory'} ) {
+        my $directory = $menu->{'Directory'};
+        my $directory_name = get_loc_entry( $directory, 'Name' );
+        if ( defined $directory_name ) {
+            Encode::from_to( $directory_name, "utf8", $charset )
+              if !defined $directory->{"Encoding"}
+                  || $directory->{"Encoding"} eq 'UTF-8';
+            $menu_name = $directory_name;
+        }
+    }
+    $menu->{'PrepName'} = $menu_name;
+    my $i = 0;
+    while ( defined $menu->{'entries'}[$i] ) {
+        my $entry = $menu->{'entries'}[$i];
+        if ( $entry->{'type'} eq 'desktop' ) {
+            my $desktop = $entry->{desktop};
+            my $name = $desktop->{'id'};
+            my $desktop_name = get_loc_entry( $desktop, 'Name' );
+            if ( defined $desktop_name ) {
+                Encode::from_to( $desktop_name, "utf8", $charset )
+                  if !defined $desktop->{"Encoding"}
+                      || $desktop->{"Encoding"} eq 'UTF-8';
+                $name = $desktop_name;
+            }
+            $desktop->{'PrepName'} = $name;
+            $entry->{'Name'}       = $name;
+            $entry->{'PrepName'}   = $name;
+            $desktop->{'PrepExec'} = prepare_exec( $desktop->{Exec}, $desktop );
+            $i++;
+        }
+        elsif ( $entry->{type} eq 'menu' ) {
+            if ( preprocess_menu( $entry->{'menu'} ) ) {
+                $entry->{'Name'}     = $entry->{'menu'}{'Name'};
+                $entry->{'PrepName'} = $entry->{'menu'}{'PrepName'};
+                $i++;
+            }
+            else {
+                splice @{ $menu->{'entries'} }, $i, 1;
+            }
+        }
+        else {
+            print STDERR "wrong menu entry type: $entry->{type}";
+            exit 1 if $die_on_error;
+            splice @{ $menu->{'entries'} }, $i, 1;
+        }
+    }
+
+    $menu->{'entries'} = [
+        sort {
+            $b->{'type'} cmp $a->{'type'}
+              || $a->{'PrepName'} cmp $b->{'PrepName'}
+          } @{ $menu->{'entries'} }
+    ];
+
+    $i = 0;
+    my $prev_entry;
+    while ( defined $menu->{'entries'}[$i] ) {
+        my $entry = $menu->{'entries'}[$i];
+        if (   defined $prev_entry
+            && $entry->{'type'}                       eq 'desktop'
+            && $prev_entry->{'type'}                  eq 'desktop'
+            && $prev_entry->{'PrepName'}              eq $entry->{'PrepName'}
+            && $prev_entry->{'desktop'}->{'PrepExec'} eq
+            $entry->{'desktop'}->{'PrepExec'} )
+        {
+            splice @{ $menu->{'entries'} }, $i, 1;
+        }
+        else {
+            $prev_entry = $entry;
+            $i++;
+        }
+    }
+    return 1;
+}
+
+sub output_fvwm2_menu {
+    my ( $menu, $toplevel, $path ) = @_;
+
+    my $output = '';
+    my $label = '';
+    $path = '' unless defined $path;
+    $toplevel = 1 unless defined $toplevel;
+    my $menu_name = $menu->{'PrepName'};
+    my $menu_id = "$path-" . $menu->{'Name'};
+    $menu_id =~ s/\s/_/g;
+    $menu_id = 'xdg_menu' if $toplevel;
+    foreach my $entry ( @{ $menu->{'entries'} } ) {
+        if ( $entry->{type} eq 'menu' ) {
+            $output .= output_fvwm2_menu( $entry->{'menu'}, 0, $menu_id );
+        }
+    }
+    $output .= "DestroyMenu \"$menu_id\"\n";
+    $output .= "AddToMenu \"$menu_id\" \"$dmicon{'fvwm_title'}$label$menu_name\" Title\n";
+    if ($MENU_STYLE ne '') {
+	push @menus_for_style, $menu_id;
+    }
+
+    #print "AddToMenu \"$name$spic{\"$flag$titletype\"}" .
+    #"$scolor{\"$flag$titletype\"}\" \"$label$mini_icon\" Title\n";
+    foreach my $entry ( @{ $menu->{'entries'} } ) {
+        if ( $entry->{type} eq 'desktop' ) {
+            my $desktop = $entry->{desktop};
+            my $name = $desktop->{'PrepName'};
+            my $exec = $desktop->{'PrepExec'};
+            $output .= "+		 \"$dmicon{'fvwm_app'}$name\" Exec $exec\n";
+        }
+        elsif ( $entry->{type} eq 'menu' ) {
+            my $name = $entry->{'menu'}{'PrepName'};
+            my $id   = "$menu_id-" . $entry->{'menu'}{'Name'};
+            $id =~ s/\s/_/g;
+            $output .= "+		 \"$dmicon{'fvwm_folder'}$name\" Popup \"$id\"\n";
+        }
+        else {
+            print STDERR "wrong menu entry type: $entry->{type}";
+        }
+    }
+    $output .= "\n";
+    if ("$menu_id" eq "xdg_menu-System_Tools") {
+	$output .= "AddToMenu \"xdg_menu-System_Tools\" " .
+	    "\"$dmicon{'fvwm_app'}Regenerate Applications Menu\" " .
+	    "PipeRead \"$0 @save_ARGV\"\n";
+    }
+    return $output;
+}
+
+sub get_root_menu {
+    foreach my $dir ( split( /:/, $xdg_config_dirs ), "/etc/xdg" ) {
+        check_file("$dir/menus/applications.menu");
+        if ( -f "$dir/menus/applications.menu" ) {
+            print STDERR "Root Menu $dir/menus/applications.menu\n" if $verbose;
+            return "$dir/menus/applications.menu";
+        }
+    }
+    return "";
+}
+
+sub get_app_dirs {
+    my %used;
+    my $ret = '';
+    my @kde_xdgdata = split( /:/, `kde-config --path xdgdata-apps` );
+
+    foreach $_ (@kde_xdgdata) {
+        s/\/applications\/*\s*$//;
+    }
+    foreach my $d ( split( /:/, $xdg_data_dirs ),
+        @kde_xdgdata, "/usr/share", "/opt/gnome/share" )
+    {
+        my $dir = $d;
+        $dir =~ s/\/*$//;
+        next if defined $used{$dir};
+        next if check_file("$dir/applications") ne 'D';
+        $ret .= ':' if $ret ne '';
+        $ret .= "$dir/applications";
+        $used{$dir} = 1;
+    }
+    if ($verbose) {
+        foreach $_ ( split( ':', $ret ) ) {
+            print STDERR "app dirs $_\n";
+        }
+    }
+    return $ret;
+}
+
+sub get_desktop_dirs {
+    my %used;
+    my $ret = '';
+    foreach my $dir ( split( /:/, $xdg_data_dirs ),
+        "/usr/share", "/opt/kde3/share", "/opt/gnome/share" )
+    {
+        next if defined $used{$dir};
+        next if check_file("$dir/desktop-directories") ne 'D';
+        $ret .= ':' if $ret ne '';
+        $ret .= "$dir/desktop-directories";
+        $used{$dir} = 1;
+    }
+    print STDERR "desktop dirs $ret\n" if $verbose;
+    return $ret;
+}
+
+sub get_KDE_legacy_dirs {
+    my %used;
+    my @ret;
+    foreach my $d ( "/etc/opt/kde3/share/applnk", "/opt/kde3/share/applnk",
+        reverse( split( /:/, `kde-config --path apps` ) ) )
+    {
+        my $dir = $d;
+        chomp $dir;
+        $dir =~ s/\/*$//;
+        next if defined $used{$dir};
+        next if check_file("$dir") ne 'D';
+        $used{$dir} = 1;
+        push @ret, $dir;
+    }
+    print STDERR "KDE legacy dirs @ret\n" if $verbose;
+    return @ret;
+}
+
+sub prepare_language_keys {
+    my ($language) = @_;
+
+    my @keys;
+
+    $language =~ s/\.[^@]*//;    # remove .ENCODING
+
+    if ( $language =~ /^([^_]*)_([^@]*)@(.*)$/ ) {    # LANG_COUNTRY@MODIFIER
+        push @keys, $1 . '_' . $2 . '@' . $3;
+        push @keys, $1 . '_' . $2;
+        push @keys, $1 . '@' . $3;
+        push @keys, $1;
+    }
+    elsif ( $language =~ /^([^_]*)_([^@]*)$/ ) {      # LANG_COUNTRY
+        push @keys, $1 . '_' . $2;
+        push @keys, $1;
+    }
+    elsif ( $language =~ /^([^_]*)@(.*)$/ ) {         # LANG@MODIFIER
+        push @keys, $1 . '@' . $2;
+        push @keys, $1;
+    }
+    elsif ( $language =~ /^([^_@]*)$/ ) {             # LANG
+        push @keys, $1;
+    }
+
+    return @keys;
+}
+
+# Fixme, remove unsupported options.
 sub show_help {
 	print <<END_HELP;
-A perl script which parses gnome/kde menus definitions to build
-the corresponding fvwm/FvwmGtk menu.  The script can also build
-Icon and MiniIcon style for the desktop applications.
+A perl script which parses xdg menu definitions to build
+the corresponding fvwm menus.  The script can also build
+Icon and MiniIcon styles for the desktop applications.
 
 Usage: $0 [OPTIONS]
 Options:
@@ -1228,6 +1735,7 @@ Options:
 	--menu-style name         assign specified MenuStyle name to menus
 	--[no]check-app           [do not] check that apps are in your path
 	--time-limit NUM          limit script running time to NUM seconds
+	--verbose                 display debug type info oni STDERR
 Short options are ok if not ambiguous: -h, -x, -icon-a.
 END_HELP
 	exit 0;
@@ -1237,8 +1745,10 @@ sub show_version {
 	print "$version\n";
 	exit 0;
 }
-
-sub wrong_usage {
-	print STDERR "Try '$0 --help' for more information.\n";
-	exit -1;
+sub obsolete {
+    my ($arg) = @_;
+    print "WARNING: Argument \"$arg\" obsolete.  Ignored.\n";
 }
+# Local Variables:
+# compile-command: "perl fvwm-menu-desktop.in --enable-mini-icons --fvwm-icons"
+# End:
