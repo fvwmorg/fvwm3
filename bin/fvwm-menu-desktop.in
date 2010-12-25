@@ -16,6 +16,8 @@
 # - Style options from fvwmmenudesktop not carried over,
 #   WM hints are sufficient to set mini-icon and icon.
 # - Removed prototypes.  None were needed.
+# - All filehandle names made local.
+# - New option for su_gui, do path check for alternatives.
 #
 # FIXME:
 # - No testing for wm_icons has been done (is that fvwm-themes?).
@@ -26,15 +28,13 @@
 # - There are good programs like alacarte that are marked GNOME-ONLY.
 #   Figure out how to get them in menus.
 # - I think this should default to mini-icons enabled, but which
-#   icon package should be assumed.
+#   icon package should be assumed?
 # - Need a way to select the /usr/share/icons icon sets with themes like
 #   default/hicolor and size like 16x16 and 24x24.
 # - Regenerate menus should prompt for a new command line.
-# - Fix root_command default.
 # - sidepics, etc not tested.
 # - iconname::: syntax needs investigation, I think some of it is obsolete,
-#   and a verifier, and some defaults.
-# - Check scope of filehandles.
+#   needs a verifier, and some defaults.
 
 # ---------------------------------------------------------------------------
 #  fvwm-menu-desktop
@@ -75,6 +75,7 @@ my $xdg_data_dirs = $ENV{XDG_DATA_DIRS};
 $xdg_data_dirs = '' if ! defined $xdg_data_dirs;
 my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS};
 $xdg_config_dirs = '' if ! defined $xdg_config_dirs;
+my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 
 my $version = '@VERSION@';
 my $DefaultAppDirs;
@@ -83,13 +84,13 @@ my @KDELegacyDirs;
 my $desktop_name = 'fvwm2';
 my $language = '';
 my $charset = 'iso-8859-1';
-my $root_cmd = 'xdg_menu_su';
+my $root_cmd;
 my $die_on_error = 0;
 my $verbose = 0;
 
 my @language_keys;
 
-my @accessed_files;
+#my @accessed_files;
 my @save_ARGV = @ARGV;
 my $TERM_CMD = "xterm -e";
 
@@ -147,7 +148,6 @@ GetOptions("enable-mini-icons"        => \$MINI_ICONS,
 	   "fvwm-icons"               => \$fvwm_icons,
 	   "check-mini-icon=s"        => \$check_mini_icons,
 	   "check-icons=s"            => \$check_icons,
-
 	   "help|h|?"                 => \&show_help,
 	   "version|V"                => \&show_version,
 	   "install-prefix:s"         => $OPT_INSTALL_PREFIX,
@@ -170,6 +170,7 @@ GetOptions("enable-mini-icons"        => \$MINI_ICONS,
 	   "time-limit=s"             => \&obsolete,
 	   "merge-user-menu"          => \&obsolete,
 
+	   "su_gui"  => \$root_cmd,
            "verbose" => \$verbose
     );
 
@@ -179,25 +180,34 @@ $DefaultAppDirs = get_app_dirs();
 $DefaultDirectoryDirs = get_desktop_dirs();
 
 $root_menu = get_root_menu();
-print STDERR "root menu is $root_menu\n" if $verbose;
 
 @KDELegacyDirs = get_KDE_legacy_dirs();
 
 $charset = langinfo(CODESET);
 $language = setlocale(LC_MESSAGES);
 
-if ($verbose) {
-    print STDERR "charset is $charset, language is $language.\n";
+if ( ! defined $root_cmd ) {
+    foreach $_ ('gnomesu', 'kdesu', 'xdg_menu_su') {
+	if ( check_app($_) ) {
+	    $root_cmd = "$_";
+	    last;
+	}
+    }
 }
 
-$root_cmd = "/opt/gnome/bin/gnomesu" if -x '/opt/gnome/bin/gnomesu';
-$root_cmd = "/opt/kde3/bin/kdesu" if -x '/opt/kde3/bin/kdesu';
+if ($verbose) {
+    print STDERR
+	"DEBUG: root menu is $root_menu\n"
+	. "DEBUG: charset is $charset.\n"
+	. "DEBUG: language is $language.\n"
+	. "DEBUG: root-cmd is $root_cmd.\n"
+}
 
 @language_keys = prepare_language_keys($language);
 
 unless ( -f $root_menu)
 {
-    print STDERR "Can't find root menu file.\n";
+    print STDERR "ERROR: Can't find root menu file.\n";
     exit 1;
 }
 
@@ -348,15 +358,15 @@ sub up_directory {
 sub check_file {
     my ($file) = @_;
     unless ( -e $file ) {
-        push @accessed_files, "X $file";
+#        push @accessed_files, "X $file";
         return '';
     }
     if ( -d $file ) {
-        push @accessed_files, "D $file";
+#        push @accessed_files, "D $file";
         return 'D';
     }
     else {
-        push @accessed_files, "F $file";
+#        push @accessed_files, "F $file";
         return 'F';
     }
 }
@@ -411,10 +421,11 @@ sub read_directory_entry {
 	if ( $verbose ) {
 	    print STDERR "Read directory entry, opening file $file.\n";
 	}
-        open( FILE, "<$file" ) or return;
+	my $FILE;
+        open( $FILE, "<$file" ) or return;
         my $in_desktop_entry = 0;
         my %entry;
-        while (<FILE>) {
+        while (<$FILE>) {
             if (/^\[/) {
                 if (/^\[Desktop Entry\]/) {
                     $in_desktop_entry = 1;
@@ -427,7 +438,7 @@ sub read_directory_entry {
                 $entry{$1} = $2;
             }
         }
-        close(FILE);
+        close($FILE);
         my $id = $file;
         $id =~ s/^$topdir//;
         $id =~ s/^\/*//;
@@ -472,11 +483,12 @@ sub read_desktop_entry {
 	if ( $verbose ) {
 	    print STDERR "Read desktop entry, opening file $file.\n";
 	}
-        open( FILE, "<$file" ) or return;
+	my $FILE;
+        open( $FILE, "<$file" ) or return;
 
         my $in_desktop_entry = 0;
         my %entry;
-        while (<FILE>) {
+        while (<$FILE>) {
             if (/^\[/) {
                 if (/^\[Desktop Entry\]/) {
                     $in_desktop_entry = 1;
@@ -489,7 +501,7 @@ sub read_desktop_entry {
                 $entry{$1} = $2;
             }
         }
-        close(FILE);
+        close($FILE);
 
         my $id = $file;
         $id =~ s/^$topdir//;
@@ -1739,6 +1751,18 @@ Options:
 Short options are ok if not ambiguous: -h, -x, -icon-a.
 END_HELP
 	exit 0;
+}
+
+# Check if application binary is executable and reachable
+sub check_app {
+	my($app) = @_;
+	# If full path, dont use path, just check path
+	if ( substr($app,0,1) eq '/' and -x $app ) { return 1 };
+	# Check if an application is in the path
+	foreach $_ (@PATH_DIRS) {
+		if ( -x "$_/$app" ) { return 1 }
+	}
+	return 0;
 }
 
 sub show_version {

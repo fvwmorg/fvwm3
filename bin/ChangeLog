@@ -1,3 +1,9 @@
+2010-12-25    <despen@verizon.net>
+
+	* fvwm-menu-desktop.in: change to work with xdg menu standard.
+	make filehandles local.
+	fix root-cmd default and search.
+
 2010-05-13  Thomas Adam   <thomas@xteddy.org>
 	* fvwm-convert-2.6.in (__convert_conditionals):
 	Be more specific about conditional command corrections.
