@@ -141,9 +141,10 @@ $DI{fvwm_title}    = 'folder.xpm:dh:%::'; # micon:law:place:spic:color
 $DI{fvwm_toptitle} = 'mini-k.xpm:no:%::'; # idem
 my $OPT_INSTALL_PREFIX = '';
 
-print STDERR "invoked with args @ARGV\n";
+warn "invoked with args @ARGV\n" if $verbose;
 
-GetOptions("enable-mini-icons"        => \$MINI_ICONS,
+GetOptions(
+       "enable-mini-icons"        => \$MINI_ICONS,
 	   "enable-tran-mini-icons"   => \$TRAN,
 	   "mini-icons-path:s"        => \$MINI_ICONS_DIR,
 	   "png-icons-path:s"         => \$PNG_ICONS,
@@ -183,7 +184,7 @@ GetOptions("enable-mini-icons"        => \$MINI_ICONS,
 
 	   "su_gui"  => \$root_cmd,
            "verbose" => \$verbose
-    );
+);
 
 icon_init();
 
@@ -197,16 +198,20 @@ $root_menu = get_root_menu();
 $charset = langinfo(CODESET);
 $language = setlocale(LC_MESSAGES);
 
-if ( ! defined $root_cmd ) {
-    foreach (qw(gnomesu kdesu xdg_menu_su)) {
-	    if ( check_app($_) ) {
+if (! defined $root_cmd )
+{
+    foreach (qw(gnomesu kdesu xdg_menu_su))
+    {
+	    if (check_app($_))
+        {
 	        $root_cmd = $_;
 	        last;
 	    }
     }
 }
 
-if ($verbose) {
+if ($verbose)
+{
     warn qq|
 	DEBUG: root menu is $root_menu
     DEBUG: charset is $charset.
@@ -216,7 +221,7 @@ if ($verbose) {
 
 @language_keys = prepare_language_keys($language);
 
-unless ( -f $root_menu)
+unless (-f $root_menu)
 {
     warn "ERROR: Can't find root menu file.\n";
     exit 1;
@@ -233,23 +238,23 @@ remove_allocated($menu);
 preprocess_menu($menu);
 remove_empty_menus($menu);
 
-my $output;
-$output = output_fvwm2_menu($menu);
+my $output = output_fvwm2_menu($menu);
 print $output;
 
 # output the menu style
-if ($MENU_STYLE ne "") {
-    foreach (@menus_for_style) {
-	print qq(ChangeMenuStyle "$MENU_STYLE" "$_"\n);
+if ($MENU_STYLE ne "")
+{
+    foreach (@menus_for_style)
+    {
+	    print qq|ChangeMenuStyle "$MENU_STYLE" "$_"\n|;
     }
 }
 
-
 exit 0;
 
-
 # Set DI to list of icons to use:
-sub icon_init {
+sub icon_init
+{
     my @list=();
     my %law;
     my %place;
@@ -258,200 +263,337 @@ sub icon_init {
     my $j = "";
     my $l = "";
     my $tmp_icon ="";
-    if ($wm_icons) {
-	$MINI_ICONS = 1;
-	$MINI_ICONS_DIR = "";
-	$DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
-	$DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
-	$DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
-	$DI{"fvwm_app"}      = "menu/utility.xpm:ow";
-    }
-    if ($fvwm_icons) {
-	$MINI_ICONS = 1;
-	$MINI_ICONS_DIR = "";
-	$DI{"fvwm_toptitle"} = "mini.fvwm.xpm::%";
-	$DI{"fvwm_title"}    = "mini.folder.xpm::%";
-	$DI{"fvwm_folder"}   = "mini.ofolder.xpm::%";
-	$DI{"fvwm_app"}      = "mini.cat.xpm::%";
-    }
-    foreach my $i (keys(%DI)) {
-	@list = split(':',$DI{$i});
-	$dmicon{$i} = $list[0];	# "default" mini-icon
-	$law{$i}    = $list[1];	# default law
-	$place{$i}  = $list[2];	# default position
-	$spic{$i}   = $list[3];	# sidepic icon
-	$scolor{$i} = $list[4];	# color for sidepic
-	$DI{$i} = '';
-    }
-    if ( $TRAN ) { $MINI_ICONS = 1 }
 
-    if ( $MINI_ICONS_DIR ne 'mini/' || $ICONS_DIR ne '') {
-	if ($MINI_ICONS_DIR ne '' ) { $MINI_ICONS_DIR =~ s/\/*$/\// };
-	if ( $ICONS_DIR eq '' ) {
-	    $ICONS_DIR = up_directory($MINI_ICONS_DIR)
-	} else {
-	    if ( $ICONS_DIR eq 'inpath' ) { $ICONS_DIR = '' }
-	    else { $ICONS_DIR =~ s/\/*$/\//  if ($MINI_ICONS_DIR ne '' ) }
-    }
+    if ($wm_icons)
+    {
+        $MINI_ICONS = 1;
+        $MINI_ICONS_DIR = "";
+        $DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
+        $DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
+        $DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
+        $DI{"fvwm_app"}      = "menu/utility.xpm:ow";
     }
 
-    if ( $TRAN_MINI_ICONS ne 'mini/' || $TRAN_ICONS ne '' ) {
-	if ($TRAN_MINI_ICONS ne '' ) { $TRAN_MINI_ICONS =~ s/\/*$/\// };
-	if ( $TRAN_ICONS eq '' ) {
-	    $TRAN_ICONS = up_directory($TRAN_MINI_ICONS)
-	} else {
-	    if ( $TRAN_ICONS eq 'inpath' ) { $TRAN_ICONS = '' }
-	    else { $TRAN_ICONS =~ s/\/*$/\// if ($TRAN_ICONS ne '' ) }
+    if ($fvwm_icons)
+    {
+        $MINI_ICONS = 1;
+        $MINI_ICONS_DIR = "";
+        $DI{"fvwm_toptitle"} = "mini.fvwm.xpm::%";
+        $DI{"fvwm_title"}    = "mini.folder.xpm::%";
+        $DI{"fvwm_folder"}   = "mini.ofolder.xpm::%";
+        $DI{"fvwm_app"}      = "mini.cat.xpm::%";
     }
+
+    foreach my $i (keys(%DI))
+    {
+        @list = split(':',$DI{$i});
+        $dmicon{$i} = $list[0];	# "default" mini-icon
+        $law{$i}    = $list[1];	# default law
+        $place{$i}  = $list[2];	# default position
+        $spic{$i}   = $list[3];	# sidepic icon
+        $scolor{$i} = $list[4];	# color for sidepic
+        $DI{$i} = '';
     }
 
-    $PNG_ICONS =~  s/\/*$/\// if ($PNG_ICONS ne '');
+    if ($TRAN)
+    {
+        $MINI_ICONS = 1;
+    }
 
-# init default mini-icons, law, place, sidepic, color
+    if ($MINI_ICONS_DIR ne 'mini/' or $ICONS_DIR ne '')
+    {
+	    if ($MINI_ICONS_DIR ne '')
+        {
+            $MINI_ICONS_DIR =~ s/\/*$/\//;
+        }
 
-    foreach my $i (qw(fvwm_app fvwm_folder fvwm_title fvwm_toptitle)) {
-	print STDERR "DEBUG: foreach $i.\n" if $verbose; # dje debug
-	# With the mini-icons-tran options we "use" gtk default
-	if ( $TRAN ) {
-	    $j = substr($i,index($i,'_'));
-	    $j = "gtk$j";
-	    $law{$i} = $law{$j};
-	    $tmp_icon  = $dmicon{$j};
-	    $tmp_icon  =~ s/\.png$/\.xpm/;
-	    $dmicon{$i} = "$TRAN_MINI_ICONS$tmp_icon";
-	} else {
-	    $dmicon{$i} = "$MINI_ICONS_DIR$dmicon{$i}";
-	}
-	if ( $verbose ) {
-	    while ( my ($key,$value) = each %dmicon) {
-		print STDERR "INTERMEDIATE icons to use $key -> $value.\n";
+        if ($ICONS_DIR eq '')
+        {
+	        $ICONS_DIR = up_directory($MINI_ICONS_DIR);
 	    }
-	}
-	@list = split(':',$DI{$i});
-	$l = @list;
-	while ( $l <= 5 ) { push(@list,''); ++$l }
-	$law{$i}     = $list[1] if ($list[1] eq 'no'  || $list[1] eq 'ow'
-				    || $list[1] eq 're' || $list[1] eq 'dh' );
-	$dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if ( $list[0] ne '' );
-	$place{$i}   = '%';		# default
-	if ($list[2] eq 'up') {
-	    $place{$i}   = '*';
-	}
-	$dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
-	$dmicon{$i}  = '' if ($law{$i} eq 'no' || $MINI_ICONS == 0);
-	if ( $list[3] ne '' ) { $spic{$i}   = "\@$list[3]\@" }
-	else { $spic{$i}   = '' }
-	if ( $list[4] ne '' && $list[3] ne '' ) { $scolor{$i} = "\^$list[4]\^" }
-	else {$scolor{$i} = ''};
+        elsif ($ICONS_DIR eq 'inpath')
+        {
+            $ICONS_DIR = '';
+        }
+	    else 
+        {
+            $ICONS_DIR =~ s/\/*$/\// if $MINI_ICONS_DIR ne '';
+        }
     }
-    if ($check_mini_icons ne "") {
-	@check_mini_icons_path = split(":", $check_mini_icons);
+
+    if ($TRAN_MINI_ICONS ne 'mini/' or $TRAN_ICONS ne '')
+    {
+	    if ($TRAN_MINI_ICONS ne '')
+        {
+            $TRAN_MINI_ICONS =~ s/\/*$/\//;
+        }
+
+        if ($TRAN_ICONS eq '')
+        {
+	        $TRAN_ICONS = up_directory($TRAN_MINI_ICONS);
+	    }
+        elsif ($TRAN_ICONS eq 'inpath')
+        {
+            $TRAN_ICONS = '';
+        }
+	    else 
+        {
+            $TRAN_ICONS =~ s/\/*$/\// if $TRAN_ICONS ne '';
+        }
     }
-    if ($check_icons ne "") {
-	@check_icons_path = split(":", $check_icons);
-    }
-    if ( $verbose ) {
-	while ( my ($key, $value) = each %dmicon) {
-	    warn "icons to use $key -> $value.\n";
-	}
+
+    $PNG_ICONS =~  s/\/*$/\// if $PNG_ICONS ne '';
+
+    # init default mini-icons, law, place, sidepic, color
+    foreach my $i (qw(fvwm_app fvwm_folder fvwm_title fvwm_toptitle))
+    {
+	    warn "DEBUG: foreach $i.\n" if $verbose; # dje debug
+        # With the mini-icons-tran options we "use" gtk default
+        if ($TRAN)
+        {
+            $j = substr($i,index($i,'_'));
+            $j = "gtk$j";
+            $law{$i} = $law{$j};
+            $tmp_icon  = $dmicon{$j};
+            $tmp_icon  =~ s/\.png$/\.xpm/;
+            $dmicon{$i} = "$TRAN_MINI_ICONS$tmp_icon";
+        }
+        else
+        {
+            $dmicon{$i} = "$MINI_ICONS_DIR$dmicon{$i}";
+        }
+
+        if ($verbose)
+        {
+            while (my ($key,$value) = each %dmicon)
+            {
+                warn "INTERMEDIATE icons to use $key -> $value.\n";
+            }
+	    }
+	    @list = split(':',$DI{$i});
+	    $l = @list;
+	    while ($l <= 5)
+        {
+            push(@list,'');
+            ++$l;
+        }
+	    $law{$i}     = $list[1] if ($list[1] eq 'no' or $list[1] eq 'ow'
+                       or $list[1] eq 're' or $list[1] eq 'dh');
+	    $dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if $list[0] ne '';
+	    $place{$i}   = '*' if $list[2] eq 'up';
+	    $dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
+	    $dmicon{$i}  = '' if $law{$i} eq 'no' or $MINI_ICONS == 0;
+
+        if ($list[3] ne '')
+        {
+            $spic{$i} = "\@$list[3]\@";
+        }
+	    else 
+        {
+            $spic{$i} = '';
+        }
+
+        if ($list[4] ne '' and $list[3] ne '')
+        {
+            $scolor{$i} = "\^$list[4]\^";
+        }
+	    else 
+        {
+            $scolor{$i} = '';
+        }
+
+        if ($check_mini_icons ne "")
+        {
+            @check_mini_icons_path = split(":", $check_mini_icons);
+        }
+
+        if ($check_icons ne "")
+        {
+            @check_icons_path = split(":", $check_icons);
+        }
+
+        if ($verbose)
+        {
+            while (my ($key, $value) = each %dmicon)
+            {
+                warn "icons to use $key -> $value.\n";
+            }
+        }
+        @list = split(':',$DI{$i});
+        $l = @list;
+        while ($l <= 5)
+        {
+            push(@list,''); 
+            ++$l;
+        }
+        $law{$i}     = $list[1] if ($list[1] eq 'no' or $list[1] eq 'ow'
+                        or $list[1] eq 're' or $list[1] eq 'dh');
+        $dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if $list[0] ne '';
+        $place{$i}   = '%';		# default
+
+        if ($list[2] eq 'up')
+        {
+            $place{$i} = '*';
+        }
+        $dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
+        $dmicon{$i}  = '' if ($law{$i} eq 'no' || $MINI_ICONS == 0);
+        if ($list[3] ne '')
+        {
+            $spic{$i} = "\@$list[3]\@";
+        }
+        else 
+        {
+            $spic{$i} = '';
+        }
+        if ($list[4] ne '' and $list[3] ne '')
+        {
+            $scolor{$i} = "\^$list[4]\^";
+        }
+        else 
+        {
+            $scolor{$i} = '';
+        }
+
+        if ($check_mini_icons ne "")
+        {
+            @check_mini_icons_path = split(":", $check_mini_icons);
+        }
+
+        if ($check_icons ne "")
+        {
+            @check_icons_path = split(":", $check_icons);
+        }
+    } # end while
+    if ( $verbose )
+    {
+	    while (my ($key, $value) = each %dmicon)
+        {
+	        warn "icons to use $key -> $value.\n";
+	    }
     }
 }
 
 # Compute cd ..
-sub up_directory {
+sub up_directory
+{
 	my($dir) = @_;
 
-	if ( $dir eq '' ) { return '../' }
+	if ($dir eq '')
+    {
+        return '../';
+    }
+
 	chop($dir);
-	if ( ! ($dir =~ /\//) ) { return '' }
-	$dir = substr($dir,0,rindex($dir,'/')+1);
+
+    if ($dir !~ /\//)
+    {
+        return '';
+    }
+	$dir = substr($dir, 0, rindex($dir, '/') + 1);
+
 	return $dir;
 }
 
-
-sub check_file {
+sub check_file
+{
     my ($file) = @_;
-    unless ( -e $file ) {
-#        push @accessed_files, "X $file";
+    unless (-e $file)
+    {
         return '';
     }
-    if ( -d $file ) {
-#        push @accessed_files, "D $file";
+
+    if (-d $file)
+    {
         return 'D';
     }
-    else {
-#        push @accessed_files, "F $file";
-        return 'F';
-    }
+
+    return 'F';
 }
-sub scan_AppDir {
-    my ( $pool, $dir, $topdir ) = @_;
+
+sub scan_AppDir
+{
+    my ($pool, $dir, $topdir) = @_;
 
     check_file($dir);
+
     $topdir = $dir unless defined $topdir;
-    return if ( check_file($dir) ne 'D' );
-    my $DIR;
-    opendir( $DIR, $dir ) or return;
-    foreach my $entry ( readdir($DIR) ) {
-        if ( -f "$dir/$entry" && $entry =~ /\.desktop$/ ) {
-            read_desktop_entry( $pool, "$dir/$entry", $topdir );
-        } elsif (-d "$dir/$entry"
-		 && $entry ne '.'
-		 && $entry ne '..'
-		 && $entry ne '.hidden' ) {
-            scan_AppDir( $pool, "$dir/$entry", $topdir );
+
+    return if check_file($dir) ne 'D';
+
+    opendir( my $dir_fh, $dir ) or return;
+    foreach my $entry ( readdir($dir_fh) )
+    {
+        if (-f "$dir/$entry" and $entry =~ /\.desktop$/)
+        {
+            read_desktop_entry($pool, "$dir/$entry", $topdir);
+        }
+        elsif (-d "$dir/$entry" and $entry !~ /^\.{1,2}$/
+                and $entry ne '.hidden')
+        {
+            scan_AppDir($pool, "$dir/$entry", $topdir);
         }
     }
-    closedir $DIR;
+    closedir $dir_fh;
 }
 
-sub scan_DirectoryDir {
-    my ( $pool, $dir, $topdir ) = @_;
+sub scan_DirectoryDir
+{
+    my ($pool, $dir, $topdir) = @_;
 
     check_file($dir);
     $topdir = $dir unless defined $topdir;
 
-    my $DIR;
-    opendir( $DIR, $dir ) or return;
-
-    foreach my $entry ( readdir($DIR) ) {
-        if ( -f "$dir/$entry" && $entry =~ /\.directory$/ ) {
+    opendir( my $dir_fh, $dir ) or return;
+    foreach my $entry (readdir($dir_fh))
+    {
+        if (-f "$dir/$entry" and $entry =~ /\.directory$/)
+        {
             read_directory_entry( $pool, "$dir/$entry", $topdir );
-        } elsif (-d "$dir/$entry"
-		 && $entry ne '.'
-		 && $entry ne '..'
-		 && $entry ne '.hidden' ) {
-            scan_DirectoryDir( $pool, "$dir/$entry", $topdir );
+        }
+        elsif (-d "$dir/$entry" and $entry !~ /^\.{1,2}$/
+                and $entry ne '.hidden')
+        {
+            scan_DirectoryDir($pool, "$dir/$entry", $topdir);
         }
     }
-    closedir $DIR;
+    closedir $dir_fh;
 }
 
-sub read_directory_entry {
-    my ( $pool, $file, $topdir ) = @_;
+sub read_directory_entry
+{
+    my ($pool, $file, $topdir) = @_;
 
-    unless ( defined $Directory_entries{$file} ) {
+    unless (defined $Directory_entries{$file})
+    {
         check_file($file);
-	if ( $verbose ) {
-	    print STDERR "Read directory entry, opening file $file.\n";
-	}
+
+        if ($verbose)
+        {
+	        warn "Read directory entry, opening file $file.\n";
+	    }
         open( my $file_fh, "<", $file ) or return;
         my $in_desktop_entry = 0;
         my %entry;
-        while (<$file_fh>) {
-            if (/^\[/) {
-                if (/^\[Desktop Entry\]/) {
+        while (<$file_fh>)
+        {
+            if (/^\[/)
+            {
+                if (/^\[Desktop Entry\]/)
+                {
                     $in_desktop_entry = 1;
                 }
-                elsif (/^\[.*\]/) {
+                elsif (/^\[.*\]/)
+                {
                     $in_desktop_entry = 0;
                 }
             }
-            elsif ( $in_desktop_entry && /^([^=]*)=([^[:cntrl:]]*)/ ) {
+            elsif ($in_desktop_entry and /^([^=]*)=([^[:cntrl:]]*)/)
+            {
                 $entry{$1} = $2;
             }
         }
         close($file_fh);
+
         my $id = $file;
         $id =~ s/^$topdir//;
         $id =~ s/^\/*//;
@@ -463,100 +605,96 @@ sub read_directory_entry {
     $pool->{'Directory_entries'}{ $entry->{'id'} } = $entry;
 }
 
-sub check_show_in {
+sub check_show_in
+{
     my ($entry) = @_;
 
     return 1 unless defined $entry;
 
-    my %OnlyShowIn;
-    my %NotShowIn;
+    my (%OnlyShowIn, %NotShowIn);
 
-    if ( defined $entry->{'OnlyShowIn'} ) {
-        foreach my $showin ( split /;/, $entry->{'OnlyShowIn'} ) {
+    if (defined $entry->{'OnlyShowIn'})
+    {
+        foreach my $showin (split /;/, $entry->{'OnlyShowIn'})
+        {
             $OnlyShowIn{$showin} = 1;
         }
+
         return 0 unless defined $OnlyShowIn{$desktop_name};
     }
-    if ( defined $entry->{'NotShowIn'} ) {
-        foreach my $showin ( split /;/, $entry->{'NotShowIn'} ) {
+
+    if (defined $entry->{'NotShowIn'})
+    {
+        foreach my $showin (split /;/, $entry->{'NotShowIn'})
+        {
             $NotShowIn{$showin} = 1;
         }
+
         return 0 if defined $NotShowIn{$desktop_name};
     }
 
     return 1;
 }
 
-sub read_desktop_entry {
-    my ( $pool, $file, $topdir ) = @_;
+sub read_desktop_entry
+{
+    my ($pool, $file, $topdir) = @_;
 
-    unless ( defined $Desktop_entries{$file} ) {
+    unless (defined $Desktop_entries{$file})
+    {
         check_file($file);
+    }
 
-	if ( $verbose ) {
+	if ($verbose)
+    {
 	    warn "Read desktop entry, opening file $file.\n";
 	}
-        open( my $file_fh, "<", $file ) or return;
 
-        my $in_desktop_entry = 0;
-        my %entry;
-        while (<$file_fh>) {
-            if (/^\[/) {
-                if (/^\[Desktop Entry\]/) {
-                    $in_desktop_entry = 1;
-                }
-                elsif (/^\[.*\]/) {
-                    $in_desktop_entry = 0;
-                }
-            }
-            elsif ( $in_desktop_entry && /^([^=]*)=([^[:cntrl:]]*)/ ) {
-                $entry{$1} = $2;
-            }
-        }
-        close($file_fh);
-
-        my $id = $file;
-        $id =~ s/^$topdir//;
-        $id =~ s/^\/*//;
-        $id =~ s/\//-/g;
-        $entry{'id'} = $id;
-
-        $entry{'refcount'} = 0;
-        $Desktop_entries{$file} = \%entry;
-    }
+    open( my $file_fh, "<", $file ) or return;
 
     my $entry = $Desktop_entries{$file};
 
     return unless defined $entry->{'Name'};
     return unless defined $entry->{'Exec'};
-    if ( defined $entry->{'Hidden'} &&
-	 $entry->{'Hidden'} eq 'true' ) {
-	return;
+
+    if (defined $entry->{'Hidden'} and $entry->{'Hidden'} eq 'true')
+    {
+	    return;
     }
-#   FIXME, an option for this would be good
-   if ( defined $entry->{'NoDisplay'} &&
-	 $entry->{'NoDisplay'} eq 'true' ) {
-	return;
+
+    #FIXME, an option for this would be good
+
+    if (defined $entry->{'NoDisplay'} and  $entry->{'NoDisplay'} eq 'true')
+    {
+	    return;
     }
+
     return unless check_show_in($entry);
 
-    return
-      if defined $entry->{'NotShowIn'}
-          && $entry->{'NotShowIn'} eq $desktop_name;
+    if (defined $entry->{'NotShowIn'} and
+        $entry->{'NotShowIn'} eq $desktop_name)
+    {
+        return;
+    }
 
-    if ( defined $pool && defined $entry->{'Categories'} ) {
-        foreach my $category ( split /;/, $entry->{'Categories'} ) {
+    if (defined $pool and defined $entry->{'Categories'})
+    {
+        foreach my $category (split /;/, $entry->{'Categories'})
+        {
             $pool->{'Categories'}{$category} = []
-              unless defined $pool->{'Categories'}{$category};
+                unless defined $pool->{'Categories'}{$category};
+
             push @{ $pool->{'Categories'}{$category} }, $entry;
         }
         $pool->{'Desktop_entries'}{ $entry->{'id'} } = $entry;
     }
+
     return $entry;
 }
 
-sub read_desktop_entries {
-    my ( $directory_paths, $desktop_paths ) = @_;
+sub read_desktop_entries
+{
+    my ($directory_paths, $desktop_paths) = @_;
     my $pool = {
         'Desktop_entries'   => {},
         'Categories'        => {},
@@ -564,43 +702,43 @@ sub read_desktop_entries {
         'Directory_paths'   => $directory_paths,
         'Desktop_paths'     => $desktop_paths
     };
-    foreach my $dir ( split /:/, $directory_paths ) {
+
+    foreach my $dir (split /:/, $directory_paths)
+    {
         next if $dir =~ /^\s*$/;
         scan_DirectoryDir( $pool, $dir );
     }
-    foreach my $dir ( split /:/, $desktop_paths ) {
+
+    foreach my $dir (split /:/, $desktop_paths)
+    {
         next if $dir =~ /^\s*$/;
         scan_AppDir( $pool, $dir );
     }
+
     return $pool;
 }
 
-# sub dump_entry_list ($) {
-#     my ($list) = @_;
-#     print "list: ";
-#     foreach my $entry (@$list) {
-#         print "$entry->{id} ";
-#     }
-#     print "\n";
-
-# }
-
-sub get_directory_entry {
-    my ( $entry, $pool ) = @_;
+sub get_directory_entry
+{
+    my ($entry, $pool) = @_;
     return $pool->{'Directory_entries'}{$entry};
 }
 
-sub interpret_Include {
+sub interpret_Include
+{
     my ( $tree, $entries, $pool ) = @_;
     my %exist;
     my @list = interpret_entry_node( $tree, 'Or', $pool );
-    foreach my $e (@$entries) {
-        if ( $e->{type} eq 'desktop' ) {
+    foreach my $e (@$entries)
+    {
+        if ( $e->{type} eq 'desktop' )
+        {
             $exist{ $e->{desktop} } = 1;
         }
     }
-    #	dump_entry_list(\@list);
-    foreach my $entry (@list) {
+
+    foreach my $entry (@list)
+    {
         next if $exist{$entry};
         push @$entries, { type => 'desktop', desktop => $entry };
         $entry->{'refcount'}++;
@@ -608,178 +746,219 @@ sub interpret_Include {
     }
 }
 
-sub interpret_Exclude {
+sub interpret_Exclude
+{
     my ( $tree, $entries, $pool ) = @_;
     my @list = interpret_entry_node( $tree, 'Or', $pool );
-    foreach my $entry (@list) {
+    foreach my $entry (@list)
+    {
         my $i = 0;
-        while ( defined $entries->[$i] ) {
+        while ( defined $entries->[$i] )
+        {
             my $exist = $entries->[$i];
-            if (   $exist->{type} eq 'desktop'
-                && $exist->{desktop} eq $entry )
+            if ($exist->{type} eq 'desktop' and
+                $exist->{desktop} eq $entry )
             {
                 splice @$entries, $i, 1;
                 $entry->{'refcount'}--;
-            } else {
+            }
+            else 
+            {
                 $i++;
             }
         }
     }
 }
 
-sub interpret_entry_node {
+sub interpret_entry_node
+{
     my ( $tree, $node, $pool ) = @_;
     my $i = 0;
     $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
     my @subtree;
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Filename' ) {
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Filename')
+        {
             $i++;
-            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
+            {
                 my $entry = $tree->[$i][2];
-                if ( defined $pool->{'Desktop_entries'}{$entry} ) {
+                if (defined $pool->{'Desktop_entries'}{$entry})
+                {
                     push @subtree, [ $pool->{'Desktop_entries'}{$entry} ];
-                } else {
+                }
+                else
+                {
                     push @subtree, [];
                 }
-            } else {
+            }
+            else
+            {
                 warn "Filename\n";
                 exit 1 if $die_on_error;
             }
             $i++;
-        } elsif ( $tree->[$i] eq 'Category' ) {
+        }
+        elsif ($tree->[$i] eq 'Category')
+        {
             $i++;
-            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
+            {
                 my $category = $tree->[$i][2];
-                if ( defined $pool->{'Categories'}{$category} ) {
+                if (defined $pool->{'Categories'}{$category})
+                {
                     push @subtree, $pool->{'Categories'}{$category};
-                } else {
+                }
+                else
+                {
                     push @subtree, [];
                 }
-            } else {
-                print STDERR "Category\n";
+            }
+            else
+            {
+                warn "Category\n";
                 exit 1 if $die_on_error;
             }
             $i++;
-        } elsif ( $tree->[$i] eq 'All' ) {
+        }
+        elsif ($tree->[$i] eq 'All')
+        {
             $i++;
-            if ( values %{ $pool->{'Desktop_entries'} } > 0 ) {
+            if (values %{ $pool->{'Desktop_entries'} } > 0)
+            {
                 push @subtree, [ values %{ $pool->{'Desktop_entries'} } ];
-            } else {
+            }
+            else
+            {
                 push @subtree, [];
             }
             $i++;
-        } elsif ( $tree->[$i] eq '0' ) {
+        }
+        elsif ($tree->[$i] eq '0')
+        {
             $i++;
             $i++;
-        } else {
-            my @res =
-              interpret_entry_node( $tree->[ $i + 1 ], $tree->[$i], $pool );
+        }
+        else
+        {
+            my @res = interpret_entry_node(
+                $tree->[ $i + 1 ], $tree->[$i], $pool
+            );
+
             push @subtree, \@res;
             $i++;
             $i++;
         }
     }
 
-    if ( $node eq 'Or' ) {
-        #		print "or - \n";
+    if ($node eq 'Or')
+    {
         my %used;
         my @res;
-        foreach my $st (@subtree) {
-            #			print "  st: ";
-            #			dump_entry_list($st);
-            foreach my $entry (@$st) {
-                if ( !defined $used{$entry} ) {
+        foreach my $st (@subtree)
+        {
+            foreach my $entry (@$st)
+            {
+                if (!defined $used{$entry})
+                {
                     push @res, $entry;
                     $used{$entry} = 1;
                 }
             }
         }
-        #		print " res: ";
-        #		dump_entry_list(\@res);
         return @res;
-    } elsif ( $node eq 'And' ) {
+    }
+    elsif ($node eq 'And')
+    {
         my %used;
         my @res;
-        #		print "and - \n";
         my $cnt     = @subtree;
         my $min     = @{ $subtree[0] };
         my $min_idx = 0;
         my $idx     = 0;
-        foreach my $st (@subtree) {
-            #			print "  st: ";
-            #			dump_entry_list($st);
+        foreach my $st (@subtree)
+        {
             my $num = @$st;
-            if ( $num < $min ) {
+            if ($num < $min)
+            {
                 $min     = $num;
                 $min_idx = $idx;
             }
 
             my %dupes;
-            foreach my $entry (@$st) {
+            foreach my $entry (@$st)
+            {
                 next if $dupes{$entry};
                 $dupes{$entry} = 1;
 
-                if ( !defined $used{$entry} ) {
+                if (!defined $used{$entry})
+                {
                     $used{$entry} = 1;
                 }
-                else {
+                else
+                {
                     $used{$entry}++;
                 }
             }
-
             $idx++;
         }
+
         return () if $cnt == 0;
-        foreach my $entry ( @{ $subtree[$min_idx] } ) {
+
+        foreach my $entry (@{ $subtree[$min_idx] })
+        {
             push @res, $entry if $used{$entry} == $cnt;
         }
 
-        #		print " res: ";
-        #		dump_entry_list(\@res);
         return @res;
     }
-    elsif ( $node eq 'Not' ) {
+    elsif ($node eq 'Not')
+    {
         my %used;
         my @res;
 
-        #		print "not - \n";
         my $cnt = @subtree;
         foreach my $st (@subtree) {
-            #			print "  st: ";
-            #			dump_entry_list($st);
             foreach my $entry (@$st) {
                 $used{$entry} = 1;
             }
         }
         return if $cnt == 0;
-        foreach my $entry ( values %{ $pool->{'Desktop_entries'} } ) {
+        foreach my $entry (values %{ $pool->{'Desktop_entries'} })
+        {
             push @res, $entry if !defined $used{$entry};
         }
-        #		print " res: ";
-        #		dump_entry_list(\@res);
+
         return @res;
-    } else {
-        print STDERR "Can't use '$node' inside <Include> or <Exclude>\n";
+    }
+    else
+    {
+        warn "Can't use '$node' inside <Include> or <Exclude>\n";
         exit 1 if $die_on_error;
         return ();
     }
 }
 
-sub interpret_root {
-    my ( $tree, $topdir ) = @_;
-    if ( $tree->[0] eq 'Menu' ) {
+sub interpret_root
+{
+    my ($tree, $topdir) = @_;
+
+    if ($tree->[0] eq 'Menu')
+    {
         return interpret_menu( $tree->[1] );
     }
-    else {
-        print STDERR "No toplevel Menu\n";
+    else
+    {
+        warn "No toplevel Menu\n";
         exit 1 if $die_on_error;
         return;
     }
 }
 
-sub interpret_menu {
-    my ( $tree, $directory_paths, $desktop_paths ) = @_;
+sub interpret_menu
+{
+    my ($tree, $directory_paths, $desktop_paths) = @_;
 
     $directory_paths = '' unless defined $directory_paths;
     $desktop_paths   = '' unless defined $desktop_paths;
@@ -793,46 +972,54 @@ sub interpret_menu {
 
     my $i = 0;
 
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    $i++ if ref $tree->[$i] eq 'HASH';
 
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'AppDir' ) {
-            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0' )
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'AppDir')
+        {
+            if (ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0')
             {
                 $desktop_paths .= ':' . $tree->[ $i + 1 ][2];
                 splice @$tree, $i, 2;
             }
-            else {
-                print STDERR "wrong AppDir\n";
+            else 
+            {
+                warn "wrong AppDir\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
             }
         }
-        elsif ( $tree->[$i] eq 'DefaultAppDirs' ) {
+        elsif ($tree->[$i] eq 'DefaultAppDirs')
+        {
             $desktop_paths .= ':' . $DefaultAppDirs;
             splice @$tree, $i, 2;
         }
-        elsif ( $tree->[$i] eq 'DirectoryDir' ) {
-            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0' )
+        elsif ($tree->[$i] eq 'DirectoryDir')
+        {
+            if (ref( $tree->[ $i + 1 ][0]) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0')
             {
                 $directory_paths .= ':' . $tree->[ $i + 1 ][2];
                 splice @$tree, $i, 2;
             }
-            else {
+            else 
+            {
                 warn "wrong DirectoryDir\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
             }
         }
-        elsif ( $tree->[$i] eq 'DefaultDirectoryDirs' ) {
+        elsif ($tree->[$i] eq 'DefaultDirectoryDirs')
+        {
             $directory_paths .= ':' . $DefaultDirectoryDirs;
             splice @$tree, $i, 2;
         }
-        else {
+        else
+        {
             $i++;
             $i++;
         }
@@ -844,64 +1031,97 @@ sub interpret_menu {
     my $pool = read_desktop_entries( $directory_paths, $desktop_paths );
 
     $i = 0;
+    $i++ if ref $tree->[$i] eq 'HASH';
 
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Menu')
+        {
+            $i++;
+            my $submenu = interpret_menu(
+                $tree->[$i], $directory_paths, $desktop_paths
+            );
 
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Menu' ) {
+            push( @{ $menu{'entries'} },
+                    { type => 'menu', menu => $submenu }
+            );
             $i++;
-            my $submenu =
-              interpret_menu( $tree->[$i], $directory_paths, $desktop_paths );
-            push @{ $menu{'entries'} }, { type => 'menu', menu => $submenu };
+        }
+        elsif ($tree->[$i] eq 'Name')
+        {
             $i++;
-        } elsif ( $tree->[$i] eq 'Name' ) {
-            $i++;
-            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+            if (ref($tree->[$i][0]) eq 'HASH' and $tree->[$i][1] eq '0')
+            {
                 $menu{'Name'} = $tree->[$i][2];
                 exit 1 if $die_on_error;
             }
             $i++;
-        } elsif ( $tree->[$i] eq 'Directory' ) {
+        }
+        elsif ($tree->[$i] eq 'Directory')
+        {
             $i++;
-            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
-                $menu{'Directory'} =
-                  get_directory_entry( $tree->[$i][2], $pool );
-
-                #				print "Directory " . $tree->[$i][2] . "\n";
+            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
+            {
+                $menu{'Directory'} = get_directory_entry(
+                    $tree->[$i][2], $pool
+                );
+            }
+            else
+            {
+                warn "wrong Directory\n";
                 exit 1 if $die_on_error;
             }
             $i++;
-        } elsif ( $tree->[$i] eq 'OnlyUnallocated' ) {
+        }
+        elsif ($tree->[$i] eq 'OnlyUnallocated')
+        {
             $menu{'OnlyUnallocated'} = 1;
             $i++;
             $i++;
-        } elsif ( $tree->[$i] eq 'DontShowIfEmpty' ) {
+        }
+        elsif ($tree->[$i] eq 'DontShowIfEmpty')
+        {
             $menu{'DontShowIfEmpty'} = 1;
             $i++;
             $i++;
-        } elsif ( $tree->[$i] eq 'Deleted' ) {
+        }
+        elsif ($tree->[$i] eq 'Deleted')
+        {
             $menu{'Deleted'} = 1;
             $i++;
             $i++;
-        } elsif ( $tree->[$i] eq 'NotDeleted' ) {
+        }
+        elsif ($tree->[$i] eq 'NotDeleted')
+        {
             $menu{'Deleted'} = 0;
             $i++;
             $i++;
-        } elsif ( $tree->[$i] eq 'Include' ) {
+        }
+        elsif ($tree->[$i] eq 'Include')
+        {
             $i++;
-            interpret_Include( $tree->[$i], $menu{'entries'}, $pool );
+            interpret_Include($tree->[$i], $menu{'entries'}, $pool);
             $i++;
-        }elsif ( $tree->[$i] eq 'Exclude' ) {
+        }
+        elsif ($tree->[$i] eq 'Exclude')
+        {
             $i++;
-            interpret_Exclude( $tree->[$i], $menu{'entries'}, $pool );
+            interpret_Exclude($tree->[$i], $menu{'entries'}, $pool);
             $i++;
-        } elsif ( $tree->[$i] eq '0' ) {
+        }
+        elsif ($tree->[$i] eq '0')
+        {
             $i++;
-            if ( $tree->[$i] !~ /^\s*$/ ) {
+            if ($tree->[$i] !~ /^\s*$/)
+            {
                 print STDERR "skip '$tree->[$i]'\n";
                 exit 1 if $die_on_error;
             }
             $i++;
+        }
+        else
+        {
+            warn "Unknown '$tree->[$i]':\n";
             $i++;
             warn "        '@{$tree->[$i]}'\n";
             $i++;
@@ -912,67 +1132,75 @@ sub interpret_menu {
     return \%menu;
 }
 
-sub read_menu {
-    my ( $file, $basedir ) = @_;
+sub read_menu
+{
+    my ($file, $basedir) = @_;
 
-    if ( $file !~ /^\// && defined $basedir ) {
+    if ($file !~ /^\// and defined $basedir)
+    {
         $file = "$basedir/$file";
     }
 
-    unless ( defined $basedir ) {
+    unless (defined $basedir)
+    {
         $basedir = $file;
         $basedir =~ s/\/[^\/]*$//;
     }
 
-    unless ( check_file($file) ) {
+    unless (check_file($file))
+    {
         warn "WARNING: '$file' does not exist\n";
         return [ 'Menu', [ {} ] ];
     }
 
     warn "reading '$file'\n" if $verbose;
 
-    my $parser = new XML::Parser( Style => 'Tree' );
+    my $parser = XML::Parser->new(Style => 'Tree');
     my $tree = $parser->parsefile($file);
 
     my $DefaultMergeDir = $file;
     $DefaultMergeDir =~ s/^.*\///;
     $DefaultMergeDir =~ s/\.menu$/-merged/;
 
-    read_includes( $tree, $basedir, $DefaultMergeDir );
+    read_includes($tree, $basedir, $DefaultMergeDir);
 
     return $tree;
 }
 
-sub read_menu_dir {
-    my ( $dir, $basedir ) = @_;
+sub read_menu_dir
+{
+    my ($dir, $basedir) = @_;
 
     my @out;
 
-    if ( $dir !~ /^\// && defined $basedir ) {
+    if ($dir !~ /^\// and defined $basedir)
+    {
         $dir = "$basedir/$dir";
     }
 
-    if ( check_file($dir) ne 'D' ) {
+    if (check_file($dir) ne 'D')
+    {
         return [];
     }
 
-    my $DIR;
-    opendir( $DIR, $dir );
+    opendir( my $dir_fh, $dir );
+    foreach my $entry (readdir($dir_fh))
+    {
 
-    foreach my $entry ( readdir($DIR) ) {
-
-        if ( -f "$dir/$entry" && $entry =~ /\.menu$/ ) {
+        if (-f "$dir/$entry" and $entry =~ /\.menu$/)
+        {
             my $menu = read_menu("$dir/$entry");
             $menu = remove_toplevel_Menu($menu);
             push @out, @$menu;
         }
     }
-    closedir $DIR;
+    closedir $dir_fh;
 
     return \@out;
 }
 
-sub quote_xml {
+sub quote_xml
+{
     my ($txt) = @_;
 
     $txt =~ s/&/&amp;/g;
@@ -981,8 +1209,9 @@ sub quote_xml {
     return $txt;
 }
 
-sub read_legacy_dir {
-    my ( $dir, $basedir ) = @_;
+sub read_legacy_dir
+{
+    my ($dir, $basedir) = @_;
     my $out;
 
     $dir =~ s/\/*$//;
@@ -993,24 +1222,25 @@ sub read_legacy_dir {
 
     $out = "<Menu>\n";
 
-    if ( $dir eq $basedir ) {
+    if ($dir eq $basedir)
+    {
         my $xmldir = quote_xml($dir);
 
         $out .= "<AppDir>$xmldir</AppDir>\n";
         $out .= "<DirectoryDir>$xmldir</DirectoryDir>\n";
     }
-    else {
+    else
+    {
         my $name = $dir;
         $name =~ s/\/*$//;
         $name =~ s/^.*\///;
 
         $name = quote_xml($name);
-
         $out .= "<Name>$name</Name>\n";
     }
 
-    if ( -f "$dir/.directory" ) {
-
+    if (-f "$dir/.directory")
+    {
         my $dir_id = "$dir/.directory";
         $dir_id =~ s/^$basedir//;
         $dir_id =~ s/^\///;
@@ -1019,112 +1249,142 @@ sub read_legacy_dir {
         $out .= "<Directory>$dir_id</Directory>\n";
     }
 
-    my $DIR;
-    if ( opendir( $DIR, $dir ) ) {
-        foreach my $entry ( readdir($DIR) ) {
-
-            if ( -f "$dir/$entry" && $entry =~ /\.desktop$/ ) {
+    if (opendir(my $dir_fh, $dir))
+    {
+        foreach my $entry (readdir($dir_fh))
+        {
+            if (-f "$dir/$entry" and $entry =~ /\.desktop$/)
+            {
                 my $id = "$dir/$entry";
                 $id =~ s/^$basedir//;
                 $id =~ s/^\///;
                 $id =~ s/\//-/g;
                 $id = quote_xml($id);
 
-                my $desktop =
-                  read_desktop_entry( undef, "$dir/$entry", $basedir );
+                my $desktop = read_desktop_entry(
+                    undef, "$dir/$entry", $basedir
+                );
+
                 $out .= "<Include><Filename>$id</Filename></Include>\n"
-                  unless defined $desktop->{'Categories'};
+                    unless defined $desktop->{'Categories'};
             }
-            elsif (-d "$dir/$entry"
-                && $entry ne '.'
-                && $entry ne '..'
-                && $entry ne '.hidden' )
+            elsif (-d "$dir/$entry" and $entry !~ /^\.{1,2}$/ and
+                    $entry ne '.hidden')
             {
                 $out .= read_legacy_dir( "$dir/$entry", $basedir );
             }
         }
-        closedir $DIR;
+        closedir $dir_fh;
     }
+
     $out .= "</Menu>\n";
     return $out;
 }
 
-sub remove_toplevel_Menu {
+sub remove_toplevel_Menu
+{
     my ($tree) = @_;
-    if ( $tree->[0] eq 'Menu' ) {
-        shift @{ $tree->[1] } if ( ref( $tree->[1][0] ) eq 'HASH' );
+
+    if ($tree->[0] eq 'Menu')
+    {
+        shift @{ $tree->[1] } if ref $tree->[1][0] eq 'HASH';
         return $tree->[1];
     }
-    else {
+    else 
+    {
         warn "No toplevel Menu\n";
         exit 1 if $die_on_error;
         return;
     }
 }
 
-sub read_includes {
-    my ( $tree, $basedir, $DefaultMergeDir ) = @_;
+sub read_includes
+{
+    my ($tree, $basedir, $DefaultMergeDir) = @_;
     my $i = 0;
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'MergeFile' ) {
-            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0' )
+    $i++ if ref $tree->[$i] eq 'HASH';
+
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'MergeFile')
+        {
+            if (ref( $tree->[ $i + 1 ][0]) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0')
             {
-                my $add_tree = read_menu( $tree->[ $i + 1 ][2], $basedir );
+                my $add_tree = read_menu(
+                    $tree->[ $i + 1 ][2], $basedir
+                );
                 $add_tree = remove_toplevel_Menu($add_tree);
 
                 splice @$tree, $i, 2, @$add_tree;
-
-            } else {
+            }
+            else
+            {
                 warn "wrong MergeFile\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
             }
-
-        } elsif ( $tree->[$i] eq 'MergeDir' ) {
-            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0' ) {
+        }
+        elsif ($tree->[$i] eq 'MergeDir')
+        {
+            if (ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0')
+            {
                 my $add_tree = read_menu_dir( $tree->[ $i + 1 ][2], $basedir );
                 splice @$tree, $i, 2, @$add_tree;
-            } else {
+            }
+            else
+            {
                 warn "wrong MergeFile\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
             }
-        } elsif ( $tree->[$i] eq 'DefaultMergeDirs' ) {
+        }
+        elsif ($tree->[$i] eq 'DefaultMergeDirs')
+        {
             my $add_tree = read_menu_dir( $DefaultMergeDir, $basedir );
             splice @$tree, $i, 2, @$add_tree;
-        } elsif ( $tree->[$i] eq 'LegacyDir' ) {
-            if ( ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0' ) {
-                if ( -d $tree->[ $i + 1 ][2] ) {
+        }
+        elsif ($tree->[$i] eq 'LegacyDir')
+        {
+            if (ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
+                and $tree->[ $i + 1 ][1] eq '0')
+            {
+                if (-d $tree->[ $i + 1 ][2])
+                {
                     my $xml = read_legacy_dir( $tree->[ $i + 1 ][2] );
-                    warn "reading legacy directory '"
-                      . $tree->[ $i + 1 ][2] . "'\n"
-                      if $verbose;
-                    my $parser = new XML::Parser( Style => 'Tree' );
+                    warn "reading legacy directory '" . $tree->[ $i + 1 ][2] . 
+                        "'\n" if $verbose;
+
+                    my $parser = XML::Parser->new(Style => 'Tree');
                     my $add_tree = $parser->parse($xml);
                     $add_tree = remove_toplevel_Menu($add_tree);
                     splice @$tree, $i, 2, @$add_tree;
-                } else {
+                }
+                else
+                {
                     warn "legacy directory '"
                       . $tree->[ $i + 1 ][2]
                       . "' not found\n"
                       if $verbose;
                     splice @$tree, $i, 2, ();
                 }
-            } else {
+            }
+            else
+            {
                 warn "wrong LegacyDir\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
             }
-        } elsif ( $tree->[$i] eq 'KDELegacyDirs' ) {
+        }
+        elsif ($tree->[$i] eq 'KDELegacyDirs')
+        {
             my @out;
-            foreach my $dir (@KDELegacyDirs) {
+            foreach my $dir (@KDELegacyDirs)
+            {
                 my $xml = read_legacy_dir($dir);
                 warn "reading legacy directory '$dir'\n" if $verbose;
 
@@ -1134,143 +1394,176 @@ sub read_includes {
                 push @out, @$add_tree;
             }
             splice @$tree, $i, 2, @out;
-        } elsif ( $tree->[$i] eq 'Menu' ) {
+        }
+        elsif ($tree->[$i] eq 'Menu')
+        {
             $i++;
             read_includes( $tree->[$i], $basedir, $DefaultMergeDir );
             $i++;
-        } else {
+        }
+        else
+        {
             $i++;
             $i++;
         }
     }
 }
 
-sub get_menu_name {
+sub get_menu_name
+{
     my ($tree) = @_;
     my $name;
 
     my $i = 0;
 
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    $i++ if ref $tree->[$i] eq 'HASH';
 
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Name' ) {
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Name')
+        {
             $i++;
-            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
+            {
                 $name = $tree->[$i][2];
                 last;
             }
-            else {
+            else
+            {
                 warn "wrong Name\n";
             }
             $i++;
         }
-        else {
+        else
+        {
             $i++;
             $i++;
         }
     }
 
-    unless ( defined $name ) {
+    unless (defined $name)
+    {
         warn "Menu has no name element\n";
     }
+
     return $name;
 }
 
-sub append_menu {
-    my ( $target, $source ) = @_;
+sub append_menu
+{
+    my ($target, $source) = @_;
 
     my $i = 0;
+    $i++ if ref $source->[$i] eq 'HASH';
 
-    $i++ if ( ref( $source->[$i] ) eq 'HASH' );
-
-    while ( defined $source->[$i] ) {
-        if ( $source->[$i] ne 'Name' ) {
+    while (defined $source->[$i])
+    {
+        if ($source->[$i] ne 'Name')
+        {
             push @$target, $source->[$i];
             push @$target, $source->[ $i + 1 ];
         }
-
         $i++;
         $i++;
     }
 }
 
-sub merge_menus {
+sub merge_menus
+{
     my ($tree) = @_;
 
     my %used;    #menu name already used
 
     my $i = 0;
+    $i++ if ref $tree->[$i] eq 'HASH';
 
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
-
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Menu' ) {
-            my $name = get_menu_name( $tree->[ $i + 1 ] );
-            if ( defined $used{$name} ) {    #second menu with the same name
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Menu')
+        {
+            my $name = get_menu_name($tree->[ $i + 1 ]);
+            if (defined $used{$name})
+            {
                 my $target = $used{$name};
-
-                append_menu( $tree->[$target], $tree->[ $i + 1 ] );
+                append_menu($tree->[$target], $tree->[ $i + 1 ]);
 
                 splice @$tree, $i, 2;
             }
-            else {                           # first appearance
+            else
+            {                           # first appearance
                 $used{$name} = $i + 1;
                 $i++;
                 $i++;
             }
         }
-        else {
+        else 
+        {
             $i++;
             $i++;
         }
     }
 
     $i = 0;
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
+    $i++ if ref $tree->[$i] eq 'HASH';
 
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Menu' ) {
-            merge_menus( $tree->[ $i + 1 ] );
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Menu')
+        {
+            merge_menus($tree->[ $i + 1 ]);
         }
         $i++;
         $i++;
     }
 }
 
-sub read_Move {
+sub read_Move
+{
     my ( $tree, $hash ) = @_;
     my $i = 0;
     my $old = '';
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Old' ) {
+    $i++ if ref $tree->[$i] eq 'HASH';
+
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Old')
+        {
             $i++;
-            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
+            {
                 $old = $tree->[$i][2];
-            } else {
+            }
+            else
+            {
                 warn "wrong Old\n";
                 exit 1 if $die_on_error;
             }
             $i++;
         }
-        if ( $tree->[$i] eq 'New' ) {
+        if ($tree->[$i] eq 'New')
+        {
             $i++;
-            if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
+            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
+            {
                 $hash->{$old} = $tree->[$i][2];
-            } else {
+            }
+            else
+            {
                 warn "wrong New\n";
                 exit 1 if $die_on_error;
             }
             $i++;
-        } else {
+        }
+        else
+        {
             $i++;
             $i++;
         }
     }
 }
 
-sub find_menu_in_tree {
+sub find_menu_in_tree
+{
     my ( $path, $tree ) = @_;
 
     my $root = $path;
@@ -1280,14 +1573,16 @@ sub find_menu_in_tree {
     $subpath =~ s/^[^\/]*\/*//;
 
     my $i = 0;
+    $i++ if ref $tree->[$i]  eq 'HASH';
 
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
-
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Menu' ) {
-            if ( $root eq get_menu_name( $tree->[ $i + 1 ] ) ) {
-
-                if ( $subpath eq '' ) {
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Menu')
+        {
+            if ($root eq get_menu_name( $tree->[ $i + 1 ]))
+            {
+                if ($subpath eq '')
+                {
                     return {
                         'parent' => $tree,
                         'index'  => $i,
@@ -1297,19 +1592,22 @@ sub find_menu_in_tree {
                 return find_menu_in_tree( $subpath, $tree->[ $i + 1 ] );
             }
         }
-
         $i++;
         $i++;
     }
 
+    #FIXME - TA:  Don't return undef here, it's bad.
     return undef;
 }
 
-sub copy_menu {
-    my ( $path, $tree ) = @_;
+sub copy_menu
+{
+    my ($path, $tree) = @_;
     my $tail;
     my $child;
-    foreach my $elem ( reverse split( /\//, $path ) ) {
+
+    foreach my $elem (reverse split( /\//, $path))
+    {
         next if $elem eq '';
         my $menu = [ {}, 'Name', [ {}, 0, $elem ] ];
         push @$menu, ( 'Menu', $child ) if defined $child;
@@ -1320,92 +1618,106 @@ sub copy_menu {
     return $child;
 }
 
-sub move_menus {
+sub move_menus
+{
     my ($tree) = @_;
     my %move;
     my $i = 0;
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Move' ) {
-            read_Move( $tree->[ $i + 1 ], \%move );
+    $i++ if ref $tree->[$i] eq 'HASH';
+
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Move')
+        {
+            read_Move($tree->[ $i + 1 ], \%move);
             splice @$tree, $i, 2;
         }
-        else {
+        else
+        {
             $i++;
             $i++;
         }
     }
-    foreach my $source ( keys %move ) {
-        my $sourceinfo = find_menu_in_tree( $source, $tree );
 
-        if ( defined $sourceinfo ) {
-            my $target = copy_menu( $move{$source}, $sourceinfo->{'menu'} );
+    foreach my $source (keys %move)
+    {
+        my $sourceinfo = find_menu_in_tree($source, $tree);
+
+        if (defined $sourceinfo)
+        {
+            my $target = copy_menu($move{$source}, $sourceinfo->{'menu'});
             splice @{ $sourceinfo->{'parent'} }, $sourceinfo->{'index'}, 2;
-            push @$tree, ( 'Menu', $target );
+            push @$tree, ('Menu', $target);
             merge_menus($tree);
         }
     }
     $i = 0;
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
-    while ( defined $tree->[$i] ) {
-        if ( $tree->[$i] eq 'Menu' ) {
-            move_menus( $tree->[ $i + 1 ] );
+    $i++ if ref $tree->[$i] eq 'HASH';
+
+    while (defined $tree->[$i])
+    {
+        if ($tree->[$i] eq 'Menu')
+        {
+            move_menus($tree->[ $i + 1 ]);
         }
         $i++;
         $i++;
     }
 }
 
-sub remove_allocated {
+sub remove_allocated
+{
     my ($menu) = @_;
 
     my $i = 0;
-    while ( $i < @{ $menu->{'entries'} } ) {
+    while ($i < @{ $menu->{'entries'} })
+    {
         my $entry = $menu->{'entries'}[$i];
 
-        if ( $entry->{type} eq 'menu' ) {
+        if ($entry->{type} eq 'menu')
+        {
             remove_allocated( $entry->{menu} );
             $i++;
         }
         elsif ($entry->{type} eq 'desktop'
-            && $menu->{'OnlyUnallocated'}
-            && $entry->{desktop}{'refcount'} > 1 )
+                and  $menu->{'OnlyUnallocated'}
+                and $entry->{desktop}{'refcount'} > 1)
         {
-
             $entry->{desktop}{'refcount'}--;
             splice @{ $menu->{'entries'} }, $i, 1;
         }
-        else {
+        else 
+        {
             $i++;
         }
     }
     return 0;
 }
 
-sub remove_empty_menus {
+sub remove_empty_menus
+{
     my ($menu) = @_;
 
     my $i = 0;
-    while ( $i < @{ $menu->{'entries'} } ) {
+    while ($i < @{ $menu->{'entries'} })
+    {
         my $entry = $menu->{'entries'}[$i];
 
-        if ( $entry->{type} eq 'menu' && remove_empty_menus( $entry->{menu} ) )
+        if ($entry->{type} eq 'menu' and remove_empty_menus($entry->{menu}))
         {
             splice @{ $menu->{'entries'} }, $i, 1;
         }
-        else {
+        else
+        {
             $i++;
         }
     }
 
-    return 1
-      if @{ $menu->{'entries'} } ==
-          0;    # && $menu->{'DontShowIfEmpty'}; #menu is empty
-
-    return 0;
+    @{ $menu->{'entries'} } == 0 ? return 1 : return 0;
 }
 
-sub prepare_exec {
+sub prepare_exec
+{
     my ( $exec, $desktop ) = @_;
 
     # Take out filename flags, etc.
@@ -1426,61 +1738,89 @@ sub prepare_exec {
     $exec =~ s/%c/$caption/g;
     $exec =~ s/%%/%/g;
 
-    if (defined $desktop->{Terminal} ) {
-	if ($desktop->{Terminal} eq '1' || $desktop->{Terminal} eq 'true') {
-	    $exec = "$TERM_CMD $exec";
-	}
+    if (defined $desktop->{Terminal})
+    {
+	    if ($desktop->{Terminal} eq '1' or $desktop->{Terminal} eq 'true')
+        {
+	        $exec = "$TERM_CMD $exec";
+	    }
     }
-    if (defined $desktop->{'X-KDE-SubstituteUID'}) {
-	if ($desktop->{'X-KDE-SubstituteUID'} eq '1'
-	    || $desktop->{'X-KDE-SubstituteUID'} eq 'true') {
-	    $exec = "$root_cmd $exec"
-	}
+
+    if (defined $desktop->{'X-KDE-SubstituteUID'})
+    {
+	    if ($desktop->{'X-KDE-SubstituteUID'} eq '1'
+	        or $desktop->{'X-KDE-SubstituteUID'} eq 'true')
+        {
+	        $exec = "$root_cmd $exec"
+	    }
     }
     return $exec;
 }
 
-sub get_loc_entry {
+sub get_loc_entry
+{
     my ( $desktop, $entry ) = @_;
 
-    foreach my $key (@language_keys) {
+    foreach my $key (@language_keys)
+    {
         my $loc_entry = $entry . "[$key]";
-        return $desktop->{$loc_entry}
-          if defined $desktop->{$loc_entry}
-              && $desktop->{$loc_entry} !~ /^\s*$/;
+
+        if (defined $desktop->{$loc_entry} and
+            $desktop->{$loc_entry} !~ /^\s*$/)
+        {
+            return $desktop->{$loc_entry};
+        }
     }
 
     return $desktop->{$entry};
 }
 
-sub preprocess_menu {
+sub preprocess_menu
+{
     # localize, sort, prepare_exec
     my ($menu) = @_;
+
     return 0 if $menu->{'Deleted'};
     return 0 unless check_show_in( $menu->{'Directory'} );
-    return 0
-	if defined $menu->{'Directory'} && defined $menu->{'Directory'}->{'NoDisplay'} 
-            && $menu->{'Directory'}->{'NoDisplay'} eq 'true';
+
+	if( defined $menu->{'Directory'} and
+        defined $menu->{'Directory'}->{'NoDisplay'} and
+        $menu->{'Directory'}->{'NoDisplay'} eq 'true')
+    {
+        return 0;
+    }
+
     my $menu_name = $menu->{'Name'};
-    if ( defined $menu->{'Directory'} ) {
+    if (defined $menu->{'Directory'})
+    {
         my $directory = $menu->{'Directory'};
         my $directory_name = get_loc_entry( $directory, 'Name' );
-        if ( defined $directory_name ) {
-            Encode::from_to( $directory_name, "utf8", $charset )
-              if !defined $directory->{"Encoding"}
-                  || $directory->{"Encoding"} eq 'UTF-8';
-            $menu_name = $directory_name;
+
+        if (defined $directory_name)
+        {
+              if( !defined $directory->{"Encoding"} or
+                  $directory->{"Encoding"} eq 'UTF-8')
+              {
+                  Encode::from_to($directory_name, "utf8", $charset);
+              }
+
+              $menu_name = $directory_name;
         }
     }
+
     $menu->{'PrepName'} = $menu_name;
+
     my $i = 0;
-    while ( defined $menu->{'entries'}[$i] ) {
+    while ( defined $menu->{'entries'}[$i] )
+    {
         my $entry = $menu->{'entries'}[$i];
-        if ( $entry->{'type'} eq 'desktop' ) {
+        if ( $entry->{'type'} eq 'desktop' )
+        {
             my $desktop = $entry->{desktop};
             my $name = $desktop->{'id'};
             my $desktop_name = get_loc_entry( $desktop, 'Name' );
-            if ( defined $desktop_name ) {
+            if ( defined $desktop_name )
+            {
                 Encode::from_to( $desktop_name, "utf8", $charset )
                   if !defined $desktop->{"Encoding"}
                       || $desktop->{"Encoding"} eq 'UTF-8';
@@ -1492,17 +1832,21 @@ sub preprocess_menu {
             $desktop->{'PrepExec'} = prepare_exec( $desktop->{Exec}, $desktop );
             $i++;
         }
-        elsif ( $entry->{type} eq 'menu' ) {
-            if ( preprocess_menu( $entry->{'menu'} ) ) {
+        elsif ( $entry->{type} eq 'menu' )
+        {
+            if ( preprocess_menu( $entry->{'menu'} ) )
+            {
                 $entry->{'Name'}     = $entry->{'menu'}{'Name'};
                 $entry->{'PrepName'} = $entry->{'menu'}{'PrepName'};
                 $i++;
             }
-            else {
+            else
+            {
                 splice @{ $menu->{'entries'} }, $i, 1;
             }
         }
-        else {
+        else
+        {
             warn "wrong menu entry type: $entry->{type}";
             exit 1 if $die_on_error;
             splice @{ $menu->{'entries'} }, $i, 1;
@@ -1518,18 +1862,20 @@ sub preprocess_menu {
 
     $i = 0;
     my $prev_entry;
-    while ( defined $menu->{'entries'}[$i] ) {
+    while ( defined $menu->{'entries'}[$i] )
+    {
         my $entry = $menu->{'entries'}[$i];
-        if (   defined $prev_entry
-            && $entry->{'type'}                       eq 'desktop'
-            && $prev_entry->{'type'}                  eq 'desktop'
-            && $prev_entry->{'PrepName'}              eq $entry->{'PrepName'}
-            && $prev_entry->{'desktop'}->{'PrepExec'} eq
+        if (defined $prev_entry
+            and $entry->{'type'}                       eq 'desktop'
+            and $prev_entry->{'type'}                  eq 'desktop'
+            and $prev_entry->{'PrepName'}              eq $entry->{'PrepName'}
+            and $prev_entry->{'desktop'}->{'PrepExec'} eq
             $entry->{'desktop'}->{'PrepExec'} )
         {
             splice @{ $menu->{'entries'} }, $i, 1;
         }
-        else {
+        else
+        {
             $prev_entry = $entry;
             $i++;
         }
@@ -1537,60 +1883,71 @@ sub preprocess_menu {
     return 1;
 }
 
-sub output_fvwm2_menu {
-    my ( $menu, $toplevel, $path ) = @_;
+sub output_fvwm2_menu
+{
+    my ($menu, $toplevel, $path) = @_;
+
+    $path = '' unless defined $path;
+    $toplevel = 1 unless defined $toplevel;
 
     my $output = '';
     my $label = '';
-    $path = '' unless defined $path;
-    $toplevel = 1 unless defined $toplevel;
     my $menu_name = $menu->{'PrepName'};
     my $menu_id = "$path-" . $menu->{'Name'};
     $menu_id =~ s/\s/_/g;
     $menu_id = $menu_prefix if $toplevel;
-    foreach my $entry ( @{ $menu->{'entries'} } ) {
+    foreach my $entry ( @{ $menu->{'entries'} } )
+    {
         if ( $entry->{type} eq 'menu' ) {
             $output .= output_fvwm2_menu( $entry->{'menu'}, 0, $menu_id );
         }
     }
     $output .= "DestroyMenu \"$menu_id\"\n";
     $output .= "AddToMenu \"$menu_id\" \"$dmicon{'fvwm_title'}$label$menu_name\" Title\n";
-    if ($MENU_STYLE ne '') {
-	push @menus_for_style, $menu_id;
+
+    if ($MENU_STYLE ne '')
+    {
+	    push @menus_for_style, $menu_id;
     }
 
-    #print "AddToMenu \"$name$spic{\"$flag$titletype\"}" .
-    #"$scolor{\"$flag$titletype\"}\" \"$label$mini_icon\" Title\n";
-    foreach my $entry ( @{ $menu->{'entries'} } ) {
-        if ( $entry->{type} eq 'desktop' ) {
+    foreach my $entry ( @{ $menu->{'entries'} } )
+    {
+        if ( $entry->{type} eq 'desktop' )
+        {
             my $desktop = $entry->{desktop};
             my $name = $desktop->{'PrepName'};
             my $exec = $desktop->{'PrepExec'};
             $output .= "+		 \"$dmicon{'fvwm_app'}$name\" Exec $exec\n";
         }
-        elsif ( $entry->{type} eq 'menu' ) {
+        elsif ( $entry->{type} eq 'menu')
+        {
             my $name = $entry->{'menu'}{'PrepName'};
             my $id   = "$menu_id-" . $entry->{'menu'}{'Name'};
             $id =~ s/\s/_/g;
             $output .= "+		 \"$dmicon{'fvwm_folder'}$name\" Popup \"$id\"\n";
         }
-        else {
+        else 
+        {
             warn "wrong menu entry type: $entry->{type}";
         }
     }
+
     $output .= "\n";
-    if ("$menu_id" eq "$menu_prefix-System_Tools") {
-	$output .= "AddToMenu \"$menu_prefix-System_Tools\" " .
-	    "\"$dmicon{'fvwm_app'}Regenerate Applications Menu\" " .
-	    "FvwmForm FvwmForm-Desktop\n";
+    if ("$menu_id" eq "$menu_prefix-System_Tools")
+    {
+	    $output .= "AddToMenu \"$menu_prefix-System_Tools\" " .
+	        "\"$dmicon{'fvwm_app'}Regenerate Applications Menu\" " .
+	        "FvwmForm FvwmForm-Desktop\n";
     }
     return $output;
 }
 
-sub get_root_menu {
+sub get_root_menu
+{
     my $menu_base='applications';
-# fixme, change more...    $menu_base='settings';
-    foreach my $dir ( split( /:/, $xdg_config_dirs ), "/etc/xdg" ) {
+    # fixme, change more...    $menu_base='settings';
+    foreach my $dir ( split( /:/, $xdg_config_dirs ), "/etc/xdg" )
+    {
         check_file("$dir/menus/$menu_base.menu");
         if ( -f "$dir/menus/$menu_base.menu" ) {
             warn "Root Menu $dir/menus/applications.menu\n" if $verbose;
@@ -1600,16 +1957,22 @@ sub get_root_menu {
     return "";
 }
 
-sub get_app_dirs {
+sub get_app_dirs
+{
     my %used;
     my $ret = '';
+
+    return $ret unless check_app("kde-config");
+
     my @kde_xdgdata = split( /:/, `kde-config --path xdgdata-apps` );
 
-    foreach $_ (@kde_xdgdata) {
+    foreach (@kde_xdgdata)
+    {
         s/\/applications\/*\s*$//;
     }
-    foreach my $d ( split( /:/, $xdg_data_dirs ),
-        @kde_xdgdata, "/usr/share", "/opt/gnome/share" )
+
+    foreach my $d (split( /:/, $xdg_data_dirs ),
+        @kde_xdgdata, "/usr/share", "/opt/gnome/share")
     {
         my $dir = $d;
         $dir =~ s/\/*$//;
@@ -1619,15 +1982,18 @@ sub get_app_dirs {
         $ret .= "$dir/applications";
         $used{$dir} = 1;
     }
-    if ($verbose) {
-        foreach ( split( ':', $ret ) ) {
+    if ($verbose)
+    {
+        foreach ( split( ':', $ret ) )
+        {
             warn "app dirs $_\n";
         }
     }
     return $ret;
 }
 
-sub get_desktop_dirs {
+sub get_desktop_dirs
+{
     my %used;
     my $ret = '';
     foreach my $dir ( split( /:/, $xdg_data_dirs ),
@@ -1643,11 +2009,22 @@ sub get_desktop_dirs {
     return $ret;
 }
 
-sub get_KDE_legacy_dirs {
+sub get_KDE_legacy_dirs
+{
     my %used;
-    my @ret;
-    foreach my $d ( "/etc/opt/kde3/share/applnk", "/opt/kde3/share/applnk",
-        reverse( split( /:/, `kde-config --path apps` ) ) )
+    my @ret = ();
+    my @legacy_dirs = (qw(
+        /etc/opt/kde3/share/applnk
+        /opt/kde3/share/applnk
+        )
+    );
+
+    if (check_app("kde-config"))
+    {
+        push @legacy_dirs, reverse(split(/:/,`kde-config --path apps` ));
+    }
+
+    foreach my $d ( @legacy_dirs )
     {
         my $dir = $d;
         chomp $dir;
@@ -1661,28 +2038,36 @@ sub get_KDE_legacy_dirs {
     return @ret;
 }
 
-sub prepare_language_keys {
+sub prepare_language_keys
+{
     my ($language) = @_;
 
     my @keys;
-
     $language =~ s/\.[^@]*//;    # remove .ENCODING
 
-    if ( $language =~ /^([^_]*)_([^@]*)@(.*)$/ ) {    # LANG_COUNTRY@MODIFIER
+    if ( $language =~ /^([^_]*)_([^@]*)@(.*)$/)
+    {
+        # LANG_COUNTRY@MODIFIER
         push @keys, $1 . '_' . $2 . '@' . $3;
         push @keys, $1 . '_' . $2;
         push @keys, $1 . '@' . $3;
         push @keys, $1;
     }
-    elsif ( $language =~ /^([^_]*)_([^@]*)$/ ) {      # LANG_COUNTRY
+    elsif ($language =~ /^([^_]*)_([^@]*)$/)
+    {
+        # LANG_COUNTRY
         push @keys, $1 . '_' . $2;
         push @keys, $1;
     }
-    elsif ( $language =~ /^([^_]*)@(.*)$/ ) {         # LANG@MODIFIER
+    elsif ($language =~ /^([^_]*)@(.*)$/)
+    {
+        # LANG@MODIFIER
         push @keys, $1 . '@' . $2;
         push @keys, $1;
     }
-    elsif ( $language =~ /^([^_@]*)$/ ) {             # LANG
+    elsif ($language =~ /^([^_@]*)$/)
+    {
+        # LANG
         push @keys, $1;
     }
 
@@ -1690,7 +2075,8 @@ sub prepare_language_keys {
 }
 
 # Fixme, remove unsupported options.
-sub show_help {
+sub show_help
+{
 	print <<END_HELP;
 A perl script which parses xdg menu definitions to build
 the corresponding fvwm menus.  The script can also build
@@ -1750,22 +2136,32 @@ END_HELP
 }
 
 # Check if application binary is executable and reachable
-sub check_app {
+sub check_app
+{
 	my($app) = @_;
 	# If full path, dont use path, just check path
-	if ( substr($app,0,1) eq '/' and -x $app ) { return 1 };
+	if ( substr($app,0,1) eq '/' and -x $app )
+    {
+        return 1;
+    }
+
 	# Check if an application is in the path
-	foreach (@PATH_DIRS) {
-		if ( -x "$_/$app" ) { return 1 }
+	foreach (@PATH_DIRS)
+    {
+		return 1 if -x "$_/$app";
 	}
+
 	return 0;
 }
 
-sub show_version {
+sub show_version
+{
 	print "$version\n";
 	exit 0;
 }
-sub obsolete {
+
+sub obsolete
+{
     my ($arg) = @_;
     print "WARNING: Argument \"$arg\" obsolete.  Ignored.\n";
 }
