@@ -35,6 +35,8 @@
 # - sidepics, etc not tested.
 # - iconname::: syntax needs investigation, I think some of it is obsolete,
 #   needs a verifier, and some defaults.
+# - Far too many lexical globals not bound to subroutines (c.f.
+#    modularisation.)
 
 # ---------------------------------------------------------------------------
 #  fvwm-menu-desktop
@@ -71,10 +73,8 @@ use POSIX qw(locale_h);
 use Digest::MD5 qw(md5_hex);
 use XML::Parser;
 
-my $xdg_data_dirs = $ENV{XDG_DATA_DIRS};
-$xdg_data_dirs = '' if ! defined $xdg_data_dirs;
-my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS};
-$xdg_config_dirs = '' if ! defined $xdg_config_dirs;
+my $xdg_data_dirs = $ENV{XDG_DATA_DIRS} || '';
+my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS} || '';
 my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 
 my $version = '@VERSION@';
@@ -187,27 +187,27 @@ $charset = langinfo(CODESET);
 $language = setlocale(LC_MESSAGES);
 
 if ( ! defined $root_cmd ) {
-    foreach $_ ('gnomesu', 'kdesu', 'xdg_menu_su') {
-	if ( check_app($_) ) {
-	    $root_cmd = "$_";
-	    last;
-	}
+    foreach (qw(gnomesu kdesu xdg_menu_su)) {
+	    if ( check_app($_) ) {
+	        $root_cmd = $_;
+	        last;
+	    }
     }
 }
 
 if ($verbose) {
-    print STDERR
-	"DEBUG: root menu is $root_menu\n"
-	. "DEBUG: charset is $charset.\n"
-	. "DEBUG: language is $language.\n"
-	. "DEBUG: root-cmd is $root_cmd.\n"
+    warn qq|
+	DEBUG: root menu is $root_menu
+    DEBUG: charset is $charset.
+	DEBUG: language is $language.
+	DEBUG: root-cmd is $root_cmd.|;
 }
 
 @language_keys = prepare_language_keys($language);
 
 unless ( -f $root_menu)
 {
-    print STDERR "ERROR: Can't find root menu file.\n";
+    warn "ERROR: Can't find root menu file.\n";
     exit 1;
 }
 
@@ -338,7 +338,7 @@ sub icon_init {
     }
     if ( $verbose ) {
 	while ( my ($key, $value) = each %dmicon) {
-	    print STDERR "icons to use $key -> $value.\n";
+	    warn "icons to use $key -> $value.\n";
 	}
     }
 }
@@ -421,11 +421,10 @@ sub read_directory_entry {
 	if ( $verbose ) {
 	    print STDERR "Read directory entry, opening file $file.\n";
 	}
-	my $FILE;
-        open( $FILE, "<$file" ) or return;
+        open( my $file_fh, "<", $file ) or return;
         my $in_desktop_entry = 0;
         my %entry;
-        while (<$FILE>) {
+        while (<$file_fh>) {
             if (/^\[/) {
                 if (/^\[Desktop Entry\]/) {
                     $in_desktop_entry = 1;
@@ -438,7 +437,7 @@ sub read_directory_entry {
                 $entry{$1} = $2;
             }
         }
-        close($FILE);
+        close($file_fh);
         my $id = $file;
         $id =~ s/^$topdir//;
         $id =~ s/^\/*//;
@@ -481,14 +480,13 @@ sub read_desktop_entry {
         check_file($file);
 
 	if ( $verbose ) {
-	    print STDERR "Read desktop entry, opening file $file.\n";
+	    warn "Read desktop entry, opening file $file.\n";
 	}
-	my $FILE;
-        open( $FILE, "<$file" ) or return;
+        open( my $file_fh, "<", $file ) or return;
 
         my $in_desktop_entry = 0;
         my %entry;
-        while (<$FILE>) {
+        while (<$file_fh>) {
             if (/^\[/) {
                 if (/^\[Desktop Entry\]/) {
                     $in_desktop_entry = 1;
@@ -501,7 +499,7 @@ sub read_desktop_entry {
                 $entry{$1} = $2;
             }
         }
-        close($FILE);
+        close($file_fh);
 
         my $id = $file;
         $id =~ s/^$topdir//;
@@ -631,7 +629,7 @@ sub interpret_entry_node {
                     push @subtree, [];
                 }
             } else {
-                print STDERR "Filename\n";
+                warn "Filename\n";
                 exit 1 if $die_on_error;
             }
             $i++;
@@ -810,7 +808,7 @@ sub interpret_menu {
                 splice @$tree, $i, 2;
             }
             else {
-                print STDERR "wrong DirectoryDir\n";
+                warn "wrong DirectoryDir\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
@@ -849,7 +847,7 @@ sub interpret_menu {
                 $menu{'Name'} = $tree->[$i][2];
             }
             else {
-                print STDERR "wrong Name\n";
+                warn "wrong Name\n";
                 exit 1 if $die_on_error;
             }
             $i++;
@@ -863,7 +861,7 @@ sub interpret_menu {
                 #				print "Directory " . $tree->[$i][2] . "\n";
             }
             else {
-                print STDERR "wrong Directory\n";
+                warn "wrong Directory\n";
                 exit 1 if $die_on_error;
             }
             $i++;
@@ -907,9 +905,9 @@ sub interpret_menu {
             $i++;
         }
         else {
-            print STDERR "Unknown '$tree->[$i]':\n";
+            warn "Unknown '$tree->[$i]':\n";
             $i++;
-            print STDERR "        '@{$tree->[$i]}'\n";
+            warn "        '@{$tree->[$i]}'\n";
             $i++;
             exit 1 if $die_on_error;
         }
@@ -931,11 +929,11 @@ sub read_menu {
     }
 
     unless ( check_file($file) ) {
-        print STDERR "WARNING: '$file' does not exist\n";
+        warn "WARNING: '$file' does not exist\n";
         return [ 'Menu', [ {} ] ];
     }
 
-    print STDERR "reading '$file'\n" if $verbose;
+    warn "reading '$file'\n" if $verbose;
 
     my $parser = new XML::Parser( Style => 'Tree' );
     my $tree = $parser->parsefile($file);
@@ -1062,7 +1060,7 @@ sub remove_toplevel_Menu {
         return $tree->[1];
     }
     else {
-        print STDERR "No toplevel Menu\n";
+        warn "No toplevel Menu\n";
         exit 1 if $die_on_error;
         return;
     }
@@ -1083,7 +1081,7 @@ sub read_includes {
                 splice @$tree, $i, 2, @$add_tree;
 
             } else {
-                print STDERR "wrong MergeFile\n";
+                warn "wrong MergeFile\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
@@ -1095,7 +1093,7 @@ sub read_includes {
                 my $add_tree = read_menu_dir( $tree->[ $i + 1 ][2], $basedir );
                 splice @$tree, $i, 2, @$add_tree;
             } else {
-                print STDERR "wrong MergeFile\n";
+                warn "wrong MergeFile\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
@@ -1108,7 +1106,7 @@ sub read_includes {
                 and $tree->[ $i + 1 ][1] eq '0' ) {
                 if ( -d $tree->[ $i + 1 ][2] ) {
                     my $xml = read_legacy_dir( $tree->[ $i + 1 ][2] );
-                    print STDERR "reading legacy directory '"
+                    warn "reading legacy directory '"
                       . $tree->[ $i + 1 ][2] . "'\n"
                       if $verbose;
                     my $parser = new XML::Parser( Style => 'Tree' );
@@ -1116,14 +1114,14 @@ sub read_includes {
                     $add_tree = remove_toplevel_Menu($add_tree);
                     splice @$tree, $i, 2, @$add_tree;
                 } else {
-                    print STDERR "legacy directory '"
+                    warn "legacy directory '"
                       . $tree->[ $i + 1 ][2]
                       . "' not found\n"
                       if $verbose;
                     splice @$tree, $i, 2, ();
                 }
             } else {
-                print STDERR "wrong LegacyDir\n";
+                warn "wrong LegacyDir\n";
                 exit 1 if $die_on_error;
                 $i++;
                 $i++;
@@ -1132,7 +1130,7 @@ sub read_includes {
             my @out;
             foreach my $dir (@KDELegacyDirs) {
                 my $xml = read_legacy_dir($dir);
-                print STDERR "reading legacy directory '$dir'\n" if $verbose;
+                warn "reading legacy directory '$dir'\n" if $verbose;
 
                 my $parser = new XML::Parser( Style => 'Tree' );
                 my $add_tree = $parser->parse($xml);
@@ -1167,7 +1165,7 @@ sub get_menu_name {
                 last;
             }
             else {
-                print STDERR "wrong Name\n";
+                warn "wrong Name\n";
             }
             $i++;
         }
@@ -1178,7 +1176,7 @@ sub get_menu_name {
     }
 
     unless ( defined $name ) {
-        print STDERR "Menu has no name element\n";
+        warn "Menu has no name element\n";
     }
     return $name;
 }
@@ -1255,7 +1253,7 @@ sub read_Move {
             if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
                 $old = $tree->[$i][2];
             } else {
-                print STDERR "wrong Old\n";
+                warn "wrong Old\n";
                 exit 1 if $die_on_error;
             }
             $i++;
@@ -1265,7 +1263,7 @@ sub read_Move {
             if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
                 $hash->{$old} = $tree->[$i][2];
             } else {
-                print STDERR "wrong New\n";
+                warn "wrong New\n";
                 exit 1 if $die_on_error;
             }
             $i++;
@@ -1509,7 +1507,7 @@ sub preprocess_menu {
             }
         }
         else {
-            print STDERR "wrong menu entry type: $entry->{type}";
+            warn "wrong menu entry type: $entry->{type}";
             exit 1 if $die_on_error;
             splice @{ $menu->{'entries'} }, $i, 1;
         }
@@ -1581,7 +1579,7 @@ sub output_fvwm2_menu {
             $output .= "+		 \"$dmicon{'fvwm_folder'}$name\" Popup \"$id\"\n";
         }
         else {
-            print STDERR "wrong menu entry type: $entry->{type}";
+            warn "wrong menu entry type: $entry->{type}";
         }
     }
     $output .= "\n";
@@ -1597,7 +1595,7 @@ sub get_root_menu {
     foreach my $dir ( split( /:/, $xdg_config_dirs ), "/etc/xdg" ) {
         check_file("$dir/menus/applications.menu");
         if ( -f "$dir/menus/applications.menu" ) {
-            print STDERR "Root Menu $dir/menus/applications.menu\n" if $verbose;
+            warn "Root Menu $dir/menus/applications.menu\n" if $verbose;
             return "$dir/menus/applications.menu";
         }
     }
@@ -1624,8 +1622,8 @@ sub get_app_dirs {
         $used{$dir} = 1;
     }
     if ($verbose) {
-        foreach $_ ( split( ':', $ret ) ) {
-            print STDERR "app dirs $_\n";
+        foreach ( split( ':', $ret ) ) {
+            warn "app dirs $_\n";
         }
     }
     return $ret;
@@ -1635,7 +1633,7 @@ sub get_desktop_dirs {
     my %used;
     my $ret = '';
     foreach my $dir ( split( /:/, $xdg_data_dirs ),
-        "/usr/share", "/opt/kde3/share", "/opt/gnome/share" )
+        qw(/usr/share /opt/kde3/share /opt/gnome/share) )
     {
         next if defined $used{$dir};
         next if check_file("$dir/desktop-directories") ne 'D';
@@ -1643,7 +1641,7 @@ sub get_desktop_dirs {
         $ret .= "$dir/desktop-directories";
         $used{$dir} = 1;
     }
-    print STDERR "desktop dirs $ret\n" if $verbose;
+    warn "desktop dirs $ret\n" if $verbose;
     return $ret;
 }
 
@@ -1661,7 +1659,7 @@ sub get_KDE_legacy_dirs {
         $used{$dir} = 1;
         push @ret, $dir;
     }
-    print STDERR "KDE legacy dirs @ret\n" if $verbose;
+    warn "KDE legacy dirs @ret\n" if $verbose;
     return @ret;
 }
 
@@ -1759,7 +1757,7 @@ sub check_app {
 	# If full path, dont use path, just check path
 	if ( substr($app,0,1) eq '/' and -x $app ) { return 1 };
 	# Check if an application is in the path
-	foreach $_ (@PATH_DIRS) {
+	foreach (@PATH_DIRS) {
 		if ( -x "$_/$app" ) { return 1 }
 	}
 	return 0;
