@@ -18,6 +18,8 @@
 # - Removed prototypes.  None were needed.
 # - All filehandle names made local.
 # - New option for su_gui, do path check for alternatives.
+
+# - Change menu prefix from xdg-menu to FvwmMenu
 #
 # FIXME:
 # - No testing for wm_icons has been done (is that fvwm-themes?).
@@ -37,6 +39,13 @@
 #   needs a verifier, and some defaults.
 # - Far too many lexical globals not bound to subroutines (c.f.
 #    modularisation.)
+# - I don't see the point to the path arguments.  I think they should
+#   be obsoleted.
+# - If I pass --fvwm-icons I don't need to set --enable-mini-icons.
+#   Therefore I think enable mini-icons is pointless.
+# - The "check" functions are useless.  Since this module doesn't get the
+#   built in path, or the users path, it can't do the check.
+# - Looks like there is no such thing as fvwm_toptitle, must have been a gtk thing?
 
 # ---------------------------------------------------------------------------
 #  fvwm-menu-desktop
@@ -46,7 +55,7 @@
 #
 #  Updated on 15/08/1999 by Mikhael Goikhman
 #
-#  Update on Dec, 24, 2010 by Dan Espen for xdg menus (see copyright below)
+#  Updated on 24/12/2010 by Dan Espen for xdg menus (see copyright below)
 # ---------------------------------------------------------------------------
 # COPYING
 #
@@ -55,7 +64,7 @@
 #
 #----------------------------------------------------------------------------
 
-# Based heavily on:
+# 25/12/2010 re-written, based heavily on
 # xdg-menu for archlinux. based on suse xdg-menu written by <nadvornik@suse.cz>
 # Sergej Pupykin <pupykin.s@gmail.com>
 #
@@ -78,6 +87,7 @@ my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS} || '';
 my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 
 my $version = '@VERSION@';
+my $menu_prefix='FvwmMenu';
 my $DefaultAppDirs;
 my $DefaultDirectoryDirs;
 my @KDELegacyDirs;
@@ -91,7 +101,6 @@ my $verbose = 0;
 my @language_keys;
 
 #my @accessed_files;
-my @save_ARGV = @ARGV;
 my $TERM_CMD = "xterm -e";
 
 
@@ -131,6 +140,8 @@ $DI{fvwm_folder}   = 'folder.xpm:dh:%::'; # idem
 $DI{fvwm_title}    = 'folder.xpm:dh:%::'; # micon:law:place:spic:color
 $DI{fvwm_toptitle} = 'mini-k.xpm:no:%::'; # idem
 my $OPT_INSTALL_PREFIX = '';
+
+print STDERR "invoked with args @ARGV\n";
 
 GetOptions("enable-mini-icons"        => \$MINI_ICONS,
 	   "enable-tran-mini-icons"   => \$TRAN,
@@ -322,7 +333,10 @@ sub icon_init {
 	$law{$i}     = $list[1] if ($list[1] eq 'no'  || $list[1] eq 'ow'
 				    || $list[1] eq 're' || $list[1] eq 'dh' );
 	$dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if ( $list[0] ne '' );
-	$place{$i}   = '*' if ($list[2] eq 'up');
+	$place{$i}   = '%';		# default
+	if ($list[2] eq 'up') {
+	    $place{$i}   = '*';
+	}
 	$dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
 	$dmicon{$i}  = '' if ($law{$i} eq 'no' || $MINI_ICONS == 0);
 	if ( $list[3] ne '' ) { $spic{$i}   = "\@$list[3]\@" }
@@ -840,72 +854,54 @@ sub interpret_menu {
               interpret_menu( $tree->[$i], $directory_paths, $desktop_paths );
             push @{ $menu{'entries'} }, { type => 'menu', menu => $submenu };
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'Name' ) {
+        } elsif ( $tree->[$i] eq 'Name' ) {
             $i++;
             if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
                 $menu{'Name'} = $tree->[$i][2];
-            }
-            else {
-                warn "wrong Name\n";
                 exit 1 if $die_on_error;
             }
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'Directory' ) {
+        } elsif ( $tree->[$i] eq 'Directory' ) {
             $i++;
             if ( ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0' ) {
                 $menu{'Directory'} =
                   get_directory_entry( $tree->[$i][2], $pool );
 
                 #				print "Directory " . $tree->[$i][2] . "\n";
-            }
-            else {
-                warn "wrong Directory\n";
                 exit 1 if $die_on_error;
             }
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'OnlyUnallocated' ) {
+        } elsif ( $tree->[$i] eq 'OnlyUnallocated' ) {
             $menu{'OnlyUnallocated'} = 1;
             $i++;
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'DontShowIfEmpty' ) {
+        } elsif ( $tree->[$i] eq 'DontShowIfEmpty' ) {
             $menu{'DontShowIfEmpty'} = 1;
             $i++;
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'Deleted' ) {
+        } elsif ( $tree->[$i] eq 'Deleted' ) {
             $menu{'Deleted'} = 1;
             $i++;
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'NotDeleted' ) {
+        } elsif ( $tree->[$i] eq 'NotDeleted' ) {
             $menu{'Deleted'} = 0;
             $i++;
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'Include' ) {
+        } elsif ( $tree->[$i] eq 'Include' ) {
             $i++;
             interpret_Include( $tree->[$i], $menu{'entries'}, $pool );
             $i++;
-        }
-        elsif ( $tree->[$i] eq 'Exclude' ) {
+        }elsif ( $tree->[$i] eq 'Exclude' ) {
             $i++;
             interpret_Exclude( $tree->[$i], $menu{'entries'}, $pool );
             $i++;
-        }
-        elsif ( $tree->[$i] eq '0' ) {
+        } elsif ( $tree->[$i] eq '0' ) {
             $i++;
             if ( $tree->[$i] !~ /^\s*$/ ) {
                 print STDERR "skip '$tree->[$i]'\n";
                 exit 1 if $die_on_error;
             }
             $i++;
-        }
-        else {
-            warn "Unknown '$tree->[$i]':\n";
             $i++;
             warn "        '@{$tree->[$i]}'\n";
             $i++;
@@ -1551,7 +1547,7 @@ sub output_fvwm2_menu {
     my $menu_name = $menu->{'PrepName'};
     my $menu_id = "$path-" . $menu->{'Name'};
     $menu_id =~ s/\s/_/g;
-    $menu_id = 'xdg_menu' if $toplevel;
+    $menu_id = $menu_prefix if $toplevel;
     foreach my $entry ( @{ $menu->{'entries'} } ) {
         if ( $entry->{type} eq 'menu' ) {
             $output .= output_fvwm2_menu( $entry->{'menu'}, 0, $menu_id );
@@ -1583,20 +1579,22 @@ sub output_fvwm2_menu {
         }
     }
     $output .= "\n";
-    if ("$menu_id" eq "xdg_menu-System_Tools") {
-	$output .= "AddToMenu \"xdg_menu-System_Tools\" " .
+    if ("$menu_id" eq "$menu_prefix-System_Tools") {
+	$output .= "AddToMenu \"$menu_prefix-System_Tools\" " .
 	    "\"$dmicon{'fvwm_app'}Regenerate Applications Menu\" " .
-	    "PipeRead \"$0 @save_ARGV\"\n";
+	    "FvwmForm FvwmForm-Desktop\n";
     }
     return $output;
 }
 
 sub get_root_menu {
+    my $menu_base='applications';
+# fixme, change more...    $menu_base='settings';
     foreach my $dir ( split( /:/, $xdg_config_dirs ), "/etc/xdg" ) {
-        check_file("$dir/menus/applications.menu");
-        if ( -f "$dir/menus/applications.menu" ) {
+        check_file("$dir/menus/$menu_base.menu");
+        if ( -f "$dir/menus/$menu_base.menu" ) {
             warn "Root Menu $dir/menus/applications.menu\n" if $verbose;
-            return "$dir/menus/applications.menu";
+            return "$dir/menus/$menu_base.menu";
         }
     }
     return "";

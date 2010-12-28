@@ -1,0 +1,45 @@
+DestroyModuleConfig  FvwmForm-Desktop: *
+*FvwmForm-Desktop: WarpPointer
+*FvwmForm-Desktop: Line         center
+*FvwmForm-Desktop: Text         "fvwm-menu-desktop options"
+*FvwmForm-Desktop: Line
+*FvwmForm-Desktop: Line
+*FvwmForm-Desktop: Text         "Icon set:"
+*FvwmForm-Desktop: Selection    SelItype single
+*FvwmForm-Desktop: Choice       TypeFvwm TypeFvwm    on  "Fvwm"
+*FvwmForm-Desktop: Choice       TypeWm   TypeWm      off "WM"
+*FvwmForm-Desktop: Choice       TypeDesk TypeDesk    off "Desktop"
+*FvwmForm-Desktop: Choice       TypeNone TypeNone    off "None"
+*FvwmForm-Desktop: Line
+*FvwmForm-Desktop: Text         "Title Icon:"
+*FvwmForm-Desktop: Input        TitleIcon        30      ""
+*FvwmForm-Desktop: Line
+*FvwmForm-Desktop: Text         "Folder Icon:"
+*FvwmForm-Desktop: Input        FolderIcon        30      ""
+*FvwmForm-Desktop: Line
+*FvwmForm-Desktop: Text         "App Icon:"
+*FvwmForm-Desktop: Input        AppIcon        30      ""
+
+*FvwmForm-Desktop: Line         expand
+*FvwmForm-Desktop: Button       quit    "Set"         ^M
+*FvwmForm-Desktop: Command      Piperead 'fvwm-menu-desktop\
+ $(TypeFvwm?--fvwm-icons)\
+ $(TypeWm?--wm-icons)\
+ $(TypeDesk?--desk-icons)\
+ $(TitleIcon?--icon-title $(TitleIcon))\
+ $(FolderIcon?--icon-folder $(FolderIcon))\
+ $(AppIcon?--icon-app $(AppIcon))'
+# Before saving the data, remove any previously saved data:
+*FvwmForm-Desktop: Command DestroyModuleConfig FvwmForm-DesktopDefault: *
+*FvwmForm-Desktop: Command !(                                      /bin/echo \
+  "# This file last created by FvwmForm-Desktop on: `/bin/date`."; /bin/echo \
+  '*FvwmForm-DesktopDefault: DisableMini $(DisableMini?on) '     ; /bin/echo \
+  '*FvwmForm-DesktopDefault: TypeFvwm $(TypeFvwm?on) '           ; /bin/echo \
+  '*FvwmForm-DesktopDefault: TypeWm   $(TypeWm?on) '             ; /bin/echo \
+  '*FvwmForm-DesktopDefault: TypeDesk $(TypeDesk?on) '           ; /bin/echo \
+) > ${FVWM_USERDIR}/.FvwmForm-Desktop
+*FvwmForm-Desktop: Button       restart "Reset"
+*FvwmForm-Desktop: Button       quit    "Cancel"        ^[
+*FvwmForm-Desktop: Command      Nop
+# Tell FvwmForm to read vars from the .FvwmForm-DesktopDefault file:
+*FvwmForm-Desktop: UseData .FvwmForm-Desktop *FvwmForm-DesktopDefault

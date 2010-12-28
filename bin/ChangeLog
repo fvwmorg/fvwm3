@@ -1,3 +1,9 @@
+2010-12-27    <despen@verizon.net>
+
+	* fvwm-menu-desktop.in: New root menu name, FvwmMenu.
+	Regenerate menu using a prompt for new options.
+	Comments about more changes.
+
 2010-12-25    <despen@verizon.net>
 
 	* fvwm-menu-desktop.in: change to work with xdg menu standard.

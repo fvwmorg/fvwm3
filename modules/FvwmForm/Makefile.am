@@ -20,6 +20,7 @@ EXTRA_DIST = $(man_MANS) Changes \
   FvwmForm-Setup.in   \
   FvwmForm-Form       \
   FvwmForm-Capture    \
+  FvwmForm-Desktop    \
   FvwmForm-QuitVerify \
   FvwmForm-Rlogin     \
   FvwmForm-RootCursor \
@@ -34,6 +35,7 @@ config_DATA =        \
   FvwmForm-Setup      \
   FvwmForm-Form       \
   FvwmForm-Capture    \
+  FvwmForm-Desktop    \
   FvwmForm-QuitVerify \
   FvwmForm-Rlogin     \
   FvwmForm-RootCursor \
