@@ -105,6 +105,7 @@ Contents
     3.26  How about transparent applications too?
     3.27  How can I define emacs type multi-keystroke fvwm bindings?
     3.28  How do I remove all decorations from a window?
+    3.29  What's the best way to make on-the-fly config changes?
 
 4. Modules
 
@@ -1689,26 +1690,42 @@ A: In emacs, keys can be set up as prefix keys, so that once
 
 ----------------------------------------------------------------------
 
-3.2.28  How do I remove all decorations from a window?
+3.28  How do I remove all decorations from a window?
 
 
 A:  I see this a lot on IRC.  Most people try and do this:
 
     Style * !Title, BorderWidth 0
 
-This doesn't always work because many forget about a window having
-having handles -- which sit on the border.  If a window has defined
-handles, then these effectively override any of border settings --
-especially the "BorderWidth" option.  But there are Handle
-equivalents, hence the correct way to remove decorations from a window
-would be:
+    This doesn't always work because many forget about a window having
+    having handles -- which sit on the border.  If a window has defined
+    handles, then these effectively override any of border settings --
+    especially the "BorderWidth" option.  But there are Handle
+    equivalents, hence the correct way to remove decorations from a window
+    would be:
 
     Style * !Title, !Borders, !Handles
 
-To set the BorderWidth of a window which has handles:
+    To set the BorderWidth of a window which has handles:
 
     Style * HandleWidth 5
    
+----------------------------------------------------------------------
+
+3.29  What's the best way to make on-the-fly config changes?
+
+A:  Often is the case, one might want to make config changes to fvwm.
+    Adding them to the .fvwm2rc file (or in more recent releases
+    .fvwm/.fvwm2rc or ~/.fvwm/config) and then restarting fvwm is one
+    way -- but this has problems with memory, especially with Colorset
+    definitions being redeclared, etc.
+
+    The better approach to making changes is instead to use FvwmConsole
+    which is a way of making live changes to fvwm configs.  When you're
+    satisfied that they're correct, then you can add them to your fvwm
+    config file so that they're there the next time fvwm loads, thus
+    reducing the need to restart fvwm.
+
 ======================================================================
                              4 - Modules
 ======================================================================
