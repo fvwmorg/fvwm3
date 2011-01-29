@@ -106,6 +106,7 @@ Contents
     3.27  How can I define emacs type multi-keystroke fvwm bindings?
     3.28  How do I remove all decorations from a window?
     3.29  What's the best way to make on-the-fly config changes?
+    3.30  How can I toggle a window's layer?
 
 4. Modules
 
@@ -1725,6 +1726,34 @@ A:  Often is the case, one might want to make config changes to fvwm.
     satisfied that they're correct, then you can add them to your fvwm
     config file so that they're there the next time fvwm loads, thus
     reducing the need to restart fvwm.
+
+----------------------------------------------------------------------
+
+3.30  How can I toggle a window's layer?
+
+A:  Usually what people want from this, is a means of making a window
+    stay on top for a time, and then putting it back in the layer it
+    was in originally.
+
+    This is best achieved with a function, as in:
+
+    DestroyFunc ToggleLayer
+    AddToFunc   ToggleLayer
+    + I ThisWindow (Layer 6) Layer
+    + I TestRc (NoMatch) Layer 0 6
+
+    This function first of all checks to see if the window that's going
+    to be toggled is in layer 6 (which in this context is assumed to be
+    the layer which is used for the style StaysOnTop -- see the
+    DefaultLayers command for more information), and if it is, to put it
+    in the layer it was previously in.
+
+    Otherwise, if we didn't do it (because the window in question was in
+    any other layer), the window is put in layer 6.
+
+    This function can be bound in the usual way, either via the Pick
+    command to some key/mouse binding, or bound to a button on the
+    titlebar, etc.
 
 ======================================================================
                              4 - Modules
