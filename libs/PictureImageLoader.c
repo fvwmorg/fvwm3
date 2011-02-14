@@ -458,19 +458,32 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	{
 		Fpng_set_expand(Fpng_ptr);
 	}
-	if (Finfo_ptr->color_type == FPNG_COLOR_TYPE_RGB_ALPHA)
+
+	/* TA:  XXX:  (2011-02-14) -- Happy Valentines Day.
+	 * 
+	 * png_get_color_type() defined in libpng 1.5 now hides a data member
+	 * to a struct:
+	 *
+	 * Finfo_ptr->color_type
+	 *
+	 * I'm not going to wrap this up in more #ifdef madness, but should
+	 * this fail to build on much older libpng versions which we support
+	 * (pre 1.3), then I might have to.
+	 */
+	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_RGB_ALPHA)
 	{
 		hasa = 1;
 	}
-	if (Finfo_ptr->color_type == FPNG_COLOR_TYPE_GRAY_ALPHA)
+	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY_ALPHA)
 	{
 		hasa = 1;
 		hasg = 1;
 	}
-	if (Finfo_ptr->color_type == FPNG_COLOR_TYPE_GRAY)
+	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY)
 	{
 		hasg = 1;
 	}
+
 	if (hasa)
 		Fpng_set_expand(Fpng_ptr);
 	/* we want ARGB */

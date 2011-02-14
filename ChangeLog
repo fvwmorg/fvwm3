@@ -1,3 +1,9 @@
+2011-02-14  Thomas Adam  <thomas@fvwm.org>
+	* libs/PictureImageLoader.c (PImageLoadPng):
+	Use png_get_color_type() as the data type we were previously using is
+	now no longer public (Finfo_ptr->color_type).  This is in libpng 1.5 --
+	hopefully no need for an #ifdef.
+
 2010-12-19  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/builtins.c (CMD_CursorMove):
 	Honour EdgeScroll settings to not flip pages when EdgeScroll is

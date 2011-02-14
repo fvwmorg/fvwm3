@@ -7,6 +7,8 @@ Changes in beta release 2.5.32 (not released yet)
 
 * New features:
 
+  - Support libpng 1.5.0's slightly newer API.
+
 * Bug fixes:
 
   - Fix width of FvwmTaskBar to fit on screen properly by using
