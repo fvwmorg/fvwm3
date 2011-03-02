@@ -2417,11 +2417,13 @@ void HandleFocusIn(const evh_args_t *ea)
 		  * was focused. Otherwise fvwm would believe that Scr.Hilite
 		  * was still focused and not send any info to the modules. */
 		 last_focus_fw == None ||
-		 IS_FOCUS_CHANGE_BROADCAST_PENDING(fw))
+		 IS_FOCUS_CHANGE_BROADCAST_PENDING(fw) ||
+		 fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)))
 	{
 		do_force_broadcast = IS_FOCUS_CHANGE_BROADCAST_PENDING(fw);
 		SET_FOCUS_CHANGE_BROADCAST_PENDING(fw, 0);
-		if (fw != Scr.Hilite)
+		if (fw != Scr.Hilite &&
+			fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)))
 		{
 			border_draw_decorations(
 				fw, PART_ALL, True, True, CLEAR_ALL, NULL,

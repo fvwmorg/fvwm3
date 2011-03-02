@@ -24,7 +24,8 @@ Changes in beta release 2.5.32 (not released yet)
   - Fix the CursorMove command to no longer move the pointer beyond
     the boundary of a page, if EdgeScroll was set to disable page
     flipping.
-
+  - Fix NeverFocus windows from taking focus when opening menus,
+    etc.
 -------------------------------------------------------------------
 
 -------------------------------------------------------------------

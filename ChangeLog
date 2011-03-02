@@ -1,3 +1,12 @@
+2011-03-02  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/events.c (HandleFocusIn):
+	Fix NeverFocus windows when handling FocusIn events.
+
+	Certain button presses on client windows can trigger a FocusIn event on
+	the parent (such as opening a menu on a GTK application).  Disallow the
+	click to trigger the window receiving focus, as well as redrawing the
+	border to reflect the window has focus.
+
 2011-02-14  Thomas Adam  <thomas@fvwm.org>
 	* libs/PictureImageLoader.c (PImageLoadPng):
 	Use png_get_color_type() as the data type we were previously using is
