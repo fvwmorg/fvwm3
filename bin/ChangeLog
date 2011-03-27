@@ -1,3 +1,10 @@
+2011-03-27  Thomas Adam  <thomas@fvwm.org>
+	* fvwm-convert-2.6.in (convert_startfunc):
+	Fix StartFunction handling
+
+	When converting a StartFunction block, set the function definition early on
+	so that further lines with "+" are handled properly.
+
 2010-12-27    <despen@verizon.net>
 
 	* fvwm-menu-desktop.in: New root menu name, FvwmMenu.

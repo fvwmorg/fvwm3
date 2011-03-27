@@ -382,6 +382,7 @@ sub convert_restartfunc
 sub convert_startfunc
 {
     my( $line ) = @_;
+    $last_func_ref = "convert_startfunc";
 
     # Now, it's possible that we have something like this:
     #
@@ -415,7 +416,6 @@ sub convert_startfunc
     __convert_conditionals( \@func_cmd );
 
     push( @{ $converted_funcs{startfunction} }, join ' ', @func_cmd );
-    $last_func_ref = "convert_startfunc";
 }
 
 sub write_out_file
