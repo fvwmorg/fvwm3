@@ -1,3 +1,11 @@
+2011-04-02  Thomas Adam  <thomas@fvwm.org>
+	*fvwm/ewmh_conf.c (CMD_EwmhBaseStruts):
+	Use EWMH_UpdateWorkArea() and not separate function calls
+
+	Don't assume the work of EWMH_UpdateWorkArea() will only ever call two
+	function calls by itself in the future; hence, centralise the call to
+	doing that to the correct containing function.
+
 2011-02-05  Thomas Adam  <thomas@fvwm.org>
 	* acinclude.m4:
 	Fix DSO linker error (ld) with missing "-lfontconfig" for fontconfig

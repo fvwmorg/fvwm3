@@ -154,8 +154,8 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 		ewmhc.BaseStrut.right  = val[1];
 		ewmhc.BaseStrut.top    = val[2];
 		ewmhc.BaseStrut.bottom = val[3];
-		ewmh_ComputeAndSetWorkArea();
-		ewmh_HandleDynamicWorkArea();
+
+		EWMH_UpdateWorkArea();
 	}
 }
 /*
