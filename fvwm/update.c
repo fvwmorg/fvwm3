@@ -101,7 +101,8 @@ static void apply_window_updates(
 	/* TA:  2010-07-28:  Conditionally update window states if they're
 	 * present -- i.e., we're preserving states set via Windowstyle.
 	 */
-	GET_USER_STATES(t) = S_USER_STATES(SCF(*pstyle));
+	CLEAR_USER_STATES(t, S_USER_STATES(SCM(*pstyle)));
+	SET_USER_STATES(t, S_USER_STATES(SCF(*pstyle)));
 
 	if (flags->do_setup_focus_policy)
 	{
