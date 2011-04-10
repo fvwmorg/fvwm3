@@ -11,17 +11,10 @@
 <section id='bugs'>
 <title>Bugs</title>
 
-
-<para>Known bugs can be found in the fvwm bug tracking system
-(accessible from the fvwm home page).</para>
-
 <para>Bug reports can be sent to the fvwm-workers mailing list at
-<email>fvwm-workers@fvwm.org</email>
-(see the <emphasis remap='I'>FAQ</emphasis>)
-or reported through the bug tracking system.</para>
+<email>fvwm-workers@fvwm.org</email></para>
 
 <para>The official fvwm homepage is
 <ulink url='http://fvwm.org/'>http://fvwm.org/</ulink>.</para>
-
 
 </section>

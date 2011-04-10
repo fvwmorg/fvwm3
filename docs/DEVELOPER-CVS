@@ -191,10 +191,9 @@ the first few times.
 HACKING THE CODE 
 ----------------
 
-So you've found a bug you want to fix? Want to implement a feature from the
-Jitterbug list? Got a new feature to implement? Hacking the code couldn't be
-easier. Just edit your copy of the sources. No need to copy files to `.orig'
-or anything; CVS has copies of the originals.
+So you've found a bug you want to fix?  Got a new feature to implement?
+Hacking the code couldn't be easier. Just edit your copy of the sources.
+No need to copy files to `.orig' or anything; CVS has copies of the originals.
 
 When you have the code in a working state, generate a patch against the
 current sources in the CVS repository.

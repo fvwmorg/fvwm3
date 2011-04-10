@@ -1,3 +1,11 @@
+2011-04-10  Thomas Adam   <thomas@fvwm.org>
+	* FAQ:
+	* DEVELOPERS:
+	* DEVELOPER-CVS:
+	Remove any references to Jitterbug, or explicit mention of our old bug
+	tracker, and suggest where instead bugs should be reported
+	(fvwm-workers@)
+
 2011-01-29  Thomas Adam   <thomas@fvwm.org>
 	* FAQ:
 	Added note about how to toggle between a window being ontop and in the

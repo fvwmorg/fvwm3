@@ -1,3 +1,7 @@
+2011-04-10  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/bugs.xml:
+	Remove any reference to the old Jitterbug (FVWM bug tracker).
+
 2010-09-14  Thomas Adam  <thomas@xteddy.org>
 	* commands/Move.xml:
 	Document that Alt during Move will disable SnapAttraction

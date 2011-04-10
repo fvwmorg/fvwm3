@@ -90,29 +90,6 @@ Dealing with CVS
 All details about dealing with CVS should be found in cvs.html or
 DEVELOPER-CVS.  Go look there!
 
-
-Doing the JitterBug
--------------------
-
-If you haven't already noticed them, now is the time to visit our
-bug tracking pages:
-
-  http://www.fvwm.org/cgi-bin/fvwm-bug
-
-Anybody can submit or view bug reports there.
-
-Developers with CVS write access can also update the bug database
-(whee!).  To do so, you have to go to the Jitterbug page, but then
-tack a ".private" on to the end of the URL:
-
-  http://www.fvwm.org/cgi-bin/fvwm-bug.private
-
-Then you'll be asked to authenticate.  The username and password
-are the same as you use for the CVS repository.
-
-You'll probably want to bookmark that page.
-
-
 Changing a Makefile
 -------------------
 
