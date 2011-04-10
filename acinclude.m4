@@ -943,7 +943,7 @@ if test "$FT2_CONFIG" = "no" ; then
   no_ft=yes
 else
   FT2_CFLAGS=`$FT2_CONFIG $ft_config_args --cflags`
-  FT2_LIBS=`$FT2_CONFIG $ft_config_args --libs` -lfontconfig
+  FT2_LIBS=`$FT2_CONFIG $ft_config_args --libs`
   ft_config_major_version=`$FT2_CONFIG $ft_config_args --version | \
          sed 's/^[[^0-9.]]*\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*$/\1/'`
   ft_config_minor_version=`$FT2_CONFIG $ft_config_args --version | \

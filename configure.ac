@@ -698,6 +698,10 @@ if test ! x"$with_xft" = xno; then
     AM_CHECK_FC(1.0.1)
     if test x"$no_fc" = x ; then
       have_fontconfig=yes
+      fontconfig_CFLAGS=`$PKG_CONFIG --cflags fontconfig`
+      fontconfig_LIBS=`$PKG_CONFIG --libs fontconfig`
+      CFLAGS="$CFLAGS $fontconfig_CFLAGS"
+      LIBS="$LIBS $fontconfig_LIBS"
     else
       have_fontconfig=no
       problem_xft=": Can't detect fontconfig >= 1.0.1"

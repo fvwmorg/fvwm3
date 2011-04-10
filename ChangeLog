@@ -1,3 +1,8 @@
+2011-04-10  Thomas Adam  <thomas@fvwm.org>
+	* acinclude.m4:
+	* configure.ac:
+	More --as-needed ld fixes for linking against exernal libraries.
+
 2011-04-05  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/update.c (apply_window_updates):
 	Don't clear all States on WindowStyle.
