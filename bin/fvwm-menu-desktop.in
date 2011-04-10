@@ -1877,14 +1877,22 @@ sub output_fvwm2_menu
 
 sub get_root_menu
 {
-    my $menu_base='applications';
-    # fixme, change more...    $menu_base='settings';
+    my @menu_bases = (qw(
+        applications
+        debian-menu
+        )
+    );
+
+    # XXX - TA:  2011-04-10:  Is it enough to assume only one match here is
+    #            sufficient?
     foreach my $dir ( split( /:/, $xdg_config_dirs ), "/etc/xdg" )
     {
-        check_file("$dir/menus/$menu_base.menu");
-        if ( -f "$dir/menus/$menu_base.menu" ) {
-            warn "Root Menu $dir/menus/applications.menu\n" if $verbose;
-            return "$dir/menus/$menu_base.menu";
+        foreach my $menu_name (@menu_bases)
+        {
+            check_file("$dir/menus/$menu_name.menu");
+            if ( -f "$dir/menus/$menu_name.menu" ) {
+                return "$dir/menus/$menu_name.menu";
+            }
         }
     }
     return "";

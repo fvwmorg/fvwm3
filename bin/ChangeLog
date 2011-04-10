@@ -1,3 +1,9 @@
+2011-04-10  Thomas Adam  <thomas@fvwm.org>
+	* fvwm-menu-desktop.in (get_root_menu):
+	Make the root menu look for more than one place.
+	Should fix the fact that Debian (and by association, Ubuntu) like to be
+	special in what the XDG menu files are called.
+
 2011-04-10    <despen@verizon.net>
 
 	* fvwm-menu-desktop.in: Restore some missing code.
