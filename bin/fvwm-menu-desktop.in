@@ -254,7 +254,7 @@ exit 0;
 
 # Set DI to list of icons to use:
 sub icon_init
-{
+  {
     my @list=();
     my %law;
     my %place;
@@ -264,214 +264,130 @@ sub icon_init
     my $l = "";
     my $tmp_icon ="";
 
-    if ($wm_icons)
-    {
-        $MINI_ICONS = 1;
-        $MINI_ICONS_DIR = "";
-        $DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
-        $DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
-        $DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
-        $DI{"fvwm_app"}      = "menu/utility.xpm:ow";
+    if ($wm_icons) {
+      $MINI_ICONS = 1;
+      $MINI_ICONS_DIR = "";
+      $DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
+      $DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
+      $DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
+      $DI{"fvwm_app"}      = "menu/utility.xpm:ow";
     }
 
-    if ($fvwm_icons)
-    {
-        $MINI_ICONS = 1;
-        $MINI_ICONS_DIR = "";
-        $DI{"fvwm_toptitle"} = "mini.fvwm.xpm::%";
-        $DI{"fvwm_title"}    = "mini.folder.xpm::%";
-        $DI{"fvwm_folder"}   = "mini.ofolder.xpm::%";
-        $DI{"fvwm_app"}      = "mini.cat.xpm::%";
+    if ($fvwm_icons) {
+      $MINI_ICONS = 1;
+      $MINI_ICONS_DIR = "";
+      $DI{"fvwm_toptitle"} = "mini.fvwm.xpm::%";
+      $DI{"fvwm_title"}    = "mini.folder.xpm::%";
+      $DI{"fvwm_folder"}   = "mini.ofolder.xpm::%";
+      $DI{"fvwm_app"}      = "mini.cat.xpm::%";
     }
 
-    foreach my $i (keys(%DI))
-    {
-        @list = split(':',$DI{$i});
-        $dmicon{$i} = $list[0];	# "default" mini-icon
-        $law{$i}    = $list[1];	# default law
-        $place{$i}  = $list[2];	# default position
-        $spic{$i}   = $list[3];	# sidepic icon
-        $scolor{$i} = $list[4];	# color for sidepic
-        $DI{$i} = '';
+    foreach my $i (keys(%DI)) {
+      @list = split(':',$DI{$i});
+      $dmicon{$i} = $list[0];	# "default" mini-icon
+      $law{$i}    = $list[1];	# default law
+      $place{$i}  = $list[2];	# default position
+      $spic{$i}   = $list[3];	# sidepic icon
+      $scolor{$i} = $list[4];	# color for sidepic
+      $DI{$i} = '';
     }
 
-    if ($TRAN)
-    {
-        $MINI_ICONS = 1;
+    if ($TRAN) {
+      $MINI_ICONS = 1;
     }
 
-    if ($MINI_ICONS_DIR ne 'mini/' or $ICONS_DIR ne '')
-    {
-	    if ($MINI_ICONS_DIR ne '')
-        {
-            $MINI_ICONS_DIR =~ s/\/*$/\//;
-        }
+    if ($MINI_ICONS_DIR ne 'mini/' or $ICONS_DIR ne '') {
+      if ($MINI_ICONS_DIR ne '') {
+	$MINI_ICONS_DIR =~ s/\/*$/\//;
+      }
 
-        if ($ICONS_DIR eq '')
-        {
-	        $ICONS_DIR = up_directory($MINI_ICONS_DIR);
-	    }
-        elsif ($ICONS_DIR eq 'inpath')
-        {
-            $ICONS_DIR = '';
-        }
-	    else 
-        {
-            $ICONS_DIR =~ s/\/*$/\// if $MINI_ICONS_DIR ne '';
-        }
+      if ($ICONS_DIR eq '') {
+	$ICONS_DIR = up_directory($MINI_ICONS_DIR);
+      } elsif ($ICONS_DIR eq 'inpath') {
+	$ICONS_DIR = '';
+      } else {
+	$ICONS_DIR =~ s/\/*$/\// if $MINI_ICONS_DIR ne '';
+      }
     }
 
-    if ($TRAN_MINI_ICONS ne 'mini/' or $TRAN_ICONS ne '')
-    {
-	    if ($TRAN_MINI_ICONS ne '')
-        {
-            $TRAN_MINI_ICONS =~ s/\/*$/\//;
-        }
+    if ($TRAN_MINI_ICONS ne 'mini/' or $TRAN_ICONS ne '') {
+      if ($TRAN_MINI_ICONS ne '') {
+	$TRAN_MINI_ICONS =~ s/\/*$/\//;
+      }
 
-        if ($TRAN_ICONS eq '')
-        {
-	        $TRAN_ICONS = up_directory($TRAN_MINI_ICONS);
-	    }
-        elsif ($TRAN_ICONS eq 'inpath')
-        {
-            $TRAN_ICONS = '';
-        }
-	    else 
-        {
-            $TRAN_ICONS =~ s/\/*$/\// if $TRAN_ICONS ne '';
-        }
+      if ($TRAN_ICONS eq '') {
+	$TRAN_ICONS = up_directory($TRAN_MINI_ICONS);
+      } elsif ($TRAN_ICONS eq 'inpath') {
+	$TRAN_ICONS = '';
+      } else {
+	$TRAN_ICONS =~ s/\/*$/\// if $TRAN_ICONS ne '';
+      }
     }
 
     $PNG_ICONS =~  s/\/*$/\// if $PNG_ICONS ne '';
 
     # init default mini-icons, law, place, sidepic, color
-    foreach my $i (qw(fvwm_app fvwm_folder fvwm_title fvwm_toptitle))
-    {
-	    warn "DEBUG: foreach $i.\n" if $verbose; # dje debug
-        # With the mini-icons-tran options we "use" gtk default
-        if ($TRAN)
-        {
-            $j = substr($i,index($i,'_'));
-            $j = "gtk$j";
-            $law{$i} = $law{$j};
-            $tmp_icon  = $dmicon{$j};
-            $tmp_icon  =~ s/\.png$/\.xpm/;
-            $dmicon{$i} = "$TRAN_MINI_ICONS$tmp_icon";
-        }
-        else
-        {
-            $dmicon{$i} = "$MINI_ICONS_DIR$dmicon{$i}";
-        }
+    foreach my $i (qw(fvwm_app fvwm_folder fvwm_title fvwm_toptitle)) {
+      warn "DEBUG: foreach $i.\n" if $verbose; # dje debug
+      # With the mini-icons-tran options we "use" gtk default
+      if ($TRAN) {
+	$j = substr($i,index($i,'_'));
+	$j = "gtk$j";
+	$law{$i} = $law{$j};
+	$tmp_icon  = $dmicon{$j};
+	$tmp_icon  =~ s/\.png$/\.xpm/;
+	$dmicon{$i} = "$TRAN_MINI_ICONS$tmp_icon";
+      } else {
+	$dmicon{$i} = "$MINI_ICONS_DIR$dmicon{$i}";
+      }
 
-        if ($verbose)
-        {
-            while (my ($key,$value) = each %dmicon)
-            {
-                warn "INTERMEDIATE icons to use $key -> $value.\n";
-            }
-	    }
-	    @list = split(':',$DI{$i});
-	    $l = @list;
-	    while ($l <= 5)
-        {
-            push(@list,'');
-            ++$l;
-        }
-	    $law{$i}     = $list[1] if ($list[1] eq 'no' or $list[1] eq 'ow'
-                       or $list[1] eq 're' or $list[1] eq 'dh');
-	    $dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if $list[0] ne '';
-	    $place{$i}   = '*' if $list[2] eq 'up';
-	    $dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
-	    $dmicon{$i}  = '' if $law{$i} eq 'no' or $MINI_ICONS == 0;
+      if ($verbose) {
+	while (my ($key,$value) = each %dmicon) {
+	  warn "INTERMEDIATE icons to use $key -> $value.\n";
+	}
+      }
+      @list = split(':',$DI{$i});
+      $l = @list;
+      while ($l <= 5) {
+	push(@list,'');
+	++$l;
+      }
+      $law{$i}     = $list[1] if ($list[1] eq 'no' or $list[1] eq 'ow'
+				  or $list[1] eq 're' or $list[1] eq 'dh');
+      $dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if $list[0] ne '';
+      $place{$i}   = '*' if $list[2] eq 'up';
+      $dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
+      $dmicon{$i}  = '' if $law{$i} eq 'no' or $MINI_ICONS == 0;
 
-        if ($list[3] ne '')
-        {
-            $spic{$i} = "\@$list[3]\@";
-        }
-	    else 
-        {
-            $spic{$i} = '';
-        }
+      if ($list[3] ne '') {
+	$spic{$i} = "\@$list[3]\@";
+      } else {
+	$spic{$i} = '';
+      }
 
-        if ($list[4] ne '' and $list[3] ne '')
-        {
-            $scolor{$i} = "\^$list[4]\^";
-        }
-	    else 
-        {
-            $scolor{$i} = '';
-        }
+      if ($list[4] ne '' and $list[3] ne '') {
+	$scolor{$i} = "\^$list[4]\^";
+      } else {
+	$scolor{$i} = '';
+      }
 
-        if ($check_mini_icons ne "")
-        {
-            @check_mini_icons_path = split(":", $check_mini_icons);
-        }
+      if ($check_mini_icons ne "") {
+	@check_mini_icons_path = split(":", $check_mini_icons);
+      }
 
-        if ($check_icons ne "")
-        {
-            @check_icons_path = split(":", $check_icons);
-        }
+      if ($check_icons ne "") {
+	@check_icons_path = split(":", $check_icons);
+      }
 
-        if ($verbose)
-        {
-            while (my ($key, $value) = each %dmicon)
-            {
-                warn "icons to use $key -> $value.\n";
-            }
-        }
-        @list = split(':',$DI{$i});
-        $l = @list;
-        while ($l <= 5)
-        {
-            push(@list,''); 
-            ++$l;
-        }
-        $law{$i}     = $list[1] if ($list[1] eq 'no' or $list[1] eq 'ow'
-                        or $list[1] eq 're' or $list[1] eq 'dh');
-        $dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if $list[0] ne '';
-        $place{$i}   = '%';		# default
 
-        if ($list[2] eq 'up')
-        {
-            $place{$i} = '*';
-        }
-        $dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
-        $dmicon{$i}  = '' if ($law{$i} eq 'no' || $MINI_ICONS == 0);
-        if ($list[3] ne '')
-        {
-            $spic{$i} = "\@$list[3]\@";
-        }
-        else 
-        {
-            $spic{$i} = '';
-        }
-        if ($list[4] ne '' and $list[3] ne '')
-        {
-            $scolor{$i} = "\^$list[4]\^";
-        }
-        else 
-        {
-            $scolor{$i} = '';
-        }
 
-        if ($check_mini_icons ne "")
-        {
-            @check_mini_icons_path = split(":", $check_mini_icons);
-        }
-
-        if ($check_icons ne "")
-        {
-            @check_icons_path = split(":", $check_icons);
-        }
-    } # end while
-    if ( $verbose )
-    {
-	    while (my ($key, $value) = each %dmicon)
-        {
-	        warn "icons to use $key -> $value.\n";
-	    }
+      if ($verbose) {
+	while (my ($key, $value) = each %dmicon) {
+	  warn "icons to use $key -> $value.\n";
+	}
+      }
     }
-}
+  }
 
 # Compute cd ..
 sub up_directory
@@ -638,58 +554,75 @@ sub check_show_in
 
 sub read_desktop_entry
 {
-    my ($pool, $file, $topdir) = @_;
+  my ($pool, $file, $topdir) = @_;
 
-    unless (defined $Desktop_entries{$file})
-    {
-        check_file($file);
+  unless (defined $Desktop_entries{$file}) {
+    check_file($file);
+    if ($verbose) {
+      warn "Read desktop entry, opening file $file.\n";
     }
-
-	if ($verbose)
-    {
-	    warn "Read desktop entry, opening file $file.\n";
-	}
-
     open( my $file_fh, "<", $file ) or return;
 
-    my $entry = $Desktop_entries{$file};
-
-    return unless defined $entry->{'Name'};
-    return unless defined $entry->{'Exec'};
-
-    if (defined $entry->{'Hidden'} and $entry->{'Hidden'} eq 'true')
-    {
-	    return;
+    my $in_desktop_entry = 0;
+    my %entry;
+    while (<$file_fh>) {
+      if (/^\[/) {
+	if (/^\[Desktop Entry\]/) {
+	  $in_desktop_entry = 1;
+	} elsif (/^\[.*\]/) {
+	  $in_desktop_entry = 0;
+	  }
+      } elsif ($in_desktop_entry && /^([^=]*)=([^[:cntrl:]]*)/) {
+	$entry{$1} = $2;
+      }
     }
+    close($file_fh);
 
-    #FIXME, an option for this would be good
+    my $id = $file;
+    $id =~ s/^$topdir//;
+    $id =~ s/^\/*//;
+    $id =~ s/\//-/g;
+    $entry{'id'} = $id;
 
-    if (defined $entry->{'NoDisplay'} and  $entry->{'NoDisplay'} eq 'true')
-    {
-	    return;
+    $entry{'refcount'} = 0;
+    $Desktop_entries{$file} = \%entry;
+  }
+
+  my $entry = $Desktop_entries{$file};
+
+  if (! defined $entry->{'Name'}) { # dje debug
+    warn "Name is not defined\n";
+  }
+
+  return unless defined $entry->{'Name'};
+  return unless defined $entry->{'Exec'};
+
+  if (defined $entry->{'Hidden'} and $entry->{'Hidden'} eq 'true') {
+    return;
+  }
+
+  #FIXME, an option for this would be good
+
+  if (defined $entry->{'NoDisplay'} and  $entry->{'NoDisplay'} eq 'true') {
+    return;
+  }
+
+  return unless check_show_in($entry);
+
+  if (defined $entry->{'NotShowIn'} and
+      $entry->{'NotShowIn'} eq $desktop_name) {
+    return;
+  }
+
+  if (defined $pool and defined $entry->{'Categories'}) {
+    foreach my $category (split /;/, $entry->{'Categories'}) {
+      $pool->{'Categories'}{$category} = []
+	unless defined $pool->{'Categories'}{$category};
+      push @{ $pool->{'Categories'}{$category} }, $entry;
     }
-
-    return unless check_show_in($entry);
-
-    if (defined $entry->{'NotShowIn'} and
-        $entry->{'NotShowIn'} eq $desktop_name)
-    {
-        return;
-    }
-
-    if (defined $pool and defined $entry->{'Categories'})
-    {
-        foreach my $category (split /;/, $entry->{'Categories'})
-        {
-            $pool->{'Categories'}{$category} = []
-                unless defined $pool->{'Categories'}{$category};
-
-            push @{ $pool->{'Categories'}{$category} }, $entry;
-        }
-        $pool->{'Desktop_entries'}{ $entry->{'id'} } = $entry;
-    }
-
-    return $entry;
+    $pool->{'Desktop_entries'}{ $entry->{'id'} } = $entry;
+  }
+  return $entry;
 }
 
 sub read_desktop_entries

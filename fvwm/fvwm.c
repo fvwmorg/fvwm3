@@ -1406,6 +1406,11 @@ static void SetRCDefaults(void)
 			"\" Module FvwmConsole"
 		},
 		{
+			"+ \"&D. ",
+			_("Desktop Menu"),
+			"\" Popup FvwmMenu"
+		},
+		{
 			"+ \"&R. ",
 			_("Restart fvwm"),
 			"\" Restart"
@@ -1424,6 +1429,7 @@ static void SetRCDefaults(void)
 		{ "Key Up M A MenuMoveCursor -1", "", "" },
 		{ "Key Down M A MenuMoveCursor 1", "", "" },
 		{ "Mouse 1 MI A MenuSelectItem", "", "" },
+		{ "PipeRead 'fvwm-menu-desktop --enable-mini-icons --fvwm-icons'", "", "" },
 		/* don't add anything below */
 		{ RC_DEFAULTS_COMPLETE, "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
