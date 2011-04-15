@@ -2,11 +2,17 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in beta release 2.7.0 (not released yet)
+Changes in beta release 2.7.0 (15-Apr-2011)
 
 * New features:
 
+As 2.6.0 -- this release is to ensure there's no 2.5.X tarballs
+around, since this is now 2.7.0 in terms of development.
+
 * Bug fixes:
+
+As 2.6.0 -- this release is to ensure there's no 2.5.X tarballs
+around, since this is now 2.7.0 in terms of development.
 
 -------------------------------------------------------------------
 
