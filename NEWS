@@ -1,9 +1,9 @@
 Note, the changes for the last STABLE release start with release
-2.4.20.
+2.6.0.
 
 -------------------------------------------------------------------
 
-Changes in beta release 2.5.32 (not released yet)
+Changes in stable release 2.6.0 (15-Apr-2011)
 
 * New features:
 
@@ -26,6 +26,10 @@ Changes in beta release 2.5.32 (not released yet)
     flipping.
   - Fix NeverFocus windows from taking focus when opening menus,
     etc.
+
+
+  - Plus *MANY* other fixes, improvements, etc.  Please see the
+    docs/ANNOUNCE file from 2_6_0.
 -------------------------------------------------------------------
 
 -------------------------------------------------------------------

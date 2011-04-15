@@ -1,19 +1,19 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-AC_PREREQ(2.53)
+AC_PREREQ(2.60)
 AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED=no
-version=2.5.32
+ISRELEASED=yes
+version=2.6.0
 VERSIONINFO=""
 
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
 dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="09 August 2010"
-RELDATESHORT="09-August-2010"
-RELDATENUM="2010-08-09"
+RELDATELONG="15 April 2011"
+RELDATESHORT="15-April-2011"
+RELDATENUM="2011-04-15"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"

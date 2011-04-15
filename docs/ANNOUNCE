@@ -1,23 +1,192 @@
-Fvwm is a powerful window manager.  Version 2.5.28 is a beta
-maintenance release that fixes a couple of bugs and adds some
-minor features.  Please be aware that any features introduced in
-the 2.5.x development versions may be renamed, changed or removed
-without notice before 2.6.0.
+FVWM 2.6.0 released!
+====================
 
-Upgrading from 2.5.30 or earlier is recommended.
+It's been almost five years since the last stable release of FVWM (2006) and
+almost ten years since the development version of FVWM (2.5.X) which became this
+latest stable release was started!  A lot of hard work from many talented
+individuals has made this release possible.
 
-This release is available at the home page: http://www.fvwm.org/.
+Highlights
+==========
 
-* New features:
+In no particular order (and neither an exhaustive list):
 
-  None.
+* EWMH support, including support for managing different window types
+  ("docks" for example).
+* Colorset commands replace FvwmTheme (which is now deprecated)
+* WindowStyle command applies a style to a specific window only.
+* XFT fonts are supported, per locale.
+* Focus-specific policies supported as styles (FP*, !FP*)
+* FocusStyle command allows styling of focus policies specifically.
+* Dynamic actions can be sent to most modules whilst they're running to
+  customise their behaviour (SendToModule).
+* Gettext support introduced for output strings (most commonly seen on
+  menu items.)
+* Mouse gestures (libstroke) bindings are available.
+* New module FvwmProxy to manage moving windows around.
+* New module FvwmWindowList to make the list of running windows more
+  customisable over the builtin "WindowList" command.
+* Variable placeholders ($w, $d, $c) deprecated in favour of newer formats.
+  Also, the number of variable placeholders has been expanded.  
+    - $[func.context], $[w.desk], $[w.layer], etc.
+* Nesting of placeholders is also allowed.
+* FvwmEvent:  The PassId option is deprecated as actions always run within a
+  window context.
+* Many new conditional commands with different options.
+* New style command "Unmanaged" to make certain windows completely divorced
+  from FVWM's control.
+* New command FakeKeyPress.
+* Window-specific key/mouse bindings. (Bindings no longer have to be global.)
+* Many new style options:
+    - FixedSize
+    - FixedPosition
+    - MoveByProgramMethod
+    - UseTitleDecorRotation
+    - IconBackgroundColorset
+    - IconTitleColorset
+    - HilightIconTitleColorset
+    - IconTitleRelief
+    - IconBackgroundRelief
+    - IconBackgroundPadding
+    - Closable
+    - Iconifiable
+    - Maximizable
+    - AllowMaximizeFixedSize
+    - PositionPlacement
+    - InitialMapComand
 
-* Bug fixes:
+    Plus many others...
+* Window states are now available to identify windows to perform "groups" of
+  commands on.
+* fvwm-menu-desktop uses the XDG menu specification.
+* PNG/SVG support for icons.
+* Menu-context bindings.
+* The name style names match against can be augmented by the X-resource "fvwmstyle".
+* New fvwm-convert-2.6 script to convert older fvwm 2.4.x config files.
+* Bugfixes!
 
-  - fvwm-convert-2.6:  Don't double-up comma separated options to
-    conditional commands if they're already delimited by commas.
-  - Correctly report a window's height and width if the window has
-    incomplete resize increments set.
-  - Maintain any State hints on a window when used with WindowStyle.
-  - FvwmIconMan now correctly handles sticky windows.
+There are of course significant bug fixes gone into this release; far too
+many to list here, and many of them so specific to the development version
+alone that listing them is out of context when comparing them to the last
+stable release.  Overall, a number of bug fixes for memory management, and
+ease of managing windows has happened.
 
+Upgrading from FVWM 2.4.X -> 2.6.0
+==================================
+
+It is worth spending some time looking at the dependencies at FVWM's
+disposal.  None of them are required per se for FVWM to work:
+
+* Xinerama
+* Readline
+* Fribidi
+* XFT
+* Iconv
+* PNG
+* SVG
+* XPM
+* XRender
+* Stroke
+* Xsm
+* Xcursor
+* SM (Session Manager)
+
+Note that not all of these are external libraries -- some of them are
+merely facets of an XServer's configuration, but a lot of it will depend on
+the platform FVWM is running on.
+
+Preferred way of upgrading your configuration file
+==================================================
+
+In the old stable (2.4.X), the path to the default user config file is now:
+
+$ ~/.fvwm/config
+
+by default, although the older paths of:
+
+$ ~/.fvwm/.fvwm2rc
+$ ~/.fvwm2rc
+
+are still supported; just deprecated in favour of ~/.fvwm/config.  Note that
+the "INITIALIZATION" section in "man fvwm" lists the other locations FVWM
+might also look in to find a valid config file.  Since there's been some
+syntax changes, a handy script can be used -- "fvwm-config-2.6" to convert a
+2.4.X style config file.
+
+Please see the man page for "fvwm-convert-2.6".
+
+History
+=======
+
+It's taken almost ten years for FVWM 2.6.0 to arrive.  In that time, FVWM
+has had contributions from numerous people -- many of them can be found
+here:
+
+http://fvwm.org/authors/
+
+Whilst it is unfair to single any one particular person out, it is without
+question that I (Thomas Adam) would like to pay particular homage to the
+following people (again in no particular order; and *far* from exhaustive):
+
+* Dominik Vogt -- for being one of the most useful sources of information on
+  FVWM to date, and making it such a great program.
+* Viktor Griph -- for implementing some cool features
+* Dan Espen -- just for being completely reliable with any request I've
+  thrown at him, and for helping to cobble this release together.
+* Olivier Chapuis -- for writing far too many features than can be listed
+  here, but responsible for things like:   new conditional commands,
+  original EWMH support, XFT support, gettext support, numerous bug fixes,
+  etc., fvwm-themes.
+* Mikhael Goikhman -- for perllib, Session management support, various perl
+  helper scripts FVWM uses (fvwm-config, fvwm-menu-desktop, etc.), as well
+  as along with Olivier Chapius, starting fvwm-themes.
+* Scott Smedley -- Converting documentation to use Docbook, window-specific
+  binding support, FvwmTabs, perllib fixes, FvwmButtons enhancements.
+
+But that list is far from the full picture.  There are numerous people on
+IRC in #fvwm (freenode) who have given up their time in terms of user
+support, and that's just as important as development.  So I would like to
+also thank the following people (in no particular order):
+
+* pebcak 
+* somiaj
+* theBlackDragon
+* starshine
+* haddock
+* Janon
+* surrounder
+* taviso
+* swimmer
+
+This list is not exhaustive either, but they have in particular been the
+life-blood of the channel on ensuring it runs smoothly and help provide the
+best support possible.
+
+Thank you all!
+
+Dedications
+===========
+
+During the course of FVWM's development, the community lost one of its
+members, Alex Wallis ("awol", on IRC).  Alex founded the IRC channel,
+brought together a community on IRC for FVWM, which still continues to this
+day.  He also was a large contributor to the fvwm-themes project.
+
+Sadly, Alex is no longer with us, and he would have been proud to see the
+FVWM he knew, as being released as stable, so this release is dedicated to
+him.  May he still rest in peace.
+
+Contact
+=======
+
+The official fvwm homepage:
+
+http://www.fvwm.org/
+
+Questions about the release can be asked on our mailing list:
+
+fvwm _at_ fvwm.org
+
+Bugs can be reported to the fvwm-workers mailing list.
+
+-- Thomas Adam (2011/04/15), on behalf of the FVWM community.
