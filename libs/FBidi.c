@@ -50,7 +50,7 @@ char *FBidiConvert(
 	FriBidiCharSet fribidi_charset;
 	FriBidiChar *logical_unicode_str;
 	FriBidiChar *visual_unicode_str;
-	FriBidiCharType pbase_dir = FRIBIDI_TYPE_ON;
+	FriBidiParType pbase_dir = FRIBIDI_TYPE_ON;
 	FriBidiStrIndex *pos_l_to_v;
 	int i;
 
@@ -146,7 +146,8 @@ char *FBidiConvert(
 	*out_len = fribidi_unicode_to_charset(
 		fribidi_charset, visual_unicode_str, str_len, visual_str);
 
-	if (is_rtl != NULL && pbase_dir == FRIBIDI_TYPE_RTL)
+	if (is_rtl != NULL && 
+		fribidi_get_bidi_type(*visual_unicode_str) == FRIBIDI_TYPE_RTL)
 	{
 		*is_rtl = True;
 	}

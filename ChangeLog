@@ -1,4 +1,10 @@
 2011-04-15  Thomas Adam <thomas@fvwm.org>
+	* libs/FBidi.c (FBidi_convert):
+	Compiler warnings fix.
+	* libs/fsm.c (CompletNewConnectionMsg):
+	Compiler warnings fix.
+
+2011-04-15  Thomas Adam <thomas@fvwm.org>
 	* NEWS:
 	* configure.ac:
 	Updated for the FVWM 2.6.0 stable release.

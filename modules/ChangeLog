@@ -1,3 +1,7 @@
+2011-04-15  Thomas Adam <thomas@fvwm.org>
+	* FvwmIconMan/xmanager.c (draw_empty_manager):
+	Compile warnings fix.(
+
 2010-12-26    <despen@verizon.net>
 
 	* FvwmForm/Makefile.am: Add file FvwmForm-Desktop.

@@ -709,12 +709,12 @@ void CompletNewConnectionMsg(void)
 	{
 		ice_conn = (FIceConn)l->object;
 		cstatus = FIceConnectionStatus(ice_conn);
-		if (cstatus == FIceConnectPending)
+		if (cstatus == (int)FIceConnectPending)
 		{
 			pending = True;
 			l = l->next;
 		}
-		else if (cstatus == FIceConnectAccepted)
+		else if (cstatus == (int)FIceConnectAccepted)
 		{
 			l = l->next;
 			pending_ice_conn_list =

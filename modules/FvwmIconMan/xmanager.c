@@ -1642,7 +1642,7 @@ static void draw_button(WinManager *man, int button, int force)
 	Button *b;
 	WinData *win;
 	ButtonGeometry g, old_g;
-	GC context1, context2;
+	GC context1 = 0, context2 = 0;
 	Contexts button_state;
 	int cleared_button = 0, dirty;
 	int draw_background = 0, draw_icon = 0, draw_string = 0;
@@ -1904,7 +1904,7 @@ void draw_managers(void)
 
 static void draw_empty_manager(WinManager *man)
 {
-	GC context1, context2;
+	GC context1 = 0, context2 = 0;
 	int state = TITLE_CONTEXT;
 	ButtonGeometry g;
 	int len = strlen(man->titlename);
