@@ -4,8 +4,8 @@ AC_PREREQ(2.60)
 AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED=no
-version=2.7.1
+ISRELEASED=yes
+version=2.6.0
 VERSIONINFO=""
 
 dnl date of the released version (please zero pad the day in the last 2 dates)
@@ -1158,12 +1158,13 @@ AC_ARG_ENABLE(bidi,
   [ with_bidi="not specified, check" ]
 )
 
+fribidi_min_version=0.19.2
 if test ! x"$with_bidi" = xno; then
   AC_ARG_WITH(fribidi-bindir,
     AS_HELP_STRING([--with-fribidi-bindir=DIR],
       [directory of fribidi-config if not in PATH]),
     FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
-  if test ! x"$PKG_CONFIG" = xno && $PKG_CONFIG fribidi --exists; then
+  if test ! x"$PKG_CONFIG" = xno && $PKG_CONFIG --exists "fribidi >= $fribidi_min_version"; then
     FRIBIDI_CONFIG="$PKG_CONFIG fribidi"
   else
     AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
@@ -1171,7 +1172,7 @@ if test ! x"$with_bidi" = xno; then
 
   if test x"$FRIBIDI_CONFIG" = x; then
     with_bidi=no
-    problem_bidi=": No fribidi-config, pkg-config fribidi"
+    problem_bidi=": pkgconfig fribidi:  fribidi version >= $fribidi_min_version needed."
   else
     Bidi_CFLAGS=`$FRIBIDI_CONFIG --cflags`
     Bidi_LIBS=`$FRIBIDI_CONFIG --libs`

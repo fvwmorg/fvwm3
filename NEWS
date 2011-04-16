@@ -2,27 +2,21 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in beta release 2.7.1 (not yet released)
+Changes in stable release 2.6.1 (16-Apr-2011)
 
 * New features:
 
-* Bug fixes:
-
--------------------------------------------------------------------
-Changes in beta release 2.7.0 (15-Apr-2011)
-
-* New features:
-
-As 2.6.0 -- this release is to ensure there's no 2.5.X tarballs
-around, since this is now 2.7.0 in terms of development.
+  None.
 
 * Bug fixes:
 
-As 2.6.0 -- this release is to ensure there's no 2.5.X tarballs
-around, since this is now 2.7.0 in terms of development.
+  - Make the version and check of Fribidi >= 0.19.2
+  - fvwm-menu-desktop:
+        - Make XML::Parser check runtime as it's a non-standard
+          module.
+        - Fix perl version check.
 
 -------------------------------------------------------------------
-
 Changes in stable release 2.6.0 (15-Apr-2011)
 
 * New features:
