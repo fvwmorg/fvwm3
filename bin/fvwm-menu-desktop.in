@@ -72,7 +72,7 @@
 # >> 
 # >> Author: nadvornik@suse.cz
 
-use '5.008';
+use 5.008;
 use strict;
 use warnings;
 use Getopt::Long;
