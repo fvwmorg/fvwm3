@@ -1,12 +1,14 @@
-Fvwm is a powerful window manager.  Version 2.7.0 is a beta
-maintenance release that fixes a couple of bugs and adds some
-minor features.  Please be aware that any features introduced in
-the 2.7.x development versions may be renamed, changed or removed
-without notice before 2.8.0.
+FVWM 2.6.1
+==========
 
-Upgrading from 2.5.31 or earlier is recommended.
+Latest stable release fixes the following:
 
-This release is available at the home page: http://www.fvwm.org/.
+This is a bug-fix release only, there are no new features.
 
-This release brings the lastest stable release (2.6.0) in-line with what
-2.7.X will be.  There is no difference between this version and 2.6.0.
+* Minor glitches in fvwm-menu-desktop, specifically:
+    * Perl version check to use 5.008;
+    * Checking for XML::Parser a runtime option, as this module is a
+      non-standard perl module which isn't guaranteed to be on all systems
+      when it's run.
+
+* Force the version of Fribidi to be >= 0.19.2

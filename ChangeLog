@@ -1,4 +1,9 @@
 2011-04-16  Thomas Adam <thomas@fvwm.org>
+	* docs/ANNOUNCE:
+	* configure.ac:
+	Update for 2.6.1
+
+2011-04-16  Thomas Adam <thomas@fvwm.org>
 	* configure.ac:
 	Fix Fribidi library check to use 0.19.2 as a minimum.
 
