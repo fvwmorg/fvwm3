@@ -72,7 +72,7 @@
 # >> 
 # >> Author: nadvornik@suse.cz
 
-use version '5.0008';
+use '5.008';
 use strict;
 use warnings;
 use Getopt::Long;
@@ -80,7 +80,10 @@ use Encode;
 use I18N::Langinfo qw(langinfo CODESET);
 use POSIX qw(locale_h);
 use Digest::MD5 qw(md5_hex);
-use XML::Parser;
+
+# TA:  2011-04-16:  This module is non-standard, so bail if we don't find
+# it.
+eval "use XML::Parser; 1" or die "fvwm-menu-desktop:  XML::Parser not installed.\n";
 
 my $xdg_data_dirs = $ENV{XDG_DATA_DIRS} || '';
 my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS} || '';
@@ -223,7 +226,7 @@ if ($verbose)
 
 unless (-f $root_menu)
 {
-    warn "ERROR: Can't find root menu file.\n";
+    warn "ERROR: Can't find root menu file.\n" if $verbose;
     exit 1;
 }
 
