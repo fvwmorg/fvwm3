@@ -1045,6 +1045,10 @@ sub interpret_menu
             interpret_Exclude($tree->[$i], $menu{'entries'}, $pool);
             $i++;
         }
+        elsif ($tree->[$i] eq 'Layout' or $tree->[$i] eq 'DefaultLayout')
+        {
+            $i+=2;		# Ignore
+        }
         elsif ($tree->[$i] eq '0')
         {
             $i++;
@@ -2110,5 +2114,6 @@ sub obsolete
     print "WARNING: Argument \"$arg\" obsolete.  Ignored.\n";
 }
 # Local Variables:
+# mode: cperl
 # compile-command: "perl fvwm-menu-desktop.in --enable-mini-icons --fvwm-icons"
 # End:
