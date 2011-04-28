@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 #!@PERL@
 
 # Modification History
@@ -86,7 +87,6 @@ use Digest::MD5 qw(md5_hex);
 eval "use XML::Parser; 1" or die "fvwm-menu-desktop:  XML::Parser not installed.\n";
 
 my $xdg_data_dirs = $ENV{XDG_DATA_DIRS} || '';
-my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS} || '';
 my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 
 my $version = '@VERSION@';
@@ -184,7 +184,7 @@ GetOptions(
 	   "check-app!"               => \&obsolete,
 	   "time-limit=s"             => \&obsolete,
 	   "merge-user-menu"          => \&obsolete,
-
+	   "desktop=s"                => \&obsolete,
 	   "su_gui"  => \$root_cmd,
            "verbose" => \$verbose
 );
@@ -217,7 +217,7 @@ if ($verbose)
 {
     warn qq|
 	DEBUG: root menu is $root_menu
-    DEBUG: charset is $charset.
+	DEBUG: charset is $charset.
 	DEBUG: language is $language.
 	DEBUG: root-cmd is $root_cmd.|;
 }
@@ -1089,7 +1089,7 @@ sub read_menu
 
     unless (check_file($file))
     {
-        warn "WARNING: '$file' does not exist\n";
+        warn "WARNING: '$file' does not exist\n" if $verbose;
         return [ 'Menu', [ {} ] ];
     }
 
@@ -1884,23 +1884,13 @@ sub output_fvwm2_menu
 
 sub get_root_menu
 {
-    my @menu_bases = (qw(
-        applications
-        debian-menu
-        )
-    );
+    my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS} || '';
+    my $xdg_menu_prefix = $ENV{XDG_MENU_PREFIX} || '';
 
-    # XXX - TA:  2011-04-10:  Is it enough to assume only one match here is
-    #            sufficient?
-    foreach my $dir ( split( /:/, $xdg_config_dirs ), "/etc/xdg" )
+    foreach my $dir (split(/:/, $xdg_config_dirs), "/etc/xdg")
     {
-        foreach my $menu_name (@menu_bases)
-        {
-            check_file("$dir/menus/$menu_name.menu");
-            if ( -f "$dir/menus/$menu_name.menu" ) {
-                return "$dir/menus/$menu_name.menu";
-            }
-        }
+        my $menu_file="$dir/menus/${xdg_menu_prefix}applications.menu"; # 
+        return "$menu_file" if -f "$menu_file";
     }
     return "";
 }

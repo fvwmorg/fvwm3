@@ -1,3 +1,9 @@
+2011-04-27    <despen@verizon.net>
+	* fvwm-menu-desktop.in: Silently ignore --desktop x.
+	Add support for XDG_MENU_PREFIX which according to standards identifies an
+	alternate prefix for the applications menu.
+	Only warn about missing menu files if verbose flag set.
+
 2011-04-19    <despen@verizon.net>
 	* fvwm-menu-desktop.in (interpret_menu): Silently ignore Layout/DefaultLayout.
 
