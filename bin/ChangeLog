@@ -1,3 +1,9 @@
+2011-04-28  Thomas Adam <thomas@fvwm.org>
+	* fvwm-menu-desktop.in:
+	Remove #! line hard-coded to #!/usr/bin/perl
+
+	@PERL@ exists here for just this reason.
+
 2011-04-27    <despen@verizon.net>
 	* fvwm-menu-desktop.in: Silently ignore --desktop x.
 	Add support for XDG_MENU_PREFIX which according to standards identifies an
