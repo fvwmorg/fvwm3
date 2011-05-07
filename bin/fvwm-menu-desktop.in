@@ -2,6 +2,12 @@
 
 # Modification History
 
+# Changed on 05/07/11 by  (dane):
+# - new option kde_config for alternate name of optional
+#   kde-config command.
+# - use kde4-config if kde-config isn't found.
+# - if no kde-config command at all, use some defaults.
+
 # Changed on 11/30/10 by  (dane):
 # - changed DIR filehandles to scalars, they're stepping on each other.
 #   was a bug in xdg-menu.
@@ -69,8 +75,20 @@
 # Sergej Pupykin <pupykin.s@gmail.com>
 #
 # >> Copyright (c) 2003 SuSE Linux AG, Nuernberg, Germany. All rights reserved.
-# >> 
+# >>
 # >> Author: nadvornik@suse.cz
+
+# FILES:
+# This script uses the following files if present:
+#   /usr/share with /applications/
+#   /opt/gnome/share with /applications/
+#   kde-config --path xdgdata-apps with /applications/
+#   /opt/kde3/share with /desktop-directories/
+#   /opt/gnome/share with /desktop-directories/
+#   /etc/opt/kde3/share/applnk
+#   /opt/kde3/share/applnk
+#   kde-config --path apps
+#   /etc/xdg
 
 use 5.008;
 use strict;
@@ -97,6 +115,7 @@ my $desktop_name = 'fvwm2';
 my $language = '';
 my $charset = 'iso-8859-1';
 my $root_cmd;
+my $kde_cmd;
 my $die_on_error = 0;
 my $verbose = 0;
 
@@ -184,11 +203,24 @@ GetOptions(
 	   "time-limit=s"             => \&obsolete,
 	   "merge-user-menu"          => \&obsolete,
 	   "desktop=s"                => \&obsolete,
-	   "su_gui"  => \$root_cmd,
-           "verbose" => \$verbose
+	   "su_gui"                   => \$root_cmd,
+	   "kde_config"               => \$kde_cmd,
+           "verbose"                  => \$verbose
 );
 
 icon_init();
+
+# kde-config helps us find things.
+# sometimes it has funny names.
+# we can get by without it.
+if ( ! defined $kde_cmd) {
+  foreach ("kde-config", "kde4-config") {
+    if (check_app($_)) {
+      $kde_cmd = $_;
+      last;
+   }
+  }
+}
 
 $DefaultAppDirs = get_app_dirs();
 $DefaultDirectoryDirs = get_desktop_dirs();
@@ -200,25 +232,27 @@ $root_menu = get_root_menu();
 $charset = langinfo(CODESET);
 $language = setlocale(LC_MESSAGES);
 
-if (! defined $root_cmd )
-{
-    foreach (qw(gnomesu kdesu xdg_menu_su))
-    {
-	    if (check_app($_))
-        {
-	        $root_cmd = $_;
-	        last;
-	    }
+if (! defined $root_cmd ) {
+  foreach (qw(gnomesu kdesu xdg_menu_su)) {
+    if (check_app($_)) {
+      $root_cmd = $_;
+      last;
     }
+  }
 }
 
 if ($verbose)
 {
     warn qq|
-	DEBUG: root menu is $root_menu
+	DEBUG: root menu is $root_menu.
 	DEBUG: charset is $charset.
 	DEBUG: language is $language.
 	DEBUG: root-cmd is $root_cmd.|;
+    if (defined $kde_cmd) {
+      warn "\tDEBUG: kde-config command is $kde_cmd.";
+    } else {
+      warn "\tDEBUG: No kde-config command found, using defaults.";
+    }
 }
 
 @language_keys = prepare_language_keys($language);
@@ -588,31 +622,40 @@ sub read_desktop_entry
 
     $entry{'refcount'} = 0;
     $Desktop_entries{$file} = \%entry;
+  } else {
+    warn "Desktop_entry for $file defined\n" if $verbose;
   }
 
   my $entry = $Desktop_entries{$file};
 
-  if (! defined $entry->{'Name'}) { # dje debug
-    warn "Name is not defined\n";
+  if (! defined $entry->{'Name'} or ! defined $entry->{'Exec'}) {
+    warn "Name or Exec is not defined\n";
   }
 
   return unless defined $entry->{'Name'};
   return unless defined $entry->{'Exec'};
 
   if (defined $entry->{'Hidden'} and $entry->{'Hidden'} eq 'true') {
+    warn "Hidden entry for $file\n" if $verbose;
     return;
   }
 
   #FIXME, an option for this would be good
 
   if (defined $entry->{'NoDisplay'} and  $entry->{'NoDisplay'} eq 'true') {
+    warn "NoDisplay entry for $file\n" if $verbose;
     return;
   }
 
-  return unless check_show_in($entry);
+  if (!check_show_in($entry)) {
+    warn "entry not shown in $file\n" if $verbose;
+    return;
+  }
+  # return unless check_show_in($entry);
 
   if (defined $entry->{'NotShowIn'} and
       $entry->{'NotShowIn'} eq $desktop_name) {
+    warn "entry not shown in 2 $file\n" if $verbose;
     return;
   }
 
@@ -1092,7 +1135,7 @@ sub read_menu
         return [ 'Menu', [ {} ] ];
     }
 
-    warn "reading '$file'\n" if $verbose;
+    warn "reading menu '$file'\n" if $verbose;
 
     my $parser = XML::Parser->new(Style => 'Tree');
     my $tree = $parser->parsefile($file);
@@ -1889,6 +1932,7 @@ sub get_root_menu
     foreach my $dir (split(/:/, $xdg_config_dirs), "/etc/xdg")
     {
         my $menu_file="$dir/menus/${xdg_menu_prefix}applications.menu"; # 
+	warn "looking for root menu $menu_file\n" if $verbose;
         return "$menu_file" if -f "$menu_file";
     }
     return "";
@@ -1899,10 +1943,15 @@ sub get_app_dirs
     my %used;
     my $ret = '';
 
-    return $ret unless check_app("kde-config");
-
-    my @kde_xdgdata = split( /:/, `kde-config --path xdgdata-apps` );
-
+    my @kde_xdgdata;
+    if ( defined $kde_cmd ) {
+      @kde_xdgdata = split( /:/, `$kde_cmd --path xdgdata-apps` );
+    } else {
+      @kde_xdgdata = ("$ENV{HOME}/.local/share/applications/",
+		      "/usr/share/kde-settings/kde-profile/default/share/applications/",
+		      "/usr/share/applications/",
+		      "/usr/local/share/applications/");
+    }
     foreach (@kde_xdgdata)
     {
         s/\/applications\/*\s*$//;
@@ -1955,10 +2004,8 @@ sub get_KDE_legacy_dirs
         /opt/kde3/share/applnk
         )
     );
-
-    if (check_app("kde-config"))
-    {
-        push @legacy_dirs, reverse(split(/:/,`kde-config --path apps` ));
+    if ( defined $kde_cmd) {
+      push @legacy_dirs, reverse(split(/:/,`$kde_cmd --path apps` ));
     }
 
     foreach my $d ( @legacy_dirs )

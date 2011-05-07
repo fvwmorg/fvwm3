@@ -1,3 +1,11 @@
+2011-05-07    <despen@verizon.net>
+	* fvwm-menu-desktop.1.in: Some updates, needs a lot of work. Later.
+	* fvwm-menu-desktop.in:
+	new option kde_config for alternate name of optional
+	kde-config command.
+	use kde4-config if kde-config isn't found.
+	if no kde-config command at all, use some defaults.
+
 2011-04-28  Thomas Adam <thomas@fvwm.org>
 	* fvwm-menu-desktop.in:
 	Remove #! line hard-coded to #!/usr/bin/perl
@@ -29,7 +37,6 @@
 	special in what the XDG menu files are called.
 
 2011-04-10    <despen@verizon.net>
-
 	* fvwm-menu-desktop.in: Restore some missing code.
 	Remove some duplicated code.
 

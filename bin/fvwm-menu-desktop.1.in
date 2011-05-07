@@ -61,27 +61,25 @@ fvwm-menu-desktop
 [ \fB\-\-menu-style\fR \fIname\fR ]
 [ \fB\-\-no\-check\-app\fR ]
 [ \fB\-\-time\-limit\fR \fINUM\fR ]
+[ \fB\-\-kde_config\fR \fIcommand\fR ]
 
 .SH DESCRIPTION
-This is a perl script which parses GNOME or KDE menus definitions to build
-corresponding fvwm or FvwmGtk menus. The script can also
+This is a perl script which parses XDG (GNOME or KDE) menus definitions to build
+corresponding fvwm menus. The script can also
 build icon and mini\-icon style commands for the applications.
 
 .SH USAGE
 There are a lot of options. However the defaults are, I hope, good
 enough.
-If you want the KDE system menu in the menu "Utilities" add the
+If you want the application menu in the menu "Utilities" add the
 following lines in your .fvwm2rc file:
 .EX
  ...
-AddToMenu Utilities "KDE System Menu" Popup kde\-sys
+AddToMenu Utilities "Application Menu" Popup FvwmMenu
  ...
-PipeRead 'fvwm-menu-desktop --desktop kde-sys'
+PipeRead 'fvwm-menu-desktop'
 .EE
-For KDE2 you may have to add --utf8 or --uniconv "charset" (see below).
-Moreover, with KDE2 you can add --merge-user-menu.
-If you use KDE version 1 (see below for KDE2) and you want mini\-icons
-in the menu and if the KDE mini\-icons are in "mini/"
+If the KDE mini\-icons are in "mini/"
 relative to your fvwm ImagePath add the option \-\-enable-mini\-icons.
 (if the KDE mini\-icons are in some other place
 use the \-\-mini\-icons\-path option, e.g., they are in your
@@ -97,8 +95,7 @@ AddToMenu kde\-user
 + DynamicPopupAction PipeRead 'fvwm-menu-desktop --desktop kde-user --enable-mini-icons [--destroy-type dynamic] [other options]'
 .EE
 
-For GNOME it is natural to use FvwmGtk
-menus. The following example builds "all" GNOME menus (with some
+The following example builds "all" GNOME menus (with some
 mini\-icons in the system menu). You need to specify the
 GNOME installation prefix if it is not /usr (with the
 option \-\-install\-prefix). Moreover, the GNOME icons need to be in your
@@ -445,20 +442,20 @@ method, fvwm-menu-desktop is very slow with this option: you probably need
 to use the --time-limit option and you should redirect the result into a
 file and read this file in your fvwm configuration.
 .IP "\fB\-\-uniconv-exec\fR \fIexec\fR"
-Where exec is either iconv or uniconv or internal. Allows to choose the
-program which perform the UTF8 translation in the case of the \-\-uniconv
-option. The internal method is only available with perl 5.8.0 and better.
-The default is either internal (if available) or iconv.
+Not used, kept for legacy purposes.
 .IP "\fB\-\-menu-style\fR \fIname\fR"
 By default the generated fvwm menus use the default MenuStyle (i.e., the
 MenuStyle "*"). You can specify another MenuStyle name using this option.
 .IP "\fB\-\-[no]check-app\fR"
-Either check or don't check that applications to execute are in your path.
-Default is \-\-check-app.
+Not used, kept for legacy purposes.
 .IP "\fB\-\-time-limit\fR \fINUM\fR"
-Change the internal limit (15 seconds) for running this script
-to NUM seconds, 0 means unlimited running. This limiting may be useful
-to cut mistakes with the \-\-dir or \-\-install\-path options.
+Not used, kept for legacy purposes.
+.IP "\fB\-\-kde_config\fR \fIcommand\fR"
+If available, this script uses the command kde-config or kde4-config
+to find the XDG menus.  If the kde-config command has another name
+you can use this option to set the command name.
+If this script can't find any kde-config command, it does it's best to run
+without it.
 
 .SH BUGS
 This script needs more testing to see if all options work well
