@@ -656,7 +656,7 @@ if test x"$with_xcursor" = xyes ; then
       ],[
          with_xcursor=no
          problem_xcursor=": Failed to detect libXcursor"
-      ],)
+      ],[$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
 fi
 AC_SUBST(Xcursor_CFLAGS)
 AC_SUBST(Xcursor_LIBS)
