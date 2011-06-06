@@ -2,6 +2,18 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
+Changes in latest CVS HEAD (not yet released)
+
+* New features:
+
+  None.
+
+* Bug fixes:
+
+  - Fix infinite loop crash when FvwmButtons quits/restarts with
+    RootTransparent colorsets.
+
+-------------------------------------------------------------------
 Changes in stable release 2.6.1 (16-Apr-2011)
 
 * New features:

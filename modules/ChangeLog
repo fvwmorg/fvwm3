@@ -1,6 +1,15 @@
+2011-06-06  Thomas Adam <thomas@fvwm.org>
+	* FvwmButtons/FvwmButtons.c (DeadPipeCleanup):
+	Don't grab the XServer when exiting FvwmButtons
+
+	When FvwmButtons is asked to quit and the _atexit() handler is run, do
+	not grab the xserver when cleaning up, as there's every chance it might
+	still be grabbed when FVWM goes to reinstall its pixmaps, leading to an
+	infinite loop.
+
 2011-04-15  Thomas Adam <thomas@fvwm.org>
 	* FvwmIconMan/xmanager.c (draw_empty_manager):
-	Compile warnings fix.(
+	Compile warnings fix.
 
 2010-12-26    <despen@verizon.net>
 

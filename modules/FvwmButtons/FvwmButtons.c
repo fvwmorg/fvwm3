@@ -276,7 +276,6 @@ static void DeadPipeCleanup(void)
 
 	signal(SIGPIPE, SIG_IGN);/* Xsync may cause SIGPIPE */
 
-	MyXGrabServer(Dpy); /* We don't want interference right now */
 	while (NextButton(&ub, &b, &button, 0))
 	{
 		swin = SwallowedWindow(b);
@@ -347,8 +346,6 @@ static void DeadPipeCleanup(void)
 #endif
 		}
 	}
-	XSync(Dpy, 0);
-	MyXUngrabServer(Dpy); /* We're through */
 
 	fsm_close();
 	/* Hey, we have to free the pictures too! */
