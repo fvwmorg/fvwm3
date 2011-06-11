@@ -12,6 +12,8 @@ Changes in latest CVS HEAD (not yet released)
 
   - Fix infinite loop crash when FvwmButtons quits/restarts with
     RootTransparent colorsets.
+  - Fix setting window states across FVWM restarts where those
+    windows do not set WM_COMMAND.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.1 (16-Apr-2011)

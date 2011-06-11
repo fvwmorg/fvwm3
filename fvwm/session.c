@@ -437,6 +437,14 @@ SaveWindowStates(FILE *f)
 				/* No client id and no WM_COMMAND, the client
 				 * cannot be managed by the sessiom manager
 				 * skip it! */
+				/* TA:  20110611 - But actually, this breaks
+				 * those applications which don't set the
+				 * WM_COMMAND XAtom anymore.  The ICCCM
+				 * deprecated this at version 2.0 -- and its
+				 * lack of existence here shouldn't be a
+				 * problem.  Let newer session managers handle
+				 * the error if it even matters.
+				 */
 				if (!Restarting)
 				{
 					if (wm_command)
@@ -444,7 +452,11 @@ SaveWindowStates(FILE *f)
 						XFreeStringList(wm_command);
 						wm_command = NULL;
 					}
-					continue;
+					/* TA: 20110611 - But see above.  We
+					 * no longer skip clients who don't
+					 * set this legacy field.
+					 */
+					/* continue; */
 				}
 			}
 		}

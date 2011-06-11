@@ -1,3 +1,21 @@
+2011-06-11  Thomas Adam <thomas@fvwm.org>
+	* fvwm/session.c (SaveWindowStates):
+	Don't skip saving window state for windows without WM_COMMAND
+
+	Newer applications (that is, those written before 1821) used to use a
+	nasty hack in the way of the WM_COMMAND XAtom to effectively start the
+	running application.  But this is a crap way of doing it, and the ICCCM
+	even agrees.  Such Atoms have been deprecated for a long time.
+
+	But FVWM uses this file for more than just hints to some other Session
+	Manager -- it's used to reapply state across restarts, and skipping it
+	on the off-chance some session manager might need WM_COMMAND in today's
+	world is silly.
+
+	If a session manager relying soley on WM_COMMAND is being used under
+	FVWM, it won't be honouring many applications anyway, so dropping
+	support for it is fine.
+
 2011-06-04  Thomas Adam <thomas@fvwm.org>
 	* configure.ac:
 	Fix XCursor detection.
