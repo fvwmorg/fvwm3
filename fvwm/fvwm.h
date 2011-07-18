@@ -39,6 +39,7 @@
 #include <X11/Intrinsic.h>
 #include "libs/PictureBase.h"
 #include "libs/Flocale.h"
+#include "libs/fvwmrect.h"
 #include "window_flags.h"
 #include "condrc.h"
 
@@ -77,6 +78,7 @@
 
 /* ---------------------------- forward declarations ----------------------- */
 
+struct size_borders;
 struct exec_context_t;
 
 #ifdef USEDECOR
@@ -964,6 +966,18 @@ typedef struct FvwmWindow
 	int ewmh_normal_layer; /* for restoring non ewmh layer */
 	/* memory for the initial _NET_WM_STATE */
 	unsigned long ewmh_hint_desktop;
+
+	/* For the purposes of restoring attributes before/after a window goes
+	 * into fullscreen.
+	 */
+	struct
+	{
+		struct window_g g;
+		size_borders sb;
+		int is_iconified;
+		int is_shaded;
+		int was_maximized;
+	} fullscreen;
 
 	/* multi purpose scratch structure */
 	struct

@@ -14,6 +14,8 @@ Changes in latest CVS HEAD (not yet released)
     RootTransparent colorsets.
   - Fix setting window states across FVWM restarts where those
     windows do not set WM_COMMAND.
+  - Windows are now correctly restored when coming out of
+    fullscreen mode.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.1 (16-Apr-2011)

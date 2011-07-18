@@ -1910,7 +1910,7 @@ void EWMH_fullscreen(FvwmWindow *fw)
 {
 	fscreen_scr_arg fscr;
 	rectangle scr_g;
-	size_borders b;
+	size_borders b, old_sb;
 	int page_x;
 	int page_y;
 	char cmd[128] = "\0";
@@ -1926,8 +1926,22 @@ void EWMH_fullscreen(FvwmWindow *fw)
 	{
 		return;
 	}
+
+	fw->fullscreen.was_maximized = 0;
+	fw->fullscreen.is_shaded = 0;
+
+	get_window_borders(fw, &old_sb);
+
+	/* Keep the old geometry when restoring from fullscreen. */
+	memcpy(&fw->fullscreen.g, &fw->g, sizeof(struct window_g));
+	memcpy(&fw->fullscreen.sb, &old_sb, sizeof(size_borders));
+
+	if (IS_MAXIMIZED(fw))
+		fw->fullscreen.was_maximized = 1;
+
 	if (IS_ICONIFIED(fw))
 	{
+		fw->fullscreen.is_iconified = 1;
 		execute_function_override_window(
 			NULL, NULL, "Iconify off", 0, fw);
 	}
@@ -1935,6 +1949,7 @@ void EWMH_fullscreen(FvwmWindow *fw)
 	{
 		int sas = fw->shade_anim_steps;
 
+		fw->fullscreen.is_shaded = 1;
 		fw->shade_anim_steps = 0;
 		execute_function_override_window(
 			NULL, NULL, "WindowShade off", 0, fw);
