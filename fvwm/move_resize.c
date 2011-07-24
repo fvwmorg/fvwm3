@@ -4395,7 +4395,6 @@ static void unmaximize_fvwm_window(
 	FvwmWindow *fw)
 {
 	rectangle new_g;
-	size_rect b;
 
 	SET_MAXIMIZED(fw, 0);
 	if (IS_SHADED(fw))
@@ -4403,44 +4402,24 @@ static void unmaximize_fvwm_window(
 		get_shaded_geometry(fw, &new_g, &new_g);
 	}
 
-	b = fw->fullscreen.sb.top_left;
-
-	get_relative_geometry(&new_g, fw->fullscreen.was_maximized ?
-			&fw->fullscreen.g.max : &fw->g.normal);
-	constrain_size(fw, NULL, &new_g.width, &new_g.height, 0, 0, 0);
-
-	/* TA:  We might be restoring a window from fullscreen which itself
-	 * had a maximized state.  Note that it is simply *NOT* good enough to
-	 * blindly call "maximize on", as that would restore an incorrect
+	/* We might be restoring a window's geometry coming out of fullscreen,
+	 * which might be a maximized window, so ensure we use the correct
+	 * geometry reference.
+	 *
+	 * If the window was not maximized, then we use the window's normal
 	 * geometry.
 	 */
+	get_relative_geometry(&new_g, fw->fullscreen.was_maximized ?
+			&fw->fullscreen.g.max : &fw->g.normal);
+
 	if (fw->fullscreen.was_maximized)
 	{
 		/* If MWMButtons is in use, set the style of the button as
 		 * marked as maximized.
 		 */
 		SET_MAXIMIZED(fw, 1);
-
-		/* TA:  Since we never call "Maximize" directly -- we're effectively
-		 * piecing together a maximized window, having first updated its
-		 * geometry, etc.  But we must also take into account removing the
-		 * border values from the previous geometry as well before
-		 * constraining it.
-		 */
-		new_g.width -= b.width;
-		new_g.height -= b.height;
-
-		constrain_size(fw, NULL, &new_g.width, &new_g.height,
-			0, 0, 0);
-
-		apply_decor_change(fw);
-		fw->fullscreen.was_maximized = 0;
 	}
 
-	frame_setup_window(
-		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
-	border_draw_decorations(
-		fw, PART_ALL, (Scr.Hilite == fw), True, CLEAR_ALL, NULL, NULL);
 	if (IS_EWMH_FULLSCREEN(fw))
 	{
 		SET_EWMH_FULLSCREEN(fw, False);
@@ -4449,6 +4428,20 @@ static void unmaximize_fvwm_window(
 			new_layer(fw, fw->ewmh_normal_layer);
 		}
 	}
+
+	/* TA:  Apply the decor change now, if the window we've just restored
+	 * was maximized; the client frame and geometry will be updated as a
+	 * result of this, so we correctly restore the window at this point.
+	 */
+	if (fw->fullscreen.was_maximized) {
+		fw->fullscreen.was_maximized = 0;
+		apply_decor_change(fw);
+	}
+
+	frame_setup_window(
+		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
+	border_draw_decorations(
+		fw, PART_ALL, (Scr.Hilite == fw), True, CLEAR_ALL, NULL, NULL);
 
 	if (fw->fullscreen.is_shaded)
 	{
@@ -4464,6 +4457,11 @@ static void unmaximize_fvwm_window(
 		fw->fullscreen.is_iconified = 0;
 	}
 
+	/* Since the window's geometry will have been constrained already when
+	 * coming out of fullscreen, we can always call this; either it's a
+	 * noop or the window will be correctly decorated in the case of the
+	 * window being restored from fullscreen to a non-maximized state.
+	 */
 	apply_decor_change(fw);
 	return;
 }

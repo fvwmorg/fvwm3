@@ -1,3 +1,13 @@
+2011-07-24  Thomas Adam <thomas@fvwm.org>
+	* fvwm/move_resize.c (unmaximize_fvwm_window):
+	* fvwm/ewmh.c (EWMH_fullscreen):
+	* fvwm/fvwm.h:
+	Fix fullscreen restoring with ResizeHintOverride
+
+	Correctly handle restoring a window whose geometry isn't subject to
+	resize increments when coming out of fullscreen, with respect to that
+	window then being subsequently maximized.
+
 2011-07-18  Thomas Adam <thomas@fvwm.org>
 	* fvwm/move_resize.c (unmaximize_fvwm_window):
 	* fvwm/ewmh.c (EWMH_fullscreen):

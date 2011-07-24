@@ -1930,11 +1930,8 @@ void EWMH_fullscreen(FvwmWindow *fw)
 	fw->fullscreen.was_maximized = 0;
 	fw->fullscreen.is_shaded = 0;
 
-	get_window_borders(fw, &old_sb);
-
 	/* Keep the old geometry when restoring from fullscreen. */
 	memcpy(&fw->fullscreen.g, &fw->g, sizeof(struct window_g));
-	memcpy(&fw->fullscreen.sb, &old_sb, sizeof(size_borders));
 
 	if (IS_MAXIMIZED(fw))
 		fw->fullscreen.was_maximized = 1;

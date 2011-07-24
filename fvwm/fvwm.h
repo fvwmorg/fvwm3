@@ -973,7 +973,6 @@ typedef struct FvwmWindow
 	struct
 	{
 		struct window_g g;
-		size_borders sb;
 		int is_iconified;
 		int is_shaded;
 		int was_maximized;
