@@ -707,7 +707,18 @@ void menu_shortcuts(
 
 		/* For multiple instances of a single hotkey, just move the
 		 * selection */
-		if (countHotkey > 1)
+		/* TA:  2011-07-24:  But if the user has turned off
+		 * "UniqueHotkeyActivatedImmediate", keep the menu open until
+		 * the user has asked for that entry to be enacted.  This also
+		 * implies the style "TitleWarpOff" and we're not over a popup
+		 * item, in which case the pointer is warped to the submenu in
+		 * the usual way.
+		 */
+		if ((countHotkey > 1) || (countHotkey >=1 && (
+					  (!MST_DO_WARP_TO_TITLE(mr) ||
+					   !MI_IS_POPUP(new_item))
+					  ) &&
+					  !MST_HOTKEY_ACTIVATES_IMMEDIATE(mr)))
 		{
 			*pmi_current = new_item;
 			pmret->rc = MENU_NEWITEM;

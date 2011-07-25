@@ -432,6 +432,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"TitleColorset", "HilightTitleBack",
 		"TitleFont",
 		"VerticalMargins",
+		"UniqueHotkeyActivatesImmediate",
 		NULL
 	};
 
@@ -1007,6 +1008,13 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			ST_USE_LEFT_SUBMENUS(tmpms) = 0;
 			ST_IS_ANIMATED(tmpms) = 0;
 			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
+			/* Pressing a hotkey on an item which only has a
+			 * single entry will activate that action; turning
+			 * those off will make the menu persist until enter or
+			 * space is pressed; the default behaviour is to
+			 * always close the menu and run the action.
+			 */
+			ST_HOTKEY_ACTIVATES_IMMEDIATE(tmpms) = 1;
 			menustyle_free_face(&ST_FACE(tmpms));
 			ST_FACE(tmpms).type = SimpleMenu;
 			if (ST_PSTDFONT(tmpms) && !ST_USING_DEFAULT_FONT(tmpms))
@@ -1601,6 +1609,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 				&ST_VERTICAL_MARGIN_BOTTOM(tmpms),
 				0, 0);
 			break;
+		case 63: /* UniqueHotKeyActivatesImmediate */
+			ST_HOTKEY_ACTIVATES_IMMEDIATE(tmpms) = on;
+			break;
 
 #if 0
 		case 99: /* PositionHints */
@@ -1826,6 +1837,8 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 
 	/* AutomaticHotkeys */
 	ST_USE_AUTOMATIC_HOTKEYS(destms) = ST_USE_AUTOMATIC_HOTKEYS(origms);
+	ST_HOTKEY_ACTIVATES_IMMEDIATE(destms) =
+		ST_HOTKEY_ACTIVATES_IMMEDIATE(origms);
 	/* Item and Title Spacing */
 	ST_ITEM_GAP_ABOVE(destms) =  ST_ITEM_GAP_ABOVE(origms);
 	ST_ITEM_GAP_BELOW(destms) = ST_ITEM_GAP_BELOW(origms);

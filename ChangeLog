@@ -1,3 +1,18 @@
+2011-07-25  Thomas Adam <thomas@fvwm.org>
+	* doc/commands/MenuStyle.xml:
+	* fvwm/menubindings.c (menu_shortcuts):
+	* fvwm/menubindings.h:
+	* fvwm/menustyle.c (menustyle_get_styleopt_index,
+	  menustyle_parse_style, menustyle_copy):
+	* fvwm/menustyle.h:
+	Add new MenuStyle option "UniqueHotkeyActicatesImmediate"
+
+	This change allows for the hotkey to be pressed on a menu and for it
+	remain open until the user presses one of the keys to enact that
+	specified item.  The default behaviour is the current one of closing the
+	menu and running the action in the case of there being only one entry at
+	the specified hotkey.
+
 2011-07-24  Thomas Adam <thomas@fvwm.org>
 	* fvwm/move_resize.c (unmaximize_fvwm_window):
 	* fvwm/ewmh.c (EWMH_fullscreen):

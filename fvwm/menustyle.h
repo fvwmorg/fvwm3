@@ -177,6 +177,8 @@
 #define MST_VERTICAL_MARGIN_TOP(m)	  ((m)->s->ms->look.vertical_margins.top)
 #define ST_VERTICAL_MARGIN_BOTTOM(s)  ((s)->look.vertical_margins.bottom)
 #define MST_VERTICAL_MARGIN_BOTTOM(m)	((m)->s->ms->look.vertical_margins.bottom)
+#define ST_HOTKEY_ACTIVATES_IMMEDIATE(s) ((s)->feel.flags.hotkey_activates_immediate)
+#define MST_HOTKEY_ACTIVATES_IMMEDIATE(m) ((m)->s->ms->feel.flags.hotkey_activates_immediate)
 
 /* ---------------------------- type definitions --------------------------- */
 
@@ -221,6 +223,7 @@ typedef struct MenuFeel
 		unsigned use_automatic_hotkeys : 1;
 		unsigned mouse_wheel : 2;
 		unsigned scroll_off_page : 1;
+		unsigned hotkey_activates_immediate : 1;
 	} flags;
 	int PopdownDelay10ms;
 	int PopupOffsetPercent;

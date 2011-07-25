@@ -75,6 +75,7 @@ VerticalItemSpacing,
 VerticalMargins,
 VerticalTitleSpacing,
 AutomaticHotkeys / !AutomaticHotkeys,
+UniqueHotkeyActivatesImmediate / !UniqueHotkeyActivatesImmediate,
 MouseWheel,
 ScrollOffPage / !ScrollOffPage,
 TrianglesUseFore / !TrianglesUseFore.</para>
@@ -124,6 +125,7 @@ TitleWarp, TitleUnderlines1, SeparatorsShort, TrianglesRelief,
 PopupDelayed, PopdownDelayed, PopupDelay 150, PopdownDelay 150,
 PopupAsSubmenu, HoldSubmenus,
 SubmenusRight, BorderWidth 2, !AutomaticHotkeys,
+UniqueHotkeyActivatesImmediate,
 PopupActiveArea 75.</para>
 
 <para><emphasis remap='I'>Mwm</emphasis>
@@ -133,6 +135,7 @@ style is equivalent to !HilightBack, Hilight3DThick,
 !TitleWarp, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopdownDelayed, PopdownDelay 150,
 PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
+UniqueHotkeyActivatesImmediate,
 !AutomaticHotkeys, PopupActiveArea 75.</para>
 
 <para><emphasis remap='I'>Win</emphasis>
@@ -141,6 +144,7 @@ style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
 TitleUnderlines1, SeparatorsShort, TrianglesSolid,
 PopupImmediately, PopdownDelayed, PopdownDelay 150,
 PopupAsSubmenu, RemoveSubmenus, SubmenusRight, BorderWidth 2,
+UniqueHotkeyActivatesImmediate,
 !AutomaticHotkeys, PopupActiveArea 75.</para>
 
 <para>
@@ -717,6 +721,18 @@ the first character of each menu item's label.  This behavior is
 always overridden if an explicit hot-key is assigned in the
 <emphasis remap='B'>AddToMenu</emphasis>
 command.</para>
+
+<para>
+<fvwmopt cmd="MenuStyle" opt="UniqueHotkeyActivatesImmediate"/> and
+<emphasis remap='I'>!UniqueHotkeyActivatesImmediate</emphasis> controls how
+menu items are invoked when used with hotkeys.  By default, if a given
+menu entry only has one completeable match for a given hotkey, the action for
+that menu entry is invoked and the menu is closed.  This is due to the
+<emphasis remap='I'>UniqueHotkeyActivatesImmediate</emphasis> option.  However,
+the menu can be told to remain open, waiting for the user to invoke the
+selected item instead when there is only one matched item for a given hotkey,
+by using the
+<emphasis remap='I'>!UniqueHotkeyActivatesImmediate</emphasis> option.</para>
 
 <para>
 <fvwmopt cmd="MenuStyle" opt="MouseWheel"/>

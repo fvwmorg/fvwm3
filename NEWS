@@ -6,7 +6,11 @@ Changes in latest CVS HEAD (not yet released)
 
 * New features:
 
-  None.
+  - New MenuStyle "UniqueHotkeyActivatesImmediate" and its
+    negation "!UniqueHotkeyActivatesImmediate" to retain the menu
+    until the user presses one of the menu keybindings to enact
+    that change in the case where there's only one item defined in
+    the menu at the specified hotkey.
 
 * Bug fixes:
 
