@@ -5,7 +5,7 @@
 	* fvwm/menustyle.c (menustyle_get_styleopt_index,
 	  menustyle_parse_style, menustyle_copy):
 	* fvwm/menustyle.h:
-	Add new MenuStyle option "UniqueHotkeyActicatesImmediate"
+	Add new MenuStyle option "UniqueHotkeyActivatesImmediate"
 
 	This change allows for the hotkey to be pressed on a menu and for it
 	remain open until the user presses one of the keys to enact that
