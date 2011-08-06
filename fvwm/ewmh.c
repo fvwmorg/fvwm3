@@ -1910,7 +1910,7 @@ void EWMH_fullscreen(FvwmWindow *fw)
 {
 	fscreen_scr_arg fscr;
 	rectangle scr_g;
-	size_borders b, old_sb;
+	size_borders b;
 	int page_x;
 	int page_y;
 	char cmd[128] = "\0";
