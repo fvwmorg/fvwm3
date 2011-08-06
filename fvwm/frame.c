@@ -1337,8 +1337,6 @@ void frame_get_titlebar_dimensions(
 	int tb_thick;
 	int tb_x;
 	int tb_y;
-	int tb_w;
-	int tb_h;
 	int b_length;
 	int b_w;
 	int b_h;
@@ -1418,8 +1416,6 @@ void frame_get_titlebar_dimensions(
 		t_w = tb_thick;
 		t_h = t_length;
 		b_l = &b_h;
-		tb_w = tb_thick;
-		tb_h = tb_length;
 	}
 	else
 	{
@@ -1444,8 +1440,6 @@ void frame_get_titlebar_dimensions(
 		t_w = t_length;
 		t_h = tb_thick;
 		b_l = &b_w;
-		tb_w = tb_length;
-		tb_h = tb_thick;
 	}
 	if (fw->title_text_rotation == ROTATION_270 ||
 	    fw->title_text_rotation == ROTATION_180)

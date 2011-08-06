@@ -1073,7 +1073,6 @@ static void CreateGCs(void)
 {
 	XGCValues gcv;
 	unsigned long gcm;
-	XColor c;
 
 	/* create scratch GC's */
 	gcm = GCFunction|GCLineWidth;
@@ -1087,7 +1086,6 @@ static void CreateGCs(void)
 	Scr.TitleGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 	Scr.BordersGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 	Scr.TransMaskGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	c.pixel = GetColor(DEFAULT_FORE_COLOR);
 	Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);
 	Scr.MonoGC = fvwmlib_XCreateGC(dpy, Scr.ScratchMonoPixmap, gcm, &gcv);
 	Scr.ScratchAlphaPixmap = XCreatePixmap(

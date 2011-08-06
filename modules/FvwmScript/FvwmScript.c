@@ -1310,7 +1310,6 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
 {
   int i;
   Atom myatom;
-  int FisrtArg;
 
   BuffSend.NbMsg=0;                     /* Aucun message dans le buffer */
 
@@ -1321,7 +1320,6 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
   {
     myatom = XInternAtom(dpy,x11base->TabScriptId[1],True);
     XSetSelectionOwner(dpy, myatom, x11base->win, CurrentTime);
-    FisrtArg = 9;
   }
   else
   {                             /* Cas du fils */
@@ -1331,7 +1329,6 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
     x11base->TabScriptId[1] = argv[7];
     myatom=XInternAtom(dpy, x11base->TabScriptId[1], True);
     XSetSelectionOwner(dpy, myatom, x11base->win, CurrentTime);
-    FisrtArg = 8;
   }
 }
 

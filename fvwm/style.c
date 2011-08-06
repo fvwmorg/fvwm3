@@ -4427,7 +4427,6 @@ static Bool style_parse_one_style_option(
 static
 void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 {
-	char *line;
 	char *option;
 	char *token;
 	char *rest;
@@ -4439,7 +4438,7 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 	{
 		action++;
 	}
-	line = action;
+
 	while (action && *action && *action != '\n')
 	{
 		action = GetNextFullOption(action, &option);

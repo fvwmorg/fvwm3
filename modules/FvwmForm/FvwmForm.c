@@ -2094,7 +2094,6 @@ static void OpenWindows(void)
   static XSizeHints sh =
     { PPosition | PSize | USPosition | USSize | PWinGravity};
   XClassHint myclasshints;
-  fscreen_scr_t scr;
 
   if (!CF.pointer[input_pointer]) {
     CF.pointer[input_pointer] = XCreateFontCursor(dpy, XC_xterm);
@@ -2168,11 +2167,9 @@ static void OpenWindows(void)
     {
       gravity = SouthEastGravity;
     }
-    scr = FSCREEN_XYPOS;
   } else {
     FScreenCenterOnScreen(
       NULL, FSCREEN_CURRENT, &x, &y, CF.max_width, CF.total_height);
-    scr = FSCREEN_CURRENT;
   }
   /* hack to prevent mapping on wrong screen with StartsOnScreen */
   FScreenMangleScreenIntoUSPosHints(FSCREEN_CURRENT, &sh);

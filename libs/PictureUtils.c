@@ -1286,9 +1286,6 @@ int PictureAllocColorTable(
 	int do_allocate = 0;
 	int use_default = 1;
 	int private_cmap = !(Pdefault);
-	int dyn_cl_set = False;
-	int strict_cl_set = False;
-	int alloc_table_set = False;
 	int color_limit;
 	int pa_type = (Pvisual->class != GrayScale) ?
 		PA_COLOR_CUBE : PA_GRAY_SCALE;
@@ -1455,12 +1452,10 @@ int PictureAllocColorTable(
 		{
 			if (rest[0] == '1')
 			{
-				strict_cl_set = True;
 				PStrictColorLimit = 1;
 			}
 			else
 			{
-				strict_cl_set = True;
 				PStrictColorLimit = 0;
 			}
 			if (strlen(rest) > 1 && rest[1] == '1')
@@ -1473,22 +1468,18 @@ int PictureAllocColorTable(
 			}
 			if (strlen(rest) > 2 && rest[2] == '1')
 			{
-				dyn_cl_set = True;
 				PUseDynamicColors = 1;
 			}
 			else
 			{
-				dyn_cl_set = True;
 				PUseDynamicColors = 0;
 			}
 			if (strlen(rest) > 3 && rest[3] == '1')
 			{
-				alloc_table_set = True;
 				PAllocTable = 1;
 			}
 			else
 			{
-				alloc_table_set = True;
 				PAllocTable = 0;
 			}
 		}
@@ -1506,12 +1497,10 @@ int PictureAllocColorTable(
 		}
 		if (opt->strict > 0)
 		{
-			strict_cl_set = True;
 			PStrictColorLimit = 1;
 		}
 		else if (opt->strict == 0)
 		{
-			strict_cl_set = True;
 			PStrictColorLimit = 0;
 		}
 		if (opt->use_named_table > 0)
@@ -1524,22 +1513,18 @@ int PictureAllocColorTable(
 		}
 		if (opt->not_dynamic > 0)
 		{
-			dyn_cl_set = True;
 			PUseDynamicColors = 0;
 		}
 		else if (opt->not_dynamic == 0)
 		{
-			dyn_cl_set = True;
 			PUseDynamicColors = 0;
 		}
 		if (opt->allocate > 0)
 		{
-			alloc_table_set = True;
 			PAllocTable = 1;
 		}
 		else if (opt->allocate == 0)
 		{
-			alloc_table_set = True;
 			PAllocTable = 0;
 		}
 	}

@@ -1147,11 +1147,9 @@ static void handle_button_config(int manager, int context, char *option)
 static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort)
 {
 	WeightedSort *p;
-	int i;
 
 	if (man->weighted_sorts_len == man->weighted_sorts_size)
 	{
-		i = man->weighted_sorts_size;
 		man->weighted_sorts_size += 16;
 		man->weighted_sorts = (WeightedSort *)saferealloc(
 			(char *)man->weighted_sorts,

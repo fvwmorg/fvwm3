@@ -1,3 +1,43 @@
+2011-08-06  Thomas Adam <thomas@fvwm.org>
+    * modules/FvwmAnimate/FvwmAnimate.c (main, Loop):
+    * modules/FvwmButtons/FvwmButtons.c (RedrawWindow):
+    * modules/FvwmButtons/draw.c (RedrawButton):
+    * modules/FvwmCpp/FvwmCpp.c (cpp_defs):
+    * modules/FvwmForm/FvwmForm.c (OpenWindows):
+    * modules/FvwmForm/ParseCommand.c (ParseCommand):
+    * modules/FvwmForm/ReadXServer.c (ResizeFrame, ReadXServer,
+                                      process_paste_request):
+    * modules/FvwmIconBox/FvwmIconBox.c (CheckActionType,
+                                         ExecuteAction):
+    * modules/FvwmIconMan/readconfig.c (handle_button_config):
+    * modules/FvwmM4/FvwmM4.c (m4_defs):
+    * modules/FvwmPager/FvwmPager.c (list_icon_name):
+    * modules/FvwmPager/x_pager.c (PictureIconWindow,
+                                   IconMoveWindow):
+    * modules/FvwmProxy/FvwmProxy.c (parse_options,
+                                     send_command_to_fvwm,
+                                     GetProperty, GetLeader,
+                                     GetParentProcessId):
+    * modules/FvwmRearrange/FvwmRearrange.c (main):
+    * modules/FvwmScript/FvwmScript.c (ReadFvwmScriptArg):
+    * modules/FvwmScript/Instructions.c (InfEq, Sup, IfThen,
+                                         FuncGetOutput):
+    * modules/FvwmScript/Widgets/HScrollBar.c (EvtMouseHScrollBar):
+    * modules/FvwmScript/Widgets/Menu.c (EvtMouseMenu):
+    * modules/FvwmScript/Widgets/PopupMenu.c (EvtMousePopupMenu):
+    * modules/FvwmScript/Widgets/PushButton.c (EvtMousePushButton):
+    * modules/FvwmScript/Widgets/RadioButton.c (EvtMouseRadioButton):
+    * modules/FvwmTaskBar/FvwmTaskBar.c (HandleEvents):
+    * modules/FvwmWharf/FvwmWharf.c (Loop, CreateVizWindow,
+                                     CreateWindow, ParseOptions):
+    * modules/FvwmWinList/ButtonArray.c (DoButton):
+    * modules/FvwmWinList/FvwmWinList.c (StartMeUp_I):
+	Fix -Wset-but-not-used-variable warnings
+
+	This removes dead declarations in code which were never used.  This is
+	the default in GCC 4.6, and whilst we could turn this feature off with
+	-Wno-set-but-not-used-variable, it's a good chance to clean this up.
+
 2011-06-06  Thomas Adam <thomas@fvwm.org>
 	* FvwmButtons/FvwmButtons.c (DeadPipeCleanup):
 	Don't grab the XServer when exiting FvwmButtons

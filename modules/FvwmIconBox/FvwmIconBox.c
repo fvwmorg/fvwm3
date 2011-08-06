@@ -3371,7 +3371,6 @@ static int CheckActionType(
 void ExecuteAction(int x, int y, struct icon_info *item)
 {
   int type = NO_CLICK;
-  XEvent *ev;
   XEvent d;
   struct mousefunc *tmp;
 
@@ -3380,7 +3379,6 @@ void ExecuteAction(int x, int y, struct icon_info *item)
   type = CheckActionType(x, y, &d, False, True);
   if (type == CLICK)
   {
-    ev = &d;
     /* If it was a click, wait to see if its a double click */
     if (have_double_click)
     {
@@ -3389,7 +3387,6 @@ void ExecuteAction(int x, int y, struct icon_info *item)
       {
       case CLICK:
 	type = DOUBLE_CLICK;
-	ev = &d;
 	break;
       case TIMEOUT:
 	type = CLICK;

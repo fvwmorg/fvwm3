@@ -485,9 +485,8 @@ void Loop(void)
   Window *CurrentWin=None;
   int x,y,CurrentRow,CurrentColumn,CurrentBase=0;
   XEvent Event;
-  int NewButton,i=0,j=0,i2, bl=-1;
+  int NewButton,i=0,j=0,i2;
   int LastMapped=-1;
-  time_t t, tl = (time_t) 0;
   int CancelPush=0;
 
   while(1)
@@ -829,9 +828,6 @@ void Loop(void)
 
 	if(NewButton == CurrentButton)
 	{
-	  t = time( 0);
-	  bl = -1;
-	  tl = -1;
 	  if(strncasecmp(Buttons[CurrentButton].action,"Folder",6)!=0)
 	  {
 	    if (LastMapped != -1 && CurrentWin != &main_win)
@@ -1420,7 +1416,7 @@ void CreateVizWindow(void)
  */
 void CreateWindow(void)
 {
-  int first_avail_button,i;
+  int i;
   XSetWindowAttributes attr;
   int wx = 0;
   int wy = 0;
@@ -1429,8 +1425,6 @@ void CreateWindow(void)
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
 
   /* Allow for multi-width/height buttons */
-  first_avail_button = num_buttons;
-
   if(num_buttons > MAX_BUTTONS)
   {
     fprintf(stderr,"%s: Out of Buttons!\n",MyName);
@@ -1581,12 +1575,11 @@ int TOTHEFOLDER = -1;
  */
 void ParseOptions(char *filename)
 {
-  char *tline,*orig_tline,*tmp;
+  char *tline,*tmp;
   int Clength, len;
 
   InitGetConfigLine(fd,CatString3("*", MyName, 0)); /* speedup */
   GetConfigLine(fd, &tline);
-  orig_tline = tline;
   Clength = strlen(MyName);
   while(tline != NULL && tline[0] != '\0')
   {
@@ -1597,7 +1590,6 @@ void ParseOptions(char *filename)
     if(strlen(&tline[0]) <= 0)
     {
       GetConfigLine(fd, &tline);
-      orig_tline = tline;
       continue;
     }
 
@@ -1815,7 +1807,6 @@ void ParseOptions(char *filename)
 	tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
     GetConfigLine(fd, &tline);
-    orig_tline = tline;
   } /* while */
 #ifdef ENABLE_DND
   /* ignore last button if there's nothing bound to it */

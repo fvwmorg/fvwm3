@@ -211,10 +211,6 @@ GC PictureDefaultGC(Display *dpy, Window win)
 	}
 	if (gc == None)
 	{
-		XGCValues xgcv;
-
-		xgcv.foreground = PictureBlackPixel();
-		xgcv.background = PictureWhitePixel();
 		gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
 	}
 

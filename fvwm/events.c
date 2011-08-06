@@ -2911,9 +2911,6 @@ void HandleMapRequestKeepRaised(
 	ew = ea->exc->w.w;
 	if (ReuseWin == NULL)
 	{
-		Window pw;
-
-		pw = ea->exc->x.etrigger->xmaprequest.parent;
 		if (XFindContext(dpy, ew, FvwmContext, (caddr_t *)&fw) ==
 		    XCNOENT)
 		{

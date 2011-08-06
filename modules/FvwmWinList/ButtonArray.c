@@ -378,7 +378,7 @@ Button *temp,*temp2;
 void DoButton(
 	Button *button, int x, int y, int w, int h, Bool clear_bg, XEvent *evp)
 {
-	int up,Fontheight,newx,set,len;
+	int up,newx,set,len;
 	GC topgc;
 	GC bottomgc;
 	char *string;
@@ -423,8 +423,6 @@ void DoButton(
 		gcv.font = Ffont->font->fid;
 		XChangeGC(dpy, graph[set], gcm, &gcv);
 	}
-
-	Fontheight=FButtonFont->height;
 
 	if ((FftSupport && Ffont->fftf.fftfont != NULL) ||
 	    (button->p.picture != 0 && button->p.alpha != 0) ||

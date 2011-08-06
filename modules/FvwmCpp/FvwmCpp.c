@@ -242,7 +242,6 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 	FILE *tmpf;
 	struct passwd *pwent;
 	int fd;
-	int ScreenWidth, ScreenHeight;
 	int Mscreen;
 
 	/* Generate a temporary filename.  Honor the TMPDIR environment variable,
@@ -345,8 +344,6 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 	Mscreen= DefaultScreen(display);
 	fputs(MkNum("SCREEN", Mscreen), tmpf);
 
-	ScreenWidth = DisplayWidth(display,Mscreen);
-	ScreenHeight = DisplayHeight(display,Mscreen);
 	fputs(MkNum("WIDTH", DisplayWidth(display,Mscreen)), tmpf);
 	fputs(MkNum("HEIGHT", DisplayHeight(display,Mscreen)), tmpf);
 

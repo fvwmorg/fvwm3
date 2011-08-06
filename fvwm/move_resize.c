@@ -1038,7 +1038,6 @@ static Bool resize_move_window(F_CMD_ARGS)
 	int x,y;
 	Bool fWarp = False;
 	Bool fPointer = False;
-	Bool has_focus;
 	int dx;
 	int dy;
 	size_borders b;
@@ -1116,7 +1115,6 @@ static Bool resize_move_window(F_CMD_ARGS)
 		fw->g.normal.x += dx;
 		fw->g.normal.y += dy;
 	}
-	has_focus = (fw == get_focus_window())? True : False;
 	update_absolute_geometry(fw);
 	maximize_adjust_offset(fw);
 	XFlush(dpy);
@@ -3818,9 +3816,6 @@ static Bool __resize_window(F_CMD_ARGS)
 		if (ev.type == MotionNotify ||
 		    ev.type == EnterNotify || ev.type == LeaveNotify)
 		{
-			Bool is_motion;
-
-			is_motion = (ev.type == MotionNotify) ? True : False;
 			/* discard any extra motion events before a release */
 			/* dv (2004-07-01): With XFree 4.1.0.1, some Mouse
 			 * events are not reported to fvwm when the pointer

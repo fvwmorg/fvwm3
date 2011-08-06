@@ -514,7 +514,6 @@ int main(int argc, char *argv[])
 {
   char match[128];
   char *config_line;
-  int scr;
 
   console = fopen("/dev/console","w");
   if (!console) console = stderr;
@@ -538,7 +537,6 @@ int main(int argc, char *argv[])
   signal (SIGPIPE, DeadPipe);
 
   FScreenInit(dpy);
-  scr = DefaultScreen(dpy);
   fd_width = GetFdWidth();
 
   strcpy(match, "*");

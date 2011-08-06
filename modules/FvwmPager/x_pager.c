@@ -2890,7 +2890,7 @@ void PictureIconWindow (PagerWindow *t)
 
 void IconMoveWindow(XEvent *Event, PagerWindow *t)
 {
-	int x1, y1, finished = 0, wx, wy, n, x = 0, y = 0, xi = 0, yi = 0;
+	int x1, y1, finished = 0, n, x = 0, y = 0, xi = 0, yi = 0;
 	Window dumwin;
 	int m, n1, m1;
 	int moved = 0;
@@ -2908,8 +2908,6 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 	m = Scr.VyMax / Scr.MyDisplayHeight;
 	n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
 	m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
-	wx = (Scr.Vx + t->x) * (icon_w - n) / Scr.VWidth + n1;
-	wy = (Scr.Vy + t->y) * (icon_h - m) / Scr.VHeight + m1;
 
 	XRaiseWindow(dpy, t->IconView);
 

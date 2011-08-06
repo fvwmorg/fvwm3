@@ -116,14 +116,12 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	static XEvent event;
 	int End=1;
 	unsigned int modif;
-	int x1,x2,y1,y2,i,j;
+	int x1,x2,y1,y2,j;
 	Window Win1,Win2;
 	Window WinBut=0;
 	int In = 0;
 
 	j=xobj->height/2+3;
-	i=(xobj->width-FlocaleTextWidth(
-		   xobj->Ffont,xobj->title,strlen(xobj->title)))/2;
 
 	while (End)
 	{

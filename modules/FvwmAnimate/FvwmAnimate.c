@@ -838,10 +838,6 @@ int main(int argc, char **argv) {
  */
 static void Loop(void) {
   FvwmPacket* packet;
-  clock_t time_start;                  /* for time() */
-  clock_t time_end;                    /* for time() */
-  clock_t time_accum;
-  struct tms time_buffer;              /* for time() */
   char cmd[200];
 
   myfprintf((stderr,"Starting event loop\n"));
@@ -867,9 +863,6 @@ static void Loop(void) {
 	    || packet->body[5] == 0) {   /* or a "noicon" icon */
 	  break;                      /* don't animate it */
 	}
-	if (Animate.time != 0) {
-	  time_start = times(&time_buffer);
-	}
 	Animate.resize((int)packet->body[3],     /* t->icon_x_loc */
 		       (int)packet->body[4],     /* t->icon_y_loc */
 		       (int)packet->body[5],     /* t->icon_p_width */
@@ -878,12 +871,8 @@ static void Loop(void) {
 		       (int)packet->body[8],     /* t->frame_y */
 		       (int)packet->body[9],     /* t->frame_width */
 		       (int)packet->body[10]);   /* t->frame_height */
-	if (Animate.time != 0) {
-	  time_end = times(&time_buffer);
-	  time_accum = time_end - time_start;
-	}
 	myaprintf((stderr,
-		   "DE_Iconify, args %d+%d+%dx%d %d+%d+%dx%d. took %dx%d\n",
+		   "DE_Iconify, args %d+%d+%dx%d %d+%d+%dx%d.\n",
 		   (int)packet->body[3],     /* t->icon_x_loc */
 		   (int)packet->body[4],     /* t->icon_y_loc */
 		   (int)packet->body[5],     /* t->icon_p_width */
@@ -891,12 +880,8 @@ static void Loop(void) {
 		   (int)packet->body[7],     /* t->frame_x */
 		   (int)packet->body[8],     /* t->frame_y */
 		   (int)packet->body[9],     /* t->frame_width */
-		   (int)packet->body[10],      /* t->frame_height */
-		   (int)time_accum,1));
-#if 0
-	/* So far, clk_tck seems to be non-portable...dje */
-/*                    (int)time_accum,(int)CLK_TCK)); */
-#endif
+		   (int)packet->body[10]     /* t->frame_height */
+	));
 	break;
       case M_ICONIFY:
 	if (play_state == False)
@@ -912,9 +897,6 @@ static void Loop(void) {
 	    || (int)packet->body[5] == 0) {   /* or a "noicon" icon */
 	  break;                    /* don't animate it */
 	}
-	if (Animate.time != 0) {
-	  time_start = times(&time_buffer);
-	}
 	Animate.resize((int)packet->body[7],     /* t->frame_x */
 		       (int)packet->body[8],     /* t->frame_y */
 		       (int)packet->body[9],     /* t->frame_width */
@@ -923,10 +905,6 @@ static void Loop(void) {
 		       (int)packet->body[4],     /* t->icon_y_loc */
 		       (int)packet->body[5],     /* t->icon_p_width */
 		       (int)packet->body[6]);    /* t->icon_p_height */
-	if (Animate.time != 0) {
-	  time_end = times(&time_buffer);
-	  time_accum = time_end - time_start;
-	}
 	myaprintf((stderr,
 		   "Iconify, args %d+%d+%dx%d %d+%d+%dx%d. Took %d\n",
 		   (int)packet->body[7],     /* t->frame_x */
@@ -936,8 +914,8 @@ static void Loop(void) {
 		   (int)packet->body[3],     /* t->icon_x_loc */
 		   (int)packet->body[4],     /* t->icon_y_loc */
 		   (int)packet->body[5],     /* t->icon_p_width */
-		   (int)packet->body[6],
-		   (int)time_accum));
+		   (int)packet->body[6]
+	));
 	break;
       case M_STRING:
 	{

@@ -930,7 +930,6 @@ Drawable CreateGradientPixmap(
 	int t_y;
 	int t_width;
 	int t_height;
-	int ps;
 
 	if (d_pixels != NULL && *d_pixels != NULL)
 	{
@@ -985,7 +984,6 @@ Drawable CreateGradientPixmap(
 			dpy, Pcmap, t_width, t_height,
 			False, False, dither, False);
 	}
-	ps = t_width * t_height;
 	/* now do the fancy drawing */
 	switch (type)
 	{

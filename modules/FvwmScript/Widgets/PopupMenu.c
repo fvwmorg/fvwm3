@@ -155,7 +155,7 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 {
   static XEvent event;
   int x,y,hOpt,yMenu,hMenu;
-  int x1,y1,x2,y2,oldy;
+  int x1,y1,x2,y2;
   int oldvalue = 0;
   int newvalue = 0;
   Window Win1,Win2,WinPop;
@@ -220,7 +220,6 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
     /* Determiner l'option courante / Current option */
     y2 = y2 - y;
     x2 = x2 - x;
-    oldy = y2;
     /* calcule de xobj->value / compute xobj->value */
     if ((x2 > 0) && (x2 < xobj->width) && (y2 > 0) && (y2 < hMenu))
       newvalue = y2 / hOpt+1;
@@ -274,7 +273,6 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
     y2 = y2 - y;
     x2 = x2 - x;
     {
-      oldy = y2;
       /* calcule de xobj->value / compute xobj->value */
       if ((x2 > 0) && (x2 < xobj->width) && (y2 > 0) && (y2 < hMenu))
 	newvalue = y2 / hOpt+1;

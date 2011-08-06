@@ -248,7 +248,6 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	XRectangle clip;
 	Bool clean = False;
 	Bool cleaned = False;
-	Bool clear_bg = False;
 	char *title;
 
 	if (b->parent == NULL)
@@ -314,7 +313,6 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 		{
 			/* bg of the button is the true bg */
 			clean = True;
-			clear_bg = True;
 		}
 	}
 

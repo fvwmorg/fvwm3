@@ -2520,16 +2520,7 @@ static Bool paint_menu_gradient_background(
 		register int i = 0, numLines;
 		int cindex = -1;
 		XRectangle r;
-		FvwmPicture *sidePic = NULL;
 
-		if (MR_SIDEPIC(mr))
-		{
-			sidePic = MR_SIDEPIC(mr);
-		}
-		else if (MST_SIDEPIC(mr))
-		{
-			sidePic = MST_SIDEPIC(mr);
-		}
 		if (pevent)
 		{
 			r.x = pevent->xexpose.x;
@@ -2702,10 +2693,8 @@ static void paint_menu(
 	MenuItem *mi;
 	MenuStyle *ms = MR_STYLE(mr);
 	int bw = MST_BORDER_WIDTH(mr);
-	XGCValues gcv;
 	int relief_thickness = ST_RELIEF_THICKNESS(MR_STYLE(mr));
 
-	gcv.line_width = 3;
 	if (fw && !check_if_fvwm_window_exists(fw))
 	{
 		fw = NULL;
@@ -3859,7 +3848,6 @@ static void pop_menu_down_and_repaint_parent(
 	MenuRoot **pmr, Bool *fSubmenuOverlaps, MenuParameters *pmp)
 {
 	MenuRoot *parent = MR_PARENT_MENU(*pmr);
-	Window win;
 	XEvent event;
 	int mr_x;
 	int mr_y;
@@ -3874,8 +3862,6 @@ static void pop_menu_down_and_repaint_parent(
 	{
 		/* popping down the menu may destroy the menu via the dynamic
 		 * popdown action! Thus we must not access *pmr afterwards. */
-		win = MR_WINDOW(*pmr);
-
 		/* Create a fake event to pass into paint_menu */
 		event.type = Expose;
 		if (!menu_get_geometry(
@@ -4388,13 +4374,12 @@ static mloop_ret_code_t __mloop_handle_event(
 		 * previous menu or possibly ignore the mouse position */
 		if (pmret->flags.is_menu_posted)
 		{
-			MenuItem *l_mi;
 			MenuRoot *l_mrMi;
 			int l_x_offset;
 			XEvent e;
 
 			pmret->flags.is_menu_posted = 0;
-			l_mi = find_entry(
+			(void)find_entry(
 				pmp, &l_x_offset, &l_mrMi, None, -1, -1);
 			if (l_mrMi != NULL)
 			{
@@ -5271,7 +5256,6 @@ static mloop_ret_code_t __mloop_handle_action_without_mi(
 
 static void __mloop_exit_warp_back(MenuParameters *pmp)
 {
-	MenuItem *tmi;
 	MenuRoot *tmrMi;
 
 	if (pmp->parent_menu && MR_SELECTED_ITEM(pmp->parent_menu))
@@ -5279,7 +5263,7 @@ static void __mloop_exit_warp_back(MenuParameters *pmp)
 		warp_pointer_to_item(
 			pmp->parent_menu, MR_SELECTED_ITEM(pmp->parent_menu),
 			False);
-		tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1);
+		(void)find_entry(pmp, NULL, &tmrMi, None, -1, -1);
 		if (pmp->parent_menu != tmrMi && MR_XANIMATION(pmp->menu) == 0)
 		{
 			/* Warping didn't take us to the correct menu, i.e. the
@@ -5904,7 +5888,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	static int indirect_depth = 0;
 	static int x_start;
 	static int y_start;
-	static Bool has_mouse_moved = False;
 	int scr_x, scr_y;
 	int scr_w, scr_h;
 
@@ -5990,7 +5973,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			fscreen_scr_arg fscr;
 
 			/* we're a top level menu */
-			has_mouse_moved = False;
 			if (!GrabEm(CRS_MENU, GRAB_MENU))
 			{
 				/* GrabEm specifies the cursor to use */
@@ -7036,7 +7018,6 @@ char *get_menu_options(
 	int x;
 	int y;
 	int button;
-	int gflags;
 	int width;
 	int height;
 	int dummy_int;
@@ -7074,7 +7055,6 @@ char *get_menu_options(
 	while (action != NULL && *action != 0 && once_more)
 	{
 		/* ^ just to be able to jump to end of loop without 'goto' */
-		gflags = NoValue;
 		pops->pos_hints.is_relative = False;
 		pops->pos_hints.menu_width = 0;
 		pops->pos_hints.is_menu_relative = False;

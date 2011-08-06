@@ -1541,7 +1541,6 @@ void HandleEvents(
 {
 	int  num = 0;
 	XEvent *evp_save;
-	int x, y;
 	int ex=10000, ey=10000, ex2=0, ey2=0;
 
 	*redraw = -1;
@@ -1562,17 +1561,6 @@ void HandleEvents(
 		{
 			StartButtonUpdate(NULL, whichButton, BUTTON_DOWN);
 			ButtonPressed = whichButton;
-			x = win_x;
-			if (win_y < Midline)
-			{
-				/* bar in top half of the screen */
-				y = win_y + RowHeight;
-			}
-			else
-			{
-				/* bar in bottom of the screen */
-				y = win_y - screen_g.height;
-			}
 		}
 		else
 		{

@@ -2621,10 +2621,8 @@ static void border_mp_draw_mp_titlebar(
 	unsigned short solid_flags;
 	unsigned short stretch_flags;
 	rectangle tmp_g, left_of_text_g,left_end_g,right_of_text_g,right_end_g;
-	dynamic_common_decorations *dcd;
 	ButtonState bs;
 
-	dcd = &(td->cd->dynamic_cd);
 	bs = td->tbstate.tstate;
 	pm = df->u.mp.pixmaps;
 	acs = df->u.mp.acs;
@@ -3630,8 +3628,6 @@ static void border_get_titlebar_draw_descr(
 	FvwmWindow *fw, titlebar_descr *td, title_draw_descr *tdd,
 	Pixmap dest_pix)
 {
-	rectangle *title_g;
-
 	memset(tdd, 0, sizeof(*tdd));
 	/* prepare the gcs and variables */
 	if (td->tbstate.is_title_pressed)
@@ -3645,7 +3641,6 @@ static void border_get_titlebar_draw_descr(
 		tdd->sgc = td->cd->shadow_gc;
 	}
 	NewFontAndColor(fw->title_font, td->cd->fore_color, td->cd->back_color);
-	title_g = &td->layout.title_g;
 	tdd->tstyle = &TB_STATE(
 		GetDecor(fw, titlebar))[td->tbstate.tstate].style;
 	tdd->df = &TB_STATE(GetDecor(fw, titlebar))[td->tbstate.tstate];

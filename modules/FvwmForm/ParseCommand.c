@@ -50,7 +50,7 @@ static int N = 8;
 char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 {
   static char var[256];
-  char c, x, *wp, *cp, *vp;
+  char c, x, *cp, *vp;
   int j, dn2;
   int added_sel;
   Item *item;
@@ -71,7 +71,7 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
     if (c == '$') {  /* variable */
       if (*sp != '(')
 	goto normal_char;
-      wp = ++sp;
+      ++sp;
       vp = var;
       while (1) {
 	x = *(sp++);

@@ -657,7 +657,6 @@ void module_input_execute(struct fmodule_input *input)
 	XEvent e;
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
-	int flags;
 
 	memset(&e, 0, sizeof(e));
 	if (XFindContext(dpy, input->window, FvwmContext,
@@ -703,7 +702,6 @@ void module_input_execute(struct fmodule_input *input)
 	fev_fake_event(&e);
 	ecc.type = EXCT_MODULE;
 	ecc.w.w = input->window;
-	flags = (input->window == None) ? 0 : FUNC_DONT_DEFER;
 	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &(input->window));
 	ecc.x.etrigger = &e;
 	ecc.m.module = input->module;

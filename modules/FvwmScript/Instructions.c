@@ -110,9 +110,8 @@ static int InfEq(char *arg1,char *arg2)
 
 static int Equal(char *arg1,char *arg2)
 {
-  int an1,an2;
-  an1=atoi(arg1);
-  an2=atoi(arg2);
+  (void)atoi(arg1);
+  (void)atoi(arg2);
   return (strcmp(arg1,arg2)==0);
 }
 
@@ -134,9 +133,8 @@ static int Sup(char *arg1,char *arg2)
 
 static int Diff(char *arg1,char *arg2)
 {
-  int an1,an2;
-  an1=atoi(arg1);
-  an2=atoi(arg2);
+  (void)atoi(arg1);
+  (void)atoi(arg2);
   return (strcmp(arg1,arg2)!=0);
 }
 
@@ -326,7 +324,6 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
   int line,index,i=2,j=0,k,NewWord;
   FILE *f;
   int maxsize=32000;
-  int size;
 
   (*NbArg)++;
   cmndbuf=CalcArg(TabArg,NbArg);
@@ -353,7 +350,6 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
       if (strcmp(Command,"None"))
 	free(BufCom);
       BufCom = (char*)safecalloc(sizeof(char),maxsize);
-      size = fread(BufCom,1,maxsize,f);
       pclose(f);
       strncpy(Command,cmndbuf,255);
       TimeCom=time(NULL);
@@ -1581,14 +1577,12 @@ static void IfThen (int NbArg,long *TabArg)
 /* Instruction boucle **/
 static void Loop (int NbArg,long *TabArg)
 {
-  int IdVar;
   char *arg[2];
   int limit[2];
   int i;
   int CurrArg=0;
 
   /* le premier argument est une variable */
-  IdVar = TabArg[0];
   /*On ajuste la taille de la var pour contenir un nombre */
   TabVVar[TabArg[0]] = (char*)saferealloc(TabVVar[TabArg[0]],sizeof(char)*10);
   /* Calcul des 2 autres arguments */

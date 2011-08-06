@@ -1245,10 +1245,8 @@ void list_icon_name(unsigned long *body)
 void list_mini_icon(unsigned long *body)
 {
   PagerWindow   *t;
-  Window target_w;
   MiniIconPacket *mip = (MiniIconPacket *) body;
 
-  target_w = body[0];
   t = Start;
   while (t && (t->w != mip->w))
     t = t->next;

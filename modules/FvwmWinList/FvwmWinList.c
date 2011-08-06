@@ -1529,12 +1529,11 @@ void StartMeUp_I(void)
 void StartMeUp_II(void)
 {
   XSizeHints g_hints;
-  int g_hints_rc;
 
   if (geometry == NULL)
     UpdateString(&geometry, "");
   /* evaluate further down */
-  g_hints_rc = FScreenParseGeometryWithScreen(
+  (void)FScreenParseGeometryWithScreen(
     geometry, &g_hints.x, &g_hints.y, (unsigned int *)&g_hints.width,
     (unsigned int *)&g_hints.height, &fscreen);
   FScreenGetScrRect(

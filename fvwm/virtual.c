@@ -1519,15 +1519,11 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
 	int wrapy;
 	int limitdeskx;
 	int limitdesky;
-	int startx;
-	int starty;
 
 	wrapx = 0;
 	wrapy = 0;
 	limitdeskx = 1;
 	limitdesky = 1;
-	startx = *page_x;
-	starty = *page_y;
 	for (; ; action = taction)
 	{
 		int do_reverse;

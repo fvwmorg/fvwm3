@@ -135,7 +135,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	static XEvent event;
 	int End = 1;
 	unsigned int modif;
-	int x1,x2,y1,y2,i,j,oldy;
+	int x1,x2,y1,y2,i;
 	Window Win1,Win2,WinPop;
 	Window WinBut = 0;
 	int In = 0;
@@ -147,7 +147,6 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 
 	if (EvtButton->button == Button1)
 	{
-		j = xobj->height / 2+3;
 		i = (xobj->width -
 		     FlocaleTextWidth(
 			     xobj->Ffont, xobj->title, strlen(xobj->title)))/2;
@@ -323,7 +322,6 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 				y2 = y2 - y;
 				x2 = x2 - x;
 				{
-					oldy = y2;
 					/* calcule de xobj->value / Compute
 					 * xobj->value */
 					if ((x2 > 0) && (x2 < wMenu) &&

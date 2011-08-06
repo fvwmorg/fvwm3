@@ -1185,14 +1185,12 @@ static
 void update_decors_colorset(int cset)
 {
 	int i;
-	int has_changed;
 	FvwmDecor *decor = &Scr.DefaultDecor;
 
 #ifdef USEDECOR
 	for(decor = &Scr.DefaultDecor; decor != NULL; decor = decor->next)
 #endif
 	{
-		has_changed = 0;
 		for(i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 		{
 			decor->flags.has_changed |= update_titlebutton_colorset(
@@ -3150,7 +3148,6 @@ void CMD_WindowFont(F_CMD_ARGS)
 void CMD_ChangeDecor(F_CMD_ARGS)
 {
 	char *item;
-	int old_height;
 	FvwmDecor *decor = &Scr.DefaultDecor;
 	FvwmDecor *found = NULL;
 	FvwmWindow * const fw = exc->w.fw;
@@ -3175,7 +3172,6 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 		return;
 	}
 	SET_DECOR_CHANGED(fw, 1);
-	old_height = (fw->decor) ? fw->decor->title_height : 0;
 	fw->decor = found;
 	apply_decor_change(fw);
 

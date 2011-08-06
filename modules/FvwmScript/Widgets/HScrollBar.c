@@ -168,7 +168,6 @@ void DrawHScrollBar(struct XObj *xobj, XEvent *evp)
 void EvtMouseHScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
 {
   static XEvent event;
-  int x,y,w,h;
   int oldx = 0;
   int oldvalue = -1;
   int newvalue;
@@ -176,11 +175,6 @@ void EvtMouseHScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
   Window Win1,Win2;
   unsigned int modif;
   fd_set in_fdset;
-
-  x = 2 + ((xobj->width - 36) * xobj->value) / (xobj->value3 - xobj->value2);
-  y = xobj->height/2 - 11;
-  w = 34;
-  h = 22;
 
   do
   {

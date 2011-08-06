@@ -697,7 +697,6 @@ void CompletNewConnectionMsg(void)
 {
 	flist *l = pending_ice_conn_list;
 	FIceConn ice_conn;
-	Bool pending = False;
 	FIceAcceptStatus cstatus;
 
 	if (!SessionSupport)
@@ -711,7 +710,6 @@ void CompletNewConnectionMsg(void)
 		cstatus = FIceConnectionStatus(ice_conn);
 		if (cstatus == (int)FIceConnectPending)
 		{
-			pending = True;
 			l = l->next;
 		}
 		else if (cstatus == (int)FIceConnectAccepted)

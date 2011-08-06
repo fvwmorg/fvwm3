@@ -650,7 +650,6 @@ Pixmap PImageCreatePixmapFromFImage(Display *dpy, Window win, FImage *fimage)
 	int w;
 	int h;
 	int depth;
-	int must_free_gc;
 
 	w = fimage->im->width;
 	h = fimage->im->height;
@@ -659,12 +658,10 @@ Pixmap PImageCreatePixmapFromFImage(Display *dpy, Window win, FImage *fimage)
 	if (depth == Pdepth)
 	{
 		gc = PictureDefaultGC(dpy, win);
-		must_free_gc = 0;
 	}
 	else
 	{
 		gc = fvwmlib_XCreateGC(dpy, pixmap, 0, NULL);
-		must_free_gc = 1;
 	}
 	FPutFImage(dpy, pixmap, gc, fimage, 0, 0, 0, 0, w, h);
 	if (depth != Pdepth)

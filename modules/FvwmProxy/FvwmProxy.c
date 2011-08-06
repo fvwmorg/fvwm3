@@ -617,19 +617,19 @@ static Bool parse_options(void)
 			char tail[128];
 			char pattern[128];
 			int bytes=0;
-			int args = sscanf(tline, "\"%[^\"]\"%s%n",
+			(void)sscanf(tline, "\"%[^\"]\"%s%n",
 				groupname,directive,&bytes);
 			ProxyGroup* proxygroup;
 
 			strncpy(tail,&tline[bytes],128);
 			tail[127]=0;
 			pattern[0]=0;
-			args = sscanf(tail, "%*[^\"]\"%[^\"]\"",pattern);
+			(void)sscanf(tail, "%*[^\"]\"%[^\"]\"",pattern);
 
 #if PROXY_GROUP_DEBUG
 			fprintf(stderr,
-				"Group: %d \"%s\" -> \"%s\" \"%s\" \"%s\"\n",
-				args,tline,groupname,directive,pattern);
+				"Group: \"%s\" -> \"%s\" \"%s\" \"%s\"\n",
+				tline,groupname,directive,pattern);
 #endif
 
 			proxygroup=FindProxyGroup(groupname);
@@ -994,7 +994,6 @@ static void send_command_to_fvwm(char *command, Window w)
 static int GetProperty(Window w,char* propertyname)
 {
 	Atom atom,actual_type;
-	char *atom_name;
 	int actual_format;
 	unsigned long nitems;
 	unsigned long bytes_after;
@@ -1005,7 +1004,6 @@ static int GetProperty(Window w,char* propertyname)
 	int bytes;
 
 	atom = XInternAtom(dpy, propertyname, True);
-	atom_name = XGetAtomName (dpy,atom);
 
 	status = XGetWindowProperty(dpy, w, atom, 0L, 1024,
 		False, AnyPropertyType,
@@ -1057,7 +1055,6 @@ static int GetLeader(Window w)
 static int GetParentProcessId(int pid)
 {
 	int ppid=0;
-	int bytes;
 	FILE* statusfile;
 
 	sprintf(commandBuffer,"/proc/%d/stat",pid);
@@ -1066,7 +1063,7 @@ static int GetParentProcessId(int pid)
 	{
 		return 0;
 	}
-	bytes=fread(resultBuffer,32,1,statusfile);
+	(void)fread(resultBuffer,32,1,statusfile);
 	sscanf(resultBuffer,"%*d %*[^)]) %*s %d",&ppid);
 	fclose(statusfile);
 	return ppid;

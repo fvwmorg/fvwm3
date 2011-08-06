@@ -1,4 +1,41 @@
 2011-08-06  Thomas Adam <thomas@fvwm.org>
+
+	* fvwm/borders.c (border_mp_draw_mp_titlebar):
+	* fvwm/builtins.c (update_decors_colorset,
+                 	   CMD_ChangeDecor):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
+	* fvwm/frame.c (frame_get_titlebar_dimensions):
+	* fvwm/fvwm.c (CreateGCs):
+	* fvwm/menus.c (paint_menu_gradient_background,
+              		paint_menu,
+              		pop_menu_down_and_repaint_parent,
+              		__mloop_exit_warp_back(MenuParameters,
+              		do_menu(MenuParameters,
+              		get_menu_options):
+	* fvwm/menustyle.c (menustyle_parse_style,
+                  		CMD_MenuStyle):
+	* fvwm/module_interface.c (module_input_execute):
+	* fvwm/move_resize.c (resize_move_window):
+	* fvwm/placement.c (__pl_minoverlap_get_pos_penalty):
+	* fvwm/session.c (LoadGlobalState):
+	* fvwm/style.c (parse_and_set_window_style):
+	* fvwm/virtual.c (get_page_arguments):
+    * libs/FGettext.c (FGettextInit, FGettext):
+    * libs/Ficonv.c (is_iconv_supported):
+    * libs/Graphics.c (CreateGradientPixmap):
+    * libs/PictureBase.c (PictureDefaultGC):
+    * libs/PictureImageLoader.c (PImageCreatePixmapFromFImage):
+    * libs/PictureUtils.c (PictureAllocColorTable):
+    * libs/fsm.c (CompletNewConnectionMsg):
+	Remove dead code due to -Wset-but-unused-variable (GCC 4.6)
+
+	This removes dead references to variables which were created and never
+	used.  Whilst we could disable the warning completely when compiling, it
+	was a useful chance to remove dead code.
+
+
+2011-08-06  Thomas Adam <thomas@fvwm.org>
 	* fvwm/ewmh.c (EWMH_fullscreen):
 	Remove unused variable.
 

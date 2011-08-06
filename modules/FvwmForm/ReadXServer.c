@@ -68,7 +68,7 @@ static void ResizeFrame (void);
 void ReadXServer (void)
 {
   static XEvent event;
-  int old_cursor = 0, keypress;
+  int keypress;
   Item *item, *old_item;
   KeySym ks;
   char *sp, *dp;
@@ -250,14 +250,12 @@ void ReadXServer (void)
 	} /* end one input field */
 	switch (buf[0]) {
 	case '\001':  /* ^A */
-	  old_cursor = CF.abs_cursor;
 	  CF.rel_cursor = 0;
 	  CF.abs_cursor = 0;
 	  CF.cur_input->input.left = 0;
 	  goto redraw_newcursor;
 	  break;
 	case '\005':  /* ^E */
-	  old_cursor = CF.abs_cursor;
 	  CF.rel_cursor = CF.cur_input->input.n;
 	  if ((CF.cur_input->input.left =
 	       CF.rel_cursor - CF.cur_input->input.size) < 0)
@@ -266,7 +264,6 @@ void ReadXServer (void)
 	  goto redraw_newcursor;
 	  break;
 	case '\002':  /* ^B */
-	  old_cursor = CF.abs_cursor;
 	  if (CF.rel_cursor > 0) {
 	    CF.rel_cursor--;
 	    CF.abs_cursor--;
@@ -278,7 +275,6 @@ void ReadXServer (void)
 	  goto redraw_newcursor;
 	  break;
 	case '\006':  /* ^F */
-	  old_cursor = CF.abs_cursor;
 	  if (CF.rel_cursor < CF.cur_input->input.n) {
 	    CF.rel_cursor++;
 	    CF.abs_cursor++;
@@ -291,7 +287,6 @@ void ReadXServer (void)
 	  goto redraw_newcursor;
 	  break;
 	case '\010':  /* ^H */
-	  old_cursor = CF.abs_cursor;
 	  if (CF.rel_cursor > 0) {
 	    sp = CF.cur_input->input.value + CF.rel_cursor;
 	    dp = sp - 1;
@@ -345,7 +340,6 @@ void ReadXServer (void)
 	  }
 	  break;
 	default:
-	  old_cursor = CF.abs_cursor;
 	  if((buf[0] >= ' ' &&
 	      buf[0] < '\177') ||
 	     (buf[0] >= 160)) {         /* regular or intl char */
@@ -669,11 +663,10 @@ static void process_paste_request (XEvent *event, Item *item) {
   Atom actual_type;
   int actual_format;
   unsigned long nitems, bytes_after, nread;
-  unsigned char *data, *h, buf[256];
+  unsigned char *data;
   unsigned char *c;
 
   nread = 0;                            /* init read offset */
-  h = buf;                              /* starting point */
   do {
     if (XGetWindowProperty (dpy,
 			    DefaultRootWindow (dpy),

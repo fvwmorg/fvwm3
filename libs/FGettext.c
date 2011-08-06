@@ -157,7 +157,7 @@ void FGettextInit(const char *domain, const char *dir, const char *module)
 const char *FGettext(char *str)
 {
 	flist *l = FGPathList;
-	const char *s, *dummy;
+	const char *s;
 
 	if (!HaveNLSSupport || !FGettextInitOk || FGPathList == NULL ||
 	    str == NULL)
@@ -167,8 +167,8 @@ const char *FGettext(char *str)
 
 	if (FGLastPath != l->object)
 	{
-		dummy = bindtextdomain (FGP_DOMAIN(l), FGP_DIR(l));
-		dummy = textdomain (FGP_DOMAIN(l));
+		(void)bindtextdomain (FGP_DOMAIN(l), FGP_DIR(l));
+		(void)textdomain (FGP_DOMAIN(l));
 		FGLastPath = l->object;
 	}
 	s = gettext(str);
@@ -179,8 +179,8 @@ const char *FGettext(char *str)
 	l = l->next;
 	while(l != NULL)
 	{
-		dummy = bindtextdomain (FGP_DOMAIN(l), FGP_DIR(l));
-		dummy = textdomain (FGP_DOMAIN(l));
+		(void)bindtextdomain (FGP_DOMAIN(l), FGP_DIR(l));
+		(void)textdomain (FGP_DOMAIN(l));
 		FGLastPath = l->object;
 		s = gettext(str);
 		if (s != str)
