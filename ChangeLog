@@ -1,3 +1,10 @@
+2011-08-06	Thomas Adam <thomas@fvwm.org>
+	* Changelog:
+	* docs/ANNOUNCE:
+	* NEWS:
+	* configure.ac:
+	Update key files for 2.6.2 release.
+
 2011-07-25  Thomas Adam <thomas@fvwm.org>
 	* doc/commands/MenuStyle.xml:
 	* fvwm/menubindings.c (menu_shortcuts):

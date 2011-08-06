@@ -1,14 +1,19 @@
-FVWM 2.6.1
+FVWM 2.6.2
 ==========
 
-Latest stable release fixes the following:
+* New features:
 
-This is a bug-fix release only, there are no new features.
+  - New MenuStyle "UniqueHotkeyActivatesImmediate" and its
+    negation "!UniqueHotkeyActivatesImmediate" to retain the menu
+    until the user presses one of the menu keybindings to enact
+    that change in the case where there's only one item defined in
+    the menu at the specified hotkey.
 
-* Minor glitches in fvwm-menu-desktop, specifically:
-    * Perl version check to use 5.008;
-    * Checking for XML::Parser a runtime option, as this module is a
-      non-standard perl module which isn't guaranteed to be on all systems
-      when it's run.
+* Bug fixes:
 
-* Force the version of Fribidi to be >= 0.19.2
+  - Fix infinite loop crash when FvwmButtons quits/restarts with
+    RootTransparent colorsets.
+  - Fix setting window states across FVWM restarts where those
+    windows do not set WM_COMMAND.
+  - Windows are now correctly restored when coming out of
+    fullscreen mode.
