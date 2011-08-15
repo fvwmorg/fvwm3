@@ -63,7 +63,7 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>StippledIconTitle</emphasis> / <emphasis remap='I'>!StippledIconTitle</emphasis>,
 <emphasis remap='I'>IndexedWindowName</emphasis> / <emphasis remap='I'>ExactWindowName</emphasis>,
 <emphasis remap='I'>IndexedIconName</emphasis> / <emphasis remap='I'>ExactIconName</emphasis>,
-<emphasis remap='I'>!Borders</emphasis> / <emphasis remap='I'>Borders</emphasis>,
+<emphasis remap='I'>TitleFormat</emphasis> / <emphasis remap='I'>!Borders</emphasis> / <emphasis remap='I'>Borders</emphasis>,
 <emphasis remap='I'>!Handles</emphasis> / <emphasis remap='I'>Handles</emphasis>,
 <emphasis remap='I'>WindowListSkip</emphasis> / <emphasis remap='I'>WindowListHit</emphasis>,
 <emphasis remap='I'>CirculateSkip</emphasis> / <emphasis remap='I'>CirculateHit</emphasis>,
@@ -617,7 +617,7 @@ without the name argument.  These styles replace the older
 <fvwmref cmd="WindowFont"/> and <fvwmopt cmd="Style" opt="IconFont"/>
 commands.</para>
 
-<para>The
+<para>The deprecated
 <fvwmopt cmd="Style" opt="IndexedWindowName"/>
 style causes fvwm to use window titles in the form</para>
 
@@ -633,17 +633,85 @@ is an integer which represents the
 <emphasis remap='I'>i th</emphasis>
 window with
 <emphasis remap='I'>name</emphasis>
-as window name.
-<fvwmopt cmd="Style" opt="ExactWindowName"/>
-restores the default which is to use the exact window name.
-<fvwmopt cmd="Style" opt="IndexedIconName"/>
+as window name.  This has been replaced with:</para>
+
+<programlisting>
+TitleFormat %n (%t)
+</programlisting>
+
+<para><fvwmopt cmd="Style" opt="ExactWindowName"/>
+restores the default which is to use the exact window name.  Deprecated in
+favour of:</para>
+
+<programlisting>
+    TitleFormat %n
+</programlisting>
+
+<para><fvwmopt cmd="Style" opt="IndexedIconName"/>
 and
 <fvwmopt cmd="Style" opt="ExactIconName"/>
 work the same as
 <emphasis remap='I'>IndexedWindowName</emphasis>
 and
 <emphasis remap='I'>ExactWindowName</emphasis>
-styles but for the icon titles.</para>
+styles but for the icon titles.  Both are deprecated in favour of:</para>
+
+<programlisting>
+IconTitleFormat %n (%t)
+IconTitleFormat %n
+</programlisting>
+
+<para><fvwmopt cmd="Style" opt="TitleFormat"/> describes what the visible
+name of a window should look like, with the following placeholders being
+valid:</para>
+
+<variablelist>
+<varlistentry>
+        <term><emphasis remap='B'>%n</emphasis></term>
+        <listitem><para>Insert the window's name.</para></listitem>
+</varlistentry>
+<varlistentry>
+        <term><emphasis remap='B'>%c</emphasis></term>
+        <listitem><para>Insert the window's class name.</para></listitem>
+</varlistentry>
+<varlistentry>
+        <term><emphasis remap='B'>%r</emphasis></term>
+        <listitem><para>Insert the window's resource name.</para></listitem>
+</varlistentry>
+<varlistentry>
+        <term><emphasis remap='B'>%t</emphasis></term>
+        <listitem><para>Insert the window count.</para></listitem>
+</varlistentry>
+<varlistentry>
+        <term><emphasis remap='B'>%I</emphasis></term>
+        <listitem><para>Insert the window ID.</para></listitem>
+</varlistentry>
+<varlistentry>
+        <term><emphasis remap='B'>%%</emphasis></term>
+        <listitem><para>Insert a literal '%' character.</para></listitem>
+</varlistentry>
+</variablelist>
+
+<para>Any amount of whitespace may be used, along with other characters to
+    make up the string -- but a valid <fvwmopt cmd="Style" opt="TitleFormat"/>
+    string must contain at least one of the placeholders mentioned.  No
+    quote stripping is performed on the string, so for example the following
+    is printed verbatim:</para>
+
+<programlisting>
+    TitleFormat " %n " -> [%t] ->      [%c]
+</programlisting>
+
+<para>Note:  It's perfectly possible to use a
+<fvwmopt cmd="Style" opt="TitleFormat"/> which can result in wiping out the
+visible title altogether.  For example:</para>
+
+<programlisting>
+    TitleFormat %z
+</programlisting>
+
+<para>Simply because the placeholder '%z' isn't supported.  This is not a bug
+but rather a facet of how the formatting parser works.</para>
 
 </section>
 

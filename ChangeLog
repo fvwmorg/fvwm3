@@ -1,3 +1,26 @@
+2011-08-15  Thomas Adam <thomas@fvwm.org>
+	* fvwm/style.c (__validate_titleformat_string):
+	New helper function for validating TitleFormat and IconTitleFormat
+	commands.
+
+	* fvwm/style.c:
+	* fvwm/style.h:
+	Introduce TitleFormat and IconTitleFormat style commands.  These
+	effectively deprecate:
+
+	IndexedWindowName
+	IndexedIconName
+	ExactWindowName
+	ExactIconName
+
+	* fvwm/add_window.c (interpolate_titleformat_name):
+	Helper function to interpolate and parse the TitleFormat and
+	IconTitleFormat string.
+
+	* fvwm/add_window.c (setup_visible_name):
+	Make use of: interpolate_titleformat_name() for setting the
+	visible name of an icon or window title.
+
 2011-08-06  Thomas Adam <thomas@fvwm.org>
 
 	* fvwm/borders.c (border_mp_draw_mp_titlebar):

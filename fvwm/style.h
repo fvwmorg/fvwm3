@@ -3,6 +3,9 @@
 #ifndef _STYLE_
 #define _STYLE_
 
+/* The default title in case the user doesn't supply one. */
+#define DEFAULT_TITLE_FORMAT "%n"
+
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */
 #define SDO_DECORATE_TRANSIENT(sf) \
@@ -655,6 +658,14 @@
 	((s).initial_map_command_string)
 #define SSET_INITIAL_MAP_COMMAND_STRING(s,x)	\
 	((s).initial_map_command_string = (x))
+#define SGET_TITLE_FORMAT_STRING(s) \
+	((s).title_format_string)
+#define SSET_TITLE_FORMAT_STRING(s,x) \
+	((s).title_format_string = (x))
+#define SGET_ICON_TITLE_FORMAT_STRING(s) \
+	((s).icon_title_format_string)
+#define SSET_ICON_TITLE_FORMAT_STRING(s,x) \
+	((s).icon_title_format_string = (x))
 
 /* function prototypes */
 void lookup_style(FvwmWindow *fw, window_style *styles);

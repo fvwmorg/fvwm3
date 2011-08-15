@@ -511,10 +511,10 @@ static void setup_name_count(FvwmWindow *fw, Bool is_icon)
 
 	titlename = (is_icon) ?
 	&(fw->icon_name) : &(fw->name);
-	
+
 	title_counterpart = (is_icon) ?
 	&(fw->name) : &(fw->icon_name);
-	
+
 	if (!titlename->name)
 	{
 		done = True;
@@ -540,18 +540,18 @@ static void setup_name_count(FvwmWindow *fw, Bool is_icon)
 				t->name_count;
 			win_count_counterpart = is_icon ?
 				t->name_count : t->icon_name_count;
-			
+
 			t_titlename = is_icon ? &(t->icon_name) :
 				&(t->name);
 			t_title_counterpart = is_icon ? &(t->name) :
 				&(t->icon_name);
 
 			if ((t_titlename->name &&
-						strcmp(titlename->name, 
+						strcmp(titlename->name,
 							t_titlename->name) == 0 &&
 						win_count == count) ||
 					(t_title_counterpart->name &&
-					 strcmp(t_title_counterpart->name, 
+					 strcmp(t_title_counterpart->name,
 						 titlename->name) == 0 &&
 					 win_count_counterpart == count))
 
@@ -561,7 +561,7 @@ static void setup_name_count(FvwmWindow *fw, Bool is_icon)
 			}
 		}
 	}
-	
+
 	if (is_icon)
 	{
 		fw->icon_name_count = count;
@@ -570,6 +570,119 @@ static void setup_name_count(FvwmWindow *fw, Bool is_icon)
 	}
 
 	return;
+}
+
+static char *interpolate_titleformat_name(FvwmWindow *fw, window_style *style,
+		Bool is_icon)
+{
+	char stringbuf[MAX_VISIBLE_NAME_LEN] = "";
+
+	/* Get the title format string.  This check should be redundant thanks
+	 * to the checking done in style.c
+	 */
+	const char *format;
+	int count;
+
+	/* MAX_WINDOW_NAME_NUMBER is defined as "999" -- that's three
+	 * characters maximum.
+	 */
+	char win_name_len[MAX_WINDOW_NAME_NUMBER_DIGITS];
+	char w_id[12];
+
+	if (is_icon)
+	{
+		format = (style->flags.has_icon_title_format_string) ?
+			SGET_ICON_TITLE_FORMAT_STRING(*style) :
+			DEFAULT_TITLE_FORMAT;
+	} else {
+		format = (style->flags.has_title_format_string) ?
+			SGET_TITLE_FORMAT_STRING(*style) :
+			DEFAULT_TITLE_FORMAT;
+	}
+
+	while (*format)
+	{
+		int pos;
+		for (pos = 0; format[pos] && format[pos] != '%'; pos++);
+
+		strncat(stringbuf, format, pos);
+		format += pos;
+
+		if (*format != '%')
+			continue;
+
+		format++;
+		switch (*format)
+		{
+			case 'n':
+				if (strlen(stringbuf) +
+					strlen(fw->name.name) >
+					MAX_VISIBLE_NAME_LEN)
+				{
+					fvwm_msg(WARN,
+					"interpolate_titleformat_name",
+					"Visible name is too long based on "
+					"TitleFormat.  Not expanding further.");
+
+					break;
+				}
+
+				strcat(stringbuf, fw->name.name);
+				break;
+			case 'c':
+				if (strlen(stringbuf) +
+					strlen(fw->class.res_class) >
+					MAX_VISIBLE_NAME_LEN)
+				{
+					fvwm_msg(WARN,
+					"interpolate_titleformat_name",
+					"Visible name is too long based on "
+					"TitleFormat.  Not expanding further.");
+
+					break;
+				}
+				strcat(stringbuf, fw->class.res_class);
+				break;
+			case 'r':
+				if (strlen(stringbuf) +
+					strlen(fw->class.res_name) >
+					MAX_VISIBLE_NAME_LEN)
+				{
+					fvwm_msg(WARN,
+					"interpolate_titleformat_name",
+					"Visible name is too long based on "
+					"TitleFormat.  Not expanding further.");
+
+					break;
+				}
+				strcat(stringbuf, fw->class.res_name);
+				break;
+			case 't':
+				setup_name_count(fw, is_icon);
+				count = is_icon ? fw->icon_name_count :
+					fw->name_count;
+
+				if (count > (MAX_WINDOW_NAME_NUMBER - 1))
+					count = MAX_WINDOW_NAME_NUMBER - 1;
+
+				sprintf(win_name_len, "%d", ++count);
+				strcat(stringbuf, win_name_len);
+				break;
+			case 'I':
+				sprintf(w_id, "0x%x", (int)FW_W(fw));
+				strcat(stringbuf, w_id);
+				break;
+			case '%':
+				strcat(stringbuf, "%");
+				break;
+			default:
+				break;
+		}
+		if (*format)
+			format++;
+	}
+	/* Now allocate our string. */
+	return strdup(stringbuf);
 }
 
 static void setup_class_and_resource(FvwmWindow *fw)
@@ -1575,9 +1688,7 @@ static void __add_window_handle_x_resources(FvwmWindow *fw)
 void setup_visible_name(FvwmWindow *fw, Bool is_icon)
 {
 	char *ext_name;
-	char *name;
-	int count;
-	int len;
+	window_style style;
 
 	if (fw == NULL)
 	{
@@ -1585,67 +1696,20 @@ void setup_visible_name(FvwmWindow *fw, Bool is_icon)
 		return;
 	}
 
-	setup_name_count(fw, is_icon);
+	/* TA:  Get the window style. */
+	lookup_style(fw, &style);
+	ext_name = interpolate_titleformat_name(fw, &style, is_icon);
 
 	if (is_icon)
 	{
-		if (fw->visible_icon_name != NULL &&
-		    fw->visible_icon_name != fw->icon_name.name &&
-		    fw->visible_icon_name != fw->name.name &&
-		    fw->visible_icon_name != NoName)
-		{
-			free(fw->visible_icon_name);
-			fw->visible_icon_name = NULL;
-		}
-		name = fw->icon_name.name;
-		count = fw->icon_name_count;
+		fw->visible_icon_name = strdup(ext_name);
 	}
 	else
 	{
-		if (fw->visible_name != NULL &&
-		    fw->visible_name != fw->name.name &&
-		    fw->visible_name != NoName)
-		{
-			free(fw->visible_name);
-			fw->visible_name = NULL;
-		}
-		name = fw->name.name;
-		count = fw->name_count;
+		fw->visible_name = strdup(ext_name);
 	}
 
-	if (name == NULL)
-	{
-		return; /* should never happen */
-	}
-
-	if (count > MAX_WINDOW_NAME_NUMBER - 1)
-	{
-		count = MAX_WINDOW_NAME_NUMBER - 1;
-	}
-
-	if (count != 0 &&
-	    ((is_icon && USE_INDEXED_ICON_NAME(fw)) ||
-	     (!is_icon && USE_INDEXED_WINDOW_NAME(fw))))
-	{
-		len = strlen(name);
-		count++;
-		ext_name = (char *)safemalloc(
-			len + MAX_WINDOW_NAME_NUMBER_DIGITS + 4);
-		sprintf(ext_name,"%s (%d)", name, count);
-	}
-	else
-	{
-		ext_name = name;
-	}
-
-	if (is_icon)
-	{
-		fw->visible_icon_name = ext_name;
-	}
-	else
-	{
-		fw->visible_name = ext_name;
-	}
+	free(ext_name);
 
 	return;
 }

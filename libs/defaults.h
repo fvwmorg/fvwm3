@@ -317,6 +317,9 @@
 #define MAX_RESOURCE_LEN                 200 /* characters */
 #define MAX_CLASS_LEN                    200 /* characters */
 
+/* Set the maximum size a visible name can be. */
+#define MAX_VISIBLE_NAME_LEN		4096
+
 /*** numbered window names ***/
 #define MAX_WINDOW_NAME_NUMBER           999
 #define MAX_WINDOW_NAME_NUMBER_DIGITS      3 /* number/digits of above number */

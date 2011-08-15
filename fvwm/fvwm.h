@@ -597,6 +597,8 @@ typedef struct style_flags
 	unsigned has_placement_percentage_penalty : 1;
 	unsigned has_placement_position_string : 1;
 	unsigned has_initial_map_command_string : 1;
+	unsigned has_title_format_string : 1;
+	unsigned has_icon_title_format_string : 1;
 } style_flags;
 
 typedef struct style_id_t
@@ -699,11 +701,15 @@ typedef struct window_style
 	pl_percent_penalty_struct pl_percent_penalty;
 	char *pl_position_string;
 	char *initial_map_command_string;
+	char *title_format_string;
+	char *icon_title_format_string;
 	style_flags flags;
 	style_flags flag_default;
 	style_flags flag_mask;
 	style_flags change_mask;
 	unsigned has_style_changed : 1;
+	unsigned has_title_format_string : 1;
+	unsigned has_icon_title_format_string : 1;
 } window_style;
 
 typedef struct window_g

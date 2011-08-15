@@ -71,6 +71,38 @@ static window_style *last_style_in_list = NULL;
 
 /* ---------------------------- local functions ---------------------------- */
 
+static Bool __validate_titleformat_string(const char *formatstr)
+{
+	const char *fmt;
+
+	/* Setting this to "True" here ensures we don't erroneously report on
+	 * an invalid TitleFormat string which contains no placeholders
+	 * whatsoever.
+	 */
+	Bool ret_condition = True;
+
+	for (fmt = formatstr; *fmt; fmt++)
+	{
+		if (*fmt != '%')
+			continue;
+
+		switch (*++fmt)
+		{
+			case 'c':
+			case 'n':
+			case 'r':
+			case 't':
+			case 'I':
+				ret_condition = True;
+				break;
+			default:
+				ret_condition = False;
+				break;
+		}
+	}
+	return ret_condition;
+}
+
 static int blockor(char *dest, char *blk1, char *blk2, int length)
 {
 	int i;
@@ -713,6 +745,20 @@ static void merge_styles(
 			*merged_style,
 			strdup(SGET_INITIAL_MAP_COMMAND_STRING(*add_style)));
 	}
+
+	if (add_style->flags.has_title_format_string)
+	{
+		SAFEFREE(SGET_TITLE_FORMAT_STRING(*merged_style));
+		SSET_TITLE_FORMAT_STRING(*merged_style,
+				strdup(SGET_TITLE_FORMAT_STRING(*add_style)));
+	}
+
+	if (add_style->flags.has_icon_title_format_string)
+	{
+		SAFEFREE(SGET_ICON_TITLE_FORMAT_STRING(*merged_style));
+		SSET_ICON_TITLE_FORMAT_STRING(*merged_style,
+				strdup(SGET_ICON_TITLE_FORMAT_STRING(*add_style)));
+	}
 	/* merge the style flags */
 
 	/*** ATTENTION:
@@ -769,6 +815,8 @@ static void free_style(window_style *style)
 	remove_icon_boxes_from_style(style);
 	SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*style));
 	SAFEFREE(SGET_INITIAL_MAP_COMMAND_STRING(*style));
+	SAFEFREE(SGET_TITLE_FORMAT_STRING(*style));
+	SAFEFREE(SGET_ICON_TITLE_FORMAT_STRING(*style));
 
 	return;
 }
@@ -2479,15 +2527,35 @@ static Bool style_parse_one_style_option(
 	case 'e':
 		if (StrEquals(token, "ExactWindowName"))
 		{
-			S_SET_USE_INDEXED_WINDOW_NAME(SCF(*ps), !on);
-			S_SET_USE_INDEXED_WINDOW_NAME(SCM(*ps), 1);
-			S_SET_USE_INDEXED_WINDOW_NAME(SCC(*ps), 1);
+			/* TA:  This is being deprecated in favour of the more
+			 * generic:
+			 *
+			 * TitleFormat %n
+			 */
+			fvwm_msg(WARN, "style_parse_one_style_option",
+				"ExactWindowName is deprecated -- using"
+				" TitleFormat %%n");
+			char *format = strdup(DEFAULT_TITLE_FORMAT);
+			SSET_TITLE_FORMAT_STRING(*ps, format);
+			ps->flags.has_title_format_string = 1;
+			ps->flag_mask.has_title_format_string = 1;
+			ps->change_mask.has_title_format_string = 1;
 		}
 		else if (StrEquals(token, "ExactIconName"))
 		{
-			S_SET_USE_INDEXED_ICON_NAME(SCF(*ps), !on);
-			S_SET_USE_INDEXED_ICON_NAME(SCM(*ps), 1);
-			S_SET_USE_INDEXED_ICON_NAME(SCC(*ps), 1);
+			/* TA:  This is being deprecated in favour of the more
+			 * generic:
+			 *
+			 * IconTitleFormat %n
+			 */
+			fvwm_msg(WARN, "style_parse_one_style_option",
+				"ExactIconName is deprecated -- using"
+				" IconTitleFormat %%n");
+			char *format = strdup(DEFAULT_TITLE_FORMAT);
+			SSET_ICON_TITLE_FORMAT_STRING(*ps, format);
+			ps->flags.has_icon_title_format_string = 1;
+			ps->flag_mask.has_icon_title_format_string = 1;
+			ps->change_mask.has_icon_title_format_string = 1;
 		}
 		else if (StrEquals(token, "EdgeMoveResistance"))
 		{
@@ -2914,6 +2982,30 @@ static Bool style_parse_one_style_option(
 			S_SET_HAS_NO_ICON_TITLE(SCM(*ps), 1);
 			S_SET_HAS_NO_ICON_TITLE(SCC(*ps), 1);
 		}
+		else if (StrEquals(token, "IconTitleFormat"))
+		{
+			char *fmt_string = NULL;
+			(rest != NULL) ? fmt_string = strdup(rest) : NULL;
+			rest = NULL; /* Consume the string. */
+
+			if (fmt_string == NULL)
+			{
+				fmt_string = DEFAULT_TITLE_FORMAT;
+			}
+
+			if (!__validate_titleformat_string(fmt_string))
+			{
+				fvwm_msg(ERR, "style_parse_one_style_option",
+					"TitleFormat string invalid:  %s",
+					fmt_string);
+			}
+
+			SSET_ICON_TITLE_FORMAT_STRING(*ps, fmt_string);
+			ps->flags.has_icon_title_format_string = 1;
+			ps->flag_mask.has_icon_title_format_string = 1;
+			ps->change_mask.has_icon_title_format_string = 1;
+
+		}
 		else if (StrEquals(token, "IconTitleColorset"))
 		{
 			*val = -1;
@@ -2980,15 +3072,37 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "IndexedWindowName"))
 		{
-			S_SET_USE_INDEXED_WINDOW_NAME(SCF(*ps), on);
-			S_SET_USE_INDEXED_WINDOW_NAME(SCM(*ps), 1);
-			S_SET_USE_INDEXED_WINDOW_NAME(SCC(*ps), 1);
+			/* TA:  This is being deprecated in favour of the more
+			 * generic:
+			 *
+			 * TitleFormat %n
+			 */
+			fvwm_msg(WARN, "style_parse_one_style_option",
+				"IndexedWindowName is deprecated.  "
+				"Converting to use:  TitleFormat %%n (%%t)");
+			char *format = strdup( "%n (%t)" );
+
+			SSET_TITLE_FORMAT_STRING(*ps, format);
+			ps->flags.has_title_format_string = 1;
+			ps->flag_mask.has_title_format_string = 1;
+			ps->change_mask.has_title_format_string = 1;
 		}
 		else if (StrEquals(token, "IndexedIconName"))
 		{
-			S_SET_USE_INDEXED_ICON_NAME(SCF(*ps), on);
-			S_SET_USE_INDEXED_ICON_NAME(SCM(*ps), 1);
-			S_SET_USE_INDEXED_ICON_NAME(SCC(*ps), 1);
+			/* TA:  This is being deprecated in favour of the more
+			 * generic:
+			 *
+			 * TitleFormat %n
+			 */
+			fvwm_msg(WARN, "style_parse_one_style_option",
+				"IndexedIconName is deprecated.  "
+				"Converting to use:  IconTitleFormat %%n (%%t)");
+			char *format = strdup( "%n (%t)" );
+
+			SSET_ICON_TITLE_FORMAT_STRING(*ps, format);
+			ps->flags.has_icon_title_format_string = 1;
+			ps->flag_mask.has_icon_title_format_string = 1;
+			ps->change_mask.has_icon_title_format_string = 1;
 		}
 		else if (StrEquals(token, "InitialMapCommand"))
 		{
@@ -4173,6 +4287,30 @@ static Bool style_parse_one_style_option(
 			S_SET_TITLE_DIR(SCM(*ps), DIR_MAJOR_MASK);
 			S_SET_TITLE_DIR(SCC(*ps), DIR_MAJOR_MASK);
 		}
+		else if (StrEquals(token, "TitleFormat"))
+		{
+			char *fmt_string = NULL;
+			(rest != NULL) ? fmt_string = strdup(rest) : NULL;
+			rest = NULL; /* Consume the string. */
+
+			if (fmt_string == NULL)
+			{
+				fmt_string = DEFAULT_TITLE_FORMAT;
+			}
+
+			if (!__validate_titleformat_string(fmt_string))
+			{
+				fvwm_msg(ERR, "style_parse_one_style_option",
+					"TitleFormat string invalid:  %s",
+					fmt_string);
+			}
+
+			SSET_TITLE_FORMAT_STRING(*ps, fmt_string);
+			ps->flags.has_title_format_string = 1;
+			ps->flag_mask.has_title_format_string = 1;
+			ps->change_mask.has_title_format_string = 1;
+
+		}
 		else if (StrEquals(token, "TopTitleRotated"))
 		{
 			S_SET_IS_TOP_TITLE_ROTATED(SCF(*ps), on);
@@ -5074,15 +5212,15 @@ void check_window_style_change(
 		flags->do_update_ewmh_stacking_hints = 1;
 	}
 
-	/*  use_indexed_window_name */
-	if (S_USE_INDEXED_WINDOW_NAME(SCC(*ret_style)))
+	/* has_title_format_string */
+	if (ret_style->change_mask.has_title_format_string)
 	{
 		flags->do_update_visible_window_name = 1;
 		flags->do_redecorate = 1;
 	}
 
-	/*  use_indexed_icon_name */
-	if (S_USE_INDEXED_ICON_NAME(SCC(*ret_style)))
+	/* has_icon_title_format_string */
+	if (ret_style->change_mask.has_icon_title_format_string)
 	{
 		flags->do_update_visible_icon_name = 1;
 		flags->do_update_icon_title = 1;

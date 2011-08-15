@@ -6,7 +6,18 @@ Changes in stable CVS HEAD (Not yet released)
 
 * New features:
 
-    None
+  - New Style commands:
+
+        TitleFormat
+        IconTitleFormat
+
+        Used to specify a window's visible name.  These new options
+        deprecate the older styles:
+
+        IndexedWindowName
+        IndexedIconName
+        ExactWindowName
+        ExactIconName
 
 * Bug fixes:
 
