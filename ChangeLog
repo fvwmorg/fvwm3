@@ -1,4 +1,34 @@
 2011-08-15  Thomas Adam <thomas@fvwm.org>
+	* fvwm/move_resize.c (__resize_window):
+	Add support code for warping/direction.
+
+	Adds the code which ensures, based on the new warptoborder/direction
+	logic that the various logic is handled at the correct time.
+
+	* fvwm/move_resize.c (__resize_get_dir_from_window):
+	__resize_dir_get_proximity() to include warp coords
+
+	In working out which direction a window should be moved in, ensure we also
+	set the coordinates for where the pointer should be warped to, if it's been
+	requested that the pointer should be warped to the closest border
+	automatically.
+
+	* fvwm/move_resize.c (GetResizeArguments):
+	Add "automatic" option to resize arguments
+	
+	Both the "direction" and "warptoborder" sub-commands of Resize, can now
+	optionally accept the option "automatic" which will attempt to work out
+	which region of the window the pointer is in, and set the direction based on
+	it.
+
+	* fvwm/move_resize.c (__resize_get_dir_from_resize_quadrant):
+	Introduce __resize_get_dir_from_resize_quadrant()
+	
+	In order to work out the direction to warp the pointer to automatically, as
+	well as setting the direction automatically, this helper function will
+	return the direction the pointer is in, based on the quadrant of the window.
+
+2011-08-15  Thomas Adam <thomas@fvwm.org>
 	* fvwm/style.c (__validate_titleformat_string):
 	New helper function for validating TitleFormat and IconTitleFormat
 	commands.

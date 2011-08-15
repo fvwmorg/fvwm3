@@ -1,3 +1,8 @@
+2011-08-15  Thomas Adam  <thomas@fvwm.org>
+	* doc/commands/Resize.xml:
+	Add information regarding the "automatic" option to the
+	Resize command.
+
 2011-04-10  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/bugs.xml:
 	Remove any reference to the old Jitterbug (FVWM bug tracker).

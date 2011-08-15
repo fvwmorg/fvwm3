@@ -18,8 +18,8 @@
 		><arg choice='opt'>frame</arg
 		><arg choice='opt'
 			>direction <replaceable>dir</replaceable
-			><arg choice='opt'>warptoborder</arg
-		></arg
+            ></arg><arg choice='opt'>warptoborder
+                <replaceable>automatic</replaceable></arg
 		><arg choice='opt'>fixeddirection</arg
 		><arg choice='plain'
 			><optional>w</optional
@@ -107,12 +107,17 @@ opposite border.  The
 <fvwmopt cmd="Resize" opt="direction"/>
 option must be followed by a direction name such as "NorthWest",
 "South" or "East" (you get the idea).  Resizing is started
-immediately, even if the pointer is not on a border.  The
-<fvwmopt cmd="Resize" opt="warptoborder"/>
-option changes the behaviour of the
-<emphasis remap='I'>direction</emphasis>
-option so that the pointer is automatically warped to the border
-in the given direction before starting to resize.  Also, if
+immediately, even if the pointer is not on a border.   If the special option
+<fvwmopt cmd="Resize" opt="automatic"/> is given as a direction argument, then
+the direction to resize is calculated based on the position of the pointer in
+the window.  If the pointer is in the middle of the window, then no direction is
+calculated.
+
+The <fvwmopt cmd="Resize" opt="warptoborder"/>
+option can be used to warp the pointer to the direction indicated.  As with the
+<fvwmopt cmd="Resize" opt="automatic" /> option for
+<fvwmopt cmd="Resize" opt="direction" />, the border to warp to is
+calculated based on the pointer's proximity to a given border.  Also, if
 resizing is started by clicking on the window border, the pointer
 is warped to the outer edge of the border.</para>
 

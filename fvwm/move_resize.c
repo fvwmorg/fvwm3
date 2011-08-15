@@ -655,11 +655,13 @@ static int GetResizeArguments(
 	char **paction, int x, int y, int w_base, int h_base, int w_inc,
 	int h_inc, size_borders *sb, int *pFinalW, int *pFinalH,
 	direction_t *ret_dir, Bool *is_direction_fixed,
-	Bool *do_warp_to_border)
+	Bool *do_warp_to_border, Bool *automatic_border_direction,
+	Bool *detect_automatic_direction)
 {
 	int n;
 	char *naction;
 	char *token;
+	char *tmp_token;
 	char *s1;
 	char *s2;
 	int w_add;
@@ -669,6 +671,9 @@ static int GetResizeArguments(
 	*ret_dir = DIR_NONE;
 	*is_direction_fixed = False;
 	*do_warp_to_border = False;
+	*automatic_border_direction = False;
+	*detect_automatic_direction = False;
+
 	if (!paction)
 	{
 		return 0;
@@ -708,11 +713,23 @@ static int GetResizeArguments(
 			{
 				return 0;
 			}
+
 			*ret_dir = gravity_parse_dir_argument(
-				naction, &naction, DIR_NONE);
+					naction, &naction, DIR_NONE);
 			if (*ret_dir != DIR_NONE)
 			{
 				*is_direction_fixed = True;
+			}
+			else if (*ret_dir == DIR_NONE)
+			{
+
+				tmp_token = PeekToken(naction, &naction);
+				if (tmp_token != NULL &&
+						StrEquals(tmp_token, "automatic"))
+				{
+					*detect_automatic_direction = True;
+					*is_direction_fixed = True;
+				}
 			}
 		}
 		else if (StrEquals(token, "fixeddirection"))
@@ -721,6 +738,13 @@ static int GetResizeArguments(
 		}
 		else if (StrEquals(token, "warptoborder"))
 		{
+			tmp_token = PeekToken(naction, &naction);
+
+			if (tmp_token != NULL &&
+				StrEquals(tmp_token, "automatic"))
+			{
+				*automatic_border_direction = True;
+			}
 			*do_warp_to_border = True;
 		}
 		else
@@ -790,7 +814,8 @@ static int GetResizeMoveArguments(
 	}
 	if (GetResizeArguments(
 		    &action, *pFinalX, *pFinalY, w_base, h_base, w_inc, h_inc,
-		    sb, pFinalW, pFinalH, &dir, &dummy, &dummy) < 2)
+		    sb, pFinalW, pFinalH, &dir, &dummy, &dummy, &dummy,
+		    &dummy) < 2)
 	{
 		return 0;
 	}
@@ -3136,6 +3161,88 @@ void CMD_XorPixmap(F_CMD_ARGS)
 
 /* ----------------------------- resizing code ----------------------------- */
 
+/* Given a mouse location within a window context, return the direction the
+ * window could be resized in, based on the window quadrant.  This is the same
+ * as the quadrants drawn by the rubber-band, if "ResizeOpaque" has not been
+ * set.
+ */
+static direction_t __resize_get_dir_from_resize_quadrant(
+		int x_off, int y_off, int px, int py)
+{
+	direction_t dir = DIR_NONE;
+	int tx;
+	int ty;
+	int dx;
+	int dy;
+
+
+	if (px < 0 || x_off < 0 || py < 0 || y_off < 0)
+	{
+		return dir;
+	}
+
+	/* Rough quadrants per window.  3x3. */
+	tx = (x_off / 3) - 1;
+	ty = (y_off / 3) - 1;
+
+	dx = x_off - px;
+	dy = y_off - py;
+
+	if (px < tx)
+	{
+		/* Far left of window.  Quadrants of NW, W, SW. */
+		if (py < ty)
+		{
+			/* North-West direction. */
+			dir = DIR_NW;
+		}
+		else if (dy < ty)
+		{
+			/* South-West direction. */
+			dir = DIR_SW;
+		}
+		else
+		{
+			/* West direction. */
+			dir = DIR_W;
+		}
+	}
+	else if (dx < tx)
+	{
+		/* Far right of window.  Quadrants NE, E, SE. */
+		if (py < ty)
+		{
+			/* North-East direction. */
+			dir = DIR_NE;
+		}
+		else if (dy < ty)
+		{
+			/* South-East direction */
+			dir = DIR_SE;
+		}
+		else
+		{
+			/* East direction. */
+			dir = DIR_E;
+		}
+	}
+	else
+	{
+		if (py < ty)
+		{
+			/* North direction. */
+			dir = DIR_N;
+		}
+		else if (dy < ty)
+		{
+			/* South direction. */
+			dir = DIR_S;
+		}
+	}
+
+	return dir;
+}
+
 static void __resize_get_dir_from_window(
 	int *ret_xmotion, int *ret_ymotion, FvwmWindow *fw, Window context_w)
 {
@@ -3184,41 +3291,99 @@ static void __resize_get_dir_from_window(
 
 static void __resize_get_dir_proximity(
 	int *ret_xmotion, int *ret_ymotion, FvwmWindow *fw, int x_off,
-	int y_off, int px, int py)
+	int y_off, int px, int py, int *warp_x, int *warp_y, Bool find_nearest_border)
 {
 	int tx;
 	int ty;
+	direction_t dir;
+
+	*warp_x = *warp_y = -1;
 
 	if (px < 0 || x_off < 0 || py < 0 || y_off < 0)
 	{
 		return;
 	}
-	/* Now find the place to warp to. We simply use the sectors
-	 * drawn when we start resizing the window. */
-#if 0
-	tx = orig->width / 10 - 1;
-	ty = orig->height / 10 - 1;
-#else
-	tx = 0;
-	ty = 0;
-#endif
-	tx = max(fw->boundary_width, tx);
-	ty = max(fw->boundary_width, ty);
-	if (px < tx)
+
+	if (find_nearest_border == False)
 	{
+		tx = 0;
+		ty = 0;
+
+		tx = max(fw->boundary_width, tx);
+		ty = max(fw->boundary_width, ty);
+
+		if (px < tx)
+		{
+			*ret_xmotion = 1;
+		}
+		else if (x_off < tx)
+		{
+			*ret_xmotion = -1;
+		}
+		if (py < ty)
+		{
+			*ret_ymotion = 1;
+		}
+		else if (y_off < ty)
+		{
+			*ret_ymotion = -1;
+		}
+
+		return;
+	}
+
+	/* Get the direction from the quadrant the pointer is in. */
+	dir = __resize_get_dir_from_resize_quadrant(
+		x_off, y_off, px, py);
+
+	switch (dir)
+	{
+	case DIR_NW:
 		*ret_xmotion = 1;
-	}
-	else if (x_off < tx)
-	{
-		*ret_xmotion = -1;
-	}
-	if (py < ty)
-	{
 		*ret_ymotion = 1;
-	}
-	else if (y_off < ty)
-	{
+		*warp_x = 0;
+		*warp_y = 0;
+		break;
+	case DIR_SW:
+		*ret_xmotion = 1;
 		*ret_ymotion = -1;
+		*warp_x = 0;
+		*warp_y = (y_off - 1);
+		break;
+	case DIR_W:
+		*ret_xmotion = 1;
+		*warp_x = 0;
+		*warp_y = (y_off / 2);
+		break;
+	case DIR_NE:
+		*ret_xmotion = -1;
+		*ret_ymotion = 1;
+		*warp_x = (x_off - 1);
+		*warp_y = 0;
+		break;
+	case DIR_SE:
+		*ret_xmotion = -1;
+		*ret_ymotion = -1;
+		*warp_x = (x_off - 1);
+		*warp_y = (y_off - 1);
+		break;
+	case DIR_E:
+		*ret_xmotion = -1;
+		*warp_x = (x_off - 1);
+		*warp_y = (y_off / 2);
+		break;
+	case DIR_N:
+		*ret_ymotion = 1;
+		*warp_x = (x_off / 2);
+		*warp_y = 0;
+		break;
+	case DIR_S:
+		*ret_ymotion = -1;
+		*warp_x = (x_off / 2);
+		*warp_y = (y_off - 1);
+		break;
+	default:
+		break;
 	}
 
 	return;
@@ -3420,6 +3585,8 @@ static Bool __resize_window(F_CMD_ARGS)
 	Bool do_resize_opaque;
 	Bool do_warp_to_border;
 	Bool is_direction_fixed;
+	Bool automatic_border_direction;
+	Bool detect_automatic_direction;
 	Bool fButtonAbort = False;
 	Bool fForceRedraw = False;
 	Bool called_from_title = False;
@@ -3453,6 +3620,8 @@ static Bool __resize_window(F_CMD_ARGS)
 	int x_off;
 	int y_off;
 	direction_t dir;
+	int warp_x = 0;
+	int warp_y = 0;
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
@@ -3502,7 +3671,8 @@ static Bool __resize_window(F_CMD_ARGS)
 		fw->hints.base_width, fw->hints.base_height,
 		fw->hints.width_inc, fw->hints.height_inc,
 		&b, &(drag->width), &(drag->height),
-		&dir, &is_direction_fixed, &do_warp_to_border);
+		&dir, &is_direction_fixed, &do_warp_to_border,
+		&automatic_border_direction, &detect_automatic_direction);
 
 	if (n == 2)
 	{
@@ -3627,6 +3797,12 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	DisplaySize(fw, exc->x.elast, orig->width, orig->height, True, True);
 
+	if (dir == DIR_NONE && detect_automatic_direction == True)
+	{
+		dir = __resize_get_dir_from_resize_quadrant(
+				orig->width, orig->height, px, py);
+	}
+
 	if (dir != DIR_NONE)
 	{
 		int grav;
@@ -3665,8 +3841,9 @@ static Bool __resize_window(F_CMD_ARGS)
 	    !called_from_title)
 	{
 		__resize_get_dir_proximity(
-			&xmotion, &ymotion, fw, orig->width - px,
-			orig->height - py, px, py);
+			&xmotion, &ymotion, fw, orig->width,
+			orig->height, px, py, &warp_x, &warp_y,
+			automatic_border_direction);
 		if (xmotion != 0 || ymotion != 0)
 		{
 			do_warp_to_border = True;
@@ -3735,6 +3912,16 @@ static Bool __resize_window(F_CMD_ARGS)
 
 		dx = (xmotion == 0) ? px : ref_x;
 		dy = (ymotion == 0) ? py : ref_y;
+
+		/* Warp the pointer to the closest border automatically? */
+		if (automatic_border_direction == True &&
+			(warp_x >=0 && warp_y >=0) &&
+			!IS_SHADED(fw))
+		{
+			dx = warp_x;
+			dy = warp_y;
+		}
+
 		/* warp the pointer to the border */
 		FWarpPointer(
 			dpy, None, ResizeWindow, 0, 0, 1, 1, dx, dy);
