@@ -350,6 +350,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
       if (strcmp(Command,"None"))
 	free(BufCom);
       BufCom = (char*)safecalloc(sizeof(char),maxsize);
+      fread(BufCom,1,maxsize,f);
       pclose(f);
       strncpy(Command,cmndbuf,255);
       TimeCom=time(NULL);
