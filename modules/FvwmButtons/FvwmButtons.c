@@ -347,6 +347,8 @@ static void DeadPipeCleanup(void)
 		}
 	}
 
+	XSync(Dpy, 0);
+
 	fsm_close();
 	/* Hey, we have to free the pictures too! */
 	button = -1;

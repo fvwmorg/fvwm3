@@ -1,3 +1,10 @@
+2011-08-27  Thomas Adam <thomas@fvwm.org>
+	* modules/FvwmButtons/FvwmButtons.c (DeadPipeCleanup):
+	Add XSync() call back.
+
+	This won't hurt, and for broken applications, will make them work again.
+	When will a WM *stop* being a means to circumvent bugs in applications?
+
 2011-08-21  Thomas Adam <thomas@fvwm.org>
 	* modules/FvwmScript/Instructions.c (FuncGetOutput):
 	Fix reading of output via GetOutput.
