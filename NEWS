@@ -29,6 +29,12 @@ Changes in stable CVS HEAD (Not yet released)
     conjunction with "direction automatic" to warp the pointer to the
     appropriate window edge.
 
+  - Couple of changes to the Move command:
+        - The EWMH working area is now honoured by default.
+        - To move a window ignoring the working area, the option
+          "ewmhiwa" can be used, similar to how the Maximize
+          command works.
+
 * Bug fixes:
 
     None

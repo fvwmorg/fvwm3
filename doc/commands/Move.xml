@@ -51,13 +51,14 @@
 			><arg choice='opt'>Warp</arg
 		></arg
 		><arg choice='opt'>pointer</arg
-	></group>
+        ><arg choice='opt'>ewmhiwa</arg>
+    </group>
 </cmdsynopsis>
 
 <para>Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window is moved.  If called from
 the root window then the user is allowed to select the target
-window.</para>
+window.  By default, the EWMH working area is honoured.</para>
 
 <para>If the literal option <fvwmopt cmd="Move" opt="screen"/> followed by a
 <replaceable>screen</replaceable>
@@ -76,7 +77,11 @@ argument
 is given, the top left corner of the window is moved to the
 pointer position before starting the operation; this is mainly
 intended for internal use by modules like
-<fvwmref mod="FvwmPager"/>.</para>
+<fvwmref mod="FvwmPager"/>.
+If the optional argument
+<fvwmopt cmd="Move" opt="ewmhiwa"/>
+is given, then the window position will ignore the working area
+(such as ignoring any values set via <fvwmref cmd="EwmhBaseStruts"/>).</para>
 
 <para>The operation can be aborted with <keysym>Escape</keysym> or any mouse
 button not set to place the window. By default mouse button 2 is set to cancel

@@ -444,13 +444,15 @@ int GetMoveArguments(
 {
 	char *s1 = NULL;
 	char *s2 = NULL;
-	char *warp = NULL;
+	char *token = NULL;
 	char *action;
 	char *naction;
 	int scr_x = 0;
 	int scr_y = 0;
 	int scr_w = Scr.MyDisplayWidth;
 	int scr_h = Scr.MyDisplayHeight;
+	Bool use_working_area = True;
+	Bool global_flag_parsed = False;
 	int retval = 0;
 
 	if (!paction)
@@ -490,14 +492,39 @@ int GetMoveArguments(
 		action = GetNextToken(action, &s1);
 	}
 	action = GetNextToken(action, &s2);
-	if (fWarp)
+	while (!global_flag_parsed)
 	{
-		warp = PeekToken(action, &naction);
-		if (StrEquals(warp, "Warp"))
+		token = PeekToken(action, &naction);
+		if (!token)
 		{
-			*fWarp = True;
+			global_flag_parsed = True;
+			break;
+		}
+
+		if (StrEquals(token, "Warp"))
+		{
+			action = naction;
+			if (fWarp)
+			{
+				*fWarp = True;
+			}
+		}
+		else if (StrEquals(token, "ewmhiwa"))
+		{
+			use_working_area = False;
 			action = naction;
 		}
+		else
+		{
+			global_flag_parsed = True;
+		}
+	}
+
+	if (use_working_area)
+	{
+		EWMH_GetWorkAreaIntersection(
+			NULL, &scr_x, &scr_y, &scr_w, &scr_h,
+			EWMH_USE_WORKING_AREA);
 	}
 
 	if (s1 != NULL && s2 != NULL)
