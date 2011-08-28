@@ -847,6 +847,19 @@ static int FindScreen(
 	return screen;
 }
 
+/* Given pointer coordinates, return the screen the pointer is on.
+ *
+ * Perhaps most useful with $[pointer.screen]
+ */
+int FScreenOfPointerXY(int x, int y)
+{
+	int pscreen;
+
+	pscreen = FindScreenOfXY(x, y);
+
+	return (pscreen > 0) ? --pscreen : pscreen;
+}
+
 /* Returns the specified screens geometry rectangle.  screen can be a screen
  * number or any of the values FSCREEN_GLOBAL, FSCREEN_CURRENT,
  * FSCREEN_PRIMARY or FSCREEN_XYPOS.  The arg union only has a meaning for

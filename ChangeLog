@@ -1,4 +1,14 @@
 2011-08-28  Thomas Adam <thomas@fvwm.org>
+	* libs/FScreen.c (FScreenOfPointerXY):
+	* libs/FScreen.h:
+	Introduce wrapper around static function FindScreenOfXY() to determine
+	which screen the pointer is on, and return it as something which can be
+	used through parameter expansion (presumably in configs?)
+
+	* fvwm/expand.c (expand_vars_extended):
+	Expand VAR_POINTER_SCREEN.
+
+2011-08-28  Thomas Adam <thomas@fvwm.org>
 	* fvwm/move_resize.c (GetMoveArguments):
 	Add ewmhiwa option
 

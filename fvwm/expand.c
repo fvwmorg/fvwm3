@@ -102,6 +102,7 @@ static char *function_vars[] =
 	"pointer.wy",
 	"pointer.x",
 	"pointer.y",
+	"pointer.screen",
 	"schedule.last",
 	"schedule.next",
 	"screen",
@@ -175,6 +176,7 @@ enum
 	VAR_POINTER_WY,
 	VAR_POINTER_X,
 	VAR_POINTER_Y,
+	VAR_POINTER_SCREEN,
 	VAR_SCHEDULE_LAST,
 	VAR_SCHEDULE_NEXT,
 	VAR_SCREEN,
@@ -835,6 +837,13 @@ static signed int expand_vars_extended(
 		}
 		val = (is_x) ? x : y;
 		break;
+	case VAR_POINTER_SCREEN:
+		is_numeric = True;
+		FQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
+				&JunkX, &JunkY, &x, &y, &JunkMask);
+		val = FScreenOfPointerXY(x, y);
+		break;
+
 	case VAR_VERSION_NUM:
 		string = VERSION;
 		break;

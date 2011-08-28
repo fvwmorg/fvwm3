@@ -1,4 +1,8 @@
 2011-08-28  Thomas Adam <thomas@fvwm.org>
+	* fvwm/expansion.xml:
+	Explain $[pointer.screen]
+
+2011-08-28  Thomas Adam <thomas@fvwm.org>
 	* doc/commands/Move.xml:
 	Explain ewmhiwa option to Move command.
 

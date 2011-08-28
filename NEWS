@@ -35,6 +35,9 @@ Changes in stable CVS HEAD (Not yet released)
           "ewmhiwa" can be used, similar to how the Maximize
           command works.
 
+  - New expansion placeholder $[pointer.screen] to return the screen number
+    the pointer is on.
+
 * Bug fixes:
 
     None

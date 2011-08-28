@@ -350,7 +350,16 @@ command can be used:</para>
 	variables are not expanded.
       </para>
     </listitem>
-  </varlistentry>
+    </varlistentry>
+  <varlistentry>
+    <term>$[pointer.screen]</term>
+    <listitem>
+        <para>
+        The screen number the pointer is currently on.  Returns 0 if
+        Xinerama is not enabled.
+    </para>
+    </listitem>
+    </varlistentry>
   <varlistentry>
     <term>$[screen]</term>
     <listitem>
