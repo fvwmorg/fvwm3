@@ -1962,7 +1962,7 @@ void EWMH_fullscreen(FvwmWindow *fw)
 	get_window_borders(fw, &b);
 	get_page_offset_check_visible(&page_x, &page_y, fw);
 	sprintf(
-		cmd, "ResizeMoveMaximize %dp %dp +%dp +%dp",
+		cmd, "ResizeMoveMaximize %dp %dp +%dp +%dp ewmhiwa",
 		scr_g.width, scr_g.height,
 		scr_g.x - b.top_left.width + page_x,
 		scr_g.y - b.top_left.height + page_y);

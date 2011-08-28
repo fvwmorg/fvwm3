@@ -1,4 +1,8 @@
 2011-08-28  Thomas Adam <thomas@fvwm.org>
+	* fvwm/ewmh.c (EWMH_fullscreen):
+	Add "ewmhiwa" option when a client goes fullscreen
+
+2011-08-28  Thomas Adam <thomas@fvwm.org>
 	* libs/FScreen.c (FScreenOfPointerXY):
 	* libs/FScreen.h:
 	Introduce wrapper around static function FindScreenOfXY() to determine
