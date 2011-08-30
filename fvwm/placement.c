@@ -1674,8 +1674,13 @@ static int __place_window(
 	}
 
 	if (SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAPPERCENT &&
-	    SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAP)
+	    SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAP &&
+	    SPLACEMENT_MODE(&pstyle->flags) != PLACE_POSITION)
 	{
+		/* TA:  In the case of PositionPlacement, the "ewmhiwa" option
+		 * will have already modified this for us -- so don't do it
+		 * for this placement policy.
+		 */
 		EWMH_GetWorkAreaIntersection(
 			fw, &screen_g.x, &screen_g.y, &screen_g.width,
 			&screen_g.height,

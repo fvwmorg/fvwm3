@@ -1,3 +1,15 @@
+2011-08-30  Thomas Adam <thomas@fvwm.org>
+	* fvwm/placement.c (__place_window):
+	Don't assume PositionPlacement can modify EWMH working area
+
+	Because PositionPlacement uses the same mechanics as the Move command,
+	and this now has the ability to check for the EWMH working area via
+	"ewmhiwa", etc., let that modify it for us if the option is given.
+
+	This makes things like the following possible:
+
+		Style teddybear PositionPlacement screen 1 0p 0p ewmhiwa
+
 2011-08-28  Thomas Adam <thomas@fvwm.org>
 	* fvwm/ewmh.c (EWMH_fullscreen):
 	Add "ewmhiwa" option when a client goes fullscreen
