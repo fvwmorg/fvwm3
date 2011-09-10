@@ -197,6 +197,7 @@ ewmh_atom ewmh_atom_window_type[] =
 	ENTRY("_NET_WM_WINDOW_TYPE_MENU",    XA_ATOM, ewmh_HandleMenu),
 	ENTRY("_NET_WM_WINDOW_TYPE_NORMAL",  XA_ATOM, ewmh_HandleNormal),
 	ENTRY("_NET_WM_WINDOW_TYPE_TOOLBAR", XA_ATOM, ewmh_HandleToolBar),
+	ENTRY("_NET_WM_WINDOW_TYPE_NOTIFICATION", XA_ATOM, ewmh_HandleNotification),
 	{NULL,0,0,0}
 };
 
@@ -1528,6 +1529,23 @@ int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 	S_SET_DO_CIRCULATE_SKIP(SCC(*style), 1);
 
 	/* no title ? MWM hints should be used by the app but ... */
+
+	return 1;
+}
+
+int ewmh_HandleNotification(EWMH_CMD_ARGS)
+{
+	/* fw->ewmh_window_type is generally used by FvwmIdent, but for this
+	 * EWMH type it is not used.  Reporting on unmanaged windows with
+	 * FvwmIdent won't work anyway as the click to the window is eaten.
+	 * So although setting this is a NOP, it might be useful for things in
+	 * the future.
+	 */
+	fw->ewmh_window_type = EWMH_WINDOW_TYPE_NOTIFICATION_ID;
+
+	style->flags.is_unmanaged = 1;
+	style->flag_mask.is_unmanaged = 1;
+	style->change_mask.is_unmanaged = 1;
 
 	return 1;
 }

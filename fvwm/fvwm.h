@@ -948,6 +948,7 @@ typedef struct FvwmWindow
 #define EWMH_WINDOW_TYPE_MENU_ID      4
 #define EWMH_WINDOW_TYPE_NORMAL_ID    5
 #define EWMH_WINDOW_TYPE_TOOLBAR_ID   6
+#define EWMH_WINDOW_TYPE_NOTIFICATION_ID 7
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
 	 */

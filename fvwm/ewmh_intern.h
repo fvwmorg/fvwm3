@@ -102,6 +102,7 @@ int ewmh_HandleDock(EWMH_CMD_ARGS);
 int ewmh_HandleMenu(EWMH_CMD_ARGS);
 int ewmh_HandleNormal(EWMH_CMD_ARGS);
 int ewmh_HandleToolBar(EWMH_CMD_ARGS);
+int ewmh_HandleNotification(EWMH_CMD_ARGS);
 
 void ewmh_AddToKdeSysTray(FvwmWindow *fw);
 void ewmh_SetWorkArea(void);
