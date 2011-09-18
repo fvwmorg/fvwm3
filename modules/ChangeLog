@@ -1,3 +1,7 @@
+2011-09-18  Thomas Adam <thomas@fvwm.org>
+	* modules/FvwmIconMan/FvwmIconMan.c (main):
+	Remove unnecessary strncasecmp()
+
 2011-08-27  Thomas Adam <thomas@fvwm.org>
 	* modules/FvwmButtons/FvwmButtons.c (DeadPipeCleanup):
 	Add XSync() call back.

@@ -223,8 +223,7 @@ main(int argc, char **argv)
 
 	if (argc >= 7)
 	{
-		if (strcasecmp(argv[6], "Transient")==0 ||
-			strcasecmp(argv[6], "-Transient") == 0)
+		if (strcasecmp(argv[6], "-Transient") == 0)
 		{
 			globals.transient = 1;
 			
