@@ -63,7 +63,7 @@ slashes ('/').  The last style in these groups is the default.
 <emphasis remap='I'>StippledIconTitle</emphasis> / <emphasis remap='I'>!StippledIconTitle</emphasis>,
 <emphasis remap='I'>IndexedWindowName</emphasis> / <emphasis remap='I'>ExactWindowName</emphasis>,
 <emphasis remap='I'>IndexedIconName</emphasis> / <emphasis remap='I'>ExactIconName</emphasis>,
-<emphasis remap='I'>TitleFormat</emphasis> / <emphasis remap='I'>!Borders</emphasis> / <emphasis remap='I'>Borders</emphasis>,
+<emphasis remap='I'>TitleFormat</emphasis> / <emphasis remap='I'>IconTitleFormat</emphasis> / <emphasis remap='I'>!Borders</emphasis> / <emphasis remap='I'>Borders</emphasis>,
 <emphasis remap='I'>!Handles</emphasis> / <emphasis remap='I'>Handles</emphasis>,
 <emphasis remap='I'>WindowListSkip</emphasis> / <emphasis remap='I'>WindowListHit</emphasis>,
 <emphasis remap='I'>CirculateSkip</emphasis> / <emphasis remap='I'>CirculateHit</emphasis>,
@@ -716,6 +716,11 @@ visible title altogether.  For example:</para>
 
 <para>Simply because the placeholder '%z' isn't supported.  This is not a bug
 but rather a facet of how the formatting parser works.</para>
+
+<para><fvwmopt cmd="Style" opt="IconTitleFormat"/> describes what the visible
+icon name of a window should look like, with the options being the same as
+<fvwmopt cmd="Style" opt="TitleFormat"/>.
+</para>
 
 </section>
 
