@@ -643,6 +643,21 @@ static char *interpolate_titleformat_name(FvwmWindow *fw, window_style *style,
 				}
 				strcat(stringbuf, fw->class.res_class);
 				break;
+			case 'i':
+				if (strlen(stringbuf) +
+					strlen(fw->icon_name.name) >
+					MAX_VISIBLE_NAME_LEN)
+				{
+					fvwm_msg(WARN,
+					"interpolate_titleformat_name",
+					"Visible name is too long based on "
+					"TitleFormat.  Not expanding further.");
+
+					break;
+				}
+
+				strcat(stringbuf, fw->icon_name.name);
+				break;
 			case 'r':
 				if (strlen(stringbuf) +
 					strlen(fw->class.res_name) >

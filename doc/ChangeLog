@@ -1,3 +1,7 @@
+2011-09-26  Chris Siebenmann <cks-fvwm@cs.toronto.edu>
+	* commands/Style.xml:
+	Document '%i' option for IconTitleFormat (and TitleFormat)
+
 2011-08-28  Thomas Adam <thomas@fvwm.org>
 	* fvwm/expansion.xml:
 	Explain $[pointer.screen]

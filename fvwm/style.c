@@ -92,6 +92,7 @@ static Bool __validate_titleformat_string(const char *formatstr)
 			case 'n':
 			case 'r':
 			case 't':
+			case 'i':
 			case 'I':
 				ret_condition = True;
 				break;

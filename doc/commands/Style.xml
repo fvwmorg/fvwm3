@@ -671,6 +671,10 @@ valid:</para>
         <listitem><para>Insert the window's name.</para></listitem>
 </varlistentry>
 <varlistentry>
+        <term><emphasis remap='B'>%i</emphasis></term>
+        <listitem><para>Insert the window's icon name.</para></listitem>
+</varlistentry>
+<varlistentry>
         <term><emphasis remap='B'>%c</emphasis></term>
         <listitem><para>Insert the window's class name.</para></listitem>
 </varlistentry>
