@@ -1,3 +1,9 @@
+2011-09-30  Thomas Adam <thomas@fvwm.org>
+	* configure.ac:
+	* NEWS
+	* docs/ANNOUNCE:
+	Update key files for 2.6.3 release.
+
 2011-09-26  Chris Siebenmann <cks-fvwm@cs.toronto.edu>
 	* fvwm/add_window.c (interpolate_titleformat_name):
 	* fvwm/style.c (__validate_titleformat_string):

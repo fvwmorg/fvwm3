@@ -1,19 +1,40 @@
-FVWM 2.6.2
+FVWM 2.6.3
 ==========
 
 * New features:
 
-  - New MenuStyle "UniqueHotkeyActivatesImmediate" and its
-    negation "!UniqueHotkeyActivatesImmediate" to retain the menu
-    until the user presses one of the menu keybindings to enact
-    that change in the case where there's only one item defined in
-    the menu at the specified hotkey.
+  - New Style commands:
+
+        TitleFormat
+        IconTitleFormat
+
+        Used to specify a window's visible name.  These new options
+        deprecate the older styles:
+
+        IndexedWindowName
+        IndexedIconName
+        ExactWindowName
+        ExactIconName
+
+  - New Resize argument to direction:  "automatic" which works out,
+    automatically, which direction a window should be resized in
+    based on which quadrant the pointer is in on the window -- this
+    is best observed by the grid formed from "ResizeOutline", as the
+    shape of this grid is used when calculating this.
+
+    Furthermore, the existing option of "warptoborder" can be used in
+    conjunction with "direction automatic" to warp the pointer to the
+    appropriate window edge.
+
+  - Couple of changes to the Move command:
+        - The EWMH working area is now honoured by default.
+        - To move a window ignoring the working area, the option
+          "ewmhiwa" can be used, similar to how the Maximize
+          command works.
+
+  - New expansion placeholder $[pointer.screen] to return the screen number
+    the pointer is on.
 
 * Bug fixes:
 
-  - Fix infinite loop crash when FvwmButtons quits/restarts with
-    RootTransparent colorsets.
-  - Fix setting window states across FVWM restarts where those
-    windows do not set WM_COMMAND.
-  - Windows are now correctly restored when coming out of
-    fullscreen mode.
+    - A few minor ones; nothing user-visible per se.

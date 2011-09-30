@@ -2,7 +2,7 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in stable CVS HEAD (Not yet released)
+Changes in stable release 2.6.3 (30-Sept-2011)
 
 * New features:
 
@@ -40,7 +40,7 @@ Changes in stable CVS HEAD (Not yet released)
 
 * Bug fixes:
 
-    None
+    - A few minor ones; nothing user-visible per se.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.2 (06-Aug-2011)
