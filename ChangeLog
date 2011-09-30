@@ -1,6 +1,11 @@
 2011-09-30  Thomas Adam <thomas@fvwm.org>
 	* configure.ac:
-	* NEWS
+	* NEWS:
+	Updated for 2.6.4
+
+2011-09-30  Thomas Adam <thomas@fvwm.org>
+	* configure.ac:
+	* NEWS:
 	* docs/ANNOUNCE:
 	Update key files for 2.6.3 release.
 
