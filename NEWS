@@ -12,6 +12,9 @@ Changes in CVS HEAD (not yet released)
 
   - FvwmRearrange now understands the "ewmhiwa" option when placing
     windows.
+  - Client gravity for subwindows is honoured for reparenting
+    windows, such as with XEmbed, when changing the parent's
+    geometry.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.3 (30-Sept-2011)

@@ -1,3 +1,12 @@
+2011-10-15  Thomas Adam <thomas@fvwm.org>
+	* fvwm/frame.c (frame_free_move_resize_args):
+	Don't restore the client's gravity.
+
+	There might be a chance some clients with a gravity other than Static
+	(such as non-NW gravity) might not react well -- but setting the gravity
+	to the main window hint will break clients being remapped as subwindows,
+	c.f. XEmbed.
+
 2011-09-30  Thomas Adam <thomas@fvwm.org>
 	* configure.ac:
 	* NEWS:

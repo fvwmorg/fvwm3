@@ -1956,7 +1956,19 @@ void frame_free_move_resize_args(
 	frame_setup_shape(fw, mra->end_g.width, mra->end_g.height, fw->wShaped);
 	if (mra->flags.do_restore_gravity)
 	{
-		mra->grav.client_grav = fw->hints.win_gravity;
+		/* TA:  2011-09-04: There might be a chance some clients with
+		 *      a gravity other than Static (such as non-NW gravity)
+		 *      might not react well -- but setting the gravity to the
+		 *      main window hint will break clients being remapped as
+		 *      subwindows, c.f. XEmbed.
+		 *
+		 *      Note that we should probably consider handling
+		 *      GravityNotify events ourselves, since we already set
+		 *      StructureNotify and SubstructureNotify events on
+		 *      FW_W_PARENT for example.
+		 *
+		 * mra->grav.client_grav = fw->hints.win_gravity;
+		 */
 		frame_set_decor_gravities(
 			fw, &mra->grav,
 			(mra->flags.do_set_bit_gravity) ? 2 : 0);
