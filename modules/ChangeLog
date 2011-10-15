@@ -1,3 +1,9 @@
+2011-10-15  Thomas Adam <thomas@fvwm.org>
+	* modules/FvwmRearrange/FvwmRearrange.c (parse_args,
+	move_resize_raise_window):
+	Make FvwmRearrange understand Move's "ewmhiwa" option when calculating
+	where to place its windows.
+
 2011-09-18  Thomas Adam <thomas@fvwm.org>
 	* modules/FvwmIconMan/FvwmIconMan.c (main):
 	Remove unnecessary strncasecmp()

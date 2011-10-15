@@ -87,6 +87,7 @@ int maxnum = 0;
 
 int do_maximize = 0;
 int do_animate = 0;
+int do_ewmhiwa = 0;
 
 char FvwmTile;
 char FvwmCascade;
@@ -250,13 +251,16 @@ void move_resize_raise_window(
 	window_item *wi, int x, int y, int w, int h)
 {
 	static char msg[64];
+	const char *ewmhiwa = do_ewmhiwa ?
+		"ewmhiwa" : "";
 
 	if (resize)
 	{
 		const char *function = do_maximize?
 			"ResizeMoveMaximize":
 			"ResizeMove";
-		sprintf(msg, "%s %dp %dp %up %up", function, w, h, x, y);
+		sprintf(msg, "%s %dp %dp %up %upi %s", function, w, h, x, y,
+			ewmhiwa);
 		SendText(fd, msg, wi->frame);
 	}
 	else
@@ -265,9 +269,10 @@ void move_resize_raise_window(
 			"ResizeMoveMaximize":
 			do_animate ? "AnimatedMove" : "Move";
 		if (do_maximize)
-			sprintf(msg, "%s keep keep %up %up", function, x, y);
+			sprintf(msg, "%s keep keep %up %up %s", function, x, y,
+				ewmhiwa);
 		else
-			sprintf(msg, "%s %up %up", function, x, y);
+			sprintf(msg, "%s %up %up %s", function, x, y, ewmhiwa);
 		SendText(fd, msg, wi->frame);
 	}
 
@@ -467,6 +472,9 @@ void parse_args(char *s, int argc, char *argv[], int argi)
     }
     else if (!strcmp(argv[argi], "-incy") && ((argi + 1) < argc)) {
       incy = atopixel(argv[++argi], dheight);
+    }
+    else if (!strcmp(argv[argi], "-ewmhiwa")) {
+	    do_ewmhiwa = 1;
     }
     else if (!strcmp(argv[argi], "-maximize")) {
       do_maximize = 1;

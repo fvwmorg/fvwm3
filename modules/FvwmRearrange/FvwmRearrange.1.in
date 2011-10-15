@@ -127,6 +127,9 @@ Causes transient windows to also be affected (implied by \-a).
 Tile windows. This argument must be the first on the command line.
 .IP \-u
 Causes untitled windows to also be affected (implied by \-a).
+.IP \-ewmhiwa
+When rearranging windows, make the calculation ignore the working area, such
+as EwmhBaseStruts; by default, FvwmRearrange will honour the working area.
 
 Up to four numbers can be placed on the command line that are not
 switches.  The first pair specify an x and y offset to start the first

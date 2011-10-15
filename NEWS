@@ -10,7 +10,8 @@ Changes in CVS HEAD (not yet released)
 
 * Bug fixes:
 
-  N/A
+  - FvwmRearrange now understands the "ewmhiwa" option when placing
+    windows.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.3 (30-Sept-2011)
