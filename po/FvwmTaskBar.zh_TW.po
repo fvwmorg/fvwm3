@@ -1,0 +1,32 @@
+# Traditional Chinese Messages for the FvwmTaskBar.
+# Copyright (C) 2004-2005 fvwm workers.
+# This file is distributed under the same license as the fvwm package.
+# Funda Wang <fundawang@linux.net.cn>, 2004.
+# Wei-Lun Chao <chaoweilun@gmail.com>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm 2.7.0\n"
+"POT-Creation-Date: 2003-04-11 12:43+0200\n"
+"PO-Revision-Date: 2008-11-25 16:16+0800\n"
+"Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
+"Language-Team: zh_TW <zh-l10n@linux.org.tw>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../modules/FvwmTaskBar/Goodies.c:462
+msgid "No new mail"
+msgstr "沒有新郵件"
+
+#: ../modules/FvwmTaskBar/Goodies.c:466
+msgid "You have new mail"
+msgstr "您有新郵件"
+
+#: ../modules/FvwmTaskBar/Goodies.c:470
+msgid "You have mail"
+msgstr "您有郵件"
+
+#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1320
+msgid "Click here to start"
+msgstr "點擊此處開始"
