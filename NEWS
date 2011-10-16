@@ -15,6 +15,11 @@ Changes in CVS HEAD (not yet released)
   - Client gravity for subwindows is honoured for reparenting
     windows, such as with XEmbed, when changing the parent's
     geometry.
+  - Conditional command processing of !Layer n, as in:
+    
+        Next (Xteddy, !Layer 4) Echo cuddles
+    
+    has now been fixed.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.3 (30-Sept-2011)

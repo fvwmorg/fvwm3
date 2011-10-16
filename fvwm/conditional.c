@@ -690,7 +690,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 				tmp = SkipNTokens(tmp, 1);
 			}
 		}
-		else if (StrEquals(condition, "Layer"))
+		else if (StrEquals(cond, "Layer"))
 		{
 			if (sscanf(tmp, "%d", &mask->layer))
 			{
