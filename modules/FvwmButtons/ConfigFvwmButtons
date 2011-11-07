@@ -18,7 +18,7 @@ DestroyModuleConfig FvwmButtons: *
 *FvwmButtons: (2x1, Frame 2, Swallow(UseOld,NoHints,Respawn) "xload" `Exec exec xload -bg bisque3 -fg black -update 5 -nolabel`)
 *FvwmButtons: (End)
 # The 8 pixels in -108 are to account for the frames:
-*FvwmButtons: (1x2, Panel(up, indicator, delay 5000, steps 5, position Root 46 -108p) FvwmPagerSubPanel "Module FvwmPager FvwmPagerSubPanel 1 5")
+*FvwmButtons: (1x2, Panel(up, indicator, position Root 46 -108p) FvwmPagerSubPanel "Module FvwmPager FvwmPagerSubPanel 1 5")
 *FvwmButtons: (2x2, Frame 2, Swallow(UseOld) "Inline" "Module FvwmPager Inline 0 0")
 *FvwmButtons: (End)
 
