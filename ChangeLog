@@ -1,3 +1,7 @@
+2011-11-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+	* configure.ac:
+	AC_SUBST(SED)
+
 2011-10-16  Thomas Adam <thomas@fvwm.org>
 	* fvwm/conditional.c (CreateConditionMask):
 	Fix processing of Layer conditional command

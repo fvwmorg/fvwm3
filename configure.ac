@@ -73,6 +73,7 @@ AM_CONFIG_HEADER(config.h)
 
 # check for programs needed to build html docs
 AC_CHECK_PROG(SED, sed, sed, "")
+AC_SUBST(SED)
 
 #!!!
 PERL=""

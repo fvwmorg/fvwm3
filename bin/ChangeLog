@@ -1,3 +1,8 @@
+2011-11-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm-perllib.in:
+	used @SED@ from configure.ac
+
 2011-05-07    <despen@verizon.net>
 	* fvwm-menu-desktop.1.in: Some updates, needs a lot of work. Later.
 	* fvwm-menu-desktop.in:

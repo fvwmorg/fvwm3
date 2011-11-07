@@ -466,7 +466,7 @@ my $man_converter = $do_man ? " | nroff -man | $pager" : "";
 open(MANPIPE, $do_cat ? "| pod2text '$file' | $pager" :
 	"| pod2man --section 3 --release 'fvwm $version$version_info'" .
 		" --center 'Fvwm Perl library' '$file'" .
-		" | sed 's/<STANDARD INPUT>/perllib/ig'$man_converter")
+		" | @SED@ 's/<STANDARD INPUT>/perllib/ig'$man_converter")
 	or die "Can't open pipe to pod/man viewer\n";
 print MANPIPE $text
 	or die "Can't write to pod/man viewer\n";
