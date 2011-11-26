@@ -1,3 +1,12 @@
+2011-11-26  Thomas Adam <thomas@fvwm.org>
+	* modules/FvwmButtons/FvwmButtons.c (ButtonPressProcess):
+	Remove calls to XDestroyWindow for -transient buttons
+
+	Rather than forcibly destroying the window which has been swallowed when
+	closing FvwmButtons from a -transient option, instead let the atexit()
+	routine handle this for us, which also correctly handles Swallowed
+	state, etc.  Noticed by David Fries.
+
 2011-11-07  Thomas Adam <thomas@fvwm.org>
 	* modules/FvwmButtons/ConfigFvwmButtons:
 	Remove delay to panelised FvwmPager

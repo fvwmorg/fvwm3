@@ -995,13 +995,6 @@ void ButtonPressProcess (button_info *b, char **act)
 					i2++;
 				}
 				strcat(tmp.name ,&(*act)[i2]);
-				if (is_transient)
-				{
-					/* delete the window before continuing
-					 */
-					XDestroyWindow(Dpy, MyWindow);
-					XSync(Dpy, 0);
-				}
 				SendText(fd,tmp.name,0);
 				if (is_transient)
 				{
@@ -1020,13 +1013,6 @@ void ButtonPressProcess (button_info *b, char **act)
 				SaveButtons(UberButton);
 			else
 			{
-				if (is_transient)
-				{
-					/* delete the window before continuing
-					 */
-					XDestroyWindow(Dpy, MyWindow);
-					XSync(Dpy, 0);
-				}
 				SendText(fd,*act,0);
 				if (is_transient)
 				{
