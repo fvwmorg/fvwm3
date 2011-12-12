@@ -62,8 +62,8 @@ declarations, or it can be bound to a menu, mouse button, or keystroke to
 invoke it later.
 
 If you wish to run FvwmIconMan in a transient mode, such as with the built in
-window list, then pass Transient as an argument. The invocation "Module
-FvwmIconMan Transient" will do nicely. In this mode, FvwmIconMan will pop up
+window list, then pass "-Transient" as an argument. The invocation "Module
+FvwmIconMan -Transient" will do nicely. In this mode, FvwmIconMan will pop up
 one manager window directly under the cursor. When the mouse button is
 released, it will execute the appropriate action, and then exit.  Things are
 somewhat complicated by the fact that you can specify that FvwmIconMan creates
