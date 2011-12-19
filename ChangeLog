@@ -1,3 +1,8 @@
+2011-12-19  Thomas Adam  <thomas@fvwm.org>
+	* bin/fvwm-menu-desktop.in:
+	Add back "/usr/share/applications" to the list in
+	get_KDE_legacy_dirs().
+
 2011-11-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 	* configure.ac:
 	AC_SUBST(SED)

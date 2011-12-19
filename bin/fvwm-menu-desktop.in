@@ -2000,6 +2000,7 @@ sub get_KDE_legacy_dirs
     my %used;
     my @ret = ();
     my @legacy_dirs = (qw(
+        /usr/share/applications
         /etc/opt/kde3/share/applnk
         /opt/kde3/share/applnk
         )
