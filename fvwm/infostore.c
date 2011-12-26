@@ -42,6 +42,7 @@ static MetaInfo *mi_store;
 /* ---------------------------- forward declarations ----------------------- */
 
 static void delete_metainfo(const char *);
+static int get_metainfo_length(void);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -131,6 +132,39 @@ inline char *get_metainfo_value(const char *key)
 	}
 
 	return NULL;
+}
+
+static inline int get_metainfo_length(void)
+{
+	MetaInfo *mi;
+	int count = 0;
+
+	for(mi = mi_store; mi; mi = mi->next)
+		count++;
+
+	return count;
+}
+
+void print_infostore(void)
+{
+	MetaInfo *mi;
+
+	fprintf(stderr, "Current items in infostore (key, value):\n\n");
+
+	if (get_metainfo_length() == 0)
+	{
+		fprintf(stderr,
+			"No items are currently stored in the infostore.\n");
+		return;
+	}
+
+	for(mi = mi_store; mi; mi = mi->next)
+	{
+		fprintf(stderr, "%s\t%s\n", mi->key, mi->value);
+	}
+
+	return;
+
 }
 
 /* ---------------------------- interface functions ------------------------ */

@@ -73,6 +73,7 @@
 #include "style.h"
 #include "move_resize.h"
 #include "menus.h"
+#include "infostore.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -2719,6 +2720,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	else if (StrEquals(subject, "Bindings"))
 	{
 		print_bindings();
+	}
+	else if (StrEquals(subject, "InfoStore"))
+	{
+		print_infostore();
 	}
 	else
 	{

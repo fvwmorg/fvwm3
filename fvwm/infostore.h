@@ -28,5 +28,6 @@ typedef struct MetaInfo
 MetaInfo *new_metainfo(void);
 void insert_metainfo(char *, char *);
 char *get_metainfo_value(const char *);
+void print_infostore(void);
 
 #endif /* INFOSTORE_H */
