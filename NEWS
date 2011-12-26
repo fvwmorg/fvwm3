@@ -14,6 +14,8 @@ Changes in CVS HEAD (not yet released)
     transient FvwmIconMan must be created with "-Transient" as in:
 
     Module FvwmIconMan -Transient
+  - New command InfoStore -- to store key/value pairs of information
+    to relieve the burdon of the SetEnv command.
 
 * Bug fixes:
 
