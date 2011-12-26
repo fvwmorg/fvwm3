@@ -330,6 +330,9 @@ const func_t func_table[] =
 	CMD_ENT("imagepath", CMD_ImagePath, F_IMAGE_PATH, 0, 0),
 	/* - Directories to search for images */
 
+	CMD_ENT("infostore", CMD_InfoStore, F_INFOSTORE, 0, 0),
+	/* Stores key/value pairs. */
+
 	CMD_ENT(PRE_KEEPRC, CMD_KeepRc, F_KEEPRC, 0, 0),
 	/* KeepRc - Do not modify the previous command return code */
 

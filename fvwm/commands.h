@@ -76,6 +76,7 @@ enum
 	F_ICON_PATH,
 	F_IGNORE_MODIFIERS,
 	F_IMAGE_PATH,
+	F_INFOSTORE,
 	F_KEEPRC,
 	F_KEY,
 	F_KILL_MODULE,
@@ -293,6 +294,7 @@ P(Iconify);
 P(IconPath);
 P(IgnoreModifiers);
 P(ImagePath);
+P(InfoStore);
 P(KeepRc);
 P(Key);
 P(KillModule);
