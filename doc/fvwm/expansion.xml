@@ -445,7 +445,16 @@ command can be used:</para>
 	<fvwmref cmd="LocalePath"/> command.
       </para>
     </listitem>
-  </varlistentry>
+</varlistentry>
+  <varlistentry>
+      <term>$[infostore.<replaceable>key</replaceable>]</term>
+      <listitem>
+          <para>Return the value of the item stored in the
+              InfoStore at the given <replaceable>key</replaceable>.
+                If no key is present, the unexpanded string is returned.
+            </para>
+        </listitem>
+    </varlistentry>
   <varlistentry>
     <term>$[...]</term>
     <listitem>

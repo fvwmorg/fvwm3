@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='InfoStoreREmove'>
+<title>InfoStoreRemove</title>
+
+<cmdsynopsis>
+    <command>InfoStoreRemove</command>
+        <arg choice='plain'>
+            <replaceable>key</replaceable>
+        </arg>
+</cmdsynopsis>
+
+<para>Removes an entry at the given
+    <replaceable>key</replaceable> from the InfoStore.  Example:
+</para>
+
+<programlisting>
+InfoStoreRemove teddybearprog
+</programlisting>
+
+</section>

@@ -80,6 +80,8 @@ Iconify
 IconPath
 IgnoreModifiers
 ImagePath
+InfoStoreAdd
+InfoStoreRemove
 Key
 KeepRc
 KillModule

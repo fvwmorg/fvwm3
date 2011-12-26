@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='InfoStoreAdd'>
+<title>InfoStoreAdd</title>
+
+<cmdsynopsis>
+    <command>InfoStoreAdd</command>
+        <arg choice='plain'>
+            <replaceable>key</replaceable>
+        </arg>
+        <arg choice='plain'>
+            <replaceable>value</replaceable>
+        </arg>
+</cmdsynopsis>
+
+<para>Stores the <replaceable>value</replaceable> at the given
+    <replaceable>key</replaceable>.  This is useful to store generic
+    information used in the lifetime of an fvwm config file.  For example
+    storing program preferences for opening video files.
+</para>
+
+<para>The purpose of this command is to store internal information to fvwm
+    which can be used bu fvwm functions, or when opening programs of a
+    certain type.  Previous to this command the only way to do this was
+    via <fvwmref cmd="SetEnv" /> but this is discouraged because it places
+    such information in the environment, which pollutes it and makes the
+    information global to other processes started by fvwm which may then
+    modify them which might not be what's wanted.  Hence the point of
+    <fvwmref cmd="InfoStoreAdd" /> is to still allow for such information to
+    be stored, but kept internal to fvwm.
+</para>
+
+<para>In this way, one can build up as many key/value pairs as needed.
+    Recalling the value of a given key happens through fvwm's usual expansion
+    mechanism.  See the
+    <fvwmref sect="expansion" opt="command_expansion"
+        name="Command Expansion" /> section for more details.  For example:
+</para>
+
+<programlisting>
+    InfoStoreAdd teddybearprog xteddy
+
+    # Echo the value of teddybearprog
+    Echo $[infostore.teddybearprog]
+</programlisting>
+
+<para>Removing an entry from the InfoStore is done with the
+    <fvwmref cmd="InfoStoreRemove" /> command.
+</para>
+
+</section>
