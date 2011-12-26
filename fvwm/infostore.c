@@ -41,7 +41,7 @@ static MetaInfo *mi_store;
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static void delete_metainfo(char *);
+static void delete_metainfo(const char *);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -95,7 +95,7 @@ void insert_metainfo(char *key, char *value)
 	return;
 }
 
-static void delete_metainfo(char *key)
+static void delete_metainfo(const char *key)
 {
 	MetaInfo *mi_current, *mi_prev;
 	mi_prev = NULL;
@@ -120,7 +120,7 @@ static void delete_metainfo(char *key)
 	return;
 }
 
-inline char *get_metainfo_value(char *key)
+inline char *get_metainfo_value(const char *key)
 {
 	MetaInfo *mi_current;
 
