@@ -170,41 +170,13 @@ void print_infostore(void)
 /* ---------------------------- interface functions ------------------------ */
 
 /* ---------------------------- builtin commands --------------------------- */
-void CMD_InfoStore(F_CMD_ARGS)
+void CMD_InfoStoreAdd(F_CMD_ARGS)
 {
 	char *key, *value;
 	char *token;
 
-	/* Accessing the values of this struct happens with the standard FVWM
-	 * expansion code (see expand.c); therefore, we have an optional flag,
-	 * "-d" to delete the entry with the specified key.
-	 */
-	/* FIXME:  TA:  This would disallow using "-d" as a key.  Might need
-	 *         to be a separate command after all.
-	 */
 	token = PeekToken(action, &action);
 	key = value = NULL;
-
-	if (StrEquals(token, "-d"))
-	{
-		/* Get the next item. */
-		token = PeekToken(action, &action);
-
-		if (token && (strcmp(token, "") != 0))
-			key = strdup(token);
-
-		if (!key)
-		{
-			fvwm_msg(ERR, "CMD_InfoStore",
-				"No key given to -d to delete.");
-			return;
-		}
-
-		delete_metainfo(key);
-		free(key);
-
-		return;
-	}
 
 	if (token)
 		key = strdup(token);
@@ -214,13 +186,30 @@ void CMD_InfoStore(F_CMD_ARGS)
 	if (token)
 		value = strdup(token);
 
-	if (!key && !value)
+	if (!key || !value)
 	{
 		fvwm_msg(ERR, "CMD_InfoStore", "Bad arguments given.");
 		return;
 	}
 
 	insert_metainfo(key, value);
+
+	return;
+}
+
+void CMD_InfoStoreRemove(F_CMD_ARGS)
+{
+	char *token;
+
+	token = PeekToken(action, &action);
+
+	if (!token)
+	{
+		fvwm_msg(ERR, "CMD_InfoStoreRemove", "No key given to remove item.");
+		return;
+	}
+
+	delete_metainfo(token);
 
 	return;
 }
