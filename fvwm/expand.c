@@ -37,6 +37,7 @@
 #include "virtual.h"
 #include "colorset.h"
 #include "schedule.h"
+#include "infostore.h"
 #include "libs/FGettext.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
@@ -66,6 +67,7 @@ static char *partial_function_vars[] =
 	"fgsh.cs",
 	"gt.",
 	"hilight.cs",
+	"infostore.",
 	"shadow.cs",
 	NULL
 };
@@ -141,6 +143,7 @@ enum
 	VAR_FGSH_CS,
 	VAR_GT_,
 	VAR_HILIGHT_CS,
+	VAR_INFOSTORE_,
 	VAR_SHADOW_CS
 } partial_extended_vars;
 
@@ -398,6 +401,14 @@ static signed int expand_vars_extended(
 			return -1;
 		}
 		string = _(rest);
+		goto GOT_STRING;
+	case VAR_INFOSTORE_:
+		if (rest == NULL)
+			return -1;
+
+		if ((string = get_metainfo_value(rest)) == NULL)
+			return -1;
+
 		goto GOT_STRING;
 	case VAR_DESK_NAME:
 		if (sscanf(rest, "%d%n", &cs, &n) < 1)
