@@ -1,3 +1,8 @@
+2011-12-30  Thomas Adam  <thomas@fvwm.org>
+	* fvwm-menu-desktop.in:
+	Remove redundant stat(2) calls when performing file-system checks for
+	constructing XDG menus.
+
 2011-11-03  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm-perllib.in:

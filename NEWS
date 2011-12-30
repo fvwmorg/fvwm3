@@ -15,7 +15,9 @@ Changes in CVS HEAD (not yet released)
 
     Module FvwmIconMan -Transient
   - New command InfoStore -- to store key/value pairs of information
-    to relieve the burdon of the SetEnv command.
+    to relieve the burden of the SetEnv command.
+  - Speed-up improvements for fvwm-menu-desktop when generating XDG
+    menus by removing unnecessary stat(2) calls.
 
 * Bug fixes:
 

@@ -462,27 +462,28 @@ sub check_file
     return 'F';
 }
 
+my %__scanmap = ();
 sub scan_AppDir
 {
     my ($pool, $dir, $topdir) = @_;
 
-    check_file($dir);
-
     $topdir = $dir unless defined $topdir;
 
-    return if check_file($dir) ne 'D';
+    return if exists $__scanmap{$dir};
 
     opendir( my $dir_fh, $dir ) or return;
+
     foreach my $entry ( readdir($dir_fh) )
     {
-        if (-f "$dir/$entry" and $entry =~ /\.desktop$/)
+        if ($entry =~ /\.desktop$/)
         {
             read_desktop_entry($pool, "$dir/$entry", $topdir);
         }
-        elsif (-d "$dir/$entry" and $entry !~ /^\.{1,2}$/
+        elsif (-d _ and $entry !~ /^\.{1,2}$/
                 and $entry ne '.hidden')
         {
             scan_AppDir($pool, "$dir/$entry", $topdir);
+            delete $__scanmap{$dir};
         }
     }
     closedir $dir_fh;
@@ -492,8 +493,9 @@ sub scan_DirectoryDir
 {
     my ($pool, $dir, $topdir) = @_;
 
-    check_file($dir);
     $topdir = $dir unless defined $topdir;
+
+    return if exists $__scanmap{$dir};
 
     opendir( my $dir_fh, $dir ) or return;
     foreach my $entry (readdir($dir_fh))
@@ -502,10 +504,11 @@ sub scan_DirectoryDir
         {
             read_directory_entry( $pool, "$dir/$entry", $topdir );
         }
-        elsif (-d "$dir/$entry" and $entry !~ /^\.{1,2}$/
+        elsif (-d _ and $entry !~ /^\.{1,2}$/
                 and $entry ne '.hidden')
         {
             scan_DirectoryDir($pool, "$dir/$entry", $topdir);
+            delete $__scanmap{$dir};
         }
     }
     closedir $dir_fh;
@@ -517,8 +520,6 @@ sub read_directory_entry
 
     unless (defined $Directory_entries{$file})
     {
-        check_file($file);
-
         if ($verbose)
         {
 	        warn "Read directory entry, opening file $file.\n";
@@ -593,7 +594,6 @@ sub read_desktop_entry
   my ($pool, $file, $topdir) = @_;
 
   unless (defined $Desktop_entries{$file}) {
-    check_file($file);
     if ($verbose) {
       warn "Read desktop entry, opening file $file.\n";
     }
@@ -1129,7 +1129,7 @@ sub read_menu
         $basedir =~ s/\/[^\/]*$//;
     }
 
-    unless (check_file($file))
+    unless (-e $file)
     {
         warn "WARNING: '$file' does not exist\n" if $verbose;
         return [ 'Menu', [ {} ] ];
@@ -1153,32 +1153,24 @@ sub read_menu_dir
 {
     my ($dir, $basedir) = @_;
 
-    my @out;
+    my $out = [];
 
     if ($dir !~ /^\// and defined $basedir)
     {
         $dir = "$basedir/$dir";
     }
 
-    if (check_file($dir) ne 'D')
+    # TA:  XXX: FIXME!
+    opendir( my $dir_fh, $dir ) or return $out;
+    foreach my $entry (grep { -f && /\.menu$/ } readdir($dir_fh))
     {
-        return [];
-    }
-
-    opendir( my $dir_fh, $dir );
-    foreach my $entry (readdir($dir_fh))
-    {
-
-        if (-f "$dir/$entry" and $entry =~ /\.menu$/)
-        {
-            my $menu = read_menu("$dir/$entry");
-            $menu = remove_toplevel_Menu($menu);
-            push @out, @$menu;
-        }
+        my $menu = read_menu("$dir/$entry");
+        $menu = remove_toplevel_Menu($menu);
+        push @$out, @$menu;
     }
     closedir $dir_fh;
 
-    return \@out;
+    return $out;
 }
 
 sub quote_xml
@@ -1199,8 +1191,6 @@ sub read_legacy_dir
     $dir =~ s/\/*$//;
 
     $basedir = $dir unless defined $basedir;
-
-    return "" if check_file($dir) ne 'D';
 
     $out = "<Menu>\n";
 
