@@ -18,6 +18,8 @@ Changes in CVS HEAD (not yet released)
     to relieve the burden of the SetEnv command.
   - Speed-up improvements for fvwm-menu-desktop when generating XDG
     menus by removing unnecessary stat(2) calls.
+  - BusyCursor and CursorStyle have been set to make the cursor look
+    like a dot during Read/PipeRead commands, by default.
 
 * Bug fixes:
 

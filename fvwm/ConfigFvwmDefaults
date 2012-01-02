@@ -6,6 +6,11 @@
 #  the new user with no configuration file.
 #  This picks up from where the builtin table in fvwm.c SetRCDefaults ends.
 
+# TA:  2012-01-02:  Set the default cursor style to a dot, if FVWM is busy
+# in a PipeRead or Read operation.
+BusyCursor Read True
+CursorStyle Wait Dot
+
 # Set at least 2 root keys to bring up the builtin menu:
 Silent Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
