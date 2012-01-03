@@ -211,13 +211,6 @@ replace all \fIfvwm\fP beeps with a sound:
 	*FvwmEvent: beep beep.au
 .sp
 .fi
-The toggle_paging event will be supported, as soon, as it's
-resurrected by \fIfvwm\fP:
-.nf
-.sp
-	*FvwmEvent: toggle_paging fwop.au
-.sp
-.fi
 .IP "*FvwmEvent: Delay \fI5\fP"
 Specifies that an event-action will only be executed if it occurs at
 least 5 seconds after the previous event.  Events that occur during

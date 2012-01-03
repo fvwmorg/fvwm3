@@ -29,10 +29,6 @@
 static WinData *fvwm_focus_win = NULL;
 
 typedef struct {
-	Ulong paging_enabled;
-} m_toggle_paging_data;
-
-typedef struct {
 	Ulong desknum;
 } m_new_desk_data;
 
@@ -72,7 +68,6 @@ typedef struct {
 } m_mini_icon_data;
 
 typedef union {
-	m_toggle_paging_data toggle_paging_data;
 	m_new_desk_data      new_desk_data;
 	ConfigWinPacket      add_config_data;
 	m_new_page_data      new_page_data;

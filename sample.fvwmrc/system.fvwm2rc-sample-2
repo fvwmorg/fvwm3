@@ -496,7 +496,6 @@ Key F8		A	MC	Prev (AcceptsFocus) focus
 *FvwmAudio deiconify eject.au
 
 #*FvwmAudio add_window    ??
-#*FvwmAudio toggle_paging ??
 
 #*FvwmAudioDelay 3
 

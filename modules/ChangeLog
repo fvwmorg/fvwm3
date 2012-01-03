@@ -1,3 +1,12 @@
+2012-01-02  Thomas Adam  <thomas@fvwm.org>
+	* modules/FvwmEvent/FvwmEvent.1.in:
+	* modules/FvwmEvent/FvwmEvent.c:
+	* modules/FvwmIconMan/fvwm.c:
+	* modules/FvwmWharf/FvwmWharf.c (process_message):
+	Remove references to M_TOGGLE_PAGING
+
+	This isn't being resurrected by FVWM.
+
 2011-12-12  Thomas Adam <thomas@fvwm.org>
 	* modules/FvwmIconMan/FvwmIconMan.1.in:
 	Mention "Transient" option to FvwmIconMan can now only be specified as

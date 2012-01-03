@@ -176,9 +176,6 @@ static event_entry future_event_table[] =
 #ifdef M_BELL
 	EVENT_ENTRY( "beep", -1 ),
 #endif
-#ifdef M_TOGGLEPAGE
-	EVENT_ENTRY( "toggle_paging", -1 ),
-#endif
 	EVENT_ENTRY(NULL,0)
 }
 #endif

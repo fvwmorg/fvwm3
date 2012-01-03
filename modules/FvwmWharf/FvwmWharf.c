@@ -2309,11 +2309,6 @@ void process_message(unsigned long type,unsigned long *body)
 {
   switch(type)
   {
-    /*    case M_TOGGLE_PAGING:
-	  pageing_enabled = body[0];
-	  RedrawWindow(&main_win,0, -1, num_rows, num_columns);
-	  break;
-	  pdg */
   case M_NEW_DESK:
     new_desk = body[0];
     RedrawWindow(&main_win,0, -1, num_rows, num_columns);
