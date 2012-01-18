@@ -50,9 +50,6 @@ Options:
 	[-e]	[--fvwm-exe]     print fvwm executable name (in bindir)
 	[-s]	[--supports]     list supported features, one per line
 	[--supports-<feature>]   return: 0 (yes), 100 (no), 200 (unknown)
-	[--is-final]             print yes or no
-	[--is-stable]            print yes or no
-	[--release-date]         print the release date (if final)
 EOF
 	exit $1
 }
@@ -101,9 +98,6 @@ with_xinerama=@with_xinerama@
 with_xft=@with_xft@
 with_xpm=@with_xpm@
 with_xrender=@with_xrender@
-
-is_stable=no
-is_final=@ISRELEASED@
 
 while test $# -gt 0; do
 	case "$1" in
@@ -235,20 +229,10 @@ while test $# -gt 0; do
 			echo "	xrender (XFree86 Xrender extention): $with_xrender"
 			;;
 
-		--is-stable|-is-stable)
-			test "$is_stable" = yes && echo yes
-			test "$is_stable" != yes && echo no
-			;;
-
 		--is-final|-is-final)
 			test "$is_final" = yes && echo yes
 			test "$is_final" != yes && echo no
 			;;
-
-		--release-date|-release-date)
-			echo $release_date
-			;;
-
 		*)
 			echo >&2 "$script: unknown argument '$1'."
 			echo >&2 "Run '$script --help' to get the usage."

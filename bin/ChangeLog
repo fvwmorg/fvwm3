@@ -1,3 +1,11 @@
+2012-01-18  Thomas Adam  <thomas@fvwm.org>
+	* fvwm-config.in:
+	* fvwm-config.1.in:
+	Remove --is-final, --is-released, --is-stable from fvwm-config
+	
+	It no longer makes sense to report on this information, given how fvwm
+	is developed.
+
 2011-12-30  Thomas Adam  <thomas@fvwm.org>
 	* fvwm-menu-desktop.in:
 	Remove redundant stat(2) calls when performing file-system checks for

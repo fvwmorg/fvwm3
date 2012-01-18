@@ -38,9 +38,6 @@ fvwm-config \- query an existing fvwm installation
 .RI [ --fvwm-exe ]
 .RI [ --supports ]
 .RI [ --supports-<feature> ]
-.RI [ --is-final ]
-.RI [ --is-stable ]
-.RI [ --release-date ]
 .SH DESCRIPTION
 .B fvwm-config
 is a shell script that provides an information about the fvwm version,
@@ -112,14 +109,6 @@ All or supported feature names may be found using
 .IR --info " or " --supports
 respectively.
 .TP
-.B --is-final
-prints "yes" for final releases and "no" for cvs snapshots
-.TP
-.B --is-stable
-prints "yes" for the stable branch and "no" otherwise
-.TP
-.B --release-date
-prints the release date if the release is final
 .SH USAGE
 Here are some real life usages.
 
