@@ -3383,7 +3383,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		 * if the icon name is NoName, set the name of the icon to be
 		 * the same as the window
 		 */
-		if (!WAS_ICON_NAME_PROVIDED(fw))
+		if (!WAS_ICON_NAME_PROVIDED(fw) || (fw->icon_name.name &&
+			(fw->icon_name.name != fw->name.name)))
 		{
 			fw->icon_name = fw->name;
 			setup_visible_name(fw, True);
