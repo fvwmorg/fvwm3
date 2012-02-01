@@ -1,40 +1,37 @@
-FVWM 2.6.3
+FVWM 2.6.4
 ==========
 
 * New features:
+  
+  - FvwmIconMan no longer allows for itself to be transient by using:
 
-  - New Style commands:
+    Module FvwmIconMan Transient
 
-        TitleFormat
-        IconTitleFormat
+    This is too ambiguous with valid module alias names, hence a
+    transient FvwmIconMan must be created with "-Transient" as in:
 
-        Used to specify a window's visible name.  These new options
-        deprecate the older styles:
-
-        IndexedWindowName
-        IndexedIconName
-        ExactWindowName
-        ExactIconName
-
-  - New Resize argument to direction:  "automatic" which works out,
-    automatically, which direction a window should be resized in
-    based on which quadrant the pointer is in on the window -- this
-    is best observed by the grid formed from "ResizeOutline", as the
-    shape of this grid is used when calculating this.
-
-    Furthermore, the existing option of "warptoborder" can be used in
-    conjunction with "direction automatic" to warp the pointer to the
-    appropriate window edge.
-
-  - Couple of changes to the Move command:
-        - The EWMH working area is now honoured by default.
-        - To move a window ignoring the working area, the option
-          "ewmhiwa" can be used, similar to how the Maximize
-          command works.
-
-  - New expansion placeholder $[pointer.screen] to return the screen number
-    the pointer is on.
+    Module FvwmIconMan -Transient
+  - New command InfoStore -- to store key/value pairs of information
+    to relieve the burden of the SetEnv command.
+  - Speed-up improvements for fvwm-menu-desktop when generating XDG
+    menus by removing unnecessary stat(2) calls.
+  - BusyCursor and CursorStyle have been set to make the cursor look
+    like a dot during Read/PipeRead commands, by default.
 
 * Bug fixes:
 
-    - A few minor ones; nothing user-visible per se.
+  - FvwmRearrange now understands the "ewmhiwa" option when placing
+    windows.
+  - Client gravity for subwindows is honoured for reparenting
+    windows, such as with XEmbed, when changing the parent's
+    geometry.
+  - Conditional command processing of !Layer n, as in:
+    
+        Next (Xteddy, !Layer 4) Echo cuddles
+    
+    has now been fixed.
+  - Fixed handling of swallowed windows for transient FvwmButtons'.
+  - fvwm-menu-desktop now looks in /usr/share/applications for KDE
+    legacy mode.
+  - fvwm-config no longer accepts "--is-stable", "--is-released",
+	"--is-final".

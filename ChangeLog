@@ -1,3 +1,8 @@
+2012-02-01  Thomas Adam  <thomas@fvwm.org>
+	* configure.ac:
+	* docs/ANNOUNCE:
+	Prep for 2.6.4
+
 2012-01-26  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/events.c (HandlePropertyNotify):
 	Rather than tracking whether the icon name has been assigned or not, now
