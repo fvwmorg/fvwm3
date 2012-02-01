@@ -5,6 +5,12 @@ Note, the changes for the last STABLE release start with release
 Changes in CVS HEAD (not yet released)
 
 * New features:
+* Bug fixes:
+
+-------------------------------------------------------------------
+Changes in stable release 2.6.4 (01-Feb-2012)
+
+* New features:
   
   - FvwmIconMan no longer allows for itself to be transient by using:
 
