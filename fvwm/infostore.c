@@ -52,6 +52,8 @@ static int get_metainfo_length(void);
 
 MetaInfo *new_metainfo(void)
 {
+	MetaInfo *mi;
+
 	if (mi_store == NULL)
 	{
 		/* Initialise the main store. */
@@ -59,7 +61,7 @@ MetaInfo *new_metainfo(void)
 		memset(&mi_store, '\0', sizeof(MetaInfo));
 	}
 
-	MetaInfo *mi = (MetaInfo *)safemalloc(sizeof(MetaInfo));
+	mi = (MetaInfo *)safemalloc(sizeof(MetaInfo));
 	mi->key = NULL;
 	mi->value = NULL;
 	mi->next = NULL;
@@ -70,7 +72,8 @@ MetaInfo *new_metainfo(void)
 void insert_metainfo(char *key, char *value)
 {
 	MetaInfo *mi;
-	MetaInfo *mi_new = new_metainfo();
+	MetaInfo *mi_new;
+	mi_new = new_metainfo();
 
 	for (mi = mi_store; mi; mi = mi->next)
 	{
@@ -137,7 +140,9 @@ inline char *get_metainfo_value(const char *key)
 static inline int get_metainfo_length(void)
 {
 	MetaInfo *mi;
-	int count = 0;
+	int count;
+
+	count = 0;
 
 	for(mi = mi_store; mi; mi = mi->next)
 		count++;

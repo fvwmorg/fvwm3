@@ -612,6 +612,7 @@ static Bool parse_options(void)
 		}
 		else if (StrEquals(resource, "Group"))
 		{
+			ProxyGroup* proxygroup;
 			char groupname[128];
 			char directive[128];
 			char tail[128];
@@ -619,7 +620,6 @@ static Bool parse_options(void)
 			int bytes=0;
 			(void)sscanf(tline, "\"%[^\"]\"%s%n",
 				groupname,directive,&bytes);
-			ProxyGroup* proxygroup;
 
 			strncpy(tail,&tline[bytes],128);
 			tail[127]=0;

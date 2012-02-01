@@ -2528,6 +2528,7 @@ static Bool style_parse_one_style_option(
 	case 'e':
 		if (StrEquals(token, "ExactWindowName"))
 		{
+			char *format;
 			/* TA:  This is being deprecated in favour of the more
 			 * generic:
 			 *
@@ -2536,7 +2537,7 @@ static Bool style_parse_one_style_option(
 			fvwm_msg(WARN, "style_parse_one_style_option",
 				"ExactWindowName is deprecated -- using"
 				" TitleFormat %%n");
-			char *format = strdup(DEFAULT_TITLE_FORMAT);
+			format = strdup(DEFAULT_TITLE_FORMAT);
 			SSET_TITLE_FORMAT_STRING(*ps, format);
 			ps->flags.has_title_format_string = 1;
 			ps->flag_mask.has_title_format_string = 1;
@@ -2544,6 +2545,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "ExactIconName"))
 		{
+			char *format;
 			/* TA:  This is being deprecated in favour of the more
 			 * generic:
 			 *
@@ -2552,7 +2554,7 @@ static Bool style_parse_one_style_option(
 			fvwm_msg(WARN, "style_parse_one_style_option",
 				"ExactIconName is deprecated -- using"
 				" IconTitleFormat %%n");
-			char *format = strdup(DEFAULT_TITLE_FORMAT);
+			format = strdup(DEFAULT_TITLE_FORMAT);
 			SSET_ICON_TITLE_FORMAT_STRING(*ps, format);
 			ps->flags.has_icon_title_format_string = 1;
 			ps->flag_mask.has_icon_title_format_string = 1;
@@ -3073,6 +3075,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "IndexedWindowName"))
 		{
+			char *format;
 			/* TA:  This is being deprecated in favour of the more
 			 * generic:
 			 *
@@ -3081,7 +3084,7 @@ static Bool style_parse_one_style_option(
 			fvwm_msg(WARN, "style_parse_one_style_option",
 				"IndexedWindowName is deprecated.  "
 				"Converting to use:  TitleFormat %%n (%%t)");
-			char *format = strdup( "%n (%t)" );
+			format = strdup( "%n (%t)" );
 
 			SSET_TITLE_FORMAT_STRING(*ps, format);
 			ps->flags.has_title_format_string = 1;
@@ -3090,6 +3093,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "IndexedIconName"))
 		{
+			char *format;
 			/* TA:  This is being deprecated in favour of the more
 			 * generic:
 			 *
@@ -3098,7 +3102,7 @@ static Bool style_parse_one_style_option(
 			fvwm_msg(WARN, "style_parse_one_style_option",
 				"IndexedIconName is deprecated.  "
 				"Converting to use:  IconTitleFormat %%n (%%t)");
-			char *format = strdup( "%n (%t)" );
+			format = strdup( "%n (%t)" );
 
 			SSET_ICON_TITLE_FORMAT_STRING(*ps, format);
 			ps->flags.has_icon_title_format_string = 1;
