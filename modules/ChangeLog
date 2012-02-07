@@ -1,3 +1,8 @@
+2012-02-07  Thomas Adam  <thomas@fvwm.org>:
+	* modules/FvwmPager/FvwmPager.1.in:
+	* modules/FvwmIconMan/FvwmIconMan.1.in:
+	Mention %i is the icon title explicitly.
+
 2012-02-01  Thomas Adam  <thomas@fvwm.org>
 	* modules/FvwmProxy/FvwmProxy.c (parse_options):
 	Make C90 compliant.

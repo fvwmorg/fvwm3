@@ -248,7 +248,7 @@ with.
 .IP "*FvwmPager: WindowLabelFormat \fIformat\fP"
 This specifies a printf() like format for the labels in the mini
 window. Possible flags are: %t, %i, %c, and %r for the window's
-title, icon, class, or resource name, respectively.  The default
+title, icon title, class, or resource name, respectively.  The default
 is "%i".
 
 .IP "*FvwmPager: Label \fIdesk label\fP"

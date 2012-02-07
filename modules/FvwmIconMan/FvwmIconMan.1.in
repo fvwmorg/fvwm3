@@ -219,7 +219,7 @@ Specifies the default foreground color.
 .IP "*FvwmIconMan: [id] Format \fIformatstring\fP"
 A printf like format string which describes the string to be printed in the
 manager window for each managed window. Possible flags are: %t, %i, %c, and
-%r for the window's title, icon, class, or resource name, respectively.
+%r for the window's title, icon title, class, or resource name, respectively.
 The default is "%c: %i". \fBWarning\fP: m4 reserves the word \fIformat\fP,
 so if you use m4, take appropriate action.
 
