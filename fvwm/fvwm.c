@@ -764,6 +764,9 @@ InstallSignals(void)
 	sigaction(SIGQUIT, &sigact, NULL);
 	sigaction(SIGTERM, &sigact, NULL);
 
+	/* Unblock these signals so that we can process them again. */
+	sigprocmask(SIG_UNBLOCK, &sigact.sa_mask, NULL);
+
 	/* Reap all zombies automatically! This signal handler will only be
 	 * called if a child process dies, not if someone sends a child a STOP
 	 * signal. Note that none of our "terminate" signals can be delivered

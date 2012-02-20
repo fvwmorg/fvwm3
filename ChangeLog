@@ -1,3 +1,10 @@
+2012-02-20  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/fvwm.c (InstallSignals):
+	Unblock signals when installing them.
+
+	When signals are registered, ensure they're unblocked so as not to queue
+	them up.
+
 2012-02-01  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/infostore.c (get_metainfo_length):
 	* fvwm/infostore.c (new_metainfo):

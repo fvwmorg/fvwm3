@@ -5,7 +5,9 @@ Note, the changes for the last STABLE release start with release
 Changes in CVS HEAD (not yet released)
 
 * New features:
+
 * Bug fixes:
+  - Made signals registered with FVWM unblocking.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.4 (01-Feb-2012)
