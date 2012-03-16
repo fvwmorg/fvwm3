@@ -378,6 +378,18 @@ static pl_penalty_t __pl_position_get_pos_simple(
 		/* TA:  20090218:  Try and keep the window on-screen if we
 		 * can.
 		 */
+
+		/* TA:  20120316:  Imply the working-area when under the mouse -- this
+		 * brings it in-line with making the EWMH working area the default.
+		 * Note that "UnderMouse" is a special case, deliberately.  All other
+		 * PositionPlacement commands are deliberately NOT subject to ewmhiwa
+		 * options.
+		 */
+		EWMH_GetWorkAreaIntersection(
+			arg->place_fw, (int *)&arg->screen_g.x, (int *)&arg->screen_g.y,
+			(int *)&arg->screen_g.width,
+			(int *)&arg->screen_g.height, EWMH_USE_WORKING_AREA);
+
 		if (ret_p->x + arg->place_fw->g.frame.width > arg->screen_g.x
 				+ arg->screen_g.width)
 		{

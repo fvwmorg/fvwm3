@@ -1,3 +1,8 @@
+2012-03-16  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/placement.c ( __pl_position_get_pos_simple):
+	When using "UnderMouse" for PositionPlacement, ensure we honor the EWMH
+	working area by default if it's in use.
+
 2012-02-20  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/fvwm.c (InstallSignals):
 	Unblock signals when installing them.
