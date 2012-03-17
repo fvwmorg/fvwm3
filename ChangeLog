@@ -1,3 +1,9 @@
+2012-03-17  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/events.c (HandlePropertyNotify):
+	Fix XSizeHints problem with FVWM not correctly allowing resizing of
+	windows when the hints are toggled with respect to FVWM processing
+	XA_WM_NORMAL_HINTS.
+
 2012-03-16  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/placement.c ( __pl_position_get_pos_simple):
 	When using "UnderMouse" for PositionPlacement, ensure we honor the EWMH

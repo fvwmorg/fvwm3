@@ -3592,6 +3592,17 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name));
 		 * the next ConfigureRequest w/ x, y, width or height set
 		 * arrives. */
 		SET_HAS_NEW_WM_NORMAL_HINTS(fw, 1);
+
+		/* TA:  20120317:  Always set the size hints here, regardless
+		 * of them possibly being modified by a ConfigureNotify
+		 * request, due to XSizeHints disallowing resize -- FVWM would
+		 * always use old values if the application decided to toggle
+		 * such things, and FVWM would then never resize the window.
+		 *
+		 * Note that SET_HAS_NEW_WM_NORMAL_HINTS being set here to
+		 * true is still valid.
+		 */
+		GetWindowSizeHints(fw);
 		break;
 	default:
 		if (te->xproperty.atom == _XA_WM_PROTOCOLS)
