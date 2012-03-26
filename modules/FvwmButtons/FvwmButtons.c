@@ -1442,7 +1442,7 @@ void Loop(void)
 	button = -1;
 	while (NextButton(&ub, &b, &button, 0))
 	{
-	  if (b->flags.b_Panel && Event.xany.window == b->PanelWin)
+	  if (b->flags.b_Panel && Event.xdestroywindow.window == b->PanelWin)
 	  {
 	    /* A panel has been unmapped, update the button */
 	    b->newflags.panel_mapped = (Event.type == MapNotify);
@@ -1458,7 +1458,7 @@ void Loop(void)
 	{
 	  Window swin = SwallowedWindow(b);
 
-	  if ((buttonSwallowCount(b) == 3) && Event.xany.window == swin)
+	  if ((buttonSwallowCount(b) == 3) && Event.xdestroywindow.window == swin)
 	  {
 #ifdef DEBUG_HANGON
 	    fprintf(stderr,

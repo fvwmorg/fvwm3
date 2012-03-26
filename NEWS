@@ -10,6 +10,7 @@ Changes in CVS HEAD (not yet released)
   - Made signals registered with FVWM unblocking.
   - The "UnderMouse" option to PositionPlacement now honors the EWMH
     working area by default, if it's in use.
+  - FvwmButtons handles the deleted window correctly for sub-windows.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.4 (01-Feb-2012)

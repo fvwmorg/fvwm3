@@ -1,4 +1,8 @@
-2012-02-07  Thomas Adam  <thomas@fvwm.org>:
+2012-03-26  Thomas Adam <thomas@fvwm.org>
+	* modules/FvwmButtons/FvwmButtons.c (Loop):
+	Use xwindowdestroy.window when tracking windows.
+
+2012-02-07  Thomas Adam  <thomas@fvwm.org>
 	* modules/FvwmPager/FvwmPager.1.in:
 	* modules/FvwmIconMan/FvwmIconMan.1.in:
 	Mention %i is the icon title explicitly.
