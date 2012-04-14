@@ -1,3 +1,7 @@
+2012-04-14  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/infostore.c (new_metainfo, insert_metainfo):
+	Fixed memory leaks.
+
 2012-03-26  Thomas Adam <thomas@fvwm.org>
 	* modules/FvwmButtons/FvwmButtons.c (Loop):
 	Use xwindowdestroy.window when tracking windows.
