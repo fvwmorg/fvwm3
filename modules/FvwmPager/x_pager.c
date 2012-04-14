@@ -119,6 +119,7 @@ static char l_g_bits[] = {0x08, 0x02};
 #define s_g_height 4
 static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
 
+#define label_border g_width
 
 Window icon_win;	       /* icon window */
 
@@ -2739,6 +2740,64 @@ void BorderIconWindow(PagerWindow *t)
     t, t->IconView, t->icon_view_width, t->icon_view_height);
 }
 
+/* draw the window label with simple greedy wrapping */
+static void label_window_wrap(PagerWindow *t)
+{
+  char *cur, *next, *end;
+  int space_width, cur_width;
+
+  space_width = FlocaleTextWidth(FwindowFont, " ", 1);
+  cur_width   = 0;
+
+  cur = next = t->window_label;
+  end = cur + strlen(cur);
+
+  while (*cur) {
+    while (*next) {
+      int width;
+      char *p;
+
+      if (!(p = strchr(next, ' ')))
+        p = end;
+
+      width = FlocaleTextWidth(FwindowFont, next, p - next );
+      if (width > t->pager_view_width - cur_width - space_width - 2*label_border)
+        break;
+      cur_width += width + space_width;
+      next = *p ? p + 1 : p;
+    }
+
+    if (cur == next) {
+      /* word too large for window */
+      while (*next) {
+        int len, width;
+
+        len   = FlocaleStringNumberOfBytes(FwindowFont, next);
+        width = FlocaleTextWidth(FwindowFont, next, len);
+
+        if (width > t->pager_view_width - cur_width - 2*label_border && cur != next)
+          break;
+
+        next      += len;
+        cur_width += width;
+      }
+    }
+
+    FwinString->str = safemalloc(next - cur + 1);
+    strncpy(FwinString->str, cur, next - cur);
+    FwinString->str[next - cur] = 0;
+
+    FlocaleDrawString(dpy, FwindowFont, FwinString, 0);
+
+    free(FwinString->str);
+    FwinString->str = NULL;
+
+    FwinString->y += FwindowFont->height;
+    cur = next;
+    cur_width = 0;
+  }
+}
+
 static void do_label_window(PagerWindow *t, Window w)
 {
   int cs;
@@ -2776,7 +2835,6 @@ static void do_label_window(PagerWindow *t, Window w)
   {
     if (FftSupport && FwindowFont != NULL && FwindowFont->fftf.fftfont != NULL)
       XClearWindow(dpy, w);
-    FwinString->str = t->window_label;
     FwinString->win = w;
     FwinString->gc = Scr.NormalGC;
     FwinString->flags.has_colorset = False;
@@ -2785,9 +2843,10 @@ static void do_label_window(PagerWindow *t, Window w)
 	    FwinString->colorset = &Colorset[cs];
 	    FwinString->flags.has_colorset = True;
     }
-    FwinString->x = 2;
+    FwinString->x = label_border;
     FwinString->y = FwindowFont->ascent+2;
-    FlocaleDrawString(dpy, FwindowFont, FwinString, 0);
+
+    label_window_wrap(t);
   }
 }
 
