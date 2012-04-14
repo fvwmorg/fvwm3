@@ -54,17 +54,8 @@ MetaInfo *new_metainfo(void)
 {
 	MetaInfo *mi;
 
-	if (mi_store == NULL)
-	{
-		/* Initialise the main store. */
-		mi_store = (MetaInfo *)safemalloc(sizeof(MetaInfo));
-		memset(&mi_store, '\0', sizeof(MetaInfo));
-	}
-
 	mi = (MetaInfo *)safemalloc(sizeof(MetaInfo));
-	mi->key = NULL;
-	mi->value = NULL;
-	mi->next = NULL;
+	memset(mi, '\0', sizeof(MetaInfo));
 
 	return mi;
 }
@@ -73,7 +64,6 @@ void insert_metainfo(char *key, char *value)
 {
 	MetaInfo *mi;
 	MetaInfo *mi_new;
-	mi_new = new_metainfo();
 
 	for (mi = mi_store; mi; mi = mi->next)
 	{
@@ -82,16 +72,17 @@ void insert_metainfo(char *key, char *value)
 			/* We already have an entry in the list with that key, so
 			 * update the value of it only.
 			 */
+			free (mi->value);
 			CopyString(&mi->value, value);
-			free (mi_new);
 
 			return;
 		}
 	}
 
 	/* It's a new item, add it to the list. */
+	mi_new = new_metainfo();
 	mi_new->key = key;
-	mi_new->value = value;
+	CopyString(&mi_new->value, value);
 
 	mi_new->next = mi_store;
 	mi_store = mi_new;
@@ -198,6 +189,7 @@ void CMD_InfoStoreAdd(F_CMD_ARGS)
 	}
 
 	insert_metainfo(key, value);
+	free(value);
 
 	return;
 }
