@@ -1,37 +1,11 @@
-FVWM 2.6.4
+FVWM 2.6.5
 ==========
 
 * New features:
-  
-  - FvwmIconMan no longer allows for itself to be transient by using:
-
-    Module FvwmIconMan Transient
-
-    This is too ambiguous with valid module alias names, hence a
-    transient FvwmIconMan must be created with "-Transient" as in:
-
-    Module FvwmIconMan -Transient
-  - New command InfoStore -- to store key/value pairs of information
-    to relieve the burden of the SetEnv command.
-  - Speed-up improvements for fvwm-menu-desktop when generating XDG
-    menus by removing unnecessary stat(2) calls.
-  - BusyCursor and CursorStyle have been set to make the cursor look
-    like a dot during Read/PipeRead commands, by default.
+  - FvwmPager now wraps window names if SmallFont is set.
 
 * Bug fixes:
-
-  - FvwmRearrange now understands the "ewmhiwa" option when placing
-    windows.
-  - Client gravity for subwindows is honoured for reparenting
-    windows, such as with XEmbed, when changing the parent's
-    geometry.
-  - Conditional command processing of !Layer n, as in:
-    
-        Next (Xteddy, !Layer 4) Echo cuddles
-    
-    has now been fixed.
-  - Fixed handling of swallowed windows for transient FvwmButtons'.
-  - fvwm-menu-desktop now looks in /usr/share/applications for KDE
-    legacy mode.
-  - fvwm-config no longer accepts "--is-stable", "--is-released",
-	"--is-final".
+  - Made signals registered with FVWM unblocking.
+  - The "UnderMouse" option to PositionPlacement now honors the EWMH
+    working area by default, if it's in use.
+  - FvwmButtons handles the deleted window correctly for sub-windows.
