@@ -1,4 +1,9 @@
 2012-04-20  Thomas Adam  <thomas@fvwm.org>
+	* NEWS:
+	* configure.ac:
+	Updated for 2.6.6 (CVS HEAD)
+
+2012-04-20  Thomas Adam  <thomas@fvwm.org>
 	* configure.ac:
 	* docs/ANNOUNCE:
 	Prep for 2.6.5

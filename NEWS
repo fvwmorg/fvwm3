@@ -2,7 +2,18 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in CVS HEAD (20-Apr-2012)
+Changes in 2.6.5 (20-Apr-2012)
+
+* New features:
+  - N/A
+
+* Bug fixes:
+  - N/A
+
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+Changes in 2.6.5 (20-Apr-2012)
 
 * New features:
   - FvwmPager now wraps window names if SmallFont is set.
