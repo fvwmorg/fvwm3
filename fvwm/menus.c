@@ -930,6 +930,9 @@ static Bool __scan_for_pixmap(
 	{
 		fvwm_msg(WARN, "scanForPixmap",
 			 "Couldn't load image from %s", name);
+		fvwm_msg(WARN, "scanForPixmap",
+			 "Check that FVWM has support for the filetype it's "
+			 "being asked to load.");
 
 		/* return true to make missing pictures not appear in the
 		 * label/name */

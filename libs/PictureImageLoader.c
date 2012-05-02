@@ -48,6 +48,8 @@
 #include "FRenderInit.h"
 #include "Fcursor.h"
 #include "FImage.h"
+#include "fvwm/fvwm.h"
+#include "fvwm/misc.h"
 
 /* ---------------------------- local definitions -------------------------- */
 #define FIMAGE_CMD_ARGS \
@@ -172,6 +174,8 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 
 	if (!USE_SVG)
 	{
+		fvwm_msg(WARN, "PImageLoadSvg", "Tried to load SVG file "
+				"when FVWM has not been compiled with SVG support.");
 		return False;
 	}
 
@@ -410,6 +414,9 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 		/* suppress compiler warning */
 		bit_depth = 0;
 
+		fvwm_msg(WARN, "PImageLoadPng", "Tried to load PNG file "
+				"when FVWM has not been compiled with PNG support.");
+
 		return False;
 	}
 	if (!(f = fopen(path, "rb")))
@@ -560,6 +567,8 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 
 	if (!XpmSupport)
 	{
+		fvwm_msg(WARN, "PImageLoadXpm", "Tried to load XPM file "
+				"when FVWM has not been compiled with XPm Support.");
 		return False;
 	}
 	memset(&xpm_im, 0, sizeof(FxpmImage));

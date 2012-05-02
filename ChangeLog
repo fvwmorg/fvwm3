@@ -1,3 +1,9 @@
+2012-05-02  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/menu.c ( __scan_for_pixmap):
+	* libs/PictureImageLoader.c (PImageLoadSvg, PimageLoadXpm,
+	  PImageLoadPng):
+	Add fvwm_msg() for hints about failed image load.
+
 2012-04-20  Thomas Adam  <thomas@fvwm.org>
 	* NEWS:
 	* configure.ac:
