@@ -245,8 +245,8 @@ void xevent_loop (void)
        * the cases to one keycode. */
       theEvent.xkey.keycode =
 	XKeysymToKeycode (theDisplay,
-			  XKeycodeToKeysym(theDisplay,
-					   theEvent.xkey.keycode,0));
+			  fvwm_KeycodeToKeysym(theDisplay,
+					   theEvent.xkey.keycode,0,0));
       modifier = (theEvent.xkey.state & MODS_USED);
       ConsoleDebug (X11, "\tKeyPress: %d\n", theEvent.xkey.keycode);
 

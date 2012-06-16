@@ -1,3 +1,13 @@
+2012-06-16  Thomas Adam  <thomas@fvwm.org>
+	* configure.ac:
+	* libs/Bindings.c (AddBinding):
+	* fvwm/builtins.c (FkeysymToKeycode):
+	* fvwm/events.c (__handle_key):
+	Add detection of XKeycodeToKeysym as deprecated, and provide a wrapper
+	for it by way of fvwm_KeycodeToKeysym() to call the newer
+	XkbKeycodeToKeysum() where needed.
+
+
 2012-05-04  Thomas Adam  <thomas@fvwm.org>
 	* libs/PictureImageLoader.c (PImageLoadSvg, PimageLoadXpm,
 	  PImageLoadPng):

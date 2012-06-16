@@ -2508,7 +2508,7 @@ void __handle_key(const evh_args_t *ea, Bool is_press)
 	/* Here's a real hack - some systems have two keys with the
 	 * same keysym and different keycodes. This converts all
 	 * the cases to one keycode. */
-	kc = XKeysymToKeycode(dpy, XKeycodeToKeysym(dpy, te->xkey.keycode, 0));
+	kc = XKeysymToKeycode(dpy, fvwm_KeycodeToKeysym(dpy, te->xkey.keycode, 0, 0));
 
 	/* Check if there is something bound to the key */
 

@@ -537,7 +537,11 @@ if test ! x"$with_shm" = xno; then
                [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 fi
 
-# ********* xinerama
+# Silently look for X11/XKBlib.h
+AH_TEMPLATE([HAVE_X11_XKBLIB_H],[Define if Xkb extension is used.])
+AC_CHECK_HEADER(X11/XKBlib.h, AC_DEFINE(HAVE_X11_XKBLIB_H))
+
+# ********* xineramA
 problem_xinerama=""
 
 AC_ARG_ENABLE(xinerama,
@@ -1655,6 +1659,14 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #else
 #define DO_USE_LSTAT 0
 #define fvwm_lstat(x,y) -1
+#endif
+
+#ifdef HAVE_X11_XKBLIB_H
+#include <X11/XKBlib.h>
+#define fvwm_KeycodeToKeysym(d, k, g, l) \
+	(XkbKeycodeToKeysym((d), (k), (g), (l)))
+#else
+#define fvwm_KeycodeToKeysym(d, k, i, x) (XKeycodeToKeysym((d), (k), (i)))
 #endif
 
 ])

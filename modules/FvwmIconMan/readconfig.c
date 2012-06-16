@@ -753,7 +753,7 @@ static Binding *ParseKeyEntry(char *tline)
 
   XDisplayKeycodes(theDisplay, &min, &max);
   for (i=min; i<=max; i++) {
-    if (XKeycodeToKeysym(theDisplay, i, 0) == keysym) {
+    if (fvwm_KeycodeToKeysym(theDisplay, i, 0, 0) == keysym) {
       if (!func) {
 	func = parse_function_list(action);
 	if (!func) {

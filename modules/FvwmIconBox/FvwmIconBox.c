@@ -2445,7 +2445,7 @@ void parsekey(char *tline)
 
   XDisplayKeycodes(dpy, &kmin, &kmax);
   for (i=kmin; i<=kmax; i++)
-    if (XKeycodeToKeysym(dpy, i, 0) == keysym)
+    if (fvwm_KeycodeToKeysym(dpy, i, 0, 0) == keysym)
       {
 	k = (struct keyfunc *)safemalloc(sizeof(struct keyfunc));
 	memset(k, 0, sizeof(struct keyfunc));
@@ -3421,7 +3421,7 @@ void ExecuteKey(XEvent event)
 
   tmp = KeyActions;
   event.xkey.keycode =
-    XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,event.xkey.keycode,0));
+    XKeysymToKeycode(dpy,fvwm_KeycodeToKeysym(dpy,event.xkey.keycode,0,0));
   while (tmp != NULL){
     if (tmp->keycode == event.xkey.keycode){
       MySendFvwmPipe(fd, tmp->action, item->id);

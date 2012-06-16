@@ -181,7 +181,7 @@ int AddBinding(
 		{
 			if (BIND_IS_MOUSE_BINDING(type) ||
 			    STROKE_CODE(BIND_IS_STROKE_BINDING(type) ||)
-			    (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
+			    (tkeysym = fvwm_KeycodeToKeysym(dpy, i, m, 0)) == keysym)
 			{
 				unsigned int add_modifiers = 0;
 				unsigned int bind_mask = 1;

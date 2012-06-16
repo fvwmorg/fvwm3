@@ -3853,7 +3853,7 @@ static Bool FKeysymToKeycode (Display *dpy, KeySym keysym,
 
 	for (m = 0; m <= 8; ++m)
 	{
-		KeySym ks = XKeycodeToKeysym(dpy, *keycode, m);
+		KeySym ks = fvwm_KeycodeToKeysym(dpy, *keycode, m, 0);
 		if (ks == keysym)
 		{
 			switch (m)

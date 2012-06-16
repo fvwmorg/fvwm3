@@ -8,7 +8,8 @@ Changes in 2.6.5 (20-Apr-2012)
   - N/A
 
 * Bug fixes:
-  - N/A
+  - Provide a wrapper for the deprecation of XKeycodeToKeysym and
+    use XkbKeycodeToKeysym() where appropriate.
 
 -------------------------------------------------------------------
 

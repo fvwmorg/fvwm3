@@ -973,7 +973,7 @@ void ReadXServer (void)
       find = False;
       XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
       event.xkey.keycode =
-	XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,event.xkey.keycode,0));
+	XKeysymToKeycode(dpy,fvwm_KeycodeToKeysym(dpy,event.xkey.keycode,0,0));
 
       /* check for bindings defined by the Key instruction */
 	  tmp.res_class = tmp.res_name = "root";
@@ -1452,7 +1452,7 @@ int main (int argc, char **argv)
   /* Compute the Shift-Tab keysym */
   {
     KeyCode tab = XKeysymToKeycode(dpy, XK_Tab);
-    shift_tab_ks = XKeycodeToKeysym(dpy, tab, ShiftMask);
+    shift_tab_ks = fvwm_KeycodeToKeysym(dpy, tab, ShiftMask, 0);
   }
 
   /* Construction des boutons et de la fenetre */
