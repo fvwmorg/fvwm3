@@ -1,8 +1,13 @@
+2012-06-22  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.in:
+	Rewrite using python and xdg libs.
+
 2012-01-18  Thomas Adam  <thomas@fvwm.org>
 	* fvwm-config.in:
 	* fvwm-config.1.in:
 	Remove --is-final, --is-released, --is-stable from fvwm-config
-	
+
 	It no longer makes sense to report on this information, given how fvwm
 	is developed.
 

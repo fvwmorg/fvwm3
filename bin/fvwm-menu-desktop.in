@@ -1,2061 +1,221 @@
-#!@PERL@
-
+#!@PYTHON@
+ 
 # Modification History
 
-# Changed on 05/07/11 by  (dane):
-# - new option kde_config for alternate name of optional
-#   kde-config command.
-# - use kde4-config if kde-config isn't found.
-# - if no kde-config command at all, use some defaults.
+# Changed on 01/26/12 by Dan Espen (dane):
+# Make compatible with fvwm-menu-desktop.
+# Restored DestroyMenu, needed for reload menus.
+# Remove bug, was printing iconpath on converted icons
+# Replace obsolete optparse, use getopt instead
+# Change from command line arg for applications.menu
+# change to using ?$XDG_MENU_PREFIX or theme? fixme
+# - use "Exec exec" for all commands, remove option.
 
-# Changed on 11/30/10 by  (dane):
-# - changed DIR filehandles to scalars, they're stepping on each other.
-#   was a bug in xdg-menu.
-# - changed default (only) format to fvwm2 and removed logic for other wms.
-# - move mainline before all subs (move it back?).
-# - removed the xdg_menu cache logic.
-# - Remove $flag, $MENU_TYPE, $MENU_DESTROY for gtk vs. fvwm menu mode.
-#   Actually removed all GTK MENU logic.
-# - Added option to menu to regenerate the menus.
-# - Remove xdg option root_menu.
-# - Added fvwm-menu option to use Fvwm Icons package.
-# - Style options from fvwmmenudesktop not carried over,
-#   WM hints are sufficient to set mini-icon and icon.
-# - Removed prototypes.  None were needed.
-# - All filehandle names made local.
-# - New option for su_gui, do path check for alternatives.
+# fixme, fix documentation, FvwmForm-Desktop, usage prompt is wrong
+# change, mini icons are enabled by default.
+# there are rescalable icons.
+# themes not working: "hicolor" is a required theme  I see lots of themes but none seem to affect much
 
-# - Change menu prefix from xdg-menu to FvwmMenu
+
+# Author: Piotr Zielinski (http://www.cl.cam.ac.uk/~pz215/)
+# Licence: GPL 2
+# Date: 03.12.2005
+
+# This script takes names of menu files conforming to the XDG Desktop
+# Menu Specification, and outputs their FVWM equivalents to the
+# standard output.
 #
-# FIXME:
-# - No testing for wm_icons has been done (is that fvwm-themes?).
-# - Docs need to be updated.
-# - fvwm-icons: okay, maybe the cat isn't a good default for Exec...
-# - Running alacarte, I can see there are Application menus, and System menus.
-#   Figure out the options to get both.
-# - There are good programs like alacarte that are marked GNOME-ONLY.
-#   Figure out how to get them in menus.
-# - I think this should default to mini-icons enabled, but which
-#   icon package should be assumed?
-# - Need a way to select the /usr/share/icons icon sets with themes like
-#   default/hicolor and size like 16x16 and 24x24.
-# - Regenerate menus should prompt for a new command line.
-# - sidepics, etc not tested.
-# - iconname::: syntax needs investigation, I think some of it is obsolete,
-#   needs a verifier, and some defaults.
-# - Far too many lexical globals not bound to subroutines (c.f.
-#    modularisation.)
-# - I don't see the point to the path arguments.  I think they should
-#   be obsoleted.
-# - If I pass --fvwm-icons I don't need to set --enable-mini-icons.
-#   Therefore I think enable mini-icons is pointless.
-# - The "check" functions are useless.  Since this module doesn't get the
-#   built in path, or the users path, it can't do the check.
-# - Looks like there is no such thing as fvwm_toptitle, must have been a gtk thing?
+#   http://standards.freedesktop.org/menu-spec/latest/
 
-# ---------------------------------------------------------------------------
-#  fvwm-menu-desktop
-#  See the man page fvwm-menu-desktop.1 for instructions.
+# This script requires the python-xdg module, which in Debian can be
+# installed by typing
 #
-#  Created on 22/07/1999 by Olivier Chapuis
+#   apt-get install python-xdg
 #
-#  Updated on 15/08/1999 by Mikhael Goikhman
-#
-#  Updated on 24/12/2010 by Dan Espen for xdg menus (see copyright below)
-# ---------------------------------------------------------------------------
-# COPYING
-#
-# The script is distributed by the same terms as fvwm itself.
-# See GNU General Public License for details.
-#
-#----------------------------------------------------------------------------
-
-# 25/12/2010 re-written, based heavily on
-# xdg-menu for archlinux. based on suse xdg-menu written by <nadvornik@suse.cz>
-# Sergej Pupykin <pupykin.s@gmail.com>
-#
-# >> Copyright (c) 2003 SuSE Linux AG, Nuernberg, Germany. All rights reserved.
-# >>
-# >> Author: nadvornik@suse.cz
-
-# FILES:
-# This script uses the following files if present:
-#   /usr/share with /applications/
-#   /opt/gnome/share with /applications/
-#   kde-config --path xdgdata-apps with /applications/
-#   /opt/kde3/share with /desktop-directories/
-#   /opt/gnome/share with /desktop-directories/
-#   /etc/opt/kde3/share/applnk
-#   /opt/kde3/share/applnk
-#   kde-config --path apps
-#   /etc/xdg
-
-use 5.008;
-use strict;
-use warnings;
-use Getopt::Long;
-use Encode;
-use I18N::Langinfo qw(langinfo CODESET);
-use POSIX qw(locale_h);
-use Digest::MD5 qw(md5_hex);
-
-# TA:  2011-04-16:  This module is non-standard, so bail if we don't find
-# it.
-eval "use XML::Parser; 1" or die "fvwm-menu-desktop:  XML::Parser not installed.\n";
-
-my $xdg_data_dirs = $ENV{XDG_DATA_DIRS} || '';
-my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
-
-my $version = '@VERSION@';
-my $menu_prefix='FvwmMenu';
-my $DefaultAppDirs;
-my $DefaultDirectoryDirs;
-my @KDELegacyDirs;
-my $desktop_name = 'fvwm2';
-my $language = '';
-my $charset = 'iso-8859-1';
-my $root_cmd;
-my $kde_cmd;
-my $die_on_error = 0;
-my $verbose = 0;
-
-my @language_keys;
-
-#my @accessed_files;
-my $TERM_CMD = "xterm -e";
-
-
-my %Desktop_entries;
-my %Directory_entries;
-
-my $root_menu;
-my $help;
-
-# Default for the mini-icons is mini/ (relatively to the ImagePath)
-my $MINI_ICONS_DIR = 'mini/';
-# Then the default for icon is ImagePath (consistent with kde, fvwm2gnome
-# and almost consistent with wm-icons)
-my $ICONS_DIR = '';
-# For png icons
-my $PNG_ICONS = '';
-my $TRAN_MINI_ICONS = 'mini/';
-my $TRAN_ICONS = '';
-my $MINI_ICONS = 0;             # mini-icon disabled  (enable =1)
-my $TRAN       = 0;             # mini-icon translation disabled (enable =1)
-my $wm_icons   = 0;             # use wm-icons compatible menu icon names
-my $fvwm_icons   = 0;           # use fvwm-icons compatible menu icon names
-# check icons
-my $check_icons = "";
-my $check_mini_icons = "";
-my @check_icons_path = ();
-my @check_mini_icons_path = ();
-my %DI;
-my %dmicon;
-# Menu Style option
-my $MENU_STYLE = "";
-my @menus_for_style = ();
-# default for style
-
-$DI{fvwm_app}      = 'mini-x.xpm:dh:%::'; # micon:law:placement:unused
-$DI{fvwm_folder}   = 'folder.xpm:dh:%::'; # idem
-$DI{fvwm_title}    = 'folder.xpm:dh:%::'; # micon:law:place:spic:color
-$DI{fvwm_toptitle} = 'mini-k.xpm:no:%::'; # idem
-my $OPT_INSTALL_PREFIX = '';
-
-warn "invoked with args @ARGV\n" if $verbose;
-
-GetOptions(
-       "enable-mini-icons"        => \$MINI_ICONS,
-	   "enable-tran-mini-icons"   => \$TRAN,
-	   "mini-icons-path:s"        => \$MINI_ICONS_DIR,
-	   "png-icons-path:s"         => \$PNG_ICONS,
-	   "tran-mini-icons-path:s"   => \$TRAN_MINI_ICONS,
-	   "icon-toptitle:s"          => \$DI{"fvwm_toptitle"},
-	   "icon-title:s"             => \$DI{"fvwm_title"},
-	   "icon-folder:s"            => \$DI{"fvwm_folder"},
-	   "icon-app:s"               => \$DI{"fvwm_app"},
-	   "icon-style:s"             => \&obsolete,
-	   "icons-path:s"             => \$ICONS_DIR,
-	   "tran-icons-path:s"        => \$TRAN_ICONS,
-	   "wm-icons"                 => \$wm_icons,
-	   "fvwm-icons"               => \$fvwm_icons,
-	   "check-mini-icon=s"        => \$check_mini_icons,
-	   "check-icons=s"            => \$check_icons,
-	   "help|h|?"                 => \&show_help,
-	   "version|V"                => \&show_version,
-	   "install-prefix:s"         => $OPT_INSTALL_PREFIX,
-	   "type:s"                   => \&obsolete,
-	   "fvwmgtk-alias=s"          => \&obsolete,
-	   "title:s"                  => \&obsolete,
-	   "name:s"                   => \&obsolete,
-	   "enable-style"             => \&obsolete,
-	   "enable-tran-style"        => \&obsolete,
-	   "submenu-name-prefix:s"    => \&obsolete,
-	   "dir:s"                    => \&obsolete,
-	   "destroy-type:s"           => \&obsolete,
-	   "xterm:s"                  => \$TERM_CMD,
-	   "lang:s"                   => \$language,
-	   "utf8"                     => \&obsolete,
-	   "uniconv=s"                => \$charset,
-	   "uniconv-exec=s"           => \&obsolete,
-	   "menu-style=s"             => \$MENU_STYLE,
-	   "check-app!"               => \&obsolete,
-	   "time-limit=s"             => \&obsolete,
-	   "merge-user-menu"          => \&obsolete,
-	   "desktop=s"                => \&obsolete,
-	   "su_gui"                   => \$root_cmd,
-	   "kde_config"               => \$kde_cmd,
-           "verbose"                  => \$verbose
-);
-
-icon_init();
-
-# kde-config helps us find things.
-# sometimes it has funny names.
-# we can get by without it.
-if ( ! defined $kde_cmd) {
-  foreach ("kde-config", "kde4-config") {
-    if (check_app($_)) {
-      $kde_cmd = $_;
-      last;
-   }
-  }
-}
-
-$DefaultAppDirs = get_app_dirs();
-$DefaultDirectoryDirs = get_desktop_dirs();
-
-$root_menu = get_root_menu();
-
-@KDELegacyDirs = get_KDE_legacy_dirs();
-
-$charset = langinfo(CODESET);
-$language = setlocale(LC_MESSAGES);
-
-if (! defined $root_cmd ) {
-  foreach (qw(gnomesu kdesu xdg_menu_su)) {
-    if (check_app($_)) {
-      $root_cmd = $_;
-      last;
-    }
-  }
-}
-
-if ($verbose)
-{
-    warn qq|
-	DEBUG: root menu is $root_menu.
-	DEBUG: charset is $charset.
-	DEBUG: language is $language.
-	DEBUG: root-cmd is $root_cmd.|;
-    if (defined $kde_cmd) {
-      warn "\tDEBUG: kde-config command is $kde_cmd.";
-    } else {
-      warn "\tDEBUG: No kde-config command found, using defaults.";
-    }
-}
-
-@language_keys = prepare_language_keys($language);
-
-unless (-f $root_menu)
-{
-    warn "ERROR: Can't find root menu file.\n" if $verbose;
-    exit 1;
-}
-
-my $tree = read_menu($root_menu);
-
-merge_menus($tree);
-move_menus($tree);
-
-my $menu = interpret_root($tree, '');
-
-remove_allocated($menu);
-preprocess_menu($menu);
-remove_empty_menus($menu);
-
-my $output = output_fvwm2_menu($menu);
-print $output;
-
-# output the menu style
-if ($MENU_STYLE ne "")
-{
-    foreach (@menus_for_style)
-    {
-	    print qq|ChangeMenuStyle "$MENU_STYLE" "$_"\n|;
-    }
-}
-
-exit 0;
-
-# Set DI to list of icons to use:
-sub icon_init
-  {
-    my @list=();
-    my %law;
-    my %place;
-    my %spic;
-    my %scolor;
-    my $j = "";
-    my $l = "";
-    my $tmp_icon ="";
-
-    if ($wm_icons) {
-      $MINI_ICONS = 1;
-      $MINI_ICONS_DIR = "";
-      $DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
-      $DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
-      $DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
-      $DI{"fvwm_app"}      = "menu/utility.xpm:ow";
-    }
-
-    if ($fvwm_icons) {
-      $MINI_ICONS = 1;
-      $MINI_ICONS_DIR = "";
-      $DI{"fvwm_toptitle"} = "mini.fvwm.xpm::%";
-      $DI{"fvwm_title"}    = "mini.folder.xpm::%";
-      $DI{"fvwm_folder"}   = "mini.ofolder.xpm::%";
-      $DI{"fvwm_app"}      = "mini.cat.xpm::%";
-    }
-
-    foreach my $i (keys(%DI)) {
-      @list = split(':',$DI{$i});
-      $dmicon{$i} = $list[0];	# "default" mini-icon
-      $law{$i}    = $list[1];	# default law
-      $place{$i}  = $list[2];	# default position
-      $spic{$i}   = $list[3];	# sidepic icon
-      $scolor{$i} = $list[4];	# color for sidepic
-      $DI{$i} = '';
-    }
-
-    if ($TRAN) {
-      $MINI_ICONS = 1;
-    }
-
-    if ($MINI_ICONS_DIR ne 'mini/' or $ICONS_DIR ne '') {
-      if ($MINI_ICONS_DIR ne '') {
-	$MINI_ICONS_DIR =~ s/\/*$/\//;
-      }
-
-      if ($ICONS_DIR eq '') {
-	$ICONS_DIR = up_directory($MINI_ICONS_DIR);
-      } elsif ($ICONS_DIR eq 'inpath') {
-	$ICONS_DIR = '';
-      } else {
-	$ICONS_DIR =~ s/\/*$/\// if $MINI_ICONS_DIR ne '';
-      }
-    }
-
-    if ($TRAN_MINI_ICONS ne 'mini/' or $TRAN_ICONS ne '') {
-      if ($TRAN_MINI_ICONS ne '') {
-	$TRAN_MINI_ICONS =~ s/\/*$/\//;
-      }
-
-      if ($TRAN_ICONS eq '') {
-	$TRAN_ICONS = up_directory($TRAN_MINI_ICONS);
-      } elsif ($TRAN_ICONS eq 'inpath') {
-	$TRAN_ICONS = '';
-      } else {
-	$TRAN_ICONS =~ s/\/*$/\// if $TRAN_ICONS ne '';
-      }
-    }
-
-    $PNG_ICONS =~  s/\/*$/\// if $PNG_ICONS ne '';
-
-    # init default mini-icons, law, place, sidepic, color
-    foreach my $i (qw(fvwm_app fvwm_folder fvwm_title fvwm_toptitle)) {
-      warn "DEBUG: foreach $i.\n" if $verbose; # dje debug
-      # With the mini-icons-tran options we "use" gtk default
-      if ($TRAN) {
-	$j = substr($i,index($i,'_'));
-	$j = "gtk$j";
-	$law{$i} = $law{$j};
-	$tmp_icon  = $dmicon{$j};
-	$tmp_icon  =~ s/\.png$/\.xpm/;
-	$dmicon{$i} = "$TRAN_MINI_ICONS$tmp_icon";
-      } else {
-	$dmicon{$i} = "$MINI_ICONS_DIR$dmicon{$i}";
-      }
-
-      if ($verbose) {
-	while (my ($key,$value) = each %dmicon) {
-	  warn "INTERMEDIATE icons to use $key -> $value.\n";
-	}
-      }
-      @list = split(':',$DI{$i});
-      $l = @list;
-      while ($l <= 5) {
-	push(@list,'');
-	++$l;
-      }
-      $law{$i}     = $list[1] if ($list[1] eq 'no' or $list[1] eq 'ow'
-				  or $list[1] eq 're' or $list[1] eq 'dh');
-      $dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if $list[0] ne '';
-      $place{$i}   = '*' if $list[2] eq 'up';
-      $dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
-      $dmicon{$i}  = '' if $law{$i} eq 'no' or $MINI_ICONS == 0;
-
-      if ($list[3] ne '') {
-	$spic{$i} = "\@$list[3]\@";
-      } else {
-	$spic{$i} = '';
-      }
-
-      if ($list[4] ne '' and $list[3] ne '') {
-	$scolor{$i} = "\^$list[4]\^";
-      } else {
-	$scolor{$i} = '';
-      }
-
-      if ($check_mini_icons ne "") {
-	@check_mini_icons_path = split(":", $check_mini_icons);
-      }
-
-      if ($check_icons ne "") {
-	@check_icons_path = split(":", $check_icons);
-      }
-
-
-
-      if ($verbose) {
-	while (my ($key, $value) = each %dmicon) {
-	  warn "icons to use $key -> $value.\n";
-	}
-      }
-    }
-  }
-
-# Compute cd ..
-sub up_directory
-{
-	my($dir) = @_;
-
-	if ($dir eq '')
-    {
-        return '../';
-    }
-
-	chop($dir);
-
-    if ($dir !~ /\//)
-    {
-        return '';
-    }
-	$dir = substr($dir, 0, rindex($dir, '/') + 1);
-
-	return $dir;
-}
-
-sub check_file
-{
-    my ($file) = @_;
-    unless (-e $file)
-    {
-        return '';
-    }
-
-    if (-d $file)
-    {
-        return 'D';
-    }
-
-    return 'F';
-}
-
-my %__scanmap = ();
-sub scan_AppDir
-{
-    my ($pool, $dir, $topdir) = @_;
-
-    $topdir = $dir unless defined $topdir;
-
-    return if exists $__scanmap{$dir};
-
-    opendir( my $dir_fh, $dir ) or return;
-
-    foreach my $entry ( readdir($dir_fh) )
-    {
-        if ($entry =~ /\.desktop$/)
-        {
-            read_desktop_entry($pool, "$dir/$entry", $topdir);
-        }
-        elsif (-d _ and $entry !~ /^\.{1,2}$/
-                and $entry ne '.hidden')
-        {
-            scan_AppDir($pool, "$dir/$entry", $topdir);
-            delete $__scanmap{$dir};
-        }
-    }
-    closedir $dir_fh;
-}
-
-sub scan_DirectoryDir
-{
-    my ($pool, $dir, $topdir) = @_;
-
-    $topdir = $dir unless defined $topdir;
-
-    return if exists $__scanmap{$dir};
-
-    opendir( my $dir_fh, $dir ) or return;
-    foreach my $entry (readdir($dir_fh))
-    {
-        if (-f "$dir/$entry" and $entry =~ /\.directory$/)
-        {
-            read_directory_entry( $pool, "$dir/$entry", $topdir );
-        }
-        elsif (-d _ and $entry !~ /^\.{1,2}$/
-                and $entry ne '.hidden')
-        {
-            scan_DirectoryDir($pool, "$dir/$entry", $topdir);
-            delete $__scanmap{$dir};
-        }
-    }
-    closedir $dir_fh;
-}
-
-sub read_directory_entry
-{
-    my ($pool, $file, $topdir) = @_;
-
-    unless (defined $Directory_entries{$file})
-    {
-        if ($verbose)
-        {
-	        warn "Read directory entry, opening file $file.\n";
-	    }
-        open( my $file_fh, "<", $file ) or return;
-        my $in_desktop_entry = 0;
-        my %entry;
-        while (<$file_fh>)
-        {
-            if (/^\[/)
-            {
-                if (/^\[Desktop Entry\]/)
-                {
-                    $in_desktop_entry = 1;
-                }
-                elsif (/^\[.*\]/)
-                {
-                    $in_desktop_entry = 0;
-                }
-            }
-            elsif ($in_desktop_entry and /^([^=]*)=([^[:cntrl:]]*)/)
-            {
-                $entry{$1} = $2;
-            }
-        }
-        close($file_fh);
-
-        my $id = $file;
-        $id =~ s/^$topdir//;
-        $id =~ s/^\/*//;
-        $id =~ s/\//-/g;
-        $entry{'id'} = $id;
-        $Directory_entries{$file} = \%entry;
-    }
-    my $entry = $Directory_entries{$file};
-    $pool->{'Directory_entries'}{ $entry->{'id'} } = $entry;
-}
-
-sub check_show_in
-{
-    my ($entry) = @_;
-
-    return 1 unless defined $entry;
-
-    my (%OnlyShowIn, %NotShowIn);
-
-    if (defined $entry->{'OnlyShowIn'})
-    {
-        foreach my $showin (split /;/, $entry->{'OnlyShowIn'})
-        {
-            $OnlyShowIn{$showin} = 1;
-        }
-
-        return 0 unless defined $OnlyShowIn{$desktop_name};
-    }
-
-    if (defined $entry->{'NotShowIn'})
-    {
-        foreach my $showin (split /;/, $entry->{'NotShowIn'})
-        {
-            $NotShowIn{$showin} = 1;
-        }
-
-        return 0 if defined $NotShowIn{$desktop_name};
-    }
-
-    return 1;
-}
-
-sub read_desktop_entry
-{
-  my ($pool, $file, $topdir) = @_;
-
-  unless (defined $Desktop_entries{$file}) {
-    if ($verbose) {
-      warn "Read desktop entry, opening file $file.\n";
-    }
-    open( my $file_fh, "<", $file ) or return;
-
-    my $in_desktop_entry = 0;
-    my %entry;
-    while (<$file_fh>) {
-      if (/^\[/) {
-	if (/^\[Desktop Entry\]/) {
-	  $in_desktop_entry = 1;
-	} elsif (/^\[.*\]/) {
-	  $in_desktop_entry = 0;
-	  }
-      } elsif ($in_desktop_entry && /^([^=]*)=([^[:cntrl:]]*)/) {
-	$entry{$1} = $2;
-      }
-    }
-    close($file_fh);
-
-    my $id = $file;
-    $id =~ s/^$topdir//;
-    $id =~ s/^\/*//;
-    $id =~ s/\//-/g;
-    $entry{'id'} = $id;
-
-    $entry{'refcount'} = 0;
-    $Desktop_entries{$file} = \%entry;
-  } else {
-    warn "Desktop_entry for $file defined\n" if $verbose;
-  }
-
-  my $entry = $Desktop_entries{$file};
-
-  if (! defined $entry->{'Name'} or ! defined $entry->{'Exec'}) {
-    warn "Name or Exec is not defined\n";
-  }
-
-  return unless defined $entry->{'Name'};
-  return unless defined $entry->{'Exec'};
-
-  if (defined $entry->{'Hidden'} and $entry->{'Hidden'} eq 'true') {
-    warn "Hidden entry for $file\n" if $verbose;
-    return;
-  }
-
-  #FIXME, an option for this would be good
-
-  if (defined $entry->{'NoDisplay'} and  $entry->{'NoDisplay'} eq 'true') {
-    warn "NoDisplay entry for $file\n" if $verbose;
-    return;
-  }
-
-  if (!check_show_in($entry)) {
-    warn "entry not shown in $file\n" if $verbose;
-    return;
-  }
-  # return unless check_show_in($entry);
-
-  if (defined $entry->{'NotShowIn'} and
-      $entry->{'NotShowIn'} eq $desktop_name) {
-    warn "entry not shown in 2 $file\n" if $verbose;
-    return;
-  }
-
-  if (defined $pool and defined $entry->{'Categories'}) {
-    foreach my $category (split /;/, $entry->{'Categories'}) {
-      $pool->{'Categories'}{$category} = []
-	unless defined $pool->{'Categories'}{$category};
-      push @{ $pool->{'Categories'}{$category} }, $entry;
-    }
-    $pool->{'Desktop_entries'}{ $entry->{'id'} } = $entry;
-  }
-  return $entry;
-}
-
-sub read_desktop_entries
-{
-    my ($directory_paths, $desktop_paths) = @_;
-    my $pool = {
-        'Desktop_entries'   => {},
-        'Categories'        => {},
-        'Directory_entries' => {},
-        'Directory_paths'   => $directory_paths,
-        'Desktop_paths'     => $desktop_paths
-    };
-
-    foreach my $dir (split /:/, $directory_paths)
-    {
-        next if $dir =~ /^\s*$/;
-        scan_DirectoryDir( $pool, $dir );
-    }
-
-    foreach my $dir (split /:/, $desktop_paths)
-    {
-        next if $dir =~ /^\s*$/;
-        scan_AppDir( $pool, $dir );
-    }
-
-    return $pool;
-}
-
-sub get_directory_entry
-{
-    my ($entry, $pool) = @_;
-    return $pool->{'Directory_entries'}{$entry};
-}
-
-sub interpret_Include
-{
-    my ( $tree, $entries, $pool ) = @_;
-    my %exist;
-    my @list = interpret_entry_node( $tree, 'Or', $pool );
-    foreach my $e (@$entries)
-    {
-        if ( $e->{type} eq 'desktop' )
-        {
-            $exist{ $e->{desktop} } = 1;
-        }
-    }
-
-    foreach my $entry (@list)
-    {
-        next if $exist{$entry};
-        push @$entries, { type => 'desktop', desktop => $entry };
-        $entry->{'refcount'}++;
-        $exist{$entry} = 1;
-    }
-}
-
-sub interpret_Exclude
-{
-    my ( $tree, $entries, $pool ) = @_;
-    my @list = interpret_entry_node( $tree, 'Or', $pool );
-    foreach my $entry (@list)
-    {
-        my $i = 0;
-        while ( defined $entries->[$i] )
-        {
-            my $exist = $entries->[$i];
-            if ($exist->{type} eq 'desktop' and
-                $exist->{desktop} eq $entry )
-            {
-                splice @$entries, $i, 1;
-                $entry->{'refcount'}--;
-            }
-            else 
-            {
-                $i++;
-            }
-        }
-    }
-}
-
-sub interpret_entry_node
-{
-    my ( $tree, $node, $pool ) = @_;
-    my $i = 0;
-    $i++ if ( ref( $tree->[$i] ) eq 'HASH' );
-    my @subtree;
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Filename')
-        {
-            $i++;
-            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
-            {
-                my $entry = $tree->[$i][2];
-                if (defined $pool->{'Desktop_entries'}{$entry})
-                {
-                    push @subtree, [ $pool->{'Desktop_entries'}{$entry} ];
-                }
-                else
-                {
-                    push @subtree, [];
-                }
-            }
-            else
-            {
-                warn "Filename\n";
-                exit 1 if $die_on_error;
-            }
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'Category')
-        {
-            $i++;
-            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
-            {
-                my $category = $tree->[$i][2];
-                if (defined $pool->{'Categories'}{$category})
-                {
-                    push @subtree, $pool->{'Categories'}{$category};
-                }
-                else
-                {
-                    push @subtree, [];
-                }
-            }
-            else
-            {
-                warn "Category\n";
-                exit 1 if $die_on_error;
-            }
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'All')
-        {
-            $i++;
-            if (values %{ $pool->{'Desktop_entries'} } > 0)
-            {
-                push @subtree, [ values %{ $pool->{'Desktop_entries'} } ];
-            }
-            else
-            {
-                push @subtree, [];
-            }
-            $i++;
-        }
-        elsif ($tree->[$i] eq '0')
-        {
-            $i++;
-            $i++;
-        }
-        else
-        {
-            my @res = interpret_entry_node(
-                $tree->[ $i + 1 ], $tree->[$i], $pool
-            );
-
-            push @subtree, \@res;
-            $i++;
-            $i++;
-        }
-    }
-
-    if ($node eq 'Or')
-    {
-        my %used;
-        my @res;
-        foreach my $st (@subtree)
-        {
-            foreach my $entry (@$st)
-            {
-                if (!defined $used{$entry})
-                {
-                    push @res, $entry;
-                    $used{$entry} = 1;
-                }
-            }
-        }
-        return @res;
-    }
-    elsif ($node eq 'And')
-    {
-        my %used;
-        my @res;
-        my $cnt     = @subtree;
-        my $min     = @{ $subtree[0] };
-        my $min_idx = 0;
-        my $idx     = 0;
-        foreach my $st (@subtree)
-        {
-            my $num = @$st;
-            if ($num < $min)
-            {
-                $min     = $num;
-                $min_idx = $idx;
-            }
-
-            my %dupes;
-            foreach my $entry (@$st)
-            {
-                next if $dupes{$entry};
-                $dupes{$entry} = 1;
-
-                if (!defined $used{$entry})
-                {
-                    $used{$entry} = 1;
-                }
-                else
-                {
-                    $used{$entry}++;
-                }
-            }
-            $idx++;
-        }
-
-        return () if $cnt == 0;
-
-        foreach my $entry (@{ $subtree[$min_idx] })
-        {
-            push @res, $entry if $used{$entry} == $cnt;
-        }
-
-        return @res;
-    }
-    elsif ($node eq 'Not')
-    {
-        my %used;
-        my @res;
-
-        my $cnt = @subtree;
-        foreach my $st (@subtree) {
-            foreach my $entry (@$st) {
-                $used{$entry} = 1;
-            }
-        }
-        return if $cnt == 0;
-        foreach my $entry (values %{ $pool->{'Desktop_entries'} })
-        {
-            push @res, $entry if !defined $used{$entry};
-        }
-
-        return @res;
-    }
-    else
-    {
-        warn "Can't use '$node' inside <Include> or <Exclude>\n";
-        exit 1 if $die_on_error;
-        return ();
-    }
-}
-
-sub interpret_root
-{
-    my ($tree, $topdir) = @_;
-
-    if ($tree->[0] eq 'Menu')
-    {
-        return interpret_menu( $tree->[1] );
-    }
-    else
-    {
-        warn "No toplevel Menu\n";
-        exit 1 if $die_on_error;
-        return;
-    }
-}
-
-sub interpret_menu
-{
-    my ($tree, $directory_paths, $desktop_paths) = @_;
-
-    $directory_paths = '' unless defined $directory_paths;
-    $desktop_paths   = '' unless defined $desktop_paths;
-
-    my %menu = (
-        'entries'         => [],
-        'OnlyUnallocated' => 0,
-        'DontShowIfEmpty' => 0,
-        'Deleted'         => 0
-    );
-
-    my $i = 0;
-
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'AppDir')
-        {
-            if (ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0')
-            {
-                $desktop_paths .= ':' . $tree->[ $i + 1 ][2];
-                splice @$tree, $i, 2;
-            }
-            else 
-            {
-                warn "wrong AppDir\n";
-                exit 1 if $die_on_error;
-                $i++;
-                $i++;
-            }
-        }
-        elsif ($tree->[$i] eq 'DefaultAppDirs')
-        {
-            $desktop_paths .= ':' . $DefaultAppDirs;
-            splice @$tree, $i, 2;
-        }
-        elsif ($tree->[$i] eq 'DirectoryDir')
-        {
-            if (ref( $tree->[ $i + 1 ][0]) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0')
-            {
-                $directory_paths .= ':' . $tree->[ $i + 1 ][2];
-                splice @$tree, $i, 2;
-            }
-            else 
-            {
-                warn "wrong DirectoryDir\n";
-                exit 1 if $die_on_error;
-                $i++;
-                $i++;
-            }
-        }
-        elsif ($tree->[$i] eq 'DefaultDirectoryDirs')
-        {
-            $directory_paths .= ':' . $DefaultDirectoryDirs;
-            splice @$tree, $i, 2;
-        }
-        else
-        {
-            $i++;
-            $i++;
-        }
-    }
-
-    $menu{directory_paths} = $directory_paths;
-    $menu{desktop_paths}   = $desktop_paths;
-
-    my $pool = read_desktop_entries( $directory_paths, $desktop_paths );
-
-    $i = 0;
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Menu')
-        {
-            $i++;
-            my $submenu = interpret_menu(
-                $tree->[$i], $directory_paths, $desktop_paths
-            );
-
-            push( @{ $menu{'entries'} },
-                    { type => 'menu', menu => $submenu }
-            );
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'Name')
-        {
-            $i++;
-            if (ref($tree->[$i][0]) eq 'HASH' and $tree->[$i][1] eq '0')
-            {
-                $menu{'Name'} = $tree->[$i][2];
-                exit 1 if $die_on_error;
-            }
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'Directory')
-        {
-            $i++;
-            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
-            {
-                $menu{'Directory'} = get_directory_entry(
-                    $tree->[$i][2], $pool
-                );
-            }
-            else
-            {
-                warn "wrong Directory\n";
-                exit 1 if $die_on_error;
-            }
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'OnlyUnallocated')
-        {
-            $menu{'OnlyUnallocated'} = 1;
-            $i++;
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'DontShowIfEmpty')
-        {
-            $menu{'DontShowIfEmpty'} = 1;
-            $i++;
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'Deleted')
-        {
-            $menu{'Deleted'} = 1;
-            $i++;
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'NotDeleted')
-        {
-            $menu{'Deleted'} = 0;
-            $i++;
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'Include')
-        {
-            $i++;
-            interpret_Include($tree->[$i], $menu{'entries'}, $pool);
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'Exclude')
-        {
-            $i++;
-            interpret_Exclude($tree->[$i], $menu{'entries'}, $pool);
-            $i++;
-        }
-        elsif ($tree->[$i] eq 'Layout' or $tree->[$i] eq 'DefaultLayout')
-        {
-            $i+=2;		# Ignore
-        }
-        elsif ($tree->[$i] eq '0')
-        {
-            $i++;
-            if ($tree->[$i] !~ /^\s*$/)
-            {
-                print STDERR "skip '$tree->[$i]'\n";
-                exit 1 if $die_on_error;
-            }
-            $i++;
-        }
-        else
-        {
-            warn "Unknown '$tree->[$i]':\n";
-            $i++;
-            warn "        '@{$tree->[$i]}'\n";
-            $i++;
-            exit 1 if $die_on_error;
-        }
-    }
-
-    return \%menu;
-}
-
-sub read_menu
-{
-    my ($file, $basedir) = @_;
-
-    if ($file !~ /^\// and defined $basedir)
-    {
-        $file = "$basedir/$file";
-    }
-
-    unless (defined $basedir)
-    {
-        $basedir = $file;
-        $basedir =~ s/\/[^\/]*$//;
-    }
-
-    unless (-e $file)
-    {
-        warn "WARNING: '$file' does not exist\n" if $verbose;
-        return [ 'Menu', [ {} ] ];
-    }
-
-    warn "reading menu '$file'\n" if $verbose;
-
-    my $parser = XML::Parser->new(Style => 'Tree');
-    my $tree = $parser->parsefile($file);
-
-    my $DefaultMergeDir = $file;
-    $DefaultMergeDir =~ s/^.*\///;
-    $DefaultMergeDir =~ s/\.menu$/-merged/;
-
-    read_includes($tree, $basedir, $DefaultMergeDir);
-
-    return $tree;
-}
-
-sub read_menu_dir
-{
-    my ($dir, $basedir) = @_;
-
-    my $out = [];
-
-    if ($dir !~ /^\// and defined $basedir)
-    {
-        $dir = "$basedir/$dir";
-    }
-
-    # TA:  XXX: FIXME!
-    opendir( my $dir_fh, $dir ) or return $out;
-    foreach my $entry (grep { -f && /\.menu$/ } readdir($dir_fh))
-    {
-        my $menu = read_menu("$dir/$entry");
-        $menu = remove_toplevel_Menu($menu);
-        push @$out, @$menu;
-    }
-    closedir $dir_fh;
-
-    return $out;
-}
-
-sub quote_xml
-{
-    my ($txt) = @_;
-
-    $txt =~ s/&/&amp;/g;
-    $txt =~ s/</&lt;/g;
-    $txt =~ s/>/&gt;/g;
-    return $txt;
-}
-
-sub read_legacy_dir
-{
-    my ($dir, $basedir) = @_;
-    my $out;
-
-    $dir =~ s/\/*$//;
-
-    $basedir = $dir unless defined $basedir;
-
-    $out = "<Menu>\n";
-
-    if ($dir eq $basedir)
-    {
-        my $xmldir = quote_xml($dir);
-
-        $out .= "<AppDir>$xmldir</AppDir>\n";
-        $out .= "<DirectoryDir>$xmldir</DirectoryDir>\n";
-    }
-    else
-    {
-        my $name = $dir;
-        $name =~ s/\/*$//;
-        $name =~ s/^.*\///;
-
-        $name = quote_xml($name);
-        $out .= "<Name>$name</Name>\n";
-    }
-
-    if (-f "$dir/.directory")
-    {
-        my $dir_id = "$dir/.directory";
-        $dir_id =~ s/^$basedir//;
-        $dir_id =~ s/^\///;
-        $dir_id = quote_xml($dir_id);
-
-        $out .= "<Directory>$dir_id</Directory>\n";
-    }
-
-    if (opendir(my $dir_fh, $dir))
-    {
-        foreach my $entry (readdir($dir_fh))
-        {
-            if (-f "$dir/$entry" and $entry =~ /\.desktop$/)
-            {
-                my $id = "$dir/$entry";
-                $id =~ s/^$basedir//;
-                $id =~ s/^\///;
-                $id =~ s/\//-/g;
-                $id = quote_xml($id);
-
-                my $desktop = read_desktop_entry(
-                    undef, "$dir/$entry", $basedir
-                );
-
-                $out .= "<Include><Filename>$id</Filename></Include>\n"
-                    unless defined $desktop->{'Categories'};
-            }
-            elsif (-d "$dir/$entry" and $entry !~ /^\.{1,2}$/ and
-                    $entry ne '.hidden')
-            {
-                $out .= read_legacy_dir( "$dir/$entry", $basedir );
-            }
-        }
-        closedir $dir_fh;
-    }
-
-    $out .= "</Menu>\n";
-    return $out;
-}
-
-sub remove_toplevel_Menu
-{
-    my ($tree) = @_;
-
-    if ($tree->[0] eq 'Menu')
-    {
-        shift @{ $tree->[1] } if ref $tree->[1][0] eq 'HASH';
-        return $tree->[1];
-    }
-    else 
-    {
-        warn "No toplevel Menu\n";
-        exit 1 if $die_on_error;
-        return;
-    }
-}
-
-sub read_includes
-{
-    my ($tree, $basedir, $DefaultMergeDir) = @_;
-    my $i = 0;
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'MergeFile')
-        {
-            if (ref( $tree->[ $i + 1 ][0]) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0')
-            {
-                my $add_tree = read_menu(
-                    $tree->[ $i + 1 ][2], $basedir
-                );
-                $add_tree = remove_toplevel_Menu($add_tree);
-
-                splice @$tree, $i, 2, @$add_tree;
-            }
-            else
-            {
-                warn "wrong MergeFile\n";
-                exit 1 if $die_on_error;
-                $i++;
-                $i++;
-            }
-        }
-        elsif ($tree->[$i] eq 'MergeDir')
-        {
-            if (ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0')
-            {
-                my $add_tree = read_menu_dir( $tree->[ $i + 1 ][2], $basedir );
-                splice @$tree, $i, 2, @$add_tree;
-            }
-            else
-            {
-                warn "wrong MergeFile\n";
-                exit 1 if $die_on_error;
-                $i++;
-                $i++;
-            }
-        }
-        elsif ($tree->[$i] eq 'DefaultMergeDirs')
-        {
-            my $add_tree = read_menu_dir( $DefaultMergeDir, $basedir );
-            splice @$tree, $i, 2, @$add_tree;
-        }
-        elsif ($tree->[$i] eq 'LegacyDir')
-        {
-            if (ref( $tree->[ $i + 1 ][0] ) eq 'HASH'
-                and $tree->[ $i + 1 ][1] eq '0')
-            {
-                if (-d $tree->[ $i + 1 ][2])
-                {
-                    my $xml = read_legacy_dir( $tree->[ $i + 1 ][2] );
-                    warn "reading legacy directory '" . $tree->[ $i + 1 ][2] . 
-                        "'\n" if $verbose;
-
-                    my $parser = XML::Parser->new(Style => 'Tree');
-                    my $add_tree = $parser->parse($xml);
-                    $add_tree = remove_toplevel_Menu($add_tree);
-                    splice @$tree, $i, 2, @$add_tree;
-                }
-                else
-                {
-                    warn "legacy directory '"
-                      . $tree->[ $i + 1 ][2]
-                      . "' not found\n"
-                      if $verbose;
-                    splice @$tree, $i, 2, ();
-                }
-            }
-            else
-            {
-                warn "wrong LegacyDir\n";
-                exit 1 if $die_on_error;
-                $i++;
-                $i++;
-            }
-        }
-        elsif ($tree->[$i] eq 'KDELegacyDirs')
-        {
-            my @out;
-            foreach my $dir (@KDELegacyDirs)
-            {
-                my $xml = read_legacy_dir($dir);
-                warn "reading legacy directory '$dir'\n" if $verbose;
-
-                my $parser = new XML::Parser( Style => 'Tree' );
-                my $add_tree = $parser->parse($xml);
-                $add_tree = remove_toplevel_Menu($add_tree);
-                push @out, @$add_tree;
-            }
-            splice @$tree, $i, 2, @out;
-        }
-        elsif ($tree->[$i] eq 'Menu')
-        {
-            $i++;
-            read_includes( $tree->[$i], $basedir, $DefaultMergeDir );
-            $i++;
-        }
-        else
-        {
-            $i++;
-            $i++;
-        }
-    }
-}
-
-sub get_menu_name
-{
-    my ($tree) = @_;
-    my $name;
-
-    my $i = 0;
-
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Name')
-        {
-            $i++;
-            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
-            {
-                $name = $tree->[$i][2];
-                last;
-            }
-            else
-            {
-                warn "wrong Name\n";
-            }
-            $i++;
-        }
-        else
-        {
-            $i++;
-            $i++;
-        }
-    }
-
-    unless (defined $name)
-    {
-        warn "Menu has no name element\n";
-    }
-
-    return $name;
-}
-
-sub append_menu
-{
-    my ($target, $source) = @_;
-
-    my $i = 0;
-    $i++ if ref $source->[$i] eq 'HASH';
-
-    while (defined $source->[$i])
-    {
-        if ($source->[$i] ne 'Name')
-        {
-            push @$target, $source->[$i];
-            push @$target, $source->[ $i + 1 ];
-        }
-        $i++;
-        $i++;
-    }
-}
-
-sub merge_menus
-{
-    my ($tree) = @_;
-
-    my %used;    #menu name already used
-
-    my $i = 0;
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Menu')
-        {
-            my $name = get_menu_name($tree->[ $i + 1 ]);
-            if (defined $used{$name})
-            {
-                my $target = $used{$name};
-                append_menu($tree->[$target], $tree->[ $i + 1 ]);
-
-                splice @$tree, $i, 2;
-            }
-            else
-            {                           # first appearance
-                $used{$name} = $i + 1;
-                $i++;
-                $i++;
-            }
-        }
-        else 
-        {
-            $i++;
-            $i++;
-        }
-    }
-
-    $i = 0;
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Menu')
-        {
-            merge_menus($tree->[ $i + 1 ]);
-        }
-        $i++;
-        $i++;
-    }
-}
-
-sub read_Move
-{
-    my ( $tree, $hash ) = @_;
-    my $i = 0;
-    my $old = '';
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Old')
-        {
-            $i++;
-            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
-            {
-                $old = $tree->[$i][2];
-            }
-            else
-            {
-                warn "wrong Old\n";
-                exit 1 if $die_on_error;
-            }
-            $i++;
-        }
-        if ($tree->[$i] eq 'New')
-        {
-            $i++;
-            if (ref( $tree->[$i][0] ) eq 'HASH' and $tree->[$i][1] eq '0')
-            {
-                $hash->{$old} = $tree->[$i][2];
-            }
-            else
-            {
-                warn "wrong New\n";
-                exit 1 if $die_on_error;
-            }
-            $i++;
-        }
-        else
-        {
-            $i++;
-            $i++;
-        }
-    }
-}
-
-sub find_menu_in_tree
-{
-    my ( $path, $tree ) = @_;
-
-    my $root = $path;
-    $root =~ s/\/.*$//;
-
-    my $subpath = $path;
-    $subpath =~ s/^[^\/]*\/*//;
-
-    my $i = 0;
-    $i++ if ref $tree->[$i]  eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Menu')
-        {
-            if ($root eq get_menu_name( $tree->[ $i + 1 ]))
-            {
-                if ($subpath eq '')
-                {
-                    return {
-                        'parent' => $tree,
-                        'index'  => $i,
-                        'menu'   => $tree->[ $i + 1 ]
-                    };
-                }
-                return find_menu_in_tree( $subpath, $tree->[ $i + 1 ] );
-            }
-        }
-        $i++;
-        $i++;
-    }
-
-    #FIXME - TA:  Don't return undef here, it's bad.
-    return undef;
-}
-
-sub copy_menu
-{
-    my ($path, $tree) = @_;
-    my $tail;
-    my $child;
-
-    foreach my $elem (reverse split( /\//, $path))
-    {
-        next if $elem eq '';
-        my $menu = [ {}, 'Name', [ {}, 0, $elem ] ];
-        push @$menu, ( 'Menu', $child ) if defined $child;
-        $tail = $menu unless defined $tail;
-        $child = $menu;
-    }
-    append_menu( $tail, $tree );
-    return $child;
-}
-
-sub move_menus
-{
-    my ($tree) = @_;
-    my %move;
-    my $i = 0;
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Move')
-        {
-            read_Move($tree->[ $i + 1 ], \%move);
-            splice @$tree, $i, 2;
-        }
-        else
-        {
-            $i++;
-            $i++;
-        }
-    }
-
-    foreach my $source (keys %move)
-    {
-        my $sourceinfo = find_menu_in_tree($source, $tree);
-
-        if (defined $sourceinfo)
-        {
-            my $target = copy_menu($move{$source}, $sourceinfo->{'menu'});
-            splice @{ $sourceinfo->{'parent'} }, $sourceinfo->{'index'}, 2;
-            push @$tree, ('Menu', $target);
-            merge_menus($tree);
-        }
-    }
-    $i = 0;
-    $i++ if ref $tree->[$i] eq 'HASH';
-
-    while (defined $tree->[$i])
-    {
-        if ($tree->[$i] eq 'Menu')
-        {
-            move_menus($tree->[ $i + 1 ]);
-        }
-        $i++;
-        $i++;
-    }
-}
-
-sub remove_allocated
-{
-    my ($menu) = @_;
-
-    my $i = 0;
-    while ($i < @{ $menu->{'entries'} })
-    {
-        my $entry = $menu->{'entries'}[$i];
-
-        if ($entry->{type} eq 'menu')
-        {
-            remove_allocated( $entry->{menu} );
-            $i++;
-        }
-        elsif ($entry->{type} eq 'desktop'
-                and  $menu->{'OnlyUnallocated'}
-                and $entry->{desktop}{'refcount'} > 1)
-        {
-            $entry->{desktop}{'refcount'}--;
-            splice @{ $menu->{'entries'} }, $i, 1;
-        }
-        else 
-        {
-            $i++;
-        }
-    }
-    return 0;
-}
-
-sub remove_empty_menus
-{
-    my ($menu) = @_;
-
-    my $i = 0;
-    while ($i < @{ $menu->{'entries'} })
-    {
-        my $entry = $menu->{'entries'}[$i];
-
-        if ($entry->{type} eq 'menu' and remove_empty_menus($entry->{menu}))
-        {
-            splice @{ $menu->{'entries'} }, $i, 1;
-        }
-        else
-        {
-            $i++;
-        }
-    }
-
-    @{ $menu->{'entries'} } == 0 ? return 1 : return 0;
-}
-
-sub prepare_exec
-{
-    my ( $exec, $desktop ) = @_;
-
-    # Take out filename flags, etc.
-    $exec =~ s/%f//g;
-    $exec =~ s/%F//g;
-    $exec =~ s/%u//g;
-    $exec =~ s/%U//g;
-    $exec =~ s/%d//g;
-    $exec =~ s/%D//g;
-    $exec =~ s/%n//g;
-    $exec =~ s/%N//g;
-    $exec =~ s/%i//g;
-    $exec =~ s/%k//g;
-    $exec =~ s/%v//g;
-    $exec =~ s/%m//g;
-
-    my $caption = $desktop->{Name};
-    $exec =~ s/%c/$caption/g;
-    $exec =~ s/%%/%/g;
-
-    if (defined $desktop->{Terminal})
-    {
-	    if ($desktop->{Terminal} eq '1' or $desktop->{Terminal} eq 'true')
-        {
-	        $exec = "$TERM_CMD $exec";
-	    }
-    }
-
-    if (defined $desktop->{'X-KDE-SubstituteUID'})
-    {
-	    if ($desktop->{'X-KDE-SubstituteUID'} eq '1'
-	        or $desktop->{'X-KDE-SubstituteUID'} eq 'true')
-        {
-	        $exec = "$root_cmd $exec"
-	    }
-    }
-    return $exec;
-}
-
-sub get_loc_entry
-{
-    my ( $desktop, $entry ) = @_;
-
-    foreach my $key (@language_keys)
-    {
-        my $loc_entry = $entry . "[$key]";
-
-        if (defined $desktop->{$loc_entry} and
-            $desktop->{$loc_entry} !~ /^\s*$/)
-        {
-            return $desktop->{$loc_entry};
-        }
-    }
-
-    return $desktop->{$entry};
-}
-
-sub preprocess_menu
-{
-    # localize, sort, prepare_exec
-    my ($menu) = @_;
-
-    return 0 if $menu->{'Deleted'};
-    return 0 unless check_show_in( $menu->{'Directory'} );
-
-	if( defined $menu->{'Directory'} and
-        defined $menu->{'Directory'}->{'NoDisplay'} and
-        $menu->{'Directory'}->{'NoDisplay'} eq 'true')
-    {
-        return 0;
-    }
-
-    my $menu_name = $menu->{'Name'};
-    if (defined $menu->{'Directory'})
-    {
-        my $directory = $menu->{'Directory'};
-        my $directory_name = get_loc_entry( $directory, 'Name' );
-
-        if (defined $directory_name)
-        {
-              if( !defined $directory->{"Encoding"} or
-                  $directory->{"Encoding"} eq 'UTF-8')
-              {
-                  Encode::from_to($directory_name, "utf8", $charset);
-              }
-
-              $menu_name = $directory_name;
-        }
-    }
-
-    $menu->{'PrepName'} = $menu_name;
-
-    my $i = 0;
-    while ( defined $menu->{'entries'}[$i] )
-    {
-        my $entry = $menu->{'entries'}[$i];
-        if ( $entry->{'type'} eq 'desktop' )
-        {
-            my $desktop = $entry->{desktop};
-            my $name = $desktop->{'id'};
-            my $desktop_name = get_loc_entry( $desktop, 'Name' );
-            if ( defined $desktop_name )
-            {
-                Encode::from_to( $desktop_name, "utf8", $charset )
-                  if !defined $desktop->{"Encoding"}
-                      || $desktop->{"Encoding"} eq 'UTF-8';
-                $name = $desktop_name;
-            }
-            $desktop->{'PrepName'} = $name;
-            $entry->{'Name'}       = $name;
-            $entry->{'PrepName'}   = $name;
-            $desktop->{'PrepExec'} = prepare_exec( $desktop->{Exec}, $desktop );
-            $i++;
-        }
-        elsif ( $entry->{type} eq 'menu' )
-        {
-            if ( preprocess_menu( $entry->{'menu'} ) )
-            {
-                $entry->{'Name'}     = $entry->{'menu'}{'Name'};
-                $entry->{'PrepName'} = $entry->{'menu'}{'PrepName'};
-                $i++;
-            }
-            else
-            {
-                splice @{ $menu->{'entries'} }, $i, 1;
-            }
-        }
-        else
-        {
-            warn "wrong menu entry type: $entry->{type}";
-            exit 1 if $die_on_error;
-            splice @{ $menu->{'entries'} }, $i, 1;
-        }
-    }
-
-    $menu->{'entries'} = [
-        sort {
-            $b->{'type'} cmp $a->{'type'}
-              || $a->{'PrepName'} cmp $b->{'PrepName'}
-          } @{ $menu->{'entries'} }
-    ];
-
-    $i = 0;
-    my $prev_entry;
-    while ( defined $menu->{'entries'}[$i] )
-    {
-        my $entry = $menu->{'entries'}[$i];
-        if (defined $prev_entry
-            and $entry->{'type'}                       eq 'desktop'
-            and $prev_entry->{'type'}                  eq 'desktop'
-            and $prev_entry->{'PrepName'}              eq $entry->{'PrepName'}
-            and $prev_entry->{'desktop'}->{'PrepExec'} eq
-            $entry->{'desktop'}->{'PrepExec'} )
-        {
-            splice @{ $menu->{'entries'} }, $i, 1;
-        }
-        else
-        {
-            $prev_entry = $entry;
-            $i++;
-        }
-    }
-    return 1;
-}
-
-sub output_fvwm2_menu
-{
-    my ($menu, $toplevel, $path) = @_;
-
-    $path = '' unless defined $path;
-    $toplevel = 1 unless defined $toplevel;
-
-    my $output = '';
-    my $label = '';
-    my $menu_name = $menu->{'PrepName'};
-    my $menu_id = "$path-" . $menu->{'Name'};
-    $menu_id =~ s/\s/_/g;
-    $menu_id = $menu_prefix if $toplevel;
-    foreach my $entry ( @{ $menu->{'entries'} } )
-    {
-        if ( $entry->{type} eq 'menu' ) {
-            $output .= output_fvwm2_menu( $entry->{'menu'}, 0, $menu_id );
-        }
-    }
-    $output .= "DestroyMenu \"$menu_id\"\n";
-    $output .= "AddToMenu \"$menu_id\" \"$dmicon{'fvwm_title'}$label$menu_name\" Title\n";
-
-    if ($MENU_STYLE ne '')
-    {
-	    push @menus_for_style, $menu_id;
-    }
-
-    foreach my $entry ( @{ $menu->{'entries'} } )
-    {
-        if ( $entry->{type} eq 'desktop' )
-        {
-            my $desktop = $entry->{desktop};
-            my $name = $desktop->{'PrepName'};
-            my $exec = $desktop->{'PrepExec'};
-            $output .= "+		 \"$dmicon{'fvwm_app'}$name\" Exec $exec\n";
-        }
-        elsif ( $entry->{type} eq 'menu')
-        {
-            my $name = $entry->{'menu'}{'PrepName'};
-            my $id   = "$menu_id-" . $entry->{'menu'}{'Name'};
-            $id =~ s/\s/_/g;
-            $output .= "+		 \"$dmicon{'fvwm_folder'}$name\" Popup \"$id\"\n";
-        }
-        else 
-        {
-            warn "wrong menu entry type: $entry->{type}";
-        }
-    }
-
-    $output .= "\n";
-    if ("$menu_id" eq "$menu_prefix-System_Tools")
-    {
-	    $output .= "AddToMenu \"$menu_prefix-System_Tools\" " .
-	        "\"$dmicon{'fvwm_app'}Regenerate Applications Menu\" " .
-	        "FvwmForm FvwmForm-Desktop\n";
-    }
-    return $output;
-}
-
-sub get_root_menu
-{
-    my $xdg_config_dirs = $ENV{XDG_CONFIG_DIRS} || '';
-    my $xdg_menu_prefix = $ENV{XDG_MENU_PREFIX} || '';
-
-    foreach my $dir (split(/:/, $xdg_config_dirs), "/etc/xdg")
-    {
-        my $menu_file="$dir/menus/${xdg_menu_prefix}applications.menu"; # 
-	warn "looking for root menu $menu_file\n" if $verbose;
-        return "$menu_file" if -f "$menu_file";
-    }
-    return "";
-}
-
-sub get_app_dirs
-{
-    my %used;
-    my $ret = '';
-
-    my @kde_xdgdata;
-    if ( defined $kde_cmd ) {
-      @kde_xdgdata = split( /:/, `$kde_cmd --path xdgdata-apps` );
-    } else {
-      @kde_xdgdata = ("$ENV{HOME}/.local/share/applications/",
-		      "/usr/share/kde-settings/kde-profile/default/share/applications/",
-		      "/usr/share/applications/",
-		      "/usr/local/share/applications/");
-    }
-    foreach (@kde_xdgdata)
-    {
-        s/\/applications\/*\s*$//;
-    }
-
-    foreach my $d (split( /:/, $xdg_data_dirs ),
-        @kde_xdgdata, "/usr/share", "/opt/gnome/share")
-    {
-        my $dir = $d;
-        $dir =~ s/\/*$//;
-        next if defined $used{$dir};
-        next if check_file("$dir/applications") ne 'D';
-        $ret .= ':' if $ret ne '';
-        $ret .= "$dir/applications";
-        $used{$dir} = 1;
-    }
-    if ($verbose)
-    {
-        foreach ( split( ':', $ret ) )
-        {
-            warn "app dirs $_\n";
-        }
-    }
-    return $ret;
-}
-
-sub get_desktop_dirs
-{
-    my %used;
-    my $ret = '';
-    foreach my $dir ( split( /:/, $xdg_data_dirs ),
-        qw(/usr/share /opt/kde3/share /opt/gnome/share) )
-    {
-        next if defined $used{$dir};
-        next if check_file("$dir/desktop-directories") ne 'D';
-        $ret .= ':' if $ret ne '';
-        $ret .= "$dir/desktop-directories";
-        $used{$dir} = 1;
-    }
-    warn "desktop dirs $ret\n" if $verbose;
-    return $ret;
-}
-
-sub get_KDE_legacy_dirs
-{
-    my %used;
-    my @ret = ();
-    my @legacy_dirs = (qw(
-        /usr/share/applications
-        /etc/opt/kde3/share/applnk
-        /opt/kde3/share/applnk
-        )
-    );
-    if ( defined $kde_cmd) {
-      push @legacy_dirs, reverse(split(/:/,`$kde_cmd --path apps` ));
-    }
-
-    foreach my $d ( @legacy_dirs )
-    {
-        my $dir = $d;
-        chomp $dir;
-        $dir =~ s/\/*$//;
-        next if defined $used{$dir};
-        next if check_file("$dir") ne 'D';
-        $used{$dir} = 1;
-        push @ret, $dir;
-    }
-    warn "KDE legacy dirs @ret\n" if $verbose;
-    return @ret;
-}
-
-sub prepare_language_keys
-{
-    my ($language) = @_;
-
-    my @keys;
-    $language =~ s/\.[^@]*//;    # remove .ENCODING
-
-    if ( $language =~ /^([^_]*)_([^@]*)@(.*)$/)
-    {
-        # LANG_COUNTRY@MODIFIER
-        push @keys, $1 . '_' . $2 . '@' . $3;
-        push @keys, $1 . '_' . $2;
-        push @keys, $1 . '@' . $3;
-        push @keys, $1;
-    }
-    elsif ($language =~ /^([^_]*)_([^@]*)$/)
-    {
-        # LANG_COUNTRY
-        push @keys, $1 . '_' . $2;
-        push @keys, $1;
-    }
-    elsif ($language =~ /^([^_]*)@(.*)$/)
-    {
-        # LANG@MODIFIER
-        push @keys, $1 . '@' . $2;
-        push @keys, $1;
-    }
-    elsif ($language =~ /^([^_@]*)$/)
-    {
-        # LANG
-        push @keys, $1;
-    }
-
-    return @keys;
-}
-
-# Fixme, remove unsupported options.
-sub show_help
-{
-	print <<END_HELP;
-A perl script which parses xdg menu definitions to build
-the corresponding fvwm menus.  The script can also build
-Icon and MiniIcon styles for the desktop applications.
+# On Fedora, python-xdg is installed by default.
+
+import sys
+import getopt
+import xdg.Menu
+import xdg.IconTheme
+import xdg.Locale
+import os.path
+import os
+from xdg.DesktopEntry import *
+
+
+def main ():
+
+    description = """
+Generate Fvwm Menu from xdg files.
+Standard output is a series Fvwm commands."""
+
+    obs_args=['check-app',
+              'enable-style',
+              'enable-tran-style',
+              'fvwm-icons',
+              'kde_config',
+              'mini-icon-path',
+              'merge-user-menu',
+              'su_gui',
+              'utf8',
+              'wm-icons']
+    dashed_obs_args=[]
+    for a in obs_args :
+        dashed_obs_args.append('--'+a)
+
+    obs_parms=['check-icons',
+               'check-mini-icon',
+               'destroy-type',
+               'dir',
+               'fvwmgtk-alias',
+               'icon-app',
+               'icon-folder',
+               'icon-style',
+               'icon-title',
+               'icon-toptitle',
+               'icons-path',
+               'lang',
+               'menu-style',
+               'name',
+               'png-icons-path',
+               'submenu-name-prefix',
+               'time-limit',
+               'title',
+               'tran-icons-path',
+               'tran-mini-icons-path',
+               'type',
+               'uniconv-exec',
+               'uniconv',
+               'xterm']
+    equaled_obs_parms=[]
+    for a in obs_parms :
+        equaled_obs_parms.append(a+'=')
+    dashed_obs_parms=[]
+    for a in obs_parms :
+        dashed_obs_parms.append('--'+a)
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hs:t:v",
+                                   ["help", "verbose", "enable-mini-icons",
+                                    "desktop=", "size=", "theme=", "install-prefix="]+obs_args+equaled_obs_parms)
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        print usage
+        sys.exit(2)
+    global verbose, force, size, theme, icon_dir, top, install_prefix
+    verbose = False
+    force = False
+    desktop='applications'
+    size=24
+    theme='gnome'
+    icon_dir="~/.fvwm/icons"
+    top='FvwmMenu'
+    install_prefix = '/etc/xdg/menus/'
+    
+    for o, a in opts:
+        if o == "-v":
+            verbose = True
+        elif o in ("-h", "--help") :
+            print usage
+            sys.exit()
+        elif o in ("--enable-mini-icons") :
+            force=True
+        elif o in ("--desktop") :
+            desktop=a
+        elif o in ("--install-prefix") :
+            if a and not os.path.isabs(a):
+                assert False, "install-prefix must be an absolute path"
+            # add trailing slash if not there already
+            if (not re.search('.*[.]/$',a)) : # no trailing slash
+                a=a+'/'
+            install_prefix = a
+
+        elif o in ("-s","--size") :
+            size = int(a)
+        elif o in ("--theme") :
+            theme = a
+        elif o in (str(dashed_obs_args+dashed_obs_parms)) :
+            # Ignore
+            sys.stderr.write( "Arg "+o+" is obsolete and ignored\n" )
+        else:
+            assert False, "unhandled option"
+
+    # If desktop lacks a trailing .menu, put one there.
+    if (not re.search('.*[.]menu$',desktop)) : # no trailing .menu
+          desktop=desktop+'.menu'
+    menu=install_prefix+desktop
+    # If desktop arg has leading slash, it's a full path
+    if (desktop[0] == '/'):
+        menu=desktop
+    
+    parsemenu(xdg.Menu.parse(menu), top)
+
+
+def printtext(text):
+    print text.encode("utf-8")
+
+def geticonfile(icon):
+    iconpath = xdg.IconTheme.getIconPath(icon, size, theme, ["png", "xpm"])
+
+    if not iconpath:
+        return None
+
+    if not force:
+        return iconpath
+    
+    if iconpath.find("%ix%i" % (size, size)) >= 0: # ugly hack!!!
+        return iconpath
+
+    iconfile = os.path.join(os.path.expanduser(icon_dir),
+                            "%ix%i-" % (size, size) + 
+                            os.path.basename(iconpath))
+    os.system("if test \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) ; then convert '%s' -resize %i '%s' ; fi"% 
+              (iconfile, iconpath, iconfile, iconpath, size, iconfile))
+    return iconfile
+
+    
+def getdefaulticonfile(command):
+    if command.startswith("Popup"):
+        return geticonfile("gnome-fs-directory")
+    else:
+        return geticonfile("gnome-applications")    
+
+def printmenu(name, icon, command):
+    iconfile = ''
+    if force :
+        iconfile = geticonfile(icon) or getdefaulticonfile(command) or icon
+        iconfile = '%'+iconfile+'%'
+    printtext('+ "%s%s" %s' % (name, iconfile, command))
+
+def parsemenu(menu, name=""):
+    if not name:
+      name = menu.getPath()
+    print 'DestroyMenu "%s"' % name
+    printtext('AddToMenu "%s"' % name)
+    for entry in menu.getEntries():
+	if isinstance(entry, xdg.Menu.Menu):
+	    printmenu(entry.getName(), entry.getIcon(),
+		      'Popup "%s"' % entry.getPath())
+	elif isinstance(entry, xdg.Menu.MenuEntry):
+	    desktop = DesktopEntry(entry.DesktopEntry.getFileName())
+	    printmenu(desktop.getName(), desktop.getIcon(),
+                      "Exec exec " + desktop.getExec() )
+	else:
+	    printtext('# not supported: ' + str(entry))
+
+    for entry in menu.getEntries():
+	if isinstance(entry, xdg.Menu.Menu):
+	    parsemenu(entry)
+
+    if (re.search('.*System Tools$',name)) : # fixme, find a better way to do this?
+        printmenu("Regenerate Applications Menu", "", "FvwmForm " "FvwmForm-Desktop" )
+
+
+usage="""
+A script which parses xdg menu definitions to build
+the corresponding fvwm menus.
 
 Usage: $0 [OPTIONS]
 Options:
@@ -2105,42 +265,14 @@ Options:
 	--[no]check-app           [do not] check that apps are in your path
 	--time-limit NUM          limit script running time to NUM seconds
 	--verbose                 display debug type info oni STDERR
-Short options are ok if not ambiguous: -h, -x, -icon-a.
-END_HELP
-	exit 0;
-}
+Short options are ok if not ambiguous: -h, -x, -icon-a."""
 
-# Check if application binary is executable and reachable
-sub check_app
-{
-	my($app) = @_;
-	# If full path, dont use path, just check path
-	if ( substr($app,0,1) eq '/' and -x $app )
-    {
-        return 1;
-    }
 
-	# Check if an application is in the path
-	foreach (@PATH_DIRS)
-    {
-		return 1 if -x "$_/$app";
-	}
 
-	return 0;
-}
+if __name__ == "__main__":
+    main()
 
-sub show_version
-{
-	print "$version\n";
-	exit 0;
-}
-
-sub obsolete
-{
-    my ($arg) = @_;
-    print "WARNING: Argument \"$arg\" obsolete.  Ignored.\n";
-}
 # Local Variables:
-# mode: cperl
-# compile-command: "perl fvwm-menu-desktop.in --enable-mini-icons --fvwm-icons"
+# mode: python
+# compile-command: "python fvwm-menu-desktop.in --desktop applications"
 # End:

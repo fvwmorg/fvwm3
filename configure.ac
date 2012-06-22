@@ -75,6 +75,9 @@ AM_CONFIG_HEADER(config.h)
 AC_CHECK_PROG(SED, sed, sed, "")
 AC_SUBST(SED)
 
+# optional python:
+AM_PATH_PYTHON([2.5],, [:])
+
 #!!!
 PERL=""
 REQUIRED_PERL_VERSION=5.004

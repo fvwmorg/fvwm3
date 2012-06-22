@@ -1011,7 +1011,7 @@ grid is 3 by 3 pixels which gives a tightly packed appearance. To
 get a more regular appearance use a grid larger than your largest
 icon. Use the
 <emphasis>IconSize</emphasis>
-definition to clip an icon to a maximum size. An
+argument to clip or stretch an icon to a maximum size. An
 <emphasis remap='I'>IconGrid</emphasis>
 definition must follow the
 <emphasis remap='B'>IconBox</emphasis>
@@ -1050,6 +1050,7 @@ definition that it applies to:</para>
 Style * IconBox -80x240-1-1, IconFill b r
 </programlisting>
 
+<section id="IconSize">
 <para>
 <fvwmopt cmd="Style" opt="IconSize"/>
 sets limits on the size of an icon image.  Both user-provided
@@ -1087,7 +1088,16 @@ dimension.  This effectively places no limits on the size of an icon.</para>
 <para>The value of "-1" can be used in place of any of the arguments to
 specify the default value for that dimension.</para>
 
-<para>Note that application-provided icon windows are not affected.</para>
+<para>In addition to the numeric arguments, 1 additional argument can be
+"Stretched", "Adjusted", or "Shrunk".
+</para>
+
+<para>Note that module provided icon managers are not affected by this style.</para>
+
+</section>
+
+
+
 
 <para><fvwmopt cmd="Style" opt="MiniIcon"/>
 specifies a pixmap to use as the miniature icon for the

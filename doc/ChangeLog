@@ -1,3 +1,7 @@
+2012-06-22  Dan Espen  <despen@verizon.net>
+
+	* commands/Style.xml: Cleanup iconsize.
+
 2011-09-27  Thomas Adam <thomas@fvwm.org>
 	* commands/Style.xml:
 	Add tiny note about IconTitleFormat.

@@ -1,3 +1,7 @@
+2012-06-22  Dan Espen  <despen@verizon.net>
+
+	* configure.ac: Set variables for python.
+
 2012-06-16  Thomas Adam  <thomas@fvwm.org>
 	* configure.ac:
 	* libs/Bindings.c (AddBinding):
