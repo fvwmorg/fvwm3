@@ -138,7 +138,7 @@ Standard output is a series Fvwm commands."""
             theme = a
         elif o in (str(dashed_obs_args+dashed_obs_parms)) :
             # Ignore
-            sys.stderr.write( "Arg "+o+" is obsolete and ignored\n" )
+            sys.stderr.write( "Warning: Arg "+o+" is obsolete and ignored\n" )
         else:
             assert False, "unhandled option"
 
@@ -150,6 +150,11 @@ Standard output is a series Fvwm commands."""
     if (desktop[0] == '/'):
         menu=desktop
     
+    if not os.path.exists(menu):
+        sys.stderr.write("Error: menu <"+menu+"> doesn't exist.  Aborting")
+        sys.exit(3)
+        
+
     parsemenu(xdg.Menu.parse(menu), top)
 
 
@@ -190,8 +195,9 @@ def printmenu(name, icon, command):
     printtext('+ "%s%s" %s' % (name, iconfile, command))
 
 def parsemenu(menu, name=""):
-    if not name:
-      name = menu.getPath()
+    m = re.compile('%[A-Z]?', re.I) # Pattern for %A-Z (meant for %U)
+    if not name :
+        name = menu.getPath()
     print 'DestroyMenu "%s"' % name
     printtext('AddToMenu "%s"' % name)
     for entry in menu.getEntries():
@@ -200,6 +206,8 @@ def parsemenu(menu, name=""):
 		      'Popup "%s"' % entry.getPath())
 	elif isinstance(entry, xdg.Menu.MenuEntry):
 	    desktop = DesktopEntry(entry.DesktopEntry.getFileName())
+            # eliminate '%U' etc behind execute string
+            execProgram = m.sub('', desktop.getExec())
 	    printmenu(desktop.getName(), desktop.getIcon(),
                       "Exec exec " + desktop.getExec() )
 	else:

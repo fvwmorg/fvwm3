@@ -1,3 +1,10 @@
+2012-06-24  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.in (main): When root menu doesn't exist,
+	print a clear error message and exit.
+	(parsemenu): Eliminate %U in exec strings
+	Based on Patch 1 from Thomas Funk.
+
 2012-06-22  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.in:
