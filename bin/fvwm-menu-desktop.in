@@ -173,6 +173,9 @@ def geticonfile(icon):
     if iconpath.find("%ix%i" % (size, size)) >= 0: # ugly hack!!!
         return iconpath
 
+    if not os.path.isdir(os.path.expanduser(icon_dir)):
+        os.system("mkdir " + os.path.expanduser(icon_dir))
+
     iconfile = os.path.join(os.path.expanduser(icon_dir),
                             "%ix%i-" % (size, size) + 
                             os.path.basename(iconpath))
@@ -198,7 +201,7 @@ def parsemenu(menu, name=""):
     m = re.compile('%[A-Z]?', re.I) # Pattern for %A-Z (meant for %U)
     if not name :
         name = menu.getPath()
-    print 'DestroyMenu "%s"' % name
+    printtext('DestroyMenu "%s"' % name)
     printtext('AddToMenu "%s"' % name)
     for entry in menu.getEntries():
 	if isinstance(entry, xdg.Menu.Menu):
