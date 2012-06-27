@@ -1,4 +1,4 @@
-#!@PYTHON@
+#!/usr/bin/python
  
 # Modification History
 
@@ -96,24 +96,26 @@ Standard output is a series Fvwm commands."""
         dashed_obs_parms.append('--'+a)
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hs:t:v",
-                                   ["help", "verbose", "enable-mini-icons",
-                                    "desktop=", "size=", "theme=", "install-prefix="]+obs_args+equaled_obs_parms)
+        opts, args = getopt.getopt(sys.argv[1:], "hs:t:vw",
+                                   ["help", "verbose", "enable-mini-icons", "with-titles",
+                                    "desktop=", "size=", "theme=", "install-prefix=", "menu-type="]+obs_args+equaled_obs_parms)
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
         print usage
         sys.exit(2)
-    global verbose, force, size, theme, icon_dir, top, install_prefix
+    global verbose, force, size, theme, icon_dir, top, install_prefix, menu_type, with_titles
     verbose = False
     force = False
-    desktop='applications'
+    desktop=''
     size=24
     theme='gnome'
     icon_dir="~/.fvwm/icons"
     top='FvwmMenu'
     install_prefix = '/etc/xdg/menus/'
-    
+    menu_type = 'applications'
+    with_titles = False
+
     for o, a in opts:
         if o == "-v":
             verbose = True
@@ -123,6 +125,7 @@ Standard output is a series Fvwm commands."""
         elif o in ("--enable-mini-icons") :
             force=True
         elif o in ("--desktop") :
+            #?desktop=a + '-'
             desktop=a
         elif o in ("--install-prefix") :
             if a and not os.path.isabs(a):
@@ -136,26 +139,35 @@ Standard output is a series Fvwm commands."""
             size = int(a)
         elif o in ("--theme") :
             theme = a
+        elif o in ("--menu-type") :
+            menu_type = a
+        elif o in ("-w","--with-titles") :
+            with_titles = True
         elif o in (str(dashed_obs_args+dashed_obs_parms)) :
             # Ignore
             sys.stderr.write( "Warning: Arg "+o+" is obsolete and ignored\n" )
         else:
             assert False, "unhandled option"
 
-    # If desktop lacks a trailing .menu, put one there.
-    if (not re.search('.*[.]menu$',desktop)) : # no trailing .menu
-          desktop=desktop+'.menu'
-    menu=install_prefix+desktop
-    # If desktop arg has leading slash, it's a full path
-    if (desktop[0] == '/'):
-        menu=desktop
-    
-    if not os.path.exists(menu):
-        sys.stderr.write("Error: menu <"+menu+"> doesn't exist.  Aborting")
-        sys.exit(3)
-        
+    check=install_prefix+desktop+menu_type+'.menu'
+    menu = checkmenu(check)
 
-    parsemenu(xdg.Menu.parse(menu), top)
+    if menu == None and menu_type == 'applications':
+        # it could be a Debian system
+        check = install_prefix + 'debian-menu.menu'
+        menu = checkmenu(check)
+        
+    if menu == None:
+        # fixme, no point in trying to print "None".
+        sys.stderr.write(check+" not available on this system. Exiting...\n")
+        sys.exit()
+    else:
+        parsemenu(xdg.Menu.parse(menu), top)
+             
+def checkmenu(menu):
+    if not os.path.exists(menu):
+        menu = None
+    return menu
 
 
 def printtext(text):
@@ -163,6 +175,9 @@ def printtext(text):
 
 def geticonfile(icon):
     iconpath = xdg.IconTheme.getIconPath(icon, size, theme, ["png", "xpm"])
+
+    if not iconpath == None:
+        extension = os.path.splitext(iconpath)[1]
 
     if not iconpath:
         return None
@@ -176,9 +191,16 @@ def geticonfile(icon):
     if not os.path.isdir(os.path.expanduser(icon_dir)):
         os.system("mkdir " + os.path.expanduser(icon_dir))
 
+    if not os.path.isdir(os.path.expanduser(icon_dir)):
+        os.system("mkdir " + os.path.expanduser(icon_dir))
+
     iconfile = os.path.join(os.path.expanduser(icon_dir),
                             "%ix%i-" % (size, size) + 
                             os.path.basename(iconpath))
+
+    if extension == '.svg':
+        iconfile = iconfile.replace('.svg', '.png')
+
     os.system("if test \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) ; then convert '%s' -resize %i '%s' ; fi"% 
               (iconfile, iconpath, iconfile, iconpath, size, iconfile))
     return iconfile
@@ -202,7 +224,10 @@ def parsemenu(menu, name=""):
     if not name :
         name = menu.getPath()
     printtext('DestroyMenu "%s"' % name)
-    printtext('AddToMenu "%s"' % name)
+    if with_titles:
+        printtext('AddToMenu "%s" "%s" Title' % (name, name))
+    else:
+        printtext('AddToMenu "%s"' % name)
     for entry in menu.getEntries():
 	if isinstance(entry, xdg.Menu.Menu):
 	    printmenu(entry.getName(), entry.getIcon(),
@@ -285,5 +310,5 @@ if __name__ == "__main__":
 
 # Local Variables:
 # mode: python
-# compile-command: "python fvwm-menu-desktop.in --desktop applications"
+# compile-command: "python fvwm-menu-desktop.in --enable-mini-icons --menu-type applications"
 # End:

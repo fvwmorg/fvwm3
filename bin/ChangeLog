@@ -1,3 +1,10 @@
+2012-06-26  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.in:
+	Apply rest Thomas Funk patch 1 and 2.
+	change --desktop to xfe, gnome.
+	add --menu-type application.
+
 2012-06-24  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.in (main): When root menu doesn't exist,
