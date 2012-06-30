@@ -191,9 +191,6 @@ def geticonfile(icon):
     if not os.path.isdir(os.path.expanduser(icon_dir)):
         os.system("mkdir " + os.path.expanduser(icon_dir))
 
-    if not os.path.isdir(os.path.expanduser(icon_dir)):
-        os.system("mkdir " + os.path.expanduser(icon_dir))
-
     iconfile = os.path.join(os.path.expanduser(icon_dir),
                             "%ix%i-" % (size, size) + 
                             os.path.basename(iconpath))
@@ -255,60 +252,24 @@ the corresponding fvwm menus.
 
 Usage: $0 [OPTIONS]
 Options:
-	--help                    show this help and exit
+	-h, --help                show this help and exit
 	--version                 show version and exit
-	--install-prefix DIR      install prefix of the desktop
-	--desktop NAME            desktop to build the menu for it:
-		gnome-sys (default), gnome-user, gnome-redhat, gnome-madriva,
-		kde-sys, kde-user
-	--type NAME               fvwm (default) or gtk for a FvwmGtk menu
-	--fvwmgtk-alias NAME      FvwmGtk module name, default is FvwmGtk
+	--install-prefix DIR      install prefix of the desktop menu files.
+                                  Default is /etc/xdg/menus
+	--desktop NAME            desktop to build the menu for:
+		gnome-sys, gnome-user, gnome-redhat, gnome-mandriva,
+		kde-sys, kde-user.
 	--title NAME              menu title, default depends on --desktop
-	--name NAME               menu name, default depends on --desktop
-	--merge-user-menu         merge the system menu with the user menu
-	--enable-mini-icons       enable mini-icons in menu
-	--enable-tran-mini-icons  enable mini-icons in menu and
-		translation of foo.png icon names to foo.xpm
-	--mini-icons-path DIR     path of menus icons (relative to your
-		ImagePath), default is 'mini/'
-	--png-icons-path DIR      path of .png icons, default is your ImagePath
-	--tran-mini-icons-path DIR      path of menus icons for translation
-	--check-mini-icons PATH   check if the mini icons are in PATH
-	--icon-toptitle micon:law:place:sidepic:color  mini-icon for the top
-		 title and sidepic for the top menu
-	--icon-title micon:law:place:sidepic:color     as above for sub menus
-	--icon-folder micon:law:place   mini-icons for folder item
-	--icon-app micon:law:place      mini-icon for applications item
-	--wm-icons                define menu icon names to use with wm-icons
-	--enable-style            build icons and mini-icons style
-	--enable-tran-style       as above with translation (for FvwmGtk menus)
-	--icon-style micon:icon:law     icons for style
-	--icons-path DIR          define the directory of the icons,
-		the default is very good
-	--tran-icons-path DIR     similar to the above option.
-	--check-icons PATH        check if the icons are in the PATH
-	--submenu-name-prefix NAME      in general not useful
-	--dir DIR                 use path as desktop menu description
-	--destroy-type FLAG       how to destroy menu, valid values:
-		'yes', 'no', 'dynamic', the default depends on --type
-	--xterm CMD               complete terminal command to run applications
-		in it, default is 'xterm -e'
-	--lang NAME               language, default is \$LANG
-	--utf8                    For desktop entries coded in UTF-8 (KDE2)
-	--uniconv                 Use (un)iconv for UTF-8 translation
-	--uniconv-exec            uniconv or iconv (default)
-	--menu-style name         assign specified MenuStyle name to menus
-	--[no]check-app           [do not] check that apps are in your path
-	--time-limit NUM          limit script running time to NUM seconds
-	--verbose                 display debug type info oni STDERR
-Short options are ok if not ambiguous: -h, -x, -icon-a."""
-
-
+	--enable-mini-icons       enable mini-icons in menus
+        -s, --size                Icon size in pixels.  Default is 24.
+        --theme                   theme name for icon selection.
+	-v, --verbose             run and display debug info on STDERR
+	-w, --with-titles         Generate menus with titles."""
 
 if __name__ == "__main__":
     main()
 
 # Local Variables:
 # mode: python
-# compile-command: "python fvwm-menu-desktop.in --enable-mini-icons --menu-type applications"
+# compile-command: "python fvwm-menu-desktop.in --enable-mini-icons --menu-type applications --with-titles"
 # End:

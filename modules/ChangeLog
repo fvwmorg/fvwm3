@@ -1,3 +1,7 @@
+2012-06-29  Dan Espen  <despen@verizon.net>
+
+	* FvwmForm/FvwmForm-Desktop: Support --with-titles, --size, --theme.
+
 2012-06-22  Dan Espen  <despen@verizon.net>
 
 	* FvwmForm/FvwmForm-Desktop: Adapt to new python version.

@@ -3,28 +3,52 @@ DestroyModuleConfig  FvwmForm-Desktop: *
 *FvwmForm-Desktop: Line         center
 *FvwmForm-Desktop: Text         "fvwm-menu-desktop options"
 *FvwmForm-Desktop: Line
+
 *FvwmForm-Desktop: Line
 *FvwmForm-Desktop: Text         "Use Icons in Menus?:"
 *FvwmForm-Desktop: Selection    SelItype single
 *FvwmForm-Desktop: Choice       IconsOn  IconsOn    on  "On"
 *FvwmForm-Desktop: Choice       IconsOff IconsOff   off "Off"
 
+*FvwmForm-Desktop: Line
+*FvwmForm-Desktop: Text         "Use Titles in Menus?:"
+*FvwmForm-Desktop: Selection    SelItype single
+*FvwmForm-Desktop: Choice       TitlesOn  TitlesOn    on  "On"
+*FvwmForm-Desktop: Choice       TitlesOff TitlesOff   off "Off"
+
 *FvwmForm-Desktop: Line left
 *FvwmForm-Desktop: Text "Menutype:"
 *FvwmForm-Desktop: Input Menutype 16 "applications"
 *FvwmForm-Desktop: Text " (Eg. applications, settings, server-settings)
 
+*FvwmForm-Desktop: Line left
+*FvwmForm-Desktop: Text "Size:"
+*FvwmForm-Desktop: Input Size 3 "24"
+*FvwmForm-Desktop: Text " (Icon size in pixels.  Default is 24.)
+
+*FvwmForm-Desktop: Line left
+*FvwmForm-Desktop: Text "Theme:"
+*FvwmForm-Desktop: Input Theme 16 ""
+*FvwmForm-Desktop: Text " (theme name for icon selection)
+
 *FvwmForm-Desktop: Line         expand
 *FvwmForm-Desktop: Button       quit    "Set"         ^M
 *FvwmForm-Desktop: Command      Piperead 'fvwm-menu-desktop\
- $(IconsOn?--enable-mini-icons) $(Menutype?--desktop) $(Menutype)'
+ $(IconsOn?--enable-mini-icons)\
+ $(TitlesOn?--with-titles)\
+ $(Menutype?--menutype) $(Menutype)\
+ $(Size?-s $(Size))\
+ $(Theme?--theme $(Theme))
+
 # Before saving the data, remove any previously saved data:
 *FvwmForm-Desktop: Command DestroyModuleConfig FvwmForm-DesktopDefault: *
 *FvwmForm-Desktop: Command !(                                      /bin/echo \
   "# This file last created by FvwmForm-Desktop on: `/bin/date`."; /bin/echo \
-  '*FvwmForm-DesktopDefault: IconsOn $(IconsOn?on) '           ; /bin/echo \
-  '*FvwmForm-DesktopDefault: IconsOff   $(IconsOff?on) '             ; /bin/echo \
-  '*FvwmForm-DesktopDefault: Menutype   $(Menutype) '             ; /bin/echo \
+  '*FvwmForm-DesktopDefault: IconsOn $(IconsOn?on) '             ; /bin/echo \
+  '*FvwmForm-DesktopDefault: IconsOff   $(IconsOff?on) '         ; /bin/echo \
+  '*FvwmForm-DesktopDefault: Menutype   $(Menutype) '            ; /bin/echo \
+  '*FvwmForm-DesktopDefault: Size       $(Size) '                ; /bin/echo \
+  '*FvwmForm-DesktopDefault: Theme      $(Theme) '               ; /bin/echo \
 ) > ${FVWM_USERDIR}/.FvwmForm-Desktop
 *FvwmForm-Desktop: Button       restart "Reset"
 *FvwmForm-Desktop: Button       quit    "Cancel"        ^[
