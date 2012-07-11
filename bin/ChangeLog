@@ -1,3 +1,8 @@
+2012-07-11  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.1.in: First pass on new man page.
+	* fvwm-menu-desktop.in: Set #! correctly.
+
 2012-06-29  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.in: fix usage.
