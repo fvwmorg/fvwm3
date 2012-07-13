@@ -1,3 +1,8 @@
+2012-07-12  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.in: Applied patch from Thomas Funk.
+	Menu titles.  Verbose fixups.  Build all menus by default.
+
 2012-07-11  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.1.in: First pass on new man page.
