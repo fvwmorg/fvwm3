@@ -143,8 +143,13 @@ Standard output is a series Fvwm commands."""
         elif o in ("-t", "--title") :
             top=a
         elif o in ("--get-menus") :
-            get_menus=a
-            printmode = False
+            if a == 'all' or a == 'desktop' :
+                get_menus=a
+                printmode = False
+            else :
+                sys.stderr.write( "--get-menus argument must be 'all' or 'desktop' found "+a )
+                print usage
+                sys.exit(1)
         elif o in ("-s","--size") :
             size = int(a)
         elif o in ("--set-menus") :
@@ -516,11 +521,12 @@ Options:
                               Default is FvwmMenu
     --insert-in-menu NAME     generates a menu to place it in the root level of the
                               menu NAME
-    --get-menus               prints a space separated list of full menu paths.
-                              'selected' prints the desktop related menus. 'all' prints 
-                              all found menus on the system except empty ones. No
-                              menu generation is done.
-    --set-menus               expects a space separated list of full menu paths to generate
+    --get-menus all|desktop   prints a space separated list of full menu paths.
+                              'all' is all menus on the system except empty ones.
+                              'desktop' is desktop related menus.
+                              No menu generation is done.
+                              This option is meant for use with the configuration tool.
+    --set-menus menu_paths    expects a space separated list of full menu paths to generate
                               user specified menus
     -v, --verbose             run and display debug info on STDERR"""
 

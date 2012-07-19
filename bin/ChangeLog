@@ -1,5 +1,8 @@
 2012-07-19  Dan Espen  <despen@verizon.net>
 
+	* fvwm-menu-desktop.in (main): Change --get-menus option to all/desktop.
+	Add validation.
+
 	* fvwm-menu-desktop.1.in:  Applied patch from Thomas Funk.
 	Functionality for configuration tool for fvwm-menu-desktop.
 	Two new options:
