@@ -14,8 +14,6 @@
 # fixme, fix documentation, FvwmForm-Desktop, usage prompt is wrong
 # change, mini icons are enabled by default.
 # there are rescalable icons.
-# themes not working: "hicolor" is a required theme  I see lots of themes but none seem to affect much
-
 
 # Author: Piotr Zielinski (http://www.cl.cam.ac.uk/~pz215/)
 # Licence: GPL 2
@@ -43,6 +41,7 @@ import os.path
 import os
 from xdg.DesktopEntry import *
 import fnmatch
+import time
 
 
 def main ():
@@ -97,14 +96,17 @@ Standard output is a series Fvwm commands."""
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hs:t:vw",
-                                   ["help", "verbose", "enable-mini-icons", "with-titles", "verbose",
-                                    "desktop=", "size=", "theme=", "install-prefix=", "menu-type=", "title="]+obs_args+equaled_obs_parms)
+                                   ["help", "verbose", "enable-mini-icons", "with-titles", "version",
+                                    "desktop=", "size=", "theme=", "install-prefix=", "menu-type=",
+                                    "title=", "get-menus=", "set-menus=", "insert-in-menu="]+obs_args+equaled_obs_parms)
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
         print usage
         sys.exit(2)
-    global verbose, force, size, theme, icon_dir, top, install_prefix, menu_type, with_titles, menu_entry_count
+    global verbose, force, size, theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
+    global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu
+    version = "2.0"
     verbose = False
     force = False
     desktop=''
@@ -112,10 +114,15 @@ Standard output is a series Fvwm commands."""
     theme='gnome'
     icon_dir="~/.fvwm/icons"
     top='FvwmMenu'
+    insert_in_menu = False
     install_prefix = ''
     menu_type = ''
     with_titles = False
     menu_entry_count = 0
+    menu_list_length = 0
+    get_menus = ''
+    printmode = True
+    set_menus = []
 
     for o, a in opts:
         if o == "-v":
@@ -123,12 +130,27 @@ Standard output is a series Fvwm commands."""
         elif o in ("-h", "--help") :
             print usage
             sys.exit()
+        elif o in ("--version") :
+            print "fvwm-menu-desktop version " + version
+            sys.exit()
         elif o in ("--enable-mini-icons") :
             force=True
+        elif o in ("--insert-in-menu") :
+            top=a
+            insert_in_menu = True
         elif o in ("--desktop") :
             desktop=a
-        elif o in ("--title") :
+        elif o in ("-t", "--title") :
             top=a
+        elif o in ("--get-menus") :
+            get_menus=a
+            printmode = False
+        elif o in ("-s","--size") :
+            size = int(a)
+        elif o in ("--set-menus") :
+            if a[-1] == ' ':
+                a = a[:-1]
+            set_menus=a.split(' ')
         elif o in ("--install-prefix") :
             if a and not os.path.isabs(a):
                 assert False, "install-prefix must be an absolute path"
@@ -136,9 +158,6 @@ Standard output is a series Fvwm commands."""
             if not a[-1] == '/' : # trailing slash
                 a=a + '/'
             install_prefix = a
-
-        elif o in ("-s","--size") :
-            size = int(a)
         elif o in ("--theme") :
             theme = a
         elif o in ("--menu-type") :
@@ -152,36 +171,43 @@ Standard output is a series Fvwm commands."""
             sys.stderr.write( "Warning: Arg "+o+" is obsolete and ignored\n" )
         else:
             assert False, "unhandled option"
-            
-    xdg_menu_prefix = (os.environ['XDG_MENU_PREFIX'] if os.environ.has_key('XDG_MENU_PREFIX') else '')
 
-    # First check if no user presettings made
-    if desktop == '':
-        # check if $XDG_MENU_PREFIX is set
-        if not xdg_menu_prefix == '':
-            desktop = xdg_menu_prefix.replace('-', '').lower()
+    timestamp = time.time()
     
-    vprint("Parameters for creating menu list:")
-    vprint(" XDG_MENU_PREFIX:  \'%s\'" %xdg_menu_prefix)
-    vprint(" --install-prefix: \'%s\'" %install_prefix)
-    vprint(" --desktop:        \'%s\'" %desktop)
-    vprint(" --menu-type:      \'%s\'" %menu_type)
+    if len(set_menus) == 0:
+        xdg_menu_prefix = ((os.environ['XDG_MENU_PREFIX'] if os.environ.has_key('XDG_MENU_PREFIX') else ''))
     
-    vprint("\nStart search ...")
-    menulist, desktop_temp = getmenulist(desktop, menu_type)
-    if not desktop_temp == '':
-		desktop = desktop_temp
-
-    vprint(" Menu list: %s" %menulist)
+        # First check if no user presettings made
+        if desktop == '':
+            # check if $XDG_MENU_PREFIX is set
+            if not xdg_menu_prefix == '':
+                desktop = xdg_menu_prefix.replace('-', '').lower()
         
+        vprint("Parameters for creating menu list:")
+        vprint(" XDG_MENU_PREFIX:  \'%s\'" %xdg_menu_prefix)
+        vprint(" --install-prefix: \'%s\'" %install_prefix)
+        vprint(" --desktop:        \'%s\'" %desktop)
+        vprint(" --menu-type:      \'%s\'" %menu_type)
         
-    if len(menulist) == 0:
+        vprint("\nStart search ...")
+        menulist, desktop_temp = getmenulist(desktop, menu_type)
+        if not desktop_temp == '':
+            desktop = desktop_temp
+    else:
+        menulist = set_menus
+    
+    vprint(" Menu list: %s\n" %menulist)
+    menu_list_length =  len(menulist)       
+        
+    if menu_list_length == 0:
         if not desktop == '':
             desktop = desktop + '-'
         sys.stderr.write(install_prefix+desktop+menu_type+".menu not available on this system. Exiting...\n")
         sys.exit(1)
     else:
         parsemenus(menulist, desktop)
+
+    vprint("\nProcess took " + str(time.time()-timestamp) + " seconds")
              
 def getmenulist(desktop, menu_type):
     menudict = {} 
@@ -191,6 +217,7 @@ def getmenulist(desktop, menu_type):
     else:
         config_dirs = xdg_config_dirs # xdg_config_dirs is a built-in list from python-xdg
 
+    found_menus = 0
     for dir in config_dirs:
         if install_prefix == '':
             dir = os.path.join(dir, 'menus')
@@ -205,108 +232,119 @@ def getmenulist(desktop, menu_type):
             # the menudict dictionary has a unsorted list (set) for the values.
             # set is easier to use then a list for removing items 
             menudict[dir] = filelist
-            vprint(" found in %s: %s" %(dir, filelist))
+            found_menus += len(filelist)
+            vprint(" found in %s: %s" %(dir, list(filelist)))
     
-    # remove all double menus in /etc/xdg/menus if they in user dir, too
-    for path in menudict.keys():
-        if not path == '/etc/xdg/menus':
-            menudict['/etc/xdg/menus'] = menudict['/etc/xdg/menus'] - menudict[path]
-    
-    # sort menus related to desktops and create a weighting
-    vprint("\n DE weighting search: DE => [user menus, system menus, overall]")
     desktop_dict = {}
-    weight_dict = {}
-    if desktop == '':
-        # first the desktops, then debian (shouldn't appear in others) then others holding
-        # all other non DE menus e.g. tools and at the end the nones without prefixes
-        # If there're other prefixes from other WMs - should be added BEFORE debian
-        DEs = ['gnome', 'kde', 'xfce', 'lxde', 'debian', 'others', 'none']
-    else:
-        DEs = [desktop]
-    for de in DEs:
-        menus = set([])
-        user_menus = 0
-        system_menus = 0
-        filled = False
+    if not found_menus == 0:
+        all_menus = []
+        # remove all menus in /etc/xdg/menus imenudict['/etc/xdg/menus']menudict['/etc/xdg/menus']f exist in user dir
         for path in menudict.keys():
-            if de == 'none':
-                pattern = '*'
-            elif de == 'others':
-                pattern = '*-*'
-            else:
-                pattern = '*'+de+'*'
-            # fnmatch.filter returns a list of files the pattern match
-            menu_names = fnmatch.filter(menudict[path], pattern)
-            if not len(menu_names) == 0:
-                filled = True
-            for name in menu_names:
-                menus.add(path+'/'+name)
-            # delete each found DE menu from the actual path. So, the menus will be reduced loop by loop.
-            menudict[path] = menudict[path]-set(menu_names)
-            # count the menus found in the users and systems menu path for later weighting
             if not path == '/etc/xdg/menus':
-                user_menus = len(menu_names)
-            else:
-                system_menus = len(menu_names)
-        if filled:
-            desktop_dict[de] = menus
-            filled = False
-        # fill the weight dictionary with the counts
-        weight_dict[de] = [user_menus, system_menus, user_menus+system_menus]
-        vprint(" %s => %s" %(de, weight_dict[de]))
-
-    # get the highest rated desktop
-    highest = 0
-    de_highest = ''
-    for de in sorted(weight_dict.keys()):
-        de_user = weight_dict[de][0]
-        de_system = weight_dict[de][1]
-        de_total = weight_dict[de][2]
-        higher = False
-        if not de_highest == '':
-            highest_user = weight_dict[de_highest][0]
-            highest_system = weight_dict[de_highest][1]
-            highest_total = weight_dict[de_highest][2]
-            # first compare the total counts
-            if highest < de_total:
-                higher = True
-            elif highest == de_total:
-                # if the totals equal compare the users
-                if highest_user < de_user:
-                    higher = True
-                elif highest_user == de_user:
-                    # it the users equal compare the system menus
-                    if highest_system < de_system:
-                        higher = True
-                    # if the systems equal the last wins
-                    elif highest_system == de_system:
-                        higher = True # fixme, should be biunique. -but how? With atime?
+                menudict['/etc/xdg/menus'] = menudict['/etc/xdg/menus'] - menudict[path]
+                for menu in list(menudict[path]):
+                    all_menus.append(path + '/' + menu)
+        
+        if not menudict['/etc/xdg/menus'] == 0:
+            for menu in list(menudict['/etc/xdg/menus']):
+                all_menus.append('/etc/xdg/menus/' + menu) 
+         
+        if get_menus == 'all':
+            return all_menus, ''
+        
+        # sort menus related to desktops and create a weighting
+        vprint("\n DE weighting search: DE => [user menus, system menus, overall]")
+        weight_dict = {}
+        if desktop == '':
+		    # first the desktops, then debian (shouldn't appear in others) then others holding
+		    # all other non DE menus e.g. tools and at the end the nones without prefixes
+		    # If there're other prefixes from other WMs - should be added BEFORE debian
+            DEs = ['gnome', 'kde', 'xfce', 'lxde', 'debian', 'others', 'none']
         else:
-            higher = True
-            
-        if higher:
-            highest = de_total
-            de_highest = de
-    vprint( "\n Winner: %s" %de_highest)
+            DEs = [desktop]
+        for de in DEs:
+            menus = set([])
+            user_menus = 0
+            system_menus = 0
+            filled = False
+            for path in menudict.keys():
+                if de == 'none':
+                    pattern = '*'
+                elif de == 'others':
+                    pattern = '*-*'
+                else:
+                    pattern = '*'+de+'*'
+                # fnmatch.filter returns a list of files the pattern match
+                menu_names = fnmatch.filter(menudict[path], pattern)
+                if not len(menu_names) == 0:
+                    filled = True
+                for name in menu_names:
+                    menus.add(path+'/'+name)
+				# delete each found DE menu from the actual path. So, the menus will be reduced loop by loop.
+                menudict[path] = menudict[path]-set(menu_names)
+				# count the menus found in the users and systems menu path for later weighting
+                if not path == '/etc/xdg/menus':
+                    user_menus = len(menu_names)
+                else:
+                    system_menus = len(menu_names)
+            if filled:
+                desktop_dict[de] = menus
+                filled = False
+			# fill the weight dictionary with the counts
+            weight_dict[de] = [user_menus, system_menus, user_menus+system_menus]
+            vprint(" %s => %s" %(de, weight_dict[de]))
     
-    # Perhaps there're a global menus available which are not in the highest rated list
-    if desktop_dict.has_key('none'):
-        for menu in desktop_dict['none']:
-            name = menu.replace('.menu', '').split('/')
-            # the fnmatch.filter will be used to find NO match because then
-            # the menu is not in the list
-            found = fnmatch.filter(desktop_dict[de_highest], '*'+name[-1]+'*')
-            if found == []:
+        # get the highest rated desktop
+        highest = 0
+        de_highest = ''
+        for de in sorted(weight_dict.keys()):
+            de_user = weight_dict[de][0]
+            de_system = weight_dict[de][1]
+            de_total = weight_dict[de][2]
+            higher = False
+            if not de_highest == '':
+                # don't weight 'none' and 'others cause both not DEs
+                if not de == 'none' and not de == 'others':
+                    highest_user = weight_dict[de_highest][0]
+                    highest_system = weight_dict[de_highest][1]
+                    highest_total = weight_dict[de_highest][2]
+					# first compare the total counts
+                    if highest < de_total:
+                        higher = True
+                    elif highest == de_total:
+						# if the totals equal compare the users
+                        if highest_user < de_user:
+                            higher = True
+                        elif highest_user == de_user:
+							# it the users equal compare the system menus
+                            if highest_system < de_system:
+                                higher = True
+							# if the systems equal the last wins
+                            elif highest_system == de_system:
+                                higher = True # fixme, should be biunique. -but how? With atime?
+            else:
+                higher = True
+                
+            if higher:
+                highest = de_total
+                de_highest = de
+        vprint( "\n Winner: %s" %de_highest)
+        
+        # Perhaps there're a global menus available which are not in the highest rated list
+        if desktop_dict.has_key('none'):
+            for menu in desktop_dict['none']:
+                name = menu.replace('.menu', '').split('/')
+		        # the fnmatch.filter will be used to find NO match because then
+		        # the menu is not in the list
+                found = fnmatch.filter(desktop_dict[de_highest], '*'+name[-1]+'*')
+                if found == []:
+                    desktop_dict[de_highest].add(menu)
+        
+        # Add 'others' menus to list, because these could be tool menus like yast, etc
+        if desktop_dict.has_key('others'):
+            for menu in desktop_dict['others']:
                 desktop_dict[de_highest].add(menu)
-    
-    # Add 'others' menus to list, because these could be tool menus like yast, etc
-    if desktop_dict.has_key('others'):
-        for menu in desktop_dict['others']:
-            name = menu.replace('.menu', '').split('/')
-            found = fnmatch.filter(desktop_dict[de_highest], '*'+name[-1]+'*')
-            if found == []:
-                desktop_dict[de_highest].add(menu)
-            
+                
     if len(desktop_dict) == 0:
         return [], ''
     else:
@@ -364,7 +402,8 @@ def printmenu(name, icon, command):
     printtext('+ "%s%s" %s' % (name, iconfile, command))
 
 def parsemenus(menulist, desktop):
-    if len(menulist) == 1:
+    global menu_entry_count
+    if menu_list_length == 1:
         # user defines only one special menu
         parsemenu(xdg.Menu.parse(menulist[0]), top)
     else:
@@ -385,19 +424,29 @@ def parsemenus(menulist, desktop):
             if not menu_entry_count == 0:
                 new_toptitles.append(title)
                 new_menulist.append(menu)
+                menu_entry_count = 0
             else:
                 vprint(" Menu is empty - won't be used!")
         
         # create the root menu
-        printtext('DestroyMenu "%s"' % top)
-        if with_titles:
-            printtext('AddToMenu "%s" "%s" Title' % (top, top))
-        else:
-            printtext('AddToMenu "%s"' % top)
+        if printmode:
+            if not insert_in_menu:
+                printtext('DestroyMenu "%s"' % top)
+            if with_titles and not insert_in_menu:
+                printtext('AddToMenu "%s" "%s" Title' % (top, top))
+            else:
+                printtext('AddToMenu "%s"' % top)
+    
+            for title in sorted(new_toptitles):
+                name = 'Fvwm'+title
+                printmenu(title, '', 'Popup "%s"' % name)
+        
+            printtext('+ "" Nop')
+            printmenu("Regenerate XDG Menu(s)", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
 
-        for title in sorted(new_toptitles):
-            name = 'Fvwm'+title
-            printmenu(title, '', 'Popup "%s"' % name)
+        if not get_menus == '':
+            printtext('%s' % ' '.join(new_menulist))
+        
     
 def parsemenu(menu, name="", title=""):
     global menu_entry_count
@@ -406,30 +455,44 @@ def parsemenu(menu, name="", title=""):
         name = menu.getPath()
     if not title:
         title = name
-    printtext('DestroyMenu "%s"' % name)
-    if with_titles:
-        printtext('AddToMenu "%s" "%s" Title' % (name, title))
-    else:
-        printtext('AddToMenu "%s"' % name)
+    if printmode:
+        if not insert_in_menu or not (insert_in_menu and name == top and menu_list_length == 1):
+            printtext('DestroyMenu "%s"' % name)
+        if with_titles:
+            # for insert-in-menu AddToMenu doesn't have a title for top menu
+            # because this will appear then in the other menu
+            if insert_in_menu and name == top and menu_list_length == 1:
+                printtext('AddToMenu "%s"' % name)
+            else:
+                printtext('AddToMenu "%s" "%s" Title' % (name, title))
+        else:
+            printtext('AddToMenu "%s"' % name)
     for entry in menu.getEntries():
     	if isinstance(entry, xdg.Menu.Menu):
-            printmenu(entry.getName(), entry.getIcon(), 'Popup "%s"' % entry.getPath())
+            if printmode:
+                printmenu(entry.getName(), entry.getIcon(), 'Popup "%s"' % entry.getPath())
     	elif isinstance(entry, xdg.Menu.MenuEntry):
-            desktop = DesktopEntry(entry.DesktopEntry.getFileName())
-            # eliminate '%U' etc behind execute string
-            execProgram = m.sub('', desktop.getExec())
-            printmenu(desktop.getName(), desktop.getIcon(), "Exec exec " + " " + execProgram)
+            if printmode:
+                desktop = DesktopEntry(entry.DesktopEntry.getFileName())
+                # eliminate '%U' etc behind execute string
+                execProgram = m.sub('', desktop.getExec())
+                printmenu(desktop.getName(), desktop.getIcon(), "Exec exec " + " " + execProgram)
             menu_entry_count += 1
     	else:
-    	    printtext('# not supported: ' + str(entry))
-    printtext('')
+            if printmode:
+                printtext('# not supported: ' + str(entry))
+
+    # should only appear in a single menu. For more it will insert in parsemenus() when the top menu will built
+    if menu_list_length == 1 and not insert_in_menu and name == top:
+        printtext('+ "" Nop')
+        printmenu("Regenerate XDG Menu", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
+        
+    if printmode:
+        printtext('')
 
     for entry in menu.getEntries():
     	if isinstance(entry, xdg.Menu.Menu):
     	    parsemenu(entry)
-
-    if (re.search('.*System Tools$',name)) : # fixme, find a better way to do this?
-        printmenu("Regenerate Applications Menu", "", "FvwmForm " "FvwmForm-Desktop" )
 
 usage="""
 A script which parses xdg menu definitions to build
@@ -443,14 +506,22 @@ Options:
                               For the system wide menus use /etc/xdg/menus/
     --desktop NAME            desktop name to build menus for:
                               gnome, kde, xfce, lxde, debian, etc.
-    --menu-type NAME          applications (default), settings, preferences, etc.
+    --menu-type NAME          applications, settings, preferences, etc.
     --theme NAME              gnome (default), oxygen, etc. Don't use hicolor. 
                               It's the default fallback theme if no icon will be found.
     -w, --with-titles         generate menus with titles.
     --enable-mini-icons       enable mini-icons in menu
-    -s, --size                set size of mini-icons in menu. Default is 24.
-    --title NAME              menu title of the top menu used by Popup command.
+    -s, --size NUM            set size of mini-icons in menu. Default is 24.
+    -t, --title NAME          menu title of the top menu used by Popup command.
                               Default is FvwmMenu
+    --insert-in-menu NAME     generates a menu to place it in the root level of the
+                              menu NAME
+    --get-menus               prints a space separated list of full menu paths.
+                              'selected' prints the desktop related menus. 'all' prints 
+                              all found menus on the system except empty ones. No
+                              menu generation is done.
+    --set-menus               expects a space separated list of full menu paths to generate
+                              user specified menus
     -v, --verbose             run and display debug info on STDERR"""
 
 if __name__ == "__main__":

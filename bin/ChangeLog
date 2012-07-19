@@ -1,3 +1,14 @@
+2012-07-19  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.1.in:  Applied patch from Thomas Funk.
+	Functionality for configuration tool for fvwm-menu-desktop.
+	Two new options:
+	- get-menus [selected, all] to send the found menus to the config gui
+	- set-menus [filelist] to tell fvwm-menu-desktop which menus should be
+	built.
+	Also another option --insert-in-menu NAME.
+
+
 2012-07-12  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.in: Applied patch from Thomas Funk.
