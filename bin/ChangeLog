@@ -1,3 +1,8 @@
+2012-07-21  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.1.in: Applied patch from Thomas Funk.
+	Some changes.
+
 2012-07-19  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.in (main): Change --get-menus option to all/desktop.

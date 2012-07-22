@@ -20,64 +20,26 @@
 fvwm-menu-desktop \- Reads XDG menu files and creates Fvwm menus
 
 .SH SYNOPSIS
-
 fvwm-menu-desktop
-[ \fB\-\-help\fR|\fB\-h\fR|\fB\-?\fR ]
-[ \fB\-\-verbose\fR|\fB\-v\fR ]
+[ \fB\-\-help\fR|\fB\-h\fR ]
+[ \fB\-\-version\fR|\fB\-v\fR ]
 [ \fB\-\-install\-prefix\fR \fIDIR\fR ]
 [ \fB\-\-desktop\fR \fINAME\fR ]
-[ \fB\-\-title\fR \fINAME\fR ]
+[ \fB\-\-menu\-type\fR \fINAME\fR ]
+[ \fB\-\-theme\fR \fINAME\fR ]
+[ \fB\-\-with\-titles\fR|\fB\-w\fR ]
 [ \fB\-\-enable\-mini\-icons\fR ]
+[ \fB\-\-size\fR|\fB\-s\fR \fINUM\fR ]
+[ \fB\-\-title\fR|\fB\-t\fR \fINAME\fR ]
+[ \fB\-\-insert\-in\-menu\fR \fINAME\fR ]
+[ \fB\-\-get\-menus\fR \fIall\fR|\fIdesktop\fR ]
+[ \fB\-\-set\-menus\fR \fImenu_paths\fR ]
+[ \fB\-\-verbose\fR ]
+
 
 .SH DESCRIPTION
-This is a python script which parses XDG menus definitions to build
+This is a python script which parses XDG menus definitions to build 
 corresponding fvwm menus.
-
-.SH USAGE
-To add the XDG "application" menu to the "Utilities" menu
-add the following to your fvwm config file (.fvwm/config):
-.EX
- ...
-AddToMenu Utilities "Application Menu" Popup FvwmMenu
-PipeRead 'fvwm-menu-desktop'
-.EE
-
-By default fvwm-menu-desktop
-builds the "applications" menu
-and the menu is named FvwmMenu.
-
-.EX
-AddToMenu Utilities "KDE User Menu" Popup kde\-user
-AddToMenu kde\-user
-+ DynamicPopupAction PipeRead 'fvwm-menu-desktop --desktop kde-user --enable-mini-icons [other options]'
-.EE
-
-If you think that fvwm-menu-desktop slows your startup too much do
-not use PipeRead.  Instead run  fvwm-menu-desktop
-and
-redirect the menu to a file and Read that file in
-your .fvwm2rc file.
-Another possibility is to use DynamicPopupAction
-(with fvwm menu), the menu will be built only if
-you pop up the menu. The
-following menu creates a "kde\-all" menu which contains the user menu
-which is built each time you pop up "kde\-all" and contains a pop up
-to the system menu which is built only the first time you pop it up.
-.EX
-AddToMenu kde\-all
-+ DynamicPopupAction FuncRecreateKdeAll
-
-AddToMenu kde\-sys
-+ DynamicPopupAction PipeRead 'fvwm-menu-desktop \\
-\-\-desktop kde\-sys [options, but \-\-destroy-type d* or n*]'
-
-AddToFunc FuncRecreateKdeAll \\
-I PipeRead 'fvwm-menu-desktop \\
-\-\-desktop kde\-user \-\-enable\-mini\-icons \-\-name kde\-all \\
-\-\-destroy-type dynamic [options you like]'
-+ I AddToMenu "kde\-all" "" Nop
-+ I AddToMenu "kde\-all" "Kde System%mini/mini\-k.xpm%" Popup kde\-sys
-.EE
 
 .SH OPTIONS
 
@@ -85,48 +47,228 @@ I PipeRead 'fvwm-menu-desktop \\
 
 .IP "\fB\-\-help\fR"
 Show the help and exit.
-.IP "\fB\-\-verbose\fR"
-Run verbosely.
+
+.IP "\fB\-\-version\fR"
+Show the version and exit.
+
 .IP "\fB\-\-install-prefix\fR \fIDIR\fR"
-Optional parameter to override the default location
-for XDG menu definitions.  The default location is /etc/xdg/menus.
+Optional parameter to override the default locations for XDG menu
+definitions. According to the xdg specification the default locations are
+/etc/xdg/menus (and $HOME/.config/menus if it exists).
+
 .IP "\fB\-\-desktop\fR \fINAME\fR"
-The name of the menus you want to generate.
-The default is "application".
-.IP "\fB\-\-title\fR \fINAME\fR"
-Define the menu title of the top menu. Default
-is "Gnome System Menu" for gnome\-sys, "Gnome User Menu" for
-gnome\-user, "Gnome Red Hat Menu" for gnome\-redhat,
-"Gnome Mandriva Menu" for gnome\-mandriva. For KDE the
-default is given by KDE itself (or are similar to GNOME title).
-.IP "\fB\-\-name\fR \fINAME\fR"
-Define the menu name of the top menu. Default is the \-\-desktop
-name if you use one above.
+Optional parameter to override the \fINAME\fR of the main desktop
+environment installed on the system. If a system offers multiple
+desktop environments $XDG_MENU_PREFIX is typically set and is
+ignored if \-\-desktop is denoted. Possible names are: \fIgnome\fR,
+\fIkde\fR, \fIxfce\fR, \fIlxde\fR, \fIdebian\fR, etc.
+
+.IP "\fB\-\-menu\-type\fR \fINAME\fR"
+Defines which type of menus should be found. Possible \fINAME\fR types
+could be: \fIapplications\fR, \fIsettings\fR, \fIpreferences\fR, etc.
+
+Note that if the specified menu type doesn't exist the generated menu
+is empty!
+
+.IP "\fB\-\-theme\fR \fINAME\fR"
+Defines the used icon theme. Default is \fIgnome\fR but all others
+found in /usr/share/icons could be used except the \fIhicolor\fR theme
+because it's the default fallback theme if no icon is found.
+
+.IP "\fB\-\-with\-titles\fR|\fB\-w\fR"
+If this option is set menus are generated with titles. Default is no
+titles.
+
+.IP "\fB\-\-title\fR|\fB\-t\fR \fINAME\fR "
+Option to define the menu title \fINAME\fR of the top menu used by Fvwm's
+\fBPopup\fR command. Default is "FvwmMenu".
+
+.IP "\fB\-\-insert\-in\-menu\fR \fINAME\fR"
+Option to insert generated menu(s) \fBIN\fR a menu \fINAME\fR (its
+top title).  Note that this 0ption does not work correctly with the
+Regnerate Menus menu entry since items insserted into a menu cannot be
+removed (currently).  If you use this option and want to update your menus,
+restart fvwm.
+
+.IP "\fB\-\-get\-menus\fR \fIall\fR|\fIdesktop\fR"
+Prints a space separated list of full menu paths. \fIall\fR is all menus
+on the system except empty ones. \fIdesktop\fR is desktop related menus.
+No menu generation is done.
+
+This option is meant for use with the configuration tool.
+
+.IP "\fB\-\-set\-menus\fR \fImenu_paths\fR"
+Expects a space separated list of full menu paths to generate user
+specified menus
+
+.IP "\fB\-\-verbose\fR"
+Enables additional information printouts on STDERR.
 
 .IP "Icons Options"
 
-By default, fvwm-menu-desktop  builds mini\-icon free menus. To enable
+By default, fvwm-menu-desktop builds menus without mini\-icons. To enable
 mini\-icons use:
 
 .IP "\fB\-\-enable\-mini\-icons\fR"
+This option enables mini\-icons in the menus. If set, 24x24 mini-icons
+are used. If the specified icon isn't that size it will be converted
+if \fBImageMagick\fR is installed and saved in $HOME/.fvwm/icons.
+Otherwise no icon appears in the menu for that entry.
+With most distributions, all the menu entries will have mini-icons
+appropriate to the application.
+
+.IP "\fB\-\-size\fR|\fB\-s\fR \fINUM\fR"
+If \-\-enable\-mini\-icons is used the \fIsize\fR of the icons can
+changed with this parameter. Default is 24.
+
+
+.SH USAGE
+Without any parameters \fBfvwm-menu-desktop\fR creates a menu named
+"FvwmMenu" with sub menus found for the main desktop environment
+installed on the system.
+
+To add the default generated menu to the "Root" menu add the following
+to your fvwm config file (~/.fvwm/config or ~/.fvwm/.fvwm2rc). This
+generates the menu each time you pop it up:
+
+.RS
+.EX
+AddToMenu MenuRoot "XDG Menus" Popup FvwmMenu
+PipeRead 'fvwm-menu-desktop'
+.EE
+.RE
+
+Another possibility is to use \fBDynamicPopupAction\fR (with fvwm menu),
+the menu will be built only if you pop up the menu. The following snippet
+creates a "KDE Menus" menu which contains all Kde menus found on the
+system which is built only the first time you pop it up:
+
+.RS
+.EX
+AddToMenu MenuRoot "KDE Menus" Popup FvwmKde
+ ...
+
+AddToMenu FvwmKde
++ DynamicPopupAction PipeRead 'fvwm-menu-desktop --desktop kde \\
+                                                 --title FvwmKde \\
+                                                 --enable-mini-icons \\
+                                                 [other options]'
+.EE
+.RE
+
+The examples above generates a menu with the Xdg menus as sub menus. If
+the sub menus should appear one level higher do this:
+
+.RS
+.EX
+AddToMenu MenuRoot "Root Menu" Title
++ PipeRead 'fvwm-menu-desktop --insert-in-menu MenuRoot'
+.EE
+.RE
+
+To generate single menus like \fIpreferences\fR different options should
+be set:
+
+.RS
+.EX
+fvwm-menu-desktop --desktop kde --menu-type preferences --title FvwmPref \\
+                  --enable-mini-icons -size 16 --with-titles
+.EE
+.RE
+
+This call generates a single Kde Preferences menu with top title
+"FvwmPref", mini icons with a size of 16x16 pixels and titles for each
+sub menu. But only if a menu with the name \fIpreferences\fR
+exists in the users or system wide Xdg directories. Else it's empty!
+
+To add the generated menu to the "Utilities" menu for example put the
+following to your fvwm config file (~/.fvwm/config or ~/.fvwm/.fvwm2rc):
+
+.RS
+.EX
+AddToMenu Utilities "Preferences Menu" Popup FvwmPref
+PipeRead 'fvwm-menu-desktop --desktop kde --menu-type preferences \\
+                            --title FvwmPref [other options]'
+.EE
+.RE
+
+If you think that \fBfvwm-menu-desktop\fR slows down your menu startup too
+much do not use \fBPipeRead\fR. Instead run \fBfvwm-menu-desktop\fR and
+redirect the menu to a file and read that file in your .fvwm2rc file.  
+
+.RS
+.EX
+AddToMenu MenuRoot "XDG Menus" Popup FvwmMenu
+ ...
+
+AddToMenu FvwmMenu
++ DynamicPopupAction Function FuncRecreateXdgMenus
+ ...
+
+DestroyFunc FuncRecreateXdgMenus
+AddToFunc   FuncRecreateXdgMenus
++ I Test (f  $[FVWM_USERDIR]/.menu) Read $[FVWM_USERDIR]/.menu
++ I TestRC (!Match) PipeRead 'fvwm-menu-desktop > $[FVWM_USERDIR]/.menu \\
+                              &&  echo "Read $[FVWM_USERDIR]/.menu"'
+.EE
+.RE
+
+or if you want to show the menus directly in the "Root" menu use this:
+
+.RS
+.EX
+AddToMenu MenuRoot "Root Menu" Title
++ FuncXdgMenusInRoot
+ ...
+
+DestroyFunc FuncXdgMenusInRoot
+AddToFunc   FuncXdgMenusInRoot
++ I Test (f  $[FVWM_USERDIR]/.menu) Read $[FVWM_USERDIR]/.menu
++ I TestRC (!Match) PipeRead 'fvwm-menu-desktop --insert-in-menu MenuRoot \\
+                              > $[FVWM_USERDIR]/.menu \\
+                              && echo "Read $[FVWM_USERDIR]/.menu"'
+.EE
+.RE
+
+
+.SH GUI
+There's a \fBFvwmForm\fR GUI to setup the menu generation manually. It
+is found in the root of the generated menu called "Regenerate XDG Menu(s)".
+
+Or it can be started from within \fBFvwmConsole\fR with
+
+.RS
+.EX
+Module FvwmPerl -l fvwm-menu-desktop-config.fpl
+.EE
+.RE
+
+
+\" .SH ERRORS AND WARNINGS
+\" \fBfvwm-menu-desktop\fR prints errors and warnings to STDERR. So these
+\" messages could be redirect to e.g. ~/.xsessions-errors:
+
+\" .RS
+\" .EX
+\" fvwm-menu-desktop > $FVWM_USERDIR/.menu 2> ~/.xsession-errors
+\" .EE
+\" .RE
 
 
 .SH BUGS
-
+If you found one please submit a bug report with fvwm-bug to the
+fvwm-workers mailing list <fvwm-workers@fvwm.org>.
 
 
 .SH AUTHORS
+This script is based on fvwm-xdg-menu.py written by Piotr Zielinski
+(http://www.cl.cam.ac.uk/~pz215/) who assigned Licence: GPL 2 Date:
+03.12.2005.
 
-This script is based on fvwm-xdg-menu.py
-written by 
-Piotr Zielinski (http://www.cl.cam.ac.uk/~pz215/)
-who assigned Licence: GPL 2
-Date: 03.12.2005.
-
-The script was reworked to replace the existing
-fvwm-menu-desktop perl script by the fvwm-workers.
+The script was reworked to replace the existing fvwm-menu-desktop perl
+script by the fvwm-workers.
 
 
 .SH COPYING
-The script is distributed by the same terms as fvwm itself.
-See GNU General Public License for details.
+The script is distributed by the same terms as fvwm itself. See GNU
+General Public License for details.
