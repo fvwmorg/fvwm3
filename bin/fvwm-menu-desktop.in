@@ -415,8 +415,10 @@ def parsemenus(menulist, desktop):
         # create a top title list
         top_titles = []
         for file in menulist:
-            name = file.replace('.menu', '').split('/')
-            top_titles.append(name[-1][0].upper()+name[-1][1:])
+            # extract and split the filename and set first char of each word to capital
+            name_parts = file.replace('.menu', '').split('/')[-1].split('-')
+            name_parts = [name[0].replace(name[0], name[0].upper())+name[1:] for name in name_parts]
+            top_titles.append(' '.join(name_parts))
         
         # create the submenus
         new_toptitles = []

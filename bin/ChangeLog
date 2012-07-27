@@ -1,3 +1,13 @@
+2012-07-27  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.1.in: Applied patch from Thomas Funk.
+	Capitalize titles, remove dashes from titles.
+
+2012-07-24  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.1.in: Latest patches from Thomas Funk with
+	some adjustments.
+
 2012-07-21  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.1.in: Applied patch from Thomas Funk.

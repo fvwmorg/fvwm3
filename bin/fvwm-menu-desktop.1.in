@@ -52,8 +52,8 @@ Show the help and exit.
 Show the version and exit.
 
 .IP "\fB\-\-install-prefix\fR \fIDIR\fR"
-Optional parameter to override the default locations for XDG menu
-definitions. According to the xdg specification the default locations are
+Optional parameter to override the standard locations for XDG menu
+definitions. The standard locations are
 /etc/xdg/menus (and $HOME/.config/menus if it exists).
 
 .IP "\fB\-\-desktop\fR \fINAME\fR"
@@ -85,10 +85,13 @@ Option to define the menu title \fINAME\fR of the top menu used by Fvwm's
 
 .IP "\fB\-\-insert\-in\-menu\fR \fINAME\fR"
 Option to insert generated menu(s) \fBIN\fR a menu \fINAME\fR (its
-top title).  Note that this 0ption does not work correctly with the
-Regnerate Menus menu entry since items insserted into a menu cannot be
-removed (currently).  If you use this option and want to update your menus,
-restart fvwm.
+top title).
+
+Note that this option does not work correctly with the
+Regnerate Menus menu entry in a normal built menu since items inserted 
+into such a menu cannot be removed (currently). If you use this option
+there and want to update your menus, you have to restart fvwm. A better
+way is to use dynamic menus (see the example in the USAGE section).
 
 .IP "\fB\-\-get\-menus\fR \fIall\fR|\fIdesktop\fR"
 Prints a space separated list of full menu paths. \fIall\fR is all menus
@@ -100,6 +103,8 @@ This option is meant for use with the configuration tool.
 .IP "\fB\-\-set\-menus\fR \fImenu_paths\fR"
 Expects a space separated list of full menu paths to generate user
 specified menus
+
+This option is meant for use with the configuration tool.
 
 .IP "\fB\-\-verbose\fR"
 Enables additional information printouts on STDERR.
@@ -138,8 +143,10 @@ PipeRead 'fvwm-menu-desktop'
 .EE
 .RE
 
-Another possibility is to use \fBDynamicPopupAction\fR (with fvwm menu),
-the menu will be built only if you pop up the menu. The following snippet
+This is likely to be too slow and is not recommended.
+
+Another possibility is to use \fBDynamicPopupAction\fR,
+the menu will be built only if you pop up the menu. The following
 creates a "KDE Menus" menu which contains all Kde menus found on the
 system which is built only the first time you pop it up:
 
@@ -156,7 +163,7 @@ AddToMenu FvwmKde
 .EE
 .RE
 
-The examples above generates a menu with the Xdg menus as sub menus. If
+The example above generates a menu with the Xdg menus as sub menus. If
 the sub menus should appear one level higher do this:
 
 .RS
@@ -166,8 +173,7 @@ AddToMenu MenuRoot "Root Menu" Title
 .EE
 .RE
 
-To generate single menus like \fIpreferences\fR different options should
-be set:
+To generate single menus like \fIpreferences\fR:
 
 .RS
 .EX
@@ -176,7 +182,7 @@ fvwm-menu-desktop --desktop kde --menu-type preferences --title FvwmPref \\
 .EE
 .RE
 
-This call generates a single Kde Preferences menu with top title
+This generates a single KDE Preferences menu with top title
 "FvwmPref", mini icons with a size of 16x16 pixels and titles for each
 sub menu. But only if a menu with the name \fIpreferences\fR
 exists in the users or system wide Xdg directories. Else it's empty!
@@ -213,7 +219,8 @@ AddToFunc   FuncRecreateXdgMenus
 .EE
 .RE
 
-or if you want to show the menus directly in the "Root" menu use this:
+or if you want to show the menus directly in a normal "Root" menu use
+this:
 
 .RS
 .EX
@@ -223,6 +230,32 @@ AddToMenu MenuRoot "Root Menu" Title
 
 DestroyFunc FuncXdgMenusInRoot
 AddToFunc   FuncXdgMenusInRoot
++ I Test (f  $[FVWM_USERDIR]/.menu) Read $[FVWM_USERDIR]/.menu
++ I TestRC (!Match) PipeRead 'fvwm-menu-desktop --insert-in-menu MenuRoot \\
+                              > $[FVWM_USERDIR]/.menu \\
+                              && echo "Read $[FVWM_USERDIR]/.menu"'
+.EE
+.RE
+
+The problem here is, that you have to restart fvwm because items insserted 
+into such a menu cannot be removed. For that BOTH menus must be regenerated:
+
+.RS
+.EX
+AddToMenu MenuRoot DynamicPopupAction FuncMenuRoot
+
+DestroyFunc FuncMenuRoot
+AddToFunc FuncMenuRoot
++ I DestroyMenu MenuRoot
++ I AddToMenu MenuRoot DynamicPopupAction FuncMenuRoot
++ I AddToMenu MenuRoot "Root Menu" Title
++ I Popup XdgMenus
+
+AddToMenu XdgMenus DynamicPopupAction FuncXdgMenusInRoot
+
+DestroyFunc FuncXdgMenusInRoot
+AddToFunc FuncXdgMenusInRoot
++ I AddToMenu XdgMenus DynamicPopupAction FuncXdgMenusInRoot
 + I Test (f  $[FVWM_USERDIR]/.menu) Read $[FVWM_USERDIR]/.menu
 + I TestRC (!Match) PipeRead 'fvwm-menu-desktop --insert-in-menu MenuRoot \\
                               > $[FVWM_USERDIR]/.menu \\
@@ -243,20 +276,9 @@ Module FvwmPerl -l fvwm-menu-desktop-config.fpl
 .EE
 .RE
 
-
-\" .SH ERRORS AND WARNINGS
-\" \fBfvwm-menu-desktop\fR prints errors and warnings to STDERR. So these
-\" messages could be redirect to e.g. ~/.xsessions-errors:
-
-\" .RS
-\" .EX
-\" fvwm-menu-desktop > $FVWM_USERDIR/.menu 2> ~/.xsession-errors
-\" .EE
-\" .RE
-
-
 .SH BUGS
-If you found one please submit a bug report with fvwm-bug to the
+The whole process of creating menus from files is slow.
+Otherwise report bugs to the
 fvwm-workers mailing list <fvwm-workers@fvwm.org>.
 
 
