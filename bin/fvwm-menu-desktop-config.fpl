@@ -11,7 +11,7 @@ use File::Basename;
 use strict;
 use warnings;
 
-open(MSG ,">>/tmp/log.txt") || die "Error $!";
+#open(MSG ,">>/tmp/log.txt") || die "Error $!";
 
 my $modname = 'FvwmForm-Desktop-Config';
 my $all = `fvwm-menu-desktop --get-menus all`;
@@ -249,8 +249,8 @@ $fvwmform_commands =~ s/^\s+//;	# trim leading whitespace
 	$fvwmform_commands
 	FvwmForm ${modname}
 ]);
-print MSG "$fvwmform_commands\n\n";
-close(MSG);
+#print MSG "$fvwmform_commands\n\n";
+#close(MSG);
 # Local Variables:
 # mode: perl
 # End:
