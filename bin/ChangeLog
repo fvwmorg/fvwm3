@@ -1,5 +1,10 @@
 2012-07-28  Dan Espen  <despen@verizon.net>
 
+	* fvwm-menu-desktop-config.fpl: New module Thomas Funk.
+	Some changes.  Got conflicts with old FvwmForm so changed name.
+
+	* Makefile.am: Add fvwm-menu-desktop-config.fpl.
+
 	* fvwm-menu-desktop.in (main): Applied patch from Thomas Funk.
 	Menus in users HOME only override /etc/xdg/menus.
 

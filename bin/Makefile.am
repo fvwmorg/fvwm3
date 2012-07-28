@@ -24,6 +24,9 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(Xcursor_LIBS) \
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 	$(rsvg_CFLAGS)
 
+configdir = @FVWM_DATADIR@
+config_DATA =        \
+fvwm-menu-desktop-config.fpl
 
 ## The long generation for *.1 is to make both pod2man and 'make -j' happy.
 
