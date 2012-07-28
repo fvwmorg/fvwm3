@@ -1,3 +1,8 @@
+2012-07-28  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.in (main): Applied patch from Thomas Funk.
+	Menus in users HOME only override /etc/xdg/menus.
+
 2012-07-27  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.1.in: Applied patch from Thomas Funk.

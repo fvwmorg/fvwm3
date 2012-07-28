@@ -243,10 +243,13 @@ def getmenulist(desktop, menu_type):
     desktop_dict = {}
     if not found_menus == 0:
         all_menus = []
-        # remove all menus in /etc/xdg/menus imenudict['/etc/xdg/menus']menudict['/etc/xdg/menus']f exist in user dir
+        # remove all menus in /etc/xdg/menus if exist in user dir
         for path in menudict.keys():
             if not path == '/etc/xdg/menus':
-                menudict['/etc/xdg/menus'] = menudict['/etc/xdg/menus'] - menudict[path]
+                if path == os.path.join(os.getenv("HOME"), '.config/menus'):
+                    menudict['/etc/xdg/menus'] = menudict['/etc/xdg/menus'] - menudict[path]
+                #else:
+                #    menudict[path] = menudict[path] - menudict['/etc/xdg/menus']
                 for menu in list(menudict[path]):
                     all_menus.append(path + '/' + menu)
         
