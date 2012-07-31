@@ -1,3 +1,8 @@
+2012-07-30  Dan Espen  <despen@verizon.net>
+
+	* NEWS: Added FvwmForm Separators,
+	fvwm-desktop-menu fixes.
+
 2012-06-22  Dan Espen  <despen@verizon.net>
 
 	* configure.ac: Set variables for python.

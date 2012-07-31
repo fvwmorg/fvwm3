@@ -224,6 +224,7 @@ Message
 PadVText
 Position
 Selection
+Separator
 Text
 Timeout
 TimeoutFont
@@ -427,6 +428,12 @@ The selections are mutually exclusive.
 .TP 16
 .B \fImultiple\fP
 This is a multiple-choice selection.
+
+.TP 4
+.B *FvwmForm: Separator
+Draws a 2 pixel shaded line across the form as a visual indication
+of a separate area.
+
 .TP 4
 .B *FvwmForm: Choice \fIname\fP \fIvalue\fP "on | off" "\fIstring\fP"
 Specifies a choice for a proceeding selection.

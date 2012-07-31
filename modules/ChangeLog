@@ -1,3 +1,9 @@
+2012-07-30  Dan Espen  <despen@verizon.net>
+
+	* FvwmForm/FvwmForm.1.in: Document Separator feature.
+	* FvwmForm/FvwmForm.c: Add Separator feature.
+	* FvwmForm/FvwmForm.h: Add Separator Item.
+
 2012-06-29  Dan Espen  <despen@verizon.net>
 
 	* FvwmForm/FvwmForm-Desktop: Support --with-titles, --size, --theme.

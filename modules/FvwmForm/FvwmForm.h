@@ -38,6 +38,7 @@
 #define I_CHOICE        4
 #define I_BUTTON        5
 #define I_TIMEOUT       6
+#define I_SEPARATOR     7
 
 #define IS_SINGLE       1
 #define IS_MULTIPLE     2
@@ -132,6 +133,9 @@ typedef union _item {
     char *text;         /* text string */
     char *command;    /* Fvwm command(s) to execute */
   } timeout;
+  struct {              /* I_SEPARATOR */
+    struct _head head;
+  } separator;
 } Item;
 
 #define L_LEFT        1

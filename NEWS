@@ -2,14 +2,16 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in 2.6.5 (20-Apr-2012)
+Changes in 2.6.6 ()
 
 * New features:
-  - N/A
+  - FvwmForm supports separator lines.
 
 * Bug fixes:
   - Provide a wrapper for the deprecation of XKeycodeToKeysym and
     use XkbKeycodeToKeysym() where appropriate.
+  - fvwm-desktop-menu is re-written and provides better support of
+    the XDG menu specification.
 
 -------------------------------------------------------------------
 
