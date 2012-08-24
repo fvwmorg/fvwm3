@@ -31,7 +31,7 @@ msgstr ""
 msgid "Issue fvwm commands"
 msgstr ""
 
-#: ../fvwm/fvwm.c:1374
+#: ../fvwm/fvwm.c:1374 ../modules/FvwmForm/FvwmForm-Setup.in: line 66
 msgid "Restart fvwm"
 msgstr ""
 
@@ -315,8 +315,4 @@ msgstr ""
 
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 55
 msgid "Copy Config File(s)"
-msgstr ""
-
-#. ./modules/FvwmForm/FvwmForm-Setup.in: line 66
-msgid "Restart fvwm"
 msgstr ""

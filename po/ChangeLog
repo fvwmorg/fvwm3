@@ -1,3 +1,7 @@
+2012-08-23  Dan Espen  <despen@verizon.net>
+
+	* fvwm.pot: Combine "Restart fvwm" lines to remove duplicate.
+
 2011-10-15  Thomas Adam  <thomas@fvwm.org>
 	* FvwmTaskBar.zh_TW.po:
 	* FvwmScript.zh_TW.po:
