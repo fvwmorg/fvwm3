@@ -30,6 +30,7 @@ fvwm-menu-desktop
 [ \fB\-\-with\-titles\fR|\fB\-w\fR ]
 [ \fB\-\-enable\-mini\-icons\fR ]
 [ \fB\-\-size\fR|\fB\-s\fR \fINUM\fR ]
+[ \fB\-\-mini\-icon\-dir\fR|\fB\-t\fR \fIDIR\fR ]
 [ \fB\-\-title\fR|\fB\-t\fR \fINAME\fR ]
 [ \fB\-\-insert\-in\-menu\fR \fINAME\fR ]
 [ \fB\-\-get\-menus\fR \fIall\fR|\fIdesktop\fR ]
@@ -117,8 +118,9 @@ mini\-icons use:
 .IP "\fB\-\-enable\-mini\-icons\fR"
 This option enables mini\-icons in the menus. If set, 24x24 mini-icons
 are used. If the specified icon isn't that size it will be converted
-if \fBImageMagick\fR is installed and saved in $HOME/.fvwm/icons.
-Otherwise no icon appears in the menu for that entry.
+if \fBImageMagick\fR is installed and saved in $HOME/.fvwm/icons or to
+the directory specified with \-\-mini\-icon\-dir option. Otherwise no icon
+appears in the menu for that entry.
 With most distributions, all the menu entries will have mini-icons
 appropriate to the application.
 
@@ -126,6 +128,11 @@ appropriate to the application.
 If \-\-enable\-mini\-icons is used the \fIsize\fR of the icons can
 changed with this parameter. Default is 24.
 
+.IP "\fB\-\-mini\-icon\-dir\fR \fIDIR\fR"
+When the right size mini-icon isn't available,
+fvwm-menu-desktop creates icons with the right size in $HOME/.fvwm/icons.
+If you don't want to use the default directory, $HOME/.fvwm/icons,
+use this option to specify a different folder.
 
 .SH USAGE
 Without any parameters \fBfvwm-menu-desktop\fR creates a menu named

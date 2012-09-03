@@ -1,3 +1,10 @@
+2012-09-02  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.1.in: Applied patches from Thomas Funk
+	with some minor changes.
+	* fvwm-menu-desktop-config.fpl: 
+	* fvwm-menu-desktop.in: 
+
 2012-07-28  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop-config.fpl: New module Thomas Funk.

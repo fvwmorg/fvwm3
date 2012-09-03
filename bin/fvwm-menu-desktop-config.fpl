@@ -52,8 +52,10 @@ DestroyModuleConfig  ${modname}: *
 *${modname}: WarpPointer
 *${modname}: Line		center
 *${modname}: Text	\"Fvwm Menu Desktop Config\"
+*${modname}: Line
+*${modname}: Separator
 *${modname}: Line		center
-*${modname}: Text		\"------------------ Multiple Menu ------------------\"
+*${modname}: Text		\"Multiple Menu\"
 *${modname}: Line 		
 ";
 
@@ -86,8 +88,10 @@ foreach my $key (sort( keys %all_menus)) {
 }
 
 $fvwmform_commands .= "
+*${modname}: Line
+*${modname}: Separator
 *${modname}: Line		center
-*${modname}: Text         \"------------------ General Options ------------------\"
+*${modname}: Text         \"General Options\"
 *${modname}: Line
 *${modname}: Line		Left
 *${modname}: Text         \"Use Icons in Menus?       \"
@@ -99,6 +103,11 @@ $fvwmform_commands .= "
 *${modname}: Text 	\"Icon size:                \"
 *${modname}: Input 	Size 2 \"\"
 *${modname}: Text 	\" (in pixels. Default is 24)
+
+*${modname}: Line 	left
+*${modname}: Text 	\"Converted Icon directory:      \"
+*${modname}: Input 	IconDir 25 \"~/.fvwm/icons\"
+*${modname}: Text 	\" (Directory for converted icons)\"
 
 *${modname}: Line		Left
 *${modname}: Text         \"Use Titles in Menus?      \"
@@ -121,8 +130,10 @@ $fvwmform_commands .= "
 
 *${modname}: Line 	left
 *${modname}: Line
+*${modname}: Line
+*${modname}: Separator
 *${modname}: Line 	center
-*${modname}: Text         \"------------------ Single Menu ------------------\"
+*${modname}: Text         \"Single Menu\"
 *${modname}: Line		
 *${modname}: Line		Left
 *${modname}: Text         \"If you want a single menu only deselect all menus above and fill out\"
@@ -157,14 +168,18 @@ $fvwmform_commands .= "
 
 *${modname}: Line 	left
 *${modname}: Line
+*${modname}: Line
+*${modname}: Separator
 *${modname}: Line 	center
-*${modname}: Text         \"------------------ Actions ------------------\"
+*${modname}: Text         \"Actions\"
 *${modname}: Line 	left
 *${modname}: Line
 *${modname}: Line         center
 *${modname}: Selection    SelItype single
 *${modname}: Choice       MultiOn  MultiOn    on  \"Multiple\"
 *${modname}: Choice       MultiOff MultiOff   off \"Single\"
+*${modname}: Line
+*${modname}: Separator
 *${modname}: Line         expand
 *${modname}: Button       continue \"Generate Menu(s)\" 
 *${modname}: Command      PipeRead 'fvwm-menu-desktop \\
@@ -172,6 +187,7 @@ $fvwmform_commands .= "
 \$(Size\?-s \$(Size) )\\
 \$(TitlesOn\?--with-titles )\\
 \$(InsertOn\?--insert-in-menu \$(InMenu) )\\
+\$(IconDir\?--mini-icon-dir \$(IconDir) )\\
 \$(Title\?--title \$(Title) )\\
 \$(Installprefix\?--install-prefix \$(Installprefix) )\\
 \$(Desktop\?--desktop \$(Desktop) )\\
@@ -225,6 +241,7 @@ $fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
   '*${modname}Default: Desktop	\$(Desktop) '		; /bin/echo \\
   '*${modname}Default: Menutype	\$(Menutype) '		; /bin/echo \\
   '*${modname}Default: Path      	\$(Path) '		; /bin/echo \\
+  '*${modname}Default: IconDir      	\$(IconDir) '		; /bin/echo \\
   '*${modname}Default: MultiOn 	\$(MultiOn\?on) '	; /bin/echo \\
   '*${modname}Default: MultiOff	\$(MultiOff\?on) '	\\
 ) >> \$FVWM_USERDIR/.${modname}

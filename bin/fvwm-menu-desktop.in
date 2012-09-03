@@ -98,7 +98,7 @@ Standard output is a series Fvwm commands."""
         opts, args = getopt.getopt(sys.argv[1:], "hs:t:vw",
                                    ["help", "verbose", "enable-mini-icons", "with-titles", "version",
                                     "desktop=", "size=", "theme=", "install-prefix=", "menu-type=",
-                                    "title=", "get-menus=", "set-menus=", "insert-in-menu="]+obs_args+equaled_obs_parms)
+                                    "title=", "get-menus=", "set-menus=", "insert-in-menu=", "mini-icon-dir="]+obs_args+equaled_obs_parms)
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -106,7 +106,7 @@ Standard output is a series Fvwm commands."""
         sys.exit(2)
     global verbose, force, size, theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu
-    version = "2.0"
+    version = "2.1"
     verbose = False
     force = False
     desktop=''
@@ -152,6 +152,8 @@ Standard output is a series Fvwm commands."""
                 sys.exit(1)
         elif o in ("-s","--size") :
             size = int(a)
+        elif o in ("--mini-icon-dir") :
+            icon_dir = a
         elif o in ("--set-menus") :
             if a[-1] == ' ':
                 a = a[:-1]
@@ -267,7 +269,7 @@ def getmenulist(desktop, menu_type):
 		    # first the desktops, then debian (shouldn't appear in others) then others holding
 		    # all other non DE menus e.g. tools and at the end the nones without prefixes
 		    # If there're other prefixes from other WMs - should be added BEFORE debian
-            DEs = ['gnome', 'kde', 'xfce', 'lxde', 'debian', 'others', 'none']
+            DEs = ['gnome', 'kde', 'xfce', 'lxde', 'cinnamon', 'mate', 'debian', 'others', 'none']
         else:
             DEs = [desktop]
         for de in DEs:
@@ -522,6 +524,7 @@ Options:
     -w, --with-titles         generate menus with titles.
     --enable-mini-icons       enable mini-icons in menu
     -s, --size NUM            set size of mini-icons in menu. Default is 24.
+    --mini-icon-dir           set directory for mini-icons. Default is ~/.fvwm/icons.
     -t, --title NAME          menu title of the top menu used by Popup command.
                               Default is FvwmMenu
     --insert-in-menu NAME     generates a menu to place it in the root level of the
