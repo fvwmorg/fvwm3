@@ -1,3 +1,7 @@
+2012-10-03  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.in: Unicode support from Thomas Funk.
+
 2012-09-02  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop.1.in: Applied patches from Thomas Funk

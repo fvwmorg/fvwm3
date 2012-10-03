@@ -2,6 +2,9 @@
  
 # Modification History
 
+# Changed on 10/01/12 by Thomas Funk:
+# Unicode support.
+
 # Changed on 01/26/12 by Dan Espen (dane):
 # Make compatible with fvwm-menu-desktop.
 # Restored DestroyMenu, needed for reload menus.
@@ -409,7 +412,18 @@ def printmenu(name, icon, command):
         iconfile = geticonfile(icon) or getdefaulticonfile(command) or icon
         if not iconfile == '':
             iconfile = '%'+iconfile+'%'
-    printtext('+ "%s%s" %s' % (name, iconfile, command))
+    # fix unicode decode problem like
+    # UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position xyz: ordinal not in range(128) 
+    try:
+        printtext('+ "%s%s" %s' % (name, iconfile, command))
+    except UnicodeDecodeError:
+        try:
+            unicode_name = name.decode("iso-8859-15")
+            unicode_command = command.decode("iso-8859-15")
+            text = '+ "%s%s" %s' % (unicode_name, iconfile, unicode_command)
+            print text.encode("iso-8859-15")
+        except:
+            sys.stderr.write("A menu entry cannot decode! Skipping it ...\n")
 
 def parsemenus(menulist, desktop):
     global menu_entry_count
