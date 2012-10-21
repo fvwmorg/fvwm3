@@ -1,3 +1,9 @@
+2012-10-21  Dan Espen  <despen@verizon.net>
+
+	* FVWM/Tracker/GlobalConfig.pm: Patch from Philippe Grégoire.
+	FVWM::Tracker::GlobalConfig the observable event is "value changed",
+	not "value updated".
+
 2009-03-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

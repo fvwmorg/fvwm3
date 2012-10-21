@@ -100,7 +100,7 @@ __END__
 This is a subclass of B<FVWM::Tracker> that enables to read the global
 FVWM configuration.
 
-    "value updated"
+    "value changed"
 
 =head1 SYNOPSYS
  
