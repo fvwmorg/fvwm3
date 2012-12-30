@@ -24,10 +24,13 @@ INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 	$(rsvg_CFLAGS)
 
 configdir = @FVWM_DATADIR@
-config_DATA =        \
-fvwm-menu-desktop-config.fpl
+config_DATA = fvwm-menu-desktop-config.fpl
 
-EXTRA_DIST = fvwm-convert-2.2 fvwm-convert-2.2.1 $(man_MANS) $(config_DATA)
+EXTRA_DIST = fvwm-convert-2.2 \
+fvwm-menu-desktop-config.fpl \
+fvwm-convert-2.2.1 \
+$(man_MANS)
+
 ## The long generation for *.1 is to make both pod2man and 'make -j' happy.
 
 _fvwm-menu-xlock.1: fvwm-menu-xlock
