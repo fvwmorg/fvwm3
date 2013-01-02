@@ -182,6 +182,7 @@ Contents
      6.8  I just got a mouse with 57 buttons.  How do I make Fvwm
           use them?
      6.9  Why does fvwm change my X Cursor theme?
+     6.10 I'm having problems giving Wine windows focus.
 
 7. Hints and Examples from the Developers
 
@@ -2651,6 +2652,16 @@ using cursors that do not match your theme, you should use
 CursorStyle to change to a cursor that is available, or find a
 more complete theme.  Note that fvwm does not control what cursors
 your applications request.
+
+----------------------------------------------------------------------
+
+6.10  I'm having problems giving Wine windows focus.
+
+A: Yep, known issue.  The ICCCM states that windows that take input
+should indicate so in their WM hints.  Wine windows don't do this.
+To work around this issue try:
+
+Style "*" Lenience
 
 ======================================================================
               7 - Hints and Examples from the Developers
