@@ -214,7 +214,7 @@ static int iconmanager_show (WinManager *man, char *tname, char *iname,
     ConsoleDebug (WINLIST, "Matching: %s\n", string->string);
     if (matches_string (string->type, string->string, tname, iname,
 			rname, cname)) {
-      ConsoleDebug (WINLIST, "Dont show\n");
+      ConsoleDebug (WINLIST, "Don't show\n");
       in_dontshowlist = 1;
       break;
     }

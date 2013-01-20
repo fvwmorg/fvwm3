@@ -429,7 +429,7 @@ where \fIdelay\fP and \fImappeddelay\fP are time out values in milliseconds.
 If no \fImappeddelay\fP is given \fIdelay\fP is assumed. Default is
 1000 300. When the cursor is on a button, FvwmIconMan wait \fIdelay\fP
 milliseconds before displaying the tip. In the case where a tip is
-already mapped and the cursor goes to an other button, FvwmIconMan
+already mapped and the cursor goes to another button, FvwmIconMan
 waits \fImappeddelay\fP milliseconds before displaying the new tip.
 
 .IP "*FvwmIconMan: [id] TipsFont \fIfontname\fP"

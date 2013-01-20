@@ -830,7 +830,7 @@ FlocaleCharset *FlocaleCharsetGetDefaultCharset(Display *dpy, char *module)
 			"charset with:\n\t",
 			(module != NULL)? module:"FVWMlibs",
 			"FlocaleGetDefaultCharset");
-		fprintf(stderr,"X Ouput Method ");
+		fprintf(stderr,"X Output Method ");
 		fprintf(stderr,", CHARSET env variable");
 		if (FlocaleLibcharsetSupport)
 			fprintf(stderr,", locale_charset");

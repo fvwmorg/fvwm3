@@ -1,3 +1,8 @@
+2013-01-20  Dan Espen  <despen@verizon.net>
+
+	* fvwm-root.1.in: spelling-error-manpage patch
+	from Vincent W. Chen Lintain Debian.
+
 2012-12-30  Dan Espen  <despen@verizon.net>
 
 	* Makefile.am (config_DATA): Add fvwm-menu-desktop-config.fpl to EXTRA_DIST

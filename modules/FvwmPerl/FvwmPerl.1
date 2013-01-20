@@ -257,7 +257,7 @@ A special function \fBcmd(\fR\*(L"command\*(R"\fB)\fR may be used in perl code t
 If perl code contains an error, it is printed to the standard error stream with the \fI[FvwmPerl][load]:\fR header prepended.
 .IP "\fBpreprocess\fR [\-q|\-\-quote char] [\-c|\-\-cmd] [\fIline\fR | \fIfile\fR]" 4
 .IX Item "preprocess [-q|--quote char] [-c|--cmd] [line | file]"
-Preprocess fvwm config \fIfile\fR or (if \-\-cmd is given) \fIline\fR. This file contains lines that are not touched (usually fvwm commands) and specially preformatted perl code that is processed and replaced. Text enclosed in \fB%{\fR ... \fB}%\fR delimiters, that may start anywhere on the line and end anywhere on the same or an other line, is perl code.
+Preprocess fvwm config \fIfile\fR or (if \-\-cmd is given) \fIline\fR. This file contains lines that are not touched (usually fvwm commands) and specially preformatted perl code that is processed and replaced. Text enclosed in \fB%{\fR ... \fB}%\fR delimiters, that may start anywhere on the line and end anywhere on the same or another line, is perl code.
 .Sp
 The \fIquote\fR parameter changes perl code delimiters.\  If a single char is given, like '@', the delimiters are \fB@{\fR ... \fB}@\fR. If the given quote is 2 chars, like \fB<>\fR, the quotes are \fB<{\fR ... \fB}>\fR
 .Sp

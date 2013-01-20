@@ -83,7 +83,7 @@ managed by fvwm.  Since these applications are rare it is most
 likely safe to leave this option at its default.</para>
 
 <para><fvwmopt cmd="BugOpts" opt="QtDragnDropWorkaround"/>
-surpresses the forwarding of unknown ClientEvent messages to windows --
+suppresses the forwarding of unknown ClientEvent messages to windows --
 usually this is harmless, but Qt has problems handling unrecognised
 ClientEvent messages.  Enabling this option might therefore help for Qt
 applications using DragnDrop.  This option is off by default.</para>

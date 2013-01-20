@@ -767,7 +767,7 @@ it causes that any module with alias or name which matches
 .I  ScriptName
 changes its associated window title to \fInewTitle\fP. The optional argument
 \fIoldTitle\fP makes sense when there are several instances of
-the same script. It permits to avoid changing the name  of all these instances
+the same script. It permits one to avoid changing the name  of all these instances
 by specifying the name of the window associated to the target script (see the
 example below).
 
@@ -817,7 +817,7 @@ FvwmScript-Colorset allows you to edit your colorset (see FvwmTheme).
 FvwmScript-Date allows you to set date and time.
 FvwmScript-FileBrowser is a file browser used by the other scripts.
 FvwmScript-Find is an elementary front-end to find.
-FvwmScript-Quit allows to quit fvwm, restart fvwm or some other window
+FvwmScript-Quit allows one to quit fvwm, restart fvwm or some other window
 manager, or shut down and reboot the computer.
 FvwmScript-ScreenDump is a screen dumper. FvwmScript-WidgetDemo is a pure
 example script. See the next section for FvwmScript-ComExample.

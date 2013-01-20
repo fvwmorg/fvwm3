@@ -173,7 +173,7 @@ This option may be useful if \fB\-\-track\fR or/and \fB\-\-debug\fR is used.
 .PP
 The default is \fB\-\-events\fR normally, and \fB\-\-noevents\fR if one or more \fB\-\-track\fR options specified.
 .PP
-\&\fB\-l\fR|\fB\-\-log\fR \fIfile\fR \- specify the log file name instead of the standard error stream. If the log file can't be open for writting, the default standard error stream is used.
+\&\fB\-l\fR|\fB\-\-log\fR \fIfile\fR \- specify the log file name instead of the standard error stream. If the log file can't be open for writing, the default standard error stream is used.
 .PP
 The \fIfile\fR may start with a pipe '|', this is similar to the usual meaning of a pipe, the output is piped to the specified command. See also \fB\-\-xconsole\fR option.
 .PP
@@ -191,7 +191,7 @@ That shows the module output in the \fIxconsole\fR window rather than the standa
 .PP
 \&\fB\-d\fR|\fB\-\-debug\fR \fIlevel\fR \- use the Perl library debugging mechanism. The useful \fIlevel\fRs are 2 to 4.
 .PP
-\&\fB\-t\fR|\fB\-\-track\fR \fItracker-name\fR \- create the given Perl library tracker and observe its main observable. This option may be specified multiple times. This options implies \fB\-\-noevents\fR unless explicitely overwritten. You may optionally try \fB\-\-debug\fR, for example:
+\&\fB\-t\fR|\fB\-\-track\fR \fItracker-name\fR \- create the given Perl library tracker and observe its main observable. This option may be specified multiple times. This options implies \fB\-\-noevents\fR unless explicitly overwritten. You may optionally try \fB\-\-debug\fR, for example:
 .PP
 .Vb 1
 \&    FvwmDebug \-xc \-\-track PageInfo \-\-track GlobalConfig \-\-debug 3

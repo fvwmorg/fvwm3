@@ -1,3 +1,8 @@
+2013-01-20  Dan Espen  <despen@verizon.net>
+
+	* libs/FlocaleCharset.c: spelling-error-binary patch
+	from Vincent W. Chen Lintain Debian.
+
 2012-07-30  Dan Espen  <despen@verizon.net>
 
 	* NEWS: Added FvwmForm Separators,

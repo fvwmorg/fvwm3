@@ -1,3 +1,23 @@
+2013-01-19  Dan Espen  <despen@verizon.net>
+
+	* FvwmButtons/FvwmButtons.1.in:
+	* FvwmTheme/FvwmTheme.1.in:
+	* FvwmAuto/FvwmAuto.1.in: manpage-error patch
+	from Vincent W. Chen Lintain Debian.
+
+	* FvwmIconMan/FvwmIconMan.1.in:
+	* FvwmProxy/FvwmProxy.1.in:
+	* FvwmScript/FvwmScript.1.in:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmPerl/FvwmPerl.1:
+	* FvwmTabs/FvwmTabs.1: spelling-error-manpage patch
+	from Vincent W. Chen Lintain Debian.
+
+	* FvwmIconMan/readconfig.c:
+	* FvwmIconMan/winlist.c: spelling-error-binary patch
+	from Vincent W. Chen Lintain Debian.
+
+
 2012-07-30  Dan Espen  <despen@verizon.net>
 
 	* FvwmForm/FvwmForm.1.in: Document Separator feature.

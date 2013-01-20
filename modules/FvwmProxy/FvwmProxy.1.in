@@ -10,7 +10,7 @@ FvwmProxy is spawned by fvwm, so no command line invocation will work.
 .SH DESCRIPTION
 The FvwmProxy allows the user to locate and control windows obscured
 by other windows by using small non-overlapping proxy windows.
-The default capabilites include raising and lowering the proxied windows.
+The default capabilities include raising and lowering the proxied windows.
 
 Using the sample configuration, pressing Alt-Tab cycles through the windows
 and allows the use of assignable click actions on the proxies.
@@ -50,7 +50,7 @@ Specifies the color theme for the selected proxy window.
 
 .IP "*FvwmProxy: IconifiedColorset \fIn\fP"
 Specifies the color theme for proxy windows of iconified windows.
-This is only meaningful in conjuction with the ProxyIconified option on.
+This is only meaningful in conjunction with the ProxyIconified option on.
 
 .IP "*FvwmProxy: Font \fIfont\fP"
 Specifies the font used for large proxy window text.

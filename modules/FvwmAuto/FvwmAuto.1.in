@@ -120,7 +120,7 @@ AddToFunc selective_raiselower
 + I WindowId $1 (FvwmIconMan) $0
 + I WindowId $1 (FvwmButtons) $0
 + I WindowId $1 (xclock) $0
-...
+\&...
 .EE
 
 More complex example (three FvwmAuto's are running):

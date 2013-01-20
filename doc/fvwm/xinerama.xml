@@ -8,7 +8,7 @@
 <title>Xinerama Support</title>
 <para>Fvwm supports the Xinerama extension of newer X servers
 which is similar to multi head support (multiple screens) but
-allows to move windows between screens.  If Xinerama support has
+allows one to move windows between screens.  If Xinerama support has
 been compiled into fvwm, it is used whenever fvwm runs on an X
 server that supports and uses multiple screens via Xinerama.
 Without this option, the whole desktop is treated as one big

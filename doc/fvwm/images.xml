@@ -59,7 +59,7 @@ might look something like this:</para>
 <para>
 By default, SVG images are rendered as the image creator intended
 them to. But since SVG is a vector graphics format, the images can
-be rendered at any choosen size and rotation, e.g. making it possible
+be rendered at any chosen size and rotation, e.g. making it possible
 to use the same icon file rendered at diffrent sizes for the
 <fvwmref cmd="Style" opt="Icon"/> and <fvwmref cmd="Style" opt="MiniIcon"/>
 styles.</para>

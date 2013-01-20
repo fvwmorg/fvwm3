@@ -53,7 +53,7 @@ this option or not depending on what part is implemented by these programs.
 You should also use this option to get fast root-transparent menus in fvwm.
 .TP
 .BI "--no-retain-pixmap"
-This is a default. May be useful to explicitely force the default even
+This is a default. May be useful to explicitly force the default even
 if "--retain-pixmap" is specified earlier.
 .TP
 .BR "--dummy" " | " "-d"
@@ -62,7 +62,7 @@ associated with the ESETROOT_PMAP_ID property (if any).
 In any case the _XSETROOT_ID property is set to None.
 .TP
 .BI "--no-dummy"
-This is a default. May be useful to explicitely force the default even
+This is a default. May be useful to explicitly force the default even
 if "--dummy" is specified earlier.
 .TP
 .BI "--dither"

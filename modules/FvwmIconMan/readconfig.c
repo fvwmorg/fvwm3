@@ -1416,7 +1416,7 @@ void read_in_resources(void)
 	  continue;
 	}
 	do {
-	  ConsoleDebug(CONFIG, "dont show: %s\n", token);
+	  ConsoleDebug(CONFIG, "don't show: %s\n", token);
 	  if (manager == -1) {
 	    int i;
 	    for (i = 0; i < globals.num_managers; i++)
