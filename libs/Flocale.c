@@ -2358,7 +2358,14 @@ void FlocaleFreeNameProperty(FlocaleNameString *ptext)
 		XFreeStringList(ptext->name_list);
 		ptext->name_list = NULL;
 	}
-	else if (ptext->name != NULL)
+	else if (ptext->name != NULL
+                 /* Sorry, this is pretty ugly.
+                    in fvwm/events.c we have:
+                    FlocaleNameString new_name = { NoName, NULL };
+                    NoName is a global extern I don't want to add to
+                    to this libary module.
+                    So, this check comes close enough: */
+                 && strcmp("Unknown",ptext->name) != 0)
 	{
 		XFree(ptext->name);
 	}
