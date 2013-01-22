@@ -2479,7 +2479,7 @@ void FindLockMods(void)
       for (i = 0; i < mm->max_keypermod; i++)
       {
 	if ((kc = *kp++) &&
-	    ((ks = XKeycodeToKeysym(dpy, kc, 0)) != NoSymbol))
+	    ((ks = fvwm_KeycodeToKeysym(dpy, kc, 0, 0)) != NoSymbol))
 	{
 	  kn = XKeysymToString(ks);
 	  knl = strlen(kn);

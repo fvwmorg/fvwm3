@@ -1,4 +1,8 @@
 2013-01-22  Thomas Adam  <thomas@fvwm.org>
+	* modules/FvwmWharf/FvwmWharf.c (FindLockMode):
+	Fix missing deprecation of XKeycodeToKeysym() and fvwm_KeycodeToKeysym()
+
+2013-01-22  Thomas Adam  <thomas@fvwm.org>
 	* FvwmIconMan/debug.c (ConsoleMessage):
 	* FvwmIconMan/functions.c (builtin_print):
 	Comply with Debian's hardening rules.
