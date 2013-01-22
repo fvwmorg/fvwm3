@@ -1,3 +1,18 @@
+2013-01-22  Thomas Adam  <thomas@fvwm.org>
+	* FvwmIconMan/debug.c (ConsoleMessage):
+	* FvwmIconMan/functions.c (builtin_print):
+	Comply with Debian's hardening rules.
+
+	Debian's policy of what's considered "fit for purpose" for inclusion in
+	its repositoy of packages says that all compiled programs must pass the
+	following:
+
+	CFLAGS="-I/usr/local/include -g -O2 -fstack-protector \
+			--param=ssp-buffer-size=4 -Wformat -Werror=format-security" \
+	LDFLAGS="-L/usr/local/lib"
+
+	http://wiki.debian.org/HardeningWalkthrough
+
 2013-01-19  Dan Espen  <despen@verizon.net>
 
 	* FvwmButtons/FvwmButtons.1.in:

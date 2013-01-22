@@ -37,6 +37,7 @@ int WINLIST = 0;
 void
 ConsoleMessage(const char *fmt, ...)
 {
+	char *mfmt;
 	va_list args;
 
 	assert(console != NULL);
@@ -44,8 +45,10 @@ ConsoleMessage(const char *fmt, ...)
 	fputs("FvwmIconMan: ", console);
 
 	va_start(args, fmt);
-	vfprintf(console, fmt, args);
+	asprintf(&mfmt, "%s\n", fmt);
+	vfprintf(console, mfmt, args);
 	va_end(args);
+	free(mfmt);
 }
 
 int

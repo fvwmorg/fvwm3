@@ -3037,8 +3037,7 @@ void CMD_SnapAttraction(F_CMD_ARGS)
 	fvwm_msg(
 		OLD, "CMD_SnapAttraction",
 		"The command SnapAttraction is obsolete. Please use the"
-		" following command instead:");
-	fvwm_msg(OLD, "", cmd);
+		" following command instead:\n\n%s", cmd);
 	execute_function(
 		cond_rc, exc, cmd,
 		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
@@ -3059,8 +3058,7 @@ void CMD_SnapGrid(F_CMD_ARGS)
 	fvwm_msg(
 		OLD, "CMD_SnapGrid",
 		"The command SnapGrid is obsolete. Please use the following"
-		" command instead:");
-	fvwm_msg(OLD, "", cmd);
+		" command instead:\n\n%s", cmd);
 	execute_function(
 		cond_rc, exc, cmd,
 		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);

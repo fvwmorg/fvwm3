@@ -346,6 +346,7 @@ static char *fvwm_msg_strings[] =
 void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 {
 	va_list args;
+	char *mfmt;
 	char fvwm_id[20];
 	char time_str[40] = "\0";
 #ifdef FVWM_DEBUG_TIME
@@ -378,21 +379,22 @@ void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 		sprintf(&fvwm_id[strlen(fvwm_id)], ".%d", (int)Scr.screen);
 	}
 
-	fprintf(stderr, "%s[%s][%s]: %s",
+	fprintf(stderr, "%s[%s][%s]: %s\n",
 		time_str, fvwm_id, id, fvwm_msg_strings[(int)type]);
 
 	if (type == ECHO)
 	{
 		/* user echos must be printed as a literal string */
-		fprintf(stderr, "%s", msg);
+		fprintf(stderr, "%s\n", msg);
 	}
 	else
 	{
 		va_start(args, msg);
-		vfprintf(stderr, msg, args);
+		asprintf(&mfmt, "%s\n", msg);
+		vfprintf(stderr, mfmt, args);
 		va_end(args);
+		free(mfmt);
 	}
-	fprintf(stderr, "\n");
 
 	if (type == ERR)
 	{
@@ -411,6 +413,7 @@ void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 		}
 		BroadcastName(M_ERROR, 0, 0, 0, tmp);
 	}
+	fprintf(stderr, "\n");
 
 } /* fvwm_msg */
 #endif

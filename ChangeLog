@@ -1,3 +1,21 @@
+2013-01-22  Thomas Adam <thomas@fvwm.org>
+	* fvwm/builtin.c (CMD_Echo):
+	* fvwm/misc.c (fvwm_msg):
+	* fvwm/move_resize.c (CMD_SnapAttraction, CMD_SnapGrid):
+	* fvwm/virtual.c (CMD_EdgeResistance):
+	* libs/FRenderInit.c (FRenderGetErrorText):
+	Comply with Debian's hardening rules.
+
+	Debian's policy of what's considered "fit for purpos" for inclusion in
+	its repositoy of packages says that all compiled programs must pass the
+	following:
+
+	CFLAGS="-I/usr/local/include -g -O2 -fstack-protector \
+			--param=ssp-buffer-size=4 -Wformat -Werror=format-security" \
+	LDFLAGS="-L/usr/local/lib"
+
+	http://wiki.debian.org/HardeningWalkthrough
+
 2013-01-20  Dan Espen  <despen@verizon.net>
 
 	* libs/Flocale.c (FlocaleFreeNameProperty): Don't XFree "Unknown".
