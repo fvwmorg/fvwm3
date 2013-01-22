@@ -1,4 +1,11 @@
 2013-01-22  Thomas Adam <thomas@fvwm.org>
+	* libs/Fsvg.h:
+	Handle deprecation of rsvg_init()
+
+	Since version 2.36, rsvg_init() has been deprecated in favour of
+	g_type_init(); therefore we should use this.
+
+2013-01-22  Thomas Adam <thomas@fvwm.org>
 	* fvwm/builtin.c (CMD_Echo):
 	* fvwm/misc.c (fvwm_msg):
 	* fvwm/move_resize.c (CMD_SnapAttraction, CMD_SnapGrid):

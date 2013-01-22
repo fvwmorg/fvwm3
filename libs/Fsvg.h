@@ -31,7 +31,16 @@
 			rsvg_handle_get_dimensions(a, b)
 #	define Frsvg_handle_new_from_file(a, b)	rsvg_handle_new_from_file(a, b)
 #	define Frsvg_handle_render_cairo(a, b)	rsvg_handle_render_cairo(a, b)
+
+/* TA:  2013-01-22 -- rsvg_init() has been deprecated since version 2.36; but
+ * RSVG doesn't define a version of its own to check against.  Since RSVG uses
+ * glib, we can check its version instead.
+ */
+#if !GLIB_CHECK_VERSION (2, 31, 0)
 #	define Frsvg_init()			rsvg_init()
+#else
+#	define Frsvg_init()			g_type_init()
+#endif
 
 #	define Fcairo_create(a)			cairo_create(a)
 #	define Fcairo_destroy(a)		cairo_destroy(a)
