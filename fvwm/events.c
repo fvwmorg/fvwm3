@@ -3214,7 +3214,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	Bool has_icon_changed = False;
 	Bool has_icon_pixmap_hint_changed = False;
 	Bool has_icon_window_hint_changed = False;
-        /* NoName is an extern pointer to a constant "Unknown".
+        /* NoName is an extern pointer to a constant "Untitled".
            See lib/Flocale.c FlocaleFreeNameProperty
            to see how this initialization causes a problem: */
 	FlocaleNameString new_name = { NoName, NULL };

@@ -2365,7 +2365,7 @@ void FlocaleFreeNameProperty(FlocaleNameString *ptext)
                     NoName is a global extern I don't want to add to
                     to this libary module.
                     So, this check comes close enough: */
-                 && strcmp("Unknown",ptext->name) != 0)
+                 && strcmp("Untitled",ptext->name) != 0)
 	{
 		XFree(ptext->name);
 	}

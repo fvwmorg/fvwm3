@@ -1,3 +1,8 @@
+2013-01-23  Dan Espen  <despen@verizon.net>
+
+	* libs/Flocale.c (FlocaleFreeNameProperty): 
+	* fvwm/events.c (HandlePropertyNotify): Unknown->Untitled.
+
 2013-01-22  Thomas Adam <thomas@fvwm.org>
 	* libs/Fsvg.h:
 	Handle deprecation of rsvg_init()
