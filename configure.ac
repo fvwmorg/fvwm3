@@ -1666,7 +1666,7 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 
 #ifdef HAVE_X11_XKBLIB_H
 #include <X11/XKBlib.h>
-#define fvwm_KeycodeToKeysym(d, k, g, l) \
+#define fvwm_KeycodeToKeysym(d, k, l, g) \
 	(XkbKeycodeToKeysym((d), (k), (g), (l)))
 #else
 #define fvwm_KeycodeToKeysym(d, k, x, i) (XKeycodeToKeysym((d), (k), (i)))
