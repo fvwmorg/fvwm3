@@ -1669,7 +1669,7 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define fvwm_KeycodeToKeysym(d, k, g, l) \
 	(XkbKeycodeToKeysym((d), (k), (g), (l)))
 #else
-#define fvwm_KeycodeToKeysym(d, k, i, x) (XKeycodeToKeysym((d), (k), (i)))
+#define fvwm_KeycodeToKeysym(d, k, x, i) (XKeycodeToKeysym((d), (k), (i)))
 #endif
 
 ])
