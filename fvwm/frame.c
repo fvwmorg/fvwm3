@@ -1938,7 +1938,7 @@ void frame_free_move_resize_args(
 	}
 	update_absolute_geometry(fw);
 	frame_reparent_hide_windows(Scr.NoFocusWin);
-	if (mra->w_with_focus != None)
+	if (mra->w_with_focus != None && FP_IS_LENIENT(FW_FOCUS_POLICY(fw)))
 	{
 		/* domivogt (28-Dec-1999): For some reason the XMoveResize() on
 		 * the frame window removes the input focus from the client

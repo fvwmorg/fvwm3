@@ -1,3 +1,11 @@
+2013-02-04  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/frame.c (frame_free_move_resize_args):
+	Imply Lenience focus when trying to focus frame.
+
+	This works around a Java 7 issue were the frame window removes input
+	focus from the client window.  In such cases Lenience should be set
+	on that window anyway, so only do this when that is set.
+
 2013-02-03  Thomas Adam  <thomas@fvwm.org>
 	* configure.ac:
 	Swap order of arguments in fvwm_KeycodeToKeysym()
