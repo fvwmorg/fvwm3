@@ -3202,6 +3202,10 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
 	{
 		i = t->desk - desk1;
 	}
+
+	if (i < 0)
+		return;
+
 	Scr.balloon_desk = i;
 	/* get the label for this balloon */
 	if (Scr.balloon_label)
