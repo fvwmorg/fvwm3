@@ -1,3 +1,14 @@
+2013-02-21  Dan Espen  <despen@verizon.net>
+
+	* fvwm.ru.po:
+	* fvwm.ru.gmo:
+	* FvwmScript.ru.po:
+	* FvwmScript.ru.gmo:
+	* FvwmTaskBar.ru.po:
+	* FvwmTaskBar.ru.gmo: Add files for Russian language from Ivan Gayevskiy.
+	* README: Write new instructions for adding a language.
+	* Makefile.am (.po.gmo): Fix doing a gmo build outside fvwm srcdir.
+
 2012-08-23  Dan Espen  <despen@verizon.net>
 
 	* fvwm.pot: Combine "Restart fvwm" lines to remove duplicate.

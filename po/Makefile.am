@@ -47,7 +47,7 @@ SUFFIXES = .po .gmo .mo .sed .sin .nop .po-update
 .po.gmo:
 	@lang=`echo $* | sed -e 's,.*/,,'`; \
 	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	if test -f $${lang}.po; then \
+	if test -f $(srcdir)/$${lang}.po; then \
 	  echo "$${cdcmd}rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o $${lang}.gmo $${lang}.po"; \
 	  cd $(srcdir) && rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o t-$${lang}.gmo $${lang}.po && mv t-$${lang}.gmo $${lang}.gmo; \
 	fi

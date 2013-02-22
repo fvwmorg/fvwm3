@@ -83,3 +83,10 @@
     - Update $(POFILES): and update-po: in po/Makfile.am
       (todo: remove this step)
 
+* New instructions, Feb 19, 2013 (Dan Espen):
+    - Got .po files from contributor.
+    - Change configure.ac to add X to ALL_LINGUAS.
+    - Generate .gmo files by doing:
+      make fvwm.X.gmo FvwmScript.X.gmo FvwmTaskBar.X.gmo
+      where X is the language.
+
