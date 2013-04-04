@@ -709,7 +709,7 @@ Style "FvwmIconMan" HandleWidth 5, Handles, BorderWidth 5
 This example is the Reader's Digest version of my personal configuration. It
 has two managers, one for emacs and one for everything else, minus things with
 no icon title. Only windows on the current page are displayed. The use of the
-\fIdrawicons\fP and \fIshape\fP options requires that fvwm and FvwmIconMan we
+\fIdrawicons\fP and \fIshape\fP options requires that fvwm and FvwmIconMan are
 compiled with the correct options. Note how the geometry and show options are
 specified per manager, and the others are common to all:
 

@@ -1,3 +1,7 @@
+2013-04-04  Dan Espen  <despen@verizon.net>
+
+	* FvwmIconMan/FvwmIconMan.1.in: Grammar fix from scootch132@yahoo.com.
+
 2013-02-05  Thomas Adam  <thomas@fvwm.org>
 	* modules/FvwmPager/x_pager.c (MapBalloonWindow):
 	Don't let desks enter negative offsets.
