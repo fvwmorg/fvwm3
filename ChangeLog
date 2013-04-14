@@ -1,3 +1,7 @@
+2013-04-13  Dan Espen  <despen@verizon.net>
+
+	* fvwm/conditional.c (CMD_Test): Add support in EnvMatch for infostore variables.
+
 2013-02-21  Dan Espen  <despen@verizon.net>
 	* configure.ac (FVWM_PERLLIB): Add ru to ALL_LINGUAS.
 

@@ -71,8 +71,11 @@ The
 <fvwmopt cmd="Test" opt="EnvMatch"/> <emphasis>varname pattern</emphasis>
 test-condition is true if
 <emphasis remap='I'>pattern</emphasis>
-matches the given environment variable value.
-The pattern may contain special "*" and "?" chars.</para>
+matches the given environment or infostore variable value.
+(See <fvwmref cmd="InfoStoreAdd" />).
+The pattern may contain special "*" and "?" chars.
+The "varname" is coded without the leading dollar sign ($).
+</para>
 
 <para>The
 <fvwmopt cmd="Test" opt="EdgeHasPointer"/>
