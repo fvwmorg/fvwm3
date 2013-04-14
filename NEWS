@@ -7,6 +7,7 @@ Changes in 2.6.6 ()
 * New features:
   - FvwmForm supports separator lines.
   - Support for Russian from Ivan Gayevskiy.
+  - EnvMatch supports infostore variables.
 
 * Bug fixes:
   - Provide a wrapper for the deprecation of XKeycodeToKeysym and
