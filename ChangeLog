@@ -1,3 +1,9 @@
+2013-04-16  Thomas Adam <thomas@fvwm.org>
+	* fvwm/builtins.c (CMD_Echo):
+	Fix calling invocation of fvwm_msg().
+	* fvwm/misc.c (fvwm_msg):
+	Restructure message types and allow for variadic Echo.
+
 2013-04-13  Dan Espen  <despen@verizon.net>
 
 	* NEWS: Update for EnvMatch InfoStore.
