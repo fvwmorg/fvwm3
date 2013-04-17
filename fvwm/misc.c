@@ -394,6 +394,7 @@ void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 		{
 			sprintf(tmp + MAX_MODULE_INPUT_TEXT_LEN - 5, "...\n");
 		}
+		fprintf(stderr, "%s", tmp);
 		BroadcastName(M_ERROR, 0, 0, 0, tmp);
 	}
 	else

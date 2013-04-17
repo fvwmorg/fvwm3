@@ -1,3 +1,8 @@
+2013-04-17  Thomas Adam <thomas@fvwm.org>
+	* fvwm/misc.c (fvwm_msg):
+	Send ERROR statements to STDERR as well as broadcasting these to
+	modules.
+
 2013-04-16  Thomas Adam <thomas@fvwm.org>
 	* fvwm/builtins.c (CMD_Echo):
 	Fix calling invocation of fvwm_msg().
