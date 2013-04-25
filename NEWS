@@ -2,28 +2,30 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in 2.6.6 ()
+Changes in release 2.6.6 (not released yet)
 
-* New features:
+* Released features:
+
   - FvwmForm supports separator lines.
   - Support for Russian from Ivan Gayevskiy.
   - EnvMatch supports infostore variables.
 
 * Bug fixes:
+
   - Provide a wrapper for the deprecation of XKeycodeToKeysym and
     use XkbKeycodeToKeysym() where appropriate.
   - fvwm-desktop-menu is re-written and provides better support of
     the XDG menu specification.
 
 -------------------------------------------------------------------
-
--------------------------------------------------------------------
-Changes in 2.6.5 (20-Apr-2012)
+Changes in release 2.6.5 (20-Apr-2012)
 
 * New features:
+
   - FvwmPager now wraps window names if SmallFont is set.
 
 * Bug fixes:
+
   - Made signals registered with FVWM unblocking.
   - The "UnderMouse" option to PositionPlacement now honors the EWMH
     working area by default, if it's in use.
@@ -33,7 +35,7 @@ Changes in 2.6.5 (20-Apr-2012)
 Changes in stable release 2.6.4 (01-Feb-2012)
 
 * New features:
-  
+
   - FvwmIconMan no longer allows for itself to be transient by using:
 
     Module FvwmIconMan Transient
@@ -57,18 +59,18 @@ Changes in stable release 2.6.4 (01-Feb-2012)
     windows, such as with XEmbed, when changing the parent's
     geometry.
   - Conditional command processing of !Layer n, as in:
-    
+
         Next (Xteddy, !Layer 4) Echo cuddles
-    
+
     has now been fixed.
   - Fixed handling of swallowed windows for transient FvwmButtons'.
   - fvwm-menu-desktop now looks in /usr/share/applications for KDE
     legacy mode.
   - fvwm-config no longer accepts "--is-stable", "--is-released",
-	"--is-final".
+    "--is-final".
 
 -------------------------------------------------------------------
-Changes in stable release 2.6.3 (30-Sept-2011)
+Changes in stable release 2.6.3 (30-Sep-2011)
 
 * New features:
 
