@@ -2479,11 +2479,11 @@ Bool __move_loop(
 
 			xl -= XOffset;
 			yt -= YOffset;
-			
+
 			rc = HandlePaging(
 				&le, dx, dy, &xl, &yt, &delta_x, &delta_y,
 				False, False, True, fw->edge_delay_ms_move);
-				
+
 			/* Fake an event to force window reposition */
 			if (delta_x)
 			{

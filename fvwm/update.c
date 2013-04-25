@@ -608,7 +608,7 @@ static void apply_window_updates(
 			/* use layer from style */
 			layer = SGET_LAYER(*pstyle);
 		}
-		
+
 		/* Set the layer, and modify the stack ring. */
 		new_layer(t, layer);
 	}

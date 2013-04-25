@@ -364,7 +364,7 @@ void ewmh_ChangeProperty(
 		{
 			format = 8;
 		}
-	       
+
                 asize = atom_size(format);
                 if (
 		    format == 32 && asize * 8 != format &&

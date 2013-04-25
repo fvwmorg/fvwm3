@@ -20,7 +20,7 @@ typedef enum
 	C_ICON = 0x04,
 	C_ROOT = 0x08,
 	C_MENU = 0x10,
-	C_PLACEMENT = 0x20, 
+	C_PLACEMENT = 0x20,
 	C_L1 = 0x40,
 	C_R1 = 0x80,
 	C_L2 = 0x100,

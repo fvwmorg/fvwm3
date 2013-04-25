@@ -402,7 +402,7 @@ static pl_penalty_t __pl_position_get_pos_simple(
 			ret_p->y = (arg->screen_g.y + arg->screen_g.height) -
 				arg->place_fw->g.frame.height;
 		}
-	}		
+	}
 	/* Don't let the upper left corner be offscreen. */
 	if (ret_p->x < arg->screen_g.x)
 	{
@@ -1059,7 +1059,7 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 				if (ret->best_p.y + arg->place_g.height > arg->page_p2.y)
 				{
 					ret->best_p.y =
-						(arg->page_p2.y - 
+						(arg->page_p2.y -
 						arg->place_g.height -
 						b.total_size.height);
 

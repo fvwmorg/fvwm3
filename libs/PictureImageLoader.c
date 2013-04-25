@@ -465,7 +465,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	}
 
 	/* TA:  XXX:  (2011-02-14) -- Happy Valentines Day.
-	 * 
+	 *
 	 * png_get_color_type() defined in libpng 1.5 now hides a data member
 	 * to a struct:
 	 *

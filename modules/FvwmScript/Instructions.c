@@ -1450,7 +1450,7 @@ static void ChangeWindowTitle(int NbArg,long * TabArg){
 static void ChangeWindowTitleFromArg(int NbArg,long * TabArg){
 
   char *arg;
-  int argVal;  
+  int argVal;
   int tmpVal=NbArg-1;
 
   arg=CalcArg(TabArg,&tmpVal);

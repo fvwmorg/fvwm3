@@ -214,29 +214,29 @@ int run_command_file(
 	 *  - Otherwise, it's assumed to be in FVWM_USERDIR OR FVWM_DATADIR,
 	 *    whichever comes first.
 	 *
-	 * - If the file starts with "./" or "../" then try and 
-	 *   open the file exactly as specified which means 
+	 * - If the file starts with "./" or "../" then try and
+	 *   open the file exactly as specified which means
 	 *   things like:
 	 *
 	 *   ../.././foo is catered for.  At this point, we just try and open
 	 *   the specified file regardless.
 	 *
 	 *  - *Hidden* files in the CWD would have to be specified as:
-	 *    
+	 *
 	 *    ./.foo
 	 */
 	full_filename = filename;
-	
+
 	if (full_filename[0] == '/')
 	{
 		/* It's an absolute path */
 		f = fopen(full_filename,"r");
 	} else {
 		/* It's a relative path.  Check in either FVWM_USERDIR or
-		 * FVWM_DATADIR. 
+		 * FVWM_DATADIR.
 		 * */
 		full_filename = CatString3(fvwm_userdir, "/", filename);
-		
+
 		if((f = fopen(full_filename, "r")) == NULL)
 		{
 			full_filename = CatString3(

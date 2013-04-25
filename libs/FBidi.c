@@ -146,7 +146,7 @@ char *FBidiConvert(
 	*out_len = fribidi_unicode_to_charset(
 		fribidi_charset, visual_unicode_str, str_len, visual_str);
 
-	if (is_rtl != NULL && 
+	if (is_rtl != NULL &&
 		fribidi_get_bidi_type(*visual_unicode_str) == FRIBIDI_TYPE_RTL)
 	{
 		*is_rtl = True;

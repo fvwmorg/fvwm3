@@ -62,7 +62,7 @@
 #define FSM_Error			SM_Error
 #define FSM_RegisterClient 		SM_RegisterClient
 #define FSM_RegisterClientReply 	SM_RegisterClientReply
-#define FSM_SaveYourself 		SM_SaveYourself 
+#define FSM_SaveYourself 		SM_SaveYourself
 #define FSM_SaveYourselfRequest 	SM_SaveYourselfRequest
 #define FSM_InteractRequest 		SM_InteractRequest
 #define FSM_Interact 			SM_Interact
@@ -350,7 +350,7 @@ typedef SmcSaveYourselfPhase2Proc FSmcSaveYourselfPhase2Proc;
 typedef SmcInteractProc FSmcInteractProc;
 typedef SmcDieProc FSmcDieProc;
 typedef SmcShutdownCancelledProc  FSmcShutdownCancelledProc;
-typedef SmcSaveCompleteProc FSmcSaveCompleteProc; 
+typedef SmcSaveCompleteProc FSmcSaveCompleteProc;
 typedef SmcPropReplyProc FSmcPropReplyProc;
 
 typedef SmcCallbacks FSmcCallbacks;
@@ -727,7 +727,7 @@ typedef struct {
 #define FSmcInteractRequest(a,b,c,d) SmcInteractRequest(a,b,c,d)
 #define FSmcInteractDone(a,b) SmcInteractDone(a,b)
 #define FSmcRequestSaveYourself(a,b,c,d,e,f) SmcRequestSaveYourself(a,b,c,d,e,f)
-#define FSmcRequestSaveYourselfPhase2(a,b,c) SmcRequestSaveYourselfPhase2(a,b,c) 
+#define FSmcRequestSaveYourselfPhase2(a,b,c) SmcRequestSaveYourselfPhase2(a,b,c)
 #define FSmcSaveYourselfDone(a,b)  SmcSaveYourselfDone(a,b)
 #define FSmcProtocolVersion(a) SmcProtocolVersion(a)
 #define FSmcProtocolRevision(a) SmcProtocolRevision(a)
@@ -794,7 +794,7 @@ typedef struct {
 #define FSmcDeleteProperties(a,b,c)
 #define FSmcGetProperties(a,b,c) 0
 #define FSmcInteractRequest(a,b,c,d) 0
-#define FSmcInteractDone(a,b) 
+#define FSmcInteractDone(a,b)
 #define FSmcRequestSaveYourself(a,b,c,d,e,f)
 #define FSmcRequestSaveYourselfPhase2(a,b,c) 0
 #define FSmcSaveYourselfDone(a,b)
