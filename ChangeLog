@@ -1,5 +1,10 @@
 2013-04-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/module_interface.c (module_input_execute):
+	fix execflags not being used
+
+2013-04-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* fvwm/move_resize.c (CMD_Maximize):
 	introduce option "forget" to the Maximize command
 
