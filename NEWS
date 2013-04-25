@@ -18,6 +18,8 @@ Changes in release 2.6.6 (not released yet)
     use XkbKeycodeToKeysym() where appropriate.
   - fvwm-desktop-menu is re-written and provides better support of
     the XDG menu specification.
+  - FvwmIconMan had problems displaying the hilight colour on some
+    systems (64 bit issue?).
 
 -------------------------------------------------------------------
 Changes in release 2.6.5 (20-Apr-2012)
