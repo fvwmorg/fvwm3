@@ -17,7 +17,7 @@
 		><replaceable>flags</replaceable
 	></arg>
 	<arg choice='opt'
-		><replaceable>bool</replaceable
+		><replaceable>bool | forget</replaceable
 	></arg
 	><arg choice='opt'
 		><replaceable>horizontal</replaceable
@@ -39,6 +39,12 @@ its normal size.  To force a window into maximized (normal) state
 you can use a "<fvwmopt cmd="Maximize" opt="True"/>" or "<fvwmopt cmd="Maximize" opt="False"/>" value for the
 <replaceable>bool</replaceable>
 argument.</para>
+
+<para>With just the parameter "forget" a maximized window reverts
+back into normal state but keeps its current maximized size.  This
+can be useful in conjunction with the commands <fvwmopt
+cmd="ResizeMaximize"/> and <fvwmopt cmd="ResizeMoveMaximize"/>.  If
+the window is not maximized, nothing happens.</para>
 
 <para>With the optional arguments
 <replaceable>horizontal</replaceable> and <replaceable>vertical</replaceable>,

@@ -4722,6 +4722,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	Bool grow_left = False;
 	Bool grow_right = False;
 	Bool do_force_maximize = False;
+	Bool do_forget = False;
 	Bool is_screen_given = False;
 	Bool ignore_working_area = False;
 	int layers[2] = { -1, -1 };
@@ -4833,7 +4834,12 @@ void CMD_Maximize(F_CMD_ARGS)
 	/* parse first parameter */
 	val1_unit = scr_w;
 	token = PeekToken(action, &taction);
-	if (token && StrEquals(token, "grow"))
+	if (token && StrEquals(token, "forget"))
+	{
+		do_forget = True;
+		do_force_maximize = True;
+	}
+	else if (token && StrEquals(token, "grow"))
 	{
 		grow_left = True;
 		grow_right = True;
@@ -4876,7 +4882,11 @@ void CMD_Maximize(F_CMD_ARGS)
 	/* parse second parameter */
 	val2_unit = scr_h;
 	token = PeekToken(taction, NULL);
-	if (token && StrEquals(token, "grow"))
+	if (do_forget == True)
+	{
+		/* nop */
+	}
+	else if (token && StrEquals(token, "grow"))
 	{
 		grow_up = True;
 		grow_down = True;
@@ -4921,7 +4931,12 @@ void CMD_Maximize(F_CMD_ARGS)
 		page_x, page_y, scr_x, scr_y, scr_w, scr_h);
 #endif
 
-	if (IS_MAXIMIZED(fw) && !do_force_maximize)
+	if (do_forget == True && IS_MAXIMIZED(fw))
+	{
+		fw->g.normal = fw->g.max;
+		unmaximize_fvwm_window(fw);
+	}
+	else if (IS_MAXIMIZED(fw) && !do_force_maximize)
 	{
 		unmaximize_fvwm_window(fw);
 	}
