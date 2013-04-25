@@ -232,8 +232,11 @@ int main ( int argc, char *argv[])
 
     if ((f = fopen (s,"r" )) != NULL)
     {
+      char *p;
+
       *cmd = 0;
-      fgets(cmd, 20, f);
+      p = fgets(cmd, 20, f);
+      (void)p;
       fclose(f);
       fprintf (stderr, "\nFvwmCommand lock file %sR is detected. "
 	       "This may indicate another FvwmCommand is running. "
@@ -254,15 +257,20 @@ int main ( int argc, char *argv[])
 
   if( Opt_Serv )
   {
+    int n;
+
     sprintf (cmd,"%s '%sS %s'", argv[0], MYNAME, sf_stem);
-    system (cmd);
+    n = system (cmd);
+    (void)n;
   }
 
   {
     char buf[64];
+    int n;
 
     sprintf(buf, "%d\n", (int)getpid());
-    write(Fdrun, buf, strlen(buf));
+    n = write(Fdrun, buf, strlen(buf));
+    (void)n;
     close(Fdrun);
   }
 
@@ -437,7 +445,10 @@ void sendit( char *cmd )
     }
     if( clen != 1 )
     {
-      write( Fdw, cmd, clen );
+      int n;
+
+      n = write( Fdw, cmd, clen );
+      (void)n;
     }
   }
 }

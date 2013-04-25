@@ -1,3 +1,22 @@
+2013-04-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmScript/Instructions.c (Exec, FuncGetOutput, LaunchScript)
+	(FuncSendMsgAndGet, Equal, Diff):
+	* FvwmProxy/FvwmProxy.c (GetParentProcessId):
+	* FvwmIconMan/debug.c (ConsoleMessage):
+	* FvwmIconBox/FvwmIconBox.c (MySendFvwmPipe):
+	* FvwmForm/FvwmForm.c (TimerHandler, DoCommand):
+	* FvwmCommand/FvwmCommandS.c (open_fifos):
+	* FvwmCommand/FvwmCommand.c (main, sendit):
+	* FvwmButtons/parse.c (ParseConfigFile):
+	fix warnings about ignored function return code
+
+	* FvwmIconMan/functions.c (builtin_print):
+	remove unused variable
+
+	* FvwmForm/FvwmForm.c (RedrawSeparator):
+	fix pointer format in fprintf
+
 2013-04-04  Dan Espen  <despen@verizon.net>
 
 	* FvwmIconMan/FvwmIconMan.1.in: Grammar fix from scootch132@yahoo.com.

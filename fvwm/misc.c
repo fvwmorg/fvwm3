@@ -403,7 +403,12 @@ void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 				time_str, fvwm_id, id, fvwm_msg_strings[(int)type]);
 
 		va_start(args, msg);
-		asprintf(&mfmt, "%s\n", msg);
+		{
+			int n;
+
+			n = asprintf(&mfmt, "%s\n", msg);
+			(void)n;
+		}
 		vfprintf(stderr, mfmt, args);
 		va_end(args);
 		free(mfmt);

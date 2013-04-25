@@ -1,3 +1,11 @@
+2013-04-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/misc.c (fvwm_msg):
+	* libs/fsm.c (FreeAuthenticationData, SetAuthentication):
+	* libs/Module.c (SendText):
+	* libs/PictureImageLoader.c (PImageLoadPng):
+	fix warnings about ignored function return code
+
 2013-04-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/module_interface.c (module_input_execute):

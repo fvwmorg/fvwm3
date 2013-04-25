@@ -398,7 +398,10 @@ int open_fifos(const char *f_stem)
    * there is no need to wait before creating our own */
   if (FfdC > 0)
   {
-    write(FfdC, bugger_off, strlen(bugger_off));
+    int n;
+
+    n = write(FfdC, bugger_off, strlen(bugger_off));
+    (void)n;
     close(FfdC);
   }
 

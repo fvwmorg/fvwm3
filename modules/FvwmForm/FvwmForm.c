@@ -1639,7 +1639,7 @@ static void RedrawSeparator(Item *item)
     XDrawLine(dpy, item->header.win,item->header.dt_ptr->dt_item_GC, 0, 1, item->header.size_x, 1);
 
   } else {
-    fprintf(stderr,"%s: Separators, no colors %8.8X\n",module->name,(int)item->header.dt_ptr);
+    fprintf(stderr,"%s: Separators, no colors %p\n",module->name,item->header.dt_ptr);
   }
   return;
 }
@@ -2095,7 +2095,10 @@ void DoCommand (Item *cmd)
 
     /* send command */
     if ( parsed_command[0] == '!') {	/* If command starts with ! */
-      system(parsed_command+1);		/* Need synchronous execution */
+      int n;
+
+      n = system(parsed_command+1);		/* Need synchronous execution */
+      (void)n;
     } else {
       SendText(Channel,parsed_command, ref);
     }
@@ -2632,7 +2635,10 @@ TimerHandler(int sig)
 
     /* send command */
     if ( parsed_command[0] == '!') {	/* If command starts with ! */
-      system(parsed_command+1);		/* Need synchronous execution */
+      int n;
+
+      n = system(parsed_command+1);		/* Need synchronous execution */
+      (void)n;
     } else {
       SendText(Channel,parsed_command, ref);
     }

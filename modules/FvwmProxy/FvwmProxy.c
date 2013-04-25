@@ -1063,7 +1063,11 @@ static int GetParentProcessId(int pid)
 	{
 		return 0;
 	}
-	(void)fread(resultBuffer,32,1,statusfile);
+	{
+		int n;
+		n = fread(resultBuffer,32,1,statusfile);
+		(void)n;
+	}
 	sscanf(resultBuffer,"%*d %*[^)]) %*s %d",&ppid);
 	fclose(statusfile);
 	return ppid;

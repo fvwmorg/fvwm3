@@ -45,7 +45,12 @@ ConsoleMessage(const char *fmt, ...)
 	fputs("FvwmIconMan: ", console);
 
 	va_start(args, fmt);
-	asprintf(&mfmt, "%s\n", fmt);
+	{
+		int n;
+
+		n = asprintf(&mfmt, "%s\n", fmt);
+		(void)n;
+	}
 	vfprintf(console, mfmt, args);
 	va_end(args);
 	free(mfmt);

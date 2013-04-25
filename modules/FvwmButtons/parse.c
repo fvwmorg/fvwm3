@@ -1962,7 +1962,10 @@ static void ParseConfigFile(button_info *ub)
 		while ((l = strlen(s)) < sizeof(s)
 			&& l >= 2 && s[l - 1] == '\n' && s[l - 2] == '\\')
 		{
-			fgets(s + l - 2, sizeof(s) - l, f);
+			char *p;
+
+			p = fgets(s + l - 2, sizeof(s) - l, f);
+			(void)p;
 		}
 
 		/* And comments: */

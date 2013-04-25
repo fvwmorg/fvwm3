@@ -110,8 +110,11 @@ static int InfEq(char *arg1,char *arg2)
 
 static int Equal(char *arg1,char *arg2)
 {
-  (void)atoi(arg1);
-  (void)atoi(arg2);
+  int n;
+
+  n = atoi(arg1);
+  n = atoi(arg2);
+  (void)n;
   return (strcmp(arg1,arg2)==0);
 }
 
@@ -133,8 +136,11 @@ static int Sup(char *arg1,char *arg2)
 
 static int Diff(char *arg1,char *arg2)
 {
-  (void)atoi(arg1);
-  (void)atoi(arg2);
+  int n;
+
+  n = atoi(arg1);
+  n = atoi(arg2);
+  (void)n;
   return (strcmp(arg1,arg2)!=0);
 }
 
@@ -347,10 +353,13 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
     }
     else
     {
+      int n;
+
       if (strcmp(Command,"None"))
 	free(BufCom);
       BufCom = (char*)safecalloc(sizeof(char),maxsize);
-      fread(BufCom,1,maxsize,f);
+      n = fread(BufCom,1,maxsize,f);
+      (void)n;
       pclose(f);
       strncpy(Command,cmndbuf,255);
       TimeCom=time(NULL);
@@ -620,12 +629,17 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   free(arg);
 
   /* Envoi de la commande */
-  write(fd[0], &ref, sizeof(Window));
-  leng = strlen(execstr);
-  write(fd[0], &leng, sizeof(unsigned long));
-  write(fd[0], execstr, leng);
-  leng = 1;
-  write(fd[0], &leng, sizeof(unsigned long));
+  {
+    int n;
+
+    n = write(fd[0], &ref, sizeof(Window));
+    (void)n;
+    leng = strlen(execstr);
+    n = write(fd[0], &leng, sizeof(unsigned long));
+    n = write(fd[0], execstr, leng);
+    leng = 1;
+    n = write(fd[0], &leng, sizeof(unsigned long));
+  }
   free(execstr);
 
   /* Retourne l'id du fils */
@@ -869,8 +883,11 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
     {
       if ((f = fopen (out_fifo, "r")) != NULL)
       {
+	int n;
+
 	buf=(char*)safecalloc(sizeof(char),maxsize);
-	fread(buf,1,maxsize,f);
+	n = fread(buf,1,maxsize,f);
+	(void)n;
 	fclose (f);
       }
       else
@@ -1014,12 +1031,17 @@ static void Exec (int NbArg,long *TabArg)
     free(tempstr);
   }
 
-  write(fd[0], &ref, sizeof(Window));
-  leng = strlen(execstr);
-  write(fd[0], &leng, sizeof(unsigned long));
-  write(fd[0], execstr, leng);
-  leng = 1;
-  write(fd[0], &leng, sizeof(unsigned long));
+  {
+    int n;
+
+    n = write(fd[0], &ref, sizeof(Window));
+    (void)n;
+    leng = strlen(execstr);
+    n = write(fd[0], &leng, sizeof(unsigned long));
+    n = write(fd[0], execstr, leng);
+    leng = 1;
+    n = write(fd[0], &leng, sizeof(unsigned long));
+  }
   free(execstr);
 }
 
