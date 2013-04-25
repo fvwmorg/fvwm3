@@ -31,7 +31,7 @@
 
 2013-01-23  Dan Espen  <despen@verizon.net>
 
-	* libs/Flocale.c (FlocaleFreeNameProperty): 
+	* libs/Flocale.c (FlocaleFreeNameProperty):
 	* fvwm/events.c (HandlePropertyNotify): Unknown->Untitled.
 
 2013-01-22  Thomas Adam <thomas@fvwm.org>
@@ -201,7 +201,7 @@
 
 	This inserts the window's icon name. There are some applications
 	that update only their icon name, not their title.
-	
+
 2011-09-10  Thomas Adam <thomas@fvwm.org>
 	* fvwm/ewmh.c (ewmh_HandleNotification):
 	* fvwm/ewmh_intern.h:
@@ -264,7 +264,7 @@
 
 	* fvwm/move_resize.c (GetResizeArguments):
 	Add "automatic" option to resize arguments
-	
+
 	Both the "direction" and "warptoborder" sub-commands of Resize, can now
 	optionally accept the option "automatic" which will attempt to work out
 	which region of the window the pointer is in, and set the direction based on
@@ -272,7 +272,7 @@
 
 	* fvwm/move_resize.c (__resize_get_dir_from_resize_quadrant):
 	Introduce __resize_get_dir_from_resize_quadrant()
-	
+
 	In order to work out the direction to warp the pointer to automatically, as
 	well as setting the direction automatically, this helper function will
 	return the direction the pointer is in, based on the quadrant of the window.
@@ -459,7 +459,7 @@
 2011-02-05  Thomas Adam  <thomas@fvwm.org>
 	* acinclude.m4:
 	Fix DSO linker error (ld) with missing "-lfontconfig" for fontconfig
-	
+
 	Stricter DSO checks with newer Libc versions requires the linker find
 	the symbols elsewhere.  The only one that's missing is "-lfontconfig" as
 	we already supply -lX11 -lXent elsewhere.
@@ -18480,7 +18480,7 @@
 
 	This inserts the window's icon name. There are some applications
 	that update only their icon name, not their title.
-	
+
 2011-09-10  Thomas Adam <thomas@fvwm.org>
 	* fvwm/ewmh.c (ewmh_HandleNotification):
 	* fvwm/ewmh_intern.h:
@@ -18543,7 +18543,7 @@
 
 	* fvwm/move_resize.c (GetResizeArguments):
 	Add "automatic" option to resize arguments
-	
+
 	Both the "direction" and "warptoborder" sub-commands of Resize, can now
 	optionally accept the option "automatic" which will attempt to work out
 	which region of the window the pointer is in, and set the direction based on
@@ -18551,7 +18551,7 @@
 
 	* fvwm/move_resize.c (__resize_get_dir_from_resize_quadrant):
 	Introduce __resize_get_dir_from_resize_quadrant()
-	
+
 	In order to work out the direction to warp the pointer to automatically, as
 	well as setting the direction automatically, this helper function will
 	return the direction the pointer is in, based on the quadrant of the window.
@@ -18738,7 +18738,7 @@
 2011-02-05  Thomas Adam  <thomas@fvwm.org>
 	* acinclude.m4:
 	Fix DSO linker error (ld) with missing "-lfontconfig" for fontconfig
-	
+
 	Stricter DSO checks with newer Libc versions requires the linker find
 	the symbols elsewhere.  The only one that's missing is "-lfontconfig" as
 	we already supply -lX11 -lXent elsewhere.
