@@ -1272,7 +1272,7 @@ AC_ARG_ENABLE(perllib,
 AC_SUBST(FVWM_PERLLIB)
 
 # ******* gettext
-ALL_LINGUAS="ar de fr sv_SE zh_CN ru"
+ALL_LINGUAS="ar de fr sv_SE zh_CN ru es"
 FVWM_DOMAIN="fvwm"
 FVWMTASKBAR_DOMAIN="FvwmTaskBar"
 FVWMSCRIPT_DOMAIN="FvwmScript"

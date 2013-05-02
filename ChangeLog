@@ -1,3 +1,7 @@
+2013-05-01  Dan Espen  <despen@verizon.net>
+
+	* configure.ac (FVWM_PERLLIB): Add es to ALL_LINGUAS.
+
 2013-04-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/misc.c (fvwm_msg):

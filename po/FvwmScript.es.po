@@ -1,0 +1,224 @@
+# Spanish translations for fvwm package
+# Copyright (C) 2013 fvwm workers
+# This file is distributed under the same license as the PACKAGE package.
+# Adonai Martin <adonai.martin@gmail.com>, 2013.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"POT-Creation-Date: 2002-11-28 14:23+0100\n"
+"PO-Revision-Date: 2013-03-11 17:20+0200\n"
+"Last-Translator: Adonai Martin <adonai.martin@gmail.com>\n"
+"Language-Team: Spanish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 2
+msgid "Bell Setup"
+msgstr "Configuración de Sonido"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 44
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 43
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 47
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 132
+msgid "Apply"
+msgstr "Aplicar"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 62
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 62
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 66
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 170
+msgid "Save"
+msgstr "Guardar"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 80
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 89
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 94
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 235
+msgid "Quit"
+msgstr "Cerrar"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 95
+msgid "Beep"
+msgstr "Pitido"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 130
+msgid "Volume:"
+msgstr "Volumen:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 156
+msgid "Pitch(Hz):"
+msgstr "Tono(Hz)"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 182
+msgid "Duration(ms):"
+msgstr "Duración(ms)"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 207
+msgid "Bell"
+msgstr "Sonido"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 2
+msgid "Keyboard Setup"
+msgstr "Configuración de Teclado"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 120
+msgid "Click Volume (%)"
+msgstr "Click Volumen (%)"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 133
+msgid "AutoRepeat On"
+msgstr "AutoRepetición On"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 159
+msgid "Start Delay:  "
+msgstr "Retardo de Inicio: "
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 185
+msgid "Repeat Delay:"
+msgstr "Retardo de Repetición:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 210
+msgid "Keyboard"
+msgstr "Teclado"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 2
+msgid "Pointer Setup"
+msgstr "Configuración de Puntero"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 108
+msgid "Right-handed user|Left-handed user"
+msgstr "Usuario diestro| Usuario zurdo"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 122
+msgid "Mouse configuration:"
+msgstr "Configuración de Ratón:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 150
+msgid "Acceleration:"
+msgstr "Aceleración:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 177
+msgid "Threshold (pixels):"
+msgstr "Umbral (píxeles):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 202
+msgid "Pointer"
+msgstr "Puntero"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 2
+msgid "Screen Setup"
+msgstr "Configuración de Pantalla"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 264
+msgid "Background"
+msgstr "Tapiz"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 279
+msgid "Uniform color:"
+msgstr "Color uniforme:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 394
+msgid "Pixmap:"
+msgstr "Mapa de píxeles"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 425
+msgid "Browser..."
+msgstr "Navegar..."
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 468
+msgid "Disable xinit background"
+msgstr "Deshabilitar fondo xinit"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 500
+msgid "Screen-saver"
+msgstr "Protector de Pantalla"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 514
+msgid "Blank"
+msgstr "Vacío"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 528
+msgid "Timeout(s):"
+msgstr "Tiempo de espera():"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 554
+msgid "Pattern"
+msgstr "Patrón"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 569
+msgid "Cycle(s):"
+msgstr "Ciclo(s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 614
+msgid "DPMS"
+msgstr "DPMS"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 628
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 768
+msgid "Enable"
+msgstr "Habilitar"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 643
+msgid "Disable"
+msgstr "Deshabilitar"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 657
+msgid "Standby(s):"
+msgstr "Espera(s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 684
+msgid "Suspend(s):"
+msgstr "Suspendido(s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 711
+msgid "Off(s):"
+msgstr "Off(s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 754
+msgid "xscreensaver"
+msgstr "xscreensaver"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 794
+msgid "Config and Demo"
+msgstr "Configuración y Demo"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 2
+msgid "File Browser"
+msgstr "Navegación de Archivos"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 42
+msgid "OK"
+msgstr "OK"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 58
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 86
+msgid "Path:"
+msgstr "Ruta:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 181
+msgid " Show hidden files"
+msgstr " Mostrar archivos ocultos"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 246
+msgid "Selected file:"
+msgstr "Archivo seleccionado:"

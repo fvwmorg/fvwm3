@@ -1,3 +1,13 @@
+2013-05-01  Dan Espen  <despen@verizon.net>
+
+	* fvwm.es.po:
+	* fvwm.es.gmo:
+	* FvwmScript.es.po:
+	* FvwmScript.es.gmo:
+	* FvwmTaskBar.es.po:
+	* FvwmTaskBar.es.gmo: Add files for Russian language from Thomas Funk.
+	Proof read, Jesús J. Guerrero Botella, author Adonai Martin.
+
 2013-02-21  Dan Espen  <despen@verizon.net>
 
 	* fvwm.ru.po:

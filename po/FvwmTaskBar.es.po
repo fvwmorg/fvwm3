@@ -1,0 +1,32 @@
+# Spanish translations for fvwm package
+# Copyright (C) 2013 fvwm workers
+# This file is distributed under the same license as the PACKAGE package.
+# Adonai Martin <adonai.martin@gmail.com>, 2013.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"POT-Creation-Date: 2003-04-11 12:43+0200\n"
+"PO-Revision-Date: 2013-03-11 17:20+0200\n"
+"Last-Translator: Adonai Martin <adonai.martin@gmail.com>\n"
+"Language-Team: Spanish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../modules/FvwmTaskBar/Goodies.c:462
+msgid "No new mail"
+msgstr "Ningún correo nuevo"
+
+#: ../modules/FvwmTaskBar/Goodies.c:466
+msgid "You have new mail"
+msgstr "Tiene un correo nuevo"
+
+#: ../modules/FvwmTaskBar/Goodies.c:470
+msgid "You have mail"
+msgstr "Tiene un correo"
+
+#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1320
+msgid "Click here to start"
+msgstr "Pulse aquí para empezar"
