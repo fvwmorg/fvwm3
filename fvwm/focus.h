@@ -9,9 +9,8 @@
 
 /* ---------------------------- global macros ------------------------------ */
 
-#define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, CurrentTime)
-#define FOCUS_RESET() \
-	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime)
+#define FOCUS_SET(w, fw) _focus_set(w, fw)
+#define FOCUS_RESET() _focus_reset()
 
 #define SetFocusWindow(a, b, c) _SetFocusWindow(a, b, c, False);
 #define SetFocusWindowClientEntered(a, b, c) _SetFocusWindow(a, b, c, True);
@@ -27,6 +26,14 @@
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- interface functions ------------------------ */
+
+/*
+ * Triggers X protocol actions to set the focus to the given window.  It also
+ * stores the FvwmWindow pointer to indicate that fvwm requested focus for that
+ * FvwmWindow, not the application itself or someone else.
+ */
+void _focus_set(Window w, FvwmWindow *fw);
+void _focus_reset(void);
 
 /*
  *

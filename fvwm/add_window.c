@@ -780,13 +780,18 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 	update_last_screen_focus_window(fw);
 	restore_focus_after_unmap(fw, False);
 	frame_destroyed_frame(FW_W(fw));
-	if (FW_W(fw) == Scr.StolenFocusWin)
+	if (fw == Scr.StolenFocusFvwmWin)
 	{
 		Scr.StolenFocusWin = None;
+		Scr.StolenFocusFvwmWin = NULL;
 	}
 	if (Scr.focus_in_pending_window == fw)
 	{
 		Scr.focus_in_pending_window = NULL;
+	}
+	if (Scr.focus_in_requested_window == fw)
+	{
+		Scr.focus_in_requested_window = NULL;
 	}
 	if (Scr.cascade_window == fw)
 	{

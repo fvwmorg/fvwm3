@@ -111,6 +111,8 @@
 
 #define CR_MOVERESIZE_MASK (CWX | CWY | CWWidth | CWHeight | CWBorderWidth)
 
+#define DEBUG_GLOBALLY_ACTIVE 1
+
 /* ---------------------------- local macros ------------------------------- */
 
 /* ---------------------------- imports ------------------------------------ */
@@ -1717,11 +1719,12 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 /* restore focus stolen by unmanaged */
 static void __refocus_stolen_focus_win(const evh_args_t *ea)
 {
-	FOCUS_SET(Scr.StolenFocusWin);
+	FOCUS_SET(Scr.StolenFocusWin, Scr.StolenFocusFvwmWin);
 	ea->exc->x.etrigger->xfocus.window = Scr.StolenFocusWin;
 	ea->exc->x.etrigger->type = FocusIn;
 	Scr.UnknownWinFocused = None;
 	Scr.StolenFocusWin = None;
+	Scr.StolenFocusFvwmWin = NULL;
 	dispatch_event(ea->exc->x.etrigger);
 
 	return;
@@ -2131,7 +2134,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		}
 		else if (
 			Scr.UnknownWinFocused != None && sf != NULL &&
-			FW_W(sf) == Scr.StolenFocusWin)
+			sf == Scr.StolenFocusFvwmWin)
 		{
 			__refocus_stolen_focus_win(ea);
 		}
@@ -2156,7 +2159,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		if (
 			Scr.UnknownWinFocused != None &&
 			(sf = get_focus_window()) != NULL &&
-			FW_W(sf) == Scr.StolenFocusWin)
+			sf == Scr.StolenFocusFvwmWin)
 		{
 			__refocus_stolen_focus_win(ea);
 		}
@@ -2267,7 +2270,7 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 	}
 	if (
 		Scr.UnknownWinFocused != None && sf != NULL &&
-		FW_W(sf) == Scr.StolenFocusWin)
+		sf == Scr.StolenFocusFvwmWin)
 	{
 			__refocus_stolen_focus_win(ea);
 	}
@@ -2375,6 +2378,29 @@ void HandleFocusIn(const evh_args_t *ea)
 	}
 
 	Scr.UnknownWinFocused = None;
+	if (
+		fw && Scr.focus_in_requested_window != fw &&
+		!FP_DO_FOCUS_BY_PROGRAM(FW_FOCUS_POLICY(fw)) &&
+		fw->focus_model == FM_GLOBALLY_ACTIVE)
+	{
+		if (DEBUG_GLOBALLY_ACTIVE)
+		{
+			fprintf(
+				stderr, "prevented globally active fw %p (%s)"
+				" from stealing the focus\n", fw,
+				fw->name.name);
+			fprintf(
+				stderr, "window was %p (%s)\n",
+				Scr.focus_in_pending_window,
+				Scr.focus_in_pending_window ?
+				Scr.focus_in_pending_window->name.name : "");
+		}
+		Scr.focus_in_requested_window = NULL;
+		__refocus_stolen_focus_win(ea);
+
+		return;
+	}
+	Scr.focus_in_pending_window = NULL;
 	if (!fw)
 	{
 		if (w != Scr.NoFocusWin)
@@ -2382,6 +2408,7 @@ void HandleFocusIn(const evh_args_t *ea)
 			Scr.UnknownWinFocused = w;
 			Scr.StolenFocusWin =
 				(ffw_old != NULL) ? FW_W(ffw_old) : None;
+			Scr.StolenFocusFvwmWin = ffw_old;
 			focus_w = w;
 			is_unmanaged_focused = True;
 		}
@@ -2420,6 +2447,12 @@ void HandleFocusIn(const evh_args_t *ea)
 		 IS_FOCUS_CHANGE_BROADCAST_PENDING(fw) ||
 		 fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)))
 	{
+		if (w != Scr.NoFocusWin)
+		{
+			Scr.StolenFocusWin = (ffw_old != NULL) ?
+				FW_W(ffw_old) : None;
+			Scr.StolenFocusFvwmWin = ffw_old;
+		}
 		do_force_broadcast = IS_FOCUS_CHANGE_BROADCAST_PENDING(fw);
 		SET_FOCUS_CHANGE_BROADCAST_PENDING(fw, 0);
 		if (fw != Scr.Hilite &&

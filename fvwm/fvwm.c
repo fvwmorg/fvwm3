@@ -2412,7 +2412,7 @@ int main(int argc, char **argv)
 		CWBackPixmap | CWBorderPixel | CWCursor, &attributes);
 	XMapWindow(dpy, Scr.NoFocusWin);
 	SetMWM_INFO(Scr.NoFocusWin);
-	FOCUS_SET(Scr.NoFocusWin);
+	FOCUS_SET(Scr.NoFocusWin, NULL);
 
 	frame_init();
 	XFlush(dpy);

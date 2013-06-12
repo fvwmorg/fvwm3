@@ -1944,7 +1944,7 @@ void frame_free_move_resize_args(
 		 * the frame window removes the input focus from the client
 		 * window.  I have no idea why, but if we explicitly restore
 		 * the focus here everything works fine. */
-		FOCUS_SET(mra->w_with_focus);
+		FOCUS_SET(mra->w_with_focus, fw);
 	}
 	if (mra->flags.do_update_shape)
 	{

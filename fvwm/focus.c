@@ -84,6 +84,24 @@ static FvwmWindow *LastScreenFocus = NULL;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
+/* ---------------------------- interface functions ------------------------ */
+
+void _focus_set(Window w, FvwmWindow *fw)
+{
+	Scr.focus_in_requested_window = fw;
+	XSetInputFocus(dpy, w, RevertToParent, CurrentTime);
+
+	return;
+}
+
+void _focus_reset(void)
+{
+	Scr.focus_in_requested_window = NULL;
+	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+
+	return;
+}
+
 /* ---------------------------- local functions ---------------------------- */
 
 static Bool focus_get_fpol_context_flag(
@@ -310,7 +328,7 @@ static void __set_focus_to_fwin(
 	sf = get_focus_window();
 	if (fw == NULL)
 	{
-		FOCUS_SET(Scr.NoFocusWin);
+		FOCUS_SET(Scr.NoFocusWin, NULL);
 		set_focus_window(NULL);
 		Scr.UnknownWinFocused = None;
 		XFlush(dpy);
@@ -336,7 +354,7 @@ static void __set_focus_to_fwin(
 
 	if (FP_IS_LENIENT(FW_FOCUS_POLICY(fw)))
 	{
-		FOCUS_SET(w);
+		FOCUS_SET(w, fw);
 		set_focus_window(fw);
 		if (args->do_allow_force_broadcast)
 		{
@@ -352,10 +370,10 @@ static void __set_focus_to_fwin(
 			/* Without this FocusIn is not generated on the
 			 * window if it was focuesed when the unmanaged
 			 * window took focus. */
-			FOCUS_SET(Scr.NoFocusWin);
+			FOCUS_SET(Scr.NoFocusWin, NULL);
 
 		}
-		FOCUS_SET(w);
+		FOCUS_SET(w, fw);
 		set_focus_window(fw);
 		if (fw)
 		{
@@ -372,7 +390,7 @@ static void __set_focus_to_fwin(
 	}
 	else
 	{
-		FOCUS_SET(Scr.NoFocusWin);
+		FOCUS_SET(Scr.NoFocusWin, NULL);
 		set_focus_window(NULL);
 	}
 	XFlush(dpy);
@@ -1134,7 +1152,7 @@ void focus_force_refresh_focus(const FvwmWindow *fw)
 		XSelectInput(
 			dpy, FW_W(fw),
 			winattrs.your_event_mask & ~FocusChangeMask);
-		FOCUS_SET(FW_W(fw));
+		FOCUS_SET(FW_W(fw), NULL /* we don't expect an event */);
 		XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
 	}
 	MyXUngrabServer(dpy);
