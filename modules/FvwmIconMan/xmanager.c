@@ -1962,7 +1962,7 @@ void draw_manager(WinManager *man)
   if (!man->window_up)
     return;
   ConsoleDebug(X11, "Drawing Manager: %s\n", man->titlename);
-  redraw_all = man->dirty_flags & REDRAW_MANAGER;
+  redraw_all = (man->dirty_flags & REDRAW_MANAGER);
 
   if (!man->flags.is_shaded && man->flags.needs_resize_after_unshade) {
     ConsoleDebug(X11, "\tresizing manager\n");
@@ -2473,7 +2473,7 @@ void man_exposed(WinManager *man, XEvent *theEvent)
 				bp[i]->drawn_state.ex = max(r1.x,r2.x);
 				bp[i]->drawn_state.ey = max(r1.y,r2.y);
 				bp[i]->drawn_state.ew =
-					min(r1.x+r1.width,r2.x+r2.width) - 
+					min(r1.x+r1.width,r2.x+r2.width) -
 						max(r1.x,r2.x);
 				bp[i]->drawn_state.eh =
 					min(r1.y+r1.height, r2.y+r2.height) -
