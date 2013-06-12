@@ -962,6 +962,8 @@ void create_manager_window (int man_id)
 		  man->backContext[i] =
 			  fvwmlib_XCreateGC(
 				  theDisplay, man->theWindow, gcmask, &gcval);
+		  XSetForeground (
+			  theDisplay, man->backContext[i], man->backcolor[i]);
 		  XSetLineAttributes (
 			  theDisplay, man->backContext[i], line_width,
 			  line_style, cap_style,
@@ -1071,8 +1073,6 @@ void recreate_background(WinManager *man, Contexts i)
 	if ((i == DEFAULT && Colorset[cset].pixmap) ||
 	    (CSET_IS_TRANSPARENT(cset) && !CSET_IS_TRANSPARENT_PR_TINT(cset)))
 	{
-		XSetForeground(
-			theDisplay, man->backContext[i], man->backcolor[i]);
 		man->pixmap[i] =
 			CreateBackgroundPixmap(
 				theDisplay, man->theWindow,
@@ -1089,8 +1089,6 @@ void recreate_background(WinManager *man, Contexts i)
 	}
 	else if (Colorset[cset].pixmap && !CSET_IS_TRANSPARENT_PR_TINT(cset))
 	{
-		XSetForeground(
-			theDisplay, man->backContext[i], man->backcolor[i]);
 		man->pixmap[i] =
 			CreateBackgroundPixmap(
 				theDisplay, man->theWindow,
@@ -1104,11 +1102,6 @@ void recreate_background(WinManager *man, Contexts i)
 	{
 		XSetTile(theDisplay, man->backContext[i], None);
 		XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
-		/* domivogt (05-Mar-2013): On _some_ systems it seems to be
-		 * necessary to set the foregroung colour _after_ resetting the
-		 * tile pixmap. */
-		XSetForeground(
-			theDisplay, man->backContext[i], man->backcolor[i]);
 		if (i == DEFAULT)
 		{
 			XSetWindowBackground (
@@ -1144,6 +1137,12 @@ void change_colorset(int color)
 			{
 				/* colorset not properly defined yet, skip it */
 				continue;
+			}
+			if (man->backContext[i])
+			{
+				XSetForeground(
+					theDisplay, man->backContext[i],
+					man->backcolor[i]);
 			}
 			XSetForeground(
 				theDisplay, man->hiContext[i],

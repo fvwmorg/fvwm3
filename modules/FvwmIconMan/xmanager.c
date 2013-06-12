@@ -1372,22 +1372,22 @@ static void draw_button_background(
 {
 	int cset = man->colorsets[button_state];
 
-	if (CSET_IS_TRANSPARENT_PR_PURE(cset) ||
-	    man->backContext[button_state] == None)
+	if (cset >= 0)
+	{
+		SetRectangleBackground(
+			theDisplay, man->theWindow,
+			bounding.x, bounding.y,
+			bounding.width, bounding.height,
+			&Colorset[cset], Pdepth,
+			man->backContext[button_state]);
+	}
+	else if (man->backContext[button_state] == None)
 	{
 		XClearArea(
 			theDisplay, man->theWindow,
 			bounding.x, bounding.y,
 			bounding.width, bounding.height,
 			False);
-	}
-	else if (CSET_IS_TRANSPARENT_PR_TINT(cset))
-	{
-		SetRectangleBackground(
-			theDisplay, man->theWindow,
-			bounding.x, bounding.y,
-			bounding.width, bounding.height,
-			&Colorset[cset], Pdepth, man->backContext[button_state]);
 	}
 	else
 	{

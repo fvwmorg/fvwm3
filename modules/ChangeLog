@@ -1,3 +1,12 @@
+2013-06-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmIconMan/xmanager.c (draw_button_background):
+	new attempt to fix bad hilight colour
+
+	* FvwmIconMan/x.c (change_colorset, recreate_background)
+	(create_manager_window):
+	remove previous attempt to fix bad hilight colour
+
 2013-04-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIconMan/x.c (change_colorset, recreate_background)
