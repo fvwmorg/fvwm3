@@ -1936,7 +1936,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 
 	DBUG("HandleEnterNotify", "Routine Entered");
 	ewp = &te->xcrossing;
-ENTER_DBG((stderr, "++++++++ en (%d): fw 0x%08x w 0x%08x sw 0x%08xmode 0x%x detail 0x%x '%s'\n", ++ecount, (int)fw, (int)ewp->window, (int)ewp->subwindow, ewp->mode, ewp->detail, fw?fw->visible_name:"(none)"));
+ENTER_DBG((stderr, "++++++++ en (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, fw, (int)ewp->window, (int)ewp->subwindow, ewp->mode, ewp->detail, fw?fw->visible_name:"(none)"));
 
 	if (
 		ewp->window == Scr.Root &&
@@ -2615,7 +2615,7 @@ void HandleLeaveNotify(const evh_args_t *ea)
 
 	DBUG("HandleLeaveNotify", "Routine Entered");
 
-ENTER_DBG((stderr, "-------- ln (%d): fw 0x%08x w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, (int)fw, (int)te->xcrossing.window, (int)te->xcrossing.subwindow, te->xcrossing.mode, te->xcrossing.detail, fw?fw->visible_name:"(none)"));
+ENTER_DBG((stderr, "-------- ln (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, fw, (int)te->xcrossing.window, (int)te->xcrossing.subwindow, te->xcrossing.mode, te->xcrossing.detail, fw?fw->visible_name:"(none)"));
 	lwp = &te->xcrossing;
 	if (
 		lwp->window == Scr.Root &&
@@ -2656,7 +2656,7 @@ ENTER_DBG((stderr, "-------- ln (%d): fw 0x%08x w 0x%08x sw 0x%08x mode 0x%x det
 		     lwp->window == FW_W_ICON_TITLE(fw) ||
 		     lwp->window == FW_W_ICON_PIXMAP(fw)))
 		{
-ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
+ENTER_DBG((stderr, "ln: *** lgw = %p\n", fw));
 			xcrossing_last_grab_window = fw;
 		}
 #ifdef FOCUS_EXPANDS_TITLE
