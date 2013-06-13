@@ -1,3 +1,17 @@
+2013-06-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/fvwm.c (main):
+	* fvwm/frame.c (frame_free_move_resize_args):
+	* fvwm/focus.h (FOCUS_SET, FOCUS_RESET):
+	* fvwm/focus.c (_focus_set, _focus_reset, __set_focus_to_fwin)
+	(focus_force_refresh_focus):
+	* fvwm/events.c (__refocus_stolen_focus_win, HandleEnterNotify)
+	(HandleFocusIn):
+	* fvwm/add_window.c (adjust_fvwm_internal_windows):
+	globally active windows cannot steal the focus if the style disallows
+	programs to take focus
+
 2013-05-07  Thomas Adam <thomas@fvwm.org>
 	* libs/Fsvg.h:
 	Only include <rsvg-cairo.h> for versions of librsvg prior to 2.36.2

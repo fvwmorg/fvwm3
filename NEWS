@@ -20,6 +20,9 @@ Changes in release 2.6.6 (not released yet)
     the XDG menu specification.
   - FvwmIconMan had problems displaying the hilight colour on some
     systems (64 bit issue?).
+  - Globally active windows cannot take the focus if the style
+    forbids programs to take foxus themselves (stlye
+    !FPFocusByProgram).
 
 -------------------------------------------------------------------
 Changes in release 2.6.5 (20-Apr-2012)
