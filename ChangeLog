@@ -1,3 +1,12 @@
+2013-06-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (__move_loop, DoSnapAttract, update_pos):
+	clean up formatting
+	do not snap to windows that are off screen
+	do not use EdgeMoveResistance unless the window is partially off screen
+	fix jumping windows caused by bad faked events
+	simplify and stabilize the snapping algorithm
+
 2013-06-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/screen.h (ScreenInfo):

@@ -23,6 +23,9 @@ Changes in release 2.6.6 (not released yet)
   - Globally active windows cannot take the focus if the style
     forbids programs to take foxus themselves (stlye
     !FPFocusByProgram).
+  - Windows no longer jump from one position to the other which
+    could happen in some cases with SnapAttraction.  Windows now
+    snap to the closest window (or screen edge).
 
 -------------------------------------------------------------------
 Changes in release 2.6.5 (20-Apr-2012)
