@@ -2030,26 +2030,15 @@ static void DoSnapAttract(
 			}
 			/* get other window dimensions */
 			get_visible_window_or_icon_geometry(tmp, &other);
-			/* prevent that window snaps off screen */
-			if (other.x <= 0)
+			if (other.x >= Scr.MyDisplayWidth ||
+			    other.x + other.width <= 0 ||
+			    other.y >= Scr.MyDisplayHeight ||
+			    other.y + other.height <= 0)
 			{
-				other.x -= fw->snap_attraction.proximity + 10000;
-				other.width += fw->snap_attraction.proximity + 10000;
+				/* do not snap to windows that are not currently
+				 * visible */
+				continue;
 			}
-			if (other.y <= 0)
-			{
-				other.y -= fw->snap_attraction.proximity + 10000;
-				other.height += fw->snap_attraction.proximity + 10000;
-			}
-			if (other.x + other.width >= Scr.MyDisplayWidth)
-			{
-				other.width += fw->snap_attraction.proximity + 10000;
-			}
-			if (other.y + other.height >= Scr.MyDisplayHeight)
-			{
-				other.height += fw->snap_attraction.proximity + 10000;
-			}
-
 			/* snap horizontally */
 			if (
 				other.y + other.height > *py &&
