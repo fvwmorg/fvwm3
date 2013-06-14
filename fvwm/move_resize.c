@@ -2463,6 +2463,8 @@ Bool __move_loop(
 				ButtonMotionMask | ExposureMask, &e)))
 		{
 			XEvent le;
+			int x;
+			int y;
 
 			fev_get_last_event(&le);
 
@@ -2492,8 +2494,20 @@ Bool __move_loop(
 			fev_make_null_event(&e, dpy);
 			e.type = MotionNotify;
 			e.xmotion.time = fev_get_evtime();
-			e.xmotion.x_root = xl - XOffset;
-			e.xmotion.y_root = yt - YOffset;
+			if (FQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
+				    &y, &JunkX, &JunkY, &JunkMask) == True)
+			{
+				e.xmotion.x_root = x;
+				e.xmotion.y_root = y;
+			}
+			else
+			{
+				/* pointer is on a different screen */
+				e.xmotion.x_root = 0;
+				e.xmotion.y_root = 0;
+			}
+			e.xmotion.state = JunkMask;
 			e.xmotion.same_screen = True;
 			break;
 		}
