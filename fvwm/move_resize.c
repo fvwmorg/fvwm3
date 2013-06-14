@@ -1932,21 +1932,35 @@ void CMD_MoveToScreen(F_CMD_ARGS)
 	return;
 }
 
+static void update_pos(
+	int *dest_score, int *dest_pos, int current_pos, int requested_pos)
+{
+	int requested_score;
+
+	requested_score = abs(current_pos - requested_pos);
+	if (requested_score < *dest_score)
+	{
+		*dest_pos = requested_pos;
+		*dest_score = requested_score;
+	}
+
+	return;
+}
+
 /* This function does the SnapAttraction stuff. It takes x and y coordinates
  * (*px and *py) and returns the snapped values. */
 static void DoSnapAttract(
 	FvwmWindow *fw, int Width, int Height, int *px, int *py)
 {
-	int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
+	int nyt,nxl;
 	rectangle self;
+	int score_x;
+	int score_y;
 
-	/* resist based on window edges */
-	closestTop = fw->snap_attraction.proximity;
-	closestBottom = fw->snap_attraction.proximity;
-	closestRight = fw->snap_attraction.proximity;
-	closestLeft = fw->snap_attraction.proximity;
 	nxl = -99999;
 	nyt = -99999;
+	score_x = 99999999;
+	score_y = 99999999;
 	self.x = *px;
 	self.y = *py;
 	self.width = Width;
@@ -1969,7 +1983,7 @@ static void DoSnapAttract(
 	{
 		if (*px != *px / fw->snap_grid_x * fw->snap_grid_x)
 		{
-			*px = (*px + ((*px >= 0) ?
+			nxl = (*px + ((*px >= 0) ?
 				      fw->snap_grid_x : -fw->snap_grid_x) /
 			       2) / fw->snap_grid_x * fw->snap_grid_x;
 		}
@@ -1978,7 +1992,7 @@ static void DoSnapAttract(
 	{
 		if (*py != *py / fw->snap_grid_y * fw->snap_grid_y)
 		{
-			*py = (*py + ((*py >= 0) ?
+			nyt = (*py + ((*py >= 0) ?
 				      fw->snap_grid_y : -fw->snap_grid_y) /
 			       2) / fw->snap_grid_y * fw->snap_grid_y;
 		}
@@ -2044,39 +2058,37 @@ static void DoSnapAttract(
 				other.y + other.height > *py &&
 				other.y < *py + self.height)
 			{
-				dist = abs(other.x - (*px + self.width));
-				if (dist < closestRight)
+				if (*px + self.width >= other.x &&
+				    *px + self.width <
+				    other.x + fw->snap_attraction.proximity)
 				{
-					closestRight = dist;
-					if (*px + self.width >= other.x &&
-					    *px + self.width <
-					    other.x + fw->snap_attraction.proximity)
-					{
-						nxl = other.x - self.width;
-					}
-					if (*px + self.width >=
-					    other.x - fw->snap_attraction.proximity &&
-					    *px + self.width < other.x)
-					{
-						nxl = other.x - self.width;
-					}
+					update_pos(
+						&score_x, &nxl, *px,
+						other.x - self.width);
 				}
-				dist = abs(other.x + other.width - *px);
-				if (dist < closestLeft)
+				if (*px + self.width >=
+				    other.x - fw->snap_attraction.proximity &&
+				    *px + self.width < other.x)
 				{
-					closestLeft = dist;
-					if (*px <= other.x + other.width &&
-					    *px > other.x + other.width -
-					    fw->snap_attraction.proximity)
-					{
-						nxl = other.x + other.width;
-					}
-					if (*px <= other.x + other.width +
-					    fw->snap_attraction.proximity &&
-					    *px > other.x + other.width)
-					{
-						nxl = other.x + other.width;
-					}
+					update_pos(
+						&score_x, &nxl, *px,
+						other.x - self.width);
+				}
+				if (*px <= other.x + other.width &&
+				    *px > other.x + other.width -
+				    fw->snap_attraction.proximity)
+				{
+					update_pos(
+						&score_x, &nxl, *px,
+						other.x + other.width);
+				}
+				if (*px <= other.x + other.width +
+				    fw->snap_attraction.proximity &&
+				    *px > other.x + other.width)
+				{
+					update_pos(
+						&score_x, &nxl, *px,
+						other.x + other.width);
 				}
 			}
 			/* snap vertically */
@@ -2084,40 +2096,38 @@ static void DoSnapAttract(
 				other.x + other.width > *px &&
 				other.x < *px + self.width)
 			{
-				dist = abs(other.y - (*py + self.height));
-				if (dist < closestBottom)
+				if (*py + self.height >= other.y &&
+				    *py + self.height < other.y +
+				    fw->snap_attraction.proximity)
 				{
-					closestBottom = dist;
-					if (*py + self.height >= other.y &&
-					    *py + self.height < other.y +
-					    fw->snap_attraction.proximity)
-					{
-						nyt = other.y - self.height;
-					}
-					if (*py + self.height >=
-					    other.y - fw->snap_attraction.proximity &&
-					    *py + self.height < other.y)
-					{
-						nyt = other.y - self.height;
-					}
+					update_pos(
+						&score_y, &nyt, *py,
+						other.y - self.height);
 				}
-				dist = abs(other.y + other.height - *py);
-				if (dist < closestTop)
+				if (*py + self.height >=
+				    other.y - fw->snap_attraction.proximity &&
+				    *py + self.height < other.y)
 				{
-					closestTop = dist;
-					if (*py <=
-					    other.y + other.height &&
-					    *py > other.y + other.height -
-					    fw->snap_attraction.proximity)
-					{
-						nyt = other.y + other.height;
-					}
-					if (*py <= other.y + other.height +
-					    fw->snap_attraction.proximity &&
-					    *py > other.y + other.height)
-					{
-						nyt = other.y + other.height;
-					}
+					update_pos(
+						&score_y, &nyt, *py,
+						other.y - self.height);
+				}
+				if (*py <=
+				    other.y + other.height &&
+				    *py > other.y + other.height -
+				    fw->snap_attraction.proximity)
+				{
+					update_pos(
+						&score_y, &nyt, *py,
+						other.y + other.height);
+				}
+				if (*py <= other.y + other.height +
+				    fw->snap_attraction.proximity &&
+				    *py > other.y + other.height)
+				{
+					update_pos(
+						&score_y, &nyt, *py,
+						other.y + other.height);
 				}
 			}
 		} /* for */
@@ -2141,79 +2151,61 @@ static void DoSnapAttract(
 		if (!(Scr.MyDisplayWidth < (*px) ||
 		      (*px + self.width) < 0))
 		{
-			dist = abs(Scr.MyDisplayHeight - (*py + self.height));
-			if (dist < closestBottom)
+			if (*py + self.height >=
+			    Scr.MyDisplayHeight &&
+			    *py + self.height <
+			    Scr.MyDisplayHeight + fw->snap_attraction.proximity)
 			{
-				closestBottom = dist;
-				if (*py + self.height >=
-				    Scr.MyDisplayHeight &&
-				    *py + self.height <
-				    Scr.MyDisplayHeight + fw->snap_attraction.proximity)
-				{
-					nyt = Scr.MyDisplayHeight -
-						self.height;
-				}
-				if (*py + self.height >=
-				    Scr.MyDisplayHeight - fw->snap_attraction.proximity &&
-				    *py + self.height < Scr.MyDisplayHeight)
-				{
-					nyt = Scr.MyDisplayHeight -
-						self.height;
-				}
+				update_pos(
+					&score_y, &nyt, *py,
+					Scr.MyDisplayHeight - self.height);
 			}
-			dist = abs(*py);
-			if (dist < closestTop)
+			if (*py + self.height >=
+			    Scr.MyDisplayHeight - fw->snap_attraction.proximity &&
+			    *py + self.height < Scr.MyDisplayHeight)
 			{
-				closestTop = dist;
-				if ((*py <= 0)&&(*py > - fw->snap_attraction.proximity))
-				{
-					nyt = 0;
-				}
-				if ((*py <=  fw->snap_attraction.proximity)&&(*py > 0))
-				{
-					nyt = 0;
-				}
+				update_pos(
+					&score_y, &nyt, *py,
+					Scr.MyDisplayHeight - self.height);
+			}
+			if ((*py <= 0)&&(*py > - fw->snap_attraction.proximity))
+			{
+				update_pos(&score_y, &nyt, *py, 0);
+			}
+			if ((*py <=  fw->snap_attraction.proximity)&&(*py > 0))
+			{
+				update_pos(&score_y, &nyt, *py, 0);
 			}
 		} /* vertically */
 		/* horizontally */
 		if (!(Scr.MyDisplayHeight < (*py) ||
 		      (*py + self.height) < 0))
 		{
-			dist = abs(
-				Scr.MyDisplayWidth - (*px + self.width));
-			if (dist < closestRight)
+			if (*px + self.width >= Scr.MyDisplayWidth &&
+			    *px + self.width <
+			    Scr.MyDisplayWidth + fw->snap_attraction.proximity)
 			{
-				closestRight = dist;
-
-				if (*px + self.width >= Scr.MyDisplayWidth &&
-				    *px + self.width <
-				    Scr.MyDisplayWidth + fw->snap_attraction.proximity)
-				{
-					nxl = Scr.MyDisplayWidth - self.width;
-				}
-
-				if (*px + self.width >=
-				    Scr.MyDisplayWidth - fw->snap_attraction.proximity &&
-				    *px + self.width < Scr.MyDisplayWidth)
-				{
-					nxl = Scr.MyDisplayWidth - self.width;
-				}
+				update_pos(
+					&score_x, &nxl, *px,
+					Scr.MyDisplayWidth - self.width);
 			}
-			dist = abs(*px);
-			if (dist < closestLeft)
+			if (*px + self.width >=
+			    Scr.MyDisplayWidth - fw->snap_attraction.proximity &&
+			    *px + self.width < Scr.MyDisplayWidth)
 			{
-				closestLeft = dist;
-
-				if ((*px <= 0) &&
-				    (*px > - fw->snap_attraction.proximity))
-				{
-					nxl = 0;
-				}
-				if ((*px <= fw->snap_attraction.proximity) &&
-				    (*px > 0))
-				{
-					nxl = 0;
-				}
+				update_pos(
+					&score_x, &nxl, *px,
+					Scr.MyDisplayWidth - self.width);
+			}
+			if ((*px <= 0) &&
+			    (*px > - fw->snap_attraction.proximity))
+			{
+				update_pos(&score_x, &nxl, *px, 0);
+			}
+			if ((*px <= fw->snap_attraction.proximity) &&
+			    (*px > 0))
+			{
+				update_pos(&score_x, &nxl, *px, 0);
 			}
 		} /* horizontally */
 	} /* snap to screen edges */
