@@ -2147,8 +2147,8 @@ static void DoSnapAttract(
 			( IS_ICONIFIED(fw) &&
 				fw->snap_attraction.mode & SNAP_SCREEN_ICONS ) ||
 			fw->snap_attraction.mode & SNAP_SCREEN_ALL ))
-		{
-		/* horizontally */
+	{
+		/* vertically */
 		if (!(Scr.MyDisplayWidth < (*px) ||
 		      (*px + self.width) < 0))
 		{
@@ -2185,8 +2185,8 @@ static void DoSnapAttract(
 					nyt = 0;
 				}
 			}
-		} /* horizontally */
-		/* vertically */
+		} /* vertically */
+		/* horizontally */
 		if (!(Scr.MyDisplayHeight < (*py) ||
 		      (*py + self.height) < 0))
 		{
@@ -2226,7 +2226,7 @@ static void DoSnapAttract(
 					nxl = 0;
 				}
 			}
-		} /* vertically */
+		} /* horizontally */
 	} /* snap to screen edges */
 
 	if (nxl != -99999)
@@ -2497,8 +2497,7 @@ Bool __move_loop(
 			yt += YOffset;
 			if (do_snap)
 			{
-				DoSnapAttract(
-						fw, Width, Height, &xl, &yt);
+				DoSnapAttract(fw, Width, Height, &xl, &yt);
 				was_snapped = True;
 			}
 			fev_make_null_event(&e, dpy);
