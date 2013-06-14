@@ -2234,27 +2234,27 @@ static void DoSnapAttract(
 	{
 		/* snap to right edge */
 		if (
-			*px + Width >= Scr.MyDisplayWidth &&
+			*px + Width > Scr.MyDisplayWidth &&
 			*px + Width < Scr.MyDisplayWidth +
 			fw->edge_resistance_move)
 		{
 			*px = Scr.MyDisplayWidth - Width;
 		}
 		/* snap to left edge */
-		else if ((*px <= 0) && (*px > -fw->edge_resistance_move))
+		else if ((*px < 0) && (*px > -fw->edge_resistance_move))
 		{
 			*px = 0;
 		}
 		/* snap to bottom edge */
 		if (
-			*py + Height >= Scr.MyDisplayHeight &&
+			*py + Height > Scr.MyDisplayHeight &&
 			*py + Height < Scr.MyDisplayHeight +
 			fw->edge_resistance_move)
 		{
 			*py = Scr.MyDisplayHeight - Height;
 		}
 		/* snap to top edge */
-		else if (*py <= 0 && *py > -fw->edge_resistance_move)
+		else if (*py < 0 && *py > -fw->edge_resistance_move)
 		{
 			*py = 0;
 		}
