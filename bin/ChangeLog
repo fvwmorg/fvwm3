@@ -1,3 +1,10 @@
+2013-06-17  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop-config.fpl:
+	* fvwm-menu-desktop.in: Thomas Funk:
+	support for python-xdg > 0.19.
+	add gettext localization.
+
 2013-01-20  Dan Espen  <despen@verizon.net>
 
 	* fvwm-root.1.in: spelling-error-manpage patch

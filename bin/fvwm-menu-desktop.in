@@ -2,6 +2,10 @@
  
 # Modification History
 
+# Changed on 15/06/13 by Thomas Funk:
+# support for python-xdg > 0.19.
+# add gettext localization.
+
 # Changed on 10/01/12 by Thomas Funk:
 # Unicode support.
 
@@ -43,6 +47,7 @@ import xdg.Locale
 import os.path
 import os
 from xdg.DesktopEntry import *
+from xdg.BaseDirectory import *
 import fnmatch
 import time
 
@@ -109,7 +114,7 @@ Standard output is a series Fvwm commands."""
         sys.exit(2)
     global verbose, force, size, theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu
-    version = "2.1"
+    version = "2.2"
     verbose = False
     force = False
     desktop=''
@@ -468,7 +473,7 @@ def parsemenus(menulist, desktop):
                 printmenu(title, '', 'Popup "%s"' % name)
         
             printtext('+ "" Nop')
-            printmenu("Regenerate XDG Menu(s)", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
+            printmenu("$[gt.Regenerate XDG Menu(s)]", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
 
         if not get_menus == '':
             printtext('%s' % ' '.join(new_menulist))
@@ -511,7 +516,7 @@ def parsemenu(menu, name="", title=""):
     # should only appear in a single menu. For more it will insert in parsemenus() when the top menu will built
     if menu_list_length == 1 and not insert_in_menu and name == top:
         printtext('+ "" Nop')
-        printmenu("Regenerate XDG Menu", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
+        printmenu("$[gt.Regenerate XDG Menu(s)]", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
         
     if printmode:
         printtext('')

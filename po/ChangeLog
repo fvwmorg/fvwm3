@@ -1,3 +1,8 @@
+2013-06-17  Dan Espen  <despen@verizon.net>
+
+	* fvwm.de.po: Update German support for fvwm-menu-desktop.
+	* fvwm.pot: Thomas Funk patch for fvwm-menu-desktop internationalization.
+
 2013-05-01  Dan Espen  <despen@verizon.net>
 
 	* fvwm.es.po:

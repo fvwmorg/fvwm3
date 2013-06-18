@@ -1,14 +1,15 @@
 # German translations for fvwm package
-# Copyright (C) 2003 fvwm workers
+# Copyright (C) 2013 fvwm workers
 # This file is distributed under the same license as the fvwm package.
 # Andrei Mitrofanow <smilebef@web.de>, 2003.
+# Thomas Funk <t.funk@web.de>, 2013
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: fvwm\n"
 "POT-Creation-Date: 2002-11-28 14:23+0100\n"
-"PO-Revision-Date: 2002-11-23 06:00+0100\n"
-"Last-Translator: Andrei Mitrofanow <smilebef@web.de>\n"
+"PO-Revision-Date: 2013-06-15 20:00+0200\n"
+"Last-Translator: Thomas Funk <t.funk@web.de>\n"
 "Language-Team: German\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -318,3 +319,163 @@ msgstr "Annehmen - Schliessen"
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 55
 msgid "Copy Config File(s)"
 msgstr "Konfigurationsdateien kopieren"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 51
+msgid "Fvwm Menu Desktop Config"
+msgstr "Fvwm Menu Desktop Konfiguration"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 58
+msgid "Multiple Menu"
+msgstr "Mehrfachmenü"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 66
+msgid "Menus in"
+msgstr "Menüs in"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 95
+msgid "No menus found! Check why from within a terminal with"
+msgstr "Keine Menüs gefunden! In einem Terminal checken warum mit"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 107
+msgid "General Options"
+msgstr "Generelle Optionen"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 110
+msgid "Use Icons in Menus?       "
+msgstr "Icons in Menüs?        "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 112
+msgid "Yes"
+msgstr "Ja"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 113
+msgid "No"
+msgstr "Nein"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 116
+msgid "Icon size:                "
+msgstr "Icongröße:             "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 118
+msgid " (in pixels. Default is 24)"
+msgstr " (in Pixel. Default ist 24)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 121
+msgid "Converted Icon directory:      "
+msgstr "Icon-Verzeichnis:      "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 123
+msgid " (Directory for converted icons)"
+msgstr " (für konvertierte Icons)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 126
+msgid "Use Titles in Menus?      "
+msgstr "Titel in Menüs?        "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 132
+msgid "Insert Menu(s) in a Menu? "
+msgstr "Menü(s) in einem Menü? "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 136
+msgid "Top title name: "
+msgstr "Toptitel Name: "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 140
+msgid "Used Icon theme:          "
+msgstr "Benutzter Icontheme:   "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 142
+msgid " (Theme name for icon selection)"
+msgstr " (Themename für Iconauswahl)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 149
+msgid "Single Menu"
+msgstr "Einzelmenü"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 152
+msgid "If you want a single menu only deselect all menus above and fill out"
+msgstr "Für ein Einzelmenü alle nicht benötigten Menüs deselektieren und die"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 154
+msgid "the fields below. But remember, if the menu doesn't exist, nothing happens."
+msgstr "Felder unten ausfüllen. Achtung: wenn ein Menü leer ist, passiert nichts."
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 158
+msgid "Menu Top Title:"
+msgstr "Menü Top Titel:"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 147
+msgid " (Eg. FvwmTestMenu)"
+msgstr " (z.b. FvwmTestMenu)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 160
+msgid "Install-Prefix:"
+msgstr "Install-Prefix:"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 165
+msgid " (Eg. /etc/xdg/menus/)"
+msgstr " (z.B. /etc/xdg/menus/)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 168
+msgid "Desktop:       "
+msgstr "Desktop:       "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 170
+msgid " (Eg. gnome, kde, xfce, lxde)"
+msgstr " (z.B. gnome, kde, xfce, lxde)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 173
+msgid "Menutype:      "
+msgstr "Menütyp:       "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 175
+msgid " (Eg. applications, settings)"
+msgstr " (z.B. applications, settings)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 178
+msgid "Output path:   "
+msgstr "Ausgabepfad:   "
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 180
+msgid " (Full path to store output)"
+msgstr " (voller Speicherpfad der Ausgabe)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 187
+msgid "Actions"
+msgstr "Aktionen"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 192
+msgid "Multiple"
+msgstr "Mehrfach"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 193
+msgid "Single"
+msgstr "Einzel"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 197
+msgid "Generate Menu(s)"
+msgstr "Menü(s) erstellen"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 221
+msgid "Save Settings"
+msgstr "Settings speichern"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 262
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 264
+msgid "Help"
+msgstr "Hilfe"
+
+#. ./bin/fvwm-menu-desktop-config.fpl.in: line 266
+msgid "Quit"
+msgstr "Beenden"
+
+#. ./bin/fvwm-menu-desktop.in: line 472
+msgid "Regenerate XDG Menu(s)"
+msgstr "XDG Menu(s) neu erstellen"
+
+#. ./bin/fvwm-menu-desktop.in: line 515
+msgid "Regenerate XDG Menu"
+msgstr "XDG Menu neu erstellen"
