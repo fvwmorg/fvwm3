@@ -4830,6 +4830,10 @@ void CMD_Maximize(F_CMD_ARGS)
 	token = PeekToken(action, &taction);
 	if (token && StrEquals(token, "forget"))
 	{
+		if (!IS_MAXIMIZED(fw))
+		{
+			return;
+		}
 		do_forget = True;
 		do_force_maximize = True;
 	}
@@ -4925,7 +4929,7 @@ void CMD_Maximize(F_CMD_ARGS)
 		page_x, page_y, scr_x, scr_y, scr_w, scr_h);
 #endif
 
-	if (do_forget == True && IS_MAXIMIZED(fw))
+	if (do_forget == True)
 	{
 		fw->g.normal = fw->g.max;
 		unmaximize_fvwm_window(fw);

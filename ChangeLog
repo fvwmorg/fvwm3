@@ -1,3 +1,8 @@
+2013-06-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/move_resize.c (CMD_Maximize):
+	"Maximize forget" does nothing if the window is not maximized
+
 2013-06-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop, DoSnapAttract, update_pos):
