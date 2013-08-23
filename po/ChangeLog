@@ -1,3 +1,9 @@
+2013-08-22  Dan Espen  <despen@verizon.net>
+
+	* fvwm.fr.po: Apply French patch giving translation support for
+	fvwm-menu-desktop-config.fpl.in, fvwm-menu-desktop.in.
+	Patch by Dominique Michel.
+
 2013-06-17  Dan Espen  <despen@verizon.net>
 
 	* fvwm.de.po: Update German support for fvwm-menu-desktop.
