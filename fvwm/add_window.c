@@ -644,6 +644,13 @@ static char *interpolate_titleformat_name(FvwmWindow *fw, window_style *style,
 				strcat(stringbuf, fw->class.res_class);
 				break;
 			case 'i':
+				/* Not every application will have an icon
+				 * name set; don't crash trying to dereference
+				 * this if the name doesn't exist.
+				 */
+				if (fw->icon_name.name == NULL)
+					break;
+
 				if (strlen(stringbuf) +
 					strlen(fw->icon_name.name) >
 					MAX_VISIBLE_NAME_LEN)
