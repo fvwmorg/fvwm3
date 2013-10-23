@@ -101,7 +101,7 @@ will cause the viewport to move as you drag but not switch
 desktops, even if the pointer moves to another desktop.
 
 With the \fI*FvwmPager: SloppyFocus\fP option the focus is
-transfered to the window pointed at with the mouse when the
+transferred to the window pointed at with the mouse when the
 pointer is inside the pager.
 
 When iconified, the pager will work as a fully functional current
@@ -164,7 +164,7 @@ The invocation method was shown in the synopsis section
 Completely or partially specifies the pager windows location and
 geometry, in standard X11 notation. In order to maintain an
 undistorted aspect ratio, you might want to leave out either the
-width or height dimension of the geometry specification .
+width or height dimension of the geometry specification.
 
 .IP "*FvwmPager: Rows \fIrows\fP"
 Tells fvwm how many rows of desks to use when laying out the pager

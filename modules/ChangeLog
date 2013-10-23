@@ -1,3 +1,8 @@
+2013-10-22  Dan Espen  <despen@verizon.net>
+
+	* FvwmPager/FvwmPager.1.in: Spelling correction
+	from Vincent W. Chen.
+
 2013-06-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIconMan/xmanager.c (draw_button_background):
