@@ -1,0 +1,80 @@
+# FvwmForm-MultiMenuHelp - Help Text for fvwm-menu-desktop-config Multiple Menu
+# V 1.0.2
+DestroyModuleConfig  FvwmForm-MultiMenuHelp: *
+*FvwmForm-MultiMenuHelp:   Title   "fvwm-menu-desktop-config - $[gt.Multiple Menu] $[gt.Help]"
+*FvwmForm-MultiMenuHelp:   WarpPointer
+# Layout
+*FvwmForm-MultiMenuHelp:   Line    center
+*FvwmForm-MultiMenuHelp:   Text    "fvwm-menu-desktop-config - $[gt.Multiple Menu] $[gt.Help]"
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    center
+*FvwmForm-MultiMenuHelp:   Text    "--------------------------------------------------------------------"
+*FvwmForm-MultiMenuHelp:   Line    center
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.Multiple Menu]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.In this section all XDG menus found on the system are shown. All selected menus]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.will integrate in one Fvwm menu. If you want to generate a custom-assembled menu]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.use the 'Single Menu' section.]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.Menus in]"
+*FvwmForm-MultiMenuHelp:   Text    " /etc/xdg/menus/"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "  => $[gt.List menus with checkboxes found in] /etc/xdg/menus/"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.Menus in]"
+*FvwmForm-MultiMenuHelp:   Text    " /home/<user>/.config/menus/"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "  =>"
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.List menus with checkboxes found in] $HOME/.config/menus/ $[gt.if available.]"
+*FvwmForm-MultiMenuHelp:   Line    Left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.Note that equal menus found under /etc/xdg/menus AND $HOME/.config/menus/]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.following the XDG menu specification only shown in $HOME/.config/menus/.]"
+*FvwmForm-MultiMenuHelp:   Line    Left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.If no menus appear check why from within a terminal with 'fvwm-menu-desktop -v'.]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.Also it is a good idea to check .xsession-errors in the user home for errors.]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.One limitation exists:]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.If there are too much menus found an error occurs in .xsession-errors:]"
+*FvwmForm-MultiMenuHelp:   Line    center
+*FvwmForm-MultiMenuHelp:   Text    "<<ERROR>> Module(0xXXXXXXX) command is too big (1008), limit is 1000"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.This happens because PipeRead used for menu generation has a command length]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.limit of 1000 characters. Sorry for that inconvinience.]"
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Line    " "
+*FvwmForm-MultiMenuHelp:   Line    left
+*FvwmForm-MultiMenuHelp:   Line    center
+*FvwmForm-MultiMenuHelp:   Text    "--------------------------------------------------------------------"
+*FvwmForm-MultiMenuHelp:   Line    Left
+*FvwmForm-MultiMenuHelp:   Line    " "
+# Buttons
+*FvwmForm-MultiMenuHelp:   Line    center
+*FvwmForm-MultiMenuHelp:   Button  quit    "$[gt.Close]"         ^M
+*FvwmForm-MultiMenuHelp:   Command Nop
+*FvwmForm-MultiMenuHelp:   Button  continue "fvwm-menu-desktop $[gt.Help]"        
+*FvwmForm-MultiMenuHelp:   Command Exec exec xterm -g 100x50 -n "Help fvwm-menu-desktop" -T "Help fvwm-menu-desktop" -e "man fvwm-menu-desktop"
+*FvwmForm-MultiMenuHelp:   Line    Left
+*FvwmForm-MultiMenuHelp:   Line    " "
+
