@@ -4,7 +4,7 @@
 # Dan Espen but inserts the found xdg menus dynamically into the Form
 # before processed.
 # Author: Thomas Funk <t.funk@web.de>
-# Version: 1.3
+# Version: 1.4
 
 package MenuConfig;
 use File::Basename;
@@ -37,10 +37,10 @@ foreach my $path (@all_filelist) {
     push (@{$all_menus{$directories}{$i}}, ($filename, $name, "off"));
     next if !defined $selected__menus{$directories};
     foreach my $hit (@{$selected__menus{$directories}}) {
-	 if ($filename eq $hit) {
-	     pop (@{$all_menus{$directories}{$i}});
-	     push (@{$all_menus{$directories}{$i}}, "on");
-	 }
+        if ($filename eq $hit) {
+            pop (@{$all_menus{$directories}{$i}});
+            push (@{$all_menus{$directories}{$i}}, "on");
+        }
     }
     $max_length = length($filename) if ($max_length < length($filename));
     $i++;
@@ -48,159 +48,169 @@ foreach my $path (@all_filelist) {
 
 my $fvwmform_commands = "
 DestroyModuleConfig  ${modname}: *
-*${modname}: Title	\"\$[gt.Fvwm Menu Desktop Config]\"
+*${modname}: Title      \"\$[gt.Fvwm Menu Desktop Config]\"
 *${modname}: WarpPointer
-*${modname}: Line		center
-*${modname}: Text	\"\$[gt.Fvwm Menu Desktop Config]\"
+*${modname}: Line       center
+*${modname}: Text       \"\$[gt.Fvwm Menu Desktop Config]\"
 *${modname}: Line
 *${modname}: Separator
-*${modname}: Line		center
-*${modname}: Text		\"\$[gt.Multiple Menu]\"
-*${modname}: Line 		
+*${modname}: Line       center
+*${modname}: Text       \"\$[gt.Multiple Menu]\"
+*${modname}: Button     continue \"\$[gt.Help]\" 
+*${modname}: Command    Module FvwmForm FvwmForm-MultiMenuHelp
+*${modname}: Line
 ";
 
 if (scalar keys %all_menus != 0) {
-	foreach my $key (sort( keys %all_menus)) {
-		$fvwmform_commands .= "
-			*${modname}: Line	left
-			*${modname}: Text    	\"\$[gt.Menus in]\"
-			*${modname}: Text    	\" $key\"
-			*${modname}: Line    	left
-			*${modname}: Selection meth multiple
-		";
-		my $m_count = 0;
-		foreach my $count (sort(keys %{$all_menus{$key}})) {
-			my @menu = @{$all_menus{$key}{$count}};
-			my $newstring = $menu[0] . ' ' x eval($max_length-length($menu[0]));
-			$fvwmform_commands .= "*${modname}: Choice  $menu[1] $menu[1] $menu[2] \"$newstring\"
-			";
-			$m_count++;
-			if ($m_count == 3) {
-				$fvwmform_commands .= "
-					*${modname}: Line    	left
-					*${modname}: Selection meth multiple
-				";
-				$m_count = 0;
-			}
-		}
-		$fvwmform_commands .= "
-			*${modname}: Line 	left
-			*${modname}: Text 	\" \"
-		";
-	}
+    foreach my $key (sort( keys %all_menus)) {
+        $fvwmform_commands .= "
+            *${modname}: Line       left
+            *${modname}: Text       \"\$[gt.Menus in]\"
+            *${modname}: Text       \" $key\"
+            *${modname}: Line       left
+            *${modname}: Selection  meth multiple
+        ";
+        my $m_count = 0;
+        foreach my $count (sort(keys %{$all_menus{$key}})) {
+            my @menu = @{$all_menus{$key}{$count}};
+            my $newstring = $menu[0] . ' ' x eval($max_length-length($menu[0]));
+            $fvwmform_commands .= "*${modname}: Choice  $menu[1] $menu[1] $menu[2] \"$newstring\"
+            ";
+            $m_count++;
+            if ($m_count == 4) {
+                $fvwmform_commands .= "
+                    *${modname}: Line       left
+                    *${modname}: Selection  meth multiple
+                ";
+                $m_count = 0;
+            }
+        }
+        $fvwmform_commands .= "
+            *${modname}: Line     left
+            *${modname}: Text     \" \"
+        ";
+    }
 }
 else {
-	$fvwmform_commands .= "
-		*${modname}: Line	center
-		*${modname}: Text    \"\$[gt.No menus found! Check why from within a terminal with]\"
-		*${modname}: Line	center
-		*${modname}: Text    \"'fvwm-menu-desktop -v'\"
-		*${modname}: Line 	left
-		*${modname}: Text 	\" \"
-	";
+    $fvwmform_commands .= "
+        *${modname}: Line    center
+        *${modname}: Text    \"\$[gt.No menus found! Check why from within a terminal with]\"
+        *${modname}: Line    center
+        *${modname}: Text    \"'fvwm-menu-desktop -v'\"
+        *${modname}: Line    left
+        *${modname}: Text    \" \"
+    ";
 }
 
 $fvwmform_commands .= "
+*${modname}: Separator
+*${modname}: Line       center
+*${modname}: Text       \"\$[gt.Single Menu]\"
+*${modname}: Button     continue \"\$[gt.Help]\" 
+*${modname}: Command    Module FvwmForm FvwmForm-SingleMenuHelp
+*${modname}: Line 
+*${modname}: Line       Left
+*${modname}: Text       \"\$[gt.If you want a single menu only deselect all menus above and fill out the fields below.]\"
+*${modname}: Line       Left
+*${modname}: Text       \"\$[gt.But remember, if the menu doesn't exist, nothing happens.]\"
+
+*${modname}: Line
+*${modname}: Line       left
+*${modname}: Text       \"\$[gt.Menu Top Title:     ]\"
+*${modname}: Input      Title 20 \"\"
+
+*${modname}: Text       \"\$[gt.  ]\"
+*${modname}: Text       \"\$[gt.Install-Prefix:     ]\"
+*${modname}: Input      Installprefix 20 \"\"
+
+*${modname}: Line       left
+*${modname}: Text       \"\$[gt.Desktop:            ]\"
+*${modname}: Input      Desktop 20 \"\"
+
+*${modname}: Text       \"\$[gt.  ]\"
+*${modname}: Text       \"\$[gt.Menutype:           ]\"
+*${modname}: Input      Menutype 20 \"\"
+
+*${modname}: Line       left
 *${modname}: Line
 *${modname}: Separator
-*${modname}: Line		center
-*${modname}: Text         \"\$[gt.General Options]\"
+
+*${modname}: Line       center
+*${modname}: Text       \"\$[gt.General Options]\"
+*${modname}: Button     continue \"\$[gt.Help]\" 
+*${modname}: Command    Module FvwmForm FvwmForm-GenOptionHelp
 *${modname}: Line
-*${modname}: Line		Left
-*${modname}: Text         \"\$[gt.Use Icons in Menus?       ]\"
-*${modname}: Selection    SelItype single
-*${modname}: Choice       IconsOn  IconsOn    on  \"\$[gt.Yes]\"
-*${modname}: Choice       IconsOff IconsOff   off \"\$[gt.No]\"
+*${modname}: Line       left
+*${modname}: Text       \"\$[gt.Used Menu Type:     ]\"
 
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Icon size:                ]\"
-*${modname}: Input 	Size 2 \"\"
-*${modname}: Text 	\"\$[gt. (in pixels. Default is 24)]\"
+*${modname}: Selection  SelItype single
+*${modname}: Choice     MultiOn  MultiOn    on  \"\$[gt.Multiple ]\"
+*${modname}: Choice     MultiOff MultiOff   off \"\$[gt.Single]\"
 
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Converted Icon directory:      ]\"
-*${modname}: Input 	IconDir 25 \"~/.fvwm/icons\"
-*${modname}: Text 	\"\$[gt. (Directory for converted icons)]\"
+*${modname}: Line       Left
+*${modname}: Text       \"\$[gt.Use Icons?          ]\"
+*${modname}: Selection  SelItype single
+*${modname}: Choice     IconsOn  IconsOn    on  \"\$[gt.Yes      ]\"
+*${modname}: Choice     IconsOff IconsOff   off \"\$[gt.No   ]\"
 
-*${modname}: Line		Left
-*${modname}: Text         \"\$[gt.Use Titles in Menus?      ]\"
-*${modname}: Selection    SelItype single
-*${modname}: Choice       TitlesOn  TitlesOn    on  \"\$[gt.Yes]\"
-*${modname}: Choice       TitlesOff TitlesOff   off \"\$[gt.No]\"
+*${modname}: Text       \"\$[gt.  ]\"
+*${modname}: Text       \"\$[gt.Icon size:          ]\"
+*${modname}: Input      Size 2 \"\"
+*${modname}: Text       \"\$[gt. (Default is 24)]\"
 
-*${modname}: Line		Left
-*${modname}: Text         \"\$[gt.Insert Menu(s) in a Menu? ]\"
-*${modname}: Selection    SelItype single
-*${modname}: Choice       InsertOn  InsertOn    off \"\$[gt.Yes]\"
-*${modname}: Choice       InsertOff InsertOff   on  \"\$[gt.No]\"
-*${modname}: Text 	\"\$[gt.Top title name: ]\"
-*${modname}: Input 	InMenu 20 \"\"
+*${modname}: Line       Left
+*${modname}: Text       \"\$[gt.Use Titles?         ]\"
+*${modname}: Selection  SelItype single
+*${modname}: Choice     TitlesOn  TitlesOn    on  \"\$[gt.Yes      ]\"
+*${modname}: Choice     TitlesOff TitlesOff   off \"\$[gt.No   ]\"
 
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Used Icon theme:          ]\"
-*${modname}: Input 	Theme 20 \"\"
-*${modname}: Text 	\"\$[gt. (Theme name for icon selection)]\"
+*${modname}: Text       \"\$[gt.  ]\"
+*${modname}: Text       \"\$[gt.Used Icon theme:    ]\"
+*${modname}: Input      Theme 20 \"\"
 
-*${modname}: Line 	left
-*${modname}: Line
-*${modname}: Line
-*${modname}: Separator
-*${modname}: Line 	center
-*${modname}: Text   \"\$[gt.Single Menu]\"
-*${modname}: Line		
-*${modname}: Line	Left
-*${modname}: Text   \"\$[gt.If you want a single menu only deselect all menus above and fill out]\"
-*${modname}: Line	Left
-*${modname}: Text   \"\$[gt.the fields below. But remember, if the menu doesn't exist, nothing happens.]\"
+*${modname}: Line       Left
+*${modname}: Text       \"\$[gt.Menu(s) in a Menu?  ]\"
+*${modname}: Selection  SelItype single
+*${modname}: Choice     InsertOn  InsertOn    off \"\$[gt.Yes      ]\"
+*${modname}: Choice     InsertOff InsertOff   on  \"\$[gt.No   ]\"
 
-*${modname}: Line
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Menu Top Title:]\"
-*${modname}: Input 	Title 20 \"\"
-*${modname}: Text 	\"\$[gt. (Eg. FvwmTestMenu)]\"
+*${modname}: Text       \"\$[gt.  ]\"
+*${modname}: Text       \"\$[gt.Insert in menu:     ]\"
+*${modname}: Input      InMenu 20 \"\"
 
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Install-Prefix:]\"
-*${modname}: Input 	Installprefix 20 \"\"
-*${modname}: Text 	\"\$[gt. (Eg. /etc/xdg/menus/)]\"
+*${modname}: Line       left
+*${modname}: Text       \"\$[gt.Directory Icon:     ]\"
+*${modname}: Input      DirIcon 20 \"gnome-fs-directory\"
 
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Desktop:       ]\"
-*${modname}: Input 	Desktop 20 \"\"
-*${modname}: Text 	\"\$[gt. (Eg. gnome, kde, xfce, lxde)]\"
+*${modname}: Text       \"\$[gt.  ]\"
+*${modname}: Text       \"\$[gt.Application Icon:   ]\"
+*${modname}: Input      AppIcon 20 \"gnome-applications\"
 
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Menutype:      ]\"
-*${modname}: Input 	Menutype 20 \"\"
-*${modname}: Text 	\"\$[gt. (Eg. applications, settings)]\"
+*${modname}: Line       left
+*${modname}: Text       \"\$[gt.Icon directory:     ]\"
+*${modname}: Input      IconDir 30 \"~/.fvwm/icons\"
+*${modname}: Text       \"\$[gt. (Directory for converted icons)]\"
 
-*${modname}: Line 	left
-*${modname}: Text 	\"\$[gt.Output path:   ]\"
-*${modname}: Input 	Path 25 \"\$FVWM_USERDIR/.menu\"
-*${modname}: Text 	\"\$[gt. (Full path to store output)]\"
+*${modname}: Line       left
+*${modname}: Text       \"\$[gt.Output path:        ]\"
+*${modname}: Input      Path 30 \"\$FVWM_USERDIR/.menu\"
+*${modname}: Text       \"\$[gt. (Full path to store output)]\"
 
-*${modname}: Line 	left
-*${modname}: Line
+*${modname}: Line       left
 *${modname}: Line
 *${modname}: Separator
-*${modname}: Line 	center
-*${modname}: Text         \"\$[gt.Actions]\"
-*${modname}: Line 	left
+
 *${modname}: Line
-*${modname}: Line         center
-*${modname}: Selection    SelItype single
-*${modname}: Choice       MultiOn  MultiOn    on  \"\$[gt.Multiple]\"
-*${modname}: Choice       MultiOff MultiOff   off \"\$[gt.Single]\"
-*${modname}: Line
-*${modname}: Separator
-*${modname}: Line         expand
-*${modname}: Button       continue \"\$[gt.Generate Menu(s)]\" 
-*${modname}: Command      PipeRead 'fvwm-menu-desktop \\
+*${modname}: Line       expand
+*${modname}: Button     continue \"\$[gt.Generate Menu(s)]\" 
+*${modname}: Command    PipeRead 'fvwm-menu-desktop2 \\
 \$(IconsOn\?--enable-mini-icons )\\
 \$(Size\?-s \$(Size) )\\
 \$(TitlesOn\?--with-titles )\\
 \$(InsertOn\?--insert-in-menu \$(InMenu) )\\
 \$(IconDir\?--mini-icon-dir \$(IconDir) )\\
+\$(DirIcon\?--dir-icon \$(DirIcon) )\\
+\$(AppIcon\?--app-icon \$(AppIcon) )\\
 \$(Title\?--title \$(Title) )\\
 \$(Installprefix\?--install-prefix \$(Installprefix) )\\
 \$(Desktop\?--desktop \$(Desktop) )\\
@@ -211,14 +221,14 @@ $fvwmform_commands .= "
 
 foreach my $key (keys %all_menus) {
     foreach my $file (keys %{$all_menus{$key}}) {
-	my @menu = @{$all_menus{$key}{$file}};
-	$fvwmform_commands .= "\$($menu[1]\?$key$menu[0].menu )\\\n";
+        my @menu = @{$all_menus{$key}{$file}};
+        $fvwmform_commands .= "\$($menu[1]\?$key$menu[0].menu )\\\n";
     }
 }
 
 $fvwmform_commands .= "\") \$(Path\? > \$(Path)) 2> ~/.xsession-errors &&  echo \"Read \$(Path\? \$(Path))\"'
 
-*${modname}: Button       continue \"\$[gt.Save Settings]\"
+*${modname}: Button     continue \"\$[gt.Save Settings]\"
 
 # Before saving the data, remove any previously saved data:
 *${modname}: Command DestroyModuleConfig ${modname}Default: *
@@ -229,42 +239,47 @@ $fvwmform_commands .= "\") \$(Path\? > \$(Path)) 2> ~/.xsession-errors &&  echo 
 foreach my $key (keys %all_menus) {
     foreach my $count (keys %{$all_menus{$key}}) {
         my @menu = @{$all_menus{$key}{$count}};
-        $fvwmform_commands .= "  '*${modname}Default: $menu[1] 	\$($menu[1]\?on) '		; /bin/echo \\
-	";
+        $fvwmform_commands .= "  '*${modname}Default: $menu[1]     \$($menu[1]\?on) '        ; /bin/echo \\
+    ";
     }
 }
 
 $fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
 
-*${modname}: Command !(                                      /bin/echo \\
-  '*${modname}Default: IconsOn 	\$(IconsOn\?on) '	; /bin/echo \\
-  '*${modname}Default: IconsOff	\$(IconsOff\?on) '	; /bin/echo \\
-  '*${modname}Default: Size       \$(Size) '		; /bin/echo \\
-  '*${modname}Default: TitlesOn 	\$(TitlesOn\?on) '	; /bin/echo \\
-  '*${modname}Default: TitlesOff 	\$(TitlesOff\?on) '	; /bin/echo \\
-  '*${modname}Default: InsertOn 	\$(InsertOn\?on) '	; /bin/echo \\
-  '*${modname}Default: InsertOff	\$(InsertOff\?on) '	; /bin/echo \\
-  '*${modname}Default: InMenu   	\$(InMenu) '		; /bin/echo \\
-  '*${modname}Default: Theme      \$(Theme) '		\\
+*${modname}: Command !(/bin/echo \\
+  '*${modname}Default: IconsOn      \$(IconsOn\?on) '   ; /bin/echo \\
+  '*${modname}Default: IconsOff     \$(IconsOff\?on) '  ; /bin/echo \\
+  '*${modname}Default: Size         \$(Size) '          ; /bin/echo \\
+  '*${modname}Default: TitlesOn     \$(TitlesOn\?on) '  ; /bin/echo \\
+  '*${modname}Default: TitlesOff    \$(TitlesOff\?on) ' ; /bin/echo \\
+  '*${modname}Default: InsertOn     \$(InsertOn\?on) '  ; /bin/echo \\
+  '*${modname}Default: InsertOff    \$(InsertOff\?on) ' ; /bin/echo \\
+  '*${modname}Default: InMenu       \$(InMenu) '        ; /bin/echo \\
+  '*${modname}Default: Theme        \$(Theme) '         \\
 ) >> \$FVWM_USERDIR/.${modname}
 
-*${modname}: Command !(                                      /bin/echo \\
-  '*${modname}Default: Title   	\$(Title) '		; /bin/echo \\
-  '*${modname}Default: Installprefix \$(Installprefix) '	; /bin/echo \\
-  '*${modname}Default: Desktop	\$(Desktop) '		; /bin/echo \\
-  '*${modname}Default: Menutype	\$(Menutype) '		; /bin/echo \\
-  '*${modname}Default: Path      	\$(Path) '		; /bin/echo \\
-  '*${modname}Default: IconDir      	\$(IconDir) '		; /bin/echo \\
-  '*${modname}Default: MultiOn 	\$(MultiOn\?on) '	; /bin/echo \\
-  '*${modname}Default: MultiOff	\$(MultiOff\?on) '	\\
+*${modname}: Command !(/bin/echo \\
+  '*${modname}Default: Title        \$(Title) '         ; /bin/echo \\
+  '*${modname}Default: Installprefix \$(Installprefix) '; /bin/echo \\
+  '*${modname}Default: Desktop      \$(Desktop) '       ; /bin/echo \\
+  '*${modname}Default: Menutype     \$(Menutype) '      ; /bin/echo \\
+  '*${modname}Default: Path         \$(Path) '          ; /bin/echo \\
+  '*${modname}Default: IconDir      \$(IconDir) '       ; /bin/echo \\
+  '*${modname}Default: MultiOn      \$(MultiOn\?on) '   ; /bin/echo \\
+  '*${modname}Default: MultiOff     \$(MultiOff\?on) '  \\
 ) >> \$FVWM_USERDIR/.${modname}
 
-*${modname}: Button       restart	\"\$[gt.Reset]\"
-*${modname}: Command      Nop
-*${modname}: Button       continue \"\$[gt.Help]\"        
-*${modname}: Command      Exec exec xterm -g 100x50 -n \"Help fvwm-menu-desktop\" -T \"Help fvwm-menu-desktop\" -e \"man fvwm-menu-desktop\" &
-*${modname}: Button       quit   	\"\$[gt.Quit]\"        
-*${modname}: Command      Nop
+*${modname}: Command !(/bin/echo \\
+  '*${modname}Default: DirIcon      \$(DirIcon) '       ; /bin/echo \\
+  '*${modname}Default: AppIcon      \$(AppIcon) '       \\
+) >> \$FVWM_USERDIR/.${modname}
+
+*${modname}: Button         restart    \"\$[gt.Reset]\"
+*${modname}: Command        Nop
+*${modname}: Button         continue \"\$[gt.Help]\"        
+*${modname}: Command        Exec exec xterm -g 100x50 -n \"Help fvwm-menu-desktop\" -T \"Help fvwm-menu-desktop\" -e \"man fvwm-menu-desktop\" &
+*${modname}: Button         quit       \"\$[gt.Quit]\"        
+*${modname}: Command        Nop
 
 # Tell ${modname} to read vars from .${modname}Default file:
 *${modname}: UseData .${modname} *${modname}Default
@@ -273,11 +288,11 @@ $fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
 # We are just asked to open a window, give fvwm a chance to do it
 ::unlock();
 
-$fvwmform_commands =~ s/^\s+//;	# trim leading whitespace
+$fvwmform_commands =~ s/^\s+//;    # trim leading whitespace
 
 ::command(qq[
-	$fvwmform_commands
-	FvwmForm ${modname}
+    $fvwmform_commands
+    FvwmForm ${modname}
 ]);
 #print MSG "$fvwmform_commands\n\n";
 #close(MSG);
