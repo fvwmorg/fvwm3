@@ -1,3 +1,13 @@
+2013-10-24  Thomas Funk  <t.funk@web.de>
+
+	* FvwmForm/FvwmForm-GenOptionHelp:
+	* FvwmForm/FvwmForm-MultiMenuHelp:
+	* FvwmForm/FvwmForm-SingleMenuHelp:
+	add help windows for revised fvwm-menu-desktop-config.fpl
+
+	* FvwmForm/Makefile.am:
+	add FvwmForm help windows to EXTRA_DIST and config_DATA
+
 2013-10-22  Dan Espen  <despen@verizon.net>
 
 	* FvwmPager/FvwmPager.1.in: Spelling correction

@@ -17,30 +17,36 @@ FvwmTalk: ../../config.h Makefile
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions!
 EXTRA_DIST = $(man_MANS) Changes \
-  FvwmForm-Setup.in   \
-  FvwmForm-Form       \
-  FvwmForm-Capture    \
-  FvwmForm-Desktop    \
-  FvwmForm-QuitVerify \
-  FvwmForm-Rlogin     \
-  FvwmForm-RootCursor \
-  FvwmForm-Talk       \
-  FvwmForm-TalkHelp
+  FvwmForm-Setup.in       \
+  FvwmForm-Form           \
+  FvwmForm-Capture        \
+  FvwmForm-Desktop        \
+  FvwmForm-QuitVerify     \
+  FvwmForm-Rlogin         \
+  FvwmForm-RootCursor     \
+  FvwmForm-Talk           \
+  FvwmForm-TalkHelp       \
+  FvwmForm-GenOptionHelp  \
+  FvwmForm-MultiMenuHelp  \
+  FvwmForm-SingleMenuHelp
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c ParseCommand.c
 
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
-config_DATA =        \
-  FvwmForm-Setup      \
-  FvwmForm-Form       \
-  FvwmForm-Capture    \
-  FvwmForm-Desktop    \
-  FvwmForm-QuitVerify \
-  FvwmForm-Rlogin     \
-  FvwmForm-RootCursor \
-  FvwmForm-Talk       \
-  FvwmForm-TalkHelp
+config_DATA =             \
+  FvwmForm-Setup          \
+  FvwmForm-Form           \
+  FvwmForm-Capture        \
+  FvwmForm-Desktop        \
+  FvwmForm-QuitVerify     \
+  FvwmForm-Rlogin         \
+  FvwmForm-RootCursor     \
+  FvwmForm-Talk           \
+  FvwmForm-TalkHelp       \
+  FvwmForm-GenOptionHelp  \
+  FvwmForm-MultiMenuHelp  \
+  FvwmForm-SingleMenuHelp
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
