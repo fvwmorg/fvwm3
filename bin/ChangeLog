@@ -1,3 +1,24 @@
+2013-10-24  Thomas Funk  <t.funk@web.de>
+
+	* fvwm-menu-desktop.in:
+	Some Bugfixes:
+	- DecodeEncodeErrors in menu names
+	- no output appears with 'fvwm-menu-desktop --get-menus all|desktop'
+	- No entry "Regenerate XDG menu(s)" appears with
+	  'fvwm-menu-desktop --insert-in-menu MenuRoot'
+	- exchange all tabs with spaces to prevent indention errors
+	- add two new options: --app-icon --dir-icon
+	  to handle default icons for not available app/dir icons
+	- fix bug in convert icon routine that background of svg icons are
+	  transparent
+	- add creation of .theme file (contains the used theme) in icon dir
+	  to start conversion only if current theme differs
+
+	* fvwm-menu-desktop-config.fpl:
+	- exchange all tabs with spaces to prevent indention errors
+	- change menus per line from 3 to 4
+	- restructure widgets to accomodate the new commands and help buttons
+
 2013-06-17  Dan Espen  <despen@verizon.net>
 
 	* fvwm-menu-desktop-config.fpl:
