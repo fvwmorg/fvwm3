@@ -1,3 +1,16 @@
+2013-10-24  Thomas Funk  <t.funk@web.de>
+
+	* fvwm.pot:
+	* fvwm.de.po:
+	* fvwm.de.gmo:
+	* fvwm.fr.po:
+	* fvwm.fr.gmo:
+	* fvwm.es.po:
+	* fvwm.es.gmo:
+	- update fvwm-menu-desktop-config.fpl.in msgids/msgstr
+	- add new msgids/msgstr for FvwmForm-SingleMenuHelp, FvwmForm-MultiMenuHelp,
+	  FvwmForm-GenOptionHelp
+
 2013-08-22  Dan Espen  <despen@verizon.net>
 
 	* fvwm.fr.po: Apply French patch giving translation support for
