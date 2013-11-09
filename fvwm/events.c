@@ -3419,8 +3419,15 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		 * if the icon name is NoName, set the name of the icon to be
 		 * the same as the window
 		 */
-		if (!WAS_ICON_NAME_PROVIDED(fw) || (fw->icon_name.name &&
-			(fw->icon_name.name != fw->name.name)))
+		if (!WAS_ICON_NAME_PROVIDED(fw)
+#if 0
+		    /* dje, reported as causing various dumps.
+		       I tried to debug, but so far haven't even figured out
+		       how to exercise this logic. Mov 9, 2013. */
+		    || (fw->icon_name.name &&
+			(fw->icon_name.name != fw->name.name))
+#endif
+)
 		{
 			fw->icon_name = fw->name;
 			setup_visible_name(fw, True);
