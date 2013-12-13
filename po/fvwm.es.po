@@ -331,7 +331,7 @@ msgstr "Menús en"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 95
 msgid "No menus found! Check why from within a terminal with"
-msgstr "No se han encontrado menús! Compruebe porque desde un terminal con"
+msgstr "No se han encontrado menús! Compruebe por qué desde un terminal con"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 109
 msgid "Single Menu"
@@ -339,15 +339,15 @@ msgstr "Menú Único"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 114
 msgid "If you want a single menu only deselect all menus above and fill out the fields below."
-msgstr "Si desea que sólo un único menú, anular la selección de todos los menús anteriores y complete los"
+msgstr "Si desea tan solo un único menú, anule la selección de todos los menús anteriores y complete los"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 116
 msgid "But remember, if the menu doesn't exist, nothing happens."
-msgstr "campos siguientes. Pero recuerde, si el menú no existe, no pasa nada."
+msgstr "campos siguientes. Pero recuerde: si el menú no existe, no pasa nada."
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 120
 msgid "Menu Top Title:     "
-msgstr "Menú top título:      "
+msgstr "Título sobre menú:  "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 123
 msgid "  "
@@ -355,7 +355,7 @@ msgstr "  "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 124
 msgid "Install-Prefix:     "
-msgstr "Instalar-Prefijo:     "
+msgstr "Prefijo instalación:"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 128
 msgid "Desktop:            "
@@ -423,7 +423,7 @@ msgstr "Icono de carpeta:     "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 188
 msgid "Application Icon:   "
-msgstr "Aplicación icono:     "
+msgstr "Icono Aplicación:   "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 192
 msgid "Icon directory:     "
@@ -511,15 +511,15 @@ msgstr "Si un sistema ofrece múltiples escritorios, $XDG_MENU_PREFIX es típicame
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 46
 msgid "is typically set. It is ignored if this field is used."
-msgstr "seleccionado. Es ignorado, si el campo es usado. Posibles nombres:"
+msgstr "seleccionado, pero se ignora si este campo es usado."
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 49
 msgid "Possible names: gnome, kde, lxde, etc."
-msgstr "gnome, kde, lxde, etc."
+msgstr "Posibles nombres: gnome, kde, lxde, etc."
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 54
 msgid "Defines which type of menu should be found. Possible name types could be:"
-msgstr "Defina qué tipo de menú debe ser encontrado. Posibles tipos pueden ser: applications,"
+msgstr "Define qué tipo de menú debe ser encontrado. Posibles tipos pueden ser: applications,"
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 57
 msgid "applications, settings, preferences, etc. Note if the specified menu type"
@@ -587,15 +587,15 @@ msgstr "Establecer el menú de generación utilizado."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 23
 msgid "Option enables mini-icons in the menu(s)."
-msgstr "Opción para activar mini-iconos en el menú(s)."
+msgstr "Opción para activar mini-iconos en el(los) menú(s)."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 28
 msgid "If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size is"
-msgstr "Si 'Usar Iconos' está seleccionado, 24x24 Mini-Iconos serán usados por defecto. Si otro"
+msgstr "Si 'Usar Iconos' está seleccionado, iconos de 24x24 serán usados por defecto. Si"
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 31
 msgid "desired enter the wanted size in this field."
-msgstr "tamaño es deseado, establecer el tamaño deseado en este campo."
+msgstr "desea otro tamaño, establézcalo en este campo."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 36
 msgid "If the specified icon isn't that size it is converted if ImageMagick is installed."
@@ -603,7 +603,7 @@ msgstr "Si el icono especificado no es de ese tamaño, será convertido, si ImageM
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 39
 msgid "Generated icons are saved in $HOME/.fvwm/icons or the directory specified here."
-msgstr "Iconos generados son guardados en $HOME/.fvwm/icons o el directorio especificado aquí."
+msgstr "Los iconos generados se guardan en $HOME/.fvwm/icons o el directorio especificado aquí."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 42
 msgid "Otherwise no icon appears in the menu for that entry."
@@ -623,7 +623,7 @@ msgstr "defecto de reserva si ningún icono es encontrado. Atención al nombre del
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 56
 msgid "exactly as the icon directory e.g."
-msgstr "ser escrito exactamente al directorio del icono:"
+msgstr "ser escrito exactamente como el directorio de los iconos:"
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 61
 msgid "If 'Use Icons' is enabled and for a directory in a menu no icon is found"
@@ -655,7 +655,7 @@ msgstr "Escriba en el campo de nombre de menú (encima del título) donde los menú
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 97
 msgid "should insert. For more information see the USAGE section in the man page of"
-msgstr "deberían insertarse. Para más información vea la sección de USO en la página de man"
+msgstr "deberían insertarse. Para más información vea la sección de USO en la página man de"
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 105
 msgid "If this option is set menus are generated with titles. Default is no titles."
