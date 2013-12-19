@@ -269,27 +269,28 @@ int AddBinding(
 	return count;
 }
 
-/*
- * replacesBinding() - does the new binding, b1, replace a current
- * binding, b2?
+/* returns 1 if binding b1 is identical to binding b2 (except action)
+ * returns 2 if b1 and b2 are identical except that b1 has a different window
+ * name than b2 and both are not NULL
+ * returns 0 otherwise
  */
-static Bool replacesBinding(Binding *b1, Binding *b2)
+static int compare_bindings(Binding *b1, Binding *b2)
 {
 	if (b1->type != b2->type)
 	{
-		return False;
+		return 0;
 	}
 	if (b1->Context != b2->Context)
 	{
-		return False;
+		return 0;
 	}
 	if (b1->Modifier != b2->Modifier)
 	{
-		return False;
+		return 0;
 	}
 	if (b1->Button_Key != b2->Button_Key)
 	{
-		return False;
+		return 0;
 	}
 
 	/* definition: "global binding" => b->windowName == NULL
@@ -300,26 +301,28 @@ static Bool replacesBinding(Binding *b1, Binding *b2)
 		/* Both bindings are window-specific. The existing binding, b2,
 		 * is only replaced (by b1) if it applies to the same window */
 		if (strcmp(b1->windowName, b2->windowName) != 0)
-			return False;
+		{
+			return 2;
+		}
 	}
 	else if (b1->windowName || b2->windowName)
 	{
 		/* 1 binding is window-specific, the other is global - no need
 		 * to replace this binding. */
-		return False;
+		return 0;
 	}
 
 	if (BIND_IS_KEY_BINDING(b1->type) || BIND_IS_MOUSE_BINDING(b1->type))
 	{
-		return True;
+		return 1;
 	}
 	if (1 STROKE_CODE(&& BIND_IS_STROKE_BINDING(b1->type) &&
 			  strcmp(b1->Stroke_Seq, b2->Stroke_Seq) == 0))
 	{
-		return True;
+		return 1;
 	}
 
-	return False;
+	return 0;
 }
 
 /*
@@ -330,16 +333,15 @@ static Bool replacesBinding(Binding *b1, Binding *b2)
  */
 void CollectBindingList(
 	Display *dpy, Binding **pblist_src, Binding **pblist_dest,
-	binding_t type, STROKE_ARG(void *stroke)
-	int button, KeySym keysym, int modifiers, int contexts,
-	char *windowName)
+	Bool *ret_are_similar_bindings_left, binding_t type,
+	STROKE_ARG(void *stroke) int button, KeySym keysym,
+	int modifiers, int contexts, char *windowName)
 {
 	Binding *tmplist = NULL;
-	Binding *btmp;
 	Binding *bold;
-	Binding *tmpprev;
 	Binding *oldprev;
 
+	*ret_are_similar_bindings_left = False;
 	/* generate a private list of bindings to be removed */
 	AddBinding(
 		dpy, &tmplist, type, STROKE_ARG(stroke)
@@ -347,25 +349,50 @@ void CollectBindingList(
 		windowName);
 	/* now find equivalent bindings in the given binding list and move
 	 * them to the new clist */
-	for (bold = *pblist_src, oldprev = NULL; bold != NULL;
-	     oldprev = bold, bold = bold->NextBinding)
+	for (bold = *pblist_src, oldprev = NULL; bold != NULL; )
 	{
-		for (btmp = tmplist, tmpprev = NULL; btmp != NULL;
-		     tmpprev = btmp, btmp = btmp->NextBinding)
+		Binding *btmp;
+		Binding *bfound;
+
+		bfound = NULL;
+		for (btmp = tmplist;
+		     btmp != NULL && (
+			     bfound == NULL ||
+			     *ret_are_similar_bindings_left == False);
+		     btmp = btmp->NextBinding)
 		{
-			if (replacesBinding(btmp, bold))
+			int rc;
+
+			rc = compare_bindings(btmp, bold);
+			if (rc == 1)
 			{
-				/* move matched binding from src list to dest
-				 * list */
-				UnlinkBinding(pblist_src, bold, oldprev);
-				bold->NextBinding = *pblist_dest;
-				*pblist_dest = bold;
-				/* throw away the tmp binding */
-				UnlinkBinding(&tmplist, btmp, tmpprev);
-				FreeBindingStruct(btmp);
-				/* stop searching for this binding */
-				break;
+				bfound = btmp;
 			}
+			else if (rc == 2)
+			{
+				*ret_are_similar_bindings_left = True;
+				if (bfound != NULL)
+				{
+					break;
+				}
+			}
+		}
+		if (bfound != NULL)
+		{
+			Binding *next;
+
+			/* move matched binding from src list to dest list */
+			UnlinkBinding(pblist_src, bold, oldprev);
+			next = bold->NextBinding;
+			bold->NextBinding = *pblist_dest;
+			*pblist_dest = bold;
+			/* oldprev is unchanged */
+			bold = next;
+		}
+		else
+		{
+			oldprev = bold;
+			bold = bold->NextBinding;
 		}
 	}
 	/* throw away the temporary list */

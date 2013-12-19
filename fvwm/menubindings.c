@@ -402,6 +402,7 @@ int menu_binding(
 {
 	Binding *rmlist;
 	int rc;
+	Bool dummy;
 
 	if (menu_bindings == NULL)
 	{
@@ -430,7 +431,7 @@ int menu_binding(
 	 */
 	/* BEGIN remove */
 	CollectBindingList(
-		dpy, menu_bindings, &rmlist, type, STROKE_ARG(NULL)
+		dpy, menu_bindings, &rmlist, &dummy, type, STROKE_ARG(NULL)
 		button, keysym, modifier, context, menu_style);
 	if (rmlist != NULL)
 	{

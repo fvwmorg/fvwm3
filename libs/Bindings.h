@@ -40,8 +40,8 @@ typedef struct Binding
 	int Modifier;           /* Modifiers for keyboard state */
 	void *Action;           /* What to do? */
 	void *Action2;          /* This one can be used too */
-	char *windowName;		/* Name of window (regex pattern) this binding
-							   applies to. NULL means all windows. */
+	char *windowName;	/* Name of window (regex pattern) this binding
+				   applies to. NULL means all windows. */
 	struct Binding *NextBinding;
 } Binding;
 
@@ -49,12 +49,14 @@ typedef struct Binding
 
 void CollectBindingList(
 	Display *dpy, Binding **pblist_src, Binding **pblist_dest,
-	binding_t type, STROKE_ARG(void *stroke) int button, KeySym keysym,
+	Bool *ret_are_similar_bindings_left, binding_t type,
+	STROKE_ARG(void *stroke) int button, KeySym keysym,
 	int modifiers, int contexts, char *windowName);
 int AddBinding(
 	Display *dpy, Binding **pblist, binding_t type,
 	STROKE_ARG(void *stroke) int button, KeySym keysym, char *key_name,
-	int modifiers, int contexts, void *action, void *action2, char *windowName);
+	int modifiers, int contexts, void *action, void *action2,
+	char *windowName);
 void FreeBindingStruct(Binding *b);
 void FreeBindingList(Binding *b);
 void RemoveBinding(Binding **pblist, Binding *b, Binding *prev);

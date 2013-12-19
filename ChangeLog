@@ -1,3 +1,19 @@
+2013-12-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menubindings.c (menu_binding):
+	Use new signature of CollectBindingList
+	* fvwm/bindings.c (ParseBinding):
+	Cleaned up some code
+	Do not remove window specific bindings that are still needed for other
+	windows.
+	* libs/Bindings.h (CollectBindingList):
+	Added ret_are_similar_bindings_left
+	* libs/Bindings.c (CollectBindingList):
+	indicates whether similar bindings are left, i.e. bindings that differ
+	in window name only
+	(replacesBinding, compare_bindings):
+	Renamed function, returns 2 if bindings only differ in window name
+
 2013-11-09  Dan Espen  <despen(at)1verizon.net>
 
 	* fvwm/events.c (HandlePropertyNotify): Disable prior fix suspected of causing

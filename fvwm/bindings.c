@@ -262,7 +262,7 @@ static int ParseBinding(
 	KeySym keysym = NoSymbol;
 	Bool is_unbind_request = False;
 	Bool is_pass_through = False;
-	Bool is_binding_removed = False;
+	Bool are_similar_bindings_left;
 	Binding *b;
 	Binding *rmlist = NULL;
 	STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "");
@@ -477,15 +477,17 @@ static int ParseBinding(
 		}
 	}
 
-	/*
-	** strip leading whitespace from action if necessary
-	*/
-	while (*action && (*action == ' ' || *action == '\t'))
+	if (action != NULL)
 	{
-		action++;
+		action = SkipSpaces(action, NULL, 0);
 	}
-
-	if (action)
+	if (
+		action == NULL || *action == 0 ||
+		(action[0] == '-' && !is_pass_through))
+	{
+		is_unbind_request = True;
+	}
+	else
 	{
 		is_pass_through = is_pass_through_action(action);
 		if (is_pass_through)
@@ -507,11 +509,6 @@ static int ParseBinding(
 				return 0;
 			}
 		}
-	}
-	/* see if it is an unbind request */
-	if (!action || (action[0] == '-' && !is_pass_through))
-	{
-		is_unbind_request = True;
 	}
 
 	/* short circuit menu bindings for now. */
@@ -540,17 +537,17 @@ static int ParseBinding(
 	*/
 	/* BEGIN remove */
 	CollectBindingList(
-		dpy, pblist, &rmlist, type, STROKE_ARG((void *)stroke)
+		dpy, pblist, &rmlist, &are_similar_bindings_left, type,
+		STROKE_ARG((void *)stroke)
 		button, keysym, modifier, context, window_name);
 	if (rmlist != NULL)
 	{
-		is_binding_removed = True;
-		if (is_unbind_request)
+		int bcontext;
+
+		if (is_unbind_request && are_similar_bindings_left == False)
 		{
 			int rc = 0;
 
-			/* remove the grabs for the key for unbind
-			 * requests */
 			for (b = rmlist; b != NULL; b = b->NextBinding)
 			{
 				/* release the grab */
@@ -563,11 +560,6 @@ static int ParseBinding(
 			}
 		}
 		FreeBindingList(rmlist);
-	}
-	if (is_binding_removed)
-	{
-		int bcontext;
-
 		bcontext = bind_get_bound_button_contexts(
 			pblist, buttons_grabbed);
 		update_nr_buttons(

@@ -26,6 +26,9 @@ Changes in release 2.6.6 (not released yet)
   - Windows no longer jump from one position to the other which
     could happen in some cases with SnapAttraction.  Windows now
     snap to the closest window (or screen edge).
+  - Removing bindings had several strange side effects that are
+    fixed now (removing too many bindings; old bindings showing up
+    again after another is removed; possibly other effects).
 
 -------------------------------------------------------------------
 Changes in release 2.6.5 (20-Apr-2012)
