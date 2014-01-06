@@ -271,7 +271,7 @@ The contents of the button is centered on the button. This is the
 default but may be changed by \fILeft\fP or \fIRight\fP.
 
 .IP "Top"
-The contents of the button is vertically aligned at the top of the 
+The contents of the button is vertically aligned at the top of the
 button. The default is to vertically center it.
 
 .IP "Colorset \fIcolorset\fP"
@@ -987,7 +987,7 @@ to give this button at least \fIwidth\fP by \fIheight\fP pixels
 inside the relief and padding.
 
 .SH DYNAMICAL ACTIONS
-A running FvwmButtons instance may receive some dynamical actions.
+A running FvwmButtons instance may receive some commands at run time.
 This is achived using the fvwm command
 .nf
 .sp
@@ -997,40 +997,47 @@ SendToModule FvwmButtons-Alias <action> <params>
 Supported actions:
 
 .IP "ChangeButton \fIbutton_id\fP options"
-where
+can be used to change the title or icon of a button at run time.
 .I button_id
 is the id of the button to change as specified using the
 .B Id
-button option. It may also be a number, in this case the button
+button option.  It may also be a number, in this case the button
 with the given number is assumed.  And finally,
 .I button_id
 may be in the form +x+y, where x and y are a column number and
 a row number of the button to be changed.
 It is possible to specify multiple option pairs (name with value)
-by delimiting them using comma. Currently options include
+by delimiting them using comma.  Currently options include
 .BR Title ", " ActiveTitle ", " PressTitle ", " Icon ", "
 .BR ActiveIcon " and " PressIcon .
+These options work like the configuration options of the same
+name.
 
 .IP "ExpandButtonVars \fIbutton_id\fP command"
-where
+replaces variables present in the
+.I command
+exactly like in the
+.B Action
+button option and then sends the command back to fvwm.
 .I button_id
 has the same syntax as described in
 .B ChangeButton
-above. Command may be any fvwm command with variables $var that
-are expanded if supported.
+above.
 
 .IP "PressButton \fIbutton_id\fP [\fImouse_button\fP]"
-where
+simulates a mouse click on a button.
 .I button_id
 is the id of the button to press as specified using the
 .B Id
 button option and
 .I mouse_button
-is the number of mouse button used to click on the button e.g "1" for left
-mouse button etc. Quotes around the number is not needed. If
+is the number of mouse button used to click on the button e.g "1"
+for the left mouse button etc.  Quotes around the number are not
+necessary.  If
 .I mouse_button
-option is omitted "1" assumed. This command behaves exactly like if
-the button in question was pressed using the mouse.
+option is omitted, mouse button 1 is assumed.  This command
+behaves exactly as if the mouse button was pressed and released on
+the button on in question.
 
 .IP Silent
 This prefix may be specified before other actions. It disables
