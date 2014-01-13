@@ -29,6 +29,9 @@ Changes in release 2.6.6 (not released yet)
   - Removing bindings had several strange side effects that are
     fixed now (removing too many bindings; old bindings showing up
     again after another is removed; possibly other effects).
+  - Windows sometimes did not get expose events (i.e. did not
+    redraw properly) if they were uncovered by moving a window
+    above them.  This has been fixed.
 
 -------------------------------------------------------------------
 Changes in release 2.6.5 (20-Apr-2012)

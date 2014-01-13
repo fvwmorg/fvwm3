@@ -2825,6 +2825,10 @@ Bool __move_loop(
 					}
 				}
 			}
+			/* dv (13-Jan-2014): Without this XFlush the modules
+			 * (and probably other windows too) sometimes get their
+			 * expose only after the next motion step.  */
+			XFlush(dpy);
 			break;
 
 		case Expose:
