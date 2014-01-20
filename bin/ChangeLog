@@ -1,3 +1,9 @@
+2014-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* ChangeLog:
+	* fvwm-menu-desktop-config.fpl:
+	remove trailing whitespace
+
 2013-10-24  Thomas Funk  <t.funk@web.de>
 
 	* fvwm-menu-desktop.in:
@@ -48,8 +54,8 @@
 
 	* fvwm-menu-desktop.1.in: Applied patches from Thomas Funk
 	with some minor changes.
-	* fvwm-menu-desktop-config.fpl: 
-	* fvwm-menu-desktop.in: 
+	* fvwm-menu-desktop-config.fpl:
+	* fvwm-menu-desktop.in:
 
 2012-07-28  Dan Espen  <despen@verizon.net>
 
@@ -276,7 +282,7 @@
 
 	Ensure we don't overwrite any previously defined file when following
 	Read files picked up by using "-f".
-	
+
 2010-01-02  Thomas Adam   <thomas.adam22@gmail.com>
 	* fvwm-convert-2.6.in:
 	* fvwm-convert-2.6.1.in:

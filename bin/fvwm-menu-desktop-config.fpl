@@ -31,7 +31,7 @@ foreach my $path (@selected_filelist) {
 my $i = 1;
 foreach my $path (@all_filelist) {
     my $name = "MEN" . $i;
-    # qr matched against the end of the $filename. 
+    # qr matched against the end of the $filename.
     # The matching portion is removed and becomes the $suffix.
     my ($filename, $directories, $suffix) = fileparse($path, qr/\.[^.]*/);
     push (@{$all_menus{$directories}{$i}}, ($filename, $name, "off"));
@@ -56,7 +56,7 @@ DestroyModuleConfig  ${modname}: *
 *${modname}: Separator
 *${modname}: Line       center
 *${modname}: Text       \"\$[gt.Multiple Menu]\"
-*${modname}: Button     continue \"\$[gt.Help]\" 
+*${modname}: Button     continue \"\$[gt.Help]\"
 *${modname}: Command    Module FvwmForm FvwmForm-MultiMenuHelp
 *${modname}: Line
 ";
@@ -106,9 +106,9 @@ $fvwmform_commands .= "
 *${modname}: Separator
 *${modname}: Line       center
 *${modname}: Text       \"\$[gt.Single Menu]\"
-*${modname}: Button     continue \"\$[gt.Help]\" 
+*${modname}: Button     continue \"\$[gt.Help]\"
 *${modname}: Command    Module FvwmForm FvwmForm-SingleMenuHelp
-*${modname}: Line 
+*${modname}: Line
 *${modname}: Line       Left
 *${modname}: Text       \"\$[gt.If you want a single menu only deselect all menus above and fill out the fields below.]\"
 *${modname}: Line       Left
@@ -137,7 +137,7 @@ $fvwmform_commands .= "
 
 *${modname}: Line       center
 *${modname}: Text       \"\$[gt.General Options]\"
-*${modname}: Button     continue \"\$[gt.Help]\" 
+*${modname}: Button     continue \"\$[gt.Help]\"
 *${modname}: Command    Module FvwmForm FvwmForm-GenOptionHelp
 *${modname}: Line
 *${modname}: Line       left
@@ -202,7 +202,7 @@ $fvwmform_commands .= "
 
 *${modname}: Line
 *${modname}: Line       expand
-*${modname}: Button     continue \"\$[gt.Generate Menu(s)]\" 
+*${modname}: Button     continue \"\$[gt.Generate Menu(s)]\"
 *${modname}: Command    PipeRead 'fvwm-menu-desktop2 \\
 \$(IconsOn\?--enable-mini-icons )\\
 \$(Size\?-s \$(Size) )\\
@@ -276,9 +276,9 @@ $fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
 
 *${modname}: Button         restart    \"\$[gt.Reset]\"
 *${modname}: Command        Nop
-*${modname}: Button         continue \"\$[gt.Help]\"        
+*${modname}: Button         continue \"\$[gt.Help]\"
 *${modname}: Command        Exec exec xterm -g 100x50 -n \"Help fvwm-menu-desktop\" -T \"Help fvwm-menu-desktop\" -e \"man fvwm-menu-desktop\" &
-*${modname}: Button         quit       \"\$[gt.Quit]\"        
+*${modname}: Button         quit       \"\$[gt.Quit]\"
 *${modname}: Command        Nop
 
 # Tell ${modname} to read vars from .${modname}Default file:
