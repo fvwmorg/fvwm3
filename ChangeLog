@@ -1,3 +1,9 @@
+2014-02-11  Dan Espen  <despen@verizon.net>
+
+	* libs/Colorset.c (SetWindowBackgroundWithOffset): Fix XGetGeometry
+	fix type-punned warnings.
+	* libs/Colorset.h: Fix prototype.
+
 2014-01-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (__move_loop):

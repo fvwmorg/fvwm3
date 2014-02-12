@@ -228,19 +228,25 @@ Pixmap ScrollPixmap(
  * if width or height are zero the window size is queried
  */
 void SetWindowBackgroundWithOffset(
-	Display *dpy, Window win, int x_off, int y_off, int width, int height,
+	Display *dpy, Window win, int x_off, int y_off, unsigned int width, unsigned int height,
 	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area)
 {
 	Pixmap pixmap = None;
 	Pixmap mask = None;
-	XID junk;
-
+	union {
+		XID junk;
+		unsigned int ui_junk;
+		int i_junk;
+	} XID_int;
 	if (0 == width || 0 == height)
 	{
 		if (!XGetGeometry(
-			    dpy, win, &junk, (int *)&junk, (int *)&junk,
-			    (unsigned int *)&width, (unsigned int *)&height,
-			    (unsigned int *)&junk, (unsigned int *)&junk))
+			    dpy, win, &XID_int.junk,
+			    &XID_int.i_junk, &XID_int.i_junk,
+			    (unsigned int *)&width,
+			    (unsigned int *)&height,
+			    &XID_int.ui_junk,
+			    &XID_int.ui_junk))
 		{
 			return;
 		}
@@ -423,16 +429,20 @@ Pixmap CreateOffsetBackgroundPixmap(
 		if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset))
 		{
 			/* check if it is still here */
-			XID dummy;
+			union {
+				XID junk;
+				unsigned int ui_junk;
+				int i_junk;
+			} XID_int;
 			/* a priori we should grab the server, but this
 			 * cause PositiveWrite error when you move a
 			 * window with a transparent title bar */
 			if (!XGetGeometry(
-				    dpy, colorset->pixmap, &dummy,
-				    (int *)&dummy, (int *)&dummy,
+				    dpy, colorset->pixmap, &XID_int.junk,
+				    &XID_int.i_junk, &XID_int.i_junk,
 				    (unsigned int *)&w, (unsigned int *)&h,
-				    (unsigned int *)&dummy,
-				    (unsigned int *)&dummy) ||
+				    &XID_int.ui_junk,
+				    &XID_int.ui_junk) ||
 			    w != cs_width || h != cs_height)
 			{
 				return None;

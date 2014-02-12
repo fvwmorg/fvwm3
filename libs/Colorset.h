@@ -176,7 +176,7 @@ Pixmap ScrollPixmap(
 	Display *dpy, Pixmap p, GC gc, int x_off, int y_off, int width,
 	int height, unsigned int depth);
 void SetWindowBackgroundWithOffset(
-	Display *dpy, Window win, int x_off, int y_off, int width, int height,
+	Display *dpy, Window win, int x_off, int y_off, unsigned int width, unsigned int height,
 	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);
 void SetWindowBackground(
 	Display *dpy, Window win, int width, int height,
