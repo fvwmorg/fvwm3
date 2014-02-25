@@ -1,3 +1,8 @@
+2014-02-25  Thomas Funk  <t.funk@web.de>
+
+	* fvwm-menu-desktop.in:
+	Converting of icons always to png
+
 2014-01-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* ChangeLog:

@@ -2,6 +2,9 @@
  
 # Modification History
 
+# Changed on 25/02/14 by Thomas Funk:
+# - Converting of icons always to png
+
 # Changed on 06/10/13 by Thomas Funk:
 # Some Bugfixes:
 # - DecodeEncodeErrors in menu names
@@ -128,7 +131,7 @@ Standard output is a series Fvwm commands."""
     global verbose, force, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
     global default_app_icon, default_dir_icon
-    version = "2.3"
+    version = "2.3.1"
     verbose = False
     force = False
     desktop=''
@@ -455,15 +458,15 @@ def geticonfile(icon):
                             os.path.basename(iconpath))
 
     if os.path.exists(iconpath):
+        iconfile = iconfile.replace(extension, '.png')
         if extension == '.svg':
-            iconfile = iconfile.replace('.svg', '.png')
             os.system("if test \\( \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) \\) -o \\( '%s' != '%s' \\); then convert -background none '%s' -resize %i '%s' ; fi"% 
                           (iconfile, iconpath, iconfile, current_theme, previous_theme, iconpath, size, iconfile))
         else:
             os.system("if test \\( \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) \\) -o \\( '%s' != '%s' \\); then convert '%s' -resize %i '%s' ; fi"% 
                           (iconfile, iconpath, iconfile, current_theme, previous_theme, iconpath, size, iconfile))
     else:
-        sys.stderr.write("%s not found! Use default icon.\n" % iconpath)
+        sys.stderr.write("%s not found! Using default icon.\n" % iconpath)
         return None
     return iconfile
 
