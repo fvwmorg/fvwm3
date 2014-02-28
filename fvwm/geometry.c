@@ -343,7 +343,18 @@ void get_shaded_geometry(
 	int big_height = big_g->height;
 	int d;
 
-	get_window_borders(fw, &b);
+	switch (SHADED_DIR(fw))
+	{
+	case DIR_SW:
+	case DIR_SE:
+	case DIR_NW:
+	case DIR_NE:
+		get_window_borders_no_title(fw, &b);
+		break;
+	default:
+		get_window_borders(fw, &b);
+		break;
+	}
 	*small_g = *big_g;
 	d = 0;
 	switch (SHADED_DIR(fw))

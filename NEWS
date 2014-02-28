@@ -11,6 +11,8 @@ Changes in release 2.6.6 (not released yet)
   - EnvMatch supports infostore variables.
   - The option "forget" to the Maximize command allows to
     unmaximize a window without changing its size and position.
+  - Windows shaded to a corner (NW, NE, SW, SE) are reduced to a
+    small square.
 
 * Bug fixes:
 
