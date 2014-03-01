@@ -1,3 +1,11 @@
+2014-03-01  Thomas Funk  <t.funk@web.de>
+
+	* fvwm.fr.po:
+	* fvwm.fr.gmo:
+	* FvwmScript.fr.po:
+	* FvwmScript.fr.gmo:
+	Apply patches by Dominique Michel
+
 2013-12-13  Thomas Funk  <t.funk@web.de>
 
 	* fvwm.es.po:

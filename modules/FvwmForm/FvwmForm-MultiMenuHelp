@@ -1,5 +1,5 @@
 # FvwmForm-MultiMenuHelp - Help Text for fvwm-menu-desktop-config Multiple Menu
-# V 1.0.2
+# V 1.0.3
 DestroyModuleConfig  FvwmForm-MultiMenuHelp: *
 *FvwmForm-MultiMenuHelp:   Title   "fvwm-menu-desktop-config - $[gt.Multiple Menu] $[gt.Help]"
 *FvwmForm-MultiMenuHelp:   WarpPointer
@@ -25,7 +25,7 @@ DestroyModuleConfig  FvwmForm-MultiMenuHelp: *
 *FvwmForm-MultiMenuHelp:   Text    "$[gt.Menus in]"
 *FvwmForm-MultiMenuHelp:   Text    " /etc/xdg/menus/"
 *FvwmForm-MultiMenuHelp:   Line    left
-*FvwmForm-MultiMenuHelp:   Text    "  => $[gt.List menus with checkboxes found in] /etc/xdg/menus/"
+*FvwmForm-MultiMenuHelp:   Text    "  => $[gt.List menus with checkboxes found in /etc/xdg/menus/]"
 *FvwmForm-MultiMenuHelp:   Line    left
 *FvwmForm-MultiMenuHelp:   Line    " "
 *FvwmForm-MultiMenuHelp:   Line    left
@@ -33,7 +33,7 @@ DestroyModuleConfig  FvwmForm-MultiMenuHelp: *
 *FvwmForm-MultiMenuHelp:   Text    " /home/<user>/.config/menus/"
 *FvwmForm-MultiMenuHelp:   Line    left
 *FvwmForm-MultiMenuHelp:   Text    "  =>"
-*FvwmForm-MultiMenuHelp:   Text    "$[gt.List menus with checkboxes found in] $HOME/.config/menus/ $[gt.if available.]"
+*FvwmForm-MultiMenuHelp:   Text    "$[gt.List menus with checkboxes found in $HOME/.config/menus/] $[gt.if available.]"
 *FvwmForm-MultiMenuHelp:   Line    Left
 *FvwmForm-MultiMenuHelp:   Line    " "
 *FvwmForm-MultiMenuHelp:   Line    left
