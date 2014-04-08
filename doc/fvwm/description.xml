@@ -22,7 +22,7 @@ main goal of fvwm95 was to supply a Windows 95 like look and
 feel. Since then, fvwm has been greatly enhanced and practically
 all fvwm95 features can be achieved by fvwm.</para>
 
-<para>Fvwm provides both, a large
+<para>Fvwm provides both a large
 <emphasis remap='I'>virtual desktop</emphasis>
 and
 <emphasis remap='I'>multiple disjoint desktops</emphasis>
@@ -35,16 +35,16 @@ unrelated to the others.</para>
 
 <para>Fvwm provides
 <emphasis remap='I'>keyboard accelerators</emphasis>
-which allow you to perform most window manager functions,
-including moving and resizing windows, and operating the menus,
+that allow you to perform most window manager functions,
+including moving and resizing windows and operating the menus,
 using keyboard shortcuts.</para>
 
 <para>Fvwm has also overcome the distinction between configuration
 commands and action commands that most window managers
 make. Configuration commands typically set fonts, colors, menu
-contents, key and mouse function bindings, while action commands
+contents, and key and mouse function bindings, while action commands
 do things like raise and lower windows.  Fvwm makes no such
-distinction, and allows anything to be changed at any time.</para>
+distinction and allows anything to be changed at any time.</para>
 
 <para>Other noteworthy differences between fvwm and other X11 window
 managers are the introduction of the <fvwmref cmd="Style" opt="SloppyFocus"/> and <fvwmref cmd="Style" opt="NeverFocus"/>

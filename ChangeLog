@@ -1,3 +1,7 @@
+2014-04-05 Stephen Dennison <stephenrd(at)gmail(dot)com>
+	* doc/fvwm/description.xml:
+	fixed minor grammatical errors
+
 2014-02-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/geometry.c (get_shaded_geometry):
