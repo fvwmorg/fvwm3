@@ -436,7 +436,7 @@ def decodetext(text):
     return new_text
     
 def geticonfile(icon):
-    iconpath = xdg.IconTheme.getIconPath(icon, None, current_theme, ["png", "xpm", "svg"])
+    iconpath = xdg.IconTheme.getIconPath(icon, size, current_theme, ["png", "xpm", "svg"])
 
     if not iconpath == None:
         extension = os.path.splitext(iconpath)[1]
@@ -451,7 +451,7 @@ def geticonfile(icon):
         return iconpath
 
     if not os.path.isdir(os.path.expanduser(icon_dir)):
-        os.system("mkdir " + os.path.expanduser(icon_dir))
+        os.makedirs(os.path.expanduser(icon_dir))
 
     iconfile = os.path.join(os.path.expanduser(icon_dir),
                             "%ix%i-" % (size, size) + 

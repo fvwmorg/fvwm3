@@ -1,3 +1,9 @@
+2014-04-25  Thomas Funk  <t.funk@web.de>
+
+	* fvwm-menu-desktop.in:
+	fix bug that specified icon size won't be used while searching
+	fix bug that sub directories cannot generated
+
 2014-02-25  Thomas Funk  <t.funk@web.de>
 
 	* fvwm-menu-desktop.in:
