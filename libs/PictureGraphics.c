@@ -468,12 +468,12 @@ Pixmap PCreateRenderPixmap(
 		goto bail;
 	}
 
-	colors = xmalloc(n_src_w * n_src_h * sizeof(XColor));
+	colors = fxmalloc(n_src_w * n_src_h * sizeof(XColor));
 	if (dest_fim)
 	{
-		dest_colors = xmalloc(w * h * sizeof(XColor));
+		dest_colors = fxmalloc(w * h * sizeof(XColor));
 	}
-	am = xmalloc(n_src_w * n_src_h * sizeof(unsigned short));
+	am = fxmalloc(n_src_w * n_src_h * sizeof(unsigned short));
 
 	if (tint_percent > 0)
 	{
@@ -873,8 +873,8 @@ Pixmap PCreateDitherPixmap(
 		return None;
 	}
 
-	colors = xmalloc(out_width * out_height * sizeof(XColor));
-	cm = xmalloc(out_width * out_height * sizeof(char));
+	colors = fxmalloc(out_width * out_height * sizeof(XColor));
+	cm = fxmalloc(out_width * out_height * sizeof(char));
 
 	x = y = 0;
 	for (j = 0; j < out_height; j++,y++)
@@ -1144,7 +1144,7 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 			dest_width, dest_height, alpha_gc);
 	}
 
-	q = xcalloc(1, sizeof(FvwmPicture));
+	q = fxcalloc(1, sizeof(FvwmPicture));
 	q->count = 1;
 	q->name = NULL;
 	q->next = NULL;
@@ -1192,7 +1192,7 @@ FvwmPicture *PGraphicsCreateTiledPicture(
 			dest_height, FRenderGetAlphaDepth(), alpha_gc);
 	}
 
-	q = xcalloc(1, sizeof(FvwmPicture));
+	q = fxcalloc(1, sizeof(FvwmPicture));
 	q->count = 1;
 	q->name = NULL;
 	q->next = NULL;

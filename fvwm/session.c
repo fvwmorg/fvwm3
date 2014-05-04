@@ -127,7 +127,7 @@ char *duplicate(const char *s)
 
 	if (!s) return NULL;
 	l = strlen(s);
-	r = xmalloc (sizeof(char)*(l+1));
+	r = fxmalloc (sizeof(char)*(l+1));
 	strncpy(r, s, l+1);
 
 	return r;
@@ -211,7 +211,7 @@ static void set_real_state_filename(char *filename)
 	{
 		free(real_state_filename);
 	}
-	real_state_filename = xstrdup(filename);
+	real_state_filename = fxstrdup(filename);
 
 	return;
 }
@@ -248,7 +248,7 @@ static char *get_unique_state_filename(void)
 	{
 		return NULL;
 	}
-	filename = xstrdup(CatString2(path, "/.fs-XXXXXX"));
+	filename = fxstrdup(CatString2(path, "/.fs-XXXXXX"));
 	fd = fvwm_mkstemp(filename);
 	if (fd == -1)
 	{
@@ -1200,7 +1200,7 @@ LoadGlobalState(char *filename)
 				s2++;
 			}
 			sscanf(s2, "%[^\n]", s1);
-			is_key = xstrdup(s1);
+			is_key = fxstrdup(s1);
 		}
 		else if (!strcmp(s1, "[VALUE]"))
 		{
@@ -1211,7 +1211,7 @@ LoadGlobalState(char *filename)
 				s2++;
 			}
 			sscanf(s2, "%[^\n]", s1);
-			is_value = xstrdup(s1);
+			is_value = fxstrdup(s1);
 
 			fprintf(stderr, "GOT: %s -> %s\n", is_key, is_value);
 
@@ -1335,7 +1335,7 @@ LoadWindowStates(char *filename)
 		{
 			sscanf(s, "%*s %lx", &w);
 			num_match++;
-			matches = xrealloc(
+			matches = fxrealloc(
 				(void *)matches, sizeof(Match), num_match);
 			matches[num_match - 1].win = w;
 			matches[num_match - 1].client_id = NULL;
@@ -1480,7 +1480,7 @@ LoadWindowStates(char *filename)
 			sscanf(s, "%*s %i%n",
 			       &matches[num_match - 1].wm_command_count, &pos);
 			matches[num_match - 1].wm_command = (char **)
-				xmalloc(
+				fxmalloc(
 					matches[num_match - 1].
 					wm_command_count * sizeof (char *));
 			for (i = 0;

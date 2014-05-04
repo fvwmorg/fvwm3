@@ -199,14 +199,61 @@ void FScreenInit(Display *dpy)
 
 single_screen:
 	m = monitor_new();
-	m->coord.x = 0;
-	m->coord.y = 0;
-	m->coord.w = DisplayWidth(disp, DefaultScreen(disp));
-	m->coord.h = DisplayHeight(disp, DefaultScreen(disp));
-	m->name = xstrdup("global");
-	TAILQ_INSERT_HEAD(&monitor_q, m, entry);
+	coord.x = 0;
+	coord.y = 0;
+	coord.w = DisplayWidth(disp, DefaultScreen(disp));
+	coord.h = DisplayHeight(disp, DefaultScreen(disp));
 
-	already_initialised = 1;
+	monitor_create_randr_region(m, GLOBAL_SCREEN_NAME, &coord, is_primary);
+
+	if (++no_of_screens > 0)
+		no_of_screens--;
+}
+
+static void
+monitor_create_randr_region(struct monitor *m, const char *name,
+	struct coord *coord, int is_primary)
+{
+	fprintf(stderr, "Monitor: %s %s (x: %d, y: %d, w: %d, h: %d)\n",
+		name, is_primary ? "(PRIMARY)" : "",
+		coord->x, coord->y, coord->w, coord->h);
+
+	if (monitor_check_stale(m))
+		free(m->name);
+
+	m->name = fxstrdup(name);
+	memcpy(&m->coord, coord, sizeof(*coord));
+
+	if (is_primary) {
+		TAILQ_INSERT_HEAD(&monitor_q, m, entry);
+	} else {
+		TAILQ_INSERT_TAIL(&monitor_q, m, entry);
+	}
+}
+
+static int
+monitor_check_stale(struct monitor *m)
+{
+	struct monitor	*mcheck = NULL;
+
+	TAILQ_FOREACH(mcheck, &monitor_q, entry) {
+		if (m == NULL || mcheck == NULL)
+			break;
+		if (m->name == NULL || mcheck->name == NULL) {
+			/* Shouldn't happen. */
+			break;
+		}
+		if (strcmp(mcheck->name, m->name) == 0)
+			return (1);
+	}
+
+	return (0);
+}
+
+int
+monitor_get_count(void)
+{
+	return (no_of_screens);
 }
 
 /* Intended to be called by modules.  Simply pass in the parameter from the
@@ -549,11 +596,11 @@ int FScreenParseGeometryWithScreen(
 	 * question!
 	 */
 	if (strchr(parsestring, '@') == NULL) {
-		copy = xstrdup(parsestring);
+		copy = fxstrdup(parsestring);
 		goto parse_geometry;
 	}
 
-	copy = xstrdup(parsestring);
+	copy = fxstrdup(parsestring);
 	copy = strsep(&parsestring, "@");
 	*screen_return = parsestring;
 	geom_str = strsep(&copy, "@");

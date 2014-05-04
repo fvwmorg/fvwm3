@@ -1911,7 +1911,7 @@ CombineChars(
 	}
 
 	/* decompose composed characters */
-	source = xmalloc((len + 1) * sizeof(unsigned short));
+	source = fxmalloc((len + 1) * sizeof(unsigned short));
 	/* convert from UTF-8-encoded text to internal 16-bit encoding */
 	str_len = convert_to_ucs2(str_visual,source,len);
 	in_str_len = str_len;
@@ -1919,11 +1919,11 @@ CombineChars(
 	   have string length */
 
 	/* be pessimistic, assume all characters are decomposed */
-	dest = xmalloc((str_len + 1) * 2 * sizeof(unsigned short));
+	dest = fxmalloc((str_len + 1) * 2 * sizeof(unsigned short));
 	/* use theese to keep track of the mapping of characters from
 	   logical to visual */
-	source_v_to_l = xmalloc(str_len * sizeof(int));
-	dest_v_to_l = xmalloc(str_len * 2 * sizeof(int));
+	source_v_to_l = fxmalloc(str_len * sizeof(int));
+	dest_v_to_l = fxmalloc(str_len * 2 * sizeof(int));
 	/* setup initial mapping 1-to-1 */
 	for(i = 0 ; i < str_len ; i++)
 	{
@@ -1960,8 +1960,8 @@ CombineChars(
 		source = dest;
 		source_v_to_l = dest_v_to_l;
 		str_len = j;
-		dest = xmalloc((str_len + 1) * 2 * sizeof(unsigned short));
-		dest_v_to_l = xmalloc(str_len * 2 * sizeof(int));
+		dest = fxmalloc((str_len + 1) * 2 * sizeof(unsigned short));
+		dest_v_to_l = fxmalloc(str_len * 2 * sizeof(int));
 	} while (has_changed);
 	/* source now holds decomposed string (got swapped before exiting
 	   loop, str_len holds string length */
@@ -2066,7 +2066,7 @@ CombineChars(
 			}
 		}
 		/* allocate storage for combining characters */
-		*comb_chars = xmalloc((comp_str_len + 1) *
+		*comb_chars = fxmalloc((comp_str_len + 1) *
 				sizeof(superimpose_char_t));
 	}
 	for (i = 0,j = 0,k = 0 ; i < str_len ; i++)
@@ -2107,7 +2107,7 @@ CombineChars(
 
 	if(l_to_v != NULL)
 	{
-		*l_to_v = xmalloc((in_str_len + 1) * sizeof(int));
+		*l_to_v = fxmalloc((in_str_len + 1) * sizeof(int));
 		/* map the visual to logical mapping obtained above into
 		   a logical to visual mapping */
 		/* setup the final mapping from logical to visual positions */

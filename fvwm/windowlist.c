@@ -78,11 +78,11 @@ static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 	desk_name = GetDesktopName(desk);
 	if (desk_name != NULL)
 	{
-		tlabel = xmalloc(strlen(desk_name)+50);
+		tlabel = fxmalloc(strlen(desk_name)+50);
 	}
 	else
 	{
-		tlabel = xmalloc(50);
+		tlabel = fxmalloc(50);
 	}
 
 	/* TA:  FIXME! xasprintf() */
@@ -554,7 +554,7 @@ void CMD_WindowList(F_CMD_ARGS)
 			}
 			else if (!opts || !*opts)
 			{
-				default_action = xstrdup(tok);
+				default_action = fxstrdup(tok);
 			}
 			else
 			{
@@ -855,7 +855,7 @@ void CMD_WindowList(F_CMD_ARGS)
 				free_name = True;
 			}
 
-			t_hot = xmalloc(strlen(name) + 80);
+			t_hot = fxmalloc(strlen(name) + 80);
 			if (use_hotkey)
 			{
 				/* Generate label */
@@ -999,7 +999,7 @@ void CMD_WindowList(F_CMD_ARGS)
 				strcat(t_hot,tname);
 			}
 			ffunc = func ? func : "WindowListFunc";
-			tfunc = xmalloc(strlen(ffunc) + 36);
+			tfunc = fxmalloc(strlen(ffunc) + 36);
 			/* support two ways for now: window context
 			 * (new) and window id param (old) */
 			

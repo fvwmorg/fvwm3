@@ -1,28 +1,25 @@
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+/* Memory management routines...
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
 
+/* Originally from OpenBSD */
+
 #include "config.h"
 
 #include <stdio.h>
-#include <stdint.h>
 #include <err.h>
 #include <sys/param.h>
 #include <stdint.h>
 #include "safemalloc.h"
 
 void *
-xmalloc(size_t length)
+fxmalloc(size_t length)
 {
 	void	*ptr;
 
@@ -36,7 +33,7 @@ xmalloc(size_t length)
 }
 
 void *
-xcalloc(size_t num, size_t length)
+fxcalloc(size_t num, size_t length)
 {
 	void	*ptr;
 
@@ -53,7 +50,7 @@ xcalloc(size_t num, size_t length)
 }
 
 void *
-xrealloc(void *oldptr, size_t nmemb, size_t size)
+fxrealloc(void *oldptr, size_t nmemb, size_t size)
 {
 	size_t	 newsize = nmemb * size;
 	void	*newptr;
@@ -63,19 +60,19 @@ xrealloc(void *oldptr, size_t nmemb, size_t size)
 	if (SIZE_MAX / nmemb < size)
 		errx(1, "nmemb * size > SIZE_MAX");
 	if ((newptr = realloc(oldptr, newsize)) == NULL)
-		err(1, "xrealloc failed");
+		err(1, "fxrealloc failed");
 
 	return (newptr);
 }
 
 char *
-xstrdup(const char *s)
+fxstrdup(const char *s)
 {
 	char	*ptr;
 	size_t	 len;
 
 	len = strlen(s) + 1;
-	ptr = xmalloc(len);
+	ptr = fxmalloc(len);
 
 	strlcpy(ptr, s, len);
 

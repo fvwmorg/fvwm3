@@ -260,7 +260,7 @@ main(int argc, char **argv)
 			token = PeekToken(enter_fn, NULL);
 			if (!StrEquals(token, "Silent"))
 			{
-				enter_fn = xstrdup(
+				enter_fn = fxstrdup(
 					CatString2("Silent ", enter_fn));
 			}
 		}
@@ -283,7 +283,7 @@ main(int argc, char **argv)
 			token = PeekToken(leave_fn, NULL);
 			if (!StrEquals(token, "Silent"))
 			{
-				leave_fn = xstrdup(
+				leave_fn = fxstrdup(
 					CatString2("Silent ", leave_fn));
 			}
 		}
@@ -344,7 +344,7 @@ main(int argc, char **argv)
 	{
 		len += 32;
 	}
-	buf = xmalloc(len);
+	buf = fxmalloc(len);
 
 	while (!isTerminated)
 	{

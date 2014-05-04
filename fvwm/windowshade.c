@@ -237,7 +237,7 @@ void CMD_WindowShadeAnimate(F_CMD_ARGS)
 		"The WindowShadeAnimate command is obsolete. "
 		"Please use 'Style * WindowShadeSteps %s' instead.", action);
 	/* TA:  FIXME!  xasprintf() */
-	buf = xmalloc(strlen(action) + 32);
+	buf = fxmalloc(strlen(action) + 32);
 	sprintf(buf, "* WindowShadeSteps %s", action);
 	action = buf;
 	CMD_Style(F_PASS_ARGS);

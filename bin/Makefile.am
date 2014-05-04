@@ -17,7 +17,7 @@ man_MANS = \
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3 $(xpm_LIBS) $(Xcursor_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(Xrender_LIBS) \
-	$(Xcursor_LIBS) $(png_LIBS) $(rsvg_LIBS) $(Xinerama_LIBS)
+	$(Xcursor_LIBS) $(png_LIBS) $(rsvg_LIBS) $(XRandR_LIBS)
 AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 	$(rsvg_CFLAGS) $(Xinerama_CFLAGS)
 

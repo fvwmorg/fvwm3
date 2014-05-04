@@ -150,7 +150,7 @@ char *EscapeString(char *s, const char *qchars, char echar)
 			len++;
 		}
 	}
-	ret = xmalloc(len);
+	ret = fxmalloc(len);
 	for (t = ret; *s; s++, t++)
 	{
 		if (strchr(qchars, *s) != NULL)
@@ -274,7 +274,7 @@ char *GetQuotedString(
 		t = SkipQuote(t, qlong, qstart, qend);
 	}
 	len = t - sin;
-	*sout = xmalloc(len + 1);
+	*sout = fxmalloc(len + 1);
 	memcpy(*sout, sin, len);
 	(*sout)[len] = 0;
 	if (*t)
@@ -479,7 +479,7 @@ char *DoGetNextToken(
 	}
 	else
 	{
-		*token = xstrdup(tmptok);
+		*token = fxstrdup(tmptok);
 	}
 
 	return end;
@@ -940,7 +940,7 @@ char *GetFileNameFromPath(char *path)
 	}
 
 	/* TA:  FIXME!  xasprintf() */
-	name = xmalloc(strlen(s)+1);
+	name = fxmalloc(strlen(s)+1);
 	strcpy(name, s);
 
 	return name;

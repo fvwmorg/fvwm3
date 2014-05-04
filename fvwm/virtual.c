@@ -1684,7 +1684,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	{
 
 		/* check if the command does contain at least one token */
-		command = xstrdup(action);
+		command = fxstrdup(action);
 		if (PeekToken(action , &action) == NULL)
 		{
 			/* the command does not contain a token so
@@ -1789,7 +1789,7 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 	{
 
 		/* check if the command does contain at least one token */
-		command = xstrdup(action);
+		command = fxstrdup(action);
 		if (PeekToken(action , &action) == NULL)
 		{
 			/* the command does not contain a token so
@@ -2031,38 +2031,6 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 			"EdgeResistance requires two or three arguments");
 		return;
 	}
-
-	return;
-}
-
-void CMD_Xinerama(F_CMD_ARGS)
-{
-	int toggle;
-
-	toggle = ParseToggleArgument(action, NULL, -1, 0);
-	if (toggle == -1)
-	{
-		toggle = !FScreenIsEnabled();
-	}
-	if (!toggle != !FScreenIsEnabled())
-	{
-		Scr.flags.do_need_window_update = True;
-		Scr.flags.has_xinerama_state_changed = True;
-		FScreenOnOff(toggle);
-		broadcast_xinerama_state();
-	}
-
-	return;
-}
-
-void CMD_XineramaPrimaryScreen(F_CMD_ARGS)
-{
-	if (FScreenIsEnabled())
-	{
-		Scr.flags.do_need_window_update = True;
-		Scr.flags.has_xinerama_state_changed = True;
-	}
-	broadcast_xinerama_state();
 
 	return;
 }
@@ -2373,7 +2341,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		if (d == NULL)
 		{
 			/* add it at the end */
-			*prev = xcalloc(1, sizeof(DesktopsInfo));
+			*prev = fxcalloc(1, sizeof(DesktopsInfo));
 			(*prev)->desk = desk;
 			if (action != NULL && *action && *action != '\n')
 			{
@@ -2383,7 +2351,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		else
 		{
 			/* instert it */
-			new = xcalloc(1, sizeof(DesktopsInfo));
+			new = fxcalloc(1, sizeof(DesktopsInfo));
 			new->desk = desk;
 			if (action != NULL && *action && *action != '\n')
 			{
@@ -2405,13 +2373,13 @@ void CMD_DesktopName(F_CMD_ARGS)
 		if (action != NULL && *action && *action != '\n')
 		{
 			/* TA:  FIXME!  xasprintf() */
-			msg = xmalloc(strlen(action) + 44);
+			msg = fxmalloc(strlen(action) + 44);
 			sprintf(msg, "DesktopName %d %s", desk, action);
 		}
 		else
 		{
 			/* TA:  FIXME!  xasprintf() */
-			msg = xmalloc(strlen(default_desk_name)+44);
+			msg = fxmalloc(strlen(default_desk_name)+44);
 			sprintf(
 				msg, "DesktopName %d %s %d", desk,
 				default_desk_name, desk);

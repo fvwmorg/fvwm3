@@ -179,9 +179,9 @@ shape_n_join(
 	const char_shaped_t *curr;
 	const char_shaped_t *next;
 
-	list = xmalloc((str_len + 2) * sizeof(char_shaped_t *));
+	list = fxmalloc((str_len + 2) * sizeof(char_shaped_t *));
 
-	orig_str = xmalloc((str_len + 1) * sizeof(FriBidiChar));
+	orig_str = fxmalloc((str_len + 1) * sizeof(FriBidiChar));
 
 	/* head is NULL */
 	*list = NULL;

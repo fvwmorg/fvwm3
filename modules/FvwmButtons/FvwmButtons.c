@@ -430,7 +430,7 @@ void AddButtonAction(button_info *b, int n, char *action)
 	else
 	{
 		int i;
-		b->action = xmalloc(
+		b->action = fxmalloc(
 			(NUMBER_OF_EXTENDED_MOUSE_BUTTONS + 1) * sizeof(char*));
 		for (i = 0; i <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS;
 			b->action[i++] = NULL)
@@ -463,7 +463,7 @@ void AddButtonAction(button_info *b, int n, char *action)
 			break;
 		}
 	}
-	t = xmalloc(l + 1);
+	t = fxmalloc(l + 1);
 	memmove(t, action, l);
 	t[l] = 0;
 	b->action[n] = t;
@@ -665,13 +665,13 @@ int main(int argc, char **argv)
 		/* There is a naming argument here! */
 		{
 			free(MyName);
-			MyName = xstrdup(argv[i]);
+			MyName = fxstrdup(argv[i]);
 			has_name = 1;
 		}
 		else if (!has_file)
 		/* There is a config file here! */
 		{
-			config_file = xstrdup(argv[i]);
+			config_file = fxstrdup(argv[i]);
 			has_file = 1;
 		}
 	}
@@ -700,7 +700,7 @@ int main(int argc, char **argv)
 
 	oldErrorHandler = XSetErrorHandler(myErrorHandler);
 
-	UberButton = xmalloc(sizeof(button_info));
+	UberButton = fxmalloc(sizeof(button_info));
 	memset(UberButton, 0, sizeof(button_info));
 	UberButton->BWidth = 1;
 	UberButton->BHeight = 1;
@@ -955,7 +955,7 @@ void ButtonPressProcess (button_info *b, char **act)
 					if(i2-i>1)
 					{
 						b->flags.b_Hangon = 1;
-						b->hangon = xmalloc(i2-i);
+						b->hangon = fxmalloc(i2-i);
 						strncpy(
 							b->hangon, &(*act)[i+1],
 							i2-i-1);
@@ -966,7 +966,7 @@ void ButtonPressProcess (button_info *b, char **act)
 				else
 					i2=i;
 
-				tmp.name = xmalloc(strlen(*act)+1);
+				tmp.name = fxmalloc(strlen(*act)+1);
 				strcpy(tmp.name, "Exec ");
 				while (
 					(*act)[i2]!=0 &&
@@ -2232,8 +2232,8 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 #endif
 	XSetWMProtocols(Dpy, MyWindow, &_XA_WM_DEL_WIN, 1);
 
-	myclasshints.res_name = xstrdup(MyName);
-	myclasshints.res_class = xstrdup("FvwmButtons");
+	myclasshints.res_name = fxstrdup(MyName);
+	myclasshints.res_class = fxstrdup("FvwmButtons");
 
 	{
 		XTextProperty mynametext;
@@ -3405,7 +3405,7 @@ void exec_swallow(char *action, button_info *b)
 	}
 
 	/* TA:  FIXME!  xasprintf() */
-	cmd = xmalloc(len + strlen(action));
+	cmd = fxmalloc(len + strlen(action));
 	sprintf(
 		cmd,
 		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",

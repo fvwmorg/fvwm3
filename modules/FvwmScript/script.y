@@ -41,13 +41,13 @@ extern char* ScriptName;
 /* Initialisation globale */
 void InitVarGlob(void)
 {
- scriptprop=xcalloc(1, sizeof(ScriptProp));
+ scriptprop=fxcalloc(1, sizeof(ScriptProp));
  scriptprop->x=-1;
  scriptprop->y=-1;
  scriptprop->colorset = -1;
  scriptprop->initbloc=NULL;
 
- tabobj=xcalloc(1, sizeof(TabObj));
+ tabobj=fxcalloc(1, sizeof(TabObj));
  for (i=0;i<1001;i++)
   TabIdObj[i]=-1;
  TabNVar=NULL;
@@ -65,8 +65,8 @@ void InitObjTabCase(int HasMainLoop)
 {
  if (nbobj==0)
  {
-  TabIObj=xcalloc(1, sizeof(long));
-  TabCObj=xcalloc(1, sizeof(CaseObj));
+  TabIObj=fxcalloc(1, sizeof(long));
+  TabCObj=fxcalloc(1, sizeof(CaseObj));
  }
  else
  {
@@ -89,13 +89,13 @@ void InitCase(int cond)
  /* On enregistre la condition du case */
  TabCObj[nbobj].NbCase++;
  if (TabCObj[nbobj].NbCase==0)
-  TabCObj[nbobj].LstCase=xcalloc(1, sizeof(int));
+  TabCObj[nbobj].LstCase=fxcalloc(1, sizeof(int));
  else
   TabCObj[nbobj].LstCase=(int*)realloc(TabCObj[nbobj].LstCase,sizeof(int)*(CurrCase+1));
  TabCObj[nbobj].LstCase[CurrCase]=cond;
 
  if (CurrCase==0)
-  TabIObj[nbobj]=xcalloc(1, sizeof(Bloc));
+  TabIObj[nbobj]=fxcalloc(1, sizeof(Bloc));
  else
   TabIObj[nbobj]=(Bloc*)realloc(TabIObj[nbobj],sizeof(Bloc)*(CurrCase+1));
 
@@ -124,7 +124,7 @@ long *Depile(int NbLevelArg, int *s)
 
  if (NbLevelArg>0)
  {
-  Temp=xcalloc(1, sizeof(long));
+  Temp=fxcalloc(1, sizeof(long));
   size=0;
   for (i=SPileArg-NbLevelArg+1;i<=SPileArg;i++)
   {
@@ -157,7 +157,7 @@ void AddCom(int Type, int NbLevelArg)
  CurrInstr=PileBloc[TopPileB]->NbInstr;
 
  if (CurrInstr==0)
-  PileBloc[TopPileB]->TabInstr=xcalloc(1, sizeof(Instr) * (CurrInstr + 1));
+  PileBloc[TopPileB]->TabInstr=fxcalloc(1, sizeof(Instr) * (CurrInstr + 1));
  else
   PileBloc[TopPileB]->TabInstr=(Instr*)realloc(PileBloc[TopPileB]->TabInstr,
 				sizeof(Instr)*(CurrInstr+1));
@@ -217,8 +217,8 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
 
  if (NbVar==0)
  {
-  TabNVar=xcalloc(1, sizeof(long));
-  TabVVar=xcalloc(1, sizeof(long));
+  TabNVar=fxcalloc(1, sizeof(long));
+  TabVVar=fxcalloc(1, sizeof(long));
  }
  else
  {
@@ -226,8 +226,8 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
   TabVVar=(char**)realloc(TabVVar,sizeof(long)*(NbVar+1));
  }
 
- TabNVar[NbVar]=xstrdup(Name);
- TabVVar[NbVar]=xcalloc(1, sizeof(char));
+ TabNVar[NbVar]=fxstrdup(Name);
+ TabVVar[NbVar]=fxcalloc(1, sizeof(char));
  TabVVar[NbVar][0]='\0';
 
 
@@ -244,8 +244,8 @@ void AddConstStr(char *Name)
  NbVar++;
  if (NbVar==0)
  {
-  TabVVar=xcalloc(1, sizeof(long));
-  TabNVar=xcalloc(1, sizeof(long));
+  TabVVar=fxcalloc(1, sizeof(long));
+  TabNVar=fxcalloc(1, sizeof(long));
  }
  else
  {
@@ -253,9 +253,9 @@ void AddConstStr(char *Name)
   TabNVar=(char**)realloc(TabNVar,sizeof(long)*(NbVar+1));
  }
 
- TabNVar[NbVar]=xcalloc(1, sizeof(char));
+ TabNVar[NbVar]=fxcalloc(1, sizeof(char));
  TabNVar[NbVar][0]='\0';
- TabVVar[NbVar]=xstrdup(Name);
+ TabVVar[NbVar]=fxstrdup(Name);
 
  /* Ajout de l'id de la constante dans la liste courante des arguments */
  l=(long)NbVar;
@@ -287,7 +287,7 @@ void AddFunct(int code,int NbLevelArg)
 
  size++;
  if (size==1)
-  l=xcalloc(1, sizeof(long));
+  l=fxcalloc(1, sizeof(long));
  else
  {
   l=(long*)realloc(l,sizeof(long)*(size));
@@ -331,7 +331,7 @@ void EmpilerBloc(void)
 {
  Bloc *TmpBloc;
 
- TmpBloc=xcalloc(1, sizeof(Bloc));
+ TmpBloc=fxcalloc(1, sizeof(Bloc));
  TmpBloc->NbInstr=-1;
  TmpBloc->TabInstr=NULL;
  TopPileB++;

@@ -45,7 +45,7 @@
 
 flist *flist_append_obj(flist *list, void *object)
 {
-	flist *new = xmalloc(sizeof(flist));
+	flist *new = fxmalloc(sizeof(flist));
 	flist *tl = list;
 
 	new->object = object;
@@ -68,7 +68,7 @@ flist *flist_append_obj(flist *list, void *object)
 
 flist *flist_prepend_obj(flist *list, void *object)
 {
-	flist *new = xmalloc(sizeof(flist));
+	flist *new = fxmalloc(sizeof(flist));
 
 	new->object = object;
 	new->next = NULL;
@@ -114,7 +114,7 @@ flist *flist_insert_obj(flist *list, void *object, int position)
 		return flist_append_obj(list, object);
 	}
 
-	new = xmalloc(sizeof(flist));;
+	new = fxmalloc(sizeof(flist));;
 	new->object = object;
 	new->prev = NULL;
 

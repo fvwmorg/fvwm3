@@ -182,7 +182,7 @@ struct MenuItem *menuitem_create(void)
 {
 	MenuItem *mi;
 
-	mi = xcalloc(1, sizeof *mi);
+	mi = fxcalloc(1, sizeof *mi);
 	return mi;
 }
 
@@ -230,7 +230,7 @@ struct MenuItem *menuitem_clone(struct MenuItem *mi)
 	int i;
 
 	/* copy everything */
-	new_mi = xmalloc(sizeof(MenuItem));
+	new_mi = fxmalloc(sizeof(MenuItem));
 	memcpy(new_mi, mi, sizeof(MenuItem));
 	/* special treatment for a few parts */
 	MI_NEXT_ITEM(new_mi) = NULL;
@@ -238,13 +238,13 @@ struct MenuItem *menuitem_clone(struct MenuItem *mi)
 	MI_WAS_DESELECTED(new_mi) = 0;
 	if (MI_ACTION(mi) != NULL)
 	{
-		MI_ACTION(new_mi) = xstrdup(MI_ACTION(mi));
+		MI_ACTION(new_mi) = fxstrdup(MI_ACTION(mi));
 	}
 	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
 	{
 		if (MI_LABEL(mi)[i] != NULL)
 		{
-			MI_LABEL(new_mi)[i] = xstrdup(MI_LABEL(mi)[i]);
+			MI_LABEL(new_mi)[i] = fxstrdup(MI_LABEL(mi)[i]);
 		}
 	}
 	if (MI_PICTURE(mi) != NULL)

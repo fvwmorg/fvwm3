@@ -85,7 +85,7 @@ void fgettext_add_one_path(char *path, int position)
 		domain = FGDefaultDomain;
 	}
 
-	tmp = xmalloc(sizeof(FGettextPath));
+	tmp = fxmalloc(sizeof(FGettextPath));
 	tmp->dir = dir;
 	CopyString(&tmp->domain, domain);
 
@@ -147,7 +147,7 @@ void FGettextInit(const char *domain, const char *dir, const char *module)
 	FGModuleName = module;
 	CopyString(&FGDefaultDir, btd);
 	CopyString(&FGDefaultDomain, td);
-	FGLastPath = xmalloc(sizeof(FGettextPath));
+	FGLastPath = fxmalloc(sizeof(FGettextPath));
 	CopyString(&FGLastPath->domain, td);
 	CopyString(&FGLastPath->dir, btd);
 	FGPathList = flist_append_obj(FGPathList, FGLastPath);
@@ -222,7 +222,7 @@ void FGettextSetLocalePath(const char *path)
 	if (path == NULL || path[0] == '\0')
 	{
 		fgettext_free_fgpath_list();
-		FGLastPath = xmalloc(sizeof(FGettextPath));
+		FGLastPath = fxmalloc(sizeof(FGettextPath));
 		CopyString(&FGLastPath->domain, FGDefaultDomain);
 		CopyString(&FGLastPath->dir, FGDefaultDir);
 		FGPathList = flist_append_obj(FGPathList, FGLastPath);

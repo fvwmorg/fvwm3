@@ -19,14 +19,14 @@ expression E;
 @@
 
 - (T *)safestrdup(E)
-+ xstrdup(E)
++ fxstrdup(E)
 
 @@
 expression E;
 @@
 
 - safestrdup(E)
-+ xstrdup(E)
++ fxstrdup(E)
 
 @@
 type T;

@@ -130,7 +130,7 @@ static struct moduleInfoList *AddToModList(char *tline)
 		t = t->next;
 	}
 
-	this = xmalloc(sizeof(struct moduleInfoList));
+	this = fxmalloc(sizeof(struct moduleInfoList));
 
 	this->alias_len = 0;
 	if (alias_end && alias_end[0] == MODULE_CONFIG_DELIM)
@@ -144,7 +144,7 @@ static struct moduleInfoList *AddToModList(char *tline)
 		this->alias_len = alias_end - tline;
 	}
 
-	this->data = xmalloc(strlen(rline)+1);
+	this->data = fxmalloc(strlen(rline)+1);
 	strcpy(this->data, rline);
 
 	this->next = NULL;
@@ -257,7 +257,7 @@ static void send_desktop_names(fmodule *module)
 		if (d->name != NULL)
 		{
 			/* TA:  FIXME!  xasprintf() */
-			name = xmalloc(strlen(d->name) + 44);
+			name = fxmalloc(strlen(d->name) + 44);
 			sprintf(name,"DesktopName %d %s", d->desk, d->name);
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
@@ -286,7 +286,7 @@ static void send_image_path(fmodule *module)
 	if (ImagePath && *ImagePath != 0)
 	{
 		/* TA:  FIXME!  xasprintf() */
-		msg = xmalloc(strlen(ImagePath) + 12);
+		msg = fxmalloc(strlen(ImagePath) + 12);
 		sprintf(msg, "ImagePath %s\n", ImagePath);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 		free(msg);

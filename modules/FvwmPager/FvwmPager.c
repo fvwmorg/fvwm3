@@ -257,7 +257,7 @@ int main(int argc, char **argv)
 	      (*s != '-' || s != argv[opt_num] || *(s+1) == 0))
 	  {
 	    free(MyName);
-	    MyName = xstrdup(argv[opt_num]);
+	    MyName = fxstrdup(argv[opt_num]);
 	    opt_num++;
 	    break;
 	  }
@@ -292,7 +292,7 @@ int main(int argc, char **argv)
     }
   ndesks = desk2 - desk1 + 1;
 
-  Desks = xcalloc(1, ndesks*sizeof(DeskInfo));
+  Desks = fxcalloc(1, ndesks*sizeof(DeskInfo));
   for(i=0;i<ndesks;i++)
     {
       sprintf(line,"Desk %d",i+desk1);
@@ -359,28 +359,28 @@ int main(int argc, char **argv)
   }
 
   if (PagerFore == NULL)
-    PagerFore = xstrdup("black");
+    PagerFore = fxstrdup("black");
 
   if (PagerBack == NULL)
-    PagerBack = xstrdup("white");
+    PagerBack = fxstrdup("white");
 
   if (HilightC == NULL)
-    HilightC = xstrdup(PagerFore);
+    HilightC = fxstrdup(PagerFore);
 
   if (WindowLabelFormat == NULL)
-    WindowLabelFormat = xstrdup("%i");
+    WindowLabelFormat = fxstrdup("%i");
 
   if ((HilightC == NULL) && (HilightPixmap == NULL))
     HilightDesks = 0;
 
   if (BalloonBorderColor == NULL)
-    BalloonBorderColor = xstrdup("black");
+    BalloonBorderColor = fxstrdup("black");
 
   if (BalloonTypeString == NULL)
-    BalloonTypeString = xstrdup("%i");
+    BalloonTypeString = fxstrdup("%i");
 
   if (BalloonFormatString == NULL)
-    BalloonFormatString = xstrdup("%i");
+    BalloonFormatString = fxstrdup("%i");
 
   /* open a pager window */
   initialize_pager();
@@ -669,7 +669,7 @@ void list_add(unsigned long *body)
 		t = t->next;
 		i++;
 	}
-	*prev = xcalloc(1, sizeof(PagerWindow));
+	*prev = fxcalloc(1, sizeof(PagerWindow));
 	handle_config_win_package(*prev, cfgpacket);
 	AddNewWindow(*prev);
 
@@ -1271,7 +1271,7 @@ void list_restack(unsigned long *body, unsigned long length)
   Window *wins;
   int i, j, d;
 
-  wins = xmalloc(length * sizeof (Window));
+  wins = fxmalloc(length * sizeof (Window));
   /* first restack in the icon view */
   j = 0;
   for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
@@ -1676,13 +1676,13 @@ void ParseOptions(void)
     tline2 = GetNextToken(tline2, &arg1);
     if (!arg1)
     {
-      arg1 = xmalloc(1);
+      arg1 = fxmalloc(1);
       arg1[0] = 0;
     }
     tline2 = GetNextToken(tline2, &arg2);
     if (!arg2)
     {
-      arg2 = xmalloc(1);
+      arg2 = fxmalloc(1);
       arg2[0] = 0;
     }
 
@@ -2215,7 +2215,7 @@ PagerStringList *NewPagerStringItem(PagerStringList *last, int desk)
 {
   PagerStringList *newitem;
 
-  newitem = xcalloc(1, sizeof(PagerStringList));
+  newitem = fxcalloc(1, sizeof(PagerStringList));
   last->next = newitem;
   newitem->colorset = -1;
   newitem->highcolorset = -1;

@@ -67,7 +67,7 @@ static void menustyle_free_face(MenuFace *mf)
 			Pixel *p;
 			int i;
 
-			p = xmalloc(mf->u.grad.npixels * sizeof(Pixel));
+			p = fxmalloc(mf->u.grad.npixels * sizeof(Pixel));
 			for(i=0; i < mf->u.grad.npixels; i++)
 			{
 				p[i] = mf->u.grad.xcs[i].pixel;
@@ -112,7 +112,7 @@ static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
 		destmf->type = SolidMenu;
 		break;
 	case GradientMenu:
-		destmf->u.grad.xcs = xmalloc(sizeof(XColor) *
+		destmf->u.grad.xcs = fxmalloc(sizeof(XColor) *
 					     origmf->u.grad.npixels);
 		memcpy(destmf->u.grad.xcs,
 		       origmf->u.grad.xcs,
@@ -858,7 +858,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		fvwm_msg(ERR,"NewMenuStyle", "menu style %s is in use", name);
 		return ms;
 	}
-	tmpms = xmalloc(sizeof(MenuStyle));
+	tmpms = fxmalloc(sizeof(MenuStyle));
 	if (ms)
 	{
 		/* copy the structure over our temporary menu face. */
@@ -1379,7 +1379,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			if (arg1)
 			{
-				ST_ITEM_FORMAT(tmpms) = xstrdup(arg1);
+				ST_ITEM_FORMAT(tmpms) = fxstrdup(arg1);
 			}
 			break;
 
@@ -1823,7 +1823,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	}
 	if (ST_ITEM_FORMAT(origms))
 	{
-		ST_ITEM_FORMAT(destms) = xstrdup(ST_ITEM_FORMAT(origms));
+		ST_ITEM_FORMAT(destms) = fxstrdup(ST_ITEM_FORMAT(origms));
 	}
 
 	/* AutomaticHotkeys */
@@ -1910,7 +1910,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	{
 		/* create destms menu style */
 		/* TA:  FIXME!  xasprintf() */
-		buffer = xmalloc(strlen(destname) + 3);
+		buffer = fxmalloc(strlen(destname) + 3);
 		sprintf(buffer,"\"%s\"",destname);
 		action = buffer;
 		destms = menustyle_parse_style(F_PASS_ARGS);

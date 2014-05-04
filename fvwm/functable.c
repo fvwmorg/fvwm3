@@ -645,13 +645,6 @@ const func_t func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Set styles on the selected window */
 
-	CMD_ENT("xinerama", CMD_Xinerama, F_XINERAMA, 0, 0),
-	/* - Control Xinerama support */
-
-	CMD_ENT("xineramaprimaryscreen", CMD_XineramaPrimaryScreen,
-		F_XINERAMAPRIMARYSCREEN, 0, 0),
-	/* - Identify Xinerama primary screen */
-
 	CMD_ENT("xorpixmap", CMD_XorPixmap, F_XOR, 0, 0),
 	/* - Use a pixmap for move/resize rubber-band */
 

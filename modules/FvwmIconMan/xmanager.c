@@ -651,10 +651,10 @@ static void set_num_buttons(ButtonArray *buttons, int n)
 
   if (n > buttons->num_buttons) {
     buttons->dirty_flags |= NUM_BUTTONS_CHANGED;
-    buttons->buttons = xrealloc((void *)buttons->buttons, n, sizeof(Button *));
+    buttons->buttons = fxrealloc((void *)buttons->buttons, n, sizeof(Button *));
 
     for (i = buttons->num_buttons; i < n; i++) {
-      buttons->buttons[i] = xcalloc(1, sizeof(Button));
+      buttons->buttons[i] = fxcalloc(1, sizeof(Button));
       buttons->buttons[i]->drawn_state.display_string = NULL;
       buttons->buttons[i]->index = i;
     }
