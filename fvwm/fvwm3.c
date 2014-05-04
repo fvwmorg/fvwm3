@@ -512,9 +512,9 @@ char *get_display_name(char *display_name, int screen_num)
 		}
 	}
 	sprintf(string_screen_num, ".%d", screen_num);
-	new_dn = safemalloc(
-		strlen(msg) + strlen(string_screen_num) + 1);
-	new_dn[0] = '\0';
+	/* TA:  FIXME!  Use asprintF() */
+	new_dn = xmalloc(strlen(msg) + strlen(string_screen_num) + 1);
+	*new_dn = '\0';
 	strcat(new_dn, msg);
 	strcat(new_dn, string_screen_num);
 	free(msg);
@@ -544,8 +544,7 @@ void Done(int restart, char *command)
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
 
-		char *action = safestrdup(
-			CatString2("Function ", exit_func_name));
+		char *action = xstrdup(CatString2("Function ", exit_func_name));
 		ecc.type = restart ? EXCT_TORESTART : EXCT_QUIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
@@ -852,11 +851,11 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 	case 0:
 	case 4:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 22;
 		v->y[0] = 39;
 		v->c[0] = 1;
@@ -873,11 +872,11 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		break;
 	case 1:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 32;
 		v->y[0] = 45;
 		v->x[1] = 68;
@@ -893,11 +892,11 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		break;
 	case 2:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 49;
 		v->y[0] = 49;
 		v->c[0] = 1;
@@ -914,11 +913,11 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 		break;
 	case 3:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 32;
 		v->y[0] = 45;
 		v->c[0] = 1;
@@ -962,11 +961,11 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 	case 0:
 	case 3:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 25;
 		v->y[0] = 25;
 		v->c[0] = 1;
@@ -983,11 +982,11 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		break;
 	case 1:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 39;
 		v->y[0] = 39;
 		v->c[0] = 1;
@@ -1004,11 +1003,11 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		break;
 	case 2:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 49;
 		v->y[0] = 49;
 		v->c[0] = 1;
@@ -1025,11 +1024,11 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 		break;
 	case 4:
 		v->num = 5;
-		v->x = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->y = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->xoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->yoff = (signed char*)safemalloc(sizeof(char) * v->num);
-		v->c = (signed char*)safecalloc(v->num, sizeof(char));
+		v->x = xmalloc(sizeof(char) * v->num);
+		v->y = xmalloc(sizeof(char) * v->num);
+		v->xoff = xmalloc(sizeof(char) * v->num);
+		v->yoff = xmalloc(sizeof(char) * v->num);
+		v->c = xcalloc(v->num, sizeof(char));
 		v->x[0] = 36;
 		v->y[0] = 36;
 		v->c[0] = 1;
@@ -1157,7 +1156,7 @@ static void InitVariables(void)
 	Scr.cascade_window = &Scr.FvwmRoot;
 	Scr.buttons2grab = 0;
 	/* initialisation of the head of the desktops info */
-	Scr.Desktops = (DesktopsInfo *)safemalloc(sizeof(DesktopsInfo));
+	Scr.Desktops = xmalloc(sizeof(DesktopsInfo));
 	Scr.Desktops->name = NULL;
 	Scr.Desktops->desk = 0; /* not desk 0 */
 	Scr.Desktops->ewmh_dyn_working_area.x =
@@ -1288,7 +1287,7 @@ static void setVersionInfo(void)
 	/* Set version information string */
 	sprintf(version_str, "fvwm %s%s compiled on %s at %s",
 		VERSION, VERSIONINFO, __DATE__, __TIME__);
-	Fvwm_VersionInfo = safestrdup(version_str);
+	Fvwm_VersionInfo = xstrdup(version_str);
 
 	sprintf(license_str,
 		"fvwm comes with NO WARRANTY, to the extent permitted by law. "
@@ -1296,7 +1295,7 @@ static void setVersionInfo(void)
 		"the terms of the GNU General Public License.\n"
 		"For more information about these matters, see the file "
 		"named COPYING.");
-	Fvwm_LicenseInfo = safestrdup(license_str);
+	Fvwm_LicenseInfo = xstrdup(license_str);
 
 #ifdef HAVE_READLINE
 	strcat(support_str, " ReadLine,");
@@ -1345,7 +1344,7 @@ static void setVersionInfo(void)
 	{
 		/* strip last comma */
 		support_str[support_len - 1] = '\0';
-		Fvwm_SupportInfo = safestrdup(
+		Fvwm_SupportInfo = xstrdup(
 			CatString2("with support for:", support_str));
 	}
 	else
@@ -1556,7 +1555,7 @@ void StartupStuff(void)
 	init_func_name = get_init_function_name(Restarting == True);
 	if (functions_is_complex_function(init_func_name))
 	{
-		char *action = safestrdup(
+		char *action = xstrdup(
 			CatString2("Function ", init_func_name));
 
 		execute_function(NULL, exc, action, 0);
@@ -1780,7 +1779,7 @@ int main(int argc, char **argv)
 
 	memset(&Scr, 0, sizeof(Scr));
 	/* for use on restart */
-	g_argv = (char **)safemalloc((argc + 4) * sizeof(char *));
+	g_argv = xmalloc((argc + 4) * sizeof(char *));
 	g_argc = argc;
 	for (i = 0; i < argc; i++)
 	{
@@ -1804,7 +1803,7 @@ int main(int argc, char **argv)
 		struct passwd* pw = getpwuid(getuid());
 		if (pw != NULL)
 		{
-			home_dir = safestrdup(pw->pw_dir);
+			home_dir = xstrdup(pw->pw_dir);
 		}
 	}
 #endif
@@ -1819,10 +1818,10 @@ int main(int argc, char **argv)
 	{
 		char *s;
 
-		fvwm_userdir = safestrdup(CatString2(home_dir, "/.fvwm"));
+		fvwm_userdir = xstrdup(CatString2(home_dir, "/.fvwm"));
 		/* Put the user directory into the environment so it can be used
 		 * later everywhere. */
-		s = safestrdup(CatString2("FVWM_USERDIR=", fvwm_userdir));
+		s = xstrdup(CatString2("FVWM_USERDIR=", fvwm_userdir));
 		flib_putenv("FVWM_USERDIR", s);
 		free(s);
 	}
@@ -1927,8 +1926,7 @@ int main(int argc, char **argv)
 				if (access(argv[i], F_OK) != 0) {
 					free(config_commands[num_config_commands]);
 					config_commands[num_config_commands] =
-						safestrdup("Read " FVWM_DATADIR
-							"/default-config/config");
+						xstrdup("Read " FVWM_DATADIR "/default-config/config");
 				}
 				num_config_commands++;
 			}
@@ -1952,7 +1950,7 @@ int main(int argc, char **argv)
 			if (num_config_commands < MAX_CFG_CMDS)
 			{
 				config_commands[num_config_commands] =
-					safestrdup(argv[i]);
+					xstrdup(argv[i]);
 				num_config_commands++;
 			}
 			else
@@ -2220,7 +2218,7 @@ int main(int argc, char **argv)
 	/* Add a DISPLAY entry to the environment, incase we were started
 	 * with fvwm -display term:0.0 */
 	len = strlen(XDisplayString(dpy));
-	display_string = safemalloc(len+10);
+	display_string = xmalloc(len+10);
 	sprintf(display_string, "DISPLAY=%s",XDisplayString(dpy));
 	flib_putenv("DISPLAY", display_string);
 	/* Add a HOSTDISPLAY environment variable, which is the same as
@@ -2231,7 +2229,8 @@ int main(int argc, char **argv)
 	{
 		char client[MAXHOSTNAME], *rdisplay_string;
 		gethostname(client,MAXHOSTNAME);
-		rdisplay_string = safemalloc(len+14 + strlen(client));
+		/* TA:  FIXME!  xasprintf() */
+		rdisplay_string = xmalloc(len+14 + strlen(client));
 		sprintf(rdisplay_string, "HOSTDISPLAY=%s:%s", client,
 			&display_string[9]);
 		flib_putenv("HOSTDISPLAY", rdisplay_string);
@@ -2241,7 +2240,8 @@ int main(int argc, char **argv)
 	{
 		char client[MAXHOSTNAME], *rdisplay_string;
 		gethostname(client,MAXHOSTNAME);
-		rdisplay_string = safemalloc(len+14 + strlen(client));
+		/* TA:  FIXME!  xasprintf() */
+		rdisplay_string = xmalloc(len+14 + strlen(client));
 		sprintf(rdisplay_string, "HOSTDISPLAY=%s:%s", client,
 			&display_string[13]);
 		flib_putenv("HOSTDISPLAY", rdisplay_string);
@@ -2250,7 +2250,8 @@ int main(int argc, char **argv)
 	else
 	{
 		char *rdisplay_string;
-		rdisplay_string = safemalloc(len+14);
+		/* TA:  FIXME!  xasprintf() */
+		rdisplay_string = xmalloc(len+14);
 		sprintf(rdisplay_string, "HOSTDISPLAY=%s",XDisplayString(dpy));
 		flib_putenv("HOSTDISPLAY", rdisplay_string);
 		free(rdisplay_string);
@@ -2462,7 +2463,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	restart_state_filename = safestrdup(
+	restart_state_filename = xstrdup(
 		CatString3(fvwm_userdir, "/.fs-restart-",
 			   getenv("HOSTDISPLAY")));
 	if (!state_filename && Restarting)

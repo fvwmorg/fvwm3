@@ -137,7 +137,7 @@ void InitSwallow(struct XObj *xobj)
 		len = 45 + strlen(my_sm_env) + strlen(orig_sm_env);
 	}
 
-	cmd = safemalloc(len + strlen(xobj->swallow));
+	cmd = xmalloc(len + strlen(xobj->swallow));
 	sprintf(
 		cmd,
 		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",

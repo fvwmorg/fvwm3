@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 	int total, remaining, count, event;
 	int is_extended_msg;
 
-	cmd_line = (char *)safemalloc(1);
+	cmd_line = xmalloc(1);
 	*cmd_line = 0;
 	/* Save our program  name - for error events */
 	if ((s=strrchr(argv[0], '/')))
@@ -252,7 +252,7 @@ int main(int argc, char **argv)
 	/* account for '*' */
 	MyNameLen=strlen(s)+1;
 	/* account for \0 */
-	MyName = safemalloc(MyNameLen+1);
+	MyName = xmalloc(MyNameLen+1);
 	*MyName='*';
 	/* append name */
 	strcpy(MyName+1, s);
@@ -447,7 +447,7 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 		{
 			len += strlen(audio_play_dir);
 		}
-		buf = (char *)safemalloc(len);
+		buf = xmalloc(len);
 		if (audio_compat)
 		{
 			/* Don't use audio_play_dir if it's NULL or if
@@ -569,11 +569,11 @@ void handle_config_line(char *buf, char **phost)
 			}
 			if (token)
 			{
-				cmd_line = safestrdup(token);
+				cmd_line = xstrdup(token);
 			}
 			else
 			{
-				cmd_line = safestrdup("");
+				cmd_line = xstrdup("");
 			}
 			break;
 
@@ -600,7 +600,7 @@ void handle_config_line(char *buf, char **phost)
 				{
 					free(audio_play_dir);
 				}
-				audio_play_dir = safestrdup(token);
+				audio_play_dir = xstrdup(token);
 			}
 			break;
 
@@ -623,7 +623,7 @@ void handle_config_line(char *buf, char **phost)
 				char *c2;
 				if (c1 != NULL)
 				{
-					*phost = safestrdup(c1);
+					*phost = xstrdup(c1);
 					c2 = *phost;
 					while (c1 && *c1 != ':')
 					{
@@ -634,7 +634,7 @@ void handle_config_line(char *buf, char **phost)
 			}
 			else if (token)
 			{
-				*phost = safestrdup(token);
+				*phost = xstrdup(token);
 			}
 			break;
 
@@ -742,7 +742,7 @@ void config(void)
 
 	if (USE_FPLAY)
 	{
-		host = safestrdup(Fplay_default_host());
+		host = xstrdup(Fplay_default_host());
 	}
 
 	/* get config lines with my name */

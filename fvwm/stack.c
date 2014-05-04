@@ -314,7 +314,7 @@ static void raise_over_unmanaged(FvwmWindow *t)
 
 		if (count > 0)
 		{
-			wins = (Window*) safemalloc (count * sizeof (Window));
+			wins = xmalloc(count * sizeof (Window));
 			for (
 				i = 0, t2 = Scr.FvwmRoot.stack_next;
 				t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
@@ -527,7 +527,7 @@ static void __restack_window_list(
 		}
 	}
 	/* restack the windows between r and s */
-	wins = (Window *)safemalloc((count + 3) * sizeof(Window));
+	wins = xmalloc((count + 3) * sizeof(Window));
 	for (t = r->stack_next, i = 0; t != s; t = t->stack_next)
 	{
 		if (i > count)
@@ -1279,7 +1279,7 @@ static void ResyncXStackingOrder(void)
 	}
 	if (count > 0)
 	{
-		wins = (Window *)safemalloc(3 * count * sizeof (Window));
+		wins = xmalloc(3 * count * sizeof (Window));
 		for (
 			i = 0, t = Scr.FvwmRoot.stack_next; count--;
 			t = t->stack_next)
@@ -1362,8 +1362,7 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 	{
 		n = min(num, max_wins_per_packet) - 1;
 		length = FvwmPacketHeaderSize + 3 * (n + 1);
-		body = (unsigned long *)safemalloc(
-			length * sizeof(unsigned long));
+		body = xmalloc(length * sizeof(unsigned long));
 		bp = body;
 		*(bp++) = START_FLAG;
 		*(bp++) = M_RESTACK;

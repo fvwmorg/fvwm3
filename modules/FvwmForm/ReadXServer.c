@@ -569,7 +569,7 @@ static void process_history(int direction) {
     }
   }
   CF.cur_input->input.value =
-    safestrdup(CF.cur_input->input.value_history_ptr[count]);
+    xstrdup(CF.cur_input->input.value_history_ptr[count]);
   CF.cur_input->input.n = strlen(CF.cur_input->input.value);
   CF.cur_input->input.value_history_yankat = count; /* new yank point */
   CF.cur_input->input.buf = CF.cur_input->input.n;
@@ -638,8 +638,8 @@ static void process_regular_char_input(unsigned char *buf) {
   if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
     CF.cur_input->input.buf += CF.cur_input->input.size;
     CF.cur_input->input.value =
-      (char *)saferealloc(CF.cur_input->input.value,
-			  CF.cur_input->input.buf);
+      xrealloc(CF.cur_input->input.value, CF.cur_input->input.buf,
+		      sizeof(CF.cur_input->input.value));
   }
   dp = CF.cur_input->input.value + CF.cur_input->input.n;
   sp = dp - 1;

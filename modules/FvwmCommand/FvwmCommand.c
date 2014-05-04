@@ -214,13 +214,14 @@ int main ( int argc, char *argv[])
   }
 
   /* create 2 fifos */
-  fm_name = safemalloc( strlen(f_stem) + 2 );
+  /* TA:  FIXME!  xasprintf() */
+  fm_name = xmalloc( strlen(f_stem) + 2 );
   strcpy(fm_name,f_stem);
   strcat(fm_name, "M");
-  fc_name = safemalloc( strlen(f_stem) + 2 );
+  fc_name = xmalloc( strlen(f_stem) + 2 );
   strcpy(fc_name,f_stem);
   strcat(fc_name, "C");
-  s = safemalloc( strlen(f_stem) + 2 );
+  s = xmalloc( strlen(f_stem) + 2 );
   strcpy(s,f_stem);
   strcat(s, "R");
 

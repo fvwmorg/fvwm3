@@ -141,7 +141,7 @@ char *searchPath(
 	maxpath_len += (suffix) ? strlen(suffix) : 0;
 
 	/* +1 for extra / and +1 for null termination */
-	path = safemalloc(maxpath_len + filename_len + 2);
+	path = xmalloc(maxpath_len + filename_len + 2);
 	*path = '\0';
 
 	if (*filename == '/')

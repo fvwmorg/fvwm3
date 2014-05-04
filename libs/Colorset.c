@@ -76,8 +76,7 @@ void AllocColorset(int n)
 	}
 
 	/* increment n to get the required array size, get a new array */
-	Colorset = (colorset_t *)saferealloc(
-		(char *)Colorset, ++n * sizeof(colorset_t));
+	Colorset = xrealloc((void *)Colorset, ++n, sizeof(colorset_t));
 
 	/* zero out colorset 0
 	   it's always defined so will be filled in during module startup */

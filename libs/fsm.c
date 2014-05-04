@@ -162,7 +162,8 @@ unique_filename(char *path, char *prefix, int *pFd)
 {
 	char *tempFile;
 
-	tempFile = (char *)safemalloc(strlen(path) + strlen(prefix) + 8);
+	/* TA:  FIXME!  xasprintf() */
+	tempFile = xmalloc(strlen(path) + strlen(prefix) + 8);
 	sprintf(tempFile, "%s/%sXXXXXX", path, prefix);
 	*pFd =  fvwm_mkstemp(tempFile);
 	if (*pFd == -1)
@@ -237,8 +238,7 @@ Status SetAuthentication(
 		goto bad;
 	}
 
-	*authDataEntries = (FIceAuthDataEntry *) safemalloc(
-		count * 2 * sizeof (FIceAuthDataEntry));
+	*authDataEntries = xmalloc(count * 2 * sizeof (FIceAuthDataEntry));
 
 	for (i = 0; i < count * 2; i += 2)
 	{
@@ -406,7 +406,7 @@ void ice_watch_fd(
 
 	if (opening)
 	{
-		fice_conn = (fsm_ice_conn_t *)safemalloc(sizeof(fsm_ice_conn_t));
+		fice_conn = xmalloc(sizeof(fsm_ice_conn_t));
 		fice_conn->ice_conn = conn;
 		fice_conn->fd = FIceConnectionNumber(conn);
 		*watch_data = (FIcePointer) fice_conn;
@@ -634,7 +634,7 @@ NewClientProc(
 	    return 0;
     }
 
-    nc = (fsm_client_t *)safemalloc(sizeof (fsm_client_t));
+    nc = xmalloc(sizeof (fsm_client_t));
     *maskRet = 0;
 
     nc->smsConn = smsConn;
@@ -1074,15 +1074,15 @@ int fsm_init(char *module)
 		return 0;
 	}
 
-	ice_fd = (int *)safemalloc(sizeof(int) * numTransports + 1);
+	ice_fd = xmalloc(sizeof(int) * numTransports + 1);
 	for (i = 0; i < numTransports; i++)
 	{
 		ice_fd[i] = FIceGetListenConnectionNumber(listenObjs[i]);
 	}
 
 	networkIds = FIceComposeNetworkIdList(numTransports, listenObjs);
-	p = (char *)safemalloc(
-		16 + strlen(networkIds) + 1);
+	/* TA:  FIXME!  xasprintf() */
+	p = xmalloc(16 + strlen(networkIds) + 1);
 	sprintf(p, "SESSION_MANAGER=%s", networkIds);
 	putenv(p);
 

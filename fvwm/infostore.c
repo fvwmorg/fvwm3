@@ -52,8 +52,7 @@ MetaInfo *new_metainfo(void)
 {
 	MetaInfo *mi;
 
-	mi = (MetaInfo *)safemalloc(sizeof(MetaInfo));
-	memset(mi, '\0', sizeof(MetaInfo));
+	mi = xcalloc(1, sizeof *mi);
 
 	return mi;
 }

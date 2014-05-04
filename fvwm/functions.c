@@ -321,7 +321,7 @@ static const func_t *find_builtin_function(char *func)
 		return &(func_table[0]);
 	}
 
-	temp = safestrdup(func);
+	temp = xstrdup(func);
 	for (s = temp; *s != 0; s++)
 	{
 		if (isupper(*s))
@@ -944,7 +944,7 @@ static void execute_complex_function(
 	/* duplicate the whole argument list for use as '$*' */
 	if (taction)
 	{
-		arguments[0] = safestrdup(taction);
+		arguments[0] = xstrdup(taction);
 		/* strip trailing newline */
 		if (arguments[0][0])
 		{
@@ -1214,7 +1214,7 @@ static FvwmFunction *NewFvwmFunction(const char *name)
 {
 	FvwmFunction *tmp;
 
-	tmp = (FvwmFunction *)safemalloc(sizeof(FvwmFunction));
+	tmp = xmalloc(sizeof *tmp);
 	tmp->next_func = Scr.functions;
 	tmp->first_item = NULL;
 	tmp->last_item = NULL;
@@ -1464,7 +1464,7 @@ void AddToFunction(FvwmFunction *func, char *action)
 		return;
 	}
 
-	tmp = (FunctionItem *)safemalloc(sizeof(FunctionItem));
+	tmp = xmalloc(sizeof *tmp);
 	tmp->next_item = NULL;
 	tmp->func = func;
 	if (func->first_item == NULL)

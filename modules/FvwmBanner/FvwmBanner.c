@@ -121,7 +121,7 @@ int main(int argc, char **argv)
   if (string != (char *) 0) string++;
 
   MyNameLen=strlen(string)+1;           /* account for '*' */
-  MyName = safemalloc(MyNameLen+1);     /* account for \0 */
+  MyName = xmalloc(MyNameLen + 1);     /* account for \0 */
   *MyName='*';
   strcpy (MyName+1, string);
 
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
   }
 
   if (argc > 6) {
-    imageName = safemalloc (strlen (argv[6]) + 1);
+    imageName = xmalloc(strlen(argv[6]) + 1);
     strcpy (imageName, argv[6]);
   }
 

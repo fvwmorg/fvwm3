@@ -1088,8 +1088,7 @@ void AddToList(char *s1, char* s2)
 	max_col1 = max_col1 > tw1 ? max_col1 : tw1;
 	max_col2 = max_col2 > tw2 ? max_col2 : tw2;
 
-	item = (struct Item*)safemalloc(sizeof(struct Item));
-
+	item = xmalloc(sizeof(struct Item));
 	item->col1 = s1;
 	item->col2 = s2;
 	item->next = NULL;

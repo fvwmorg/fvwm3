@@ -50,7 +50,7 @@ static int push_read_file(const char *file)
 		return 0;
 	}
 	prev_read_files[curr_read_depth++] = curr_read_file;
-	curr_read_file = safestrdup(file);
+	curr_read_file = xstrdup(file);
 	if (curr_read_dir)
 	{
 		free(curr_read_dir);
@@ -100,7 +100,7 @@ const char *get_current_read_dir(void)
 		{
 			dir_end = curr_read_file;
 		}
-		curr_read_dir = safemalloc(dir_end - curr_read_file + 1);
+		curr_read_dir = xmalloc(dir_end - curr_read_file + 1);
 		strncpy(curr_read_dir, curr_read_file,
 			dir_end - curr_read_file);
 		curr_read_dir[dir_end - curr_read_file] = '\0';

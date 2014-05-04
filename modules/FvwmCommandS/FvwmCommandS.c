@@ -561,11 +561,11 @@ void relay_packet(unsigned long type, unsigned long length,
   if (!body)
 	  return;
 
-  new = (Q *)safemalloc(sizeof(Q));
+  new = xmalloc(sizeof(Q));
 
   new->length = length + 2 * SOL;
   new->sent = 0L;
-  new->body = safemalloc(new->length);
+  new->body = xmalloc(new->length);
   memcpy(new->body, &type, SOL);
   memcpy(new->body + SOL, &length, SOL);
   memcpy(new->body + 2 * SOL, body, length);

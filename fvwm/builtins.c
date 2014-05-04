@@ -277,7 +277,8 @@ static char *ReadTitleButton(
 		}
 		s = SkipSpaces(s, NULL, 0);
 		len = end - s + 1;
-		spec = safemalloc(len);
+		/* TA:  FIXME!  xasprintf() */
+		spec = xmalloc(len);
 		strncpy(spec, s, len - 1);
 		spec[len - 1] = 0;
 	}
@@ -317,7 +318,7 @@ static char *ReadTitleButton(
 			{
 				tail = tail->next;
 			}
-			tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
+			tail->next = xmalloc(sizeof(DecorFace));
 			memcpy(tail->next, &tmpdf, sizeof(DecorFace));
 			if (DFS_FACE_TYPE(tail->next->style) == VectorButton &&
 			    DFS_FACE_TYPE((&TB_STATE(*tb)[bs_start])->style) ==
@@ -346,11 +347,7 @@ static char *ReadTitleButton(
 				{
 					tail = tail->next;
 				}
-				tail->next = (DecorFace *)safemalloc(
-					sizeof(DecorFace));
-				memset(
-					&DFS_FLAGS(tail->next->style), 0,
-					sizeof(DFS_FLAGS(tail->next->style)));
+				tail->next = xcalloc(1, sizeof(DecorFace));
 				DFS_FACE_TYPE(tail->next->style) =
 					SimpleButton;
 				tail->next->next = NULL;
@@ -548,13 +545,9 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 	FvwmPictureAttributes fpa;
 
 	df->style.face_type = MultiPixmap;
-	df->u.mp.pixmaps = pm =
-		(FvwmPicture**)safecalloc(
-			TBMP_NUM_PIXMAPS, sizeof(FvwmPicture*));
-	df->u.mp.acs = acs =
-		(FvwmAcs *)safemalloc(TBMP_NUM_PIXMAPS * sizeof(FvwmAcs));
-	df->u.mp.pixels = pixels =
-		(Pixel *)safemalloc(TBMP_NUM_PIXMAPS * sizeof(Pixel));
+	df->u.mp.pixmaps = pm = xcalloc(TBMP_NUM_PIXMAPS, sizeof(FvwmPicture*));
+	df->u.mp.acs = acs = xmalloc(TBMP_NUM_PIXMAPS * sizeof(FvwmAcs));
+	df->u.mp.pixels = pixels = xmalloc(TBMP_NUM_PIXMAPS * sizeof(Pixel));
 	for(i=0; i < TBMP_NUM_PIXMAPS; i++)
 	{
 		acs[i].cs = -1;
@@ -1396,8 +1389,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 			Pixel *p;
 			int i;
 
-			p = (Pixel *)safemalloc(
-				df->u.grad.npixels * sizeof(Pixel));
+			p = xmalloc(df->u.grad.npixels * sizeof(Pixel));
 			for(i=0; i < df->u.grad.npixels; i++)
 			{
 				p[i] = df->u.grad.xcs[i].pixel;
@@ -1601,16 +1593,11 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 
 			vc->num = num_coords;
 			vc->use_fgbg = 0;
-			vc->x = (signed char*)safemalloc(sizeof(char) *
-							 num_coords);
-			vc->y = (signed char*)safemalloc(sizeof(char) *
-							 num_coords);
-			vc->xoff = (signed char*)safemalloc(sizeof(char) *
-							    num_coords);
-			vc->yoff = (signed char*)safemalloc(sizeof(char) *
-							    num_coords);
-			vc->c = (signed char*)safemalloc(sizeof(char) *
-							 num_coords);
+			vc->x = xmalloc(sizeof(char) * num_coords);
+			vc->y = xmalloc(sizeof(char) * num_coords);
+			vc->xoff = xmalloc(sizeof(char) * num_coords);
+			vc->yoff = xmalloc(sizeof(char) * num_coords);
+			vc->c = xmalloc(sizeof(char) * num_coords);
 
 			/* get the points */
 			for (i = 0; i < vc->num; ++i)
@@ -2388,12 +2375,12 @@ void CMD_ExecUseShell(F_CMD_ARGS)
 	{
 		if (getenv("SHELL"))
 		{
-			exec_shell_name = safestrdup(getenv("SHELL"));
+			exec_shell_name = xstrdup(getenv("SHELL"));
 		}
 		else
 		{
 			/* if $SHELL not set, use default */
-			exec_shell_name = safestrdup("/bin/sh");
+			exec_shell_name = xstrdup("/bin/sh");
 		}
 	}
 }
@@ -2416,7 +2403,7 @@ void CMD_Exec(F_CMD_ARGS)
 	else
 #endif
 	{
-		cmd = safestrdup(action);
+		cmd = xstrdup(action);
 	}
 	if (!cmd)
 	{
@@ -2513,7 +2500,8 @@ void CMD_Wait(F_CMD_ARGS)
 				temp++;
 			}
 			free(wait_string);
-			wait_string = safestrdup(temp);
+			wait_string = xstrdup(temp);
+
 			for (i = strlen(wait_string) - 1; i >= 0 &&
 				     isspace(wait_string[i]); i--)
 			{
@@ -2523,7 +2511,7 @@ void CMD_Wait(F_CMD_ARGS)
 	}
 	else
 	{
-		wait_string = safestrdup("");
+		wait_string = xstrdup("");
 	}
 
 	is_ungrabbed = UngrabEm(GRAB_NORMAL);
@@ -2829,7 +2817,8 @@ void CMD_HilightColor(F_CMD_ARGS)
 	GetNextToken(action, &back);
 	if (fore && back)
 	{
-		action = safemalloc(strlen(fore) + strlen(back) + 29);
+		/* TA:  FIXME:  xasprintf() */
+		action = xmalloc(strlen(fore) + strlen(back) + 29);
 		sprintf(action, "* HilightFore %s, HilightBack %s", fore, back);
 		CMD_Style(F_PASS_ARGS);
 	}
@@ -2862,7 +2851,8 @@ void CMD_HilightColorset(F_CMD_ARGS)
 
 	if (action)
 	{
-		newaction = safemalloc(strlen(action) + 32);
+		/* TA:  FIXME!  xasprintf() */
+		newaction = xmalloc(strlen(action) + 32);
 		sprintf(newaction, "* HilightColorset %s", action);
 		action = newaction;
 		CMD_Style(F_PASS_ARGS);
@@ -2988,11 +2978,11 @@ void CMD_DefaultColors(F_CMD_ARGS)
 	}
 	if (!back)
 	{
-		back = safestrdup(DEFAULT_BACK_COLOR);
+		back = xstrdup(DEFAULT_BACK_COLOR);
 	}
 	if (!fore)
 	{
-		fore = safestrdup(DEFAULT_FORE_COLOR);
+		fore = xstrdup(DEFAULT_FORE_COLOR);
 	}
 	if (!StrEquals(fore, "-"))
 	{
@@ -3076,7 +3066,8 @@ void CMD_IconFont(F_CMD_ARGS)
 
 	if (action)
 	{
-		newaction = safemalloc(strlen(action) + 16);
+		/* TA:  FIXME!  xasprintf() */
+		newaction = xmalloc(strlen(action) + 16);
 		sprintf(newaction, "* IconFont %s", action);
 		action = newaction;
 		CMD_Style(F_PASS_ARGS);
@@ -3102,7 +3093,8 @@ void CMD_WindowFont(F_CMD_ARGS)
 
 	if (action)
 	{
-		newaction = safemalloc(strlen(action) + 16);
+		/* TA;  FIXME!  xasprintf() */
+		newaction = xmalloc(strlen(action) + 16);
 		sprintf(newaction, "* Font %s", action);
 		action = newaction;
 		CMD_Style(F_PASS_ARGS);
@@ -3200,7 +3192,7 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 			int i;
 
 			InitFvwmDecor(found);
-			found->tag = safestrdup(item);
+			found->tag = xstrdup(item);
 			Scr.flags.do_need_window_update = 1;
 			found->flags.has_changed = 1;
 			found->flags.has_title_height_changed = 0;
@@ -3253,7 +3245,7 @@ void CMD_AddToDecor(F_CMD_ARGS)
 	if (!found)
 	{
 		/* then make a new one */
-		found = (FvwmDecor *)safemalloc(sizeof( FvwmDecor ));
+		found = xmalloc(sizeof *found);
 		InitFvwmDecor(found);
 		found->tag = item; /* tag it */
 		/* add it to list */
@@ -3370,9 +3362,9 @@ void CMD_SetEnv(F_CMD_ARGS)
 	action = GetNextToken(action, &szValue);
 	if (!szValue)
 	{
-		szValue = safestrdup("");
+		szValue = xstrdup("");
 	}
-	szPutenv = safemalloc(strlen(szVar) + strlen(szValue) + 2);
+	szPutenv = xmalloc(strlen(szVar) + strlen(szValue) + 2);
 	sprintf(szPutenv,"%s=%s", szVar, szValue);
 	flib_putenv(szVar, szPutenv);
 	free(szVar);
@@ -4159,8 +4151,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		XBell(dpy, 0);
 		return;
 	}
-	x = (int*)safemalloc(coords_size * sizeof(int));
-	y = (int*)safemalloc(coords_size * sizeof(int));
+	x = xmalloc(coords_size * sizeof(int));
+	y = xmalloc(coords_size * sizeof(int));
 	e = *exc->x.etrigger;
 	/* set the default option */
 	if (e.type == KeyPress || e.type == ButtonPress)
@@ -4306,12 +4298,12 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 				if (i >= coords_size)
 				{
 					coords_size += STROKE_CHUNK_SIZE;
-					x = (int*)saferealloc(
-						(void *)x, coords_size *
-						sizeof(int));
-					y = (int*)saferealloc(
-						(void *)y, coords_size *
-						sizeof(int));
+					x = xrealloc((void *)x,
+						     coords_size * sizeof(int),
+						     sizeof((void *)x));
+					y = xrealloc((void *)y,
+						     coords_size * sizeof(int),
+						     sizeof((void *)y));
 				}
 				x[i] = tmpx;
 				y[i] = tmpy;

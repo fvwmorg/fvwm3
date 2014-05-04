@@ -114,7 +114,7 @@ char *charmap_table_to_string(int mask, charmap_t *table)
 
 	c[1] = 0;
 	modmask = mask;
-	allmods = safemalloc(sizeof(table->value) * 8 + 1);
+	allmods = xmalloc(sizeof(table->value) * 8 + 1);
 	*allmods = 0;
 	for (; table->key !=0; table++)
 	{

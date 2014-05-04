@@ -516,8 +516,7 @@ XColor *AllocLinearGradient(
 	/* blue part and step width */
 	b = from.blue;
 	db = (float)(to.blue - from.blue);
-	xcs = (XColor *)safemalloc(sizeof(XColor) * npixels);
-	memset(xcs, 0, sizeof(XColor) * npixels);
+	xcs = xcalloc(1, sizeof(XColor) * npixels);
 	c.flags = DoRed | DoGreen | DoBlue;
 	for (i = (skip_first_color) ? 1 : 0; i < npixels && div > 0; ++i)
 	{
@@ -550,7 +549,7 @@ XColor *AllocLinearGradient(
 static XColor *AllocNonlinearGradient(
 	char *s_colors[], int clen[], int nsegs, int npixels, int dither)
 {
-	XColor *xcs = (XColor *)safemalloc(sizeof(XColor) * npixels);
+	XColor *xcs = xmalloc(sizeof(XColor) * npixels);
 	int i;
 	int curpixel = 0;
 	int *seg_end_colors;
@@ -740,8 +739,8 @@ int ParseGradient(
 	if (GetIntegerArguments(item, NULL, &nsegs, 1) != 1)
 	{
 		/* get the end color of a simple gradient */
-		s_colors = (char **)safemalloc(sizeof(char *) * 2);
-		perc = (int *)safemalloc(sizeof(int));
+		s_colors = xmalloc(sizeof(char *) * 2);
+		perc = xmalloc(sizeof(int));
 		nsegs = 1;
 		s_colors[0] = item;
 		gradient = GetNextToken(gradient, &item);
@@ -756,8 +755,8 @@ int ParseGradient(
 			nsegs = 1;
 		if (nsegs > MAX_GRADIENT_SEGMENTS)
 			nsegs = MAX_GRADIENT_SEGMENTS;
-		s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
-		perc = (int *)safemalloc(sizeof(int) * nsegs);
+		s_colors = xmalloc(sizeof(char *) * (nsegs + 1));
+		perc = xmalloc(sizeof(int) * nsegs);
 		for (i = 0; !is_syntax_error && i <= nsegs; i++)
 		{
 			s_colors[i] = 0;
@@ -1308,8 +1307,7 @@ Pixmap CreateGradientPixmapFromString(
 				Pixel *pixels;
 				int i;
 
-				pixels = (Pixel *)safemalloc(
-					ncolors * sizeof(Pixel));
+				pixels = xmalloc(ncolors * sizeof(Pixel));
 				for(i=0; i<ncolors; i++)
 				{
 					pixels[i] = xcs[i].pixel;

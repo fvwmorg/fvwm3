@@ -226,7 +226,7 @@ static const char *getEnv(const char *name, int len)
 	static char *empty = "";
 	char   *ret = NULL, *tmp, *p, *p2;
 
-	if ((tmp = safestrdup(name)) == NULL)
+	if ((tmp = xstrdup(name)) == NULL)
 		return empty;  /* better than no test at all. */
 	p = tmp;
 	if (*p == '$')
@@ -323,7 +323,8 @@ char *envDupExpand(const char *s, int extra)
 	if (bufflen < slen + 1)
 		bufflen = slen + 1;
 
-	ret = safemalloc(bufflen);
+	ret = xmalloc(bufflen);
+	/* TA:  FIXME!  xasprintf() */
 
 	/*
 	 *  now do the real expansion.
@@ -422,16 +423,14 @@ static void add_to_envlist(char *var, char *env)
 	{
 		/* list is still empty */
 		env_len_allocated = ENV_LIST_INC;
-		env_list = (env_list_item *)safecalloc(
-			sizeof(env_list_item), env_len_allocated);
+		env_list = xcalloc(sizeof(env_list_item), env_len_allocated);
 	}
 	else if (env_len >= env_len_allocated && env != NULL)
 	{
 		/* need more memory */
 		env_len_allocated = env_len + ENV_LIST_INC;
-		env_list = (env_list_item *)saferealloc(
-			(void *)env_list, (env_len_allocated) *
-			sizeof(env_list_item));
+		env_list = xrealloc((void *)env_list, (env_len_allocated),
+				sizeof(env_list_item));
 	}
 	env_list[env_len].var = var;
 	env_list[env_len].env = env;
@@ -454,9 +453,9 @@ void flib_putenv(char *var, char *env)
 {
 	char *s;
 
-	s = safestrdup(var);
+	s = xstrdup(var);
 	var = s;
-	s = safestrdup(env);
+	s = xstrdup(env);
 	env = s;
 	putenv(env);
 	add_to_envlist(var, env);

@@ -296,7 +296,7 @@ void EWMH_SetDesktopNames(void)
 	{
 		return;
 	}
-	names = (void *)safemalloc(sizeof(*names)*nbr);
+	names = xmalloc(sizeof(*names)*nbr);
 	for (i = 0; i < nbr; i++)
 	{
 		names[i] = (unsigned char *)FiconvCharsetToUtf8(
@@ -311,7 +311,7 @@ void EWMH_SetDesktopNames(void)
 		}
 		s = s->next;
 	}
-	val = (unsigned char *)safemalloc(len);
+	val = xmalloc(len);
 	for (i = 0; i < nbr; i++)
 	{
 		if (names[i] != NULL)

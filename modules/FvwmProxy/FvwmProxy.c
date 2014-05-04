@@ -260,7 +260,7 @@ static void LinkSlotAction(char *string)
 			{
 				free(slot_action_list[b-1][slot]);
 			}
-			slot_action_list[b-1][slot] = safestrdup(string);
+			slot_action_list[b-1][slot] = xstrdup(string);
 #if PROXY_GROUP_DEBUG
 			fprintf(stderr,"slot_action_list[%d][%d]=\"%s\"\n",
 				b-1,slot,slot_action_list[b-1][slot]);
@@ -301,7 +301,7 @@ static void LinkAction(char *string)
 				free(action_list[PROXY_ACTION_CLICK + b - 1]);
 			}
 			action_list[PROXY_ACTION_CLICK + b - 1] =
-				safestrdup(string);
+				xstrdup(string);
 		}
 	}
 	else if (StrEquals(token, "Select"))
@@ -310,7 +310,7 @@ static void LinkAction(char *string)
 		{
 			free(action_list[PROXY_ACTION_SELECT]);
 		}
-		action_list[PROXY_ACTION_SELECT] = safestrdup(string);
+		action_list[PROXY_ACTION_SELECT] = xstrdup(string);
 	}
 	else if (StrEquals(token, "Show"))
 	{
@@ -318,7 +318,7 @@ static void LinkAction(char *string)
 		{
 			free(action_list[PROXY_ACTION_SHOW]);
 		}
-		action_list[PROXY_ACTION_SHOW] = safestrdup(string);
+		action_list[PROXY_ACTION_SHOW] = xstrdup(string);
 	}
 	else if (StrEquals(token, "Hide"))
 	{
@@ -326,7 +326,7 @@ static void LinkAction(char *string)
 		{
 			free(action_list[PROXY_ACTION_HIDE]);
 		}
-		action_list[PROXY_ACTION_HIDE] = safestrdup(string);
+		action_list[PROXY_ACTION_HIDE] = xstrdup(string);
 	}
 	else if (StrEquals(token, "Abort"))
 	{
@@ -334,7 +334,7 @@ static void LinkAction(char *string)
 		{
 			free(action_list[PROXY_ACTION_ABORT]);
 		}
-		action_list[PROXY_ACTION_ABORT] = safestrdup(string);
+		action_list[PROXY_ACTION_ABORT] = xstrdup(string);
 	}
 	else if (StrEquals(token, "Mark"))
 	{
@@ -342,7 +342,7 @@ static void LinkAction(char *string)
 		{
 			free(action_list[PROXY_ACTION_MARK]);
 		}
-		action_list[PROXY_ACTION_MARK] = safestrdup(string);
+		action_list[PROXY_ACTION_MARK] = xstrdup(string);
 	}
 	else if (StrEquals(token, "Unmark"))
 	{
@@ -350,7 +350,7 @@ static void LinkAction(char *string)
 		{
 			free(action_list[PROXY_ACTION_UNMARK]);
 		}
-		action_list[PROXY_ACTION_UNMARK] = safestrdup(string);
+		action_list[PROXY_ACTION_UNMARK] = xstrdup(string);
 	}
 	else if (StrEquals(token, "ModifierRelease"))
 	{
@@ -362,7 +362,7 @@ static void LinkAction(char *string)
 		}
 
 		modifiers_string_to_modmask(token, (int *)&watched_modifiers);
-		action_list[PROXY_ACTION_MODIFIER_RELEASE] = safestrdup(string);
+		action_list[PROXY_ACTION_MODIFIER_RELEASE] = xstrdup(string);
 	}
 
 	return;
@@ -493,7 +493,7 @@ static Bool parse_options(void)
 			{
 				free(font_name);
 			}
-			font_name = safestrdup(tline);
+			font_name = xstrdup(tline);
 		}
 		else if (StrEquals(resource, "SmallFont"))
 		{
@@ -501,7 +501,7 @@ static Bool parse_options(void)
 			{
 				free(small_font_name);
 			}
-			small_font_name = safestrdup(tline);
+			small_font_name = xstrdup(tline);
 		}
 		else if (StrEquals(resource, "ShowMiniIcons"))
 		{
@@ -875,7 +875,7 @@ static void ProxyWindow_ProxyWindow(ProxyWindow *p)
 
 static ProxyWindow *new_ProxyWindow(void)
 {
-	ProxyWindow *p=(ProxyWindow *)safemalloc(sizeof(ProxyWindow));
+	ProxyWindow *p=xmalloc(sizeof(ProxyWindow));
 	ProxyWindow_ProxyWindow(p);
 	return p;
 }
@@ -916,7 +916,7 @@ static void WindowName_WindowName(WindowName *p)
 
 static WindowName *new_WindowName(void)
 {
-	WindowName *p=(WindowName *)safemalloc(sizeof(WindowName));
+	WindowName *p=xmalloc(sizeof(WindowName));
 	WindowName_WindowName(p);
 	return p;
 }
@@ -937,7 +937,7 @@ static void ProxyGroup_ProxyGroup(ProxyGroup *p)
 
 static ProxyGroup *new_ProxyGroup(void)
 {
-	ProxyGroup *p=(ProxyGroup *)safemalloc(sizeof(ProxyGroup));
+	ProxyGroup *p=xmalloc(sizeof(ProxyGroup));
 	ProxyGroup_ProxyGroup(p);
 	return p;
 }
@@ -2001,7 +2001,7 @@ void RestackAtomic(int raise)
 	{
 		count++;
 	}
-	windows = (Window *) safemalloc (count * sizeof (Window));
+	windows = xmalloc(count * sizeof(Window));
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		fprintf(stderr, "RestackAtomic %d %s\n",
@@ -3821,7 +3821,7 @@ static void ProcessMessage(FvwmPacket* packet)
 			{
 				free(proxy->name);
 			}
-			proxy->name = safestrdup((char*)&body[3]);
+			proxy->name = xstrdup((char *)&body[3]);
 #if PROXY_GROUP_DEBUG
 			fprintf(stderr,"M_WINDOW_NAME %s\n",proxy->name);
 #endif
@@ -3840,7 +3840,7 @@ static void ProcessMessage(FvwmPacket* packet)
 			{
 				free(proxy->iconname);
 			}
-			proxy->iconname = safestrdup((char*)&body[3]);
+			proxy->iconname = xstrdup((char *)&body[3]);
 #if PROXY_GROUP_DEBUG
 			fprintf(stderr,"M_ICON_NAME %s\n",proxy->iconname);
 #endif
@@ -4363,8 +4363,7 @@ int main(int argc, char **argv)
 
 	if (parse_options() == False)
 		exit(1);
-	stampQueue=(GeometryStamp*)safemalloc(
-		sizeof(GeometryStamp)*stampLimit);
+	stampQueue=xmalloc(sizeof(GeometryStamp) * stampLimit);
 	if ((Ffont = FlocaleLoadFont(dpy, font_name, MyName)) == NULL)
 	{
 		fprintf(stderr,"%s: Couldn't load font \"%s\". Exiting!\n",

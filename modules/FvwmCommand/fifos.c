@@ -75,7 +75,7 @@ char * fifos_get_default_name(void)
 		/* append screen number */
 		strcpy(dpy_name_add, ".0");
 	}
-	f_stem = safemalloc(11 + strlen(F_NAME) + MAXHOSTNAME +
+	f_stem = xmalloc(11 + strlen(F_NAME) + MAXHOSTNAME +
 			    strlen(dpy_name) + strlen(dpy_name_add));
 
 	if (
@@ -164,7 +164,8 @@ char * fifos_get_default_name(void)
 			free(tmp);
 			return NULL;
 		}
-		f_stem = safemalloc(strlen(userdir) + strlen(tailname) + 1);
+		/* TA:  FIXME!  xasprintf() */
+		f_stem = xmalloc(strlen(userdir) + strlen(tailname) + 1);
 		strcpy(f_stem, userdir);
 		strcat(f_stem, tailname);
 		free(tmp);

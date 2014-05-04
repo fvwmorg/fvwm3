@@ -141,7 +141,7 @@ static void SetupTimer(void)
 static char *CopyQuotedString (char *cp)
 {
   char *dp, *bp, c;
-  bp = dp = (char *)safemalloc(strlen(cp) + 1);
+  bp = dp = xmalloc(strlen(cp) + 1);
   while (1) {
     switch (c = *(cp++)) {
     case '\\':
@@ -164,7 +164,7 @@ static char *CopyQuotedString (char *cp)
 static char *CopySolidString (char *cp)
 {
   char *dp, *bp, c;
-  bp = dp = (char *)safemalloc(strlen(cp) + 1);
+  bp = dp = xmalloc(strlen(cp) + 1);
   while (1) {
     c = *(cp++);
     if (c == '\\') {
@@ -301,9 +301,10 @@ static void FormVarsCheck(char **p)
     if (strlen(*p) + 200 > CF.expand_buffer_size) { /* fast and loose */
       CF.expand_buffer_size = strlen(*p) + 2000; /* new size */
       if (CF.expand_buffer) {		/* already have one */
-	CF.expand_buffer = saferealloc(CF.expand_buffer, CF.expand_buffer_size);
+	CF.expand_buffer = xrealloc(CF.expand_buffer, CF.expand_buffer_size,
+			sizeof(CF.expand_buffer));
       } else {				/* first time */
-	CF.expand_buffer = safemalloc(CF.expand_buffer_size);
+	CF.expand_buffer = xmalloc(CF.expand_buffer_size);
       }
     }
     strcpy(CF.expand_buffer,*p);
@@ -381,8 +382,9 @@ static void ExpandArray(Line *this_line)
   if (this_line->n + 1 >= this_line->item_array_size) { /* no empty space */
     this_line->item_array_size += ITEMS_PER_EXPANSION; /* get bigger */
     this_line->items =
-      (Item **)saferealloc((void *)this_line->items,
-			  (sizeof(Item *) * this_line->item_array_size));
+      xrealloc((void *)this_line->items,
+               (sizeof(Item *) * this_line->item_array_size),
+	       sizeof(this_line->items));
   } /* end array full */
 }
 
@@ -493,7 +495,7 @@ static void ct_Fore(char *cp)
 {
   if (color_names[c_fg])
     free(color_names[c_fg]);
-  color_names[c_fg] = safestrdup(cp);
+  color_names[c_fg] = xstrdup(cp);
   colorset = -1;
   myfprintf((stderr, "ColorFore: %s\n", color_names[c_fg]));
 }
@@ -501,12 +503,12 @@ static void ct_Back(char *cp)
 {
   if (color_names[c_bg])
     free(color_names[c_bg]);
-  color_names[c_bg] = safestrdup(cp);
+  color_names[c_bg] = xstrdup(cp);
   if (bg_state == 'd')
   {
     if (screen_background_color)
       free(screen_background_color);
-    screen_background_color = safestrdup(color_names[c_bg]);
+    screen_background_color = xstrdup(color_names[c_bg]);
     bg_state = 's';			/* indicate set by command */
   }
   colorset = -1;
@@ -522,7 +524,7 @@ static void ct_ItemFore(char *cp)
 {
   if (color_names[c_item_fg])
     free(color_names[c_item_fg]);
-  color_names[c_item_fg] = safestrdup(cp);
+  color_names[c_item_fg] = xstrdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemFore: %s\n", color_names[c_item_fg]));
 }
@@ -530,7 +532,7 @@ static void ct_ItemBack(char *cp)
 {
   if (color_names[c_item_bg])
     free(color_names[c_item_bg]);
-  color_names[c_item_bg] = safestrdup(cp);
+  color_names[c_item_bg] = xstrdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemBack: %s\n", color_names[c_item_bg]));
 }
@@ -629,7 +631,7 @@ static void ct_InputPointerFore(char *cp) {
 static void ct_Line(char *cp)
 {
   /* malloc new line */
-  cur_line->next = (struct _line *)safemalloc(sizeof(struct _line));
+  cur_line->next = xmalloc(sizeof(struct _line));
   memset(cur_line->next, 0, sizeof(struct _line));
   cur_line = cur_line->next;		/* new current line */
   cur_line->next = &root_line;		/* new next ptr, (actually root) */
@@ -659,7 +661,7 @@ static void ct_Message(char *cp)
      to the correct DrawTable. */
   AssignDrawTable(item);
   item->header.name = "FvwmMessage";	/* No purpose to this? dje */
-  item->text.value = safemalloc(80);	/* point at last error recvd */
+  item->text.value = xmalloc(80);	/* point at last error recvd */
   item->text.n = 80;
   strcpy(item->text.value,"A mix of chars. MM20"); /* 20 mixed width chars */
   item->header.size_x = (FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
@@ -784,7 +786,7 @@ static void AssignDrawTable(Item *adt_item)
 
   /* Time to add a DrawTable */
   /* get one */
-  new_dt = (struct _drawtable *)safemalloc(sizeof(struct _drawtable));
+  new_dt = xmalloc(sizeof(struct _drawtable));
   memset(new_dt, 0, sizeof(struct _drawtable));
   new_dt->dt_next = 0;			/* new end of list */
   if (CF.roots_dt == 0) {		   /* If first entry in list */
@@ -793,11 +795,11 @@ static void AssignDrawTable(Item *adt_item)
     last_dt->dt_next = new_dt;		/* link old to new */
   }
 
-  new_dt->dt_font_name = safestrdup(match_font);
-  new_dt->dt_color_names[c_fg]	    = safestrdup(match_text_fore);
-  new_dt->dt_color_names[c_bg]	    = safestrdup(match_text_back);
-  new_dt->dt_color_names[c_item_fg] = safestrdup(match_item_fore);
-  new_dt->dt_color_names[c_item_bg] = safestrdup(match_item_back);
+  new_dt->dt_font_name = xstrdup(match_font);
+  new_dt->dt_color_names[c_fg]	    = xstrdup(match_text_fore);
+  new_dt->dt_color_names[c_bg]	    = xstrdup(match_text_back);
+  new_dt->dt_color_names[c_item_fg] = xstrdup(match_item_fore);
+  new_dt->dt_color_names[c_item_bg] = xstrdup(match_item_back);
   new_dt->dt_used = 0;			/* show nothing allocated */
   new_dt->dt_Ffont = FlocaleLoadFont(dpy, new_dt->dt_font_name, module->name);
   FlocaleAllocateWinString(&new_dt->dt_Fstr);
@@ -815,7 +817,7 @@ static void AddItem(void)
 {
   Item *save_item;
   save_item = (Item *)item;		/* save current item */
-  item = (Item *)safecalloc(sizeof(Item),1); /* get a new item */
+  item = xcalloc(sizeof(Item), 1); /* get a new item */
   if (save_item == 0) {			/* if first item */
     root_item_ptr = item;		/* save root item */
   } else {				/* else not first item */
@@ -915,11 +917,11 @@ static void ct_Timeout(char *cp)
     cp += strlen(item->timeout.command) + 1;
   }
   else {
-    tmpbuf = safestrdup(cp);
+    tmpbuf = xstrdup(cp);
     tmpcp = tmpbuf;
     while (!isspace((unsigned char)*tmpcp)) tmpcp++;
     *tmpcp = '\0';			  /* cutoff command at first word */
-    item->timeout.command = safestrdup(tmpbuf);
+    item->timeout.command = xstrdup(tmpbuf);
     free(tmpbuf);
     while (!isspace((unsigned char)*cp)) cp++; /* move past command again */
   }
@@ -966,16 +968,16 @@ static void ct_Input(char *cp)
   item->input.size = atoi(cp);
   while (!isspace((unsigned char)*cp)) cp++;
   while (isspace((unsigned char)*cp)) cp++;
-  item->input.init_value = safestrdup("");	    /* init */
+  item->input.init_value = xstrdup("");	    /* init */
   if (*cp == '\"') {
     free(item->input.init_value);
     item->input.init_value = CopyQuotedString(++cp);
   }
-  item->input.blanks = (char *)safemalloc(item->input.size);
+  item->input.blanks = xmalloc(item->input.size);
   for (j = 0; j < item->input.size; j++)
     item->input.blanks[j] = ' ';
   item->input.buf = strlen(item->input.init_value) + 1;
-  item->input.value = (char *)safemalloc(item->input.buf);
+  item->input.value = xmalloc(item->input.buf);
   item->input.value[0] = 0;		/* avoid reading unitialized data */
 
   item->header.size_x = item->header.dt_ptr->dt_Ffont->max_char_width
@@ -1076,12 +1078,12 @@ static void PutDataInForm(char *cp)
 	var_len = strlen(cp);
 	if (item->input.init_value)
 	  free(item->input.init_value);
-	item->input.init_value = safemalloc(var_len+1);
+	item->input.init_value = xmalloc(var_len + 1);
 	strcpy(item->input.init_value,cp); /* new initial value in field */
 	if (item->input.value)
 	  free(item->input.value);
 	item->input.buf = var_len+1;
-	item->input.value = safemalloc(item->input.buf);
+	item->input.value = xmalloc(item->input.buf);
 	strcpy(item->input.value,cp);	  /* new value in field */
 	free(var_name);			/* goto's have their uses */
 	return;
@@ -1185,9 +1187,9 @@ static void ct_Choice(char *cp)
       <= cur_sel->selection.n) {	   /* no room */
     cur_sel->selection.choices_array_count += CHOICES_PER_SEL_EXPANSION;
     cur_sel->selection.choices =
-      (Item **)saferealloc((void *)cur_sel->selection.choices,
-			   sizeof(Item *) *
-			   cur_sel->selection.choices_array_count); /* expand */
+      xrealloc((void *)cur_sel->selection.choices,
+               sizeof(Item *) * cur_sel->selection.choices_array_count,
+	       sizeof(cur_sel->selection.choices)); /* expand */
   }
 
   cur_sel->selection.choices[cur_sel->selection.n++] = item;
@@ -1249,26 +1251,26 @@ static void ct_Command(char *cp)
   {
     cur_button->button.button_array_size += BUTTON_COMMAND_EXPANSION;
     cur_button->button.commands =
-      (char **)saferealloc((void *)cur_button->button.commands,
-			   sizeof(char *) *
-			   cur_button->button.button_array_size);
+      xrealloc((void *)cur_button->button.commands,
+               sizeof(char *) * cur_button->button.button_array_size,
+	       sizeof(cur_button->button.commands));
   }
-  cur_button->button.commands[cur_button->button.n++] = safestrdup(cp);
+  cur_button->button.commands[cur_button->button.n++] = xstrdup(cp);
 }
 
 /* End of ct_ routines */
 
 /* Init constants with values that can be freed later. */
 static void InitConstants(void) {
-  color_names[0]=safestrdup("Light Gray");
-  color_names[1]=safestrdup("Black");
-  color_names[2]=safestrdup("Gray50");
-  color_names[3]=safestrdup("Wheat");
-  font_names[0]=safestrdup("8x13bold");
-  font_names[1]=safestrdup("8x13bold");
-  font_names[2]=safestrdup("8x13bold");
-  font_names[3]=safestrdup("8x13bold");
-  screen_background_color=safestrdup("Light Gray");
+  color_names[0]=xstrdup("Light Gray");
+  color_names[1]=xstrdup("Black");
+  color_names[2]=xstrdup("Gray50");
+  color_names[3]=xstrdup("Wheat");
+  font_names[0]=xstrdup("8x13bold");
+  font_names[1]=xstrdup("8x13bold");
+  font_names[2]=xstrdup("8x13bold");
+  font_names[3]=xstrdup("8x13bold");
+  screen_background_color=xstrdup("Light Gray");
   CF.p_c[input_fore].pointer_color.pixel = PictureWhitePixel();
   CF.p_c[input_back].pointer_color.pixel = PictureBlackPixel();
   CF.p_c[button_fore].pointer_color.pixel = PictureBlackPixel();
@@ -1438,8 +1440,8 @@ static void Restart(void)
       if (item->input.value && item->input.value[0] != 0) { /* ? to save */
 	if (item->input.value_history_ptr == 0) {  /* no history yet */
 	  item->input.value_history_ptr =
-	    (char **)safecalloc(sizeof(char *), 50);
-	  item->input.value_history_ptr[0] = safestrdup(item->input.value);
+	    xcalloc(sizeof(char *), 50);
+	  item->input.value_history_ptr[0] = xstrdup(item->input.value);
 	  item->input.value_history_count = 1; /* next insertion point */
 	  myfprintf((stderr,"Initial save of %s in slot 0\n",
 		     item->input.value_history_ptr[0]));
@@ -1465,7 +1467,7 @@ static void Restart(void)
 			 item->input.value_history_count));
 	    }
 	    item->input.value_history_ptr[item->input.value_history_count] =
-	      safestrdup(item->input.value); /* save value ptr in array */
+	      xstrdup(item->input.value); /* save value ptr in array */
 	    myfprintf((stderr,"Save of %s in slot %d\n",
 		       item->input.value,
 		       item->input.value_history_count));
@@ -1654,7 +1656,7 @@ void RedrawTimeout(Item *item)
 	       item->header.size_x, item->header.size_y,
 	       False);
 
-  tmpbuf = safemalloc(item->timeout.len + 6);
+  tmpbuf = xmalloc(item->timeout.len + 6);
   tmpbptr = tmpbuf;
   for (tmpptr = item->timeout.text; *tmpptr != '\0' &&
 		!(tmpptr[0] == '%' && tmpptr[1] == '%'); tmpptr++) {
@@ -1692,7 +1694,7 @@ void RedrawTimeout(Item *item)
   }
   if (item->header.dt_ptr->dt_Fstr->str != NULL)
     free(item->header.dt_ptr->dt_Fstr->str);
-  item->header.dt_ptr->dt_Fstr->str = safestrdup(tmpbuf);
+  item->header.dt_ptr->dt_Fstr->str = xstrdup(tmpbuf);
   item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x + TEXT_SPC;
   item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + ( CF.padVText / 2 ) +
     item->header.dt_ptr->dt_Ffont->ascent;
@@ -2415,8 +2417,9 @@ static void process_message(unsigned long type, unsigned long *body)
 	msg_ptr[msg_len-1] = '\0'; /* strip off \n */
       }
       if (CF.last_error->text.n <= msg_len) { /* if message wont fit */
-	CF.last_error->text.value = saferealloc(CF.last_error->text.value,
-						msg_len * 2);
+	CF.last_error->text.value = xrealloc(CF.last_error->text.value,
+                                             msg_len * 2,
+					     sizeof(CF.last_error->text.value));
 	CF.last_error->text.n = msg_len * 2;
       }
       strncpy(CF.last_error->text.value,msg_ptr,

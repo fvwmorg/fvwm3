@@ -187,7 +187,7 @@ int get_window(void)
     case M_CONFIGURE_WINDOW:
       if (is_suitable_window(packet->body)) {
 	window_item *wi =
-	  (window_item*)safemalloc(sizeof( window_item ));
+	  xmalloc(sizeof(window_item));
 	wi->frame = cfgpacket->frame;
 	wi->th = cfgpacket->title_height;
 	wi->bw = cfgpacket->border_width;

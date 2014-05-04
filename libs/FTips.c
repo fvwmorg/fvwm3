@@ -474,9 +474,7 @@ ftips_config *FTipsNewConfig(void)
 {
 	ftips_config *fc;
 
-	fc = (ftips_config *)safemalloc(sizeof(ftips_config));
-
-	memset(fc, 0, sizeof(ftips_config));
+	fc = xcalloc(1, sizeof(ftips_config));
 
 	/* use colorset 0 as default */
 	fc->border_width = FTIPS_DEFAULT_BORDER_WIDTH;

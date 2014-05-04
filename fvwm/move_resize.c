@@ -788,7 +788,7 @@ static int GetResizeArguments(
 	s1 = NULL;
 	if (token != NULL)
 	{
-		s1 = safestrdup(token);
+		s1 = xstrdup(token);
 	}
 	naction = GetNextToken(naction, &s2);
 	if (!s2)
@@ -3019,9 +3019,10 @@ void CMD_SnapAttraction(F_CMD_ARGS)
 	char *cmd;
 	size_t len;
 
+	/* TA:  FIXME  xasprintf() */
 	len = strlen(action);
 	len += 99;
-	cmd = safemalloc(len);
+	cmd = xmalloc(len);
 	sprintf(cmd, "Style * SnapAttraction %s", action);
 	fvwm_msg(
 		OLD, "CMD_SnapAttraction",
@@ -3040,9 +3041,10 @@ void CMD_SnapGrid(F_CMD_ARGS)
 	char *cmd;
 	size_t len;
 
+	/* TA:  FIXME xasprintf() */
 	len = strlen(action);
 	len += 99;
-	cmd = safemalloc(len);
+	cmd = xmalloc(len);
 	sprintf(cmd, "Style * SnapGrid %s", action);
 	fvwm_msg(
 		OLD, "CMD_SnapGrid",

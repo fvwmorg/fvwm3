@@ -84,8 +84,7 @@ static void FShmSafeCreateImage(
 	{
 		return;
 	}
-	fim->shminfo = (FShmSegmentInfo *)safecalloc(
-		1, sizeof(FShmSegmentInfo));
+	fim->shminfo = xcalloc(1, sizeof(FShmSegmentInfo));
 	if (!(fim->im = FShmCreateImage(
 		dpy, visual, depth, format, NULL, fim->shminfo,
 		width, height)))
@@ -165,7 +164,7 @@ FImage *FCreateFImage (
 
 	FShmInit(dpy);
 
-	fim = (FImage *)safemalloc(sizeof(FImage));
+	fim = xmalloc(sizeof(FImage));
 	fim->im = NULL;
 	fim->shminfo = NULL;
 
@@ -181,7 +180,7 @@ FImage *FCreateFImage (
 			dpy, visual, depth, ZPixmap, 0, 0, width, height,
 			Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0)))
 		{
-			fim->im->data = safemalloc(
+			fim->im->data = xmalloc(
 				fim->im->bytes_per_line * height);
 		}
 		else
@@ -202,7 +201,7 @@ FImage *FGetFImage(
 
 	FShmInit(dpy);
 
-	fim = (FImage *)safemalloc(sizeof(FImage));
+	fim = xmalloc(sizeof(FImage));
 	fim->im = NULL;
 	fim->shminfo = NULL;
 

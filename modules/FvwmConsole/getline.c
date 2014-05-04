@@ -78,7 +78,7 @@ char *get_line(void)
 		(void)fvwm_rl_bind_key('\t', rl_insert);
 		/* get history from file */
 		home = getenv("FVWM_USERDIR");
-		h_file = safemalloc(strlen(home) + sizeof(HISTFILE) + 1);
+		h_file = xmalloc(strlen(home) + sizeof(HISTFILE) + 1);
 		strcpy(h_file, home);
 		strcat(h_file, HISTFILE);
 		fvwm_stifle_history(HISTSIZE);

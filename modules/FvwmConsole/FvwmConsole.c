@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 	/* construct client's name */
 	strcpy(client, argv[0]);
 	strcat(client, "C");
-	eargv =(char **)safemalloc((argc+12)*sizeof(char *));
+	eargv = xmalloc((argc+12)*sizeof(char *));
 	/* copy arguments */
 	eargv[0] = XTERM;
 	j = 1;
@@ -207,7 +207,7 @@ void server(void)
 
 	/* name the socket */
 	home = getenv("FVWM_USERDIR");
-	S_name = safemalloc(strlen(home) + sizeof(S_NAME) + 1);
+	S_name = xmalloc(strlen(home) + sizeof(S_NAME) + 1);
 	strcpy(S_name, home);
 	strcat(S_name, S_NAME);
 

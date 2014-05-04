@@ -50,10 +50,9 @@ timeout_t *timeout_create(
 	{
 		return NULL;
 	}
-	to = (timeout_t *)safecalloc(1, sizeof(timeout_t));
+	to = xcalloc(1, sizeof(timeout_t));
 	to->n_timeouts = n_timeouts;
-	to->timeouts = (timeout_time_t *)safecalloc(
-		1, n_timeouts * sizeof(timeout_time_t));
+	to->timeouts = xcalloc(1, n_timeouts * sizeof(timeout_time_t));
 
 	return to;
 }

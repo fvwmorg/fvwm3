@@ -97,7 +97,7 @@ const exec_context_t *exc_create_null_context(void)
 	int i;
 #endif
 
-	exc = (exec_context_t *)safecalloc(1, sizeof(exec_context_t));
+	exc = xcalloc(1, sizeof(exec_context_t));
 #ifdef DEBUG_EXECCONTEXT
 fprintf(stderr, "xxx+0 ");
 for(i=0;i<nx;i++)fprintf(stderr,"  ");
@@ -136,7 +136,7 @@ const exec_context_t *exc_clone_context(
 int i;
 #endif
 
-	exc = (exec_context_t *)safemalloc(sizeof(exec_context_t));
+	exc = xmalloc(sizeof(exec_context_t));
 #ifdef DEBUG_EXECCONTEXT
 fprintf(stderr, "xxx+= ");
 for(i=0;i<nx;i++)fprintf(stderr,"  ");

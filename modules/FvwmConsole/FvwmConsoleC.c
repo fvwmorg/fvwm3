@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 
 	/* make a socket */
 	home = getenv("FVWM_USERDIR");
-	s_name = safemalloc(strlen(home) + sizeof(S_NAME) + 1);
+	s_name = xmalloc(strlen(home) + sizeof(S_NAME) + 1);
 	strcpy(s_name, home);
 	strcat(s_name, S_NAME);
 	s = socket(AF_UNIX, SOCK_STREAM, 0);

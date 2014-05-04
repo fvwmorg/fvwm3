@@ -445,7 +445,8 @@ static signed int expand_vars_extended(
 		if (string == NULL)
 		{
 			const char *ddn = _("Desk");
-			allocated_string = (char *)safemalloc(19 + strlen(ddn));
+			/* TA:  FIXME!  xasprintf() */
+			allocated_string = xmalloc(19 + strlen(ddn));
 			sprintf(allocated_string, "%s %i", ddn, cs);
 			string = allocated_string;
 		}
@@ -981,7 +982,7 @@ GOT_STRING:
 	}
 	if (should_quote)
 	{
-		quoted_string = (char *)safemalloc(len * 2 + 3);
+		quoted_string = xmalloc(len * 2 + 3);
 		len = QuoteString(quoted_string, string) - quoted_string;
 		if (output)
 		{
@@ -1202,7 +1203,7 @@ char *expand_vars(
 
 	/* Actually create expanded string */
 	i = 0;
-	out = safemalloc(l2 + 1);
+	out = xmalloc(l2 + 1);
 	j = 0;
 	while (i < l)
 	{

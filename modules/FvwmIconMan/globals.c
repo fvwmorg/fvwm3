@@ -44,8 +44,9 @@ int ModuleLen;
 
 static char *alloc_string(char *string)
 {
+	/* TA:  FIXME!  xasprintf() - but also, this function should die!!! */
 	int len = strlen(string);
-	char *ret = (char *)safemalloc((len + 1) * sizeof(char));
+	char *ret = xmalloc((len + 1) * sizeof(char));
 	strcpy(ret, string);
 	return ret;
 }
@@ -143,7 +144,7 @@ int allocate_managers(int num)
 	}
 
 	globals.num_managers = num;
-	globals.managers = (WinManager *)safemalloc(num * sizeof(WinManager));
+	globals.managers = xmalloc(num * sizeof(WinManager));
 
 	for (i = 0; i < num; i++) {
 		init_win_manager(i);

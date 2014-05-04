@@ -76,7 +76,7 @@ FftChar16 *FftUtf8ToFftString16(unsigned char *str, int len, int *nl)
 	FftChar16 *new;
 	int i = 0, j= 0;
 
-	new = (FftChar16 *)safemalloc((len+1)*sizeof(FftChar16));
+	new = xmalloc((len+1)*sizeof(FftChar16));
 	while(i < len && str[i] != 0)
 	{
 		if (str[i] <= 0x7f)
@@ -372,7 +372,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	{
 		goto bail;
 	}
-	fftf = (FftFontType *)safemalloc(sizeof(FftFontType));
+	fftf = xmalloc(sizeof(FftFontType));
 	fftf->fftfont = fftfont;
 	fftf->fftfont_rotated_90 = NULL;
 	fftf->fftfont_rotated_180 = NULL;

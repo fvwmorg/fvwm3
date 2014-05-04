@@ -378,12 +378,9 @@ int my_dither_depth_15_16_init(void)
 		return 0; /* fail */
 	}
 
-	Pcsi.red_dither =
-		(unsigned short *)safemalloc(4*4*256*sizeof(unsigned short));
-	Pcsi.green_dither =
-		(unsigned short *)safemalloc(4*4*256*sizeof(unsigned short));
-	Pcsi.blue_dither =
-		(unsigned short *)safemalloc(4*4*256*sizeof(unsigned short));
+	Pcsi.red_dither = xmalloc(4*4*256*sizeof(unsigned short));
+	Pcsi.green_dither = xmalloc(4*4*256*sizeof(unsigned short));
+	Pcsi.blue_dither = xmalloc(4*4*256*sizeof(unsigned short));
 
 	for (y = 0; y < 4; y++)
 	{
@@ -692,7 +689,7 @@ void free_colors_in_table(
 		return;
 	}
 
-	p = (Pixel *)safemalloc(n*sizeof(Pixel));
+	p = xmalloc(n * sizeof(Pixel));
 	for(i= 0; i < n; i++)
 	{
 		do_free = 1;
@@ -753,7 +750,7 @@ XColor *build_mapping_colors(int nr, int ng, int nb)
 	int r, g, b, i;
 	XColor *colors;
 
-	colors = (XColor *)safemalloc(nr*ng*nb * sizeof(XColor));
+	colors = xmalloc(nr*ng*nb * sizeof(XColor));
 	i = 0;
 	for (r = 0; r < nr; r++)
 	{
@@ -784,7 +781,7 @@ static short *build_mapping_table(int nr, int ng, int nb, Bool use_named)
 	double dst;
 
 	colors_map = build_mapping_colors(nr, ng, nb);
-	Table = (short *)safemalloc((size+1) * sizeof(short));
+	Table = xmalloc((size+1) * sizeof(short));
 	for(i=0; i<size; i++)
 	{
 		minind = 0;
@@ -906,7 +903,7 @@ PColor *alloc_color_cube(
 		end_grey = ngrey;
 	}
 
-	color_table = (PColor *)safemalloc((size+1) * sizeof(PColor));
+	color_table = xmalloc((size+1) * sizeof(PColor));
 
 	i = 0;
 
@@ -1074,7 +1071,7 @@ PColor *alloc_named_ct(int *limit, Bool do_allocate)
 	XColor color;
 
 	*limit = (*limit > NColors)? NColors: *limit;
-	color_table = (PColor *)safemalloc((*limit+1) * sizeof(PColor));
+	color_table = xmalloc((*limit+1) * sizeof(PColor));
 	for(i=0; i<*limit; i++)
 	{
 		rc=XParseColor(Pdpy, Pcmap, color_names[i], &color);
@@ -1247,14 +1244,15 @@ static void finish_ct_init(
 		{
 			ctt++;
 		}
-		env = safemalloc(PICTURE_TABLETYPE_LENGHT + 1);
+		/* TA:  FIXME!  Spelling!!! */
+		/* TA:  FIXME!  Use xasprintf() */
+		env = xmalloc(PICTURE_TABLETYPE_LENGHT + 1);
 		sprintf(env, "%i", ctt);
 		flib_putenv("FVWM_COLORTABLE_TYPE", env);
 		free(env);
 		if (Pdepth <= 8)
 		{
-			Pac = (PColor *)safecalloc(
-				(1 << Pdepth), sizeof(PColor));
+			Pac = xcalloc((1 << Pdepth), sizeof(PColor));
 		}
 	}
 
@@ -1801,7 +1799,7 @@ Bool alloc_direct_colors(int *limit, Bool use_my_color_limit)
 	ng = 1 << Pcsi.green_prec;
 	nb = 1 << Pcsi.blue_prec;
 
-	colors = (XColor *)safemalloc(nb*sizeof(XColor));
+	colors = xmalloc(nb*sizeof(XColor));
 	cf = DoRed|DoBlue|DoGreen;
 	for (r=0; r<nr; r++)
 	{
@@ -1841,7 +1839,7 @@ void init_static_colors_table(void)
 	int nbr_of_colors = min(256, (1 << Pdepth));
 
 	PColorLimit = nbr_of_colors;
-	Pct = (PColor *)safemalloc((nbr_of_colors+1) * sizeof(PColor));
+	Pct = xmalloc((nbr_of_colors+1) * sizeof(PColor));
 	for (i = 0; i < nbr_of_colors; i++)
 	{
 		colors[i].pixel = Pct[i].color.pixel = i;
@@ -1957,14 +1955,12 @@ PictureImageColorAllocator *PictureOpenImageColorAllocator(
 	PictureImageColorAllocator *pica;
 	Bool do_save_pixels = False;
 
-	pica = (PictureImageColorAllocator *)safemalloc(
-		sizeof(PictureImageColorAllocator));
+	pica = xmalloc(sizeof(PictureImageColorAllocator));
 	if (Pdepth <= 8 && !do_not_save_pixels && (Pvisual->class & 1) &&
 	    ((PUseDynamicColors && Pct) || no_limit))
 	{
 		int s =  1 << Pdepth;
-		pica->pixels_table = (unsigned long *)safecalloc(
-			s, sizeof(unsigned long));
+		pica->pixels_table = xcalloc(s, sizeof(unsigned long));
 		pica->pixels_table_size = s;
 		do_save_pixels = True;
 	}
@@ -2022,12 +2018,11 @@ void PictureCloseImageColorAllocator(
 		}
 		if (free_num)
 		{
-			free_pixels = (Pixel *)safemalloc(
-				free_num * sizeof(Pixel));
+			free_pixels = xmalloc(free_num * sizeof(Pixel));
 		}
 		if (np && nalloc_pixels != NULL && alloc_pixels != NULL)
 		{
-			save_pixels = (Pixel *)safemalloc(np * sizeof(Pixel));
+			save_pixels = xmalloc(np * sizeof(Pixel));
 		}
 		for(i = 0; i < pica->pixels_table_size; i++)
 		{
@@ -2156,7 +2151,8 @@ void PictureReduceColorName(char **my_color)
 	 * string */
 	free(*my_color);                    /* free old color */
 	/* area for new color */
-	*my_color = safemalloc(8);
+	/* TA:  FIXME!  xasprintf() */
+	*my_color = xmalloc(8);
 	sprintf(*my_color,"#%x%x%x",
 		Pct[index].color.red >> 8,
 		Pct[index].color.green >> 8,
