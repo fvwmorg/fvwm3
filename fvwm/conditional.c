@@ -356,7 +356,7 @@ char *CreateFlagString(char *string, char **restptr)
 		/* We must allocate a new string because we null terminate the
 		 * string between the [ ] or ( ) characters. */
 		/* TA:  FIXME!  xasprintf() */
-		retval = xmalloc(length + 1);
+		retval = fxmalloc(length + 1);
 		strncpy(retval, start, length);
 		retval[length] = 0;
 
@@ -709,8 +709,10 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond, "Screen"))
 		{
-			if (sscanf(tmp, "%d", &mask->screen)) {
+			char	*scr_name = NULL;
+			if (sscanf(tmp, "%s", scr_name)) {
 				tmp = SkipNTokens(tmp, 1);
+				mask->screen = monitor_by_name(scr_name);
 			}
 			mask->my_flags.do_check_screen = 1;
 
@@ -721,16 +723,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		{
 			struct name_condition *pp;
 			struct namelist *p;
-			char *condp = xstrdup(cond);
+			char *condp = fxstrdup(cond);
 
-			pp = xmalloc(sizeof *pp);
+			pp = fxmalloc(sizeof *pp);
 			pp->invert = (!on ? True : False);
 			pp->namelist = NULL;
 			pp->next = mask->name_condition;
 			mask->name_condition = pp;
 			for (;;)
 			{
-				p = xmalloc(sizeof *p);
+				p = fxmalloc(sizeof *p);
 				p->name=condp;
 				p->next=pp->namelist;
 				pp->namelist=p;
@@ -1107,10 +1109,12 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	if (mask->my_flags.do_check_screen)
 	{
 		rectangle	 g;
-		int		 scr;
+		const char	*mon_name;
+		struct monitor	*scr;
 
 		get_unshaded_geometry(fw, &g);
-		scr = FScreenOfPointerXY(g.x, g.y);
+		mon_name = FScreenOfPointerXY(g.x, g.y);
+		scr = monitor_by_name(mon_name);
 
 		if (mask->my_flags.do_not_check_screen) {
 			/* Negation of (!screen n) specified. */
@@ -1600,7 +1604,7 @@ void CMD_All(F_CMD_ARGS)
 	{
 		num++;
 	}
-	g = xmalloc(num * sizeof(FvwmWindow *));
+	g = fxmalloc(num * sizeof(FvwmWindow *));
 	num = 0;
 	if (!use_stack)
 	{
@@ -1909,7 +1913,7 @@ static Bool match_version(char *version, char *operator)
 
 	if (fvwm_version < 0)
 	{
-		char *tmp = xstrdup(VERSION);
+		char *tmp = fxstrdup(VERSION);
 		fvwm_version = ver(tmp);
 		free(tmp);
 	}

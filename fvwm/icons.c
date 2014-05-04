@@ -1791,8 +1791,9 @@ void AutoPlaceIcon(
 #define HRZ_FILL icon_boxes_ptr->IconFlags & ICONFILLHRZ
 
     /* needed later */
-    fscr.xypos.x = t->g.frame.x + (t->g.frame.width / 2) - base_x;
-    fscr.xypos.y = t->g.frame.y + (t->g.frame.height / 2) - base_y;
+    fscr = fxcalloc(1, sizeof *fscr);
+    fscr->xypos.x = t->g.frame.x + (t->g.frame.width / 2) - base_x;
+    fscr->xypos.y = t->g.frame.y + (t->g.frame.height / 2) - base_y;
     get_icon_geometry(t, &g);
     /* unnecessary copy of width */
     width = g.width;

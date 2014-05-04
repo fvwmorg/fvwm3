@@ -263,7 +263,7 @@ static void copy_icon_boxes(icon_boxes **pdest, icon_boxes *src)
 	/* copy the icon boxes */
 	for ( ; src != NULL; src = src->next)
 	{
-		temp = xmalloc(sizeof(icon_boxes));
+		temp = fxmalloc(sizeof(icon_boxes));
 		memcpy(temp, src, sizeof(icon_boxes));
 		temp->next = NULL;
 		if (last != NULL)
@@ -367,7 +367,7 @@ static void merge_styles(
 			SAFEFREE(SGET_ICON_NAME(*merged_style));
 			SSET_ICON_NAME(
 				*merged_style, (SGET_ICON_NAME(*add_style)) ?
-				xstrdup(SGET_ICON_NAME(*add_style)) : NULL);
+				fxstrdup(SGET_ICON_NAME(*add_style)) : NULL);
 		}
 		else
 		{
@@ -383,7 +383,7 @@ static void merge_styles(
 			SSET_MINI_ICON_NAME(
 				*merged_style,
 				(SGET_MINI_ICON_NAME(*add_style)) ?
-				xstrdup(SGET_MINI_ICON_NAME(*add_style)) :
+				fxstrdup(SGET_MINI_ICON_NAME(*add_style)) :
 				NULL);
 		}
 		else
@@ -400,7 +400,7 @@ static void merge_styles(
 			SAFEFREE(SGET_DECOR_NAME(*merged_style));
 			SSET_DECOR_NAME(
 				*merged_style, (SGET_DECOR_NAME(*add_style)) ?
-				xstrdup(SGET_DECOR_NAME(*add_style)) :
+				fxstrdup(SGET_DECOR_NAME(*add_style)) :
 				NULL);
 		}
 		else
@@ -416,7 +416,7 @@ static void merge_styles(
 			SAFEFREE(SGET_ICON_FONT(*merged_style));
 			SSET_ICON_FONT(
 				*merged_style, (SGET_ICON_FONT(*add_style)) ?
-				xstrdup(SGET_ICON_FONT(*add_style)) : NULL);
+				fxstrdup(SGET_ICON_FONT(*add_style)) : NULL);
 		}
 		else
 		{
@@ -431,7 +431,7 @@ static void merge_styles(
 			SAFEFREE(SGET_WINDOW_FONT(*merged_style));
 			SSET_WINDOW_FONT(
 				*merged_style, (SGET_WINDOW_FONT(*add_style)) ?
-				xstrdup(SGET_WINDOW_FONT(*add_style)) :
+				fxstrdup(SGET_WINDOW_FONT(*add_style)) :
 				NULL);
 		}
 		else
@@ -461,7 +461,7 @@ static void merge_styles(
 			SSET_FORE_COLOR_NAME(
 				*merged_style,
 				(SGET_FORE_COLOR_NAME(*add_style)) ?
-				xstrdup(SGET_FORE_COLOR_NAME(*add_style)) :
+				fxstrdup(SGET_FORE_COLOR_NAME(*add_style)) :
 				NULL);
 		}
 		else
@@ -479,7 +479,7 @@ static void merge_styles(
 			SSET_BACK_COLOR_NAME(
 				*merged_style,
 				(SGET_BACK_COLOR_NAME(*add_style)) ?
-				xstrdup(SGET_BACK_COLOR_NAME(*add_style)) :
+				fxstrdup(SGET_BACK_COLOR_NAME(*add_style)) :
 				NULL);
 		}
 		else
@@ -497,7 +497,7 @@ static void merge_styles(
 			SSET_FORE_COLOR_NAME_HI(
 				*merged_style,
 				(SGET_FORE_COLOR_NAME_HI(*add_style)) ?
-				xstrdup(SGET_FORE_COLOR_NAME_HI(*add_style)) :
+				fxstrdup(SGET_FORE_COLOR_NAME_HI(*add_style)) :
 				NULL);
 		}
 		else
@@ -515,7 +515,7 @@ static void merge_styles(
 			SSET_BACK_COLOR_NAME_HI(
 				*merged_style,
 				(SGET_BACK_COLOR_NAME_HI(*add_style)) ?
-				xstrdup(SGET_BACK_COLOR_NAME_HI(*add_style)) :
+				fxstrdup(SGET_BACK_COLOR_NAME_HI(*add_style)) :
 				NULL);
 		}
 		else
@@ -1782,8 +1782,8 @@ static char *style_parse_icon_box_style(
 	}
 
 	/* otherwise try to parse the icon box */
-	IconBoxes = xcalloc(1, sizeof(icon_boxes));
-	IconBoxes->IconScreen = FSCREEN_GLOBAL;
+	IconBoxes = fxcalloc(1, sizeof(icon_boxes));
+	IconBoxes->IconScreen = "global";
 	/* init grid x */
 	IconBoxes->IconGrid[0] = 3;
 	/* init grid y */
@@ -2086,7 +2086,7 @@ static Bool style_parse_one_style_option(
 		{
 			/* add missing prefix */
 			/* TA:  xasprintf() */
-			token_l = xmalloc(l + strlen(token) + 1);
+			token_l = fxmalloc(l + strlen(token) + 1);
 			strcpy(token_l, prefix);
 			strcat(token_l, token);
 			token = token_l;
@@ -3986,15 +3986,12 @@ static Bool style_parse_one_style_option(
 			if (s != NULL)
 				m = monitor_by_name(s);
 
-			fprintf(stderr, "STARTSONSCREEN: %s\n", s);
 			if (s != NULL && m != NULL)
 			{
 				ps->flags.use_start_on_screen = 1;
 				ps->flag_mask.use_start_on_screen = 1;
 				ps->change_mask.use_start_on_screen = 1;
 				SSET_START_SCREEN(*ps, s);
-				fprintf(stderr, "SET SCREEN TO: %s\n",
-					SGET_START_SCREEN(*ps));
 			}
 			else
 			{
@@ -4630,7 +4627,7 @@ static void __style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 	/* temp area to build name list */
 	window_style *ps;
 
-	ps = xcalloc(1, sizeof(window_style));
+	ps = fxcalloc(1, sizeof(window_style));
 	/* init default focus policy */
 	fpol_init_default_fp(&S_FOCUS_POLICY(SCF(*ps)));
 	/* mark style as changed */

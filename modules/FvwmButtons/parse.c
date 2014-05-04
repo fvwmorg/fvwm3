@@ -1187,7 +1187,7 @@ static void ParseButton(button_info **uberb, char *s)
 					b->swallow |= 1;
 					if (!(b->swallow & b_NoHints))
 					{
-						b->hints = xmalloc(
+						b->hints = fxmalloc(
 							sizeof(XSizeHints));
 					}
 					if (o)
@@ -1720,7 +1720,7 @@ static void ParseButton(button_info **uberb, char *s)
 		b->hangon = seekright(&s);
 		if (!b->hangon)
 		{
-			b->hangon = xstrdup("");
+			b->hangon = fxstrdup("");
 		}
 		if (tolower(*s) == 's')
 		{
@@ -1736,7 +1736,7 @@ static void ParseButton(button_info **uberb, char *s)
 		s = trimleft(s);
 		if (!(b->swallow & b_NoHints))
 		{
-			b->hints = xmalloc(sizeof(XSizeHints));
+			b->hints = fxmalloc(sizeof(XSizeHints));
 		}
 		if (*s)
 		{
@@ -1744,7 +1744,7 @@ static void ParseButton(button_info **uberb, char *s)
 			{
 				SendText(fd, s, 0);
 			}
-			b->spawn = xstrdup(s);
+			b->spawn = fxstrdup(s);
 		}
 	}
 	else if (*s)
@@ -2054,7 +2054,7 @@ void ParseConfiguration(button_info *ub)
 		NULL
 	};
 
-	items[0] = xmalloc(strlen(MyName) + 2);
+	items[0] = fxmalloc(strlen(MyName) + 2);
 	sprintf(items[0], "*%s", MyName);
 
 	/* send config lines with MyName */

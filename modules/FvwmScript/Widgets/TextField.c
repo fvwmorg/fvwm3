@@ -687,7 +687,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 			Size=strlen(xobj->title);
 			fprintf(stderr, "Current size: %d\n", Size);
 			/* make room for more the new text */
-			/* shouldn't saferealloc be used here? */
+			/* shouldn't fxrealloc be used here? */
 			xobj->title=(char*)realloc(
 				xobj->title,(Size+i+1)*sizeof(char));
 			/* new text will be inserted at NewPos */

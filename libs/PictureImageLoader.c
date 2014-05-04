@@ -177,7 +177,7 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	}
 
 	/* Separate rendering options from path */
-	render_opts = path = allocated_path = xstrdup(path);
+	render_opts = path = allocated_path = fxstrdup(path);
 	if (*path == ':' && (path = strchr(path + 1, ':')))
 	{
 		*path = 0;
@@ -318,7 +318,7 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 		angle += 90;
 	}
 
-	data = xcalloc(1, w * h * sizeof(CARD32));
+	data = fxcalloc(1, w * h * sizeof(CARD32));
 	surface = Fcairo_image_surface_create_for_data((unsigned char *)data,
 		FCAIRO_FORMAT_ARGB32, w, h, w * sizeof(CARD32));
 	if (Fcairo_surface_status(surface) != FCAIRO_STATUS_SUCCESS)
@@ -516,8 +516,8 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 		Fpng_set_expand(Fpng_ptr);
 	}
 
-	data = xmalloc(w * h * sizeof(CARD32));
-	lines = xmalloc(h * sizeof(unsigned char *));
+	data = fxmalloc(w * h * sizeof(CARD32));
+	lines = fxmalloc(h * sizeof(unsigned char *));
 
 	if (hasg)
 	{
@@ -602,7 +602,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 		FxpmFreeXpmImage(&xpm_im);
 		return False;
 	}
-	colors = xmalloc(xpm_im.ncolors * sizeof(CARD32));
+	colors = fxmalloc(xpm_im.ncolors * sizeof(CARD32));
 	for (i=0; i < xpm_im.ncolors; i++)
 	{
 		xpm_color = &xpm_im.colorTable[i];
@@ -636,7 +636,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	}
 	*width = w = xpm_im.width;
 	*height = h = xpm_im.height;
-	data = xmalloc(w * h * sizeof(CARD32));
+	data = fxmalloc(w * h * sizeof(CARD32));
 	for (i=0; i < w * h; i++)
 	{
 		data[i] = colors[xpm_im.data[i]];
@@ -896,7 +896,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 		return NULL;
 	}
 
-	p = xcalloc(1, sizeof(FvwmPicture));
+	p = fxcalloc(1, sizeof(FvwmPicture));
 	p->count = 1;
 	p->name = path;
 	p->fpa_mask = fpa.mask;

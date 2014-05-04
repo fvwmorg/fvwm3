@@ -466,7 +466,7 @@ typedef struct WindowConditionMask
 	struct name_condition *name_condition;
 	int layer;
 	int desk;
-	int screen;
+	struct monitor *screen;
 	int placed_by_button_mask;
 	int placed_by_button_set_mask;
 } WindowConditionMask;

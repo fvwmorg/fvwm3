@@ -233,7 +233,7 @@ int AddBinding(
 					break;
 				}
 				temp = *pblist;
-				(*pblist) = xmalloc(sizeof(Binding));
+				(*pblist) = fxmalloc(sizeof(Binding));
 				(*pblist)->type = type;
 				(*pblist)->Button_Key = i;
 				STROKE_CODE((*pblist)->Stroke_Seq = (stroke) ?

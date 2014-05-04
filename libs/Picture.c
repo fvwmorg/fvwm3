@@ -219,7 +219,7 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(
 {
 	FvwmPicture *q;
 
-	q = xcalloc(1, sizeof(FvwmPicture));
+	q = fxcalloc(1, sizeof(FvwmPicture));
 	q->count = 1;
 	q->name = name;
 	q->next = NULL;

@@ -395,7 +395,7 @@ static unsigned long *make_named_packet(
 		*len = FvwmPacketMaxSize;
 	}
 
-	body = xmalloc(*len * sizeof(unsigned long));
+	body = fxmalloc(*len * sizeof(unsigned long));
 	/* Zero out end of memory to avoid uninit memory access. */
 	body[*len-1] = 0;
 

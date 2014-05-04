@@ -74,7 +74,7 @@ void setFvwmUserDir(void)
   if (home_dir == NULL) {
     struct passwd* pw = getpwuid(getuid());
     if (pw != NULL)
-      home_dir = xstrdup(pw->pw_dir);
+      home_dir = fxstrdup(pw->pw_dir);
   }
 #endif
   if (home_dir == NULL)
@@ -84,7 +84,7 @@ void setFvwmUserDir(void)
   FvwmUserDir = getenv("FVWM_USERDIR");
   if (FvwmUserDir == NULL)
   {
-    FvwmUserDir = xstrdup(CatString2(home_dir, "/.fvwm"));
+    FvwmUserDir = fxstrdup(CatString2(home_dir, "/.fvwm"));
   }
 }
 
@@ -154,13 +154,13 @@ static char *CalcArg (long *TabArg,int *Ix)
   if (TabArg[*Ix]>100000)       /* Cas du codage d'un nombre */
   {
     i = (int)TabArg[*Ix] - 200000;
-    TmpStr = xcalloc(1, sizeof(char) * 10);
+    TmpStr = fxcalloc(1, sizeof(char) * 10);
     sprintf(TmpStr,"%d",i);
   }
   else if (TabArg[*Ix] < -200000)/* Cas d'un id de fonction de comparaison */
   {
    i = TabArg[*Ix]+250000;
-   TmpStr = xcalloc(1, sizeof(char) * 10);
+   TmpStr = fxcalloc(1, sizeof(char) * 10);
    sprintf(TmpStr,"%d",i);
   }
   else if (TabArg[*Ix] < -100000)       /* Cas d'un id de fonction */
@@ -169,7 +169,7 @@ static char *CalcArg (long *TabArg,int *Ix)
   }
   else                          /* Cas d'une variable */
   {
-    TmpStr=xstrdup(TabVVar[TabArg[*Ix]]);
+    TmpStr=fxstrdup(TabVVar[TabArg[*Ix]]);
   }
   return (TmpStr);
 }
@@ -188,7 +188,7 @@ static char *FuncGetValue(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = xcalloc(1, sizeof(char) * 10);
+  tmp = fxcalloc(1, sizeof(char) * 10);
   sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value);
   return tmp;
 }
@@ -203,7 +203,7 @@ static char *FuncGetMinValue(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = xcalloc(1, sizeof(char) * 10);
+  tmp = fxcalloc(1, sizeof(char) * 10);
   sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value2);
   return tmp;
 }
@@ -218,7 +218,7 @@ static char *FuncGetMaxValue(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = xcalloc(1, sizeof(char) * 10);
+  tmp = fxcalloc(1, sizeof(char) * 10);
   sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value3);
   return tmp;
 }
@@ -234,7 +234,7 @@ static char *FuncGetFore(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = xcalloc(1, sizeof(char) * 7);
+  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[fore];
   XQueryColor(dpy, Pcmap, &color);
   sprintf(tmp, "%02x%02x%02x",
@@ -253,7 +253,7 @@ static char *FuncGetBack(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = xcalloc(1, sizeof(char) * 7);
+  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[back];
   XQueryColor(dpy, Pcmap, &color);
   sprintf(tmp, "%02x%02x%02x",
@@ -272,7 +272,7 @@ static char *FuncGetHili(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = xcalloc(1, sizeof(char) * 7);
+  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[hili];
   XQueryColor(dpy, Pcmap, &color);
   sprintf(tmp, "%02x%02x%02x",
@@ -291,7 +291,7 @@ static char *FuncGetShad(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = xcalloc(1, sizeof(char) * 7);
+  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[shad];
   XQueryColor(dpy, Pcmap, &color);
   sprintf(tmp, "%02x%02x%02x",
@@ -310,12 +310,12 @@ static char *FuncGetTitle(int *NbArg, long *TabArg)
   Id = atoi(tmp);
   free(tmp);
   if (TabIdObj[Id] != -1)
-    tmp=xstrdup(tabxobj[TabIdObj[Id]]->title);
+    tmp=fxstrdup(tabxobj[TabIdObj[Id]]->title);
   else
   {
     fprintf(stderr,"[%s][GetTitle]: <<WARNING>> Widget %d doesn't exist\n",
 	    ScriptName, (int)Id);
-    tmp=xcalloc(1, sizeof(char));
+    tmp=fxcalloc(1, sizeof(char));
     tmp[0]='\0';
   }
   return tmp;
@@ -346,7 +346,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
     if ((f = popen(cmndbuf,"r")) == NULL)
     {
       fprintf(stderr,"[%s][GetOutput]: can't run %s\n",ScriptName,cmndbuf);
-      str = xcalloc(sizeof(char), 10);
+      str = fxcalloc(sizeof(char), 10);
       free(cmndbuf);
       return str;
     }
@@ -356,7 +356,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
 
       if (strcmp(Command,"None"))
 	free(BufCom);
-      BufCom = xcalloc(sizeof(char), maxsize);
+      BufCom = fxcalloc(sizeof(char), maxsize);
       n = fread(BufCom,1,maxsize,f);
       (void)n;
       pclose(f);
@@ -393,7 +393,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
       else
 	if (!NewWord) NewWord = 1;
     }
-    str = xcalloc(sizeof(char), 255);
+    str = fxcalloc(sizeof(char), 255);
     sscanf(&BufCom[j],"%s",str);
   }
   else          /* Lecture de la ligne complete */
@@ -402,7 +402,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
     k=j;
     while ((BufCom[k] != '\n') && (BufCom[k] != '\0'))
       k++;
-    str = xcalloc(sizeof(char), k - j + 1);
+    str = fxcalloc(sizeof(char), k - j + 1);
     memmove(str,&BufCom[j],k-j);
     str[k-j]='\0';
   }
@@ -427,7 +427,7 @@ static char *FuncNumToHex(int *NbArg, long *TabArg)
   nbchar = atoi(str);
   free(str);
 
-  str = xcalloc(1, nbchar + 10);
+  str = fxcalloc(1, nbchar + 10);
   sprintf(str,"%X",value);
   j = strlen(str);
   if (j < nbchar)
@@ -453,7 +453,7 @@ static char *FuncHexToNum(int *NbArg, long *TabArg)
   k = (int)strtol(str,NULL,16);
   free(str);
 
-  str2 = xcalloc(1, 20);
+  str2 = fxcalloc(1, 20);
   sprintf(str2,"%d",k);
   return str2;
 }
@@ -472,7 +472,7 @@ static char *FuncAdd(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = xcalloc(1, 20);
+  str = fxcalloc(1, 20);
   sprintf(str,"%d",val1+val2);
   return str;
 }
@@ -491,7 +491,7 @@ static char *FuncMult(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = xcalloc(1, 20);
+  str = fxcalloc(1, 20);
   sprintf(str,"%d",val1*val2);
   return str;
 }
@@ -510,7 +510,7 @@ static char *FuncDiv(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = xcalloc(1, 20);
+  str = fxcalloc(1, 20);
   sprintf(str,"%d",val1/val2);
   return str;
 }
@@ -519,7 +519,7 @@ static char *FuncDiv(int *NbArg, long *TabArg)
 static char *RemainderOfDiv(int *NbArg, long *TabArg)
 {
 #ifndef HAVE_DIV
-  return xstrdup("Unsupported function: div");
+  return fxstrdup("Unsupported function: div");
 #else
   char *str;
   int val1,val2;
@@ -533,7 +533,7 @@ static char *RemainderOfDiv(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = xcalloc(1, 20);
+  str = fxcalloc(1, 20);
   res = div(val1,val2);
   sprintf(str,"%d",res.rem);
   return str;
@@ -564,12 +564,12 @@ static char *FuncStrCopy(int *NbArg, long *TabArg)
   {
     if (i2 > strlen(strsrc))
       i2=strlen(strsrc);
-    str = xcalloc(1, i2 - i1 + 2);
+    str = fxcalloc(1, i2 - i1 + 2);
     memmove(str,&strsrc[i1-1],i2 - i1 + 1);
   }
   else
   {
-    str = xcalloc(1, 1);
+    str = fxcalloc(1, 1);
   }
 
  free(strsrc);
@@ -588,11 +588,11 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   (*NbArg)++;
   arg = CalcArg(TabArg,NbArg);
 
-  str = xcalloc(100, sizeof(char));
+  str = fxcalloc(100, sizeof(char));
 
  /* Calcul du nom du script fils */
   x11base->TabScriptId[x11base->NbChild+2] =
-    xcalloc(strlen(x11base->TabScriptId[1]) + 4, sizeof(char));
+    fxcalloc(strlen(x11base->TabScriptId[1]) + 4, sizeof(char));
 
   if (x11base->NbChild<98)
   {
@@ -614,11 +614,11 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   }
 
   /* Construction de la commande */
-  execstr = xcalloc(strlen(module->name) + strlen(arg) + strlen(x11base->TabScriptId[x11base->NbChild + 2]) + 5,
+  execstr = fxcalloc(strlen(module->name) + strlen(arg) + strlen(x11base->TabScriptId[x11base->NbChild + 2]) + 5,
                     sizeof(char));
-  scriptname = xcalloc(sizeof(char), 100);
+  scriptname = fxcalloc(sizeof(char), 100);
   sscanf(arg,"%s",scriptname);
-  scriptarg = xcalloc(sizeof(char), strlen(arg));
+  scriptarg = fxcalloc(sizeof(char), strlen(arg));
   scriptarg = (char*)strncpy(scriptarg, &arg[strlen(scriptname)],
 			     strlen(arg) - strlen(scriptname));
   sprintf(execstr,"%s %s %s %s",module->name,scriptname,
@@ -652,7 +652,7 @@ static char *GetScriptFather (int *NbArg,long *TabArg)
 {
   char *str;
 
-  str = xcalloc(10, sizeof(char));
+  str = fxcalloc(10, sizeof(char));
   sprintf(str,"0");
   return str;
 }
@@ -663,7 +663,7 @@ static char *GetTime (int *NbArg,long *TabArg)
   char *str;
   time_t t;
 
-  str = xcalloc(20, sizeof(char));
+  str = fxcalloc(20, sizeof(char));
   t = time(NULL);
   sprintf(str,"%ld",(long)t-x11base->BeginTime);
   return str;
@@ -682,12 +682,12 @@ static char *GetScriptArg (int *NbArg,long *TabArg)
 
   if (x11base->TabArg[val1] != NULL)
   {
-    str = xcalloc(strlen(x11base->TabArg[val1]) + 1, sizeof(char));
+    str = fxcalloc(strlen(x11base->TabArg[val1]) + 1, sizeof(char));
     str = strcpy(str,x11base->TabArg[val1]);
   }
   else
   {
-    str = xcalloc(1, sizeof(char));
+    str = fxcalloc(1, sizeof(char));
     str = strcpy(str,"");
   }
 
@@ -711,7 +711,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
   send = (int)atoi(arg);
   free(arg);
 
-  msg = xcalloc(256, sizeof(char));
+  msg = fxcalloc(256, sizeof(char));
   sprintf(msg,"No message");
 
   /* Recuperation des atomes */
@@ -755,7 +755,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
 			 &longueur,&octets_restant,&donnees);
       if (longueur > 0)
       {
-	msg = xrealloc((void *)msg, (longueur + 1) * sizeof(char),
+	msg = fxrealloc((void *)msg, (longueur + 1) * sizeof(char),
                        sizeof((void *)msg));
 	msg = strcpy(msg,(char *)donnees);
 	XDeleteProperty(dpy,event.xselection.requestor,
@@ -773,7 +773,7 @@ static char *FuncGetPid(int *NbArg,long *TabArg)
   pid_t pid;
 
   pid = getpid();
-  str = xcalloc(1, 20);
+  str = fxcalloc(1, 20);
   sprintf(str,"%d",pid);
   return str;
 }
@@ -809,7 +809,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
 
   setFvwmUserDir();
   in_fifo =
-    xcalloc(strlen(com_name) + strlen(FvwmUserDir) + 14, sizeof(char));
+    fxcalloc(strlen(com_name) + strlen(FvwmUserDir) + 14, sizeof(char));
   sprintf(in_fifo,"%s/.tmp-com-in-%s",FvwmUserDir,com_name);
 
   /* unlock the receiver, wait IN_FIFO_TIMEOUT * IN_FIFO_NBR_OF_TRY so that *
@@ -866,7 +866,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   {
     free(cmd);
     free(com_name);
-    str=xcalloc(2, sizeof(char));
+    str=fxcalloc(2, sizeof(char));
     sprintf(str,(err) ? "0" : "1");
     return str;
   }
@@ -874,7 +874,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   /* get the answer from the receiver.                              *
    * we wait OUT_FIFO_TIMEOUT * OUT_FIFO_NBR_OF_TRY for this answer */
   out_fifo =
-    xcalloc(strlen(com_name) + strlen(FvwmUserDir) + 15, sizeof(char));
+    fxcalloc(strlen(com_name) + strlen(FvwmUserDir) + 15, sizeof(char));
   sprintf(out_fifo,"%s/.tmp-com-out-%s",FvwmUserDir,com_name);
   i = 0;
   while(1)
@@ -885,7 +885,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
       {
 	int n;
 
-	buf=xcalloc(sizeof(char), maxsize);
+	buf=fxcalloc(sizeof(char), maxsize);
 	n = fread(buf,1,maxsize,f);
 	(void)n;
 	fclose (f);
@@ -924,12 +924,12 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   {
     if (buf)
       free(buf);
-    str=xcalloc(2, sizeof(char));
+    str=fxcalloc(2, sizeof(char));
     sprintf(str,"0");
     return str;
   }
   l = strlen(buf);
-  str=xcalloc(l + 1, sizeof(char));
+  str=fxcalloc(l + 1, sizeof(char));
   memmove(str,&buf[0],l);
   free(buf);
   str[l]='\0';
@@ -972,12 +972,12 @@ static char *FuncParse(int *NbArg,long *TabArg)
 
   if (end > l || end <= start)
   {
-    str=xcalloc(1, sizeof(char));
+    str=fxcalloc(1, sizeof(char));
     str[0] ='\0';
   }
   else
   {
-    str=xcalloc(end - start + 1, sizeof(char));
+    str=fxcalloc(end - start + 1, sizeof(char));
     memmove(str,&string[start],end-start);
     str[end-start] ='\0';
   }
@@ -991,7 +991,7 @@ static char *FuncGetLastString(int *NbArg,long *TabArg)
   char *str;
 
   if (LastString == NULL) {
-    str = xcalloc(1, sizeof(char));
+    str = fxcalloc(1, sizeof(char));
     str[0] ='\0';
   }
   else
@@ -1023,7 +1023,7 @@ static void Exec (int NbArg,long *TabArg)
     return;
   }
 
-  execstr = xcalloc(1, leng + 1);
+  execstr = fxcalloc(1, leng + 1);
   for (i=0; i < NbArg; i++)
   {
     tempstr = CalcArg(TabArg,&i);
@@ -1187,7 +1187,7 @@ static void ChangeFont (int NbArg,long *TabArg)
   IdItem = TabIdObj[atoi(arg[0])];
   if (tabxobj[IdItem]->font)
     free(tabxobj[IdItem]->font);
-  tabxobj[IdItem]->font = xstrdup(arg[1]);
+  tabxobj[IdItem]->font = fxstrdup(arg[1]);
 
   if ((Ffont =
        FlocaleLoadFont(dpy, tabxobj[IdItem]->font, ScriptName)) == NULL) {
@@ -1250,7 +1250,7 @@ static void ChangeTitle (int NbArg,long *TabArg)
 
   if (tabxobj[IdItem]->title)
     free(tabxobj[IdItem]->title);
-  tabxobj[IdItem]->title=xstrdup(arg[1]);
+  tabxobj[IdItem]->title=fxstrdup(arg[1]);
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
   tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
@@ -1272,7 +1272,7 @@ static void ChangeLocaleTitle (int NbArg,long *TabArg)
 
   if (tabxobj[IdItem]->title)
     free(tabxobj[IdItem]->title);
-  tabxobj[IdItem]->title=xstrdup(FGettext(arg[1]));
+  tabxobj[IdItem]->title=fxstrdup(FGettext(arg[1]));
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
   tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
@@ -1295,7 +1295,7 @@ static void ChangeIcon (int NbArg,long *TabArg)
 	{
 		free(tabxobj[IdItem]->icon);
 	}
-	tabxobj[IdItem]->icon = xstrdup(arg[1]);
+	tabxobj[IdItem]->icon = fxstrdup(arg[1]);
 	LoadIcon(tabxobj[IdItem]);
 	if (tabxobj[IdItem]->TypeWidget != SwallowExec)
 	{
@@ -1327,7 +1327,7 @@ static void ChangeForeColor (int NbArg,long *TabArg)
   {
 	  free(tabxobj[IdItem]->forecolor);
   }
-  tabxobj[IdItem]->forecolor= xstrdup(arg[1]);
+  tabxobj[IdItem]->forecolor= fxstrdup(arg[1]);
 
   tabxobj[IdItem]->TabColor[fore] = GetColor(tabxobj[IdItem]->forecolor);
   if (tabxobj[IdItem]->colorset >= 0) {
@@ -1367,7 +1367,7 @@ static void ChangeBackColor (int NbArg,long *TabArg)
   {
 	  free(tabxobj[IdItem]->backcolor);
   }
-  tabxobj[IdItem]->backcolor= xstrdup(arg[1]);
+  tabxobj[IdItem]->backcolor= fxstrdup(arg[1]);
 
   tabxobj[IdItem]->TabColor[back] = GetColor(tabxobj[IdItem]->backcolor);
   if (tabxobj[IdItem]->colorset >= 0) {
@@ -1480,10 +1480,10 @@ static void ChangeWindowTitleFromArg(int NbArg,long * TabArg){
   free(arg);
 
   if(x11base->TabArg[argVal]!=NULL){
-    arg =  xcalloc(strlen(x11base->TabArg[argVal]) + 1, sizeof(char));
+    arg =  fxcalloc(strlen(x11base->TabArg[argVal]) + 1, sizeof(char));
     arg = strcpy(arg,x11base->TabArg[argVal]);
   }else{
-    arg =  xcalloc(1, sizeof(char));
+    arg =  fxcalloc(1, sizeof(char));
     arg = strcpy(arg,"");
   }
 
@@ -1500,11 +1500,11 @@ static void SetVar (int NbArg,long *TabArg)
   int i;
   char *str,*tempstr;
 
-  str=xcalloc(sizeof(char), 1);
+  str=fxcalloc(sizeof(char), 1);
   for (i=1; i<NbArg; i++)
   {
     tempstr = CalcArg(TabArg,&i);
-    str = xrealloc((void *)str,
+    str = fxrealloc((void *)str,
                    sizeof(char) * (1 + strlen(str) + strlen(tempstr)),
                    sizeof((void *)str));
     str = strcat(str,tempstr);
@@ -1568,7 +1568,7 @@ static void IfThen (int NbArg,long *TabArg)
     if (TabArg[j] > 100000)     /* Cas du codage d'un nombre */
     {
       i = (int)TabArg[j] - 200000;
-      arg[CurrArg] = xcalloc(1, sizeof(char) * 10);
+      arg[CurrArg] = fxcalloc(1, sizeof(char) * 10);
       sprintf(arg[CurrArg],"%d",i);
       CurrArg++;
     }
@@ -1583,7 +1583,7 @@ static void IfThen (int NbArg,long *TabArg)
     }
     else                                /* Cas d'une variable */
     {
-      arg[CurrArg] = xstrdup(TabVVar[TabArg[j]]);
+      arg[CurrArg] = fxstrdup(TabVVar[TabArg[j]]);
       CurrArg++;
     }
   }
@@ -1608,7 +1608,7 @@ static void Loop (int NbArg,long *TabArg)
 
   /* le premier argument est une variable */
   /*On ajuste la taille de la var pour contenir un nombre */
-  TabVVar[TabArg[0]] = xrealloc(TabVVar[TabArg[0]], sizeof(char) * 10,
+  TabVVar[TabArg[0]] = fxrealloc(TabVVar[TabArg[0]], sizeof(char) * 10,
                                 sizeof(TabVVar[TabArg[0]]));
   /* Calcul des 2 autres arguments */
   for (i=1; i<NbArg; i++)
@@ -1617,7 +1617,7 @@ static void Loop (int NbArg,long *TabArg)
     {
       int x;
       x = (int)TabArg[i] - 200000;
-      arg[CurrArg] = xcalloc(1, sizeof(char) * 10);
+      arg[CurrArg] = fxcalloc(1, sizeof(char) * 10);
       sprintf(arg[CurrArg],"%d",x);
     }
     else if (TabArg[i] < -100000)       /* Cas d'un id de fonction */
@@ -1626,7 +1626,7 @@ static void Loop (int NbArg,long *TabArg)
     }
     else                                /* Cas d'une variable */
     {
-      arg[CurrArg] = xstrdup(TabVVar[TabArg[i]]);
+      arg[CurrArg] = fxstrdup(TabVVar[TabArg[i]]);
     }
     CurrArg++;
   }
@@ -1695,7 +1695,7 @@ static void WriteToFile (int NbArg,long *TabArg)
   int OldPID;
 
   arg[0] = CalcArg(TabArg,&i);
-  arg[1]=xcalloc(1, 256);
+  arg[1]=fxcalloc(1, 256);
   for (i=1; i<NbArg; i++)
   {
     tempstr = CalcArg(TabArg,&i);
@@ -1705,7 +1705,7 @@ static void WriteToFile (int NbArg,long *TabArg)
   if (arg[1][strlen(arg[1])-1] != '\n')
   {
     i = strlen(arg[1]);
-    arg[1] = xrealloc(arg[1], strlen(arg[1]) + 2, sizeof(arg[1]));
+    arg[1] = fxrealloc(arg[1], strlen(arg[1]) + 2, sizeof(arg[1]));
     arg[1][i] = '\n';
     arg[1][i+1] = '\0';
   }
@@ -1713,13 +1713,13 @@ static void WriteToFile (int NbArg,long *TabArg)
   sprintf(StrEnd,"#end\n");
   sprintf(StrBegin,"#%s,",ScriptName);
 
-  buf=xcalloc(1, maxsize);
+  buf=fxcalloc(1, maxsize);
 
   if (arg[0][0] != '/')
   {
-    file = xstrdup(arg[0]);
+    file = fxstrdup(arg[0]);
     home = getenv("HOME");
-    arg[0] = xrealloc(arg[0],
+    arg[0] = fxrealloc(arg[0],
                       sizeof(char) * (strlen(arg[0]) + 4 + strlen(home)),
                       sizeof(arg[0]));
     sprintf(arg[0],"%s/%s",home,file);
@@ -1798,18 +1798,18 @@ static void SendToScript (int NbArg,long *TabArg)
   free(tempstr);
 
   /* Calcul contenu */
-  Msg=xcalloc(256, sizeof(char));
+  Msg=fxcalloc(256, sizeof(char));
   for (j=1;j<NbArg;j++)
   {
     tempstr=CalcArg(TabArg,&j);
-    Msg=xrealloc((void *)Msg, strlen(Msg) + strlen(tempstr) + 1,
+    Msg=fxrealloc((void *)Msg, strlen(Msg) + strlen(tempstr) + 1,
                  sizeof((void *)Msg));
     Msg=strcat(Msg,tempstr);
     free(tempstr);
   }
 
   /* Calcul recepteur */
-  R=xcalloc(strlen(x11base->TabScriptId[dest]) + 1, sizeof(char));
+  R=fxcalloc(strlen(x11base->TabScriptId[dest]) + 1, sizeof(char));
   sprintf(R,"%s",x11base->TabScriptId[dest]);
   myatom=XInternAtom(dpy,R,True);
 
@@ -1857,17 +1857,17 @@ static void Key (int NbArg,long *TabArg)
   sig = CalcArg(TabArg,&j);
 
   /* the string */
-  str = xcalloc(256,sizeof(char));
+  str = fxcalloc(256,sizeof(char));
   for (i=j+1; i<NbArg; i++)
   {
     tmp = CalcArg(TabArg,&i);
-    str = xrealloc((void*)str, strlen(str) + strlen(tmp) + 1, sizeof(str));
+    str = fxrealloc((void*)str, strlen(str) + strlen(tmp) + 1, sizeof(str));
     str = strcat(str, tmp);
     free(tmp);
   }
 
-  tmp = xstrdup(CatString3(widget, " ", sig));
-  action = xstrdup(CatString3(tmp, " ", str));
+  tmp = fxstrdup(CatString3(widget, " ", sig));
+  action = fxstrdup(CatString3(tmp, " ", str));
   free(sig);
   free(widget);
   free(str);

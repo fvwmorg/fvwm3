@@ -52,7 +52,7 @@ MetaInfo *new_metainfo(void)
 {
 	MetaInfo *mi;
 
-	mi = xcalloc(1, sizeof *mi);
+	mi = fxcalloc(1, sizeof *mi);
 
 	return mi;
 }

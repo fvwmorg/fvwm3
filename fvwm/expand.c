@@ -446,7 +446,7 @@ static signed int expand_vars_extended(
 		{
 			const char *ddn = _("Desk");
 			/* TA:  FIXME!  xasprintf() */
-			allocated_string = xmalloc(19 + strlen(ddn));
+			allocated_string = fxmalloc(19 + strlen(ddn));
 			sprintf(allocated_string, "%s %i", ddn, cs);
 			string = allocated_string;
 		}
@@ -828,16 +828,20 @@ static signed int expand_vars_extended(
 		if (!fw || IS_EWMH_DESKTOP(FW_W(fw))) {
 			return -1;
 		} else {
-			is_numeric = True;
+			is_numeric = False;
 
-			rectangle	g;
+			rectangle	 g;
+			const char	*mon_name;
 			get_unshaded_geometry(fw, &g);
 
-			val = FScreenOfPointerXY(g.x, g.y);
+			mon_name = FScreenOfPointerXY(g.x, g.y);
+			string = (char *)mon_name;
+
+			should_quote = True;
 		}
 		break;
 	case VAR_SCREEN:
-		is_numeric = True;
+		is_numeric = False;
 		val = Scr.screen;
 		break;
 	case VAR_SCHEDULE_LAST:
@@ -982,7 +986,7 @@ GOT_STRING:
 	}
 	if (should_quote)
 	{
-		quoted_string = xmalloc(len * 2 + 3);
+		quoted_string = fxmalloc(len * 2 + 3);
 		len = QuoteString(quoted_string, string) - quoted_string;
 		if (output)
 		{
@@ -1203,7 +1207,7 @@ char *expand_vars(
 
 	/* Actually create expanded string */
 	i = 0;
-	out = xmalloc(l2 + 1);
+	out = fxmalloc(l2 + 1);
 	j = 0;
 	while (i < l)
 	{

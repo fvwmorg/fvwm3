@@ -341,7 +341,7 @@ void *fev_save_event(void)
 {
 	XEvent *ev;
 
-	ev = xmalloc(sizeof(XEvent));
+	ev = fxmalloc(sizeof(XEvent));
 	*ev = fev_event;
 
 	return ev;
