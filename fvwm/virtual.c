@@ -2071,69 +2071,6 @@ void CMD_XineramaPrimaryScreen(F_CMD_ARGS)
 	return;
 }
 
-void CMD_XineramaSls(F_CMD_ARGS)
-{
-	int toggle;
-
-	toggle = ParseToggleArgument(action, NULL, -1, 0);
-	if (toggle == -1)
-	{
-		toggle = !FScreenIsSLSEnabled();
-	}
-	if (!toggle != !FScreenIsSLSEnabled())
-	{
-		if (FScreenIsEnabled())
-		{
-			Scr.flags.do_need_window_update = True;
-			Scr.flags.has_xinerama_state_changed = True;
-		}
-		FScreenSLSOnOff(toggle);
-		broadcast_xinerama_state();
-	}
-
-	return;
-}
-
-void CMD_XineramaSlsSize(F_CMD_ARGS)
-{
-	int val[2];
-
-	if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
-	    GetRectangleArguments(action, &val[0], &val[1]) != 2)
-	{
-		val[0] = 1;
-		val[1] = 1;
-	}
-	if (FScreenConfigureSLSSize(val[0], val[1]))
-	{
-		broadcast_xinerama_state();
-	}
-
-	return;
-}
-
-void CMD_XineramaSlsScreens(F_CMD_ARGS)
-{
-	int nscreens;
-	char *args;
-
-	if (GetIntegerArguments(action, &args, &nscreens, 1) != 1)
-	{
-		nscreens = 0;
-		args = NULL;
-	}
-	else if (args == NULL)
-	{
-		nscreens = 0;
-	}
-	if (FScreenConfigureSLSScreens(nscreens, args))
-	{
-		broadcast_xinerama_state();
-	}
-
-	return;
-}
-
 void CMD_DesktopSize(F_CMD_ARGS)
 {
 	int val[2];
