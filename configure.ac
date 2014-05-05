@@ -539,64 +539,29 @@ fi
 AH_TEMPLATE([HAVE_X11_XKBLIB_H],[Define if Xkb extension is used.])
 AC_CHECK_HEADER(X11/XKBlib.h, AC_DEFINE(HAVE_X11_XKBLIB_H))
 
-# ********* xineramA
-problem_xinerama=""
+# ********* XRandR
+problem_xrandr=""
 
-AC_ARG_ENABLE(xinerama,
-  AS_HELP_STRING([--disable-xinerama],[disable Xinerama multi screen support]),
+AC_ARG_ENABLE(xrandr,
+  AS_HELP_STRING([--disable-xrandr],[disable XRandR support]),
   [ if test x"$enableval" = xyes; then
-    with_xinerama="yes, check"
+    with_xrandr="yes, check"
   else
-    with_xinerama="no"
-    problem_xinerama=": Explicitly disabled"
+    with_xrandr="no"
+    problem_xrandr=": Explicitly disabled"
   fi ],
-  [ with_xinerama="not specified, check" ]
+  [ with_xrandr="not specified, check" ]
 )
 
-AH_TEMPLATE([HAVE_XINERAMA],[Define if Xinerama library is used.])
-AH_TEMPLATE([HAVE_SOLARIS_XINERAMA],
-  [Define if Solaris' Xinerama calls are being used.
-  (Solaris 7 11/99 and later)])
-AH_TEMPLATE([HAVE_SOLARIS_XINERAMA_H],
-  [Define if Solaris' X11/extensions/xinerama.h header is provided.
-  (Solaris 9 and later)])
-if test ! x"$with_xinerama" = xno; then
-  $UNSET ac_cv_lib_Xinerama_XineramaIsActive
-  _check_solaris_xinerama=no
-  AC_CHECK_LIB(Xinerama, XineramaIsActive,
-    with_xinerama=yes; Xinerama_LIBS=-lXinerama; AC_DEFINE(HAVE_XINERAMA),
-    _check_solaris_xinerama=yes,
+AH_TEMPLATE([HAVE_XRANDR],[Define if XRandR library is used.])
+if test ! x"$with_xrandr" = xno; then
+  $UNSET ac_cv_lib_XRandR_XRRQueryExtension
+  AC_CHECK_LIB(Xrandr, XRRQueryExtension,
+    with_xrandr=yes; XRandR_LIBS=-lxrandr; AC_DEFINE(HAVE_XRANDR),
     [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
-  if test x"$_check_solaris_xinerama" = xyes; then
-    AC_CHECK_LIB(Xext, XineramaGetState,
-      [ AC_DEFINE(HAVE_XINERAMA) AC_DEFINE(HAVE_SOLARIS_XINERAMA)
-      with_xinerama=yes; Xinerama_LIBS=-lXext
-      my_CPPFLAGS="$CPPFLAGS"; CPPFLAGS="$X_CPPFLAGS $CPPFLAGS"
-      my_hdr="X11/extensions/xinerama.h"
-      AC_CHECK_HEADER($my_hdr, AC_DEFINE(HAVE_SOLARIS_XINERAMA_H)
-	problem_xinerama=" (Using Solaris Xinerama calls)",
-	problem_xinerama=" (Using Solaris 9 prototypes for missing header)")
-      CPPFLAGS="$my_CPPFLAGS"],
-    with_xinerama=no; Xinerama_LIBS=
-    problem_xinerama=": Failed to detect libXinerama",
-    [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
-  fi
-  $UNSET _check_solaris_xinerama
 fi
-AC_SUBST(Xinerama_LIBS)
-AC_SUBST(Xinerama_CFLAGS)
-
-# ********* xinerama-emulation
-smr_SWITCH(
-  xinerama-emulation,
-  [Xinerama emulation on one screen (useful only for developers)], off,
-  USE_XINERAMA_EMULATION,,
-  [Define if Xinerama should be emulated on a single screen.])
-if test x"$enable_xinerama_emulation" = xyes; then
-  with_xinerama_emulation=yes
-else
-  with_xinerama_emulation=no
-fi
+AC_SUBST(XRandR_LIBS)
+AC_SUBST(XRandR_CFLAGS)
 
 # ********* xrender
 problem_xrender=""
@@ -1611,7 +1576,7 @@ AC_SUBST(with_sm)
 AC_SUBST(with_stroke)
 AC_SUBST(with_xcursor)
 AC_SUBST(with_xft)
-AC_SUBST(with_xinerama)
+AC_SUBST(with_xrandr)
 AC_SUBST(with_xrender)
 AC_SUBST(with_xpm)
 
@@ -1756,7 +1721,7 @@ Fvwm Configuration:
   With Session Management support?    $with_sm$problem_sm
   With SVG image support?             $with_rsvg$problem_rsvg
   With Xcursor support?               $with_xcursor$problem_xcursor
-  With Xinerama multi-head support?   $with_xinerama$problem_xinerama
+  With XRandR support?                $with_xrandr$problem_xrandr
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm
   With Xrender image support?         $with_xrender$problem_xrender
@@ -1764,10 +1729,6 @@ Fvwm Configuration:
   Build HTML documentation?           $with_htmldoc$problem_htmldoc
 
 "
-
-case "$with_xinerama_emulation" in
-  yes) echo "  Xinerama emulation enabled." ;;
-esac
 case "$ac_cv_dmalloc" in
   yes) echo "  DMALLOC heap debugging library enabled." ;;
 esac

@@ -35,18 +35,12 @@ typedef union
 
 /* Control */
 Bool FScreenIsEnabled(void);
-Bool FScreenIsSLSEnabled(void);
 void FScreenInit(Display *dpy);
-void FScreenOnOff(Bool do_enable);
-Bool FScreenConfigureSLSSize(int width, int height);
-Bool FScreenConfigureSLSScreens(int nscreens, char *args);
-void FScreenSLSOnOff(Bool do_enable);
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
 void FScreenConfigureModule(char *args);
 const char* FScreenGetConfiguration(void); /* For use by fvwm */
 void FScreenSetDefaultModuleScreen(char *scr_spec);
-void FScreenDisableRandR(void);
 
 void FScreenSetPrimaryScreen(int scr);
 
@@ -91,10 +85,5 @@ int  FScreenGetGeometry(
 	int *width_return, int *height_return, XSizeHints *hints, int flags);
 void FScreenMangleScreenIntoUSPosHints(fscreen_scr_t screen, XSizeHints *hints);
 fscreen_scr_t FScreenFetchMangledScreenFromUSPosHints(XSizeHints *hints);
-
-/* RandR support */
-int  FScreenGetRandrEventType(void);
-Bool FScreenHandleRandrEvent(
-	XEvent *event, int *old_w, int *old_h, int *new_w, int *new_h);
 
 #endif /* FVWMLIB_FSCRREN_H */

@@ -652,17 +652,6 @@ const func_t func_table[] =
 		F_XINERAMAPRIMARYSCREEN, 0, 0),
 	/* - Identify Xinerama primary screen */
 
-	CMD_ENT("xineramasls", CMD_XineramaSls, F_XINERAMASLS, 0, 0),
-	/* - Control single logical screen support */
-
-	CMD_ENT("xineramaslsscreens", CMD_XineramaSlsScreens,
-		F_XINERAMASLSSCREENS, 0, 0),
-	/* - Configure layout for single logical screen */
-
-	CMD_ENT("xineramaslssize", CMD_XineramaSlsSize, F_XINERAMASLSSIZE,
-		0, 0),
-	/* - Configure layout for single logical screen sizes */
-
 	CMD_ENT("xorpixmap", CMD_XorPixmap, F_XOR, 0, 0),
 	/* - Use a pixmap for move/resize rubber-band */
 

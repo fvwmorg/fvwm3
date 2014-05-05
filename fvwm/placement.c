@@ -2077,7 +2077,7 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		s += strlen(s);
 	}
 	/* screen */
-	if (FScreenIsEnabled() == True || FScreenIsSLSEnabled() == True)
+	if (FScreenIsEnabled() == True)
 	{
 		switch (reason->screen.reason)
 		{
