@@ -38,7 +38,6 @@
 #include "module_interface.h"
 #include "module_list.h"
 #include "focus.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "move_resize.h"
 #include "borders.h"
@@ -569,8 +568,6 @@ static void MapDesk(int desk, Bool grab)
 			/*  If window is sticky, just update its desk (it's
 			 * still mapped).  */
 			t->Desk = desk;
-			GNOME_SetDesk(t);
-			GNOME_SetWinArea(t);
 			if (sf == t)
 			{
 				StickyWin = t;
@@ -1386,7 +1383,6 @@ void MoveViewport(int newx, int newy, Bool grab)
 			{
 				/* Clear double move blocker. */
 				SET_VIEWPORT_MOVED(t, 0);
-				GNOME_SetWinArea(t);
 			}
 			/* If its an icon, and its sticking, autoplace it so
 			 * that it doesn't wind up on top a a stationary
@@ -1420,8 +1416,6 @@ void MoveViewport(int newx, int newy, Bool grab)
 	{
 		MyXUngrabServer(dpy);
 	}
-	/* update GNOME pager */
-	GNOME_SetCurrentArea();
 	EWMH_SetDesktopViewPort();
 
 	return;
@@ -1454,8 +1448,6 @@ void goto_desk(int desk)
 		 * pager doesn't maintain the stacking order. */
 		BroadcastRestackAllWindows();
 		EWMH_SetCurrentDesktop();
-		GNOME_SetCurrentDesk();
-		GNOME_SetDeskCount();
 	}
 
 	return;
@@ -1508,9 +1500,6 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	}
 	focus_grab_buttons_on_layer(fw->layer);
 	EWMH_SetWMDesktop(fw);
-	GNOME_SetDeskCount();
-	GNOME_SetDesk(fw);
-	GNOME_SetWinArea(fw);
 
 	return;
 }
@@ -2170,8 +2159,6 @@ void CMD_DesktopSize(F_CMD_ARGS)
 		(long)((Scr.VyMax / Scr.MyDisplayHeight) + 1));
 
 	checkPanFrames();
-	/* update GNOME pager */
-	GNOME_SetAreaCount();
 	EWMH_SetDesktopGeometry();
 
 	return;
@@ -2258,8 +2245,6 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		BroadcastPacket(M_NEW_DESK, 1, (long)Scr.CurrentDesk);
 	}
 	EWMH_SetCurrentDesktop();
-	GNOME_SetCurrentDesk();
-	GNOME_SetDeskCount();
 
 	return;
 }

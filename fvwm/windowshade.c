@@ -32,7 +32,6 @@
 #include "module_list.h"
 #include "module_interface.h"
 #include "geometry.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "borders.h"
 #include "frame.h"
@@ -221,8 +220,6 @@ void CMD_WindowShade(F_CMD_ARGS)
 	FlushAllMessageQueues();
 	XFlush(dpy);
 	EWMH_SetWMState(fw, False);
-	GNOME_SetHints(fw);
-	GNOME_SetWinArea(fw);
 
 	return;
 }

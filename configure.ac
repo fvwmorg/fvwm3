@@ -1627,7 +1627,6 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 AC_SUBST(with_bidi)
 AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gettext)
-AC_SUBST(with_gnomelibs)
 AC_SUBST(with_iconv)
 AC_SUBST(with_perllib)
 AC_SUBST(with_png)

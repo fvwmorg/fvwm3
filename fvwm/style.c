@@ -44,7 +44,6 @@
 #include "style.h"
 #include "colorset.h"
 #include "ewmh.h"
-#include "gnome.h"
 #include "placement.h"
 
 /* ---------------------------- local definitions -------------------------- */
@@ -2760,18 +2759,6 @@ static Bool style_parse_one_style_option(
 			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCM(*ps)), 1);
 			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
-		else if (StrEquals(token, "GNOMEIgnoreHints"))
-		{
-			S_SET_DO_IGNORE_GNOME_HINTS(SCF(*ps), on);
-			S_SET_DO_IGNORE_GNOME_HINTS(SCM(*ps), 1);
-			S_SET_DO_IGNORE_GNOME_HINTS(SCC(*ps), 1);
-		}
-		else if (StrEquals(token, "GNOMEUseHints"))
-		{
-			S_SET_DO_IGNORE_GNOME_HINTS(SCF(*ps), !on);
-			S_SET_DO_IGNORE_GNOME_HINTS(SCM(*ps), 1);
-			S_SET_DO_IGNORE_GNOME_HINTS(SCC(*ps), 1);
-		}
 		else
 		{
 			found = False;
@@ -4803,17 +4790,6 @@ void lookup_style(FvwmWindow *fw, window_style *styles)
 			merge_styles(styles, nptr, False);
 		}
 	}
-	if (!DO_IGNORE_GNOME_HINTS(fw))
-	{
-		window_style gnome_style;
-
-		/* use GNOME hints if not overridden by user with
-		 * GNOMEIgnoreHitns */
-		memset(&gnome_style, 0, sizeof(window_style));
-		GNOME_GetStyle(fw, &gnome_style);
-		merge_styles(&gnome_style, styles, False);
-		memcpy(styles, &gnome_style, sizeof(window_style));
-	}
 	EWMH_GetStyle(fw, styles);
 
 	return;
@@ -4835,19 +4811,7 @@ void check_window_style_change(
 		return;
 	}
 
-	/* do_ignore_gnome_hints
-	 *
-	 * must handle these first because they may alter the style */
-	if (S_DO_IGNORE_GNOME_HINTS(SCC(*ret_style)) &&
-	    !S_DO_IGNORE_GNOME_HINTS(SCF(*ret_style)))
-	{
-		GNOME_GetStyle(t, ret_style);
-		/* may need further treatment for some styles */
-		flags->do_update_gnome_styles = 1;
-	}
-
 	/*** common style flags ***/
-
 	wf = (char *)(&FW_COMMON_STATIC_FLAGS(t));
 	sf = (char *)(&SCFS(*ret_style));
 	if (IS_STYLE_DELETED(t))

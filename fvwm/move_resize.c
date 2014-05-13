@@ -55,7 +55,6 @@
 #include "borders.h"
 #include "frame.h"
 #include "geometry.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "virtual.h"
 #include "decorations.h"
@@ -1175,7 +1174,6 @@ static Bool resize_move_window(F_CMD_ARGS)
 	update_absolute_geometry(fw);
 	maximize_adjust_offset(fw);
 	XFlush(dpy);
-	GNOME_SetWinArea(fw);
 
 	return True;
 }
@@ -1511,10 +1509,6 @@ static void AnimatedMoveAnyWindow(
 	} while (*ppctMovement != 1.0 && ppctMovement++);
 	MyXUngrabKeyboard(dpy);
 	XFlush(dpy);
-	if (fw)
-	{
-		GNOME_SetWinArea(fw);
-	}
 
 	return;
 }
@@ -1899,7 +1893,6 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		update_absolute_geometry(fw);
 		maximize_adjust_offset(fw);
 		XFlush(dpy);
-		GNOME_SetWinArea(fw);
 	}
 	else /* icon window */
 	{
@@ -3745,7 +3738,6 @@ static Bool __resize_window(F_CMD_ARGS)
 		}
 		update_absolute_geometry(fw);
 		maximize_adjust_offset(fw);
-		GNOME_SetWinArea(fw);
 		ResizeWindow = None;
 		return True;
 	}
@@ -4369,7 +4361,6 @@ static Bool __resize_window(F_CMD_ARGS)
 	Scr.flags.do_edge_wrap_y = edge_wrap_y;
 	update_absolute_geometry(fw);
 	maximize_adjust_offset(fw);
-	GNOME_SetWinArea(fw);
 	if (is_aborted)
 	{
 		return False;
@@ -5001,7 +4992,6 @@ void CMD_Maximize(F_CMD_ARGS)
 		maximize_fvwm_window(fw, &new_g);
 	}
 	EWMH_SetWMState(fw, False);
-	GNOME_SetWinArea(fw);
 
 	return;
 }
@@ -5108,8 +5098,6 @@ int stick_across_desks(F_CMD_ARGS, int toggle)
 	{
 		SET_STICKY_ACROSS_DESKS(fw, 0);
 		fw->Desk = Scr.CurrentDesk;
-		GNOME_SetDeskCount();
-		GNOME_SetDesk(fw);
 	}
 	else
 	{
@@ -5137,7 +5125,6 @@ static void __handle_stick_exit(
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 		EWMH_SetWMState(fw, False);
 		EWMH_SetWMDesktop(fw);
-		GNOME_SetHints(fw);
 	}
 
 	return;

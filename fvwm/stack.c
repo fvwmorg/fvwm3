@@ -44,7 +44,6 @@
 #include "virtual.h"
 #include "geometry.h"
 #include "icons.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "frame.h"
 
@@ -2009,7 +2008,6 @@ void new_layer(FvwmWindow *fw, int layer)
 		border_draw_decorations(
 			s, PART_TITLEBAR, (Scr.Hilite == fw), True, CLEAR_NONE,
 			NULL, NULL);
-		GNOME_SetLayer(fw);
 		EWMH_SetWMState(fw, False);
 	}
 	/* move the windows without modifying their stacking order */

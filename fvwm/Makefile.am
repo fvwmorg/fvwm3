@@ -13,7 +13,7 @@ fvwm_SOURCES = \
 	commands.h conditional.h condrc.h cursor.h decorations.h events.h \
 	eventhandler.h eventmask.h ewmh.h ewmh_intern.h expand.h externs.h \
 	focus.h functable.h functions.h fvwm.h geometry.h focus_policy.h \
-	gnome.h icccm2.h icons.h menubindings.h menudim.h menugeometry.h \
+	icccm2.h icons.h menubindings.h menudim.h menugeometry.h \
 	menuitem.h menuroot.h menuparameters.h menus.h menustyle.h misc.h \
 	modconf.h module_interface.h module_list.h move_resize.h \
 	placement.h read.h repeat.h execcontext.h schedule.h screen.h \
@@ -23,7 +23,7 @@ fvwm_SOURCES = \
 	menus.c style.c borders.c events.c move_resize.c builtins.c \
 	add_window.c icons.c fvwm.c frame.c placement.c virtual.c \
 	menustyle.c conditional.c ewmh.c stack.c session.c colorset.c \
-	functions.c ewmh_events.c gnome.c geometry.c module_list.c focus.c \
+	functions.c ewmh_events.c geometry.c module_list.c focus.c \
 	windowlist.c functable.c menuitem.c expand.c module_interface.c \
 	menubindings.c decorations.c ewmh_icons.c update.c bindings.c misc.c \
 	cursor.c colormaps.c modconf.c  ewmh_conf.c read.c schedule.c \

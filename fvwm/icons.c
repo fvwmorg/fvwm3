@@ -65,7 +65,6 @@
 #include "virtual.h"
 #include "decorations.h"
 #include "module_interface.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "geometry.h"
 
@@ -2446,7 +2445,6 @@ void DeIconify(FvwmWindow *fw)
 		SetFocusWindow(fw, True, FOCUS_SET_FORCE);
 	}
 	focus_grab_buttons_on_layer(fw->layer);
-	GNOME_SetWinArea(fw);
 
 	return;
 }

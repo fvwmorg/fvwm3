@@ -66,8 +66,6 @@ Focus
 FocusStyle
 Function
 GlobalOpts
-GnomeButton
-GnomeShowDesks
 GotoDesk
 GotoDeskAndPage
 GotoPage

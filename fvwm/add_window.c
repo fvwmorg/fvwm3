@@ -76,7 +76,6 @@
 #include "update.h"
 #include "style.h"
 #include "icons.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "focus.h"
 #include "placement.h"
@@ -202,13 +201,6 @@ static void CaptureOneWindow(
 		XChangeProperty(
 			dpy, FW_W(fw), _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
 			PropModeReplace, (unsigned char *) data, 1);
-
-		/* are all these really needed ? */
-		/* EWMH_SetWMDesktop(fw); */
-		GNOME_SetHints(fw);
-		GNOME_SetDesk(fw);
-		GNOME_SetLayer(fw);
-		GNOME_SetWinArea(fw);
 
 		XSelectInput(dpy, FW_W(fw), NoEventMask);
 		w = FW_W(fw);
@@ -2019,12 +2011,6 @@ void setup_style_and_decor(
 	/****** some numeric values ******/
 	setup_numeric_vals(fw, pstyle);
 
-	/****** GNOME style hints ******/
-	if (!S_DO_IGNORE_GNOME_HINTS(SCF(*pstyle)))
-	{
-		GNOME_GetStyle(fw, pstyle);
-	}
-
 	/* ConfigureNotify motion method */
 	if (SCR_MOTION_METHOD(&pstyle->flag_mask))
 	{
@@ -2671,13 +2657,6 @@ FvwmWindow *AddWindow(
 
 	/****** ewmh setup *******/
 	EWMH_WindowInit(fw);
-
-	/****** gnome setup ******/
-	/* set GNOME hints on the window from flags set on fw */
-	GNOME_SetHints(fw);
-	GNOME_SetLayer(fw);
-	GNOME_SetDesk(fw);
-	GNOME_SetWinArea(fw);
 
 	/****** windowshade ******/
 	if (state_args.do_shade || SDO_START_SHADED(sflags))

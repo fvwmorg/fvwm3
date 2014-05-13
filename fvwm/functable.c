@@ -282,12 +282,6 @@ const func_t func_table[] =
 	CMD_ENT("globalopts", CMD_GlobalOpts, F_GLOBAL_OPTS, 0, 0),
 	/* - (obsolete, use corresponding Style * instead) */
 
-	CMD_ENT("gnomebutton", CMD_GnomeButton, F_MOUSE, 0, 0),
-	/* - Pass mouse button presses on root to GNOME program */
-
-	CMD_ENT("gnomeshowdesks", CMD_GnomeShowDesks, F_GOTO_DESK, 0, 0),
-	/* - Limit GNOME pager to the number of desks */
-
 	CMD_ENT("gotodesk", CMD_GotoDesk, F_GOTO_DESK, 0, 0),
 	/* - Switch viewport to another desk same page */
 

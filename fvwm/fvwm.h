@@ -215,7 +215,6 @@ typedef struct
 		unsigned do_ewmh_use_stacking_hints : 1;
 		unsigned do_ewmh_ignore_window_type : 1;
 		unsigned do_iconify_window_groups : 1;
-		unsigned do_ignore_gnome_hints : 1;
 		unsigned do_ignore_icon_boxes : 1;
 		unsigned do_ignore_restack : 1;
 		unsigned do_use_window_group_hint : 1;

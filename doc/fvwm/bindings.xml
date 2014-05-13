@@ -14,7 +14,6 @@
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="IgnoreModifiers.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="EdgeCommand.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="EdgeLeaveCommand.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="GnomeButton.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Key.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Mouse.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="PointerKey.xml" />

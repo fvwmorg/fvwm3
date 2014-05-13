@@ -24,7 +24,6 @@ typedef struct
 	unsigned do_update_ewmh_stacking_hints : 1;
 	unsigned do_update_ewmh_state_hints : 1;
 	unsigned do_update_frame_attributes : 1;
-	unsigned do_update_gnome_styles : 1;
 	unsigned do_update_icon : 1;
 	unsigned do_update_icon_background_cs : 1;
 	unsigned do_update_icon_boxes : 1;

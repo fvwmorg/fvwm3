@@ -37,7 +37,6 @@
 #include "focus.h"
 #include "borders.h"
 #include "frame.h"
-#include "gnome.h"
 #include "ewmh.h"
 
 /* ---------------------------- local definitions -------------------------- */

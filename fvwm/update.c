@@ -35,7 +35,6 @@
 #include "builtins.h"
 #include "borders.h"
 #include "frame.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "icons.h"
 #include "geometry.h"
@@ -116,13 +115,6 @@ static void apply_window_updates(
 				Scr.Hilite = NULL;
 			}
 			flags->do_redraw_decoration = True;
-		}
-	}
-	if (flags->do_update_gnome_styles)
-	{
-		if (!S_DO_IGNORE_GNOME_HINTS(SCF(*pstyle)))
-		{
-			GNOME_GetStyle(t, pstyle);
 		}
 	}
 	if (flags->do_update_window_grabs)
@@ -375,7 +367,6 @@ static void apply_window_updates(
 			t, frame_g.x, frame_g.y, frame_g.width, frame_g.height,
 			True);
 		set_focus_window(tmp);
-		GNOME_SetWinArea(t);
 		EWMH_SetFrameStrut(t);
 	}
 	if (flags->do_update_window_color)

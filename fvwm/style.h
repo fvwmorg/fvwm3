@@ -168,10 +168,6 @@
 	((c).s.do_iconify_window_groups)
 #define S_SET_DO_ICONIFY_WINDOW_GROUPS(c,x) \
 	((c).s.do_iconify_window_groups = !!(x))
-#define S_DO_IGNORE_GNOME_HINTS(c) \
-	((c).s.do_ignore_gnome_hints)
-#define S_SET_DO_IGNORE_GNOME_HINTS(c,x) \
-	((c).s.do_ignore_gnome_hints = !!(x))
 #define S_DO_IGNORE_ICON_BOXES(c) \
 	((c).s.do_ignore_icon_boxes)
 #define S_SET_DO_IGNORE_ICON_BOXES(c,x) \

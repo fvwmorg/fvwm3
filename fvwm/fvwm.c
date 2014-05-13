@@ -72,7 +72,6 @@
 #include "eventhandler.h"
 #include "eventmask.h"
 #include "icccm2.h"
-#include "gnome.h"
 #include "ewmh.h"
 #include "add_window.h"
 #include "libs/fvwmsignal.h"
@@ -2579,7 +2578,6 @@ int main(int argc, char **argv)
 	MyXUngrabServer(dpy);
 	CoerceEnterNotifyOnCurrentWindow();
 	SessionInit();
-	GNOME_Init();
 	DBUG("main", "Entering HandleEvents loop...");
 
 	HandleEvents();
