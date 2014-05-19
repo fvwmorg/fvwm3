@@ -916,10 +916,10 @@ static signed int expand_vars_extended(
 		val = (is_x) ? x : y;
 		break;
 	case VAR_POINTER_SCREEN:
-		is_numeric = True;
 		FQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY, &x, &y, &JunkMask);
-		val = FScreenOfPointerXY(x, y);
+		string = FScreenOfPointerXY(x, y);
+		should_quote = True;
 		break;
 
 	case VAR_VERSION_NUM:

@@ -7205,8 +7205,9 @@ char *get_menu_options(
 		}
 		else if (StrEquals(tok,"rectangle"))
 		{
+			char *screen;
+			fscreen_scr_arg	arg;
 			int flags;
-			int screen;
 			int sx;
 			int sy;
 			int sw;
@@ -7247,7 +7248,10 @@ char *get_menu_options(
 				return action;
 			}
 			pops->pos_hints.has_screen_origin = 1;
-			FScreenGetScrRect(NULL, screen, &sx, &sy, &sw, &sh);
+			arg.mouse_ev = NULL;
+			arg.name = screen;
+			FScreenGetScrRect(&arg, FSCREEN_BY_NAME,&sx, &sy, &sw,
+					  &sh);
 			pops->pos_hints.screen_origin_x = sx;
 			pops->pos_hints.screen_origin_y = sy;
 			if (!(flags & WidthValue))

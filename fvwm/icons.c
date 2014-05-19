@@ -876,9 +876,8 @@ void DrawIconTitleWindow(
 		{
 			x_title_w = fw->icon_g.picture_w_g.x -
 				(w_title_w - fw->icon_g.picture_w_g.width) / 2;
-			FScreenGetScrRect(
-				NULL, FSCREEN_CURRENT,
-				&sx, &sy, &sw, &sh);
+			FScreenGetScrRect(NULL, FSCREEN_CURRENT,
+					  &sx, &sy, &sw, &sh);
 			/* start keep label on screen. dje 8/7/97 */
 			if (x_title_w < sx) {
 				/* if new loc neg (off left edge) */
@@ -1813,12 +1812,8 @@ void AutoPlaceIcon(
 	break;
       }
       /* get the screen dimensions for the icon box */
-      if (icon_boxes_ptr->IconScreen == FSCREEN_CURRENT)
-	fscr.mouse_ev = NULL;
-      FScreenGetScrRect(
-	&fscr,
-	icon_boxes_ptr->IconScreen,
-	&ref.x, &ref.y, &ref.width, &ref.height);
+      FScreenGetScrRect(&fscr, FSCREEN_CURRENT,
+		        &ref.x, &ref.y, &ref.width, &ref.height);
       dim[1].screen_offset = ref.y;
       dim[1].screen_dimension = ref.height;
       dim[2].screen_offset = ref.x;

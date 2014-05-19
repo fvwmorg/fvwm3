@@ -4,7 +4,7 @@
 #define FVWM_MODULE_LIST_H
 
 #include "libs/Module.h"
-#include "libs/queue.h"
+#include "libs/fqueue.h"
 
 /* for F_CMD_ARGS */
 #include "fvwm/fvwm.h"
