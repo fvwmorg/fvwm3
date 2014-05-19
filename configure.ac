@@ -539,6 +539,10 @@ fi
 AH_TEMPLATE([HAVE_X11_XKBLIB_H],[Define if Xkb extension is used.])
 AC_CHECK_HEADER(X11/XKBlib.h, AC_DEFINE(HAVE_X11_XKBLIB_H))
 
+# TAILQ and friends
+AH_TEMPLATE([HAVE_TAILQ],[Check if tailq is present.])
+AC_CHECK_HEADER(queue.h, AC_DEFINE(HAVE_TAILQ))
+
 # ********* XRandR
 problem_xrandr=""
 
@@ -1512,6 +1516,10 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 
 #if HAVE_SYS_TYPES_H
 #  include <sys/types.h>
+#endif
+
+#ifndef HAVE_TAILQ
+#	include <sys/queue.h>
 #endif
 
 #if HAVE_UNISTD_H

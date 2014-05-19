@@ -14,15 +14,15 @@ libfvwm3_a_SOURCES = \
 	PictureUtils.h Rectangles.h Strings.h System.h Target.h WinMagic.h \
 	XError.h XResource.h charmap.h defaults.h envvar.h fio.h flist.h \
 	fsm.h ftime.h fvwm_sys_stat.h fvwmlib.h fvwmrect.h fvwmsignal.h \
-	gravity.c gravity.h lang-strings.h modifiers.h queue.h safemalloc.h \
-	setpgrp.h strlcpy.h timeout.h vpacket.h wcontext.h wild.h \
+	gravity.c gravity.h lang-strings.h modifiers.h fqueue.h safemalloc.h \
+	setpgrp.h strlcpy.h timeout.h vpacket.h wcontext.h wild.h queue.h \
 	\
 	BidiJoin.c Flocale.c PictureUtils.c FScreen.c Graphics.c \
 	PictureGraphics.c Bindings.c FlocaleCharset.c Parse.c \
 	PictureImageLoader.c Colorset.c ColorUtils.c CombineChars.c Module.c \
 	FRender.c Ficonv.c envvar.c Fft.c  gravity.c \
 	XResource.c FEvent.c FImage.c WinMagic.c Target.c Picture.c XError.c \
-	queue.c fvwmsignal.c System.c PictureBase.c Cursor.c Strings.c \
+	fqueue.c fvwmsignal.c System.c PictureBase.c Cursor.c Strings.c \
 	fvwmrect.c FRenderInit.c safemalloc.c  FBidi.c \
 	wild.c Grab.c Event.c ClientMsg.c setpgrp.c FShape.c \
 	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
