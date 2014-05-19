@@ -736,13 +736,18 @@ void X_init_manager (int man_id)
   man->geometry.x = man->managed_g.x;
   man->geometry.y = man->managed_g.y;
   if (man->geometry_str) {
-    int scr;
+    char *scr;
+    fscreen_scr_arg arg;
+    arg.mouse_ev = NULL;
 
     geometry_mask = FScreenParseGeometryWithScreen(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
       &man->geometry.cols, &man->geometry.rows, &scr);
+
+    arg.name = scr;
+
     FScreenGetScrRect(
-      NULL, scr, &man->managed_g.x, &man->managed_g.y,
+      &arg, FSCREEN_BY_NAME, &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
 
     if (geometry_mask & XValue)
@@ -854,7 +859,6 @@ void create_manager_window (int man_id)
   int join_style = JoinRound;
   int i;
   WinManager *man;
-  fscreen_scr_t scr;
   ConsoleDebug (X11, "In create_manager_window\n");
 
   man = &globals.managers[man_id];
@@ -921,7 +925,6 @@ void create_manager_window (int man_id)
       &fscr, FSCREEN_XYPOS,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
-    scr = FSCREEN_XYPOS;
   }
   else
   {
@@ -929,7 +932,6 @@ void create_manager_window (int man_id)
       NULL, FSCREEN_GLOBAL,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
-    scr = FSCREEN_GLOBAL;
   }
 
   man->theWindow = XCreateWindow(theDisplay, theRoot, sizehints.x, sizehints.y,
@@ -937,7 +939,7 @@ void create_manager_window (int man_id)
 				 0, Pdepth, InputOutput, Pvisual, winattrmask,
 				 &winattr);
   /* hack to prevent mapping on wrong screen with StartsOnScreen */
-  FScreenMangleScreenIntoUSPosHints(scr, &sizehints);
+  FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &sizehints);
   XSetWMNormalHints(theDisplay, man->theWindow, &sizehints);
   FShapeSelectInput (theDisplay, man->theWindow, FShapeNotifyMask);
   if (globals.transient)

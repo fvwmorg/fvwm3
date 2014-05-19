@@ -1795,8 +1795,7 @@ static char *style_parse_icon_box_style(
 		is_screen_given = True;
 		option = PeekToken(rest, &rest); /* skip screen */
 		option = PeekToken(rest, &rest); /* get the screen spec */
-		IconBoxes->IconScreen =
-			FScreenGetScreenArgument(option, FSCREEN_SPEC_PRIMARY);
+		IconBoxes->IconScreen = option;
 	}
 
 	/* try for 4 numbers x y x y */
@@ -3979,14 +3978,23 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "StartsOnScreen"))
 		{
-			if (rest)
+			char		*s;
+			struct monitor	*m;
+			s = (rest != NULL) ? strdup(rest) : NULL;
+			rest = NULL; /* consume the entire string */
+
+			if (s != NULL)
+				m = monitor_by_name(s);
+
+			fprintf(stderr, "STARTSONSCREEN: %s\n", s);
+			if (s != NULL && m != NULL)
 			{
-				tmpno[0] = FScreenGetScreenArgument(rest, 'c');
-				PeekToken(rest,&rest);
 				ps->flags.use_start_on_screen = 1;
 				ps->flag_mask.use_start_on_screen = 1;
 				ps->change_mask.use_start_on_screen = 1;
-				SSET_START_SCREEN(*ps, tmpno[0]);
+				SSET_START_SCREEN(*ps, s);
+				fprintf(stderr, "SET SCREEN TO: %s\n",
+					SGET_START_SCREEN(*ps));
 			}
 			else
 			{

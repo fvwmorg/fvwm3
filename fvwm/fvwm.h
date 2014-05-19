@@ -156,7 +156,7 @@ typedef struct icon_boxes_struct
 	struct icon_boxes_struct *next;       /* next icon_boxes or zero */
 	unsigned int use_count;
 	int IconBox[4];                       /* x/y x/y for iconbox */
-	int IconScreen;                       /* Xinerama screen */
+	char	*IconScreen;                       /* Xinerama screen */
 	short IconGrid[2];                    /* x incr, y incr */
 	char IconSign[4];                     /* because of -0, need to save */
 	unsigned is_orphan : 1;
@@ -678,7 +678,7 @@ typedef struct window_style
 	int start_desk;
 	int start_page_x;
 	int start_page_y;
-	int start_screen;
+	char *start_screen;
 	int min_window_width;
 	int min_window_height;
 	int max_window_width;

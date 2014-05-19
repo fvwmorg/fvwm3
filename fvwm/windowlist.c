@@ -925,18 +925,8 @@ void CMD_WindowList(F_CMD_ARGS)
 				}
 				if (flags & SHOW_SCREEN)
 				{
-					fscreen_scr_arg fscr;
-					int scr;
-
-					fscr.xypos.x =
-						Scr.Vx + t->g.frame.x +
-						t->g.frame.width / 2;
-					fscr.xypos.y =
-						Scr.Vy + t->g.frame.y +
-						t->g.frame.height / 2;
-					scr = FScreenGetScrId(
-						&fscr, FSCREEN_XYPOS);
-					sprintf(loc, "@%d", scr);
+					/* TA:  FIXME! */
+					sprintf(loc, "@%d", 0);
 					strcat(tname, loc);
 				}
 				if (flags & SHOW_PAGE_X)

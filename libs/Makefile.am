@@ -32,4 +32,4 @@ libfvwm3_a_LIBADD = @LIBOBJS@
 
 AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(iconv_CFLAGS) $(Xrender_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS) \
-	$(rsvg_CFLAGS) $(intl_CFLAGS)
+	$(rsvg_CFLAGS) $(intl_CFLAGS) $(XRandR_CFLAGS)

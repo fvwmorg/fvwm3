@@ -11,7 +11,7 @@ FvwmAuto_SOURCES = FvwmAuto.c
 FvwmAuto_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3  \
-	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) $(XRandR_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir) $(X_CFLAGS)
 

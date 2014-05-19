@@ -138,7 +138,7 @@ typedef struct
 	struct
 	{
 		preason_screen_t reason;
-		int screen;
+		char *screen;
 		rectangle g;
 		unsigned was_modified_by_ewmh_workingarea : 1;
 	} screen;
@@ -165,7 +165,7 @@ typedef struct
 	int desk;
 	int page_x;
 	int page_y;
-	int screen;
+	char *screen;
 } pl_start_style_t;
 
 typedef struct
@@ -552,8 +552,7 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 		{
 			XMapRaised(dpy, Scr.SizeWindow);
 		}
-		FScreenGetScrRect(
-			NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
+		FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
 		if (__move_loop(
 			    arg->exc, mx, my, DragWidth, DragHeight, &ret_p->x,
 			    &ret_p->y, False, CRS_POSITION))
@@ -1417,8 +1416,6 @@ static int __place_get_nowm_pos(
 		SUSE_START_ON_SCREEN(&pstyle->flags) &&
 		flags.do_honor_starts_on_screen)
 	{
-		fscreen_scr_t mangle_screen;
-
 		/* If StartsOnScreen has been given for a window, translate its
 		 * USPosition so that it is relative to that particular screen.
 		 *  If we don't do this, then a geometry would completely
@@ -1435,16 +1432,16 @@ static int __place_get_nowm_pos(
 		 * 2: Do NOT specify a Xinerama screen (or specify it to be
 		 * 'g') and give the geometry hint in terms of the global
 		 * screen. */
-		mangle_screen = FScreenFetchMangledScreenFromUSPosHints(
+		int mangle_screen = FScreenFetchMangledScreenFromUSPosHints(
 			&(fw->hints));
-		if (mangle_screen != FSCREEN_GLOBAL)
+		if (mangle_screen != 0)
 		{
 			/* whoever set this hint knew exactly what he was
 			 * doing; so ignore the StartsOnScreen style */
 			flags.do_honor_starts_on_screen = 0;
 			reason->pos.reason = PR_POS_USPOS_OVERRIDE_SOS;
 		}
-		else if (attr_g->x + attr_g->width < screen_g.x ||
+		if (attr_g->x + attr_g->width < screen_g.x ||
 			 attr_g->x >= screen_g.x + screen_g.width ||
 			 attr_g->y + attr_g->height < screen_g.y ||
 			 attr_g->y >= screen_g.y + screen_g.height)
@@ -1453,8 +1450,11 @@ static int __place_get_nowm_pos(
 			 * screen.  Let's assume the application specified
 			 * global coordinates and translate them to the screen.
 			 */
+			fscreen_scr_arg	 arg;
+			arg.mouse_ev = NULL;
+			arg.name = start_style.screen;
 			FScreenTranslateCoordinates(
-				NULL, start_style.screen, NULL, FSCREEN_GLOBAL,
+				&arg, FSCREEN_BY_NAME, NULL, FSCREEN_GLOBAL,
 				&attr_g->x, &attr_g->y);
 			reason->pos.do_adjust_off_screen = 1;
 		}
@@ -1662,29 +1662,32 @@ static int __place_window(
 	{
 		if (flags.do_honor_starts_on_screen)
 		{
-			/* use screen from style */
-			FScreenGetScrRect(
-				NULL, start_style.screen, &screen_g.x,
-				&screen_g.y, &screen_g.width,
-				&screen_g.height);
-			reason->screen.screen = start_style.screen;
+			fscreen_scr_arg	 arg;
+			arg.mouse_ev = NULL;
+			arg.name = SGET_START_SCREEN(*pstyle);
+
+			FScreenGetScrRect(&arg, FSCREEN_BY_NAME,
+				&screen_g.x, &screen_g.y,
+				&screen_g.width, &screen_g.height);
+			fprintf(stderr, "MONITOR:  I SHOULD HAVE PLACED ON: '%s'\n",
+				arg.name);
 		}
 		else
 		{
 			/* use global screen */
-			FScreenGetScrRect(
-				NULL, FSCREEN_GLOBAL, &screen_g.x, &screen_g.y,
+			FScreenGetScrRect(NULL, FSCREEN_GLOBAL,
+				&screen_g.x, &screen_g.y,
 				&screen_g.width, &screen_g.height);
-			reason->screen.screen = FSCREEN_GLOBAL;
+			reason->screen.screen = "global";
 		}
 	}
 	else
 	{
 		/* use current screen */
-		FScreenGetScrRect(
-			NULL, FSCREEN_CURRENT, &screen_g.x, &screen_g.y,
+		FScreenGetScrRect(NULL, FSCREEN_CURRENT,
+			&screen_g.x, &screen_g.y,
 			&screen_g.width, &screen_g.height);
-		reason->screen.screen = FSCREEN_CURRENT;
+		reason->screen.screen = "current";
 	}
 
 	if (SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAPPERCENT &&
@@ -1919,8 +1922,7 @@ static void __place_handle_x_resources(
 	if (GetResourceString(db, "fvwmscreen", client_argv[0], &rm_value) &&
 	    rm_value.size != 0)
 	{
-		SSET_START_SCREEN(
-			*pstyle, FScreenGetScreenArgument(rm_value.addr, 'c'));
+		SSET_START_SCREEN(*pstyle, rm_value.addr);
 		reason->screen.reason = PR_SCREEN_X_RESOURCE_FVWMSCREEN;
 		reason->screen.screen = SGET_START_SCREEN(*pstyle);
 		pstyle->flags.use_start_on_screen = 1;
@@ -1971,7 +1973,6 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 	char explanation[2048];
 	char *r;
 	char *s;
-	char t[32];
 	int do_show_page;
 	int is_placed_by_algo;
 
@@ -2097,11 +2098,11 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 			r = "bug";
 			break;
 		}
-		FScreenSpecToString(t, 32, reason->screen.screen);
 		sprintf(
 			s, "  screen: %s: %d %d %dx%d (%s)\n",
-			t, reason->screen.g.x, reason->screen.g.y,
-			reason->screen.g.width, reason->screen.g.height, r);
+			reason->screen.screen, reason->screen.g.x,
+			reason->screen.g.y, reason->screen.g.width,
+			reason->screen.g.height, r);
 		s += strlen(s);
 		if (reason->screen.was_modified_by_ewmh_workingarea == 1)
 		{

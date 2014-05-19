@@ -219,7 +219,7 @@ void __map_window(Display *dpy)
 	}
 
 	FScreenGetScrRect(
-		fsarg,  FSCREEN_GLOBAL, &screen_g.x, &screen_g.y,
+		fsarg, FSCREEN_GLOBAL, &screen_g.x, &screen_g.y,
 		&screen_g.width, &screen_g.height);
 
 	new_g.height = ((current_config->Ffont)? current_config->Ffont->height:0)

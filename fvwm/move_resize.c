@@ -460,25 +460,15 @@ int GetMoveArguments(
 	}
 	if (s1 && StrEquals(s1, "screen"))
 	{
-		char *token;
-		int scr;
-		fscreen_scr_arg arg;
-		fscreen_scr_arg* parg;
+		fscreen_scr_arg parg;
+		parg.mouse_ev = NULL;
 
 		free(s1);
 		token = PeekToken(action, &action);
-		scr = FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
-		if (scr == FSCREEN_XYPOS)
-		{
-			arg.xypos.x = *pFinalX;
-			arg.xypos.y = *pFinalY;
-			parg = &arg;
-		}
-		else
-		{
-			parg = NULL;
-		}
-		FScreenGetScrRect(parg, scr, &scr_x, &scr_y, &scr_w, &scr_h);
+		parg.name = token;
+
+		FScreenGetScrRect(&parg, FSCREEN_BY_NAME, &scr_x, &scr_y,
+				  &scr_w, &scr_h);
 		action = GetNextToken(action, &s1);
 	}
 	action = GetNextToken(action, &s2);
@@ -931,8 +921,8 @@ static void DisplayPosition(
 {
 	char str[100];
 	int offset;
-	fscreen_scr_arg fscr;
 	FlocaleWinString fstr;
+	fscreen_scr_arg fscr;
 
 	if (Scr.gs.do_hide_position_window)
 	{
@@ -943,8 +933,8 @@ static void DisplayPosition(
 	 * in case Xinerama is used. */
 	fscr.xypos.x = x;
 	fscr.xypos.y = y;
-	FScreenTranslateCoordinates(
-		NULL, FSCREEN_GLOBAL, &fscr, FSCREEN_XYPOS, &x, &y);
+	FScreenTranslateCoordinates(NULL, FSCREEN_GLOBAL, &fscr,
+			FSCREEN_XYPOS, &x, &y);
 	(void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, x, y);
 	if (Init)
 	{
@@ -1810,13 +1800,10 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle r;
 		rectangle s;
 		rectangle p;
-		int fscreen;
 
 		do_animate = False;
-		fscreen = FScreenGetScreenArgument(
-			action, FSCREEN_SPEC_CURRENT);
 		FScreenGetScrRect(
-			NULL, fscreen, &s.x, &s.y, &s.width, &s.height);
+			NULL, FSCREEN_CURRENT, &s.x, &s.y, &s.width, &s.height);
 		page_x = Scr.Vx;
 		page_y = Scr.Vy;
 		r.x = x;
@@ -4754,15 +4741,15 @@ void CMD_Maximize(F_CMD_ARGS)
 		{
 			if (StrEquals(token, "screen"))
 			{
-				int scr;
-
+				fscreen_scr_arg arg;
+				arg.mouse_ev = NULL;
 				is_screen_given = True;
 				token = PeekToken(taction, &action);
-				scr = FScreenGetScreenArgument(
-					token, FSCREEN_SPEC_PRIMARY);
-				FScreenGetScrRect(
-					NULL, scr, &scr_x, &scr_y, &scr_w,
-					&scr_h);
+
+				arg.name = token;
+
+				FScreenGetScrRect(&arg, FSCREEN_BY_NAME,
+					&scr_x, &scr_y, &scr_w, &scr_h);
 			}
 			else if (StrEquals(token, "ewmhiwa"))
 			{
@@ -4843,8 +4830,8 @@ void CMD_Maximize(F_CMD_ARGS)
 
 		fscr.xypos.x = fw->g.frame.x + fw->g.frame.width  / 2 - page_x;
 		fscr.xypos.y = fw->g.frame.y + fw->g.frame.height / 2 - page_y;
-		FScreenGetScrRect(
-			&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
+		FScreenGetScrRect(&fscr, FSCREEN_XYPOS,
+				  &scr_x, &scr_y, &scr_w, &scr_h);
 	}
 
 	if (!ignore_working_area)
