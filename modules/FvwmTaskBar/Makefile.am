@@ -22,7 +22,7 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm -lm $(xpm_LIBS) $(png_LIBS) \
 	$(X_EXTRA_LIBS) $(Xrender_LIBS) $(Xcursor_LIBS) $(iconv_LIBS) \
 	$(Bidi_LIBS) $(intl_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(png_CFLAGS) $(Xft_CFLAGS) \
+AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(png_CFLAGS) $(Xft_CFLAGS) \
 	$(X_CFLAGS) $(Xrender_CFLAGS) $(iconv_CFLAGS) $(Bidi_CFLAGS) \
 	$(intl_CFLAGS)
 

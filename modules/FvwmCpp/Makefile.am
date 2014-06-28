@@ -14,7 +14,7 @@ FvwmCpp_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm -lm  \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(X_CFLAGS)
 AM_CFLAGS = -DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\"	\
 	-DFVWM_DATADIR=\"$(FVWM_DATADIR)\"		\
 	-DFVWM_CPP='"$(FVWM_CPP)"'

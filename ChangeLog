@@ -1,3 +1,40 @@
+2014-06-28  Thomas Adam <thomas@fvwm.org>
+	* Makefile.am:
+	* bin/Makefile.am:
+	* debian/Makefile.am:
+	* doc/Makefile.am:
+	* doc/commands/Makefile.am:
+	* doc/docbook-xml/Makefile.am:
+	* doc/docbook-xml/ent/Makefile.am:
+	* doc/docbook-xsl/Makefile.am:
+	* doc/docbook-xsl/common/Makefile.am:
+	* doc/docbook-xsl/highlighting/Makefile.am:
+	* doc/docbook-xsl/html/Makefile.am:
+	* doc/docbook-xsl/lib/Makefile.am:
+	* doc/docbook-xsl/manpages/Makefile.am:
+	* doc/docbook-xsl/profiling/Makefile.am:
+	* doc/fvwm/Makefile.am:
+	* doc/images/Makefile.am:
+	* doc/images/svg_rendering/Makefile.am:
+	* doc/modules/Makefile.am:
+	* doc/modules/images/Makefile.am:
+	* doc/modules/images/FvwmTabs/Makefile.am:
+	* docs/Makefile.am:
+	* fvwm/Makefile.am:
+	* libs/Makefile.am:
+	* perllib/Makefile.am:
+	* perllib/FVWM/Makefile.am:
+	* perllib/FVWM/Module/Makefile.am:
+	* perllib/FVWM/Tracker/Makefile.am:
+	* perllib/General/Makefile.am:
+	* po/Makefile.am:
+	* rpm/Makefile.am:
+	* sample.fvwmrc/Makefile.am:
+	* tests/Makefile.am:
+	* tests/hints/Makefile.am:
+	* utils/Makefile.am:
+	Autotools:  INCLUDES macro deprecated.  Renamed to AM_CPPFLAGS
+
 2014-04-05 Stephen Dennison <stephenrd(at)gmail(dot)com>
 	* doc/fvwm/description.xml:
 	fixed minor grammatical errors

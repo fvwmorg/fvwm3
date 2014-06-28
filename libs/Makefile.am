@@ -30,6 +30,6 @@ libfvwm_a_SOURCES = \
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
+AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(iconv_CFLAGS) $(Xrender_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS) \
 	$(rsvg_CFLAGS) $(intl_CFLAGS)

@@ -55,7 +55,7 @@ LDADD = -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) $(X_LIBS)  \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
 	-lm $(Xrender_LIBS) $(rsvg_LIBS) $(iconv_LIBS) $(Bidi_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS) $(iconv_CFLAGS) \
+AM_CPPFLAGS = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS) $(iconv_CFLAGS) \
 	$(Bidi_CFLAGS) $(Xrender_CFLAGS)
 
 FvwmForm-Setup: FvwmForm-Setup.in Makefile

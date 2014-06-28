@@ -38,7 +38,7 @@ LDADD = \
 	$(X_EXTRA_LIBS) -lm $(iconv_LIBS) $(Xrender_LIBS) $(Xcursor_LIBS) \
 	$(Bidi_LIBS) $(png_LIBS) $(rsvg_LIBS) $(intl_LIBS)
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir) $(stroke_CFLAGS) $(Xft_CFLAGS) \
 	$(xpm_CFLAGS) $(X_CFLAGS) $(iconv_CFLAGS) $(Xrender_CFLAGS) \
 	$(Bidi_CFLAGS) $(png_CFLAGS) $(rsvg_CFLAGS) $(intl_CFLAGS)

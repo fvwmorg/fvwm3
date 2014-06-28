@@ -1,3 +1,41 @@
+2014-06-28  Thomas Adam <thomas@fvwm.org>
+	* modules/Makefile.am:
+	* modules/FvwmAnimate/Makefile.am:
+	* modules/FvwmAuto/Makefile.am:
+	* modules/FvwmBacker/Makefile.am:
+	* modules/FvwmBanner/Makefile.am:
+	* modules/FvwmButtons/Makefile.am:
+	* modules/FvwmCommand/Makefile.am:
+	* modules/FvwmCommand/scripts/Makefile.am:
+	* modules/FvwmConsole/Makefile.am:
+	* modules/FvwmCpp/Makefile.am:
+	* modules/FvwmDebug/Makefile.am:
+	* modules/FvwmDragWell/Makefile.am:
+	* modules/FvwmEvent/Makefile.am:
+	* modules/FvwmForm/Makefile.am:
+	* modules/FvwmGtk/Makefile.am:
+	* modules/FvwmIconBox/Makefile.am:
+	* modules/FvwmIconMan/Makefile.am:
+	* modules/FvwmIdent/Makefile.am:
+	* modules/FvwmM4/Makefile.am:
+	* modules/FvwmPager/Makefile.am:
+	* modules/FvwmPerl/Makefile.am:
+	* modules/FvwmProxy/Makefile.am:
+	* modules/FvwmRearrange/Makefile.am:
+	* modules/FvwmSave/Makefile.am:
+	* modules/FvwmSaveDesk/Makefile.am:
+	* modules/FvwmScript/Makefile.am:
+	* modules/FvwmScript/Scripts/Makefile.am:
+	* modules/FvwmScript/Widgets/Makefile.am:
+	* modules/FvwmScroll/Makefile.am:
+	* modules/FvwmTabs/Makefile.am:
+	* modules/FvwmTaskBar/Makefile.am:
+	* modules/FvwmTheme/Makefile.am:
+	* modules/FvwmWharf/Makefile.am:
+	* modules/FvwmWinList/Makefile.am:
+	* modules/FvwmWindowMenu/Makefile.am:
+	Autotools:  INCLUDES macro deprecated.  Renamed to AM_CPPFLAGS
+
 2014-03-01  Thomas Funk  <t.funk@web.de>
 
 	* FvwmForm/FvwmForm-MultiMenuHelp:

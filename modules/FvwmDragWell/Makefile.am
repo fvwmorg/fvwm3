@@ -16,5 +16,5 @@ LDADD = -L$(top_builddir)/libs -lfvwm \
 	$(X_LIBS) $(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
 	-lm $(Xrender_LIBS) $(rsvg_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(Xrender_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(X_CFLAGS) $(Xrender_CFLAGS)
 

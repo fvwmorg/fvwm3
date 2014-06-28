@@ -21,4 +21,4 @@ LDADD = -L$(top_builddir)/libs -lfvwm $(readline_LIBS) $(X_EXTRA_LIBS)
 # FIXME:
 # Despite not using X functions explicitly, the code includes
 # fvwmlib.h, which *does* include X headers and xpm.h!
-INCLUDES = -I$(top_srcdir) $(readline_CFLAGS) $(xpm_CFLAGS) $(X_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(readline_CFLAGS) $(xpm_CFLAGS) $(X_CFLAGS)

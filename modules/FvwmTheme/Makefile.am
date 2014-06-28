@@ -11,5 +11,5 @@ FvwmTheme_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm  \
 	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir)  $(X_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)  $(X_CFLAGS)
 

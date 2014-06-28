@@ -34,7 +34,7 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 	$(GTK_LIBS) $(GDK_IMLIB_LIBS) \
 	$(GNOME_LIBDIR) $(GNOMEUI_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS) \
+AM_CPPFLAGS = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(GTK_CFLAGS) $(GDK_IMLIB_CFLAGS) $(GNOME_INCLUDEDIR)
 
 clean-local:
