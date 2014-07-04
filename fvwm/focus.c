@@ -443,7 +443,7 @@ static void set_focus_to_fwin(
  */
 static void warp_to_fvwm_window(
 	const exec_context_t *exc, int warp_x, int x_unit, int warp_y,
-	int y_unit)
+	int y_unit, int do_raise)
 {
 	int dx,dy;
 	int cx,cy;
@@ -538,7 +538,10 @@ static void warp_to_fvwm_window(
 	}
 	FWarpPointerUpdateEvpos(
 		exc->x.elast, dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
-	RaiseWindow(t, False);
+	if (do_raise)
+	{
+		RaiseWindow(t, False);
+	}
 	/* If the window is still not visible, make it visible! */
 	if (t->g.frame.x + t->g.frame.width  < 0 ||
 	    t->g.frame.y + t->g.frame.height < 0 ||
@@ -1213,18 +1216,37 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 {
 	int val1_unit, val2_unit, n;
 	int val1, val2;
+	int do_raise;
+	char *next;
+	char *token;
 
+	next = GetNextToken(action, &token);
+	if (StrEquals(token, "!raise"))
+	{
+		do_raise = 0;
+		action = next;
+	}
+	else if (StrEquals(token, "raise"))
+	{
+		do_raise = 1;
+		action = next;
+	}
+	else
+	{
+		do_raise = 1;
+	}
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 	if (exc->w.wcontext != C_UNMANAGED)
 	{
 		if (n == 2)
 		{
 			warp_to_fvwm_window(
-				exc, val1, val1_unit, val2, val2_unit);
+				exc, val1, val1_unit, val2, val2_unit,
+				do_raise);
 		}
 		else
 		{
-			warp_to_fvwm_window(exc, 0, 0, 0, 0);
+			warp_to_fvwm_window(exc, 0, 0, 0, 0, do_raise);
 		}
 	}
 	else

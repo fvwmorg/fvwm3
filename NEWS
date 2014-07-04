@@ -13,6 +13,7 @@ Changes in release 2.6.6 (not released yet)
     unmaximize a window without changing its size and position.
   - Windows shaded to a corner (NW, NE, SW, SE) are reduced to a
     small square.
+  - New option "!raise" to the WarpToWindow command.
 
 * Bug fixes:
 

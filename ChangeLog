@@ -1,3 +1,12 @@
+2014-07-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/ConfigFvwmDefaults:
+	Use "WarpToWindow !raise" in WindowListFunc.
+
+	* fvwm/focus.c (warp_to_fvwm_window):
+	(CMD_WarpToWindow):
+	Implement options "!raise" and "raise" for WarpToWindow
+
 2014-06-28  Thomas Adam <thomas@fvwm.org>
 	* Makefile.am:
 	* bin/Makefile.am:

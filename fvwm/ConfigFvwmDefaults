@@ -23,7 +23,7 @@ AddToFunc WindowListFunc
 + I Iconify off
 + I FlipFocus
 + I Raise
-+ I WarpToWindow 5p 5p
++ I WarpToWindow !raise 5p 5p
 
 # Needed by the ewmh support
 AddToFunc EWMHActivateWindowFunc

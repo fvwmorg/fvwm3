@@ -72,7 +72,7 @@ are executed when the flag is set/cleared.  Their default definitions are:</para
  + I <fvwmref cmd="Iconify"/> off
  + I <fvwmref cmd="FlipFocus"/>
  + I <fvwmref cmd="Raise"/>
- + I <fvwmref cmd="WarpToWindow"/> 5p 5p
+ + I <fvwmref cmd="WarpToWindow !raise"/> 5p 5p
 <fvwmref cmd="AddToFunc"/> UrgencyDoneFunc
  + I <fvwmref cmd="Nop"/>
 </programlisting>

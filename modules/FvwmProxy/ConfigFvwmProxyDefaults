@@ -15,7 +15,7 @@
 #+ I WindowId $w Iconify off
 #+ I WindowId $w FlipFocus
 #+ I WindowId $w Raise
-#+ I WindowId $w WarpToWindow 5p 5p
+#+ I WindowId $w WarpToWindow !raise 5p 5p
 
 #AddToFunc FvwmProxy_Mark
 #+ I SendToModule FvwmProxy mark $w

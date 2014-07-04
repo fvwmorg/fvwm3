@@ -13,6 +13,10 @@
 
 <cmdsynopsis>
 	<command>WarpToWindow</command
+	><group choice='opt'
+		><arg choice='plain'>!raise</arg
+		><arg choice='plain'>raise</arg
+	></group
 	><arg choice='plain'
 		><replaceable>x</replaceable
 		><optional>p</optional
@@ -23,7 +27,9 @@
 	></arg>
 </cmdsynopsis>
 
-<para>Warps the cursor to the associated window.  The parameters
+<para>Warps the cursor to the associated window and raises it
+(unless the option <fvwmopt cmd="WarpToWindow" opt="!raise"/> is
+present).  The parameters
 <replaceable>x</replaceable> and <replaceable>y</replaceable>
 default to percentage of window down and in from the upper left
 hand corner (or number of pixels down and in if
