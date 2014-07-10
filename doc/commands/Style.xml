@@ -1253,7 +1253,7 @@ windows.  To allow this kind of actions, use the
 style.  These styles may sometimes affect the initial placement
 and dimensions of new windows (depending on the application).  If
 windows are created at strange places, try either the
-<fvwmopt cmd="Style" opt="VariablePPosition"/> or <fvwmopt cmd="Style" opt="NoPPosition"/>
+<fvwmopt cmd="Style" opt="VariablePPosition"/> or <fvwmopt cmd="Style" opt="!UsePPosition"/>
 styles.  The
 <fvwmopt cmd="Style" opt="FixedPSize"/>
 style may screw up window dimensions for some applications.  Do Not
@@ -1748,7 +1748,7 @@ Style * ManualPlacementsHonorsStartsOnPageOff
 <section id="placement_policy_and_window_stacking">
 <title>Placement policy options and window stacking</title>
 
-<para><fvwmopt cmd="Style" opt="NoUsePPosition"/>
+<para><fvwmopt cmd="Style" opt="!UsePPosition"/>
 instructs fvwm to ignore the program specified position (PPosition
 hint) when adding new windows.  Using PPosition is required for
 some applications, but if you do not have one of those it's a real
@@ -1756,9 +1756,9 @@ headache.  Many programs set PPosition to something obnoxious like
 0,0 (upper left corner).
 Note: <emphasis>!UsePPosition</emphasis>
 is equivalent to the deprecated option
-<emphasis>NoPPosition</emphasis></para>
+<emphasis>!UsePPosition</emphasis></para>
 
-<para><fvwmopt cmd="Style" opt="NoUseUSPosition"/>
+<para><fvwmopt cmd="Style" opt="!UseUSPosition"/>
 works like
 <emphasis remap='I'>!UsePPosition</emphasis>
 but applies suppresses using the user specified position indicated

@@ -1,3 +1,9 @@
+2014-07-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* commands/Style.xml:
+	Replace NoPPosition with !UsePPosition and NoUsPosition with
+	!UseUSPosition.
+
 2014-07-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icccm.xml:
