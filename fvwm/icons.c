@@ -292,7 +292,7 @@ void GetIconPicture(FvwmWindow *fw, Bool no_icon_window)
 		icon_order[1] = 1;
 		icon_order[2] = 2;
 		icon_order[3] = 3;
-ICON_DBG((stderr,"ciw: hint order: file iwh iph '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: file iwh iph '%s'\n", fw->name.name));
 	}
 	else if (ICON_OVERRIDE_MODE(fw) == NO_ACTIVE_ICON_OVERRIDE)
 	{
@@ -305,7 +305,7 @@ ICON_DBG((stderr,"ciw: hint order: file iwh iph '%s'\n", fw->name));
 			icon_order[1] = 2;
 			icon_order[2] = 3;
 			icon_order[3] = 0;
-ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name.name));
 		}
 		else if (Scr.DefaultIcon &&
 			 fw->icon_bitmap_file == Scr.DefaultIcon)
@@ -316,7 +316,7 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
 			icon_order[1] = 2;
 			icon_order[2] = 3;
 			icon_order[3] = 0;
-ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name.name));
 		}
 		else
 		{
@@ -327,7 +327,7 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
 			icon_order[1] = 2;
 			icon_order[2] = 0;
 			icon_order[3] = 3;
-ICON_DBG((stderr,"ciw: hint order: iwh file iph '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh file iph '%s'\n", fw->name.name));
 		}
 	}
 	else
@@ -338,7 +338,7 @@ ICON_DBG((stderr,"ciw: hint order: iwh file iph '%s'\n", fw->name));
 		icon_order[1] = 2;
 		icon_order[2] = 3;
 		icon_order[3] = 0;
-ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name.name));
 	}
 
 	fw->icon_g.picture_w_g.width = 0;
@@ -358,7 +358,8 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
 			{
 				GetIconFromFile(fw);
 			}
-ICON_DBG((stderr,"ciw: file%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not", fw->name));
+ICON_DBG((stderr,"ciw: file%s used '%s'\n",
+	  (fw->icon_g.picture_w_g.height)?"":" not", fw->name.name));
 			break;
 		case 1:
 			/* Next, See if the app supplies its own icon window */
@@ -371,7 +372,8 @@ ICON_DBG((stderr,"ciw: file%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":"
 			{
 				GetIconWindow(fw);
 			}
-ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
+ICON_DBG((stderr,"ciw: iwh%s used '%s'\n",
+	  (fw->icon_g.picture_w_g.height)?"":" not",fw->name.name));
 			break;
 		case 2:
 			/* try an ewmh icon */
@@ -382,7 +384,8 @@ ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 					SET_USE_EWMH_ICON(fw, True);
 				}
 			}
-ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
+ICON_DBG((stderr,"ciw: inh%s used '%s'\n",
+	  (fw->icon_g.picture_w_g.height)?"":" not",fw->name.name));
 			break;
 		case 3:
 			/* Finally, try to get icon bitmap from the
@@ -392,7 +395,8 @@ ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 			{
 				GetIconBitmap(fw);
 			}
-ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
+ICON_DBG((stderr,"ciw: iph%s used '%s'\n",
+	  (fw->icon_g.picture_w_g.height)?"":" not",fw->name.name));
 			break;
 		default:
 			/* can't happen */
@@ -440,8 +444,9 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 			int force_centering = False;
 			int nrx, nry;
 
-			ICON_DBG((stderr,"ciw: Changing icon (%s) from %dx%d to"
-				  " %dx%d\n", fw->name,
+			ICON_DBG((stderr,
+				  "ciw: Changing icon (%s) from %dx%d to"
+				  " %dx%d\n", fw->name.name,
 				  fw->icon_g.picture_w_g.width,
 				  fw->icon_g.picture_w_g.height,
 				  newWidth, newHeight));
@@ -1544,13 +1549,15 @@ void ChangeIconPixmap(FvwmWindow *fw)
 
 	if (!IS_ICONIFIED(fw))
 	{
-		ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
+		ICON_DBG((stderr,"hpn: postpone icon change '%s'\n",
+			  fw->name.name));
 		/* update the icon later when application is iconified */
 		SET_HAS_ICON_CHANGED(fw, 1);
 	}
 	else if (IS_ICONIFIED(fw))
 	{
-		ICON_DBG((stderr,"hpn: applying new icon '%s'\n", fw->name));
+		ICON_DBG((stderr,"hpn: applying new icon '%s'\n",
+			  fw->name.name));
 		SET_ICONIFIED(fw, 0);
 		SET_ICON_UNMAPPED(fw, 0);
 		get_icon_geometry(fw, &g);

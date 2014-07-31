@@ -1,3 +1,10 @@
+2014-07-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/icons.c (GetIconPicture):
+	(ChangeIconPixmap):
+	* fvwm/events.c (HandlePropertyNotify):
+	fixed compile errors in ICON_DBG macros
+
 2014-07-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ConfigFvwmDefaults:
