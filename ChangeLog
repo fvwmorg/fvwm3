@@ -1,3 +1,8 @@
+2014-08-01  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/builtins.c (CMD_Beep):
+	removed debug code
+
 2014-07-31  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/icons.c (GetIconPicture):
