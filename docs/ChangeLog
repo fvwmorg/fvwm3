@@ -1,3 +1,8 @@
+2014-08-04  Dominik Vogt  <vogt@linux.vnet.ibm.com>
+
+	* FAQ: Whitespace cleanup; corrected a typo.
+	De-capitalize section headings.
+
 2013-01-02  Dan Espen  <despen@verizon.net>
 
 	* FAQ: Update for Wine question.
