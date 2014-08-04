@@ -182,6 +182,7 @@ Contents
      6.8  I just got a mouse with 57 buttons.  How do I make Fvwm
           use them?
      6.9  Why does fvwm change my X Cursor theme?
+     6.10 (This question has been renumbered to Q8.1).
 
 7. Hints and examples from the developers
 
@@ -215,7 +216,6 @@ Contents
      8.1  I'm having problems giving Wine windows focus.
      8.2  I use XMMS, but it ignores some window styles.
           Please refer to Q0.2.
-     8.3  !!!
 
 ======================================================================
                 0 - The most frequently asked question
@@ -2661,13 +2661,7 @@ your applications request.
 
 ----------------------------------------------------------------------
 
-6.10  I'm having problems giving Wine windows focus.
-
-A: Yep, known issue.  The ICCCM states that windows that take input
-should indicate so in their WM hints.  Wine windows don't do this.
-To work around this issue try:
-
-Style "*" Lenience
+6.10 (This question has been renumbered to Q8.1).
 
 ======================================================================
               7 - Hints and examples from the developers
@@ -3341,7 +3335,7 @@ Style "*" Lenience
 ----------------------------------------------------------------------
 
 ======================================================================
-              8 - Taming problematic Application Windows
+              8 - Taming problematic application windows
 ======================================================================
 
 8.1   I'm having problems giving Wine windows focus.
@@ -3353,12 +3347,3 @@ this.  To work around this issue try:
 Style "*" Lenience
 
 8.2   Please refer to Q0.2.
-
-8.3   Application XYZ does things like raising its window, switching
-      the active page or switching the input focus to make one of its
-      windows visible.  How can this be prevented?
-
-   Today there are numerous ways in which applications can do things
-   with their windows that the user may not want.  Fvwm can counter
-   many of them.
-!!!

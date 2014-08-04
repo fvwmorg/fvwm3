@@ -2,6 +2,10 @@
 
 	* FAQ: Whitespace cleanup; corrected a typo.
 	De-capitalize section headings.
+	* FAQ: New section 8 in the FAQ for questions about controlling
+	annoying applications.
+	(Q6.10): Renumbered to Q8.1
+	(Q8.2): Synonym for Q0.2.
 
 2013-01-02  Dan Espen  <despen@verizon.net>
 
