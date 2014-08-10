@@ -51,7 +51,7 @@ Unless you used configure options,
 
 * ${prefix}     is /usr/local
 * ${bindir}     is ${prefix}/bin
-* ${mandir}     is ${prefix}/man
+* ${mandir}     is ${prefix}/share/man or ${prefix}/man
 * ${libexecdir} is ${prefix}/libexec
 * ${datadir}    is ${prefix}/share
 * ${sysconfdir} is ${prefix}/etc
