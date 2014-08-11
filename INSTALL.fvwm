@@ -56,9 +56,10 @@ Unless you used configure options,
 * ${datadir}    is ${prefix}/share
 * ${sysconfdir} is ${prefix}/etc
 
-Thus the default locations are: /usr/local/bin, /usr/local/man/man1,
-/usr/local/libexec/fvwm/VERSION, and /usr/local/share/fvwm for the fvwm
-executables, man pages, modules, and configuration files, respectively.
+Thus the default locations are: /usr/local/bin, /usr/local/share/man/man1 or
+/usr/local/man/man1, /usr/local/libexec/fvwm/VERSION, and
+/usr/local/share/fvwm for the fvwm executables, man pages, modules, and
+configuration files, respectively.
 
 Note that by default, none of the executables are stripped when they're
 installed.  If you'd like them to be, run `make install-strip' instead
