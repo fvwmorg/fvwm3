@@ -188,7 +188,18 @@ static void set_win_configuration(WinData *win, FvwmPacketBody *body)
 	win->width = body->add_config_data.frame_width;
 	win->height = body->add_config_data.frame_height;
 	win->iconified =  IS_ICONIFIED(&(body->add_config_data));
-	win->state = (win == fvwm_focus_win) ? FOCUS_CONTEXT : PLAIN_CONTEXT;
+	if (win == fvwm_focus_win)
+	{
+		win->state = FOCUS_CONTEXT;
+	}
+	else if (win->iconified)
+	{
+		win->state = ICON_CONTEXT;
+	}
+	else
+	{
+		win->state = PLAIN_CONTEXT;
+	}
 	win->geometry_set = 1;
 	memcpy(&(win->flags), &(body->add_config_data.flags),
 		sizeof(win->flags));

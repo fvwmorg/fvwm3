@@ -1,3 +1,16 @@
+2014-08-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmIconMan/xmanager.c (set_win_iconified):
+	(add_win_state)
+	(draw_button):
+	(delete_windows_button):
+	* FvwmIconMan/readconfig.c (read_in_resources)
+	* FvwmIconMan/fvwm.c (set_win_configuration):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/FvwmIconMan.1.in:
+	introduce IconAndSelectButton and IconAndSelectColorset options in
+	FvwmIconMan
+
 2014-07-04  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmProxy/ConfigFvwmProxyDefaults:

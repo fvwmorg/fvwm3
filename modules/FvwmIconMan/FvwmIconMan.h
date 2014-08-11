@@ -100,6 +100,7 @@ typedef enum {
 	PLAIN_CONTEXT = 4,
 	TITLE_CONTEXT = 5,
 	ICON_CONTEXT = 6,
+	ICON_SELECT_CONTEXT = 7,
 	NUM_CONTEXTS
 } Contexts;
 
