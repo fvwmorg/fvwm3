@@ -1,3 +1,12 @@
+2014-08-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmConsole/FvwmConsole.c (main):
+	Use SetMessageMask to limit the messages fvwm sends to simple error
+	messages.
+	* FvwmConsole/FvwmConsole.c (server):
+	* FvwmConsole/FvwmConsole.h (M_PASS):
+	removed M_PASS in favour of M_ERROR
+
 2014-08-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIconMan/xmanager.c (set_win_iconified):

@@ -172,6 +172,8 @@ int main(int argc, char *argv[])
 		execvp(*eargv, eargv);
 		ErrMsg("exec");
 	}
+	SetMessageMask(Fd, M_END_CONFIG_INFO | M_ERROR);
+	SetMessageMask(Fd, M_EXTENDED_MSG);
 	/* tell fvwm we're running */
 	SendFinishedStartupNotification(Fd);
 
@@ -277,20 +279,16 @@ void server(void)
 				clean_up();
 				exit(0);
 			}
-			else
+			else if (packet->type == M_ERROR)
 			{
-				if (packet->type == M_PASS)
+				msglen = strlen((char *)&(packet->body[3]));
+				if (msglen > MAX_MESSAGE_SIZE-2)
 				{
-					msglen = strlen(
-						(char *)&(packet->body[3]));
-					if (msglen > MAX_MESSAGE_SIZE-2)
-					{
-						msglen = MAX_MESSAGE_SIZE-2;
-					}
-					fvwm_send(
-						Ns, (char *)&(packet->body[3]),
-						msglen, 0);
+					msglen = MAX_MESSAGE_SIZE-2;
 				}
+				fvwm_send(
+					Ns, (char *)&(packet->body[3]), msglen,
+					0);
 			}
 		}
 		if (FD_ISSET(Ns, &fdset))

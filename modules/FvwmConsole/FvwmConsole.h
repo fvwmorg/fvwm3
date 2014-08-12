@@ -30,9 +30,6 @@
 #define HISTSIZE 100    /* readline history file size */
 #define HISTFILE "/.FvwmConsole-History"
 
-/* #define M_PASS M_ERROR */
-#define M_PASS M_ERROR
-
 #define XTERM "xterm"
 
 /* message to client */

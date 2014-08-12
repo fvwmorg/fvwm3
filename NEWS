@@ -41,6 +41,7 @@ Changes in release 2.6.6 (not released yet)
   - Windows sometimes did not get expose events (i.e. did not
     redraw properly) if they were uncovered by moving a window
     above them.  This has been fixed.
+  - FvwmConsole now causes much less network traffic.
 
 -------------------------------------------------------------------
 Changes in release 2.6.5 (20-Apr-2012)
