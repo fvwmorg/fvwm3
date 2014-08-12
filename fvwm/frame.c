@@ -433,8 +433,11 @@ static void __frame_setup_window(
 	}
 	/* get things updated */
 	XFlush(dpy);
-	/* inform the modules of the change */
-	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+	if (is_moved || is_resized)
+	{
+		/* inform the modules of the change */
+		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+	}
 
 	return;
 }

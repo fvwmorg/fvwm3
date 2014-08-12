@@ -42,6 +42,8 @@ Changes in release 2.6.6 (not released yet)
     redraw properly) if they were uncovered by moving a window
     above them.  This has been fixed.
   - FvwmConsole now causes much less network traffic.
+  - Suppress bogus events sent to the modules when a window is
+    resized with the mouse.
 
 -------------------------------------------------------------------
 Changes in release 2.6.5 (20-Apr-2012)

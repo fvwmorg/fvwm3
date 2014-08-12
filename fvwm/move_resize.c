@@ -3999,6 +3999,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	while (!is_finished && bad_window != FW_W(fw))
 	{
 		int rc = 0;
+		int is_resized = False;
 
 		/* block until there is an interesting event */
 		while (rc != -1 &&
@@ -4149,6 +4150,7 @@ static Bool __resize_window(F_CMD_ARGS)
 					exc, x, y, &x_off, &y_off, drag, orig,
 					&xmotion, &ymotion, do_resize_opaque,
 					is_direction_fixed);
+				is_resized = True;
 				/* need to move the viewport */
 				HandlePaging(
 					&ev, dx, dy, &x, &y, &delta_x,
@@ -4167,6 +4169,7 @@ static Bool __resize_window(F_CMD_ARGS)
 					exc, x, y, &x_off, &y_off, drag, orig,
 					&xmotion, &ymotion, do_resize_opaque,
 					is_direction_fixed);
+				is_resized = True;
 			}
 			fForceRedraw = False;
 			is_done = True;
@@ -4210,7 +4213,15 @@ static Bool __resize_window(F_CMD_ARGS)
 			{
 				/* only do this with opaque resizes, (i.e. the
 				 * server is not grabbed) */
-				BroadcastConfig(M_CONFIGURE_WINDOW, fw);
+				if (is_resized == False)
+				{
+					BroadcastConfig(
+						M_CONFIGURE_WINDOW, fw);
+				}
+				else
+				{
+					/* event already broadcast */
+				}
 				FlushAllMessageQueues();
 			}
 		}

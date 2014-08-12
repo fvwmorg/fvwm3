@@ -1,3 +1,11 @@
+2014-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/frame.c (__frame_setup_window):
+	Only broadcast M_CONFIGURE_WINDOW when the window geometry changes.
+	* fvwm/move_resize.c (__resize_window):
+	Suppress duplicate M_CONFIGURE_WINDOW broadcasts when the window is
+	resized.
+
 2014-08-11  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* NEWS: Update for IconAndSelect... options in FvwmIconMan
