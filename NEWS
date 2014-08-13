@@ -2,7 +2,7 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in release 2.6.6 (not released yet)
+Changes in stable release 2.6.6 (not released yet)
 
 * New fvwm features:
 
@@ -35,7 +35,7 @@ Changes in release 2.6.6 (not released yet)
   - FvwmIconMan had problems displaying the hilight colour on some
     systems (64 bit issue?).
   - Globally active windows cannot take the focus if the style
-    forbids programs to take foxus themselves (stlye
+    forbids programs to take focus themselves (style
     !FPFocusByProgram).
   - Windows no longer jump from one position to the other which
     could happen in some cases with SnapAttraction.  Windows now
@@ -51,7 +51,7 @@ Changes in release 2.6.6 (not released yet)
     resized with the mouse.
 
 -------------------------------------------------------------------
-Changes in release 2.6.5 (20-Apr-2012)
+Changes in stable release 2.6.5 (20-Apr-2012)
 
 * New features:
 
