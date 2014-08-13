@@ -13,6 +13,11 @@ Changes in release 2.6.6 (not released yet)
   - Windows shaded to a corner (NW, NE, SW, SE) are reduced to a
     small square.
   - New option "!raise" to the WarpToWindow command.
+  - The new extended variables $[wa.x], $[wa.y], $[wa.width],
+    $[wa.height] can be used to get the geometry of the EWMH
+    working area, and $[dwa.x], $[dwa.y], $[dwa.width],
+    $[dwa.height] can be used to get the geometry of the EWMH
+    dynamic working area.
 
 * New module features:
 

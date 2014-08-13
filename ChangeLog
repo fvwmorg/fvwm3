@@ -1,5 +1,12 @@
 2014-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/expand.c (function_vars):
+	(extended_vars):
+	(expand_vars_extended):
+	New extended variables $[wa.x/y/width/height] and
+	$[dwa.x/y/width/height] that retrieve the geometry of the ewmh working
+	area or ewmh dynamic working area
+
 	* fvwm/frame.c (__frame_setup_window):
 	Only broadcast M_CONFIGURE_WINDOW when the window geometry changes.
 	* fvwm/move_resize.c (__resize_window):

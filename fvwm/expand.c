@@ -132,6 +132,16 @@ static char *function_vars[] =
 	"w.y",
 	"w.desk",
 	"w.layer",
+	/* ewmh working area */
+	"wa.height",
+	"wa.width",
+	"wa.x",
+	"wa.y",
+	/* ewmh dynamic working area */
+	"dwa.height",
+	"dwa.width",
+	"dwa.x",
+	"dwa.y",
 	NULL
 };
 
@@ -206,7 +216,17 @@ enum
 	VAR_W_X,
 	VAR_W_Y,
 	VAR_W_DESK,
-	VAR_W_LAYER
+	VAR_W_LAYER,
+	/* ewmh working area */
+	VAR_WA_HEIGHT,
+	VAR_WA_WIDTH,
+	VAR_WA_X,
+	VAR_WA_Y,
+	/* ewmh dynamic working area */
+	VAR_DWA_HEIGHT,
+	VAR_DWA_WIDTH,
+	VAR_DWA_X,
+	VAR_DWA_Y
 } extended_vars;
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -471,6 +491,38 @@ static signed int expand_vars_extended(
 	case VAR_VP_HEIGHT:
 		is_numeric = True;
 		val = Scr.MyDisplayHeight;
+		break;
+	case VAR_WA_HEIGHT:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_working_area.height;
+		break;
+	case VAR_WA_WIDTH:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_working_area.width;
+		break;
+	case VAR_WA_X:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_working_area.x;
+		break;
+	case VAR_WA_Y:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_working_area.y;
+		break;
+	case VAR_DWA_HEIGHT:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_dyn_working_area.height;
+		break;
+	case VAR_DWA_WIDTH:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_dyn_working_area.width;
+		break;
+	case VAR_DWA_X:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_dyn_working_area.x;
+		break;
+	case VAR_DWA_Y:
+		is_numeric = True;
+		val = Scr.Desktops->ewmh_dyn_working_area.y;
 		break;
 	case VAR_PAGE_NX:
 		is_numeric = True;

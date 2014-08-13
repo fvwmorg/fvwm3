@@ -1,3 +1,9 @@
+2014-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/expansion.xml:
+	document new variables $[wa.x/y/width/height] and
+	$[dwa.x/y/width/height]
+
 2014-07-10  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* commands/Style.xml:
