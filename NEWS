@@ -18,6 +18,10 @@ Changes in stable release 2.6.6 (not released yet)
     working area, and $[dwa.x], $[dwa.y], $[dwa.width],
     $[dwa.height] can be used to get the geometry of the EWMH
     dynamic working area.
+  - The Resize commands accept "wa" or "da" as a suffix of the
+    width or height value.  If present, the value is a percentage
+    of the width or height of the EWMH working area or the EWMH
+    dynamic working area.
 
 * New module features:
 

@@ -1,5 +1,8 @@
 2014-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* commands/Resize.xml:
+	Document new resize suffixes 'wa' and 'da'.
+
 	* fvwm/expansion.xml:
 	document new variables $[wa.x/y/width/height] and
 	$[dwa.x/y/width/height]

@@ -1,5 +1,10 @@
 2014-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/move_resize.c (GetResizeArguments)
+	(ParseOneResizeArgument):
+	new suffixes 'wa' and 'da' for resize arguments to reference the width
+	or height of the ewmh working area or ewmh synamic working area.
+
 	* fvwm/expand.c (function_vars):
 	(extended_vars):
 	(expand_vars_extended):

@@ -28,6 +28,8 @@
 				><group choice='plain'
 					><arg choice='plain'>p</arg
 					><arg choice='plain'>c</arg
+					><arg choice='plain'>wa</arg
+					><arg choice='plain'>da</arg
 				></group
 			></optional
 		></arg
@@ -65,7 +67,13 @@ is appended to one or both coordinates, in which case the location
 is specified in pixels.  With a
 '<fvwmopt cmd="Resize" opt="c"/>'
 suffix the unit defined by the client application (hence the c) is
-used.  So you can say</para>
+used.  With the suffix
+'<fvwmopt cmd="Resize" opt="wa"/>'
+the value is a percentage of the width or height size of the EWMH
+working area, and with the suffix
+'<fvwmopt cmd="Resize" opt="da"/>'
+it is a percentage of the width or height of the EWMH dynamic working
+area.  So you can say</para>
 
 <programlisting>Resize 80c 24c</programlisting>
 

@@ -585,8 +585,8 @@ int GetMoveArguments(
 }
 
 static int ParseOneResizeArgument(
-	char *arg, int scr_size, int base_size, int size_inc, int add_size,
-	int *ret_size)
+	char *arg, int scr_size, int wa_size, int dwa_size, int base_size,
+	int size_inc, int add_size, int *ret_size)
 {
 	float factor;
 	int val;
@@ -603,7 +603,19 @@ static int ParseOneResizeArgument(
 		/* do not change size */
 		return 1;
 	}
-	if (arg[cch-1] == 'p')
+	if (cch > 1 && arg[cch-2] == 'w' && arg[cch-1] == 'a')
+	{
+		/* ewmh working area */
+		factor = (float)wa_size / 100.0;
+		arg[cch-1] = '\0';
+	}
+	else if (cch > 1 && arg[cch-2] == 'd' && arg[cch-1] == 'a')
+	{
+		/* ewmh dynamic working area */
+		factor = (float)dwa_size / 100.0;
+		arg[cch-1] = '\0';
+	}
+	else if (arg[cch-1] == 'p')
 	{
 		factor = 1;
 		arg[cch-1] = '\0';
@@ -807,9 +819,15 @@ static int GetResizeArguments(
 
 	n = 0;
 	n += ParseOneResizeArgument(
-		s1, Scr.MyDisplayWidth, w_base, w_inc, w_add, pFinalW);
+		s1, Scr.MyDisplayWidth,
+		Scr.Desktops->ewmh_working_area.width,
+		Scr.Desktops->ewmh_dyn_working_area.width, w_base, w_inc,
+		w_add, pFinalW);
 	n += ParseOneResizeArgument(
-		s2, Scr.MyDisplayHeight, h_base, h_inc, h_add, pFinalH);
+		s2, Scr.MyDisplayHeight,
+		Scr.Desktops->ewmh_working_area.height,
+		Scr.Desktops->ewmh_dyn_working_area.height, h_base, h_inc,
+		h_add, pFinalH);
 	if (s1 != NULL)
 	{
 		free(s1);
