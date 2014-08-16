@@ -53,6 +53,8 @@ Changes in stable release 2.6.6 (not released yet)
   - FvwmConsole now causes much less network traffic.
   - Suppress bogus events sent to the modules when a window is
     resized with the mouse.
+  - Properly handle the has_ref_window_moved flag for ResizeMove and
+    ResizeMoveMaximize.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.5 (20-Apr-2012)

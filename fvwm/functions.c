@@ -633,7 +633,9 @@ static void __execute_function(
 				if (has_ref_window_moved &&
 				    (bif->func_t == F_ANIMATED_MOVE ||
 				     bif->func_t == F_MOVE ||
-				     bif->func_t == F_RESIZE))
+				     bif->func_t == F_RESIZE ||
+				     bif->func_t == F_RESIZEMOVE ||
+				     bif->func_t == F_RESIZEMOVE_MAXIMIZE))
 				{
 					dummy_w = PressedW;
 					PressedW = None;
