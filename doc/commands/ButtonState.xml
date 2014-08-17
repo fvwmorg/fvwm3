@@ -38,7 +38,10 @@ buttons are used.  The default is to use all four states:
 commands).  The
 <replaceable>bool</replaceable>
 argument after the key word controls if the designated state is
-used ("True") or not ("False").  The "ActiveUp" state cannot be
+used ("True") or not ("False").  The <replaceable>bool</replacement> flag
+is the same as other commands, and not limited to just "True" or "False";
+"Yes" and "No" may also be used.
+The "ActiveUp" state cannot be
 deactivated. If no arguments are provided or the given arguments
 are illegal, the default is restored.</para>
 
