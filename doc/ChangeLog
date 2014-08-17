@@ -1,3 +1,7 @@
+2014-08-17  Thomas Adam <thomas@fvwm.org>
+	* commands/ButtonState.xml:
+	Fix rendering glitch due to typos in syntax.
+
 2014-08-13  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* commands/Resize.xml:

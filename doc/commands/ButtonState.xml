@@ -29,10 +29,10 @@ The
 <emphasis remap='B'>ButtonState</emphasis>
 command controls which states of the window titles and title
 buttons are used.  The default is to use all four states:
-"ActiveUp>",
-"ActiveDown>",
-"InactiveUp>" and
-"InactiveDown>" (see
+"ActiveUp",
+"ActiveDown",
+"InactiveUp" and
+"InactiveDown" (see
 <fvwmref cmd="ButtonStyle"/> and
 <fvwmref cmd="TitleStyle"/>
 commands).  The
