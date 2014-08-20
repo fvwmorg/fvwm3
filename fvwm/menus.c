@@ -232,11 +232,7 @@ typedef struct mloop_static_info_t
 
 /* This global is saved and restored every time a function is called that
  * might modify them, so we can safely let it live outside a function. */
-static saved_pos_hints last_saved_pos_hints =
-{
-	{ False, False },
-	{ 0, 0, 0.0, 0.0, 0, 0, False, False, False, False }
-};
+static saved_pos_hints last_saved_pos_hints;
 
 /* structures for menus */
 static MenuInfo Menus;

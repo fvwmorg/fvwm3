@@ -1,3 +1,8 @@
+2014-08-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menus.c (last_saved_pos_hints): Do not initialize structure at
+	all, the old initialization was buggy anyway and wrote only zeros.
+
 2014-08-16  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/functions.c (__execute_function):
