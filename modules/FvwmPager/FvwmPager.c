@@ -1188,7 +1188,7 @@ void list_window_name(unsigned long *body,unsigned long type)
 	   && !(MiniIcons && t->mini_icon.picture)) {
 	if (t->PagerView)
 	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-	if (t->IconView);
+	if (t->IconView)
 	  XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
       }
       if (ShowBalloons && BalloonView)
@@ -1235,7 +1235,7 @@ void list_icon_name(unsigned long *body)
 	   && !(MiniIcons && t->mini_icon.picture)) {
 	if (t->PagerView)
 	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-	if (t->IconView);
+	if (t->IconView)
 	  XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
       }
     }
@@ -1262,7 +1262,7 @@ void list_mini_icon(unsigned long *body)
     if (MiniIcons && t->mini_icon.picture) {
       if (t->PagerView)
 	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-      if (t->IconView);
+      if (t->IconView)
 	XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
     }
   }
