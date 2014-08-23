@@ -42,8 +42,8 @@ argument.</para>
 
 <para>With just the parameter "forget" a maximized window reverts
 back into normal state but keeps its current maximized size.  This
-can be useful in conjunction with the commands <fvwmopt
-cmd="ResizeMaximize"/> and <fvwmopt cmd="ResizeMoveMaximize"/>.  If
+can be useful in conjunction with the commands
+<fvwmref cmd="ResizeMaximize"/> and <fvwmref cmd="ResizeMoveMaximize"/>.  If
 the window is not maximized, nothing happens.</para>
 
 <para>With the optional arguments

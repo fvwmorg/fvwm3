@@ -1,3 +1,9 @@
+2014-08-23  Thomas Adam <thomas@fvwm.org>
+	* commands/ButtonState.xml:
+	* commands/Maximize.xml:
+	Fix error in closing tag, and use correct tag for referring to other
+	commands.
+
 2014-08-17  Thomas Adam <thomas@fvwm.org>
 	* commands/ButtonState,xml:
 	Clarify that the "bool" option can be specified in more ways than just
