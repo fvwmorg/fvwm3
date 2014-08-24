@@ -748,11 +748,11 @@ static int GetResizeArguments(
 		}
 		else if (StrEquals(token, "direction"))
 		{
-			if (token == NULL)
+			tmp_token = PeekToken(naction, &naction);
+			if (tmp_token == NULL)
 			{
 				return 0;
 			}
-
 			*ret_dir = gravity_parse_dir_argument(
 					naction, &naction, DIR_NONE);
 			if (*ret_dir != DIR_NONE)
@@ -761,7 +761,6 @@ static int GetResizeArguments(
 			}
 			else if (*ret_dir == DIR_NONE)
 			{
-
 				tmp_token = PeekToken(naction, &naction);
 				if (tmp_token != NULL &&
 						StrEquals(tmp_token, "automatic"))

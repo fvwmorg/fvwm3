@@ -1,5 +1,8 @@
 2014-08-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/move_resize.c (GetResizeArguments):
+	code cleanup
+
 	* fvwm/virtual.c (get_page_arguments): Fix nodesklimity option of
 	GotoPage.
 
