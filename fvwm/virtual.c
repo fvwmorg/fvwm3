@@ -1559,7 +1559,7 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
 		{
 			limitdeskx = (0 ^ do_reverse);
 		}
-		else if (StrEquals(token, "nodesklimitx"))
+		else if (StrEquals(token, "nodesklimity"))
 		{
 			limitdesky = (0 ^ do_reverse);
 		}
