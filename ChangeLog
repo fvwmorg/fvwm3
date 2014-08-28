@@ -1,3 +1,9 @@
+2014-08-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/menus.c (get_menu_options):
+	Fixed negative coordinate handling of the "rectangle" menu command
+	option.
+
 2014-08-24  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/move_resize.c (GetResizeArguments):

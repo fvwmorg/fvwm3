@@ -7242,11 +7242,13 @@ char *get_menu_options(
 			y += sy;
 			if (flags & XNegative)
 			{
-				x = sx + sw - x - width;
+				/* x is negative */
+				x = sx + sw + x;
 			}
 			if (flags & YNegative)
 			{
-				y = sy + sh - y - height;
+				/* y is negative */
+				y = sy + sh + y;
 			}
 			pops->pos_hints.is_relative = False;
 			fRectangleContext = True;
