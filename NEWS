@@ -56,7 +56,7 @@ Changes in stable release 2.6.6 (not released yet)
   - Properly handle the has_ref_window_moved flag for ResizeMove and
     ResizeMoveMaximize.
   - Removed some unnecessary redraws in FvwmPager.
-  - The optin "NoDeskLimitY" option of the GotoPage command did
+  - The option "NoDeskLimitY" option of the GotoPage command did
     not work.
   - Negative coordinates in the "rectangle" option to the Menu
     commend did not work correctly.  This has been fixed.
