@@ -1,3 +1,8 @@
+2014-08-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmIconMan/globals.c:
+	add entry "iconandselect" and sort to match the "Contexts" enum
+
 2014-08-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmPager/FvwmPager.c (list_window_name, list_icon_name)

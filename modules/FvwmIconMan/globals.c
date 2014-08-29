@@ -25,13 +25,14 @@
 
 GlobalData globals;
 ContextDefaults contextDefaults[] = {
-	{ "plain", BUTTON_UP, { "black", "black" }, { "white", "gray"} },
+	{ "default", BUTTON_FLAT, { "black", "black"}, {"white", "gray"} },
 	{ "focus", BUTTON_UP, { "white", "gray" }, { "black", "black" } },
 	{ "select", BUTTON_FLAT, { "black", "black" }, { "white", "gray" } },
 	{ "focusandselect", BUTTON_FLAT, { "white", "gray" }, { "black", "black" } },
+	{ "plain", BUTTON_UP, { "black", "black" }, { "white", "gray"} },
 	{ "title", BUTTON_EDGEUP, { "black", "black"}, {"white", "gray"} },
 	{ "icon", BUTTON_FLAT, { "black", "black"}, {"white", "gray"} },
-	{ "default", BUTTON_FLAT, { "black", "black"}, {"white", "gray"} }
+	{ "iconandselect", BUTTON_FLAT, { "black", "black"}, {"white", "gray"} }
 };
 
 int fvwm_fd[2];
