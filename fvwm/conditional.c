@@ -2095,7 +2095,12 @@ void CMD_Test(F_CMD_ARGS)
 				}
 				char *pattern;
 				/* unfortunately, GetNextSimpleOption is
-				 * broken, does not accept quoted empty "" */
+				 * broken, does not accept quoted empty ""
+				 *
+				 * DV (2-Sep-2014):  It is *not* broken.  The
+				 * parsing functions never return empty tokens
+				 * by design.
+				 */
 				flags_ptr = GetNextSimpleOption(
 					flags_ptr, &pattern);
 				if (!value)
