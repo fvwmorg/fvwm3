@@ -1,3 +1,16 @@
+2014-09-02  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/bindings.c (active_modifiers):
+	* fvwm/bindings.h:
+	* fvwm/events.c (__handle_bpress_on_managed):
+	* fvwm/events.c (HandleButtonPress):
+	Update passive grabs tracking modifiers
+
+	In the case of GTK's link widget which doesn't handle passive grabs
+	following FVWM's window bindings (which assumes the underlying
+	application can handle a PointerReplay), update the grabs in this
+	context by always ungrabbing the button and grabbing it for modifiers
+	other than ALL_MODIFIERS.
+
 2014-09-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/builtins.c (CMD_Wait):
