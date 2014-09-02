@@ -2539,6 +2539,7 @@ void CMD_Wait(F_CMD_ARGS)
 			{
 				temp++;
 			}
+			free(wait_string);
 			wait_string = safestrdup(temp);
 			for (i = strlen(wait_string) - 1; i >= 0 &&
 				     isspace(wait_string[i]); i--)

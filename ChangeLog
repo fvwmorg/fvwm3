@@ -1,3 +1,8 @@
+2014-09-02  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/builtins.c (CMD_Wait):
+	fixed a memory leak
+
 2014-08-28  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/menus.c (get_menu_options):
