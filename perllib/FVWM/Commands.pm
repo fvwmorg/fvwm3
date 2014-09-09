@@ -4,8 +4,8 @@ package FVWM::Commands;
 
 use vars qw($VERS $TIME @LIST);
 
-$VERS = '2.5.28 (from cvs)';
-$TIME = 1237313570;
+$VERS = '2.6.6 (from cvs)';
+$TIME = 1410306754;
 
 @LIST = (
 	{
@@ -501,7 +501,19 @@ $TIME = 1237313570;
 		descr => q{Directories to search for images},
 	},
 	{
-		name => 'KeepRc',
+		name => 'InfoStoreAdd',
+		cursor => '',
+		window => 0,
+		descr => q{Adds an entry (key/value pairs) to the infostore},
+	},
+	{
+		name => 'InfoStoreRemove',
+		cursor => '',
+		window => 0,
+		descr => q{Removes an entry from the infostore},
+	},
+	{
+		name => '- KeepRc',
 		cursor => '',
 		window => 0,
 		descr => q{Do not modify the previous command return code},

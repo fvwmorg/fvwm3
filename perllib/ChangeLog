@@ -1,3 +1,7 @@
+2014-09-10  Thomas Adam  <thomas@fvwm.org>
+	* FVWM/Commands.pm:
+	Regenerate.
+
 2012-10-21  Dan Espen  <despen@verizon.net>
 
 	* FVWM/Tracker/GlobalConfig.pm: Patch from Philippe Grégoire.
