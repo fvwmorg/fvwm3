@@ -1,3 +1,9 @@
+2014-09-09  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/move_resize.c (GetResizeArguments):
+	Fix direction option parsing
+
+	Don't throw away additional options to the Direction command of Resize.
+
 2014-09-02  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/bindings.c (active_modifiers):
 	* fvwm/bindings.h:
