@@ -331,10 +331,10 @@ const func_t func_table[] =
 	/* - Directories to search for images */
 
 	CMD_ENT("infostoreadd", CMD_InfoStoreAdd, F_INFOSTOREADD, 0, 0),
-	/* Adds an entry (key/value pairs) to the infostore. */
+	/* - Adds an entry (key/value pairs) to the infostore */
 
 	CMD_ENT("infostoreremove", CMD_InfoStoreRemove, F_INFOSTOREREMOVE, 0, 0),
-	/* Removes an entry from the infostore. */
+	/* - Removes an entry from the infostore */
 
 	CMD_ENT(PRE_KEEPRC, CMD_KeepRc, F_KEEPRC, 0, 0),
 	/* KeepRc - Do not modify the previous command return code */

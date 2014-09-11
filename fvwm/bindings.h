@@ -20,7 +20,6 @@
 void update_key_bindings(void);
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);
 unsigned int GetUnusedModifiers(void);
-unsigned int active_modifiers(void);
 void print_bindings(void);
 
 #endif /* BINDINGS_H */

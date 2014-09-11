@@ -1,3 +1,10 @@
+2014-09-11  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/bindings.c (active_modifiers):
+	* fvwm/bindings.h:
+	* fvwm/events.c (__handle_bpress_on_managed):
+	* fvwm/events.c (HandleButtonPress):
+	Revert:  "Update passive grabs tracking modifiers"
+
 2014-09-09  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/move_resize.c (GetResizeArguments):
 	Cleanup temp variable handling

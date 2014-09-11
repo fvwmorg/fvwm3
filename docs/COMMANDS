@@ -1,4 +1,4 @@
-The recognized commands for fvwm 2.5.28 (from cvs) as of 17-Mar-2009:
+The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
 
   #                     - Comment line (ignored)
   *                     - Module configuration line (no space after asterisk)
@@ -82,7 +82,9 @@ The recognized commands for fvwm 2.5.28 (from cvs) as of 17-Mar-2009:
   IconPath              - (obsolete, use ImagePath instead)
   IgnoreModifiers       - Modifiers to ignore on mouse and key bindings
   ImagePath             - Directories to search for images
-  KeepRc                - Do not modify the previous command return code
+  InfoStoreAdd          - Adds an entry (key/value pairs) to the infostore
+  InfoStoreRemove       - Removes an entry from the infostore
+  - KeepRc              - Do not modify the previous command return code
   Key                   - Bind or unbind a key to an fvwm action
   KillModule            - Stops an fvwm module
   Layer                 - Change the layer of a window
