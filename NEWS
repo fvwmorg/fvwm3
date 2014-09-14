@@ -60,6 +60,8 @@ Changes in stable release 2.6.6 (not released yet)
     not work.
   - Negative coordinates in the "rectangle" option to the Menu
     commend did not work correctly.  This has been fixed.
+  - Removes a slight graphis problem whith the ResizeMaximize
+    command being invoked from a window button menu.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.5 (20-Apr-2012)
