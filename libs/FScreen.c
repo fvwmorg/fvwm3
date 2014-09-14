@@ -1263,16 +1263,10 @@ int FScreenParseGeometry(
 		{
 			if (rc & YNegative)
 			{
-#if 1 /*!!!*/
-				fprintf(stderr, "!!!yneg: y_return %d -> ", *y_return);
-#endif
 				*y_return -=
 					(screens[0].height -
 					 screens[scr].height -
 					 screens[scr].y_org);
-#if 1 /*!!!*/
-				fprintf(stderr, "%d\n", *y_return);
-#endif
 			}
 			else
 			{
