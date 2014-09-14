@@ -2830,7 +2830,7 @@ void FetchWmProtocols(FvwmWindow *tmp)
 
 void GetWindowSizeHintsWithCheck(
 	FvwmWindow *fw,
-	int do_reject_invalid_size_constrains_on_existing_window)
+	int do_reject_invalid_size_constraints_on_existing_window)
 {
 	long supplied = 0;
 	char *broken_cause ="";
@@ -3137,12 +3137,12 @@ void GetWindowSizeHintsWithCheck(
 #undef minAspectX
 #undef minAspectY
 	}
-	if (do_reject_invalid_size_constrains_on_existing_window)
+	if (do_reject_invalid_size_constraints_on_existing_window)
 	{
 		int is_valid;
 
 		is_valid = is_geometry_valid_with_new_hints(
-			&fw->g.frame, &new_hints);
+			&fw->g.normal, &new_hints);
 		if (is_valid && IS_MAXIMIZED(fw))
 		{
 			is_valid = is_geometry_valid_with_new_hints(
