@@ -1,3 +1,20 @@
+2014-09-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/add_window.c (GetWindowSizeHintsWithCheck):
+	(GetWindowSizeHints):
+	(is_geometry_valid_with_new_hints):
+	* fvwm/add_window.h (CaptureAllWindows):
+	Ignore new WmNormalHints if they would make the window's current
+	geometry (or its normal geomatry in case it is maximized) invalid.  In
+	that case, the hints are applied when the window generates a
+	ConfigureRequest event.
+
+2014-09-12  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/functions.c (__execute_function):
+	Treat resizemaximize command like resizemovemaximize
+
 2014-09-11  Thomas Adam  <thomas@fvwm.org>
 	* fvwm/bindings.c (active_modifiers):
 	* fvwm/bindings.h:
