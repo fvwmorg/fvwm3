@@ -1711,36 +1711,46 @@ static void __add_window_handle_x_resources(FvwmWindow *fw)
 }
 
 
-static int is_geometry_valid_with_new_hints(
+static int is_geometry_invalid_with_hints(
 	const rectangle *g, const XSizeHints *hints)
 {
-	int remainder;
-
 	if (hints->min_width > g->width)
 	{
-		return 0;
+		return 1;
 	}
 	else if (hints->min_height > g->height)
 	{
-		return 0;
+		return 2;
 	}
 	else if (hints->max_width < g->width)
 	{
-		return 0;
+		return 3;
 	}
 	else if (hints->max_height < g->height)
 	{
-		return 0;
+		return 4;
 	}
-	remainder = (g->width - hints->base_width) % hints->width_inc;
-	if (remainder != 0)
+	if (hints->width_inc > 0)
 	{
-		return 0;
+		int remainder;
+
+		remainder = (g->width - hints->base_width) %
+			hints->width_inc;
+		if (remainder != 0)
+		{
+			return 5;
+		}
 	}
-	remainder = (g->height - hints->base_height) % hints->height_inc;
-	if (remainder != 0)
+	if (hints->height_inc > 0)
 	{
-		return 0;
+		int remainder;
+
+		remainder = (g->height - hints->base_height) %
+			hints->height_inc;
+		if (remainder != 0)
+		{
+			return 6;
+		}
 	}
 	if (hints->flags & PAspect)
 	{
@@ -1749,18 +1759,18 @@ static int is_geometry_valid_with_new_hints(
 			(long)hints->min_aspect.x * (long)g->height)
 		{
 			/* aspect smaller than minimum aspect */
-			return 0;
+			return 7;
 		}
 		if (
 			(long)g->width * (long)hints->max_aspect.y >
 			(long)hints->max_aspect.x * (long)g->height)
 		{
 			/* aspect larger than maximum aspect */
-			return 0;
+			return 8;
 		}
 	}
 
-	return 1;
+	return 0;
 }
 
 /* ---------------------------- interface functions ------------------------ */
@@ -3139,23 +3149,28 @@ void GetWindowSizeHintsWithCheck(
 	}
 	if (do_reject_invalid_size_constraints_on_existing_window)
 	{
-		int is_valid;
+		int is_invalid;
+		rectangle g;
 
-		is_valid = is_geometry_valid_with_new_hints(
-			&fw->g.normal, &new_hints);
-		if (is_valid && IS_MAXIMIZED(fw))
+		gravity_get_naked_geometry(
+			fw->hints.win_gravity, fw, &g, &fw->g.normal);
+		is_invalid = is_geometry_invalid_with_hints(&g, &new_hints);
+		if (!is_invalid && IS_MAXIMIZED(fw))
 		{
-			is_valid = is_geometry_valid_with_new_hints(
-				&fw->g.normal, &new_hints);
+			gravity_get_naked_geometry(
+				fw->hints.win_gravity, fw, &g, &fw->g.max);
+			is_invalid = is_geometry_invalid_with_hints(
+				&g, &new_hints);
 		}
-		if (!is_valid)
+		if (is_invalid)
 		{
 			fvwm_msg(
-				WARN, "GetWindowSizeHints", "The hints have"
-				" been ignored because the window's current"
-				" size would have become invalid.  The new"
-				" hints will become active when the window"
-				" generates the next ConfigureRequest.\n");
+				WARN, "GetWindowSizeHints", "reason: %d:"
+				" The hints have been ignored because the"
+				" window's current size would have become"
+				" invalid.  The new hints will become active"
+				" when the window generates the next"
+				" ConfigureRequest.\n", is_invalid);
 			return;
 		}
 	}
