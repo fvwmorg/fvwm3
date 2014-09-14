@@ -3645,7 +3645,7 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 		 * Note that SET_HAS_NEW_WM_NORMAL_HINTS being set here to
 		 * true is still valid.
 		 */
-		GetWindowSizeHints(fw);
+		GetWindowSizeHintsWithCheck(fw, 1);
 		break;
 	default:
 		if (te->xproperty.atom == _XA_WM_PROTOCOLS)

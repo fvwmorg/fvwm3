@@ -61,7 +61,10 @@ FvwmWindow *AddWindow(
 	const char **ret_initial_map_command, const exec_context_t *exc,
 	FvwmWindow *ReuseWin, initial_window_options_t * win_opts);
 void GetWindowSizeHints(
-	FvwmWindow *);
+	FvwmWindow *fw);
+void GetWindowSizeHintsWithCheck(
+	FvwmWindow *fw,
+	int do_reject_invalid_size_constrains_on_existing_window);
 void free_window_names(
 	FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 void destroy_window(
