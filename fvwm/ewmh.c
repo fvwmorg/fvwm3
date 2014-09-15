@@ -308,29 +308,28 @@ ewmh_atom *get_ewmh_atom_by_name(
 
 ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name)
 {
-	Bool done = 0;
 	int i = 0;
 
-	while(!done && atom_list[i].name != EWMH_ATOM_LIST_END)
+	for (i = 0; atom_list[i].name != EWMH_ATOM_LIST_END; i++)
 	{
-		if (atom_list[i].name == list_name ||
-		    list_name == EWMH_ATOM_LIST_ALL)
+		ewmh_atom *item;
+
+		if (list_name != atom_list[i].name &&
+		    list_name != EWMH_ATOM_LIST_ALL)
 		{
-			ewmh_atom *list = atom_list[i].list;
-			while(list->name != NULL)
+			continue;
+		}
+		for (item = atom_list[i].list; item->name != NULL; item++)
+		{
+			if (atom == item->atom)
 			{
-				if (atom == list->atom)
-				{
-					return list;
-				}
-				list++;
-			}
-			if (atom_list[i].name == list_name)
-			{
-				return NULL;
+				return item;
 			}
 		}
-		i++;
+		if (list_name == atom_list[i].name)
+		{
+			return NULL;
+		}
 	}
 
 	return NULL;

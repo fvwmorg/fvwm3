@@ -3243,7 +3243,6 @@ void HandleMotionNotify(const evh_args_t *ea)
 
 void HandlePropertyNotify(const evh_args_t *ea)
 {
-	Bool OnThisPage = False;
 	Bool has_icon_changed = False;
 	Bool has_icon_pixmap_hint_changed = False;
 	Bool has_icon_window_hint_changed = False;
@@ -3258,6 +3257,14 @@ void HandlePropertyNotify(const evh_args_t *ea)
 
 	DBUG("HandlePropertyNotify", "Routine Entered");
 
+#if 1 /*!!!*/
+	{
+		char *name;
+
+		name = XGetAtomName(dpy, te->xproperty.atom);
+		fprintf(stderr, "%s: send_event %d, window 0x%lx, atom %lx '%s', time %ld, state %d\n", __func__, (int)te->xproperty.send_event, te->xproperty.window, te->xproperty.atom, name ? name : "(nil)", (long)te->xproperty.time, te->xproperty.state);
+	}
+#endif
 	if (te->xproperty.window == Scr.Root &&
 	    te->xproperty.state == PropertyNewValue &&
 	    (te->xproperty.atom == _XA_XSETROOT_ID ||
@@ -3274,6 +3281,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		/* update icon window with some alpha and tear-off menu */
 		FvwmWindow *t;
 
+#if 1 /*!!!*/
+fprintf(stderr, "background change\n");
+#endif
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
 			int cs;
@@ -3342,56 +3352,87 @@ void HandlePropertyNotify(const evh_args_t *ea)
 
 	if (!fw)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "no fw\n");
+#endif
 		return;
 	}
-	if (XGetGeometry(
-		    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
-		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth) == 0)
-	{
-		return;
-	}
-
-	/*
-	 * Make sure at least part of window is on this page
-	 * before giving it focus...
-	 */
-	OnThisPage = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
-
 	switch (te->xproperty.atom)
 	{
 	case XA_WM_TRANSIENT_FOR:
-		flush_property_notify(XA_WM_TRANSIENT_FOR, FW_W(fw));
+	{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_TRANSIENT_FOR\n");
+#endif
 		if (setup_transientfor(fw) == True)
 		{
 			RaiseWindow(fw, False);
 		}
 		break;
-
+	}
 	case XA_WM_NAME:
-		flush_property_notify(XA_WM_NAME, FW_W(fw));
+	{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME\n");
+#endif
+		int n;
+		int pos;
+
+		pos = check_for_another_property_notify(
+			te->xproperty.atom, FW_W(fw), &n);
+		if (pos > 0)
+		{
+			/* Another PropertyNotify for this atom is pending,
+			 * skip the current one. */
+			return;
+		}
+		if (XGetGeometry(
+			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			    (unsigned int*)&JunkWidth,
+			    (unsigned int*)&JunkHeight,
+			    (unsigned int*)&JunkBW,
+			    (unsigned int*)&JunkDepth) == 0)
+		{
+			/* Window does not exist anymore. */
+			return;
+		}
 		if (HAS_EWMH_WM_NAME(fw))
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME A\n");
+#endif
 			return;
 		}
 		FlocaleGetNameProperty(XGetWMName, dpy, FW_W(fw), &new_name);
 		if (new_name.name == NULL)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME B\n");
+#endif
 			FlocaleFreeNameProperty(&new_name);
 			return;
 		}
 		if (strlen(new_name.name) > MAX_WINDOW_NAME_LEN)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME C\n");
+#endif
 			/* limit to prevent hanging X server */
 			(new_name.name)[MAX_WINDOW_NAME_LEN] = 0;
 		}
 		if (fw->name.name && strcmp(new_name.name, fw->name.name) == 0)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME D\n");
+#endif
 			/* migo: some apps update their names every second */
 			/* griph: make sure we don't free the property if it
 			   is THE same name */
 			if (new_name.name != fw->name.name)
 			{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME E\n");
+#endif
 				FlocaleFreeNameProperty(&new_name);
 			}
 			return;
@@ -3402,6 +3443,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		SET_NAME_CHANGED(fw, 1);
 		if (fw->name.name == NULL)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME F\n");
+#endif
 			fw->name.name = NoName; /* must not happen */
 		}
 		setup_visible_name(fw, False);
@@ -3410,6 +3454,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		/* fix the name in the title bar */
 		if (!IS_ICONIFIED(fw))
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME G\n");
+#endif
 			border_draw_decorations(
 				fw, PART_TITLE, (Scr.Hilite == fw), True,
 				CLEAR_ALL, NULL, NULL);
@@ -3429,39 +3476,85 @@ void HandlePropertyNotify(const evh_args_t *ea)
 #endif
 )
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME H\n");
+#endif
 			fw->icon_name = fw->name;
 			setup_visible_name(fw, True);
 			BroadcastWindowIconNames(fw, False, True);
 			RedoIconName(fw);
 		}
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NAME I\n");
+#endif
 		break;
-
+	}
 	case XA_WM_ICON_NAME:
-		flush_property_notify(XA_WM_ICON_NAME, FW_W(fw));
+	{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME\n");
+#endif
+		int n;
+
+		int pos;
+
+		pos = check_for_another_property_notify(
+			te->xproperty.atom, FW_W(fw), &n);
+		if (pos > 0)
+		{
+			/* Another PropertyNotify for this atom is pending,
+			 * skip the current one. */
+			return;
+		}
+		if (XGetGeometry(
+			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			    (unsigned int*)&JunkWidth,
+			    (unsigned int*)&JunkHeight,
+			    (unsigned int*)&JunkBW,
+			    (unsigned int*)&JunkDepth) == 0)
+		{
+			/* Window does not exist anymore. */
+			return;
+		}
 		if (HAS_EWMH_WM_ICON_NAME(fw))
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME A\n");
+#endif
 			return;
 		}
 		FlocaleGetNameProperty(
 			XGetWMIconName, dpy, FW_W(fw), &new_name);
 		if (new_name.name == NULL)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME B\n");
+#endif
 			FlocaleFreeNameProperty(&new_name);
 			return;
 		}
 		if (new_name.name && strlen(new_name.name) > MAX_ICON_NAME_LEN)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME C\n");
+#endif
 			/* limit to prevent hanging X server */
 			(new_name.name)[MAX_ICON_NAME_LEN] = 0;
 		}
 		if (fw->icon_name.name &&
 			strcmp(new_name.name, fw->icon_name.name) == 0)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME D\n");
+#endif
 			/* migo: some apps update their names every second */
 			/* griph: make sure we don't free the property if it
 			   is THE same name */
 			if (new_name.name != fw->icon_name.name)
 			{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME E\n");
+#endif
 				FlocaleFreeNameProperty(&new_name);
 			}
 			return;
@@ -3472,6 +3565,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		SET_WAS_ICON_NAME_PROVIDED(fw, 1);
 		if (fw->icon_name.name == NULL)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME F\n");
+#endif
 			/* currently never happens */
 			fw->icon_name.name = fw->name.name;
 			SET_WAS_ICON_NAME_PROVIDED(fw, 0);
@@ -3480,10 +3576,37 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		BroadcastWindowIconNames(fw, False, True);
 		RedoIconName(fw);
 		EWMH_SetVisibleName(fw, True);
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_ICON_NAME G\n");
+#endif
 		break;
-
+	}
 	case XA_WM_HINTS:
-		flush_property_notify(XA_WM_HINTS, FW_W(fw));
+	{
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_HINTS \n");
+#endif
+		int n;
+		int pos;
+
+		pos = check_for_another_property_notify(
+			te->xproperty.atom, FW_W(fw), &n);
+		if (pos > 0)
+		{
+			/* Another PropertyNotify for this atom is pending,
+			 * skip the current one. */
+			return;
+		}
+		if (XGetGeometry(
+			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			    (unsigned int*)&JunkWidth,
+			    (unsigned int*)&JunkHeight,
+			    (unsigned int*)&JunkBW,
+			    (unsigned int*)&JunkDepth) == 0)
+		{
+			/* Window does not exist anymore. */
+			return;
+		}
 		/* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
 		 * the urgency flag is an ICCCM 2.0 addition to the WM_HINTS.
 		 */
@@ -3630,7 +3753,11 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 			exc_destroy_context(exc);
 		}
 		break;
+	}
 	case XA_WM_NORMAL_HINTS:
+#if 1 /*!!!*/
+fprintf(stderr, "XA_WM_NORMAL_HINTS \n");
+#endif
 		/* just mark wm normal hints as changed and look them up when
 		 * the next ConfigureRequest w/ x, y, width or height set
 		 * arrives. */
@@ -3650,16 +3777,34 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 	default:
 		if (te->xproperty.atom == _XA_WM_PROTOCOLS)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "_XA_WM_PROTOCOLS \n");
+#endif
 			FetchWmProtocols (fw);
 		}
 		else if (te->xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "_XA_WM_COLORMAP_WINDOWS\n");
+#endif
 			FetchWmColormapWindows (fw);    /* frees old data */
 			ReInstallActiveColormap();
 		}
 		else if (te->xproperty.atom == _XA_WM_STATE)
 		{
-			if (fw && OnThisPage && focus_is_focused(fw) &&
+			/*
+			 * Make sure at least part of window is on this page
+			 * before giving it focus...
+			 */
+			Bool is_on_this_page;
+
+#if 1 /*!!!*/
+fprintf(stderr, "_XA_WM_STATE\n");
+#endif
+			is_on_this_page = IsRectangleOnThisPage(
+				&(fw->g.frame), fw->Desk);
+			if (fw && is_on_this_page == True &&
+			    focus_is_focused(fw) &&
 			    FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(fw)))
 			{
 				/* refresh the focus - why? */
@@ -3668,6 +3813,9 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 		}
 		else
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "EWMH property notify?\n");
+#endif
 			EWMH_ProcessPropertyNotify(ea->exc);
 		}
 		break;
@@ -4175,6 +4323,9 @@ void dispatch_event(XEvent *e)
 		ea.exc = exc_create_context(
 			&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W |
 			ECC_WCONTEXT);
+#if 1 /*!!!*/
+		fprintf(stderr, "%s: event %d\n", __func__, e->type);
+#endif
 		(*event_group->jump_table[e->type - event_group->base])(&ea);
 		exc_destroy_context(ea.exc);
 	}
@@ -4543,6 +4694,7 @@ int flush_expose(Window w)
 	XEvent dummy;
 	int i=0;
 
+	/*!!!!implement maximum depth*/
 	while (FCheckTypedWindowEvent(dpy, w, Expose, &dummy))
 	{
 		i++;
@@ -4561,6 +4713,7 @@ int flush_accumulate_expose(Window w, XEvent *e)
 	int x2 = x1 + e->xexpose.width;
 	int y2 = y1 + e->xexpose.height;
 
+	/*!!!!implement maximum depth*/
 	while (FCheckTypedWindowEvent(dpy, w, Expose, &dummy))
 	{
 		x1 = min(x1, dummy.xexpose.x);
@@ -4589,6 +4742,7 @@ void handle_all_expose(void)
 
 	saved_event = fev_save_event();
 	FPending(dpy);
+	/*!!!!implement maximum depth*/
 	while (FCheckMaskEvent(dpy, ExposureMask, &evdummy))
 	{
 		dispatch_event(&evdummy);
@@ -4663,6 +4817,7 @@ int discard_events(long event_mask)
 	XEvent e;
 	int count;
 
+	/*!!!!implement maximum depth???*/
 	XSync(dpy, 0);
 	for (count = 0; FCheckMaskEvent(dpy, event_mask, &e); count++)
 	{
@@ -4679,6 +4834,7 @@ int discard_window_events(Window w, long event_mask)
 	XEvent e;
 	int count;
 
+	/*!!!!implement maximum depth???*/
 	XSync(dpy, 0);
 	for (count = 0; FCheckWindowEvent(dpy, w, event_mask, &e); count++)
 	{
@@ -4689,23 +4845,52 @@ int discard_window_events(Window w, long event_mask)
 }
 
 /* Similar function for certain types of PropertyNotify. */
-int flush_property_notify(Atom atom, Window w)
+int check_for_another_property_notify(
+	Atom atom, Window w, int *num_events_removed)
 {
-	XEvent e;
-	int count;
 	test_typed_window_event_args args;
+	XEvent e;
+	int pos;
 
-	count = 0;
+	*num_events_removed = 0;
 	XSync(dpy, 0);
 	args.w = w;
 	args.atom = atom;
 	args.event_type = PropertyNotify;
-
 	/* Get rid of the events. */
-	while (FCheckIfEvent(dpy, &e, test_typed_window_event, (XPointer)&args))
-		count++;
+	for (*num_events_removed = 0; 1; (*num_events_removed)++)
+	{
+		pos = FCheckPeekIfEventWithLimit(
+			dpy, &e, test_typed_window_event, (XPointer)&args,
+			200 /*!!!*/);
+		switch (pos)
+		{
+		case 1:
+		{
+			/* Strip leadind events from the queue. */
+			FNextEvent(dpy, &e);
+			/* keep going */
+			continue;
+		}
+		case 0:
+			/* No more events found. */
+			break;
+		default:
+			/* Event left, but not at the front of the queue. */
+			break;
+		}
+	}
+#if 1 /*!!!*/
+	{
+		char *name;
 
-	return count;
+		name = XGetAtomName(dpy, atom);
+		fprintf(stderr, "%s: flushed %d duplicate PropertyNotify of atom %ld '%s'\n", __func__, *num_events_removed, atom, name ? name : "(nil)");
+	}
+	fprintf(stderr, "%s: pos %d\n", __func__, pos);
+#endif
+
+	return pos;
 }
 
 /* Wait for all mouse buttons to be released

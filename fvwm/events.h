@@ -39,7 +39,8 @@ void SendConfigureNotify(
 void WaitForButtonsUp(Bool do_handle_expose);
 int discard_events(long event_mask);
 int discard_window_events(Window w, long event_mask);
-int flush_property_notify(Atom atom, Window w);
+int check_for_another_property_notify(
+	Atom atom, Window w, int *num_events_removed);
 void sync_server(int toggle);
 Bool is_resizing_event_pending(FvwmWindow *fw);
 void events_handle_configure_request(

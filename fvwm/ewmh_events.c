@@ -26,6 +26,7 @@
 #include "libs/FScreen.h"
 #include "libs/Strings.h"
 #include "fvwm.h"
+#include "externs.h"
 #include "execcontext.h"
 #include "functions.h"
 #include "misc.h"
@@ -1616,7 +1617,27 @@ void EWMH_ProcessPropertyNotify(const exec_context_t *exc)
 	{
 		if (ewmh_a->action != None)
 		{
-			flush_property_notify(ewmh_a->atom, FW_W(fw));
+			int n;
+			int pos;
+
+			pos = check_for_another_property_notify(
+				ev->xproperty.atom, FW_W(fw), &n);
+			if (pos > 0)
+			{
+				/* Another PropertyNotify for this atom is
+				 * pending, skip the current one. */
+				return;
+			}
+			if (XGetGeometry(
+				    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+				    (unsigned int*)&JunkWidth,
+				    (unsigned int*)&JunkHeight,
+				    (unsigned int*)&JunkBW,
+				    (unsigned int*)&JunkDepth) == 0)
+			{
+				/* Window does not exist anymore. */
+				return;
+			}
 			ewmh_a->action(fw, ev, NULL, 0);
 		}
 	}
