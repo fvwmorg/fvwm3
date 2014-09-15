@@ -66,6 +66,14 @@ Bool FCheckIfEvent(
 	XPointer arg);
 Bool FCheckMaskEvent(
 	Display *display, long event_mask, XEvent *event_return);
+/* Works like FCheckPeekIfEvent(), but only searches through the first
+ * max_num_events_to_check events that are already on the queue (0 = no limit).
+ * Returns the position of the event in the queue (1 = first event) or 0 if
+ * none is found.  If no event is found, the contents of *event are invalid. */
+int FCheckPeekIfEventWithLimit(
+	Display *display, XEvent *event_return,
+	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
+	XPointer arg, int max_num_events_to_check);
 Bool FCheckPeekIfEvent(
         Display *display, XEvent *event_return,
         Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
