@@ -1,5 +1,27 @@
 2014-09-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/ewmh_events.c (EWMH_ProcessPropertyNotify):
+	* fvwm/events.c (HandlePropertyNotify):
+	(check_for_another_property_notify):
+	* fvwm/events.h:
+	Rename flush_property_notify to check_for_another_property_notify and
+	use it everywhere.  The new function can be limited to looking for the
+	wanted PropertyNotify event only near the beginning of the queue.  This
+	prevents that flushing the queue recursively may take a long time if
+	the queue ist long.  Matching events at the start of the queue are
+	dropped, and if one is found further inside the queue, it's position is
+	returned without doing anything else
+
+	* libs/FEvent.h:
+	* libs/FEvent.c (struct fev_check_peek_args):
+	(fev_check_peek_pred):
+	(FCheckPeekIfEventWithLimit):
+	(FCheckPeekIfEvent):
+	New function FCheckPeekIfEventWithLimit(), use it from
+	FCheckPeekIfEvent
+
+2014-09-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* fvwm/frame.c (get_resize_decor_gravities_one_axis):
 	fix warnings
 
