@@ -169,7 +169,6 @@ static void get_resize_decor_gravities_one_axis(
 	frame_move_resize_mode axis_mode, direction_t neg_dir,
 	direction_t pos_dir, int is_moving)
 {
-
 	int title_grav;
 	int neg_grav;
 	int pos_grav;
@@ -207,7 +206,9 @@ static void get_resize_decor_gravities_one_axis(
 		ret_grav->client_grav = neg_grav;
 		break;
 	case FRAME_MR_DONT_DRAW:
+	default:
 		/* can not happen, just a dummy to keep -Wall happy */
+		ret_grav->client_grav = pos_grav;
 		break;
 	}
 	ret_grav->parent_grav = ret_grav->client_grav;

@@ -1,3 +1,8 @@
+2014-09-15  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/frame.c (get_resize_decor_gravities_one_axis):
+	fix warnings
+
 2014-09-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandlePropertyNotify):
