@@ -43,12 +43,8 @@ typedef struct
 {
 	Bool (*predicate) (Display *display, XEvent *event, XPointer arg);
 	XPointer arg;
-	/* The maximum number of events to check, or 0 for unlimited. */
-	int max_num_events;
-	/* Keeps track of the position in the event queue (1 = first event).
-	 * Also returns the position in the queue where the first matching
-	 * event was found or 0 if none was found. */
-	int event_count;
+	XEvent event;
+	Bool found;
 } fev_check_peek_args;
 
 /* ---------------------------- forward declarations ----------------------- */
@@ -117,23 +113,16 @@ static Bool fev_check_peek_pred(
 	Display *display, XEvent *event, XPointer arg)
 {
 	fev_check_peek_args *cpa = (fev_check_peek_args *)arg;
-	Bool is_match;
 
-	is_match = cpa->predicate(display, event, cpa->arg);
-	if (is_match == True)
+	if (cpa->found == True)
 	{
-		/* Found a matching event, stop looking. */
-		return True;
+		return False;
 	}
-	cpa->event_count++;
-	if (cpa->event_count == cpa->max_num_events)
+	cpa->found = cpa->predicate(display, event, cpa->arg);
+	if (cpa->found == True)
 	{
-		/* Not found within the given limit, give up and return a
-		 * random event. */
-		cpa->event_count = 0;
-		return True;
+		cpa->event = *event;
 	}
-	/* Otherwise keep looking. */
 
 	return False;
 }
@@ -346,50 +335,25 @@ Bool FCheckMaskEvent(
 	return rc;
 }
 
-int FCheckPeekIfEventWithLimit(
-	Display *display, XEvent *event_return,
-	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
-	XPointer arg, int max_num_events_to_check)
-{
-	fev_check_peek_args pred_args;
-	int qlen;
-
-	qlen = QLength(display);
-	if (qlen == 0)
-	{
-		/* input queue is empty, no match */
-		return 0;
-	}
-	pred_args.predicate = predicate;
-	pred_args.arg = arg;
-	pred_args.max_num_events = max_num_events_to_check;
-	pred_args.event_count = 0;
-	if (max_num_events_to_check > 0 && max_num_events_to_check <= qlen)
-	{
-		pred_args.max_num_events = max_num_events_to_check;
-	}
-	else
-	{
-		pred_args.max_num_events = qlen;
-	}
-	FPeekIfEvent(
-		display, event_return, fev_check_peek_pred,
-		(char *)&pred_args);
-
-	return pred_args.event_count;
-}
-
 Bool FCheckPeekIfEvent(
 	Display *display, XEvent *event_return,
 	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
 	XPointer arg)
 {
-	int rc;
+	XEvent dummy;
+	fev_check_peek_args cpa;
 
-	rc = FCheckPeekIfEventWithLimit(
-		display, event_return, predicate, arg, 0);
+	cpa.predicate = predicate;
+	cpa.arg = arg;
+	cpa.found = False;
+	XCheckIfEvent(display, &dummy, fev_check_peek_pred, (char *)&cpa);
+	if (cpa.found == True)
+	{
+		*event_return = cpa.event;
+		fev_update_last_timestamp(event_return);
+	}
 
-	return (rc > 0) ? 1 : 0;
+	return cpa.found;
 }
 
 Bool FCheckTypedEvent(
