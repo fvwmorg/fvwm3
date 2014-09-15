@@ -113,6 +113,8 @@
 
 #define DEBUG_GLOBALLY_ACTIVE 1
 
+#define NUM_EVENTS_TO_PEEK 200
+
 /* ---------------------------- local macros ------------------------------- */
 
 /* ---------------------------- imports ------------------------------------ */
@@ -3243,7 +3245,6 @@ void HandleMotionNotify(const evh_args_t *ea)
 
 void HandlePropertyNotify(const evh_args_t *ea)
 {
-	Bool OnThisPage = False;
 	Bool has_icon_changed = False;
 	Bool has_icon_pixmap_hint_changed = False;
 	Bool has_icon_window_hint_changed = False;
@@ -3344,32 +3345,39 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	{
 		return;
 	}
-	if (XGetGeometry(
-		    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
-		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth) == 0)
-	{
-		return;
-	}
-
-	/*
-	 * Make sure at least part of window is on this page
-	 * before giving it focus...
-	 */
-	OnThisPage = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
-
 	switch (te->xproperty.atom)
 	{
 	case XA_WM_TRANSIENT_FOR:
-		flush_property_notify(XA_WM_TRANSIENT_FOR, FW_W(fw));
+	{
 		if (setup_transientfor(fw) == True)
 		{
 			RaiseWindow(fw, False);
 		}
 		break;
-
+	}
 	case XA_WM_NAME:
-		flush_property_notify(XA_WM_NAME, FW_W(fw));
+	{
+		int n;
+		int pos;
+
+		pos = check_for_another_property_notify(
+			te->xproperty.atom, FW_W(fw), &n);
+		if (pos > 0)
+		{
+			/* Another PropertyNotify for this atom is pending,
+			 * skip the current one. */
+			return;
+		}
+		if (XGetGeometry(
+			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			    (unsigned int*)&JunkWidth,
+			    (unsigned int*)&JunkHeight,
+			    (unsigned int*)&JunkBW,
+			    (unsigned int*)&JunkDepth) == 0)
+		{
+			/* Window does not exist anymore. */
+			return;
+		}
 		if (HAS_EWMH_WM_NAME(fw))
 		{
 			return;
@@ -3435,9 +3443,30 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			RedoIconName(fw);
 		}
 		break;
-
+	}
 	case XA_WM_ICON_NAME:
-		flush_property_notify(XA_WM_ICON_NAME, FW_W(fw));
+	{
+		int n;
+		int pos;
+
+		pos = check_for_another_property_notify(
+			te->xproperty.atom, FW_W(fw), &n);
+		if (pos > 0)
+		{
+			/* Another PropertyNotify for this atom is pending,
+			 * skip the current one. */
+			return;
+		}
+		if (XGetGeometry(
+			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			    (unsigned int*)&JunkWidth,
+			    (unsigned int*)&JunkHeight,
+			    (unsigned int*)&JunkBW,
+			    (unsigned int*)&JunkDepth) == 0)
+		{
+			/* Window does not exist anymore. */
+			return;
+		}
 		if (HAS_EWMH_WM_ICON_NAME(fw))
 		{
 			return;
@@ -3481,9 +3510,30 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		RedoIconName(fw);
 		EWMH_SetVisibleName(fw, True);
 		break;
-
+	}
 	case XA_WM_HINTS:
-		flush_property_notify(XA_WM_HINTS, FW_W(fw));
+	{
+		int n;
+		int pos;
+
+		pos = check_for_another_property_notify(
+			te->xproperty.atom, FW_W(fw), &n);
+		if (pos > 0)
+		{
+			/* Another PropertyNotify for this atom is pending,
+			 * skip the current one. */
+			return;
+		}
+		if (XGetGeometry(
+			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			    (unsigned int*)&JunkWidth,
+			    (unsigned int*)&JunkHeight,
+			    (unsigned int*)&JunkBW,
+			    (unsigned int*)&JunkDepth) == 0)
+		{
+			/* Window does not exist anymore. */
+			return;
+		}
 		/* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
 		 * the urgency flag is an ICCCM 2.0 addition to the WM_HINTS.
 		 */
@@ -3630,6 +3680,7 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 			exc_destroy_context(exc);
 		}
 		break;
+	}
 	case XA_WM_NORMAL_HINTS:
 		/* just mark wm normal hints as changed and look them up when
 		 * the next ConfigureRequest w/ x, y, width or height set
@@ -3645,7 +3696,7 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 		 * Note that SET_HAS_NEW_WM_NORMAL_HINTS being set here to
 		 * true is still valid.
 		 */
-		GetWindowSizeHints(fw);
+		GetWindowSizeHintsWithCheck(fw, 1);
 		break;
 	default:
 		if (te->xproperty.atom == _XA_WM_PROTOCOLS)
@@ -3659,7 +3710,16 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 		}
 		else if (te->xproperty.atom == _XA_WM_STATE)
 		{
-			if (fw && OnThisPage && focus_is_focused(fw) &&
+			/*
+			 * Make sure at least part of window is on this page
+			 * before giving it focus...
+			 */
+			Bool is_on_this_page;
+
+			is_on_this_page = IsRectangleOnThisPage(
+				&(fw->g.frame), fw->Desk);
+			if (fw && is_on_this_page == True &&
+			    focus_is_focused(fw) &&
 			    FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(fw)))
 			{
 				/* refresh the focus - why? */
@@ -4689,23 +4749,43 @@ int discard_window_events(Window w, long event_mask)
 }
 
 /* Similar function for certain types of PropertyNotify. */
-int flush_property_notify(Atom atom, Window w)
+int check_for_another_property_notify(
+	Atom atom, Window w, int *num_events_removed)
 {
-	XEvent e;
-	int count;
 	test_typed_window_event_args args;
+	XEvent e;
+	int pos;
 
-	count = 0;
+	*num_events_removed = 0;
 	XSync(dpy, 0);
 	args.w = w;
 	args.atom = atom;
 	args.event_type = PropertyNotify;
-
 	/* Get rid of the events. */
-	while (FCheckIfEvent(dpy, &e, test_typed_window_event, (XPointer)&args))
-		count++;
+	for (*num_events_removed = 0; 1; (*num_events_removed)++)
+	{
+		pos = FCheckPeekIfEventWithLimit(
+			dpy, &e, test_typed_window_event, (XPointer)&args,
+			NUM_EVENTS_TO_PEEK);
+		switch (pos)
+		{
+		case 1:
+		{
+			/* Strip leadind events from the queue. */
+			FNextEvent(dpy, &e);
+			/* keep going */
+			continue;
+		}
+		case 0:
+			/* No more events found. */
+			break;
+		default:
+			/* Event left, but not at the front of the queue. */
+			break;
+		}
+	}
 
-	return count;
+	return pos;
 }
 
 /* Wait for all mouse buttons to be released
