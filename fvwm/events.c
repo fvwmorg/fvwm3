@@ -4755,6 +4755,7 @@ int check_for_another_property_notify(
 	test_typed_window_event_args args;
 	XEvent e;
 	int pos;
+	int do_loop;
 
 	*num_events_removed = 0;
 	XSync(dpy, 0);
@@ -4762,7 +4763,9 @@ int check_for_another_property_notify(
 	args.atom = atom;
 	args.event_type = PropertyNotify;
 	/* Get rid of the events. */
-	for (*num_events_removed = 0; 1; (*num_events_removed)++)
+	for (
+		*num_events_removed = 0, do_loop = 1; do_loop;
+		(*num_events_removed)++)
 	{
 		pos = FCheckPeekIfEventWithLimit(
 			dpy, &e, test_typed_window_event, (XPointer)&args,
@@ -4778,9 +4781,11 @@ int check_for_another_property_notify(
 		}
 		case 0:
 			/* No more events found. */
+			do_loop = 0;
 			break;
 		default:
 			/* Event left, but not at the front of the queue. */
+			do_loop = 0;
 			break;
 		}
 	}
