@@ -2849,16 +2849,6 @@ void GetWindowSizeHintsWithCheck(
 	Status rc;
 
 	new_hints = fw->hints;
-	orig_hints.width_inc = 1;
-	orig_hints.height_inc = 1;
-	if (fw->orig_hints.width_inc <= 0)
-	{
-		fw->orig_hints.width_inc = 1;
-	}
-	if (fw->orig_hints.height_inc <= 0)
-	{
-		fw->orig_hints.height_inc = 1;
-	}
 	rc = XGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
 	if (rc == 0)
 	{
@@ -3179,13 +3169,15 @@ void GetWindowSizeHintsWithCheck(
 				" invalid.  The new hints will become active"
 				" when the window generates the next"
 				" ConfigureRequest.\n", is_invalid);
-			return;
 		}
+		broken_cause = "";
 	}
-	fw->hints = new_hints;
-	fw->orig_hints.width_inc = orig_hints.width_inc;
-	fw->orig_hints.height_inc = orig_hints.height_inc;
-
+	else
+	{
+		fw->hints = new_hints;
+		fw->orig_hints.width_inc = orig_hints.width_inc;
+		fw->orig_hints.height_inc = orig_hints.height_inc;
+	}
 	if (*broken_cause != 0)
 	{
 		fvwm_msg(
@@ -3211,6 +3203,15 @@ void GetWindowSizeHintsWithCheck(
 			orig_hints.base_width, orig_hints.base_height,
 			orig_hints.win_gravity);
 		fvwm_msg_report_app();
+	}
+	/* final safety net */
+	if (fw->orig_hints.width_inc <= 0)
+	{
+		fw->orig_hints.width_inc = 1;
+	}
+	if (fw->orig_hints.height_inc <= 0)
+	{
+		fw->orig_hints.height_inc = 1;
 	}
 
 	return;
