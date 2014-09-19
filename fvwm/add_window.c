@@ -2851,6 +2851,14 @@ void GetWindowSizeHintsWithCheck(
 	new_hints = fw->hints;
 	orig_hints.width_inc = 1;
 	orig_hints.height_inc = 1;
+	if (fw->orig_hints.width_inc <= 0)
+	{
+		fw->orig_hints.width_inc = 1;
+	}
+	if (fw->orig_hints.height_inc <= 0)
+	{
+		fw->orig_hints.height_inc = 1;
+	}
 	rc = XGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
 	if (rc == 0)
 	{
