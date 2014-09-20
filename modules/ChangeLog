@@ -1,3 +1,19 @@
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmDragWell/fvwmDragWell.c (veryLongLoop):
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmIconMan/x.c (xevent_loop):
+	* FvwmIconBox/FvwmIconBox.c (Loop):
+	* FvwmIdent/FvwmIdent.c (ProcessXEvent):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmPager/x_pager.c (DispatchEvent):
+	* FvwmScroll/GrabWindow.c (LoopOnEvents):
+	* FvwmScript/FvwmScript.c (ReadXServer):
+	* FvwmTaskBar/FvwmTaskBar.c (HandleEvents):
+	* FvwmWinList/FvwmWinList.c (LoopOnEvents):
+	* FvwmButtons/FvwmButtons.c (Loop):
+	Use fev_sanitise_configure_notify()
+
 2014-08-29  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmIconMan/globals.c:

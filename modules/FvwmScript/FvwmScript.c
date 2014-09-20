@@ -954,9 +954,11 @@ void ReadXServer (void)
     {
       Bool moved = False;
 
+      fev_sanitise_configure_notify(&event);
       moved = event.xconfigure.send_event;
       while (FCheckTypedEvent(dpy, ConfigureNotify, &event))
       {
+	fev_sanitise_configure_notify(&event);
 	/* check for movement */
 	if (event.xconfigure.send_event)
 	  moved = True;

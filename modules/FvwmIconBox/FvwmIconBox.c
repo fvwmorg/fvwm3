@@ -402,6 +402,7 @@ void Loop(void)
 		break;
 
 	case ConfigureNotify:
+	      fev_sanitise_configure_notify(&Event);
 	      if (Event.xconfigure.window == icon_win &&
 		  !CSET_IS_TRANSPARENT(colorset))
 	      {

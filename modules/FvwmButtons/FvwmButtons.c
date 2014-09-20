@@ -1167,11 +1167,13 @@ void Loop(void)
 	unsigned int depth, tw, th, border_width;
 	Window root;
 
+	fev_sanitise_configure_notify(&Event);
 	while (FCheckTypedWindowEvent(Dpy, MyWindow, ConfigureNotify, &event))
 	{
 	  if (!event.xconfigure.send_event &&
 	      Event.xconfigure.window != MyWindow)
 	    continue;
+	  fev_sanitise_configure_notify(&event);
 	  Event.xconfigure.x = event.xconfigure.x;
 	  Event.xconfigure.y = event.xconfigure.y;
 	  Event.xconfigure.send_event = True;

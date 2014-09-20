@@ -180,22 +180,41 @@ void HandleScrollDone(void)
 	do_scroll(0, 0, True, True);
 }
 
+typedef struct
+{
+	int event_type;
+	XEvent *ret_last_event;
+} _weed_window_events_args;
+
+static int _pred_weed_window_events(
+	Display *display, XEvent *current_event, XPointer arg)
+{
+	_weed_window_events_args *args = (_weed_window_events_args *)arg;
+
+	if (current_event->type == args->event_type)
+	{
+		if (args->ret_last_event != NULL)
+		{
+			*args->ret_last_event = *current_event;
+		}
+
+		return 1;
+	}
+
+	return 0;
+}
+
 /* discard certain events on a window */
 static void discard_events(long event_type, Window w, XEvent *last_ev)
 {
-  XEvent e;
+	_weed_window_events_args args;
 
-  XSync(dpy, 0);
-  while (FCheckTypedWindowEvent(dpy, w, event_type, &e))
-  {
-    /* do nothing */
-    if (last_ev)
-    {
-      memcpy(last_ev, &e, sizeof(XEvent));
-    }
-  }
+	XSync(dpy, 0);
+	args.event_type = event_type;
+	args.ret_last_event = last_ev;
+	FWeedIfWindowEvents(dpy, w, _pred_weed_window_events, (XPointer)&args);
 
-  return;
+	return;
 }
 
 /*
@@ -1041,8 +1060,10 @@ void DispatchEvent(XEvent *Event)
       UnmapBalloonWindow();
     break;
   case ConfigureNotify:
+    fev_sanitise_configure_notify(Event);
     w = Event->xconfigure.window;
     discard_events(ConfigureNotify, Event->xconfigure.window, Event);
+    fev_sanitise_configure_notify(Event);
     if (w != icon_win)
     {
       /* icon_win is not handled here */

@@ -92,9 +92,11 @@ void ReadXServer (void)
       {
 	      XEvent tmpe;
 
+	      fev_sanitise_configure_notify(&event);
 	      while (FCheckTypedWindowEvent(
 		      dpy, CF.frame, ConfigureNotify, &tmpe))
 	      {
+		      fev_sanitise_configure_notify(&tmpe);
 		      if (!tmpe.xconfigure.send_event)
 			      continue;
 		      event.xconfigure.x = tmpe.xconfigure.x;

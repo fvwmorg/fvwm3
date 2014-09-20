@@ -954,6 +954,7 @@ void LoopOnEvents(void)
 	{
 	  XEvent event;
 
+	  fev_sanitise_configure_notify(&Event);
 	/* Opaque moves cause lots of these to be sent which causes flickering
 	 * It's better to miss out on intermediate steps than to do them all
 	 * and take too long. Look down the event queue and do the last one */
@@ -964,6 +965,7 @@ void LoopOnEvents(void)
 	     * If it is false it comes from the Xserver and is bogus */
 	    if (!event.xconfigure.send_event)
 	      continue;
+	    fev_sanitise_configure_notify(&event);
 	    Event.xconfigure.x = event.xconfigure.x;
 	    Event.xconfigure.y = event.xconfigure.y;
 	    Event.xconfigure.send_event = True;

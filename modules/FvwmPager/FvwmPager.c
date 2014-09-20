@@ -176,6 +176,9 @@ int main(int argc, char **argv)
 
   FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
 
+  /* Tell the FEvent module an event type that is not used by fvwm. */
+  fev_init_invalid_event_type(KeymapNotify);
+
   /* Save our program  name - for error messages */
   MyName = GetFileNameFromPath(argv[0]);
 
