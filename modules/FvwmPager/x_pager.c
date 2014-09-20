@@ -1060,10 +1060,10 @@ void DispatchEvent(XEvent *Event)
       UnmapBalloonWindow();
     break;
   case ConfigureNotify:
-    fev_sanitise_configure_notify(Event);
+    fev_sanitise_configure_notify(&Event->xconfigure);
     w = Event->xconfigure.window;
     discard_events(ConfigureNotify, Event->xconfigure.window, Event);
-    fev_sanitise_configure_notify(Event);
+    fev_sanitise_configure_notify(&Event->xconfigure);
     if (w != icon_win)
     {
       /* icon_win is not handled here */

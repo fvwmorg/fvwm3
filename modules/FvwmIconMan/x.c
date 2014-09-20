@@ -224,7 +224,7 @@ void xevent_loop (void)
 
     if (theEvent.type == ConfigureNotify)
     {
-	    fev_sanitise_configure_notify(&theEvent);
+	    fev_sanitise_configure_notify(&theEvent.xconfigure);
     }
     man = find_windows_manager (theEvent.xany.window);
     if (!man && theEvent.type == ConfigureNotify)
@@ -377,7 +377,7 @@ void xevent_loop (void)
       while (FPending(theDisplay) &&
 	     FCheckTypedEvent(theDisplay, ConfigureNotify, &theEvent))
       {
-	fev_sanitise_configure_notify(&theEvent);
+	fev_sanitise_configure_notify(&theEvent.xconfigure);
 	saveEvent = theEvent;
 	/* check for movement on all events */
 	if (theEvent.xconfigure.send_event)

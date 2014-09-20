@@ -74,12 +74,8 @@ void fev_get_last_event(XEvent *ev);
 
 /* Make sure the values in the event are in the defined range (e.g. x is and
  * int, but the protocol uses only a 16 bit signed integer. */
-void fev_sanitise_configure_request(XConfigureRequestEvent *event);
-
-/* Same but for ConfigureNotify.  It's actually the same function as the
- * event structures are similar. */
-#define fev_sanitise_configure_notify(pe) \
-	fev_sanitise_configure_request((XConfigureRequestEvent *)(pe))
+void fev_sanitise_configure_request(XConfigureRequestEvent *cr);
+void fev_sanitise_configure_notify(XConfigureEvent *cn);
 
 /* ---------------------------- Functions not present in Xlib -------------- */
 

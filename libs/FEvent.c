@@ -368,29 +368,39 @@ void fev_get_last_event(XEvent *ev)
 	return;
 }
 
-void fev_sanitise_configure_request(XConfigureRequestEvent *ev)
+void fev_sanitise_configure_request(XConfigureRequestEvent *cr)
 {
-	if (ev->value_mask & CWX)
+	if (cr->value_mask & CWX)
 	{
-		ev->x = (((int)ev->x) & 0xffff);
+		cr->x = (((int)cr->x) & 0xffff);
 	}
-	if (ev->value_mask & CWY)
+	if (cr->value_mask & CWY)
 	{
-		ev->x = (((int)ev->y) & 0xffff);
+		cr->y = (((int)cr->y) & 0xffff);
 	}
-	if (ev->value_mask & CWWidth)
+	if (cr->value_mask & CWWidth)
 	{
-		ev->width = (((unsigned int)ev->width) & 0xffff);
+		cr->width = (((unsigned int)cr->width) & 0xffff);
 	}
-	if (ev->value_mask & CWHeight)
+	if (cr->value_mask & CWHeight)
 	{
-		ev->height = (((unsigned int)ev->height) & 0xffff);
-		ev->height &= 0xffff;
+		cr->height = (((unsigned int)cr->height) & 0xffff);
 	}
-	if (ev->value_mask & CWBorderWidth)
+	if (cr->value_mask & CWBorderWidth)
 	{
-		ev->border_width = (((unsigned int)ev->border_width) & 0xffff);
+		cr->border_width = (((unsigned int)cr->border_width) & 0xffff);
 	}
+
+	return;
+}
+
+void fev_sanitise_configure_notify(XConfigureEvent *cn)
+{
+	cn->x = (((int)cn->x) & 0xffff);
+	cn->y = (((int)cn->y) & 0xffff);
+	cn->width = (((unsigned int)cn->width) & 0xffff);
+	cn->height = (((unsigned int)cn->height) & 0xffff);
+	cn->border_width = (((unsigned int)cn->border_width) & 0xffff);
 
 	return;
 }

@@ -669,14 +669,15 @@ int ProcessXEvent(int x, int y)
 			SendText(fd, "Raise", main_win);
 			break;
 		case ConfigureNotify:
-			fev_sanitise_configure_notify(&Event);
+			fev_sanitise_configure_notify(&Event.xconfigure);
                        /* this only happens with transparent windows,
 			* slurp up as many events as possible before
 			* redrawing to reduce flickering */
 			while (FCheckTypedEvent(
 				dpy, ConfigureNotify, &event))
 			{
-				fev_sanitise_configure_notify(&event);
+				fev_sanitise_configure_notify(
+					&event.xconfigure);
 				if (!event.xconfigure.send_event)
 					continue;
 				Event.xconfigure.x = event.xconfigure.x;

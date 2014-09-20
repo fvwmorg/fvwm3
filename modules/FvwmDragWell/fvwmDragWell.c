@@ -281,7 +281,7 @@ void veryLongLoop(void)
 	  drawDragWellButton(&dragBut); /*draws the drag icon*/
 	  break;
 	case ConfigureNotify:
-	  fev_sanitise_configure_notify(&xev);
+	  fev_sanitise_configure_notify(&xev.xconfigure);
 	  if (xg.colorset >= 0 && Colorset[xg.colorset].pixmap == ParentRelative)
 	    XClearArea(xg.dpy, xg.win, 0,0,0,0, True);
 	  break;

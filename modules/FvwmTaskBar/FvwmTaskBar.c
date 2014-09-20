@@ -1733,7 +1733,7 @@ void HandleEvents(
 		Bool moved = False;
 		int cx = win_x, cy = win_y;
 
-		fev_sanitise_configure_notify(evp);
+		fev_sanitise_configure_notify(&evp->xconfigure);
 		/* eat up excess ConfigureNotify events. */
 		if (evp->xconfigure.send_event)
 		{
@@ -1744,7 +1744,7 @@ void HandleEvents(
 		evp_save = evp;
 		while (FCheckTypedWindowEvent(dpy, win, ConfigureNotify, evp))
 		{
-			fev_sanitise_configure_notify(evp);
+			fev_sanitise_configure_notify(&evp->xconfigure);
 			evp_save = evp;
 			if (evp->xconfigure.send_event)
 			{

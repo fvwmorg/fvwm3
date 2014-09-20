@@ -4110,7 +4110,7 @@ void SendConfigureNotify(
 		(int)client_event.xconfigure.window,
 		(fw->name.name) ? fw->name.name : "");
 #endif
-	fev_sanitise_configure_notify(&client_event);
+	fev_sanitise_configure_notify(&client_event.xconfigure);
 	FSendEvent(
 		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
 	if (send_for_frame_too)

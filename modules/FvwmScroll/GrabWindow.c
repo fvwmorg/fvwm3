@@ -226,11 +226,11 @@ void LoopOnEvents(Window target)
 			break;
 
 		case ConfigureNotify:
-			fev_sanitise_configure_notify(&Event);
+			fev_sanitise_configure_notify(&Event.xconfigure);
 			while (FCheckTypedWindowEvent(
 				dpy, main_win, ConfigureNotify, &ev))
 			{
-				fev_sanitise_configure_notify(&ev);
+				fev_sanitise_configure_notify(&ev.xconfigure);
 				if (!ev.xconfigure.send_event)
 					continue;
 				Event.xconfigure.send_event = True;
