@@ -1383,7 +1383,7 @@ void DrawIconWindow(
 		{
 			if (!pev)
 			{
-				FWeedTypedWindowEvents(
+				FCheckWeedTypedWindowEvents(
 					dpy, FW_W_ICON_TITLE(fw), Expose,
 					NULL);
 			}
@@ -1502,7 +1502,7 @@ void DrawIconWindow(
 		{
 			if (!pev)
 			{
-				FWeedTypedWindowEvents(
+				FCheckWeedTypedWindowEvents(
 					dpy, FW_W_ICON_PIXMAP(fw), Expose,
 					NULL);
 			}

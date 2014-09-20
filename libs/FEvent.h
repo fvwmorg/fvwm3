@@ -112,9 +112,10 @@ int FWeedIfWindowEvents(
 	XPointer arg);
 
 /* Same as FWeedIfEvents but weeds only events of the given type for the given
-   window. */
-int FWeedTypedWindowEvents(
-	Display *display, Window window, int event_type, XPointer arg);
+ * window.  If last_event is not NULL, a copy of the last weeded event is
+ * returned through *last_event (valid if a value > 0 is treturned). */
+int FCheckWeedTypedWindowEvents(
+	Display *display, Window window, int event_type, XEvent *last_event);
 
 /* Like FCheckIfEvent but does not remove the event from the queue. */
 int FCheckPeekIfEvent(

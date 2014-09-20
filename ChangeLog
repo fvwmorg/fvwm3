@@ -1,5 +1,17 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/FEvent.h:
+	* libs/FEvent.c (FCheckWeedTypedWindowEvents, FWeedTypedWindowEvents):
+	* fvwm/icons.c (DrawIconWindow):
+	(DrawIconWindow):
+	* fvwm/menus.c (__mloop_do_popup):
+	(select_menu_item):
+	Replace unused last argument from FWeedTypedWindowEvents and replace it
+	with a pointer to store the last matched event.  Renamed the function
+	too.
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* fvwm/events.c (MAX_NUM_WEED_EVENT_TYPES):
 	(NUM_EVENTS_TO_PEEK):
 	(_weed_event_type_arg):

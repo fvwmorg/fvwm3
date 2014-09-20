@@ -2850,7 +2850,7 @@ static void select_menu_item(
 
 				if (!MR_IS_PAINTED(mr))
 				{
-					FWeedTypedWindowEvents(
+					FCheckWeedTypedWindowEvents(
 						dpy, MR_WINDOW(mr), Expose,
 						NULL);
 					paint_menu(mr, NULL, fw);
@@ -4858,7 +4858,7 @@ static mloop_ret_code_t __mloop_do_popup(
 	if (!MR_IS_PAINTED(pmp->menu))
 	{
 		/* draw the parent menu if it is not already drawn */
-		FWeedTypedWindowEvents(
+		FCheckWeedTypedWindowEvents(
 			dpy, MR_WINDOW(pmp->menu), Expose, NULL);
 		paint_menu(pmp->menu, NULL, (*pmp->pexc)->w.fw);
 	}

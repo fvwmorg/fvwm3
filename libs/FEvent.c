@@ -51,6 +51,8 @@ typedef struct
 typedef struct
 {
 	int (*weed_predicate) (Display *display, XEvent *event, XPointer arg);
+	XEvent *last_event;
+	XEvent *ret_last_weeded_event;
 	XPointer arg;
 	Window w;
 	int event_type;
@@ -178,13 +180,36 @@ static Bool _fev_pred_weed_if(Display *display, XEvent *event, XPointer arg)
 	}
 	if (rc & 1)
 	{
-		/* invalidate event by setting a bogus event type */
-		event->type = fev_invalid_event_type;
+		/* We invalidate events only when the next event to invalidate
+		 * is found.  This way we avoid having to copy all events as
+		 * each one could be the last. */
+		if (weed_args->last_event != NULL)
+		{
+			/* invalidate event by setting a bogus event type */
+			weed_args->last_event->type = fev_invalid_event_type;
+		}
+		weed_args->last_event = event;
 		weed_args->count++;
 	}
 	ret = (rc & 2) ? True : False;
 
 	return ret;
+}
+
+static void _fev_pred_weed_if_finish(_fev_weed_args *weed_args)
+{
+	if (weed_args->count != 0)
+	{
+		if (weed_args->ret_last_weeded_event != NULL)
+		{
+			*weed_args->ret_last_weeded_event =
+				*weed_args->last_event;
+		}
+		/* invalidate event by setting a bogus event type */
+		weed_args->last_event->type = fev_invalid_event_type;
+	}
+
+	return;
 }
 
 /* ---------------------------- interface functions (privileged access) ----- */
@@ -361,6 +386,7 @@ int FWeedIfEvents(
 	FCheckPeekIfEvent(
 		display, &e, _fev_pred_weed_if, (XPointer)&weed_args);
 	/* e is discarded */
+	_fev_pred_weed_if_finish(&weed_args);
 
 	return weed_args.count;
 }
@@ -383,26 +409,28 @@ int FWeedIfWindowEvents(
 	FCheckPeekIfEvent(
 		display, &e, _fev_pred_weed_if, (XPointer)&weed_args);
 	/* e is discarded */
+	_fev_pred_weed_if_finish(&weed_args);
 
 	return weed_args.count;
 }
 
-int FWeedTypedWindowEvents(
-	Display *display, Window window, int event_type, XPointer arg)
+int FCheckWeedTypedWindowEvents(
+	Display *display, Window window, int event_type, XEvent *last_event)
 {
 	_fev_weed_args weed_args;
 	XEvent e;
 
 	assert(fev_is_invalid_event_type_set);
 	memset(&weed_args, 0, sizeof(weed_args));
-	weed_args.arg = arg;
 	weed_args.w = window;
 	weed_args.event_type = event_type;
 	weed_args.has_window = 1;
 	weed_args.has_event_type = 1;
+	weed_args.ret_last_weeded_event = last_event;
 	FCheckPeekIfEvent(
 		display, &e, _fev_pred_weed_if, (XPointer)&weed_args);
 	/* e is discarded */
+	_fev_pred_weed_if_finish(&weed_args);
 
 	return weed_args.count;
 }
