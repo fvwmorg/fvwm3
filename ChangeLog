@@ -1,8 +1,62 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/events.c (MAX_NUM_WEED_EVENT_TYPES):
+	(NUM_EVENTS_TO_PEEK):
+	(_weed_event_type_arg):
+	(_weed_window_mask_events_arg):
+	(_pred_weed_accumulate_expose):
+	(_pred_weed_handle_expose):
+	(_pred_weed_event_type):
+	(_pred_flush_property_notify_weed, HandlePropertyNotify)
+	(__merge_cr_moveresize, HandleReparentNotify, HandleEvents):
+	(flush_accumulate_expose):
+	(handle_all_expose):
+	(discard_typed_events):
+	(flush_property_notify_stop_at_event_type):
+	(discard_events):
+	Rewrite event discarding code.
+
+	* fvwm/events.c (flush_expose):
+	(discard_window_events):
+	(check_for_another_property_notify):
+	Removed obsolete functions.
+
+	* fvwm/events.c (_pred_button_click, __predicate_button_click):
+	(_pred_flush_property_notify_weed, test_typed_window_event):
+	(discard_typed_events, discard_events):
+	Renamed functions
+
+	* fvwm/events.h:
+	Deleted and renamed some interfaces.
+	(flush_property_notify_args):
+	(test_typed_window_event_args):
+	Renamed structure
+
+	* fvwm/add_window.c (do_recapture):
+	When reparenting fails, throw away only window events, not all events.
+
+	* fvwm/virtual.c (HandlePaging):
+	* fvwm/move_resize.c (InteractiveMove):
+	(__resize_window):
+	* fvwm/menus.c (select_menu_item):
+	(__mloop_do_popup):
+	(_pred_menu_window_weed_events):
+	(menu_tear_off):
+	* fvwm/icons.c (DrawIconWindow):
+	* fvwm/ewmh_events.c (EWMH_ProcessPropertyNotify):
+	* fvwm/add_window.c (do_recapture):
+	Adapt to new event discarding code.
+
+	* fvwm/fvwm.c (main):
+	Call fev_init_invalid_event_type(KeymapNotify)
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* libs/FEvent.h (FEV_IS_EVENT_INVALID):
 	(FEV_HAS_EVENT_WINDOW):
-	New helper macros
+	(fev_is_invalid_event_type_set):
+	(fev_invalid_event_type):
+	New helper macros and globals that are used in the macros
 
 	* libs/FEvent.c (fev_init_invalid_event_type):
 	(WeedIfEvents):
