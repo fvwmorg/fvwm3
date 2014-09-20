@@ -1,5 +1,32 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/ewmh_events.c (ewmh_RestackWindow, ewmh_MoveResizeWindow):
+	* fvwm/events.c (events_handle_configure_request):
+	(test_resizing_event):
+	(_pred_merge_cr):
+	(_cr_detect_icccm_move):
+	(HandleConfigureRequest):
+	(_handle_cr_on_client):
+	(_handle_configure_request):
+	(_handle_cr_on_unmanaged):
+	(_handle_cr_on_icon):
+	(_handle_cr_on_shaped):
+	(_handle_cr_restack):
+	(_merge_cr_moveresize):
+	Dramatically improved speed of configure request merging.
+
+	* fvwm/events.c (_handle_cr_on_client, __handle_cr_on_client):
+	(_handle_configure_request, __handle_configure_request):
+	(_handle_cr_on_unmanaged, __handle_cr_on_unmanaged):
+	(_handle_cr_on_icon, __handle_cr_on_icon):
+	(_handle_cr_on_shaped, __handle_cr_on_shaped):
+	(_handle_cr_restack, __handle_cr_restack):
+	(_cr_get_static_position, __cr_get_static_position):
+	(_cr_get_grav_position, __cr_get_grav_position):
+	(_cr_detect_icccm_move, __cr_detect_icccm_move):
+	(_merge_cr_moveresize, __merge_cr_moveresize):
+	Renamed functions
+
 	* libs/FEvent.c (_fev_pred_weed_if_finish):
 	(_fev_pred_weed_if):
 	Use FEV_INVALIDATE_EVENT().

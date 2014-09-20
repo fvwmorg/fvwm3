@@ -22,6 +22,8 @@ Changes in stable release 2.6.6 (not released yet)
     width or height value.  If present, the value is a percentage
     of the width or height of the EWMH working area or the EWMH
     dynamic working area.
+  - Fvwm is much more resilient agains applications that flood the
+    window manager with repeated events.
 
 * New module features:
 

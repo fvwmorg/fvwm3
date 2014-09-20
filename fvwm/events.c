@@ -165,6 +165,13 @@ typedef struct
 	long event_mask;
 } _weed_window_mask_events_arg;
 
+typedef struct
+{
+	Window w;
+	XEvent *last_cr_event;
+	int count;
+} _merge_cr_args;
+
 /* ---------------------------- forward declarations ----------------------- */
 
 /* ---------------------------- local variables ---------------------------- */
@@ -409,8 +416,9 @@ static Bool test_resizing_event(
 	return rc;
 }
 
-static inline void __handle_cr_on_unmanaged(XConfigureRequestEvent *cre)
+static inline void _handle_cr_on_unmanaged(XEvent *e)
 {
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
 	XWindowChanges xwc;
 	unsigned long xwcm;
 
@@ -425,9 +433,9 @@ static inline void __handle_cr_on_unmanaged(XConfigureRequestEvent *cre)
 	return;
 }
 
-static inline void __handle_cr_on_icon(
-	XConfigureRequestEvent *cre, FvwmWindow *fw)
+static inline void _handle_cr_on_icon(XEvent *e, FvwmWindow *fw)
 {
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
 	XWindowChanges xwc;
 	unsigned long xwcm;
 
@@ -483,7 +491,7 @@ static inline void __handle_cr_on_icon(
 	return;
 }
 
-static inline void __handle_cr_on_shaped(FvwmWindow *fw)
+static inline void _handle_cr_on_shaped(FvwmWindow *fw)
 {
 	/* suppress compiler warnings w/o shape extension */
 	int i = 0;
@@ -505,9 +513,10 @@ static inline void __handle_cr_on_shaped(FvwmWindow *fw)
 	return;
 }
 
-static inline void __handle_cr_restack(
-	int *ret_do_send_event, XConfigureRequestEvent *cre, FvwmWindow *fw)
+static inline void _handle_cr_restack(
+	int *ret_do_send_event, XEvent *e, FvwmWindow *fw)
 {
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
 	XWindowChanges xwc;
 	unsigned long xwcm;
 	FvwmWindow *fw2 = NULL;
@@ -605,10 +614,11 @@ static inline void __handle_cr_restack(
 	return;
 }
 
-static inline void __cr_get_static_position(
-	rectangle *ret_g, FvwmWindow *fw, XConfigureRequestEvent *cre,
-	size_borders *b)
+static inline void _cr_get_static_position(
+	rectangle *ret_g, FvwmWindow *fw, XEvent *e, size_borders *b)
 {
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
+
 	if (cre->value_mask & CWX)
 	{
 		ret_g->x = cre->x - b->top_left.width;
@@ -629,10 +639,10 @@ static inline void __cr_get_static_position(
 	return;
 }
 
-static inline void __cr_get_grav_position(
-	rectangle *ret_g, FvwmWindow *fw, XConfigureRequestEvent *cre,
-	size_borders *b)
+static inline void _cr_get_grav_position(
+	rectangle *ret_g, FvwmWindow *fw, XEvent *e, size_borders *b)
 {
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
 	int grav_x;
 	int grav_y;
 
@@ -659,9 +669,10 @@ static inline void __cr_get_grav_position(
 
 /* Try to detect whether the application uses the ICCCM way of moving its
  * window or the traditional way, always assuming StaticGravity. */
-static inline void __cr_detect_icccm_move(
-	FvwmWindow *fw, XConfigureRequestEvent *cre, size_borders *b)
+static inline void _cr_detect_icccm_move(
+	FvwmWindow *fw, XEvent *e, size_borders *b)
 {
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
 	rectangle grav_g;
 	rectangle static_g;
 	rectangle dg_g;
@@ -744,8 +755,8 @@ static inline void __cr_detect_icccm_move(
 		}
 		return;
 	}
-	__cr_get_grav_position(&grav_g, fw, cre, b);
-	__cr_get_static_position(&static_g, fw, cre, b);
+	_cr_get_grav_position(&grav_g, fw, e, b);
+	_cr_get_static_position(&static_g, fw, e, b);
 	if (static_g.x == grav_g.x)
  	{
 		/* both methods have the same result; ignore */
@@ -911,7 +922,6 @@ static inline void __cr_detect_icccm_move(
 	return;
 }
 
-#define EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 /* This is not a good idea because this interferes with changes in the size
  * hints of the window.  However, it is impossible to be completely safe here.
  * For example, if the client changes the size inc, then resizes the size of
@@ -920,141 +930,157 @@ static inline void __cr_detect_icccm_move(
  * wrong one in the ConfigureRequest calculations. */
 /* dv (31 Mar 2002): The code now handles these situations, so enable it
  * again. */
-#ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
-static inline int __merge_cr_moveresize(
-	const evh_args_t *ea, XConfigureRequestEvent *cre, FvwmWindow *fw,
-	size_borders *b)
+static int _pred_merge_cr(Display *display, XEvent *event, XPointer arg)
 {
-	int cn_count = 0;
-	XEvent e;
-	XConfigureRequestEvent *ecre;
-	check_if_event_args args;
+	_merge_cr_args *args = (_merge_cr_args *)arg;
 
-	args.w = cre->window;
-	args.do_return_true = False;
-	args.do_return_true_cr = True;
-	args.cr_value_mask = CR_MOVERESIZE_MASK;
-	args.ret_does_match = False;
-	args.ret_type = 0;
-
-	for (cn_count = 0; 1; )
+	switch (event->type)
 	{
-		unsigned long vma;
-		unsigned long vmo;
-		unsigned long xm;
-		unsigned long ym;
-		evh_args_t ea2;
-		exec_context_changes_t ecc;
+	case ConfigureRequest:
+	{
+		XConfigureRequestEvent *ecr = &event->xconfigurerequest;
+		XConfigureRequestEvent *lcr =
+			&args->last_cr_event->xconfigurerequest;
 
-		FCheckPeekIfEvent(
-			dpy, &e, test_resizing_event, (XPointer)&args);
-		ecre = &e.xconfigurerequest;
-		if (args.ret_does_match == False)
+		if (event->xconfigurerequest.window != args->w)
 		{
-			break;
+			/* no match, keep looking */
+			return 0;
 		}
-		else if (args.ret_type == PropertyNotify)
-		{
-			/* Can't merge events with a PropertyNotify in
-			 * between.  The event is still on the queue. */
-			break;
-		}
-		else if (args.ret_type != ConfigureRequest)
-		{
-			/* not good. unselected event type! */
-			continue;
-		}
-		fev_sanitise_configure_request(cre);
-		/* Event was not yet removed from the queue but stored in e. */
-		xm = CWX | CWWidth;
-		ym = CWY | CWHeight;
-		vma = cre->value_mask & ecre->value_mask;
-		vmo = cre->value_mask | ecre->value_mask;
-		if (((vma & xm) == 0 && (vmo & xm) == xm) ||
-		    ((vma & ym) == 0 && (vmo & ym) == ym))
-		{
-			/* can't merge events since location of window might
-			 * get screwed up. */
-			break;
-		}
-		/* Finally remove the event from the queue */
-		FCheckIfEvent(dpy, &e, test_resizing_event, (XPointer)&args);
-		/* partially handle the event */
-		ecre->value_mask &= ~args.cr_value_mask;
-		ea2.exc = exc_clone_context(ea->exc, &ecc, ECC_ETRIGGER);
-		HandleConfigureRequest(&ea2);
-		exc_destroy_context(ea2.exc);
 		/* collect the size/position changes */
-		if (ecre->value_mask & CWX)
+		if (lcr->value_mask & CWX)
 		{
-			cre->x = ecre->x;
+			ecr->x = lcr->x;
 		}
-		if (ecre->value_mask & CWY)
+		if (lcr->value_mask & CWY)
 		{
-			cre->y = ecre->y;
+			ecr->y = lcr->y;
 		}
-		if (ecre->value_mask & CWWidth)
+		if (lcr->value_mask & CWWidth)
 		{
-			cre->width = ecre->width;
+			ecr->width = lcr->width;
 		}
-		if (ecre->value_mask & CWHeight)
+		if (lcr->value_mask & CWHeight)
 		{
-			cre->height = ecre->height;
+			ecr->height = lcr->height;
 		}
-		if (ecre->value_mask & CWBorderWidth)
+		if (lcr->value_mask & CWBorderWidth)
 		{
-			cre->border_width = ecre->border_width;
+			ecr->border_width = lcr->border_width;
 		}
-		cre->value_mask |= (ecre->value_mask & CR_MOVERESIZE_MASK);
-		cn_count++;
+		/* add to new event and remove from old event */
+		ecr->value_mask |= (lcr->value_mask & CR_MOVERESIZE_MASK);
+		lcr->value_mask &= ~CR_MOVERESIZE_MASK;
+		if (lcr->value_mask == 0)
+		{
+			/* The event has no useful contents anymore. */
+			FEV_INVALIDATE_EVENT(args->last_cr_event);
+		}
+		args->last_cr_event = event;
+		args->count++;
+
+		/* don't drop the current event and continue weeding */
+		return 0;
 	}
-
-	return cn_count;
+	case PropertyNotify:
+		if (
+			event->xproperty.window == args->w &&
+			event->xproperty.atom != XA_WM_NORMAL_HINTS)
+		{
+			/* ConfigureRequest events cannot be merged past
+			 * changes of the size hints. */
+			/* don't merge and stop weeding */
+			return 2;
+		}
+		else
+		{
+			/* PropertyNotify for another window, or the changed
+			 * property does not interfere with merging. */
+			/* keep looking */
+			return 0;
+		}
+	default:
+		/* Other events do not interfer with merging. */
+		/* keep looking */
+		return 0;
+	}
 }
-#endif
 
-static inline int __handle_cr_on_client(
-	int *ret_do_send_event, XConfigureRequestEvent cre,
-	const evh_args_t *ea, FvwmWindow *fw, Bool force, int force_gravity)
+static inline int _merge_cr_moveresize(
+	const evh_args_t *ea, XEvent *ev, FvwmWindow *fw, size_borders *b)
 {
+	_merge_cr_args args;
+
+	memset(&args, 0, sizeof(args));
+	args.w = ev->xconfigurerequest.window;
+	args.last_cr_event = ev;
+	FWeedIfEvents(dpy, _pred_merge_cr, (XPointer)&args);
+
+#if 1 /*!!!*/
+	if (args.count > 0)
+	{
+		fprintf(stderr, "%s: merged %d cr events\n", __func__, args.count);
+	}
+#endif
+	/* use the count from the structure, not the return value of
+	 * FWeedIfEvents() because the predicate has a different way of weeding
+	 * and the return value is always zero. */
+	return args.count;
+}
+
+static inline int _handle_cr_on_client(
+	int *ret_do_send_event, XEvent *e, const evh_args_t *ea,
+	FvwmWindow *fw, Bool force, int force_gravity)
+{
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
 	rectangle current_g;
 	rectangle new_g;
 	rectangle d_g;
 	size_rect constr_dim;
 	size_rect oldnew_dim;
 	size_borders b;
-	int cn_count = 0;
 	int gravity;
 
 	if (ea)
 	{
-		cre = ea->exc->x.etrigger->xconfigurerequest;
+		cre = &ea->exc->x.etrigger->xconfigurerequest;
 	}
-	if ((cre.value_mask & (CWWidth | CWHeight | CWX | CWY)) == 0)
+	if (cre->value_mask & CWBorderWidth)
+	{
+		/* for restoring */
+		fw->attr_backup.border_width = cre->border_width;
+	}
+	if ((cre->value_mask & (CWWidth | CWHeight | CWX | CWY)) == 0)
 	{
 		return 0;
 	}
 
 	get_window_borders(fw, &b);
-#ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 	/* Merge all pending ConfigureRequests for the window into a single
 	 * event.  However, we can not do this if the window uses the motion
 	 * method autodetection because the merged event might confuse the
 	 * detection code. */
 	if (ea && CR_MOTION_METHOD(fw) != CR_MOTION_METHOD_AUTO)
 	{
-		cn_count = __merge_cr_moveresize(ea, &cre, fw, &b);
+		int count;
+
+		count = _merge_cr_moveresize(ea, e, fw, &b);
+		if (count > 0)
+		{
+			/* the event has been merged into a later one, do
+			 * nothing */
+			return 0;
+		}
 	}
-#endif
 #if 0
 	fprintf(stderr,
 		"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
 		"ew 0x%08x  '%s'\n",
-		cre.x, (int)(cre.value_mask & CWX),
-		cre.y, (int)(cre.value_mask & CWY),
-		cre.width, (int)(cre.value_mask & CWWidth),
-		cre.height, (int)(cre.value_mask & CWHeight),
-		(int)FW_W_FRAME(fw), (int)FW_W(fw), (int)cre.window,
+		cre->x, (int)(cre->value_mask & CWX),
+		cre->y, (int)(cre->value_mask & CWY),
+		cre->width, (int)(cre->value_mask & CWWidth),
+		cre->height, (int)(cre->value_mask & CWHeight),
+		(int)FW_W_FRAME(fw), (int)FW_W(fw), (int)cre->window,
 		(fw->name.name) ? fw->name.name : "");
 #endif
 	/* Don't modify frame_g fields before calling SetupWindow! */
@@ -1070,46 +1096,46 @@ static inline int __handle_cr_on_client(
 	if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMaxSize))
 	{
 		/* Java workaround */
-		if (cre.height > fw->hints.max_height &&
+		if (cre->height > fw->hints.max_height &&
 		    fw->hints.max_height <= BROKEN_MAXSIZE_LIMIT)
 		{
 			fw->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
-			cre.value_mask |= CWHeight;
+			cre->value_mask |= CWHeight;
 		}
-		if (cre.width > fw->hints.max_width &&
+		if (cre->width > fw->hints.max_width &&
 		    fw->hints.max_width <= BROKEN_MAXSIZE_LIMIT)
 		{
 			fw->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-			cre.value_mask |= CWWidth;
+			cre->value_mask |= CWWidth;
 		}
 	}
 	if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMinSize))
 	{
-		if (cre.width < fw->hints.min_width &&
+		if (cre->width < fw->hints.min_width &&
 		    fw->hints.min_width >= BROKEN_MINSIZE_LIMIT)
 		{
 			fw->hints.min_width = 1;
-			cre.value_mask |= CWWidth;
+			cre->value_mask |= CWWidth;
 		}
-		if (cre.height < fw->hints.min_height &&
+		if (cre->height < fw->hints.min_height &&
 		    fw->hints.min_height >= BROKEN_MINSIZE_LIMIT)
 		{
 			fw->hints.min_height = 1;
-			cre.value_mask |= CWHeight;
+			cre->value_mask |= CWHeight;
 		}
 	}
 	if (IS_SHADED(fw) ||
 	    !is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM, False))
 	{
 		/* forbid shaded applications to move their windows */
-		cre.value_mask &= ~(CWX | CWY);
+		cre->value_mask &= ~(CWX | CWY);
 		/* resend the old geometry */
 		*ret_do_send_event = 1;
 	}
 	if (IS_MAXIMIZED(fw))
 	{
 		/* dont allow clients to resize maximized windows */
-		cre.value_mask &= ~(CWWidth | CWHeight);
+		cre->value_mask &= ~(CWWidth | CWHeight);
 		/* resend the old geometry */
 		*ret_do_send_event = 1;
 		d_g.width = 0;
@@ -1119,18 +1145,13 @@ static inline int __handle_cr_on_client(
 		!is_function_allowed(
 			F_RESIZE, NULL, fw, RQORIG_PROGRAM, False))
 	{
-		cre.value_mask &= ~(CWWidth | CWHeight);
+		cre->value_mask &= ~(CWWidth | CWHeight);
 		*ret_do_send_event = 1;
 	}
 
-	if (cre.value_mask & CWBorderWidth)
-	{
-		/* for restoring */
-		fw->attr_backup.border_width = cre.border_width;
-	}
 	if (!force && CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
 	{
-		__cr_detect_icccm_move(fw, &cre, &b);
+		_cr_detect_icccm_move(fw, e, &b);
 	}
 	if (force_gravity > ForgetGravity && force_gravity <= StaticGravity)
 	{
@@ -1155,7 +1176,7 @@ static inline int __handle_cr_on_client(
 	{
 		current_g = fw->g.frame;
 	}
-	if (!(cre.value_mask & (CWX | CWY)))
+	if (!(cre->value_mask & (CWX | CWY)))
 	{
 		/* nothing */
 	}
@@ -1169,15 +1190,15 @@ static inline int __handle_cr_on_client(
 		int grav_y;
 
 		gravity_get_offsets(gravity, &grav_x, &grav_y);
-		if (cre.value_mask & CWX)
+		if (cre->value_mask & CWX)
 		{
-			ref_x = cre.x -
+			ref_x = cre->x -
 				((grav_x + 1) * b.total_size.width) / 2;
 			d_g.x = ref_x - current_g.x;
 		}
-		if (cre.value_mask & CWY)
+		if (cre->value_mask & CWY)
 		{
-			ref_y = cre.y -
+			ref_y = cre->y -
 				((grav_y + 1) * b.total_size.height) / 2;
 			d_g.y = ref_y - current_g.y;
 		}
@@ -1185,22 +1206,22 @@ static inline int __handle_cr_on_client(
 	else /* ..._USE_GRAV or ..._AUTO */
 	{
 		/* default: traditional cr handling */
-		if (cre.value_mask & CWX)
+		if (cre->value_mask & CWX)
 		{
-			d_g.x = cre.x - current_g.x - b.top_left.width;
+			d_g.x = cre->x - current_g.x - b.top_left.width;
 		}
-		if (cre.value_mask & CWY)
+		if (cre->value_mask & CWY)
 		{
-			d_g.y = cre.y - current_g.y - b.top_left.height;
+			d_g.y = cre->y - current_g.y - b.top_left.height;
 		}
 	}
 
-	if (cre.value_mask & CWHeight)
+	if (cre->value_mask & CWHeight)
 	{
-		if (cre.height <
+		if (cre->height <
 		    (WINDOW_FREAKED_OUT_SIZE - b.total_size.height))
 		{
-			d_g.height = cre.height -
+			d_g.height = cre->height -
 				(current_g.height - b.total_size.height);
 		}
 		else
@@ -1215,11 +1236,11 @@ static inline int __handle_cr_on_client(
 			*ret_do_send_event = 1;
 		}
 	}
-	if (cre.value_mask & CWWidth)
+	if (cre->value_mask & CWWidth)
 	{
-		if (cre.width < (WINDOW_FREAKED_OUT_SIZE - b.total_size.width))
+		if (cre->width < (WINDOW_FREAKED_OUT_SIZE - b.total_size.width))
 		{
-			d_g.width = cre.width -
+			d_g.width = cre->width -
 				(current_g.width - b.total_size.width);
 		}
 		else
@@ -1245,29 +1266,29 @@ static inline int __handle_cr_on_client(
 		CS_UPDATE_MAX_DEFECT);
 	d_g.width += (constr_dim.width - oldnew_dim.width);
 	d_g.height += (constr_dim.height - oldnew_dim.height);
-	if ((cre.value_mask & CWX) && d_g.width)
+	if ((cre->value_mask & CWX) && d_g.width)
 	{
 		new_g.x = current_g.x + d_g.x;
 		new_g.width = current_g.width + d_g.width;
 	}
-	else if ((cre.value_mask & CWX) && !d_g.width)
+	else if ((cre->value_mask & CWX) && !d_g.width)
 	{
 		new_g.x = current_g.x + d_g.x;
 	}
-	else if (!(cre.value_mask & CWX) && d_g.width)
+	else if (!(cre->value_mask & CWX) && d_g.width)
 	{
 		gravity_resize(gravity, &new_g, d_g.width, 0);
 	}
-	if ((cre.value_mask & CWY) && d_g.height)
+	if ((cre->value_mask & CWY) && d_g.height)
 	{
 		new_g.y = current_g.y + d_g.y;
 		new_g.height = current_g.height + d_g.height;
 	}
-	else if ((cre.value_mask & CWY) && !d_g.height)
+	else if ((cre->value_mask & CWY) && !d_g.height)
 	{
 		new_g.y = current_g.y + d_g.y;
 	}
-	else if (!(cre.value_mask & CWY) && d_g.height)
+	else if (!(cre->value_mask & CWY) && d_g.height)
 	{
 		gravity_resize(gravity, &new_g, 0, d_g.height);
 	}
@@ -1280,7 +1301,7 @@ static inline int __handle_cr_on_client(
 		 * ConfigureNotify. */
 		*ret_do_send_event = 1;
 	}
-	else if ((cre.value_mask & CWX) || (cre.value_mask & CWY) ||
+	else if ((cre->value_mask & CWX) || (cre->value_mask & CWY) ||
 		 d_g.width || d_g.height)
 	{
 		if (IS_SHADED(fw))
@@ -1303,17 +1324,18 @@ static inline int __handle_cr_on_client(
 	SET_FORCE_NEXT_CR(fw, 0);
 	SET_FORCE_NEXT_PN(fw, 0);
 
-	return cn_count;
+	return 1;
 }
 
-void __handle_configure_request(
-	XConfigureRequestEvent cre, const evh_args_t *ea, FvwmWindow *fw,
+void _handle_configure_request(
+	XEvent *e, const evh_args_t *ea, FvwmWindow *fw,
 	Bool force, int force_gravity)
 {
+	XConfigureRequestEvent *cre = &e->xconfigurerequest;
 	int do_send_event = 0;
 	int cn_count = 0;
 
-	fev_sanitise_configure_request(&cre);
+	fev_sanitise_configure_request(cre);
 	/* According to the July 27, 1988 ICCCM draft, we should ignore size
 	 * and position fields in the WM_NORMAL_HINTS property when we map a
 	 * window. Instead, we'll read the current geometry.  Therefore, we
@@ -1321,29 +1343,29 @@ void __handle_configure_request(
 	 * never been mapped. */
 	if (fw == NULL)
 	{
-		__handle_cr_on_unmanaged(&cre);
+		_handle_cr_on_unmanaged(e);
 		return;
 	}
-	if (cre.window == FW_W_ICON_TITLE(fw) ||
-	    cre.window == FW_W_ICON_PIXMAP(fw))
+	if (cre->window == FW_W_ICON_TITLE(fw) ||
+	    cre->window == FW_W_ICON_PIXMAP(fw))
 	{
-		__handle_cr_on_icon(&cre, fw);
+		_handle_cr_on_icon(e, fw);
 	}
 	if (FShapesSupported)
 	{
-		__handle_cr_on_shaped(fw);
+		_handle_cr_on_shaped(fw);
 	}
-	if (fw != NULL && cre.window == FW_W(fw))
+	if (fw != NULL && cre->window == FW_W(fw))
 	{
-		cn_count = __handle_cr_on_client(
-			&do_send_event, cre, ea, fw, force, force_gravity);
+		cn_count = _handle_cr_on_client(
+			&do_send_event, e, ea, fw, force, force_gravity);
 	}
 	/* Stacking order change requested.  Handle this *after* geometry
 	 * changes, since we need the new geometry in occlusion calculations */
-	if ((cre.value_mask & CWStackMode) &&
+	if ((cre->value_mask & CWStackMode) &&
 	    (!DO_IGNORE_RESTACK(fw) || force))
 	{
-		__handle_cr_restack(&do_send_event, &cre, fw);
+		_handle_cr_restack(&do_send_event, e, fw);
 	}
 #if 1
 	/* This causes some ddd windows not to be drawn properly. Reverted back
@@ -1977,21 +1999,21 @@ void HandleColormapNotify(const evh_args_t *ea)
 
 void HandleConfigureRequest(const evh_args_t *ea)
 {
-	const XEvent *te = ea->exc->x.etrigger;
-	XConfigureRequestEvent cre;
+	XEvent *te = ea->exc->x.etrigger;
+	XConfigureRequestEvent *cre;
 	FvwmWindow *fw = ea->exc->w.fw;
 
 	DBUG("HandleConfigureRequest", "Routine Entered");
 
-	cre = te->xconfigurerequest;
+	cre = &te->xconfigurerequest;
 	/* te->xany.window is te->.xconfigurerequest.parent, so the context
 	 * window may be wrong. */
-	if (XFindContext(dpy, cre.window, FvwmContext, (caddr_t *)&fw) ==
+	if (XFindContext(dpy, cre->window, FvwmContext, (caddr_t *)&fw) ==
 	    XCNOENT)
 	{
 		fw = NULL;
 	}
-	__handle_configure_request(cre, ea, fw, False, ForgetGravity);
+	_handle_configure_request(te, ea, fw, False, ForgetGravity);
 
 	return;
 }
@@ -4315,10 +4337,9 @@ void dispatch_event(XEvent *e)
 
 /* ewmh configure request */
 void events_handle_configure_request(
-	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force,
-	int force_gravity)
+	XEvent *cre, FvwmWindow *fw, Bool force, int force_gravity)
 {
-	__handle_configure_request(cre, NULL, fw, force, force_gravity);
+	_handle_configure_request(cre, NULL, fw, force, force_gravity);
 
 	return;
 }
@@ -4890,8 +4911,7 @@ void sync_server(int toggle)
 	return;
 }
 
-Bool is_resizing_event_pending(
-	FvwmWindow *fw)
+Bool is_resizing_event_pending(FvwmWindow *fw)
 {
 	XEvent e;
 	check_if_event_args args;
