@@ -108,7 +108,7 @@ void SlideWindow(
 	is_mapped = False;
 
 	/* Get the mini (re)size hints and do some check consistency */
-	if (use_hints && XGetWMNormalHints(dpy, win, &hints, &dummy))
+	if (use_hints && FGetWMNormalHints(dpy, win, &hints, &dummy))
 	{
 		if (hints.flags & PMinSize)
 		{

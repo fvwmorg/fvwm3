@@ -2427,7 +2427,7 @@ void swallow(unsigned long *body)
 	  Buttons[button].icons[0].w = ICON_WIN_WIDTH;
 	  Buttons[button].icons[0].h = ICON_WIN_HEIGHT;
 	}
-	if (!XGetWMNormalHints (dpy, Buttons[button].IconWin,
+	if (!FGetWMNormalHints (dpy, Buttons[button].IconWin,
 				&Buttons[button].hints,
 				&supplied))
 	{

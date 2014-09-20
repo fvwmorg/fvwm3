@@ -163,7 +163,7 @@ void MakeButton(button_info *b)
     {
       if (!(buttonSwallow(b)&b_NoHints))
       {
-	if(!XGetWMNormalHints(Dpy,b->IconWin,b->hints,&supplied))
+	if(!FGetWMNormalHints(Dpy,b->IconWin,b->hints,&supplied))
 	  b->hints->flags=0;
 	ConstrainSize(b->hints, &b->icon_w, &b->icon_h);
       }

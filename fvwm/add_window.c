@@ -2850,7 +2850,7 @@ void GetWindowSizeHintsWithCheck(
 	Status rc;
 
 	new_hints = fw->hints;
-	rc = XGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
+	rc = FGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
 	if (rc == 0)
 	{
 		new_hints.flags = 0;

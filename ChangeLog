@@ -1,5 +1,9 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/add_window.c (GetWindowSizeHintsWithCheck):
+	* libs/WinMagic.c (SlideWindow):
+	Use FGetWMNormalHints
+
 	* libs/FEvent.c (fev_sanitize_size_hints):
 	(FGetWMNormalHints):
 	* libs/FEvent.h:

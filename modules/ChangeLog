@@ -1,5 +1,15 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* FvwmWharf/FvwmWharf.c (swallow):
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	* FvwmIconMan/xmanager.c (fix_manager_size):
+	* FvwmButtons/draw.c (MakeButton):
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(HandlePanelPress):
+	Use FGetWMNormalHints
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* FvwmDragWell/fvwmDragWell.c (veryLongLoop):
 	* FvwmForm/ReadXServer.c (ReadXServer):
 	* FvwmIconMan/x.c (xevent_loop):

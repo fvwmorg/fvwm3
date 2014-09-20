@@ -551,7 +551,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  win_y += screen_g.y;
 	}
 
-	XGetWMNormalHints(dpy,win,&hints,&dumy);
+	FGetWMNormalHints(dpy,win,&hints,&dumy);
 	hints.min_width   = win_width;
 	hints.base_width  = win_width;
 	hints.max_width   = win_width;
