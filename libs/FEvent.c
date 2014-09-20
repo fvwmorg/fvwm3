@@ -46,14 +46,7 @@ typedef struct
 	XPointer arg;
 	XEvent event;
 	Bool found;
-} fev_check_peek_args;
-
-typedef struct
-{
-	Bool (*predicate) (Display *display, XEvent *event, XPointer arg);
-	XPointer arg;
-	int count;
-} fev_check_peek_invalidate_args;
+} _fev_check_peek_args;
 
 typedef struct
 {
@@ -65,7 +58,7 @@ typedef struct
 	char has_predicate;
 	char has_window;
 	char has_event_type;
-} fev_weed_args;
+} _fev_weed_args;
 
 /* ---------------------------- forward declarations ----------------------- */
 
@@ -135,7 +128,7 @@ static void fev_update_last_timestamp(const XEvent *ev)
 static Bool _fev_pred_check_peek(
         Display *display, XEvent *event, XPointer arg)
 {
-	fev_check_peek_args *cpa = (fev_check_peek_args *)arg;
+	_fev_check_peek_args *cpa = (_fev_check_peek_args *)arg;
 
 	if (cpa->found == True)
 	{
@@ -152,7 +145,7 @@ static Bool _fev_pred_check_peek(
 
 static Bool _fev_pred_weed_if(Display *display, XEvent *event, XPointer arg)
 {
-	fev_weed_args *weed_args = (fev_weed_args *)arg;
+	_fev_weed_args *weed_args = (_fev_weed_args *)arg;
 	Bool ret;
 	int rc;
 
@@ -357,7 +350,7 @@ int FWeedIfEvents(
 	int (*weed_predicate) (Display *display, XEvent *event, XPointer arg),
 	XPointer arg)
 {
-	fev_weed_args weed_args;
+	_fev_weed_args weed_args;
 	XEvent e;
 
 	assert(fev_is_invalid_event_type_set);
@@ -378,7 +371,7 @@ int FWeedIfWindowEvents(
 		Display *display, XEvent *current_event, XPointer arg),
 	XPointer arg)
 {
-	fev_weed_args weed_args;
+	_fev_weed_args weed_args;
 	XEvent e;
 
 	assert(fev_is_invalid_event_type_set);
@@ -397,7 +390,7 @@ int FWeedIfWindowEvents(
 int FWeedTypedWindowEvents(
 	Display *display, Window window, int event_type, XPointer arg)
 {
-	fev_weed_args weed_args;
+	_fev_weed_args weed_args;
 	XEvent e;
 
 	assert(fev_is_invalid_event_type_set);
@@ -420,7 +413,7 @@ Bool FCheckPeekIfEvent(
 	XPointer arg)
 {
 	XEvent dummy;
-	fev_check_peek_args cpa;
+	_fev_check_peek_args cpa;
 
 	cpa.predicate = predicate;
 	cpa.arg = arg;

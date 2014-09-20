@@ -7,9 +7,6 @@
 
 /* ---------------------------- global definitions ------------------------- */
 
-/* A value guaranteed to be neither True nor False. */
-#define FEV_INVALID_BOOL (True + True - False)
-
 #define FEV_IS_EVENT_INVALID(e) \
 	(fev_is_invalid_event_type_set && (e).type == fev_invalid_event_type)
 

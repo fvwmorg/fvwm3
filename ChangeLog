@@ -1,3 +1,32 @@
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/FEvent.h (FEV_IS_EVENT_INVALID):
+	(FEV_HAS_EVENT_WINDOW):
+	New helper macros
+
+	* libs/FEvent.c (fev_init_invalid_event_type):
+	(WeedIfEvents):
+	(FWeedIfWindowEvents):
+	(FWeedTypedWindowEvents):
+	(_fev_weed_args, _fev_pred_weed_if):
+	New library functions to allow weeding unwanted events from the input
+	queue.
+
+	* libs/FEvent.c (_fev_pred_check_peek):
+	(_fev_check_peek_args):
+	(FCheckPeekIfEvent):
+	Rewritten
+
+	* libs/FEvent.c (FCheckPeekIfEventWithLimit):
+	Removed obsolete function.
+
+	* libs/FEvent.c (_fev_check_peek_args, fev_check_peek_args):
+	(_fev_pred_check_peek, fev_check_peek_pred):
+	Renamed
+
+	* libs/FEvent.c (fev_check_peek_invalidate_args):
+	Removed unused struct
+
 2014-09-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (HandleReparentNotify):
