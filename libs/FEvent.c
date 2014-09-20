@@ -368,6 +368,33 @@ void fev_get_last_event(XEvent *ev)
 	return;
 }
 
+void fev_sanitise_configure_request(XConfigureRequestEvent *ev)
+{
+	if (ev->value_mask & CWX)
+	{
+		ev->x = (((int)ev->x) & 0xffff);
+	}
+	if (ev->value_mask & CWY)
+	{
+		ev->x = (((int)ev->y) & 0xffff);
+	}
+	if (ev->value_mask & CWWidth)
+	{
+		ev->width = (((unsigned int)ev->width) & 0xffff);
+	}
+	if (ev->value_mask & CWHeight)
+	{
+		ev->height = (((unsigned int)ev->height) & 0xffff);
+		ev->height &= 0xffff;
+	}
+	if (ev->value_mask & CWBorderWidth)
+	{
+		ev->border_width = (((unsigned int)ev->border_width) & 0xffff);
+	}
+
+	return;
+}
+
 /* ---------------------------- Functions not present in Xlib -------------- */
 
 int FWeedIfEvents(

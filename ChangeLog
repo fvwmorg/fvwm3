@@ -1,6 +1,13 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* libs/FEvent.h:
+	* libs/FEvent.c (fev_sanitise_configure_request)
+	(fev_sanitise_configure_notify):
+	New utility functions
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* libs/FEvent.h:
 	* libs/FEvent.c (FCheckWeedTypedWindowEvents, FWeedTypedWindowEvents):
 	* fvwm/icons.c (DrawIconWindow):
 	(DrawIconWindow):

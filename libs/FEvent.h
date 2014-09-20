@@ -72,6 +72,15 @@ void fev_make_null_event(XEvent *ev, Display *dpy);
 /* return a copy of the last XEVent in *ev */
 void fev_get_last_event(XEvent *ev);
 
+/* Make sure the values in the event are in the defined range (e.g. x is and
+ * int, but the protocol uses only a 16 bit signed integer. */
+void fev_sanitise_configure_request(XConfigureRequestEvent *event);
+
+/* Same but for ConfigureNotify.  It's actually the same function as the
+ * event structures are similar. */
+#define fev_sanitise_configure_notify(pe) \
+	fev_sanitise_configure_request((XConfigureRequestEvent *)(pe))
+
 /* ---------------------------- Functions not present in Xlib -------------- */
 
 /* Iterates over all events currentliy in the input queue and calls the
