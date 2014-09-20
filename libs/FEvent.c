@@ -185,8 +185,7 @@ static Bool _fev_pred_weed_if(Display *display, XEvent *event, XPointer arg)
 		 * each one could be the last. */
 		if (weed_args->last_event != NULL)
 		{
-			/* invalidate event by setting a bogus event type */
-			weed_args->last_event->type = fev_invalid_event_type;
+			FEV_INVALIDATE_EVENT(weed_args->last_event);
 		}
 		weed_args->last_event = event;
 		weed_args->count++;
@@ -205,8 +204,7 @@ static void _fev_pred_weed_if_finish(_fev_weed_args *weed_args)
 			*weed_args->ret_last_weeded_event =
 				*weed_args->last_event;
 		}
-		/* invalidate event by setting a bogus event type */
-		weed_args->last_event->type = fev_invalid_event_type;
+		FEV_INVALIDATE_EVENT(weed_args->last_event);
 	}
 
 	return;

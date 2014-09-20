@@ -17,6 +17,10 @@
 		 (type) != SelectionNotify && \
 		 (type) != SelectionRequest) ? 1 : 0)
 
+/* invalidate event by setting a bogus event type */
+#define FEV_INVALIDATE_EVENT(e) \
+	do { (e)->type = fev_invalid_event_type; } while (0)
+
 /* ---------------------------- global macros ------------------------------ */
 
 /* ---------------------------- type definitions --------------------------- */

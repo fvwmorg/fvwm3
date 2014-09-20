@@ -1,5 +1,14 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/FEvent.c (_fev_pred_weed_if_finish):
+	(_fev_pred_weed_if):
+	Use FEV_INVALIDATE_EVENT().
+
+	* libs/FEvent.h (FEV_INVALIDATE_EVENT):
+	New helper macro
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* configure.ac:
 	* libs/FEvent.h (XGetSizeHints):
 	fix compile errors
