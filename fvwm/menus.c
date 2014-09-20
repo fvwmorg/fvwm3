@@ -2850,7 +2850,9 @@ static void select_menu_item(
 
 				if (!MR_IS_PAINTED(mr))
 				{
-					flush_expose(MR_WINDOW(mr));
+					FWeedTypedWindowEvents(
+						dpy, MR_WINDOW(mr), Expose,
+						NULL);
 					paint_menu(mr, NULL, fw);
 				}
 				iy = MI_Y_OFFSET(mi);
@@ -4856,7 +4858,8 @@ static mloop_ret_code_t __mloop_do_popup(
 	if (!MR_IS_PAINTED(pmp->menu))
 	{
 		/* draw the parent menu if it is not already drawn */
-		flush_expose(MR_WINDOW(pmp->menu));
+		FWeedTypedWindowEvents(
+			dpy, MR_WINDOW(pmp->menu), Expose, NULL);
 		paint_menu(pmp->menu, NULL, (*pmp->pexc)->w.fw);
 	}
 	/* get pos hints for item's action */
@@ -5567,6 +5570,26 @@ static char *menu_strip_tear_off_title(MenuRoot *mr)
 	return name;
 }
 
+static int _pred_menu_window_weed_events(
+	Display *display, XEvent *event, XPointer arg)
+{
+	switch (event->type)
+	{
+	case CirculateNotify:
+	case ConfigureNotify:
+	case CreateNotify:
+	case DestroyNotify:
+	case GravityNotify:
+	case MapNotify:
+	case ReparentNotify:
+	case UnmapNotify:
+		/* events in SubstructureNotifyMask */
+		return 1;
+	default:
+		return 0;
+	}
+}
+
 static void menu_tear_off(MenuRoot *mr_to_copy)
 {
 	MenuRoot *mr;
@@ -5594,8 +5617,10 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	/* keep the menu open */
 	if (MR_WINDOW(mr_to_copy) != None)
 	{
-		discard_window_events(
-			MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
+		XSync(dpy, 0);
+		FWeedIfWindowEvents(
+			dpy, MR_WINDOW(mr_to_copy),
+			_pred_menu_window_weed_events, NULL);
 	}
 	mr = clone_menu(mr_to_copy);
 	/* also dump the menu style */

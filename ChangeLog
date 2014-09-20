@@ -1,5 +1,11 @@
 2014-09-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/events.c (HandleReparentNotify):
+	if reparenting fails, only throw away events for the frame window, not
+	_all_ events
+
+2014-09-19  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* fvwm/add_window.c (GetWindowSizeHintsWithCheck):
 	fix uninitialised zero fw->orig_hints.width/height_inc
 

@@ -62,6 +62,9 @@ Changes in stable release 2.6.6 (not released yet)
     commend did not work correctly.  This has been fixed.
   - Removes a slight graphics problem whith the ResizeMaximize
     command being invoked from a window button menu.
+  - When an attempt to reparent a client window (i.e. decorate
+    it) fails, fvwm no longer throws away all events but only the
+    events for that window.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.5 (20-Apr-2012)

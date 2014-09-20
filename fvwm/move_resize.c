@@ -1313,8 +1313,10 @@ static void InteractiveMove(
 
 	if (!do_move_opaque)
 	{
+		int event_types[2] = { EnterNotify, LeaveNotify };
+
 		/* Throw away some events that dont interest us right now. */
-		discard_events(EnterWindowMask|LeaveWindowMask);
+		discard_typed_events(2, event_types);
 		Scr.flags.is_wire_frame_displayed = False;
 		MyXUngrabServer(dpy);
 	}
@@ -4335,8 +4337,10 @@ static Bool __resize_window(F_CMD_ARGS)
 	ResizeWindow = None;
 	if (!do_resize_opaque)
 	{
+		int event_types[2] = { EnterNotify, LeaveNotify };
+
 		/* Throw away some events that dont interest us right now. */
-		discard_events(EnterWindowMask|LeaveWindowMask);
+		discard_typed_events(2, event_types);
 		Scr.flags.is_wire_frame_displayed = False;
 		MyXUngrabServer(dpy);
 	}

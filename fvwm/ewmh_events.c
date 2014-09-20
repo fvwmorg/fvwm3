@@ -1617,17 +1617,8 @@ void EWMH_ProcessPropertyNotify(const exec_context_t *exc)
 	{
 		if (ewmh_a->action != None)
 		{
-			int n;
-			int pos;
-
-			pos = check_for_another_property_notify(
-				ev->xproperty.atom, FW_W(fw), &n);
-			if (pos > 0)
-			{
-				/* Another PropertyNotify for this atom is
-				 * pending, skip the current one. */
-				return;
-			}
+			flush_property_notify_stop_at_event_type(
+				ev->xproperty.atom, FW_W(fw), 0, 0);
 			if (XGetGeometry(
 				    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
 				    (unsigned int*)&JunkWidth,

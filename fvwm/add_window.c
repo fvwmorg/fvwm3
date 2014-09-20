@@ -391,6 +391,9 @@ static int MappedNotOverride(
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
 	FvwmWindow *fw = exc->w.fw;
+	int event_types[5] = {
+		ButtonPress, ButtonRelease, MotionNotify, KeyPress, KeyRelease
+	};
 
 	MyXGrabServer(dpy);
 	if (fSingle)
@@ -407,9 +410,7 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 	 * same moment and the click goes through to the root window. Not good
 	 */
 	XAllowEvents(dpy, AsyncPointer, CurrentTime);
-	discard_events(
-		ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|	\
-		PointerMotionMask|KeyPressMask|KeyReleaseMask);
+	discard_typed_events(5, event_types);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
 #endif

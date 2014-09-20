@@ -1383,7 +1383,9 @@ void DrawIconWindow(
 		{
 			if (!pev)
 			{
-				flush_expose(FW_W_ICON_TITLE(fw));
+				FWeedTypedWindowEvents(
+					dpy, FW_W_ICON_TITLE(fw), Expose,
+					NULL);
 			}
 			DrawIconTitleWindow(
 				fw, pev, BackColor, Shadow, Relief, cs,
@@ -1500,7 +1502,9 @@ void DrawIconWindow(
 		{
 			if (!pev)
 			{
-				flush_expose(FW_W_ICON_PIXMAP(fw));
+				FWeedTypedWindowEvents(
+					dpy, FW_W_ICON_PIXMAP(fw), Expose,
+					NULL);
 			}
 			DrawIconPixmapWindow(
 				fw, reset_bg, pev, Shadow, Relief, cs);

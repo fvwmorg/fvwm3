@@ -95,6 +95,12 @@ static int prev_desk_and_page_page_y = 0;
 /* ---------------------------- local functions ---------------------------- */
 
 
+static Bool _pred_button_event(Display *display, XEvent *event, XPointer arg)
+{
+	return (event->type == ButtonPress || event->type == ButtonRelease) ?
+		True : False;
+}
+
 static void __drag_viewport(const exec_context_t *exc, int scroll_speed)
 {
 	XEvent e;
@@ -696,7 +702,7 @@ int HandlePaging(
 		int JunkC;
 		unsigned int JunkM;
 
-		if (FCheckPeekIfEvent(dpy, &e, test_button_event, NULL))
+		if (FCheckPeekIfEvent(dpy, &e, _pred_button_event, NULL))
 		{
 			is_timestamp_valid = False;
 			add_time = 0;

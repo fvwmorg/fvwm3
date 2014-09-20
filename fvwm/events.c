@@ -53,6 +53,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <assert.h>
 #include <X11/Xatom.h>
 
 #include "libs/ftime.h"
@@ -113,7 +114,7 @@
 
 #define DEBUG_GLOBALLY_ACTIVE 1
 
-#define NUM_EVENTS_TO_PEEK 200
+#define MAX_NUM_WEED_EVENT_TYPES 40
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -152,6 +153,17 @@ typedef struct event_group
 	PFEH *jump_table;
 	struct event_group *next;
 } event_group_t;
+
+typedef struct
+{
+	int num_event_types;
+	int event_types[MAX_NUM_WEED_EVENT_TYPES];
+} _weed_event_type_arg;
+
+typedef struct
+{
+	long event_mask;
+} _weed_window_mask_events_arg;
 
 /* ---------------------------- forward declarations ----------------------- */
 
@@ -258,30 +270,104 @@ static Bool test_withdraw_request(
 	return rc;
 }
 
-Bool test_button_event(
-	Display *display, XEvent *event, XPointer arg)
+static int _pred_weed_accumulate_expose(
+	Display *display, XEvent *ev, XPointer arg)
 {
-	if (event->type == ButtonPress || event->type == ButtonRelease)
+	XEvent *em = (XEvent *)arg;
+
+	if (ev->type != Expose)
 	{
-		return True;
+		return 0;
+	}
+	{
+		int x0;
+		int x1;
+
+		x1 = max(
+			ev->xexpose.x + ev->xexpose.width,
+			em->xexpose.x + em->xexpose.width);
+		x0 = min(em->xexpose.x, ev->xexpose.x);
+		em->xexpose.x = x0;
+		em->xexpose.width = x1 - x0;
+	}
+	{
+		int y0;
+		int y1;
+
+		y1 = max(
+			ev->xexpose.y + ev->xexpose.height,
+			em->xexpose.y + em->xexpose.height);
+		y0 = min(em->xexpose.y, ev->xexpose.y);
+		em->xexpose.y = y0;
+		em->xexpose.height = y1 - y0;
 	}
 
-	return False;
+	return 1;
 }
 
-Bool test_typed_window_event(
+static int _pred_weed_handle_expose(
 	Display *display, XEvent *event, XPointer arg)
 {
-	test_typed_window_event_args *ta = (test_typed_window_event_args *)arg;
-
-	if (event->xany.window == ta->w &&
-	    event->xany.type == ta->event_type &&
-	    event->xproperty.atom == ta->atom)
+	if (event->type == Expose)
 	{
-		return True;
+		dispatch_event(event);
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+static int _pred_weed_event_type(
+	Display *display, XEvent *event, XPointer arg)
+{
+	_weed_event_type_arg *args = (_weed_event_type_arg *)arg;
+	int i;
+
+	for (i = 0; i < args->num_event_types; i++)
+	{
+		if (event->type == args->event_types[i])
+		{
+			/* invalidate event and continue weeding */
+			return 1;
+		}
 	}
 
-	return False;
+	/* keep event and continue weeding */
+	return 0;
+}
+
+static int _pred_flush_property_notify_weed(
+	Display *display, XEvent *event, XPointer arg)
+{
+	flush_property_notify_args *args =
+		(flush_property_notify_args *)arg;
+	int does_match_window;
+
+	does_match_window = (
+		FEV_HAS_EVENT_WINDOW(event->type) &&
+		event->xany.window == args->w) ? 1 : 0;
+	if (
+		does_match_window &&
+		event->type == args->event_type &&
+		event->xproperty.atom == args->atom)
+	{
+		/* invalidate event and continue weeding */
+		return 1;
+	}
+	else if (
+		args->do_stop_at_event_type &&
+		event->type == args->stop_at_event_type && (
+			!FEV_HAS_EVENT_WINDOW(args->stop_at_event_type) ||
+			does_match_window))
+	{
+		/* keep event and stop weeding */
+		return 2;
+	}
+
+	/* keep event and continue weeding */
+	return 0;
 }
 
 static Bool test_resizing_event(
@@ -1285,7 +1371,7 @@ void __handle_configure_request(
 	return;
 }
 
-static Bool __predicate_button_click(
+static Bool _pred_button_click(
 	Display *display, XEvent *event, XPointer arg)
 {
 	if (event->type == ButtonPress || event->type == ButtonRelease)
@@ -1333,7 +1419,7 @@ static Bool __test_for_motion(int x0, int y0)
 			/* the pointer has moved */
 			return True;
 		}
-		if (FCheckPeekIfEvent(dpy, &e, __predicate_button_click, NULL))
+		if (FCheckPeekIfEvent(dpy, &e, _pred_button_click, NULL))
 		{
 			/* click in the future */
 			return False;
@@ -3357,17 +3443,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	}
 	case XA_WM_NAME:
 	{
-		int n;
-		int pos;
-
-		pos = check_for_another_property_notify(
-			te->xproperty.atom, FW_W(fw), &n);
-		if (pos > 0)
-		{
-			/* Another PropertyNotify for this atom is pending,
-			 * skip the current one. */
-			return;
-		}
+		flush_property_notify_stop_at_event_type(
+			te->xproperty.atom, FW_W(fw), 0, 0);
 		if (XGetGeometry(
 			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
 			    (unsigned int*)&JunkWidth,
@@ -3446,17 +3523,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	}
 	case XA_WM_ICON_NAME:
 	{
-		int n;
-		int pos;
-
-		pos = check_for_another_property_notify(
-			te->xproperty.atom, FW_W(fw), &n);
-		if (pos > 0)
-		{
-			/* Another PropertyNotify for this atom is pending,
-			 * skip the current one. */
-			return;
-		}
+		flush_property_notify_stop_at_event_type(
+			te->xproperty.atom, FW_W(fw), 0, 0);
 		if (XGetGeometry(
 			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
 			    (unsigned int*)&JunkWidth,
@@ -3513,17 +3581,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	}
 	case XA_WM_HINTS:
 	{
-		int n;
-		int pos;
-
-		pos = check_for_another_property_notify(
-			te->xproperty.atom, FW_W(fw), &n);
-		if (pos > 0)
-		{
-			/* Another PropertyNotify for this atom is pending,
-			 * skip the current one. */
-			return;
-		}
+		flush_property_notify_stop_at_event_type(
+			te->xproperty.atom, FW_W(fw), 0, 0);
 		if (XGetGeometry(
 			    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
 			    (unsigned int*)&JunkWidth,
@@ -3764,7 +3823,8 @@ void HandleReparentNotify(const evh_args_t *ea)
 		{
 			XSelectInput(dpy, te->xreparent.window, XEVMASK_MENUW);
 		}
-		discard_events(XEVMASK_FRAMEW);
+		XSync(dpy, 0);
+		FWeedIfWindowEvents(dpy, FW_W_FRAME(fw), NULL, NULL);
 		destroy_window(fw);
 		EWMH_ManageKdeSysTray(te->xreparent.window, te->type);
 		EWMH_WindowDestroyed();
@@ -4279,6 +4339,14 @@ void HandleEvents(void)
 		}
 		if (My_XNextEvent(dpy, &ev))
 		{
+			/* DV (19-Sep-2014): We mark events as invalid by
+			 * setting the send_event field to a bogus value in a
+			 * predicate procedure.  It's unsure whether this works
+			 * reliably.  */
+			if (FEV_IS_EVENT_INVALID(ev))
+			{
+				continue;
+			}
 			dispatch_event(&ev);
 		}
 		if (Scr.flags.do_need_style_list_update)
@@ -4593,48 +4661,13 @@ int GetContext(FvwmWindow **ret_fw, FvwmWindow *t, const XEvent *e, Window *w)
 	return context;
 }
 
-/*
- *
- * Removes expose events for a specific window from the queue
- *
- */
-int flush_expose(Window w)
+/* Drops all expose events for the given window from the input queue and merges
+ * the expose rectangles into a single big one (*e). */
+void flush_accumulate_expose(Window w, XEvent *e)
 {
-	XEvent dummy;
-	int i=0;
+	FWeedIfWindowEvents(dpy, w, _pred_weed_accumulate_expose, (XPointer)e);
 
-	while (FCheckTypedWindowEvent(dpy, w, Expose, &dummy))
-	{
-		i++;
-	}
-
-	return i;
-}
-
-/* same as above, but merges the expose rectangles into a single big one */
-int flush_accumulate_expose(Window w, XEvent *e)
-{
-	XEvent dummy;
-	int i = 0;
-	int x1 = e->xexpose.x;
-	int y1 = e->xexpose.y;
-	int x2 = x1 + e->xexpose.width;
-	int y2 = y1 + e->xexpose.height;
-
-	while (FCheckTypedWindowEvent(dpy, w, Expose, &dummy))
-	{
-		x1 = min(x1, dummy.xexpose.x);
-		y1 = min(y1, dummy.xexpose.y);
-		x2 = max(x2, dummy.xexpose.x + dummy.xexpose.width);
-		y2 = max(y2, dummy.xexpose.y + dummy.xexpose.height);
-		i++;
-	}
-	e->xexpose.x = x1;
-	e->xexpose.y = y1;
-	e->xexpose.width = x2 - x1;
-	e->xexpose.height = y2 - y1;
-
-	return i;
+	return;
 }
 
 /*
@@ -4645,14 +4678,10 @@ int flush_accumulate_expose(Window w, XEvent *e)
 void handle_all_expose(void)
 {
 	void *saved_event;
-	XEvent evdummy;
 
 	saved_event = fev_save_event();
 	FPending(dpy);
-	while (FCheckMaskEvent(dpy, ExposureMask, &evdummy))
-	{
-		dispatch_event(&evdummy);
-	}
+	FWeedIfEvents(dpy, _pred_weed_handle_expose, NULL);
 	fev_restore_event(saved_event);
 
 	return;
@@ -4716,81 +4745,42 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 	return;
 }
 
-/* This function discards all queued up ButtonPress, ButtonRelease and
- * ButtonMotion events. */
-int discard_events(long event_mask)
+/* This function discards all queued up events selected by the mask. */
+int discard_typed_events(int num_event_types, int *event_types)
 {
-	XEvent e;
+	_weed_event_type_arg args;
 	int count;
+	int i;
 
 	XSync(dpy, 0);
-	for (count = 0; FCheckMaskEvent(dpy, event_mask, &e); count++)
+	assert(num_event_types <= MAX_NUM_WEED_EVENT_TYPES);
+	args.num_event_types = num_event_types;
+	for (i = 0; i < num_event_types; i++)
 	{
-		/* nothing */
+		args.event_types[i] = event_types[i];
 	}
-
-	return count;
-}
-
-/* This function discards all queued up ButtonPress, ButtonRelease and
- * ButtonMotion events. */
-int discard_window_events(Window w, long event_mask)
-{
-	XEvent e;
-	int count;
-
-	XSync(dpy, 0);
-	for (count = 0; FCheckWindowEvent(dpy, w, event_mask, &e); count++)
-	{
-		/* nothing */
-	}
+	count = FWeedIfEvents(dpy, _pred_weed_event_type, (XPointer)&args);
 
 	return count;
 }
 
 /* Similar function for certain types of PropertyNotify. */
-int check_for_another_property_notify(
-	Atom atom, Window w, int *num_events_removed)
+int flush_property_notify_stop_at_event_type(
+	Atom atom, Window w, char do_stop_at_event_type,
+	int stop_at_event_type)
 {
-	test_typed_window_event_args args;
-	XEvent e;
-	int pos;
-	int do_loop;
+	flush_property_notify_args args;
 
-	*num_events_removed = 0;
 	XSync(dpy, 0);
 	args.w = w;
 	args.atom = atom;
 	args.event_type = PropertyNotify;
-	/* Get rid of the events. */
-	for (
-		*num_events_removed = 0, do_loop = 1; do_loop;
-		(*num_events_removed)++)
-	{
-		pos = FCheckPeekIfEventWithLimit(
-			dpy, &e, test_typed_window_event, (XPointer)&args,
-			NUM_EVENTS_TO_PEEK);
-		switch (pos)
-		{
-		case 1:
-		{
-			/* Strip leadind events from the queue. */
-			FNextEvent(dpy, &e);
-			/* keep going */
-			continue;
-		}
-		case 0:
-			/* No more events found. */
-			do_loop = 0;
-			break;
-		default:
-			/* Event left, but not at the front of the queue. */
-			do_loop = 0;
-			break;
-		}
-	}
+	args.stop_at_event_type = stop_at_event_type;
+	args.do_stop_at_event_type = do_stop_at_event_type;
+	FWeedIfEvents(
+		dpy, _pred_flush_property_notify_weed, (XPointer)&args);
 
-	return pos;
+	return 0;
 }
 
 /* Wait for all mouse buttons to be released
