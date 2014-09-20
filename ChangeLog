@@ -1,5 +1,12 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* libs/FEvent.c (fev_sanitize_size_hints):
+	(FGetWMNormalHints):
+	* libs/FEvent.h:
+	new functions
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* fvwm/events.c (__merge_cr_moveresize):
 	(__handle_configure_request):
 	Sanitise the geometry in ConfigureRequest events before using them.

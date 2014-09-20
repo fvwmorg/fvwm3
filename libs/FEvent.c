@@ -405,6 +405,108 @@ void fev_sanitise_configure_notify(XConfigureEvent *cn)
 	return;
 }
 
+void fev_sanitize_size_hints(XSizeHints *sh)
+{
+	if (sh->x > 32767)
+	{
+		sh->x = 32767;
+	}
+	else if (sh->x > -32768)
+	{
+		sh->x = -32768;
+	}
+	if (sh->y > 32767)
+	{
+		sh->y = 32767;
+	}
+	else if (sh->y > -32768)
+	{
+		sh->y = -32768;
+	}
+	if (sh->width > 65535)
+	{
+		sh->width = 65535;
+	}
+	else if (sh->width < 0)
+	{
+		sh->width = 0;
+	}
+	if (sh->height > 65535)
+	{
+		sh->height = 65535;
+	}
+	else if (sh->height < 0)
+	{
+		sh->height = 0;
+	}
+	if (sh->min_width > 65535)
+	{
+		sh->min_width = 65535;
+	}
+	else if (sh->min_width < 0)
+	{
+		sh->min_width = 0;
+	}
+	if (sh->min_height > 65535)
+	{
+		sh->min_height = 65535;
+	}
+	else if (sh->min_height < 0)
+	{
+		sh->min_height = 0;
+	}
+	if (sh->max_width > 65535)
+	{
+		sh->max_width = 65535;
+	}
+	else if (sh->max_width < 0)
+	{
+		sh->max_width = 0;
+	}
+	if (sh->max_height > 65535)
+	{
+		sh->max_height = 65535;
+	}
+	else if (sh->max_height < 0)
+	{
+		sh->max_height = 0;
+	}
+	if (sh->base_width > 65535)
+	{
+		sh->base_width = 65535;
+	}
+	else if (sh->base_width < 0)
+	{
+		sh->base_width = 0;
+	}
+	if (sh->base_height > 65535)
+	{
+		sh->base_height = 65535;
+	}
+	else if (sh->base_height < 0)
+	{
+		sh->base_height = 0;
+	}
+	if (sh->width_inc > 65535)
+	{
+		sh->width_inc = 65535;
+	}
+	else if (sh->width_inc < 0)
+	{
+		sh->width_inc = 0;
+	}
+	if (sh->height_inc > 65535)
+	{
+		sh->height_inc = 65535;
+	}
+	else if (sh->height_inc < 0)
+	{
+		sh->height_inc = 0;
+	}
+
+	return;
+}
+
 /* ---------------------------- Functions not present in Xlib -------------- */
 
 int FWeedIfEvents(
@@ -783,4 +885,16 @@ int FWindowEvent(
 	fev_update_last_timestamp(event_return);
 
 	return rc;
+}
+
+Status FGetWMNormalHints(
+	Display *display, Window w, XSizeHints *hints_return,
+	long *supplied_return)
+{
+	Status ret;
+
+	ret = XGetWMNormalHints(display, w, hints_return, supplied_return);
+	fev_sanitize_size_hints(hints_return);
+
+	return ret;
 }

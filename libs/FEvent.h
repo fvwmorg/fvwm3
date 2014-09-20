@@ -76,6 +76,7 @@ void fev_get_last_event(XEvent *ev);
  * int, but the protocol uses only a 16 bit signed integer. */
 void fev_sanitise_configure_request(XConfigureRequestEvent *cr);
 void fev_sanitise_configure_notify(XConfigureEvent *cn);
+void fev_sanitize_size_hints(XSizeHints *sh);
 
 /* ---------------------------- Functions not present in Xlib -------------- */
 
@@ -188,6 +189,9 @@ int FWarpPointerUpdateEvpos(
 	int dest_x, int dest_y);
 int FWindowEvent(
 	Display *display, Window w, long event_mask, XEvent *event_return);
+Status FGetWMNormalHints(
+	Display *display, Window w, XSizeHints *hints_return,
+	long *supplied_return);
 
 /* ---------------------------- disable X symbols -------------------------- */
 
@@ -212,6 +216,9 @@ int FWindowEvent(
 #define XSendEvent(a, b, c, d, e) use_FSendEvent
 #define XWarpPointer(a, b, c, d, e, f, g, h, i) use_FWarpPointer
 #define XWindowEvent(a, b, c, d) use_FWindowEvent
+#define XGetSizeHints(a, b, c) use_FGetWMNormalHints
+#define XGetNormalHints(a, b, c) use_FGetWMNormalHints
+#define XGetWMNormalHints(a, b, c, d) use_FGetWMNormalHints
 #endif
 
 #endif /* FEVENT_H */
