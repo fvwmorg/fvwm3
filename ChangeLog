@@ -1,5 +1,13 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* fvwm/events.c (__merge_cr_moveresize):
+	(__handle_configure_request):
+	Sanitise the geometry in ConfigureRequest events before using them.
+	(SendConfigureNotify):
+	Sanitise the geometry in ConfigureNotify events before sending them.
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* libs/FEvent.h:
 	* libs/FEvent.c (fev_sanitise_configure_request)
 	(fev_sanitise_configure_notify):

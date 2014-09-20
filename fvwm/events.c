@@ -964,6 +964,7 @@ static inline int __merge_cr_moveresize(
 			/* not good. unselected event type! */
 			continue;
 		}
+		fev_sanitise_configure_request(cre);
 		/* Event was not yet removed from the queue but stored in e. */
 		xm = CWX | CWWidth;
 		ym = CWY | CWHeight;
@@ -1312,6 +1313,7 @@ void __handle_configure_request(
 	int do_send_event = 0;
 	int cn_count = 0;
 
+	fev_sanitise_configure_request(&cre);
 	/* According to the July 27, 1988 ICCCM draft, we should ignore size
 	 * and position fields in the WM_NORMAL_HINTS property when we map a
 	 * window. Instead, we'll read the current geometry.  Therefore, we
@@ -4108,6 +4110,7 @@ void SendConfigureNotify(
 		(int)client_event.xconfigure.window,
 		(fw->name.name) ? fw->name.name : "");
 #endif
+	fev_sanitise_configure_notify(&client_event);
 	FSendEvent(
 		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
 	if (send_for_frame_too)
