@@ -1,5 +1,11 @@
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
+	* configure.ac:
+	* libs/FEvent.h (XGetSizeHints):
+	fix compile errors
+
+2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
 	* fvwm/add_window.c (GetWindowSizeHintsWithCheck):
 	* libs/WinMagic.c (SlideWindow):
 	Use FGetWMNormalHints

@@ -216,7 +216,7 @@ Status FGetWMNormalHints(
 #define XSendEvent(a, b, c, d, e) use_FSendEvent
 #define XWarpPointer(a, b, c, d, e, f, g, h, i) use_FWarpPointer
 #define XWindowEvent(a, b, c, d) use_FWindowEvent
-#define XGetSizeHints(a, b, c) use_FGetWMNormalHints
+#define XGetSizeHints(a, b, c, d) use_FGetWMNormalHints
 #define XGetNormalHints(a, b, c) use_FGetWMNormalHints
 #define XGetWMNormalHints(a, b, c, d) use_FGetWMNormalHints
 #endif
