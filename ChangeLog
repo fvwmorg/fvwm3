@@ -1,3 +1,9 @@
+2014-09-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* fvwm/events.c (dispatch_event):
+	Ignore window events other than DestroyNotify when the window is being
+	destroyed.
+
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/ewmh_events.c (ewmh_RestackWindow, ewmh_MoveResizeWindow):
