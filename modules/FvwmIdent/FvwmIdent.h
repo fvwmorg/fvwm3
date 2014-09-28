@@ -9,8 +9,10 @@ struct target_struct
   char class[256];
   char name[256];
   char icon_name[256];
+  char *monitor;
   unsigned long id;
   unsigned long frame;
+  long monitor_id;
   long frame_x;
   long frame_y;
   long frame_w;
