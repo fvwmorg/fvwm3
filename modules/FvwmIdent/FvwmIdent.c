@@ -387,6 +387,10 @@ void list_configure(unsigned long *body)
 	{
 		module->window = cfgpacket->frame;
 		target.id = cfgpacket->w;
+		target.monitor_id = cfgpacket->monitor_id;
+		free(target.monitor);
+		target.monitor = mvwm_strdup(monitor_by_number(
+					(int)target.monitor_id)->name);
 		target.frame = cfgpacket->frame;
 		target.frame_x = cfgpacket->frame_x;
 		target.frame_y = cfgpacket->frame_y;
@@ -1133,6 +1137,7 @@ void MakeList(void)
 	AddToList("Class:",         target.class);
 	AddToList("Resource:",      target.res);
 	AddToList("Window ID:",     id);
+	AddToList("Monitor:",       target.monitor);
 	AddToList("Desk:",          desktop);
 	if (FScreenIsEnabled()) {
 		sprintf(xin_str, "%d",
