@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
+#include <err.h>
 
 #include "defaults.h"
 #include "fvwmlib.h"
@@ -133,6 +134,40 @@ monitor_by_name(const char *name)
 	return (mret);
 }
 
+struct monitor *
+monitor_by_number(int number)
+{
+	struct monitor	*m, *mret = NULL;
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->number == number) {
+		       mret = m;
+		       break;
+		}
+	}
+
+	/* If 'm' is still NULL here, and the monitor number is -1, return
+	 * the global  monitor instead.  This check can only succeed if we've
+	 * requested the global screen whilst XRandR is in use, since the global
+	 * monitor isn't stored in the monitor list directly.
+	 */
+	if (mret == NULL && number == -1)
+		return (monitor_by_name(GLOBAL_SCREEN_NAME));
+
+	/* Then we couldn't find the named monitor at all.  Return the current
+	 * monitor instead.
+	 */
+	if (mret == NULL) {
+		mret = monitor_get_current();
+		fprintf(stderr, "%s: couldn't find monitor id: %d\n", __func__,
+		    number);
+		fprintf(stderr, "%s: returning current monitor (%s)\n",
+		    __func__, mret->name);
+	}
+
+	return (mret);
+}
+
 void
 FScreenSelect(Display *dpy)
 {
@@ -205,6 +240,7 @@ void FScreenInit(Display *dpy)
 		}
 
 		m = monitor_new();
+		m->number = no_of_screens;
 		coord.x = crtc_info->x;
 		coord.y = crtc_info->y;
 		coord.w = crtc_info->width;
@@ -223,6 +259,7 @@ void FScreenInit(Display *dpy)
 
 single_screen:
 	m = monitor_new();
+	m->number = -1;
 	coord.x = 0;
 	coord.y = 0;
 	coord.w = DisplayWidth(disp, DefaultScreen(disp));

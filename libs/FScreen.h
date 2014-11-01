@@ -32,9 +32,10 @@ struct coord {
 };
 
 struct monitor {
-	char	*name;
-	int	 is_primary;
-	struct coord coord;
+	char		*name;
+	int		 is_primary;
+	struct coord 	 coord;
+	int 		 number;
 
 	TAILQ_ENTRY(monitor) entry;
 };
