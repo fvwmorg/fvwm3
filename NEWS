@@ -67,6 +67,9 @@ Changes in stable release 2.6.6 (not released yet)
   - When an attempt to reparent a client window (i.e. decorate
     it) fails, fvwm no longer throws away all events but only the
     events for that window.
+  - The ChangeButton command of FvwmButtons used to strip
+    whitespace from the beginning and end of button titles and
+    image paths.  This is no longer done.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.5 (20-Apr-2012)
