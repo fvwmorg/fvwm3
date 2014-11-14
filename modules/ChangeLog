@@ -1,3 +1,8 @@
+2014-11-14  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
+
+	* FvwmButtons/dynamic.c (parse_message_line): Do not strip whitespace
+	from synamic button title or image path.
+
 2014-09-20  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* FvwmWharf/FvwmWharf.c (swallow):

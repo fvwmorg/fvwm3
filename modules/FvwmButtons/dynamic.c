@@ -290,21 +290,24 @@ void parse_message_line(char *line)
 				if (b->flags.b_Title)
 					free(b->title);
 				b->flags.b_Title = 1;
-				CopyString(&b->title, value);
+				b->title = value;
+				value = NULL;
 				break;
 			case 2:
 				/* ActiveTitle */
 				if (b->flags.b_ActiveTitle)
 					free(b->activeTitle);
 				b->flags.b_ActiveTitle = 1;
-				CopyString(&b->activeTitle, value);
+				b->title = value;
+				value = NULL;
 				break;
 			case 4:
 				/* PressTitle */
 				if (b->flags.b_PressTitle)
 					free(b->pressTitle);
 				b->flags.b_PressTitle = 1;
-				CopyString(&b->pressTitle, value);
+				b->title = value;
+				value = NULL;
 				break;
 			default:
 				if (
@@ -327,8 +330,8 @@ void parse_message_line(char *line)
 								Dpy, b->icon);
 						}
 						b->flags.b_Icon = 1;
-						CopyString(
-							&b->icon_file, value);
+						b->icon_file = value;
+						value = NULL;
 						b->icon = icon;
 						break;
 					case 3: /* ActiveIcon */
@@ -340,9 +343,8 @@ void parse_message_line(char *line)
 								b->activeicon);
 						}
 						b->flags.b_ActiveIcon = 1;
-						CopyString(
-							&b->active_icon_file,
-							value);
+						b->active_icon_file = value;
+						value = NULL;
 						b->activeicon = icon;
 						break;
 					case 5: /* PressIcon */
@@ -354,9 +356,8 @@ void parse_message_line(char *line)
 								b->pressicon);
 						}
 						b->flags.b_PressIcon = 1;
-						CopyString(
-							&b->press_icon_file,
-							value);
+						b->press_icon_file = value;
+						value = NULL;
 						b->pressicon = icon;
 						break;
 					}
