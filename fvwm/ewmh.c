@@ -1111,14 +1111,17 @@ void EWMH_GetWorkAreaIntersection(
 	}
 	nx = max(*x, area_x);
 	ny = max(*y, area_y);
-	nw = min(*x + *w, area_x + area_w) - nx;
-	if (nw == 0)
-		nw = m->si->w;
-	nh = min(*y + *h, area_y + area_h) - ny;
-	*x = abs(nx);
-	*y = abs(ny);
-	*w = abs(nw);
-	*h = abs(nh);
+	nw = min(*x + *w, area_x + area_w);
+	nh = min(*y + *h, area_y + area_h);
+	*x = nx;
+	*y = ny;
+	*w = nw;
+	*h = nh;
+
+	if ((nw - nx) > 0)
+		*w = nw - nx;
+	if ((nh - ny) > 0)
+		*h = nh - ny;
 
 	return;
 }
