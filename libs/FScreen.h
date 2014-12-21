@@ -6,6 +6,15 @@
 #include <X11/extensions/Xrandr.h>
 #endif
 
+/* For CARD32 */
+#include <X11/Xproto.h>
+
+#include "fvwm/fvwm.h"
+#include "fvwm/execcontext.h"
+#include "fvwm/misc.h"
+#include "fvwm/screen.h"
+#include "fvwm/ewmh_intern.h"
+
 /* needs X11/Xlib.h and X11/Xutil.h */
 
 typedef struct
@@ -100,6 +109,9 @@ struct monitor {
          * correct for any desktop not in the list
          */
 	DesktopsInfo    *Desktops;
+
+	/* Information about EWMH */
+	ewmhInfo ewmhc;
 
         /* Information about EWMH. */
         struct {

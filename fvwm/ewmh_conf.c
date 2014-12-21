@@ -108,27 +108,31 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 		return;
 	}
 
-	if (num == 2 && ewmhc.MaxDesktops != val[1])
-	{
-		ewmhc.MaxDesktops = val[1];
-		num = 3;
-	}
-	else if (num == 1 && ewmhc.MaxDesktops != 0)
-	{
-		ewmhc.MaxDesktops = 0;
-		num = 3;
-	}
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (monitor_should_ignore_global(m))
+			continue;
+		if (num == 2 && m->ewmhc.MaxDesktops != val[1])
+		{
+			m->ewmhc.MaxDesktops = val[1];
+			num = 3;
+		}
+		else if (num == 1 && m->ewmhc.MaxDesktops != 0)
+		{
+			m->ewmhc.MaxDesktops = 0;
+			num = 3;
+		}
 
-	if (ewmhc.NumberOfDesktops != val[0])
-	{
-		ewmhc.NumberOfDesktops = val[0];
-		num = 3;
-	}
+		if (m->ewmhc.NumberOfDesktops != val[0])
+		{
+			m->ewmhc.NumberOfDesktops = val[0];
+			num = 3;
+		}
 
-	if (num == 3)
-	{
-		ewmhc.NeedsToCheckDesk = True;
-		EWMH_SetNumberOfDesktops(monitor_get_current());
+		if (num == 3)
+		{
+			m->ewmhc.NeedsToCheckDesk = True;
+			EWMH_SetNumberOfDesktops(m);
+		}
 	}
 }
 

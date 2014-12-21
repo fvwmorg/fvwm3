@@ -1,10 +1,10 @@
 /* -*-c-*- */
 /* Copyright (C) 2001  Olivier Chapuis */
 /* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -521,32 +521,31 @@ void EWMH_SetNumberOfDesktops(struct monitor *m)
 {
 	long val;
 
-	/* FIXME: needs broadcasting to each monitor if global. */
-
-	if (ewmhc.CurrentNumberOfDesktops < ewmhc.NumberOfDesktops)
+	if (m->ewmhc.CurrentNumberOfDesktops < m->ewmhc.NumberOfDesktops)
 	{
-		ewmhc.CurrentNumberOfDesktops = ewmhc.NumberOfDesktops;
+		m->ewmhc.CurrentNumberOfDesktops = m->ewmhc.NumberOfDesktops;
 	}
 
-	if (ewmhc.CurrentNumberOfDesktops > ewmhc.NumberOfDesktops ||
-	    ewmhc.NeedsToCheckDesk)
+	if (m->ewmhc.CurrentNumberOfDesktops > m->ewmhc.NumberOfDesktops ||
+	    m->ewmhc.NeedsToCheckDesk)
 	{
 		int d = check_desk();
 
-		ewmhc.NeedsToCheckDesk = False;
-		if (d >= ewmhc.MaxDesktops && ewmhc.MaxDesktops != 0)
+		m->ewmhc.NeedsToCheckDesk = False;
+		if (d >= m->ewmhc.MaxDesktops && m->ewmhc.MaxDesktops != 0)
 			d = 0;
-		ewmhc.CurrentNumberOfDesktops =
-			max(ewmhc.NumberOfDesktops, d+1);
+		m->ewmhc.CurrentNumberOfDesktops =
+			max(m->ewmhc.NumberOfDesktops, d+1);
 	}
 
-	if (m->virtual_scr.CurrentDesk >= ewmhc.CurrentNumberOfDesktops &&
-	    (m->virtual_scr.CurrentDesk < ewmhc.MaxDesktops || ewmhc.MaxDesktops == 0))
+	if (m->virtual_scr.CurrentDesk >= m->ewmhc.CurrentNumberOfDesktops &&
+	    (m->virtual_scr.CurrentDesk < m->ewmhc.MaxDesktops ||
+	    ewmhc.MaxDesktops == 0))
 	{
 		ewmhc.CurrentNumberOfDesktops = m->virtual_scr.CurrentDesk + 1;
 	}
 
-	val = (long)ewmhc.CurrentNumberOfDesktops;
+	val = (long)m->ewmhc.CurrentNumberOfDesktops;
 	ewmh_ChangeProperty(Scr.Root, "_NET_NUMBER_OF_DESKTOPS",
 			    EWMH_ATOM_LIST_CLIENT_ROOT,
 			    (unsigned char *)&val, 1);
@@ -945,7 +944,8 @@ void ewmh_SetWorkArea(struct monitor *m)
 	long val[256][4]; /* no more than 256 desktops */
 	int i = 0;
 
-	/* FIXME:  needs broadcast if monitor is global. */
+	if (m->Desktops == NULL)
+		return;
 
 	while(i < ewmhc.NumberOfDesktops && i < 256)
 	{
@@ -964,10 +964,10 @@ void ewmh_SetWorkArea(struct monitor *m)
 
 void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 {
-	int left = ewmhc.BaseStrut.left;
-	int right = ewmhc.BaseStrut.right;
-	int top = ewmhc.BaseStrut.top;
-	int bottom = ewmhc.BaseStrut.bottom;
+	int left = m->ewmhc.BaseStrut.left;
+	int right = m->ewmhc.BaseStrut.right;
+	int top = m->ewmhc.BaseStrut.top;
+	int bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
 
@@ -1020,10 +1020,10 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 void ewmh_HandleDynamicWorkArea(struct monitor *m)
 {
-	int dyn_left = ewmhc.BaseStrut.left;
-	int dyn_right = ewmhc.BaseStrut.right;
-	int dyn_top = ewmhc.BaseStrut.top;
-	int dyn_bottom = ewmhc.BaseStrut.bottom;
+	int dyn_left = m->ewmhc.BaseStrut.left;
+	int dyn_right = m->ewmhc.BaseStrut.right;
+	int dyn_top = m->ewmhc.BaseStrut.top;
+	int dyn_bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
 
@@ -1073,8 +1073,6 @@ void EWMH_UpdateWorkArea(struct monitor *m)
 {
 	ewmh_ComputeAndSetWorkArea(m);
 	ewmh_HandleDynamicWorkArea(m);
-
-	return;
 }
 
 void EWMH_GetWorkAreaIntersection(
