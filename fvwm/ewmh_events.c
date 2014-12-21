@@ -136,26 +136,28 @@ int ewmh_NumberOfDesktops(
 	int d = ev->xclient.data.l[0];
 	struct monitor	*m;
 
-	m = (fw && fw->m) ? fw->m : monitor_get_current();
-
 	/* not a lot of sinification for fvwm */
-	if (d > 0 && (d <= ewmhc.MaxDesktops || ewmhc.MaxDesktops == 0))
-	{
-		ewmhc.NumberOfDesktops = d;
+	TAILQ_FOREACH(m, &monitor_q, entry) {
 		EWMH_SetNumberOfDesktops(m);
-	}
-	else
-	{
-		fvwm_msg(
-			WARN, "ewmh_NumberOfDesktops",
-			"The application window (id %#lx)\n"
-			"  \"%s\" tried to set an invalid number of desktops"
-			" (%ld)\n"
-			"  using an EWMH client message.\n"
-			"    fvwm is ignoring this request.\n",
-			fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			ev->xclient.data.l[0]);
-		fvwm_msg_report_app_and_workers();
+
+		if (d > 0 &&
+		    (d <= m->ewmhc.MaxDesktops || m->ewmhc.MaxDesktops == 0))
+		{
+			m->ewmhc.NumberOfDesktops = d;
+		}
+		else
+		{
+			mvwm_msg(
+				WARN, "ewmh_NumberOfDesktops",
+				"The application window (id %#lx)\n"
+				"  \"%s\" tried to set an invalid number of desktops"
+				" (%ld)\n"
+				"  using an EWMH client message.\n"
+				"    fvwm is ignoring this request.\n",
+				fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+				ev->xclient.data.l[0]);
+			fvwm_msg_report_app_and_workers();
+		}
 	}
 
 	return -1;
