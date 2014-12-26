@@ -1,3 +1,9 @@
+2014-12-26  Thomas Adam  <thomas@fvwm.org>
+	* fvwm/ewmh_events.c (ewmh_WMStateSticky):
+	Fix EWMH sticky message to handle toggle/remove
+	This wasn't being unset at all in the case where toggle or remove was
+	explicitly requested in the EWMH-mesage.
+
 2014-09-21  Dominik Vogt  <dominik(dot)vogt(at)gmx(dot)de>
 
 	* fvwm/events.c (dispatch_event):

@@ -1427,10 +1427,13 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
 			execute_function_override_window(
 				NULL, NULL, "Stick on", 0, fw);
 		}
-		else
+		else if ((IS_STICKY_ACROSS_PAGES(fw) ||
+			  IS_STICKY_ACROSS_DESKS(fw)) &&
+			 (bool_arg == NET_WM_STATE_TOGGLE ||
+			  bool_arg == NET_WM_STATE_REMOVE))
 		{
 			execute_function_override_window(
-				NULL, NULL, "Stick on", 1, fw);
+				NULL, NULL, "Stick off", 1, fw);
 		}
 	}
 	return 0;
