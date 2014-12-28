@@ -168,6 +168,8 @@ FftFont *FftGetRotatedFont(
 	if (f == NULL)
 		return NULL;
 
+	memset(&b, 0, sizeof(FftMatrix));
+
 	rotated_pat = FftPatternDuplicate(f->pattern);
 
 	if (rotated_pat == NULL)
@@ -249,6 +251,8 @@ void FftGetFontWidths(
 {
 	FGlyphInfo extents;
 
+	memset(&extents, 0, sizeof(FGlyphInfo));
+
 	/* FIXME:  max_char_width should not be use in the all fvwm! */
 	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
@@ -273,9 +277,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	FlocaleCharset *fc;
 	FftPattern *src_pat = NULL, *load_pat = NULL;
 	FftMatrix *a = NULL;
-	FftResult result;
 
-	result = 0;
 	if (!FftSupport || !(FRenderGetExtensionSupported() || 1))
 	{
 		return NULL;
@@ -332,6 +334,8 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	{
 		FftMatrix b;
 		Bool cm = False;
+
+		memset(&b, 0, sizeof(FftMatrix));
 
 		if (a->xx < 0)
 		{
