@@ -36,8 +36,10 @@ Changes in stable release 2.6.6 (not released yet)
 
   - Provide a wrapper for the deprecation of XKeycodeToKeysym and
     use XkbKeycodeToKeysym() where appropriate.
-  - fvwm-desktop-menu is re-written and provides better support of
+  - fvwm-menu-desktop is re-written and provides better support of
     the XDG menu specification.
+  - Fix fvwm-menu-desktop keyError bug.  Use "others" if no desktop
+    environment found.
   - FvwmIconMan had problems displaying the hilight colour on some
     systems (64 bit issue?).
   - Globally active windows cannot take the focus if the style

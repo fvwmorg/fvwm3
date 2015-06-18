@@ -1,3 +1,9 @@
+2015-06-16  Dan Espen  <despen@verizon.net>
+
+	* fvwm-menu-desktop.in (getmenulist):
+	Fix keyError on my FC21 install.
+	When no desktop environment found, use "others".
+
 2014-04-25  Thomas Funk  <t.funk@web.de>
 
 	* fvwm-menu-desktop.in:

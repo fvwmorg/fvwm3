@@ -382,6 +382,9 @@ def getmenulist(desktop, menu_type):
             if higher:
                 highest = de_total
                 de_highest = de
+
+	if highest == 0 :	# no dev environments?
+	    de_highest = 'others' # use 'others'
         vprint( "\n Winner: %s" %de_highest)
         
         # Perhaps there're a global menus available which are not in the highest rated list
