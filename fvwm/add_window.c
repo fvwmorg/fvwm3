@@ -585,9 +585,9 @@ static char *interpolate_titleformat_name(FvwmWindow *fw, window_style *style,
 	int count;
 
 	/* MAX_WINDOW_NAME_NUMBER is defined as "999" -- that's three
-	 * characters maximum.
+	 * characters maximum.  win_name_len must be 1 larger for null.
 	 */
-	char win_name_len[MAX_WINDOW_NAME_NUMBER_DIGITS];
+	char win_name_len[MAX_WINDOW_NAME_NUMBER_DIGITS+1];
 	char w_id[12];
 
 	if (is_icon)
