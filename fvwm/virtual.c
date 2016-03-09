@@ -2502,8 +2502,8 @@ void CMD_DesktopName(F_CMD_ARGS)
 		}
 		BroadcastConfigInfoString(msg);
 		free(msg);
-		EWMH_SetDesktopNames();
 	}
+	EWMH_SetDesktopNames();
 
 	return;
 }
