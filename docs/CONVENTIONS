@@ -169,67 +169,7 @@ G. Formatting text files
    Reasoning:  Improves readability.
    [dv]
 
-H. Release Management
-
- * New patches may be tried out in the development versions (with
-   an odd second digit in the version number).  Features may be
-   changed, renamed or removed at any time.
-   [dv]
-
- ! In the stable versions, features can not easily be changed or
-   removed.  For backwards compatibility think of the least
-   disrupting way of doing changes.
-   [dv]
-
- * As you may conclude from above two items, try to never add
-   experimental features close to the next stable release.  Once
-   the feature is made available in a stable version, it becomes
-   virtually impossible to back it out or change its syntax.
-   [dv]
-
-I. Maintaining the NEWS
-
- * In the development versions, only new, removed and changed
-   features must be mentioned in the NEWS.
-   [dv]
-
- * There is currently some discussion whether features that were
-   added in a prior development release and are renamed or removed
-   later, before the next stable release, should be deleted from
-   the NEWS or not.
-   [dv]
-
- ! In the stable versions, all changes to any file *must* be
-   mentioned in the NEWS.  This is important since the NEWS file
-   is sent as part of the release announcement.  Users must be
-   able to judge whether they want the new release or not.
-   [dv]
-
-J. Maintaining the ChangeLog
-
- ! The ChangeLog is meant to ease code maintenance.  With proper
-   and detailed entries, the ChangeLog can dramatically reduce the
-   time needed to find problems and fix bugs.
-   [dv]
-
- ! Every change *must* be ChangeLog'ed as detailed as possible.
-   To generate a ChangeLog entry while you are coding, press "C-x
-   4 a" in (x)emacs.
-   [dv]
-
- ! If at all possible, put *all* names of modified files and
-   functions in the ChangeLog.
-   [dv]
-
- * Please do not use wildcards in the ChangeLog entries.  If you
-   modified fvwm.c and fvwm.h, do not write "fvwm.[ch]" or
-   "fvwm.{c,h}" or "fvwm.*".
-
-   Reasoning:  wildcards make it virtually impossible to grep
-   through the ChangeLog.
-   [dv]
-
-K. Maintaining Man Pages
+H. Maintaining Man Pages
 
  ! Every feature must be described with all options in the man
    page.

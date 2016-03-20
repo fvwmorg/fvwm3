@@ -1,38 +1,5 @@
-			Notes for Developers                         -*-text-*-
-			--------------------
-
-Last updated on 08-Jan-2006
-
-You will need to install several GNU tools to be able to use the
-cvs sources.  If you do not have these tools available, build from
-the tar file distribution instead, available from ftp.fvwm.org.
-
-To build from the CVS sources, you will need:
-  * GNU gcc
-  * GNU make
-  * autoconf (version >= 2.53)
-  * automake (version >= 1.4)
 
 
-After the *initial* checkout of the sources, (see DEVELOPER-CVS or
-cvs.html) you will need to execute the following commands from the
-top of the source tree.
-
-    aclocal
-    autoheader
-    automake --add-missing
-    autoconf
-
-There will be some warnings, which are ignorable as long as you
-get a working configure script: the configure script will fix all
-those problems.
-
-Now, configure and build as per INSTALL.fvwm and INSTALL.  If
-configure fails, please look through `config.log' for clues.
-
-
-Development Rules of the Road
------------------------------
 
  1) _Every_ change must be properly ChangeLogged, listing the name
     of the changed function.  If you use Emacs, you can do this
