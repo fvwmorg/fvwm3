@@ -2,5 +2,5 @@
 ## Process this file with automake to create Makefile.in
 
 EXTRA_DIST = \
-	ANNOUNCE COMMANDS BUGS CONVENTIONS DEVELOPERS FAQ TODO error_codes\
+	COMMANDS CONVENTIONS DEVELOPERS FAQ TODO error_codes\
 	fvwm.lsm
