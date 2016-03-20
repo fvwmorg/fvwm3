@@ -1,259 +1,53 @@
+= Developing for FVWM
 
+This document aims to help the developer with the expectations when dealing
+with the FVWM source code.
 
+The FVWM source conforms to the [Linux kernel style
+guide](https://www.kernel.org/doc/Documentation/CodingStyle).  For more
+detailed, FVWM-specific instructions, see [CONVENTIONS](./CONVENTIONS).
 
- 1) _Every_ change must be properly ChangeLogged, listing the name
-    of the changed function.  If you use Emacs, you can do this
-    oh-so-trivially with the "C-x 4 a" command; it will add a
-    header (if it's a new day), the name of the file, and even the
-    name of the function you're currently in.  There is a
-    vim-script utils/changelog.vim that does the same when yoi
-    type ":ChangeLog".
+= Creating a release
 
-    If you start adding them as you change functions, it'll soon
-    become second-nature and we'll get proper ChangeLogs.
+Before deciding to make a new release, please check with the `fvwm-workers`
+mailing list that this is the right time to do so.  This will give adequate
+warning for other developers to give status updates about any in-flight
+development that's happening which might impact a potential release.
 
-    If you don't use Emacs, please mimic the format of all the
-    other log entries when adding your own.
+Make sure you have all optional libraries installed.
 
- 2) If you make a user-visible change please add a blurb about it
-    to the NEWS file.  A couple sentences is fine; don't repeat
-    the documentation but give folks enough of an idea so they can
-    decide if they want to learn more.  Bug fixes (unless they're
-    _really_ user visible) shouldn't be noted in the NEWS file.
+0. `git checkout master && git pull` 
+1. Change the dates in configure.ac and fill in the release dates.
+2. Verify that the version variable at the very beginning of
+   configure.ac has the value of the going to be released version
+   and set `ISRELEASED` to `yes`.
+3. Commit the results:  `git commit -a`
+4. Run: `./utils/configure_dev.sh && make clean` to get the tree into a clean
+   slate.  Because this is a release, the source needs compiling.  To do
+   that, run:
 
- 3) If you add a new user-visible feature, don't forget to update
-    the appropriate man pages at the same time!
+   ```
+    make CFLAGS="-g -O2 -Wall -Wpointer-arith -fno-strict-aliasing -Werror"
+   ```
 
- 4) Bug fixes may be committed at any time (unless we're in code
-    freeze for a release), usually without much review (unless you
-    want someone else to look at it).  All our code freezes,
-    etc. are merely procedural, not enforced, so it's important
-    you read fvwm-workers and keep up-to-date with the current
-    state of the tree.
+    Fix all warnings and problems, commit the changes and repeat the previous
+    command until no more warnings occur.
 
- 5) New features should be discussed on the list to ensure
-    everyone thinks they're "appropriate" (one of the goals of
-    fvwm is to be relatively efficient, remember, which means we
-    don't necessarily want the kitchen sink).
+5. Build and test the release tarballs:
 
- 6) If the new feature is large enough, unstable enough, or not
-    targeted at the next release, it should go on a private
-    branch.  Otherwise, consensus will probably have it installed
-    on the main branch.
+   Run: `make distcheck2`
 
- 7) Before adding a new feature think twice if it could perhaps be
-    implemented as a module (perhaps after some extension of the
-    fvwm<->module communication protocol). Moving features in
-    modules helps to keep fvwm itself clean and efficient.
+   If that succeeds, check for `fvwm-x.y.z.tar.gz` in the current working
+   directory.  This is the release tarball which will be uploaded to Github.
+   Unpack it to a temporary directory and build it; check the version as well,
+   via: `./fvwm --version`.
 
- 8) See CONVENTIONS for more details.
+6. Tag the release: `git tag -a` 
+7. Push the tag out: `git push --tags`
+8. Upload the `fvwm-x.y.z.tar.gz` tarball to Github.
+9. Increase the version number in `configure.ac` and set `ISRELEASED` to `no`
+10. Commit that, and push it out.
 
-        ** Of course, compile and test before committing! **
+= Updating fvwm-web
 
-
-Dealing with CVS
-----------------
-
-All details about dealing with CVS should be found in cvs.html or
-DEVELOPER-CVS.  Go look there!
-
-Changing a Makefile
--------------------
-
-First of all, NEVER edit anything named Makefile or Makefile.in.
-These are both derived from the corresponding Makefile.am.  The
-most common reason for editing is to change the list of sources.
-
-Steps: 1. edit foo/blah/Makefile.am
-       2. re-run "make" from the top of the build directory
-
-Step 2 will take care of rebuilding the Makefile.in and Makefile
-from your changed Makefile.am.
-
-Makefile.am has a simple format, basically:
-
-        bin_PROGRAMS = fvwm
-
-        fvwm_SOURCES = blah.c blah.h foo.c foo.h ...
-
-Notice that you have to add all files, C-code *and* headers, to
-the _SOURCES line.  This is vital, because this is the list of
-files that are packed into the distribution.  If you leave one
-out, nobody will be able to build the distributed tar file!
-
-
-Changing configure.ac
----------------------
-
-The most common reason to do this is to change the version string.
-If you're editing it for any other reason, I will assume you know
-what you're doing.
-
-Steps: 1. edit configure.ac, and find the line containing
-          AM_INIT_AUTOMAKE(fvwm, x.y.z) at the top of the file
-       2. change x.y.z to the new version string
-       3. re-run "make" from the top of the build directory
-
-Step 3 will take care of rebuilding the configure script, and
-usually all the other Makefiles.
-
-
-Building an official distribution
----------------------------------
-
-By this, I mean the files fvwm-x.y.z.tar.gz and
-fvwm-x.y.z.tar.bz2.  It is important to do all steps in the given
-order!
-
-Preparations:
-
-  - Make sure you have all optional libraries installed.
-  - When building a release, update the CVS sources first. For a
-    stable release it is best to throw away the whole source tree
-    and check it out from scratch to ensure all source files have
-    been added to CVS.
-  - Change the dates in configure.ac and fill in the release date
-    in NEWS.  Note: For releases prior to 2.5.3, the date has to be
-    updated in docs/fvwm.lsm.in and fvwm/fvwm.1 instead of
-    configure.ac.
-  - Verify that the version variable at the very beginning of
-    configure.ac has the value of the going to be released version
-    and set ISRELEASED to "yes".  It should be "yes" in the
-    released tarballs.
-  - Update docs/ANNOUNCE file.  For the first version of a major
-    release (e.g. 2.6.0) all user visible changes have to be
-    mentioned.  For the following maintenance releases *all* code
-    changes have to be listed.  This is usually done by copying
-    all entries from the NEWS file.  Don't forget to proof read
-    the file as it will be sent to the fvwm-announce mailing list.
-  - Update the ChangeLog for all the changes above.
-  - Commit these changes.
-
-Configuration tests:
-
-  Note that you need to have actually built everything before
-  packing the distribution.  Among other things, this generates
-  the proper dependency information for insertion into
-  Makefile.in's generated by "make distcheck2".
-
-  - Run
-     $ aclocal && autoheader && automake --add-missing && autoconf
-  - If you are building a stable release, remove the config.cache
-    file if there is one (autoconf 2.52 does no longer generate
-    this file by default).  Of course doing this for a development
-    release won't hurt either.
-  - Run
-     $ ./configure --enable-htmldoc
-  - Make sure configure detects all optional libraries except the
-    ones that are recommended not to be used.  Repeat the previous
-    step until configure finds everything.  Building a release
-    without any optional library should be a rare exception.
-
-Compile tests:
-
-  - Run
-     $ make clean
-    even if you checked out from scratch.  It is a useful
-    additional check.
-  - Double check that you get no warnings during the build:
-     $ make CFLAGS="-g -O2 -Wall -Wpointer-arith -fno-strict-aliasing -Werror"
-    On some systems, the system include files generate warnings.
-    On such a system you have to omit the -Werror option and check
-    the output of the compilation run for warnings manually.  It
-    is important to use the -O2 option because gcc can not
-    generate some warnings without it.  If your gcc-version does
-    not know the option "-fno-strict-aliasing", remove it. If you
-    have gcc >= 3.4 you should also use -Wdeclaration-after-statement
-    since it will catch code that won't compile on all C89 compilers.
-  - Fix all warnings and problems, commit the changes and repeat
-    the previous step until no more warnings occur.
-
-Build and test the release tarballs:
-
-  The next step will create the tar file, then unpack it and
-  attempt to build fvwm from it and install to a scratch
-  directory.  This makes sure that you really *did* include all
-  the files necessary to build the package into the tar file.  It
-  may be hard to appreciate how useful this is, until it has
-  reminded you that you forgot file "foo.h" in some _SOURCES line.
-  But trust me, it will save your bacon in this way some day!
-
-  - Run
-     $ make distcheck2
-  - Ensure that you see the messages
-      "fvwm-x.y.z.tar.gz is ready for distribution"
-    and
-      "fvwm-x.y.z.tar.bz2 - ready for distribution"
-
-Tag the release:
-
-* Important note: Before you proceed, please ask yourself if the
-  code is ready to be released:
-
-  * Have you committed patches only hours or even minutes ago?
-  * Have there been any big changes in the last few days?
-  * Are there any important parts that are not well tested?
-  * Are you tired from work or have you been hacking fvwm for many
-    hours in a row?
-
-  Should your answer to any of these questions be 'yes', please do
-  take a break now and reconsider, especially if this is going to
-  be a stable release.
-
-  The steps above are not critical and can not screw up anything
-  bad.  This is not true for what follows.  If you do something
-  wrong now, you will have a hard time cleaning up the mess.
-  Should something go wrong and you are not sure about the correct
-  fixes, please ask on the fvwm-workers list for help.
-
-  It's important that the files included in the release tarballs
-  and the tagged files are identical.
-
-  - Tag the CVS tree (replace x, y and z):
-     $ cvs tag version-x_y_z
-
-Upload the release:
-
-  Hopefully you didn't change any files after the last commit.
-  Otherwise commit your changes and return to the previous sections,
-  i.e. rebuild tarballs using "make distcheck2" and retag the tree.
-
-  - Upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
-    ftp://ftp.fvwm.org/pub/incoming/fvwm
-  - Notify fvwm-owner@fvwm.org of the upload.
-
-Increase the version number:
-
-  - Increase the version number in the very beginning of
-    configure.ac (see above) and set ISRELEASED to "no".
-  - Create a new section for future changes in the NEWS file.
-  - Add a ChangeLog entry indicating that a new version started.
-  - Commit these three changes.
-  - For a stable release, copy the NEWS from the stable branch to
-    the development branch and update the link in the same
-    document.
-
-Update fvwm-web:
-
-  - Update the release numbers at the bottom of definitions.inc file.
-  - If this is the head development version, then run a shell script
-    in fvwm-web called regenerate_pages to update the web pages for
-    NEWS, FAQ and AUTHORS.  It should usually work without parameters
-    for a typical setup (when fvwm and fvwm-web trees are sibling
-    directories), optionally pass a parameter to regenerate_pages -
-    the fvwm location relative to fvwm-web.
-     $ cd fvwm-web
-     $ ./regenerate_pages
-  - Update the html documentation: go to the directory
-    doc and run the script
-    $ ./updatedoc
-  - Generate the man pages: go to the directory
-    documentation/manpages and run the script
-     $ ./manpages2php
-    It needs the program "man2html" installed.
-  - Generate ChangeLog entries for all these changes and commit them.
-
-Announce the release:
-
-  - Once the tarballs are in place, mail the ANNOUNCE file to the
-    usual places, at least to fvwm-announce.
+TBD
