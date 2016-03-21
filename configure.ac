@@ -1,11 +1,11 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_PREREQ(2.60)
-AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
 ISRELEASED=no
-version=2.6.7
+AC_INIT([fvwm], 2.6.7)
+
 VERSIONINFO=""
 
 dnl date of the released version (please zero pad the day in the last 2 dates)
@@ -68,7 +68,7 @@ AC_SUBST(FVWMWORKERSLIST)
 AC_SUBST(FVWMWORKERSLISTLONG)
 AC_SUBST(MANPAGE_PREAMBLE)
 
-AM_INIT_AUTOMAKE(fvwm, ${version})
+AM_INIT_AUTOMAKE([foreign])
 AM_CONFIG_HEADER(config.h)
 
 # check for programs needed to build html docs
