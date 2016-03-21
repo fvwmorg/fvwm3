@@ -1,4 +1,5 @@
-= Developing for FVWM
+Developing for FVWM
+===================
 
 This document aims to help the developer with the expectations when dealing
 with the FVWM source code.
@@ -7,7 +8,8 @@ The FVWM source conforms to the [Linux kernel style
 guide](https://www.kernel.org/doc/Documentation/CodingStyle).  For more
 detailed, FVWM-specific instructions, see [CONVENTIONS](./CONVENTIONS).
 
-= Creating a release
+Creating a release
+==================
 
 Before deciding to make a new release, please check with the `fvwm-workers`
 mailing list that this is the right time to do so.  This will give adequate
@@ -32,7 +34,6 @@ Make sure you have all optional libraries installed.
 
     Fix all warnings and problems, commit the changes and repeat the previous
     command until no more warnings occur.
-
 5. Build and test the release tarballs:
 
    Run: `make distcheck2`
@@ -41,13 +42,13 @@ Make sure you have all optional libraries installed.
    directory.  This is the release tarball which will be uploaded to Github.
    Unpack it to a temporary directory and build it; check the version as well,
    via: `./fvwm --version`.
-
 6. Tag the release: `git tag -a` 
 7. Push the tag out: `git push --tags`
 8. Upload the `fvwm-x.y.z.tar.gz` tarball to Github.
 9. Increase the version number in `configure.ac` and set `ISRELEASED` to `no`
 10. Commit that, and push it out.
 
-= Updating fvwm-web
+Updating fvwm-web
+=================
 
 TBD
