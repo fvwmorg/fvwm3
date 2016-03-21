@@ -1796,7 +1796,6 @@ dnl
 	doc/modules/images/FvwmTabs/Makefile
 	doc/images/Makefile
 	doc/images/svg_rendering/Makefile
-	docs/fvwm.lsm
 	docs/Makefile
 	sample.fvwmrc/Makefile
 	tests/Makefile
