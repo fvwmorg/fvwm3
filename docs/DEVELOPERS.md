@@ -5,8 +5,61 @@ This document aims to help the developer with the expectations when dealing
 with the FVWM source code.
 
 The FVWM source conforms to the [Linux kernel style
-guide](https://www.kernel.org/doc/Documentation/CodingStyle).  For more
-detailed, FVWM-specific instructions, see [CONVENTIONS](./CONVENTIONS).
+guide](https://www.kernel.org/doc/Documentation/CodingStyle).
+
+Coventions
+==========
+
+The following tries to list all the conventions that the fvwm developers
+adhere to, either by consensus through discussion, common practice or unspoken
+agreement.  It is hopefully useful for the fvwm development newbie.
+
+Programming Languages
+--------------------
+
+ The following programming languages are allowed:
+
+- ANSI C
+- Perl
+- Portable /bin/sh scripts for examples.
+
+New Code Files
+--------------
+
+- There are templates for new code files in the fvwm directory.  Try to always
+  use them as they provide a clean structure of the header and code files.
+  Please honour the section titles.  For example, put all static functions
+  (and only static functions) under the "local functions" section.
+
+- All .c files *must* have
+
+```
+#include "config.h"
+```
+
+as the first non-comment line.  Otherwise the settings made by the configure
+script may not be used.  This can cause random problems.
+
+File Names
+----------
+
+- The names of the code files in the fvwm directory are in lower case.
+- Files in the libs directory may begin with a capital 'F'.  This letter is
+  reserved for wrapper files for third party libraries or modules.  For
+  example, FShape is an abstraction of the XShape X server extension and FBidi
+  is a wrapper for the fribidi library.  Do not use the 'F' for other
+  purposes.
+
+Copyright Notices
+-----------------
+
+- A copy of the GPL should be at the beginning of all code files (.c) and
+  scripts, but not at the beginning of header files (.h).
+
+Maintaining Man Pages
+---------------------
+
+- Every feature must be described with all options in the man page.
 
 Creating a release
 ==================
