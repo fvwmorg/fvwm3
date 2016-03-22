@@ -54,7 +54,9 @@ void flib_init_graphics(Display *dpy)
 	AllocColorset(0);
 	FShapeInit(dpy);
 	FRenderInit(dpy);
+#ifdef Frsvg_init
 	Frsvg_init();
+#endif
 
 	return;
 }

@@ -2384,9 +2384,9 @@ int main(int argc, char **argv)
 	Scr.ColorLimit = PictureInitColors(
 		PICTURE_CALLED_BY_FVWM, True, &colorLimitop, True, True);
 
-	Frsvg_init();
-	FShapeInit(dpy);
-	FRenderInit(dpy);
+
+	flib_init_graphics(dpy);
+
 	Scr.pscreen = XScreenOfDisplay(dpy, Scr.screen);
 	Scr.use_backing_store = DoesBackingStore(Scr.pscreen);
 	Scr.flags.do_save_under = DoesSaveUnders(Scr.pscreen);

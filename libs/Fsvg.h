@@ -15,17 +15,7 @@
 
 #if USE_SVG
 #	include <librsvg/rsvg.h>
-/* TA:  (2013-05-07):  If the version is >= 2.36.2 then we no longer include
- * the rsvg-cairo header.  It is now only necessary with RSvg to include
- * <rsvg.h> and nothing else.
- */
-#		if defined (LIBRSVG_CHECK_VERSION)
-#			if LIBRSVG_CHECK_VERSION (2, 36, 1)
-#				include <librsvg/rsvg-cairo.h>
-#			endif
-#		else
-#			include <librsvg/rsvg-cairo.h>
-#		endif
+#	include <cairo.h>
 	typedef RsvgDimensionData		FRsvgDimensionData;
 	typedef RsvgHandle			FRsvgHandle;
 	typedef cairo_surface_t			Fcairo_surface_t;
@@ -47,7 +37,9 @@
  */
 #if !GLIB_CHECK_VERSION (2, 31, 0)
 #	define Frsvg_init()			rsvg_init()
-#else
+#endif
+
+#if !GLIB_CHECK_VERSION(2,35,0)
 #	define Frsvg_init()			g_type_init()
 #endif
 

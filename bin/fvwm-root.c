@@ -95,7 +95,7 @@ int SetRootWindow(char *tline)
 		 * --color-limit option */
 		PictureInitCMap(dpy);
 	}
-	Frsvg_init();
+	flib_init_graphics(dpy);
 	/* try built-in image path first, but not before pwd */
 	PictureSetImagePath(".:+");
 	file_path = PictureFindImageFile(tline, NULL, R_OK);
