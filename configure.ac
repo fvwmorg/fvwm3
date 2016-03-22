@@ -228,7 +228,7 @@ AC_TRY_COMPILE([#include <stdio.h>],
   switch (*p = p = *c) { case 0: printf("%Q", c, p); }
   *c = &i; c = p;
   while (1 || (unsigned int)3 >= 0 || ((int)-1) == ((unsigned int)1));
-  return;], , AC_MSG_ERROR("
+], , AC_MSG_ERROR("
 configure is not able to compile programs with warnings.  Please
 remove all offending options like -Werror from the CFLAGS and
 CPPFLAGS variables and run configure again."))
