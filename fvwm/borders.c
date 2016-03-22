@@ -4066,7 +4066,7 @@ static void border_get_titlebar_descr_state(
 	}
 	if ((clear_parts & CLEAR_BUTTONS) != CLEAR_NONE)
 	{
-		tbstate->clear_bmask = ~0;
+		tbstate->clear_bmask = 0x3FF;
 	}
 	else
 	{

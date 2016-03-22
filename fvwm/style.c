@@ -1472,8 +1472,8 @@ static Bool style_parse_focus_policy_style(
 			val = DEF_FP_MOUSE_BUTTONS;
 		}
 		FPS_MOUSE_BUTTONS(*f, val);
-		FPS_MOUSE_BUTTONS(*m, ~0);
-		FPS_MOUSE_BUTTONS(*c, ~0);
+		FPS_MOUSE_BUTTONS(*m, 0x1FF);
+		FPS_MOUSE_BUTTONS(*c, 0x1FF);
 		break;
 	case 2:
 		/* FocusClickModifiers */
@@ -1493,8 +1493,8 @@ static Bool style_parse_focus_policy_style(
 			val = FPOL_ANY_MODIFIER;
 		}
 		FPS_MODIFIERS(*f, val);
-		FPS_MODIFIERS(*m, ~0);
-		FPS_MODIFIERS(*c, ~0);
+		FPS_MODIFIERS(*m, 0xFF);
+		FPS_MODIFIERS(*c, 0xFF);
 		break;
 	case 3:
 		/* ClickRaisesFocused */
