@@ -1602,9 +1602,11 @@ static int __place_window(
 		{
 			flags.do_honor_starts_on_page = 0;
 			flags.do_honor_starts_on_screen = 0;
-			reason->page.reason = PR_PAGE_IGNORE_CAPTURE;
+			reason->page.reason =
+				(preason_page_t)PR_PAGE_IGNORE_CAPTURE;
 			reason->page.do_ignore_starts_on_page = 1;
-			reason->screen.reason = PR_PAGE_IGNORE_CAPTURE;
+			reason->screen.reason =
+				(preason_screen_t)PR_PAGE_IGNORE_CAPTURE;
 		}
 		/*
 		 * it's a cold start window capture, and that's disallowed...
@@ -1617,7 +1619,8 @@ static int __place_window(
 			flags.do_honor_starts_on_screen = 0;
 			reason->page.reason = PR_PAGE_IGNORE_CAPTURE;
 			reason->page.do_ignore_starts_on_page = 1;
-			reason->screen.reason = PR_PAGE_IGNORE_CAPTURE;
+			reason->screen.reason =
+				(preason_screen_t)PR_PAGE_IGNORE_CAPTURE;
 		}
 		/*
 		 * it's ActivePlacement and SkipMapping, and that's disallowed.

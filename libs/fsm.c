@@ -717,7 +717,7 @@ void CompletNewConnectionMsg(void)
 	while(l != NULL)
 	{
 		ice_conn = (FIceConn)l->object;
-		cstatus = FIceConnectionStatus(ice_conn);
+		cstatus = (FIceAcceptStatus)FIceConnectionStatus(ice_conn);
 		if (cstatus == (int)FIceConnectPending)
 		{
 			l = l->next;
