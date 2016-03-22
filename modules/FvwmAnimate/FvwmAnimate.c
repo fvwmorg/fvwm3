@@ -988,15 +988,7 @@ static void Loop(void) {
 			else if (strcasecmp(token, "pop") == 0)
 			{
 				num_saved_play_states--;
-				if (num_saved_play_states < 0)
-				{
-					num_saved_play_states = 0;
-					fprintf(
-						stderr,	"FvwmAnimate: Got pop "
-						"without push, ignored\n");
-				}
-				else if (num_saved_play_states <
-					MAX_SAVED_STATES)
+				if (num_saved_play_states < MAX_SAVED_STATES)
 				{
 					play_state = saved_play_states[
 						num_saved_play_states];

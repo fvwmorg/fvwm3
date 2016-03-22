@@ -491,7 +491,7 @@ void xevent_loop (void)
 
     case MapNotify:
       ConsoleDebug (X11, "XEVENT: MapNotify\n");
-      if (globals.transient && !grab_state != HAVE_GRABBED) {
+      if (globals.transient) {
 	grab_pointer (man);
       }
       force_manager_redraw (man);

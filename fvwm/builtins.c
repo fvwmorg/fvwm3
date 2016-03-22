@@ -4502,7 +4502,7 @@ void CMD_State(F_CMD_ARGS)
 	{
 		return;
 	}
-	if (state < 0 || state > 31)
+	if (state > 31)
 	{
 		fvwm_msg(ERR, "CMD_State", "Illegal state %d\n", state);
 		return;
