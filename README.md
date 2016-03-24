@@ -17,6 +17,15 @@ Users of fvwm prior to 2.6.X can make use of the
 configuration file converted to a newer syntax.  Please see its manpage for
 more details on how to use it.
 
+Development
+-----------
+
+Those interested in contributing to FVWM should have [a read of the developer
+documentation](./docs/DEVELOPERS.md).
+
+Comments, Questions?
+--------------------
+
 If you have any questions, concerns, bug reports, enhancement requests,
 etc., please feel free to send an email to the fvwm mailing list, or open a
 Github issue.
