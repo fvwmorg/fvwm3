@@ -216,7 +216,7 @@ int AddBinding(
 					 * configuration. */
 					mask = modifier_mapindex_to_mask[m - 1];
 					if (modifiers != AnyModifier &&
-					    !(modifiers & mask) != mask)
+					    !((modifiers & mask) != mask))
 					{
 						add_modifiers = mask;
 						bind_mask = (1 << m);
