@@ -19,8 +19,25 @@ release.
 Other branches in the repository will reflect on-going development from core
 fvwm-workers.   As such, these branches are often in a state of flux, and likely
 to be rebased against other branches.  *NO* code should be based off topic
-branches, unless explictly agreed with other developers, who might need to
+branches, unless explicitly agreed with other developers, who might need to
 collaborate.
+
+### Branch naming
+
+Branch names are used to try and indicate the feature, and who is working on
+them.  So for example, a topic-branch will be named as:
+
+`initials/rough-description-of-branch`
+
+For example:
+
+`ta/fix-clang-warnings`
+
+denotes that the branch is worked on by someone with the initials `TA` and that
+the branch is about fixing warnings from Clang.
+
+Sometimes, if more than one person is collaborating on a branch, the initials
+prefix might not be needed.
 
 ### Submitting Pull-requests
 
@@ -69,7 +86,7 @@ be as release-worthy as can be.
 **NOTE**:  At present, this does not stop core fvwm-workers from force-pushing
 onto `master`.  This might be useful in some cases, but isn't recommended.
 
-Coventions
+Conventions
 ==========
 
 The following tries to list all the conventions that the fvwm developers
