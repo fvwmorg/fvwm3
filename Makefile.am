@@ -38,11 +38,8 @@ EXTRA_DIST = \
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-htmldoc
 
-dist2: dist
-	gzip -dc $(distdir).tar.gz | bzip2 -9 >$(distdir).tar.bz2
-
-distcheck2: distcheck dist2
-	@banner="$(distdir).tar.bz2 - ready for distribution"; \
+distcheck2: distcheck
+	@banner="$(distdir).tar.gz - ready for distribution"; \
 	dashes=`echo "$$banner" | sed s/./=/g`; \
 	echo "$$banner"; \
 	echo "$$dashes"
