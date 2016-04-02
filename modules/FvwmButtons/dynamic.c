@@ -201,7 +201,8 @@ static char *actions[] =
 
 static char *button_options[] =
 {
-	"Title", "Icon", "ActiveTitle", "ActiveIcon", "PressTitle", "PressIcon", NULL
+	"Title", "Icon", "ActiveTitle", "ActiveIcon", "PressTitle", "PressIcon",
+	"Colorset", NULL
 };
 
 void parse_message_line(char *line)
@@ -249,7 +250,7 @@ void parse_message_line(char *line)
 		while (rest && rest[0] != '\0')
 		{
 			char *option_pair;
-			int option;
+			int option, i;
 			char *value0, *value;
 			FvwmPicture *icon;
 
@@ -308,6 +309,13 @@ void parse_message_line(char *line)
 				b->flags.b_PressTitle = 1;
 				b->title = value;
 				value = NULL;
+				break;
+			case 6:
+				/* Colorset */
+				i = atoi(value);
+				b->colorset = i;
+				b->flags.b_Colorset = 1;
+				AllocColorset(i);
 				break;
 			default:
 				if (

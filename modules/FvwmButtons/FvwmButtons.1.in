@@ -1008,7 +1008,7 @@ may be in the form +x+y, where x and y are a column number and
 a row number of the button to be changed.
 It is possible to specify multiple option pairs (name with value)
 by delimiting them using comma.  Currently options include
-.BR Title ", " ActiveTitle ", " PressTitle ", " Icon ", "
+.BR Title ", " ActiveTitle ", " PressTitle ", " Colorset ", " Icon ", "
 .BR ActiveIcon " and " PressIcon .
 These options work like the configuration options of the same
 name.
