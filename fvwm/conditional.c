@@ -709,6 +709,13 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			}
 			mask->my_flags.needs_same_layer = on;
 		}
+		else if (StrEquals(cond, "Desk"))
+		{
+			if (sscanf(tmp, "%d", &mask->desk)) {
+				tmp = SkipNTokens(tmp, 1);
+			}
+			mask->my_flags.do_check_cond_desk = on;
+		}
 		else
 		{
 			struct name_condition *pp;
@@ -1085,6 +1092,12 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		{
 			return False;
 		}
+	}
+	if (mask->my_flags.do_check_cond_desk)
+	{
+		return (fw->Desk == mask->desk) ? True : False;
+	} else {
+		return (fw->Desk != mask->desk) ? True : False;
 	}
 
 	return True;

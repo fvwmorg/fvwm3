@@ -439,6 +439,7 @@ typedef struct WindowConditionMask
 	{
 		unsigned do_accept_focus : 1;
 		unsigned do_check_desk : 1;
+		unsigned do_check_cond_desk : 1;
 		unsigned do_check_desk_and_global_page : 1;
 		unsigned do_check_desk_and_page : 1;
 		unsigned do_check_global_page : 1;
@@ -466,6 +467,7 @@ typedef struct WindowConditionMask
 	window_flags flag_mask;
 	struct name_condition *name_condition;
 	int layer;
+	int desk;
 	int placed_by_button_mask;
 	int placed_by_button_set_mask;
 } WindowConditionMask;

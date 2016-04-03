@@ -165,6 +165,7 @@ directly in front of its name.</para>
 <emphasis remap='I'>CurrentPage</emphasis>,
 <emphasis remap='I'>CurrentPageAnyDesk</emphasis>,
 <emphasis remap='I'>CurrentScreen</emphasis>,
+<emphasis remap='I'>Desk</emphasis>,
 <emphasis remap='I'>FixedPosition</emphasis>,
 <emphasis remap='I'>FixedSize</emphasis>,
 <emphasis remap='I'>Focused</emphasis>,
@@ -294,6 +295,10 @@ conditions matches only windows that are on the current page of any
 desk.  If Xinerama support is enabled, they only match windows
 that are at least partially on the Xinerama screen containing the
 mouse pointer.</para>
+
+<para>The
+<emphasis remap='I'>Desk [n]</emphasis>
+condition matches only windows which are on the specified desk.</para>
 
 <para>The
 <emphasis remap='I'>FixedPosition</emphasis>
