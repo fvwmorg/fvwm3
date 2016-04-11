@@ -156,7 +156,7 @@ Make sure you have all optional libraries installed.
    configure.ac has the value of the going to be released version
    and set `ISRELEASED` to `yes`.
 3. Commit the results:  `git commit -a`
-4. Run: `./utils/configure_dev.sh && make clean` to get the tree into a clean
+4. Run: `./autogen.sh && make clean` to get the tree into a clean
    slate.  Because this is a release, the source needs compiling.  To do
    that, run:
 
