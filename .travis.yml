@@ -8,7 +8,7 @@ matrix:
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get -y install debhelper autotools-dev dh-autoreconf file fontconfig gettext libfontconfig-dev libfreetype6-dev libfribidi-dev libncurses5-dev libreadline-dev libpng-dev libsm-dev libx11-dev libxcursor-dev libxext-dev libxft-dev libxi-dev x11proto-xinerama-dev libxpm-dev libxrender-dev libxt-dev sharutils xsltproc build-essential
-script: (CFLAGS= ./utils/configure_dev.sh) && make && make distcheck2
+script: (CFLAGS= ./autogen.sh) && make && make distcheck2
 notifications:
         irc:
                 channels:
