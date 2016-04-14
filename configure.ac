@@ -3,8 +3,18 @@ dnl
 AC_PREREQ(2.60)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED=no
-AC_INIT([fvwm], 2.6.7)
+ISRELEASED="no"
+if test $ISRELEASED = "no"; then
+	RELDATELONG=""
+	RELDATESHORT=""
+	RELDATENUM=""
+fi
+
+AC_INIT([fvwm],
+	m4_esyscmd_s([utils/fvwm-version-str.sh]),
+	[fvwm-workers@fvwm.org])
+AM_INIT_AUTOMAKE([foreign])
+AM_CONFIG_HEADER(config.h)
 
 VERSIONINFO=""
 
@@ -27,29 +37,6 @@ FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
 MANPAGE_PREAMBLE='.\" WARNING: This file was automatically generated.  Edit the .in file instead.'
 
-if test ! x"$ISRELEASED" = xyes; then
-	VERSIONINFO=" (from cvs)"
-	RELDATELONG="(not released yet)"
-	RELDATESHORT="(not released yet)"
-	RELDATENUM="(not released yet)"
-#	# migo: unfortunately this nice idea can not work, it is not updated.
-#	# I will think more about this, maybe autoconf-2.50+ has a solution.
-#	if test -d CVS/ -a -f CVS/Entries && \
-#		date +%Y-%m-%d -d 'Wed Sep  4 12:36:50 2002' >/dev/null 2>&1
-#	then
-#		# this is not the exact date, but better than the current date
-#		for file in CVS/Entries */CVS/Entries; do
-#			changelog_date="`cat $file | grep /ChangeLog/ \
-#				| cut -d/ -f4`"
-#			test ! x"$changelog_date" = x && \
-#			date +%Y-%m-%d -d "$changelog_date" >>changelog_dates
-#		done
-#		changelog_date=`cat changelog_dates | sort -r -u | head -1`
-#		VERSIONINFO=" (from cvs $changelog_date)"
-#		rm -f changelog_dates
-#	fi
-fi
-
 AC_SUBST(ISRELEASED)
 AH_TEMPLATE([VERSIONINFO],[Additional version information, like date])
 AC_DEFINE_UNQUOTED(VERSIONINFO, "$VERSIONINFO")
@@ -67,9 +54,6 @@ AC_SUBST(FVWMLIST)
 AC_SUBST(FVWMWORKERSLIST)
 AC_SUBST(FVWMWORKERSLISTLONG)
 AC_SUBST(MANPAGE_PREAMBLE)
-
-AM_INIT_AUTOMAKE([foreign])
-AM_CONFIG_HEADER(config.h)
 
 # check for programs needed to build html docs
 AC_CHECK_PROG(SED, sed, sed, "")

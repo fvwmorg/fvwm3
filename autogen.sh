@@ -6,5 +6,5 @@ die()
     exit $2
 }
 
-autoreconf -f -i -v -m || die "autoreconf failed" $? && \
-	./configure
+autoreconf -f -i -v || die "autoreconf failed" $?
+./configure || die "configure failed" $?
