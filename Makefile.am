@@ -46,6 +46,7 @@ distcheck2: distcheck
 	@if test "x$(ISRELEASED)" != xyes; then \
 		echo 'Warning: ISRELEASED is not set to "yes".'; \
 		echo '	So these can not be the official tarballs.'; \
+		exit 1; \
 	fi
 
 distclean2: distclean
