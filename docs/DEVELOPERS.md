@@ -150,12 +150,17 @@ development that's happening which might impact a potential release.
 
 Make sure you have all optional libraries installed.
 
-0. `git checkout master && git pull` 
+**NOTE:  as `master` is a protected branch, changes made to files during the
+release phase must be done on a separate branch, and not on master directly,
+as pushes to this branch are not allowed until checks have been done on it.
+This means the end result of the release-phase must have these changes issued
+as a pull-request against `master`.**
+
+0. `git checkout master && git pull && git checkout -b release/x.y.z`
+   **Where: `x.y.z` will be the next release**.
 1. Change the dates in configure.ac and fill in the release dates.
-2. Verify that the version variable at the very beginning of
-   configure.ac has the value of the going to be released version
-   and set `ISRELEASED` to `yes`.
-3. Commit the results:  `git commit -a`
+2. Set `ISRELEASED` to `"yes"`.
+3. Commit the results.
 4. Run: `./autogen.sh && make clean` to get the tree into a clean
    slate.  Because this is a release, the source needs compiling.  To do
    that, run:
@@ -166,7 +171,9 @@ Make sure you have all optional libraries installed.
 
     Fix all warnings and problems, commit the changes and repeat the previous
     command until no more warnings occur.
-5. Build and test the release tarballs:
+5. Tag the release: `git tag -a x.y.z` -- where `x.y.z` represents the
+   appropriate version number for the release.
+6. Build and test the release tarballs:
 
    Run: `make distcheck2`
 
@@ -174,11 +181,13 @@ Make sure you have all optional libraries installed.
    directory.  This is the release tarball which will be uploaded to Github.
    Unpack it to a temporary directory and build it; check the version as well,
    via: `./fvwm --version`.
-6. Tag the release: `git tag -a` 
-7. Push the tag out: `git push --tags`
-8. Upload the `fvwm-x.y.z.tar.gz` tarball to Github.
-9. Increase the version number in `configure.ac` and set `ISRELEASED` to `no`
-10. Commit that, and push it out.
+7. Push the tag out: `git push origin x.y.z` -- where `x.y.z` is the specific
+   tag created in step 5.
+8. Set `ISRELEASED` to `"no"` in configure.ac and commit and push that out.
+9. Issue a PR (pull-request) against `master` and mege that in assuming all
+    checks pass.  If not, fix the problems, and repeat this step.
+10. Upload the `fvwm-x.y.z.tar.gz` tarball to Github against the tag just
+   pushed.
 
 Updating fvwm-web
 =================
