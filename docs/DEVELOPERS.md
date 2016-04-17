@@ -14,9 +14,9 @@ Branch Workflows / Submitting Code Changes
 
 The main FVWM repository treats the `master` branch as stable, in that it's the
 branch which has the most tested code on it, and the branch from which releases
-are made.  Formal releases of FVWM are tagged, in the form `version-_x.y.z`.
-Untagged code may well accumulate on `master`, which will go to form the next
-release.
+are made.  Formal releases of FVWM are tagged, in the form `x.y.z`, historical
+versions of FVWM are tagged as `version-x_y_z`.  Untagged code may well
+accumulate on `master`, which will go to form the next release.
 
 Other branches in the repository will reflect on-going development from core
 fvwm-workers.   As such, these branches are often in a state of flux, and likely
@@ -190,6 +190,7 @@ as a pull-request against `master`.**
     checks pass.  If not, fix the problems, and repeat this step.
 10. Upload the `fvwm-x.y.z.tar.gz` tarball to Github against the tag just
    pushed.
+11. Update the fvwm web site (see below)
 
 Updating fvwm-web
 =================
