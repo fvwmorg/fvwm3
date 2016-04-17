@@ -1,3 +1,5 @@
+<!--- IF THIS DOCUMENT IS UPDATED THEN ALSO UPDATE THE FVWM WEB REPO --->
+
 Developing for FVWM
 ===================
 
