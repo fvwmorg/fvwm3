@@ -183,4 +183,12 @@ Make sure you have all optional libraries installed.
 Updating fvwm-web
 =================
 
-TBD
+1.  Ensure you've a checkout of the repository:
+
+    ```
+    git clone git@github.com:fvwmorg/fvwmorg.github.io.git
+    ```
+2.  Update the `RELEASE` variable in `Makefile` to the desired version which
+    has been released.
+3.  Run `make`.  This will update all relevant files.
+4.  `git commit -a` the result, and push it out.
