@@ -71,7 +71,7 @@ used, sending the relevant patchsets to the `fvwm-workers` mailing list.
 Pull-requests made will result in the use of Travis-CI being run against the
 branch.  This builds the copy of the pushed code in a Ubuntu environment, with
 all the additional libraries FVWM could use, loaded in.  Builds are made against
-`gcc` and `clang`, because both those compiler cover slightly different angles
+`gcc` and `clang`, because both those compilers cover slightly different angles
 with respect to compiling.  All warnings are treated as errors, and if a build
 does not succeeded, ensure the code is fixed, and pushed back out on the same
 branch.  Rebasing is recommended; Travis-CI and Github handle this just fine.
@@ -81,12 +81,14 @@ The FVWM repository also treats the `master` branch as protected.  This is a
 which means the `master` branch in this case cannot have changes merged into it
 until Travis-CI has verified the builds do not fail.
 
-This has benefit since not every developer will be using the same operating
+This has merit since not every developer will be using the same operating
 systems (Linux versus BSD for instance), and that `master` is meant to try and
 be as release-worthy as can be.
 
-**NOTE**:  At present, this does not stop core fvwm-workers from force-pushing
-onto `master`.  This might be useful in some cases, but isn't recommended.
+**NOTE**:  This means that no work can be commited to `master` directly.  ALL
+work that needs to appear on `master`---including the release
+process---**MUST** go via a separate topic-branch, with a PR (pull-request).
+Not even fvwmorg owners are an exception to this.
 
 Conventions
 ==========
