@@ -1,9 +1,0 @@
-re-reading definitions leads to sigsegv's.
-
-some nice widgets to have: spinbuttons, option menus, file 
-selections (embedded, not as separate dialog), font selections
-
-keyboard accelerators
-
-turn FvwmGtk into a Gnome application. does this need more than
-calling gnome-init instead of gtk-init ?

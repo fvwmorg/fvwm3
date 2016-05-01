@@ -321,7 +321,6 @@ if test ! x"$SED" = x; then
 			bnext
 		:found
 			s/modules.//
-			/FvwmTabs/bnext
 			p
 		:next
 			n
@@ -1258,7 +1257,6 @@ AC_SUBST(FVWM_PERLLIB)
 # ******* gettext
 ALL_LINGUAS="ar de fr sv_SE zh_CN ru es"
 FVWM_DOMAIN="fvwm"
-FVWMTASKBAR_DOMAIN="FvwmTaskBar"
 FVWMSCRIPT_DOMAIN="FvwmScript"
 ALL_DOMAINS="$FVWM_DOMAIN $FVWMTASKBAR_DOMAIN $FVWMSCRIPT_DOMAIN"
 
@@ -1415,32 +1413,7 @@ fi
 AC_CHECK_FUNCS(unsetenv)
 
 
-# ********* GTK, IMLIB, GNOME
-# Check the availability of gtk
-FVWMGTK=""
-MANFVWMGTK=""
-AC_ARG_ENABLE(gtk,
-  AS_HELP_STRING([--disable-gtk],[do not build modules using gtk library]),
-    enable_gtktest="$enableval", enable_gtktest=yes)
-if test x"$enable_gtktest" = xyes; then
-  AM_PATH_GTK(1.1.0,[
-    FVWMGTK="FvwmGtk$EXEEXT" AC_SUBST(FVWMGTK)
-    MANFVWMGTK=FvwmGtk.1 AC_SUBST(MANFVWMGTK)
-  ],)
-  if test x"$no_gtk" = x; then
-    with_gtk=yes
-    problem_gtk=""
-  else
-    with_gtk=no
-    problem_gtk=": Failed to detect GTK, see config.log"
-  fi
-else
-  with_gtk=no
-  problem_gtk=": Explicitly disabled"
-fi
-AC_SUBST(FVWMGTK)
-AC_SUBST(MANFVWMGTK)
-
+# ********* IMLIB, GNOME
 # Check the availability of gdk-imlib
 AH_TEMPLATE([GDK_IMLIB],[Define if gdk-imlib is used])
 AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB))
@@ -1717,11 +1690,8 @@ dnl	bin/fvwm-perllib.1
 dnl	modules/FvwmDebug/FvwmDebug.1
 dnl	modules/FvwmDebug/FvwmGtkDebug.1
 dnl	modules/FvwmDebug/FvwmOldDebug.1
-	modules/FvwmDragWell/FvwmDragWell.1
 	modules/FvwmEvent/FvwmEvent.1
 	modules/FvwmForm/FvwmForm.1
-	modules/FvwmGtk/FvwmGtk.1
-	modules/FvwmIconBox/FvwmIconBox.1
 	modules/FvwmIconMan/FvwmIconMan.1
 	modules/FvwmIdent/FvwmIdent.1
 	modules/FvwmM4/FvwmM4.1
@@ -1729,14 +1699,8 @@ dnl	modules/FvwmDebug/FvwmOldDebug.1
 dnl	modules/FvwmPerl/FvwmPerl.1
 	modules/FvwmProxy/FvwmProxy.1
 	modules/FvwmRearrange/FvwmRearrange.1
-	modules/FvwmSave/FvwmSave.1
-	modules/FvwmSaveDesk/FvwmSaveDesk.1
 	modules/FvwmScript/FvwmScript.1
 	modules/FvwmScroll/FvwmScroll.1
-	modules/FvwmTaskBar/FvwmTaskBar.1
-	modules/FvwmTheme/FvwmTheme.1
-	modules/FvwmWharf/FvwmWharf.1
-	modules/FvwmWinList/FvwmWinList.1
 dnl	modules/FvwmWindowMenu/FvwmWindowMenu.1
 dnl
 	bin/Makefile
@@ -1775,9 +1739,6 @@ dnl
 	doc/docbook-xsl/highlighting/Makefile
 	doc/docbook-xsl/lib/Makefile
 	doc/docbook-xsl/html/Makefile
-	doc/modules/Makefile
-	doc/modules/images/Makefile
-	doc/modules/images/FvwmTabs/Makefile
 	doc/images/Makefile
 	doc/images/svg_rendering/Makefile
 	docs/Makefile
@@ -1799,10 +1760,8 @@ dnl
 	modules/FvwmDebug/Makefile
 	modules/FvwmDebug/FvwmDebug
 	modules/FvwmDebug/FvwmGtkDebug
-	modules/FvwmDragWell/Makefile
 	modules/FvwmEvent/Makefile
 	modules/FvwmForm/Makefile
-	modules/FvwmIconBox/Makefile
 	modules/FvwmIconMan/Makefile
 	modules/FvwmIdent/Makefile
 	modules/FvwmM4/Makefile
@@ -1811,21 +1770,10 @@ dnl
 	modules/FvwmPerl/FvwmPerl
 	modules/FvwmProxy/Makefile
 	modules/FvwmRearrange/Makefile
-	modules/FvwmSave/Makefile
-	modules/FvwmSaveDesk/Makefile
 	modules/FvwmScript/Makefile
 	modules/FvwmScript/Scripts/Makefile
 	modules/FvwmScript/Widgets/Makefile
 	modules/FvwmScroll/Makefile
-	modules/FvwmTabs/Makefile
-	modules/FvwmTabs/FvwmTabs
-	modules/FvwmTaskBar/Makefile
-	modules/FvwmTheme/Makefile
-	modules/FvwmWharf/Makefile
-	modules/FvwmWinList/Makefile
-	modules/FvwmWindowMenu/Makefile
-	modules/FvwmWindowMenu/FvwmWindowMenu
-	modules/FvwmGtk/Makefile
 )
 
 # ---------------------------------------------------------------------------
@@ -1859,13 +1807,6 @@ test x"$FVWM_PERLLIB" = x && my_plldir="(Not installed) $my_plldir"
 eval my_localedir="`eval echo ${LOCALEDIR}`"
 test x"$USE_NLS" = xno && my_localedir="(Not installed) $my_localdir"
 
-case "$with_gtk" in
-  yes) fvwmgtk_msg="
-  With GDK image support in FvwmGtk?  $with_gdkimlib$problem_gdkimlib
-  With GNOME libs support in FvwmGtk? $with_gnomelibs$problem_gnomelibs" ;;
-  no) fvwmgtk_msg="" ;;
-esac
-
 echo "
 Fvwm Configuration:
 
@@ -1881,7 +1822,6 @@ Fvwm Configuration:
 
   With Asian bi-direct. text support? $with_bidi$problem_bidi
   With Gettext Native Lang support?   $with_gettext$problem_gettext
-  With GTK+ required for FvwmGtk?     $with_gtk$problem_gtk$fvwmgtk_msg
   With Iconv support?                 $with_iconv_type$problem_iconv
   With Mouse strokes (gestures)?      $with_stroke$problem_stroke
   With PNG image support?             $with_png$problem_png

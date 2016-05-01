@@ -13,6 +13,6 @@ doc_DATA = \
 endif
 
 
-SUBDIRS = commands images modules docbook-xml docbook-xsl fvwm
+SUBDIRS = commands images docbook-xml docbook-xsl fvwm
 
 all: $(doc_DATA)
