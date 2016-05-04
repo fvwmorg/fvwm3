@@ -23,6 +23,9 @@ Development
 Those interested in contributing to FVWM should have [a read of the developer
 documentation](./docs/DEVELOPERS.md).
 
+A [TODO file](./TODO.md) exists, and sometimes even things from it are worked
+on.
+
 Comments, Questions?
 --------------------
 
