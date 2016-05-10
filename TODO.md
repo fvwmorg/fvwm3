@@ -5,10 +5,10 @@
 
 * Code auditing/security:
     * [ ] Remove SAFEFREE() macro;
-    * [ ]  Add xasprintf() to libs/safemalloc.[ch]
-    * [ ]  Audit xmalloc() use and consider xasprintf() wrapper
+    * [ ] Add xasprintf() to libs/safemalloc.[ch]
+    * [ ] Audit xmalloc() use and consider xasprintf() wrapper
 
-* Code cleanup needed!
+* Code cleanup:
     * [ ] Don't use typedefs for structs:
         * Opaqueness is not useful here!
             * 'struct foo' versus 'foo_t' or 'Foo' as the type.
@@ -28,7 +28,7 @@
       help justify/cleanup functions in the longer-term by identifying
       similar functions, etc.
 
-* String handling!
+* String handling:
     * [ ] libs/String.[ch] and friends have idioms like CatString3, and
       other means to manipulating strings.  Get rid of these.
     * [ ]  Audit the code for strcpy()/strcat(), and take out back and shoot
@@ -59,7 +59,7 @@
       state.
 
 * Commands:
-    * There's wayyy too many commands in FVWM:
+    * There's far too many commands in FVWM:
         * [ ] Too many duplicates; merge.
         * [ ] Think about a common way of referring to pages/windows/etc -- much
           like with tmux's "-t session:window.pane" syntax, can we not do
