@@ -1094,9 +1094,15 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	}
 	if (mask->my_flags.do_check_cond_desk)
 	{
-		return (fw->Desk == mask->desk) ? True : False;
-	} else {
-		return (fw->Desk != mask->desk) ? True : False;
+		if (fw->Desk == mask->desk)
+			return True;
+		else
+			return False;
+
+		if (fw->Desk != mask->desk)
+			return True;
+		else
+			return False;
 	}
 
 	return True;
