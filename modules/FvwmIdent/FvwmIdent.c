@@ -114,6 +114,7 @@ static int max_col1, max_col2;
 static char id[15], desktop[10], swidth[10], sheight[10], borderw[10];
 static char geometry[30], mymin_aspect[11], max_aspect[11], layer[10];
 static char ewmh_init_state[512];
+static char xin_str[10];
 
 /* FIXME: default layer should be received from fvwm */
 #define default_layer DEFAULT_DEFAULT_LAYER
@@ -1147,6 +1148,11 @@ void MakeList(void)
 	AddToList("Resource:",      target.res);
 	AddToList("Window ID:",     id);
 	AddToList("Desk:",          desktop);
+	if (FScreenIsEnabled()) {
+		sprintf(xin_str, "%d",
+			FScreenOfPointerXY(target.frame_x, target.frame_y));
+		AddToList("Xinerama Screen:", xin_str);
+	}
 	AddToList("Layer:",         layer);
 	AddToList("Width:",         swidth);
 	AddToList("Height:",        sheight);
