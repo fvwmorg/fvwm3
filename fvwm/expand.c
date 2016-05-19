@@ -132,6 +132,7 @@ static char *function_vars[] =
 	"w.y",
 	"w.desk",
 	"w.layer",
+	"w.screen",
 	/* ewmh working area */
 	"wa.height",
 	"wa.width",
@@ -217,6 +218,7 @@ enum
 	VAR_W_Y,
 	VAR_W_DESK,
 	VAR_W_LAYER,
+	VAR_W_SCREEN,
 	/* ewmh working area */
 	VAR_WA_HEIGHT,
 	VAR_WA_WIDTH,
@@ -821,6 +823,18 @@ static signed int expand_vars_extended(
 		}
 		is_numeric = True;
 		val = fw->layer;
+		break;
+	case VAR_W_SCREEN:
+		if (!fw || IS_EWMH_DESKTOP(FW_W(fw))) {
+			return -1;
+		} else {
+			is_numeric = True;
+
+			rectangle	g;
+			get_unshaded_geometry(fw, &g);
+
+			val = FScreenOfPointerXY(g.x, g.y);
+		}
 		break;
 	case VAR_SCREEN:
 		is_numeric = True;

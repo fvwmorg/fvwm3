@@ -313,6 +313,11 @@ command can be used:</para>
     <listitem><para>The layer of the window.</para></listitem>
   </varlistentry>
   <varlistentry>
+    <term>$[w.screen]</term>
+    <listitem><para>The screen number the window is on.  If Xinerama is not
+		    present, this returns the number 0.</para></listitem>
+  </varlistentry>
+  <varlistentry>
     <term>$[cw.x] $[cw.y] $[cw.width] $[cw.height]</term>
     <listitem>
       <para>
