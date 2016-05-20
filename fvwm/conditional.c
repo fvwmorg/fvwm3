@@ -715,6 +715,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			}
 			mask->my_flags.do_check_cond_desk = on;
 		}
+		else if (StrEquals(cond, "Screen"))
+		{
+			if (sscanf(tmp, "%d", &mask->screen)) {
+				tmp = SkipNTokens(tmp, 1);
+			}
+			mask->my_flags.do_check_screen = 1;
+
+			if (!on)
+				mask->my_flags.do_not_check_screen = 1;
+		}
 		else
 		{
 			struct name_condition *pp;
@@ -1103,6 +1113,20 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 			return True;
 		else
 			return False;
+	}
+	if (mask->my_flags.do_check_screen)
+	{
+		rectangle	 g;
+		int		 scr;
+
+		get_unshaded_geometry(fw, &g);
+		scr = FScreenOfPointerXY(g.x, g.y);
+
+		if (mask->my_flags.do_not_check_screen) {
+			/* Negation of (!screen n) specified. */
+			return (scr != mask->screen);
+		} else
+			return (scr == mask->screen);
 	}
 
 	return True;

@@ -297,9 +297,12 @@ that are at least partially on the Xinerama screen containing the
 mouse pointer.</para>
 
 <para>The
+<emphasis remap='I'>Screen [n]</emphasis>
+condition matches only windows which are on the specified Xinerama screen.</para>
+
+<para>The
 <emphasis remap='I'>Desk [n]</emphasis>
 condition matches only windows which are on the specified desk.</para>
-
 <para>The
 <emphasis remap='I'>FixedPosition</emphasis>
 condition excludes all windows that do not have a fixed position,
