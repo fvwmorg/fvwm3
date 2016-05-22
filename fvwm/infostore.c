@@ -42,7 +42,6 @@ static MetaInfo *mi_store;
 /* ---------------------------- forward declarations ----------------------- */
 
 static void delete_metainfo(const char *);
-static int get_metainfo_length(void);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -128,7 +127,7 @@ inline char *get_metainfo_value(const char *key)
 	return NULL;
 }
 
-static inline int get_metainfo_length(void)
+int get_metainfo_length(void)
 {
 	MetaInfo *mi;
 	int count;
@@ -139,6 +138,12 @@ static inline int get_metainfo_length(void)
 		count++;
 
 	return count;
+}
+
+MetaInfo *
+get_metainfo(void)
+{
+	return mi_store;
 }
 
 void print_infostore(void)
