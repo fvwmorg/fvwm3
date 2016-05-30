@@ -215,3 +215,14 @@ void CMD_InfoStoreRemove(F_CMD_ARGS)
 
 	return;
 }
+
+void CMD_InfoStoreClear(F_CMD_ARGS)
+{
+	MetaInfo	*mi;
+
+	if (get_metainfo_length() == 0)
+		return;
+
+	for (mi = mi_store; mi; mi = mi->next)
+		delete_metainfo(mi->key);
+}

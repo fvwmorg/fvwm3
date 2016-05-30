@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<section id='InfoStoreClear'>
+<title>InfoStoreClear</title>
+
+<cmdsynopsis>
+    <command>InfoStoreClear</command>
+        <arg choice='plain'>
+            <replaceable>key</replaceable>
+        </arg>
+</cmdsynopsis>
+
+<para>Removes all entries from the Infostore.</para>
+
+</section>

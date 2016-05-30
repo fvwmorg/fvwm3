@@ -333,6 +333,9 @@ const func_t func_table[] =
 	CMD_ENT("infostoreadd", CMD_InfoStoreAdd, F_INFOSTOREADD, 0, 0),
 	/* - Adds an entry (key/value pairs) to the infostore */
 
+	CMD_ENT("infostoreclear", CMD_InfoStoreClear, F_INFOSTORECLEAR, 0, 0),
+	/* - Clears all entries from the infostore */
+
 	CMD_ENT("infostoreremove", CMD_InfoStoreRemove, F_INFOSTOREREMOVE, 0, 0),
 	/* - Removes an entry from the infostore */
 
