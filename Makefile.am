@@ -15,7 +15,6 @@ SUBDIRS = \
 	docs \
 	rpm \
 	debian \
-	sample.fvwmrc \
 	$(POSUB) \
 	tests
 
