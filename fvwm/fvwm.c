@@ -1396,16 +1396,6 @@ static void SetRCDefaults(void)
 		{ "+ \"&1. XTerm\" Exec xterm", "", ""},
 		{
 			"+ \"&2. ",
-			_("Setup Form"),
-			"\" Module FvwmForm FvwmForm-Setup"
-		},
-		{
-			"+ \"&3. ",
-			_("Setup 95 Script"),
-			"\" Module FvwmScript FvwmScript-Setup95"
-		},
-		{
-			"+ \"&4. ",
 			_("Issue fvwm commands"),
 			"\" Module FvwmConsole"
 		},
