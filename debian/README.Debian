@@ -1,9 +1,0 @@
-fvwm for Debian like systems
-----------------------------
-
-  * To start fvwm, create executable file ~/.xinitrc with line "exec fvwm".
-  * Or make symlink /etc/alternatives/x-window-manager to /usr/bin/fvwm.
-  * If you have config or .fvwm2rc file, place it into ~/.fvwm/ and start X.
-  * You may start fvwm without any configuration, the built-in root menu
-    suggests two initial configurations.  You may choose "Setup 95".
-  * Alternativelly install and use fvwm-themes package together with fvwm.

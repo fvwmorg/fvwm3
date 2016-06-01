@@ -13,8 +13,6 @@ SUBDIRS = \
 	$(FVWM_PERLLIB) \
 	doc \
 	docs \
-	rpm \
-	debian \
 	$(POSUB) \
 	tests
 
@@ -41,44 +39,3 @@ distcheck2: distcheck
 	fi
 
 distclean2: distclean
-
-## ---------------------------------------------------------------------------
-## Produce an rpm package using dist or from the given tarball
-## (requires rpmbuild in your system)
-#  Usage:
-#    make rpm-dist
-#    make release=1 rpm-dist
-#    make rpm-this
-#    make version=2.3.22 release=2 rpm-this
-#    make rpm-dist cparams='--enable-multibyte --quiet' mparams='CFLAGS="-O2 -g"'
-
-# automatical regeneration is missing for other dirs, so do it explicitly
-rpm-regenerate:
-	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) Makefile *.spec) || exit 1
-
-rpm-dist: dist rpm-this
-
-rpm-this: rpm-regenerate
-	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) this) || exit 1
-
-## -----------------------------------------------------------------
-## Produce a deb package using dist or from the given tarball
-## (requires fakeroot, dpkg and debhelper in your system)
-#  Usage:
-#    make deb-dist
-#    make release=1 deb-dist
-#    make deb-this
-#    make version=2.3.22 release=2 deb-this
-#    make deb-dist cparams='--enable-gnome --quiet' mparams='CFLAGS="-O2 -g"'
-#    make deb-inplace release=1.mg fullname=migo # works on sources directly
-
-deb-regenerate:
-	(cd debian && $(MAKE) $(AM_MAKEFLAGS) Makefile control) || exit 1
-
-deb-dist: dist deb-this
-
-deb-this: deb-regenerate
-	$(MAKE) -f debian/Makefile $(AM_MAKEFLAGS) this || exit 1
-
-deb-inplace: deb-regenerate
-	$(MAKE) -f debian/Makefile $(AM_MAKEFLAGS) inplace || exit 1

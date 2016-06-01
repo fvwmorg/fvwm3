@@ -1,6 +1,0 @@
-?package(fvwm):\
-  needs=wm\
-  section=WindowManagers\
-  title="Fvwm"\
-  longtitle="Fvwm Window Manager"\
-  command="/usr/bin/fvwm"

@@ -1721,10 +1721,6 @@ dnl
 	perllib/FVWM/Module/Makefile
 	perllib/FVWM/Tracker/Makefile
 	perllib/FVWM/Module.pm
-	rpm/Makefile
-	rpm/fvwm.spec
-	debian/Makefile
-	debian/control
 	doc/fvwm.ent
 	doc/footer.html
 	doc/Makefile
