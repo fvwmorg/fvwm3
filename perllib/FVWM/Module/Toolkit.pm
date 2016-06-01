@@ -95,7 +95,7 @@ sub show_message ($$;$) {
 		my @dirs = split(':', $ENV{PATH});
 		# kdialog is last because at least v0.9 ignores --title
 		TOOL_CANDIDATE:
-		foreach (qw(gdialog Xdialog zenity gtk-shell xmessage kdialog)) {
+		foreach (qw(gdialog Xdialog zenity message kdialog)) {
 			foreach my $dir (@dirs) {
 				my $file = "$dir/$_";
 				if (-x $file) {
@@ -111,8 +111,6 @@ sub show_message ($$;$) {
 	$title =~ s/'/'"'"'/sg;
 	if ($tool eq "gdialog" || $tool eq "Xdialog" || $tool eq "kdialog") {
 		system("$tool --title '$title' --msgbox '$msg' 500 100 &");
-	} elsif ($tool eq "gtk-shell") {
-		system("gtk-shell --size 500 100 --title '$title' --label '$msg' --button Close &");
 	} elsif ($tool eq "zenity") {
 		system("zenity --title '$title' --info --text '$msg' --no-wrap &");
 	} elsif ($tool eq "xmessage") {
@@ -207,7 +205,7 @@ A new toolkit subclass implementation may look like this:
 
 The B<FVWM::Module::Toolkit> package is a sub-class of B<FVWM::Module> that
 is intended to be uses as the base of sub-classes that attach widget
-toolkit library, like Perl/Tk or Gtk-Perl. It does some common work to load
+toolkit library, like Perl/Tk. It does some common work to load
 widget toolkit libraries and to show an error in the external window like
 xmessage if the required libraries are not available.
 
@@ -240,7 +238,7 @@ May be good for module diagnostics or any other purpose.
 This method is intended to be overridden in subclasses to create a dialog
 box using the corresponding widgets. The default fall back implementation is
 to find a system message application to show the message. The potentially
-used applications are I<gdialog>, I<Xdialog>, I<zenity>, I<gtk-shell>,
+used applications are I<gdialog>, I<Xdialog>, I<zenity>,
 I<xmessage>, I<kdialog>, or I<xterm> as the last resort. If not given,
 I<title> is based on the module name.
 
@@ -269,7 +267,6 @@ Mikhael Goikhman <migo@homemail.com>.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm>, L<FVWM::Module>, L<FVWM::Module::Gtk>,
-L<FVWM::Module::Gtk2>, L<FVWM::Module::Tk>.
+For more information, see L<fvwm>, L<FVWM::Module>, L<FVWM::Module::Tk>.
 
 =cut

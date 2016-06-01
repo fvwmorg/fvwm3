@@ -6,7 +6,7 @@ use warnings;
 use lib '../../perllib', '../perllib', 'perllib', `fvwm-perllib dir`;
 use FVWM::Commands;
 
-my $mode = shift || "--autodetect-gtk";  # -t|--text-only -x|--x-dialog
+my $mode = shift;  # -t|--text-only -x|--x-dialog
 
 my $title = "Commands of fvwm-$FVWM::Commands::VERS";
 my $commands_text = join('', map {
@@ -18,44 +18,8 @@ if ($mode =~ /-t/) {
 	exit;
 }
 
-if ($mode =~ /-x/ || !eval "use Gtk2 -init; 1;") {
+if ($mode =~ /-x/) {
 	require FVWM::Module::Toolkit;
 	FVWM::Module::Toolkit->show_message($commands_text, $title, 1);
 	exit;
 }
-
-my %cursor_to_stock_icon = (
-	''      => 'gtk-yes',
-	DESTROY => 'gtk-close',
-	SELECT  => 'gtk-find',
-	RESIZE  => 'gtk-fullscreen',
-	MOVE    => 'gtk-leave-fullscreen',
-);
-
-my $command_entries = Gtk2::ListStore->new(('Glib::String') x 3);
-foreach (@FVWM::Commands::LIST) {
-	$command_entries->set($command_entries->append,
-		0 => $cursor_to_stock_icon{$_->{cursor}} || 'gtk-no',
-		1 => $_->{name},
-		2 => $_->{descr},
-	);
-}
-
-my $combo_box = Gtk2::ComboBox->new($command_entries);
-my $renderer = Gtk2::CellRendererPixbuf->new;
-$combo_box->pack_start($renderer, 0);
-$combo_box->add_attribute($renderer, stock_id => 0);
-$renderer = Gtk2::CellRendererText->new;
-$combo_box->pack_start($renderer, 1);
-$combo_box->add_attribute($renderer, text => 1);
-$renderer = Gtk2::CellRendererText->new;
-$renderer->set(scale => 0.8);
-$combo_box->pack_start($renderer, 0);
-$combo_box->add_attribute($renderer, text => 2);
-
-my $window = Gtk2::Dialog->new;
-$window->set_title($title);
-$window->add_button('gtk-close' => 'close');
-$combo_box->show;
-$window->vbox->add($combo_box);
-$window->run;

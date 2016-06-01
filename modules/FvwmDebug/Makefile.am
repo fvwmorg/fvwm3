@@ -3,9 +3,9 @@
 ## Notes: Imakefile also linked with -ldnet_stub, on AlphaArchitecture
 
 moduledir = @FVWM_MODULEDIR@
-module_SCRIPTS = FvwmDebug FvwmGtkDebug
+module_SCRIPTS = FvwmDebug
 
-man_MANS = FvwmDebug.1 FvwmGtkDebug.1
+man_MANS = FvwmDebug.1
 EXTRA_DIST = $(man_MANS)
 
 # all the following lines may be removed one day
@@ -24,8 +24,4 @@ _FvwmDebug.1: FvwmDebug
 	pod2man --center "Fvwm Modules" --release "@VERSION@@VERSIONINFO@" \
 		--name FvwmDebug FvwmDebug >FvwmDebug.1
 
-_FvwmGtkDebug.1: FvwmGtkDebug
-	pod2man --center "Fvwm Modules" --release "@VERSION@@VERSIONINFO@" \
-		--name FvwmGtkDebug FvwmGtkDebug >FvwmGtkDebug.1
-
-regenerate: _FvwmDebug.1 _FvwmGtkDebug.1
+regenerate: _FvwmDebug.1

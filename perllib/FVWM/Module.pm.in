@@ -1189,7 +1189,7 @@ Randy J. Ray <randy@byz.org>.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm>, L<FVWM::Module::Gtk> and L<FVWM::Module::Tk>,
+For more information, see L<fvwm> and L<FVWM::Module::Tk>,
 L<FVWM::Tracker>.
 
 =cut

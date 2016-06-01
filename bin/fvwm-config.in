@@ -80,7 +80,6 @@ release_date="@RELDATENUM@"
 
 with_bidi=@with_bidi@
 with_gettext=@with_gettext@
-with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
 with_iconv=@with_iconv@
@@ -155,7 +154,6 @@ while test $# -gt 0; do
 		--supports|-supports|-s)
 			test "$with_bidi"       = "yes" && echo "bidi"
 			test "$with_gettext"    = "yes" && echo "gettext"
-			test "$with_gtk"        = "yes" && echo "gtk"
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs"  = "yes" && echo "gnome-libs"
 			test "$with_iconv"      = "yes" && echo "iconv"
@@ -209,9 +207,6 @@ while test $# -gt 0; do
 			echo "Support for features:"
 			echo "	bidi (bi-directionality): $with_bidi"
 			echo "	gettext (Native Lang Support): $with_gettext"
-			echo "	gtk (required for FvwmGtk): $with_gtk"
-			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
-			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	perllib (Perl library installed): $with_perllib"
 			echo "	iconv (i18n conversions): $with_iconv"
 			echo "	png: $with_png"

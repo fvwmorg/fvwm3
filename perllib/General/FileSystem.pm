@@ -821,10 +821,6 @@ Searches for the given file in the given directories.
 
 Returns the fully qualified file name.
 
-=item usage
-
-  my $gtkrc = find_file(".gtkrc", [$home, "$home/.gnome"]);
-
 =item parameters
 
   * file name to search for

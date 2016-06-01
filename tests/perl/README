@@ -6,16 +6,9 @@ These are a number of small fvwm modules written in Perl:
 * module-flash:
 	Shows a flash window on every page switch. Mainly for tutorial.
 
-* module-gtkflash:
-	The same using GTK+ with small additional functionality.
-
 * module-winlist:
 	Prints window names and ids to stderr and exits.
 	If -x flag is given, do this in xmessage instead of stderr.
-
-* module-gtkwinlist:
-	Shows a list of windows, two columns that may be sorted by clicking
-	on titles, multiple windows may be iconified/shaded. Using Perl/Gtk.
 
 * module-tkdesker:
 	A simple version of pager, does not show mini-windows or pages;
@@ -34,7 +27,7 @@ Other files in this directory:
 * show-commands:
 	A test for FVWM::Commands module (used to generate docs/COMMANDS).
 	Show all fvwm commands with descriptions, on standard output (-t)
-	or using some X dialog (-x) or using gtk combo box (autodetected).
+	or using some X dialog (-x).
 
 * xmessage.fpl:
 	A test for the "FvwmPerl load" functionality.

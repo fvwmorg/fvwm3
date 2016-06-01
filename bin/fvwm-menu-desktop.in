@@ -91,7 +91,6 @@ Standard output is a series Fvwm commands."""
                'check-mini-icon',
                'destroy-type',
                'dir',
-               'fvwmgtk-alias',
                'icon-app',
                'icon-folder',
                'icon-style',

@@ -316,66 +316,17 @@ $internal_pods->{tutorial} = q{
 	        }
 	    });
 
-	Now, let's convert our module to be GTK+ based and not to be
-	dependent on I<xmessage>.
-
-	    use lib `fvwm-perllib dir`;
-	    use FVWM::Module::Gtk;
-	    use POSIX qw(SIGALRM);
-	    Gtk->init;
-
-	    my $format = "(%d, %d)";
-	    my $module = new FVWM::Module::Gtk;
-	    my $pageinfo = $module->track("PageInfo");
-
-	    $pageinfo->observe("desk/page changed", sub {
-	        my ($module, $tracker, $data) = @_;
-
-	        my $page_nx = $data->{page_nx};
-	        my $page_ny = $data->{page_ny};
-	        my $width  = $data->{vp_width};
-	        my $height = $data->{vp_height};
-
-	        # actually show the flash
-	        my ($w, $h) = (80, 50);
-	        my $string = sprintf($format, $page_nx, $page_ny);
-
-	        my $window = new Gtk::Window('toplevel');
-	        $window->set_title("FlashWindow");
-	        $window->set_border_width(5);
-	        $window->set_usize($w, $h);
-	        $window->set_uposition(($width - $w) / 2, ($height - $h) / 2);
-
-	        my $frame = new Gtk::Frame();
-	        $window->add($frame);
-	        $frame->set_shadow_type('etched_out');
-
-	        my $label = new Gtk::Label($string);
-	        $frame->add($label);
-	        $window->show_all;
-
-	        POSIX::sigaction(SIGALRM, POSIX::SigAction->new(
-	            sub { $window->destroy(); }
-	        ));
-	        alarm(1);
-	    });
-
-	    $module->event_loop;
-
-	The full module source that we just wrote is available at
-	ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/module-gtkflash .
-
 	:head1 EXAMPLES
 
 	Currently see I<ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/>
 	for examples.
 
-	Learning the sources of B<FvwmPerl>, B<FvwmDebug>, B<FvwmGtkDebug>
+	Learning the sources of B<FvwmPerl>, B<FvwmDebug>
 	modules may help too.
 
 	:head1 SEE ALSO
 
-	See L<FVWM::Module> and L<FVWM::Module::Gtk> for the module API.
+	See L<FVWM::Module> for the module API.
 
 	:head1 AUTHOR
 
@@ -417,7 +368,7 @@ $internal_pods->{events} = q{
 	    wflags - window flags in binary string
 	    looped - loop of zero or more fixed argument bunches
 
-	Run L<FvwmDebug> or L<FvwmGtkDebug> to browse events.
+	Run L<FvwmDebug> to browse events.
 
 	:head1 SEE ALSO
 

@@ -133,7 +133,6 @@ The sections below explain these options.
 ---------------------------------------------------------------------------
   With Asian bi-direct. text support?  bidi          --disable-bidi
   With Gettext Native Lang Support     gettext       --with-intl-*
-  With GTK+ required for FvwmGtk?      gtk           --with-gtk-*
   With GDK image support in FvwmGtk?   gdk-imlib     --with-imlib-*
   With GNOME libs support in FvwmGtk?  gnome-libs    --with-gnome
   With PNG image support?              png           --with-png-*
@@ -237,31 +236,6 @@ may be found:
 	intl        libintl.h
 
 Only one version of the --with-foo-library flag may be specified.
-
-
-Optional libraries used by FvwmGtk
-==================================
-
-FvwmGtk module requires GTK+ and optionally GDK-Imlib and GNOME libraries.
-GDK-Imlib library that is a part of Imlib version 1 is used to have images.
-
-Note, fvwm itself has an ability to support GNOME Window Manager hints
-(which is enabled by default), this has nothing to do with GNOME library
-support compiled into FvwmGtk (which is autoprobed and used if passed).
-
-To disable autoprobing of GTK+, Imlib and GNOME libraries, use:
-
-	--disable-gtktest --disable-imlibtest --without-gnome
-
-This does not turn GTK+ and Imlib support off, instead, one part of the
-checking, precisely compilation, is quietly considered to be passed.
-To disable GTK+ and Imlib support even if the corresponding libraries
-are installed, try this solution:
-
-	--with-gtk-prefix=/no/dir --with-imlib-prefix=/no/dir
-
-Run './configure --help' for more information about configure options.
-
 
 Shared Libraries in Non-standard Places
 =======================================
@@ -433,18 +407,6 @@ By default the fvwm perl library is installed together with all other
 data files.  Perl library may be used to write fvwm modules in perl.
 Currently the FvwmPerl module uses it.  This option disables installing
 the fvwm perl library.
-
-
-  --with-gnome                  no, yes or prefix for GNOME files (FvwmGtk only)
-  ~~~~~~~~~~~~
-
-FvwmGtk may be built as a GTK application or a GNOME application.
-This is autodetected and if GNOME libs found, they are used in FvwmGtk.
-You may also specify the location of GNOME headers and libs using
---with-gnome-includes and --with-gnome-libs, but this is usually never
-needed, since all required info should be returned by gnome-config
-if GNOME is properly installed.  In case the GNOME installation works
-and you don't want to be dependant on GNOME, specify --without-gnome.
 
 
   --enable-xinerama-emulation   enable Xinerama emulation on one screen
