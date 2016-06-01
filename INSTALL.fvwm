@@ -2,9 +2,6 @@
 If you only need an information about all supported features skip to the
 "Supported Features" and the following sections.
 
-VMS users: ignore this file, and follow the instructions in vms/README
-instead.
-
 This file details only configuration options peculiar to fvwm.  Please
 read the generic instructions in INSTALL first.
 
