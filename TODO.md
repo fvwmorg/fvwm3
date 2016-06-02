@@ -43,7 +43,7 @@
       functions.
         - This means rethinking how commands/lines/etc., are parsed.
 
-* XRandR:
+* RandR:
     * [ ] Configuration:
         * [ ] Enumerate outputs without requiring config file changes.  See:
             http://www.mail-archive.com/fvwm-workers@fvwm.org/msg03649.html
@@ -95,3 +95,14 @@
 		  dragging elements to a different position on the window)
 		* Initially support the older module interface.
 		* Can replace all the old modules with symlinks.
+
+* perllib (FvwmPerl):
+	* Transition away from 5.004 as the minimum version;
+	* Update the code to use 5.14 at least:
+        - Do away with subroutine prototypes;
+        - "use vars" is deprecated;
+        - "use parent", rather than manipulating @ISA/Exporter directly;
+        - "use warnings/strictures" everywhere;
+	* Don't rely on the crappy command generation stuff from FVWM releases to feed
+	  the perl API ""abstraction"" as we have it now (deprecate create-constants
+	  and create-commands).
