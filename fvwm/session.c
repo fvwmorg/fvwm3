@@ -48,12 +48,13 @@
 #include "virtual.h"
 #include "geometry.h"
 #include "move_resize.h"
+#include "infostore.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
 /*#define FVWM_SM_DEBUG_PROTO*/
 /*#define FVWM_SM_DEBUG_WINMATCH*/
-/*#define FVWM_SM_DEBUG_FILES*/
+#define FVWM_SM_DEBUG_FILES
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -184,6 +185,17 @@ SaveGlobalState(FILE *f)
 	fprintf(
 		f, "  [STYLE] %i %i\n", Scr.gs.do_emulate_mwm,
 		Scr.gs.do_emulate_win);
+
+	if (get_metainfo_length() > 0) {
+		MetaInfo *mi = get_metainfo(), *mi_i;
+
+		fprintf(f, "  [INFOSTORE]\n");
+		for (mi_i = mi; mi_i; mi_i = mi_i->next) {
+			fprintf(f, "    [KEY] %s\n", mi_i->key);
+			fprintf(f, "    [VALUE] %s\n", mi_i->value);
+		}
+	}
+
 
 	return 1;
 }
@@ -1124,7 +1136,8 @@ LoadGlobalState(char *filename)
 	FILE *f;
 	char s[4096], s1[4096];
 	/* char s2[256]; */
-	int i1, i2, i3, i4;
+	char *is_key = NULL, *is_value = NULL;
+	int n, i1, i2, i3, i4;
 
 	if (!does_file_version_match)
 	{
@@ -1141,11 +1154,14 @@ LoadGlobalState(char *filename)
 
 	while (fgets(s, sizeof(s), f))
 	{
+		n = 0;
+
 		i1 = 0;
 		i2 = 0;
 		i3 = 0;
 		i4 = 0;
-		sscanf(s, "%4000s", s1);
+
+		sscanf(s, "%4000s%n", s1, &n);
 		/* If we are restarting, [REAL_STATE_FILENAME] points
 		 * to the file containing the true session state. */
 		if (SessionSupport && !strcmp(s1, "[REAL_STATE_FILENAME]"))
@@ -1173,6 +1189,40 @@ LoadGlobalState(char *filename)
 			 Scr.VyMax = i4;
 			*/
 			MoveViewport(i1, i2, True);
+		}
+		else if (!strcmp(s1, "[KEY]"))
+		{
+			char *s2;
+			s2 = s + n;
+			if (*s2 != 0)
+			{
+				s2++;
+			}
+			sscanf(s2, "%[^\n]", s1);
+			is_key = safestrdup(s1);
+		}
+		else if (!strcmp(s1, "[VALUE]"))
+		{
+			char *s2;
+			s2 = s + n;
+			if (*s2 != 0)
+			{
+				s2++;
+			}
+			sscanf(s2, "%[^\n]", s1);
+			is_value = safestrdup(s1);
+
+			fprintf(stderr, "GOT: %s -> %s\n", is_key, is_value);
+
+			if (is_key != NULL && is_value != NULL) {
+				fprintf(stderr, "INSERTING: %s -> %s\n",
+					is_key, is_value);
+				insert_metainfo(is_key, is_value);
+			}
+
+			free(is_key);
+			free(is_value);
+			is_key = is_value = NULL;
 		}
 #if 0
 		/* migo (08-Dec-1999): we don't want to eliminate config yet */

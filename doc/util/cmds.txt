@@ -81,6 +81,7 @@ IconPath
 IgnoreModifiers
 ImagePath
 InfoStoreAdd
+InfoStoreClear
 InfoStoreRemove
 Key
 KeepRc

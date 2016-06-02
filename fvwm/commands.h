@@ -78,6 +78,7 @@ enum
 	F_IMAGE_PATH,
 	F_INFOSTOREADD,
 	F_INFOSTOREREMOVE,
+	F_INFOSTORECLEAR,
 	F_KEEPRC,
 	F_KEY,
 	F_KILL_MODULE,
@@ -296,6 +297,7 @@ P(IconPath);
 P(IgnoreModifiers);
 P(ImagePath);
 P(InfoStoreAdd);
+P(InfoStoreClear);
 P(InfoStoreRemove);
 P(KeepRc);
 P(Key);
