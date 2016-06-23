@@ -1045,6 +1045,7 @@ static void CreateGCs(void)
 {
 	XGCValues gcv;
 	unsigned long gcm;
+	int i;
 
 	/* create scratch GC's */
 	gcm = GCFunction|GCLineWidth;
@@ -1055,7 +1056,15 @@ static void CreateGCs(void)
 	Scr.ScratchGC2 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 	Scr.ScratchGC3 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 	Scr.ScratchGC4 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	Scr.TitleGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+
+	for (i = 0; i < BP_SIZE; i++) {
+		Scr.ScratchBGC[i] = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm,
+		    &gcv);
+		Scr.ScratchBGC2[i] = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm,
+		    &gcv);
+	}
+
+        Scr.TitleGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 	Scr.BordersGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 	Scr.TransMaskGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 	Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);

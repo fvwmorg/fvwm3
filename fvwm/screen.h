@@ -383,6 +383,9 @@ typedef struct ScreenInfo
 	GC ScratchGC2;
 	GC ScratchGC3;
 	GC ScratchGC4;
+	GC ScratchBGC[BP_SIZE];
+	GC ScratchBGC2[BP_SIZE];
+
 	GC TitleGC;
 	GC BordersGC;
 
