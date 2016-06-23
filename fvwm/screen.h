@@ -383,6 +383,21 @@ typedef struct ScreenInfo
 	GC ScratchGC2;
 	GC ScratchGC3;
 	GC ScratchGC4;
+	GC ScratchGC5;
+	GC ScratchGC6;
+	GC ScratchGC7;
+	GC ScratchGC8;
+	GC ScratchGC9;
+	GC ScratchGC10;
+	GC ScratchGC11;
+	GC ScratchGC12;
+	GC ScratchGC13;
+	GC ScratchGC14;
+	GC ScratchGC15;
+	GC ScratchGC16;
+	GC ScratchGC17;
+	GC ScratchGC18;
+
 	GC TitleGC;
 	GC BordersGC;
 
