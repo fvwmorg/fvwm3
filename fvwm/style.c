@@ -39,6 +39,8 @@
 /* ---------------------------- local definitions -------------------------- */
 
 #define SAFEFREE( p )  {if (p) {free(p);(p)=NULL;}}
+#define BS_BC 0
+#define BS_BC_HI 1
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -49,6 +51,8 @@
 /* ---------------------------- local types -------------------------------- */
 
 /* ---------------------------- forward declarations ----------------------- */
+
+static int style_set_border_colorset(window_style *, char *, int);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -669,13 +673,21 @@ static void merge_styles(
 	}
 	if (add_style->flags.use_border_colorset)
 	{
-		SSET_BORDER_COLORSET(
-			*merged_style, SGET_BORDER_COLORSET(*add_style));
+		int i, cs;
+
+		for (i = 0; i < BP_SIZE; i++) {
+			cs = SGET_BORDER_COLORSET(*add_style, i);
+			SSET_BORDER_COLORSET(*merged_style, i, cs);
+		}
 	}
 	if (add_style->flags.use_border_colorset_hi)
 	{
-		SSET_BORDER_COLORSET_HI(
-			*merged_style,SGET_BORDER_COLORSET_HI(*add_style));
+		int i, cs;
+
+		for (i = 0; i < BP_SIZE; i++) {
+			cs = SGET_BORDER_COLORSET_HI(*add_style, i);
+			SSET_BORDER_COLORSET_HI(*merged_style, i, cs);
+		}
 	}
 	if (add_style->flags.use_icon_title_colorset)
 	{
@@ -2096,6 +2108,51 @@ static char *style_parse_icon_fill_style(
 	return rest;
 }
 
+static int style_set_border_colorset(window_style *ps, char *rest, int type)
+{
+	int vals[BP_SIZE];
+	int this_many;
+	int this_cs;
+	int upto = 0;
+	int just_one = 0;
+
+	this_many = GetIntegerArguments(rest, &rest, vals, BP_SIZE);
+
+	if (this_many == 1) {
+		just_one = 1;
+		this_many = BP_SIZE;
+	}
+
+	if (this_many < 2 && this_many > 8)
+		return 1;
+
+	for (upto = 0; upto < this_many; upto++) {
+		this_cs = just_one ? vals[0] : vals[upto];
+
+		if (this_cs < 0)
+			return 1;
+
+		if (type == BS_BC)
+			SSET_BORDER_COLORSET(*ps, upto, this_cs);
+		else
+			SSET_BORDER_COLORSET_HI(*ps, upto, this_cs);
+
+		alloc_colorset(this_cs);
+	}
+
+	if (type == BS_BC) {
+		ps->flags.use_border_colorset = 1;
+		ps->flag_mask.use_border_colorset = 1;
+		ps->change_mask.use_border_colorset = 1;
+	} else {
+		ps->flags.use_border_colorset_hi = 1;
+		ps->flag_mask.use_border_colorset_hi = 1;
+		ps->change_mask.use_border_colorset_hi = 1;
+	}
+
+	return 0;
+}
+
 static Bool style_parse_one_style_option(
 	char *token, char *rest, char **ret_rest, char *prefix,
 	window_style *ps, icon_boxes **cur_ib)
@@ -2234,13 +2291,13 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "BorderColorset"))
 		{
-			*val = -1;
-			GetIntegerArguments(rest, &rest, val, 1);
-			SSET_BORDER_COLORSET(*ps, *val);
-			alloc_colorset(*val);
-			ps->flags.use_border_colorset = (*val >= 0);
-			ps->flag_mask.use_border_colorset = 1;
-			ps->change_mask.use_border_colorset = 1;
+			if (style_set_border_colorset(ps, rest, BS_BC) != 0) {
+				fvwm_debug(__func__, "BorderColorset can only "
+				    "contain positive integers, and have <= 8 "
+				    "value, and have <= 8 "
+				    "values: %s", rest);
+				break;
+			}
 		}
 		else if (StrEquals(token, "BottomTitleRotated"))
 		{
@@ -2867,15 +2924,14 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "HilightBorderColorset"))
 		{
-			*val = -1;
-			GetIntegerArguments(rest, &rest, val, 1);
-			SSET_BORDER_COLORSET_HI(*ps, *val);
-			alloc_colorset(*val);
-			ps->flags.use_border_colorset_hi = (*val >= 0);
-			ps->flag_mask.use_border_colorset_hi = 1;
-			ps->change_mask.use_border_colorset_hi = 1;
+			if (style_set_border_colorset(ps, rest, BS_BC_HI) != 0) {
+				fvwm_debug(__func__, "HilightBorderColorset can "
+				    "only contain positive integers, and have "
+				    " <= 8 values: %s", rest);
+				break;
+			}
 		}
-		else if (StrEquals(token, "HilightIconTitleColorset"))
+                else if (StrEquals(token, "HilightIconTitleColorset"))
 		{
 			*val = -1;
 			GetIntegerArguments(rest, &rest, val, 1);
@@ -5315,15 +5371,13 @@ void update_style_colorset(int colorset)
 			temp->change_mask.use_colorset_hi = 1;
 			Scr.flags.do_need_window_update = 1;
 		}
-		if (SUSE_BORDER_COLORSET(&temp->flags) &&
-		    SGET_BORDER_COLORSET(*temp) == colorset)
+		if (SUSE_BORDER_COLORSET(&temp->flags))
 		{
 			temp->has_style_changed = 1;
 			temp->change_mask.use_border_colorset = 1;
 			Scr.flags.do_need_window_update = 1;
 		}
-		if (SUSE_BORDER_COLORSET_HI(&temp->flags) &&
-		    SGET_BORDER_COLORSET_HI(*temp) == colorset)
+		if (SUSE_BORDER_COLORSET_HI(&temp->flags))
 		{
 			temp->has_style_changed = 1;
 			temp->change_mask.use_border_colorset_hi = 1;
@@ -5393,18 +5447,26 @@ void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 	}
 	if (SUSE_BORDER_COLORSET(&pstyle->flags))
 	{
-		cs = SGET_BORDER_COLORSET(*pstyle);
-		fw->border_cs = cs;
-		fw->border_colors.hilight = Colorset[cs].hilite;
-		fw->border_colors.shadow = Colorset[cs].shadow;
-		fw->border_colors.back = Colorset[cs].bg;
+		int i;
+
+		for (i = 0; i < BP_SIZE; i++) {
+			cs = SGET_BORDER_COLORSET(*pstyle, i);
+			fw->border_cs[i] = cs;
+			fw->border_colors[i].hilight = Colorset[cs].hilite;
+			fw->border_colors[i].shadow = Colorset[cs].shadow;
+			fw->border_colors[i].back = Colorset[cs].bg;
+		}
 	}
 	else
 	{
-		fw->border_cs = -1;
-		fw->border_colors.hilight = fw->colors.hilight;
-		fw->border_colors.shadow = fw->colors.shadow;
-		fw->border_colors.back = fw->colors.back;
+		int i;
+
+		for (i = 0; i < BP_SIZE; i++) {
+			fw->border_cs[i] = -1;
+			fw->border_colors[i].hilight = fw->colors.hilight;
+			fw->border_colors[i].shadow = fw->colors.shadow;
+			fw->border_colors[i].back = fw->colors.back;
+		}
 	}
 }
 
@@ -5447,18 +5509,26 @@ void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 	}
 	if (SUSE_BORDER_COLORSET_HI(&pstyle->flags))
 	{
-		cs = SGET_BORDER_COLORSET_HI(*pstyle);
-		fw->border_cs_hi = cs;
-		fw->border_hicolors.hilight = Colorset[cs].hilite;
-		fw->border_hicolors.shadow = Colorset[cs].shadow;
-		fw->border_hicolors.back = Colorset[cs].bg;
+		int i;
+
+		for (i = 0; i < BP_SIZE; i++) {
+			cs = SGET_BORDER_COLORSET_HI(*pstyle, i);
+			fw->border_cs_hi[i] = cs;
+			fw->border_hicolors[i].hilight = Colorset[cs].hilite;
+			fw->border_hicolors[i].shadow = Colorset[cs].shadow;
+			fw->border_hicolors[i].back = Colorset[cs].bg;
+		}
 	}
 	else
 	{
-		fw->border_cs_hi = -1;
-		fw->border_hicolors.hilight = fw->hicolors.hilight;
-		fw->border_hicolors.shadow = fw->hicolors.shadow;
-		fw->border_hicolors.back = fw->hicolors.back;
+		int i;
+
+		for (i = 0; i < BP_SIZE; i++) {
+			fw->border_cs_hi[i] = -1;
+			fw->border_hicolors[i].hilight = fw->colors.hilight;
+			fw->border_hicolors[i].shadow = fw->colors.shadow;
+			fw->border_hicolors[i].back = fw->colors.back;
+		}
 	}
 }
 

@@ -5459,11 +5459,30 @@ work exactly like _ForeColor_, _BackColor_ and _Colorset_ but are
 used only if the window has the focus. These styles replace the old
 commands *HilightColor* and _HilightColorset_.
 +
-_BorderColorset_ takes the colorset number as its sole argument and
-overrides the colors set by _Color_ or _Colorset_. for the window
-border. To stop using a colorset, the argument is omitted.
+_BorderColorset_ takes eight positive integers as its arguments and will
+apply the given colorsets to the eight individual components of the window
+border.
 +
-The _HilightBorderColorset_ style option works similarly to
+For backwards compatibility, if one integer is supplied, that is applied to
+all window border components.
++
+The border is split up into the following definitions, and is the same order as
+the colorsets which will be applied to the border.
++
+....
+    North, North East, East, South East, South, South West, West, North West
+....
++
+_North_, _East_, _South_, and _West_ refer to the top, left, bottom, and right
+sides of the window border.
++
+_NE_, _SE_, _SW_, and _NW_ refer to the window handles.
++
+*NOTE*: due to how window handles are rendered, there is no way to make one
+complete edge of a window the same color as defined by either _North_, _South_,
+_East_, or _West_.
++
+The _HilightBorderColorset_ style option works the same as
 _BorderColorset_ but is used when the window has the focus.
 +
 !_IconTitle_ disables displaying icon labels while the opposite

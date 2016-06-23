@@ -454,20 +454,20 @@
 	((s).colorset)
 #define SSET_COLORSET(s,x) \
 	((s).colorset = (x))
-#define SSET_BORDER_COLORSET(s,x) \
-	((s).border_colorset = (x))
-#define SGET_BORDER_COLORSET(s) \
-	((s).border_colorset)
 #define SGET_COLORSET_HI(s) \
 	((s).colorset_hi)
 #define SSET_COLORSET_HI(s,x) \
 	((s).colorset_hi = (x))
-#define SGET_BORDER_COLORSET_HI(s) \
-	((s).border_colorset_hi)
-#define SSET_BORDER_COLORSET_HI(s,x) \
-	((s).border_colorset_hi = (x))
+#define SSET_BORDER_COLORSET(s,p,x) \
+	((s).border_colorset[(p)] = (x))
+#define SGET_BORDER_COLORSET(s, p) \
+	((s).border_colorset[(p)])
+#define SGET_BORDER_COLORSET_HI(s,p) \
+	((s).border_colorset_hi[(p)])
+#define SSET_BORDER_COLORSET_HI(s,p,x) \
+	((s).border_colorset_hi[(p)] = (x))
 #define SSET_ICON_TITLE_COLORSET(s,x) \
-	((s).icon_title_colorset = (x))
+        ((s).icon_title_colorset = (x))
 #define SGET_ICON_TITLE_COLORSET(s) \
 	((s).icon_title_colorset)
 #define SSET_ICON_TITLE_COLORSET_HI(s,x) \

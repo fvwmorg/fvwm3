@@ -185,6 +185,19 @@ typedef struct
 	int bottom;
 } ewmh_strut;
 
+enum border_part_cardinals
+{
+	BP_NORTH = 0,
+	BP_NE,
+	BP_EAST,
+	BP_SE,
+	BP_SOUTH,
+	BP_SW,
+	BP_WEST,
+	BP_NW,
+	BP_SIZE
+};
+
 typedef struct
 {
 	/* common flags (former flags in bits 0-12) */
@@ -620,8 +633,8 @@ typedef struct window_style
 	char *back_color_name_hi;
 	int colorset;
 	int colorset_hi;
-	int border_colorset;
-	int border_colorset_hi;
+	int border_colorset[BP_SIZE];
+	int border_colorset_hi[BP_SIZE];
 	int icon_title_colorset;
 	int icon_title_colorset_hi;
 	int icon_background_colorset;
@@ -836,13 +849,14 @@ typedef struct FvwmWindow
 	int number_cmap_windows;
 	color_quad colors;
 	color_quad hicolors;
-	color_quad border_colors;
-	color_quad border_hicolors;
+	color_quad border_colors[BP_SIZE];
+	color_quad border_hicolors[BP_SIZE];
 
 	int cs;
 	int cs_hi;
-	int border_cs;
-	int border_cs_hi;
+	int border_cs[BP_SIZE];
+	int border_cs_hi[BP_SIZE];
+
 	int icon_title_cs;
 	int icon_title_cs_hi;
 	int icon_background_cs;

@@ -113,15 +113,19 @@ typedef struct
 typedef struct
 {
 	int relief_width;
-	GC relief_gc;
-	GC shadow_gc;
-	Pixel fore_color;
-	Pixel back_color;
-	int cs;
-	int border_cs;		/* for UseBorderStyle */
+	GC relief_gc[BP_SIZE];
+	GC shadow_gc[BP_SIZE];
+
+	Pixel fore_color[BP_SIZE];
+	Pixel back_color[BP_SIZE];
+
+	int cs[BP_SIZE];
+	int border_cs[BP_SIZE];	/* for UseBorderStyle */
 	int bg_border_cs;	/* for UseBorderStyle */
 	Pixmap back_pixmap;
-	XSetWindowAttributes attributes;
+
+        XSetWindowAttributes attributes[BP_SIZE];
+
 	unsigned long valuemask;
 	Pixmap texture_pixmap;
 	int texture_pixmap_width;
@@ -319,11 +323,11 @@ static void get_common_decorations(
 	Bool do_change_gcs)
 {
 	DecorFace *df;
-	color_quad *draw_colors;
+	color_quad *draw_colors[BP_SIZE];
 
 	df = border_get_border_style(t, has_focus);
 	cd->bg_border_cs = -1;
-	cd->cs = -1;
+
 	if (has_focus)
 	{
 		/* are we using textured borders? */
@@ -345,13 +349,57 @@ static void get_common_decorations(
 		cd->back_pixmap = Scr.gray_pixmap;
 		if (is_border)
 		{
-			draw_colors = &(t->border_hicolors);
-			cd->cs = t->border_cs_hi;
+			draw_colors[BP_NORTH] = &t->border_hicolors[BP_NORTH];
+			cd->cs[BP_NORTH] = t->border_cs_hi[BP_NORTH];
+
+			draw_colors[BP_SOUTH] = &t->border_hicolors[BP_SOUTH];
+			cd->cs[BP_SOUTH] = t->border_cs_hi[BP_SOUTH];
+
+			draw_colors[BP_EAST] = &t->border_hicolors[BP_EAST];
+			cd->cs[BP_EAST] = t->border_cs_hi[BP_EAST];
+
+			draw_colors[BP_WEST] = &t->border_hicolors[BP_WEST];
+			cd->cs[BP_WEST] = t->border_cs_hi[BP_WEST];
+
+			/* handles */
+			draw_colors[BP_NE] = &t->border_hicolors[BP_NE];
+			cd->cs[BP_NE] = t->border_cs_hi[BP_NE];
+
+			draw_colors[BP_SE] = &t->border_hicolors[BP_SE];
+			cd->cs[BP_SE] = t->border_cs_hi[BP_SE];
+
+			draw_colors[BP_SW] = &t->border_hicolors[BP_SW];
+			cd->cs[BP_SW] = t->border_cs_hi[BP_SW];
+
+			draw_colors[BP_NW] = &t->border_hicolors[BP_NW];
+			cd->cs[BP_NW] = t->border_cs_hi[BP_NW];
 		}
 		else
 		{
-			draw_colors = &(t->hicolors);
-			cd->cs = t->cs_hi;
+			draw_colors[BP_NORTH] = &(t->hicolors);
+			cd->cs[BP_NORTH] = t->cs_hi;
+
+			draw_colors[BP_SOUTH] = &(t->hicolors);
+			cd->cs[BP_SOUTH] = t->cs_hi;
+
+			draw_colors[BP_EAST] = &(t->hicolors);
+			cd->cs[BP_EAST] = t->cs_hi;
+
+			draw_colors[BP_WEST] = &(t->hicolors);
+			cd->cs[BP_WEST] = t->cs_hi;
+
+			/* handles */
+			draw_colors[BP_NW] = &(t->hicolors);
+			cd->cs[BP_NW] = t->cs_hi;
+
+			draw_colors[BP_NE] = &(t->hicolors);
+			cd->cs[BP_NE] = t->cs_hi;
+
+			draw_colors[BP_SW] = &(t->hicolors);
+			cd->cs[BP_SW] = t->cs_hi;
+
+			draw_colors[BP_SE] = &(t->hicolors);
+			cd->cs[BP_SE] = t->cs_hi;
 		}
 	}
 	else
@@ -381,46 +429,126 @@ static void get_common_decorations(
 		}
 		if (is_border)
 		{
-			draw_colors = &(t->border_colors);
-			cd->cs = t->border_cs;
+			draw_colors[BP_NORTH] = &t->border_colors[BP_NORTH];
+			cd->cs[BP_NORTH] = t->border_cs[BP_NORTH];
+
+			draw_colors[BP_SOUTH] = &t->border_colors[BP_SOUTH];
+			cd->cs[BP_SOUTH] = t->border_cs[BP_SOUTH];
+
+			draw_colors[BP_EAST] = &t->border_colors[BP_EAST];
+			cd->cs[BP_EAST] = t->border_cs[BP_EAST];
+
+			draw_colors[BP_WEST] = &t->border_colors[BP_WEST];
+			cd->cs[BP_WEST] = t->border_cs[BP_WEST];
+
+			/* handles */
+			draw_colors[BP_NE] = &t->border_colors[BP_NE];
+			cd->cs[BP_NE] = t->border_cs[BP_NE];
+
+			draw_colors[BP_SE] = &t->border_colors[BP_SE];
+			cd->cs[BP_SE] = t->border_cs[BP_SE];
+
+			draw_colors[BP_SW] = &t->border_colors[BP_SW];
+			cd->cs[BP_SW] = t->border_cs[BP_SW];
+
+			draw_colors[BP_NW] = &t->border_colors[BP_NW];
+			cd->cs[BP_NW] = t->border_cs[BP_NW];
 		}
 		else
 		{
-			draw_colors = &(t->colors);
-			cd->cs = t->cs;
+			draw_colors[BP_NORTH] = &(t->colors);
+			cd->cs[BP_NORTH] = t->cs;
+
+			draw_colors[BP_SOUTH] = &(t->colors);
+			cd->cs[BP_SOUTH] = t->cs;
+
+			draw_colors[BP_EAST] = &(t->colors);
+			cd->cs[BP_EAST] = t->cs;
+
+			draw_colors[BP_WEST] = &(t->colors);
+			cd->cs[BP_WEST] = t->cs;
+
+			/* handles */
+			draw_colors[BP_NW] = &(t->colors);
+			cd->cs[BP_NW] = t->cs;
+
+			draw_colors[BP_NE] = &(t->colors);
+			cd->cs[BP_NE] = t->cs;
+
+			draw_colors[BP_SW] = &(t->colors);
+			cd->cs[BP_SW] = t->cs;
+
+			draw_colors[BP_SE] = &(t->colors);
+			cd->cs[BP_SE] = t->cs;
 		}
 	}
-	cd->fore_color = draw_colors->fore;
-	cd->back_color = draw_colors->back;
+	cd->fore_color[BP_NORTH] = draw_colors[BP_NORTH]->fore;
+	cd->back_color[BP_NORTH] = draw_colors[BP_NORTH]->back;
+	cd->fore_color[BP_SOUTH] = draw_colors[BP_SOUTH]->fore;
+	cd->back_color[BP_SOUTH] = draw_colors[BP_SOUTH]->back;
+	cd->fore_color[BP_EAST] = draw_colors[BP_EAST]->fore;
+	cd->back_color[BP_EAST] = draw_colors[BP_EAST]->back;
+	cd->fore_color[BP_WEST] = draw_colors[BP_WEST]->fore;
+	cd->back_color[BP_WEST] = draw_colors[BP_WEST]->back;
+
+	cd->fore_color[BP_NW] = draw_colors[BP_NW]->fore;
+	cd->back_color[BP_NW] = draw_colors[BP_NW]->back;
+	cd->fore_color[BP_NE] = draw_colors[BP_NE]->fore;
+	cd->back_color[BP_NE] = draw_colors[BP_NE]->back;
+	cd->fore_color[BP_SE] = draw_colors[BP_SE]->fore;
+	cd->back_color[BP_SE] = draw_colors[BP_SE]->back;
+	cd->fore_color[BP_SW] = draw_colors[BP_SW]->fore;
+	cd->back_color[BP_SW] = draw_colors[BP_SW]->back;
+
 	if (do_change_gcs)
 	{
-		Globalgcv.foreground = draw_colors->hilight;
+		int i = 0;
 		Globalgcm = GCForeground;
-		XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
-		Globalgcv.foreground = draw_colors->shadow;
-		XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);
-		cd->relief_gc = Scr.ScratchGC1;
-		cd->shadow_gc = Scr.ScratchGC2;
+
+		for (i = 0; i < BP_SIZE; i++) {
+			Globalgcv.foreground = draw_colors[i]->hilight;
+			XChangeGC(dpy, Scr.ScratchBGC[i], Globalgcm, &Globalgcv);
+
+			Globalgcv.foreground = draw_colors[i]->shadow;
+			XChangeGC(dpy, Scr.ScratchBGC2[i], Globalgcm,
+			    &Globalgcv);
+
+			cd->relief_gc[i] = Scr.ScratchBGC[i];
+			cd->shadow_gc[i] = Scr.ScratchBGC2[i];
+		}
 	}
 
 	/* MWMBorder style means thin 3d effects */
-	cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : 2);
+	cd->relief_width = (HAS_MWM_BORDER(t) ? 2 : 2);
 
 	if (cd->texture_pixmap)
 	{
-		cd->attributes.background_pixmap = cd->texture_pixmap;
+		int i = 0;
+
+		for (i = 0; i < BP_SIZE; i++)
+			cd->attributes[i].background_pixmap = cd->texture_pixmap;
 		cd->valuemask = CWBackPixmap;
 	}
 	else
 	{
 		if (Pdepth < 2)
 		{
-			cd->attributes.background_pixmap = cd->back_pixmap;
+			int i = 0;
+
+			for (i = 0; i < BP_SIZE; i++) {
+				cd->attributes[i].background_pixmap =
+					cd->back_pixmap;
+			}
 			cd->valuemask = CWBackPixmap;
 		}
 		else
 		{
-			cd->attributes.background_pixel = cd->back_color;
+			int i = 0;
+
+			for (i = 0; i < BP_SIZE; i++) {
+				cd->attributes[i].background_pixel =
+					cd->back_color[i];
+			}
 			cd->valuemask = CWBackPixel;
 		}
 	}
@@ -431,7 +559,10 @@ static void get_common_decorations(
 	}
 	else
 	{
-		cd->notex_attributes.background_pixel = cd->back_color;
+		/* Just take the first color -- it'll be the same for the
+		 * others.
+		 */
+		cd->notex_attributes.background_pixel = cd->back_color[0];
 		cd->notex_valuemask = CWBackPixel;
 	}
 
@@ -790,7 +921,7 @@ static window_parts border_get_tb_parts_to_draw(
 
 static void border_get_border_gcs(
 	draw_border_gcs *ret_gcs, common_decorations_type *cd, FvwmWindow *fw,
-	Bool do_hilight)
+	Bool do_hilight, window_parts part)
 {
 	static GC transparent_gc = None;
 	DecorFaceStyle *borderstyle;
@@ -814,17 +945,92 @@ static void border_get_border_gcs(
 	{
 		is_reversed = True;
 	}
-	if (is_reversed)
-	{
-		ret_gcs->shadow = cd->relief_gc;
-		ret_gcs->relief = cd->shadow_gc;
-	}
-	else
-	{
-		ret_gcs->relief = cd->relief_gc;
-		ret_gcs->shadow = cd->shadow_gc;
-	}
 
+        switch ( part )
+        {
+                case PART_BORDER_N:
+                        if( is_reversed )
+                        {
+                                ret_gcs->shadow = cd->relief_gc[BP_NORTH];
+                                ret_gcs->relief = cd->shadow_gc[BP_NORTH];
+                        } else {
+                                ret_gcs->relief = cd->relief_gc[BP_NORTH];
+                                ret_gcs->shadow = cd->shadow_gc[BP_NORTH];
+		        }
+		        break;
+		case PART_BORDER_S:
+		        if( is_reversed )
+		        {
+				ret_gcs->shadow = cd->relief_gc[BP_SOUTH];
+				ret_gcs->relief = cd->shadow_gc[BP_SOUTH];
+		        } else {
+				 ret_gcs->relief = cd->relief_gc[BP_SOUTH];
+				 ret_gcs->shadow = cd->shadow_gc[BP_SOUTH];
+		        }
+		        break;
+		case PART_BORDER_E:
+		        if( is_reversed )
+		        {
+				ret_gcs->shadow = cd->relief_gc[BP_EAST];
+				ret_gcs->relief = cd->shadow_gc[BP_EAST];
+		        } else {
+				 ret_gcs->relief = cd->relief_gc[BP_EAST];
+				 ret_gcs->shadow = cd->shadow_gc[BP_EAST];
+		        }
+		        break;
+		case PART_BORDER_W:
+		        if( is_reversed )
+		        {
+				ret_gcs->shadow = cd->relief_gc[BP_WEST];
+				ret_gcs->relief = cd->shadow_gc[BP_WEST];
+		        } else {
+				 ret_gcs->relief = cd->relief_gc[BP_WEST];
+				 ret_gcs->shadow = cd->shadow_gc[BP_WEST];
+		        }
+		        break;
+		case PART_BORDER_NW:
+		        if( is_reversed )
+		        {
+				ret_gcs->shadow = cd->relief_gc[BP_NW];
+				ret_gcs->relief = cd->shadow_gc[BP_NW];
+		        } else {
+				 ret_gcs->relief = cd->relief_gc[BP_NW];
+				 ret_gcs->shadow = cd->shadow_gc[BP_NW];
+		        }
+		        break;
+		case PART_BORDER_NE:
+		        if( is_reversed )
+		        {
+				ret_gcs->shadow = cd->relief_gc[BP_NE];
+				ret_gcs->relief = cd->shadow_gc[BP_NE];
+		        } else {
+				 ret_gcs->relief = cd->relief_gc[BP_NE];
+				 ret_gcs->shadow = cd->shadow_gc[BP_NE];
+		        }
+		        break;
+		case PART_BORDER_SW:
+		        if( is_reversed )
+		        {
+				ret_gcs->shadow = cd->relief_gc[BP_SW];
+				ret_gcs->relief = cd->shadow_gc[BP_SW];
+		        } else {
+				 ret_gcs->relief = cd->relief_gc[BP_SW];
+				 ret_gcs->shadow = cd->shadow_gc[BP_SW];
+		        }
+		        break;
+		case PART_BORDER_SE:
+		        if( is_reversed )
+		        {
+				ret_gcs->shadow = cd->relief_gc[BP_SE];
+				ret_gcs->relief = cd->shadow_gc[BP_SE];
+		        } else {
+				 ret_gcs->relief = cd->relief_gc[BP_SE];
+				 ret_gcs->shadow = cd->shadow_gc[BP_SE];
+		        }
+		        break;
+		default:
+		        break;
+        }
 	return;
 }
 
@@ -921,9 +1127,9 @@ static void border_fetch_mwm_layout(
 	ret_size_descr->w_hiout = 2;
 	ret_size_descr->w_trout = 0;
 	ret_size_descr->w_trin = 0;
-	ret_size_descr->w_shin = 1;
+	ret_size_descr->w_shin = 2;
 	ret_size_descr->w_din = 0;
-	ret_size_descr->sum = 3;
+	ret_size_descr->sum = 4;
 	ret_size_descr->trim = ret_size_descr->sum - fw->boundary_width + 1;
 	check_remove_inset(borderstyle, ret_size_descr);
 	trim_border_layout(fw, borderstyle, ret_size_descr);
@@ -1126,12 +1332,13 @@ static void border_draw_x_mark(
 		}
 		if (do_draw_shadow)
 		{
-			x1 = x + k;
+			//x1 = x + k;
+                        x1 = x;
 			y1 = y - 1 - k;
 		}
 		else
 		{
-			x1 = x;
+			x1 = x - k;
 			y1 = y + k;
 		}
 		x2 = x1 + length;
@@ -1282,9 +1489,11 @@ static void border_fill_pixmap_background(
 		valuemask |= GCForeground | GCClipMask | GCClipXOrigin |
 			GCClipYOrigin;
 		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
-		XFillRectangle(
+
+                XFillRectangle(
 			dpy, dest_pix, Scr.BordersGC, dest_g->x, dest_g->y,
 			dest_g->width - dest_g->x, dest_g->height - dest_g->y);
+
 		return;
 	}
 
@@ -1332,8 +1541,8 @@ static void border_fill_pixmap_background(
 	if (do_tile == False)
 	{
 		/* pixmap, offset stored in dest_g->x/y */
-		xgcv.foreground = cd->fore_color;
-		xgcv.background = cd->back_color;
+		xgcv.foreground = cd->fore_color[0];
+		xgcv.background = cd->back_color[0];
 		valuemask |= GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
@@ -1348,8 +1557,8 @@ static void border_fill_pixmap_background(
 	else
 	{
 		/* tiled pixmap */
-		xgcv.foreground = cd->fore_color;
-		xgcv.background = cd->back_color;
+		xgcv.foreground = cd->fore_color[0];
+		xgcv.background = cd->back_color[0];
 		valuemask |= GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
@@ -1444,7 +1653,7 @@ static void border_get_frame_pixmap(
 
 static void border_get_border_background(
 	pixmap_background_type *bg, common_decorations_type *cd,
-	rectangle *part_g, rectangle *relative_g, int *free_bg_pixmap, Window w)
+	rectangle *part_g, rectangle *relative_g, int *free_bg_pixmap, Window w, window_parts part)
 {
 	*free_bg_pixmap = False;
 
@@ -1510,9 +1719,37 @@ static void border_get_border_background(
 	else
 	{
 		bg->flags.use_pixmap = 0;
-		bg->pixel = cd->attributes.background_pixel;
-	}
 
+                switch ( part )
+                {
+		case PART_BORDER_N:
+			bg->pixel = cd->attributes[BP_NORTH].background_pixel;
+			break;
+		case PART_BORDER_S:
+			bg->pixel = cd->attributes[BP_SOUTH].background_pixel;
+			break;
+		case PART_BORDER_E:
+			bg->pixel = cd->attributes[BP_EAST].background_pixel;
+			break;
+		case PART_BORDER_W:
+			bg->pixel = cd->attributes[BP_WEST].background_pixel;
+			break;
+		case PART_BORDER_NW:
+			bg->pixel = cd->attributes[BP_NW].background_pixel;
+			break;
+		case PART_BORDER_NE:
+			bg->pixel = cd->attributes[BP_NE].background_pixel;
+			break;
+		case PART_BORDER_SW:
+			bg->pixel = cd->attributes[BP_SW].background_pixel;
+			break;
+		case PART_BORDER_SE:
+			bg->pixel = cd->attributes[BP_SE].background_pixel;
+			break;
+		default:
+			break;
+                }
+	}
 	return;
 }
 
@@ -1542,7 +1779,7 @@ static void border_draw_one_border_part(
 	relative_g.x = part_g.x;
 	relative_g.y = part_g.y;
 	border_get_border_background(
-		&bg, cd, &part_g, &relative_g, &free_bg_pixmap, w);
+		&bg, cd, &part_g, &relative_g, &free_bg_pixmap, w, part);
 	if (cd->texture_pixmap)
 	{
 		switch (part)
@@ -1629,7 +1866,7 @@ static void border_draw_all_border_parts(
 	border_get_border_relief_size_descr(&br->relief, fw, do_hilight);
 	border_get_border_marks_descr(cd, br, fw);
 	/* fetch the gcs used to draw the border */
-	border_get_border_gcs(&br->gcs, cd, fw, do_hilight);
+	//border_get_border_gcs(&br->gcs, cd, fw, do_hilight);
 	/* draw everything in a big loop */
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 	draw_handles = (draw_parts & PART_HANDLES);
@@ -1638,11 +1875,12 @@ static void border_draw_all_border_parts(
 	{
 		if (part & draw_parts)
 		{
-			border_draw_one_border_part(
-				cd, fw, &br->sidebar_g, frame_g, br, part,
-				draw_handles,
-				(pressed_parts & part) ? True : False,
-				do_clear);
+                        border_get_border_gcs(&br->gcs, cd, fw, do_hilight, part);
+                        border_draw_one_border_part(
+                                        cd, fw, &br->sidebar_g, frame_g, br, part,
+                                        draw_handles,
+                                        (pressed_parts & part) ? True : False,
+					do_clear);
 		}
 	}
 
@@ -1663,23 +1901,23 @@ static void border_draw_vector_to_pixmap(
 
 	if (coords->use_fgbg == 1)
 	{
-		Globalgcv.foreground = cd->fore_color;
+		Globalgcv.foreground = cd->fore_color[0];
 		Globalgcm = GCForeground;
 		XChangeGC(dpy, Scr.ScratchGC3, Globalgcm, &Globalgcv);
-		Globalgcv.foreground = cd->back_color;
+		Globalgcv.foreground = cd->back_color[0];
 		XChangeGC(dpy, Scr.ScratchGC4, Globalgcm, &Globalgcv);
 		gcs[3] = Scr.ScratchGC3; /* @3 is fg */
 		gcs[2] = Scr.ScratchGC4; /* @2 is bg */
 	}
 	if (is_toggled)
 	{
-		gcs[0] = cd->relief_gc;
-		gcs[1] = cd->shadow_gc;
+		gcs[0] = cd->relief_gc[0];
+		gcs[1] = cd->shadow_gc[0];
 	}
 	else
 	{
-		gcs[0] = cd->shadow_gc;
-		gcs[1] = cd->relief_gc;
+		gcs[0] = cd->shadow_gc[0];
+		gcs[1] = cd->relief_gc[0];
 	}
 	for (i = 1; i < coords->num; i++)
 	{
@@ -2740,7 +2978,7 @@ static void border_draw_decor_to_pixmap(
 	}
 	else
 	{
-		border = HAS_MWM_BORDER(fw) ? 1 : 2;
+		border = HAS_MWM_BORDER(fw) ? 2 : 2;
 	}
 	dest_g.width = w_g->width;
 	dest_g.height = w_g->height;
@@ -2781,7 +3019,7 @@ static void border_draw_decor_to_pixmap(
 			if (cd->cs >= 0)
 			{
 				bg.pixmap.fra.mask |= FRAM_HAVE_ICON_CSET;
-				bg.pixmap.fra.colorset = &Colorset[cd->cs];
+				bg.pixmap.fra.colorset = &Colorset[cd->cs[0]];
 			}
 		}
 		else
@@ -3244,15 +3482,15 @@ static void border_set_button_pixmap(
 	button_g = &td->layout.button_g[button];
 	bs = td->tbstate.bstate[button];
 	df = &TB_STATE(GetDecor(fw, buttons[button]))[bs];
-	rgc = td->cd->relief_gc;
-	sgc = td->cd->shadow_gc;
+	rgc = td->cd->relief_gc[0];
+	sgc = td->cd->shadow_gc[0];
 	/* prepare background, either from the window colour or from the
 	 * border style */
 	if (!DFS_USE_BORDER_STYLE(df->style))
 	{
 		/* fill with the button background colour */
 		bg.flags.use_pixmap = 0;
-		bg.pixel = td->cd->back_color;
+		bg.pixel = td->cd->back_color[0];
 		pix_g.x = 0;
 		pix_g.y = 0;
 		pix_g.width = button_g->width;
@@ -3269,7 +3507,7 @@ static void border_set_button_pixmap(
 		relative_g.x = button_g->x;
 		relative_g.y = button_g->y;
 		border_get_border_background(
-			&bg, td->cd, button_g, &relative_g, &free_bg_pixmap, w);
+			&bg, td->cd, button_g, &relative_g, &free_bg_pixmap, w, PART_NONE);
 		bg.pixmap.g.x = 0;
 		bg.pixmap.g.y = 0;
 		/* set the geometry for drawing the Tiled pixmap;
@@ -3519,7 +3757,7 @@ static void border_draw_title_mono(
 
 	has_vt = HAS_VERTICAL_TITLE(fw);
 	XFillRectangle(
-		dpy, dest_pix, td->cd->relief_gc,
+		dpy, dest_pix, td->cd->relief_gc[0],
 		td->offset - 2, 0, td->length+4, fw->title_thickness);
 	if (fw->visible_name != (char *)NULL)
 	{
@@ -3622,15 +3860,15 @@ static void border_get_titlebar_draw_descr(
 	/* prepare the gcs and variables */
 	if (td->tbstate.is_title_pressed)
 	{
-		tdd->rgc = td->cd->shadow_gc;
-		tdd->sgc = td->cd->relief_gc;
+		tdd->rgc = td->cd->shadow_gc[0];
+		tdd->sgc = td->cd->relief_gc[0];
 	}
 	else
 	{
-		tdd->rgc = td->cd->relief_gc;
-		tdd->sgc = td->cd->shadow_gc;
+		tdd->rgc = td->cd->relief_gc[0];
+		tdd->sgc = td->cd->shadow_gc[0];
 	}
-	NewFontAndColor(fw->title_font, td->cd->fore_color, td->cd->back_color);
+	NewFontAndColor(fw->title_font, td->cd->fore_color[0], td->cd->back_color[0]);
 	tdd->tstyle = &TB_STATE(
 		GetDecor(fw, titlebar))[td->tbstate.tstate].style;
 	tdd->df = &TB_STATE(GetDecor(fw, titlebar))[td->tbstate.tstate];
@@ -3658,7 +3896,7 @@ static void border_get_titlebar_draw_descr(
 	}
 	if (td->cd->cs >= 0)
 	{
-		tdd->fstr.colorset = &Colorset[td->cd->cs];
+		tdd->fstr.colorset = &Colorset[td->cd->cs[0]];
 		tdd->fstr.flags.has_colorset = 1;
 	}
 	tdd->fstr.gc = Scr.TitleGC;
@@ -3682,7 +3920,7 @@ static void border_set_title_pixmap(
 	{
 		/* fill with the button background colour */
 		bg.flags.use_pixmap = 0;
-		bg.pixel = td->cd->back_color;
+		bg.pixel = td->cd->back_color[0];
 		pix_g.x = 0;
 		pix_g.y = 0;
 		pix_g.width = td->layout.title_g.width;
@@ -3713,7 +3951,7 @@ static void border_set_title_pixmap(
 		relative_g.y = td->layout.title_g.y;
 		border_get_border_background(
 			&bg, td->cd, &td->layout.title_g, &relative_g,
-			&free_bg_pixmap, w);
+			&free_bg_pixmap, w, PART_NONE);
 		bg.pixmap.g.x = 0;
 		bg.pixmap.g.y = 0;
 		/* set the geometry for drawing the Tiled pixmap;
