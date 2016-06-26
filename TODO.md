@@ -106,3 +106,10 @@
 	* Don't rely on the crappy command generation stuff from FVWM releases to feed
 	  the perl API ""abstraction"" as we have it now (deprecate create-constants
 	  and create-commands).
+
+* Decors:
+	* Think carefully about the syntax of the decor replacement!
+	* [ ] Remove {Border,Title,Button}Style and decors, just one simple look.
+	* [ ] New style `DecoratedByFvwm`/`DecoratedByModule`.
+	* [ ] New module `FvwmDecor` to do per-window decoarations:
+		* [ ] How does resizing work with this module?
