@@ -113,3 +113,12 @@
 	* [ ] New style `DecoratedByFvwm`/`DecoratedByModule`.
 	* [ ] New module `FvwmDecor` to do per-window decoarations:
 		* [ ] How does resizing work with this module?
+
+* Styles:
+	* Expand Style command to support name=pattern syntax, for instance:
+	  `Style (Name "File *", Class XPaint, Resource *browser) NoIcon`
+	* Add id-pattern to Style command.
+	* Split styles into five lists (resource, class, icon, name, id) which are
+	  then applied in that order.
+	* Split Style into run time control (`Style`) and startup style
+	  (`InitialStyle`).
