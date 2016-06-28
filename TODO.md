@@ -79,8 +79,10 @@
 	  functionality.
 
 * Modules:
-    * [ ] The module interface (FVWM <-> Module) is a mess; consider DBUS?  Or
-      imsg?
+    * [ ] The module interface (FVWM <-> Module) is a mess; consider:
+    	* DBus?
+	* imsg?
+	* msgpack?
     * [ ] Use libevent to replace the hand-rolled (and often broken) select/poll
 	  mechanism.
     * [ ] What about third-party scripting languages?  How do we handle that
