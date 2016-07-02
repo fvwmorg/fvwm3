@@ -1,7 +1,7 @@
 language: c
 branches:
         except:
-                - ta/todo
+                - todo
 matrix:
     include:
         - compiler: gcc
