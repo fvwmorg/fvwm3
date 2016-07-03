@@ -9,6 +9,12 @@ with the FVWM source code.
 The FVWM source conforms to the [Linux kernel style
 guide](https://www.kernel.org/doc/Documentation/CodingStyle).
 
+Command Parsing
+===============
+
+The internal representation of how fvwm parses commands in undergoing a
+rewrite.  [Some notes on how fvwm parses commands exists](PARSING.md).
+
 Branch Workflows / Submitting Code Changes
 ==========================================
 
