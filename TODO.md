@@ -125,3 +125,5 @@
 	  then applied in that order.
 	* Split Style into run time control (`Style`) and startup style
 	  (`InitialStyle`).
+	* Remove the ability to toggle specific parts of EWMH; it's either on
+	  or it isn't.
