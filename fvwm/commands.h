@@ -208,9 +208,7 @@ enum
 void CMD_Plus(F_CMD_ARGS);
 void CMD_AddButtonStyle(F_CMD_ARGS);
 void CMD_AddTitleStyle(F_CMD_ARGS);
-#ifdef USEDECOR
 void CMD_AddToDecor(F_CMD_ARGS);
-#endif /* USEDECOR */
 void CMD_AddToFunc(F_CMD_ARGS);
 void CMD_AddToMenu(F_CMD_ARGS);
 void CMD_Alias(F_CMD_ARGS);
@@ -224,9 +222,7 @@ void CMD_BugOpts(F_CMD_ARGS);
 void CMD_BusyCursor(F_CMD_ARGS);
 void CMD_ButtonState(F_CMD_ARGS);
 void CMD_ButtonStyle(F_CMD_ARGS);
-#ifdef USEDECOR
 void CMD_ChangeDecor(F_CMD_ARGS);
-#endif /* USEDECOR */
 void CMD_ChangeMenuStyle(F_CMD_ARGS);
 void CMD_CleanupColorsets(F_CMD_ARGS);
 void CMD_ClickTime(F_CMD_ARGS);
@@ -249,9 +245,7 @@ void CMD_Desk(F_CMD_ARGS);
 void CMD_DesktopName(F_CMD_ARGS);
 void CMD_DesktopSize(F_CMD_ARGS);
 void CMD_Destroy(F_CMD_ARGS);
-#ifdef USEDECOR
 void CMD_DestroyDecor(F_CMD_ARGS);
-#endif /* USEDECOR */
 void CMD_DestroyFunc(F_CMD_ARGS);
 void CMD_DestroyMenu(F_CMD_ARGS);
 void CMD_DestroyMenuStyle(F_CMD_ARGS);

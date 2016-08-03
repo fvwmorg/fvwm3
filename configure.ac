@@ -1512,15 +1512,6 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define FMiniIconsSupported 0
 #endif
 
-/* Enables tagged general decoration styles which can be assigned to
- * windows using the UseDecor Style option, or dynamically updated
- * with ChangeDecor.  To create and destroy "decor" definitions, see
- * the man page entries for AddToDecor and DestroyDecor.  There is a
- * slight memory penalty for each additionally defined decor. */
-/* #undef USEDECOR */
-/* NOTE: hard coded to 1 */
-#define USEDECOR 1
-
 #if RETSIGTYPE != void
 #define SIGNAL_RETURN return 0
 #else

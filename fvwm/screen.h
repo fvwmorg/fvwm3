@@ -281,9 +281,7 @@ typedef struct
 
 typedef struct FvwmDecor
 {
-#ifdef USEDECOR
 	char *tag;                    /* general style tag */
-#endif
 	int title_height;           /* explicitly specified title bar height */
 	int min_title_height;
 	/* titlebar buttons */
@@ -293,9 +291,7 @@ typedef struct FvwmDecor
 	{
 		DecorFace active, inactive;
 	} BorderStyle;
-#ifdef USEDECOR
 	struct FvwmDecor *next;       /* additional user-defined styles */
-#endif
 	struct
 	{
 		unsigned has_changed : 1;
@@ -539,11 +535,7 @@ typedef struct ScreenInfo
 /* Macro which gets specific decor or default decor.
  * This saves an indirection in case you don't want
  * the UseDecor mechanism. */
-#ifdef USEDECOR
 #define GetDecor(window,part) ((window)->decor->part)
-#else
-#define GetDecor(window,part) (Scr.DefaultDecor.part)
-#endif
 
 /* some protos for the decoration structures */
 void LoadDefaultButton(DecorFace *bf, int i);

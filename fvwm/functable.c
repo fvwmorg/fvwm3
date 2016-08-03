@@ -72,11 +72,9 @@ const func_t func_table[] =
 		FUNC_DECOR, 0),
 	/* - Add to a title style (see TitleStyle) */
 
-#ifdef USEDECOR
 	CMD_ENT("addtodecor", CMD_AddToDecor, F_ADD_DECOR, 0, 0),
 	/* - Add a decor definition (will be obsolete) */
 
-#endif /* USEDECOR */
 	CMD_ENT("addtofunc", CMD_AddToFunc, F_ADDFUNC, FUNC_ADD_TO, 0),
 	/* - Add a function definition */
 
@@ -116,12 +114,10 @@ const func_t func_table[] =
 		FUNC_DECOR, 0),
 	/* - Define a window button look (will be reworked) */
 
-#ifdef USEDECOR
 	CMD_ENT("changedecor", CMD_ChangeDecor, F_CHANGE_DECOR,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Attach decor to a window (will be obsolete) */
 
-#endif /* USEDECOR */
 	CMD_ENT("changemenustyle", CMD_ChangeMenuStyle, F_CHANGE_MENUSTYLE,
 		0, 0),
 	/* - Attach menu style to a menu (see MenuStyle) */
@@ -193,11 +189,9 @@ const func_t func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_DESTROY),
 	/* - Kill a window without any warning to an application */
 
-#ifdef USEDECOR
 	CMD_ENT("destroydecor", CMD_DestroyDecor, F_DESTROY_DECOR, 0, 0),
 	/* - Delete decor defined by AddToDecor (will be obsolete) */
 
-#endif /* USEDECOR */
 	CMD_ENT("destroyfunc", CMD_DestroyFunc, F_DESTROY_FUNCTION, 0, 0),
 	/* - Delete function defined using AddToFunc */
 

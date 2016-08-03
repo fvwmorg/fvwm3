@@ -4999,11 +4999,7 @@ void CMD_BorderStyle(F_CMD_ARGS)
 {
 	char *parm;
 	char *prev;
-#ifdef USEDECOR
 	FvwmDecor *decor = Scr.cur_decor ? Scr.cur_decor : &Scr.DefaultDecor;
-#else
-	FvwmDecor *decor = &Scr.DefaultDecor;
-#endif
 
 	Scr.flags.do_need_window_update = 1;
 	decor->flags.has_changed = 1;

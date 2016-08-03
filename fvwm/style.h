@@ -426,12 +426,10 @@
 	((s).mini_icon_name)
 #define SSET_MINI_ICON_NAME(s,x) \
 	((s).mini_icon_name = (x))
-#ifdef USEDECOR
 #define SGET_DECOR_NAME(s) \
 	((s).decor_name)
 #define SSET_DECOR_NAME(s,x) \
 	((s).decor_name = (x))
-#endif
 #define SGET_FORE_COLOR_NAME(s) \
 	((s).fore_color_name)
 #define SSET_FORE_COLOR_NAME(s,x) \

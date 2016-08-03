@@ -541,7 +541,6 @@ static void __execute_function(
 		function = "";
 	}
 
-#ifdef USEDECOR
 	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor &&
 	    (!bif || !(bif->flags & FUNC_DECOR)))
 	{
@@ -550,7 +549,6 @@ static void __execute_function(
 			"Command can not be added to a decor; executing"
 			" command now: '%s'", action);
 	}
-#endif
 
 	if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND))
 	{
@@ -582,7 +580,6 @@ static void __execute_function(
 	 * the asterisk. */
 	if (expaction[0] == '*')
 	{
-#ifdef USEDECOR
 		if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
 		{
 			fvwm_msg(
@@ -590,7 +587,7 @@ static void __execute_function(
 				"Command can not be added to a decor;"
 				" executing command now: '%s'", expaction);
 		}
-#endif
+
 		/* process a module config command */
 		ModuleConfig(expaction);
 	}
@@ -1529,7 +1526,6 @@ void CMD_Plus(F_CMD_ARGS)
 	{
 		AddToFunction(Scr.last_added_item.item, action);
 	}
-#ifdef USEDECOR
 	else if (Scr.last_added_item.type == ADDED_DECOR)
 	{
 		FvwmDecor *tmp = &Scr.DefaultDecor;
@@ -1543,7 +1539,6 @@ void CMD_Plus(F_CMD_ARGS)
 		}
 		AddToDecor(F_PASS_ARGS, tmp);
 	}
-#endif /* USEDECOR */
 
 	return;
 }

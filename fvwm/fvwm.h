@@ -81,10 +81,8 @@
 struct size_borders;
 struct exec_context_t;
 
-#ifdef USEDECOR
 /* definition in screen.h */
 struct FvwmDecor;
-#endif
 
 /* ---------------------------- type definitions --------------------------- */
 
@@ -647,9 +645,7 @@ typedef struct window_style
 #endif
 	char *icon_name;
 	char *mini_icon_name;
-#ifdef USEDECOR
 	char *decor_name;
-#endif
 	unsigned char min_icon_width;
 	unsigned char max_icon_width;
 	unsigned char min_icon_height;
@@ -794,9 +790,7 @@ typedef struct FvwmWindow
 	int nr_right_buttons;
 #define BUTTON_INDEX(b) \
 	(((b) == 0) ? (NUMBER_OF_TITLE_BUTTONS - 1) : ((b) - 1))
-#ifdef USEDECOR
 	struct FvwmDecor *decor;
-#endif
 	/* is this a shaped window */
 	int wShaped;
 	Pixmap title_background_pixmap;

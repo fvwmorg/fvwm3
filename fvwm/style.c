@@ -403,7 +403,6 @@ static void merge_styles(
 				SGET_MINI_ICON_NAME(*add_style));
 		}
 	}
-#ifdef USEDECOR
 	if (add_style->flag_mask.has_decor)
 	{
 		if (do_free_src_and_alloc_copy)
@@ -420,7 +419,6 @@ static void merge_styles(
 				*merged_style, SGET_DECOR_NAME(*add_style));
 		}
 	}
-#endif
 	if (S_HAS_ICON_FONT(SCF(*add_style)))
 	{
 		if (do_free_src_and_alloc_copy)
@@ -4371,7 +4369,6 @@ static Bool style_parse_one_style_option(
 			S_SET_USE_TITLE_DECOR_ROTATION(SCM(*ps), 1);
 			S_SET_USE_TITLE_DECOR_ROTATION(SCC(*ps), 1);
 		}
-#ifdef USEDECOR
 		else if (StrEquals(token, "UseDecor"))
 		{
 			SAFEFREE(SGET_DECOR_NAME(*ps));
@@ -4381,7 +4378,6 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.has_decor = 1;
 			ps->change_mask.has_decor = 1;
 		}
-#endif
 		else if (StrEquals(token, "UseStyle"))
 		{
 			int hit;
