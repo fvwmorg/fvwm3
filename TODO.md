@@ -22,7 +22,10 @@
     * [ ] What's in libs/ -- the static linking of libfvwm.a useful anymore?
       There's a lot of code being ripped out of libs/ and I don't see much
       more being added in.
-    * [ ] I'm not keen on commands.h:P() macro, or ewmh_intern.h:CMD_EWMH_ARGS
+    * [X] I'm not keen on commands.h:P() macro, I'd rather have the prototypes
+      explicitly stated.
+    * [ ] Remove the ewmh_intern.h:CMD_EWMH_ARGS macro, I'd rather have the
+      prototypes explicitly stated.
       macros; I'd rather have all prototypes unrolled and explicitly stated.
     * [ ] Consider using doxygen for API-specific documentation?  This would
       help justify/cleanup functions in the longer-term by identifying
