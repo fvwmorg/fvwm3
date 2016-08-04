@@ -2412,18 +2412,7 @@ void HandleExpose(const evh_args_t *ea)
 	FvwmWindow * const fw = ea->exc->w.fw;
 
 	e = *ea->exc->x.etrigger;
-#if 0
-	/* This doesn't work well. Sometimes, the expose count is zero although
-	 * dozens of expose events are pending.  This happens all the time
-	 * during a shading animation.  Simply flush expose events
-	 * unconditionally. */
-	if (e.xexpose.count != 0)
-	{
-		flush_accumulate_expose(e.xexpose.window, &e);
-	}
-#else
-	flush_accumulate_expose(e.xexpose.window, &e);
-#endif
+
 	if (fw == NULL)
 	{
 		return;
