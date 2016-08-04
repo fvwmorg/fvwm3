@@ -1224,18 +1224,21 @@ void EWMH_SetFrameStrut(FvwmWindow *fw)
 /*
  * allowed actions
  */
-Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
+Bool ewmh_AllowsYes(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	return True;
 }
 
-Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
+Bool ewmh_AllowsClose(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	return is_function_allowed(
 		F_CLOSE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
-Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
+Bool ewmh_AllowsFullScreen(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (
 		!is_function_allowed(
@@ -1251,22 +1254,26 @@ Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
 	return True;
 }
 
-Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS)
+Bool ewmh_AllowsMinimize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	return is_function_allowed(F_ICONIFY, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
-Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)
+Bool ewmh_AllowsMaximize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	return is_function_allowed(F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
-Bool ewmh_AllowsMove(EWMH_CMD_ARGS)
+Bool ewmh_AllowsMove(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	return is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
 
-Bool ewmh_AllowsResize(EWMH_CMD_ARGS)
+Bool ewmh_AllowsResize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	return is_function_allowed(F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, False);
 }
@@ -1305,7 +1312,8 @@ void EWMH_SetAllowedActions(FvwmWindow *fw)
  * Window types
  */
 
-int ewmh_HandleDesktop(EWMH_CMD_ARGS)
+int ewmh_HandleDesktop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (Scr.EwmhDesktop != NULL && FW_W(Scr.EwmhDesktop) != FW_W(fw))
 	{
@@ -1400,14 +1408,16 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 	return 1;
 }
 
-int ewmh_HandleDialog(EWMH_CMD_ARGS)
+int ewmh_HandleDialog(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_DIALOG_ID;
 
 	return 0;
 }
 
-int ewmh_HandleDock(EWMH_CMD_ARGS)
+int ewmh_HandleDock(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_DOCK_ID;
 
@@ -1457,7 +1467,8 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
 	return 1;
 }
 
-int ewmh_HandleMenu(EWMH_CMD_ARGS)
+int ewmh_HandleMenu(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_MENU_ID;
 
@@ -1499,14 +1510,16 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
 	return 1;
 }
 
-int ewmh_HandleNormal(EWMH_CMD_ARGS)
+int ewmh_HandleNormal(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_NORMAL_ID;
 
 	return 0;
 }
 
-int ewmh_HandleToolBar(EWMH_CMD_ARGS)
+int ewmh_HandleToolBar(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_TOOLBAR_ID;
 
@@ -1532,7 +1545,8 @@ int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 	return 1;
 }
 
-int ewmh_HandleNotification(EWMH_CMD_ARGS)
+int ewmh_HandleNotification(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	/* fw->ewmh_window_type is generally used by FvwmIdent, but for this
 	 * EWMH type it is not used.  Reporting on unmanaged windows with

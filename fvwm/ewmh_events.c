@@ -49,7 +49,8 @@ extern ewmh_atom ewmh_atom_wm_state[];
 /*
  * root
  */
-int ewmh_CurrentDesktop(EWMH_CMD_ARGS)
+int ewmh_CurrentDesktop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff)
 	{
@@ -70,7 +71,8 @@ int ewmh_CurrentDesktop(EWMH_CMD_ARGS)
 	return -1;
 }
 
-int ewmh_DesktopGeometry(EWMH_CMD_ARGS)
+int ewmh_DesktopGeometry(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	char action[256];
 	long width = ev->xclient.data.l[0];
@@ -100,7 +102,8 @@ int ewmh_DesktopGeometry(EWMH_CMD_ARGS)
 	return -1;
 }
 
-int ewmh_DesktopViewPort(EWMH_CMD_ARGS)
+int ewmh_DesktopViewPort(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (
 		ev->xclient.data.l[0] < 0 ||
@@ -125,7 +128,8 @@ int ewmh_DesktopViewPort(EWMH_CMD_ARGS)
 	return -1;
 }
 
-int ewmh_NumberOfDesktops(EWMH_CMD_ARGS)
+int ewmh_NumberOfDesktops(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int d = ev->xclient.data.l[0];
 
@@ -156,7 +160,8 @@ int ewmh_NumberOfDesktops(EWMH_CMD_ARGS)
  * window
  */
 
-int ewmh_ActiveWindow(EWMH_CMD_ARGS)
+int ewmh_ActiveWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL)
 	{
@@ -168,7 +173,8 @@ int ewmh_ActiveWindow(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_CloseWindow(EWMH_CMD_ARGS)
+int ewmh_CloseWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL)
 	{
@@ -183,7 +189,8 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
+int ewmh_MoveResizeWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int do_reconfigure;
 	int win_gravity;
@@ -236,7 +243,8 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_RestackWindow(EWMH_CMD_ARGS)
+int ewmh_RestackWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int do_restack;
 
@@ -268,7 +276,8 @@ int ewmh_RestackWindow(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMDesktop(EWMH_CMD_ARGS)
+int ewmh_WMDesktop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev != NULL && style == NULL)
 	{
@@ -370,7 +379,8 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_MoveResize(EWMH_CMD_ARGS)
+int ewmh_MoveResize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int dir = -1;
 	int x_warp = 0;
@@ -460,7 +470,8 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 /*
  * WM_STATE*
  */
-int ewmh_WMState(EWMH_CMD_ARGS)
+int ewmh_WMState(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	unsigned long maximize = 0;
 
@@ -554,7 +565,8 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
+int ewmh_WMStateFullScreen(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL && style == NULL)
 	{
@@ -635,7 +647,8 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateHidden(EWMH_CMD_ARGS)
+int ewmh_WMStateHidden(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL && style == NULL)
 	{
@@ -714,7 +727,8 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
+int ewmh_WMStateMaxHoriz(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 
 	if (ev == NULL && style == NULL)
@@ -789,7 +803,8 @@ int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateMaxVert(EWMH_CMD_ARGS)
+int ewmh_WMStateMaxVert(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 
 	if (ev == NULL && style == NULL)
@@ -859,7 +874,8 @@ int ewmh_WMStateMaxVert(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateModal(EWMH_CMD_ARGS)
+int ewmh_WMStateModal(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL && style == NULL)
 	{
@@ -965,7 +981,8 @@ int ewmh_WMStateModal(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateShaded(EWMH_CMD_ARGS)
+int ewmh_WMStateShaded(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 
 	if (ev == NULL && style == NULL)
@@ -1044,7 +1061,8 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateSkipPager(EWMH_CMD_ARGS)
+int ewmh_WMStateSkipPager(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL && style == NULL)
 	{
@@ -1114,7 +1132,8 @@ int ewmh_WMStateSkipPager(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS)
+int ewmh_WMStateSkipTaskBar(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL && style == NULL)
 	{
@@ -1185,7 +1204,8 @@ int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
+int ewmh_WMStateStaysOnTop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL && style == NULL)
 	{
@@ -1272,7 +1292,8 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS)
+int ewmh_WMStateStaysOnBottom(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	if (ev == NULL && style == NULL)
 	{
@@ -1358,7 +1379,8 @@ int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS)
 	return 0;
 }
 
-int ewmh_WMStateSticky(EWMH_CMD_ARGS)
+int ewmh_WMStateSticky(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 
 	if (ev == NULL && style == NULL)
@@ -1443,7 +1465,8 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
  * Property Notify (_NET_WM_ICON is in ewmh_icon.c, _NET_WM_*NAME are in
  * ewmh_name)                        *
  */
-int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
+int ewmh_WMIconGeometry(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int size;
 	CARD32 *val;
@@ -1506,7 +1529,8 @@ void EWMH_GetIconGeometry(FvwmWindow *fw, rectangle *icon_rect)
 	return;
 }
 
-int ewmh_WMStrut(EWMH_CMD_ARGS)
+int ewmh_WMStrut(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int size = 0;
 	CARD32 *val;

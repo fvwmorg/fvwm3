@@ -13,16 +13,13 @@
 #include "ftime.h"
 #endif
 
-#define EWMH_CMD_ARGS FvwmWindow *fw, XEvent *ev, window_style *style, \
-	unsigned long any
-
 typedef struct ewmh_atom
 {
 	char *name;
 	Atom atom;
 	Atom atom_type;
 #ifdef __STDC__
-	int (*action)(EWMH_CMD_ARGS);
+	int (*action)(FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 #else
 	int (*action)();
 #endif
@@ -96,13 +93,20 @@ void *ewmh_AtomGetByName(
 	Window win, const char *atom_name, ewmh_atom_list_name list,
 	int *size);
 
-int ewmh_HandleDesktop(EWMH_CMD_ARGS);
-int ewmh_HandleDialog(EWMH_CMD_ARGS);
-int ewmh_HandleDock(EWMH_CMD_ARGS);
-int ewmh_HandleMenu(EWMH_CMD_ARGS);
-int ewmh_HandleNormal(EWMH_CMD_ARGS);
-int ewmh_HandleToolBar(EWMH_CMD_ARGS);
-int ewmh_HandleNotification(EWMH_CMD_ARGS);
+int ewmh_HandleDesktop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_HandleDialog(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_HandleDock(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_HandleMenu(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_HandleNormal(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_HandleToolBar(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_HandleNotification(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
 void ewmh_AddToKdeSysTray(FvwmWindow *fw);
 void ewmh_SetWorkArea(void);
@@ -110,44 +114,75 @@ void ewmh_ComputeAndSetWorkArea(void);
 void ewmh_HandleDynamicWorkArea(void);
 void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style);
 
-int ewmh_CurrentDesktop(EWMH_CMD_ARGS);
-int ewmh_DesktopGeometry(EWMH_CMD_ARGS);
-int ewmh_DesktopViewPort(EWMH_CMD_ARGS);
-int ewmh_NumberOfDesktops(EWMH_CMD_ARGS);
+int ewmh_CurrentDesktop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_DesktopGeometry(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_DesktopViewPort(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_NumberOfDesktops(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
-int ewmh_ActiveWindow(EWMH_CMD_ARGS);
-int ewmh_CloseWindow(EWMH_CMD_ARGS);
-int ewmh_MoveResizeWindow(EWMH_CMD_ARGS);
-int ewmh_RestackWindow(EWMH_CMD_ARGS);
-int ewmh_WMDesktop(EWMH_CMD_ARGS);
-int ewmh_MoveResize(EWMH_CMD_ARGS);
+int ewmh_ActiveWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_CloseWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_MoveResizeWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_RestackWindow(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMDesktop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_MoveResize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
-int ewmh_WMState(EWMH_CMD_ARGS);
-int ewmh_WMStateFullScreen(EWMH_CMD_ARGS);
-int ewmh_WMStateHidden(EWMH_CMD_ARGS);
-int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS);
-int ewmh_WMStateMaxVert(EWMH_CMD_ARGS);
-int ewmh_WMStateModal(EWMH_CMD_ARGS);
-int ewmh_WMStateShaded(EWMH_CMD_ARGS);
-int ewmh_WMStateSkipPager(EWMH_CMD_ARGS);
-int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS);
-int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS);
-int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS);
-int ewmh_WMStateSticky(EWMH_CMD_ARGS);
+int ewmh_WMState(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateFullScreen(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateHidden(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateMaxHoriz(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateMaxVert(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateModal(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateShaded(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateSkipPager(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateSkipTaskBar(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateStaysOnTop(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateStaysOnBottom(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStateSticky(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
-int ewmh_WMIconGeometry(EWMH_CMD_ARGS);
-int ewmh_WMStrut(EWMH_CMD_ARGS);
+int ewmh_WMIconGeometry(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMStrut(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
-Bool ewmh_AllowsYes(EWMH_CMD_ARGS);
-Bool ewmh_AllowsClose(EWMH_CMD_ARGS);
-Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS);
-Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS);
-Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS);
-Bool ewmh_AllowsMove(EWMH_CMD_ARGS);
-Bool ewmh_AllowsResize(EWMH_CMD_ARGS);
+Bool ewmh_AllowsYes(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+Bool ewmh_AllowsClose(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+Bool ewmh_AllowsFullScreen(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+Bool ewmh_AllowsMinimize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+Bool ewmh_AllowsMaximize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+Bool ewmh_AllowsMove(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+Bool ewmh_AllowsResize(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
 /* ewmh_icon */
-int ewmh_WMIcon(EWMH_CMD_ARGS);
+int ewmh_WMIcon(FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 CARD32 *ewmh_SetWmIconFromPixmap(
 	FvwmWindow *fw, CARD32 *orig_icon, int *orig_size,
 	Bool is_mini_icon);
