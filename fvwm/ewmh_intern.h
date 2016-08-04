@@ -182,7 +182,8 @@ Bool ewmh_AllowsResize(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
 /* ewmh_icon */
-int ewmh_WMIcon(FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
+int ewmh_WMIcon(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 CARD32 *ewmh_SetWmIconFromPixmap(
 	FvwmWindow *fw, CARD32 *orig_icon, int *orig_size,
 	Bool is_mini_icon);
