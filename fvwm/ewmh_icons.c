@@ -44,7 +44,8 @@
 /*
  * net icon handler
  */
-int ewmh_WMIcon(EWMH_CMD_ARGS)
+int ewmh_WMIcon(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	CARD32 *list = NULL;
 	CARD32 *new_list = NULL;

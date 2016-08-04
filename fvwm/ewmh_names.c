@@ -123,7 +123,8 @@ void EWMH_SetVisibleName(FvwmWindow *fw, Bool is_icon_name)
 /*
  * setup and property notify
  */
-int EWMH_WMIconName(EWMH_CMD_ARGS)
+int EWMH_WMIconName(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int size = 0;
 	char *val;
@@ -192,7 +193,8 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 	return 1;
 }
 
-int EWMH_WMName(EWMH_CMD_ARGS)
+int EWMH_WMName(
+	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int size = 0;
 	char *val;
