@@ -37,7 +37,7 @@ Items
       more being added in.
     * [X] I'm not keen on commands.h:P() macro, I'd rather have the prototypes
       explicitly stated.
-    * [ ] Remove the ewmh_intern.h:CMD_EWMH_ARGS macro, I'd rather have the
+    * [X] Remove the ewmh_intern.h:CMD_EWMH_ARGS macro, I'd rather have the
       prototypes explicitly stated.
     * [ ] Consider using doxygen for API-specific documentation?  This would
       help justify/cleanup functions in the longer-term by identifying
