@@ -1,3 +1,16 @@
+TODO
+====
+
+Welcome to the braindump for current ideas in FVWM.  These items are not
+ordered in temrs of their priority; rather they represent the key areas that
+FVWM could benefit from.
+
+If you're thinking of working on any of these items, it might be worth
+dropping @ThomasAdam an email for discussion.
+
+Items
+=====
+
 * Parsing:
     * [ ] Print where an error was found whilst reading the config file
       (including line numbers).
@@ -26,7 +39,6 @@
       explicitly stated.
     * [ ] Remove the ewmh_intern.h:CMD_EWMH_ARGS macro, I'd rather have the
       prototypes explicitly stated.
-      macros; I'd rather have all prototypes unrolled and explicitly stated.
     * [ ] Consider using doxygen for API-specific documentation?  This would
       help justify/cleanup functions in the longer-term by identifying
       similar functions, etc.
@@ -105,11 +117,11 @@
 * perllib (FvwmPerl):
 	* Transition away from 5.004 as the minimum version;
 	* Update the code to use 5.14 at least:
-        - Do away with subroutine prototypes;
-        - "use vars" is deprecated;
-        - "use parent", rather than manipulating @ISA/Exporter directly;
-        - "use warnings/strictures" everywhere;
-	* Don't rely on the crappy command generation stuff from FVWM releases to feed
+        - [ ] Do away with subroutine prototypes;
+        - [ ] "use vars" is deprecated;
+        - [ ] "use parent", rather than manipulating @ISA/Exporter directly;
+        - [ ] "use warnings/strictures" everywhere;
+	* [ ] Don't rely on the crappy command generation stuff from FVWM releases to feed
 	  the perl API ""abstraction"" as we have it now (deprecate create-constants
 	  and create-commands).
 
@@ -121,12 +133,12 @@
 		* [ ] How does resizing work with this module?
 
 * Styles:
-	* Expand Style command to support name=pattern syntax, for instance:
+	* [ ] Expand Style command to support name=pattern syntax, for instance:
 	  `Style (Name "File *", Class XPaint, Resource *browser) NoIcon`
-	* Add id-pattern to Style command.
-	* Split styles into five lists (resource, class, icon, name, id) which are
+	* [ ] Add id-pattern to Style command.
+	* [ ] Split styles into five lists (resource, class, icon, name, id) which are
 	  then applied in that order.
-	* Split Style into run time control (`Style`) and startup style
+	* [ ] Split Style into run time control (`Style`) and startup style
 	  (`InitialStyle`).
-	* Remove the ability to toggle specific parts of EWMH; it's either on
+	* [ ] Remove the ability to toggle specific parts of EWMH; it's either on
 	  or it isn't.
