@@ -6239,7 +6239,6 @@ Bool menu_expose(XEvent *event, FvwmWindow *fw)
 		     dpy, event->xany.window, MenuContext, (caddr_t *)&mr) !=
 	     XCNOENT))
 	{
-		flush_accumulate_expose(event->xany.window, event);
 		paint_menu(mr, event, fw);
 
 		return True;

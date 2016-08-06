@@ -1366,18 +1366,11 @@ void DrawIconWindow(
 
 	if (draw_title && FW_W_ICON_TITLE(fw) != None)
 	{
-		if (pev && pev->xexpose.window != FW_W_ICON_TITLE(fw))
+		if (pev && pev->xexpose.window == FW_W_ICON_TITLE(fw))
 		{
-			XEvent e;
-			if (FCheckTypedWindowEvent(
-			    dpy, FW_W_ICON_TITLE(fw), Expose, &e))
-			{
-				flush_accumulate_expose(
-					FW_W_ICON_TITLE(fw), &e);
-				DrawIconTitleWindow(
-					fw, &e, BackColor, Shadow, Relief, cs,
-					title_cs);
-			}
+			DrawIconTitleWindow(
+				fw, pev, BackColor, Shadow, Relief, cs,
+				title_cs);
 		}
 		else
 		{
