@@ -13,7 +13,9 @@ fi
 AC_INIT([fvwm],
 	m4_esyscmd_s([utils/fvwm-version-str.sh]),
 	[fvwm-workers@fvwm.org])
-AM_INIT_AUTOMAKE([foreign])
+AC_CONFIG_AUX_DIR(etc)
+AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_SILENT_RULES([yes])
 AM_CONFIG_HEADER(config.h)
 
 VERSIONINFO=""
