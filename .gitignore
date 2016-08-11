@@ -1,0 +1,16 @@
+*.1
+*.core
+*.diff
+*.o
+*.patch
+*~
+Makefile
+Makefile.in
+aclocal.m4
+config.cache
+config.h
+config.log
+configure
+core
+etc/
+tags
