@@ -1821,7 +1821,7 @@ Fvwm Configuration:
   Build man pages?                    $with_mandoc$problem_mandoc
   Build HTML documentation?           $with_htmldoc$problem_htmldoc
 
-See INSTALL.fvwm for the description of what this may mean."
+"
 
 case "$with_xinerama_emulation" in
   yes) echo "  Xinerama emulation enabled." ;;

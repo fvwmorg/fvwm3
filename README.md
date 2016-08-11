@@ -17,6 +17,11 @@ Users of fvwm prior to 2.6.X can make use of the
 configuration file converted to a newer syntax.  Please see its manpage for
 more details on how to use it.
 
+Installation
+------------
+
+See [the installation instructions](./INSTALL.md)
+
 Development
 -----------
 
