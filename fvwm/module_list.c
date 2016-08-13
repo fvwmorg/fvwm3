@@ -92,7 +92,6 @@ static void module_free(fmodule *module);
 static inline void module_list_insert(fmodule *module, fmodule_list *list);
 static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list);
 static inline void module_list_destroy(fmodule_list *list);
-static inline int module_list_len(fmodule_list *list);
 
 static void KillModuleByName(char *name, char *alias);
 static char *get_pipe_name(fmodule *module);
@@ -817,19 +816,6 @@ fmodule *module_list_itr_next(fmodule_list_itr *itr)
 	*itr = (*itr)->next;
 
 	return module;
-}
-
-int module_list_len(fmodule_list *list)
-{
-	int count=0;
-	fmodule_store *current=*list;
-	while (current != NULL)
-	{
-		current = current->next;
-		count++;
-	}
-
-	return count;
 }
 
 static void KillModuleByName(char *name, char *alias)

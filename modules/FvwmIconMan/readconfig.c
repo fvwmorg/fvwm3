@@ -656,7 +656,7 @@ Binding *ParseMouseEntry(char *tline)
 {
   char modifiers[20],*action,*token;
   Binding *new;
-  int button;
+  int button = -1;
   int n1=0,n2=0;
   int mods;
 

@@ -667,7 +667,7 @@ static void property_change(FvwmPacketBody *body)
 		man != NULL)
 	{
 		man->swallowed = body->property_data.toggle;
-		if (man->swallowed && body->property_data.str)
+		if (man->swallowed)
 		{
 			unsigned long u;
 

@@ -556,7 +556,7 @@ CloseDownClient(fsm_client_t *client)
 
 	FSmsCleanUp(client->smsConn);
 	FIceSetShutdownNegotiation(client->ice_conn, False);
-	if (!FIceCloseConnection(client->ice_conn) != FIceClosedNow)
+	if ((!FIceCloseConnection(client->ice_conn)) != FIceClosedNow)
 	{
 		/* do not care */
 	}
@@ -847,7 +847,7 @@ void ProcessIceMsg(fsm_ice_conn_t *fic)
 			 */
 
 			FIceSetShutdownNegotiation (fic->ice_conn, False);
-			if (!FIceCloseConnection(fic->ice_conn) != FIceClosedNow)
+			if ((!FIceCloseConnection(fic->ice_conn)) != FIceClosedNow)
 			{
 				/* do not care */
 			}

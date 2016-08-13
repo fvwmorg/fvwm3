@@ -1662,7 +1662,7 @@ RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 		CloseICCCM2();
 		XCloseDisplay(dpy);
 
-		if (!FSmcCloseConnection(sm_conn, 0, NULL) != FSmcClosedNow)
+		if ((!FSmcCloseConnection(sm_conn, 0, NULL)) != FSmcClosedNow)
 		{
 			/* go a head any way ? */
 		}
