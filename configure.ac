@@ -1690,7 +1690,6 @@ dnl	modules/FvwmPerl/FvwmPerl.1
 	modules/FvwmProxy/FvwmProxy.1
 	modules/FvwmRearrange/FvwmRearrange.1
 	modules/FvwmScript/FvwmScript.1
-	modules/FvwmScroll/FvwmScroll.1
 dnl	modules/FvwmWindowMenu/FvwmWindowMenu.1
 dnl
 	bin/Makefile
@@ -1757,7 +1756,6 @@ dnl
 	modules/FvwmScript/Makefile
 	modules/FvwmScript/Scripts/Makefile
 	modules/FvwmScript/Widgets/Makefile
-	modules/FvwmScroll/Makefile
 )
 
 # ---------------------------------------------------------------------------
