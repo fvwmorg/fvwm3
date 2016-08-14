@@ -95,7 +95,7 @@ Items
 
 * Modules:
     * [ ] The module interface (FVWM <-> Module) is a mess; consider:
-    	* DBus
+	* DBus
 	* imsg
 	* Msgpack-C:
 	  (https://github.com/msgpack/msgpack-c/blob/master/QUICKSTART-C.md)
