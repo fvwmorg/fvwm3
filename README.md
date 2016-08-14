@@ -34,6 +34,9 @@ on.
 Comments, Questions?
 --------------------
 
+There is the `#fvwm` IRC channel on `freenode.net` which you can use to chat
+to people about FVWM.
+
 If you have any questions, concerns, bug reports, enhancement requests,
 etc., please feel free to send an email to the fvwm mailing list, or open a
 Github issue.
