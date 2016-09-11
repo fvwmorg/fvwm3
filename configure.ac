@@ -1397,23 +1397,9 @@ if test ! x"$ac_cv_func_select" = xyes; then
   AC_MSG_ERROR([select required])
 fi
 
-# Check for standard functions that we have replacements for.
-AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strdup strerror usleep atexit)
-dnl dv: this is harmful with autoconf 2.53 and is done automatically anyway
-dnl AC_SUBST(LIBOBJS)
-
 # check for mkstemp, see the discution on this subject on the fvwm workers
 # list (2001-02-16 and 2001-02-24)
 AM_SAFETY_CHECK_MKSTEMP
-
-# If we do not have atexit(), then check for on_exit()
-if test x$ac_cv_func_atexit = xno; then
-  AC_CHECK_FUNCS(on_exit)
-fi
-
-# Check for unsetenv function
-AC_CHECK_FUNCS(unsetenv)
-
 
 # ********* IMLIB, GNOME
 # Check the availability of gdk-imlib

@@ -17,12 +17,6 @@
 #include "libs/vpacket.h"
 #include "libs/fvwm_sys_stat.h"
 
-#ifndef HAVE_STRERROR
-extern char *sys_errlist[];
-#define strerror(_e)    (sys_errlist[_e])
-#endif
-
-
 #define F_NAME  "FvwmCommand-"
 
 /* number of default arguments when invoked from fvwm */

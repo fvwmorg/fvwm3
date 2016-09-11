@@ -15,34 +15,6 @@
 /* Convenience function ti init all the graphics subsystems */
 void flib_init_graphics(Display *dpy);
 
-/*
- * Replacements for missing system calls.
- */
-
-#ifndef HAVE_ATEXIT
-int atexit(void(*func)());
-#endif
-
-#ifndef HAVE_GETHOSTNAME
-int gethostname(char* name, int len);
-#endif
-
-#ifndef HAVE_STRCASECMP
-int strcasecmp(char* s1, char* s2);
-#endif
-
-#ifndef HAVE_STRNCASECMP
-int strncasecmp(char* s1, char* s2, int len);
-#endif
-
-#ifndef HAVE_STRERROR
-char* strerror(int errNum);
-#endif
-
-#ifndef HAVE_USLEEP
-int usleep(unsigned long usec);
-#endif
-
 /* Set up heap debugging library dmalloc.  */
 #ifdef HAVE_DMALLOC_H
 #include <dmalloc.h>
