@@ -10,6 +10,9 @@ if test $ISRELEASED = "no"; then
 	RELDATENUM=""
 fi
 
+# Silence warning: ar: 'u' modifier ignored since 'D' is the default
+AC_SUBST(AR_FLAGS, [cr])
+
 AC_INIT([fvwm],
 	m4_esyscmd_s([utils/fvwm-version-str.sh]),
 	[fvwm-workers@fvwm.org])
