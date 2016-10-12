@@ -1934,6 +1934,8 @@ static void DoSnapAttract(
 	rectangle self;
 	int score_x;
 	int score_y;
+	int scr_w, scr_h;
+	struct monitor *m;
 
 	nxl = -99999;
 	nyt = -99999;
@@ -1952,6 +1954,16 @@ static void DoSnapAttract(
 		{
 			self.height += g.height;
 		}
+	}
+
+	m = fw->m;
+
+	if (m == NULL) {
+		scr_w = Scr.MyDisplayWidth;
+		scr_h = Scr.MyDisplayHeight;
+	} else {
+		scr_w = m->coord.w;
+		scr_h = m->coord.h;
 	}
 
 	/*
@@ -2022,9 +2034,9 @@ static void DoSnapAttract(
 			}
 			/* get other window dimensions */
 			get_visible_window_or_icon_geometry(tmp, &other);
-			if (other.x >= Scr.MyDisplayWidth ||
+			if (other.x >= scr_w ||
 			    other.x + other.width <= 0 ||
-			    other.y >= Scr.MyDisplayHeight ||
+			    other.y >= scr_h ||
 			    other.y + other.height <= 0)
 			{
 				/* do not snap to windows that are not currently
@@ -2126,25 +2138,25 @@ static void DoSnapAttract(
 			fw->snap_attraction.mode & SNAP_SCREEN_ALL ))
 	{
 		/* vertically */
-		if (!(Scr.MyDisplayWidth < (*px) ||
+		if (!(scr_w < (*px) ||
 		      (*px + self.width) < 0))
 		{
 			if (*py + self.height >=
-			    Scr.MyDisplayHeight &&
+			    scr_h &&
 			    *py + self.height <
-			    Scr.MyDisplayHeight + fw->snap_attraction.proximity)
+			    scr_h + fw->snap_attraction.proximity)
 			{
 				update_pos(
 					&score_y, &nyt, *py,
-					Scr.MyDisplayHeight - self.height);
+					scr_h - self.height);
 			}
 			if (*py + self.height >=
-			    Scr.MyDisplayHeight - fw->snap_attraction.proximity &&
-			    *py + self.height < Scr.MyDisplayHeight)
+			    scr_h - fw->snap_attraction.proximity &&
+			    *py + self.height < scr_h)
 			{
 				update_pos(
 					&score_y, &nyt, *py,
-					Scr.MyDisplayHeight - self.height);
+					scr_h - self.height);
 			}
 			if ((*py <= 0)&&(*py > - fw->snap_attraction.proximity))
 			{
@@ -2156,24 +2168,24 @@ static void DoSnapAttract(
 			}
 		} /* vertically */
 		/* horizontally */
-		if (!(Scr.MyDisplayHeight < (*py) ||
+		if (!(scr_h < (*py) ||
 		      (*py + self.height) < 0))
 		{
-			if (*px + self.width >= Scr.MyDisplayWidth &&
+			if (*px + self.width >= scr_w &&
 			    *px + self.width <
-			    Scr.MyDisplayWidth + fw->snap_attraction.proximity)
+			    scr_w + fw->snap_attraction.proximity)
 			{
 				update_pos(
 					&score_x, &nxl, *px,
-					Scr.MyDisplayWidth - self.width);
+					scr_w - self.width);
 			}
 			if (*px + self.width >=
-			    Scr.MyDisplayWidth - fw->snap_attraction.proximity &&
-			    *px + self.width < Scr.MyDisplayWidth)
+			    scr_w - fw->snap_attraction.proximity &&
+			    *px + self.width < scr_w)
 			{
 				update_pos(
 					&score_x, &nxl, *px,
-					Scr.MyDisplayWidth - self.width);
+					scr_w - self.width);
 			}
 			if ((*px <= 0) &&
 			    (*px > - fw->snap_attraction.proximity))
@@ -2204,11 +2216,11 @@ static void DoSnapAttract(
 	{
 		/* snap to right edge */
 		if (
-			*px + Width > Scr.MyDisplayWidth &&
-			*px + Width < Scr.MyDisplayWidth +
+			*px + Width > scr_w &&
+			*px + Width < scr_w +
 			fw->edge_resistance_move)
 		{
-			*px = Scr.MyDisplayWidth - Width;
+			*px = scr_w - Width;
 		}
 		/* snap to left edge */
 		else if ((*px < 0) && (*px > -fw->edge_resistance_move))
@@ -2217,11 +2229,11 @@ static void DoSnapAttract(
 		}
 		/* snap to bottom edge */
 		if (
-			*py + Height > Scr.MyDisplayHeight &&
-			*py + Height < Scr.MyDisplayHeight +
+			*py + Height > scr_h &&
+			*py + Height < scr_h +
 			fw->edge_resistance_move)
 		{
-			*py = Scr.MyDisplayHeight - Height;
+			*py = scr_h - Height;
 		}
 		/* snap to top edge */
 		else if (*py < 0 && *py > -fw->edge_resistance_move)
@@ -2241,7 +2253,7 @@ static void DoSnapAttract(
 			&scr_y1);
 
 		/* snap to right edge */
-		if (scr_x1 < Scr.MyDisplayWidth &&
+		if (scr_x1 < scr_w &&
 		    *px + Width >= scr_x1 && *px + Width <
 		    scr_x1 + fw->edge_resistance_xinerama_move)
 		{
@@ -2267,7 +2279,7 @@ static void DoSnapAttract(
 				&scr_x1, &scr_y1);
 		}
 		/* snap to bottom edge */
-		if (scr_y1 < Scr.MyDisplayHeight &&
+		if (scr_y1 < scr_h &&
 		    *py + Height >= scr_y1 && *py + Height <
 		    scr_y1 + fw->edge_resistance_xinerama_move)
 		{
