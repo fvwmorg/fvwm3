@@ -36,7 +36,7 @@
 #if defined(USE_LIBICONV) && !defined (_LIBICONV_H)
 #error libiconv in use but included iconv.h not from libiconv
 #endif
-#if !defined(USE_LIBICONV) && defined (_LIBICONV_H)
+#if !defined(USE_LIBICONV) && defined (_LIBICONV_H) && defined (LIBICONV_PLUG)
 #error libiconv not in use but included iconv.h is from libiconv
 #endif
 #endif /* FiconvSupport */

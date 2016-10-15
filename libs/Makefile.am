@@ -28,7 +28,7 @@ libfvwm_a_SOURCES = \
 	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
 	modifiers.c fsm.c FTips.c fio.c fvwmlib.c
 
-libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
+libfvwm_a_LIBADD = @LIBOBJS@
 
 AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(iconv_CFLAGS) $(Xrender_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS) \

@@ -1378,7 +1378,6 @@ dnl AC_STRUCT_TM
 AC_TYPE_SIGNAL
 
 # Checks for library functions.
-AC_FUNC_ALLOCA
 AC_FUNC_STRFTIME
 AC_FUNC_SETPGRP
 AC_CHECK_FUNCS(gettimeofday mkfifo putenv setvbuf socket waitpid)
@@ -1520,18 +1519,6 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
 #    define __format__ format
 #    define __printf__ printf
-#  endif
-#endif
-
-#if HAVE_ALLOCA_H
-#  include <alloca.h>
-#else
-#  ifdef _AIX
-       #pragma alloca
-#  else
-#    ifndef alloca /* predefined by HP cc +Olibcalls */
-	 char *alloca ();
-#    endif
 #  endif
 #endif
 
