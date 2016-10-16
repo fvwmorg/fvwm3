@@ -1319,9 +1319,6 @@ static void setVersionInfo(void)
 #ifdef XPM
 	strcat(support_str, " XPM,");
 #endif
-#ifdef HAVE_PNG
-	strcat(support_str, " PNG,");
-#endif
 #ifdef HAVE_RSVG
 	strcat(support_str, " SVG,");
 #endif

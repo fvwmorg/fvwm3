@@ -813,51 +813,16 @@ AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
 
 # ********* png
-problem_png=": png library or header not found"
-
-$UNSET ac_cv_header_png_h
-$UNSET ac_cv_lib_png_png_read_info
-smr_CHECK_LIB(png, png, for coloured or shaped icons,
-    png_read_info, png.h, -lz -lm,)
-
-if test ! x"$png_LIBS" = x; then
-  # Check for proper version of png
-  AC_MSG_CHECKING([for libpng 1.0.4a or better])
-  my_CPPFLAGS="$CPPFLAGS"
-  my_LIBS="$LIBS"
-  CPPFLAGS="$CPPFLAGS $png_CFLAGS"
-  LIBS="$LIBS $png_LIBS -lz -lm"
-  AC_TRY_RUN([#include <png.h>
-   int main(int c, char **v) {
-   return c == 1 ? 0 : (PNG_LIBPNG_VER < 10005) ? 2 : 0 ;}],
-    [./conftest dummy_arg; png_status=$?;
-     if test x"$png_status" = x0; then
-       with_png=yes;
-     else
-       with_png=no;
-       if test x"$png_status" = x2; then
-	 problem_png=": png library version is too old"
-       else
-	 problem_png=": Internal png detection logic error"
-       fi
-     fi],
-   [with_png="no"; problem_png=": png test error, see config.log"],
-   [echo $ac_n "cross compiling; assumed OK... $ac_c"])
-  AC_MSG_RESULT($with_png)
-  CPPFLAGS="$my_CPPFLAGS"
-  LIBS="$my_LIBS"
-fi
-
-AH_TEMPLATE([HAVE_PNG],[Define if ppm library is used.])
-if test x"$with_png" = xyes; then
-  AC_DEFINE(HAVE_PNG)
-  png_LIBS="$png_LIBS -lz"
-  problem_png=""
-else
-  with_png=no
-fi
-AC_SUBST(png_LIBS)
-AC_SUBST(png_CFLAGS)
+# Check for proper version of png
+AC_MSG_CHECKING([for libpng...])
+PKG_CHECK_MODULES([png], [libpng >= 1.2],
+[
+   AC_SUBST(png_LIBS)
+   AC_SUBST(png_CFLAGS)
+],
+[
+   AC_MSG_ERROR([*** libpng not found. ***])
+])
 
 # ** needed by the png support
 AC_C_BIGENDIAN
@@ -1778,7 +1743,6 @@ Fvwm Configuration:
   With Gettext Native Lang support?   $with_gettext$problem_gettext
   With Iconv support?                 $with_iconv_type$problem_iconv
   With Mouse strokes (gestures)?      $with_stroke$problem_stroke
-  With PNG image support?             $with_png$problem_png
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
   With Shaped window support?         $with_shape$problem_shape
