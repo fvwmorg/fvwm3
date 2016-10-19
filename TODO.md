@@ -11,6 +11,11 @@ dropping @ThomasAdam an email for discussion.
 Items
 =====
 
+* Backend:
+	* Wayland? -- maybe, but it's new and a moving target.  No decorations (a
+	  la Xlib).
+	* XCB
+
 * Parsing:
     * [ ] Print where an error was found whilst reading the config file
       (including line numbers).
@@ -99,6 +104,7 @@ Items
 	* imsg
 	* Msgpack-C:
 	  (https://github.com/msgpack/msgpack-c/blob/master/QUICKSTART-C.md)
+	* Cap'n Proto (bloody stupid name!): https://capnproto.org
     * [ ] Use libevent to replace the hand-rolled (and often broken) select/poll
 	  mechanism.
     * [ ] What about third-party scripting languages?  How do we handle that
