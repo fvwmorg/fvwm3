@@ -813,19 +813,47 @@ AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
 
 # ********* png
-# Check for proper version of png
-AC_MSG_CHECKING([for libpng...])
-PKG_CHECK_MODULES([png], [libpng >= 1.2],
-[
-   AC_SUBST(png_LIBS)
-   AC_SUBST(png_CFLAGS)
-],
-[
-   AC_MSG_ERROR([*** libpng not found. ***])
-])
+png_LIBS=""
+png_CFLAGS=""
 
-# ** needed by the png support
-AC_C_BIGENDIAN
+AH_TEMPLATE([HAVE_PNG], [Define PNG])
+AC_ARG_ENABLE(png,
+    AS_HELP_STRING([--disable-png],
+		   [Disables libpng support.]),
+		   [with_png="$enableval"],
+		   [with_png="yes"])
+
+if test "$with_png" = no; then
+      AC_MSG_WARN([***
+		   disabling PNG support will mean the default
+		   configuration shipped with FVWM will be without icon
+		   support.  Be sure this is what you mean to do.
+		   ***])
+else
+	AC_MSG_CHECKING([for libpng...])
+	PKG_CHECK_MODULES([png], [libpng >= 1.2],
+	[
+	 AC_DEFINE(HAVE_PNG)
+	],
+	[
+	 AC_MSG_ERROR([***
+		       libpng not found, and --disable-png not given.
+		       It is recommended to use libpng so that PNG icons can
+		       be rendered by FVWM, which the default configuration
+		       file needs, as well as other third-party programs
+		       which generate menus, for example.
+
+		       If it is critical that FVWM does not link against
+		       libpng (perhaps due to size limitations of the
+		       binary), then use --disable-png
+		       ***])
+	])
+	# ** needed by the png support
+	AC_C_BIGENDIAN
+fi
+
+AC_SUBST(png_LIBS)
+AC_SUBST(png_CFLAGS)
 
 # ********* rsvg
 rsvg_min_version=2.13.92
