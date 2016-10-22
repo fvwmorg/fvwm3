@@ -1940,11 +1940,9 @@ void setup_style_and_decor(
 		Bool b;
 		int boundingShaped;
 
-		/* suppress compiler warnings w/o shape extension */
-		i = 0;
-		u = 0;
-		b = False;
-
+		SUPPRESS_UNUSED_VAR_WARNING(i);
+		SUPPRESS_UNUSED_VAR_WARNING(u);
+		SUPPRESS_UNUSED_VAR_WARNING(b);
 		FShapeSelectInput(dpy, FW_W(fw), FShapeNotifyMask);
 		if (FShapeQueryExtents(
 			    dpy, FW_W(fw), &boundingShaped, &i, &i, &u, &u, &b,

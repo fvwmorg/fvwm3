@@ -522,6 +522,7 @@ void SaveYourselfPhase2ReqProc(FSmsConn smsConn, FSmPointer managerData)
 		return;
 	}
 	client = (fsm_client_t *)managerData;
+	SUPPRESS_UNUSED_VAR_WARNING(client);
 	FSmsSaveYourselfPhase2(client->smsConn);
 }
 
@@ -535,6 +536,7 @@ SaveYourselfDoneProc(FSmsConn smsConn, FSmPointer managerData, Bool success)
 		return;
 	}
 	client = (fsm_client_t *) managerData;
+	SUPPRESS_UNUSED_VAR_WARNING(client);
 	FSmsSaveComplete(client->smsConn);
 }
 
@@ -776,10 +778,10 @@ void NewConnectionMsg(int i)
 
 	if (!SessionSupport)
 	{
-		status = 0;
 		return;
 	}
 
+	SUPPRESS_UNUSED_VAR_WARNING(status);
 	ice_conn = FIceAcceptConnection(listenObjs[i], &status);
 #ifdef FVWM_DEBUG_FSM
 	fprintf(stderr, "[%s][NewConnection] %i\n", module_name, i);

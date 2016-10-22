@@ -104,13 +104,13 @@ int is_translit_supported(char *c1, char *c2)
 	{
 		return 0;
 	}
-	Ficonv_close(cd);
+	(void)Ficonv_close(cd);
 	cd = Ficonv_open(translit_csname(c2),c1);
 	if (cd == (Ficonv_t) -1)
 	{
 		return 0;
 	}
-	Ficonv_close(cd);
+	(void)Ficonv_close(cd);
 
 	return 1;
 }
@@ -265,6 +265,9 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 
 	for (is_finished = 0; is_finished == 0; )
 	{
+		SUPPRESS_UNUSED_VAR_WARNING(inptr);
+		SUPPRESS_UNUSED_VAR_WARNING(insize);
+		SUPPRESS_UNUSED_VAR_WARNING(outbytes_remaining);
 		nconv = Ficonv(
 			cd, (ICONV_ARG_CONST char **)&inptr, &insize, &outp,
 			&outbytes_remaining);

@@ -1726,6 +1726,8 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			/* Item does not fit on screen anymore. */
 			char *t;
 			char *tempname;
+			const char *gt_name;
+			char *name;
 			MenuRoot *menuContinuation;
 			int more_item_height;
 
@@ -1802,9 +1804,12 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			/* don't propagate sidepic, sidecolor, popup and
 			 * popdown actions */
 			/* And add the entry pointing to the new menu */
+			gt_name = gettext("More&...");
+			name = safestrdup(gt_name);
 			AddToMenu(
-				msp->menu, gettext("More&..."), tempname,
+				msp->menu, name, tempname,
 				False /* no pixmap scan */, False, True);
+			free(name);
 			free(tempname);
 			has_continuation_menu = True;
 		}

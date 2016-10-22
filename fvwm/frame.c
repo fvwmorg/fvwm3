@@ -749,6 +749,7 @@ static void frame_prepare_animation_shape(
 		rectangle tb_g;
 		XRectangle rect;
 
+		SUPPRESS_UNUSED_VAR_WARNING(rect);
 		frame_get_titlebar_dimensions_only(
 			fw, &mra->next_g, &mra->b_no_title_g, &tb_g);
 		/* windows w/ titles */
@@ -2097,7 +2098,6 @@ void frame_force_setup_window(
  ****************************************************************************/
 void frame_setup_shape(FvwmWindow *fw, int w, int h, int shape_mode)
 {
-	XRectangle rect;
 	rectangle r;
 	size_borders b;
 
@@ -2126,6 +2126,8 @@ void frame_setup_shape(FvwmWindow *fw, int w, int h, int shape_mode)
 			b.top_left.height, FW_W(fw), FShapeBounding, FShapeSet);
 		if (FW_W_TITLE(fw))
 		{
+			XRectangle rect;
+
 			/* windows w/ titles */
 			r.width = w;
 			r.height = h;
@@ -2134,6 +2136,7 @@ void frame_setup_shape(FvwmWindow *fw, int w, int h, int shape_mode)
 			rect.y = r.y;
 			rect.width = r.width;
 			rect.height = r.height;
+			SUPPRESS_UNUSED_VAR_WARNING(rect);
 			FShapeCombineRectangles(
 				dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0,
 				&rect, 1, FShapeUnion, Unsorted);

@@ -213,8 +213,7 @@ FImage *FGetFImage(
 			dpy, fim, visual, depth, format, width, height);
 		if (fim->im)
 		{
-			FShmGetImage(
-				dpy, d, fim->im, x, y, plane_mask);
+			(void)FShmGetImage(dpy, d, fim->im, x, y, plane_mask);
 		}
 	}
 

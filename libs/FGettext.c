@@ -126,7 +126,8 @@ static void fgettext_free_fgpath_list(void)
 
 void FGettextInit(const char *domain, const char *dir, const char *module)
 {
-	char *btd, *td;
+	const char *btd;
+	const char *td;
 
 	if (!HaveNLSSupport)
 	{

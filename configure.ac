@@ -1592,6 +1592,10 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define fvwm_KeycodeToKeysym(d, k, x, i) (XKeycodeToKeysym((d), (k), (i)))
 #endif
 
+/* A macro that touches a variable in a compiler independent way to suppress
+ * warnings. */
+#define SUPPRESS_UNUSED_VAR_WARNING(x) \
+do { void *p; p = (void *)&x; (void)p; } while (0);
 ])
 
 # mainly for fvwm-config

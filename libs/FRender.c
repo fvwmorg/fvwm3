@@ -79,6 +79,7 @@ void FRenderVisualInit(Display *dpy)
 	pf.type = FRenderPictTypeDirect;
 	pf.direct.alpha = 0;
 	pf.direct.alphaMask = 0xff;
+	SUPPRESS_UNUSED_VAR_WARNING(pf);
 	PFrenderAlphaFormat = FRenderFindFormat(
 		dpy, FRenderPictFormatType| FRenderPictFormatDepth|
 		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
@@ -188,6 +189,7 @@ Bool FRenderCreateShadePicture(
 		pa.repeat = True;
 		if (shade_pixmap)
 		{
+			SUPPRESS_UNUSED_VAR_WARNING(pa);
 			shade_picture = FRenderCreatePicture(
 				dpy, shade_pixmap, PFrenderAlphaFormat,
 				FRenderCPRepeat, &pa);
@@ -219,7 +221,6 @@ Bool FRenderTintPicture(
 	static Pixmap tint_pixmap = None;
 	static FRenderPicture tint_picture = None;
 	FRenderPicture shade_picture = None;
-	FRenderColor frc_tint;
 	Bool force_update = False;
 	FRenderPictureAttributes  pa;
 	int rv = 0;
@@ -259,6 +260,7 @@ Bool FRenderTintPicture(
 	{
 		XColor color;
 		float alpha_factor = (float)tint_percent/100;
+		FRenderColor frc_tint;
 
 		force_update = False;
 		color.pixel = tint;
@@ -267,6 +269,7 @@ Bool FRenderTintPicture(
 		frc_tint.green = color.green * alpha_factor;
 		frc_tint.blue = color.blue * alpha_factor;
 		frc_tint.alpha = 0xffff * alpha_factor;
+		SUPPRESS_UNUSED_VAR_WARNING(frc_tint);
 		FRenderFillRectangle(
 			dpy, FRenderPictOpSrc, tint_picture, &frc_tint,
 			0, 0, 1, 1);
@@ -281,6 +284,7 @@ Bool FRenderTintPicture(
 	rv = FRenderCompositeAndCheck(
 		dpy, FRenderPictOpOver, tint_picture, shade_picture,
 		dest_picture, 0, 0, 0, 0, dest_x, dest_y, dest_w, dest_h);
+	SUPPRESS_UNUSED_VAR_WARNING(pa);
 
  bail:
 	return rv;
@@ -295,9 +299,8 @@ Bool FRenderTintRectangle(
 {
 	FRenderPicture dest_picture = None;
 	FRenderPictureAttributes  pa;
-	unsigned int val = 0;
+	unsigned int val;
 	Bool rv = True;
-
 
 	if (!XRenderSupport || !FRenderGetExtensionSupported())
 	{
@@ -318,7 +321,8 @@ Bool FRenderTintRectangle(
 
 	pa.clip_mask = mask;
 	val = FRenderCPClipMask;
-
+	SUPPRESS_UNUSED_VAR_WARNING(val);
+	SUPPRESS_UNUSED_VAR_WARNING(pa);
 	if (!(dest_picture = FRenderCreatePicture(
 		dpy, d, PFrenderVisualFormat, val, &pa)))
 	{
@@ -429,6 +433,8 @@ int FRenderRender(
 	}
 	else if (!pixmap_copy)
 	{
+		SUPPRESS_UNUSED_VAR_WARNING(pa);
+		SUPPRESS_UNUSED_VAR_WARNING(pam);
 		src_picture = FRenderCreatePicture(
 			dpy, pixmap, PFrenderVisualFormat, pam, &pa);
 	}

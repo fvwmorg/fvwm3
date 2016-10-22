@@ -348,11 +348,11 @@ void FScreenInit(Display *dpy)
 	static Bool is_initialised = False;
 	int dummy_rc;
 
+	SUPPRESS_UNUSED_VAR_WARNING(dummy_rc);
 	if (is_initialised)
 	{
 		return;
 	}
-	dummy_rc = 0;
 	is_initialised = True;
 	disp = dpy;
 	if (FScreenXineramaEmulation)

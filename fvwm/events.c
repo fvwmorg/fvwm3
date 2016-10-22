@@ -493,11 +493,14 @@ static inline void _handle_cr_on_icon(XEvent *e, FvwmWindow *fw)
 static inline void _handle_cr_on_shaped(FvwmWindow *fw)
 {
 	/* suppress compiler warnings w/o shape extension */
-	int i = 0;
-	unsigned int u = 0;
-	Bool b = False;
+	int i;
+	unsigned int u;
+	Bool b;
 	int boundingShaped;
 
+	SUPPRESS_UNUSED_VAR_WARNING(i);
+	SUPPRESS_UNUSED_VAR_WARNING(u);
+	SUPPRESS_UNUSED_VAR_WARNING(b);
 	if (FShapeQueryExtents(
 		    dpy, FW_W(fw), &boundingShaped, &i, &i, &u, &u, &b,
 		    &i, &i, &u, &u))

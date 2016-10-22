@@ -928,7 +928,7 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 	props[2] = &prop3;
 	props[3] = &prop4;
 	props[4] = &prop5;
-
+	SUPPRESS_UNUSED_VAR_WARNING(props);
 	if (filename)
 	{
 		props[5] = &prop6;
@@ -1709,7 +1709,6 @@ SessionInit(void)
 		return;
 	}
 
-	context = NULL;
 	InstallIOErrorHandler();
 
 	callbacks.save_yourself.callback = callback_save_yourself;
@@ -1720,6 +1719,7 @@ SessionInit(void)
 		callbacks.die.client_data =
 		callbacks.save_complete.client_data =
 		callbacks.shutdown_cancelled.client_data = (FSmPointer) NULL;
+	SUPPRESS_UNUSED_VAR_WARNING(context);
 	sm_conn = FSmcOpenConnection(
 		NULL, &context, FSmProtoMajor, FSmProtoMinor,
 		FSmcSaveYourselfProcMask | FSmcDieProcMask |

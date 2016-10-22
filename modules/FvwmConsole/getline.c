@@ -114,6 +114,7 @@ char *get_line(void)
 		}
 
 		/* Get a line from the user. */
+		SUPPRESS_UNUSED_VAR_WARNING(prompt);
 		line  = fvwm_readline(prompt);
 		if (line == NULL)
 		{

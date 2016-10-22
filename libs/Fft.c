@@ -321,10 +321,12 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	{
 		fn = fontname;
 	}
+	SUPPRESS_UNUSED_VAR_WARNING(fn);
 	if ((src_pat = FftNameParse(fn)) == NULL)
 	{
 		goto bail;
 	}
+	SUPPRESS_UNUSED_VAR_WARNING(result);
 	if ((load_pat = FftFontMatch(dpy, fftscreen, src_pat, &result)) == NULL)
 	{
 		goto bail;

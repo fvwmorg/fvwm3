@@ -762,6 +762,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 				off = abs(fw->icon_background_relief) +
 					fw->icon_background_padding;
 			}
+			SUPPRESS_UNUSED_VAR_WARNING(off);
 			FShapeCombineMask(
 				dpy, FW_W_ICON_PIXMAP(fw), FShapeBounding, off,
 				off, fw->icon_maskPixmap, FShapeSet);
@@ -776,6 +777,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 			r.y = 0;
 			r.width = fw->icon_g.picture_w_g.width;
 			r.height = fw->icon_g.picture_w_g.height;
+			SUPPRESS_UNUSED_VAR_WARNING(r);
 			FShapeCombineRectangles(
 				dpy, FW_W_ICON_PIXMAP(fw), FShapeBounding, 0,
 				0, &r, 1, FShapeSet, 0);
