@@ -47,6 +47,12 @@ the branch is about fixing warnings from Clang.
 Sometimes, if more than one person is collaborating on a branch, the initials
 prefix might not be needed.
 
+### Updating NEWS
+
+When submitting patches, please also update the NEWS file with relevant
+highlights as to new functionality and/or bug-fixes.  For inspiration, GNU
+have a [list](https://www.gnu.org/prep/standards/standards.txt).
+
 ### Submitting Pull-requests
 
 External contributions are always welcomed and encouraged.  If you're thinking
