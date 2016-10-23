@@ -8,6 +8,7 @@
 
 # TA:  2012-01-02:  Set the default cursor style to a dot, if FVWM is busy
 # in a PipeRead or Read operation.
+ImagePath +:$[FVWM_USERDIR]
 BusyCursor Read True
 CursorStyle Wait Dot
 

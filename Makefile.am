@@ -5,6 +5,7 @@
 AUTOMAKE_OPTIONS = 1.4
 
 SUBDIRS = \
+	default-config \
 	libs \
 	fvwm \
 	modules \

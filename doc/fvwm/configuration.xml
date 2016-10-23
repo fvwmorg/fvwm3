@@ -42,18 +42,13 @@ sense for run-time.</para>
 <section id='supplied_configuration'>
 <title>Supplied Configuration</title>
 <para>A sample configuration file,
-<filename>system.fvwm2rc</filename>,
 is supplied with the fvwm distribution.  It is well commented and
 can be used as a source of examples for fvwm configuration.
-It may be copied to <filename>/usr/local/share/fvwm/config</filename> file.</para>
+It may be copied from <filename>/usr/local/share/fvwm/config</filename> file.</para>
 
 <para>Alternatively, the built-in menu (accessible when no
 configuration file is found) has options to create an initial
 config file for the user.</para>
-
-<para>If you are new to fvwm, try
-<ulink url="http://fvwm-themes.sourceforge.net/">fvwm-themes</ulink>
-package demonstrating the powerful fvwm functionality.</para>
 
 </section>
 </section>

@@ -1373,6 +1373,11 @@ static void SetRCDefaults(void)
 	/* set up default colors, fonts, etc */
 	const char *defaults[][3] = {
 		{ "XORValue 0", "", "" },
+		{ "ImagePath "FVWM_DATADIR"/default-config/images", "", "" },
+		{ "SetEnv FVWM_DATADIR "FVWM_DATADIR"", "", "" },
+		/* The below is historical -- before we had a default
+		 * configuration which defines these and more.
+		 */
 		{ "DefaultFont", "", "" },
 		{ "DefaultColors black grey", "", "" },
 		{ DEFAULT_MENU_STYLE, "", "" },
@@ -1922,6 +1927,19 @@ int main(int argc, char **argv)
 				       "Read ");
 				strcat(config_commands[num_config_commands],
 				       argv[i]);
+
+				/* Check to see if the file requested exists.
+				 * If it doesn't, use the default config
+				 * instead.
+				 */
+
+				if (access(config_commands[num_config_commands],
+				    F_OK) != 0) {
+					free(config_commands[num_config_commands]);
+					config_commands[num_config_commands] =
+						safestrdup("Read " FVWM_DATADIR
+							"/default-config/config");
+				}
 				num_config_commands++;
 			}
 			else
@@ -2528,7 +2546,9 @@ int main(int argc, char **argv)
 			!run_command_file(CatString3(
 				FVWM_DATADIR, "/system", FVWM2RC), exc) &&
 			!run_command_file(CatString3(
-				FVWM_CONFDIR, "/system", FVWM2RC), exc))
+				FVWM_CONFDIR, "/system", FVWM2RC), exc) &&
+			!run_command_file(CatString3(
+				FVWM_DATADIR, "/default-config/", "config"), exc))
 		{
 			fvwm_msg(
 				ERR, "main", "Cannot read startup config file,"

@@ -1,0 +1,178 @@
+WindowTitle {ConfirmCopyConfig}
+WindowSize  500 205
+Font "xft:Sans:size=10"
+Init
+ Begin
+  Set $DataDir=(GetOutput {echo "$FVWM_DATADIR"} 1 -1)
+  Set $UserDir=(GetOutput {echo "$FVWM_USERDIR"} 1 -1)
+  Set $DefaultConf=$DataDir {/default-config/config}
+  Set $UserConf=$UserDir {/config}
+  Set $BackupConf=$UserDir {/config-bak}
+  Set $DefaultTray=$DataDir {/default-config/.stalonetrayrc}
+  Set $UserTray=$UserDir {/.stalonetrayrc}
+  Set $BackupTray=$UserDir {/stalonetrayrc-bak}
+  Set $DefaultImg=$DataDir {/default-config/images}
+  Set $UserImg=$UserDir {/images}
+  Set $BackupImg=$UserDir {/images-bak}
+  
+  ChangeTitle 3 $UserDir
+  ChangeTitle 5 $BackupConf
+  ChangeTitle 6 $BackupTray
+  ChangeTitle 7 $BackupImg
+
+  Do {Style ConfirmCopyConfig Layer 6}
+ End
+
+Widget 1
+Property
+ Title {Fvwm Default Configuration}
+ Font "xft:Sans:size=14"
+ Size  500 25
+ Position 0 0
+ Type ItemDraw
+ Flags NoReliefString Center
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 2
+Property
+ Title {This script copies the default configuration into your home directory:}
+ Size  400 12
+ Position 15 30
+ Type ItemDraw
+ Flags NoReliefString Left
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 3
+Property
+ Title {}
+ Size  400 17
+ Position 70 50
+ Type ItemDraw
+ Flags NoReliefString Left
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 4
+Property
+ Title {Backups of your current configuration will be located at:}
+ Size  400 12
+ Position 15 70
+ Type ItemDraw
+ Flags NoReliefString Left
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Title {}
+ Size  400 17
+ Position 70 90
+ Type ItemDraw
+ Flags NoReliefString Left
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 6
+Property
+ Title {}
+ Size  400 17
+ Position 70 107
+ Type ItemDraw
+ Flags NoReliefString Left
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 7
+Property
+ Title {}
+ Size  400 17
+ Position 70 125
+ Type ItemDraw
+ Flags NoReliefString Left
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 8
+Property
+ Title {Click Confirm to continue and restart Fvwm.}
+ Size  400 15
+ Position 15 145
+ Type ItemDraw
+ Flags NoReliefString Left
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 9
+Property
+ Title {Confirm}
+ Colorset 13
+ Size 60 28
+ Position 100 170
+ Flags NoReliefString 
+ Type PushButton
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Test (f } $UserConf {) PipeRead `mv "} $UserConf {" "} $BackupConf {"; echo "Echo Backup: } $BackupConf {"`}
+   Do {Test (f } $UserTray {) PipeRead `mv "} $UserTray {" "} $BackupTray {"; echo "Echo Backup: } $BackupTray {"`}
+   Do {Test (f } $UserImg {) PipeRead `mv "} $UserImg {" "} $BackupImg {"; echo "Echo Backup: } $BackupImg {"`}
+   Do {PipeRead `cp -r "} $DefaultConf {" "} $DefaultTray {" "} $DefaultImg {" "} $UserDir {"; echo "Echo Copied default config to } $UserDir {"`}
+   Do {Restart}
+   Quit
+  End
+End
+
+Widget 10
+Property
+ Title {Cancel}
+ Colorset 13
+ Size 60 28
+ Position 350 170
+ Flags NoReliefString
+ Type PushButton
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End

@@ -1681,6 +1681,7 @@ dnl
 	perllib/FVWM/Module/Makefile
 	perllib/FVWM/Tracker/Makefile
 	perllib/FVWM/Module.pm
+	default-config/Makefile
 	doc/fvwm.ent
 	doc/footer.html
 	doc/Makefile
