@@ -27,6 +27,13 @@
 
 #include <stdio.h>
 #include <assert.h>
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#else
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
+#endif
 
 #include "libs/ftime.h"
 
@@ -370,23 +377,23 @@ void fev_sanitise_configure_request(XConfigureRequestEvent *cr)
 {
 	if (cr->value_mask & CWX)
 	{
-		cr->x = (((int)cr->x) & 0xffff);
+		cr->x = (int16_t)cr->x;
 	}
 	if (cr->value_mask & CWY)
 	{
-		cr->y = (((int)cr->y) & 0xffff);
+		cr->y = (int16_t)cr->y;
 	}
 	if (cr->value_mask & CWWidth)
 	{
-		cr->width = (((unsigned int)cr->width) & 0xffff);
+		cr->width = (uint16_t)cr->width;
 	}
 	if (cr->value_mask & CWHeight)
 	{
-		cr->height = (((unsigned int)cr->height) & 0xffff);
+		cr->height = (uint16_t)cr->height;
 	}
 	if (cr->value_mask & CWBorderWidth)
 	{
-		cr->border_width = (((unsigned int)cr->border_width) & 0xffff);
+		cr->border_width = (uint16_t)cr->border_width;
 	}
 
 	return;
@@ -394,11 +401,11 @@ void fev_sanitise_configure_request(XConfigureRequestEvent *cr)
 
 void fev_sanitise_configure_notify(XConfigureEvent *cn)
 {
-	cn->x = (((int)cn->x) & 0xffff);
-	cn->y = (((int)cn->y) & 0xffff);
-	cn->width = (((unsigned int)cn->width) & 0xffff);
-	cn->height = (((unsigned int)cn->height) & 0xffff);
-	cn->border_width = (((unsigned int)cn->border_width) & 0xffff);
+	cn->x = (int16_t)cn->x;
+	cn->y = (int16_t)cn->y;
+	cn->width = (uint16_t)cn->width;
+	cn->height = (uint16_t)cn->height;
+	cn->border_width = (uint16_t)cn->border_width;
 
 	return;
 }

@@ -1358,6 +1358,7 @@ dnl AC_PROG_YACC
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(stdlib.h fcntl.h limits.h malloc.h string.h memory.h unistd.h)
+AC_CHECK_HEADERS(stdint.h inttypes.h)
 AC_CHECK_HEADERS(getopt.h sys/select.h sys/systeminfo.h sys/time.h)
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -1369,6 +1370,8 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 dnl AC_STRUCT_TM
 AC_TYPE_SIGNAL
+AC_TYPE_INT16_T
+AC_TYPE_UINT16_T
 
 # Checks for library functions.
 AC_FUNC_STRFTIME
