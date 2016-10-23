@@ -2,7 +2,7 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in stable release2.6.7 (UNRELEASED)
+Changes in stable release 2.6.7 (UNRELEASED)
 
 * New fvwm features:
 
@@ -19,18 +19,18 @@ Changes in stable release2.6.7 (UNRELEASED)
   - New command 'InfoStoreClear' to remove all items in the InfoStore.
   - Some fvwm modules have been removed:
     
-    FvwmDragWell   (no replacement)
-    FvwmGTK        (no replacement)
-    FvwmSave       (no replacement)
-    FvwmSaveDesk   (no replacement)
-    FvwmScroll     (no replacement)
-    FvwmTabs       (no replacement)
-    FvwmTaskBar    (use FvwmButtons)
-    FvwmTheme      (in core of fvwm as colorsets)
-    FvwmWharf      (use FvwmButtons)
-    FvwmWinList    (use WindowList command)
-    FvwmWindowMenu (use WindowList command)
-    FvwmIconBox    (use the IconBox style instead)
+      - FvwmDragWell   (no replacement)
+      - FvwmGTK        (no replacement)
+      - FvwmSave       (no replacement)
+      - FvwmSaveDesk   (no replacement)
+      - FvwmScroll     (no replacement)
+      - FvwmTabs       (no replacement)
+      - FvwmTaskBar    (use FvwmButtons)
+      - FvwmTheme      (in core of fvwm as colorsets)
+      - FvwmWharf      (use FvwmButtons)
+      - FvwmWinList    (use WindowList command)
+      - FvwmWindowMenu (use WindowList command)
+      - FvwmIconBox    (use the IconBox style instead)
 
   - VMS support has been removed.
   - GTK1.x support has been removed.
@@ -259,10 +259,7 @@ Changes in stable release 2.6.0 (15-Apr-2011)
     flipping.
   - Fix NeverFocus windows from taking focus when opening menus,
     etc.
-
-
-  - Plus *MANY* other fixes, improvements, etc.  Please see the
-    docs/ANNOUNCE file from 2_6_0.
+  - Plus *MANY* other fixes, improvements, etc.
 -------------------------------------------------------------------
 
 -------------------------------------------------------------------
