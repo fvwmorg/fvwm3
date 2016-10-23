@@ -2,6 +2,40 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
+Changes in stable release2.6.7 (UNRELEASED)
+
+* New fvwm features:
+
+  - The old and unmaintained debian/and rpm/ directories have
+    been remmoved; use the maintainers' copies where available.
+  - FvwmButtons learned a new option 'Colorset' to its ChangeButton
+    command.
+  - A new conitional command 'Desk n' can restrict matching windows
+    to a specific desk.
+  - A new conditional command 'Screen n' to restrict matching windows
+    on a given Xinerama screen.
+  - New expansion variable 'w.screen' to ascertain the Xineram screen
+    number a window is on.
+  - New command 'InfoStoreClear' to remove all items in the InfoStore.
+  - Some fvwm modules have been removed:
+    
+    FvwmDragWell   (no replacement)
+    FvwmGTK        (no replacement)
+    FvwmSave       (no replacement)
+    FvwmSaveDesk   (no replacement)
+    FvwmScroll     (no replacement)
+    FvwmTabs       (no replacement)
+    FvwmTaskBar    (use FvwmButtons)
+    FvwmTheme      (in core of fvwm as colorsets)
+    FvwmWharf      (use FvwmButtons)
+    FvwmWinList    (use WindowList command)
+    FvwmWindowMenu (use WindowList command)
+    FvwmIconBox    (use the IconBox style instead)
+
+  - VMS support has been removed.
+  - GTK1.x support has been removed.
+  - GNOME-specific window hints (pre-EWMH) have been removed.
+
 Changes in stable release 2.6.6 (15-Mar-2016)
 
 * New fvwm features:
