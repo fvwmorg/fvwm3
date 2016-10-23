@@ -36,6 +36,10 @@ Changes in stable release 2.6.7 (UNRELEASED)
   - GTK1.x support has been removed.
   - GNOME-specific window hints (pre-EWMH) have been removed.
 
+* Bug fixes:
+  - FvwmButtons 'Silent' option for dynamic ChangeButton commands no longer
+    loops infinitely.
+
 Changes in stable release 2.6.6 (15-Mar-2016)
 
 * New fvwm features:

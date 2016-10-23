@@ -226,9 +226,18 @@ void parse_message_line(char *line)
 		if (action == 0)
 		{
 			silent = True;
-			line = rest;
+			break;
 		}
 	} while (action == 0);
+
+	/* If silent was given (to surpress erros from parsing commands, then
+	 * retokenise the rest of the line, so that token matching for the
+	 * actual command is possible.
+	 */
+	if (silent == True) {
+		line = PeekToken(line, &rest);
+		action = GetTokenIndex(rest, actions, -1, &rest);
+	}
 
 	/* find out which button */
 	b = parse_button_id(&rest);
