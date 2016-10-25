@@ -59,6 +59,19 @@ Items
           unuseable function documentation.  I'm against using it since it does
           not help to understand how functions are related to each other.
 
+* Messages:
+    * More debug output to help the user pinning down why a window does not
+      "behave".  One problem that comes up all the time is "why does my window
+      appear at position X Y with size WIDTHxHEIGHT".  Although there is some
+      output, when a window first pops up, there is none after the initial
+      mapping when the really interesing things happen (messages from the client
+      application).
+    * Look over all existing messages, add a proper severity (debug, info,
+      warning, deprecated, error etc.) and feature number and make the messages
+      switchable through the config file.
+    * Allow to disable all messages through configure to allow for smaller
+      builds.
+
 * String handling:
     * [ ] libs/String.[ch] and friends have idioms like CatString3, and
       other means to manipulating strings.  Get rid of these.
