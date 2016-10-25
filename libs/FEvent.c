@@ -64,7 +64,6 @@ typedef struct
 	Window w;
 	int event_type;
 	int count;
-	char has_predicate;
 	char has_window;
 	char has_event_type;
 } _fev_weed_args;
@@ -173,7 +172,7 @@ static Bool _fev_pred_weed_if(Display *display, XEvent *event, XPointer arg)
 			return 0;
 		}
 	}
-	if (weed_args->has_predicate)
+	if (weed_args->weed_predicate)
 	{
 		rc = weed_args->weed_predicate(display, event, weed_args->arg);
 	}
@@ -526,7 +525,6 @@ int FWeedIfEvents(
 	memset(&weed_args, 0, sizeof(weed_args));
 	weed_args.weed_predicate = weed_predicate;
 	weed_args.arg = arg;
-	weed_args.has_predicate = (weed_predicate != NULL);
 	FCheckPeekIfEvent(
 		display, &e, _fev_pred_weed_if, (XPointer)&weed_args);
 	/* e is discarded */
