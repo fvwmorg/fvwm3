@@ -37,9 +37,17 @@ Items
           see these go away.  FW and Decor are good examples of this!  I'd
           rather see more exposed functions to replace these.  The API will
           need discussion.
+          dv: Many of these macros were introduced to hide the layout from the
+              underlying structures from its users.  So, when the structures
+              change - as they have many times - one would only have to change
+              the macro definition and not hundreds of users.  Especially with
+              a future rewrite of the style system in mind, this is still very
+              important.
     * [ ] What's in libs/ -- the static linking of libfvwm.a useful anymore?
       There's a lot of code being ripped out of libs/ and I don't see much
       more being added in.
+      dv: Static linkage was good when the library was small.  Nowadays its
+          just a burden.
     * [X] I'm not keen on commands.h:P() macro, I'd rather have the prototypes
       explicitly stated.
     * [X] Remove the ewmh_intern.h:CMD_EWMH_ARGS macro, I'd rather have the
@@ -47,6 +55,9 @@ Items
     * [ ] Consider using doxygen for API-specific documentation?  This would
       help justify/cleanup functions in the longer-term by identifying
       similar functions, etc.
+      dv: In my experience using doxygen automatically leads to mostly
+          unuseable function documentation.  I'm against using it since it does
+          not help to understand how functions are related to each other.
 
 * String handling:
     * [ ] libs/String.[ch] and friends have idioms like CatString3, and
@@ -77,6 +88,14 @@ Items
     * [ ] No special-casing of maximised state, it's just another geometry set
       which is added on to a list, and popped when no longer used in that
       state.
+      dv: Unfortunately its not that easy because being "maximised", "shaded",
+          "iconified" or "fullscreen" is announced to the world through the EWMH
+          interface.  The list approach sounds promising, but one has to keep in
+          mind that the geometries are not independent of each other.   For
+          example, a window is halfway between two pages, maximised on the
+          current page, then the user switches to the other page and
+          unmaximises the window.  Now, where dos he expect the window to
+          appear?
 
 * Commands:
     * There's far too many commands in FVWM:
@@ -132,6 +151,8 @@ Items
 	  and create-commands).
 
 * Decors:
+        dv: I think decorations should be dropped in favour of styles.  The
+            whole concept was invented because stlyes were unable to do it.
 	* Think carefully about the syntax of the decor replacement!
 	* [ ] Remove {Border,Title,Button}Style and decors, just one simple look.
 	* [ ] New style `DecoratedByFvwm`/`DecoratedByModule`.
@@ -139,6 +160,10 @@ Items
 		* [ ] How does resizing work with this module?
 
 * Styles:
+        dv: I have much more radical plans for styles:  Being able to nest
+            styles, making them conditional with any condition that can be used
+            anywhere in fvwm at any time, defining window specific preferences
+            of style order.
 	* [ ] Expand Style command to support name=pattern syntax, for instance:
 	  `Style (Name "File *", Class XPaint, Resource *browser) NoIcon`
 	* [ ] Add id-pattern to Style command.
@@ -148,3 +173,7 @@ Items
 	  (`InitialStyle`).
 	* [ ] Remove the ability to toggle specific parts of EWMH; it's either on
 	  or it isn't.
+          dv: I don't think this should be done.  EWMH is annoying in many ways,
+              and in order to tame EWMH "enabled" applications, detailed
+              control over the various aspects.  It was a single switch
+              originally, and that was not good enough.
