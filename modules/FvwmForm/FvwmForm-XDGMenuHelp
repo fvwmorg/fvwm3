@@ -1,0 +1,65 @@
+# FvwmForm-XDGMenuHelp - Help Text for fvwm-menu-desktop-config XDGMenu
+# V 1.0.4
+DestroyModuleConfig  FvwmForm-XDGMenuHelp: *
+*FvwmForm-XDGMenuHelp:   Title   "$[gt.XDGMenu Help]"
+*FvwmForm-XDGMenuHelp:   WarpPointer
+# Layout
+#*FvwmForm-XDGMenuHelp:   Line    center
+#*FvwmForm-XDGMenuHelp:   Text    "$[gt.XDGMenu.Help]"
+#*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    center
+*FvwmForm-XDGMenuHelp:   Text    "--------------------------------------------------------------------"
+*FvwmForm-XDGMenuHelp:   Line    center
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.All the XDG menus found on the system are listed under Available Menus. Click]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Generate Menus to create a menu for fvwm from the selected menus. Use this]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.FvwmForm to configure some of the defaults options for fvwm-menu-desktop.]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Menus are found /etc/xdg/menus, $HOME/.config/menus, and $XDG_MENU_PREFIX.]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Note that equal menus found under both /etc/xdg/menus AND $HOME/.config/menus/]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.following the XDG menu specification are only shown in $HOME/.config/menus/.]"
+*FvwmForm-XDGMenuHelp:   Line    Left
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.If no menus appear check why from within a terminal with 'fvwm-menu-desktop -v'.]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Also it is a good idea to check .xsession-errors in the user home for errors.]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Known limitation:]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.If there are too many menus found an error occurs in .xsession-errors:]"
+*FvwmForm-XDGMenuHelp:   Line    center
+*FvwmForm-XDGMenuHelp:   Text    "<<ERROR>> Module(0xXXXXXXX) command is too big (1008), limit is 1000"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.This happens because PipeRead used for menu generation has a command length]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.limit of 1000 characters. Sorry for that inconvinience.]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Line    center
+*FvwmForm-XDGMenuHelp:   Text    "--------------------------------------------------------------------"
+*FvwmForm-XDGMenuHelp:   Line    Left
+*FvwmForm-XDGMenuHelp:   Line    " "
+# Buttons
+*FvwmForm-XDGMenuHelp:   Line    center
+*FvwmForm-XDGMenuHelp:   Button  quit    "$[gt.Close]"         ^M
+*FvwmForm-XDGMenuHelp:   Command Nop
+*FvwmForm-XDGMenuHelp:   Button  continue "Options Help"
+*FvwmForm-XDGMenuHelp:   Command Module FvwmForm FvwmForm-XDGOptionsHelp
+*FvwmForm-XDGMenuHelp:   Button  continue "fvwm-menu-desktop man page"        
+*FvwmForm-XDGMenuHelp:   Command Exec exec xterm -g 100x50 -n "Help fvwm-menu-desktop" -T "Help fvwm-menu-desktop" -e "man fvwm-menu-desktop"
+*FvwmForm-XDGMenuHelp:   Line    Left
+*FvwmForm-XDGMenuHelp:   Line    " "
+

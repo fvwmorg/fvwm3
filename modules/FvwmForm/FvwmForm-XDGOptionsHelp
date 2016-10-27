@@ -1,0 +1,131 @@
+# FvwmForm-XDGOptionsHelp - Help Text for fvwm-menu-desktop-config XDGMenu Options
+# V 1.0.3
+DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
+*FvwmForm-XDGOptionsHelp:   Title   "$[gt.XDGMenu Options Help]"
+*FvwmForm-XDGOptionsHelp:   WarpPointer
+# Layout
+#*FvwmForm-XDGOptionsHelp:   Line    center
+#*FvwmForm-XDGOptionsHelp:   Text    "$[gt.XDGMenu Options Help]"
+#*FvwmForm-XDGOptionsHelp:   Line 
+*FvwmForm-XDGOptionsHelp:   Line    center
+*FvwmForm-XDGOptionsHelp:   Text    "----------------------------------------------------------------------------------------"
+*FvwmForm-XDGOptionsHelp:   Line    center
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.General Options]"
+*FvwmForm-XDGOptionsHelp:   Line    left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Include in Menu:    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Set if XDGMenu will include menu items to Configure and/or Regenerate the menu]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.at the bottom of the top level menu.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Use Icons?          ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Option enables mini-icons in the menu(s). Warning! If ImageMagick is installed]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.the script may generate all the icons and pause your system]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.until the job is done. Wait or kill the fvwm-menu-desktop process.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Icon size:          ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size is]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.desired enter the wanted size in this field.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Icon directory:     ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.If the specified icon isn't that size it is converted if ImageMagick is installed.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Generated icons are saved in $HOME/.fvwm/icons or the directory specified here.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Otherwise no icon appears in the menu for that entry.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Used Icon theme:    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Sets the used icon theme. Default is 'gnome' but all others found in]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt./usr/share/icons can used except the hicolor theme because it's the default]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.fallback theme if no icon is found. Note that the theme name must be written]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.exactly as the icon directory e.g.] /usr/share/icons/Mint-X => 'Mint-X'."
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Directory Icon:     ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.If 'Use Icons' is enabled and for a directory in a menu no icon is found]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "'gnome-fs-directory' $[gt.as default icon is used. But if the gnome icon theme isn't]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.installed no default icon appears. Another icon can defined here.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Only the name of an icon is needed not the path!]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Application Icon:   ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.If 'Use Icons' is enabled and for an application no icon is found]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "'gnome-applications' $[gt.as default icon is used. But if the gnome icon theme isn't]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.installed no default icon appears. Another icon can defined here.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Only the name of an icon is needed not the path!]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Use Titles?         ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.If this option is set menus are generated with titles. Default is no titles.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Top Menu Name:      ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Sets the name of the name of the top level menu. Default is XDGMenu.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Output path:        ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter here the FULL path of the menu to store. Default path is $FVWM_USERDIR/.menu.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Install-Prefix:     ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter the FULL path of additional directories to search for XDG .menu files.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    left
+*FvwmForm-XDGOptionsHelp:   Line    center
+*FvwmForm-XDGOptionsHelp:   Text    "----------------------------------------------------------------------------------------"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+# Buttons
+*FvwmForm-XDGOptionsHelp:   Line    center
+*FvwmForm-XDGOptionsHelp:   Button  quit    "$[gt.Close]"         ^M
+*FvwmForm-XDGOptionsHelp:   Command Nop
+*FvwmForm-XDGOptionsHelp:   Button  continue "XDGMenu Help"
+*FvwmForm-XDGOptionsHelp:   Command Module FvwmForm FvwmForm-XDGMenuHelp
+*FvwmForm-XDGOptionsHelp:   Button  continue "fvwm-menu-desktop $[gt.manpage]"        
+*FvwmForm-XDGOptionsHelp:   Command Exec exec xterm -g 100x50 -n "Help fvwm-menu-desktop" -T "Help fvwm-menu-desktop" -e "man fvwm-menu-desktop"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+

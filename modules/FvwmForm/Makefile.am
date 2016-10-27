@@ -25,9 +25,8 @@ EXTRA_DIST = $(man_MANS) Changes \
   FvwmForm-RootCursor     \
   FvwmForm-Talk           \
   FvwmForm-TalkHelp       \
-  FvwmForm-GenOptionHelp  \
-  FvwmForm-MultiMenuHelp  \
-  FvwmForm-SingleMenuHelp
+  FvwmForm-XDGOptionsHelp \
+  FvwmForm-XDGMenuHelp
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c ParseCommand.c
 
@@ -42,9 +41,8 @@ config_DATA =             \
   FvwmForm-RootCursor     \
   FvwmForm-Talk           \
   FvwmForm-TalkHelp       \
-  FvwmForm-GenOptionHelp  \
-  FvwmForm-MultiMenuHelp  \
-  FvwmForm-SingleMenuHelp
+  FvwmForm-XDGOptionsHelp \
+  FvwmForm-XDGMenuHelp
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
