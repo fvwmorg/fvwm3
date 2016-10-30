@@ -638,6 +638,7 @@ DestroyModuleConfig FvwmIconMan:*
 # on specific events. This instance changes which desk number
 # is highlighted when the desk is changed.
 DestroyModuleConfig EventNewDesk:*
+*EventNewDesk: PassID
 *EventNewDesk: new_desk ChangeDesk
 
 # FvwmForm
