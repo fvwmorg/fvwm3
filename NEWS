@@ -41,6 +41,15 @@ Changes in stable release 2.6.7 (UNRELEASED)
   - FvwmButtons learned a new option "Colorset" to its
     ChangeButton command.
 
+* fvwm-menu-desktop updated:
+
+  - Renamed default menu to XDGMenu and changed the name
+    of the FvwmForm to FvwmForm-XDGMenu-Config
+  - fvwm-menu-desktop will now load defaults from the
+    FvwmForm-XDGMenu-Config data file.
+  - Improved dynamic menus.
+  - Added new options: --regen-cmd, --dynamic, and more.
+
 * Bug fixes:
 
   - A bug introduced in 2.6.6 could cause applications with

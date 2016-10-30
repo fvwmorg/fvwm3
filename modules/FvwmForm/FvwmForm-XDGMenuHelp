@@ -12,11 +12,31 @@ DestroyModuleConfig  FvwmForm-XDGMenuHelp: *
 *FvwmForm-XDGMenuHelp:   Line    center
 *FvwmForm-XDGMenuHelp:   Line    " "
 *FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.All the XDG menus found on the system are listed under Available Menus. Click]"
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.All the XDG menus found on the system are listed under Available Menus.  Use]"
 *FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.Generate Menus to create a menu for fvwm from the selected menus. Use this]"
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.this FvwmForm to configure some of the defaults options for fvwm-menu-desktop]"
 *FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.FvwmForm to configure some of the defaults options for fvwm-menu-desktop.]"
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.and select which menus are generated.  Select the options you want and then]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.generate then generate the menu by selecting the following:]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Save Menu:]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.     Generates a menu by calling fvwm-menu-desktop with the selected options]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.     and saves the output to Output Path. After the menu file is created it]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.     is read by fvwm. This option does not save any changes made to settings.]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Line    " "
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Save and Regenerate:]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.     This saves the settings then runs fvwm-menu-desktop with no options using]"
+*FvwmForm-XDGMenuHelp:   Line    left
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.     the defaults saved in the config file. This does not save the menu.]"
 *FvwmForm-XDGMenuHelp:   Line    left
 *FvwmForm-XDGMenuHelp:   Line    " "
 *FvwmForm-XDGMenuHelp:   Line    left
@@ -28,26 +48,11 @@ DestroyModuleConfig  FvwmForm-XDGMenuHelp: *
 *FvwmForm-XDGMenuHelp:   Line    Left
 *FvwmForm-XDGMenuHelp:   Line    " "
 *FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.If no menus appear check why from within a terminal with 'fvwm-menu-desktop -v'.]"
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.If no menus appear check with 'fvwm-menu-desktop --get-menus all -v'.]"
 *FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.Also it is a good idea to check .xsession-errors in the user home for errors.]"
-*FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Line    " "
-*FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.Known limitation:]"
-*FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.If there are too many menus found an error occurs in .xsession-errors:]"
-*FvwmForm-XDGMenuHelp:   Line    center
-*FvwmForm-XDGMenuHelp:   Text    "<<ERROR>> Module(0xXXXXXXX) command is too big (1008), limit is 1000"
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Also it is a good idea to check $HOME/.xsession-errors for errors.]"
 *FvwmForm-XDGMenuHelp:   Line    left
 *FvwmForm-XDGMenuHelp:   Line    " "
-*FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.This happens because PipeRead used for menu generation has a command length]"
-*FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.limit of 1000 characters. Sorry for that inconvinience.]"
-*FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Line    " "
-*FvwmForm-XDGMenuHelp:   Line    left
 *FvwmForm-XDGMenuHelp:   Line    center
 *FvwmForm-XDGMenuHelp:   Text    "--------------------------------------------------------------------"
 *FvwmForm-XDGMenuHelp:   Line    Left

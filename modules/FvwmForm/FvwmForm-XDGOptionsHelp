@@ -26,10 +26,10 @@ DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.Option enables mini-icons in the menu(s). Warning! If ImageMagick is installed]"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.the script may generate all the icons and pause your system]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.the script may generate all the icons and pause your system until the job is]"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.until the job is done. Wait or kill the fvwm-menu-desktop process.]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.done. After the icons are generated, it will not take as long to regenerate.]"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    Left
@@ -95,7 +95,7 @@ DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.Use Titles?         ]"
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.If this option is set menus are generated with titles. Default is no titles.]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.If this option is set menus are generated with titles. Default is use titles.]"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    Left
@@ -104,16 +104,15 @@ DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Insert Menu Into:   ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Inserts the menu items into the given Menu.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.Output path:        ]"
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter here the FULL path of the menu to store. Default path is $FVWM_USERDIR/.menu.]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter here the FULL path of the menu to save. Default path is $FVWM_USERDIR/.menu.]"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
-*FvwmForm-XDGOptionsHelp:   Line    Left
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Install-Prefix:     ]"
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter the FULL path of additional directories to search for XDG .menu files.]"
-*FvwmForm-XDGOptionsHelp:   Line    Left
-*FvwmForm-XDGOptionsHelp:   Line    " "
-*FvwmForm-XDGOptionsHelp:   Line    left
 *FvwmForm-XDGOptionsHelp:   Line    center
 *FvwmForm-XDGOptionsHelp:   Text    "----------------------------------------------------------------------------------------"
 *FvwmForm-XDGOptionsHelp:   Line    Left

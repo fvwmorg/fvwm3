@@ -2,14 +2,24 @@
  
 # Modification History
 
-# Changed on 26/10/16 by Jaimos Skrietz:
-# - Added the abilty to load defaults from the FvwmForm data file
-#   $FVWM_USERDIR/.FvwmForm-XDGMenu-Config for the GUI tool.
+# Changed on 26/10/27 by Jaimos Skrietz:
+# - Renamed default menu to XDGMenu and changed the name of the
+#   FvwmForm to FvwmForm-XDGMenu-Config
+# - Modified the FvwmForm and added the abilty to load defaults from
+#   the Form's data file.
+# - Changed default to generate menu titles. Disable with --without-titles
 # - The top level menu now has two additional items:
-#     'Regenerate' - Regenerates menu with saved options.
-#     'Configure' - Opens up FvwmForm-Desktop-Config.
+#     'Regenerate' - Regenerates menu.
+#     'Configure' - Opens up FvwmForm-XDGMenu-Config.
+# - Added --regen-cmd "CMD" for a fvwm CMD to use on the Regenerate item.
+#   Default: PipeRead `fvwm-menu-desktop`
 # - Added --include-items [config|regenerate|both|none] option
 #   to control if the additional items are included in the menu.
+# - Added --dynamic option to be used with dynamic menus.
+# - Added --all-menus option to generate all menus and not try to determine
+#   which one is best
+# - Changed default behavior to include menu titles.
+# - Added new option --without-titles
 
 # Changed on 25/02/14 by Thomas Funk:
 # - Converting of icons always to png
@@ -128,9 +138,9 @@ Standard output is a series Fvwm commands."""
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hs:t:vw",
                                    ["help", "verbose", "enable-mini-icons", "with-titles", "without-titles", "version",
-                                    "desktop=", "size=", "theme=", "install-prefix=", "menu-type=",
+                                    "desktop=", "size=", "theme=", "install-prefix=", "menu-type=", "regen-cmd=",
                                     "title=", "get-menus=", "set-menus=", "insert-in-menu=", "mini-icon-dir=",
-                                    "app-icon=", "dir-icon=", "include-items="]+obs_args+equaled_obs_parms)
+                                    "app-icon=", "dir-icon=", "include-items=", "dynamic", "all-menus"]+obs_args+equaled_obs_parms)
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -138,7 +148,7 @@ Standard output is a series Fvwm commands."""
         sys.exit(2)
     global verbose, force, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
-    global default_app_icon, default_dir_icon, include_items, config_menus
+    global default_app_icon, default_dir_icon, include_items, config_menus, regen_cmd, dynamic_menu, build_all_menus
     version = "2.3.3"
     verbose = False
     force = False
@@ -151,16 +161,19 @@ Standard output is a series Fvwm commands."""
     insert_in_menu = False
     install_prefix = ''
     menu_type = ''
-    with_titles = False
+    with_titles = True
     menu_entry_count = 0
     menu_list_length = 0
     get_menus = ''
     printmode = True
     set_menus = []
+    build_all_menus = False
     config_menus = []
     default_app_icon = "gnome-applications"
     default_dir_icon = "gnome-fs-directory"
     include_items = 'both'
+    regen_cmd = 'PipeRead `fvwm-menu-desktop`'
+    dynamic_menu = False
 
     # Loads config options from $FVWM_USERDIR/.FvwmForm-XDGMenu-Config
     if os.path.isfile("%s/.FvwmForm-XDGMenu-Config" % os.environ['FVWM_USERDIR']):
@@ -181,6 +194,9 @@ Standard output is a series Fvwm commands."""
                     current_theme = o[2]
                 elif o[1] == 'Title':
                     top = o[2]
+                elif o[1] == 'InsertInto':
+                    top = o[2]
+                    insert_in_menu = True
                 elif o[1] == 'Installprefix':
                     install_prefix = o[2]
                 elif o[1] == 'IconDir':
@@ -261,6 +277,12 @@ Standard output is a series Fvwm commands."""
                 sys.stderr.write( "--include-items argument must be 'config', 'regenerate', 'both' or 'none' found "+a )
                 print usage
                 sys.exit(1)
+        elif o in ("--regen-cmd") :
+            regen_cmd = a
+        elif o in ("--dynamic") :
+            dynamic_menu = True
+        elif o in ("--all-menus") :
+            build_all_menus = True
         elif o in (str(dashed_obs_args+dashed_obs_parms)) :
             # Ignore
             sys.stderr.write( "Warning: Arg "+o+" is obsolete and ignored\n" )
@@ -362,7 +384,7 @@ def getmenulist(desktop, menu_type):
             for menu in list(menudict['/etc/xdg/menus']):
                 all_menus.append('/etc/xdg/menus/' + menu) 
          
-        if get_menus == 'all':
+        if get_menus == 'all' or (build_all_menus and desktop == '' and menu_type == ''):
             return all_menus, ''
 
         # get menus selected in config file
@@ -397,6 +419,12 @@ def getmenulist(desktop, menu_type):
                 sys.exit(1)
 
         vprint("\n Finding best menu in Menu List: %s" % menudict )
+        if build_all_menus:
+            all_menus = []
+            for key in menudict:
+                for i in menudict[key]:
+                  all_menus.append(key+'/'+i)
+            return all_menus, ''
 
         # sort menus related to desktops and create a weighting
         vprint("\n DE weighting search: DE => [user menus, system menus, overall]")
@@ -622,7 +650,10 @@ def parsemenus(menulist, desktop):
         # create the root menu
         if printmode:
             if not insert_in_menu:
-                printtext('DestroyMenu "%s"' % top)
+                if dynamic_menu:
+                    printtext('DestroyMenu recreate "%s"' % top)
+                else:
+                    printtext('DestroyMenu "%s"' % top)
             if with_titles and not insert_in_menu:
                 printtext('AddToMenu "%s" "%s" Title' % (top, top))
             else:
@@ -635,7 +666,7 @@ def parsemenus(menulist, desktop):
             if include_items != 'none':
                 printtext('+ "" Nop')
                 if include_items in ("both", "regenerate"):
-                    printmenu("$[gt.Regenerate]", "system-software-update", "PipeRead 'fvwm-menu-desktop'" )
+                    printmenu("$[gt.Regenerate]", "system-software-update", regen_cmd )
                 if include_items in ("both", "config"):
                     printmenu("$[gt.Configure]", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
 
@@ -654,7 +685,10 @@ def parsemenu(menu, name="", title=""):
         title = decodetext(title)
         if not (name == None or title == None):
             if not insert_in_menu or not (insert_in_menu and name == top and menu_list_length == 1):
-                printtext('DestroyMenu "%s"' % name, False)
+                if name == top and dynamic_menu:
+                    printtext('DestroyMenu recreate "%s"' % name, False)
+                else:
+                    printtext('DestroyMenu "%s"' % name, False)
             if with_titles:
                 # for insert-in-menu AddToMenu doesn't have a title for top menu
                 # because this will appear then in the other menu
@@ -687,7 +721,7 @@ def parsemenu(menu, name="", title=""):
         if menu_list_length == 1 and name == top and include_items != 'none':
             printtext('+ "" Nop')
             if include_items in ("both", "regenerate"):
-                printmenu("$[gt.Regenerate]", "system-software-update", "PipeRead 'fvwm-menu-desktop'" )
+                printmenu("$[gt.Regenerate]", "system-software-update", regen_cmd )
             if include_items in ("both", "config"):
                 printmenu("$[gt.Configure]", "system-software-update", "Module FvwmPerl -l fvwm-menu-desktop-config.fpl" )
         printtext('')
@@ -707,13 +741,16 @@ Options:
     --install-prefix DIR      install prefix of the desktop menu files.
                               Per default not set. For system wide menus
                               use /etc/xdg/menus/.
-    --desktop NAME            desktop name to build menus for:
+    --desktop NAME            use menus that include NAME in the file name:
                               gnome, kde, xfce, lxde, debian, etc.
-    --menu-type NAME          applications, settings, preferences, etc.
-    --theme NAME              gnome (default), oxygen, etc. Don't use hicolor. 
-                              It's the default fallback theme if no icon will
-                              be found.
-    -w, --with-titles         generate menus with titles.
+    --menu-type NAME          use menus that include NAME in the file name:
+                              applications, settings, preferences, etc. When
+                              used with --desktop only menus whose file name
+                              mathces '*desktop*menutype*' are used.
+    --theme NAME              icon theme: gnome (default), oxygen, etc. Don't
+                              use hicolor. It's the default fallback theme if
+                              no icon is found.
+    -w, --with-titles         generate menus with titles. Default.
     --without-titles          generate menus without titles.
     --enable-mini-icons       enable mini-icons in menu.
     -s, --size NUM            set size of mini-icons in menu. Default is 24.
@@ -729,14 +766,17 @@ Options:
                               of the menu NAME.
     --get-menus all|desktop   prints a space separated list of full menu paths.
                               'all' is all menus on the system except empty
-                              ones. 'desktop' is desktop related menus.
-                              No menu generation is done. This option is meant
-                              for use with the configuration tool.
+                              ones. 'desktop' list the menus that would have been
+                              generated. No menu generation is done.
     --set-menus menu_paths    expects a space separated list of full menu paths
                               to generate user specified menus.
+    --all-menus               generate all menus found.
     --include-items NAME      include additional menu items NAME in top level
                               menu. NAME can be 'config', 'regenerate', 'both'
                               or 'none'. Default both.
+    --regen-cmd ACTION        The fvwm ACTION for the 'Regenerate' menu item.
+                              Default: 'PipeRead `fvwm-menu-desktop`'
+    --dynamic                 used with dynamic menus.
     -v, --verbose             run and display debug info on STDERR."""
 
 if __name__ == "__main__":
