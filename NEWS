@@ -44,10 +44,11 @@ Changes in stable release 2.6.7 (UNRELEASED)
 * fvwm-menu-desktop updated:
 
   - Renamed default menu to XDGMenu and changed the name
-    of the FvwmForm to FvwmForm-XDGMenu-Config
+    of the FvwmForm to FvwmForm-XDGMenu-Config to not conflict
+    with someone already using FvwmMenu.
   - fvwm-menu-desktop will now load defaults from the
     FvwmForm-XDGMenu-Config data file.
-  - Improved dynamic menus.
+  - Improved dynamic menus by regenerating them on-the-fly.
   - Added new options: --regen-cmd, --dynamic, and more.
 
 * Bug fixes:
