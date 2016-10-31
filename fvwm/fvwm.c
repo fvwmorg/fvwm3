@@ -1933,8 +1933,7 @@ int main(int argc, char **argv)
 				 * instead.
 				 */
 
-				if (access(config_commands[num_config_commands],
-				    F_OK) != 0) {
+				if (access(argv[i], F_OK) != 0) {
 					free(config_commands[num_config_commands]);
 					config_commands[num_config_commands] =
 						safestrdup("Read " FVWM_DATADIR
