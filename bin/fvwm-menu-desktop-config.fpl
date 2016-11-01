@@ -119,8 +119,8 @@ $fvwmform_commands .= "
 *${modname}: Line       Left
 *${modname}: Text       \"\$[gt.Use Icons?          ]\"
 *${modname}: Selection  SelItype single
-*${modname}: Choice     IconsOn  IconsOn    on  \"\$[gt.Yes      ]\"
-*${modname}: Choice     IconsOff IconsOff   off \"\$[gt.No   ]\"
+*${modname}: Choice     IconsOn  IconsOn    off \"\$[gt.Yes      ]\"
+*${modname}: Choice     IconsOff IconsOff   on  \"\$[gt.No   ]\"
 
 *${modname}: Text       \"\$[gt.  ]\"
 *${modname}: Text       \"\$[gt.Icon size:          ]\"
