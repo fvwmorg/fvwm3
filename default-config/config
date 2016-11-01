@@ -224,9 +224,6 @@ Style * BorderWidth 5, HandleWidth 5, MWMButtons, \
 Style * Colorset 1, HilightColorset 2
 Style * BorderColorset 3, HilightBorderColorset 4
 
-# Set ImagePath
-ImagePath $[FVWM_USERDIR]/images:+
-
 # Disable Icons from appearing on desktop.
 # Comment this out or use Style * Icon to get the icons back.
 Style * !Icon
@@ -234,7 +231,6 @@ Style * !Icon
 # Window Specific Styles
 Style RightPanel !Title, !Borders, !Handles, Sticky, WindowListSkip, NeverFocus
 Style ConfirmQuit !Title, PositionPlacement Center, WindowListSkip, Layer 6
-Style XTerm MiniIcon "icons/xterm.png"
 Style FvwmIdent WindowListSkip
 
 #######
@@ -558,10 +554,6 @@ DestroyModuleConfig FvwmScript:*
 # FvwmIconMan (list of running windows), and a clock.
 #
 # Note - To use the system tray you must have "stalonetray" installed.
-InfoStoreAdd stalonetrayrc $[FVWM_DATADIR]/default-config/.stalonetrayrc
-Test (f $[FVWM_USERDIR]/.stalonetrayrc) \
-    InfoStoreAdd stalonetrayrc $[FVWM_USERDIR]/.stalonetrayrc
-
 DestroyModuleConfig RightPanel:*
 *RightPanel: Geometry 120x$[vp.height]-0+0
 *RightPanel: Colorset 10
@@ -582,8 +574,8 @@ DestroyModuleConfig RightPanel:*
 *RightPanel: (5x80, Frame 0)
 *RightPanel: (120x5, Frame 0)
 Test (x stalonetray) *RightPanel: (120x20, Swallow(NoClose,UseOld) \
-    stalonetray 'Exec exec stalonetray --config $[infostore.stalonetrayrc]', \
-    Frame 0)
+    stalonetray 'Exec exec stalonetray --config \
+    "$[FVWM_DATADIR]/default-config/.stalonetrayrc"', Frame 0)
 Test (x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[vp.height]-225)), \
     Top, Swallow FvwmIconMan \'Module FvwmIconMan\', Frame 0)"'
 Test (!x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[vp.height]-205)),\
@@ -591,7 +583,6 @@ Test (!x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[vp.height]-205)),\
 *RightPanel: (120x45, Swallow DateTime 'Module FvwmScript FvwmScript-DateTime',\
     Frame 0)
 *RightPanel: (120x5, Frame 0)
-InfoStoreRemove stalonetrayrc
 
 # FvwmPager
 #

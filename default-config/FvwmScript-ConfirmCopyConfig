@@ -1,5 +1,5 @@
 WindowTitle {ConfirmCopyConfig}
-WindowSize  500 205
+WindowSize  500 160
 Font "xft:Sans:size=10"
 Init
  Begin
@@ -8,17 +8,9 @@ Init
   Set $DefaultConf=$DataDir {/default-config/config}
   Set $UserConf=$UserDir {/config}
   Set $BackupConf=$UserDir {/config-bak}
-  Set $DefaultTray=$DataDir {/default-config/.stalonetrayrc}
-  Set $UserTray=$UserDir {/.stalonetrayrc}
-  Set $BackupTray=$UserDir {/stalonetrayrc-bak}
-  Set $DefaultImg=$DataDir {/default-config/images}
-  Set $UserImg=$UserDir {/images}
-  Set $BackupImg=$UserDir {/images-bak}
   
   ChangeTitle 3 $UserDir
   ChangeTitle 5 $BackupConf
-  ChangeTitle 6 $BackupTray
-  ChangeTitle 7 $BackupImg
 
   Do {Style ConfirmCopyConfig Layer 6}
  End
@@ -68,7 +60,7 @@ End
 
 Widget 4
 Property
- Title {Backups of your current configuration will be located at:}
+ Title {A backup of your current configuration will be located at:}
  Size  400 12
  Position 15 70
  Type ItemDraw
@@ -96,38 +88,9 @@ End
 
 Widget 6
 Property
- Title {}
- Size  400 17
- Position 70 107
- Type ItemDraw
- Flags NoReliefString Left
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-Widget 7
-Property
- Title {}
- Size  400 17
- Position 70 125
- Type ItemDraw
- Flags NoReliefString Left
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-
-Widget 8
-Property
  Title {Click Confirm to continue and restart Fvwm.}
  Size  400 15
- Position 15 145
+ Position 15 107
  Type ItemDraw
  Flags NoReliefString Left
 Main
@@ -138,12 +101,12 @@ Main
 End
 
 
-Widget 9
+Widget 7
 Property
  Title {Confirm}
  Colorset 13
  Size 60 28
- Position 100 170
+ Position 100 130
  Flags NoReliefString 
  Type PushButton
  Value 1
@@ -152,20 +115,18 @@ Main
   SingleClic :
   Begin
    Do {Test (f } $UserConf {) PipeRead `mv "} $UserConf {" "} $BackupConf {"; echo "Echo Backup: } $BackupConf {"`}
-   Do {Test (f } $UserTray {) PipeRead `mv "} $UserTray {" "} $BackupTray {"; echo "Echo Backup: } $BackupTray {"`}
-   Do {Test (f } $UserImg {) PipeRead `mv "} $UserImg {" "} $BackupImg {"; echo "Echo Backup: } $BackupImg {"`}
-   Do {PipeRead `cp -r "} $DefaultConf {" "} $DefaultTray {" "} $DefaultImg {" "} $UserDir {"; echo "Echo Copied default config to } $UserDir {"`}
+   Do {PipeRead `cp "} $DefaultConf {" "} $UserDir {"; echo "Echo Copied default config to } $UserDir {"`}
    Do {Restart}
    Quit
   End
 End
 
-Widget 10
+Widget 8
 Property
  Title {Cancel}
  Colorset 13
  Size 60 28
- Position 350 170
+ Position 350 130
  Flags NoReliefString
  Type PushButton
  Value 1
