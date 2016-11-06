@@ -17,8 +17,6 @@ SUBDIRS = \
 	$(POSUB) \
 	tests
 
-EXTRA_DIST = INSTALL.fvwm
-
 ## ---------------------------------------------------------------------------
 ## Manage bzip2 archive together with gzip archive
 #  Usage:

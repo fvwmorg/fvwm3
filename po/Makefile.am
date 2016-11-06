@@ -12,10 +12,6 @@ FVWMRC_POT_FILES = \
      ../fvwm/ConfigFvwmSetup \
      ../modules/FvwmForm/FvwmForm-Setup.in
 
-FVWMTASKBAR_POT_FILES = \
-	../modules/FvwmTaskBar/Goodies.c \
-	../modules/FvwmTaskBar/FvwmTaskBar.c
-
 FVWMSCRIPT_POT_FILES = \
 	../modules/FvwmScript/Scripts/FvwmScript-BellSetup \
 	../modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup \
@@ -24,7 +20,7 @@ FVWMSCRIPT_POT_FILES = \
 	../modules/FvwmScript/Scripts/FvwmScript-FileBrowser
 
 EXTRA_DIST = \
-	@POFILES@ @GMOFILES@ fvwm.pot FvwmTaskBar.pot FvwmScript.pot \
+	@POFILES@ @GMOFILES@ fvwm.pot FvwmScript.pot \
 	remove-potcdate.sed remove-potcdate.sin
 
 COPYRIGHT_HOLDER = fvwm workers
@@ -108,36 +104,6 @@ $(FVWM_DOMAIN).pot-update: $(FVWM_POT_FILES) \
 $(srcdir)/$(FVWM_DOMAIN).pot:
 	$(MAKE) $(FVWM_DOMAIN).pot-update
 
-$(FVWMTASKBAR_DOMAIN).pot-update: $(FVWMTASKBAR_POT_FILES) \
-	remove-potcdate.sed
-	potfiles='$(FVWMTASKBAR_POT_FILES)'; \
-	$(XGETTEXT) \
-	  --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS) \
-	  -o $(FVWMTASKBAR_DOMAIN).po \
-	  --copyright-holder='$(COPYRIGHT_HOLDER)' $$potfiles; \
-	test ! -f $(FVWMTASKBAR_DOMAIN).po || { \
-	  if test -f $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot; then \
-	    sed -f remove-potcdate.sed < $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot \
-	    > $(FVWMTASKBAR_DOMAIN).1po && \
-	    sed -f remove-potcdate.sed < $(FVWMTASKBAR_DOMAIN).po \
-	    > $(FVWMTASKBAR_DOMAIN).2po && \
-	    if cmp $(FVWMTASKBAR_DOMAIN).1po $(FVWMTASKBAR_DOMAIN).2po \
-	    >/dev/null 2>&1; then \
-	      rm -f $(FVWMTASKBAR_DOMAIN).1po $(FVWMTASKBAR_DOMAIN).2po \
-	      $(FVWMTASKBAR_DOMAIN).po; \
-	    else \
-	      rm -f $(FVWMTASKBAR_DOMAIN).1po $(FVWMTASKBAR_DOMAIN).2po \
-	      $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot && \
-	      mv $(FVWMTASKBAR_DOMAIN).po $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot; \
-	    fi; \
-	  else \
-	    mv $(FVWMTASKBAR_DOMAIN).po $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot; \
-	  fi; \
-	}
-
-$(srcdir)/$(FVWMTASKBAR_DOMAIN).pot:
-	$(MAKE) $(FVWMTASKBAR_DOMAIN).pot-update
-
 $(FVWMSCRIPT_DOMAIN).pot-update: $(FVWMSCRIPT_POT_FILES) \
 	remove-potcdate.sed
 	potfiles='$(FVWMSCRIPT_POT_FILES)'; \
@@ -155,7 +121,7 @@ $(FVWMSCRIPT_DOMAIN).pot-update: $(FVWMSCRIPT_POT_FILES) \
 $(srcdir)/$(FVWMSCRIPT_DOMAIN).pot:
 	$(MAKE) $(FVWMSCRIPT_DOMAIN).pot-update
 
-$(POFILES): $(srcdir)/$(FVWM_DOMAIN).pot $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot \
+$(POFILES): $(srcdir)/$(FVWM_DOMAIN).pot \
 	$(srcdir)/$(FVWMSCRIPT_DOMAIN).pot
 	dlang=`echo $@ | sed -e 's,.*/,,' -e 's/\.po$$//'`; \
 	dom=`echo $$dlang | sed -e 's/\..*$$//'`; \
@@ -293,7 +259,6 @@ uninstall-local-yes:
 
 update-po: Makefile
 	$(MAKE) $(FVWM_DOMAIN).pot-update
-	$(MAKE) $(FVWMTASKBAR_DOMAIN).pot-update
 	$(MAKE) $(FVWMSCRIPT_DOMAIN).pot-update
 	$(MAKE) $(UPDATEPOFILES)
 	$(MAKE) update-gmo

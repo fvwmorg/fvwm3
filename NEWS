@@ -2,10 +2,12 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in stable release 2.6.7 (UNRELEASED)
+Changes in stable release 2.6.7 (06-Mar-2016)
 
 * New fvwm features:
 
+  - A new default configuration which is available when fvwm
+    doesn't detect a configuration file to load.
   - A new conitional command "Desk n" can restrict matching
     windows to a specific desk.
   - A new conditional command "Screen n" to restrict matching

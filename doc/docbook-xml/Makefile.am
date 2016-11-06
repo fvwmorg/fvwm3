@@ -1,7 +1,6 @@
 SUBDIRS = ent
 
 EXTRA_DIST = \
-	ChangeLog \
 	README \
 	calstblx.dtd \
 	catalog.xml \

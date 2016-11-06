@@ -3,7 +3,7 @@ dnl
 AC_PREREQ(2.60)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED="no"
+ISRELEASED="yes"
 if test $ISRELEASED = "no"; then
 	RELDATELONG=""
 	RELDATESHORT=""
@@ -26,9 +26,9 @@ VERSIONINFO=""
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
 dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="15 March 2016"
-RELDATESHORT="15-Mar-2016"
-RELDATENUM="2016-03-15"
+RELDATELONG="06 November 2016"
+RELDATESHORT="06-Nov-2016"
+RELDATENUM="2016-11-06"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"

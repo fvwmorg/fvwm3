@@ -1,8 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
 configdir = @FVWM_DATADIR@/default-config
-IMAGES_DIR != find images -type d
 config_DATA = config \
+	      .stalonetrayrc \
+	      FvwmScript-DateTime \
+	      FvwmScript-ConfirmQuit \
+	      FvwmScript-ConfirmCopyConfig
+
+EXTRA_DIST  = images \
+	      config \
 	      .stalonetrayrc \
 	      FvwmScript-DateTime \
 	      FvwmScript-ConfirmQuit \
