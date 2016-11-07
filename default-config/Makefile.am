@@ -1,6 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
 configdir = @FVWM_DATADIR@/default-config
+inst_location = $(DESTDIR)@FVWM_DATADIR@/default-config
 config_DATA = config \
 	      .stalonetrayrc \
 	      FvwmScript-DateTime \
@@ -15,11 +16,10 @@ EXTRA_DIST  = images \
 	      FvwmScript-ConfirmCopyConfig
 
 install-data-hook:
-	cp -r images @FVWM_DATADIR@/default-config
-	ln -sf @FVWM_DATADIR@/default-config/FvwmScript-DateTime @FVWM_DATADIR@
-	ln -sf @FVWM_DATADIR@/default-config/FvwmScript-ConfirmQuit @FVWM_DATADIR@
-	ln -sf @FVWM_DATADIR@/default-config/FvwmScript-ConfirmCopyConfig @FVWM_DATADIR@
+	cp -r $(srcdir)/images $(inst_location)
+	ln -sf $(inst_location)/FvwmScript-DateTime $(inst_location)/..
+	ln -sf $(inst_location)/FvwmScript-ConfirmQuit $(inst_location)/..
+	ln -sf $(inst_location)/FvwmScript-ConfirmCopyConfig $(inst_location)/..
 
 uninstall-hook:
-	rm -fr $(configdir)
-	rm @FVWM_DATADIR@/FvwmScript-*
+	rm -fr $(DESTDIR)/$(configdir)

@@ -12,7 +12,7 @@
 
 if grep -q -i '^ISRELEASED="yes"' ./configure.ac; then
 	# A release build.  Strip the git information off the tag name.
-	git describe --tags --abbrev=0
+	git describe --tags --abbrev=0 2>/dev/null || echo "2.6.7"
 else
 	git describe --always --long --dirty
 fi
