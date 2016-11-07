@@ -3,6 +3,12 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.8 (UNRELEASED)
+
+* Bug fixes:
+
+  - Various DESTDIR fixes (especially around the default-config
+    Makefile)
+
 -------------------------------------------------------------------
 Changes in stable release 2.6.7 (06-Mar-2016)
 
