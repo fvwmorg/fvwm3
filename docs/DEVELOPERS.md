@@ -196,8 +196,10 @@ as a pull-request against `master`.**
    **Where: `x.y.z` will be the next release**.
 1. Change the dates in configure.ac and fill in the release dates.
 2. Set `ISRELEASED` to `"yes"`.
-3. Commit the results.
-4. Run: `./autogen.sh && make clean` to get the tree into a clean
+3. Change `utils/fvwm-version-str.sh` and include the approrpiate version
+   string.
+4. Commit the results.
+5. Run: `./autogen.sh && make clean` to get the tree into a clean
    slate.  Because this is a release, the source needs compiling.  To do
    that, run:
 
@@ -207,24 +209,24 @@ as a pull-request against `master`.**
 
     Fix all warnings and problems, commit the changes and repeat the previous
     command until no more warnings occur.
-5. Tag the release: `git tag -a x.y.z` -- where `x.y.z` represents the
+6. Tag the release: `git tag -a x.y.z` -- where `x.y.z` represents the
    appropriate version number for the release.
-6. Build and test the release tarballs:
+7. Build and test the release tarballs:
 
-   Run: `make distcheck2`
+   Run: `make dist`
 
    If that succeeds, check for `fvwm-x.y.z.tar.gz` in the current working
    directory.  This is the release tarball which will be uploaded to Github.
    Unpack it to a temporary directory and build it; check the version as well,
    via: `./fvwm --version`.
-7. Push the tag out: `git push origin x.y.z` -- where `x.y.z` is the specific
-   tag created in step 5.
-8. Set `ISRELEASED` to `"no"` in configure.ac and commit and push that out.
-9. Issue a PR (pull-request) against `master` and mege that in assuming all
+8. Push the tag out: `git push origin x.y.z` -- where `x.y.z` is the specific
+   tag created in step 6.
+9. Set `ISRELEASED` to `"no"` in configure.ac and commit and push that out.
+10. Issue a PR (pull-request) against `master` and mege that in assuming all
     checks pass.  If not, fix the problems, and repeat this step.
-10. Upload the `fvwm-x.y.z.tar.gz` tarball to Github against the tag just
+11. Upload the `fvwm-x.y.z.tar.gz` tarball to Github against the tag just
    pushed.
-11. Update the fvwm web site (see below)
+12. Update the fvwm web site (see below)
 
 Updating fvwm-web
 =================
