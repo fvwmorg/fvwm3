@@ -17,6 +17,17 @@ Users of fvwm prior to 2.6.X can make use of the
 configuration file converted to a newer syntax.  Please see its manpage for
 more details on how to use it.
 
+Releases
+--------
+
+* Latest stable release: [2.6.7](https://github.com/fvwmorg/fvwm/releases/tag/2.6.7)
+* Long-term stable release: [fvwm2-stable](https://github.com/fvwmorg/fvwm/archive/fvwm2-stable.zip)
+
+The **Long-term stable release** represents the fvwm version prior to 2.6.7
+which contains ported bug-fixes from 2.6.7, but retains the modules and other
+features removed in 2.6.7.  This version **won't** receive any new features but
+may occsaionally receive bug-fixes.
+
 Installation
 ------------
 
