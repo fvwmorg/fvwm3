@@ -6,12 +6,12 @@ man_MANS = FvwmAnimate.1
 EXTRA_DIST = $(man_MANS)
 
 FvwmAnimate_SOURCES = FvwmAnimate.c FvwmAnimate.h
-FvwmAnimate_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmAnimate_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(rplay_LIBS) \
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3 $(xpm_LIBS) $(rplay_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm $(png_LIBS) \
 	$(rsvg_LIBS) $(Xrender_LIBS) $(Xcursor_LIBS)
 

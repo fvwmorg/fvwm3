@@ -13,7 +13,7 @@ fi
 # Silence warning: ar: 'u' modifier ignored since 'D' is the default
 AC_SUBST(AR_FLAGS, [cr])
 
-AC_INIT([fvwm],
+AC_INIT([fvwm3],
 	m4_esyscmd_s([utils/fvwm-version-str.sh]),
 	[fvwm-workers@fvwm.org])
 AC_CONFIG_AUX_DIR(etc)
