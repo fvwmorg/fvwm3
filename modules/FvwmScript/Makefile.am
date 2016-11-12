@@ -11,14 +11,14 @@ module_PROGRAMS = FvwmScript
 
 FvwmScript_SOURCES = FvwmScript.c Instructions.c libyywrap.c \
 	types.h scanner.c script.c script.h
-FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a Widgets/libWidgets.a
+FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a Widgets/libWidgets.a
 
 YFLAGS = -d
 
 man_MANS = FvwmScript.1
 EXTRA_DIST = $(man_MANS) scanner.l script.y TODO
 
-LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) \
+LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm3 $(Xft_LIBS) \
 	$(X_LIBS) $(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(Xrender_LIBS) $(Xcursor_LIBS) $(iconv_LIBS) \
 	$(Bidi_LIBS) $(png_LIBS) $(rsvg_LIBS) $(intl_LIBS)

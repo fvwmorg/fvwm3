@@ -1,9 +1,9 @@
 ## Process this file with automake to create Makefile.in
 
-noinst_LIBRARIES = libfvwm.a
+noinst_LIBRARIES = libfvwm3.a
 
 ## please keep .c files in largest first order to speed up parallel makes
-libfvwm_a_SOURCES = \
+libfvwm3_a_SOURCES = \
 	BidiJoin.h Bindings.h ClientMsg.h ColorUtils.h Colorset.h \
 	CombineChars.h Cursor.h Event.h FBidi.h FEvent.h FGettext.h FImage.h \
 	FRender.h FRenderInit.h FRenderInterface.h FSMlib.h FScreen.h \
@@ -26,9 +26,9 @@ libfvwm_a_SOURCES = \
 	fvwmrect.c FRenderInit.c safemalloc.c  FBidi.c \
 	wild.c Grab.c Event.c ClientMsg.c setpgrp.c FShape.c \
 	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
-	modifiers.c fsm.c FTips.c fio.c fvwmlib.c
+	modifiers.c fsm.c FTips.c fio.c fvwmlib3.c
 
-libfvwm_a_LIBADD = @LIBOBJS@
+libfvwm3_a_LIBADD = @LIBOBJS@
 
 AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(iconv_CFLAGS) $(Xrender_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS) \

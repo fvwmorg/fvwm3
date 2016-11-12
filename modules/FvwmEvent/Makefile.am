@@ -8,7 +8,7 @@ man_MANS = FvwmEvent.1
 EXTRA_DIST = $(man_MANS)
 
 FvwmEvent_SOURCES = FvwmEvent.c
-FvwmEvent_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmEvent_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
 # This module behaves like the old FvwmAudio when invoked with that name.
 install-exec-local: ../../config.h Makefile
@@ -22,7 +22,7 @@ install-exec-local: ../../config.h Makefile
 uninstall-local:
 	@rm -f $(DESTDIR)$(moduleexecdir)/FvwmAudio
 
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(rplay_LIBS) \
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3 $(rplay_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir) $(rplay_CFLAGS) $(X_CFLAGS)

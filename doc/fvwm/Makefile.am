@@ -1,16 +1,16 @@
 # Author: Scott Smedley
 
-docdir = @FVWM_DOCDIR@/fvwm
+docdir = @FVWM_DOCDIR@/fvwm3
 XSLTPROC = @XSLTPROC@
 
 XSL_FILE = $(srcdir)/../fvwm.xsl
 XSL_MAN_FILE = $(srcdir)/../fvwm-man.xsl
 XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
-HTML_FILES = fvwm.man.html
+HTML_FILES = fvwm3.man.html
 XML_FILES = @DOC_SECTIONS_XML_PATH@
 EXTRA_DIST = @DOC_SECTIONS_XML@ $(man_MANS) sections
-man_MANS = fvwm.1
+man_MANS = fvwm3.1
 
 if FVWM_BUILD_HTMLDOC
 doc_DATA = $(HTML_FILES)
@@ -48,27 +48,16 @@ fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMAN
 		--stringparam section.autolabel 1 \
 		-o $@ $(XSL_FILE) fvwm.man.html.tmp && rm fvwm.man.html.tmp
 
-fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE) @DOC_COMMANDS_XML_PATH@
+fvwm3.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE) @DOC_COMMANDS_XML_PATH@
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value man \
-		-o fvwm.1.tmp \
+		-o fvwm3.1.tmp \
 		$(XSL_PROFILE) "$(srcdir)/fvwm.man.xml"
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
-		$(XSL_MAN_FILE) fvwm.1.tmp && rm fvwm.1.tmp
+		$(XSL_MAN_FILE) fvwm3.1.tmp && rm fvwm3.1.tmp
 #	mv fvwm.1 fvwm.1.pre
 #	tbl fvwm.1.pre | sed '/^\.T[SE]$$/d' > fvwm.1 && rm fvwm.1.pre
 endif
-
-fvwm_name =`echo "fvwm" | "$(SED)" -e "${transform}"`
-fvwm2_name =`echo "fvwm2" | "$(SED)" -e "${transform}"`
-
-install-data-local:
-	@rm -f "$(DESTDIR)$(mandir)/man1/$(fvwm2_name).1"
-	@$(LN_S) $(fvwm_name).1 "$(DESTDIR)$(mandir)/man1/$(fvwm2_name).1" || \
-	echo "Minor warning: $(mandir)/man1/$(fvwm2_name).1 symlink was not created"
-
-uninstall-local:
-	@rm -f "$(DESTDIR)$(mandir)/man1/$(fvwm2_name).1"

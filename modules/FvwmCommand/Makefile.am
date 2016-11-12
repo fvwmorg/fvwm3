@@ -24,13 +24,13 @@ FvwmCommand.pm: findcmd.pl $(top_srcdir)/fvwm/functable.c
 
 CLEANFILES = FvwmCommand.sh FvwmCommand.pm
 
-FvwmCommand_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmCommand_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
 man_MANS = FvwmCommand.1
 
 EXTRA_DIST = $(man_MANS) findcmd.pl
 
-LDADD = -L$(top_builddir)/libs -lfvwm
+LDADD = -L$(top_builddir)/libs -lfvwm3
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes

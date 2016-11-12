@@ -27,9 +27,9 @@ man_MANS = FvwmRearrange.1
 CLEANFILES = $(module_SCRIPTS)
 
 FvwmRearrange_SOURCES = FvwmRearrange.c
-FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lm -lfvwm  \
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lm -lfvwm3  \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS)

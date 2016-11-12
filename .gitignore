@@ -31,7 +31,7 @@ core
 doc/footer.html
 doc/fvwm.ent
 etc/
-fvwm/fvwm
+fvwm/fvwm3
 modules/FvwmAnimate/FvwmAnimate
 modules/FvwmAuto/FvwmAuto
 modules/FvwmBacker/FvwmBacker

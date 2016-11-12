@@ -32,7 +32,7 @@ EXTRA_DIST = $(man_MANS) Changes \
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c ParseCommand.c
 
-FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
 config_DATA =             \
   FvwmForm-Form           \
@@ -49,7 +49,7 @@ config_DATA =             \
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
-LDADD = -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) $(X_LIBS)  \
+LDADD = -L$(top_builddir)/libs -lfvwm3 $(Xft_LIBS) $(X_LIBS)  \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
 	-lm $(Xrender_LIBS) $(rsvg_LIBS) $(iconv_LIBS) $(Bidi_LIBS)
 

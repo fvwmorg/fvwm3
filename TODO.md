@@ -43,7 +43,7 @@ Items
               the macro definition and not hundreds of users.  Especially with
               a future rewrite of the style system in mind, this is still very
               important.
-    * [ ] What's in libs/ -- the static linking of libfvwm.a useful anymore?
+    * [ ] What's in libs/ -- the static linking of libfvwm3.a useful anymore?
       There's a lot of code being ripped out of libs/ and I don't see much
       more being added in.
       dv: Static linkage was good when the library was small.  Nowadays its
