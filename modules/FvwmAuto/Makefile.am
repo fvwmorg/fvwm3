@@ -1,5 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
+program_transform_name =
+
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmAuto
 man_MANS = FvwmAuto.1

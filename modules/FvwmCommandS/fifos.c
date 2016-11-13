@@ -1,0 +1,1 @@
+../FvwmCommand/fifos.c

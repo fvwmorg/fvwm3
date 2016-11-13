@@ -72,7 +72,13 @@ fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE) @DOC_COMMANDS_XML_PA
 #	mv fvwm.1 fvwm.1.pre
 #	tbl fvwm.1.pre | sed '/^\.T[SE]$$/d' > fvwm.1 && rm fvwm.1.pre
 
+fvwm_name =`echo "fvwm" | "$(SED)" -e "${transform}"`
+fvwm2_name =`echo "fvwm2" | "$(SED)" -e "${transform}"`
+
 install-data-local:
-	@rm -f "$(DESTDIR)$(mandir)/man1/fvwm2.1"
-	@$(LN_S) fvwm.1 "$(DESTDIR)$(mandir)/man1/fvwm2.1" || \
-	echo "Minor warning: $(mandir)/man1/fvwm2.1 symlink was not created"
+	@rm -f "$(DESTDIR)$(mandir)/man1/$(fvwm2_name).1"
+	@$(LN_S) $(fvwm_name).1 "$(DESTDIR)$(mandir)/man1/$(fvwm2_name).1" || \
+	echo "Minor warning: $(mandir)/man1/$(fvwm2_name).1 symlink was not created"
+
+uninstall-local:
+	@rm -f "$(DESTDIR)$(mandir)/man1/$(fvwm2_name).1"

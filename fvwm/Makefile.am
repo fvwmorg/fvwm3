@@ -52,8 +52,14 @@ AM_CFLAGS = \
 
 ## Create compatibility symlinks if available
 
+fvwm_name =`echo "fvwm" | "$(SED)" -e "${transform}"`
+fvwm2_name =`echo "fvwm2" | "$(SED)" -e "${transform}"`
+
 install-exec-local:
-	@rm -f $(DESTDIR)$(bindir)/fvwm2
-	@$(LN_S) fvwm $(DESTDIR)$(bindir)/fvwm2 || \
+	@rm -f $(DESTDIR)$(bindir)/$(fvwm2_name)$(EXEEXT)
+	@$(LN_S) $(fvwm_name)$(EXEEXT) \
+		$(DESTDIR)$(bindir)/$(fvwm2_name)$(EXEEXT) || \
 		echo "Minor warning: $(bindir)/fvwm2 symlink was not created"
 
+uninstall-local:
+	@rm -f $(DESTDIR)$(bindir)/$(fvwm2_name)$(EXEEXT)

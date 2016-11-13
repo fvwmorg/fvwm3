@@ -70,14 +70,23 @@ regenerate: \
 
 ## Create compatibility symlinks if available
 
+xpmroot_name =`echo "xpmroot" | "$(SED)" -e "${transform}"`
+fvwm_root_name =`echo "fvwm-root" | "$(SED)" -e "${transform}"`
+
 install-exec-local:
-	@rm -f $(DESTDIR)$(bindir)/xpmroot
-	@$(LN_S) fvwm-root $(DESTDIR)$(bindir)/xpmroot || \
-		echo "Minor warning: $(bindir)/xpmroot symlink was not created"
+	@rm -f $(DESTDIR)$(bindir)/$(xpmroot_name)$(EXEEXT)
+	@$(LN_S) $(fvwm_root_name)$(EXEEXT) \
+		$(DESTDIR)$(bindir)/$(xpmroot_name)$(EXEEXT) || \
+		echo "Minor warning: $(bindir)/$(xpmroot_name)$(EXEEXT) symlink was not created"
 
 install-data-local:
-	@rm -f $(DESTDIR)$(mandir)/man1/xpmroot.1
-	@$(LN_S) fvwm-root.1 $(DESTDIR)$(mandir)/man1/xpmroot.1 || \
-		echo "Minor warning: $(mandir)/man1/xpmroot.1 symlink was not created"
+	@rm -f $(DESTDIR)$(mandir)/man1/$(xpmroot_name).1
+	@$(LN_S) $(fvwm_root_name).1 \
+		$(DESTDIR)$(mandir)/man1/$(xpmroot_name).1 || \
+		echo "Minor warning: $(mandir)/man1/$(xpmroot_name).1 symlink was not created"
+
+uninstall-local:
+	@rm -f $(DESTDIR)$(bindir)/$(xpmroot_name)$(EXEEXT)
+	@rm -f $(DESTDIR)$(mandir)/man1/$(xpmroot_name).1
 
 CLEANFILES = $(bin_SCRIPTS) $(bin_PROGRAMS)

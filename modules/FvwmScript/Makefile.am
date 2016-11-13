@@ -3,6 +3,8 @@
 
 SUBDIRS = Scripts Widgets
 
+program_transform_name =
+
 moduledir = @FVWM_MODULEDIR@
 
 module_PROGRAMS = FvwmScript

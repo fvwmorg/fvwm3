@@ -93,9 +93,11 @@ AC_MSG_RESULT([assuming $PERL as perl location])
 AC_SUBST(PERL)
 
 # installation paths
-FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
-FVWM_DATASUBDIR=/${PACKAGE}
-FVWM_DOCSUBDIR=/doc/${PACKAGE}
+transform=`echo "${program_transform_name}" | "$SED" -e 's/\\$\\$/\\$/'`
+PPACKAGE=`echo "${PACKAGE}" | "$SED" -e "${transform}"`
+FVWM_MODULESUBDIR=/${PPACKAGE}/${VERSION}
+FVWM_DATASUBDIR=/${PPACKAGE}
+FVWM_DOCSUBDIR=/doc/${PPACKAGE}
 
 AC_ARG_ENABLE(package-subdirs,
   AS_HELP_STRING([--disable-package-subdirs],
@@ -1709,6 +1711,7 @@ dnl
 	modules/FvwmBanner/Makefile
 	modules/FvwmButtons/Makefile
 	modules/FvwmCommand/Makefile
+	modules/FvwmCommandS/Makefile
 	modules/FvwmCommand/scripts/Makefile
 	modules/FvwmConsole/Makefile
 	modules/FvwmConsole/FvwmConsoleC.pl

@@ -1,0 +1,1 @@
+../FvwmCommand/FvwmCommand.h

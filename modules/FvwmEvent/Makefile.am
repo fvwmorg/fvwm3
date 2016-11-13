@@ -1,5 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
+program_transform_name =
+
 moduleexecdir = @FVWM_MODULEDIR@
 moduleexec_PROGRAMS = FvwmEvent
 man_MANS = FvwmEvent.1
@@ -16,6 +18,9 @@ install-exec-local: ../../config.h Makefile
 	 _fa=`echo FvwmAudio|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	 echo "  $(LN_S) $$_fe $(DESTDIR)$(moduleexecdir)/$$_fa"; \
 	 $(LN_S) "$$_fe" $(DESTDIR)$(moduleexecdir)/"$$_fa" || true
+
+uninstall-local:
+	@rm -f $(DESTDIR)$(moduleexecdir)/FvwmAudio
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(rplay_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
