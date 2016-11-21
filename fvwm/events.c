@@ -224,58 +224,6 @@ static void fake_map_unmap_notify(const FvwmWindow *fw, int event_type)
 	return;
 }
 
-static Bool test_map_request(
-	Display *display, XEvent *event, XPointer arg)
-{
-	check_if_event_args *cie_args;
-	Bool rc;
-
-	cie_args = (check_if_event_args *)arg;
-	cie_args->ret_does_match = False;
-	if (event->type == MapRequest &&
-	    event->xmaprequest.window == cie_args->w)
-	{
-		cie_args->ret_type = MapRequest;
-		cie_args->ret_does_match = True;
-		rc = cie_args->do_return_true;
-	}
-	else
-	{
-		cie_args->ret_type = 0;
-		rc = False;
-	}
-
-	/* Yes, it is correct that this function always returns False. */
-	return rc;
-}
-
-/* Test for ICCCM2 withdraw requests by syntetic events on the root window */
-static Bool test_withdraw_request(
-	Display *display, XEvent *event, XPointer arg)
-{
-	check_if_event_args *cie_args;
-	Bool rc;
-
-	cie_args = (check_if_event_args *)arg;
-	cie_args->ret_does_match = False;
-	if (event->type == UnmapNotify &&
-	    event->xunmap.window == cie_args->w &&
-	    event->xany.send_event == True &&
-	     event->xunmap.event == FW_W(&Scr.FvwmRoot))
-	{
-		cie_args->ret_type = UnmapNotify;
-		cie_args->ret_does_match = True;
-		rc = cie_args->do_return_true;
-	}
-	else
-	{
-		cie_args->ret_type = 0;
-		rc = False;
-	}
-
-	return rc;
-}
-
 static int _pred_weed_accumulate_expose(
 	Display *display, XEvent *ev, XPointer arg)
 {
@@ -3069,59 +3017,6 @@ void HandleMapRequestKeepRaised(
 	/* If the window has never been mapped before ... */
 	if (!fw || (fw && DO_REUSE_DESTROYED(fw)))
 	{
-		check_if_event_args args;
-		XEvent dummy;
-
-		args.w = ew;
-		args.do_return_true = True;
-		args.do_return_true_cr = False;
-		if (
-			FCheckIfEvent(
-				dpy, &dummy, test_withdraw_request,
-				(XPointer)&args)) {
-			/* The window is moved back to the WithdrawnState
-			 * immideately. Don't map it.
-			 *
-			 * However, send make sure that a WM_STATE
-			 * PropertyNotify event is sent to the window.
-			 * QT needs this.
-			 */
-			Atom atype;
-			int aformat;
-			unsigned long nitems, bytes_remain;
-			unsigned char *prop;
-
-			if (
-				XGetWindowProperty(
-					dpy, ew, _XA_WM_STATE, 0L, 3L, False,
-					_XA_WM_STATE, &atype, &aformat,
-					&nitems,&bytes_remain,&prop)
-				== Success)
-			{
-				if (prop != NULL)
-				{
-					XFree(prop);
-					XDeleteProperty(dpy, ew, _XA_WM_STATE);
-				}
-				else
-				{
-					XPropertyEvent ev;
-					ev.type = PropertyNotify;
-					ev.display = dpy;
-					ev.window = ew;
-					ev.atom = _XA_WM_STATE;
-					ev.time = fev_get_evtime();
-					ev.state = PropertyDelete;
-					FSendEvent(
-						dpy, ew, True,
-						PropertyChangeMask,
-						(XEvent*)&ev);
-				}
-			}
-
-			return;
-		}
-
 		/* Add decorations. */
 		fw = AddWindow(
 			&initial_map_command, ea->exc, ReuseWin, win_opts);
@@ -3888,7 +3783,6 @@ void HandleUnmapNotify(const evh_args_t *ea)
 	XEvent dummy;
 	XEvent map_event;
 	const XEvent *te = ea->exc->x.etrigger;
-	int weMustUnmap;
 	Bool focus_grabbed;
 	Bool must_return = False;
 	Bool do_map = False;
@@ -3898,10 +3792,10 @@ void HandleUnmapNotify(const evh_args_t *ea)
 
 	DBUG("HandleUnmapNotify", "Routine Entered");
 
-	/* Don't ignore events as described below. */
-	if (te->xunmap.event != te->xunmap.window &&
-	   (te->xunmap.event != Scr.Root || !te->xunmap.send_event))
+	if (te->xunmap.event != te->xunmap.window
+	    && (te->xunmap.event != Scr.Root || !te->xunmap.send_event))
 	{
+		/* Nothing to do except updating some states. */
 		must_return = True;
 	}
 
@@ -3912,10 +3806,8 @@ void HandleUnmapNotify(const evh_args_t *ea)
 	 * unmapped (which is the case for fvwm for IconicState).
 	 * Unfortunately, we looked for the FvwmContext using that field, so
 	 * try the window field also. */
-	weMustUnmap = 0;
 	if (!fw)
 	{
-		weMustUnmap = 1;
 		if (XFindContext(
 			    dpy, te->xunmap.window, FvwmContext,
 			    (caddr_t *)&fw) == XCNOENT)
@@ -3935,31 +3827,6 @@ void HandleUnmapNotify(const evh_args_t *ea)
 		return;
 	}
 
-	if (weMustUnmap)
-	{
-		Bool is_map_request_pending;
-		check_if_event_args args;
-
-		args.w = te->xunmap.window;
-		args.do_return_true = False;
-		args.do_return_true_cr = False;
-		/* Using FCheckTypedWindowEvent() does not work here.  I don't
-		 * have the slightest idea why, but using FCheckIfEvent() with
-		 * the appropriate predicate procedure works fine. */
-		FCheckIfEvent(dpy, &dummy, test_map_request, (XPointer)&args);
-		/* Unfortunately, there is no procedure in X that simply tests
-		 * if an event of a certain type in on the queue without
-		 * waiting and without removing it from the queue.
-		 * XCheck...Event() does not wait but removes the event while
-		 * XPeek...() does not remove the event but waits. To solve
-		 * this, the predicate procedure sets a flag in the passed in
-		 * structure and returns False unconditionally. */
-		is_map_request_pending = (args.ret_does_match == True);
-		if (!is_map_request_pending)
-		{
-			XUnmapWindow(dpy, te->xunmap.window);
-		}
-	}
 	if (fw ==  Scr.Hilite)
 	{
 		Scr.Hilite = NULL;
