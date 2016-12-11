@@ -8,6 +8,7 @@ Changes in stable release 2.6.8 (UNRELEASED)
 
   - Various DESTDIR fixes (especially around the default-config
     Makefile)
+  - fvwm-perllib pod2man fixes.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.7 (06-Mar-2016)

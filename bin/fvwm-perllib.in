@@ -390,7 +390,7 @@ if (exists $internal_pods->{$topic}) {
 	if ($topic eq 'index') {
 		my @class_names = sort @{list_filenames($perllibdir, 1)};
 		@class_names = map { s!\.pm$!!; s!/!::!g; $_ } @class_names;
-		$text =~ s/{{CLASS_NAMES}}/join("\n    ", @class_names)/seg;
+		$text =~ s/\{\{CLASS_NAMES\}\}/join("\n    ", @class_names)/seg;
 	}
 
 	if ($topic eq 'events') {
@@ -404,7 +404,7 @@ if (exists $internal_pods->{$topic}) {
 			/eg;
 			$result .= "\n";
 		}
-		$text =~ s!{{EVENT_NAMES}}!$result!se;
+		$text =~ s!\{\{EVENT_NAMES\}\}!$result!se;
 	}
 
 } else {
@@ -416,7 +416,7 @@ if (exists $internal_pods->{$topic}) {
 my $man_converter = $do_man ? " | nroff -man | $pager" : "";
 open(MANPIPE, $do_cat ? "| pod2text '$file' | $pager" :
 	"| pod2man --section 3 --release 'fvwm $version$version_info'" .
-		" --center 'Fvwm Perl library' '$file'" .
+		" --center 'Fvwm Perl library' --name '$topic' '$file'" .
 		" | @SED@ 's/<STANDARD INPUT>/perllib/ig'$man_converter")
 	or die "Can't open pipe to pod/man viewer\n";
 print MANPIPE $text
