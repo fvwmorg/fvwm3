@@ -16,6 +16,7 @@ Changes in stable release 2.6.8 (UNRELEASED)
   - Fix (de)installation with the configure options
     --program-prefix, --program-suffix and
     --program-transform-name.
+  - Remove further references to obsolete modules from man page(s).
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.7 (06-Mar-2016)
