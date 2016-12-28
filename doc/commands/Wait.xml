@@ -44,8 +44,8 @@ After the xmh window appears control moves to desk 0.</para>
 <para>Fvwm remains partially functional during a wait, but any input
 from the modules is queued up and processed only after the window
 appears or the command is aborted.  For example, windows can not
-be focused with <fvwmref mod="FvwmTaskBar"/> or 
-<fvwmref mod="FvwmWinList"/> during a wait.</para>
+be focused with <fvwmref mod="FvwmIconMan"/> or
+<fvwmref mod="FvwmPager"/> during a wait.</para>
 
 <para>You can escape from a
 <emphasis remap='B'>Wait</emphasis>

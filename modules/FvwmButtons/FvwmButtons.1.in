@@ -113,7 +113,7 @@ This is the default.
 
 .IP "*FvwmButtons: Colorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP for the window
-background.  Refer to the FvwmTheme man page
+background.  Refer to the fvwm man page
 for details about colorsets.
 
 .IP "*FvwmButtons: ActiveColorset \fIcolorset\fP"
@@ -299,8 +299,8 @@ is not applied to the swallowed module. You should use the
 in the module configuration. If the swallowed module has a
 transparent colorset background, then the FvwmButtons background
 (and not the button colorset) is seen by transparency of the
-background of the swallowed module. Refer to the man page of the
-FvwmTheme module for details about colorsets.
+background of the swallowed module. Refer to the fvwm man page
+for details about colorsets.
 
 .IP "ActiveColorset \fIcolorset\fP"
 Use colorset \fIcolorset\fP for the background color/image and/or title

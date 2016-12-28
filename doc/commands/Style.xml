@@ -1105,7 +1105,7 @@ window. This miniature icon can be drawn in a title-bar button
 (see
 <fvwmref cmd="ButtonStyle"/>),
 and can be used by various fvwm modules
-(<fvwmref mod="FvwmWinList"/>, <fvwmref mod="FvwmIconMan"/> and <fvwmref mod="FvwmTaskBar"/>).
+(<fvwmref mod="FvwmIconMan"/> and <fvwmref mod="FvwmPager"/>).
 It takes the name of a pixmap as an argument.</para>
 
 <para><fvwmopt cmd="Style" opt="WindowShadeShrinks"/> and <fvwmopt cmd="Style" opt="WindowShadeScrolls"/>
@@ -2265,8 +2265,8 @@ Style rxvt !State 11
 <fvwmopt cmd="Style" opt="WindowListSkip"/>
 styles do not appear in the menu that is created with the
 <fvwmref cmd="WindowList"/>
-command or the lists shown in several modules like
-<fvwmref mod="FvwmIconMan"/> or <fvwmref mod="FvwmWinList"/>.
+command or the lists shown in modules like
+<fvwmref mod="FvwmIconMan"/>.
 In the modules, the style can usually be ignored with an option.
 Please refer to the man page of the module in question for
 further information.  To disable this feature, use the default

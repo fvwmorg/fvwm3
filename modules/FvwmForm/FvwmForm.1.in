@@ -277,7 +277,7 @@ distance from the right (bottom) of the screen.
 If this option is omitted, FvwmForm starts at the center of the screen.
 .TP 4
 .B *FvwmForm: Colorset \fIn\fP
-Tells the module to use colorset \fIn\fP. See FvwmTheme.
+Tells the module to use colorset \fIn\fP.
 .TP 4
 .B *FvwmForm: Back \fIcolor\fP
 Specifies the background color of the FvwmForm window
@@ -292,7 +292,7 @@ Switches off the Colorset option.
 See DEFAULTS.
 .TP 4
 .B *FvwmForm: ItemColorset \fIn\fP
-Tells the module to use colorset \fIn\fP for items. See FvwmTheme.
+Tells the module to use colorset \fIn\fP for items.
 .TP 4
 .B *FvwmForm: ItemBack \fIcolor\fP
 Specifies the background color for the text input windows, and

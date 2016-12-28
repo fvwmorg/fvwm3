@@ -183,7 +183,7 @@ specified height is 0, then the button height is determined from the font
 size. X and Y coordinates are ignored.
 
 .IP "*FvwmIconMan: [id] Colorset \fIcolorset\fP"
-The default colorset used. Overrides background and foreground. See FvwmTheme.
+The default colorset used. Overrides background and foreground.
 
 .IP "*FvwmIconMan: [id] DrawIcons \fIvalue\fP"
 If your version of fvwm is capable of using mini icons, then this option
@@ -198,7 +198,7 @@ both selected, and have the keyboard focus.
 
 .IP "*FvwmIconMan: [id] FocusAndSelectColorset \fIcolorset\fP"
 Works like focusandselectbutton but uses colorsets instead.  The style setting can
-still only be applied with focusandselectbutton.  See FvwmTheme.
+still only be applied with focusandselectbutton.
 
 .IP "*FvwmIconMan: [id] FocusButton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons whose
@@ -206,7 +206,7 @@ windows have the keyboard focus.
 
 .IP "*FvwmIconMan: [id] FocusColorset \fIcolorset\fP"
 Works like focusbutton but uses colorsets instead.  The style setting can still
-only be applied with focusbutton.  See FvwmTheme.
+only be applied with focusbutton.
 
 .IP "*FvwmIconMan: [id] FollowFocus \fIboolean\fP"
 If \fItrue\fP, then the button appearance reflects
@@ -240,11 +240,11 @@ windows are iconified.
 
 .IP "*FvwmIconMan: [id] IconAndSelectColorset \fIcolorset\fP"
 Works like IconAndSelectButton but uses colorsets instead.  The style setting
-can still only be applied with iconbutton.  See FvwmTheme.
+can still only be applied with iconbutton.
 
 .IP "*FvwmIconMan: [id] IconColorset \fIcolorset\fP"
 Works like iconbutton but uses colorsets instead.  The style setting can still
-only be applied with iconbutton.  See FvwmTheme.
+only be applied with iconbutton.
 
 .IP "*FvwmIconMan: [id] ManagerGeometry \fIgeometry\fP"
 Specifies the initial geometry of the manager, in units of buttons. If
@@ -291,7 +291,7 @@ option is ignored, but must still be set.
 
 .IP "*FvwmIconMan: [id] PlainColorset \fIcolorset\fP"
 Works like plainbutton but uses colorsets instead.  The style setting can
-still only be applied with plainbutton.  See FvwmTheme.
+still only be applied with plainbutton.
 
 .IP "*FvwmIconMan: [id] ReliefThickness \fInum\fP"
 \fInum\fP is an integer specifying the number of pixels thick
@@ -332,7 +332,7 @@ mouse is over them.
 
 .IP "*FvwmIconMan: [id] SelectColorset \fIcolorset\fP"
 Works like selectbutton but uses colorsets instead.  The style setting can
-still only be applied with selectbutton.  See FvwmTheme.
+still only be applied with selectbutton.
 
 .IP "*FvwmIconMan: [id] Shape \fIboolean\fP"
 If \fITrue\fP, then use make the window shaped. Probably only useful if you
@@ -448,7 +448,6 @@ font.
 
 .IP "*FvwmIconMan: [id] TipsColorset \fIcolorset\fP"
 Specifies the colors for tips window. Default is colorset 0.
-See  FvwmTheme.
 
 .IP "*FvwmIconMan: [id] TipsFormat \fIformatstring\fP"
 Similar to the Format option but for the tips window. The default is

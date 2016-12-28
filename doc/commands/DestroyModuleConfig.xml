@@ -31,7 +31,7 @@ In this case a module name (or alias) can't have wildcards.</para>
 <programlisting>
 DestroyModuleConfig FvwmButtons*
 DestroyModuleConfig FvwmForm: Fore
-DestroyModuleConfig FvwmIconBox: Max*
+DestroyModuleConfig FvwmIconMan: Tips*
 </programlisting>
 
 

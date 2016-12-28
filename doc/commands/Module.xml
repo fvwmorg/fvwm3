@@ -26,7 +26,6 @@ spawned. Currently several modules, including
 <fvwmref mod="FvwmButtons"/>,
 <fvwmref mod="FvwmEvent"/>,
 <fvwmref mod="FvwmForm"/>,
-<fvwmref mod="FvwmGtk"/>,
 <fvwmref mod="FvwmPager"/>,
 <fvwmref mod="FvwmScript"/>
 support aliases.  Aliases are useful if more than one instance of
@@ -53,12 +52,8 @@ Module FvwmForm MyForm
 <fvwmref mod="FvwmCommandS"/> (a command server to use with shell's FvwmCommand client),
 <fvwmref mod="FvwmConsole"/> (to execute fvwm commands directly),
 <fvwmref mod="FvwmCpp"/> (to preprocess your <emphasis remap='I'>config</emphasis> with cpp),
-<fvwmref mod="FvwmDebug"/> (to help debug fvwm),
-<fvwmref mod="FvwmDragWell"/> (the place to drag&amp;drop to),
 <fvwmref mod="FvwmEvent"/> (trigger various actions by events),
 <fvwmref mod="FvwmForm"/> (to bring up dialogs),
-<fvwmref mod="FvwmGtk"/> (to bring up <acronym>GTK</acronym> menus and dialogs),
-<fvwmref mod="FvwmIconBox"/> (like the mwm IconBox),
 <fvwmref mod="FvwmIconMan"/> (a flexible icon manager),
 <fvwmref mod="FvwmIdent"/> (to get window info),
 <fvwmref mod="FvwmM4"/> (to preprocess your <emphasis remap='I'>config</emphasis> with m4),
@@ -66,16 +61,7 @@ Module FvwmForm MyForm
 <fvwmref mod="FvwmPerl"/> (a Perl manipulator and preprocessor),
 <fvwmref mod="FvwmProxy"/> (to locate and control obscured windows by using small proxy windows),
 <fvwmref mod="FvwmRearrange"/> (to rearrange windows),
-<fvwmref mod="FvwmSave"/> (saves the desktop state in .xinitrc style),
-<fvwmref mod="FvwmSaveDesk"/> (saves the desktop state in fvwm commands),
 <fvwmref mod="FvwmScript"/> (another powerful dialog toolkit),
-<fvwmref mod="FvwmScroll"/> (puts scrollbars on any window),
-<fvwmref mod="FvwmTabs"/> (a generic tabbing module),
-<fvwmref mod="FvwmTaskBar"/> (a Windows like task bar),
-<fvwmref mod="FvwmTheme"/> (managed colorsets, obsolete),
-<fvwmref mod="FvwmWharf"/> (an AfterStep like button bar),
-<fvwmref mod="FvwmWindowMenu"/> (a configurable fvwm menu listing current windows),
-<fvwmref mod="FvwmWinList"/> (a window list).
 These modules have their own man
 pages.  There may be other modules out on there as well.</para>
 

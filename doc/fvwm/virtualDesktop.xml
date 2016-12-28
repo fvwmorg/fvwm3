@@ -29,11 +29,11 @@ windows on a range of desktops can be viewed in the
 <fvwmref mod="FvwmPager"/>,
 a miniature view of the desktops.  The pager is an accessory
 program, called a module, which is not essential for the window
-manager to operate.  Windows may also be listed, along with their
-geometries, in a window list, accessible as a pop-up menu, or as a
-separate window, called the
-<fvwmref mod="FvwmWinList"/>
-(another module).</para>
+manager to operate.  Windows may also be listed using the
+<fvwmref cmd="WindowList"/>
+command or the
+<fvwmref mod="FvwmIconMan"/>
+module.</para>
 
 <para>Fvwm keeps the windows on the desktop in a layered stacking order;
 a window in a lower layer never obscures a window in a higher

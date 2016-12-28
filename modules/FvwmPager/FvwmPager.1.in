@@ -380,25 +380,21 @@ the string to display in the balloons. The default is "%i".
 .IP "*FvwmPager: Colorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for \fIdesk\fP. If
 you use an asterisk '*' in place of \fIdesk\fP, the colorset is
-used on all desks. Please refer to the man page of the FvwmTheme
-module for details about colorsets.
+used on all desks.
 
 .IP "*FvwmPager: BalloonColorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for balloons on
 \fIdesk\fP. If you use an asterisk '*' in place of \fIdesk\fP, the
-colorset is used on all desks. Please refer to the man page of the
-FvwmTheme module for details about colorsets.
+colorset is used on all desks.
 
 .IP "*FvwmPager: HilightColorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for hilighting on
 \fIdesk\fP. If you use an asterisk '*' in place of \fIdesk\fP, the
-colorset is used on all desks. Please refer to the man page of the
-FvwmTheme module for details about colorsets.
+colorset is used on all desks.
 
 .IP "*FvwmPager: WindowColorsets \fIcolorset activecolorset\fP"
-Uses colorsets in the same way as *FvwmPager: WindowColors. Please
-refer to the man page of the FvwmTheme module for details about
-colorsets.  The shadow and hilight colors of the colorset are only
+Uses colorsets in the same way as *FvwmPager: WindowColors.
+The shadow and hilight colors of the colorset are only
 used for the window borders if the *FvwmPager: Window3DBorders is
 specified too.
 

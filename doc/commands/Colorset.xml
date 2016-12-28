@@ -237,22 +237,15 @@ uses Colorset 10 as background. If you want root transparency use
 the
 <emphasis>RootTransparent</emphasis>
 option.
-<fvwmref mod="FvwmButtons"/>,
+<fvwmref mod="FvwmButtons"/>
 <fvwmref mod="FvwmIconMan"/>,
-<fvwmref mod="FvwmIdent"/>,
-<fvwmref mod="FvwmScroll"/>
 and
-<fvwmref mod="FvwmTaskBar"/>
+<fvwmref mod="FvwmIdent"/>,
 are relatively simple. There is one main colorset option which
 defines the background of the window and the other colorsets (if
 any) are drawn on the foreground. The case of
-<fvwmref mod="FvwmWinList"/> and
 <fvwmref mod="FvwmProxy"/>
-are simpler. With
-<fvwmref mod="FvwmWinList"/>
-all the colorsets are drawn on the foreground and with
-<fvwmref mod="FvwmProxy"/>
-the two colorsets refer to the window backgrounds.
+is simpler, the two colorsets refer to the window backgrounds.
 <fvwmref mod="FvwmPager"/>
 is more complicated as almost everything in the pager are windows
 with some parental relations (the mini windows are the child and

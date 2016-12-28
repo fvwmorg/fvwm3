@@ -87,8 +87,6 @@ parameter:</para>
 available.</para>
 
 <para>Note that the
-<fvwmref mod="FvwmTaskBar"/>
-module has its own catalog and that the
 <fvwmref mod="FvwmScript"/>
 module has a set of special instructions for string
 translation. It is out of the scope of this discussion to explain

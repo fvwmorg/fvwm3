@@ -24,7 +24,8 @@ other color operations.</para>
 <fvwmref mod="FvwmTheme"/>
 was introduced to manage colorsets.  Starting with the 2.5.x beta
 version, the <fvwmref mod="FvwmTheme"/> functionality was moved to the core fvwm,
-so this module became obsolete.</para>
+so this module became obsolete. In 2.6.7 the <fvwmref mod="FvwmTheme"/>
+module was removed.</para>
 
 <para>The old syntax:</para>
 

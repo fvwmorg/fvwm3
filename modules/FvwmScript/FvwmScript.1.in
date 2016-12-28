@@ -84,8 +84,6 @@ command or in the script with the ShadowColor command, grey55 is used.
 
 .IP "*FvwmScript: DefaultColorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP as the default colorset.
-Refer to the FvwmTheme man page for details about
-colorsets.
 
 .SH ANATOMY OF A SCRIPT
 FvwmScript uses a particular programming language. A script is composed of
@@ -813,7 +811,7 @@ that the script has destroyed
 
 FvwmScript-Buttons is a buttons panel which can replace FvwmButtons (this
 script supports popup menus and requires xload, xclock, FvwmPager, TkDesk).
-FvwmScript-Colorset allows you to edit your colorset (see FvwmTheme).
+FvwmScript-Colorset allows you to edit your colorset.
 FvwmScript-Date allows you to set date and time.
 FvwmScript-FileBrowser is a file browser used by the other scripts.
 FvwmScript-Find is an elementary front-end to find.

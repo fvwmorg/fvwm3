@@ -54,7 +54,7 @@ FvwmIdent reads the same .fvwm2rc file as fvwm reads when it starts up,
 and looks for lines as listed below:
 
 .IP "*FvwmIdent: Colorset \fIn\fP"
-Tells the module to use colorset \fIn\fP. See FvwmTheme.
+Tells the module to use colorset \fIn\fP.
 
 .IP "*FvwmIdent: Fore \fIcolor\fP"
 Tells the module to use \fIcolor\fP instead of black for text. Switches off the

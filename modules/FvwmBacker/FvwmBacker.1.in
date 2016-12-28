@@ -74,7 +74,7 @@ color names may be used).
 
 If the \fIcommand\fP is \fIcolorset\fP FvwmBacker uses the background
 specified in colorset \fIn\fP for the given desk.  Please refer to
-the man page of the FvwmTheme module for details about colorsets.
+the fvwm man page for details about colorsets.
 
 Otherwise the command is sent to fvwm to execute.
 
@@ -85,7 +85,7 @@ has been set. This works only for the
 commands. This is useful for applications which want to use the root
 Pixmap on the background to simulate transparency (for example,
 Eterm and Aterm use this method). This option should also be used for the
-RootTransparent colorset option (see the FvwmTheme man page).
+RootTransparent colorset option.
 Note: with a colorset background this command may add a lot of memory
 to the X server. For example, this adds the pixmap width times height bytes
 with a TiledPixmap

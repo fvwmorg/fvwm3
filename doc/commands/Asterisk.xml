@@ -26,7 +26,6 @@ optional spaces, between the module name and the rest of the line,
 this is recommended to avoid conflicts.</para>
 
 <programlisting>
-*FvwmIconBox: MaxIconSize 48x48
 *FvwmPager: WindowBorderWidth 1
 *FvwmButtons-TopRight: Geometry 100x100-0+0
 *FvwmButtons-Bottom: Geometry +0-0

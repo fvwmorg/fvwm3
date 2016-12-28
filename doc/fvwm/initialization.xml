@@ -136,14 +136,14 @@ is used instead of ExitFunction.</para>
 <fvwmref cmd="DestroyFunc"/> InitFunction
 <fvwmref cmd="AddToFunc"/> InitFunction
  + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmBanner"/>
- + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmTaskBar"/>
+ + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmIconMan"/>
  + I <fvwmref cmd="Exec"/> xsetroot -solid cyan
  + I <fvwmref cmd="Exec"/> xterm
  + I <fvwmref cmd="Exec"/> netscape
 
 <fvwmref cmd="DestroyFunc"/> RestartFunction
 <fvwmref cmd="AddToFunc"/> RestartFunction
- + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmTaskBar"/>
+ + I <fvwmref cmd="Module"/> <fvwmref mod="FvwmIconMan"/>
 
 <fvwmref cmd="DestroyFunc"/> SessionInitFunction
 <fvwmref cmd="AddToFunc"/> SessionInitFunction
