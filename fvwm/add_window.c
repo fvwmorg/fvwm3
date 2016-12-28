@@ -2819,7 +2819,7 @@ void GetWindowSizeHintsWithCheck(
 	int do_reject_invalid_size_constraints_on_existing_window)
 {
 	long supplied = 0;
-	char *broken_cause ="";
+	char *broken_cause = 0;
 	XSizeHints orig_hints;
 	XSizeHints new_hints;
 	Status rc;
@@ -2873,7 +2873,7 @@ void GetWindowSizeHintsWithCheck(
 			     (new_hints.flags & PMaxSize) &&
 			     new_hints.min_height != new_hints.max_height))
 			{
-				if (!*broken_cause)
+				if (!broken_cause)
 				{
 					broken_cause = "height_inc";
 				}
@@ -2891,11 +2891,11 @@ void GetWindowSizeHintsWithCheck(
 
 	if (new_hints.flags & PMinSize)
 	{
-		if (new_hints.min_width < 0 && !*broken_cause)
+		if (new_hints.min_width < 0 && !broken_cause)
 		{
 			broken_cause = "min_width";
 		}
-		if (new_hints.min_height < 0 && !*broken_cause)
+		if (new_hints.min_height < 0 && !broken_cause)
 		{
 			broken_cause = "min_height";
 		}
@@ -2927,7 +2927,7 @@ void GetWindowSizeHintsWithCheck(
 		if (new_hints.max_width < new_hints.min_width)
 		{
 			new_hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-			if (!*broken_cause)
+			if (!broken_cause)
 			{
 				broken_cause = "max_width";
 			}
@@ -2935,7 +2935,7 @@ void GetWindowSizeHintsWithCheck(
 		if (new_hints.max_height < new_hints.min_height)
 		{
 			new_hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
-			if (!*broken_cause)
+			if (!broken_cause)
 			{
 				broken_cause = "max_height";
 			}
@@ -2957,7 +2957,7 @@ void GetWindowSizeHintsWithCheck(
 		if (new_hints.base_width < 0)
 		{
 			new_hints.base_width = 0;
-			if (!*broken_cause)
+			if (!broken_cause)
 			{
 				broken_cause = "base_width";
 			}
@@ -2965,7 +2965,7 @@ void GetWindowSizeHintsWithCheck(
 		if (new_hints.base_height < 0)
 		{
 			new_hints.base_height = 0;
-			if (!*broken_cause)
+			if (!broken_cause)
 			{
 				broken_cause = "base_height";
 			}
@@ -2984,7 +2984,7 @@ void GetWindowSizeHintsWithCheck(
 #if 0
 			/* Keep silent about this, since the Xlib manual
 			 * actually recommends making min <= base <= max ! */
-			broken_cause = "";
+			broken_cause = 0;
 #endif
 		}
 	}
@@ -3013,7 +3013,7 @@ void GetWindowSizeHintsWithCheck(
 		if (new_hints.max_width < new_hints.base_width)
 		{
 			new_hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-			if (!*broken_cause)
+			if (!broken_cause)
 			{
 				broken_cause = "max_width";
 			}
@@ -3021,7 +3021,7 @@ void GetWindowSizeHintsWithCheck(
 		if (new_hints.max_height < new_hints.base_height)
 		{
 			new_hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
-			if (!*broken_cause)
+			if (!broken_cause)
 			{
 				broken_cause = "max_height";
 			}
@@ -3065,7 +3065,7 @@ void GetWindowSizeHintsWithCheck(
 		    (((double)minAspectX * (double)maxAspectY) >
 		     ((double)maxAspectX * (double)minAspectY)))
 		{
-			if (!*broken_cause)
+			if (!broken_cause)
 			{
 				broken_cause = "aspect ratio";
 			}
@@ -3145,8 +3145,8 @@ void GetWindowSizeHintsWithCheck(
 				" invalid.  The new hints will become active"
 				" when the window generates the next"
 				" ConfigureRequest.\n", is_invalid);
+			broken_cause = "inconsistent with current size";
 		}
-		broken_cause = "";
 	}
 	else
 	{
@@ -3154,7 +3154,7 @@ void GetWindowSizeHintsWithCheck(
 		fw->orig_hints.width_inc = orig_hints.width_inc;
 		fw->orig_hints.height_inc = orig_hints.height_inc;
 	}
-	if (*broken_cause != 0)
+	if (broken_cause != 0)
 	{
 		fvwm_msg(
 			WARN, "GetWindowSizeHints",
