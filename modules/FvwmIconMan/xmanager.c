@@ -374,6 +374,22 @@ static void fix_manager_size(WinManager *man, int w, int h)
   XSetWMNormalHints(theDisplay, man->theWindow, &size);
 }
 
+static void release_manager_size(WinManager *man)
+{
+  XSizeHints size;
+  long mask;
+
+  if (man->geometry.dir & GROW_FIXED)
+    return;
+
+  FGetWMNormalHints(theDisplay, man->theWindow, &size, &mask);
+  size.min_width = 1;
+  size.max_width = 65535;
+  size.min_height = 1;
+  size.max_height = 65535;
+  XSetWMNormalHints(theDisplay, man->theWindow, &size);
+}
+
 /* Like XMoveResizeWindow(), but can move in arbitary directions */
 static void resize_window(WinManager *man)
 {
@@ -381,7 +397,9 @@ static void resize_window(WinManager *man)
   int x_changed, y_changed, dir;
 
   dir = man->geometry.dir;
-  fix_manager_size(man, man->geometry.width, man->geometry.height);
+  /* Remove any size limits so that the window can be resized without
+   * warnings. */
+  release_manager_size(man);
 
   if ((dir & GROW_DOWN) && (dir & GROW_RIGHT)) {
     XResizeWindow(theDisplay, man->theWindow, man->geometry.width,
@@ -421,6 +439,7 @@ static void resize_window(WinManager *man)
     }
     MyXUngrabServer(theDisplay);
   }
+  fix_manager_size(man, man->geometry.width, man->geometry.height);
 }
 
 static char *make_display_string(WinData *win, char *format, int len)
