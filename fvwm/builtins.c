@@ -611,7 +611,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			{
 				fvwm_msg(
 					ERR, "ReadMultiPixmapDecor",
-					"Colorset shoule take one or two "
+					"Colorset should take one or two "
 					"positive integers as argument");
 			}
 			else

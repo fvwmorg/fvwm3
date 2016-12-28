@@ -794,7 +794,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   FILE *f;
   struct timeval timeout;
 
-  /* comunication name */
+  /* communication name */
   (*NbArg)++;
   com_name=CalcArg(TabArg,NbArg);
   /* the command send to the receiver */
@@ -851,7 +851,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
       if (i > IN_FIFO_NBR_OF_TRY)
       {
 	fprintf(stderr,
-	 "[%s][GetMsgAndGet]: <<WARNING>> No in fifo %s for comunication %s\n",
+	 "[%s][GetMsgAndGet]: <<WARNING>> No in fifo %s for communication %s\n",
 	  ScriptName,in_fifo,com_name);
 	close(filedes);
 	err = 1;
@@ -908,7 +908,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
       if (i > OUT_FIFO_NBR_OF_TRY)
       {
 	fprintf(stderr,
-	 "[%s][GetMsgAndGet]: <<WARNING>>: No out fifo %s for comunication %s\n",
+	 "[%s][GetMsgAndGet]: <<WARNING>>: No out fifo %s for communication %s\n",
 	 ScriptName,out_fifo,com_name);
 	err = 1;
 	break;

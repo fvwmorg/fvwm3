@@ -300,7 +300,7 @@ void ChooseFunction(struct XObj *xobj,char *type)
 	}
 	else
 	{
-		fprintf(stderr,"Item %s unknow\n",type);
+		fprintf(stderr,"Item %s unknown\n",type);
 		exit(1);
 	}
 }

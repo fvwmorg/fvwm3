@@ -135,7 +135,7 @@ option.</para>
 enables transliteration during conversions from utf-8 strings.  By
 default fvwm will not transliterate during conversion, but will fall
 back to alternate strings provided by the clients if conversion from
-utf-8 fails due to characters which have no direct correspondance in
+utf-8 fails due to characters which have no direct correspondence in
 the target charecter set. Some clients however neglect to set non utf-8
 properties correctly in which case this option may help.</para>
 

@@ -988,7 +988,7 @@ inside the relief and padding.
 
 .SH DYNAMICAL ACTIONS
 A running FvwmButtons instance may receive some commands at run time.
-This is achived using the fvwm command
+This is achieved using the fvwm command
 .nf
 .sp
 SendToModule FvwmButtons-Alias <action> <params>

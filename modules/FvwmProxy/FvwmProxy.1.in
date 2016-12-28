@@ -61,7 +61,7 @@ If this text exceeds the width of the proxy, it is cropped on the right.
 If no Font is specified, a default is used.
 
 .IP "*FvwmProxy: SmallFont \fIfont\fP"
-Specifies the font used for the auxillary proxy window text.
+Specifies the font used for the auxiliary proxy window text.
 This usually contains the title bar string, but is omitted if it
 is identical to the icon string and that text was not cropped.
 The text is drawn close to the bottom of the proxy and should

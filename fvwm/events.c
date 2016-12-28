@@ -4213,7 +4213,7 @@ void InitEventHandlerJumpTable(void)
 	{
 		/* should never happen */
 		fvwm_msg(ERR, "InitEventHandlerJumpTable",
-			 "Faild to initialize event handlers");
+			 "Failed to initialize event handlers");
 		exit(1);
 	}
 	if (FShapesSupported)
@@ -4231,7 +4231,7 @@ void InitEventHandlerJumpTable(void)
 				shape_jump_table))
 		{
 			fvwm_msg(ERR, "InitEventHandlerJumpTable",
-				 "Faild to init Shape event handler");
+				 "Failed to init Shape event handler");
 		}
 	}
 

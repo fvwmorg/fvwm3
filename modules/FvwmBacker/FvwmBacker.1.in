@@ -101,7 +101,7 @@ Cancels the effect of the previous option. This is the default.
 It it possible to replace FvwmBacker's configuration at run-time,
 although it is not yet possible to remove existing configuration
 lines.  This is done by simply removing the old configuration from
-withing fvwm and then read a new one.  This can be done in many
+within fvwm and then read a new one.  This can be done in many
 ways, for example by using an fvwm function or one of the modules
 .BR FvwmCommand " or " FvwmConsole .
 

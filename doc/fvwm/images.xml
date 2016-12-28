@@ -60,7 +60,7 @@ might look something like this:</para>
 By default, SVG images are rendered as the image creator intended
 them to. But since SVG is a vector graphics format, the images can
 be rendered at any chosen size and rotation, e.g. making it possible
-to use the same icon file rendered at diffrent sizes for the
+to use the same icon file rendered at different sizes for the
 <fvwmref cmd="Style" opt="Icon"/> and <fvwmref cmd="Style" opt="MiniIcon"/>
 styles.</para>
 
@@ -301,7 +301,7 @@ image.svg:@57.3
 <para>
 <replaceable>factor</replaceable> specifes a scaling of the actual
 image (not the rendering area). Scaling it up results in a cropped
-image.  Floting point values are recognized.  Division by zero is
+image.  Floating point values are recognized.  Division by zero is
 ignored.  If <replaceable>factor</replaceable> is directly followed
 by a '<literal>x</literal>' or a '<literal>y</literal>', the scaling
 is horizontal or vertical respectively.  Otherwise the scaling is

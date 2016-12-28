@@ -46,7 +46,7 @@ argument after the
 <emphasis remap='I'>Height</emphasis>
 keyword. The
 <emphasis remap='I'>MinHeight</emphasis>
-height is reseted by
+height is reset by
 <emphasis remap='I'>Height</emphasis>
 or if given with no argument.
 Example:</para>

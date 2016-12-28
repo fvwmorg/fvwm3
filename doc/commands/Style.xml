@@ -352,14 +352,14 @@ The latter is the default for
 <para>The styles
 <fvwmopt cmd="Style" opt="FPClickRaisesFocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesFocused"/> and
 <fvwmopt cmd="Style" opt="FPClickIconRaisesFocused"/>
-allow to raise the window when the interior or the decorations or
+allow one to raise the window when the interior or the decorations or
 the icon of the window is clicked while the window is already
 focused.</para>
 
 <para>The styles
 <fvwmopt cmd="Style" opt="FPClickRaisesUnfocused"/>, <fvwmopt cmd="Style" opt="FPClickDecorRaisesUnfocused"/> and
 <fvwmopt cmd="Style" opt="FPClickIconRaisesUnfocused"/>
-allow to raise the window when the interior or the decorations or
+allow one to raise the window when the interior or the decorations or
 the icon of the window is clicked while the window is not yet
 focused.</para>
 
@@ -943,7 +943,7 @@ Style * IconBox -80 240 -1 -1, \
 
 <para>A Style command with the IconBox option replaces any icon box
 defined previously by another Style command for the same style.
-Thats why the backslash in the previous example is required.</para>
+That's why the backslash in the previous example is required.</para>
 
 <para>Note: The geometry for the icon box command takes the additional
 screen specifier "@w" in case a Xinerama setup is used.  This

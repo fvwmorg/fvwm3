@@ -532,7 +532,7 @@ void usage(void)
   fprintf (stderr,
 	   "  -v                  print version number\n");
   fprintf (stderr,
-	   "  -w <micro sec>      waiting time for the reponse from fvwm\n");
+	   "  -w <micro sec>      waiting time for the response from fvwm\n");
   fprintf (stderr, "\nDefault fifo names are ~/.%sC and ~/.%sM\n",
 	   MYNAME, MYNAME);
   fprintf (stderr, "Default waiting time is 500,000 us\n");

@@ -204,7 +204,7 @@ The following 5 options are only valid together with \fB\-\-preprocess\fR option
 If \fB\-\-nolock\fR is added here, \fBModuleSynchronous\fR returns immediately. Note that \fBModule\fR returns immediately regardless of this option.
 .SH "USING ALIAS"
 .IX Header "USING ALIAS"
-Aliases allow to have several module invocations and work separately with all invocations, here is an example:
+Aliases allow one to have several module invocations and work separately with all invocations, here is an example:
 .PP
 .Vb 4
 \&    ModuleSynchronous FvwmPerl FvwmPerl\-JustTest
@@ -214,7 +214,7 @@ Aliases allow to have several module invocations and work separately with all in
 .Ve
 .SH "PREPROCESSING EXAMPLE"
 .IX Header "PREPROCESSING EXAMPLE"
-One of the effective proprocessing solutions is to pass the whole fvwm configuration with embeded perl code to \*(L"FvwmPerl \-\-preprocess\*(R". An alternative approach is to write a perl script that produces fvwm commands and sends them for execution, this script may be loaded using \*(L"FvwmPerl \-\-load\*(R". There are hovewer intermediate solutions that preprocess only separate configuration lines (or alternatively, execute separate perl commands that produce fvwm commands).
+One of the effective proprocessing solutions is to pass the whole fvwm configuration with embedded perl code to \*(L"FvwmPerl \-\-preprocess\*(R". An alternative approach is to write a perl script that produces fvwm commands and sends them for execution, this script may be loaded using \*(L"FvwmPerl \-\-load\*(R". There are however intermediate solutions that preprocess only separate configuration lines (or alternatively, execute separate perl commands that produce fvwm commands).
 .PP
 The following code snippet adds ability of arithmetics and string scripting to certain lines that need this. To use this, you want to start FvwmPerl as your first command so that other commands may be asked to be preprosessed.
 .PP
