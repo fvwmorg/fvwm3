@@ -13,6 +13,9 @@ Changes in stable release 2.6.8 (UNRELEASED)
     in the fvwm core.
   - VMware windows do not disapper when switching between
     fullscreen and normal state.
+  - Fix (de)installation with the configure options
+    --program-prefix, --program-suffix and
+    --program-transform-name.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.7 (06-Mar-2016)
