@@ -42,6 +42,7 @@ fvwm-menu-desktop
 [ \fB\-\-include\-items\fR \fINAME\fR ]
 [ \fB\-\-regen\-cmd\fR \fICMD\fR ]
 [ \fB\-\-dynamic\fR ]
+[ \fB\-\-menu-error\fR|\fB\-e\fR ]
 [ \fB\-\-verbose\fR|\fB\-v\fR ]
 
 
@@ -144,6 +145,10 @@ fvwm. See \fBEXAMPLES\fR below for some solutions.
 Generates all menus listed in a space separated list of full menu paths.
 This option overrides any defaults and \fB\-\-desktop\fR|\fB\-\-menu\-type\fR
 settings.
+
+.IP "\fB\-\-menu-error\fR |\fB\-t\fR"
+If this option is present and python-xdg is not found, the script
+will print the error in the generated menu. Used in the default-config.
 
 .IP "\fB\-\-verbose\fR"
 Enables additional information printouts on STDERR.

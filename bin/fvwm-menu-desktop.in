@@ -2,7 +2,13 @@
  
 # Modification History
 
-# Changed on 26/10/27 by Jaimos Skrietz:
+# Changed on 16/12/31 by Jaimos Skriletz:
+# - Added check for FVWM_USERDIR env variable.
+# - Added check for python-xdg module to print less errors if not found.
+# - Added option -e/--menu-error to output phython-xdg not found as
+#   a menu for the default-config.
+
+# Changed on 16/10/27 by Jaimos Skrietz:
 # - Renamed default menu to XDGMenu and changed the name of the
 #   FvwmForm to FvwmForm-XDGMenu-Config
 # - Modified the FvwmForm and added the abilty to load defaults from
@@ -75,17 +81,25 @@
 
 import sys
 import getopt
-import xdg.Menu
-import xdg.IconTheme
-import xdg.Locale
 import os.path
 import os
-from xdg.DesktopEntry import *
-from xdg.BaseDirectory import *
 import fnmatch
 import time
 
+# Test for python-xdg
+try:
+    import xdg.Menu
+except ImportError:
+    xdg_import_error = True
+else:
+    xdg_import_error = False
+    import xdg.IconTheme
+    import xdg.Locale
+    from xdg.DesktopEntry import *
+    from xdg.BaseDirectory import *
 
+
+# Main Function
 def main ():
 
     description = """
@@ -136,10 +150,10 @@ Standard output is a series Fvwm commands."""
         dashed_obs_parms.append('--'+a)
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hs:t:vw",
+        opts, args = getopt.getopt(sys.argv[1:], "hs:t:vwe",
                                    ["help", "verbose", "enable-mini-icons", "with-titles", "without-titles", "version",
                                     "desktop=", "size=", "theme=", "install-prefix=", "menu-type=", "regen-cmd=",
-                                    "title=", "get-menus=", "set-menus=", "insert-in-menu=", "mini-icon-dir=",
+                                    "title=", "get-menus=", "set-menus=", "insert-in-menu=", "mini-icon-dir=", "menu-error",
                                     "app-icon=", "dir-icon=", "include-items=", "dynamic", "all-menus"]+obs_args+equaled_obs_parms)
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -174,10 +188,15 @@ Standard output is a series Fvwm commands."""
     include_items = 'both'
     regen_cmd = 'PipeRead `fvwm-menu-desktop`'
     dynamic_menu = False
+    menu_error = False
 
     # Loads config options from $FVWM_USERDIR/.FvwmForm-XDGMenu-Config
-    if os.path.isfile("%s/.FvwmForm-XDGMenu-Config" % os.environ['FVWM_USERDIR']):
-        fvwmform_config = open("%s/.FvwmForm-XDGMenu-Config" % os.environ['FVWM_USERDIR'], "r")
+    if "FVWM_USERDIR" in os.environ:
+        config_file = "%s/.FvwmForm-XDGMenu-Config" % os.environ['FVWM_USERDIR']
+    else:
+        config_file = "%s/.fvwm/.FvwmForm-XDGMenu-Config" % os.environ['HOME']
+    if os.path.isfile(config_file):
+        fvwmform_config = open(config_file, "r")
 
         for l in fvwmform_config:
             o = l.split()
@@ -216,14 +235,20 @@ Standard output is a series Fvwm commands."""
         fvwmform_config.close()
 
     for o, a in opts:
-        if o == "-v":
+        if o in ("-v", "--verbose"):
             verbose = True
+            if os.path.isfile(config_file):
+                vprint("Defaults loaded from %s\n" % config_file)
+            else:
+                vprint("Config file not found: %s\nUsing built-in defaults.\n" % config_file)
         elif o in ("-h", "--help") :
             print usage
             sys.exit()
         elif o in ("--version") :
             print "fvwm-menu-desktop version " + version
             sys.exit()
+        elif o in ("-e", "--menu-error") :
+            menu_error = True
         elif o in ("--enable-mini-icons") :
             force=True
         elif o in ("--insert-in-menu") :
@@ -260,12 +285,10 @@ Standard output is a series Fvwm commands."""
             current_theme = a
         elif o in ("--menu-type") :
             menu_type = a
-        elif o in ("-w","--with-titles") :
+        elif o in ("-w", "--with-titles") :
             with_titles = True
-        elif o in ("-w","--without-titles") :
+        elif o in ("--without-titles") :
             with_titles = False
-        elif o in ("--verbose") :
-            verbose = True
         elif o in ("--app-icon") :
             default_app_icon = a
         elif o in ("--dir-icon") :
@@ -288,6 +311,19 @@ Standard output is a series Fvwm commands."""
             sys.stderr.write( "Warning: Arg "+o+" is obsolete and ignored\n" )
         else:
             assert False, "unhandled option"
+
+    # Exit if python-xdg not found
+    if xdg_import_error:
+        if menu_error:
+            printtext('DestroyMenu "%s"' % top)
+            printtext('AddToMenu "%s" "%s" Title' % (top, top))
+            printtext('+ "Error: python-xdg not found" Nop')
+            printtext('+ "" Nop')
+            printtext('+ "Regenerate" PipeRead `fvwm-menu-desktop -e`')
+        else:
+            sys.stderr.write('Python module python-xdg not found.')
+        sys.exit(1)
+
 
     timestamp = time.time()
     
@@ -320,7 +356,14 @@ Standard output is a series Fvwm commands."""
     if menu_list_length == 0:
         if not desktop == '':
             desktop = desktop + '-'
-        sys.stderr.write(install_prefix+desktop+menu_type+".menu not available on this system. Exiting...\n")
+	if menu_error:
+            printtext('DestroyMenu "%s"' % top)
+            printtext('AddToMenu "%s" "%s" Title' % (top, top))
+            printtext('+ "Error: No menus found" Nop')
+            printtext('+ "" Nop')
+            printtext('+ "Regenerate" PipeRead `fvwm-menu-desktop -e`')
+        else:
+            sys.stderr.write(install_prefix+desktop+menu_type+".menu not available on this system. Exiting...\n")
         sys.exit(1)
     else:
         # set previous_theme if <icon_dir>/.theme exist
@@ -777,6 +820,7 @@ Options:
     --regen-cmd ACTION        The fvwm ACTION for the 'Regenerate' menu item.
                               Default: 'PipeRead `fvwm-menu-desktop`'
     --dynamic                 used with dynamic menus.
+    -e, --menu-error          out python-xdg not found error in menu.
     -v, --verbose             run and display debug info on STDERR."""
 
 if __name__ == "__main__":

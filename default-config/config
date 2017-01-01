@@ -300,7 +300,7 @@ AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "Quit%icons/quit.png%" Module FvwmScript FvwmScript-ConfirmQuit
 
 # Generate XDGMenu
-PipeRead "fvwm-menu-desktop"
+PipeRead "fvwm-menu-desktop -e"
 
 # Programs Menu
 #
