@@ -9,7 +9,7 @@ Init
   Set $UserConf=$UserDir {/config}
   Set $BackupConf=$UserDir {/config-bak}
   
-  ChangeTitle 3 $UserDir
+  ChangeTitle 3 $UserConf
   ChangeTitle 5 $BackupConf
 
   Do {Style ConfirmCopyConfig Layer 6}

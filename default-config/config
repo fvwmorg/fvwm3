@@ -63,26 +63,22 @@ AddToFunc   StartFunction
 + I Module FvwmButtons RightPanel
 + I Module FvwmEvent EventNewDesk
 
-# Function: MoveClickX $0 $1 $2
-#
-# This function runs variable actions on different events
-# and is used with the mouse bindings to allow different
-# actions depending on if the mouse is clicked, double clicked
-# or moved. Use "Nop" for no action.
-#
-#   $0 - Action on Mouse Hold + Move
-#   $1 - Action on Mouse Click
-#   $2 - Action on Mouse DoubleClick
-#
-#  Example: Mouse 1 T A MoveClickX Move Raise Maximize
-#
-#  Click title bar to raise, double click to maximize,
-#  and click+move to move the window.
-DestroyFunc MoveClickX
-AddToFunc   MoveClickX
+# Mouse Bindings Functions
+DestroyFunc RaiseMoveX
+AddToFunc RaiseMoveX
++ I Raise
 + M $0
-+ C $1
-+ D $2
++ D $1
+
+DestroyFunc RaiseMove
+AddToFunc RaiseMove
++ I Raise
++ M $0
+
+DestroyFunc MoveToCurrent
+AddToFunc MoveToCurrent
++ I ThisWindow MoveToPage
++ I ThisWindow MoveToDesk
 
 # Function: ViewManPage $0
 #
@@ -119,9 +115,9 @@ DestroyFunc IconManClick
 AddToFunc   IconManClick
 + I ThisWindow (Raised, !Shaded, !Iconic, CurrentPage) Iconify
 + I TestRc (Match) Break
-+ I ThisWindow (!Raised) Raise
-+ I ThisWindow (Shaded) WindowShade
-+ I ThisWindow (Iconic) Iconify
++ I ThisWindow WindowShade off
++ I ThisWindow Iconify off
++ I ThisWindow Raise
 + I ThisWindow (AcceptsFocus) FlipFocus
 
 # Function: ToggleTitle
@@ -187,7 +183,7 @@ EwmhBaseStruts 0 120 0 0
 
 # This sets the ClickTime and MoveThreshold used to determine
 # Double Clicks, Hold and Move for the mouse.
-ClickTime 350
+ClickTime 250
 MoveThreshold 3
 
 # Sets the focus style to SloppyFocus and a mouse click
@@ -198,14 +194,12 @@ Style * SloppyFocus, MouseFocusClickRaises
 DefaultFont "xft:Sans:Bold:size=8:antialias=True"
 
 # Window Placement
-Style * TileCascadePlacement, GrabFocusOff, !UsePPosition
+Style * MinOverlapPlacement, GrabFocusOff, !UsePPosition
 
 # Sets all windows to OpaqueMove (vs a wired frame) and  windows will
 # snap to each other and the edge of the screen.
-OpaqueMoveSize -1
-HideGeometryWindow
+OpaqueMoveSize unlimited
 Style * ResizeOpaque, SnapAttraction 15 SameType ScreenAll, SnapGrid
-XorValue 55555
 
 # Transient Windows (such as open file windows)
 Style * DecorateTransient, StackTransientParent
@@ -219,8 +213,7 @@ Style * WindowShadeScrolls, WindowShadeSteps 10
 IgnoreModifiers L25
 
 # Decor Styles
-Style * BorderWidth 5, HandleWidth 5, MWMButtons, \
-	FvwmBorder, FirmBorder, UseDecor FvwmDecor
+Style * BorderWidth 5, HandleWidth 5, MWMButtons, FvwmBorder, FirmBorder
 Style * Colorset 1, HilightColorset 2
 Style * BorderColorset 3, HilightBorderColorset 4
 
@@ -229,7 +222,8 @@ Style * BorderColorset 3, HilightBorderColorset 4
 Style * !Icon
 
 # Window Specific Styles
-Style RightPanel !Title, !Borders, !Handles, Sticky, WindowListSkip, NeverFocus
+Style RightPanel !Title, !Borders, !Handles, Sticky, \
+                 WindowListSkip, NeverFocus
 Style ConfirmQuit !Title, PositionPlacement Center, WindowListSkip, Layer 6
 Style FvwmIdent WindowListSkip
 
@@ -256,6 +250,7 @@ Style FvwmIdent WindowListSkip
 #      11 - Module Hilight
 #      12 - Module ActiveButton (Mouse Hover)
 #      13 - FvwmPager Active Page
+#      14 - FvwmIconMan Iconified Button
 ###########
 Colorset 0  fg #ffffff, bg #003c3c, hi, sh, Plain, NoShape
 Colorset 1  fg #000000, bg #8f9f8f, hi, sh, Plain, NoShape
@@ -270,6 +265,7 @@ Colorset 10 fg #ffffff, bg #003c3c, hi #aaaaaa, sh #999999, Plain, NoShape
 Colorset 11 fg #ffffff, bg #1a6e99, hi #ffffff, sh #ffffff, Plain, NoShape
 Colorset 12 fg #2d2d2d, bg #ffffff, hi, sh, Plain, NoShape
 Colorset 13 fg #ffffff, bg #006c6c, hi, sh, Plain, NoShape
+Colorset 14 fg #555555, bg #003c3c, hi #aaaaaa, sh #999999, Plain, NoShape
 
 #######
 # 4: Menus
@@ -286,18 +282,18 @@ MenuStyle * Font "xft:Sans:Bold:size=8:antialias=True"
 # window or using alt-f1 (or menu).
 DestroyMenu MenuFvwmRoot
 AddToMenu   MenuFvwmRoot "Fvwm" Title
-+ "Programs%icons/programs.png%" Popup MenuPrograms
-+ "XDG Menu%icons/apps.png%" Popup XDGMenu
-+ "XTerm%icons/terminal.png%" Exec exec $[infostore.terminal]
++ "&Programs%icons/programs.png%" Popup MenuPrograms
++ "XDG &Menu%icons/apps.png%" Popup XDGMenu
++ "&XTerm%icons/terminal.png%" Exec exec $[infostore.terminal]
 + "" Nop
-+ "FvwmConsole%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
-+ "Wallpapers%icons/wallpaper.png%" Popup BGMenu
-+ "Man Pages%icons/help.png%" Popup MenuFvwmManPages
++ "Fvwm&Console%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
++ "&Wallpapers%icons/wallpaper.png%" Popup BGMenu
++ "M&an Pages%icons/help.png%" Popup MenuFvwmManPages
 + "Copy Config%icons/conf.png%" FvwmScript FvwmScript-ConfirmCopyConfig
 + "" Nop
-+ "Refresh%icons/refresh.png%" Refresh
-+ "Restart%icons/restart.png%" Restart
-+ "Quit%icons/quit.png%" Module FvwmScript FvwmScript-ConfirmQuit
++ "Re&fresh%icons/refresh.png%" Refresh
++ "&Restart%icons/restart.png%" Restart
++ "&Quit%icons/quit.png%" Module FvwmScript FvwmScript-ConfirmQuit
 
 # Generate XDGMenu
 PipeRead "fvwm-menu-desktop -e"
@@ -349,7 +345,7 @@ AddToMenu   MenuWindowOpsLong
 + "(Un)Shade"           WindowShade
 + "(Un)Sticky"		Stick
 + "(No)TitleBar"	Pick (CirculateHit) ToggleTitle
-+ "Send To Desk"        Popup MenuSendToDesk
++ "Send To"             Popup MenuSendTo
 + "" Nop
 + "Close"               Close
 + "Destroy"             Destroy
@@ -370,7 +366,7 @@ AddToMenu   MenuIconOps
 + "(Un)Shade"           WindowShade
 + "(Un)Sticky"		Stick
 + "(No)TitleBar"	Pick (CirculateHit) ToggleTitle
-+ "Send To Desk"        Popup MenuSendToDesk
++ "Send To"             Popup MenuSendTo
 + "" Nop
 + "Close"               Close
 + "Destroy"             Destroy
@@ -384,13 +380,26 @@ AddToMenu   MenuIconOps
 + "" Nop
 + "Identify"            Module FvwmIdent
 
+DestroyMenu MenuSendTo
+AddToMenu MenuSendTo
++ "Current" MoveToCurrent
++ "Page" PopUp MenuSendToPage
++ "Desk" PopUp MenuSendToDesk
+
 DestroyMenu MenuSendToDesk
 AddToMenu   MenuSendToDesk
-+ "Current"	MoveToDesk
 + "Desk 0"	MoveToDesk 0 0
 + "Desk 1"	MoveToDesk 0 1
 + "Desk 2"	MoveToDesk 0 2
 + "Desk 3"	MoveToDesk 0 3
+
+DestroyMenu MenuSendToPage
+AddToMenu   MenuSendToPage
++ "Page (0,0)"	MoveToPage 0 0
++ "Page (0,1)"	MoveToPage 0 1
++ "Page (1,0)"	MoveToPage 1 0
++ "Page (1,1)"	MoveToPage 1 1
+
 
 # Fvwm Man Pages (Help) Menu
 DestroyMenu MenuFvwmManPages
@@ -459,8 +468,8 @@ Silent Key Super_R A A Exec exec $[infostore.terminal]
 #   2 - Close on single click, Destory on double click.
 #   4 - Maximize (right/middle button will only maximize vertical/horizontal)
 #   6 - Iconify (minimize)
-Mouse 1 1 A Menu MenuWindowOps
-Mouse 1 2 A MoveClickX Nop Close Destroy
+Mouse 1 1 A Menu MenuWindowOps Delete
+Mouse 1 2 A Close
 Mouse 1 4 A Maximize 100 100
 Mouse 2 4 A Maximize 0 100
 Mouse 3 4 A Maximize 100 0
@@ -473,14 +482,14 @@ Mouse 1 6 A Iconify
 #                Right Click - WindowOps Menu
 #                Middle Click - Window List Menu
 #   Right click TitleBar/Borders for WindowOps Menu
-Mouse 1	T    A MoveClickX Move Raise Maximize
-Mouse 1	FS   A MoveClickX Resize Raise Nop
-Mouse 4	T    A MoveClickX Nop Raise "WindowShade True"
-Mouse 5	T    A MoveClickX Nop Raise "WindowShade False"
+Mouse 1	T    A RaiseMoveX Move Maximize
+Mouse 1	FS   A RaiseMove Resize
+Mouse 4	T    A WindowShade True
+Mouse 5	T    A WindowShade False
 Mouse 1	R    A Menu MenuFvwmRoot
 Mouse 2	R    A WindowList
 Mouse 3	R    A Menu MenuWindowOpsLong
-Mouse 1	I    A MoveClickX Move Nop Iconify
+Mouse 1	I    A RaiseMoveX Move "Iconify off"
 Mouse 3	T    A Menu MenuWindowOps
 Mouse 3 I    A Menu MenuIconOps
 
@@ -494,26 +503,30 @@ Mouse 3 I    A Menu MenuIconOps
 #   4 - Maximize
 #   6 - Minimize
 ###########
-DestroyDecor FvwmDecor
-AddToDecor   FvwmDecor
-+ TitleStyle Centered Height 18 -- Flat
-+ ButtonStyle All ActiveUp Vector 5 15x15@4 15x85@3 85x85@3 85x15@3 15x15@3 -- Flat
-+ ButtonStyle All ToggledActiveUp Vector 5 15x15@4 15x85@3 85x85@3 85x15@3 15x15@3 -- Flat
-+ ButtonStyle All ActiveDown Vector 5 20x20@4 20x80@3 80x80@3 80x20@3 20x20@3 -- Flat
-+ ButtonStyle All ToggledActiveDown Vector 5 20x20@4 20x80@3 80x80@3 80x20@3 20x20@3 -- Flat
-+ ButtonStyle All ToggledInactive Vector 5 47x47@3 57x53@3 53x53@3 53x47@3 47x47@3 -- Flat
-+ ButtonStyle All Inactive Vector 5 47x47@3 57x53@3 53x53@3 53x47@3 47x47@3 -- Flat
-+ AddButtonStyle 1 Active Vector 5 45x45@3 55x45@3 55x55@3 45x55@3 45x45@3
-+ AddButtonStyle 2 Active Vector 4 35x35@3 65x65@3 65x35@4 35x65@3
-+ AddButtonStyle 4 Active Vector 8 30x70@3 30x30@3 70x30@3 70x70@3 30x70@3 \
-        30x50@4 50x50@3 50x70@3
-+ AddButtonStyle 4 ToggledActiveUp Vector 8 30x70@3 30x30@3 70x30@3 70x70@3 30x70@3 \
-        50x30@4 50x50@3 70x50@3
-+ AddButtonStyle 6 Active Vector 5 35x60@3 65x60@3 65x50@3 35x50@3 35x60@3
-+ ButtonStyle All - Clear
-+ ButtonStyle 1 - MwmDecorMenu
-+ ButtonStyle 4 - MwmDecorMax
-+ ButtonStyle 6 - MwmDecorMin
+TitleStyle Centered Height 18 -- Flat
+ButtonStyle All ActiveUp Vector 5 15x15@4 15x85@3 85x85@3 85x15@3 \
+                15x15@3 -- Flat
+ButtonStyle All ToggledActiveUp Vector 5 15x15@4 15x85@3 85x85@3 \
+                85x15@3 15x15@3 -- Flat
+ButtonStyle All ActiveDown Vector 5 20x20@4 20x80@3 80x80@3 80x20@3 \
+                20x20@3 -- Flat
+ButtonStyle All ToggledActiveDown Vector 5 20x20@4 20x80@3 80x80@3 \
+                80x20@3 20x20@3 -- Flat
+ButtonStyle All ToggledInactive Vector 5 47x47@3 57x53@3 53x53@3 \
+                53x47@3 47x47@3 -- Flat
+ButtonStyle All Inactive Vector 5 47x47@3 57x53@3 53x53@3 53x47@3 \
+                47x47@3 -- Flat
+AddButtonStyle 1 Active Vector 5 45x45@3 55x45@3 55x55@3 45x55@3 45x45@3
+AddButtonStyle 2 Active Vector 4 35x35@3 65x65@3 65x35@4 35x65@3
+AddButtonStyle 4 Active Vector 8 30x70@3 30x30@3 70x30@3 70x70@3 30x70@3 \
+                 30x50@4 50x50@3 50x70@3
+AddButtonStyle 4 ToggledActiveUp Vector 8 30x70@3 30x30@3 70x30@3 70x70@3 \
+                 30x70@3 50x30@4 50x50@3 70x50@3
+AddButtonStyle 6 Active Vector 5 35x60@3 65x60@3 65x50@3 35x50@3 35x60@3
+ButtonStyle All - Clear
+ButtonStyle 1 - MwmDecorMenu
+ButtonStyle 4 - MwmDecorMax
+ButtonStyle 6 - MwmDecorMin
 
 ############
 # 7: Modules
@@ -607,8 +620,11 @@ DestroyModuleConfig FvwmPager:*
 DestroyModuleConfig FvwmIconMan:*
 *FvwmIconMan: UseWinList true
 *FvwmIconMan: ButtonGeometry 120x20
-*FvwmIconMan: Colorset 10
+*FvwmIconMan: ManagerGeometry 1x1
+*FvwmIconMan: Background #003c3c
+*FvwmIconMan: Foreground #ffffff
 *FvwmIconMan: FocusColorset 11
+*FvwmIconMan: IconColorset 14
 *FvwmIconMan: FocusAndSelectColorset 12
 *FvwmIconMan: SelectColorset 12
 *FvwmIconMan: IconAndSelectColorset 12
@@ -616,8 +632,8 @@ DestroyModuleConfig FvwmIconMan:*
 *FvwmIconMan: ReliefThickness 0
 *FvwmIconMan: Format "%t"
 *FvwmIconMan: Font "xft:Sans:Bold:size=8:antialias=True"
+*FvwmIconMan: Action Mouse 0 A ret
 *FvwmIconMan: Action Mouse 1 A sendcommand IconManClick
-*FvwmIconMan: Action Mouse 2 A sendcommand Nop
 *FvwmIconMan: Action Mouse 3 A sendcommand "Menu MenuIconOps"
 *FvwmIconMan: Resolution global
 *FvwmIconMan: Tips needed
