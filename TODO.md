@@ -190,3 +190,9 @@ Items
               and in order to tame EWMH "enabled" applications, detailed
               control over the various aspects.  It was a single switch
               originally, and that was not good enough.
+
+* Add missing translations:
+	- StaysOnTop
+	- StaysPut
+	- StaysOnBottom
+	- Identify
