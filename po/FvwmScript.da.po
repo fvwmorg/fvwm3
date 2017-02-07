@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fvwm version-2_6_6-142-g1a05b191-dirty\n"
 "POT-Creation-Date: 2002-11-28 14:23+0100\n"
-"PO-Revision-Date: 2017-01-31 20:44+0100\n"
+"PO-Revision-Date: 2017-02-07 00:00+0100\n"
 "Last-Translator: scootergrisen\n"
 "Language-Team: Danish\n"
 "Language: da\n"
@@ -101,9 +101,10 @@ msgstr "Tastatur"
 msgid "Pointer Setup"
 msgstr "Opsætning af markør"
 
+# scootergrisen: bruges i drop down hvor der ikke er så god plads så " bruger" kan eventuelt undlades
 #. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 108
 msgid "Right-handed user|Left-handed user"
-msgstr "Højrehåndet bruger|Venstrehåndet bruger"
+msgstr "Højrehåndet|Venstrehåndet"
 
 #. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 122
 msgid "Mouse configuration:"
@@ -196,9 +197,10 @@ msgstr "Sluk (s):"
 msgid "xscreensaver"
 msgstr "xscreensaver"
 
+# scootergrisen: bruges på en knap hvor der ikke er plads nok til "Konfiguration og demonstration"
 #. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 794
 msgid "Config and Demo"
-msgstr "Konfiguration og demonstration"
+msgstr "Konfig og demo"
 
 #. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 2
 msgid "File Browser"
