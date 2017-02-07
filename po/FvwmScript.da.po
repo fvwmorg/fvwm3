@@ -1,0 +1,227 @@
+# Danish translations for fvwm package.
+# Copyright (C) 2017 fvwm workers
+# This file is distributed under the same license as the fvwm package.
+# scootergrisen, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm version-2_6_6-142-g1a05b191-dirty\n"
+"POT-Creation-Date: 2002-11-28 14:23+0100\n"
+"PO-Revision-Date: 2017-02-07 00:00+0100\n"
+"Last-Translator: scootergrisen\n"
+"Language-Team: Danish\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 2
+msgid "Bell Setup"
+msgstr "Opsætning af klokke"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 44
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 43
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 47
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 132
+msgid "Apply"
+msgstr "Anvend"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 62
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 62
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 66
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 170
+msgid "Save"
+msgstr "Gem"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 80
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 89
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 94
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 235
+msgid "Quit"
+msgstr "Afslut"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 95
+msgid "Beep"
+msgstr "Bip"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 130
+msgid "Volume:"
+msgstr "Lydstyrke:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 156
+msgid "Pitch(Hz):"
+msgstr "Tonehøjde (Hz):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 182
+msgid "Duration(ms):"
+msgstr "Varighed (ms):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 207
+msgid "Bell"
+msgstr "Klokke"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 2
+msgid "Keyboard Setup"
+msgstr "Opsætning af tastatur"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 120
+msgid "Click Volume (%)"
+msgstr "Klik-lydstyrke (%)"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 133
+msgid "AutoRepeat On"
+msgstr "Automatisk gentagelse til"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 159
+msgid "Start Delay:  "
+msgstr "Forsinkelse ved start:  "
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 185
+msgid "Repeat Delay:"
+msgstr "Forsinkelse ved gentagelse:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 210
+msgid "Keyboard"
+msgstr "Tastatur"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 2
+msgid "Pointer Setup"
+msgstr "Opsætning af markør"
+
+# scootergrisen: bruges i drop down hvor der ikke er så god plads så " bruger" kan eventuelt undlades
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 108
+msgid "Right-handed user|Left-handed user"
+msgstr "Højrehåndet|Venstrehåndet"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 122
+msgid "Mouse configuration:"
+msgstr "Musekonfiguration:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 150
+msgid "Acceleration:"
+msgstr "Acceleration:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 177
+msgid "Threshold (pixels):"
+msgstr "Tærskel (pixels):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 202
+msgid "Pointer"
+msgstr "Markør"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 2
+msgid "Screen Setup"
+msgstr "Opsætning af skærm"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 264
+msgid "Background"
+msgstr "Baggrund"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 279
+msgid "Uniform color:"
+msgstr "Ensartet farve:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 394
+msgid "Pixmap:"
+msgstr "Pixelkort:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 425
+msgid "Browser..."
+msgstr "Browser..."
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 468
+msgid "Disable xinit background"
+msgstr "Deaktivér xinit-baggrund"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 500
+msgid "Screen-saver"
+msgstr "Pauseskærm"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 514
+msgid "Blank"
+msgstr "Tom"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 528
+msgid "Timeout(s):"
+msgstr "Timeout (s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 554
+msgid "Pattern"
+msgstr "Mønster"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 569
+msgid "Cycle(s):"
+msgstr "Gennemløb (s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 614
+msgid "DPMS"
+msgstr "DPMS"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 628
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 768
+msgid "Enable"
+msgstr "Aktivér"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 643
+msgid "Disable"
+msgstr "Deaktivér"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 657
+msgid "Standby(s):"
+msgstr "Standby (s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 684
+msgid "Suspend(s):"
+msgstr "Hvile (s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 711
+msgid "Off(s):"
+msgstr "Sluk (s):"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 754
+msgid "xscreensaver"
+msgstr "xscreensaver"
+
+# scootergrisen: bruges på en knap hvor der ikke er plads nok til "Konfiguration og demonstration"
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 794
+msgid "Config and Demo"
+msgstr "Konfig og demo"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 2
+msgid "File Browser"
+msgstr "Filbrowser"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 42
+msgid "OK"
+msgstr "OK"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 58
+msgid "Cancel"
+msgstr "Annuller"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 86
+msgid "Path:"
+msgstr "Sti:"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 181
+msgid " Show hidden files"
+msgstr " Vis skjulte filer"
+
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 246
+msgid "Selected file:"
+msgstr "Valgte fil:"
