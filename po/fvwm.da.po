@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fvwm version-2_6_6-142-g1a05b191-dirty\n"
 "POT-Creation-Date: 2002-11-28 14:23+0100\n"
-"PO-Revision-Date: 2017-01-31 20:44+0100\n"
+"PO-Revision-Date: 2017-02-07 00:00+0100\n"
 "Last-Translator: scootergrisen\n"
 "Language-Team: Danish\n"
 "Language: da\n"
@@ -63,7 +63,7 @@ msgstr "Rodmenu"
 
 #. ./fvwm/ConfigFvwmSetup: line 95
 msgid "Remote Logins"
-msgstr "Fjern-logins"
+msgstr "Fjern-login"
 
 #. #-#-#-#-#  duplicate  #-#-#-#-#
 #. ./fvwm/ConfigFvwmSetup: line 97
@@ -92,7 +92,7 @@ msgstr "Fvwm-konfigurationshandlinger"
 
 #. ./fvwm/ConfigFvwmSetup: line 103
 msgid "Refresh Screen"
-msgstr "Gentegn skærm"
+msgstr "Opdater skærm"
 
 #. ./fvwm/ConfigFvwmSetup: line 104
 msgid "Recapture Screen"
@@ -164,7 +164,7 @@ msgstr "&Hæv"
 
 #. ./fvwm/ConfigFvwmSetup: line 147
 msgid "&Lower"
-msgstr "&Sænk"
+msgstr "Sæ&nk"
 
 #. ./fvwm/ConfigFvwmSetup: line 148
 msgid "(De)&Iconify"
@@ -196,7 +196,7 @@ msgstr "Vindueshandlinger"
 
 #. ./fvwm/ConfigFvwmSetup: line 163
 msgid "Re&fresh Window"
-msgstr "&Gentegn vindue"
+msgstr "&Opdater vindue"
 
 #. ./fvwm/ConfigFvwmSetup: line 172
 msgid "Print"
@@ -300,7 +300,7 @@ msgstr "redigeringsprogram som passer til dine behov."
 
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 26
 msgid "Create a starting .fvwm2rc file"
-msgstr "Opret en begynder .fvwm2rc-fil"
+msgstr "Opret en indledende .fvwm2rc-fil"
 
 #. ./modules/FvwmForm/FvwmForm-Setup.in: line 30
 msgid "These files are optional.  Select the modules you want to customize."
@@ -320,7 +320,7 @@ msgstr "Kopiér konfigurationsfil(er)"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 51
 msgid "Fvwm Menu Desktop Config"
-msgstr "Fvwm-menu skrivebordskonfiguration"
+msgstr "Skrivebordskonfiguration for Fvwm-menu"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 58
 msgid "Multiple Menu"
@@ -352,7 +352,7 @@ msgstr "Men husk, hvis menuen ikke findes, så sker der ikke noget."
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 120
 msgid "Menu Top Title:     "
-msgstr "Menu toptitel:     "
+msgstr "Menuens toptitel:   "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 123
 msgid "  "
@@ -360,11 +360,11 @@ msgstr "  "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 124
 msgid "Install-Prefix:     "
-msgstr "Installationspræfiks:     "
+msgstr "Installationspræfiks: "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 128
 msgid "Desktop:            "
-msgstr "Skrivebord:            "
+msgstr "Skrivebord:         "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 132
 msgid "Menutype:           "
@@ -376,7 +376,7 @@ msgstr "Generelle valgmuligheder"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 146
 msgid "Used Menu Type:     "
-msgstr "Anvendt menutype:     "
+msgstr "Anvendt menutype:   "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 149
 msgid "Multiple "
@@ -388,19 +388,19 @@ msgstr "Enkelt"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 153
 msgid "Use Icons?          "
-msgstr "Brug ikoner?          "
+msgstr "Brug ikoner?        "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 155
 msgid "Yes      "
-msgstr "Ja      "
+msgstr "Ja       "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 156
 msgid "No   "
-msgstr "Nej   "
+msgstr "Nej  "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 159
 msgid "Icon size:          "
-msgstr "Ikonstørrelse:          "
+msgstr "Ikonstørrelse:      "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 161
 msgid " (Default is 24)"
@@ -408,31 +408,31 @@ msgstr " (standard er 24)"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 164
 msgid "Use Titles?         "
-msgstr "Brug titler?         "
+msgstr "Brug titler?        "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 170
 msgid "Used Icon theme:    "
-msgstr "Anvendt ikontema:    "
+msgstr "Anvendt ikontema:   "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 174
 msgid "Menu(s) in a Menu?  "
-msgstr "Menu(er) i en menu?  "
+msgstr "Menu(er) i en menu? "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 180
 msgid "Insert in menu:     "
-msgstr "Indsæt i menu:     "
+msgstr "Indsæt i menu:      "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 184
 msgid "Directory Icon:     "
-msgstr "Mappeikon:     "
+msgstr "Mappeikon:          "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 188
 msgid "Application Icon:   "
-msgstr "Programikon:   "
+msgstr "Programikon:        "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 192
 msgid "Icon directory:     "
-msgstr "Ikonmappe:     "
+msgstr "Ikonmappe:          "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 194
 msgid " (Directory for converted icons)"
@@ -440,7 +440,7 @@ msgstr " (mappe til konverterede ikoner)"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 197
 msgid "Output path:        "
-msgstr "Output-sti:        "
+msgstr "Outputsti:          "
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 199
 msgid " (Full path to store output)"
@@ -448,7 +448,7 @@ msgstr " (fuld sti til at lagre output)"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 209
 msgid "Generate Menu(s)"
-msgstr "Genererede menu(er)"
+msgstr "Genererer menu(er)"
 
 #. ./bin/fvwm-menu-desktop-config.fpl.in: line 235
 msgid "Save Settings"
@@ -468,11 +468,11 @@ msgstr "Afslut"
 
 #. ./bin/fvwm-menu-desktop.in: line 472
 msgid "Regenerate XDG Menu(s)"
-msgstr "Regenerer XDG-menu(er)"
+msgstr "Regenererer XDG-menu(er)"
 
 #. ./bin/fvwm-menu-desktop.in: line 515
 msgid "Regenerate XDG Menu"
-msgstr "Regenerer XDG-menu"
+msgstr "Regenererer XDG-menu"
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 17
 msgid ""
@@ -488,7 +488,7 @@ msgstr "placering som defineret i XDG-menu-definitionerne."
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 24
 msgid "Specifies the menu title of the top menu used by Fvwm's Popup command."
-msgstr "Specificerer menutitlen af topmenuen brugt af Fvwm's pop op-kommando."
+msgstr "Specificerer topmenuens menutitel som bruges af Fvwm's pop op-kommando."
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 26
 msgid "                    "
@@ -500,12 +500,11 @@ msgstr "Standard er 'FvwmMenu'."
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 32
 msgid "Overrides the standard locations for XDG menu definitions. The standard"
-msgstr ""
-"Tilsidesætter standardplaceringerne for XDG-menu-definitionerne. Standarden"
+msgstr "Tilsidesætter standardplaceringerne for XDG-menu-definitionerne."
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 35
 msgid "locations are /etc/xdg/menus and"
-msgstr "placeringer er /etc/xdg/menus og"
+msgstr "Standardplaceringen er /etc/xdg/menus og"
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 35
 msgid "if available."
@@ -524,7 +523,7 @@ msgstr ""
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 46
 msgid "is typically set. It is ignored if this field is used."
-msgstr "typisk sat. Den ignoreres hvis dette felt er brugt."
+msgstr "typisk angivet. Den ignoreres hvis dette felt er brugt."
 
 #. ./modules/FvwmForm/FvwmForm-SingleMenuHelp: line 49
 msgid "Possible names: gnome, kde, lxde, etc."
@@ -559,7 +558,7 @@ msgid ""
 "will integrate in one Fvwm menu. If you want to generate a custom-assembled "
 "menu"
 msgstr ""
-"vil integrere i en Fvwm-menu. Hvis du vil generere en hjemmelavet menu,"
+"vil blive integreret i en Fvwm-menu. Hvis du vil generere en hjemmelavet menu,"
 
 #. ./modules/FvwmForm/FvwmForm-MultiMenuHelp: line 21
 msgid "use the 'Single Menu' section."
@@ -567,11 +566,11 @@ msgstr "så brug afsnittet 'Enkelt menu'."
 
 #. ./modules/FvwmForm/FvwmForm-MultiMenuHelp: line 28
 msgid "List menus with checkboxes found in /etc/xdg/menus/"
-msgstr "Viser menuer med tjekbokse fundet i /etc/xdg/menus/"
+msgstr "Vis menuer med afkrydsningsfelter fundet i /etc/xdg/menus/"
 
 #. ./modules/FvwmForm/FvwmForm-MultiMenuHelp: line 36
 msgid "List menus with checkboxes found in $HOME/.config/menus/"
-msgstr "Viser menuer med tjekbokse fundet i $HOME/.config/menus/"
+msgstr "Vis menuer med afkrydsningsfelter fundet i $HOME/.config/menus/"
 
 #. ./modules/FvwmForm/FvwmForm-MultiMenuHelp: line 42
 msgid ""
@@ -620,7 +619,7 @@ msgstr "på 1000 tegn for længden af kommandoen. Beklager ulejligheden."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 18
 msgid "Set which menu generation will be used."
-msgstr "Sæt hvilken menugenerering der vil blive brugt."
+msgstr "Angiv hvilken menugenerering der vil blive brugt."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 23
 msgid "Option enables mini-icons in the menu(s)."
@@ -631,7 +630,7 @@ msgid ""
 "If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size "
 "is"
 msgstr ""
-"Hvis 'Brug ikoner' er sat, så bruges 24x24 miniikoner som standard. Hvis en "
+"Hvis 'Brug ikoner' er angivet, så bruges 24x24 miniikoner som standard. Hvis en "
 "anden størrelse er"
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 31
@@ -650,7 +649,7 @@ msgstr ""
 msgid ""
 "Generated icons are saved in $HOME/.fvwm/icons or the directory specified "
 "here."
-msgstr "Genereret ikoner gemmes i $HOME/.fvwm/icons eller mappen angivet her."
+msgstr "Genererede ikoner gemmes i $HOME/.fvwm/icons eller mappen angivet her."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 42
 msgid "Otherwise no icon appears in the menu for that entry."
@@ -659,7 +658,7 @@ msgstr "Ellers vises intet ikon i menuen for det punkt."
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 47
 msgid "Sets the used icon theme. Default is 'gnome' but all others found in"
 msgstr ""
-"Sætter den brugte ikontema. Standard er 'gnome' men alle andre fundet i"
+"Angiver det brugte ikontema. Standard er 'gnome', men alle andre fundet i"
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 50
 msgid ""
@@ -670,7 +669,7 @@ msgstr "/usr/share/icons kan bruges undtagen hicolor-temaet, da det er"
 msgid ""
 "fallback theme if no icon is found. Note that the theme name must be written"
 msgstr ""
-"standardtilbagefaldstemaet hvis der ikke findes noget ikon. Bemærk at "
+"temaet som anvendes som standard hvis der ikke findes noget ikon. Bemærk at "
 "temanavnet skal skrives"
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 56
@@ -706,15 +705,15 @@ msgstr ""
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 89
 msgid "Enable this checkbox to insert generated menu(s) IN a menu."
-msgstr "Aktivér denne tjekboks for at indsætte genererede menu(er) I en menu."
+msgstr "Aktivér dette afkrydsningsfelt for at indsætte genererede menu(er) I en menu."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 94
 msgid ""
 "Enter in this field the name of the menu (its top title) where the generated "
 "menu(s)"
 msgstr ""
-"Indtast navnet på menuen (dets toptitel) i dette felt, hvor den genererede "
-"menu(er)"
+"Indtast navnet på menuen i dette felt (dens toptitel), hvor de genererede "
+"menuer"
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 97
 msgid ""
@@ -725,7 +724,7 @@ msgstr "skal indsættes. Se afsnittet USAGE/ANVENDELSE/BRUG i man-siden af"
 msgid ""
 "If this option is set menus are generated with titles. Default is no titles."
 msgstr ""
-"Hvis denne valgmulighed er sat, genereres menuer med titler. Standard er "
+"Hvis denne valgmulighed er angivet, genereres menuer med titler. Standard er "
 "ingen titler."
 
 #. ./modules/FvwmForm/FvwmForm-GenOptionHelp: line 110
