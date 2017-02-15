@@ -24,7 +24,7 @@ argument can be '<fvwmopt cmd="MoveToScreen" opt="p"/>' for the primary screen,
 '<fvwmopt cmd="MoveToScreen" opt="c"/>' for the current
 screen (containing the mouse pointer),
 '<fvwmopt cmd="MoveToScreen" opt="w"/>' for the screen containing the center of
-+the the context window,
++the context window,
 '<fvwmopt cmd="MoveToScreen" opt="g"/>' for the global screen
 or the screen number itself (counting from zero).</para>
 
