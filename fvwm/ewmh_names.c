@@ -186,10 +186,8 @@ int EWMH_WMIconName(
 		return 1;
 	}
 
-	setup_visible_name(fw, True);
-	EWMH_SetVisibleName(fw, True);
-	BroadcastWindowIconNames(fw, False, True);
-	RedoIconName(fw);
+	update_window_names(fw, 2);
+
 	return 1;
 }
 
@@ -200,6 +198,7 @@ int EWMH_WMName(
 	char *val;
 	char *tmp_str;
 	FlocaleCharset *fc = NULL;
+	int what_changed;
 
 	if (!FiconvSupport)
 		return 0;
@@ -251,27 +250,15 @@ int EWMH_WMName(
 		return 1;
 	}
 
-	setup_visible_name(fw, False);
 	SET_NAME_CHANGED(fw, 1);
-	EWMH_SetVisibleName(fw, False);
-	BroadcastWindowIconNames(fw, True, False);
-
-	/* fix the name in the title bar */
-	if (!IS_ICONIFIED(fw))
-	{
-		border_draw_decorations(
-			fw, PART_TITLE, (Scr.Hilite == fw),
-			True, CLEAR_ALL, NULL, NULL);
-	}
-
+	what_changed = 1;
 	if (!WAS_ICON_NAME_PROVIDED(fw))
 	{
 		fw->icon_name = fw->name;
-		setup_visible_name(fw, True);
-		BroadcastWindowIconNames(fw, False, True);
-		EWMH_SetVisibleName(fw, True);
-		RedoIconName(fw);
+		what_changed |= 2;
 	}
+	update_window_names(fw, what_changed);
+
 	return 0;
 }
 

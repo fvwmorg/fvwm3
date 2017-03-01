@@ -20,7 +20,8 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-void setup_visible_name(FvwmWindow *fw, Bool is_icon);
+int setup_visible_names(FvwmWindow *fw, int what_changed);
+void update_window_names(FvwmWindow *fw, int which);
 void setup_wm_hints(FvwmWindow *fw);
 void setup_snapping(FvwmWindow *fw, window_style *pstyle);
 void setup_placement_penalty(FvwmWindow *fw, window_style *pstyle);

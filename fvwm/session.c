@@ -1562,7 +1562,7 @@ MatchWinToSM(
 				{
 					free_window_names(ewin, True, False);
 					ewin->name.name = matches[i].wm_name;
-					setup_visible_name(ewin, False);
+					setup_visible_names(ewin, 1);
 				}
 			}
 			SET_NAME_CHANGED(ewin,IS_NAME_CHANGED(&(matches[i])));

@@ -3,9 +3,6 @@
 #ifndef _STYLE_
 #define _STYLE_
 
-/* The default title in case the user doesn't supply one. */
-#define DEFAULT_TITLE_FORMAT "%n"
-
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */
 #define SDO_DECORATE_TRANSIENT(sf) \

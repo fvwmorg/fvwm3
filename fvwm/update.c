@@ -184,7 +184,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_visible_window_name)
 	{
-		setup_visible_name(t, False);
+		setup_visible_names(t, 4);
 		BroadcastName(M_VISIBLE_NAME,FW_W(t),FW_W_FRAME(t),
 			      (unsigned long)t,t->visible_name);
 		EWMH_SetVisibleName(t, False);
@@ -192,7 +192,7 @@ static void apply_window_updates(
 
 	if (flags->do_update_visible_icon_name)
 	{
-		setup_visible_name(t, True);
+		setup_visible_names(t, 8);
 		BroadcastName(MX_VISIBLE_ICON_NAME,FW_W(t),FW_W_FRAME(t),
 			      (unsigned long)t,t->visible_icon_name);
 		EWMH_SetVisibleName(t, True);

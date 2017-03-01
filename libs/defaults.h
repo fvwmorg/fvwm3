@@ -317,6 +317,10 @@
 #define MAX_RESOURCE_LEN                 200 /* characters */
 #define MAX_CLASS_LEN                    200 /* characters */
 
+/* The default title and icon title in case the user doesn't supply one. */
+#define DEFAULT_TITLE_FORMAT "%n"
+#define DEFAULT_ICON_TITLE_FORMAT "%i"
+
 /* Set the maximum size a visible name can be. */
 #define MAX_VISIBLE_NAME_LEN		4096
 
