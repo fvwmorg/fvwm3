@@ -155,7 +155,7 @@ Standard output is a series Fvwm commands."""
                                     "desktop=", "size=", "theme=", "install-prefix=", "menu-type=", "regen-cmd=",
                                     "title=", "get-menus=", "set-menus=", "insert-in-menu=", "mini-icon-dir=", "menu-error",
                                     "app-icon=", "dir-icon=", "include-items=", "dynamic", "all-menus"]+obs_args+equaled_obs_parms)
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
         print usage
