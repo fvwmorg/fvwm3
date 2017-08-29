@@ -17,9 +17,9 @@ EXTRA_DIST  = images \
 
 install-data-hook:
 	cp -r $(srcdir)/images $(inst_location)
-	ln -sf $(inst_location)/FvwmScript-DateTime $(inst_location)/..
-	ln -sf $(inst_location)/FvwmScript-ConfirmQuit $(inst_location)/..
-	ln -sf $(inst_location)/FvwmScript-ConfirmCopyConfig $(inst_location)/..
+	ln -sf default-config/FvwmScript-DateTime $(inst_location)/..
+	ln -sf default-config/FvwmScript-ConfirmQuit $(inst_location)/..
+	ln -sf default-config/FvwmScript-ConfirmCopyConfig $(inst_location)/..
 
 uninstall-hook:
 	rm -fr $(DESTDIR)/$(configdir)
