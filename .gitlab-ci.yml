@@ -1,5 +1,5 @@
 before_script:
-        - apt-get intall debhelper autotools-dev dh-autreconf file fontconfig gettext libfontconfig-dev libfreetype6-dev libfribidi-dev libncurses5-dev libreadline-dev libpng-dev libxsm-dev libx11-dev libxcursor-dev libext-dev libxft-ev libxi-dev x11proto-xinerama-dev libxpm-dev libxrender-dev libxt-dev sharutils xsltproc build-essential
+        - apt-get install debhelper autotools-dev dh-autreconf file fontconfig gettext libfontconfig-dev libfreetype6-dev libfribidi-dev libncurses5-dev libreadline-dev libpng-dev libxsm-dev libx11-dev libxcursor-dev libext-dev libxft-ev libxi-dev x11proto-xinerama-dev libxpm-dev libxrender-dev libxt-dev sharutils xsltproc build-essential
 
 stages:
         - build
