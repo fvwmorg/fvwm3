@@ -14,14 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- *
- * This is all original code by Robert Nation
- * which reads motif mwm window manager
- * hints from a window, and makes necessary adjustments for fvwm.
- *
- */
-
 /* ---------------------------- included header files ---------------------- */
 
 #include "config.h"

@@ -2,11 +2,7 @@
 /* This module, and the entire ModuleDebugger program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
- *
- * Copyright 1994, Robert Nation. No guarantees or warantees or anything
- * are provided or implied in any way whatsoever. Use this program at your
- * own risk. Permission to use this program for any purpose is given,
- * as long as the copyright is kept intact. */
+ */
 
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

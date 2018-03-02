@@ -3,11 +3,6 @@
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
  *
- * Copyright 1994, Robert Nation. No guarantees or warantees or anything
- * are provided or implied in any way whatsoever. Use this program at your
- * own risk. Permission to use this program for any purpose is given,
- * as long as the copyright is kept intact.
- *
  * reworked by A.Kadlec (albrecht@auto.tuwien.ac.at) 09/96
  * to support an arbitrary enter_fn & leave_fn (command line arguments)
  * completely reworked, while I was there.

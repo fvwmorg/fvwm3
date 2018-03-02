@@ -1,31 +1,4 @@
 /* -*-c-*- */
-/* FvwmBacker Module for fvwm.
- *
- *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *                               Mike_Finger@atk.com)
- *
- * The author makes not guarantees or warantees, either express or
- * implied.  Feel free to use any contained here for any purpose, as long
- * and this and any other applicible copyrights are kept intact.
-
- * The functions in this source file that are based on part of the FvwmIdent
- * module for fvwm are noted by a small copyright atop that function, all others
- * are copyrighted by Mike Finger.  For those functions modified/used, here is
- *  the full, origonal copyright:
- *
- * Copyright 1994, Robert Nation and Nobutaka Suzuki.
- * No guarantees or warantees or anything
- * are provided or implied in any way whatsoever. Use this program at your
- * own risk. Permission to use this program for any purpose is given,
- * as long as the copyright is kept intact. */
-
-/* Modified to directly manipulate the X server if a solid color
- * background is requested. To use this, use "-solid <color_name>"
- * as the command to be executed.
- *
- * A. Davison
- * Septmber 1994.
- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -39,6 +12,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/* Modified to directly manipulate the X server if a solid color
+ * background is requested. To use this, use "-solid <color_name>"
+ * as the command to be executed.
+ *
+ * A. Davison
+ * Septmber 1994.
  */
 
 #include "config.h"

@@ -14,16 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* This module is all new
- * by Rob Nation
- *
- * This code handles colormaps for fvwm.
- *
- * Copyright 1994 Robert Nation. No restrictions are placed on this code,
- * as long as the copyright notice is preserved . No guarantees or
- * warrantees of any sort whatsoever are given or implied or anything.
- */
-
 /* ---------------------------- included header files ---------------------- */
 
 #include "config.h"

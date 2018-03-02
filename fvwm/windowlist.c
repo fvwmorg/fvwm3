@@ -15,13 +15,6 @@
  */
 
 /*
- * This module is all new
- * by Rob Nation
- * A little of it is borrowed from ctwm.
- * Copyright 1993 Robert Nation. No restrictions are placed on this code,
- * as long as the copyright notice is preserved
- */
-/*
  *
  * fvwm window-list popup code
  *

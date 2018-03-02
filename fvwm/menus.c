@@ -14,12 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- * Copyright 1993, Robert Nation
- *     You may use this code for any purpose, as long as the original
- *     copyright remains in the source code and all documentation
- */
-
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below or in defaults.h to ensure full
  * control over the menus. */
