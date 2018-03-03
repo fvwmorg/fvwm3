@@ -414,9 +414,10 @@ void parse_args(char *s, int argc, char *argv[], int argi)
     }
     else if (!strcmp(argv[argi], "-a")) {
       all = untitled = transients = maximized = 1;
-      if (FvwmCascade)
-	sticky_page = 1;
-	sticky_desk = 1;
+      if (FvwmCascade) {
+		sticky_page = 1;
+		sticky_desk = 1;
+      }
     }
     else if (!strcmp(argv[argi], "-r")) {
       reversed = 1;
