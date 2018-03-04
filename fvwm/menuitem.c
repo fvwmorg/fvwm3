@@ -438,12 +438,13 @@ void menuitem_paint(
 
 	off_cs = ST_HAS_MENU_CSET(ms) ? ST_CSET_MENU(ms) : -1;
 	/* Note: it's ok to pass a NULL label to is_function_allowed. */
-	if (
-		!IS_EWMH_DESKTOP_FW(mpip->fw) &&
+	if (MI_SHOULD_BE_GREYED(mi) ||
+		(!IS_EWMH_DESKTOP_FW(mpip->fw) &&
 		!is_function_allowed(
 			MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], mpip->fw,
-			RQORIG_PROGRAM_US, False))
+			RQORIG_PROGRAM_US, False)))
 	{
+		MI_IS_SELECTABLE(mi) = False;
 		gcs = ST_MENU_STIPPLE_GCS(ms);
 		off_gcs = gcs;
 		off_cs = ST_HAS_GREYED_CSET(ms) ? ST_CSET_GREYED(ms) : -1;
