@@ -6606,6 +6606,7 @@ void AddToMenu(
 	int i;
 	int is_empty;
 	Bool do_replace_title;
+	Bool greyed = False;
 
 	if (MR_MAPPED_COPIES(mr) > 0)
 	{
@@ -6673,6 +6674,14 @@ void AddToMenu(
 			MR_MISSING_SUBMENU_FUNC(mr) = stripcpy(action);
 		}
 		return;
+	}
+	else if (StrEquals(item, "Greyed"))
+	{
+		greyed = True;
+		free(item);
+
+		GetNextToken(action, &item);
+		action = "Nop";
 	}
 
 	/*
@@ -6800,6 +6809,10 @@ void AddToMenu(
 	 * Set the type flags
 	 */
 
+	if (greyed)
+	{
+		MI_SHOULD_BE_GREYED(tmp) = True;
+	}
 	if (is_continuation_item)
 	{
 		MI_IS_CONTINUATION(tmp) = True;

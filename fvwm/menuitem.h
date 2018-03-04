@@ -37,6 +37,7 @@
 #define MI_HAS_HOTKEY(i)        ((i)->flags.has_hotkey)
 #define MI_IS_HOTKEY_AUTOMATIC(i) ((i)->flags.is_hotkey_automatic)
 #define MI_IS_SELECTABLE(i)     ((i)->flags.is_selectable)
+#define MI_SHOULD_BE_GREYED(i)	((i)->flags.must_grey)
 /* temporary flags */
 #define MI_WAS_DESELECTED(i)    ((i)->flags.was_deselected)
 
@@ -92,6 +93,7 @@ typedef struct MenuItem
 		unsigned has_hotkey : 1;
 		unsigned is_hotkey_automatic : 1;
 		unsigned is_selectable : 1;
+		unsigned must_grey : 1;
 		/* temporary flags */
 		unsigned was_deselected : 1;
 	} flags;

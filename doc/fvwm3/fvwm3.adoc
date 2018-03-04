@@ -2128,6 +2128,9 @@ fail and may screw up your menus. See the *Silent* command.
 *Warning* Do not issue *MenuStyle* commands as dynamic menu actions.
 Chances are good that this crashes fvwm.
 +
+The keyword _Greyed_ will still render the menu item, but will grey it out
+making the option unselectable.
++
 There are several configurable scripts installed together with fvwm
 for automatic menu generation. They have their own man pages. Some of
 them, specifically *fvwm-menu-directory* and *fvwm-menu-desktop*, may
@@ -4125,7 +4128,7 @@ the move. Moving a window to the edge of the screen can be used to drag the
 window to other pages, see *EdgeScroll*, and the *EdgeMoveDelay* style
 for more information.
 +
-The interactive move operation can be aborted with Escape 
+The interactive move operation can be aborted with Escape
 or any mouse button not set to place the window. By default mouse
 button 2 is set to cancel the move operation. To change this you may
 use the *Mouse* command with special context 'P' for Placement.
