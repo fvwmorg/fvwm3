@@ -24,14 +24,17 @@ typedef enum
 	FSCREEN_BY_NAME = -5
 } fscreen_scr_t;
 
+struct coord {
+	int x;
+	int y;
+	int w;
+	int h;
+};
+
 struct monitor {
 	char	*name;
-	struct {
-		int x;
-		int y;
-		int w;
-		int h;
-	} coord;
+	int	 is_primary;
+	struct coord coord;
 
 	TAILQ_ENTRY(monitor) entry;
 };

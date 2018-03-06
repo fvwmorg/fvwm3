@@ -48,7 +48,6 @@
 void flib_init_graphics(Display *dpy)
 {
 	PictureInitCMap(dpy);
-	FScreenInit(dpy);
 	/* Initialise default colorset */
 	AllocColorset(0);
 	FShapeInit(dpy);
