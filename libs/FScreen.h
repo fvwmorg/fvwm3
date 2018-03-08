@@ -46,10 +46,12 @@ struct monitor	*monitor_by_name(const char *);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 
+int randr_event;
 
 /* Control */
 Bool FScreenIsEnabled(void);
 void FScreenInit(Display *dpy);
+void FScreenSelect(Display *dpy);
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
 void FScreenConfigureModule(char *args);

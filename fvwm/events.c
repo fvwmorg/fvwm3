@@ -101,6 +101,10 @@
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
+#ifdef HAVE_XRANDR
+#include <X11/extensions/Xrandr.h>
+#include "libs/FScreen.h"
+#endif
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1786,6 +1790,14 @@ static void __refocus_stolen_focus_win(const evh_args_t *ea)
 }
 
 /* ---------------------------- event handlers ----------------------------- */
+
+#ifdef HAVE_XRANDR
+void HandleRRScreenChangeNotify(XEvent *e)
+{
+	FScreenInit(dpy);
+	execute_function_override_window(NULL, NULL, "All PlaceAgain", 0, NULL);
+}
+#endif
 
 void HandleButtonPress(const evh_args_t *ea)
 {
@@ -4089,7 +4101,6 @@ void InitEventHandlerJumpTable(void)
 		}
 	}
 
-
 	return;
 }
 
@@ -4103,6 +4114,13 @@ void dispatch_event(XEvent *e)
 	DBUG("dispatch_event", "Routine Entered");
 
 	XFlush(dpy);
+
+#if HAVE_XRANDR
+	if (e->type - randr_event == RRScreenChangeNotify) {
+		HandleRRScreenChangeNotify(e);
+	}
+#endif
+
 	if (w == Scr.Root)
 	{
 		switch (e->type)
