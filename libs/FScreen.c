@@ -52,6 +52,7 @@ static struct monitor	*monitor_get_current(void);
 static struct monitor	*monitor_new(void);
 static void		 monitor_create_randr_region(struct monitor *m,
 	const char *, struct coord *, int);
+static int		 monitor_check_stale(struct monitor *);
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -134,6 +135,12 @@ monitor_by_name(const char *name)
 	return (mret);
 }
 
+void
+FScreenSelect(Display *dpy)
+{
+	XRRSelectInput(disp, DefaultRootWindow(disp), RRScreenChangeNotifyMask);
+}
+
 void FScreenInit(Display *dpy)
 {
 	XRRScreenResources	*res = NULL;
@@ -142,15 +149,14 @@ void FScreenInit(Display *dpy)
 	RROutput		 rr_output, rr_output_primary;
 	struct monitor		*m;
 	struct coord		 coord;
-	int			 err_base = 0, event = 0;
+	int			 err_base = 0;
 	int			 is_randr_present = 0;
 	int			 iscres, is_primary = 0;
 
 	disp = dpy;
+	randr_event = 0;
 
-	TAILQ_INIT(&monitor_q);
-
-	is_randr_present = XRRQueryExtension(dpy, &event, &err_base);
+	is_randr_present = XRRQueryExtension(dpy, &randr_event, &err_base);
 
 	if (FScreenIsEnabled() && !is_randr_present) {
 		/* Something went wrong. */
