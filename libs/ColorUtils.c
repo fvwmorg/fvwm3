@@ -22,9 +22,8 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
+ * License along with this library; if not, see:
+ * <http://www.gnu.org/licenses/>
  *
  * The routine at the bottom "pixel_to_color_string" was not from Lesstif.
  *
