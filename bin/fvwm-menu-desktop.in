@@ -206,7 +206,7 @@ Standard output is a series Fvwm commands."""
                 if o[1] == 'IconsOn' and o[2] == 'on':
                     force = True
                 elif o[1] == 'Size':
-                    size = o[2]
+                    size = int(o[2])
                 elif o[1] == 'TitlesOn' and o[2] == 'on':
                     with_titles = True
                 elif o[1] == 'Theme':
