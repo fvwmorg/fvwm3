@@ -2,6 +2,10 @@
  
 # Modification History
 
+# Changed on 18/03/11 by Jaimos Skriletz:
+# - Updated script for Python 3
+# - Added support for xdg.Menu.Separator
+
 # Changed on 16/12/31 by Jaimos Skriletz:
 # - Added check for FVWM_USERDIR env variable.
 # - Added check for python-xdg module to print less errors if not found.
@@ -157,13 +161,13 @@ Standard output is a series Fvwm commands."""
                                     "app-icon=", "dir-icon=", "include-items=", "dynamic", "all-menus"]+obs_args+equaled_obs_parms)
     except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
-        print usage
+        print(str(err)) # will print something like "option -a not recognized"
+        print(usage)
         sys.exit(2)
     global verbose, force, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
     global default_app_icon, default_dir_icon, include_items, config_menus, regen_cmd, dynamic_menu, build_all_menus
-    version = "2.3.3"
+    version = "2.3.4"
     verbose = False
     force = False
     desktop=''
@@ -242,10 +246,10 @@ Standard output is a series Fvwm commands."""
             else:
                 vprint("Config file not found: %s\nUsing built-in defaults.\n" % config_file)
         elif o in ("-h", "--help") :
-            print usage
+            print(usage)
             sys.exit()
         elif o in ("--version") :
-            print "fvwm-menu-desktop version " + version
+            print("fvwm-menu-desktop version " + version)
             sys.exit()
         elif o in ("-e", "--menu-error") :
             menu_error = True
@@ -264,7 +268,7 @@ Standard output is a series Fvwm commands."""
                 printmode = False
             else :
                 sys.stderr.write( "--get-menus argument must be 'all' or 'desktop' found "+a )
-                print usage
+                print(usage)
                 sys.exit(1)
         elif o in ("-s","--size") :
             size = int(a)
@@ -298,7 +302,7 @@ Standard output is a series Fvwm commands."""
                 include_items = a
             else:
                 sys.stderr.write( "--include-items argument must be 'config', 'regenerate', 'both' or 'none' found "+a )
-                print usage
+                print(usage)
                 sys.exit(1)
         elif o in ("--regen-cmd") :
             regen_cmd = a
@@ -328,7 +332,7 @@ Standard output is a series Fvwm commands."""
     timestamp = time.time()
     
     if len(set_menus) == 0:
-        xdg_menu_prefix = ((os.environ['XDG_MENU_PREFIX'] if os.environ.has_key('XDG_MENU_PREFIX') else ''))
+        xdg_menu_prefix = ((os.environ['XDG_MENU_PREFIX'] if 'XDG_MENU_PREFIX' in os.environ else ''))
     
         # First check if no user presettings made
         if desktop == '':
@@ -356,7 +360,7 @@ Standard output is a series Fvwm commands."""
     if menu_list_length == 0:
         if not desktop == '':
             desktop = desktop + '-'
-	if menu_error:
+        if menu_error:
             printtext('DestroyMenu "%s"' % top)
             printtext('AddToMenu "%s" "%s" Title' % (top, top))
             printtext('+ "Error: No menus found" Nop')
@@ -414,7 +418,7 @@ def getmenulist(desktop, menu_type):
     if not found_menus == 0:
         all_menus = []
         # remove all menus in /etc/xdg/menus if exist in user dir
-        for path in menudict.keys():
+        for path in list(menudict.keys()):
             if not path == '/etc/xdg/menus':
                 if path == os.path.join(os.getenv("HOME"), '.config/menus'):
                     menudict['/etc/xdg/menus'] = menudict['/etc/xdg/menus'] - menudict[path]
@@ -451,7 +455,7 @@ def getmenulist(desktop, menu_type):
         if desktop != '' or menu_type != '':
             vprint("\n Filtering menus according to --desktop %s and --menu-type %s" % (desktop, menu_type) )
             pattern = '*'+desktop+'*'+menu_type+'*'
-            for path in menudict.keys():
+            for path in list(menudict.keys()):
                 for menu in list(menudict[path]):
                     if not fnmatch.fnmatch( menu, pattern ):
                         menudict[path].remove(menu)
@@ -484,7 +488,7 @@ def getmenulist(desktop, menu_type):
             user_menus = 0
             system_menus = 0
             filled = False
-            for path in menudict.keys():
+            for path in list(menudict.keys()):
                 if de == 'none':
                     pattern = '*'
                 elif de == 'others':
@@ -546,12 +550,12 @@ def getmenulist(desktop, menu_type):
                 highest = de_total
                 de_highest = de
 
-	if highest == 0 :	# no dev environments?
-	    de_highest = 'others' # use 'others'
+        if highest == 0 : # no dev environments?
+            de_highest = 'others' # use 'others'
         vprint( "\n Winner: %s" %de_highest)
         
         # Perhaps there're a global menus available which are not in the highest rated list
-        if desktop_dict.has_key('none'):
+        if 'none' in desktop_dict:
             for menu in desktop_dict['none']:
                 name = menu.replace('.menu', '').split('/')
                 # the fnmatch.filter will be used to find NO match because then
@@ -561,7 +565,7 @@ def getmenulist(desktop, menu_type):
                     desktop_dict[de_highest].add(menu)
         
         # Add 'others' menus to list, because these could be tool menus like yast, etc
-        if desktop_dict.has_key('others'):
+        if 'others' in desktop_dict:
             for menu in desktop_dict['others']:
                 desktop_dict[de_highest].add(menu)
                 
@@ -575,14 +579,16 @@ def vprint(text):
         sys.stderr.write(text+"\n")
     
 def printtext(text, encodetext=True):
-    if encodetext:
-        print text.encode("utf-8")
+    if encodetext and sys.version_info < (3,0):
+        print(text.encode("utf-8"))
     else:
-        print text
+        print(text)
 
 # fix unicode decode problem like
 # UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position xyz: ordinal not in range(128) 
+# Python 3 str work with unicode by default, so decoding skipped for python 3.
 def decodetext(text):
+    if sys.version_info > (3,0): return text
     old_stdout = sys.stdout
     fnull = open(os.devnull, 'w')
     sys.stdout = fnull
@@ -594,7 +600,7 @@ def decodetext(text):
             unicode_text = text.decode("iso-8859-15")
             text = "%s" % unicode_text
             new_text = text.encode("iso-8859-15")
-            print new_text
+            print(new_text)
         except:
             new_text = None
     fnull.close()
@@ -755,6 +761,9 @@ def parsemenu(menu, name="", title=""):
                 execProgram = m.sub('', desktop.getExec())
                 printmenu(desktop.getName(), desktop.getIcon(), "Exec exec " + " " + execProgram)
             menu_entry_count += 1
+        elif isinstance(entry, xdg.Menu.Separator):
+            if printmode:
+                printtext( '+ "" Nop' )
         else:
             if printmode:
                 printtext('# not supported: ' + str(entry))
