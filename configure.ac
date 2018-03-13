@@ -679,15 +679,18 @@ AH_TEMPLATE([HAVE_XFT],[Define if Xft library is used.])
 AH_TEMPLATE([HAVE_XFT2],[Define if Xft 2 library is used.])
 AH_TEMPLATE([HAVE_XFT_UTF8],[Define if Xft library can handle utf8 encoding])
 if test ! x"$with_xft" = xno; then
+  AC_MSG_CHECKING([whether pkg-config could find freetype2])
+  if "${PKG_CONFIG}" --exists freetype2; then
+    AC_MSG_RESULT([yes])
+    CFLAGS_FREETYPE=`"${PKG_CONFIG}" --cflags freetype2`
+    FREETYPE_LIBS=`"${PKG_CONFIG}" --libs freetype2`
+    CFLAGS="$CFLAGS $CFLAGS_FREETYPE"
+    LIBS="$LIBS $FREETYPE_LIBS"
 
-  # first check for freetype2
-  have_freetype=no
-  AM_CHECK_FT2(6.1.0)
-  if test x"$no_ft" = x; then
     have_freetype=yes
   else
-    have_freetype=no
-    problem_xft=": Can't detect freetype2 >= 6.1.0/2.0.6"
+  AC_MSG_RESULT([no])
+  have_freetype=no
   fi
 
   # check for fontconfig for Xft 2
