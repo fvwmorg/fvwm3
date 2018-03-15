@@ -108,6 +108,7 @@ static char *function_vars[] =
 	"schedule.last",
 	"schedule.next",
 	"screen",
+	"screen.count",
 	"version.info",
 	"version.line",
 	"version.num",
@@ -194,6 +195,7 @@ enum
 	VAR_SCHEDULE_LAST,
 	VAR_SCHEDULE_NEXT,
 	VAR_SCREEN,
+	VAR_SCREEN_COUNT,
 	VAR_VERSION_INFO,
 	VAR_VERSION_LINE,
 	VAR_VERSION_NUM,
@@ -843,6 +845,10 @@ static signed int expand_vars_extended(
 	case VAR_SCREEN:
 		is_numeric = False;
 		val = Scr.screen;
+		break;
+	case VAR_SCREEN_COUNT:
+		is_numeric = True;
+		val = monitor_get_count();
 		break;
 	case VAR_SCHEDULE_LAST:
 		is_numeric = True;

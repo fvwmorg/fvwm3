@@ -391,6 +391,14 @@ command can be used:</para>
     </listitem>
   </varlistentry>
   <varlistentry>
+    <term>$[screen.count]</term>
+    <listitem>
+      <para>
+	The total number of screens detected.  Assumes RandR.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
     <term>
       $[fg.cs&lt;n&gt;]
       $[bg.cs&lt;n&gt;]
