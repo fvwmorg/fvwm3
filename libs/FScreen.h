@@ -73,6 +73,7 @@ void FScreenGetResistanceRect(
 	int *x1, int *y1);
 Bool FScreenIsRectangleOnScreen(fscreen_scr_arg *, fscreen_scr_t,rectangle *);
 const char	*FScreenOfPointerXY(int, int);
+int		 monitor_get_count(void);
 
 
 /* Clipping/positioning */

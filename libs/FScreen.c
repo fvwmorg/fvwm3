@@ -231,6 +231,9 @@ single_screen:
 	coord.h = DisplayHeight(disp, DefaultScreen(disp));
 
 	monitor_create_randr_region(m, GLOBAL_SCREEN_NAME, &coord, is_primary);
+
+	if (++no_of_screens > 0)
+		no_of_screens--;
 }
 
 static void
