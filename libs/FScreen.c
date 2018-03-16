@@ -47,8 +47,6 @@ static int grav_matrix[3][3] =
 static Display *disp;
 static int no_of_screens;
 
-static struct monitor	*FindScreenOfXY(int x, int y);
-static struct monitor	*monitor_get_current(void);
 static struct monitor	*monitor_new(void);
 static void		 monitor_create_randr_region(struct monitor *m,
 	const char *, struct coord *, int);
@@ -339,7 +337,7 @@ void FScreenSetDefaultModuleScreen(char *scr_spec)
 }
 
 
-static struct monitor *
+struct monitor *
 FindScreenOfXY(int x, int y)
 {
 	struct monitor	*m;

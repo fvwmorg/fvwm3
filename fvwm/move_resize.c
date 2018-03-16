@@ -1885,6 +1885,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 void CMD_Move(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_NORMAL);
+	UPDATE_FVWM_SCREEN(exc->w.fw);
 
 	return;
 }
@@ -1892,6 +1893,7 @@ void CMD_Move(F_CMD_ARGS)
 void CMD_AnimatedMove(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, True, MOVE_NORMAL);
+	UPDATE_FVWM_SCREEN(exc->w.fw);
 
 	return;
 }
@@ -1899,6 +1901,7 @@ void CMD_AnimatedMove(F_CMD_ARGS)
 void CMD_MoveToPage(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_PAGE);
+	UPDATE_FVWM_SCREEN(exc->w.fw);
 
 	return;
 }
@@ -1906,6 +1909,7 @@ void CMD_MoveToPage(F_CMD_ARGS)
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_SCREEN);
+	UPDATE_FVWM_SCREEN(exc->w.fw);
 
 	return;
 }
@@ -2342,6 +2346,9 @@ Bool __move_loop(
 	FvwmWindow *fw = exc->w.fw;
 	unsigned int draw_parts = PART_NONE;
 	XEvent e;
+
+	if (fw->m == NULL)
+		UPDATE_FVWM_SCREEN(fw);
 
 	if (!GrabEm(cursor, GRAB_NORMAL))
 	{
@@ -4373,6 +4380,7 @@ void CMD_Resize(F_CMD_ARGS)
 	}
 
 	__resize_window(F_PASS_ARGS);
+	UPDATE_FVWM_SCREEN(fw);
 
 	return;
 }
@@ -5042,6 +5050,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 		maximize_fvwm_window(fw, &max_g);
 	}
 	EWMH_SetWMState(fw, False);
+	UPDATE_FVWM_SCREEN(fw);
 
 	return;
 }
@@ -5069,6 +5078,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 		maximize_fvwm_window(fw, &max_g);
 	}
 	EWMH_SetWMState(fw, False);
+	UPDATE_FVWM_SCREEN(fw);
 
 	return;
 }
@@ -5094,6 +5104,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 		{
 			action = "";
 			__move_window(F_PASS_ARGS, False, MOVE_PAGE);
+			UPDATE_FVWM_SCREEN(fw);
 		}
 		SET_STICKY_ACROSS_PAGES(fw, 1);
 	}
