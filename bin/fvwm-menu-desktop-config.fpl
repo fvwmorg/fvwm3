@@ -11,9 +11,11 @@ use File::Basename;
 use strict;
 use warnings;
 
-#open(MSG ,">>/tmp/log.txt") || die "Error $!";
-
 my $modname = 'FvwmForm-XDGMenu-Config';
+my $configtmp = "$ENV{'FVWM_USERDIR'}/.XDGMenu-Config.fvwm2rc";
+
+open(MSG ,">$configtmp") || die "Error $!";
+
 my $all = `fvwm-menu-desktop --get-menus all`;
 my $selected = `fvwm-menu-desktop --get-menus desktop`;
 
@@ -62,42 +64,41 @@ DestroyModuleConfig  ${modname}: *
 if (scalar keys %all_menus != 0) {
     foreach my $key (sort( keys %all_menus)) {
         $fvwmform_commands .= "
-            *${modname}: Line       left
-            *${modname}: Text       \"\$[gt.Menus in]\"
-            *${modname}: Text       \" $key\"
-            *${modname}: Line       left
-            *${modname}: Selection  meth multiple
-        ";
+*${modname}: Line       left
+*${modname}: Text       \"\$[gt.Menus in]\"
+*${modname}: Text       \" $key\"
+*${modname}: Line       left
+*${modname}: Selection  meth multiple
+";
         my $m_count = 0;
         foreach my $count (sort(keys %{$all_menus{$key}})) {
             my $menu = $all_menus{$key}{$count};
             my $newstring = $menu->[0] . ' ' x eval($max_length-length($menu->[0]));
-            $fvwmform_commands .= "*${modname}: Choice  $menu->[1] $menu->[1] $menu->[2] \"$newstring\"
-            ";
+            $fvwmform_commands .= "*${modname}: Choice  $menu->[1] $menu->[1] $menu->[2] \"$newstring\"\n";
             $m_count++;
             if ($m_count == 4) {
                 $fvwmform_commands .= "
-                    *${modname}: Line       left
-                    *${modname}: Selection  meth multiple
-                ";
+*${modname}: Line       left
+*${modname}: Selection  meth multiple
+";
                 $m_count = 0;
             }
         }
         $fvwmform_commands .= "
-            *${modname}: Line     left
-            *${modname}: Text     \" \"
-        ";
+*${modname}: Line     left
+*${modname}: Text     \" \"
+";
     }
 }
 else {
     $fvwmform_commands .= "
-        *${modname}: Line    center
-        *${modname}: Text    \"\$[gt.No menus found! Check why from within a terminal with]\"
-        *${modname}: Line    center
-        *${modname}: Text    \"'fvwm-menu-desktop -v'\"
-        *${modname}: Line    left
-        *${modname}: Text    \" \"
-    ";
+*${modname}: Line    center
+*${modname}: Text    \"\$[gt.No menus found! Check why from within a terminal with]\"
+*${modname}: Line    center
+*${modname}: Text    \"'fvwm-menu-desktop -v'\"
+*${modname}: Line    left
+*${modname}: Text    \" \"
+";
 }
 
 $fvwmform_commands .= "
@@ -169,7 +170,18 @@ $fvwmform_commands .= "
 
 *${modname}: Line
 *${modname}: Line       expand
-*${modname}: Button     continue \"\$[gt.Save Menu]\"
+*${modname}: Button     continue \"\$[gt.Export Menu]\"
+*${modname}: Command    InfoStoreAdd XDGMenuList \"\\
+";
+
+foreach my $key (keys %all_menus) {
+    foreach my $file (keys %{$all_menus{$key}}) {
+        my $menu = $all_menus{$key}{$file};
+        $fvwmform_commands .= "\$($menu->[1]\?$key$menu->[0].menu )\\\n";
+    }
+}
+
+$fvwmform_commands .= "\"
 *${modname}: Command    PipeRead 'fvwm-menu-desktop \\
 \$(IconsOn\?--enable-mini-icons )\\
 \$(Size\?-s \$(Size) )\\
@@ -185,36 +197,24 @@ $fvwmform_commands .= "
 \$(InsertInto\?--insert-in-menu \$(InsertInto) )\\
 \$(Title\?--title \$(Title) )\\
 \$(Theme\?--theme \$(Theme) )\\
---set-menus \"\\
-";
-
-foreach my $key (keys %all_menus) {
-    foreach my $file (keys %{$all_menus{$key}}) {
-        my $menu = $all_menus{$key}{$file};
-        $fvwmform_commands .= "\$($menu->[1]\?$key$menu->[0].menu )\\\n";
-    }
-}
-
-$fvwmform_commands .= "\" \$(Path\? > \$(Path)) 2>> ~/.xsession-errors &&  echo \"Read \$(Path\? \$(Path))\"'
+--set-menus \"\$[infostore.XDGMenuList]\" \\
+\$(Path\? > \$(Path)) 2>> ~/.xsession-errors &&  echo \"Read \$(Path\? \$(Path))\"'
 
 *${modname}: Button         continue \"\$[gt.Save and Regenerate]\"
 
 # Before saving the data, remove any previously saved data:
 *${modname}: Command DestroyModuleConfig ${modname}Default: *
-*${modname}: Command !(                                      /bin/echo \\
-  \"# This file last created by ${modname} on: `/bin/date`.\"; /bin/echo \\
+*${modname}: Command !(/bin/echo \"# This file last created by ${modname} on: `/bin/date`.\") > \$FVWM_USERDIR/.${modname}
 ";
 
 foreach my $key (keys %all_menus) {
     foreach my $count (keys %{$all_menus{$key}}) {
         my $menu = $all_menus{$key}{$count};
-        $fvwmform_commands .= "  '*${modname}Default: $menu->[1]     \$($menu->[1]\?on) '        ; /bin/echo \\
-    ";
+        $fvwmform_commands .= "*${modname}: Command !(/bin/echo '*${modname}Default: $menu->[1] \$($menu->[1]\?on) ') >> \$FVWM_USERDIR/.${modname}\n";
     }
 }
 
-$fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
-
+$fvwmform_commands .= "
 *${modname}: Command !(/bin/echo \\
   '*${modname}Default: IncludeConfig\$(IncludeConfig\?on) ' ; /bin/echo \\
   '*${modname}Default: IncludeRegen \$(IncludeRegen\?on) '  ; /bin/echo \\
@@ -243,20 +243,17 @@ $fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
 
 # Before saving the data, remove any previously saved data:
 *${modname}: Command DestroyModuleConfig ${modname}Default: *
-*${modname}: Command !(                                      /bin/echo \\
-  \"# This file last created by ${modname} on: `/bin/date`.\"; /bin/echo \\
+*${modname}: Command !(/bin/echo \"# This file last created by ${modname} on: `/bin/date`.\") > \$FVWM_USERDIR/.${modname}
 ";
 
 foreach my $key (keys %all_menus) {
     foreach my $count (keys %{$all_menus{$key}}) {
         my $menu = $all_menus{$key}{$count};
-        $fvwmform_commands .= "  '*${modname}Default: $menu->[1]     \$($menu->[1]\?on) '        ; /bin/echo \\
-    ";
+        $fvwmform_commands .= "*${modname}: Command !(/bin/echo '*${modname}Default: $menu->[1] \$($menu->[1]\?on) ') >> \$FVWM_USERDIR/.${modname}\n";
     }
 }
 
-$fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
-
+$fvwmform_commands .= "
 *${modname}: Command !(/bin/echo \\
   '*${modname}Default: IncludeConfig\$(IncludeConfig\?on) ' ; /bin/echo \\
   '*${modname}Default: IncludeRegen \$(IncludeRegen\?on) '  ; /bin/echo \\
@@ -295,12 +292,17 @@ $fvwmform_commands .= ") > \$FVWM_USERDIR/.${modname}
 
 $fvwmform_commands =~ s/^\s+//;    # trim leading whitespace
 
+print MSG "$fvwmform_commands\n\n";
+close(MSG);
+
 ::command(qq[
-    $fvwmform_commands
+    Read $configtmp
     FvwmForm ${modname}
 ]);
-#print MSG "$fvwmform_commands\n\n";
-#close(MSG);
+
+sleep(2);
+unlink $configtmp
+
 # Local Variables:
 # mode: perl
 # End:

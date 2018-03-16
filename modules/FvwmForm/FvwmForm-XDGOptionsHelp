@@ -110,7 +110,7 @@ DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.Output path:        ]"
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter here the FULL path of the menu to save. Default path is $FVWM_USERDIR/.menu.]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu.]"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    center

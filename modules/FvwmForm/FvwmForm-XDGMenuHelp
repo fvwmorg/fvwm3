@@ -22,7 +22,7 @@ DestroyModuleConfig  FvwmForm-XDGMenuHelp: *
 *FvwmForm-XDGMenuHelp:   Line    left
 *FvwmForm-XDGMenuHelp:   Line    " "
 *FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.Save Menu:]"
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.Export Menu:]"
 *FvwmForm-XDGMenuHelp:   Line    left
 *FvwmForm-XDGMenuHelp:   Text    "$[gt.     Generates a menu by calling fvwm-menu-desktop with the selected options]"
 *FvwmForm-XDGMenuHelp:   Line    left
@@ -36,7 +36,7 @@ DestroyModuleConfig  FvwmForm-XDGMenuHelp: *
 *FvwmForm-XDGMenuHelp:   Line    left
 *FvwmForm-XDGMenuHelp:   Text    "$[gt.     This saves the settings then runs fvwm-menu-desktop with no options using]"
 *FvwmForm-XDGMenuHelp:   Line    left
-*FvwmForm-XDGMenuHelp:   Text    "$[gt.     the defaults saved in the config file. This does not save the menu.]"
+*FvwmForm-XDGMenuHelp:   Text    "$[gt.     the defaults saved in the config file. This does not export the menu.]"
 *FvwmForm-XDGMenuHelp:   Line    left
 *FvwmForm-XDGMenuHelp:   Line    " "
 *FvwmForm-XDGMenuHelp:   Line    left
