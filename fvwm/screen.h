@@ -527,6 +527,18 @@ typedef struct ScreenInfo
 	} last_added_item;
 } ScreenInfo;
 
+#define UPDATE_FVWM_SCREEN(fw) \
+	do { \
+		rectangle g; \
+		struct monitor *mnew; \
+		get_unshaded_geometry((fw), &g); \
+		mnew = FindScreenOfXY(g.x, g.y); \
+		if (mnew == NULL) \
+			mnew = monitor_get_current(); \
+		if (mnew != NULL) \
+			(fw)->m = mnew; \
+	} while(0)
+
 /* A macro to to simplify he "ewmh desktop code" */
 #define IS_EWMH_DESKTOP(win) \
 	(Scr.EwmhDesktop && win == Scr.EwmhDesktop->wins.client)

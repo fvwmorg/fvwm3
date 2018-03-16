@@ -40,6 +40,7 @@
 #include "libs/PictureBase.h"
 #include "libs/Flocale.h"
 #include "libs/fvwmrect.h"
+#include "libs/FScreen.h"
 #include "window_flags.h"
 #include "condrc.h"
 
@@ -988,6 +989,8 @@ typedef struct FvwmWindow
 		void *p;
 		int i;
 	} scratch;
+
+	struct monitor *m;
 } FvwmWindow;
 
 /* ---------------------------- exported variables (globals) --------------- */

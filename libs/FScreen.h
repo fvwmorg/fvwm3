@@ -43,6 +43,9 @@ TAILQ_HEAD(monitors, monitor);
 struct monitors		monitor_q;
 
 struct monitor	*monitor_by_name(const char *);
+struct monitor	*monitor_by_xy(int, int);
+struct monitor  *monitor_by_number(int);
+struct monitor  *monitor_get_current(void);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 
@@ -57,7 +60,6 @@ void FScreenSelect(Display *dpy);
 void FScreenConfigureModule(char *args);
 const char* FScreenGetConfiguration(void); /* For use by fvwm */
 void FScreenSetDefaultModuleScreen(char *scr_spec);
-
 void FScreenSetPrimaryScreen(int scr);
 
 /* Screen info */
@@ -74,7 +76,7 @@ void FScreenGetResistanceRect(
 Bool FScreenIsRectangleOnScreen(fscreen_scr_arg *, fscreen_scr_t,rectangle *);
 const char	*FScreenOfPointerXY(int, int);
 int		 monitor_get_count(void);
-
+struct monitor	*FindScreenOfXY(int, int);
 
 /* Clipping/positioning */
 int FScreenClipToScreen(fscreen_scr_arg *, fscreen_scr_t,
