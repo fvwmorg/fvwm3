@@ -117,7 +117,7 @@ Option to define the menu title \fINAME\fR of the top menu used by Fvwm's
 
 .IP "\fB\-\-include\-items\fR \fINAME\fR "
 This option controls if the additional menu items 'Regenerate' and 'Configure'
-are included in the top level menu. \fINAME\fR can be one of \fIregen\fR,
+are included in the top level menu. \fINAME\fR can be one of \fIregenerate\fR,
 \fIconfig\fR, \fIboth\fR, or \fInone\fR. The default is \fIboth\fR.
 
 .IP "\fB\-\-regen\-cmd\fR \fICMD\fR "
