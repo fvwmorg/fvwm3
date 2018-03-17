@@ -200,7 +200,10 @@ Standard output is a series Fvwm commands."""
     else:
         config_file = "%s/.fvwm/.FvwmForm-XDGMenu-Config" % os.environ['HOME']
     if os.path.isfile(config_file):
-        fvwmform_config = open(config_file, "r")
+        if sys.version_info > (3,0):
+            fvwmform_config = open(config_file, "r", errors="ignore")
+        else:
+            fvwmform_config = open(config_file, "r")
 
         for l in fvwmform_config:
             o = l.split()
