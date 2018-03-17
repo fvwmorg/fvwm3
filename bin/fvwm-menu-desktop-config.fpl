@@ -216,7 +216,7 @@ foreach my $key (keys %all_menus) {
 
 $fvwmform_commands .= "
 *${modname}: Command !(/bin/echo \\
-  '*${modname}Default: IncludeConfig\$(IncludeConfig\?on) ' ; /bin/echo \\
+  '*${modname}Default: IncludeConfig \$(IncludeConfig\?on) ' ; /bin/echo \\
   '*${modname}Default: IncludeRegen \$(IncludeRegen\?on) '  ; /bin/echo \\
   '*${modname}Default: IncludeBoth  \$(IncludeBoth\?on) '   ; /bin/echo \\
   '*${modname}Default: IncludeNone  \$(IncludeNone\?on) '   ; /bin/echo \\
@@ -255,7 +255,7 @@ foreach my $key (keys %all_menus) {
 
 $fvwmform_commands .= "
 *${modname}: Command !(/bin/echo \\
-  '*${modname}Default: IncludeConfig\$(IncludeConfig\?on) ' ; /bin/echo \\
+  '*${modname}Default: IncludeConfig \$(IncludeConfig\?on) ' ; /bin/echo \\
   '*${modname}Default: IncludeRegen \$(IncludeRegen\?on) '  ; /bin/echo \\
   '*${modname}Default: IncludeBoth  \$(IncludeBoth\?on) '   ; /bin/echo \\
   '*${modname}Default: IncludeNone  \$(IncludeNone\?on) '   ; /bin/echo \\
