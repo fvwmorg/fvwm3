@@ -2,9 +2,10 @@
  
 # Modification History
 
-# Changed on 18/03/11 by Jaimos Skriletz:
-# - Updated script for Python 3
-# - Added support for xdg.Menu.Separator
+# Changed on 18/03/19 by Jaimos Skriletz:
+# - Updated script for and require Python 3.
+# - Drop support for Python 2.
+# - Added support for xdg.Menu.Separator.
 
 # Changed on 16/12/31 by Jaimos Skriletz:
 # - Added check for FVWM_USERDIR env variable.
@@ -79,7 +80,7 @@
 # This script requires the python-xdg module, which in Debian can be
 # installed by typing
 #
-#   apt-get install python-xdg
+#   apt-get install python3-xdg
 #
 # On Fedora, python-xdg is installed by default.
 
@@ -167,7 +168,7 @@ Standard output is a series Fvwm commands."""
     global verbose, force, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
     global default_app_icon, default_dir_icon, include_items, config_menus, regen_cmd, dynamic_menu, build_all_menus
-    version = "2.3.4"
+    version = "2.4"
     verbose = False
     force = False
     desktop=''
@@ -200,10 +201,7 @@ Standard output is a series Fvwm commands."""
     else:
         config_file = "%s/.fvwm/.FvwmForm-XDGMenu-Config" % os.environ['HOME']
     if os.path.isfile(config_file):
-        if sys.version_info > (3,0):
-            fvwmform_config = open(config_file, "r", errors="ignore")
-        else:
-            fvwmform_config = open(config_file, "r")
+        fvwmform_config = open(config_file, "r", errors="ignore")
 
         for l in fvwmform_config:
             o = l.split()
@@ -377,8 +375,9 @@ Standard output is a series Fvwm commands."""
         if os.path.exists(os.path.join(os.path.expanduser(icon_dir), ".theme")):
             previous_theme = next(open(os.path.join(os.path.expanduser(icon_dir), ".theme"), 'r')).replace('\n', '')
         vprint(" Previous used theme: %s" %previous_theme)
-        vprint(" Current used theme: %s" %current_theme)
-        
+        vprint(" Current used theme: %s\n" %current_theme)
+       
+        sys.stderr.flush() 
         parsemenus(menulist, desktop)
 
     # write current_theme to <icon_dir>/.theme if --enable-mini-icons and printmode is set
@@ -387,6 +386,7 @@ Standard output is a series Fvwm commands."""
         fh.write(current_theme)
         fh.close()
               
+    sys.stdout.flush()
     vprint("\nProcess took " + str(time.time()-timestamp) + " seconds")
              
 def getmenulist(desktop, menu_type):
@@ -580,36 +580,20 @@ def getmenulist(desktop, menu_type):
 def vprint(text):
     if verbose:
         sys.stderr.write(text+"\n")
-    
-def printtext(text, encodetext=True):
-    if encodetext and sys.version_info < (3,0):
-        print(text.encode("utf-8"))
-    else:
-        print(text)
 
-# fix unicode decode problem like
-# UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position xyz: ordinal not in range(128) 
-# Python 3 str work with unicode by default, so decoding skipped for python 3.
-def decodetext(text):
-    if sys.version_info > (3,0): return text
-    old_stdout = sys.stdout
-    fnull = open(os.devnull, 'w')
-    sys.stdout = fnull
-    try:
-        new_text = text.encode("utf-8")
-        printtext('%s' % text)
-    except UnicodeDecodeError:
+# Encoding error handling of menu entries.
+def printtext(text):
+    try: print(text)
+    except UnicodeEncodeError:
+        if verbose: print("# UnicodeEncodeError - Attempting to encode")
         try:
-            unicode_text = text.decode("iso-8859-15")
-            text = "%s" % unicode_text
-            new_text = text.encode("iso-8859-15")
-            print(new_text)
-        except:
-            new_text = None
-    fnull.close()
-    sys.stdout = old_stdout
-    return new_text
-    
+            sys.stdout.flush()
+            sys.stdout.buffer.write(text.encode())
+            print()
+        except: print(text.encode("ascii", errors="replace").decode("ascii"))
+    except:
+        if verbose: print("# Unknown error - Skipping entry")
+
 def geticonfile(icon):
     iconpath = xdg.IconTheme.getIconPath(icon, size, current_theme, ["png", "xpm", "svg"])
 
@@ -660,14 +644,7 @@ def printmenu(name, icon, command):
             iconfile = '%'+iconfile+'%'
         else:
             sys.stderr.write("%s icon or default icon not found!\n")
-    name = decodetext(name)
-    command = decodetext(command)
-    iconfile = decodetext(iconfile)
-    if not (name == None or command == None or iconfile == None):
-        printtext('+ "%s%s" %s' % (name, iconfile, command), False)
-    else:
-        sys.stderr.write("A menu entry cannot decode! Skipping ...\n")
-        printtext('# Decode Error! Menu entry skipped.')
+    printtext('+ "%s%s" %s' % (name, iconfile, command))
 
 def parsemenus(menulist, desktop):
     global menu_entry_count
@@ -733,26 +710,20 @@ def parsemenu(menu, name="", title=""):
     if not title:
         title = name
     if printmode:
-        name = decodetext(name)
-        title = decodetext(title)
-        if not (name == None or title == None):
-            if not insert_in_menu or not (insert_in_menu and name == top and menu_list_length == 1):
-                if name == top and dynamic_menu:
-                    printtext('DestroyMenu recreate "%s"' % name, False)
-                else:
-                    printtext('DestroyMenu "%s"' % name, False)
-            if with_titles:
-                # for insert-in-menu AddToMenu doesn't have a title for top menu
-                # because this will appear then in the other menu
-                if insert_in_menu and name == top and menu_list_length == 1:
-                    printtext('AddToMenu "%s"' % name, False)
-                else:
-                    printtext('AddToMenu "%s" "%s" Title' % (name, title), False)
+        if not insert_in_menu or not (insert_in_menu and name == top and menu_list_length == 1):
+            if name == top and dynamic_menu:
+                printtext('DestroyMenu recreate "%s"' % name)
             else:
-                printtext('AddToMenu "%s"' % name, False)
+                printtext('DestroyMenu "%s"' % name)
+        if with_titles:
+            # for insert-in-menu AddToMenu doesn't have a title for top menu
+            # because this will appear then in the other menu
+            if insert_in_menu and name == top and menu_list_length == 1:
+                printtext('AddToMenu "%s"' % name)
+            else:
+                printtext('AddToMenu "%s" "%s" Title' % (name, title))
         else:
-            sys.stderr.write("A menu entry cannot decode! Skipping ...\n")
-            printtext('# Decode Error! Menu entry skipped.')
+            printtext('AddToMenu "%s"' % name)
     for entry in menu.getEntries():
         if isinstance(entry, xdg.Menu.Menu):
             if printmode:
@@ -840,5 +811,5 @@ if __name__ == "__main__":
 
 # Local Variables:
 # mode: python
-# compile-command: "python fvwm-menu-desktop.in --enable-mini-icons --with-titles"
+# compile-command: "python3 fvwm-menu-desktop.in --version"
 # End:
