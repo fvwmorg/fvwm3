@@ -7,10 +7,10 @@ DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
 #*FvwmForm-XDGOptionsHelp:   Line    center
 #*FvwmForm-XDGOptionsHelp:   Text    "$[gt.XDGMenu Options Help]"
 #*FvwmForm-XDGOptionsHelp:   Line 
-*FvwmForm-XDGOptionsHelp:   Line    center
-*FvwmForm-XDGOptionsHelp:   Text    "----------------------------------------------------------------------------------------"
-*FvwmForm-XDGOptionsHelp:   Line    center
-*FvwmForm-XDGOptionsHelp:   Text    "$[gt.General Options]"
+#*FvwmForm-XDGOptionsHelp:   Line    center
+#*FvwmForm-XDGOptionsHelp:   Text    "----------------------------------------------------------------------------------------"
+#*FvwmForm-XDGOptionsHelp:   Line    center
+#*FvwmForm-XDGOptionsHelp:   Text    "$[gt.General Options]"
 *FvwmForm-XDGOptionsHelp:   Line    left
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    Left
@@ -109,14 +109,22 @@ DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
 *FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Terminal Command:   ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter terminal emulator command used to launch terminal applications. The command]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.                    ]"
+*FvwmForm-XDGOptionsHelp:   Text    "$[gt.must end with an execute option (-e). Default xterm -e.]"
+*FvwmForm-XDGOptionsHelp:   Line    Left
+*FvwmForm-XDGOptionsHelp:   Line    " "
+*FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.Output path:        ]"
 *FvwmForm-XDGOptionsHelp:   Text    "$[gt.Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu.]"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
-*FvwmForm-XDGOptionsHelp:   Line    center
-*FvwmForm-XDGOptionsHelp:   Text    "----------------------------------------------------------------------------------------"
-*FvwmForm-XDGOptionsHelp:   Line    Left
-*FvwmForm-XDGOptionsHelp:   Line    " "
+#*FvwmForm-XDGOptionsHelp:   Line    center
+#*FvwmForm-XDGOptionsHelp:   Text    "----------------------------------------------------------------------------------------"
+#*FvwmForm-XDGOptionsHelp:   Line    Left
+#*FvwmForm-XDGOptionsHelp:   Line    " "
 # Buttons
 *FvwmForm-XDGOptionsHelp:   Line    center
 *FvwmForm-XDGOptionsHelp:   Button  quit    "$[gt.Close]"         ^M

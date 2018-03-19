@@ -41,6 +41,7 @@ fvwm-menu-desktop
 [ \fB\-\-all\-menus\fR ]
 [ \fB\-\-include\-items\fR \fINAME\fR ]
 [ \fB\-\-regen\-cmd\fR \fICMD\fR ]
+[ \fB\-\-term\-cmd\fR \fICMD\fR ]
 [ \fB\-\-dynamic\fR ]
 [ \fB\-\-menu-error\fR|\fB\-e\fR ]
 [ \fB\-\-verbose\fR|\fB\-v\fR ]
@@ -123,6 +124,12 @@ are included in the top level menu. \fINAME\fR can be one of \fIregenerate\fR,
 .IP "\fB\-\-regen\-cmd\fR \fICMD\fR "
 This option sets the fvwm command \fICMD\fR that is run when the menu item
 \'Regenerate' is selected. The default is "PipeRead `fvwm-menu-desktop`".
+
+.IP "\fB\-\-term\-cmd\fR \fICMD\fR "
+This option sets the terminal emulator command \fICMD\fR that is used to
+to run terminal applications in. \fICMD\fR needs to end with an execute
+option, such as xterm's -e option, which will run the command that is
+appended to \fICMD\fR. The default is "xterm -e".
 
 .IP "\fB\-\-dynamic\fR "
 This option is to be used with creating dynamic menus using

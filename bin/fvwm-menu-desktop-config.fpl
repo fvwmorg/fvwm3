@@ -155,6 +155,11 @@ $fvwmform_commands .= "
 *${modname}: Input      InsertInto 20 \"\"
 
 *${modname}: Line       left
+*${modname}: Text       \"\$[gt.Terminal command:   ]\"
+*${modname}: Input      TermCmd 30 \"xterm -e\"
+*${modname}: Text       \"\$[gt. (Used to run Terminal entries)]\"
+
+*${modname}: Line       left
 *${modname}: Text       \"\$[gt.Icon directory:     ]\"
 *${modname}: Input      IconDir 30 \"~/.fvwm/icons\"
 *${modname}: Text       \"\$[gt. (Directory for converted icons)]\"
@@ -191,6 +196,7 @@ $fvwmform_commands .= "\"
 \$(IncludeRegen\?regenerate)\\
 \$(IncludeBoth\?both)\\
 \$(IncludeNone\?none) \\
+\$(TermCmd\?--term-cmd \"\$(TermCmd)\" )\\
 \$(IconDir\?--mini-icon-dir \$(IconDir) )\\
 \$(DirIcon\?--dir-icon \$(DirIcon) )\\
 \$(AppIcon\?--app-icon \$(AppIcon) )\\
@@ -232,6 +238,7 @@ $fvwmform_commands .= "
   '*${modname}Default: Title        \$(Title) '         ; /bin/echo \\
   '*${modname}Default: InsertInto   \$(InsertInto) '    ; /bin/echo \\
   '*${modname}Default: Path         \$(Path) '          ; /bin/echo \\
+  '*${modname}Default: TermCmd      \$(TermCmd) '       ; /bin/echo \\
   '*${modname}Default: IconDir      \$(IconDir) '       ; /bin/echo \\
   '*${modname}Default: DirIcon      \$(DirIcon) '       ; /bin/echo \\
   '*${modname}Default: AppIcon      \$(AppIcon) '       \\
@@ -271,6 +278,7 @@ $fvwmform_commands .= "
   '*${modname}Default: Title        \$(Title) '         ; /bin/echo \\
   '*${modname}Default: InsertInto   \$(InsertInto) '    ; /bin/echo \\
   '*${modname}Default: Path         \$(Path) '          ; /bin/echo \\
+  '*${modname}Default: TermCmd      \$(TermCmd) '       ; /bin/echo \\
   '*${modname}Default: IconDir      \$(IconDir) '       ; /bin/echo \\
   '*${modname}Default: DirIcon      \$(DirIcon) '       ; /bin/echo \\
   '*${modname}Default: AppIcon      \$(AppIcon) '       \\

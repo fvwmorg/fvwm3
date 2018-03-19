@@ -6,6 +6,8 @@
 # - Updated script for and require Python 3.
 # - Drop support for Python 2.
 # - Added support for xdg.Menu.Separator.
+# - Added option --term-cmd to state the terminal emulator command
+#   to use with Terminal=True .desktop entries. Default: xterm -e
 
 # Changed on 16/12/31 by Jaimos Skriletz:
 # - Added check for FVWM_USERDIR env variable.
@@ -157,7 +159,7 @@ Standard output is a series Fvwm commands."""
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hs:t:vwe",
                                    ["help", "verbose", "enable-mini-icons", "with-titles", "without-titles", "version",
-                                    "desktop=", "size=", "theme=", "install-prefix=", "menu-type=", "regen-cmd=",
+                                    "desktop=", "size=", "theme=", "install-prefix=", "menu-type=", "regen-cmd=", "term-cmd=",
                                     "title=", "get-menus=", "set-menus=", "insert-in-menu=", "mini-icon-dir=", "menu-error",
                                     "app-icon=", "dir-icon=", "include-items=", "dynamic", "all-menus"]+obs_args+equaled_obs_parms)
     except getopt.GetoptError as err:
@@ -165,7 +167,7 @@ Standard output is a series Fvwm commands."""
         print(str(err)) # will print something like "option -a not recognized"
         print(usage)
         sys.exit(2)
-    global verbose, force, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length 
+    global verbose, force, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length, term_cmd
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
     global default_app_icon, default_dir_icon, include_items, config_menus, regen_cmd, dynamic_menu, build_all_menus
     version = "2.4"
@@ -194,6 +196,7 @@ Standard output is a series Fvwm commands."""
     regen_cmd = 'PipeRead `fvwm-menu-desktop`'
     dynamic_menu = False
     menu_error = False
+    term_cmd = "xterm -e"
 
     # Loads config options from $FVWM_USERDIR/.FvwmForm-XDGMenu-Config
     if "FVWM_USERDIR" in os.environ:
@@ -237,6 +240,8 @@ Standard output is a series Fvwm commands."""
                     include_items = "both"
                 elif o[1] == 'IncludeNone' and o[2] == 'on':
                     include_items = "none"
+                elif o[1] == 'TermCmd':
+                    term_cmd = " ".join(o[2:])
         fvwmform_config.close()
 
     for o, a in opts:
@@ -307,6 +312,8 @@ Standard output is a series Fvwm commands."""
                 sys.exit(1)
         elif o in ("--regen-cmd") :
             regen_cmd = a
+        elif o in ("--term-cmd") :
+            term_cmd = a
         elif o in ("--dynamic") :
             dynamic_menu = True
         elif o in ("--all-menus") :
@@ -733,7 +740,9 @@ def parsemenu(menu, name="", title=""):
                 desktop = DesktopEntry(entry.DesktopEntry.getFileName())
                 # eliminate '%U' etc behind execute string
                 execProgram = m.sub('', desktop.getExec())
-                printmenu(desktop.getName(), desktop.getIcon(), "Exec exec " + " " + execProgram)
+                if desktop.getTerminal():
+                    execProgram = "%s %s" % (term_cmd, execProgram)
+                printmenu(desktop.getName(), desktop.getIcon(), "Exec exec " + execProgram)
             menu_entry_count += 1
         elif isinstance(entry, xdg.Menu.Separator):
             if printmode:
@@ -792,8 +801,8 @@ Options:
                               of the menu NAME.
     --get-menus all|desktop   prints a space separated list of full menu paths.
                               'all' is all menus on the system except empty
-                              ones. 'desktop' list the menus that would have been
-                              generated. No menu generation is done.
+                              ones. 'desktop' list the menus that would have
+                              been generated. No menu generation is done.
     --set-menus menu_paths    expects a space separated list of full menu paths
                               to generate user specified menus.
     --all-menus               generate all menus found.
@@ -802,6 +811,8 @@ Options:
                               or 'none'. Default both.
     --regen-cmd ACTION        The fvwm ACTION for the 'Regenerate' menu item.
                               Default: 'PipeRead `fvwm-menu-desktop`'
+    --term-cmd CMD            Terminal emulator CMD used on terminal entries.
+                              Default: xterm -e
     --dynamic                 used with dynamic menus.
     -e, --menu-error          out python-xdg not found error in menu.
     -v, --verbose             run and display debug info on STDERR."""
