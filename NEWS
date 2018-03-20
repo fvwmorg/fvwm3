@@ -18,6 +18,11 @@ Changes in stable release 2.6.8 (UNRELEASED)
     --program-transform-name.
   - Remove further references to obsolete modules from man page(s).
 
+* New fvwm features:
+  
+  - fvwm-menu-desktop(1) now requires python3 as an explicit
+    dependency.
+
 -------------------------------------------------------------------
 Changes in stable release 2.6.7 (06-Mar-2016)
 
