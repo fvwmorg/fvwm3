@@ -1421,18 +1421,6 @@ else
   problem_gdkimlib=": Failed on gdk-imlib, see config.log"
 fi
 
-GNOME_INIT_HOOK
-
-# Unfortunately we have 2 gnome supports: WM hints and gnome libs.
-# The $with_gnomehints below refers to the first, not GNOME_INIT_HOOK.
-if test ! x"$enable_gnome_hints" = xno; then
-  with_gnomehints=yes
-  problem_gnomehints=""
-else
-  with_gnomehints=no
-  problem_gnomehints=": Explicitly disabled"
-fi
-
 # Define some compatibility macros needed for config.h.
 mg_DEFINE_IF_NOT([#include <X11/keysym.h>],
   [defined XK_Page_Up && defined XK_Page_Down],
