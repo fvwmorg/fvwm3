@@ -39,7 +39,7 @@ modules/FvwmButtons/FvwmButtons
 modules/FvwmCommand/FvwmCommand
 modules/FvwmCommand/FvwmCommand.pm
 modules/FvwmCommand/FvwmCommand.sh
-modules/FvwmCommand/FvwmCommandS
+modules/FvwmCommandS/FvwmCommandS
 modules/FvwmCommand/scripts/ex-auto
 modules/FvwmCommand/scripts/ex-cascade
 modules/FvwmCommand/scripts/ex-grpmv
