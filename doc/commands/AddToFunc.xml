@@ -18,7 +18,7 @@
 		><arg choice='opt'
 			><group choice='plain'
 				><arg choice='plain'>I</arg
-				><arg choice='plain'>R</arg
+				><arg choice='plain'>J</arg
 				><arg choice='plain'>M</arg
 				><arg choice='plain'>C</arg
 				><arg choice='plain'>H</arg
