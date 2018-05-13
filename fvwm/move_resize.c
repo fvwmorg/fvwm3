@@ -4725,6 +4725,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	Bool do_forget = False;
 	Bool is_screen_given = False;
 	Bool ignore_working_area = False;
+	Bool do_fullscreen = False;
 	int layers[2] = { -1, -1 };
 	Bool global_flag_parsed = False;
 	int  scr_x, scr_y;
@@ -4784,6 +4785,11 @@ void CMD_Maximize(F_CMD_ARGS)
 					layers[1] = -1;
 				}
 			}
+			else if (StrEquals(token, "fullscreen"))
+			{
+				do_fullscreen = True;
+				action = taction;
+			}
 			else
 			{
 				global_flag_parsed = True;
@@ -4791,15 +4797,34 @@ void CMD_Maximize(F_CMD_ARGS)
 		}
 	}
 	toggle = ParseToggleArgument(action, &action, -1, 0);
-	if (toggle == 0 && !IS_MAXIMIZED(fw))
-	{
-		return;
-	}
+	if (do_fullscreen) {
+		if (toggle == -1) {
+			/* Flip-flop between fullscreen or not, if no toggle
+			 * argument is given.
+			 */
+			toggle = (IS_EWMH_FULLSCREEN(fw) ? 0 : 1);
+		}
+		if (toggle == 1 && !IS_EWMH_FULLSCREEN(fw)) {
+			EWMH_fullscreen(fw);
+			return;
+		}
 
-	if (toggle == 1 && IS_MAXIMIZED(fw))
-	{
-		/* Fake that the window is not maximized. */
-		do_force_maximize = True;
+		if (toggle == 0 && IS_EWMH_FULLSCREEN(fw)) {
+			unmaximize_fvwm_window(fw);
+			return;
+		}
+		return;
+	} else {
+		if (toggle == 0 && !IS_MAXIMIZED(fw))
+		{
+			return;
+		}
+
+		if (toggle == 1 && IS_MAXIMIZED(fw))
+		{
+			/* Fake that the window is not maximized. */
+			do_force_maximize = True;
+		}
 	}
 
 	/* find the new page and geometry */

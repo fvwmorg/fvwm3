@@ -22,6 +22,7 @@ Changes in stable release 2.6.8 (UNRELEASED)
   
   - fvwm-menu-desktop(1) now requires python3 as an explicit
     dependency.
+  - Add a 'fullscreen' option to the 'Maximize' command.
 
 -------------------------------------------------------------------
 Changes in stable release 2.6.7 (06-Mar-2016)

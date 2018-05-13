@@ -69,7 +69,9 @@ The optional
 <replaceable>flags</replaceable>
 argument is a space separated list containing the following
 key words:
-<emphasis remap='I'>ewmhiwa</emphasis>, <emphasis remap='I'>growonwindowlayer</emphasis>, <emphasis remap='I'>growonlayers</emphasis> and <emphasis remap='I'>screen</emphasis>.
+<emphasis remap='I'>fullscreen</emphasis>, <emphasis remap='I'>ewmhiwa</emphasis>, <emphasis remap='I'>growonwindowlayer</emphasis>, <emphasis remap='I'>growonlayers</emphasis> and <emphasis remap='I'>screen</emphasis>.
+<fvwmopt cmd="Maximize" opt="fullscreen"/>
+causes the window to become fullscreened if the appropriate EWMH hint is set.
 <fvwmopt cmd="Maximize" opt="ewmhiwa"/>
 causes fvwm to ignore the <acronym>EWMH</acronym> working area.
 <fvwmopt cmd="Maximize" opt="growonwindowlayer"/>
