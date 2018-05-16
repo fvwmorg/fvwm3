@@ -67,7 +67,7 @@ if "--dummy" is specified earlier.
 .TP
 .BI "--dither"
 Causes fvwm-root to dither images for "smoother" rendition on displays
-with color depth of 16 or lower. This the defaut with color depth  less
+with color depth of 16 or lower. This the default with color depth  less
 or equal to 8.
 .TP
 .BI "--no-dither"

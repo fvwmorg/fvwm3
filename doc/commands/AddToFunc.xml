@@ -59,7 +59,7 @@ stands for "Immediate", and is executed as soon as the function is
 invoked.
 '<fvwmopt cmd="AddToFunc" opt="J"/>'
 is similar to "Immediate" but is delayed until a button is pressed
-or released or the pointer is moved, or the funtion completes.  It
+or released or the pointer is moved, or the function completes.  It
 is always executed before the other function actions.
 '<fvwmopt cmd="AddToFunc" opt="M"/>'
 stands for "Motion", i.e. if the user starts moving the mouse.
