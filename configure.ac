@@ -382,7 +382,7 @@ AC_ARG_ENABLE(mandoc,
 		with_mandoc="no"
 		problem_mandoc=": Explicitly disabled"
 	fi ],
-  [ with_mandoc="not specified, check" ]
+  [ with_mandoc="no" ]
 )
 
 if test ! x"$with_mandoc" = xno; then
