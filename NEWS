@@ -2,7 +2,14 @@ Note, the changes for the last STABLE release start with release
 2.6.0.
 
 -------------------------------------------------------------------
-Changes in stable release 2.6.8 (UNRELEASED)
+Changes in stable release 2.6.9 (UNRELEASED)
+
+* Bug fixes:
+
+* New fvwm features:
+
+-------------------------------------------------------------------
+Changes in stable release 2.6.8 (31-Mar-2018)
 
 * Bug fixes:
 
