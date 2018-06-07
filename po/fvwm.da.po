@@ -55,7 +55,7 @@ msgstr "Skrivebord: %d%s"
 
 #: ../fvwm/menus.c:1674
 msgid "More&..."
-msgstr "Mere&..."
+msgstr "Flere&..."
 
 #. ./fvwm/ConfigFvwmSetup: line 91
 msgid "Root Menu"
