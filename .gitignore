@@ -3,6 +3,7 @@
 *.core
 *.deps/
 *.diff
+*.html
 *.o
 *.patch
 *~

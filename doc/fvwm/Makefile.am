@@ -32,18 +32,7 @@ clean:
 
 distclean-local: clean
 
-#%.html : $(srcdir)/%.xml $(srcdir)/../style.css
-#	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
-#		--xinclude \
-#		--stringparam profile.attribute output \
-#		--stringparam profile.value html \
-#		-o $(<F).p \
-#		$(XSL_PROFILE) $<
-#	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
-#		--xinclude \
-#		--stringparam html.stylesheet "$(srcdir)/../style.css" \
-#		-o $@ $(XSL_FILE) $(<F).p && rm $(<F).p
-
+if FVWM_BUILD_MANDOC
 fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMANDS_XML_PATH@ $(srcdir)/../header.html
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
@@ -71,6 +60,7 @@ fvwm.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE) @DOC_COMMANDS_XML_PA
 		$(XSL_MAN_FILE) fvwm.1.tmp && rm fvwm.1.tmp
 #	mv fvwm.1 fvwm.1.pre
 #	tbl fvwm.1.pre | sed '/^\.T[SE]$$/d' > fvwm.1 && rm fvwm.1.pre
+endif
 
 fvwm_name =`echo "fvwm" | "$(SED)" -e "${transform}"`
 fvwm2_name =`echo "fvwm2" | "$(SED)" -e "${transform}"`

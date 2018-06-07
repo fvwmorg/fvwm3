@@ -6,6 +6,8 @@ Changes in stable release 2.6.9 (UNRELEASED)
 
 * Bug fixes:
 
+  - Fix handling of configure's --enable-mandoc/--enable-htmldoc
+
 * New fvwm features:
 
 -------------------------------------------------------------------

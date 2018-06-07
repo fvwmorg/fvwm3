@@ -12,7 +12,10 @@ doc_DATA = \
 	$(HTML_FILES)
 endif
 
-
+if FVWM_BUILD_MANDOC
 SUBDIRS = commands images docbook-xml docbook-xsl fvwm
+else
+SUBDIRS = commands images docbook-xml docbook-xsl
+endif
 
 all: $(doc_DATA)
