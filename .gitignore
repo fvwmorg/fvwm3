@@ -31,6 +31,7 @@ core
 doc/footer.html
 doc/fvwm.ent
 etc/
+fvwm/fvwm
 fvwm/fvwm3
 modules/FvwmAnimate/FvwmAnimate
 modules/FvwmAuto/FvwmAuto
@@ -40,7 +41,7 @@ modules/FvwmButtons/FvwmButtons
 modules/FvwmCommand/FvwmCommand
 modules/FvwmCommand/FvwmCommand.pm
 modules/FvwmCommand/FvwmCommand.sh
-modules/FvwmCommandS/FvwmCommandS
+modules/FvwmCommand/FvwmCommandS
 modules/FvwmCommand/scripts/ex-auto
 modules/FvwmCommand/scripts/ex-cascade
 modules/FvwmCommand/scripts/ex-grpmv
@@ -48,6 +49,7 @@ modules/FvwmCommand/scripts/focus-Netscape
 modules/FvwmCommand/scripts/focus-link
 modules/FvwmCommand/scripts/push-away
 modules/FvwmCommand/scripts/test1
+modules/FvwmCommandS/FvwmCommandS
 modules/FvwmConsole/FvwmConsole
 modules/FvwmConsole/FvwmConsoleC
 modules/FvwmConsole/FvwmConsoleC.pl
