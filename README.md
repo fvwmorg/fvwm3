@@ -10,37 +10,26 @@ Fvwm is intended to have a small memory footprint but a rich feature set, be
 extremely customizable and extendible, and have a high degree of Motif mwm
 compatibility.
 
-**ALL VERSIONS OF FVWM PRIOR TO 2.6.X ARE NOT SUPPORTED UPSTREAM.**
-
-Users of fvwm prior to 2.6.X can make use of the
-[./bin/fvwm-convert-2.6.in](fvwm-convert-2.6 utility) to try and have their
-configuration file converted to a newer syntax.  Please see its manpage for
-more details on how to use it.
-
 Releases
 --------
 
-* Latest stable release: [2.6.7](https://github.com/fvwmorg/fvwm/releases/tag/2.6.7)
-* Long-term stable release: [fvwm2-stable](https://github.com/fvwmorg/fvwm/archive/fvwm2-stable.zip)
-
-The **Long-term stable release** represents the fvwm version prior to 2.6.7
-which contains ported bug-fixes from 2.6.7, but retains the modules and other
-features removed in 2.6.7.  This version **won't** receive any new features but
-may occsaionally receive bug-fixes.
+* None.  fvwm3 is in development still.  The master branch contains what could
+  be considered "stable" for now, but even then there are no guarantees of
+  stability.
 
 Installation
 ------------
 
-See [the installation instructions](./INSTALL.md)
+See [the installation instructions](./dev-docs/INSTALL.md)
 
 Development
 -----------
 
 Those interested in contributing to FVWM should have [a read of the developer
-documentation](./docs/DEVELOPERS.md).
+documentation](./dev-docs/DEVELOPERS.md).
 
-A [TODO file](./TODO.md) exists, and sometimes even things from it are worked
-on.
+A [TODO file](./dev-docs/TODO.md) exists, and sometimes even things from it are
+worked on.
 
 Comments, Questions?
 --------------------

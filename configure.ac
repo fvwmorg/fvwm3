@@ -1682,7 +1682,7 @@ dnl
 	doc/docbook-xsl/html/Makefile
 	doc/images/Makefile
 	doc/images/svg_rendering/Makefile
-	docs/Makefile
+	dev-docs/Makefile
 	po/Makefile
 dnl
 	modules/FvwmAnimate/Makefile
