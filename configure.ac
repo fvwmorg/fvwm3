@@ -1683,8 +1683,6 @@ dnl
 	doc/images/Makefile
 	doc/images/svg_rendering/Makefile
 	docs/Makefile
-	tests/Makefile
-	tests/hints/Makefile
 	po/Makefile
 dnl
 	modules/FvwmAnimate/Makefile

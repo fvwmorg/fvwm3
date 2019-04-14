@@ -1,9 +1,0 @@
-#!/bin/sh
-
-cp test1.xpm /tmp
-cp test2.xpm /tmp
-cp test3.xpm /tmp
-cp test.png /tmp
-cp xtrek_fed_e.xbm /tmp
-cp purify.read /tmp
-cp purify.fvwm2rc /tmp

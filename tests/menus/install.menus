@@ -1,8 +1,0 @@
-#!/bin/sh
-
-cp icon1.xpm /tmp
-cp icon2.xpm /tmp
-cp icon3.xpm /tmp
-cp sidepic.xpm /tmp
-cp menus.read /tmp
-

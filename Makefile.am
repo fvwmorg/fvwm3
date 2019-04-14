@@ -14,8 +14,7 @@ SUBDIRS = \
 	$(FVWM_PERLLIB) \
 	doc \
 	docs \
-	$(POSUB) \
-	tests
+	$(POSUB)
 
 ## ---------------------------------------------------------------------------
 ## Manage bzip2 archive together with gzip archive
