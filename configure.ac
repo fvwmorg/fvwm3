@@ -1347,14 +1347,6 @@ fi
 # C89/C99 signal handling
 AC_CHECK_FUNCS(sigsetjmp siglongjmp)
 
-# Look harder for a C preprocessor for FvwmCpp
-AC_PATH_PROG(FVWM_CPP, cpp, no, $PATH:/lib:/usr/lib:/usr/ccs/lib)
-if test x"$FVWM_CPP" = xno; then
-  FVWM_CPP=
-  AC_MSG_WARN([cannot locate a C preprocessor: run FvwmCpp with -cppprog])
-fi
-dnl FIXME: make sure the cpp we found actually works...
-
 # Finish checking for programs.
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -1648,23 +1640,13 @@ dnl	bin/fvwm-perllib.1
 	modules/FvwmAnimate/FvwmAnimate.1
 	modules/FvwmAuto/FvwmAuto.1
 	modules/FvwmBacker/FvwmBacker.1
-	modules/FvwmBanner/FvwmBanner.1
 	modules/FvwmButtons/FvwmButtons.1
-	modules/FvwmCommand/FvwmCommand.1
-	modules/FvwmConsole/FvwmConsole.1
-	modules/FvwmConsole/FvwmConsoleC.pl.1
-	modules/FvwmCpp/FvwmCpp.1
 	modules/FvwmEvent/FvwmEvent.1
-	modules/FvwmForm/FvwmForm.1
 	modules/FvwmIconMan/FvwmIconMan.1
 	modules/FvwmIdent/FvwmIdent.1
-	modules/FvwmM4/FvwmM4.1
 	modules/FvwmPager/FvwmPager.1
-dnl	modules/FvwmPerl/FvwmPerl.1
-	modules/FvwmProxy/FvwmProxy.1
 	modules/FvwmRearrange/FvwmRearrange.1
 	modules/FvwmScript/FvwmScript.1
-dnl	modules/FvwmWindowMenu/FvwmWindowMenu.1
 dnl
 	bin/Makefile
 	bin/fvwm-config
@@ -1708,23 +1690,13 @@ dnl
 	modules/FvwmAnimate/Makefile
 	modules/FvwmAuto/Makefile
 	modules/FvwmBacker/Makefile
-	modules/FvwmBanner/Makefile
 	modules/FvwmButtons/Makefile
-	modules/FvwmCommand/Makefile
-	modules/FvwmCommandS/Makefile
-	modules/FvwmCommand/scripts/Makefile
-	modules/FvwmConsole/Makefile
-	modules/FvwmConsole/FvwmConsoleC.pl
-	modules/FvwmCpp/Makefile
 	modules/FvwmEvent/Makefile
-	modules/FvwmForm/Makefile
 	modules/FvwmIconMan/Makefile
 	modules/FvwmIdent/Makefile
-	modules/FvwmM4/Makefile
 	modules/FvwmPager/Makefile
 	modules/FvwmPerl/Makefile
 	modules/FvwmPerl/FvwmPerl
-	modules/FvwmProxy/Makefile
 	modules/FvwmRearrange/Makefile
 	modules/FvwmScript/Makefile
 	modules/FvwmScript/Scripts/Makefile
