@@ -7,16 +7,11 @@ Installing From Git
 ===================
 
 FVWM has a bootstrap script to generate `configure` and associated files.
-Run:
+Runi the following command chain to generat the `configure` script and build
+the project:
 
 ```
-./autogen.sh
-```
-
-This will also call `./configure` after it has been generated.  Then run:
-
-```
-make
+./autogen.sh && ./configure && make
 ```
 
 Installing From Release Tarball

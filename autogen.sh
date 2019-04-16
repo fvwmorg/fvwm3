@@ -7,4 +7,3 @@ die()
 }
 
 autoreconf -f -i -v || die "autoreconf failed" $?
-./configure || die "configure failed" $?
