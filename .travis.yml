@@ -37,7 +37,7 @@ addons:
     - sharutils
     - xsltproc
     - build-essential
-script: (CFLAGS= ./autogen.sh && ./configure) && make
+script: (./autogen.sh && CFLAGS= ./configure) && make
 notifications:
         irc:
                 channels:
