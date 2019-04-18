@@ -15,7 +15,7 @@ libfvwm3_a_SOURCES = \
 	XError.h XResource.h charmap.h defaults.h envvar.h fio.h flist.h \
 	fsm.h ftime.h fvwm_sys_stat.h fvwmlib.h fvwmrect.h fvwmsignal.h \
 	gravity.c gravity.h lang-strings.h modifiers.h queue.h safemalloc.h \
-	setpgrp.h strlcpy.h timeout.h vpacket.h wcontext.h wild.h \
+	setpgrp.h strlcpy.h vpacket.h wcontext.h wild.h \
 	\
 	BidiJoin.c Flocale.c PictureUtils.c FScreen.c Graphics.c \
 	PictureGraphics.c Bindings.c FlocaleCharset.c Parse.c \
@@ -25,7 +25,7 @@ libfvwm3_a_SOURCES = \
 	queue.c fvwmsignal.c System.c PictureBase.c Cursor.c Strings.c \
 	fvwmrect.c FRenderInit.c safemalloc.c  FBidi.c \
 	wild.c Grab.c Event.c ClientMsg.c setpgrp.c FShape.c \
-	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
+	FGettext.c Rectangles.c flist.c charmap.c wcontext.c \
 	modifiers.c fsm.c FTips.c fio.c fvwmlib3.c strlcpy.c
 
 libfvwm3_a_LIBADD = @LIBOBJS@
