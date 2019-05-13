@@ -28,8 +28,10 @@ Development
 Those interested in contributing to FVWM should have [a read of the developer
 documentation](./dev-docs/DEVELOPERS.md).
 
-A [TODO file](./dev-docs/TODO.md) exists, and sometimes even things from it are
+* A [TODO file](./dev-docs/TODO.md) exists, and sometimes even things from it are
 worked on.
+
+* New commands and config file syntax thoughts [are being documented here](./dev-docs/NEW-COMMANDS.md).
 
 Comments, Questions?
 --------------------
