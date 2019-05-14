@@ -1,4 +1,5 @@
 language: c
+dist: xenial
 sudo: false
 branches:
         except:
@@ -11,32 +12,35 @@ matrix:
           env: CFLAGS="-g -O2"
 addons:
     apt:
-    packages:
-    - debhelper
-    - autotools-dev
-    - dh-autoreconf
-    - file
-    - fontconfig
-    - gettext
-    - libfontconfig-dev
-    - libfreetype6-dev
-    - libfribidi-dev
-    - libncurses5-dev
-    - libreadline-dev
-    - libpng-dev
-    - libsm-dev
-    - libx11-dev
-    - libxcursor-dev
-    - libxext-dev
-    - libxft-dev
-    - libxi-dev
-    - x11proto-xinerama-dev
-    - libxpm-dev
-    - libxrender-dev
-    - libxt-dev
-    - sharutils
-    - xsltproc
-    - build-essential
+        update: true
+        packages:
+        - autotools-dev
+        - build-essential
+        - debhelper
+        - dh-autoreconf
+        - file
+        - fontconfig
+        - gettext
+        - libbsd-dev
+        - libfontconfig-dev
+        - libfreetype6-dev
+        - libfribidi-dev
+        - libncurses5-dev
+        - libpng-dev
+        - libreadline-dev
+        - libsm-dev
+        - libx11-dev
+        - libxcursor-dev
+        - libxext-dev
+        - libxft-dev
+        - libxi-dev
+        - libxpm-dev
+        - libxrender-dev
+        - libxt-dev
+        - sharutils
+        - x11proto-xinerama-dev
+        - xsltproc
+after_failure: sudo apt-get install libbsd-dev && sudo dpkg -L libbsd-dev
 script: (./autogen.sh && CFLAGS= ./configure) && make
 notifications:
         irc:

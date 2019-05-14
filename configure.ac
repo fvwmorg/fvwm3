@@ -1325,6 +1325,17 @@ AC_SUBST(CATOBJEXT)
 
 # Check for REQUIRED headers and functions before going any
 # further.
+AC_CHECK_HEADER([bsd/bsd.h],
+	[AC_DEFINE(HAVE_BSD_H,1,[Defined if 'bsd/bsd.h' present])])
+
+LIBBSD_LIBS=
+if "${PKG_CONFIG}" --exists libbsd; then
+	LIBBSD_LIBS=`"${PKG_CONFIG}" --libs libbsd`
+else
+	LIBBSD_LIBS="-lutil"
+fi
+AC_SUBST(LIBBSD_LIBS)
+
 
 # The module interface uses variadic functions for message passing.
 AC_CHECK_HEADERS(stdarg.h)
@@ -1555,6 +1566,12 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #endif
 #ifndef abs
 #  define abs(a) (((a)>=0)?(a):-(a))
+#endif
+
+#ifdef HAVE_BSD_H
+#include <bsd/bsd.h>
+#else
+#include <libutil.h>
 #endif
 
 #include "libs/defaults.h"
