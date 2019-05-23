@@ -129,6 +129,8 @@ Items
 * Menus:
 	* [ ] Typeahead/autocomplete inside of menus.  See 'rofi' for example of
 	  functionality.
+	* [ ] Potentially consider appmenu for a global menu for the focused
+	  window.
 
 * Modules:
     * [ ] The module interface (FVWM <-> Module) is a mess; consider:
