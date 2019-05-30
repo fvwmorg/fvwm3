@@ -11,32 +11,32 @@ matrix:
           env: CFLAGS="-g -O2"
 addons:
     apt:
-    packages:
-    - debhelper
-    - autotools-dev
-    - dh-autoreconf
-    - file
-    - fontconfig
-    - gettext
-    - libfontconfig-dev
-    - libfreetype6-dev
-    - libfribidi-dev
-    - libncurses5-dev
-    - libreadline-dev
-    - libpng-dev
-    - libsm-dev
-    - libx11-dev
-    - libxcursor-dev
-    - libxext-dev
-    - libxft-dev
-    - libxi-dev
-    - x11proto-xinerama-dev
-    - libxpm-dev
-    - libxrender-dev
-    - libxt-dev
-    - sharutils
-    - xsltproc
-    - build-essential
+            packages:
+                    - autotools-dev
+                    - build-essential
+                    - debhelper
+                    - dh-autoreconf
+                    - file
+                    - fontconfig
+                    - gettext
+                    - libfontconfig-dev
+                    - libfreetype6-dev
+                    - libfribidi-dev
+                    - libncurses5-dev
+                    - libpng-dev
+                    - libreadline-dev
+                    - libsm-dev
+                    - libx11-dev
+                    - libxcursor-dev
+                    - libxext-dev
+                    - libxft-dev
+                    - libxi-dev
+                    - libxpm-dev
+                    - libxrandr-dev
+                    - libxrender-dev
+                    - libxt-dev
+                    - sharutils
+                    - xsltproc
 script: (./autogen.sh && CFLAGS= ./configure) && make
 notifications:
         irc:
