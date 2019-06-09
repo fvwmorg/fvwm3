@@ -1777,7 +1777,7 @@ void AutoPlaceIcon(
     dimension dim[3];                   /* space for work, 1st, 2nd dimen */
     icon_boxes *icon_boxes_ptr;         /* current icon box */
     int i;                              /* index for inner/outer loop data */
-    fscreen_scr_arg fscr;
+    fscreen_scr_arg *fscr;
     rectangle ref;
     rectangle g;
 
@@ -1813,7 +1813,7 @@ void AutoPlaceIcon(
 	break;
       }
       /* get the screen dimensions for the icon box */
-      FScreenGetScrRect(&fscr, FSCREEN_CURRENT,
+      FScreenGetScrRect(fscr, FSCREEN_CURRENT,
 		        &ref.x, &ref.y, &ref.width, &ref.height);
       dim[1].screen_offset = ref.y;
       dim[1].screen_dimension = ref.height;
@@ -1961,7 +1961,7 @@ void AutoPlaceIcon(
 	  }
 
 	  /* this may be a good location */
-	  if (FScreenIsRectangleOnScreen(&fscr, FSCREEN_XYPOS, &ref))
+	  if (FScreenIsRectangleOnScreen(fscr, FSCREEN_XYPOS, &ref))
 	  {
 	    loc_ok = True;
 	  }
@@ -2014,6 +2014,8 @@ void AutoPlaceIcon(
     set_icon_position(t, real_x, real_y);
     broadcast_icon_geometry(t, True);
     do_move_icon = True;
+    free(fscr);
+
   }
   if (do_move_icon && do_move_immediately)
   {
