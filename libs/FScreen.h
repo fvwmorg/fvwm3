@@ -4,7 +4,7 @@
 
 /* needs X11/Xlib.h and X11/Xutil.h */
 
-typedef union
+typedef struct
 {
 	XEvent *mouse_ev;
 	const char *name;
