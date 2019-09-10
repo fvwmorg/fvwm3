@@ -963,6 +963,8 @@ void create_manager_window (int man_id)
   for (i = 0; i < NUM_CONTEXTS; i++) {
 	  if (man->colorsets[i] != -2)
 	  {
+		  gcmask = GCForeground;
+		  gcval.foreground = man->backcolor[i];
 		  man->backContext[i] =
 			  fvwmlib_XCreateGC(
 				  theDisplay, man->theWindow, gcmask, &gcval);
@@ -973,6 +975,8 @@ void create_manager_window (int man_id)
 			  line_style, cap_style,
 			  join_style);
 	  }
+	  gcmask = GCForeground;
+	  gcval.foreground = man->forecolor[i];
 	  man->hiContext[i] = fvwmlib_XCreateGC(
 		  theDisplay, man->theWindow, gcmask, &gcval);
 	  if (man->FButtonFont->font != NULL)
