@@ -690,7 +690,7 @@ static char *interpolate_titleformat_name(
 				if (count > (MAX_WINDOW_NAME_NUMBER - 1))
 					count = MAX_WINDOW_NAME_NUMBER - 1;
 
-				sprintf(win_name_len, "%d", ++count);
+				sprintf(win_name_len, "%hhu", ++count);
 				strcat(stringbuf, win_name_len);
 				break;
 			case 'I':
