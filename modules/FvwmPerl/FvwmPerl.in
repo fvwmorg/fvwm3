@@ -321,7 +321,7 @@ sub preprocess ($;$) {
 	}
 
 	# perl code substitution first
-	$$text_ref =~ s/\Q$quote1\E { ( .*? ) } \Q$quote2\E/
+	$$text_ref =~ s/\Q$quote1\E \{ ( .*? ) \} \Q$quote2\E/
 		my $result = eval "
 			no strict;
 			package PreprocessNamespace;
