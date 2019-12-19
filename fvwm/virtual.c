@@ -88,6 +88,8 @@ static int prev_desk_and_page_desk = 0;
 static int prev_desk_and_page_page_x = 0;
 static int prev_desk_and_page_page_y = 0;
 
+static int number_of_desktops(void);
+
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
@@ -273,6 +275,13 @@ static int GetDeskNumber(char *action, int current_desk)
 	if (MatchToken(action, "prev"))
 	{
 		return prev_desk;
+	}
+	if (MatchToken(action, "next"))
+	{
+		if (current_desk + 1 >= number_of_desktops())
+			return (0);
+		else
+			return (current_desk + 1);
 	}
 	n = GetIntegerArguments(action, NULL, &(val[0]), 4);
 	if (n <= 0)
@@ -2258,6 +2267,21 @@ void CMD_Scroll(F_CMD_ARGS)
 	MoveViewport(x,y,True);
 
 	return;
+}
+
+static int
+number_of_desktops(void)
+{
+	DesktopsInfo	*d;
+	int		 count = 0;
+
+	d = Scr.Desktops->next;
+	while (d != NULL) {
+		count++;
+		d = d->next;
+	}
+
+	return (count);
 }
 
 /*
