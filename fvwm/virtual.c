@@ -82,6 +82,8 @@
 static int edge_thickness = 2;
 static int last_edge_thickness = 2;
 
+static int number_of_desktops(struct monitor *);
+
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
@@ -268,6 +270,13 @@ static int GetDeskNumber(struct monitor *mon, char *action, int current_desk)
 	if (MatchToken(action, "prev"))
 	{
 		return mon->virtual_scr.prev_desk;
+	}
+	if (MatchToken(action, "next"))
+	{
+		if (current_desk + 1 >= number_of_desktops(mon))
+			return (0);
+		else
+			return (current_desk + 1);
 	}
 	n = GetIntegerArguments(action, NULL, &(val[0]), 4);
 	if (n <= 0)
@@ -2342,6 +2351,21 @@ void CMD_Scroll(F_CMD_ARGS)
 	MoveViewport(m, x,y,True);
 
 	return;
+}
+
+static int
+number_of_desktops(struct monitor *m)
+{
+	DesktopsInfo	*d;
+	int		 count = 0;
+
+	d = m->Desktops->next;
+	while (d != NULL) {
+		count++;
+		d = d->next;
+	}
+
+	return (count);
 }
 
 /*
