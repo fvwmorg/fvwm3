@@ -1127,8 +1127,8 @@ static void InitVariables(void)
 	Scr.BusyCursor = BUSY_NONE;
 	Scr.Hilite = NULL;
 	Scr.DefaultFont = NULL;
-	Scr.VxMax = 2*Scr.MyDisplayWidth;
-	Scr.VyMax = 2*Scr.MyDisplayHeight;
+	Scr.VxMax = 0; // Scr.MyDisplayWidth;
+	Scr.VyMax = 0; //Scr.MyDisplayHeight;
 	Scr.Vx = 0;
 	Scr.Vy = 0;
 	Scr.SizeWindow = None;

@@ -181,9 +181,6 @@ const func_t func_table[] =
 	CMD_ENT("desktopname", CMD_DesktopName, F_DESKTOP_NAME, 0, 0),
 	/* - Define the desktop names used in WindowList, modules */
 
-	CMD_ENT("desktopsize", CMD_DesktopSize, F_SETDESK, 0, 0),
-	/* - Set virtual desktop size in units of physical pages */
-
 	CMD_ENT("destroy", CMD_Destroy, F_DESTROY,
 		FUNC_NEEDS_WINDOW, CRS_DESTROY),
 	/* - Kill a window without any warning to an application */

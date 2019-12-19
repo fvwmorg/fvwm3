@@ -2035,35 +2035,6 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DesktopSize(F_CMD_ARGS)
-{
-	int val[2];
-
-	if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
-	    GetRectangleArguments(action, &val[0], &val[1]) != 2)
-	{
-		fvwm_msg(ERR, "CMD_DesktopSize",
-			 "DesktopSize requires two arguments");
-		return;
-	}
-
-	Scr.VxMax = (val[0] <= 0) ?
-		0: val[0]*Scr.MyDisplayWidth-Scr.MyDisplayWidth;
-	Scr.VyMax = (val[1] <= 0) ?
-		0: val[1]*Scr.MyDisplayHeight-Scr.MyDisplayHeight;
-	BroadcastPacket(
-		M_NEW_PAGE, 7, (long)Scr.Vx, (long)Scr.Vy,
-		(long)Scr.CurrentDesk, (long)Scr.MyDisplayWidth,
-		(long)Scr.MyDisplayHeight,
-		(long)((Scr.VxMax / Scr.MyDisplayWidth) + 1),
-		(long)((Scr.VyMax / Scr.MyDisplayHeight) + 1));
-
-	checkPanFrames();
-	EWMH_SetDesktopGeometry();
-
-	return;
-}
-
 /*
  *
  * Move to a new desktop

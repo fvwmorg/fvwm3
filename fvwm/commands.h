@@ -243,7 +243,6 @@ void CMD_Delete(F_CMD_ARGS);
 void CMD_Deschedule(F_CMD_ARGS);
 void CMD_Desk(F_CMD_ARGS);
 void CMD_DesktopName(F_CMD_ARGS);
-void CMD_DesktopSize(F_CMD_ARGS);
 void CMD_Destroy(F_CMD_ARGS);
 void CMD_DestroyDecor(F_CMD_ARGS);
 void CMD_DestroyFunc(F_CMD_ARGS);
