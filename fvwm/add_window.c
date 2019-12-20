@@ -2686,13 +2686,10 @@ FvwmWindow *AddWindow(
 	/****** stick window ******/
 	if (!(fw->hints.flags & USPosition) || used_sm)
 	{
-		int stick_page;
 		int stick_desk;
 
-		stick_page = is_window_sticky_across_pages(fw);
 		stick_desk = is_window_sticky_across_desks(fw);
-		if ((stick_page &&
-		     !IsRectangleOnThisPage(&fw->g.frame, Scr.CurrentDesk)) ||
+		if (!IsRectangleOnThisPage(&fw->g.frame, Scr.CurrentDesk) ||
 		    (stick_desk && fw->Desk != Scr.CurrentDesk))
 		{
 			/* If it's sticky and the user didn't ask for an
@@ -2706,10 +2703,9 @@ FvwmWindow *AddWindow(
 			ecc.w.wcontext = C_FRAME;
 			exc2 = exc_clone_context(
 				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-			SET_STICKY_ACROSS_PAGES(fw, 0);
 			SET_STICKY_ACROSS_DESKS(fw, 0);
 			handle_stick(
-				NULL, exc2, "", stick_page, stick_desk, 1, 0);
+				NULL, exc2, "", 0, stick_desk, 1, 0);
 			exc_destroy_context(exc2);
 		}
 	}

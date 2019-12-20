@@ -1146,13 +1146,9 @@ void DispatchEvent(XEvent *Event)
       for(i=0;i<ndesks;i++)
       {
 	if(Event->xany.window == Desks[i].w)
-	  SwitchToDeskAndPage(i,Event);
+	  SwitchToDesk(i);
 	else if(Event->xany.window == Desks[i].title_w)
 	  SwitchToDesk(i);
-      }
-      if(Event->xany.window == icon_win)
-      {
-	IconSwitchPage(Event);
       }
     }
     if (is_transient)
@@ -1580,73 +1576,6 @@ void update_pr_transparent_windows(void)
 	}
 }
 
-void MovePage(Bool is_new_desk)
-{
-  int n1,m1,x,y,n,m,i,w,h;
-  XTextProperty name;
-  char str[100],*sptr;
-  static int icon_desk_shown = -1000;
-
-  Wait = 0;
-  n1 = Scr.Vx/Scr.MyDisplayWidth;
-  m1 = Scr.Vy/Scr.MyDisplayHeight;
-  n = Scr.VxMax / Scr.MyDisplayWidth;
-  m = Scr.VyMax / Scr.MyDisplayHeight;
-
-  x = (desk_w - n) * Scr.Vx / Scr.VWidth + n1;
-  y = (desk_h - m) * Scr.Vy / Scr.VHeight + m1;
-  w = (desk_w - n)/(n+1);
-  h = (desk_h - m)/(m+1);
-
-  for(i=0;i<ndesks;i++)
-  {
-    if (HilightDesks)
-    {
-      if(i == Scr.CurrentDesk - desk1)
-      {
-	XMoveWindow(dpy, Desks[i].CPagerWin, x,y);
-	XLowerWindow(dpy,Desks[i].CPagerWin);
-	if (CSET_IS_TRANSPARENT(Desks[i].highcolorset))
-	{
-		SetWindowBackground(
-			dpy, Desks[i].CPagerWin, w, h,
-			&Colorset[Desks[i].highcolorset], Pdepth,
-			Scr.NormalGC, True);
-	}
-      }
-      else
-      {
-	XMoveWindow(dpy, Desks[i].CPagerWin, -32768,-32768);
-      }
-    }
-  }
-  DrawIconGrid(1);
-
-  ReConfigureIcons(!is_new_desk);
-
-  if(Scr.CurrentDesk != icon_desk_shown)
-  {
-    icon_desk_shown = Scr.CurrentDesk;
-
-    if((Scr.CurrentDesk >= desk1)&&(Scr.CurrentDesk <=desk2))
-      sptr = Desks[Scr.CurrentDesk -desk1].label;
-    else
-    {
-      sprintf(str, "GotoDesk %d", Scr.CurrentDesk);
-      sptr = &str[0];
-    }
-
-    if (FlocaleTextListToTextProperty(
-	  dpy, &sptr, 1, XStdICCTextStyle, &name) == 0)
-    {
-      fprintf(stderr,"%s: cannot allocate window name", MyName);
-      return;
-    }
-    XSetWMIconName(dpy,Scr.Pager_w,&name);
-    XFree(name.value);
-  }
-}
-
 void ReConfigureAll(void)
 {
   PagerWindow *t;
@@ -1926,56 +1855,6 @@ void SwitchToDesk(int Desk)
 }
 
 
-void SwitchToDeskAndPage(int Desk, XEvent *Event)
-{
-  char command[256];
-
-  if (Scr.CurrentDesk != (Desk + desk1))
-  {
-    int vx, vy;
-    /* patch to let mouse button 3 change desks and do not cling to a page */
-    vx = Event->xbutton.x * Scr.VWidth / (desk_w * Scr.MyDisplayWidth);
-    vy = Event->xbutton.y * Scr.VHeight / (desk_h * Scr.MyDisplayHeight);
-    Scr.Vx = vx * Scr.MyDisplayWidth;
-    Scr.Vy = vy * Scr.MyDisplayHeight;
-    sprintf(command, "GotoDeskAndPage %d %d %d", Desk + desk1, vx, vy);
-    SendText(fd, command, 0);
-
-  }
-  else
-  {
-    int x = Event->xbutton.x * Scr.VWidth / (desk_w * Scr.MyDisplayWidth);
-    int y = Event->xbutton.y * Scr.VHeight / (desk_h * Scr.MyDisplayHeight);
-
-    /* Fix for buggy XFree86 servers that report button release events
-     * incorrectly when moving fast. Not perfect, but should at least prevent
-     * that we get a random page. */
-    if (x < 0)
-      x = 0;
-    if (y < 0)
-      y = 0;
-    if (x * Scr.MyDisplayWidth > Scr.VxMax)
-      x = Scr.VxMax / Scr.MyDisplayWidth;
-    if (y * Scr.MyDisplayHeight > Scr.VyMax)
-      y = Scr.VyMax / Scr.MyDisplayHeight;
-    sprintf(command, "GotoPage %d %d", x, y);
-    SendText(fd, command, 0);
-  }
-  Wait = 1;
-}
-
-void IconSwitchPage(XEvent *Event)
-{
-  char command[34];
-
-  sprintf(command,"GotoPage %d %d",
-	  Event->xbutton.x * Scr.VWidth / (icon_w * Scr.MyDisplayWidth),
-	  Event->xbutton.y * Scr.VHeight / (icon_h * Scr.MyDisplayHeight));
-  SendText(fd, command, 0);
-  Wait = 1;
-}
-
-
 void AddNewWindow(PagerWindow *t)
 {
 	unsigned long valuemask;
@@ -2231,14 +2110,6 @@ void MoveStickyWindow(Bool is_new_page, Bool is_new_desk)
 		{
 			ChangeDeskForWindow(t, Scr.CurrentDesk);
 		}
-		else if (
-			is_new_page &&
-			((IS_ICONIFIED(t) &&
-			  IS_ICON_STICKY_ACROSS_PAGES(t)) ||
-			 IS_STICKY_ACROSS_PAGES(t)))
-		{
-			MoveResizePagerView(t, True);
-		}
 	}
 }
 
@@ -2258,7 +2129,7 @@ void Hilight(PagerWindow *t, int on)
     }
     else
     {
-      if(IS_STICKY_ACROSS_DESKS(t) || IS_STICKY_ACROSS_PAGES(t))
+      if(IS_STICKY_ACROSS_DESKS(t))
       {
 	if(t->PagerView != None)
 	  XSetWindowBackgroundPixmap(dpy,t->PagerView,

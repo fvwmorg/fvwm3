@@ -64,7 +64,6 @@ typedef struct
 #define ModuleUnlockResponse          "NOP UNLOCK"
 
 /* Possible values of type */
-#define M_NEW_PAGE               (1)
 #define M_NEW_DESK               (1<<1)
 #define M_OLD_ADD_WINDOW         (1<<2)
 #define M_RAISE_WINDOW           (1<<3)

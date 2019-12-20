@@ -1765,36 +1765,6 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	{
 		return;
 	}
-	if (mode == MOVE_PAGE && IS_STICKY_ACROSS_PAGES(fw))
-	{
-		return;
-	}
-	if (mode == MOVE_PAGE)
-	{
-		rectangle r;
-		rectangle s;
-		rectangle t;
-
-		do_animate = False;
-		r.x = x;
-		r.y = y;
-		r.width = width;
-		r.height = height;
-		get_absolute_geometry(&t, &r);
-		get_page_offset_rectangle(&page_x, &page_y, &t);
-		if (!get_page_arguments(action, &page_x, &page_y))
-		{
-			page_x = Scr.Vx;
-			page_y = Scr.Vy;
-		}
-		s.x = page_x - Scr.Vx;
-		s.y = page_y - Scr.Vy;
-		s.width = Scr.MyDisplayWidth;
-		s.height = Scr.MyDisplayHeight;
-		fvwmrect_move_into_rectangle(&r, &s);
-		FinalX = r.x;
-		FinalY = r.y;
-	}
 	else if (mode == MOVE_SCREEN)
 	{
 		rectangle r;
@@ -4398,19 +4368,6 @@ void CMD_Resize(F_CMD_ARGS)
 
 /* ----------------------------- maximizing code --------------------------- */
 
-Bool is_window_sticky_across_pages(FvwmWindow *fw)
-{
-	if (IS_STICKY_ACROSS_PAGES(fw) ||
-	    (IS_ICONIFIED(fw) && IS_ICON_STICKY_ACROSS_PAGES(fw)))
-	{
-		return True;
-	}
-	else
-	{
-		return False;
-	}
-}
-
 Bool is_window_sticky_across_desks(FvwmWindow *fw)
 {
 	if (IS_STICKY_ACROSS_DESKS(fw) ||
@@ -4422,50 +4379,6 @@ Bool is_window_sticky_across_desks(FvwmWindow *fw)
 	{
 		return False;
 	}
-}
-
-static void move_sticky_window_to_same_page(
-	int *x11, int *x12, int *y11, int *y12,
-	int x21, int x22, int y21, int y22)
-{
-	/* make sure the x coordinate is on the same page as the reference
-	 * window */
-	if (*x11 >= x22)
-	{
-		while (*x11 >= x22)
-		{
-			*x11 -= Scr.MyDisplayWidth;
-			*x12 -= Scr.MyDisplayWidth;
-		}
-	}
-	else if (*x12 <= x21)
-	{
-		while (*x12 <= x21)
-		{
-			*x11 += Scr.MyDisplayWidth;
-			*x12 += Scr.MyDisplayWidth;
-		}
-	}
-	/* make sure the y coordinate is on the same page as the reference
-	 * window */
-	if (*y11 >= y22)
-	{
-		while (*y11 >= y22)
-		{
-			*y11 -= Scr.MyDisplayHeight;
-			*y12 -= Scr.MyDisplayHeight;
-		}
-	}
-	else if (*y12 <= y21)
-	{
-		while (*y12 <= y21)
-		{
-			*y11 += Scr.MyDisplayHeight;
-			*y12 += Scr.MyDisplayHeight;
-		}
-	}
-
-	return;
 }
 
 static void MaximizeHeight(
@@ -4509,13 +4422,6 @@ static void MaximizeHeight(
 		y21 = g.y;
 		x22 = x21 + g.width;
 		y22 = y21 + g.height;
-		if (is_window_sticky_across_pages(cwin))
-		{
-			move_sticky_window_to_same_page(
-				&x21, &x22, &new_y1, &new_y2, x11, x12, y11,
-				y12);
-		}
-
 		/* Are they in the same X space? */
 		if (!((x22 <= x11) || (x21 >= x12)))
 		{
@@ -4584,12 +4490,6 @@ static void MaximizeWidth(
 		y21 = g.y;
 		x22 = x21 + g.width;
 		y22 = y21 + g.height;
-		if (is_window_sticky_across_pages(cwin))
-		{
-			move_sticky_window_to_same_page(
-				&new_x1, &new_x2, &y21, &y22, x11, x12, y11,
-				y12);
-		}
 
 		/* Are they in the same Y space? */
 		if (!((y22 <= y11) || (y21 >= y12)))
@@ -5094,35 +4994,6 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 	return;
 }
 
-/* ----------------------------- stick code -------------------------------- */
-
-int stick_across_pages(F_CMD_ARGS, int toggle)
-{
-	FvwmWindow *fw = exc->w.fw;
-
-	if ((toggle == 1 && IS_STICKY_ACROSS_PAGES(fw)) ||
-	    (toggle == 0 && !IS_STICKY_ACROSS_PAGES(fw)))
-	{
-		return 0;
-	}
-	if (IS_STICKY_ACROSS_PAGES(fw))
-	{
-		SET_STICKY_ACROSS_PAGES(fw, 0);
-	}
-	else
-	{
-		if (!IsRectangleOnThisPage(&fw->g.frame, Scr.CurrentDesk))
-		{
-			action = "";
-			__move_window(F_PASS_ARGS, False, MOVE_PAGE);
-			UPDATE_FVWM_SCREEN(fw);
-		}
-		SET_STICKY_ACROSS_PAGES(fw, 1);
-	}
-
-	return 1;
-}
-
 int stick_across_desks(F_CMD_ARGS, int toggle)
 {
 	FvwmWindow *fw = exc->w.fw;
@@ -5169,21 +5040,6 @@ static void __handle_stick_exit(
 	return;
 }
 
-void handle_stick_across_pages(
-	F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
-{
-	FvwmWindow *fw = exc->w.fw;
-	int did_change;
-
-	did_change = stick_across_pages(F_PASS_ARGS, toggle);
-	if (did_change)
-	{
-		__handle_stick_exit(fw, do_not_draw, do_silently);
-	}
-
-	return;
-}
-
 void handle_stick_across_desks(
 	F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
 {
@@ -5208,7 +5064,6 @@ void handle_stick(
 
 	did_change = 0;
 	did_change |= stick_across_desks(F_PASS_ARGS, toggle_desk);
-	did_change |= stick_across_pages(F_PASS_ARGS, toggle_page);
 	if (did_change)
 	{
 		__handle_stick_exit(fw, do_not_draw, do_silently);
@@ -5222,24 +5077,8 @@ void CMD_Stick(F_CMD_ARGS)
 	int toggle;
 
 	toggle = ParseToggleArgument(action, &action, -1, 0);
-	if (toggle == -1 && IS_STICKY_ACROSS_DESKS(exc->w.fw) !=
-	    IS_STICKY_ACROSS_PAGES(exc->w.fw))
-	{
-		/* don't switch between only stickypage and only stickydesk.
-		 * rather switch it off completely */
-		toggle = 0;
-	}
+
 	handle_stick(F_PASS_ARGS, toggle, toggle, 0, 0);
-
-	return;
-}
-
-void CMD_StickAcrossPages(F_CMD_ARGS)
-{
-	int toggle;
-
-	toggle = ParseToggleArgument(action, &action, -1, 0);
-	handle_stick_across_pages(F_PASS_ARGS, toggle, 0, 0);
 
 	return;
 }

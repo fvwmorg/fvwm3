@@ -194,7 +194,6 @@ typedef struct
 typedef struct
 {
 	/* common flags (former flags in bits 0-12) */
-	unsigned is_sticky_across_pages : 1;
 	unsigned is_sticky_across_desks : 1;
 	unsigned has_icon_font : 1;
 	unsigned has_no_border : 1;
@@ -250,7 +249,6 @@ typedef struct
 		unsigned is_unmaximizable : 1;
 		unsigned is_unclosable : 1;
 		unsigned is_maximize_fixed_size_disallowed : 1;
-		unsigned is_icon_sticky_across_pages : 1;
 		unsigned is_icon_sticky_across_desks : 1;
 		unsigned is_icon_suppressed : 1;
 		unsigned is_left_title_rotated_cw : 1; /* cw = clock wise */
@@ -439,17 +437,9 @@ typedef struct WindowConditionMask
 		unsigned do_check_desk : 1;
 		unsigned do_check_screen : 1;
 		unsigned do_check_cond_desk : 1;
-		unsigned do_check_desk_and_global_page : 1;
-		unsigned do_check_desk_and_page : 1;
-		unsigned do_check_global_page : 1;
 		unsigned do_check_overlapped : 1;
-		unsigned do_check_page : 1;
 		unsigned do_not_check_screen : 1;
 		unsigned needs_current_desk : 1;
-		unsigned needs_current_desk_and_global_page : 1;
-		unsigned needs_current_desk_and_page : 1;
-		unsigned needs_current_global_page : 1;
-		unsigned needs_current_page : 1;
 #define NEEDS_ANY   0
 #define NEEDS_TRUE  1
 #define NEEDS_FALSE 2
@@ -589,12 +579,7 @@ typedef struct style_flags
 	unsigned use_no_transient_pposition : 1;
 	unsigned use_no_transient_usposition : 1;
 	unsigned use_start_on_desk : 1;
-	unsigned use_start_on_page_for_transient : 1;
 	unsigned use_start_on_screen : 1;
-	unsigned manual_placement_honors_starts_on_page : 1;
-	unsigned um_placement_honors_starts_on_page : 1;
-	unsigned capture_honors_starts_on_page : 1;
-	unsigned recapture_honors_starts_on_page : 1;
 	unsigned has_placement_penalty : 1;
 	unsigned has_placement_percentage_penalty : 1;
 	unsigned has_placement_position_string : 1;
@@ -677,8 +662,6 @@ typedef struct window_style
 	short handle_width;
 	int layer;
 	int start_desk;
-	int start_page_x;
-	int start_page_y;
 	char *start_screen;
 	int min_window_width;
 	int min_window_height;

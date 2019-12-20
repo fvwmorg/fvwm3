@@ -2847,7 +2847,6 @@ ENTER_DBG((stderr, "ln: *** lgw = %p\n", fw));
 
 void HandleMapNotify(const evh_args_t *ea)
 {
-	Bool is_on_this_page = False;
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
@@ -2885,10 +2884,6 @@ void HandleMapNotify(const evh_args_t *ea)
 		return;
 	}
 
-	/* Make sure at least part of window is on this page before giving it
-	 * focus... */
-	is_on_this_page = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
-
 	/*
 	 * Need to do the grab to avoid race condition of having server send
 	 * MapNotify to client before the frame gets mapped; this is bad because
@@ -2922,8 +2917,7 @@ void HandleMapNotify(const evh_args_t *ea)
 			(unsigned long)fw);
 	}
 
-	if (is_on_this_page &&
-	    focus_query_open_grab_focus(fw, get_focus_window()) == True)
+	if (focus_query_open_grab_focus(fw, get_focus_window()) == True)
 	{
 		SetFocusWindow(fw, True, FOCUS_SET_FORCE);
 	}
@@ -2976,7 +2970,6 @@ void HandleMapRequestKeepRaised(
 	const evh_args_t *ea, Window KeepRaised, FvwmWindow *ReuseWin,
 	initial_window_options_t *win_opts)
 {
-	Bool is_on_this_page = False;
 	Bool is_new_window = False;
 	FvwmWindow *tmp;
 	FvwmWindow *sf;
@@ -3042,11 +3035,6 @@ void HandleMapRequestKeepRaised(
 		}
 		is_new_window = True;
 	}
-	/*
-	 * Make sure at least part of window is on this page
-	 * before giving it focus...
-	 */
-	is_on_this_page = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
 	if (KeepRaised != None)
 	{
 		XRaiseWindow(dpy, KeepRaised);
@@ -3096,10 +3084,6 @@ void HandleMapRequestKeepRaised(
 				XMapWindow(dpy, FW_W(fw));
 				SetMapStateProp(fw, NormalState);
 				if (Scr.flags.is_map_desk_in_progress)
-				{
-					do_grab_focus = False;
-				}
-				else if (!is_on_this_page)
 				{
 					do_grab_focus = False;
 				}
@@ -3668,16 +3652,7 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 		}
 		else if (te->xproperty.atom == _XA_WM_STATE)
 		{
-			/*
-			 * Make sure at least part of window is on this page
-			 * before giving it focus...
-			 */
-			Bool is_on_this_page;
-
-			is_on_this_page = IsRectangleOnThisPage(
-				&(fw->g.frame), fw->Desk);
-			if (fw && is_on_this_page == True &&
-			    focus_is_focused(fw) &&
+			if (fw && focus_is_focused(fw) &&
 			    FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(fw)))
 			{
 				/* refresh the focus - why? */

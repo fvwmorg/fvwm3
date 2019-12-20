@@ -133,9 +133,6 @@ int is_suitable_window(unsigned long *body)
   if ((IS_MAXIMIZED(cfgpacket)) && !maximized)
     return 0;
 
-  if ((IS_STICKY_ACROSS_PAGES(cfgpacket)) && !sticky_page)
-    return 0;
-
   if ((IS_STICKY_ACROSS_DESKS(cfgpacket)) && !sticky_desk)
     return 0;
 

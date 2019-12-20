@@ -148,9 +148,7 @@ void setup_icon_title_size(FvwmWindow *fw)
 				fw->icon_g.title_text_width +
 				2 * (ICON_TITLE_TEXT_GAP_COLLAPSED +
 				     abs(fw->icon_title_relief));
-			if (IS_STICKY_ACROSS_PAGES(fw) ||
-			    IS_ICON_STICKY_ACROSS_PAGES(fw) ||
-			    IS_STICKY_ACROSS_DESKS(fw) ||
+			if (IS_STICKY_ACROSS_DESKS(fw) ||
 			    IS_ICON_STICKY_ACROSS_DESKS(fw))
 			{
 				fw->icon_g.title_w_g.width +=
@@ -835,13 +833,11 @@ void DrawIconTitleWindow(
 	int x_stipple = relief;
 	int w_title_text_gap = 0;
 	int w_stipple = 0;
-	int is_sticky;
+	int is_sticky = 0;
 	int is_stippled;
 	int use_unexpanded_size = 1;
 	Bool draw_string = True;
 
-	is_sticky =
-		(IS_STICKY_ACROSS_PAGES(fw) || IS_ICON_STICKY_ACROSS_PAGES(fw));
 	is_sticky |=
 		(IS_STICKY_ACROSS_DESKS(fw) || IS_ICON_STICKY_ACROSS_DESKS(fw));
 	is_stippled = ((is_sticky && HAS_STICKY_STIPPLED_ICON_TITLE(fw)) ||
@@ -1636,7 +1632,6 @@ void AutoPlaceIcon(
   Bool loc_ok_wrong_screen;
   Bool loc_ok_wrong_screen2;
   int real_x=10, real_y=10;
-  int new_x, new_y;
   Bool do_move_icon = False;
 
 #if 0
@@ -1655,21 +1650,7 @@ void AutoPlaceIcon(
   {
     t->Desk = Scr.CurrentDesk;
   }
-  if (IS_ICON_STICKY_ACROSS_PAGES(t) || IS_STICKY_ACROSS_PAGES(t))
-  {
-    base_x = 0;
-    base_y = 0;
-    /*Also, if its a stickyWindow, put it on the current page! */
-    new_x = t->g.frame.x % Scr.MyDisplayWidth;
-    new_y = t->g.frame.y % Scr.MyDisplayHeight;
-    if (new_x + t->g.frame.width <= 0)
-      new_x += Scr.MyDisplayWidth;
-    if (new_y + t->g.frame.height <= 0)
-      new_y += Scr.MyDisplayHeight;
-    frame_setup_window(
-	    t, new_x, new_y, t->g.frame.width, t->g.frame.height, False);
-  }
-  else if (IsRectangleOnThisPage(&(t->g.frame), t->Desk))
+  if (IsRectangleOnThisPage(&(t->g.frame), t->Desk))
   {
     base_x = 0;
     base_y = 0;

@@ -292,8 +292,7 @@ int ewmh_WMDesktop(
 		}
 		else if (d > 0)
 		{
-			if (IS_STICKY_ACROSS_PAGES(fw) ||
-			    IS_STICKY_ACROSS_DESKS(fw))
+			if (IS_STICKY_ACROSS_DESKS(fw))
 			{
 				execute_function_override_window(
 					NULL, NULL, "Stick off", 0, fw);
@@ -356,9 +355,6 @@ int ewmh_WMDesktop(
 #endif
 		if (val[0] == (CARD32)-2 || val[0] == (CARD32)-1)
 		{
-			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);
@@ -1395,8 +1391,7 @@ int ewmh_WMStateSticky(
 			}
 			return False;
 		}
-		return (IS_STICKY_ACROSS_PAGES(fw) &&
-			IS_STICKY_ACROSS_DESKS(fw));
+		return (IS_STICKY_ACROSS_DESKS(fw));
 	}
 
 	if (ev == NULL && style != NULL)
@@ -1426,9 +1421,6 @@ int ewmh_WMStateSticky(
 				fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
-		S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
-		S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
-		S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
 		S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
 		S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
 		S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);
@@ -1441,15 +1433,13 @@ int ewmh_WMStateSticky(
 		/* client message */
 		int bool_arg = ev->xclient.data.l[0];
 		if ((bool_arg == NET_WM_STATE_TOGGLE &&
-		     (!IS_STICKY_ACROSS_PAGES(fw) ||
-		      !IS_STICKY_ACROSS_DESKS(fw))) ||
+		     (!IS_STICKY_ACROSS_DESKS(fw))) ||
 		    bool_arg == NET_WM_STATE_ADD)
 		{
 			execute_function_override_window(
 				NULL, NULL, "Stick on", 0, fw);
 		}
-		else if ((IS_STICKY_ACROSS_PAGES(fw) ||
-			  IS_STICKY_ACROSS_DESKS(fw)) &&
+		else if (IS_STICKY_ACROSS_DESKS(fw) &&
 			 (bool_arg == NET_WM_STATE_TOGGLE ||
 			  bool_arg == NET_WM_STATE_REMOVE))
 		{

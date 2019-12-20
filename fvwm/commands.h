@@ -68,7 +68,6 @@ enum
 	F_FUNCTION,
 	F_GLOBAL_OPTS,
 	F_GOTO_DESK,
-	F_GOTO_PAGE,
 	F_HICOLOR,
 	F_HICOLORSET,
 	F_HIDEGEOMWINDOW,
@@ -136,7 +135,6 @@ enum
 	F_THISWINDOW,
 	F_TITLE,
 	F_TITLESTYLE,
-	F_TOGGLE_PAGE,
 	F_UPDATE_STYLES,
 	F_WAIT,
 	F_WINDOWFONT,
@@ -172,7 +170,6 @@ enum
 	F_MAXIMIZE,
 	F_MOVE,
 	F_MOVE_THRESHOLD,
-	F_MOVE_TO_PAGE,
 	F_MOVE_TO_SCREEN,
 	F_PLACEAGAIN,
 	F_RAISE,
@@ -186,7 +183,6 @@ enum
 	F_STATE,
 	F_STICK,
 	F_STICKACROSSDESKS,
-	F_STICKACROSSPAGES,
 	F_UPDATE_DECOR,
 	F_WARP,
 	F_WINDOWID,
@@ -273,8 +269,6 @@ void CMD_FocusStyle(F_CMD_ARGS);
 void CMD_Function(F_CMD_ARGS);
 void CMD_GlobalOpts(F_CMD_ARGS);
 void CMD_GotoDesk(F_CMD_ARGS);
-void CMD_GotoDeskAndPage(F_CMD_ARGS);
-void CMD_GotoPage(F_CMD_ARGS);
 void CMD_HideGeometryWindow(F_CMD_ARGS);
 void CMD_HilightColor(F_CMD_ARGS);
 void CMD_HilightColorset(F_CMD_ARGS);
@@ -304,7 +298,6 @@ void CMD_Mouse(F_CMD_ARGS);
 void CMD_Move(F_CMD_ARGS);
 void CMD_MoveThreshold(F_CMD_ARGS);
 void CMD_MoveToDesk(F_CMD_ARGS);
-void CMD_MoveToPage(F_CMD_ARGS);
 void CMD_MoveToScreen(F_CMD_ARGS);
 void CMD_Next(F_CMD_ARGS);
 void CMD_None(F_CMD_ARGS);
@@ -359,7 +352,6 @@ void CMD_SnapGrid(F_CMD_ARGS);
 void CMD_State(F_CMD_ARGS);
 void CMD_Stick(F_CMD_ARGS);
 void CMD_StickAcrossDesks(F_CMD_ARGS);
-void CMD_StickAcrossPages(F_CMD_ARGS);
 #ifdef HAVE_STROKE
 void CMD_Stroke(F_CMD_ARGS);
 void CMD_StrokeFunc(F_CMD_ARGS);

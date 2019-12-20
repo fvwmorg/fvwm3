@@ -414,8 +414,6 @@ SaveWindowStates(FILE *f)
 	     ewin != &Scr.FvwmRoot;
 	     ewin = get_next_window_in_stack_ring(ewin))
 	{
-		Bool is_icon_sticky_across_pages;
-
 		if (!XGetGeometry(
 			    dpy, FW_W(ewin), &JunkRoot, &JunkX, &JunkY,
 			    (unsigned int*)&JunkWidth,
@@ -427,8 +425,6 @@ SaveWindowStates(FILE *f)
 			 * (i.e. modules)! */
 			continue;
 		}
-		is_icon_sticky_across_pages =
-			is_window_sticky_across_pages(ewin);
 
 		wm_command = NULL;
 		wm_command_count = 0;
@@ -531,11 +527,6 @@ SaveWindowStates(FILE *f)
 		gravity_get_naked_geometry(
 			ewin->hints.win_gravity, ewin, &save_g,
 			&ewin->g.normal);
-		if (IS_STICKY_ACROSS_PAGES(ewin))
-		{
-			save_g.x -= Scr.Vx;
-			save_g.y -= Scr.Vy;
-		}
 		get_visible_icon_geometry(ewin, &ig);
 		fprintf(
 			f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i"
@@ -544,8 +535,8 @@ SaveWindowStates(FILE *f)
 			ewin->g.max.x, ewin->g.max.y, ewin->g.max.width,
 			ewin->g.max.height, ewin->g.max_defect.width,
 			ewin->g.max_defect.height,
-			ig.x + ((!is_icon_sticky_across_pages) ? Scr.Vx : 0),
-			ig.y + ((!is_icon_sticky_across_pages) ? Scr.Vy : 0),
+			ig.x + Scr.Vx,
+			ig.y + Scr.Vy,
 			ewin->hints.win_gravity,
 			ewin->g.max_offset.x, ewin->g.max_offset.y);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
@@ -1541,9 +1532,6 @@ MatchWinToSM(
 					FW_FOCUS_POLICY(ewin),
 					FP_IS_LENIENT(FW_FOCUS_POLICY(
 							      &(matches[i]))));
-				SET_ICON_STICKY_ACROSS_PAGES(
-					ewin, IS_ICON_STICKY_ACROSS_PAGES(
-						&(matches[i])));
 				SET_ICON_STICKY_ACROSS_DESKS(
 					ewin, IS_ICON_STICKY_ACROSS_DESKS(
 						&(matches[i])));
@@ -1586,10 +1574,7 @@ MatchWinToSM(
 				win_opts->flags.use_initial_icon_xy = 1;
 				win_opts->initial_icon_x = matches[i].icon_x;
 				win_opts->initial_icon_y = matches[i].icon_y;
-				if (!IS_STICKY_ACROSS_PAGES(&(matches[i])) &&
-				    !(IS_ICONIFIED(&(matches[i])) &&
-				      IS_ICON_STICKY_ACROSS_PAGES(
-					      &(matches[i]))))
+				if (!(IS_ICONIFIED(&(matches[i]))))
 				{
 					win_opts->initial_icon_x -= Scr.Vx;
 					win_opts->initial_icon_y -= Scr.Vy;
@@ -1608,8 +1593,6 @@ MatchWinToSM(
 				matches[i].height_defect_max;
 			ewin->g.max_offset.x = matches[i].max_x_offset;
 			ewin->g.max_offset.y = matches[i].max_y_offset;
-			SET_STICKY_ACROSS_PAGES(
-				ewin, IS_STICKY_ACROSS_PAGES(&(matches[i])));
 			SET_STICKY_ACROSS_DESKS(
 				ewin, IS_STICKY_ACROSS_DESKS(&(matches[i])));
 			ewin->Desk = (IS_STICKY_ACROSS_DESKS(ewin)) ?

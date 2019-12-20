@@ -845,11 +845,6 @@ static void Loop(void) {
 	break;                    /* fvwm is gone */
 
       switch (packet->type) {
-      case M_NEW_PAGE:
-	  Scr.Vx = packet->body[0];
-	  Scr.Vy = packet->body[1];
-	  Scr.CurrentDesk = packet->body[2];
-	  break;
       case M_NEW_DESK:
 	  Scr.CurrentDesk = packet->body[0];
 	  break;

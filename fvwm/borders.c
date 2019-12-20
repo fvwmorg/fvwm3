@@ -266,8 +266,7 @@ static Bool is_button_toggled(
 	{
 		return True;
 	}
-	if ((mf & MWM_DECOR_STICK) &&
-	    (IS_STICKY_ACROSS_PAGES(fw) || IS_STICKY_ACROSS_DESKS(fw)))
+	if ((mf & MWM_DECOR_STICK) && IS_STICKY_ACROSS_DESKS(fw))
 	{
 		return True;
 	}
@@ -371,7 +370,7 @@ static void get_common_decorations(
 			cd->bg_border_cs = GetDecor(
 				t, BorderStyle.inactive.u.acs.cs);
 		}
-		if (IS_STICKY_ACROSS_PAGES(t) || IS_STICKY_ACROSS_DESKS(t))
+		if (IS_STICKY_ACROSS_DESKS(t))
 		{
 			cd->back_pixmap = Scr.sticky_gray_pixmap;
 		}
@@ -3413,7 +3412,7 @@ static void border_draw_title_stick_lines(
 	rotation_t rotation;
 
 	if (!( (HAS_STICKY_STIPPLED_TITLE(fw) &&
-		(IS_STICKY_ACROSS_PAGES(fw) || IS_STICKY_ACROSS_DESKS(fw)))
+		(IS_STICKY_ACROSS_DESKS(fw)))
 	       || HAS_STIPPLED_TITLE(fw)))
 	{
 		return;
@@ -3446,16 +3445,12 @@ static void border_draw_title_stick_lines(
 			td->right_of_text_length - td->right_end_length;
 	}
 
-	/* If the window is sticky either across pages or
-	 * desks and it has a stippled title, but nothing for
-	 * sticky_stippled_title, then don't bother drawing them, just
-	 * return immediately. -- Thomas Adam
+	/* If the window is sticky either across desks and it has a stippled
+	 * title, but nothing for sticky_stippled_title, then don't bother
+	 * drawing them, just return immediately. -- Thomas Adam
 	 */
-	if ( (IS_STICKY_ACROSS_PAGES(fw) || IS_STICKY_ACROSS_DESKS(fw)) &&
-	    (!HAS_STICKY_STIPPLED_TITLE(fw) && HAS_STIPPLED_TITLE(fw)) )
-	{
-		return;
-	}
+	if ( (IS_STICKY_ACROSS_DESKS(fw)) && (!HAS_STICKY_STIPPLED_TITLE(fw)
+				&& HAS_STIPPLED_TITLE(fw)) ) { return; }
 
 	num = (int)(fw->title_thickness / WINDOW_TITLE_STICK_VERT_DIST / 2) *
 		2 - 1;

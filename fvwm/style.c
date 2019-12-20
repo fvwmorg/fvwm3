@@ -443,10 +443,6 @@ static void merge_styles(
 	if (add_style->flags.use_start_on_desk)
 	{
 		SSET_START_DESK(*merged_style, SGET_START_DESK(*add_style));
-		SSET_START_PAGE_X(
-			*merged_style, SGET_START_PAGE_X(*add_style));
-		SSET_START_PAGE_Y(
-			*merged_style, SGET_START_PAGE_Y(*add_style));
 	}
 	if (add_style->flags.use_start_on_screen)
 	{
@@ -2101,23 +2097,6 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode |= PLACE_RANDOM;
 			ps->change_mask.placement_mode |= PLACE_RANDOM;
 		}
-		else if (StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
-		{
-			ps->flags.manual_placement_honors_starts_on_page = on;
-			ps->flag_mask.manual_placement_honors_starts_on_page =
-				1;
-			ps->change_mask.manual_placement_honors_starts_on_page
-				= 1;
-		}
-		else if (StrEquals(
-				 token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
-		{
-			ps->flags.manual_placement_honors_starts_on_page = !on;
-			ps->flag_mask.manual_placement_honors_starts_on_page =
-				1;
-			ps->change_mask.manual_placement_honors_starts_on_page
-				= 1;
-		}
 		else if (StrEquals(token, "AllowRestack"))
 		{
 			S_SET_DO_IGNORE_RESTACK(SCF(*ps), !on);
@@ -2249,18 +2228,6 @@ static Bool style_parse_one_style_option(
 			ps->flags.placement_mode &= (~PLACE_CLEVER);
 			ps->flag_mask.placement_mode |= PLACE_CLEVER;
 			ps->change_mask.placement_mode |= PLACE_CLEVER;
-		}
-		else if (StrEquals(token, "CaptureHonorsStartsOnPage"))
-		{
-			ps->flags.capture_honors_starts_on_page = on;
-			ps->flag_mask.capture_honors_starts_on_page = 1;
-			ps->change_mask.capture_honors_starts_on_page = 1;
-		}
-		else if (StrEquals(token, "CaptureIgnoresStartsonPage"))
-		{
-			ps->flags.capture_honors_starts_on_page = !on;
-			ps->flag_mask.capture_honors_starts_on_page = 1;
-			ps->change_mask.capture_honors_starts_on_page = 1;
 		}
 		else if (StrEquals(token, "ColorSet"))
 		{
@@ -3184,23 +3151,6 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode = PLACE_MASK;
 			ps->change_mask.placement_mode = PLACE_MASK;
 		}
-		else if (StrEquals(token, "ManualPlacementHonorsStartsOnPage"))
-		{
-			ps->flags.manual_placement_honors_starts_on_page = on;
-			ps->flag_mask.manual_placement_honors_starts_on_page =
-				1;
-			ps->change_mask.manual_placement_honors_starts_on_page
-				= 1;
-		}
-		else if (StrEquals(
-				 token, "ManualPlacementIgnoresStartsOnPage"))
-		{
-			ps->flags.manual_placement_honors_starts_on_page = !on;
-			ps->flag_mask.manual_placement_honors_starts_on_page =
-				1;
-			ps->change_mask.manual_placement_honors_starts_on_page
-				= 1;
-		}
 		else if (StrEquals(token, "Maximizable"))
 		{
 			S_SET_IS_UNMAXIMIZABLE(SCF(*ps), !on);
@@ -3706,18 +3656,6 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode |= PLACE_RANDOM;
 			ps->change_mask.placement_mode |= PLACE_RANDOM;
 		}
-		else if (StrEquals(token, "RECAPTUREHONORSSTARTSONPAGE"))
-		{
-			ps->flags.recapture_honors_starts_on_page = on;
-			ps->flag_mask.recapture_honors_starts_on_page = 1;
-			ps->change_mask.recapture_honors_starts_on_page = 1;
-		}
-		else if (StrEquals(token, "RECAPTUREIGNORESSTARTSONPAGE"))
-		{
-			ps->flags.recapture_honors_starts_on_page = !on;
-			ps->flag_mask.recapture_honors_starts_on_page = 1;
-			ps->change_mask.recapture_honors_starts_on_page = 1;
-		}
 		else if (StrEquals(token, "RESIZEHINTOVERRIDE"))
 		{
 			S_SET_HAS_OVERRIDE_SIZE(SCF(*ps), on);
@@ -3781,18 +3719,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "StickyIcon"))
 		{
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCF(*ps), on);
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCF(*ps), on);
 			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCM(*ps), 1);
 			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCC(*ps), 1);
-		}
-		else if (StrEquals(token, "StickyAcrossPagesIcon"))
-		{
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCF(*ps), on);
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "StickyAcrossDesksIcon"))
 		{
@@ -3802,9 +3731,6 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "SlipperyIcon"))
 		{
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCF(*ps), !on);
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCF(*ps), !on);
 			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCM(*ps), 1);
 			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCC(*ps), 1);
@@ -3851,18 +3777,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Sticky"))
 		{
-			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*ps), on);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*ps), 1);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*ps), on);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*ps), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*ps), 1);
-		}
-		else if (StrEquals(token, "StickyAcrossPages"))
-		{
-			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*ps), on);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*ps), 1);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "StickyAcrossDesks"))
 		{
@@ -3884,9 +3801,6 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Slippery"))
 		{
-			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*ps), !on);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*ps), 1);
-			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*ps), !on);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*ps), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*ps), 1);
@@ -3911,70 +3825,6 @@ static Bool style_parse_one_style_option(
 				fvwm_msg(ERR,"style_parse_one_style_option",
 					 "bad StartsOnDesk arg: %s", rest);
 			}
-		}
-		/* StartsOnPage is like StartsOnDesk-Plus */
-		else if (StrEquals(token, "STARTSONPAGE"))
-		{
-			char *ret_rest;
-			spargs = GetIntegerArguments(rest, &ret_rest,
-						     tmpno, 3);
-			if (spargs == 1 || spargs == 3)
-			{
-				/* We have a desk no., with or without page. */
-				/* RBW - 11/20/1998 - allow for the special
-				 * case of -1 */
-				/* Desk is now actual + 1 */
-				SSET_START_DESK(
-					*ps, (tmpno[0] > -1) ?
-					tmpno[0] + 1 : tmpno[0]);
-			}
-			if (spargs == 2 || spargs == 3)
-			{
-				if (spargs == 3)
-				{
-					/*  RBW - 11/20/1998 - allow for the
-					 * special case of -1  */
-					SSET_START_PAGE_X(
-						*ps, (tmpno[1] > -1) ?
-						tmpno[1] + 1 : tmpno[1]);
-					SSET_START_PAGE_Y(
-						*ps, (tmpno[2] > -1) ?
-						tmpno[2] + 1 : tmpno[2]);
-				}
-				else
-				{
-					SSET_START_PAGE_X(
-						*ps, (tmpno[0] > -1) ?
-						tmpno[0] + 1 : tmpno[0]);
-					SSET_START_PAGE_Y(
-						*ps, (tmpno[1] > -1) ?
-						tmpno[1] + 1 : tmpno[1]);
-				}
-			}
-			if (spargs < 1 || spargs > 3)
-			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					 "bad StartsOnPage args: %s", rest);
-			}
-			else
-			{
-				ps->flags.use_start_on_desk = 1;
-				ps->flag_mask.use_start_on_desk = 1;
-				ps->change_mask.use_start_on_desk = 1;
-			}
-			rest = ret_rest;
-		}
-		else if (StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
-		{
-			ps->flags.use_start_on_page_for_transient = on;
-			ps->flag_mask.use_start_on_page_for_transient = 1;
-			ps->change_mask.use_start_on_page_for_transient = 1;
-		}
-		else if (StrEquals(token, "STARTSONPAGEIGNORESTRANSIENTS"))
-		{
-			ps->flags.use_start_on_page_for_transient = !on;
-			ps->flag_mask.use_start_on_page_for_transient = 1;
-			ps->change_mask.use_start_on_page_for_transient = 1;
 		}
 		else if (StrEquals(token, "StartsOnScreen"))
 		{
@@ -4634,8 +4484,6 @@ static void __style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 	ps->has_style_changed = 1;
 	/* set global flag */
 	Scr.flags.do_need_window_update = 1;
-	/* default StartsOnPage behavior for initial capture */
-	ps->flags.capture_honors_starts_on_page = 1;
 
 	if (!is_window_style)
 	{
@@ -4827,17 +4675,10 @@ void check_window_style_change(
 		sf[i] = wf[i];
 	}
 
-	/* is_sticky
-	 * is_icon_sticky */
-	if (S_IS_STICKY_ACROSS_PAGES(SCC(*ret_style)) ||
-	    S_IS_STICKY_ACROSS_DESKS(SCC(*ret_style)))
+	/* is_sticky */
+	if (S_IS_STICKY_ACROSS_DESKS(SCC(*ret_style)))
 	{
 		flags->do_update_stick = 1;
-	}
-	else if (S_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ret_style)) &&
-		 IS_ICONIFIED(t) && !IS_STICKY_ACROSS_PAGES(t))
-	{
-		flags->do_update_stick_icon = 1;
 	}
 	else if (S_IS_ICON_STICKY_ACROSS_DESKS(SCC(*ret_style)) &&
 		 IS_ICONIFIED(t) && !IS_STICKY_ACROSS_DESKS(t))

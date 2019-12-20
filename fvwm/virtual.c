@@ -81,12 +81,7 @@
  */
 static int edge_thickness = 2;
 static int last_edge_thickness = 2;
-static int prev_page_x = 0;
-static int prev_page_y = 0;
 static int prev_desk = 0;
-static int prev_desk_and_page_desk = 0;
-static int prev_desk_and_page_page_x = 0;
-static int prev_desk_and_page_page_y = 0;
 
 static int number_of_desktops(void);
 
@@ -1226,12 +1221,6 @@ Bool is_pan_frame(Window w)
  */
 void MoveViewport(int newx, int newy, Bool grab)
 {
-	FvwmWindow *t, *t1;
-	int deltax,deltay;
-	int PageTop, PageLeft;
-	int PageBottom, PageRight;
-	int txl, txr, tyt, tyb;
-
 	if (grab)
 	{
 		MyXGrabServer(dpy);
@@ -1252,175 +1241,18 @@ void MoveViewport(int newx, int newy, Bool grab)
 	{
 		newy = 0;
 	}
-	deltay = Scr.Vy - newy;
-	deltax = Scr.Vx - newx;
 	/*
 	  Identify the bounding rectangle that will be moved into
 	  the viewport.
 	*/
-	PageBottom    =  Scr.MyDisplayHeight - deltay - 1;
-	PageRight     =  Scr.MyDisplayWidth  - deltax - 1;
-	PageTop       =  0 - deltay;
-	PageLeft      =  0 - deltax;
-	if (deltax || deltay)
-	{
-		prev_page_x = Scr.Vx;
-		prev_page_y = Scr.Vy;
-		prev_desk_and_page_page_x = Scr.Vx;
-		prev_desk_and_page_page_y = Scr.Vy;
-		prev_desk_and_page_desk = Scr.CurrentDesk;
-	}
 	Scr.Vx = newx;
 	Scr.Vy = newy;
 
-	if (deltax || deltay)
-	{
-		BroadcastPacket(
-			M_NEW_PAGE, 7, (long)Scr.Vx, (long)Scr.Vy,
-			(long)Scr.CurrentDesk, (long)Scr.MyDisplayWidth,
-			(long)Scr.MyDisplayHeight,
-			(long)((Scr.VxMax / Scr.MyDisplayWidth) + 1),
-			(long)((Scr.VyMax / Scr.MyDisplayHeight) + 1));
-
-		/*
-		 * RBW - 11/13/1998      - new:  chase the chain
-		 * bidirectionally, all at once! The idea is to move the
-		 * windows that are moving out of the viewport from the bottom
-		 * of the stacking order up, to minimize the expose-redraw
-		 * overhead. Windows that will be moving into view will be
-		 * moved top down, for the same reason. Use the new
-		 * stacking-order chain, rather than the old last-focused
-		 * chain.
-		 *
-		 * domivogt (29-Nov-1999): It's faster to first map windows
-		 * top to bottom and then unmap windows bottom up.
-		 */
-		t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
-		while (t != &Scr.FvwmRoot)
-		{
-			/*
-			 * If the window is moving into the viewport...
-			 */
-			txl = t->g.frame.x;
-			tyt = t->g.frame.y;
-			txr = t->g.frame.x + t->g.frame.width - 1;
-			tyb = t->g.frame.y + t->g.frame.height - 1;
-			if (is_window_sticky_across_pages(t) &&
-			    !IS_VIEWPORT_MOVED(t))
-			{
-				/* the absolute position has changed */
-				t->g.normal.x -= deltax;
-				t->g.normal.y -= deltay;
-				t->g.max.x -= deltax;
-				t->g.max.y -= deltay;
-				/*  Block double move.  */
-				SET_VIEWPORT_MOVED(t, 1);
-			}
-			if ((txr >= PageLeft && txl <= PageRight
-			     && tyb >= PageTop && tyt <= PageBottom)
-			    && !IS_VIEWPORT_MOVED(t)
-			    && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
-			{
-				/*  Block double move.  */
-				SET_VIEWPORT_MOVED(t, 1);
-				/* If the window is iconified, and sticky
-				 * Icons is set, then the window should
-				 * essentially be sticky */
-				if (!is_window_sticky_across_pages(t))
-				{
-					if (IS_ICONIFIED(t))
-					{
-						modify_icon_position(
-							t, deltax, deltay);
-						move_icon_to_position(t);
-						broadcast_icon_geometry(
-							t, False);
-					}
-					frame_setup_window(
-						t, t->g.frame.x + deltax,
-						t->g.frame.y + deltay,
-						t->g.frame.width,
-						t->g.frame.height, False);
-				}
-			}
-			/*  Bump to next win...  */
-			t = get_next_window_in_stack_ring(t);
-		}
-		t1 = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
-		while (t1 != &Scr.FvwmRoot)
-		{
-			/*
-			 *If the window is not moving into the viewport...
-			 */
-			SET_VIEWPORT_MOVED(t, 1);
-			txl = t1->g.frame.x;
-			tyt = t1->g.frame.y;
-			txr = t1->g.frame.x + t1->g.frame.width - 1;
-			tyb = t1->g.frame.y + t1->g.frame.height - 1;
-			if (! (txr >= PageLeft && txl <= PageRight
-			       && tyb >= PageTop && tyt <= PageBottom)
-			    && !IS_VIEWPORT_MOVED(t1)
-			    && !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
-			{
-				/* If the window is iconified, and sticky
-				 * Icons is set, then the window should
-				 * essentially be sticky */
-				if (!is_window_sticky_across_pages(t1))
-				{
-					if (IS_ICONIFIED(t1))
-					{
-						modify_icon_position(
-							t1, deltax, deltay);
-						move_icon_to_position(t1);
-						broadcast_icon_geometry(
-							t1, False);
-					}
-					frame_setup_window(
-						t1, t1->g.frame.x + deltax,
-						t1->g.frame.y + deltay,
-						t1->g.frame.width,
-						t1->g.frame.height, False);
-				}
-			}
-			/*  Bump to next win...  */
-			t1 = get_prev_window_in_stack_ring(t1);
-		}
-		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-		{
-			if (IS_VIEWPORT_MOVED(t))
-			{
-				/* Clear double move blocker. */
-				SET_VIEWPORT_MOVED(t, 0);
-			}
-			/* If its an icon, and its sticking, autoplace it so
-			 * that it doesn't wind up on top a a stationary
-			 * icon */
-			if (is_window_sticky_across_pages(t) &&
-			    IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
-			    !IS_ICON_UNMAPPED(t))
-			{
-				AutoPlaceIcon(t, NULL, True);
-			}
-		}
-	}
 	checkPanFrames();
 	/* regrab buttons in case something got obscured or unobscured */
 	focus_grab_buttons_all();
 
-#if 0
-	/* dv (2004-07-01): I don't think that's a good idea.  We could eat too
-	 * many events. */
-	/* do this with PanFrames too ??? HEDU */
-	{
-		XEvent e;
-
-		while (FCheckTypedEvent(dpy, MotionNotify, &e))
-		{
-			/* nothing */
-		}
-	}
-#endif
-	if (grab)
+ 	if (grab)
 	{
 		MyXUngrabServer(dpy);
 	}
@@ -1437,9 +1269,6 @@ void goto_desk(int desk)
 	if (Scr.CurrentDesk != desk)
 	{
 		prev_desk = Scr.CurrentDesk;
-		prev_desk_and_page_desk = Scr.CurrentDesk;
-		prev_desk_and_page_page_x = Scr.Vx;
-		prev_desk_and_page_page_y = Scr.Vy;
 		UnmapDesk(Scr.CurrentDesk, True);
 		Scr.CurrentDesk = desk;
 		MapDesk(desk, True);
@@ -1510,155 +1339,6 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	EWMH_SetWMDesktop(fw);
 
 	return;
-}
-
-Bool get_page_arguments(char *action, int *page_x, int *page_y)
-{
-	int val[2];
-	int suffix[2];
-	char *token;
-	char *taction;
-	int wrapx;
-	int wrapy;
-	int limitdeskx;
-	int limitdesky;
-
-	wrapx = 0;
-	wrapy = 0;
-	limitdeskx = 1;
-	limitdesky = 1;
-	for (; ; action = taction)
-	{
-		int do_reverse;
-
-		token = PeekToken(action, &taction);
-		if (token == NULL)
-		{
-			*page_x = Scr.Vx;
-			*page_y = Scr.Vy;
-			return True;
-		}
-		if (StrEquals(token, "prev"))
-		{
-			/* last page selected */
-			*page_x = prev_page_x;
-			*page_y = prev_page_y;
-			return True;
-		}
-		do_reverse = 0;
-		for ( ; *token == '!'; token++)
-		{
-			do_reverse = !do_reverse;
-		}
-		if (StrEquals(token, "wrapx"))
-		{
-			wrapx = (1 ^ do_reverse);
-		}
-		else if (StrEquals(token, "wrapy"))
-		{
-			wrapy = (1 ^ do_reverse);
-		}
-		else if (StrEquals(token, "nodesklimitx"))
-		{
-			limitdeskx = (0 ^ do_reverse);
-		}
-		else if (StrEquals(token, "nodesklimity"))
-		{
-			limitdesky = (0 ^ do_reverse);
-		}
-		else
-		{
-			/* no more options */
-			break;
-		}
-	}
-
-	if (GetSuffixedIntegerArguments(action, NULL, val, 2, "pw", suffix) !=
-	    2)
-	{
-		return 0;
-	}
-
-	if (suffix[0] == 1)
-	{
-		*page_x = val[0] * Scr.MyDisplayWidth + Scr.Vx;
-	}
-	else if (suffix[0] == 2)
-	{
-		*page_x += val[0] * Scr.MyDisplayWidth;
-	}
-	else if (val[0] >= 0)
-	{
-		*page_x = val[0] * Scr.MyDisplayWidth;
-	}
-	else
-	{
-		*page_x = (val[0] + 1) * Scr.MyDisplayWidth + Scr.VxMax;
-	}
-	if (suffix[1] == 1)
-	{
-		*page_y = val[1] * Scr.MyDisplayHeight + Scr.Vy;
-	}
-	else if (suffix[1] == 2)
-	{
-		*page_y += val[1] * Scr.MyDisplayHeight;
-	}
-	else if (val[1] >= 0)
-	{
-		*page_y = val[1] * Scr.MyDisplayHeight;
-	}
-	else
-	{
-		*page_y = (val[1] + 1) * Scr.MyDisplayHeight + Scr.VyMax;
-	}
-
-	/* limit to desktop size */
-	if (limitdeskx && !wrapx)
-	{
-		if (*page_x < 0)
-		{
-			*page_x = 0;
-		}
-		else if (*page_x > Scr.VxMax)
-		{
-			*page_x = Scr.VxMax;
-		}
-	}
-	else if (limitdeskx && wrapx)
-	{
-		while (*page_x < 0)
-		{
-			*page_x += Scr.VxMax + Scr.MyDisplayWidth;
-		}
-		while (*page_x > Scr.VxMax)
-		{
-			*page_x -= Scr.VxMax + Scr.MyDisplayWidth;
-		}
-	}
-	if (limitdesky && !wrapy)
-	{
-		if (*page_y < 0)
-		{
-			*page_y = 0;
-		}
-		else if (*page_y > Scr.VyMax)
-		{
-			*page_y = Scr.VyMax;
-		}
-	}
-	else if (limitdesky && wrapy)
-	{
-		while (*page_y < 0)
-		{
-			*page_y += Scr.VyMax + Scr.MyDisplayHeight;
-		}
-		while (*page_y > Scr.VyMax)
-		{
-			*page_y -= Scr.VyMax + Scr.MyDisplayHeight;
-		}
-	}
-
-	return True;
 }
 
 char *GetDesktopName(int desk)
@@ -2059,107 +1739,6 @@ void CMD_GotoDesk(F_CMD_ARGS)
 void CMD_Desk(F_CMD_ARGS)
 {
 	CMD_GotoDesk(F_PASS_ARGS);
-
-	return;
-}
-
-/*
- *
- * Move to a new desktop and page at the same time.
- *   This function is designed for use by the Pager, and replaces the old
- *   GoToDesk 0 10000 hack.
- *   - unmap all windows on the current desk so they don't flash when the
- *     viewport is moved, then switch the viewport, then the desk.
- *
- */
-void CMD_GotoDeskAndPage(F_CMD_ARGS)
-{
-	int val[3];
-	Bool is_new_desk;
-
-	if (MatchToken(action, "prev"))
-	{
-		val[0] = prev_desk_and_page_desk;
-		val[1] = prev_desk_and_page_page_x;
-		val[2] = prev_desk_and_page_page_y;
-	}
-	else if (GetIntegerArguments(action, NULL, val, 3) == 3)
-	{
-		val[1] *= Scr.MyDisplayWidth;
-		val[2] *= Scr.MyDisplayHeight;
-	}
-	else
-	{
-		return;
-	}
-
-	is_new_desk = (Scr.CurrentDesk != val[0]);
-	if (is_new_desk)
-	{
-		UnmapDesk(Scr.CurrentDesk, True);
-	}
-	prev_desk_and_page_page_x = Scr.Vx;
-	prev_desk_and_page_page_y = Scr.Vy;
-	MoveViewport(val[1], val[2], True);
-	if (is_new_desk)
-	{
-		prev_desk = Scr.CurrentDesk;
-		prev_desk_and_page_desk = Scr.CurrentDesk;
-		Scr.CurrentDesk = val[0];
-		MapDesk(val[0], True);
-		focus_grab_buttons_all();
-		BroadcastPacket(M_NEW_DESK, 1, (long)Scr.CurrentDesk);
-		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
-		 * window upon desk change.  This is a workaround for a
-		 * problem in FvwmPager: The pager has a separate 'root'
-		 * window for each desk.  If the active desk changes, the
-		 * pager destroys sticky mini windows and creates new ones in
-		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.  So we have to tell it ecplicitly where they
-		 * go :-( This should be fixed in the pager, but right now the
-		 * pager doesn't the stacking order. */
-		BroadcastRestackAllWindows();
-	}
-	else
-	{
-		BroadcastPacket(M_NEW_DESK, 1, (long)Scr.CurrentDesk);
-	}
-	EWMH_SetCurrentDesktop();
-
-	return;
-}
-
-void CMD_GotoPage(F_CMD_ARGS)
-{
-	int x;
-	int y;
-
-	x = Scr.Vx;
-	y = Scr.Vy;
-	if (!get_page_arguments(action, &x, &y))
-	{
-		fvwm_msg(
-			ERR, "goto_page_func",
-			"GotoPage: invalid arguments: %s", action);
-		return;
-	}
-	if (x < 0)
-	{
-		x = 0;
-	}
-	if (x > Scr.VxMax)
-	{
-		x = Scr.VxMax;
-	}
-	if (y < 0)
-	{
-		y = 0;
-	}
-	if (y > Scr.VyMax)
-	{
-		y = Scr.VyMax;
-	}
-	MoveViewport(x,y,True);
 
 	return;
 }

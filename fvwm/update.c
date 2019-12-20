@@ -73,7 +73,6 @@ static void init_style(
 	/* determine level of decoration */
 	setup_style_and_decor(t, pstyle, pbuttons);
 	/* restore some old values */
-	IS_STICKY_ACROSS_PAGES(t) = IS_STICKY_ACROSS_PAGES(old_t);
 	IS_STICKY_ACROSS_DESKS(t) = IS_STICKY_ACROSS_DESKS(old_t);
 	GET_USER_STATES(t) = GET_USER_STATES(old_t);
 
@@ -139,16 +138,15 @@ static void apply_window_updates(
 	exc = exc_create_context(
 		&ecc, ECC_TYPE | ECC_FW | ECC_W | ECC_WCONTEXT);
 	if (flags->do_update_stick_icon && IS_ICONIFIED(t) &&
-	    !(IS_STICKY_ACROSS_PAGES(t) || IS_STICKY_ACROSS_DESKS(t)))
+	    IS_STICKY_ACROSS_DESKS(t))
 	{
-		if (IS_ICON_STICKY_ACROSS_PAGES(pstyle) ||
-		    IS_ICON_STICKY_ACROSS_DESKS(pstyle))
+		if (IS_ICON_STICKY_ACROSS_DESKS(pstyle))
 		{
 			/* stick and unstick the window to force the icon on
 			 * the current page */
 			handle_stick(
 				NULL, exc, "",
-				S_IS_STICKY_ACROSS_PAGES(SCF(*pstyle)),
+				0, /* Fake that pages still exist for now. */
 				S_IS_STICKY_ACROSS_DESKS(SCF(*pstyle)), 1, 1);
 			handle_stick(NULL, exc, "", 0, 0, 1, 0);
 		}
@@ -157,7 +155,8 @@ static void apply_window_updates(
 	else if (flags->do_update_stick)
 	{
 		handle_stick(
-			NULL, exc, "", S_IS_STICKY_ACROSS_PAGES(SCF(*pstyle)),
+			NULL, exc, "",
+			0, /* Fake that pages still exist for now. */
 			S_IS_STICKY_ACROSS_DESKS(SCF(*pstyle)), 0, 0);
 	}
 	exc_destroy_context(exc);

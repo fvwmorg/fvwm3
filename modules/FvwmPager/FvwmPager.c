@@ -324,7 +324,6 @@ int main(int argc, char **argv)
 		 M_CONFIGURE_WINDOW|
 		 M_DESTROY_WINDOW|
 		 M_FOCUS_CHANGE|
-		 M_NEW_PAGE|
 		 M_NEW_DESK|
 		 M_RAISE_WINDOW|
 		 M_LOWER_WINDOW|
@@ -501,9 +500,6 @@ void process_message( FvwmPacket* packet )
       break;
     case M_FOCUS_CHANGE:
       list_focus(body);
-      break;
-    case M_NEW_PAGE:
-      list_new_page(body);
       break;
     case M_NEW_DESK:
       list_new_desk(body);
@@ -805,37 +801,6 @@ void list_focus(unsigned long *body)
 /*
  *
  *  Procedure:
- *      list_new_page - displays packet contents to stderr
- *
- */
-void list_new_page(unsigned long *body)
-{
-  Scr.Vx = body[0];
-  Scr.Vy = body[1];
-  if (Scr.CurrentDesk != body[2])
-  {
-      /* first handle the new desk */
-      body[0] = body[2];
-      list_new_desk(body);
-  }
-  if (Scr.VxPages != body[5] || Scr.VyPages != body[6])
-  {
-    Scr.VxPages = body[5];
-    Scr.VyPages = body[6];
-    Scr.VWidth = Scr.VxPages * Scr.MyDisplayWidth;
-    Scr.VHeight = Scr.VyPages * Scr.MyDisplayHeight;
-    Scr.VxMax = Scr.VWidth - Scr.MyDisplayWidth;
-    Scr.VyMax = Scr.VHeight - Scr.MyDisplayHeight;
-    ReConfigure();
-  }
-  MovePage(False);
-  MoveStickyWindow(True, False);
-  Hilight(FocusWin,True);
-}
-
-/*
- *
- *  Procedure:
  *      list_new_desk - displays packet contents to stderr
  *
  */
@@ -986,7 +951,6 @@ void list_new_desk(unsigned long *body)
     XSetIconName(dpy, Scr.Pager_w, name);
   }
 
-  MovePage(True);
   DrawGrid(oldDesk - desk1, 1, None, NULL);
   DrawGrid(Scr.CurrentDesk - desk1, 1, None, NULL);
   MoveStickyWindow(False, True);
@@ -2179,8 +2143,6 @@ void ParseOptions(void)
     Scr.VyMax = 0;
   Scr.VWidth = Scr.VxMax + Scr.MyDisplayWidth;
   Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
-  Scr.VxPages = Scr.VWidth / Scr.MyDisplayWidth;
-  Scr.VyPages = Scr.VHeight / Scr.MyDisplayHeight;
   Scr.Vx = 0;
   Scr.Vy = 0;
 

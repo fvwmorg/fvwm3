@@ -1150,10 +1150,7 @@ void MakeList(void)
 	AddToList("Y (current page):",   ystr);
 	AddToList("Boundary Width:", borderw);
 
-	AddToList("StickyPage:",    (IS_STICKY_ACROSS_PAGES(targ) ? yes : no));
 	AddToList("StickyDesk:",    (IS_STICKY_ACROSS_DESKS(targ) ? yes : no));
-	AddToList("StickyPageIcon:",
-		(IS_ICON_STICKY_ACROSS_PAGES(targ) ? yes : no));
 	AddToList("StickyDeskIcon:",
 		(IS_ICON_STICKY_ACROSS_DESKS(targ) ? yes : no));
 	AddToList("NoTitle:",       (HAS_TITLE(targ)    ? no : yes));

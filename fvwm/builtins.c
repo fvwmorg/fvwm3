@@ -2148,7 +2148,6 @@ void CMD_CursorMove(F_CMD_ARGS)
 	int val1, val2, val1_unit, val2_unit;
 	int x_unit, y_unit;
 	int virtual_x, virtual_y;
-	int x_pages, y_pages;
 
 	if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
 	{
@@ -2170,16 +2169,6 @@ void CMD_CursorMove(F_CMD_ARGS)
 
 	virtual_x = Scr.Vx;
 	virtual_y = Scr.Vy;
-	if (x >= 0)
-	{
-		x_pages = x / Scr.MyDisplayWidth;
-	}
-	else
-	{
-		x_pages = ((x + 1) / Scr.MyDisplayWidth) - 1;
-	}
-	virtual_x += x_pages * Scr.MyDisplayWidth;
-	x -= x_pages * Scr.MyDisplayWidth;
 	if (virtual_x < 0)
 	{
 		x += virtual_x;
@@ -2190,17 +2179,6 @@ void CMD_CursorMove(F_CMD_ARGS)
 		x += virtual_x - Scr.VxMax;
 		virtual_x = Scr.VxMax;
 	}
-
-	if (y >= 0)
-	{
-		y_pages = y / Scr.MyDisplayHeight;
-	}
-	else
-	{
-		y_pages = ((y + 1) / Scr.MyDisplayHeight) - 1;
-	}
-	virtual_y += y_pages * Scr.MyDisplayHeight;
-	y -= y_pages * Scr.MyDisplayHeight;
 
 	if (virtual_y < 0)
 	{

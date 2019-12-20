@@ -32,8 +32,6 @@ typedef struct ScreenInfo
   unsigned VScale;       /* Panner scale factor */
   int VxMax;             /* Max location for top left of virt desk*/
   int VyMax;
-  int VxPages;           /* desktop size */
-  int VyPages;
   int VWidth;            /* Size of virtual desktop */
   int VHeight;
   int Vx;                /* Current loc for top left of virt desk */

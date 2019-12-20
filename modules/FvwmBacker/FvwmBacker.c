@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 	ParseConfig();
 
 	SetMessageMask(fvwm_fd,
-		       M_NEW_PAGE | M_NEW_DESK | M_CONFIG_INFO |
+		       M_NEW_DESK | M_CONFIG_INFO |
 		       M_END_CONFIG_INFO | M_SENDCONFIG);
 
 	/*
@@ -469,28 +469,6 @@ void ProcessMessage(unsigned long type, unsigned long *body)
 		}
 		ExecuteMatchingCommands(-1, change);
 		break;
-
-	case M_NEW_PAGE:
-		if (is_initial)
-		{
-			change = EXEC_ALWAYS;
-			is_initial = False;
-		}
-		if (current_desk != body[2])
-		{
-			current_desk = body[2];
-			change |= EXEC_CHANGED_DESK;
-		}
-		if (current_x != body[0] / MyDisplayWidth ||
-		    current_y != body[1] / MyDisplayHeight)
-		{
-			current_x = body[0] / MyDisplayWidth;
-			current_y = body[1] / MyDisplayHeight;
-			change |= EXEC_CHANGED_PAGE;
-		}
-		ExecuteMatchingCommands(-1, change);
-		break;
-
 	}
 }
 

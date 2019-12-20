@@ -597,8 +597,6 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 	FvwmWindow *other_fw;
 	int xnew;
 	int xtest;
-	int stickyx;
-	int stickyy;
 	int start,i;
 	int win_left;
 	rectangle g;
@@ -651,23 +649,13 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 		{
 			continue;
 		}
-		if (IS_STICKY_ACROSS_PAGES(other_fw))
-		{
-			stickyx = arg->pdelta_p.x;
-			stickyy = arg->pdelta_p.y;
-		}
-		else
-		{
-			stickyx = 0;
-			stickyy = 0;
-		}
 		if (IS_ICONIFIED(other_fw))
 		{
 			rc = get_visible_icon_geometry(other_fw, &g);
-			if (rc == True && y < g.y + g.height - stickyy &&
-			    g.y - stickyy < arg->place_g.height + y)
+			if (rc == True && y < g.y + g.height &&
+			    g.y < arg->place_g.height + y)
 			{
-				win_left = arg->page_p1.x + g.x - stickyx -
+				win_left = arg->page_p1.x + g.x -
 					arg->place_g.width;
 				for (i = start; i <= CP_GET_NEXT_STEP; i++)
 				{
@@ -679,7 +667,7 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 						xnew = MIN(xnew, xtest);
 					}
 				}
-				win_left = arg->page_p1.x + g.x - stickyx;
+				win_left = arg->page_p1.x + g.x;
 				for (i = start; i <= CP_GET_NEXT_STEP; i++)
 				{
 					xtest = (win_left) + g.width * i /
@@ -692,16 +680,15 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 			}
 		}
 		else if (
-			y < other_fw->g.frame.height + other_fw->g.frame.y -
-			stickyy &&
-			other_fw->g.frame.y - stickyy <
+			y < other_fw->g.frame.height + other_fw->g.frame.y &&
+			other_fw->g.frame.y <
 			arg->place_g.height + y &&
 			arg->page_p1.x < other_fw->g.frame.width +
-			other_fw->g.frame.x - stickyx &&
-			other_fw->g.frame.x - stickyx < arg->page_p2.x)
+			other_fw->g.frame.x &&
+			other_fw->g.frame.x < arg->page_p2.x)
 		{
 			win_left =
-				other_fw->g.frame.x - stickyx -
+				other_fw->g.frame.x -
 				arg->place_g.width;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
@@ -713,7 +700,7 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 					xnew = MIN(xnew, xtest);
 				}
 			}
-			win_left = other_fw->g.frame.x - stickyx;
+			win_left = other_fw->g.frame.x;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				xtest = win_left + other_fw->g.frame.width *
@@ -734,7 +721,6 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 	FvwmWindow *other_fw;
 	int ynew;
 	int ytest;
-	int stickyy;
 	int win_top;
 	int start;
 	int i;
@@ -787,19 +773,10 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 			continue;
 		}
 
-		if (IS_STICKY_ACROSS_PAGES(other_fw))
-		{
-			stickyy = arg->pdelta_p.y;
-		}
-		else
-		{
-			stickyy = 0;
-		}
-
 		if (IS_ICONIFIED(other_fw))
 		{
 			get_visible_icon_geometry(other_fw, &g);
-			win_top = g.y - stickyy;
+			win_top = g.y;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				ytest =
@@ -810,7 +787,7 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 					ynew = MIN(ynew, ytest);
 				}
 			}
-			win_top = g.y - stickyy - arg->place_g.height;
+			win_top = g.y - arg->place_g.height;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				ytest =
@@ -825,7 +802,7 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 		}
 		else
 		{
-			win_top = other_fw->g.frame.y - stickyy;
+			win_top = other_fw->g.frame.y;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				ytest =
@@ -836,7 +813,7 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 					ynew = MIN(ynew, ytest);
 				}
 			}
-			win_top = other_fw->g.frame.y - stickyy -
+			win_top = other_fw->g.frame.y -
 				arg->place_g.height;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
@@ -929,9 +906,7 @@ static pl_penalty_t __pl_minoverlap_get_avoidance_penalty(
 	{
 		avoidance_factor = BELOW_PLACEMENT_PENALTY(opp);
 	}
-	else if (
-		IS_STICKY_ACROSS_PAGES(other_fw) ||
-		IS_STICKY_ACROSS_DESKS(other_fw))
+	else if (IS_STICKY_ACROSS_DESKS(other_fw))
 	{
 		avoidance_factor = STICKY_PLACEMENT_PENALTY(opp);
 	}
@@ -1024,11 +999,6 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 			continue;
 		}
 		(void)get_visible_window_or_icon_geometry(other_fw, &other_g);
-		if (IS_STICKY_ACROSS_PAGES(other_fw))
-		{
-			other_g.x -= arg->pdelta_p.x;
-			other_g.y -= arg->pdelta_p.y;
-		}
 		if (
 			arg->place_g.x < other_g.x + other_g.width &&
 			arg->place_p2.x > other_g.x &&
@@ -1462,8 +1432,7 @@ static int __place_get_nowm_pos(
 	/* If SkipMapping, and other legalities are observed, adjust for
 	 * StartsOnPage. */
 	if (DO_NOT_SHOW_ON_MAP(fw) && flags.do_honor_starts_on_page &&
-	    (!IS_TRANSIENT(fw) ||
-	     SUSE_START_ON_PAGE_FOR_TRANSIENT(&pstyle->flags))
+	    (!IS_TRANSIENT(fw))
 #if 0
 	    /* dv 08-Jul-2003:  Do not use this.  Instead, force the window on
 	     * the requested page even if the application requested a different
@@ -1564,8 +1533,6 @@ static int __place_window(
 {
 	FvwmWindow *t;
 	int is_skipmapping_forbidden;
-	int px = 0;
-	int py = 0;
 	int pdeltax = 0;
 	int pdeltay = 0;
 	rectangle screen_g;
@@ -1596,14 +1563,11 @@ static int __place_window(
 		 * it's a restart or recapture, and that option's disallowed...
 		 */
 		if (win_opts->flags.do_override_ppos &&
-		    (Restarting || (Scr.flags.are_windows_captured)) &&
-		    !SRECAPTURE_HONORS_STARTS_ON_PAGE(&pstyle->flags))
+		    (Restarting || (Scr.flags.are_windows_captured)))
 		{
-			flags.do_honor_starts_on_page = 0;
 			flags.do_honor_starts_on_screen = 0;
 			reason->page.reason =
 				(preason_page_t)PR_PAGE_IGNORE_CAPTURE;
-			reason->page.do_ignore_starts_on_page = 1;
 			reason->screen.reason =
 				(preason_screen_t)PR_PAGE_IGNORE_CAPTURE;
 		}
@@ -1611,13 +1575,10 @@ static int __place_window(
 		 * it's a cold start window capture, and that's disallowed...
 		 */
 		if (win_opts->flags.do_override_ppos &&
-		    (!Restarting && !(Scr.flags.are_windows_captured)) &&
-		    !SCAPTURE_HONORS_STARTS_ON_PAGE(&pstyle->flags))
+		    (!Restarting && !(Scr.flags.are_windows_captured)))
 		{
-			flags.do_honor_starts_on_page = 0;
 			flags.do_honor_starts_on_screen = 0;
 			reason->page.reason = PR_PAGE_IGNORE_CAPTURE;
-			reason->page.do_ignore_starts_on_page = 1;
 			reason->screen.reason =
 				(preason_screen_t)PR_PAGE_IGNORE_CAPTURE;
 		}
@@ -1629,9 +1590,7 @@ static int __place_window(
 		case PLACE_MANUAL:
 		case PLACE_MANUAL_B:
 		case PLACE_TILEMANUAL:
-			is_skipmapping_forbidden =
-				!SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(
-					&pstyle->flags);
+			is_skipmapping_forbidden = 0;
 			break;
 		default:
 			is_skipmapping_forbidden = 0;
@@ -1644,13 +1603,11 @@ static int __place_window(
 		}
 		if (is_skipmapping_forbidden == 1)
 		{
-			flags.do_honor_starts_on_page = 0;
 			reason->page.reason = PR_PAGE_IGNORE_INVALID;
-			reason->page.do_ignore_starts_on_page = 1;
 			fvwm_msg(
 				WARN, "__place_window",
-				"invalid style combination used: StartsOnPage"
-				"/StartsOnDesk and SkipMapping don't work with"
+				"invalid style combination used: StartsOnDesk"
+				" and SkipMapping don't work with"
 				" ManualPlacement and TileManualPlacement."
 				" Putting window on current page, please use"
 				" another placement style or"
@@ -1814,37 +1771,6 @@ static int __place_window(
 		}
 		goto_desk(fw->Desk);
 	}
-	/* Don't move viewport if SkipMapping, or if recapturing the window,
-	 * adjust the coordinates later. Otherwise, just switch to the target
-	 * page - it's ever so much simpler. */
-	if (S_IS_STICKY_ACROSS_PAGES(SFC(pstyle->flags)))
-	{
-		reason->page.reason = PR_PAGE_STICKY;
-	}
-	else if (SUSE_START_ON_DESK(&pstyle->flags))
-	{
-		if (start_style.page_x != 0 && start_style.page_y != 0)
-		{
-			px = start_style.page_x - 1;
-			py = start_style.page_y - 1;
-			reason->page.reason = PR_PAGE_STYLE;
-			px *= Scr.MyDisplayWidth;
-			py *= Scr.MyDisplayHeight;
-			if (!win_opts->flags.do_override_ppos &&
-			    !DO_NOT_SHOW_ON_MAP(fw))
-			{
-				MoveViewport(px,py,True);
-				reason->page.do_switch_page = 1;
-			}
-			else if (flags.do_honor_starts_on_page)
-			{
-				/*  Save the delta from current page */
-				pdeltax = Scr.Vx - px;
-				pdeltay = Scr.Vy - py;
-				reason->page.do_honor_starts_on_page = 1;
-			}
-		}
-	}
 
 	/* pick a location for the window. */
 	__place_get_placement_flags(
@@ -1886,7 +1812,6 @@ static void __place_handle_x_resources(
 		{"-xrn", NULL, XrmoptionResArg, (caddr_t) NULL},
 		{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL},
 	};
-	int t1 = -1, t2 = -1, t3 = -1, spargs = 0;
 
 	/* Find out if the client requested a specific desk on the command
 	 * line.
@@ -1927,41 +1852,6 @@ static void __place_handle_x_resources(
 		reason->screen.screen = SGET_START_SCREEN(*pstyle);
 		pstyle->flags.use_start_on_screen = 1;
 	}
-	if (GetResourceString(db, "page", client_argv[0], &rm_value) &&
-	    rm_value.size != 0)
-	{
-		spargs = sscanf(
-			rm_value.addr, "%d %d %d", &t1, &t2, &t3);
-		switch (spargs)
-		{
-		case 1:
-			pstyle->flags.use_start_on_desk = 1;
-			SSET_START_DESK(*pstyle, (t1 > -1) ? t1 + 1 : t1);
-			reason->desk.sod_reason = PR_DESK_X_RESOURCE_PAGE;
-			break;
-		case 2:
-			pstyle->flags.use_start_on_desk = 1;
-			SSET_START_PAGE_X(*pstyle, (t1 > -1) ? t1 + 1 : t1);
-			SSET_START_PAGE_Y(*pstyle, (t2 > -1) ? t2 + 1 : t2);
-			reason->page.reason = PR_PAGE_X_RESOURCE_PAGE;
-			reason->page.px = SGET_START_PAGE_X(*pstyle);
-			reason->page.py = SGET_START_PAGE_Y(*pstyle);
-			break;
-		case 3:
-			pstyle->flags.use_start_on_desk = 1;
-			SSET_START_DESK(*pstyle, (t1 > -1) ? t1 + 1 : t1);
-			reason->desk.sod_reason =
-				PR_DESK_X_RESOURCE_PAGE;
-			SSET_START_PAGE_X(*pstyle, (t2 > -1) ? t2 + 1 : t2);
-			SSET_START_PAGE_Y(*pstyle, (t3 > -1) ? t3 + 1 : t3);
-			reason->page.reason = PR_PAGE_X_RESOURCE_PAGE;
-			reason->page.px = SGET_START_PAGE_X(*pstyle);
-			reason->page.py = SGET_START_PAGE_Y(*pstyle);
-			break;
-		default:
-			break;
-		}
-	}
 	XFreeStringList(client_argv);
 	XrmDestroyDatabase(db);
 
@@ -1973,7 +1863,6 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 	char explanation[2048];
 	char *r;
 	char *s;
-	int do_show_page;
 	int is_placed_by_algo;
 
 	*explanation = 0;
@@ -1994,9 +1883,6 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		break;
 	case PR_DESK_X_RESOURCE_DESK:
 		r = "specified by 'desk' X resource";
-		break;
-	case PR_DESK_X_RESOURCE_PAGE:
-		r = "specified by 'page' X resource";
 		break;
 	case PR_DESK_CAPTURE:
 		r = "window was (re)captured";
@@ -2028,13 +1914,8 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		s += strlen(s);
 	}
 	/* page */
-	do_show_page = 1;
 	switch (reason->page.reason)
 	{
-	case PR_PAGE_CURRENT:
-		do_show_page = 0;
-		r = "current page";
-		break;
 	case PR_PAGE_STYLE:
 		r = "specified by style";
 		break;
@@ -2049,34 +1930,13 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 			" combination";
 		break;
 	case PR_PAGE_STICKY:
-		do_show_page = 0;
-		r = "current page (window is sticky)";
+		r = "window is sticky";
 		break;
 	default:
 		r = "bug";
 		break;
 	}
-	if (do_show_page == 0)
-	{
-		sprintf(s, "  %s\n", r);
-	}
-	else
-	{
-		sprintf(
-			s, "  page %d %d (%s)\n", reason->page.px - 1,
-			reason->page.py - 1, r);
-	}
 	s += strlen(s);
-	if (reason->page.do_switch_page == 1)
-	{
-		sprintf(s, "    (switched to page)\n");
-		s += strlen(s);
-	}
-	if (reason->page.do_ignore_starts_on_page == 1)
-	{
-		sprintf(s, "    (possibly ignored StartsOnPage)\n");
-		s += strlen(s);
-	}
 	/* screen */
 	if (FScreenIsEnabled() == True)
 	{
@@ -2140,9 +2000,6 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		break;
 	case PR_POS_CAPTURE:
 		r = "window was (re)captured";
-		break;
-	case PR_POS_USPOS_OVERRIDE_SOS:
-		r = "StartsOnPage style overridden by application via USPos";
 		break;
 	default:
 		r = "bug";
@@ -2254,8 +2111,6 @@ Bool setup_window_placement(
 	if (pstyle->flags.use_start_on_desk)
 	{
 		reason.desk.sod_reason = PR_DESK_STYLE;
-		reason.page.px = SGET_START_PAGE_X(*pstyle);
-		reason.page.py = SGET_START_PAGE_Y(*pstyle);
 	}
 	if (pstyle->flags.use_start_on_screen)
 	{
@@ -2271,8 +2126,6 @@ Bool setup_window_placement(
 	ecc.w.fw = fw;
 	exc = exc_create_context(&ecc, ECC_TYPE | ECC_FW);
 	start_style.desk = SGET_START_DESK(*pstyle);
-	start_style.page_x = SGET_START_PAGE_X(*pstyle);
-	start_style.page_y = SGET_START_PAGE_Y(*pstyle);
 	start_style.screen = SGET_START_SCREEN(*pstyle);
 	rc = __place_window(
 		exc, pstyle, attr_g, start_style, mode, win_opts, &reason);

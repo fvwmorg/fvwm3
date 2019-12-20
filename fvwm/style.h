@@ -89,16 +89,8 @@
 	((sf)->use_no_transient_usposition)
 #define SUSE_START_ON_DESK(sf) \
 	((sf)->use_start_on_desk)
-#define SUSE_START_ON_PAGE_FOR_TRANSIENT(sf) \
-	((sf)->use_start_on_page_for_transient)
 #define SUSE_START_ON_SCREEN(sf) \
 	((sf)->use_start_on_screen)
-#define SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
-	((sf)->manual_placement_honors_starts_on_page)
-#define SCAPTURE_HONORS_STARTS_ON_PAGE(sf) \
-	((sf)->capture_honors_starts_on_page)
-#define SRECAPTURE_HONORS_STARTS_ON_PAGE(sf) \
-	((sf)->recapture_honors_starts_on_page)
 #define SHAS_PLACEMENT_PENALTY(sf) \
 	((sf)->has_placement_penalty)
 #define SHAS_PLACEMENT_PERCENTAGE_PENALTY(sf) \
@@ -141,10 +133,6 @@
 	((c).user_states = (x))
 #define S_ADD_USER_STATES(c,x) \
 	((c).user_states = ((c).user_states | (x)))
-#define S_IS_STICKY_ACROSS_PAGES(c) \
-	((c).is_sticky_across_pages)
-#define S_SET_IS_STICKY_ACROSS_PAGES(c,x) \
-	((c).is_sticky_across_pages = !!(x))
 #define S_IS_STICKY_ACROSS_DESKS(c) \
 	((c).is_sticky_across_desks)
 #define S_SET_IS_STICKY_ACROSS_DESKS(c,x) \
@@ -281,10 +269,6 @@
 	((c).s.is_unclosable = !!(x))
 #define S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(c,x) \
 	((c).s.is_maximize_fixed_size_disallowed = !!(x))
-#define S_IS_ICON_STICKY_ACROSS_PAGES(c) \
-	((c).s.is_icon_sticky_across_pages)
-#define S_SET_IS_ICON_STICKY_ACROSS_PAGES(c,x) \
-	((c).s.is_icon_sticky_across_pages = !!(x))
 #define S_IS_ICON_STICKY_ACROSS_DESKS(c) \
 	((c).s.is_icon_sticky_across_desks)
 #define S_SET_IS_ICON_STICKY_ACROSS_DESKS(c,x) \
@@ -493,14 +477,6 @@
 	((s).start_desk)
 #define SSET_START_DESK(s,x) \
 	((s).start_desk = (x))
-#define SGET_START_PAGE_X(s) \
-	((s).start_page_x)
-#define SSET_START_PAGE_X(s,x) \
-	((s).start_page_x = (x))
-#define SGET_START_PAGE_Y(s) \
-	((s).start_page_y)
-#define SSET_START_PAGE_Y(s,x) \
-	((s).start_page_y = (x))
 #define SGET_START_SCREEN(s) \
 	((s).start_screen)
 #define SSET_START_SCREEN(s,x) \

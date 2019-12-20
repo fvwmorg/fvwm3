@@ -966,9 +966,7 @@ void ewmh_ComputeAndSetWorkArea(void)
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		if (
-			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
-			!IS_STICKY_ACROSS_PAGES(fw))
+		if (DO_EWMH_IGNORE_STRUT_HINTS(fw))
 		{
 			continue;
 		}
@@ -1010,9 +1008,7 @@ void ewmh_HandleDynamicWorkArea(void)
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		if (
-			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
-			!IS_STICKY_ACROSS_PAGES(fw))
+		if (DO_EWMH_IGNORE_STRUT_HINTS(fw))
 		{
 			continue;
 		}
@@ -1331,9 +1327,6 @@ int ewmh_HandleDesktop(
 	style->flag_mask.use_layer = 1;
 	style->change_mask.use_layer = 1;
 
-	S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);
@@ -1420,9 +1413,6 @@ int ewmh_HandleDock(
 {
 	fw->ewmh_window_type = EWMH_WINDOW_TYPE_DOCK_ID;
 
-	S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);
@@ -1524,9 +1514,6 @@ int ewmh_HandleToolBar(
 
 	/* this ok for KDE 2 (and 3??) but I do not think that a toolbar
 	   should be sticky */
-	S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
 	S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);

@@ -58,7 +58,7 @@ static void init_win_manager(int id)
 	memset(&globals.managers[id], 0, sizeof(WinManager));
 	globals.managers[id].magic = 0x12344321;
 	globals.managers[id].index = id;
-	globals.managers[id].res = SHOW_PAGE;
+	globals.managers[id].res = SHOW_DESKTOP;
 	globals.managers[id].rev = REVERSE_NONE;
 	globals.managers[id].titlename = alloc_string("FvwmIconMan");
 	globals.managers[id].iconname = alloc_string("FvwmIconMan");

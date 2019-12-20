@@ -281,12 +281,6 @@ const func_t func_table[] =
 	CMD_ENT("gotodesk", CMD_GotoDesk, F_GOTO_DESK, 0, 0),
 	/* - Switch viewport to another desk same page */
 
-	CMD_ENT("gotodeskandpage", CMD_GotoDeskAndPage, F_GOTO_DESK, 0, 0),
-	/* - Switch viewport to another desk and page */
-
-	CMD_ENT("gotopage", CMD_GotoPage, F_GOTO_PAGE, 0, 0),
-	/* - Switch viewport to another page same desk */
-
 	CMD_ENT("hidegeometrywindow", CMD_HideGeometryWindow,
 		F_HIDEGEOMWINDOW, 0, 0),
 	/* - Hide/show the position/size window */
@@ -383,10 +377,6 @@ const func_t func_table[] =
 	CMD_ENT("movetodesk", CMD_MoveToDesk, F_MOVE_TO_DESK,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Move a window to another desk same page */
-
-	CMD_ENT("movetopage", CMD_MoveToPage, F_MOVE_TO_PAGE,
-		FUNC_NEEDS_WINDOW, CRS_SELECT),
-	/* - Move a window to another page same desk */
 
 	CMD_ENT("movetoscreen", CMD_MoveToScreen, F_MOVE_TO_SCREEN,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
@@ -570,10 +560,6 @@ const func_t func_table[] =
 	CMD_ENT("stickacrossdesks", CMD_StickAcrossDesks, F_STICKACROSSDESKS,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Change window stickyness on a desk basis */
-
-	CMD_ENT("stickacrosspages", CMD_StickAcrossPages, F_STICKACROSSPAGES,
-		FUNC_NEEDS_WINDOW, CRS_SELECT),
-	/* - Change window stickyness on a page basis */
 
 #ifdef HAVE_STROKE
 	CMD_ENT("stroke", CMD_Stroke, F_STROKE, 0, 0),

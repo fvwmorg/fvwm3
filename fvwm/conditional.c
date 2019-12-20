@@ -538,15 +538,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond,"Sticky"))
 		{
-			SET_STICKY_ACROSS_PAGES(mask, on);
 			SET_STICKY_ACROSS_DESKS(mask, on);
-			SETM_STICKY_ACROSS_PAGES(mask, 1);
 			SETM_STICKY_ACROSS_DESKS(mask, 1);
-		}
-		else if (StrEquals(cond,"StickyAcrossPages"))
-		{
-			SET_STICKY_ACROSS_PAGES(mask, on);
-			SETM_STICKY_ACROSS_PAGES(mask, 1);
 		}
 		else if (StrEquals(cond,"StickyAcrossDesks"))
 		{
@@ -555,15 +548,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond,"StickyIcon"))
 		{
-			SET_ICON_STICKY_ACROSS_PAGES(mask, on);
 			SET_ICON_STICKY_ACROSS_DESKS(mask, on);
-			SETM_ICON_STICKY_ACROSS_PAGES(mask, 1);
 			SETM_ICON_STICKY_ACROSS_DESKS(mask, 1);
-		}
-		else if (StrEquals(cond,"StickyAcrossPagesIcon"))
-		{
-			SET_ICON_STICKY_ACROSS_PAGES(mask, on);
-			SETM_ICON_STICKY_ACROSS_PAGES(mask, 1);
 		}
 		else if (StrEquals(cond,"StickyAcrossDesksIcon"))
 		{
@@ -628,30 +614,9 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			mask->my_flags.needs_current_desk = on;
 			mask->my_flags.do_check_desk = 1;
 		}
-		else if (StrEquals(cond,"CurrentPage"))
-		{
-			mask->my_flags.needs_current_desk_and_page = on;
-			mask->my_flags.do_check_desk_and_page = 1;
-		}
-		else if (StrEquals(cond,"CurrentGlobalPage"))
-		{
-			mask->my_flags.needs_current_desk_and_global_page = on;
-			mask->my_flags.do_check_desk_and_global_page = 1;
-		}
-		else if (StrEquals(cond,"CurrentPageAnyDesk") ||
-			 StrEquals(cond,"CurrentScreen"))
-		{
-			mask->my_flags.needs_current_page = on;
-			mask->my_flags.do_check_page = 1;
-		}
 		else if (StrEquals(cond,"AnyScreen"))
 		{
 			mask->my_flags.do_not_check_screen = on;
-		}
-		else if (StrEquals(cond,"CurrentGlobalPageAnyDesk"))
-		{
-			mask->my_flags.needs_current_global_page = on;
-			mask->my_flags.do_check_global_page = 1;
 		}
 		else if (StrEquals(cond,"CirculateHit"))
 		{
@@ -783,8 +748,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
 	int does_match;
 	int is_on_desk;
-	int is_on_page;
-	int is_on_global_page;
 	FvwmWindow *sf = get_focus_window();
 	struct name_condition *pp;
 	struct namelist *p;
@@ -896,78 +859,16 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		return False;
 	}
 
-	/* desk and page matching */
+	/* desk matching */
 	is_on_desk = 1;
-	if (mask->my_flags.do_check_desk ||
-	    mask->my_flags.do_check_desk_and_page ||
-	    mask->my_flags.do_check_desk_and_global_page)
+	if (mask->my_flags.do_check_desk)
 	{
 		is_on_desk = (fw->Desk == Scr.CurrentDesk);
-	}
-	is_on_page = 1;
-	if (mask->my_flags.do_check_page ||
-	    mask->my_flags.do_check_desk_and_page)
-	{
-		if (FScreenIsEnabled() && !mask->my_flags.do_not_check_screen)
-		{
-			is_on_page = !!FScreenIsRectangleOnScreen(
-				NULL, FSCREEN_CURRENT, &(fw->g.frame));
-		}
-		else
-		{
-			is_on_page = !!IsRectangleOnThisPage(
-				&(fw->g.frame), Scr.CurrentDesk);
-		}
-	}
-	is_on_global_page = 1;
-	if (mask->my_flags.do_check_global_page ||
-	    mask->my_flags.do_check_desk_and_global_page)
-	{
-		is_on_global_page = !!IsRectangleOnThisPage(
-			&(fw->g.frame), Scr.CurrentDesk);
-	}
-
-	if (mask->my_flags.do_check_desk_and_page)
-	{
-		int is_on_desk_and_page;
-
-		is_on_desk_and_page = (is_on_desk && is_on_page);
-		if (mask->my_flags.needs_current_desk_and_page !=
-		    is_on_desk_and_page)
-		{
-			return False;
-		}
-	}
-	else if (mask->my_flags.do_check_desk_and_global_page)
-	{
-		int is_on_desk_and_global_page;
-
-		is_on_desk_and_global_page = (is_on_desk && is_on_global_page);
-		if (mask->my_flags.needs_current_desk_and_global_page !=
-		    is_on_desk_and_global_page)
-		{
-			return False;
-		}
 	}
 	if (mask->my_flags.do_check_desk &&
 	    mask->my_flags.needs_current_desk != is_on_desk)
 	{
 		return False;
-	}
-	if (mask->my_flags.do_check_page)
-	{
-		if (mask->my_flags.needs_current_page != is_on_page)
-		{
-			return False;
-		}
-	}
-	else if (mask->my_flags.do_check_global_page)
-	{
-		if (mask->my_flags.needs_current_global_page !=
-		    is_on_global_page)
-		{
-			return False;
-		}
 	}
 
 	for (pp = mask->name_condition; pp; pp = pp->next)

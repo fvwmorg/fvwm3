@@ -60,10 +60,8 @@ typedef signed char Schar;
 typedef enum {
 	SHOW_GLOBAL,
 	SHOW_DESKTOP,
-	SHOW_PAGE,
 	SHOW_SCREEN,
 	NO_SHOW_DESKTOP,  /* "!desk" Show windows not on the current desk */
-	NO_SHOW_PAGE,     /* "!page" Show windows not on the current page */
 	NO_SHOW_SCREEN,   /* "!screen" Show windows not on the current screen */
 } Resolution;
 

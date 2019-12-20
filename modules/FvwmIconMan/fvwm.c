@@ -85,9 +85,8 @@ static int count_nonsticky_in_hashtab(void *arg)
 	WinData *win = (WinData *)arg;
 	WinManager *man = the_manager;
 
-	if (!(IS_STICKY_ACROSS_DESKS(win) || IS_STICKY_ACROSS_PAGES(win)) &&
-	    !(WINDATA_ICONIFIED(win) && (IS_ICON_STICKY_ACROSS_PAGES(win) ||
-				 IS_ICON_STICKY_ACROSS_DESKS(win))) &&
+	if (!(IS_STICKY_ACROSS_DESKS(win) &&
+	    !(WINDATA_ICONIFIED(win) && ( IS_ICON_STICKY_ACROSS_DESKS(win)))) &&
 	    win->complete && win->manager == man)
 	{
 		return 1;
@@ -786,30 +785,6 @@ static void ProcessMessage(Ulong type, FvwmPacketBody *body)
 	case M_NEW_DESK:
 		ConsoleDebug(FVWM, "DEBUG::M_NEW_DESK\n");
 		new_desk(body);
-		break;
-
-	case M_NEW_PAGE:
-		ConsoleDebug(FVWM, "DEBUG::M_NEW_PAGE\n");
-		if (globals.x == body->new_page_data.x &&
-			globals.y == body->new_page_data.y &&
-			globals.desknum == body->new_page_data.desknum)
-		{
-			ConsoleDebug(FVWM, "Useless NEW_PAGE received\n");
-			break;
-		}
-		globals.x = body->new_page_data.x;
-		globals.y = body->new_page_data.y;
-		globals.desknum = body->new_page_data.desknum;
-		if (fvwm_focus_win && fvwm_focus_win->manager &&
-			fvwm_focus_win->manager->followFocus)
-		{
-			/* need to set the focus on a page change */
-			add_win_state(fvwm_focus_win, FOCUS_CONTEXT);
-		}
-		for (i = 0; i < globals.num_managers; i++)
-		{
-			set_draw_mode(&globals.managers[i], 0);
-		}
 		break;
 
 	case M_STRING:

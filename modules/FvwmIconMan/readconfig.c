@@ -1650,14 +1650,10 @@ void read_in_resources(void)
 	  r = SHOW_GLOBAL;
 	else if (!strcasecmp(p, "desk"))
 	  r = SHOW_DESKTOP;
-	else if (!strcasecmp(p, "page"))
-	  r = SHOW_PAGE;
 	else if (!strcasecmp(p, "screen"))
 	  r = SHOW_SCREEN;
 	else if (!strcasecmp(p, "!desk"))
 	  r = NO_SHOW_DESKTOP;
-	else if (!strcasecmp(p, "!page"))
-	  r = NO_SHOW_PAGE;
 	else if (!strcasecmp(p, "!screen"))
 	  r = NO_SHOW_SCREEN;
 	else {
@@ -2307,14 +2303,10 @@ void process_dynamic_config_line(char *line)
 			value = SHOW_GLOBAL;
 		else if (!strcasecmp(token, "desk"))
 			value = SHOW_DESKTOP;
-		else if (!strcasecmp(token, "page"))
-			value = SHOW_PAGE;
 		else if (!strcasecmp(token, "screen"))
 			value = SHOW_SCREEN;
 		else if (!strcasecmp(token, "!desk"))
 			value = NO_SHOW_DESKTOP;
-		else if (!strcasecmp(token, "!page"))
-			value = NO_SHOW_PAGE;
 		else if (!strcasecmp(token, "!screen"))
 			value = NO_SHOW_SCREEN;
 		else

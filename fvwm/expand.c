@@ -80,8 +80,6 @@ static char *function_vars[] =
 	"cw.y",
 	"desk.height",
 	"desk.n",
-	"desk.pagesx",
-	"desk.pagesy",
 	"desk.width",
 	"func.context",
 	"i.height",
@@ -167,8 +165,6 @@ enum
 	VAR_CW_Y,
 	VAR_DESK_HEIGHT,
 	VAR_DESK_N,
-	VAR_DESK_PAGESX,
-	VAR_DESK_PAGESY,
 	VAR_DESK_WIDTH,
 	VAR_FUNC_CONTEXT,
 	VAR_I_HEIGHT,
@@ -183,8 +179,6 @@ enum
 	VAR_IT_WIDTH,
 	VAR_IT_X,
 	VAR_IT_Y,
-	VAR_PAGE_NX,
-	VAR_PAGE_NY,
 	VAR_POINTER_CX,
 	VAR_POINTER_CY,
 	VAR_POINTER_WX,
@@ -472,14 +466,6 @@ static signed int expand_vars_extended(
 		is_numeric = True;
 		val = Scr.VyMax + Scr.MyDisplayHeight;
 		break;
-	case VAR_DESK_PAGESX:
-		is_numeric = True;
-		val = (int)(Scr.VxMax / Scr.MyDisplayWidth) + 1;
-		break;
-	case VAR_DESK_PAGESY:
-		is_numeric = True;
-		val = (int)(Scr.VyMax / Scr.MyDisplayHeight) + 1;
-		break;
 	case VAR_VP_X:
 		is_numeric = True;
 		val = Scr.Vx;
@@ -527,14 +513,6 @@ static signed int expand_vars_extended(
 	case VAR_DWA_Y:
 		is_numeric = True;
 		val = Scr.Desktops->ewmh_dyn_working_area.y;
-		break;
-	case VAR_PAGE_NX:
-		is_numeric = True;
-		val = (int)(Scr.Vx / Scr.MyDisplayWidth);
-		break;
-	case VAR_PAGE_NY:
-		is_numeric = True;
-		val = (int)(Scr.Vy / Scr.MyDisplayHeight);
 		break;
 	case VAR_W_ID:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))

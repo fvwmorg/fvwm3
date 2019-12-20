@@ -105,12 +105,6 @@
 	(fw)->flags.common.s.icon_override = ((x) & ICON_OVERRIDE_MASK)
 #define SETM_ICON_OVERRIDE_MODE(fw,x) \
 	(fw)->flag_mask.common.s.icon_override = ((x) ? ICON_OVERRIDE_MASK : 0)
-#define IS_ICON_STICKY_ACROSS_PAGES(fw) \
-	((fw)->flags.common.s.is_icon_sticky_across_pages)
-#define SET_ICON_STICKY_ACROSS_PAGES(fw,x) \
-	(fw)->flags.common.s.is_icon_sticky_across_pages = !!(x)
-#define SETM_ICON_STICKY_ACROSS_PAGES(fw,x) \
-	(fw)->flag_mask.common.s.is_icon_sticky_across_pages = !!(x)
 #define IS_ICON_STICKY_ACROSS_DESKS(fw) \
 	((fw)->flags.common.s.is_icon_sticky_across_desks)
 #define SET_ICON_STICKY_ACROSS_DESKS(fw,x) \
@@ -197,12 +191,6 @@
 	(fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
 	(fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
-#define IS_STICKY_ACROSS_PAGES(fw) \
-	((fw)->flags.common.is_sticky_across_pages)
-#define SET_STICKY_ACROSS_PAGES(fw,x) \
-	(fw)->flags.common.is_sticky_across_pages = !!(x)
-#define SETM_STICKY_ACROSS_PAGES(fw,x) \
-	(fw)->flag_mask.common.is_sticky_across_pages = !!(x)
 #define IS_STICKY_ACROSS_DESKS(fw) \
 	((fw)->flags.common.is_sticky_across_desks)
 #define SET_STICKY_ACROSS_DESKS(fw,x) \
