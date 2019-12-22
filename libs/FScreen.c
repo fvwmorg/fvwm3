@@ -280,63 +280,6 @@ monitor_get_count(void)
 	return (no_of_screens);
 }
 
-/* Intended to be called by modules.  Simply pass in the parameter from the
- * config string sent by fvwm. */
-void FScreenConfigureModule(char *args)
-{
-#if 0
-	int n;
-	char *next;
-
-	n = GetIntegerArguments(args, &next, val, 4);
-	if (n != 4)
-	{
-		/* ignore broken line */
-		return;
-	}
-	FScreenSetPrimaryScreen(val[1]);
-
-	if (val[3])
-	{
-		/* SLS screen coordinates follow */
-		n = GetIntegerArguments(next, &next, val + 4, 1);
-		if (n != 1)
-		{
-			/* ignore broken line */
-			return;
-		}
-	}
-#endif
-	return;
-}
-
-/* Here's the function used by fvwm to generate the string which
- * FScreenConfigureModule expects to receive back as its argument.
- */
-const char *FScreenGetConfiguration(void)
-{
-	int l;
-	static char msg[MAX_MODULE_INPUT_TEXT_LEN];
-
-	sprintf(
-		msg, XINERAMA_CONFIG_STRING" %d %d %d %d",
-		FScreenIsEnabled(), 0,
-		0, 0);
-	l = strlen(msg);
-	sprintf(msg + l, " %d %d", 0, 0);
-
-	return msg;
-}
-
-/* Sets the default screen for ...ParseGeometry if no screen spec is given.
- * Usually this is FSCREEN_SPEC_PRIMARY, but this won't allow modules to appear
- * under the pointer. */
-void FScreenSetDefaultModuleScreen(char *scr_spec)
-{
-	return;
-}
-
-
 struct monitor *
 FindScreenOfXY(int x, int y)
 {

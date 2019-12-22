@@ -617,18 +617,6 @@ void BroadcastConfigInfoString(char *string)
 	return;
 }
 
-
-/*
- * Broadcasts the state of Xinerama support to all modules as M_CONFIG_INFO.
- */
-void broadcast_xinerama_state(void)
-{
-	BroadcastConfigInfoString((char *)FScreenGetConfiguration());
-
-	return;
-}
-
-
 /*
  * Broadcasts the ignored modifiers to all modules as M_CONFIG_INFO.
  */

@@ -246,10 +246,6 @@ static void handle_config_info(unsigned long *body)
 		color = LoadColorset(rest);
 		change_colorset(color);
 	}
-	else if (StrEquals(token, XINERAMA_CONFIG_STRING))
-	{
-		FScreenConfigureModule(rest);
-	}
 	else if (StrEquals(token, "IgnoreModifiers"))
 	{
 		sscanf(rest, "%d", &mods_unused);

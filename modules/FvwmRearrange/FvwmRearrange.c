@@ -553,12 +553,6 @@ int main(int argc, char *argv[])
   GetConfigLine(fd, &config_line);
   while (config_line != NULL)
   {
-    if (strncasecmp(config_line, XINERAMA_CONFIG_STRING,
-		    sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
-    {
-      FScreenConfigureModule(
-	config_line + sizeof(XINERAMA_CONFIG_STRING) - 1);
-    }
     GetConfigLine(fd, &config_line);
   }
   FScreenGetScrRect(NULL, FSCREEN_CURRENT, &dx, &dy, &dwidth, &dheight);

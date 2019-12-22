@@ -272,13 +272,6 @@ int main(int argc, char **argv)
 		{
 			LoadColorset(&tline[8]);
 		}
-		else if (strncasecmp(
-			tline, XINERAMA_CONFIG_STRING,
-			sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
-		{
-			FScreenConfigureModule(
-				tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
-		}
 		GetConfigLine(fd, &tline);
 	}
 
@@ -557,12 +550,7 @@ void list_config_info(unsigned long *body)
 				&Colorset[colorset], Pdepth, gc, True);
 		}
 	}
-	else if (StrEquals(token, XINERAMA_CONFIG_STRING))
-	{
-		FScreenConfigureModule(tline);
-	}
-	if (token)
-		free(token);
+	free(token);
 }
 
 /*

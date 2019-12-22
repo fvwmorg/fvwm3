@@ -55,11 +55,6 @@ int randr_event;
 Bool FScreenIsEnabled(void);
 void FScreenInit(Display *dpy);
 void FScreenSelect(Display *dpy);
-/* Intended to be called by modules.  Simply pass in the parameter from the
- * config string sent by fvwm. */
-void FScreenConfigureModule(char *args);
-const char* FScreenGetConfiguration(void); /* For use by fvwm */
-void FScreenSetDefaultModuleScreen(char *scr_spec);
 void FScreenSetPrimaryScreen(int scr);
 
 /* Screen info */

@@ -2050,7 +2050,6 @@ void ParseConfiguration(button_info *ub)
 		NULL, /* filled out below */
 		"imagepath",
 		"colorset",
-		XINERAMA_CONFIG_STRING,
 		NULL
 	};
 
@@ -2083,10 +2082,6 @@ void ParseConfiguration(button_info *ub)
 		case 2:
 			/* store colorset sent by fvwm */
 			LoadColorset(rest);
-			break;
-		case 3:
-			/* Xinerama state */
-			FScreenConfigureModule(rest);
 			break;
 		}
 		GetConfigLine(fd,&s);

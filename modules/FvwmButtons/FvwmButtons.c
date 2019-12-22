@@ -2696,11 +2696,6 @@ static void handle_config_info_packet(unsigned long *body)
 		colorset = LoadColorset(tline);
 		change_colorset(colorset, NULL);
 	}
-	else if (StrEquals(token, XINERAMA_CONFIG_STRING))
-	{
-		FScreenConfigureModule(tline);
-	}
-	return;
 }
 
 
