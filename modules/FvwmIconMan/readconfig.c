@@ -841,13 +841,6 @@ static int GetConfigLineWrapper(int *fd, char **tline)
 		{
 			LoadColorset(&(*tline)[8]);
 		}
-		else if (strncasecmp(
-			*tline, XINERAMA_CONFIG_STRING,
-			sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
-		{
-			FScreenConfigureModule(
-			(*tline) + sizeof(XINERAMA_CONFIG_STRING) - 1);
-		}
 		else if (strncasecmp(*tline, "IgnoreModifiers", 15) == 0)
 		{
 			sscanf((*tline) + 16, "%d", &mods_unused);

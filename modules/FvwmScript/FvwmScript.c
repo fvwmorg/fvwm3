@@ -280,10 +280,6 @@ void ParseOptions(void)
 	CopyStringWithQuotes(&x11base->font,&tline[22]);
       else if (strncasecmp(tline,"Colorset",8) == 0)
 	LoadColorset(&tline[8]);
-      else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
-			   sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
-	FScreenConfigureModule(
-	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
 
     GetConfigLine(fd,&tline);
@@ -1229,11 +1225,7 @@ void MainLoop (void)
 	      }
 	    }
 	  }
-	  else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
-	    FScreenConfigureModule(line);
-	  }
-	  if (token)
-	    free(token);
+	  free(token);
 	}
 	else if (packet->type == MX_PROPERTY_CHANGE)
 	{

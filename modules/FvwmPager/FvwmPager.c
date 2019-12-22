@@ -1365,10 +1365,6 @@ void list_config_info(unsigned long *body)
     color = LoadColorset(tline);
     change_colorset(color);
   }
-  else if (StrEquals(token, XINERAMA_CONFIG_STRING))
-  {
-    FScreenConfigureModule(tline);
-  }
   else if (StrEquals(token, "DesktopName"))
   {
     int val;
@@ -1617,10 +1613,6 @@ void ParseOptions(void)
     {
       LoadColorset(next);
       continue;
-    }
-    else if (StrEquals(token, XINERAMA_CONFIG_STRING))
-    {
-      FScreenConfigureModule(next);
     }
     else if (StrEquals(token, "DesktopSize"))
     {
