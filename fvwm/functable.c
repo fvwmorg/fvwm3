@@ -504,9 +504,6 @@ const func_t func_table[] =
 	CMD_ENT("schedule", CMD_Schedule, F_SCHEDULE, 0, 0),
 	/* - Run an fvwm command after a delay */
 
-	CMD_ENT("scroll", CMD_Scroll, F_SCROLL, 0, 0),
-	/* - Scroll the desktop viewport */
-
 	CMD_ENT("send_configinfo", CMD_Send_ConfigInfo, F_CONFIG_LIST,
 		FUNC_DONT_REPEAT, 0),
 	/* - Internal, used for module communication */
