@@ -189,6 +189,9 @@ void FScreenInit(Display *dpy)
 	disp = dpy;
 	randr_event = 0;
 
+	/* Allocate for monitors. */
+	TAILQ_INIT(&monitor_q);
+
 	is_randr_present = XRRQueryExtension(dpy, &randr_event, &err_base);
 
 	if (FScreenIsEnabled() && !is_randr_present) {

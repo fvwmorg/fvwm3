@@ -2206,9 +2206,6 @@ int main(int argc, char **argv)
 		g_argv[argc] = NULL;
 	}
 
-	/* Allocate for monitors. */
-	TAILQ_INIT(&monitor_q);
-
 	FScreenInit(dpy);
 	FScreenSelect(dpy);
 	x_fd = XConnectionNumber(dpy);
