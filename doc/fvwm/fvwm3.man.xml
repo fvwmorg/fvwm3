@@ -3,15 +3,15 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "../docbook-xml/docbookx.dtd"
 [
-<!ENTITY % myents SYSTEM "../fvwm.ent" >
+<!ENTITY % myents SYSTEM "../fvwm3.ent" >
 %myents;
 ]>
 
 <article>
 <artheader>
-	<title>Fvwm &version;</title>
+	<title>Fvwm3 &version;</title>
 	<author>Scott Smedley</author>
-	<titleabbrev>fvwm</titleabbrev>
+	<titleabbrev>fvwm3</titleabbrev>
 	<date>&releasedate;</date>
 </artheader>
 

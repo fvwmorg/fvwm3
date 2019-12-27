@@ -3,8 +3,8 @@
 docdir = @FVWM_DOCDIR@/fvwm3
 XSLTPROC = @XSLTPROC@
 
-XSL_FILE = $(srcdir)/../fvwm.xsl
-XSL_MAN_FILE = $(srcdir)/../fvwm-man.xsl
+XSL_FILE = $(srcdir)/../fvwm3.xsl
+XSL_MAN_FILE = $(srcdir)/../fvwm3-man.xsl
 XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
 HTML_FILES = fvwm3.man.html
@@ -33,28 +33,28 @@ clean:
 distclean-local: clean
 
 if FVWM_BUILD_MANDOC
-fvwm.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm.ent @DOC_COMMANDS_XML_PATH@ $(srcdir)/../header.html
+fvwm3.man.html: $(XML_FILES) $(XSL_FILE) $(top_builddir)/doc/fvwm3.ent @DOC_COMMANDS_XML_PATH@ $(srcdir)/../header.html
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value html \
-		-o fvwm.man.html.tmp \
-		$(XSL_PROFILE) "$(srcdir)/fvwm.man.xml"
+		-o fvwm3.man.html.tmp \
+		$(XSL_PROFILE) "$(srcdir)/fvwm3.man.xml"
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		--stringparam html.stylesheet "../style.css" \
 		--stringparam header.file "$(srcdir)/../header.html" \
 		--stringparam twdt 1 \
 		--stringparam section.autolabel 1 \
-		-o $@ $(XSL_FILE) fvwm.man.html.tmp && rm fvwm.man.html.tmp
+		-o $@ $(XSL_FILE) fvwm3.man.html.tmp && rm fvwm3.man.html.tmp
 
-fvwm3.1: $(XML_FILES) $(srcdir)/fvwm.man.xml $(XSL_MAN_FILE) @DOC_COMMANDS_XML_PATH@
+fvwm3.1: $(XML_FILES) $(srcdir)/fvwm3.man.xml $(XSL_MAN_FILE) @DOC_COMMANDS_XML_PATH@
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		--stringparam profile.attribute output \
 		--stringparam profile.value man \
 		-o fvwm3.1.tmp \
-		$(XSL_PROFILE) "$(srcdir)/fvwm.man.xml"
+		$(XSL_PROFILE) "$(srcdir)/fvwm3.man.xml"
 	$(XSLTPROC) --path "$(top_builddir)/doc":"$(top_srcdir)/doc/commands" \
 		--xinclude \
 		$(XSL_MAN_FILE) fvwm3.1.tmp && rm fvwm3.1.tmp

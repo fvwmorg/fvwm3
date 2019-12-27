@@ -5,7 +5,7 @@ docdir = @FVWM_DOCDIR@
 HTML_FILES = \
 	index.html allCommands.html groupedCommands.html modules.html style.css
 EXTRA_DIST = \
-	fvwm.xsl fvwm-man.xsl header.html $(HTML_FILES)
+	fvwm3.xsl fvwm3-man.xsl header.html $(HTML_FILES)
 
 if FVWM_BUILD_HTMLDOC
 doc_DATA = \

@@ -1,7 +1,7 @@
 docdir = @FVWM_DOCDIR@/commands
 XSLTPROC = @XSLTPROC@
 
-XSL_FILE = $(srcdir)/../fvwm.xsl
+XSL_FILE = $(srcdir)/../fvwm3.xsl
 XSL_PROFILE = $(srcdir)/../docbook-xsl/profiling/profile.xsl
 
 EXTRA_DIST = @DOC_COMMANDS_XML@ WindowsDesk.xml
