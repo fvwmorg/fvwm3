@@ -2455,6 +2455,8 @@ Bool __move_loop(
 			int x;
 			int y;
 
+			UPDATE_FVWM_SCREEN(fw);
+
 			fev_get_last_event(&le);
 
 			xl -= XOffset;

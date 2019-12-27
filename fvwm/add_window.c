@@ -2654,6 +2654,7 @@ FvwmWindow *AddWindow(
 	setup_key_and_button_grabs(fw);
 
 	/****** inform modules of new window ******/
+	UPDATE_FVWM_SCREEN(fw);
 	BroadcastConfig(M_ADD_WINDOW,fw);
 	BroadcastWindowIconNames(fw, True, False);
 
