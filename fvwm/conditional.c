@@ -1608,6 +1608,8 @@ void CMD_All(F_CMD_ARGS)
 	{
 		num++;
 	}
+	if (num == 0)
+		return;
 	g = fxmalloc(num * sizeof(FvwmWindow *));
 	num = 0;
 	if (!use_stack)
