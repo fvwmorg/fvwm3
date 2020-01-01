@@ -1800,10 +1800,19 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle r;
 		rectangle s;
 		rectangle p;
+		struct monitor	*m;
+
+		if (action == NULL)
+			m = monitor_get_current();
+		else
+			m = monitor_by_name(action);
+
+		s.x = m->coord.x;
+		s.y = m->coord.y;
+		s.width = m->coord.w;
+		s.height = m->coord.h;
 
 		do_animate = False;
-		FScreenGetScrRect(
-			NULL, FSCREEN_CURRENT, &s.x, &s.y, &s.width, &s.height);
 		page_x = Scr.Vx;
 		page_y = Scr.Vy;
 		r.x = x;
