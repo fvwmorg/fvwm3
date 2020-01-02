@@ -119,7 +119,7 @@ new window is placed or one of the commands
 <fvwmref cmd="PlaceAgain"/>,
 <fvwmref cmd="Recapture"/> or
 <fvwmref cmd="RecaptureWindow"/>
-is used.  The message explains on which desk, page, Xinerama
+is used.  The message explains on which desk, page, 
 screen and position it was placed and why.  This option can be
 used to figure out why a specific window does not appear where you
 think it should.</para>

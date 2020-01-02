@@ -85,12 +85,8 @@ Windows that are outside of this range of layers are ignored by
 the grow methods.  A negative value as the first or second
 argument means to assume no minimum or maximum layer.
 <fvwmopt cmd="Maximize" opt="screen"/>
-must have an argument which specifies the Xinerama screen on which
-to operate.
-It can be 'p' for the primary screen, 'c' for the current
-screen (containing the mouse pointer), 'g' for the global screen
-or the screen number itself (counting from zero).  This option is
-only useful with multiple Xinerama screens.</para>
+must have an argument which specifies the screen on which
+to operate.</para>
 
 <para>Here are some examples.  The following adds a title-bar button to
 switch a window to the full vertical size of the screen:</para>

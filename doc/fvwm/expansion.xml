@@ -314,8 +314,8 @@ command can be used:</para>
   </varlistentry>
   <varlistentry>
     <term>$[w.screen]</term>
-    <listitem><para>The screen number the window is on.  If Xinerama is not
-		    present, this returns the number 0.</para></listitem>
+    <listitem><para>The screen name the window is on.  If RandR is not
+		    present, this does not expand.</para></listitem>
   </varlistentry>
   <varlistentry>
     <term>$[cw.x] $[cw.y] $[cw.width] $[cw.height]</term>
@@ -376,8 +376,8 @@ command can be used:</para>
     <term>$[pointer.screen]</term>
     <listitem>
         <para>
-        The screen number the pointer is currently on.  Returns 0 if
-        Xinerama is not enabled.
+        The screen name the pointer is currently on.  No expansion if
+        RandR is not enabled.
     </para>
     </listitem>
     </varlistentry>

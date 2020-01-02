@@ -19,6 +19,6 @@ performed separately on each screen.  The use of</para>
 
 <para>is strongly recommended for multi-screen displays.  You may need
 to quit on each screen to quit from the X session completely.
-This is not to be confused with Xinerama support.</para>
+This is not to be confused with RandR support.</para>
 
 </section>

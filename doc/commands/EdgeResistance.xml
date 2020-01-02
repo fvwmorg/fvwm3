@@ -25,7 +25,7 @@
 		><replaceable>moving</replaceable
 	></arg>
 	<arg choice='opt'
-		><replaceable>xinerama-scrolling</replaceable
+		><replaceable>screen-scrolling</replaceable
 	></arg>
 </cmdsynopsis>
 
@@ -52,7 +52,7 @@ as needed:</para>
 <fvwmref cmd="Style"/> * EdgeMoveDelay <replaceable>scrolling</replaceable>
 <fvwmref cmd="Style"/> * EdgeMoveResistance <replaceable>moving</replaceable>
 or
-<fvwmref cmd="Style"/> * EdgeMoveResistance <replaceable>moving</replaceable> <replaceable>xinerama-scrolling</replaceable>
+<fvwmref cmd="Style"/> * EdgeMoveResistance <replaceable>moving</replaceable> <replaceable>screen-scrolling</replaceable>
 </programlisting>
 
 <para>Fvwm does this substitution automatically and prints a warning.</para>

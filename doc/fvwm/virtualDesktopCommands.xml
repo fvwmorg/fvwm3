@@ -23,10 +23,5 @@
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="GotoDeskAndPage.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="GotoPage.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Scroll.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Xinerama.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="XineramaPrimaryScreen.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="XineramaSls.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="XineramaSlsSize.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="XineramaSlsScreens.xml" />
 
 </section>

@@ -171,11 +171,6 @@ WindowsDesk
 WindowShade
 WindowShadeAnimate
 WindowStyle
-Xinerama
-XineramaPrimaryScreen
-XineramaSls
-XineramaSlsScreens
-XineramaSlsSize
 XorPixmap
 XorValue
 XSync

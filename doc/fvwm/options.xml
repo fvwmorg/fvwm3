@@ -151,7 +151,7 @@ multi-screen display.</para>
 Also prints an information about the compiled in support for
 readline, rplay, stroke, xpm, png, svg, <acronym>GNOME</acronym> hints, <acronym>EWMH</acronym> hints,
 session management, bidirectional text, multibyte characters,
-xinerama and Xft aa font rendering.</para>
+RandR and Xft aa font rendering.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
