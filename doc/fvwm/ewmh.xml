@@ -56,7 +56,7 @@ this function.  For example:</para>
 <acronym>EWMH</acronym>
 specification introduces the notion of Working Area.  Without ewmh
 support the Working Area is the full visible screen (or all your
-screens if you have a multi head setup and you use Xinerama).
+screens if you have a multi head setup with RandR).
 However, compliant applications (such as a panel) can ask to
 reserve space at the edge of the screen.  If this is the case, the
 Working Area is your full visible screen minus these reserved

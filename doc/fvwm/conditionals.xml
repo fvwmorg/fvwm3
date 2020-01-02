@@ -212,13 +212,13 @@ is equivalent to the deprecated option
 <emphasis remap='I'>AnyScreen</emphasis>
 condition used together with any of the
 <emphasis remap='I'>Current...</emphasis>
-conditions, windows that do not intersect the Xinerama screen
+conditions, windows that do not intersect the screen
 containing the mouse pointer are considered for a match too.  For
 example:</para>
 
 <programlisting>
 # Focus next window on current page,
-# regardless of Xinerama screen
+# regardless of screen
 <fvwmref cmd="Next"/> (CurrentPage, AnyScreen) <fvwmref cmd="Focus"/>
 </programlisting>
 
@@ -269,22 +269,20 @@ condition matches only windows that are on the current desk.</para>
 <para>The
 <emphasis remap='I'>CurrentGlobalPage</emphasis>
 condition matches only windows that are on the current page of the
-current desk, regardless of whether Xinerama support is enabled or
-not.  This condition implicitly activates the
+current desk, regardless of which screen the window is on.
+This condition implicitly activates the
 <emphasis remap='I'>CurrentDesk</emphasis>
 condition.</para>
 
 <para>The
 <emphasis remap='I'>CurrentGlobalPageAnyDesk</emphasis>
 condition matches only windows that are on the current page of any
-desk, regardless of whether Xinerama support is enabled or not.</para>
+desk, regardless of RandR screen .</para>
 
 <para>The
 <emphasis remap='I'>CurrentPage</emphasis>
 condition matches only windows that are on the current page of the
-current desk.  If Xinerama support is enabled, it only matches
-windows that are at least partially on the Xinerama screen
-containing the mouse pointer.  This condition implicitly
+current desk.  This condition implicitly
 activates the
 <emphasis remap='I'>CurrentDesk</emphasis>
 condition.</para>
@@ -292,13 +290,12 @@ condition.</para>
 <para>The
 <emphasis remap='I'>CurrentPageAnyDesk</emphasis> and <emphasis remap='I'>CurrentScreen</emphasis>
 conditions matches only windows that are on the current page of any
-desk.  If Xinerama support is enabled, they only match windows
-that are at least partially on the Xinerama screen containing the
-mouse pointer.</para>
+desk. 
+</para>
 
 <para>The
-<emphasis remap='I'>Screen [n]</emphasis>
-condition matches only windows which are on the specified Xinerama screen.</para>
+<emphasis remap='I'>Screen [name]</emphasis>
+condition matches only windows which are on the specified screen.</para>
 
 <para>The
 <emphasis remap='I'>Desk [n]</emphasis>

@@ -251,7 +251,7 @@ enable displaying the page of the window rounded multiples of the
 display size.
 With
 <fvwmopt cmd="WindowList" opt="ShowScreen"/>,
-the window's Xinerama screen number is displayed.</para>
+the window's screen name is displayed.</para>
 
 <para>The
 <fvwmopt cmd="WindowList" opt="MaxLabelWidth"/>

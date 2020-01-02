@@ -80,10 +80,6 @@ can be one of:</para>
 	<listitem><para>the root window of the current screen.</para></listitem>
 </varlistentry>	
 <varlistentry>
-	<term><fvwmopt cmd="Menu" opt="XineramaRoot"/></term>
-	<listitem><para>the root window of the whole Xinerama screen.  Equivalent to "root" when Xinerama is not used.</para></listitem>
-</varlistentry>	
-<varlistentry>
 	<term><fvwmopt cmd="Menu" opt="Mouse"/></term>
 	<listitem><para>a 1x1 rectangle at the mouse position.</para></listitem>
 </varlistentry>	

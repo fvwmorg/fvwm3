@@ -925,8 +925,7 @@ void CMD_WindowList(F_CMD_ARGS)
 				}
 				if (flags & SHOW_SCREEN)
 				{
-					/* TA:  FIXME! */
-					sprintf(loc, "@%d", 0);
+					sprintf(loc, "@%s", t->m->name);
 					strcat(tname, loc);
 				}
 				if (flags & SHOW_PAGE_X)
