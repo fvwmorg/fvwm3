@@ -1444,11 +1444,7 @@ static int __rc_matches_rcstring_consume(
 		else
 		{
 			match_rc = COND_RC_NO_MATCH;
-			/* Does anyone check for other numerical returncode
-			 * values? If so, this might have to be changed. */
-			fprintf(
-				stderr, "Unrecognised condition \"%s\" in"
-				" TestRc command.\n", flags);
+			/* Unrecognised condition. */
 		}
 	}
 	if (orig_flags != NULL)
@@ -2266,9 +2262,6 @@ void CMD_Test(F_CMD_ARGS)
 		{
 			/* unrecognized condition */
 			error = 1;
-			fprintf(
-				stderr, "Unrecognised condition \"%s\" in"
-				" Test command.\n", cond);
 		}
 
 		if (reverse)
