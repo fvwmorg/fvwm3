@@ -1181,9 +1181,10 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	}
 	/* Place the individual items off the menu in case they are not
 	 * set in the format string. */
+	struct monitor	*m = monitor_get_current();
 	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
 	{
-		label_offset[i] = 2 * Scr.MyDisplayWidth;
+		label_offset[i] = 2 * m->virtual_scr.MyDisplayWidth;
 	}
 
 	x = MST_BORDER_WIDTH(msp->menu);
@@ -6166,9 +6167,12 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			 * brought up with a keypress and we're returning from
 			 * a top level menu, and a button release event didn't
 			 * end it */
+			struct monitor	*m = monitor_get_current();
 			FWarpPointer(
-				dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-				Scr.MyDisplayHeight, x_start, y_start);
+				dpy, 0, Scr.Root, 0, 0,
+				m->virtual_scr.MyDisplayWidth,
+				m->virtual_scr.MyDisplayHeight,
+				x_start, y_start);
 			if ((*pmp->pexc)->x.elast->type == KeyPress)
 			{
 				XEvent e = *(*pmp->pexc)->x.elast;

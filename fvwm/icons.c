@@ -1251,7 +1251,7 @@ void DrawIconWindow(
 	int co_title_cs = -1;
 	int is_expanded = IS_ICON_ENTERED(fw);
 
-	if (IS_ICON_SUPPRESSED(fw) || (pev && fw->Desk != Scr.CurrentDesk))
+	if (IS_ICON_SUPPRESSED(fw) || (pev && fw->Desk != fw->m->virtual_scr.CurrentDesk))
 	{
 		return;
 	}
@@ -1573,7 +1573,7 @@ void ChangeIconPixmap(FvwmWindow *fw)
 		{
 			LowerWindow(fw, False);
 			AutoPlaceIcon(fw, NULL, True);
-			if (fw->Desk == Scr.CurrentDesk)
+			if (fw->Desk == fw->m->virtual_scr.CurrentDesk)
 			{
 				if (FW_W_ICON_TITLE(fw))
 				{
@@ -1653,19 +1653,19 @@ void AutoPlaceIcon(
    * visible on the current page. */
   if (IS_ICON_STICKY_ACROSS_DESKS(t) || IS_STICKY_ACROSS_DESKS(t))
   {
-    t->Desk = Scr.CurrentDesk;
+    t->Desk = t->m->virtual_scr.CurrentDesk;
   }
   if (IS_ICON_STICKY_ACROSS_PAGES(t) || IS_STICKY_ACROSS_PAGES(t))
   {
     base_x = 0;
     base_y = 0;
     /*Also, if its a stickyWindow, put it on the current page! */
-    new_x = t->g.frame.x % Scr.MyDisplayWidth;
-    new_y = t->g.frame.y % Scr.MyDisplayHeight;
+    new_x = t->g.frame.x % t->m->virtual_scr.MyDisplayWidth;
+    new_y = t->g.frame.y % t->m->virtual_scr.MyDisplayHeight;
     if (new_x + t->g.frame.width <= 0)
-      new_x += Scr.MyDisplayWidth;
+      new_x += t->m->virtual_scr.MyDisplayWidth;
     if (new_y + t->g.frame.height <= 0)
-      new_y += Scr.MyDisplayHeight;
+      new_y += t->m->virtual_scr.MyDisplayHeight;
     frame_setup_window(
 	    t, new_x, new_y, t->g.frame.width, t->g.frame.height, False);
   }
@@ -1676,21 +1676,21 @@ void AutoPlaceIcon(
   }
   else
   {
-    base_x = ((t->g.frame.x + Scr.Vx + (t->g.frame.width >> 1)) /
-      Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
-    base_y= ((t->g.frame.y + Scr.Vy + (t->g.frame.height >> 1)) /
-      Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+    base_x = ((t->g.frame.x + t->m->virtual_scr.Vx + (t->g.frame.width >> 1)) /
+      t->m->virtual_scr.MyDisplayWidth) * t->m->virtual_scr.MyDisplayWidth;
+    base_y= ((t->g.frame.y + t->m->virtual_scr.Vy + (t->g.frame.height >> 1)) /
+      t->m->virtual_scr.MyDisplayHeight) * t->m->virtual_scr.MyDisplayHeight;
     /* limit icon position to desktop */
-    if (base_x > Scr.VxMax)
-      base_x = Scr.VxMax;
+    if (base_x > t->m->virtual_scr.VxMax)
+      base_x = t->m->virtual_scr.VxMax;
     if (base_x < 0)
       base_x = 0;
-    if (base_y > Scr.VyMax)
-      base_y = Scr.VyMax;
+    if (base_y > t->m->virtual_scr.VyMax)
+      base_y = t->m->virtual_scr.VyMax;
     if (base_y < 0)
       base_y = 0;
-    base_x -= Scr.Vx;
-    base_y -= Scr.Vy;
+    base_x -= t->m->virtual_scr.Vx;
+    base_y -= t->m->virtual_scr.Vy;
   }
   if (IS_ICON_MOVED(t) ||
       (win_opts != NULL && win_opts->flags.use_initial_icon_xy))
@@ -1709,15 +1709,15 @@ void AutoPlaceIcon(
     dy = g.y;
 
     /* just make sure the icon is on this page */
-    g.x = g.x % Scr.MyDisplayWidth + base_x;
-    g.y = g.y % Scr.MyDisplayHeight + base_y;
+    g.x = g.x % t->m->virtual_scr.MyDisplayWidth + base_x;
+    g.y = g.y % t->m->virtual_scr.MyDisplayHeight + base_y;
     if (g.x < 0)
     {
-      g.x += Scr.MyDisplayWidth;
+      g.x += t->m->virtual_scr.MyDisplayWidth;
     }
     if (g.y < 0)
     {
-      g.y += Scr.MyDisplayHeight;
+      g.y += t->m->virtual_scr.MyDisplayHeight;
     }
     dx = g.x - dx;
     dy = g.y - dy;
@@ -2341,7 +2341,7 @@ void DeIconify(FvwmWindow *fw)
 			XFlush(dpy);
 			/* End AS */
 			XMapWindow(dpy, FW_W(t));
-			if (t->Desk == Scr.CurrentDesk)
+			if (t->Desk == t->m->virtual_scr.CurrentDesk)
 			{
 				rectangle r;
 
@@ -2360,11 +2360,11 @@ void DeIconify(FvwmWindow *fw)
 					t->g.frame.x -=
 						truncate_to_multiple(
 							t->g.frame.x,
-							Scr.MyDisplayWidth);
+							t->m->virtual_scr.MyDisplayWidth);
 					t->g.frame.y -=
 						truncate_to_multiple(
 							t->g.frame.y,
-							Scr.MyDisplayHeight);
+							t->m->virtual_scr.MyDisplayHeight);
 					XMoveWindow(
 						dpy, FW_W_FRAME(t),
 						t->g.frame.x, t->g.frame.y);
@@ -2406,7 +2406,7 @@ void DeIconify(FvwmWindow *fw)
 					(long)icon_rect.height);
 			}
 			XMapWindow(dpy, FW_W_PARENT(t));
-			if (t->Desk == Scr.CurrentDesk)
+			if (t->Desk == t->m->virtual_scr.CurrentDesk)
 			{
 				XMapWindow(dpy, FW_W_FRAME(t));
 				SET_MAP_PENDING(t, 1);
@@ -2619,9 +2619,9 @@ void Iconify(FvwmWindow *fw, initial_window_options_t *win_opts)
 	}
 	if (IS_ICON_STICKY_ACROSS_DESKS(fw) || IS_STICKY_ACROSS_DESKS(fw))
 	{
-		fw->Desk = Scr.CurrentDesk;
+		fw->Desk = fw->m->virtual_scr.CurrentDesk;
 	}
-	if (fw->Desk == Scr.CurrentDesk)
+	if (fw->Desk == fw->m->virtual_scr.CurrentDesk)
 	{
 		if (FW_W_ICON_TITLE(fw) != None)
 		{

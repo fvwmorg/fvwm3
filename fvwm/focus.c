@@ -159,16 +159,18 @@ static Bool __check_allow_focus(
 	Window w, FvwmWindow *fw, fpol_set_focus_by_t set_by)
 {
 	FvwmWindow *sf;
+	struct monitor	*m;
 
 	if (fw == NULL || set_by == FOCUS_SET_FORCE)
 	{
 		/* always allow to delete focus */
 		return True;
 	}
+	m = fw->m;
 	sf = get_focus_window();
 	if (!FP_IS_LENIENT(FW_FOCUS_POLICY(fw)) &&
 	    !focus_does_accept_input_focus(fw) &&
-	    sf != NULL && sf->Desk == Scr.CurrentDesk)
+	    sf != NULL && sf->Desk == m->virtual_scr.CurrentDesk)
 	{
 		/* window does not want focus */
 		return False;
@@ -279,6 +281,7 @@ static void __set_focus_to_fwin(
 	Window w, FvwmWindow *fw, sftfwin_args_t *args)
 {
 	FvwmWindow *sf;
+	struct monitor	*m;
 
 	if (__try_forbid_user_focus(w, fw) == True)
 	{
@@ -325,6 +328,9 @@ static void __set_focus_to_fwin(
 		XFlush(dpy);
 		return;
 	}
+
+	m = fw->m;
+
 	/* RBW - allow focus to go to a NoIconTitle icon window so
 	 * auto-raise will work on it. */
 	if (IS_ICONIFIED(fw))
@@ -375,7 +381,7 @@ static void __set_focus_to_fwin(
 		}
 		Scr.UnknownWinFocused = None;
 	}
-	else if (sf && sf->Desk == Scr.CurrentDesk)
+	else if (sf && sf->Desk == m->virtual_scr.CurrentDesk)
 	{
 		/* Window doesn't want focus. Leave focus alone */
 	}
@@ -440,15 +446,19 @@ static void warp_to_fvwm_window(
 	int cx,cy;
 	int x,y;
 	FvwmWindow *t = exc->w.fw;
+	struct monitor	*m;
 
 	if (t == (FvwmWindow *)0 ||
 	    (IS_ICONIFIED(t) && FW_W_ICON_TITLE(t) == None))
 	{
 		return;
 	}
-	if (t->Desk != Scr.CurrentDesk)
+
+	m = t->m;
+
+	if (t->Desk != m->virtual_scr.CurrentDesk)
 	{
-		goto_desk(t->Desk);
+		goto_desk(t->Desk, m);
 	}
 	if (IS_ICONIFIED(t))
 	{
@@ -468,11 +478,11 @@ static void warp_to_fvwm_window(
 		cx = t->g.frame.x + t->g.frame.width/2;
 		cy = t->g.frame.y + t->g.frame.height/2;
 	}
-	dx = (cx + Scr.Vx) / Scr.MyDisplayWidth * Scr.MyDisplayWidth;
-	dy = (cy + Scr.Vy) / Scr.MyDisplayHeight * Scr.MyDisplayHeight;
-	if (dx != Scr.Vx || dy != Scr.Vy)
+	dx = (cx + m->virtual_scr.Vx) / m->virtual_scr.MyDisplayWidth * m->virtual_scr.MyDisplayWidth;
+	dy = (cy + m->virtual_scr.Vy) / m->virtual_scr.MyDisplayHeight * m->virtual_scr.MyDisplayHeight;
+	if (dx != m->virtual_scr.Vx || dy != m->virtual_scr.Vy)
 	{
-		MoveViewport(dx, dy, True);
+		MoveViewport(m, dx, dy, True);
 	}
 	if (IS_ICONIFIED(t))
 	{
@@ -489,11 +499,11 @@ static void warp_to_fvwm_window(
 	}
 	else
 	{
-		if (x_unit != Scr.MyDisplayWidth && warp_x >= 0)
+		if (x_unit != m->virtual_scr.MyDisplayWidth && warp_x >= 0)
 		{
 			x = t->g.frame.x + warp_x;
 		}
-		else if (x_unit != Scr.MyDisplayWidth)
+		else if (x_unit != m->virtual_scr.MyDisplayWidth)
 		{
 			x = t->g.frame.x + t->g.frame.width + warp_x;
 		}
@@ -508,11 +518,11 @@ static void warp_to_fvwm_window(
 				(t->g.frame.width - 1) * (100 + warp_x) / 100;
 		}
 
-		if (y_unit != Scr.MyDisplayHeight && warp_y >= 0)
+		if (y_unit != m->virtual_scr.MyDisplayHeight && warp_y >= 0)
 		{
 			y = t->g.frame.y + warp_y;
 		}
-		else if (y_unit != Scr.MyDisplayHeight)
+		else if (y_unit != m->virtual_scr.MyDisplayHeight)
 		{
 			y = t->g.frame.y + t->g.frame.height + warp_y;
 		}
@@ -536,8 +546,8 @@ static void warp_to_fvwm_window(
 	/* If the window is still not visible, make it visible! */
 	if (t->g.frame.x + t->g.frame.width  < 0 ||
 	    t->g.frame.y + t->g.frame.height < 0 ||
-	    t->g.frame.x >= Scr.MyDisplayWidth ||
-	    t->g.frame.y >= Scr.MyDisplayHeight)
+	    t->g.frame.x >= m->virtual_scr.MyDisplayWidth ||
+	    t->g.frame.y >= m->virtual_scr.MyDisplayHeight)
 	{
 		frame_setup_window(
 			t, 0, 0, t->g.frame.width, t->g.frame.height, False);
@@ -552,8 +562,9 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 {
 	Bool flag;
 	Bool is_focused;
+	struct monitor	*m = fw->m;
 
-	if (fw->Desk != Scr.CurrentDesk || IS_ICONIFIED(fw))
+	if (fw->Desk != m->virtual_scr.CurrentDesk || IS_ICONIFIED(fw))
 	{
 		return False;
 	}
@@ -639,6 +650,7 @@ static void __activate_window_by_command(
 	Bool do_not_warp;
 	sftfwin_args_t sf_args;
 	FvwmWindow * const fw = exc->w.fw;
+	struct monitor	*m;
 
 	memset(&sf_args, 0, sizeof(sf_args));
 	sf_args.do_allow_force_broadcast = 1;
@@ -658,12 +670,13 @@ static void __activate_window_by_command(
 		return;
 	}
 
+	m = fw->m;
 	do_not_warp = StrEquals(PeekToken(action, NULL), "NoWarp");
 	if (!do_not_warp)
 	{
-		if (fw->Desk != Scr.CurrentDesk)
+		if (fw->Desk != m->virtual_scr.CurrentDesk)
 		{
-			goto_desk(fw->Desk);
+			goto_desk(fw->Desk, m);
 		}
 		if (IS_ICONIFIED(fw))
 		{
@@ -684,17 +697,17 @@ static void __activate_window_by_command(
 			cy = fw->g.frame.y + fw->g.frame.height/2;
 		}
 		if (
-			cx < 0 || cx >= Scr.MyDisplayWidth ||
-			cy < 0 || cy >= Scr.MyDisplayHeight)
+			cx < 0 || cx >= m->virtual_scr.MyDisplayWidth ||
+			cy < 0 || cy >= m->virtual_scr.MyDisplayHeight)
 		{
 			int dx;
 			int dy;
 
-			dx = ((cx + Scr.Vx) / Scr.MyDisplayWidth) *
-				Scr.MyDisplayWidth;
-			dy = ((cy + Scr.Vy) / Scr.MyDisplayHeight) *
-				Scr.MyDisplayHeight;
-			MoveViewport(dx, dy, True);
+			dx = ((cx + m->virtual_scr.Vx) / m->virtual_scr.MyDisplayWidth) *
+				m->virtual_scr.MyDisplayWidth;
+			dy = ((cy + m->virtual_scr.Vy) / m->virtual_scr.MyDisplayHeight) *
+				m->virtual_scr.MyDisplayHeight;
+			MoveViewport(m, dx, dy, True);
 		}
 #if 0 /* can not happen */
 		/* If the window is still not visible, make it visible! */
@@ -719,7 +732,7 @@ static void __activate_window_by_command(
 	}
 	UngrabEm(GRAB_NORMAL);
 
-	if (fw->Desk == Scr.CurrentDesk)
+	if (fw->Desk == m->virtual_scr.CurrentDesk)
 	{
 		FvwmWindow *sf;
 
@@ -1210,6 +1223,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 	int do_raise;
 	char *next;
 	char *token;
+	struct monitor	*m = monitor_get_current();
 
 	next = GetNextToken(action, &token);
 	if (StrEquals(token, "!raise"))
@@ -1260,7 +1274,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 			{
 				return;
 			}
-			if (val1_unit != Scr.MyDisplayWidth)
+			if (val1_unit != m->virtual_scr.MyDisplayWidth)
 			{
 				x = val1;
 			}
@@ -1268,7 +1282,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 			{
 				x = (ww - 1) * val1 / 100;
 			}
-			if (val2_unit != Scr.MyDisplayHeight)
+			if (val2_unit != m->virtual_scr.MyDisplayHeight)
 			{
 				y = val2;
 			}

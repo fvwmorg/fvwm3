@@ -4683,6 +4683,7 @@ void border_draw_decorations(
 	Bool do_redraw_titlebar = False;
 	window_parts pressed_parts;
 	window_parts force_parts;
+	struct monitor	*m = NULL;
 	int context;
 	int item;
 
@@ -4728,7 +4729,9 @@ void border_draw_decorations(
 	{
 		Scr.Hilite = NULL;
 	}
-	if (fw->Desk != Scr.CurrentDesk)
+
+	m = fw->m;
+	if (fw->Desk != m->virtual_scr.CurrentDesk)
 	{
 		return;
 	}

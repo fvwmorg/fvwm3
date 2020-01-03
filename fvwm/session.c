@@ -174,12 +174,13 @@ static char *unspace_string(const char *str)
 static int
 SaveGlobalState(FILE *f)
 {
+	struct monitor	*m = monitor_get_current();
 	fprintf(f, "[GLOBAL]\n");
-	fprintf(f, "  [DESKTOP] %i\n", Scr.CurrentDesk);
+	fprintf(f, "  [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
 	fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
-		Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
+		m->virtual_scr.Vx, m->virtual_scr.Vy, m->virtual_scr.VxMax, m->virtual_scr.VyMax);
 	fprintf(f, "  [SCROLL] %i %i %i %i %i\n",
-		Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollDelay,
+		m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY, Scr.ScrollDelay,
 		!!(Scr.flags.do_edge_wrap_x), !!(Scr.flags.do_edge_wrap_y));
 	fprintf(f, "  [MISC] %i %i %i\n",
 		Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
@@ -407,6 +408,7 @@ SaveWindowStates(FILE *f)
 	FvwmWindow *ewin;
 	rectangle save_g;
 	rectangle ig;
+	struct monitor	*m = monitor_get_current();
 	int i;
 	int layer;
 
@@ -533,8 +535,8 @@ SaveWindowStates(FILE *f)
 			&ewin->g.normal);
 		if (IS_STICKY_ACROSS_PAGES(ewin))
 		{
-			save_g.x -= Scr.Vx;
-			save_g.y -= Scr.Vy;
+			save_g.x -= m->virtual_scr.Vx;
+			save_g.y -= m->virtual_scr.Vy;
 		}
 		get_visible_icon_geometry(ewin, &ig);
 		fprintf(
@@ -544,8 +546,8 @@ SaveWindowStates(FILE *f)
 			ewin->g.max.x, ewin->g.max.y, ewin->g.max.width,
 			ewin->g.max.height, ewin->g.max_defect.width,
 			ewin->g.max_defect.height,
-			ig.x + ((!is_icon_sticky_across_pages) ? Scr.Vx : 0),
-			ig.y + ((!is_icon_sticky_across_pages) ? Scr.Vy : 0),
+			ig.x + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vx : 0),
+			ig.y + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vy : 0),
 			ewin->hints.win_gravity,
 			ewin->g.max_offset.x, ewin->g.max_offset.y);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
@@ -1177,7 +1179,7 @@ LoadGlobalState(char *filename)
 		else if (!strcmp(s1, "[DESKTOP]"))
 		{
 			sscanf(s, "%*s %i", &i1);
-			goto_desk(i1);
+			goto_desk(i1, monitor_get_current());
 		}
 		else if (!strcmp(s1, "[VIEWPORT]"))
 		{
@@ -1189,7 +1191,7 @@ LoadGlobalState(char *filename)
 			 Scr.VxMax = i3;
 			 Scr.VyMax = i4;
 			*/
-			MoveViewport(i1, i2, True);
+			MoveViewport(monitor_get_current(), i1, i2, True);
 		}
 		else if (!strcmp(s1, "[KEY]"))
 		{
@@ -1291,6 +1293,7 @@ void
 LoadWindowStates(char *filename)
 {
 	FILE *f;
+	struct monitor	*m = monitor_get_current();
 	char s[4096], s1[4096];
 	char *s2;
 	int i, pos, pos1;
@@ -1351,8 +1354,8 @@ LoadWindowStates(char *filename)
 			matches[num_match - 1].h = 100;
 			matches[num_match - 1].x_max = 0;
 			matches[num_match - 1].y_max = 0;
-			matches[num_match - 1].w_max = Scr.MyDisplayWidth;
-			matches[num_match - 1].h_max = Scr.MyDisplayHeight;
+			matches[num_match - 1].w_max = m->virtual_scr.MyDisplayWidth;
+			matches[num_match - 1].h_max = m->virtual_scr.MyDisplayHeight;
 			matches[num_match - 1].width_defect_max = 0;
 			matches[num_match - 1].height_defect_max = 0;
 			matches[num_match - 1].icon_x = 0;
@@ -1512,6 +1515,7 @@ MatchWinToSM(
 	initial_window_options_t *win_opts)
 {
 	int i;
+	struct monitor *m = monitor_get_current();
 
 	if (!does_file_version_match)
 	{
@@ -1591,8 +1595,8 @@ MatchWinToSM(
 				      IS_ICON_STICKY_ACROSS_PAGES(
 					      &(matches[i]))))
 				{
-					win_opts->initial_icon_x -= Scr.Vx;
-					win_opts->initial_icon_y -= Scr.Vy;
+					win_opts->initial_icon_x -= m->virtual_scr.Vx;
+					win_opts->initial_icon_y -= m->virtual_scr.Vy;
 				}
 			}
 			ewin->g.normal.x = matches[i].x;
@@ -1613,7 +1617,7 @@ MatchWinToSM(
 			SET_STICKY_ACROSS_DESKS(
 				ewin, IS_STICKY_ACROSS_DESKS(&(matches[i])));
 			ewin->Desk = (IS_STICKY_ACROSS_DESKS(ewin)) ?
-				Scr.CurrentDesk : matches[i].desktop;
+				m->virtual_scr.CurrentDesk : matches[i].desktop;
 			set_layer(ewin, matches[i].layer);
 			set_default_layer(ewin, matches[i].default_layer);
 			ewin->placed_by_button = matches[i].placed_by_button;
@@ -1657,7 +1661,7 @@ RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 		save_state_file(filename);
 		set_sm_properties(sm_conn, filename, FSmRestartImmediately);
 
-		MoveViewport(0, 0, False);
+		MoveViewport(monitor_get_current(), 0, 0, False);
 		Reborder();
 
 		CloseICCCM2();
