@@ -2035,6 +2035,16 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 	return;
 }
 
+void CMD_DesktopConfiguration(F_CMD_ARGS)
+{
+	if (action == NULL) {
+		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action is required");
+		return;
+	}
+
+	monitor_init_contents(action);
+}
+
 void CMD_DesktopSize(F_CMD_ARGS)
 {
 	int val[2];

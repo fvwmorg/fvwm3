@@ -178,6 +178,10 @@ const func_t func_table[] =
 	CMD_ENT("desk", CMD_Desk, F_GOTO_DESK, 0, 0),
 	/* - (obsolete, use GotoDesk instead) */
 
+	CMD_ENT("desktopconfiguration", CMD_DesktopConfiguration,
+		F_DESKTOP_CONFIGURATION, 0, 0),
+	/* - Defines how desktops are managed. */
+
 	CMD_ENT("desktopname", CMD_DesktopName, F_DESKTOP_NAME, 0, 0),
 	/* - Define the desktop names used in WindowList, modules */
 

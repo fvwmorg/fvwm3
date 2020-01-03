@@ -169,6 +169,13 @@ monitor_by_number(int number)
 }
 
 void
+monitor_init_contents(const char *name)
+{
+	/* XXX - fill out. */
+	return;
+}
+
+void
 FScreenSelect(Display *dpy)
 {
 	XRRSelectInput(disp, DefaultRootWindow(disp), RRScreenChangeNotifyMask);

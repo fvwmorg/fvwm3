@@ -41,6 +41,7 @@ enum
 	F_CURRENT,
 	F_CURSOR_STYLE,
 	F_DESCHEDULE,
+	F_DESKTOP_CONFIGURATION,
 	F_DESKTOP_NAME,
 	F_DESTROY_FUNCTION,
 	F_DESTROY_MENU,
@@ -242,6 +243,7 @@ void CMD_DefaultLayers(F_CMD_ARGS);
 void CMD_Delete(F_CMD_ARGS);
 void CMD_Deschedule(F_CMD_ARGS);
 void CMD_Desk(F_CMD_ARGS);
+void CMD_DesktopConfiguration(F_CMD_ARGS);
 void CMD_DesktopName(F_CMD_ARGS);
 void CMD_DesktopSize(F_CMD_ARGS);
 void CMD_Destroy(F_CMD_ARGS);
