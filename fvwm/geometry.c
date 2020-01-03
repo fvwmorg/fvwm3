@@ -88,8 +88,11 @@ void gravity_add_decoration(
 
 void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
 {
-	rel_g->x = abs_g->x - Scr.Vx;
-	rel_g->y = abs_g->y - Scr.Vy;
+	/* FIXME - not sure this is correct. */
+	struct monitor	*m = monitor_get_current();
+
+	rel_g->x = abs_g->x - m->virtual_scr.Vx;
+	rel_g->y = abs_g->y - m->virtual_scr.Vy;
 	rel_g->width = abs_g->width;
 	rel_g->height = abs_g->height;
 
@@ -98,8 +101,11 @@ void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
 
 void get_absolute_geometry(rectangle *abs_g, rectangle *rel_g)
 {
-	abs_g->x = rel_g->x + Scr.Vx;
-	abs_g->y = rel_g->y + Scr.Vy;
+	/* FIXME - not sure this is correct. */
+	struct monitor	*m = monitor_get_current();
+
+	abs_g->x = rel_g->x + m->virtual_scr.Vx;
+	abs_g->y = rel_g->y + m->virtual_scr.Vy;
 	abs_g->width = rel_g->width;
 	abs_g->height = rel_g->height;
 
@@ -594,12 +600,13 @@ void update_absolute_geometry(FvwmWindow *fw)
 {
 	rectangle *dest_g;
 	rectangle frame_g;
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* store orig values in absolute coords */
 	dest_g = (IS_MAXIMIZED(fw)) ? &fw->g.max : &fw->g.normal;
 	frame_g = *dest_g;
-	dest_g->x = fw->g.frame.x + Scr.Vx;
-	dest_g->y = fw->g.frame.y + Scr.Vy;
+	dest_g->x = fw->g.frame.x + m->virtual_scr.Vx;
+	dest_g->y = fw->g.frame.y + m->virtual_scr.Vy;
 	dest_g->width = fw->g.frame.width;
 	dest_g->height = fw->g.frame.height;
 	if (IS_SHADED(fw))
@@ -643,16 +650,18 @@ void maximize_adjust_offset(FvwmWindow *fw)
 	int off_y;
 	int dh;
 	int dw;
+	struct monitor	*m;
 
 	if (!IS_MAXIMIZED(fw))
 	{
 		/* otherwise we might corrupt the g.normal */
 		return;
 	}
+	m = fw->m;
 	off_x = fw->g.normal.x - fw->g.max.x - fw->g.max_offset.x;
 	off_y = fw->g.normal.y - fw->g.max.y - fw->g.max_offset.y;
-	dw = Scr.MyDisplayWidth;
-	dh = Scr.MyDisplayHeight;
+	dw = m->virtual_scr.MyDisplayWidth;
+	dh = m->virtual_scr.MyDisplayHeight;
 	if (off_x >= dw)
 	{
 		fw->g.normal.x -= (off_x / dw) * dw;
@@ -818,6 +827,7 @@ void constrain_size(
 	size_rect d;
 	size_rect old;
 	size_borders b;
+	struct monitor	*m = fw->m;
 
 	if (DO_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw) == 1)
 	{
@@ -940,7 +950,7 @@ void constrain_size(
 		}
 		else if (
 			xmotion < 0 && e->xmotion.x_root >=
-			Scr.MyDisplayWidth - round_up.width)
+			m->virtual_scr.MyDisplayWidth - round_up.width)
 		{
 			d.width -= inc.width;
 		}
@@ -950,7 +960,7 @@ void constrain_size(
 		}
 		else if (
 			ymotion < 0 && e->xmotion.y_root >=
-			Scr.MyDisplayHeight - round_up.height)
+			m->virtual_scr.MyDisplayHeight - round_up.height)
 		{
 			d.height -= inc.height;
 		}
@@ -1347,14 +1357,18 @@ void resize_icon_title_height(FvwmWindow *fw, int dh)
 void get_page_offset_rectangle(
 	int *ret_page_x, int *ret_page_y, rectangle *r)
 {
-	int xoff = Scr.Vx % Scr.MyDisplayWidth;
-	int yoff = Scr.Vy % Scr.MyDisplayHeight;
+	struct monitor	*m = monitor_get_current();
+
+	/* FIXME: broadcast if global monitor in use. */
+
+	int xoff = m->virtual_scr.Vx % m->virtual_scr.MyDisplayWidth;
+	int yoff = m->virtual_scr.Vy % m->virtual_scr.MyDisplayHeight;
 
 	/* maximize on the page where the center of the window is */
 	*ret_page_x = truncate_to_multiple(
-		r->x + r->width / 2 + xoff, Scr.MyDisplayWidth) - xoff;
+		r->x + r->width / 2 + xoff, m->virtual_scr.MyDisplayWidth) - xoff;
 	*ret_page_y = truncate_to_multiple(
-		r->y + r->height / 2 + yoff, Scr.MyDisplayHeight) - yoff;
+		r->y + r->height / 2 + yoff, m->virtual_scr.MyDisplayHeight) - yoff;
 
 	return;
 }

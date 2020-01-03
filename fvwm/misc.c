@@ -79,8 +79,9 @@ static void change_grab_cursor(int cursor)
 int GetTwoArguments(
 	char *action, int *val1, int *val2, int *val1_unit, int *val2_unit)
 {
-	*val1_unit = Scr.MyDisplayWidth;
-	*val2_unit = Scr.MyDisplayHeight;
+	struct monitor	*m = monitor_get_current();
+	*val1_unit = m->virtual_scr.MyDisplayWidth;
+	*val2_unit = m->virtual_scr.MyDisplayHeight;
 
 	return GetTwoPercentArguments(action, val1, val2, val1_unit, val2_unit);
 }
@@ -511,11 +512,13 @@ int truncate_to_multiple (int x, int m)
 
 Bool IsRectangleOnThisPage(const rectangle *rec, int desk)
 {
-	return (desk == Scr.CurrentDesk &&
+	struct monitor	*m = monitor_get_current();
+
+	return (desk == m->virtual_scr.CurrentDesk &&
 		rec->x + (signed int)rec->width > 0 &&
-		(rec->x < 0 || rec->x < Scr.MyDisplayWidth) &&
+		(rec->x < 0 || rec->x < m->virtual_scr.MyDisplayWidth) &&
 		rec->y + (signed int)rec->height > 0 &&
-		(rec->y < 0 || rec->y < Scr.MyDisplayHeight)) ?
+		(rec->y < 0 || rec->y < m->virtual_scr.MyDisplayHeight)) ?
 		True : False;
 }
 

@@ -109,9 +109,9 @@ int ewmh_HandleNotification(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 
 void ewmh_AddToKdeSysTray(FvwmWindow *fw);
-void ewmh_SetWorkArea(void);
-void ewmh_ComputeAndSetWorkArea(void);
-void ewmh_HandleDynamicWorkArea(void);
+void ewmh_SetWorkArea(struct monitor *);
+void ewmh_ComputeAndSetWorkArea(struct monitor *);
+void ewmh_HandleDynamicWorkArea(struct monitor *);
 void ewmh_HandleWindowType(FvwmWindow *fw, window_style *style);
 
 int ewmh_CurrentDesktop(

@@ -842,18 +842,19 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 {
 	FvwmWindow *t;
 	fmodule *mod = exc->m.module;
+	struct monitor	*m = monitor_get_current();
 
 	if (mod == NULL)
 	{
 		return;
 	}
-	SendPacket(mod, M_NEW_DESK, 1, (long)Scr.CurrentDesk);
+	SendPacket(mod, M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
 	SendPacket(
-		mod, M_NEW_PAGE, 7, (long)Scr.Vx, (long)Scr.Vy,
-		(long)Scr.CurrentDesk, (long)Scr.MyDisplayWidth,
-		(long)Scr.MyDisplayHeight,
-		(long)((Scr.VxMax / Scr.MyDisplayWidth) + 1),
-		(long)((Scr.VyMax / Scr.MyDisplayHeight) + 1));
+		mod, M_NEW_PAGE, 7, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
+		(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
+		(long)m->virtual_scr.MyDisplayHeight,
+		(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
+		(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
 
 	if (Scr.Hilite != NULL)
 	{
