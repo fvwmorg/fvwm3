@@ -244,8 +244,9 @@ static void send_desktop_names(fmodule *module)
 {
 	DesktopsInfo *d;
 	char *name;
+	struct monitor	*m = monitor_get_current();
 
-	for (d = Scr.Desktops->next; d != NULL; d = d->next)
+	for (d = m->Desktops->next; d != NULL; d = d->next)
 	{
 		if (d->name != NULL)
 		{
@@ -263,9 +264,11 @@ static void send_desktop_names(fmodule *module)
 static void send_desktop_geometry(fmodule *module)
 {
 	char msg[64];
+	struct monitor	*m = monitor_get_current();
 
-	sprintf(msg, "DesktopSize %d %d\n", Scr.VxMax / Scr.MyDisplayWidth + 1,
-		Scr.VyMax / Scr.MyDisplayHeight + 1);
+	sprintf(msg, "DesktopSize %d %d\n",
+		m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth + 1,
+		m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight + 1);
 	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;

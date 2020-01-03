@@ -31,11 +31,81 @@ struct coord {
 	int h;
 };
 
+typedef struct DesktopsInfo
+{
+	int desk;
+	char *name;
+
+	struct
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	} ewmh_working_area;
+	struct
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	} ewmh_dyn_working_area;
+
+	struct DesktopsInfo *next;
+} DesktopsInfo;
+
+#define MONITOR_TRACKING_G 0x1
+#define MONITOR_TRACKING_M 0x2
+
 struct monitor {
 	char		*name;
 	int		 is_primary;
 	struct coord 	 coord;
+	struct coord 	 coord_cpy;
 	int 		 number;
+	int		 flags;
+
+	/* info for some desktops; the first entries should be generic info
+         * correct for any desktop not in the list
+         */
+        DesktopsInfo    *Desktops;
+        DesktopsInfo    *Desktops_cpy;
+
+        /* Information about EWMH. */
+        struct {
+                unsigned NumberOfDesktops;
+                unsigned MaxDesktops;
+                unsigned CurrentNumberOfDesktops;
+                Bool NeedsToCheckDesk;
+
+                struct {
+                        int left;
+                        int right;
+                        int top;
+                        int bottom;
+                } BaseStrut;
+
+        } ewmhc;
+
+        struct {
+                int VxMax;
+                int VyMax;
+                int Vx;
+                int Vy;
+
+                int EdgeScrollX;
+                int EdgeScrollY;
+
+                int CurrentDesk;
+                int prev_page_x;
+                int prev_page_y;
+                int prev_desk;
+                int prev_desk_and_page_desk;
+                int prev_desk_and_page_page_x;
+                int prev_desk_and_page_page_y;
+		int MyDisplayWidth;
+		int MyDisplayHeight;
+        } virtual_scr;
 
 	TAILQ_ENTRY(monitor) entry;
 };
@@ -47,6 +117,7 @@ struct monitor	*monitor_by_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_number(int);
 struct monitor  *monitor_get_current(void);
+void		 monitor_init_contents(const char *);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 

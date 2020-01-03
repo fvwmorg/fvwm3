@@ -20,12 +20,13 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle, int on);
 
 /* Extended window manager hints support */
 
+#include "libs/FScreen.h"
 #include <X11/Xmd.h>
 
-void EWMH_SetCurrentDesktop(void);
-void EWMH_SetNumberOfDesktops(void);
-void EWMH_SetDesktopViewPort(void);
-void EWMH_SetDesktopGeometry(void);
+void EWMH_SetCurrentDesktop(struct monitor *);
+void EWMH_SetNumberOfDesktops(struct monitor *);
+void EWMH_SetDesktopViewPort(struct monitor *);
+void EWMH_SetDesktopGeometry(struct monitor *);
 
 void EWMH_SetActiveWindow(Window w);
 void EWMH_SetWMDesktop(FvwmWindow *fw);
@@ -33,9 +34,9 @@ void EWMH_SetWMState(FvwmWindow *fw, Bool do_restore);
 
 int EWMH_IsKdeSysTrayWindow(Window w);
 void EWMH_ManageKdeSysTray(Window w, int type);
-void EWMH_SetClientList(void);
-void EWMH_SetClientListStacking(void);
-void EWMH_UpdateWorkArea(void);
+void EWMH_SetClientList(struct monitor *);
+void EWMH_SetClientListStacking(struct monitor *);
+void EWMH_UpdateWorkArea(struct monitor *);
 void EWMH_GetWorkAreaIntersection(
 	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type);
 float EWMH_GetBaseStrutIntersection(
@@ -53,7 +54,7 @@ void EWMH_RestoreInitialStates(FvwmWindow *fw, int event_type);
 void EWMH_DestroyWindow(FvwmWindow *fw);
 void EWMH_WindowDestroyed(void);
 
-void EWMH_Init(void);
+void EWMH_Init(struct monitor *);
 void EWMH_ExitStuff(void);
 
 /* ewmh_conf.c */
@@ -74,7 +75,7 @@ int EWMH_WMName(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
 int EWMH_WMIconName(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any);
-void EWMH_SetDesktopNames(void);
+void EWMH_SetDesktopNames(struct monitor *);
 void EWMH_fullscreen(FvwmWindow *fw);
 
 #endif /* _EWMH_ */

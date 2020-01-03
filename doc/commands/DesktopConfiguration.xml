@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='DesktopConfiguration'>
+<title>DesktopConfiguration</title>
+
+<cmdsynopsis>
+	<command>DesktopConfiguration</command>
+		<group choice='plain'>
+			<arg choice='plain'>global</arg>
+			<arg choice='plain'>per-monitor</arg>
+		</group>
+</cmdsynopsis>
+
+<para>
+        This command controls the behaviour of how desktops should be managed
+        by FVWM. By default, for all screens detected by FVWM through RandR
+        support, the option of 
+        <literal>
+        global
+	</literal>
+	means that all windows on the same desk across monitors is treated as one --
+	hence, when a change of desktop/page happens, the same change occurs across
+	all monitors.
+</para>
+
+<para>
+        With
+        <literal>
+        per-monitor
+	</literal>, each RandR monitor has a separate copy of desktops, and hence function
+independently of one another when switching desks/pages.
+</para>
+</section>

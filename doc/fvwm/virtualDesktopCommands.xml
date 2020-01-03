@@ -13,6 +13,7 @@
 
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Desk.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DesktopName.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DesktopConfiguration.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="DesktopSize.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="EdgeResistance.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="EdgeScroll.xml" />

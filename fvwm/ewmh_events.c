@@ -51,6 +51,7 @@ extern ewmh_atom ewmh_atom_wm_state[];
 int ewmh_CurrentDesktop(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
+	struct monitor	*m = monitor_get_current();
 	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff)
 	{
 		fvwm_msg(
@@ -65,7 +66,7 @@ int ewmh_CurrentDesktop(
 
 		return -1;
 	}
-	goto_desk(ev->xclient.data.l[0]);
+	goto_desk(ev->xclient.data.l[0], m);
 
 	return -1;
 }
@@ -76,9 +77,10 @@ int ewmh_DesktopGeometry(
 	char action[256];
 	long width = ev->xclient.data.l[0];
 	long height = ev->xclient.data.l[1];
+	struct monitor	*m = monitor_get_current();
 
-	width = width / Scr.MyDisplayWidth;
-	height = height / Scr.MyDisplayHeight;
+	width = width / m->virtual_scr.MyDisplayWidth;
+	height = height / m->virtual_scr.MyDisplayHeight;
 
 	if (width <= 0 || height <= 0)
 	{
@@ -104,6 +106,8 @@ int ewmh_DesktopGeometry(
 int ewmh_DesktopViewPort(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
+
 	if (
 		ev->xclient.data.l[0] < 0 ||
 		ev->xclient.data.l[0] > 0x7fffffff ||
@@ -123,7 +127,7 @@ int ewmh_DesktopViewPort(
 
 		return -1;
 	}
-	MoveViewport(ev->xclient.data.l[0], ev->xclient.data.l[1], 1);
+	MoveViewport(m, ev->xclient.data.l[0], ev->xclient.data.l[1], 1);
 	return -1;
 }
 
@@ -131,12 +135,15 @@ int ewmh_NumberOfDesktops(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	int d = ev->xclient.data.l[0];
+	struct monitor	*m;
+
+	m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* not a lot of sinification for fvwm */
 	if (d > 0 && (d <= ewmhc.MaxDesktops || ewmhc.MaxDesktops == 0))
 	{
 		ewmhc.NumberOfDesktops = d;
-		EWMH_SetNumberOfDesktops();
+		EWMH_SetNumberOfDesktops(m);
 	}
 	else
 	{
@@ -1533,6 +1540,9 @@ int ewmh_WMStrut(
 {
 	int size = 0;
 	CARD32 *val;
+	struct monitor	*m;
+
+	m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	if (ev == NULL)
 	{
@@ -1560,7 +1570,7 @@ int ewmh_WMStrut(
 		fw->strut.right  = val[1];
 		fw->strut.top    = val[2];
 		fw->strut.bottom = val[3];
-		ewmh_ComputeAndSetWorkArea();
+		ewmh_ComputeAndSetWorkArea(m);
 	}
 	if (val[0] !=  fw->dyn_strut.left ||
 	    val[1] != fw->dyn_strut.right ||
@@ -1571,7 +1581,7 @@ int ewmh_WMStrut(
 		fw->dyn_strut.right  = val[1];
 		fw->dyn_strut.top    = val[2];
 		fw->dyn_strut.bottom = val[3];
-		ewmh_HandleDynamicWorkArea();
+		ewmh_HandleDynamicWorkArea(m);
 	}
 	free(val);
 

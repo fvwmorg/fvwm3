@@ -788,6 +788,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	FvwmWindow *sf = get_focus_window();
 	struct name_condition *pp;
 	struct namelist *p;
+	struct monitor	*m = fw->m;
 	char *name;
 
 	/* match FixedSize conditional */
@@ -902,7 +903,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	    mask->my_flags.do_check_desk_and_page ||
 	    mask->my_flags.do_check_desk_and_global_page)
 	{
-		is_on_desk = (fw->Desk == Scr.CurrentDesk);
+		is_on_desk = (fw->Desk == m->virtual_scr.CurrentDesk);
 	}
 	is_on_page = 1;
 	if (mask->my_flags.do_check_page ||
@@ -916,7 +917,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		else
 		{
 			is_on_page = !!IsRectangleOnThisPage(
-				&(fw->g.frame), Scr.CurrentDesk);
+				&(fw->g.frame), m->virtual_scr.CurrentDesk);
 		}
 	}
 	is_on_global_page = 1;
@@ -924,7 +925,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	    mask->my_flags.do_check_desk_and_global_page)
 	{
 		is_on_global_page = !!IsRectangleOnThisPage(
-			&(fw->g.frame), Scr.CurrentDesk);
+			&(fw->g.frame), m->virtual_scr.CurrentDesk);
 	}
 
 	if (mask->my_flags.do_check_desk_and_page)

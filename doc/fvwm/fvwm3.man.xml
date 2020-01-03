@@ -25,6 +25,7 @@
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="windowAnatomy.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="virtualDesktop.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="multiScreen.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="randr.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="initialization.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="compilation.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="images.xml" />
