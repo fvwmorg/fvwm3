@@ -51,6 +51,7 @@ extern ewmh_atom ewmh_atom_wm_state[];
 int ewmh_CurrentDesktop(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
+	struct monitor	*m = monitor_get_current();
 	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff)
 	{
 		fvwm_msg(
@@ -65,7 +66,7 @@ int ewmh_CurrentDesktop(
 
 		return -1;
 	}
-	goto_desk(ev->xclient.data.l[0]);
+	goto_desk(ev->xclient.data.l[0], m);
 
 	return -1;
 }
@@ -76,9 +77,10 @@ int ewmh_DesktopGeometry(
 	char action[256];
 	long width = ev->xclient.data.l[0];
 	long height = ev->xclient.data.l[1];
+	struct monitor	*m = monitor_get_current();
 
-	width = width / Scr.MyDisplayWidth;
-	height = height / Scr.MyDisplayHeight;
+	width = width / m->virtual_scr.MyDisplayWidth;
+	height = height / m->virtual_scr.MyDisplayHeight;
 
 	if (width <= 0 || height <= 0)
 	{

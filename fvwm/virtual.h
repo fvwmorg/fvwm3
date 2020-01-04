@@ -12,9 +12,9 @@ void raisePanFrames(void);
 void initPanFrames(void);
 Bool is_pan_frame(Window w);
 void MoveViewport(int newx, int newy,Bool);
-void goto_desk(int desk);
+void goto_desk(int desk, struct monitor *);
 void do_move_window_to_desk(FvwmWindow *fw, int desk);
-Bool get_page_arguments(char *action, int *page_x, int *page_y);
-char *GetDesktopName(int desk);
+Bool get_page_arguments(FvwmWindow *, char *action, int *page_x, int *page_y);
+char *GetDesktopName(struct monitor *, int desk);
 
 #endif /* _VIRTUAL_ */

@@ -52,6 +52,7 @@ static struct monitor	*monitor_new(void);
 static void		 monitor_create_randr_region(struct monitor *m,
 	const char *, struct coord *, int);
 static int		 monitor_check_stale(struct monitor *);
+static void		 monitor_init_one(struct monitor *, int, int);
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -168,11 +169,72 @@ monitor_by_number(int number)
 	return (mret);
 }
 
+static void
+monitor_init_one(struct monitor *m, int w, int h)
+{
+	m->virtual_scr.MyDisplayWidth = w;
+	m->virtual_scr.MyDisplayHeight = h;
+	m->virtual_scr.CurrentDesk = 0;
+	m->virtual_scr.Vx = 0;
+	m->virtual_scr.Vy = 0;
+	m->virtual_scr.VxMax = 2 * m->virtual_scr.MyDisplayWidth;
+	m->virtual_scr.VyMax = 2 * m->virtual_scr.MyDisplayHeight;
+	m->virtual_scr.prev_page_x = 0;
+	m->virtual_scr.prev_page_y = 0;
+	m->virtual_scr.prev_desk = 0;
+	m->virtual_scr.prev_desk_and_page_desk = 0;
+	m->virtual_scr.prev_desk_and_page_page_x = 0;
+	m->virtual_scr.prev_desk_and_page_page_y = 0;
+	m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
+		m->virtual_scr.MyDisplayWidth  / 100;
+	m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
+		m->virtual_scr.MyDisplayHeight / 100;
+
+	m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
+	m->Desktops->name = NULL;
+	m->Desktops->desk = 0; /* not desk 0 */
+	m->Desktops->ewmh_dyn_working_area.x =
+		m->Desktops->ewmh_working_area.x = 0;
+	m->Desktops->ewmh_dyn_working_area.y =
+		m->Desktops->ewmh_working_area.y = 0;
+	m->Desktops->ewmh_dyn_working_area.width =
+		m->Desktops->ewmh_working_area.width =
+		m->virtual_scr.MyDisplayWidth;
+	m->Desktops->ewmh_dyn_working_area.height =
+		m->Desktops->ewmh_working_area.height =
+		m->virtual_scr.MyDisplayHeight;
+	m->Desktops->next = NULL;
+}
+
 void
 monitor_init_contents(const char *name)
 {
-	/* XXX - fill out. */
-	return;
+	/* If we've been asked for the "global" screen, then we set the
+	 * desktop size to all monitors.  We don't need RandR for this; X11
+	 * provides that directly.  Then, copy each of this into all monitors
+	 * for the same values.
+	 *
+	 * Otherwise, we initialise the specific monitors with their own
+	 * values, if "per-monitor" has been specified.
+	 */
+	struct monitor	*m = NULL;
+	int	 	 w;
+	int	 	 h;
+
+	if (strcmp(name, "global") == 0) {
+		fprintf(stderr, "%s: init monitor for global\n", __func__);
+		w = DisplayWidth(disp, DefaultScreen(disp));
+		h = DisplayHeight(disp, DefaultScreen(disp));
+
+		TAILQ_FOREACH(m, &monitor_q, entry)
+			monitor_init_one(m, w, h);
+	}
+
+	if (strcmp(name, "per-monitor") == 0) {
+		fprintf(stderr, "%s: init monitor for per-monitor\n", __func__);
+		TAILQ_FOREACH(m, &monitor_q, entry)
+			monitor_init_one(m, m->coord.w, m->coord.h);
+	}
 }
 
 void
@@ -264,6 +326,7 @@ void FScreenInit(Display *dpy)
 		no_of_screens++;
 	}
 	XRRFreeScreenResources(res);
+	monitor_init_contents("global");
 
 	return;
 
@@ -276,6 +339,7 @@ single_screen:
 	coord.h = DisplayHeight(disp, DefaultScreen(disp));
 
 	monitor_create_randr_region(m, GLOBAL_SCREEN_NAME, &coord, is_primary);
+	monitor_init_contents("global");
 
 	if (++no_of_screens > 0)
 		no_of_screens--;

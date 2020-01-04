@@ -74,8 +74,9 @@ static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 {
 	char *desk_name;
 	char *tlabel;
+	struct monitor	*m = monitor_get_current();
 
-	desk_name = GetDesktopName(desk);
+	desk_name = GetDesktopName(m, desk);
 	if (desk_name != NULL)
 	{
 		tlabel = fxmalloc(strlen(desk_name)+50);
@@ -216,7 +217,8 @@ void CMD_WindowList(F_CMD_ARGS)
 	char scut = '0';              /* Current short cut key */
 	char *opts=NULL;
 	char *tok=NULL;
-	int desk = Scr.CurrentDesk;
+	struct monitor	*mon = monitor_get_current();
+	int desk = mon->virtual_scr.CurrentDesk;
 	unsigned long flags = SHOW_DEFAULT;
 	char *func = NULL;
 	char *ffunc = NULL;
@@ -302,7 +304,7 @@ void CMD_WindowList(F_CMD_ARGS)
 			}
 			else if (StrEquals(tok,"CurrentDesk"))
 			{
-				desk = Scr.CurrentDesk;
+				desk = mon->virtual_scr.CurrentDesk;
 				flags &= ~SHOW_ALLDESKS;
 			}
 			else if (StrEquals(tok,"NotAlphabetic"))
@@ -933,7 +935,7 @@ void CMD_WindowList(F_CMD_ARGS)
 					sprintf(loc, "+%d",
 						(Scr.Vx + t->g.frame.x +
 						 t->g.frame.width / 2) /
-						Scr.MyDisplayWidth);
+						mon->virtual_scr.MyDisplayWidth);
 					strcat(tname, loc);
 				}
 				if (flags & SHOW_PAGE_Y)
@@ -941,7 +943,7 @@ void CMD_WindowList(F_CMD_ARGS)
 					sprintf(loc, "+%d",
 						(Scr.Vy + t->g.frame.y +
 						 t->g.frame.height/2) /
-						Scr.MyDisplayHeight);
+						mon->virtual_scr.MyDisplayHeight);
 					strcat(tname, loc);
 				}
 				if (!(flags & NO_LAYER))

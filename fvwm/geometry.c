@@ -643,16 +643,18 @@ void maximize_adjust_offset(FvwmWindow *fw)
 	int off_y;
 	int dh;
 	int dw;
+	struct monitor	*m;
 
 	if (!IS_MAXIMIZED(fw))
 	{
 		/* otherwise we might corrupt the g.normal */
 		return;
 	}
+	m = fw->m;
 	off_x = fw->g.normal.x - fw->g.max.x - fw->g.max_offset.x;
 	off_y = fw->g.normal.y - fw->g.max.y - fw->g.max_offset.y;
-	dw = Scr.MyDisplayWidth;
-	dh = Scr.MyDisplayHeight;
+	dw = m->virtual_scr.MyDisplayWidth;
+	dh = m->virtual_scr.MyDisplayHeight;
 	if (off_x >= dw)
 	{
 		fw->g.normal.x -= (off_x / dw) * dw;
@@ -818,6 +820,7 @@ void constrain_size(
 	size_rect d;
 	size_rect old;
 	size_borders b;
+	struct monitor	*m = fw->m;
 
 	if (DO_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw) == 1)
 	{
@@ -940,7 +943,7 @@ void constrain_size(
 		}
 		else if (
 			xmotion < 0 && e->xmotion.x_root >=
-			Scr.MyDisplayWidth - round_up.width)
+			m->virtual_scr.MyDisplayWidth - round_up.width)
 		{
 			d.width -= inc.width;
 		}
@@ -950,7 +953,7 @@ void constrain_size(
 		}
 		else if (
 			ymotion < 0 && e->xmotion.y_root >=
-			Scr.MyDisplayHeight - round_up.height)
+			m->virtual_scr.MyDisplayHeight - round_up.height)
 		{
 			d.height -= inc.height;
 		}
@@ -1347,14 +1350,18 @@ void resize_icon_title_height(FvwmWindow *fw, int dh)
 void get_page_offset_rectangle(
 	int *ret_page_x, int *ret_page_y, rectangle *r)
 {
-	int xoff = Scr.Vx % Scr.MyDisplayWidth;
-	int yoff = Scr.Vy % Scr.MyDisplayHeight;
+	struct monitor	*m = monitor_get_current();
+
+	/* FIXME: broadcast if global monitor in use. */
+
+	int xoff = m->virtual_scr.Vx % m->virtual_scr.MyDisplayWidth;
+	int yoff = m->virtual_scr.Vy % m->virtual_scr.MyDisplayHeight;
 
 	/* maximize on the page where the center of the window is */
 	*ret_page_x = truncate_to_multiple(
-		r->x + r->width / 2 + xoff, Scr.MyDisplayWidth) - xoff;
+		r->x + r->width / 2 + xoff, m->virtual_scr.MyDisplayWidth) - xoff;
 	*ret_page_y = truncate_to_multiple(
-		r->y + r->height / 2 + yoff, Scr.MyDisplayHeight) - yoff;
+		r->y + r->height / 2 + yoff, m->virtual_scr.MyDisplayHeight) - yoff;
 
 	return;
 }

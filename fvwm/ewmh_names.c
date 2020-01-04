@@ -274,13 +274,16 @@ void EWMH_SetDesktopNames(void)
 	DesktopsInfo *d,*s;
 	unsigned char **names;
 	unsigned char *val;
+	struct monitor	*m = monitor_get_current();
+
+	/* FIXME: broadcast to all monitors if global is in use. */
 
 	if (!FiconvSupport)
 	{
 		return;
 	}
 
-	d = Scr.Desktops->next;
+	d = m->Desktops->next;
 	/* skip negative desk */
 	while (d != NULL && d->desk < 0)
 	{

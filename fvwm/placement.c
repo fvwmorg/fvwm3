@@ -358,7 +358,7 @@ static pl_penalty_t __pl_position_get_pos_simple(
 		fPointer = False;
 		ret_p->x = 0;
 		ret_p->y = 0;
-		n = GetMoveArguments(
+		n = GetMoveArguments(arg->place_fw,
 			&spos, arg->place_g.width, arg->place_g.height,
 			&ret_p->x, &ret_p->y, NULL, &fPointer, False);
 		spos = DEFAULT_PLACEMENT_POSITION_STRING;
@@ -605,7 +605,9 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 	Bool rc;
 	int x;
 	int y;
+	struct monitor	*m = NULL;
 
+	m = arg->place_fw->m;
 	x = arg->place_g.x;
 	y = arg->place_g.y;
 	if (arg->flags.use_percent == 1)
@@ -625,14 +627,14 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 		xnew = xtest;
 	}
 	/* test the borders of the working area */
-	xtest = arg->page_p1.x + Scr.Desktops->ewmh_working_area.x;
+	xtest = arg->page_p1.x + m->Desktops->ewmh_working_area.x;
 	if (xtest > x)
 	{
 		xnew = MIN(xnew, xtest);
 	}
 	xtest = arg->page_p1.x +
-		(Scr.Desktops->ewmh_working_area.x +
-		 Scr.Desktops->ewmh_working_area.width) -
+		(m->Desktops->ewmh_working_area.x +
+		 m->Desktops->ewmh_working_area.width) -
 		arg->place_g.width;
 	if (xtest > x)
 	{
@@ -740,6 +742,7 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 	int i;
 	rectangle g;
 	int y;
+	struct monitor	*mon;
 
 	y = arg->place_g.y;
 	if (arg->flags.use_percent == 1)
@@ -751,6 +754,8 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 		start = CP_GET_NEXT_STEP;
 	}
 
+	mon = arg->place_fw->m;
+
 	/* Test window at far bottom of screen */
 	ynew = arg->page_p2.y;
 	ytest = arg->page_p2.y - arg->place_g.height;
@@ -759,14 +764,14 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 		ynew = ytest;
 	}
 	/* test the borders of the working area */
-	ytest = arg->page_p1.y + Scr.Desktops->ewmh_working_area.y;
+	ytest = arg->page_p1.y + mon->Desktops->ewmh_working_area.y;
 	if (ytest > y)
 	{
 		ynew = MIN(ynew, ytest);
 	}
 	ytest = arg->screen_g.y +
-		(Scr.Desktops->ewmh_working_area.y +
-		 Scr.Desktops->ewmh_working_area.height) -
+		(mon->Desktops->ewmh_working_area.y +
+		 mon->Desktops->ewmh_working_area.height) -
 		arg->place_g.height;
 	if (ytest > y)
 	{
@@ -1405,6 +1410,7 @@ static int __place_get_nowm_pos(
 {
 	FvwmWindow *fw = exc->w.fw;
 	size_borders b;
+	struct monitor	*m = fw->m;
 
 	if (!win_opts->flags.do_override_ppos)
 	{
@@ -1493,9 +1499,9 @@ static int __place_get_nowm_pos(
 		 * then 2) readjust relative to the current page. */
 		if (attr_g->x < 0)
 		{
-			attr_g->x += Scr.MyDisplayWidth;
+			attr_g->x += m->virtual_scr.MyDisplayWidth;
 		}
-		attr_g->x %= Scr.MyDisplayWidth;
+		attr_g->x %= m->virtual_scr.MyDisplayWidth;
 		attr_g->x -= pdeltax;
 		/* Noticed a quirk here. With some apps (e.g., xman), we find
 		 * the placement has moved 1 pixel away from where we
@@ -1504,9 +1510,9 @@ static int __place_get_nowm_pos(
 		 * -borderwidth 100 */
 		if (attr_g->y < 0)
 		{
-			attr_g->y += Scr.MyDisplayHeight;
+			attr_g->y += m->virtual_scr.MyDisplayHeight;
 		}
-		attr_g->y %= Scr.MyDisplayHeight;
+		attr_g->y %= m->virtual_scr.MyDisplayHeight;
 		attr_g->y -= pdeltay;
 		if (attr_g->x != old_x || attr_g->y != old_y)
 		{
@@ -1708,7 +1714,8 @@ static int __place_window(
 	/* Don't alter the existing desk location during Capture/Recapture.  */
 	if (!win_opts->flags.do_override_ppos)
 	{
-		fw->Desk = Scr.CurrentDesk;
+		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
+		fw->Desk = m->virtual_scr.CurrentDesk;
 		reason->desk.reason = PR_DESK_CURRENT;
 	}
 	else
@@ -1717,7 +1724,8 @@ static int __place_window(
 	}
 	if (S_IS_STICKY_ACROSS_DESKS(SFC(pstyle->flags)))
 	{
-		fw->Desk = Scr.CurrentDesk;
+		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
+		fw->Desk = m->virtual_scr.CurrentDesk;
 		reason->desk.reason = PR_DESK_STICKY;
 	}
 	else if (SUSE_START_ON_DESK(&pstyle->flags) && start_style.desk &&
@@ -1808,11 +1816,13 @@ static int __place_window(
 	/*  RBW - 11/02/1998  --  I dont. */
 	if (!win_opts->flags.do_override_ppos && !DO_NOT_SHOW_ON_MAP(fw))
 	{
-		if (Scr.CurrentDesk != fw->Desk)
+		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
+
+		if (m->virtual_scr.CurrentDesk != fw->Desk)
 		{
 			reason->desk.do_switch_desk = 1;
 		}
-		goto_desk(fw->Desk);
+		goto_desk(fw->Desk, fw->m);
 	}
 	/* Don't move viewport if SkipMapping, or if recapturing the window,
 	 * adjust the coordinates later. Otherwise, just switch to the target
@@ -1828,8 +1838,8 @@ static int __place_window(
 			px = start_style.page_x - 1;
 			py = start_style.page_y - 1;
 			reason->page.reason = PR_PAGE_STYLE;
-			px *= Scr.MyDisplayWidth;
-			py *= Scr.MyDisplayHeight;
+			px *= fw->m->virtual_scr.MyDisplayWidth;
+			py *= fw->m->virtual_scr.MyDisplayHeight;
 			if (!win_opts->flags.do_override_ppos &&
 			    !DO_NOT_SHOW_ON_MAP(fw))
 			{
@@ -1839,8 +1849,8 @@ static int __place_window(
 			else if (flags.do_honor_starts_on_page)
 			{
 				/*  Save the delta from current page */
-				pdeltax = Scr.Vx - px;
-				pdeltay = Scr.Vy - py;
+				pdeltax = fw->m->virtual_scr.Vx - px;
+				pdeltay = fw->m->virtual_scr.Vy - py;
 				reason->page.do_honor_starts_on_page = 1;
 			}
 		}
@@ -2329,7 +2339,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		{
 			return;
 		}
-		fw->Desk = Scr.CurrentDesk;
+		fw->Desk = fw->m->virtual_scr.CurrentDesk;
 		get_icon_geometry(fw, &old_g);
 		SET_ICON_MOVED(fw, 0);
 		AutoPlaceIcon(fw, NULL, False);

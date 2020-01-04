@@ -174,12 +174,13 @@ static char *unspace_string(const char *str)
 static int
 SaveGlobalState(FILE *f)
 {
+	struct monitor	*m = monitor_get_current();
 	fprintf(f, "[GLOBAL]\n");
-	fprintf(f, "  [DESKTOP] %i\n", Scr.CurrentDesk);
+	fprintf(f, "  [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
 	fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
 		Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
 	fprintf(f, "  [SCROLL] %i %i %i %i %i\n",
-		Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollDelay,
+		m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY, Scr.ScrollDelay,
 		!!(Scr.flags.do_edge_wrap_x), !!(Scr.flags.do_edge_wrap_y));
 	fprintf(f, "  [MISC] %i %i %i\n",
 		Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
@@ -1177,7 +1178,7 @@ LoadGlobalState(char *filename)
 		else if (!strcmp(s1, "[DESKTOP]"))
 		{
 			sscanf(s, "%*s %i", &i1);
-			goto_desk(i1);
+			goto_desk(i1, monitor_get_current());
 		}
 		else if (!strcmp(s1, "[VIEWPORT]"))
 		{
@@ -1291,6 +1292,7 @@ void
 LoadWindowStates(char *filename)
 {
 	FILE *f;
+	struct monitor	*m = monitor_get_current();
 	char s[4096], s1[4096];
 	char *s2;
 	int i, pos, pos1;
@@ -1351,8 +1353,8 @@ LoadWindowStates(char *filename)
 			matches[num_match - 1].h = 100;
 			matches[num_match - 1].x_max = 0;
 			matches[num_match - 1].y_max = 0;
-			matches[num_match - 1].w_max = Scr.MyDisplayWidth;
-			matches[num_match - 1].h_max = Scr.MyDisplayHeight;
+			matches[num_match - 1].w_max = m->virtual_scr.MyDisplayWidth;
+			matches[num_match - 1].h_max = m->virtual_scr.MyDisplayHeight;
 			matches[num_match - 1].width_defect_max = 0;
 			matches[num_match - 1].height_defect_max = 0;
 			matches[num_match - 1].icon_x = 0;
@@ -1512,6 +1514,7 @@ MatchWinToSM(
 	initial_window_options_t *win_opts)
 {
 	int i;
+	struct monitor *m = monitor_get_current();
 
 	if (!does_file_version_match)
 	{
@@ -1613,7 +1616,7 @@ MatchWinToSM(
 			SET_STICKY_ACROSS_DESKS(
 				ewin, IS_STICKY_ACROSS_DESKS(&(matches[i])));
 			ewin->Desk = (IS_STICKY_ACROSS_DESKS(ewin)) ?
-				Scr.CurrentDesk : matches[i].desktop;
+				m->virtual_scr.CurrentDesk : matches[i].desktop;
 			set_layer(ewin, matches[i].layer);
 			set_default_layer(ewin, matches[i].default_layer);
 			ewin->placed_by_button = matches[i].placed_by_button;

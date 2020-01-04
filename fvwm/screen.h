@@ -299,40 +299,12 @@ typedef struct FvwmDecor
 	} flags;
 } FvwmDecor;
 
-typedef struct DesktopsInfo
-{
-	int desk;
-	char *name;
-
-	struct
-	{
-		int x;
-		int y;
-		int width;
-		int height;
-	} ewmh_working_area;
-	struct
-	{
-		int x;
-		int y;
-		int width;
-		int height;
-	} ewmh_dyn_working_area;
-
-	struct DesktopsInfo *next;
-} DesktopsInfo;
-
 typedef struct ScreenInfo
 {
 	unsigned long screen;
 	Screen *pscreen;
 	/* number of screens on display */
 	int NumberOfScreens;
-	/* my copy of DisplayWidth(dpy, screen) */
-	int MyDisplayWidth;
-	/* my copy of DisplayHeight(dpy, screen) */
-	int MyDisplayHeight;
-
 	/* the head of the fvwm window list */
 	FvwmWindow FvwmRoot;
 	/* the root window */
@@ -431,10 +403,6 @@ typedef struct ScreenInfo
 	FvwmWindow *StolenFocusFvwmWin;
 	FvwmWindow *focus_in_pending_window;
 	FvwmWindow *focus_in_requested_window;
-	/* #pixels to scroll on screen edge */
-	int EdgeScrollX;
-	/* #pixels to scroll on screen edge */
-	int EdgeScrollY;
 	/* buttons to grab in click to focus mode */
 	unsigned short buttons2grab;
 	int NumBoxes;
@@ -455,8 +423,6 @@ typedef struct ScreenInfo
 	int ScrollDelay;
 	int MoveThreshold;
 	int OpaqueSize;
-	/* The current desktop number */
-	int CurrentDesk;
 	/* colormap focus style */
 	int ColormapFocus;
 	/* Limit on colors used in pixmaps */
@@ -515,9 +481,6 @@ typedef struct ScreenInfo
 		unsigned is_wire_frame_displayed : 1;
 	} flags;
 
-	/* info for some desktops; the first entries should be generic info
-	 * correct for any desktop not in the list */
-	DesktopsInfo *Desktops;
 	/* the window of desktop type if any */
 	FvwmWindow *EwmhDesktop;
 	struct
