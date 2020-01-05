@@ -100,6 +100,7 @@ static void __drag_viewport(const exec_context_t *exc, int scroll_speed)
 	int y;
 	unsigned int button_mask = 0;
 	Bool is_finished = False;
+	struct monitor	*m = monitor_get_current();
 
 	if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
 	{
@@ -226,9 +227,9 @@ static void __drag_viewport(const exec_context_t *exc, int scroll_speed)
 		} /* switch */
 		if (x != old_x || y != old_y)
 		{
-			MoveViewport(
-				Scr.Vx + scroll_speed * (x - old_x),
-				Scr.Vy + scroll_speed * (y - old_y), False);
+			MoveViewport(m,
+				m->virtual_scr.Vx + scroll_speed * (x - old_x),
+				m->virtual_scr.Vy + scroll_speed * (y - old_y), False);
 			FlushAllMessageQueues();
 		}
 	} /* while*/
@@ -480,7 +481,7 @@ static void map_window(FvwmWindow *t)
  *   - unmaps from the bottom of the stack up
  *
  */
-static void UnmapDesk(int desk, Bool grab)
+static void UnmapDesk(struct monitor *m, int desk, Bool grab)
 {
 	FvwmWindow *t;
 	FvwmWindow *sf = get_focus_window();
@@ -495,6 +496,9 @@ static void UnmapDesk(int desk, Bool grab)
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
+			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+				continue;
+
 			if (t->Desk == desk)
 			{
 				if (sf == t)
@@ -533,7 +537,7 @@ static void UnmapDesk(int desk, Bool grab)
  *   - maps from the top of the stack down
  *
  */
-static void MapDesk(int desk, Bool grab)
+static void MapDesk(struct monitor *m, int desk, Bool grab)
 {
 	FvwmWindow *t;
 	FvwmWindow *FocusWin = NULL;
@@ -551,6 +555,9 @@ static void MapDesk(int desk, Bool grab)
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
+			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+				continue;
+
 			if (t->Desk == desk)
 			{
 				map_window(t);
@@ -665,7 +672,7 @@ int HandlePaging(
 		add_time = 0;
 		return 0;
 	}
-	if (Scr.VxMax == 0 && Scr.VyMax == 0)
+	if (m->virtual_scr.VxMax == 0 && m->virtual_scr.VyMax == 0)
 	{
 		is_timestamp_valid = False;
 		add_time = 0;
@@ -774,7 +781,7 @@ int HandlePaging(
 	{
 		*delta_x = 0;
 	}
-	if (Scr.VxMax == 0)
+	if (m->virtual_scr.VxMax == 0)
 	{
 		*delta_x = 0;
 	}
@@ -790,7 +797,7 @@ int HandlePaging(
 	{
 		*delta_y = 0;
 	}
-	if (Scr.VyMax == 0)
+	if (m->virtual_scr.VyMax == 0)
 	{
 		*delta_y = 0;
 	}
@@ -800,20 +807,20 @@ int HandlePaging(
 	{
 		if (!(Scr.flags.do_edge_wrap_x))
 		{
-			*delta_x = -Scr.Vx;
+			*delta_x = -m->virtual_scr.Vx;
 			*xl = x - *delta_x;
 		}
 		else
 		{
-			*delta_x += Scr.VxMax + m->virtual_scr.MyDisplayWidth;
+			*delta_x += m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
 			*xl = x + *delta_x % m->virtual_scr.MyDisplayWidth + HorWarpSize;
 		}
 	}
-	else if (Scr.Vx + *delta_x > m->virtual_scr.VxMax)
+	else if (m->virtual_scr.Vx + *delta_x > m->virtual_scr.VxMax)
 	{
 		if (!(Scr.flags.do_edge_wrap_x))
 		{
-			*delta_x = m->virtual_scr.VxMax - Scr.Vx;
+			*delta_x = m->virtual_scr.VxMax - m->virtual_scr.Vx;
 			*xl = x - *delta_x;
 		}
 		else
@@ -831,12 +838,12 @@ int HandlePaging(
 	{
 		if (!(Scr.flags.do_edge_wrap_y))
 		{
-			*delta_y = -Scr.Vy;
+			*delta_y = -m->virtual_scr.Vy;
 			*yt = y - *delta_y;
 		}
 		else
 		{
-			*delta_y += Scr.VyMax + m->virtual_scr.MyDisplayHeight;
+			*delta_y += m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
 			*yt = y + *delta_y % m->virtual_scr.MyDisplayHeight + VertWarpSize;
 		}
 	}
@@ -844,7 +851,7 @@ int HandlePaging(
 	{
 		if (!(Scr.flags.do_edge_wrap_y))
 		{
-			*delta_y = m->virtual_scr.VyMax - Scr.Vy;
+			*delta_y = m->virtual_scr.VyMax - m->virtual_scr.Vy;
 			*yt = y - *delta_y;
 		}
 		else
@@ -891,7 +898,8 @@ int HandlePaging(
 	/* Turn off the rubberband if its on */
 	switch_move_resize_grid(False);
 	FWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
-	MoveViewport(Scr.Vx + *delta_x,Scr.Vy + *delta_y,False);
+	MoveViewport(m, m->virtual_scr.Vx + *delta_x,
+			m->virtual_scr.Vy + *delta_y,False);
 	if (FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, xl, yt, &JunkX,
 		    &JunkY, &JunkMask) == False)
@@ -1212,10 +1220,9 @@ Bool is_pan_frame(Window w)
  *  Moves the viewport within the virtual desktop
  *
  */
-void MoveViewport(int newx, int newy, Bool grab)
+void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 {
 	FvwmWindow *t, *t1;
-	struct monitor	*m = monitor_get_current();
 	int deltax,deltay;
 	int PageTop, PageLeft;
 	int PageBottom, PageRight;
@@ -1414,7 +1421,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	{
 		MyXUngrabServer(dpy);
 	}
-	EWMH_SetDesktopViewPort();
+	EWMH_SetDesktopViewPort(m);
 
 	return;
 }
@@ -1424,6 +1431,9 @@ void goto_desk(int desk, struct monitor *m)
 	/* RBW - the unmapping operations are now removed to their own
 	 * functions so they can also be used by the new GoToDeskAndPage
 	 * command. */
+
+	/* FIXME: needs to broadcast monitors if global. */
+
 	if (m == NULL)
 		return;
 
@@ -1433,9 +1443,9 @@ void goto_desk(int desk, struct monitor *m)
 		m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
 		m->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
 		m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
-		UnmapDesk(m->virtual_scr.CurrentDesk, True);
+		UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
 		m->virtual_scr.CurrentDesk = desk;
-		MapDesk(desk, True);
+		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
@@ -1448,7 +1458,7 @@ void goto_desk(int desk, struct monitor *m)
 		 * go :-( This should be fixed in the pager, but right now the
 		 * pager doesn't maintain the stacking order. */
 		BroadcastRestackAllWindows();
-		EWMH_SetCurrentDesktop();
+		EWMH_SetCurrentDesktop(m);
 	}
 
 	return;
@@ -1525,7 +1535,7 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 	wrapy = 0;
 	limitdeskx = 1;
 	limitdesky = 1;
-	m = fw->m ? fw->m : monitor_get_current();
+	m = (fw && fw->m) ? fw->m : monitor_get_current();
 	for (; ; action = taction)
 	{
 		int do_reverse;
@@ -2047,12 +2057,25 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 
 void CMD_DesktopConfiguration(F_CMD_ARGS)
 {
+	FvwmWindow	*t;
+	struct monitor	*m;
+
 	if (action == NULL) {
 		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action is required");
 		return;
 	}
 
 	monitor_init_contents(action);
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		fprintf(stderr, "I know about: %s\n", m->name);
+		EWMH_Init(m);
+	}
+
+	for (t = Scr.FvwmRoot.next; t; t = t->next)
+		UPDATE_FVWM_SCREEN(t);
+
+	execute_function_override_window(NULL, NULL, "All Recapture", 0, NULL);
 }
 
 void CMD_DesktopSize(F_CMD_ARGS)
@@ -2083,7 +2106,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 
 	/* FIXME: likely needs per-monitor considerations!!! */
 	checkPanFrames();
-	EWMH_SetDesktopGeometry();
+	EWMH_SetDesktopGeometry(m);
 
 	return;
 }
@@ -2095,8 +2118,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
  */
 void CMD_GotoDesk(F_CMD_ARGS)
 {
-	FvwmWindow * const fw = exc->w.fw;
-	struct monitor	*m = monitor_get_current(); //fw->m;
+	struct monitor	*m = monitor_get_current();
 
 	goto_desk(GetDeskNumber(m, action, m->virtual_scr.CurrentDesk), m);
 
@@ -2146,17 +2168,17 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	is_new_desk = (m->virtual_scr.CurrentDesk != val[0]);
 	if (is_new_desk)
 	{
-		UnmapDesk(m->virtual_scr.CurrentDesk, True);
+		UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
 	}
 	m->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
 	m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
-	MoveViewport(val[1], val[2], True);
+	MoveViewport(m, val[1], val[2], True);
 	if (is_new_desk)
 	{
 		m->virtual_scr.prev_desk = m->virtual_scr.CurrentDesk;
 		m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
 		m->virtual_scr.CurrentDesk = val[0];
-		MapDesk(val[0], True);
+		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
@@ -2174,7 +2196,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	{
 		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
 	}
-	EWMH_SetCurrentDesktop();
+	EWMH_SetCurrentDesktop(m);
 
 	return;
 }
@@ -2182,7 +2204,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 void CMD_GotoPage(F_CMD_ARGS)
 {
 	FvwmWindow * const fw = exc->w.fw;
-	struct monitor	*m = fw->m;
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 	int x;
 	int y;
 
@@ -2211,7 +2233,7 @@ void CMD_GotoPage(F_CMD_ARGS)
 	{
 		y = m->virtual_scr.VyMax;
 	}
-	MoveViewport(x,y,True);
+	MoveViewport(m, x,y,True);
 
 	return;
 }
@@ -2259,21 +2281,21 @@ void CMD_Scroll(F_CMD_ARGS)
 	}
 	if ((val1 > -100000)&&(val1 < 100000))
 	{
-		x = Scr.Vx + val1*val1_unit/100;
+		x = m->virtual_scr.Vx + val1*val1_unit/100;
 	}
 	else
 	{
-		x = Scr.Vx + (val1/1000)*val1_unit/100;
+		x = m->virtual_scr.Vx + (val1/1000)*val1_unit/100;
 	}
 	if ((val2 > -100000)&&(val2 < 100000))
 	{
-		y=Scr.Vy + val2*val2_unit/100;
+		y=m->virtual_scr.Vy + val2*val2_unit/100;
 	}
 	else
 	{
-		y = Scr.Vy + (val2/1000)*val2_unit/100;
+		y = m->virtual_scr.Vy + (val2/1000)*val2_unit/100;
 	}
-	if (((val1 <= -100000)||(val1 >= 100000))&&(x>Scr.VxMax))
+	if (((val1 <= -100000)||(val1 >= 100000))&&(x>m->virtual_scr.VxMax))
 	{
 		int xpixels;
 
@@ -2317,7 +2339,7 @@ void CMD_Scroll(F_CMD_ARGS)
 			x=m->virtual_scr.VxMax;
 		}
 	}
-	MoveViewport(x,y,True);
+	MoveViewport(m, x,y,True);
 
 	return;
 }
@@ -2423,7 +2445,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		BroadcastConfigInfoString(msg);
 		free(msg);
 	}
-	EWMH_SetDesktopNames();
+	EWMH_SetDesktopNames(m);
 
 	return;
 }

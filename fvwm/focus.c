@@ -478,11 +478,11 @@ static void warp_to_fvwm_window(
 		cx = t->g.frame.x + t->g.frame.width/2;
 		cy = t->g.frame.y + t->g.frame.height/2;
 	}
-	dx = (cx + Scr.Vx) / m->virtual_scr.MyDisplayWidth * m->virtual_scr.MyDisplayWidth;
-	dy = (cy + Scr.Vy) / m->virtual_scr.MyDisplayHeight * m->virtual_scr.MyDisplayHeight;
-	if (dx != Scr.Vx || dy != Scr.Vy)
+	dx = (cx + m->virtual_scr.Vx) / m->virtual_scr.MyDisplayWidth * m->virtual_scr.MyDisplayWidth;
+	dy = (cy + m->virtual_scr.Vy) / m->virtual_scr.MyDisplayHeight * m->virtual_scr.MyDisplayHeight;
+	if (dx != m->virtual_scr.Vx || dy != m->virtual_scr.Vy)
 	{
-		MoveViewport(dx, dy, True);
+		MoveViewport(m, dx, dy, True);
 	}
 	if (IS_ICONIFIED(t))
 	{
@@ -707,7 +707,7 @@ static void __activate_window_by_command(
 				m->virtual_scr.MyDisplayWidth;
 			dy = ((cy + m->virtual_scr.Vy) / m->virtual_scr.MyDisplayHeight) *
 				m->virtual_scr.MyDisplayHeight;
-			MoveViewport(dx, dy, True);
+			MoveViewport(m, dx, dy, True);
 		}
 #if 0 /* can not happen */
 		/* If the window is still not visible, make it visible! */

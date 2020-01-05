@@ -88,8 +88,11 @@ void gravity_add_decoration(
 
 void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
 {
-	rel_g->x = abs_g->x - Scr.Vx;
-	rel_g->y = abs_g->y - Scr.Vy;
+	/* FIXME - not sure this is correct. */
+	struct monitor	*m = monitor_get_current();
+
+	rel_g->x = abs_g->x - m->virtual_scr.Vx;
+	rel_g->y = abs_g->y - m->virtual_scr.Vy;
 	rel_g->width = abs_g->width;
 	rel_g->height = abs_g->height;
 
@@ -98,8 +101,11 @@ void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
 
 void get_absolute_geometry(rectangle *abs_g, rectangle *rel_g)
 {
-	abs_g->x = rel_g->x + Scr.Vx;
-	abs_g->y = rel_g->y + Scr.Vy;
+	/* FIXME - not sure this is correct. */
+	struct monitor	*m = monitor_get_current();
+
+	abs_g->x = rel_g->x + m->virtual_scr.Vx;
+	abs_g->y = rel_g->y + m->virtual_scr.Vy;
 	abs_g->width = rel_g->width;
 	abs_g->height = rel_g->height;
 
@@ -594,12 +600,13 @@ void update_absolute_geometry(FvwmWindow *fw)
 {
 	rectangle *dest_g;
 	rectangle frame_g;
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* store orig values in absolute coords */
 	dest_g = (IS_MAXIMIZED(fw)) ? &fw->g.max : &fw->g.normal;
 	frame_g = *dest_g;
-	dest_g->x = fw->g.frame.x + Scr.Vx;
-	dest_g->y = fw->g.frame.y + Scr.Vy;
+	dest_g->x = fw->g.frame.x + m->virtual_scr.Vx;
+	dest_g->y = fw->g.frame.y + m->virtual_scr.Vy;
 	dest_g->width = fw->g.frame.width;
 	dest_g->height = fw->g.frame.height;
 	if (IS_SHADED(fw))

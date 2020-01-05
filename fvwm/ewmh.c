@@ -491,10 +491,9 @@ int check_desk(void)
 	return d;
 }
 
-void EWMH_SetCurrentDesktop(void)
+void EWMH_SetCurrentDesktop(struct monitor *m)
 {
 	long val;
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME: this should broadcast to all monitors. */
 
@@ -509,7 +508,7 @@ void EWMH_SetCurrentDesktop(void)
 	    (ewmhc.NumberOfDesktops != ewmhc.CurrentNumberOfDesktops &&
 	     val < ewmhc.CurrentNumberOfDesktops))
 	{
-		EWMH_SetNumberOfDesktops();
+		EWMH_SetNumberOfDesktops(m);
 	}
 
 	ewmh_ChangeProperty(Scr.Root,"_NET_CURRENT_DESKTOP",
@@ -519,10 +518,9 @@ void EWMH_SetCurrentDesktop(void)
 	return;
 }
 
-void EWMH_SetNumberOfDesktops(void)
+void EWMH_SetNumberOfDesktops(struct monitor *m)
 {
 	long val;
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME: needs broadcasting to each monitor if global. */
 
@@ -553,20 +551,20 @@ void EWMH_SetNumberOfDesktops(void)
 	ewmh_ChangeProperty(Scr.Root, "_NET_NUMBER_OF_DESKTOPS",
 			    EWMH_ATOM_LIST_CLIENT_ROOT,
 			    (unsigned char *)&val, 1);
-	ewmh_SetWorkArea();
+	ewmh_SetWorkArea(m);
 
 	return;
 }
 
-void EWMH_SetDesktopViewPort(void)
+void EWMH_SetDesktopViewPort(struct monitor *m)
 {
 	long val[256][2]; /* no more than 256 desktops */
 	int i = 0;
 
 	while(i < ewmhc.NumberOfDesktops && i < 256)
 	{
-		val[i][0] = Scr.Vx;
-		val[i][1] = Scr.Vy;
+		val[i][0] = m->virtual_scr.Vx;
+		val[i][1] = m->virtual_scr.Vy;
 		i++;
 	}
 	ewmh_ChangeProperty(
@@ -576,10 +574,9 @@ void EWMH_SetDesktopViewPort(void)
 	return;
 }
 
-void EWMH_SetDesktopGeometry(void)
+void EWMH_SetDesktopGeometry(struct monitor *m)
 {
 	long val[2];
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME: needs broadcast for global. */
 
@@ -615,7 +612,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fw)
 	else if (desk >= ewmhc.CurrentNumberOfDesktops)
 	{
 		ewmhc.NeedsToCheckDesk = True;
-		EWMH_SetNumberOfDesktops();
+		EWMH_SetNumberOfDesktops(fw->m);
 	}
 	ewmh_ChangeProperty(
 		FW_W(fw), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
@@ -876,7 +873,7 @@ void EWMH_ManageKdeSysTray(Window w, int type)
 
 /**** Client lists ****/
 
-void EWMH_SetClientList(void)
+void EWMH_SetClientList(struct monitor *m)
 {
 	Window *wl = NULL;
 	FvwmWindow *fw;
@@ -906,7 +903,7 @@ void EWMH_SetClientList(void)
 	return;
 }
 
-void EWMH_SetClientListStacking(void)
+void EWMH_SetClientListStacking(struct monitor *m)
 {
 	Window *wl = NULL;
 	FvwmWindow *fw;
@@ -944,11 +941,10 @@ void EWMH_SetClientListStacking(void)
 /**** Working Area stuff ****/
 /**** At present time we support only sticky windows with strut ****/
 
-void ewmh_SetWorkArea(void)
+void ewmh_SetWorkArea(struct monitor *m)
 {
 	long val[256][4]; /* no more than 256 desktops */
 	int i = 0;
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME:  needs broadcast if monitor is global. */
 
@@ -967,7 +963,7 @@ void ewmh_SetWorkArea(void)
 	return;
 }
 
-void ewmh_ComputeAndSetWorkArea(void)
+void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 {
 	int left = ewmhc.BaseStrut.left;
 	int right = ewmhc.BaseStrut.right;
@@ -975,7 +971,6 @@ void ewmh_ComputeAndSetWorkArea(void)
 	int bottom = ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
@@ -1008,13 +1003,13 @@ void ewmh_ComputeAndSetWorkArea(void)
 		m->Desktops->ewmh_working_area.y = y;
 		m->Desktops->ewmh_working_area.width = width;
 		m->Desktops->ewmh_working_area.height = height;
-		ewmh_SetWorkArea();
+		ewmh_SetWorkArea(m);
 	}
 
 	return;
 }
 
-void ewmh_HandleDynamicWorkArea(void)
+void ewmh_HandleDynamicWorkArea(struct monitor *m)
 {
 	int dyn_left = ewmhc.BaseStrut.left;
 	int dyn_right = ewmhc.BaseStrut.right;
@@ -1022,7 +1017,6 @@ void ewmh_HandleDynamicWorkArea(void)
 	int dyn_bottom = ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
@@ -1061,10 +1055,10 @@ void ewmh_HandleDynamicWorkArea(void)
 	return;
 }
 
-void EWMH_UpdateWorkArea(void)
+void EWMH_UpdateWorkArea(struct monitor *m)
 {
-	ewmh_ComputeAndSetWorkArea();
-	ewmh_HandleDynamicWorkArea();
+	ewmh_ComputeAndSetWorkArea(m);
+	ewmh_HandleDynamicWorkArea(m);
 
 	return;
 }
@@ -1777,14 +1771,16 @@ void EWMH_DestroyWindow(FvwmWindow *fw)
 /* a window has been destroyed (unmap/reparent/destroy) */
 void EWMH_WindowDestroyed(void)
 {
-	EWMH_SetClientList();
-	EWMH_SetClientListStacking();
+	struct monitor	*m = monitor_get_current();
+
+	EWMH_SetClientList(m);
+	EWMH_SetClientListStacking(m);
 	if (ewmhc.NeedsToCheckDesk)
 	{
-		EWMH_SetNumberOfDesktops();
+		EWMH_SetNumberOfDesktops(m);
 	}
-	ewmh_ComputeAndSetWorkArea();
-	ewmh_HandleDynamicWorkArea();
+	ewmh_ComputeAndSetWorkArea(m);
+	ewmh_HandleDynamicWorkArea(m);
 
 	return;
 }
@@ -1846,7 +1842,7 @@ void clean_up(void)
 	return;
 }
 
-void EWMH_Init(void)
+void EWMH_Init(struct monitor *m)
 {
 	int i;
 	int supported_count = 0;
@@ -1898,14 +1894,14 @@ void EWMH_Init(void)
 
 	clean_up();
 
-	EWMH_SetDesktopNames();
-	EWMH_SetCurrentDesktop();
-	EWMH_SetNumberOfDesktops();
-	EWMH_SetDesktopViewPort();
-	EWMH_SetDesktopGeometry();
-	EWMH_SetClientList();
-	EWMH_SetClientListStacking();
-	ewmh_ComputeAndSetWorkArea();
+	EWMH_SetDesktopNames(m);
+	EWMH_SetCurrentDesktop(m);
+	EWMH_SetNumberOfDesktops(m);
+	EWMH_SetDesktopViewPort(m);
+	EWMH_SetDesktopGeometry(m);
+	EWMH_SetClientList(m);
+	EWMH_SetClientListStacking(m);
+	ewmh_ComputeAndSetWorkArea(m);
 
 	return;
 }

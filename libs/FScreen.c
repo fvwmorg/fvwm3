@@ -217,7 +217,7 @@ monitor_init_contents(const char *name)
 	 * Otherwise, we initialise the specific monitors with their own
 	 * values, if "per-monitor" has been specified.
 	 */
-	struct monitor	*m = NULL;
+	struct monitor	*m = NULL, *m2 = NULL;
 	int	 	 w;
 	int	 	 h;
 
@@ -225,15 +225,38 @@ monitor_init_contents(const char *name)
 		fprintf(stderr, "%s: init monitor for global\n", __func__);
 		w = DisplayWidth(disp, DefaultScreen(disp));
 		h = DisplayHeight(disp, DefaultScreen(disp));
+		m = TAILQ_FIRST(&monitor_q);
 
-		TAILQ_FOREACH(m, &monitor_q, entry)
-			monitor_init_one(m, w, h);
+		if (m->Desktops_cpy != NULL) {
+			m->Desktops = m->Desktops_cpy;
+			memcpy(&m->coord, &m->coord_cpy, sizeof(m->coord));
+		}
+		monitor_init_one(m, w, h);
+		m->flags &= ~MONITOR_TRACKING_M;
+		m->flags |= MONITOR_TRACKING_G;
+		m->Desktops_cpy = m->Desktops;
+
+		TAILQ_FOREACH(m2, &monitor_q, entry) {
+			/* We've already set the first monitor. */
+			if (m == m2)
+				continue;
+			memcpy(&m->coord, &m->coord_cpy, sizeof(m->coord));
+			m2->Desktops = m->Desktops_cpy;
+			m2->flags &= ~MONITOR_TRACKING_M;
+			m2->flags |= MONITOR_TRACKING_G;
+			memcpy(&m2->virtual_scr, &m->virtual_scr,
+				sizeof(m->virtual_scr));
+		}
 	}
 
 	if (strcmp(name, "per-monitor") == 0) {
 		fprintf(stderr, "%s: init monitor for per-monitor\n", __func__);
-		TAILQ_FOREACH(m, &monitor_q, entry)
-			monitor_init_one(m, m->coord.w, m->coord.h);
+		TAILQ_FOREACH(m2, &monitor_q, entry) {
+			memcpy(&m2->coord, &m2->coord_cpy, sizeof(m2->coord));
+			//monitor_init_one(m, m->coord.w, m->coord.h);
+			m2->flags &= ~MONITOR_TRACKING_G;
+			m2->flags |= MONITOR_TRACKING_M;
+		}
 	}
 }
 
@@ -326,6 +349,8 @@ void FScreenInit(Display *dpy)
 		no_of_screens++;
 	}
 	XRRFreeScreenResources(res);
+
+	m = TAILQ_FIRST(&monitor_q);
 	monitor_init_contents("global");
 
 	return;
@@ -352,6 +377,8 @@ monitor_create_randr_region(struct monitor *m, const char *name,
 	fprintf(stderr, "Monitor: %s %s (x: %d, y: %d, w: %d, h: %d)\n",
 		name, is_primary ? "(PRIMARY)" : "",
 		coord->x, coord->y, coord->w, coord->h);
+
+	memcpy(&m->coord_cpy, coord, sizeof(*coord));
 
 	if (monitor_check_stale(m))
 		free(m->name);

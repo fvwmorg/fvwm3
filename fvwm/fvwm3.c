@@ -532,10 +532,11 @@ char *get_display_name(char *display_name, int screen_num)
 void Done(int restart, char *command)
 {
 	const char *exit_func_name;
+	struct monitor	*m = monitor_get_current();
 
 	if (!restart)
 	{
-		MoveViewport(0,0,False);
+		MoveViewport(m, 0,0,False);
 	}
 	/* migo (03/Jul/1999): execute [Session]ExitFunction */
 	exit_func_name = get_init_function_name(2);
@@ -594,7 +595,7 @@ void Done(int restart, char *command)
 		 * window position information out of sync. There may be a
 		 * better way to do this (i.e., adjust the Restart code), but
 		 * this works for now. */
-		MoveViewport(0,0,False);
+		MoveViewport(m, 0,0,False);
 		Reborder();
 
 		/* Really make sure that the connection is closed and cleared!
@@ -1767,6 +1768,7 @@ int main(int argc, char **argv)
 	PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
+	struct monitor	*m = NULL;
 
 	DBUG("main", "Entered, about to parse args");
 
@@ -2498,7 +2500,8 @@ int main(int argc, char **argv)
 	Scr.gray_bitmap =
 		XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
 
-	EWMH_Init();
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		EWMH_Init(m);
 
 	DBUG("main", "Setting up rc file defaults...");
 	SetRCDefaults();

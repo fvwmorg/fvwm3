@@ -933,7 +933,7 @@ void CMD_WindowList(F_CMD_ARGS)
 				if (flags & SHOW_PAGE_X)
 				{
 					sprintf(loc, "+%d",
-						(Scr.Vx + t->g.frame.x +
+						(mon->virtual_scr.Vx + t->g.frame.x +
 						 t->g.frame.width / 2) /
 						mon->virtual_scr.MyDisplayWidth);
 					strcat(tname, loc);
@@ -941,7 +941,7 @@ void CMD_WindowList(F_CMD_ARGS)
 				if (flags & SHOW_PAGE_Y)
 				{
 					sprintf(loc, "+%d",
-						(Scr.Vy + t->g.frame.y +
+						(mon->virtual_scr.Vy + t->g.frame.y +
 						 t->g.frame.height/2) /
 						mon->virtual_scr.MyDisplayHeight);
 					strcat(tname, loc);

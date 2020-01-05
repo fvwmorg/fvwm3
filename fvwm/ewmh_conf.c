@@ -128,7 +128,7 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 	if (num == 3)
 	{
 		ewmhc.NeedsToCheckDesk = True;
-		EWMH_SetNumberOfDesktops();
+		EWMH_SetNumberOfDesktops(monitor_get_current());
 	}
 }
 
@@ -154,7 +154,7 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 		ewmhc.BaseStrut.top    = val[2];
 		ewmhc.BaseStrut.bottom = val[3];
 
-		EWMH_UpdateWorkArea();
+		EWMH_UpdateWorkArea(monitor_get_current());
 	}
 }
 /*

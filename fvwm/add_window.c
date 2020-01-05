@@ -141,7 +141,7 @@ static void CaptureOneWindow(
 	Window keep_on_top_win, Window parent_win, Bool is_recapture)
 {
 	Window w;
-	struct monitor	*m = fw->m;
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 	unsigned long data[1];
 	initial_window_options_t win_opts;
 	evh_args_t ea;
@@ -2521,6 +2521,8 @@ FvwmWindow *AddWindow(
 	used_sm = MatchWinToSM(fw, &state_args, win_opts);
 	if (used_sm)
 	{
+		struct monitor	*tm = monitor_get_current();
+
 		/* read the requested absolute geometry */
 		gravity_translate_to_northwest_geometry_no_bw(
 			fw->hints.win_gravity, fw, &fw->g.normal,
@@ -2529,8 +2531,8 @@ FvwmWindow *AddWindow(
 			fw->hints.win_gravity, &fw->g.normal,
 			b.total_size.width, b.total_size.height);
 		fw->g.frame = fw->g.normal;
-		fw->g.frame.x -= Scr.Vx;
-		fw->g.frame.y -= Scr.Vy;
+		fw->g.frame.x -= tm->virtual_scr.Vx;
+		fw->g.frame.y -= tm->virtual_scr.Vy;
 
 		/****** calculate frame size ******/
 		setup_frame_size_limits(fw, &style);

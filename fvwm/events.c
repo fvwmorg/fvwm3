@@ -3231,8 +3231,10 @@ void HandleMapRequestKeepRaised(
 		SET_MAPPED(fw, 1);
 		SET_MAP_PENDING(fw, 0);
 	}
-	EWMH_SetClientList();
-	EWMH_SetClientListStacking();
+	if (m == NULL || ((m = fw->m) == NULL))
+		m = monitor_get_current();
+	EWMH_SetClientList(m);
+	EWMH_SetClientListStacking(m);
 
 	return;
 }

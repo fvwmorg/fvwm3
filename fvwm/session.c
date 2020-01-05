@@ -178,7 +178,7 @@ SaveGlobalState(FILE *f)
 	fprintf(f, "[GLOBAL]\n");
 	fprintf(f, "  [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
 	fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
-		Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
+		m->virtual_scr.Vx, m->virtual_scr.Vy, m->virtual_scr.VxMax, m->virtual_scr.VyMax);
 	fprintf(f, "  [SCROLL] %i %i %i %i %i\n",
 		m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY, Scr.ScrollDelay,
 		!!(Scr.flags.do_edge_wrap_x), !!(Scr.flags.do_edge_wrap_y));
@@ -408,6 +408,7 @@ SaveWindowStates(FILE *f)
 	FvwmWindow *ewin;
 	rectangle save_g;
 	rectangle ig;
+	struct monitor	*m = monitor_get_current();
 	int i;
 	int layer;
 
@@ -534,8 +535,8 @@ SaveWindowStates(FILE *f)
 			&ewin->g.normal);
 		if (IS_STICKY_ACROSS_PAGES(ewin))
 		{
-			save_g.x -= Scr.Vx;
-			save_g.y -= Scr.Vy;
+			save_g.x -= m->virtual_scr.Vx;
+			save_g.y -= m->virtual_scr.Vy;
 		}
 		get_visible_icon_geometry(ewin, &ig);
 		fprintf(
@@ -545,8 +546,8 @@ SaveWindowStates(FILE *f)
 			ewin->g.max.x, ewin->g.max.y, ewin->g.max.width,
 			ewin->g.max.height, ewin->g.max_defect.width,
 			ewin->g.max_defect.height,
-			ig.x + ((!is_icon_sticky_across_pages) ? Scr.Vx : 0),
-			ig.y + ((!is_icon_sticky_across_pages) ? Scr.Vy : 0),
+			ig.x + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vx : 0),
+			ig.y + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vy : 0),
 			ewin->hints.win_gravity,
 			ewin->g.max_offset.x, ewin->g.max_offset.y);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
@@ -1190,7 +1191,7 @@ LoadGlobalState(char *filename)
 			 Scr.VxMax = i3;
 			 Scr.VyMax = i4;
 			*/
-			MoveViewport(i1, i2, True);
+			MoveViewport(monitor_get_current(), i1, i2, True);
 		}
 		else if (!strcmp(s1, "[KEY]"))
 		{
@@ -1594,8 +1595,8 @@ MatchWinToSM(
 				      IS_ICON_STICKY_ACROSS_PAGES(
 					      &(matches[i]))))
 				{
-					win_opts->initial_icon_x -= Scr.Vx;
-					win_opts->initial_icon_y -= Scr.Vy;
+					win_opts->initial_icon_x -= m->virtual_scr.Vx;
+					win_opts->initial_icon_y -= m->virtual_scr.Vy;
 				}
 			}
 			ewin->g.normal.x = matches[i].x;
@@ -1660,7 +1661,7 @@ RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 		save_state_file(filename);
 		set_sm_properties(sm_conn, filename, FSmRestartImmediately);
 
-		MoveViewport(0, 0, False);
+		MoveViewport(monitor_get_current(), 0, 0, False);
 		Reborder();
 
 		CloseICCCM2();

@@ -577,7 +577,7 @@ static void __restack_window_list(
 		XRestackWindows(dpy, wins, count);
 	}
 	free(wins);
-	EWMH_SetClientListStacking();
+	EWMH_SetClientListStacking(monitor_get_current());
 	if (do_broadcast_all)
 	{
 		/* send out M_RESTACK for all windows, to make sure we don't

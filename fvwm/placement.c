@@ -1835,15 +1835,17 @@ static int __place_window(
 	{
 		if (start_style.page_x != 0 && start_style.page_y != 0)
 		{
+			struct monitor	*m = (fw && fw->m) ? fw->m :
+				monitor_get_current();
 			px = start_style.page_x - 1;
 			py = start_style.page_y - 1;
 			reason->page.reason = PR_PAGE_STYLE;
-			px *= fw->m->virtual_scr.MyDisplayWidth;
-			py *= fw->m->virtual_scr.MyDisplayHeight;
+			px *= m->virtual_scr.MyDisplayWidth;
+			py *= m->virtual_scr.MyDisplayHeight;
 			if (!win_opts->flags.do_override_ppos &&
 			    !DO_NOT_SHOW_ON_MAP(fw))
 			{
-				MoveViewport(px,py,True);
+				MoveViewport(m, px,py,True);
 				reason->page.do_switch_page = 1;
 			}
 			else if (flags.do_honor_starts_on_page)

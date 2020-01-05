@@ -410,13 +410,6 @@ typedef struct ScreenInfo
 	int cascade_x;
 	int cascade_y;
 	FvwmWindow *cascade_window;
-	/* Max location for top left of virt desk*/
-	int VxMax;
-	int VyMax;
-	/* Current loc for top left of virt desk */
-	int Vx;
-	int Vy;
-
 	/*Max button-click delay for Function built-in*/
 	int ClickTime;
 	/* resistance to scrolling in desktop */
@@ -496,8 +489,10 @@ typedef struct ScreenInfo
 		struct monitor *mnew; \
 		get_unshaded_geometry((fw), &g); \
 		mnew = FindScreenOfXY(g.x, g.y); \
-		if (mnew == NULL) \
+		if (mnew == NULL) { \
+			fprintf(stderr, "CRAP - WHICH MONITOR?\n"); \
 			mnew = monitor_get_current(); \
+		} \
 		if (mnew != NULL) \
 			(fw)->m = mnew; \
 	} while(0)

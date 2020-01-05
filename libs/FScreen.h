@@ -54,16 +54,22 @@ typedef struct DesktopsInfo
 	struct DesktopsInfo *next;
 } DesktopsInfo;
 
+#define MONITOR_TRACKING_G 0x1
+#define MONITOR_TRACKING_M 0x2
+
 struct monitor {
 	char		*name;
 	int		 is_primary;
 	struct coord 	 coord;
+	struct coord 	 coord_cpy;
 	int 		 number;
+	int		 flags;
 
 	/* info for some desktops; the first entries should be generic info
          * correct for any desktop not in the list
          */
         DesktopsInfo    *Desktops;
+        DesktopsInfo    *Desktops_cpy;
 
         /* Information about EWMH. */
         struct {

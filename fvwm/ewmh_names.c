@@ -265,7 +265,7 @@ int EWMH_WMName(
 /*
  * set the desktop name
  */
-void EWMH_SetDesktopNames(void)
+void EWMH_SetDesktopNames(struct monitor *m)
 {
 	int nbr = 0;
 	int len = 0;
@@ -274,7 +274,6 @@ void EWMH_SetDesktopNames(void)
 	DesktopsInfo *d,*s;
 	unsigned char **names;
 	unsigned char *val;
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME: broadcast to all monitors if global is in use. */
 

@@ -1791,8 +1791,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		get_page_offset_rectangle(&page_x, &page_y, &t);
 		if (!get_page_arguments(fw, action, &page_x, &page_y))
 		{
-			page_x = Scr.Vx;
-			page_y = Scr.Vy;
+			page_x = m->virtual_scr.Vx;
+			page_y = m->virtual_scr.Vy;
 		}
 		s.x = page_x - m->virtual_scr.Vx;
 		s.y = page_y - m->virtual_scr.Vy;
@@ -2337,9 +2337,9 @@ Bool __move_loop(
 	unsigned int button_mask = 0;
 	FvwmWindow fw_copy;
 	int dx;
-	int dy;;
-	const int vx = Scr.Vx;
-	const int vy = Scr.Vy;
+	int dy;
+	int vx;
+	int vy;
 	int xl_orig = 0;
 	int yt_orig = 0;
 	int cnx = 0;
@@ -2368,6 +2368,8 @@ Bool __move_loop(
 	if (fw->m == NULL)
 		UPDATE_FVWM_SCREEN(fw);
 	m = fw->m;
+	vx = m->virtual_scr.Vx;
+	vy = m->virtual_scr.Vy;
 	dx = m->virtual_scr.EdgeScrollX ? m->virtual_scr.EdgeScrollX : m->virtual_scr.MyDisplayWidth;
 	dy = m->virtual_scr.EdgeScrollY ? m->virtual_scr.EdgeScrollY : m->virtual_scr.MyDisplayHeight;
 
@@ -2724,8 +2726,8 @@ Bool __move_loop(
 				xl = xl2;
 				yt = yt2;
 			}
-			if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx ||
-			    vy != Scr.Vy || was_snapped)
+			if (xl != xl_orig || yt != yt_orig || vx != m->virtual_scr.Vx ||
+			    vy != m->virtual_scr.Vy || was_snapped)
 			{
 				/* only snap if the window actually moved! */
 				if (do_snap)
@@ -2930,9 +2932,9 @@ Bool __move_loop(
 	}
 	if (is_aborted || bad_window == FW_W(fw))
 	{
-		if (vx != Scr.Vx || vy != Scr.Vy)
+		if (vx != m->virtual_scr.Vx || vy != m->virtual_scr.Vy)
 		{
-			MoveViewport(vx, vy, False);
+			MoveViewport(m, vx, vy, False);
 		}
 		if (is_aborted && do_move_opaque)
 		{
@@ -3637,10 +3639,11 @@ static Bool __resize_window(F_CMD_ARGS)
 	Bool called_from_title = False;
 	int x,y,delta_x,delta_y,stashed_x,stashed_y;
 	Window ResizeWindow;
+	struct monitor *mon = fw->m;
 	int dx;
 	int dy;
-	const int vx = Scr.Vx;
-	const int vy = Scr.Vy;
+	const int vx = mon->virtual_scr.Vx;
+	const int vy = mon->virtual_scr.Vy;
 	int n;
 	unsigned int button_mask = 0;
 	rectangle sdrag;
@@ -3667,7 +3670,6 @@ static Bool __resize_window(F_CMD_ARGS)
 	direction_t dir;
 	int warp_x = 0;
 	int warp_y = 0;
-	struct monitor *mon = fw->m;
 
 	dx = mon->virtual_scr.EdgeScrollX ? mon->virtual_scr.EdgeScrollX : mon->virtual_scr.MyDisplayWidth;
 	dy = mon->virtual_scr.EdgeScrollY ? mon->virtual_scr.EdgeScrollY : mon->virtual_scr.MyDisplayHeight;
@@ -4292,9 +4294,9 @@ static Bool __resize_window(F_CMD_ARGS)
 				exc, sorig.x, sorig.y, &xo, &yo, &g, orig,
 				&xmotion, &ymotion, do_resize_opaque, True);
 		}
-		if (vx != Scr.Vx || vy != Scr.Vy)
+		if (vx != mon->virtual_scr.Vx || vy != mon->virtual_scr.Vy)
 		{
-			MoveViewport(vx, vy, False);
+			MoveViewport(mon, vx, vy, False);
 		}
 		/* restore all geometry-related info */
 		fw->g = g_backup;
@@ -5062,6 +5064,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	rectangle max_g;
 	Bool was_resized;
 	FvwmWindow *fw = exc->w.fw;
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* keep a copy of the old geometry */
 	normal_g = fw->g.normal;
@@ -5072,8 +5075,8 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
 		max_g = fw->g.normal;
-		max_g.x -= Scr.Vx;
-		max_g.y -= Scr.Vy;
+		max_g.x -= m->virtual_scr.Vx;
+		max_g.y -= m->virtual_scr.Vy;
 		fw->g.normal = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
@@ -5090,6 +5093,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 	rectangle max_g;
 	Bool was_resized;
 	FvwmWindow *fw = exc->w.fw;
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* keep a copy of the old geometry */
 	normal_g = fw->g.normal;
@@ -5100,8 +5104,8 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
 		max_g = fw->g.normal;
-		max_g.x -= Scr.Vx;
-		max_g.y -= Scr.Vy;
+		max_g.x -= m->virtual_scr.Vx;
+		max_g.y -= m->virtual_scr.Vy;
 		fw->g.normal = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
