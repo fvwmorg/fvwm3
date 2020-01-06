@@ -2,6 +2,10 @@
  
 # Modification History
 
+# Changed on 18/03/19 by Dominique Michel:
+# - Fix converting of multi-images icon files;
+#   use the first one.
+
 # Changed on 18/03/19 by Jaimos Skriletz:
 # - Updated script for and require Python 3.
 # - Drop support for Python 2.
@@ -629,7 +633,7 @@ def geticonfile(icon):
             os.system("if test \\( \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) \\) -o \\( '%s' != '%s' \\); then convert -background none '%s' -resize %i '%s' ; fi"% 
                           (iconfile, iconpath, iconfile, current_theme, previous_theme, iconpath, size, iconfile))
         else:
-            os.system("if test \\( \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) \\) -o \\( '%s' != '%s' \\); then convert '%s' -resize %i '%s' ; fi"% 
+            os.system("if test \\( \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) \\) -o \\( '%s' != '%s' \\); then convert '%s'[0] -resize %i '%s' ; fi"% 
                           (iconfile, iconpath, iconfile, current_theme, previous_theme, iconpath, size, iconfile))
     else:
         sys.stderr.write("%s not found! Using default icon.\n" % iconpath)
