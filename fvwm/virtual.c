@@ -1275,7 +1275,6 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
 		m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
 	}
-	/* TA:  FIXME -- need to reassign to all monitors if global. */
 	m->virtual_scr.Vx = newx;
 	m->virtual_scr.Vy = newy;
 
@@ -1287,6 +1286,9 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
+
+		if (m->flags & MONITOR_TRACKING_G)
+			monitor_init_contents("global");
 
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
@@ -1393,6 +1395,10 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		}
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
+			/* FIXME: almost, but not quite! */
+			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+				continue;
+
 			if (IS_VIEWPORT_MOVED(t))
 			{
 				/* Clear double move blocker. */
@@ -1457,6 +1463,9 @@ void goto_desk(int desk, struct monitor *m)
 		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
+		if (m->flags & MONITOR_TRACKING_G)
+			monitor_init_contents("global");
+
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -2067,7 +2076,6 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 void CMD_DesktopConfiguration(F_CMD_ARGS)
 {
 	FvwmWindow	*t;
-	struct monitor	*m;
 
 	if (action == NULL) {
 		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action is required");
@@ -2076,15 +2084,14 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 
 	monitor_init_contents(action);
 
+#if 0
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		fprintf(stderr, "I know about: %s\n", m->name);
 		EWMH_Init(m);
 	}
+#endif
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
 		UPDATE_FVWM_SCREEN(t);
-
-	execute_function_override_window(NULL, NULL, "All Recapture", 0, NULL);
 }
 
 void CMD_DesktopSize(F_CMD_ARGS)
@@ -2112,6 +2119,9 @@ void CMD_DesktopSize(F_CMD_ARGS)
 		(long)m->virtual_scr.MyDisplayHeight,
 		(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
 		(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
+
+	if (m->flags & MONITOR_TRACKING_G)
+		monitor_init_contents("global");
 
 	/* FIXME: likely needs per-monitor considerations!!! */
 	checkPanFrames();
@@ -2190,6 +2200,8 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
+		if (m->flags & MONITOR_TRACKING_G)
+			monitor_init_contents("global");
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
