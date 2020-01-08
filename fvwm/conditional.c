@@ -2161,6 +2161,7 @@ void CMD_Test(F_CMD_ARGS)
 		}
 		else if (StrEquals(cond, "EdgeIsActive"))
 		{
+			struct monitor	*m = monitor_get_current();
 			direction_t dir= DIR_NONE;
 			char *dirname;
 			char *next;
@@ -2186,13 +2187,13 @@ void CMD_Test(F_CMD_ARGS)
 			if (!error)
 			{
 				if (((dir == DIR_W || dir == DIR_NONE) &&
-					Scr.PanFrameLeft.isMapped) ||
+					m->PanFrameLeft.isMapped) ||
 				    ((dir == DIR_N || dir == DIR_NONE) &&
-					Scr.PanFrameTop.isMapped) ||
+					m->PanFrameTop.isMapped) ||
 				    ((dir == DIR_S || dir == DIR_NONE) &&
-					Scr.PanFrameBottom.isMapped) ||
+					m->PanFrameBottom.isMapped) ||
 				    ((dir == DIR_E || dir == DIR_NONE) &&
- 				    	Scr.PanFrameRight.isMapped))
+ 				    	m->PanFrameRight.isMapped))
 				{
 				  	match = 1;
 				}
@@ -2205,6 +2206,7 @@ void CMD_Test(F_CMD_ARGS)
 		}
 		else if (StrEquals(cond, "EdgeHasPointer"))
 		{
+			struct monitor	*m = monitor_get_current();
 			int x,y;
 			Window win;
 			direction_t dir = DIR_NONE;
@@ -2243,13 +2245,13 @@ void CMD_Test(F_CMD_ARGS)
 				{
 					if (dir == DIR_NONE ||
 					    (dir == DIR_N &&
-					     win == Scr.PanFrameTop.win) ||
+					     win == m->PanFrameTop.win) ||
 					    (dir == DIR_S &&
-					     win == Scr.PanFrameBottom.win) ||
+					     win == m->PanFrameBottom.win) ||
 					    (dir == DIR_E &&
-					     win == Scr.PanFrameRight.win) ||
+					     win == m->PanFrameRight.win) ||
 					    (dir == DIR_W &&
-					     win == Scr.PanFrameLeft.win))
+					     win == m->PanFrameLeft.win))
 					{
 						match = 1;
 					}

@@ -76,16 +76,6 @@ typedef struct
 	int alpha_percent;
 } FvwmAcs;
 
-typedef struct
-{
-	Window win;
-	int isMapped;
-	/* command which is executed when the pan frame is entered */
-	char *command;
-	/* command which is executed when the pan frame is left*/
-	char *command_leave;
-} PanFrame;
-
 typedef enum
 {
 	/* button types */
@@ -315,11 +305,6 @@ typedef struct ScreenInfo
 	Window NoFocusWin;
 
 	flist *FWScheduledForDestroy;
-
-	PanFrame PanFrameTop;
-	PanFrame PanFrameLeft;
-	PanFrame PanFrameRight;
-	PanFrame PanFrameBottom;
 
 	/*dark gray pattern for shaded out menu items*/
 	Pixmap gray_bitmap;
