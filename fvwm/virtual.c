@@ -1297,8 +1297,10 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
 
+#if 0
 		if (m->flags & MONITOR_TRACKING_G)
 			monitor_init_contents("global");
+#endif
 
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
@@ -1473,9 +1475,10 @@ void goto_desk(int desk, struct monitor *m)
 		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
+#if 0
 		if (m->flags & MONITOR_TRACKING_G)
 			monitor_init_contents("global");
-
+#endif
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -2133,8 +2136,10 @@ void CMD_DesktopSize(F_CMD_ARGS)
 		(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
 		(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
 
+#if 0
 	if (m->flags & MONITOR_TRACKING_G)
 		monitor_init_contents("global");
+#endif
 
 	/* FIXME: likely needs per-monitor considerations!!! */
 	checkPanFrames();
@@ -2213,8 +2218,10 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
+#if 0
 		if (m->flags & MONITOR_TRACKING_G)
 			monitor_init_contents("global");
+#endif
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
