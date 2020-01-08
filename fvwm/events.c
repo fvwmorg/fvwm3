@@ -1795,8 +1795,53 @@ static void __refocus_stolen_focus_win(const evh_args_t *ea)
 #ifdef HAVE_XRANDR
 void HandleRRScreenChangeNotify(XEvent *e)
 {
+	FvwmWindow	*t;
+	struct monitor	*mcur, *m;
+
 	FScreenInit(dpy);
-	execute_function_override_window(NULL, NULL, "All PlaceAgain", 0, NULL);
+
+	mcur = monitor_get_current();
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		EWMH_SetDesktopNames(m);
+
+	for (t = Scr.FvwmRoot.next; t; t = t->next) {
+		/* If the monitor the window is on is no longer present in our
+		 * list, then move this window to the monitor which has the
+		 * pointer.
+		 */
+		struct monitor	*m = t->m;
+		char		*move_cmd = NULL;
+
+		if (t->m_prev != NULL) {
+			/* If the window count on this monitor is 0, then it
+			 * must be a new monitor.
+			 *
+			 * Check to see if this new monitor used to contain
+			 * previous windows.
+			 */
+			if (t->m_prev != NULL &&
+			    (strcmp(t->m_prev->name, m->name) == 0)) {
+			    t->m = t->m_prev;
+			}
+
+			if (t->m != NULL) {
+				asprintf(&move_cmd, "MoveToScreen %s", t->m->name);
+				execute_function_override_window(NULL, NULL, move_cmd, 0, t);
+				break;
+			}
+		}
+
+		if (m != mcur) {
+			asprintf(&move_cmd, "MoveToScreen %s", mcur->name);
+			execute_function_override_window(NULL, NULL, move_cmd, 0, t);
+			fprintf(stderr, "Moved window (0x%x) to monitor %s\n",
+				(int)FW_W(t), t->m->name);
+			free(move_cmd);
+			continue;
+		}
+		UPDATE_FVWM_SCREEN(t);
+	}
 }
 #endif
 
@@ -4136,6 +4181,7 @@ void dispatch_event(XEvent *e)
 
 #if HAVE_XRANDR
 	if (e->type - randr_event == RRScreenChangeNotify) {
+		XRRUpdateConfiguration(e);
 		HandleRRScreenChangeNotify(e);
 	}
 #endif

@@ -51,7 +51,7 @@ static int no_of_screens;
 static struct monitor	*monitor_new(void);
 static void		 monitor_create_randr_region(struct monitor *m,
 	const char *, struct coord *, int);
-static int		 monitor_check_stale(struct monitor *);
+static int		 monitor_check_stale(const char *);
 static void		 monitor_init_one(struct monitor *, int, int);
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
@@ -190,6 +190,9 @@ monitor_init_one(struct monitor *m, int w, int h)
 	m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
 		m->virtual_scr.MyDisplayHeight / 100;
 
+	if (m->Desktops != NULL)
+		return;
+
 	m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
 	m->Desktops->name = NULL;
 	m->Desktops->desk = 0; /* not desk 0 */
@@ -204,6 +207,21 @@ monitor_init_one(struct monitor *m, int w, int h)
 		m->Desktops->ewmh_working_area.height =
 		m->virtual_scr.MyDisplayHeight;
 	m->Desktops->next = NULL;
+}
+
+static int
+number_of_desktops(struct monitor *m)
+{
+	DesktopsInfo	*d;
+	int		 count = 0;
+
+	d = m->Desktops->next;
+	while (d != NULL) {
+		count++;
+		d = d->next;
+	}
+
+	return (count);
 }
 
 void
@@ -229,9 +247,18 @@ monitor_init_contents(const char *name)
 
 		if (m->Desktops_cpy != NULL) {
 			m->Desktops = m->Desktops_cpy;
-			memcpy(&m->coord, &m->coord_cpy, sizeof(m->coord));
-		}
-		monitor_init_one(m, w, h);
+			fprintf(stderr, "Global, restoring previous desktop\n");
+			fprintf(stderr, "count is: %d\n", number_of_desktops(m));
+		} else
+			monitor_init_one(m, w, h);
+
+		if (m->Desktops == NULL && m->Desktops_cpy != NULL)
+			m->Desktops = m->Desktops_cpy;
+
+		if (m->Desktops == NULL)
+			monitor_init_one(m, w, h);
+			
+
 		m->flags &= ~MONITOR_TRACKING_M;
 		m->flags |= MONITOR_TRACKING_G;
 		m->Desktops_cpy = m->Desktops;
@@ -240,10 +267,9 @@ monitor_init_contents(const char *name)
 			/* We've already set the first monitor. */
 			if (m == m2)
 				continue;
-			memcpy(&m->coord, &m->coord_cpy, sizeof(m->coord));
-			m2->Desktops = m->Desktops_cpy;
-			m2->flags &= ~MONITOR_TRACKING_M;
-			m2->flags |= MONITOR_TRACKING_G;
+			memcpy(&m2->flags, &m->flags, sizeof(m->flags));
+			m2->Desktops = m->Desktops;
+			m2->Desktops_cpy = m->Desktops_cpy;
 			memcpy(&m2->virtual_scr, &m->virtual_scr,
 				sizeof(m->virtual_scr));
 		}
@@ -252,8 +278,6 @@ monitor_init_contents(const char *name)
 	if (strcmp(name, "per-monitor") == 0) {
 		fprintf(stderr, "%s: init monitor for per-monitor\n", __func__);
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
-			memcpy(&m2->coord, &m2->coord_cpy, sizeof(m2->coord));
-			//monitor_init_one(m, m->coord.w, m->coord.h);
 			m2->flags &= ~MONITOR_TRACKING_G;
 			m2->flags |= MONITOR_TRACKING_M;
 		}
@@ -272,7 +296,7 @@ void FScreenInit(Display *dpy)
 	XRROutputInfo		*oinfo = NULL;
 	XRRCrtcInfo		*crtc_info = NULL;
 	RROutput		 rr_output, rr_output_primary;
-	struct monitor		*m;
+	struct monitor		*m, *m1;
 	struct coord		 coord;
 	int			 err_base = 0;
 	int			 is_randr_present = 0;
@@ -280,9 +304,10 @@ void FScreenInit(Display *dpy)
 
 	disp = dpy;
 	randr_event = 0;
+	no_of_screens = 0;
 
-	/* Allocate for monitors. */
-	TAILQ_INIT(&monitor_q);
+	if (TAILQ_EMPTY(&monitor_q))
+		TAILQ_INIT(&monitor_q);
 
 	is_randr_present = XRRQueryExtension(dpy, &randr_event, &err_base);
 
@@ -351,7 +376,11 @@ void FScreenInit(Display *dpy)
 	XRRFreeScreenResources(res);
 
 	m = TAILQ_FIRST(&monitor_q);
-	monitor_init_contents("global");
+
+	if (m->flags & MONITOR_TRACKING_G)
+		monitor_init_contents("global");
+	else
+		monitor_init_contents("per-screen");
 
 	return;
 
@@ -378,13 +407,25 @@ monitor_create_randr_region(struct monitor *m, const char *name,
 		name, is_primary ? "(PRIMARY)" : "",
 		coord->x, coord->y, coord->w, coord->h);
 
-	memcpy(&m->coord_cpy, coord, sizeof(*coord));
+	m->win_count = 0; /* filled in via UPDATE_FVWM_SCREEN */
 
-	if (monitor_check_stale(m))
-		free(m->name);
-
-	m->name = fxstrdup(name);
+	/* Always copy over the new coord information.  This may have changed
+	 * at any point, and we don't want to lose it.
+	 */
 	memcpy(&m->coord, coord, sizeof(*coord));
+
+	if (monitor_check_stale(name)) {
+		/* We've seen this monitor before, and it's already in the
+		 * list.  Skip anything further; we will fill in the
+		 * appropriate values via monitor_init_contents()
+		 */
+		fprintf(stderr, "%s: monitor '%s' already in list, so skipping\n",
+			__func__, name);
+		free(m);
+		return;
+	}
+	m->name = fxstrdup(name);
+	m->flags |= MONITOR_TRACKING_G;
 
 	if (is_primary) {
 		TAILQ_INSERT_HEAD(&monitor_q, m, entry);
@@ -394,18 +435,18 @@ monitor_create_randr_region(struct monitor *m, const char *name,
 }
 
 static int
-monitor_check_stale(struct monitor *m)
+monitor_check_stale(const char *name)
 {
 	struct monitor	*mcheck = NULL;
 
 	TAILQ_FOREACH(mcheck, &monitor_q, entry) {
-		if (m == NULL || mcheck == NULL)
+		if (mcheck == NULL)
 			break;
-		if (m->name == NULL || mcheck->name == NULL) {
+		if (name == NULL || mcheck->name == NULL) {
 			/* Shouldn't happen. */
 			break;
 		}
-		if (strcmp(mcheck->name, m->name) == 0)
+		if (strcmp(mcheck->name, name) == 0)
 			return (1);
 	}
 
@@ -434,6 +475,13 @@ FindScreenOfXY(int x, int y)
 		if (x >= m->coord.x && x < m->coord.x + m->coord.w &&
 		    y >= m->coord.y && y < m->coord.y + m->coord.h)
 			return (m);
+	}
+
+	if (m == NULL) {
+		fprintf(stderr, "%s: couldn't find screen at %d x %d "
+			"returning first monitor.  This is a bug.\n", __func__,
+			x, y);
+		return TAILQ_FIRST(&monitor_q);
 	}
 
 	return (NULL);

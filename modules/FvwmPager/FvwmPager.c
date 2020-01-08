@@ -114,6 +114,7 @@ char *BalloonFore = NULL;
 char *BalloonFont = NULL;
 char *BalloonBorderColor = NULL;
 char *BalloonFormatString = NULL;
+char *monitor_to_track = NULL;
 int BalloonBorderWidth = 1;
 int BalloonYOffset = 3;
 Window BalloonView = None;
@@ -595,6 +596,7 @@ void handle_config_win_package(PagerWindow *t,
 	t->frame_y = cfgpacket->frame_y;
 	t->frame_width = cfgpacket->frame_width;
 	t->frame_height = cfgpacket->frame_height;
+	t->m = monitor_by_number(cfgpacket->monitor_id);
 
 	t->desk = cfgpacket->desk;
 
@@ -654,12 +656,23 @@ void list_add(unsigned long *body)
 	PagerWindow *t,**prev;
 	int i=0;
 	struct ConfigWinPacket  *cfgpacket = (void *) body;
+	struct monitor *newm;
 
 	t = Start;
 	prev = &Start;
 
-	while(t!= NULL)
+	newm = monitor_by_number(cfgpacket->monitor_id);
+
+	if (newm == NULL) {
+		fprintf(stderr, "monitor was null with ID: %d\n", cfgpacket->monitor_id);
+		fprintf(stderr, "using current montior\n");
+
+		newm = monitor_get_current();
+	}
+
+	while(t != NULL)
 	{
+		t->m = newm;
 		if (t->w == cfgpacket->w)
 		{
 			/* it's already there, do nothing */
@@ -688,11 +701,29 @@ void list_configure(unsigned long *body)
   Window target_w;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
   Bool is_new_desk;
+  struct monitor *newm;
 
   target_w = cfgpacket->w;
   t = Start;
-  while((t!= NULL)&&(t->w != target_w))
+  newm = monitor_by_number(cfgpacket->monitor_id);
+
+  if (newm == NULL) {
+	  fprintf(stderr, "monitor was null with ID: %d\n", cfgpacket->monitor_id);
+	  fprintf(stderr, "using current montior\n");
+
+	  newm = monitor_get_current();
+  }
+
+  /* FIXME: need to handle things when DesktopConfiguration is global --
+   * and/or when the Monitor string insn't set in FvwmPager.
+   */
+
+  while( (t != NULL) && (t->w != target_w))
   {
+	  if (t->m != newm) {
+		  t = t->next;
+		  continue;
+	  }
     t = t->next;
   }
   if(t== NULL)
@@ -810,6 +841,14 @@ void list_focus(unsigned long *body)
  */
 void list_new_page(unsigned long *body)
 {
+	int mon_num = body[7];
+	struct monitor *m;
+
+	m = monitor_by_number(mon_num);
+
+	if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
+		return;
+
   Scr.Vx = body[0];
   Scr.Vy = body[1];
   if (Scr.CurrentDesk != body[2])
@@ -845,6 +884,13 @@ void list_new_desk(unsigned long *body)
   int change_cs = -1;
   int change_ballooncs = -1;
   int change_highcs = -1;
+  int mon_num = body[1];
+  struct monitor *m;
+
+  m = monitor_by_number(mon_num);
+
+  if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
+	  return;
 
   oldDesk = Scr.CurrentDesk;
   Scr.CurrentDesk = (long)body[0];
@@ -1153,11 +1199,22 @@ void list_window_name(unsigned long *body,unsigned long type)
 {
   PagerWindow *t;
   Window target_w;
+  struct monitor *m = NULL;
+
+  if (monitor_to_track != NULL)
+	  m = monitor_by_name(monitor_to_track);
+
+  if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
+	  return;
 
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
     {
+	    if (m != NULL && t->m != m) {
+		    t = t->next;
+		    continue;
+	    }
       t = t->next;
     }
   if(t!= NULL)
@@ -1584,9 +1641,9 @@ void ParseOptions(void)
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
   Scr.VScale = 32;
-
-  Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
-  Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
+  struct monitor  *m = monitor_get_current();
+  Scr.MyDisplayWidth  = m->virtual_scr.MyDisplayWidth;
+  Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
 
   fpa.mask = 0;
   if (Pdepth <= 8)
@@ -1609,6 +1666,7 @@ void ParseOptions(void)
     arg1 = arg2 = NULL;
 
     token = PeekToken(tline, &next);
+
     if (StrEquals(token, "Colorset"))
     {
       LoadColorset(next);
@@ -1678,7 +1736,32 @@ void ParseOptions(void)
       arg2[0] = 0;
     }
 
-    if(StrEquals(resource,"Colorset"))
+    if (StrEquals(resource, "Monitor")) {
+	    free(monitor_to_track);
+	    if (next == NULL) {
+		    fprintf(stderr, "FvwmPager: no monitor name given "
+				    "using current monitor\n");
+		    /* m already set... */
+		    monitor_to_track = fxstrdup(m->name);
+		    Scr.MyDisplayWidth = m->virtual_scr.MyDisplayWidth;
+		    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
+		    continue;
+	    }
+	    if ((m = monitor_by_name(next)) == NULL) {
+		    fprintf(stderr, "FvwmPager: monitor '%s' not found "
+			"using current monitor", next);
+		    m = monitor_get_current();
+		    monitor_to_track = fxstrdup(m->name);
+		    Scr.MyDisplayWidth = m->virtual_scr.MyDisplayWidth;
+		    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
+		    continue;
+	    }
+	    fprintf(stderr, "Assigning monitor: %s\n", m->name);
+	    monitor_to_track = fxstrdup(m->name);
+	    Scr.MyDisplayWidth = m->virtual_scr.MyDisplayWidth;
+	    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
+    }
+    else if(StrEquals(resource,"Colorset"))
     {
       ParseColorset(arg1, arg2,
 		    &(((DeskInfo *)(NULL))->colorset),
@@ -2169,6 +2252,15 @@ void ParseOptions(void)
     free(resource);
     free(arg1);
     free(arg2);
+  }
+
+  /* If we get here, and have not been given a Monitor line to configure,
+   * assume we're monitoring globally.
+   */
+  if (monitor_to_track == NULL) {
+	  struct monitor *m = TAILQ_FIRST(&monitor_q);
+	  Scr.MyDisplayWidth  = m->virtual_scr.MyDisplayWidth;
+	  Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
   }
 
   Scr.VxMax = dx * Scr.MyDisplayWidth - Scr.MyDisplayWidth;
