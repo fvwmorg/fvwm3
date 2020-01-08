@@ -2207,6 +2207,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	if (is_pan_frame(ewp->window))
 	{
 		char *edge_command = NULL;
+		struct monitor	*m = monitor_get_current();
 
 		if (
 			Scr.UnknownWinFocused != None &&
@@ -2216,21 +2217,21 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			__refocus_stolen_focus_win(ea);
 		}
 		/* check for edge commands */
-		if (ewp->window == Scr.PanFrameTop.win)
+		if (ewp->window == m->PanFrameTop.win)
 		{
-			edge_command = Scr.PanFrameTop.command;
+			edge_command = m->PanFrameTop.command;
 		}
-		else if (ewp->window == Scr.PanFrameBottom.win)
+		else if (ewp->window == m->PanFrameBottom.win)
 		{
-			edge_command = Scr.PanFrameBottom.command;
+			edge_command = m->PanFrameBottom.command;
 		}
-		else if (ewp->window == Scr.PanFrameLeft.win)
+		else if (ewp->window == m->PanFrameLeft.win)
 		{
-			edge_command = Scr.PanFrameLeft.command;
+			edge_command = m->PanFrameLeft.command;
 		}
-		else if (ewp->window == Scr.PanFrameRight.win)
+		else if (ewp->window == m->PanFrameRight.win)
 		{
-			edge_command = Scr.PanFrameRight.command;
+			edge_command = m->PanFrameRight.command;
 		}
 		if (edge_command && ewp->mode == NotifyUngrab &&
 		    ewp->detail == NotifyAncestor)
@@ -2774,23 +2775,24 @@ ENTER_DBG((stderr, "ln: *** lgw = %p\n", fw));
 	if (is_pan_frame(lwp->window))
 	{
 		char *edge_command_leave = NULL;
+		struct monitor	*m = monitor_get_current();
 
 		/* check for edge commands */
-		if (lwp->window == Scr.PanFrameTop.win)
+		if (lwp->window == m->PanFrameTop.win)
 		{
-			edge_command_leave = Scr.PanFrameTop.command_leave;
+			edge_command_leave = m->PanFrameTop.command_leave;
 		}
-		else if (lwp->window == Scr.PanFrameBottom.win)
+		else if (lwp->window == m->PanFrameBottom.win)
 		{
-			edge_command_leave = Scr.PanFrameBottom.command_leave;
+			edge_command_leave = m->PanFrameBottom.command_leave;
 		}
-		else if (lwp->window == Scr.PanFrameLeft.win)
+		else if (lwp->window == m->PanFrameLeft.win)
 		{
-			edge_command_leave = Scr.PanFrameLeft.command_leave;
+			edge_command_leave = m->PanFrameLeft.command_leave;
 		}
-		else if (lwp->window == Scr.PanFrameRight.win)
+		else if (lwp->window == m->PanFrameRight.win)
 		{
-			edge_command_leave = Scr.PanFrameRight.command_leave;
+			edge_command_leave = m->PanFrameRight.command_leave;
 		}
 		if (edge_command_leave && lwp->mode == NotifyUngrab &&
 		    lwp->detail == NotifyAncestor)

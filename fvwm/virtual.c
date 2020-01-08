@@ -992,19 +992,21 @@ void checkPanFrames(void)
 	/* correct the unmap variables if pan frame commands are set */
 	if (edge_thickness != 0)
 	{
-		if (Scr.PanFrameLeft.command != NULL || Scr.PanFrameLeft.command_leave != NULL)
+		struct monitor	*m = monitor_get_current();
+
+		if (m->PanFrameLeft.command != NULL || m->PanFrameLeft.command_leave != NULL)
 		{
 			do_unmap_l = False;
 		}
-		if (Scr.PanFrameRight.command != NULL || Scr.PanFrameRight.command_leave != NULL)
+		if (m->PanFrameRight.command != NULL || m->PanFrameRight.command_leave != NULL)
 		{
 			do_unmap_r = False;
 		}
-		if (Scr.PanFrameBottom.command != NULL || Scr.PanFrameBottom.command_leave != NULL)
+		if (m->PanFrameBottom.command != NULL || m->PanFrameBottom.command_leave != NULL)
 		{
 			do_unmap_b = False;
 		}
-		if (Scr.PanFrameTop.command != NULL || Scr.PanFrameTop.command_leave != NULL)
+		if (m->PanFrameTop.command != NULL || m->PanFrameTop.command_leave != NULL)
 		{
 			do_unmap_t = False;
 		}
@@ -1017,10 +1019,12 @@ void checkPanFrames(void)
 	/* left */
 	if (do_unmap_l)
 	{
-		if (Scr.PanFrameLeft.isMapped)
+		struct monitor	*m = monitor_get_current();
+
+		if (m->PanFrameLeft.isMapped)
 		{
-			XUnmapWindow(dpy, Scr.PanFrameLeft.win);
-			Scr.PanFrameLeft.isMapped = False;
+			XUnmapWindow(dpy, m->PanFrameLeft.win);
+			m->PanFrameLeft.isMapped = False;
 		}
 	}
 	else
@@ -1028,22 +1032,22 @@ void checkPanFrames(void)
 		if (edge_thickness != last_edge_thickness)
 		{
 			XResizeWindow(
-				dpy, Scr.PanFrameLeft.win, edge_thickness,
+				dpy, m->PanFrameLeft.win, edge_thickness,
 				m->virtual_scr.MyDisplayHeight);
 		}
-		if (!Scr.PanFrameLeft.isMapped)
+		if (!m->PanFrameLeft.isMapped)
 		{
-			XMapRaised(dpy, Scr.PanFrameLeft.win);
-			Scr.PanFrameLeft.isMapped = True;
+			XMapRaised(dpy, m->PanFrameLeft.win);
+			m->PanFrameLeft.isMapped = True;
 		}
 	}
 	/* right */
 	if (do_unmap_r)
 	{
-		if (Scr.PanFrameRight.isMapped)
+		if (m->PanFrameRight.isMapped)
 		{
-			XUnmapWindow(dpy, Scr.PanFrameRight.win);
-			Scr.PanFrameRight.isMapped = False;
+			XUnmapWindow(dpy, m->PanFrameRight.win);
+			m->PanFrameRight.isMapped = False;
 		}
 	}
 	else
@@ -1051,23 +1055,23 @@ void checkPanFrames(void)
 		if (edge_thickness != last_edge_thickness)
 		{
 			XMoveResizeWindow(
-				dpy, Scr.PanFrameRight.win,
+				dpy, m->PanFrameRight.win,
 				m->virtual_scr.MyDisplayWidth - edge_thickness, 0,
 				edge_thickness, m->virtual_scr.MyDisplayHeight);
 		}
-		if (!Scr.PanFrameRight.isMapped)
+		if (!m->PanFrameRight.isMapped)
 		{
-			XMapRaised(dpy, Scr.PanFrameRight.win);
-			Scr.PanFrameRight.isMapped = True;
+			XMapRaised(dpy, m->PanFrameRight.win);
+			m->PanFrameRight.isMapped = True;
 		}
 	}
 	/* top */
 	if (do_unmap_t)
 	{
-		if (Scr.PanFrameTop.isMapped)
+		if (m->PanFrameTop.isMapped)
 		{
-			XUnmapWindow(dpy, Scr.PanFrameTop.win);
-			Scr.PanFrameTop.isMapped = False;
+			XUnmapWindow(dpy, m->PanFrameTop.win);
+			m->PanFrameTop.isMapped = False;
 		}
 	}
 	else
@@ -1075,22 +1079,22 @@ void checkPanFrames(void)
 		if (edge_thickness != last_edge_thickness)
 		{
 			XResizeWindow(
-				dpy, Scr.PanFrameTop.win, m->virtual_scr.MyDisplayWidth,
+				dpy, m->PanFrameTop.win, m->virtual_scr.MyDisplayWidth,
 				edge_thickness);
 		}
-		if (!Scr.PanFrameTop.isMapped)
+		if (!m->PanFrameTop.isMapped)
 		{
-			XMapRaised(dpy, Scr.PanFrameTop.win);
-			Scr.PanFrameTop.isMapped = True;
+			XMapRaised(dpy, m->PanFrameTop.win);
+			m->PanFrameTop.isMapped = True;
 		}
 	}
 	/* bottom */
 	if (do_unmap_b)
 	{
-		if (Scr.PanFrameBottom.isMapped)
+		if (m->PanFrameBottom.isMapped)
 		{
-			XUnmapWindow(dpy, Scr.PanFrameBottom.win);
-			Scr.PanFrameBottom.isMapped = False;
+			XUnmapWindow(dpy, m->PanFrameBottom.win);
+			m->PanFrameBottom.isMapped = False;
 		}
 	}
 	else
@@ -1098,14 +1102,14 @@ void checkPanFrames(void)
 		if (edge_thickness != last_edge_thickness)
 		{
 			XMoveResizeWindow(
-				dpy, Scr.PanFrameBottom.win, 0,
+				dpy, m->PanFrameBottom.win, 0,
 				m->virtual_scr.MyDisplayHeight - edge_thickness,
 				m->virtual_scr.MyDisplayWidth, edge_thickness);
 		}
-		if (!Scr.PanFrameBottom.isMapped)
+		if (!m->PanFrameBottom.isMapped)
 		{
-			XMapRaised(dpy, Scr.PanFrameBottom.win);
-			Scr.PanFrameBottom.isMapped = True;
+			XMapRaised(dpy, m->PanFrameBottom.win);
+			m->PanFrameBottom.isMapped = True;
 		}
 	}
 	last_edge_thickness = edge_thickness;
@@ -1125,36 +1129,39 @@ void raisePanFrames(void)
 {
 	Window windows[4];
 	int n;
+	struct monitor	*m;
 
 	/* Note: make sure the stacking order of the pan frames is not changed
 	 * every time they are raised by using XRestackWindows. */
-	n = 0;
-	if (Scr.PanFrameTop.isMapped)
-	{
-		windows[n++] = Scr.PanFrameTop.win;
-	}
-	if (Scr.PanFrameLeft.isMapped)
-	{
-		windows[n++] = Scr.PanFrameLeft.win;
-	}
-	if (Scr.PanFrameRight.isMapped)
-	{
-		windows[n++] = Scr.PanFrameRight.win;
-	}
-	if (Scr.PanFrameBottom.isMapped)
-	{
-		windows[n++] = Scr.PanFrameBottom.win;
-	}
-	if (n > 0)
-	{
-		XRaiseWindow(dpy, windows[0]);
-		if (n > 1)
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		n = 0;
+		if (m->PanFrameTop.isMapped)
 		{
-			XRestackWindows(dpy, windows, n);
+			windows[n++] = m->PanFrameTop.win;
+		}
+		if (m->PanFrameLeft.isMapped)
+		{
+			windows[n++] = m->PanFrameLeft.win;
+		}
+		if (m->PanFrameRight.isMapped)
+		{
+			windows[n++] = m->PanFrameRight.win;
+		}
+		if (m->PanFrameBottom.isMapped)
+		{
+			windows[n++] = m->PanFrameBottom.win;
+		}
+
+		if (n > 0)
+		{
+			XRaiseWindow(dpy, windows[0]);
+			if (n > 1)
+			{
+				XRestackWindows(dpy, windows, n);
+			}
 		}
 	}
-
-	return;
 }
 
 /*
@@ -1167,7 +1174,7 @@ void initPanFrames(void)
 	XSetWindowAttributes attributes;
 	unsigned long valuemask;
 	int saved_thickness;
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m;
 
 	/* Not creating the frames disables all subsequent behavior */
 	/* TKP. This is bad, it will cause an XMap request on a null window
@@ -1185,43 +1192,46 @@ void initPanFrames(void)
 	attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
 	/* I know these overlap, it's useful when at (0,0) and the top one is
 	 * unmapped */
-	Scr.PanFrameTop.win = XCreateWindow(
-		dpy, Scr.Root, 0, 0, m->virtual_scr.MyDisplayWidth, edge_thickness,
-		0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
-		&attributes);
-	attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
-	Scr.PanFrameLeft.win = XCreateWindow(
-		dpy, Scr.Root, 0, 0, edge_thickness, m->virtual_scr.MyDisplayHeight,
-		0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
-		&attributes);
-	attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
-	Scr.PanFrameRight.win = XCreateWindow(
-		dpy, Scr.Root, m->virtual_scr.MyDisplayWidth - edge_thickness, 0,
-		edge_thickness, m->virtual_scr.MyDisplayHeight, 0, CopyFromParent,
-		InputOnly, CopyFromParent, valuemask, &attributes);
-	attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
-	Scr.PanFrameBottom.win = XCreateWindow(
-		dpy, Scr.Root, 0, m->virtual_scr.MyDisplayHeight - edge_thickness,
-		m->virtual_scr.MyDisplayWidth, edge_thickness, 0, CopyFromParent,
-		InputOnly, CopyFromParent, valuemask, &attributes);
-	Scr.PanFrameTop.isMapped=Scr.PanFrameLeft.isMapped=
-		Scr.PanFrameRight.isMapped= Scr.PanFrameBottom.isMapped=False;
-	edge_thickness = saved_thickness;
 
-	return;
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		m->PanFrameTop.win = XCreateWindow(
+			dpy, Scr.Root, 0, 0, m->virtual_scr.MyDisplayWidth, edge_thickness,
+			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
+			&attributes);
+		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
+		m->PanFrameLeft.win = XCreateWindow(
+			dpy, Scr.Root, 0, 0, edge_thickness, m->virtual_scr.MyDisplayHeight,
+			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
+			&attributes);
+		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
+		m->PanFrameRight.win = XCreateWindow(
+			dpy, Scr.Root, m->virtual_scr.MyDisplayWidth - edge_thickness, 0,
+			edge_thickness, m->virtual_scr.MyDisplayHeight, 0, CopyFromParent,
+			InputOnly, CopyFromParent, valuemask, &attributes);
+		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
+		m->PanFrameBottom.win = XCreateWindow(
+			dpy, Scr.Root, 0, m->virtual_scr.MyDisplayHeight - edge_thickness,
+			m->virtual_scr.MyDisplayWidth, edge_thickness, 0, CopyFromParent,
+			InputOnly, CopyFromParent, valuemask, &attributes);
+		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
+			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=False;
+	}
+	edge_thickness = saved_thickness;
 }
 
 Bool is_pan_frame(Window w)
 {
-	if (w == Scr.PanFrameTop.win || w == Scr.PanFrameBottom.win ||
-	    w == Scr.PanFrameLeft.win || w == Scr.PanFrameRight.win)
-	{
-		return True;
+	struct monitor *m;
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (w == m->PanFrameTop.win || w == m->PanFrameBottom.win ||
+		    w == m->PanFrameLeft.win || w == m->PanFrameRight.win)
+		{
+			return True;
+		}
 	}
-	else
-	{
-		return False;
-	}
+
+	return False;
 }
 
 /*
@@ -1711,7 +1721,8 @@ char *GetDesktopName(struct monitor *m, int desk)
 void CMD_EdgeCommand(F_CMD_ARGS)
 {
 	direction_t direction;
-	char * command;
+	char *command;
+	struct monitor	*m;
 
 	/* get the direction */
 	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
@@ -1728,46 +1739,48 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 			free(command);
 			command = NULL;
 		}
-		/* assign command to the edge(s) */
-		if (direction == DIR_N)
-		{
-			if (Scr.PanFrameTop.command != NULL)
-			{
-				free(Scr.PanFrameTop.command);
-			}
-			Scr.PanFrameTop.command = command;
-		}
-		else if (direction == DIR_S)
-		{
-			if (Scr.PanFrameBottom.command != NULL)
-			{
-				free(Scr.PanFrameBottom.command);
-			}
-			Scr.PanFrameBottom.command = command;
-		}
-		else if (direction == DIR_W)
-		{
-			if (Scr.PanFrameLeft.command != NULL)
-			{
-				free(Scr.PanFrameLeft.command);
-			}
-			Scr.PanFrameLeft.command = command;
-		}
-		else if (direction == DIR_E)
-		{
-			if (Scr.PanFrameRight.command != NULL)
-			{
-				free(Scr.PanFrameRight.command);
-			}
-			Scr.PanFrameRight.command = command;
-		}
-		else
-		{
-			/* this should never happen */
-			fvwm_msg(ERR, "EdgeCommand",
-				 "Internal error in CMD_EdgeCommand");
-		}
 
+		TAILQ_FOREACH(m, &monitor_q, entry) {
+			/* assign command to the edge(s) */
+			if (direction == DIR_N)
+			{
+				if (m->PanFrameTop.command != NULL)
+				{
+					free(m->PanFrameTop.command);
+				}
+				m->PanFrameTop.command = command;
+			}
+			else if (direction == DIR_S)
+			{
+				if (m->PanFrameBottom.command != NULL)
+				{
+					free(m->PanFrameBottom.command);
+				}
+				m->PanFrameBottom.command = command;
+			}
+			else if (direction == DIR_W)
+			{
+				if (m->PanFrameLeft.command != NULL)
+				{
+					free(m->PanFrameLeft.command);
+				}
+				m->PanFrameLeft.command = command;
+			}
+			else if (direction == DIR_E)
+			{
+				if (m->PanFrameRight.command != NULL)
+				{
+					free(m->PanFrameRight.command);
+				}
+				m->PanFrameRight.command = command;
+			}
+			else
+			{
+				/* this should never happen */
+				fvwm_msg(ERR, "EdgeCommand",
+					 "Internal error in CMD_EdgeCommand");
+			}
+		}
 	}
 	else
 	{
@@ -1777,29 +1790,30 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 		{
 			/* Just plain EdgeCommand, so all edge commands are
 			 * removed */
-			if (Scr.PanFrameTop.command != NULL)
-			{
-				free(Scr.PanFrameTop.command);
-				Scr.PanFrameTop.command = NULL;
+
+			TAILQ_FOREACH(m, &monitor_q, entry) {
+				if (m->PanFrameTop.command != NULL)
+				{
+					free(m->PanFrameTop.command);
+					m->PanFrameTop.command = NULL;
+				}
+				if (m->PanFrameBottom.command != NULL)
+				{
+					free(m->PanFrameBottom.command);
+					m->PanFrameBottom.command = NULL;
+				}
+				if (m->PanFrameLeft.command != NULL)
+				{
+					free(m->PanFrameLeft.command);
+					m->PanFrameLeft.command = NULL;
+				}
+				if (m->PanFrameRight.command != NULL)
+				{
+					free(m->PanFrameRight.command);
+					m->PanFrameRight.command = NULL;
+				}
 			}
-			if (Scr.PanFrameBottom.command != NULL)
-			{
-				free(Scr.PanFrameBottom.command);
-				Scr.PanFrameBottom.command = NULL;
-			}
-			if (Scr.PanFrameLeft.command != NULL)
-			{
-				free(Scr.PanFrameLeft.command);
-				Scr.PanFrameLeft.command = NULL;
-			}
-			if (Scr.PanFrameRight.command != NULL)
-			{
-				free(Scr.PanFrameRight.command);
-				Scr.PanFrameRight.command = NULL;
-			}
-		}
-		else
-		{
+		} else {
 			/* not a proper direction */
 			fvwm_msg(ERR, "EdgeCommand",
 				 "EdgeCommand [direction [function]]");
@@ -1808,15 +1822,14 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 
 	/* maybe something has changed so we adapt the pan frames */
 	checkPanFrames();
-
-	return;
 }
 
 /* EdgeLeaveCommand - binds a function to a pan frame Leave event */
 void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 {
 	direction_t direction;
-	char * command;
+	char *command;
+	struct monitor *m;
 
 	/* get the direction */
 	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
@@ -1833,78 +1846,79 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 			free(command);
 			command = NULL;
 		}
-		/* assign command to the edge(s) */
-		if (direction == DIR_N)
-		{
-			if (Scr.PanFrameTop.command_leave != NULL)
-			{
-				free(Scr.PanFrameTop.command_leave);
-			}
-			Scr.PanFrameTop.command_leave = command;
-		}
-		else if (direction == DIR_S)
-		{
-			if (Scr.PanFrameBottom.command_leave != NULL)
-			{
-				free(Scr.PanFrameBottom.command_leave);
-			}
-			Scr.PanFrameBottom.command_leave = command;
-		}
-		else if (direction == DIR_W)
-		{
-			if (Scr.PanFrameLeft.command_leave != NULL)
-			{
-				free(Scr.PanFrameLeft.command_leave);
-			}
-			Scr.PanFrameLeft.command_leave = command;
-		}
-		else if (direction == DIR_E)
-		{
-			if (Scr.PanFrameRight.command_leave != NULL)
-			{
-				free(Scr.PanFrameRight.command_leave);
-			}
-			Scr.PanFrameRight.command_leave = command;
-		}
-		else
-		{
-			/* this should never happen */
-			fvwm_msg(ERR, "EdgeLeaveCommand",
-				 "Internal error in CMD_EdgeLeaveCommand");
-		}
 
+		TAILQ_FOREACH(m, &monitor_q, entry) {
+			/* assign command to the edge(s) */
+			if (direction == DIR_N)
+			{
+				if (m->PanFrameTop.command_leave != NULL)
+				{
+					free(m->PanFrameTop.command_leave);
+				}
+				m->PanFrameTop.command_leave = command;
+			}
+			else if (direction == DIR_S)
+			{
+				if (m->PanFrameBottom.command_leave != NULL)
+				{
+					free(m->PanFrameBottom.command_leave);
+				}
+				m->PanFrameBottom.command_leave = command;
+			}
+			else if (direction == DIR_W)
+			{
+				if (m->PanFrameLeft.command_leave != NULL)
+				{
+					free(m->PanFrameLeft.command_leave);
+				}
+				m->PanFrameLeft.command_leave = command;
+			}
+			else if (direction == DIR_E)
+			{
+				if (m->PanFrameRight.command_leave != NULL)
+				{
+					free(m->PanFrameRight.command_leave);
+				}
+				m->PanFrameRight.command_leave = command;
+			}
+			else
+			{
+				/* this should never happen */
+				fvwm_msg(ERR, "EdgeLeaveCommand",
+					 "Internal error in CMD_EdgeLeaveCommand");
+			}
+		}
 	}
 	else
 	{
-
 		/* check if the argument does contain at least one token */
 		if (PeekToken(action , &action) == NULL)
 		{
 			/* Just plain EdgeLeaveCommand, so all edge commands are
 			 * removed */
-			if (Scr.PanFrameTop.command_leave != NULL)
-			{
-				free(Scr.PanFrameTop.command_leave);
-				Scr.PanFrameTop.command_leave = NULL;
+			TAILQ_FOREACH(m, &monitor_q, entry) {
+				if (m->PanFrameTop.command_leave != NULL)
+				{
+					free(m->PanFrameTop.command_leave);
+					m->PanFrameTop.command_leave = NULL;
+				}
+				if (m->PanFrameBottom.command_leave != NULL)
+				{
+					free(m->PanFrameBottom.command_leave);
+					m->PanFrameBottom.command_leave = NULL;
+				}
+				if (m->PanFrameLeft.command_leave != NULL)
+				{
+					free(m->PanFrameLeft.command_leave);
+					m->PanFrameLeft.command_leave = NULL;
+				}
+				if (m->PanFrameRight.command_leave != NULL)
+				{
+					free(m->PanFrameRight.command_leave);
+					m->PanFrameRight.command_leave = NULL;
+				}
 			}
-			if (Scr.PanFrameBottom.command_leave != NULL)
-			{
-				free(Scr.PanFrameBottom.command_leave);
-				Scr.PanFrameBottom.command_leave = NULL;
-			}
-			if (Scr.PanFrameLeft.command_leave != NULL)
-			{
-				free(Scr.PanFrameLeft.command_leave);
-				Scr.PanFrameLeft.command_leave = NULL;
-			}
-			if (Scr.PanFrameRight.command_leave != NULL)
-			{
-				free(Scr.PanFrameRight.command_leave);
-				Scr.PanFrameRight.command_leave = NULL;
-			}
-		}
-		else
-		{
+		} else {
 			/* not a proper direction */
 			fvwm_msg(ERR, "EdgeLeaveCommand",
 				 "EdgeLeaveCommand [direction [function]]");
@@ -1913,8 +1927,6 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 
 	/* maybe something has changed so we adapt the pan frames */
 	checkPanFrames();
-
-	return;
 }
 
 void CMD_EdgeThickness(F_CMD_ARGS)
@@ -2083,6 +2095,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	}
 
 	monitor_init_contents(action);
+	checkPanFrames();
 
 #if 0
 	TAILQ_FOREACH(m, &monitor_q, entry) {
