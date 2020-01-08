@@ -125,6 +125,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	int my_nc;
 	FvwmWindow *fw2;
 	Cursor cursor;
+	struct monitor	*m = monitor_get_current();
 
 	cursor = 0;
 	cname = PeekToken(action, &action);
@@ -417,12 +418,12 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	/* Do the menus for good measure */
 	SetMenuCursor(Scr.FvwmCursors[CRS_MENU]);
 
-	SafeDefineCursor(Scr.PanFrameTop.win, Scr.FvwmCursors[CRS_TOP_EDGE]);
+	SafeDefineCursor(m->PanFrameTop.win, Scr.FvwmCursors[CRS_TOP_EDGE]);
 	SafeDefineCursor(
-		Scr.PanFrameBottom.win, Scr.FvwmCursors[CRS_BOTTOM_EDGE]);
-	SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[CRS_LEFT_EDGE]);
+		m->PanFrameBottom.win, Scr.FvwmCursors[CRS_BOTTOM_EDGE]);
+	SafeDefineCursor(m->PanFrameLeft.win, Scr.FvwmCursors[CRS_LEFT_EDGE]);
 	SafeDefineCursor(
-		Scr.PanFrameRight.win, Scr.FvwmCursors[CRS_RIGHT_EDGE]);
+		m->PanFrameRight.win, Scr.FvwmCursors[CRS_RIGHT_EDGE]);
 	/* migo (04/Nov/1999): don't annoy users which use xsetroot */
 	if (index == CRS_ROOT)
 	{

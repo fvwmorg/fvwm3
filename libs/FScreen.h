@@ -54,6 +54,16 @@ typedef struct DesktopsInfo
 	struct DesktopsInfo *next;
 } DesktopsInfo;
 
+typedef struct
+{
+	Window win;
+	int isMapped;
+	/* command which is executed when the pan frame is entered */
+	char *command;
+	/* command which is executed when the pan frame is left*/
+	char *command_leave;
+} PanFrame;
+
 #define MONITOR_TRACKING_G 0x1
 #define MONITOR_TRACKING_M 0x2
 
@@ -106,6 +116,11 @@ struct monitor {
 		int MyDisplayWidth;
 		int MyDisplayHeight;
         } virtual_scr;
+
+	PanFrame PanFrameTop;
+	PanFrame PanFrameLeft;
+	PanFrame PanFrameRight;
+	PanFrame PanFrameBottom;
 
 	TAILQ_ENTRY(monitor) entry;
 };
