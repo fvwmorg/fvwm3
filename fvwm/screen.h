@@ -478,8 +478,14 @@ typedef struct ScreenInfo
 			fprintf(stderr, "CRAP - WHICH MONITOR?\n"); \
 			mnew = monitor_get_current(); \
 		} \
-		if (mnew != NULL) \
+		if (mnew != NULL) { \
+			if ((fw) && (fw)->m) { \
+				(fw)->m->win_count--; \
+			} \
+			(fw)->m_prev = (fw)->m; \
 			(fw)->m = mnew; \
+			(fw)->m->win_count++; \
+		} \
 	} while(0)
 
 /* A macro to to simplify he "ewmh desktop code" */

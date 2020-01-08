@@ -49,6 +49,7 @@
 
 extern ScreenInfo Scr;
 extern Display *dpy;
+extern char *monitor_to_track; 
 
 Pixel back_pix, fore_pix, hi_pix;
 Pixel focus_pix;
@@ -1981,6 +1982,10 @@ void AddNewWindow(PagerWindow *t)
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 	int i, x, y, w, h;
+	struct monitor	*mon;
+
+	if (monitor_to_track != NULL)
+		mon = monitor_by_name(monitor_to_track);
 
 	i = t->desk - desk1;
 	CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
@@ -1999,6 +2004,9 @@ void AddNewWindow(PagerWindow *t)
 
 	if ((i >= 0) && (i < ndesks))
 	{
+		if (monitor_to_track != NULL && (t->m != NULL && t->m != mon))
+			return;
+
 		t->PagerView = XCreateWindow(
 			dpy,Desks[i].w, x, y, w, h, 0, CopyFromParent,
 			InputOutput, CopyFromParent, valuemask, &attributes);

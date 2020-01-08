@@ -842,119 +842,136 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 {
 	FvwmWindow *t;
 	fmodule *mod = exc->m.module;
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m;
 
 	if (mod == NULL)
 	{
 		return;
 	}
-	SendPacket(mod, M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
-	SendPacket(
-		mod, M_NEW_PAGE, 7, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
-		(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
-		(long)m->virtual_scr.MyDisplayHeight,
-		(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-		(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
 
-	if (Scr.Hilite != NULL)
-	{
+	/* TA: 2020-01-09:  We send this for *ALL* configured monitors.
+	 *
+	 * Modules can filter out those monitor packets they're not interested
+	 * in.
+	 */
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		SendPacket(mod, M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
+			(long)m->number);
 		SendPacket(
-			mod, M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
-			(long)FW_W_FRAME(Scr.Hilite), (unsigned long)True,
-			(long)Scr.Hilite->hicolors.fore,
-			(long)Scr.Hilite->hicolors.back);
-	}
-	else
-	{
-		SendPacket(
-			mod, M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
-			(long)GetColor(DEFAULT_FORE_COLOR),
-			(long)GetColor(DEFAULT_BACK_COLOR));
-	}
-	if (Scr.DefaultIcon != NULL)
-	{
-		SendName(mod, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
-	}
+			mod, M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
+			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
+			(long)m->virtual_scr.MyDisplayHeight,
+			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
+			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+			(long)m->number);
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-	{
-		SendConfig(mod,M_CONFIGURE_WINDOW,t);
-		SendName(
-			mod, M_WINDOW_NAME, FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t, t->name.name);
-		SendName(
-			mod, M_ICON_NAME, FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t, t->icon_name.name);
-		SendName(
-			mod, M_VISIBLE_NAME, FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t, t->visible_name);
-		SendName(
-			mod, MX_VISIBLE_ICON_NAME, FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t,t->visible_icon_name);
-		if (t->icon_bitmap_file != NULL
-		    && t->icon_bitmap_file != Scr.DefaultIcon)
+		if (Scr.Hilite != NULL)
 		{
-			SendName(
-				mod, M_ICON_FILE, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->icon_bitmap_file);
+			SendPacket(
+				mod, M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
+				(long)FW_W_FRAME(Scr.Hilite), (unsigned long)True,
+				(long)Scr.Hilite->hicolors.fore,
+				(long)Scr.Hilite->hicolors.back);
+		}
+		else
+		{
+			SendPacket(
+				mod, M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
+				(long)GetColor(DEFAULT_FORE_COLOR),
+				(long)GetColor(DEFAULT_BACK_COLOR));
+		}
+		if (Scr.DefaultIcon != NULL)
+		{
+			SendName(mod, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
 		}
 
-		SendName(
-			mod, M_RES_CLASS, FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t, t->class.res_class);
-		SendName(
-			mod, M_RES_NAME, FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t, t->class.res_name);
-
-		if (IS_ICONIFIED(t) && !IS_ICON_UNMAPPED(t))
+		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
-			rectangle r;
-			Bool rc;
+			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+				continue;
 
-			rc = get_visible_icon_geometry(t, &r);
-			if (rc == True)
+			SendConfig(mod,M_CONFIGURE_WINDOW,t);
+			SendName(
+				mod, M_WINDOW_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->name.name);
+			SendName(
+				mod, M_ICON_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->icon_name.name);
+			SendName(
+				mod, M_VISIBLE_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->visible_name);
+			SendName(
+				mod, MX_VISIBLE_ICON_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t,t->visible_icon_name);
+			if (t->icon_bitmap_file != NULL
+			    && t->icon_bitmap_file != Scr.DefaultIcon)
+			{
+				SendName(
+					mod, M_ICON_FILE, FW_W(t), FW_W_FRAME(t),
+					(unsigned long)t, t->icon_bitmap_file);
+			}
+
+			SendName(
+				mod, M_RES_CLASS, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->class.res_class);
+			SendName(
+				mod, M_RES_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->class.res_name);
+
+			if (IS_ICONIFIED(t) && !IS_ICON_UNMAPPED(t))
+			{
+				rectangle r;
+				Bool rc;
+
+				rc = get_visible_icon_geometry(t, &r);
+				if (rc == True)
+				{
+					SendPacket(
+						mod, M_ICONIFY, 7, (long)FW_W(t),
+						(long)FW_W_FRAME(t), (unsigned long)t,
+						(long)r.x, (long)r.y,
+						(long)r.width, (long)r.height);
+				}
+			}
+			if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 			{
 				SendPacket(
 					mod, M_ICONIFY, 7, (long)FW_W(t),
 					(long)FW_W_FRAME(t), (unsigned long)t,
-					(long)r.x, (long)r.y,
-					(long)r.width, (long)r.height);
+					(long)0, (long)0, (long)0, (long)0);
+			}
+			if (FMiniIconsSupported && t->mini_icon != NULL)
+			{
+				SendFvwmPicture(
+					mod, M_MINI_ICON, FW_W(t), FW_W_FRAME(t),
+					(unsigned long)t, t->mini_icon,
+					t->mini_pixmap_file);
 			}
 		}
-		if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
-		{
-			SendPacket(
-				mod, M_ICONIFY, 7, (long)FW_W(t),
-				(long)FW_W_FRAME(t), (unsigned long)t,
-				(long)0, (long)0, (long)0, (long)0);
-		}
-		if (FMiniIconsSupported && t->mini_icon != NULL)
-		{
-			SendFvwmPicture(
-				mod, M_MINI_ICON, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->mini_icon,
-				t->mini_pixmap_file);
-		}
-	}
 
-	if (Scr.Hilite == NULL)
-	{
-		BroadcastPacket(
-			M_FOCUS_CHANGE, 5, (long)0, (long)0,
-			(unsigned long)True,
-			(long)GetColor(DEFAULT_FORE_COLOR),
-			(long)GetColor(DEFAULT_BACK_COLOR));
-	}
-	else
-	{
-		BroadcastPacket(
-			M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
-			(long)FW_W(Scr.Hilite), (unsigned long)True,
-			(long)Scr.Hilite->hicolors.fore,
-			(long)Scr.Hilite->hicolors.back);
+		if (Scr.Hilite == NULL)
+		{
+			BroadcastPacket(
+				M_FOCUS_CHANGE, 5, (long)0, (long)0,
+				(unsigned long)True,
+				(long)GetColor(DEFAULT_FORE_COLOR),
+				(long)GetColor(DEFAULT_BACK_COLOR));
+		}
+		else
+		{
+			BroadcastPacket(
+				M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
+				(long)FW_W(Scr.Hilite), (unsigned long)True,
+				(long)Scr.Hilite->hicolors.fore,
+				(long)Scr.Hilite->hicolors.back);
+		}
+
+		/* If we're tracking just the global monitor, then stop here
+		 * -- essentialy, we only need to send this informatio once.
+		 */
+		if (m->flags & MONITOR_TRACKING_G)
+			break;
 	}
 
 	SendPacket(mod, M_END_WINDOWLIST, 0);
-
-	return;
 }

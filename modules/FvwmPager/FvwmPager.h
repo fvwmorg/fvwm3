@@ -50,6 +50,7 @@ typedef struct pager_window
   char *t;
   Window w;
   Window frame;
+  struct monitor *m;
   int x;
   int y;
   int width;

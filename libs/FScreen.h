@@ -73,6 +73,7 @@ struct monitor {
 	struct coord 	 coord;
 	struct coord 	 coord_cpy;
 	int 		 number;
+	int		 win_count;
 	int		 flags;
 
 	/* info for some desktops; the first entries should be generic info
