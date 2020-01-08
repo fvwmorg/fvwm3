@@ -1773,6 +1773,9 @@ void EWMH_WindowDestroyed(void)
 {
 	struct monitor	*m = monitor_get_current();
 
+	if (m == NULL)
+		return;
+
 	EWMH_SetClientList(m);
 	EWMH_SetClientListStacking(m);
 	if (ewmhc.NeedsToCheckDesk)

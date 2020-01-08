@@ -991,6 +991,7 @@ typedef struct FvwmWindow
 	} scratch;
 
 	struct monitor *m;
+	struct monitor *m_prev;
 } FvwmWindow;
 
 /* ---------------------------- exported variables (globals) --------------- */

@@ -1291,11 +1291,12 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	if (deltax || deltay)
 	{
 		BroadcastPacket(
-			M_NEW_PAGE, 7, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
+			M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
 			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
+			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+			(long)m->number);
 
 #if 0
 		if (m->flags & MONITOR_TRACKING_G)
@@ -1474,7 +1475,8 @@ void goto_desk(int desk, struct monitor *m)
 		m->virtual_scr.CurrentDesk = desk;
 		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
-		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
+		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
+				(long)m->number);
 #if 0
 		if (m->flags & MONITOR_TRACKING_G)
 			monitor_init_contents("global");
@@ -2098,13 +2100,9 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	}
 
 	monitor_init_contents(action);
+	initPanFrames();
 	checkPanFrames();
-
-#if 0
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		EWMH_Init(m);
-	}
-#endif
+	raisePanFrames();
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
 		UPDATE_FVWM_SCREEN(t);
@@ -2130,11 +2128,12 @@ void CMD_DesktopSize(F_CMD_ARGS)
 	m->virtual_scr.VyMax = (val[1] <= 0) ?
 		0: val[1]*m->virtual_scr.MyDisplayHeight-m->virtual_scr.MyDisplayHeight;
 	BroadcastPacket(
-		M_NEW_PAGE, 7, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
+		M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
 		(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
 		(long)m->virtual_scr.MyDisplayHeight,
 		(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-		(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1));
+		(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+		(long)m->number);
 
 #if 0
 	if (m->flags & MONITOR_TRACKING_G)
@@ -2217,7 +2216,8 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		m->virtual_scr.CurrentDesk = val[0];
 		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
-		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
+		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
+			(long)m->number);
 #if 0
 		if (m->flags & MONITOR_TRACKING_G)
 			monitor_init_contents("global");
@@ -2235,7 +2235,8 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	}
 	else
 	{
-		BroadcastPacket(M_NEW_DESK, 1, (long)m->virtual_scr.CurrentDesk);
+		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
+				(long)m->number);
 	}
 	EWMH_SetCurrentDesktop(m);
 
@@ -2501,6 +2502,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		BroadcastConfigInfoString(msg);
 		free(msg);
 	}
+
 	EWMH_SetDesktopNames(m);
 
 	return;
