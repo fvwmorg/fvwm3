@@ -59,7 +59,6 @@ AddToFunc   StartFunction
     Exec exec fvwm-root $[FVWM_USERDIR]/.BGdefault
 + I TestRc (NoMatch) Exec exec fvwm-root \
     $[FVWM_DATADIR]/default-config/images/background/bg1.png
-+ I Test (Init) Module FvwmBanner
 + I Module FvwmButtons RightPanel
 + I Module FvwmEvent EventNewDesk
 
@@ -408,12 +407,10 @@ AddToMenu   MenuFvwmManPages "Help" Title
 + "FvwmAnimate"         ViewManPage FvwmAnimate
 + "FvwmAuto"            ViewManPage FvwmAuto
 + "FvwmBacker"          ViewManPage FvwmBacker
-+ "FvwmBanner"          ViewManPage FvwmBanner
 + "FvwmButtons"         ViewManPage FvwmButtons
 + "FvwmCommand"         ViewManPage FvwmCommand
 + "FvwmConsole"         ViewManPage FvwmConsole
 + "FvwmEvent"           ViewManPage FvwmEvent
-+ "FvwmForm"            ViewManPage FvwmForm
 + "FvwmIconMan"         ViewManPage FvwmIconMan
 + "FvwmIdent"           ViewManPage FvwmIdent
 + "FvwmPager"           ViewManPage FvwmPager
@@ -540,14 +537,6 @@ DestroyModuleConfig FvwmIdent:*
 *FvwmIdent: Colorset 10
 *FvwmIdent: Font "xft:Sans:size=10:antialias=True"
 
-# FvwmBanner
-#
-# This displays the Fvwm Logo for 5 seconds. This is displayed
-# when fvwm starts.
-DestroyModuleConfig FvwmBanner:*
-*FvwmBanner: NoDecor
-*FvwmBanner: Timeout 5
-
 # FvwmScript
 #
 # FvwmScript is a module that allows one to write custom desktop
@@ -647,11 +636,3 @@ DestroyModuleConfig FvwmIconMan:*
 DestroyModuleConfig EventNewDesk:*
 *EventNewDesk: PassID
 *EventNewDesk: new_desk ChangeDesk
-
-# FvwmForm
-#
-# FvwmForm is a module that can be used to build a GUI
-# form. Used with fvwm-menu-desktop-config.fpl.
-# This sets the default colorsets.
-*FvwmFormDefault: Colorset 10
-*FvwmFormDefault: ItemColorset 13
