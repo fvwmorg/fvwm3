@@ -661,10 +661,11 @@ void list_add(unsigned long *body)
 	t = Start;
 	prev = &Start;
 
-	newm = monitor_by_number(cfgpacket->monitor_id);
+	newm = monitor_by_number((int)cfgpacket->monitor_id);
 
 	if (newm == NULL) {
-		fprintf(stderr, "monitor was null with ID: %d\n", cfgpacket->monitor_id);
+		fprintf(stderr, "monitor was null with ID: %d\n",
+			(int)cfgpacket->monitor_id);
 		fprintf(stderr, "using current montior\n");
 
 		newm = monitor_get_current();
@@ -705,10 +706,11 @@ void list_configure(unsigned long *body)
 
   target_w = cfgpacket->w;
   t = Start;
-  newm = monitor_by_number(cfgpacket->monitor_id);
+  newm = monitor_by_number((int)cfgpacket->monitor_id);
 
   if (newm == NULL) {
-	  fprintf(stderr, "monitor was null with ID: %d\n", cfgpacket->monitor_id);
+	  fprintf(stderr, "monitor was null with ID: %d\n",
+		(int)cfgpacket->monitor_id);
 	  fprintf(stderr, "using current montior\n");
 
 	  newm = monitor_get_current();
