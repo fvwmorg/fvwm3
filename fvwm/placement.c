@@ -607,7 +607,8 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 	int y;
 	struct monitor	*m = NULL;
 
-	m = arg->place_fw->m;
+	m = (arg->place_fw && arg->place_fw->m) ?
+	    arg->place_fw->m : monitor_get_current();
 	x = arg->place_g.x;
 	y = arg->place_g.y;
 	if (arg->flags.use_percent == 1)
@@ -754,7 +755,8 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 		start = CP_GET_NEXT_STEP;
 	}
 
-	mon = arg->place_fw->m;
+	mon = (arg->place_fw && arg->place_fw->m) ?
+	    arg->place_fw->m : monitor_get_current();
 
 	/* Test window at far bottom of screen */
 	ynew = arg->page_p2.y;
