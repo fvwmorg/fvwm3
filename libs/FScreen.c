@@ -16,6 +16,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <errno.h>
 #include <err.h>
@@ -463,6 +464,10 @@ struct monitor *
 FindScreenOfXY(int x, int y)
 {
 	struct monitor	*m;
+	int		 xa, ya;
+
+	xa = abs(x);
+	ya = abs(y);
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		/* If we have more than one screen configured, then don't match
@@ -472,15 +477,15 @@ FindScreenOfXY(int x, int y)
 		if (no_of_screens > 0 &&
 		    strcmp(m->name, GLOBAL_SCREEN_NAME) == 0)
 			continue;
-		if (x >= m->coord.x && x < m->coord.x + m->coord.w &&
-		    y >= m->coord.y && y < m->coord.y + m->coord.h)
+		if (xa >= m->coord.x && xa < m->coord.x + m->coord.w &&
+		    ya >= m->coord.y && ya < m->coord.y + m->coord.h)
 			return (m);
 	}
 
 	if (m == NULL) {
 		fprintf(stderr, "%s: couldn't find screen at %d x %d "
 			"returning first monitor.  This is a bug.\n", __func__,
-			x, y);
+			xa, ya);
 		return TAILQ_FIRST(&monitor_q);
 	}
 
