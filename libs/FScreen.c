@@ -297,7 +297,7 @@ void FScreenInit(Display *dpy)
 	XRROutputInfo		*oinfo = NULL;
 	XRRCrtcInfo		*crtc_info = NULL;
 	RROutput		 rr_output, rr_output_primary;
-	struct monitor		*m, *m1;
+	struct monitor		*m;
 	struct coord		 coord;
 	int			 err_base = 0;
 	int			 is_randr_present = 0;
