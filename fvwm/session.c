@@ -1215,13 +1215,8 @@ LoadGlobalState(char *filename)
 			sscanf(s2, "%[^\n]", s1);
 			is_value = fxstrdup(s1);
 
-			fprintf(stderr, "GOT: %s -> %s\n", is_key, is_value);
-
-			if (is_key != NULL && is_value != NULL) {
-				fprintf(stderr, "INSERTING: %s -> %s\n",
-					is_key, is_value);
+			if (is_key != NULL && is_value != NULL)
 				insert_metainfo(is_key, is_value);
-			}
 
 			free(is_key);
 			free(is_value);
