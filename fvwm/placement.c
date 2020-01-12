@@ -1675,8 +1675,6 @@ static int __place_window(
 			FScreenGetScrRect(&arg, FSCREEN_BY_NAME,
 				&screen_g.x, &screen_g.y,
 				&screen_g.width, &screen_g.height);
-			fprintf(stderr, "MONITOR:  I SHOULD HAVE PLACED ON: '%s'\n",
-				arg.name);
 		}
 		else
 		{
