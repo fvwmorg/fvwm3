@@ -210,21 +210,6 @@ monitor_init_one(struct monitor *m, int w, int h)
 	m->Desktops->next = NULL;
 }
 
-static int
-number_of_desktops(struct monitor *m)
-{
-	DesktopsInfo	*d;
-	int		 count = 0;
-
-	d = m->Desktops->next;
-	while (d != NULL) {
-		count++;
-		d = d->next;
-	}
-
-	return (count);
-}
-
 void
 monitor_init_contents(const char *name)
 {
@@ -241,15 +226,12 @@ monitor_init_contents(const char *name)
 	int	 	 h;
 
 	if (strcmp(name, "global") == 0) {
-		fprintf(stderr, "%s: init monitor for global\n", __func__);
 		w = DisplayWidth(disp, DefaultScreen(disp));
 		h = DisplayHeight(disp, DefaultScreen(disp));
 		m = TAILQ_FIRST(&monitor_q);
 
 		if (m->Desktops_cpy != NULL) {
 			m->Desktops = m->Desktops_cpy;
-			fprintf(stderr, "Global, restoring previous desktop\n");
-			fprintf(stderr, "count is: %d\n", number_of_desktops(m));
 		} else
 			monitor_init_one(m, w, h);
 
@@ -277,7 +259,6 @@ monitor_init_contents(const char *name)
 	}
 
 	if (strcmp(name, "per-monitor") == 0) {
-		fprintf(stderr, "%s: init monitor for per-monitor\n", __func__);
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
 			m2->flags &= ~MONITOR_TRACKING_G;
 			m2->flags |= MONITOR_TRACKING_M;
@@ -404,10 +385,6 @@ static void
 monitor_create_randr_region(struct monitor *m, const char *name,
 	struct coord *coord, int is_primary)
 {
-	fprintf(stderr, "Monitor: %s %s (x: %d, y: %d, w: %d, h: %d)\n",
-		name, is_primary ? "(PRIMARY)" : "",
-		coord->x, coord->y, coord->w, coord->h);
-
 	m->win_count = 0; /* filled in via UPDATE_FVWM_SCREEN */
 
 	/* Always copy over the new coord information.  This may have changed
@@ -425,6 +402,10 @@ monitor_create_randr_region(struct monitor *m, const char *name,
 		free(m);
 		return;
 	}
+	fprintf(stderr, "Monitor: %s %s (x: %d, y: %d, w: %d, h: %d)\n",
+		name, is_primary ? "(PRIMARY)" : "",
+		coord->x, coord->y, coord->w, coord->h);
+
 	m->name = fxstrdup(name);
 	m->flags |= MONITOR_TRACKING_G;
 
