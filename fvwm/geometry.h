@@ -10,8 +10,8 @@ void gravity_get_naked_geometry(
 	int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
 void gravity_add_decoration(
 	int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
-void get_relative_geometry(rectangle *rel_g, rectangle *abs_g);
-void get_absolute_geometry(rectangle *abs_g, rectangle *rel_g);
+void get_relative_geometry(FvwmWindow *, rectangle *rel_g, rectangle *abs_g);
+void get_absolute_geometry(FvwmWindow *, rectangle *abs_g, rectangle *rel_g);
 void gravity_translate_to_northwest_geometry(
 	int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
 void gravity_translate_to_northwest_geometry_no_bw(
@@ -78,7 +78,7 @@ void modify_icon_position(FvwmWindow *fw, int dx, int dy);
 void set_icon_position(FvwmWindow *fw, int x, int y);
 void set_icon_picture_size(FvwmWindow *fw, int w, int h);
 void resize_icon_title_height(FvwmWindow *fw, int dh);
-void get_page_offset_rectangle(
+void get_page_offset_rectangle(FvwmWindow *,
 	int *ret_page_x, int *ret_page_y, rectangle *r);
 void get_page_offset(
 	int *ret_page_x, int *ret_page_y, FvwmWindow *fw);
