@@ -2547,11 +2547,11 @@ FvwmWindow *AddWindow(
 			constrain_size(
 				fw, NULL, &fw->g.max.width, &fw->g.max.height,
 				0, 0, CS_UPDATE_MAX_DEFECT);
-			get_relative_geometry(&fw->g.frame, &fw->g.max);
+			get_relative_geometry(fw, &fw->g.frame, &fw->g.max);
 		}
 		else
 		{
-			get_relative_geometry(&fw->g.frame, &fw->g.normal);
+			get_relative_geometry(fw, &fw->g.frame, &fw->g.normal);
 		}
 	}
 	else

@@ -1787,8 +1787,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		r.y = y;
 		r.width = width;
 		r.height = height;
-		get_absolute_geometry(&t, &r);
-		get_page_offset_rectangle(&page_x, &page_y, &t);
+		get_absolute_geometry(fw, &t, &r);
+		get_page_offset_rectangle(fw, &page_x, &page_y, &t);
 		if (!get_page_arguments(fw, action, &page_x, &page_y))
 		{
 			page_x = m->virtual_scr.Vx;
@@ -4656,7 +4656,7 @@ static void unmaximize_fvwm_window(
 	 * If the window was not maximized, then we use the window's normal
 	 * geometry.
 	 */
-	get_relative_geometry(&new_g, fw->fullscreen.was_maximized ?
+	get_relative_geometry(fw, &new_g, fw->fullscreen.was_maximized ?
 			&fw->fullscreen.g.max : &fw->g.normal);
 
 	if (fw->fullscreen.was_maximized)

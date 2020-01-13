@@ -319,7 +319,7 @@ static void apply_window_updates(
 		}
 		else
 		{
-			get_relative_geometry(&frame_g, new_g);
+			get_relative_geometry(t, &frame_g, new_g);
 		}
 		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
