@@ -86,10 +86,9 @@ void gravity_add_decoration(
 	return;
 }
 
-void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
+void get_relative_geometry(FvwmWindow *fw, rectangle *rel_g, rectangle *abs_g)
 {
-	/* FIXME - not sure this is correct. */
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	rel_g->x = abs_g->x - m->virtual_scr.Vx;
 	rel_g->y = abs_g->y - m->virtual_scr.Vy;
@@ -99,10 +98,10 @@ void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
 	return;
 }
 
-void get_absolute_geometry(rectangle *abs_g, rectangle *rel_g)
+void get_absolute_geometry(FvwmWindow *fw, rectangle *abs_g, rectangle *rel_g)
 {
 	/* FIXME - not sure this is correct. */
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	abs_g->x = rel_g->x + m->virtual_scr.Vx;
 	abs_g->y = rel_g->y + m->virtual_scr.Vy;
@@ -436,7 +435,7 @@ void get_unshaded_geometry(
 		{
 			*ret_g = fw->g.normal;
 		}
-		get_relative_geometry(ret_g, ret_g);
+		get_relative_geometry(fw, ret_g, ret_g);
 	}
 	else
 	{
@@ -454,7 +453,7 @@ void get_shaded_client_window_pos(
 
 	get_window_borders(fw, &b);
 	big_g = (IS_MAXIMIZED(fw)) ? fw->g.max : fw->g.normal;
-	get_relative_geometry(&big_g, &big_g);
+	get_relative_geometry(fw, &big_g, &big_g);
 	switch (SHADED_DIR(fw))
 	{
 	case DIR_S:
@@ -583,7 +582,7 @@ void get_client_geometry(
  * state */
 void update_relative_geometry(FvwmWindow *fw)
 {
-	get_relative_geometry(
+	get_relative_geometry(fw,
 		&fw->g.frame,
 		(IS_MAXIMIZED(fw)) ? &fw->g.max : &fw->g.normal);
 	if (IS_SHADED(fw))
@@ -1354,7 +1353,7 @@ void resize_icon_title_height(FvwmWindow *fw, int dh)
 	return;
 }
 
-void get_page_offset_rectangle(
+void get_page_offset_rectangle(FvwmWindow *fw,
 	int *ret_page_x, int *ret_page_y, rectangle *r)
 {
 	struct monitor	*m = monitor_get_current();
@@ -1382,7 +1381,7 @@ void get_page_offset(
 	r.y = fw->g.frame.y;
 	r.width = fw->g.frame.width;
 	r.height = fw->g.frame.height;
-	get_page_offset_rectangle(ret_page_x, ret_page_y, &r);
+	get_page_offset_rectangle(fw, ret_page_x, ret_page_y, &r);
 
 	return;
 }
