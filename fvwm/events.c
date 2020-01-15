@@ -1837,6 +1837,7 @@ void HandleRRScreenChangeNotify(XEvent *e)
 			if (t->m != NULL) {
 				asprintf(&move_cmd, "MoveToScreen %s", t->m->name);
 				execute_function_override_window(NULL, NULL, move_cmd, 0, t);
+				free(move_cmd);
 				break;
 			}
 		}
