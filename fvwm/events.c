@@ -1798,8 +1798,17 @@ void HandleRRScreenChangeNotify(XEvent *e)
 	FvwmWindow	*t;
 	struct monitor	*mcur, *m;
 
+	if (Scr.bo.do_debug_randr) {
+		fprintf(stderr, "Before RandR update...\n");
+		monitor_dump_state();
+	}
+
 	FScreenInit(dpy);
 
+	if (Scr.bo.do_debug_randr) {
+		fprintf(stderr, "After RandR update...\n");
+		monitor_dump_state();
+	}
 	mcur = monitor_get_current();
 
 	TAILQ_FOREACH(m, &monitor_q, entry)

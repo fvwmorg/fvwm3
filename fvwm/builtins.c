@@ -3705,6 +3705,23 @@ void CMD_BugOpts(F_CMD_ARGS)
 				break;
 			}
 		}
+		else if (StrEquals(opt, "DebugRandR"))
+		{
+			switch (toggle)
+			{
+			case -1:
+				Scr.bo.do_debug_randr ^= 1;
+				break;
+			case 0:
+			case 1:
+				Scr.bo.do_debug_randr = toggle;
+				break;
+			default:
+				Scr.bo.do_debug_randr = 0;
+				break;
+			}
+			monitor_dump_state();
+		}
 		else if (StrEquals(opt, "TransliterateUtf8"))
 		{
 			FiconvSetTransliterateUtf8(toggle);

@@ -134,6 +134,7 @@ struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_number(int);
 struct monitor  *monitor_get_current(void);
 void		 monitor_init_contents(const char *);
+void		 monitor_dump_state(void);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 

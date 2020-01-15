@@ -425,6 +425,7 @@ typedef struct ScreenInfo
 		unsigned do_raise_over_unmanaged : 1;
 		unsigned is_modality_evil : 1;
 		unsigned is_raise_hack_needed : 1;
+		unsigned do_debug_randr : 1;
 	} bo; /* bug workaround control options */
 	struct
 	{
