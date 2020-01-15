@@ -416,6 +416,38 @@ monitor_create_randr_region(struct monitor *m, const char *name,
 	}
 }
 
+void
+monitor_dump_state(void)
+{
+	struct monitor	*m = NULL, *mcur;
+
+	mcur = monitor_get_current();
+
+	fprintf(stderr, "Monitor Debug\n");
+	fprintf(stderr, "\tnumber of outputs: %d\n", monitor_get_count()); 
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m == NULL) {
+			fprintf(stderr, "monitor in list is NULL.  Bug!\n");
+			continue;
+		}
+		fprintf(stderr,
+			"\tName:\t%s\n"
+			"\tIs Primary:\t%s\n"
+			"\tIs Current:\t%s\n"
+			"\tCoords:\t{x: %d, y: %d, w: %d, h: %d}\n"
+			"\tDesktops:\t%s\n"
+			"\tFlags:%s\n\n",
+			m->name,
+			m->is_primary ? "yes" : "no",
+			m == mcur ? "yes" : "no",
+			m->coord.x, m->coord.y, m->coord.w, m->coord.h,
+			m->Desktops ? "yes" : "no",
+			m->flags & MONITOR_TRACKING_G ? "global" :
+			m->flags & MONITOR_TRACKING_M ? "per-monitor" : "Unknown"
+		);
+	}
+}
+
 static int
 monitor_check_stale(const char *name)
 {
