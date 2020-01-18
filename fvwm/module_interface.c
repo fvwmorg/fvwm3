@@ -26,7 +26,6 @@
 
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/ColorUtils.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
@@ -887,7 +886,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
-			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
 				continue;
 
 			SendConfig(mod,M_CONFIGURE_WINDOW,t);
@@ -969,7 +968,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		/* If we're tracking just the global monitor, then stop here
 		 * -- essentialy, we only need to send this informatio once.
 		 */
-		if (m->flags & MONITOR_TRACKING_G)
+		if (monitor_mode == MONITOR_TRACKING_G)
 			break;
 	}
 

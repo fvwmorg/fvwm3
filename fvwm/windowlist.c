@@ -25,7 +25,6 @@
 #include <limits.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/FGettext.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"

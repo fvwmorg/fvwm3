@@ -3720,7 +3720,7 @@ void CMD_BugOpts(F_CMD_ARGS)
 				Scr.bo.do_debug_randr = 0;
 				break;
 			}
-			monitor_dump_state();
+			monitor_dump_state(NULL);
 		}
 		else if (StrEquals(opt, "TransliterateUtf8"))
 		{

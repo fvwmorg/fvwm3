@@ -485,6 +485,7 @@ typedef struct ScreenInfo
 			} \
 			(fw)->m_prev = (fw)->m; \
 			(fw)->m = mnew; \
+			(fw)->Desk = (fw)->m->virtual_scr.CurrentDesk; \
 			(fw)->m->win_count++; \
 		} \
 	} while(0)

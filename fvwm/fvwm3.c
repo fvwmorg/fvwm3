@@ -42,7 +42,6 @@
 #include "libs/Grab.h"
 #include "libs/ColorUtils.h"
 #include "libs/Graphics.h"
-#include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"
@@ -2205,6 +2204,7 @@ int main(int argc, char **argv)
 		g_argv[argc] = NULL;
 	}
 
+	monitor_mode = MONITOR_TRACKING_G;
 	FScreenInit(dpy);
 	FScreenSelect(dpy);
 	x_fd = XConnectionNumber(dpy);
@@ -2490,8 +2490,12 @@ int main(int argc, char **argv)
 	Scr.gray_bitmap =
 		XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		EWMH_Init(m);
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->wants_refresh) {
+			EWMH_Init(m);
+			m->wants_refresh = 0;
+		}
+	}
 
 	DBUG("main", "Setting up rc file defaults...");
 	SetRCDefaults();

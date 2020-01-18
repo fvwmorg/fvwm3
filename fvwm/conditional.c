@@ -23,7 +23,6 @@
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
 #include "libs/wild.h"
-#include "libs/FScreen.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "fvwm.h"

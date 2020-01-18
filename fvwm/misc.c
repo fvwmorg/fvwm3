@@ -513,12 +513,21 @@ int truncate_to_multiple (int x, int m)
 Bool IsRectangleOnThisPage(const rectangle *rec, int desk)
 {
 	struct monitor	*m = monitor_get_current();
-
+#if 0
+	fprintf(stderr, "%s: I think I want monitor '%s'\n", __func__,
+		m->name);
+	fprintf(stderr, "%s: fw desk is: %d, mon desk is: %d\n", __func__,
+		desk, m->virtual_scr.CurrentDesk);
+	fprintf(stderr, "%s: fw rec: {x: %d, y: %d, w: %d, h: %d}\n", __func__,
+		rec->x, rec->y, rec->width, rec->height);
+	fprintf(stderr, "%s: mon: {MyDH: %d, MyDW: %d}\n", __func__,
+		m->virtual_scr.MyDisplayWidth, m->virtual_scr.MyDisplayHeight);
+#endif
 	return (desk == m->virtual_scr.CurrentDesk &&
 		rec->x + (signed int)rec->width > 0 &&
-		(rec->x < 0 || rec->x < m->virtual_scr.MyDisplayWidth) &&
+		(rec->x < 0 || rec->x <= m->virtual_scr.MyDisplayWidth) &&
 		rec->y + (signed int)rec->height > 0 &&
-		(rec->y < 0 || rec->y < m->virtual_scr.MyDisplayHeight)) ?
+		(rec->y < 0 || rec->y <= m->virtual_scr.MyDisplayHeight)) ?
 		True : False;
 }
 

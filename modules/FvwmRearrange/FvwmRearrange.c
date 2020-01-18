@@ -42,7 +42,6 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"

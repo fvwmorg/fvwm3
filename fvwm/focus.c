@@ -179,7 +179,6 @@ static Bool __check_allow_focus(
 	{
 		return True;
 	}
-
 	return False;
 }
 
@@ -671,6 +670,7 @@ static void __activate_window_by_command(
 	}
 
 	m = fw->m;
+	monitor_dump_state(m);
 	do_not_warp = StrEquals(PeekToken(action, NULL), "NoWarp");
 	if (!do_not_warp)
 	{
@@ -732,7 +732,7 @@ static void __activate_window_by_command(
 	}
 	UngrabEm(GRAB_NORMAL);
 
-	if (fw->Desk == m->virtual_scr.CurrentDesk)
+	//if (fw->Desk == m->virtual_scr.CurrentDesk)
 	{
 		FvwmWindow *sf;
 
