@@ -50,7 +50,6 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
-#include "libs/FScreen.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
 #include "libs/charmap.h"

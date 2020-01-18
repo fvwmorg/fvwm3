@@ -101,10 +101,7 @@
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
-#ifdef HAVE_XRANDR
-#include <X11/extensions/Xrandr.h>
 #include "libs/FScreen.h"
-#endif
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1793,20 +1790,13 @@ static void __refocus_stolen_focus_win(const evh_args_t *ea)
 /* ---------------------------- event handlers ----------------------------- */
 
 #ifdef HAVE_XRANDR
-void HandleRRScreenChangeNotify(XEvent *e)
+void HandleRRScreenChangeNotify(void)
 {
 	FvwmWindow	*t;
 	struct monitor	*mcur, *m;
 
 	if (Scr.bo.do_debug_randr) {
-		fprintf(stderr, "Before RandR update...\n");
-		monitor_dump_state();
-	}
-
-	FScreenInit(dpy);
-
-	if (Scr.bo.do_debug_randr) {
-		fprintf(stderr, "After RandR update...\n");
+		fprintf(stderr, "%s: monitor debug...\n", __func__);
 		monitor_dump_state();
 	}
 	mcur = monitor_get_current();
@@ -4190,9 +4180,25 @@ void dispatch_event(XEvent *e)
 	XFlush(dpy);
 
 #if HAVE_XRANDR
-	if (e->type - randr_event == RRScreenChangeNotify) {
+	XRRNotifyEvent *ne;
+	XRROutputChangeNotifyEvent *oe;
+
+	if (e->type - randr_event == RRNotify) {
 		XRRUpdateConfiguration(e);
-		HandleRRScreenChangeNotify(e);
+		ne = (XRRNotifyEvent *)e;
+		switch (ne->subtype) {
+		case RRNotify_OutputChange:
+			oe = (XRROutputChangeNotifyEvent *)e;
+			monitor_output_change(dpy, oe);
+			HandleRRScreenChangeNotify();
+			break;
+		case RRNotify_CrtcChange:
+			break;
+		case RRNotify_OutputProperty:
+			break;
+		default:
+			fprintf(stderr, "%s: unknown subtype\n", __func__);
+		}
 	}
 #endif
 

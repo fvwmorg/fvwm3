@@ -24,11 +24,10 @@
 #include "defaults.h"
 #include "fvwmlib.h"
 #include "Parse.h"
-#include "FScreen.h"
 #include "PictureBase.h"
+#include "FScreen.h"
 
 #ifdef HAVE_XRANDR
-#	include <X11/extensions/Xrandr.h>
 #	define IS_RANDR_ENABLED 1
 #else
 #	define IS_RANDR_ENABLED 0
@@ -269,7 +268,63 @@ monitor_init_contents(const char *name)
 void
 FScreenSelect(Display *dpy)
 {
-	XRRSelectInput(disp, DefaultRootWindow(disp), RRScreenChangeNotifyMask);
+	XRRSelectInput(disp, DefaultRootWindow(disp),
+		RRScreenChangeNotifyMask | RROutputChangeNotifyMask);
+}
+
+void
+monitor_output_change(Display *dpy, XRROutputChangeNotifyEvent *e)
+{
+	XRROutputInfo		*oinfo;
+	XRRScreenResources	*res;
+	XRRCrtcInfo             *crtc_info = NULL;
+	struct monitor		*m = NULL, *mret = NULL;
+	struct coord		 coord;
+	int 			 count = 0, rr_output_primary = 0;
+	int			 is_primary = 0;
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		count++;
+
+	res = XRRGetScreenResources(dpy, DefaultRootWindow(dpy));
+	if ((oinfo = XRRGetOutputInfo(dpy, res, e->output)) == NULL)
+		goto out;
+
+	if ((crtc_info = XRRGetCrtcInfo(dpy, res, oinfo->crtc)) == NULL)
+		goto out;
+
+	rr_output_primary = XRRGetOutputPrimary(dpy, DefaultRootWindow(dpy));
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		monitor_dump_state();
+		if (m->output == e->output) {
+			mret = m;
+			is_primary = m->is_primary;
+			break;
+		}
+	}
+
+	if (mret == NULL) {
+		m = monitor_new();
+		m->number = count++;
+		coord.x = crtc_info->x;
+		coord.y = crtc_info->y;
+		coord.w = crtc_info->width;
+		coord.h = crtc_info->height;
+		is_primary = rr_output_primary ==  e->output;
+		monitor_create_randr_region(m, oinfo->name, &coord, is_primary);
+	} else 	if (crtc_info != NULL) {
+		coord.x = crtc_info->x;
+		coord.y = crtc_info->y;
+		coord.w = crtc_info->width;
+		coord.h = crtc_info->height;
+		is_primary = rr_output_primary ==  e->output;
+		monitor_create_randr_region(mret, oinfo->name, &coord, is_primary);
+	}
+out:
+	XRRFreeOutputInfo(oinfo);
+	XRRFreeCrtcInfo(crtc_info);
+	XRRFreeScreenResources(res);
 }
 
 void FScreenInit(Display *dpy)
@@ -343,6 +398,8 @@ void FScreenInit(Display *dpy)
 
 		m = monitor_new();
 		m->number = no_of_screens;
+		m->output = rr_output;
+		m->crtc = oinfo->crtc;
 		coord.x = crtc_info->x;
 		coord.y = crtc_info->y;
 		coord.w = crtc_info->width;
@@ -368,6 +425,8 @@ void FScreenInit(Display *dpy)
 
 single_screen:
 	m = monitor_new();
+	m->output = -1;
+	m->crtc = -1;
 	m->number = -1;
 	coord.x = 0;
 	coord.y = 0;
@@ -399,7 +458,6 @@ monitor_create_randr_region(struct monitor *m, const char *name,
 		 */
 		fprintf(stderr, "%s: monitor '%s' already in list, so skipping\n",
 			__func__, name);
-		free(m);
 		return;
 	}
 	fprintf(stderr, "Monitor: %s %s (x: %d, y: %d, w: %d, h: %d)\n",

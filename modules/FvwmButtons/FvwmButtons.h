@@ -32,6 +32,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 #include "libs/Flocale.h"
+#include "libs/FScreen.h"
 
 /* ------------------------------- structs --------------------------------- */
 

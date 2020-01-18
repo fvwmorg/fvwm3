@@ -2,6 +2,10 @@
 #ifndef FVWMLIB_FSCRREN_H
 #define FVWMLIB_FSCRREN_H
 
+#ifdef HAVE_XRANDR
+#include <X11/extensions/Xrandr.h> 
+#endif
+
 /* needs X11/Xlib.h and X11/Xutil.h */
 
 typedef struct
@@ -69,7 +73,7 @@ typedef struct
 
 struct monitor {
 	char		*name;
-	int		 is_primary;
+	int		 is_primary, output, crtc;
 	struct coord 	 coord;
 	struct coord 	 coord_cpy;
 	int 		 number;
@@ -135,6 +139,7 @@ struct monitor  *monitor_by_number(int);
 struct monitor  *monitor_get_current(void);
 void		 monitor_init_contents(const char *);
 void		 monitor_dump_state(void);
+void		 monitor_output_change(Display *, XRROutputChangeNotifyEvent *);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 

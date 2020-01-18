@@ -56,7 +56,6 @@
 #include <X11/Xatom.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "functions.h"

@@ -26,7 +26,6 @@
 
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/ColorUtils.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"

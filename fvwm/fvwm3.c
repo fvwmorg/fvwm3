@@ -42,7 +42,6 @@
 #include "libs/Grab.h"
 #include "libs/ColorUtils.h"
 #include "libs/Graphics.h"
-#include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"

@@ -38,6 +38,8 @@
 #include <X11/cursorfont.h>
 #include <X11/Intrinsic.h>
 #include "libs/PictureBase.h"
+#include "libs/Fft.h"
+#include "libs/FRender.h"
 #include "libs/Flocale.h"
 #include "libs/fvwmrect.h"
 #include "libs/FScreen.h"

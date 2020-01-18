@@ -21,7 +21,6 @@
 
 #include <X11/keysym.h>
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/FGettext.h"
 #include "libs/Grab.h"
 #include "libs/Parse.h"

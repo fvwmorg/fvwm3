@@ -27,7 +27,6 @@
 #endif
 
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Parse.h"
 #include "libs/Picture.h"
