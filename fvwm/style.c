@@ -21,7 +21,6 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/charmap.h"
 #include "libs/modifiers.h"
 #include "libs/ColorUtils.h"

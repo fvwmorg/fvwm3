@@ -56,7 +56,6 @@
 #include <X11/Xatom.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "functions.h"
@@ -1066,7 +1065,7 @@ void EWMH_UpdateWorkArea(struct monitor *m)
 void EWMH_GetWorkAreaIntersection(
 	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type)
 {
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 	int nx,ny,nw,nh;
 	int area_x = m->Desktops->ewmh_working_area.x;
 	int area_y = m->Desktops->ewmh_working_area.y;
@@ -1099,10 +1098,13 @@ void EWMH_GetWorkAreaIntersection(
 	ny = max(*y, area_y);
 	nw = min(*x + *w, area_x + area_w) - nx;
 	nh = min(*y + *h, area_y + area_h) - ny;
-	*x = nx;
-	*y = ny;
-	*w = nw;
-	*h = nh;
+	*x = abs(nx);
+	*y = abs(ny);
+	*w = abs(nw);
+	*h = abs(nh);
+
+	fprintf(stderr, "%s: using: {x: %d, y: %d, w: %d, h: %d}\n", __func__,
+			*x, *y, *w, *h);
 
 	return;
 }

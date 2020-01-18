@@ -21,7 +21,6 @@
 
 #include <X11/keysym.h>
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/FGettext.h"
 #include "libs/Grab.h"
 #include "libs/Parse.h"
@@ -505,7 +504,7 @@ static void UnmapDesk(struct monitor *m, int desk, Bool grab)
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
-			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
 				continue;
 
 			if (t->Desk == desk)
@@ -564,7 +563,7 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
-			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
 				continue;
 
 			if (t->Desk == desk)
@@ -1302,8 +1301,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->number);
 
-		if (m->flags & MONITOR_TRACKING_G)
-			monitor_init_contents("global");
+		monitor_init_contents();
 
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
@@ -1411,7 +1409,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
 			/* FIXME: almost, but not quite! */
-			if ((!(m->flags & MONITOR_TRACKING_G)) && t->m != m)
+			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
 				continue;
 
 			if (IS_VIEWPORT_MOVED(t))
@@ -1458,6 +1456,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 
 void goto_desk(int desk, struct monitor *m)
 {
+	struct monitor	*m2 = NULL;
 	/* RBW - the unmapping operations are now removed to their own
 	 * functions so they can also be used by the new GoToDeskAndPage
 	 * command. */
@@ -1491,6 +1490,15 @@ void goto_desk(int desk, struct monitor *m)
 		 * pager doesn't maintain the stacking order. */
 		BroadcastRestackAllWindows();
 		EWMH_SetCurrentDesktop(m);
+
+		if (monitor_mode == MONITOR_TRACKING_M)
+			return;
+
+		TAILQ_FOREACH(m2, &monitor_q, entry) {
+			if (m2 == m)
+				continue;
+			m2->Desktops = m->Desktops;
+		}
 	}
 
 	return;
@@ -1507,6 +1515,7 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 
 	if (fw == NULL)
 	{
+		fprintf(stderr, "%s: got NULL fw\n", __func__);
 		return;
 	}
 
@@ -1544,6 +1553,8 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 			fw->Desk = desk;
 		}
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
+		    fw->Desk, m->name);
 	}
 	focus_grab_buttons_on_layer(fw->layer);
 	EWMH_SetWMDesktop(fw);
@@ -2098,7 +2109,16 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		return;
 	}
 
-	monitor_init_contents(action);
+	if (strcmp(action, "global") == 0)
+		monitor_mode = MONITOR_TRACKING_G;
+	else if (strcmp(action, "per-monitor") == 0)
+		monitor_mode = MONITOR_TRACKING_M;
+	else {
+		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action not recognised");
+		return;
+	}
+
+	monitor_init_contents();
 	initPanFrames();
 	checkPanFrames();
 	raisePanFrames();
@@ -2135,8 +2155,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->number);
 
-		if (m->flags & MONITOR_TRACKING_G)
-			monitor_init_contents("global");
+		monitor_init_contents();
 
 		/* FIXME: likely needs per-monitor considerations!!! */
 		checkPanFrames();

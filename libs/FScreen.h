@@ -2,6 +2,10 @@
 #ifndef FVWMLIB_FSCRREN_H
 #define FVWMLIB_FSCRREN_H
 
+#ifdef HAVE_XRANDR
+#include <X11/extensions/Xrandr.h> 
+#endif
+
 /* needs X11/Xlib.h and X11/Xutil.h */
 
 typedef struct
@@ -64,17 +68,23 @@ typedef struct
 	char *command_leave;
 } PanFrame;
 
-#define MONITOR_TRACKING_G 0x1
-#define MONITOR_TRACKING_M 0x2
+enum monitor_tracking
+{
+	MONITOR_TRACKING_G = 1,
+	MONITOR_TRACKING_M,
+};
+
+enum monitor_tracking monitor_mode;
 
 struct monitor {
 	char		*name;
-	int		 is_primary;
+	int		 is_primary, output, crtc;
 	struct coord 	 coord;
 	struct coord 	 coord_cpy;
 	int 		 number;
 	int		 win_count;
-	int		 flags;
+	int		 wants_refresh;
+	int		 is_disabled;
 
 	/* info for some desktops; the first entries should be generic info
          * correct for any desktop not in the list
@@ -133,8 +143,11 @@ struct monitor	*monitor_by_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_number(int);
 struct monitor  *monitor_get_current(void);
-void		 monitor_init_contents(const char *);
-void		 monitor_dump_state(void);
+void		 monitor_init_contents(void);
+void		 monitor_dump_state(struct monitor *);
+void		 monitor_output_change(Display *, XRROutputChangeNotifyEvent *);
+int		 monitor_get_all_widths(void);
+int		 monitor_get_all_heights(void);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 

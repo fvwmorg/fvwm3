@@ -101,10 +101,7 @@
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
-#ifdef HAVE_XRANDR
-#include <X11/extensions/Xrandr.h>
 #include "libs/FScreen.h"
-#endif
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1793,26 +1790,28 @@ static void __refocus_stolen_focus_win(const evh_args_t *ea)
 /* ---------------------------- event handlers ----------------------------- */
 
 #ifdef HAVE_XRANDR
-void HandleRRScreenChangeNotify(XEvent *e)
+void HandleRRScreenChangeNotify(void)
 {
 	FvwmWindow	*t;
 	struct monitor	*mcur, *m;
 
 	if (Scr.bo.do_debug_randr) {
-		fprintf(stderr, "Before RandR update...\n");
-		monitor_dump_state();
-	}
-
-	FScreenInit(dpy);
-
-	if (Scr.bo.do_debug_randr) {
-		fprintf(stderr, "After RandR update...\n");
-		monitor_dump_state();
+		fprintf(stderr, "%s: monitor debug...\n", __func__);
+		monitor_dump_state(NULL);
 	}
 	mcur = monitor_get_current();
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		EWMH_SetDesktopNames(m);
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->wants_refresh) {
+			fprintf(stderr, "%s: refreshing monitor %s\n", __func__,
+				m->name);
+			if (m->Desktops_cpy != NULL)
+				m->Desktops = m->Desktops_cpy;
+			else
+				EWMH_Init(m);
+			m->wants_refresh = 0;
+		}
+	}
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
 		/* If the monitor the window is on is no longer present in our
@@ -4190,9 +4189,31 @@ void dispatch_event(XEvent *e)
 	XFlush(dpy);
 
 #if HAVE_XRANDR
-	if (e->type - randr_event == RRScreenChangeNotify) {
+	XRRNotifyEvent *ne;
+	XRROutputChangeNotifyEvent *oe;
+
+	if (e->type - randr_event == RRNotify) {
 		XRRUpdateConfiguration(e);
-		HandleRRScreenChangeNotify(e);
+		ne = (XRRNotifyEvent *)e;
+		switch (ne->subtype) {
+		case RRNotify_OutputChange:
+			oe = (XRROutputChangeNotifyEvent *)e;
+			monitor_output_change(dpy, oe);
+			HandleRRScreenChangeNotify();
+			break;
+		case RRNotify_CrtcChange:
+			fprintf(stderr, "%s: got RRNotifyCRTCChange event\n",
+				__func__);
+			break;
+		case RRNotify_OutputProperty:
+			fprintf(stderr, "%s: got RRNotifyOutputProperty event\n",
+				__func__);
+			break;
+		default:
+			fprintf(stderr, "%s: unknown subtype\n", __func__);
+		}
+
+		return;
 	}
 #endif
 

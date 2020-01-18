@@ -22,7 +22,6 @@
 #include <X11/Xmd.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/Strings.h"
 #include "fvwm.h"
 #include "externs.h"

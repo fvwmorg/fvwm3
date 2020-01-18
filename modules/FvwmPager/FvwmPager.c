@@ -40,7 +40,6 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
-#include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/FRenderInit.h"
 #include "libs/Colorset.h"
