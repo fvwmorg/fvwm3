@@ -1301,7 +1301,22 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->number);
 
-		monitor_init_contents();
+		if (monitor_mode == MONITOR_TRACKING_G) {
+			struct monitor	*m2 = NULL;
+			TAILQ_FOREACH(m2, &monitor_q, entry) {
+				if (m2 == m)
+					continue;
+				m2->Desktops = m->Desktops;
+				m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
+				m2->virtual_scr.prev_page_x = m->virtual_scr.Vx;
+				m2->virtual_scr.prev_page_y = m->virtual_scr.Vy;
+				m2->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
+				m2->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
+				m2->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
+				m2->virtual_scr.Vx = m->virtual_scr.Vx;
+				m2->virtual_scr.Vy = m->virtual_scr.Vy;
+			}
+		}
 
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
@@ -1498,6 +1513,7 @@ void goto_desk(int desk, struct monitor *m)
 			if (m2 == m)
 				continue;
 			m2->Desktops = m->Desktops;
+			m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
 		}
 	}
 
