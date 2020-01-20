@@ -273,6 +273,9 @@ monitor_init_contents(void)
 		break;
 	}
 
+	if (monitor_get_count() == 1)
+		return;
+
 	fprintf(stderr, "%s: first monitor is: %s\n", __func__,
 			mfirst->name);
 
@@ -316,8 +319,7 @@ monitor_output_change(Display *dpy, XRROutputChangeNotifyEvent *e)
 	int 			 count = 0, rr_output_primary = 0;
 	int			 is_primary = 0;
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		count++;
+	count = monitor_get_count();
 
 	res = XRRGetScreenResources(dpy, DefaultRootWindow(dpy));
 	if ((oinfo = XRRGetOutputInfo(dpy, res, e->output)) == NULL)
@@ -591,7 +593,12 @@ monitor_check_stale(const char *name)
 int
 monitor_get_count(void)
 {
-	return (no_of_screens);
+	struct monitor	*m = NULL;
+	int		 c = 0;
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		c++;
+	return (c);
 }
 
 struct monitor *
@@ -608,7 +615,7 @@ FindScreenOfXY(int x, int y)
 		 * on the global screen, as that's separate to XY positioning
 		 * which is only concerned with the *specific* screen.
 		 */
-		if (no_of_screens > 0 &&
+		if (monitor_get_count() > 0 &&
 		    strcmp(m->name, GLOBAL_SCREEN_NAME) == 0)
 			continue;
 		if (xa >= m->coord.x && xa < m->coord.x + m->coord.w &&
