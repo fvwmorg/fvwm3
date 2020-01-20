@@ -443,7 +443,8 @@ static signed int expand_vars_extended(
 			/* trailing characters */
 			return -1;
 		}
-		string = GetDesktopName(fw->m, cs);
+		struct monitor	*mon = (fw && fw->m) ? fw->m : monitor_get_current();
+		string = GetDesktopName(mon, cs);
 		if (string == NULL)
 		{
 			const char *ddn = _("Desk");
