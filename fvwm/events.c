@@ -1821,6 +1821,10 @@ void HandleRRScreenChangeNotify(void)
 		struct monitor	*m = t->m;
 		char		*move_cmd = NULL;
 
+		update_relative_geometry(t);
+		update_absolute_geometry(t);
+		UPDATE_FVWM_SCREEN(t);
+
 		if (t->m_prev != NULL) {
 			/* If the window count on this monitor is 0, then it
 			 * must be a new monitor.
