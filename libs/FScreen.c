@@ -606,9 +606,16 @@ FindScreenOfXY(int x, int y)
 {
 	struct monitor	*m;
 	int		 xa, ya;
+	int		 all_widths, all_heights;
+
+	all_widths = monitor_get_all_widths();
+	all_heights = monitor_get_all_heights();
 
 	xa = abs(x);
 	ya = abs(y);
+
+	xa %= all_widths;
+	ya %= all_heights;
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		/* If we have more than one screen configured, then don't match
