@@ -1572,7 +1572,7 @@ void StartupStuff(void)
 	*/
 	if (Restarting)
 	{
-		unlink(state_filename);
+		//unlink(state_filename);
 	}
 	exc_destroy_context(exc);
 

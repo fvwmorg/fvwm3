@@ -73,6 +73,7 @@ extern int g_argc;
 typedef struct _match
 {
 	unsigned long win;
+	struct monitor *m;
 	char *client_id;
 	char *res_name;
 	char *res_class;
@@ -174,14 +175,21 @@ static char *unspace_string(const char *str)
 static int
 SaveGlobalState(FILE *f)
 {
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m;
+
 	fprintf(f, "[GLOBAL]\n");
-	fprintf(f, "  [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
-	fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
-		m->virtual_scr.Vx, m->virtual_scr.Vy, m->virtual_scr.VxMax, m->virtual_scr.VyMax);
-	fprintf(f, "  [SCROLL] %i %i %i %i %i\n",
-		m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY, Scr.ScrollDelay,
-		!!(Scr.flags.do_edge_wrap_x), !!(Scr.flags.do_edge_wrap_y));
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		fprintf(f, "  [MONITOR] %i\n", m->output);
+		fprintf(f, "      [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
+		fprintf(f, "      [VIEWPORT] %i %i %i %i\n",
+			m->virtual_scr.Vx, m->virtual_scr.Vy,
+			m->virtual_scr.VxMax, m->virtual_scr.VyMax);
+		fprintf(f, "      [SCROLL] %i %i %i %i %i\n",
+			m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY,
+			Scr.ScrollDelay,
+			!!(Scr.flags.do_edge_wrap_x), 
+			!!(Scr.flags.do_edge_wrap_y));
+	}
 	fprintf(f, "  [MISC] %i %i %i\n",
 		Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
 	fprintf(
@@ -551,6 +559,7 @@ SaveWindowStates(FILE *f)
 			ewin->hints.win_gravity,
 			ewin->g.max_offset.x, ewin->g.max_offset.y);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
+		fprintf(f, "  [MONITOR] %i\n", ewin->m->output);
 		/* set the layer to the default layer if the layer has been
 		 * set by an ewmh hint */
 		layer = get_layer(ewin);
@@ -1141,6 +1150,7 @@ LoadGlobalState(char *filename)
 	/* char s2[256]; */
 	char *is_key = NULL, *is_value = NULL;
 	int n, i1, i2, i3, i4;
+	struct monitor	*mon;
 
 	if (!does_file_version_match)
 	{
@@ -1176,10 +1186,15 @@ LoadGlobalState(char *filename)
 			   set_real_state_filename(s2);
 			*/
 		}
+		else if (!strcmp(s1, "[MONITOR]"))
+		{
+			sscanf(s, "%*s %i", &i2);
+			mon = monitor_by_output(i2); 
+		}
 		else if (!strcmp(s1, "[DESKTOP]"))
 		{
 			sscanf(s, "%*s %i", &i1);
-			goto_desk(i1, monitor_get_current());
+			goto_desk(i1, mon);
 		}
 		else if (!strcmp(s1, "[VIEWPORT]"))
 		{
@@ -1191,7 +1206,7 @@ LoadGlobalState(char *filename)
 			 Scr.VxMax = i3;
 			 Scr.VyMax = i4;
 			*/
-			MoveViewport(monitor_get_current(), i1, i2, True);
+			MoveViewport(mon, i1, i2, True);
 		}
 		else if (!strcmp(s1, "[KEY]"))
 		{
@@ -1489,6 +1504,13 @@ LoadWindowStates(char *filename)
 				matches[num_match - 1].wm_command[i] =
 					duplicate (s1);
 			}
+		}
+		else if (!strcmp(s1, "[MONITOR]"))
+		{
+			struct monitor *m;
+			sscanf(s, "%*s %i", &pos);
+			m = monitor_by_output(pos);
+			matches[num_match - 1].m = m;
 		}
 	}
 	fclose(f);
