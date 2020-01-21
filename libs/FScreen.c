@@ -548,6 +548,7 @@ monitor_dump_state(struct monitor *m)
 			"\t\tVxMax: %d, VyMax: %d, Vx: %d, Vy: %d\n"
 			"\t\tEdgeScrollX: %d, EdgeScrollY: %d\n"
 			"\t\tCurrentDesk: %d\n"
+			"\t\tCurrentPage: {x: %d, y: %d}\n"
 			"\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
 			"\tDesktops:\t%s\n"
 			"\tFlags:%s\n\n",
@@ -561,7 +562,10 @@ monitor_dump_state(struct monitor *m)
 			m2->virtual_scr.VxMax, m2->virtual_scr.VyMax,
 			m2->virtual_scr.Vx, m2->virtual_scr.Vy,
 			m2->virtual_scr.EdgeScrollX, m2->virtual_scr.EdgeScrollY,
-			m2->virtual_scr.CurrentDesk, m2->virtual_scr.MyDisplayWidth,
+			m2->virtual_scr.CurrentDesk,
+			(int)(m2->virtual_scr.Vx / m2->virtual_scr.MyDisplayWidth),
+			(int)(m2->virtual_scr.Vy / m2->virtual_scr.MyDisplayHeight),
+			m2->virtual_scr.MyDisplayWidth,
 			m2->virtual_scr.MyDisplayHeight,
 			m2->Desktops ? "yes" : "no",
 			monitor_mode == MONITOR_TRACKING_G ? "global" :
