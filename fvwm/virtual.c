@@ -1331,9 +1331,18 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		 * domivogt (29-Nov-1999): It's faster to first map windows
 		 * top to bottom and then unmap windows bottom up.
 		 */
+		/* TA: 2020-01-21:  This change of skipping monitors will
+		 * break using 'Scroll' and __drag_viewport().  We need to
+		 * ensure we handle this case properly.
+		 */
 		t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
 		while (t != &Scr.FvwmRoot)
 		{
+			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m) {
+				/*  Bump to next win...  */
+				t = get_next_window_in_stack_ring(t);
+				continue;
+			}
 			/*
 			 * If the window is moving into the viewport...
 			 */
@@ -1385,6 +1394,11 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		t1 = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
 		while (t1 != &Scr.FvwmRoot)
 		{
+			if ((monitor_mode == MONITOR_TRACKING_M) && t1->m != m) {
+				/*  Bump to next win...  */
+				t1 = get_prev_window_in_stack_ring(t1);
+				continue;
+			}
 			/*
 			 *If the window is not moving into the viewport...
 			 */
@@ -1424,7 +1438,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
 			/* FIXME: almost, but not quite! */
-			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
+			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
 				continue;
 
 			if (IS_VIEWPORT_MOVED(t))
