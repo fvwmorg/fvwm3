@@ -2473,10 +2473,6 @@ int main(int argc, char **argv)
 		state_filename = restart_state_filename;
 	}
 
-	/* This should be done early enough to have the window states loaded
-	 * before the first call to AddWindow. */
-	LoadWindowStates(state_filename);
-
 	InitVariables();
 	if (visualClass != -1 || visualId != -1)
 	{
@@ -2489,6 +2485,10 @@ int main(int argc, char **argv)
 
 	Scr.gray_bitmap =
 		XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
+
+	/* This should be done early enough to have the window states loaded
+	 * before the first call to AddWindow. */
+	LoadWindowStates(state_filename);
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->wants_refresh) {

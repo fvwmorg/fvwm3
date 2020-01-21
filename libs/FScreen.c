@@ -136,6 +136,27 @@ monitor_by_name(const char *name)
 }
 
 struct monitor *
+monitor_by_output(int output)
+{
+	struct monitor	*m, *mret = NULL;
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->output == output) {
+		       mret = m;
+		       break;
+		}
+	}
+
+	if (mret == NULL) {
+		fprintf(stderr, "%s: couldn't find monitor with output '%d', "
+			"returning first output.\n", __func__, output);
+		mret = TAILQ_FIRST(&monitor_q);
+	}
+
+	return (mret);
+}
+
+struct monitor *
 monitor_by_number(int number)
 {
 	struct monitor	*m, *mret = NULL;

@@ -84,6 +84,7 @@ typedef struct _match
 	int x_max, y_max, w_max, h_max;
 	int width_defect_max, height_defect_max;
 	int max_x_offset, max_y_offset;
+	struct monitor *m;
 	int desktop;
 	int layer;
 	int default_layer;
@@ -174,14 +175,21 @@ static char *unspace_string(const char *str)
 static int
 SaveGlobalState(FILE *f)
 {
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m;
+
 	fprintf(f, "[GLOBAL]\n");
-	fprintf(f, "  [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
-	fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
-		m->virtual_scr.Vx, m->virtual_scr.Vy, m->virtual_scr.VxMax, m->virtual_scr.VyMax);
-	fprintf(f, "  [SCROLL] %i %i %i %i %i\n",
-		m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY, Scr.ScrollDelay,
-		!!(Scr.flags.do_edge_wrap_x), !!(Scr.flags.do_edge_wrap_y));
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		fprintf(f, "  [MONITOR] %i\n", m->output);
+		fprintf(f, "      [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
+		fprintf(f, "      [VIEWPORT] %i %i %i %i\n",
+			m->virtual_scr.Vx, m->virtual_scr.Vy,
+			m->virtual_scr.VxMax, m->virtual_scr.VyMax);
+		fprintf(f, "      [SCROLL] %i %i %i %i %i\n",
+			m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY,
+			Scr.ScrollDelay,
+			!!(Scr.flags.do_edge_wrap_x), 
+			!!(Scr.flags.do_edge_wrap_y));
+	}
 	fprintf(f, "  [MISC] %i %i %i\n",
 		Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
 	fprintf(
@@ -550,6 +558,7 @@ SaveWindowStates(FILE *f)
 			ig.y + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vy : 0),
 			ewin->hints.win_gravity,
 			ewin->g.max_offset.x, ewin->g.max_offset.y);
+		fprintf(f, "  [MONITOR] %i\n", ewin->m->output);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
 		/* set the layer to the default layer if the layer has been
 		 * set by an ewmh hint */
@@ -1141,6 +1150,7 @@ LoadGlobalState(char *filename)
 	/* char s2[256]; */
 	char *is_key = NULL, *is_value = NULL;
 	int n, i1, i2, i3, i4;
+	struct monitor	*mon;
 
 	if (!does_file_version_match)
 	{
@@ -1176,10 +1186,15 @@ LoadGlobalState(char *filename)
 			   set_real_state_filename(s2);
 			*/
 		}
+		else if (!strcmp(s1, "[MONITOR]"))
+		{
+			sscanf(s, "%*s %i", &i2);
+			mon = monitor_by_output(i2);
+		}
 		else if (!strcmp(s1, "[DESKTOP]"))
 		{
 			sscanf(s, "%*s %i", &i1);
-			goto_desk(i1, monitor_get_current());
+			goto_desk(i1, mon);
 		}
 		else if (!strcmp(s1, "[VIEWPORT]"))
 		{
@@ -1191,7 +1206,7 @@ LoadGlobalState(char *filename)
 			 Scr.VxMax = i3;
 			 Scr.VyMax = i4;
 			*/
-			MoveViewport(monitor_get_current(), i1, i2, True);
+			MoveViewport(mon, i1, i2, True);
 		}
 		else if (!strcmp(s1, "[KEY]"))
 		{
@@ -1355,12 +1370,20 @@ LoadWindowStates(char *filename)
 			matches[num_match - 1].height_defect_max = 0;
 			matches[num_match - 1].icon_x = 0;
 			matches[num_match - 1].icon_y = 0;
+			matches[num_match - 1].m = NULL;
 			matches[num_match - 1].desktop = 0;
 			matches[num_match - 1].layer = 0;
 			matches[num_match - 1].default_layer = 0;
 			memset(&(matches[num_match - 1].flags), 0,
 			       sizeof(window_flags));
 			matches[num_match - 1].used = 0;
+		}
+		else if (!strcmp(s1, "[MONITOR]"))
+		{
+			struct monitor *m;
+			sscanf(s, "%*s %i", &pos);
+			m = monitor_by_output(pos);
+			matches[num_match - 1].m = m;
 		}
 		else if (!strcmp(s1, "[GEOMETRY]"))
 		{
@@ -1384,6 +1407,7 @@ LoadWindowStates(char *filename)
 		}
 		else if (!strcmp(s1, "[DESK]"))
 		{
+			struct monitor	*mon = matches[num_match - 1].m;
 			sscanf(s, "%*s %i",
 			       &(matches[num_match - 1].desktop));
 		}
@@ -1594,6 +1618,7 @@ MatchWinToSM(
 					win_opts->initial_icon_y -= m->virtual_scr.Vy;
 				}
 			}
+			ewin->m = matches[i].m;
 			ewin->g.normal.x = matches[i].x;
 			ewin->g.normal.y = matches[i].y;
 			ewin->g.normal.width = matches[i].w;

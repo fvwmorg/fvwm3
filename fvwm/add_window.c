@@ -85,6 +85,7 @@
 #include "colormaps.h"
 #include "decorations.h"
 #include "functions.h"
+#include "virtual.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -2520,7 +2521,10 @@ FvwmWindow *AddWindow(
 	used_sm = MatchWinToSM(fw, &state_args, win_opts);
 	if (used_sm)
 	{
-		struct monitor	*tm = monitor_get_current();
+		struct monitor	*tm = (fw && fw->m) ? fw->m :
+			monitor_get_current();
+
+		goto_desk(fw->Desk, tm);
 
 		/* read the requested absolute geometry */
 		gravity_translate_to_northwest_geometry_no_bw(
