@@ -234,9 +234,9 @@ monitor_init_one(struct monitor *m, int w, int h)
 		m->Desktops_cpy = NULL;
 	}
 	m->Desktops->ewmh_dyn_working_area.x =
-		m->Desktops->ewmh_working_area.x = 0; //m->coord.x;
+		m->Desktops->ewmh_working_area.x = m->coord.x;
 	m->Desktops->ewmh_dyn_working_area.y =
-		m->Desktops->ewmh_working_area.y = 0; //m->coord.y;
+		m->Desktops->ewmh_working_area.y = m->coord.y;
 	m->Desktops->ewmh_dyn_working_area.width =
 		m->Desktops->ewmh_working_area.width =
 		m->virtual_scr.MyDisplayWidth;
@@ -615,8 +615,8 @@ FindScreenOfXY(int x, int y)
 	all_widths = monitor_get_all_widths();
 	all_heights = monitor_get_all_heights();
 
-	xa = abs(x);
-	ya = abs(y);
+	xa = x;
+	ya = y;
 
 	xa %= all_widths;
 	ya %= all_heights;
@@ -630,8 +630,9 @@ FindScreenOfXY(int x, int y)
 		    strcmp(m->name, GLOBAL_SCREEN_NAME) == 0)
 			continue;
 		if (xa >= m->coord.x && xa < m->coord.x + m->coord.w &&
-		    ya >= m->coord.y && ya < m->coord.y + m->coord.h)
+		    ya >= m->coord.y && ya < m->coord.y + m->coord.h) {
 			return (m);
+		}
 	}
 
 	if (m == NULL) {

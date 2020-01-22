@@ -2593,6 +2593,8 @@ FvwmWindow *AddWindow(
 		gravity_constrain_size(
 			fw->hints.win_gravity, fw, &fw->g.frame, 0);
 		update_absolute_geometry(fw);
+
+		UPDATE_FVWM_SCREEN(fw);
 	}
 
 	/****** auxiliary window setup ******/
@@ -2750,6 +2752,8 @@ FvwmWindow *AddWindow(
 			exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_WCONTEXT);
 		CMD_Resize(NULL, exc2, "");
 		exc_destroy_context(exc2);
+
+		UPDATE_FVWM_SCREEN(fw);
 	}
 
 	/****** window colormap ******/

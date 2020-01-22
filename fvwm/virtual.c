@@ -1343,6 +1343,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 				t = get_next_window_in_stack_ring(t);
 				continue;
 			}
+			fprintf(stderr, "%s: 1: considering window (0x%x) on '%s'\n",
+				__func__, (int)FW_W(t), t->m->name);
 			/*
 			 * If the window is moving into the viewport...
 			 */
@@ -1399,6 +1401,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 				t1 = get_prev_window_in_stack_ring(t1);
 				continue;
 			}
+			fprintf(stderr, "%s: 2: considering window (0x%x) on '%s'\n",
+				__func__, (int)FW_W(t1), t1->m->name);
 			/*
 			 *If the window is not moving into the viewport...
 			 */
@@ -1441,6 +1445,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
 				continue;
 
+			fprintf(stderr, "%s: 3: considering window (0x%x) on '%s'\n",
+				__func__, (int)FW_W(t), t->m->name);
 			if (IS_VIEWPORT_MOVED(t))
 			{
 				/* Clear double move blocker. */

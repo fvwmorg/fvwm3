@@ -1713,7 +1713,7 @@ static int __place_window(
 	/* Don't alter the existing desk location during Capture/Recapture.  */
 	if (!win_opts->flags.do_override_ppos)
 	{
-		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
+		struct monitor	*m = monitor_get_current();
 		fw->Desk = m->virtual_scr.CurrentDesk;
 		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
 		    fw->Desk, m->name);
@@ -1725,7 +1725,7 @@ static int __place_window(
 	}
 	if (S_IS_STICKY_ACROSS_DESKS(SFC(pstyle->flags)))
 	{
-		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
+		struct monitor	*m = monitor_get_current();
 		fw->Desk = m->virtual_scr.CurrentDesk;
 		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
 		    fw->Desk, m->name);
@@ -1831,7 +1831,7 @@ static int __place_window(
 		{
 			reason->desk.do_switch_desk = 1;
 		}
-		goto_desk(fw->Desk, fw->m);
+		goto_desk(fw->Desk, m);
 	}
 	/* Don't move viewport if SkipMapping, or if recapturing the window,
 	 * adjust the coordinates later. Otherwise, just switch to the target
@@ -1884,6 +1884,8 @@ static int __place_window(
 	}
 	reason->pos.x = attr_g->x;
 	reason->pos.y = attr_g->y;
+
+	UPDATE_FVWM_SCREEN(fw);
 
 	return rc;
 }

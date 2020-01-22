@@ -1,0 +1,116 @@
+DestroyFunc 1
+AddToFunc 1
++ I Echo Performing for Screen $[pointer.screen] ...
++ I GotoDesk 0 0
++ I GotoPage 0 0
++ I Exec exec sh -c 'xterm -title A -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 0, Pages 0 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 2
+AddToFunc   2
++ I GotoDesk 0 0
++ I GotoPage 0 1
++ I Exec exec sh -c 'xterm -title B -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 0, Pages 0 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 3
+AddToFunc 3
++ I GotoDesk 0 0
++ I GotoPage 1 0
++ I Exec exec sh -c 'xterm -title C -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 0, Pages 1 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+
+DestroyFunc 4
+AddToFunc 4
++ I GotoDesk 0 0
++ I GotoPage 1 1
++ I Exec exec sh -c 'xterm -title D -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 0, Pages 1 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 5
+AddToFunc   5
++ I GotoDesk 0 1
++ I GotoPage 0 0
++ I Exec exec sh -c 'xterm -title E -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 1, Pages 0 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 6
+AddToFunc   6
++ I GotoDesk 0 1
++ I GotoPage 0 1
++ I Exec exec sh -c 'xterm -title F -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 1, Pages 0 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 7
+AddToFunc   7
++ I GotoDesk 0 1
++ I GotoPage 1 0
++ I Exec exec sh -c 'xterm -title G -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 1, Pages 1 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 8
+AddToFunc   8
++ I GotoDesk 0 1
++ I GotoPage 1 1
++ I Exec exec sh -c 'xterm -title H -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 1, Pages 1 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 9
+AddToFunc   9
++ I GotoDesk 0 2
++ I GotoPage 0 0
++ I Exec exec sh -c 'xterm -title I -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 2, Pages 0 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 10
+AddToFunc   10
++ I GotoDesk 0 2
++ I GotoPage 0 1
++ I Exec exec sh -c 'xterm -title J -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 2, Pages 0 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 11
+AddToFunc   11
++ I GotoDesk 0 2
++ I GotoPage 1 0
++ I Exec exec sh -c 'xterm -title K -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 2, Pages 1 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+Destroyfunc 12
+AddTofunc 12
++ I GotoDesk 0 2
++ I GotoPage 1 1
++ I Exec exec sh -c 'xterm -title L -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 2, Pages 1 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 13
+AddTofunc   13
++ I GotoDesk 0 3
++ I GotoPage 0 0
++ I Exec exec sh -c 'xterm -title M -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 3, Pages 0 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 14
+AddToFunc   14
++ I GotoDesk 0 3
++ I GotoPage 0 1
++ I Exec exec sh -c 'xterm -title N -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 3, Pages 0 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc 15
+AddToFunc   15
++ I GotoDesk 0 3
++ I GotoPage 1 0
++ I Exec exec sh -c 'xterm -title O -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 3, Pages 1 0, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
+
+DestroyFunc  16
+AddTofunc    16
++ I GotoDesk 0 3
++ I GotoPage 1 1
++ I Exec exec sh -c 'xterm -title P -geometry 80x6+32+32 -hold -e "echo Static: Screen: Virtual-0 Desk: 3, Pages 1 1, Dynamic: Desk: $[desk.n], $[page.nx] $[page.ny]"'
++ I Wait XTerm
++ I Echo Performing for Screen $[pointer.screen] done.
++ I GotoDesk 0 0
++ I GotoPage 0 0
