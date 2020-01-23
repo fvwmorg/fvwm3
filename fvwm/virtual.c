@@ -501,12 +501,12 @@ static void UnmapDesk(struct monitor *m, int desk, Bool grab)
 	for (t = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
 	     t != &Scr.FvwmRoot; t = get_prev_window_in_stack_ring(t))
 	{
+		if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
+			continue;
+
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
-			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
-				continue;
-
 			if (t->Desk == desk)
 			{
 				if (sf == t)
@@ -560,12 +560,12 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 	for (t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
 	     t != &Scr.FvwmRoot; t = get_next_window_in_stack_ring(t))
 	{
+		if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
+			continue;
+
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
-			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
-				continue;
-
 			if (t->Desk == desk)
 			{
 				map_window(t);
@@ -589,6 +589,8 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
+		if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
+			continue;
 		/*
 		  Autoplace any sticky icons, so that sticky icons from the old
 		  desk don't land on top of stationary ones on the new desk.
@@ -1276,10 +1278,11 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	  Identify the bounding rectangle that will be moved into
 	  the viewport.
 	*/
-	PageBottom    =  m->virtual_scr.MyDisplayHeight - deltay - 1;
-	PageRight     =  m->virtual_scr.MyDisplayWidth  - deltax - 1;
+	PageBottom    =  monitor_get_all_heights() - deltay - 1;
+	PageRight     =  monitor_get_all_widths()  - deltax - 1;
 	PageTop       =  0 - deltay;
 	PageLeft      =  0 - deltax;
+
 	if (deltax || deltay)
 	{
 		m->virtual_scr.prev_page_x = m->virtual_scr.Vx;
@@ -1297,8 +1300,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
 			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+			(long)((m->virtual_scr.VxMax / monitor_get_all_widths() ) + 1),
+			(long)((m->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
 			(long)m->number);
 
 		if (monitor_mode == MONITOR_TRACKING_G) {
@@ -1544,10 +1547,7 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	struct monitor	*m;
 
 	if (fw == NULL)
-	{
-		fprintf(stderr, "%s: got NULL fw\n", __func__);
 		return;
-	}
 
 	m = fw->m;
 
@@ -1583,8 +1583,6 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 			fw->Desk = desk;
 		}
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
-		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
-		    fw->Desk, m->name);
 	}
 	focus_grab_buttons_on_layer(fw->layer);
 	EWMH_SetWMDesktop(fw);
@@ -1663,35 +1661,38 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 
 	if (suffix[0] == 1)
 	{
-		*page_x = val[0] * m->virtual_scr.MyDisplayWidth + m->virtual_scr.Vx;
+		*page_x = val[0] * monitor_get_all_widths() + m->virtual_scr.Vx;
 	}
 	else if (suffix[0] == 2)
 	{
-		*page_x += val[0] * m->virtual_scr.MyDisplayWidth;
+		*page_x += val[0] * monitor_get_all_widths();
 	}
 	else if (val[0] >= 0)
 	{
-		*page_x = val[0] * m->virtual_scr.MyDisplayWidth;
+		*page_x = val[0] * monitor_get_all_widths();
 	}
 	else
 	{
-		*page_x = (val[0] + 1) * m->virtual_scr.MyDisplayWidth + m->virtual_scr.VxMax;
+		*page_x = (val[0] + 1) * monitor_get_all_widths() +
+			m->virtual_scr.VxMax;
 	}
 	if (suffix[1] == 1)
 	{
-		*page_y = val[1] * m->virtual_scr.MyDisplayHeight + m->virtual_scr.Vy;
+		*page_y = val[1] * monitor_get_all_heights() +
+			m->virtual_scr.Vy;
 	}
 	else if (suffix[1] == 2)
 	{
-		*page_y += val[1] * m->virtual_scr.MyDisplayHeight;
+		*page_y += val[1] * monitor_get_all_heights();
 	}
 	else if (val[1] >= 0)
 	{
-		*page_y = val[1] * m->virtual_scr.MyDisplayHeight;
+		*page_y = val[1] * monitor_get_all_heights();
 	}
 	else
 	{
-		*page_y = (val[1] + 1) * m->virtual_scr.MyDisplayHeight + m->virtual_scr.VyMax;
+		*page_y = (val[1] + 1) * monitor_get_all_heights() +
+			m->virtual_scr.VyMax;
 	}
 
 	/* limit to desktop size */
@@ -1710,11 +1711,13 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 	{
 		while (*page_x < 0)
 		{
-			*page_x += m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
+			*page_x += m->virtual_scr.VxMax +
+				monitor_get_all_widths();
 		}
 		while (*page_x > m->virtual_scr.VxMax)
 		{
-			*page_x -= m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
+			*page_x -= m->virtual_scr.VxMax +
+				monitor_get_all_widths();
 		}
 	}
 	if (limitdesky && !wrapy)
@@ -1732,11 +1735,13 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 	{
 		while (*page_y < 0)
 		{
-			*page_y += m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
+			*page_y += m->virtual_scr.VyMax +
+				monitor_get_all_heights();
 		}
 		while (*page_y > m->virtual_scr.VyMax)
 		{
-			*page_y -= m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
+			*page_y -= m->virtual_scr.VyMax +
+				monitor_get_all_heights();
 		}
 	}
 

@@ -531,11 +531,11 @@ static signed int expand_vars_extended(
 		break;
 	case VAR_PAGE_NX:
 		is_numeric = True;
-		val = (int)(m->virtual_scr.Vx / m->virtual_scr.MyDisplayWidth);
+		val = (int)(m->virtual_scr.Vx / monitor_get_all_widths());
 		break;
 	case VAR_PAGE_NY:
 		is_numeric = True;
-		val = (int)(m->virtual_scr.Vy / m->virtual_scr.MyDisplayHeight);
+		val = (int)(m->virtual_scr.Vy / monitor_get_all_heights());
 		break;
 	case VAR_W_ID:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))

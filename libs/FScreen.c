@@ -230,21 +230,8 @@ monitor_init_one(struct monitor *m, int w, int h)
 		m->virtual_scr.MyDisplayWidth = m->coord.x + m->coord.w;
 		m->virtual_scr.MyDisplayHeight = m->coord.y + m->coord.h;
 	}
-	m->virtual_scr.CurrentDesk = 0;
-	m->virtual_scr.Vx = 0;
-	m->virtual_scr.Vy = 0;
-	m->virtual_scr.VxMax = 2 * m->virtual_scr.MyDisplayWidth;
-	m->virtual_scr.VyMax = 2 * m->virtual_scr.MyDisplayHeight;
-	m->virtual_scr.prev_page_x = 0;
-	m->virtual_scr.prev_page_y = 0;
-	m->virtual_scr.prev_desk = 0;
-	m->virtual_scr.prev_desk_and_page_desk = 0;
-	m->virtual_scr.prev_desk_and_page_page_x = 0;
-	m->virtual_scr.prev_desk_and_page_page_y = 0;
-	m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
-		m->virtual_scr.MyDisplayWidth  / 100;
-	m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
-		m->virtual_scr.MyDisplayHeight / 100;
+	m->virtual_scr.VxMax = 2 * w; //m->virtual_scr.MyDisplayWidth;
+	m->virtual_scr.VyMax = 2 * h; //m->virtual_scr.MyDisplayHeight;
 
 	if (m->Desktops == NULL) {
 		m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
@@ -253,6 +240,10 @@ monitor_init_one(struct monitor *m, int w, int h)
 		m->Desktops->next = NULL;
 		m->wants_refresh = 1;
 		m->Desktops_cpy = NULL;
+		m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
+			m->virtual_scr.MyDisplayWidth  / 100;
+		m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
+			m->virtual_scr.MyDisplayHeight / 100;
 	}
 	m->Desktops->ewmh_dyn_working_area.x =
 		m->Desktops->ewmh_working_area.x = 0; //m->coord.x;
