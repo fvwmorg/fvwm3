@@ -474,7 +474,7 @@ typedef struct ScreenInfo
 		rectangle g; \
 		struct monitor *mnew; \
 		get_unshaded_geometry((fw), &g); \
-		mnew = FindScreenOfXY(g.x, g.y); \
+		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y); \
 		if (mnew == NULL) { \
 			fprintf(stderr, "CRAP - WHICH MONITOR?\n"); \
 			mnew = monitor_get_current(); \

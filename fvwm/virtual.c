@@ -501,12 +501,12 @@ static void UnmapDesk(struct monitor *m, int desk, Bool grab)
 	for (t = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
 	     t != &Scr.FvwmRoot; t = get_prev_window_in_stack_ring(t))
 	{
+		if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
+			continue;
+
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
-			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
-				continue;
-
 			if (t->Desk == desk)
 			{
 				if (sf == t)
@@ -560,12 +560,12 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 	for (t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
 	     t != &Scr.FvwmRoot; t = get_next_window_in_stack_ring(t))
 	{
+		if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
+			continue;
+
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
-			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
-				continue;
-
 			if (t->Desk == desk)
 			{
 				map_window(t);
@@ -589,6 +589,8 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
+		if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
+			continue;
 		/*
 		  Autoplace any sticky icons, so that sticky icons from the old
 		  desk don't land on top of stationary ones on the new desk.
@@ -1250,6 +1252,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	int PageBottom, PageRight;
 	int txl, txr, tyt, tyb;
 
+	fprintf(stderr, "%s: original: {x: %d, y: %d}\n", __func__, newx, newy);
+
 	if (grab)
 	{
 		MyXGrabServer(dpy);
@@ -1270,6 +1274,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	{
 		newy = 0;
 	}
+	fprintf(stderr, "%s: now: {x: %d, y: %d}\n", __func__, newx, newy);
 	deltay = m->virtual_scr.Vy - newy;
 	deltax = m->virtual_scr.Vx - newx;
 	/*
@@ -1280,6 +1285,10 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	PageRight     =  m->virtual_scr.MyDisplayWidth  - deltax - 1;
 	PageTop       =  0 - deltay;
 	PageLeft      =  0 - deltax;
+
+	fprintf(stderr, "%s: {deltax: %d, deltay: %d, "
+		"{PB: %d, PR: %d, PT: %d, PL: %d}\n", __func__,
+		deltax, deltay, PageBottom, PageRight, PageTop, PageLeft);
 	if (deltax || deltay)
 	{
 		m->virtual_scr.prev_page_x = m->virtual_scr.Vx;
@@ -1341,6 +1350,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m) {
 				/*  Bump to next win...  */
 				t = get_next_window_in_stack_ring(t);
+				fprintf(stderr, "Skipping window...\n");
 				continue;
 			}
 			/*
@@ -1360,6 +1370,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 				t->g.max.y -= deltay;
 				/*  Block double move.  */
 				SET_VIEWPORT_MOVED(t, 1);
+				fprintf(stderr,
+				    "Window (%s) changed...\n", t->name.name);
 			}
 			if ((txr >= PageLeft && txl <= PageRight
 			     && tyb >= PageTop && tyt <= PageBottom)
@@ -1386,6 +1398,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 						t->g.frame.y + deltay,
 						t->g.frame.width,
 						t->g.frame.height, False);
+				fprintf(stderr,
+				    "Window 2 (%s) changed...\n", t->name.name);
 				}
 			}
 			/*  Bump to next win...  */
@@ -1430,6 +1444,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 						t1->g.frame.y + deltay,
 						t1->g.frame.width,
 						t1->g.frame.height, False);
+				fprintf(stderr,
+				    "Window 3 (%s) changed...\n", t1->name.name);
 				}
 			}
 			/*  Bump to next win...  */
@@ -1739,6 +1755,8 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 			*page_y -= m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
 		}
 	}
+
+	fprintf(stderr, "%s: page_x: %d, page_y: %d\n", __func__, *page_x, *page_y);
 
 	return True;
 }

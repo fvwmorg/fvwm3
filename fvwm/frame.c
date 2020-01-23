@@ -374,6 +374,9 @@ static void __frame_setup_window(
 	}
 	if (new_g.x != fw->g.frame.x || new_g.y != fw->g.frame.y)
 	{
+		fprintf(stderr, "Moving '%s' from: {x: %d, y: %d} to:"
+			"{x: %d, y: %d}\n", fw->name.name, fw->g.frame.x,
+			fw->g.frame.y, new_g.x, new_g.y);
 		is_moved = True;
 	}
 	/* setup the window */
@@ -434,6 +437,7 @@ static void __frame_setup_window(
 	XFlush(dpy);
 	if (is_moved || is_resized)
 	{
+		fprintf(stderr, "Moved window %s...\n", fw->name.name); 
 		/* inform the modules of the change */
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 	}
