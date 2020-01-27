@@ -3,7 +3,7 @@
 This document attempts to aggregate the functionality of FVWM3 across a common
 and consistant command set.
 
-There is a hierarchical organsisation to identifing windows within FVWM3.
+There is a hierarchical organisation to identifing windows within FVWM3.
 
 ```
 Screen --> Desktops --> Windows
