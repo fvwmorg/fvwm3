@@ -103,6 +103,9 @@ void get_absolute_geometry(FvwmWindow *fw, rectangle *abs_g, rectangle *rel_g)
 	/* FIXME - not sure this is correct. */
 	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
+	fprintf(stderr, "%s: %s: Vx: %d, Vy: %d\n", __func__, m->name,
+		m->virtual_scr.Vx, m->virtual_scr.Vy);
+
 	abs_g->x = rel_g->x + m->virtual_scr.Vx;
 	abs_g->y = rel_g->y + m->virtual_scr.Vy;
 	abs_g->width = rel_g->width;
@@ -1389,7 +1392,7 @@ void get_page_offset(
 void get_page_offset_check_visible(
 	int *ret_page_x, int *ret_page_y, FvwmWindow *fw)
 {
-	if (IsRectangleOnThisPage(&fw->g.frame, fw->Desk))
+	if (IsRectangleOnThisPage(fw->m, &fw->g.frame, fw->Desk))
 	{
 		/* maximize on visible page if any part of the window is
 		 * visible */

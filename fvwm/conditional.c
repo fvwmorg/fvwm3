@@ -915,7 +915,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		}
 		else
 		{
-			is_on_page = !!IsRectangleOnThisPage(
+			is_on_page = !!IsRectangleOnThisPage(m,
 				&(fw->g.frame), m->virtual_scr.CurrentDesk);
 		}
 	}
@@ -923,7 +923,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	if (mask->my_flags.do_check_global_page ||
 	    mask->my_flags.do_check_desk_and_global_page)
 	{
-		is_on_global_page = !!IsRectangleOnThisPage(
+		is_on_global_page = !!IsRectangleOnThisPage(m,
 			&(fw->g.frame), m->virtual_scr.CurrentDesk);
 	}
 

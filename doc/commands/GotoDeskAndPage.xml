@@ -12,9 +12,10 @@
 <title>GotoDeskAndPage</title>
 
 <cmdsynopsis>
-	<command>GotoDeskAndPage</command
-	><group choice='plain'
-		><arg choice='plain'>prev</arg
+	<command>GotoDeskAndPage</command>
+		<group choice='plain' >
+			<arg choice='plain'>screen</arg>
+			<arg choice='plain'>prev</arg
 		><arg choice='plain'
 			><arg choice='plain'
 				><replaceable>desk</replaceable

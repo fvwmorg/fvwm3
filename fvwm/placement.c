@@ -1860,8 +1860,8 @@ static int __place_window(
 			else if (flags.do_honor_starts_on_page)
 			{
 				/*  Save the delta from current page */
-				pdeltax = fw->m->virtual_scr.Vx - px;
-				pdeltay = fw->m->virtual_scr.Vy - py;
+				pdeltax = m->virtual_scr.Vx - px;
+				pdeltay = m->virtual_scr.Vy - py;
 				reason->page.do_honor_starts_on_page = 1;
 			}
 		}

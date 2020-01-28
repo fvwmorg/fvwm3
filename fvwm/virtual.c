@@ -1278,8 +1278,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	  Identify the bounding rectangle that will be moved into
 	  the viewport.
 	*/
-	PageBottom    =  monitor_get_all_heights() - deltay - 1;
-	PageRight     =  monitor_get_all_widths()  - deltax - 1;
+	PageBottom    =  m->virtual_scr.MyDisplayHeight - deltay - 1;
+	PageRight     =  m->virtual_scr.MyDisplayWidth  - deltax - 1;
 	PageTop       =  0 - deltay;
 	PageLeft      =  0 - deltax;
 
@@ -1297,12 +1297,15 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	if (deltax || deltay)
 	{
 		BroadcastPacket(
-			M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
-			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
+			M_NEW_PAGE, 8,
+			(long)m->virtual_scr.Vx,
+			(long)m->virtual_scr.Vy,
+			(long)m->virtual_scr.CurrentDesk,
+			(long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / monitor_get_all_widths() ) + 1),
-			(long)((m->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
-			(long)m->number);
+			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth ) + 1),
+			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+			(long)m->output);
 
 		if (monitor_mode == MONITOR_TRACKING_G) {
 			struct monitor	*m2 = NULL;
@@ -1440,7 +1443,6 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		}
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
-			/* FIXME: almost, but not quite! */
 			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
 				continue;
 
@@ -1509,7 +1511,7 @@ void goto_desk(int desk, struct monitor *m)
 		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->number);
+				(long)m->output);
 
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
@@ -1594,19 +1596,33 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 {
 	int val[2];
 	int suffix[2];
+	int mw, mh;
 	char *token;
-	char *taction;
+	char *taction, *action_cpy;
 	int wrapx;
 	int wrapy;
 	int limitdeskx;
 	int limitdesky;
-	struct monitor	*m;
+	struct monitor	*m, *m_use;
 
 	wrapx = 0;
 	wrapy = 0;
 	limitdeskx = 1;
 	limitdesky = 1;
-	m = (fw && fw->m) ? fw->m : monitor_get_current();
+
+	m_use = (fw && fw->m) ? fw->m : monitor_get_current();
+	action_cpy = strdup(action);
+	token = PeekToken(action_cpy, &action_cpy);
+
+	m = monitor_by_name(token);
+	if (strcmp(m->name, token) != 0)
+		m = m_use;
+	else
+		PeekToken(action, &action);
+
+	mw = m->virtual_scr.MyDisplayWidth;
+	mh = m->virtual_scr.MyDisplayHeight;
+
 	for (; ; action = taction)
 	{
 		int do_reverse;
@@ -1618,6 +1634,7 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 			*page_y = m->virtual_scr.Vy;
 			return True;
 		}
+
 		if (StrEquals(token, "prev"))
 		{
 			/* last page selected */
@@ -1661,38 +1678,35 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 
 	if (suffix[0] == 1)
 	{
-		*page_x = val[0] * monitor_get_all_widths() + m->virtual_scr.Vx;
+		*page_x = val[0] * mw + m->virtual_scr.Vx;
 	}
 	else if (suffix[0] == 2)
 	{
-		*page_x += val[0] * monitor_get_all_widths();
+		*page_x += val[0] * mw;
 	}
 	else if (val[0] >= 0)
 	{
-		*page_x = val[0] * monitor_get_all_widths();
+		*page_x = val[0] * mw;
 	}
 	else
 	{
-		*page_x = (val[0] + 1) * monitor_get_all_widths() +
-			m->virtual_scr.VxMax;
+		*page_x = (val[0] + 1) * mw + m->virtual_scr.VxMax;
 	}
 	if (suffix[1] == 1)
 	{
-		*page_y = val[1] * monitor_get_all_heights() +
-			m->virtual_scr.Vy;
+		*page_y = val[1] * mh + m->virtual_scr.Vy;
 	}
 	else if (suffix[1] == 2)
 	{
-		*page_y += val[1] * monitor_get_all_heights();
+		*page_y += val[1] * mh;
 	}
 	else if (val[1] >= 0)
 	{
-		*page_y = val[1] * monitor_get_all_heights();
+		*page_y = val[1] * mh;
 	}
 	else
 	{
-		*page_y = (val[1] + 1) * monitor_get_all_heights() +
-			m->virtual_scr.VyMax;
+		*page_y = (val[1] + 1) * mh + m->virtual_scr.VyMax;
 	}
 
 	/* limit to desktop size */
@@ -1712,12 +1726,12 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 		while (*page_x < 0)
 		{
 			*page_x += m->virtual_scr.VxMax +
-				monitor_get_all_widths();
+				m->virtual_scr.MyDisplayWidth;
 		}
 		while (*page_x > m->virtual_scr.VxMax)
 		{
 			*page_x -= m->virtual_scr.VxMax +
-				monitor_get_all_widths();
+				m->virtual_scr.MyDisplayWidth;
 		}
 	}
 	if (limitdesky && !wrapy)
@@ -1736,12 +1750,12 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 		while (*page_y < 0)
 		{
 			*page_y += m->virtual_scr.VyMax +
-				monitor_get_all_heights();
+				m->virtual_scr.MyDisplayHeight;
 		}
 		while (*page_y > m->virtual_scr.VyMax)
 		{
 			*page_y -= m->virtual_scr.VyMax +
-				monitor_get_all_heights();
+				m->virtual_scr.MyDisplayHeight;
 		}
 	}
 
@@ -2177,20 +2191,23 @@ void CMD_DesktopSize(F_CMD_ARGS)
 
 	/* FIXME: this needs broadcasting for all modules when global used. */
 
+	monitor_init_contents();
+
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->virtual_scr.VxMax = (val[0] <= 0) ?
-			0: val[0]*m->virtual_scr.MyDisplayWidth-m->virtual_scr.MyDisplayWidth;
+			0: val[0]*m->virtual_scr.MyDisplayWidth - m->virtual_scr.MyDisplayWidth;
 		m->virtual_scr.VyMax = (val[1] <= 0) ?
-			0: val[1]*m->virtual_scr.MyDisplayHeight-m->virtual_scr.MyDisplayHeight;
+			0: val[1]*m->virtual_scr.MyDisplayHeight - m->virtual_scr.MyDisplayHeight;
 		BroadcastPacket(
-			M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
-			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
+			M_NEW_PAGE, 8,
+			(long)m->virtual_scr.Vx,
+			(long)m->virtual_scr.Vy,
+			(long)m->virtual_scr.CurrentDesk,
+			(long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
-			(long)m->number);
-
-		monitor_init_contents();
+			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth)),
+			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight)),
+			(long)m->output);
 
 		/* FIXME: likely needs per-monitor considerations!!! */
 		checkPanFrames();
@@ -2232,7 +2249,19 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 {
 	int val[3];
 	Bool is_new_desk;
-	struct monitor  *m = monitor_get_current();
+	char *action_cpy;
+	char *token;
+	struct monitor  *m_use = monitor_get_current(), *m;
+
+	action_cpy = strdup(action);
+	token = PeekToken(action_cpy, &action_cpy);
+
+	if ((m = monitor_by_name(token)) == NULL)
+		m = m_use;
+	else
+		PeekToken(action, &action);
+
+	//free(action_cpy);
 
 	/* FIXME: monitor needs broadcast when global. */
 
@@ -2268,7 +2297,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->number);
+			(long)m->output);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -2283,8 +2312,9 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	else
 	{
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->number);
+				(long)m->output);
 	}
+	BroadcastMonitorList(NULL);
 	EWMH_SetCurrentDesktop(m);
 
 	return;

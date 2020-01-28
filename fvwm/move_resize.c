@@ -5134,7 +5134,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 	}
 	else
 	{
-		if (!IsRectangleOnThisPage(&fw->g.frame,
+		if (!IsRectangleOnThisPage(fw->m, &fw->g.frame,
 		    fw->m->virtual_scr.CurrentDesk))
 		{
 			action = "";
