@@ -119,7 +119,9 @@ typedef struct
 #define MX_LEAVE_WINDOW           ((1<<2) | M_EXTENDED_MSG)
 #define MX_PROPERTY_CHANGE        ((1<<3) | M_EXTENDED_MSG)
 #define MX_REPLY		  ((1<<4) | M_EXTENDED_MSG)
-#define MAX_EXTENDED_MESSAGES     5
+#define MX_MONITOR_CHANGE         ((1<<5) | M_EXTENDED_MSG)
+#define MX_MONITOR_LIST           ((1<<6) | M_EXTENDED_MSG)
+#define MAX_EXTENDED_MESSAGES     7
 #define DEFAULT_XMSG_MASK         0x00000000
 #define MAX_XMSG_MASK             0x0000001f
 

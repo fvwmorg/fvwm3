@@ -1812,6 +1812,7 @@ void HandleRRScreenChangeNotify(void)
 			m->wants_refresh = 0;
 		}
 	}
+	BroadcastMonitorList(NULL);
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
 		/* If the monitor the window is on is no longer present in our
@@ -2956,7 +2957,7 @@ void HandleMapNotify(const evh_args_t *ea)
 
 	/* Make sure at least part of window is on this page before giving it
 	 * focus... */
-	is_on_this_page = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
+	is_on_this_page = IsRectangleOnThisPage(fw->m, &(fw->g.frame), fw->Desk);
 
 	/*
 	 * Need to do the grab to avoid race condition of having server send
@@ -3118,7 +3119,7 @@ void HandleMapRequestKeepRaised(
 	 * Make sure at least part of window is on this page
 	 * before giving it focus...
 	 */
-	is_on_this_page = IsRectangleOnThisPage(&(fw->g.frame), fw->Desk);
+	is_on_this_page = IsRectangleOnThisPage(fw->m, &(fw->g.frame), fw->Desk);
 	if (KeepRaised != None)
 	{
 		XRaiseWindow(dpy, KeepRaised);
@@ -3750,7 +3751,7 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 			Bool is_on_this_page;
 
 			is_on_this_page = IsRectangleOnThisPage(
-				&(fw->g.frame), fw->Desk);
+				fw->m, &(fw->g.frame), fw->Desk);
 			if (fw && is_on_this_page == True &&
 			    focus_is_focused(fw) &&
 			    FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(fw)))

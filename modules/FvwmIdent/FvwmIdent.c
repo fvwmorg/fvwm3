@@ -392,7 +392,7 @@ void list_configure(unsigned long *body)
 		if (FScreenIsEnabled()) {
 			free(target.monitor);
 			target.monitor = fxstrdup(
-				monitor_by_number((int)target.monitor_id)->name);
+				monitor_by_output((int)target.monitor_id)->name);
 		}
 		target.frame = cfgpacket->frame;
 		target.frame_x = cfgpacket->frame_x;

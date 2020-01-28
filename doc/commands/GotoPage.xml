@@ -12,9 +12,10 @@
 <title>GotoPage</title>
 
 <cmdsynopsis>
-	<command>GotoPage</command
-	><group choice='plain'
-		><arg choice='plain'>prev</arg
+	<command>GotoPage</command >
+		<group choice='plain' >
+			<arg choice='plain'>screen</arg>
+			<arg choice='plain'>prev</arg
 		><arg choice='plain'
 			><arg choice='opt'
 				><replaceable>options</replaceable
@@ -50,6 +51,8 @@ are
 <fvwmopt cmd="GotoPage" opt="wrapx"/> and <fvwmopt cmd="GotoPage" opt="wrapy"/>
 to wrap around the x or y coordinate when the viewport is moved
 beyond the border of the desktop.</para>
+
+<para><fvwmopt cmd="screen"/>The name of the RandR screen.</para>
 
 <para>To go to the last visited page use
 <fvwmopt cmd="GotoPage" opt="prev"/>
