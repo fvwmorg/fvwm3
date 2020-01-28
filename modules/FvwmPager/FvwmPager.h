@@ -3,6 +3,37 @@
 #include "libs/vpacket.h"
 #include "libs/Flocale.h"
 
+struct fpmonitor {
+	char		*name;
+	int		 is_primary, output;
+	struct coord 	 coord;
+	struct coord 	 coord_cpy;
+	int 		 number;
+	int		 win_count;
+	int		 wants_refresh;
+	int		 is_disabled;
+	int		 is_current;
+
+        struct {
+                int VxMax;
+                int VyMax;
+                int Vx;
+                int Vy;
+
+                int CurrentDesk;
+		int MyDisplayWidth;
+		int MyDisplayHeight;
+        } virtual_scr;
+
+	TAILQ_ENTRY(fpmonitor) entry;
+};
+TAILQ_HEAD(fpmonitors, fpmonitor);
+
+struct fpmonitors		 fp_monitor_q;
+struct fpmonitor		*fpmonitor_by_name(const char *);
+struct fpmonitor		*fpmonitor_by_output(int);
+struct fpmonitor		*fpmonitor_get_current(void);
+
 typedef struct ScreenInfo
 {
   unsigned long screen;
@@ -50,7 +81,7 @@ typedef struct pager_window
   char *t;
   Window w;
   Window frame;
-  struct monitor *m;
+  struct fpmonitor *m;
   int x;
   int y;
   int width;

@@ -308,7 +308,7 @@ action_flags *__get_allowed_actions(const FvwmWindow *fw)
 		(unsigned long)(0),			\
 		&(*(_fw))->Desk,			\
 		(unsigned long)(0),			\
-		&(*(_fw))->m->number,			\
+		&(*(_fw))->m->output,			\
 		(unsigned long)(0),			\
 		&(*(_fw))->layer,			\
 		(unsigned long)(0),			\
@@ -453,6 +453,40 @@ void BroadcastName(
 	free(body);
 
 	return;
+}
+
+void BroadcastMonitorList(fmodule *this)
+{
+	char		*name;
+	struct monitor	*m, *mcur;
+	fmodule_list_itr moditr;
+	fmodule *module;
+
+	module_list_itr_init(&moditr);
+	
+	mcur = monitor_get_current();
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d",
+			m->name,
+			m->output,
+			m == mcur,
+			m->virtual_scr.MyDisplayWidth,
+			m->virtual_scr.MyDisplayHeight,
+			m->virtual_scr.Vx,
+			m->virtual_scr.Vy,
+			m->virtual_scr.VxMax,
+			m->virtual_scr.VyMax
+		);
+
+		if (this != NULL)
+			SendName(this, M_CONFIG_INFO, 0, 0, 0, name);
+		else {
+			while ((module = module_list_itr_next(&moditr)) != NULL)
+				SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
+		}
+		fprintf(stderr, "Sent: <<%s>>\n", name);
+		free(name);
+	}
 }
 
 void BroadcastWindowIconNames(FvwmWindow *fw, Bool window, Bool icon)
@@ -855,14 +889,14 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	 */
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		SendPacket(mod, M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->number);
+			(long)m->output);
 		SendPacket(
 			mod, M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
 			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
-			(long)m->number);
+			(long)m->output);
 
 		if (Scr.Hilite != NULL)
 		{

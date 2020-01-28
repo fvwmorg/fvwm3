@@ -1300,9 +1300,9 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
 			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / monitor_get_all_widths() ) + 1),
-			(long)((m->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
-			(long)m->number);
+			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth ) + 1),
+			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+			(long)m->output);
 
 		if (monitor_mode == MONITOR_TRACKING_G) {
 			struct monitor	*m2 = NULL;
@@ -1509,7 +1509,7 @@ void goto_desk(int desk, struct monitor *m)
 		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->number);
+				(long)m->output);
 
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
@@ -2177,6 +2177,8 @@ void CMD_DesktopSize(F_CMD_ARGS)
 
 	/* FIXME: this needs broadcasting for all modules when global used. */
 
+	monitor_init_contents();
+
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->virtual_scr.VxMax = (val[0] <= 0) ?
 			0: val[0]*m->virtual_scr.MyDisplayWidth-m->virtual_scr.MyDisplayWidth;
@@ -2188,9 +2190,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
-			(long)m->number);
-
-		monitor_init_contents();
+			(long)m->output);
 
 		/* FIXME: likely needs per-monitor considerations!!! */
 		checkPanFrames();
@@ -2268,7 +2268,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->number);
+			(long)m->output);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -2283,8 +2283,9 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	else
 	{
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->number);
+				(long)m->output);
 	}
+	BroadcastMonitorList(NULL);
 	EWMH_SetCurrentDesktop(m);
 
 	return;

@@ -350,6 +350,11 @@ void send_ignore_modifiers(fmodule *module)
 	return;
 }
 
+void send_monitor_list(fmodule *module)
+{
+	BroadcastMonitorList(module);
+}
+
 void CMD_Send_ConfigInfo(F_CMD_ARGS)
 {
 	struct moduleInfoList *t;
@@ -359,6 +364,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 	int match_len = 0;
 	fmodule *mod = exc->m.module;
 
+	send_monitor_list(mod);
 	send_desktop_geometry(mod);
 	/* send ImagePath and ColorLimit first */
 	send_image_path(mod);

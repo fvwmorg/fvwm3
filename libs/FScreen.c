@@ -156,40 +156,6 @@ monitor_by_output(int output)
 	return (mret);
 }
 
-struct monitor *
-monitor_by_number(int number)
-{
-	struct monitor	*m, *mret = NULL;
-
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->number == number) {
-		       mret = m;
-		       break;
-		}
-	}
-
-	/* If 'm' is still NULL here, and the monitor number is -1, return
-	 * the global  monitor instead.  This check can only succeed if we've
-	 * requested the global screen whilst XRandR is in use, since the global
-	 * monitor isn't stored in the monitor list directly.
-	 */
-	if (mret == NULL && number == -1)
-		return (monitor_by_name(GLOBAL_SCREEN_NAME));
-
-	/* Then we couldn't find the named monitor at all.  Return the current
-	 * monitor instead.
-	 */
-	if (mret == NULL) {
-		mret = monitor_get_current();
-		fprintf(stderr, "%s: couldn't find monitor id: %d\n", __func__,
-		    number);
-		fprintf(stderr, "%s: returning current monitor (%s)\n",
-		    __func__, mret->name);
-	}
-
-	return (mret);
-}
-
 int
 monitor_get_all_widths(void)
 {
@@ -367,7 +333,6 @@ monitor_output_change(Display *dpy, XRROutputChangeNotifyEvent *e)
 
 	if (mret == NULL && crtc_info != NULL) {
 		m = monitor_new();
-		m->number = count++;
 		m->output = e->output;
 		m->crtc = oinfo->crtc;
 		m->is_disabled = 0;
@@ -465,7 +430,6 @@ void FScreenInit(Display *dpy)
 		}
 
 		m = monitor_new();
-		m->number = no_of_screens;
 		m->output = rr_output;
 		m->crtc = oinfo->crtc;
 		m->wants_refresh = 1;
@@ -491,7 +455,6 @@ single_screen:
 	m = monitor_new();
 	m->output = -1;
 	m->crtc = -1;
-	m->number = -1;
 	coord.x = 0;
 	coord.y = 0;
 	coord.w = DisplayWidth(disp, DefaultScreen(disp));

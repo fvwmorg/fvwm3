@@ -153,6 +153,50 @@ static void SetDeskLabel(int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
 
+struct fpmonitor *
+fpmonitor_get_current(void)
+{
+	struct fpmonitor *m;
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (m->is_current)
+			return (m);
+	}
+}
+
+struct fpmonitor *
+fpmonitor_by_name(const char *name)
+{
+	struct fpmonitor	*m;
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (strcmp(m->name, name) == 0)
+			return (m);
+	}
+}
+
+struct fpmonitor *
+fpmonitor_by_output(int output)
+{
+	struct fpmonitor	*m;
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (m->output == output)
+			return (m);
+	}
+}
+
+void
+dump_scr(void)
+{
+	fprintf(stderr, "scr: {MyDisplayWidth: %d, MyDisplayHeight: %d, "
+		"VxMax: %d, VyMax: %d, VxPages: %d, VyPages: %d, "
+		"VWidth: %d,VVHeight: %d, Vx: %d, Vy: %d, CurrentDesk: %d\n",
+		Scr.MyDisplayWidth, Scr.MyDisplayHeight, Scr.VxMax, Scr.VyMax,
+		Scr.VxPages, Scr.VyPages, Scr.VWidth, Scr.VHeight, Scr.Vx,
+		Scr.Vy, Scr.CurrentDesk);
+}
+
 /*
  *
  *  Procedure:
@@ -183,6 +227,8 @@ int main(int argc, char **argv)
 	      VERSION);
       exit(1);
     }
+
+  TAILQ_INIT(&fp_monitor_q);
 
 #ifdef HAVE_SIGACTION
   {
@@ -595,7 +641,7 @@ void handle_config_win_package(PagerWindow *t,
 	t->frame_y = cfgpacket->frame_y;
 	t->frame_width = cfgpacket->frame_width;
 	t->frame_height = cfgpacket->frame_height;
-	t->m = monitor_by_number(cfgpacket->monitor_id);
+	t->m = fpmonitor_by_output(cfgpacket->monitor_id);
 
 	t->desk = cfgpacket->desk;
 
@@ -655,19 +701,19 @@ void list_add(unsigned long *body)
 	PagerWindow *t,**prev;
 	int i=0;
 	struct ConfigWinPacket  *cfgpacket = (void *) body;
-	struct monitor *newm;
+	struct fpmonitor *newm;
 
 	t = Start;
 	prev = &Start;
 
-	newm = monitor_by_number((int)cfgpacket->monitor_id);
+	newm = fpmonitor_by_output((int)cfgpacket->monitor_id);
 
 	if (newm == NULL) {
 		fprintf(stderr, "monitor was null with ID: %d\n",
 			(int)cfgpacket->monitor_id);
 		fprintf(stderr, "using current montior\n");
 
-		newm = monitor_get_current();
+		newm = fpmonitor_get_current();
 	}
 
 	while(t != NULL)
@@ -701,18 +747,18 @@ void list_configure(unsigned long *body)
   Window target_w;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
   Bool is_new_desk;
-  struct monitor *newm;
+  struct fpmonitor *newm;
 
   target_w = cfgpacket->w;
   t = Start;
-  newm = monitor_by_number((int)cfgpacket->monitor_id);
+  newm = fpmonitor_by_output((int)cfgpacket->monitor_id);
 
   if (newm == NULL) {
 	  fprintf(stderr, "monitor was null with ID: %d\n",
 		(int)cfgpacket->monitor_id);
 	  fprintf(stderr, "using current montior\n");
 
-	  newm = monitor_get_current();
+	  newm = fpmonitor_get_current();
   }
 
   /* FIXME: need to handle things when DesktopConfiguration is global --
@@ -843,9 +889,9 @@ void list_focus(unsigned long *body)
 void list_new_page(unsigned long *body)
 {
 	int mon_num = body[7];
-	struct monitor *m;
+	struct fpmonitor *m;
 
-	m = monitor_by_number(mon_num);
+	m = fpmonitor_by_output(mon_num);
 
 	if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 		return;
@@ -868,6 +914,7 @@ void list_new_page(unsigned long *body)
     Scr.VyMax = Scr.VHeight - Scr.MyDisplayHeight;
     ReConfigure();
   }
+  dump_scr();
   MovePage(False);
   MoveStickyWindow(True, False);
   Hilight(FocusWin,True);
@@ -886,9 +933,9 @@ void list_new_desk(unsigned long *body)
   int change_ballooncs = -1;
   int change_highcs = -1;
   int mon_num = body[1];
-  struct monitor *m;
+  struct fpmonitor *m;
 
-  m = monitor_by_number(mon_num);
+  m = fpmonitor_by_output(mon_num);
 
   if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 	  return;
@@ -1200,10 +1247,10 @@ void list_window_name(unsigned long *body,unsigned long type)
 {
   PagerWindow *t;
   Window target_w;
-  struct monitor *m = NULL;
+  struct fpmonitor *m = NULL;
 
   if (monitor_to_track != NULL)
-	  m = monitor_by_name(monitor_to_track);
+	  m = fpmonitor_by_name(monitor_to_track);
 
   if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 	  return;
@@ -1413,6 +1460,7 @@ void list_end(void)
 
 void list_config_info(unsigned long *body)
 {
+  struct fpmonitor *m, *m2;
   char *tline, *token;
   int color;
 
@@ -1445,6 +1493,56 @@ void list_config_info(unsigned long *body)
     }
     DrawGrid(val, True, None, NULL);
   }
+    else if (StrEquals(token, "Monitor")) {
+	    char	*mname, *foo;
+	    int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+	    int		 updated = 0;
+
+	    tline = GetNextToken(tline, &mname);
+	    fprintf(stderr, "mon: <<%s>>, token: <<%s>>, tline: <<%s>>\n", mname, tline, tline);
+	    sscanf(tline, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
+		    &vx, &vy, &vxmax, &vymax);
+
+	    m = fxcalloc(1, sizeof(*m));
+
+	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+		    if (strcmp(m2->name, mname) == 0) {
+			    m2->output = output;
+			    m2->is_current = iscur; 
+			    m2->virtual_scr.MyDisplayWidth = mdw;
+			    m2->virtual_scr.MyDisplayHeight = mdh;
+			    m2->virtual_scr.Vx = vx;
+			    m2->virtual_scr.Vy = vy;
+			    m2->virtual_scr.VxMax = vxmax;
+			    m2->virtual_scr.VyMax = vymax;
+			    updated = 1;
+		    }
+	    }
+
+	    if (updated) {
+		    free(m);
+		    goto done;
+	    }
+
+	    m->name = fxstrdup(mname);
+	    m->is_current = iscur;
+	    m->output = output;
+	    m->virtual_scr.MyDisplayWidth = mdw;
+	    m->virtual_scr.MyDisplayHeight = mdh;
+	    m->virtual_scr.Vx = vx;
+	    m->virtual_scr.Vy = vy;
+	    m->virtual_scr.VxMax = vxmax;
+	    m->virtual_scr.VyMax = vymax;
+	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
+    }
+done:
+    m2 = TAILQ_FIRST(&fp_monitor_q);
+    Scr.MyDisplayWidth  = m2->virtual_scr.MyDisplayWidth;
+    Scr.MyDisplayHeight = m2->virtual_scr.MyDisplayHeight;
+    Scr.Vx = m2->virtual_scr.Vx;
+    Scr.Vy = m2->virtual_scr.Vy;
+    Scr.VxMax = m2->virtual_scr.VxMax;
+    Scr.VyMax = m2->virtual_scr.VyMax;
 }
 
 void list_property_change(unsigned long *body)
@@ -1642,9 +1740,6 @@ void ParseOptions(void)
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
   Scr.VScale = 32;
-  struct monitor  *m = monitor_get_current();
-  Scr.MyDisplayWidth  = m->virtual_scr.MyDisplayWidth;
-  Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
 
   fpa.mask = 0;
   if (Pdepth <= 8)
@@ -1663,6 +1758,7 @@ void ParseOptions(void)
     char *token;
     char *next;
     Bool MoveThresholdSetForModule = False;
+    struct fpmonitor	*m, *m2;
 
     arg1 = arg2 = NULL;
 
@@ -1683,6 +1779,7 @@ void ParseOptions(void)
 	if (token)
 	  sscanf(token, "%d", &dy);
       }
+      fprintf(stderr, "GOT DS of: %d x %d\n", dx, dy);
       continue;
     }
     else if (StrEquals(token, "ImagePath"))
@@ -1720,6 +1817,57 @@ void ParseOptions(void)
       }
       continue;
     }
+    else if (StrEquals(token, "Monitor")) {
+	    char	*mname, *foo;
+	    int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+	    int		 updated = 0;
+
+	    next = GetNextToken(next, &mname);
+	    sscanf(next, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
+		    &vx, &vy, &vxmax, &vymax);
+
+	    m = fxcalloc(1, sizeof(*m));
+
+	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+		    if (strcmp(m2->name, mname) == 0) {
+			    m2->output = output;
+			    m2->is_current = iscur; 
+			    m2->virtual_scr.MyDisplayWidth = mdw;
+			    m2->virtual_scr.MyDisplayHeight = mdh;
+			    m2->virtual_scr.Vx = vx;
+			    m2->virtual_scr.Vy = vy;
+			    m2->virtual_scr.VxMax = vxmax;
+			    m2->virtual_scr.VyMax = vymax;
+			    updated = 1;
+		    }
+	    }
+
+	    if (updated) {
+		    free(m);
+		    continue;
+	    }
+
+	    m->name = fxstrdup(mname);
+	    m->is_current = iscur;
+	    m->output = output;
+	    m->virtual_scr.MyDisplayWidth = mdw;
+	    m->virtual_scr.MyDisplayHeight = mdh;
+	    m->virtual_scr.Vx = vx;
+	    m->virtual_scr.Vy = vy;
+	    m->virtual_scr.VxMax = vxmax;
+	    m->virtual_scr.VyMax = vymax;
+	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
+
+	    continue;
+    }
+
+    m2 = TAILQ_FIRST(&fp_monitor_q);
+    Scr.MyDisplayWidth  = m2->virtual_scr.MyDisplayWidth;
+    Scr.MyDisplayHeight = m2->virtual_scr.MyDisplayHeight;
+    Scr.Vx = m2->virtual_scr.Vx;
+    Scr.Vy = m2->virtual_scr.Vy;
+    Scr.VxMax = m2->virtual_scr.VxMax;
+    Scr.VyMax = m2->virtual_scr.VyMax;
 
     tline2 = GetModuleResource(tline, &resource, MyName);
     if (!resource)
@@ -1748,10 +1896,10 @@ void ParseOptions(void)
 		    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
 		    continue;
 	    }
-	    if ((m = monitor_by_name(next)) == NULL) {
+	    if ((m = fpmonitor_by_name(next)) == NULL) {
 		    fprintf(stderr, "FvwmPager: monitor '%s' not found "
 			"using current monitor", next);
-		    m = monitor_get_current();
+		    m = fpmonitor_get_current();
 		    monitor_to_track = fxstrdup(m->name);
 		    Scr.MyDisplayWidth = m->virtual_scr.MyDisplayWidth;
 		    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
@@ -2255,15 +2403,6 @@ void ParseOptions(void)
     free(arg2);
   }
 
-  /* If we get here, and have not been given a Monitor line to configure,
-   * assume we're monitoring globally.
-   */
-  if (monitor_to_track == NULL) {
-	  struct monitor *m = TAILQ_FIRST(&monitor_q);
-	  Scr.MyDisplayWidth  = m->virtual_scr.MyDisplayWidth;
-	  Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
-  }
-
   Scr.VxMax = dx * Scr.MyDisplayWidth - Scr.MyDisplayWidth;
   Scr.VyMax = dy * Scr.MyDisplayHeight - Scr.MyDisplayHeight;
   if (Scr.VxMax < 0)
@@ -2274,8 +2413,12 @@ void ParseOptions(void)
   Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
   Scr.VxPages = Scr.VWidth / Scr.MyDisplayWidth;
   Scr.VyPages = Scr.VHeight / Scr.MyDisplayHeight;
-  Scr.Vx = 0;
-  Scr.Vy = 0;
+  //Scr.Vx = 0;
+  //Scr.Vy = 0;
+  
+  fprintf(stderr, "VxMax: %d, VyMax: %d, VWidth: %d, Vheight: %d, "
+		"VxPages: %d, VyPages: %d\n", Scr.VxMax, Scr.VyMax, Scr.VWidth,
+		Scr.VHeight, Scr.VxPages, Scr.VyPages);
 
   return;
 }

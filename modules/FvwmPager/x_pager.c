@@ -583,7 +583,6 @@ void initialize_pager(void)
 				  fore_pix,back_pix,Pdepth);
   }
 
-
   n = Scr.VxMax / Scr.MyDisplayWidth;
   m = Scr.VyMax / Scr.MyDisplayHeight;
 
@@ -1981,10 +1980,10 @@ void AddNewWindow(PagerWindow *t)
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 	int i, x, y, w, h;
-	struct monitor	*mon;
+	struct fpmonitor	*mon;
 
 	if (monitor_to_track != NULL)
-		mon = monitor_by_name(monitor_to_track);
+		mon = fpmonitor_by_name(monitor_to_track);
 
 	i = t->desk - desk1;
 	CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);

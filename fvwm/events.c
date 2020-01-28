@@ -1812,6 +1812,7 @@ void HandleRRScreenChangeNotify(void)
 			m->wants_refresh = 0;
 		}
 	}
+	BroadcastMonitorList(NULL);
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
 		/* If the monitor the window is on is no longer present in our
