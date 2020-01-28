@@ -156,99 +156,54 @@ monitor_by_output(int output)
 	return (mret);
 }
 
-struct monitor *
-monitor_by_number(int number)
-{
-	struct monitor	*m, *mret = NULL;
-
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->number == number) {
-		       mret = m;
-		       break;
-		}
-	}
-
-	/* If 'm' is still NULL here, and the monitor number is -1, return
-	 * the global  monitor instead.  This check can only succeed if we've
-	 * requested the global screen whilst XRandR is in use, since the global
-	 * monitor isn't stored in the monitor list directly.
-	 */
-	if (mret == NULL && number == -1)
-		return (monitor_by_name(GLOBAL_SCREEN_NAME));
-
-	/* Then we couldn't find the named monitor at all.  Return the current
-	 * monitor instead.
-	 */
-	if (mret == NULL) {
-		mret = monitor_get_current();
-		fprintf(stderr, "%s: couldn't find monitor id: %d\n", __func__,
-		    number);
-		fprintf(stderr, "%s: returning current monitor (%s)\n",
-		    __func__, mret->name);
-	}
-
-	return (mret);
-}
-
 int
 monitor_get_all_widths(void)
 {
-	struct monitor	*m = NULL;
-	int 		 w = 0;
-
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->is_disabled)
-			continue;
-		w += m->coord.w;
-	}
-
-	return (w);
+	return (DisplayWidth(disp, DefaultScreen(disp)));
 }
 
 int
 monitor_get_all_heights(void)
 {
-	struct monitor	*m = NULL;
-	int 		 h = 0;
-
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->is_disabled)
-			continue;
-		h += m->coord.h;
-	}
-
-	return (h);
+	return (DisplayHeight(disp, DefaultScreen(disp)));
 }
 
 static void
 monitor_init_one(struct monitor *m, int w, int h)
 {
-	if (monitor_mode == MONITOR_TRACKING_G) {
-		m->virtual_scr.MyDisplayWidth = w;
-		m->virtual_scr.MyDisplayHeight = h;
-	} else if (monitor_mode == MONITOR_TRACKING_M) {
-		m->virtual_scr.MyDisplayWidth = m->coord.x + m->coord.w;
-		m->virtual_scr.MyDisplayHeight = m->coord.y + m->coord.h;
+	struct monitor	*m2;
+
+	TAILQ_FOREACH(m2, &monitor_q, entry) {
+		if (m2 != m)
+			break;
 	}
-	m->virtual_scr.VxMax = 2 * w; //m->virtual_scr.MyDisplayWidth;
-	m->virtual_scr.VyMax = 2 * h; //m->virtual_scr.MyDisplayHeight;
 
 	if (m->Desktops == NULL) {
-		m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
-		m->Desktops->name = NULL;
-		m->Desktops->desk = 0; /* not desk 0 */
-		m->Desktops->next = NULL;
+		if (m2 != NULL && m2->Desktops != NULL) {
+			memcpy(&m->virtual_scr, &m2->virtual_scr,
+				sizeof(m->virtual_scr));
+			m->Desktops = m2->Desktops;
+			m->Desktops_cpy = m2->Desktops_cpy;
+		} else {
+			m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
+			m->Desktops->next = NULL;
+			m->Desktops->name = NULL;
+			m->Desktops->desk = 0; /* not desk 0 */
+			m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
+				m->virtual_scr.MyDisplayWidth  / 100;
+			m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
+				m->virtual_scr.MyDisplayHeight / 100;
+		}
 		m->wants_refresh = 1;
-		m->Desktops_cpy = NULL;
-		m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
-			m->virtual_scr.MyDisplayWidth  / 100;
-		m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
-			m->virtual_scr.MyDisplayHeight / 100;
 	}
+
+	m->virtual_scr.MyDisplayWidth = DisplayWidth(disp, DefaultScreen(disp));
+	m->virtual_scr.MyDisplayHeight = DisplayHeight(disp, DefaultScreen(disp));
+
 	m->Desktops->ewmh_dyn_working_area.x =
-		m->Desktops->ewmh_working_area.x = 0; //m->coord.x;
+		m->Desktops->ewmh_working_area.x = m->coord.x;
 	m->Desktops->ewmh_dyn_working_area.y =
-		m->Desktops->ewmh_working_area.y = 0; //m->coord.y;
+		m->Desktops->ewmh_working_area.y = m->coord.y;
 	m->Desktops->ewmh_dyn_working_area.width =
 		m->Desktops->ewmh_working_area.width =
 		m->virtual_scr.MyDisplayWidth;
@@ -275,8 +230,13 @@ monitor_init_contents(void)
 	TAILQ_FOREACH(m, &monitor_q, entry)
 		monitor_init_one(m, w, h);
 
+#if 0
+	/*
+	 * XXX - Check if necessary.
+	 */
 	if (monitor_mode == MONITOR_TRACKING_M)
 		return;
+#endif
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->is_disabled && mdisabled != m)
@@ -367,7 +327,6 @@ monitor_output_change(Display *dpy, XRROutputChangeNotifyEvent *e)
 
 	if (mret == NULL && crtc_info != NULL) {
 		m = monitor_new();
-		m->number = count++;
 		m->output = e->output;
 		m->crtc = oinfo->crtc;
 		m->is_disabled = 0;
@@ -465,7 +424,6 @@ void FScreenInit(Display *dpy)
 		}
 
 		m = monitor_new();
-		m->number = no_of_screens;
 		m->output = rr_output;
 		m->crtc = oinfo->crtc;
 		m->wants_refresh = 1;
@@ -491,7 +449,6 @@ single_screen:
 	m = monitor_new();
 	m->output = -1;
 	m->crtc = -1;
-	m->number = -1;
 	coord.x = 0;
 	coord.y = 0;
 	coord.w = DisplayWidth(disp, DefaultScreen(disp));

@@ -510,9 +510,8 @@ int truncate_to_multiple (int x, int m)
 	return (x < 0) ? (m * (((x + 1) / m) - 1)) : (m * (x / m));
 }
 
-Bool IsRectangleOnThisPage(const rectangle *rec, int desk)
+Bool IsRectangleOnThisPage(struct monitor *m, const rectangle *rec, int desk)
 {
-	struct monitor	*m = monitor_get_current();
 #if 0
 	fprintf(stderr, "%s: I think I want monitor '%s'\n", __func__,
 		m->name);
@@ -523,12 +522,17 @@ Bool IsRectangleOnThisPage(const rectangle *rec, int desk)
 	fprintf(stderr, "%s: mon: {MyDH: %d, MyDW: %d}\n", __func__,
 		m->virtual_scr.MyDisplayWidth, m->virtual_scr.MyDisplayHeight);
 #endif
-	return (desk == m->virtual_scr.CurrentDesk &&
+	if (m == NULL)
+		return (False);
+
+	if (m->virtual_scr.CurrentDesk == desk &&
 		rec->x + (signed int)rec->width > 0 &&
-		(rec->x < 0 || rec->x <= m->virtual_scr.MyDisplayWidth) &&
+		(rec->x < 0 || rec->x <= m->coord.x + m->coord.w) &&
 		rec->y + (signed int)rec->height > 0 &&
-		(rec->y < 0 || rec->y <= m->virtual_scr.MyDisplayHeight)) ?
-		True : False;
+		(rec->y < 0 || rec->y <= m->coord.y + m->coord.h)) {
+			return (True);
+	}
+	return (False);
 }
 
 /* returns the FvwmWindow that contains the pointer or NULL if none */

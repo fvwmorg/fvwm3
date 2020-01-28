@@ -149,9 +149,63 @@ Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
 Bool Swallowed = False;
 
-static void SetDeskLabel(int desk, const char *label);
+static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
+
+struct fpmonitor *
+fpmonitor_get_current(void)
+{
+	struct fpmonitor *m;
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (m->is_current)
+			return (m);
+	}
+	return (NULL);
+}
+
+struct fpmonitor *
+fpmonitor_by_name(const char *name)
+{
+	struct fpmonitor	*m;
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (strcmp(m->name, name) == 0)
+			return (m);
+	}
+	return (NULL);
+}
+
+struct fpmonitor *
+fpmonitor_by_output(int output)
+{
+	struct fpmonitor	*m;
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (m->output == output)
+			return (m);
+	}
+	return (NULL);
+}
+
+struct fpmonitor *
+fpmonitor_this(void)
+{
+	struct fpmonitor 	*m;
+
+	if (monitor_to_track == NULL)
+		return (fpmonitor_get_current());
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (monitor_to_track != NULL &&
+		    strcmp(m->name, monitor_to_track) == 0) {
+			return (m);
+		}
+	}
+
+	return (fpmonitor_get_current());
+}
 
 /*
  *
@@ -183,6 +237,8 @@ int main(int argc, char **argv)
 	      VERSION);
       exit(1);
     }
+
+  TAILQ_INIT(&fp_monitor_q);
 
 #ifdef HAVE_SIGACTION
   {
@@ -267,13 +323,13 @@ int main(int argc, char **argv)
 
   if (argc < opt_num + 1)
     {
-      desk1 = Scr.CurrentDesk;
-      desk2 = Scr.CurrentDesk;
+      desk1 = 0; //Scr.CurrentDesk;
+      desk2 = 0; //Scr.CurrentDesk;
     }
   else if (StrEquals(argv[opt_num], "*"))
     {
-      desk1 = Scr.CurrentDesk;
-      desk2 = Scr.CurrentDesk;
+      desk1 = 0; //Scr.CurrentDesk;
+      desk2 = 0; //Scr.CurrentDesk;
       fAlwaysCurrentDesk = 1;
     }
   else
@@ -595,7 +651,7 @@ void handle_config_win_package(PagerWindow *t,
 	t->frame_y = cfgpacket->frame_y;
 	t->frame_width = cfgpacket->frame_width;
 	t->frame_height = cfgpacket->frame_height;
-	t->m = monitor_by_number(cfgpacket->monitor_id);
+	t->m = fpmonitor_by_output(cfgpacket->monitor_id);
 
 	t->desk = cfgpacket->desk;
 
@@ -655,19 +711,19 @@ void list_add(unsigned long *body)
 	PagerWindow *t,**prev;
 	int i=0;
 	struct ConfigWinPacket  *cfgpacket = (void *) body;
-	struct monitor *newm;
+	struct fpmonitor *newm;
 
 	t = Start;
 	prev = &Start;
 
-	newm = monitor_by_number((int)cfgpacket->monitor_id);
+	newm = fpmonitor_by_output((int)cfgpacket->monitor_id);
 
 	if (newm == NULL) {
 		fprintf(stderr, "monitor was null with ID: %d\n",
 			(int)cfgpacket->monitor_id);
 		fprintf(stderr, "using current montior\n");
 
-		newm = monitor_get_current();
+		newm = fpmonitor_get_current();
 	}
 
 	while(t != NULL)
@@ -701,18 +757,18 @@ void list_configure(unsigned long *body)
   Window target_w;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
   Bool is_new_desk;
-  struct monitor *newm;
+  struct fpmonitor *newm;
 
   target_w = cfgpacket->w;
   t = Start;
-  newm = monitor_by_number((int)cfgpacket->monitor_id);
+  newm = fpmonitor_by_output((int)cfgpacket->monitor_id);
 
   if (newm == NULL) {
 	  fprintf(stderr, "monitor was null with ID: %d\n",
 		(int)cfgpacket->monitor_id);
 	  fprintf(stderr, "using current montior\n");
 
-	  newm = monitor_get_current();
+	  newm = fpmonitor_get_current();
   }
 
   /* FIXME: need to handle things when DesktopConfiguration is global --
@@ -843,29 +899,30 @@ void list_focus(unsigned long *body)
 void list_new_page(unsigned long *body)
 {
 	int mon_num = body[7];
-	struct monitor *m;
+	struct fpmonitor *m;
 
-	m = monitor_by_number(mon_num);
+	m = fpmonitor_by_output(mon_num);
+	fprintf(stderr, "%s: using monitor: %s\n", __func__, m->name);
 
 	if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 		return;
 
-  Scr.Vx = body[0];
-  Scr.Vy = body[1];
-  if (Scr.CurrentDesk != body[2])
+  m->virtual_scr.Vx = body[0];
+  m->virtual_scr.Vy = body[1];
+  if (m->virtual_scr.CurrentDesk != body[2])
   {
       /* first handle the new desk */
       body[0] = body[2];
       list_new_desk(body);
   }
-  if (Scr.VxPages != body[5] || Scr.VyPages != body[6])
+  if (m->virtual_scr.VxPages != body[5] || m->virtual_scr.VyPages != body[6])
   {
-    Scr.VxPages = body[5];
-    Scr.VyPages = body[6];
-    Scr.VWidth = Scr.VxPages * Scr.MyDisplayWidth;
-    Scr.VHeight = Scr.VyPages * Scr.MyDisplayHeight;
-    Scr.VxMax = Scr.VWidth - Scr.MyDisplayWidth;
-    Scr.VyMax = Scr.VHeight - Scr.MyDisplayHeight;
+    m->virtual_scr.VxPages = body[5];
+    m->virtual_scr.VyPages = body[6];
+    m->virtual_scr.VWidth = m->virtual_scr.VxPages * m->virtual_scr.MyDisplayWidth;
+    m->virtual_scr.VHeight = m->virtual_scr.VyPages * m->virtual_scr.MyDisplayHeight;
+    m->virtual_scr.VxMax = m->virtual_scr.VWidth - m->virtual_scr.MyDisplayWidth;
+    m->virtual_scr.VyMax = m->virtual_scr.VHeight - m->virtual_scr.MyDisplayHeight;
     ReConfigure();
   }
   MovePage(False);
@@ -886,29 +943,29 @@ void list_new_desk(unsigned long *body)
   int change_ballooncs = -1;
   int change_highcs = -1;
   int mon_num = body[1];
-  struct monitor *m;
+  struct fpmonitor *m;
 
-  m = monitor_by_number(mon_num);
+  m = fpmonitor_by_output(mon_num);
 
   if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 	  return;
 
-  oldDesk = Scr.CurrentDesk;
-  Scr.CurrentDesk = (long)body[0];
-  if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk)
+  oldDesk = m->virtual_scr.CurrentDesk;
+  m->virtual_scr.CurrentDesk = (long)body[0];
+  if (fAlwaysCurrentDesk && oldDesk != m->virtual_scr.CurrentDesk)
   {
     PagerWindow *t;
     PagerStringList *item;
     char line[100];
 
-    desk1 = Scr.CurrentDesk;
-    desk2 = Scr.CurrentDesk;
+    desk1 = m->virtual_scr.CurrentDesk;
+    desk2 = m->virtual_scr.CurrentDesk;
     for (t = Start; t != NULL; t = t->next)
     {
-      if (t->desk == oldDesk || t->desk == Scr.CurrentDesk)
+      if (t->desk == oldDesk || t->desk == m->virtual_scr.CurrentDesk)
 	ChangeDeskForWindow(t, t->desk);
     }
-    item = FindDeskStrings(Scr.CurrentDesk);
+    item = FindDeskStrings(m->virtual_scr.CurrentDesk);
     if (Desks[0].label != NULL)
     {
       free(Desks[0].label);
@@ -1019,14 +1076,14 @@ void list_new_desk(unsigned long *body)
     char *name;
     char line[100];
 
-    i = Scr.CurrentDesk - desk1;
+    i = m->virtual_scr.CurrentDesk - desk1;
     if (i >= 0 && i < ndesks && Desks[i].label != NULL)
     {
       name = Desks[i].label;
     }
     else
     {
-      sprintf(line, "Desk %d", Scr.CurrentDesk);
+      sprintf(line, "Desk %d", m->virtual_scr.CurrentDesk);
       name = &(line[0]);
     }
     XStoreName(dpy, Scr.Pager_w, name);
@@ -1035,7 +1092,7 @@ void list_new_desk(unsigned long *body)
 
   MovePage(True);
   DrawGrid(oldDesk - desk1, 1, None, NULL);
-  DrawGrid(Scr.CurrentDesk - desk1, 1, None, NULL);
+  DrawGrid(m->virtual_scr.CurrentDesk - desk1, 1, None, NULL);
   MoveStickyWindow(False, True);
 /*
   Hilight(FocusWin,False);
@@ -1200,10 +1257,8 @@ void list_window_name(unsigned long *body,unsigned long type)
 {
   PagerWindow *t;
   Window target_w;
-  struct monitor *m = NULL;
+  struct fpmonitor *m = fpmonitor_this();
 
-  if (monitor_to_track != NULL)
-	  m = monitor_by_name(monitor_to_track);
 
   if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 	  return;
@@ -1413,38 +1468,100 @@ void list_end(void)
 
 void list_config_info(unsigned long *body)
 {
-  char *tline, *token;
-  int color;
+	struct fpmonitor *m, *m2;
+	char *tline, *token;
+	int color;
 
-  tline = (char*)&(body[3]);
-  token = PeekToken(tline, &tline);
-  if (StrEquals(token, "Colorset"))
-  {
-    color = LoadColorset(tline);
-    change_colorset(color);
-  }
-  else if (StrEquals(token, "DesktopName"))
-  {
-    int val;
-    if (GetIntegerArguments(tline, &tline, &val, 1) > 0)
-    {
-      SetDeskLabel(val, (const char *)tline);
-    }
-    else
-    {
-      return;
-    }
-    if (fAlwaysCurrentDesk)
-    {
-      if (Scr.CurrentDesk == val)
-	val = 0;
-    }
-    else if ((val >= desk1) && (val <=desk2))
-    {
-      val = val - desk1;
-    }
-    DrawGrid(val, True, None, NULL);
-  }
+	tline = (char*)&(body[3]);
+	token = PeekToken(tline, &tline);
+	if (StrEquals(token, "Colorset"))
+	{
+		color = LoadColorset(tline);
+		change_colorset(color);
+	}
+	else if (StrEquals(token, "DesktopName"))
+	{
+		int val;
+		if (GetIntegerArguments(tline, &tline, &val, 1) > 0)
+		{
+			TAILQ_FOREACH(m, &fp_monitor_q, entry)
+				SetDeskLabel(m, val, (const char *)tline);
+		}
+		else
+		{
+			return;
+		}
+		if (fAlwaysCurrentDesk)
+		{
+			TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+				if (m->virtual_scr.CurrentDesk == val)
+					val = 0;
+			}
+		}
+		else if ((val >= desk1) && (val <=desk2))
+		{
+			val = val - desk1;
+		}
+		DrawGrid(val, True, None, NULL);
+	} else if (StrEquals(token, "Monitor")) {
+		char	*mname;
+		int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+		int		 updated = 0;
+
+		tline = GetNextToken(tline, &mname);
+		sscanf(tline, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
+				&vx, &vy, &vxmax, &vymax);
+
+		m = fxcalloc(1, sizeof(*m));
+
+		TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+			if (strcmp(m2->name, mname) == 0) {
+				m2->output = output;
+				m2->is_current = iscur; 
+				m2->virtual_scr.MyDisplayWidth = mdw;
+				m2->virtual_scr.MyDisplayHeight = mdh;
+				m2->virtual_scr.Vx = vx;
+				m2->virtual_scr.Vy = vy;
+				m2->virtual_scr.VxMax = vxmax;
+				m2->virtual_scr.VyMax = vymax;
+				updated = 1;
+			}
+		}
+
+		if (updated) {
+			free(m);
+			return;
+		}
+
+		m->name = fxstrdup(mname);
+		m->is_current = iscur;
+		m->output = output;
+		m->virtual_scr.MyDisplayWidth = mdw;
+		m->virtual_scr.MyDisplayHeight = mdh;
+		m->virtual_scr.Vx = vx;
+		m->virtual_scr.Vy = vy;
+		m->virtual_scr.VxMax = vxmax;
+		m->virtual_scr.VyMax = vymax;
+		TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
+	} else if (StrEquals(token, "DesktopSize")) {
+		int dx, dy;
+		struct fpmonitor *m;
+
+		sscanf(tline, "%d %d", &dx, &dy);
+
+		TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+			m->virtual_scr.VxMax = dx * m->virtual_scr.MyDisplayWidth - m->virtual_scr.MyDisplayWidth;
+			m->virtual_scr.VyMax = dy * m->virtual_scr.MyDisplayHeight - m->virtual_scr.MyDisplayHeight;
+			if (m->virtual_scr.VxMax < 0)
+				m->virtual_scr.VxMax = 0;
+			if (m->virtual_scr.VyMax < 0)
+				m->virtual_scr.VyMax = 0;
+			m->virtual_scr.VWidth = m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
+			m->virtual_scr.VHeight = m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
+			m->virtual_scr.VxPages = m->virtual_scr.VWidth / m->virtual_scr.MyDisplayWidth;
+			m->virtual_scr.VyPages = m->virtual_scr.VHeight / m->virtual_scr.MyDisplayHeight;
+		}
+	}
 }
 
 void list_property_change(unsigned long *body)
@@ -1536,13 +1653,14 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
   int desk;
   unsigned long colorset_offset = (unsigned long)offset_deskinfo;
   unsigned long item_colorset_offset = (unsigned long)offset_item;
+  struct fpmonitor *mon = fpmonitor_this();
 
   sscanf(arg2, "%d", &colorset);
   AllocColorset(colorset);
   if (StrEquals(arg1, "*"))
   {
     all_desks = True;
-    desk = Scr.CurrentDesk;
+    desk = 0; //Scr.CurrentDesk;
   }
   else
   {
@@ -1571,7 +1689,7 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
 	*(int *)(((char *)item) + item_colorset_offset) = colorset;
       }
     }
-    if (desk == Scr.CurrentDesk || all_desks)
+    if (desk == mon->virtual_scr.CurrentDesk || all_desks)
     {
       *(int *)(((char *)&Desks[0]) + colorset_offset) = colorset;
     }
@@ -1591,7 +1709,7 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
   return;
 }
 
-static void SetDeskLabel(int desk, const char *label)
+static void SetDeskLabel(struct fpmonitor *m, int desk, const char *label)
 {
   PagerStringList *item;
 
@@ -1614,7 +1732,7 @@ static void SetDeskLabel(int desk, const char *label)
       item = NewPagerStringItem(item, desk);
       CopyString(&(item->label), label);
     }
-    if (desk == Scr.CurrentDesk)
+    if (desk == m->virtual_scr.CurrentDesk)
     {
       free(Desks[0].label);
       CopyString(&Desks[0].label, label);
@@ -1642,9 +1760,6 @@ void ParseOptions(void)
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
   Scr.VScale = 32;
-  struct monitor  *m = monitor_get_current();
-  Scr.MyDisplayWidth  = m->virtual_scr.MyDisplayWidth;
-  Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
 
   fpa.mask = 0;
   if (Pdepth <= 8)
@@ -1663,6 +1778,7 @@ void ParseOptions(void)
     char *token;
     char *next;
     Bool MoveThresholdSetForModule = False;
+    struct fpmonitor	*m, *m2;
 
     arg1 = arg2 = NULL;
 
@@ -1716,9 +1832,54 @@ void ParseOptions(void)
       int val;
       if (GetIntegerArguments(next, &next, &val, 1) > 0)
       {
-	SetDeskLabel(val, (const char *)next);
+	      TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		      SetDeskLabel(m, val, (const char *)next);
+	      }
       }
       continue;
+    }
+    else if (StrEquals(token, "Monitor")) {
+	    char	*mname;
+	    int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+	    int		 updated = 0;
+
+	    next = GetNextToken(next, &mname);
+	    sscanf(next, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
+		    &vx, &vy, &vxmax, &vymax);
+
+	    m = fxcalloc(1, sizeof(*m));
+
+	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+		    if (strcmp(m2->name, mname) == 0) {
+			    m2->output = output;
+			    m2->is_current = iscur; 
+			    m2->virtual_scr.MyDisplayWidth = mdw;
+			    m2->virtual_scr.MyDisplayHeight = mdh;
+			    m2->virtual_scr.Vx = vx;
+			    m2->virtual_scr.Vy = vy;
+			    m2->virtual_scr.VxMax = vxmax;
+			    m2->virtual_scr.VyMax = vymax;
+			    updated = 1;
+		    }
+	    }
+
+	    if (updated) {
+		    free(m);
+		    continue;
+	    }
+
+	    m->name = fxstrdup(mname);
+	    m->is_current = iscur;
+	    m->output = output;
+	    m->virtual_scr.MyDisplayWidth = mdw;
+	    m->virtual_scr.MyDisplayHeight = mdh;
+	    m->virtual_scr.Vx = vx;
+	    m->virtual_scr.Vy = vy;
+	    m->virtual_scr.VxMax = vxmax;
+	    m->virtual_scr.VyMax = vymax;
+	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
+
+	    continue;
     }
 
     tline2 = GetModuleResource(tline, &resource, MyName);
@@ -1744,23 +1905,17 @@ void ParseOptions(void)
 				    "using current monitor\n");
 		    /* m already set... */
 		    monitor_to_track = fxstrdup(m->name);
-		    Scr.MyDisplayWidth = m->virtual_scr.MyDisplayWidth;
-		    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
 		    continue;
 	    }
-	    if ((m = monitor_by_name(next)) == NULL) {
+	    if ((m = fpmonitor_by_name(next)) == NULL) {
 		    fprintf(stderr, "FvwmPager: monitor '%s' not found "
 			"using current monitor", next);
-		    m = monitor_get_current();
+		    m = fpmonitor_get_current();
 		    monitor_to_track = fxstrdup(m->name);
-		    Scr.MyDisplayWidth = m->virtual_scr.MyDisplayWidth;
-		    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
 		    continue;
 	    }
 	    fprintf(stderr, "Assigning monitor: %s\n", m->name);
 	    monitor_to_track = fxstrdup(m->name);
-	    Scr.MyDisplayWidth = m->virtual_scr.MyDisplayWidth;
-	    Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
     }
     else if(StrEquals(resource,"Colorset"))
     {
@@ -1854,14 +2009,15 @@ void ParseOptions(void)
     {
       if (StrEquals(arg1, "*"))
       {
-	desk = Scr.CurrentDesk;
+	desk = 0; //Scr.CurrentDesk;
       }
       else
       {
 	desk = desk1;
 	sscanf(arg1,"%d",&desk);
       }
-      SetDeskLabel(desk, (const char *)arg2);
+      TAILQ_FOREACH(m, &fp_monitor_q, entry)
+	      SetDeskLabel(m, desk, (const char *)arg2);
     }
     else if (StrEquals(resource, "Font"))
     {
@@ -1900,7 +2056,7 @@ void ParseOptions(void)
     {
       if (StrEquals(arg1, "*"))
       {
-	desk = Scr.CurrentDesk;
+	desk = 0; //Scr.CurrentDesk;
       }
       else
       {
@@ -1928,7 +2084,9 @@ void ParseOptions(void)
 	  item = NewPagerStringItem(item, desk);
 	  CopyString(&(item->Dcolor), arg2);
 	}
-	if (desk == Scr.CurrentDesk)
+	m = fpmonitor_this();
+
+	if (desk == m->virtual_scr.CurrentDesk)
 	{
 	  free(Desks[0].Dcolor);
 	  CopyString(&Desks[0].Dcolor, arg2);
@@ -1944,7 +2102,7 @@ void ParseOptions(void)
     {
       if (StrEquals(arg1, "*"))
       {
-	desk = Scr.CurrentDesk;
+	desk = 0; //Scr.CurrentDesk;
       }
       else
       {
@@ -1974,7 +2132,8 @@ void ParseOptions(void)
 	  item->bgPixmap = PCacheFvwmPicture(
 		  dpy, Scr.Pager_w, ImagePath, arg2, fpa);
 	}
-	if (desk == Scr.CurrentDesk)
+	m = fpmonitor_this();
+	if (desk == m->virtual_scr.CurrentDesk)
 	{
 	  if (Desks[0].bgPixmap != NULL)
 	  {
@@ -2255,28 +2414,26 @@ void ParseOptions(void)
     free(arg2);
   }
 
-  /* If we get here, and have not been given a Monitor line to configure,
-   * assume we're monitoring globally.
-   */
-  if (monitor_to_track == NULL) {
-	  struct monitor *m = TAILQ_FIRST(&monitor_q);
-	  Scr.MyDisplayWidth  = m->virtual_scr.MyDisplayWidth;
-	  Scr.MyDisplayHeight = m->virtual_scr.MyDisplayHeight;
+  struct fpmonitor *m;
+  TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+	  m->virtual_scr.VxMax = dx * m->virtual_scr.MyDisplayWidth - m->virtual_scr.MyDisplayWidth;
+	  m->virtual_scr.VyMax = dy * m->virtual_scr.MyDisplayHeight - m->virtual_scr.MyDisplayHeight;
+	  if (m->virtual_scr.VxMax < 0)
+		  m->virtual_scr.VxMax = 0;
+	  if (m->virtual_scr.VyMax < 0)
+		  m->virtual_scr.VyMax = 0;
+	  m->virtual_scr.VWidth = m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
+	  m->virtual_scr.VHeight = m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
+	  m->virtual_scr.VxPages = m->virtual_scr.VWidth / m->virtual_scr.MyDisplayWidth;
+	  m->virtual_scr.VyPages = m->virtual_scr.VHeight / m->virtual_scr.MyDisplayHeight;
+
+	  fprintf(stderr, "%s: VxMax: %d, VyMax: %d, VWidth: %d, Vheight: %d, "
+			  "VxPages: %d, VyPages: %d\n", m->name,
+			  m->virtual_scr.VxMax, m->virtual_scr.VyMax, m->virtual_scr.VWidth,
+			  m->virtual_scr.VHeight, m->virtual_scr.VxPages, m->virtual_scr.VyPages);
+
   }
-
-  Scr.VxMax = dx * Scr.MyDisplayWidth - Scr.MyDisplayWidth;
-  Scr.VyMax = dy * Scr.MyDisplayHeight - Scr.MyDisplayHeight;
-  if (Scr.VxMax < 0)
-    Scr.VxMax = 0;
-  if (Scr.VyMax < 0)
-    Scr.VyMax = 0;
-  Scr.VWidth = Scr.VxMax + Scr.MyDisplayWidth;
-  Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
-  Scr.VxPages = Scr.VWidth / Scr.MyDisplayWidth;
-  Scr.VyPages = Scr.VHeight / Scr.MyDisplayHeight;
-  Scr.Vx = 0;
-  Scr.Vy = 0;
-
+  
   return;
 }
 

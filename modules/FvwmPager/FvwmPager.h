@@ -3,11 +3,45 @@
 #include "libs/vpacket.h"
 #include "libs/Flocale.h"
 
+struct fpmonitor {
+	char		*name;
+	int		 is_primary, output;
+	struct coord 	 coord;
+	struct coord 	 coord_cpy;
+	int 		 number;
+	int		 win_count;
+	int		 wants_refresh;
+	int		 is_disabled;
+	int		 is_current;
+
+        struct {
+                int VxMax;
+                int VyMax;
+                int Vx;
+                int Vy;
+		int VxPages;           /* desktop size */
+		int VyPages;
+		int VWidth;            /* Size of virtual desktop */
+		int VHeight;
+
+                int CurrentDesk;
+		int MyDisplayWidth;
+		int MyDisplayHeight;
+        } virtual_scr;
+
+	TAILQ_ENTRY(fpmonitor) entry;
+};
+TAILQ_HEAD(fpmonitors, fpmonitor);
+
+struct fpmonitors		 fp_monitor_q;
+struct fpmonitor		*fpmonitor_by_name(const char *);
+struct fpmonitor		*fpmonitor_by_output(int);
+struct fpmonitor		*fpmonitor_get_current(void);
+struct fpmonitor 		*fpmonitor_this(void);
+
 typedef struct ScreenInfo
 {
   unsigned long screen;
-  int MyDisplayWidth;   /* my copy of DisplayWidth(dpy, screen) */
-  int MyDisplayHeight;  /* my copy of DisplayHeight(dpy, screen) */
 
   char *FvwmRoot;       /* the head of the fvwm window list */
 
@@ -30,15 +64,7 @@ typedef struct ScreenInfo
 			  * except for networking delays, this is the
 			  * window which REALLY has the focus */
   unsigned VScale;       /* Panner scale factor */
-  int VxMax;             /* Max location for top left of virt desk*/
-  int VyMax;
-  int VxPages;           /* desktop size */
-  int VyPages;
-  int VWidth;            /* Size of virtual desktop */
-  int VHeight;
-  int Vx;                /* Current loc for top left of virt desk */
-  int Vy;
-  int CurrentDesk;
+  //int CurrentDesk;
   Pixmap sticky_gray_pixmap;
   Pixmap light_gray_pixmap;
   Pixmap gray_pixmap;
@@ -50,7 +76,7 @@ typedef struct pager_window
   char *t;
   Window w;
   Window frame;
-  struct monitor *m;
+  struct fpmonitor *m;
   int x;
   int y;
   int width;

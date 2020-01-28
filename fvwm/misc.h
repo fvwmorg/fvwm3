@@ -72,8 +72,7 @@ Bool check_if_fvwm_window_exists(
 	FvwmWindow *fw);
 int truncate_to_multiple(
 	int x, int m);
-Bool IsRectangleOnThisPage(
-	const rectangle *rec, int desk);
+Bool IsRectangleOnThisPage(struct monitor *, const rectangle *rec, int desk);
 FvwmWindow *get_pointer_fvwm_window(void);
 Time get_server_time(void);
 void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)

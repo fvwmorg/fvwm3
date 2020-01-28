@@ -1668,7 +1668,7 @@ void AutoPlaceIcon(
     frame_setup_window(
 	    t, new_x, new_y, t->g.frame.width, t->g.frame.height, False);
   }
-  else if (IsRectangleOnThisPage(&(t->g.frame), t->Desk))
+  else if (IsRectangleOnThisPage(t->m, &(t->g.frame), t->Desk))
   {
     base_x = 0;
     base_y = 0;
@@ -2350,8 +2350,8 @@ void DeIconify(FvwmWindow *fw)
 				 * code already takes care of keeping the frame
 				 * geometry up to date */
 				update_absolute_geometry(t);
-				if (IsRectangleOnThisPage(&r, t->Desk) &&
-				    !IsRectangleOnThisPage(
+				if (IsRectangleOnThisPage(t->m, &r, t->Desk) &&
+				    !IsRectangleOnThisPage(t->m,
 					    &(t->g.frame), t->Desk))
 				{
 					/* Make sure we keep it on screen when
