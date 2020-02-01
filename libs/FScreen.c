@@ -189,27 +189,38 @@ monitor_get_all_heights(void)
 static void
 monitor_init_one(struct monitor *m, int w, int h)
 {
+	struct monitor	*m2;
+
+	TAILQ_FOREACH(m2, &monitor_q, entry) {
+		if (m2 != m)
+			break;
+	}
+
+	if (m->Desktops == NULL) {
+		if (m2->Desktops != NULL) {
+			memcpy(&m->virtual_scr, &m2->virtual_scr,
+				sizeof(m->virtual_scr));
+			m->Desktops = m2->Desktops;
+			m->Desktops_cpy = m2->Desktops_cpy;
+		} else {
+			m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
+			m->Desktops->next = NULL;
+			m->Desktops->name = NULL;
+			m->Desktops->desk = 0; /* not desk 0 */
+			m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
+				m->virtual_scr.MyDisplayWidth  / 100;
+			m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
+				m->virtual_scr.MyDisplayHeight / 100;
+		}
+		m->wants_refresh = 1;
+	}
+
 	if (monitor_mode == MONITOR_TRACKING_G) {
 		m->virtual_scr.MyDisplayWidth = w;
 		m->virtual_scr.MyDisplayHeight = h;
 	} else if (monitor_mode == MONITOR_TRACKING_M) {
 		m->virtual_scr.MyDisplayWidth = m->coord.x + m->coord.w;
 		m->virtual_scr.MyDisplayHeight = m->coord.y + m->coord.h;
-	}
-	m->virtual_scr.VxMax = 2 * w; //m->virtual_scr.MyDisplayWidth;
-	m->virtual_scr.VyMax = 2 * h; //m->virtual_scr.MyDisplayHeight;
-
-	if (m->Desktops == NULL) {
-		m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
-		m->Desktops->name = NULL;
-		m->Desktops->desk = 0; /* not desk 0 */
-		m->Desktops->next = NULL;
-		m->wants_refresh = 1;
-		m->Desktops_cpy = NULL;
-		m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
-			m->virtual_scr.MyDisplayWidth  / 100;
-		m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
-			m->virtual_scr.MyDisplayHeight / 100;
 	}
 	m->Desktops->ewmh_dyn_working_area.x =
 		m->Desktops->ewmh_working_area.x = 0; //m->coord.x;

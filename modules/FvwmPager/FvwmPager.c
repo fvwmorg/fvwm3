@@ -1460,89 +1460,102 @@ void list_end(void)
 
 void list_config_info(unsigned long *body)
 {
-  struct fpmonitor *m, *m2;
-  char *tline, *token;
-  int color;
+	struct fpmonitor *m, *m2;
+	char *tline, *token;
+	int color;
 
-  tline = (char*)&(body[3]);
-  token = PeekToken(tline, &tline);
-  if (StrEquals(token, "Colorset"))
-  {
-    color = LoadColorset(tline);
-    change_colorset(color);
-  }
-  else if (StrEquals(token, "DesktopName"))
-  {
-    int val;
-    if (GetIntegerArguments(tline, &tline, &val, 1) > 0)
-    {
-      SetDeskLabel(val, (const char *)tline);
-    }
-    else
-    {
-      return;
-    }
-    if (fAlwaysCurrentDesk)
-    {
-      if (Scr.CurrentDesk == val)
-	val = 0;
-    }
-    else if ((val >= desk1) && (val <=desk2))
-    {
-      val = val - desk1;
-    }
-    DrawGrid(val, True, None, NULL);
-  }
-    else if (StrEquals(token, "Monitor")) {
-	    char	*mname, *foo;
-	    int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
-	    int		 updated = 0;
+	tline = (char*)&(body[3]);
+	token = PeekToken(tline, &tline);
+	if (StrEquals(token, "Colorset"))
+	{
+		color = LoadColorset(tline);
+		change_colorset(color);
+	}
+	else if (StrEquals(token, "DesktopName"))
+	{
+		int val;
+		if (GetIntegerArguments(tline, &tline, &val, 1) > 0)
+		{
+			SetDeskLabel(val, (const char *)tline);
+		}
+		else
+		{
+			return;
+		}
+		if (fAlwaysCurrentDesk)
+		{
+			if (Scr.CurrentDesk == val)
+				val = 0;
+		}
+		else if ((val >= desk1) && (val <=desk2))
+		{
+			val = val - desk1;
+		}
+		DrawGrid(val, True, None, NULL);
+	} else if (StrEquals(token, "Monitor")) {
+		char	*mname, *foo;
+		int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+		int		 updated = 0;
 
-	    tline = GetNextToken(tline, &mname);
-	    fprintf(stderr, "mon: <<%s>>, token: <<%s>>, tline: <<%s>>\n", mname, tline, tline);
-	    sscanf(tline, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
-		    &vx, &vy, &vxmax, &vymax);
+		tline = GetNextToken(tline, &mname);
+		sscanf(tline, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
+				&vx, &vy, &vxmax, &vymax);
 
-	    m = fxcalloc(1, sizeof(*m));
+		m = fxcalloc(1, sizeof(*m));
 
-	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
-		    if (strcmp(m2->name, mname) == 0) {
-			    m2->output = output;
-			    m2->is_current = iscur; 
-			    m2->virtual_scr.MyDisplayWidth = mdw;
-			    m2->virtual_scr.MyDisplayHeight = mdh;
-			    m2->virtual_scr.Vx = vx;
-			    m2->virtual_scr.Vy = vy;
-			    m2->virtual_scr.VxMax = vxmax;
-			    m2->virtual_scr.VyMax = vymax;
-			    updated = 1;
-		    }
-	    }
+		TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+			if (strcmp(m2->name, mname) == 0) {
+				m2->output = output;
+				m2->is_current = iscur; 
+				m2->virtual_scr.MyDisplayWidth = mdw;
+				m2->virtual_scr.MyDisplayHeight = mdh;
+				m2->virtual_scr.Vx = vx;
+				m2->virtual_scr.Vy = vy;
+				m2->virtual_scr.VxMax = vxmax;
+				m2->virtual_scr.VyMax = vymax;
+				updated = 1;
+			}
+		}
 
-	    if (updated) {
-		    free(m);
-		    goto done;
-	    }
+		if (updated) {
+			free(m);
+			goto done;
+		}
 
-	    m->name = fxstrdup(mname);
-	    m->is_current = iscur;
-	    m->output = output;
-	    m->virtual_scr.MyDisplayWidth = mdw;
-	    m->virtual_scr.MyDisplayHeight = mdh;
-	    m->virtual_scr.Vx = vx;
-	    m->virtual_scr.Vy = vy;
-	    m->virtual_scr.VxMax = vxmax;
-	    m->virtual_scr.VyMax = vymax;
-	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
-    }
+		m->name = fxstrdup(mname);
+		m->is_current = iscur;
+		m->output = output;
+		m->virtual_scr.MyDisplayWidth = mdw;
+		m->virtual_scr.MyDisplayHeight = mdh;
+		m->virtual_scr.Vx = vx;
+		m->virtual_scr.Vy = vy;
+		m->virtual_scr.VxMax = vxmax;
+		m->virtual_scr.VyMax = vymax;
+		TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
 done:
-    m2 = TAILQ_FIRST(&fp_monitor_q);
-    Scr.MyDisplayWidth  = m2->virtual_scr.MyDisplayWidth;
-    Scr.MyDisplayHeight = m2->virtual_scr.MyDisplayHeight;
-    Scr.Vx = m2->virtual_scr.Vx;
-    Scr.Vy = m2->virtual_scr.Vy;
-    Scr.VxMax = m2->virtual_scr.VxMax;
-    Scr.VyMax = m2->virtual_scr.VyMax;
+		m2 = TAILQ_FIRST(&fp_monitor_q);
+		Scr.MyDisplayWidth  = m2->virtual_scr.MyDisplayWidth;
+		Scr.MyDisplayHeight = m2->virtual_scr.MyDisplayHeight;
+		Scr.Vx = m2->virtual_scr.Vx;
+		Scr.Vy = m2->virtual_scr.Vy;
+		Scr.VxMax = m2->virtual_scr.VxMax;
+		Scr.VyMax = m2->virtual_scr.VyMax;
+	} else if (StrEquals(token, "DesktopSize")) {
+		int dx, dy;
+
+		sscanf(tline, "%d %d", &dx, &dy);
+
+		Scr.VxMax = dx * Scr.MyDisplayWidth - Scr.MyDisplayWidth;
+		Scr.VyMax = dy * Scr.MyDisplayHeight - Scr.MyDisplayHeight;
+		if (Scr.VxMax < 0)
+			Scr.VxMax = 0;
+		if (Scr.VyMax < 0)
+			Scr.VyMax = 0;
+		Scr.VWidth = Scr.VxMax + Scr.MyDisplayWidth;
+		Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
+		Scr.VxPages = Scr.VWidth / Scr.MyDisplayWidth;
+		Scr.VyPages = Scr.VHeight / Scr.MyDisplayHeight;
+	}
 }
 
 void list_property_change(unsigned long *body)
