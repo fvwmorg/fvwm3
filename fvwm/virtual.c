@@ -2166,7 +2166,6 @@ void CMD_DesktopSize(F_CMD_ARGS)
 {
 	int val[2];
 	struct monitor	*m;
-	char		*cmd;
 
 	if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
 	    GetRectangleArguments(action, &val[0], &val[1]) != 2)
@@ -2179,10 +2178,6 @@ void CMD_DesktopSize(F_CMD_ARGS)
 	/* FIXME: this needs broadcasting for all modules when global used. */
 
 	monitor_init_contents();
-
-        asprintf(&cmd, "DesktopSize %ld %ld", val[0], val[1]);
-	execute_function_override_window(NULL, NULL, cmd, 0, NULL);
-	free(cmd);
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->virtual_scr.VxMax = (val[0] <= 0) ?

@@ -110,6 +110,8 @@ struct monitor {
         struct {
                 int VxMax;
                 int VyMax;
+		int VxPages;
+		int VyPages;
                 int Vx;
                 int Vy;
 

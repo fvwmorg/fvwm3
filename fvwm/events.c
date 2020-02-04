@@ -2615,6 +2615,7 @@ void HandleFocusIn(const evh_args_t *ea)
 				(unsigned long)IsLastFocusSetByMouse(),
 				(long)fc, (long)bc);
 			EWMH_SetActiveWindow(focus_w);
+			BroadcastMonitorList(NULL);
 		}
 		last_focus_w = focus_w;
 		last_focus_fw = focus_fw;

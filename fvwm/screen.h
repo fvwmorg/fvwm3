@@ -480,13 +480,10 @@ typedef struct ScreenInfo
 			mnew = monitor_get_current(); \
 		} \
 		if (mnew != NULL) { \
-			if ((fw) && (fw)->m) { \
-				(fw)->m->win_count--; \
-			} \
 			(fw)->m_prev = (fw)->m; \
 			(fw)->m = mnew; \
 			(fw)->Desk = (fw)->m->virtual_scr.CurrentDesk; \
-			(fw)->m->win_count++; \
+			BroadcastMonitorList(NULL); \
 		} \
 	} while(0)
 

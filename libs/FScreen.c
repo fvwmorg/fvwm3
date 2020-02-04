@@ -189,15 +189,19 @@ monitor_get_all_heights(void)
 static void
 monitor_init_one(struct monitor *m, int w, int h)
 {
-	struct monitor	*m2;
+	struct monitor	*m2, *m3;
 
-	TAILQ_FOREACH(m2, &monitor_q, entry) {
-		if (m2 != m)
+	TAILQ_FOREACH(m3, &monitor_q, entry) {
+		if (m3 == m || m3->is_disabled)
+			continue;
+		else {
+			m2 = m3;
 			break;
+		}
 	}
 
 	if (m->Desktops == NULL) {
-		if (m2->Desktops != NULL) {
+		if (m2 != NULL && m2->Desktops != NULL) {
 			memcpy(&m->virtual_scr, &m2->virtual_scr,
 				sizeof(m->virtual_scr));
 			m->Desktops = m2->Desktops;
@@ -264,7 +268,7 @@ monitor_init_contents(void)
 
 	if (monitor_get_count() == 1)
 		return;
-
+#if 0
 	fprintf(stderr, "%s: first monitor is: %s\n", __func__,
 			mfirst->name);
 
@@ -288,6 +292,7 @@ monitor_init_contents(void)
 		m2->Desktops = mfirst->Desktops;
 		m2->Desktops_cpy = mfirst->Desktops_cpy;
 	}
+#endif
 }
 
 void

@@ -466,7 +466,7 @@ void BroadcastMonitorList(fmodule *this)
 	
 	mcur = monitor_get_current();
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d",
+		asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d %d %d",
 			m->name,
 			m->output,
 			m == mcur,
@@ -475,7 +475,10 @@ void BroadcastMonitorList(fmodule *this)
 			m->virtual_scr.Vx,
 			m->virtual_scr.Vy,
 			m->virtual_scr.VxMax,
-			m->virtual_scr.VyMax
+			m->virtual_scr.VyMax,
+			(m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1,
+			(m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1
+
 		);
 
 		if (this != NULL)

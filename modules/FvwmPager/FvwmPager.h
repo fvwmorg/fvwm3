@@ -19,6 +19,10 @@ struct fpmonitor {
                 int VyMax;
                 int Vx;
                 int Vy;
+		int VxPages;
+		int VyPages;
+		int VWidth;            /* Size of virtual desktop */
+		int VHeight;
 
                 int CurrentDesk;
 		int MyDisplayWidth;
@@ -61,15 +65,6 @@ typedef struct ScreenInfo
 			  * except for networking delays, this is the
 			  * window which REALLY has the focus */
   unsigned VScale;       /* Panner scale factor */
-  int VxMax;             /* Max location for top left of virt desk*/
-  int VyMax;
-  int VxPages;           /* desktop size */
-  int VyPages;
-  int VWidth;            /* Size of virtual desktop */
-  int VHeight;
-  int Vx;                /* Current loc for top left of virt desk */
-  int Vy;
-  int CurrentDesk;
   Pixmap sticky_gray_pixmap;
   Pixmap light_gray_pixmap;
   Pixmap gray_pixmap;
