@@ -138,13 +138,16 @@ Programming Languages
 - Perl
 - Portable /bin/sh scripts for examples.
 
+Editorconfig
+------------
+
+At the top-level of the `fvwm3` git repo, is a [.editorconfig](../.editorconfig)
+file which sets some options which can be used across different editors.  See
+the [editorconfig webpage](https://editorconfig.org/) for more information and
+to see whether your editor is supported.
+
 New Code Files
 --------------
-
-- There are templates for new code files in the fvwm directory.  Try to always
-  use them as they provide a clean structure of the header and code files.
-  Please honour the section titles.  For example, put all static functions
-  (and only static functions) under the "local functions" section.
 
 - All .c files *must* have
 
