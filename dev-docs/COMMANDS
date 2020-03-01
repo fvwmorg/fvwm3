@@ -36,7 +36,7 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   DefaultIcon           - The default icon to use for iconified windows
   DefaultLayers         - Set StaysOnBottom, StaysPut, StaysOnTop layer numbers
   Delete                - Try to delete a window using the X delete protocol
-  Deschedule            - Remove commands sheduled earlier using Schedule
+  Deschedule            - Remove commands scheduled earlier using Schedule
   Desk                  - (obsolete, use GotoDesk instead)
   DesktopName           - Define the desktop names used in WindowList, modules
   DesktopSize           - Set virtual desktop size in units of physical pages
@@ -50,7 +50,7 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   DestroyWindowStyle    - Delete style defined using WindowStyle
   Direction             - Operate on the next window in the specified direction
   Echo                  - Print message to stderr, mainly for debugging
-  EchoFuncDefinition    - Print the definion of a function
+  EchoFuncDefinition    - Print the definition of a function
   EdgeCommand           - Bind one or another screen edge to an fvwm action
   EdgeLeaveCommand      - Bind one or another screen edge to an fvwm action
   EdgeResistance        - Control viewport scrolling and window move over edge

@@ -97,7 +97,7 @@ This has merit since not every developer will be using the same operating
 systems (Linux versus BSD for instance), and that `master` is meant to try and
 be as release-worthy as can be.
 
-**NOTE**:  This means that no work can be commited to `master` directly.  ALL
+**NOTE**:  This means that no work can be committed to `master` directly.  ALL
 work that needs to appear on `master`---including the release
 process---**MUST** go via a separate topic-branch, with a PR (pull-request).
 Not even fvwmorg owners are an exception to this.
@@ -199,7 +199,7 @@ as a pull-request against `master`.**
    **Where: `x.y.z` will be the next release**.
 1. Change the dates in configure.ac and fill in the release dates.
 2. Set `ISRELEASED` to `"yes"`.
-3. Change `utils/fvwm-version-str.sh` and include the approrpiate version
+3. Change `utils/fvwm-version-str.sh` and include the appropriate version
    string.
 4. Commit the results.
 5. Run: `./autogen.sh && make clean` to get the tree into a clean
@@ -225,7 +225,7 @@ as a pull-request against `master`.**
 8. Push the tag out: `git push origin x.y.z` -- where `x.y.z` is the specific
    tag created in step 6.
 9. Set `ISRELEASED` to `"no"` in configure.ac and commit and push that out.
-10. Issue a PR (pull-request) against `master` and mege that in assuming all
+10. Issue a PR (pull-request) against `master` and merge that in assuming all
     checks pass.  If not, fix the problems, and repeat this step.
 11. Upload the `fvwm-x.y.z.tar.gz` tarball to Github against the tag just
    pushed.

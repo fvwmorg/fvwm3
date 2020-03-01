@@ -7,7 +7,7 @@ Installing From Git
 ===================
 
 FVWM has a bootstrap script to generate `configure` and associated files.
-Runi the following command chain to generat the `configure` script and build
+Run the following command chain to generate the `configure` script and build
 the project:
 
 ```

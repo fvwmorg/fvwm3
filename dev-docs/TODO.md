@@ -171,7 +171,7 @@ Items
 	* Think carefully about the syntax of the decor replacement!
 	* [ ] Remove {Border,Title,Button}Style and decors, just one simple look.
 	* [ ] New style `DecoratedByFvwm`/`DecoratedByModule`.
-	* [ ] New module `FvwmDecor` to do per-window decoarations:
+	* [ ] New module `FvwmDecor` to do per-window decorations:
 		* [ ] How does resizing work with this module?
 
 * Styles:

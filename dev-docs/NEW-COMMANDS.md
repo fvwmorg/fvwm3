@@ -1,9 +1,9 @@
 # New Commands in FVWM3
 
 This document attempts to aggregate the functionality of FVWM3 across a common
-and consistant command set.
+and consistent command set.
 
-There is a hierarchical organisation to identifing windows within FVWM3.
+There is a hierarchical organisation to identifying windows within FVWM3.
 
 ```
 Screen --> Desktops --> Windows
@@ -15,7 +15,7 @@ This is equivalent to a monitor attached to a computer.  Screens are numbered
 automatically, although can also be named.  The name of a monitor is taken
 from RandR.
 
-RandR is used in identifing attached monitors, to get their rotation, size,
+RandR is used in identifying attached monitors, to get their rotation, size,
 position and name.  FVWM3 maintains a runtime list of monitors.  Customised
 behaviour about monitors which are attached/detached will be exposed to the
 user.
@@ -24,10 +24,10 @@ user.
 
 A desktop is attached to a screen.  These are viewports into a monitor, of
 which there could be many.   Desktops are containers which hold windows.
-Desktops are separate from each atrached screen, although it would be possible
+Desktops are separate from each attached screen, although it would be possible
 to have one "global" desktop which operated across all screens.
 
-Desktos are linear in their arrangement.  There is no concept of pages within
+Desktops are linear in their arrangement.  There is no concept of pages within
 a desktop (as there is with FVWM2).
 
 Desktops can be named -- and since desktops are unique per screen, desktops
