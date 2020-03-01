@@ -506,7 +506,7 @@ Implemented in `functions.c:execute_complex_function()`.
   6. Call `__run_complex_function_items()`.
 
 * Step 2 (`__run_complex_function_items()`)
-  1. For each complec function iten, call `__execute_command_line()`
+  1. For each complex function item, call `__execute_command_line()`
       with the `FUNC_DONT_DEFER` flag and the list of positional
       arguments.  This causes the function item command text to be
       passed through the parser again.
@@ -1480,7 +1480,7 @@ CMD_XORPIXMAP = "XorPixmap" [IMAGEFILE]
 ```
 CMD_XORVALUE = "XorValue" [INTEGER_ARGUMENT]
 ; note: argument defaults to 0 if missing or malformed
-; note: argument is converted to unsinged long before use
+; note: argument is converted to unsigned long before use
 ; note: argument should be parsed as unsigned long to prevent misinterpretation
 ; note: ignores rest of line
 ; note: syntax description complete
@@ -1557,7 +1557,7 @@ CMD_WINDOWID = "WindowId"
 ; note: syntax description complete
 WINDOWIDSCREENNUM = POSINT
 ; note: valid range is 0 to <number of screens - 1>
-; note: mvwm has replaced Xinerama with XRandr, therfore using integets to
+; note: fvwm has replaced Xinerama with XRandr, therefore using integers to
 ;       refer to monitors won't work.
 WINDOWID = LONGINT
 ; note: long value parsed by strtol without error checking
