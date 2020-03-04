@@ -2,7 +2,8 @@ FVWM3
 -----
 
 [![Build Status](https://travis-ci.org/fvwmorg/fvwm3.svg?branch=master)](https://travis-ci.org/fvwmorg/fvwm3)
-[![Coverity Status](https://img.shields.io/coverity/scan/18414.svg)](https://scan.coverity.com/projects/fvwmorg-fvwm3)
+![Open issues](https://img.shields.io/github/issues-raw/fvwmorg/fvwm3)
+![GitHub contributors](https://img.shields.io/github/contributors/fvwmorg/fvwm3)
 
 Welcome to fvwm3.  Fvwm3 is a multiple large virtual desktop window manager,
 originally (a looooong time ago!) derived from twm.
