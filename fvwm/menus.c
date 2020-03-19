@@ -1981,8 +1981,7 @@ static void make_menu(MenuRoot *mr, Bool is_tear_off)
  * changed. */
 static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 {
-	int sw;
-	int sh;
+	int sw, sh, sx, sy;
 	Bool has_screen_size_changed = False;
 	fscreen_scr_arg fscr;
 
@@ -2004,10 +2003,13 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 	}
 	fscr.xypos.x = pmp->screen_origin_x;
 	fscr.xypos.y = pmp->screen_origin_y;
-	FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &JunkX, &JunkY, &sw, &sh);
-	if (sw != MR_SCREEN_WIDTH(mr) || sh != MR_SCREEN_HEIGHT(mr))
+	FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &sx, &sy, &sw, &sh);
+	if (sw != MR_SCREEN_WIDTH(mr) || sh != MR_SCREEN_HEIGHT(mr)
+	    || sx != MR_SCREEN_X(mr) || sy != MR_SCREEN_Y(mr))
 	{
 		has_screen_size_changed = True;
+		MR_SCREEN_X(mr) = sx;
+		MR_SCREEN_Y(mr) = sy;
 		MR_SCREEN_WIDTH(mr) = sw;
 		MR_SCREEN_HEIGHT(mr) = sh;
 	}
