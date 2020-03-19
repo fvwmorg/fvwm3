@@ -21,6 +21,8 @@
 #define MDIM_HILIGHT_WIDTH(d)      ((d).hilight_width)
 #define MDIM_SCREEN_WIDTH(d)       ((d).screen_width)
 #define MDIM_SCREEN_HEIGHT(d)      ((d).screen_height)
+#define MDIM_SCREEN_X(d)           ((d).screen_x_offset)
+#define MDIM_SCREEN_Y(d)           ((d).screen_y_offset)
 
 /* ---------------------------- type definitions --------------------------- */
 
@@ -51,6 +53,8 @@ struct MenuDimensions
 	 * the menu was mapped on */
 	int screen_width;
 	int screen_height;
+	int screen_x_offset;
+	int screen_y_offset;
 };
 
 /* ---------------------------- exported variables (globals) --------------- */

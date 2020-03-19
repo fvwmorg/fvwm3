@@ -75,6 +75,8 @@ typedef struct MenuRootStatic
 #define MR_HILIGHT_WIDTH(m)      MDIM_HILIGHT_WIDTH((m)->s->dim)
 #define MR_SCREEN_WIDTH(m)       MDIM_SCREEN_WIDTH((m)->s->dim)
 #define MR_SCREEN_HEIGHT(m)      MDIM_SCREEN_HEIGHT((m)->s->dim)
+#define MR_SCREEN_X(m)           MDIM_SCREEN_X((m)->s->dim)
+#define MR_SCREEN_Y(m)           MDIM_SCREEN_Y((m)->s->dim)
 #define MR_ITEMS(m)              ((m)->s->items)
 #define MR_SIDEPIC(m)            ((m)->s->sidePic)
 #define MR_SIDECOLOR(m)          ((m)->s->sideColor)

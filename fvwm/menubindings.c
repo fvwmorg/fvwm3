@@ -1074,15 +1074,15 @@ void menu_shortcuts(
 
 					if (
 						menu_y + menu_height >
-						MR_SCREEN_HEIGHT(mr))
+						MR_SCREEN_Y(mr) + MR_SCREEN_HEIGHT(mr))
 					{
 						FWarpPointer(
 							dpy, 0, 0, 0, 0, 0, 0,
 							0,
 							MR_SCREEN_HEIGHT(mr) -
 							menu_y - menu_height);
-						menu_y = MR_SCREEN_HEIGHT(mr) -
-							menu_height;
+						menu_y = MR_SCREEN_Y(mr) + MR_SCREEN_HEIGHT(mr) -
+							 menu_height;
 					}
 				}
 				if (old_y != menu_y)
@@ -1123,15 +1123,14 @@ void menu_shortcuts(
 				"can't get geometry of menu %s", MR_NAME(mr));
 			return;
 		}
-		if (menu_y < 0 || menu_y + menu_height > MR_SCREEN_HEIGHT(mr))
+		if (menu_y < 0 || menu_y + menu_height > MR_SCREEN_Y(mr) + MR_SCREEN_HEIGHT(mr))
 		{
 			menu_y = (menu_y < 0) ?
-				0 : MR_SCREEN_HEIGHT(mr) - menu_height;
+				 0 : MR_SCREEN_Y(mr) + MR_SCREEN_HEIGHT(mr) - menu_height;
 			pmret->rc = MENU_NEWITEM_MOVEMENU;
 			*ret_menu_x = menu_x;
 			*ret_menu_y = menu_y;
 		}
 	}
-
 	return;
 }
