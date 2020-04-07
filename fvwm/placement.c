@@ -1831,7 +1831,7 @@ static int __place_window(
 		{
 			reason->desk.do_switch_desk = 1;
 		}
-		goto_desk(fw->Desk, fw->m);
+		goto_desk(fw->Desk, m);
 	}
 	/* Don't move viewport if SkipMapping, or if recapturing the window,
 	 * adjust the coordinates later. Otherwise, just switch to the target
