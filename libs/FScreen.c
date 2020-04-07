@@ -245,8 +245,8 @@ monitor_init_contents(void)
 		break;
 	}
 
-	if (monitor_get_count() == 1)
-		return;
+	//if (monitor_get_count() == 1)
+	//	return;
 
 	fprintf(stderr, "%s: first monitor is: %s\n", __func__,
 			mfirst->name);
@@ -344,6 +344,7 @@ monitor_output_change(Display *dpy, XRROutputChangeNotifyEvent *e)
 		coord.w = crtc_info->width;
 		coord.h = crtc_info->height;
 		is_primary = rr_output_primary ==  e->output;
+		m->wants_refresh = 1;
 		mret->is_disabled = 0;
 		monitor_create_randr_region(mret, oinfo->name, &coord, is_primary);
 		monitor_init_contents();
@@ -497,7 +498,7 @@ monitor_dump_state(struct monitor *m)
 	mcur = monitor_get_current();
 
 	fprintf(stderr, "Monitor Debug\n");
-	fprintf(stderr, "\tnumber of outputs: %d\n", monitor_get_count()); 
+	fprintf(stderr, "\tnumber of outputs: %d\n", monitor_get_count());
 	TAILQ_FOREACH(m2, &monitor_q, entry) {
 		if (m2 == NULL) {
 			fprintf(stderr, "monitor in list is NULL.  Bug!\n");

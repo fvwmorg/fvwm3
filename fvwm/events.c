@@ -1793,69 +1793,24 @@ static void __refocus_stolen_focus_win(const evh_args_t *ea)
 void HandleRRScreenChangeNotify(void)
 {
 	FvwmWindow	*t;
-	struct monitor	*mcur, *m;
+	struct monitor	*m;
 
 	if (Scr.bo.do_debug_randr) {
 		fprintf(stderr, "%s: monitor debug...\n", __func__);
 		monitor_dump_state(NULL);
 	}
-	mcur = monitor_get_current();
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->wants_refresh) {
 			fprintf(stderr, "%s: refreshing monitor %s\n", __func__,
 				m->name);
+			//EWMH_Init(m);
 			if (m->Desktops_cpy != NULL)
 				m->Desktops = m->Desktops_cpy;
-			else
-				EWMH_Init(m);
 			m->wants_refresh = 0;
 		}
 	}
 	BroadcastMonitorList(NULL);
-
-	for (t = Scr.FvwmRoot.next; t; t = t->next) {
-		/* If the monitor the window is on is no longer present in our
-		 * list, then move this window to the monitor which has the
-		 * pointer.
-		 */
-		struct monitor	*m = t->m;
-		char		*move_cmd = NULL;
-
-		update_relative_geometry(t);
-		update_absolute_geometry(t);
-		UPDATE_FVWM_SCREEN(t);
-
-		if (t->m_prev != NULL) {
-			/* If the window count on this monitor is 0, then it
-			 * must be a new monitor.
-			 *
-			 * Check to see if this new monitor used to contain
-			 * previous windows.
-			 */
-			if (t->m_prev != NULL &&
-			    (strcmp(t->m_prev->name, m->name) == 0)) {
-			    t->m = t->m_prev;
-			}
-
-			if (t->m != NULL) {
-				asprintf(&move_cmd, "MoveToScreen %s", t->m->name);
-				execute_function_override_window(NULL, NULL, move_cmd, 0, t);
-				free(move_cmd);
-				break;
-			}
-		}
-
-		if (m != mcur) {
-			asprintf(&move_cmd, "MoveToScreen %s", mcur->name);
-			execute_function_override_window(NULL, NULL, move_cmd, 0, t);
-			fprintf(stderr, "Moved window (0x%x) to monitor %s\n",
-				(int)FW_W(t), t->m->name);
-			free(move_cmd);
-			continue;
-		}
-		UPDATE_FVWM_SCREEN(t);
-	}
 }
 #endif
 
@@ -4197,11 +4152,13 @@ void dispatch_event(XEvent *e)
 	XRRNotifyEvent *ne;
 	XRROutputChangeNotifyEvent *oe;
 
-	if (e->type - randr_event == RRNotify) {
+	if (e->type == randr_event + RRNotify) {
 		XRRUpdateConfiguration(e);
 		ne = (XRRNotifyEvent *)e;
 		switch (ne->subtype) {
 		case RRNotify_OutputChange:
+			fprintf(stderr, "%s: git RRNotify_OutputChange event\n",
+				__func__);
 			oe = (XRROutputChangeNotifyEvent *)e;
 			monitor_output_change(dpy, oe);
 			HandleRRScreenChangeNotify();
