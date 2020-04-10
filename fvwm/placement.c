@@ -1680,9 +1680,10 @@ static int __place_window(
 		else
 		{
 			/* use global screen */
-			FScreenGetScrRect(NULL, FSCREEN_GLOBAL,
-				&screen_g.x, &screen_g.y,
-				&screen_g.width, &screen_g.height);
+			screen_g.x = 0;
+			screen_g.y = 0;
+			screen_g.width = monitor_get_all_widths();
+			screen_g.height = monitor_get_all_heights();
 			reason->screen.screen = "global";
 		}
 	}
