@@ -576,6 +576,11 @@ Pixmap PCreateRenderPixmap(
 		 {
 			 new_mask_fim = FCreateFImage(
 				 dpy, Pvisual, 1, ZPixmap, w, h);
+			if (!new_mask_fim)
+			{
+				error = True;
+				goto bail;
+			}			 
 			 if (mono_gc == None)
 			 {
 				 mono_gc = fvwmlib_XCreateGC(
