@@ -926,7 +926,7 @@ void CMD_WindowList(F_CMD_ARGS)
 				}
 				if (flags & SHOW_SCREEN)
 				{
-					sprintf(loc, "@%s", t->m->name);
+					sprintf(loc, "@%s", t->m->si->name);
 					strcat(tname, loc);
 				}
 				if (flags & SHOW_PAGE_X)
@@ -1002,7 +1002,7 @@ void CMD_WindowList(F_CMD_ARGS)
 			tfunc = fxmalloc(strlen(ffunc) + 36);
 			/* support two ways for now: window context
 			 * (new) and window id param (old) */
-			
+
 			/* TA:  FIXME!  xasprintf() */
 			sprintf(tfunc, "WindowId %lu %s %lu",
 				FW_W(t), ffunc, FW_W(t));

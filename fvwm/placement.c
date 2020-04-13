@@ -1716,8 +1716,6 @@ static int __place_window(
 	{
 		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
 		fw->Desk = m->virtual_scr.CurrentDesk;
-		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
-		    fw->Desk, m->name);
 		reason->desk.reason = PR_DESK_CURRENT;
 	}
 	else
@@ -1728,8 +1726,6 @@ static int __place_window(
 	{
 		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
 		fw->Desk = m->virtual_scr.CurrentDesk;
-		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
-		    fw->Desk, m->name);
 		reason->desk.reason = PR_DESK_STICKY;
 	}
 	else if (SUSE_START_ON_DESK(&pstyle->flags) && start_style.desk &&
@@ -1737,8 +1733,6 @@ static int __place_window(
 	{
 		fw->Desk = (start_style.desk > -1) ?
 			start_style.desk - 1 : start_style.desk;
-		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
-		    fw->Desk, "NOT KNOWN");
 		reason->desk.reason = reason->desk.sod_reason;
 	}
 	else
@@ -1784,8 +1778,6 @@ static int __place_window(
 				if (FW_W(t) == FW_W_TRANSIENTFOR(fw))
 				{
 					fw->Desk = t->Desk;
-					fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
-							fw->Desk, "NOT KNOWN");
 					reason->desk.reason =
 						PR_DESK_TRANSIENT;
 					break;
@@ -1811,8 +1803,6 @@ static int __place_window(
 				if (prop != NULL)
 				{
 					fw->Desk = *(unsigned long *)prop;
-					fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
-							fw->Desk, "NOT KNOWN");
 					XFree(prop);
 					reason->desk.reason =
 						PR_DESK_XPROP_XA_WM_DESKTOP;
@@ -2352,8 +2342,6 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 			return;
 		}
 		fw->Desk = fw->m->virtual_scr.CurrentDesk;
-		fprintf(stderr, "%s: assigned fw to: %d (%s)\n", __func__, 
-		    fw->Desk, fw->m->name);
 		get_icon_geometry(fw, &old_g);
 		SET_ICON_MOVED(fw, 0);
 		AutoPlaceIcon(fw, NULL, False);

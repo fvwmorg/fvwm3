@@ -1155,25 +1155,7 @@ static void InitVariables(void)
 	 * initially */
 	Scr.cascade_window = &Scr.FvwmRoot;
 	Scr.buttons2grab = 0;
-	/* initialisation of the head of the desktops info */
-	/* TA: MOVE THIS...
-	 */
-#if 0
-	Scr.Desktops = fxmalloc(sizeof(DesktopsInfo));
-	Scr.Desktops->name = NULL;
-	Scr.Desktops->desk = 0; /* not desk 0 */
-	Scr.Desktops->ewmh_dyn_working_area.x =
-		Scr.Desktops->ewmh_working_area.x = 0;
-	Scr.Desktops->ewmh_dyn_working_area.y =
-		Scr.Desktops->ewmh_working_area.y = 0;
-	Scr.Desktops->ewmh_dyn_working_area.width =
-		Scr.Desktops->ewmh_working_area.width = Scr.MyDisplayWidth;
-	Scr.Desktops->ewmh_dyn_working_area.height =
-		Scr.Desktops->ewmh_working_area.height = Scr.MyDisplayHeight;
-	Scr.Desktops->next = NULL;
-#endif
 	/* ewmh desktop */
-	Scr.EwmhDesktop = NULL;
 	InitFvwmDecor(&Scr.DefaultDecor);
 	Scr.DefaultDecor.tag = "Default";
 	/* Initialize RaiseHackNeeded by identifying X servers
@@ -2490,12 +2472,8 @@ int main(int argc, char **argv)
 	 * before the first call to AddWindow. */
 	LoadWindowStates(state_filename);
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->wants_refresh) {
-			EWMH_Init(m);
-			m->wants_refresh = 0;
-		}
-	}
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		EWMH_Init(m);
 
 	DBUG("main", "Setting up rc file defaults...");
 	SetRCDefaults();

@@ -112,7 +112,6 @@ static int max_col1, max_col2;
 static char id[15], desktop[10], swidth[10], sheight[10], borderw[10];
 static char geometry[30], mymin_aspect[11], max_aspect[11], layer[10];
 static char ewmh_init_state[512];
-static char xin_str[10];
 
 /* FIXME: default layer should be received from fvwm */
 #define default_layer DEFAULT_DEFAULT_LAYER
@@ -392,7 +391,7 @@ void list_configure(unsigned long *body)
 		if (FScreenIsEnabled()) {
 			free(target.monitor);
 			target.monitor = fxstrdup(
-				monitor_by_output((int)target.monitor_id)->name);
+				monitor_by_output((int)target.monitor_id)->si->name);
 		}
 		target.frame = cfgpacket->frame;
 		target.frame_x = cfgpacket->frame_x;
