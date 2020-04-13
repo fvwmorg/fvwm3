@@ -308,7 +308,7 @@ action_flags *__get_allowed_actions(const FvwmWindow *fw)
 		(unsigned long)(0),			\
 		&(*(_fw))->Desk,			\
 		(unsigned long)(0),			\
-		&(*(_fw))->m->output,			\
+		&(*(_fw))->m->si->rr_output,		\
 		(unsigned long)(0),			\
 		&(*(_fw))->layer,			\
 		(unsigned long)(0),			\
@@ -463,12 +463,14 @@ void BroadcastMonitorList(fmodule *this)
 	fmodule *module;
 
 	module_list_itr_init(&moditr);
-	
+
 	mcur = monitor_get_current();
 	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->si->is_disabled)
+			continue;
 		asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d",
-			m->name,
-			m->output,
+			m->si->name,
+			(int)m->si->rr_output,
 			m == mcur,
 			m->virtual_scr.MyDisplayWidth,
 			m->virtual_scr.MyDisplayHeight,
@@ -889,14 +891,14 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	 */
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		SendPacket(mod, M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->output);
+			(long)m->si->rr_output);
 		SendPacket(
 			mod, M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
 			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
-			(long)m->output);
+			(long)m->si->rr_output);
 
 		if (Scr.Hilite != NULL)
 		{

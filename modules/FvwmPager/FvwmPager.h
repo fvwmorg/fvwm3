@@ -6,8 +6,6 @@
 struct fpmonitor {
 	char		*name;
 	int		 is_primary, output;
-	struct coord 	 coord;
-	struct coord 	 coord_cpy;
 	int 		 number;
 	int		 win_count;
 	int		 wants_refresh;

@@ -1193,28 +1193,28 @@ void initPanFrames(void)
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->PanFrameTop.win = XCreateWindow(
-			dpy, Scr.Root, m->coord.x, m->coord.y,
+			dpy, Scr.Root, 0, 0,
 			m->virtual_scr.MyDisplayWidth, edge_thickness,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
 		m->PanFrameLeft.win = XCreateWindow(
-			dpy, Scr.Root, m->coord.x, m->coord.y,
+			dpy, Scr.Root, 0, 0,
 			edge_thickness, m->virtual_scr.MyDisplayHeight,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
 		m->PanFrameRight.win = XCreateWindow(
 			dpy, Scr.Root,
-			m->coord.x + m->virtual_scr.MyDisplayWidth - edge_thickness,
-			m->coord.y,
+			m->virtual_scr.MyDisplayWidth - edge_thickness,
+			m->virtual_scr.MyDisplayHeight,
 			edge_thickness, m->virtual_scr.MyDisplayHeight, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
 		m->PanFrameBottom.win = XCreateWindow(
-			dpy, Scr.Root, m->coord.x,
-			m->coord.y - m->virtual_scr.MyDisplayHeight - edge_thickness,
+			dpy, Scr.Root, m->si->x,
+			m->virtual_scr.MyDisplayHeight - edge_thickness,
 			m->virtual_scr.MyDisplayWidth, edge_thickness, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
@@ -1305,7 +1305,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth ) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
-			(long)m->output);
+			(long)m->si->rr_output);
 
 		if (monitor_mode == MONITOR_TRACKING_G) {
 			struct monitor	*m2 = NULL;
@@ -1511,7 +1511,7 @@ void goto_desk(int desk, struct monitor *m)
 		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->output);
+				(long)m->si->rr_output);
 
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
@@ -1615,7 +1615,7 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 	token = PeekToken(action_cpy, &action_cpy);
 
 	m = monitor_by_name(token);
-	if (strcmp(m->name, token) != 0)
+	if (strcmp(m->si->name, token) != 0)
 		m = m_use;
 	else
 		PeekToken(action, &action);
@@ -2152,6 +2152,7 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 void CMD_DesktopConfiguration(F_CMD_ARGS)
 {
 	FvwmWindow	*t;
+	struct monitor	*m = NULL;
 
 	if (action == NULL) {
 		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action is required");
@@ -2167,7 +2168,8 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		return;
 	}
 
-	monitor_init_contents();
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		monitor_init_contents(m);
 	initPanFrames();
 	checkPanFrames();
 	raisePanFrames();
@@ -2191,8 +2193,6 @@ void CMD_DesktopSize(F_CMD_ARGS)
 
 	/* FIXME: this needs broadcasting for all modules when global used. */
 
-	monitor_init_contents();
-
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->virtual_scr.VxMax = (val[0] <= 0) ?
 			0: val[0]*m->virtual_scr.MyDisplayWidth - m->virtual_scr.MyDisplayWidth;
@@ -2207,7 +2207,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth)),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight)),
-			(long)m->output);
+			(long)m->si->rr_output);
 
 		/* FIXME: likely needs per-monitor considerations!!! */
 		checkPanFrames();
@@ -2257,7 +2257,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	token = PeekToken(action_cpy, &action_cpy);
 
 	m = monitor_by_name(token);
-	if (strcmp(m->name, token) != 0)
+	if (strcmp(m->si->name, token) != 0)
 		m = m_use;
 	else
 		PeekToken(action, &action);
@@ -2298,7 +2298,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->output);
+			(long)m->si->rr_output);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -2313,7 +2313,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	else
 	{
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->output);
+				(long)m->si->rr_output);
 	}
 	BroadcastMonitorList(NULL);
 	EWMH_SetCurrentDesktop(m);

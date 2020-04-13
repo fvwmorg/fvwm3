@@ -989,8 +989,8 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 	x = left;
 	y = top;
-	width = (m->coord.x + m->virtual_scr.MyDisplayWidth) - (left + right);
-	height =(m->coord.y + m->virtual_scr.MyDisplayHeight) - (top + bottom);
+	width = (m->virtual_scr.MyDisplayWidth) - (left + right);
+	height =(m->virtual_scr.MyDisplayHeight) - (top + bottom);
 
 	if (
 		m->Desktops->ewmh_working_area.x != x ||
@@ -1035,8 +1035,8 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 
 	x = dyn_left;
 	y = dyn_top;
-	width = (m->coord.x + m->virtual_scr.MyDisplayWidth) - (dyn_left + dyn_right);
-	height = (m->coord.y + m->virtual_scr.MyDisplayHeight) - (dyn_top + dyn_bottom);
+	width = (m->virtual_scr.MyDisplayWidth) - (dyn_left + dyn_right);
+	height = (m->virtual_scr.MyDisplayHeight) - (dyn_top + dyn_bottom);
 
 	if (
 		m->Desktops->ewmh_dyn_working_area.x != x ||
@@ -1886,6 +1886,8 @@ void EWMH_Init(struct monitor *m)
 		XSetWMName(dpy, Scr.NoFocusWin, &text);
 		XFree(text.value);
 	}
+
+	fprintf(stderr, "%s: handling for monitor: %s\n", __func__, m->si->name);
 
 	/* FVWM in UTF8 */
 	utf_name[0] = 0x46;

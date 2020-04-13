@@ -282,6 +282,14 @@ void EWMH_SetDesktopNames(struct monitor *m)
 		return;
 	}
 
+	if (m->Desktops == NULL) {
+		m->Desktops = fxcalloc(1, sizeof *d);
+		m->Desktops->next = NULL;
+		m->Desktops->name = NULL;
+		m->Desktops->desk = 0;
+	}
+
+
 	d = m->Desktops->next;
 	/* skip negative desk */
 	while (d != NULL && d->desk < 0)

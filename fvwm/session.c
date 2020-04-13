@@ -179,7 +179,7 @@ SaveGlobalState(FILE *f)
 
 	fprintf(f, "[GLOBAL]\n");
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		fprintf(f, "  [MONITOR] %i\n", m->output);
+		fprintf(f, "  [MONITOR] %i\n", (int)m->si->rr_output);
 		fprintf(f, "      [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
 		fprintf(f, "      [VIEWPORT] %i %i %i %i\n",
 			m->virtual_scr.Vx, m->virtual_scr.Vy,
@@ -187,7 +187,7 @@ SaveGlobalState(FILE *f)
 		fprintf(f, "      [SCROLL] %i %i %i %i %i\n",
 			m->virtual_scr.EdgeScrollX, m->virtual_scr.EdgeScrollY,
 			Scr.ScrollDelay,
-			!!(Scr.flags.do_edge_wrap_x), 
+			!!(Scr.flags.do_edge_wrap_x),
 			!!(Scr.flags.do_edge_wrap_y));
 	}
 	fprintf(f, "  [MISC] %i %i %i\n",
@@ -558,7 +558,7 @@ SaveWindowStates(FILE *f)
 			ig.y + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vy : 0),
 			ewin->hints.win_gravity,
 			ewin->g.max_offset.x, ewin->g.max_offset.y);
-		fprintf(f, "  [MONITOR] %i\n", ewin->m->output);
+		fprintf(f, "  [MONITOR] %i\n", (int)ewin->m->si->rr_output);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
 		/* set the layer to the default layer if the layer has been
 		 * set by an ewmh hint */
@@ -1150,7 +1150,7 @@ LoadGlobalState(char *filename)
 	/* char s2[256]; */
 	char *is_key = NULL, *is_value = NULL;
 	int n, i1, i2, i3, i4;
-	struct monitor	*mon;
+	struct monitor	*mon = NULL;
 
 	if (!does_file_version_match)
 	{
@@ -1407,7 +1407,6 @@ LoadWindowStates(char *filename)
 		}
 		else if (!strcmp(s1, "[DESK]"))
 		{
-			struct monitor	*mon = matches[num_match - 1].m;
 			sscanf(s, "%*s %i",
 			       &(matches[num_match - 1].desktop));
 		}

@@ -3,7 +3,7 @@
 #define FVWMLIB_FSCRREN_H
 
 #ifdef HAVE_XRANDR
-#include <X11/extensions/Xrandr.h> 
+#include <X11/extensions/Xrandr.h>
 #endif
 
 /* needs X11/Xlib.h and X11/Xutil.h */
@@ -27,13 +27,6 @@ typedef enum
 	FSCREEN_XYPOS   = -4,
 	FSCREEN_BY_NAME = -5
 } fscreen_scr_t;
-
-struct coord {
-	int x;
-	int y;
-	int w;
-	int h;
-};
 
 typedef struct DesktopsInfo
 {
@@ -76,20 +69,32 @@ enum monitor_tracking
 
 enum monitor_tracking monitor_mode;
 
+struct screen_info {
+	const char		*name;
+	int			 x, y, w, h;
+	RROutput		 rr_output;
+	int			 is_primary;
+	int			 is_new;
+	int			 is_disabled;
+
+	TAILQ_ENTRY(screen_info) entry;
+};
+TAILQ_HEAD(screen_infos, screen_info);
+
+struct screen_infos	 screen_info_q;
+
+struct screen_info	*screen_info_new(void);
+struct screen_info	*screen_info_by_name(const char *);
+
+
 struct monitor {
-	char		*name;
-	int		 is_primary, output, crtc;
-	struct coord 	 coord;
-	struct coord 	 coord_cpy;
-	int		 win_count;
-	int		 wants_refresh;
-	int		 is_disabled;
+	struct screen_info	*si;
+	int			 win_count;
 
 	/* info for some desktops; the first entries should be generic info
          * correct for any desktop not in the list
          */
         DesktopsInfo    *Desktops;
-        DesktopsInfo    *Desktops_cpy;
 
         /* Information about EWMH. */
         struct {
@@ -142,11 +147,12 @@ struct monitor	*monitor_by_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_output(int);
 struct monitor  *monitor_get_current(void);
-void		 monitor_init_contents(void);
+void		 monitor_init_contents(struct monitor *);
 void		 monitor_dump_state(struct monitor *);
-void		 monitor_output_change(Display *, XRROutputChangeNotifyEvent *);
+void		 monitor_output_change(Display *, XRRScreenChangeNotifyEvent *);
 int		 monitor_get_all_widths(void);
 int		 monitor_get_all_heights(void);
+void		 monitor_add_new(void);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 
