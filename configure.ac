@@ -559,15 +559,15 @@ AC_ARG_ENABLE(xrandr,
 
 AH_TEMPLATE([HAVE_XRANDR],[Define if XRandR library is used.])
 if test ! x"$with_xrandr" = xno; then
-  $UNSET ac_cv_lib_XRandR_XRRQueryExtension
-  AC_CHECK_LIB(Xrandr, XRRQueryExtension, [
-    AC_DEFINE(HAVE_XRANDR)
-    with_xrandr=yes
-    XRandR_LIBS=-lXrandr
-    ],[
+    if $PKG_CONFIG --exists "xrandr >= 1.5.0"; then
+        AC_DEFINE(HAVE_XRANDR)
+        with_xrandr=yes
+        XRandR_LIBS=-lXrandr
+    else
        with_xrandr=no
-       problem_xrandr="Couldn't detect libxrandr"
-    ],[$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
+       problem_xrandr="Couldn't detect libxrandr, or version < 1.5.0"
+    fi
+    #],[$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
 fi
 
 AC_SUBST(XRandR_LIBS)

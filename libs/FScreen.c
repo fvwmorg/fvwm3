@@ -50,7 +50,7 @@ static Display *disp;
 static bool		 is_randr_present;
 
 static struct monitor	*monitor_new(void);
-static void		 monitor_init_one(struct monitor *);
+static void		 monitor_set_flags(struct monitor *);
 static void		 scan_screens(Display *);
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
@@ -195,100 +195,14 @@ monitor_get_all_heights(void)
 }
 
 static void
-monitor_init_one(struct monitor *m)
+monitor_set_flags(struct monitor *m)
 {
-#if 0
-	fprintf(stderr, "Adding new desktops for %s\n", m->si->name);
-	m->Desktops = fxcalloc(1, sizeof(DesktopsInfo));
-	m->Desktops->next = NULL;
-	m->Desktops->name = NULL;
-	m->Desktops->desk = 0; /* not desk 0 */
-#endif
+	if (m->si->is_new)
+		m->flags |= MONITOR_NEW;
 
-	m->virtual_scr.EdgeScrollX = DEFAULT_EDGE_SCROLL *
-		m->virtual_scr.MyDisplayWidth  / 100;
-	m->virtual_scr.EdgeScrollY = DEFAULT_EDGE_SCROLL *
-		m->virtual_scr.MyDisplayHeight / 100;
-	m->virtual_scr.VxMax = 2 * m->virtual_scr.MyDisplayWidth;
-	m->virtual_scr.VyMax = 2 * m->virtual_scr.MyDisplayHeight;
-	m->virtual_scr.Vx = 0;
-	m->virtual_scr.Vy = 0;
-
-#if 0
-	m->Desktops->ewmh_dyn_working_area.x =
-		m->Desktops->ewmh_working_area.x = m->si->x;
-	m->Desktops->ewmh_dyn_working_area.y =
-		m->Desktops->ewmh_working_area.y = m->si->y;
-	m->Desktops->ewmh_dyn_working_area.width =
-		m->Desktops->ewmh_working_area.width =
-		m->virtual_scr.MyDisplayWidth;
-	m->Desktops->ewmh_dyn_working_area.height =
-		m->Desktops->ewmh_working_area.height =
-		m->virtual_scr.MyDisplayHeight;
-#endif
-}
-
-void
-monitor_init_contents(struct monitor *m)
-{
-	/* If we've been asked for the "global" screen, then we set the
-	 * desktop size to all monitors.  We don't need RandR for this; X11
-	 * provides that directly.  Then, copy each of this into all monitors
-	 * for the same values.
-	 *
-	 * Otherwise, we initialise the specific monitors with their own
-	 * values, if "per-monitor" has been specified.
-	 */
-	struct monitor	*reference_m = NULL, *loop_m = NULL;
-
-	/* Always reset the width/height, as this might have changed. */
-	m->virtual_scr.MyDisplayWidth = monitor_get_all_widths();
-	m->virtual_scr.MyDisplayHeight = monitor_get_all_heights();
-
-	if (monitor_mode == MONITOR_TRACKING_G) {
-		/* We might be transitioning out of being in per-monitor.
-		 *
-		 * In which case, get the current monitor and use a new
-		 * monitor as a reference.
-		 */
-		fprintf(stderr, "%s: global monitors...\n", __func__);
-		TAILQ_FOREACH(loop_m, &monitor_q, entry) {
-			if (loop_m != m && loop_m->Desktops != NULL) {
-				reference_m = loop_m;
-				break;
-			}
-		}
-
-		if (reference_m == NULL) {
-			/* Initialise all monitors. */
-			fprintf(stderr, "%s: first time; setting up all monitors\n",
-			    __func__);
-
-			TAILQ_FOREACH(loop_m, &monitor_q, entry)
-				monitor_init_one(loop_m);
-		} else if (reference_m->Desktops != NULL) {
-			/* We have a reference monitor to use to add it to a
-			 * global set.
-			 */
-			fprintf(stderr, "%s: found reference monitor '%s' "
-				"copying over desktop information to new "
-				"monitor '%s'\n", __func__,
-				reference_m->si->name, m->si->name);
-			memcpy(&m->virtual_scr, &reference_m->virtual_scr,
-					sizeof(m->virtual_scr));
-
-			/* FIXME: free(); */
-			m->Desktops = reference_m->Desktops;
-		}
-	}
-
-	if (monitor_mode == MONITOR_TRACKING_M) {
-		/* Per-monitor. */
-		if (m->si->is_new) {
-			fprintf(stderr, "New monitor: %s, adding stuff\n",
-				m->si->name);
-			monitor_init_one(m);
-		}
+	if (m->si->is_disabled) {
+		m->flags = ~MONITOR_NEW;
+		m->flags |= MONITOR_DISABLED;
 	}
 }
 
@@ -312,13 +226,41 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 			__func__);
 		return;
 	}
+
+	{
+		struct screen_info	*si;
+		XRROutputInfo		*oinfo = NULL;
+		int			 i;
+
+		scan_screens(dpy);
+
+		for (i = 0; i < res->noutput; i++) {
+			oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
+			if (oinfo == NULL)
+				continue;
+
+			si = screen_info_by_name(oinfo->name);
+
+			if (si == NULL)
+				continue;
+
+			switch (oinfo->connection) {
+			case RR_Connected:
+				si->is_disabled = false;
+				break;
+			case RR_Disconnected:
+				si->is_disabled = true;
+				break;
+			default:
+				break;
+			}
+		}
+		XRRFreeOutputInfo(oinfo);
+	}
 	XRRFreeScreenResources(res);
 
-	scan_screens(dpy);
-	monitor_add_new();
-
 	TAILQ_FOREACH(m, &monitor_q, entry)
-		monitor_init_contents(m);
+		monitor_set_flags(m);
 
 }
 
@@ -349,6 +291,7 @@ scan_screens(Display *dpy)
 			m->si = screen_info_new();
 			m->si->name = strdup(name);
 			m->si->is_new = true;
+			memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
 
 			TAILQ_INSERT_TAIL(&monitor_q, m, entry);
 
@@ -359,24 +302,11 @@ scan_screens(Display *dpy)
 		m->si->y = rrm[i].y;
 		m->si->w = rrm[i].width;
 		m->si->h = rrm[i].height;
+		m->si->rr_output = *rrm[i].outputs;
 		m->si->is_primary = rrm[i].primary > 0;
-	}
-}
+		m->virtual_scr.MyDisplayWidth = monitor_get_all_widths();
+		m->virtual_scr.MyDisplayHeight = monitor_get_all_heights();
 
-void
-monitor_add_new(void)
-{
-	struct screen_info	*si;
-	struct monitor		*m;
-
-	TAILQ_FOREACH(si, &screen_info_q, entry) {
-		if (si->is_new) {
-			fprintf(stderr, "Adding new monitor %s (%d)\n",
-				si->name, (int)si->rr_output);
-			m = monitor_new();
-			m->si = si;
-			TAILQ_INSERT_TAIL(&monitor_q, m, entry);
-		}
 	}
 }
 
@@ -417,6 +347,12 @@ void FScreenInit(Display *dpy)
 
 	fprintf(stderr, "Using RandR %d.%d\n", major, minor);
 
+	if (ReferenceDesktops == NULL) {
+		ReferenceDesktops = fxcalloc(1, sizeof *ReferenceDesktops);
+		ReferenceDesktops->next = NULL;
+		ReferenceDesktops->desk = 0;
+	}
+
 	/* XRandR is present, so query the screens we have. */
 	res = XRRGetScreenResources(dpy, DefaultRootWindow(dpy));
 
@@ -429,10 +365,12 @@ void FScreenInit(Display *dpy)
 	XRRFreeScreenResources(res);
 
 	scan_screens(dpy);
-	monitor_add_new();
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		monitor_init_contents(m);
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		fprintf(stderr, "%s: mon: %s (%d x %d)\n", __func__, m->si->name,
+			m->virtual_scr.MyDisplayWidth, m->virtual_scr.MyDisplayHeight);
+		monitor_set_flags(m);
+	}
 
 	return;
 
@@ -447,7 +385,7 @@ single_screen:
 	m->si->w = DisplayWidth(disp, DefaultScreen(disp)),
 	m->si->h = DisplayHeight(disp, DefaultScreen(disp));
 
-	monitor_init_contents(m);
+	monitor_set_flags(m);
 
 	TAILQ_INSERT_TAIL(&monitor_q, m, entry);
 }
@@ -526,7 +464,7 @@ FindScreenOfXY(int x, int y)
 	int		 xa, ya;
 	int		 all_widths, all_heights;
 
-	all_widths = monitor_get_all_widths();
+	all_widths =  monitor_get_all_widths();
 	all_heights = monitor_get_all_heights();
 
 	xa = abs(x);
