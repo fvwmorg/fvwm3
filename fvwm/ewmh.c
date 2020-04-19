@@ -975,6 +975,8 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
+		if (monitor_mode == MONITOR_TRACKING_M && fw->m != m)
+			continue;
 		if (
 			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
 			!IS_STICKY_ACROSS_PAGES(fw))
@@ -991,6 +993,9 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 	y = top;
 	width = (m->virtual_scr.MyDisplayWidth) - (left + right);
 	height =(m->virtual_scr.MyDisplayHeight) - (top + bottom);
+
+	if (width == 0)
+		width = m->si->w;
 
 	if (
 		m->Desktops->ewmh_working_area.x != x ||
@@ -1021,6 +1026,8 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
+		if (monitor_mode == MONITOR_TRACKING_M && fw->m != m)
+			continue;
 		if (
 			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
 			!IS_STICKY_ACROSS_PAGES(fw))
@@ -1037,6 +1044,9 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 	y = dyn_top;
 	width = (m->virtual_scr.MyDisplayWidth) - (dyn_left + dyn_right);
 	height = (m->virtual_scr.MyDisplayHeight) - (dyn_top + dyn_bottom);
+
+	if (width == 0)
+		width = m->si->w;
 
 	if (
 		m->Desktops->ewmh_dyn_working_area.x != x ||
@@ -1097,6 +1107,8 @@ void EWMH_GetWorkAreaIntersection(
 	nx = max(*x, area_x);
 	ny = max(*y, area_y);
 	nw = min(*x + *w, area_x + area_w) - nx;
+	if (nw == 0)
+		nw = m->si->w;
 	nh = min(*y + *h, area_y + area_h) - ny;
 	*x = abs(nx);
 	*y = abs(ny);

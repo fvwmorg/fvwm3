@@ -68,6 +68,7 @@ enum monitor_tracking
 };
 
 enum monitor_tracking monitor_mode;
+DesktopsInfo	 *ReferenceDesktops;
 
 struct screen_info {
 	const char		*name;
@@ -86,15 +87,20 @@ struct screen_infos	 screen_info_q;
 struct screen_info	*screen_info_new(void);
 struct screen_info	*screen_info_by_name(const char *);
 
+#define MONITOR_NEW 0x1
+#define MONITOR_DISABLED 0x2
+#define MONITOR_DESKTOPS 0x3
+#define MONITOR_INIT (MONITOR_NEW|MONITOR_DESKTOPS)
 
 struct monitor {
 	struct screen_info	*si;
 	int			 win_count;
+	int			 flags;
 
 	/* info for some desktops; the first entries should be generic info
          * correct for any desktop not in the list
          */
-        DesktopsInfo    *Desktops;
+	DesktopsInfo    *Desktops;
 
         /* Information about EWMH. */
         struct {

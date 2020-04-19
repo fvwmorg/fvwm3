@@ -1446,6 +1446,8 @@ static int CatchFatal(Display *dpy)
 /* FvwmErrorHandler - displays info on internal errors */
 static int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
+	char errtext[512];
+
 	if (event->error_code == BadWindow)
 	{
 		bad_window = event->resourceid;
@@ -1466,10 +1468,15 @@ static int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 	{
 		return 0;
 	}
+
+	XGetErrorText(dpy, event->error_code, errtext, 512);
+
 	fvwm_msg(ERR, "FvwmErrorHandler", "*** internal error ***");
-	fvwm_msg(ERR, "FvwmErrorHandler", "Request %d, Error %d, EventType: %d",
+	fvwm_msg(ERR, "FvwmErrorHandler", "Request %d, Error %d, Text %s, "
+		"EventType: %d",
 		 event->request_code,
 		 event->error_code,
+		 errtext,
 		 last_event_type);
 
 	return 0;
@@ -2468,12 +2475,12 @@ int main(int argc, char **argv)
 	Scr.gray_bitmap =
 		XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
 
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		EWMH_Init(m);
+
 	/* This should be done early enough to have the window states loaded
 	 * before the first call to AddWindow. */
 	LoadWindowStates(state_filename);
-
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		EWMH_Init(m);
 
 	DBUG("main", "Setting up rc file defaults...");
 	SetRCDefaults();

@@ -2152,7 +2152,7 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 void CMD_DesktopConfiguration(F_CMD_ARGS)
 {
 	FvwmWindow	*t;
-	struct monitor	*m = NULL;
+	//struct monitor	*m = NULL;
 
 	if (action == NULL) {
 		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action is required");
@@ -2168,8 +2168,8 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		return;
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		monitor_init_contents(m);
+	//TAILQ_FOREACH(m, &monitor_q, entry)
+	//	monitor_init_contents(m);
 	initPanFrames();
 	checkPanFrames();
 	raisePanFrames();
@@ -2486,9 +2486,9 @@ number_of_desktops(struct monitor *m)
  */
 void CMD_DesktopName(F_CMD_ARGS)
 {
-	int desk;
-	DesktopsInfo *t, *d, *new, **prev;
-	struct monitor	*m = monitor_get_current();
+	int		 desk;
+	DesktopsInfo	*t, *d, *new, **prev;
+	struct monitor	*m;
 
 	if (GetIntegerArguments(action, &action, &desk, 1) != 1)
 	{
@@ -2499,9 +2499,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		return;
 	}
 
-	/* FIXME: this needs broadcasting to all monitors. */
-
-	d = m->Desktops->next;
+	d = ReferenceDesktops->next;
 	while (d != NULL && d->desk != desk)
 	{
 		d = d->next;
@@ -2522,9 +2520,9 @@ void CMD_DesktopName(F_CMD_ARGS)
 	else
 	{
 		/* new deskops entries: add it in order */
-		d = m->Desktops->next;
-		t = m->Desktops;
-		prev = &(m->Desktops->next);
+		d = ReferenceDesktops->next;
+		t = ReferenceDesktops;
+		prev = &(ReferenceDesktops->next);
 		while (d != NULL && d->desk < desk)
 		{
 			t = t->next;
@@ -2543,7 +2541,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		}
 		else
 		{
-			/* instert it */
+			/* insert it */
 			new = fxcalloc(1, sizeof(DesktopsInfo));
 			new->desk = desk;
 			if (action != NULL && *action && *action != '\n')
@@ -2581,7 +2579,12 @@ void CMD_DesktopName(F_CMD_ARGS)
 		free(msg);
 	}
 
-	EWMH_SetDesktopNames(m);
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->Desktops == NULL) {
+			m->Desktops = ReferenceDesktops;
+		}
+		EWMH_SetDesktopNames(m);
+	}
 
 	return;
 }

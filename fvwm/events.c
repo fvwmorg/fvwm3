@@ -1794,63 +1794,30 @@ static void __refocus_stolen_focus_win(const evh_args_t *ea)
 void monitor_update_ewmh(void)
 {
 	FvwmWindow	*t;
-	struct monitor	*m;
+	struct monitor	*m, *mref;
 
 	if (Scr.bo.do_debug_randr) {
 		fprintf(stderr, "%s: monitor debug...\n", __func__);
 		monitor_dump_state(NULL);
 	}
 
+	mref = TAILQ_FIRST(&monitor_q);
+
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		fprintf(stderr, "Oh yes, it's a mess: %s\n", m->si->name);
-			EWMH_Init(m);
-			m->si->is_new = false;
+		if (m->flags & MONITOR_NEW) {
+			m->virtual_scr.Vx = mref->virtual_scr.Vx;
+			m->virtual_scr.Vy = mref->virtual_scr.Vy;
+			m->virtual_scr.VxMax = mref->virtual_scr.VxMax;
+			m->virtual_scr.VyMax = mref->virtual_scr.VyMax;
+
+			m->flags &= ~MONITOR_NEW;
+		}
+		EWMH_Init(m);
 	}
 
 	BroadcastMonitorList(NULL);
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
-		/* If the monitor the window is on is no longer present in our
-		 * list, then move this window to the monitor which has the
-		 * pointer.
-		 */
-#if 0 /*** Will move to FvwmEvent. ***/
-		struct monitor	*m = t->m;
-		char		*move_cmd = NULL;
-
-		update_relative_geometry(t);
-		update_absolute_geometry(t);
-		UPDATE_FVWM_SCREEN(t);
-
-		if (t->m_prev != NULL) {
-			/* If the window count on this monitor is 0, then it
-			 * must be a new monitor.
-			 *
-			 * Check to see if this new monitor used to contain
-			 * previous windows.
-			 */
-			if (t->m_prev != NULL &&
-			    (strcmp(t->m_prev->si->name, m->si->name) == 0)) {
-			    t->m = t->m_prev;
-			}
-
-			if (t->m != NULL) {
-				asprintf(&move_cmd, "MoveToScreen %s", t->m->si->name);
-				execute_function_override_window(NULL, NULL, move_cmd, 0, t);
-				free(move_cmd);
-				break;
-			}
-		}
-
-		if (m != mcur) {
-			asprintf(&move_cmd, "MoveToScreen %s", mcur->si->name);
-			execute_function_override_window(NULL, NULL, move_cmd, 0, t);
-			fprintf(stderr, "Moved window (0x%x) to monitor %s\n",
-				(int)FW_W(t), t->m->si->name);
-			free(move_cmd);
-			continue;
-		}
-#endif
 		UPDATE_FVWM_SCREEN(t);
 	}
 }
@@ -4197,15 +4164,13 @@ void dispatch_event(XEvent *e)
 	XRRUpdateConfiguration(e);
 
 	switch (e->type - randr_event) {
-	case RRScreenChangeNotify: {
-		sce = (XRRScreenChangeNotifyEvent *)e;
-		monitor_output_change(sce->display, sce);
-		monitor_update_ewmh();
-		break;
+		case RRScreenChangeNotify: {
+			sce = (XRRScreenChangeNotifyEvent *)e;
+			monitor_output_change(sce->display, sce);
+			monitor_update_ewmh();
+			break;
+		}
 	}
-	}
-
-	//return;
 #endif
 
 	if (w == Scr.Root)
