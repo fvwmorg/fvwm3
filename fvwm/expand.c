@@ -930,7 +930,7 @@ static signed int expand_vars_extended(
 		FQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY, &x, &y, &JunkMask);
 		string = FScreenOfPointerXY(x, y);
-		should_quote = True;
+		should_quote = False;
 		break;
 
 	case VAR_VERSION_NUM:
