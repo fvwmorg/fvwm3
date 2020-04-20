@@ -1411,7 +1411,7 @@ static int __place_get_nowm_pos(
 {
 	FvwmWindow *fw = exc->w.fw;
 	size_borders b;
-	struct monitor	*m = fw->m;
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	if (!win_opts->flags.do_override_ppos)
 	{
@@ -1553,6 +1553,8 @@ static int __place_get_nowm_pos(
 		attr_g->x = final_g.x;
 		attr_g->y = final_g.y;
 	}
+
+	UPDATE_FVWM_SCREEN(fw);
 
 	return 0;
 }
@@ -1714,6 +1716,7 @@ static int __place_window(
 	/* Don't alter the existing desk location during Capture/Recapture.  */
 	if (!win_opts->flags.do_override_ppos)
 	{
+		fprintf(stderr, "%s: setting desk!\n", __func__);
 		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
 		fw->Desk = m->virtual_scr.CurrentDesk;
 		reason->desk.reason = PR_DESK_CURRENT;
@@ -1873,6 +1876,18 @@ static int __place_window(
 			exc, pstyle, attr_g, flags, screen_g, start_style,
 			mode, win_opts, reason, pdeltax, pdeltay);
 	}
+
+	/* Check the desk here. */
+	if (!SUSE_START_ON_DESK(&pstyle->flags)) {
+		struct monitor *mnew;
+
+		mnew = FindScreenOfXY(attr_g->x, attr_g->y);
+
+		fw->Desk = mnew->virtual_scr.CurrentDesk;
+
+		fprintf(stderr, "%s: set desk now to: %d\n", __func__, fw->Desk);
+	}
+
 	reason->pos.x = attr_g->x;
 	reason->pos.y = attr_g->y;
 

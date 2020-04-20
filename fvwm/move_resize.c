@@ -1835,6 +1835,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		fvwmrect_move_into_rectangle(&r, &s);
 		FinalX = r.x;
 		FinalY = r.y;
+
+		fw->Desk = m->virtual_scr.CurrentDesk;
 	}
 	else
 	{

@@ -123,6 +123,12 @@ monitor_by_name(const char *name)
 {
 	struct monitor	*m, *mret = NULL;
 
+	if (name == NULL) {
+		fprintf("%s: name is NULL; shouldn't happen.  "
+			"Returning current monitor\n", __func__);
+		return (monitor_get_current());
+	}
+
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (strcmp(m->si->name, name) == 0) {
 			mret = m;

@@ -1614,6 +1614,9 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 	action_cpy = strdup(action);
 	token = PeekToken(action_cpy, &action_cpy);
 
+	if (token == NULL)
+		return (False);
+
 	m = monitor_by_name(token);
 	if (strcmp(m->si->name, token) != 0)
 		m = m_use;

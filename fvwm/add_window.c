@@ -2524,6 +2524,8 @@ FvwmWindow *AddWindow(
 		struct monitor	*tm = (fw && fw->m) ? fw->m :
 			monitor_get_current();
 
+		fprintf(stderr, "%s: Found: %s - going to desk: %d (mon: %s)\n",
+			__func__, fw->name.name, fw->Desk, tm->si->name);
 		goto_desk(fw->Desk, tm);
 
 		/* read the requested absolute geometry */
