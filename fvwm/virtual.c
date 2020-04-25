@@ -2225,7 +2225,19 @@ void CMD_DesktopSize(F_CMD_ARGS)
  */
 void CMD_GotoDesk(F_CMD_ARGS)
 {
-	struct monitor	*m = monitor_get_current();
+	struct monitor  *m_use = monitor_get_current(), *m;
+	char		*action_cpy, *token;
+
+	action_cpy = strdup(action);
+	token = PeekToken(action_cpy, &action_cpy);
+
+	m = monitor_by_name(token);
+	if (strcmp(m->si->name, token) != 0)
+		m = m_use;
+	else
+		PeekToken(action, &action);
+
+	fprintf(stderr, "%s: using monitor: %s\n", __func__, m->si->name);
 
 	goto_desk(GetDeskNumber(m, action, m->virtual_scr.CurrentDesk), m);
 

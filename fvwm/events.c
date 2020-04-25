@@ -2883,7 +2883,7 @@ void HandleMapNotify(const evh_args_t *ea)
 	Bool is_on_this_page = False;
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
-	struct monitor *m = monitor_get_current();
+	struct monitor *m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	DBUG("HandleMapNotify", "Routine Entered");
 

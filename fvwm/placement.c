@@ -1879,13 +1879,9 @@ static int __place_window(
 
 	/* Check the desk here. */
 	if (!SUSE_START_ON_DESK(&pstyle->flags)) {
-		struct monitor *mnew;
-
-		mnew = FindScreenOfXY(attr_g->x, attr_g->y);
-
+		struct monitor *mnew = FindScreenOfXY(attr_g->x, attr_g->y);
+		fw->m = mnew;
 		fw->Desk = mnew->virtual_scr.CurrentDesk;
-
-		fprintf(stderr, "%s: set desk now to: %d\n", __func__, fw->Desk);
 	}
 
 	reason->pos.x = attr_g->x;
