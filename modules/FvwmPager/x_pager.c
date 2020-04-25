@@ -48,7 +48,7 @@
 
 extern ScreenInfo Scr;
 extern Display *dpy;
-extern char *monitor_to_track; 
+extern char *monitor_to_track;
 
 Pixel back_pix, fore_pix, hi_pix;
 Pixel focus_pix;
@@ -1639,7 +1639,7 @@ void MovePage(Bool is_new_desk)
       sptr = Desks[mon->virtual_scr.CurrentDesk -desk1].label;
     else
     {
-      sprintf(str, "GotoDesk %d", mon->virtual_scr.CurrentDesk);
+      sprintf(str, "GotoDesk %s %d", mon->name, mon->virtual_scr.CurrentDesk);
       sptr = &str[0];
     }
 
@@ -1701,6 +1701,9 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	XRectangle bound;
 	Region region = 0;
 	struct fpmonitor *mon = fpmonitor_this();
+
+	if (mon == NULL)
+		return;
 
 	if((desk < 0 ) || (desk >= ndesks))
 		return;
@@ -1929,10 +1932,11 @@ void DrawIconGrid(int erase)
 
 void SwitchToDesk(int Desk)
 {
-  char command[256];
+	char command[256];
+	struct fpmonitor *m = fpmonitor_this();
 
-  sprintf(command, "GotoDesk 0 %d", Desk + desk1);
-  SendText(fd,command,0);
+	sprintf(command, "GotoDesk %s 0 %d", m->name, Desk + desk1);
+	SendText(fd,command,0);
 }
 
 
