@@ -7,7 +7,7 @@
 
 my $n=0;
 my $bHTML = 1; # change me to 0 to set ASCII output.
-my @obsolete = ('ColorLimit', 'GlobalOpts', 'HilightColor', 'HilightColorset', 'IconFont', 'IconPath', 'PixmapPath', 'Recapture', 'RecaptureWindow', 'WindowShadeAnimate', 'WindowFont', 'WindowsDesk');
+my @obsolete = ('ColorLimit', 'GlobalOpts', 'HilightColor', 'HilightColorset', 'IconFont', 'IconPath', 'PixmapPath', 'WindowShadeAnimate', 'WindowFont', 'WindowsDesk');
 # @deprecated is not currently used.
 my @deprecated = ('AddToDecor', 'ChangeDecor', 'DestroyDecor', 'UpdateDecor');
 while (<>)

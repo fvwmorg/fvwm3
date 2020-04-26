@@ -3843,19 +3843,3 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 
 	return;
 }
-
-/* ---------------------------- builtin commands --------------------------- */
-
-void CMD_Recapture(F_CMD_ARGS)
-{
-	do_recapture(F_PASS_ARGS, False);
-
-	return;
-}
-
-void CMD_RecaptureWindow(F_CMD_ARGS)
-{
-	do_recapture(F_PASS_ARGS, True);
-
-	return;
-}

@@ -1390,7 +1390,7 @@ argument if you only want to snap against the screen edges. The default
 behavior is <emphasis remap='I'>All</emphasis>.</para>
 
 <para>The third and last optional argument may be set to one of the
-four following values: 
+four following values:
 <itemizedlist>
 <listitem><para>With <replaceable>Screen</replaceable> the
 already snapping icons or windows, which is controlled by the second
@@ -1459,7 +1459,7 @@ opt="EdgeMoveResistance"/> can be used without any
 parameters.</para>
 
 <para>The option <fvwmopt cmd="Style" opt="InitialMapCommand"/> allows
-for any valid fvwm command or function to run when the window is 
+for any valid fvwm command or function to run when the window is
 initially mapped by fvwm.  Example:</para>
 
 <programlisting>
@@ -1472,7 +1472,7 @@ command on that window.</para>
 
 <para>Note that should <fvwmref cmd="Style" opt="InitialMapCommand" /> be
 used as a global option for all windows, but there is a need that some
-windows should not have this command applied, then an action of 
+windows should not have this command applied, then an action of
 <fvwmref cmd="Nop" /> can be used on those windows, as in the following
 example:</para>
 
@@ -1865,10 +1865,10 @@ on initial capture.  The default is
 causes a window to be placed according to, or revert to, the
 <emphasis remap='I'>StartsOnPage</emphasis> and <emphasis remap='I'>StartsOnScreen</emphasis>
 desk, page and screen specification on
-<fvwmref cmd="Restart"/> or <fvwmopt cmd="Style" opt="Recapture"/>.
+<fvwmref cmd="Restart"/>.
 <fvwmopt cmd="Style" opt="RecaptureIgnoresStartsOnPage"/>
 causes fvwm to respect the current window position on
-<fvwmref cmd="Restart"/> or <fvwmref cmd="Recapture"/>.
+<fvwmref cmd="Restart"/>.
 The default is
 <emphasis remap='I'>RecaptureIgnoresStartsOnPage</emphasis>.</para>
 
@@ -2214,11 +2214,7 @@ be moved or resized, etc.  You probably want to use
 <emphasis remap='B'>Bugopts RaiseOverUnmanaged</emphasis>
 too.  This option can be turned off with the
 <emphasis remap='I'>!Unmanaged</emphasis>
-style.
-However, windows that are already ignored at the time when the
-option is set must be recaptured with the
-<fvwmref cmd="Recapture"/>
-command in order to become managed.</para>
+style.</para>
 
 <para>
 <fvwmopt cmd="Style" opt="State"/>
