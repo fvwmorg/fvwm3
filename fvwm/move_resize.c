@@ -5047,8 +5047,6 @@ void CMD_Maximize(F_CMD_ARGS)
 			new_g.width = scr_w;
 		}
 		/* now maximize it */
-		fprintf(stderr, "%s: NEW_G:{x: %d, y: %d, w: %d, h: %d}\n",
-			__func__, new_g.x, new_g.y, new_g.width, new_g.height);
 		maximize_fvwm_window(fw, &new_g);
 	}
 	EWMH_SetWMState(fw, False);
