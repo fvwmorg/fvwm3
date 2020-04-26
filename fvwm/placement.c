@@ -1716,7 +1716,6 @@ static int __place_window(
 	/* Don't alter the existing desk location during Capture/Recapture.  */
 	if (!win_opts->flags.do_override_ppos)
 	{
-		fprintf(stderr, "%s: setting desk!\n", __func__);
 		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
 		fw->Desk = m->virtual_scr.CurrentDesk;
 		reason->desk.reason = PR_DESK_CURRENT;
@@ -1878,7 +1877,8 @@ static int __place_window(
 	}
 
 	/* Check the desk here. */
-	if (!SUSE_START_ON_DESK(&pstyle->flags)) {
+	if (!SUSE_START_ON_DESK(&pstyle->flags) &&
+		((!Restarting && Scr.flags.are_windows_captured))) {
 		struct monitor *mnew = FindScreenOfXY(attr_g->x, attr_g->y);
 		fw->m = mnew;
 		fw->Desk = mnew->virtual_scr.CurrentDesk;
