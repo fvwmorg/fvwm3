@@ -444,6 +444,7 @@ static void setup_window_structure(
 	if (savewin != NULL)
 	{
 		(*pfw)->Desk = savewin->Desk;
+		(*pfw)->m = savewin->m;
 		SET_SHADED(*pfw, IS_SHADED(savewin));
 		SET_USED_TITLE_DIR_FOR_SHADING(
 			*pfw, USED_TITLE_DIR_FOR_SHADING(savewin));
@@ -3804,6 +3805,7 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 		Window parent_win;
 		Window focus_w;
 		FvwmWindow *t;
+		struct monitor *mon = monitor_get_current();
 
 		t = get_focus_window();
 		focus_w = (t) ? FW_W(t) : None;
@@ -3815,6 +3817,10 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 				    dpy, children[i], FvwmContext,
 				    (caddr_t *)&fw) != XCNOENT)
 			{
+				if ((fw != NULL && fw->m != NULL)) {
+					if (fw->m != mon)
+						continue;
+				}
 				CaptureOneWindow(
 					exc, fw, children[i], keep_on_top_win,
 					parent_win, is_recapture);
