@@ -416,7 +416,6 @@ SaveWindowStates(FILE *f)
 	FvwmWindow *ewin;
 	rectangle save_g;
 	rectangle ig;
-	struct monitor	*m = monitor_get_current();
 	int i;
 	int layer;
 
@@ -543,8 +542,8 @@ SaveWindowStates(FILE *f)
 			&ewin->g.normal);
 		if (IS_STICKY_ACROSS_PAGES(ewin))
 		{
-			save_g.x -= m->virtual_scr.Vx;
-			save_g.y -= m->virtual_scr.Vy;
+			save_g.x -= ewin->m->virtual_scr.Vx;
+			save_g.y -= ewin->m->virtual_scr.Vy;
 		}
 		get_visible_icon_geometry(ewin, &ig);
 		fprintf(
@@ -554,8 +553,8 @@ SaveWindowStates(FILE *f)
 			ewin->g.max.x, ewin->g.max.y, ewin->g.max.width,
 			ewin->g.max.height, ewin->g.max_defect.width,
 			ewin->g.max_defect.height,
-			ig.x + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vx : 0),
-			ig.y + ((!is_icon_sticky_across_pages) ? m->virtual_scr.Vy : 0),
+			ig.x + ((!is_icon_sticky_across_pages) ? ewin->m->virtual_scr.Vx : 0),
+			ig.y + ((!is_icon_sticky_across_pages) ? ewin->m->virtual_scr.Vy : 0),
 			ewin->hints.win_gravity,
 			ewin->g.max_offset.x, ewin->g.max_offset.y);
 		fprintf(f, "  [MONITOR] %i\n", (int)ewin->m->si->rr_output);
@@ -1303,7 +1302,6 @@ void
 LoadWindowStates(char *filename)
 {
 	FILE *f;
-	struct monitor	*m = monitor_get_current();
 	char s[4096], s1[4096];
 	char *s2;
 	int i, pos, pos1;
@@ -1364,8 +1362,6 @@ LoadWindowStates(char *filename)
 			matches[num_match - 1].h = 100;
 			matches[num_match - 1].x_max = 0;
 			matches[num_match - 1].y_max = 0;
-			matches[num_match - 1].w_max = m->virtual_scr.MyDisplayWidth;
-			matches[num_match - 1].h_max = m->virtual_scr.MyDisplayHeight;
 			matches[num_match - 1].width_defect_max = 0;
 			matches[num_match - 1].height_defect_max = 0;
 			matches[num_match - 1].icon_x = 0;
@@ -1384,6 +1380,8 @@ LoadWindowStates(char *filename)
 			sscanf(s, "%*s %i", &pos);
 			m = monitor_by_output(pos);
 			matches[num_match - 1].m = m;
+			matches[num_match - 1].w_max = m->virtual_scr.MyDisplayWidth;
+			matches[num_match - 1].h_max = m->virtual_scr.MyDisplayHeight;
 		}
 		else if (!strcmp(s1, "[GEOMETRY]"))
 		{
@@ -1533,7 +1531,6 @@ MatchWinToSM(
 	initial_window_options_t *win_opts)
 {
 	int i;
-	struct monitor *m = monitor_get_current();
 
 	if (!does_file_version_match)
 	{
@@ -1598,6 +1595,7 @@ MatchWinToSM(
 			ret_state_args->do_max = IS_MAXIMIZED(&(matches[i]));
 			SET_USER_STATES(ewin, GET_USER_STATES(&(matches[i])));
 			SET_ICON_MOVED(ewin, IS_ICON_MOVED(&(matches[i])));
+			ewin->m = matches[i].m;
 			if (IS_ICONIFIED(&(matches[i])))
 			{
 				/*
@@ -1613,11 +1611,10 @@ MatchWinToSM(
 				      IS_ICON_STICKY_ACROSS_PAGES(
 					      &(matches[i]))))
 				{
-					win_opts->initial_icon_x -= m->virtual_scr.Vx;
-					win_opts->initial_icon_y -= m->virtual_scr.Vy;
+					win_opts->initial_icon_x -= ewin->m->virtual_scr.Vx;
+					win_opts->initial_icon_y -= ewin->m->virtual_scr.Vy;
 				}
 			}
-			ewin->m = matches[i].m;
 			ewin->g.normal.x = matches[i].x;
 			ewin->g.normal.y = matches[i].y;
 			ewin->g.normal.width = matches[i].w;
@@ -1636,7 +1633,7 @@ MatchWinToSM(
 			SET_STICKY_ACROSS_DESKS(
 				ewin, IS_STICKY_ACROSS_DESKS(&(matches[i])));
 			ewin->Desk = (IS_STICKY_ACROSS_DESKS(ewin)) ?
-				m->virtual_scr.CurrentDesk : matches[i].desktop;
+				ewin->m->virtual_scr.CurrentDesk : matches[i].desktop;
 			set_layer(ewin, matches[i].layer);
 			set_default_layer(ewin, matches[i].default_layer);
 			ewin->placed_by_button = matches[i].placed_by_button;
