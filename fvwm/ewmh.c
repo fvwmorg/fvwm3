@@ -1115,9 +1115,6 @@ void EWMH_GetWorkAreaIntersection(
 	*w = abs(nw);
 	*h = abs(nh);
 
-	fprintf(stderr, "%s: using: {x: %d, y: %d, w: %d, h: %d}\n", __func__,
-			*x, *y, *w, *h);
-
 	return;
 }
 
@@ -1898,8 +1895,6 @@ void EWMH_Init(struct monitor *m)
 		XSetWMName(dpy, Scr.NoFocusWin, &text);
 		XFree(text.value);
 	}
-
-	fprintf(stderr, "%s: handling for monitor: %s\n", __func__, m->si->name);
 
 	/* FVWM in UTF8 */
 	utf_name[0] = 0x46;

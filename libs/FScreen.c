@@ -124,7 +124,7 @@ monitor_by_name(const char *name)
 	struct monitor	*m, *mret = NULL;
 
 	if (name == NULL) {
-		fprintf("%s: name is NULL; shouldn't happen.  "
+		fprintf(stderr, "%s: name is NULL; shouldn't happen.  "
 			"Returning current monitor\n", __func__);
 		return (monitor_get_current());
 	}

@@ -486,7 +486,6 @@ void BroadcastMonitorList(fmodule *this)
 			while ((module = module_list_itr_next(&moditr)) != NULL)
 				SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 		}
-		fprintf(stderr, "Sent: <<%s>>\n", name);
 		free(name);
 	}
 }
