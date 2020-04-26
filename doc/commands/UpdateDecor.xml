@@ -36,12 +36,7 @@ are updated.  This command is useful, for instance, after a
 <fvwmref cmd="ButtonStyle"/>, <fvwmref cmd="TitleStyle"/> or <fvwmref cmd="BorderStyle"/>
 (possibly used in conjunction with
 <fvwmref cmd="AddToDecor"/>).
-Specifying an invalid decor results in all windows being
-updated.  This command is less disturbing than
-<fvwmref cmd="Recapture"/>,
-but does not affect window style options as
-<fvwmref cmd="Recapture"/>
-does.</para>
+Specifying an invalid decor results in all windows being updated.</para>
 
 
 </section>

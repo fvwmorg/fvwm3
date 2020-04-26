@@ -468,13 +468,6 @@ const func_t func_table[] =
 	CMD_ENT("readwritecolors", CMD_ReadWriteColors, F_NOP, 0, 0),
 	/* - Used for colorset speed hacks (will be removed?) */
 
-	CMD_ENT("recapture", CMD_Recapture, F_RECAPTURE, 0, 0),
-	/* - Reapply styles to all windows (will be obsolete) */
-
-	CMD_ENT("recapturewindow", CMD_RecaptureWindow, F_RECAPTURE_WINDOW,
-		FUNC_NEEDS_WINDOW, CRS_SELECT),
-	/* - Reapply styles to one window (will be obsolete) */
-
 	CMD_ENT("refresh", CMD_Refresh, F_REFRESH, 0, 0),
 	/* - Cause all windows to redraw themselves */
 

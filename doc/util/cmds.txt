@@ -122,8 +122,6 @@ QuitSession
 Raise
 RaiseLower
 Read
-Recapture
-RecaptureWindow
 Refresh
 RefreshWindow
 Repeat

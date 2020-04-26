@@ -115,11 +115,9 @@ command.</para>
 <para>When the
 <fvwmopt cmd="BugOpts" opt="ExplainWindowPlacement"/>
 option is enabled, fvwm prints a message to the console whenever a
-new window is placed or one of the commands
+new window is placed or
 <fvwmref cmd="PlaceAgain"/>,
-<fvwmref cmd="Recapture"/> or
-<fvwmref cmd="RecaptureWindow"/>
-is used.  The message explains on which desk, page, 
+is used.  The message explains on which desk, page,
 screen and position it was placed and why.  This option can be
 used to figure out why a specific window does not appear where you
 think it should.</para>
