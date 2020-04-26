@@ -3,7 +3,7 @@
 <!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "../docbook-xml/docbookx.dtd"
 [
-<!ENTITY % myents SYSTEM "../fvwm.ent" >
+<!ENTITY % myents SYSTEM "../fvwm3.ent" >
 %myents;
 ]>
 
