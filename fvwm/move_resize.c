@@ -1788,7 +1788,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		r.height = height;
 		get_absolute_geometry(fw, &t, &r);
 		get_page_offset_rectangle(fw, &page_x, &page_y, &t);
-		if (!get_page_arguments(fw, action, &page_x, &page_y))
+		if (!get_page_arguments(fw, action, &page_x, &page_y, NULL))
 		{
 			page_x = m->virtual_scr.Vx;
 			page_y = m->virtual_scr.Vy;
@@ -1837,6 +1837,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		FinalY = r.y;
 
 		fw->Desk = m->virtual_scr.CurrentDesk;
+		fw->m = m;
 	}
 	else
 	{
