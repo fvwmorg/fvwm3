@@ -1592,7 +1592,7 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	return;
 }
 
-Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
+Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, struct monitor **mret)
 {
 	int val[2];
 	int suffix[2];
@@ -1622,6 +1622,9 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y)
 		m = m_use;
 	else
 		PeekToken(action, &action);
+
+	if (mret != NULL)
+		*mret = m;
 
 	mw = m->virtual_scr.MyDisplayWidth;
 	mh = m->virtual_scr.MyDisplayHeight;
@@ -2340,18 +2343,22 @@ void CMD_GotoPage(F_CMD_ARGS)
 {
 	FvwmWindow * const fw = exc->w.fw;
 	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
+	struct monitor	*mpa;
 	int x;
 	int y;
 
 	x = m->virtual_scr.Vx;
 	y = m->virtual_scr.Vy;
-	if (!get_page_arguments(fw, action, &x, &y))
+	if (!get_page_arguments(fw, action, &x, &y, &mpa))
 	{
 		fvwm_msg(
 			ERR, "goto_page_func",
 			"GotoPage: invalid arguments: %s", action);
 		return;
 	}
+
+	m = mpa;
+
 	if (x < 0)
 	{
 		x = 0;
