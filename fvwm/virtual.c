@@ -1306,24 +1306,6 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth ) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->si->rr_output);
-
-		if (monitor_mode == MONITOR_TRACKING_G) {
-			struct monitor	*m2 = NULL;
-			TAILQ_FOREACH(m2, &monitor_q, entry) {
-				if (m2 == m)
-					continue;
-				m2->Desktops = m->Desktops;
-				m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
-				m2->virtual_scr.prev_page_x = m->virtual_scr.Vx;
-				m2->virtual_scr.prev_page_y = m->virtual_scr.Vy;
-				m2->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
-				m2->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
-				m2->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
-				m2->virtual_scr.Vx = m->virtual_scr.Vx;
-				m2->virtual_scr.Vy = m->virtual_scr.Vy;
-			}
-		}
-
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
 		 * bidirectionally, all at once! The idea is to move the
@@ -2158,30 +2140,48 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 void CMD_DesktopConfiguration(F_CMD_ARGS)
 {
 	FvwmWindow	*t;
-	//struct monitor	*m = NULL;
+	struct monitor	*m_loop, *m = monitor_get_current();
 
 	if (action == NULL) {
-		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action is required");
+		fvwm_msg(ERR, __func__, "action is required");
 		return;
 	}
 
-	if (strcmp(action, "global") == 0)
+	if (strcmp(action, "global") == 0) {
+		/* If we're switching to global mode after coming out of per-monitor
+		 * mode, the desks won't be the same.  Fix this by switching
+		 * other monitor desks to be the same as the current monitor.
+		 */
+
+		char *cmd = NULL;
+		TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+			if (m_loop == m)
+				continue;
+			asprintf(&cmd, "GotoDeskAndPage %s %d %d %d",
+				m_loop->si->name,
+				m->virtual_scr.CurrentDesk,
+				m->virtual_scr.Vx / m->virtual_scr.MyDisplayWidth,
+				m->virtual_scr.Vy / m->virtual_scr.MyDisplayHeight);
+
+			execute_function_override_window(NULL, NULL, cmd, 0, NULL);
+			free(cmd);
+		}
 		monitor_mode = MONITOR_TRACKING_G;
-	else if (strcmp(action, "per-monitor") == 0)
+	} else if (strcmp(action, "per-monitor") == 0)
 		monitor_mode = MONITOR_TRACKING_M;
 	else {
-		fvwm_msg(ERR, "CMD_DesktopConfiguration", "action not recognised");
+		fvwm_msg(ERR, __func__, "action not recognised");
 		return;
 	}
 
-	//TAILQ_FOREACH(m, &monitor_q, entry)
-	//	monitor_init_contents(m);
 	initPanFrames();
 	checkPanFrames();
 	raisePanFrames();
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
 		UPDATE_FVWM_SCREEN(t);
+
+	BroadcastMonitorList(NULL);
 }
 
 void CMD_DesktopSize(F_CMD_ARGS)
