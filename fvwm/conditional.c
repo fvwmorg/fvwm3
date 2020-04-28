@@ -708,7 +708,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond, "Screen"))
 		{
-			char	*scr_name = NULL;
+			char	scr_name[1024];
+
 			if (sscanf(tmp, "%s", scr_name)) {
 				tmp = SkipNTokens(tmp, 1);
 				mask->screen = monitor_by_name(scr_name);
