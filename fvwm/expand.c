@@ -833,14 +833,8 @@ static signed int expand_vars_extended(
 		} else {
 			is_numeric = False;
 
-			rectangle	 g;
-			const char	*mon_name;
-			get_unshaded_geometry(fw, &g);
-
-			mon_name = FScreenOfPointerXY(g.x, g.y);
-			string = (char *)mon_name;
-
-			should_quote = True;
+			string = (char *)fw->m->si->name;
+			should_quote = False;
 		}
 		break;
 	case VAR_SCREEN:
