@@ -28,6 +28,17 @@ Installation
 
 See [the installation instructions](./dev-docs/INSTALL.md)
 
+Help & Support
+--------------
+
+We have a strong community on IRC (freenode), in the `#fvwm` channel if you
+fancy a chat.
+
+There is also the [Fvwm Forums](https://fvwmforums.org) where you can ask
+questions.
+
+Issues (for bugs) can be opened, and any/all bug reports are appreciated!
+
 Development
 -----------
 
@@ -41,12 +52,3 @@ worked on.
 
 Please open a github issue or contact me directly if you wish to discuss a
 particular feature of issue you need help with.
-
-Comments, Questions?
---------------------
-
-There is the `#fvwm` IRC channel on `freenode.net` which you can use to chat
-to people about FVWM3.
-
-If you have any questions, concerns, bug reports, enhancement requests,
-etc., please open a Github issue.
