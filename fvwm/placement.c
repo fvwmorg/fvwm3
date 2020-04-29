@@ -40,6 +40,7 @@
 #include "ewmh.h"
 #include "icons.h"
 #include "add_window.h"
+#include "expand.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1673,11 +1674,32 @@ static int __place_window(
 		{
 			fscreen_scr_arg	 arg;
 			arg.mouse_ev = NULL;
-			arg.name = SGET_START_SCREEN(*pstyle);
+
+			/* FIXME:  expand the screen name here.  It's possible
+			 * we have been specified as:
+			 *
+			 *     Style foo StartsOnScreen $$[screen.pointer]
+			 *
+			 * we need to double-up the variable expansion, as the
+			 * Style command will expand it first, and we want to
+			 * expand $[pointer.screen] here.
+			 */
+			char *sc = SGET_START_SCREEN(*pstyle);
+			char *e = expand_vars(sc, NULL, False, True, NULL, exc);
+
+			arg.name = e;
 
 			FScreenGetScrRect(&arg, FSCREEN_BY_NAME,
 				&screen_g.x, &screen_g.y,
 				&screen_g.width, &screen_g.height);
+			free(e);
+
+			/* FIXME:  Set the monitor here, but make
+			 * UPDATE_FVWM_SCREEN aware of how to do this.
+			 *
+			 * This is necessary for StartsOnScreen
+			 */
+			fw->m = monitor_by_name(arg.name);
 		}
 		else
 		{
@@ -2296,10 +2318,29 @@ Bool setup_window_placement(
 	start_style.desk = SGET_START_DESK(*pstyle);
 	start_style.page_x = SGET_START_PAGE_X(*pstyle);
 	start_style.page_y = SGET_START_PAGE_Y(*pstyle);
-	start_style.screen = SGET_START_SCREEN(*pstyle);
+
+	/* FIXME:  expand the screen name here.  It's possible
+	 * we have been specified as:
+	 *
+	 *     Style foo StartsOnScreen $$[screen.pointer]
+	 *
+	 * we need to double-up the variable expansion, as the
+	 * Style command will expand it first, and we want to
+	 * expand $[pointer.screen] here.
+	 */
+	char *sc = SGET_START_SCREEN(*pstyle);
+	char *e = NULL;
+
+	if (sc != NULL)
+		expand_vars(sc, NULL, False, True, NULL, exc);
+
+	start_style.screen = e;
 	rc = __place_window(
 		exc, pstyle, attr_g, start_style, mode, win_opts, &reason);
+
 	exc_destroy_context(exc);
+	free(e);
+
 	if (Scr.bo.do_explain_window_placement == 1)
 	{
 		__explain_placement(fw, &reason);
