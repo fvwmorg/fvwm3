@@ -2567,6 +2567,8 @@ FvwmWindow *AddWindow(
 	{
 		rectangle attr_g;
 
+		UPDATE_FVWM_SCREEN(fw);
+
 		if (IS_SHADED(fw))
 		{
 			state_args.do_shade = 1;
