@@ -3982,6 +3982,18 @@ static Bool style_parse_one_style_option(
 			s = (rest != NULL) ? strdup(rest) : NULL;
 			rest = NULL; /* consume the entire string */
 
+			/* TA:  2020-04-29:  retain backwards compatability
+			 * with fvwm2 for now, and convert 'c' (which meant
+			 * *current* screen), to using "$$[pointer]" which
+			 * does the same thing, but uses expansion instead.
+			 *
+			 * This is a nasty way of doing this though!
+			 */
+			if (strcmp(s, "c") == 0) {
+				free(s);
+				s = strdup("$$[pointer.screen]");
+			}
+
 			if (s != NULL)
 				m = monitor_by_name(s);
 
