@@ -1492,33 +1492,46 @@ void goto_desk(int desk, struct monitor *m)
 		m->virtual_scr.CurrentDesk = desk;
 		MapDesk(m, desk, True);
 		focus_grab_buttons_all();
-		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->si->rr_output);
 
-		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
-		 * window upon desk change.  This is a workaround for a
-		 * problem in FvwmPager: The pager has a separate 'root'
-		 * window for each desk.  If the active desk changes, the
-		 * pager destroys sticky mini windows and creates new ones in
-		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.  So we have to tell it explicitly where they
-		 * go :-( This should be fixed in the pager, but right now the
-		 * pager doesn't maintain the stacking order. */
-		BroadcastRestackAllWindows();
-		EWMH_SetCurrentDesktop(m);
+		if (monitor_mode == MONITOR_TRACKING_M) {
+			BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
+					(long)m->si->rr_output);
+			/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
+			 * window upon desk change.  This is a workaround for a
+			 * problem in FvwmPager: The pager has a separate 'root'
+			 * window for each desk.  If the active desk changes, the
+			 * pager destroys sticky mini windows and creates new ones in
+			 * the other desktop 'root'.  But the pager can't know where to
+			 * stack them.  So we have to tell it explicitly where they
+			 * go :-( This should be fixed in the pager, but right now the
+			 * pager doesn't maintain the stacking order. */
+			BroadcastRestackAllWindows();
+			EWMH_SetCurrentDesktop(m);
 
-		if (monitor_mode == MONITOR_TRACKING_M)
 			return;
+		}
 
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
-			if (m2 == m)
-				continue;
 			m2->Desktops = m->Desktops;
 			m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
+
+			BroadcastPacket(M_NEW_DESK, 2, (long)m2->virtual_scr.CurrentDesk,
+					(long)m2->si->rr_output);
+
+			/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
+			 * window upon desk change.  This is a workaround for a
+			 * problem in FvwmPager: The pager has a separate 'root'
+			 * window for each desk.  If the active desk changes, the
+			 * pager destroys sticky mini windows and creates new ones in
+			 * the other desktop 'root'.  But the pager can't know where to
+			 * stack them.  So we have to tell it explicitly where they
+			 * go :-( This should be fixed in the pager, but right now the
+			 * pager doesn't maintain the stacking order. */
+			BroadcastRestackAllWindows();
+			EWMH_SetCurrentDesktop(m2);
+
 		}
 	}
-
-	return;
 }
 
 /*
