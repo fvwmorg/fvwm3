@@ -468,7 +468,8 @@ void BroadcastMonitorList(fmodule *this)
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->si->is_disabled)
 			continue;
-		asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d",
+		asprintf(&name, "Monitor %s "
+			"%d %d %d %d %d %d %d %d %d %d %d %d",
 			m->si->name,
 			(int)m->si->rr_output,
 			m == mcur,
@@ -477,7 +478,11 @@ void BroadcastMonitorList(fmodule *this)
 			m->virtual_scr.Vx,
 			m->virtual_scr.Vy,
 			m->virtual_scr.VxMax,
-			m->virtual_scr.VyMax
+			m->virtual_scr.VyMax,
+			m->si->x,
+			m->si->y,
+			m->si->w,
+			m->si->h
 		);
 
 		if (this != NULL)

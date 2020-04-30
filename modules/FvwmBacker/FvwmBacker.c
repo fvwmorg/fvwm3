@@ -51,6 +51,7 @@
 #define fvwm_msg(t,l,f) fprintf(stderr, "[fvwm][FvwmBacker]: <<ERROR>> %s\n", f)
 
 unsigned long BackerGetColor(char *color);
+static struct dimension *dimension_by_output(int);
 
 #define EXEC_CHANGED_PAGE  0x01
 #define EXEC_CHANGED_DESK  0x02
@@ -80,6 +81,31 @@ struct Command
 	struct Command *next;
 };
 
+struct dimension
+{
+	const char	*monitor;
+	int		 output;
+	int		 x;
+	int		 y;
+	int		 w;
+	int		 h;
+
+	int		 MyDisplayHeight;
+	int		 MyDisplayWidth;
+
+	int		 this_height;
+	int		 this_width;
+
+	int current_desk;
+	int current_x;
+	int current_y;
+	int current_colorset;  /* the last matched command colorset or -1 */
+
+	TAILQ_ENTRY(dimension) entry;
+};
+TAILQ_HEAD(dimensions, dimension);
+struct dimensions	 dimensions_q;
+
 typedef struct Command Command;
 
 typedef struct
@@ -89,11 +115,6 @@ typedef struct
 } CommandChain;
 
 CommandChain *commands;
-
-int current_desk = 0;
-int current_x = 0;
-int current_y = 0;
-int current_colorset = -1;  /* the last matched command colorset or -1 */
 
 int fvwm_fd[2];
 
@@ -106,8 +127,6 @@ char *configPrefix;  /* i.e. "*FvwmBacker" */
 Display*        dpy;
 Window          root;
 int                     screen;
-int MyDisplayHeight;
-int MyDisplayWidth;
 char* displayName = NULL;
 
 Bool RetainPixmap = False;
@@ -116,6 +135,20 @@ Atom XA_ESETROOT_PMAP_ID = None;
 Atom XA_XROOTPMAP_ID = None;
 
 unsigned char *XsetrootData = NULL;
+
+static struct dimension *
+dimension_by_output(int output)
+{
+	struct dimension	*d;
+
+	TAILQ_FOREACH(d, &dimensions_q, entry) {
+		fprintf(stderr, "%s: d is: {%s, %d}\n", __func__, d->monitor, d->output);
+		if (d->output == output)
+			return (d);
+	}
+
+	return (NULL);
+}
 
 int
 ErrorHandler(Display *d, XErrorEvent *event)
@@ -134,6 +167,8 @@ int main(int argc, char **argv)
 
 	commands = fxmalloc(sizeof(CommandChain));
 	commands->first = commands->last = NULL;
+
+	TAILQ_INIT(&dimensions_q);
 
 	/* Save the program name for error messages and config parsing */
 	temp = argv[0];
@@ -168,8 +203,6 @@ int main(int argc, char **argv)
 	}
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
-	MyDisplayHeight = DisplayHeight(dpy, screen);
-	MyDisplayWidth = DisplayWidth(dpy, screen);
 	XSetErrorHandler(ErrorHandler);
 	flib_init_graphics(dpy);
 
@@ -287,14 +320,20 @@ void SetRootAtoms(Display *dpy2, Window root2, Pixmap RootPix)
 	}
 }
 
-void SetDeskPageBackground(const Command *c)
+void SetDeskPageBackground(const Command *c, struct dimension *d)
 {
 	Display *dpy2 = NULL;
 	Window root2 = None;
 	int screen2;
 	Pixmap pix = None;
 
-	current_colorset = -1;
+	d->current_colorset = -1;
+
+	if (d->output != 70)
+		return;
+
+	fprintf(stderr, "Using: %s: tw: %d, th: %d\n", d->monitor,
+		d->this_width, d->this_height);
 
 	/* FvwmBacker bg preperation */
 	switch (c->type)
@@ -319,7 +358,7 @@ void SetDeskPageBackground(const Command *c)
 		switch (c->type)
 		{
 		case 2:
-			current_colorset = c->colorset;
+			d->current_colorset = c->colorset;
 			/* Process a colorset */
 			if (CSET_IS_TRANSPARENT(c->colorset))
 			{
@@ -343,8 +382,8 @@ void SetDeskPageBackground(const Command *c)
 			else if (RetainPixmap)
 			{
 				pix = CreateBackgroundPixmap(
-					dpy2, root2, MyDisplayWidth,
-					MyDisplayHeight,
+					dpy2, root2, 100, //d->this_width,
+					100, //d->this_height,
 					&Colorset[c->colorset],
 					DefaultDepth(dpy2, screen2),
 					DefaultGC(dpy2, screen2), False);
@@ -358,8 +397,8 @@ void SetDeskPageBackground(const Command *c)
 			else
 			{
 				SetWindowBackground(
-					dpy2, root2, MyDisplayWidth,
-					MyDisplayHeight,
+					dpy2, root2, d->this_width,
+					d->this_height,
 					&Colorset[c->colorset],
 					DefaultDepth(dpy2, screen2),
 					DefaultGC(dpy2, screen2), True);
@@ -368,6 +407,7 @@ void SetDeskPageBackground(const Command *c)
 		case 1: /* Process a solid color request */
 			if (RetainPixmap)
 			{
+				fprintf(stderr, "1 - RP\n");
 				GC gc;
 				XGCValues xgcv;
 
@@ -376,13 +416,13 @@ void SetDeskPageBackground(const Command *c)
 					dpy2, root2, GCForeground,
 					&xgcv);
 				pix = XCreatePixmap(
-					dpy2, root2, 1, 1,
+					dpy2, root2, 11, 11,
 					DefaultDepth(dpy2, screen2));
 				XFillRectangle(
-					dpy2, pix, gc, 0, 0, 1, 1);
+					dpy2, pix, gc, d->x, d->y, d->w, d->h);
 				XFreeGC(dpy2, gc);
 			}
-			XSetWindowBackground(dpy2, root2, c->solidColor);
+			XSetWindowBackground(dpy2, root2, pix);
 			XClearWindow(dpy2, root2);
 			break;
 		}
@@ -405,10 +445,13 @@ void SetDeskPageBackground(const Command *c)
  * migo (23-Nov-1999): Maybe execute only first (or last?) matching command?
  * migo (03-Apr-2001): Yes, execute only the last matching command.
  */
-void ExecuteMatchingCommands(int colorset, int changed)
+void ExecuteMatchingCommands(int colorset, int changed, struct dimension *d)
 {
 	const Command *matching_command = NULL;
 	const Command *command;
+
+	if (d == NULL)
+		d = TAILQ_FIRST(&dimensions_q);
 
 	if (!changed)
 	{
@@ -425,10 +468,10 @@ void ExecuteMatchingCommands(int colorset, int changed)
 			continue;
 		}
 		if ((command->flags.do_match_any_desk ||
-		     command->desk == current_desk) &&
-		    (command->x < 0 || command->x == current_x) &&
-		    (command->y < 0 || command->y == current_y) &&
-		    (colorset < 0 || (colorset == current_colorset &&
+		     command->desk == d->current_desk) &&
+		    (command->x < 0 || command->x == d->current_x) &&
+		    (command->y < 0 || command->y == d->current_y) &&
+		    (colorset < 0 || (colorset == d->current_colorset &&
 				      colorset == command->colorset)))
 		{
 			matching_command = command;
@@ -436,7 +479,7 @@ void ExecuteMatchingCommands(int colorset, int changed)
 	}
 	if (matching_command)
 	{
-		SetDeskPageBackground(matching_command);
+		SetDeskPageBackground(matching_command, d);
 	}
 }
 
@@ -448,47 +491,54 @@ void ProcessMessage(unsigned long type, unsigned long *body)
 	char *tline;
 	int change = 0;
 	static Bool is_initial = True;
+	struct dimension *d = NULL;
 
 	switch (type)
 	{
 	case M_CONFIG_INFO:
 		tline = (char*)&(body[3]);
-		ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS);
+		ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS, NULL);
 		break;
 
 	case M_NEW_DESK:
+		d = dimension_by_output(body[1]);
+		fprintf(stderr, "Using monitor: %s\n", d->monitor);
+
 		if (is_initial)
 		{
 			change = EXEC_ALWAYS;
 			is_initial = False;
 		}
-		else if (current_desk != body[0])
+		else if (d->current_desk != body[0])
 		{
-			current_desk = body[0];
+			d->current_desk = body[0];
 			change |= EXEC_CHANGED_DESK;
 		}
-		ExecuteMatchingCommands(-1, change);
+		ExecuteMatchingCommands(-1, change, d);
 		break;
 
 	case M_NEW_PAGE:
+		d = dimension_by_output(body[7]);
+		fprintf(stderr, "Using monitor: %s\n", d->monitor);
+
 		if (is_initial)
 		{
 			change = EXEC_ALWAYS;
 			is_initial = False;
 		}
-		if (current_desk != body[2])
+		if (d->current_desk != body[2])
 		{
-			current_desk = body[2];
+			d->current_desk = body[2];
 			change |= EXEC_CHANGED_DESK;
 		}
-		if (current_x != body[0] / MyDisplayWidth ||
-		    current_y != body[1] / MyDisplayHeight)
+		if (d->current_x != body[0] / d->this_width ||
+		    d->current_y != body[1] / d->this_height)
 		{
-			current_x = body[0] / MyDisplayWidth;
-			current_y = body[1] / MyDisplayHeight;
+			d->current_x = body[0] / d->this_width;
+			d->current_y = body[1] / d->this_height;
 			change |= EXEC_CHANGED_PAGE;
 		}
-		ExecuteMatchingCommands(-1, change);
+		ExecuteMatchingCommands(-1, change, d);
 		break;
 
 	}
@@ -509,6 +559,7 @@ RETSIGTYPE DeadPipe(int nonsense)
 int ParseConfigLine(char *line)
 {
 	int cpl = strlen(configPrefix);
+	struct dimension	*d, *d2;
 
 	if (strlen(line) > 1)
 	{
@@ -534,6 +585,57 @@ int ParseConfigLine(char *line)
 		{
 			return LoadColorset(line + 8);
 		}
+		else if (strncasecmp(line, "monitor", 7) == 0)
+		{
+			char	*data;
+			char	*mname;
+			int	 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+			int	 x, y, w, h;
+			int	 updated = 0;
+
+			line += 8;
+
+			line = GetNextToken(line, &mname);
+			sscanf(line, "%d %d %d %d %d %d %d %d %d %d %d %d",
+				&output, &iscur, &mdw, &mdh, &vx, &vy,
+				&vxmax, &vymax, &x, &y, &w, &h);
+
+			d = fxcalloc(1, sizeof(*d));
+
+			TAILQ_FOREACH(d2, &dimensions_q, entry) {
+				if (strcmp(d2->monitor, mname) == 0) {
+					d2->MyDisplayWidth = mdw;
+					d2->MyDisplayHeight = mdh;
+					d2->output = output;
+					d2->x = x;
+					d2->y = y;
+					d2->w = w;
+					d2->h = h;
+					d2->this_width = d2->x + d2->w;
+					d2->this_height = d2->y + d2->h;
+					updated = 1;
+				}
+			}
+
+			if (updated) {
+				free(d);
+				return -1;
+			}
+
+			d->monitor = fxstrdup(mname);
+			d->MyDisplayWidth = mdw;
+			d->MyDisplayHeight = mdh;
+			d->output = output;
+			d->x = x;
+			d->y = y;
+			d->w = w;
+			d->h = h;
+			d->this_width = d->x + d->w;
+			d->this_height = d->y + d->h;
+
+			TAILQ_INSERT_TAIL(&dimensions_q, d, entry);
+		}
+
 	}
 	return -1;
 }

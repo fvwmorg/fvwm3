@@ -1517,7 +1517,7 @@ void list_config_info(unsigned long *body)
 		TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 			if (strcmp(m2->name, mname) == 0) {
 				m2->output = output;
-				m2->is_current = iscur; 
+				m2->is_current = iscur;
 				m2->virtual_scr.MyDisplayWidth = mdw;
 				m2->virtual_scr.MyDisplayHeight = mdh;
 				m2->virtual_scr.Vx = vx;
@@ -1852,7 +1852,7 @@ void ParseOptions(void)
 	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 		    if (strcmp(m2->name, mname) == 0) {
 			    m2->output = output;
-			    m2->is_current = iscur; 
+			    m2->is_current = iscur;
 			    m2->virtual_scr.MyDisplayWidth = mdw;
 			    m2->virtual_scr.MyDisplayHeight = mdh;
 			    m2->virtual_scr.Vx = vx;
@@ -2433,7 +2433,7 @@ void ParseOptions(void)
 			  m->virtual_scr.VHeight, m->virtual_scr.VxPages, m->virtual_scr.VyPages);
 
   }
-  
+
   return;
 }
 

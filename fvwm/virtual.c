@@ -1306,6 +1306,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth ) + 1),
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->si->rr_output);
+
+		fprintf(stderr, "%s: JUST SENT OUTPUT: %d\n", __func__, m->si->rr_output);
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
 		 * bidirectionally, all at once! The idea is to move the
@@ -1496,6 +1498,7 @@ void goto_desk(int desk, struct monitor *m)
 		if (monitor_mode == MONITOR_TRACKING_M) {
 			BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
 					(long)m->si->rr_output);
+			fprintf(stderr, "%s: JUST SENT OUTPUT: %d\n", __func__, m->si->rr_output);
 			/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 			 * window upon desk change.  This is a workaround for a
 			 * problem in FvwmPager: The pager has a separate 'root'
@@ -1518,6 +1521,7 @@ void goto_desk(int desk, struct monitor *m)
 			BroadcastPacket(M_NEW_DESK, 2, (long)m2->virtual_scr.CurrentDesk,
 					(long)m2->si->rr_output);
 
+			fprintf(stderr, "%s: JUST SENT OUTPUT: %d\n", __func__, m->si->rr_output);
 			/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 			 * window upon desk change.  This is a workaround for a
 			 * problem in FvwmPager: The pager has a separate 'root'
@@ -2228,6 +2232,8 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight)),
 			(long)m->si->rr_output);
 
+		fprintf(stderr, "%s: JUST SENT OUTPUT: %d\n", __func__, m->si->rr_output);
+
 		/* FIXME: likely needs per-monitor considerations!!! */
 		checkPanFrames();
 		EWMH_SetDesktopGeometry(m);
@@ -2330,6 +2336,9 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
 			(long)m->si->rr_output);
+
+		fprintf(stderr, "%s: JUST SENT: %d\n", __func__, m->si->rr_output);
+
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -2345,6 +2354,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	{
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
 				(long)m->si->rr_output);
+		fprintf(stderr, "%s: JUST SENT: %d\n", __func__, m->si->rr_output);
 	}
 	BroadcastMonitorList(NULL);
 	EWMH_SetCurrentDesktop(m);
