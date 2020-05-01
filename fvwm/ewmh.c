@@ -991,11 +991,8 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 	x = left;
 	y = top;
-	width = (m->virtual_scr.MyDisplayWidth) - (left + right);
-	height =(m->virtual_scr.MyDisplayHeight) - (top + bottom);
-
-	if (width == 0)
-		width = m->si->w;
+	width = (m->si->w) - (left + right);
+	height =(m->si->h) - (top + bottom);
 
 	if (
 		m->Desktops->ewmh_working_area.x != x ||
