@@ -95,6 +95,7 @@ static char *function_vars[] =
 	"it.width",
 	"it.x",
 	"it.y",
+	"monitor.primary",
 	"page.nx",
 	"page.ny",
 	"pointer.cx",
@@ -182,6 +183,7 @@ enum
 	VAR_IT_WIDTH,
 	VAR_IT_X,
 	VAR_IT_Y,
+	VAR_MONITOR_PRIMARY,
 	VAR_PAGE_NX,
 	VAR_PAGE_NY,
 	VAR_POINTER_CX,
@@ -941,6 +943,14 @@ static signed int expand_vars_extended(
 		target[0] = wcontext_wcontext_to_char(exc->w.wcontext);
 		target[1] = '\0';
 		break;
+	case VAR_MONITOR_PRIMARY: {
+		struct monitor *m = monitor_by_primary();
+
+		if (m != NULL)
+			string = m->si->name;
+		should_quote = False;
+		break;
+	}
 	default:
 		/* unknown variable - try to find it in the environment */
 		string = getenv(var_name);
