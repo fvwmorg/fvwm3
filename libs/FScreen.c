@@ -760,21 +760,25 @@ int FScreenParseGeometryWithScreen(
 	int   ret;
 
 	/* Safety net */
-	if (parsestring == NULL || *parsestring == '\0')
+	if (parsestring == NULL || *parsestring == '\0') {
+		*screen_return = NULL;
 		return 0;
+	}
+
+	/* No screen specified; parse geometry as standard. */
+	if (strchr(parsestring, '@') == NULL) {
+		*screen_return = NULL;
+		copy = fxstrdup(parsestring);
+		goto parse_geometry;
+	}
 
 	/* If the geometry specification contains an '@' symbol, assume the
 	 * screen is specified.  This must be the name of the monitor in
 	 * question!
 	 */
-	if (strchr(parsestring, '@') == NULL) {
-		copy = fxstrdup(parsestring);
-		goto parse_geometry;
-	}
-
 	copy = fxstrdup(parsestring);
 	copy = strsep(&parsestring, "@");
-	*screen_return = parsestring;
+	*screen_return = fxstrdup(parsestring);
 	geom_str = strsep(&copy, "@");
 	copy = geom_str;
 
@@ -794,31 +798,41 @@ int FScreenParseGeometry(
 {
 	struct monitor	*m;
 	char		*scr = NULL;
-	int		 rc;
+	int		 rc, x, y, w, h;
+
+	x = y = 0;
+	w = monitor_get_all_widths();
+	h = monitor_get_all_heights();
 
 	rc = FScreenParseGeometryWithScreen(
 		parsestring, x_return, y_return, width_return, height_return,
 		&scr);
 
-	if (scr != NULL)
+	if (scr != NULL) {
 		m = monitor_by_name(scr);
-	else
+		free(scr);
+
+		x = m->si->x;
+		y = m->si->y;
+		w = m->si->w;
+		h = m->si->h;
+	} else
 		m = monitor_get_current();
 
 	/* adapt geometry to selected screen */
 	if (rc & XValue)
 	{
 		if (rc & XNegative)
-			*x_return -= (m->si->w - m->si->x);
+			*x_return -= (m->virtual_scr.MyDisplayWidth - w - x);
 		else
-			*x_return += m->si->x;
+			*x_return += x;
 	}
 	if (rc & YValue)
 	{
 		if (rc & YNegative)
-			*y_return -= (m->si->h - m->si->y);
+			*y_return -= (m->virtual_scr.MyDisplayHeight - h - y);
 		else
-			*y_return += m->si->y;
+			*y_return += y;
 	}
 	return rc;
 }
