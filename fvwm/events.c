@@ -3089,9 +3089,6 @@ void HandleMapRequestKeepRaised(
 	}
 	/* If it's not merely iconified, and we have hints, use them. */
 
-	/* If no hints, or currently an icon, just "deiconify" */
-	DeIconify(fw);
-
 	if (IS_MAPPED(fw))
 	{
 		/* the window is already mapped - fake a MapNotify event */
