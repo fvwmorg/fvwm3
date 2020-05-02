@@ -382,6 +382,15 @@ command can be used:</para>
     </listitem>
     </varlistentry>
   <varlistentry>
+    <term>$[monitor.primary]</term>
+    <listitem>
+      <para>
+	The primary screen name as set from xrandr(1).  Useful for setups with
+	multiple screens.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
     <term>$[screen]</term>
     <listitem>
       <para>
