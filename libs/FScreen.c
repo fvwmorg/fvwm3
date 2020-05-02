@@ -188,6 +188,22 @@ monitor_by_output(int output)
 	return (mret);
 }
 
+struct monitor *
+monitor_by_primary(void)
+{
+	struct monitor	*m = NULL, *m_loop;
+
+	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+		if (m_loop->si->is_primary) {
+			m = m_loop;
+			break;
+		}
+	}
+
+	return (m);
+}
+
+
 int
 monitor_get_all_widths(void)
 {
@@ -203,6 +219,12 @@ monitor_get_all_heights(void)
 static void
 monitor_set_flags(struct monitor *m)
 {
+	/* If we have only found one monitor, then mark this as the "primary"
+	 * monitor, so that variable expansion works.
+	 */
+	if (monitor_get_count() == 0)
+		m->si->is_primary = 1;
+
 	if (m->si->is_new)
 		m->flags |= MONITOR_NEW;
 
@@ -786,6 +808,9 @@ parse_geometry:
 	/* Do the parsing */
 	ret = XParseGeometry(
 		copy, x_return, y_return, width_return, height_return);
+
+	if (*screen_return == NULL)
+		*screen_return = fxstrdup(monitor_by_primary()->si->name);
 
 	return ret;
 }
