@@ -1980,14 +1980,11 @@ static void DoSnapAttract(
 
 	m = fw->m;
 
-	if (m == NULL) {
+	if (m == NULL)
 		m = monitor_get_current();
-		scr_w = m->virtual_scr.MyDisplayWidth;
-		scr_h = m->virtual_scr.MyDisplayHeight;
-	} else {
-		scr_w = m->si->w;
-		scr_h = m->si->h;
-	}
+
+	scr_w = m->virtual_scr.MyDisplayWidth;
+	scr_h = m->virtual_scr.MyDisplayHeight;
 
 	/*
 	 * Snap grid handling
