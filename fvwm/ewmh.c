@@ -994,6 +994,11 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 	width = (m->si->w) - (left + right);
 	height =(m->si->h) - (top + bottom);
 
+	monitor_dump_state(m);
+	fprintf(stderr, "%s: monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
+		"{x: %d, y: %d, w: %d, h: %d}\n", __func__, m->si->name,
+		left, right, top, bottom, x, y, width, height);
+
 	if (
 		m->Desktops->ewmh_working_area.x != x ||
 		m->Desktops->ewmh_working_area.y != y ||
@@ -1004,6 +1009,9 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 		m->Desktops->ewmh_working_area.y = y;
 		m->Desktops->ewmh_working_area.width = width;
 		m->Desktops->ewmh_working_area.height = height;
+
+		fprintf(stderr, "%s: differ, so setting work area\n", __func__);
+
 		ewmh_SetWorkArea(m);
 	}
 
