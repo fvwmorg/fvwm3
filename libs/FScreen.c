@@ -375,12 +375,6 @@ void FScreenInit(Display *dpy)
 
 	fprintf(stderr, "Using RandR %d.%d\n", major, minor);
 
-	if (ReferenceDesktops == NULL) {
-		ReferenceDesktops = fxcalloc(1, sizeof *ReferenceDesktops);
-		ReferenceDesktops->next = NULL;
-		ReferenceDesktops->desk = 0;
-	}
-
 	/* XRandR is present, so query the screens we have. */
 	res = XRRGetScreenResources(dpy, DefaultRootWindow(dpy));
 
@@ -395,8 +389,11 @@ void FScreenInit(Display *dpy)
 	scan_screens(dpy);
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		fprintf(stderr, "%s: mon: %s (%d x %d)\n", __func__, m->si->name,
-			m->virtual_scr.MyDisplayWidth, m->virtual_scr.MyDisplayHeight);
+		m->Desktops = fxcalloc(1, sizeof *m->Desktops);
+		m->Desktops->name = NULL;
+		m->Desktops->next = NULL;
+		m->Desktops->desk = 0;
+
 		monitor_set_flags(m);
 	}
 
