@@ -2224,8 +2224,8 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)m->virtual_scr.CurrentDesk,
 			(long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth)),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight)),
+			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
+			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight)+ 1),
 			(long)m->si->rr_output);
 
 		/* FIXME: likely needs per-monitor considerations!!! */

@@ -147,7 +147,7 @@ int ewmh_NumberOfDesktops(
 		}
 		else
 		{
-			mvwm_msg(
+			fvwm_msg(
 				WARN, "ewmh_NumberOfDesktops",
 				"The application window (id %#lx)\n"
 				"  \"%s\" tried to set an invalid number of desktops"

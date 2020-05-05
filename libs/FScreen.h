@@ -110,9 +110,6 @@ struct monitor {
          */
 	DesktopsInfo    *Desktops;
 
-	/* Information about EWMH */
-	ewmhInfo ewmhc;
-
         /* Information about EWMH. */
         struct {
                 unsigned NumberOfDesktops;
