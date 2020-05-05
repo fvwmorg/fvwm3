@@ -2534,59 +2534,62 @@ void CMD_DesktopName(F_CMD_ARGS)
 		return;
 	}
 
-	d = ReferenceDesktops->next;
-	while (d != NULL && d->desk != desk)
-	{
-		d = d->next;
-	}
-
-	if (d != NULL)
-	{
-		if (d->name != NULL)
+	/* The same name on all monitors... */
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		d = m->Desktops->next;
+		while (d != NULL && d->desk != desk)
 		{
-			free(d->name);
-			d->name = NULL;
-		}
-		if (action != NULL && *action && *action != '\n')
-		{
-			CopyString(&d->name, action);
-		}
-	}
-	else
-	{
-		/* new deskops entries: add it in order */
-		d = ReferenceDesktops->next;
-		t = ReferenceDesktops;
-		prev = &(ReferenceDesktops->next);
-		while (d != NULL && d->desk < desk)
-		{
-			t = t->next;
-			prev = &(d->next);
 			d = d->next;
 		}
-		if (d == NULL)
+
+		if (d != NULL)
 		{
-			/* add it at the end */
-			*prev = fxcalloc(1, sizeof(DesktopsInfo));
-			(*prev)->desk = desk;
+			if (d->name != NULL)
+			{
+				free(d->name);
+				d->name = NULL;
+			}
 			if (action != NULL && *action && *action != '\n')
 			{
-				CopyString(&((*prev)->name), action);
+				CopyString(&d->name, action);
 			}
 		}
 		else
 		{
-			/* insert it */
-			new = fxcalloc(1, sizeof(DesktopsInfo));
-			new->desk = desk;
-			if (action != NULL && *action && *action != '\n')
+			/* new deskops entries: add it in order */
+			d = m->Desktops->next;
+			t = m->Desktops;
+			prev = &(m->Desktops->next);
+			while (d != NULL && d->desk < desk)
 			{
-				CopyString(&(new->name), action);
+				t = t->next;
+				prev = &(d->next);
+				d = d->next;
 			}
-			t->next = new;
-			new->next = d;
+			if (d == NULL)
+			{
+				/* add it at the end */
+				*prev = fxcalloc(1, sizeof(DesktopsInfo));
+				(*prev)->desk = desk;
+				if (action != NULL && *action && *action != '\n')
+				{
+					CopyString(&((*prev)->name), action);
+				}
+			}
+			else
+			{
+				/* instert it */
+				new = fxcalloc(1, sizeof(DesktopsInfo));
+				new->desk = desk;
+				if (action != NULL && *action && *action != '\n')
+				{
+					CopyString(&(new->name), action);
+				}
+				t->next = new;
+				new->next = d;
+			}
+			/* should check/set the working areas */
 		}
-		/* should check/set the working areas */
 	}
 
 	if (!fFvwmInStartup)
@@ -2594,7 +2597,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		char *msg;
 		const char *default_desk_name = _("Desk");
 
-		/* should send the info to the FvwmPager and set the EWMH
+		/* should send the info to the MvwmPager and set the EWMH
 		 * desktop names */
 		if (action != NULL && *action && *action != '\n')
 		{
@@ -2612,14 +2615,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 		}
 		BroadcastConfigInfoString(msg);
 		free(msg);
+		TAILQ_FOREACH(m, &monitor_q, entry)
+			EWMH_SetDesktopNames(m);
 	}
-
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->Desktops == NULL) {
-			m->Desktops = ReferenceDesktops;
-		}
-		EWMH_SetDesktopNames(m);
-	}
-
-	return;
 }

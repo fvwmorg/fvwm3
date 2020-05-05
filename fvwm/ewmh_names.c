@@ -282,9 +282,6 @@ void EWMH_SetDesktopNames(struct monitor *m)
 		return;
 	}
 
-	if (m->Desktops == NULL)
-		m->Desktops = ReferenceDesktops;
-
 	d = m->Desktops->next;
 	/* skip negative desk */
 	while (d != NULL && d->desk < 0)
