@@ -83,18 +83,6 @@ Atom XA_UTF8_STRING = None;
 KstItem *ewmh_KstWinList = NULL;
 
 /*
- * Default
- */
-ewmhInfo ewmhc =
-{
-	4,            /* NumberOfDesktops */
-	0,            /* MaxDesktops limit the number of desktops*/
-	0,            /* CurrentNumberOfDesktops */
-	False,        /* NeedsToCheckDesk */
-	{0, 0, 0, 0}, /* BaseStrut */
-};
-
-/*
  * The ewmh atoms lists
  */
 #define ENTRY(name, type, func) {name, None, type, func}
@@ -498,14 +486,14 @@ void EWMH_SetCurrentDesktop(struct monitor *m)
 
 	val = m->virtual_scr.CurrentDesk;
 
-	if (val < 0 || (val >= ewmhc.MaxDesktops && ewmhc.MaxDesktops != 0))
+	if (val < 0 || (val >= m->ewmhc.MaxDesktops && m->ewmhc.MaxDesktops != 0))
 	{
 		return;
 	}
 
-	if (val >= ewmhc.CurrentNumberOfDesktops ||
-	    (ewmhc.NumberOfDesktops != ewmhc.CurrentNumberOfDesktops &&
-	     val < ewmhc.CurrentNumberOfDesktops))
+	if (val >= m->ewmhc.CurrentNumberOfDesktops ||
+	    (m->ewmhc.NumberOfDesktops != m->ewmhc.CurrentNumberOfDesktops &&
+	     val < m->ewmhc.CurrentNumberOfDesktops))
 	{
 		EWMH_SetNumberOfDesktops(m);
 	}
@@ -540,9 +528,9 @@ void EWMH_SetNumberOfDesktops(struct monitor *m)
 
 	if (m->virtual_scr.CurrentDesk >= m->ewmhc.CurrentNumberOfDesktops &&
 	    (m->virtual_scr.CurrentDesk < m->ewmhc.MaxDesktops ||
-	    ewmhc.MaxDesktops == 0))
+	    m->ewmhc.MaxDesktops == 0))
 	{
-		ewmhc.CurrentNumberOfDesktops = m->virtual_scr.CurrentDesk + 1;
+		m->ewmhc.CurrentNumberOfDesktops = m->virtual_scr.CurrentDesk + 1;
 	}
 
 	val = (long)m->ewmhc.CurrentNumberOfDesktops;
@@ -559,7 +547,7 @@ void EWMH_SetDesktopViewPort(struct monitor *m)
 	long val[256][2]; /* no more than 256 desktops */
 	int i = 0;
 
-	while(i < ewmhc.NumberOfDesktops && i < 256)
+	while(i < m->ewmhc.NumberOfDesktops && i < 256)
 	{
 		val[i][0] = m->virtual_scr.Vx;
 		val[i][1] = m->virtual_scr.Vy;
@@ -578,8 +566,8 @@ void EWMH_SetDesktopGeometry(struct monitor *m)
 
 	/* FIXME: needs broadcast for global. */
 
-	val[0] = m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
-	val[1] = m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
+	val[0] = m->virtual_scr.VxMax + m->si->w; //m->virtual_scr.MyDisplayWidth;
+	val[1] = m->virtual_scr.VyMax + m->si->h; //m->virtual_scr.MyDisplayHeight;
 	ewmh_ChangeProperty(
 		Scr.Root,"_NET_DESKTOP_GEOMETRY", EWMH_ATOM_LIST_CLIENT_ROOT,
 		(unsigned char *)&val, 2);
@@ -601,16 +589,17 @@ void EWMH_SetActiveWindow(Window w)
 
 void EWMH_SetWMDesktop(FvwmWindow *fw)
 {
+	struct monitor *m = (fw && fw->m) ? fw->m : monitor_get_current();
 	long desk = fw->Desk;
 
 	if (IS_STICKY_ACROSS_DESKS(fw))
 	{
 		desk = (unsigned long)-1;
 	}
-	else if (desk >= ewmhc.CurrentNumberOfDesktops)
+	else if (desk >= m->ewmhc.CurrentNumberOfDesktops)
 	{
-		ewmhc.NeedsToCheckDesk = True;
-		EWMH_SetNumberOfDesktops(fw->m);
+		m->ewmhc.NeedsToCheckDesk = True;
+		EWMH_SetNumberOfDesktops(m);
 	}
 	ewmh_ChangeProperty(
 		FW_W(fw), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
@@ -947,7 +936,7 @@ void ewmh_SetWorkArea(struct monitor *m)
 	if (m->Desktops == NULL)
 		return;
 
-	while(i < ewmhc.NumberOfDesktops && i < 256)
+	while(i < m->ewmhc.NumberOfDesktops && i < 256)
 	{
 		val[i][0] = m->Desktops->ewmh_working_area.x;
 		val[i][1] = m->Desktops->ewmh_working_area.y;
@@ -975,7 +964,7 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		if (monitor_mode == MONITOR_TRACKING_M && fw->m != m)
+		if (fw->m != m)
 			continue;
 		if (
 			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
@@ -994,7 +983,6 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 	width = (m->si->w) - (left + right);
 	height =(m->si->h) - (top + bottom);
 
-	monitor_dump_state(m);
 	fprintf(stderr, "%s: monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
 		"{x: %d, y: %d, w: %d, h: %d}\n", __func__, m->si->name,
 		left, right, top, bottom, x, y, width, height);
@@ -1031,7 +1019,7 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
-		if (monitor_mode == MONITOR_TRACKING_M && fw->m != m)
+		if (fw->m != m)
 			continue;
 		if (
 			DO_EWMH_IGNORE_STRUT_HINTS(fw) ||
@@ -1047,11 +1035,8 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 
 	x = dyn_left;
 	y = dyn_top;
-	width = (m->virtual_scr.MyDisplayWidth) - (dyn_left + dyn_right);
-	height = (m->virtual_scr.MyDisplayHeight) - (dyn_top + dyn_bottom);
-
-	if (width == 0)
-		width = m->si->w;
+	width = (m->si->w) - (dyn_left + dyn_right);
+	height = (m->si->h) - (dyn_top + dyn_bottom);
 
 	if (
 		m->Desktops->ewmh_dyn_working_area.x != x ||
@@ -1111,15 +1096,11 @@ void EWMH_GetWorkAreaIntersection(
 	ny = max(*y, area_y);
 	nw = min(*x + *w, area_x + area_w);
 	nh = min(*y + *h, area_y + area_h);
+
 	*x = nx;
 	*y = ny;
 	*w = nw;
 	*h = nh;
-
-	if ((nw - nx) > 0)
-		*w = nw - nx;
-	if ((nh - ny) > 0)
-		*h = nh - ny;
 
 	return;
 }
@@ -1151,76 +1132,74 @@ float get_intersection(
 }
 
 static
-float ewmh_GetStrutIntersection(
+float ewmh_GetStrutIntersection(struct monitor *m,
 	int x11, int y11, int x12, int y12,
 	int left, int right, int top, int bottom,
 	Bool use_percent)
 {
 	float ret = 0;
 	int x21, y21, x22, y22;
-	struct monitor	*m = monitor_get_current();
 
-	/* FIXME: needs broadcast if global monitor in use. */
+	/* FIXME: possibly need to consider using m->si->x/y/w/h */
 
 	/* left */
 	x21 = 0;
 	y21 = 0;
 	x22 = left;
-	y22 = m->virtual_scr.MyDisplayHeight;
+	y22 = m->si->w;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* right */
-	x21 = m->virtual_scr.MyDisplayWidth - right;
+	x21 = m->si->w - right;
 	y21 = 0;
-	x22 = m->virtual_scr.MyDisplayWidth;
-	y22 = m->virtual_scr.MyDisplayHeight;
+	x22 = m->si->w;
+	y22 = m->si->h;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* top */
 	x21 = 0;
 	y21 = 0;
-	x22 = m->virtual_scr.MyDisplayWidth;
+	x22 = m->si->w;
 	y22 = top;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* bottom */
 	x21 = 0;
-	y21 = m->virtual_scr.MyDisplayHeight - bottom;
-	x22 = m->virtual_scr.MyDisplayWidth;
-	y22 = m->virtual_scr.MyDisplayHeight;
+	y21 = m->si->y - bottom;
+	x22 = m->si->w;
+	y22 = m->si->h;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 
 	return ret;
 }
 
-float EWMH_GetBaseStrutIntersection(
+float EWMH_GetBaseStrutIntersection(struct monitor *m,
 	int x11, int y11, int x12, int y12, Bool use_percent)
 {
-	return ewmh_GetStrutIntersection(
-		x11, y11, x12, y12, ewmhc.BaseStrut.left,
-		ewmhc.BaseStrut.right, ewmhc.BaseStrut.top,
-		ewmhc.BaseStrut.bottom, use_percent);
+	return ewmh_GetStrutIntersection(m,
+		x11, y11, x12, y12, m->ewmhc.BaseStrut.left,
+		m->ewmhc.BaseStrut.right, m->ewmhc.BaseStrut.top,
+		m->ewmhc.BaseStrut.bottom, use_percent);
 }
 
-float EWMH_GetStrutIntersection(
+float EWMH_GetStrutIntersection(struct monitor *m,
 	int x11, int y11, int x12, int y12, Bool use_percent)
 {
 	int left, right, top, bottom;
-	struct monitor	*m = monitor_get_current();
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
 	left = m->Desktops->ewmh_working_area.x;
-	right = m->virtual_scr.MyDisplayWidth -
+	right = m->si->w -
 		(m->Desktops->ewmh_working_area.x
 		 + m->Desktops->ewmh_working_area.width);
 	top = m->Desktops->ewmh_working_area.y;
-	bottom = m->virtual_scr.MyDisplayHeight -
+	bottom = m->si->y -
 		(m->Desktops->ewmh_working_area.y
 		 + m->Desktops->ewmh_working_area.height);
 
-	return ewmh_GetStrutIntersection(
+	return ewmh_GetStrutIntersection(m,
 		x11, y11, x12, y12, left, right, top, bottom, use_percent);
 }
 
@@ -1777,9 +1756,9 @@ void EWMH_DestroyWindow(FvwmWindow *fw)
 	{
 		Scr.EwmhDesktop = NULL;
 	}
-	if (fw->Desk >= ewmhc.NumberOfDesktops)
+	if (fw->Desk >= fw->m->ewmhc.NumberOfDesktops)
 	{
-		ewmhc.NeedsToCheckDesk = True;
+		fw->m->ewmhc.NeedsToCheckDesk = True;
 	}
 
 	return;
@@ -1795,7 +1774,7 @@ void EWMH_WindowDestroyed(void)
 
 	EWMH_SetClientList(m);
 	EWMH_SetClientListStacking(m);
-	if (ewmhc.NeedsToCheckDesk)
+	if (m->ewmhc.NeedsToCheckDesk)
 	{
 		EWMH_SetNumberOfDesktops(m);
 	}
