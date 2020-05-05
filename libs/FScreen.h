@@ -98,6 +98,7 @@ struct screen_info	*screen_info_by_name(const char *);
 struct monitor {
 	struct screen_info	*si;
 	int			 flags;
+	int			 dx, dy;
 
 	/* info for some desktops; the first entries should be generic info
          * correct for any desktop not in the list

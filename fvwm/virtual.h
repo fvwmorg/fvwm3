@@ -5,6 +5,7 @@
 
 #include "libs/FScreen.h"
 
+void calculate_page_sizes(struct monitor *, int, int);
 int HandlePaging(
 	XEvent *pev, int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
