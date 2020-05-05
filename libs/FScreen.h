@@ -99,6 +99,7 @@ struct monitor {
 	struct screen_info	*si;
 	int			 win_count;
 	int			 flags;
+	int			 dx, dy;
 
 	/* info for some desktops; the first entries should be generic info
          * correct for any desktop not in the list

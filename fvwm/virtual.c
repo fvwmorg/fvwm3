@@ -2197,6 +2197,15 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	BroadcastMonitorList(NULL);
 }
 
+void
+calculate_page_sizes(struct monitor *m, int dx, int dy)
+{
+	m->virtual_scr.VxMax = dx *
+		m->virtual_scr.MyDisplayWidth - m->virtual_scr.MyDisplayWidth;
+	m->virtual_scr.VyMax = dy *
+		m->virtual_scr.MyDisplayHeight - m->virtual_scr.MyDisplayHeight;
+}
+
 void CMD_DesktopSize(F_CMD_ARGS)
 {
 	int val[2];
@@ -2210,13 +2219,12 @@ void CMD_DesktopSize(F_CMD_ARGS)
 		return;
 	}
 
-	/* FIXME: this needs broadcasting for all modules when global used. */
-
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		m->virtual_scr.VxMax = (val[0] <= 0) ?
-			0: val[0]*m->virtual_scr.MyDisplayWidth - m->virtual_scr.MyDisplayWidth;
-		m->virtual_scr.VyMax = (val[1] <= 0) ?
-			0: val[1]*m->virtual_scr.MyDisplayHeight - m->virtual_scr.MyDisplayHeight;
+		m->dx = val[0] <= 0 ? 1 : val[0];
+		m->dy = val[1] <= 0 ? 1 : val[1];
+
+		calculate_page_sizes(m, m->dx, m->dy);
+
 		BroadcastPacket(
 			M_NEW_PAGE, 8,
 			(long)m->virtual_scr.Vx,
@@ -2225,7 +2233,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)m->virtual_scr.MyDisplayWidth,
 			(long)m->virtual_scr.MyDisplayHeight,
 			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight)+ 1),
+			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->si->rr_output);
 
 		/* FIXME: likely needs per-monitor considerations!!! */
