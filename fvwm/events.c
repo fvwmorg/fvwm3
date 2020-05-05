@@ -1810,6 +1810,11 @@ void monitor_update_ewmh(void)
 			m->virtual_scr.VxMax = mref->virtual_scr.VxMax;
 			m->virtual_scr.VyMax = mref->virtual_scr.VyMax;
 
+			if (m->Desktops == NULL) {
+				m->Desktops = fxcalloc(1, sizeof *m->Desktops);
+				*m->Desktops = *mref->Desktops;
+			}
+
 			m->flags &= ~MONITOR_NEW;
 		}
 		EWMH_Init(m);
