@@ -1805,16 +1805,14 @@ void monitor_update_ewmh(void)
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->flags & MONITOR_NEW) {
-			m->virtual_scr.Vx = mref->virtual_scr.Vx;
-			m->virtual_scr.Vy = mref->virtual_scr.Vy;
-			m->virtual_scr.VxMax = mref->virtual_scr.VxMax;
-			m->virtual_scr.VyMax = mref->virtual_scr.VyMax;
-
 			if (m->Desktops == NULL) {
 				m->Desktops = fxcalloc(1, sizeof *m->Desktops);
 				*m->Desktops = *mref->Desktops;
-			}
+				calculate_page_sizes(m, mref->dx, mref->dy);
+				m->virtual_scr.Vx = 0;
+				m->virtual_scr.Vy = 0;
 
+			}
 			m->flags &= ~MONITOR_NEW;
 		}
 		EWMH_Init(m);
