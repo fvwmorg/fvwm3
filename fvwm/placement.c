@@ -1080,13 +1080,14 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 	/* now handle the working area */
 	{
 		const pl_penalty_struct *mypp;
+		struct monitor *m = FindScreenOfXY(arg->place_g.x, arg->place_g.y);
 
 		mypp = (arg->scratch->pp != 0 && 0) ? arg->scratch->pp :
 			&arg->place_fw->pl_penalty;
 		if (arg->flags.use_ewmh_dynamic_working_areapercent == 1)
 		{
 			penalty += EWMH_STRUT_PLACEMENT_PENALTY(mypp) *
-				EWMH_GetStrutIntersection(
+				EWMH_GetStrutIntersection(m,
 					arg->place_g.x, arg->place_g.y,
 					arg->place_p2.x, arg->place_p2.y,
 					arg->flags.use_percent);
@@ -1097,7 +1098,7 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 			 */
 			penalty +=
 				EWMH_STRUT_PLACEMENT_PENALTY(mypp) *
-				EWMH_GetBaseStrutIntersection(
+				EWMH_GetBaseStrutIntersection(m,
 					arg->place_g.x, arg->place_g.y,
 					arg->place_p2.x, arg->place_p2.y,
 					arg->flags.use_percent);

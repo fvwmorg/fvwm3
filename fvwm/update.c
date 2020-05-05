@@ -90,9 +90,6 @@ static void apply_window_updates(
 	rectangle frame_g;
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
-	struct monitor	*m;
-
-	m = (t && t->m) ? t->m : monitor_get_current();
 
 	frame_g.x = t->g.frame.x;
 	frame_g.y = t->g.frame.y;
