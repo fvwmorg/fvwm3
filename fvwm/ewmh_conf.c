@@ -39,7 +39,6 @@
 #include "move_resize.h"
 
 /* Forward declarations */
-static void set_ewmhc_strut_values(struct monitor *, int *);
 static void set_ewmhc_desktop_values(struct monitor *, int, int *);
 
 /*
@@ -209,7 +208,7 @@ set_ewmhc_desktop_values(struct monitor *m, int num, int *val)
 	}
 }
 
-static void
+void
 set_ewmhc_strut_values(struct monitor *m, int *val)
 {
 	if (m->ewmhc.BaseStrut.left != val[0] ||
