@@ -1356,7 +1356,7 @@ void resize_icon_title_height(FvwmWindow *fw, int dh)
 void get_page_offset_rectangle(FvwmWindow *fw,
 	int *ret_page_x, int *ret_page_y, rectangle *r)
 {
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* FIXME: broadcast if global monitor in use. */
 

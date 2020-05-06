@@ -4492,6 +4492,7 @@ static void MaximizeHeight(
 	int *win_y, Bool grow_up, Bool grow_down, int top_border,
 	int bottom_border, int *layers)
 {
+	struct monitor	*mon;
 	FvwmWindow *cwin;
 	int x11, x12, x21, x22;
 	int y11, y12, y21, y22;
@@ -4506,8 +4507,13 @@ static void MaximizeHeight(
 	new_y1 = top_border;
 	new_y2 = bottom_border;
 
+	mon = win->m;
+
 	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
 	{
+		if (cwin->m != mon)
+			continue;
+
 		if (cwin == win ||
 		    (cwin->Desk != win->Desk &&
 		     !is_window_sticky_across_desks(cwin)))
@@ -4567,6 +4573,7 @@ static void MaximizeWidth(
 	int win_y, Bool grow_left, Bool grow_right, int left_border,
 	int right_border, int *layers)
 {
+	struct monitor	*mon;
 	FvwmWindow *cwin;
 	int x11, x12, x21, x22;
 	int y11, y12, y21, y22;
@@ -4581,8 +4588,13 @@ static void MaximizeWidth(
 	new_x1 = left_border;
 	new_x2 = right_border;
 
+	mon = win->m;
+
 	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
 	{
+		if (cwin->m != mon)
+			continue;
+
 		if (cwin == win ||
 		    (cwin->Desk != win->Desk &&
 		     !is_window_sticky_across_desks(cwin)))

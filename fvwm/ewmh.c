@@ -1071,6 +1071,11 @@ void EWMH_GetWorkAreaIntersection(
 	int area_h = m->Desktops->ewmh_working_area.height;
 	Bool is_dynamic = False;
 
+	fprintf(stderr, "%s: mon: %s {ax: %d, ay: %d, aw: %d, ah: %d\n",
+		__func__, m->si->name, area_x, area_y, area_w, area_h);
+	fprintf(stderr, "%s: mon: %s {x: %d, y: %d, w: %d, h: %d\n",
+		__func__, m->si->name, *x, *y, *w, *h);
+
 	/* FIXME: needs broadcast if global monitor in use. */
 
 	switch(type)
@@ -1101,6 +1106,9 @@ void EWMH_GetWorkAreaIntersection(
 	*y = ny;
 	*w = nw;
 	*h = nh;
+
+	fprintf(stderr, "%s: mon: %s RETURNING: {x: %d, y: %d, w: %d, h: %d}\n",
+		__func__, m->si->name, *x, *y, *w, *h);
 
 	return;
 }
@@ -1146,28 +1154,28 @@ float ewmh_GetStrutIntersection(struct monitor *m,
 	x21 = 0;
 	y21 = 0;
 	x22 = left;
-	y22 = m->si->w;
+	y22 = m->virtual_scr.MyDisplayHeight;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* right */
-	x21 = m->si->w - right;
+	x21 = m->virtual_scr.MyDisplayWidth - right;
 	y21 = 0;
-	x22 = m->si->w;
-	y22 = m->si->h;
+	x22 = m->virtual_scr.MyDisplayWidth;
+	y22 = m->virtual_scr.MyDisplayHeight;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* top */
 	x21 = 0;
 	y21 = 0;
-	x22 = m->si->w;
+	x22 = m->virtual_scr.MyDisplayWidth;
 	y22 = top;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* bottom */
 	x21 = 0;
-	y21 = m->si->y - bottom;
-	x22 = m->si->w;
-	y22 = m->si->h;
+	y21 = m->virtual_scr.MyDisplayHeight - bottom;
+	x22 = m->virtual_scr.MyDisplayWidth;
+	y22 = m->virtual_scr.MyDisplayHeight;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 
@@ -1191,11 +1199,11 @@ float EWMH_GetStrutIntersection(struct monitor *m,
 	/* FIXME: needs broadcast if global monitor in use. */
 
 	left = m->Desktops->ewmh_working_area.x;
-	right = m->si->w -
+	right = m->virtual_scr.MyDisplayWidth -
 		(m->Desktops->ewmh_working_area.x
 		 + m->Desktops->ewmh_working_area.width);
 	top = m->Desktops->ewmh_working_area.y;
-	bottom = m->si->y -
+	bottom = m->virtual_scr.MyDisplayHeight -
 		(m->Desktops->ewmh_working_area.y
 		 + m->Desktops->ewmh_working_area.height);
 

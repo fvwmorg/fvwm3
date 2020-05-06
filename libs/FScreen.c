@@ -567,9 +567,6 @@ FindScreen(fscreen_scr_arg *arg, fscreen_scr_t screen)
 		break;
 	}
 
-	if (m == NULL)
-		m = TAILQ_FIRST(&monitor_q);
-
 	return (m);
 }
 
