@@ -1806,12 +1806,17 @@ void monitor_update_ewmh(void)
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->flags & MONITOR_NEW) {
 			if (m->Desktops == NULL) {
+				int ewbs[4] = {0, 0, 0, 0};
+
 				m->Desktops = fxcalloc(1, sizeof *m->Desktops);
 				*m->Desktops = *mref->Desktops;
+
 				calculate_page_sizes(m, mref->dx, mref->dy);
+
 				m->virtual_scr.Vx = 0;
 				m->virtual_scr.Vy = 0;
 
+				set_ewmhc_strut_values(m, ewbs);
 			}
 			m->flags &= ~MONITOR_NEW;
 		}

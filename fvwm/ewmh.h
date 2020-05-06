@@ -58,6 +58,7 @@ void EWMH_Init(struct monitor *);
 void EWMH_ExitStuff(void);
 
 /* ewmh_conf.c */
+void set_ewmhc_strut_values(struct monitor *, int *);
 
 /* ewmh_events.c */
 Bool EWMH_ProcessClientMessage(const exec_context_t *exc);
