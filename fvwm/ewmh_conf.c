@@ -152,9 +152,11 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 		/* Actually get the screen value. */
 		option = PeekToken(action, &action);
 
-		if ((m = monitor_by_name(option)) == NULL) {
+		m = monitor_by_name(option);
+		if (strcmp(m->si->name, option) != 0) {
 			fvwm_msg(ERR, "CMD_EwmhBaseStruts",
 				"Invalid screen: %s", option);
+			return;
 		}
 	}
 
