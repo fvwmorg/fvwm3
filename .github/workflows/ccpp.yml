@@ -24,22 +24,18 @@ jobs:
         with:
           channel: "#fvwm"
           nickname: fvwm3-gh
-          message: |
-            ${{ github.actor }} pushed ${{ github.event.ref }} ${{ github.event.compare }}
-            ${{ join(github.event.commits.*.message) }}
+          message: ${{ github.actor }} pushed ${{ github.event.ref }} ${{ github.event.compare }}
       - name: irc pull request
         uses: rectalogic/notify-irc@v1
         if: github.event_name == 'pull_request'
         with:
           channel: "#fvwm"
           nickname: fvwm3-gh
-          message: |
-            ${{ github.actor }} opened PR ${{ github.event.html_url }}
+          message: ${{ github.actor }} opened PR ${{ github.event.html_url }}
       - name: irc tag created
         uses: rectalogic/notify-irc@v1
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
         with:
           channel: "#fvwm"
           nickname: fvwm-gh
-          message: |
-            ${{ github.actor }} tagged ${{ github.repository }} ${{ github.event.ref }}
+          message: ${{ github.actor }} tagged ${{ github.repository }} ${{ github.event.ref }}
