@@ -1064,6 +1064,9 @@ void EWMH_GetWorkAreaIntersection(
 	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type)
 {
 	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
+
+	EWMH_UpdateWorkArea(m);
+
 	int nx,ny,nw,nh;
 	int area_x = m->Desktops->ewmh_working_area.x;
 	int area_y = m->Desktops->ewmh_working_area.y;
