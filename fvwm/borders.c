@@ -4730,11 +4730,6 @@ void border_draw_decorations(
 		Scr.Hilite = NULL;
 	}
 
-	m = fw->m;
-	if (fw->Desk != m->virtual_scr.CurrentDesk)
-	{
-		return;
-	}
 	if (IS_ICONIFIED(fw))
 	{
 		DrawIconWindow(fw, True, True, True, False, NULL);
