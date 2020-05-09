@@ -475,18 +475,8 @@ typedef struct ScreenInfo
 		struct monitor *mnew; \
 		get_unshaded_geometry((fw), &g); \
 		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y); \
-		if (mnew == NULL) { \
-			fprintf(stderr, "CRAP - WHICH MONITOR?\n"); \
-			mnew = monitor_get_current(); \
-		} \
-		if (mnew != NULL) { \
-			if ((fw) && (fw)->m) { \
-				(fw)->m->win_count--; \
-			} \
-			(fw)->m_prev = (fw)->m; \
-			(fw)->m = mnew; \
-			(fw)->m->win_count++; \
-		} \
+		(fw)->m_prev = (fw)->m; \
+		(fw)->m = mnew; \
 	} while(0)
 
 /* A macro to to simplify he "ewmh desktop code" */
