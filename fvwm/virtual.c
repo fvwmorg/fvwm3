@@ -81,6 +81,7 @@
 static int edge_thickness = 2;
 static int last_edge_thickness = 2;
 
+static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -2522,30 +2523,43 @@ number_of_desktops(struct monitor *m)
 	return (count);
 }
 
-/*
- *
- * Defines the name of a desktop
- *
- */
-void CMD_DesktopName(F_CMD_ARGS)
+static void
+store_desktop_cmd(int desk, char *name)
 {
-	int		 desk;
-	DesktopsInfo	*t, *d, *new, **prev;
-	struct monitor	*m;
+	struct desktop_cmd	*dc, *dc_loop;
 
-	if (GetIntegerArguments(action, &action, &desk, 1) != 1)
-	{
-		fvwm_msg(
-			ERR,"CMD_DesktopName",
-			"First argument to DesktopName must be an integer: %s",
-			action);
+	if (name == NULL) {
+		fprintf(stderr, "%s: name cannot be NULL\n");
 		return;
 	}
 
-	/* The same name on all monitors... */
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	TAILQ_FOREACH(dc_loop, &desktop_cmd_q, entry) {
+		/* Update the name for an existing desktop, only if it
+		 * differs.
+		 */
+		if (dc_loop->desk == desk && (strcmp(dc->name, name) != 0)) {
+			free(dc_loop->name);
+			dc_loop->name = fxstrdup(name);
+
+			return;
+		}
+	}
+
+	dc = fxcalloc(1, sizeof *dc);
+	dc->name = fxstrdup(name);
+	dc->desk = desk;
+	TAILQ_INSERT_TAIL(&desktop_cmd_q, dc, entry);
+}
+
+void
+apply_desktops_monitor(struct monitor *m)
+{
+	DesktopsInfo	*t, *d, *new, **prev;
+	struct desktop_cmd	*dc;
+
+	TAILQ_FOREACH(dc, &desktop_cmd_q, entry) {
 		d = m->Desktops->next;
-		while (d != NULL && d->desk != desk)
+		while (d != NULL && d->desk != dc->desk)
 		{
 			d = d->next;
 		}
@@ -2557,10 +2571,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 				free(d->name);
 				d->name = NULL;
 			}
-			if (action != NULL && *action && *action != '\n')
-			{
-				CopyString(&d->name, action);
-			}
+			CopyString(&d->name, dc->name);
 		}
 		else
 		{
@@ -2568,7 +2579,7 @@ void CMD_DesktopName(F_CMD_ARGS)
 			d = m->Desktops->next;
 			t = m->Desktops;
 			prev = &(m->Desktops->next);
-			while (d != NULL && d->desk < desk)
+			while (d != NULL && d->desk < dc->desk)
 			{
 				t = t->next;
 				prev = &(d->next);
@@ -2578,52 +2589,74 @@ void CMD_DesktopName(F_CMD_ARGS)
 			{
 				/* add it at the end */
 				*prev = fxcalloc(1, sizeof(DesktopsInfo));
-				(*prev)->desk = desk;
-				if (action != NULL && *action && *action != '\n')
-				{
-					CopyString(&((*prev)->name), action);
-				}
+				(*prev)->desk = dc->desk;
+
+				CopyString(&((*prev)->name), dc->name);
 			}
 			else
 			{
 				/* instert it */
 				new = fxcalloc(1, sizeof(DesktopsInfo));
-				new->desk = desk;
-				if (action != NULL && *action && *action != '\n')
-				{
-					CopyString(&(new->name), action);
-				}
+				new->desk = dc->desk;
+				CopyString(&(new->name), dc->name);
 				t->next = new;
 				new->next = d;
 			}
 			/* should check/set the working areas */
 		}
-	}
 
-	if (!fFvwmInStartup)
+		if (!fFvwmInStartup)
+		{
+			char *msg;
+			const char *default_desk_name = _("Desk");
+
+			/* should send the info to the FvwmPager and set the EWMH
+			 * desktop names */
+			{
+				asprintf(&msg, "DesktopName %d %s",
+					dc->desk, dc->name);
+			}
+#if 0
+			else
+			{
+				/* TA:  FIXME!  xasprintf() */
+				msg = fxmalloc(strlen(default_desk_name)+44);
+				sprintf(
+						msg, "DesktopName %d %s %d", desk,
+						default_desk_name, desk);
+			}
+#endif
+			BroadcastConfigInfoString(msg);
+			free(msg);
+		}
+	}
+	EWMH_SetDesktopNames(m);
+}
+
+/*
+ *
+ * Defines the name of a desktop
+ *
+ */
+void CMD_DesktopName(F_CMD_ARGS)
+{
+	struct monitor	*m;
+	int		 desk;
+
+	if (GetIntegerArguments(action, &action, &desk, 1) != 1)
 	{
-		char *msg;
-		const char *default_desk_name = _("Desk");
-
-		/* should send the info to the MvwmPager and set the EWMH
-		 * desktop names */
-		if (action != NULL && *action && *action != '\n')
-		{
-			/* TA:  FIXME!  xasprintf() */
-			msg = fxmalloc(strlen(action) + 44);
-			sprintf(msg, "DesktopName %d %s", desk, action);
-		}
-		else
-		{
-			/* TA:  FIXME!  xasprintf() */
-			msg = fxmalloc(strlen(default_desk_name)+44);
-			sprintf(
-				msg, "DesktopName %d %s %d", desk,
-				default_desk_name, desk);
-		}
-		BroadcastConfigInfoString(msg);
-		free(msg);
-		TAILQ_FOREACH(m, &monitor_q, entry)
-			EWMH_SetDesktopNames(m);
+		fvwm_msg(
+			ERR,"CMD_DesktopName",
+			"First argument to DesktopName must be an integer: %s",
+			action);
+		return;
 	}
+
+	if (TAILQ_EMPTY(&desktop_cmd_q))
+		TAILQ_INIT(&desktop_cmd_q);
+
+	store_desktop_cmd(desk, action);
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		apply_desktops_monitor(m);
 }

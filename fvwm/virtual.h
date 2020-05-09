@@ -21,4 +21,15 @@ Bool get_page_arguments(FvwmWindow *, char *action, int *page_x, int *page_y,
     struct monitor **);
 char *GetDesktopName(struct monitor *, int desk);
 
+struct desktop_cmd {
+	int				 desk;
+	char				*name;
+
+	TAILQ_ENTRY(desktop_cmd)	 entry;
+};
+TAILQ_HEAD(desktop_cmds, desktop_cmd);
+struct desktop_cmds	 desktop_cmd_q;
+
+void apply_desktops_monitor(struct monitor *);
+
 #endif /* _VIRTUAL_ */

@@ -168,8 +168,8 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 		return;
 	}
 
-	/* If m is still NULL, then no monitor was specified, therefore assume
-	 * all monitors will be used.
+	/* If m is valid here, it's been set by "screen foo" above, so only
+	 * apply these settings to that monitor.
 	 */
 	if (m != NULL) {
 		set_ewmhc_strut_values(m, val);

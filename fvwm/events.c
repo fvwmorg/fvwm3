@@ -1809,9 +1809,17 @@ void monitor_update_ewmh(void)
 				int ewbs[4] = {0, 0, 0, 0};
 
 				m->Desktops = fxcalloc(1, sizeof *m->Desktops);
-				*m->Desktops = *mref->Desktops;
+				m->Desktops->name = NULL;
+				m->Desktops->next = NULL;
+				m->Desktops->desk = 0;
+				apply_desktops_monitor(m);
 
 				calculate_page_sizes(m, mref->dx, mref->dy);
+
+				fprintf(stderr,
+				"%s: new_monitor: %s (%p) compared to (%p)\n",
+				__func__, m->si->name, m->Desktops->next,
+				mref->Desktops->next);
 
 				m->virtual_scr.Vx = 0;
 				m->virtual_scr.Vy = 0;
