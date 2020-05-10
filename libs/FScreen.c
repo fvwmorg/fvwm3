@@ -157,11 +157,6 @@ monitor_by_name(const char *name)
 		mret = monitor_get_current();
 		if (mret == NULL)
 			return (NULL);
-
-		fprintf(stderr, "%s: couldn't find monitor: (%s)\n", __func__,
-		    name);
-		fprintf(stderr, "%s: returning current monitor (%s)\n",
-		    __func__, mret->si->name);
 	}
 
 	return (mret);
