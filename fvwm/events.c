@@ -2599,6 +2599,8 @@ void HandleFocusIn(const evh_args_t *ea)
 		last_focus_w = focus_w;
 		last_focus_fw = focus_fw;
 		was_nothing_ever_focused = False;
+
+		BroadcastMonitorList(NULL);
 	}
 	if ((sf = get_focus_window()) != ffw_old)
 	{

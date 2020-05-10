@@ -6,11 +6,11 @@
 struct fpmonitor {
 	char		*name;
 	int		 is_primary, output;
-	int 		 number;
 	int		 win_count;
 	int		 wants_refresh;
 	int		 is_disabled;
 	int		 is_current;
+	int		 x, y, w, h;
 
         struct {
                 int VxMax;
