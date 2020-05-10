@@ -458,35 +458,35 @@ void BroadcastName(
 void BroadcastMonitorList(fmodule *this)
 {
 	char		*name;
-	struct monitor	*m, *mcur;
+	struct monitor	*m;
 	fmodule_list_itr moditr;
 	fmodule *module;
 
 	module_list_itr_init(&moditr);
 
-	mcur = monitor_get_current();
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->si->is_disabled)
-			continue;
-		asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d",
-			m->si->name,
-			(int)m->si->rr_output,
-			m == mcur,
-			m->virtual_scr.MyDisplayWidth,
-			m->virtual_scr.MyDisplayHeight,
-			m->virtual_scr.Vx,
-			m->virtual_scr.Vy,
-			m->virtual_scr.VxMax,
-			m->virtual_scr.VyMax
-		);
+	while ((module = module_list_itr_next(&moditr)) != NULL) {
+		TAILQ_FOREACH(m, &monitor_q, entry) {
+			if (m->si->is_disabled)
+				continue;
+			asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d %d %d %d %d",
+				m->si->name,
+				(int)m->si->rr_output,
+				m == monitor_get_current(),
+				m->virtual_scr.MyDisplayWidth,
+				m->virtual_scr.MyDisplayHeight,
+				m->virtual_scr.Vx,
+				m->virtual_scr.Vy,
+				m->virtual_scr.VxMax,
+				m->virtual_scr.VyMax,
+				m->si->x,
+				m->si->y,
+				m->si->w,
+				m->si->h
+			);
 
-		if (this != NULL)
-			SendName(this, M_CONFIG_INFO, 0, 0, 0, name);
-		else {
-			while ((module = module_list_itr_next(&moditr)) != NULL)
-				SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
+			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
+			free(name);
 		}
-		free(name);
 	}
 }
 

@@ -189,6 +189,8 @@ fpmonitor_by_output(int output)
 	return (NULL);
 }
 
+
+
 struct fpmonitor *
 fpmonitor_this(void)
 {
@@ -1506,18 +1508,23 @@ void list_config_info(unsigned long *body)
 	} else if (StrEquals(token, "Monitor")) {
 		char	*mname;
 		int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+		int		 x, y, w, h;
 		int		 updated = 0;
 
 		tline = GetNextToken(tline, &mname);
-		sscanf(tline, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
-				&vx, &vy, &vxmax, &vymax);
-
-		m = fxcalloc(1, sizeof(*m));
+		sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d",
+			&output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
+			&x, &y, &w, &h);
 
 		TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+			updated = 0;
 			if (strcmp(m2->name, mname) == 0) {
+				m2->x = x;
+				m2->y = y;
+				m2->w = w;
+				m2->h = h;
 				m2->output = output;
-				m2->is_current = iscur; 
+				m2->is_current = iscur;
 				m2->virtual_scr.MyDisplayWidth = mdw;
 				m2->virtual_scr.MyDisplayHeight = mdh;
 				m2->virtual_scr.Vx = vx;
@@ -1528,12 +1535,16 @@ void list_config_info(unsigned long *body)
 			}
 		}
 
-		if (updated) {
-			free(m);
+		if (updated)
 			return;
-		}
+
+		m = fxcalloc(1, sizeof(*m));
 
 		m->name = fxstrdup(mname);
+		m->x = x;
+		m->y = y;
+		m->w = w;
+		m->h = h;
 		m->is_current = iscur;
 		m->output = output;
 		m->virtual_scr.MyDisplayWidth = mdw;
@@ -1852,7 +1863,7 @@ void ParseOptions(void)
 	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 		    if (strcmp(m2->name, mname) == 0) {
 			    m2->output = output;
-			    m2->is_current = iscur; 
+			    m2->is_current = iscur;
 			    m2->virtual_scr.MyDisplayWidth = mdw;
 			    m2->virtual_scr.MyDisplayHeight = mdh;
 			    m2->virtual_scr.Vx = vx;
@@ -2433,7 +2444,7 @@ void ParseOptions(void)
 			  m->virtual_scr.VHeight, m->virtual_scr.VxPages, m->virtual_scr.VyPages);
 
   }
-  
+
   return;
 }
 
