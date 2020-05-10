@@ -378,16 +378,43 @@ command can be used:</para>
         <para>
         The screen name the pointer is currently on.  No expansion if
         RandR is not enabled.
-    </para>
+	</para>
+	<para>
+	This command is deprecated; use $[monitor.current] instead.
+	</para>
+
     </listitem>
     </varlistentry>
   <varlistentry>
-    <term>$[monitor.primary]</term>
-    <listitem>
-      <para>
-	The primary screen name as set from xrandr(1).  Useful for setups with
-	multiple screens.
-      </para>
+	  <term>$[monitor.&lt;n&gt;.x], $[monitor.&lt;n&gt;.y],
+		  $[monitor.&lt;n&gt;.width],
+		  $[monitor.&lt;n&gt;.height], $[monitor.primary],
+		  $[monitor.current], $[monitor.output], $[monitor.count]
+	  </term>
+	<listitem>
+	<para></para>
+	<para>
+	Returns information about the selected monitor.  These can be nested,
+	for example:  $[monitor.$[monitor.primary].width]
+	</para>
+
+	<para>&lt;n&gt; should be a valid xrandr(1) output name.</para>
+
+	<para>
+	"x" returns the monitor's x position;
+	"y" returns the monitor's y position;
+	"width" returns the monitor's width (in pixels);
+	"height" returns the monitor's height (in pixels)
+	</para>
+	<para>
+	"current" is the same as the deprecated $[screen.pointer] variable;
+	the monitor which has the mouse pointer.
+	</para>
+	<para>
+	"count" returns the number of active monitors.
+	</para>
+
+	<para>"primary" is the name of the output set as primary via xrandr(1).</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -405,6 +432,7 @@ command can be used:</para>
       <para>
 	The total number of screens detected.  Assumes RandR.
       </para>
+      <para>This is deprecated; use $[monitor.count] instead.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
