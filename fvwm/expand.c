@@ -66,6 +66,7 @@ static char *partial_function_vars[] =
 	"gt.",
 	"hilight.cs",
 	"infostore.",
+	"monitor.",
 	"shadow.cs",
 	NULL
 };
@@ -95,7 +96,6 @@ static char *function_vars[] =
 	"it.width",
 	"it.x",
 	"it.y",
-	"monitor.primary",
 	"page.nx",
 	"page.ny",
 	"pointer.cx",
@@ -155,6 +155,7 @@ enum
 	VAR_GT_,
 	VAR_HILIGHT_CS,
 	VAR_INFOSTORE_,
+	VAR_MONITOR_,
 	VAR_SHADOW_CS
 } partial_extended_vars;
 
@@ -183,7 +184,6 @@ enum
 	VAR_IT_WIDTH,
 	VAR_IT_X,
 	VAR_IT_Y,
-	VAR_MONITOR_PRIMARY,
 	VAR_PAGE_NX,
 	VAR_PAGE_NY,
 	VAR_POINTER_CX,
@@ -456,6 +456,84 @@ static signed int expand_vars_extended(
 			string = allocated_string;
 		}
 		goto GOT_STRING;
+	case VAR_MONITOR_: {
+		if (strcmp(rest, "count") == 0) {
+			is_numeric = True;
+			val = monitor_get_count();
+
+			goto GOT_STRING;
+		}
+
+		if (strcmp(rest, "primary") == 0) {
+			struct monitor *m = monitor_by_primary();
+
+			if (m != NULL)
+				string = m->si->name;
+			should_quote = False;
+			goto GOT_STRING;
+		}
+
+		if (strcmp(rest, "current") == 0) {
+			struct monitor *m = monitor_get_current();
+
+			should_quote = False;
+			string = m->si->name;
+
+			goto GOT_STRING;
+		}
+
+		/* We could be left with "<NAME>.?" */
+		char m_name[200];
+		struct monitor *mon;
+
+		/* The first word is the monitor name:
+		 *
+		 * monitor.Virtual-1
+		 *
+		 * so scan for the first full-stop.
+		 */
+		if (sscanf(rest, "%[^.].", &m_name) < 1)
+			return -1;
+
+		mon = monitor_by_name(m_name);
+		if (strcmp(mon->si->name, m_name) == 1)
+			return -1;
+
+		/* Skip over the monitor name. */
+		rest += strlen(m_name) + 1;
+
+		/* Match remainder to valid fields. */
+		if (strcmp(rest, "x") == 0) {
+			is_numeric = True;
+			val = mon->si->x;
+			goto GOT_STRING;
+		}
+
+		if (strcmp(rest, "y") == 0) {
+			is_numeric = True;
+			val = mon->si->y;
+			goto GOT_STRING;
+		}
+
+		if (strcmp(rest, "width") == 0) {
+			is_numeric = True;
+			val = mon->si->w;
+			goto GOT_STRING;
+		}
+
+		if (strcmp(rest, "height") == 0) {
+			is_numeric = True;
+			val = mon->si->h;
+			goto GOT_STRING;
+		}
+
+		if (strcmp(rest, "output") == 0) {
+			is_numeric = True;
+			val = (int)m->si->rr_output;
+			goto GOT_STRING;
+		}
+		break;
+	}
 	default:
 		break;
 	}
@@ -943,14 +1021,6 @@ static signed int expand_vars_extended(
 		target[0] = wcontext_wcontext_to_char(exc->w.wcontext);
 		target[1] = '\0';
 		break;
-	case VAR_MONITOR_PRIMARY: {
-		struct monitor *m = monitor_by_primary();
-
-		if (m != NULL)
-			string = m->si->name;
-		should_quote = False;
-		break;
-	}
 	default:
 		/* unknown variable - try to find it in the environment */
 		string = getenv(var_name);
