@@ -468,7 +468,7 @@ void BroadcastMonitorList(fmodule *this)
 		TAILQ_FOREACH(m, &monitor_q, entry) {
 			if (m->si->is_disabled)
 				continue;
-			asprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d %d %d %d %d",
+			xasprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d %d %d %d %d",
 				m->si->name,
 				(int)m->si->rr_output,
 				m == monitor_get_current(),

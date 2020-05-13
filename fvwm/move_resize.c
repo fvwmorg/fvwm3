@@ -4701,7 +4701,7 @@ static void unmaximize_fvwm_window(
 	frame_setup_window(
 		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
 
-	asprintf(&cmd, "MoveToScreen %s", fw->m->si->name);
+	xasprintf(&cmd, "MoveToScreen %s", fw->m->si->name);
 	execute_function_override_window(NULL, NULL, cmd, 0, fw);
 	free(cmd);
 

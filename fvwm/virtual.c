@@ -2171,7 +2171,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		TAILQ_FOREACH(m_loop, &monitor_q, entry) {
 			if (m_loop == m)
 				continue;
-			asprintf(&cmd, "GotoDeskAndPage %s %d %d %d",
+			xasprintf(&cmd, "GotoDeskAndPage %s %d %d %d",
 				m_loop->si->name,
 				m->virtual_scr.CurrentDesk,
 				m->virtual_scr.Vx / m->virtual_scr.MyDisplayWidth,
