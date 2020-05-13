@@ -47,7 +47,7 @@ ConsoleMessage(const char *fmt, ...)
 	{
 		int n;
 
-		n = asprintf(&mfmt, "%s\n", fmt);
+		n = xasprintf(&mfmt, "%s\n", fmt);
 		(void)n;
 	}
 	vfprintf(console, mfmt, args);
