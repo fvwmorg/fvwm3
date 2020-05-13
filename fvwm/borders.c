@@ -4683,7 +4683,6 @@ void border_draw_decorations(
 	Bool do_redraw_titlebar = False;
 	window_parts pressed_parts;
 	window_parts force_parts;
-	struct monitor	*m = NULL;
 	int context;
 	int item;
 

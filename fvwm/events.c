@@ -4170,8 +4170,6 @@ void dispatch_event(XEvent *e)
 	XFlush(dpy);
 
 #if HAVE_XRANDR
-	XRRNotifyEvent *ne;
-	XRROutputChangeNotifyEvent *oe;
 	XRRScreenChangeNotifyEvent *sce;
 
 	XRRUpdateConfiguration(e);

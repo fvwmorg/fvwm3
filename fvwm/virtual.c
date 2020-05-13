@@ -2157,7 +2157,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	struct monitor	*m_loop, *m = monitor_get_current();
 
 	if (action == NULL) {
-		fvwm_msg(ERR, __func__, "action is required");
+		fvwm_msg(ERR, (char *)__func__, "action is required");
 		return;
 	}
 
@@ -2184,7 +2184,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	} else if (strcmp(action, "per-monitor") == 0)
 		monitor_mode = MONITOR_TRACKING_M;
 	else {
-		fvwm_msg(ERR, __func__, "action not recognised");
+		fvwm_msg(ERR, (char *)__func__, "action not recognised");
 		return;
 	}
 
@@ -2529,7 +2529,7 @@ store_desktop_cmd(int desk, char *name)
 	struct desktop_cmd	*dc, *dc_loop;
 
 	if (name == NULL) {
-		fprintf(stderr, "%s: name cannot be NULL\n");
+		fprintf(stderr, "%s: name cannot be NULL\n", __func__);
 		return;
 	}
 
@@ -2537,7 +2537,7 @@ store_desktop_cmd(int desk, char *name)
 		/* Update the name for an existing desktop, only if it
 		 * differs.
 		 */
-		if (dc_loop->desk == desk && (strcmp(dc->name, name) != 0)) {
+		if (dc_loop->desk == desk && (strcmp(dc_loop->name, name) != 0)) {
 			free(dc_loop->name);
 			dc_loop->name = fxstrdup(name);
 
@@ -2608,7 +2608,7 @@ apply_desktops_monitor(struct monitor *m)
 		if (!fFvwmInStartup)
 		{
 			char *msg;
-			const char *default_desk_name = _("Desk");
+			/*const char *default_desk_name = _("Desk");*/
 
 			/* should send the info to the FvwmPager and set the EWMH
 			 * desktop names */

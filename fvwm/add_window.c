@@ -381,37 +381,6 @@ static int MappedNotOverride(
 		(wa.override_redirect != True));
 }
 
-static void do_recapture(F_CMD_ARGS, Bool fSingle)
-{
-	FvwmWindow *fw = exc->w.fw;
-	int event_types[5] = {
-		ButtonPress, ButtonRelease, MotionNotify, KeyPress, KeyRelease
-	};
-
-	MyXGrabServer(dpy);
-	if (fSingle)
-	{
-		CaptureOneWindow(
-			exc, fw, FW_W(fw), None, None, True);
-	}
-	else
-	{
-		CaptureAllWindows(exc, True);
-	}
-	/* Throw away queued up events. We don't want user input during a
-	 * recapture.  The window the user clicks in might disapper at the very
-	 * same moment and the click goes through to the root window. Not good
-	 */
-	XAllowEvents(dpy, AsyncPointer, CurrentTime);
-	discard_typed_events(5, event_types);
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
-	MyXUngrabServer(dpy);
-
-	return;
-}
-
 static void setup_window_structure(
 	FvwmWindow **pfw, Window w, FvwmWindow *ReuseWin)
 {
@@ -576,7 +545,7 @@ static char *interpolate_titleformat_name(
 	 * to the checking done in style.c
 	 */
 	const char *format;
-	int count;
+	unsigned short count;
 
 	/* MAX_WINDOW_NAME_NUMBER is defined as "999" -- that's three
 	 * characters maximum.  win_name_len must be 1 larger for null.
@@ -693,7 +662,7 @@ static char *interpolate_titleformat_name(
 				if (count > (MAX_WINDOW_NAME_NUMBER - 1))
 					count = MAX_WINDOW_NAME_NUMBER - 1;
 
-				sprintf(win_name_len, "%d", ++count);
+				sprintf(win_name_len, "%hu", ++count);
 				strcat(stringbuf, win_name_len);
 				break;
 			case 'I':
