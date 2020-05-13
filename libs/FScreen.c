@@ -52,6 +52,7 @@ static bool		 is_randr_present;
 static struct monitor	*monitor_new(void);
 static void		 monitor_set_flags(struct monitor *);
 static void		 scan_screens(Display *);
+static void		 monitor_check_primary(void);
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -198,6 +199,12 @@ monitor_by_primary(void)
 	return (m);
 }
 
+static void
+monitor_check_primary(void)
+{
+	if (monitor_by_primary() == NULL)
+		TAILQ_FIRST(&monitor_q)->si->is_primary = 1;
+}
 
 int
 monitor_get_all_widths(void)
@@ -285,6 +292,8 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	TAILQ_FOREACH(m, &monitor_q, entry)
 		monitor_set_flags(m);
 
+	monitor_check_primary();
+
 }
 
 static void
@@ -331,6 +340,8 @@ scan_screens(Display *dpy)
 		m->virtual_scr.MyDisplayHeight = monitor_get_all_heights();
 
 	}
+
+	monitor_check_primary();
 }
 
 void FScreenInit(Display *dpy)
@@ -391,6 +402,8 @@ void FScreenInit(Display *dpy)
 
 		monitor_set_flags(m);
 	}
+
+	monitor_check_primary();
 
 	return;
 
