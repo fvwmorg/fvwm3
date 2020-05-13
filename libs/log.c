@@ -42,16 +42,9 @@ log_set_level(int ll)
 	log_level = ll;
 }
 
-/* Get log level. */
-int
-log_get_level(void)
-{
-	return (log_level);
-}
-
 /* Open logging to file. */
 void
-log_open(const char *name)
+log_open(void)
 {
 	char	*path;
 
@@ -59,7 +52,7 @@ log_open(const char *name)
 		return;
 	log_close();
 
-	xasprintf(&path, "fvwm3-%s-%ld.log", name, (long)getpid());
+	xasprintf(&path, "fvwm3-%ld.log", (long)getpid());
 	log_file = fopen(path, "a");
 	free(path);
 	if (log_file == NULL)
@@ -70,11 +63,11 @@ log_open(const char *name)
 
 /* Toggle logging. */
 void
-log_toggle(const char *name)
+log_toggle(void)
 {
 	if (log_level == 0) {
 		log_level = 1;
-		log_open(name);
+		log_open();
 		log_debug("log opened");
 	} else {
 		log_debug("log closed");

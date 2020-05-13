@@ -5,8 +5,8 @@
 
 void	log_set_level(int);
 int	log_get_level(void);
-void	log_open(const char *);
-void	log_toggle(const char *);
+void	log_open(void);
+void	log_toggle(void);
 void	log_close(void);
 void printflike(1, 2) log_debug(const char *, ...);
 
