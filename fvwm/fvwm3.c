@@ -295,6 +295,14 @@ Restart(int sig)
 }
 
 static RETSIGTYPE
+ToggleLogging(int sig)
+{
+	log_toggle();
+
+	SIGNAL_RETURN;
+}
+
+static RETSIGTYPE
 SigDone(int sig)
 {
 	fvwmRunState = FVWM_DONE;
@@ -735,6 +743,7 @@ InstallSignals(void)
 	sigaddset(&sigact.sa_mask, SIGQUIT);
 	sigaddset(&sigact.sa_mask, SIGTERM);
 	sigaddset(&sigact.sa_mask, SIGUSR1);
+	sigaddset(&sigact.sa_mask, SIGUSR2);
 
 #ifdef SA_RESTART
 	sigact.sa_flags = SA_RESTART;
@@ -746,6 +755,9 @@ InstallSignals(void)
 
 	sigact.sa_handler = Restart;
 	sigaction(SIGUSR1, &sigact, NULL);
+
+	sigact.sa_handler = ToggleLogging;
+	sigaction(SIGUSR2, &sigact, NULL);
 
 	sigact.sa_handler = SigDone;
 	sigaction(SIGINT,  &sigact, NULL);
@@ -773,8 +785,8 @@ InstallSignals(void)
 #else
 #ifdef USE_BSD_SIGNALS
 	fvwmSetSignalMask(
-		sigmask(SIGUSR1) | sigmask(SIGINT) | sigmask(SIGHUP) |
-		sigmask(SIGQUIT) | sigmask(SIGTERM) );
+		sigmask(SIGUSR1) | sigmask(SIGUSR2) | sigmask(SIGINT) |
+		sigmask(SIGHUP)  | sigmask(SIGQUIT) | sigmask(SIGTERM) );
 #endif
 
 	/*
@@ -783,6 +795,7 @@ InstallSignals(void)
 	 */
 	signal(SIGPIPE, DeadPipe);
 	signal(SIGUSR1, Restart);
+	signal(SIGUSR2, ToggleLogging);
 #ifdef HAVE_SIGINTERRUPT
 	siginterrupt(SIGUSR1, 0);
 #endif
@@ -829,6 +842,7 @@ void fvmm_deinstall_signals(void)
 	signal(SIGQUIT, SIG_DFL);
 	signal(SIGTERM, SIG_DFL);
 	signal(SIGUSR1, SIG_DFL);
+	signal(SIGUSR2, SIG_DFL);
 
 	return;
 }
@@ -2073,6 +2087,10 @@ int main(int argc, char **argv)
 			printf("%s\n%s\n\n%s\n", Fvwm_VersionInfo,
 			       Fvwm_SupportInfo, Fvwm_LicenseInfo);
 			exit(0);
+		}
+		else if (strcmp(argv[i], "-v") == 0)
+		{
+			log_set_level(1);
 		}
 		else
 		{
