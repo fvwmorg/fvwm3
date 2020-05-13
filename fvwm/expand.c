@@ -483,7 +483,7 @@ static signed int expand_vars_extended(
 		}
 
 		/* We could be left with "<NAME>.?" */
-		char m_name[200];
+		char *m_name = NULL;
 		struct monitor *mon;
 
 		/* The first word is the monitor name:
@@ -492,10 +492,12 @@ static signed int expand_vars_extended(
 		 *
 		 * so scan for the first full-stop.
 		 */
-		if (sscanf(rest, "%[^.].", &m_name) < 1)
+		if (sscanf(rest, "%[^.].", m_name) < 1)
 			return -1;
 
 		mon = monitor_by_name(m_name);
+		if (m_name == NULL)
+			return -1;
 		if (strcmp(mon->si->name, m_name) == 1)
 			return -1;
 
