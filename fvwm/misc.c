@@ -22,9 +22,6 @@
 #include <X11/Xatom.h>
 
 #include "libs/ftime.h"
-#ifdef FVWM_DEBUG_TIME
-#include <sys/times.h>
-#endif
 #include "libs/Parse.h"
 #include "libs/Target.h"
 #include "fvwm.h"
@@ -341,29 +338,6 @@ void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 	char *mfmt;
 	char fvwm_id[20];
 	char time_str[40] = "\0";
-#ifdef FVWM_DEBUG_TIME
-	clock_t time_val, time_taken;
-	static clock_t start_time = 0;
-	static clock_t prev_time = 0;
-	struct tms not_used_tms;
-	time_t mytime;
-	struct tm *t_ptr;
-#endif
-
-#ifdef FVWM_DEBUG_TIME
-	time(&mytime);
-	t_ptr = localtime(&mytime);
-	if (start_time == 0)
-	{
-		/* get clock ticks */
-		prev_time = start_time = (unsigned int)times(&not_used_tms);
-	}
-	time_val = (unsigned int)times(&not_used_tms); /* get clock ticks */
-	time_taken = time_val - prev_time;
-	prev_time = time_val;
-	sprintf(time_str, "%.2d:%.2d:%.2d%7ld ",
-		t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec, time_taken);
-#endif
 
 	strcpy(fvwm_id, "fvwm");
 	if (Scr.NumberOfScreens > 1)

@@ -1841,8 +1841,6 @@ void monitor_update_ewmh(void)
 
 void HandleButtonPress(const evh_args_t *ea)
 {
-	DBUG("HandleButtonPress", "Routine Entered");
-
 	GrabEm(CRS_NONE, GRAB_PASSIVE);
 	if (__is_bpress_window_handled(ea->exc) == False)
 	{
@@ -1870,10 +1868,8 @@ void HandleButtonRelease(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	XClassHint *class;
 
-	DBUG("HandleButtonRelease", "Routine Entered");
 	send_motion = False;
 	stroke_trans (sequence);
-	DBUG("HandleButtonRelease",sequence);
 	/*  Allows modifier to work (Only R context works here). */
 	real_modifier = te->xbutton.state - (1 << (7 + te->xbutton.button));
 	if (ea->exc->w.fw == NULL)
@@ -1906,8 +1902,6 @@ void HandleClientMessage(const evh_args_t *ea)
 {
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
-
-	DBUG("HandleClientMessage", "Routine Entered");
 
 	if (EWMH_ProcessClientMessage(ea->exc))
 	{
@@ -1983,8 +1977,6 @@ void HandleConfigureRequest(const evh_args_t *ea)
 	XConfigureRequestEvent *cre;
 	FvwmWindow *fw = ea->exc->w.fw;
 
-	DBUG("HandleConfigureRequest", "Routine Entered");
-
 	cre = &te->xconfigurerequest;
 	/* te->xany.window is te->.xconfigurerequest.parent, so the context
 	 * window may be wrong. */
@@ -2000,8 +1992,6 @@ void HandleConfigureRequest(const evh_args_t *ea)
 
 void HandleDestroyNotify(const evh_args_t *ea)
 {
-	DBUG("HandleDestroyNotify", "Routine Entered");
-
 	destroy_window(ea->exc->w.fw);
 	EWMH_ManageKdeSysTray(
 		ea->exc->x.etrigger->xdestroywindow.window,
@@ -2028,7 +2018,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleEnterNotify", "Routine Entered");
 	ewp = &te->xcrossing;
 ENTER_DBG((stderr, "++++++++ en (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, fw, (int)ewp->window, (int)ewp->subwindow, ewp->mode, ewp->detail, fw?fw->visible_name:"(none)"));
 
@@ -2447,8 +2436,6 @@ void HandleFocusIn(const evh_args_t *ea)
 	static Bool was_nothing_ever_focused = True;
 	FvwmWindow *fw = ea->exc->w.fw;
 
-	DBUG("HandleFocusIn", "Routine Entered");
-
 	Scr.focus_in_pending_window = NULL;
 	/* This is a hack to make the PointerKey command work */
 	if (ea->exc->x.etrigger->xfocus.detail != NotifyPointer)
@@ -2747,8 +2734,6 @@ void HandleLeaveNotify(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleLeaveNotify", "Routine Entered");
-
 ENTER_DBG((stderr, "-------- ln (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, fw, (int)te->xcrossing.window, (int)te->xcrossing.subwindow, te->xcrossing.mode, te->xcrossing.detail, fw?fw->visible_name:"(none)"));
 	lwp = &te->xcrossing;
 	if (
@@ -2903,8 +2888,6 @@ void HandleMapNotify(const evh_args_t *ea)
 	FvwmWindow * const fw = ea->exc->w.fw;
 	struct monitor *m = (fw && fw->m) ? fw->m : monitor_get_current();
 
-	DBUG("HandleMapNotify", "Routine Entered");
-
 	if (!fw)
 	{
 		if (te->xmap.override_redirect == True &&
@@ -3011,8 +2994,6 @@ void HandleMappingNotify(const evh_args_t *ea)
 
 void HandleMapRequest(const evh_args_t *ea)
 {
-	DBUG("HandleMapRequest", "Routine Entered");
-
 	if (fFvwmInStartup)
 	{
 		/* Just map the damn thing, decorations are added later
@@ -3279,8 +3260,6 @@ void HandleMapRequestKeepRaised(
 #ifdef HAVE_STROKE
 void HandleMotionNotify(const evh_args_t *ea)
 {
-	DBUG("HandleMotionNotify", "Routine Entered");
-
 	if (send_motion == True)
 	{
 		stroke_record(
@@ -3305,8 +3284,6 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	char *urgency_action = NULL;
 	FvwmWindow * const fw = ea->exc->w.fw;
-
-	DBUG("HandlePropertyNotify", "Routine Entered");
 
 	if (te->xproperty.window == Scr.Root &&
 	    te->xproperty.state == PropertyNewValue &&
@@ -3802,8 +3779,6 @@ void HandleShapeNotify(const evh_args_t *ea)
 {
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleShapeNotify", "Routine Entered");
-
 	if (FShapesSupported)
 	{
 		const FShapeEvent *sev =
@@ -3842,8 +3817,6 @@ void HandleUnmapNotify(const evh_args_t *ea)
 	FvwmWindow * const fw = ea->exc->w.fw;
 	Window pw;
 	Window cw;
-
-	DBUG("HandleUnmapNotify", "Routine Entered");
 
 	if (te->xunmap.event != te->xunmap.window
 	    && (te->xunmap.event != Scr.Root || !te->xunmap.send_event))
@@ -3964,8 +3937,6 @@ void HandleUnmapNotify(const evh_args_t *ea)
 void HandleVisibilityNotify(const evh_args_t *ea)
 {
 	FvwmWindow * const fw = ea->exc->w.fw;
-
-	DBUG("HandleVisibilityNotify", "Routine Entered");
 
 	if (fw && ea->exc->x.etrigger->xvisibility.window == FW_W_FRAME(fw))
 	{
@@ -4165,8 +4136,6 @@ void dispatch_event(XEvent *e)
 	FvwmWindow *fw;
 	event_group_t *event_group;
 
-	DBUG("dispatch_event", "Routine Entered");
-
 	XFlush(dpy);
 
 #if HAVE_XRANDR
@@ -4248,7 +4217,6 @@ void dispatch_event(XEvent *e)
 	 */
 	alloca(0);
 #endif
-	DBUG("dispatch_event", "Leaving Routine");
 
 	return;
 }
@@ -4266,7 +4234,6 @@ void HandleEvents(void)
 {
 	XEvent ev;
 
-	DBUG("HandleEvents", "Routine Entered");
 	STROKE_CODE(send_motion = False);
 	while (!isTerminated)
 	{
@@ -4317,8 +4284,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	static struct timeval timeout;
 	static struct timeval *timeoutP = &timeout;
 
-	DBUG("My_XNextEvent", "Routine Entered");
-
 	/* check for any X events already queued up.
 	 * Side effect: this does an XFlush if no events are queued
 	 * Make sure nothing between here and the select causes further
@@ -4326,9 +4291,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	 * there are events in the queue */
 	if (FPending(dpy))
 	{
-		DBUG(
-			"My_XNextEvent", "taking care of queued up events"
-			" & returning (1)");
 		FNextEvent(dpy, event);
 		return 1;
 	}
@@ -4348,10 +4310,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		module_cleanup();
 		if (module == NULL)
 		{
-			/* last module */
-			DBUG(
-				"My_XNextEvent",
-				"Starting up after command lines modules");
 			/* set an infinite timeout to stop ticking */
 			timeoutP = NULL;
 			/* This may cause X requests to be sent */
@@ -4425,7 +4383,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 			}
 		}
 
-		DBUG("My_XNextEvent", "waiting for module input/output");
 		num_fd = fvwmSelect(
 			fvwmlib_max_fd, &in_fdset, &out_fdset, 0, timeoutP);
 		if (is_waiting_for_scheduled_command)
@@ -4456,14 +4413,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 				MOD_WRITEFD(module) >= 0 &&
 				FD_ISSET(MOD_WRITEFD(module), &out_fdset))
 			{
-				DBUG("My_XNextEvent",
-				     "calling FlushMessageQueue");
 				FlushMessageQueue(module);
 			}
 		}
 
 		/* execute any commands queued up */
-		DBUG("My_XNextEvent", "executing module comand queue");
 		ExecuteCommandQueue();
 
 		/* cleanup dead modules */
@@ -4500,13 +4454,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	 */
 	if (FPending(dpy))
 	{
-		DBUG("My_XNextEvent",
-		     "taking care of queued up events & returning (2)");
 		FNextEvent(dpy,event);
 		return 1;
 	}
 
-	DBUG("My_XNextEvent", "leaving My_XNextEvent");
 	return 0;
 }
 
