@@ -140,21 +140,6 @@ AC_ARG_ENABLE(efence,
   [ac_cv_efence="$enableval"],
   [ac_cv_efence="no"])
 
-smr_SWITCH(command-log, command logging, off, FVWM_COMMAND_LOG,, [Produces a log of all executed commands and their times on stderr.])
-AH_VERBATIM([_FVWM_COMMAND_LOG],
-[#ifdef FVWM_COMMAND_LOG
-#   define FVWM_DEBUG_TIME 1
-#endif])
-
-smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS,, [if you would like to see lots of debug messages from fvwm, for debugging
-   purposes, uncomment the next line])
-AH_VERBATIM([_FVWM_DEBUG_MSGS],
-[#ifdef FVWM_DEBUG_MSGS
-#   define DBUG(x,y) fvwm_msg(DBG,x,y)
-#else
-#   define DBUG(x,y) /* no messages */
-#endif])
-
 dnl dummy: smr_SWITCH(sm, dummy for test script, on, SESSION)
 
 # Need to know where X is, for finding some libraries (e.g. xpm)

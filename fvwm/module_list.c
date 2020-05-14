@@ -156,7 +156,6 @@ static void module_free(fmodule *module)
 static inline void module_list_insert(fmodule *module, fmodule_list *list)
 {
 	fmodule_store *new_store;
-	DBUG("module_list_insert", "inserting module");
 	if (module == NULL)
 	{
 		return;
@@ -187,7 +186,6 @@ static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list)
 			/* found it */
 			fmodule_store *current;
 
-			DBUG("module_list_remove", "Removing from module list");
 			current = *position;
 			*position = (*position)->next;
 			free(current);
@@ -195,9 +193,6 @@ static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list)
 			return module;
 		}
 	}
-
-	/* module not found */
-	DBUG("module_list_remove", "Tried to remove a not listed module!");
 
 	return NULL;
 }
@@ -375,7 +370,6 @@ static fmodule *do_execute_module(
 		if (DoingCommandLine)
 		{
 			/* add to the list of command line modules */
-			DBUG("executeModule", "starting commandline module\n");
 			MOD_SET_CMDLINE(module, 1);
 		}
 

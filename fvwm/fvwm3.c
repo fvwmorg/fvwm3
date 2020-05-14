@@ -1761,8 +1761,6 @@ int main(int argc, char **argv)
 	exec_context_changes_t ecc;
 	struct monitor	*m = NULL;
 
-	DBUG("main", "Entered, about to parse args");
-
 	fvwmlib_init_max_fd();
 	/* Tell the FEvent module an event type that is not used by fvwm. */
 	fev_init_invalid_event_type(KeymapNotify);
@@ -2100,9 +2098,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	DBUG("main", "Done parsing args");
-
-	DBUG("main", "Installing signal handlers");
 	InstallSignals();
 
 	if (single_screen_num >= 0)
@@ -2499,12 +2494,10 @@ int main(int argc, char **argv)
 	 * before the first call to AddWindow. */
 	LoadWindowStates(state_filename);
 
-	DBUG("main", "Setting up rc file defaults...");
 	SetRCDefaults();
 	flush_window_updates();
 	simplify_style_list();
 
-	DBUG("main", "Running config_commands...");
 	ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 	ecc.w.wcontext = C_ROOT;
 	exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
@@ -2565,8 +2558,6 @@ int main(int argc, char **argv)
 	}
 	exc_destroy_context(exc);
 
-	DBUG("main", "Done running config_commands");
-
 	if (Pdepth<2)
 	{
 		Scr.gray_pixmap = XCreatePixmapFromBitmapData(
@@ -2595,7 +2586,6 @@ int main(int argc, char **argv)
 	MyXUngrabServer(dpy);
 	CoerceEnterNotifyOnCurrentWindow();
 	SessionInit();
-	DBUG("main", "Entering HandleEvents loop...");
 
 	HandleEvents();
 	switch (fvwmRunState)
@@ -2607,7 +2597,7 @@ int main(int argc, char **argv)
 		Done(1, "");       /* does not return */
 
 	default:
-		DBUG("main", "Unknown fvwm run-state");
+		break;
 	}
 
 	exit(0);

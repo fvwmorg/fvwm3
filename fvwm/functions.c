@@ -565,10 +565,6 @@ static void __execute_function(
 		expaction = taction;
 	}
 
-#ifdef FVWM_COMMAND_LOG
-	fvwm_msg(INFO, "LOG", "%c: %s", (char)exc->type, expaction);
-#endif
-
 	/* Note: the module config command, "*" can not be handled by the
 	 * regular command table because there is no required white space after
 	 * the asterisk. */

@@ -740,7 +740,6 @@ void module_input_enqueue(struct fmodule_input *input)
 		return;
 	}
 
-	DBUG("module_input_enqueue", input->command);
 	fqueue_add_at_end(&cqueue, (void*)input);
 }
 
@@ -765,7 +764,6 @@ void ExecuteCommandQueue(void)
 		/* execute and destroy */
 		if (input->command)
 		{
-			DBUG("ExecuteCommandQueue", input->command);
 			module_input_execute(input);
 		}
 		else

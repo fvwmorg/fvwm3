@@ -67,9 +67,6 @@ SetupICCCM2(Bool replace_wm)
 	running_wm_win = XGetSelectionOwner(dpy, _XA_WM_SX);
 	if (running_wm_win != None)
 	{
-		DBUG(
-			"SetupICCCM2",
-			"another ICCCM 2.0 compliant WM is running");
 		if (!replace_wm)
 		{
 			fvwm_msg(
@@ -111,7 +108,6 @@ SetupICCCM2(Bool replace_wm)
 	if (running_wm_win != None) {
 		/* Wait for the old wm to finish. */
 		/* FIXME: need a timeout here. */
-		DBUG("SetupICCCM2", "waiting for WM to give up");
 		do {
 			FWindowEvent(
 				dpy, running_wm_win, StructureNotifyMask, &xev);
@@ -131,7 +127,6 @@ SetupICCCM2(Bool replace_wm)
 void
 CloseICCCM2(void)
 {
-	DBUG("CloseICCCM2", "good luck, new wm");
 	XSelectInput(dpy, Scr.Root, NoEventMask);
 	XFlush(dpy);
 
@@ -249,7 +244,6 @@ icccm2_handle_selection_request(const XEvent *e)
 void
 icccm2_handle_selection_clear(void)
 {
-	DBUG("HandleSelectionClear", "I lost my selection!");
 	Done(0, NULL);
 
 	return;
