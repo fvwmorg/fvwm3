@@ -216,94 +216,58 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
 	return;
 }
 
-/*
- *
- *  Procedure:
- *	CalcGeom - calculates the size and position of a mini-window
- *	given the real window size.
- *	You can always tell bad code by the size of the comments.
- */
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
 {
-  int virt, virt2, edge, edge2, size, page, over;
-  struct fpmonitor *m = fpmonitor_this();
+	int wfull, hfull, xwin, ywin;
+	struct fpmonitor *m = fpmonitor_this();
 
-  /* coordinate of left hand edge on virtual desktop */
-  virt = m->virtual_scr.Vx + t->x;
+	/* Only track windows on the appropriate monitor if per-monitor mode. */
+	if (monitor_to_track != NULL && t->m != m) {
+		*x_ret = 0;
+		*y_ret = 0;
+		*w_ret = 0;
+		*h_ret = 0;
+		return;
+	}
 
-  /* position of left hand edge of mini-window on pager window */
-  edge = (virt * win_w) / m->virtual_scr.VWidth;
+	if (monitor_to_track == NULL) {
+		wfull = m->virtual_scr.VWidth;
+		hfull = m->virtual_scr.VHeight;
+		xwin = m->virtual_scr.Vx + t->x;
+		ywin = m->virtual_scr.Vy + t->y;
+	} else {
+		int page;
 
-  /* absolute coordinate of right hand edge on virtual desktop */
-  virt += t->width - 1;
+		/* Shrink geometry to current monitor. */
+		wfull = m->w * m->virtual_scr.VxPages;
+		hfull = m->h * m->virtual_scr.VyPages;
+		xwin = m->virtual_scr.Vx + t->x;
+		ywin = m->virtual_scr.Vy + t->y;
 
-  /* to calculate the right edge, mirror the window and use the same
-   * calculations as for the left edge for consistency. */
-  virt2 = m->virtual_scr.VWidth - 1 - virt;
-  edge2 = (virt2 * win_w) / m->virtual_scr.VWidth;
+		/* Adjust coordinates to be inside current monitor
+		 * Moves windows not in current monitor to the monitor's edge.
+		 */
+		page = xwin / m->virtual_scr.MyDisplayWidth;
+		xwin = page * m->w + min(m->w,
+			max(0, xwin % m->virtual_scr.MyDisplayWidth - m->x));
+		page = ywin / m->virtual_scr.MyDisplayHeight;
+		ywin = page * m->h + min(m->h,
+			max(0, ywin % m->virtual_scr.MyDisplayHeight - m->y));
+	}
+	/* fprintf(stderr, "Input: {Mon: %s, Wfull: %d, Xwin: %d, Hfull: %d, "
+	 *                "Ywin: %d}\n",
+	 *		m->name, wfull, xwin, hfull, ywin );
+	 */
 
-  /* then mirror it back to get the real coordinate */
-  edge2 = win_w - 1 - edge2;
-
-  /* Calculate the mini-window's width by subtracting its LHS
-   * from its RHS. This theoretically means that the width will
-   * vary slightly as the window travels around the screen, but
-   * this way ensures that the mini-windows in the pager match
-   * the actual screen layout. */
-  size = edge2 - edge + 1;
-
-  /* Make size big enough to be visible */
-  if (size < MinSize) {
-    size = MinSize;
-    /* this mini-window has to be grown to be visible
-     * which way it grows depends on some magic:
-     * normally it will grow right but if the window is on the right hand
-     * edge of a page it should be grown left so that the pager looks better */
-
-    /* work out the page that the right hand edge is on */
-    page = virt / m->virtual_scr.MyDisplayWidth;
-
-    /* if the left edge is on the same page then possibly move it left */
-    if (page == ((virt - t->width + 1) / m->virtual_scr.MyDisplayWidth)) {
-      /* calculate how far the mini-window right edge overlaps the page line */
-      /* beware that the "over" is actually one greater than on screen, but
-	 this discrepancy is catered for in the next two lines */
-      over = edge + size - ((page + 1) * win_w * m->virtual_scr.MyDisplayWidth) /
-	m->virtual_scr.VWidth;
-
-      /* if the mini-window right edge is beyond the mini-window pager grid */
-      if (over > 0) {
-	/* move it left by the amount of pager grid overlap (!== the growth) */
-	edge -= over;
-      }
-    }
-  }
-  /* fill in return values */
-  *x_ret = edge;
-  *w_ret = size;
-
-  /* same code for y axis */
-  virt = m->virtual_scr.Vy + t->y;
-  edge = (virt * win_h) / m->virtual_scr.VHeight;
-  virt += t->height - 1;
-  virt2 = m->virtual_scr.VHeight - 1 - virt;
-  edge2 = (virt2 * win_h) / m->virtual_scr.VHeight;
-  edge2 = win_h - 1 - edge2;
-  size = edge2 - edge + 1;
-  if (size < MinSize)
-  {
-    size = MinSize;
-    page = virt / m->virtual_scr.MyDisplayHeight;
-    if (page == ((virt - t->height + 1) / m->virtual_scr.MyDisplayHeight)) {
-      over = edge + size - ((page + 1) * win_h * m->virtual_scr.MyDisplayHeight) /
-	m->virtual_scr.VHeight;
-      if (over > 0)
-	edge -= over;
-    }
-  }
-  *y_ret = edge;
-  *h_ret = size;
+	/* Due to rounding some windows may appear slightly off the page
+	 * edges when they are not. Should add some cleanup/snapping
+	 * code to help improve the visual effect.
+	 */
+	*x_ret = (xwin * win_w) / wfull;
+	*w_ret = max(MinSize, (t->width * win_w) / wfull);
+	*y_ret = (ywin * win_h) / hfull;
+	*h_ret = max(MinSize, (t->height * win_h) / hfull);
 }
 
 /*
@@ -585,8 +549,8 @@ void initialize_pager(void)
 				  fore_pix,back_pix,Pdepth);
   }
 
-  n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-  m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
+  n = mon->virtual_scr.VxMax / (mon->x + mon->w); //mon->virtual_scr.MyDisplayWidth;
+  m = mon->virtual_scr.VyMax / (mon->y + mon->h); //mon->virtual_scr.MyDisplayHeight;
 
   /* Size the window */
   if(Rows < 0)
@@ -625,6 +589,10 @@ void initialize_pager(void)
   sizehints.height_inc = Rows*(m+1);
   sizehints.base_width = Columns * n + Columns - 1;
   sizehints.base_height = Rows * (m + label_h + 1) - 1;
+
+  int vWidth  = mon->virtual_scr.VxPages * (mon->x + mon->w);
+  int vHeight = mon->virtual_scr.VyPages * (mon->y + mon->h);
+
   if (window_w > 0)
   {
     window_w = (window_w - sizehints.base_width) / sizehints.width_inc;
@@ -632,7 +600,7 @@ void initialize_pager(void)
   }
   else
   {
-    window_w = Columns * (mon->virtual_scr.VWidth / Scr.VScale + n) + Columns - 1;
+    window_w = Columns * (vWidth / Scr.VScale + n) + Columns - 1;
   }
   if (window_h > 0)
   {
@@ -641,7 +609,7 @@ void initialize_pager(void)
   }
   else
   {
-    window_h = Rows * (mon->virtual_scr.VHeight / Scr.VScale + m + label_h + 1) - 1;
+    window_h = Rows * (vHeight / Scr.VScale + m + label_h + 1) - 1;
   }
   desk_w = (window_w - Columns + 1) / Columns;
   desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
@@ -657,23 +625,23 @@ void initialize_pager(void)
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     if (window_w + window_x > screen_g.x + screen_g.width)
     {
-      window_x = screen_g.x + screen_g.width - mon->virtual_scr.MyDisplayWidth;
+      window_x = screen_g.x + screen_g.width - mon->w; //mon->virtual_scr.MyDisplayWidth;
       xneg = 1;
     }
     if (window_h + window_y > screen_g.y + screen_g.height)
     {
-      window_y = screen_g.y + screen_g.height - mon->virtual_scr.MyDisplayHeight;
+      window_y = screen_g.y + screen_g.height - mon->h; //mon->virtual_scr.MyDisplayHeight;
       yneg = 1;
     }
   }
   if (xneg)
   {
     sizehints.win_gravity = NorthEastGravity;
-    window_x = mon->virtual_scr.MyDisplayWidth - window_w + window_x;
+    window_x = mon->w - window_w + window_x;
   }
   if (yneg)
   {
-    window_y = mon->virtual_scr.MyDisplayHeight - window_h + window_y;
+    window_y = mon->h - window_h + window_y;
     if(sizehints.win_gravity == NorthEastGravity)
       sizehints.win_gravity = SouthEastGravity;
     else
@@ -2269,9 +2237,11 @@ void MoveStickyWindow(Bool is_new_page, Bool is_new_desk)
 
 void Hilight(PagerWindow *t, int on)
 {
-
   if(!t)
     return;
+
+  if (monitor_to_track != NULL && strcmp(t->m->name, monitor_to_track) != 0)
+	  return;
 
   if(Pdepth < 2)
   {

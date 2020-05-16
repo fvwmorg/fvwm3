@@ -443,13 +443,13 @@ int main(int argc, char **argv)
   if (BalloonFormatString == NULL)
     BalloonFormatString = fxstrdup("%i");
 
-  /* open a pager window */
-  initialize_pager();
-
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
   SendInfo(fd,"Send_WindowList",0);
+
+  /* open a pager window */
+  initialize_pager();
 
   if (is_transient)
   {
@@ -724,17 +724,13 @@ void list_add(unsigned long *body)
 
 	newm = fpmonitor_by_output((int)cfgpacket->monitor_id);
 
-	if (newm == NULL) {
-		fvwm_debug(__func__, "monitor was null with ID: %d\n",
-			   (int)cfgpacket->monitor_id);
-		fvwm_debug(__func__, "using current montior\n");
-
+	if (newm == NULL)
 		newm = fpmonitor_get_current();
-	}
 
 	while(t != NULL)
 	{
-		t->m = newm;
+		//t->m = newm;
+		fprintf(stderr, "WINDOW %s: mon: %s\n", t->window_name, t->m->name);
 		if (t->w == cfgpacket->w)
 		{
 			/* it's already there, do nothing */
@@ -1856,16 +1852,21 @@ void ParseOptions(void)
     else if (StrEquals(token, "Monitor")) {
 	    char	*mname;
 	    int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+	    int		 x, y, w, h;
 	    int		 updated = 0;
 
 	    next = GetNextToken(next, &mname);
-	    sscanf(next, "%d %d %d %d %d %d %d %d", &output, &iscur, &mdw, &mdh,
-		    &vx, &vy, &vxmax, &vymax);
-
-	    m = fxcalloc(1, sizeof(*m));
+	    sscanf(next, "%d %d %d %d %d %d %d %d %d %d %d %d",
+			    &output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
+			    &x, &y, &w, &h);
 
 	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+		    updated = 0;
 		    if (strcmp(m2->name, mname) == 0) {
+			    m2->x = x;
+			    m2->y = y;
+			    m2->w = w;
+			    m2->h = h;
 			    m2->output = output;
 			    m2->is_current = iscur;
 			    m2->virtual_scr.MyDisplayWidth = mdw;
@@ -1878,12 +1879,16 @@ void ParseOptions(void)
 		    }
 	    }
 
-	    if (updated) {
-		    free(m);
-		    continue;
-	    }
+	    if (updated)
+		    return;
+
+	    m = fxcalloc(1, sizeof(*m));
 
 	    m->name = fxstrdup(mname);
+	    m->x = x;
+	    m->y = y;
+	    m->w = w;
+	    m->h = h;
 	    m->is_current = iscur;
 	    m->output = output;
 	    m->virtual_scr.MyDisplayWidth = mdw;
@@ -1893,7 +1898,6 @@ void ParseOptions(void)
 	    m->virtual_scr.VxMax = vxmax;
 	    m->virtual_scr.VyMax = vymax;
 	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
-
 	    continue;
     }
 
