@@ -12,11 +12,11 @@
 
 VERSION=3.0.0
 
-echo "$VERSION" && exit 0
+[ -d ".git" ] || { echo "$VERSION" && exit 0 ; }
 
 if grep -q -i '^ISRELEASED="yes"' ./configure.ac; then
 	# A release build.  Strip the git information off the tag name.
-	git describe --tags --abbrev=0 2>/dev/null || echo "2.6.8"
+	git describe --tags --abbrev=0 2>/dev/null || echo "$VERSION"
 else
 	git describe --always --long --dirty
 fi
