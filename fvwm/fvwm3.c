@@ -1261,7 +1261,7 @@ static void setVersionInfo(void)
 	int support_len;
 
 	/* Set version information string */
-	sprintf(version_str, "fvwm3 %s%s compiled on %s at %s",
+	sprintf(version_str, "fvwm3 %s (%s) compiled on %s at %s",
 		VERSION, VERSIONINFO, __DATE__, __TIME__);
 	Fvwm_VersionInfo = fxstrdup(version_str);
 
