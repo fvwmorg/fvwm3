@@ -603,6 +603,7 @@ typedef struct style_flags
 	unsigned has_initial_map_command_string : 1;
 	unsigned has_title_format_string : 1;
 	unsigned has_icon_title_format_string : 1;
+	unsigned initial_placement_done : 1;
 } style_flags;
 
 typedef struct style_id_t
