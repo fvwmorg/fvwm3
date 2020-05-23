@@ -1261,12 +1261,12 @@ static void setVersionInfo(void)
 	int support_len;
 
 	/* Set version information string */
-	sprintf(version_str, "fvwm %s%s compiled on %s at %s",
+	sprintf(version_str, "fvwm3 %s%s compiled on %s at %s",
 		VERSION, VERSIONINFO, __DATE__, __TIME__);
 	Fvwm_VersionInfo = fxstrdup(version_str);
 
 	sprintf(license_str,
-		"fvwm comes with NO WARRANTY, to the extent permitted by law. "
+		"fvwm3 comes with NO WARRANTY, to the extent permitted by law. "
 		"You may\nredistribute copies of fvwm under "
 		"the terms of the GNU General Public License.\n"
 		"For more information about these matters, see the file "

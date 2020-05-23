@@ -1708,7 +1708,7 @@ eval my_localedir="`eval echo ${LOCALEDIR}`"
 test x"$USE_NLS" = xno && my_localedir="(Not installed) $my_localdir"
 
 echo "
-Fvwm Configuration:
+Fvwm3 Configuration:
 
   Version:     $VERSION$VERSIONINFO
 
