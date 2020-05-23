@@ -30,6 +30,7 @@ configure
 core
 doc/footer.html
 doc/fvwm.ent
+doc/fvwm3.ent
 etc/
 fvwm/fvwm
 fvwm/fvwm3
