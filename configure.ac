@@ -13,15 +13,13 @@ fi
 # Silence warning: ar: 'u' modifier ignored since 'D' is the default
 AC_SUBST(AR_FLAGS, [cr])
 
-AC_INIT([fvwm3],
-	m4_esyscmd_s([utils/fvwm-version-str.sh]),
-	[fvwm-workers@fvwm.org])
+AC_INIT([fvwm3], 3.0.0, [fvwm-workers@fvwm.org])
 AC_CONFIG_AUX_DIR(etc)
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_SILENT_RULES([yes])
 AM_CONFIG_HEADER(config.h)
 
-VERSIONINFO=""
+VERSIONINFO=m4_esyscmd([./utils/fvwm-version-str.sh])
 
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
@@ -1710,7 +1708,7 @@ test x"$USE_NLS" = xno && my_localedir="(Not installed) $my_localdir"
 echo "
 Fvwm3 Configuration:
 
-  Version:     $VERSION$VERSIONINFO
+  Version:     $VERSION ($VERSIONINFO)
 
   Executables: $my_bindir
   Man pages:   $my_mandir

@@ -191,7 +191,7 @@ void server(void)
 	socklen_t clen;     /* length of sockaddr */
 	char buf[MAX_COMMAND_SIZE];      /*  command line buffer */
 	char *tline;
-	char ver[40];
+	char ver[200];
 	fd_set fdset;
 	char *home;
 	int s;
@@ -255,12 +255,10 @@ void server(void)
 		GetConfigLine(Fd, &tline);
 	}
 	fvwm_send(Ns, C_END, strlen(C_END), 0);
-	strcpy(ver, "*");
-	strcpy(ver, module->name);
-	strcat(ver, " version ");
-	strcat(ver, VERSION VERSIONINFO);
-	strcat(ver, "\n");
+	snprintf(ver, sizeof ver, "*%s version %s (%s)", module->name, VERSION,
+	    VERSIONINFO);
 	fvwm_send(Ns, ver, strlen(ver), 0);
+	fvwm_send(Ns, "\n\n", 2, 0);
 
 	while (1)
 	{
