@@ -1556,8 +1556,6 @@ static int __place_get_nowm_pos(
 		attr_g->y = final_g.y;
 	}
 
-	UPDATE_FVWM_SCREEN(fw);
-
 	return 0;
 }
 
@@ -1693,7 +1691,6 @@ static int __place_window(
 			FScreenGetScrRect(&arg, FSCREEN_BY_NAME,
 				&screen_g.x, &screen_g.y,
 				&screen_g.width, &screen_g.height);
-			free(e);
 
 			/* FIXME:  Set the monitor here, but make
 			 * UPDATE_FVWM_SCREEN aware of how to do this.
@@ -1701,6 +1698,7 @@ static int __place_window(
 			 * This is necessary for StartsOnScreen
 			 */
 			fw->m = monitor_by_name(arg.name);
+			free(e);
 		}
 		else
 		{
@@ -1810,6 +1808,7 @@ static int __place_window(
 			}
 		}
 
+#if 0
 		{
 			/* migo - I am not sure this block is ever needed */
 
@@ -1834,6 +1833,7 @@ static int __place_window(
 				}
 			}
 		}
+#endif
 	}
 	reason->desk.desk = fw->Desk;
 	/* I think it would be good to switch to the selected desk
@@ -1904,7 +1904,8 @@ static int __place_window(
 		((!Restarting && Scr.flags.are_windows_captured))) {
 		struct monitor *mnew = FindScreenOfXY(attr_g->x, attr_g->y);
 		fw->m = mnew;
-		fw->Desk = mnew->virtual_scr.CurrentDesk;
+		do_move_window_to_desk(fw, mnew->virtual_scr.CurrentDesk);
+		pstyle->flags.initial_placement_done = 1;
 	}
 
 	reason->pos.x = attr_g->x;

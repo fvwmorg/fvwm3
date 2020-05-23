@@ -31,6 +31,11 @@
 #ifndef _SCREEN_
 #define _SCREEN_
 
+#include "config.h"
+
+#include "fvwm/update.h"
+#include "fvwm/style.h"
+
 #include "libs/flist.h"
 #include "libs/Bindings.h"
 
@@ -469,14 +474,22 @@ typedef struct ScreenInfo
 	} last_added_item;
 } ScreenInfo;
 
-#define UPDATE_FVWM_SCREEN(fw) \
-	do { \
-		rectangle g; \
-		struct monitor *mnew; \
-		get_unshaded_geometry((fw), &g); \
-		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y); \
-		(fw)->m_prev = (fw)->m; \
-		(fw)->m = mnew; \
+#define UPDATE_FVWM_SCREEN(fw)						   \
+	do {								   \
+		rectangle g;						   \
+		struct monitor *mnew;					   \
+		window_style style;					   \
+									   \
+		lookup_style((fw), &style);				   \
+		get_unshaded_geometry((fw), &g);			   \
+		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y);   \
+		/* Avoid unnecessary updates. */			   \
+		if (mnew == (fw)->m)					   \
+			break;						   \
+		(fw)->m_prev = (fw)->m;					   \
+		(fw)->m = mnew;						   \
+		(fw)->Desk = mnew->virtual_scr.CurrentDesk;		   \
+		BroadcastConfig(M_CONFIGURE_WINDOW, (fw));		   \
 	} while(0)
 
 /* A macro to to simplify he "ewmh desktop code" */
