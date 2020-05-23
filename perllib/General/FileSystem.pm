@@ -1066,7 +1066,7 @@ Returns the current working directory.
 
 
 sub get_cwd () {
-	$^O eq "MSWin32" ? Win32::GetCwd() : require "getcwd.pl" && getcwd();
+	$^O eq "MSWin32" ? Win32::GetCwd() : require Cwd && getcwd()."\n";
 }
 
 
