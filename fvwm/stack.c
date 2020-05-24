@@ -1508,6 +1508,7 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 {
 	FvwmWindow *t;
 	Bool ontop = True;
+	struct monitor *m = fw->m;
 
 	if (IS_SCHEDULED_FOR_DESTROY(fw))
 	{
@@ -1520,6 +1521,9 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 	}
 	for (t = fw->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
 	{
+		if (t->m != m)
+			continue;
+
 		if (t->layer > fw->layer)
 		{
 			break;
