@@ -980,8 +980,8 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 	x = left;
 	y = top;
-	width = (m->si->w) - (left + right);
-	height =(m->si->h) - (top + bottom);
+	width = (m->virtual_scr.MyDisplayWidth) - (left + right);
+	height =(m->virtual_scr.MyDisplayHeight) - (top + bottom);
 
 	fprintf(stderr, "%s: monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
 		"{x: %d, y: %d, w: %d, h: %d}\n", __func__, m->si->name,
@@ -1035,8 +1035,8 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 
 	x = dyn_left;
 	y = dyn_top;
-	width = (m->si->w) - (dyn_left + dyn_right);
-	height = (m->si->h) - (dyn_top + dyn_bottom);
+	width  =  (m->virtual_scr.MyDisplayWidth) - (dyn_left + dyn_right);
+	height = (m->virtual_scr.MyDisplayHeight) - (dyn_top + dyn_bottom);
 
 	if (
 		m->Desktops->ewmh_dyn_working_area.x != x ||
@@ -1102,8 +1102,8 @@ void EWMH_GetWorkAreaIntersection(
 	}
 	nx = max(*x, area_x);
 	ny = max(*y, area_y);
-	nw = min(*x + *w, area_x + area_w);
-	nh = min(*y + *h, area_y + area_h);
+	nw = min(*x + *w, area_x + area_w) - nx;
+	nh = min(*y + *h, area_y + area_h) - ny;
 
 	*x = nx;
 	*y = ny;
