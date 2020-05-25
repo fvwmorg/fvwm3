@@ -270,9 +270,8 @@ static char *ReadTitleButton(
 		pstyle = 1;
 		if (!(end = strchr(++s, ')')))
 		{
-			fvwm_msg(
-				ERR, "ReadTitleButton",
-				"missing parenthesis: %s", s);
+			fvwm_debug(__func__,
+				   "missing parenthesis: %s", s);
 			return NULL;
 		}
 		s = SkipSpaces(s, NULL, 0);
@@ -463,9 +462,9 @@ static void do_title_style(F_CMD_ARGS, Bool do_add)
 			{
 				if (height != 0)
 				{
-					fvwm_msg(ERR, "do_title_style",
-						 "bad height argument (height"
-						 " must be from 5 to 256)");
+					fvwm_debug(__func__,
+						   "bad height argument (height"
+						   " must be from 5 to 256)");
 					height = 0;
 				}
 			}
@@ -575,9 +574,9 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 		if (pm[pm_id] || acs[pm_id].cs >= 0 ||
 		    (df->u.mp.solid_flags & (1 << pm_id)))
 		{
-			fvwm_msg(WARN, "ReadMultiPixmapDecor",
-				 "Ignoring: already-specified %s",
-				 pm_names[i]);
+			fvwm_debug(__func__,
+				   "Ignoring: already-specified %s",
+				   pm_names[i]);
 			continue;
 		}
 		if (stretched)
@@ -593,10 +592,9 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			if (!GetIntegerArguments(token, NULL, &val, 1) ||
 			    val < 0)
 			{
-				fvwm_msg(
-					ERR, "ReadMultiPixmapDecor",
-					"Colorset should take one or two "
-					"positive integers as argument");
+				fvwm_debug(__func__,
+					   "Colorset should take one or two "
+					   "positive integers as argument");
 			}
 			else
 			{
@@ -643,9 +641,9 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 				dpy, Scr.NoFocusWin, NULL, token, fpa);
 			if (!pm[pm_id])
 			{
-				fvwm_msg(ERR, "ReadMultiPixmapDecor",
-					 "Pixmap '%s' could not be loaded",
-					 token);
+				fvwm_debug(__func__,
+					   "Pixmap '%s' could not be loaded",
+					   token);
 			}
 		}
 		if (pm_id == TBMP_BUTTONS)
@@ -719,10 +717,10 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 	    !(pm[TBMP_RIGHT_MAIN] || acs[TBMP_RIGHT_MAIN].cs >= 0 ||
 	      (df->u.mp.solid_flags & TBMP_RIGHT_MAIN)))
 	{
-		fvwm_msg(ERR, "ReadMultiPixmapDecor",
-			 "No Main pixmap/colorset/solid found for TitleStyle "
-			 "MultiPixmap  (you must specify either Main, "
-			 "or both LeftMain and RightMain)");
+		fvwm_debug(__func__,
+			   "No Main pixmap/colorset/solid found for TitleStyle "
+			   "MultiPixmap  (you must specify either Main, "
+			   "or both LeftMain and RightMain)");
 		for (i=0; i < TBMP_NUM_PIXMAPS; i++)
 		{
 			if (pm[i])
@@ -887,9 +885,8 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 
 	if (parm == NULL || button >= NUMBER_OF_TITLE_BUTTONS || button < 0)
 	{
-		fvwm_msg(
-			ERR, "ButtonStyle", "Bad button style (1) in line %s",
-			action);
+		fvwm_debug(__func__, "Bad button style (1) in line %s",
+			   action);
 		return;
 	}
 
@@ -920,10 +917,9 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "ButtonStyle",
-					"Bad button style (2) in line %s",
-					action);
+				fvwm_debug(__func__,
+					   "Bad button style (2) in line %s",
+					   action);
 			}
 			multi = 3;
 			do_return = 1;
@@ -1050,11 +1046,11 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 					}
 					if (!ltok || !got_number)
 					{
-						fvwm_msg(ERR, "ButtonStyle",
-							 "could not read"
-							 " integer value for"
-							 " layer -- line: %s",
-							 text);
+						fvwm_debug(__func__,
+							   "could not read"
+							   " integer value for"
+							   " layer -- line: %s",
+							   text);
 					}
 					else
 					{
@@ -1066,9 +1062,10 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 				}
 				else
 				{
-					fvwm_msg(ERR, "ButtonStyle",
-						 "unknown title button flag"
-						 " %s -- line: %s", tok, text);
+					fvwm_debug(__func__,
+						   "unknown title button flag"
+						   " %s -- line: %s", tok,
+						   text);
 				}
 				if (set)
 				{
@@ -1506,7 +1503,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	{
 		if (verbose)
 		{
-			fvwm_msg(ERR, "ReadDecorFace", "error in face `%s'", s);
+			fvwm_debug(__func__, "error in face `%s'", s);
 		}
 		return False;
 	}
@@ -1534,10 +1531,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				{
 					if (verbose)
 					{
-						fvwm_msg(
-							ERR,"ReadDecorFace",
-							"need default button"
-							" number to load");
+						fvwm_debug(__func__,
+							   "need default button"
+							   " number to load");
 					}
 					return False;
 				}
@@ -1556,10 +1552,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				if (verbose)
 				{
-					fvwm_msg(
-						ERR, "ReadDecorFace",
-						"button number out of range:"
-						" %d", b);
+					fvwm_debug(__func__,
+						   "button number out of range:"
+						   " %d", b);
 				}
 				return False;
 			}
@@ -1587,10 +1582,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				if (verbose)
 				{
-					fvwm_msg(
-						ERR, "ReadDecorFace",
-						"Bad button style (2) in line:"
-						" %s",action);
+					fvwm_debug(__func__,
+						   "Bad button style (2) in line:"
+						   " %s",action);
 				}
 				return False;
 			}
@@ -1652,10 +1646,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				if (verbose)
 				{
-					fvwm_msg(
-						ERR, "ReadDecorFace",
-						"Bad button style (3) in line"
-						" %s", action);
+					fvwm_debug(__func__,
+						   "Bad button style (3) in line"
+						   " %s", action);
 				}
 				free(vc->x);
 				free(vc->y);
@@ -1686,10 +1679,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				if (verbose)
 				{
-					fvwm_msg(
-						ERR, "ReadDecorFace",
-						"no color given for Solid"
-						" face type: %s", action);
+					fvwm_debug(__func__,
+						   "no color given for Solid"
+						   " face type: %s", action);
 				}
 				return False;
 			}
@@ -1752,10 +1744,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				{
 					if (verbose)
 					{
-						fvwm_msg(
-							ERR, "ReadDecorFace",
-							"couldn't load pixmap"
-							" %s", file);
+						fvwm_debug(__func__,
+							   "couldn't load pixmap"
+							   " %s", file);
 					}
 					free(file);
 				}
@@ -1798,10 +1789,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				if (verbose)
 				{
-					fvwm_msg(
-						ERR, "ReadDecorFace",
-						"MultiPixmap is only valid"
-						" for TitleStyle");
+					fvwm_debug(__func__,
+						   "MultiPixmap is only valid"
+						   " for TitleStyle");
 				}
 				return False;
 			}
@@ -1848,9 +1838,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 		{
 			if (verbose)
 			{
-				fvwm_msg(
-					ERR, "ReadDecorFace",
-					"unknown style %s: %s", style, action);
+				fvwm_debug(__func__,
+					   "unknown style %s: %s", style,
+					   action);
 			}
 			return False;
 		}
@@ -2010,10 +2000,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			}
 			else if (verbose)
 			{
-				fvwm_msg(
-					ERR, "ReadDecorFace",
-					"unknown button face flag '%s'"
-					" -- line: %s", tok, action);
+				fvwm_debug(__func__,
+					   "unknown button face flag '%s'"
+					   " -- line: %s", tok, action);
 			}
 			if (set)
 			{
@@ -2157,7 +2146,7 @@ void CMD_CursorMove(F_CMD_ARGS)
 
 	if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
 	{
-		fvwm_msg(ERR, "movecursor", "CursorMove needs 2 arguments");
+		fvwm_debug(__func__, "CursorMove needs 2 arguments");
 		return;
 	}
 	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
@@ -2441,15 +2430,15 @@ void CMD_Exec(F_CMD_ARGS)
 
 		if (fvwm_setpgrp() == -1)
 		{
-			fvwm_msg(ERR, "exec_function", "setpgrp failed (%s)",
-				 strerror(errno));
+			fvwm_debug(__func__, "setpgrp failed (%s)",
+				   strerror(errno));
 			exit(100);
 		}
 		if (execl(exec_shell_name, exec_shell_name, "-c", cmd, NULL) ==
 		    -1)
 		{
-			fvwm_msg(ERR, "exec_function", "execl failed (%s)",
-				 strerror(errno));
+			fvwm_debug(__func__, "execl failed (%s)",
+				   strerror(errno));
 			exit(100);
 		}
 	}
@@ -2648,7 +2637,7 @@ void CMD_Echo(F_CMD_ARGS)
 			action[len-1]='\0';
 		}
 	}
-	fvwm_msg(ECHO, "Echo", "%s", action);
+	fvwm_debug(__func__, "%s\n", action);
 
 	return;
 }
@@ -2693,8 +2682,8 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	}
 	else
 	{
-		fvwm_msg(ERR, "PrintInfo",
-			 "Unknown subject '%s'", action);
+		fvwm_debug(__func__,
+			   "Unknown subject '%s'", action);
 	}
 	if (subject)
 	{
@@ -2715,9 +2704,9 @@ void CMD_ColormapFocus(F_CMD_ARGS)
 	}
 	else
 	{
-		fvwm_msg(ERR, "SetColormapFocus",
-			 "ColormapFocus requires 1 arg: FollowsFocus or"
-			 " FollowsMouse");
+		fvwm_debug(__func__,
+			   "ColormapFocus requires 1 arg: FollowsFocus or"
+			   " FollowsMouse");
 		return;
 	}
 
@@ -2757,8 +2746,8 @@ void CMD_ImagePath(F_CMD_ARGS)
 
 void CMD_IconPath(F_CMD_ARGS)
 {
-	fvwm_msg(ERR, "iconPath_function",
-		 "IconPath is deprecated since 2.3.0; use ImagePath instead.");
+	fvwm_debug(__func__,
+		   "IconPath is deprecated since 2.3.0; use ImagePath instead.");
 	obsolete_imagepaths( action );
 
 	return;
@@ -2766,9 +2755,9 @@ void CMD_IconPath(F_CMD_ARGS)
 
 void CMD_PixmapPath(F_CMD_ARGS)
 {
-	fvwm_msg(ERR, "pixmapPath_function",
-		 "PixmapPath is deprecated since 2.3.0; use ImagePath"
-		 " instead." );
+	fvwm_debug(__func__,
+		   "PixmapPath is deprecated since 2.3.0; use ImagePath"
+		   " instead." );
 	obsolete_imagepaths( action );
 
 	return;
@@ -2811,13 +2800,12 @@ void CMD_HilightColor(F_CMD_ARGS)
 
 	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
 	{
-		fvwm_msg(
-			ERR, "SetHiColor",
-			"Decors do not support the HilightColor command"
-			" anymore. Please use"
-			" 'Style <stylename> HilightFore <forecolor>' and"
-			" 'Style <stylename> HilightBack <backcolor>' instead."
-			" Sorry for the inconvenience.");
+		fvwm_debug(__func__,
+			   "Decors do not support the HilightColor command"
+			   " anymore. Please use"
+			   " 'Style <stylename> HilightFore <forecolor>' and"
+			   " 'Style <stylename> HilightBack <backcolor>' instead."
+			   " Sorry for the inconvenience.");
 		return;
 	}
 	action = GetNextToken(action, &fore);
@@ -2847,12 +2835,11 @@ void CMD_HilightColorset(F_CMD_ARGS)
 
 	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
 	{
-		fvwm_msg(
-			ERR, "SetHiColorset",
-			"Decors do not support the HilightColorset command "
-			"anymore. Please use "
-			"'Style <stylename> HilightColorset <colorset>'"
-			" instead. Sorry for the inconvenience.");
+		fvwm_debug(__func__,
+			   "Decors do not support the HilightColorset command "
+			   "anymore. Please use "
+			   "'Style <stylename> HilightColorset <colorset>'"
+			   " instead. Sorry for the inconvenience.");
 		return;
 	}
 
@@ -3063,11 +3050,10 @@ void CMD_IconFont(F_CMD_ARGS)
 
 	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
 	{
-		fvwm_msg(
-			ERR, "LoadIconFont",
-			"Decors do not support the IconFont command anymore."
-			" Please use 'Style <stylename> IconFont <fontname>'"
-			" instead.  Sorry for the inconvenience.");
+		fvwm_debug(__func__,
+			   "Decors do not support the IconFont command anymore."
+			   " Please use 'Style <stylename> IconFont <fontname>'"
+			   " instead.  Sorry for the inconvenience.");
 		return;
 	}
 
@@ -3090,11 +3076,10 @@ void CMD_WindowFont(F_CMD_ARGS)
 
 	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
 	{
-		fvwm_msg(
-			ERR, "LoadWindowFont",
-			"Decors do not support the WindowFont command anymore."
-			" Please use 'Style <stylename> Font <fontname>'"
-			" instead.  Sorry for the inconvenience.");
+		fvwm_debug(__func__,
+			   "Decors do not support the WindowFont command anymore."
+			   " Please use 'Style <stylename> Font <fontname>'"
+			   " instead.  Sorry for the inconvenience.");
 		return;
 	}
 
@@ -3450,8 +3435,8 @@ void CMD_GlobalOpts(F_CMD_ARGS)
 		"RaiseOverNativeWindows off"
 	};
 
-	fvwm_msg(ERR, "SetGlobalOptions",
-		 "The GlobalOpts command is obsolete.");
+	fvwm_debug(__func__,
+		   "The GlobalOpts command is obsolete.");
 	for (action = GetNextSimpleOption(action, &opt); opt;
 	     action = GetNextSimpleOption(action, &opt))
 	{
@@ -3487,15 +3472,14 @@ void CMD_GlobalOpts(F_CMD_ARGS)
 				cmd = "BugOpts";
 			}
 			action = tmp;
-			fvwm_msg(
-				ERR, "SetGlobalOptions",
-				"Please replace 'GlobalOpts %s' with '%s %s'.",
-				opt, cmd, replace);
+			fvwm_debug(__func__,
+				   "Please replace 'GlobalOpts %s' with '%s %s'.",
+				   opt, cmd, replace);
 		}
 		else
 		{
-			fvwm_msg(ERR, "SetGlobalOptions",
-				 "Unknown Global Option '%s'", opt);
+			fvwm_debug(__func__,
+				   "Unknown Global Option '%s'", opt);
 		}
 		/* should never be null, but checking anyways... */
 		if (opt)
@@ -3728,8 +3712,8 @@ void CMD_BugOpts(F_CMD_ARGS)
 		}
 		else
 		{
-			fvwm_msg(ERR, "SetBugOptions",
-				 "Unknown Bug Option '%s'", opt);
+			fvwm_debug(__func__,
+				   "Unknown Bug Option '%s'", opt);
 		}
 	}
 
@@ -3758,7 +3742,7 @@ void CMD_Emulate(F_CMD_ARGS)
 	}
 	else
 	{
-		fvwm_msg(ERR, "Emulate", "Unknown style '%s'", style);
+		fvwm_debug(__func__, "Unknown style '%s'", style);
 		return;
 	}
 	Scr.flags.do_need_window_update = 1;
@@ -3770,9 +3754,8 @@ void CMD_Emulate(F_CMD_ARGS)
 
 void CMD_ColorLimit(F_CMD_ARGS)
 {
-	fvwm_msg(
-		WARN, "ColorLimit", "ColorLimit is obsolete,\n\tuse the "
-		"fvwm -color-limit option");
+	fvwm_debug(__func__, "ColorLimit is obsolete,\n\tuse the "
+		   "fvwm -color-limit option");
 
 	return;
 }
@@ -3789,15 +3772,15 @@ void CMD_SetAnimation(F_CMD_ARGS)
 	opt = PeekToken(action, &action);
 	if (!opt || sscanf(opt,"%d",&delay) != 1)
 	{
-		fvwm_msg(ERR,"SetAnimation",
-			 "Improper milli-second delay as first argument");
+		fvwm_debug(__func__,
+			   "Improper milli-second delay as first argument");
 		return;
 	}
 	if (delay > 500)
 	{
-		fvwm_msg(WARN,"SetAnimation",
-			 "Using longer than .5 seconds as between frame"
-			 " animation delay");
+		fvwm_debug(__func__,
+			   "Using longer than .5 seconds as between frame"
+			   " animation delay");
 	}
 	cmsDelayDefault = delay;
 	for (opt = PeekToken(action, &action); opt;
@@ -3805,9 +3788,9 @@ void CMD_SetAnimation(F_CMD_ARGS)
 	{
 		if (sscanf(opt,"%f",&pct) != 1)
 		{
-			fvwm_msg(ERR,"SetAnimation",
-				 "Use fractional values ending in 1.0 as args"
-				 " 2 and on");
+			fvwm_debug(__func__,
+				   "Use fractional values ending in 1.0 as args"
+				   " 2 and on");
 			return;
 		}
 		rgpctMovementDefault[i++] = pct;
@@ -3843,8 +3826,8 @@ static Bool FKeysymToKeycode (Display *dpy, KeySym keysym,
 					*modifiers |= ShiftMask;
 					break;
 				default:
-					fvwm_msg(ERR, "FKeysymToKeycode",
-						"Unhandled modifier %d", m);
+					fvwm_debug(__func__,
+						   "Unhandled modifier %d", m);
 					break;
 			}
 			return True;
@@ -3909,10 +3892,10 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 				    val < 1 ||
 				    val > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 				{
-					fvwm_msg(
-						ERR, "__fake_event",
-						"Invalid button specifier in"
-						" \"%s\" for FakeClick.", args);
+					fvwm_debug(__func__,
+						   "Invalid button specifier in"
+						   " \"%s\" for FakeClick.",
+						   args);
 					return; /* error */
 				}
 			}
@@ -3921,10 +3904,9 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 				char *key = PeekToken(action, &action);
 				if (key == NULL)
 				{
-					fvwm_msg(
-						ERR, "__fake_event",
-						"No keysym specifier in \"%s\""
-						" for FakeKeypress.", args);
+					fvwm_debug(__func__,
+						   "No keysym specifier in \"%s\""
+						   " for FakeKeypress.", args);
 					return;
 				}
 
@@ -3933,11 +3915,10 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 				keysym = XStringToKeysym(key);
 				if (keysym == NoSymbol)
 				{
-					fvwm_msg(
-						ERR, "__fake_event",
-						"Invalid keysym specifier (%s)"
-						" in \"%s\" for FakeKeypress.",
-						key, args);
+					fvwm_debug(__func__,
+						   "Invalid keysym specifier (%s)"
+						   " in \"%s\" for FakeKeypress.",
+						   key, args);
 					return;
 				}
 			}
@@ -4016,8 +3997,8 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 					    dpy, keysym, &(e.xkey.keycode),
 					    &(e.xkey.state)) != True)
 				{
-					fvwm_msg(DBG, "__fake_event",
-						"FKeysymToKeycode failed");
+					fvwm_debug(__func__,
+						   "FKeysymToKeycode failed");
 					return;
 				}
 				e.xkey.state |= mask;
@@ -4035,8 +4016,9 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 				     action, &action, &val, 1) != 1) ||
 			    val <= 0 || val > 1000000)
 			{
-				fvwm_msg(ERR, "__fake_event",
-					"Invalid wait value in \"%s\"", args);
+				fvwm_debug(__func__,
+					   "Invalid wait value in \"%s\"",
+					   args);
 				return;
 			}
 
@@ -4055,10 +4037,9 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 			/* set modifier */
 			if (GetIntegerArguments(action, &action, &val, 1) != 1)
 			{
-				fvwm_msg(
-					ERR, "__fake_event",
-					"Invalid modifier value in \"%s\"",
-					args);
+				fvwm_debug(__func__,
+					   "Invalid modifier value in \"%s\"",
+					   args);
 				return;
 			}
 			do_unset = False;
@@ -4104,15 +4085,17 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 			/* new max depth */
 			if (GetIntegerArguments(action, &action, &val, 1) != 1)
 			{
-				fvwm_msg(ERR, "__fake_event",
-					"Invalid depth value in \"%s\"", args);
+				fvwm_debug(__func__,
+					   "Invalid depth value in \"%s\"",
+					   args);
 				return;
 			}
 			maxdepth = val;
 			break;
 		default:
-			fvwm_msg(ERR, "__fake_event",
-				"Invalid command (%s) in \"%s\"", token, args);
+			fvwm_debug(__func__,
+				   "Invalid command (%s) in \"%s\"", token,
+				   args);
 			return;
 		}
 		if (action)
@@ -4218,9 +4201,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			action = GetNextToken(action, &opt);
 			if (!opt)
 			{
-				fvwm_msg(
-					WARN, "StrokeWidth",
-					"needs an integer argument");
+				fvwm_debug(__func__,
+					   "needs an integer argument");
 			}
 			/* we allow stroke_width == 0 which means drawing a
 			 * `fast' line of width 1; the upper level of 100 is
@@ -4228,16 +4210,15 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			else if (!sscanf(opt, "%d", &stroke_width) ||
 				 stroke_width < 0 || stroke_width > 100)
 			{
-				fvwm_msg(
-					WARN, "StrokeWidth",
-					"Bad integer argument %d",
-					stroke_width);
+				fvwm_debug(__func__,
+					   "Bad integer argument %d",
+					   stroke_width);
 				stroke_width = 1;
 			}
 		}
 		else
 		{
-			fvwm_msg(WARN,"StrokeFunc","Unknown option %s", opt);
+			fvwm_debug(__func__, "Unknown option %s", opt);
 		}
 		if (opt)
 		{
@@ -4427,8 +4408,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			}
 		}
 		num_seq[i++] = '\0';
-		fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %s (N%s)",
-			 sequence, num_seq);
+		fvwm_debug(__func__, "stroke sequence: %s (N%s)",
+			   sequence, num_seq);
 	}
 	if (abort)
 	{
@@ -4485,7 +4466,7 @@ void CMD_State(F_CMD_ARGS)
 	}
 	if (state > 31)
 	{
-		fvwm_msg(ERR, "CMD_State", "Illegal state %d\n", state);
+		fvwm_debug(__func__, "Illegal state %d\n", state);
 		return;
 	}
 	toggle = ParseToggleArgument(action, NULL, -1, 0);

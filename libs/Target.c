@@ -250,7 +250,7 @@ void fvwmlib_get_target_window(
 	}
 	if(val != GrabSuccess)
 	{
-		fprintf(stderr,"%s: Couldn't grab the cursor!\n",MyName);
+		fvwm_debug(__func__, "%s: Couldn't grab the cursor!\n",MyName);
 		exit(1);
 	}
 	MyXGrabKeyboard(dpy);

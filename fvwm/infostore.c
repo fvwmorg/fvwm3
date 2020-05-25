@@ -148,18 +148,18 @@ void print_infostore(void)
 {
 	MetaInfo *mi;
 
-	fprintf(stderr, "Current items in infostore (key, value):\n\n");
+	fvwm_debug(__func__, "Current items in infostore (key, value):\n\n");
 
 	if (get_metainfo_length() == 0)
 	{
-		fprintf(stderr,
-			"No items are currently stored in the infostore.\n");
+		fvwm_debug(__func__,
+			   "No items are currently stored in the infostore.\n");
 		return;
 	}
 
 	for(mi = mi_store; mi; mi = mi->next)
 	{
-		fprintf(stderr, "%s\t%s\n", mi->key, mi->value);
+		fvwm_debug(__func__, "%s\t%s\n", mi->key, mi->value);
 	}
 
 	return;
@@ -187,7 +187,7 @@ void CMD_InfoStoreAdd(F_CMD_ARGS)
 
 	if (!key || !value)
 	{
-		fvwm_msg(ERR, "CMD_InfoStore", "Bad arguments given.");
+		fvwm_debug(__func__, "Bad arguments given.");
 		return;
 	}
 
@@ -205,7 +205,7 @@ void CMD_InfoStoreRemove(F_CMD_ARGS)
 
 	if (!token)
 	{
-		fvwm_msg(ERR, "CMD_InfoStoreRemove", "No key given to remove item.");
+		fvwm_debug(__func__, "No key given to remove item.");
 		return;
 	}
 

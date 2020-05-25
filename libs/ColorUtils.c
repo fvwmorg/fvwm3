@@ -452,16 +452,16 @@ Pixel GetSimpleColor(char *name)
 
 	if (is_illegal_rgb)
 	{
-		fprintf(stderr, "Illegal RGB format \"%s\"\n", name);
+		fvwm_debug(__func__, "Illegal RGB format \"%s\"\n", name);
 	}
 	else if (!XParseColor (Pdpy, Pcmap, name, &color))
 	{
-		fprintf(stderr, "Cannot parse color \"%s\"\n",
-			name ? name : "<blank>");
+		fvwm_debug(__func__, "Cannot parse color \"%s\"\n",
+			   name ? name : "<blank>");
 	}
 	else if (!PictureAllocColor(Pdpy, Pcmap, &color, True))
 	{
-		fprintf(stderr, "Cannot allocate color \"%s\"\n", name);
+		fvwm_debug(__func__, "Cannot allocate color \"%s\"\n", name);
 	}
 	return color.pixel;
 }
@@ -483,23 +483,24 @@ Pixel GetColor(char *name)
 		if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
 		{
 			/* not a non-negative integer without leading zeros */
-			fprintf(stderr,
-				"Invalid colorset number in color '%s'\n",
-				name);
+			fvwm_debug(__func__,
+				   "Invalid colorset number in color '%s'\n",
+				   name);
 			return 0;
 		}
 		sscanf(rest, "%d%n", &cs, &n);
 		if (*(rest + n) != ']')
 		{
-			fprintf(stderr,
-				"No closing brace after '%d' in color '%s'\n",
-				cs, name);
+			fvwm_debug(__func__,
+				   "No closing brace after '%d' in color '%s'\n",
+				   cs, name);
 			return 0;
 		}
 		if (*(rest + n + 1) != 0)
 		{
-			fprintf(stderr, "Trailing characters after brace in"
-				" color '%s'\n", name);
+			fvwm_debug(__func__,
+				   "Trailing characters after brace in"
+				   " color '%s'\n", name);
 			return 0;
 		}
 		AllocColorset(cs);
@@ -520,8 +521,8 @@ Pixel GetColor(char *name)
 		}
 		if (!PictureAllocColor(Pdpy, Pcmap, &color, True))
 		{
-			fprintf(stderr, "Cannot allocate color %d from"
-				" colorset %d\n", i, cs);
+			fvwm_debug(__func__, "Cannot allocate color %d from"
+				   " colorset %d\n", i, cs);
 			return 0;
 		}
 		return color.pixel;
@@ -542,7 +543,8 @@ Pixel fvwmlib_clone_color(Pixel p)
 	XQueryColor(Pdpy, Pcmap, &c);
 	if (!PictureAllocColor(Pdpy, Pcmap, &c, True))
 	{
-		fprintf(stderr, "Cannot allocate clone Pixel %d\n", (int)p);
+		fvwm_debug(__func__, "Cannot allocate clone Pixel %d\n",
+			   (int)p);
 		return 0;
 	}
 

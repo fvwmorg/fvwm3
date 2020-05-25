@@ -107,13 +107,14 @@ static void dump_stack_ring(void)
 		return;
 	}
 	XBell(dpy, 0);
-	fprintf(stderr,"dumping stack ring:\n");
+	fvwm_debug(__func__, "dumping stack ring:\n");
 	for (
 		t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot;
 		t1 = t1->stack_next)
 	{
-		fprintf(stderr,"    l=%d fw=%p f=0x%08x '%s'\n", t1->layer,
-			t1, (int)FW_W_FRAME(t1), t1->name.name);
+		fvwm_debug(__func__, "    l=%d fw=%p f=0x%08x '%s'\n",
+			   t1->layer,
+			   t1, (int)FW_W_FRAME(t1), t1->name.name);
 	}
 
 	return;
@@ -147,12 +148,11 @@ void verify_stack_ring_consistency(void)
 	{
 		if (t1->layer > last_layer)
 		{
-			fprintf(
-				stderr,
-				"vsrc: stack ring is corrupt! '%s' (layer %d)"
-				" is above '%s' (layer %d/%d)\n",
-				t1->name.name, t1->layer, t2->name.name,
-				t2->layer, last_layer);
+			fvwm_debug(__func__,
+				   "vsrc: stack ring is corrupt! '%s' (layer %d)"
+				   " is above '%s' (layer %d/%d)\n",
+				   t1->name.name, t1->layer, t2->name.name,
+				   t2->layer, last_layer);
 			dump_stack_ring();
 			return;
 		}
@@ -170,11 +170,10 @@ void verify_stack_ring_consistency(void)
 	}
 	if (t1 != &Scr.FvwmRoot || t1->stack_prev != t2)
 	{
-		fprintf(
-			stderr,
-			"vsrc: stack ring is corrupt -"
-			" fvwm will probably crash! %p -> %p but %p <- %p",
-			t2, t1, t1->stack_prev, t1);
+		fvwm_debug(__func__,
+			   "vsrc: stack ring is corrupt -"
+			   " fvwm will probably crash! %p -> %p but %p <- %p",
+			   t2, t1, t1->stack_prev, t1);
 		dump_stack_ring();
 		return;
 	}
@@ -199,20 +198,19 @@ void verify_stack_ring_consistency(void)
 		}
 		if (i == nchildren)
 		{
-			fprintf(
-				stderr,"vsrc: window already died:"
-				" fw=%p w=0x%08x '%s'\n",
-				t1, (int)FW_W_FRAME(t1), t1->name.name);
+			fvwm_debug(__func__, "vsrc: window already died:"
+				   " fw=%p w=0x%08x '%s'\n",
+				   t1, (int)FW_W_FRAME(t1), t1->name.name);
 		}
 		else if (i >= last_index)
 		{
-			fprintf(
-				stderr, "vsrc: window is at wrong position"
-				" in stack ring: fw=%p f=0x%08x '%s'\n",
-				t1, (int)FW_W_FRAME(t1),
-				t1->name.name);
+			fvwm_debug(__func__,
+				   "vsrc: window is at wrong position"
+				   " in stack ring: fw=%p f=0x%08x '%s'\n",
+				   t1, (int)FW_W_FRAME(t1),
+				   t1->name.name);
 			dump_stack_ring();
-			fprintf(stderr,"dumping X stacking order:\n");
+			fvwm_debug(__func__, "dumping X stacking order:\n");
 			for (i = nchildren; i-- > 0; )
 			{
 				for (
@@ -223,9 +221,9 @@ void verify_stack_ring_consistency(void)
 					/* only dump frame windows */
 					if (FW_W_FRAME(t1) == children[i])
 					{
-						fprintf(
-							stderr, "  f=0x%08x\n",
-							(int)children[i]);
+						fvwm_debug(__func__,
+							   "  f=0x%08x\n",
+							   (int)children[i]);
 						break;
 					}
 				}
@@ -532,9 +530,8 @@ static void __restack_window_list(
 	{
 		if (i > count)
 		{
-			fvwm_msg(
-				ERR, "__restack_window_list",
-				"more transients than expected");
+			fvwm_debug(__func__,
+				   "more transients than expected");
 			break;
 		}
 		wins[i++] = FW_W_FRAME(t);
@@ -1641,12 +1638,11 @@ void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win)
 	if (t == add_after_win || t == add_after_win->stack_next)
 	{
 		/* tried to add the window before or after itself */
-		fvwm_msg(
-			ERR, "add_window_to_stack_ring_after",
-			"BUG: tried to add window '%s' %s itself in stack"
-			" ring\n",
-			t->name.name, (t == add_after_win) ?
-			"after" : "before");
+		fvwm_debug(__func__,
+			   "BUG: tried to add window '%s' %s itself in stack"
+			   " ring\n",
+			   t->name.name, (t == add_after_win) ?
+			   "after" : "before");
 		return;
 	}
 	t->stack_next = add_after_win->stack_next;
@@ -2141,9 +2137,8 @@ void CMD_DefaultLayers(F_CMD_ARGS)
 		i = atoi (bot);
 		if (i < 0)
 		{
-			fvwm_msg(
-				ERR, "DefaultLayers",
-				"Layer must be non-negative." );
+			fvwm_debug(__func__,
+				   "Layer must be non-negative." );
 		}
 		else
 		{
@@ -2156,9 +2151,8 @@ void CMD_DefaultLayers(F_CMD_ARGS)
 		i = atoi (def);
 		if (i < 0)
 		{
-			fvwm_msg(
-				ERR, "DefaultLayers",
-				"Layer must be non-negative." );
+			fvwm_debug(__func__,
+				   "Layer must be non-negative." );
 		}
 		else
 		{
@@ -2171,9 +2165,8 @@ void CMD_DefaultLayers(F_CMD_ARGS)
 		i = atoi (top);
 		if (i < 0)
 		{
-			fvwm_msg(
-				ERR, "DefaultLayers",
-				"Layer must be non-negative." );
+			fvwm_debug(__func__,
+				   "Layer must be non-negative." );
 		}
 		else
 		{

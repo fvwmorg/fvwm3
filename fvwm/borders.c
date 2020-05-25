@@ -1424,7 +1424,7 @@ static void border_get_frame_pixmap(
 	if (dcd->frame_pixmap != None)
 	{
 		/* should not happen */
-		fprintf(stderr, "Bad use of border_get_frame_pixmap!!\n");
+		fvwm_debug(__func__, "Bad use of border_get_frame_pixmap!!\n");
 		dcd->frame_pixmap = None;
 	}
 
@@ -3208,7 +3208,7 @@ static void border_draw_decor_to_pixmap(
 		break;
 
 	default:
-		fvwm_msg(ERR, "DrawButton", "unknown button type: %i", type);
+		fvwm_debug(__func__, "unknown button type: %i", type);
 		break;
 	}
 
@@ -4968,8 +4968,8 @@ void CMD_ButtonState(F_CMD_ARGS)
 				DEFAULT_USE_INACTIVE_BUTTONS;
 			Scr.gs.use_inactive_down_buttons =
 				DEFAULT_USE_INACTIVE_DOWN_BUTTONS;
-			fvwm_msg(ERR, "cmd_button_state",
-				 "Unknown button state %s", token);
+			fvwm_debug(__func__,
+				   "Unknown button state %s", token);
 			return;
 		}
 	}
@@ -5022,10 +5022,9 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			{
 				if (!*action)
 				{
-					fvwm_msg(
-						ERR, "SetBorderStyle",
-						"error in %s border"
-						" specification", parm);
+					fvwm_debug(__func__,
+						   "error in %s border"
+						   " specification", parm);
 					return;
 				}
 				while (isspace(*action))
@@ -5042,10 +5041,9 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			end = strchr(++action, ')');
 			if (!end)
 			{
-				fvwm_msg(
-					ERR, "SetBorderStyle",
-					"error in %s border specification",
-					parm);
+				fvwm_debug(__func__,
+					   "error in %s border specification",
+					   parm);
 				return;
 			}
 			len = end - action + 1;

@@ -61,9 +61,8 @@ void InitTextField(struct XObj *xobj)
 	if ((xobj->Ffont = FlocaleLoadFont(
 		     dpy, xobj->font, ScriptName)) == NULL)
 	{
-		fprintf(
-			stderr, "%s: Couldn't load font. Exiting!\n",
-			ScriptName);
+		fvwm_debug(__func__, "%s: Couldn't load font. Exiting!\n",
+			   ScriptName);
 		exit(1);
 	}
 	if (xobj->Ffont->font != NULL)
@@ -143,8 +142,8 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	int offset,offset2,offset3;
 	int end_value;
 
-	fprintf(stderr,"DrawTextField: value %d value2 %d value3 %d\n",
-		xobj->value, xobj->value2, xobj->value3);
+	fvwm_debug(__func__, "DrawTextField: value %d value2 %d value3 %d\n",
+		   xobj->value, xobj->value2, xobj->value3);
 
 	y1 = xobj->Ffont->ascent;
 	l=strlen(xobj->title);
@@ -163,8 +162,9 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	if(offset3 == l)
 		xobj->value3 = end_value;
 
-	fprintf(stderr, "DrawTextField: offset: %d offset2 %d, offset3: %d\n",
-		offset, offset2, offset3);
+	fvwm_debug(__func__,
+		   "DrawTextField: offset: %d offset2 %d, offset3: %d\n",
+		   offset, offset2, offset3);
 
 	/*if (offset > l)
 		xobj->value = FlocaleStringByteToCharOffset(xobj->Ffont,
@@ -184,7 +184,7 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 				offset - nl) > (xobj->width-10))
 	{
 		nl += FlocaleStringNumberOfBytes(xobj->Ffont,xobj->title + nl);
-		fprintf(stderr,"nl: %d\n", nl);
+		fvwm_debug(__func__, "nl: %d\n", nl);
 	}
 	/* now nl is the byte offset of the first the first visible
 	   character */
@@ -203,8 +203,8 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 							xobj->title,
 							xobj->value3);
 	}
-	fprintf(stderr, "Got visible offset; %d char %d\n", offset3,
-		xobj->value3);
+	fvwm_debug(__func__, "Got visible offset; %d char %d\n", offset3,
+		   xobj->value3);
 	/* calcul de la longueur du titre visible */
 	/* computation of the length of the visible title */
 	/* increase string until it won't fit anymore into into the textbox */
@@ -243,7 +243,7 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	xobj->title + right);
 		fprintf(stderr, "sl: %d\n", l - offset3 - right);
 		} */
-	fprintf(stderr,"computed length of visible string\n");
+	fvwm_debug(__func__, "computed length of visible string\n");
 	FwinString->win = xobj->win;
 	FwinString->gc = xobj->gc;
 	FwinString->x = 5;
@@ -685,7 +685,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 			/* here "i" is the number of bytes returned
 			   need not be 1 incase of MB locale */
 			Size=strlen(xobj->title);
-			fprintf(stderr, "Current size: %d\n", Size);
+			fvwm_debug(__func__, "Current size: %d\n", Size);
 			/* make room for more the new text */
 			/* shouldn't fxrealloc be used here? */
 			xobj->title=(char*)realloc(

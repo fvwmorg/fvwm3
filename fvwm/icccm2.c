@@ -69,10 +69,9 @@ SetupICCCM2(Bool replace_wm)
 	{
 		if (!replace_wm)
 		{
-			fvwm_msg(
-				ERR, "SetupICCCM2",
-				"another ICCCM 2.0 compliant WM is running,"
-				" try -replace");
+			fvwm_debug(__func__,
+				   "another ICCCM 2.0 compliant WM is running,"
+				   " try -replace");
 			exit(1);
 		}
 		/* We need to know when the old manager is gone.
@@ -90,9 +89,8 @@ SetupICCCM2(Bool replace_wm)
 	XSetSelectionOwner(dpy, _XA_WM_SX, Scr.NoFocusWin, managing_since);
 	if (XGetSelectionOwner(dpy, _XA_WM_SX) != Scr.NoFocusWin)
 	{
-		fvwm_msg(
-			ERR, "SetupICCCM2",
-			"failed to acquire selection ownership");
+		fvwm_debug(__func__,
+			   "failed to acquire selection ownership");
 		exit(1);
 	}
 

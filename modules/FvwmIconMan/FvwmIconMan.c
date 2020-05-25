@@ -76,13 +76,14 @@ void Free(void *p)
 		head--;
 		if (head->magic != MALLOC_MAGIC)
 		{
-			fprintf(stderr, "Corrupted memory found in Free\n");
+			fvwm_debug(__func__,
+				   "Corrupted memory found in Free\n");
 			abort();
 			return;
 		}
 		if (head->len > MemUsed)
 		{
-			fprintf(stderr, "Free block too big\n");
+			fvwm_debug(__func__, "Free block too big\n");
 			return;
 		}
 		MemUsed -= head->len;
@@ -244,9 +245,9 @@ main(int argc, char **argv)
 
 	if (argc < 6)
 	{
-		fprintf(stderr,
-			"%s version %s should only be executed by fvwm!\n",
-			MyName, VERSION);
+		fvwm_debug(__func__,
+                           "%s version %s should only be executed by fvwm!\n",
+                           MyName, VERSION);
 		ShutMeDown(1);
 	}
 	fvwm_fd[0] = atoi(argv[1]);

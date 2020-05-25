@@ -235,8 +235,9 @@ int main(int argc, char **argv)
 
   if(argc  < 6)
     {
-      fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
-	      VERSION);
+      fvwm_debug(__func__, "%s Version %s should only be executed by fvwm!\n",
+                 MyName,
+                 VERSION);
       exit(1);
     }
 
@@ -363,8 +364,8 @@ int main(int argc, char **argv)
   /* Initialize X connection */
   if (!(dpy = XOpenDisplay(display_name)))
     {
-      fprintf(stderr,"%s: can't open display %s", MyName,
-	      XDisplayName(display_name));
+      fvwm_debug(__func__, "%s: can't open display %s", MyName,
+                 XDisplayName(display_name));
       exit (1);
     }
 
@@ -478,9 +479,9 @@ int main(int argc, char **argv)
     if (!is_pointer_grabbed)
     {
       XBell(dpy, 0);
-      fprintf(stderr,
-	      "%s: could not grab pointer in transient mode. exiting.\n",
-	      MyName);
+      fvwm_debug(__func__,
+                 "%s: could not grab pointer in transient mode. exiting.\n",
+                 MyName);
       exit(1);
     }
 
@@ -494,7 +495,7 @@ int main(int argc, char **argv)
 #ifdef FVWM_DEBUG_MSGS
   if ( isTerminated )
   {
-    fprintf(stderr, "%s: Received signal: exiting...\n", MyName);
+    fvwm_debug(__func__, "%s: Received signal: exiting...\n", MyName);
   }
 #endif
 
@@ -643,7 +644,8 @@ void handle_config_win_package(PagerWindow *t,
 	if (t->w != None && t->w != cfgpacket->w)
 	{
 		/* Should never happen */
-		fprintf(stderr,"%s: Error: Internal window list corrupt\n",MyName);
+		fvwm_debug(__func__,
+			   "%s: Error: Internal window list corrupt\n",MyName);
 		/* might be a good idea to exit here */
 		return;
 	}
@@ -721,9 +723,9 @@ void list_add(unsigned long *body)
 	newm = fpmonitor_by_output((int)cfgpacket->monitor_id);
 
 	if (newm == NULL) {
-		fprintf(stderr, "monitor was null with ID: %d\n",
-			(int)cfgpacket->monitor_id);
-		fprintf(stderr, "using current montior\n");
+		fvwm_debug(__func__, "monitor was null with ID: %d\n",
+			   (int)cfgpacket->monitor_id);
+		fvwm_debug(__func__, "using current montior\n");
 
 		newm = fpmonitor_get_current();
 	}
@@ -766,9 +768,9 @@ void list_configure(unsigned long *body)
   newm = fpmonitor_by_output((int)cfgpacket->monitor_id);
 
   if (newm == NULL) {
-	  fprintf(stderr, "monitor was null with ID: %d\n",
-		(int)cfgpacket->monitor_id);
-	  fprintf(stderr, "using current montior\n");
+	  fvwm_debug(__func__, "monitor was null with ID: %d\n",
+                     (int)cfgpacket->monitor_id);
+	  fvwm_debug(__func__, "using current montior\n");
 
 	  newm = fpmonitor_get_current();
   }
@@ -904,7 +906,7 @@ void list_new_page(unsigned long *body)
 	struct fpmonitor *m;
 
 	m = fpmonitor_by_output(mon_num);
-	fprintf(stderr, "%s: using monitor: %s\n", __func__, m->name);
+	fvwm_debug(__func__, "%s: using monitor: %s\n", __func__, m->name);
 
 	if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 		return;
@@ -1912,20 +1914,20 @@ void ParseOptions(void)
     if (StrEquals(resource, "Monitor")) {
 	    free(monitor_to_track);
 	    if (next == NULL) {
-		    fprintf(stderr, "FvwmPager: no monitor name given "
+		    fvwm_debug(__func__, "FvwmPager: no monitor name given "
 				    "using current monitor\n");
 		    /* m already set... */
 		    monitor_to_track = fxstrdup(m->name);
 		    continue;
 	    }
 	    if ((m = fpmonitor_by_name(next)) == NULL) {
-		    fprintf(stderr, "FvwmPager: monitor '%s' not found "
-			"using current monitor", next);
+		    fvwm_debug(__func__, "FvwmPager: monitor '%s' not found "
+                               "using current monitor", next);
 		    m = fpmonitor_get_current();
 		    monitor_to_track = fxstrdup(m->name);
 		    continue;
 	    }
-	    fprintf(stderr, "Assigning monitor: %s\n", m->name);
+	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->name);
 	    monitor_to_track = fxstrdup(m->name);
     }
     else if(StrEquals(resource,"Colorset"))
@@ -2403,10 +2405,10 @@ void ParseOptions(void)
       sscanf(arg1, "%d", &BalloonYOffset);
       if (BalloonYOffset == 0)
       {
-	fprintf(stderr,
-		"%s: Warning:"
-		" you're not allowed BalloonYOffset 0; defaulting to +3\n",
-		MyName);
+	fvwm_debug(__func__,
+                   "%s: Warning:"
+                   " you're not allowed BalloonYOffset 0; defaulting to +3\n",
+                   MyName);
 	/* we don't allow yoffset of 0 because it allows direct transit from
 	 * pager window to balloon window, setting up a LeaveNotify/EnterNotify
 	 * event loop */
@@ -2438,7 +2440,8 @@ void ParseOptions(void)
 	  m->virtual_scr.VxPages = m->virtual_scr.VWidth / m->virtual_scr.MyDisplayWidth;
 	  m->virtual_scr.VyPages = m->virtual_scr.VHeight / m->virtual_scr.MyDisplayHeight;
 
-	  fprintf(stderr, "%s: VxMax: %d, VyMax: %d, VWidth: %d, Vheight: %d, "
+	  fvwm_debug(__func__,
+			  "%s: VxMax: %d, VyMax: %d, VWidth: %d, Vheight: %d, "
 			  "VxPages: %d, VyPages: %d\n", m->name,
 			  m->virtual_scr.VxMax, m->virtual_scr.VyMax, m->virtual_scr.VWidth,
 			  m->virtual_scr.VHeight, m->virtual_scr.VxPages, m->virtual_scr.VyPages);

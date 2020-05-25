@@ -131,7 +131,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	cname = PeekToken(action, &action);
 	if (!cname)
 	{
-		fvwm_msg(ERR, "CursorStyle", "Bad cursor style");
+		fvwm_debug(__func__, "Bad cursor style");
 
 		return;
 	}
@@ -233,7 +233,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	}
 	else
 	{
-		fvwm_msg(ERR, "CursorStyle", "Unknown cursor name %s", cname);
+		fvwm_debug(__func__, "Unknown cursor name %s", cname);
 
 		return;
 	}
@@ -268,9 +268,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 		/* newcursor was a number or the name of a X11 cursor */
 		if ((nc < 0) || (nc >= XC_num_glyphs) || ((nc % 2) != 0))
 		{
-			fvwm_msg(
-				ERR, "CursorStyle", "Bad cursor number %s",
-				newcursor);
+			fvwm_debug(__func__, "Bad cursor number %s",
+				   newcursor);
 			free(newcursor);
 
 			return;
@@ -307,9 +306,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 			path = PictureFindImageFile(newcursor, NULL, R_OK);
 			if (!path)
 			{
-				fvwm_msg(
-					ERR, "CursorStyle",
-					"Cursor %s not found", newcursor);
+				fvwm_debug(__func__,
+					   "Cursor %s not found", newcursor);
 				free(newcursor);
 
 				return;
@@ -325,9 +323,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	}
 	if (!cursor)
 	{
-		fvwm_msg(
-			ERR, "CursorStyle", "Cannot load cursor: %s",
-			newcursor);
+		fvwm_debug(__func__, "Cannot load cursor: %s",
+			   newcursor);
 		free(newcursor);
 
 		return;
@@ -465,8 +462,8 @@ void CMD_BusyCursor(F_CMD_ARGS)
 		free(optstring);
 		if (flag == -1)
 		{
-			fvwm_msg(ERR, "BusyCursor",
-				 "error in boolean specification");
+			fvwm_debug(__func__,
+				   "error in boolean specification");
 			free(option);
 			break;
 		}
@@ -529,8 +526,8 @@ void CMD_BusyCursor(F_CMD_ARGS)
 			break;
 
 		default:
-			fvwm_msg(ERR, "BusyCursor", "unknown context '%s'",
-				 option);
+			fvwm_debug(__func__, "unknown context '%s'",
+				   option);
 			break;
 		}
 		free(option);

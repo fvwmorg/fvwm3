@@ -112,8 +112,8 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 		option = PeekToken(action, &action);
 
 		if ((m = monitor_by_name(option)) == NULL) {
-			fvwm_msg(ERR, "CMD_EwmhNumberOfDesktops",
-				"Invalid screen: %s", option);
+			fvwm_debug(__func__,
+				   "Invalid screen: %s", option);
 		}
 	}
 
@@ -121,8 +121,8 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 	if ((num != 1 && num != 2) || val[0] < 1 ||
 	    (num == 2 && val[1] < val[0] && val[1] != 0))
 	{
-		fvwm_msg(ERR,"EwmhNumberOfDesktops",
-			 "Bad arguments to EwmhNumberOfDesktops");
+		fvwm_debug(__func__,
+			   "Bad arguments to EwmhNumberOfDesktops");
 		return;
 	}
 
@@ -154,8 +154,8 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 
 		m = monitor_by_name(option);
 		if (strcmp(m->si->name, option) != 0) {
-			fvwm_msg(ERR, "CMD_EwmhBaseStruts",
-				"Invalid screen: %s", option);
+			fvwm_debug(__func__,
+				   "Invalid screen: %s", option);
 			return;
 		}
 	}
@@ -163,8 +163,8 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 	if (GetIntegerArguments(action, NULL, val, 4) != 4 ||
 	    val[0] < 0 || val[1] < 0 || val[2] < 0 || val[3] < 0)
 	{
-		fvwm_msg(ERR,"CMD_EwmhBaseStruts",
-			 "EwmhBaseStruts needs four positive arguments");
+		fvwm_debug(__func__,
+			   "EwmhBaseStruts needs four positive arguments");
 		return;
 	}
 
@@ -177,8 +177,8 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 	}
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		fprintf(stderr, "%s: mon: %s {l: %d, r: %d, t: %d, b: %d}\n",
-			__func__, m->si->name, val[0], val[1], val[2], val[3]);
+		fvwm_debug(__func__, "mon: %s {l: %d, r: %d, t: %d, b: %d}\n",
+			m->si->name, val[0], val[1], val[2], val[3]);
 		set_ewmhc_strut_values(m, val);
 	}
 }

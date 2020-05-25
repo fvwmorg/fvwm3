@@ -273,9 +273,7 @@ static int ParseBinding(
  	/* check to see if a window name has been specified. */
 	if (p == NULL)
 	{
-		fvwm_msg(
-			ERR, "ParseBinding", "empty %s binding, ignored\n",
-			tline);
+		fvwm_debug( __func__, "empty %s binding, ignored\n", tline);
 
 		return 0;
 	}
@@ -290,8 +288,7 @@ static int ParseBinding(
 			{
 				if (!is_silent)
 				{
-					fvwm_msg(
-						ERR, "ParseBinding",
+					fvwm_debug( __func__,
 						"Syntax error in line %s -"
 						" missing ')'", tline);
 				}
@@ -306,8 +303,7 @@ static int ParseBinding(
 		{
 			if (!is_silent)
 			{
-				fvwm_msg(
-					ERR, "ParseBinding",
+				fvwm_debug(__func__,
 					"Syntax error in line %s - trailing"
 					" text after specified window", tline);
 			}
@@ -366,8 +362,8 @@ static int ParseBinding(
 			{
 				if (!is_silent)
 				{
-					fvwm_msg(
-						WARN, "ParseBinding",
+					fvwm_debug(
+						__func__,
 						"Too long stroke sequence in"
 						" line %s.  Only %i elements"
 						" will be taken into"
@@ -384,8 +380,7 @@ static int ParseBinding(
 			{
 				if (!is_silent)
 				{
-					fvwm_msg(
-						ERR, "ParseBinding",
+					fvwm_debug(__func__,
 						"Illegal mouse button in line"
 						" %s", tline);
 				}
@@ -395,8 +390,7 @@ static int ParseBinding(
 			{
 				if (!is_silent)
 				{
-					fvwm_msg(
-						WARN, "ParseBinding",
+					fvwm_debug(__func__,
 						"Got mouse button %d when the"
 						" maximum is %d.\n  You can't"
 						" bind complex functions to"
@@ -437,9 +431,7 @@ static int ParseBinding(
 	{
 		if (!is_silent)
 		{
-			fvwm_msg(
-				ERR, "ParseBinding", "Syntax error in line %s",
-				tline);
+			fvwm_debug(__func__, "Syntax error in line %s", tline);
 		}
 		return 0;
 	}
@@ -447,16 +439,12 @@ static int ParseBinding(
 	if (wcontext_string_to_wcontext(
 		    context_string, &context) && !is_silent)
 	{
-		fvwm_msg(
-			WARN, "ParseBinding", "Illegal context in line %s",
-			tline);
+		fvwm_debug(__func__, "Illegal context in line %s", tline);
 	}
 	if (modifiers_string_to_modmask(modifier_string, &modifier) &&
 	    !is_silent)
 	{
-		fvwm_msg(
-			WARN, "ParseBinding", "Illegal modifier in line %s",
-			tline);
+		fvwm_debug(__func__, "Illegal modifier in line %s", tline);
 	}
 
 	if (BIND_IS_KEY_BINDING(type))
@@ -468,9 +456,7 @@ static int ParseBinding(
 		{
 			if (!is_silent)
 			{
-				fvwm_msg(
-					ERR, "ParseBinding", "No such key: %s",
-					key_string);
+				fvwm_debug(__func__, "No such key: %s", key_string);
 			}
 			return 0;
 		}
@@ -499,8 +485,8 @@ static int ParseBinding(
 				 * action on global bindings. */
 				if (!is_silent)
 				{
-					fvwm_msg(
-						ERR, "ParseBinding",
+					fvwm_debug(
+						__func__,
 						"Invalid action for global "
 						"binding: %s", tline);
 				}
@@ -575,8 +561,8 @@ static int ParseBinding(
 	update_nr_buttons(context, nr_left_buttons, nr_right_buttons, False);
 	if ((modifier & AnyModifier)&&(modifier&(~AnyModifier)))
 	{
-		fvwm_msg(
-			WARN, "ParseBinding", "Binding specified AnyModifier"
+		fvwm_debug(
+			__func__, "Binding specified AnyModifier"
 			" and other modifers too. Excess modifiers are"
 			" ignored.");
 		modifier = AnyModifier;
@@ -634,48 +620,46 @@ void print_bindings(void)
 {
 	Binding *b;
 
-	fprintf(stderr, "Current list of bindings:\n\n");
+	fvwm_debug(__func__, "Current list of bindings:\n\n");
 	for (b = Scr.AllBindings; b != NULL; b = b->NextBinding)
 	{
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
-			fprintf(stderr, "Key");
+			fvwm_debug(__func__, "Key");
 			break;
 		case BIND_PKEYPRESS:
-			fprintf(stderr, "PointerKey");
+			fvwm_debug(__func__, "PointerKey");
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			fprintf(stderr, "Mouse");
+			fvwm_debug(__func__, "Mouse");
 			break;
 		case BIND_STROKE:
-			fprintf(stderr, "Stroke");
+			fvwm_debug(__func__, "Stroke");
 			break;
 		default:
-			fvwm_msg(
-				ERR, "print_bindings",
-				"invalid binding type %d", b->type);
+			fvwm_debug(__func__, "invalid binding type %d", b->type);
 			continue;
 		}
 		if (b->windowName != NULL)
 		{
-			fprintf(stderr, " (%s)", b->windowName);
+			fvwm_debug(__func__, " (%s)", b->windowName);
 		}
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
 		case BIND_PKEYPRESS:
-			fprintf(stderr, "\t%s", b->key_name);
+			fvwm_debug(__func__, "\t%s", b->key_name);
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			fprintf(stderr, "\t%d", b->Button_Key);
+			fvwm_debug(__func__, "\t%d", b->Button_Key);
 			break;
 		case BIND_STROKE:
 			STROKE_CODE(
-				fprintf(
-					stderr, "\t%s\t%d",
+				fvwm_debug(
+					__func__, "\t%s\t%d",
 					(char *)b->Stroke_Seq, b->Button_Key));
 			break;
 		}
@@ -687,9 +671,8 @@ void print_bindings(void)
 				MaskUsedModifiers(b->Modifier),key_modifiers);
 			context_string = charmap_table_to_string(
 				b->Context, win_contexts);
-			fprintf(
-				stderr, "\t%s\t%s\t%s\n", context_string,
-				mod_string, (char *)b->Action);
+			fvwm_debug(__func__, "\t%s\t%s\t%s\n", context_string,
+				   mod_string, (char *)b->Action);
 			free(mod_string);
 			free(context_string);
 		}
@@ -761,9 +744,8 @@ void CMD_IgnoreModifiers(F_CMD_ARGS)
 	}
 	else if (modifiers_string_to_modmask(token, &mods_unused))
 	{
-		fvwm_msg(
-			ERR, "ignore_modifiers",
-			"illegal modifier in line %s\n", action);
+		fvwm_debug(__func__,
+			   "illegal modifier in line %s\n", action);
 	}
 	if (mods_unused != mods_unused_old)
 	{

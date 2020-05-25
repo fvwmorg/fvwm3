@@ -915,11 +915,11 @@ static Bool __scan_for_pixmap(
 		dpy, Scr.NoFocusWin, NULL, name, fpa);
 	if (!p)
 	{
-		fvwm_msg(WARN, "scanForPixmap",
-			 "Couldn't load image from %s", name);
-		fvwm_msg(WARN, "scanForPixmap",
-			 "Check that FVWM has support for the filetype it's "
-			 "being asked to load.");
+		fvwm_debug(__func__,
+			   "Couldn't load image from %s", name);
+		fvwm_debug(__func__,
+			   "Check that FVWM has support for the filetype it's "
+			   "being asked to load.");
 
 		/* return true to make missing pictures not appear in the
 		 * label/name */
@@ -1743,8 +1743,8 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 				MI_PREV_ITEM(mi) == NULL ||
 				menu_height > MR_SCREEN_HEIGHT(msp->menu))
 			{
-				fvwm_msg(ERR, "size_menu_vertically",
-					 "Menu entry does not fit on screen");
+				fvwm_debug(__func__,
+					   "Menu entry does not fit on screen");
 				/* leave a coredump */
 				abort();
 				exit(1);
@@ -3040,8 +3040,8 @@ static void get_prefered_popup_position(
 		*px = 0;
 		*py = 0;
 		*pprefer_left_submenus = False;
-		fvwm_msg(ERR, "get_prefered_popup_position",
-			 "can't get geometry of menu %s", MR_NAME(mr));
+		fvwm_debug(__func__,
+			   "can't get geometry of menu %s", MR_NAME(mr));
 		return;
 	}
 	/* set the direction flag */
@@ -5629,9 +5629,8 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	if (!ms)
 	{
 		/* this must never happen */
-		fvwm_msg(
-			ERR, "menu_tear_off",
-			"impossible to create %s menu style", buffer);
+		fvwm_debug(__func__,
+			   "impossible to create %s menu style", buffer);
 		free(buffer);
 		DestroyMenu(mr, False, False);
 		return;
@@ -6442,7 +6441,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 	    (is_command_request || MR_COPIES(mr) == 1))
 	{
 		/* can't destroy a menu while in use */
-		fvwm_msg(ERR, "DestroyMenu", "Menu %s is in use", MR_NAME(mr));
+		fvwm_debug(__func__, "Menu %s is in use", MR_NAME(mr));
 		return False;
 	}
 
@@ -6983,8 +6982,8 @@ void change_mr_menu_style(MenuRoot *mr, char *stylename)
 	}
 	if (MR_MAPPED_COPIES(mr) != 0)
 	{
-		fvwm_msg(ERR,"ChangeMenuStyle", "menu %s is in use",
-			 MR_NAME(mr));
+		fvwm_debug(__func__, "menu %s is in use",
+			   MR_NAME(mr));
 	}
 	else
 	{
@@ -7008,7 +7007,7 @@ void add_another_menu_item(char *action)
 	}
 	if (MR_MAPPED_COPIES(mr) != 0)
 	{
-		fvwm_msg(ERR,"add_another_menu_item", "menu is in use");
+		fvwm_debug(__func__, "menu is in use");
 		return;
 	}
 	rest = GetNextToken(action,&item);
@@ -7064,8 +7063,7 @@ char *get_menu_options(
 	last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
 	if (pops == NULL)
 	{
-		fvwm_msg(ERR,
-			 "get_menu_options","no MenuOptions pointer passed");
+		fvwm_debug(__func__, "no MenuOptions pointer passed");
 		return action;
 	}
 
@@ -7223,8 +7221,8 @@ char *get_menu_options(
 			naction = GetNextToken(naction, &tok);
 			if (tok == NULL)
 			{
-				fvwm_msg(ERR, "get_menu_options",
-					 "missing rectangle geometry");
+				fvwm_debug(__func__,
+					   "missing rectangle geometry");
 				if (!pops->pos_hints.has_screen_origin)
 				{
 					/* xinerama: emergency fallback */
@@ -7241,8 +7239,8 @@ char *get_menu_options(
 			if ((flags & (XValue | YValue)) != (XValue | YValue))
 			{
 				free(tok);
-				fvwm_msg(ERR, "get_menu_options",
-					 "invalid rectangle geometry");
+				fvwm_debug(__func__,
+					   "invalid rectangle geometry");
 				if (!pops->pos_hints.has_screen_origin)
 				{
 					/* xinerama: emergency fallback */
@@ -7453,8 +7451,8 @@ char *get_menu_options(
 			/* argument is missing or invalid */
 			if (fHasContext)
 			{
-				fvwm_msg(ERR, "get_menu_options",
-					 "invalid position arguments");
+				fvwm_debug(__func__,
+					   "invalid position arguments");
 			}
 			naction = action;
 			taction = action;

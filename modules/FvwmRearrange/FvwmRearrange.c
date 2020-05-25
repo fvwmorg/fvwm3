@@ -528,7 +528,8 @@ int main(int argc, char *argv[])
   module = ParseModuleArgs(argc,argv,0);
   if (module == NULL)
   {
-    fprintf(stderr,"FvwmRearrange: module should be executed by fvwm only\n");
+    fvwm_debug(__func__,
+               "FvwmRearrange: module should be executed by fvwm only\n");
     exit(-1);
   }
 

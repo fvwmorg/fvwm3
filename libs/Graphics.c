@@ -457,8 +457,8 @@ Bool IsGradientTypeSupported(char type)
 	case C_GRADIENT:
 		return True;
 	default:
-		fprintf(stderr, "%cGradient type is not supported\n",
-			toupper(type));
+		fvwm_debug(__func__, "%cGradient type is not supported\n",
+			   toupper(type));
 		return False;
 	}
 }
@@ -486,21 +486,21 @@ XColor *AllocLinearGradient(
 
 	if (npixels < 1)
 	{
-		fprintf(stderr,
-			"AllocLinearGradient: Invalid number of pixels: %d\n",
-			npixels);
+		fvwm_debug(__func__,
+			   "AllocLinearGradient: Invalid number of pixels: %d\n",
+			   npixels);
 		return NULL;
 	}
 	if (!s_from || !XParseColor(Pdpy, Pcmap, s_from, &from))
 	{
-		fprintf(stderr, "Cannot parse color \"%s\"\n",
-			s_from ? s_from : "<blank>");
+		fvwm_debug(__func__, "Cannot parse color \"%s\"\n",
+			   s_from ? s_from : "<blank>");
 		return NULL;
 	}
 	if (!s_to || !XParseColor(Pdpy, Pcmap, s_to, &to))
 	{
-		fprintf(stderr, "Cannot parse color \"%s\"\n",
-			s_to ? s_to : "<blank>");
+		fvwm_debug(__func__, "Cannot parse color \"%s\"\n",
+			   s_to ? s_to : "<blank>");
 		return NULL;
 	}
 
@@ -534,8 +534,8 @@ XColor *AllocLinearGradient(
 	}
 	if (!got_all && dither == 0)
 	{
-		fprintf(stderr, "Cannot alloc color gradient %s to %s\n",
-			s_from, s_to);
+		fvwm_debug(__func__, "Cannot alloc color gradient %s to %s\n",
+			   s_from, s_to);
 	}
 
 	return xcs;
@@ -558,9 +558,9 @@ static XColor *AllocNonlinearGradient(
 
 	if (nsegs < 1 || npixels < 2)
 	{
-		fprintf(stderr,
-			"Gradients must specify at least one segment and"
-			" two colors\n");
+		fvwm_debug(__func__,
+			   "Gradients must specify at least one segment and"
+			   " two colors\n");
 		free(xcs);
 		return NULL;
 	}
@@ -591,12 +591,12 @@ static XColor *AllocNonlinearGradient(
 		}
 		if (seg_end_colors[nsegs - 1] > npixels - 1)
 		{
-			fprintf(stderr,
-				"BUG: (AllocNonlinearGradient): "
-				"seg_end_colors[nsegs - 1] (%d)"
-				" > npixels - 1 (%d)."
-				" Gradient drawing aborted\n",
-				seg_end_colors[nsegs - 1], npixels - 1);
+			fvwm_debug(__func__,
+				   "BUG: (AllocNonlinearGradient): "
+				   "seg_end_colors[nsegs - 1] (%d)"
+				   " > npixels - 1 (%d)."
+				   " Gradient drawing aborted\n",
+				   seg_end_colors[nsegs - 1], npixels - 1);
 			return NULL;
 		}
 		/* take care of rounding errors */
@@ -642,13 +642,13 @@ static XColor *AllocNonlinearGradient(
 		}
 		if (curpixel != seg_end_colors[i])
 		{
-			fprintf(stderr,
-				"BUG: (AllocNonlinearGradient): "
-				"nsegs %d, i %d, curpixel %d,"
-				" seg_end_colors[i] = %d,"
-				" npixels %d, n %d\n",
-				nsegs, i, curpixel,
-				seg_end_colors[i],npixels,n);
+			fvwm_debug(__func__,
+				   "BUG: (AllocNonlinearGradient): "
+				   "nsegs %d, i %d, curpixel %d,"
+				   " seg_end_colors[i] = %d,"
+				   " npixels %d, n %d\n",
+				   nsegs, i, curpixel,
+				   seg_end_colors[i],npixels,n);
 			return NULL;
 		}
 	}
@@ -677,7 +677,7 @@ XColor *AllocAllGradientColors(
 	free(perc);
 	if (!xcs)
 	{
-		fprintf(stderr, "couldn't create gradient\n");
+		fvwm_debug(__func__, "couldn't create gradient\n");
 		return NULL;
 	}
 
@@ -710,9 +710,9 @@ int ParseGradient(
 	if (GetIntegerArguments(gradient, &gradient, (int *)&npixels, 1) != 1 ||
 	    npixels < 2)
 	{
-		fprintf(
-			stderr, "ParseGradient: illegal number of colors in"
-			" gradient: '%s'\n", orig);
+		fvwm_debug(__func__,
+			   "ParseGradient: illegal number of colors in"
+			   " gradient: '%s'\n", orig);
 		return 0;
 	}
 
@@ -724,7 +724,8 @@ int ParseGradient(
 	}
 	if (!gradient || !*gradient || !item)
 	{
-		fprintf(stderr, "Incomplete gradient style: '%s'\n", orig);
+		fvwm_debug(__func__, "Incomplete gradient style: '%s'\n",
+			   orig);
 		if (item)
 		{
 			free(item);
@@ -774,9 +775,8 @@ int ParseGradient(
 		}
 		if (s_colors[nsegs] == NULL)
 		{
-			fprintf(
-				stderr, "ParseGradient: too few gradient"
-				" segments: '%s'\n", orig);
+			fvwm_debug(__func__, "ParseGradient: too few gradient"
+				   " segments: '%s'\n", orig);
 			is_syntax_error = True;
 		}
 	}
@@ -790,9 +790,8 @@ int ParseGradient(
 		if (sum < old_sum)
 		{
 			/* integer overflow */
-			fprintf(
-				stderr, "ParseGradient: multi gradient"
-				" overflow: '%s'", orig);
+			fvwm_debug(__func__, "ParseGradient: multi gradient"
+				   " overflow: '%s'", orig);
 			is_syntax_error = 1;
 			break;
 		}
@@ -901,7 +900,7 @@ Bool CalculateGradientDimensions(
 		*height_ret = *width_ret;
 		break;
 	default:
-		fprintf(stderr, "%cGradient not supported\n", type);
+		fvwm_debug(__func__, "%cGradient not supported\n", type);
 		return False;
 	}
 	return True;
@@ -971,7 +970,7 @@ Drawable CreateGradientPixmap(
 		dpy, Pvisual, Pdepth, ZPixmap, t_width, t_height);
 	if (!fim)
 	{
-		fprintf(stderr, "%cGradient couldn't get image\n", type);
+		fvwm_debug(__func__, "%cGradient couldn't get image\n", type);
 		if (pixmap != None)
 			XFreePixmap(dpy, pixmap);
 		return None;
@@ -1261,7 +1260,7 @@ Pixmap CreateGradientPixmapFromString(
 
 	/* translate the gradient string into an array of colors etc */
 	if (!(ncolors = ParseGradient(action, NULL, &colors, &perc, &nsegs))) {
-		fprintf(stderr, "Can't parse gradient: '%s'\n", action);
+		fvwm_debug(__func__, "Can't parse gradient: '%s'\n", action);
 		return None;
 	}
 	/* grab the colors */
@@ -1292,9 +1291,9 @@ Pixmap CreateGradientPixmapFromString(
 		{
 			/* if the caller has not asked for the pixels there is
 			 * probably a leak */
-			fprintf(stderr,
-			"CreateGradient: potential color leak, losing track"
-			" of pixels\n");
+			fvwm_debug(__func__,
+				   "CreateGradient: potential color leak, losing track"
+				   " of pixels\n");
 			if (d_pixels != NULL)
 			{
 				free(d_pixels);

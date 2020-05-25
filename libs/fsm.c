@@ -440,11 +440,11 @@ Status RegisterClientProc(
 		return 0;
 	}
 #ifdef FVWM_DEBUG_FSM
-	fprintf (stderr,
-		 "[%s][RegisterClientProc] On FIceConn fd = %d, received "
-		 "REGISTER CLIENT [Previous Id = %s]\n", module_name,
-		 FIceConnectionNumber (client->ice_conn),
-		 previousId ? previousId : "NULL");
+	fvwm_debug(__func__,
+		   "[%s][RegisterClientProc] On FIceConn fd = %d, received "
+		   "REGISTER CLIENT [Previous Id = %s]\n", module_name,
+		   FIceConnectionNumber (client->ice_conn),
+		   previousId ? previousId : "NULL");
 #endif
 
 	/* ignore previousID!! (we are dummy) */
@@ -456,18 +456,17 @@ Status RegisterClientProc(
 		{
 			free(id);
 		}
-		fprintf(
-			stderr,
-			"[%s][RegisterClientProc] ERR -- fail to register "
-			"client", module_name);
+		fvwm_debug(__func__,
+			   "[%s][RegisterClientProc] ERR -- fail to register "
+			   "client", module_name);
 		return 0;
 	}
 
 #ifdef FVWM_DEBUG_FSM
-	fprintf (stderr,
-		 "[%s][RegisterClientProc] On FIceConn fd = %d, sent "
-		 "REGISTER CLIENT REPLY [Client Id = %s]\n",
-		 module_name, FIceConnectionNumber (client->ice_conn), id);
+	fvwm_debug(__func__,
+		   "[%s][RegisterClientProc] On FIceConn fd = %d, sent "
+		   "REGISTER CLIENT REPLY [Client Id = %s]\n",
+		   module_name, FIceConnectionNumber (client->ice_conn), id);
 #endif
 
 	client->clientId = id;
@@ -549,10 +548,9 @@ CloseDownClient(fsm_client_t *client)
 	}
 
 #ifdef FVWM_DEBUG_FSM
-	fprintf(
-		stderr, "[%s][CloseDownClient] ICE Connection closed, "
-		"FIceConn fd = %d\n", module_name,
-		FIceConnectionNumber (client->ice_conn));
+	fvwm_debug(__func__, "[%s][CloseDownClient] ICE Connection closed, "
+		   "FIceConn fd = %d\n", module_name,
+		   FIceConnectionNumber (client->ice_conn));
 #endif
 
 	FSmsCleanUp(client->smsConn);
@@ -644,10 +642,10 @@ NewClientProc(
     running_list = flist_append_obj(running_list, nc);
 
 #ifdef FVWM_DEBUG_FSM
-	fprintf(
-		stderr, "[%s][NewClientProc] On FIceConn fd = %d, client "
-		"set up session mngmt protocol\n", module_name,
-		FIceConnectionNumber (nc->ice_conn));
+	fvwm_debug(__func__,
+                   "[%s][NewClientProc] On FIceConn fd = %d, client "
+                   "set up session mngmt protocol\n", module_name,
+                   FIceConnectionNumber (nc->ice_conn));
 #endif
 
     /*
@@ -734,10 +732,11 @@ void CompletNewConnectionMsg(void)
 			char *connstr;
 
 			connstr = FIceConnectionString (ice_conn);
-			fprintf(stderr, "[%s][NewConnection] ICE Connection "
-				"opened by client, FIceConn fd = %d, Accept at "
-				"networkId %s\n", module_name,
-				FIceConnectionNumber (ice_conn), connstr);
+			fvwm_debug(__func__,
+				   "[%s][NewConnection] ICE Connection "
+				   "opened by client, FIceConn fd = %d, Accept at "
+				   "networkId %s\n", module_name,
+				   FIceConnectionNumber (ice_conn), connstr);
 			free (connstr);
 #endif
 		}
@@ -754,15 +753,17 @@ void CompletNewConnectionMsg(void)
 #ifdef FVWM_DEBUG_FSM
 			if (cstatus == FIceConnectIOError)
 			{
-				fprintf(stderr, "[%s][NewConnection] IO error "
-					"opening ICE Connection!\n",
-					module_name);
+				fvwm_debug(__func__,
+					   "[%s][NewConnection] IO error "
+					   "opening ICE Connection!\n",
+					   module_name);
 			}
 			else
 			{
-				fprintf(stderr, "[%s][NewConnection] ICE "
-					"Connection rejected!\n",
-					module_name);
+				fvwm_debug(__func__,
+					   "[%s][NewConnection] ICE "
+					   "Connection rejected!\n",
+					   module_name);
 			}
 #endif
 		}
@@ -783,13 +784,13 @@ void NewConnectionMsg(int i)
 	SUPPRESS_UNUSED_VAR_WARNING(status);
 	ice_conn = FIceAcceptConnection(listenObjs[i], &status);
 #ifdef FVWM_DEBUG_FSM
-	fprintf(stderr, "[%s][NewConnection] %i\n", module_name, i);
+	fvwm_debug(__func__, "[%s][NewConnection] %i\n", module_name, i);
 #endif
 	if (!ice_conn)
 	{
 #ifdef FVWM_DEBUG_FSM
-		fprintf(stderr, "[%s][NewConnection] "
-			"FIceAcceptConnection failed\n", module_name);
+		fvwm_debug(__func__, "[%s][NewConnection] "
+			   "FIceAcceptConnection failed\n", module_name);
 #endif
 	}
 	else
@@ -812,7 +813,8 @@ void ProcessIceMsg(fsm_ice_conn_t *fic)
 	}
 
 #ifdef FVWM_DEBUG_FSM
-	fprintf(stderr, "[%s][ProcessIceMsg] %i\n", module_name, (int)fic->fd);
+	fvwm_debug(__func__, "[%s][ProcessIceMsg] %i\n", module_name,
+		   (int)fic->fd);
 #endif
 
 	status = FIceProcessMessages(fic->ice_conn, NULL, NULL);
@@ -823,8 +825,9 @@ void ProcessIceMsg(fsm_ice_conn_t *fic)
 		int found = 0;
 
 #ifdef FVWM_DEBUG_FSM
-		fprintf(stderr, "[%s][ProcessIceMsg] IO error on connection\n",
-			module_name);
+		fvwm_debug(__func__,
+			   "[%s][ProcessIceMsg] IO error on connection\n",
+			   module_name);
 #endif
 
 		for (cl = running_list; cl; cl = cl->next)
@@ -975,9 +978,8 @@ void set_session_manager(Display *dpy, Window window, char *sm)
 	}
 
 #ifdef FVWM_DEBUG_FSM
-	fprintf(
-		stderr, "[%s][fsm_init] Proxy %s window 0x%lx\n",
-		module_name, (sm)? "On":"Off", client_leader);
+	fvwm_debug(__func__, "[%s][fsm_init] Proxy %s window 0x%lx\n",
+		   module_name, (sm)? "On":"Off", client_leader);
 
 #endif
 
@@ -1015,44 +1017,40 @@ int fsm_init(char *module)
 		ice_watch_fd(0, NULL, 0, NULL);
 		NewClientProc(0, NULL, 0, NULL, NULL);
 #ifdef FVWM_DEBUG_FSM
-		fprintf(
-			stderr, "[%s][fsm_init] No Session Support\n",
-			module_name);
+		fvwm_debug(__func__, "[%s][fsm_init] No Session Support\n",
+			   module_name);
 #endif
 		return 0;
 	}
 
 	if (fsm_init_succeed)
 	{
-		fprintf(
-			stderr, "[%s][fsm_init] <<ERROR>> -- "
-			"Session already Initialized!\n", module_name);
+		fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
+			   "Session already Initialized!\n", module_name);
 		return 1;
 	}
 	module_name = module;
 	InstallIOErrorHandler ();
 
 #ifdef FVWM_DEBUG_FSM
-	fprintf(stderr, "[%s][fsm_init] FSmsInitialize\n", module_name);
+	fvwm_debug(__func__, "[%s][fsm_init] FSmsInitialize\n", module_name);
 #endif
 	if (!FSmsInitialize(
 		    module, "1.0", NewClientProc, NULL, HostBasedAuthProc, 256,
 		    errormsg))
 	{
-		fprintf(
-			stderr, "[%s][fsm_init] <<ERROR>> -- "
-			"FSmsInitialize failed: %s\n",
-			module_name, errormsg);
+		fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
+			   "FSmsInitialize failed: %s\n",
+			   module_name, errormsg);
 		return 0;
 	}
 
 	if (!FIceListenForConnections (
 		    &numTransports, &listenObjs, 256, errormsg))
 	{
-		fprintf(
-			stderr, "[%s][fsm_init] <<ERROR>> -- "
-			"FIceListenForConnections failed:\n"
-			"%s\n", module_name, errormsg);
+		fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
+			   "FIceListenForConnections failed:\n"
+			   "%s\n", module_name, errormsg);
 		return 0;
 	}
 
@@ -1060,17 +1058,16 @@ int fsm_init(char *module)
 
 	if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
 	{
-	    fprintf(
-		    stderr, "[%s][fsm_init] <<ERROR>> -- "
-		    "Could not set authorization\n", module_name);
+	    fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
+		       "Could not set authorization\n", module_name);
 	    return 0;
 	}
 
 	if (FIceAddConnectionWatch(&ice_watch_fd, NULL) == 0)
 	{
-		fprintf(stderr,
-			"[%s][fsm_init] <<ERROR>> -- "
-			"FIceAddConnectionWatch failed\n", module_name);
+		fvwm_debug(__func__,
+			   "[%s][fsm_init] <<ERROR>> -- "
+			   "FIceAddConnectionWatch failed\n", module_name);
 		return 0;
 	}
 
@@ -1087,8 +1084,9 @@ int fsm_init(char *module)
 	putenv(p);
 
 #ifdef FVWM_DEBUG_FSM
-	fprintf(stderr,"[%s][fsm_init] OK: %i\n", module_name, numTransports);
-	fprintf(stderr,"\t%s\n", p);
+	fvwm_debug(__func__, "[%s][fsm_init] OK: %i\n", module_name,
+		   numTransports);
+	fvwm_debug(__func__, "\t%s\n", p);
 #endif
 
 	fsm_init_succeed = True;

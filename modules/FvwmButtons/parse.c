@@ -137,15 +137,15 @@ static int ParseBack(char **ss)
 		{
 		case 0: /* Icon */
 			r = 1;
-			fprintf(stderr,
-				"%s: Back(Icon) not supported yet\n",
-				MyName);
+			fvwm_debug(__func__,
+				   "%s: Back(Icon) not supported yet\n",
+				   MyName);
 			break;
 		default:
 			t = seekright(&s);
-			fprintf(stderr,
-				"%s: Illegal back option \"%s\"\n",
-				MyName, (t) ? t : "");
+			fvwm_debug(__func__,
+				   "%s: Illegal back option \"%s\"\n",
+				   MyName, (t) ? t : "");
 			if (t)
 			{
 				free(t);
@@ -199,9 +199,9 @@ static void ParseBoxSize(char **ss, flags_type *flags)
 	default:
 		flags->b_SizeFixed = 0;
 		flags->b_SizeSmart = 0;
-		fprintf(stderr,
-			"%s: Illegal boxsize option \"%s\"\n",
-			MyName, s);
+		fvwm_debug(__func__,
+			   "%s: Illegal boxsize option \"%s\"\n",
+			   MyName, s);
 		break;
 	}
 	return;
@@ -258,9 +258,9 @@ static void ParseTitle(char **ss, byte *flags, byte *mask)
 			break;
 		default:
 			t = seekright(&s);
-			fprintf(stderr,
-				"%s: Illegal title option \"%s\"\n",
-				MyName, (t) ? t : "");
+			fvwm_debug(__func__,
+				   "%s: Illegal title option \"%s\"\n",
+				   MyName, (t) ? t : "");
 			if (t)
 			{
 				free(t);
@@ -371,9 +371,10 @@ static void ParseSwallow(
 			break;
 		default:
 			t = seekright(&s);
-			fprintf(stderr,
-				"%s: Illegal Swallow option \"%s\"\n", MyName,
-				(t) ? t : "");
+			fvwm_debug(__func__,
+				   "%s: Illegal Swallow option \"%s\"\n",
+				   MyName,
+				   (t) ? t : "");
 			if (t)
 			{
 				free(t);
@@ -591,10 +592,11 @@ static void ParsePanel(
 					s--;
 					if (t)
 					{
-						fprintf(stderr,
-							"%s: Illegal Panel "
-							"position option %s\n",
-							MyName,	(t) ? t : "");
+						fvwm_debug(__func__,
+							   "%s: Illegal Panel "
+							   "position option %s\n",
+							   MyName,
+							   	(t) ? t : "");
 						free(t);
 					}
 				}
@@ -602,9 +604,10 @@ static void ParsePanel(
 			break;
 		default:
 			t = seekright(&s);
-			fprintf(stderr,
-				"%s: Illegal Panel option \"%s\"\n", MyName,
-				(t) ? t : "");
+			fvwm_debug(__func__,
+				   "%s: Illegal Panel option \"%s\"\n",
+				   MyName,
+				   (t) ? t : "");
 			if (t)
 			{
 				free(t);
@@ -717,7 +720,7 @@ static void ParseContainer(char **ss,button_info *b)
 	b->c->flags.b_Padding = 1;
       }
       else
-	fprintf(stderr,"%s: Illegal padding argument\n",MyName);
+	fvwm_debug(__func__, "%s: Illegal padding argument\n",MyName);
       break;
     case 7: /* Title - flags */
       s = trimleft(s);
@@ -734,9 +737,9 @@ static void ParseContainer(char **ss,button_info *b)
       else
       {
 	char *temp;
-	fprintf(stderr,
-		"%s: Illegal title in container options\n",
-		MyName);
+	fvwm_debug(__func__,
+                   "%s: Illegal title in container options\n",
+                   MyName);
 	temp = seekright(&s);
 	if (temp)
 	{
@@ -751,8 +754,8 @@ static void ParseContainer(char **ss,button_info *b)
 	s = trimleft(s);
 	if (b->c->flags.b_Swallow || b->c->flags.b_Panel)
 	{
-	  fprintf(stderr, "%s: Multiple Swallow or Panel options are not"
-		" allowed in a single button", MyName);
+	  fvwm_debug(__func__, "%s: Multiple Swallow or Panel options are not"
+                     " allowed in a single button", MyName);
 	  failed = True;
 	}
 	else if (*s == '(' && s++)
@@ -767,9 +770,9 @@ static void ParseContainer(char **ss,button_info *b)
 	}
 	else
 	{
-	  fprintf(stderr,
-		  "%s: Illegal swallow or panel in container options\n",
-		  MyName);
+	  fvwm_debug(__func__,
+                     "%s: Illegal swallow or panel in container options\n",
+                     MyName);
 	  failed = True;
 	}
 	if (failed)
@@ -798,7 +801,7 @@ static void ParseContainer(char **ss,button_info *b)
 	s = o;
       }
       else
-	fprintf(stderr,"%s: Illegal size arguments\n",MyName);
+	fvwm_debug(__func__, "%s: Illegal size arguments\n",MyName);
       break;
 
     case 11: /* BoxSize */
@@ -822,7 +825,8 @@ static void ParseContainer(char **ss,button_info *b)
 
     default:
       t = seekright(&s);
-      fprintf(stderr,"%s: Illegal container option \"%s\"\n",MyName, (t)?t:"");
+      fvwm_debug(__func__, "%s: Illegal container option \"%s\"\n",MyName,
+                 (t)?t:"");
       if (t)
 	free(t);
     }
@@ -1002,17 +1006,17 @@ static void ParseButton(button_info **uberb, char *s)
 					}
 					b->title = t;
 #ifdef DEBUG_PARSER
-					fprintf(stderr,
-						"PARSE: Title \"%s\"\n",
-						b->title);
+					fvwm_debug(__func__,
+						   "PARSE: Title \"%s\"\n",
+						   b->title);
 #endif
 					b->flags.b_Title = 1;
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing title argument\n",
-						MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing title argument\n",
+						   MyName);
 					if (t)
 					{
 						free(t);
@@ -1028,13 +1032,13 @@ static void ParseButton(button_info **uberb, char *s)
 				{
 					if (b->flags.b_Swallow)
 					{
-						fprintf(stderr,
-							"%s: a button can not "
-							"have an icon and a "
-							"swallowed window at "
-							"the same time. "
-							"Ignoring icon\n",
-							MyName);
+						fvwm_debug(__func__,
+							   "%s: a button can not "
+							   "have an icon and a "
+							   "swallowed window at "
+							   "the same time. "
+							   "Ignoring icon\n",
+							   MyName);
 					}
 					else
 					{
@@ -1048,9 +1052,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing Icon argument\n",
-						MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing Icon argument\n",
+						   MyName);
 					if (t)
 					{
 						free(t);
@@ -1070,9 +1074,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Illegal frame argument\n",
-						MyName);
+					fvwm_debug(__func__,
+						   "%s: Illegal frame argument\n",
+						   MyName);
 				}
 				break;
 
@@ -1094,9 +1098,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Illegal padding "
-						"argument\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: Illegal padding "
+						   "argument\n", MyName);
 				}
 				break;
 
@@ -1163,13 +1167,13 @@ static void ParseButton(button_info **uberb, char *s)
 					{
 						if (b->flags.b_Icon)
 						{
-							fprintf(stderr,
-							"%s: a button can not "
-							"have an icon and a "
-							"swallowed window at "
-							"the same time. "
-							"Ignoring icon\n",
-							MyName);
+							fvwm_debug(__func__,
+								   "%s: a button can not "
+								   "have an icon and a "
+								   "swallowed window at "
+								   "the same time. "
+								   "Ignoring icon\n",
+								   MyName);
 							b->flags.b_Icon = 0;
 						}
 
@@ -1218,9 +1222,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing swallow "
-						"argument\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing swallow "
+						   "argument\n", MyName);
 					if (t)
 					{
 						free(t);
@@ -1278,7 +1282,9 @@ static void ParseButton(button_info **uberb, char *s)
 				free(b);
 				if (!ub->parent)
 				{
-					fprintf(stderr,"%s: Unmatched END in config file\n",MyName);
+					fvwm_debug(__func__,
+						   "%s: Unmatched END in config file\n",
+						   MyName);
 					exit(1);
 				}
 				if (ub->parent->c->flags.b_Colorset ||
@@ -1309,9 +1315,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Illegal size arguments\n",
-						MyName);
+					fvwm_debug(__func__,
+						   "%s: Illegal size arguments\n",
+						   MyName);
 				}
 				break;
 
@@ -1355,9 +1361,9 @@ static void ParseButton(button_info **uberb, char *s)
 					s++;
 					if (strncasecmp(s, "mouse", 5) != 0)
 					{
-						fprintf(stderr,
-							"%s: Couldn't parse "
-							"action\n", MyName);
+						fvwm_debug(__func__,
+							   "%s: Couldn't parse "
+							   "action\n", MyName);
 					}
 					s += 5;
 					i = strtol(s, &t, 10);
@@ -1399,9 +1405,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing action argument\n",
-						MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing action argument\n",
+						   MyName);
 				}
 				break;
 
@@ -1429,17 +1435,18 @@ static void ParseButton(button_info **uberb, char *s)
 					}
 			        	else
 					{
-						fprintf(stderr,
-							"%s: Incorrect id '%s' "
-							"ignored\n", MyName, t);
+						fvwm_debug(__func__,
+							   "%s: Incorrect id '%s' "
+							   "ignored\n",
+							   MyName, t);
 					}
 					free(t);
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing id argument\n",
-						MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing id argument\n",
+						   MyName);
 				}
 				break;
 
@@ -1450,13 +1457,13 @@ static void ParseButton(button_info **uberb, char *s)
 				{
 					if (b->flags.b_Swallow)
 					{
-						fprintf(stderr,
-							"%s: a button can not "
-							"have a ActiveIcon and "
-							"a swallowed window at "
-							"the same time. "
-							"Ignoring ActiveIcon.\n",
-							MyName);
+						fvwm_debug(__func__,
+							   "%s: a button can not "
+							   "have a ActiveIcon and "
+							   "a swallowed window at "
+							   "the same time. "
+							   "Ignoring ActiveIcon.\n",
+							   MyName);
 					}
 					else
 					{
@@ -1470,9 +1477,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing ActiveIcon "
-						"argument\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing ActiveIcon "
+						   "argument\n", MyName);
 					if (t)
 					{
 						free(t);
@@ -1485,9 +1492,10 @@ static void ParseButton(button_info **uberb, char *s)
 				s = trimleft(s);
 				if (*s == '(')
 				{
-					fprintf(stderr,
-						"%s: justification not allowed "
-						"for ActiveTitle.\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: justification not allowed "
+						   "for ActiveTitle.\n",
+						   MyName);
 				}
 				t = seekright(&s);
 				if (t && *t && (t[0] != '-' || t[1] != 0))
@@ -1498,17 +1506,17 @@ static void ParseButton(button_info **uberb, char *s)
 					}
 					b->activeTitle = t;
 #ifdef DEBUG_PARSER
-					fprintf(stderr,
-						"PARSE: ActiveTitle \"%s\"\n",
-						b->activeTitle);
+					fvwm_debug(__func__,
+						   "PARSE: ActiveTitle \"%s\"\n",
+						   b->activeTitle);
 #endif
 					b->flags.b_ActiveTitle = 1;
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing ActiveTitle "
-						"argument\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing ActiveTitle "
+						   "argument\n", MyName);
 					if (t)
 					{
 						free(t);
@@ -1523,13 +1531,13 @@ static void ParseButton(button_info **uberb, char *s)
 				{
 					if (b->flags.b_Swallow)
 					{
-						fprintf(stderr,
-							"%s: a button can not "
-							"have a PressIcon and "
-							"a swallowed window at "
-							"the same time. "
-							"Ignoring PressIcon.\n",
-							MyName);
+						fvwm_debug(__func__,
+							   "%s: a button can not "
+							   "have a PressIcon and "
+							   "a swallowed window at "
+							   "the same time. "
+							   "Ignoring PressIcon.\n",
+							   MyName);
 					}
 					else
 					{
@@ -1543,9 +1551,9 @@ static void ParseButton(button_info **uberb, char *s)
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing PressIcon "
-						"argument\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing PressIcon "
+						   "argument\n", MyName);
 					if (t)
 					{
 						free(t);
@@ -1558,9 +1566,10 @@ static void ParseButton(button_info **uberb, char *s)
 				s = trimleft(s);
 				if (*s == '(')
 				{
-					fprintf(stderr,
-						"%s: justification not allowed "
-						"for PressTitle.\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: justification not allowed "
+						   "for PressTitle.\n",
+						   MyName);
 				}
 				t = seekright(&s);
 				if (t && *t && (t[0] != '-' || t[1] != 0))
@@ -1571,17 +1580,17 @@ static void ParseButton(button_info **uberb, char *s)
 					}
 					b->pressTitle = t;
 #ifdef DEBUG_PARSER
-					fprintf(stderr,
-						"PARSE: PressTitle \"%s\"\n",
-						b->pressTitle);
+					fvwm_debug(__func__,
+						   "PARSE: PressTitle \"%s\"\n",
+						   b->pressTitle);
 #endif
 					b->flags.b_PressTitle = 1;
 				}
 				else
 				{
-					fprintf(stderr,
-						"%s: Missing PressTitle "
-						"argument\n", MyName);
+					fvwm_debug(__func__,
+						   "%s: Missing PressTitle "
+						   "argument\n", MyName);
 					if (t)
 					{
 						free(t);
@@ -1627,9 +1636,9 @@ static void ParseButton(button_info **uberb, char *s)
 			/* --------------- --------------- */
 			default:
 				t = seekright(&s);
-				fprintf(stderr,
-					"%s: Illegal button option \"%s\"\n",
-					MyName, (t) ? t : "");
+				fvwm_debug(__func__,
+					   "%s: Illegal button option \"%s\"\n",
+					   MyName, (t) ? t : "");
 				if (t)
 				{
 					free(t);
@@ -1699,9 +1708,9 @@ static void ParseButton(button_info **uberb, char *s)
 	{
 		if (b->flags.b_Swallow || b->flags.b_Panel)
 		{
-			fprintf(stderr,
-				"%s: Illegal with both old and new swallow!\n",
-				MyName);
+			fvwm_debug(__func__,
+				   "%s: Illegal with both old and new swallow!\n",
+				   MyName);
 			exit(1);
 		}
 		s += 7;
@@ -1942,9 +1951,9 @@ static void ParseConfigFile(button_info *ub)
 	int l;
 	if (!f)
 	{
-		fprintf(stderr,
-			"%s: Couldn't open config file %s\n", MyName,
-			config_file);
+		fvwm_debug(__func__,
+			   "%s: Couldn't open config file %s\n", MyName,
+			   config_file);
 		return;
 	}
 

@@ -114,9 +114,10 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
 	    *shadow_size < 0)
 	{
 		*shadow_size = 0;
-		fprintf(stderr,"[%s][FlocaleParseShadow]: WARNING -- bad "
-			"shadow size in font name:\n\t'%s'\n",
-			(module)? module: "fvwm", fontname);
+		fvwm_debug(__func__,
+		           "[%s][FlocaleParseShadow]: WARNING -- bad "
+		           "shadow size in font name:\n\t'%s'\n",
+		           (module)? module: "fvwm", fontname);
 		return;
 	}
 	if (*shadow_size == 0)
@@ -130,9 +131,10 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
 		if (*shadow_offset < 0)
 		{
 			*shadow_offset = 0;
-			fprintf(stderr,"[%s][FlocaleParseShadow]: WARNING -- "
-				"bad shadow offset in font name:\n\t'%s'\n",
-				(module)? module: "fvwmlibs", fontname);
+			fvwm_debug(__func__,
+				   "[%s][FlocaleParseShadow]: WARNING -- "
+				   "bad shadow offset in font name:\n\t'%s'\n",
+				   (module)? module: "fvwmlibs", fontname);
 		}
 		PeekToken(dir_str, &dir_str);
 	}
@@ -141,10 +143,11 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
 		dir = gravity_parse_multi_dir_argument(dir_str, &dir_str);
 		if (dir == MULTI_DIR_NONE)
 		{
-			fprintf(stderr,"[%s][FlocaleParseShadow]: WARNING -- "
-				"bad shadow direction in font description:\n"
-				"\t%s\n",
-				(module)? module: "fvwmlibs", fontname);
+			fvwm_debug(__func__,
+				   "[%s][FlocaleParseShadow]: WARNING -- "
+				   "bad shadow direction in font description:\n"
+				   "\t%s\n",
+				   (module)? module: "fvwmlibs", fontname);
 			PeekToken(dir_str, &dir_str); /* skip it */
 		}
 		else
@@ -1157,23 +1160,23 @@ FlocaleFont *FlocaleGetFontSet(
 		if (mc_errors <= FLOCALE_NUMBER_MISS_CSET_ERR_MSG)
 		{
 			mc_errors++;
-			fprintf(stderr,
-				"[%s][FlocaleGetFontSet]: (%s)"
-				" Missing font charsets:\n",
-				(module)? module: "fvwmlibs", fontname);
+			fvwm_debug(__func__,
+				   "[%s][FlocaleGetFontSet]: (%s)"
+				   " Missing font charsets:\n",
+				   (module)? module: "fvwmlibs", fontname);
 			for (i = 0; i < mc; i++)
 			{
-				fprintf(stderr, "%s", ml[i]);
+				fvwm_debug(__func__, "%s", ml[i]);
 				if (i < mc - 1)
-					fprintf(stderr, ", ");
+					fvwm_debug(__func__, ", ");
 			}
-			fprintf(stderr, "\n");
+			fvwm_debug(__func__, "\n");
 			if (mc_errors == FLOCALE_NUMBER_MISS_CSET_ERR_MSG)
 			{
-				fprintf(stderr,
-					"[%s][FlocaleGetFontSet]: No more"
-					" missing charset reportings\n",
-					(module)? module: "fvwmlibs");
+				fvwm_debug(__func__,
+					   "[%s][FlocaleGetFontSet]: No more"
+					   " missing charset reportings\n",
+					   (module)? module: "fvwmlibs");
 			}
 		}
 		XFreeStringList(ml);
@@ -1325,18 +1328,20 @@ void FlocaleSetlocaleForX(
 {
 	if ((Flocale = setlocale(category, locale)) == NULL)
 	{
-		fprintf(stderr,
-			"[%s][%s]: ERROR -- Cannot set locale. Please check"
-			" your $LC_CTYPE or $LANG.\n",
-			(module == NULL)? "" : module, "FlocaleSetlocaleForX");
+		fvwm_debug(__func__,
+			   "[%s][%s]: ERROR -- Cannot set locale. Please check"
+			   " your $LC_CTYPE or $LANG.\n",
+			   (module == NULL)? "" : module,
+			   "FlocaleSetlocaleForX");
 		return;
 	}
 	if (!XSupportsLocale())
 	{
-		fprintf(stderr,
-			"[%s][%s]: WARNING -- X does not support locale %s\n",
-			(module == NULL)? "": module, "FlocaleSetlocaleForX",
-			Flocale);
+		fvwm_debug(__func__,
+			   "[%s][%s]: WARNING -- X does not support locale %s\n",
+			   (module == NULL)? "": module,
+			   "FlocaleSetlocaleForX",
+			   Flocale);
 		Flocale = NULL;
 	}
 }
@@ -1359,13 +1364,13 @@ void FlocaleInit(
 	if (modifiers != NULL &&
 	    (Fmodifiers = XSetLocaleModifiers(modifiers)) == NULL)
 	{
-		fprintf(stderr,
-			"[%s][%s]: WARNING -- Cannot set locale modifiers\n",
-			(module == NULL)? "": module, "FlocaleInit");
+		fvwm_debug(__func__,
+			   "[%s][%s]: WARNING -- Cannot set locale modifiers\n",
+			   (module == NULL)? "": module, "FlocaleInit");
 	}
 #if FLOCALE_DEBUG_SETLOCALE
-	fprintf(stderr,"[%s][FlocaleInit] locale: %s, modifier: %s\n",
-		module, Flocale, Fmodifiers);
+	fvwm_debug(__func__, "[%s][FlocaleInit] locale: %s, modifier: %s\n",
+		   module, Flocale, Fmodifiers);
 #endif
 }
 
@@ -1489,10 +1494,10 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		/* loading failed, try default font */
 		if (!ask_default)
 		{
-			fprintf(stderr,"[%s][FlocaleLoadFont]: "
-				"WARNING -- can't load font '%s',"
-				" trying default:\n",
-				(module)? module: "fvwmlibs", fontname);
+			fvwm_debug(__func__, "[%s][FlocaleLoadFont]: "
+				   "WARNING -- can't load font '%s',"
+				   " trying default:\n",
+				   (module)? module: "fvwmlibs", fontname);
 		}
 		else
 		{
@@ -1502,8 +1507,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		{
 			if (!ask_default)
 			{
-				fprintf(stderr, "\t%s\n",
-					mb_fallback_font);
+				fvwm_debug(__func__, "\t%s\n",
+					   mb_fallback_font);
 			}
 			if ((flf = FlocaleGetFontSet(
 				     dpy, mb_fallback_font, NULL,
@@ -1516,8 +1521,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		{
 			if (!ask_default)
 			{
-				fprintf(stderr,"\t%s\n",
-					fallback_font);
+				fvwm_debug(__func__, "\t%s\n",
+					   fallback_font);
 			}
 			if ((flf =
 			     FlocaleGetFont(
@@ -1528,21 +1533,21 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			}
 			else if (!ask_default)
 			{
-				fprintf(stderr,
-					"[%s][FlocaleLoadFont]:"
-					" ERROR -- can't load font.\n",
-					(module)? module: "fvwmlibs");
+				fvwm_debug(__func__,
+					   "[%s][FlocaleLoadFont]:"
+					   " ERROR -- can't load font.\n",
+					   (module)? module: "fvwmlibs");
 			}
 			else
 			{
-				fprintf(stderr,
-					"[%s][FlocaleLoadFont]: ERROR"
-					" -- can't load default font:\n",
-					(module)? module: "fvwmlibs");
-				fprintf(stderr, "\t%s\n",
-					mb_fallback_font);
-				fprintf(stderr, "\t%s\n",
-					fallback_font);
+				fvwm_debug(__func__,
+					   "[%s][FlocaleLoadFont]: ERROR"
+					   " -- can't load default font:\n",
+					   (module)? module: "fvwmlibs");
+				fvwm_debug(__func__, "\t%s\n",
+					   mb_fallback_font);
+				fvwm_debug(__func__, "\t%s\n",
+					   fallback_font);
 			}
 		}
 	}
@@ -1561,9 +1566,9 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		}
 		if (flf->fc == FlocaleCharsetGetUnknownCharset())
 		{
-			fprintf(stderr,"[%s][FlocaleLoadFont]: "
-				"WARNING -- Unknown charset for font\n\t'%s'\n",
-				(module)? module: "fvwmlibs", flf->name);
+			fvwm_debug(__func__, "[%s][FlocaleLoadFont]: "
+				   "WARNING -- Unknown charset for font\n\t'%s'\n",
+				   (module)? module: "fvwmlibs", flf->name);
 			flf->fc = FlocaleCharsetGetDefaultCharset(dpy, module);
 		}
 		else if (flf->str_fc == FlocaleCharsetGetUnknownCharset() &&
@@ -1571,10 +1576,10 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			  (FftSupport && flf->fftf.fftfont != NULL &&
 			   flf->fftf.str_encoding != NULL)))
 		{
-			fprintf(stderr,"[%s][FlocaleLoadFont]: "
-				"WARNING -- Unknown string encoding for font\n"
-				"\t'%s'\n",
-				(module)? module: "fvwmlibs", flf->name);
+			fvwm_debug(__func__, "[%s][FlocaleLoadFont]: "
+				   "WARNING -- Unknown string encoding for font\n"
+				   "\t'%s'\n",
+				   (module)? module: "fvwmlibs", flf->name);
 		}
 		if (flf->str_fc == FlocaleCharsetGetUnknownCharset())
 		{
@@ -2418,22 +2423,23 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 
 	fflush(stderr);
 	fflush(stdout);
-	fprintf(stderr,"fvwm info on locale:\n");
-	fprintf(stderr,"  locale: %s, Modifier: %s\n",
-		(Flocale)? Flocale:"", (Fmodifiers)? Fmodifiers:"");
+	fvwm_debug(__func__, "fvwm info on locale:\n");
+	fvwm_debug(__func__, "  locale: %s, Modifier: %s\n",
+		   (Flocale)? Flocale:"", (Fmodifiers)? Fmodifiers:"");
 	cs = FlocaleCharsetGetDefaultCharset(dpy, NULL);
-	fprintf(stderr,"  Default Charset:  X: %s, Iconv: %s, Bidi: %s\n",
-		cs->x,
-		(cs->iconv_index >= 0)?
-		cs->locale[cs->iconv_index]:"Not defined",
-		(cs->bidi)? "Yes":"No");
+	fvwm_debug(__func__,
+		   "  Default Charset:  X: %s, Iconv: %s, Bidi: %s\n",
+		   cs->x,
+		   (cs->iconv_index >= 0)?
+		   cs->locale[cs->iconv_index]:"Not defined",
+		   (cs->bidi)? "Yes":"No");
 	FlocaleCharsetPrintXOMInfo();
 	while (flf)
 	{
 		count++;
 		flf = flf->next;
 	}
-	fprintf(stderr,"  Number of loaded font: %i\n", count);
+	fvwm_debug(__func__, "  Number of loaded font: %i\n", count);
 	if (verbose)
 	{
 		count = 0;
@@ -2441,37 +2447,39 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 		while(flf)
 		{
 			cs = flf->fc;
-			fprintf(stderr,"  * Font number %i\n", count);
-			fprintf(stderr,"    fvwm info:\n");
-			fprintf(stderr,"      Name: %s\n",
-				(flf->name)?  flf->name:"");
-			fprintf(stderr,"      Cache count: %i\n", flf->count);
-			fprintf(stderr,"      Type: ");
+			fvwm_debug(__func__, "  * Font number %i\n", count);
+			fvwm_debug(__func__, "    fvwm info:\n");
+			fvwm_debug(__func__, "      Name: %s\n",
+				   (flf->name)?  flf->name:"");
+			fvwm_debug(__func__, "      Cache count: %i\n",
+				   flf->count);
+			fvwm_debug(__func__, "      Type: ");
 			if (flf->font)
 			{
-				fprintf(stderr,"FontStruct\n");
+				fvwm_debug(__func__, "FontStruct\n");
 			}
 			else if (flf->fontset)
 			{
-				fprintf(stderr,"FontSet\n");
+				fvwm_debug(__func__, "FontSet\n");
 			}
 			else
 			{
-				fprintf(stderr,"XftFont\n");
+				fvwm_debug(__func__, "XftFont\n");
 			}
-			fprintf(stderr, "      Charset:  X: %s, Iconv: %s, "
-				"Bidi: %s\n",
-				cs->x,
-				(cs->iconv_index >= 0)?
-				cs->locale[cs->iconv_index]:"Not defined",
-				(cs->bidi)? "Yes":"No");
-			fprintf(stderr,"      height: %i, ascent: %i, "
-				"descent: %i\n", flf->height, flf->ascent,
-				flf->descent);
-			fprintf(stderr,"      shadow size: %i, "
-				"shadow offset: %i, shadow direction:%i\n",
-				flf->shadow_size, flf->shadow_offset,
-				flf->flags.shadow_dir);
+			fvwm_debug(__func__,
+				   "      Charset:  X: %s, Iconv: %s, "
+				   "Bidi: %s\n",
+				   cs->x,
+				   (cs->iconv_index >= 0)?
+				   cs->locale[cs->iconv_index]:"Not defined",
+				   (cs->bidi)? "Yes":"No");
+			fvwm_debug(__func__, "      height: %i, ascent: %i, "
+				   "descent: %i\n", flf->height, flf->ascent,
+				   flf->descent);
+			fvwm_debug(__func__, "      shadow size: %i, "
+				   "shadow offset: %i, shadow direction:%i\n",
+				   flf->shadow_size, flf->shadow_offset,
+				   flf->flags.shadow_dir);
 			if (verbose >= 2)
 			{
 				if (flf->fftf.fftfont != NULL)
@@ -2479,37 +2487,40 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 					FftFontType *fftf;
 
 					fftf = &flf->fftf;
-					fprintf(stderr, "    Xft info:\n"
-						"      - Vertical font:");
+					fvwm_debug(__func__, "    Xft info:\n"
+						   "      - Vertical font:");
 					FftPrintPatternInfo(
 						fftf->fftfont, False);
-					fprintf(stderr, "      "
-						"- Rotated font 90:");
+					fvwm_debug(__func__, "      "
+						   "- Rotated font 90:");
 					if (fftf->fftfont_rotated_90)
 						FftPrintPatternInfo(
 							fftf->
 							fftfont_rotated_90,
 							True);
 					else
-						fprintf(stderr, " None\n");
-					fprintf(stderr, "      "
-						"- Rotated font 270:");
+						fvwm_debug(__func__,
+							   " None\n");
+					fvwm_debug(__func__, "      "
+						   "- Rotated font 270:");
 					if (fftf->fftfont_rotated_270)
 						FftPrintPatternInfo(
 							fftf->
 							fftfont_rotated_270,
 							True);
 					else
-						fprintf(stderr, " None\n");
-					fprintf(stderr, "      "
-						"- Rotated font 180:");
+						fvwm_debug(__func__,
+							   " None\n");
+					fvwm_debug(__func__, "      "
+						   "- Rotated font 180:");
 					if (fftf->fftfont_rotated_180)
 						FftPrintPatternInfo(
 							fftf->
 							fftfont_rotated_180,
 							True);
 					else
-						fprintf(stderr, " None\n");
+						fvwm_debug(__func__,
+							   " None\n");
 				}
 				else if (flf->font != NULL)
 				{
@@ -2518,9 +2529,9 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 					full_name =
 						FlocaleGetFullNameOfFontStruct(
 							dpy, flf->font);
-					fprintf(stderr, "    X info:\n"
-						"      %s\n",
-						(full_name)? full_name:"?");
+					fvwm_debug(__func__, "    X info:\n"
+						   "      %s\n",
+						   (full_name)? full_name:"?");
 					if (full_name != NULL)
 					{
 						XFree(full_name);
@@ -2532,16 +2543,16 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 					XFontStruct **font_struct_list;
 					char **font_name_list;
 
-					fprintf(stderr, "    X info:\n");
+					fvwm_debug(__func__, "    X info:\n");
 					n = XFontsOfFontSet(
 						flf->fontset,
 						&font_struct_list,
 						&font_name_list);
 					for(i = 0; i < n; i++)
 					{
-						fprintf(stderr,
-							"      %s\n",
-							font_name_list[i]);
+						fvwm_debug(__func__,
+							   "      %s\n",
+							   font_name_list[i]);
 					}
 				}
 			}

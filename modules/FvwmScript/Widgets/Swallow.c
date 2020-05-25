@@ -109,7 +109,7 @@ void InitSwallow(struct XObj *xobj)
 
 	if (xobj->swallow == NULL)
 	{
-		fprintf(stderr,"Error\n");
+		fvwm_debug(__func__, "Error\n");
 		return;
 	}
 

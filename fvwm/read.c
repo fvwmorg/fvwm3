@@ -44,9 +44,8 @@ static int push_read_file(const char *file)
 {
 	if (curr_read_depth >= MAX_READ_DEPTH)
 	{
-		fvwm_msg(
-			ERR, "Read", "Nested Read limit %d is reached",
-			MAX_READ_DEPTH);
+		fvwm_debug(__func__, "Nested Read limit %d is reached",
+			   MAX_READ_DEPTH);
 		return 0;
 	}
 	prev_read_files[curr_read_depth++] = curr_read_file;
@@ -173,7 +172,7 @@ static int parse_filename(
 	rest = GetNextToken(action,filename);
 	if (*filename == NULL)
 	{
-		fvwm_msg(ERR, cmdname, "missing filename parameter");
+		fvwm_debug(__func__, "missing filename parameter");
 		return 0;
 	}
 	/* optional "Quiet" argument -- flag defaults to `off' (noisy) */
@@ -317,16 +316,15 @@ void CMD_Read(F_CMD_ARGS)
 		{
 			if (filename[0] == '/')
 			{
-				fvwm_msg(
-					ERR, "Read",
-					"file '%s' not found", filename);
+				fvwm_debug(__func__,
+					   "file '%s' not found", filename);
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "Read",
-					"file '%s' not found in %s or "
-					FVWM_DATADIR, filename, fvwm_userdir);
+				fvwm_debug(__func__,
+					   "file '%s' not found in %s or "
+					   FVWM_DATADIR, filename,
+					   fvwm_userdir);
 			}
 		}
 		if (cond_rc != NULL)
@@ -370,9 +368,8 @@ void CMD_PipeRead(F_CMD_ARGS)
 		}
 		if (!read_quietly)
 		{
-			fvwm_msg(
-				ERR, "PipeRead", "command '%s' not run",
-				command);
+			fvwm_debug(__func__, "command '%s' not run",
+				   command);
 		}
 		free(command);
 		cursor_control(False);

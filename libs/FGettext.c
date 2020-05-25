@@ -138,10 +138,9 @@ void FGettextInit(const char *domain, const char *dir, const char *module)
 	td = textdomain (domain);
 	if (!td || !btd)
 	{
-		fprintf(
-			stderr,"[%s][FGettextInit]: <<ERROR>> "
-			"gettext initialisation fail!\n",
-			module);
+		fvwm_debug(__func__, "[%s][FGettextInit]: <<ERROR>> "
+			   "gettext initialisation fail!\n",
+			   module);
 		return;
 	}
 	FGModuleName = module;
@@ -241,10 +240,9 @@ void FGettextSetLocalePath(const char *path)
 	after = GetQuotedString(exp_path, &before, "+", NULL, NULL, NULL);
 	if ((after && strchr(after, '+')) || (before && strchr(before, '+')))
 	{
-		fprintf(
-			stderr,"[%s][SetLocalePath]: "
-			"To many '+' in locale path specification: %s\n",
-			FGModuleName, path);
+		fvwm_debug(__func__, "[%s][SetLocalePath]: "
+			   "To many '+' in locale path specification: %s\n",
+			   FGModuleName, path);
 		goto bail;
 	}
 	if (!strchr(exp_path, '+'))
@@ -299,12 +297,11 @@ void FGettextPrintLocalePath(int verbose)
 		return;
 	}
 
-	fprintf(stderr,"fvwm NLS gettext path:\n");
+	fvwm_debug(__func__, "fvwm NLS gettext path:\n");
 	while(l != NULL)
 	{
-		fprintf(
-			stderr,"  dir: %s, domain: %s\n",
-			FGP_DIR(l), FGP_DOMAIN(l));
+		fvwm_debug(__func__, "  dir: %s, domain: %s\n",
+			   FGP_DIR(l), FGP_DOMAIN(l));
 		l = l->next;
 	}
 }

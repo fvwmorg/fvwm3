@@ -506,14 +506,14 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 					FlocaleCharsetOfXCharset(
 						cs.charset_list[i]);
 #if FLOCALE_DEBUG_CHARSET
-				fprintf(stderr,
-					"[FlocaleInitCharset] XOM charset "
-					"%i: %s, bidi:%s\n",
-					i,
-					FLC_DEBUG_GET_X_CHARSET(
-						FLCXOMCharsetList[i]),
-					FLC_DEBUG_GET_BIDI_CHARSET (
-						FLCXOMCharsetList[i]));
+				fvwm_debug(__func__,
+					   "[FlocaleInitCharset] XOM charset "
+					   "%i: %s, bidi:%s\n",
+					   i,
+					   FLC_DEBUG_GET_X_CHARSET(
+								   FLCXOMCharsetList[i]),
+					   FLC_DEBUG_GET_BIDI_CHARSET (
+								       FLCXOMCharsetList[i]));
 #endif
 			}
 		}
@@ -530,18 +530,18 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 		{
 			best_charset = FLCLocaleCharset->x;
 #if FLOCALE_DEBUG_CHARSET
-			fprintf(stderr,
-				"[FlocaleInitCharset] FLCLocaleCharset: %s\n",
-				best_charset);
+			fvwm_debug(__func__,
+				   "[FlocaleInitCharset] FLCLocaleCharset: %s\n",
+				   best_charset);
 #endif
 		}
 		else
 		{
 			best_charset = FLOCALE_FALLBACK_XCHARSET;
 #if FLOCALE_DEBUG_CHARSET
-			fprintf(stderr,
-				"[FlocaleInitCharset] FALLBACK: %s\n",
-				best_charset);
+			fvwm_debug(__func__,
+				   "[FlocaleInitCharset] FALLBACK: %s\n",
+				   best_charset);
 #endif
 		}
 
@@ -565,11 +565,11 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 			}
 		}
 #if FLOCALE_DEBUG_CHARSET
-		fprintf(stderr,
-			"[FlocaleInitCharset] XOM charset "
-			"%i: %s\n",
-			i,
-			FLC_DEBUG_GET_X_CHARSET(FLCXOMCharset));
+		fvwm_debug(__func__,
+			   "[FlocaleInitCharset] XOM charset "
+			   "%i: %s\n",
+			   i,
+			   FLC_DEBUG_GET_X_CHARSET(FLCXOMCharset));
 #endif
 	}
 #endif
@@ -591,27 +591,26 @@ void FlocaleCharsetInit(Display *dpy, const char *module)
 	/* try to find the regular charset */
 	charset = getenv("CHARSET");
 #if FLOCALE_DEBUG_CHARSET
-	fprintf(stderr,
-		"[FlocaleInitCharset] CHARSET: %s\n", (!charset)? "null":charset);
+	fvwm_debug(__func__,
+		   "[FlocaleInitCharset] CHARSET: %s\n",
+		   (!charset)? "null":charset);
 #endif
 	if ((!charset || strlen(charset) < 3) && FlocaleLibcharsetSupport)
 	{
 		charset = (char *)Flocale_charset();
 #if FLOCALE_DEBUG_CHARSET
-		fprintf(
-			stderr,
-			"[FlocaleInitCharset] FlocaleLibcharsetSupport: %s\n",
-			(!charset)? "null":charset);
+		fvwm_debug(__func__,
+			   "[FlocaleInitCharset] FlocaleLibcharsetSupport: %s\n",
+			   (!charset)? "null":charset);
 #endif
 	}
 	if ((!charset || strlen(charset) < 3) && FlocaleCodesetSupport)
 	{
 		charset = Fnl_langinfo(FCODESET);
 #if FLOCALE_DEBUG_CHARSET
-		fprintf(
-			stderr,
-			"[FlocaleInitCharset] Fnl_langinfo: %s\n",
-			(!charset)? "null":charset);
+		fvwm_debug(__func__,
+			   "[FlocaleInitCharset] Fnl_langinfo: %s\n",
+			   (!charset)? "null":charset);
 #endif
 	}
 	if (charset != NULL && strlen(charset) > 2)
@@ -619,9 +618,9 @@ void FlocaleCharsetInit(Display *dpy, const char *module)
 		FLCLocaleCharset =
 			FlocaleCharsetOfLocaleCharset(charset);
 #if FLOCALE_DEBUG_CHARSET
-		fprintf(
-			stderr,
-			"[FlocaleInitCharset] FLCLocaleCharset: %s\n", charset);
+		fvwm_debug(__func__,
+			   "[FlocaleInitCharset] FLCLocaleCharset: %s\n",
+			   charset);
 #endif
 	}
 
@@ -632,12 +631,14 @@ void FlocaleCharsetInit(Display *dpy, const char *module)
 	FLCUtf8Charset = FlocaleCharsetOfXCharset(FLOCALE_UTF8_XCHARSET);
 
 #if FLOCALE_DEBUG_CHARSET
-	fprintf(stderr,"[FlocaleCharsetInit] locale charset: x:%s, bidi:%s\n",
-		FLC_DEBUG_GET_X_CHARSET(FLCXOMCharset),
-		FLC_DEBUG_GET_BIDI_CHARSET (FLCXOMCharset));
-	fprintf(stderr,"[FlocaleCharsetInit] locale charset: x:%s, bidi:%s\n",
-		FLC_DEBUG_GET_X_CHARSET(FLCLocaleCharset),
-		FLC_DEBUG_GET_BIDI_CHARSET (FLCLocaleCharset));
+	fvwm_debug(__func__,
+		   "[FlocaleCharsetInit] locale charset: x:%s, bidi:%s\n",
+		   FLC_DEBUG_GET_X_CHARSET(FLCXOMCharset),
+		   FLC_DEBUG_GET_BIDI_CHARSET (FLCXOMCharset));
+	fvwm_debug(__func__,
+		   "[FlocaleCharsetInit] locale charset: x:%s, bidi:%s\n",
+		   FLC_DEBUG_GET_X_CHARSET(FLCLocaleCharset),
+		   FLC_DEBUG_GET_BIDI_CHARSET (FLCLocaleCharset));
 #endif
 
 	return;
@@ -824,23 +825,23 @@ FlocaleCharset *FlocaleCharsetGetDefaultCharset(Display *dpy, char *module)
 	if (warn)
 	{
 		warn = False;
-		fprintf(stderr,
-			"[%s][%s]: WARN -- Cannot find default locale "
-			"charset with:\n\t",
-			(module != NULL)? module:"FVWMlibs",
-			"FlocaleGetDefaultCharset");
-		fprintf(stderr,"X Output Method ");
-		fprintf(stderr,", CHARSET env variable");
+		fvwm_debug(__func__,
+			   "[%s][%s]: WARN -- Cannot find default locale "
+			   "charset with:\n\t",
+			   (module != NULL)? module:"FVWMlibs",
+			   "FlocaleGetDefaultCharset");
+		fvwm_debug(__func__, "X Output Method ");
+		fvwm_debug(__func__, ", CHARSET env variable");
 		if (FlocaleLibcharsetSupport)
-			fprintf(stderr,", locale_charset");
+			fvwm_debug(__func__, ", locale_charset");
 		if (FlocaleCodesetSupport)
-			fprintf(stderr,", nl_langinfo");
-		fprintf(stderr,"\n");
+			fvwm_debug(__func__, ", nl_langinfo");
+		fvwm_debug(__func__, "\n");
 		/* never null */
 		FLCLocaleCharset =
 			FlocaleCharsetOfXCharset(FLOCALE_FALLBACK_XCHARSET);
-		fprintf(stderr,"\tUse default charset: %s\n",
-			FLOCALE_FALLBACK_XCHARSET);
+		fvwm_debug(__func__, "\tUse default charset: %s\n",
+			   FLOCALE_FALLBACK_XCHARSET);
 
 	}
 	return FLCLocaleCharset;
@@ -919,16 +920,15 @@ void FlocaleCharsetPrintXOMInfo(void)
 #ifdef HAVE_XOUTPUT_METHOD
 	int i;
 
-	fprintf(stderr,"  XOM Charsets: ");
+	fvwm_debug(__func__, "  XOM Charsets: ");
 	if (FLCXOMCharsetList_num > 0)
 	{
 		for(i = 0; i <  FLCXOMCharsetList_num; i++)
 		{
-			fprintf(
-				stderr, "%s ",
-				FLC_DEBUG_GET_X_CHARSET(FLCXOMCharsetList[i]));
+			fvwm_debug(__func__, "%s ",
+				   FLC_DEBUG_GET_X_CHARSET(FLCXOMCharsetList[i]));
 		}
 	}
-	fprintf(stderr,"\n");
+	fvwm_debug(__func__, "\n");
 #endif
 }

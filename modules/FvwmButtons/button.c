@@ -152,7 +152,7 @@ int buttonFrameSigned(button_info *b)
     if(b->c->flags.b_Frame)
       return b->c->framew;
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No relief width definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No relief width definition?\n",MyName);
 #endif
   return 0;
 }
@@ -171,7 +171,7 @@ int buttonXPad(button_info *b)
     if(b->c->flags.b_Padding)
       return b->c->xpad;
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No padding definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No padding definition?\n",MyName);
 #endif
   return 0;
 }
@@ -190,7 +190,7 @@ int buttonYPad(button_info *b)
     if(b->c->flags.b_Padding)
       return b->c->ypad;
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No padding definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No padding definition?\n",MyName);
 #endif
   return 0;
 }
@@ -207,7 +207,7 @@ FlocaleFont *buttonFont(button_info *b)
     if(b->c->flags.b_Font)
       return b->c->Ffont;
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No font definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No font definition?\n",MyName);
 #endif
   return None;
 }
@@ -226,7 +226,7 @@ Pixel buttonFore(const button_info *b)
       return b->c->fc;
   }
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No foreground definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No foreground definition?\n",MyName);
 #endif
   return None;
 }
@@ -245,7 +245,7 @@ Pixel buttonBack(const button_info *b)
       return b->c->bc;
   }
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No background definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No background definition?\n",MyName);
 #endif
   return None;
 }
@@ -264,7 +264,7 @@ Pixel buttonHilite(button_info *b)
       return b->c->hc;
   }
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No background definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No background definition?\n",MyName);
 #endif
   return None;
 }
@@ -283,7 +283,7 @@ Pixel buttonShadow(button_info *b)
       return b->c->sc;
   }
 #ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No background definition?\n",MyName);
+  fvwm_debug(__func__, "%s: BUG: No background definition?\n",MyName);
 #endif
   return None;
 }
@@ -487,7 +487,7 @@ void alloc_buttonlist(button_info *ub,int num)
     old=ub->c->allocated_buttons;
     if(num<old || old>(old+32)) /* test for num<old or for signed overflow */
     {
-      fprintf(stderr,"%s: Too many buttons, integer overflow\n",MyName);
+      fvwm_debug(__func__, "%s: Too many buttons, integer overflow\n",MyName);
       exit(1);
     }
     while(ub->c->allocated_buttons<=num)
@@ -516,7 +516,8 @@ button_info *alloc_button(button_info *ub,int num)
     alloc_buttonlist(ub,num);
   if(ub->c->buttons[num])
   {
-    fprintf(stderr,"%s: Allocated button twice, report bug twice\n",MyName);
+    fvwm_debug(__func__, "%s: Allocated button twice, report bug twice\n",
+               MyName);
     exit(2);
   }
 
@@ -613,19 +614,20 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
   i = x+y*c->num_columns;
   if (x>=c->num_columns || x<0)
   {
-    fprintf(stderr,"%s: Button out of horizontal range. Quitting.\n",MyName);
-    fprintf(stderr,"Button=%d num_columns=%d BPosX=%d\n",
-	    i,c->num_columns,b->BPosX);
+    fvwm_debug(__func__, "%s: Button out of horizontal range. Quitting.\n",
+               MyName);
+    fvwm_debug(__func__, "Button=%d num_columns=%d BPosX=%d\n",
+               i,c->num_columns,b->BPosX);
     exit(1);
   }
   if (y>=c->num_rows || y<0)
   {
     if (b->flags.b_PosFixed || !ub->c->flags.b_SizeSmart || y<0)
     {
-      fprintf(stderr,"%s: Button out of vertical range. Quitting.\n",
-	      MyName);
-      fprintf(stderr,"Button=%d num_rows=%d BPosY=%d\n",
-	      i,c->num_rows,b->BPosY);
+      fvwm_debug(__func__, "%s: Button out of vertical range. Quitting.\n",
+                 MyName);
+      fvwm_debug(__func__, "Button=%d num_rows=%d BPosY=%d\n",
+                 i,c->num_rows,b->BPosY);
       exit(1);
     }
     c->num_rows=y+b->BHeight;
@@ -634,9 +636,9 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
   }
   if(x+b->BWidth>c->num_columns)
   {
-    fprintf(stderr,"%s: Button too wide. giving up\n",MyName);
-    fprintf(stderr,"Button=%d num_columns=%d bwidth=%d w=%d\n",
-	    i,c->num_columns,b->BWidth,x);
+    fvwm_debug(__func__, "%s: Button too wide. giving up\n",MyName);
+    fvwm_debug(__func__, "Button=%d num_columns=%d bwidth=%d w=%d\n",
+               i,c->num_columns,b->BWidth,x);
     b->BWidth = c->num_columns-x;
   }
   if(y+b->BHeight>c->num_rows)
@@ -649,9 +651,9 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
     }
     else
     {
-      fprintf(stderr,"%s: Button too tall. Giving up\n",MyName);
-      fprintf(stderr,"Button=%d num_rows=%d bheight=%d h=%d\n",
-	      i,c->num_rows,b->BHeight,y);
+      fvwm_debug(__func__, "%s: Button too tall. Giving up\n",MyName);
+      fvwm_debug(__func__, "Button=%d num_rows=%d bheight=%d h=%d\n",
+                 i,c->num_rows,b->BHeight,y);
       b->BHeight = c->num_rows-y;
     }
   }
@@ -680,7 +682,7 @@ void ShrinkButton(button_info *b, container_info *c)
 
   if (!b)
   {
-    fprintf(stderr,"error: shrink1: button is empty but shouldn't\n");
+    fvwm_debug(__func__, "error: shrink1: button is empty but shouldn't\n");
     exit(1);
   }
   i = b->BPosX+b->BPosY*c->num_columns;
@@ -694,7 +696,7 @@ void ShrinkButton(button_info *b, container_info *c)
 	l = i+j+k*c->num_columns;
 	if (c->buttons[l] != b)
 	{
-	  fprintf(stderr,"error: shrink2: button was stolen\n");
+	  fvwm_debug(__func__, "error: shrink2: button was stolen\n");
 	  exit(1);
 	}
 	c->buttons[l] = NULL;
@@ -794,8 +796,9 @@ void ShuffleButtons(button_info *ub)
     /* Move button if position given by user */
     if (PlaceAndExpandButton(b->BPosX,b->BPosY,b,ub))
     {
-      fprintf(stderr, "%s: Overlapping fixed buttons. Quitting.\n",MyName);
-      fprintf(stderr, "Button=%d, x=%d, y=%d\n", i,b->BPosX,b->BPosY);
+      fvwm_debug(__func__, "%s: Overlapping fixed buttons. Quitting.\n",
+                 MyName);
+      fvwm_debug(__func__, "Button=%d, x=%d, y=%d\n", i,b->BPosX,b->BPosY);
       exit(1);
     }
   }
@@ -823,7 +826,7 @@ void ShuffleButtons(button_info *ub)
 	if (next_button_y>=c->num_rows)
 	{
 	  /* could not place button */
-	  fprintf(stderr,"%s: Button confusion! Quitting\n", MyName);
+	  fvwm_debug(__func__, "%s: Button confusion! Quitting\n", MyName);
 	  exit(1);
 	}
       }
@@ -866,7 +869,7 @@ button_info *NextButton(button_info **ub,button_info **b,int *i,int all)
     *i=(*b)->n;
     if((*i)>=(*ub)->c->num_buttons)
     {
-      fprintf(stderr,"%s: BUG: Couldn't return to uberbutton\n",MyName);
+      fvwm_debug(__func__, "%s: BUG: Couldn't return to uberbutton\n",MyName);
       exit(2);
     }
     NextButton(ub,b,i,all);

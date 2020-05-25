@@ -439,7 +439,8 @@ void CMD_WindowList(F_CMD_ARGS)
 			else if (StrEquals(tok,"UseListSkip"))
 			{
 				/* deprecated as of 02-May-2007 (SS) */
-				fprintf(stderr, "UseListSkip is deprecated. Please use \"UseSkipList\".\n");
+				fvwm_debug(__func__,
+					   "UseListSkip is deprecated. Please use \"UseSkipList\".\n");
 				skiplist_mode = 1;
 			}
 			else if (StrEquals(tok,"UseSkipList"))
@@ -449,7 +450,8 @@ void CMD_WindowList(F_CMD_ARGS)
 			else if (StrEquals(tok,"OnlyListSkip"))
 			{
 				/* deprecated as of 02-May-2007 (SS) */
-				fprintf(stderr, "OnlyListSkip is deprecated. Please use \"OnlySkipList\".\n");
+				fvwm_debug(__func__,
+					   "OnlyListSkip is deprecated. Please use \"OnlySkipList\".\n");
 				skiplist_mode = 2;
 			}
 			else if (StrEquals(tok,"OnlySkipList"))
@@ -559,9 +561,8 @@ void CMD_WindowList(F_CMD_ARGS)
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "WindowList","Unknown option '%s'",
-					tok);
+				fvwm_debug(__func__, "Unknown option '%s'",
+					   tok);
 			}
 			if (tok)
 			{

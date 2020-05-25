@@ -283,8 +283,8 @@ void CMD_Schedule(F_CMD_ARGS)
 	n = GetIntegerArguments(action, &action, &ms, 1);
 	if (n <= 0)
 	{
-		fvwm_msg(ERR, "CMD_Schedule",
-			 "Requires time to schedule as argument");
+		fvwm_debug(__func__,
+			   "Requires time to schedule as argument");
 		return;
 	}
 	if (ms < 0)

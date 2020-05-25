@@ -125,8 +125,8 @@ monitor_by_name(const char *name)
 	struct monitor	*m, *mret = NULL;
 
 	if (name == NULL) {
-		fprintf(stderr, "%s: name is NULL; shouldn't happen.  "
-			"Returning current monitor\n", __func__);
+		fvwm_debug(__func__, "%s: name is NULL; shouldn't happen.  "
+			   "Returning current monitor\n", __func__);
 		return (monitor_get_current());
 	}
 
@@ -176,8 +176,9 @@ monitor_by_output(int output)
 	}
 
 	if (mret == NULL) {
-		fprintf(stderr, "%s: couldn't find monitor with output '%d', "
-			"returning first output.\n", __func__, output);
+		fvwm_debug(__func__,
+			   "%s: couldn't find monitor with output '%d', "
+			   "returning first output.\n", __func__, output);
 		mret = TAILQ_FIRST(&monitor_q);
 	}
 
@@ -249,11 +250,12 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	XRRScreenResources	*res;
 	struct monitor		*m = NULL;
 
-	fprintf(stderr, "%s: outputs have changed\n", __func__);
+	fvwm_debug(__func__, "%s: outputs have changed\n", __func__);
 
 	if ((res = XRRGetScreenResources(dpy, e->root)) == NULL) {
-		fprintf(stderr, "%s: couldn't acquire screen resources\n",
-			__func__);
+		fvwm_debug(__func__,
+			   "%s: couldn't acquire screen resources\n",
+			   __func__);
 		return;
 	}
 
@@ -306,7 +308,7 @@ scan_screens(Display *dpy)
 
 	rrm = XRRGetMonitors(dpy, root, false, &n);
 	if (n <= 0) {
-		fprintf(stderr, "get monitors failed\n");
+		fvwm_debug(__func__, "get monitors failed\n");
 		return;
 	}
 
@@ -362,7 +364,8 @@ void FScreenInit(Display *dpy)
 
 	if (!XRRQueryExtension(dpy, &randr_event, &err_base) ||
 	    !XRRQueryVersion (dpy, &major, &minor)) {
-		fprintf(stderr, "RandR not present, falling back to single screen\n");
+		fvwm_debug(__func__,
+			   "RandR not present, falling back to single screen\n");
 		goto single_screen;
 	}
 
@@ -372,22 +375,22 @@ void FScreenInit(Display *dpy)
 
 	if (FScreenIsEnabled() && !is_randr_present) {
 		/* Something went wrong. */
-		fprintf(stderr, "Couldn't initialise XRandR: %s\n",
-			strerror(errno));
-		fprintf(stderr, "Falling back to single screen...\n");
+		fvwm_debug(__func__, "Couldn't initialise XRandR: %s\n",
+			   strerror(errno));
+		fvwm_debug(__func__, "Falling back to single screen...\n");
 
 		goto single_screen;
 	}
 
-	fprintf(stderr, "Using RandR %d.%d\n", major, minor);
+	fvwm_debug(__func__, "Using RandR %d.%d\n", major, minor);
 
 	/* XRandR is present, so query the screens we have. */
 	res = XRRGetScreenResources(dpy, DefaultRootWindow(dpy));
 
 	if (res == NULL || (res != NULL && res->noutput == 0)) {
 		XRRFreeScreenResources(res);
-		fprintf(stderr, "RandR present, yet no ouputs found.  "
-			"Using single screen...\n");
+		fvwm_debug(__func__, "RandR present, yet no ouputs found.  "
+			   "Using single screen...\n");
 		goto single_screen;
 	}
 	XRRFreeScreenResources(res);
@@ -430,48 +433,50 @@ monitor_dump_state(struct monitor *m)
 
 	mcur = monitor_get_current();
 
-	fprintf(stderr, "Monitor Debug\n");
-	fprintf(stderr, "\tnumber of outputs: %d\n", monitor_get_count());
+	fvwm_debug(__func__, "Monitor Debug\n");
+	fvwm_debug(__func__, "\tnumber of outputs: %d\n", monitor_get_count());
 	TAILQ_FOREACH(m2, &monitor_q, entry) {
 		if (m2 == NULL) {
-			fprintf(stderr, "monitor in list is NULL.  Bug!\n");
+			fvwm_debug(__func__,
+				   "monitor in list is NULL.  Bug!\n");
 			continue;
 		}
 		if (m != NULL && m2 != m)
 			continue;
-		fprintf(stderr,
-			"\tName:\t%s\n"
-			"\tDisabled:\t%s\n"
-			"\tIs Primary:\t%s\n"
-			"\tIs Current:\t%s\n"
-			"\tOutput:\t%d\n"
-			"\tCoords:\t{x: %d, y: %d, w: %d, h: %d}\n"
-			"\tVirtScr: {\n"
-			"\t\tVxMax: %d, VyMax: %d, Vx: %d, Vy: %d\n"
-			"\t\tEdgeScrollX: %d, EdgeScrollY: %d\n"
-			"\t\tCurrentDesk: %d\n"
-			"\t\tCurrentPage: {x: %d, y: %d}\n"
-			"\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
-			"\tDesktops:\t%s\n"
-			"\tFlags:%s\n\n",
-			m2->si->name,
-			m2->si->is_disabled ? "true" : "false",
-			m2->si->is_primary ? "yes" : "no",
-			(mcur && m2 == mcur) ? "yes" : "no",
-			(int)m2->si->rr_output,
-			m2->si->x, m2->si->y, m2->si->w, m2->si->h,
-			m2->virtual_scr.VxMax, m2->virtual_scr.VyMax,
-			m2->virtual_scr.Vx, m2->virtual_scr.Vy,
-			m2->virtual_scr.EdgeScrollX, m2->virtual_scr.EdgeScrollY,
-			m2->virtual_scr.CurrentDesk,
-			(int)(m2->virtual_scr.Vx / m2->virtual_scr.MyDisplayWidth),
-			(int)(m2->virtual_scr.Vy / m2->virtual_scr.MyDisplayHeight),
-			m2->virtual_scr.MyDisplayWidth,
-			m2->virtual_scr.MyDisplayHeight,
-			m2->Desktops ? "yes" : "no",
-			monitor_mode == MONITOR_TRACKING_G ? "global" :
-			monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
-			"Unknown"
+		fvwm_debug(__func__,
+			   "\tName:\t%s\n"
+			   "\tDisabled:\t%s\n"
+			   "\tIs Primary:\t%s\n"
+			   "\tIs Current:\t%s\n"
+			   "\tOutput:\t%d\n"
+			   "\tCoords:\t{x: %d, y: %d, w: %d, h: %d}\n"
+			   "\tVirtScr: {\n"
+			   "\t\tVxMax: %d, VyMax: %d, Vx: %d, Vy: %d\n"
+			   "\t\tEdgeScrollX: %d, EdgeScrollY: %d\n"
+			   "\t\tCurrentDesk: %d\n"
+			   "\t\tCurrentPage: {x: %d, y: %d}\n"
+			   "\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
+			   "\tDesktops:\t%s\n"
+			   "\tFlags:%s\n\n",
+			   m2->si->name,
+			   m2->si->is_disabled ? "true" : "false",
+			   m2->si->is_primary ? "yes" : "no",
+			   (mcur && m2 == mcur) ? "yes" : "no",
+			   (int)m2->si->rr_output,
+			   m2->si->x, m2->si->y, m2->si->w, m2->si->h,
+			   m2->virtual_scr.VxMax, m2->virtual_scr.VyMax,
+			   m2->virtual_scr.Vx, m2->virtual_scr.Vy,
+			   m2->virtual_scr.EdgeScrollX,
+			   m2->virtual_scr.EdgeScrollY,
+			   m2->virtual_scr.CurrentDesk,
+			   (int)(m2->virtual_scr.Vx / m2->virtual_scr.MyDisplayWidth),
+			   (int)(m2->virtual_scr.Vy / m2->virtual_scr.MyDisplayHeight),
+			   m2->virtual_scr.MyDisplayWidth,
+			   m2->virtual_scr.MyDisplayHeight,
+			   m2->Desktops ? "yes" : "no",
+			   monitor_mode == MONITOR_TRACKING_G ? "global" :
+			   monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
+			   "Unknown"
 		);
 	}
 }
@@ -520,9 +525,10 @@ FindScreenOfXY(int x, int y)
 	}
 
 	if (m == NULL) {
-		fprintf(stderr, "%s: couldn't find screen at %d x %d "
-			"returning first monitor.  This is a bug.\n", __func__,
-			xa, ya);
+		fvwm_debug(__func__, "%s: couldn't find screen at %d x %d "
+			   "returning first monitor.  This is a bug.\n",
+			   __func__,
+			   xa, ya);
 		return TAILQ_FIRST(&monitor_q);
 	}
 
@@ -617,7 +623,7 @@ Bool FScreenGetScrRect(fscreen_scr_arg *arg, fscreen_scr_t screen,
 {
 	struct monitor	*m = FindScreen(arg, screen);
 	if (m == NULL) {
-		fprintf(stderr, "%s: m is NULL\n", __func__);
+		fvwm_debug(__func__, "%s: m is NULL\n", __func__);
 		return (True);
 	}
 

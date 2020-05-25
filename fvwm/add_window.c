@@ -589,10 +589,9 @@ static char *interpolate_titleformat_name(
 					strlen(fw->name.name) >
 					MAX_VISIBLE_NAME_LEN)
 				{
-					fvwm_msg(WARN,
-					"interpolate_titleformat_name",
-					"Visible name is too long based on "
-					"TitleFormat.  Not expanding further.");
+					fvwm_debug(__func__,
+						   "Visible name is too long based on "
+						   "TitleFormat.  Not expanding further.");
 
 					break;
 				}
@@ -604,10 +603,9 @@ static char *interpolate_titleformat_name(
 					strlen(fw->class.res_class) >
 					MAX_VISIBLE_NAME_LEN)
 				{
-					fvwm_msg(WARN,
-					"interpolate_titleformat_name",
-					"Visible name is too long based on "
-					"TitleFormat.  Not expanding further.");
+					fvwm_debug(__func__,
+						   "Visible name is too long based on "
+						   "TitleFormat.  Not expanding further.");
 
 					break;
 				}
@@ -627,10 +625,9 @@ static char *interpolate_titleformat_name(
 					strlen(fw->icon_name.name) >
 					MAX_VISIBLE_NAME_LEN)
 				{
-					fvwm_msg(WARN,
-					"interpolate_titleformat_name",
-					"Visible name is too long based on "
-					"TitleFormat.  Not expanding further.");
+					fvwm_debug(__func__,
+						   "Visible name is too long based on "
+						   "TitleFormat.  Not expanding further.");
 
 					break;
 				}
@@ -642,10 +639,9 @@ static char *interpolate_titleformat_name(
 					strlen(fw->class.res_name) >
 					MAX_VISIBLE_NAME_LEN)
 				{
-					fvwm_msg(WARN,
-					"interpolate_titleformat_name",
-					"Visible name is too long based on "
-					"TitleFormat.  Not expanding further.");
+					fvwm_debug(__func__,
+						   "Visible name is too long based on "
+						   "TitleFormat.  Not expanding further.");
 
 					break;
 				}
@@ -2354,7 +2350,7 @@ FvwmWindow *AddWindow(
 	{
 		if (Scr.bo.do_display_new_window_names)
 		{
-			fvwm_msg(INFO, "AddWindow", "new window disappeared");
+			fvwm_debug(__func__, "new window disappeared");
 		}
 		free(fw);
 		MyXUngrabServer(dpy);
@@ -2374,14 +2370,13 @@ FvwmWindow *AddWindow(
 	{
 		if (Scr.bo.do_display_new_window_names)
 		{
-			fvwm_msg(
-				INFO, "AddWindow", "new window is unmanaged:\n"
-				"  name:      %s\n"
-				"  icon name: (unknown)\n"
-				"  resource:  %s\n"
-				"  class:     %s",
-				fw->name.name, fw->class.res_name,
-				fw->class.res_class);
+			fvwm_debug(__func__, "new window is unmanaged:\n"
+				   "  name:      %s\n"
+				   "  icon name: (unknown)\n"
+				   "  resource:  %s\n"
+				   "  class:     %s",
+				   fw->name.name, fw->class.res_name,
+				   fw->class.res_class);
 		}
 		free_window_names(fw, True, True);
 		if (fw->style_name)
@@ -2418,15 +2413,15 @@ FvwmWindow *AddWindow(
 	EWMH_SetVisibleName(fw, False);
 	if (Scr.bo.do_display_new_window_names)
 	{
-		fvwm_msg(
-			INFO, "AddWindow", "new window:\n"
-			"  name:      %s\n"
-			"  icon name: %s\n"
-			"  resource:  %s\n"
-			"  class:     %s",
-			fw->name.name, (fw->icon_name.name == NULL) ?
-			"(unknown)" : fw->icon_name.name, fw->class.res_name,
-			fw->class.res_class);
+		fvwm_debug(__func__, "new window:\n"
+			   "  name:      %s\n"
+			   "  icon name: %s\n"
+			   "  resource:  %s\n"
+			   "  class:     %s",
+			   fw->name.name, (fw->icon_name.name == NULL) ?
+			   "(unknown)" : fw->icon_name.name,
+			   fw->class.res_name,
+			   fw->class.res_class);
 	}
 
 	/****** InitialMapCommand ******/
@@ -3150,14 +3145,13 @@ void GetWindowSizeHintsWithCheck(
 				broken_cause = "aspect ratio";
 			}
 			new_hints.flags &= ~PAspect;
-			fvwm_msg(
-				WARN, "GetWindowSizeHints",
-				"The applicaton window (window id %#lx)\n"
-				"  \"%s\" has broken aspect ratio: "
-				"%d/%d - %d/%d\n"
-				"    fvwm is ignoring this aspect ratio.  ",
-				FW_W(fw), fw->name.name, minAspectX,
-				minAspectY, maxAspectX, maxAspectY);
+			fvwm_debug(__func__,
+				   "The applicaton window (window id %#lx)\n"
+				   "  \"%s\" has broken aspect ratio: "
+				   "%d/%d - %d/%d\n"
+				   "    fvwm is ignoring this aspect ratio.  ",
+				   FW_W(fw), fw->name.name, minAspectX,
+				   minAspectY, maxAspectX, maxAspectY);
 			fvwm_msg_report_app();
 		}
 		else
@@ -3218,13 +3212,12 @@ void GetWindowSizeHintsWithCheck(
 		}
 		if (is_invalid)
 		{
-			fvwm_msg(
-				WARN, "GetWindowSizeHints", "reason: %d:"
-				" The hints have been ignored because the"
-				" window's current size would have become"
-				" invalid.  The new hints will become active"
-				" when the window generates the next"
-				" ConfigureRequest.\n", is_invalid);
+			fvwm_debug(__func__, "reason: %d:"
+				   " The hints have been ignored because the"
+				   " window's current size would have become"
+				   " invalid.  The new hints will become active"
+				   " when the window generates the next"
+				   " ConfigureRequest.\n", is_invalid);
 			broken_cause = "inconsistent with current size";
 		}
 	}
@@ -3236,28 +3229,27 @@ void GetWindowSizeHintsWithCheck(
 	}
 	if (broken_cause != 0)
 	{
-		fvwm_msg(
-			WARN, "GetWindowSizeHints",
-			"The application window (id %#lx)\n"
-			"  \"%s\" has broken size hints (%s).\n"
-			"    fvwm is ignoring those hints.  "
-			"  hint override = %d, flags = %lx\n"
-			"  min_width = %d, min_height = %d, "
-			"max_width = %d, max_height = %d\n"
-			"  width_inc = %d, height_inc = %d\n"
-			"  min_aspect = %d/%d, max_aspect = %d/%d\n"
-			"  base_width = %d, base_height = %d\n"
-			"  win_gravity = %d\n",
-			FW_W(fw), fw->name.name, broken_cause,
-			HAS_OVERRIDE_SIZE_HINTS(fw),
-			orig_hints.flags,
-			orig_hints.min_width, orig_hints.min_height,
-			orig_hints.max_width, orig_hints.max_height,
-			orig_hints.width_inc, orig_hints.height_inc,
-			orig_hints.min_aspect.x, orig_hints.min_aspect.y,
-			orig_hints.max_aspect.x, orig_hints.max_aspect.y,
-			orig_hints.base_width, orig_hints.base_height,
-			orig_hints.win_gravity);
+		fvwm_debug(__func__,
+			   "The application window (id %#lx)\n"
+			   "  \"%s\" has broken size hints (%s).\n"
+			   "    fvwm is ignoring those hints.  "
+			   "  hint override = %d, flags = %lx\n"
+			   "  min_width = %d, min_height = %d, "
+			   "max_width = %d, max_height = %d\n"
+			   "  width_inc = %d, height_inc = %d\n"
+			   "  min_aspect = %d/%d, max_aspect = %d/%d\n"
+			   "  base_width = %d, base_height = %d\n"
+			   "  win_gravity = %d\n",
+			   FW_W(fw), fw->name.name, broken_cause,
+			   HAS_OVERRIDE_SIZE_HINTS(fw),
+			   orig_hints.flags,
+			   orig_hints.min_width, orig_hints.min_height,
+			   orig_hints.max_width, orig_hints.max_height,
+			   orig_hints.width_inc, orig_hints.height_inc,
+			   orig_hints.min_aspect.x, orig_hints.min_aspect.y,
+			   orig_hints.max_aspect.x, orig_hints.max_aspect.y,
+			   orig_hints.base_width, orig_hints.base_height,
+			   orig_hints.win_gravity);
 		fvwm_msg_report_app();
 	}
 	/* final safety net */

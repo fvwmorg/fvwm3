@@ -1287,8 +1287,8 @@ void frame_init(void)
 			InputOutput, CopyFromParent, valuemask, &xswa);
 		if (hide_wins.w[i] == None)
 		{
-			fvwm_msg(ERR, "frame_init",
-				 "Could not create internal windows. Exiting");
+			fvwm_debug(__func__,
+				   "Could not create internal windows. Exiting");
 			MyXUngrabServer(dpy);
 			exit(1);
 		}

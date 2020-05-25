@@ -1443,10 +1443,10 @@ static void AnimatedMoveAnyWindow(
 				fw->g.frame.width,
 				fw->g.frame.height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
-			fvwm_msg(DBG,"AnimatedMoveAnyWindow",
-				 "Sent ConfigureNotify (w == %d, h == %d)",
-				 fw->g.frame.width,
-				 fw->g.frame.height);
+			fvwm_debug(__func__,
+				   "Sent ConfigureNotify (w == %d, h == %d)",
+				   fw->g.frame.width,
+				   fw->g.frame.height);
 #endif
 		}
 		XFlush(dpy);
@@ -1528,17 +1528,15 @@ int placement_binding(int button, KeySym keysym, int modifier, char *action)
 	if (keysym != 0)
 	{
 		/* fixme */
-		fvwm_msg(
-			ERR, "placement_binding",
-			"sorry, placement keybindings not allowed. yet.");
+		fvwm_debug(__func__,
+			   "sorry, placement keybindings not allowed. yet.");
 		return 1;
 	}
 	if (modifier != 0)
 	{
 		/* fixme */
-		fvwm_msg(
-			ERR, "placement_binding",
-			"sorry, placement binding modifiers not allowed. yet.");
+		fvwm_debug(__func__,
+			   "sorry, placement binding modifiers not allowed. yet.");
 		return 1;
 	}
 	if (strcmp(action,"-") == 0 ||
@@ -1647,9 +1645,8 @@ int placement_binding(int button, KeySym keysym, int modifier, char *action)
 	}
 	else
 	{
-		fvwm_msg(
-			ERR, "placement_binding",
-			"invalid action %s", action);
+		fvwm_debug(__func__,
+			   "invalid action %s", action);
 	}
 
 	return 0;
@@ -2888,10 +2885,9 @@ Bool __move_loop(
 					fw, xl, yt, Width, Height, 0,
 					False);
 #ifdef FVWM_DEBUG_MSGS
-				fvwm_msg(
-					DBG, "frame_setup_window",
-					"Sent ConfigureNotify (w %d, h %d)",
-					Width, Height);
+				fvwm_debug(__func__,
+					   "Sent ConfigureNotify (w %d, h %d)",
+					   Width, Height);
 #endif
 			}
 		}
@@ -3054,10 +3050,9 @@ void CMD_SnapAttraction(F_CMD_ARGS)
 	len += 99;
 	cmd = fxmalloc(len);
 	sprintf(cmd, "Style * SnapAttraction %s", action);
-	fvwm_msg(
-		OLD, "CMD_SnapAttraction",
-		"The command SnapAttraction is obsolete. Please use the"
-		" following command instead:\n\n%s", cmd);
+	fvwm_debug(__func__,
+		   "The command SnapAttraction is obsolete. Please use the"
+		   " following command instead:\n\n%s", cmd);
 	execute_function(
 		cond_rc, exc, cmd,
 		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
@@ -3076,10 +3071,9 @@ void CMD_SnapGrid(F_CMD_ARGS)
 	len += 99;
 	cmd = fxmalloc(len);
 	sprintf(cmd, "Style * SnapGrid %s", action);
-	fvwm_msg(
-		OLD, "CMD_SnapGrid",
-		"The command SnapGrid is obsolete. Please use the following"
-		" command instead:\n\n%s", cmd);
+	fvwm_debug(__func__,
+		   "The command SnapGrid is obsolete. Please use the following"
+		   " command instead:\n\n%s", cmd);
 	execute_function(
 		cond_rc, exc, cmd,
 		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
@@ -3162,7 +3156,7 @@ void CMD_XorPixmap(F_CMD_ARGS)
 	xp = PGetFvwmPicture(dpy, Scr.Root, NULL, PixmapName, fpa);
 	if (xp == NULL)
 	{
-		fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
+		fvwm_debug(__func__, "Can't find pixmap %s", PixmapName);
 		free(PixmapName);
 		PictureUseFvwmVisual();
 		return;

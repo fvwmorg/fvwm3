@@ -1076,8 +1076,9 @@ PColor *alloc_named_ct(int *limit, Bool do_allocate)
 	{
 		rc=XParseColor(Pdpy, Pcmap, color_names[i], &color);
 		if (rc==0) {
-			fprintf(stderr,"color_to_rgb: can't parse color %s,"
-				" rc %d\n", color_names[i], rc);
+			fvwm_debug(__func__,
+				   "color_to_rgb: can't parse color %s,"
+				   " rc %d\n", color_names[i], rc);
 			free_table_colors(color_table, i);
 			free(color_table);
 			return NULL;
@@ -1751,8 +1752,8 @@ int PictureAllocColorTable(
 	finish_ct_init(call_type, cc_nbr-1, 0, 0, 0, 0, 1, 0);
 	if (Pct == NULL)
 	{
-		fprintf(stderr,
-			"[fvwm] ERR -- Cannot get Black and White. exiting!\n");
+		fvwm_debug(__func__,
+			   "[fvwm] ERR -- Cannot get Black and White. exiting!\n");
 		exit(2);
 	}
 	return PColorLimit;
@@ -1876,10 +1877,10 @@ void print_colormap(Colormap cmap)
 	XQueryColors(Pdpy, cmap, colors, nbr_of_colors);
 	for (i = 0; i < nbr_of_colors; i++)
 	{
-		fprintf(stderr,"    rgb(%.3i): %.3i/%.3i/%.3i\n", i,
-			colors[i].red >> 8,
-			colors[i].green >> 8,
-			colors[i].blue >> 8);
+		fvwm_debug(__func__, "    rgb(%.3i): %.3i/%.3i/%.3i\n", i,
+			   colors[i].red >> 8,
+			   colors[i].green >> 8,
+			   colors[i].blue >> 8);
 	}
 }
 
@@ -2143,8 +2144,8 @@ void PictureReduceColorName(char **my_color)
 
 	if (!XParseColor(Pdpy, Pcmap, *my_color, &rgb))
 	{
-		fprintf(stderr,"color_to_rgb: can't parse color %s\n",
-			*my_color);
+		fvwm_debug(__func__, "color_to_rgb: can't parse color %s\n",
+			   *my_color);
 	}
 	index = get_color_index(rgb.red,rgb.green,rgb.blue, False);
 	/* Finally: replace the color string by the newly determined color
@@ -2360,55 +2361,55 @@ void PicturePrintColorInfo(int verbose)
 {
 	unsigned long nbr_of_colors = 1 << Pdepth;
 
-	fprintf(stderr, "fvwm info on colors\n");
-	fprintf(stderr, "  Visual ID: 0x%x, Default?: %s, Class: ",
-		(int)(Pvisual->visualid),
-		(Pdefault)? "Yes":"No");
+	fvwm_debug(__func__, "fvwm info on colors\n");
+	fvwm_debug(__func__, "  Visual ID: 0x%x, Default?: %s, Class: ",
+		   (int)(Pvisual->visualid),
+		   (Pdefault)? "Yes":"No");
 	if (Pvisual->class == TrueColor)
 	{
-		fprintf(stderr,"TrueColor");
+		fvwm_debug(__func__, "TrueColor");
 	}
 	else if (Pvisual->class == PseudoColor)
 	{
-		fprintf(stderr,"PseudoColor");
+		fvwm_debug(__func__, "PseudoColor");
 	}
 	else if (Pvisual->class == DirectColor)
 	{
-		fprintf(stderr,"DirectColor");
+		fvwm_debug(__func__, "DirectColor");
 	}
 	else if (Pvisual->class == StaticColor)
 	{
-		fprintf(stderr,"StaticColor");
+		fvwm_debug(__func__, "StaticColor");
 	}
 	else if (Pvisual->class == GrayScale)
 	{
-		fprintf(stderr,"GrayScale");
+		fvwm_debug(__func__, "GrayScale");
 	}
 	else if (Pvisual->class == StaticGray)
 	{
-		fprintf(stderr,"StaticGray");
+		fvwm_debug(__func__, "StaticGray");
 	}
-	fprintf(stderr, "\n");
-	fprintf(stderr, "  Depth: %i, Number of colors: %lu",
-		Pdepth, (unsigned long)nbr_of_colors);
+	fvwm_debug(__func__, "\n");
+	fvwm_debug(__func__, "  Depth: %i, Number of colors: %lu",
+		   Pdepth, (unsigned long)nbr_of_colors);
 	if (Pct != NULL)
 	{
-		fprintf(stderr,"\n  Pallet with %i colors", PColorLimit);
+		fvwm_debug(__func__, "\n  Pallet with %i colors", PColorLimit);
 		if (Pvisual->class & 1)
 		{
-			fprintf(stderr,", Number of free colors: %i\n",
-				get_nbr_of_free_colors((1 << Pdepth)));
-			fprintf(stderr,
-				"  Auto Detected: %s, Strict: %s, Allocated: %s,"
-				" Dynamic: %s\n",
-				(Pcsi.pre_allocated_pallet)? "Yes":"No",
-				(PStrictColorLimit)? "Yes":"No",
-				(PAllocTable)? "Yes":"No",
-				(PUseDynamicColors)? "Yes":"No");
+			fvwm_debug(__func__, ", Number of free colors: %i\n",
+				   get_nbr_of_free_colors((1 << Pdepth)));
+			fvwm_debug(__func__,
+				   "  Auto Detected: %s, Strict: %s, Allocated: %s,"
+				   " Dynamic: %s\n",
+				   (Pcsi.pre_allocated_pallet)? "Yes":"No",
+				   (PStrictColorLimit)? "Yes":"No",
+				   (PAllocTable)? "Yes":"No",
+				   (PUseDynamicColors)? "Yes":"No");
 		}
 		else
 		{
-			fprintf(stderr," (default colormap)\n");
+			fvwm_debug(__func__, " (default colormap)\n");
 		}
 		if (PColorLimit <= 256)
 		{
@@ -2418,19 +2419,19 @@ void PicturePrintColorInfo(int verbose)
 
 			if (verbose)
 			{
-				fprintf(stderr,"  The fvwm colors table:\n");
+				fvwm_debug(__func__,
+					   "  The fvwm colors table:\n");
 			}
 			for (i = 0; i < PColorLimit; i++)
 			{
 				if (verbose)
 				{
-					fprintf(
-						stderr,
-						"    rgb:%.3i/%.3i/%.3i\t%lu\n",
-						Pct[i].color.red >> 8,
-						Pct[i].color.green >> 8,
-						Pct[i].color.blue >> 8,
-						Pct[i].alloc_count);
+					fvwm_debug(__func__,
+						   "    rgb:%.3i/%.3i/%.3i\t%lu\n",
+						   Pct[i].color.red >> 8,
+						   Pct[i].color.green >> 8,
+						   Pct[i].color.blue >> 8,
+						   Pct[i].alloc_count);
 				}
 				if (Pct[i].alloc_count)
 				{
@@ -2441,8 +2442,9 @@ void PicturePrintColorInfo(int verbose)
 			{
 				if (verbose)
 				{
-					fprintf(stderr,"  fvwm colors not in"
-						" the table:\n");
+					fvwm_debug(__func__,
+						   "  fvwm colors not in"
+						   " the table:\n");
 				}
 				for(i=0; i < nbr_of_colors; i++)
 				{
@@ -2464,35 +2466,36 @@ void PicturePrintColorInfo(int verbose)
 					count_alloc++;
 					if (verbose)
 					{
-						fprintf(
-							stderr,
-							"    rgb:"
-							"%.3i/%.3i/%.3i\t%lu\n",
-							Pac[i].color.red >> 8,
-							Pac[i].color.green >> 8,
-							Pac[i].color.blue >> 8,
-							Pac[i].alloc_count);
+						fvwm_debug(__func__,
+							   "    rgb:"
+							   "%.3i/%.3i/%.3i\t%lu\n",
+							   Pac[i].color.red >> 8,
+							   Pac[i].color.green >> 8,
+							   Pac[i].color.blue >> 8,
+							   Pac[i].alloc_count);
 					}
 				}
 				if (verbose && count_alloc == 0)
 				{
 					if (verbose)
 					{
-						fprintf(stderr,"    None\n");
+						fvwm_debug(__func__,
+							   "    None\n");
 					}
 				}
 			}
 			if (Pvisual->class & 1)
 			{
-				fprintf(stderr,
-					"  Number of colours used by fvwm:\n");
-				fprintf(stderr,
-					"    In the table: %i\n", count);
-				fprintf(
-					stderr, "    Out of the table: %i\n",
-					count_alloc);
-				fprintf(stderr,
-					"    Total: %i\n", count_alloc+count);
+				fvwm_debug(__func__,
+					   "  Number of colours used by fvwm:\n");
+				fvwm_debug(__func__,
+					   "    In the table: %i\n", count);
+				fvwm_debug(__func__,
+					   "    Out of the table: %i\n",
+					   count_alloc);
+				fvwm_debug(__func__,
+					   "    Total: %i\n",
+					   count_alloc+count);
 			}
 		}
 	}
@@ -2500,27 +2503,28 @@ void PicturePrintColorInfo(int verbose)
 	{
 		if (Pvisual->class == DirectColor)
 		{
-			fprintf(stderr, ", Pseudo Pallet with: %i colors\n",
-				(1 << Pcsi.red_prec)*(1 << Pcsi.green_prec)*
-				(1 << Pcsi.blue_prec));
+			fvwm_debug(__func__,
+				   ", Pseudo Pallet with: %i colors\n",
+				   (1 << Pcsi.red_prec)*(1 << Pcsi.green_prec)*
+				   (1 << Pcsi.blue_prec));
 		}
 		else
 		{
-			fprintf(stderr, ", No Pallet (static colors)\n");
+			fvwm_debug(__func__, ", No Pallet (static colors)\n");
 		}
-		fprintf(stderr, "  red: %i, green: %i, blue %i\n",
-			1 << Pcsi.red_prec, 1 << Pcsi.green_prec,
-			1 << Pcsi.blue_prec);
+		fvwm_debug(__func__, "  red: %i, green: %i, blue %i\n",
+			   1 << Pcsi.red_prec, 1 << Pcsi.green_prec,
+			   1 << Pcsi.blue_prec);
 		if (verbose && Pdepth <= 8)
 		{
 			if (Pvisual->class == DirectColor)
 			{
-				fprintf(stderr, "  Colormap:\n");
+				fvwm_debug(__func__, "  Colormap:\n");
 			}
 			else
 			{
-				fprintf(stderr,
-					"  Static Colormap used by fvwm:\n");
+				fvwm_debug(__func__,
+					   "  Static Colormap used by fvwm:\n");
 			}
 			print_colormap(Pcmap);
 		}
@@ -2528,7 +2532,7 @@ void PicturePrintColorInfo(int verbose)
 
 	if (Pdepth <= 8 && verbose >= 2)
 	{
-		fprintf(stderr,"\n  Default Colormap:\n");
+		fvwm_debug(__func__, "\n  Default Colormap:\n");
 		print_colormap(DefaultColormap(Pdpy,DefaultScreen(Pdpy)));
 	}
 }
