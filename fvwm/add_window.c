@@ -192,10 +192,7 @@ static void CaptureOneWindow(
 		{
 			win_opts.initial_state = NormalState;
 			win_opts.flags.is_iconified_by_parent = 0;
-			if (m->virtual_scr.CurrentDesk != fw->Desk)
-			{
-				SetMapStateProp(fw, NormalState);
-			}
+			SetMapStateProp(fw, NormalState);
 		}
 		data[0] = (unsigned long) fw->Desk;
 		XChangeProperty(
