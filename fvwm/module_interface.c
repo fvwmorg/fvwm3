@@ -120,10 +120,9 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 		bodylen += addlen;
 		if (bodylen >= FvwmPacketMaxSize_byte)
 		{
-			fvwm_msg(
-				ERR, "make_new_vpacket",
-				"packet too long %ld %ld", (long)bodylen,
-				(long)FvwmPacketMaxSize_byte);
+			fvwm_debug(__func__,
+				   "packet too long %ld %ld", (long)bodylen,
+				   (long)FvwmPacketMaxSize_byte);
 			break;
 		}
 		if (arglen > 0)
@@ -159,10 +158,10 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 		}
 		else
 		{
-			fvwm_msg(
-				ERR, "make_new_vpacket",
-				"can not handle arglen %ld, please contact"
-				" fvwm-workers@fvwm.org. aborting...", arglen);
+			fvwm_debug(__func__,
+				   "can not handle arglen %ld, please contact"
+				   " fvwm-workers@fvwm.org. aborting...",
+				   arglen);
 			abort();
 		}
 	}

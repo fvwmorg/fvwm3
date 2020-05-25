@@ -2123,7 +2123,7 @@ static void GetIconFromFile(FvwmWindow *fw)
 		&fw->iconDepth, &fw->icon_nalloc_pixels, &fw->icon_alloc_pixels,
 		&fw->icon_no_limit, fpa))
 	{
-		fvwm_msg(ERR, "GetIconFromFile", "Failed to load %s", path);
+		fvwm_debug(__func__, "Failed to load %s", path);
 		free(path);
 		return;
 	}
@@ -2158,10 +2158,9 @@ static void GetIconWindow(FvwmWindow *fw)
 		    (unsigned int*)&w, (unsigned int*)&h,(unsigned int*)&bw,
 		    (unsigned int*)&JunkDepth) == 0)
 	{
-		fvwm_msg(
-			ERR,"GetIconWindow",
-			"Window '%s' has a bad icon window! Ignoring icon"
-			" window.", fw->name.name);
+		fvwm_debug(__func__,
+			   "Window '%s' has a bad icon window! Ignoring icon"
+			   " window.", fw->name.name);
 		/* disable the icon window hint */
 		fw->wmhints->icon_window = None;
 		fw->wmhints->flags &= ~IconWindowHint;
@@ -2213,10 +2212,9 @@ static void GetIconBitmap(FvwmWindow *fw)
 		    (unsigned int*)&width, (unsigned int*)&height,
 		    (unsigned int*)&JunkBW, (unsigned int*)&depth))
 	{
-		fvwm_msg(
-			ERR,"GetIconBitmap",
-			"Window '%s' has a bad icon pixmap! Ignoring icon.",
-			fw->name.name);
+		fvwm_debug(__func__,
+			   "Window '%s' has a bad icon pixmap! Ignoring icon.",
+			   fw->name.name);
 		/* disable icon pixmap hint */
 		fw->wmhints->icon_pixmap = None;
 		fw->wmhints->flags &= ~IconPixmapHint;
@@ -2227,12 +2225,11 @@ static void GetIconBitmap(FvwmWindow *fw)
 	if (depth != 1 && depth != Pdepth &&
 	    depth != DefaultDepth(dpy,Scr.screen))
 	{
-		fvwm_msg(
-			ERR, "GetIconBitmap",
-			"Window '%s' has a bad icon bitmap depth %d (should"
-			" be 1, %d or %d)! Ignoring icon bitmap.",
-			fw->name.name, depth, Pdepth,
-			DefaultDepth(dpy,Scr.screen));
+		fvwm_debug(__func__,
+			   "Window '%s' has a bad icon bitmap depth %d (should"
+			   " be 1, %d or %d)! Ignoring icon bitmap.",
+			   fw->name.name, depth, Pdepth,
+			   DefaultDepth(dpy,Scr.screen));
 		/* disable icon pixmap hint */
 		fw->wmhints->icon_pixmap = None;
 		fw->wmhints->flags &= ~IconPixmapHint;

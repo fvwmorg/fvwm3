@@ -232,10 +232,10 @@ void CMD_WindowShadeAnimate(F_CMD_ARGS)
 	{
 		action = "";
 	}
-	fvwm_msg(
-		ERR, "CMD_WindowShadeAnimate",
-		"The WindowShadeAnimate command is obsolete. "
-		"Please use 'Style * WindowShadeSteps %s' instead.", action);
+	fvwm_debug(__func__,
+		   "The WindowShadeAnimate command is obsolete. "
+		   "Please use 'Style * WindowShadeSteps %s' instead.",
+		   action);
 	/* TA:  FIXME!  xasprintf() */
 	buf = fxmalloc(strlen(action) + 32);
 	sprintf(buf, "* WindowShadeSteps %s", action);

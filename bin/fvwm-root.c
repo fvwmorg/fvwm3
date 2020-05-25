@@ -126,9 +126,9 @@ int SetRootWindow(char *tline)
 		dpy, root, file_path, &temp_pix, &shapeMask, &alpha,
 		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, 0, fpa))
 	{
-		fprintf(
-			stderr, "[fvwm-root] failed to load image file '%s'\n",
-			tline);
+		fvwm_debug(__func__,
+			   "[fvwm-root] failed to load image file '%s'\n",
+			   tline);
 		return -1;
 	}
 	if (depth == Pdepth)
@@ -173,15 +173,15 @@ int main(int argc, char **argv)
 	if (argc < 2)
 	{
 		usage(0);
-		fprintf(stderr, "Nothing to do, try again.\n");
+		fvwm_debug(__func__, "Nothing to do, try again.\n");
 		exit(1);
 	}
 	dpy = XOpenDisplay(display_name);
 	if (!dpy)
 	{
-		fprintf(
-			stderr, "fvwm-root: unable to open display '%s'\n",
-			XDisplayName (display_name));
+		fvwm_debug(__func__,
+			   "fvwm-root: unable to open display '%s'\n",
+			   XDisplayName (display_name));
 		exit(2);
 	}
 	screen = DefaultScreen(dpy);
@@ -253,12 +253,12 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			fprintf(
-				stderr, "fvwm-root: unknown option '%s'\n",
-				argv[i]);
-			fprintf(
-				stderr, "Run '%s --help' to get the usage.\n",
-				argv[0]);
+			fvwm_debug(__func__,
+				   "fvwm-root: unknown option '%s'\n",
+				   argv[i]);
+			fvwm_debug(__func__,
+				   "Run '%s --help' to get the usage.\n",
+				   argv[0]);
 			exit(1);
 		}
 	}

@@ -241,9 +241,9 @@ static void parse_menu_action(
 		{
 			if (suffix[0] != 0 || count[0] != 0)
 			{
-				fvwm_msg(ERR, "parse_menu_action",
-					 "invalid MenuMoveCursor arguments "
-					 "'%s'", options);
+				fvwm_debug(__func__,
+					   "invalid MenuMoveCursor arguments "
+					   "'%s'", options);
 				*saction = SA_NONE;
 				break;
 			}
@@ -274,9 +274,9 @@ static void parse_menu_action(
 		}
 		else
 		{
-			fvwm_msg(ERR, "parse_menu_action",
-				 "invalid MenuMoveCursor arguments '%s'",
-				 options);
+			fvwm_debug(__func__,
+				   "invalid MenuMoveCursor arguments '%s'",
+				   options);
 			*saction = SA_NONE;
 			break;
 		}
@@ -310,9 +310,9 @@ static void parse_menu_action(
 			}
 			else
 			{
-				fvwm_msg(ERR, "parse_menu_action",
-					 "invalid MenuScroll arguments '%s'",
-					 options);
+				fvwm_debug(__func__,
+					   "invalid MenuScroll arguments '%s'",
+					   options);
 				*saction = SA_NONE;
 				break;
 			}
@@ -326,9 +326,8 @@ static void parse_menu_action(
 		*ret_cmd = options;
 		break;
 	default:
-		fvwm_msg(
-			ERR, "parse_menu_action", "unknown action '%s'",
-			action);
+		fvwm_debug(__func__, "unknown action '%s'",
+			   action);
 		*saction = SA_NONE;
 	}
 
@@ -410,18 +409,16 @@ int menu_binding(
 	rmlist = NULL;
 	if (~(~context | C_MENU | C_TITLE | C_MENU_ITEM | C_SIDEBAR) != 0)
 	{
-		fvwm_msg(
-			ERR, "menu_binding",
-			"invalid context in combination with menu context.");
+		fvwm_debug(__func__,
+			   "invalid context in combination with menu context.");
 
 		return 1;
 	}
 	if (menu_style != NULL)
 	{
 		/*!!! fixme - make either match a menu style or a menu name */
-		fvwm_msg(
-			ERR, "menu_binding", "a window name may not be"
-			" specified without a menu context.");
+		fvwm_debug(__func__, "a window name may not be"
+			   " specified without a menu context.");
 
 		return 1;
 	}
@@ -442,10 +439,9 @@ int menu_binding(
 	{
 		/* Warn if Mouse n M N - occurs without removing any binding.
 		 The user most likely want Mouse n MT A - instead. */
-		fvwm_msg(
-			WARN, "menu_binding",
-			"The syntax for disabling the tear off button has "
-			"changed.");
+		fvwm_debug(__func__,
+			   "The syntax for disabling the tear off button has "
+			   "changed.");
 	}
 	if (strcmp(action,"-") == 0)
 	{
@@ -454,10 +450,9 @@ int menu_binding(
 	/* END remove */
 	if ((modifier & AnyModifier) && (modifier & (~AnyModifier)))
 	{
-		fvwm_msg(
-			WARN, "menu_binding", "Binding specified AnyModifier"
-			" and other modifers too. Excess modifiers are"
-			" ignored.");
+		fvwm_debug(__func__, "Binding specified AnyModifier"
+			   " and other modifers too. Excess modifiers are"
+			   " ignored.");
 		modifier = AnyModifier;
 	}
 	/* Warn about Mouse n M N TearOff. */
@@ -465,10 +460,10 @@ int menu_binding(
 		keysym == 0 && button != 0 && modifier == 0 &&
 		strcasecmp(action,"tearoff") == 0 && context == C_MENU)
 	{
-		fvwm_msg(OLD, "menu_binding",
-			 "The syntax for disabling the tear off button has "
-			 "changed. The TearOff action is no longer possible "
-			 "in menu bindings.");
+		fvwm_debug(__func__,
+			   "The syntax for disabling the tear off button has "
+			   "changed. The TearOff action is no longer possible "
+			   "in menu bindings.");
 	}
 	rc = AddBinding(
 		dpy, menu_bindings, type, STROKE_ARG(NULL) button, keysym,
@@ -590,9 +585,8 @@ void menu_shortcuts(
 		}
 		else
 		{
-			fvwm_msg(
-				ERR, "menu_shortcuts", "can't get geometry of"
-				" menu %s", MR_NAME(mr));
+			fvwm_debug(__func__, "can't get geometry of"
+				   " menu %s", MR_NAME(mr));
 		}
 	}
 
@@ -978,9 +972,9 @@ void menu_shortcuts(
 				&JunkWidth, &menu_height,
 				&JunkBW, &JunkDepth))
 		{
-			fvwm_msg(
-				ERR, "menu_shortcuts",
-				"can't get geometry of menu %s", MR_NAME(mr));
+			fvwm_debug(__func__,
+				   "can't get geometry of menu %s",
+				   MR_NAME(mr));
 			return;
 		}
 		if (do_skip_section)
@@ -1118,9 +1112,9 @@ void menu_shortcuts(
 			    &JunkWidth, &menu_height,
 			    &JunkBW, &JunkDepth))
 		{
-			fvwm_msg(
-				ERR, "menu_shortcuts",
-				"can't get geometry of menu %s", MR_NAME(mr));
+			fvwm_debug(__func__,
+				   "can't get geometry of menu %s",
+				   MR_NAME(mr));
 			return;
 		}
 		if (menu_y < 0 || menu_y + menu_height > MR_SCREEN_Y(mr) + MR_SCREEN_HEIGHT(mr))

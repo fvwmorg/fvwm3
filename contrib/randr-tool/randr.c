@@ -120,7 +120,7 @@ screen_info_new(void)
 bool is_randr_newest(void)
 {
 	if ((RANDR_MAJOR * 100) + RANDR_MINOR < 105) {
-		fprintf(stderr, "Error: randr v1.5+ required\n");
+		fvwm_debug(__func__, "Error: randr v1.5+ required\n");
 		return false;
 	}
 	return true;
@@ -201,13 +201,13 @@ poll_x(void)
 			oinfo = XRRGetOutputInfo(oce->display, sres, oce->output);
 			XRRConfigCurrentConfiguration(sc, &current_rotation);
 			sizes = XRRConfigSizes(sc, &nsize);
-			fprintf(stderr, "%s (%s) %d %dx%d\n",
-				oinfo->name,
-				oinfo->connection == RR_Connected ?
-				  "connected" : "disconnected",
-				0,
-				sizes[0].width,
-				sizes[0].height
+			fvwm_debug(__func__, "%s (%s) %d %dx%d\n",
+				   oinfo->name,
+				   oinfo->connection == RR_Connected ?
+				   "connected" : "disconnected",
+				   0,
+				   sizes[0].width,
+				   sizes[0].height
 			);
 			XRRFreeScreenResources(sres);
 			XRRFreeOutputInfo(oinfo);
@@ -226,7 +226,7 @@ scan_for_monitors(void)
 
 	rrm = XRRGetMonitors(dpy, root, false, &n);
 	if (n == -1) {
-		fprintf(stderr, "get monitors failed\n");
+		fvwm_debug(__func__, "get monitors failed\n");
 		exit(1);
 	}
 
@@ -262,7 +262,7 @@ main(void)
 	struct monitor 	*m;
 
 	if ((dpy = XOpenDisplay(NULL)) == NULL) {
-		fprintf(stderr, "Couldn't open display\n");
+		fvwm_debug(__func__, "Couldn't open display\n");
 		return (1);
 	}
 
@@ -274,7 +274,7 @@ main(void)
 	if (!XRRQueryExtension(dpy, &event_base, &error_base) ||
         	!XRRQueryVersion (dpy, &major, &minor))
     	{
-		fprintf (stderr, "RandR extension missing\n");
+		fvwm_debug(__func__, "RandR extension missing\n");
 		return (1);
 	}
 	if (!is_randr_newest())

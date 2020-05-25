@@ -1332,9 +1332,8 @@ static char *style_parse_button_style(
 	button = BUTTON_INDEX(button);
 	if (button < 0 || button >= NUMBER_OF_TITLE_BUTTONS)
 	{
-		fvwm_msg(
-			ERR, "CMD_Style",
-			"Button and NoButton styles require an argument");
+		fvwm_debug(__func__,
+			   "Button and NoButton styles require an argument");
 	}
 	else
 	{
@@ -1447,9 +1446,8 @@ static Bool style_parse_focus_policy_style(
 		}
 		if (token != NULL && *token != 0)
 		{
-			fvwm_msg(
-				ERR, "style_parse_focus_policy_style",
-				"illegal mouse button '%c'", *token);
+			fvwm_debug(__func__,
+				   "illegal mouse button '%c'", *token);
 			val = DEF_FP_MOUSE_BUTTONS;
 		}
 		if (token == NULL)
@@ -1699,12 +1697,12 @@ static char *style_parse_icon_size_style(
 			    (vals[i] < MIN_ALLOWABLE_ICON_DIMENSION ||
 			     vals[i] > MAX_ALLOWABLE_ICON_DIMENSION))
 			{
-				fvwm_msg(
-					ERR, "CMD_Style",
-					"IconSize dimension (%d) not in valid"
-					" range (%d-%d)",
-					vals[i], MIN_ALLOWABLE_ICON_DIMENSION,
-					MAX_ALLOWABLE_ICON_DIMENSION);
+				fvwm_debug(__func__,
+					   "IconSize dimension (%d) not in valid"
+					   " range (%d-%d)",
+					   vals[i],
+					   MIN_ALLOWABLE_ICON_DIMENSION,
+					   MAX_ALLOWABLE_ICON_DIMENSION);
 				use_default = 1;
 			}
 
@@ -1733,10 +1731,9 @@ static char *style_parse_icon_size_style(
 		ps->change_mask.has_icon_size_limits = 1;
 		break;
 	default:
-		fvwm_msg(
-			ERR, "CMD_Style",
-			"IconSize requires exactly 0, 2 or 4"
-			" numerical arguments");
+		fvwm_debug(__func__,
+			   "IconSize requires exactly 0, 2 or 4"
+			   " numerical arguments");
 		break;
 	}
 
@@ -1827,10 +1824,9 @@ static char *style_parse_icon_box_style(
 	else if  (is_screen_given)
 	{
 		/* screen-spec is given but not 4 numbers */
-		fvwm_msg(
-			ERR,"CMD_Style",
-			"IconBox requires 4 numbers if screen is given!"
-			" Invalid: <%s>.", option);
+		fvwm_debug(__func__,
+			   "IconBox requires 4 numbers if screen is given!"
+			   " Invalid: <%s>.", option);
 		/* Drop the box */
 		free(IconBoxes);
 		/* forget about it */
@@ -1865,11 +1861,10 @@ static char *style_parse_icon_box_style(
 			if (width == 0 || !(geom_flags & WidthValue))
 			{
 				/* zero width is invalid */
-				fvwm_msg(
-					ERR,"CMD_Style",
-					"IconBox requires 4 numbers or"
-					" geometry! Invalid string <%s>.",
-					option);
+				fvwm_debug(__func__,
+					   "IconBox requires 4 numbers or"
+					   " geometry! Invalid string <%s>.",
+					   option);
 				/* Drop the box */
 				free(IconBoxes);
 				/* forget about it */
@@ -1952,10 +1947,9 @@ static char *style_parse_icon_grid_style(
 	if (ib == 0)
 	{
 		/* If no current box */
-		fvwm_msg(
-			ERR,"CMD_Style",
-			"IconGrid must follow an IconBox in same Style"
-			" command");
+		fvwm_debug(__func__,
+			   "IconGrid must follow an IconBox in same Style"
+			   " command");
 		return rest;
 	}
 	/* have a place to grid */
@@ -1963,10 +1957,9 @@ static char *style_parse_icon_grid_style(
 	num = GetIntegerArguments(rest, &rest, val, 2);
 	if (num != 2 || val[0] < 1 || val[1] < 1)
 	{
-		fvwm_msg(
-			ERR,"CMD_Style",
-			"IconGrid needs 2 numbers > 0. Got %d numbers."
-			" x=%d y=%d!", num, val[0], val[1]);
+		fvwm_debug(__func__,
+			   "IconGrid needs 2 numbers > 0. Got %d numbers."
+			   " x=%d y=%d!", num, val[0], val[1]);
 		/* reset grid */
 		ib->IconGrid[0] = 3;
 		ib->IconGrid[1] = 3;
@@ -1995,10 +1988,9 @@ static char *style_parse_icon_fill_style(
 	if (ib == 0)
 	{
 		/* If no current box */
-		fvwm_msg(
-			ERR,"CMD_Style",
-			"IconFill must follow an IconBox in same Style"
-			" command");
+		fvwm_debug(__func__,
+			   "IconFill must follow an IconBox in same Style"
+			   " command");
 		return rest;
 	}
 	/* have a place to fill */
@@ -2011,10 +2003,9 @@ static char *style_parse_icon_fill_style(
 		{
 			option = "(none)";
 		}
-		fvwm_msg(
-			ERR,"CMD_Style",
-			"IconFill must be followed by T|B|R|L, found"
-			" %s.", option);
+		fvwm_debug(__func__,
+			   "IconFill must be followed by T|B|R|L, found"
+			   " %s.", option);
 		return rest;
 	}
 	/* first word valid */
@@ -2029,18 +2020,16 @@ static char *style_parse_icon_fill_style(
 		{
 			option = "(none)";
 		}
-		fvwm_msg(
-			ERR,"CMD_Style",
-			"IconFill must be followed by T|B|R|L,"
-			" found %s.", option);
+		fvwm_debug(__func__,
+			   "IconFill must be followed by T|B|R|L,"
+			   " found %s.", option);
 		return rest;
 	}
 	if ((IconFill_1 & ICONFILLHRZ) == (IconFill_2 & ICONFILLHRZ))
 	{
-		fvwm_msg(
-			ERR, "CMD_Style",
-			"IconFill must specify a horizontal"
-			" and vertical direction.");
+		fvwm_debug(__func__,
+			   "IconFill must specify a horizontal"
+			   " and vertical direction.");
 		return rest;
 	}
 	/* Its valid! */
@@ -2152,10 +2141,9 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "style_parse_on_estyle_option",
-					"Style BackColor requires color"
-					" argument");
+				fvwm_debug(__func__,
+					   "Style BackColor requires color"
+					   " argument");
 			}
 		}
 		else if (StrEquals(token, "Button"))
@@ -2283,10 +2271,9 @@ static Bool style_parse_one_style_option(
 			next = GetNextToken(rest, &token);
 			if (token == NULL)
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"Color Style requires a color"
-					" argument");
+				fvwm_debug(__func__,
+					   "Color Style requires a color"
+					   " argument");
 				break;
 			}
 			if (strncasecmp(token, "rgb:", 4) == 0)
@@ -2352,10 +2339,9 @@ static Bool style_parse_one_style_option(
 			rest=GetNextToken(rest, &token);
 			if (!token)
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"Color Style called with incomplete"
-					" color argument.");
+				fvwm_debug(__func__,
+					   "Color Style called with incomplete"
+					   " color argument.");
 				break;
 			}
 			SAFEFREE(SGET_BACK_COLOR_NAME(*ps));
@@ -2517,9 +2503,9 @@ static Bool style_parse_one_style_option(
 			 *
 			 * TitleFormat %n
 			 */
-			fvwm_msg(WARN, "style_parse_one_style_option",
-				"ExactWindowName is deprecated -- using"
-				" TitleFormat %%n");
+			fvwm_debug(__func__,
+				   "ExactWindowName is deprecated -- using"
+				   " TitleFormat %%n");
 			format = strdup(DEFAULT_TITLE_FORMAT);
 			SSET_TITLE_FORMAT_STRING(*ps, format);
 			ps->flags.has_title_format_string = 1;
@@ -2534,9 +2520,9 @@ static Bool style_parse_one_style_option(
 			 *
 			 * IconTitleFormat %n
 			 */
-			fvwm_msg(WARN, "style_parse_one_style_option",
-				"ExactIconName is deprecated -- using"
-				" IconTitleFormat %%n");
+			fvwm_debug(__func__,
+				   "ExactIconName is deprecated -- using"
+				   " IconTitleFormat %%n");
 			format = strdup(DEFAULT_TITLE_FORMAT);
 			SSET_ICON_TITLE_FORMAT_STRING(*ps, format);
 			ps->flags.has_icon_title_format_string = 1;
@@ -2659,9 +2645,8 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"ForeColor Style needs color argument"
+				fvwm_debug(__func__,
+					   "ForeColor Style needs color argument"
 					);
 			}
 		}
@@ -2796,10 +2781,9 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"HilightFore Style needs color"
-					" argument");
+				fvwm_debug(__func__,
+					   "HilightFore Style needs color"
+					   " argument");
 			}
 		}
 		else if (StrEquals(token, "HilightBack"))
@@ -2818,10 +2802,9 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"HilightBack Style needs color"
-					" argument");
+				fvwm_debug(__func__,
+					   "HilightBack Style needs color"
+					   " argument");
 			}
 		}
 		else if (StrEquals(token, "HilightColorset"))
@@ -2969,9 +2952,9 @@ static Bool style_parse_one_style_option(
 
 			if (!__validate_titleformat_string(fmt_string))
 			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					"TitleFormat string invalid:  %s",
-					fmt_string);
+				fvwm_debug(__func__,
+					   "TitleFormat string invalid:  %s",
+					   fmt_string);
 			}
 
 			SSET_ICON_TITLE_FORMAT_STRING(*ps, fmt_string);
@@ -3052,9 +3035,9 @@ static Bool style_parse_one_style_option(
 			 *
 			 * TitleFormat %n
 			 */
-			fvwm_msg(WARN, "style_parse_one_style_option",
-				"IndexedWindowName is deprecated.  "
-				"Converting to use:  TitleFormat %%n (%%t)");
+			fvwm_debug(__func__,
+				   "IndexedWindowName is deprecated.  "
+				   "Converting to use:  TitleFormat %%n (%%t)");
 			format = strdup( "%n (%t)" );
 
 			SSET_TITLE_FORMAT_STRING(*ps, format);
@@ -3070,9 +3053,9 @@ static Bool style_parse_one_style_option(
 			 *
 			 * TitleFormat %n
 			 */
-			fvwm_msg(WARN, "style_parse_one_style_option",
-				"IndexedIconName is deprecated.  "
-				"Converting to use:  IconTitleFormat %%n (%%t)");
+			fvwm_debug(__func__,
+				   "IndexedIconName is deprecated.  "
+				   "Converting to use:  IconTitleFormat %%n (%%t)");
 			format = strdup( "%n (%t)" );
 
 			SSET_ICON_TITLE_FORMAT_STRING(*ps, format);
@@ -3145,8 +3128,8 @@ static Bool style_parse_one_style_option(
 			if (GetIntegerArguments(rest, &rest, val, 1) &&
 			    *val < 0)
 			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					 "Layer must be positive or zero.");
+				fvwm_debug(__func__,
+					   "Layer must be positive or zero.");
 			}
 			if (*val < 0)
 			{
@@ -3240,10 +3223,9 @@ static Bool style_parse_one_style_option(
 			}
 			if (bad)
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"Bad argument to MinOverlap"
-					"PlacementPenalties: %s", rest);
+				fvwm_debug(__func__,
+					   "Bad argument to MinOverlap"
+					   "PlacementPenalties: %s", rest);
 				break;
 			}
 			{
@@ -3297,10 +3279,9 @@ static Bool style_parse_one_style_option(
 			}
 			if (bad)
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"Bad argument to MinOverlapPercent"
-					"PlacementPenalties: %s", rest);
+				fvwm_debug(__func__,
+					   "Bad argument to MinOverlapPercent"
+					   "PlacementPenalties: %s", rest);
 				break;
 			}
 			{
@@ -3352,9 +3333,8 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"MiniIcon Style requires an Argument");
+				fvwm_debug(__func__,
+					   "MiniIcon Style requires an Argument");
 			}
 		}
 		else if (StrEquals(token, "MwmBorder"))
@@ -3907,8 +3887,8 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(ERR,"style_parse_one_style_option",
-					 "bad StartsOnDesk arg: %s", rest);
+				fvwm_debug(__func__,
+					   "bad StartsOnDesk arg: %s", rest);
 			}
 		}
 		/* StartsOnPage is like StartsOnDesk-Plus */
@@ -3952,8 +3932,8 @@ static Bool style_parse_one_style_option(
 			}
 			if (spargs < 1 || spargs > 3)
 			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					 "bad StartsOnPage args: %s", rest);
+				fvwm_debug(__func__,
+					   "bad StartsOnPage args: %s", rest);
 			}
 			else
 			{
@@ -4045,11 +4025,9 @@ static Bool style_parse_one_style_option(
 				}
 				else
 				{
-					fvwm_msg(
-						ERR,
-						"style_parse_one_style_option",
-						"Option: %s is not valid with"
-						" StartShaded", token);
+					fvwm_debug(__func__,
+						   "Option: %s is not valid with"
+						   " StartShaded", token);
 				}
 			}
 			else
@@ -4121,9 +4099,8 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(
-					ERR,"style_parse_one_style_option",
-					"bad State arg: %s", rest);
+				fvwm_debug(__func__,
+					   "bad State arg: %s", rest);
 			}
 		}
 		else if (StrEquals(token, "SnapAttraction"))
@@ -4294,9 +4271,9 @@ static Bool style_parse_one_style_option(
 
 			if (!__validate_titleformat_string(fmt_string))
 			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					"TitleFormat string invalid:  %s",
-					fmt_string);
+				fvwm_debug(__func__,
+					   "TitleFormat string invalid:  %s",
+					   fmt_string);
 			}
 
 			SSET_TITLE_FORMAT_STRING(*ps, fmt_string);
@@ -4376,8 +4353,8 @@ static Bool style_parse_one_style_option(
 			token = PeekToken(rest, &rest);
 			if (!token)
 			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					 "UseStyle needs an argument");
+				fvwm_debug(__func__,
+					   "UseStyle needs an argument");
 				break;
 			}
 			hit = 0;
@@ -4397,9 +4374,9 @@ static Bool style_parse_one_style_option(
 			/* move forward one word */
 			if (!hit)
 			{
-				fvwm_msg(
-					ERR, "style_parse_one_style_option",
-					"UseStyle: %s style not found", token);
+				fvwm_debug(__func__,
+					   "UseStyle: %s style not found",
+					   token);
 			}
 		}
 		else if (StrEquals(token, "Unmanaged"))
@@ -4591,9 +4568,8 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 
 		if (found == False)
 		{
-			fvwm_msg(
-				ERR, "style_parse_and_set_window_style",
-				"Bad style option: %s", option);
+			fvwm_debug(__func__,
+				   "Bad style option: %s", option);
 			/* Can't return here since all malloced memory will be
 			 * lost. Ignore rest of line instead. */
 			/* No, I think we /can/ return here. In fact, /not/
@@ -4609,10 +4585,9 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 			rest = SkipSpaces(rest,NULL,0);
 			if (*rest)
 			{
-				fvwm_msg(WARN,
-					 "style_parse_and_set_window_style",
-					 "Unconsumed argument in %s: %s",
-					 option, rest);
+				fvwm_debug(__func__,
+					   "Unconsumed argument in %s: %s",
+					   option, rest);
 			}
 		}
 		free(option);
@@ -5465,10 +5440,10 @@ void print_styles(int verbose)
 	int count = 0;
 	int mem = 0;
 
-	fprintf(stderr,"Info on fvwm Styles:\n");
+	fvwm_debug(__func__, "Info on fvwm Styles:\n");
 	if (verbose)
 	{
-		fprintf(stderr,"  List of Styles Names:\n");
+		fvwm_debug(__func__, "  List of Styles Names:\n");
 	}
 	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
 	{
@@ -5478,7 +5453,8 @@ void print_styles(int verbose)
 			mem += strlen(SGET_NAME(*nptr));
 			if (verbose)
 			{
-				fprintf(stderr,"    * %s\n", SGET_NAME(*nptr));
+				fvwm_debug(__func__, "    * %s\n",
+					   SGET_NAME(*nptr));
 			}
 		}
 		else
@@ -5486,8 +5462,8 @@ void print_styles(int verbose)
 			mem++;
 			if (verbose)
 			{
-				fprintf(stderr,"    * 0x%lx\n",
-					(unsigned long)SGET_WINDOW_ID(*nptr));
+				fvwm_debug(__func__, "    * 0x%lx\n",
+					   (unsigned long)SGET_WINDOW_ID(*nptr));
 			}
 		}
 		if (SGET_BACK_COLOR_NAME(*nptr))
@@ -5495,9 +5471,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_BACK_COLOR_NAME(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Back Color: %s\n",
-					SGET_BACK_COLOR_NAME(*nptr));
+				fvwm_debug(__func__,
+					   "        Back Color: %s\n",
+					   SGET_BACK_COLOR_NAME(*nptr));
 			}
 		}
 		if (SGET_FORE_COLOR_NAME(*nptr))
@@ -5505,9 +5481,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_FORE_COLOR_NAME(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Fore Color: %s\n",
-					SGET_FORE_COLOR_NAME(*nptr));
+				fvwm_debug(__func__,
+					   "        Fore Color: %s\n",
+					   SGET_FORE_COLOR_NAME(*nptr));
 			}
 		}
 		if (SGET_BACK_COLOR_NAME_HI(*nptr))
@@ -5515,9 +5491,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_BACK_COLOR_NAME_HI(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Back Color hi: %s\n",
-					SGET_BACK_COLOR_NAME_HI(*nptr));
+				fvwm_debug(__func__,
+					   "        Back Color hi: %s\n",
+					   SGET_BACK_COLOR_NAME_HI(*nptr));
 			}
 		}
 		if (SGET_FORE_COLOR_NAME_HI(*nptr))
@@ -5525,9 +5501,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_FORE_COLOR_NAME_HI(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Fore Color hi: %s\n",
-					SGET_FORE_COLOR_NAME_HI(*nptr));
+				fvwm_debug(__func__,
+					   "        Fore Color hi: %s\n",
+					   SGET_FORE_COLOR_NAME_HI(*nptr));
 			}
 		}
 		if (SGET_DECOR_NAME(*nptr))
@@ -5535,9 +5511,8 @@ void print_styles(int verbose)
 			mem += strlen(SGET_DECOR_NAME(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Decor: %s\n",
-					SGET_DECOR_NAME(*nptr));
+				fvwm_debug(__func__, "        Decor: %s\n",
+					   SGET_DECOR_NAME(*nptr));
 			}
 		}
 		if (SGET_WINDOW_FONT(*nptr))
@@ -5545,9 +5520,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_WINDOW_FONT(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Window Font: %s\n",
-					SGET_WINDOW_FONT(*nptr));
+				fvwm_debug(__func__,
+					   "        Window Font: %s\n",
+					   SGET_WINDOW_FONT(*nptr));
 			}
 		}
 		if (SGET_ICON_FONT(*nptr))
@@ -5555,9 +5530,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_ICON_FONT(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Icon Font: %s\n",
-					SGET_ICON_FONT(*nptr));
+				fvwm_debug(__func__,
+					   "        Icon Font: %s\n",
+					   SGET_ICON_FONT(*nptr));
 			}
 		}
 		if (SGET_ICON_NAME(*nptr))
@@ -5565,9 +5540,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_ICON_NAME(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        Icon Name: %s\n",
-					SGET_ICON_NAME(*nptr));
+				fvwm_debug(__func__,
+					   "        Icon Name: %s\n",
+					   SGET_ICON_NAME(*nptr));
 			}
 		}
 		if (SGET_MINI_ICON_NAME(*nptr))
@@ -5575,9 +5550,9 @@ void print_styles(int verbose)
 			mem += strlen(SGET_MINI_ICON_NAME(*nptr));
 			if (verbose > 1)
 			{
-				fprintf(
-					stderr,"        MiniIcon Name: %s\n",
-					SGET_MINI_ICON_NAME(*nptr));
+				fvwm_debug(__func__,
+					   "        MiniIcon Name: %s\n",
+					   SGET_MINI_ICON_NAME(*nptr));
 			}
 		}
 		if (SGET_ICON_BOXES(*nptr))
@@ -5585,8 +5560,8 @@ void print_styles(int verbose)
 			mem += sizeof(icon_boxes);
 		}
 	}
-	fprintf(stderr,"  Number of styles: %d, Memory Used: %d bits\n",
-		count, (int)(count*sizeof(window_style) + mem));
+	fvwm_debug(__func__, "  Number of styles: %d, Memory Used: %d bits\n",
+		   count, (int)(count*sizeof(window_style) + mem));
 
 	return;
 }

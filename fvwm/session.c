@@ -383,12 +383,11 @@ static Bool VerifyVersionInfo(char *filename)
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "VerifyVersionInfo",
-					"State file version (%s) does not"
-					" match the current version (%s), "
-					"state file is ignored.", s1,
-					current_v);
+				fvwm_debug(__func__,
+					   "State file version (%s) does not"
+					   " match the current version (%s), "
+					   "state file is ignored.", s1,
+					   current_v);
 				break;
 			}
 		}
@@ -662,43 +661,43 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 	} /* if client_id's agree */
 
 #ifdef FVWM_SM_DEBUG_WINMATCH
-	fprintf(stderr,
-		"\twin(%s, %s, %s, %s, %s,",
-		w->class.res_name, w->class.res_class, w->name.name,
-		(client_id)? client_id:"(null)",
-		(window_role)? window_role:"(null)");
+	fvwm_debug(__func__,
+		   "\twin(%s, %s, %s, %s, %s,",
+		   w->class.res_name, w->class.res_class, w->name.name,
+		   (client_id)? client_id:"(null)",
+		   (window_role)? window_role:"(null)");
 	if (wm_command)
 	{
 		for (i = 0; i < wm_command_count; i++)
 		{
-			fprintf(stderr," %s", wm_command[i]);
+			fvwm_debug(__func__, " %s", wm_command[i]);
 		}
-		fprintf(stderr,",");
+		fvwm_debug(__func__, ",");
 	}
 	else
 	{
-		fprintf(stderr," no_wmc,");
+		fvwm_debug(__func__, " no_wmc,");
 	}
-	fprintf(stderr," %d)", IS_NAME_CHANGED(w));
-	fprintf(stderr,"\n[%d]", found);
-	fprintf(stderr,
-		"\tmat(%s, %s, %s, %s, %s,",
-		m->res_name, m->res_class, m->wm_name,
-		(m->client_id)?m->client_id:"(null)",
-		(m->window_role)?m->window_role:"(null)");
+	fvwm_debug(__func__, " %d)", IS_NAME_CHANGED(w));
+	fvwm_debug(__func__, "\n[%d]", found);
+	fvwm_debug(__func__,
+		   "\tmat(%s, %s, %s, %s, %s,",
+		   m->res_name, m->res_class, m->wm_name,
+		   (m->client_id)?m->client_id:"(null)",
+		   (m->window_role)?m->window_role:"(null)");
 	if (m->wm_command)
 	{
 		for (i = 0; i < m->wm_command_count; i++)
 		{
-			fprintf(stderr," %s", m->wm_command[i]);
+			fvwm_debug(__func__, " %s", m->wm_command[i]);
 		}
-		fprintf(stderr,",");
+		fvwm_debug(__func__, ",");
 	}
 	else
 	{
-		fprintf(stderr," no_wmc,");
+		fvwm_debug(__func__, " no_wmc,");
 	}
-	fprintf(stderr," %d)\n\n", IS_NAME_CHANGED(m));
+	fvwm_debug(__func__, " %d)\n\n", IS_NAME_CHANGED(m));
 #endif
 
 	if (client_id)
@@ -755,7 +754,7 @@ static int save_state_file(char *filename)
 		       " /tmp/fs-save"));
 #endif
 #if defined(FVWM_SM_DEBUG_PROTO) || defined(FVWM_SM_DEBUG_FILES)
-	fprintf(stderr, "[FVWM_SMDEBUG] Saving %s\n", filename);
+	fvwm_debug(__func__, "[FVWM_SMDEBUG] Saving %s\n", filename);
 #endif
 
 	return success;
@@ -778,8 +777,10 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][set_sm_properties] state filename: %s%s\n",
-		filename ? filename : "(null)", sm_conn ? "" : " - not connected");
+	fvwm_debug(__func__,
+		   "[FVWM_SMDEBUG][set_sm_properties] state filename: %s%s\n",
+		   filename ? filename : "(null)",
+		   sm_conn ? "" : " - not connected");
 #endif
 
 	if (!sm_conn)
@@ -973,7 +974,7 @@ callback_save_yourself2(FSmcConn sm_conn, FSmPointer client_data)
 
 	filename = get_unique_state_filename();
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself2]\n");
+	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself2]\n");
 #endif
 
 	success = save_state_file(filename);
@@ -1000,17 +1001,17 @@ callback_save_yourself(FSmcConn sm_conn, FSmPointer client_data,
 	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
-		"(save=%d, shut=%d, intr=%d, fast=%d)\n",
-		save_style, shutdown, interact_style, fast);
+	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
+		   "(save=%d, shut=%d, intr=%d, fast=%d)\n",
+		   save_style, shutdown, interact_style, fast);
 #endif
 
 	if (save_style == FSmSaveGlobal)
 	{
 		/* nothing to do */
 #ifdef FVWM_SM_DEBUG_PROTO
-		fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
-		"Global Save type ... do nothing\n");
+		fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
+			   "Global Save type ... do nothing\n");
 #endif
 		FSmcSaveYourselfDone (sm_conn, True);
 		sent_save_done = 1;
@@ -1018,8 +1019,8 @@ callback_save_yourself(FSmcConn sm_conn, FSmPointer client_data,
 
 	}
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
-		"Both or Local save type, going to phase 2 ...");
+	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
+		   "Both or Local save type, going to phase 2 ...");
 #endif
 	if (!FSmcRequestSaveYourselfPhase2(
 		    sm_conn, callback_save_yourself2, NULL))
@@ -1027,13 +1028,13 @@ callback_save_yourself(FSmcConn sm_conn, FSmPointer client_data,
 		FSmcSaveYourselfDone (sm_conn, False);
 		sent_save_done = 1;
 #ifdef FVWM_SM_DEBUG_PROTO
-		fprintf(stderr, " failed!\n");
+		fvwm_debug(__func__, " failed!\n");
 #endif
 	}
 	else
 	{
 #ifdef FVWM_SM_DEBUG_PROTO
-		fprintf(stderr, " OK\n");
+		fvwm_debug(__func__, " OK\n");
 #endif
 		sent_save_done = 0;
 	}
@@ -1051,7 +1052,7 @@ callback_die(FSmcConn sm_conn, FSmPointer client_data)
 	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][callback_die]\n");
+	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_die]\n");
 #endif
 
 	if (FSmcCloseConnection(sm_conn, 0, NULL) != FSmcClosedNow)
@@ -1075,7 +1076,7 @@ callback_save_complete(FSmcConn sm_conn, FSmPointer client_data)
 		return;
 	}
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_complete]\n");
+	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_complete]\n");
 #endif
 
 	return;
@@ -1090,7 +1091,7 @@ callback_shutdown_cancelled(FSmcConn sm_conn, FSmPointer client_data)
 	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr, "[FVWM_SMDEBUG][callback_shutdown_cancelled]\n");
+	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_shutdown_cancelled]\n");
 #endif
 
 	if (!sent_save_done)
@@ -1323,7 +1324,7 @@ LoadWindowStates(char *filename)
 	}
 
 #if defined(FVWM_SM_DEBUG_PROTO) ||  defined(FVWM_SM_DEBUG_FILES)
-	fprintf(stderr, "[FVWM_SMDEBUG] Loading %s\n", filename);
+	fvwm_debug(__func__, "[FVWM_SMDEBUG] Loading %s\n", filename);
 #endif
 #ifdef FVWM_SM_DEBUG_FILES
 	system(CatString3(
@@ -1689,8 +1690,8 @@ RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 		}
 
 #ifdef  FVWM_SM_DEBUG_PROTO
-		fprintf(stderr, "[FVWM_SMDEBUG]: Exiting, now SM must "
-			"restart us.\n");
+		fvwm_debug(__func__, "[FVWM_SMDEBUG]: Exiting, now SM must "
+			   "restart us.\n");
 #endif
 		/* Close all my pipes */
 		module_kill_all();
@@ -1754,21 +1755,20 @@ SessionInit(void)
 		*/
 		if (previous_sm_client_id)
 		{
-			fvwm_msg(
-				ERR, "SessionInit",
-				"While connecting to session manager:\n%s.",
-				error_string_ret);
+			fvwm_debug(__func__,
+				   "While connecting to session manager:\n%s.",
+				   error_string_ret);
 		}
 		sm_fd = -1;
 #ifdef FVWM_SM_DEBUG_PROTO
-		fprintf(stderr,"[FVWM_SMDEBUG] No SM connection\n");
+		fvwm_debug(__func__, "[FVWM_SMDEBUG] No SM connection\n");
 #endif
 	}
 	else
 	{
 		sm_fd = FIceConnectionNumber(FSmcGetIceConnection(sm_conn));
 #ifdef FVWM_SM_DEBUG_PROTO
-		fprintf(stderr,"[FVWM_SMDEBUG] Connectecd to a SM\n");
+		fvwm_debug(__func__, "[FVWM_SMDEBUG] Connectecd to a SM\n");
 #endif
 		set_init_function_name(0, "SessionInitFunction");
 		set_init_function_name(1, "SessionRestartFunction");
@@ -1792,7 +1792,8 @@ ProcessICEMsgs(void)
 	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
-	fprintf(stderr,"[FVWM_SMDEBUG][ProcessICEMsgs] %i\n", (int)sm_fd);
+	fvwm_debug(__func__, "[FVWM_SMDEBUG][ProcessICEMsgs] %i\n",
+		   (int)sm_fd);
 #endif
 	if (sm_fd < 0)
 	{
@@ -1801,8 +1802,8 @@ ProcessICEMsgs(void)
 	status = FIceProcessMessages(FSmcGetIceConnection(sm_conn), NULL, NULL);
 	if (status == FIceProcessMessagesIOError)
 	{
-		fvwm_msg(ERR, "ProcessICEMSGS",
-			 "Connection to session manager lost\n");
+		fvwm_debug(__func__,
+			   "Connection to session manager lost\n");
 		sm_conn = NULL;
 		sm_fd = -1;
 	}

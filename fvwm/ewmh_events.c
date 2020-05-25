@@ -53,14 +53,13 @@ int ewmh_CurrentDesktop(
 	struct monitor	*m = monitor_get_current();
 	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff)
 	{
-		fvwm_msg(
-			WARN, "ewmh_CurrentDesktop",
-			"The application window (id %#lx)\n"
-			"  \"%s\" tried to switch to an invalid desktop (%ld)\n"
-			"  using an EWMH client message.\n"
-			"    fvwm is ignoring this request.\n",
-			fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			ev->xclient.data.l[0]);
+		fvwm_debug(__func__,
+			   "The application window (id %#lx)\n"
+			   "  \"%s\" tried to switch to an invalid desktop (%ld)\n"
+			   "  using an EWMH client message.\n"
+			   "    fvwm is ignoring this request.\n",
+			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+			   ev->xclient.data.l[0]);
 		fvwm_msg_report_app_and_workers();
 
 		return -1;
@@ -83,15 +82,14 @@ int ewmh_DesktopGeometry(
 
 	if (width <= 0 || height <= 0)
 	{
-		fvwm_msg(
-			WARN, "ewmh_DesktopGeometry",
-			"The application window (id %#lx)\n"
-			"  \"%s\" tried to set an invalid desktop geometry"
-			" (%ldx%ld)\n"
-			"  using an EWMH client message.\n"
-			"    fvwm is ignoring this request.\n",
-			fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			ev->xclient.data.l[0], ev->xclient.data.l[1]);
+		fvwm_debug(__func__,
+			   "The application window (id %#lx)\n"
+			   "  \"%s\" tried to set an invalid desktop geometry"
+			   " (%ldx%ld)\n"
+			   "  using an EWMH client message.\n"
+			   "    fvwm is ignoring this request.\n",
+			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+			   ev->xclient.data.l[0], ev->xclient.data.l[1]);
 		fvwm_msg_report_app_and_workers();
 
 		return -1;
@@ -113,15 +111,14 @@ int ewmh_DesktopViewPort(
 		ev->xclient.data.l[1] < 0 ||
 		ev->xclient.data.l[1] > 0x7fffffff)
 	{
-		fvwm_msg(
-			WARN, "ewmh_DesktopViewPort",
-			"The application window (id %#lx)\n"
-			"  \"%s\" tried to switch to an invalid page"
-			" (%ldx%ld)\n"
-			"  using an EWMH client message.\n"
-			"    fvwm is ignoring this request.\n",
-			fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			ev->xclient.data.l[0], ev->xclient.data.l[1]);
+		fvwm_debug(__func__,
+			   "The application window (id %#lx)\n"
+			   "  \"%s\" tried to switch to an invalid page"
+			   " (%ldx%ld)\n"
+			   "  using an EWMH client message.\n"
+			   "    fvwm is ignoring this request.\n",
+			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+			   ev->xclient.data.l[0], ev->xclient.data.l[1]);
 		fvwm_msg_report_app_and_workers();
 
 		return -1;
@@ -147,15 +144,15 @@ int ewmh_NumberOfDesktops(
 		}
 		else
 		{
-			fvwm_msg(
-				WARN, "ewmh_NumberOfDesktops",
-				"The application window (id %#lx)\n"
-				"  \"%s\" tried to set an invalid number of desktops"
-				" (%ld)\n"
-				"  using an EWMH client message.\n"
-				"    fvwm is ignoring this request.\n",
-				fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-				ev->xclient.data.l[0]);
+			fvwm_debug(__func__,
+				   "The application window (id %#lx)\n"
+				   "  \"%s\" tried to set an invalid number of desktops"
+				   " (%ld)\n"
+				   "  using an EWMH client message.\n"
+				   "    fvwm is ignoring this request.\n",
+				   fw ? FW_W(fw) : 0,
+				   fw ? fw->name.name : "(none)",
+				   ev->xclient.data.l[0]);
 			fvwm_msg_report_app_and_workers();
 		}
 	}
@@ -313,16 +310,15 @@ int ewmh_WMDesktop(
 		}
 		else
 		{
-			fvwm_msg(
-				WARN, "ewmh_WMDesktop",
-				"The application window (id %#lx)\n"
-				"  \"%s\" tried to move to an invalid desk"
-				" (%ld)\n"
-				"  using an EWMH client message.\n"
-				"    fvwm is ignoring this request.\n",
-				fw ? FW_W(fw) : 0,
-				fw ? fw->name.name : "(none)",
-				ev->xclient.data.l[0]);
+			fvwm_debug(__func__,
+				   "The application window (id %#lx)\n"
+				   "  \"%s\" tried to move to an invalid desk"
+				   " (%ld)\n"
+				   "  using an EWMH client message.\n"
+				   "    fvwm is ignoring this request.\n",
+				   fw ? FW_W(fw) : 0,
+				   fw ? fw->name.name : "(none)",
+				   ev->xclient.data.l[0]);
 			fvwm_msg_report_app_and_workers();
 		}
 
@@ -356,11 +352,10 @@ int ewmh_WMDesktop(
 			return 0;
 		}
 #if DEBUG_EWMH_INIT_STATE
-		fprintf(
-			stderr, "ewmh WM_DESKTOP hint for window 0x%lx  "
-			"(%i,%lu,%u)\n", FW_W(fw),
-			HAS_EWMH_INIT_WM_DESKTOP(fw),
-			fw->ewmh_hint_desktop, val[0]);
+		fvwm_debug(__func__, "ewmh WM_DESKTOP hint for window 0x%lx  "
+			   "(%i,%lu,%u)\n", FW_W(fw),
+			   HAS_EWMH_INIT_WM_DESKTOP(fw),
+			   fw->ewmh_hint_desktop, val[0]);
 #endif
 		if (val[0] == (CARD32)-2 || val[0] == (CARD32)-1)
 		{
@@ -521,9 +516,8 @@ int ewmh_WMState(
 #if DEBUG_EWMH_INIT_STATE
 		if (size != 0)
 		{
-			fprintf(
-				stderr, "Window 0x%lx has an init"
-				" _NET_WM_STATE hint\n",FW_W(fw));
+			fvwm_debug(__func__, "Window 0x%lx has an init"
+				   " _NET_WM_STATE hint\n",FW_W(fw));
 		}
 #endif
 		nitems = size / sizeof(CARD32);
@@ -588,7 +582,7 @@ int ewmh_WMStateFullScreen(
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 		{
-			fprintf(stderr,"\tFullscreen\n");
+			fvwm_debug(__func__, "\tFullscreen\n");
 		}
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -680,7 +674,7 @@ int ewmh_WMStateHidden(
 
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
-			fprintf(stderr,"\tHidden\n");
+			fvwm_debug(__func__, "\tHidden\n");
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
 		{
@@ -756,9 +750,8 @@ int ewmh_WMStateMaxHoriz(
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 		{
-			fprintf(
-				stderr, "\t Maxhoriz %i\n",
-				HAS_EWMH_INIT_MAXHORIZ_STATE(fw));
+			fvwm_debug(__func__, "\t Maxhoriz %i\n",
+				   HAS_EWMH_INIT_MAXHORIZ_STATE(fw));
 		}
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -832,9 +825,8 @@ int ewmh_WMStateMaxVert(
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 		{
-			fprintf(
-				stderr, "\t Maxvert %i\n",
-				HAS_EWMH_INIT_MAXVERT_STATE(fw));
+			fvwm_debug(__func__, "\t Maxvert %i\n",
+				   HAS_EWMH_INIT_MAXVERT_STATE(fw));
 		}
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -906,9 +898,8 @@ int ewmh_WMStateModal(
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 		{
-			fprintf(
-				stderr, "\t Modal %i\n",
-				HAS_EWMH_INIT_MODAL_STATE(fw));
+			fvwm_debug(__func__, "\t Modal %i\n",
+				   HAS_EWMH_INIT_MODAL_STATE(fw));
 		}
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -1015,9 +1006,8 @@ int ewmh_WMStateShaded(
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 		{
-			fprintf(
-				stderr, "\t Shaded %i\n",
-				HAS_EWMH_INIT_SHADED_STATE(fw));
+			fvwm_debug(__func__, "\t Shaded %i\n",
+				   HAS_EWMH_INIT_SHADED_STATE(fw));
 		}
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -1092,10 +1082,9 @@ int ewmh_WMStateSkipPager(
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
 		/*if (has_hint)*/
-		fprintf(
-			stderr, "\t Skip_Pager %lu, %i, %i\n", has_hint,
-			HAS_EWMH_INIT_SKIP_PAGER_STATE(fw),
-			DO_EWMH_IGNORE_STATE_HINTS(style));
+		fvwm_debug(__func__, "\t Skip_Pager %lu, %i, %i\n", has_hint,
+			   HAS_EWMH_INIT_SKIP_PAGER_STATE(fw),
+			   DO_EWMH_IGNORE_STATE_HINTS(style));
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
 		{
@@ -1163,10 +1152,10 @@ int ewmh_WMStateSkipTaskBar(
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
 		/*if (has_hint)*/
-		fprintf(stderr,"\t Skip_Taskbar %lu, %i, %i\n",
-			has_hint,
-			HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw),
-			DO_EWMH_IGNORE_STATE_HINTS(style));
+		fvwm_debug(__func__, "\t Skip_Taskbar %lu, %i, %i\n",
+			   has_hint,
+			   HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw),
+			   DO_EWMH_IGNORE_STATE_HINTS(style));
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
 		{
@@ -1239,7 +1228,7 @@ int ewmh_WMStateStaysOnTop(
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 		{
-			fprintf(stderr,"\tStaysOnTop\n");
+			fvwm_debug(__func__, "\tStaysOnTop\n");
 		}
 #endif
 		if (!DO_EWMH_USE_STACKING_HINTS(style))
@@ -1326,7 +1315,7 @@ int ewmh_WMStateStaysOnBottom(
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
-			fprintf(stderr,"\tStaysOnBottom\n");
+			fvwm_debug(__func__, "\tStaysOnBottom\n");
 #endif
 		if (!DO_EWMH_USE_STACKING_HINTS(style))
 		{
@@ -1414,7 +1403,7 @@ int ewmh_WMStateSticky(
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 		{
-			fprintf(stderr,"\t Sticky\n");
+			fvwm_debug(__func__, "\t Sticky\n");
 		}
 #endif
 		if (DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -1487,14 +1476,13 @@ int ewmh_WMIconGeometry(
 
 	if (val != NULL && size < 4 * sizeof(CARD32))
 	{
-		fvwm_msg(
-			WARN, "ewmh_WMIconGeometry",
-			"The application window (id %#lx)\n"
-			"  \"%s\" tried to set to an icon geometry via EWMH\n"
-			"  but provided only %d of the 4 values required.\n"
-			"    fvwm is ignoring this request.\n",
-			fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			(int)(size / sizeof(CARD32)));
+		fvwm_debug(__func__,
+			   "The application window (id %#lx)\n"
+			   "  \"%s\" tried to set to an icon geometry via EWMH\n"
+			   "  but provided only %d of the 4 values required.\n"
+			   "    fvwm is ignoring this request.\n",
+			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+			   (int)(size / sizeof(CARD32)));
 		fvwm_msg_report_app_and_workers();
 		free(val);
 		val = NULL;

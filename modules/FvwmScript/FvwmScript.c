@@ -169,8 +169,9 @@ void Debug(void)
     for (i=0; i<=TabCObj[TabIdObj[j]].NbCase; i++)
     {
       /* Execution du bloc d'instruction */
-      fprintf(stderr,"Id de l'objet %d\n",TabIdObj[j]);
-      fprintf(stderr,"Nb Instruction %d\n",TabIObj[TabIdObj[j]][i].NbInstr);
+      fvwm_debug(__func__, "Id de l'objet %d\n",TabIdObj[j]);
+      fvwm_debug(__func__, "Nb Instruction %d\n",
+                 TabIObj[TabIdObj[j]][i].NbInstr);
     }
 
 }
@@ -316,8 +317,8 @@ void Xinit(int IsFather)
   dpy=XOpenDisplay(NULL);
   if (dpy == NULL)
   {
-    fprintf(stderr,"[%s]: <<ERROR>> Can't open display %s",
-	    ScriptName, XDisplayName(NULL));
+    fvwm_debug(__func__, "[%s]: <<ERROR>> Can't open display %s",
+               ScriptName, XDisplayName(NULL));
     exit(1);
   }
   screen = DefaultScreen(dpy);
@@ -401,9 +402,9 @@ void LoadIcon(struct XObj *xobj)
 		&xobj->icon_h, &depth, &xobj->nalloc_pixels,
 		&xobj->alloc_pixels, 0, fpa))
 	{
-		fprintf(stderr,"[%s][LoadIcon]: <<WARNING>> Unable to "
-			"load pixmap %s\n",
-			ScriptName,xobj->icon);
+		fvwm_debug(__func__, "[%s][LoadIcon]: <<WARNING>> Unable to "
+			   "load pixmap %s\n",
+			   ScriptName,xobj->icon);
 		free(path);
 		return;
 	}
@@ -475,8 +476,9 @@ void OpenWindow (void)
 
   /* Specification des parametres utilises par le gestionnaire de fenetre */
   if (XStringListToTextProperty(&x11base->title,1,&Name) == 0)
-    fprintf(stderr,"[%s][OpenWindow]: <<WARNING>> Can't use icon name\n",
-	    ScriptName);
+    fvwm_debug(__func__,
+               "[%s][OpenWindow]: <<WARNING>> Can't use icon name\n",
+               ScriptName);
   IndicNorm = XAllocSizeHints();
   if (x11base->size.x!=-1)
   {
@@ -707,8 +709,9 @@ void SendMsgAndString(char *action, char *type)
   if(StrEquals(type,"SendString") || StrEquals(type,"CheckBinding")){
     if (GetIntegerArguments(action, NULL, val, 2) == 2){
       if (val[0] > 1000 || val[0] < 1){
-	fprintf(stderr,"[%s][%s]: <<WARNING>> Widget id out of range: %i\n",
-		ScriptName,type,val[0]);
+	fvwm_debug(__func__,
+                   "[%s][%s]: <<WARNING>> Widget id out of range: %i\n",
+                   ScriptName,type,val[0]);
 	return;
       }
 
@@ -726,14 +729,14 @@ void SendMsgAndString(char *action, char *type)
 
 	SendMsg(tabxobj[i],val[1]);
       }else{
-	fprintf(stderr,"[%s][%s]: <<WARNING>> no Widget %i\n",
-		ScriptName,type,val[0]);
+	fvwm_debug(__func__, "[%s][%s]: <<WARNING>> no Widget %i\n",
+                   ScriptName,type,val[0]);
       }
       if (token)
 	free(token);
     }else{
-      fprintf(stderr,"[%s][%s]: <<WARNING>> Syntax Error: %s\n",
-	      ScriptName,type,action);
+      fvwm_debug(__func__, "[%s][%s]: <<WARNING>> Syntax Error: %s\n",
+                 ScriptName,type,action);
     }
   }else{
 
@@ -749,9 +752,8 @@ void SendMsgAndString(char *action, char *type)
 
       }else{
 	if(XFetchName(dpy, x11base->win, &windowName) == 0){
-		fprintf(
-			stderr,"[%s][SendMsgAndString]: <<ERROR>> "
-			"Can't find the title of a window\n", module->name);
+		fvwm_debug(__func__, "[%s][SendMsgAndString]: <<ERROR>> "
+                           "Can't find the title of a window\n", module->name);
 	}else{
 	  if(StrEquals(arg2,windowName)){
 	    XChangeProperty(
@@ -763,9 +765,9 @@ void SendMsgAndString(char *action, char *type)
     }
     else
     {
-	    fprintf(
-		    stderr,"[%s][SendMsgAndString]: <<ERROR>> "
-		    "Unknown SendToModule command: %s\n", module->name, type);
+	    fvwm_debug(__func__, "[%s][SendMsgAndString]: <<ERROR>> "
+                       "Unknown SendToModule command: %s\n", module->name,
+                       type);
     }
 
     if(arg1) free(arg1);
@@ -1346,13 +1348,13 @@ int main (int argc, char **argv)
   module = ParseModuleArgs(argc,argv,0); /* no alias */
   if (module == NULL)
   {
-    fprintf(stderr,"FvwmScript must be started by Fvwm.\n");
+    fvwm_debug(__func__, "FvwmScript must be started by Fvwm.\n");
     exit(1);
   }
 
   if (module->user_argc == 0)
   {
-    fprintf(stderr,"FvwmScript requires the script's name or path.\n");
+    fvwm_debug(__func__, "FvwmScript requires the script's name or path.\n");
     exit(1);
   }
 

@@ -339,9 +339,9 @@ char *CreateFlagString(char *string, char **restptr)
 		{
 			if (*c == 0)
 			{
-				fvwm_msg(ERR, "CreateFlagString",
-					 "Conditionals require closing "
-					 "parenthesis");
+				fvwm_debug(__func__,
+					   "Conditionals require closing "
+					   "parenthesis");
 				*restptr = NULL;
 				return NULL;
 			}
@@ -501,8 +501,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 				    mask->placed_by_button_set_mask &
 				    ~button_mask)
 				{
-				  	  fvwm_msg(WARN, "PlacedByButton",
-						   "Condition always False.");
+				  	  fvwm_debug(__func__,
+						       "Condition always False.");
 				}
 				mask->placed_by_button_mask |= button_mask;
 			}
@@ -519,8 +519,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 				if (mask->placed_by_button_mask &
 				    mask->placed_by_button_set_mask & ~(1<<2))
 				{
-				  	  fvwm_msg(WARN, "PlacedByButton3",
-						   "Condition always False.");
+				  	  fvwm_debug(__func__,
+						       "Condition always False.");
 				}
 				mask->placed_by_button_mask |= (1<<2);
 			}
@@ -748,26 +748,17 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			}
 		}
 
-		if (tmp && *tmp)
+		if (allocated_condition != NULL)
 		{
-			fvwm_msg(OLD, "CreateConditionMask",
-				 "Use comma instead of whitespace to "
-				 "separate conditions");
+			free(allocated_condition);
+			allocated_condition = NULL;
 		}
-		else
+		if (next_condition && *next_condition)
 		{
-			if (allocated_condition != NULL)
-			{
-				free(allocated_condition);
-				allocated_condition = NULL;
-			}
-			if (next_condition && *next_condition)
-			{
-				next_condition = GetNextFullOption(
-					next_condition, &allocated_condition);
-			}
-			tmp = allocated_condition;
+			next_condition = GetNextFullOption(
+				next_condition, &allocated_condition);
 		}
+		tmp = allocated_condition;
 		condition = PeekToken(tmp, &tmp);
 	}
 
@@ -1172,8 +1163,8 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 	dir = gravity_parse_dir_argument(tmp, NULL, -1);
 	if (dir == -1 || dir > DIR_ALL_MASK)
 	{
-		fvwm_msg(ERR, "Direction", "Invalid direction %s",
-			 (tmp) ? tmp : "");
+		fvwm_debug(__func__, "Invalid direction %s",
+			   (tmp) ? tmp : "");
 		if (cond_rc != NULL)
 		{
 			cond_rc->rc = COND_RC_ERROR;
@@ -1186,9 +1177,8 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 		tmp = PeekToken(action, &action);
 		if ( ! tmp )
 		{
-			fvwm_msg(
-				ERR, "Direction", "Missing minor direction %s",
-				(tmp) ? tmp : "");
+			fvwm_debug(__func__, "Missing minor direction %s",
+				   (tmp) ? tmp : "");
 			if (cond_rc != NULL)
 			{
 				cond_rc->rc = COND_RC_ERROR;
@@ -1200,9 +1190,8 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 		if (dir2 == -1 || dir2 > DIR_NW ||
 		    (dir < 4) != (dir2 < 4) || (abs(dir - dir2) & 1) != 1)
 		{
-			fvwm_msg(
-				ERR, "Direction", "Invalid minor direction %s",
-				(tmp) ? tmp : "");
+			fvwm_debug(__func__, "Invalid minor direction %s",
+				   (tmp) ? tmp : "");
 			if (cond_rc != NULL)
 			{
 				cond_rc->rc = COND_RC_ERROR;
@@ -1922,9 +1911,8 @@ static Bool match_version(char *version, char *operator)
 	}
 	if (v < 0)
 	{
-		fprintf(
-			stderr, "match_version: Invalid version: %s\n",
-			version);
+		fvwm_debug(__func__, "match_version: Invalid version: %s\n",
+			   version);
 		return False;
 	}
 	if (strcmp(operator, ">=") == 0)
@@ -1953,9 +1941,8 @@ static Bool match_version(char *version, char *operator)
 	}
 	else
 	{
-		fprintf(
-			stderr, "match_version: Invalid operator: %s\n",
-			operator);
+		fvwm_debug(__func__, "match_version: Invalid operator: %s\n",
+			   operator);
 	}
 
 	return False;

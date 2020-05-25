@@ -124,9 +124,9 @@ char *get_line(void)
 		linelen = strlen(line);
 		if (len + linelen > MAX_COMMAND_SIZE-2)
 		{
-			fprintf(
-				stderr, "line too long %d chars max %d \a\n",
-				len + linelen, MAX_COMMAND_SIZE - 2);
+			fvwm_debug(__func__,
+				   "line too long %d chars max %d \a\n",
+				   len + linelen, MAX_COMMAND_SIZE - 2);
 			strncat(cmd, line, MAX_COMMAND_SIZE - len - 2);
 			fvwm_add_history(cmd);
 			break;

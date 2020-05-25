@@ -70,8 +70,8 @@ void FRenderVisualInit(Display *dpy)
 	PFrenderVisualFormat = FRenderFindVisualFormat (dpy, Pvisual);
 	if (!PFrenderVisualFormat)
 	{
-		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
-			"fail to create XRender Visual Format\n");
+		fvwm_debug(__func__, "[fvwmlibs][FRenderInit] -- ERROR: "
+			   "fail to create XRender Visual Format\n");
 		return;
 	}
 	pf.depth = 8;
@@ -84,8 +84,8 @@ void FRenderVisualInit(Display *dpy)
 		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderAlphaFormat)
 	{
-		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
-			"fail to create XRender Alpha Format\n");
+		fvwm_debug(__func__, "[fvwmlibs][FRenderInit] -- ERROR: "
+			   "fail to create XRender Alpha Format\n");
 		return;
 	}
 	pf.depth = 1;
@@ -97,8 +97,8 @@ void FRenderVisualInit(Display *dpy)
 		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderMaskFormat)
 	{
-		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
-			"fail to create XRender Mask Format\n");
+		fvwm_debug(__func__, "[fvwmlibs][FRenderInit] -- ERROR: "
+			   "fail to create XRender Mask Format\n");
 		return;
 	}
 	pf.depth = 24;
@@ -119,8 +119,8 @@ void FRenderVisualInit(Display *dpy)
 		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderDirectFormat)
 	{
-		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
-			"fail to create XRender Direct Format\n");
+		fvwm_debug(__func__, "[fvwmlibs][FRenderInit] -- ERROR: "
+			   "fail to create XRender Direct Format\n");
 		return;
 	}
 	pf.depth = 32;
@@ -141,8 +141,8 @@ void FRenderVisualInit(Display *dpy)
 		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderAbsoluteFormat)
 	{
-		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
-			"fail to create XRender Absolute Format\n");
+		fvwm_debug(__func__, "[fvwmlibs][FRenderInit] -- ERROR: "
+			   "fail to create XRender Absolute Format\n");
 		return;
 	}
 }

@@ -265,10 +265,9 @@ static fmodule *do_execute_module(
 		 * likely a typo in a command, not a module name. */
 		if (!desperate)
 		{
-			fvwm_msg(
-				ERR, "executeModule",
-				"No such module '%s' in ModulePath '%s'",
-				cptr, ModulePath);
+			fvwm_debug(__func__,
+				   "No such module '%s' in ModulePath '%s'",
+				   cptr, ModulePath);
 		}
 		goto err_exit;
 	}
@@ -294,12 +293,12 @@ static fmodule *do_execute_module(
 	}
 	else if (pipe(fvwm_to_app) != 0)
 	{
-		fvwm_msg(ERR, "executeModule", "Failed to open pipe");
+		fvwm_debug(__func__, "Failed to open pipe");
 		goto err_exit;
 	}
 	if (pipe(app_to_fvwm) != 0)
 	{
-		fvwm_msg(ERR, "executeModule", "Failed to open pipe2");
+		fvwm_debug(__func__, "Failed to open pipe2");
 		goto err_exit;
 	}
 	if (
@@ -308,7 +307,7 @@ static fmodule *do_execute_module(
 		app_to_fvwm[0] >= fvwmlib_max_fd ||
 		app_to_fvwm[1] >= fvwmlib_max_fd)
 	{
-		fvwm_msg(ERR, "executeModule", "too many open fds");
+		fvwm_debug(__func__, "too many open fds");
 		goto err_exit;
 	}
 
@@ -383,17 +382,15 @@ static fmodule *do_execute_module(
 		 * won`t inherit them */
 		if (fcntl(MOD_READFD(module), F_SETFD, 1) == -1)
 		{
-			fvwm_msg(
-				ERR, "executeModule",
-				"module close-on-exec failed");
+			fvwm_debug(__func__,
+				   "module close-on-exec failed");
 		}
 		if (
 			MOD_WRITEFD(module) >= 0 &&
 			fcntl(MOD_WRITEFD(module), F_SETFD, 1) == -1)
 		{
-			fvwm_msg(
-				ERR, "executeModule",
-				"module close-on-exec failed");
+			fvwm_debug(__func__,
+				   "module close-on-exec failed");
 		}
 		/* module struct is completed, insert into the list */
 		module_list_insert(module, &module_list);
@@ -437,9 +434,8 @@ static fmodule *do_execute_module(
 		/* Why is this execvp??  We've already searched the module
 		 * path! */
 		execvp(arg1,args);
-		fvwm_msg(
-			ERR, "executeModule", "Execution of module failed: %s",
-			arg1);
+		fvwm_debug(__func__, "Execution of module failed: %s",
+			   arg1);
 		perror("");
 		close(app_to_fvwm[1]);
 		/* dont't care that this may be -1 */
@@ -450,7 +446,7 @@ static fmodule *do_execute_module(
 	}
 	else
 	{
-		fvwm_msg(ERR, "executeModule", "Fork failed");
+		fvwm_debug(__func__, "Fork failed");
 		free(arg1);
 		for (i = 6; i < nargs; i++)
 		{
@@ -559,7 +555,7 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 			sizeof(mqueue_object_type) + size);
 		if (c == NULL)
 		{
-			fvwm_msg(ERR, "PositiveWrite", "malloc failed\n");
+			fvwm_debug(__func__, "malloc failed\n");
 			exit(1);
 		}
 		c->size = size;
@@ -649,15 +645,15 @@ void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 				name = get_pipe_name(module);
 				/* Doh! Something has gone wrong - get rid of
 				 * the offender! */
-				fvwm_msg(ERR, "PositiveWrite",
-					 "Failed to read descriptor from"
-					 " '%s':\n"
-					 "- data available=%c\n"
-					 "- terminate signal=%c\n",
-					 name,
-					 (FD_ISSET(channel, &readSet) ?
-					  'Y' : 'N'),
-					 isTerminated ? 'Y' : 'N');
+				fvwm_debug(__func__,
+					   "Failed to read descriptor from"
+					   " '%s':\n"
+					   "- data available=%c\n"
+					   "- terminate signal=%c\n",
+					   name,
+					   (FD_ISSET(channel, &readSet) ?
+					    'Y' : 'N'),
+					   isTerminated ? 'Y' : 'N');
 				module_kill(module);
 				break;
 			}
@@ -703,18 +699,17 @@ fmodule_input *module_receive(fmodule *module)
 	n = read(MOD_READFD(module), &size, sizeof(size));
 	if (n < sizeof(size))
 	{
-		fvwm_msg(
-			ERR, "module_receive",
-			"Fail to read command size (Module: %p, read: %i, "
-			"size: %i)", module, n, (int)sizeof(size));
+		fvwm_debug(__func__,
+			   "Fail to read command size (Module: %p, read: %i, "
+			   "size: %i)", module, n, (int)sizeof(size));
 		goto err;
 	}
 
 	if (size > MAX_MODULE_INPUT_TEXT_LEN)
 	{
-		fvwm_msg(ERR, "module_receive",
-			 "Module(%p) command is too big (%ld), limit is %d",
-			 module, size, MAX_MODULE_INPUT_TEXT_LEN);
+		fvwm_debug(__func__,
+			   "Module(%p) command is too big (%ld), limit is %d",
+			   module, size, MAX_MODULE_INPUT_TEXT_LEN);
 		/* The rest of the output from this module is going to be
 		 * scrambled so let's kill it rather than risk interpreting
 		 * garbage */
@@ -732,19 +727,18 @@ fmodule_input *module_receive(fmodule *module)
 	n = read(MOD_READFD(module), input->command, size);
 	if (n < size)
 	{
-		fvwm_msg(
-			ERR, "module_receive",
-			"Fail to read command (Module: %p, read: %i, size:"
-			" %ld)", module, n, size);
+		fvwm_debug(__func__,
+			   "Fail to read command (Module: %p, read: %i, size:"
+			   " %ld)", module, n, size);
 		goto err;
 	}
 	input->command[n] = '\0';
 	n = read(MOD_READFD(module), &cont, sizeof(cont));
 	if (n < sizeof(cont))
 	{
-		fvwm_msg(ERR, "module_receive",
-			 "Module %p, Size Problems (read: %d, size: %d)",
-			 module, n, (int)sizeof(cont));
+		fvwm_debug(__func__,
+			   "Module %p, Size Problems (read: %d, size: %d)",
+			   module, n, (int)sizeof(cont));
 		goto err;
 	}
 	if (cont == 0)
@@ -1002,14 +996,13 @@ void FlushMessageQueue(fmodule *module)
 					name = get_pipe_name(module);
 					/* Doh! Something has gone wrong - get
 					 * rid of the offender! */
-					fvwm_msg(
-						ERR, "FlushMessageQueue",
-						"Failed to write descriptor to"
-						" '%s':\n"
-						"- select rc=%d\n"
-						"- terminate signal=%c\n",
-						name, rc, isTerminated ?
-						'Y' : 'N');
+					fvwm_debug(__func__,
+						   "Failed to write descriptor to"
+						   " '%s':\n"
+						   "- select rc=%d\n"
+						   "- terminate signal=%c\n",
+						   name, rc, isTerminated ?
+						   'Y' : 'N');
 					module_kill(module);
 
 					return;
@@ -1128,7 +1121,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		}
 		else
 		{
-			fvwm_msg(ERR, "executeModuleSync", "illegal timeout");
+			fvwm_debug(__func__, "illegal timeout");
 			return;
 		}
 	}

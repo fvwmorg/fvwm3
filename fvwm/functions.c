@@ -387,11 +387,10 @@ static void __execute_function(
 	func_depth++;
 	if (func_depth > MAX_FUNCTION_DEPTH)
 	{
-		fvwm_msg(
-			ERR, "__execute_function",
-			"Function '%s' called with a depth of %i, "
-			"stopping function execution!",
-			action, func_depth);
+		fvwm_debug(__func__,
+			   "Function '%s' called with a depth of %i, "
+			   "stopping function execution!",
+			   action, func_depth);
 		func_depth--;
 		return;
 	}
@@ -538,10 +537,9 @@ static void __execute_function(
 	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor &&
 	    (!bif || !(bif->flags & FUNC_DECOR)))
 	{
-		fvwm_msg(
-			ERR, "__execute_function",
-			"Command can not be added to a decor; executing"
-			" command now: '%s'", action);
+		fvwm_debug(__func__,
+			   "Command can not be added to a decor; executing"
+			   " command now: '%s'", action);
 	}
 
 	if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND))
@@ -572,10 +570,9 @@ static void __execute_function(
 	{
 		if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
 		{
-			fvwm_msg(
-				WARN, "__execute_function",
-				"Command can not be added to a decor;"
-				" executing command now: '%s'", expaction);
+			fvwm_debug(__func__,
+				   "Command can not be added to a decor;"
+				   " executing command now: '%s'", expaction);
 		}
 
 		/* process a module config command */
@@ -661,10 +658,9 @@ static void __execute_function(
 					    func_rc, exc, runaction) == NULL &&
 				    *function != 0 && !set_silent)
 				{
-					fvwm_msg(
-						ERR, "__execute_function",
-						"No such command '%s'",
-						function);
+					fvwm_debug(__func__,
+						   "No such command '%s'",
+						   function);
 				}
 			}
 			exc_destroy_context(exc2);
@@ -925,9 +921,8 @@ static void execute_complex_function(
 	{
 		if (*desperate == 0)
 		{
-			fvwm_msg(
-				ERR, "ComplexFunction", "No such function %s",
-				action);
+			fvwm_debug(__func__, "No such function %s",
+				   action);
 		}
 		return;
 	}
@@ -1019,10 +1014,8 @@ static void execute_complex_function(
 	if (!GrabEm(CRS_NONE, GRAB_NORMAL))
 	{
 		func->use_depth--;
-		fvwm_msg(
-			ERR,
-			"ComplexFunction", "Grab failed in function %s,"
-			" unable to execute immediate action", action);
+		fvwm_debug(__func__, "Grab failed in function %s,"
+			   " unable to execute immediate action", action);
 		__cf_cleanup(&depth, arguments, cond_rc);
 		return;
 	}
@@ -1245,10 +1238,9 @@ static void DestroyFunction(FvwmFunction *func)
 
 	if (func->use_depth != 0)
 	{
-		fvwm_msg(
-			ERR,"DestroyFunction",
-			"Function %s is in use (depth %d)", func->name,
-			func->use_depth);
+		fvwm_debug(__func__,
+			   "Function %s is in use (depth %d)", func->name,
+			   func->use_depth);
 		return;
 	}
 
@@ -1431,21 +1423,19 @@ void AddToFunction(FvwmFunction *func, char *action)
 	    condition != CF_CLICK &&
 	    condition != CF_DOUBLE_CLICK)
 	{
-		fvwm_msg(
-			ERR, "AddToFunction",
-			"Got '%s' instead of a valid function specifier",
-			token);
+		fvwm_debug(__func__,
+			   "Got '%s' instead of a valid function specifier",
+			   token);
 		return;
 	}
 	if (token[0] != 0 && token[1] != 0 &&
 	    (find_builtin_function(token) || find_complex_function(token)))
 	{
-		fvwm_msg(
-			WARN, "AddToFunction",
-			"Got the command or function name '%s' instead of a"
-			" function specifier. This may indicate a syntax"
-			" error in the configuration file. Using %c as the"
-			" specifier.", token, token[0]);
+		fvwm_debug(__func__,
+			   "Got the command or function name '%s' instead of a"
+			   " function specifier. This may indicate a syntax"
+			   " error in the configuration file. Using %c as the"
+			   " specifier.", token, token[0]);
 	}
 	if (!action)
 	{
@@ -1570,16 +1560,15 @@ void CMD_EchoFuncDefinition(F_CMD_ARGS)
 	GetNextToken(action, &token);
 	if (!token)
 	{
-		fvwm_msg(ERR, "EchoFuncDefinition", "Missing argument");
+		fvwm_debug(__func__, "Missing argument");
 
 		return;
 	}
 	bif = find_builtin_function(token);
 	if (bif != NULL)
 	{
-		fvwm_msg(
-			INFO, "EchoFuncDefinition",
-			"function '%s' is a built in command", token);
+		fvwm_debug(__func__,
+			   "function '%s' is a built in command", token);
 		free(token);
 
 		return;
@@ -1587,23 +1576,20 @@ void CMD_EchoFuncDefinition(F_CMD_ARGS)
 	func = find_complex_function(token);
 	if (!func)
 	{
-		fvwm_msg(
-			INFO, "EchoFuncDefinition",
-			"function '%s' not defined", token);
+		fvwm_debug(__func__,
+			   "function '%s' not defined", token);
 		free(token);
 
 		return;
 	}
-	fvwm_msg(
-		INFO, "EchoFuncDefinition", "definition of function '%s':",
-		token);
+	fvwm_debug(__func__, "definition of function '%s':",
+		   token);
 	for (fi = func->first_item; fi != NULL; fi = fi->next_item)
 	{
-		fvwm_msg(
-			INFO, "EchoFuncDefinition", "  %c %s", fi->condition,
-			(fi->action == 0) ? "(null)" : fi->action);
+		fvwm_debug(__func__, "  %c %s", fi->condition,
+			   (fi->action == 0) ? "(null)" : fi->action);
 	}
-	fvwm_msg(INFO, "EchoFuncDefinition", "end of definition");
+	fvwm_debug(__func__, "end of definition");
 	free(token);
 
 	return;

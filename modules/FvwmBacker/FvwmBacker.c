@@ -148,9 +148,9 @@ int main(int argc, char **argv)
 
 	if ((argc != 6) && (argc != 7))
 	{
-		fprintf(stderr,
-			"%s Version %s should only be executed by fvwm!\n",
-			Module, VERSION);
+		fvwm_debug(__func__,
+			   "%s Version %s should only be executed by fvwm!\n",
+			   Module, VERSION);
 		exit(1);
 	}
 
@@ -162,8 +162,8 @@ int main(int argc, char **argv)
 	dpy = XOpenDisplay(displayName);
 	if (!dpy)
 	{
-		fprintf(stderr, "%s:  unable to open display '%s'\n",
-			Module, XDisplayName (displayName));
+		fvwm_debug(__func__, "%s:  unable to open display '%s'\n",
+			   Module, XDisplayName (displayName));
 		exit (2);
 	}
 	screen = DefaultScreen(dpy);
@@ -304,8 +304,8 @@ void SetDeskPageBackground(const Command *c)
 		dpy2 =  XOpenDisplay(displayName);
 		if (!dpy2)
 		{
-			fvwm_msg(ERR, "FvwmBacker",
-				 "Fail to create a forking dpy, Exit!");
+			fvwm_debug(__func__,
+				   "Fail to create a forking dpy, Exit!");
 			exit(2);
 		}
 		screen2 = DefaultScreen(dpy2);
@@ -323,19 +323,19 @@ void SetDeskPageBackground(const Command *c)
 			/* Process a colorset */
 			if (CSET_IS_TRANSPARENT(c->colorset))
 			{
-				fvwm_msg(ERR,"FvwmBacker", "You cannot "
-					 "use a transparent colorset as "
-					 "background!");
+				fvwm_debug(__func__, "You cannot "
+					   "use a transparent colorset as "
+					   "background!");
 				XUngrabServer(dpy2);
 				XCloseDisplay(dpy2);
 				return;
 			}
 			else if (Pdepth != DefaultDepth(dpy2, screen2))
 			{
-				fvwm_msg(ERR,"FvwmBacker", "You cannot "
-					 "use a colorset background if\n"
-					 "the fvwm depth is not equal "
-					 "to the root depth!");
+				fvwm_debug(__func__, "You cannot "
+					   "use a colorset background if\n"
+					   "the fvwm depth is not equal "
+					   "to the root depth!");
 				XUngrabServer(dpy2);
 				XCloseDisplay(dpy2);
 				return;
@@ -587,8 +587,8 @@ Bool ParseNewCommand(
 		{
 			if (GetNextToken(option_val, &value) == NULL)
 			{
-				fvwm_msg(ERR, "FvwmBacker",
-					 "Desk option requires a value");
+				fvwm_debug(__func__,
+					   "Desk option requires a value");
 				return 1;
 			}
 			if (!StrEquals(value, "*"))
@@ -604,9 +604,8 @@ Bool ParseNewCommand(
 			if ((option_val = GetNextToken(
 				     option_val,&value)) == NULL)
 			{
-				fvwm_msg(
-					ERR, "FvwmBacker",
-					"Page option requires 2 values");
+				fvwm_debug(__func__,
+					   "Page option requires 2 values");
 				return 1;
 			}
 			if (!StrEquals(value, "*"))
@@ -614,9 +613,8 @@ Bool ParseNewCommand(
 			free(value);
 			if (GetNextToken(option_val, &value) == NULL)
 			{
-				fvwm_msg(
-					ERR, "FvwmBacker",
-					"Desk option requires 2 values");
+				fvwm_debug(__func__,
+					   "Desk option requires 2 values");
 				return 1;
 			}
 			if (!StrEquals(value, "*"))
@@ -683,9 +681,8 @@ void AddCommand(char *line)
 				line, &parens, ")", NULL, NULL, NULL);
 			if (line == NULL)
 			{
-				fvwm_msg(
-					ERR, "FvwmBacker",
-					"Syntax error: no closing brace");
+				fvwm_debug(__func__,
+					   "Syntax error: no closing brace");
 				free(this);
 				return;
 			}
@@ -702,9 +699,8 @@ void AddCommand(char *line)
 	}
 	else
 	{
-		fvwm_msg(
-			ERR, "FvwmBacker",
-			CatString2("Unknown directive: ", line));
+		fvwm_debug(__func__,
+			   CatString2("Unknown directive: ", line));
 		return;
 	}
 	this->flags.do_ignore_desk = do_ignore_desk;

@@ -299,7 +299,7 @@ void ChooseFunction(struct XObj *xobj,char *type)
 	}
 	else
 	{
-		fprintf(stderr,"Item %s unknown\n",type);
+		fvwm_debug(__func__, "Item %s unknown\n",type);
 		exit(1);
 	}
 }

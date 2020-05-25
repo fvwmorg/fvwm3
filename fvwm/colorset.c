@@ -396,7 +396,6 @@ static void reset_cs_pixmap(colorset_t *cs, GC gc)
 static void parse_pixmap(
 	Window win, GC gc, colorset_t *cs, Bool *pixmap_is_a_bitmap)
 {
-	static char *name = "parse_colorset(pixmap)";
 	FvwmPictureAttributes fpa;
 
 	/* dither */
@@ -415,7 +414,7 @@ static void parse_pixmap(
 	cs->picture = PCacheFvwmPicture(dpy, win, NULL, cs->pixmap_args, fpa);
 	if (cs->picture == NULL)
 	{
-		fvwm_msg(ERR, name, "can't load picture %s", cs->pixmap_args);
+		fvwm_debug(__func__, "can't load picture %s", cs->pixmap_args);
 		return;
 	}
 	if (cs->picture->depth != Pdepth)
@@ -466,7 +465,6 @@ static void parse_shape(Window win, colorset_t *cs, int i, char *args,
 			int *has_shape_changed)
 {
 	char *token;
-	static char *name = "parse_colorset(shape)";
 	FvwmPicture *picture;
 	FvwmPictureAttributes fpa;
 
@@ -510,11 +508,11 @@ static void parse_shape(Window win, colorset_t *cs, int i, char *args,
 	picture = PCacheFvwmPicture(dpy, win, NULL, token, fpa);
 	if (!picture)
 	{
-		fvwm_msg(ERR, name, "can't load picture %s", token);
+		fvwm_debug(__func__, "can't load picture %s", token);
 	}
 	else if (picture->depth != 1 && picture->mask == None)
 	{
-		fvwm_msg(ERR, name, "shape pixmap must be of depth 1");
+		fvwm_debug(__func__, "shape pixmap must be of depth 1");
 		SafeDestroyPicture(dpy, picture);
 	}
 	else
@@ -558,7 +556,6 @@ static void parse_simple_tint(
 	int *changed, int *percent, char *cmd)
 {
 	char *rest;
-	static char *name = "parse_colorset (tint)";
 
 	*changed = False;
 	rest = get_simple_color(args, tint, cs, supplied_color, 0, NULL);
@@ -571,9 +568,9 @@ static void parse_simple_tint(
 	}
 	else if (!GetIntegerArguments(rest, NULL, percent, 1))
 	{
-		fvwm_msg(WARN, name,
-			 "%s must have two arguments a color and an integer",
-			 cmd);
+		fvwm_debug(__func__,
+			   "%s must have two arguments a color and an integer",
+			   cmd);
 		return;
 	}
 	*changed = True;
@@ -645,7 +642,6 @@ void parse_colorset(int n, char *line)
 	Bool is_server_grabbed = False;
 	XColor color;
 	XGCValues xgcv;
-	static char *name = "parse_colorset";
 	Window win = Scr.NoFocusWin;
 	static GC gc = None;
 
@@ -782,9 +778,8 @@ void parse_colorset(int n, char *line)
 
 			if (Pdepth != DefaultDepth(dpy, (DefaultScreen(dpy))))
 			{
-				fvwm_msg(
-					ERR, name, "can't do Transparent "
-					"when root_depth!=fvwm_depth");
+				fvwm_debug(__func__, "can't do Transparent "
+					   "when root_depth!=fvwm_depth");
 				break;
 			}
 			has_pixmap_changed = True;
@@ -795,9 +790,9 @@ void parse_colorset(int n, char *line)
 		case 24: /* RootTransparent */
 			if (Pdepth != DefaultDepth(dpy, (DefaultScreen(dpy))))
 			{
-				fvwm_msg(
-					ERR, name, "can't do RootTransparent "
-					"when root_depth!=fvwm_depth");
+				fvwm_debug(__func__,
+					   "can't do RootTransparent "
+					   "when root_depth!=fvwm_depth");
 				break;
 			}
 			free_colorset_background(cs, True);
@@ -952,9 +947,8 @@ void parse_colorset(int n, char *line)
 			}
 			else
 			{
-				fvwm_msg(
-					WARN, name, "bad colorset pixmap "
-					"specifier %s %s", option, line);
+				fvwm_debug(__func__, "bad colorset pixmap "
+					   "specifier %s %s", option, line);
 			}
 			break;
 		} /* switch */
@@ -1801,7 +1795,7 @@ void update_root_transparent_colorset(Atom prop)
 
 void CMD_ReadWriteColors(F_CMD_ARGS)
 {
-	fvwm_msg(WARN, "CMD_ReadWriteColors", "ReadWriteColors is obsolete");
+	fvwm_debug(__func__, "ReadWriteColors is obsolete");
 
 	return;
 }

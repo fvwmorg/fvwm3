@@ -492,8 +492,8 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
 
  if (NbVar>MAX_VARS-2)
  {
-  fprintf(stderr,
-    "[%s] Line %d: too many variables (>5120)\n",ScriptName,numligne);
+  fvwm_debug(__func__,
+             "[%s] Line %d: too many variables (>5120)\n",ScriptName,numligne);
   exit(1);
  }
 
@@ -639,7 +639,7 @@ void DepilerBloc(int IdBloc)
 /* Gestion des erreurs de syntaxes */
 int yyerror(char *errmsg)
 {
- fprintf(stderr,"[%s] Line %d: %s\n",ScriptName,numligne,errmsg);
+ fvwm_debug(__func__, "[%s] Line %d: %s\n",ScriptName,numligne,errmsg);
  return 0;
 }
 
@@ -1889,11 +1889,11 @@ yy_reduce_print (yyvsp, yyrule)
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
-      fprintf (stderr, "   $%d = ", yyi + 1);
+      fvwm_debug(__func__, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
 		       		       );
-      fprintf (stderr, "\n");
+      fvwm_debug(__func__, "\n");
     }
 }
 

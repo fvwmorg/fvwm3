@@ -36,7 +36,7 @@ static char unknown[32];
 
 void do_coredump(void)
 {
-	fprintf(stderr, " Leaving a core dump now\n");
+	fvwm_debug(__func__, " Leaving a core dump now\n");
 	{
 		abort();
 	}
@@ -61,29 +61,29 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 	}
 	if (!suc)
 		XGetErrorText(dpy, error->error_code, msg, sizeof(msg));
-	fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
-	fprintf(stderr, "   Error: %d (%s)\n", error->error_code, msg);
+	fvwm_debug(__func__, "%s: Cause of next X Error.\n", MyName);
+	fvwm_debug(__func__, "   Error: %d (%s)\n", error->error_code, msg);
 #else
-	fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
+	fvwm_debug(__func__, "%s: Cause of next X Error.\n", MyName);
 	if (error->error_code >= FirstExtensionError)
 	{
 		suc = FRenderGetErrorText(error->error_code, msg);
 	}
 	if (suc)
-		fprintf(stderr, "   Error: %d (%s)\n",
-			error->error_code, msg);
+		fvwm_debug(__func__, "   Error: %d (%s)\n",
+			   error->error_code, msg);
 	else
-		fprintf(stderr, "   Error: %d (%s)\n",
-			error->error_code, error_name(error->error_code));
+		fvwm_debug(__func__, "   Error: %d (%s)\n",
+			   error->error_code, error_name(error->error_code));
 #endif
-	fprintf(stderr, "   Major opcode of failed request:  %d (%s)\n",
-		error->request_code, request_name(error->request_code));
-	fprintf(stderr, "   Minor opcode of failed request:  %d \n",
-		error->minor_code);
+	fvwm_debug(__func__, "   Major opcode of failed request:  %d (%s)\n",
+		   error->request_code, request_name(error->request_code));
+	fvwm_debug(__func__, "   Minor opcode of failed request:  %d \n",
+		   error->minor_code);
 	/* error->resourceid may be uninitialised. This is no proble since we
 	 * are dumping core anyway. */
-	fprintf(stderr, "   Resource id of failed request:  0x%lx \n",
-		error->resourceid);
+	fvwm_debug(__func__, "   Resource id of failed request:  0x%lx \n",
+		   error->resourceid);
 
 	/* leave a coredump */
 	do_coredump();

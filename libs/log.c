@@ -33,7 +33,7 @@
 static FILE	*log_file;
 static int	 log_level;
 
-static void	 log_vwrite(const char *, va_list);
+static void	 log_vwrite(const char *, const char *, va_list);
 
 /* Set log level. */
 void
@@ -68,9 +68,9 @@ log_toggle(void)
 	if (log_level == 0) {
 		log_level = 1;
 		log_open();
-		log_debug("log opened");
+		fvwm_debug(NULL, "log opened (because of SIGUSR2)");
 	} else {
-		log_debug("log closed");
+		fvwm_debug(NULL, "log closed (because of SIGUSR2)");
 		log_level = 0;
 		log_close();
 	}
@@ -87,21 +87,35 @@ log_close(void)
 
 /* Write a log message. */
 static void
-log_vwrite(const char *msg, va_list ap)
+log_vwrite(const char *func, const char *msg, va_list ap)
 {
-	char		*fmt;
+	char		*fmt, *sep = ":";
 	struct timeval	 tv;
 
 	if (log_file == NULL)
 		return;
 
+	if (func == NULL) {
+		func = "";
+		sep = "";
+	}
+
 	if (vasprintf(&fmt, msg, ap) == -1)
 		exit(1);
 
 	gettimeofday(&tv, NULL);
-	if (fprintf(log_file, "%lld.%06d %s\n", (long long)tv.tv_sec,
-	    (int)tv.tv_usec, fmt) == -1)
+	if (fprintf(log_file, "[%lld.%06d] %s%s %s", (long long)tv.tv_sec,
+	    (int)tv.tv_usec, func, sep, fmt) == -1)
 		exit(1);
+	/* Compat: some callers from conversion of printf(stderr, ...) most
+	 * likely add a newline.  But we don't want to double-up on newlines
+	 * in output.  Add one if not present.
+	 */
+	if (fmt[strlen(fmt) - 1] != '\n') {
+		if (fprintf(log_file, "\n") == -1)
+			exit(1);
+	}
+
 	fflush(log_file);
 
 	free(fmt);
@@ -109,11 +123,11 @@ log_vwrite(const char *msg, va_list ap)
 
 /* Log a debug message. */
 void
-log_debug(const char *msg, ...)
+fvwm_debug(const char *func, const char *msg, ...)
 {
 	va_list	ap;
 
 	va_start(ap, msg);
-	log_vwrite(msg, ap);
+	log_vwrite(func, msg, ap);
 	va_end(ap);
 }

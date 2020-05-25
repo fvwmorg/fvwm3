@@ -8,6 +8,6 @@ int	log_get_level(void);
 void	log_open(void);
 void	log_toggle(void);
 void	log_close(void);
-void printflike(1, 2) log_debug(const char *, ...);
+void printflike(2, 3) fvwm_debug(const char *, const char *, ...);
 
 #endif

@@ -62,7 +62,7 @@ void InitList(struct XObj *xobj)
 
   if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
   {
-    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
+    fvwm_debug(__func__, "%s: Couldn't load font. Exiting!\n", ScriptName);
     exit(1);
   }
   if (xobj->Ffont->font != NULL)

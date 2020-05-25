@@ -265,8 +265,8 @@ int main(int argc, char **argv)
 	/* Now MyName is defined */
 	if ((argc != 6)&&(argc != 7))
 	{
-		fprintf(stderr, "%s Version "VERSION" should only be "
-			"executed by fvwm!\n", MyName+1);
+		fvwm_debug(__func__, "%s Version "VERSION" should only be "
+			   "executed by fvwm!\n", MyName+1);
 		exit(1);
 	}
 
@@ -555,9 +555,10 @@ void handle_config_line(char *buf, char **phost)
 			if (!audio_compat)
 			{
 				/* PlayCmd */
-				fprintf(stderr,
-					"%s: PlayCmd supported only when"
-					" invoked as FvwmAudio\n", MyName+1);
+				fvwm_debug(__func__,
+					   "%s: PlayCmd supported only when"
+					   " invoked as FvwmAudio\n",
+					   MyName+1);
 				break;
 			}
 			/* fall through */
@@ -589,9 +590,9 @@ void handle_config_line(char *buf, char **phost)
 			/* Dir */
 			if (!audio_compat)
 			{
-				fprintf(stderr,
-					"%s: Dir supported only when invoked as"
-					" FvwmAudio\n", MyName+1);
+				fvwm_debug(__func__,
+					   "%s: Dir supported only when invoked as"
+					   " FvwmAudio\n", MyName+1);
 				break;
 			}
 			if (token)
@@ -681,8 +682,9 @@ void handle_config_line(char *buf, char **phost)
 			{
 				free(action);
 			}
-			fprintf(stderr, "%s: incomplete event definition %s\n",
-				MyName + 1, buf);
+			fvwm_debug(__func__,
+				   "%s: incomplete event definition %s\n",
+				   MyName + 1, buf);
 			return;
 		}
 		event_table = event_tables;
@@ -719,8 +721,8 @@ void handle_config_line(char *buf, char **phost)
 		}
 		if (!found)
 		{
-			fprintf(stderr, "%s: unknown event type: %s\n",
-				MyName+1, event);
+			fvwm_debug(__func__, "%s: unknown event type: %s\n",
+				   MyName+1, event);
 			if (action)
 			{
 				free(action);

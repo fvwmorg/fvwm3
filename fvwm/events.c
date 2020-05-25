@@ -641,11 +641,10 @@ static inline void _cr_detect_icccm_move(
 	{
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr,
-				"_cdim: --- already detected (pid %d) %p"
-				" '%s'\n", HAS_EWMH_WM_PID(fw), fw,
-				fw->visible_name);
+			fvwm_debug(__func__,
+				   "_cdim: --- already detected (pid %d) %p"
+				   " '%s'\n", HAS_EWMH_WM_PID(fw), fw,
+				   fw->visible_name);
 		}
 		return;
 	}
@@ -653,9 +652,9 @@ static inline void _cr_detect_icccm_move(
 	{
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr,"_cdim: +++ has ewmh_wm_pid: icccm"
-				" %p '%s'\n", fw, fw->visible_name);
+			fvwm_debug(__func__,
+				   "_cdim: +++ has ewmh_wm_pid: icccm"
+				   " %p '%s'\n", fw, fw->visible_name);
 		}
 		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
@@ -665,10 +664,10 @@ static inline void _cr_detect_icccm_move(
 	{
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr, "_cdim: +++ has ewmh_window_type:"
-				" icccm %p '%s'\n", fw,
-				fw->visible_name);
+			fvwm_debug(__func__,
+				   "_cdim: +++ has ewmh_window_type:"
+				   " icccm %p '%s'\n", fw,
+				   fw->visible_name);
 		}
 		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
@@ -678,9 +677,8 @@ static inline void _cr_detect_icccm_move(
 	{
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr, "_cdim: --- shaped window %p "
-				"'%s'\n", fw, fw->visible_name);
+			fvwm_debug(__func__, "_cdim: --- shaped window %p "
+				   "'%s'\n", fw, fw->visible_name);
 		}
 		/* no detection for shaped windows */
 		return;
@@ -689,9 +687,8 @@ static inline void _cr_detect_icccm_move(
 	{
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr, "_cdim: --- using StaticGravity"
-				" %p '%s'\n", fw, fw->visible_name);
+			fvwm_debug(__func__, "_cdim: --- using StaticGravity"
+				   " %p '%s'\n", fw, fw->visible_name);
 		}
 		return;
 	}
@@ -701,9 +698,8 @@ static inline void _cr_detect_icccm_move(
 	{
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr, "_cdim: --- not moved %p '%s'\n",
-				fw, fw->visible_name);
+			fvwm_debug(__func__, "_cdim: --- not moved %p '%s'\n",
+				   fw, fw->visible_name);
 		}
 		return;
 	}
@@ -723,9 +719,8 @@ static inline void _cr_detect_icccm_move(
 	{
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr, "_cdim: --- not moved %p '%s'\n",
-				fw, fw->visible_name);
+			fvwm_debug(__func__, "_cdim: --- not moved %p '%s'\n",
+				   fw, fw->visible_name);
 		}
 		return;
 	}
@@ -735,10 +730,9 @@ static inline void _cr_detect_icccm_move(
 	ds_g.y = static_g.y - fw->g.frame.y;
 	if (Scr.bo.do_debug_cr_motion_method == 1)
 	{
-		fprintf(
-			stderr, "s %3d/%3d %2d/%2d, g %3d/%3d %2d/%2d: ",
-			static_g.x, static_g.y, ds_g.x, ds_g.y, grav_g.x,
-			grav_g.y, dg_g.x, dg_g.y);
+		fvwm_debug(__func__, "s %3d/%3d %2d/%2d, g %3d/%3d %2d/%2d: ",
+			   static_g.x, static_g.y, ds_g.x, ds_g.y, grav_g.x,
+			   grav_g.y, dg_g.x, dg_g.y);
 	}
 	/* check full screen */
 	if ((cre->value_mask & (CWX | CWY)) == (CWX | CWY) &&
@@ -754,9 +748,8 @@ static inline void _cr_detect_icccm_move(
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 			if (Scr.bo.do_debug_cr_motion_method == 1)
 			{
-				fprintf(
-					stderr, "+++ fullscreen icccm %p"
-					" '%s'\n", fw, fw->visible_name);
+				fvwm_debug(__func__, "+++ fullscreen icccm %p"
+					   " '%s'\n", fw, fw->visible_name);
 			}
 			return;
 		}
@@ -768,10 +761,10 @@ static inline void _cr_detect_icccm_move(
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 			if (Scr.bo.do_debug_cr_motion_method == 1)
 			{
-				fprintf(
-					stderr, "+++ fullscreen traditional"
-					" %p '%s'\n", fw,
-					fw->visible_name);
+				fvwm_debug(__func__,
+					   "+++ fullscreen traditional"
+					   " %p '%s'\n", fw,
+					   fw->visible_name);
 			}
 			return;
 		}
@@ -786,9 +779,8 @@ static inline void _cr_detect_icccm_move(
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr, "+++ travelling icccm %p '%s'\n",
-				fw, fw->visible_name);
+			fvwm_debug(__func__, "+++ travelling icccm %p '%s'\n",
+				   fw, fw->visible_name);
 		}
 		return;
 	}
@@ -801,9 +793,8 @@ static inline void _cr_detect_icccm_move(
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 		if (Scr.bo.do_debug_cr_motion_method == 1)
 		{
-			fprintf(
-				stderr, "+++ travelling traditional %p"
-				" '%s'\n", fw, fw->visible_name);
+			fvwm_debug(__func__, "+++ travelling traditional %p"
+				   " '%s'\n", fw, fw->visible_name);
 		}
 		return;
 	}
@@ -854,21 +845,19 @@ static inline void _cr_detect_icccm_move(
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 			if (Scr.bo.do_debug_cr_motion_method == 1)
 			{
-				fprintf(
-					stderr, "+++ near border %s %p "
-					"'%s'\n", (m ==
-						   CR_MOTION_METHOD_USE_GRAV)
-					? "icccm" : "traditional", fw,
-					fw->visible_name);
+				fvwm_debug(__func__, "+++ near border %s %p "
+					   "'%s'\n", (m ==
+						      CR_MOTION_METHOD_USE_GRAV)
+					   ? "icccm" : "traditional", fw,
+					   fw->visible_name);
 			}
 			return;
 		}
 	}
 	if (Scr.bo.do_debug_cr_motion_method == 1)
 	{
-		fprintf(
-			stderr, "--- not detected %p '%s'\n", fw,
-			fw->visible_name);
+		fvwm_debug(__func__, "--- not detected %p '%s'\n", fw,
+			   fw->visible_name);
 	}
 
 	return;
@@ -971,7 +960,8 @@ static inline int _merge_cr_moveresize(
 #if 1 /*!!!*/
 	if (args.count > 0)
 	{
-		fprintf(stderr, "%s: merged %d cr events\n", __func__, args.count);
+		fvwm_debug(__func__, "%s: merged %d cr events\n", __func__,
+			   args.count);
 	}
 #endif
 	/* use the count from the structure, not the return value of
@@ -1796,10 +1786,8 @@ void monitor_update_ewmh(void)
 	FvwmWindow	*t;
 	struct monitor	*m, *mref;
 
-	if (Scr.bo.do_debug_randr) {
-		fprintf(stderr, "%s: monitor debug...\n", __func__);
-		monitor_dump_state(NULL);
-	}
+	fvwm_debug(__func__, "monitor debug...\n");
+	monitor_dump_state(NULL);
 
 	mref = TAILQ_FIRST(&monitor_q);
 
@@ -1816,10 +1804,11 @@ void monitor_update_ewmh(void)
 
 				calculate_page_sizes(m, mref->dx, mref->dy);
 
-				fprintf(stderr,
-				"%s: new_monitor: %s (%p) compared to (%p)\n",
-				__func__, m->si->name, m->Desktops->next,
-				mref->Desktops->next);
+				fvwm_debug(__func__,
+					   "new_monitor: %s (%p) compared to (%p)\n",
+					   m->si->name,
+					   m->Desktops->next,
+					   mref->Desktops->next);
 
 				m->virtual_scr.Vx = 0;
 				m->virtual_scr.Vy = 0;
@@ -4103,8 +4092,8 @@ void InitEventHandlerJumpTable(void)
 	if (register_event_group(0, LASTEvent, EventHandlerJumpTable))
 	{
 		/* should never happen */
-		fvwm_msg(ERR, "InitEventHandlerJumpTable",
-			 "Failed to initialize event handlers");
+		fvwm_debug(__func__,
+			   "Failed to initialize event handlers");
 		exit(1);
 	}
 	if (FShapesSupported)
@@ -4121,8 +4110,8 @@ void InitEventHandlerJumpTable(void)
 				FShapeEventBase, FShapeNumberEvents,
 				shape_jump_table))
 		{
-			fvwm_msg(ERR, "InitEventHandlerJumpTable",
-				 "Failed to init Shape event handler");
+			fvwm_debug(__func__,
+				   "Failed to init Shape event handler");
 		}
 	}
 
@@ -4437,9 +4426,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		 * decorate */
 		if (fFvwmInStartup)
 		{
-			fvwm_msg(ERR, "My_XNextEvent",
-				 "Some command line modules have not quit, "
-				 "Starting up after timeout.\n");
+			fvwm_debug(__func__,
+				   "Some command line modules have not quit, "
+				   "Starting up after timeout.\n");
 			StartupStuff();
 			timeoutP = NULL; /* set an infinite timeout to stop
 					  * ticking */

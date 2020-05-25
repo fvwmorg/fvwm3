@@ -99,10 +99,10 @@ const exec_context_t *exc_create_null_context(void)
 
 	exc = fxcalloc(1, sizeof(exec_context_t));
 #ifdef DEBUG_EXECCONTEXT
-fprintf(stderr, "xxx+0 ");
-for(i=0;i<nx;i++)fprintf(stderr,"  ");
+fvwm_debug(__func__, "xxx+0 ");
+for(i=0;i<nx;i++) fvwm_debug(__func__, "  ");
 x[nx]=exc;nx++;
-fprintf(stderr, "0x%08x\n", (int)exc);
+fvwm_debug(__func__, "0x%08x\n", (int)exc);
 #endif
 	exc->type = EXCT_NULL;
 	fev_make_null_event(&exc->private_data.te, dpy);
@@ -138,10 +138,10 @@ int i;
 
 	exc = fxmalloc(sizeof(exec_context_t));
 #ifdef DEBUG_EXECCONTEXT
-fprintf(stderr, "xxx+= ");
-for(i=0;i<nx;i++)fprintf(stderr,"  ");
+fvwm_debug(__func__, "xxx+= ");
+for(i=0;i<nx;i++) fvwm_debug(__func__, "  ");
 x[nx]=exc;nx++;
-fprintf(stderr, "0x%08x\n", (int)exc);
+fvwm_debug(__func__, "0x%08x\n", (int)exc);
 #endif
 	memcpy(exc, excin, sizeof(*exc));
 	__exc_change_context(exc, ecc, mask);
@@ -156,9 +156,9 @@ void exc_destroy_context(
 int i;
 if (nx == 0||x[nx-1] != exc)abort();
 nx--;
-fprintf(stderr, "xxx-- ");
-for(i=0;i<nx;i++)fprintf(stderr,"  ");
-fprintf(stderr, "0x%08x\n", (int)exc);
+fvwm_debug(__func__, "xxx-- ");
+for(i=0;i<nx;i++) fvwm_debug(__func__, "  ");
+fvwm_debug(__func__, "0x%08x\n", (int)exc);
 #endif
 	free((exec_context_t *)exc);
 

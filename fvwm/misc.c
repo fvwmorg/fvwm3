@@ -98,12 +98,12 @@ void print_grab_stats(char *text)
 {
 	int i;
 
-	fprintf(stderr,"grab_stats (%s):", text);
+	fvwm_debug(__func__, "grab_stats (%s):", text);
 	for (i = 0; i < GRAB_MAXVAL; i++)
 	{
-		fprintf(stderr," %d", grab_count[i]);
+		fvwm_debug(__func__, " %d", grab_count[i]);
 	}
-	fprintf(stderr," \n");
+	fvwm_debug(__func__, " \n");
 
 	return;
 }
@@ -119,9 +119,8 @@ Bool GrabEm(int cursor, int grab_context)
 
 	if (grab_context <= GRAB_STARTUP || grab_context >= GRAB_MAXVAL)
 	{
-		fvwm_msg(
-			ERR, "GrabEm", "Bug: Called with illegal context %d",
-			grab_context);
+		fvwm_debug(__func__, "Bug: Called with illegal context %d",
+			   grab_context);
 		return False;
 	}
 
@@ -248,9 +247,8 @@ Bool UngrabEm(int ungrab_context)
 {
 	if (ungrab_context <= GRAB_ALL || ungrab_context >= GRAB_MAXVAL)
 	{
-		fvwm_msg(
-			ERR, "UngrabEm", "Bug: Called with illegal context %d",
-			ungrab_context);
+		fvwm_debug(__func__, "Bug: Called with illegal context %d",
+			   ungrab_context);
 		return False;
 	}
 
@@ -319,91 +317,25 @@ Bool UngrabEm(int ungrab_context)
 	return True;
 }
 
-#ifndef fvwm_msg /* Some ports (i.e. VMS) define their own version */
-/*
-** fvwm_msg: used to send output from fvwm to files and or stderr/stdout
-**
-** type -> DBG == Debug, ERR == Error, INFO == Information, WARN == Warning,
-** OLD == Command or option deprecated
-** id -> name of function, or other identifier
-*/
-static char *fvwm_msg_strings[] =
-{
-	"<<DEBUG>> ", "", "", "<<WARNING>> ", "<<DEPRECATED>> ", "<<ERROR>> "
-};
-
-void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
-{
-	va_list args;
-	char *mfmt;
-	char fvwm_id[20];
-	char time_str[40] = "\0";
-
-	strcpy(fvwm_id, "fvwm");
-	if (Scr.NumberOfScreens > 1)
-	{
-		sprintf(&fvwm_id[strlen(fvwm_id)], ".%d", (int)Scr.screen);
-	}
-
-	if (type == ERR)
-	{
-		/* I hate to use a fixed length but this will do for now */
-		char tmp[2 * MAX_TOKEN_LENGTH];
-		sprintf(tmp, "[%s][%s]: %s",
-			fvwm_id, id, fvwm_msg_strings[(int)type]);
-		va_start(args, msg);
-		vsprintf(tmp + strlen(tmp), msg, args);
-		va_end(args);
-		tmp[strlen(tmp) + 1] = '\0';
-		tmp[strlen(tmp)] = '\n';
-		if (strlen(tmp) >= MAX_MODULE_INPUT_TEXT_LEN)
-		{
-			sprintf(tmp + MAX_MODULE_INPUT_TEXT_LEN - 5, "...\n");
-		}
-		fprintf(stderr, "%s", tmp);
-		BroadcastName(M_ERROR, 0, 0, 0, tmp);
-	}
-	else
-	{
-		fprintf(stderr, "%s[%s][%s]: %s",
-				time_str, fvwm_id, id, fvwm_msg_strings[(int)type]);
-
-		va_start(args, msg);
-		{
-			int n;
-
-			n = asprintf(&mfmt, "%s\n", msg);
-			(void)n;
-		}
-		vfprintf(stderr, mfmt, args);
-		va_end(args);
-		free(mfmt);
-	}
-
-} /* fvwm_msg */
-#endif
-
 void fvwm_msg_report_app(void)
 {
-	fprintf(
-		stderr,
-		"    If you are having a problem with the application, send a"
-		" bug report\n"
-		"    with this message included to the application owner.\n"
-		"    There is no need to notify fvwm-workers@fvwm.org.\n");
+	fvwm_debug(__func__,
+		   "    If you are having a problem with the application, send a"
+		   " bug report\n"
+		   "    with this message included to the application owner.\n"
+		   "    There is no need to notify fvwm-workers@fvwm.org.\n");
 
 	return;
 }
 
 void fvwm_msg_report_app_and_workers(void)
 {
-	fprintf(
-		stderr,
-		"    If you are having a problem with the application, send"
-		" a bug report with\n"
-		"    this message included to the application owner and"
-		" notify\n"
-		"    fvwm-workers@fvwm.org.\n");
+	fvwm_debug(__func__,
+		   "    If you are having a problem with the application, send"
+		   " a bug report with\n"
+		   "    this message included to the application owner and"
+		   " notify\n"
+		   "    fvwm-workers@fvwm.org.\n");
 
 	return;
 }
@@ -575,16 +507,16 @@ Time get_server_time(void)
 
 void print_g(char *text, rectangle *g)
 {
-	fprintf(stderr,"%s: ", (text != NULL) ? text : "");
+	fvwm_debug(__func__, "%s: ", (text != NULL) ? text : "");
 	if (g == NULL)
 	{
-		fprintf(stderr, "(null)\n");
+		fvwm_debug(__func__, "(null)\n");
 
 		return;
 	}
-	fprintf(stderr,"%4d %4d %4dx%4d (%4d - %4d, %4d - %4d)\n",
-		g->x, g->y, g->width, g->height,
-		g->x, g->x + g->width, g->y, g->y + g->height);
+	fvwm_debug(__func__, "%4d %4d %4dx%4d (%4d - %4d, %4d - %4d)\n",
+		   g->x, g->y, g->width, g->height,
+		   g->x, g->x + g->width, g->y, g->y + g->height);
 
 	return;
 }

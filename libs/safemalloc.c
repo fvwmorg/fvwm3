@@ -104,7 +104,7 @@ xvasprintf(char **ret, const char *fmt, va_list ap)
 	i = vasprintf(ret, fmt, ap);
 
 	if (i < 0 || *ret == NULL) {
-		fprintf(stderr, "xasprintf: %s", strerror(errno));
+		fvwm_debug(__func__, "xasprintf: %s", strerror(errno));
 		exit (1);
 	}
 

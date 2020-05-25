@@ -1658,14 +1658,13 @@ static int __place_window(
 			flags.do_honor_starts_on_page = 0;
 			reason->page.reason = PR_PAGE_IGNORE_INVALID;
 			reason->page.do_ignore_starts_on_page = 1;
-			fvwm_msg(
-				WARN, "__place_window",
-				"invalid style combination used: StartsOnPage"
-				"/StartsOnDesk and SkipMapping don't work with"
-				" ManualPlacement and TileManualPlacement."
-				" Putting window on current page, please use"
-				" another placement style or"
-				" ActivePlacementHonorsStartsOnPage.");
+			fvwm_debug(__func__,
+				   "invalid style combination used: StartsOnPage"
+				   "/StartsOnDesk and SkipMapping don't work with"
+				   " ManualPlacement and TileManualPlacement."
+				   " Putting window on current page, please use"
+				   " another placement style or"
+				   " ActivePlacementHonorsStartsOnPage.");
 		}
 	}
 	/* get the screen coordinates to place window on */
@@ -2281,9 +2280,8 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		sprintf(s, "    (adjusted to force window on page)\n");
 		s += strlen(s);
 	}
-	fvwm_msg(
-		INFO, "__explain_placement", explanation, (int)FW_W(fw),
-		fw->name.name);
+	fvwm_debug(__func__, explanation, (int)FW_W(fw),
+		   fw->name.name);
 
 	return;
 }

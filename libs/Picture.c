@@ -289,7 +289,7 @@ void PicturePrintImageCache(int verbose)
 
 	fflush(stderr);
 	fflush(stdout);
-	fprintf(stderr, "fvwm info on Image cache:\n");
+	fvwm_debug(__func__, "fvwm info on Image cache:\n");
 
 	for (p = FvwmPictureList; p != NULL; p = p->next)
 	{
@@ -306,16 +306,17 @@ void PicturePrintImageCache(int verbose)
 		}
 		if (verbose > 0)
 		{
-			fprintf(stderr,
-				"Image: %s (%d pixmaps; used %d times)\n",
-				p->name, num_pixmaps, p->count);
+			fvwm_debug(__func__,
+				   "Image: %s (%d pixmaps; used %d times)\n",
+				   p->name, num_pixmaps, p->count);
 		}
 		count++;
 		hits += p->count-1;
 	}
 
-	fprintf(stderr, "%u images in cache (%d reuses) "
-		"(%u masks, %u alpha channels => %u pixmaps)\n",
-		count, hits, num_mask, num_alpha, count + num_mask + num_alpha);
+	fvwm_debug(__func__, "%u images in cache (%d reuses) "
+		   "(%u masks, %u alpha channels => %u pixmaps)\n",
+		   count, hits, num_mask, num_alpha,
+		   count + num_mask + num_alpha);
 	fflush(stderr);
 }

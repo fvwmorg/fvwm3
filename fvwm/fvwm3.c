@@ -625,20 +625,19 @@ void Done(int restart, char *command)
 
 			if (n <= 0)
 			{
-				fvwm_msg(
-					ERR, "Done",
-					"Restart command parsing error in"
-					" (%s): [%s]", command, error_msg);
+				fvwm_debug(__func__,
+					   "Restart command parsing error in"
+					   " (%s): [%s]", command, error_msg);
 			}
 			else if (strcmp(my_argv[0], "--pass-args") == 0)
 			{
 				if (n != 2)
 				{
-					fvwm_msg(
-						ERR, "Done",
-						"Restart --pass-args: single"
-						" name expected. (restarting"
-						" '%s' instead)", g_argv[0]);
+					fvwm_debug(__func__,
+						   "Restart --pass-args: single"
+						   " name expected. (restarting"
+						   " '%s' instead)",
+						   g_argv[0]);
 
 				}
 				else
@@ -653,11 +652,10 @@ void Done(int restart, char *command)
 					my_argv[i] = NULL;
 
 					execvp(my_argv[0], my_argv);
-					fvwm_msg(
-						ERR, "Done",
-						"Call of '%s' failed!"
-						" (restarting '%s' instead)",
-						my_argv[0], g_argv[0]);
+					fvwm_debug(__func__,
+						   "Call of '%s' failed!"
+						   " (restarting '%s' instead)",
+						   my_argv[0], g_argv[0]);
 					perror("  system error description");
 				}
 
@@ -680,25 +678,24 @@ void Done(int restart, char *command)
 				}
 				if (str)
 				{
-					fvwm_msg(
-						WARN, "Done",
-						"`Restart %s' might not do"
-						" what you want, see the man"
-						" page.\n\tUse Restart without"
-						" parameters if you mean to"
-						" restart the same WM.", str);
+					fvwm_debug(__func__,
+						   "`Restart %s' might not do"
+						   " what you want, see the man"
+						   " page.\n\tUse Restart without"
+						   " parameters if you mean to"
+						   " restart the same WM.",
+						   str);
 				}
 				execvp(my_argv[0], my_argv);
-				fvwm_msg(
-					ERR, "Done", "Call of '%s' failed!"
-					" (restarting '%s' instead)",
-					my_argv[0], g_argv[0]);
+				fvwm_debug(__func__, "Call of '%s' failed!"
+					   " (restarting '%s' instead)",
+					   my_argv[0], g_argv[0]);
 				perror("  system error description");
 			}
 		}
 
 		execvp(g_argv[0], g_argv);    /* that _should_ work */
-		fvwm_msg(ERR, "Done", "Call of '%s' failed!", g_argv[0]);
+		fvwm_debug(__func__, "Call of '%s' failed!", g_argv[0]);
 		perror("  system error description");
 	}
 	else
@@ -1222,47 +1219,46 @@ static void InitVariables(void)
 
 static void usage(int is_verbose)
 {
-	fprintf(stderr, "usage: %s", g_argv[0]);
-	fprintf(stderr,
-		" [-d display]"
-		" [-f cfgfile]"
-		" [-c cmd]"
-		" [-s [screen_num]]"
-		" [-I vis-id | -C vis-class]"
-		" [-l colors"
-		" [-L|A|S|P] ...]"
-		" [-r]"
-		" [OTHER OPTIONS] ..."
-		"\n");
+	fvwm_debug(__func__, "usage: %s", g_argv[0]);
+	fvwm_debug(__func__,
+		   " [-d display]"
+		   " [-f cfgfile]"
+		   " [-c cmd]"
+		   " [-s [screen_num]]"
+		   " [-I vis-id | -C vis-class]"
+		   " [-l colors"
+		   " [-L|A|S|P] ...]"
+		   " [-r]"
+		   " [OTHER OPTIONS] ..."
+		   "\n");
 	if (!is_verbose)
 	{
-		fprintf(
-			stderr, "Try '%s --help' for more information.\n",
-			g_argv[0]);
+		fvwm_debug(__func__,
+		           "Try '%s --help' for more information.\n",
+		           g_argv[0]);
 		return;
 	}
-	fprintf(stderr,
-		" -A:           allocate palette\n"
-		" -c cmd:       preprocess configuration file with <cmd>\n"
-		" -C vis-class: use visual class <vis-class>\n"
-		" -d display:   run fvwm on <display>\n"
-		" -D:           enable debug oputput\n"
-		" -f cfgfile:   read configuration from <cfgfile>\n"
-		" -F file:      used internally for session management\n"
-		" -h, -?:       print this help message\n"
-		" -i client-id: used internally for session management\n"
-		" -I vis-id:    use visual <vis-id>\n"
-		" -l colors:    try to use no more than <colors> colors\n"
-		" -L:           strict color limit\n"
-		" -P:           visual palette\n"
-		" -r:           replace running window manager\n"
-		" -s [screen]:  manage a single screen\n"
-		" -S:           static palette\n"
-		" -V:           print version information\n"
+	fvwm_debug(__func__,
+		   " -A:           allocate palette\n"
+		   " -c cmd:       preprocess configuration file with <cmd>\n"
+		   " -C vis-class: use visual class <vis-class>\n"
+		   " -d display:   run fvwm on <display>\n"
+		   " -D:           enable debug oputput\n"
+		   " -f cfgfile:   read configuration from <cfgfile>\n"
+		   " -F file:      used internally for session management\n"
+		   " -h, -?:       print this help message\n"
+		   " -i client-id: used internally for session management\n"
+		   " -I vis-id:    use visual <vis-id>\n"
+		   " -l colors:    try to use no more than <colors> colors\n"
+		   " -L:           strict color limit\n"
+		   " -P:           visual palette\n"
+		   " -r:           replace running window manager\n"
+		   " -s [screen]:  manage a single screen\n"
+		   " -S:           static palette\n"
+		   " -V:           print version information\n"
 		);
-	fprintf(
-		stderr, "Try 'man %s' for more information.\n",
-		PACKAGE);
+	fvwm_debug(__func__, "Try 'man %s' for more information.\n",
+		   PACKAGE);
 
 		return;
 }
@@ -1436,7 +1432,7 @@ static void SetRCDefaults(void)
 
 static int CatchRedirectError(Display *dpy, XErrorEvent *event)
 {
-	fvwm_msg(ERR, "CatchRedirectError", "another WM is running");
+	fvwm_debug(__func__, "another WM is running");
 	exit(1);
 
 	/* to make insure happy */
@@ -1484,13 +1480,13 @@ static int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 
 	XGetErrorText(dpy, event->error_code, errtext, 512);
 
-	fvwm_msg(ERR, "FvwmErrorHandler", "*** internal error ***");
-	fvwm_msg(ERR, "FvwmErrorHandler", "Request %d, Error %d, Text %s, "
-		"EventType: %d",
-		 event->request_code,
-		 event->error_code,
-		 errtext,
-		 last_event_type);
+	fvwm_debug(__func__, "*** internal error ***");
+	fvwm_debug(__func__, "Request %d, Error %d, Text %s, "
+		   "EventType: %d",
+		   event->request_code,
+		   event->error_code,
+		   errtext,
+		   last_event_type);
 
 	return 0;
 }
@@ -1831,9 +1827,8 @@ int main(int argc, char **argv)
 	}
 	if (access(fvwm_userdir, W_OK) != 0)
 	{
-		fvwm_msg(
-			ERR, "main", "No write permissions in `%s/'.\n",
-			fvwm_userdir);
+		fvwm_debug(__func__, "No write permissions in `%s/'.\n",
+			   fvwm_userdir);
 	}
 
 	for (i = 1; i < argc; i++)
@@ -1931,10 +1926,9 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "main",
-					"only %d -f and -cmd parms allowed!",
-					MAX_CFG_CMDS);
+				fvwm_debug(__func__,
+					   "only %d -f and -cmd parms allowed!",
+					   MAX_CFG_CMDS);
 			}
 		}
 		else if (strcmp(argv[i], "-c") == 0 ||
@@ -1954,10 +1948,9 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				fvwm_msg(
-					ERR, "main",
-					"only %d -f and -cmd parms allowed!",
-					MAX_CFG_CMDS);
+				fvwm_debug(__func__,
+					   "only %d -f and -cmd parms allowed!",
+					   MAX_CFG_CMDS);
 			}
 		}
 		else if (strcmp(argv[i], "-h") == 0 ||
@@ -1970,10 +1963,9 @@ int main(int argc, char **argv)
 		else if (strcmp(argv[i], "-blackout") == 0)
 		{
 			/* obsolete option */
-			fvwm_msg(
-				WARN, "main",
-				"The -blackout option is obsolete, it will be "
-				"removed in 3.0.");
+			fvwm_debug(__func__,
+				   "The -blackout option is obsolete, it will be "
+				   "removed in 3.0.");
 		}
 		else if (strcmp(argv[i], "-r") == 0 ||
 			 strcmp(argv[i], "-replace") == 0 ||
@@ -2093,7 +2085,8 @@ int main(int argc, char **argv)
 		else
 		{
 			usage(0);
-			fprintf(stderr, "invalid option -- %s\n", argv[i]);
+			fvwm_debug(__func__, "invalid option -- %s\n",
+				   argv[i]);
 			exit(1);
 		}
 	}
@@ -2117,10 +2110,9 @@ int main(int argc, char **argv)
 			/* should never happen ? */
 			if (!(dpy = XOpenDisplay(dn)))
 			{
-				fvwm_msg(
-					ERR, "main", "can't open display %s"
-					"to get the default display",
-					XDisplayName(dn));
+				fvwm_debug(__func__, "can't open display %s"
+					   "to get the default display",
+					   XDisplayName(dn));
 			}
 			else
 			{
@@ -2129,10 +2121,9 @@ int main(int argc, char **argv)
 		}
 		if (dn == NULL)
 		{
-			fvwm_msg(
-				ERR,
-				"main", "couldn't find default display (%s)",
-				XDisplayName(dn));
+			fvwm_debug(__func__,
+				   "couldn't find default display (%s)",
+				   XDisplayName(dn));
 		}
 		else
 		{
@@ -2151,11 +2142,10 @@ int main(int argc, char **argv)
 			}
 			if (!dpy && !(Pdpy = dpy = XOpenDisplay(new_dn)))
 			{
-				fvwm_msg(
-					ERR, "main",
-					"can't open display %s, single screen "
-					"number %d maybe not correct",
-					new_dn, single_screen_num);
+				fvwm_debug(__func__,
+					   "can't open display %s, single screen "
+					   "number %d maybe not correct",
+					   new_dn, single_screen_num);
 			}
 			Scr.screen = single_screen_num;
 			Scr.NumberOfScreens = ScreenCount(dpy);
@@ -2167,9 +2157,8 @@ int main(int argc, char **argv)
 	{
 		if(!(Pdpy = dpy = XOpenDisplay(display_name)))
 		{
-			fvwm_msg(
-				ERR, "main", "can't open display %s",
-				XDisplayName(display_name));
+			fvwm_debug(__func__, "can't open display %s",
+				   XDisplayName(display_name));
 			exit (1);
 		}
 		Scr.screen= DefaultScreen(dpy);
@@ -2213,7 +2202,7 @@ int main(int argc, char **argv)
 #ifdef HAVE_X11_FD
 	if (fcntl(x_fd, F_SETFD, 1) == -1)
 	{
-		fvwm_msg(ERR, "main", "close-on-exec failed");
+		fvwm_debug(__func__, "close-on-exec failed");
 		exit (1);
 	}
 #endif
@@ -2264,9 +2253,8 @@ int main(int argc, char **argv)
 	Scr.Root = RootWindow(dpy, Scr.screen);
 	if (Scr.Root == None)
 	{
-		fvwm_msg(
-			ERR, "main", "Screen %d is not a valid screen",
-			(int)Scr.screen);
+		fvwm_debug(__func__, "Screen %d is not a valid screen",
+			   (int)Scr.screen);
 		exit(1);
 	}
 
@@ -2286,9 +2274,9 @@ int main(int argc, char **argv)
 					&template, &total);
 			if (!total)
 			{
-				fvwm_msg(ERR, "main",
-					"Cannot find visual class %d",
-					visualClass);
+				fvwm_debug(__func__,
+					   "Cannot find visual class %d",
+					   visualClass);
 			}
 		}
 		else if (visualId != -1)
@@ -2299,9 +2287,9 @@ int main(int argc, char **argv)
 					&template, &total);
 			if (!total)
 			{
-				fvwm_msg(ERR, "main",
-					"VisualId 0x%x is not valid ",
-					visualId);
+				fvwm_debug(__func__,
+					   "VisualId 0x%x is not valid ",
+					   visualId);
 			}
 		}
 
@@ -2543,17 +2531,17 @@ int main(int argc, char **argv)
 			!run_command_file(CatString3(
 				FVWM_DATADIR, "/default-config/", "config"), exc))
 		{
-			fvwm_msg(
-				ERR, "main", "Cannot read startup config file,"
-				" tried: \n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t"
-				"%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
-				fvwm_userdir, FVWM_CONFIG,
-				FVWM_DATADIR, FVWM_CONFIG,
-				fvwm_userdir, FVWM2RC,
-				home_dir, FVWM2RC,
-				FVWM_DATADIR, FVWM2RC,
-				FVWM_DATADIR, FVWM2RC,
-				FVWM_CONFDIR, FVWM2RC);
+			fvwm_debug(__func__,
+				   "Cannot read startup config file,"
+				   " tried: \n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t"
+				   "%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
+				   fvwm_userdir, FVWM_CONFIG,
+				   FVWM_DATADIR, FVWM_CONFIG,
+				   fvwm_userdir, FVWM2RC,
+				   home_dir, FVWM2RC,
+				   FVWM_DATADIR, FVWM2RC,
+				   FVWM_DATADIR, FVWM2RC,
+				   FVWM_CONFDIR, FVWM2RC);
 		}
 	}
 	exc_destroy_context(exc);

@@ -85,7 +85,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	{
 		if (menu_name)
 		{
-			fvwm_msg(ERR,"menu_func","No such menu %s",menu_name);
+			fvwm_debug(__func__, "No such menu %s",menu_name);
 			free(menu_name);
 		}
 		return;
@@ -158,7 +158,7 @@ void CMD_AddToMenu(F_CMD_ARGS)
 	mr = menus_find_menu(token);
 	if (mr && MR_MAPPED_COPIES(mr) != 0)
 	{
-		fvwm_msg(ERR,"add_item_to_menu", "menu %s is in use", token);
+		fvwm_debug(__func__, "menu %s is in use", token);
 		return;
 	}
 	mr = FollowMenuContinuations(menus_find_menu(token), &mrPrior);
@@ -226,7 +226,7 @@ void CMD_DestroyMenuStyle(F_CMD_ARGS)
 	name = PeekToken(action, NULL);
 	if (name == NULL)
 	{
-		fvwm_msg(ERR,"DestroyMenuStyle", "needs one parameter");
+		fvwm_debug(__func__, "needs one parameter");
 		return;
 	}
 
@@ -237,16 +237,16 @@ void CMD_DestroyMenuStyle(F_CMD_ARGS)
 	}
 	else if (ms == menustyle_get_default_style())
 	{
-		fvwm_msg(ERR,"DestroyMenuStyle",
-			 "cannot destroy default menu style. "
-			 "To reset the default menu style use\n  %s",
-			 DEFAULT_MENU_STYLE);
+		fvwm_debug(__func__,
+			   "cannot destroy default menu style. "
+			   "To reset the default menu style use\n  %s",
+			   DEFAULT_MENU_STYLE);
 		return;
 	}
 	else if (ST_USAGE_COUNT(ms) != 0)
 	{
-		fvwm_msg(ERR, "DestroyMenuStyle", "menu style %s is in use",
-			 name);
+		fvwm_debug(__func__, "menu style %s is in use",
+			   name);
 		return;
 	}
 	else
@@ -268,15 +268,15 @@ void CMD_ChangeMenuStyle(F_CMD_ARGS)
 	name = PeekToken(action, &action);
 	if (name == NULL)
 	{
-		fvwm_msg(ERR,"ChangeMenuStyle",
-			 "needs at least two parameters");
+		fvwm_debug(__func__,
+			   "needs at least two parameters");
 		return;
 	}
 
 	ms = menustyle_find(name);
 	if (ms == NULL)
 	{
-		fvwm_msg(ERR,"ChangeMenuStyle", "cannot find style %s", name);
+		fvwm_debug(__func__, "cannot find style %s", name);
 		return;
 	}
 
@@ -286,14 +286,14 @@ void CMD_ChangeMenuStyle(F_CMD_ARGS)
 		mr = menus_find_menu(menuname);
 		if (mr == NULL)
 		{
-			fvwm_msg(ERR, "ChangeMenuStyle", "cannot find menu %s",
-				 menuname);
+			fvwm_debug(__func__, "cannot find menu %s",
+				   menuname);
 			break;
 		}
 		if (MR_MAPPED_COPIES(mr) != 0)
 		{
-			fvwm_msg(ERR, "ChangeMenuStyle", "menu %s is in use",
-				 menuname);
+			fvwm_debug(__func__, "menu %s is in use",
+				   menuname);
 		}
 		else
 		{

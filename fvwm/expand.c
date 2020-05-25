@@ -1422,8 +1422,8 @@ char *expand_vars(
 			case 'w':
 				if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 				{
-					fvwm_msg(OLD, "expand_vars",
-						"Use $[w.id] instead of $w");
+					fvwm_debug(__func__,
+						   "Use $[w.id] instead of $w");
 					sprintf(&out[j], "0x%x",
 						(int)FW_W(fw));
 				}
@@ -1435,22 +1435,22 @@ char *expand_vars(
 				i++;
 				break;
 			case 'd':
-				fvwm_msg(OLD, "expand_vars",
-					"Use $[desk.n] instead of $d");
+				fvwm_debug(__func__,
+					   "Use $[desk.n] instead of $d");
 				sprintf(&out[j], "%d", mon->virtual_scr.CurrentDesk);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'x':
-				fvwm_msg(OLD, "expand_vars",
-					"Use $[vp.x] instead of $x");
+				fvwm_debug(__func__,
+					   "Use $[vp.x] instead of $x");
 				sprintf(&out[j], "%d", mon->virtual_scr.Vx);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'y':
-				fvwm_msg(OLD, "expand_vars",
-					"Use $[vp.y] instead of $y");
+				fvwm_debug(__func__,
+					   "Use $[vp.y] instead of $y");
 				sprintf(&out[j], "%d", mon->virtual_scr.Vy);
 				j += strlen(&out[j]);
 				i++;
@@ -1464,9 +1464,9 @@ char *expand_vars(
 					switch(input[i + 1])
 					{
 					case 'c':
-						fvwm_msg(OLD, "expand_vars",
-							"Use $[w.class] "
-							"instead of $c");
+						fvwm_debug(__func__,
+							   "Use $[w.class] "
+							   "instead of $c");
 						if (fw->class.res_class &&
 						    fw->class.res_class[0])
 						{
@@ -1475,9 +1475,9 @@ char *expand_vars(
 						}
 						break;
 					case 'r':
-						fvwm_msg(OLD, "expand_vars",
-							"Use $[w.resource] "
-							"instead of $r");
+						fvwm_debug(__func__,
+							   "Use $[w.resource] "
+							   "instead of $r");
 						if (fw->class.res_name &&
 						    fw->class.res_name[0])
 						{
@@ -1486,9 +1486,9 @@ char *expand_vars(
 						}
 						break;
 					case 'n':
-						fvwm_msg(OLD, "expand_vars",
-							"Use $[w.name] "
-							"instead of $n");
+						fvwm_debug(__func__,
+							   "Use $[w.name] "
+							   "instead of $n");
 						if (fw->name.name &&
 						    fw->name.name[0])
 						{
@@ -1500,8 +1500,8 @@ char *expand_vars(
 				is_string = True;
 				break;
 			case 'v':
-				fvwm_msg(OLD, "expand_vars",
-					"Use $[version.line] instead of $v");
+				fvwm_debug(__func__,
+					   "Use $[version.line] instead of $v");
 				sprintf(&out[j], "%s", (Fvwm_VersionInfo) ?
 					Fvwm_VersionInfo : "");
 				j += strlen(&out[j]);

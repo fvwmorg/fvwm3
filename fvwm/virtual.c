@@ -1843,8 +1843,8 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 			else
 			{
 				/* this should never happen */
-				fvwm_msg(ERR, "EdgeCommand",
-					 "Internal error in CMD_EdgeCommand");
+				fvwm_debug(__func__,
+					   "Internal error in CMD_EdgeCommand");
 			}
 		}
 	}
@@ -1881,8 +1881,8 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 			}
 		} else {
 			/* not a proper direction */
-			fvwm_msg(ERR, "EdgeCommand",
-				 "EdgeCommand [direction [function]]");
+			fvwm_debug(__func__,
+				   "EdgeCommand [direction [function]]");
 		}
 	}
 
@@ -1950,8 +1950,8 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 			else
 			{
 				/* this should never happen */
-				fvwm_msg(ERR, "EdgeLeaveCommand",
-					 "Internal error in CMD_EdgeLeaveCommand");
+				fvwm_debug(__func__,
+					   "Internal error in CMD_EdgeLeaveCommand");
 			}
 		}
 	}
@@ -1986,8 +1986,8 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 			}
 		} else {
 			/* not a proper direction */
-			fvwm_msg(ERR, "EdgeLeaveCommand",
-				 "EdgeLeaveCommand [direction [function]]");
+			fvwm_debug(__func__,
+				   "EdgeLeaveCommand [direction [function]]");
 		}
 	}
 
@@ -2002,17 +2002,17 @@ void CMD_EdgeThickness(F_CMD_ARGS)
 	n = GetIntegerArguments(action, NULL, &val, 1);
 	if (n != 1)
 	{
-		fvwm_msg(ERR,"setEdgeThickness",
-			 "EdgeThickness requires 1 numeric argument,"
-			 " found %d args",n);
+		fvwm_debug(__func__,
+			   "EdgeThickness requires 1 numeric argument,"
+			   " found %d args",n);
 		return;
 	}
 		/* check range */
 	if (val < 0 || val > 2)
 	{
-		fvwm_msg(ERR,"setEdgeThickness",
-			 "EdgeThickness arg must be between 0 and 2,"
-			 " found %d",val);
+		fvwm_debug(__func__,
+			   "EdgeThickness arg must be between 0 and 2,"
+			   " found %d",val);
 		return;
 	}
 	edge_thickness = val;
@@ -2030,9 +2030,8 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 	if (n != 2)
 	{
-		fvwm_msg(
-			ERR, "SetEdgeScroll",
-			"EdgeScroll requires two arguments");
+		fvwm_debug(__func__,
+			   "EdgeScroll requires two arguments");
 		return;
 	}
 
@@ -2125,11 +2124,11 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 				stylecmd2, "Style * EdgeMoveResistance %d %d",
 				val[1], val[2]);
 		}
-		fvwm_msg(
-			OLD, "CMD_EdgeResistance",
-			"The command EdgeResistance with three arguments is"
-			" obsolete. Please use the following commands"
-			" instead:\n%s\n%s\n%s\n", cmd, stylecmd, stylecmd2);
+		fvwm_debug(__func__,
+			   "The command EdgeResistance with three arguments is"
+			   " obsolete. Please use the following commands"
+			   " instead:\n%s\n%s\n%s\n", cmd, stylecmd,
+			   stylecmd2);
 		execute_function(
 			cond_rc, exc, cmd,
 			FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
@@ -2142,9 +2141,8 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 	}
 	else
 	{
-		fvwm_msg(
-			ERR, "CMD_EdgeResistance",
-			"EdgeResistance requires two or three arguments");
+		fvwm_debug(__func__,
+			   "EdgeResistance requires two or three arguments");
 		return;
 	}
 
@@ -2157,7 +2155,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	struct monitor	*m_loop, *m = monitor_get_current();
 
 	if (action == NULL) {
-		fvwm_msg(ERR, (char *)__func__, "action is required");
+		fvwm_debug(__func__, "action is required");
 		return;
 	}
 
@@ -2184,7 +2182,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	} else if (strcmp(action, "per-monitor") == 0)
 		monitor_mode = MONITOR_TRACKING_M;
 	else {
-		fvwm_msg(ERR, (char *)__func__, "action not recognised");
+		fvwm_debug(__func__, "action not recognised");
 		return;
 	}
 
@@ -2215,8 +2213,8 @@ void CMD_DesktopSize(F_CMD_ARGS)
 	if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
 	    GetRectangleArguments(action, &val[0], &val[1]) != 2)
 	{
-		fvwm_msg(ERR, "CMD_DesktopSize",
-			 "DesktopSize requires two arguments");
+		fvwm_debug(__func__,
+			   "DesktopSize requires two arguments");
 		return;
 	}
 
@@ -2262,7 +2260,7 @@ void CMD_GotoDesk(F_CMD_ARGS)
 	else
 		PeekToken(action, &action);
 
-	fprintf(stderr, "%s: using monitor: %s\n", __func__, m->si->name);
+	fvwm_debug(__func__, "%s: using monitor: %s\n", __func__, m->si->name);
 
 	goto_desk(GetDeskNumber(m, action, m->virtual_scr.CurrentDesk), m);
 
@@ -2373,9 +2371,8 @@ void CMD_GotoPage(F_CMD_ARGS)
 	y = m->virtual_scr.Vy;
 	if (!get_page_arguments(fw, action, &x, &y, &mpa))
 	{
-		fvwm_msg(
-			ERR, "goto_page_func",
-			"GotoPage: invalid arguments: %s", action);
+		fvwm_debug(__func__,
+			   "GotoPage: invalid arguments: %s", action);
 		return;
 	}
 
@@ -2529,7 +2526,7 @@ store_desktop_cmd(int desk, char *name)
 	struct desktop_cmd	*dc, *dc_loop;
 
 	if (name == NULL) {
-		fprintf(stderr, "%s: name cannot be NULL\n", __func__);
+		fvwm_debug(__func__, "%s: name cannot be NULL\n", __func__);
 		return;
 	}
 
@@ -2645,10 +2642,9 @@ void CMD_DesktopName(F_CMD_ARGS)
 
 	if (GetIntegerArguments(action, &action, &desk, 1) != 1)
 	{
-		fvwm_msg(
-			ERR,"CMD_DesktopName",
-			"First argument to DesktopName must be an integer: %s",
-			action);
+		fvwm_debug(__func__,
+		           "First argument to DesktopName must be an integer: %s",
+		           action);
 		return;
 	}
 

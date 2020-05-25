@@ -1,5 +1,18 @@
 @@
-expression E;
+expression L, F;
 @@
 
-- DBUG(...);
+- fvwm_msg(
++ fvwm_debug(
+- L, F,
++ __func__,
+...);
+
+@@
+expression S;
+@@
+
+- fprintf(stderr,
++ fvwm_debug(__func__,
+...);
+

@@ -313,8 +313,9 @@ static char *FuncGetTitle(int *NbArg, long *TabArg)
     tmp=fxstrdup(tabxobj[TabIdObj[Id]]->title);
   else
   {
-    fprintf(stderr,"[%s][GetTitle]: <<WARNING>> Widget %d doesn't exist\n",
-	    ScriptName, (int)Id);
+    fvwm_debug(__func__,
+               "[%s][GetTitle]: <<WARNING>> Widget %d doesn't exist\n",
+               ScriptName, (int)Id);
     tmp=fxcalloc(1, sizeof(char));
     tmp[0]='\0';
   }
@@ -345,7 +346,8 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
   {
     if ((f = popen(cmndbuf,"r")) == NULL)
     {
-      fprintf(stderr,"[%s][GetOutput]: can't run %s\n",ScriptName,cmndbuf);
+      fvwm_debug(__func__, "[%s][GetOutput]: can't run %s\n",ScriptName,
+                 cmndbuf);
       str = fxcalloc(sizeof(char), 10);
       free(cmndbuf);
       return str;
@@ -608,7 +610,8 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   }
   else
   {
-    fprintf(stderr,"[%s][LaunchScript]: Too many launched script\n", ScriptName);
+    fvwm_debug(__func__, "[%s][LaunchScript]: Too many launched script\n",
+               ScriptName);
     sprintf(str,"-1");
     return str;
   }
@@ -718,8 +721,9 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
   AReceiv = XInternAtom(dpy,x11base->TabScriptId[1],True);
   if (AReceiv == None)
   {
-    fprintf(stderr,"[%s][ReceivFromScript]: <<WARNING>> Error with atome\n",
-	    ScriptName);
+    fvwm_debug(__func__,
+               "[%s][ReceivFromScript]: <<WARNING>> Error with atome\n",
+               ScriptName);
     return msg;
   }
 
@@ -729,9 +733,9 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
     {
       ASend=XInternAtom(dpy,x11base->TabScriptId[send],True);
       if (ASend==None)
-	fprintf(stderr,
-		"[%s][ReceivFromScript]: <<WARNING>> Error with atome\n",
-		ScriptName);
+	fvwm_debug(__func__,
+                   "[%s][ReceivFromScript]: <<WARNING>> Error with atome\n",
+                   ScriptName);
     }
     else
       return msg;
@@ -822,9 +826,9 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
     {
       if ((filedes = open(in_fifo,O_WRONLY)) == 0)
       {
-	fprintf(stderr,
-	 "[%s][GetMsgAndGet]: <<WARNING>> cannot open the in fifo %s\n",
-	  ScriptName,in_fifo);
+	fvwm_debug(__func__,
+                   "[%s][GetMsgAndGet]: <<WARNING>> cannot open the in fifo %s\n",
+                   ScriptName,in_fifo);
 	err = 1;
 	break;
       }
@@ -832,9 +836,9 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
       l = strlen(cmd);
       while(l > i) {
 	if ((j = write(filedes, cmd+i, l-i)) == -1) {
-	  fprintf(stderr,
-		  "[%s][GetMsgAndGet]: <<WARNING>> write error on %s\n",
-		  ScriptName,in_fifo);
+	  fvwm_debug(__func__,
+                     "[%s][GetMsgAndGet]: <<WARNING>> write error on %s\n",
+                     ScriptName,in_fifo);
 	  err = 1;
 	}
 	i += j;
@@ -850,9 +854,9 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
       i++;
       if (i > IN_FIFO_NBR_OF_TRY)
       {
-	fprintf(stderr,
-	 "[%s][GetMsgAndGet]: <<WARNING>> No in fifo %s for communication %s\n",
-	  ScriptName,in_fifo,com_name);
+	fvwm_debug(__func__,
+                   "[%s][GetMsgAndGet]: <<WARNING>> No in fifo %s for communication %s\n",
+                   ScriptName,in_fifo,com_name);
 	close(filedes);
 	err = 1;
 	break;
@@ -892,9 +896,9 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
       }
       else
       {
-	fprintf(stderr,
-	  "[%s][GetMsgAndGet]: <<WARNING>> cannot open the out fifo %s\n",
-	  ScriptName,out_fifo);
+	fvwm_debug(__func__,
+                   "[%s][GetMsgAndGet]: <<WARNING>> cannot open the out fifo %s\n",
+                   ScriptName,out_fifo);
 	err = 1;
       }
       break;
@@ -907,9 +911,9 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
       i++;
       if (i > OUT_FIFO_NBR_OF_TRY)
       {
-	fprintf(stderr,
-	 "[%s][GetMsgAndGet]: <<WARNING>>: No out fifo %s for communication %s\n",
-	 ScriptName,out_fifo,com_name);
+	fvwm_debug(__func__,
+                   "[%s][GetMsgAndGet]: <<WARNING>>: No out fifo %s for communication %s\n",
+                   ScriptName,out_fifo,com_name);
 	err = 1;
 	break;
       }
@@ -1018,8 +1022,8 @@ static void Exec (int NbArg,long *TabArg)
 
   if (leng >= 998)
   {
-    fprintf(stderr, "[%s][Do]: too long command %i chars max 998\n",
-	    ScriptName,(int)leng);
+    fvwm_debug(__func__, "[%s][Do]: too long command %i chars max 998\n",
+               ScriptName,(int)leng);
     return;
   }
 
@@ -1191,8 +1195,8 @@ static void ChangeFont (int NbArg,long *TabArg)
 
   if ((Ffont =
        FlocaleLoadFont(dpy, tabxobj[IdItem]->font, ScriptName)) == NULL) {
-    fprintf(stderr, "[%s][ChangeFont]: Couldn't load font %s\n",
-	    ScriptName,tabxobj[IdItem]->font);
+    fvwm_debug(__func__, "[%s][ChangeFont]: Couldn't load font %s\n",
+               ScriptName,tabxobj[IdItem]->font);
   }
   else
   {
@@ -1773,8 +1777,8 @@ static void WriteToFile (int NbArg,long *TabArg)
   f= fopen(arg[0],"w");
   if (f == NULL)
   {
-    fprintf(stderr,"[%s][WriteToFile]: Unable to open file %s\n",
-	    ScriptName,arg[0]);
+    fvwm_debug(__func__, "[%s][WriteToFile]: Unable to open file %s\n",
+               ScriptName,arg[0]);
     return;
   }
   fwrite(buf,1,strlen(buf),f);
@@ -1829,8 +1833,8 @@ static void SendToScript (int NbArg,long *TabArg)
   }
   else
   {
-    fprintf(stderr,"[%s][SendToScript]: Too many messages sended\n",
-	    ScriptName);
+    fvwm_debug(__func__, "[%s][SendToScript]: Too many messages sended\n",
+               ScriptName);
     free(Msg);
   }
 }
@@ -1876,13 +1880,13 @@ static void Key (int NbArg,long *TabArg)
   keysym = FvwmStringToKeysym(dpy, key_string);
   if (keysym == 0)
   {
-    fprintf(stderr, "[%s][Key]: No such key: %s", ScriptName, key_string);
+    fvwm_debug(__func__, "[%s][Key]: No such key: %s", ScriptName, key_string);
     error = 1;
   }
 
   if (modifiers_string_to_modmask(in_modifier, &modifier)) {
-    fprintf(stderr,"[%s][Key]: bad modifier: %s\n",
-	    ScriptName,in_modifier);
+    fvwm_debug(__func__, "[%s][Key]: bad modifier: %s\n",
+               ScriptName,in_modifier);
     error = 1;
   }
 

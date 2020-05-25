@@ -715,18 +715,18 @@ void set_kde_sys_tray(void)
 
 	t = ewmh_KstWinList;
 #ifdef DEBUG_KST
-	fprintf(stderr,"ADD_TO_KST: ");
+	fvwm_debug(__func__, "ADD_TO_KST: ");
 #endif
 	while (t != NULL)
 	{
 #ifdef DEBUG_KST
-		fprintf(stderr,"0x%lx ",t->w);
+		fvwm_debug(__func__, "0x%lx ",t->w);
 #endif
 		wins[i++] = t->w;
 		t = t->next;
 	}
 #ifdef DEBUG_KST
-	fprintf(stderr,"\n");
+	fvwm_debug(__func__, "\n");
 #endif
 
 	ewmh_ChangeProperty(Scr.Root,"_KDE_NET_SYSTEM_TRAY_WINDOWS",
@@ -804,7 +804,7 @@ int EWMH_IsKdeSysTrayWindow(Window w)
 		return 0;
 	}
 #ifdef DEBUG_KST
-	fprintf(stderr,"IsKdeSysTrayWindow: 0x%lx\n", w);
+	fvwm_debug(__func__, "IsKdeSysTrayWindow: 0x%lx\n", w);
 #endif
 
 	return 1;
@@ -827,14 +827,14 @@ void EWMH_ManageKdeSysTray(Window w, int type)
 	{
 	case UnmapNotify:
 #ifdef DEBUG_KST
-		fprintf(stderr,"KST_UNMAP: 0x%lx\n", w);
+		fvwm_debug(__func__, "KST_UNMAP: 0x%lx\n", w);
 #endif
 		XSelectInput(dpy, w, StructureNotifyMask);
 		XFlush(dpy);
 		break;
 	case DestroyNotify:
 #ifdef DEBUG_KST
-		fprintf(stderr,"KST_DESTROY: 0x%lx\n", w);
+		fvwm_debug(__func__, "KST_DESTROY: 0x%lx\n", w);
 #endif
 		XSelectInput(dpy, t->w, NoEventMask);
 		XFlush(dpy);
@@ -843,14 +843,14 @@ void EWMH_ManageKdeSysTray(Window w, int type)
 		break;
 	case ReparentNotify:
 #ifdef DEBUG_KST
-		fprintf(stderr,"KST_Reparent: 0x%lx\n", w);
+		fvwm_debug(__func__, "KST_Reparent: 0x%lx\n", w);
 #endif
 		XSelectInput(dpy, w, StructureNotifyMask);
 		XFlush(dpy);
 		break;
 	default:
 #ifdef DEBUG_KST
-		fprintf(stderr,"KST_NO: 0x%lx\n", w);
+		fvwm_debug(__func__, "KST_NO: 0x%lx\n", w);
 #endif
 		break;
 	}
@@ -983,8 +983,8 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 	width = (m->virtual_scr.MyDisplayWidth) - (left + right);
 	height =(m->virtual_scr.MyDisplayHeight) - (top + bottom);
 
-	fprintf(stderr, "%s: monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
-		"{x: %d, y: %d, w: %d, h: %d}\n", __func__, m->si->name,
+	fvwm_debug(__func__, "monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
+		"{x: %d, y: %d, w: %d, h: %d}\n", m->si->name,
 		left, right, top, bottom, x, y, width, height);
 
 	if (
@@ -998,7 +998,7 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 		m->Desktops->ewmh_working_area.width = width;
 		m->Desktops->ewmh_working_area.height = height;
 
-		fprintf(stderr, "%s: differ, so setting work area\n", __func__);
+		fvwm_debug(__func__, "differ, so setting work area\n");
 
 		ewmh_SetWorkArea(m);
 	}
@@ -1074,10 +1074,10 @@ void EWMH_GetWorkAreaIntersection(
 	int area_h = m->Desktops->ewmh_working_area.height;
 	Bool is_dynamic = False;
 
-	fprintf(stderr, "%s: mon: %s {ax: %d, ay: %d, aw: %d, ah: %d\n",
-		__func__, m->si->name, area_x, area_y, area_w, area_h);
-	fprintf(stderr, "%s: mon: %s {x: %d, y: %d, w: %d, h: %d\n",
-		__func__, m->si->name, *x, *y, *w, *h);
+	fvwm_debug(__func__, "mon: %s {ax: %d, ay: %d, aw: %d, ah: %d\n",
+		m->si->name, area_x, area_y, area_w, area_h);
+	fvwm_debug(__func__, "mon: %s {x: %d, y: %d, w: %d, h: %d\n",
+		m->si->name, *x, *y, *w, *h);
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
@@ -1110,8 +1110,8 @@ void EWMH_GetWorkAreaIntersection(
 	*w = nw;
 	*h = nh;
 
-	fprintf(stderr, "%s: mon: %s RETURNING: {x: %d, y: %d, w: %d, h: %d}\n",
-		__func__, m->si->name, *x, *y, *w, *h);
+	fvwm_debug(__func__, "mon: %s finalising: {x: %d, y: %d, w: %d, h: %d}\n",
+		m->si->name, *x, *y, *w, *h);
 
 	return;
 }
@@ -1344,10 +1344,9 @@ int ewmh_HandleDesktop(
 {
 	if (Scr.EwmhDesktop != NULL && FW_W(Scr.EwmhDesktop) != FW_W(fw))
 	{
-		fvwm_msg(
-			WARN,"ewmh_HandleDesktop",
-			"A Desktop application (0x%lx) already runs! This"
-			" can cause problems\n", FW_W(Scr.EwmhDesktop));
+		fvwm_debug(__func__,
+			   "A Desktop application (0x%lx) already runs! This"
+			   " can cause problems\n", FW_W(Scr.EwmhDesktop));
 		/* what to do ? */
 	}
 
@@ -1958,12 +1957,12 @@ void EWMH_DLOG(char *msg, ...)
 		buffer, "%.2d:%.2d:%.2d %6ld",
 		t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec, time_taken);
 
-	fprintf(stderr, "EWMH DEBUG: ");
+	fvwm_debug(__func__, "EWMH DEBUG: ");
 	va_start(args,msg);
 	vfprintf(stderr, msg, args);
 	va_end(args);
-	fprintf(stderr, "\n");
-	fprintf(stderr, "            [time]: %s\n",buffer);
+	fvwm_debug(__func__, "\n");
+	fvwm_debug(__func__, "            [time]: %s\n",buffer);
 
 	return;
 }

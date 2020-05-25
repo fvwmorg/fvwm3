@@ -230,23 +230,19 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 		error_count++;
 		if (errno == EINVAL)
 		{
-			fprintf(
-				stderr,
-				"[fvwm][convert_charsets]: WARNING -\n\t");
-			fprintf(
-				stderr,
-				"conversion from `%s' to `%s' not available\n",
-				in_charset,out_charset);
+			fvwm_debug(__func__,
+				   "[fvwm][convert_charsets]: WARNING -\n\t");
+			fvwm_debug(__func__,
+				   "conversion from `%s' to `%s' not available\n",
+				   in_charset,out_charset);
 		}
 		else
 		{
-			fprintf(
-				stderr,
-				"[fvwm][convert_charsets]: WARNING -\n\t");
-			fprintf(
-				stderr,
-				"conversion from `%s' to `%s' fail (init)\n",
-				in_charset,out_charset);
+			fvwm_debug(__func__,
+				   "[fvwm][convert_charsets]: WARNING -\n\t");
+			fvwm_debug(__func__,
+				   "conversion from `%s' to `%s' fail (init)\n",
+				   in_charset,out_charset);
 		}
 		/* Terminate the output string.  */
 		return NULL;
@@ -297,15 +293,13 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 				if (error_count <=
 				    FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
 				{
-					fprintf(
-						stderr,
-						"[fvwm][convert_charsets]:"
-						" WARNING -\n\t");
-					fprintf(
-						stderr,
-						"Invalid byte sequence during"
-						" conversion from %s to %s\n",
-						in_charset,out_charset);
+					fvwm_debug(__func__,
+						   "[fvwm][convert_charsets]:"
+						   " WARNING -\n\t");
+					fvwm_debug(__func__,
+						   "Invalid byte sequence during"
+						   " conversion from %s to %s\n",
+						   in_charset,out_charset);
 				}
 				have_error = 1;
 				break;
@@ -314,15 +308,13 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 				if (error_count <=
 				    FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
 				{
-					fprintf(
-						stderr,
-						"[fvwm][convert_charsets]:"
-						" WARNING -\n\t");
-					fprintf(
-						stderr,
-						"Error during conversion from"
-						" %s to %s\n", in_charset,
-						out_charset);
+					fvwm_debug(__func__,
+						   "[fvwm][convert_charsets]:"
+						   " WARNING -\n\t");
+					fvwm_debug(__func__,
+						   "Error during conversion from"
+						   " %s to %s\n", in_charset,
+						   out_charset);
 				}
 				have_error = 1;
 				break;
@@ -335,10 +327,9 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 
 	if (Ficonv_close (cd) != 0)
 	{
-		fprintf(
-			stderr,
-			"[fvwm][convert_charsets]: WARNING - iconv_close"
-			" fail\n");
+		fvwm_debug(__func__,
+			   "[fvwm][convert_charsets]: WARNING - iconv_close"
+			   " fail\n");
 	}
 
 	if (have_error)
@@ -374,24 +365,24 @@ void FiconvInit(Display *dpy, const char *module)
 	}
 	if (!suc)
 	{
-		fprintf(stderr,
-		       "[%s][FiconvInit]: WARN -- Cannot get default "
-		       "iconv charset for default charsets '%s' and '%s'\n",
-		       module,
-		       FLC_DEBUG_GET_X_CHARSET(
-			       FlocaleCharsetGetFLCXOMCharset()),
-		       FLC_DEBUG_GET_X_CHARSET(FLCIconvDefaultCharset));
+		fvwm_debug(__func__,
+			   "[%s][FiconvInit]: WARN -- Cannot get default "
+			   "iconv charset for default charsets '%s' and '%s'\n",
+			   module,
+			   FLC_DEBUG_GET_X_CHARSET(
+						   FlocaleCharsetGetFLCXOMCharset()),
+			   FLC_DEBUG_GET_X_CHARSET(FLCIconvDefaultCharset));
 		FLCIconvUtf8Charset = NULL;
 		FLCIconvDefaultCharset = NULL;
 	}
 
 #if FLOCALE_DEBUG_CHARSET
-	fprintf(stderr,"[FiconvInit] iconv charset: x:%s, iconv:%s\n",
-		FLC_DEBUG_GET_X_CHARSET(FLCIconvDefaultCharset),
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvDefaultCharset));
-	fprintf(stderr,"[FiconvInit] UTF-8 charset: x:%s, iconv:%s\n",
-		FLC_DEBUG_GET_X_CHARSET(FLCIconvUtf8Charset),
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset));
+	fvwm_debug(__func__, "[FiconvInit] iconv charset: x:%s, iconv:%s\n",
+		   FLC_DEBUG_GET_X_CHARSET(FLCIconvDefaultCharset),
+		   FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvDefaultCharset));
+	fvwm_debug(__func__, "[FiconvInit] UTF-8 charset: x:%s, iconv:%s\n",
+		   FLC_DEBUG_GET_X_CHARSET(FLCIconvUtf8Charset),
+		   FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset));
 #endif
 
 }
@@ -433,18 +424,17 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleCharset *fc)
 	{
 		set_iconv_charset_index(my_fc);
 #if FLOCALE_DEBUG_CHARSET
-		fprintf(stderr, "[Flocale] set up iconv charset: "
-			"x: %s, iconv: %s\n",
-			FLC_DEBUG_GET_X_CHARSET(my_fc),
-			FLC_DEBUG_GET_ICONV_CHARSET(my_fc));
+		fvwm_debug(__func__, "[Flocale] set up iconv charset: "
+			   "x: %s, iconv: %s\n",
+			   FLC_DEBUG_GET_X_CHARSET(my_fc),
+			   FLC_DEBUG_GET_ICONV_CHARSET(my_fc));
 #endif
 		if (!FLC_HAVE_ICONV_CHARSET(my_fc))
 		{
-			fprintf(
-				stderr,
-				"[fvwmlibs] cannot get iconv converter "
-				"for charset %s\n",
-				FLC_DEBUG_GET_X_CHARSET(my_fc));
+			fvwm_debug(__func__,
+				   "[fvwmlibs] cannot get iconv converter "
+				   "for charset %s\n",
+				   FLC_DEBUG_GET_X_CHARSET(my_fc));
 			return NULL;
 		}
 	}
@@ -496,9 +486,10 @@ char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,
 	}
 
 #if FLOCALE_DEBUG_ICONV
-	fprintf(stderr, "[FiconvUtf8ToCharset] conversion from %s to %s\n",
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
-		FLC_DEBUG_GET_ICONV_CHARSET(my_fc));
+	fvwm_debug(__func__,
+		   "[FiconvUtf8ToCharset] conversion from %s to %s\n",
+		   FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
+		   FLC_DEBUG_GET_ICONV_CHARSET(my_fc));
 #endif
 
 	if (FLC_ENCODING_TYPE_IS_UTF_8(my_fc))
@@ -549,9 +540,10 @@ char *FiconvCharsetToUtf8(Display *dpy, FlocaleCharset *fc,
 	}
 
 #if FLOCALE_DEBUG_ICONV
-	fprintf(stderr, "[FiconvCharsetToUtf8] conversion from %s to %s\n",
-		FLC_DEBUG_GET_ICONV_CHARSET(my_fc),
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset));
+	fvwm_debug(__func__,
+		   "[FiconvCharsetToUtf8] conversion from %s to %s\n",
+		   FLC_DEBUG_GET_ICONV_CHARSET(my_fc),
+		   FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset));
 #endif
 
 	if (FLC_ENCODING_TYPE_IS_UTF_8(my_fc))

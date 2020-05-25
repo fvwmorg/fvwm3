@@ -2319,9 +2319,8 @@ void process_dynamic_config_line(char *line)
 			value = NO_SHOW_SCREEN;
 		else
 		{
-			fprintf(
-				stderr, "%s: unknown resolution %s.\n",
-				MyName, token);
+			fvwm_debug(__func__, "%s: unknown resolution %s.\n",
+				   MyName, token);
 			free(token);
 			return;
 		}

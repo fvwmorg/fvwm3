@@ -186,9 +186,9 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 		{
 			if (verbose)
 			{
-				fvwm_msg(ERR, "menustyle_parse_face",
-					 "no color given for Solid face type:"
-					 " %s", action);
+				fvwm_debug(__func__,
+					   "no color given for Solid face type:"
+					   " %s", action);
 			}
 			free(style);
 			return False;
@@ -244,9 +244,9 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 			{
 				if (verbose)
 				{
-					fvwm_msg(ERR, "menustyle_parse_face",
-						 "couldn't load pixmap %s",
-						 token);
+					fvwm_debug(__func__,
+						   "couldn't load pixmap %s",
+						   token);
 				}
 				free(token);
 				free(style);
@@ -260,9 +260,9 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 		{
 			if (verbose)
 			{
-				fvwm_msg(ERR, "menustyle_parse_face",
-					 "missing pixmap name for style %s",
-					 style);
+				fvwm_debug(__func__,
+					   "missing pixmap name for style %s",
+					   style);
 			}
 			free(style);
 			return False;
@@ -272,10 +272,8 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 	{
 		if (verbose)
 		{
-			fvwm_msg(
-				ERR,
-				"menustyle_parse_face", "unknown style %s: %s",
-				style, action);
+			fvwm_debug(__func__, "unknown style %s: %s",
+				   style, action);
 		}
 		free(style);
 		return False;
@@ -342,8 +340,8 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 
 	if (!fore || !back || !stipple || !font || !style)
 	{
-		fvwm_msg(ERR, "menustyle_parse_old_style",
-			 "error in %s style specification", action);
+		fvwm_debug(__func__,
+			   "error in %s style specification", action);
 	}
 	else
 	{
@@ -354,10 +352,10 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 			style, fore, back, stipple, font,
 			(animated && StrEquals(animated, "anim")) ?
 			"Animation" : "AnimationOff");
-		fvwm_msg(OLD, "menustyle_parse_old_style",
-			 "The old MenuStyle snytax has been deprecated.  "
-			 "Use 'MenuStyle %s' instead of 'MenuStyle %s'\n",
-			 buffer, action);
+		fvwm_debug(__func__,
+			   "The old MenuStyle snytax has been deprecated.  "
+			   "Use 'MenuStyle %s' instead of 'MenuStyle %s'\n",
+			   buffer, action);
 		action = buffer;
 		ms = menustyle_parse_style(F_PASS_ARGS);
 	}
@@ -597,8 +595,8 @@ void menustyle_update(MenuStyle *ms)
 
 	if (ST_USAGE_COUNT(ms) != 0)
 	{
-		fvwm_msg(ERR,"menustyle_update", "menu style %s is in use",
-			 ST_NAME(ms));
+		fvwm_debug(__func__, "menu style %s is in use",
+			   ST_NAME(ms));
 		return;
 	}
 	ST_IS_UPDATED(ms) = 1;
@@ -847,15 +845,15 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 	action = GetNextToken(action, &name);
 	if (!name)
 	{
-		fvwm_msg(ERR, "NewMenuStyle",
-			 "error in %s style specification",action);
+		fvwm_debug(__func__,
+			   "error in %s style specification",action);
 		return NULL;
 	}
 
 	ms = menustyle_find(name);
 	if (ms && ST_USAGE_COUNT(ms) != 0)
 	{
-		fvwm_msg(ERR,"NewMenuStyle", "menu style %s is in use", name);
+		fvwm_debug(__func__, "menu style %s is in use", name);
 		return ms;
 	}
 	tmpms = fxmalloc(sizeof(MenuStyle));
@@ -1161,8 +1159,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			if (arg1 != NULL &&
 			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
 			{
-				fvwm_msg(ERR, "NewMenuStyle",
-					 "Couldn't load font '%s'\n", arg1);
+				fvwm_debug(__func__,
+					   "Couldn't load font '%s'\n", arg1);
 				break;
 			}
 			if (ST_PSTDFONT(tmpms) && !ST_USING_DEFAULT_FONT(tmpms))
@@ -1207,9 +1205,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 18: /* PopupOffset */
 			if ((n = GetIntegerArguments(args, NULL, val, 2)) == 0)
 			{
-				fvwm_msg(ERR,"NewMenuStyle",
-					 "PopupOffset requires one or two"
-					 " arguments");
+				fvwm_debug(__func__,
+					   "PopupOffset requires one or two"
+					   " arguments");
 			}
 			else
 			{
@@ -1295,9 +1293,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 					dpy, Scr.NoFocusWin, NULL, arg1, fpa);
 				if (!ST_SIDEPIC(tmpms))
 				{
-					fvwm_msg(WARN, "NewMenuStyle",
-						 "Couldn't find pixmap %s",
-						 arg1);
+					fvwm_debug(__func__,
+						   "Couldn't find pixmap %s",
+						   arg1);
 				}
 			}
 			break;
@@ -1527,11 +1525,10 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 				}
 				else
 				{
-					fvwm_msg(
-						ERR, "NewMenuStyle",
-						"unknown argument to"
-						" MouseWheel '%s'",
-						 arg1);
+					fvwm_debug(__func__,
+						   "unknown argument to"
+						   " MouseWheel '%s'",
+						   arg1);
 					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
 				}
 		        }
@@ -1571,8 +1568,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			if (arg1 != NULL &&
 			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
 			{
-				fvwm_msg(ERR, "NewMenuStyle",
-					 "Couldn't load font '%s'\n", arg1);
+				fvwm_debug(__func__,
+					   "Couldn't load font '%s'\n", arg1);
 				break;
 			}
 			if (
@@ -1611,8 +1608,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 #endif
 
 		default:
-			fvwm_msg(ERR, "NewMenuStyle", "unknown option '%s'",
-				 poption);
+			fvwm_debug(__func__, "unknown option '%s'",
+				   poption);
 			break;
 		} /* switch */
 
@@ -1717,9 +1714,9 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 		{
 			ST_PSTDFONT(destms) = Scr.DefaultFont;
 			ST_USING_DEFAULT_FONT(destms) = True;
-			fvwm_msg(ERR, "CopyMenuStyle",
-				 "Couldn't load font '%s' use Default Font\n",
-				 ST_PSTDFONT(origms)->name);
+			fvwm_debug(__func__,
+				   "Couldn't load font '%s' use Default Font\n",
+				   ST_PSTDFONT(origms)->name);
 		}
 		else
 		{
@@ -1744,9 +1741,9 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 		{
 			ST_PTITLEFONT(destms) = Scr.DefaultFont;
 			ST_USING_DEFAULT_TITLEFONT(destms) = True;
-			fvwm_msg(ERR, "CopyMenuStyle",
-				 "Couldn't load font '%s' use Default Font\n",
-				 ST_PTITLEFONT(origms)->name);
+			fvwm_debug(__func__,
+				   "Couldn't load font '%s' use Default Font\n",
+				   ST_PTITLEFONT(origms)->name);
 		}
 		else
 		{
@@ -1880,28 +1877,28 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	origname = PeekToken(action, &action);
 	if (origname == NULL)
 	{
-		fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
+		fvwm_debug(__func__, "need two arguments");
 		return;
 	}
 
 	origms = menustyle_find(origname);
 	if (!origms)
 	{
-		fvwm_msg(ERR, "CopyMenuStyle", "%s: no such menu style",
-			 origname);
+		fvwm_debug(__func__, "%s: no such menu style",
+			   origname);
 		return;
 	}
 
 	destname = PeekToken(action, &action);
 	if (destname == NULL)
 	{
-		fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
+		fvwm_debug(__func__, "need two arguments");
 		return;
 	}
 
 	if (action && *action)
 	{
-		fvwm_msg(ERR,"CopyMenuStyle", "too many arguments");
+		fvwm_debug(__func__, "too many arguments");
 		return;
 	}
 
@@ -1918,31 +1915,31 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		if (!destms)
 		{
 			/* this must never happen */
-			fvwm_msg(ERR, "CopyMenuStyle",
-				 "impossible to create %s menu style",
-				 destname);
+			fvwm_debug(__func__,
+				   "impossible to create %s menu style",
+				   destname);
 			return;
 		}
 	}
 
 	if (strcasecmp("*",destname) == 0)
 	{
-		fvwm_msg(ERR, "CopyMenuStyle",
-			 "You cannot copy on the default menu style");
+		fvwm_debug(__func__,
+			   "You cannot copy on the default menu style");
 		return;
 	}
 	if (strcasecmp(ST_NAME(origms),destname) == 0)
 	{
-		fvwm_msg(ERR, "CopyMenuStyle",
-			 "%s and %s identify the same menu style",
-			 ST_NAME(origms),destname);
+		fvwm_debug(__func__,
+			   "%s and %s identify the same menu style",
+			   ST_NAME(origms),destname);
 		return;
 	}
 
 	if (ST_USAGE_COUNT(destms) != 0)
 	{
-		fvwm_msg(ERR, "CopyMenuStyle", "menu style %s is in use",
-			 destname);
+		fvwm_debug(__func__, "menu style %s is in use",
+			   destname);
 		return;
 	}
 

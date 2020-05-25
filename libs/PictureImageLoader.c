@@ -171,7 +171,8 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 
 	if (!USE_SVG)
 	{
-		fprintf(stderr, "[PImageLoadSvg]: Tried to load SVG file "
+		fvwm_debug(__func__,
+				"[PImageLoadSvg]: Tried to load SVG file "
 				"when FVWM has not been compiled with SVG support.\n");
 		return False;
 	}
@@ -410,7 +411,8 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 		/* suppress compiler warning */
 		bit_depth = 0;
 
-		fprintf(stderr, "[PImageLoadPng]: Tried to load PNG file "
+		fvwm_debug(__func__,
+				"[PImageLoadPng]: Tried to load PNG file "
 				"when FVWM has not been compiled with PNG support.\n");
 
 		return False;
@@ -568,7 +570,8 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 
 	if (!XpmSupport)
 	{
-		fprintf(stderr, "[PImageLoadXpm]: Tried to load XPM file "
+		fvwm_debug(__func__,
+				"[PImageLoadXpm]: Tried to load XPM file "
 				"when FVWM has not been compiled with XPm Support.\n");
 		return False;
 	}

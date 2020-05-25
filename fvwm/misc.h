@@ -32,17 +32,6 @@ enum
 
 /* ---------------------------- type definitions --------------------------- */
 
-/* message levels for fvwm_msg */
-typedef enum
-{
-	DBG = 0,
-	ECHO,
-	INFO,
-	WARN,
-	OLD,
-	ERR
-} fvwm_msg_t;
-
 typedef enum
 {
 	ADDED_NONE = 0,
@@ -75,8 +64,6 @@ int truncate_to_multiple(
 Bool IsRectangleOnThisPage(struct monitor *, const rectangle *rec, int desk);
 FvwmWindow *get_pointer_fvwm_window(void);
 Time get_server_time(void);
-void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
-	__attribute__ ((format (printf, 3, 4)));
 void fvwm_msg_report_app(void);
 void fvwm_msg_report_app_and_workers(void);
 void set_last_added_item(last_added_item_t type, void *item);

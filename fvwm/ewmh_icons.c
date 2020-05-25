@@ -332,9 +332,8 @@ CARD32 *ewmh_SetWmIconFromPixmap(
 		dpy, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
 	if (image == NULL)
 	{
-		fvwm_msg(
-			ERR, "EWMH_SetWmIconFromPixmap",
-			"cannot create XImage\n");
+		fvwm_debug(__func__,
+			   "cannot create XImage\n");
 		if (destroy_icon_pix)
 		{
 			XFreePixmap(dpy, pixmap);
@@ -751,8 +750,8 @@ int EWMH_SetIconFromWMIcon(
 		&pixmap, &mask, &alpha, &nalloc_pixels,
 		&alloc_pixels, &no_limit, fpa))
 	{
-		fvwm_msg(ERR, "EWMH_SetIconFromWMIcon",
-			 "fail to create a pixmap\n");
+		fvwm_debug(__func__,
+			   "fail to create a pixmap\n");
 		if (free_list)
 		{
 			free(list);
