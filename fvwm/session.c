@@ -138,7 +138,7 @@ static char *get_version_string(void)
 {
 	/* migo (14-Mar-2001): it is better to manually update a version string
 	 * in the stable branch, otherwise saving sessions becomes useless */
-	return CatString3(VERSION, ", ", __DATE__);
+	return CatString3(VERSION, ", ", " ");
 	/* return "2.6-0"; */
 }
 
