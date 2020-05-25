@@ -1802,6 +1802,10 @@ static int __place_window(
 			{
 				if (FW_W(t) == FW_W_TRANSIENTFOR(fw))
 				{
+					if (monitor_mode == MONITOR_TRACKING_M &&
+					    (fw->m != t->m))
+						continue;
+
 					fw->Desk = t->Desk;
 					reason->desk.reason =
 						PR_DESK_TRANSIENT;
