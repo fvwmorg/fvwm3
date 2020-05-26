@@ -23,6 +23,7 @@
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 #include "libs/ColorUtils.h"
+#include "libs/safemalloc.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -483,8 +484,9 @@ static signed int expand_vars_extended(
 		}
 
 		/* We could be left with "<NAME>.?" */
-		char *m_name = NULL;
-		struct monitor *mon;
+		char		*m_name = NULL;
+		struct monitor  *mon;
+		char		*rest_s;
 
 		/* The first word is the monitor name:
 		 *
@@ -492,47 +494,47 @@ static signed int expand_vars_extended(
 		 *
 		 * so scan for the first full-stop.
 		 */
-		if (sscanf(rest, "%[^.].", m_name) < 1)
-			return -1;
+		rest_s = fxstrdup(rest);
+		while ((m_name = strsep(&rest_s, ".")) != NULL) {
+			mon = monitor_by_name(m_name);
+			if (m_name == NULL)
+				return -1;
+			if (strcmp(mon->si->name, m_name) == 1)
+				return -1;
 
-		mon = monitor_by_name(m_name);
-		if (m_name == NULL)
-			return -1;
-		if (strcmp(mon->si->name, m_name) == 1)
-			return -1;
+			/* Skip over the monitor name. */
+			rest += strlen(m_name) + 1;
 
-		/* Skip over the monitor name. */
-		rest += strlen(m_name) + 1;
+			/* Match remainder to valid fields. */
+			if (strcmp(rest, "x") == 0) {
+				is_numeric = True;
+				val = mon->si->x;
+				goto GOT_STRING;
+			}
 
-		/* Match remainder to valid fields. */
-		if (strcmp(rest, "x") == 0) {
-			is_numeric = True;
-			val = mon->si->x;
-			goto GOT_STRING;
-		}
+			if (strcmp(rest, "y") == 0) {
+				is_numeric = True;
+				val = mon->si->y;
+				goto GOT_STRING;
+			}
 
-		if (strcmp(rest, "y") == 0) {
-			is_numeric = True;
-			val = mon->si->y;
-			goto GOT_STRING;
-		}
+			if (strcmp(rest, "width") == 0) {
+				is_numeric = True;
+				val = mon->si->w;
+				goto GOT_STRING;
+			}
 
-		if (strcmp(rest, "width") == 0) {
-			is_numeric = True;
-			val = mon->si->w;
-			goto GOT_STRING;
-		}
+			if (strcmp(rest, "height") == 0) {
+				is_numeric = True;
+				val = mon->si->h;
+				goto GOT_STRING;
+			}
 
-		if (strcmp(rest, "height") == 0) {
-			is_numeric = True;
-			val = mon->si->h;
-			goto GOT_STRING;
-		}
-
-		if (strcmp(rest, "output") == 0) {
-			is_numeric = True;
-			val = (int)m->si->rr_output;
-			goto GOT_STRING;
+			if (strcmp(rest, "output") == 0) {
+				is_numeric = True;
+				val = (int)m->si->rr_output;
+				goto GOT_STRING;
+			}
 		}
 		break;
 	}
