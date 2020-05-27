@@ -1219,8 +1219,8 @@ static void InitVariables(void)
 
 static void usage(int is_verbose)
 {
-	fvwm_debug(__func__, "usage: %s", g_argv[0]);
-	fvwm_debug(__func__,
+	fprintf(stderr, "usage: %s", g_argv[0]);
+	fprintf(stderr,
 		   " [-d display]"
 		   " [-f cfgfile]"
 		   " [-c cmd]"
@@ -1233,12 +1233,12 @@ static void usage(int is_verbose)
 		   "\n");
 	if (!is_verbose)
 	{
-		fvwm_debug(__func__,
+		fprintf(stderr,
 		           "Try '%s --help' for more information.\n",
 		           g_argv[0]);
 		return;
 	}
-	fvwm_debug(__func__,
+	fprintf(stderr,
 		   " -A:           allocate palette\n"
 		   " -c cmd:       preprocess configuration file with <cmd>\n"
 		   " -C vis-class: use visual class <vis-class>\n"
@@ -1257,7 +1257,7 @@ static void usage(int is_verbose)
 		   " -S:           static palette\n"
 		   " -V:           print version information\n"
 		);
-	fvwm_debug(__func__, "Try 'man %s' for more information.\n",
+	fprintf(stderr, "Try 'man %s' for more information.\n",
 		   PACKAGE);
 
 		return;
@@ -2085,7 +2085,7 @@ int main(int argc, char **argv)
 		else
 		{
 			usage(0);
-			fvwm_debug(__func__, "invalid option -- %s\n",
+			fprintf(stderr, "invalid option -- %s\n",
 				   argv[i]);
 			exit(1);
 		}
