@@ -108,6 +108,7 @@ static Bool audio_compat = False;
 static char *audio_play_dir = NULL;
 
 #define ARG_NO_WINID 1024  /* just a large number */
+#define ARG_EXPECTS_CHAR 1025
 
 #define EVENT_ENTRY(name,action_arg) { name, action_arg, {NULL} }
 static event_entry message_event_table[] =
@@ -151,6 +152,9 @@ static event_entry extended_message_event_table[] =
 	EVENT_ENTRY( "enter_window", 0 ),
 	EVENT_ENTRY( "leave_window", 0 ),
 	EVENT_ENTRY( "property_change", 0),
+	EVENT_ENTRY( "monitor_enabled", 0 | ARG_EXPECTS_CHAR),
+	EVENT_ENTRY( "monitor_disabled", 0 | ARG_EXPECTS_CHAR),
+	EVENT_ENTRY( "monitor_changed", 0 | ARG_EXPECTS_CHAR),
 	EVENT_ENTRY( "reply", 0), /* FvwmEvent will never receive MX_REPLY */
 	EVENT_ENTRY(NULL,0)
 };
@@ -265,7 +269,7 @@ int main(int argc, char **argv)
 	/* Now MyName is defined */
 	if ((argc != 6)&&(argc != 7))
 	{
-		fvwm_debug(__func__, "%s Version "VERSION" should only be "
+		fprintf(stderr, "%s Version "VERSION" should only be "
 			   "executed by fvwm!\n", MyName+1);
 		exit(1);
 	}
@@ -491,6 +495,11 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 						action,	body[action_arg]);
 				}
 			}
+			/* monitor_* events. */
+			else if (action_arg != -1 && (action_arg & ARG_EXPECTS_CHAR)) {
+				sprintf(buf, "%s %s %s", cmd_line, action,
+						(char *)(&body[3]));
+			}
 			else
 			{
 				sprintf(buf,"%s %s", cmd_line, action);
@@ -682,8 +691,7 @@ void handle_config_line(char *buf, char **phost)
 			{
 				free(action);
 			}
-			fvwm_debug(__func__,
-				   "%s: incomplete event definition %s\n",
+			fprintf(stderr, "%s: incomplete event definition %s\n",
 				   MyName + 1, buf);
 			return;
 		}
@@ -721,7 +729,7 @@ void handle_config_line(char *buf, char **phost)
 		}
 		if (!found)
 		{
-			fvwm_debug(__func__, "%s: unknown event type: %s\n",
+			fprintf(stderr, "%s: unknown event type: %s\n",
 				   MyName+1, event);
 			if (action)
 			{

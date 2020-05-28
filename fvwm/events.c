@@ -1826,6 +1826,26 @@ void monitor_update_ewmh(void)
 		UPDATE_FVWM_SCREEN(t);
 	}
 }
+
+void
+monitor_emit_broadcast(void)
+{
+	struct monitor	*m;
+
+	TAILQ_FOREACH (m, &monitor_q, entry) {
+		if (m->emit & MONITOR_CHANGED) {
+			BroadcastName(MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
+			m->emit &= ~MONITOR_ALL;
+			m->flags &= ~MONITOR_CHANGED;
+		}
+		if (m->emit & MONITOR_ENABLED) {
+			BroadcastName(MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
+		}
+		if (m->emit & MONITOR_DISABLED) {
+			BroadcastName(MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
+		}
+	}
+}
 #endif
 
 void HandleButtonPress(const evh_args_t *ea)
@@ -4136,6 +4156,7 @@ void dispatch_event(XEvent *e)
 			monitor_output_change(sce->display, sce);
 			XRRUpdateConfiguration(e);
 			monitor_update_ewmh();
+			monitor_emit_broadcast();
 			break;
 		}
 	}

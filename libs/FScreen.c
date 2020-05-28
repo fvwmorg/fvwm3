@@ -208,9 +208,9 @@ monitor_by_primary(void)
 static void
 monitor_check_primary(void)
 {
-	struct monitor	*m;
-
 	if (monitor_by_primary() == NULL) {
+		struct monitor	*m;
+
 		m = TAILQ_FIRST(&monitor_q);
 		m->flags |= MONITOR_PRIMARY;
 	}
@@ -268,8 +268,10 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 				continue;
 
 			TAILQ_FOREACH(m, &monitor_q, entry) {
-				if (m->si == si)
+				if (m->si == si) {
+					m->emit &= ~MONITOR_ALL;
 					break;
+				}
 			}
 
 			if (m == NULL)
@@ -277,11 +279,8 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 
 			if (oinfo->connection == RR_Connected &&
 			    m->flags & MONITOR_ENABLED) {
-				if (m->flags & MONITOR_CHANGED) {
-					fvwm_debug(__func__, "MONITOR: %s CHANGED\n",
-						m->si->name);
-					m->flags &= ~MONITOR_CHANGED;
-				}
+				if (m->flags & MONITOR_CHANGED)
+					m->emit |= MONITOR_CHANGED;
 				continue;
 			}
 
@@ -294,14 +293,13 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 			case RR_Connected:
 				m->flags &= ~MONITOR_DISABLED;
 				m->flags |= MONITOR_ENABLED;
-				fvwm_debug(__func__, "MONITOR: %s CONNECTED\n",
-					m->si->name);
+
+				m->emit |= MONITOR_ENABLED;
 				break;
 			case RR_Disconnected:
 				m->flags &= ~MONITOR_ENABLED;
 				m->flags |= MONITOR_DISABLED;
-				fvwm_debug(__func__, "MONITOR: %s DISCONNECTED\n",
-					m->si->name);
+				m->emit |= MONITOR_DISABLED;
 				break;
 			default:
 				break;
@@ -352,7 +350,8 @@ scan_screens(Display *dpy)
 		if ((strcmp(m->si->name, name) == 0) &&
 		    (m->si->x != rrm[i].x || m->si->y != rrm[i].y ||
 		    m->si->w != rrm[i].width || m->si->h != rrm[i].height)) {
-			m->flags |= MONITOR_CHANGED;
+			if (m->flags & MONITOR_ENABLED)
+				m->flags |= MONITOR_CHANGED;
 		}
 
 set_coords:
@@ -429,7 +428,7 @@ void FScreenInit(Display *dpy)
 		m->Desktops->name = NULL;
 		m->Desktops->next = NULL;
 		m->Desktops->desk = 0;
-		m->flags |= MONITOR_NEW;
+		m->flags |= (MONITOR_NEW|MONITOR_ENABLED);
 	}
 
 	monitor_check_primary();
@@ -482,8 +481,8 @@ monitor_dump_state(struct monitor *m)
 			   "\tDesktops:\t%s\n"
 			   "\tFlags:%s\n\n",
 			   m2->si->name,
-			   m2->flags & MONITOR_DISABLED ? "true" : "false",
-			   m2->flags & MONITOR_PRIMARY ? "yes" : "no",
+			   (m2->flags & MONITOR_DISABLED) ? "true" : "false",
+			   (m2->flags & MONITOR_PRIMARY) ? "yes" : "no",
 			   (mcur && m2 == mcur) ? "yes" : "no",
 			   (int)m2->si->rr_output,
 			   m2->si->x, m2->si->y, m2->si->w, m2->si->h,
