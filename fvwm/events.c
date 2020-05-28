@@ -4130,12 +4130,11 @@ void dispatch_event(XEvent *e)
 #if HAVE_XRANDR
 	XRRScreenChangeNotifyEvent *sce;
 
-	XRRUpdateConfiguration(e);
-
 	switch (e->type - randr_event) {
 		case RRScreenChangeNotify: {
 			sce = (XRRScreenChangeNotifyEvent *)e;
 			monitor_output_change(sce->display, sce);
+			XRRUpdateConfiguration(e);
 			monitor_update_ewmh();
 			break;
 		}

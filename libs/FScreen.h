@@ -77,9 +77,6 @@ struct screen_info {
 	const char		*name;
 	int			 x, y, w, h;
 	RROutput		 rr_output;
-	int			 is_primary;
-	int			 is_new;
-	int			 is_disabled;
 
 	TAILQ_ENTRY(screen_info) entry;
 };
@@ -92,8 +89,9 @@ struct screen_info	*screen_info_by_name(const char *);
 
 #define MONITOR_NEW 0x1
 #define MONITOR_DISABLED 0x2
-#define MONITOR_DESKTOPS 0x3
-#define MONITOR_INIT (MONITOR_NEW|MONITOR_DESKTOPS)
+#define MONITOR_ENABLED 0x4
+#define MONITOR_PRIMARY 0x8
+#define MONITOR_CHANGED 0x10
 
 struct monitor {
 	struct screen_info	*si;

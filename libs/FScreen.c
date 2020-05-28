@@ -50,7 +50,6 @@ static Display *disp;
 static bool		 is_randr_present;
 
 static struct monitor	*monitor_new(void);
-static void		 monitor_set_flags(struct monitor *);
 static void		 scan_screens(Display *);
 static void		 monitor_check_primary(void);
 
@@ -191,7 +190,7 @@ monitor_by_primary(void)
 	struct monitor	*m = NULL, *m_loop;
 
 	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
-		if (m_loop->si->is_primary) {
+		if (m_loop->flags & MONITOR_PRIMARY) {
 			m = m_loop;
 			break;
 		}
@@ -203,8 +202,12 @@ monitor_by_primary(void)
 static void
 monitor_check_primary(void)
 {
-	if (monitor_by_primary() == NULL)
-		TAILQ_FIRST(&monitor_q)->si->is_primary = 1;
+	struct monitor	*m;
+
+	if (monitor_by_primary() == NULL) {
+		m = TAILQ_FIRST(&monitor_q);
+		m->flags |= MONITOR_PRIMARY;
+	}
 }
 
 int
@@ -217,24 +220,6 @@ int
 monitor_get_all_heights(void)
 {
 	return (DisplayHeight(disp, DefaultScreen(disp)));
-}
-
-static void
-monitor_set_flags(struct monitor *m)
-{
-	/* If we have only found one monitor, then mark this as the "primary"
-	 * monitor, so that variable expansion works.
-	 */
-	if (monitor_get_count() == 0)
-		m->si->is_primary = 1;
-
-	if (m->si->is_new)
-		m->flags |= MONITOR_NEW;
-
-	if (m->si->is_disabled) {
-		m->flags = ~MONITOR_NEW;
-		m->flags |= MONITOR_DISABLED;
-	}
 }
 
 void
@@ -276,12 +261,41 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 			if (si == NULL)
 				continue;
 
+			TAILQ_FOREACH(m, &monitor_q, entry) {
+				if (m->si == si)
+					break;
+			}
+
+			if (m == NULL)
+				continue;
+
+			if (oinfo->connection == RR_Connected &&
+			    m->flags & MONITOR_ENABLED) {
+				if (m->flags & MONITOR_CHANGED) {
+					fvwm_debug(__func__, "MONITOR: %s CHANGED\n",
+						m->si->name);
+					m->flags &= ~MONITOR_CHANGED;
+				}
+				continue;
+			}
+
+			if (oinfo->connection == RR_Disconnected &&
+			    m->flags & MONITOR_DISABLED) {
+				continue;
+			}
+
 			switch (oinfo->connection) {
 			case RR_Connected:
-				si->is_disabled = false;
+				m->flags &= ~MONITOR_DISABLED;
+				m->flags |= MONITOR_ENABLED;
+				fvwm_debug(__func__, "MONITOR: %s CONNECTED\n",
+					m->si->name);
 				break;
 			case RR_Disconnected:
-				si->is_disabled = true;
+				m->flags &= ~MONITOR_ENABLED;
+				m->flags |= MONITOR_DISABLED;
+				fvwm_debug(__func__, "MONITOR: %s DISCONNECTED\n",
+					m->si->name);
 				break;
 			default:
 				break;
@@ -291,11 +305,7 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	}
 	XRRFreeScreenResources(res);
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		monitor_set_flags(m);
-
 	monitor_check_primary();
-
 }
 
 static void
@@ -322,22 +332,33 @@ scan_screens(Display *dpy)
 		if (((m = monitor_by_name(name)) == NULL) ||
 		    (m != NULL && strcmp(m->si->name, name) != 0)) {
 			m = monitor_new();
+			m->flags |= MONITOR_NEW;
 			m->si = screen_info_new();
 			m->si->name = strdup(name);
-			m->si->is_new = true;
 			memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
 
+			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
 			TAILQ_INSERT_TAIL(&monitor_q, m, entry);
 
-			printf("New monitor: %s\n", m->si->name);
+			goto set_coords;
 		}
 
+		if ((strcmp(m->si->name, name) == 0) &&
+		    (m->si->x != rrm[i].x || m->si->y != rrm[i].y ||
+		    m->si->w != rrm[i].width || m->si->h != rrm[i].height)) {
+			m->flags |= MONITOR_CHANGED;
+		}
+
+set_coords:
 		m->si->x = rrm[i].x;
 		m->si->y = rrm[i].y;
 		m->si->w = rrm[i].width;
 		m->si->h = rrm[i].height;
 		m->si->rr_output = *rrm[i].outputs;
-		m->si->is_primary = rrm[i].primary > 0;
+		if (rrm[i].primary > 0)
+			m->flags |= MONITOR_PRIMARY;
+		else
+			m->flags &= ~MONITOR_PRIMARY;
 		m->virtual_scr.MyDisplayWidth = monitor_get_all_widths();
 		m->virtual_scr.MyDisplayHeight = monitor_get_all_heights();
 
@@ -402,8 +423,7 @@ void FScreenInit(Display *dpy)
 		m->Desktops->name = NULL;
 		m->Desktops->next = NULL;
 		m->Desktops->desk = 0;
-
-		monitor_set_flags(m);
+		m->flags |= MONITOR_NEW;
 	}
 
 	monitor_check_primary();
@@ -414,14 +434,11 @@ single_screen:
 	m = monitor_new();
 	m->si->name = fxstrdup(GLOBAL_SCREEN_NAME);
 	m->si->rr_output = -1;
-	m->si->is_primary = 0;
-	m->si->is_disabled = 0;
 	m->si->x = 0,
 	m->si->y = 0,
 	m->si->w = DisplayWidth(disp, DefaultScreen(disp)),
 	m->si->h = DisplayHeight(disp, DefaultScreen(disp));
-
-	monitor_set_flags(m);
+	m->flags |= MONITOR_NEW|MONITOR_PRIMARY;
 
 	TAILQ_INSERT_TAIL(&monitor_q, m, entry);
 }
@@ -459,8 +476,8 @@ monitor_dump_state(struct monitor *m)
 			   "\tDesktops:\t%s\n"
 			   "\tFlags:%s\n\n",
 			   m2->si->name,
-			   m2->si->is_disabled ? "true" : "false",
-			   m2->si->is_primary ? "yes" : "no",
+			   m2->flags & MONITOR_DISABLED ? "true" : "false",
+			   m2->flags & MONITOR_PRIMARY ? "yes" : "no",
 			   (mcur && m2 == mcur) ? "yes" : "no",
 			   (int)m2->si->rr_output,
 			   m2->si->x, m2->si->y, m2->si->w, m2->si->h,
@@ -488,7 +505,7 @@ monitor_get_count(void)
 	int		 c = 0;
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (m->si->is_disabled)
+		if (m->flags & MONITOR_DISABLED)
 			continue;
 		c++;
 	}
