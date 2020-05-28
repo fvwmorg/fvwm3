@@ -188,11 +188,33 @@ e.g. for audio-events:
 	*FvwmEvent: enter_window beep.au
 	*FvwmEvent: leave_window beep.au
 	*FvwmEvent: property_change beep.au
+
+	*FvwmEvent: montior_enabled beep.au
+	*FvwmEvent: montior_disabled beep.au
+	*FvwmEvent: montior_changed beep.au
 .sp
 .fi
 The window related event handlers are executed within a window
 context.  Previously PassId was used for this purpose, but now using
 PassId is not needed.
+
+The monitor_* events do not operate in a window context (as there
+isn't one), but react to when a monitor is plugged in (enabled),
+unplugged (disabled), or changed (resized/rotated, etc., which
+will only be true if the monitor is already active).  In all cases,
+the monitor name is is passed through to the command, hence the
+following example prints out the changed monitor's name, and
+width/height values:
+
+.nf
+.sp
+	DestroyFunc MonitorExample
+	AddToFunc   MonitorExample
+	+ I Echo "Monitor $0 changed ($[monitor.$0.width] x $[monitor.$0.height])
+
+	*FvwmEvent: monitor_changed MonitorExample
+.sp
+.fi
 
 Note: The enter_window event is generated when the pointer enters
 a window.  With the -passid option, that window's id is passed to

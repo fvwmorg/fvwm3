@@ -92,10 +92,12 @@ struct screen_info	*screen_info_by_name(const char *);
 #define MONITOR_ENABLED 0x4
 #define MONITOR_PRIMARY 0x8
 #define MONITOR_CHANGED 0x10
+#define MONITOR_ALL (MONITOR_DISABLED|MONITOR_ENABLED|MONITOR_CHANGED)
 
 struct monitor {
 	struct screen_info	*si;
 	int			 flags;
+	int			 emit;
 	int			 dx, dy;
 
 	/* info for some desktops; the first entries should be generic info
