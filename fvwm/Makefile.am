@@ -12,7 +12,7 @@ fvwm3_SOURCES = \
 	add_window.h bindings.h borders.h builtins.h colormaps.h colorset.h \
 	commands.h conditional.h condrc.h cursor.h decorations.h events.h \
 	eventhandler.h eventmask.h ewmh.h ewmh_intern.h expand.h externs.h \
-	focus.h functable.h functions.h fvwm.h geometry.h focus_policy.h \
+	focus.h functable.h functions.h fvwm3.h geometry.h focus_policy.h \
 	icccm2.h icons.h menubindings.h menudim.h menugeometry.h \
 	menuitem.h menuroot.h menuparameters.h menus.h menustyle.h misc.h \
 	modconf.h module_interface.h module_list.h move_resize.h \
