@@ -12,7 +12,7 @@ libfvwm3_a_SOURCES = \
 	Graphics.h Module.h Parse.h Picture.h PictureBase.h \
 	PictureDitherMatrice.h PictureGraphics.h PictureImageLoader.h \
 	PictureUtils.h Rectangles.h Strings.h System.h Target.h WinMagic.h \
-	XError.h XResource.h charmap.h defaults.h envvar.h fio.h flist.h \
+	XError.h XResource.h charmap.h defaults.h envvar.h fio.h flist.h fqueue.h \
 	fsm.h ftime.h fvwm_sys_stat.h fvwmlib.h fvwmrect.h fvwmsignal.h \
 	gravity.c gravity.h lang-strings.h log.h modifiers.h queue.h safemalloc.h \
 	setpgrp.h strlcpy.h timeout.h vpacket.h wcontext.h wild.h \
