@@ -295,7 +295,7 @@ int ewmh_WMDesktop(
 			execute_function_override_window(
 				NULL, NULL, "Stick on", 0, fw);
 		}
-		else if (d > 0)
+		else if (d >= 0)
 		{
 			if (IS_STICKY_ACROSS_PAGES(fw) ||
 			    IS_STICKY_ACROSS_DESKS(fw))
