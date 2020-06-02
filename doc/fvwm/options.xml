@@ -367,5 +367,11 @@ internal debugging and should only be used by developers.</para>
 
   </listitem>
   </varlistentry>
+  <varlistentry>
+  <term><option>-v</option></term>
+  <listitem>
+<para>Enables debug logging.  Write to ~/fvwm3-output.log in append mode.</para>
+  </listitem>
+  </varlistentry>
 </variablelist>
 </section>
