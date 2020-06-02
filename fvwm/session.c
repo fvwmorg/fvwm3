@@ -1375,6 +1375,12 @@ LoadWindowStates(char *filename)
 		else if (!strcmp(s1, "[MONITOR]"))
 		{
 			struct monitor *m;
+
+			if (num_match == 0) {
+				num_match++;
+				matches = fxrealloc(
+					(void *)matches, sizeof(Match), num_match);
+			}
 			sscanf(s, "%*s %i", &pos);
 			m = monitor_by_output(pos);
 			matches[num_match - 1].m = m;
