@@ -84,6 +84,8 @@ static int last_edge_thickness = 2;
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
 
+struct desktop_cmds	 desktop_cmd_q;
+
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */

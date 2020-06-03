@@ -70,8 +70,8 @@ enum monitor_tracking
 	MONITOR_TRACKING_M,
 };
 
-enum monitor_tracking monitor_mode;
-DesktopsInfo	 *ReferenceDesktops;
+extern enum monitor_tracking monitor_mode;
+extern DesktopsInfo	 *ReferenceDesktops;
 
 struct screen_info {
 	const char		*name;
@@ -85,7 +85,7 @@ struct screen_info {
 };
 TAILQ_HEAD(screen_infos, screen_info);
 
-struct screen_infos	 screen_info_q;
+extern struct screen_infos	 screen_info_q;
 
 struct screen_info	*screen_info_new(void);
 struct screen_info	*screen_info_by_name(const char *);
@@ -150,7 +150,7 @@ struct monitor {
 };
 TAILQ_HEAD(monitors, monitor);
 
-struct monitors		monitor_q;
+extern struct monitors		monitor_q;
 
 struct monitor	*monitor_by_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
@@ -166,7 +166,7 @@ void		 monitor_add_new(void);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 
-int randr_event;
+extern int randr_event;
 
 /* Control */
 Bool FScreenIsEnabled(void);
