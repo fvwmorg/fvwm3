@@ -31,7 +31,7 @@ struct fpmonitor {
 };
 TAILQ_HEAD(fpmonitors, fpmonitor);
 
-struct fpmonitors		 fp_monitor_q;
+extern struct fpmonitors	 fp_monitor_q;
 struct fpmonitor		*fpmonitor_by_name(const char *);
 struct fpmonitor		*fpmonitor_by_output(int);
 struct fpmonitor		*fpmonitor_get_current(void);

@@ -62,6 +62,8 @@ PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
 extern FlocaleFont *FwindowFont;
 extern Pixmap default_pixmap;
 
+struct fpmonitors		 fp_monitor_q;
+
 /*
  *
  * Screen, font, etc info

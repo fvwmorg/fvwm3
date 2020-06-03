@@ -54,6 +54,12 @@ static void		 monitor_set_flags(struct monitor *);
 static void		 scan_screens(Display *);
 static void		 monitor_check_primary(void);
 
+enum monitor_tracking monitor_mode;
+DesktopsInfo	 *ReferenceDesktops;
+struct screen_infos	 screen_info_q;
+struct monitors		monitor_q;
+int randr_event;
+
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
 	XEvent e;

@@ -28,7 +28,7 @@ struct desktop_cmd {
 	TAILQ_ENTRY(desktop_cmd)	 entry;
 };
 TAILQ_HEAD(desktop_cmds, desktop_cmd);
-struct desktop_cmds	 desktop_cmd_q;
+extern struct desktop_cmds	 desktop_cmd_q;
 
 void apply_desktops_monitor(struct monitor *);
 
