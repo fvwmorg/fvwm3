@@ -1441,6 +1441,7 @@ static int __place_get_nowm_pos(
 		 * 2: Do NOT specify a Xinerama screen (or specify it to be
 		 * 'g') and give the geometry hint in terms of the global
 		 * screen. */
+#if 0
 		int mangle_screen = FScreenFetchMangledScreenFromUSPosHints(
 			&(fw->hints));
 		if (mangle_screen != 0)
@@ -1450,6 +1451,7 @@ static int __place_get_nowm_pos(
 			flags.do_honor_starts_on_screen = 0;
 			reason->pos.reason = PR_POS_USPOS_OVERRIDE_SOS;
 		}
+#endif
 		if (attr_g->x + attr_g->width < screen_g.x ||
 			 attr_g->x >= screen_g.x + screen_g.width ||
 			 attr_g->y + attr_g->height < screen_g.y ||
@@ -2336,14 +2338,17 @@ Bool setup_window_placement(
 	char *e = NULL;
 
 	if (sc != NULL)
-		expand_vars(sc, NULL, False, True, NULL, exc);
+		e = expand_vars(sc, NULL, False, True, NULL, exc);
 
-	start_style.screen = e;
+	start_style.screen = (e != NULL) ? fxstrdup(e) : fxstrdup("");
+	fvwm_debug(__func__, "Expanding screen from '%s' -> '%s'",
+			sc ? sc : "null", start_style.screen);
 	rc = __place_window(
 		exc, pstyle, attr_g, start_style, mode, win_opts, &reason);
 
 	exc_destroy_context(exc);
 	free(e);
+	free(start_style.screen);
 
 	if (Scr.bo.do_explain_window_placement == 1)
 	{
