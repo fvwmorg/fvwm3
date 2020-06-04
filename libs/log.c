@@ -46,15 +46,13 @@ log_set_level(int ll)
 void
 log_open(void)
 {
-	char	*path;
+	char	*path = "fvwm3-output.log";
 
 	if (log_level == 0)
 		return;
 	log_close();
 
-	xasprintf(&path, "fvwm3-%ld.log", (long)getpid());
 	log_file = fopen(path, "a");
-	free(path);
 	if (log_file == NULL)
 		return;
 

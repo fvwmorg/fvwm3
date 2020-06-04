@@ -2081,6 +2081,7 @@ int main(int argc, char **argv)
 		else if (strcmp(argv[i], "-v") == 0)
 		{
 			log_set_level(1);
+			log_open();
 		}
 		else
 		{
