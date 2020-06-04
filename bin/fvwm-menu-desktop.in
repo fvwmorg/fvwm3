@@ -617,8 +617,9 @@ def geticonfile(icon):
     if not force:
         return iconpath
     
-    if iconpath.find("%ix%i" % (size, size)) >= 0: # ugly hack!!!
-        return iconpath
+    with os.popen("identify -format %%w '%s'" % iconpath, 'r') as p:
+        if int(p.read()) == size:
+                return iconpath
 
     if not os.path.isdir(os.path.expanduser(icon_dir)):
         os.makedirs(os.path.expanduser(icon_dir))
@@ -629,12 +630,11 @@ def geticonfile(icon):
 
     if os.path.exists(iconpath):
         iconfile = iconfile.replace(extension, '.png')
-        if extension == '.svg':
-            os.system("if test \\( \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) \\) -o \\( '%s' != '%s' \\); then convert -background none '%s' -resize %i '%s' ; fi"% 
-                          (iconfile, iconpath, iconfile, current_theme, previous_theme, iconpath, size, iconfile))
-        else:
-            os.system("if test \\( \\( ! -f '%s' \\) -o \\( '%s' -nt '%s' \\) \\) -o \\( '%s' != '%s' \\); then convert '%s'[0] -resize %i '%s' ; fi"% 
-                          (iconfile, iconpath, iconfile, current_theme, previous_theme, iconpath, size, iconfile))
+        if not os.path.isfile(iconfile) or os.path.getmtime(iconpath) > os.path.getmtime(iconfile) or current_theme != previous_theme:
+            if extension == '.svg':
+                os.system("convert -background none '%s' -resize %i '%s'"% (iconpath, size, iconfile))
+            else:
+                os.system("convert '%s'[0] -resize %i '%s'"% (iconpath, size, iconfile))
     else:
         sys.stderr.write("%s not found! Using default icon.\n" % iconpath)
         return None
