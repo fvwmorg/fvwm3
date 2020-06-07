@@ -546,13 +546,9 @@ FindScreenOfXY(int x, int y)
 			return (m);
 	}
 
-	if (m == NULL) {
-		fvwm_debug(__func__, "%s: couldn't find screen at %d x %d "
-			   "returning first monitor.  This is a bug.\n",
-			   __func__,
-			   xa, ya);
+	/* FIXME: this is a convenience, but could confuse callers. */
+	if (m == NULL)
 		return TAILQ_FIRST(&monitor_q);
-	}
 
 	return (NULL);
 }
