@@ -2,6 +2,7 @@
 #define _LOG_H
 
 #define printflike(a, b) __attribute__ ((format (printf, a, b)))
+#define FVWM3_LOGFILE_DEFAULT "fvwm3-output.log"
 
 void	log_set_level(int);
 int	log_get_level(void);
