@@ -30,6 +30,10 @@
 #include "fvwmlib.h"
 #include "log.h"
 
+#ifdef HAVE_GETPWUID
+#include <pwd.h>
+#endif
+
 static FILE	*log_file;
 static int	 log_level;
 
@@ -46,7 +50,31 @@ log_set_level(int ll)
 void
 log_open(void)
 {
-	char	*path = "fvwm3-output.log";
+	char	*path;
+
+	if (getenv("FVWM3_LOGFILE"))
+	{
+		path = fxstrdup(getenv("FVWM3_LOGFILE"));
+#ifdef HAVE_GETPWUID
+		if (strncmp(path, "~/", 2) == 0)
+		{
+		        /* Remove only ~ we need / between homedir and the rest */
+			memmove(path, path + 1, strlen(path));
+
+			struct passwd *pwd;
+
+	                pwd = getpwuid(getuid());
+			if (pwd)
+			{
+				path = strcat(pwd->pw_dir, path);
+			}
+		}
+#endif
+	}
+	else
+	{
+		path = FVWM3_LOGFILE_DEFAULT;
+	}
 
 	if (log_level == 0)
 		return;
