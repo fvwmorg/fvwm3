@@ -28,6 +28,7 @@
 #include <unistd.h>
 
 #include "fvwmlib.h"
+#include "getpwuid.h"
 #include "log.h"
 
 static FILE	*log_file;
@@ -46,17 +47,32 @@ log_set_level(int ll)
 void
 log_open(void)
 {
-	char	*path = "fvwm3-output.log";
+	char		*path = fxstrdup(FVWM3_LOGFILE_DEFAULT);
+
+	if (getenv("FVWM3_LOGFILE")) {
+		const char	*expanded_path;
+
+		free(path);
+		path = getenv("FVWM3_LOGFILE");
+		expanded_path = expand_path(path);
+
+		path = fxstrdup(expanded_path);
+		free((char *)expanded_path);
+	}
 
 	if (log_level == 0)
 		return;
 	log_close();
 
 	log_file = fopen(path, "a");
-	if (log_file == NULL)
+	if (log_file == NULL) {
+		free(path);
 		return;
+	}
 
 	setvbuf(log_file, NULL, _IOLBF, 0);
+
+	free(path);
 }
 
 /* Toggle logging. */

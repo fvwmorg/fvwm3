@@ -24,9 +24,6 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
-#ifdef HAVE_GETPWUID
-#  include <pwd.h>
-#endif
 #if HAVE_SYS_SYSTEMINFO_H
 /* Solaris has sysinfo instead of gethostname.  */
 #include <sys/systeminfo.h>
@@ -49,6 +46,7 @@
 #include "libs/FRenderInit.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
+#include "libs/getpwuid.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -122,7 +120,7 @@ static char l_g_bits[] =
 static char s_g_bits[] =
 {0x01, 0x02, 0x04, 0x08};
 
-static char *home_dir;
+static const char *home_dir;
 
 static volatile sig_atomic_t fvwmRunState = FVWM_RUNNING;
 
@@ -1790,17 +1788,7 @@ int main(int argc, char **argv)
 	flib_putenv("FVWM_MODULEDIR", "FVWM_MODULEDIR=" FVWM_MODULEDIR);
 
 	/* Figure out user's home directory */
-	home_dir = getenv("HOME");
-#ifdef HAVE_GETPWUID
-	if (home_dir == NULL)
-	{
-		struct passwd* pw = getpwuid(getuid());
-		if (pw != NULL)
-		{
-			home_dir = fxstrdup(pw->pw_dir);
-		}
-	}
-#endif
+	home_dir = find_home_dir();
 	if (home_dir == NULL)
 	{
 		home_dir = "/"; /* give up and use root dir */

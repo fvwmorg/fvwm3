@@ -21,6 +21,14 @@ are the following:
     </listitem>
   </varlistentry>
   <varlistentry>
+    <term><envar>FVWM3_LOGFILE</envar></term>
+    <listitem>
+      <para>Used to determine the path and filename to log debug information
+	      from fvwm3.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
     <term><envar>FVWM_MODULEDIR</envar></term>
     <listitem>
       <para>Set by fvwm to the directory containing the standard fvwm
