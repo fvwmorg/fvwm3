@@ -1,12 +1,43 @@
 Installation Instructions
 =========================
 
-FVWM uses automake and friends as its build process. 
+FVWM3 uses automake and autotools as its build process.
+
+Dependencies
+============
+
+FVWM3 has the following dependencies.  It's recommended to install all
+dependencies, core or optional.
+
+## Core dependencies
+
+* libx11-dev
+* libxrandr-dev
+* libxrender-dev
+* libxt-dev
+
+## Optional dependencies
+
+* libfontconfig-dev
+* libfreetype6-dev
+* libfribidi-dev
+* libncurses5-dev
+* libpng-dev
+* libreadline-dev
+* libsm-dev
+* libx11-dev
+* libxcursor-dev
+* libxext-dev
+* libxft-dev
+* libxi-dev
+* libxpm-dev
+* sharutils
+* xsltproc
 
 Installing From Git
 ===================
 
-FVWM has a bootstrap script to generate `configure` and associated files.
+FVWM3 has a bootstrap script to generate `configure` and associated files.
 Run the following command chain to generate the `configure` script and build
 the project:
 
