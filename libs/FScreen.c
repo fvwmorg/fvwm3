@@ -323,7 +323,7 @@ scan_screens(Display *dpy)
 	rrm = XRRGetMonitors(dpy, root, false, &n);
 	if (n <= 0) {
 		fvwm_debug(__func__, "get monitors failed\n");
-		return;
+		exit(101);
 	}
 
 	for (i = 0; i < n; i++) {
@@ -390,9 +390,8 @@ void FScreenInit(Display *dpy)
 
 	if (!XRRQueryExtension(dpy, &randr_event, &err_base) ||
 	    !XRRQueryVersion (dpy, &major, &minor)) {
-		fvwm_debug(__func__,
-			   "RandR not present, falling back to single screen\n");
-		goto single_screen;
+		fvwm_debug(__func__, "RandR not present");
+		goto randr_fail;
 	}
 
 	if (major == 1 && minor >= 5)
@@ -403,9 +402,7 @@ void FScreenInit(Display *dpy)
 		/* Something went wrong. */
 		fvwm_debug(__func__, "Couldn't initialise XRandR: %s\n",
 			   strerror(errno));
-		fvwm_debug(__func__, "Falling back to single screen...\n");
-
-		goto single_screen;
+		goto randr_fail;
 	}
 
 	fvwm_debug(__func__, "Using RandR %d.%d\n", major, minor);
@@ -415,9 +412,8 @@ void FScreenInit(Display *dpy)
 
 	if (res == NULL || (res != NULL && res->noutput == 0)) {
 		XRRFreeScreenResources(res);
-		fvwm_debug(__func__, "RandR present, yet no ouputs found.  "
-			   "Using single screen...\n");
-		goto single_screen;
+		fvwm_debug(__func__, "RandR present, yet no ouputs found.");
+		goto randr_fail;
 	}
 	XRRFreeScreenResources(res);
 
@@ -435,17 +431,9 @@ void FScreenInit(Display *dpy)
 
 	return;
 
-single_screen:
-	m = monitor_new();
-	m->si->name = fxstrdup(GLOBAL_SCREEN_NAME);
-	m->si->rr_output = -1;
-	m->si->x = 0,
-	m->si->y = 0,
-	m->si->w = DisplayWidth(disp, DefaultScreen(disp)),
-	m->si->h = DisplayHeight(disp, DefaultScreen(disp));
-	m->flags |= MONITOR_NEW|MONITOR_PRIMARY;
-
-	TAILQ_INSERT_TAIL(&monitor_q, m, entry);
+randr_fail:
+	fprintf(stderr, "Unable to initialise RandR\n");
+	exit(101);
 }
 
 void

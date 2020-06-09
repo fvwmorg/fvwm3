@@ -525,31 +525,16 @@ AH_TEMPLATE([HAVE_TAILQ],[Check if tailq is present.])
 AC_CHECK_HEADER(queue.h, AC_DEFINE(HAVE_TAILQ))
 
 # ********* XRandR
-problem_xrandr=""
-
-AC_ARG_ENABLE(xrandr,
-  AS_HELP_STRING([--disable-xrandr],[disable XRandR support]),
-  [ if test x"$enableval" = xyes; then
-    with_xrandr="yes, check"
-  else
-    with_xrandr="no"
-    problem_xrandr=": Explicitly disabled"
-  fi ],
-  [ with_xrandr="not specified, check" ]
-)
-
 AH_TEMPLATE([HAVE_XRANDR],[Define if XRandR library is used.])
-if test ! x"$with_xrandr" = xno; then
-    if $PKG_CONFIG --exists "xrandr >= 1.5.0"; then
-        AC_DEFINE(HAVE_XRANDR)
-        with_xrandr=yes
-        XRandR_LIBS=-lXrandr
-    else
-       with_xrandr=no
-       problem_xrandr="Couldn't detect libxrandr, or version < 1.5.0"
-    fi
-    #],[$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
-fi
+AC_MSG_CHECKING([for XRandR...])
+PKG_CHECK_MODULES([xrandr], [xrandr >= 1.5],
+[
+	 AC_DEFINE(HAVE_XRANDR)
+         XRandR_LIBS=-lXrandr
+],
+[
+	 AC_MSG_ERROR([*** XRandR not found.  Install its header files. ***])
+])
 
 AC_SUBST(XRandR_LIBS)
 AC_SUBST(XRandR_CFLAGS)
@@ -1727,7 +1712,6 @@ Fvwm3 Configuration:
   With Session Management support?    $with_sm$problem_sm
   With SVG image support?             $with_rsvg$problem_rsvg
   With Xcursor support?               $with_xcursor$problem_xcursor
-  With XRandR support?                $with_xrandr$problem_xrandr
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm
   With Xrender image support?         $with_xrender$problem_xrender
