@@ -524,9 +524,34 @@ AC_CHECK_HEADER(X11/XKBlib.h, AC_DEFINE(HAVE_X11_XKBLIB_H))
 AH_TEMPLATE([HAVE_TAILQ],[Check if tailq is present.])
 AC_CHECK_HEADER(queue.h, AC_DEFINE(HAVE_TAILQ))
 
+# libbson
+AH_TEMPLATE([HAVE_LIBBSON],[Define if libbson is used.])
+PKG_CHECK_MODULES([libbson], [libbson-1.0],
+[
+	 AC_DEFINE(HAVE_LIBBSON)
+	libevent_LIBS=-lbson-1.0
+],
+[
+	 AC_MSG_ERROR([*** libnson not found.  Install its header files. ***])
+])
+AC_SUBST(libbson_LIBS)
+AC_SUBST(libbson_CFLAGS)
+
+# libevent
+AH_TEMPLATE([HAVE_LIBEVENT],[Define if libevent is used.])
+PKG_CHECK_MODULES([libevent], [libevent >= 2.0],
+[
+	 AC_DEFINE(HAVE_LIBEVENT)
+	libevent_LIBS=-levent
+],
+[
+	 AC_MSG_ERROR([*** libevent >=2 not found.  Install its header files. ***])
+])
+AC_SUBST(libevent_LIBS)
+AC_SUBST(libevent_CFLAGS)
+
 # ********* XRandR
 AH_TEMPLATE([HAVE_XRANDR],[Define if XRandR library is used.])
-AC_MSG_CHECKING([for XRandR...])
 PKG_CHECK_MODULES([xrandr], [xrandr >= 1.5],
 [
 	 AC_DEFINE(HAVE_XRANDR)
@@ -1636,6 +1661,7 @@ dnl
 	dev-docs/Makefile
 	po/Makefile
 dnl
+	modules/fmd/Makefile
 	modules/FvwmAnimate/Makefile
 	modules/FvwmAuto/Makefile
 	modules/FvwmBacker/Makefile

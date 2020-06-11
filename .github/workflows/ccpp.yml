@@ -11,8 +11,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: install
       run: |
-        sudo apt install autotools-dev build-essential debhelper dh-autoreconf file fontconfig gettext libfontconfig-dev libfreetype6-dev libfribidi-dev libncurses5-dev libpng-dev libreadline-dev libsm-dev libx11-dev libxcursor-dev libxext-dev libxft-dev libxi-dev libxpm-dev libxrandr-dev libxrender-dev libxt-dev sharutils xsltproc
-        (./autogen.sh && CFLAGS= ./configure)
+        sudo apt install autotools-dev build-essential debhelper dh-autoreconf file fontconfig gettext libbson-dev libevent-dev libfontconfig-dev libfreetype6-dev libfribidi-dev libncurses5-dev libpng-dev libreadline-dev libsm-dev libx11-dev libxcursor-dev libxext-dev libxft-dev libxi-dev libxpm-dev libxrandr-dev libxrender-dev libxt-dev sharutils xsltproc
+        (./autogen.sh && CFLAGS= ./configure --disable-silent-rules)
         make CFLAGS="-g -O2 -Wall"
   notification:
     runs-on: ubuntu-latest

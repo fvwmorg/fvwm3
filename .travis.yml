@@ -19,6 +19,8 @@ addons:
                     - file
                     - fontconfig
                     - gettext
+                    - libbson-dev
+                    - libevent-dev
                     - libfontconfig-dev
                     - libfreetype6-dev
                     - libfribidi-dev
