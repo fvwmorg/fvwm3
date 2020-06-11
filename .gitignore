@@ -71,6 +71,7 @@ modules/FvwmRearrange/FvwmTile
 modules/FvwmScript/FvwmScript
 modules/FvwmScript/Scripts/FvwmScript-ComExample
 modules/FvwmScroll/FvwmScroll
+modules/fmd/fmd
 perllib/FVWM/Module.pm
 stamp-h1
 tags

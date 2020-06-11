@@ -15,7 +15,7 @@ jobs:
       run: 'docker build -t fvwm3 .'
 
   notification:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: notifications
     steps:
       - name: irc push
