@@ -1,0 +1,122 @@
+.\" t
+
+.\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.ta .3i .6i .9i 1.2i 1.5i 1.8i
+.TH FvwmMFL 1 "@RELDATELONG@ (@VERSION@)" Fvwm "Fvwm Modules"
+.UC
+.SH NAME
+\fIFvwmMFL\fP \- the Fvwm3 front-loader module
+.SH SYNOPSIS
+\fIFvwmMFL\fP can only be invoked by Fvwm3.
+Command line invocation of the \fIFvwmMFL\fP will not work.
+
+This module has no command-line options.
+
+.SH DESCRIPTION
+The \fIFvwmMFL\fP module provides access to Fvwm events over a unix-domain
+socket.  This module is intended to provide externally-written programs
+(clients) the ability to receive information from Fvwm and to perform an
+action on that event.
+
+The information from Fvwm3 is in the form of JSON packets.  Each JSON packet
+has different fields, depending on the type requested.
+
+.SH COMMUNICATION
+The default unix-domain socket for \fIFvwmMFL\fP is \fI/tmp/fvwm_mfl.sock\fP,
+although this can be overriden via an environment variable \fIFVWMMFL_SOCKET\fP.
+
+.SH REGISTERING INTEREST
+Commands can be sent to \fIFvwmMFL\fP to control which information is sent the
+client.  The \fIset\fP command is used for this.  The table below shows which
+events can be subscribed to.
+
+.TS
+allbox tab(:);
+l l.
+\fIEvent\fP:\fIDescription\fP
+new_window:Fired when a new window is mapped and visible.
+map:Fired when a window is mapped.
+configure_window:Fired when a window is moved or resized.
+destroy_window:Fired when a window is closed.
+new_page:Fired when a new page is switched to.
+new_desk:Fired when a new desk is switched to.
+raise_window:Fired when a window is raised (or changes layer).
+lower_window:Fired when a window is lowered (or changed layer).
+focus_change:Fired when a window loses/gains focus.
+enter_window:Fired when a window has the pointer moved into it.
+leave_Window:Fired when a window has pointer moved out of it.
+window_shade:Fired when a window is shaded.
+window_unshade:Fired when a window is unshaded.
+window_name:Fired when the window name changes.
+visible_name:Fired when the visible window name changes.
+res_class:Fired when the class of the window is set.
+res_name:Fired when the resource of the window is set.
+iconify:Fired when a window is iconified.
+deiconify:Fired when a window is deiconified.
+icon_name:Fired when the icon name changes.
+visible_icon_name:Fired when the icon's visible name changes.
+icon_file:Fired when the path to the icon changes.
+icon_location:Fired when the icon location changes.
+restack:Fired when the window stacking order changes.
+.TE
+
+For example, to register an interest in \fInew_window\fP and
+\fIfocus_change\fP, the following commands would be set via the socket:
+
+.EX
+.I set new_window
+.I set focus_change
+.EE
+
+To remove interest in an event, use the \fIunset\fP command:
+
+.EX
+.I unset focus_change
+.EE
+
+.SH JSON FORMAT
+Each packet sent to a client is in plain JSON.  The information contained in
+each packet varies depending on the event.
+
+TODO: document each JSON structure.
+
+.SH EXAMPLE
+
+The following example shows how to monitor for \fIfocus_change\fP events at
+the shell, printing the JSON returned:
+
+.EX
+.I echo "set focus_change" | nc -U /tmp/fvwm_mfl.sock 2>&1 | jq --unbuffered .
+.EE
+
+Outputs:
+
+.EX
+{
+  "focus_change": {
+    "window": "0x5400022",
+    "type": 0,
+    "hilight": {
+      "text_colour": 16777215,
+      "bg_colour": 32767
+    }
+  }
+}
+.EE
+
+.SH AUTHORS
+
+This module first appeared in 2020.

@@ -1,5 +1,6 @@
 language: c
 sudo: false
+dist: bionic
 branches:
         except:
                 - todo
@@ -19,6 +20,8 @@ addons:
                     - file
                     - fontconfig
                     - gettext
+                    - libbson-dev
+                    - libevent-dev
                     - libfontconfig-dev
                     - libfreetype6-dev
                     - libfribidi-dev
@@ -37,7 +40,7 @@ addons:
                     - libxt-dev
                     - sharutils
                     - xsltproc
-script: (./autogen.sh && CFLAGS= ./configure) && make
+script: (./autogen.sh && CFLAGS= ./configure --disable-silent-rules) && make
 notifications:
         irc:
                 channels:
