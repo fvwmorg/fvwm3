@@ -401,6 +401,11 @@ WindowColorsets is specified.
 Tells FvwmPager to not show the windows that are using the
 WindowListSkip style.
 
+.IP "*FvwmPager: Monitor \fIRandRName\fP"
+Tells FvwmPager to display windows only on \fIRandRName\fP monitor.
+This is especially meaningful when the \fIDesktopConfiguration\fP command is
+set to \fIper-monitor\fP.
+
 .SH AUTHOR
 Robert Nation
 .br
