@@ -1610,7 +1610,6 @@ void list_reply(unsigned long *body)
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
-  static int miss_counter = 0;
 
   if(FPending(dpy))
   {
@@ -1629,14 +1628,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if(FPending(dpy))
 	{
 	  FNextEvent(dpy,event);
-	  miss_counter = 0;
 	  return 1;
 	}
-	miss_counter++;
-#ifdef WORRY_ABOUT_MISSED_XEVENTS
-	if(miss_counter > 100)
-	  DeadPipe(0);
-#endif
     }
 
   if(FD_ISSET(fd[1], &in_fdset))

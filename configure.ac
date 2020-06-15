@@ -1400,9 +1400,6 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
  * shown here on systems that _don't_ use the configure script.
  **/
 
-/* Enable tests for missing too many XEvents.  Usually you want this. */
-#define WORRY_ABOUT_MISSED_XEVENTS 1
-
 /* Define if the X11 ConnectionNumber is actually a file descriptor. */
 #define HAVE_X11_FD 1
 
