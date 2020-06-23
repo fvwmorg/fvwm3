@@ -1740,6 +1740,7 @@ static void reopen_fd(int fd, char* mode, FILE *of)
 
 int main(int argc, char **argv)
 {
+	fprintf(stderr, "Hello\n");
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 	int i;
