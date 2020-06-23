@@ -96,6 +96,7 @@ import os.path
 import os
 import fnmatch
 import time
+import shutil
 
 # Test for python-xdg
 try:
@@ -109,6 +110,71 @@ else:
     from xdg.DesktopEntry import *
     from xdg.BaseDirectory import *
 
+class BaseIconScaleTool(object):
+    size = 32
+    icon_dir = ''
+    enable_icon = True
+
+    def __init__(self, filename):
+        self.filename = filename
+
+    def _do_check(self):
+        sys.stderr.write('Cannot find ImageMagick binaries or PIL module. Skipping scaling icon %s\n' % filename)
+        return True
+
+    def check_size(self):
+        if self.filename.endswith('.svg'):
+            return False
+        
+        return self._do_check()
+
+    def convert(self, theme_changed):
+        # FVWM knows how to render SVGs
+        if self.filename.endswith('.svg'):
+            return '{0}:{1}x{1}'.format(self.filename, self.size)
+        
+        output = self._output_path()
+        
+        if theme_changed or not os.path.isfile(output) or os.path.getmtime(self.filename) > os.path.getmtime(output):
+            self._do_convert(output)
+
+        return output
+        
+    def _output_path(self):
+        if not os.path.isdir(os.path.expanduser(self.icon_dir)):
+            os.makedirs(os.path.expanduser(self.icon_dir))
+        return os.path.join(os.path.expanduser(self.icon_dir),
+                            "%ix%i-" % (self.size, self.size) +
+                            os.path.basename(self.filename))
+
+class ImageMagickIconScaleTool(BaseIconScaleTool):
+    def _do_check(self):
+        with os.popen("identify -format %%w '%s'" % self.filename, 'r') as p:
+            return int(p.read()) == self.size
+
+    def _do_convert(self, output):
+        os.system("convert '%s'[0] -resize %i '%s'"% (self.filename, self.size, output))
+
+class PILIconScaleTool(BaseIconScaleTool):
+    def _do_check(self):
+        with PIL.Image.open(self.filename) as f:
+            return f.size[0] == self.size
+
+    def _do_convert(self, output):
+        with PIL.Image.open(self.filename) as f:
+            f.thumbnail((self.size, self.size))
+            f.save(output, 'PNG')
+
+IconScaleTool = BaseIconScaleTool
+
+try:
+    import PIL.Image
+    IconScaleTool = PILIconScaleTool
+except:
+    if shutil.which('convert') and shutil.which('identify'):
+        IconScaleTool = ImageMagickIconScaleTool
+    else:
+        sys.stderr.write('No image convertion tools found, use original icon instead.\n')
 
 # Main Function
 def main ():
@@ -171,7 +237,7 @@ Standard output is a series Fvwm commands."""
         print(str(err)) # will print something like "option -a not recognized"
         print(usage)
         sys.exit(2)
-    global verbose, force, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length, term_cmd
+    global verbose, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length, term_cmd
     global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
     global default_app_icon, default_dir_icon, include_items, config_menus, regen_cmd, dynamic_menu, build_all_menus
     version = "2.4"
@@ -340,6 +406,9 @@ Standard output is a series Fvwm commands."""
             sys.stderr.write('Python module python-xdg not found.')
         sys.exit(1)
 
+    BaseIconScaleTool.size = size
+    BaseIconScaleTool.icon_dir = icon_dir
+    BaseIconScaleTool.enable_icon = force
 
     timestamp = time.time()
     
@@ -606,40 +675,16 @@ def printtext(text):
         if verbose: print("# Unknown error - Skipping entry")
 
 def geticonfile(icon):
-    iconpath = xdg.IconTheme.getIconPath(icon, size, current_theme, ["png", "xpm", "svg"])
-
-    if not iconpath == None:
-        extension = os.path.splitext(iconpath)[1]
-
-    if not iconpath:
-        return None
-
-    if not force:
-        return iconpath
+    assert IconScaleTool.enable_icon, "enable_icon option must be True here"
+    iconpath = xdg.IconTheme.getIconPath(icon, size, current_theme, ["svg", "png", "xpm"])
     
-    with os.popen("identify -format %%w '%s'" % iconpath, 'r') as p:
-        if int(p.read()) == size:
-                return iconpath
-
-    if not os.path.isdir(os.path.expanduser(icon_dir)):
-        os.makedirs(os.path.expanduser(icon_dir))
-
-    iconfile = os.path.join(os.path.expanduser(icon_dir),
-                            "%ix%i-" % (size, size) + 
-                            os.path.basename(iconpath))
-
-    if os.path.exists(iconpath):
-        iconfile = iconfile.replace(extension, '.png')
-        if not os.path.isfile(iconfile) or os.path.getmtime(iconpath) > os.path.getmtime(iconfile) or current_theme != previous_theme:
-            if extension == '.svg':
-                os.system("convert -background none '%s' -resize %i '%s'"% (iconpath, size, iconfile))
-            else:
-                os.system("convert '%s'[0] -resize %i '%s'"% (iconpath, size, iconfile))
-    else:
-        sys.stderr.write("%s not found! Using default icon.\n" % iconpath)
+    if not iconpath or not os.path.exists(iconpath):
         return None
-    return iconfile
 
+    st = IconScaleTool(iconpath)
+    if st.check_size():
+        return iconpath
+    return st.convert(previous_theme != current_theme)
     
 def getdefaulticonfile(command):
     if command.startswith("Popup"):
@@ -649,7 +694,7 @@ def getdefaulticonfile(command):
 
 def printmenu(name, icon, command):
     iconfile = ''
-    if force :
+    if IconScaleTool.enable_icon:
         iconfile = geticonfile(icon) or getdefaulticonfile(command) or icon
         if not (iconfile == '' or iconfile == None):
             iconfile = '%'+iconfile+'%'
