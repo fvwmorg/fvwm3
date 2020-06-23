@@ -174,7 +174,7 @@ except:
     if shutil.which('convert') and shutil.which('identify'):
         IconScaleTool = ImageMagickIconScaleTool
     else:
-        sys.stderr.write('No image convertion tools found, use original icon instead.\n')
+        sys.stderr.write('No image conversion tools found, using original icon size instead.\n')
 
 # Main Function
 def main ():
