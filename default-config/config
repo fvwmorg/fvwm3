@@ -285,7 +285,7 @@ AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "&Programs%icons/programs.png%" Popup MenuPrograms
 + "XDG &Menu%icons/apps.png%" Popup XDGMenu
 + "&XTerm%icons/terminal.png%" Exec exec $[infostore.terminal]
-Test (x dmenu_run) + "Run command" Exec exec dmenu_run
+Test (x dmenu_run) + "Run command" Exec exec dmenu_run -nb "#2b4e5e"
 + "" Nop
 + "Fvwm&Console%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
 + "&Wallpapers%icons/wallpaper.png%" Popup BGMenu
@@ -310,7 +310,7 @@ Test (x chromium) + "Chromium" Exec exec chromium
 Test (x firefox) + "Firefox" Exec exec firefox
 Test (x google-chrome) + "Google-Chrome" Exec exec google-chrome
 Test (x gvim) + "gVim" Exec exec gvim
-Test (x xemacs) + "XEmacs" Exec exec xemacs
+Test (x emacs) + "Emacs" Exec exec emacs
 Test (x gimp) + "Gimp" Exec exec gimp
 Test (x vlc) + "VLC" Exec exec vlc
 
@@ -462,7 +462,7 @@ Silent Key F2 A C GotoDesk 0 1
 Silent Key F3 A C GotoDesk 0 2
 Silent Key F4 A C GotoDesk 0 3
 Silent Key Super_R A A Exec exec $[infostore.terminal]
-Silent Key Space A M Exec exec dmenu_run
+Silent Key Space A M Exec exec dmenu_run -nb "#2b4e5e"
 
 # Window Buttons: [1 3 5 7 9  TTTTT  0 8 6 4 2]
 #   1 - Open the WindowOps menu.
@@ -614,7 +614,7 @@ DestroyModuleConfig FvwmIconMan:*
 *FvwmIconMan: UseWinList true
 *FvwmIconMan: ButtonGeometry 120x20
 *FvwmIconMan: ManagerGeometry 1x1
-*FvwmIconMan: Colorset 0
+*FvwmIconMan: Colorset 10
 *FvwmIconMan: FocusColorset 11
 *FvwmIconMan: IconColorset 14
 *FvwmIconMan: FocusAndSelectColorset 12
