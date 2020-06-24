@@ -1115,7 +1115,9 @@ static void clear_empty_region(WinManager *man)
 		rects[0].x, rects[0].y, rects[0].width, rects[0].height,
 		rects[1].x, rects[1].y, rects[1].width, rects[1].height);
 
-  if (CSET_IS_TRANSPARENT_PR_PURE(man->colorsets[DEFAULT]))
+  int cset = man->colorsets[DEFAULT];
+
+  if (CSET_IS_TRANSPARENT_PR_PURE(cset))
   {
     for(n=0; n < num_rects; n++)
     {
@@ -1124,6 +1126,19 @@ static void clear_empty_region(WinManager *man)
 		    XClearArea(
 			    theDisplay, man->theWindow, rects[n].x, rects[n].y,
 			    rects[n].width, rects[n].height, False);
+	    }
+    }
+  }
+  else if (cset >= 0)
+  {
+    for(n=0; n < num_rects; n++)
+    {
+	    if (rects[n].width > 0 && rects[n].height > 0)
+	    {
+		    SetRectangleBackground(theDisplay, man->theWindow,
+			    rects[n].x, rects[n].y, rects[n].width,
+			    rects[n].height, &Colorset[cset], Pdepth,
+			    man->backContext[DEFAULT]);
 	    }
     }
   }
