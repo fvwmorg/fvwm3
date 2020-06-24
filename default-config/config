@@ -31,6 +31,9 @@
 # that FvwmConsole uses. Change this to your terminal of choice
 InfoStoreAdd terminal xterm
 
+# This is used for "Run Command" and the Meta+Space key-binding
+InfoStoreAdd runcmd "dmenu_run -nb '#2b4e5e'"
+
 ###########
 # 1: Functions
 #
@@ -285,7 +288,7 @@ AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "&Programs%icons/programs.png%" Popup MenuPrograms
 + "XDG &Menu%icons/apps.png%" Popup XDGMenu
 + "&XTerm%icons/terminal.png%" Exec exec $[infostore.terminal]
-Test (x dmenu_run) + "Run command" Exec exec dmenu_run -nb "#2b4e5e"
+Test (x dmenu_run) + "Run command" Exec exec $[infostore.runcmd]
 + "" Nop
 + "Fvwm&Console%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
 + "&Wallpapers%icons/wallpaper.png%" Popup BGMenu
@@ -462,7 +465,7 @@ Silent Key F2 A C GotoDesk 0 1
 Silent Key F3 A C GotoDesk 0 2
 Silent Key F4 A C GotoDesk 0 3
 Silent Key Super_R A A Exec exec $[infostore.terminal]
-Silent Key Space A M Exec exec dmenu_run -nb "#2b4e5e"
+Silent Key Space A M Exec exec $[infostore.runcmd]
 
 # Window Buttons: [1 3 5 7 9  TTTTT  0 8 6 4 2]
 #   1 - Open the WindowOps menu.
