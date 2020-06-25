@@ -453,7 +453,7 @@ command can be used:</para>
         colorset 3 (in rgb:rrrr/gggg/bbbb form).
       </para>
       <para>
-        If .lighten&lt;p&gt; or .darken&lt;p&gt; is appeneded to the
+        If .lighten&lt;p&gt; or .darken&lt;p&gt; is appended to the
         parameters, they are instead replaced with a color that is
         lighter or darker than the one defined in colorset &lt;n&gt;
         by a percentage value &lt;p&gt; (between 0 and 100). For example

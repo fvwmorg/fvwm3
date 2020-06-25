@@ -407,10 +407,10 @@ static signed int expand_vars_extended(
 				csadj = -l;
 			}
 			/* Check for .hash */
-			if (strcmp(rest + n + nn,  ".hash") == 0)
+			if (StrEquals(rest + n + nn,  ".hash"))
 			{
 				use_hash = True;
-				nn = nn + 5;
+				nn += strlen(".hash");
 				if (csadj == 101)
 				{
 					csadj = 0;
