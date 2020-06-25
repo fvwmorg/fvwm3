@@ -2444,6 +2444,7 @@ void HandleFocusIn(const evh_args_t *ea)
 	static Window last_focus_fw = None;
 	static Bool was_nothing_ever_focused = True;
 	FvwmWindow *fw = ea->exc->w.fw;
+	struct monitor *mon = monitor_get_current();
 
 	Scr.focus_in_pending_window = NULL;
 	/* This is a hack to make the PointerKey command work */
@@ -2591,12 +2592,17 @@ void HandleFocusIn(const evh_args_t *ea)
 				(unsigned long)IsLastFocusSetByMouse(),
 				(long)fc, (long)bc);
 			EWMH_SetActiveWindow(focus_w);
+
+			if (fw != NULL && strcmp(fw->m->si->name, prev_focused_monitor) != 0) {
+				BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
+				    fw->m->si->name /* Name of the monitor. */
+			        );
+			}
 		}
 		last_focus_w = focus_w;
 		last_focus_fw = focus_fw;
 		was_nothing_ever_focused = False;
 
-		BroadcastMonitorList(NULL);
 	}
 	if ((sf = get_focus_window()) != ffw_old)
 	{
