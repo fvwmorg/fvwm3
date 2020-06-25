@@ -441,15 +441,32 @@ command can be used:</para>
       $[bg.cs&lt;n&gt;]
       $[hilight.cs&lt;n&gt;]
       $[shadow.cs&lt;n&gt;]
+      $[fgsh.cs&lt;n&gt;]
     </term>
     <listitem>
       <para>
 	These parameters are replaced with the name of the foreground
-	(fg), background (bg), hilight (hilight) or shadow (shadow) color
-	that is defined in colorset &lt;n&gt; (replace &lt;n&gt; with zero
-	or a positive integer).  For example "$[fg.cs3]" is expanded to the
-	name of the foreground color of colorset 3 (in rgb:rrrr/gggg/bbbb
-	form).  Please refer to the
+	(fg), background (bg), hilight (hilight), shadow (shadow), or
+        the font shadow (fgsh) color that is defined in colorset &lt;n&gt;
+        (replace &lt;n&gt; with zero or a positive integer).  For example
+        "$[fg.cs3]" is expanded to the name of the foreground color of
+        colorset 3 (in rgb:rrrr/gggg/bbbb form).
+      </para>
+      <para>
+        If .lighten&lt;p&gt; or .darken&lt;p&gt; is appeneded to the
+        parameters, they are instead replaced with a color that is
+        lighter or darker than the one defined in colorset &lt;n&gt;
+        by a percentage value &lt;p&gt; (between 0 and 100). For example
+        "$[bg.cs3.lighten15]" is expanded to the background color of
+        colorset 3 and then lightened 15% (in rgb:rrrr/gggg/bbbb form).
+      </para>
+      <para>
+        If .hash is appened to the end the color output will use
+        #rrggbb form (instead of rgb:rrrr/gggg/bbbb). For example,
+        $[bg.cs3.hash] or $[bg.cs3.lighten15.hash].
+      </para>
+      <para>
+        Please refer to the
 	<fvwmref sect="colorsets" opt="colorsets" name="Colorsets"/>
 	section for details about colorsets.
       </para>
