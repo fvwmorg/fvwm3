@@ -154,6 +154,7 @@ Bool Swallowed = False;
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
+void list_monitor_focus(unsigned long *);
 
 struct fpmonitor *
 fpmonitor_get_current(void)
@@ -402,7 +403,8 @@ int main(int argc, char **argv)
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE|
-		 MX_REPLY);
+		 MX_MONITOR_FOCUS);
+
   ParseOptions();
   if (is_transient)
   {
@@ -604,6 +606,9 @@ void process_message( FvwmPacket* packet )
       break;
     case MX_PROPERTY_CHANGE:
       list_property_change(body);
+      break;
+    case MX_MONITOR_FOCUS:
+      list_monitor_focus(body);
       break;
     case MX_REPLY:
 	    list_reply(body);
@@ -843,6 +848,28 @@ void list_destroy(unsigned long *body)
 	free(t->icon_name);
       free(t);
     }
+}
+
+void list_monitor_focus(unsigned long *body)
+{
+	struct fpmonitor	*m, *mcur, *mthis;
+	char	*mon_name = (char *)(&body[3]);
+
+	mcur = fpmonitor_get_current();
+
+	if (mcur == NULL || mon_name == NULL)
+		return;
+
+	mthis = fpmonitor_by_name(mon_name);
+
+	if (mcur == mthis)
+		return;
+
+	mcur->is_current = 0;
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (m == mthis)
+			m->is_current = 1;
+	}
 }
 
 /*

@@ -167,6 +167,7 @@ void		 monitor_add_new(void);
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 
 extern int randr_event;
+extern const char *prev_focused_monitor;
 
 /* Control */
 Bool FScreenIsEnabled(void);
