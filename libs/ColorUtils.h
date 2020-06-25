@@ -17,13 +17,13 @@ Pixel GetTintedPixel(Pixel in, Pixel tint, int percent);
 /* This function converts the colour stored in a colorcell (pixel) into the
  * string representation of a colour.  The output is printed at the
  * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if
- * use_hash is False or in hash notation ("#rrrrggggbbbb") if use_hash is true.
+ * use_hash is False or in hash notation ("#rrggbb") if use_hash is true.
  * The return value is the number of characters used by the string.  The
  * rgb values of the output are undefined if the colorcell is invalid.  The
  * memory area pointed at by 'output' must be at least 64 bytes (in case of
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(
-	Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash);
+	Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash, int adj);
 
 Pixel GetSimpleColor(char *name);
 /* handles colorset color names too */

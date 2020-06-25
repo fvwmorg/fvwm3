@@ -354,7 +354,9 @@ static signed int expand_vars_extended(
 	char dummy[64] = "\0";
 	char *target = (output) ? output : dummy;
 	int cs = -1;
+	int csadj = 0;
 	int n;
+	int nn = 0;
 	int i;
 	int l;
 	int x;
@@ -368,6 +370,7 @@ static signed int expand_vars_extended(
 	Bool is_numeric = False;
 	Bool is_target = False;
 	Bool is_x;
+	Bool use_hash = False;
 	Window context_w = Scr.Root;
 	FvwmWindow *fw = exc->w.fw;
 	struct monitor	*m = fw ? fw->m : monitor_get_current();
@@ -381,7 +384,7 @@ static signed int expand_vars_extended(
 	case VAR_HILIGHT_CS:
 	case VAR_SHADOW_CS:
 	case VAR_FGSH_CS:
-		if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
+		if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0 && *(rest + 1) != '.' ))
 		{
 			/* not a non-negative integer without leading zeros */
 			return -1;
@@ -391,6 +394,34 @@ static signed int expand_vars_extended(
 			return -1;
 		}
 		if (*(rest + n) != 0)
+		{
+			/* Check for .lightenN or .darkenN */
+			csadj = 101;
+			l = -1;
+			if (sscanf(rest + n, ".lighten%d%n", &l, &nn) && l >= 0 && l <= 100)
+			{
+				csadj = l;
+			}
+			if (sscanf(rest + n, ".darken%d%n", &l, &nn) && l >= 0 && l <= 100)
+			{
+				csadj = -l;
+			}
+			/* Check for .hash */
+			if (strcmp(rest + n + nn,  ".hash") == 0)
+			{
+				use_hash = True;
+				nn = nn + 5;
+				if (csadj == 101)
+				{
+					csadj = 0;
+				}
+			}
+			if (csadj == 101)
+			{
+				return -1;
+			}
+		}
+		if (*(rest + n + nn) != 0)
 		{
 			/* trailing characters */
 			return -1;
@@ -419,7 +450,7 @@ static signed int expand_vars_extended(
 			break;
 		}
 		is_target = True;
-		len = pixel_to_color_string(dpy, Pcmap, pixel, target, False);
+		len = pixel_to_color_string(dpy, Pcmap, pixel, target, use_hash, csadj);
 		goto GOT_STRING;
 	case VAR_GT_:
 		if (rest == NULL)

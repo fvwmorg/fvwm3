@@ -386,13 +386,14 @@ Pixel GetTintedPixel(Pixel in, Pixel tint, int percent)
 /* This function converts the colour stored in a colorcell (pixel) into the
  * string representation of a colour.  The output is printed at the
  * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if
- * use_hash is False or in hash notation ("#rrrrggggbbbb") if use_hash is true.
+ * use_hash is False or in hash notation ("#rrggbb") if use_hash is true.
  * The return value is the number of characters used by the string.  The
  * rgb values of the output are undefined if the colorcell is invalid.  The
  * memory area pointed at by 'output' must be at least 64 bytes (in case of
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(
-	Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash)
+	Display *dpy, Colormap cmap, Pixel pixel, char *output,
+	Bool use_hash, int adj)
 {
 	XColor color;
 	int n;
@@ -403,6 +404,22 @@ int pixel_to_color_string(
 	color.blue = 0;
 
 	XQueryColor(dpy, cmap, &color);
+
+	/* Lighten color */
+	if ( adj > 0 && adj <= 100 )
+	{
+		color.red = (int)( ((100-adj)*color.red+adj*65535)/100 );
+		color.green = (int)( ((100-adj)*color.green+adj*65535)/100 );
+		color.blue = (int)( ((100-adj)*color.blue+adj*65535)/100 );
+	}
+	/* Darken color */
+	if ( adj >= -100 && adj < 0 )
+	{
+		color.red = (int)( (100+adj)*color.red/100 );
+		color.green = (int)( (100+adj)*color.green/100 );
+		color.blue = (int)( (100+adj)*color.blue/100 );
+	}
+
 	if (!use_hash)
 	{
 		sprintf(
@@ -412,8 +429,8 @@ int pixel_to_color_string(
 	else
 	{
 		sprintf(
-			output, "#%04x%04x%04x%n", (int)color.red,
-			(int)color.green, (int)color.blue, &n);
+			output, "#%02x%02x%02x%n", (int)(color.red/256),
+			(int)(color.green/256), (int)(color.blue/256), &n);
 	}
 
 	return n;
@@ -425,6 +442,7 @@ static char *colorset_names[] =
 	"$[bg.cs",
 	"$[hilight.cs",
 	"$[shadow.cs",
+	"$[fgsh.cs",
 	NULL
 };
 
