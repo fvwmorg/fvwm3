@@ -342,47 +342,47 @@ AddToMenu   MenuWindowOps
 
 DestroyMenu MenuWindowOpsLong
 AddToMenu   MenuWindowOpsLong
-+ "Move"                Move
-+ "Resize"              Resize
-+ "(De)Iconify"         Iconify
-+ "(Un)Maximize"        Maximize
-+ "(Un)Shade"           WindowShade
-+ "(Un)Sticky"		Stick
-+ "(No)TitleBar"	Pick (CirculateHit) ToggleTitle
-+ "Send To"             Popup MenuSendTo
++ "Move%icons/win/move.png%" Move
++ "Resize%icons/win/resize.png%" Resize
++ "(De)Iconify%icons/win/iconify.png%" Iconify
++ "(Un)Maximize%icons/win/max.png%" Maximize
++ "(Un)Shade%icons/win/shade.png%" WindowShade
++ "(Un)Sticky%icons/win/sticky.png%" Stick
++ "(No)Title Bar%icons/win/title.png%" Pick (CirculateHit) ToggleTitle
++ "Send To%icons/win/sendto.png%" Popup MenuSendTo
 + "" Nop
-+ "Close"               Close
-+ "Destroy"             Destroy
++ "Close%icons/win/close.png%" Close
++ "Destroy%icons/win/destroy.png%" Destroy
 + "" Nop
-+ "Raise"		Raise
-+ "Lower"		Lower
++ "Raise%icons/win/raise.png%" Raise
++ "Lower%icons/win/lower.png%" Lower
 + "" Nop
-+ "StaysOnTop"          Pick (CirculateHit) Layer 0 6
-+ "StaysPut"            Pick (CirculateHit) Layer 0 4
-+ "StaysOnBottom"       Pick (CirculateHit) Layer 0 2
++ "Stays On Top%icons/win/top.png%" Pick (CirculateHit) Layer 0 6
++ "Stays Put%icons/win/stays.png%" Pick (CirculateHit) Layer 0 4
++ "Stays On Bottom%icons/win/bottom.png%" Pick (CirculateHit) Layer 0 2
 + "" Nop
-+ "Identify"            Module FvwmIdent
++ "Identify%icons/info.png%" Module FvwmIdent
 
 DestroyMenu MenuIconOps
 AddToMenu   MenuIconOps
-+ "(De)Iconify"         Iconify
-+ "(Un)Maximize"        Maximize
-+ "(Un)Shade"           WindowShade
-+ "(Un)Sticky"		Stick
-+ "(No)TitleBar"	Pick (CirculateHit) ToggleTitle
-+ "Send To"             Popup MenuSendTo
++ "(De)Iconify%icons/win/iconify.png%"	Iconify
++ "(Un)Maximize%icons/win/max.png%" 	Maximize
++ "(Un)Shade%icons/win/shade.png%"      WindowShade
++ "(Un)Sticky%icons/win/sticky.png%"	Stick
++ "(No)TitleBar%icons/win/title.png%"	Pick (CirculateHit) ToggleTitle
++ "Send To%icons/win/sendto.png%"       Popup MenuSendTo
 + "" Nop
-+ "Close"               Close
-+ "Destroy"             Destroy
++ "Close%icons/win/close.png%"		Close
++ "Destroy%icons/win/destroy.png%"	Destroy
 + "" Nop
-+ "Raise"		Raise
-+ "Lower"		Lower
++ "Raise%icons/win/raise.png%"		Raise
++ "Lower%icons/win/lower.png%"		Lower
 + "" Nop
-+ "StaysOnTop"          Pick (CirculateHit) Layer 0 6
-+ "StaysPut"            Pick (CirculateHit) Layer 0 4
-+ "StaysOnBottom"       Pick (CirculateHit) Layer 0 2
++ "StaysOnTop%icons/win/top.png%"       Pick (CirculateHit) Layer 0 6
++ "StaysPut%icons/win/stays.png%"       Pick (CirculateHit) Layer 0 4
++ "StaysOnBottom%icons/win/bottom.png%" Pick (CirculateHit) Layer 0 2
 + "" Nop
-+ "Identify"            Module FvwmIdent
++ "Identify%icons/info.png%"            Module FvwmIdent
 
 DestroyMenu MenuSendTo
 AddToMenu MenuSendTo
