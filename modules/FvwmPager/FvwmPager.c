@@ -1873,7 +1873,7 @@ void ParseOptions(void)
 	    }
 
 	    if (updated)
-		    return;
+		    continue;
 
 	    m = fxcalloc(1, sizeof(*m));
 
