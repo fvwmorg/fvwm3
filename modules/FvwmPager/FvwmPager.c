@@ -1467,6 +1467,29 @@ void list_end(void)
     XFree((char *)children);
 }
 
+void extract_monitor_config(struct fpmonitor *m, char *tline)
+{
+    int  output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+    int  x, y, w, h;
+
+    sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d",
+        &output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
+        &x, &y, &w, &h);
+    m->x = x;
+    m->y = y;
+    m->w = w;
+    m->h = h;
+    m->output = output;
+    m->is_current = iscur;
+    m->virtual_scr.MyDisplayWidth = mdw;
+    m->virtual_scr.MyDisplayHeight = mdh;
+    m->virtual_scr.Vx = vx;
+    m->virtual_scr.Vy = vy;
+    m->virtual_scr.VxMax = vxmax;
+    m->virtual_scr.VyMax = vymax;
+
+}
+
 
 void list_config_info(unsigned long *body)
 {
@@ -1507,30 +1530,14 @@ void list_config_info(unsigned long *body)
 		DrawGrid(val, True, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
 		char	*mname;
-		int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
-		int		 x, y, w, h;
 		int		 updated = 0;
 
 		tline = GetNextToken(tline, &mname);
-		sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d",
-			&output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
-			&x, &y, &w, &h);
 
 		TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 			updated = 0;
 			if (strcmp(m2->name, mname) == 0) {
-				m2->x = x;
-				m2->y = y;
-				m2->w = w;
-				m2->h = h;
-				m2->output = output;
-				m2->is_current = iscur;
-				m2->virtual_scr.MyDisplayWidth = mdw;
-				m2->virtual_scr.MyDisplayHeight = mdh;
-				m2->virtual_scr.Vx = vx;
-				m2->virtual_scr.Vy = vy;
-				m2->virtual_scr.VxMax = vxmax;
-				m2->virtual_scr.VyMax = vymax;
+				extract_monitor_config(m2,tline);
 				updated = 1;
 			}
 		}
@@ -1541,18 +1548,7 @@ void list_config_info(unsigned long *body)
 		m = fxcalloc(1, sizeof(*m));
 
 		m->name = fxstrdup(mname);
-		m->x = x;
-		m->y = y;
-		m->w = w;
-		m->h = h;
-		m->is_current = iscur;
-		m->output = output;
-		m->virtual_scr.MyDisplayWidth = mdw;
-		m->virtual_scr.MyDisplayHeight = mdh;
-		m->virtual_scr.Vx = vx;
-		m->virtual_scr.Vy = vy;
-		m->virtual_scr.VxMax = vxmax;
-		m->virtual_scr.VyMax = vymax;
+		extract_monitor_config(m,tline);
 		TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
 	} else if (StrEquals(token, "DesktopSize")) {
 		int dx, dy;
@@ -1844,52 +1840,25 @@ void ParseOptions(void)
     }
     else if (StrEquals(token, "Monitor")) {
 	    char	*mname;
-	    int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
-	    int		 x, y, w, h;
 	    int		 updated = 0;
 
 	    next = GetNextToken(next, &mname);
-	    sscanf(next, "%d %d %d %d %d %d %d %d %d %d %d %d",
-			    &output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
-			    &x, &y, &w, &h);
 
 	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 		    updated = 0;
 		    if (strcmp(m2->name, mname) == 0) {
-			    m2->x = x;
-			    m2->y = y;
-			    m2->w = w;
-			    m2->h = h;
-			    m2->output = output;
-			    m2->is_current = iscur;
-			    m2->virtual_scr.MyDisplayWidth = mdw;
-			    m2->virtual_scr.MyDisplayHeight = mdh;
-			    m2->virtual_scr.Vx = vx;
-			    m2->virtual_scr.Vy = vy;
-			    m2->virtual_scr.VxMax = vxmax;
-			    m2->virtual_scr.VyMax = vymax;
+			    extract_monitor_config(m2, next); 
 			    updated = 1;
 		    }
 	    }
 
 	    if (updated)
-		    return;
+		    continue;
 
 	    m = fxcalloc(1, sizeof(*m));
 
 	    m->name = fxstrdup(mname);
-	    m->x = x;
-	    m->y = y;
-	    m->w = w;
-	    m->h = h;
-	    m->is_current = iscur;
-	    m->output = output;
-	    m->virtual_scr.MyDisplayWidth = mdw;
-	    m->virtual_scr.MyDisplayHeight = mdh;
-	    m->virtual_scr.Vx = vx;
-	    m->virtual_scr.Vy = vy;
-	    m->virtual_scr.VxMax = vxmax;
-	    m->virtual_scr.VyMax = vymax;
+	    extract_monitor_config(m, next); 
 	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
 	    continue;
     }
