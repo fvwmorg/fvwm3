@@ -9,12 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        repo-token: ${{ secrets.FVWM3_READ_TOKEN }}
-    - name: Docker Login
-      run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p ${{ secrets.FVWM3_READ_TOKEN }}
     - name: Pulling docker image
-      run: docker pull docker.pkg.github.com/smoothwall/build-core/build-base:latest
+      run: docker pull fvwmorg/fvwm3-build:latest
     - name: Build Package
       run: 'docker build -t fvwm3 .'
 
