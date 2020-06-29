@@ -169,7 +169,7 @@ RETSIGTYPE DeadPipe(int nonsense);
 void process_message(FvwmPacket*);
 void ParseOptions(void);
 
-void extract_monitor_config(struct fpmonitor *m, char *tline);
+static void extract_monitor_config(struct fpmonitor *, char *);
 void list_add(unsigned long *body);
 void list_configure(unsigned long *body);
 void list_config_info(unsigned long *body);
