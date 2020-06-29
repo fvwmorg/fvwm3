@@ -1467,7 +1467,8 @@ void list_end(void)
     XFree((char *)children);
 }
 
-void extract_monitor_config(struct fpmonitor *m, char *tline) {
+void extract_monitor_config(struct fpmonitor *m, char *tline)
+{
     int  output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
     int  x, y, w, h;
 
