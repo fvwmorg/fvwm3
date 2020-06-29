@@ -1,6 +1,7 @@
 FVWM3
 -----
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0bfafcfd16b84a96a1305e92de2d6c4c)](https://app.codacy.com/gh/fvwmorg/fvwm3?utm_source=github.com&utm_medium=referral&utm_content=fvwmorg/fvwm3&utm_campaign=Badge_Grade_Settings)
 [![Build Status](https://travis-ci.org/fvwmorg/fvwm3.svg?branch=master)](https://travis-ci.org/fvwmorg/fvwm3)
 ![Open issues](https://img.shields.io/github/issues-raw/fvwmorg/fvwm3)
 ![GitHub contributors](https://img.shields.io/github/contributors/fvwmorg/fvwm3)
