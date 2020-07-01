@@ -348,13 +348,15 @@ scan_screens(Display *dpy)
 			m = monitor_new();
 			m->flags |= MONITOR_NEW;
 			m->si = screen_info_new();
-			m->si->name = strdup(name);
-			memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
+			if(m->si != NULL){
+				m->si->name = strdup(name);
+				memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
 
-			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
-			TAILQ_INSERT_TAIL(&monitor_q, m, entry);
+				TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
+				TAILQ_INSERT_TAIL(&monitor_q, m, entry);
 
-			goto set_coords;
+				goto set_coords;
+			}
 		}
 
 		if ((strcmp(m->si->name, name) == 0) &&
