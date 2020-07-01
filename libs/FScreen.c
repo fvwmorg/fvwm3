@@ -94,7 +94,7 @@ screen_info_new(void)
 {
 	struct screen_info	*si;
 
-	si = calloc(1, sizeof *si);
+	si = fxcalloc(1, sizeof *si);
 
 	return (si);
 }
