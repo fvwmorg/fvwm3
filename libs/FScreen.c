@@ -83,7 +83,7 @@ monitor_new(void)
 {
 	struct monitor	*m;
 
-	m = calloc(1, sizeof *m);
+	m = fxcalloc(1, sizeof *m);
 	//m->si = calloc(1, sizeof(struct screen_info));
 
 	return (m);
