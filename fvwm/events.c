@@ -417,23 +417,25 @@ static inline void _handle_cr_on_icon(XEvent *e, FvwmWindow *fw)
 	{
 		rectangle g;
 
-		get_icon_picture_geometry(fw, &g);
-		xwc.x = g.x;
-		xwc.y = g.y;
-		xwcm = cre->value_mask & (CWX | CWY);
-		XConfigureWindow(
-			dpy, FW_W_ICON_PIXMAP(fw), xwcm, &xwc);
+		if(get_icon_picture_geometry(fw, &g)){
+			xwc.x = g.x;
+			xwc.y = g.y;
+			xwcm = cre->value_mask & (CWX | CWY);
+			XConfigureWindow(
+				dpy, FW_W_ICON_PIXMAP(fw), xwcm, &xwc);
+		}
 	}
 	if (FW_W_ICON_TITLE(fw) != None)
 	{
 		rectangle g;
 
-		get_icon_title_geometry(fw, &g);
-		xwc.x = g.x;
-		xwc.y = g.y;
-		xwcm = cre->value_mask & (CWX | CWY);
-		XConfigureWindow(
-			dpy, FW_W_ICON_TITLE(fw), xwcm, &xwc);
+		if(get_icon_title_geometry(fw, &g)){
+			xwc.x = g.x;
+			xwc.y = g.y;
+			xwcm = cre->value_mask & (CWX | CWY);
+			XConfigureWindow(
+				dpy, FW_W_ICON_TITLE(fw), xwcm, &xwc);
+		}
 	}
 
 	return;
