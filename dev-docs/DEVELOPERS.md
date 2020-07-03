@@ -4,24 +4,24 @@ Developing for FVWM
 ===================
 
 This document aims to help the developer with the expectations when dealing
-with the FVWM source code.
+with the FVWM3 source code.
 
-The FVWM source conforms to the [Linux kernel style
+The FVWM3 source conforms to the [Linux kernel style
 guide](https://www.kernel.org/doc/Documentation/CodingStyle).
 
 Command Parsing
 ===============
 
-The internal representation of how fvwm parses commands in undergoing a
-rewrite.  [Some notes on how fvwm parses commands exists](PARSING.md).
+The internal representation of how fvwm3 parses commands in undergoing a
+rewrite.  [Some notes on how fvwm3 parses commands exists](PARSING.md).
 
 Branch Workflows / Submitting Code Changes
 ==========================================
 
-The main FVWM repository treats the `master` branch as stable, in that it's the
+The main FVWM3 repository treats the `master` branch as stable, in that it's the
 branch which has the most tested code on it, and the branch from which releases
-are made.  Formal releases of FVWM are tagged, in the form `x.y.z`, historical
-versions of FVWM are tagged as `version-x_y_z`.  Untagged code may well
+are made.  Formal releases of FVWM3 are tagged, in the form `x.y.z`, historical
+versions of FVWM3 are tagged as `version-x_y_z`.  Untagged code may well
 accumulate on `master`, which will go to form the next release.
 
 Other branches in the repository will reflect on-going development from core
@@ -56,27 +56,26 @@ have a [list](https://www.gnu.org/prep/standards/standards.txt).
 ### Submitting Pull-requests
 
 External contributions are always welcomed and encouraged.  If you're thinking
-of writing a new feature, it is worthwhile posting an email to the
-`fvwm-workers` mailing list to discuss whether it's a good idea, and to check no
-one else is working on that feature.
+of writing a new feature, it is worthwhile opening an issue against the `fvwm3`
+repository to discuss whether it's a good idea, and to check no one else is 
+working on that feature.
 
 Those wishing to submit code/bug-fixes should:
 
-* [Fork the FVWM-repository](https://github.com/fvwmorg/fvwm3#fork-destination-box)
-* Add the [FVWM-repo](https://github.com/fvwmorg/fvwm3.git) as an upstream
+* [Fork the FVWM3-repository](https://github.com/fvwmorg/fvwm3#fork-destination-box)
+* Add the [FVWM3-repo](https://github.com/fvwmorg/fvwm3.git) as an upstream
   remote:
   * `git remote add fvwmorg https://github.com/fvwmorg/fvwm3.git &&
     git fetch fvwmorg`
-* Create a topic-branch to house your work;
-* Rebase it against `fvwmorg/master`
-* Push the latest changes to your fork;
+* Create a topic-branch to house your work:
+  * `git switch -b initial/mybranch`
+  * [ hack, hack, hack... ] && commit
+* Rebase it against `fvwmorg/master`:
+  * `git fetch && git rebase -i fvwmorg/master`
+* Push the latest changes to your fork:
+  * If you've never pushed this branch before:  `git push -u origin HEAD`
+  * Or, if updating an existing branch: `git push origin -f`
 * Open a pull-request
-
-Once a pull-request is opened, an email is sent to the `fvwm-workers` list so we
-can take a look at it.
-
-Alternatively, if pull-requests are not an option, then `git-send-email` can be
-used, sending the relevant patchsets to the `fvwm-workers` mailing list.
 
 ### Protected branches and the use of Github Actions
 
@@ -86,7 +85,7 @@ all the additional libraries FVWM could use, loaded in.  If a build fails this
 check, it is recommend to fix this by rebasing the commits with the additional
 fixes
 
-The FVWM repository also treats the `master` branch as protected.  This is a
+The FVWM3 repository also treats the `master` branch as protected.  This is a
 [GitHub feature](https://help.github.com/articles/about-protected-branches/)
 which means the `master` branch in this case cannot have changes merged into it
 until Github Actions has verified the builds do not fail.
