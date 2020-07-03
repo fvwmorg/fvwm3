@@ -58,6 +58,7 @@ DesktopsInfo	 *ReferenceDesktops;
 struct screen_infos	 screen_info_q;
 struct monitors		monitor_q;
 int randr_event;
+const char *prev_focused_monitor;
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -82,8 +83,7 @@ monitor_new(void)
 {
 	struct monitor	*m;
 
-	m = calloc(1, sizeof *m);
-	//m->si = calloc(1, sizeof(struct screen_info));
+	m = fxcalloc(1, sizeof *m);
 
 	return (m);
 }
@@ -93,7 +93,7 @@ screen_info_new(void)
 {
 	struct screen_info	*si;
 
-	si = calloc(1, sizeof *si);
+	si = fxcalloc(1, sizeof *si);
 
 	return (si);
 }
@@ -117,11 +117,20 @@ monitor_get_current(void)
 	int		 JunkX = 0, JunkY = 0, x, y;
 	Window		 JunkRoot, JunkChild;
 	unsigned int	 JunkMask;
+	struct monitor	  *mon;
+	static const char *cur_mon;
+
+	prev_focused_monitor = cur_mon;
 
 	FQueryPointer(disp, DefaultRootWindow(disp), &JunkRoot, &JunkChild,
 			&JunkX, &JunkY, &x, &y, &JunkMask);
 
-	return (FindScreenOfXY(x, y));
+	mon = FindScreenOfXY(x, y);
+
+	if (mon != NULL)
+		cur_mon = mon->si->name;
+
+	return (mon);
 }
 
 struct monitor *

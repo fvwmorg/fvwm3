@@ -36,6 +36,7 @@
 #include "libs/Rectangles.c"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
+#include "libs/safemalloc.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -2047,7 +2048,7 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 		 * screen, uses an 80x80 grid, and fills top-bottom,
 		 * left-right */
 		FScreenGetScrRect(NULL, FSCREEN_PRIMARY, &sx, &sy, &sw, &sh);
-		global_icon_box_ptr = calloc(1, sizeof(icon_boxes));
+		global_icon_box_ptr = fxcalloc(1, sizeof(icon_boxes));
 		global_icon_box_ptr->IconBox[0] = sx;
 		global_icon_box_ptr->IconBox[1] = sy;
 		global_icon_box_ptr->IconBox[2] = sx + sw;

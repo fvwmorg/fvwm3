@@ -78,20 +78,18 @@ can take a look at it.
 Alternatively, if pull-requests are not an option, then `git-send-email` can be
 used, sending the relevant patchsets to the `fvwm-workers` mailing list.
 
-### Protected branches and the use of Travis-CI
+### Protected branches and the use of Github Actions
 
-Pull-requests made will result in the use of Travis-CI being run against the
-branch.  This builds the copy of the pushed code in a Ubuntu environment, with
-all the additional libraries FVWM could use, loaded in.  Builds are made against
-`gcc` and `clang`, because both those compilers cover slightly different angles
-with respect to compiling.  All warnings are treated as errors, and if a build
-does not succeeded, ensure the code is fixed, and pushed back out on the same
-branch.  Rebasing is recommended; Travis-CI and Github handle this just fine.
+Pull-requests made will result in the use of Github Actions being run against the
+branch.  This builds the copy of the pushed code in a Debian environment, with
+all the additional libraries FVWM could use, loaded in.  If a build fails this
+check, it is recommend to fix this by rebasing the commits with the additional
+fixes
 
 The FVWM repository also treats the `master` branch as protected.  This is a
 [GitHub feature](https://help.github.com/articles/about-protected-branches/)
 which means the `master` branch in this case cannot have changes merged into it
-until Travis-CI has verified the builds do not fail.
+until Github Actions has verified the builds do not fail.
 
 This has merit since not every developer will be using the same operating
 systems (Linux versus BSD for instance), and that `master` is meant to try and
@@ -112,7 +110,7 @@ If using github this process is easy, since the `Merge pull request` button
 has an option to `Rebase and Merge`.  This is what should be used.  See also
 [the documentation on Github](https://github.com/blog/2243-rebase-and-merge-pull-requests)
 
-If this is manual (which will only work when the Travis-CI checks have
+If this is manual (which will only work when the Github Actions checks have
 passed), then:
 
 ```

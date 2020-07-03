@@ -22,6 +22,7 @@
 #include <X11/extensions/Xrandr.h>
 #include <X11/extensions/randr.h>
 #include <sys/queue.h>
+#include "libs/safemalloc.h"
 
 struct screen_info {
 	int 	 w;
@@ -64,7 +65,7 @@ monitor_new(void)
 {
 	struct monitor 	*m;
 
-	m = calloc(1, sizeof *m);
+	m = fxcalloc(1, sizeof *m);
 
 	return (m);
 }
@@ -112,7 +113,7 @@ screen_info_new(void)
 {
 	struct screen_info 	*si;
 
-	si = calloc(1, sizeof *si);
+	si = fxcalloc(1, sizeof *si);
 
 	return (si);
 }

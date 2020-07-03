@@ -154,6 +154,7 @@ Bool Swallowed = False;
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
+void list_monitor_focus(unsigned long *);
 
 struct fpmonitor *
 fpmonitor_get_current(void)
@@ -402,7 +403,8 @@ int main(int argc, char **argv)
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE|
-		 MX_REPLY);
+		 MX_MONITOR_FOCUS);
+
   ParseOptions();
   if (is_transient)
   {
@@ -604,6 +606,9 @@ void process_message( FvwmPacket* packet )
       break;
     case MX_PROPERTY_CHANGE:
       list_property_change(body);
+      break;
+    case MX_MONITOR_FOCUS:
+      list_monitor_focus(body);
       break;
     case MX_REPLY:
 	    list_reply(body);
@@ -843,6 +848,28 @@ void list_destroy(unsigned long *body)
 	free(t->icon_name);
       free(t);
     }
+}
+
+void list_monitor_focus(unsigned long *body)
+{
+	struct fpmonitor	*m, *mcur, *mthis;
+	char	*mon_name = (char *)(&body[3]);
+
+	mcur = fpmonitor_get_current();
+
+	if (mcur == NULL || mon_name == NULL)
+		return;
+
+	mthis = fpmonitor_by_name(mon_name);
+
+	if (mcur == mthis)
+		return;
+
+	mcur->is_current = 0;
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		if (m == mthis)
+			m->is_current = 1;
+	}
 }
 
 /*
@@ -1467,6 +1494,29 @@ void list_end(void)
     XFree((char *)children);
 }
 
+void extract_monitor_config(struct fpmonitor *m, char *tline)
+{
+    int  output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+    int  x, y, w, h;
+
+    sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d",
+        &output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
+        &x, &y, &w, &h);
+    m->x = x;
+    m->y = y;
+    m->w = w;
+    m->h = h;
+    m->output = output;
+    m->is_current = iscur;
+    m->virtual_scr.MyDisplayWidth = mdw;
+    m->virtual_scr.MyDisplayHeight = mdh;
+    m->virtual_scr.Vx = vx;
+    m->virtual_scr.Vy = vy;
+    m->virtual_scr.VxMax = vxmax;
+    m->virtual_scr.VyMax = vymax;
+
+}
+
 
 void list_config_info(unsigned long *body)
 {
@@ -1507,30 +1557,14 @@ void list_config_info(unsigned long *body)
 		DrawGrid(val, True, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
 		char	*mname;
-		int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
-		int		 x, y, w, h;
 		int		 updated = 0;
 
 		tline = GetNextToken(tline, &mname);
-		sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d",
-			&output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
-			&x, &y, &w, &h);
 
 		TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 			updated = 0;
 			if (strcmp(m2->name, mname) == 0) {
-				m2->x = x;
-				m2->y = y;
-				m2->w = w;
-				m2->h = h;
-				m2->output = output;
-				m2->is_current = iscur;
-				m2->virtual_scr.MyDisplayWidth = mdw;
-				m2->virtual_scr.MyDisplayHeight = mdh;
-				m2->virtual_scr.Vx = vx;
-				m2->virtual_scr.Vy = vy;
-				m2->virtual_scr.VxMax = vxmax;
-				m2->virtual_scr.VyMax = vymax;
+				extract_monitor_config(m2,tline);
 				updated = 1;
 			}
 		}
@@ -1541,18 +1575,7 @@ void list_config_info(unsigned long *body)
 		m = fxcalloc(1, sizeof(*m));
 
 		m->name = fxstrdup(mname);
-		m->x = x;
-		m->y = y;
-		m->w = w;
-		m->h = h;
-		m->is_current = iscur;
-		m->output = output;
-		m->virtual_scr.MyDisplayWidth = mdw;
-		m->virtual_scr.MyDisplayHeight = mdh;
-		m->virtual_scr.Vx = vx;
-		m->virtual_scr.Vy = vy;
-		m->virtual_scr.VxMax = vxmax;
-		m->virtual_scr.VyMax = vymax;
+		extract_monitor_config(m,tline);
 		TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
 	} else if (StrEquals(token, "DesktopSize")) {
 		int dx, dy;
@@ -1844,52 +1867,25 @@ void ParseOptions(void)
     }
     else if (StrEquals(token, "Monitor")) {
 	    char	*mname;
-	    int		 output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
-	    int		 x, y, w, h;
 	    int		 updated = 0;
 
 	    next = GetNextToken(next, &mname);
-	    sscanf(next, "%d %d %d %d %d %d %d %d %d %d %d %d",
-			    &output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
-			    &x, &y, &w, &h);
 
 	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 		    updated = 0;
 		    if (strcmp(m2->name, mname) == 0) {
-			    m2->x = x;
-			    m2->y = y;
-			    m2->w = w;
-			    m2->h = h;
-			    m2->output = output;
-			    m2->is_current = iscur;
-			    m2->virtual_scr.MyDisplayWidth = mdw;
-			    m2->virtual_scr.MyDisplayHeight = mdh;
-			    m2->virtual_scr.Vx = vx;
-			    m2->virtual_scr.Vy = vy;
-			    m2->virtual_scr.VxMax = vxmax;
-			    m2->virtual_scr.VyMax = vymax;
+			    extract_monitor_config(m2, next); 
 			    updated = 1;
 		    }
 	    }
 
 	    if (updated)
-		    return;
+		    continue;
 
 	    m = fxcalloc(1, sizeof(*m));
 
 	    m->name = fxstrdup(mname);
-	    m->x = x;
-	    m->y = y;
-	    m->w = w;
-	    m->h = h;
-	    m->is_current = iscur;
-	    m->output = output;
-	    m->virtual_scr.MyDisplayWidth = mdw;
-	    m->virtual_scr.MyDisplayHeight = mdh;
-	    m->virtual_scr.Vx = vx;
-	    m->virtual_scr.Vy = vy;
-	    m->virtual_scr.VxMax = vxmax;
-	    m->virtual_scr.VyMax = vymax;
+	    extract_monitor_config(m, next); 
 	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
 	    continue;
     }
