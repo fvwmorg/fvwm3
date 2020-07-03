@@ -62,10 +62,10 @@ one else is working on that feature.
 
 Those wishing to submit code/bug-fixes should:
 
-* [Fork the FVWM-repository](https://github.com/fvwmorg/fvwm#fork-destination-box)
-* Add the [FVWM-repo](https://github.com/fvwmorg/fvwm.git) as an upstream
+* [Fork the FVWM-repository](https://github.com/fvwmorg/fvwm3#fork-destination-box)
+* Add the [FVWM-repo](https://github.com/fvwmorg/fvwm3.git) as an upstream
   remote:
-  * `git remote add fvwmorg https://github.com/fvwmorg/fvwm.git &&
+  * `git remote add fvwmorg https://github.com/fvwmorg/fvwm3.git &&
     git fetch fvwmorg`
 * Create a topic-branch to house your work;
 * Rebase it against `fvwmorg/master`
