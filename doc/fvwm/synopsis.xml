@@ -10,7 +10,7 @@
 <title>Synopsis</title>
 
 <cmdsynopsis>
-	<command>fvwm</command
+	<command>fvwm3</command
 	><arg choice='opt'
 		><option>-c</option
 		><arg choice='plain'
