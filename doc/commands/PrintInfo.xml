@@ -23,7 +23,7 @@
 
 <para>Print information on
 <replaceable>subject</replaceable>
-on stderr.  An optional integer argument
+to ~/fvwm3-output.log. fvwm3 has to be run with -v option for this log file to be written.  An optional integer argument
 <replaceable>verbose</replaceable>
 defines the level of information which is given.
 The current valid subjects are:</para>
