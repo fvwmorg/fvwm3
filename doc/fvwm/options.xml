@@ -79,8 +79,7 @@ instead of the name obtained from the environment variable
   <listitem>
 <para>Puts X transactions in synchronous mode, which dramatically slows
 things down, but guarantees that fvwm's internal error messages
-are correct. Also causes fvwm to output debug messages while
-running.</para>
+are correct.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -93,9 +92,8 @@ running.</para>
 <replaceable>config-file</replaceable>
 instead of
 <filename>~/.fvwm/config</filename>
-as its initialization file.  This is equivalent to
--c '<fvwmref cmd="Read"/>
-<replaceable>config-file</replaceable>'.</para>
+as its initialization file. <envar>$FVWM_USERDIR</envar> can also be used to 
+change location of default user directory <filename>~/.fvwm</filename>.</para> 
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -234,7 +232,7 @@ follow:</para>
   </varlistentry>
 </variablelist>
 
-<para>These defaults may change before version 2.6. Note that if
+<para>Note that if
 you use a private color map (i.e., fvwm is started with the
 <option>-C</option> or the <option>-I</option> options), then
 other defaults are used.</para>
@@ -370,7 +368,22 @@ internal debugging and should only be used by developers.</para>
   <varlistentry>
   <term><option>-v</option></term>
   <listitem>
-<para>Enables debug logging.  Write to ~/fvwm3-output.log in append mode.</para>
+<para>Enables debug logging.  Writes in append mode to fvwm log file, 
+which is ~/.fvwm/fvwm3-output.log by default. See ENVIRONMENT section on 
+how to override this location on fvwm3 startup using 
+<envar>$FVWM_USERDIR</envar> or <envar>$FVWM3_LOGFILE</envar> .</para>
+  <variablelist>
+    <varlistentry>
+      <term>Logging can also be dynamically toggled on and off using signals:</term>
+      <listitem>
+        <simplelist>
+      <member><option>SIGUSR1</option> : used as a signal to restart Fvwm</member>
+      <member><option>SIGUSR2</option> : used as a signal to toggle opening/closing debug log file</member>
+        </simplelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
   </listitem>
   </varlistentry>
 </variablelist>

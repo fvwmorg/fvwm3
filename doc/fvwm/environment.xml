@@ -21,11 +21,31 @@ are the following:
     </listitem>
   </varlistentry>
   <varlistentry>
+    <term><envar>FVWM_USERDIR</envar></term>
+    <listitem>
+      <para>Used to determine the user's data directory for reading and
+	writing files. If this variable is not already
+	set, it is set by fvwm to <filename>$HOME/.fvwm</filename>, which
+	is the default user's data directory.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
     <term><envar>FVWM3_LOGFILE</envar></term>
     <listitem>
       <para>Used to determine the path and filename to log debug information
-	      from fvwm3.
+          from fvwm3. By default debug log is written to 
+          <envar>$FVWM_USERDIR</envar>/fvwm3-output.log . If an absolute path
+          is specified (starting with /) then <envar>$FVWM_USERDIR</envar> is 
+          ignored, otherwise the log is written to 
+          <envar>$FVWM_USERDIR</envar>/<envar>$FVWM3_LOGFILE</envar> .
       </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><envar>FVWM_DATADIR</envar></term>
+    <listitem>
+        <para>Set by fvwm to the directory containing fvwm config and module 
+            data.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -33,15 +53,6 @@ are the following:
     <listitem>
       <para>Set by fvwm to the directory containing the standard fvwm
 	modules.</para>
-    </listitem>
-  </varlistentry>
-  <varlistentry>
-    <term><envar>FVWM_USERDIR</envar></term>
-    <listitem>
-      <para>Used to determine the user's data directory for reading and
-	sometimes writing personal files. If this variable is not already
-	set, it is set by fvwm to <filename>$HOME/.fvwm</filename>, which
-	is the default user's data directory.</para>
     </listitem>
   </varlistentry>
   <varlistentry>
@@ -70,4 +81,5 @@ and normally are removed automatically when not used anymore.</para>
     </listitem>
   </varlistentry>
 </variablelist>
+<para><command>fvwm-config --info</command> is useful to query fvwm3 compiled-in paths</para>
 </section>
