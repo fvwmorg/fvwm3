@@ -93,9 +93,7 @@ are correct.</para>
 instead of
 <filename>~/.fvwm/config</filename>
 as its initialization file. <envar>$FVWM_USERDIR</envar> can also be used to 
-change location of default user directory <filename>~/.fvwm</filename>. Another
-option is to use -c '<fvwmref cmd="Read"/>
-<replaceable>config-file</replaceable>'.</para>
+change location of default user directory <filename>~/.fvwm</filename>.</para> 
   </listitem>
   </varlistentry>
   <varlistentry>
@@ -372,9 +370,8 @@ internal debugging and should only be used by developers.</para>
   <listitem>
 <para>Enables debug logging.  Writes in append mode to fvwm log file, 
 which is ~/.fvwm/fvwm3-output.log by default. See ENVIRONMENT section on 
-how to override this location using <envar>$FVWM_USERDIR</envar> or 
-<envar>$FVWM3_LOGFILE</envar>.</para>
-
+how to override this location on fvwm3 startup using 
+<envar>$FVWM_USERDIR</envar> or <envar>$FVWM3_LOGFILE</envar> .</para>
   <variablelist>
     <varlistentry>
       <term>Logging can also be dynamically toggled on and off using signals:</term>

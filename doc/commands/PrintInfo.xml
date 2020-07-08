@@ -23,13 +23,11 @@
 
 <para>Print information on
 <replaceable>subject</replaceable>
-to debug log file, which is <filename>$HOME/.fvwm/fvwm3-output.log</filename> 
-by default. <envar>$FVWM_USERDIR</envar> overrides 
-<filename>$HOME/.fvwm<filename> directory, while
-<envar>$FVWM3_LOGFILE</envar> overrides debug log path and filename. For this
-logfile to be written, either fvwm3 has to be run with <option>-v</option> 
-option or <option>SIGUSR2</option> signal can be used to toggle 
-opening/closing debug log file.</para>
+to debug log file, which defaults to <filename>$HOME/.fvwm/fvwm3-output.log</filename> . Environment variables <envar>$FVWM_USERDIR</envar> and 
+<envar>$FVWM3_LOGFILE</envar> can alter this default.  For this logfile to be 
+written, either fvwm3 has to be started with <option>-v</option> option or 
+<option>SIGUSR2</option> signal can be used to toggle opening/closing debug 
+log file.</para>
 
 <para> An optional integer argument
 <replaceable>verbose</replaceable>
