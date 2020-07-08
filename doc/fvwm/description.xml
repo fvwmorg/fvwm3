@@ -11,18 +11,14 @@ memory consumption, provide a 3D look to window frames, and a
 virtual desktop.</para>
 
 <para>Note that there are several window managers around that have
-"fvwm" in their name.  In the past, version 2.x of fvwm was
-commonly called fvwm2 to distinguish it from the former version
-1.x (fvwm or even fvwm1).  Since version 1.x has been replaced by
-version 2.x a long time ago we simply call version 2.x and all
-versions to come, fvwm, throughout this document, and the
-executable program is named fvwm.  There is an fvwm offspring
-called fvwm95, it is mostly a patched version of fvwm-2.0.43.  The
-main goal of fvwm95 was to supply a Windows 95 like look and
-feel. Since then, fvwm has been greatly enhanced and practically
-all fvwm95 features can be achieved by fvwm.</para>
+"fvwm" in their name. Fvwm3 is the successor to fvwm2, which 
+preceded the 1.x versions of fvwm. This version is simply called
+fvwm throughout this document, while the main executable is named 
+fvwm3.</para>
 
-<para>Fvwm provides both a large
+<para> Fvwm is intended to have a small memory footprint but a rich feature 
+set, be extremely customizable and extendible, and have a high degree of Motif 
+mwm compatibility.  Fvwm provides both a large
 <emphasis remap='I'>virtual desktop</emphasis>
 and
 <emphasis remap='I'>multiple disjoint desktops</emphasis>
