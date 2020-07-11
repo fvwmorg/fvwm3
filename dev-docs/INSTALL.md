@@ -20,7 +20,7 @@ dependencies, core or optional.
 
 ## Core dependencies
 
-* libbson-dev
+* libbson-dev (>= 1.16.2)
 * libevent-dev (>= 2.0)
 * libx11-dev
 * libxrandr-dev (>= 1.5)
