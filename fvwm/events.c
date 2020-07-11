@@ -2444,7 +2444,6 @@ void HandleFocusIn(const evh_args_t *ea)
 	static Window last_focus_fw = None;
 	static Bool was_nothing_ever_focused = True;
 	FvwmWindow *fw = ea->exc->w.fw;
-	struct monitor *mon = monitor_get_current();
 
 	Scr.focus_in_pending_window = NULL;
 	/* This is a hack to make the PointerKey command work */

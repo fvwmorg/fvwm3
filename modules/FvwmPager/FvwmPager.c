@@ -151,6 +151,7 @@ Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
 Bool Swallowed = False;
 
+static void extract_monitor_config(struct fpmonitor *, char *);
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
@@ -1805,7 +1806,7 @@ void ParseOptions(void)
     char *token;
     char *next;
     Bool MoveThresholdSetForModule = False;
-    struct fpmonitor	*m, *m2;
+    struct fpmonitor	*m = NULL, *m2 = NULL;
 
     arg1 = arg2 = NULL;
 
@@ -1874,7 +1875,7 @@ void ParseOptions(void)
 	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
 		    updated = 0;
 		    if (strcmp(m2->name, mname) == 0) {
-			    extract_monitor_config(m2, next); 
+			    extract_monitor_config(m2, next);
 			    updated = 1;
 		    }
 	    }
@@ -1885,7 +1886,7 @@ void ParseOptions(void)
 	    m = fxcalloc(1, sizeof(*m));
 
 	    m->name = fxstrdup(mname);
-	    extract_monitor_config(m, next); 
+	    extract_monitor_config(m, next);
 	    TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
 	    continue;
     }

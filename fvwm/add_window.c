@@ -141,7 +141,6 @@ static void CaptureOneWindow(
 	Window keep_on_top_win, Window parent_win, Bool is_recapture)
 {
 	Window w;
-	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 	unsigned long data[1];
 	initial_window_options_t win_opts;
 	evh_args_t ea;
