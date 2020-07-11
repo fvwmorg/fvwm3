@@ -58,7 +58,7 @@ log_open(const char *fvwm_userdir)
 		expanded_path = expand_path(path);
 
 		path = fxstrdup(expanded_path);
-		if (strchr(expanded_path, '/') != NULL)
+		if (expanded_path[0] == '/')
 		{
 				path = fxstrdup(expanded_path);
 		} else {
