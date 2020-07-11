@@ -21,7 +21,7 @@ usefulness to the newcomer.</para>
 <listitem><simpara><fvwmref sect="windowMovement" opt="window_movement_and_placement" name="Commands affecting window movement and placement"/></simpara></listitem>
 <listitem><simpara><fvwmref sect="focus" opt="focus_and_mouse_movement" name="Commands for focus and mouse movement"/></simpara></listitem>
 <listitem><simpara><fvwmref sect="windowState" opt="window_state" name="Commands controlling window state"/></simpara></listitem>
-<listitem><simpara><fvwmref sect="bindings" opt="mouse_key_and_stroke_bindings" name="Commands for mouse, key and stroke bindings"/></simpara></listitem>
+<listitem><simpara><fvwmref sect="bindings" opt="mouse_and_key_bindings" name="Commands for mouse and key bindings"/></simpara></listitem>
 <listitem><simpara><fvwmref sect="styleCommands" opt="controlling_window_styles" name="The Style command (controlling window styles)"/></simpara></listitem>
 <listitem><simpara><fvwmref sect="windowStyles" opt="window_styles" name="Other commands controlling window styles"/></simpara></listitem>
 <listitem><simpara><fvwmref sect="virtualDesktopCommands" opt="virtual_desktop" name="Commands controlling the virtual desktop"/></simpara></listitem>

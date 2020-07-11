@@ -942,29 +942,6 @@ AC_SUBST(rplay_LIBS)
 AC_SUBST(rplay_CFLAGS)
 
 
-# ********* stroke
-$UNSET ac_cv_header_stroke_h
-$UNSET ac_cv_lib_stroke_stroke_init
-dnl Add in X_LIBS for MOUSE_DROPPINGS?
-dnl As of 23/Mar/2000 the only libstroke RPM has /usr/X11R6/include/stroke.h
-AH_TEMPLATE([HAVE_STROKE],[Define if stroke library is used.])
-smr_CHECK_LIB(stroke, , mouse strokes recognition,
-	stroke_init, stroke.h,
-	[$X_LIBS -lX11], $X_CFLAGS -I/usr/X11R6/include)
-test ! x"$stroke_LIBS" = x &&
-AC_DEFINE(HAVE_STROKE)
-AH_VERBATIM([_HAVE_STROKE],
-[#ifdef HAVE_STROKE
-#    define STROKE_ARG(x) x,
-#    define STROKE_CODE(x) x
-#else
-#    define STROKE_ARG(x)
-#    define STROKE_CODE(x)
-#endif])
-AC_SUBST(stroke_LIBS)
-AC_SUBST(stroke_CFLAGS)
-
-
 # ********* readline
 with_readline=no
 problem_readline=": Both termcap and ncurses disabled"
@@ -1390,19 +1367,6 @@ AH_VERBATIM([_COMPAT_OLD_KEYSYMDEF],
 #  define XK_Page_Down XK_Next
 #endif])
 
-if test x"$with_stroke" = xyes; then
-  mg_DEFINE_IF_NOT([#include <stroke.h>],
-    [defined STROKE_MAX_SEQUENCE],
-    [COMPAT_OLD_LIBSTROKE], [$stroke_CFLAGS],
-    [Old libstroke <= 0.4 does not use STROKE_ prefix for constants.])
-fi
-AH_VERBATIM([_COMPAT_OLD_LIBSTROKE],
-[#ifdef COMPAT_OLD_LIBSTROKE
-/* currently we only use one constant */
-#  define STROKE_MAX_SEQUENCE MAX_SEQUENCE
-#endif])
-
-
 # Allow building with dmalloc.  Do this last to avoid screwing up any
 # other checks above.
 case "$ac_cv_dmalloc" in
@@ -1582,7 +1546,6 @@ AC_SUBST(with_rplay)
 AC_SUBST(with_shape)
 AC_SUBST(with_shm)
 AC_SUBST(with_sm)
-AC_SUBST(with_stroke)
 AC_SUBST(with_xcursor)
 AC_SUBST(with_xft)
 AC_SUBST(with_xrandr)
@@ -1728,7 +1691,6 @@ Fvwm3 Configuration:
   With Asian bi-direct. text support? $with_bidi$problem_bidi
   With Gettext Native Lang support?   $with_gettext$problem_gettext
   With Iconv support?                 $with_iconv_type$problem_iconv
-  With Mouse strokes (gestures)?      $with_stroke$problem_stroke
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
   With Shaped window support?         $with_shape$problem_shape

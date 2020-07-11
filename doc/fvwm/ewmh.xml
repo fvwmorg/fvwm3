@@ -30,8 +30,7 @@ as the prefix (so you can find them easily in this man page).</para>
 <para>There is a new Context 'D' for the
 <fvwmref cmd="Key"/>,
 <fvwmref cmd="PointerKey"/>,
-<fvwmref cmd="Mouse"/> and
-<fvwmref cmd="Stroke"/>
+<fvwmref cmd="Mouse"/>
 commands. This context is for desktop applications (such as
 kdesktop and Nautilus desktop).</para>
 

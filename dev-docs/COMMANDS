@@ -158,8 +158,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   Stick                 - Change window stickyness
   StickAcrossDesks      - Change window stickyness on a desk basis
   StickAcrossPages      - Change window stickyness on a page basis
-  Stroke                - Bind a stroke to an fvwm action
-  StrokeFunc            - Record stroke and execute corresponding stroke action
   Style                 - Set attributes of windows that match a pattern
   TearMenuOff           - Convert a menu to a window, for use in menu items
   Test                  - Execute command if conditions are met

@@ -128,8 +128,6 @@ enum
 	F_SNAP_ATT,
 	F_SNAP_GRID,
 	F_STAYSUP,
-	STROKE_ARG(F_STROKE)
-	STROKE_ARG(F_STROKE_FUNC)
 	F_STYLE,
 	F_TEARMENUOFF,
 	F_TEST_,
@@ -363,10 +361,6 @@ void CMD_State(F_CMD_ARGS);
 void CMD_Stick(F_CMD_ARGS);
 void CMD_StickAcrossDesks(F_CMD_ARGS);
 void CMD_StickAcrossPages(F_CMD_ARGS);
-#ifdef HAVE_STROKE
-void CMD_Stroke(F_CMD_ARGS);
-void CMD_StrokeFunc(F_CMD_ARGS);
-#endif /* HAVE_STROKE */
 void CMD_Style(F_CMD_ARGS);
 void CMD_TearMenuOff(F_CMD_ARGS);
 void CMD_Test(F_CMD_ARGS);

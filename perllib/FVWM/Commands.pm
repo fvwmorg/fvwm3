@@ -957,18 +957,6 @@ $TIME = 1410306754;
 		descr => q{Change window stickyness on a page basis},
 	},
 	{
-		name => 'Stroke',
-		cursor => '',
-		window => 0,
-		descr => q{Bind a stroke to an fvwm action},
-	},
-	{
-		name => 'StrokeFunc',
-		cursor => '',
-		window => 0,
-		descr => q{Record stroke and execute corresponding stroke action},
-	},
-	{
 		name => 'Style',
 		cursor => '',
 		window => 0,

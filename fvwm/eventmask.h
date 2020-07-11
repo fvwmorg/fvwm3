@@ -57,7 +57,6 @@
 	PropertyChangeMask | SubstructureRedirectMask | KeyPressMask | \
 	KeyReleaseMask | \
 	SubstructureNotifyMask | ColormapChangeMask | \
-	STROKE_CODE(ButtonMotionMask | DEFAULT_ALL_BUTTONS_MOTION_MASK |) \
 	ButtonPressMask | ButtonReleaseMask)
 #define XEVMASK_RESIZE \
 	(ButtonPressMask | ButtonReleaseMask | KeyPressMask | \

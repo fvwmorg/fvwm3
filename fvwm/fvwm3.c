@@ -1286,9 +1286,6 @@ static void setVersionInfo(void)
 #ifdef HAVE_RPLAY
 	strcat(support_str, " RPlay,");
 #endif
-#ifdef HAVE_STROKE
-	strcat(support_str, " Stroke,");
-#endif
 #ifdef XPM
 	strcat(support_str, " XPM,");
 #endif

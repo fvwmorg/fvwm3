@@ -147,8 +147,6 @@ State
 Stick
 StickAcrossDesks
 StickAcrossPages
-Stroke
-StrokeFunc
 Style
 --
 TearMenuOff

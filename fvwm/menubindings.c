@@ -427,7 +427,7 @@ int menu_binding(
 	 */
 	/* BEGIN remove */
 	CollectBindingList(
-		dpy, menu_bindings, &rmlist, &dummy, type, STROKE_ARG(NULL)
+		dpy, menu_bindings, &rmlist, &dummy, type,
 		button, keysym, modifier, context, menu_style);
 	if (rmlist != NULL)
 	{
@@ -466,7 +466,7 @@ int menu_binding(
 			   "in menu bindings.");
 	}
 	rc = AddBinding(
-		dpy, menu_bindings, type, STROKE_ARG(NULL) button, keysym,
+		dpy, menu_bindings, type, button, keysym,
 		NULL, modifier, context, (void *)action, NULL, menu_style);
 
 	return rc;

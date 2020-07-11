@@ -1240,7 +1240,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 				name = NULL;
 			}
 			escape = CheckBinding(
-				Scr.AllBindings, STROKE_ARG(0)
+				Scr.AllBindings,
 				tmpevent.xkey.keycode, tmpevent.xkey.state,
 				GetUnusedModifiers(), context, BIND_KEYPRESS,
 				class, name);
