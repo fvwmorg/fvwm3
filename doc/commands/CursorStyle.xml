@@ -146,10 +146,6 @@ example, to indicate that it is busy.  The various contexts are:</para>
 	<term><fvwmopt cmd="CursorStyle" opt="ROOT"/> (left_ptr)</term>
 	<listitem><para>used as the root cursor</para></listitem>
 </varlistentry>
-<varlistentry>
-	<term><fvwmopt cmd="CursorStyle" opt="STROKE"/> (plus)</term>
-	<listitem><para>used during a <fvwmref cmd="StrokeFunc"/> command.</para></listitem>
-</varlistentry>
 </variablelist>
 
 

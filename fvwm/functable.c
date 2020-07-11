@@ -575,14 +575,6 @@ const func_t func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Change window stickyness on a page basis */
 
-#ifdef HAVE_STROKE
-	CMD_ENT("stroke", CMD_Stroke, F_STROKE, 0, 0),
-	/* - Bind a stroke to an fvwm action */
-
-	CMD_ENT("strokefunc", CMD_StrokeFunc, F_STROKE_FUNC, 0, 0),
-	/* - Record stroke and execute corresponding stroke action */
-
-#endif /* HAVE_STROKE */
 	CMD_ENT("style", CMD_Style, F_STYLE, 0, 0),
 	/* - Set attributes of windows that match a pattern */
 

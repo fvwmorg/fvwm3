@@ -58,8 +58,7 @@ which prints information on fvwm styles.
 can be 1.</para>
 
 <para><fvwmopt cmd="PrintInfo" opt="bindings"/>
-which prints information on all the bindings fvwm has:  key, mouse and
-stroke bindings.
+which prints information on all the bindings fvwm has:  key and mouse bindings.
 <replaceable>verbose</replaceable>
 has no effect with this option.</para>
 

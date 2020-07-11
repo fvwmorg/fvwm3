@@ -275,7 +275,7 @@ process.
   quoting and expansion.]
 
 * Step 8
-  
+
   If the expanded action begins with '*' treat it as a module
   configuration line.
   *GOTO step 10*
@@ -288,7 +288,7 @@ process.
   begins with double quotes, not `*`.]
 
 * Step 9
-  
+
   Execute the action
 
   1. Prepare the execution context.
@@ -1801,8 +1801,6 @@ CMD_GNOMEBUTTON = "GnomeButton"
 CMD_GNOMESHOWDESKS = "GnomeShowDesks"
 CMD_SAVESESSION = "SaveSession"
 CMD_SAVEQUITSESSION = "SaveQuitSession"
-CMD_STROKE = "Stroke"
-CMD_STROKEFUNC = "StrokeFunc"
 CMD_QUITSESSION = "QuitSession"
 CMD_XINERAMA = "Xinerama"
 CMD_XINERAMAPRIMARYSCREEN = "XineramaPrimaryScreen"

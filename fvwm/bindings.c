@@ -37,9 +37,6 @@
 #include "focus.h"
 #include "menubindings.h"
 #include "move_resize.h"	/* for placement_binding */
-#ifdef HAVE_STROKE
-#include "stroke.h"
-#endif /* HAVE_STROKE */
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -188,13 +185,12 @@ static int bind_get_bound_button_contexts(
 	}
 	for (b = *pblist; b != NULL; b = b->NextBinding)
 	{
-		if (!BIND_IS_MOUSE_BINDING(b->type) &&
-		    !BIND_IS_STROKE_BINDING(b->type))
+		if (!BIND_IS_MOUSE_BINDING(b->type))
 		{
 			continue;
 		}
 		if ((b->Context & (C_WINDOW | C_EWMH_DESKTOP)) &&
-		    !(BIND_IS_STROKE_BINDING(b->type) && b->Button_Key == 0) &&
+		     b->Button_Key == 0 &&
 		    buttons_grabbed != NULL)
 		{
 			if (b->Button_Key == 0)
@@ -264,9 +260,6 @@ static int ParseBinding(
 	Bool are_similar_bindings_left;
 	Binding *b;
 	Binding *rmlist = NULL;
-	STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "");
-	STROKE_CODE(int n4 = 0);
-	STROKE_CODE(int i);
 
 	/* tline points after the key word "Mouse" or "Key" */
 	token = p = PeekToken(tline, &ptr);
@@ -320,59 +313,6 @@ static int ParseBinding(
 			/* see len of key_string above */
 			n1 = sscanf(token,"%200s", key_string);
 		}
-#ifdef HAVE_STROKE
-		else if (BIND_IS_STROKE_BINDING(type))
-		{
-			int num = 0;
-			int j;
-
-			n1 = 1;
-			i = 0;
-			if (token[0] == 'N' && token[1] != '\0')
-			{
-				num = 1;
-			}
-			j=i+num;
-			while (n1 && token[j] != '\0' &&
-			       i < STROKE_MAX_SEQUENCE)
-			{
-				if (!isdigit(token[j]))
-				{
-					n1 = 0;
-				}
-				if (num)
-				{
-					/* Numeric pad to Telephone  */
-					if ('7' <= token[j] && token[j] <= '9')
-					{
-						token[j] -= 6;
-					}
-					else if ('1' <= token[j] &&
-						 token[j] <= '3')
-					{
-						token[j] += 6;
-					}
-				}
-				stroke[i] = token[j];
-				i++;
-				j=i+num;
-			}
-			stroke[i] = '\0';
-			if (strlen(token) > STROKE_MAX_SEQUENCE + num)
-			{
-				if (!is_silent)
-				{
-					fvwm_debug(
-						__func__,
-						"Too long stroke sequence in"
-						" line %s.  Only %i elements"
-						" will be taken into"
-						" account.\n",
-						 tline, STROKE_MAX_SEQUENCE);
-				}
-			}
-		}
-#endif /* HAVE_STROKE */
 		else
 		{
 			n1 = sscanf(token, "%d", &button);
@@ -404,17 +344,6 @@ static int ParseBinding(
 		}
 	}
 
-#ifdef HAVE_STROKE
-	if (BIND_IS_STROKE_BINDING(type))
-	{
-		token = PeekToken(ptr, &ptr);
-		if (token != NULL)
-		{
-			n4 = sscanf(token,"%d", &button);
-		}
-	}
-#endif /* HAVE_STROKE */
-
 	token = PeekToken(ptr, &ptr);
 	if (token != NULL)
 	{
@@ -426,8 +355,7 @@ static int ParseBinding(
 		n3 = sscanf(token, "%19s", modifier_string);
 	}
 
-	if (n1 != 1 || n2 != 1 || n3 != 1
-	    STROKE_CODE(|| (BIND_IS_STROKE_BINDING(type) && n4 != 1)))
+	if (n1 != 1 || n2 != 1 || n3 != 1)
 	{
 		if (!is_silent)
 		{
@@ -523,7 +451,6 @@ static int ParseBinding(
 	/* BEGIN remove */
 	CollectBindingList(
 		dpy, pblist, &rmlist, &are_similar_bindings_left, type,
-		STROKE_ARG((void *)stroke)
 		button, keysym, modifier, context, window_name);
 	if (rmlist != NULL)
 	{
@@ -568,8 +495,7 @@ static int ParseBinding(
 		modifier = AnyModifier;
 	}
 	if (
-		(BIND_IS_MOUSE_BINDING(type) ||
-		 (BIND_IS_STROKE_BINDING(type) && button != 0)) &&
+		(BIND_IS_MOUSE_BINDING(type)) &&
 		(context & (C_WINDOW | C_EWMH_DESKTOP)) &&
 		buttons_grabbed != NULL)
 	{
@@ -584,7 +510,7 @@ static int ParseBinding(
 		}
 	}
 	rc = AddBinding(
-		dpy, pblist, type, STROKE_ARG((void *)stroke)
+		dpy, pblist, type,
 		button, keysym, key_string, modifier, context, (void *)action,
 		NULL, window_name);
 
@@ -635,9 +561,6 @@ void print_bindings(void)
 		case BIND_BUTTONRELEASE:
 			fvwm_debug(__func__, "Mouse");
 			break;
-		case BIND_STROKE:
-			fvwm_debug(__func__, "Stroke");
-			break;
 		default:
 			fvwm_debug(__func__, "invalid binding type %d", b->type);
 			continue;
@@ -655,12 +578,6 @@ void print_bindings(void)
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
 			fvwm_debug(__func__, "\t%d", b->Button_Key);
-			break;
-		case BIND_STROKE:
-			STROKE_CODE(
-				fvwm_debug(
-					__func__, "\t%s\t%d",
-					(char *)b->Stroke_Seq, b->Button_Key));
 			break;
 		}
 		{
@@ -716,15 +633,6 @@ void CMD_Mouse(F_CMD_ARGS)
 
 	return;
 }
-
-#ifdef HAVE_STROKE
-void CMD_Stroke(F_CMD_ARGS)
-{
-	binding_cmd(F_PASS_ARGS, BIND_STROKE);
-
-	return;
-}
-#endif /* HAVE_STROKE */
 
 /* Declares which X modifiers are actually locks and should be ignored when
  * testing mouse/key binding modifiers. */

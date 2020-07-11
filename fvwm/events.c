@@ -99,9 +99,6 @@
 #include "menus.h"
 #include "colormaps.h"
 #include "colorset.h"
-#ifdef HAVE_STROKE
-#include "stroke.h"
-#endif /* HAVE_STROKE */
 #include "libs/FScreen.h"
 
 /* ---------------------------- local definitions -------------------------- */
@@ -178,8 +175,6 @@ typedef struct
 
 static int Button = 0;
 static const FvwmWindow *xcrossing_last_grab_window = NULL;
-STROKE_CODE(static int send_motion);
-STROKE_CODE(static char sequence[STROKE_MAX_SEQUENCE + 1]);
 static event_group_t *base_event_group = NULL;
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -1598,15 +1593,6 @@ static Bool __handle_click_to_raise(const exec_context_t *exc)
 	return rc;
 }
 
-/* Helper function for HandleButtonPress */
-static void __handle_bpress_stroke(void)
-{
-	STROKE_CODE(stroke_init());
-	STROKE_CODE(send_motion = True);
-
-	return;
-}
-
 /* Helper function for __handle_bpress_on_managed */
 static Bool __handle_bpress_action(
 	const exec_context_t *exc, char *action)
@@ -1658,10 +1644,9 @@ static void __handle_bpress_on_root(const exec_context_t *exc)
 	char *action;
 
 	PressedW = None;
-	__handle_bpress_stroke();
 	/* search for an appropriate mouse binding */
 	action = CheckBinding(
-		Scr.AllBindings, STROKE_ARG(0) exc->x.etrigger->xbutton.button,
+		Scr.AllBindings, exc->x.etrigger->xbutton.button,
 		exc->x.etrigger->xbutton.state, GetUnusedModifiers(), C_ROOT,
 		BIND_BUTTONPRESS, NULL, NULL);
 	if (action && *action)
@@ -1725,11 +1710,9 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	/* handle bindings */
 	if (!f.do_forbid_function)
 	{
-		/* stroke bindings */
-		__handle_bpress_stroke();
 		/* mouse bindings */
 		action = CheckBinding(
-			Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
+			Scr.AllBindings, e->xbutton.button,
 			e->xbutton.state, GetUnusedModifiers(),
 			exc->w.wcontext, BIND_BUTTONPRESS, &fw->class,
 			fw->name.name);
@@ -1867,45 +1850,6 @@ void HandleButtonPress(const evh_args_t *ea)
 
 	return;
 }
-
-#ifdef HAVE_STROKE
-void HandleButtonRelease(const evh_args_t *ea)
-{
-	char *action;
-	char *name;
-	int real_modifier;
-	const XEvent *te = ea->exc->x.etrigger;
-	XClassHint *class;
-
-	send_motion = False;
-	stroke_trans (sequence);
-	/*  Allows modifier to work (Only R context works here). */
-	real_modifier = te->xbutton.state - (1 << (7 + te->xbutton.button));
-	if (ea->exc->w.fw == NULL)
-	{
-		class = NULL;
-		name = NULL;
-	}
-	else
-	{
-		class = &ea->exc->w.fw->class;
-		name = ea->exc->w.fw->name.name;
-	}
-	/* need to search for an appropriate stroke binding */
-	action = CheckBinding(
-		Scr.AllBindings, sequence, te->xbutton.button, real_modifier,
-		GetUnusedModifiers(), ea->exc->w.wcontext, BIND_STROKE,
-		class, name);
-	/* got a match, now process it */
-	if (action != NULL && (action[0] != 0))
-	{
-		execute_function(NULL, ea->exc, action, 0);
-		WaitForButtonsUp(True);
-	}
-
-	return;
-}
-#endif /* HAVE_STROKE */
 
 void HandleClientMessage(const evh_args_t *ea)
 {
@@ -2676,7 +2620,7 @@ void __handle_key(const evh_args_t *ea, Bool is_press)
 	 * (ie. BIND_KEYPRESS vs BIND_PKEYPRESS) doesn't make a difference.
 	 * The different context value does though. */
 	action = CheckTwoBindings(
-		&is_second_binding, Scr.AllBindings, STROKE_ARG(0) kc,
+		&is_second_binding, Scr.AllBindings, kc,
 		te->xkey.state, GetUnusedModifiers(), kcontext, BIND_KEYPRESS,
 		winClass1, name1, ea->exc->w.wcontext, BIND_PKEYPRESS,
 		winClass2, name2);
@@ -3271,20 +3215,6 @@ void HandleMapRequestKeepRaised(
 
 	return;
 }
-
-#ifdef HAVE_STROKE
-void HandleMotionNotify(const evh_args_t *ea)
-{
-	if (send_motion == True)
-	{
-		stroke_record(
-			ea->exc->x.etrigger->xmotion.x,
-			ea->exc->x.etrigger->xmotion.y);
-	}
-
-	return;
-}
-#endif /* HAVE_STROKE */
 
 void HandlePropertyNotify(const evh_args_t *ea)
 {
@@ -4108,13 +4038,6 @@ void InitEventHandlerJumpTable(void)
 	EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
 	EventHandlerJumpTable[ReparentNotify] =   HandleReparentNotify;
 	EventHandlerJumpTable[MappingNotify] =    HandleMappingNotify;
-	STROKE_CODE(EventHandlerJumpTable[ButtonRelease] = HandleButtonRelease);
-	STROKE_CODE(EventHandlerJumpTable[MotionNotify] = HandleMotionNotify);
-#ifdef MOUSE_DROPPINGS
-	STROKE_CODE(stroke_init(dpy,DefaultRootWindow(dpy)));
-#else /* no MOUSE_DROPPINGS */
-	STROKE_CODE(stroke_init());
-#endif /* MOUSE_DROPPINGS */
 	if (register_event_group(0, LASTEvent, EventHandlerJumpTable))
 	{
 		/* should never happen */
@@ -4249,7 +4172,6 @@ void HandleEvents(void)
 {
 	XEvent ev;
 
-	STROKE_CODE(send_motion = False);
 	while (!isTerminated)
 	{
 		last_event_type = 0;

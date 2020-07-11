@@ -1898,7 +1898,7 @@ static void Key (int NbArg,long *TabArg)
   }
 
   AddBinding(
-	  dpy, &BindingsList, BIND_KEYPRESS, STROKE_ARG(0) 0, keysym,
+	  dpy, &BindingsList, BIND_KEYPRESS, 0, keysym,
 	  key_string, modifier, C_WINDOW, (void *)action, NULL, NULL);
   free(key_string);
   free(in_modifier);

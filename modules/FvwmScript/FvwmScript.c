@@ -977,10 +977,9 @@ void ReadXServer (void)
       /* check for bindings defined by the Key instruction */
 	  tmp.res_class = tmp.res_name = "root";
       if ((action = CheckBinding(
-		   BindingsList, STROKE_ARG(0) event.xkey.keycode,
+		   BindingsList, event.xkey.keycode,
 		   event.xkey.state, LockMask, C_WINDOW, BIND_KEYPRESS,
-		   &tmp, tmp.res_class)) !=
-	  NULL)
+		   &tmp, tmp.res_class)) != NULL)
       {
 	SendMsgAndString(action, "CheckBinding");
 	break;
