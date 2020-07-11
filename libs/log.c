@@ -47,23 +47,21 @@ log_set_level(int ll)
 void
 log_open(const char *fvwm_userdir)
 {
-	char *path;
+	char *path, *logfile_env;
+
 	xasprintf(&path, "%s/%s", fvwm_userdir, FVWM3_LOGFILE_DEFAULT);
 
-	if (getenv("FVWM3_LOGFILE")) {
+	logfile_env = getenv("FVWM3_LOGFILE");
+	if (logfile_env != NULL) {
 		const char	*expanded_path;
 
 		free(path);
-		path = getenv("FVWM3_LOGFILE");
-		expanded_path = expand_path(path);
+		expanded_path = expand_path(logfile_env);
 
-		path = fxstrdup(expanded_path);
-		if (strchr(expanded_path, '/') != NULL)
-		{
-				path = fxstrdup(expanded_path);
-		} else {
-				xasprintf(&path, "%s/%s", fvwm_userdir, expanded_path);
-		}
+		if (expanded_path[0] == '/')
+			path = fxstrdup(expanded_path);
+		else
+			xasprintf(&path, "%s/%s", fvwm_userdir, expanded_path);
 		free((char *)expanded_path);
 	}
 
