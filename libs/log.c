@@ -45,18 +45,22 @@ log_set_level(int ll)
 
 /* Open logging to file. */
 void
-log_open(void)
+log_open(const char *fvwm_userdir)
 {
-	char		*path = fxstrdup(FVWM3_LOGFILE_DEFAULT);
+	char *path, *logfile_env;
 
-	if (getenv("FVWM3_LOGFILE")) {
+	xasprintf(&path, "%s/%s", fvwm_userdir, FVWM3_LOGFILE_DEFAULT);
+
+	logfile_env = getenv("FVWM3_LOGFILE");
+	if (logfile_env != NULL) {
 		const char	*expanded_path;
 
-		free(path);
-		path = getenv("FVWM3_LOGFILE");
-		expanded_path = expand_path(path);
+		expanded_path = expand_path(logfile_env);
 
-		path = fxstrdup(expanded_path);
+		if (expanded_path[0] == '/')
+			path = fxstrdup(expanded_path);
+		else
+			xasprintf(&path, "%s/%s", fvwm_userdir, expanded_path);
 		free((char *)expanded_path);
 	}
 
@@ -77,11 +81,11 @@ log_open(void)
 
 /* Toggle logging. */
 void
-log_toggle(void)
+log_toggle(const char *fvwm_userdir)
 {
 	if (log_level == 0) {
 		log_level = 1;
-		log_open();
+		log_open(fvwm_userdir);
 		fvwm_debug(NULL, "log opened (because of SIGUSR2)");
 	} else {
 		fvwm_debug(NULL, "log closed (because of SIGUSR2)");
