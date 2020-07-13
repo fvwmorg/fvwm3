@@ -295,7 +295,7 @@ Restart(int sig)
 static RETSIGTYPE
 ToggleLogging(int sig)
 {
-	log_toggle();
+	log_toggle(fvwm_userdir);
 
 	SIGNAL_RETURN;
 }
@@ -2069,7 +2069,7 @@ int main(int argc, char **argv)
 		else if (strcmp(argv[i], "-v") == 0)
 		{
 			log_set_level(1);
-			log_open();
+			log_open(fvwm_userdir);
 		}
 		else
 		{
