@@ -238,7 +238,7 @@ Standard output is a series Fvwm commands."""
         print(usage)
         sys.exit(2)
     global verbose, size, current_theme, icon_dir, top, install_prefix, menu_type, menu_list_length, term_cmd
-    global with_titles, menu_entry_count, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
+    global with_titles, get_menus, timestamp, set_menus, printmode, insert_in_menu, previous_theme
     global default_app_icon, default_dir_icon, include_items, config_menus, regen_cmd, dynamic_menu, build_all_menus
     version = "2.4"
     verbose = False
@@ -253,7 +253,6 @@ Standard output is a series Fvwm commands."""
     install_prefix = ''
     menu_type = ''
     with_titles = True
-    menu_entry_count = 0
     menu_list_length = 0
     get_menus = ''
     printmode = True
@@ -436,8 +435,9 @@ Standard output is a series Fvwm commands."""
         menulist = set_menus
     
     vprint(" Menu list: %s\n" %menulist)
-    menu_list_length =  len(menulist)       
-        
+    menu_list_length = len(menulist)
+    desktop_entries = []
+
     if menu_list_length == 0:
         if not desktop == '':
             desktop = desktop + '-'
@@ -458,14 +458,22 @@ Standard output is a series Fvwm commands."""
         vprint(" Current used theme: %s\n" %current_theme)
        
         sys.stderr.flush() 
-        parsemenus(menulist, desktop)
+        parsemenus(menulist, desktop, desktop_entries)
 
     # write current_theme to <icon_dir>/.theme if --enable-mini-icons and printmode is set
     if printmode and force:
         fh = open(os.path.join(os.path.expanduser(icon_dir), ".theme"), "w")
         fh.write(current_theme)
         fh.close()
-              
+
+    if force:
+        for ent in desktop_entries:
+            style_id = ent.getStartupWMClass()
+            if not style_id:
+                style_id = ent.getIcon()
+            if style_id and ent.getIcon():
+                sys.stdout.write('Style {} MiniIcon "{}"\n'.format(style_id, geticonfile(ent.getIcon())))
+
     sys.stdout.flush()
     vprint("\nProcess took " + str(time.time()-timestamp) + " seconds")
              
@@ -702,12 +710,11 @@ def printmenu(name, icon, command):
             sys.stderr.write("%s icon or default icon not found!\n")
     printtext('+ "%s%s" %s' % (name, iconfile, command))
 
-def parsemenus(menulist, desktop):
-    global menu_entry_count
+def parsemenus(menulist, desktop, desktop_entries=[]):
     if menu_list_length == 1:
         new_menulist = menulist
         # user defines only one special menu
-        parsemenu(xdg.Menu.parse(menulist[0]), top)
+        parsemenu(xdg.Menu.parse(menulist[0]), top, '', desktop_entries)
     else:
         # create a top title list
         top_titles = []
@@ -723,12 +730,13 @@ def parsemenus(menulist, desktop):
         for title, menu in zip(top_titles, menulist):
             name = 'Fvwm'+title
             vprint("Create submenu \'%s\' from \'%s\'" %(name, menu))
-            parsemenu(xdg.Menu.parse(menu), name, title)
+            desktop_subentries = []
+            parsemenu(xdg.Menu.parse(menu), name, title, desktop_subentries)
             # remove a menu if no menu entry was created in its sub menus
-            if not menu_entry_count == 0:
+            if desktop_subentries:
                 new_toptitles.append(title)
-                new_menulist.append(menu)
-                menu_entry_count = 0
+                new_menulist.append(emenu)
+                desktop_entries += desktop_subentries
             else:
                 vprint(" Menu is empty - won't be used!")
         
@@ -758,8 +766,7 @@ def parsemenus(menulist, desktop):
     if not get_menus == '':
         printtext('%s' % ' '.join(new_menulist))
 
-def parsemenu(menu, name="", title=""):
-    global menu_entry_count
+def parsemenu(menu, name="", title="", desktop_entries=[]):
     m = re.compile('%[A-Z]?', re.I) # Pattern for %A-Z (meant for %U)
     if not name :
         name = menu.getPath()
@@ -785,14 +792,14 @@ def parsemenu(menu, name="", title=""):
             if printmode:
                 printmenu(entry.getName(), entry.getIcon(), 'Popup "%s"' % entry.getPath())
         elif isinstance(entry, xdg.Menu.MenuEntry):
+            desktop = DesktopEntry(entry.DesktopEntry.getFileName())
             if printmode:
-                desktop = DesktopEntry(entry.DesktopEntry.getFileName())
                 # eliminate '%U' etc behind execute string
                 execProgram = m.sub('', desktop.getExec())
                 if desktop.getTerminal():
                     execProgram = "%s %s" % (term_cmd, execProgram)
                 printmenu(desktop.getName(), desktop.getIcon(), "Exec exec " + execProgram)
-            menu_entry_count += 1
+            desktop_entries.append(desktop)
         elif isinstance(entry, xdg.Menu.Separator):
             if printmode:
                 printtext( '+ "" Nop' )
@@ -812,7 +819,7 @@ def parsemenu(menu, name="", title=""):
 
     for entry in menu.getEntries():
         if isinstance(entry, xdg.Menu.Menu):
-            parsemenu(entry)
+            parsemenu(entry, '', '', desktop_entries)
 
 usage="""
 A script which parses xdg menu definitions to build
