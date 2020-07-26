@@ -449,7 +449,7 @@ broadcast_to_client(FvwmPacket *packet)
 {
 	struct client		*c;
 	struct fvwm_msg		*fm;
-	char			*as_json;
+	char			*as_json, *to_client;
 	size_t			 json_len;
 	unsigned long		*body = packet->body;
 	unsigned long		 type =	packet->type;
@@ -488,9 +488,15 @@ broadcast_to_client(FvwmPacket *packet)
 		}
 		c->fm = fm;
 
-		bufferevent_write(c->comms, as_json, strlen(as_json));
+		/* Ensure there's a newline at the end of the string, so that
+		 * buffered output can be sent.
+		 */
+		asprintf(&to_client, "%s\n", as_json);
+
+		bufferevent_write(c->comms, to_client, strlen(to_client));
 		bufferevent_flush(c->comms, EV_WRITE, BEV_NORMAL);
 		free(fm);
+		free(to_client);
 	}
 }
 
