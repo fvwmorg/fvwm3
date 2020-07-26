@@ -190,7 +190,6 @@ static int bind_get_bound_button_contexts(
 			continue;
 		}
 		if ((b->Context & (C_WINDOW | C_EWMH_DESKTOP)) &&
-		     b->Button_Key == 0 &&
 		    buttons_grabbed != NULL)
 		{
 			if (b->Button_Key == 0)
