@@ -668,8 +668,7 @@ void GrabWindowButton(
 	dead_modifiers &= ALL_MODIFIERS;
 
 	if ((binding->Context & contexts) &&
-	    ((BIND_IS_MOUSE_BINDING(binding->type) ||
-	      binding->Button_Key !=0)))
+	    ((BIND_IS_MOUSE_BINDING(binding->type))))
 	{
 		int bmin = 1;
 		int bmax = NUMBER_OF_EXTENDED_MOUSE_BUTTONS;
