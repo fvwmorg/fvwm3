@@ -6,6 +6,18 @@
  * Released under the same license as FVWM3 itself.
  */
 
+
+#include <stdio.h>
+#ifndef HAVE_LIBBSON
+
+int main(int argc, char **argv)
+{
+	fprintf(stderr, "MFL support not built\n");
+	return (1);
+}
+
+#else
+
 #include "config.h"
 
 #include "fvwm/fvwm.h"
@@ -20,7 +32,6 @@
 #include <sys/un.h>
 #include <sys/time.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <err.h>
@@ -655,3 +666,5 @@ int main(int argc, char **argv)
 
 	return (0);
 }
+
+#endif /* HAVE_LIBBSON */

@@ -532,7 +532,7 @@ PKG_CHECK_MODULES([libbson], [libbson-1.0],
 	libbson_LIBS=-lbson-1.0
 ],
 [
-	 AC_MSG_ERROR([*** libbson not found.  Install its header files. ***])
+	 AC_MSG_WARN([*** libbson not found.  MFL disabled. ***])
 ])
 AC_SUBST(libbson_LIBS)
 AC_SUBST(libbson_CFLAGS)
@@ -545,7 +545,7 @@ PKG_CHECK_MODULES([libevent], [libevent >= 2.0],
 	libevent_LIBS=-levent
 ],
 [
-	 AC_MSG_ERROR([*** libevent >=2 not found.  Install its header files. ***])
+	 AC_MSG_WARN([*** libevent >=2 not found.  MFL disabled. ***])
 ])
 AC_SUBST(libevent_LIBS)
 AC_SUBST(libevent_CFLAGS)
