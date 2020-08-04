@@ -153,7 +153,8 @@ class ImageMagickIconScaleTool(BaseIconScaleTool):
             return int(p.read()) == self.size
 
     def _do_convert(self, output):
-        os.system("convert '%s'[0] -resize %i '%s'"% (self.filename, self.size, output))
+        if os.system("convert '%s'[0] -resize %i '%s'"% (self.filename, self.size, output)) != 0:
+            raise ValueError('convert process return non-zero status code')
 
 class PILIconScaleTool(BaseIconScaleTool):
     def _do_check(self):
@@ -700,6 +701,9 @@ def getdefaulticonfile(command):
     else:
         return geticonfile(default_app_icon)    
 
+def escapemenutext(text):
+    return text.replace('&', '&&').replace('%', '%%')
+
 def printmenu(name, icon, command):
     iconfile = ''
     if IconScaleTool.enable_icon:
@@ -708,7 +712,7 @@ def printmenu(name, icon, command):
             iconfile = '%'+iconfile+'%'
         else:
             sys.stderr.write("%s icon or default icon not found!\n")
-    printtext('+ "%s%s" %s' % (name, iconfile, command))
+    printtext('+ "%s%s" %s' % (escapemenutext(name), iconfile, command))
 
 def parsemenus(menulist, desktop, desktop_entries=[]):
     if menu_list_length == 1:
@@ -735,7 +739,7 @@ def parsemenus(menulist, desktop, desktop_entries=[]):
             # remove a menu if no menu entry was created in its sub menus
             if desktop_subentries:
                 new_toptitles.append(title)
-                new_menulist.append(emenu)
+                new_menulist.append(menu)
                 desktop_entries += desktop_subentries
             else:
                 vprint(" Menu is empty - won't be used!")
