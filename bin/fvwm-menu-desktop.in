@@ -136,7 +136,11 @@ class BaseIconScaleTool(object):
         output = self._output_path()
         
         if theme_changed or not os.path.isfile(output) or os.path.getmtime(self.filename) > os.path.getmtime(output):
-            self._do_convert(output)
+            try:
+                self._do_convert(output)
+            except:
+                sys.stderr.write('Fail to convert %s.\n' % self.filename)
+                return None
 
         return output
         
