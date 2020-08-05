@@ -125,8 +125,12 @@ class BaseIconScaleTool(object):
     def check_size(self):
         if self.filename.endswith('.svg'):
             return False
-        
-        return self._do_check()
+        try:
+            return self._do_check()
+        except:
+            # Always try to convert if check_size() fails.
+            # Worst case convert() would fail and ignore the icon.
+            return False
 
     def convert(self, theme_changed):
         # FVWM knows how to render SVGs
