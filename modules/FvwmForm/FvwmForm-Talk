@@ -1,0 +1,22 @@
+# FvwmForm-Talk - Basic replacement for FvwmTalk
+DestroyModuleConfig  FvwmForm-Talk: *
+*FvwmForm-Talk: WarpPointer
+# Layout
+*FvwmForm-Talk: Line         center
+*FvwmForm-Talk: Text         "Talk to Fvwm"
+*FvwmForm-Talk: Line         left
+*FvwmForm-Talk: Text         "Command:"
+*FvwmForm-Talk: Input        Command 80 ""
+*FvwmForm-Talk: Line         left
+*FvwmForm-Talk: Text         "Msg:"
+*FvwmForm-Talk: Message
+*FvwmForm-Talk: Line         center
+# Buttons
+*FvwmForm-Talk: Button       restart    "Return - Execute"         ^M
+*FvwmForm-Talk: Command        $(Command)
+*FvwmForm-Talk: Button       continue    "F1 - Help" F1
+*FvwmForm-Talk: Command        Module FvwmForm FvwmForm-TalkHelp
+*FvwmForm-Talk: Button       restart     "F3 - Reset input" F3
+*FvwmForm-Talk: Command        Nop
+*FvwmForm-Talk: Button       quit        "F4 - Dismiss"  F4
+*FvwmForm-Talk: Command        Nop

@@ -1581,6 +1581,7 @@ dnl	bin/fvwm-perllib.1
 	modules/FvwmConsole/FvwmConsole.1
 	modules/FvwmConsole/FvwmConsoleC.pl.1
 	modules/FvwmEvent/FvwmEvent.1
+	modules/FvwmForm/FvwmForm.1
 	modules/FvwmIconMan/FvwmIconMan.1
 	modules/FvwmIdent/FvwmIdent.1
 	modules/FvwmMFL/FvwmMFL.1
@@ -1632,6 +1633,7 @@ dnl
 	modules/FvwmConsole/Makefile
 	modules/FvwmConsole/FvwmConsoleC.pl
 	modules/FvwmEvent/Makefile
+	modules/FvwmForm/Makefile
 	modules/FvwmIconMan/Makefile
 	modules/FvwmIdent/Makefile
 	modules/FvwmMFL/Makefile

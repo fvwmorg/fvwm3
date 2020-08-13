@@ -1,0 +1,30 @@
+DestroyModuleConfig  FvwmForm-Rlogin: *
+*FvwmForm-Rlogin: WarpPointer
+*FvwmForm-Rlogin: Line         center
+*FvwmForm-Rlogin: Text         "Login to Remote Host"
+*FvwmForm-Rlogin: Line         center
+*FvwmForm-Rlogin: Text         "Host:"
+*FvwmForm-Rlogin: Input        HostName        20      ""
+*FvwmForm-Rlogin: Line         center
+*FvwmForm-Rlogin: Selection    UserSel single
+*FvwmForm-Rlogin: Choice       Default Default on      "same user"
+*FvwmForm-Rlogin: Choice       Custom  Custom  off     "user:"
+*FvwmForm-Rlogin: Input        UserName        10      ""
+*FvwmForm-Rlogin: Line         expand
+*FvwmForm-Rlogin: Button       quit    "Login"         ^M
+*FvwmForm-Rlogin: Command      Exec exec ssh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
+# Before saving the data, remove any previously saved data:
+*FvwmForm-Rlogin: Command DestroyModuleConfig FvwmForm-RloginDefault: *
+# The "Login" button causes a login and a saving of the current data:
+*FvwmForm-Rlogin: Command !(                                      /bin/echo \
+  "# This file last created by FvwmForm-Rlogin on: `/bin/date`."; /bin/echo \
+  '*FvwmForm-RloginDefault: HostName $(HostName)'               ; /bin/echo \
+  '*FvwmForm-RloginDefault: UserName $(UserName)'               ; /bin/echo \
+  '*FvwmForm-RloginDefault: Default $(Default?on)'              ; /bin/echo \
+  '*FvwmForm-RloginDefault: Custom $(Custom?on)' \
+) > ${FVWM_USERDIR}/.FvwmForm-Rlogin
+*FvwmForm-Rlogin: Button       restart "Reset"
+*FvwmForm-Rlogin: Button       quit    "Cancel"        ^[
+*FvwmForm-Rlogin: Command      Nop
+# Tell FvwmForm to read vars from the .FvwmForm-RloginDefault file:
+*FvwmForm-Rlogin: UseData .FvwmForm-Rlogin *FvwmForm-RloginDefault
