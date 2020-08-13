@@ -1,0 +1,104 @@
+# -*- Mode: fvwm -*-
+DestroyModuleConfig FvwmForm-Form: *
+*FvwmForm-Form: WarpPointer
+*FvwmForm-Form: Line  center
+*FvwmForm-Form: Text  "FvwmForm Set Form Defaults:"
+*FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  ""
+*FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  "Font for text:  "
+*FvwmForm-Form: Input Font 63 "8x13bold"
+*FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  "Font for input: "
+*FvwmForm-Form: Input InputFont 63 "8x13bold"
+*FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  "Font for button:"
+*FvwmForm-Form: Input ButtonFont 63 "8x13bold"
+*FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  "Font for timeout text:"
+*FvwmForm-Form: Input TimeoutFont 63 "8x13bold"
+*FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  "Color of text f/g:   "
+*FvwmForm-Form: Input Fore 15 "Wheat"
+*FvwmForm-Form: Text  "b/g:"
+*FvwmForm-Form: Input Back 15 "Gray50"
+*FvwmForm-Form: Text  "colorset:"
+*FvwmForm-Form: Input Colorset 5 "-1"
+*FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  "Color of buttons f/g:"
+*FvwmForm-Form: Input ItemFore 15 "Black"
+*FvwmForm-Form: Text  "b/g:"
+*FvwmForm-Form: Input ItemBack 15 "Light Gray"
+*FvwmForm-Form: Text  "colorset:"
+*FvwmForm-Form: Input ItemColorset 5 "-1"
+
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Pointer over button:    "
+*FvwmForm-Form: Input ButtonPointer 20 "hand2"
+*FvwmForm-Form: Text  "f/g"
+*FvwmForm-Form: Input ButtonPointerFore 20 "white"
+*FvwmForm-Form: Text  "b/g"
+*FvwmForm-Form: Input ButtonPointerBack 20 "black"
+
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Pointer while button in:"
+*FvwmForm-Form: Input ButtonInPointer 20 "hand2"
+*FvwmForm-Form: Text  "f/g"
+*FvwmForm-Form: Input ButtonInPointerFore 20 "black"
+*FvwmForm-Form: Text  "b/g"
+*FvwmForm-Form: Input ButtonInPointerBack 20 "white"
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Pointer over input:     "
+*FvwmForm-Form: Input InputPointer 20 "xterm"
+*FvwmForm-Form: Text  "f/g"
+*FvwmForm-Form: Input InputPointerFore 20 "white"
+*FvwmForm-Form: Text  "b/g"
+*FvwmForm-Form: Input InputPointerBack 20 "black"
+
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Activate buttons:"
+*FvwmForm-Form: Selection ActivateOnPress single
+*FvwmForm-Form: Choice    OnRelease off off " on release (default)"
+*FvwmForm-Form: Choice    OnPress on on " on press"
+
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Message
+*FvwmForm-Form: Line         expand
+*FvwmForm-Form: Button       quit "F1 - Save & Restart This Form" F1
+*FvwmForm-Form: Command DestroyModuleConfig FvwmFormDefault: *
+# Caution, this command is getting too long, if you add something,
+# you might have some truncation occur:
+*FvwmForm-Form: Command !(/bin/echo \
+ "# This file last created by FvwmForm-Form on: `/bin/date`."; /bin/echo \
+ '*FvwmFormDefault: Font $(Font)'            ; /bin/echo \
+ '*FvwmFormDefault: InputFont $(InputFont)'  ; /bin/echo \
+ '*FvwmFormDefault: ButtonFont $(ButtonFont)'; /bin/echo \
+ '*FvwmFormDefault: TimeoutFont $(TimeoutFont)'; /bin/echo \
+ '*FvwmFormDefault: Fore $(Fore)'            ; /bin/echo \
+ '*FvwmFormDefault: Back $(Back)'            ; /bin/echo \
+ '*FvwmFormDefault: Colorset $(Colorset)'    ; /bin/echo \
+ '*FvwmFormDefault: ItemFore $(ItemFore)'    ; /bin/echo \
+ '*FvwmFormDefault: ItemBack $(ItemBack)'    ; /bin/echo \
+ '*FvwmFormDefault: ItemColorset $(ItemColorset)'       ; /bin/echo \
+ '*FvwmFormDefault: ButtonPointer $(ButtonPointer)'     ; /bin/echo \
+ '*FvwmFormDefault: ButtonInPointer $(ButtonInPointer)' ; /bin/echo \
+ '*FvwmFormDefault: InputPointer $(InputPointer)' ; /bin/echo  \
+ '*FvwmFormDefault: ActivateOnPress $(ActivateOnPress)'\
+) > ${FVWM_USERDIR}/.FvwmForm
+# This would have surely hit a limit so its appended with >>:
+*FvwmForm-Form: Command !(\
+ /bin/echo '*FvwmFormDefault: ButtonPointerFore $(ButtonPointerFore)';\
+ /bin/echo '*FvwmFormDefault: ButtonPointerBack $(ButtonPointerBack)';\
+ /bin/echo '*FvwmFormDefault: ButtonInPointerFore $(ButtonInPointerFore)';\
+ /bin/echo '*FvwmFormDefault: ButtonInPointerBack $(ButtonInPointerBack)';\
+ /bin/echo '*FvwmFormDefault: InputPointerFore $(InputPointerFore)';\
+ /bin/echo '*FvwmFormDefault: InputPointerBack $(InputPointerBack)';\
+) >> ${FVWM_USERDIR}/.FvwmForm
+
+*FvwmForm-Form: Command *FvwmFormDefault: Read n
+*FvwmForm-Form: Command Module FvwmForm FvwmForm-Form
+*FvwmForm-Form: Button       restart   "F3 - Reset" F3
+*FvwmForm-Form: Button       quit "F4 - Dismiss" F4
+*FvwmForm-Form: Command Nop
+# Tell FvwmForm to read and save vars from the .FvwmForm file.
+*FvwmForm-Form: UseData .FvwmForm *FvwmFormDefault

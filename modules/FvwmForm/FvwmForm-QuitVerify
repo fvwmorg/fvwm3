@@ -1,0 +1,14 @@
+DestroyModuleConfig  FvwmForm-QuitVerify: *
+*FvwmForm-QuitVerify: GrabServer
+*FvwmForm-QuitVerify: WarpPointer
+*FvwmForm-QuitVerify: Command     Beep
+*FvwmForm-QuitVerify: Line        center
+*FvwmForm-QuitVerify: Text        "Do you really want to logout?"
+*FvwmForm-QuitVerify: Line        expand
+*FvwmForm-QuitVerify: Button      quit "Logout" ^M
+*FvwmForm-QuitVerify: Command     Quit
+*FvwmForm-QuitVerify: Button      restart   "Restart" ^R
+*FvwmForm-QuitVerify: Command     Restart
+*FvwmForm-QuitVerify: Button      quit "Cancel" ^[
+*FvwmForm-QuitVerify: Command     Nop
+*FvwmForm-QuitVerify: Timeout     20 Quit "Automatic logout will occur in %% seconds."
