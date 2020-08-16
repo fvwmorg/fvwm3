@@ -304,26 +304,26 @@
 #define MAX_VARS 5120
 extern int numligne;
 ScriptProp *scriptprop;
-int nbobj=-1;			/* Nombre d'objets */
+int nbobj=-1;			/* Number of objects */
 int HasPosition,HasType=0;
-TabObj *tabobj;		/* Tableau d'objets, limite=1000 */
-int TabIdObj[1001]; 	/* Tableau d'indice des objets */
-Bloc **TabIObj;		/* TabIObj[Obj][Case] -> bloc attache au case */
-Bloc *PileBloc[10];	/* Au maximum 10 imbrications de boucle conditionnelle */
-int TopPileB=0;		/* Sommet de la pile des blocs */
-CaseObj *TabCObj;	/* Struct pour enregistrer les valeurs des cases et leur nb */
+TabObj *tabobj;		/* Array of objects, limit=1000 */
+int TabIdObj[1001]; 	/* Array of object IDs */
+Bloc **TabIObj;		/* TabIObj[Obj][Case] -> block linked to case */
+Bloc *PileBloc[10];	/* 10 imbrications max for conditional loops */
+int TopPileB=0;		/* Top of block stack */
+CaseObj *TabCObj;	/* Structure to store case values and numbers */
 int CurrCase;
 int i;
-char **TabNVar;		/* Tableau des noms de variables */
-char **TabVVar;		/* Tableau des valeurs de variables */
+char **TabNVar;		/* Array for variable names */
+char **TabVVar;		/* Array for variable values */
 int NbVar;
-long BuffArg[6][20];	/* Les arguments s'ajoute par couche pour chaque fonction imbriquee */
-int NbArg[6];		/* Tableau: nb d'args pour chaque couche */
-int SPileArg;		/* Taille de la pile d'arguments */
+long BuffArg[6][20];	/* Arguments are stacked for each function */
+int NbArg[6];		/* Array: number of arguments for each layer */
+int SPileArg;		/* Size of argument stack */
 long l;
 extern char* ScriptName;
 
-/* Initialisation globale */
+/* Global Initialization */
 void InitVarGlob(void)
 {
  scriptprop=fxcalloc(1, sizeof(ScriptProp));
@@ -345,7 +345,7 @@ void InitVarGlob(void)
  scriptprop->quitfunc=NULL;
 }
 
-/* Initialisation pour un objet */
+/* Object Initialization */
 void InitObjTabCase(int HasMainLoop)
 {
  if (nbobj==0)
@@ -365,13 +365,13 @@ void InitObjTabCase(int HasMainLoop)
  TabCObj[nbobj].NbCase=-1;
 }
 
-/* Ajout d'un case dans la table TabCase */
-/* Initialisation d'un case of: agrandissement de la table */
+/* Add a case in TabCase array */
+/* Case Initialization: increase array size */
 void InitCase(int cond)
 {
  CurrCase++;
 
- /* On enregistre la condition du case */
+ /* We store the case condition */
  TabCObj[nbobj].NbCase++;
  if (TabCObj[nbobj].NbCase==0)
   TabCObj[nbobj].LstCase=fxcalloc(1, sizeof(int));
@@ -387,19 +387,19 @@ void InitCase(int cond)
  TabIObj[nbobj][CurrCase].NbInstr=-1;
  TabIObj[nbobj][CurrCase].TabInstr=NULL;
 
- /* Ce case correspond au bloc courant d'instruction: on l'empile */
+ /* This case is for current instruction block: we stack it */
  PileBloc[0]=&TabIObj[nbobj][CurrCase];
  TopPileB=0;
 }
 
-/* Enleve un niveau d'args dans la pile BuffArg */
+/* Remove an argument level in BuffArg stack */
 void RmLevelBufArg(void)
 {
   SPileArg--;
 }
 
-/* Fonction de concatenation des n derniers etage de la pile */
-/* Retourne les elts trie et depile et la taille */
+/* Function to concatenate the n latest levels of stack */
+/* Returns sorted, unstacked elements and size */
 long *Depile(int NbLevelArg, int *s)
 {
  long *Temp;
@@ -421,7 +421,7 @@ long *Depile(int NbLevelArg, int *s)
    }
   }
   *s=size;
-  for (i=0;i<NbLevelArg;i++)	/* On depile les couches d'arguments */
+  for (i=0;i<NbLevelArg;i++)	/* Unstack argument layers */
    RmLevelBufArg();
   return Temp;
  }
@@ -432,7 +432,7 @@ long *Depile(int NbLevelArg, int *s)
  }
 }
 
-/* Ajout d'une commande */
+/* Add a command */
 void AddCom(int Type, int NbLevelArg)
 {
  int CurrInstr;
@@ -446,24 +446,24 @@ void AddCom(int Type, int NbLevelArg)
  else
   PileBloc[TopPileB]->TabInstr=(Instr*)realloc(PileBloc[TopPileB]->TabInstr,
 				sizeof(Instr)*(CurrInstr+1));
- /* Rangement des instructions dans le bloc */
+ /* Put instructins into block */
  PileBloc[TopPileB]->TabInstr[CurrInstr].Type=Type;
- /* On enleve la derniere couche d'argument et on la range dans la commande */
+ /* We remove the last argument layer, and we put it in command */
 
  PileBloc[TopPileB]->TabInstr[CurrInstr].TabArg=Depile(NbLevelArg,
 		&PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg);
 }
 
-/* Initialisation du buffer contenant les arguments de la commande courante */
-/* Ajout d'une couche d'argument dans la pile*/
+/* Initialize the buffer containing current command arguments */
+/* Add a layer of arguments in stack */
 void AddLevelBufArg(void)
 {
- /* Agrandissment de la pile */
+ /* Increase stack size */
  SPileArg++;
  NbArg[SPileArg]=-1;
 }
 
-/* Ajout d'un arg dans la couche arg qui est au sommet de la pile TabArg */
+/* Add an argument in the argument layer on top of TabArg stack */
 void AddBufArg(long *TabLong,int NbLong)
 {
  int i;
@@ -475,13 +475,13 @@ void AddBufArg(long *TabLong,int NbLong)
  NbArg[SPileArg]=NbArg[SPileArg]+NbLong;
 }
 
-/* Recheche d'un nom de var dans TabVar, s'il n'existe pas il le cree */
-/* Retourne un Id */
+/* Search for a variable name in TabVar, create it if nonexistant */
+/* Returns an Id */
 void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande pointee */
 {
  int i;
 
- /* Comparaison avec les variables deja existante */
+ /* Comparison of already existing variables */
  for (i=0;i<=NbVar;i++)
   if (strcmp(TabNVar[i],Name)==0)
   {
@@ -497,7 +497,7 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
   exit(1);
  }
 
- /* La variable n'a pas ete trouvee: creation */
+ /* Variable was not found: create it */
  NbVar++;
 
  if (NbVar==0)
@@ -516,16 +516,16 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
  TabVVar[NbVar][0]='\0';
 
 
- /* Ajout de la variable dans le buffer Arg */
+ /* Add variable into Arg buffer */
  l=(long)NbVar;
  AddBufArg(&l,1);
  return ;
 }
 
-/* Ajout d'une constante str comme argument */
+/* Add a string constant as argument */
 void AddConstStr(char *Name)
 {
- /* On cree une nouvelle variable et on range la constante dedans */
+ /* We create a new vraible and put constant in it */
  NbVar++;
  if (NbVar==0)
  {
@@ -542,32 +542,32 @@ void AddConstStr(char *Name)
  TabNVar[NbVar][0]='\0';
  TabVVar[NbVar]=fxstrdup(Name);
 
- /* Ajout de l'id de la constante dans la liste courante des arguments */
+ /* Add the constant Id into the current list of arguments */
  l=(long)NbVar;
  AddBufArg(&l,1);
 }
 
-/* Ajout d'une constante numerique comme argument */
+/* Add a number constant as argument */
 void AddConstNum(long num)
 {
 
- /* On ne cree pas de nouvelle variable */
- /* On code la valeur numerique afin de le ranger sous forme d'id */
+ /* We don't create a new variable */
+ /* Number is codede to become an ID */
  l=num+200000;
- /* Ajout de la constante dans la liste courante des arguments */
+ /* Add the constant into the current list of arguments */
  AddBufArg(&l,1);
 }
 
-/* Ajout d'une fonction comme argument */
-/* Enleve les args de func de la pile, */
-/* le concate, et les range dans la pile */
+/* Add a function as argument */
+/* Remove function arguments from stack, */
+/* concatenate them, and put them into stack */
 void AddFunct(int code,int NbLevelArg)
 {
  int size;
  long *l;
  int i;
 
- /* Methode: depiler BuffArg et completer le niveau inferieur de BuffArg */
+ /* Method: unstack BuffArg and complete the bottom level of BuffArg */
  l=Depile(NbLevelArg, &size);
 
  size++;
@@ -576,7 +576,7 @@ void AddFunct(int code,int NbLevelArg)
  else
  {
   l=(long*)realloc(l,sizeof(long)*(size));
-  for (i=size-2;i>-1;i--)	/* Deplacement des args */
+  for (i=size-2;i>-1;i--)	/* Move arguments */
   {
    l[i+1]=l[i];
   }
@@ -586,20 +586,20 @@ void AddFunct(int code,int NbLevelArg)
  AddBufArg(l,size);
 }
 
-/* Ajout d'une instruction de test pour executer un ou plusieurs blocs */
-/* enregistre l'instruction et le champs de ces blocs = NULL */
+/* Add a test instruction to execute one block or more */
+/* store the instruction and these blocks field becomes NULL */
 void AddComBloc(int TypeCond, int NbLevelArg, int NbBloc)
 {
  int i;
  int OldNA;
  int CurrInstr;
 
- /* Ajout de l'instruction de teste comme d'une commande */
+ /* Add the test instruction as a command */
  AddCom(TypeCond, NbLevelArg);
 
- /* On initialise ensuite les deux champs reserve à bloc1 et bloc2 */
+ /* We then initialize both fields for bloc1 and bloc2 */
  CurrInstr=PileBloc[TopPileB]->NbInstr;
- /* Attention NbArg peur changer si on utilise en arg une fonction */
+ /* Caution: NbArg can change if we use a function as argument */
  OldNA=PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg;
 
  PileBloc[TopPileB]->TabInstr[CurrInstr].TabArg=(long*)realloc(
@@ -611,7 +611,7 @@ void AddComBloc(int TypeCond, int NbLevelArg, int NbBloc)
  PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg=OldNA+NbBloc;
 }
 
-/* Creer un nouveau bloc, et l'empile: il devient le bloc courant */
+/* Create a new block, and stack it: it's becoming the current block */
 void EmpilerBloc(void)
 {
  Bloc *TmpBloc;
@@ -624,7 +624,7 @@ void EmpilerBloc(void)
 
 }
 
-/* Depile le bloc d'initialisation du script et le range a sa place speciale */
+/* Unstack the script intitialization block and put it into its special location */
 void DepilerBloc(int IdBloc)
 {
  Bloc *Bloc1;
@@ -636,7 +636,7 @@ void DepilerBloc(int IdBloc)
  IfInstr->TabArg[IfInstr->NbArg-IdBloc]=(long)Bloc1;
 }
 
-/* Gestion des erreurs de syntaxes */
+/* Syntax error management */
 int yyerror(char *errmsg)
 {
  fvwm_debug(__func__, "[%s] Line %d: %s\n",ScriptName,numligne,errmsg);
@@ -2498,7 +2498,7 @@ yyreduce:
   case 7:
 #line 413 "script.y"
     {
-	/* Titre de la fenetre */
+	/* Window Title */
 	scriptprop->titlewin=(yyvsp[(3) - (3)].str);
 }
     break;
@@ -2506,7 +2506,7 @@ yyreduce:
   case 8:
 #line 418 "script.y"
     {
-	/* Titre de la fenetre */
+	/* Window Title */
 	scriptprop->titlewin=(char *)FGettext((yyvsp[(3) - (3)].str));
 }
     break;
@@ -2521,7 +2521,7 @@ yyreduce:
   case 10:
 #line 427 "script.y"
     {
-	/* Position et taille de la fenetre */
+	/* Window Position and Size */
 	scriptprop->x=(yyvsp[(3) - (4)].number);
 	scriptprop->y=(yyvsp[(4) - (4)].number);
 }
@@ -2530,7 +2530,7 @@ yyreduce:
   case 11:
 #line 433 "script.y"
     {
-	/* Position et taille de la fenetre */
+	/* Window Position and Size */
 	scriptprop->width=(yyvsp[(3) - (4)].number);
 	scriptprop->height=(yyvsp[(4) - (4)].number);
 }
@@ -2539,7 +2539,7 @@ yyreduce:
   case 12:
 #line 439 "script.y"
     {
-	/* Couleur de fond */
+	/* Background Color */
 	scriptprop->backcolor=(yyvsp[(3) - (3)].str);
 	scriptprop->colorset = -1;
 }
@@ -2548,7 +2548,7 @@ yyreduce:
   case 13:
 #line 445 "script.y"
     {
-	/* Couleur des lignes */
+	/* Foreground Color */
 	scriptprop->forecolor=(yyvsp[(3) - (3)].str);
 	scriptprop->colorset = -1;
 }
@@ -2557,7 +2557,7 @@ yyreduce:
   case 14:
 #line 451 "script.y"
     {
-	/* Couleur des lignes */
+	/* Shaded Color */
 	scriptprop->shadcolor=(yyvsp[(3) - (3)].str);
 	scriptprop->colorset = -1;
 }
@@ -2566,7 +2566,7 @@ yyreduce:
   case 15:
 #line 457 "script.y"
     {
-	/* Couleur des lignes */
+	/* Highlighted Color */
 	scriptprop->hilicolor=(yyvsp[(3) - (3)].str);
 	scriptprop->colorset = -1;
 }

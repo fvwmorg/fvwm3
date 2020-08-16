@@ -21,16 +21,16 @@
 #include "Tools.h"
 
 /*
- * Fonction pour HDipstick
- * Création d'une jauge horizontale
- * plusieurs options
+ * Function for HDipstick
+ * Create a horizontal slider
+ * several options
  */
 void InitHDipstick(struct XObj *xobj)
 {
  unsigned long mask;
  XSetWindowAttributes Attr;
 
- /* Enregistrement des couleurs et de la police */
+ /* Save colors and font */
  if (xobj->colorset >= 0) {
   xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
   xobj->TabColor[back] = Colorset[xobj->colorset].bg;

@@ -14,7 +14,7 @@
  */
 
 /*
- * Fichier contenant les fonctions attachees aux objets graphiques
+ * File containing functions for graphical objects
  */
 
 #include "config.h"
@@ -142,7 +142,7 @@ extern void ProcessMsgMenu(
 	struct XObj *xobj,unsigned long type,unsigned long *body);
 
 /*
- * Choix des fonctions suivant le type de bouton
+ * Choose function depending on button type
  */
 
 void ChooseFunction(struct XObj *xobj,char *type)

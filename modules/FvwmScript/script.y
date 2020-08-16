@@ -19,26 +19,26 @@
 #define MAX_VARS 5120
 extern int numligne;
 ScriptProp *scriptprop;
-int nbobj=-1;			/* Nombre d'objets */
+int nbobj=-1;			/* Number of objects */
 int HasPosition,HasType=0;
-TabObj *tabobj;		/* Tableau d'objets, limite=1000 */
-int TabIdObj[1001]; 	/* Tableau d'indice des objets */
-Bloc **TabIObj;		/* TabIObj[Obj][Case] -> bloc attache au case */
-Bloc *PileBloc[10];	/* Au maximum 10 imbrications de boucle conditionnelle */
-int TopPileB=0;		/* Sommet de la pile des blocs */
-CaseObj *TabCObj;	/* Struct pour enregistrer les valeurs des cases et leur nb */
+TabObj *tabobj;		/* Array of objects, limit=1000 */
+int TabIdObj[1001]; 	/* Array of object IDs */
+Bloc **TabIObj;		/* TabIObj[Obj][Case] -> block linked to case */
+Bloc *PileBloc[10];	/* 10 imbrications max of conditional loops */
+int TopPileB=0;		/* Top of block stack */
+CaseObj *TabCObj;	/* Structure to store cases values and their ID */
 int CurrCase;
 int i;
-char **TabNVar;		/* Tableau des noms de variables */
-char **TabVVar;		/* Tableau des valeurs de variables */
+char **TabNVar;		/* Array of variable names */
+char **TabVVar;		/* Array of variable values */
 int NbVar;
-long BuffArg[6][20];	/* Les arguments s'ajoute par couche pour chaque fonction imbriquee */
-int NbArg[6];		/* Tableau: nb d'args pour chaque couche */
-int SPileArg;		/* Taille de la pile d'arguments */
+long BuffArg[6][20];	/* Arguments are added by layers for each function */
+int NbArg[6];		/* Array: number of arguments for each layer */
+int SPileArg;		/* Size of argument stack */
 long l;
 extern char* ScriptName;
 
-/* Initialisation globale */
+/* Global Initialization */
 void InitVarGlob(void)
 {
  scriptprop=fxcalloc(1, sizeof(ScriptProp));
@@ -60,7 +60,7 @@ void InitVarGlob(void)
  scriptprop->quitfunc=NULL;
 }
 
-/* Initialisation pour un objet */
+/* Object Initialization */
 void InitObjTabCase(int HasMainLoop)
 {
  if (nbobj==0)
@@ -80,13 +80,13 @@ void InitObjTabCase(int HasMainLoop)
  TabCObj[nbobj].NbCase=-1;
 }
 
-/* Ajout d'un case dans la table TabCase */
-/* Initialisation d'un case of: agrandissement de la table */
+/* Add a case into TabCase array */
+/* Initialization of a case: increase array size */
 void InitCase(int cond)
 {
  CurrCase++;
 
- /* On enregistre la condition du case */
+ /* We store the case condition */
  TabCObj[nbobj].NbCase++;
  if (TabCObj[nbobj].NbCase==0)
   TabCObj[nbobj].LstCase=fxcalloc(1, sizeof(int));
@@ -102,19 +102,19 @@ void InitCase(int cond)
  TabIObj[nbobj][CurrCase].NbInstr=-1;
  TabIObj[nbobj][CurrCase].TabInstr=NULL;
 
- /* Ce case correspond au bloc courant d'instruction: on l'empile */
+ /* This case is for the current instruction block: we stack it */
  PileBloc[0]=&TabIObj[nbobj][CurrCase];
  TopPileB=0;
 }
 
-/* Enleve un niveau d'args dans la pile BuffArg */
+/* Remove a level of args in BuffArg stack */
 void RmLevelBufArg(void)
 {
   SPileArg--;
 }
 
-/* Fonction de concatenation des n derniers etage de la pile */
-/* Retourne les elts trie et depile et la taille */
+/* Function to concatenate the n latest levels of stack */
+/* Returns the sorted and unstacked elements and size */
 long *Depile(int NbLevelArg, int *s)
 {
  long *Temp;
@@ -136,7 +136,7 @@ long *Depile(int NbLevelArg, int *s)
    }
   }
   *s=size;
-  for (i=0;i<NbLevelArg;i++)	/* On depile les couches d'arguments */
+  for (i=0;i<NbLevelArg;i++)	/* Unstack the argument layers */
    RmLevelBufArg();
   return Temp;
  }
@@ -147,7 +147,7 @@ long *Depile(int NbLevelArg, int *s)
  }
 }
 
-/* Ajout d'une commande */
+/* Add a command */
 void AddCom(int Type, int NbLevelArg)
 {
  int CurrInstr;
@@ -161,24 +161,24 @@ void AddCom(int Type, int NbLevelArg)
  else
   PileBloc[TopPileB]->TabInstr=(Instr*)realloc(PileBloc[TopPileB]->TabInstr,
 				sizeof(Instr)*(CurrInstr+1));
- /* Rangement des instructions dans le bloc */
+ /* Put instructions into block */
  PileBloc[TopPileB]->TabInstr[CurrInstr].Type=Type;
- /* On enleve la derniere couche d'argument et on la range dans la commande */
+ /* We remove the last arguments layer and put it in command */
 
  PileBloc[TopPileB]->TabInstr[CurrInstr].TabArg=Depile(NbLevelArg,
 		&PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg);
 }
 
-/* Initialisation du buffer contenant les arguments de la commande courante */
-/* Ajout d'une couche d'argument dans la pile*/
+/* Initialization of the buffer containing the current command arguments */
+/* Add a layer of arguments into stack */
 void AddLevelBufArg(void)
 {
- /* Agrandissment de la pile */
+ /* Increase stack size */
  SPileArg++;
  NbArg[SPileArg]=-1;
 }
 
-/* Ajout d'un arg dans la couche arg qui est au sommet de la pile TabArg */
+/* Add an argument into the argument layer on top of TabArg stack */
 void AddBufArg(long *TabLong,int NbLong)
 {
  int i;
@@ -190,13 +190,13 @@ void AddBufArg(long *TabLong,int NbLong)
  NbArg[SPileArg]=NbArg[SPileArg]+NbLong;
 }
 
-/* Recheche d'un nom de var dans TabVar, s'il n'existe pas il le cree */
-/* Retourne un Id */
-void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande pointee */
+/* Search for a variable name in TabVar, create it if nonexistant */
+/* Returns an ID */
+void AddVar(char *Name)		/* add a variable at the end of last pointed command */
 {
  int i;
 
- /* Comparaison avec les variables deja existante */
+ /* Comparison with already existing variables */
  for (i=0;i<=NbVar;i++)
   if (strcmp(TabNVar[i],Name)==0)
   {
@@ -212,7 +212,7 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
   exit(1);
  }
 
- /* La variable n'a pas ete trouvee: creation */
+ /* Variable not found: create it */
  NbVar++;
 
  if (NbVar==0)
@@ -231,16 +231,16 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
  TabVVar[NbVar][0]='\0';
 
 
- /* Ajout de la variable dans le buffer Arg */
+ /* Add variable into argument buffer */
  l=(long)NbVar;
  AddBufArg(&l,1);
  return ;
 }
 
-/* Ajout d'une constante str comme argument */
+/* Add a string constant as argument */
 void AddConstStr(char *Name)
 {
- /* On cree une nouvelle variable et on range la constante dedans */
+ /* We create a new variable and put constant in it */
  NbVar++;
  if (NbVar==0)
  {
@@ -257,32 +257,32 @@ void AddConstStr(char *Name)
  TabNVar[NbVar][0]='\0';
  TabVVar[NbVar]=fxstrdup(Name);
 
- /* Ajout de l'id de la constante dans la liste courante des arguments */
+ /* Add the constant ID into the current arguments list */
  l=(long)NbVar;
  AddBufArg(&l,1);
 }
 
-/* Ajout d'une constante numerique comme argument */
+/* Add a number constant as argument */
 void AddConstNum(long num)
 {
 
- /* On ne cree pas de nouvelle variable */
- /* On code la valeur numerique afin de le ranger sous forme d'id */
+ /* We don't create a new variable */
+ /* We code the number value to form an ID */
  l=num+200000;
- /* Ajout de la constante dans la liste courante des arguments */
+ /* Add the constant into the current arguments list */
  AddBufArg(&l,1);
 }
 
-/* Ajout d'une fonction comme argument */
-/* Enleve les args de func de la pile, */
-/* le concate, et les range dans la pile */
+/* Add a functon as argument */
+/* Remove function arguments from stack, */
+/* concatene them, and put them into stack */
 void AddFunct(int code,int NbLevelArg)
 {
  int size;
  long *l;
  int i;
 
- /* Methode: depiler BuffArg et completer le niveau inferieur de BuffArg */
+ /* Method: unstack BuffArg and complete the bottom level of BuffArg */
  l=Depile(NbLevelArg, &size);
 
  size++;
@@ -291,7 +291,7 @@ void AddFunct(int code,int NbLevelArg)
  else
  {
   l=(long*)realloc(l,sizeof(long)*(size));
-  for (i=size-2;i>-1;i--)	/* Deplacement des args */
+  for (i=size-2;i>-1;i--)	/* Move arguments */
   {
    l[i+1]=l[i];
   }
@@ -301,20 +301,20 @@ void AddFunct(int code,int NbLevelArg)
  AddBufArg(l,size);
 }
 
-/* Ajout d'une instruction de test pour executer un ou plusieurs blocs */
-/* enregistre l'instruction et le champs de ces blocs = NULL */
+/* Add a test instruction to execute one block or more */
+/* store the instruction, and these blocks field becomes NULL */
 void AddComBloc(int TypeCond, int NbLevelArg, int NbBloc)
 {
  int i;
  int OldNA;
  int CurrInstr;
 
- /* Ajout de l'instruction de teste comme d'une commande */
+ /* Add the test instruction as a command */
  AddCom(TypeCond, NbLevelArg);
 
- /* On initialise ensuite les deux champs reserve à bloc1 et bloc2 */
+ /* We then initialize both reserved fields bloc1 and bloc2 */
  CurrInstr=PileBloc[TopPileB]->NbInstr;
- /* Attention NbArg peur changer si on utilise en arg une fonction */
+ /* Caution: NbArg can change if we use a function as argument */
  OldNA=PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg;
 
  PileBloc[TopPileB]->TabInstr[CurrInstr].TabArg=(long*)realloc(
@@ -326,7 +326,7 @@ void AddComBloc(int TypeCond, int NbLevelArg, int NbBloc)
  PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg=OldNA+NbBloc;
 }
 
-/* Creer un nouveau bloc, et l'empile: il devient le bloc courant */
+/* Create a new block, and stack it: it's becoming the current block */
 void EmpilerBloc(void)
 {
  Bloc *TmpBloc;
@@ -339,7 +339,7 @@ void EmpilerBloc(void)
 
 }
 
-/* Depile le bloc d'initialisation du script et le range a sa place speciale */
+/* Unstack the script initialization block and put it into its special location */
 void DepilerBloc(int IdBloc)
 {
  Bloc *Bloc1;
@@ -351,7 +351,7 @@ void DepilerBloc(int IdBloc)
  IfInstr->TabArg[IfInstr->NbArg-IdBloc]=(long)Bloc1;
 }
 
-/* Gestion des erreurs de syntaxes */
+/* Syntax error management */
 int yyerror(char *errmsg)
 {
  fprintf(stderr,"[%s] Line %d: %s\n",ScriptName,numligne,errmsg);
@@ -361,16 +361,16 @@ int yyerror(char *errmsg)
 
 %}
 
-/* Declaration des types des tokens, tous les types sont assemblés dans union */
-/* Le type est celui de yyval, yyval est utilisé dans lex explicitement */
-/* Dans bison, il est utlise implicitement avec $1, $2... */
+/* Declaration of token types, all types are in union */
+/* Type is the one of yyval, yyval being used in lex */
+/* In bison, it's implicitly used with $1, $2... */
 %union {  char *str;
           int number;
        }
 
-/* Declaration des symboles terminaux */
+/* Declaration of terminal symbols */
 %token <str> STR GSTR VAR FONT
-%token <number> NUMBER	/* Nombre pour communiquer les dimensions */
+%token <number> NUMBER	/* Number to give dimensions */
 
 %token WINDOWTITLE WINDOWLOCALETITLE WINDOWSIZE WINDOWPOSITION USEGETTEXT
 %token FORECOLOR BACKCOLOR SHADCOLOR LICOLOR COLORSET
@@ -391,11 +391,11 @@ int yyerror(char *errmsg)
 %%
 script: initvar head initbloc periodictask quitfunc object ;
 
-/* Initialisation des variables */
+/* Variables Initialization */
 initvar: 			{ InitVarGlob(); }
        ;
 
-/* Entete du scripte decrivant les options par defaut */
+/* Script header for default options */
 head:
 | head USEGETTEXT GSTR
 {
@@ -407,15 +407,15 @@ head:
 	fprintf(stderr,"UseGettext!\n");
 	FGettextInit("FvwmScript", LOCALEDIR, "FvwmScript");
 }
-/* vide: dans ce cas on utilise les valeurs par défaut */
+/* empty: we use default values */
 | head WINDOWTITLE GSTR
 {
-	/* Titre de la fenetre */
+	/* Window Title */
 	scriptprop->titlewin=$3;
 }
 | head WINDOWLOCALETITLE GSTR
 {
-	/* Titre de la fenetre */
+	/* Window Title */
 	scriptprop->titlewin=(char *)FGettext($3);
 }
 | head ICON STR
@@ -424,37 +424,37 @@ head:
 }
 | head WINDOWPOSITION NUMBER NUMBER
 {
-	/* Position et taille de la fenetre */
+	/* Window Position and Size */
 	scriptprop->x=$3;
 	scriptprop->y=$4;
 }
 | head WINDOWSIZE NUMBER NUMBER
 {
-	/* Position et taille de la fenetre */
+	/* Window Width and Height */
 	scriptprop->width=$3;
 	scriptprop->height=$4;
 }
 | head BACKCOLOR GSTR
 {
-	/* Couleur de fond */
+	/* Background Color */
 	scriptprop->backcolor=$3;
 	scriptprop->colorset = -1;
 }
 | head FORECOLOR GSTR
 {
-	/* Couleur des lignes */
+	/* Foreground Color */
 	scriptprop->forecolor=$3;
 	scriptprop->colorset = -1;
 }
 | head SHADCOLOR GSTR
 {
-	/* Couleur des lignes */
+	/* Shaded Color */
 	scriptprop->shadcolor=$3;
 	scriptprop->colorset = -1;
 }
 | head LICOLOR GSTR
 {
-	/* Couleur des lignes */
+	/* Highlighted Color */
 	scriptprop->hilicolor=$3;
 	scriptprop->colorset = -1;
 }
@@ -468,14 +468,14 @@ head:
 	scriptprop->font=$2;
 }
 
-/* Bloc d'initialisation du script */
-initbloc:		/* cas ou il n'y pas de bloc d'initialisation du script */
+/* Script initialization block */
+initbloc:		/* case where there's no script initialization block */
 	| INIT creerbloc BEG instr END {
 				 scriptprop->initbloc=PileBloc[TopPileB];
 				 TopPileB--;
 				}
 
-periodictask:		/* cas ou il n'y a pas de tache periodique */
+periodictask:		/* case where there's no periodic task */
 	    | PERIODICTASK creerbloc BEG instr END {
 				 scriptprop->periodictasks=PileBloc[TopPileB];
 				 TopPileB--;
@@ -490,8 +490,8 @@ quitfunc:		/* case where there are no QuitFunc */
 	    ;
 
 
-/* Desciption d'un objet */
-object :			/* Vide */
+/* Object Desciption */
+object :			/* Empty */
     | object OBJECT id PROP init verify mainloop
     ;
 
@@ -626,7 +626,7 @@ bloc: BEG instr END
     ;
 
 
-/* ensemble d'instructions */
+/* instructions */
 instr:
     | instr EXEC exec
     | instr WARP warp
@@ -657,7 +657,7 @@ instr:
     | instr KEY key
     ;
 
-/* une seule instruction */
+/* One single instruction */
 oneinstr: EXEC exec
     	| WARP warp
 	| WRITETOFILE writetofile
@@ -737,10 +737,10 @@ loop: headloop creerbloc bloc2
 while: headwhile creerbloc bloc2
     ;
 
-/* Boucle conditionnelle: compare n'importe quel type d'argument */
+/* Conditional loop: compare whatever argument type */
 headif: addlbuff arg addlbuff compare addlbuff arg THEN 	{ AddComBloc(14,3,2); }
       ;
-else: 				/* Le else est optionnel */
+else: 				/* else is optional */
     | ELSE creerbloc bloc2
     ;
 creerbloc:			{ EmpilerBloc(); }
@@ -753,16 +753,16 @@ bloc2: BEG instr END		{ DepilerBloc(1); }
      | oneinstr			{ DepilerBloc(1); }
      ;
 
-/* Boucle sur une variable */
+/* Loop on a variable */
 headloop: addlbuff vararg GET addlbuff arg TO addlbuff arg DO	{ AddComBloc(15,3,1); }
         ;
 
-/* Boucle conditionnelle while */
+/* While conditional loop */
 headwhile: addlbuff arg addlbuff compare addlbuff arg DO	{ AddComBloc(16,3,1); }
         ;
 
-/* Argument de commandes */
-/* Argument elementaire */
+/* Command Argument */
+/* Elementary Argument */
 var	: VAR			{ AddVar($1); }
 	;
 str	: STR			{ AddConstStr($1); }
@@ -806,7 +806,7 @@ function: GETVALUE numarg	{ AddFunct(1,1); }
 	;
 
 
-/* Plusieurs arguments de type differents */
+/* Unique argument of several types */
 args	:			{ }
 	| singleclic2 args
 	| doubleclic2 args
@@ -817,7 +817,7 @@ args	:			{ }
 	| BEGF addlbuff function ENDF args
 	;
 
-/* Argument unique de n'importe quel type */
+/* Unique argument of whatever type */
 arg	: var
 	| singleclic2
 	| doubleclic2
@@ -827,7 +827,7 @@ arg	: var
 	| BEGF addlbuff function ENDF
 	;
 
-/* Argument unique de type numerique */
+/* Unique argument of number type */
 numarg	: singleclic2
 	| doubleclic2
 	| num
@@ -835,23 +835,23 @@ numarg	: singleclic2
 	| BEGF addlbuff function ENDF
 	;
 
-/* Argument unique de type str */
+/* Unique argument of str type */
 strarg	: var
 	| str
 	| BEGF addlbuff function ENDF
 	;
 
-/* Argument unique de type gstr */
+/* Unique argument of gstr type */
 gstrarg	: var
 	| gstr
 	| BEGF addlbuff function ENDF
 	;
 
-/* Argument unique de type var, pas de fonction */
+/* Unique argument of variable type, no function */
 vararg	: var
 	;
 
-/* element de comparaison entre deux variables numerique */
+/* comparison element between 2 numbers */
 compare	: INF			 { l=1-250000; AddBufArg(&l,1); }
 	| INFEQ			 { l=2-250000; AddBufArg(&l,1); }
 	| EQUAL			 { l=3-250000; AddBufArg(&l,1); }

@@ -1,5 +1,5 @@
 WindowTitle {Base Config}
-WindowSize 650 405		# Taille
+WindowSize 650 405		# Size
 Font		-adobe-helvetica-bold-r-*-*-12-*
 
 Init

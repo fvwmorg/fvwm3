@@ -20,9 +20,9 @@ extern int x_fd;
 extern char *ScriptName;
 extern FlocaleWinString *FwinString;
 
-/* Constante pour les type de message envoie entre objets */
-/* <0 valeur reserve pour les messages internes */
-/* >0 message envoie par l'utilisateur */
+/* Constant for messages types sent between objects */
+/* <0 value for internal messages */
+/* >0 messages sent by user */
 #define SingleClic -1
 #define DoubleClic -2
 

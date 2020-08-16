@@ -21,14 +21,14 @@
 #include "Tools.h"
 
 /*
- * Fonction pour RadioButton / Function for RadioButton
+ * Function for RadioButton
  */
 void InitRadioButton(struct XObj *xobj)
 {
 	unsigned long mask;
 	XSetWindowAttributes Attr;
 
-	/* Enregistrement des couleurs et de la police */
+	/* Save colors and font */
 	if (xobj->colorset >= 0) {
 		xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
 		xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -43,7 +43,7 @@ void InitRadioButton(struct XObj *xobj)
 
 	mask=0;
 	Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
-	mask|=CWCursor;                /* Curseur pour la fenetre */
+	mask|=CWCursor;                /* Cursor for window */
 	Attr.background_pixel=xobj->TabColor[back];
 	mask|=CWBackPixel;
 
@@ -67,7 +67,7 @@ void InitRadioButton(struct XObj *xobj)
 
 	XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 
-	/* Redimensionnement du widget */
+	/* Resize widget */
 	xobj->height= xobj->Ffont->height +5;
 	xobj->width=FlocaleTextWidth(
 		xobj->Ffont,xobj->title,strlen(xobj->title))+20;
@@ -93,7 +93,7 @@ void DrawRadioButton(struct XObj *xobj, XEvent *evp)
 
 	j=xobj->height/2+3;
 	i=16;
-	/* Dessin du cercle arrondi */
+	/* Draw circle */
 	XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
 	XDrawArc(dpy,xobj->win,xobj->gc,1,j-11,11,11,45*64,180*64);
 	XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
@@ -104,7 +104,7 @@ void DrawRadioButton(struct XObj *xobj, XEvent *evp)
 	if (xobj->value)
 		XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
 
-	/* Calcul de la position de la chaine de charactere */
+	/* Compute character string position */
 	MyDrawString(dpy,xobj,xobj->win,i,j,xobj->title,fore,hili,
 		     back,!xobj->flags[1], NULL, evp);
 }
@@ -195,8 +195,8 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 			/* Mouse not on button */
 			if (In)
 			{
-				/* Envoie d'un message vide de type SingleClic
-				 * pour un clique souris */
+				/* Send an empty message of SingleClic type
+				 * for a mouse click */
 				xobj->value=1;
 				XSetForeground(
 					dpy,xobj->gc,xobj->TabColor[fore]);

@@ -44,12 +44,12 @@
 #include <unchecked.h>
 #endif
 
-/* Variables utilise par l'analyseur syntaxique */
+/* Variables used by syntax interpreter */
 extern ScriptProp *scriptprop;
-extern int nbobj;                       /* Nombre d'objets */
-extern int numligne;                    /* Numero de ligne */
-extern TabObj *tabobj;                  /* Tableau d'objets, limite=1000 */
-extern char **TabVVar;                  /* Tableau des variables du sript */
+extern int nbobj;                       /* Number of objects */
+extern int numligne;                    /* Line Number */
+extern TabObj *tabobj;                  /* Object array, limit=1000 */
+extern char **TabVVar;                  /* Script variables array */
 extern int TabIdObj[1001];
 extern Bloc **TabIObj;
 extern CaseObj *TabCObj;
@@ -57,15 +57,15 @@ extern CaseObj *TabCObj;
 extern int __bounds_debug_no_checking;
 #endif
 
-/* Constante de couleurs utilise dans le tableau TabColor */
+/* Color constants used in TabColor array */
 #define back 0
 #define fore 1
 #define shad 2
 #define hili 3
 
 
-/* Variables globales */
-char *ScriptName;       /* Nom du fichier contenat le script decrivant le GUI */
+/* Global Variables */
+char *ScriptName;       /* Filename for GUI script */
 char *ScriptBaseName;
 char *ScriptPath = "";
 ModuleArgs *module;
@@ -81,8 +81,8 @@ extern void (*TabCom[25]) (int NbArg,long *TabArg);
 Display *dpy;
 int screen;
 Window  Root;
-X11base *x11base;               /* Pour le serveur X */
-TypeBuffSend BuffSend;          /* Pour les communication entre script */
+X11base *x11base;               /* For X server */
+TypeBuffSend BuffSend;          /* For inter script communications */
 int grab_server = 0;
 struct XObj *tabxobj[1000];
 char *Scrapt;
@@ -91,7 +91,7 @@ static Atom wm_del_win;
 char *imagePath = NULL;
 static Bool is_dead_pipe = False;
 KeySym shift_tab_ks;  /* shift-Tab keysym */
-char *LastString = NULL;  /* last string send by a SendString ot Key cmd */
+char *LastString = NULL;  /* last string sent by a SendString ot Key cmd */
 Binding *BindingsList;
 
 extern void InitCom(void);
@@ -121,15 +121,15 @@ ShutdownX(void)
   if (is_dead_pipe)
     return;
 
-  /* On cache la fenetre */
+  /* We hide the window */
   XUnmapWindow(dpy,x11base->win);
   XFlush(dpy);
 
-  /* Le script ne possede plus la propriete */
+  /* Script doesn't own the property anymore */
   MyAtom = XInternAtom(dpy, x11base->TabScriptId[1], False);
   XSetSelectionOwner(dpy, MyAtom, x11base->root, CurrentTime);
 
-  /* On verifie si tous les messages ont ete envoyes */
+  /* We check whether all messages have been sent */
   while(!isTerminated && (BuffSend.NbMsg > 0) && (NbEssai < 10000) )
   {
     tv.tv_sec = 1;
@@ -149,9 +149,9 @@ ShutdownX(void)
   }
   XFlush(dpy);
 
-  /* Attente de deux secondes afin d'etre sur que tous */
-  /* les messages soient arrives a destination         */
-  /* On quitte proprement le serveur X */
+  /* Wait for 2 seconds, to be sure all */
+  /* messages are received */
+  /* Exiting cleanly the X server */
   for (i=0; i<nbobj; i++)
     tabxobj[i]->DestroyObj(tabxobj[i]);
   XFlush(dpy);
@@ -168,7 +168,7 @@ void Debug(void)
   for (j=1;j<=nbobj;j++)
     for (i=0; i<=TabCObj[TabIdObj[j]].NbCase; i++)
     {
-      /* Execution du bloc d'instruction */
+      /* Execution of instruction block */
       fvwm_debug(__func__, "Id de l'objet %d\n",TabIdObj[j]);
       fvwm_debug(__func__, "Nb Instruction %d\n",
                  TabIObj[TabIdObj[j]][i].NbInstr);
@@ -176,7 +176,7 @@ void Debug(void)
 
 }
 
-/* Lecture du fichier contenant le script */
+/* Script file reading */
 void ReadConfig (char *ScriptName)
 {
   extern FILE *yyin;
@@ -198,11 +198,11 @@ void ReadConfig (char *ScriptName)
 	    module->name,s);
     exit(1);
   }
-  /* On ne redefini pas yyout qui est la sortie standard */
+  /* We don't define yyout again, it's the standard output */
 
-  /* Application de l'analyseur syntaxique et lexical */
+  /* Applying syntaxic and lexical interpreter */
   yyparse();
-  /* Fermeture du script */
+  /* Closing the script */
 
   fclose(yyin);
 }
@@ -231,7 +231,7 @@ static void TryToFind(char *filename) {
   return;
 }
 
-/* Quitter par l'option Delete du bouton de la fenetre */
+/* Exiting with Delete button */
 RETSIGTYPE DeadPipe(int nonsense)
 {
   is_dead_pipe = True;
@@ -239,7 +239,7 @@ RETSIGTYPE DeadPipe(int nonsense)
   SIGNAL_RETURN;
 }
 
-/* Lecture du fichier system.fvwmrc ou .fvwmrc */
+/* Reading system.fvwmrc or .fvwmrc file */
 void ParseOptions(void)
 {
   char *tline;
@@ -302,14 +302,14 @@ static int myErrorHandler(Display *dpy, XErrorEvent *event)
   return 0;
 }
 
-/* Procedure d'initialisation du serveur X et des variables globales*/
+/* Initialize X server and global variables */
 void Xinit(int IsFather)
 {
   char *name;
   Atom myatom;
   int i = 16;
 
-  /* Connextion au serveur X */
+  /* Connection to X server */
 #ifdef MEMDEBUG
   __bounds_debug_no_checking=True;
 #endif
@@ -354,7 +354,7 @@ void Xinit(int IsFather)
 }
 
 /*
- * Lecture d'un icone
+ * Reading an icon
  */
 void LoadIcon(struct XObj *xobj)
 {
@@ -430,7 +430,7 @@ void LoadIcon(struct XObj *xobj)
 }
 
 
-/* Ouvre une fenetre pour l'affichage du GUI */
+/* Opening a GUI window */
 void OpenWindow (void)
 {
   XTextProperty Name;
@@ -440,7 +440,7 @@ void OpenWindow (void)
   XClassHint classHints;
   XSetWindowAttributes Attr;
 
-  /* Allocation des couleurs */
+  /* Allocation for colors */
   if (x11base->colorset >= 0) {
     x11base->TabColor[fore] = Colorset[x11base->colorset].fg;
     x11base->TabColor[back] = Colorset[x11base->colorset].bg;
@@ -453,7 +453,7 @@ void OpenWindow (void)
     x11base->TabColor[hili] = GetColor(x11base->hilicolor);
   }
 
-  /* Definition des caracteristiques de la fentre */
+  /* Window properties definition */
   mask = CWBackPixel | CWBorderPixel | CWColormap;
   Attr.background_pixel = x11base->TabColor[back];
   Attr.border_pixel = 0;
@@ -468,13 +468,13 @@ void OpenWindow (void)
       dpy, x11base->win, x11base->size.width, x11base->size.height,
       &Colorset[x11base->colorset], Pdepth, x11base->gc, True);
 
-  /* Choix des evts recus par la fenetre */
+  /* Select which events are received by the window */
   XSelectInput(dpy,x11base->win, KeyPressMask|ButtonPressMask|
 	       ExposureMask|ButtonReleaseMask|EnterWindowMask|LeaveWindowMask|
 	       ButtonMotionMask|StructureNotifyMask);
   XSelectInput(dpy, x11base->root, PropertyChangeMask);
 
-  /* Specification des parametres utilises par le gestionnaire de fenetre */
+  /* Specify which parameters are used by the window manager */
   if (XStringListToTextProperty(&x11base->title,1,&Name) == 0)
     fvwm_debug(__func__,
                "[%s][OpenWindow]: <<WARNING>> Can't use icon name\n",
@@ -506,7 +506,7 @@ void OpenWindow (void)
 		   &Name, NULL, 0, IndicNorm, IndicWM, &classHints);
   Scrapt = fxcalloc(sizeof(char), 1);
 
-  /* Construction des atomes pour la communication inter-application */
+  /* Build atoms for inter application communication */
   propriete = XInternAtom(dpy,"Prop_selection",False);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,x11base->win,&wm_del_win,1);
@@ -516,8 +516,8 @@ void OpenWindow (void)
 }
 
 /*
- * Execution d'une sequence d'instruction
- */
+ * Executing an instruction sequence
+*/
 void ExecBloc(Bloc *bloc)
 {
   int i;
@@ -530,7 +530,7 @@ void ExecBloc(Bloc *bloc)
 }
 
 
-/* Construction de l'interface graphique */
+/* Building the GUI */
 void BuildGUI(int IsFather)
 {
   int i;
@@ -582,10 +582,10 @@ void BuildGUI(int IsFather)
   x11base->size.height = scriptprop->height;
   x11base->title = scriptprop->titlewin;
 
-  /* Initialisation de la fenetre */
+  /* Window initialization */
   OpenWindow();
 
-  /* Parcour de tous les objets graphiques */
+  /* Go through every graphical object */
   nbobj++;
   for (i=0; i<nbobj; i++)
   {
@@ -653,17 +653,17 @@ void BuildGUI(int IsFather)
     tabxobj[i]->iconPixmap = None;
     tabxobj[i]->icon_maskPixmap = None;
 
-    LoadIcon(tabxobj[i]);                  /* Chargement de l'icone du widget */
+    LoadIcon(tabxobj[i]);                  /* Loading the widget icon */
 
     tabxobj[i]->InitObj(tabxobj[i]);
   }
 
-  /* Enregistrement du bloc de taches periodic */
+  /* Registering the periodic task block */
   x11base->periodictasks = scriptprop->periodictasks;
   /* the QuitFunc */
   x11base->quitfunc = scriptprop->quitfunc;
 
-  /*Si un bloc d'initialisation du script existe, on l'execute ici */
+  /* If an initialization block exists for the script, it's executed here */
   if (scriptprop->initbloc != NULL)
   {
     ExecBloc(scriptprop->initbloc);
@@ -680,7 +680,7 @@ void BuildGUI(int IsFather)
 }
 
 /*
- * Fonction de traitement des msg entre objets
+ * Managing messages between objects
  */
 void SendMsg(struct XObj *xobj,int TypeMsg)
 {
@@ -689,13 +689,13 @@ void SendMsg(struct XObj *xobj,int TypeMsg)
   for (i=0; i <= TabCObj[TabIdObj[xobj->id]].NbCase; i++)
     if (TabCObj[TabIdObj[xobj->id]].LstCase[i] == TypeMsg)
     {
-      /* Execution du bloc d'instruction */
+      /* Executing the instruction block */
       ExecBloc(&TabIObj[TabIdObj[xobj->id]][i]);
     }
 }
 
 /*
- * Fonction de traitement des msg entre objets
+ * Managing messages between objects
  */
 void SendMsgAndString(char *action, char *type)
 {
@@ -777,7 +777,7 @@ void SendMsgAndString(char *action, char *type)
 }
 
 /*
- * Appeler lors d'une demande de selection
+ * Called by a select request
  */
 void SendMsgToScript(XEvent event)
 {
@@ -802,7 +802,7 @@ void SendMsgToScript(XEvent event)
     evnt_sel.xselection.selection = event.xselectionrequest.selection;
     evnt_sel.xselection.target = Receiver;
     evnt_sel.xselection.time = event.xselectionrequest.time;
-    /* On a trouve le recepteur */
+    /* Receiver has been found */
     if (event.xselectionrequest.target == Receiver)
     {
       evnt_sel.xselection.property = event.xselectionrequest.property;
@@ -818,13 +818,13 @@ void SendMsgToScript(XEvent event)
       free(BuffSend.TabMsg[i].Msg);
       if (BuffSend.NbMsg > 0)
       {
-	memmove(&BuffSend.TabMsg[i],
+memmove(&BuffSend.TabMsg[i],
 		&BuffSend.TabMsg[i+1],(BuffSend.NbMsg-i)*sizeof(TypeName));
       }
     }
     else
     {
-      /* Cas ou le recepteur demande un message et qu'il n'y en a pas */
+      /* If receiver asks for a message, but there is none */
       evnt_sel.xselection.property = None;
     }
     FSendEvent(dpy,evnt_sel.xselection.requestor, False, 0, &evnt_sel);
@@ -967,7 +967,7 @@ void ReadXServer (void)
     }
     break;
     case KeyPress:
-      /* Touche presse dans un objet / Key press in an object */
+      /* Key pressed in an object */
       isTab = 0;
       find = False;
       XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
@@ -996,7 +996,7 @@ void ReadXServer (void)
 	isTab = 2;
       if (event.xkey.subwindow!=0)
       {
-	/* Envoi de l'evt à l'objet */
+	/* Sending event to object */
 	for (i=0; i<nbobj; i++)
 	{
 	  if (tabxobj[i]->win == event.xkey.subwindow)
@@ -1036,7 +1036,7 @@ void ReadXServer (void)
       }
       break;
     case ButtonPress:
-      /* Clique dans quel fenetre? */
+      /* Which window is clicked in? */
       if (event.xbutton.subwindow != 0)
 	for (i=0; i<nbobj; i++)
 	  if (tabxobj[i]->win == event.xbutton.subwindow) {
@@ -1291,7 +1291,7 @@ void MainLoop (void)
 
     if (!isTerminated && x11base->periodictasks!=NULL && delta >= 1000000)
     {
-      /* Execution des taches periodics */
+      /* Executing periodic tasks */
       last_periodic.tv_sec = now.tv_sec;
       last_periodic.tv_usec = now.tv_usec;
       ExecBloc(x11base->periodictasks);
@@ -1305,18 +1305,18 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
   int i;
   Atom myatom;
 
-  BuffSend.NbMsg=0;                     /* Aucun message dans le buffer */
+  BuffSend.NbMsg=0;             /* No message in buffer */
 
   for (i=2; i<98; i++)
     x11base->TabScriptId[i]=NULL;
 
-  if (IsFather)                 /* Cas du pere */
+  if (IsFather)                 /* Father case */
   {
     myatom = XInternAtom(dpy,x11base->TabScriptId[1],True);
     XSetSelectionOwner(dpy, myatom, x11base->win, CurrentTime);
   }
   else
-  {                             /* Cas du fils */
+  {                             /* Son case */
     x11base->TabScriptId[0] = fxcalloc(sizeof(char), strlen(argv[7]));
     x11base->TabScriptId[0] = strncpy(x11base->TabScriptId[0],argv[7],
 				    strlen(argv[7])-2);
@@ -1357,7 +1357,7 @@ int main (int argc, char **argv)
     exit(1);
   }
 
-  /* On determine si le script a un pere */
+  /* Check whether the script has a father */
   if (module->user_argc >= 2)
     IsFather = (module->user_argv[1][0] != (char)161);
   else
@@ -1373,12 +1373,12 @@ int main (int argc, char **argv)
 		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
   SetMessageMask(fd, MX_PROPERTY_CHANGE);
-  /* Enregistrement des arguments du script */
+  /* Saving the script arguments */
   x11base = fxcalloc(1, sizeof(X11base));
   x11base->TabArg[0] = module->name;
   for (i=2-IsFather; i< module->user_argc; i++)
     x11base->TabArg[i-1+IsFather] = module->user_argv[i];
-  /* Couleurs et fontes par defaut */
+  /* Default colors and fonts */
   x11base->font = NULL;
   x11base->forecolor = fxstrdup("black");
   x11base->backcolor = fxstrdup("grey85");
@@ -1387,16 +1387,16 @@ int main (int argc, char **argv)
   x11base->colorset = -1;
   x11base->swallowed = False;
 
-  /* Initialisation du serveur X et de la fenetre */
+  /* Initializing X server and window */
   Xinit(IsFather);
 
   ParseOptions();
 
   SendText(fd,"Send_WindowList",0);
 
-  ReadConfig(ScriptName);       /* Lecture et analyse du script */
+  ReadConfig(ScriptName);       /* Read and interpret the script */
 
-  /* Fonction d'initialisation de TabCom et TabFunc   */
+  /* Initializing TabCom and TabFunc   */
   InitCom();
 
 #ifdef HAVE_SIGACTION
@@ -1449,7 +1449,7 @@ int main (int argc, char **argv)
     shift_tab_ks = fvwm_KeycodeToKeysym(dpy, tab, ShiftMask, 0);
   }
 
-  /* Construction des boutons et de la fenetre */
+  /* Building buttons and window */
   BuildGUI(IsFather);
 
   ReadFvwmScriptArg(argc,argv,IsFather);

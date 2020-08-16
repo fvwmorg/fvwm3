@@ -21,7 +21,7 @@
 #include "Tools.h"
 
 /*
- * Fonction pour VScrollBar
+ * Function for VScrollBar
  */
 void DrawThumbV(struct XObj *xobj, XEvent *evp)
 {
@@ -79,7 +79,7 @@ void InitVScrollBar(struct XObj *xobj)
 	int i,j;
 	char str[20];
 
-	/* Enregistrement des couleurs et de la police */
+	/* Save colors and font */
 	if (xobj->colorset >= 0) {
 		xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
 		xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -96,7 +96,7 @@ void InitVScrollBar(struct XObj *xobj)
 	Attr.background_pixel = xobj->TabColor[back];
 	mask |= CWBackPixel;
 	Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-	mask |= CWCursor;             /* Curseur pour la fenetre */
+	mask |= CWCursor;             /* Cursor for window */
 
 	xobj->win = XCreateWindow(
 		dpy, *xobj->ParentWin, xobj->x, xobj->y, xobj->width,
@@ -155,14 +155,14 @@ void DrawVScrollBar(struct XObj *xobj, XEvent *evp)
 	int x,y,w,h;
 	char str[20];
 
-	/* Calcul de la taille de l'ascenseur */
+	/* Compute scrollbar size */
 	x = xobj->width/2 - 12;
 	y = 0;
 	w = 24;
 	h = xobj->height;
 	DrawThumbV(xobj, evp);
 	DrawReliefRect(x, y, w, h, xobj, shad, hili);
-	/* Ecriture des valeurs */
+	/* Write values */
 	x = x + 26;
 	y = xobj->Ffont->ascent + 2;
 	sprintf(str, "%d", xobj->value3);
@@ -187,7 +187,7 @@ void EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
 
 	do
 	{
-		/* On suit les mouvements de la souris */
+		/* We follow mouse movements */
 		FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 			      &x1, &y1, &x2, &y2, &modif);
 		y2 = y2 - xobj->y;
@@ -198,7 +198,7 @@ void EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
 		if (oldy != y2)
 		{
 			oldy = y2;
-			/* calcule de xobj->value */
+			/* compute xobj->value */
 			newvalue = (y2-15)*xobj->height/(xobj->height - 36) *
 				(xobj->value2 - xobj->value3) /
 				(xobj->height) + xobj->value3;

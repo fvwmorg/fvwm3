@@ -24,7 +24,7 @@
 #define ITEM_DRAW_LCR_OFFSETS 1,0,1
 
 /*
- * Fonction pour ItemDraw / functions for ItemDraw
+ * functions for ItemDraw
  */
 void InitItemDraw(struct XObj *xobj)
 {
@@ -32,7 +32,7 @@ void InitItemDraw(struct XObj *xobj)
   XSetWindowAttributes Attr;
   int minHeight,minWidth;
 
-  /* Enregistrement des couleurs et de la police */
+  /* Save colors and font */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
     xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -65,7 +65,7 @@ void InitItemDraw(struct XObj *xobj)
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
-  /* Redimensionnement du widget */
+  /* Resize widget */
 
   if (xobj->icon == NULL)
   {

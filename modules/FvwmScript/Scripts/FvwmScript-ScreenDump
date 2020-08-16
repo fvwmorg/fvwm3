@@ -1,5 +1,5 @@
 WindowTitle {Screen Grabber}
-WindowSize 360 360		# Taille
+WindowSize 360 360		# Size
 #WindowPosition 191 50		# Position
 #ForeColor	{black}
 #BackColor	{grey85}
