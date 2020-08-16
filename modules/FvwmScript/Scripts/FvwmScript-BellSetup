@@ -1,6 +1,6 @@
 UseGettext
 WindowLocaleTitle {Bell Setup}
-WindowSize 410 190		# Taille
+WindowSize 410 190		# Size
 Font "xft:monospace:pixelsize=11;"
 
 Init

@@ -24,7 +24,7 @@
 #define SbWidth 15              /* ScrollBar width */
 
 /*
- * Fonction pour Liste / Functions for the List
+ * Functions for the List
  */
 void InitList(struct XObj *xobj)
 {
@@ -33,7 +33,7 @@ void InitList(struct XObj *xobj)
   int minw,minh,resize=0;
   int NbVisCell,NbCell;
 
-  /* Enregistrement des couleurs et de la police / fonts and colors */
+  /* Save font and colors */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
     xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -50,7 +50,7 @@ void InitList(struct XObj *xobj)
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
   Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-  mask |= CWCursor;  /* Curseur pour la fenetre / Window cursor */
+  mask |= CWCursor;  /* Window cursor */
   xobj->win = XCreateWindow(dpy, *xobj->ParentWin,
 			  xobj->x, xobj->y, xobj->width, xobj->height, 0,
 			  CopyFromParent, InputOutput, CopyFromParent,
@@ -68,8 +68,6 @@ void InitList(struct XObj *xobj)
   if (xobj->Ffont->font != NULL)
     XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
-  /* Calcul de la taille du widget *
-   * Taille minimum: une ligne ou ascenseur visible */
   /* Computation of the size of the widget *
    * min size: one line or a visible elevator */
   minh = 8 + 3*BdWidth + 3*(xobj->Ffont->height + 3);
@@ -91,7 +89,6 @@ void InitList(struct XObj *xobj)
 			&Colorset[xobj->colorset], Pdepth,
 			xobj->gc, True);
 
-  /* Calcul de la premiere cellule visible */
   /* Computation of the first visible cell */
   NbVisCell = (xobj->height - 2 - 3*BdWidth) / (xobj->Ffont->height + 3);
   NbCell = CountOption(xobj->title);
@@ -118,25 +115,24 @@ void DrawVSbList(struct XObj *xobj, int NbCell, int NbVisCell, int press)
   r.width = SbWidth + 4;
   DrawReliefRect(r.x, r.y, r.width, r.height, xobj, shad, hili);
 
-  /* Calcul du rectangle pour les fleches *
-   * Compute the rectangle for the arrows */
+  /* Compute the rectangle for the arrows */
   r.x = r.x + 2;
   r.y = r.y + 2;
   r.width = r.width - 4;
   r.height = r.height - 4;
 
-  /* Dessin de la fleche haute / Draw the up arrow */
+  /* Draw the up arrow */
   DrawArrowN(xobj, r.x + 1, r.y + 1, press==1);
   DrawArrowS(xobj, r.x + 1, r.y + r.height - 14, press==2);
 
-  /* Calcul du rectangle pour le pouce*/
+  /* Compute rectangle for thumb */
   r.y = r.y + 13;
   r.height = r.height - 26;
 
-  /* Effacement */
+  /* Erase */
   XClearArea(dpy, xobj->win, r.x, r.y+1, r.width, r.height-2, False);
 
-  /* Dessin du pouce */
+  /* Draw thumb */
   if (NbVisCell < NbCell)
     SizeTh = (NbVisCell * (r.height-8) / NbCell) + 8;
  else
@@ -241,17 +237,17 @@ void DrawList(struct XObj *xobj, XEvent *evp)
   int HeightCell;
   XRectangle r;
 
-  /* Dessin du contour / */
+  /* Draw frame */
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
 
-  /* Dessin du contour de la liste */
+  /* Draw list frame */
   r.x = 2 + BdWidth;
   r.y = r.x;
   r.width = xobj->width - r.x - 4 - 2*BdWidth - SbWidth;
   r.height = xobj->height - r.y - 2*BdWidth;
   DrawReliefRect(r.x, r.y, r.width, r.height, xobj, shad, hili);
 
-  /* Calcul du nombre de cellules visibles */
+  /* Compute number of visible cells */
   HeightCell = xobj->Ffont->height + 3;
   NbVisCell = r.height/HeightCell;
   NbCell = CountOption(xobj->title);
@@ -266,14 +262,14 @@ void DrawList(struct XObj *xobj, XEvent *evp)
     xobj->value2 = 1;
 
 
-  /* Dessin des cellules */
+  /* Draw cells */
   DrawCellule(
 	  xobj, NbCell, NbVisCell, HeightCell,
 	  /*FlocaleGetMinOffset(xobj->Ffont, ROTATION_0)*/
 	  xobj->Ffont->ascent,
 	  evp);
 
-  /* Dessin de l'ascenseur vertical */
+  /* Draw vertical scrollbar */
   DrawVSbList(xobj, NbCell, NbVisCell, 0);
 
 }
@@ -297,14 +293,14 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
   NbVisCell = (xobj->height-6-BdWidth)/HeightCell;
   NbCell = CountOption(xobj->title);
 
-  /* Clic dans une cellule */
+  /* Click on cell */
   rect.x = 4 + BdWidth;
   rect.y = rect.x;
   rect.width = xobj->width - rect.x - 10 - 2*BdWidth - SbWidth;
   rect.height = xobj->height -rect.y - 4 - 2*BdWidth;
   if(PtInRect(pt,rect))
   {
-    /* Determination de la cellule */
+    /* Find cell */
     pt.y = pt.y - rect.y;
     NPosCell = xobj->value2 + (pt.y/(xobj->Ffont->height+3));
     if (NPosCell > CountOption(xobj->title))
@@ -322,7 +318,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
     return ;
   }
 
-  /* Clic fleche haute asc vertical */
+  /* Click on vetical scrollbar top arrow */
   rect.y = 5 + BdWidth;
   rect.x = xobj->width - (6+BdWidth) - SbWidth+3;
   rect.height = 12;
@@ -380,7 +376,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
     return;
   }
 
-  /* Clic flache basse asc vertical */
+  /* Click on vertical scrollbar bottom arrow */
   rect.y = xobj->height - 2*BdWidth -16;
   if(PtInRect(pt,rect))
   {
@@ -433,14 +429,14 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
     return;
   }
 
-  /* clic sur la zone pouce de l'ascenseur de l'ascenseur */
+  /* click on vertical scrollbar thumb zone */
   rect.y = 17 + BdWidth;
   rect.x = xobj->width - (6+BdWidth) - SbWidth + 2;
   rect.height = xobj->height - rect.y - 19 - 2*BdWidth;
   rect.width = SbWidth;
   if(PtInRect(pt,rect))
   {
-    /* Clic dans le pouce */
+    /* Click on thumb */
     rectT.x = rect.x;
     rectT.y = rect.y + (xobj->value2 - 1) * (rect.height - 8) / NbCell;
     if (NbVisCell<NbCell)
@@ -455,7 +451,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		      &x1, &y1, &x2, &y2, &modif);
-	/* Calcul de l'id de la premiere cellule */
+	/* Compute first cell */
 	pt.y = y2-xobj->y - PosMouse;
 	NPosCell = (pt.y - rect.y)*NbCell / (rect.height);
 
@@ -537,14 +533,14 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
   rect.width = xobj->width - rect.x -10 - 2*BdWidth - SbWidth;
   rect.height= xobj->height - rect.y - 4 - 2*BdWidth;
 
-  /* Recherche du charactere */
+  /* Find char */
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
 
   if (ks == XK_Return)
   {
     if(PtInRect(pt,rect))
     {
-      /* Determination de la cellule */
+      /* Find cell */
       pt.y =  pt.y - rect.y;
       NPosCell = xobj->value2 + (pt.y/(xobj->Ffont->height + 3));
       if (NPosCell > CountOption(xobj->title))
@@ -567,7 +563,7 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
     {
       if(PtInRect(pt,rect))
       {
-	/* Determination de la cellule */
+	/* Find cell */
 	pt.y= pt.y - rect.y;
 	NPosCell = xobj->value2+(pt.y/(xobj->Ffont->height + 3));
 	if (NPosCell > CountOption(xobj->title))
@@ -592,7 +588,7 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
     {
       if(PtInRect(pt,rect))
       {
-	/* Determination de la cellule */
+	/* Find cell */
 	pt.y =  pt.y - rect.y;
 	NPosCell =  xobj->value2 + (pt.y/(xobj->Ffont->height + 3));
 	if (NPosCell > CountOption(xobj->title))

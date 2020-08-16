@@ -51,13 +51,13 @@
 extern int yylex(void);
 
 
-/* Constante de couleurs */
+/* Color constants */
 #define back 0
 #define fore 1
 #define shad 2
 #define hili 3
 
-/* Constante type de widget */
+/* Widget Type constants */
 #define PushButton      1
 #define RadioButton     2
 #define ItemDraw        3
@@ -74,67 +74,67 @@ extern int yylex(void);
 #define List            14
 #define Menu            15
 
-/* Structure qui regroupe commande et boucle conditionnelle */
+/* Structure that groups command and conditional loop */
 typedef struct
 {
- int Type;              /* Type de la commande */
- long *TabArg;          /* Tableau d'argument: id var,fnc,const,adr bloc... */
+ int Type;              /* comman type */
+ long *TabArg;          /* array of arguments: id var,fnc,const,adr block... */
  int NbArg;
 } Instr;
 
 
-/* Structure bloc d'instruction */
+/* Structure for instruction block */
 typedef struct
 {
- Instr *TabInstr;               /* Tableau d'instruction */
- int NbInstr;                   /* Nombre d'instruction */
+ Instr *TabInstr;               /* array of instructions */
+ int NbInstr;                   /* number of instructions */
 } Bloc;
 
 
-/* Structure pour enregistrer l'entete du script: valeur par defaut */
-typedef struct                  /* Type pour la gestion X */
+/* Structure to store script header: default value */
+typedef struct                  /* X management type */
 {
-  int x,y ;                     /* Origine de la fenetre */
-  int height,width;             /* Hauteur et largeur */
-  char *titlewin;               /* Titre */
-  char *forecolor;              /* Couleur des lignes */
-  char *backcolor;              /* Couleur de fond */
-  char *shadcolor;              /* Couleur des lignes */
-  char *hilicolor;              /* Couleur des lignes */
+  int x,y ;                     /* Window origin */
+  int height,width;             /* Height, Width */
+  char *titlewin;               /* Title */
+  char *forecolor;              /* Foreground color */
+  char *backcolor;              /* Background color */
+  char *shadcolor;              /* Shaded color */
+  char *hilicolor;              /* Hilighted color */
   int colorset;
-  char *font;                   /* Police utilisee */
-  char *icon;                   /* Icone pour l'application iconisee */
-  Bool usegettext;              /* Utilisation de gettext? */
-  char *localepath;             /* path pour gettext */
-  Bloc *periodictasks;          /* Tableau de taches periodiques */
-  Bloc *initbloc;               /* Bloc d'initalisation */
-  Bloc *quitfunc;               /* Bloc executed at exit */
+  char *font;                   /* Font */
+  char *icon;                   /* Icon for iconnized app */
+  Bool usegettext;              /* Is gettext used? */
+  char *localepath;             /* path for gettext */
+  Bloc *periodictasks;          /* Periodic tasks array */
+  Bloc *initbloc;               /* Initalization block */
+  Bloc *quitfunc;               /* Block executed at exit */
 } ScriptProp;
 
 
 typedef struct
 {
  int NbCase;
- int *LstCase;          /* Tableau des valeurs case a verifier */
+ int *LstCase;          /* Array of case values to be checked */
 } CaseObj;
 
-/* Structure pour enregistrer les caracteristiques des objets graphiques */
-typedef struct                  /* Type pour les boutons */
+/* Structure to store graphical objects */
+typedef struct                  /* Buttons Type */
 {
   int id;
   char *type;
-  int x,y ;                     /* Origine du bouton */
-  int height,width;             /* Hauteur et largeur */
-  char *title;                  /* Titre */
+  int x,y ;                     /* Origin */
+  int height,width;             /* Height, Width */
+  char *title;                  /* Title */
   char *swallow;                /* swallowexec */
   char *icon;                   /* Icon */
-  char *forecolor;              /* Couleur des lignes */
-  char *backcolor;              /* Couleur de fond */
+  char *forecolor;              /* Forground color */
+  char *backcolor;              /* Backgournd color */
   char *shadcolor;
   char *hilicolor;
   int colorset;
-  char *font;                   /* Police utilisé */
-  int flags[5];                 /* Etat du bouton:invisible, inactif et actif */
+  char *font;                   /* Font */
+  int flags[5];                 /* Button state: hidden, unchecked, checked */
   int value;
   int value2;
   int value3;
@@ -184,36 +184,36 @@ typedef struct
 struct XObj
 {
   int TypeWidget;
-  Window win;           /* Fenetre contenant l'objet */
-  Window *ParentWin;            /* Fenetre parent */
+  Window win;           /* Window containing the oject */
+  Window *ParentWin;            /* Parent window */
   Pixel TabColor[4];
-  GC gc;                        /* gc utilise pour les requetes: 4 octets */
-  int id;                       /* Numero d'id */
-  int x,y;                      /* Origine du bouton */
-  int height,width;             /* Hauteur et largeur */
-  char *title;                  /* Titre */
+  GC gc;                        /* gc used for requests: 4 bytes */
+  int id;                       /* ID */
+  int x,y;                      /* Origin */
+  int height,width;             /* Height, Width */
+  char *title;                  /* Title */
   char *swallow;                /* SwallowExec */
   char *icon;                   /* Icon */
-  char *forecolor;              /* Couleur des lignes */
-  char *backcolor;              /* Couleur de fond */
-  char *shadcolor;              /* Couleur des lignes */
-  char *hilicolor;              /* Couleur de fond */
+  char *forecolor;              /* Foreground color */
+  char *backcolor;              /* Background color */
+  char *shadcolor;              /* Shaded color */
+  char *hilicolor;              /* Hilighted color */
   int colorset;
-  char *font;                   /* Police utilisee */
-  Pixmap iconPixmap;            /* Icone charge */
-  Pixmap icon_maskPixmap;       /* Icone masque */
+  char *font;                   /* Font */
+  Pixmap iconPixmap;            /* Loaded icon */
+  Pixmap icon_maskPixmap;       /* Icon mask */
   Pixmap icon_alphaPixmap;      /* alpha channel */
   Pixel  *alloc_pixels;
   int nalloc_pixels;
-  int icon_w,icon_h;            /* Largeur et hauteur de l'icone */
+  int icon_w,icon_h;            /* Icon Width and Height */
   FlocaleFont *Ffont;
-  int value;                    /* Valeur courante */
-  int value2;                   /* Valeur minimale */
-  int value3;                   /* Valeur maximale */
+  int value;                    /* Current value */
+  int value2;                   /* Min value */
+  int value3;                   /* Max value */
   int flags[5];
-  void (*InitObj) (struct XObj *xobj);  /* Initialisation de l'objet */
-  void (*DestroyObj) (struct XObj *xobj);       /* Destruction objet */
-  void (*DrawObj) (struct XObj *xobj, XEvent *evp);  /* Dessin de l'objet */
+  void (*InitObj) (struct XObj *xobj);  /* Object Initializer */
+  void (*DestroyObj) (struct XObj *xobj);       /* Object Destructor */
+  void (*DrawObj) (struct XObj *xobj, XEvent *evp);  /* Object Drawing */
   void (*EvtMouse) (struct XObj *xobj,XButtonEvent *EvtButton);
   void (*EvtKey) (struct XObj *xobj,XKeyEvent *EvtKey);
   void (*ProcessMsg) (struct XObj *xobj,unsigned long type,unsigned long *body);

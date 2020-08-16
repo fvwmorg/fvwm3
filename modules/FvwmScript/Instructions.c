@@ -89,7 +89,7 @@ void setFvwmUserDir(void)
 }
 
 /*
- * Ensemble de fonction de comparaison de deux entiers
+ * Functions to compare 2 integers
  */
 static int Inf(char *arg1,char *arg2)
 {
@@ -144,30 +144,30 @@ static int Diff(char *arg1,char *arg2)
 }
 
 /*
- * Fonction qui retourne la valeur d'un argument
+ * Funtion that returns an argument value
  */
 static char *CalcArg (long *TabArg,int *Ix)
 {
   char *TmpStr;
   int i;
 
-  if (TabArg[*Ix]>100000)       /* Cas du codage d'un nombre */
+  if (TabArg[*Ix]>100000)       /* Number coding case */
   {
     i = (int)TabArg[*Ix] - 200000;
     TmpStr = fxcalloc(1, sizeof(char) * 10);
     sprintf(TmpStr,"%d",i);
   }
-  else if (TabArg[*Ix] < -200000)/* Cas d'un id de fonction de comparaison */
+  else if (TabArg[*Ix] < -200000)/* Comparison fuction ID case */
   {
    i = TabArg[*Ix]+250000;
    TmpStr = fxcalloc(1, sizeof(char) * 10);
    sprintf(TmpStr,"%d",i);
   }
-  else if (TabArg[*Ix] < -100000)       /* Cas d'un id de fonction */
+  else if (TabArg[*Ix] < -100000)       /* Function ID case */
   {
     TmpStr = TabFunc[TabArg[*Ix]+150000](Ix,TabArg);
   }
-  else                          /* Cas d'une variable */
+  else                          /* Variable case */
   {
     TmpStr=fxstrdup(TabVVar[TabArg[*Ix]]);
   }
@@ -175,7 +175,7 @@ static char *CalcArg (long *TabArg,int *Ix)
 }
 
 /*
- * Ensemble des fonctions pour recuperer les prop d'un objet
+ * Functions to get an object properties
  */
 
 /* GetValue */
@@ -184,7 +184,7 @@ static char *FuncGetValue(int *NbArg, long *TabArg)
   char *tmp;
   long Id;
 
-  (*NbArg)++;           /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;              /* GetValue has one single argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -199,7 +199,7 @@ static char *FuncGetMinValue(int *NbArg, long *TabArg)
   char *tmp;
   long Id;
 
-  (*NbArg)++;              /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;              /* GetValue has one single argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -214,7 +214,7 @@ static char *FuncGetMaxValue(int *NbArg, long *TabArg)
   char *tmp;
   long Id;
 
-  (*NbArg)++;         /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;         /* GetValue has one single argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -230,7 +230,7 @@ static char *FuncGetFore(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;            /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;           /* GetValue has one single argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -249,7 +249,7 @@ static char *FuncGetBack(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;             /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;              /* GetValue has one single argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -268,7 +268,7 @@ static char *FuncGetHili(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;       /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;             /* GetValue has one single argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -287,7 +287,7 @@ static char *FuncGetShad(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;       /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;             /* GetValue has one single argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -299,7 +299,7 @@ static char *FuncGetShad(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/* Fonction qui retourne le titre d'un objet */
+/* Returns an object title */
 static char *FuncGetTitle(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -322,7 +322,7 @@ static char *FuncGetTitle(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/* Fonction qui retourne la sortie d'une commande */
+/* Returns a command output */
 static char *FuncGetOutput(int *NbArg, long *TabArg)
 {
   char *cmndbuf;
@@ -367,7 +367,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
     }
   }
 
-  /* Recherche de la ligne */
+  /* Search for the line */
   while ((i <= line) && (BufCom[j] != '\0'))
   {
     j++;
@@ -375,7 +375,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
       i++;
   }
 
-  /* Recherche du mot */
+  /* Search for the word */
   if (index != -1)
   {
     if (i != 2) j++;
@@ -398,7 +398,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
     str = fxcalloc(sizeof(char), 255);
     sscanf(&BufCom[j],"%s",str);
   }
-  else          /* Lecture de la ligne complete */
+  else          /* Reading the full line */
   {
     if (i != 2) j++;
     k=j;
@@ -413,7 +413,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
   return str;
 }
 
-/* Convertion decimal vers hexadecimal */
+/* Converting from decimal to hexadecimal */
 static char *FuncNumToHex(int *NbArg, long *TabArg)
 {
   char *str;
@@ -442,7 +442,7 @@ static char *FuncNumToHex(int *NbArg, long *TabArg)
   return str;
 }
 
-/* Convertion hexadecimal vers decimal */
+/* Converting from hexadecimal to decimal */
 static char *FuncHexToNum(int *NbArg, long *TabArg)
 {
   char *str,*str2;
@@ -578,7 +578,7 @@ static char *FuncStrCopy(int *NbArg, long *TabArg)
  return str;
 }
 
-/* Lancement d'un script avec pipe */
+/* Launching a script with pipe */
 static char *LaunchScript (int *NbArg,long *TabArg)
 {
   char *arg,*execstr,*str,*scriptarg,*scriptname;
@@ -586,13 +586,13 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   int i;
   Atom MyAtom;
 
-  /* Lecture des arguments */
+  /* Reading the arguments */
   (*NbArg)++;
   arg = CalcArg(TabArg,NbArg);
 
   str = fxcalloc(100, sizeof(char));
 
- /* Calcul du nom du script fils */
+ /* Computing the son script name */
   x11base->TabScriptId[x11base->NbChild+2] =
     fxcalloc(strlen(x11base->TabScriptId[1]) + 4, sizeof(char));
 
@@ -616,7 +616,7 @@ static char *LaunchScript (int *NbArg,long *TabArg)
     return str;
   }
 
-  /* Construction de la commande */
+  /* Building the command */
   execstr = fxcalloc(strlen(module->name) + strlen(arg) + strlen(x11base->TabScriptId[x11base->NbChild + 2]) + 5,
                     sizeof(char));
   scriptname = fxcalloc(sizeof(char), 100);
@@ -630,7 +630,7 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   free(scriptarg);
   free(arg);
 
-  /* Envoi de la commande */
+  /* Sending the command */
   {
     int n;
 
@@ -644,7 +644,7 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   }
   free(execstr);
 
-  /* Retourne l'id du fils */
+  /* Returning the son ID */
   sprintf(str,"%d",x11base->NbChild+2);
   x11base->NbChild++;
   return str;
@@ -717,7 +717,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
   msg = fxcalloc(256, sizeof(char));
   sprintf(msg,"No message");
 
-  /* Recuperation des atomes */
+  /* Get atoms */
   AReceiv = XInternAtom(dpy,x11base->TabScriptId[1],True);
   if (AReceiv == None)
   {
@@ -743,7 +743,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
   else
     return msg;
 
-  /* Recuperation du message */
+  /* Get message */
   XConvertSelection(dpy,ASend,AReceiv,propriete,x11base->win,CurrentTime);
   while ((!FCheckTypedEvent(dpy,SelectionNotify,&event)) && (NbEssai < 10))
   {
@@ -801,7 +801,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   /* communication name */
   (*NbArg)++;
   com_name=CalcArg(TabArg,NbArg);
-  /* the command send to the receiver */
+  /* the command sent to the receiver */
   (*NbArg)++;
   cmd=CalcArg(TabArg,NbArg);
   /* 0: no answer (so no locking) from the receiver  *
@@ -1006,7 +1006,7 @@ static char *FuncGetLastString(int *NbArg,long *TabArg)
 }
 
 /*
- * Ensemble des commandes possible pour un obj
+ * Object Commands
  */
 
 /* Exec */
@@ -1061,7 +1061,7 @@ static void HideObj (int NbArg,long *TabArg)
 
 
   tabxobj[IdItem]->flags[0] = True;
-  /* On cache la fentre pour la faire disparaitre */
+  /* We hide the window */
   XUnmapWindow(dpy,tabxobj[IdItem]->win);
   free(arg[0]);
 }
@@ -1093,7 +1093,7 @@ static void ChangeValue (int NbArg,long *TabArg)
   arg[1] =CalcArg(TabArg,&i);
 
   tabxobj[TabIdObj[atoi(arg[0])]]->value = atoi(arg[1]);
-  /* On redessine l'objet pour le mettre a jour */
+  /* Redraw the object to refresh it */
   if (tabxobj[TabIdObj[atoi(arg[0])]]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[TabIdObj[atoi(arg[0])]]->win);
   tabxobj[TabIdObj[atoi(arg[0])]]->DrawObj(tabxobj[TabIdObj[atoi(arg[0])]],NULL);
@@ -1114,7 +1114,7 @@ static void ChangeValueMax (int NbArg,long *TabArg)
   arg[1] = CalcArg(TabArg,&i);
 
   tabxobj[TabIdObj[j]]->value3 = atoi(arg[1]);
-  /* On redessine l'objet pour le mettre a jour */
+  /* Redraw the object to refresh it */
   if (tabxobj[TabIdObj[j]]->value > tabxobj[TabIdObj[j]]->value3)
   {
     tabxobj[TabIdObj[j]]->value = atoi(arg[1]);
@@ -1139,7 +1139,7 @@ static void ChangeValueMin (int NbArg,long *TabArg)
   j = atoi(arg[0]);
 
   tabxobj[TabIdObj[j]]->value2 = atoi(arg[1]);
-  /* On redessine l'objet pour le mettre a jour */
+  /* Redraw the object to refresh it */
   if (tabxobj[TabIdObj[j]]->value < tabxobj[TabIdObj[j]]->value2)
   {
     tabxobj[TabIdObj[j]]->value = atoi(arg[1]);
@@ -1322,7 +1322,7 @@ static void ChangeForeColor (int NbArg,long *TabArg)
   arg[1] = CalcArg(TabArg,&i);
   IdItem = TabIdObj[atoi(arg[0])];
 
-  /* Liberation de la couleur */
+  /* Free color */
   if (tabxobj[IdItem]->colorset < 0)
     PictureFreeColors(
 	    dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0, True);
@@ -1362,7 +1362,7 @@ static void ChangeBackColor (int NbArg,long *TabArg)
   arg[1] = CalcArg(TabArg,&i);
   IdItem = TabIdObj[atoi(arg[0])];
 
-  /* Liberation de la couleur */
+  /* Free color */
   if (tabxobj[IdItem]->colorset < 0)
     PictureFreeColors(
 	    dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0,True);
@@ -1396,7 +1396,7 @@ static void ChangeBackColor (int NbArg,long *TabArg)
 /* ChangeMainColorset */
 static void ChangeMainColorset (int i)
 {
- /* Liberation de la couleur */
+ /* Free color */
   if (x11base->colorset < 0) {
     PictureFreeColors(dpy,Pcmap,&x11base->TabColor[fore],1,0,True);
     PictureFreeColors(dpy,Pcmap,&x11base->TabColor[back],1,0,True);
@@ -1431,7 +1431,7 @@ static void ChangeColorset (int NbArg,long *TabArg)
   }
   IdItem = TabIdObj[atoi(arg[0])];
 
-  /* Liberation de la couleur */
+  /* Free color */
   if (tabxobj[IdItem]->colorset < 0) {
     PictureFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[fore],1,0,True);
     PictureFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[back],1,0,True);
@@ -1546,7 +1546,7 @@ static void MyWarpPointer(int NbArg,long *TabArg)
 
   arg=CalcArg(TabArg,&i);
   IdItem= TabIdObj[atoi(arg)];
-  /* Deplacement du pointeur sur l'objet */
+  /* Move pointer toward object */
   FWarpPointer(dpy, None, tabxobj[IdItem]->win, 0, 0, 0, 0,
 	       tabxobj[IdItem]->width / 2, tabxobj[IdItem]->height + 10);
   free(arg);
@@ -1566,33 +1566,33 @@ static void IfThen (int NbArg,long *TabArg)
   int CurrArg=0;
   int IdFuncComp = 0;
 
-  /* Verification de la condition */
+  /* Checking the condition */
   for (j=0; j<NbArg-2; j++)
   {
-    if (TabArg[j] > 100000)     /* Cas du codage d'un nombre */
+    if (TabArg[j] > 100000)     /* Number coding case */
     {
       i = (int)TabArg[j] - 200000;
       arg[CurrArg] = fxcalloc(1, sizeof(char) * 10);
       sprintf(arg[CurrArg],"%d",i);
       CurrArg++;
     }
-    else if (TabArg[j] < -200000)/* Cas d'un id de fonction de comparaison */
+    else if (TabArg[j] < -200000)/* Comparison function ID case */
     {
       IdFuncComp = TabArg[j] + 250000;
     }
-    else if (TabArg[j] < -100000)       /* Cas d'un id de fonction */
+    else if (TabArg[j] < -100000)       /* Function ID case */
     {
       arg[CurrArg] = TabFunc[TabArg[j]+150000](&j,TabArg);
       CurrArg++;
     }
-    else                                /* Cas d'une variable */
+    else                                /* Variable case */
     {
       arg[CurrArg] = fxstrdup(TabVVar[TabArg[j]]);
       CurrArg++;
     }
   }
 
-  /* Comparaison des arguments */
+  /* Comparing the arguments */
   if (TabComp[IdFuncComp](arg[0],arg[1]))
     ExecBloc((Bloc*)TabArg[NbArg-2]);
   else if (TabArg[NbArg-1]!=0)
@@ -1602,7 +1602,7 @@ static void IfThen (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/* Instruction boucle **/
+/** Loop Instruction **/
 static void Loop (int NbArg,long *TabArg)
 {
   char *arg[2];
@@ -1610,25 +1610,25 @@ static void Loop (int NbArg,long *TabArg)
   int i;
   int CurrArg=0;
 
-  /* le premier argument est une variable */
-  /*On ajuste la taille de la var pour contenir un nombre */
+  /* First argument is a variable */
+  /* Variable size is tuned for storing a number */
   TabVVar[TabArg[0]] = fxrealloc(TabVVar[TabArg[0]], sizeof(char) * 10,
                                 sizeof(TabVVar[TabArg[0]]));
-  /* Calcul des 2 autres arguments */
+  /* Compute the 2 remaining arguments */
   for (i=1; i<NbArg; i++)
   {
-    if (TabArg[i] > 100000)     /* Cas du codage d'un nombre */
+    if (TabArg[i] > 100000)     /* Number coding case */
     {
       int x;
       x = (int)TabArg[i] - 200000;
       arg[CurrArg] = fxcalloc(1, sizeof(char) * 10);
       sprintf(arg[CurrArg],"%d",x);
     }
-    else if (TabArg[i] < -100000)       /* Cas d'un id de fonction */
+    else if (TabArg[i] < -100000)       /* Function ID case */
     {
       arg[CurrArg] = TabFunc[TabArg[i]+150000](&i,TabArg);
     }
-    else                                /* Cas d'une variable */
+    else                                /* Variable case */
     {
       arg[CurrArg] = fxstrdup(TabVVar[TabArg[i]]);
     }
@@ -1640,7 +1640,7 @@ static void Loop (int NbArg,long *TabArg)
   {
     for (i=limit[0]; i<=limit[1]; i++)
     {
-      /* On met a jour la variable */
+      /* Refeshing the variable */
       sprintf(TabVVar[TabArg[0]],"%d",i);
       ExecBloc((Bloc*)TabArg[NbArg-1]);
     }
@@ -1658,7 +1658,7 @@ static void Loop (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-/** Instruction While **/
+/** While Instruction **/
 static void While (int NbArg,long *TabArg)
 {
   char *arg[3],*str;
@@ -1757,7 +1757,7 @@ static void WriteToFile (int NbArg,long *TabArg)
       memmove(&buf[CurrPos+strlen(arg[1])],&buf[CurrPos],strlen(buf)-CurrPos);
       memmove(&buf[CurrPos],arg[1],strlen(arg[1]));
     }
-    else          /* Remplacement des anciennes commandes */
+    else          /* Replacing old commands */
     {
       CurrPos = CurrPos+strlen(StrBegin);
       CurrPos2 = CurrPos;
@@ -1796,12 +1796,12 @@ static void SendToScript (int NbArg,long *TabArg)
   int j=0;
   Atom myatom;
 
-  /* Calcul destinataire */
+  /* Compute Receiver */
   tempstr=CalcArg(TabArg,&j);
   dest=(int)atoi(tempstr);
   free(tempstr);
 
-  /* Calcul contenu */
+  /* Compute what's inside */
   Msg=fxcalloc(256, sizeof(char));
   for (j=1;j<NbArg;j++)
   {
@@ -1812,21 +1812,21 @@ static void SendToScript (int NbArg,long *TabArg)
     free(tempstr);
   }
 
-  /* Calcul recepteur */
+  /* Compute Receiver */
   R=fxcalloc(strlen(x11base->TabScriptId[dest]) + 1, sizeof(char));
   sprintf(R,"%s",x11base->TabScriptId[dest]);
   myatom=XInternAtom(dpy,R,True);
 
   if ((BuffSend.NbMsg<40)&&(XGetSelectionOwner(dpy,myatom)!=None))
   {
-    /* Enregistrement dans le buffer du message */
+    /* Storing into message buffer */
     BuffSend.TabMsg[BuffSend.NbMsg].Msg=Msg;
-    /* Enregistrement dans le buffer du destinataire */
+    /* Storing into receiver buffer */
     BuffSend.TabMsg[BuffSend.NbMsg].R=R;
-    /* Enregistrement du message */
+    /* Storing the message */
     BuffSend.NbMsg++;
 
-    /* Reveil du destinataire */
+    /* Waking the receiver up */
     XConvertSelection(dpy,
 		      XInternAtom(dpy,x11base->TabScriptId[dest],True),
 		      propriete, propriete, x11base->win, CurrentTime);
@@ -1925,11 +1925,11 @@ static char *FuncGettext(int *NbArg,long *TabArg)
 }
 
 /*
- * Fonction d'initialisation de TabCom et TabFunc
+ * Initializing TabCom and TabFunc
  */
 void InitCom(void)
 {
-  /* commande */
+  /* Command */
   TabCom[1]=Exec;
   TabCom[2]=HideObj;
   TabCom[3]=ShowObj;
@@ -1958,7 +1958,7 @@ void InitCom(void)
   TabCom[27]=ChangeWindowTitle;
   TabCom[28]=ChangeWindowTitleFromArg;
 
-  /* Fonction */
+  /* Function */
   TabFunc[1]=FuncGetValue;
   TabFunc[2]=FuncGetTitle;
   TabFunc[3]=FuncGetOutput;
@@ -1986,7 +1986,7 @@ void InitCom(void)
   TabFunc[25]=FuncGetLastString;
   TabFunc[26]=FuncGettext;
 
-  /* Fonction de comparaison */
+  /* Comparison Function */
   TabComp[1]=Inf;
   TabComp[2]=InfEq;
   TabComp[3]=Equal;

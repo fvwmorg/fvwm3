@@ -38,7 +38,7 @@ int getCharOffsetBoundsCheck(FlocaleFont *flf, char *str, int offset)
 }
 
 /*
- * Fonction d'ecriture en relief
+ * Function for 3D writing
  */
 void MyDrawString(
 	Display *dpy, struct XObj *xobj, Window win, int x, int y,
@@ -171,7 +171,7 @@ int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len,
 }
 
 /*
- * Retourne le titre de l'option id du menu
+ * Returns menu's option id title
  */
 char* GetMenuTitle(char *str, int id)
 {
@@ -199,7 +199,7 @@ char* GetMenuTitle(char *str, int id)
 }
 
 /*
- * Dessine le contenu de la fenetre du popup-menu
+ * Draw popup menu window content
  */
 void DrawPMenu(struct XObj *xobj, Window WinPop, int h, int StrtOpt)
 {
@@ -237,7 +237,7 @@ void DrawPMenu(struct XObj *xobj, Window WinPop, int h, int StrtOpt)
 		XSetForeground(dpy, xobj->gc, xobj->TabColor[shad]);
 		XDrawSegments(dpy, WinPop, xobj->gc, segm, 2);
 	}
-	/* Ecriture des options */
+	/* Write options */
 	for (i=StrtOpt; i <= xobj->value3; i++)
 		UnselectMenu(
 			xobj, WinPop, h, i, width, xobj->Ffont->ascent, StrtOpt);
@@ -262,7 +262,7 @@ void UnselectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value,
 }
 
 /*
- * Dessine l'option active d'un menu
+ * Draw menu's active option
  */
 void SelectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value)
 {
@@ -304,7 +304,7 @@ void SelectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value)
 }
 
 /*
- * Compte le nombre d'option contenu dans un menu
+ * Get the number of options in a menu
  */
 int CountOption(char *str)
 {
@@ -322,7 +322,7 @@ int CountOption(char *str)
 
 
 /*
- * Dessine l'icone et le titre du widget
+ * Draw widget icon and title
  */
 void DrawIconStr(
 	int offset, struct XObj *xobj, int DoRedraw,
@@ -382,7 +382,7 @@ void DrawIconStr(
 
 	if (len > 0 && xobj->iconPixmap==None)
 	{
-		/* Si l'icone n'existe pas */
+		/* if no icon */
 		j = xobj->height/2 - (xobj->Ffont->height)/2 +
 			xobj->Ffont->ascent + offset;
 		MyDrawString(
@@ -391,7 +391,7 @@ void DrawIconStr(
 	}
 	else
 	{
-		/* Si l'icone existe */
+		/* if icon exists */
 		FvwmRenderAttributes fra;
 		Bool do_draw_icon = True;
 		XRectangle ir;
@@ -456,7 +456,7 @@ void DrawIconStr(
 				dpy,xobj,xobj->win,i,j,str,fore,hili,
 				back,!xobj->flags[1], str_clip, evp);
 		}
-		/* Dessin de l'icone */
+		/* Draw icon */
 		fra.mask = FRAM_DEST_IS_A_WINDOW;
 		if (xobj->colorset >= 0)
 		{
@@ -477,7 +477,7 @@ void DrawIconStr(
 }
 
 /*
- * Fonction de dessin d'un rectangle en relief
+ * Function to draw a 3D rectangle
  */
 void DrawReliefRect(int x, int y, int width, int height, struct XObj *xobj,
 		    unsigned int LiC, unsigned int ShadC)
@@ -518,7 +518,7 @@ void DrawReliefRect(int x, int y, int width, int height, struct XObj *xobj,
 }
 
 /*
- * Insertion d'un str dans le titre d'un objet
+ * Insert a string into an object title
  */
 int InsertText(struct XObj *xobj, char *str, int SizeStr)
 {
@@ -526,7 +526,7 @@ int InsertText(struct XObj *xobj, char *str, int SizeStr)
 	int NewPos;
 	int i;
 
-	/* Insertion du caractere dans le titre */
+	/* Insert a charactere into title */
 	NewPos = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
 					  xobj->value);
 	Size = strlen(xobj->title);
@@ -541,7 +541,7 @@ int InsertText(struct XObj *xobj, char *str, int SizeStr)
 }
 
 /*
- * Lecture d'un morceau de texte de xobj->value à End
+ * Read a substring from xobj->value to End
  */
 char *GetText(struct XObj *xobj, int End)
 {
@@ -606,7 +606,7 @@ void SelectOneTextField(struct XObj *xobj)
 }
 
 /*
- * Dessine une fleche direction nord
+ * Draw a North direction arrow
  */
 void DrawArrowN(struct XObj *xobj, int x, int y, int Press)
 {
@@ -651,7 +651,7 @@ void DrawArrowN(struct XObj *xobj, int x, int y, int Press)
 }
 
 /*
- * Dessine une fleche direction sud
+ * Draw a South direction arrow
  */
 void DrawArrowS(struct XObj *xobj, int x, int y, int Press)
 {
@@ -785,7 +785,7 @@ int PtInRect(XPoint pt, XRectangle rect)
 		(pt.x <= rect.x+rect.width) && (pt.y <= rect.y+rect.height));
 }
 
-/* Arret pendant t*1/60 de secondes */
+/* Stop for t*1/60 seconds */
 void Wait(int t)
 {
 	struct timeval *tv;

@@ -22,7 +22,7 @@
 #include "Tools.h"
 
 /*
- * Fonction pour PopupMenu / function for PopupMenu
+ * function for PopupMenu
  */
 
 void InitPopupMenu(struct XObj *xobj)
@@ -32,7 +32,7 @@ void InitPopupMenu(struct XObj *xobj)
   int i;
   char *str;
 
-  /* Enregistrement des couleurs et de la police / set the colors and the font
+  /* Save colors and font
    */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
@@ -50,7 +50,7 @@ void InitPopupMenu(struct XObj *xobj)
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
   Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-  mask |= CWCursor;             /* Curseur pour la fenetre / window cursor */
+  mask |= CWCursor;             /* window cursor */
 
   xobj->win = XCreateWindow(dpy, *xobj->ParentWin,
 		xobj->x, xobj->y, xobj->width, xobj->height, 0,
@@ -74,7 +74,7 @@ void InitPopupMenu(struct XObj *xobj)
   if (xobj->value < 1)
     xobj->value = 1;
 
-  /* Redimensionnement du widget / Widget resizing */
+  /* Widget resizing */
   xobj->height = xobj->Ffont->height  +12;
   xobj->width = 30;
   for (i = 1; i <= xobj->value3; i++)
@@ -108,7 +108,7 @@ void DrawPopupMenu(struct XObj *xobj, XEvent *evp)
 
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
 
-  /* Dessin de la fleche / arrow drawing */
+  /* arrow drawing */
   segm[0].x1 = 7;
   segm[0].y1 = asc;
   segm[0].x2 = 19;
@@ -138,7 +138,7 @@ void DrawPopupMenu(struct XObj *xobj, XEvent *evp)
   XSetForeground(dpy, xobj->gc, xobj->TabColor[hili]);
   XDrawSegments(dpy, xobj->win, xobj->gc, segm, 2);
 
-  /* Dessin du titre du popup menu */
+  /* Draw popup menu title */
   str = (char*)GetMenuTitle(xobj->title, xobj->value);
   y = asc + 5;
   x = GetXTextPosition(xobj,xobj->width,
@@ -173,7 +173,7 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   yMenu = xobj->y - ((xobj->value-1) * hOpt);
   hMenu = xobj->value3 * hOpt;
 
-  /* Creation de la fenetre menu */
+  /* Create menu window */
   XTranslateCoordinates(dpy, *xobj->ParentWin, Root,
 			xobj->x, yMenu, &x, &y, &Win1);
   if (x < 0) x = 0;
@@ -190,7 +190,7 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   Attr.colormap = Pcmap;
   mask |= CWColormap;
   Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-  mask |= CWCursor;             /* Curseur pour la fenetre / Window cursor */
+  mask |= CWCursor;             /* Window cursor */
   Attr.override_redirect = True;
   mask |= CWOverrideRedirect;
   WinPop = XCreateWindow(dpy, Root, x, y, xobj->width, hMenu, 0,
@@ -201,7 +201,7 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 			xobj->gc, True);
   XMapRaised(dpy, WinPop);
 
-  /* Dessin du menu / Drawing the menu */
+  /* Drawing the menu */
   DrawPMenu(xobj, WinPop, hOpt, 0);
   XGrabPointer(dpy, WinPop, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
 	       None, None, CurrentTime);
@@ -216,10 +216,10 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   while (End)
   {
     FQueryPointer(dpy, Root, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
-    /* Determiner l'option courante / Current option */
+    /* Find current option */
     y2 = y2 - y;
     x2 = x2 - x;
-    /* calcule de xobj->value / compute xobj->value */
+    /* compute xobj->value */
     if ((x2 > 0) && (x2 < xobj->width) && (y2 > 0) && (y2 < hMenu))
       newvalue = y2 / hOpt+1;
     else

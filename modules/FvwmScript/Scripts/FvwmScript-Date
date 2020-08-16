@@ -1,5 +1,5 @@
 WindowTitle {Date}
-WindowSize 360 330		# Taille
+WindowSize 360 330		# Size
 WindowPosition 191 50		# Position
 ForeColor	{black}
 BackColor	{grey85}

@@ -21,7 +21,7 @@
 #include "Tools.h"
 
 /*
- * Fonction pour MiniScroll / Functions for MiniScroll
+ * Functions for MiniScroll
  */
 void InitMiniScroll(struct XObj *xobj)
 {
@@ -29,7 +29,7 @@ void InitMiniScroll(struct XObj *xobj)
   XSetWindowAttributes Attr;
   int i;
 
-  /* Enregistrement des couleurs / colors */
+  /* Save colors */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
     xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -46,7 +46,7 @@ void InitMiniScroll(struct XObj *xobj)
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
 
-  /* La taille du widget est fixe / The widget size is fixed */
+  /* The widget size is fixed */
   xobj->width = 19;
   xobj->height = 34;
   xobj->win=XCreateWindow(dpy, *xobj->ParentWin,
@@ -82,8 +82,8 @@ void DrawMiniScroll(struct XObj *xobj, XEvent *evp)
 
   DrawReliefRect(-1, -1, xobj->width+2, xobj->height+2, xobj, hili, shad);
 
-  DrawArrowN(xobj, 3, 3, 0);  /* fleche du haut / top arrow    */
-  DrawArrowS(xobj, 3, 18, 0); /* fleche du bas  / bottom arrow */
+  DrawArrowN(xobj, 3, 3, 0);  /* top arrow    */
+  DrawArrowS(xobj, 3, 18, 0); /* bottom arrow */
 }
 
 void EvtMouseMiniScroll(struct XObj *xobj, XButtonEvent *EvtButton)
@@ -114,7 +114,7 @@ void EvtMouseMiniScroll(struct XObj *xobj, XButtonEvent *EvtButton)
     }
     FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		  &x1, &y1, &x2, &y2, &modif);
-    /* Determiner l'option courante */
+    /* Find current option */
     y2 = y2 - xobj->y;
     x2 = x2 - xobj->x;
     if ((x2 > 0) && (x2 < xobj->width) && (y2 > 0) && (y2 < xobj->height/2))

@@ -23,7 +23,7 @@
 extern int fd[2];
 
 /*
- * Fonction pour Swallow
+ * Function for Swallow
  */
 
 void DrawRelief(struct XObj *xobj)
@@ -82,7 +82,7 @@ void InitSwallow(struct XObj *xobj)
 	static Bool session_manager = False;
 	char *cmd;
 
-	/* Enregistrement des couleurs et de la police */
+	/* Save colors and font */
 	if (xobj->colorset >= 0) {
 		xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
 		xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -101,7 +101,7 @@ void InitSwallow(struct XObj *xobj)
 				CopyFromParent,InputOutput,CopyFromParent,
 				mask,&Attr);
 
-	/* Redimensionnement du widget */
+	/* Resize widget */
 	if (xobj->height<30)
 		xobj->height=30;
 	if (xobj->width<30)
@@ -148,7 +148,7 @@ void InitSwallow(struct XObj *xobj)
 
 void DestroySwallow(struct XObj *xobj)
 {
-	/* Arrete le programme swallow */
+	/* Stop swallow program */
 	if (xobj->win!=None)
 		XKillClient(dpy, xobj->win);
 	xobj->win = None;
@@ -167,7 +167,7 @@ void EvtKeySwallow(struct XObj *xobj,XKeyEvent *EvtKey)
 {
 }
 
-/* Recupere le pointeur de la fenetre Swallow */
+/* Get the Swallow window pointer */
 void CheckForHangon(struct XObj *xobj,unsigned long *body)
 {
 	char *cbody;

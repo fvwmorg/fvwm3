@@ -21,14 +21,14 @@
 #include "Tools.h"
 
 /*
- * Fonction pour CheckBox / functions for CheckBox
+ * functions for CheckBox
  */
 void InitCheckBox(struct XObj *xobj)
 {
   unsigned long mask;
   XSetWindowAttributes Attr;
 
-  /* Enregistrement des couleurs et de la police / fonts and colors */
+  /* fonts and colors */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
     xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -45,7 +45,7 @@ void InitCheckBox(struct XObj *xobj)
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
   Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-  mask |= CWCursor;  /* Curseur pour la fenetre / Cursor for the window */
+  mask |= CWCursor;  /* Cursor for the window */
 
   xobj->win = XCreateWindow(dpy, *xobj->ParentWin,
 		xobj->x, xobj->y, xobj->width, xobj->height,0,
@@ -64,7 +64,7 @@ void InitCheckBox(struct XObj *xobj)
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
-  /* Redimensionnement du widget / resize the widget */
+  /* resize the widget */
   xobj->height = xobj->Ffont->height + 5;
   xobj->width =
     FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title)) + 30;
@@ -87,15 +87,14 @@ void DrawCheckBox(struct XObj *xobj, XEvent *evp)
 {
   XSegment segm[2];
 
-  /* Dessin du rectangle arrondi / drawing of the round rectangle */
+  /* drawing of the round rectangle */
   DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
 		 xobj, hili, shad);
 
-  /* Calcul de la position de la chaine de charactere */
   /* Compute the position of string */
   MyDrawString(dpy, xobj, xobj->win, 23, xobj->Ffont->ascent, xobj->title,
 	       fore, hili, back, !xobj->flags[1], NULL, evp);
-  /* Dessin de la croix / draw the cross */
+  /* draw the cross */
   if (xobj->value)
   {
     XSetLineAttributes(dpy, xobj->gc, 2, LineSolid, CapProjecting, JoinMiter);
@@ -181,7 +180,7 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
       /* Mouse not on button */
       if (In)
       {
-	/* Envoie d'un message vide de type SingleClic pour un clique souris */
+	/* Send an empty message of SingleClic type, for a mouse click */
 	xobj->value = !xobj->value;
 	DrawReliefRect(0, xobj->Ffont->ascent -11, xobj->height, xobj->height,
 		       xobj, hili, shad);

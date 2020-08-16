@@ -1,5 +1,5 @@
 WindowTitle {Buttons}
-WindowSize 548 95		# Taille
+WindowSize 548 95		# Size
 WindowPosition 0 0		# Position
 ForeColor	{#000000}
 BackColor	{#d0d0d0}

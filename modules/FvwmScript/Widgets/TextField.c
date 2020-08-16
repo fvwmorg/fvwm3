@@ -21,7 +21,7 @@
 #include "Tools.h"
 
 /*
- * Fonction for TextField
+ * Function for TextField
  */
 
 void InitTextField(struct XObj *xobj)
@@ -31,8 +31,7 @@ void InitTextField(struct XObj *xobj)
 	int i;
 	int num_chars;
 
-	/* Enregistrement des couleurs et de la police */
-	/* colors and fonts */
+	/* Save colors and fonts */
 	if (xobj->colorset >= 0) {
 		xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
 		xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -47,7 +46,7 @@ void InitTextField(struct XObj *xobj)
 
 	mask=0;
 	Attr.cursor=XCreateFontCursor(dpy,XC_xterm);
-	mask|=CWCursor; /* Curseur pour la fenetre / window cursor */
+	mask|=CWCursor; /* window cursor */
 	Attr.background_pixel=xobj->TabColor[back];
 	mask|=CWBackPixel;
 
@@ -69,7 +68,6 @@ void InitTextField(struct XObj *xobj)
 		XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
 	XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
-	/* value2 représente la fin de la zone selectionnee */
 	/* value2 gives the end of the selected zone */
 	/* calculate number of characters in title */
 	num_chars = FlocaleStringCharLength(xobj->Ffont, xobj->title);
@@ -79,7 +77,6 @@ void InitTextField(struct XObj *xobj)
 	/* left position of the visible title */
 	xobj->value3=0;
 
-	/* Redimensionnement du widget */
 	/* widget resizing */
 	xobj->height= xobj->Ffont->height + 10;
 	i = FlocaleTextWidth(xobj->Ffont,xobj->title,strlen(xobj->title))+40;
@@ -100,7 +97,6 @@ void DestroyTextField(struct XObj *xobj)
 	XDestroyWindow(dpy,xobj->win);
 }
 
-/* Dessin du curseur du texte */
 /* text cursor drawing */
 void DrawPointTxt(struct XObj *xobj,unsigned int pixel)
 {
@@ -130,7 +126,6 @@ void DrawPointTxt(struct XObj *xobj,unsigned int pixel)
 	XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 }
 
-/* Dessin du contenu du champs texte */
 /* text field drawing */
 
 void DrawTextField(struct XObj *xobj, XEvent *evp)
@@ -177,7 +172,6 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
 	XClearArea(dpy,xobj->win,2,2,xobj->width-4,xobj->height-4,False);
 	XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
-	/* calcul du premier caractere visible */
 	/* computation of the first visible character */
 	while (l-nl >= 1 &&
 	       FlocaleTextWidth(xobj->Ffont,xobj->title + nl,
@@ -205,7 +199,6 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 	}
 	fvwm_debug(__func__, "Got visible offset; %d char %d\n", offset3,
 		   xobj->value3);
-	/* calcul de la longueur du titre visible */
 	/* computation of the length of the visible title */
 	/* increase string until it won't fit anymore into into the textbox */
 	right = offset3;
@@ -279,7 +272,6 @@ void DrawTextField(struct XObj *xobj, XEvent *evp)
 		dpy,xobj->win,xobj->gc,x1+5,7,x2,y1+xobj->Ffont->descent-2);
 	XSetFunction(dpy,xobj->gc,GXcopy);
 
-	/* Dessin du point d'insertion */
 	/* insertion point drawing */
 	DrawPointTxt(xobj,xobj->TabColor[fore]);
 }
@@ -302,8 +294,6 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 	XRectangle rect;
 	int start_pos, selection_pos, curs_pos;
 
-	/* On deplace le curseur a la position de la souris */
-	/* On recupere la position de la souris */
 	/* We move the cursor at mouse position and we get the mouse position
 	 */
 	switch (EvtButton->button)
@@ -371,7 +361,6 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 							   curs_pos);
 					PosCurs++;
 				}
-				/* Limitation de la zone de dessin */
 				/* limitation of the drawing zone */
 				/* these 2 if-statements updates current
 				   cursor position of the widget if needed */
@@ -425,8 +414,8 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 			}
 		}
 
-		/* Enregistrement de la selection dans le presse papier */
-		/* Le programme devient proprietaire de la selection */
+		/* Save selection zone in clipboard */
+		/* Program becomes the selection owner */
 		/* selection stuff: get the selection */
 		if (xobj->value != xobj->value2)
 		{
@@ -445,14 +434,13 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 		}
 		break;
 
-	case Button2:                        /* Colle le texte */
-		/* Si l'application possede pas la selection, elle la demande
+	case Button2:                        /* Paste text */
+		/* If application has no selection, it asks for one
 		 */
-		/* sinon elle lit son presse papier */
+		/* else it reads its clipboard */
 		/* read the selection */
 		if (!x11base->HaveXSelection)
 		{
-			/* Demande de la selection */
 			/* ask for the selection */
 			XConvertSelection(
 				dpy,XA_PRIMARY,XA_STRING,propriete,
@@ -499,7 +487,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 		}
 		break;
 
-	case Button3:                /* Appuie sur le troisieme bouton */
+	case Button3:                /* Push on third button */
 		FQueryPointer(
 			dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,
 			&modif);
@@ -608,7 +596,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 	int NewPos;
 	int new_value;
 
-	/* Recherche du charactere */
+	/* Find character */
 	i=XLookupString(EvtKey,car,10,&ks,NULL);
 	/* calculate byte offset from current position */
 	NewPos = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
@@ -678,9 +666,8 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 				SendMsg(xobj,SingleClic);
 			}
 		}
-		else if (i!=0)        /* Cas d'un caractere normal */
+		else if (i!=0)        /* Normal character */
 		{
-			/* Insertion du caractere dans le titre */
 			/* a normal character: insertion in the title */
 			/* here "i" is the number of bytes returned
 			   need not be 1 incase of MB locale */

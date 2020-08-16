@@ -1,6 +1,6 @@
 UseGettext
 WindowLocaleTitle {File Browser}
-WindowSize 360 340		# Taille
+WindowSize 360 340		# Size
 Font {}
 
 Init

@@ -1,6 +1,6 @@
 UseGettext
 WindowLocaleTitle {Keyboard Setup}
-WindowSize 365 265		# Taille
+WindowSize 365 265		# Size
 Font "xft:monospace:pixelsize=11;"
 
 Init

@@ -33,7 +33,7 @@ void InitMenu(struct XObj *xobj)
   int i;
   char *Option;
 
-  /* Enregistrement des couleurs et de la police / fonts and colors */
+  /* Save font and colors */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
     xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -110,7 +110,6 @@ void DrawMenu(struct XObj *xobj, XEvent *evp)
   XSegment segm[2];
   int i;
 
-  /* Si c'est le premier menu, on dessine la bar de menu */
   /* if it is the first menu we draw the menu bar */
   if (xobj->x == 2)
   {
@@ -166,7 +165,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 
   hOpt = xobj->Ffont->height + 10;
   xobj->value3 = CountOption(xobj->title);
-  /* Hauteur totale du menu / total height of the menu */
+  /* total height of the menu */
   hMenu = (xobj->value3 - 1) * hOpt;
   yMenu = xobj->y + xobj->height;
   wMenu = 0;
@@ -178,7 +177,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
     free(str);
   }
 
-  /* Creation de la fenetre menu / Create the menu window */
+  /* Create the menu window */
   XTranslateCoordinates(dpy, *xobj->ParentWin, Root,
 			xobj->x, yMenu, &x, &y, &Win1);
   if (x<0) x = 0;
@@ -196,7 +195,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   Attr.colormap = Pcmap;
   mask |= CWColormap;
   Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-  /* Curseur pour la fenetre / cursor for the window */
+  /* cursor for the window */
   mask |= CWCursor;
   Attr.override_redirect = True;
   mask |= CWOverrideRedirect;
@@ -208,7 +207,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 			xobj->gc, True);
   XMapRaised(dpy, WinPop);
 
- /* Dessin du menu / Drawing the menu */
+ /* Drawing the menu */
   DrawPMenu(xobj, WinPop, hOpt, 1);
   XGrabPointer(dpy, WinPop, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
 	       None, None, CurrentTime);
@@ -223,10 +222,10 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   while (End)
   {
     FQueryPointer(dpy, Root, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
-    /* Determiner l'option courante */
+    /* Find current option */
     y2 = y2 - y;
     x2 = x2 - x;
-    /* calcule de xobj->value */
+    /* compute xobj->value */
     if ((x2 > 0) && (x2 < wMenu) && (y2 > 0) && (y2 < hMenu))
       newvalue = y2 / hOpt+1;
     else

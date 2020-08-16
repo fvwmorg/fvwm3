@@ -1,5 +1,5 @@
 WindowTitle {Find}
-WindowSize 520 340		# Taille
+WindowSize 520 340		# Size
 #ForeColor	{black}
 #BackColor	{grey85}
 #ShadowColor	{grey55}

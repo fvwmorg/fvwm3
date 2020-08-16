@@ -21,14 +21,14 @@
 #include "Tools.h"
 
 /*
- * Fonction pour Rectangle
+ * Function for Rectangle
  */
 void InitRectangle(struct XObj *xobj)
 {
 	unsigned long mask;
 	XSetWindowAttributes Attr;
 
-	/* Enregistrement des couleurs et de la police */
+	/* Save colors and font */
 	if (xobj->colorset >= 0) {
 		xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
 		xobj->TabColor[back] = Colorset[xobj->colorset].bg;

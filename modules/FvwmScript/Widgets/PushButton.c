@@ -24,7 +24,7 @@
 #define PUSH_BUTTON_LCR_OFFSETS 4,0,4
 
 /*
- * Fonction pour PushButton
+ * Function for PushButton
  */
 void InitPushButton(struct XObj *xobj)
 {
@@ -33,7 +33,7 @@ void InitPushButton(struct XObj *xobj)
 	int i;
 	char *str;
 
-	/* Enregistrement des couleurs et de la police */
+	/* Save colors and font */
 	if (xobj->colorset >= 0) {
 		xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
 		xobj->TabColor[back] = Colorset[xobj->colorset].bg;
@@ -53,7 +53,7 @@ void InitPushButton(struct XObj *xobj)
 	mask |= CWBackPixel;
 
 
-	/* Epaisseur de la fenetre = 0 */
+	/* Window thickness = 0 */
 	xobj->win = XCreateWindow(
 		dpy, *xobj->ParentWin, xobj->x, xobj->y, xobj->width,
 		xobj->height, 0, CopyFromParent, InputOutput, CopyFromParent,
@@ -73,7 +73,7 @@ void InitPushButton(struct XObj *xobj)
 
 	XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
-	/* Redimensionnement du widget */
+	/* Resize widget */
 	str = (char*)GetMenuTitle(xobj->title, 1);
 	if (xobj->icon == NULL)
 	{
@@ -241,8 +241,8 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 					NULL);
 				if (In)
 				{
-					/* Envoie d'un message vide de type
-					 * SingleClic pour un clique souris */
+					/* Send an empty message of SingleClick type
+					 * for a mouse click */
 					xobj->value = 1;
 					SendMsg(xobj, SingleClic);
 					xobj->value = 0;
@@ -251,13 +251,13 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 			}
 		}
 	}
-	/* affichage du popup menu / Drawing the popup menu */
+	/* Drawing the popup menu */
 	else if (EvtButton->button == Button3)
 	{
 		if (xobj->value3 > 1)
 		{
 			hOpt = xobj->Ffont->height + 10;
-			/* Hauteur totale du menu / Total height of the menu */
+			/* Total height of the menu */
 			hMenu = (xobj->value3 - 1) * hOpt;
 			yMenu = xobj->y + xobj->height;
 			wMenu = 0;
@@ -272,8 +272,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 				free(str);
 			}
 
-			/* Creation de la fenetre menu / create the menu
-			 * window */
+			/* create the menu window */
 			XTranslateCoordinates(dpy, *xobj->ParentWin, Root,
 					      xobj->x, yMenu, &x, &y, &Win1);
 			if (x<0) x = 0;
@@ -295,7 +294,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 			Attr.colormap = Pcmap;
 			mask |= CWColormap;
 			Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-			mask |= CWCursor;         /* Curseur pour la fenetre */
+			mask |= CWCursor;         /* Window cursor */
 			Attr.override_redirect = True;
 			mask |= CWOverrideRedirect;
 			WinPop = XCreateWindow(
@@ -308,20 +307,18 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 					xobj->gc, True);
 			XMapRaised(dpy, WinPop);
 
-			/* Dessin du menu */
+			/* Draw the menu */
 			DrawPMenu(xobj, WinPop, hOpt, 1);
 			do
 			{
 				FQueryPointer(
 					dpy, Root, &Win1, &Win2, &x1, &y1,
 					&x2, &y2, &modif);
-				/* Determiner l'option courante / Current
-				 * option */
+				/* Find current option */
 				y2 = y2 - y;
 				x2 = x2 - x;
 				{
-					/* calcule de xobj->value / Compute
-					 * xobj->value */
+					/* Compute xobj->value */
 					if ((x2 > 0) && (x2 < wMenu) &&
 					    (y2 > 0) && (y2 < hMenu))
 						newvalue = y2 / hOpt+1;

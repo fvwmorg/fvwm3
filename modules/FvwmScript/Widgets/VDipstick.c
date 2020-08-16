@@ -21,16 +21,16 @@
 #include "Tools.h"
 
 /*
- * Fonction pour VDipstick
- * Création d'une jauge verticale
- * plusieurs options
+ * Function for VDipstick
+ * Create a vertical slider
+ * several options
  */
 void InitVDipstick(struct XObj *xobj)
 {
 	unsigned long mask;
 	XSetWindowAttributes Attr;
 
-	/* Enregistrement des couleurs et de la police */
+	/* Save colors and font */
 	if (xobj->colorset >= 0) {
 		xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
 		xobj->TabColor[back] = Colorset[xobj->colorset].bg;
