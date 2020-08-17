@@ -99,6 +99,9 @@ Bool Swallowed = False;
 int colorset = -1;
 int itemcolorset = 0;
 
+/* global not exported */
+const struct itimerval itv_100ms = { {0L, 100000L}, {0L, 100000L} };
+
 /* prototypes */
 static void RedrawSeparator(Item *item);
 static void AssignDrawTable(Item *);
@@ -135,7 +138,7 @@ static void SetupTimer(void)
 #endif
 #endif
 
-  alarm(1);
+  setitimer(ITIMER_REAL, &itv_100ms, NULL);
 }
 
 /* copy a string until '"', or '\n', or '\0' */
@@ -878,7 +881,7 @@ static void ct_Title(char *cp)
 }
 static void ct_Timeout(char *cp)
 {
-  /* syntax: *FFTimeout seconds <Command> "Text" */
+  /* syntax: *FFTimeout tenth_of_seconds <Command> "Text" */
   char *tmpcp, *tmpbuf;
 
   if (timer != NULL) {
@@ -2674,7 +2677,7 @@ TimerHandler(int sig)
   }
   else {
     RedrawTimeout(timer);
-    alarm(1);
+    setitimer(ITIMER_REAL, &itv_100ms, NULL);
   }
 
   SIGNAL_RETURN;
