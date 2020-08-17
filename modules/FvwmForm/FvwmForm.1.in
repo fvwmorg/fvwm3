@@ -582,13 +582,13 @@ used while the pointer is over a text field.
 See DEFAULTS.
 
 .TP 4
-.B *FvwmForm: Timeout \fIseconds\fP \fIcommand\fP \fI"text"\fP
-Set up FvwmForm to time out after the amount of \fIseconds\fP
+.B *FvwmForm: Timeout \fItenth_of_seconds\fP \fIcommand\fP \fI"text"\fP
+Set up FvwmForm to time out after the amount of \fItenth of seconds\fP
 specified.  When the timer hits zero, \fIcommand\fP executes.  The
 \fItext\fP field is displayed much like a \fIText\fP
 field, except that a '%%' in the line is replaced automatically by
 the amount of time left on the timer.  The value gets updated every
-second as the timer counts down.
+tenth of second as the timer counts down.
 There can only be one timeout field per form.
 
 .SH EXAMPLES
@@ -623,7 +623,7 @@ DestroyModuleConfig  FvwmForm-QuitVerify: *
 *FvwmForm-QuitVerify: Command     Restart
 *FvwmForm-QuitVerify: Button      quit "Cancel" ^[
 *FvwmForm-QuitVerify: Command     Nop
-*FvwmForm-QuitVerify: Timeout     20 Quit "Automatic logout will occur in %% seconds."
+*FvwmForm-QuitVerify: Timeout     200 Quit "Automatic logout will occur in %% tenth of seconds."
 .EE
 
 .SH EXAMPLE 2 - Remote Login
