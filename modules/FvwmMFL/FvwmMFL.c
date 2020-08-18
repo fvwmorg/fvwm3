@@ -112,6 +112,7 @@ static struct fvwm_msg *handle_packet(unsigned long, unsigned long *, unsigned l
 static struct fvwm_msg *fvwm_msg_new(void);
 static void fvwm_msg_free(struct fvwm_msg *);
 static void register_interest(void);
+static void send_version_info(struct client *);
 
 static struct fvwm_msg *
 fvwm_msg_new(void)
@@ -157,6 +158,37 @@ setup_signal_handlers(struct event_base *base)
 	evsignal_add(pipe, NULL);
 	evsignal_add(child, NULL);
 	evsignal_add(intrp, NULL);
+}
+
+static void
+send_version_info(struct client *c)
+{
+	struct fvwm_msg		*fm;
+	size_t			 json_len;
+	char			*as_json, *to_client;
+
+	fm = fvwm_msg_new();
+	fm->msg = BCON_NEW("connection_profile",
+		"{",
+		    "version", BCON_UTF8(VERSION),
+		    "version_info", BCON_UTF8(VERSIONINFO),
+		"}"
+	);
+	as_json = bson_as_relaxed_extended_json(fm->msg, &json_len);
+	if (as_json == NULL) {
+		free(fm);
+		return;
+	}
+
+	/* Ensure there's a newline at the end of the string, so that
+	 * buffered output can be sent.
+	 */
+	asprintf(&to_client, "%s\n", as_json);
+
+	bufferevent_write(c->comms, to_client, strlen(to_client));
+	bufferevent_flush(c->comms, EV_WRITE, BEV_NORMAL);
+	free(fm);
+	free(to_client);
 }
 
 static struct fvwm_msg *
@@ -571,6 +603,8 @@ accept_conn_cb(struct evconnlistener *l, evutil_socket_t fd,
 	bufferevent_setcb(c->comms, client_read_cb, client_write_cb,
 	    client_err_cb, c);
 	bufferevent_enable(c->comms, EV_READ|EV_WRITE|EV_PERSIST);
+
+	send_version_info(c);
 
 	TAILQ_INSERT_TAIL(&clientq, c, entry);
 }
