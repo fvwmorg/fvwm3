@@ -427,7 +427,6 @@ AddToMenu   MenuFvwmManPages "Help" Title
 + "fvwm-root"	        ViewManPage fvwm-root
 + "fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop
 + "fvwm-menu-directory" ViewManPage fvwm-menu-directory
-+ "fvwm-menu-headlines" ViewManPage fvwm-menu-headlines
 + "fvwm-menu-xlock"     ViewManPage fvwm-menu-xlock
 + "fvwm-config"         ViewManPage fvwm-config
 
