@@ -712,10 +712,6 @@ Rewritten on 1999-08-05 by Mikhael Goikhman <migo@homemail.com>.
 The script is distributed by the same terms as fvwm itself.
 See GNU General Public License for details.
 
-=head1 BUGS
-
-Report bugs to fvwm-bug@fvwm.org.
-
 =cut
 
 # ***************************************************************************

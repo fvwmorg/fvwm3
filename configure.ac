@@ -1565,7 +1565,6 @@ AC_OUTPUT(
 	fvwm/Makefile
 	modules/Makefile
 dnl
-	bin/fvwm-bug.1
 	bin/fvwm-config.1
 	bin/fvwm-convert-2.6.1
 	bin/fvwm-menu-desktop.1
@@ -1590,7 +1589,6 @@ dnl	bin/fvwm-perllib.1
 dnl
 	bin/Makefile
 	bin/fvwm-config
-	bin/fvwm-bug
 	bin/fvwm-perllib
 	bin/fvwm-menu-xlock
 	bin/fvwm-menu-directory
