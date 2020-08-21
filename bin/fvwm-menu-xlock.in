@@ -262,8 +262,6 @@ See GNU General Public License for details.
 Depends on the output of xlock. Will produce an empty menu if the structure
 of the output is changed.
 
-Report bugs to fvwm-bug@fvwm.org.
-
 =cut
 
 # ***************************************************************************
