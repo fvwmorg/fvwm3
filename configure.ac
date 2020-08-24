@@ -63,6 +63,43 @@ AC_PATH_PROG([PYTHON],[python3],[:])
 AS_IF([test "$PYTHON" != ":"],
             [AM_PYTHON_CHECK_VERSION([$PYTHON],[$REQUIRED_PYTHON_VERSION],[:],
 				     [PYTHON=":"])])
+
+# Golang
+problem_golang=""
+AC_ARG_ENABLE(golang,
+  AS_HELP_STRING([--enable-golang],[enable compilation of modules written in Go]),
+  [ if test x"$enableval" = xyes; then
+		with_golang="yes, check"
+	else
+		with_golang="no"
+		problem_golang=": Explicitly disabled"
+	fi ],
+  [ with_golang="no" ]
+)
+
+if test ! x"$with_golang" = xno; then
+	AC_CHECK_PROGS(GO, go)
+	if test -n "$GO" ; then
+	    GOVERSIONOPTION=version
+	    go_version=$($GO $GOVERSIONOPTION | sed -e 's/go version //')
+	    AC_MSG_CHECKING([whether go version is >= 1.4.x])
+	    case $go_version in
+	    go1.[14]*)
+	      AC_MSG_RESULT([yes - version is: $go_version])
+	      with_golang="yes"
+	      GO=
+	      ;;
+	    *)
+	      AC_MSG_RESULT([no - version is: $go_version])
+	      with_golang="no"
+	      problem_golang=": version of go ($go_version) <= 1.4.x"
+	      ;;
+	    esac
+	fi
+fi
+AM_CONDITIONAL([FVWM_BUILD_GOLANG], [test x"$with_golang" = xyes])
+AC_SUBST(GO)
+
 #!!!
 PERL=""
 REQUIRED_PERL_VERSION=5.004
@@ -1699,6 +1736,7 @@ Fvwm3 Configuration:
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm
   With Xrender image support?         $with_xrender$problem_xrender
+  With Golang support?                $with_golang$problem_golang
   Build man pages?                    $with_mandoc$problem_mandoc
   Build HTML documentation?           $with_htmldoc$problem_htmldoc
 
