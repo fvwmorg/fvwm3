@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
-
 program_transform_name =
 
 PERL = @PERL@
 moduledir = @FVWM_MODULEDIR@
+
+# If FVWM_BUILD_GOLANG has been defined via --enable-golang, then FvwmPrompt
+# is preferred.  In this case, disable compiling/installing FvwmConsole --
+# eventually, FvwmConsole will go away completely, but for compatibility
+# reasons, remains here only under this condition.
+if !FVWM_BUILD_GOLANG
 
 module_PROGRAMS = FvwmConsole FvwmConsoleC
 module_SCRIPTS = FvwmConsoleC.pl
@@ -24,3 +29,4 @@ LDADD = -L$(top_builddir)/libs -lfvwm3 $(readline_LIBS) $(X_EXTRA_LIBS)
 # Despite not using X functions explicitly, the code includes
 # fvwmlib.h, which *does* include X headers and xpm.h!
 AM_CPPFLAGS = -I$(top_srcdir) $(readline_CFLAGS) $(xpm_CFLAGS) $(X_CFLAGS)
+endif !FVWM_BUILD_GOLANG

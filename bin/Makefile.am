@@ -1,5 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
+SUBDIRS = FvwmPrompt
+
 bin_PROGRAMS = fvwm-root
 fvwm_root_SOURCE= fvwm-root.c
 fvwm_root_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
