@@ -429,7 +429,7 @@ void menuitem_paint(
 				y = MI_MINI_ICON(mi)[i]->height;
 			}
 		}
-		y -= font->height;
+		y -= font->height + ST_ITEM_GAP_ABOVE(ms) + ST_ITEM_GAP_BELOW(ms);
 		if (y > 1)
 		{
 			text_y += y / 2;
