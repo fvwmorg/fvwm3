@@ -124,7 +124,7 @@ func main() {
 
 	shell := ishell.New()
 	shell.ShowPrompt(false)
-	shell.IgnoreCase(true)
+	shell.IgnoreCase(false)
 
 	shell.DeleteCmd("help")
 	shell.DeleteCmd("clear")
