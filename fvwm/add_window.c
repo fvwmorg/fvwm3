@@ -2507,16 +2507,10 @@ FvwmWindow *AddWindow(
 		if (state_args.do_max)
 		{
 			SET_MAXIMIZED(fw, 1);
-#if 0
-			/* TA:  2020-04028:  No longer need to perform these
-			 * operations, since the size is already constrained
-			 * on recapture.
-			 */
 			constrain_size(
 				fw, NULL, &fw->g.max.width, &fw->g.max.height,
 				0, 0, CS_UPDATE_MAX_DEFECT);
 			get_relative_geometry(fw, &fw->g.frame, &fw->g.max);
-#endif
 		}
 		else
 		{
