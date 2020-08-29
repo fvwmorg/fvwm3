@@ -388,6 +388,12 @@ AC_SUBST(DOC_SECTIONS)
 AC_SUBST(DOC_SECTIONS_XML)
 AC_SUBST(DOC_SECTIONS_XML_PATH)
 
+PKG_CHECK_MODULES([xt],[xt],
+[],
+[
+ AC_MSG_ERROR([*** libxt not found. ***])
+])
+
 problem_mandoc=""
 AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, "")
 
