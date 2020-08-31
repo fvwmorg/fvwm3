@@ -10,7 +10,7 @@
 #
 # Intended to be called from configure.ac (via autogen.sh)
 
-VERSION=""
+VERSION="1.0.0-RC0"
 
 [ -d ".git" ] || { echo "$VERSION" && exit 0 ; }
 
