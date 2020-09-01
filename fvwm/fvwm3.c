@@ -1348,6 +1348,7 @@ static void SetRCDefaults(void)
 		{ "XORValue 0", "", "" },
 		{ "ImagePath "FVWM_DATADIR"/default-config/images", "", "" },
 		{ "SetEnv FVWM_DATADIR "FVWM_DATADIR"", "", "" },
+		{ "SetEnv FVWM_IS_FVWM3 1", "", "" },
 		/* The below is historical -- before we had a default
 		 * configuration which defines these and more.
 		 */
