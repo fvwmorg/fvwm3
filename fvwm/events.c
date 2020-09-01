@@ -3045,14 +3045,12 @@ void HandleMapRequestKeepRaised(
 		XRaiseWindow(dpy, KeepRaised);
 	}
 	/* If it's not merely iconified, and we have hints, use them. */
-
-	if (IS_MAPPED(fw))
-	{
+	if (IS_ICONIFIED(fw))
+		DeIconify(fw);
+	else if (IS_MAPPED(fw)) {
 		/* the window is already mapped - fake a MapNotify event */
 		fake_map_unmap_notify(fw, MapNotify);
-	}
-	else
-	{
+	} else {
 		int state;
 
 		if (fw->wmhints && (fw->wmhints->flags & StateHint))
