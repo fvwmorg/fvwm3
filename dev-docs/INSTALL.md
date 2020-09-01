@@ -15,8 +15,7 @@ repository.  This is the same Docker image as used by Github Actions.
 Manually
 ========
 
-FVWM3 has the following dependencies.  It's recommended to install all
-dependencies, core or optional.
+FVWM3 has the following dependencies.
 
 ## Core dependencies
 
