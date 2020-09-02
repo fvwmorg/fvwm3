@@ -10,13 +10,13 @@
 #
 # Intended to be called from configure.ac (via autogen.sh)
 
-VERSION="1.0.0-RC0"
+VERSION="1.0.0"
 
 [ -d ".git" ] || { echo "$VERSION" && exit 0 ; }
 
 if grep -q -i '^ISRELEASED="yes"' ./configure.ac; then
 	# A release build.  Strip the git information off the tag name.
-	git describe --tags --abbrev=0 2>/dev/null || echo "$VERSION"
+	git describe --tags --abbrev=0 2>/dev/null || echo "released"
 else
 	git describe --always --long --dirty
 fi
