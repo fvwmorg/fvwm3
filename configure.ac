@@ -127,7 +127,8 @@ AC_MSG_RESULT([assuming $PERL as perl location])
 AC_SUBST(PERL)
 
 # installation paths
-transform=`echo "${program_transform_name}" | "$SED" -e 's/\\$\\$/\\$/'`
+AC_ARG_PROGRAM
+transform=`echo "${program_transform_name}"`
 PPACKAGE=`echo "${PACKAGE}" | "$SED" -e "${transform}"`
 FVWM_MODULESUBDIR=/${PPACKAGE}/${VERSION}
 FVWM_DATASUBDIR=/${PPACKAGE}
@@ -1261,7 +1262,7 @@ AC_SUBST(FVWMTASKBAR_DOMAIN)
 AC_SUBST(FVWMSCRIPT_DOMAIN)
 AC_SUBST(ALL_DOMAINS)
 
-LOCALEDIR='${datadir}'"/locale"
+LOCALEDIR='${datadir}'"/$PPACKAGE/locale"
 with_gettext="yes"
 problem_gettext=""
 
