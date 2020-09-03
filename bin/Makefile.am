@@ -26,7 +26,7 @@ AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 configdir = @FVWM_DATADIR@
 config_DATA = fvwm-menu-desktop-config.fpl
 
-EXTRA_DIST = fvwm-menu-desktop-config.fpl $(man_MANS)
+EXTRA_DIST = fvwm-menu-desktop-config.fpl $(man_MANS) FvwmPrompt
 
 ## The long generation for *.1 is to make both pod2man and 'make -j' happy.
 

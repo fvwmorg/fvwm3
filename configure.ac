@@ -8,12 +8,13 @@ if test $ISRELEASED = "no"; then
 	RELDATELONG=""
 	RELDATESHORT=""
 	RELDATENUM=""
+
 fi
 
 # Silence warning: ar: 'u' modifier ignored since 'D' is the default
 AC_SUBST(AR_FLAGS, [cr])
 
-AC_INIT([fvwm3], 1.0.0-RC0, [fvwm-workers@fvwm.org])
+AC_INIT([fvwm3], 1.0.0, [fvwm-workers@fvwm.org])
 AC_CONFIG_AUX_DIR(etc)
 AC_CONFIG_LIBOBJ_DIR(libs)
 AM_INIT_AUTOMAKE([foreign subdir-objects])
@@ -25,9 +26,9 @@ VERSIONINFO=m4_esyscmd([./utils/fvwm-version-str.sh])
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
 dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="01 September 2020"
-RELDATESHORT="01-Sep-2020"
-RELDATENUM="2020-09-01"
+RELDATELONG="02 September 2020"
+RELDATESHORT="02-Sep-2020"
+RELDATENUM="2020-09-02"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"
