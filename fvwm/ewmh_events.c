@@ -734,14 +734,11 @@ int ewmh_WMStateMaxHoriz(
 
 	if (ev == NULL && style == NULL)
 	{
-#if 0
-		return (IS_MAXIMIZED(fw) && !IS_EWMH_FULLSCREEN(fw));
-#else
-		/* DV: the notion of vertical/horizontal maximization does not
-		 * make any sense in fvwm, so just claim we're never maximized
+		/* the notion of vertical/horizontal maximization may not make
+		 * any sense in fvwm, but we still need to claim we're maximized
+		 * otherwise the _NET_WM_STATE property will not be updated
 		 */
-		return 0;
-#endif
+		return (IS_MAXIMIZED(fw) && !IS_EWMH_FULLSCREEN(fw));
 	}
 
 	if (ev == NULL && style != NULL)
@@ -809,14 +806,11 @@ int ewmh_WMStateMaxVert(
 
 	if (ev == NULL && style == NULL)
 	{
-#if 0
-		return (IS_MAXIMIZED(fw) && !IS_EWMH_FULLSCREEN(fw));
-#else
-		/* DV: the notion of vertical/horizontal maximization does not
-		 * make any sense in fvwm, so just claim we're never maximized
+		/* the notion of vertical/horizontal maximization may not make
+		 * any sense in fvwm, but we still need to claim we're maximized
+		 * otherwise the _NET_WM_STATE property will not be updated
 		 */
-		return 0;
-#endif
+		return (IS_MAXIMIZED(fw) && !IS_EWMH_FULLSCREEN(fw));
 	}
 
 	if (ev == NULL && style != NULL)
