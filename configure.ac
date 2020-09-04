@@ -82,10 +82,11 @@ if test ! x"$with_golang" = xno; then
 	AC_CHECK_PROGS(GO, go)
 	if test -n "$GO" ; then
 	    GOVERSIONOPTION=version
-	    go_version=$($GO $GOVERSIONOPTION | sed -e 's/go version //')
-	    AC_MSG_CHECKING([whether go version is >= 1.4.x])
-	    case $go_version in
-	    go1.[14]*)
+	    go_version=$($GO $GOVERSIONOPTION | sed -e 's/go version go//' | \
+		sed -e 's/ .*$//')
+	    AC_MSG_CHECKING([whether go version is >= 1.14.x ($go_version)])
+	    case "$go_version" in
+	     1.14*|1.15*|1.16*|1.17*|1.18*|1.19*)
 	      AC_MSG_RESULT([yes - version is: $go_version])
 	      with_golang="yes"
 	      GO=
@@ -93,7 +94,7 @@ if test ! x"$with_golang" = xno; then
 	    *)
 	      AC_MSG_RESULT([no - version is: $go_version])
 	      with_golang="no"
-	      problem_golang=": version of go ($go_version) <= 1.4.x"
+	      problem_golang=": version of go ($go_version) <= 1.14.x"
 	      ;;
 	    esac
 	fi
