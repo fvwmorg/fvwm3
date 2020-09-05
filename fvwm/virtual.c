@@ -1209,8 +1209,7 @@ void initPanFrames(void)
 		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
 		m->PanFrameRight.win = XCreateWindow(
 			dpy, Scr.Root,
-			m->virtual_scr.MyDisplayWidth - edge_thickness,
-			m->virtual_scr.MyDisplayHeight,
+			m->virtual_scr.MyDisplayWidth - edge_thickness, 0,
 			edge_thickness, m->virtual_scr.MyDisplayHeight, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
