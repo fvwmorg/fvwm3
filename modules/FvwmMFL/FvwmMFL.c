@@ -29,7 +29,11 @@
 #include <errno.h>
 #include <stdbool.h>
 
+#if defined(__FreeBSD__)
+#include <libbson-1.0/bson.h>
+#else
 #include <bson/bson.h>
+#endif
 
 #include <event2/event.h>
 /* FIXME: including event_struct.h won't be binary comaptible with future
