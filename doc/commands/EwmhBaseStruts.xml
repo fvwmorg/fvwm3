@@ -12,23 +12,26 @@
 <title>EwmhBaseStruts</title>
 
 <cmdsynopsis>
-	<command>EwmhBaseStruts</command
-	><arg choice='plain'
-		><replaceable>left</replaceable
-	></arg
-	><arg choice='plain'
-		><replaceable>right</replaceable
-	></arg
-	><arg choice='plain'
-		><replaceable>top</replaceable
-	></arg
-	><arg choice='plain'
-		><replaceable>bottom</replaceable
-	></arg>
+	<command>EwmhBaseStruts</command>
+	<arg choice='plain'></arg>
+		<replaceable>screen RANDRNAME</replaceable>
+	<arg choice='plain'>
+		<replaceable>left</replaceable>
+	</arg>
+	<arg choice='plain'>
+		<replaceable>right</replaceable>
+	</arg>
+	<arg choice='plain'>
+		<replaceable>top</replaceable>
+	</arg>
+	<arg choice='plain'>
+		<replaceable>bottom</replaceable>
+	</arg>
 </cmdsynopsis>
-
 <para>Where left, right, top and bottom are positive or null integers
-which define bands at the edge of the screen.
+	which define bands at the edge of the screen.
+If <replaceable>screen</replaceable> is given, followed by the RANDRNAME of a
+given display, then the EwmhBaseStruts are defined for just RANDRNAME.
 <replaceable>left</replaceable>
 defines a band on the left of your screen of width
 <replaceable>left</replaceable>,
