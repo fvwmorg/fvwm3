@@ -1196,28 +1196,28 @@ void initPanFrames(void)
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->PanFrameTop.win = XCreateWindow(
-			dpy, Scr.Root, 0, 0,
-			m->virtual_scr.MyDisplayWidth, edge_thickness,
+			dpy, Scr.Root, m->si->x, m->si->y,
+			m->si->w, edge_thickness,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
 		m->PanFrameLeft.win = XCreateWindow(
-			dpy, Scr.Root, 0, 0,
-			edge_thickness, m->virtual_scr.MyDisplayHeight,
+			dpy, Scr.Root, m->si->x, m->si->y,
+			edge_thickness, m->si->h,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
 		m->PanFrameRight.win = XCreateWindow(
 			dpy, Scr.Root,
-			m->virtual_scr.MyDisplayWidth - edge_thickness, 0,
-			edge_thickness, m->virtual_scr.MyDisplayHeight, 0,
+			m->si->w - edge_thickness, 0,
+			edge_thickness, m->si->h, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
 		m->PanFrameBottom.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x,
-			m->virtual_scr.MyDisplayHeight - edge_thickness,
-			m->virtual_scr.MyDisplayWidth, edge_thickness, 0,
+			m->si->h - edge_thickness,
+			m->si->w, edge_thickness, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
