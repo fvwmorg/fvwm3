@@ -231,7 +231,7 @@ AC_PROG_CPP
 
 # added -Wall for gcc, what about for others?
 if test "x$GCC" = "xyes"; then
-  CFLAGS="-Wall -Wno-implicit-int -fno-common $CFLAGS"
+  CFLAGS="-Wall -Wno-implicit-int -fno-common -Wno-error=format-security $CFLAGS"
 fi
 
 # Help finding POSIX functions on some systems
