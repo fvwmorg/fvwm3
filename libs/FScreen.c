@@ -349,6 +349,7 @@ scan_screens(Display *dpy)
 			m->si = screen_info_new();
 			m->si->name = strdup(name);
 			memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
+			memset(&m->paging, 0, sizeof(m->paging));
 
 			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
 			TAILQ_INSERT_TAIL(&monitor_q, m, entry);

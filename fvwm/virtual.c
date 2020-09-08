@@ -647,25 +647,18 @@ int HandlePaging(
 	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
 	Bool do_continue_previous, int delay)
 {
-	static int add_time = 0;
+	struct monitor	*m = monitor_get_current();
 	int x,y;
 	XEvent e;
-	static Time my_timestamp = 0;
-	static Time my_last_timestamp = 0;
-	static Bool is_timestamp_valid = False;
-	static int last_x = 0;
-	static int last_y = 0;
-	static Bool is_last_position_valid = False;
-	struct monitor	*m = monitor_get_current();
 
 	*delta_x = 0;
 	*delta_y = 0;
-	if (!is_timestamp_valid && do_continue_previous)
+	if (!m->paging.is_timestamp_valid && do_continue_previous)
 	{
 		/* don't call me again until something has happened */
 		return -1;
 	}
-	if (!is_timestamp_valid && pev->type == MotionNotify)
+	if (!m->paging.is_timestamp_valid && pev->type == MotionNotify)
 	{
 		x = pev->xmotion.x_root;
 		y = pev->xmotion.y_root;
@@ -681,30 +674,30 @@ int HandlePaging(
 	}
 	if (delay < 0 || (HorWarpSize == 0 && VertWarpSize==0))
 	{
-		is_timestamp_valid = False;
-		add_time = 0;
+		m->paging.is_timestamp_valid = False;
+		m->paging.add_time = 0;
 		return 0;
 	}
 	if (m->virtual_scr.VxMax == 0 && m->virtual_scr.VyMax == 0)
 	{
-		is_timestamp_valid = False;
-		add_time = 0;
+		m->paging.is_timestamp_valid = False;
+		m->paging.add_time = 0;
 		return 0;
 	}
-	if (!is_timestamp_valid)
+	if (!m->paging.is_timestamp_valid)
 	{
-		is_timestamp_valid = True;
-		my_timestamp = fev_get_evtime();
-		is_last_position_valid = False;
-		add_time = 0;
-		last_x = -1;
-		last_y = -1;
+		m->paging.is_timestamp_valid = True;
+		m->paging.my_timestamp = fev_get_evtime();
+		m->paging.is_last_position_valid = False;
+		m->paging.add_time = 0;
+		m->paging.last_x = -1;
+		m->paging.last_y = -1;
 	}
-	else if (my_last_timestamp != fev_get_evtime())
+	else if (m->paging.my_last_timestamp != fev_get_evtime())
 	{
-		add_time = 0;
+		m->paging.add_time = 0;
 	}
-	my_last_timestamp = fev_get_evtime();
+	m->paging.my_last_timestamp = fev_get_evtime();
 
 	do
 	{
@@ -715,8 +708,8 @@ int HandlePaging(
 
 		if (FCheckPeekIfEvent(dpy, &e, _pred_button_event, NULL))
 		{
-			is_timestamp_valid = False;
-			add_time = 0;
+			m->paging.is_timestamp_valid = False;
+			m->paging.add_time = 0;
 			return 0;
 		}
 		/* get pointer location */
@@ -737,35 +730,35 @@ int HandlePaging(
 		    y >= edge_thickness &&
 		    y < m->virtual_scr.MyDisplayHeight-edge_thickness)
 		{
-			is_timestamp_valid = False;
-			add_time = 0;
+			m->paging.is_timestamp_valid = False;
+			m->paging.add_time = 0;
 			return 0;
 		}
-		if (!fLoop && is_last_position_valid &&
-		    (x - last_x > MAX_PAGING_MOVE_DISTANCE ||
-		     x - last_x < -MAX_PAGING_MOVE_DISTANCE ||
-		     y - last_y > MAX_PAGING_MOVE_DISTANCE ||
-		     y - last_y < -MAX_PAGING_MOVE_DISTANCE))
+		if (!fLoop && m->paging.is_last_position_valid &&
+		    (x - m->paging.last_x > MAX_PAGING_MOVE_DISTANCE ||
+		     x - m->paging.last_x < -MAX_PAGING_MOVE_DISTANCE ||
+		     y - m->paging.last_y > MAX_PAGING_MOVE_DISTANCE ||
+		     y - m->paging.last_y < -MAX_PAGING_MOVE_DISTANCE))
 		{
 			/* The pointer is moving too fast, prevent paging until
 			 * it slows down. Don't prevent paging when fLoop is
 			 * set since we can't be sure that HandlePaging will be
 			 * called again. */
-			is_timestamp_valid = True;
-			my_timestamp = fev_get_evtime();
-			add_time = 0;
-			last_x = x;
-			last_y = y;
+			m->paging.is_timestamp_valid = True;
+			m->paging.my_timestamp = fev_get_evtime();
+			m->paging.add_time = 0;
+			m->paging.last_x = x;
+			m->paging.last_y = y;
 			return 0;
 		}
-		last_x = x;
-		last_y = y;
-		is_last_position_valid = True;
+		m->paging.last_x = x;
+		m->paging.last_y = y;
+		m->paging.is_last_position_valid = True;
 		usleep(10000);
-		add_time += 10;
-	} while (fLoop && fev_get_evtime() - my_timestamp + add_time < delay);
+		m->paging.add_time += 10;
+	} while (fLoop && fev_get_evtime() - m->paging.my_timestamp + m->paging.add_time < delay);
 
-	if (fev_get_evtime() - my_timestamp + add_time < delay)
+	if (fev_get_evtime() - m->paging.my_timestamp + m->paging.add_time < delay)
 	{
 		return 0;
 	}
@@ -879,8 +872,8 @@ int HandlePaging(
 	}
 
 	/* Check for paging -- and don't warp the pointer. */
-	is_timestamp_valid = False;
-	add_time = 0;
+	m->paging.is_timestamp_valid = False;
+	m->paging.add_time = 0;
 	if (*delta_x == 0 && *delta_y == 0)
 	{
 		return 0;

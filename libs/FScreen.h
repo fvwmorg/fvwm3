@@ -8,6 +8,7 @@
 
 /* For CARD32 */
 #include <X11/Xproto.h>
+#include <X11/Xutil.h>
 
 /* needs X11/Xlib.h and X11/Xutil.h */
 
@@ -140,6 +141,16 @@ struct monitor {
 		int MyDisplayWidth;
 		int MyDisplayHeight;
         } virtual_scr;
+
+	struct {
+		int	add_time;
+		Time	my_timestamp;
+		Time	my_last_timestamp;
+		int	last_x;
+		int	last_y;
+		Bool	is_last_position_valid;
+		Bool	is_timestamp_valid;
+	} paging;
 
 	PanFrame PanFrameTop;
 	PanFrame PanFrameLeft;
