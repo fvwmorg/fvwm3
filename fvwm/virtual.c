@@ -1191,29 +1191,30 @@ void initPanFrames(void)
 	valuemask=  (CWEventMask | CWCursor);
 
 	attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
+	attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
+	attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
+	attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
+
 	/* I know these overlap, it's useful when at (0,0) and the top one is
 	 * unmapped */
-
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->PanFrameTop.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x, m->si->y,
 			m->si->w, edge_thickness,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
-		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
+		fprintf(stderr, "%s: %s: %ld\n", __func__, m->si->name, m->PanFrameTop.win);
 		m->PanFrameLeft.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x, m->si->y,
 			edge_thickness, m->si->h,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
-		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
 		m->PanFrameRight.win = XCreateWindow(
 			dpy, Scr.Root,
 			m->si->w - edge_thickness, 0,
 			edge_thickness, m->si->h, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
-		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
 		m->PanFrameBottom.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x,
 			m->si->h - edge_thickness,
