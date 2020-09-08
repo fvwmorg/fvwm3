@@ -216,7 +216,7 @@
 /** Other placement related values **/
 /* default string for position placement */
 #define DEFAULT_PLACEMENT_POSITION_STRING   "0 0"
-#define DEFAULT_PLACEMENT_POS_CENTER_STRING "50-50w 50-50w"
+#define DEFAULT_PLACEMENT_POS_CENTER_STRING "screen $[w.screen] 50-50w 50-50w"
 #define DEFAULT_PLACEMENT_POS_MOUSE_STRING  "m-50w m-50w"
 
 /*** icon layout ***/
