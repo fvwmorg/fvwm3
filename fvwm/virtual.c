@@ -649,6 +649,7 @@ int HandlePaging(
 {
 	struct monitor	*m = monitor_get_current();
 	int x,y;
+	int w, h;
 	XEvent e;
 
 	*delta_x = 0;
@@ -699,6 +700,9 @@ int HandlePaging(
 	}
 	m->paging.my_last_timestamp = fev_get_evtime();
 
+	w = m->si->x + m->si->w;
+	h = m->si->y + m->si->h;
+
 	do
 	{
 		int rc;
@@ -726,9 +730,9 @@ int HandlePaging(
 		/* check actual pointer location since PanFrames can get buried
 		 * under window being moved or resized - mab */
 		if (x >= edge_thickness &&
-		    x < m->virtual_scr.MyDisplayWidth-edge_thickness &&
+		    x < w - edge_thickness &&
 		    y >= edge_thickness &&
-		    y < m->virtual_scr.MyDisplayHeight-edge_thickness)
+		    y < h - edge_thickness)
 		{
 			m->paging.is_timestamp_valid = False;
 			m->paging.add_time = 0;
@@ -779,7 +783,7 @@ int HandlePaging(
 	{
 		*delta_x = -HorWarpSize;
 	}
-	else if (x >= m->virtual_scr.MyDisplayWidth-edge_thickness)
+	else if (x >= w - edge_thickness)
 	{
 		*delta_x = HorWarpSize;
 	}
@@ -795,7 +799,7 @@ int HandlePaging(
 	{
 		*delta_y = -VertWarpSize;
 	}
-	else if (y >= m->virtual_scr.MyDisplayHeight-edge_thickness)
+	else if (y >= h - edge_thickness)
 	{
 		*delta_y = VertWarpSize;
 	}
@@ -818,8 +822,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_x += m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
-			*xl = x + *delta_x % m->virtual_scr.MyDisplayWidth + HorWarpSize;
+			*delta_x += m->virtual_scr.VxMax + w;
+			*xl = x + *delta_x % w + HorWarpSize;
 		}
 	}
 	else if (m->virtual_scr.Vx + *delta_x > m->virtual_scr.VxMax)
@@ -831,8 +835,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_x -= m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
-			*xl = x + *delta_x % m->virtual_scr.MyDisplayWidth - HorWarpSize;
+			*delta_x -= m->virtual_scr.VxMax + w;
+			*xl = x + *delta_x % w - HorWarpSize;
 		}
 	}
 	else
@@ -849,8 +853,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_y += m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
-			*yt = y + *delta_y % m->virtual_scr.MyDisplayHeight + VertWarpSize;
+			*delta_y += m->virtual_scr.VyMax + h;
+			*yt = y + *delta_y % h + VertWarpSize;
 		}
 	}
 	else if (m->virtual_scr.Vy + *delta_y > m->virtual_scr.VyMax)
@@ -862,8 +866,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_y -= m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
-			*yt = y + *delta_y % m->virtual_scr.MyDisplayHeight - VertWarpSize;
+			*delta_y -= m->virtual_scr.VyMax + h;
+			*yt = y + *delta_y % h - VertWarpSize;
 		}
 	}
 	else
@@ -888,13 +892,13 @@ int HandlePaging(
 	{
 		*yt = edge_thickness;
 	}
-	if (*xl >= m->virtual_scr.MyDisplayWidth - edge_thickness)
+	if (*xl >= w - edge_thickness)
 	{
-		*xl = m->virtual_scr.MyDisplayWidth - edge_thickness -1;
+		*xl = w - edge_thickness -1;
 	}
-	if (*yt >= m->virtual_scr.MyDisplayHeight - edge_thickness)
+	if (*yt >= h - edge_thickness)
 	{
-		*yt = m->virtual_scr.MyDisplayHeight - edge_thickness -1;
+		*yt = h - edge_thickness -1;
 	}
 
 	if (Grab)
@@ -904,6 +908,9 @@ int HandlePaging(
 	/* Turn off the rubberband if its on */
 	switch_move_resize_grid(False);
 	FWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
+	fprintf(stderr, "%s: mon: %s, MV: {x: %d, y: %d}\n",
+		__func__, m->si->name, m->virtual_scr.Vx + *delta_x,
+		m->virtual_scr.Vy + *delta_y);
 	MoveViewport(m, m->virtual_scr.Vx + *delta_x,
 			m->virtual_scr.Vy + *delta_y,False);
 	if (FQueryPointer(
