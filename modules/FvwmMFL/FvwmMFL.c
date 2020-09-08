@@ -15,6 +15,7 @@
 #include "libs/queue.h"
 #include "libs/fvwmsignal.h"
 #include "libs/vpacket.h"
+#include "libs/getpwuid.h"
 
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -40,12 +41,13 @@
 #include <event2/listener.h>
 #include <event2/util.h>
 
-/* XXX - should also be configurable via getenv() */
-#define SOCK "/tmp/fvwm_mfl.sock"
+/* This is also configurable via getenv() - see FvwmMFL(1) */
+#define MFL_SOCKET_DEFAULT "/tmp/fvwm_mfl.sock"
 #define MYNAME "FvwmMFL"
 
 static int debug;
 struct fvwm_msg;
+static char *sock_pathname;
 
 struct client {
 	struct bufferevent	*comms;
@@ -113,6 +115,7 @@ static struct fvwm_msg *fvwm_msg_new(void);
 static void fvwm_msg_free(struct fvwm_msg *);
 static void register_interest(void);
 static void send_version_info(struct client *);
+static char *set_socket_pathname(void);
 
 static struct fvwm_msg *
 fvwm_msg_new(void)
@@ -135,7 +138,7 @@ static void
 HandleTerminate(int fd, short what, void *arg)
 {
 	fprintf(stderr, "%s: dying...\n", __func__);
-	unlink(SOCK);
+	unlink(sock_pathname);
 	fvwmSetTerminate(fd);
 }
 
@@ -627,11 +630,39 @@ fvwm_read(int efd, short ev, void *data)
 	if ((packet = ReadFvwmPacket(efd)) == NULL) {
 		if (debug)
 			fprintf(stderr, "Couldn't read from FVWM - exiting.\n");
-		unlink(SOCK);
+		unlink(sock_pathname);
 		exit(0);
 	}
 
 	broadcast_to_client(packet);
+}
+
+static char *
+set_socket_pathname(void)
+{
+	char		*mflsock_env;
+	const char	*unrolled_path;
+
+	/* Figure out if we are using default MFL socket path or we should
+	 * respect environment variable FVWMMFL_SOCKET for FvwmMFL socket path
+	 */
+
+	mflsock_env = getenv("FVWMMFL_SOCKET");
+	if (mflsock_env == NULL) {
+		return (fxstrdup(MFL_SOCKET_DEFAULT));
+	}
+
+	unrolled_path = expand_path(mflsock_env);
+	if (unrolled_path[0] == '/')
+		sock_pathname = fxstrdup(unrolled_path);
+	else {
+		xasprintf(&sock_pathname, "%s/%s", getenv("FVWM_USERDIR"),
+			unrolled_path);
+	}
+
+	free((void *)unrolled_path);
+
+	return (sock_pathname);
 }
 
 int main(int argc, char **argv)
@@ -647,6 +678,8 @@ int main(int argc, char **argv)
 		return (1);
 	}
 
+	sock_pathname = set_socket_pathname();
+
 	/* Create new event base */
 	if ((base = event_base_new()) == NULL) {
 		fprintf(stderr, "Couldn't start libevent\n");
@@ -656,7 +689,7 @@ int main(int argc, char **argv)
 
 	memset(&sin, 0, sizeof(sin));
 	sin.sun_family = AF_LOCAL;
-	strcpy(sin.sun_path, SOCK);
+	strcpy(sin.sun_path, sock_pathname);
 
 	/* Create a new listener */
 	fmd_cfd = evconnlistener_new_bind(base, accept_conn_cb, NULL,
@@ -685,7 +718,7 @@ int main(int argc, char **argv)
 	SendFinishedStartupNotification(fc.fd);
 
 	event_base_dispatch(base);
-	unlink(SOCK);
+	unlink(sock_pathname);
 
 	return (0);
 }
