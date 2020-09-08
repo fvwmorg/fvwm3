@@ -2555,10 +2555,6 @@ int main(int argc, char **argv)
 		dpy, Scr.Root, 0, 0, 1, 1, 0, Pdepth,
 		InputOutput, Pvisual, valuemask, &attributes);
 	resize_geometry_window();
-	initPanFrames();
-	MyXGrabServer(dpy);
-	checkPanFrames();
-	MyXUngrabServer(dpy);
 	CoerceEnterNotifyOnCurrentWindow();
 	SessionInit();
 
