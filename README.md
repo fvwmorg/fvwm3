@@ -15,14 +15,13 @@ Fvwm3 is intended to have a small memory footprint but a rich feature set, be
 extremely customizable and extendible, and have a high degree of Motif mwm
 compatibility.
 
-**Currently, your existing fvwm2 config will work with fvwm3**
+**Currently, your existing fvwm2 config will work with fvwm3, but over time
+this will change.**
 
 Releases
 --------
 
-* None.  fvwm3 is in development still.  The `master` branch contains what could
-  be considered stable for now, but even then there are no guarantees of
-  stability.
+* [1.0.0](https://github.com/fvwmorg/fvwm3/releases/tag/1.0.0)
 
 Installation
 ------------
