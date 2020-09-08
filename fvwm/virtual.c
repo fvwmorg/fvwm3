@@ -23,6 +23,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FGettext.h"
 #include "libs/Grab.h"
+#include "libs/Graphics.h"
 #include "libs/Parse.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -652,6 +653,8 @@ int HandlePaging(
 	int w, h;
 	XEvent e;
 
+	fprintf(stderr, "%s: using monitor: %s\n", __func__, m->si->name);
+
 	*delta_x = 0;
 	*delta_y = 0;
 	if (!m->paging.is_timestamp_valid && do_continue_previous)
@@ -665,10 +668,10 @@ int HandlePaging(
 		y = pev->xmotion.y_root;
 		if ((m->virtual_scr.VxMax == 0 ||
 		     (x >= edge_thickness &&
-		      x < m->virtual_scr.MyDisplayWidth  - edge_thickness)) &&
+		      x < m->si->w  - edge_thickness)) &&
 		    (m->virtual_scr.VyMax == 0 ||
 		     (y >= edge_thickness &&
-		      y < m->virtual_scr.MyDisplayHeight - edge_thickness)))
+		      y < m->si->h - edge_thickness)))
 		{
 			return -1;
 		}
@@ -677,12 +680,14 @@ int HandlePaging(
 	{
 		m->paging.is_timestamp_valid = False;
 		m->paging.add_time = 0;
+		fprintf(stderr, "%s 1: ret: 0\n", __func__);
 		return 0;
 	}
 	if (m->virtual_scr.VxMax == 0 && m->virtual_scr.VyMax == 0)
 	{
 		m->paging.is_timestamp_valid = False;
 		m->paging.add_time = 0;
+		fprintf(stderr, "%s 2: ret: 0\n", __func__);
 		return 0;
 	}
 	if (!m->paging.is_timestamp_valid)
@@ -723,8 +728,8 @@ int HandlePaging(
 		if (rc == False)
 		{
 			/* pointer is on a different screen */
-			x = 0;
-			y = 0;
+			//x = 0;
+			//y = 0;
 		}
 
 		/* check actual pointer location since PanFrames can get buried
@@ -736,7 +741,8 @@ int HandlePaging(
 		{
 			m->paging.is_timestamp_valid = False;
 			m->paging.add_time = 0;
-			return 0;
+			//fprintf(stderr, "%s 3: ret: 0\n", __func__);
+			//return 0;
 		}
 		if (!fLoop && m->paging.is_last_position_valid &&
 		    (x - m->paging.last_x > MAX_PAGING_MOVE_DISTANCE ||
@@ -753,6 +759,7 @@ int HandlePaging(
 			m->paging.add_time = 0;
 			m->paging.last_x = x;
 			m->paging.last_y = y;
+			fprintf(stderr, "%s 4: ret: 0\n", __func__);
 			return 0;
 		}
 		m->paging.last_x = x;
@@ -764,6 +771,7 @@ int HandlePaging(
 
 	if (fev_get_evtime() - m->paging.my_timestamp + m->paging.add_time < delay)
 	{
+		fprintf(stderr, "%s 5: ret: 0\n", __func__);
 		return 0;
 	}
 
@@ -880,6 +888,7 @@ int HandlePaging(
 	m->paging.add_time = 0;
 	if (*delta_x == 0 && *delta_y == 0)
 	{
+		fprintf(stderr, "%s 6: ret: 0\n", __func__);
 		return 0;
 	}
 
@@ -1128,15 +1137,15 @@ void checkPanFrames(void)
  */
 void raisePanFrames(void)
 {
-	Window windows[4];
+	Window windows[100];
 	int n;
 	struct monitor	*m;
 
 	/* Note: make sure the stacking order of the pan frames is not changed
 	 * every time they are raised by using XRestackWindows. */
 
+	n = 0;
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		n = 0;
 		if (m->PanFrameTop.isMapped)
 		{
 			windows[n++] = m->PanFrameTop.win;
@@ -1153,14 +1162,14 @@ void raisePanFrames(void)
 		{
 			windows[n++] = m->PanFrameBottom.win;
 		}
+	}
 
-		if (n > 0)
+	if (n > 0)
+	{
+		XRaiseWindow(dpy, windows[0]);
+		if (n > 1)
 		{
-			XRaiseWindow(dpy, windows[0]);
-			if (n > 1)
-			{
-				XRestackWindows(dpy, windows, n);
-			}
+			XRestackWindows(dpy, windows, n);
 		}
 	}
 }
@@ -1204,23 +1213,33 @@ void initPanFrames(void)
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		fprintf(stderr, "%s: %s: %ld\n", __func__, m->si->name, m->PanFrameTop.win);
+		fprintf(stderr, "Top: %s {x: %d, y: %d, w: %d, h: %d}\n",
+			m->si->name, m->si->x, m->si->y, m->si->w, edge_thickness);
 		m->PanFrameLeft.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x, m->si->y,
 			edge_thickness, m->si->h,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
+		fprintf(stderr, "Left: %s {x: %d, y: %d, w: %d, h: %d}\n",
+			m->si->name, m->si->x, m->si->y, edge_thickness, m->si->h);
 		m->PanFrameRight.win = XCreateWindow(
 			dpy, Scr.Root,
-			m->si->w - edge_thickness, 0,
+			m->si->w - edge_thickness, m->si->y,
 			edge_thickness, m->si->h, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
+			fprintf(stderr, "Right: %s {x: %d, y: %d, w: %d, h: %d}\n",
+			m->si->name, m->si->w - edge_thickness, m->si->y,
+			edge_thickness, m->si->h);
 		m->PanFrameBottom.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x,
 			m->si->h - edge_thickness,
 			m->si->w, edge_thickness, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
+			fprintf(stderr, "Bottom: %s {x: %d, y: %d, w: %d, h: %d}\n",
+			m->si->name, m->si->x, m->si->h - edge_thickness, m->si->w,
+			edge_thickness);
 		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
 			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=False;
 	}
@@ -1235,6 +1254,7 @@ Bool is_pan_frame(Window w)
 		if (w == m->PanFrameTop.win || w == m->PanFrameBottom.win ||
 		    w == m->PanFrameLeft.win || w == m->PanFrameRight.win)
 		{
+			fprintf(stderr, "PAN FOR: %s\n", m->si->name);
 			return True;
 		}
 	}

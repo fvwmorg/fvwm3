@@ -2221,6 +2221,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		}
 		else if (edge_command)
 		{
+			fprintf(stderr, "NO PAGING...\n");
 			execute_function(NULL, ea->exc, edge_command, 0);
 		}
 		else
@@ -2237,14 +2238,20 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			else
 				m = monitor_get_current();
 
+			fprintf(stderr, "HANDLING PAGING: %s\n", m->si->name);
+
 			/* this was in the HandleMotionNotify before, HEDU */
 			Scr.flags.is_pointer_on_this_screen = 1;
 			e = *te;
-			HandlePaging(
+
+			int rv;
+			rv = HandlePaging(
 				&e, m->virtual_scr.EdgeScrollX,
 				m->virtual_scr.EdgeScrollY, &JunkX,
 				&JunkY, &delta_x, &delta_y, True, True, False,
 				Scr.ScrollDelay);
+			fprintf(stderr, "%s: HandlePaging ret: %d\n",
+				__func__, rv);
 			return;
 		}
 	}
