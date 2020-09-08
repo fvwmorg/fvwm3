@@ -2237,10 +2237,9 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->si->rr_output);
 
-		/* FIXME: likely needs per-monitor considerations!!! */
-		checkPanFrames();
 		EWMH_SetDesktopGeometry(m);
 	}
+	checkPanFrames();
 }
 
 /*
