@@ -2027,7 +2027,7 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 {
 	int val1, val2, val1_unit, val2_unit, n;
 	char *token;
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m;
 
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 	if (n != 2)
@@ -2080,10 +2080,10 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 		}
 	}
 
-	/* FIXME - update all monitors if global. */
-	m->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
-	m->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
-
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		m->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
+		m->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
+	}
 	checkPanFrames();
 
 	return;
