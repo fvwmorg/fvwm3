@@ -35,7 +35,7 @@ The information from Fvwm3 is in the form of JSON packets.  Each JSON packet
 has different fields, depending on the type requested.
 
 .SH COMMUNICATION
-The default unix-domain socket for \fIFvwmMFL\fP is \fI/tmp/fvwm_mfl.sock\fP,
+The default unix-domain socket for \fIFvwmMFL\fP is \fI$TMPDIR/fvwm_mfl.sock\fP,
 although this can be overriden via an environment variable \fIFVWMMFL_SOCKET\fP.
 
 .SH REGISTERING INTEREST

@@ -15,8 +15,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	fmdSocket = "/tmp/fvwm_mfl.sock"
+var (
+	fmdSocket = os.Getenv("FVWMMFL_SOCKET")
 )
 
 // getopt parsing
