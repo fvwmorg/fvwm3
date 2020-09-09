@@ -137,9 +137,6 @@ fvwm_msg_free(struct fvwm_msg *fm)
 static void
 HandleTerminate(int fd, short what, void *arg)
 {
-
-	sock_pathname = set_socket_pathname();
-
 	fprintf(stderr, "%s: dying...\n", __func__);
 	unlink(sock_pathname);
 	fvwmSetTerminate(fd);
@@ -629,7 +626,6 @@ static void
 fvwm_read(int efd, short ev, void *data)
 {
 	FvwmPacket	*packet;
-	sock_pathname = set_socket_pathname();
 
 	if ((packet = ReadFvwmPacket(efd)) == NULL) {
 		if (debug)
@@ -682,14 +678,14 @@ int main(int argc, char **argv)
 		return (1);
 	}
 
+	sock_pathname = set_socket_pathname();
+
 	/* Create new event base */
 	if ((base = event_base_new()) == NULL) {
 		fprintf(stderr, "Couldn't start libevent\n");
 		return (1);
 	}
 	setup_signal_handlers(base);
-
-	sock_pathname = set_socket_pathname();
 
 	memset(&sin, 0, sizeof(sin));
 	sin.sun_family = AF_LOCAL;
