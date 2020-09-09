@@ -679,6 +679,7 @@ int main(int argc, char **argv)
 	}
 
 	sock_pathname = set_socket_pathname();
+	unlink(sock_pathname);
 
 	/* Create new event base */
 	if ((base = event_base_new()) == NULL) {
