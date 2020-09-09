@@ -1946,10 +1946,7 @@ static void ParseConfigLine(button_info **ubb, char *s)
 			ub->c->flags.b_WindowName = 0;
 		}
 #ifdef DEBUG_PARSER
-		if (windowname == 0)
-		{
-			fprintf(stderr, "%s\n", windowname);
-		}
+		fprintf(stderr, "%s\n", windowname);
 #endif
 		break;
 	}
