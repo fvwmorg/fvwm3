@@ -47,6 +47,7 @@
 
 static int debug;
 struct fvwm_msg;
+static const char *sock_pathname;
 
 struct client {
 	struct bufferevent	*comms;
@@ -114,7 +115,7 @@ static struct fvwm_msg *fvwm_msg_new(void);
 static void fvwm_msg_free(struct fvwm_msg *);
 static void register_interest(void);
 static void send_version_info(struct client *);
-static char *set_socket_path();
+static const char *set_socket_pathname(void);
 
 static struct fvwm_msg *
 fvwm_msg_new(void)
@@ -136,11 +137,10 @@ fvwm_msg_free(struct fvwm_msg *fm)
 static void
 HandleTerminate(int fd, short what, void *arg)
 {
-	char *sock_path;
 
-	sock_path = set_socket_path();
+	sock_pathname = set_socket_pathname();
 	fprintf(stderr, "%s: dying...\n", __func__);
-	unlink(sock_path);
+	unlink(sock_pathname);
 	fvwmSetTerminate(fd);
 }
 
@@ -628,42 +628,42 @@ static void
 fvwm_read(int efd, short ev, void *data)
 {
 	FvwmPacket	*packet;
-	char *sock_path;
 
-	sock_path = set_socket_path();
+	sock_pathname = set_socket_pathname();
 
 	if ((packet = ReadFvwmPacket(efd)) == NULL) {
 		if (debug)
 			fprintf(stderr, "Couldn't read from FVWM - exiting.\n");
-		unlink(sock_path);
+		unlink(sock_pathname);
 		exit(0);
 	}
 
 	broadcast_to_client(packet);
 }
 
-static char *set_socket_path()
+static const char *
+set_socket_pathname(void)
 {
-	char *mflsock_env, *sock_path;
+	char *mflsock_env;
+	const char      *unrolled_path;
 
 	/* Figure out if we are using default MFL socket path or we should respect */
 	/* environment variable FVWMMFL_SOCKET for FvwmMFL socket path */
-	xasprintf(&sock_path, "%s", MFL_SOCKET_DEFAULT);
 
 	mflsock_env = getenv("FVWMMFL_SOCKET");
-	if (mflsock_env != NULL) {
-		const char      *unrolled_path;
-
-		unrolled_path = expand_path(mflsock_env);
-
-		if (unrolled_path[0] == '/')
-			sock_path = fxstrdup(unrolled_path);
-		else
-			xasprintf(&sock_path, "%s/%s", getenv("FVWM_USERDIR"), unrolled_path);
-
-		free((char *)unrolled_path);
+	if (mflsock_env == NULL) {
+		return (fxstrdup(MFL_SOCKET_DEFAULT));
 	}
-	return (sock_path);
+
+	unrolled_path = expand_path(mflsock_env);
+	if (unrolled_path[0] == '/')
+	    sock_pathname = fxstrdup(unrolled_path);
+	else
+	    xasprintf(&sock_pathname, "%s/%s", getenv("FVWM_USERDIR"), unrolled_path);
+
+	free((void *)unrolled_path);
+
+	return (sock_pathname);
 }
 
 int main(int argc, char **argv)
@@ -671,8 +671,6 @@ int main(int argc, char **argv)
 	struct event_base     *base;
 	struct evconnlistener *fmd_cfd;
 	struct sockaddr_un    sin;
-
-	char *sock_path;
 
 	TAILQ_INIT(&clientq);
 
@@ -688,11 +686,12 @@ int main(int argc, char **argv)
 	}
 	setup_signal_handlers(base);
 
-	sock_path = set_socket_path();
+	sock_pathname = set_socket_pathname();
 
 	memset(&sin, 0, sizeof(sin));
 	sin.sun_family = AF_LOCAL;
-	strcpy(sin.sun_path, sock_path);
+	strcpy(sin.sun_path, sock_pathname);
+	free(sock_pathname);
 
 	/* Create a new listener */
 	fmd_cfd = evconnlistener_new_bind(base, accept_conn_cb, NULL,
@@ -721,7 +720,7 @@ int main(int argc, char **argv)
 	SendFinishedStartupNotification(fc.fd);
 
 	event_base_dispatch(base);
-	unlink(sock_path);
+	unlink(sock_pathname);
 
 	return (0);
 }
