@@ -1396,7 +1396,6 @@ static void SetRCDefaults(void)
 		{ "Key Up M A MenuMoveCursor -1", "", "" },
 		{ "Key Down M A MenuMoveCursor 1", "", "" },
 		{ "Mouse 1 MI A MenuSelectItem", "", "" },
-		{ "Module FvwmMFL", "", "" },
 		/* don't add anything below */
 		{ RC_DEFAULTS_COMPLETE, "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
