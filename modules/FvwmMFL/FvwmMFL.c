@@ -690,7 +690,6 @@ int main(int argc, char **argv)
 	memset(&sin, 0, sizeof(sin));
 	sin.sun_family = AF_LOCAL;
 	strcpy(sin.sun_path, sock_pathname);
-	free(sock_pathname);
 
 	/* Create a new listener */
 	fmd_cfd = evconnlistener_new_bind(base, accept_conn_cb, NULL,
