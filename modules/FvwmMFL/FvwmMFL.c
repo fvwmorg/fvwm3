@@ -47,7 +47,7 @@
 
 static int debug;
 struct fvwm_msg;
-static const char *sock_pathname;
+static char *sock_pathname;
 
 struct client {
 	struct bufferevent	*comms;
@@ -115,7 +115,7 @@ static struct fvwm_msg *fvwm_msg_new(void);
 static void fvwm_msg_free(struct fvwm_msg *);
 static void register_interest(void);
 static void send_version_info(struct client *);
-static const char *set_socket_pathname(void);
+static char *set_socket_pathname(void);
 
 static struct fvwm_msg *
 fvwm_msg_new(void)
@@ -139,6 +139,7 @@ HandleTerminate(int fd, short what, void *arg)
 {
 
 	sock_pathname = set_socket_pathname();
+
 	fprintf(stderr, "%s: dying...\n", __func__);
 	unlink(sock_pathname);
 	fvwmSetTerminate(fd);
@@ -628,7 +629,6 @@ static void
 fvwm_read(int efd, short ev, void *data)
 {
 	FvwmPacket	*packet;
-
 	sock_pathname = set_socket_pathname();
 
 	if ((packet = ReadFvwmPacket(efd)) == NULL) {
@@ -641,14 +641,15 @@ fvwm_read(int efd, short ev, void *data)
 	broadcast_to_client(packet);
 }
 
-static const char *
+static char *
 set_socket_pathname(void)
 {
-	char *mflsock_env;
-	const char      *unrolled_path;
+	char		*mflsock_env;
+	const char	*unrolled_path;
 
-	/* Figure out if we are using default MFL socket path or we should respect */
-	/* environment variable FVWMMFL_SOCKET for FvwmMFL socket path */
+	/* Figure out if we are using default MFL socket path or we should
+	 * respect environment variable FVWMMFL_SOCKET for FvwmMFL socket path
+	 */
 
 	mflsock_env = getenv("FVWMMFL_SOCKET");
 	if (mflsock_env == NULL) {
@@ -657,9 +658,11 @@ set_socket_pathname(void)
 
 	unrolled_path = expand_path(mflsock_env);
 	if (unrolled_path[0] == '/')
-	    sock_pathname = fxstrdup(unrolled_path);
-	else
-	    xasprintf(&sock_pathname, "%s/%s", getenv("FVWM_USERDIR"), unrolled_path);
+		sock_pathname = fxstrdup(unrolled_path);
+	else {
+		xasprintf(&sock_pathname, "%s/%s", getenv("FVWM_USERDIR"),
+			unrolled_path);
+	}
 
 	free((void *)unrolled_path);
 
