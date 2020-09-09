@@ -728,8 +728,8 @@ int HandlePaging(
 		if (rc == False)
 		{
 			/* pointer is on a different screen */
-			//x = 0;
-			//y = 0;
+			x = 0;
+			y = 0;
 		}
 
 		/* check actual pointer location since PanFrames can get buried
@@ -741,8 +741,8 @@ int HandlePaging(
 		{
 			m->paging.is_timestamp_valid = False;
 			m->paging.add_time = 0;
-			//fprintf(stderr, "%s 3: ret: 0\n", __func__);
-			//return 0;
+			fprintf(stderr, "%s 3: ret: 0\n", __func__);
+			return 0;
 		}
 		if (!fLoop && m->paging.is_last_position_valid &&
 		    (x - m->paging.last_x > MAX_PAGING_MOVE_DISTANCE ||
@@ -1067,8 +1067,8 @@ void checkPanFrames(void)
 			{
 				XMoveResizeWindow(
 					dpy, m->PanFrameRight.win,
-					m->virtual_scr.MyDisplayWidth - edge_thickness, 0,
-					edge_thickness, m->virtual_scr.MyDisplayHeight);
+					(m->si->x + m->si->w) - edge_thickness, 0,
+					edge_thickness, m->si->y + m->si->h);
 			}
 			if (!m->PanFrameRight.isMapped)
 			{
@@ -1090,7 +1090,8 @@ void checkPanFrames(void)
 			if (edge_thickness != last_edge_thickness)
 			{
 				XResizeWindow(
-					dpy, m->PanFrameTop.win, m->virtual_scr.MyDisplayWidth,
+					dpy, m->PanFrameTop.win,
+					(m->si->x + m->si->w),
 					edge_thickness);
 			}
 			if (!m->PanFrameTop.isMapped)
@@ -1114,8 +1115,8 @@ void checkPanFrames(void)
 			{
 				XMoveResizeWindow(
 					dpy, m->PanFrameBottom.win, 0,
-					m->virtual_scr.MyDisplayHeight - edge_thickness,
-					m->virtual_scr.MyDisplayWidth, edge_thickness);
+					(m->si->y + m->si->h) - edge_thickness,
+					(m->si->x + m->si->w), edge_thickness);
 			}
 			if (!m->PanFrameBottom.isMapped)
 			{
@@ -1468,6 +1469,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		}
 	}
 	checkPanFrames();
+	raisePanFrames();
 	/* regrab buttons in case something got obscured or unobscured */
 	focus_grab_buttons_all();
 
