@@ -181,6 +181,16 @@ double quotes) for a transparent background.
 Specifies the number of rows of buttons to be created. The default
 is 2 rows.
 
+.IP "*FvwmButtons: WindowName \fIname\fP"
+If FvwmButtons has a titlebar enabled with Title style, (for example,
+some transient subpanel), this option can set it's Window name and
+Icon name to a string provided with this parameter. If omitted, default
+for Window and Icon name is the window resource name which itself is
+simply "FvwmButtons", or is derived from the alias by which FvwmButtons
+configuration is referenced. This enables setting a title with spaces
+and larger number of non-ASCII characters which is not allowed as an
+alias for FvwmButtons module instance otherwise.
+
 .IP "*FvwmButtons: (\fIoptions\fP) [\fItitle icon command\fP]"
 Specifies the contents of a button in the buttonbox. The following
 \fIoptions\fP, separated by commas or whitespace, can be given a

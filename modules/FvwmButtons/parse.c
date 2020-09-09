@@ -1785,6 +1785,7 @@ static void ParseConfigLine(button_info **ubb, char *s)
 		"colorset",
 		"activecolorset",
 		"presscolorset",
+		"windowname",
 		NULL
 	};
 	int i, j, k;
@@ -1932,6 +1933,26 @@ static void ParseConfigLine(button_info **ubb, char *s)
 			ub->c->flags.b_PressColorset = 0;
 		}
 		break;
+
+	case 15: /* WindowName */
+	{
+		i = sscanf(s, "%126[^\n]", windowname);
+		if (i > 0)
+		{
+			ub->c->flags.b_WindowName = 1;
+		}
+		else
+		{
+			ub->c->flags.b_WindowName = 0;
+		}
+#ifdef DEBUG_PARSER
+		if (windowname == 0)
+		{
+			fprintf(stderr, "%s\n", windowname);
+		}
+#endif
+		break;
+	}
 
 	default:
 		s = trimleft(s);

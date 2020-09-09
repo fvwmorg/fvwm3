@@ -77,6 +77,7 @@ typedef struct
 	unsigned b_PressIcon      : 1; /* Use alternate Icon on press */
 	unsigned b_PressColorset  : 1; /* Use alternate Colorset on press */
 	unsigned b_PressTitle     : 1; /* Use alternate Title text on press */
+	unsigned b_WindowName     : 1; /* Use alternate Window and Icon name */
 } flags_type;
 
 /* Flags for b->swallow */
@@ -240,6 +241,7 @@ void exec_swallow(char *action, button_info *b);
 
 char *GetButtonAction(button_info*,int);
 void ButtonPressProcess(button_info *b, char **act);
+void change_window_name(char *str);
 
 /* ----------------------------- global variables -------------------------- */
 
@@ -257,6 +259,7 @@ extern int new_desk;
 extern GC NormalGC;
 extern GC ShadowGC;
 extern FlocaleWinString *FwinString;
+extern char windowname[128];
 
 /* ---------------------------------- misc --------------------------------- */
 
