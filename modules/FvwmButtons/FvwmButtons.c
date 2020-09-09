@@ -191,6 +191,7 @@ Bool do_allow_bad_access = False;
 Bool was_bad_access = False;
 Bool swallowed = False;
 Window swallower_win = 0;
+char windowname[128];
 
 /* ------------------------------ Misc functions ----------------------------*/
 
@@ -846,6 +847,11 @@ int main(int argc, char **argv)
 	 * will tell us the current desktop and paging status, needed to
 	 * indent buttons correctly */
 	SendText(fd, "Send_WindowList", 0);
+
+	if (UberButton->c->flags.b_WindowName == 1)
+	{
+		change_window_name(windowname);
+	}
 
 #ifdef DEBUG_INIT
 	fvwm_debug(__func__, "OK\n%s: Startup complete\n", MyName);
@@ -3419,4 +3425,23 @@ void exec_swallow(char *action, button_info *b)
 		my_sm_env, action, orig_sm_env);
 	SendText(fd, cmd, 0);
 	free(cmd);
+}
+
+/*
+ *  Change the window name displayed in the title bar.
+ *  Helper function borrowed from FvwmIdent for
+ *  WindowName FvwmButtons functionality
+ */
+void change_window_name(char *str)
+{
+	XTextProperty name;
+
+	if (XStringListToTextProperty(&str, 1, &name) == 0)
+	{
+		fprintf(stderr,"FvwmButtons: cannot allocate window name");
+		return;
+	}
+	XSetWMName(Dpy, MyWindow, &name);
+	XSetWMIconName(Dpy, MyWindow, &name);
+	XFree(name.value);
 }
