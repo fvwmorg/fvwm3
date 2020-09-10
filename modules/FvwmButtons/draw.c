@@ -663,9 +663,20 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 					break;
 				}
 			}
-			DrawTrianglePattern(
-				Dpy, MyWindow, NormalGC, ShadowGC, None,
-				ix, iy, iw, ih, 0, dir, 1, 0, 0);
+
+			if (b->indicator_sunkraise == 2)
+			{
+				DrawTrianglePattern(
+					Dpy, MyWindow, ShadowGC, NormalGC, None,
+					ix, iy, iw, ih, 0, dir, 1, 0, 0);
+			}
+			else
+			{
+				DrawTrianglePattern(
+					Dpy, MyWindow, NormalGC, ShadowGC, None,
+					ix, iy, iw, ih, 0, dir, 1, 0, 0);
+			}
+
 		}
 	} /* panel indicator */
 

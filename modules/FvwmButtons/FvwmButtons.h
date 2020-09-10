@@ -226,6 +226,9 @@ struct button_info_struct
 	int slide_delay_ms;          /* b_Panel */
 	int indicator_size;          /* b_Panel */
 	panel_flags_type panel_flags;
+	int indicator_sunkraise;     /* b_Panel */
+	char indicator_in_out;       /* b_Panel */
+
 };
 
 #include "button.h"

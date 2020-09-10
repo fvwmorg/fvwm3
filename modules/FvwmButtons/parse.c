@@ -396,7 +396,8 @@ static void ParsePanel(
 	char **ss, unsigned int *flags, unsigned int *mask, char *direction,
 	int *steps, int *delay, panel_flags_type *panel_flags,
 	int *indicator_size, int *rela_x, int *rela_y, char *position,
-	char *context)
+	char *context, int *indicator_sunkraise, char *indicator_in_out)
+
 {
 	char *swallowopts[] =
 	{
@@ -424,6 +425,9 @@ static void ParsePanel(
 
 	char *t, *s = *ss;
 	int n;
+	char *instr = "in";
+	char *outstr = "out";
+	char *clear_comma;
 
 	while (*s && *s != ')')
 	{
@@ -515,7 +519,38 @@ static void ParsePanel(
 			n = 0;
 			(*panel_flags).panel_indicator = 1;
 			*indicator_size = 0;
-			sscanf(s, "%d%n", indicator_size, &n);
+			sscanf(s, "%d %s%n", indicator_size, indicator_in_out, &n);
+
+			/* Remove comma from %s of sscanf */
+			clear_comma = strchr(indicator_in_out, ',');
+			if (clear_comma != NULL)
+			{
+				*clear_comma = '\0';
+			}
+
+			if (*indicator_in_out == *instr)
+			{
+			        *indicator_sunkraise = 2;
+			}
+			if (*indicator_in_out == *outstr)
+			{
+			        *indicator_sunkraise = 1;
+			}
+
+			/* Not defined - parse indicator size without in/out after it */
+			if (*indicator_sunkraise < 1 || *indicator_sunkraise > 2)
+			{
+			        *indicator_sunkraise = 1;
+			        s = trimleft(s);
+			        n = n - 1;
+			        sscanf(s, "%d%n", indicator_size, &n);
+			        if (*indicator_size < 0 || *indicator_size > 100)
+			        {
+			                *indicator_size = 0;
+			        }
+			}
+
+
 			if (*indicator_size < 0 || *indicator_size > 100)
 			{
 				*indicator_size = 0;
@@ -1151,7 +1186,9 @@ static void ParseButton(button_info **uberb, char *s)
 							&b->relative_x,
 							&b->relative_y,
 							&b->slide_position,
-							&b->slide_context);
+							&b->slide_context,
+							&b->indicator_sunkraise,
+							&b->indicator_in_out);
 					}
 				}
 				t = seekright(&s);
