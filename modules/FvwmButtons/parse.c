@@ -427,7 +427,6 @@ static void ParsePanel(
 	int n;
 	char *instr = "in";
 	char *outstr = "out";
-	char *clear_comma;
 
 	while (*s && *s != ')')
 	{
@@ -522,11 +521,7 @@ static void ParsePanel(
 			sscanf(s, "%d %s%n", indicator_size, indicator_in_out, &n);
 
 			/* Remove comma from %s of sscanf */
-			clear_comma = strchr(indicator_in_out, ',');
-			if (clear_comma != NULL)
-			{
-				*clear_comma = '\0';
-			}
+			indicator_in_out[strcspn(indicator_in_out, ",")] = '\0';
 
 			if (*indicator_in_out == *instr)
 			{
