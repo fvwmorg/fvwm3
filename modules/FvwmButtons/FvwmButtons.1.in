@@ -455,7 +455,11 @@ points in the direction where the panel will pop up.  The
 specifies the maximum width and height of the indicator.  Without
 this size FvwmButtons will make the indicator fit the button. You
 will probably want to use the \fIPadding\fP option to leave a few
-pixels between the indicator and the frame of the button.
+pixels between the indicator and the frame of the button. Second
+option to indicator may be given which enters the look of the
+triangle. If this keyword is \fIin\fP, triangle will appear pressed
+in, while \fIout\fP will make triangle to appear depressed (3D raised).
+If this keyword is omitted, default will be \fIout\fP or depressed.
 
 The \fIposition\fP option allows one to place the panel. The syntax
 is:
