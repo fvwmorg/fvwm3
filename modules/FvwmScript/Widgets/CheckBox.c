@@ -44,8 +44,10 @@ void InitCheckBox(struct XObj *xobj)
   mask = 0;
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
-  Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-  mask |= CWCursor;  /* Cursor for the window */
+  if (!x11base->cursor) {
+    Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
+    mask |= CWCursor;  /* Window cursor */
+  }
 
   xobj->win = XCreateWindow(dpy, *xobj->ParentWin,
 		xobj->x, xobj->y, xobj->width, xobj->height,0,

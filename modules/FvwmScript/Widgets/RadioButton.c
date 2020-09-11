@@ -42,8 +42,10 @@ void InitRadioButton(struct XObj *xobj)
 	}
 
 	mask=0;
-	Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
-	mask|=CWCursor;                /* Cursor for window */
+	if (!x11base->cursor) {
+		Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
+		mask |= CWCursor;  /* Window cursor */
+	}
 	Attr.background_pixel=xobj->TabColor[back];
 	mask|=CWBackPixel;
 

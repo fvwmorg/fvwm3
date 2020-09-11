@@ -47,8 +47,10 @@ void InitPushButton(struct XObj *xobj)
 	}
 
 	mask = 0;
-	Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-	mask |= CWCursor;
+	if (!x11base->cursor) {
+		Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
+		mask |= CWCursor;  /* Window cursor */
+	}
 	Attr.background_pixel = xobj->TabColor[back];
 	mask |= CWBackPixel;
 
@@ -293,8 +295,10 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 			mask |= CWBorderPixel;
 			Attr.colormap = Pcmap;
 			mask |= CWColormap;
-			Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-			mask |= CWCursor;         /* Window cursor */
+			if (!x11base->cursor) {
+				Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
+				mask |= CWCursor;  /* Window cursor */
+			}
 			Attr.override_redirect = True;
 			mask |= CWOverrideRedirect;
 			WinPop = XCreateWindow(

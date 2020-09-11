@@ -49,9 +49,11 @@ void InitPopupMenu(struct XObj *xobj)
   mask = 0;
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
-  Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-  mask |= CWCursor;             /* window cursor */
 
+  if (!x11base->cursor) {
+    Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
+    mask |= CWCursor;  /* Window cursor */
+  }
   xobj->win = XCreateWindow(dpy, *xobj->ParentWin,
 		xobj->x, xobj->y, xobj->width, xobj->height, 0,
 		CopyFromParent, InputOutput, CopyFromParent,
@@ -189,8 +191,10 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   mask |= CWBorderPixel;
   Attr.colormap = Pcmap;
   mask |= CWColormap;
-  Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
-  mask |= CWCursor;             /* Window cursor */
+  if (!x11base->cursor) {
+    Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
+    mask |= CWCursor;  /* Window cursor */
+  }
   Attr.override_redirect = True;
   mask |= CWOverrideRedirect;
   WinPop = XCreateWindow(dpy, Root, x, y, xobj->width, hMenu, 0,

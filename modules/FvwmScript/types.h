@@ -156,6 +156,7 @@ typedef struct
   char *hilicolor;
   int colorset;
   char *font;
+  char *cursor;
   char *icon;
   char *title;
   Bloc *periodictasks;
