@@ -85,6 +85,11 @@ command or in the script with the ShadowColor command, grey55 is used.
 .IP "*FvwmScript: DefaultColorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP as the default colorset.
 
+.IP "*FvwmScript: DefaultCursor \fIcursor\fP"
+Tells the module to use X11 cursor \fIcursor\fP as the default for all
+widgets. Cursor names are those defined in the include file X11/cursorfont.h
+but without XC_ prefix.
+
 .SH ANATOMY OF A SCRIPT
 FvwmScript uses a particular programming language. A script is composed of
 five parts. Heading contains general characteristics of the window and

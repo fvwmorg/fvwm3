@@ -39,6 +39,7 @@
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 #include "libs/XError.h"
+#include "libs/Cursor.h"
 
 #ifdef MEMDEBUG                 /* For debugging */
 #include <unchecked.h>
@@ -97,6 +98,7 @@ Binding *BindingsList;
 extern void InitCom(void);
 static void TryToFind(char *filename);
 
+char *default_cursor;
 
 /* Exit procedure - called whenever we call exit(), or when main() ends */
 static void
@@ -281,6 +283,11 @@ void ParseOptions(void)
 	CopyStringWithQuotes(&x11base->font,&tline[22]);
       else if (strncasecmp(tline,"Colorset",8) == 0)
 	LoadColorset(&tline[8]);
+      else if (strncasecmp(tline,"*FvwmScriptDefaultCursor",24) == 0)
+      {
+	CopyString(&x11base->cursor,&tline[24]);
+	default_cursor = x11base->cursor;
+      }
     }
 
     GetConfigLine(fd,&tline);
@@ -439,6 +446,7 @@ void OpenWindow (void)
   unsigned long mask;
   XClassHint classHints;
   XSetWindowAttributes Attr;
+  int xcnum;
 
   /* Allocation for colors */
   if (x11base->colorset >= 0) {
@@ -458,6 +466,16 @@ void OpenWindow (void)
   Attr.background_pixel = x11base->TabColor[back];
   Attr.border_pixel = 0;
   Attr.colormap = Pcmap;
+
+  xcnum = fvwmCursorNameToIndex(default_cursor);
+  if (xcnum != -1) {
+    Attr.cursor = XCreateFontCursor(dpy, xcnum);
+    mask |= CWCursor;
+  } else {
+    /* Bad name or value, clear the config slot. */
+    x11base->cursor = NULL;
+  }
+  free(default_cursor);
 
   x11base->win=XCreateWindow(
     dpy, x11base->root, x11base->size.x,x11base->size.y, x11base->size.width,
