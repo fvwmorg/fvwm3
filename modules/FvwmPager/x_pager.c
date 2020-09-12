@@ -549,8 +549,8 @@ void initialize_pager(void)
 				  fore_pix,back_pix,Pdepth);
   }
 
-  n = mon->virtual_scr.VxMax / (mon->x + mon->w); //mon->virtual_scr.MyDisplayWidth;
-  m = mon->virtual_scr.VyMax / (mon->y + mon->h); //mon->virtual_scr.MyDisplayHeight;
+  n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
+  m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
 
   /* Size the window */
   if(Rows < 0)
@@ -590,8 +590,8 @@ void initialize_pager(void)
   sizehints.base_width = Columns * n + Columns - 1;
   sizehints.base_height = Rows * (m + label_h + 1) - 1;
 
-  int vWidth  = mon->virtual_scr.VxPages * (mon->x + mon->w);
-  int vHeight = mon->virtual_scr.VyPages * (mon->y + mon->h);
+  int vWidth  = mon->virtual_scr.VxPages * (mon->virtual_scr.MyDisplayWidth);
+  int vHeight = mon->virtual_scr.VyPages * (mon->virtual_scr.MyDisplayHeight);
 
   if (window_w > 0)
   {
@@ -625,12 +625,12 @@ void initialize_pager(void)
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     if (window_w + window_x > screen_g.x + screen_g.width)
     {
-      window_x = screen_g.x + screen_g.width - mon->w; //mon->virtual_scr.MyDisplayWidth;
+      window_x = screen_g.x + screen_g.width - mon->virtual_scr.MyDisplayWidth;
       xneg = 1;
     }
     if (window_h + window_y > screen_g.y + screen_g.height)
     {
-      window_y = screen_g.y + screen_g.height - mon->h; //mon->virtual_scr.MyDisplayHeight;
+      window_y = screen_g.y + screen_g.height - mon->virtual_scr.MyDisplayHeight;
       yneg = 1;
     }
   }
