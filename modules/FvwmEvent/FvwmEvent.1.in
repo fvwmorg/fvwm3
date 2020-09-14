@@ -189,10 +189,10 @@ e.g. for audio-events:
 	*FvwmEvent: leave_window beep.au
 	*FvwmEvent: property_change beep.au
 
-	*FvwmEvent: montior_enabled beep.au
-	*FvwmEvent: montior_disabled beep.au
-	*FvwmEvent: montior_changed beep.au
-	*FvwmEvent: montior_focus beep.au
+	*FvwmEvent: monitor_enabled beep.au
+	*FvwmEvent: monitor_disabled beep.au
+	*FvwmEvent: monitor_changed beep.au
+	*FvwmEvent: monitor_focus beep.au
 .sp
 .fi
 The window related event handlers are executed within a window
