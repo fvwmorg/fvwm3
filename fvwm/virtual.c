@@ -1554,8 +1554,6 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	/*
 	 * Set the window's desktop, and map or unmap it as needed.
 	 */
-	/* Only change mapping for non-sticky windows */
-	if (!is_window_sticky_across_desks(fw) /*&& !IS_ICON_UNMAPPED(fw)*/)
 	{
 		if (fw->Desk == m->virtual_scr.CurrentDesk)
 		{
