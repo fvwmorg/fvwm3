@@ -456,6 +456,42 @@ $EVENTS_INFO = {
 		],
 	},
 
+	&MX_MONITOR_DISABLED         => {
+		format => "L!3a*",
+		fields => [
+			win_id       => window,
+			frame_id     => window,
+			ptr          => number,
+			name         => string,
+		],
+	},
+	&MX_MONITOR_ENABLED          => {
+		format => "L!3a*",
+		fields => [
+			win_id       => window,
+			frame_id     => window,
+			ptr          => number,
+			name         => string,
+		],
+	},
+	&MX_MONITOR_CHANGED          => {
+		format => "L!3a*",
+		fields => [
+			win_id       => window,
+			frame_id     => window,
+			ptr          => number,
+			name         => string,
+		],
+	},
+	&MX_MONITOR_FOCUS          => {
+		format => "L!3a*",
+		fields => [
+			win_id       => window,
+			frame_id     => window,
+			ptr          => number,
+			name         => string,
+		],
+	},
 };
 
 # end of the would-be-generated part
