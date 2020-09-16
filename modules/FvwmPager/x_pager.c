@@ -1903,7 +1903,9 @@ void SwitchToDesk(int Desk)
 	char command[256];
 	struct fpmonitor *m = fpmonitor_this();
 
-	sprintf(command, "GotoDesk %s 0 %d", m->name, Desk + desk1);
+	sprintf(command, "GotoDesk %s 0 %d", monitor_to_track ? m->name : "",
+			Desk + desk1);
+	fprintf(stderr, "%s: cmd: %s\n", __func__, command);
 	SendText(fd,command,0);
 }
 
@@ -1921,7 +1923,9 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
     vy = Event->xbutton.y * mon->virtual_scr.VHeight / (desk_h * mon->virtual_scr.MyDisplayHeight);
     mon->virtual_scr.Vx = vx * mon->virtual_scr.MyDisplayWidth;
     mon->virtual_scr.Vy = vy * mon->virtual_scr.MyDisplayHeight;
-    sprintf(command, "GotoDeskAndPage %s %d %d %d", mon->name, Desk + desk1, vx, vy);
+    sprintf(command, "GotoDeskAndPage %s %d %d %d",
+		monitor_to_track ? mon->name : "", Desk + desk1, vx, vy);
+    fprintf(stderr, "%s: cmd: %s\n", __func__, command);
     SendText(fd, command, 0);
 
   }
@@ -1941,8 +1945,8 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       x = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
     if (y * mon->virtual_scr.MyDisplayHeight > mon->virtual_scr.VyMax)
       y = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-    sprintf(command, "GotoPage %s %d %d", mon->name, x, y);
-    fprintf(stderr, "%s: going to page: %s %d, %d\n", __func__, mon->name, x, y);
+    sprintf(command, "GotoPage %s %d %d", monitor_to_track ? mon->name : "", x, y);
+    fprintf(stderr, "%s: cmd: %s\n", __func__, command);
     SendText(fd, command, 0);
   }
   Wait = 1;
@@ -1954,9 +1958,10 @@ void IconSwitchPage(XEvent *Event)
   struct fpmonitor *mon = fpmonitor_this();
 
   sprintf(command,"GotoPage %s %d %d",
-	  mon->name,
+	  monitor_to_track ? mon->name : "",
 	  Event->xbutton.x * mon->virtual_scr.VWidth / (icon_w * mon->virtual_scr.MyDisplayWidth),
 	  Event->xbutton.y * mon->virtual_scr.VHeight / (icon_h * mon->virtual_scr.MyDisplayHeight));
+  fprintf(stderr, "%s: cmd: %s\n", __func__, command);
   SendText(fd, command, 0);
   Wait = 1;
 }
