@@ -1,5 +1,8 @@
 #ifndef _SAFEMALLOC_H
 #define _SAFEMALLOC_H
+
+#include <stdarg.h>
+
 void	*fxmalloc(size_t);
 void	*fxcalloc(size_t, size_t);
 void	*fxrealloc(void *, size_t, size_t);
