@@ -2,6 +2,7 @@
 #define _SAFEMALLOC_H
 
 #include <stdarg.h>
+#include <stddef.h>
 
 void	*fxmalloc(size_t);
 void	*fxcalloc(size_t, size_t);
