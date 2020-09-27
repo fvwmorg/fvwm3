@@ -1297,18 +1297,28 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	m->virtual_scr.Vx = newx;
 	m->virtual_scr.Vy = newy;
 
+	/* If we're in global mode, store the virtual_scr across all monitors.
+	 * This will allow for per-monitor tracking to be toggled, as well as
+	 * ensuring commands such as Goto{Page,Desk} operate correctly.
+	 */
+	monitor_assign_virtual(m);
+
 	if (deltax || deltay)
 	{
-		BroadcastPacket(
-			M_NEW_PAGE, 8,
-			(long)m->virtual_scr.Vx,
-			(long)m->virtual_scr.Vy,
-			(long)m->virtual_scr.CurrentDesk,
-			(long)m->virtual_scr.MyDisplayWidth,
-			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth ) + 1),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
-			(long)m->si->rr_output);
+		struct monitor	*mloop;
+
+		TAILQ_FOREACH(mloop, &monitor_q, entry) {
+			BroadcastPacket(
+				M_NEW_PAGE, 8,
+				(long)mloop->virtual_scr.Vx,
+				(long)mloop->virtual_scr.Vy,
+				(long)mloop->virtual_scr.CurrentDesk,
+				(long)mloop->virtual_scr.MyDisplayWidth,
+				(long)mloop->virtual_scr.MyDisplayHeight,
+				(long)((mloop->virtual_scr.VxMax / mloop->virtual_scr.MyDisplayWidth ) + 1),
+				(long)((mloop->virtual_scr.VyMax / mloop->virtual_scr.MyDisplayHeight) + 1),
+				(long)mloop->si->rr_output);
+		}
 		/*
 		 * RBW - 11/13/1998      - new:  chase the chain
 		 * bidirectionally, all at once! The idea is to move the
@@ -1491,9 +1501,15 @@ void goto_desk(int desk, struct monitor *m)
 		m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
 		m->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
 		m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
+
+		monitor_assign_virtual(m);
+
 		UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
 		m->virtual_scr.CurrentDesk = desk;
 		MapDesk(m, desk, True);
+
+		monitor_assign_virtual(m);
+
 		focus_grab_buttons_all();
 
 		if (monitor_mode == MONITOR_TRACKING_M) {
@@ -1515,6 +1531,9 @@ void goto_desk(int desk, struct monitor *m)
 		}
 
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
+			if (m == m2)
+				continue;
+
 			m2->Desktops = m->Desktops;
 			m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
 
@@ -2333,6 +2352,14 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		m->virtual_scr.prev_desk = m->virtual_scr.CurrentDesk;
 		m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
 		m->virtual_scr.CurrentDesk = val[0];
+
+		/* If we're in global mode, store the virtual_scr across all
+		 * monitors.  This will allow for per-monitor tracking to be
+		 * toggled, as well as ensuring commands such as
+		 * Goto{Page,Desk} operate correctly.
+		 */
+		monitor_assign_virtual(m);
+
 		MapDesk(m, val[0], True);
 		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,

@@ -163,6 +163,7 @@ void		 monitor_output_change(Display *, XRRScreenChangeNotifyEvent *);
 int		 monitor_get_all_widths(void);
 int		 monitor_get_all_heights(void);
 void		 monitor_add_new(void);
+void		 monitor_assign_virtual(struct monitor *);
 
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 

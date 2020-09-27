@@ -238,6 +238,23 @@ monitor_get_all_heights(void)
 }
 
 void
+monitor_assign_virtual(struct monitor *ref)
+{
+	struct monitor	*m;
+
+	if (monitor_mode == MONITOR_TRACKING_M)
+		return;
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m == ref)
+			continue;
+
+		memcpy(&m->virtual_scr, &ref->virtual_scr, sizeof(m->virtual_scr));
+	}
+}
+
+
+void
 FScreenSelect(Display *dpy)
 {
 	XRRSelectInput(disp, DefaultRootWindow(disp),
