@@ -972,10 +972,9 @@ void list_new_desk(unsigned long *body)
   int change_cs = -1;
   int change_ballooncs = -1;
   int change_highcs = -1;
-  int mon_num = body[1];
   struct fpmonitor *m;
 
-  m = fpmonitor_by_output(mon_num);
+  m = fpmonitor_this();
 
   if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 	  return;
