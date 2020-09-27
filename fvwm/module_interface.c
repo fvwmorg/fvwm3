@@ -918,7 +918,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
-			if ((!(monitor_mode == MONITOR_TRACKING_G)) && t->m != m)
+			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
 				continue;
 
 			SendConfig(mod,M_CONFIGURE_WINDOW,t);
