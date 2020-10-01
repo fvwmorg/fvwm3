@@ -2090,9 +2090,18 @@ void CMD_Test(F_CMD_ARGS)
 			flags_ptr = GetNextSimpleOption(flags_ptr, &var_name);
 			if (var_name)
 			{
-				const char *value = getenv(var_name);
+				const char *value;
 
-				match = (value != NULL) ? 1 : 0;
+				if ( (strlen(var_name) > 10) && (memcmp(var_name,"infostore.",10) == 0)  )
+				{
+					value = get_metainfo_value(var_name+10);
+					match = (value != NULL) ? 1 : 0;
+				}
+				else
+				{
+					value = getenv(var_name);
+					match = (value != NULL) ? 1 : 0;
+				}
 			}
 			else
 			{
