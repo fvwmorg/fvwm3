@@ -2092,7 +2092,7 @@ void CMD_Test(F_CMD_ARGS)
 			{
 				const char *value;
 
-				if ( (strlen(var_name) > 10) && (memcmp(var_name,"infostore.",10) == 0)  )
+				if (memcmp(var_name,"infostore.",10) == 0)
 				{
 					value = get_metainfo_value(var_name+10);
 					match = (value != NULL) ? 1 : 0;
