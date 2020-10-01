@@ -90,6 +90,16 @@ typedef struct
 
 CommandChain *commands;
 
+struct fpmonitor {
+	const char 	*name;
+	int 		 x, y, w, h;
+
+	TAILQ_ENTRY(fpmonitor) entry;
+};
+TAILQ_HEAD(fpmonitors, fpmonitor);
+
+struct fpmonitors		 fp_monitor_q;
+
 int current_desk = 0;
 int current_x = 0;
 int current_y = 0;
@@ -128,6 +138,20 @@ ErrorHandler(Display *d, XErrorEvent *event)
 	return 0;
 }
 
+void extract_monitor_config(struct fpmonitor *m, char *tline)
+{
+    int  output, mdw, mdh, vx, vy, vxmax, vymax, iscur;
+    int  x, y, w, h;
+
+    sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d",
+        &output, &iscur, &mdw, &mdh, &vx, &vy, &vxmax, &vymax,
+        &x, &y, &w, &h);
+    m->x = x;
+    m->y = y;
+    m->w = w;
+    m->h = h;
+}
+
 int main(int argc, char **argv)
 {
 	char *temp, *s;
@@ -142,6 +166,8 @@ int main(int argc, char **argv)
 	{
 		temp = s + 1;
 	}
+
+	TAILQ_INIT(&fp_monitor_q);
 
 	Module = temp;
 	configPrefix = CatString2("*", Module);
@@ -168,8 +194,8 @@ int main(int argc, char **argv)
 	}
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
-	MyDisplayHeight = DisplayHeight(dpy, screen);
-	MyDisplayWidth = DisplayWidth(dpy, screen);
+	MyDisplayHeight = DisplayHeight(dpy, screen) - 1000;
+	MyDisplayWidth = DisplayWidth(dpy, screen) - 1000;
 	XSetErrorHandler(ErrorHandler);
 	flib_init_graphics(dpy);
 
@@ -343,8 +369,8 @@ void SetDeskPageBackground(const Command *c)
 			else if (RetainPixmap)
 			{
 				pix = CreateBackgroundPixmap(
-					dpy2, root2, MyDisplayWidth,
-					MyDisplayHeight,
+					dpy2, root2, MyDisplayWidth - 600,
+					MyDisplayHeight - 600,
 					&Colorset[c->colorset],
 					DefaultDepth(dpy2, screen2),
 					DefaultGC(dpy2, screen2), False);
@@ -358,8 +384,8 @@ void SetDeskPageBackground(const Command *c)
 			else
 			{
 				SetWindowBackground(
-					dpy2, root2, MyDisplayWidth,
-					MyDisplayHeight,
+					dpy2, root2, MyDisplayWidth - 600,
+					MyDisplayHeight- 600,
 					&Colorset[c->colorset],
 					DefaultDepth(dpy2, screen2),
 					DefaultGC(dpy2, screen2), True);
@@ -453,6 +479,7 @@ void ProcessMessage(unsigned long type, unsigned long *body)
 	{
 	case M_CONFIG_INFO:
 		tline = (char*)&(body[3]);
+		ParseConfigLine(tline);
 		ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS);
 		break;
 
@@ -533,6 +560,32 @@ int ParseConfigLine(char *line)
 		else if (strncasecmp(line, "colorset", 8) == 0)
 		{
 			return LoadColorset(line + 8);
+		}
+		else if (strncasecmp(line, "Monitor", 7) == 0)
+		{
+			struct fpmonitor *m, *m2;
+			char	*mname;
+			int 	 updated = 0;
+
+			line = GetNextToken(line + 8, &mname);
+
+			TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
+				updated = 0;
+				if (strcmp(m2->name, mname) == 0) {
+					extract_monitor_config(m2, line);
+					updated = 1;
+				}
+			}
+
+			if (updated)
+				return -1;
+
+			m = fxcalloc(1, sizeof(*m));
+
+			m->name = fxstrdup(mname);
+			extract_monitor_config(m, line);
+			TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
+			fprintf(stderr, "Added monitor: %s\n", m->name);
 		}
 	}
 	return -1;
@@ -622,6 +675,16 @@ Bool ParseNewCommand(
 			*do_ignore_page = False;
 			free(value);
 		}
+		else if (StrEquals(name, "Monitor"))
+		{
+			if (GetNextToken(option_val, &value) == NULL)
+			{
+				fvwm_debug(__func__,
+					   "Monitor option requires a value");
+				return 1;
+			}
+		}
+
 		free(name);
 		free(option);
 	}
