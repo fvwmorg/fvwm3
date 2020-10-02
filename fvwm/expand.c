@@ -41,6 +41,7 @@
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "libs/Fsvg.h"
+#include "libs/log.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -79,6 +80,7 @@ static char *function_vars[] =
 	"cw.width",
 	"cw.x",
 	"cw.y",
+	"debuglog.state",
 	"desk.height",
 	"desk.n",
 	"desk.pagesx",
@@ -167,6 +169,7 @@ enum
 	VAR_CW_WIDTH,
 	VAR_CW_X,
 	VAR_CW_Y,
+	VAR_DEBUG_LOG_STATE,
 	VAR_DESK_HEIGHT,
 	VAR_DESK_N,
 	VAR_DESK_PAGESX,
@@ -1055,6 +1058,10 @@ static signed int expand_vars_extended(
 		is_target = True;
 		target[0] = wcontext_wcontext_to_char(exc->w.wcontext);
 		target[1] = '\0';
+		break;
+	case VAR_DEBUG_LOG_STATE:
+		is_numeric = True;
+		val = log_get_level();
 		break;
 	default:
 		/* unknown variable - try to find it in the environment */
