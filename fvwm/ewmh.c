@@ -959,6 +959,7 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 	int bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
+	int w, h;
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
@@ -978,10 +979,13 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 		bottom = max(bottom, fw->strut.bottom);
 	}
 
+	w = m->si->x + m->si->w;
+	h = m->si->y + m->si->h;
+
 	x = left;
 	y = top;
-	width = (m->virtual_scr.MyDisplayWidth) - (left + right);
-	height =(m->virtual_scr.MyDisplayHeight) - (top + bottom);
+	width =  w - (left + right);
+	height = h - (top + bottom);
 
 	fvwm_debug(__func__, "monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
 		"{x: %d, y: %d, w: %d, h: %d}\n", m->si->name,
@@ -1014,6 +1018,7 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 	int dyn_bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
+	int w,h;
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
@@ -1033,10 +1038,12 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 		dyn_bottom = max(dyn_bottom, fw->dyn_strut.bottom);
 	}
 
+	w = m->si->x + m->si->w;
+	h = m->si->y + m->si->h;
 	x = dyn_left;
 	y = dyn_top;
-	width  =  (m->virtual_scr.MyDisplayWidth) - (dyn_left + dyn_right);
-	height = (m->virtual_scr.MyDisplayHeight) - (dyn_top + dyn_bottom);
+	width  = w - (dyn_left + dyn_right);
+	height = h - (dyn_top + dyn_bottom);
 
 	if (
 		m->Desktops->ewmh_dyn_working_area.x != x ||
