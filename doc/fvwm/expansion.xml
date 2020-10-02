@@ -518,6 +518,15 @@ command can be used:</para>
     </listitem>
   </varlistentry>
   <varlistentry>
+    <term>$[debuglog.state]</term>
+    <listitem>
+      <para>
+	Either <replaceable>0</replaceable> (debug log closed) or <replaceable>1</replaceable>.
+	Indicates the current state of debuging and logging facility.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
     <term>$[gt.<replaceable>str</replaceable>]</term>
     <listitem>
       <para>

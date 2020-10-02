@@ -43,6 +43,12 @@ log_set_level(int ll)
 	log_level = ll;
 }
 
+/* Get log level. */
+int log_get_level(void)
+{
+	return log_level;
+}
+
 /* Open logging to file. */
 void
 log_open(const char *fvwm_userdir)
