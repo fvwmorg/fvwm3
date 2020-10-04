@@ -18,10 +18,10 @@ compatibility.
 **Currently, your existing fvwm2 config will work with fvwm3, but over time
 this will change.**
 
-Releases
---------
+Releases / Changelog
+--------------------
 
-* [1.0.0](https://github.com/fvwmorg/fvwm3/releases/tag/1.0.0)
+* [See the CHANGELOG](./CHANGELOG.md)
 
 Installation
 ------------
