@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/fvwmorg/fvwm3/tree/HEAD)
+## [1.0.1](https://github.com/fvwmorg/fvwm3/tree/1.0.1) (2020-10-04)
 
-[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.0...HEAD)
+[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.0...1.0.1)
 
 **Implemented enhancements:**
 
@@ -10,15 +10,15 @@
 
 **Fixed bugs:**
 
+- compilation fails on openbsd-current due to safemalloc.h \(va\_list\) [\#231](https://github.com/fvwmorg/fvwm3/issues/231)
+- \_NET\_WM\_STATE was not updated for maximized windows [\#203](https://github.com/fvwmorg/fvwm3/issues/203)
 - EwmhBaseStruts calculations don't use monitor's [\#241](https://github.com/fvwmorg/fvwm3/issues/241)
 - DesktopConfiguration global inherits behaviour from per-monitor mode [\#236](https://github.com/fvwmorg/fvwm3/issues/236)
-- compilation fails on openbsd-current due to safemalloc.h \(va\_list\) [\#231](https://github.com/fvwmorg/fvwm3/issues/231)
 - FvwmEvent:  missing `monitor\_focus` event [\#228](https://github.com/fvwmorg/fvwm3/issues/228)
 - perllib: doesn't understand MX\_MONITOR\_\* events [\#226](https://github.com/fvwmorg/fvwm3/issues/226)
 - FvwmButtons subpanels not popped out on primary monitor when desk is \> 0 [\#224](https://github.com/fvwmorg/fvwm3/issues/224)
 - PositionPlacement Center: fix to use current screen [\#211](https://github.com/fvwmorg/fvwm3/issues/211)
 - EwmhBaseStruts missing screen info from manpage [\#208](https://github.com/fvwmorg/fvwm3/issues/208)
-- \_NET\_WM\_STATE was not updated for maximized windows [\#203](https://github.com/fvwmorg/fvwm3/issues/203)
 - "version of go" misinterpreted by configure script? [\#202](https://github.com/fvwmorg/fvwm3/issues/202)
 - Unable to build 1.0, bson.h not found \[FreeBSD 12.1\] [\#200](https://github.com/fvwmorg/fvwm3/issues/200)
 - EwmhBaseStrut: fix calculations for per-monitor [\#242](https://github.com/fvwmorg/fvwm3/pull/242) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -31,6 +31,7 @@
 
 **Merged pull requests:**
 
+- Added CHANGELOG.md [\#244](https://github.com/fvwmorg/fvwm3/pull/244) ([ThomasAdam](https://github.com/ThomasAdam))
 - EWMH area: don't crop the boundary [\#243](https://github.com/fvwmorg/fvwm3/pull/243) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add support for infostore in EnvIsSet Test case [\#240](https://github.com/fvwmorg/fvwm3/pull/240) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add variable/parameter which indicates the state of the FVWM3 logging [\#239](https://github.com/fvwmorg/fvwm3/pull/239) ([NsCDE](https://github.com/NsCDE))
@@ -38,21 +39,21 @@
 - OpenBSD: add missing stdarg.h include [\#232](https://github.com/fvwmorg/fvwm3/pull/232) ([ThomasAdam](https://github.com/ThomasAdam))
 - sticky windows: explicitly move to desk [\#230](https://github.com/fvwmorg/fvwm3/pull/230) ([ThomasAdam](https://github.com/ThomasAdam))
 - Ta/monitor focus [\#229](https://github.com/fvwmorg/fvwm3/pull/229) ([ThomasAdam](https://github.com/ThomasAdam))
-- perllib: update to include MX\_MONITOR\_\* events [\#227](https://github.com/fvwmorg/fvwm3/pull/227) ([ThomasAdam](https://github.com/ThomasAdam))
 - Support for setting default mouse cursor on all FvwmScript widgets [\#222](https://github.com/fvwmorg/fvwm3/pull/222) ([NsCDE](https://github.com/NsCDE))
 - Add support for triangle indicator in/out sub options [\#221](https://github.com/fvwmorg/fvwm3/pull/221) ([NsCDE](https://github.com/NsCDE))
-- FvwmMFL: honour TMPDIR for socket [\#220](https://github.com/fvwmorg/fvwm3/pull/220) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add WindowName option to FvwmButtons [\#219](https://github.com/fvwmorg/fvwm3/pull/219) ([NsCDE](https://github.com/NsCDE))
 - FvwmMFL: remove socket before opening [\#218](https://github.com/fvwmorg/fvwm3/pull/218) ([ThomasAdam](https://github.com/ThomasAdam))
 - ta/gh 214 [\#217](https://github.com/fvwmorg/fvwm3/pull/217) ([ThomasAdam](https://github.com/ThomasAdam))
 - README: update for 1.0.0 [\#213](https://github.com/fvwmorg/fvwm3/pull/213) ([ThomasAdam](https://github.com/ThomasAdam))
 - PositionPlacement: include screen for Center [\#212](https://github.com/fvwmorg/fvwm3/pull/212) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure: default CFLAGS, add no-security guard [\#210](https://github.com/fvwmorg/fvwm3/pull/210) ([ThomasAdam](https://github.com/ThomasAdam))
-- doc: EwmhBaseStruts mention screen attribute [\#209](https://github.com/fvwmorg/fvwm3/pull/209) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: libbson: guard for FreeBSD [\#207](https://github.com/fvwmorg/fvwm3/pull/207) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure.ac: fix golang binary check [\#205](https://github.com/fvwmorg/fvwm3/pull/205) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fixed \_NET\_WM\_STATE for maximized windows [\#204](https://github.com/fvwmorg/fvwm3/pull/204) ([xuzhen](https://github.com/xuzhen))
 - Ta/release 1.0.0 [\#199](https://github.com/fvwmorg/fvwm3/pull/199) ([ThomasAdam](https://github.com/ThomasAdam))
+- perllib: update to include MX\_MONITOR\_\* events [\#227](https://github.com/fvwmorg/fvwm3/pull/227) ([ThomasAdam](https://github.com/ThomasAdam))
+- FvwmMFL: honour TMPDIR for socket [\#220](https://github.com/fvwmorg/fvwm3/pull/220) ([ThomasAdam](https://github.com/ThomasAdam))
+- doc: EwmhBaseStruts mention screen attribute [\#209](https://github.com/fvwmorg/fvwm3/pull/209) ([ThomasAdam](https://github.com/ThomasAdam))
 
 ## [1.0.0](https://github.com/fvwmorg/fvwm3/tree/1.0.0) (2020-09-03)
 
