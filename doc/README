@@ -1,19 +1,20 @@
 # Author: Scott Smedley
 
-This directory contains fvwm XML documentation. It is configured
-to output an fvwm.1 man page & a plethora of HTML files - all from
-the same (XML) source.
+This directory contains fvwm XML documentation. It can output an
+fvwm3.1 man page & a plethora of HTML files - all from the same (XML)
+source.
 
-By default, only the man page is generated. If you would like to
-generate the HTML documentation, use:
+By default the documentation is not generated.  If you want to
+generate the man page, use:
+
+  $ ./configure --enable-mandoc
+
+If you want to generate the HTML documentation, use:
 
   $ ./configure --enable-htmldoc
 
-If you do not want to generate the man page, use:
-
-  $ ./configure --disable-mandoc
-
-Once it is built, you should be able to point your web browser to:
+Once the HTML documentation is built and installed, you should be able
+to point your web browser to:
 
   file:///usr/local/share/doc/fvwm/index.html
 
