@@ -54,7 +54,6 @@ static void		 scan_screens(Display *);
 static void		 monitor_check_primary(void);
 
 enum monitor_tracking monitor_mode;
-DesktopsInfo	 *ReferenceDesktops;
 struct screen_infos	 screen_info_q;
 struct monitors		monitor_q;
 int randr_event;

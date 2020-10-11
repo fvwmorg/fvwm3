@@ -71,7 +71,6 @@ enum monitor_tracking
 };
 
 extern enum monitor_tracking monitor_mode;
-extern DesktopsInfo	 *ReferenceDesktops;
 
 struct screen_info {
 	const char		*name;
