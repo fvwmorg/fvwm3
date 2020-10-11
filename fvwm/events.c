@@ -98,6 +98,7 @@
 #include "schedule.h"
 #include "menus.h"
 #include "colormaps.h"
+#include "builtins.h"
 #include "colorset.h"
 #include "libs/FScreen.h"
 
@@ -2541,6 +2542,7 @@ void HandleFocusIn(const evh_args_t *ea)
 				    fw->m->si->name /* Name of the monitor. */
 			        );
 			}
+			status_send();
 		}
 		last_focus_w = focus_w;
 		last_focus_fw = focus_fw;
@@ -2552,6 +2554,7 @@ void HandleFocusIn(const evh_args_t *ea)
 		focus_grab_buttons(sf);
 		focus_grab_buttons(ffw_old);
 	}
+	status_send();
 
 	return;
 }
@@ -3590,6 +3593,7 @@ ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name.name));
 		    (fw->wmhints->flags & XUrgencyHint))
 		{
 			urgency_action = "Function UrgencyFunc";
+			status_send();
 		}
 		if ((old_wmhints_flags & XUrgencyHint) &&
 		    !(fw->wmhints->flags & XUrgencyHint))

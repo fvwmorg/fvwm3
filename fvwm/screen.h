@@ -478,17 +478,17 @@ typedef struct ScreenInfo
 	do {								   \
 		rectangle g;						   \
 		struct monitor *mnew;					   \
-		window_style style;					   \
 									   \
-		lookup_style((fw), &style);				   \
 		get_unshaded_geometry((fw), &g);			   \
 		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y);   \
 		/* Avoid unnecessary updates. */			   \
-		if (mnew == (fw)->m)					   \
+		if (mnew == (fw)->m &&					   \
+		    (fw)->Desk == mnew->virtual_scr.CurrentDesk)	   \
 			break;						   \
 		(fw)->m_prev = (fw)->m;					   \
 		(fw)->m = mnew;						   \
 		(fw)->Desk = mnew->virtual_scr.CurrentDesk;		   \
+		desk_add_fw((fw));					   \
 		BroadcastConfig(M_CONFIGURE_WINDOW, (fw));		   \
 	} while(0)
 

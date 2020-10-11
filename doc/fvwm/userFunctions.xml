@@ -28,6 +28,6 @@
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Silent.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="UnsetEnv.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Wait.xml" />
-
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Status.xml" />
 
 </section>

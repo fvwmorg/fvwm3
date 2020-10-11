@@ -48,7 +48,9 @@
 /* ---------------------------- local definitions -------------------------- */
 
 /* ---------------------------- local macros ------------------------------- */
-
+#ifndef XUrgencyHint
+#define XUrgencyHint            (1L << 8)
+#endif
 /* ---------------------------- imports ------------------------------------ */
 
 /* ---------------------------- included code files ------------------------ */
@@ -85,6 +87,7 @@ static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
 
 struct desktop_cmds	 desktop_cmd_q;
+struct desktop_fws	 desktop_fvwm_q;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -2575,8 +2578,135 @@ store_desktop_cmd(int desk, char *name)
 	TAILQ_INSERT_TAIL(&desktop_cmd_q, dc, entry);
 }
 
+static struct desktop_fw *
+desktop_fw_new(void)
+{
+	struct desktop_fw	*new;
+
+	new = fxcalloc(1, sizeof *new);
+	TAILQ_INIT(&new->desk_fvwmwin_q);
+
+	return (new);
+}
+
+bool
+desk_get_fw_urgent(struct monitor *m, int desk)
+{
+	struct desktop_fw	*df;
+	struct desk_fvwmwin	*dfws;
+
+	TAILQ_FOREACH(df, &desktop_fvwm_q, entry) {
+		if (df->desk == desk) {
+			TAILQ_FOREACH(dfws, &df->desk_fvwmwin_q, entry) {
+				if (dfws == NULL || dfws->fw == NULL)
+					continue;
+				if (dfws->fw->m != m)
+					continue;
+				if (dfws->fw->wmhints != NULL &&
+				    dfws->fw->wmhints->flags & XUrgencyHint)
+					return (true);
+			}
+		}
+	}
+	return (false);
+}
+
+int
+desk_get_fw_count(struct monitor *m, int desk)
+{
+	struct desktop_fw	*df;
+	struct desk_fvwmwin	*dfws;
+	window_style		 style;
+	style_flags		*sflags;
+	int 			 count = 0;
+
+	TAILQ_FOREACH(df, &desktop_fvwm_q, entry) {
+		if (df->desk == desk) {
+			TAILQ_FOREACH(dfws, &df->desk_fvwmwin_q, entry) {
+				if (dfws && dfws->fw && (dfws->fw->m != m))
+					continue;
+				lookup_style(dfws->fw, &style);
+				sflags = SGET_FLAGS_POINTER(style);
+
+				if (DO_SKIP_WINDOW_LIST(dfws->fw))
+					continue;
+				if (SIS_UNMANAGED(sflags))
+					continue;
+				fvwm_debug(__func__, "%s: considering: %s",
+						m->si->name, dfws->fw->visible_name);
+				count++;
+			}
+		}
+	}
+
+	return (count);
+}
+
+
+void
+desk_add_fw(FvwmWindow *fw)
+{
+	struct desktop_fw	*df, *df_loop;
+	struct desk_fvwmwin	*dfws;
+	int			 desk = monitor_get_current()->virtual_scr.CurrentDesk;
+
+	if (fw == NULL)
+		return;
+
+	if (TAILQ_EMPTY(&desktop_fvwm_q))
+		TAILQ_INIT(&desktop_fvwm_q);
+
+	desk_del_fw(fw);
+
+	TAILQ_FOREACH(df_loop, &desktop_fvwm_q, entry) {
+		if (df_loop->desk == desk) {
+			TAILQ_FOREACH(dfws, &df_loop->desk_fvwmwin_q, entry) {
+				if (dfws->fw == fw &&
+				    dfws->fw->m == fw->m &&
+				    dfws->fw->Desk == desk)
+					break;
+			}
+			dfws = fxcalloc(1, sizeof *dfws);
+			dfws->fw = fw;
+			TAILQ_INSERT_TAIL(&df_loop->desk_fvwmwin_q, dfws, entry);
+			fvwm_debug(__func__, "1: added fw (%s) to mon %s, desk: %d",
+				fw->visible_name, fw->m->si->name, desk);
+			return;
+		}
+	}
+
+	df = desktop_fw_new();
+	df->desk = desk;
+
+	dfws = fxcalloc(1, sizeof *dfws);
+	dfws->fw = fw;
+
+	TAILQ_INSERT_TAIL(&df->desk_fvwmwin_q, dfws, entry);
+	TAILQ_INSERT_TAIL(&desktop_fvwm_q, df, entry);
+	fvwm_debug(__func__, "2: added fw (%s) to mon %s, desk: %d",
+			fw->visible_name, fw->m->si->name, desk);
+}
+
+void
+desk_del_fw(FvwmWindow *fw)
+{
+	struct desktop_fw	*df;
+	struct desk_fvwmwin	*dfws;
+
+	TAILQ_FOREACH(df, &desktop_fvwm_q, entry) {
+		TAILQ_FOREACH(dfws, &df->desk_fvwmwin_q, entry) {
+			if (dfws->fw == fw) {
+				TAILQ_REMOVE(&df->desk_fvwmwin_q, dfws, entry);
+				free(dfws);
+				break;
+			}
+		}
+	}
+}
+
 void
 apply_desktops_monitor(struct monitor *m)
+
 {
 	DesktopsInfo	*t, *d, *new, **prev;
 	struct desktop_cmd	*dc;
