@@ -2516,6 +2516,7 @@ FvwmWindow *AddWindow(
 		{
 			get_relative_geometry(fw, &fw->g.frame, &fw->g.normal);
 		}
+		desk_add_fw(fw);
 	}
 	else
 	{
@@ -3378,6 +3379,8 @@ void destroy_window(FvwmWindow *fw)
 		 ring anchored on Scr.FvwmRoot
 		*/
 		remove_window_from_stack_ring(fw);
+
+		desk_del_fw(fw);
 	}
 
 	/****** check if we have to delay window destruction ******/
@@ -3419,6 +3422,7 @@ void destroy_window(FvwmWindow *fw)
 			M_DESTROY_WINDOW, 3, (long)FW_W(fw),
 			(long)FW_W_FRAME(fw), (unsigned long)fw);
 		EWMH_DestroyWindow(fw);
+		desk_del_fw(fw);
 		focus_grab_buttons_on_layer(fw->layer);
 		Scr.FWScheduledForDestroy = flist_append_obj(
 			Scr.FWScheduledForDestroy, fw);

@@ -563,6 +563,9 @@ const func_t func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Control user defined window states */
 
+	CMD_ENT("status", CMD_Status, F_STATUS, 0, 0),
+	/* - Sets if we send status. */
+
 	CMD_ENT("stick", CMD_Stick, F_STICK,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Change window stickyness */

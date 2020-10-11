@@ -128,6 +128,7 @@ enum
 	F_SNAP_ATT,
 	F_SNAP_GRID,
 	F_STAYSUP,
+	F_STATUS,
 	F_STYLE,
 	F_TEARMENUOFF,
 	F_TEST_,
@@ -349,6 +350,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS);
 void CMD_Send_Reply(F_CMD_ARGS);
 void CMD_Send_WindowList(F_CMD_ARGS);
 void CMD_SendToModule(F_CMD_ARGS);
+void CMD_Status(F_CMD_ARGS);
 void CMD_set_mask(F_CMD_ARGS);
 void CMD_set_nograb_mask(F_CMD_ARGS);
 void CMD_set_sync_mask(F_CMD_ARGS);

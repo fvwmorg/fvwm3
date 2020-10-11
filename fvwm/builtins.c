@@ -65,8 +65,11 @@
 #include "move_resize.h"
 #include "menus.h"
 #include "infostore.h"
+#include "focus.h"
 
 /* ---------------------------- local definitions -------------------------- */
+
+static void status_init_pipe(void);
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -118,8 +121,129 @@ static char *button_states[BS_MaxButtonStateName + 1] =
 
 char *ModulePath = FVWM_MODULEDIR;
 int moduleTimeout = DEFAULT_MODULE_TIMEOUT;
+static FILE *status_fp;
 
 /* ---------------------------- local functions ---------------------------- */
+
+void
+status_send(void)
+{
+	bson_t		 msg, screens;
+	bson_t		*desktops[256], *desk_doc[256], *individual_d[256];
+	int 		 i, d_count;
+	FvwmWindow	*fw_cur;
+	DesktopsInfo 	*di;
+	struct monitor	*m, *m_cur;
+	size_t		 json_len;
+	char		*as_json;
+
+	if (status_fp == NULL)
+		return;
+
+	memset(desktops, 0, sizeof desktops[0]);
+	memset(individual_d, 0, sizeof individual_d[0]);
+
+	m_cur = monitor_get_current();
+
+	bson_init(&msg);
+	BSON_APPEND_INT64(&msg, "version", 1);
+	BSON_APPEND_UTF8(&msg, "current_screen", m_cur->si->name);
+	BSON_APPEND_DOCUMENT_BEGIN(&msg, "screens", &screens);
+
+	d_count = 0;
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		desktops[d_count] = bson_new();
+		desk_doc[d_count] = bson_new();
+
+		di = m->Desktops->next;
+		while (di != NULL) {
+			individual_d[d_count] = bson_new();
+			BSON_APPEND_INT64(individual_d[d_count], "number",
+				di->desk);
+			BSON_APPEND_BOOL(individual_d[d_count], "is_current",
+				di->desk == m->virtual_scr.CurrentDesk);
+			BSON_APPEND_BOOL(individual_d[d_count], "is_urgent",
+				desk_get_fw_urgent(m, di->desk));
+			BSON_APPEND_INT64(individual_d[d_count],
+				"number_of_clients", desk_get_fw_count(m, di->desk));
+			BSON_APPEND_DOCUMENT(desktops[d_count], di->name,
+				individual_d[d_count]);
+			BSON_APPEND_DOCUMENT(desk_doc[d_count], "desktops",
+				desktops[d_count]);
+
+			di = di->next;
+		}
+		fw_cur = get_focus_window();
+		if (fw_cur != NULL && fw_cur->m == m) {
+			BSON_APPEND_UTF8(desk_doc[d_count], "current_client",
+				fw_cur->visible_name);
+		}
+		BSON_APPEND_DOCUMENT(&screens, m->si->name, desk_doc[d_count]);
+		d_count++;
+	}
+	bson_append_document_end(&msg, &screens);
+
+	if ((as_json = bson_as_relaxed_extended_json(&msg, &json_len)) == NULL)
+		goto out;
+
+	fflush(status_fp);
+	fprintf(status_fp, "%s\n", as_json);
+	fflush(status_fp);
+
+out:
+	bson_free(as_json);
+	for (i = 0; i < d_count; i++) {
+		if (desk_doc[i])
+			bson_free(desk_doc[i]);
+		if (desktops[i])
+			bson_free(desktops[i]);
+		if (individual_d[i])
+			bson_free(individual_d[i]);
+	}
+	bson_destroy(&msg);
+}
+
+#define PIPENAME "fvwm3.pipe"
+#define STATUSENV "FVWM_STATUS_PIPE"
+static void status_init_pipe(void)
+{
+	char	*tmpdir, *pipename, *addenv;
+	int	 status_fd = -1;
+
+	if ((tmpdir = getenv("TMPDIR")) == NULL)
+		tmpdir = "/tmp";
+
+	asprintf(&pipename, "%s/%s", tmpdir, PIPENAME);
+
+	unlink(pipename);
+	if ((mkfifo(pipename, 0666) == -1)) {
+		fvwm_debug(__func__, "mkfifo: %s", strerror(errno));
+		free(pipename);
+		return;
+	}
+
+	if ((status_fd = open(pipename, O_RDWR|O_NONBLOCK)) == -1) {
+		fvwm_debug(__func__, "Couldn't open pipe '%s': %s", pipename,
+			strerror(errno));
+		free(pipename);
+		return;
+	}
+
+	if ((status_fp = fdopen(status_fd, "w")) == NULL) {
+		fvwm_debug(__func__, "Error opening pipe: %s", strerror(errno));
+		free(pipename);
+		return;
+	}
+
+	xasprintf(&addenv, "%s=%s", STATUSENV, pipename);
+	flib_putenv(STATUSENV, addenv);
+	free(addenv);
+
+	fvwm_debug(__func__, "Pipe opened: %s (fd: %d)", pipename,
+		fileno(status_fp));
+
+	free(pipename);
+}
 
 /** Prepend rather than replace the image path.
     Used for obsolete PixmapPath and IconPath **/
@@ -2114,6 +2238,25 @@ void update_fvwm_colorset(int cset)
 }
 
 /* ---------------------------- builtin commands --------------------------- */
+
+void CMD_Status(F_CMD_ARGS)
+{
+	if ((strcasecmp(action, "on") == 0) && status_fp == NULL) {
+		status_init_pipe();
+	} else if (strcasecmp(action, "off") == 0) {
+		if (status_fp != NULL) {
+			fclose(status_fp);
+			status_fp = NULL;
+			fvwm_debug(__func__, "Closed pipe for status");
+		}
+		return;
+	} else {
+		fvwm_debug(__func__, "unknown option: %s", action);
+		return;
+	}
+
+	status_send();
+}
 
 void CMD_Beep(F_CMD_ARGS)
 {

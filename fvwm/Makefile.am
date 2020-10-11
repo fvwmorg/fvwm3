@@ -36,12 +36,14 @@ LDADD = \
 	-L$(top_builddir)/libs -lfvwm3 $(Xft_LIBS) $(X_LIBS) $(xpm_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(iconv_LIBS) $(Xrender_LIBS) $(Xcursor_LIBS) \
-	$(Bidi_LIBS) $(png_LIBS) $(rsvg_LIBS) $(intl_LIBS) $(XRandR_LIBS)
+	$(Bidi_LIBS) $(png_LIBS) $(rsvg_LIBS) $(intl_LIBS) $(XRandR_LIBS) \
+	$(libbson_LIBS)
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) $(Xft_CFLAGS) \
 	$(xpm_CFLAGS) $(X_CFLAGS) $(iconv_CFLAGS) $(Xrender_CFLAGS) \
-	$(Bidi_CFLAGS) $(png_CFLAGS) $(rsvg_CFLAGS) $(intl_CFLAGS)
+	$(Bidi_CFLAGS) $(png_CFLAGS) $(rsvg_CFLAGS) $(intl_CFLAGS) \
+	$(libbson_CFLAGS)
 
 AM_CFLAGS = \
 	-DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\" \

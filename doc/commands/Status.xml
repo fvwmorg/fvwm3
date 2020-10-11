@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "../docbook-xml/docbookx.dtd"
+[
+<!ENTITY % myents SYSTEM "../fvwm3.ent" >
+%myents;
+]>
+
+<!-- $Id$ -->
+
+<section id='Status'>
+<title>Status</title>
+
+<cmdsynopsis>
+	<command>Status</command>
+		<arg choice='plain' >
+			<replaceable>On | Off</replaceable>
+		</arg>
+</cmdsynopsis>
+	<para>Turns status either On or Off.  This sends information in JSON
+		format down a named pipe (set via FVWM_STATUS_PIPE env var)
+		about the current desks and number of windows, etc.  This is
+		meant to provide a fast means of supplying third-party tools
+		information about what's happening in Fvwm.  For example, the
+		JSON could be manipulated and sent to tools such as
+		<replaceable>lemonbar</replaceable>,
+		<replaceable>polybar</replaceable>, etc.
+	</para>
+	<para>The format of the JSON blob looks like this:</para>
+	<programlisting>
+	{
+	  "version": 1,
+	  "current_screen": "HDMI2",
+	  "screens": {
+	    "HDMI2": {
+	      "current_client": "n6tadam@shuttle: ~",
+	      "desktops": {
+		"0": {
+		  "number": 0,
+		  "is_urgent": false,
+		  "is_current": true,
+		  "number_of_clients": 5
+	       },
+	     },
+	   },
+	 },
+	}
+	</programlisting>
+	<para>These sections repeat for all screens/groups/etc, depending on
+		how many there are of each.
+	</para>
+</section>
