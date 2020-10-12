@@ -1,0 +1,31 @@
+#!/bin/bash
+
+pfile=${TMPDIR:-/tmp}/fvwm3-panel.pid
+
+[ -f $pfile ] && kill -0 $(<$pfile) && {
+	echo "Already running..."
+	pkill -P $(<$pfile)
+}
+
+echo $$ > $pfile
+
+pipe="$FVWM_STATUS_PIPE"
+
+# Ascertain the DPI value.  Anything over 100 is assumed to be on a HiDPI
+# display, and as such, XFT fonts, and higher font sizes are used.
+this_dpi=$(xdpyinfo | \
+	perl -wane '/resolution:\s+(?:(\d+)x(?:\d+))/ and print $1;')
+
+# Assume we last started conky.  Probably not ideal; we could go down the
+# route of tracking the PID if it's a problem.
+pkill conky
+(conky -d > "$pipe" &)
+
+font_opts=""
+geom_opts="x16"
+[ $this_dpi -gt 100 ] && {
+	font_opts="-f 'Book:pixelsize=25'"
+	geom_opts="x25"
+}
+
+~/read_status.pl | lemonbar -g $geom_opts $font_opts -p -d -B'#0000FF' -u2

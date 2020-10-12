@@ -1,0 +1,22 @@
+conky.config = {
+	out_to_x = false,
+	out_to_console = true,
+	background = false,
+	update_interval = 60,
+	total_run_times = 0,
+	use_spacer = 'none',
+	default_color = 'ffaf5f',
+	draw_graph_borders = true,
+	short_units = true,
+	use_spacer = 'left',
+	pad_percents = 1
+}
+
+conky.text = [[
+clock:%{r}%{B-}%{U\#00FFFF}%{+u}%{+o} \
+%{r}%{B-}%{U\#00FFFF}%{+u}%{+o} \
+%{B\#4ECC4E}[CPU: ${cpu cpu0 11,12}]%{B-} \
+%{B\#66B2FF}[MEM:  ${mem}]%{B-} \
+%{B\#D68C5A}[AVG:  ${loadavg 1}]%{B-} \
+%{B\#BF4356}[${time %b %d %H:%M:%S}]%{B-}%{-u}%{-o} \
+]]
