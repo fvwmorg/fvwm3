@@ -57,6 +57,7 @@
 #include "move_resize.h"
 #include "functions.h"
 #include "style.h"
+#include "externs.h"
 
 /* ----- move globals ----- */
 

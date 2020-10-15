@@ -300,6 +300,10 @@ command can be used:</para>
     </listitem>
   </varlistentry>
   <varlistentry>
+    <term>$[w.pagex] $[w.pagey]</term>
+    <listitem><para>The X or Y page the window is on.</para></listitem>
+  </varlistentry>
+  <varlistentry>
     <term>$[w.desk]</term>
     <listitem>
       <para>

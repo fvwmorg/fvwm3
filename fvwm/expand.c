@@ -136,6 +136,8 @@ static char *function_vars[] =
 	"w.desk",
 	"w.layer",
 	"w.screen",
+	"w.pagex",
+	"w.pagey",
 	/* ewmh working area */
 	"wa.height",
 	"wa.width",
@@ -225,6 +227,8 @@ enum
 	VAR_W_DESK,
 	VAR_W_LAYER,
 	VAR_W_SCREEN,
+	VAR_W_PAGEX,
+	VAR_W_PAGEY,
 	/* ewmh working area */
 	VAR_WA_HEIGHT,
 	VAR_WA_WIDTH,
@@ -955,6 +959,40 @@ static signed int expand_vars_extended(
 			should_quote = False;
 		}
 		break;
+	case VAR_W_PAGEX:
+	case VAR_W_PAGEY: {
+		int wx, wy, wh, ww, page_x, page_y;
+		rectangle r, t;
+		Window win;
+
+		if (!fw || IS_EWMH_DESKTOP(FW_W(fw))) {
+			return -1;
+		}
+
+		win = FW_W_FRAME(fw);
+		if (!XGetGeometry(dpy, win, &JunkRoot, &wx, &wy,
+			(unsigned int*)&ww,
+			(unsigned int*)&wh,
+			(unsigned int*)&JunkBW,
+			(unsigned int*)&JunkDepth)) {
+			return -1;
+		}
+		r.x = wx;
+		r.y = wy;
+		r.width = ww;
+		r.height = wh;
+
+		get_absolute_geometry(fw, &t, &r);
+		get_page_offset_rectangle(fw, &page_x, &page_y, &t);
+
+		if (i == VAR_W_PAGEX)
+			val = page_x / monitor_get_all_widths();
+		else
+			val = page_y / monitor_get_all_heights();
+		is_numeric = True;
+		should_quote = False;
+		break;
+	}
 	case VAR_SCREEN:
 		is_numeric = False;
 		val = Scr.screen;
