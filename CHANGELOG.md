@@ -1,5 +1,34 @@
 # Changelog
 
+## [Unreleased](https://github.com/fvwmorg/fvwm3/tree/HEAD)
+
+[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.1...HEAD)
+
+**Implemented enhancements:**
+
+- Add expansion variables for a window's X/Y page [\#255](https://github.com/fvwmorg/fvwm3/issues/255)
+- Fvwm should provide a Status option [\#253](https://github.com/fvwmorg/fvwm3/issues/253)
+- \[feature-request\] Global desktop with predefined resolutions [\#248](https://github.com/fvwmorg/fvwm3/issues/248)
+
+**Fixed bugs:**
+
+- status:  fix bson\_t detection [\#257](https://github.com/fvwmorg/fvwm3/issues/257)
+- Maximize on second monitor gives wrong window size [\#250](https://github.com/fvwmorg/fvwm3/issues/250)
+- Man page `fvwm3.1` not built by default [\#246](https://github.com/fvwmorg/fvwm3/issues/246)
+
+**Closed issues:**
+
+- Q: open-desktop icon tray [\#252](https://github.com/fvwmorg/fvwm3/issues/252)
+
+**Merged pull requests:**
+
+- status: fix bson\_t detection [\#258](https://github.com/fvwmorg/fvwm3/pull/258) ([ThomasAdam](https://github.com/ThomasAdam))
+- Expansion: add $\[w.pagex\] $\[w.pagey\] [\#256](https://github.com/fvwmorg/fvwm3/pull/256) ([ThomasAdam](https://github.com/ThomasAdam))
+- New command:  Status [\#254](https://github.com/fvwmorg/fvwm3/pull/254) ([ThomasAdam](https://github.com/ThomasAdam))
+- Fix Maximize on monitor 2 [\#251](https://github.com/fvwmorg/fvwm3/pull/251) ([phileimer](https://github.com/phileimer))
+- Revise doc/README - docs not built by default [\#247](https://github.com/fvwmorg/fvwm3/pull/247) ([djwf](https://github.com/djwf))
+- Release/1.0.1 [\#245](https://github.com/fvwmorg/fvwm3/pull/245) ([ThomasAdam](https://github.com/ThomasAdam))
+
 ## [1.0.1](https://github.com/fvwmorg/fvwm3/tree/1.0.1) (2020-10-04)
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.0...1.0.1)
