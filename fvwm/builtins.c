@@ -140,8 +140,9 @@ status_send(void)
 	if (status_fp == NULL)
 		return;
 
-	memset(desktops, 0, sizeof desktops[0]);
-	memset(individual_d, 0, sizeof individual_d[0]);
+	memset(desktops, 0, sizeof(bson_t));
+	memset(individual_d, 0, sizeof(bson_t));
+	memset(desk_doc, 0, sizeof(bson_t));
 
 	m_cur = monitor_get_current();
 
@@ -193,11 +194,11 @@ status_send(void)
 out:
 	bson_free(as_json);
 	for (i = 0; i < d_count; i++) {
-		if (desk_doc[i])
+		if (desk_doc[i] != NULL)
 			bson_free(desk_doc[i]);
-		if (desktops[i])
+		if (desktops[i] != NULL)
 			bson_free(desktops[i]);
-		if (individual_d[i])
+		if (individual_d[i] != NULL)
 			bson_free(individual_d[i]);
 	}
 	bson_destroy(&msg);
