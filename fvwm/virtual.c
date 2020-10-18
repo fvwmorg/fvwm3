@@ -1534,11 +1534,10 @@ void goto_desk(int desk, struct monitor *m)
 		}
 
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
-			if (m == m2)
-				continue;
-
-			m2->Desktops = m->Desktops;
-			m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
+			if (m != m2) {
+				m2->Desktops = m->Desktops;
+				m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
+                        }
 
 			BroadcastPacket(M_NEW_DESK, 2, (long)m2->virtual_scr.CurrentDesk,
 					(long)m2->si->rr_output);
