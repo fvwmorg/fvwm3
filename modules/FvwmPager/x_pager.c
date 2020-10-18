@@ -1919,8 +1919,14 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   {
     int vx, vy;
     /* patch to let mouse button 3 change desks and do not cling to a page */
-    vx = Event->xbutton.x * mon->virtual_scr.VWidth / (desk_w * mon->virtual_scr.MyDisplayWidth);
-    vy = Event->xbutton.y * mon->virtual_scr.VHeight / (desk_h * mon->virtual_scr.MyDisplayHeight);
+    if (desk_w == 0)
+      vx = 0;
+    else
+      vx = Event->xbutton.x * mon->virtual_scr.VWidth / (desk_w * mon->virtual_scr.MyDisplayWidth);
+    if (desk_h == 0)
+      vy = 0;
+    else
+      vy = Event->xbutton.y * mon->virtual_scr.VHeight / (desk_h * mon->virtual_scr.MyDisplayHeight);
     mon->virtual_scr.Vx = vx * mon->virtual_scr.MyDisplayWidth;
     mon->virtual_scr.Vy = vy * mon->virtual_scr.MyDisplayHeight;
     sprintf(command, "GotoDeskAndPage %s %d %d %d",
@@ -1931,8 +1937,15 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   }
   else
   {
-    int x = Event->xbutton.x * mon->virtual_scr.VWidth / (desk_w * mon->virtual_scr.MyDisplayWidth);
-    int y = Event->xbutton.y * mon->virtual_scr.VHeight / (desk_h * mon->virtual_scr.MyDisplayHeight);
+    int x, y;
+    if (desk_w == 0)
+      x = 0;
+    else
+      x = Event->xbutton.x * mon->virtual_scr.VWidth / (desk_w * mon->virtual_scr.MyDisplayWidth);
+    if (desk_h == 0)
+      y = 0;
+    else
+      y = Event->xbutton.y * mon->virtual_scr.VHeight / (desk_h * mon->virtual_scr.MyDisplayHeight);
 
     /* Fix for buggy XFree86 servers that report button release events
      * incorrectly when moving fast. Not perfect, but should at least prevent
