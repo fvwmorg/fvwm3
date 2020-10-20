@@ -49,6 +49,7 @@
 #include "module_interface.h"
 #include "colorset.h"
 #include "libs/FScreen.h"
+#include "expand.h"
 
 extern int nColorsets;  /* in libs/Colorset.c */
 
@@ -119,6 +120,7 @@ static struct moduleInfoList *AddToModList(char *tline)
 	struct moduleInfoList *t, *prev, *this;
 	char *rline = tline;
 	char *alias_end = skipModuleAliasToken(tline + 1);
+	const exec_context_t *exc;
 
 	/* Find end of list */
 	t = modlistroot;
@@ -144,8 +146,10 @@ static struct moduleInfoList *AddToModList(char *tline)
 		this->alias_len = alias_end - tline;
 	}
 
-	this->data = fxmalloc(strlen(rline)+1);
+	exc = exc_create_null_context();
+	this->data = expand_vars(rline, NULL, False, True, NULL, exc);
 	strcpy(this->data, rline);
+	exc_destroy_context(exc);
 
 	this->next = NULL;
 	if(prev == NULL)
