@@ -839,6 +839,7 @@ int FScreenParseGeometryWithScreen(
 	 */
 	copy = fxstrdup(parsestring);
 	copy = strsep(&parsestring, "@");
+
 	*screen_return = fxstrdup(parsestring);
 	geom_str = strsep(&copy, "@");
 	copy = geom_str;
@@ -860,7 +861,7 @@ int FScreenParseGeometry(
 	char *parsestring, int *x_return, int *y_return,
 	unsigned int *width_return, unsigned int *height_return)
 {
-	struct monitor	*m;
+	struct monitor	*m = monitor_get_current();
 	char		*scr = NULL;
 	int		 rc, x, y, w, h;
 
@@ -873,15 +874,30 @@ int FScreenParseGeometry(
 		&scr);
 
 	if (scr != NULL) {
-		m = monitor_by_name(scr);
-		free(scr);
+		/* If we've asked for "@g" then use the global screen.  The
+		 * x,y,w,h values are already assigned, so skip that.
+		 */
+		if (strcmp(scr, "g") == 0)
+			goto adapt;
 
+		/* "@c" is for the current screen. */
+		if (strcmp(scr, "c") == 0)
+			goto assign;
+
+		/* "@p" is for the primary screen. */
+		if (strcmp(scr, "p") == 0) {
+			m = monitor_by_primary();
+			goto assign;
+		}
+		m = monitor_by_name(scr);
+	}
+assign:
 		x = m->si->x;
 		y = m->si->y;
 		w = m->si->w;
 		h = m->si->h;
-	} else
-		m = monitor_get_current();
+adapt:
+	free(scr);
 
 	/* adapt geometry to selected screen */
 	if (rc & XValue)
