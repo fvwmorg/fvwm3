@@ -2668,8 +2668,6 @@ desk_add_fw(FvwmWindow *fw)
 			dfws = fxcalloc(1, sizeof *dfws);
 			dfws->fw = fw;
 			TAILQ_INSERT_TAIL(&df_loop->desk_fvwmwin_q, dfws, entry);
-			fvwm_debug(__func__, "1: added fw (%s) to mon %s, desk: %d",
-				fw->visible_name, fw->m->si->name, desk);
 			return;
 		}
 	}
@@ -2682,8 +2680,6 @@ desk_add_fw(FvwmWindow *fw)
 
 	TAILQ_INSERT_TAIL(&df->desk_fvwmwin_q, dfws, entry);
 	TAILQ_INSERT_TAIL(&desktop_fvwm_q, df, entry);
-	fvwm_debug(__func__, "2: added fw (%s) to mon %s, desk: %d",
-			fw->visible_name, fw->m->si->name, desk);
 }
 
 void
