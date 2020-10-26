@@ -38,8 +38,6 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-#define SAFEFREE( p )  {if (p) {free(p);(p)=NULL;}}
-
 /* ---------------------------- local macros ------------------------------- */
 
 /* ---------------------------- imports ------------------------------------ */
@@ -363,7 +361,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_ICON_NAME(*merged_style));
+			free(SGET_ICON_NAME(*merged_style));
 			SSET_ICON_NAME(
 				*merged_style, (SGET_ICON_NAME(*add_style)) ?
 				fxstrdup(SGET_ICON_NAME(*add_style)) : NULL);
@@ -378,7 +376,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_MINI_ICON_NAME(*merged_style));
+			free(SGET_MINI_ICON_NAME(*merged_style));
 			SSET_MINI_ICON_NAME(
 				*merged_style,
 				(SGET_MINI_ICON_NAME(*add_style)) ?
@@ -396,7 +394,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_DECOR_NAME(*merged_style));
+			free(SGET_DECOR_NAME(*merged_style));
 			SSET_DECOR_NAME(
 				*merged_style, (SGET_DECOR_NAME(*add_style)) ?
 				fxstrdup(SGET_DECOR_NAME(*add_style)) :
@@ -412,7 +410,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_ICON_FONT(*merged_style));
+			free(SGET_ICON_FONT(*merged_style));
 			SSET_ICON_FONT(
 				*merged_style, (SGET_ICON_FONT(*add_style)) ?
 				fxstrdup(SGET_ICON_FONT(*add_style)) : NULL);
@@ -427,7 +425,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_WINDOW_FONT(*merged_style));
+			free(SGET_WINDOW_FONT(*merged_style));
 			SSET_WINDOW_FONT(
 				*merged_style, (SGET_WINDOW_FONT(*add_style)) ?
 				fxstrdup(SGET_WINDOW_FONT(*add_style)) :
@@ -456,7 +454,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_FORE_COLOR_NAME(*merged_style));
+			free(SGET_FORE_COLOR_NAME(*merged_style));
 			SSET_FORE_COLOR_NAME(
 				*merged_style,
 				(SGET_FORE_COLOR_NAME(*add_style)) ?
@@ -474,7 +472,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_BACK_COLOR_NAME(*merged_style));
+			free(SGET_BACK_COLOR_NAME(*merged_style));
 			SSET_BACK_COLOR_NAME(
 				*merged_style,
 				(SGET_BACK_COLOR_NAME(*add_style)) ?
@@ -492,7 +490,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_FORE_COLOR_NAME_HI(*merged_style));
+			free(SGET_FORE_COLOR_NAME_HI(*merged_style));
 			SSET_FORE_COLOR_NAME_HI(
 				*merged_style,
 				(SGET_FORE_COLOR_NAME_HI(*add_style)) ?
@@ -510,7 +508,7 @@ static void merge_styles(
 	{
 		if (do_free_src_and_alloc_copy)
 		{
-			SAFEFREE(SGET_BACK_COLOR_NAME_HI(*merged_style));
+			free(SGET_BACK_COLOR_NAME_HI(*merged_style));
 			SSET_BACK_COLOR_NAME_HI(
 				*merged_style,
 				(SGET_BACK_COLOR_NAME_HI(*add_style)) ?
@@ -719,14 +717,14 @@ static void merge_styles(
 	}
 	if (add_style->flags.has_placement_position_string)
 	{
-		SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*merged_style));
+		free(SGET_PLACEMENT_POSITION_STRING(*merged_style));
 		SSET_PLACEMENT_POSITION_STRING(
 			*merged_style,
 			strdup(SGET_PLACEMENT_POSITION_STRING(*add_style)));
 	}
 	if (add_style->flags.has_initial_map_command_string)
 	{
-		SAFEFREE(SGET_INITIAL_MAP_COMMAND_STRING(*merged_style));
+		free(SGET_INITIAL_MAP_COMMAND_STRING(*merged_style));
 		SSET_INITIAL_MAP_COMMAND_STRING(
 			*merged_style,
 			strdup(SGET_INITIAL_MAP_COMMAND_STRING(*add_style)));
@@ -734,14 +732,14 @@ static void merge_styles(
 
 	if (add_style->flags.has_title_format_string)
 	{
-		SAFEFREE(SGET_TITLE_FORMAT_STRING(*merged_style));
+		free(SGET_TITLE_FORMAT_STRING(*merged_style));
 		SSET_TITLE_FORMAT_STRING(*merged_style,
 				strdup(SGET_TITLE_FORMAT_STRING(*add_style)));
 	}
 
 	if (add_style->flags.has_icon_title_format_string)
 	{
-		SAFEFREE(SGET_ICON_TITLE_FORMAT_STRING(*merged_style));
+		free(SGET_ICON_TITLE_FORMAT_STRING(*merged_style));
 		SSET_ICON_TITLE_FORMAT_STRING(*merged_style,
 				strdup(SGET_ICON_TITLE_FORMAT_STRING(*add_style)));
 	}
@@ -788,21 +786,21 @@ static void merge_styles(
 static void free_style(window_style *style)
 {
 	/* Free contents of style */
-	SAFEFREE(SGET_NAME(*style));
-	SAFEFREE(SGET_BACK_COLOR_NAME(*style));
-	SAFEFREE(SGET_FORE_COLOR_NAME(*style));
-	SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
-	SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
-	SAFEFREE(SGET_DECOR_NAME(*style));
-	SAFEFREE(SGET_ICON_FONT(*style));
-	SAFEFREE(SGET_WINDOW_FONT(*style));
-	SAFEFREE(SGET_ICON_NAME(*style));
-	SAFEFREE(SGET_MINI_ICON_NAME(*style));
+	free(SGET_NAME(*style));
+	free(SGET_BACK_COLOR_NAME(*style));
+	free(SGET_FORE_COLOR_NAME(*style));
+	free(SGET_BACK_COLOR_NAME_HI(*style));
+	free(SGET_FORE_COLOR_NAME_HI(*style));
+	free(SGET_DECOR_NAME(*style));
+	free(SGET_ICON_FONT(*style));
+	free(SGET_WINDOW_FONT(*style));
+	free(SGET_ICON_NAME(*style));
+	free(SGET_MINI_ICON_NAME(*style));
 	remove_icon_boxes_from_style(style);
-	SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*style));
-	SAFEFREE(SGET_INITIAL_MAP_COMMAND_STRING(*style));
-	SAFEFREE(SGET_TITLE_FORMAT_STRING(*style));
-	SAFEFREE(SGET_ICON_TITLE_FORMAT_STRING(*style));
+	free(SGET_PLACEMENT_POSITION_STRING(*style));
+	free(SGET_INITIAL_MAP_COMMAND_STRING(*style));
+	free(SGET_TITLE_FORMAT_STRING(*style));
+	free(SGET_ICON_TITLE_FORMAT_STRING(*style));
 
 	return;
 }
@@ -822,39 +820,39 @@ static void free_style_mask(window_style *style, style_flags *mask)
 	/* Free contents of style */
 	if (pmask->has_color_back)
 	{
-		SAFEFREE(SGET_BACK_COLOR_NAME(*style));
+		free(SGET_BACK_COLOR_NAME(*style));
 	}
 	if (pmask->has_color_fore)
 	{
-		SAFEFREE(SGET_FORE_COLOR_NAME(*style));
+		free(SGET_FORE_COLOR_NAME(*style));
 	}
 	if (pmask->has_color_back_hi)
 	{
-		SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
+		free(SGET_BACK_COLOR_NAME_HI(*style));
 	}
 	if (pmask->has_color_fore_hi)
 	{
-		SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
+		free(SGET_FORE_COLOR_NAME_HI(*style));
 	}
 	if (pmask->has_decor)
 	{
-		SAFEFREE(SGET_DECOR_NAME(*style));
+		free(SGET_DECOR_NAME(*style));
 	}
 	if (pmask->common.has_icon_font)
 	{
-		SAFEFREE(SGET_ICON_FONT(*style));
+		free(SGET_ICON_FONT(*style));
 	}
 	if (pmask->common.has_window_font)
 	{
-		SAFEFREE(SGET_WINDOW_FONT(*style));
+		free(SGET_WINDOW_FONT(*style));
 	}
 	if (pmask->has_icon)
 	{
-		SAFEFREE(SGET_ICON_NAME(*style));
+		free(SGET_ICON_NAME(*style));
 	}
 	if (pmask->has_mini_icon)
 	{
-		SAFEFREE(SGET_MINI_ICON_NAME(*style));
+		free(SGET_MINI_ICON_NAME(*style));
 	}
 	if (pmask->has_icon_boxes)
 	{
@@ -2130,7 +2128,7 @@ static Bool style_parse_one_style_option(
 			rest = GetNextToken(rest, &token);
 			if (token)
 			{
-				SAFEFREE(SGET_BACK_COLOR_NAME(*ps));
+				free(SGET_BACK_COLOR_NAME(*ps));
 				SSET_BACK_COLOR_NAME(*ps, token);
 				ps->flags.has_color_back = 1;
 				ps->flag_mask.has_color_back = 1;
@@ -2312,7 +2310,7 @@ static Bool style_parse_one_style_option(
 					rest, &token, NULL, ",/", &c);
 			}
 			rest = next;
-			SAFEFREE(SGET_FORE_COLOR_NAME(*ps));
+			free(SGET_FORE_COLOR_NAME(*ps));
 			SSET_FORE_COLOR_NAME(*ps, token);
 			ps->flags.has_color_fore = 1;
 			ps->flag_mask.has_color_fore = 1;
@@ -2344,7 +2342,7 @@ static Bool style_parse_one_style_option(
 					   " color argument.");
 				break;
 			}
-			SAFEFREE(SGET_BACK_COLOR_NAME(*ps));
+			free(SGET_BACK_COLOR_NAME(*ps));
 			SSET_BACK_COLOR_NAME(*ps, token);
 			ps->flags.has_color_back = 1;
 			ps->flag_mask.has_color_back = 1;
@@ -2621,7 +2619,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Font"))
 		{
-			SAFEFREE(SGET_WINDOW_FONT(*ps));
+			free(SGET_WINDOW_FONT(*ps));
 			rest = GetNextToken(rest, &token);
 			SSET_WINDOW_FONT(*ps, token);
 			S_SET_HAS_WINDOW_FONT(SCF(*ps), (token != NULL));
@@ -2634,7 +2632,7 @@ static Bool style_parse_one_style_option(
 			rest = GetNextToken(rest, &token);
 			if (token)
 			{
-				SAFEFREE(SGET_FORE_COLOR_NAME(*ps));
+				free(SGET_FORE_COLOR_NAME(*ps));
 				SSET_FORE_COLOR_NAME(*ps, token);
 				ps->flags.has_color_fore = 1;
 				ps->flag_mask.has_color_fore = 1;
@@ -2770,7 +2768,7 @@ static Bool style_parse_one_style_option(
 			rest = GetNextToken(rest, &token);
 			if (token)
 			{
-				SAFEFREE(SGET_FORE_COLOR_NAME_HI(*ps));
+				free(SGET_FORE_COLOR_NAME_HI(*ps));
 				SSET_FORE_COLOR_NAME_HI(*ps, token);
 				ps->flags.has_color_fore_hi = 1;
 				ps->flag_mask.has_color_fore_hi = 1;
@@ -2791,7 +2789,7 @@ static Bool style_parse_one_style_option(
 			rest = GetNextToken(rest, &token);
 			if (token)
 			{
-				SAFEFREE(SGET_BACK_COLOR_NAME_HI(*ps));
+				free(SGET_BACK_COLOR_NAME_HI(*ps));
 				SSET_BACK_COLOR_NAME_HI(*ps, token);
 				ps->flags.has_color_back_hi = 1;
 				ps->flag_mask.has_color_back_hi = 1;
@@ -2850,7 +2848,7 @@ static Bool style_parse_one_style_option(
 			{
 				rest = GetNextToken(rest, &token);
 
-				SAFEFREE(SGET_ICON_NAME(*ps));
+				free(SGET_ICON_NAME(*ps));
 				SSET_ICON_NAME(*ps,token);
 				ps->flags.has_icon = (token != NULL);
 				ps->flag_mask.has_icon = 1;
@@ -2913,7 +2911,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "IconFont"))
 		{
-			SAFEFREE(SGET_ICON_FONT(*ps));
+			free(SGET_ICON_FONT(*ps));
 			rest = GetNextToken(rest, &token);
 			SSET_ICON_FONT(*ps, token);
 			S_SET_HAS_ICON_FONT(SCF(*ps), (token != NULL));
@@ -3325,7 +3323,7 @@ static Bool style_parse_one_style_option(
 			rest = GetNextToken(rest, &token);
 			if (token)
 			{
-				SAFEFREE(SGET_MINI_ICON_NAME(*ps));
+				free(SGET_MINI_ICON_NAME(*ps));
 				SSET_MINI_ICON_NAME(*ps, token);
 				ps->flags.has_mini_icon = 1;
 				ps->flag_mask.has_mini_icon = 1;
@@ -4339,7 +4337,7 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "UseDecor"))
 		{
-			SAFEFREE(SGET_DECOR_NAME(*ps));
+			free(SGET_DECOR_NAME(*ps));
 			rest = GetNextToken(rest, &token);
 			SSET_DECOR_NAME(*ps, token);
 			ps->flags.has_decor = (token != NULL);
