@@ -86,6 +86,7 @@
 #include "decorations.h"
 #include "functions.h"
 #include "virtual.h"
+#include "builtins.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1398,6 +1399,7 @@ static void broadcast_window_names(FvwmWindow *fw, int changed_names)
 		EWMH_SetVisibleName(fw, True);
 		BroadcastWindowIconNames(fw, False, True);
 	}
+	status_send();
 }
 
 static void setup_icon(FvwmWindow *fw, window_style *pstyle)
