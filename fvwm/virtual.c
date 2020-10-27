@@ -2631,8 +2631,6 @@ desk_get_fw_count(struct monitor *m, int desk)
 					continue;
 				if (SIS_UNMANAGED(sflags))
 					continue;
-				fvwm_debug(__func__, "%s: considering: %s",
-						m->si->name, dfws->fw->visible_name);
 				count++;
 			}
 		}
