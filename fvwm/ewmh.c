@@ -979,8 +979,8 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 		bottom = max(bottom, fw->strut.bottom);
 	}
 
-	w = m->si->x > 0 ? m->si->x : 0 + m->si->w;
-	h = m->si->y > 0 ? m->si->y : 0 + m->si->y + m->si->h;
+	w = m->si->x > 0 ? m->si->x : m->si->x + m->si->w;
+	h = m->si->y > 0 ? m->si->y : m->si->y + m->si->h;
 
 	x = left;
 	y = top;

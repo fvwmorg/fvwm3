@@ -9,6 +9,8 @@
 /* For CARD32 */
 #include <X11/Xproto.h>
 
+#include <stdbool.h>
+
 /* needs X11/Xlib.h and X11/Xutil.h */
 
 typedef struct
@@ -74,6 +76,8 @@ extern enum monitor_tracking monitor_mode;
 
 struct screen_info {
 	const char		*name;
+	const char		*rotation_name;
+	bool			 is_rotated;
 	int			 x, y, w, h;
 	RROutput		 rr_output;
 

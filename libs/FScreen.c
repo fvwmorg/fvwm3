@@ -52,6 +52,7 @@ static bool		 is_randr_present;
 static struct monitor	*monitor_new(void);
 static void		 scan_screens(Display *);
 static void		 monitor_check_primary(void);
+static void		 monitor_adjust_for_rotation(Display *, struct monitor *);
 
 enum monitor_tracking monitor_mode;
 struct screen_infos	 screen_info_q;
@@ -338,6 +339,54 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 }
 
 static void
+monitor_adjust_for_rotation(Display *dpy, struct monitor *m)
+{
+	XRRScreenConfiguration	*sc;
+	Rotation		 cr;
+	Window			 root = RootWindow(dpy, DefaultScreen(dpy));
+	int			 i;
+
+	const char *rnames[] = {
+		"normal",
+		"left",
+		"inverted",
+		"right"
+	};
+
+	m->si->is_rotated = false;
+
+	sc = XRRGetScreenInfo(dpy, root);
+	XRRConfigRotations(sc, &cr);
+
+	if ((cr & 0xf) == 0) {
+		m->si->rotation_name = fxstrdup(rnames[0]);
+		fprintf(stderr, "%s: monitor rotation is: %s (%d)\n",
+			__func__, m->si->rotation_name, 0);
+		return;
+	}
+
+	for (i = 0; i < 4; i++) {
+		if ((cr & (1 << i)) && ((i % 2) == 1)) {
+			m->si->rotation_name = fxstrdup(rnames[i]);
+			m->si->is_rotated = true;
+			fprintf(stderr, "%s: monitor rotation is: %s (%d)\n",
+				__func__, m->si->rotation_name, i);
+		}
+	}
+
+	if (m->si->is_rotated) {
+#if 0
+		int th = m->si->h;
+		m->si->h = m->si->w;
+		m->si->w = th;
+#endif
+
+		if (m->flags & MONITOR_ENABLED)
+			m->flags |= MONITOR_CHANGED;
+	}
+}
+
+static void
 scan_screens(Display *dpy)
 {
 	XRRMonitorInfo		*rrm;
@@ -384,6 +433,12 @@ set_coords:
 		m->si->y = rrm[i].y;
 		m->si->w = rrm[i].width;
 		m->si->h = rrm[i].height;
+
+		monitor_adjust_for_rotation(dpy, m);
+
+		fprintf(stderr, "MONITOR: %s {x: %d, y: %d, w: %d, h: %d}\n",
+			m->si->name, m->si->x, m->si->y, m->si->w, m->si->h);
+
 		m->si->rr_output = *rrm[i].outputs;
 		if (rrm[i].primary > 0)
 			m->flags |= MONITOR_PRIMARY;
