@@ -556,6 +556,7 @@ client_read_cb(struct bufferevent *bev, void *ctx)
 	struct client	*c =	 ctx;
 	size_t		 len = evbuffer_get_length(input);
 	char		 *data = fxcalloc(len + 1, sizeof (char));
+	char		 *split;
 
 	evbuffer_remove(input, data, len);
 
@@ -569,11 +570,15 @@ client_read_cb(struct bufferevent *bev, void *ctx)
 	if (*data == '\0')
 		goto out;
 
-	if (client_set_interest(c, data))
-		goto out;
-
-	SendText(fc.fd, data, c->fm ? c->fm->fw : 0);
-
+	split = strtok(data, "\n");
+	while (split != NULL) {
+		if (client_set_interest(c, split)) {
+			split = strtok(NULL, "\n");
+			continue;
+		}
+		SendText(fc.fd, split, c->fm ? c->fm->fw : 0);
+		split = strtok(NULL, "\n");
+	}
 out:
 	free(data);
 }
