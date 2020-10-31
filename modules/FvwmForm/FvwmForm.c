@@ -100,7 +100,7 @@ int colorset = -1;
 int itemcolorset = 0;
 
 /* global not exported */
-const struct itimerval itv_100ms = { {0L, 100000L}, {0L, 100000L} }; /* interval = 100ms, value = 100ms */
+const struct itimerval itv_100ms = { {0L, 100000L}, {0L, 100000L} };
 
 /* prototypes */
 static void RedrawSeparator(Item *item);
@@ -2607,9 +2607,9 @@ static void MainLoop(void)
     /*XFlush(dpy);*/
     if (fvwmSelect(fd_width, &fds, NULL, NULL, NULL) > 0) {
       if (FD_ISSET(Channel[1], &fds))
-        ReadFvwm();
+	ReadFvwm();
       if (FD_ISSET(fd_x, &fds))
-        ReadXServer();
+	ReadXServer();
     }
   }
 }
