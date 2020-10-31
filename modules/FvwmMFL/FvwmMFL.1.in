@@ -71,6 +71,7 @@ visible_icon_name:Fired when the icon's visible name changes.
 icon_file:Fired when the path to the icon changes.
 icon_location:Fired when the icon location changes.
 restack:Fired when the window stacking order changes.
+echo:Fired when Fvwm receives an Echo command.
 .TE
 
 For example, to register an interest in \fInew_window\fP and

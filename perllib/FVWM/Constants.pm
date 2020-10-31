@@ -45,7 +45,8 @@ use constant MX_MONITOR_ENABLED =>     ((1<<4) | M_EXTENDED_MSG);
 use constant MX_MONITOR_DISABLED =>    ((1<<5) | M_EXTENDED_MSG);
 use constant MX_MONITOR_CHANGED =>     ((1<<6) | M_EXTENDED_MSG);
 use constant MX_MONITOR_FOCUS	=>     ((1<<7) | M_EXTENDED_MSG);
-use constant MX_REPLY => ((1<<8)|M_EXTENDED_MSG);
+use constant MX_ECHO 		=>     ((1<<8) | M_EXTENDED_MSG);
+use constant MX_REPLY => ((1<<9)|M_EXTENDED_MSG);
 use constant MX_PROPERTY_CHANGE_NONE => 0;
 use constant MX_PROPERTY_CHANGE_BACKGROUND => 1;
 use constant MX_PROPERTY_CHANGE_SWALLOW => 2;
@@ -98,6 +99,7 @@ use constant INTSIZE => $Config{longsize};
   MX_MONITOR_DISABLED
   MX_MONITOR_CHANGED
   MX_MONITOR_FOCUS
+  MX_ECHO
   MX_REPLY
   MX_PROPERTY_CHANGE_NONE
   MX_PROPERTY_CHANGE_BACKGROUND
@@ -176,6 +178,7 @@ For more information, see L<FVWM::Module>.
   MX_MONITOR_DISABLED
   MX_MONITOR_CHANGED
   MX_MONITOR_FOCUS
+  MX_ECHO
   MX_REPLY
   MX_PROPERTY_CHANGE_NONE
   MX_PROPERTY_CHANGE_BACKGROUND

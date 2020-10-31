@@ -122,8 +122,9 @@ typedef struct
 #define MX_MONITOR_DISABLED       ((1<<5) | M_EXTENDED_MSG)
 #define MX_MONITOR_CHANGED        ((1<<6) | M_EXTENDED_MSG)
 #define MX_MONITOR_FOCUS	  ((1<<7) | M_EXTENDED_MSG)
-#define MX_REPLY		  ((1<<8) | M_EXTENDED_MSG)
-#define MAX_EXTENDED_MESSAGES     9
+#define MX_ECHO			  ((1<<8) | M_EXTENDED_MSG)
+#define MX_REPLY		  ((1<<9) | M_EXTENDED_MSG)
+#define MAX_EXTENDED_MESSAGES     10
 #define DEFAULT_XMSG_MASK         0x00000000
 #define MAX_XMSG_MASK             0x0000001f
 
