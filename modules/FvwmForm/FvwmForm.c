@@ -100,7 +100,8 @@ int colorset = -1;
 int itemcolorset = 0;
 
 /* global not exported */
-const struct itimerval itv_100ms = { {0L, 100000L}, {0L, 100000L} }; /* interval = 100ms, value = 100ms */
+const struct itimerspec its_100ms = { {0L, 100000000L}, {0L, 100000000L} }; /* interval = 100ms, value = 100ms */
+static timer_t timerid;
 
 /* prototypes */
 static void RedrawSeparator(Item *item);
@@ -109,36 +110,19 @@ static void AddItem(void);
 static void PutDataInForm(char *);
 static void ReadFormData(void);
 static void FormVarsCheck(char **);
-static RETSIGTYPE TimerHandler(int);
+static void TimerHandler(union sigval sv);
 static int ErrorHandler(Display *dpy, XErrorEvent *error_event);
 static void SetupTimer(void)
 {
-#ifdef HAVE_SIGACTION
-  {
-    struct sigaction  sigact;
+  struct sigevent sev;
 
-#ifdef SA_INTERRUPT
-    sigact.sa_flags = SA_INTERRUPT;
-#else
-    sigact.sa_flags = 0;
-#endif
-    sigemptyset(&sigact.sa_mask);
-    sigaddset(&sigact.sa_mask, SIGALRM);
-    sigact.sa_handler = TimerHandler;
+  sev.sigev_notify = SIGEV_THREAD;
+  sev.sigev_notify_function = TimerHandler;
+  sev.sigev_notify_attributes = NULL;
+  sev.sigev_value.sival_ptr = &timerid;
+  timer_create(CLOCK_REALTIME, &sev, &timerid);
 
-    sigaction(SIGALRM, &sigact, NULL);
-  }
-#else
-#ifdef USE_BSD_SIGNALS
-  fvwmSetSignalMask( sigmask(SIGALRM) );
-#endif
-  signal(SIGALRM, TimerHandler);  /* Dead pipe == Fvwm died */
-#ifdef HAVE_SIGINTERRUPT
-  siginterrupt(SIGALRM, 1);
-#endif
-#endif
-
-  setitimer(ITIMER_REAL, &itv_100ms, NULL);
+  timer_settime(timerid, 0, &its_100ms, NULL);
 }
 
 /* copy a string until '"', or '\n', or '\0' */
@@ -2624,15 +2608,17 @@ TerminateHandler(int sig)
 }
 
 /* signal-handler to make the timer work */
-static RETSIGTYPE
-TimerHandler(int sig)
+static void TimerHandler(union sigval sv)
 {
   int dn;
   char *sp;
   char *parsed_command;
+  timer_t *ptimerid = (timer_t *)sv.sival_ptr;
 
   timer->timeout.timeleft--;
   if (timer->timeout.timeleft <= 0) {
+    timer_delete(*ptimerid);
+
     /* pre-command */
     if (!XWithdrawWindow(dpy, CF.frame, screen))
     {
