@@ -492,6 +492,12 @@ $EVENTS_INFO = {
 			name         => string,
 		],
 	},
+	&MX_ECHO 		  => {
+		format => "L!a*",
+		fields => [
+			message   => string,
+		],
+	},
 };
 
 # end of the would-be-generated part

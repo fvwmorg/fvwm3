@@ -156,6 +156,7 @@ static event_entry extended_message_event_table[] =
 	EVENT_ENTRY( "monitor_disabled", 0 | ARG_EXPECTS_CHAR),
 	EVENT_ENTRY( "monitor_changed", 0 | ARG_EXPECTS_CHAR),
 	EVENT_ENTRY( "monitor_focus", 0 | ARG_EXPECTS_CHAR),
+	EVENT_ENTRY( "echo", 0 | ARG_EXPECTS_CHAR),
 	EVENT_ENTRY( "reply", 0), /* FvwmEvent will never receive MX_REPLY */
 	EVENT_ENTRY(NULL,0)
 };

@@ -2778,6 +2778,7 @@ void CMD_Echo(F_CMD_ARGS)
 			action[len-1]='\0';
 		}
 	}
+	BroadcastName(MX_ECHO, -1, -1, -1, action);
 	fvwm_debug(__func__, "%s\n", action);
 
 	return;

@@ -193,6 +193,8 @@ e.g. for audio-events:
 	*FvwmEvent: monitor_disabled beep.au
 	*FvwmEvent: monitor_changed beep.au
 	*FvwmEvent: monitor_focus beep.au
+
+	*FvwmEvent: echo beep.au
 .sp
 .fi
 The window related event handlers are executed within a window
@@ -215,6 +217,8 @@ prints out the changed monitor's name, and width/height values:
 	*FvwmEvent: monitor_changed MonitorExample
 .sp
 .fi
+
+The echo event is generated whenever Fvwm receives an Echo command.
 
 Note: The enter_window event is generated when the pointer enters
 a window.  With the -passid option, that window's id is passed to

@@ -106,6 +106,7 @@ struct event_flag {
 	{"leave_window", MX_LEAVE_WINDOW|M_EXTENDED_MSG},
 	{"enter_window", MX_ENTER_WINDOW|M_EXTENDED_MSG},
 	{"visible_icon_name", MX_VISIBLE_ICON_NAME|M_EXTENDED_MSG},
+	{"echo", MX_ECHO|M_EXTENDED_MSG},
 };
 
 
@@ -224,6 +225,14 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		fm->msg = BCON_NEW(type_name,
 		  "{",
 		      "window", BCON_UTF8(xwid),
+		  "}"
+		);
+		return (fm);
+	}
+	case MX_ECHO: {
+		fm->msg = BCON_NEW(type_name,
+		  "{",
+		    "message", BCON_UTF8((char *)&body[3]),
 		  "}"
 		);
 		return (fm);
