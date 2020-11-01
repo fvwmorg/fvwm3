@@ -2677,7 +2677,6 @@ TimerHandler(int sig)
   }
   else {
     RedrawTimeout(timer);
-    setitimer(ITIMER_REAL, &itv_100ms, NULL);
   }
 
   SIGNAL_RETURN;
