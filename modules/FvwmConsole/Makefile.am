@@ -19,8 +19,7 @@ FvwmConsoleC_SOURCES = FvwmConsoleC.c FvwmConsole.h getline.c
 FvwmConsole_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 FvwmConsoleC_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
-man_MANS = FvwmConsole.1 FvwmConsoleC.pl.1
-EXTRA_DIST = FvwmConsoleC.pl.in $(man_MANS) Changes .fvwm2rc.sample
+EXTRA_DIST = FvwmConsoleC.pl.in Changes .fvwm2rc.sample
 
 # Use X_EXTRA_LIBS to get socket(), etc.
 LDADD = -L$(top_builddir)/libs -lfvwm3 $(readline_LIBS) $(X_EXTRA_LIBS)

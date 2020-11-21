@@ -1,21 +1,35 @@
-# Author: Scott Smedley
-
 docdir = @FVWM_DOCDIR@
+MODULE_ADOCS = $(wildcard fvwm3/fvwm3.adoc bin/*.adoc modules/*.adoc)
 
-HTML_FILES = \
-	index.html allCommands.html groupedCommands.html modules.html style.css
-EXTRA_DIST = \
-	fvwm3.xsl fvwm3-man.xsl header.html $(HTML_FILES)
-
-if FVWM_BUILD_HTMLDOC
-doc_DATA = \
-	$(HTML_FILES)
-endif
+man_MANS = $(patsubst %.adoc,%.1, $(MODULE_ADOCS))
+EXTRA_DISTS = $(man_MANS)
 
 if FVWM_BUILD_MANDOC
-SUBDIRS = commands images docbook-xml docbook-xsl fvwm
+BUILD_MANS = $(man_MANS)
 else
-SUBDIRS = commands images docbook-xml docbook-xsl
+BUILD_MANS =
 endif
 
-all: $(doc_DATA)
+all: docs
+docs: $(BUILD_MANS)
+
+clean:
+	rm -f $(BUILD_MANS)
+
+distclean-local: clean
+
+if FVWM_BUILD_MANDOC
+QUIET_ASCIIDOC = @echo '  ' DOC '    ' $@;
+
+%.1: %.adoc
+	$(QUIET_ASCIIDOC)$(ASCIIDOC) -b manpage $< -o $@
+
+install-data-local:
+	install -d -m 755 $(DESTDIR)$(mandir)/man1/
+	install -m 644 $(BUILD_MANS) $(DESTDIR)$(mandir)/man1/
+
+uninstall-local:
+	@for i in $(notdir $(BUILD_MANS)); do \
+		rm -f "$(DESTDIR)$(mandir)/man1/$$i"; \
+	done
+endif

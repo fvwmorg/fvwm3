@@ -6,8 +6,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmButtons
-man_MANS = FvwmButtons.1
-EXTRA_DIST = $(man_MANS) CHANGES samplebuttonrc BUGS ConfigFvwmButtons
+EXTRA_DIST = CHANGES samplebuttonrc BUGS ConfigFvwmButtons
 
 config_DATA = ConfigFvwmButtons
 

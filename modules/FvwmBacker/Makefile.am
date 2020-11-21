@@ -6,8 +6,6 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmBacker
-man_MANS = FvwmBacker.1
-EXTRA_DIST = $(man_MANS) ConfigFvwmBacker
 
 config_DATA = \
   ConfigFvwmBacker

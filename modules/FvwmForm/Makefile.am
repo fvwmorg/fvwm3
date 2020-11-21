@@ -6,7 +6,6 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmForm
-man_MANS = FvwmForm.1
 
 ## FvwmTalk was made obsolete in March 1999.
 ## This provides compatibility.
@@ -18,7 +17,7 @@ FvwmTalk: ../../config.h Makefile
 
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions!
-EXTRA_DIST = $(man_MANS) Changes \
+EXTRA_DIST = Changes \
   FvwmForm-Form           \
   FvwmForm-Capture        \
   FvwmForm-Desktop        \

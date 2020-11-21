@@ -11,11 +11,7 @@ bin_SCRIPTS = fvwm-config fvwm-perllib \
 	fvwm-menu-xlock fvwm-menu-directory \
 	fvwm-menu-desktop
 
-man_MANS = \
-	fvwm-root.1 fvwm-config.1 fvwm-perllib.1 \
-	fvwm-convert-2.6.1 \
-	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
-	fvwm-menu-desktop.1
+man_MANS = fvwm-menu-xlock.1
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3 $(xpm_LIBS) $(Xcursor_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(Xrender_LIBS) \
@@ -58,7 +54,7 @@ _fvwm-perllib.1: fvwm-perllib
 	rm -rf $$TMP)
 
 regenerate: \
-	_fvwm-menu-xlock.1 _fvwm-menu-directory.1 _fvwm-perllib.1
+	_fvwm-menu-xlock.1
 
 ## Create compatibility symlinks if available
 

@@ -6,8 +6,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmPager
-man_MANS = FvwmPager.1
-EXTRA_DIST = $(man_MANS) ConfigFvwmPager
+EXTRA_DIST = ConfigFvwmPager
 
 config_DATA = \
   ConfigFvwmPager

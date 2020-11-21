@@ -23,7 +23,7 @@ SUBDIRS = \
 #    make distcheck2  # instead of make distcheck
 #    make distclean2  # instead of make distclean
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-htmldoc
+DISTCHECK_CONFIGURE_FLAGS = --enable-mandoc
 
 distcheck2: distcheck
 	@banner="$(distdir).tar.gz - ready for distribution"; \

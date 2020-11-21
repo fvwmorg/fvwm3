@@ -4,8 +4,6 @@ program_transform_name =
 
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmAuto
-man_MANS = FvwmAuto.1
-EXTRA_DIST = $(man_MANS)
 
 FvwmAuto_SOURCES = FvwmAuto.c
 FvwmAuto_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a

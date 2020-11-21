@@ -1,0 +1,89 @@
+= fvwm-convert-2.6(1)
+
+== NAME
+
+fvwm-convert-2.6 - convert fvwm 2.4.x configuration file to fvwm 2.6 style
+
+== SYNOPSIS
+
+*fvwm-convert-2.6* [__--follow-read__|_-f_] [__--help__|_-h_] source
+[_dest_]
+
+== OPTIONS
+
+The following options are supported:
+
+--help | -h::
+  Prints a usage message to the screen.
+--follow-read | -f::
+  Follows files found along with the *Read* command.
+
+== DESCRIPTION
+
+*fvwm-convert-2.6* converts an fvwm 2.4.x configuration file into a fvwm
+2.6 file with compatible syntax. It is not suitable to convert older 2.x
+configuration files. Please use *fvwm-convert-2.2* to convert these to
+the 2.2.x format first, and then if necessary *fvwm-convert-2.4*
+
+By default, *fvwm-convert-2.6* won't look for a given config file. This
+must be specified as the first parameter to *fvwm-convert-2.6.*
+Different source and destination files may be given. If the destination
+file already exists, this program exits. If no destination file is
+given, then the filename is the same name as the source file with the
+suffix ".converted" added. Without an absolute path given as the
+destination path to the destination file, the program will create the
+destination file in the CWD.
+
+*fvwm-convert-2.6* makes the following changes:
+
+*Style lines*::
+  In fvwm 2.4, most style options could be negated from their
+  counterparts using NoFoo -- fvwm-convert-2.6 corrects this by now
+  using !Foo.
+*ModulePath*::
+  In fvwm 2.4 and beyond, the ModulePath is compiled into fvwm.
+  *fvwm-convert-2.6* comments out any ModulePath commands it finds. If
+  you are using your own modules, (not the ones that come with fvwm),
+  you will have to fix your configuration file after using
+  *fvwm-convert-2.6*.
+*Conditional command syntax*::
+  In fvwm 2.4, the conditional command options were whitespace-separated
+  -- they should now be comma-separated instead. In addition, the older
+  syntax to Next and Prev of using [*] to denote all windows has been
+  removed entirely. Both these checks and conversions are done on
+  function commands, key/mouse bindings.
+*WindowShadeSteps*::
+  In fvwm 2.4, the WindowShadeSteps command is replaced by the
+  WindowShadeSteps Style option. *fvwm-convert-2.6* makes this change.
+*FvwmTheme*::
+  In fvwm 2.6, the FvwmTheme module is replaced by a series of Colorset
+  commands. Whilst *fvwm-convert-2.6* will try and make this change, it
+  is still recommended that this is checked after conversion.
+*EdgeResistance*::
+  In fvwm 2.6, the EdgeResistance command is has been split to include
+  an additional style option for EdgeMoveResistance. *fvwm-convert-2.6*
+  makes any changes necessary.
+*StartFunction / RestartFunction / InitFunction*::
+  In fvwm 2.6, the need for using InitFunction and/or RestartFunction is
+  redundant when StartFunction is read at both of these times.
+  *fvwm-convert-2.6* attempts to convert this.
+*Read*::
+  If *-f* or *--follow-read* is given, any files *fvwm-convert-2.6* can
+  detect and open will be converted automatically, else a list of files
+  that can be followed are printed to the screen.
+
+== BUGS
+
+_InitFunction_ and _RestartFunction_ and hence _StartFunction_ are
+printed at the end of the files -- this slight reordering might put some
+comments before in an odd spot.
+
+When converting over FvwmTheme lines, the colorset definitions might
+well be broken, but these cannot easily be converted.
+
+Bug reports can be sent to the fvwm-workers mailing list (see the
+_FAQ_).
+
+== AUTHOR
+
+Thomas Adam <thomas@fvwm.org>

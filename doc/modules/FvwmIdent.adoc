@@ -1,0 +1,84 @@
+= FvwmIdent(1)
+
+:doctype: manpage
+:mantitle: FvwmIdent
+:manname: FvwmIdent
+:manmanual: Fvwm Modules
+:manvolnum: 1
+:page-layout: base
+
+== NAME
+
+FvwmIdent - the Fvwm identify-window module
+
+== SYNOPSIS
+
+FvwmIdent is spawned by fvwm, so no command line invocation will work.
+
+== DESCRIPTION
+
+The FvwmIdent module prompts the user to select a target window, if the
+module was not launched from within a window context in Fvwm. After
+that, it pops up a window with information about the window which was
+selected.
+
+== COPYRIGHTS
+
+The FvwmIdent program, and the concept for interfacing this module to
+the Window Manager, are all original work by Robert Nation and Nobutaka
+Suzuki.
+
+Copyright 1994, Robert Nation and Nobutaka Suzuki. No guarantees or
+warranties or anything are provided or implied in any way whatsoever.
+Use this program at your own risk. Permission to use this program for
+any purpose is given, as long as the copyright is kept intact.
+
+== INITIALIZATION
+
+During initialization, _FvwmIdent_ gets config info from *fvwm*'s module
+configuration database (see _fvwm_(1), section *MODULE COMMANDS*) to
+determine which colors and font to use.
+
+If the FvwmIdent executable is linked to another name, ie ln -s
+FvwmIdent MoreIdentify, then another module called MoreIdentify can be
+started, with a completely different configuration than FvwmIdent,
+simply by changing the keyword FvwmIdent to MoreIdentify. This way
+multiple clutter-reduction programs can be used.
+
+== INVOCATION
+
+FvwmIdent can be invoked by binding the action 'Module FvwmIdent' to a
+menu or key-stroke in the .fvwm2rc file. Fvwm will search directory
+specified in the ModulePath configuration option to attempt to locate
+FvwmIdent. Although nothing keeps you from launching FvwmIdent at
+start-up time, you probably don't want to. Clicking into the FvwmIdent
+window or pressing a key while it has focus closes FvwmIdent. Pressing
+mouse button 2 in the window restarts FvwmIdent and asks for a new
+window to select.
+
+== CONFIGURATION OPTIONS
+
+FvwmIdent reads the same .fvwm2rc file as fvwm reads when it starts up,
+and looks for lines as listed below:
+
+*FvwmIdent: Colorset n::
+  Tells the module to use colorset _n_.
+*FvwmIdent: Fore color::
+  Tells the module to use _color_ instead of black for text. Switches
+  off the Colorset option.
+*FvwmIdent: Back color::
+  Tells the module to use _color_ instead of white for the window
+  background. Switches off the Colorset option.
+*FvwmIdent: Font fontname::
+  Tells the module to use _fontname_ instead of fixed for text.
+*FvwmIdent: MinimalLayer layer::
+  FvwmIdent places its window on the layer of a target window. But not
+  below the minimal layer. By default, the minimal layer is 4 just like
+  the fvwm default layer. If _layer_ is 0, the layer of the target
+  window is always used. If _layer_ is "default" or not specified, the
+  default behavior is restored. If _layer_ is "none", FvwmIdent is
+  placed as a normal window even if the target window is above it.
+
+== AUTHOR
+
+Robert Nation and Nobutaka Suzuki (nobuta-s@is.aist-nara.ac.jp).
