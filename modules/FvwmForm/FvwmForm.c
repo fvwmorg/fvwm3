@@ -24,7 +24,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <signal.h>
+#include <event2/event.h>
 
 #include "libs/ftime.h"
 #include <fcntl.h>
@@ -100,7 +100,8 @@ int colorset = -1;
 int itemcolorset = 0;
 
 /* global not exported */
-const struct itimerval itv_100ms = { {0L, 100000L}, {0L, 100000L} };
+const struct timeval tv_100ms = {0L, 100000L};
+static struct event *pev;
 
 /* prototypes */
 static void RedrawSeparator(Item *item);
@@ -109,36 +110,16 @@ static void AddItem(void);
 static void PutDataInForm(char *);
 static void ReadFormData(void);
 static void FormVarsCheck(char **);
-static RETSIGTYPE TimerHandler(int);
+static void TimerHandler(evutil_socket_t, short int, void *);
 static int ErrorHandler(Display *dpy, XErrorEvent *error_event);
 static void SetupTimer(void)
 {
-#ifdef HAVE_SIGACTION
-  {
-    struct sigaction  sigact;
+  struct event_base *pevbase = event_base_new();
 
-#ifdef SA_INTERRUPT
-    sigact.sa_flags = SA_INTERRUPT;
-#else
-    sigact.sa_flags = 0;
-#endif
-    sigemptyset(&sigact.sa_mask);
-    sigaddset(&sigact.sa_mask, SIGALRM);
-    sigact.sa_handler = TimerHandler;
+  pev = event_new(pevbase, -1, EV_PERSIST, TimerHandler, NULL);
 
-    sigaction(SIGALRM, &sigact, NULL);
-  }
-#else
-#ifdef USE_BSD_SIGNALS
-  fvwmSetSignalMask( sigmask(SIGALRM) );
-#endif
-  signal(SIGALRM, TimerHandler);  /* Dead pipe == Fvwm died */
-#ifdef HAVE_SIGINTERRUPT
-  siginterrupt(SIGALRM, 1);
-#endif
-#endif
-
-  setitimer(ITIMER_REAL, &itv_100ms, NULL);
+  evtimer_add(pev, &tv_100ms);
+  event_base_dispatch(pevbase);
 }
 
 /* copy a string until '"', or '\n', or '\0' */
@@ -2624,8 +2605,8 @@ TerminateHandler(int sig)
 }
 
 /* signal-handler to make the timer work */
-static RETSIGTYPE
-TimerHandler(int sig)
+static void
+TimerHandler(evutil_socket_t fd, short ev, void *arg)
 {
   int dn;
   char *sp;
@@ -2633,6 +2614,8 @@ TimerHandler(int sig)
 
   timer->timeout.timeleft--;
   if (timer->timeout.timeleft <= 0) {
+    evtimer_del(pev);
+
     /* pre-command */
     if (!XWithdrawWindow(dpy, CF.frame, screen))
     {
