@@ -22,8 +22,6 @@ FvwmTile: ../../config.h Makefile
 	echo 'shift;shift;shift;shift;shift' >> $@
 	echo exec ${moduledir}'/FvwmRearrange $$modargs -tile $$@' >> $@
 
-EXTRA_DIST = $(man_MANS)
-man_MANS = FvwmRearrange.1
 CLEANFILES = $(module_SCRIPTS)
 
 FvwmRearrange_SOURCES = FvwmRearrange.c

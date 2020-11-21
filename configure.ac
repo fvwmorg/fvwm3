@@ -132,7 +132,6 @@ transform=`echo "${program_transform_name}" | "$SED" -e 's/\\$\\$/\\$/'`
 PPACKAGE=`echo "${PACKAGE}" | "$SED" -e "${transform}"`
 FVWM_MODULESUBDIR=/${PPACKAGE}/${VERSION}
 FVWM_DATASUBDIR=/${PPACKAGE}
-FVWM_DOCSUBDIR=/doc/${PPACKAGE}
 
 AC_ARG_ENABLE(package-subdirs,
   AS_HELP_STRING([--disable-package-subdirs],
@@ -303,93 +302,6 @@ esac
 # - version of fribidi without fribidi-config
 AM_CHECK_PKG_CONFIG
 
-
-# Building man pages & HTML documentation (from XML source).
-# extract command names
-if test ! x"$SED" = x; then
-	DOC_COMMANDS=`
-		sed -n '
-		:findhead
-			/#.*define.*CMD_ENT/bfindcmd
-			n
-			bfindhead
-		:findcmd
-			n
-			/CMD_ENT/bfound
-			bfindcmd
-		:found
-			/"#"/bfindcmd
-			/"propertychange"/bfindcmd
-			/"readwritecolors"/bfindcmd
-			/"send_.*"/bfindcmd
-			/"set_.*"/bfindcmd
-			s/.*CMD_ENT.*CMD_//
-			s/,.*//
-			p
-			n
-			bfindcmd
-	' < fvwm/functable.c`
-	DOC_COMMANDS=`echo $DOC_COMMANDS`
-	# with .xml suffix
-	DOC_COMMANDS_XML=`for i in $DOC_COMMANDS; do echo ${i}.xml; done`
-	DOC_COMMANDS_XML=`echo $DOC_COMMANDS_XML`
-	# with .xml suffix and path
-	DOC_COMMANDS_XML_PATH=`
-		for i in $DOC_COMMANDS; do
-			echo ../commands/${i}.xml;
-		done
-	`
-	DOC_COMMANDS_XML_PATH=`echo $DOC_COMMANDS_XML_PATH`
-	# with .html suffix
-	DOC_COMMANDS_HTML=`for i in $DOC_COMMANDS; do echo ${i}.html; done`
-	DOC_COMMANDS_HTML=`echo $DOC_COMMANDS_HTML`
-	# extract module names
-	DOC_MODULES=""
-	DOC_MODULES=`
-		for i in modules/*; do echo "$i"; done |
-		sed -n '
-			:search
-			/^modules.Fvwm/bfound
-			bnext
-		:found
-			s/modules.//
-			p
-		:next
-			n
-			bsearch
-		'
-	`
-	DOC_MODULES=`echo $DOC_MODULES`
-	DOC_MODULES_HTML=`for i in $DOC_MODULES; do echo ${i}.html; done`
-	DOC_MODULES_HTML=`echo $DOC_MODULES_HTML`
-	# extract man page section names
-	DOC_SECTIONS=`cat doc/fvwm/sections`
-	DOC_SECTIONS=`echo $DOC_SECTIONS`
-	DOC_SECTIONS_XML=`for i in $DOC_SECTIONS; do echo ${i}.xml; done`
-	DOC_SECTIONS_XML=`echo $DOC_SECTIONS_XML`
-	DOC_SECTIONS_XML_PATH=`for i in $DOC_SECTIONS; do echo ${i}.xml; done`
-	DOC_SECTIONS_XML_PATH=`echo $DOC_SECTIONS_XML`
-else
-	DOC_COMMANDS=""
-	DOC_COMMANDS_XML=""
-	DOC_COMMANDS_XML_PATH=""
-	DOC_COMMANDS_HTML=""
-	DOC_MODULES=""
-	DOC_MODULES_HTML=""
-	DOC_SECTIONS=""
-	DOC_SECTIONS_XML=""
-	DOC_SECTIONS_XML_PATH=""
-fi
-AC_SUBST(DOC_COMMANDS)
-AC_SUBST(DOC_COMMANDS_XML)
-AC_SUBST(DOC_COMMANDS_XML_PATH)
-AC_SUBST(DOC_COMMANDS_HTML)
-AC_SUBST(DOC_MODULES)
-AC_SUBST(DOC_MODULES_HTML)
-AC_SUBST(DOC_SECTIONS)
-AC_SUBST(DOC_SECTIONS_XML)
-AC_SUBST(DOC_SECTIONS_XML_PATH)
-
 PKG_CHECK_MODULES([xt],[xt],
 [],
 [
@@ -397,7 +309,8 @@ PKG_CHECK_MODULES([xt],[xt],
 ])
 
 problem_mandoc=""
-AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, "")
+AC_CHECK_PROG(ASCIIDOC, asciidoctor, asciidoctor, "")
+AC_SUBST(ASCIIDOC)
 
 AC_ARG_ENABLE(mandoc,
   AS_HELP_STRING([--disable-mandoc],
@@ -412,9 +325,9 @@ AC_ARG_ENABLE(mandoc,
 )
 
 if test ! x"$with_mandoc" = xno; then
-	if test x"$XSLTPROC" = x ; then
+	if test x"$ASCIIDOC" = x ; then
 		with_mandoc="no"
-		problem_mandoc=": No xsltproc found in PATH"
+		problem_mandoc=": No asciidoctor found in PATH"
 	elif test x"$SED" = x ; then
 		with_mandoc="no"
 		problem_mandoc=": No sed found in PATH"
@@ -426,36 +339,6 @@ if test ! x"$with_mandoc" = xno; then
 	fi
 fi
 AM_CONDITIONAL([FVWM_BUILD_MANDOC], [test x"$with_mandoc" = xyes])
-
-
-problem_htmldoc=""
-AC_ARG_ENABLE(htmldoc,
-  AS_HELP_STRING([--enable-htmldoc],[enable generation of HTML documentation]),
-  [ if test x"$enableval" = xyes; then
-		with_htmldoc="yes, check"
-	else
-		with_htmldoc="no"
-		problem_htmldoc=": Explicitly disabled"
-	fi ],
-  [ with_htmldoc="no" ]
-)
-
-if test ! x"$with_htmldoc" = xno; then
-	if test x"$XSLTPROC" = x ; then
-		with_htmldoc="no"
-		problem_htmldoc=": No xsltproc found in PATH"
-	elif test x"$SED" = x ; then
-		with_htmldoc="no"
-		problem_htmldoc=": No sed found in PATH"
-	elif test x"$HAVE_PERL_FOR_DOCS" = x0 ; then
-		with_htmldoc="no"
-		problem_htmldoc=": No perl found in PATH"
-	else
-		with_htmldoc="yes"
-	fi
-fi
-AM_CONDITIONAL([FVWM_BUILD_HTMLDOC], [test x"$with_htmldoc" = xyes])
-
 
 # ********* session management
 # Check the availability of SM; we don't have to add any extra libraries,
@@ -1610,27 +1493,9 @@ AC_OUTPUT(
 	fvwm/Makefile
 	modules/Makefile
 dnl
-	bin/fvwm-config.1
-	bin/fvwm-convert-2.6.1
-	bin/fvwm-menu-desktop.1
 dnl	bin/fvwm-menu-directory.1
 dnl	bin/fvwm-menu-xlock.1
 dnl	bin/fvwm-perllib.1
-	bin/fvwm-root.1
-	modules/FvwmAnimate/FvwmAnimate.1
-	modules/FvwmAuto/FvwmAuto.1
-	modules/FvwmBacker/FvwmBacker.1
-	modules/FvwmButtons/FvwmButtons.1
-	modules/FvwmConsole/FvwmConsole.1
-	modules/FvwmConsole/FvwmConsoleC.pl.1
-	modules/FvwmEvent/FvwmEvent.1
-	modules/FvwmForm/FvwmForm.1
-	modules/FvwmIconMan/FvwmIconMan.1
-	modules/FvwmIdent/FvwmIdent.1
-	modules/FvwmMFL/FvwmMFL.1
-	modules/FvwmPager/FvwmPager.1
-	modules/FvwmRearrange/FvwmRearrange.1
-	modules/FvwmScript/FvwmScript.1
 dnl
 	bin/Makefile
 	bin/FvwmPrompt/Makefile
@@ -1649,22 +1514,7 @@ dnl
 	perllib/FVWM/Tracker/Makefile
 	perllib/FVWM/Module.pm
 	default-config/Makefile
-	doc/fvwm3.ent
-	doc/footer.html
 	doc/Makefile
-	doc/fvwm/Makefile
-	doc/commands/Makefile
-	doc/docbook-xml/Makefile
-	doc/docbook-xml/ent/Makefile
-	doc/docbook-xsl/Makefile
-	doc/docbook-xsl/common/Makefile
-	doc/docbook-xsl/manpages/Makefile
-	doc/docbook-xsl/profiling/Makefile
-	doc/docbook-xsl/highlighting/Makefile
-	doc/docbook-xsl/lib/Makefile
-	doc/docbook-xsl/html/Makefile
-	doc/images/Makefile
-	doc/images/svg_rendering/Makefile
 	dev-docs/Makefile
 	po/Makefile
 dnl
@@ -1747,7 +1597,6 @@ Fvwm3 Configuration:
   With Xrender image support?         $with_xrender$problem_xrender
   With Golang support?                $with_golang$problem_golang
   Build man pages?                    $with_mandoc$problem_mandoc
-  Build HTML documentation?           $with_htmldoc$problem_htmldoc
 
 "
 case "$ac_cv_dmalloc" in

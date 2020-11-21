@@ -28,6 +28,7 @@ FVWM3 has the following dependencies.
 
 ## Optional dependencies
 
+* asciidoctor
 * libfontconfig-dev
 * libfreetype6-dev
 * libfribidi-dev
@@ -43,7 +44,16 @@ FVWM3 has the following dependencies.
 * libxi-dev
 * libxpm-dev
 * sharutils
-* xsltproc
+
+Generating documentation
+========================
+
+To generate `fvwm3`'s documentation:
+
+1. Install `asciidoctor`
+2. Pass `--enable-mandoc` to `./configure` (see below(
+
+`fvwm3` won't compile documentation by default, so it's opt-in.
 
 Installing From Git
 ===================

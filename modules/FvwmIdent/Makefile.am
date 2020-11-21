@@ -6,8 +6,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmIdent
-man_MANS = FvwmIdent.1
-EXTRA_DIST = $(man_MANS) ConfigFvwmIdent
+EXTRA_DIST = ConfigFvwmIdent
 
 config_DATA = \
   ConfigFvwmIdent
