@@ -736,7 +736,6 @@ void list_add(unsigned long *body)
 	while(t != NULL)
 	{
 		//t->m = newm;
-		fprintf(stderr, "WINDOW %s: mon: %s\n", t->window_name, t->m->name);
 		if (t->w == cfgpacket->w)
 		{
 			/* it's already there, do nothing */
