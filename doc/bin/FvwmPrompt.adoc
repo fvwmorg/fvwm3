@@ -1,0 +1,49 @@
+= FvwmPrompt(1)
+
+== NAME
+
+FvwmPrompt - a command-shell for fvwm3
+
+== SYNOPSIS
+
+[verse]
+_FvwmPrompt_ <options>
+
+== DESCRIPTION
+
+_FvwmPrompt_ accepts the following command-line arguments:
+
+ FvwmPrompt [-p <prompt>]
+
+_FvwmPrompt_ provides a minimal shell for sending commands to **fvwm3** -- with
+the history of previous commands remembered for easier repetition.
+
+The prompt can be changed, although by default the _FvwmPrompt_ interface
+looks like the following:
+
+....
+*FvwmPrompt 1.0.1 (1.0.0-49-g845f28d85-dirty)
+
+Press ^D or type 'exit' to end this session
+
+>>>
+....
+
+== Prerequisites
+
+_FvwmMFL_(1) must be spawned by **fvwm3** otherwise _FvwmPrompt_ will not
+start.  For example:
+
+....
+AddToFunc StartFunction I Module FvwmMFL
+....
+
+== Comparisons to FvwmConsole
+
+Unlike _FvwmConsole_, _FvwmPrompt_ doesn't need to be spawned via a terminal
+(such as _xterm_) but acts as a standalone program, and can be run from any
+terminal the user choses.
+
+== Author
+
+Thomas Adam <thomas@fvwm.org>
