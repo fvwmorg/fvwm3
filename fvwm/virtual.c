@@ -660,6 +660,11 @@ int HandlePaging(
 	static int last_y = 0;
 	static Bool is_last_position_valid = False;
 	struct monitor	*m = monitor_get_current();
+	int mwidth, mheight;
+
+	mwidth = m->virtual_scr.MyDisplayWidth;
+	mheight = m->virtual_scr.MyDisplayHeight;
+
 
 	*delta_x = 0;
 	*delta_y = 0;
@@ -673,11 +678,11 @@ int HandlePaging(
 		x = pev->xmotion.x_root;
 		y = pev->xmotion.y_root;
 		if ((m->virtual_scr.VxMax == 0 ||
-		     (x >= edge_thickness &&
-		      x < m->virtual_scr.MyDisplayWidth  - edge_thickness)) &&
+		     (x >= (m->si->x + edge_thickness) &&
+		      x < (m->si->x + m->si->w)  - edge_thickness)) &&
 		    (m->virtual_scr.VyMax == 0 ||
-		     (y >= edge_thickness &&
-		      y < m->virtual_scr.MyDisplayHeight - edge_thickness)))
+		     (y >= (m->si->y + edge_thickness) &&
+		      y < (m->si->y + m->si->h) - edge_thickness)))
 		{
 			return -1;
 		}
@@ -736,9 +741,11 @@ int HandlePaging(
 		/* check actual pointer location since PanFrames can get buried
 		 * under window being moved or resized - mab */
 		if (x >= edge_thickness &&
-		    x < m->virtual_scr.MyDisplayWidth-edge_thickness &&
+		    x < mwidth - edge_thickness &&
+		    x <= (m->si->w) - edge_thickness &&
 		    y >= edge_thickness &&
-		    y < m->virtual_scr.MyDisplayHeight-edge_thickness)
+		    y < mheight - edge_thickness &&
+		    y >= (m->si->h) - edge_thickness)
 		{
 			is_timestamp_valid = False;
 			add_time = 0;
@@ -785,11 +792,12 @@ int HandlePaging(
 	/* and/or move the cursor back to the approximate correct location */
 	/* that is, the same place on the virtual desktop that it */
 	/* started at */
-	if (x < edge_thickness)
+
+	if (x <= (m->si->x + edge_thickness))
 	{
 		*delta_x = -HorWarpSize;
 	}
-	else if (x >= m->virtual_scr.MyDisplayWidth-edge_thickness)
+	else if (x >= (m->si->x + m->si->w) - edge_thickness)
 	{
 		*delta_x = HorWarpSize;
 	}
@@ -801,11 +809,11 @@ int HandlePaging(
 	{
 		*delta_x = 0;
 	}
-	if (y < edge_thickness)
+	if (y <= (m->si->y + edge_thickness))
 	{
 		*delta_y = -VertWarpSize;
 	}
-	else if (y >= m->virtual_scr.MyDisplayHeight-edge_thickness)
+	else if (y >= (m->si->y + m->si->h) - edge_thickness)
 	{
 		*delta_y = VertWarpSize;
 	}
@@ -828,8 +836,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_x += m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
-			*xl = x + *delta_x % m->virtual_scr.MyDisplayWidth + HorWarpSize;
+			*delta_x += m->virtual_scr.VxMax + mwidth;
+			*xl = x + *delta_x % mwidth + HorWarpSize;
 		}
 	}
 	else if (m->virtual_scr.Vx + *delta_x > m->virtual_scr.VxMax)
@@ -841,8 +849,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_x -= m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
-			*xl = x + *delta_x % m->virtual_scr.MyDisplayWidth - HorWarpSize;
+			*delta_x -= m->virtual_scr.VxMax + mwidth;
+			*xl = x + *delta_x % mwidth - HorWarpSize;
 		}
 	}
 	else
@@ -859,8 +867,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_y += m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
-			*yt = y + *delta_y % m->virtual_scr.MyDisplayHeight + VertWarpSize;
+			*delta_y += m->virtual_scr.VyMax + mheight;
+			*yt = y + *delta_y % mheight + VertWarpSize;
 		}
 	}
 	else if (m->virtual_scr.Vy + *delta_y > m->virtual_scr.VyMax)
@@ -872,8 +880,8 @@ int HandlePaging(
 		}
 		else
 		{
-			*delta_y -= m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
-			*yt = y + *delta_y % m->virtual_scr.MyDisplayHeight - VertWarpSize;
+			*delta_y -= m->virtual_scr.VyMax + mheight;
+			*yt = y + *delta_y % mheight - VertWarpSize;
 		}
 	}
 	else
@@ -890,21 +898,21 @@ int HandlePaging(
 	}
 
 	/* make sure the pointer isn't warped into the panframes */
-	if (*xl < edge_thickness)
+	if (*xl <= (m->si->x + edge_thickness))
 	{
-		*xl = edge_thickness;
+		*xl = m->si->x + edge_thickness;
 	}
-	if (*yt < edge_thickness)
+	if (*yt <= (m->si->y + edge_thickness))
 	{
 		*yt = edge_thickness;
 	}
-	if (*xl >= m->virtual_scr.MyDisplayWidth - edge_thickness)
+	if (*xl >= (m->si->x + m->si->w) - edge_thickness)
 	{
-		*xl = m->virtual_scr.MyDisplayWidth - edge_thickness -1;
+		*xl = (m->si->x + m->si->w) - edge_thickness -1;
 	}
-	if (*yt >= m->virtual_scr.MyDisplayHeight - edge_thickness)
+	if (*yt >= (m->si->y + m->si->h) - edge_thickness)
 	{
-		*yt = m->virtual_scr.MyDisplayHeight - edge_thickness -1;
+		*yt = (m->si->y + m->si->h) - edge_thickness -1;
 	}
 
 	if (Grab)
@@ -968,154 +976,156 @@ void checkPanFrames(void)
 		do_unmap_b = True;
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
-		/* Remove Pan frames if paging by edge-scroll is permanently or
-		 * temporarily disabled */
-		if (m->virtual_scr.EdgeScrollX == 0 || m->virtual_scr.VxMax == 0)
-		{
-			do_unmap_l = True;
-			do_unmap_r = True;
-		}
-		if (m->virtual_scr.EdgeScrollY == 0 || m->virtual_scr.VyMax == 0)
-		{
-			do_unmap_t = True;
-			do_unmap_b = True;
-		}
-		if (m->virtual_scr.Vx == 0 && !Scr.flags.do_edge_wrap_x)
-		{
-			do_unmap_l = True;
-		}
-		if (m->virtual_scr.Vx == m->virtual_scr.VxMax && !Scr.flags.do_edge_wrap_x)
-		{
-			do_unmap_r = True;
-		}
-		if (m->virtual_scr.Vy == 0 && !Scr.flags.do_edge_wrap_y)
-		{
-			do_unmap_t = True;
-		}
-		if (m->virtual_scr.Vy == m->virtual_scr.VyMax && !Scr.flags.do_edge_wrap_y)
-		{
-			do_unmap_b = True;
-		}
+	m = monitor_get_current();
 
-		/* correct the unmap variables if pan frame commands are set */
-		if (edge_thickness != 0)
-		{
-			if (m->PanFrameLeft.command != NULL || m->PanFrameLeft.command_leave != NULL)
-			{
-				do_unmap_l = False;
-			}
-			if (m->PanFrameRight.command != NULL || m->PanFrameRight.command_leave != NULL)
-			{
-				do_unmap_r = False;
-			}
-			if (m->PanFrameBottom.command != NULL || m->PanFrameBottom.command_leave != NULL)
-			{
-				do_unmap_b = False;
-			}
-			if (m->PanFrameTop.command != NULL || m->PanFrameTop.command_leave != NULL)
-			{
-				do_unmap_t = False;
-			}
-		}
+	/* Remove Pan frames if paging by edge-scroll is permanently or
+	 * temporarily disabled */
+	if (m->virtual_scr.EdgeScrollX == 0 || m->virtual_scr.VxMax == 0)
+	{
+		do_unmap_l = True;
+		do_unmap_r = True;
+	}
+	if (m->virtual_scr.EdgeScrollY == 0 || m->virtual_scr.VyMax == 0)
+	{
+		do_unmap_t = True;
+		do_unmap_b = True;
+	}
+	if (m->virtual_scr.Vx == 0 && !Scr.flags.do_edge_wrap_x)
+	{
+		do_unmap_l = True;
+	}
+	if (m->virtual_scr.Vx == m->virtual_scr.VxMax && !Scr.flags.do_edge_wrap_x)
+	{
+		do_unmap_r = True;
+	}
+	if (m->virtual_scr.Vy == 0 && !Scr.flags.do_edge_wrap_y)
+	{
+		do_unmap_t = True;
+	}
+	if (m->virtual_scr.Vy == m->virtual_scr.VyMax && !Scr.flags.do_edge_wrap_y)
+	{
+		do_unmap_b = True;
+	}
 
-		/*
-		 * hide or show the windows
-		 */
+	/* correct the unmap variables if pan frame commands are set */
+	if (edge_thickness != 0)
+	{
+		if (m->PanFrameLeft.command != NULL || m->PanFrameLeft.command_leave != NULL)
+		{
+			do_unmap_l = False;
+		}
+		if (m->PanFrameRight.command != NULL || m->PanFrameRight.command_leave != NULL)
+		{
+			do_unmap_r = False;
+		}
+		if (m->PanFrameBottom.command != NULL || m->PanFrameBottom.command_leave != NULL)
+		{
+			do_unmap_b = False;
+		}
+		if (m->PanFrameTop.command != NULL || m->PanFrameTop.command_leave != NULL)
+		{
+			do_unmap_t = False;
+		}
+	}
 
-		/* left */
-		if (do_unmap_l)
+	/*
+	 * hide or show the windows
+	 */
+
+	/* left */
+	if (do_unmap_l)
+	{
+		if (m->PanFrameLeft.isMapped)
 		{
-			if (m->PanFrameLeft.isMapped)
-			{
-				XUnmapWindow(dpy, m->PanFrameLeft.win);
-				m->PanFrameLeft.isMapped = False;
-			}
+			XUnmapWindow(dpy, m->PanFrameLeft.win);
+			m->PanFrameLeft.isMapped = False;
 		}
-		else
+	}
+	else
+	{
+		if (edge_thickness != last_edge_thickness)
 		{
-			if (edge_thickness != last_edge_thickness)
-			{
-				XResizeWindow(
-					dpy, m->PanFrameLeft.win, edge_thickness,
-					m->virtual_scr.MyDisplayHeight);
-			}
-			if (!m->PanFrameLeft.isMapped)
-			{
-				XMapRaised(dpy, m->PanFrameLeft.win);
-				m->PanFrameLeft.isMapped = True;
-			}
+			XResizeWindow(
+				dpy, m->PanFrameLeft.win, edge_thickness,
+				m->si->y + m->si->h);
 		}
-		/* right */
-		if (do_unmap_r)
+		if (!m->PanFrameLeft.isMapped)
 		{
-			if (m->PanFrameRight.isMapped)
-			{
-				XUnmapWindow(dpy, m->PanFrameRight.win);
-				m->PanFrameRight.isMapped = False;
-			}
+			XMapRaised(dpy, m->PanFrameLeft.win);
+			m->PanFrameLeft.isMapped = True;
 		}
-		else
+	}
+	/* right */
+	if (do_unmap_r)
+	{
+		if (m->PanFrameRight.isMapped)
 		{
-			if (edge_thickness != last_edge_thickness)
-			{
-				XMoveResizeWindow(
-					dpy, m->PanFrameRight.win,
-					m->virtual_scr.MyDisplayWidth - edge_thickness, 0,
-					edge_thickness, m->virtual_scr.MyDisplayHeight);
-			}
-			if (!m->PanFrameRight.isMapped)
-			{
-				XMapRaised(dpy, m->PanFrameRight.win);
-				m->PanFrameRight.isMapped = True;
-			}
+			XUnmapWindow(dpy, m->PanFrameRight.win);
+			m->PanFrameRight.isMapped = False;
 		}
-		/* top */
-		if (do_unmap_t)
+	}
+	else
+	{
+		if (edge_thickness != last_edge_thickness)
 		{
-			if (m->PanFrameTop.isMapped)
-			{
-				XUnmapWindow(dpy, m->PanFrameTop.win);
-				m->PanFrameTop.isMapped = False;
-			}
+			XMoveResizeWindow(
+				dpy, m->PanFrameRight.win,
+				(m->si->x + m->si->w) - edge_thickness, m->si->y + m->si->h,
+				edge_thickness, (m->si->y + m->si->h));
 		}
-		else
+		if (!m->PanFrameRight.isMapped)
 		{
-			if (edge_thickness != last_edge_thickness)
-			{
-				XResizeWindow(
-					dpy, m->PanFrameTop.win, m->virtual_scr.MyDisplayWidth,
-					edge_thickness);
-			}
-			if (!m->PanFrameTop.isMapped)
-			{
-				XMapRaised(dpy, m->PanFrameTop.win);
-				m->PanFrameTop.isMapped = True;
-			}
+			fprintf(stderr, "%s: MAPPING RIGHT\n", m->si->name);
+			XMapRaised(dpy, m->PanFrameRight.win);
+			m->PanFrameRight.isMapped = True;
 		}
-		/* bottom */
-		if (do_unmap_b)
+	}
+	/* top */
+	if (do_unmap_t)
+	{
+		if (m->PanFrameTop.isMapped)
 		{
-			if (m->PanFrameBottom.isMapped)
-			{
-				XUnmapWindow(dpy, m->PanFrameBottom.win);
-				m->PanFrameBottom.isMapped = False;
-			}
+			XUnmapWindow(dpy, m->PanFrameTop.win);
+			m->PanFrameTop.isMapped = False;
 		}
-		else
+	}
+	else
+	{
+		if (edge_thickness != last_edge_thickness)
 		{
-			if (edge_thickness != last_edge_thickness)
-			{
-				XMoveResizeWindow(
-					dpy, m->PanFrameBottom.win, 0,
-					m->virtual_scr.MyDisplayHeight - edge_thickness,
-					m->virtual_scr.MyDisplayWidth, edge_thickness);
-			}
-			if (!m->PanFrameBottom.isMapped)
-			{
-				XMapRaised(dpy, m->PanFrameBottom.win);
-				m->PanFrameBottom.isMapped = True;
-			}
+			XResizeWindow(
+				dpy, m->PanFrameTop.win,
+				(m->si->x + m->si->w),
+				edge_thickness);
+		}
+		if (!m->PanFrameTop.isMapped)
+		{
+			XMapRaised(dpy, m->PanFrameTop.win);
+			m->PanFrameTop.isMapped = True;
+		}
+	}
+	/* bottom */
+	if (do_unmap_b)
+	{
+		if (m->PanFrameBottom.isMapped)
+		{
+			XUnmapWindow(dpy, m->PanFrameBottom.win);
+			m->PanFrameBottom.isMapped = False;
+		}
+	}
+	else
+	{
+		if (edge_thickness != last_edge_thickness)
+		{
+			XMoveResizeWindow(
+				dpy, m->PanFrameBottom.win, m->si->x,
+				(m->si->y + m->si->h) - edge_thickness,
+				(m->si->x + m->si->w), edge_thickness);
+		}
+		if (!m->PanFrameBottom.isMapped)
+		{
+			XMapRaised(dpy, m->PanFrameBottom.win);
+			m->PanFrameBottom.isMapped = True;
 		}
 	}
 	last_edge_thickness = edge_thickness;
@@ -1131,15 +1141,15 @@ void checkPanFrames(void)
  */
 void raisePanFrames(void)
 {
-	Window windows[4];
+	Window windows[1024];
 	int n;
 	struct monitor	*m;
 
 	/* Note: make sure the stacking order of the pan frames is not changed
 	 * every time they are raised by using XRestackWindows. */
 
+	n = 0;
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		n = 0;
 		if (m->PanFrameTop.isMapped)
 		{
 			windows[n++] = m->PanFrameTop.win;
@@ -1156,14 +1166,14 @@ void raisePanFrames(void)
 		{
 			windows[n++] = m->PanFrameBottom.win;
 		}
+	}
 
-		if (n > 0)
+	if (n > 0)
+	{
+		XRaiseWindow(dpy, windows[0]);
+		if (n > 1)
 		{
-			XRaiseWindow(dpy, windows[0]);
-			if (n > 1)
-			{
-				XRestackWindows(dpy, windows, n);
-			}
+			XRestackWindows(dpy, windows, n);
 		}
 	}
 }
@@ -1199,29 +1209,28 @@ void initPanFrames(void)
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->PanFrameTop.win = XCreateWindow(
-			dpy, Scr.Root, 0, 0,
-			m->virtual_scr.MyDisplayWidth, edge_thickness,
+			dpy, Scr.Root, m->si->x, m->si->y,
+			m->si->w, edge_thickness,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
 		m->PanFrameLeft.win = XCreateWindow(
-			dpy, Scr.Root, 0, 0,
-			edge_thickness, m->virtual_scr.MyDisplayHeight,
+			dpy, Scr.Root, m->si->x, m->si->y,
+			edge_thickness, m->si->h,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
 		m->PanFrameRight.win = XCreateWindow(
 			dpy, Scr.Root,
-			m->virtual_scr.MyDisplayWidth - edge_thickness,
-			m->virtual_scr.MyDisplayHeight,
-			edge_thickness, m->virtual_scr.MyDisplayHeight, 0,
+			(m->si->x + m->si->w) - edge_thickness, (m->si->y + m->si->h) - m->si->h,
+			edge_thickness, m->si->h, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
 		m->PanFrameBottom.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x,
-			m->virtual_scr.MyDisplayHeight - edge_thickness,
-			m->virtual_scr.MyDisplayWidth, edge_thickness, 0,
+			m->si->h - edge_thickness,
+			m->si->w, edge_thickness, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
 		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
@@ -2046,7 +2055,7 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 {
 	int val1, val2, val1_unit, val2_unit, n;
 	char *token;
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m;
 
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 	if (n != 2)
@@ -2099,9 +2108,10 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 		}
 	}
 
-	/* FIXME - update all monitors if global. */
-	m->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
-	m->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		m->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
+		m->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
+	}
 
 	checkPanFrames();
 

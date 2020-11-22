@@ -2231,12 +2231,9 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			int delta_x = 0;
 			int delta_y = 0;
 			XEvent e;
-			struct monitor	*m;
 
 			if (fw != NULL)
 				m = fw->m;
-			else
-				m = monitor_get_current();
 
 			/* this was in the HandleMotionNotify before, HEDU */
 			Scr.flags.is_pointer_on_this_screen = 1;
