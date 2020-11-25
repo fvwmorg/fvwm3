@@ -1,0 +1,156 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.69])
+AC_INIT([fvwm3], [1.0.1], [thomas@fvwm.org])
+AC_CONFIG_AUX_DIR(etc)
+AC_CONFIG_LIBOBJ_DIR(libs)
+AC_CONFIG_SRCDIR([fvwm/icccm2.c])
+AC_CONFIG_HEADERS([config.h])
+
+AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_SILENT_RULES([yes])
+
+
+VERSIONINFO=m4_esyscmd([./utils/fvwm-version-str.sh])
+
+# Set the date of release for the version in AC_INIT.  This can be blank if
+# this is a non-release (git) build.
+RELDATELONG="04 October 2020"
+RELDATESHORT="04-Oct-2020"
+RELDATENUM="2020-10-04"
+
+ISRELEASED="no"
+if test "$ISRELEASED" = "no"; then
+	RELDATELONG=""
+	RELDATESHORT=""
+	RELDATENUM=""
+fi
+
+AC_SUBST(ISRELEASED)
+AC_DEFINE_UNQUOTED(VERSIONINFO, "$VERSIONINFO")
+AC_SUBST(VERSIONINFO)
+AC_SUBST(RELDATELONG)
+AC_SUBST(RELDATESHORT)
+AC_SUBST(RELDATENUM)
+
+# Checks for programs.
+AC_PROG_YACC
+AC_PROG_CC
+AC_PROG_LEX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_SED
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-lX11':
+AC_CHECK_LIB([X11], [main])
+# FIXME: Replace `main' with a function in `-lXext':
+AC_CHECK_LIB([Xext], [main])
+# FIXME: Replace `main' with a function in `-lfvwm3':
+AC_CHECK_LIB([fvwm3], [main])
+# FIXME: Replace `main' with a function in `-lm':
+AC_CHECK_LIB([m], [main])
+
+# Checks for header files.
+AC_PATH_X
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([fcntl.h
+		  inttypes.h
+		  langinfo.h
+		  libintl.h
+		  limits.h
+		  locale.h
+		  malloc.h
+		  stddef.h
+		  stdint.h
+		  stdlib.h
+		  string.h
+		  sys/param.h
+		  sys/socket.h
+		  sys/systeminfo.h
+		  sys/time.h
+		  unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT8_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
+
+# Checks for library functions.
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_FUNC_SETPGRP
+AC_FUNC_STRFTIME
+AC_FUNC_WAIT3
+AC_CHECK_FUNCS([alarm
+		atexit
+		dup2
+		gethostname
+		gettimeofday
+		isascii
+		memchr
+		memmove
+		memset
+		mkdir
+		mkfifo
+		putenv
+		select
+		setlocale
+		socket
+		sqrt
+		strcasecmp
+		strchr
+		strcspn
+		strdup
+		strerror
+		strncasecmp
+		strndup
+		strrchr
+		strtol
+		strtoul
+		uname])
+AC_REPLACE_FUNCS([asprintf])
+
+AC_CONFIG_FILES([Makefile
+                 bin/FvwmPrompt/Makefile
+                 bin/Makefile
+                 default-config/Makefile
+                 dev-docs/Makefile
+                 doc/Makefile
+                 fvwm/Makefile
+                 libs/Makefile
+                 modules/FvwmAnimate/Makefile
+                 modules/FvwmAuto/Makefile
+                 modules/FvwmBacker/Makefile
+                 modules/FvwmButtons/Makefile
+                 modules/FvwmConsole/Makefile
+                 modules/FvwmEvent/Makefile
+                 modules/FvwmForm/Makefile
+                 modules/FvwmIconMan/Makefile
+                 modules/FvwmIdent/Makefile
+                 modules/FvwmMFL/Makefile
+                 modules/FvwmPager/Makefile
+                 modules/FvwmPerl/Makefile
+                 modules/FvwmRearrange/Makefile
+                 modules/FvwmScript/Makefile
+                 modules/FvwmScript/Scripts/Makefile
+                 modules/FvwmScript/Widgets/Makefile
+                 modules/Makefile
+                 perllib/FVWM/Makefile
+                 perllib/FVWM/Module/Makefile
+                 perllib/FVWM/Tracker/Makefile
+                 perllib/General/Makefile
+                 perllib/Makefile
+                 po/Makefile
+                 utils/Makefile])
+AC_OUTPUT
