@@ -1025,7 +1025,7 @@ static void ParseButton(button_info **uberb, char *s)
 					}
 				}
 				t = seekright(&s);
-				if (t && *t && (t[0] != '-' || t[1] != 0))
+				if (t && *t)
 				{
 					if (b->title)
 					{
