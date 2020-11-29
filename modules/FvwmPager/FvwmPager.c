@@ -764,7 +764,7 @@ void list_configure(unsigned long *body)
   PagerWindow *t;
   Window target_w;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
-  Bool is_new_desk;
+  Bool is_new_desk, is_new_monitor;
   struct fpmonitor *newm;
 
   target_w = cfgpacket->w;
@@ -778,10 +778,6 @@ void list_configure(unsigned long *body)
 
 	  newm = fpmonitor_get_current();
   }
-
-  /* FIXME: need to handle things when DesktopConfiguration is global --
-   * and/or when the Monitor string insn't set in FvwmPager.
-   */
 
   while( (t != NULL) && (t->w != target_w))
   {
@@ -797,7 +793,17 @@ void list_configure(unsigned long *body)
     return;
   }
 
-  is_new_desk = (t->desk != cfgpacket->desk);
+  is_new_monitor = ((monitor_to_track != NULL) && (t->m != newm));
+  is_new_desk = (t->desk != cfgpacket->desk && is_new_monitor);
+
+  /* If the monitor is different to the one the window was previously on,
+   * remove the window in the pager as it's no longer on that screen.
+   */
+  if (is_new_monitor) {
+	  XDestroyWindow(dpy, t->PagerView);
+	  t->PagerView = None;
+  }
+
   handle_config_win_package(t, cfgpacket);
 
   if (is_new_desk)
