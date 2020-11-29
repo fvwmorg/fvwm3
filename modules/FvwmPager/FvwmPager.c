@@ -978,11 +978,16 @@ void list_new_desk(unsigned long *body)
   int change_cs = -1;
   int change_ballooncs = -1;
   int change_highcs = -1;
-  struct fpmonitor *m;
+  struct fpmonitor *m, *mout;
 
   m = fpmonitor_this();
+  mout = fpmonitor_by_output((int)body[1]);
 
-  if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
+  /* If the monitor for which the event was sent, does not match the monitor
+   * itself, then don't change the FvwmPager's desk.  Only do this if we're
+   * tracking a specific monitor though.
+   */
+  if (monitor_to_track != NULL && m != mout)
 	  return;
 
   oldDesk = m->virtual_scr.CurrentDesk;
