@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _BORDERS_H
-#define _BORDERS_H
+#ifndef FVWM_BORDERS_H
+#define FVWM_BORDERS_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -73,4 +73,4 @@ void border_redraw_decorations(
 	FvwmWindow *fw);
 unsigned int border_get_transparent_decorations_part(
 	FvwmWindow *fw);
-#endif /* _BORDERS_H */
+#endif /* FVWM_BORDERS_H */

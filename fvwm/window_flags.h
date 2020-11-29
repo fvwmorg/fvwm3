@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _WINDOW_FLAGS_
-#define _WINDOW_FLAGS_
+#ifndef FVWM_WINDOW_FLAGS_H
+#define FVWM_WINDOW_FLAGS_H
 
 #include "focus_policy.h"
 
@@ -747,4 +747,4 @@
 #define HAS_EWMH_INIT_WM_DESKTOP(fw) \
 	((fw)->flags.has_ewmh_init_wm_desktop)
 
-#endif /* _WINDOW_FLAGS_ */
+#endif /* FVWM_WINDOW_FLAGS_H */

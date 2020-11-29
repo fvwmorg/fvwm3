@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef INFOSTORE_H
-#define INFOSTORE_H
+#ifndef FVWM_INFOSTORE_H
+#define FVWM_INFOSTORE_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -32,4 +32,4 @@ int get_metainfo_length(void);
 MetaInfo *get_metainfo(void);
 void print_infostore(void);
 
-#endif /* INFOSTORE_H */
+#endif /* FVWM_INFOSTORE_H */

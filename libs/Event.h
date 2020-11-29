@@ -1,5 +1,5 @@
-#ifndef LIB_EVENT_H
-#define LIB_EVENT_H
+#ifndef FVWMLIB_EVENT_H
+#define FVWMLIB_EVENT_H
 
 #include <X11/Xlib.h>
 
@@ -8,4 +8,4 @@
  */
 Window GetSubwindowFromEvent(Display *dpy, const XEvent *eventp);
 
-#endif /* LIB_EVENT_H */
+#endif /* FVWMLIB_EVENT_H */

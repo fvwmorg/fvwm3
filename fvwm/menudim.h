@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENUDIM_H
-#define MENUDIM_H
+#ifndef FVWM_MENUDIM_H
+#define FVWM_MENUDIM_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "libs/defaults.h"
@@ -66,4 +66,4 @@ int menudim_middle_x_offset(struct MenuDimensions *mdim);
 
 /* ---------------------------- builtin commands --------------------------- */
 
-#endif /* MENUDIM_H */
+#endif /* FVWM_MENUDIM_H */

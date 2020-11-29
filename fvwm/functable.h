@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FUNCTABLE_H
-#define FUNCTABLE_H
+#ifndef FVWM_FUNCTABLE_H
+#define FVWM_FUNCTABLE_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "functions.h"
@@ -22,4 +22,4 @@ extern const func_t func_table[];
 
 /* ---------------------------- interface functions ------------------------ */
 
-#endif /* FUNCTABLE_H */
+#endif /* FVWM_FUNCTABLE_H */

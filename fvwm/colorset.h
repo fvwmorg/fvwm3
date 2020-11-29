@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef COLORSET_H
-#define COLORSET_H
+#ifndef FVWM_COLORSET_H
+#define FVWM_COLORSET_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/X.h>
@@ -23,4 +23,4 @@ void cleanup_colorsets(void);
 void alloc_colorset(int n);
 void update_root_transparent_colorset(Atom prop);
 
-#endif /* COLORSET_H */
+#endif /* FVWM_COLORSET_H */

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _STYLE_
-#define _STYLE_
+#ifndef FVWM_STYLE_H
+#define FVWM_STYLE_H
 
 #include "fvwm.h"
 #include "update.h"
@@ -677,4 +677,4 @@ void free_icon_boxes(icon_boxes *ib);
 void style_destroy_style(style_id_t s_id);
 void print_styles(int verbose);
 
-#endif /* _STYLE_ */
+#endif /* FVWM_STYLE_H */

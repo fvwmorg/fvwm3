@@ -1,5 +1,5 @@
-#ifndef FERROR_H
-#define FERROR_H
+#ifndef FVWMLIB_XERROR_H
+#define FVWMLIB_XERROR_H
 #include <X11/Xlib.h>
 
 void do_coredump(void);
@@ -12,4 +12,4 @@ void ferror_set_temp_error_handler(ferror_handler_t new_handler);
 void ferror_reset_temp_error_handler(void);
 int ferror_call_next_error_handler(Display *dpy, XErrorEvent *error);
 
-#endif /* FERROR_H */
+#endif /* FVWMLIB_XERROR_H */

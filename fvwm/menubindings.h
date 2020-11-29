@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENU_BINDINGS_H
-#define MENU_BINDINGS_H
+#ifndef FVWM_MENU_BINDINGS_H
+#define FVWM_MENU_BINDINGS_H
 #include <X11/Xlib.h>
 #include "libs/Bindings.h"
 
@@ -92,4 +92,4 @@ void menu_shortcuts(
 	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmi_current,
 	double_keypress *pdkp, int *ret_menu_x, int *ret_menu_y);
 
-#endif /* MENU_BINDINGS_H */
+#endif /* FVWM_MENU_BINDINGS_H */

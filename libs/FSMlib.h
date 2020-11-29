@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FSMlib_H
-#define FSMlib_H
+#ifndef FVWMLIB_FSMLIB_H
+#define FVWMLIB_FSMLIB_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "config.h"
@@ -838,4 +838,4 @@ typedef struct {
 
 #endif
 
-#endif /* FSMlib_H */
+#endif /* FVWMLIB_FSMLIB_H */

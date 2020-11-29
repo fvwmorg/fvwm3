@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _SCREEN_
-#define _SCREEN_
+#ifndef FVWM_SCREEN_H
+#define FVWM_SCREEN_H
 
 #include "config.h"
 
@@ -521,4 +521,4 @@ void AddToDecor(F_CMD_ARGS, FvwmDecor *decor);
 
 extern ScreenInfo Scr;
 
-#endif /* _SCREEN_ */
+#endif /* FVWM_SCREEN_H */

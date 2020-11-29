@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FOCUS_POLICY_H
-#define FOCUS_POLICY_H
+#ifndef FVWM_FOCUS_POLICY_H
+#define FVWM_FOCUS_POLICY_H
 
 /* Note: focus_policy.[ch] is meant to manage structures of type focus_policy_t
  * only.  No code dealing with *any* external data types belongs in here!  Put
@@ -219,4 +219,4 @@ int fpol_query_allow_user_focus(
 int fpol_is_policy_changed(
 	focus_policy_t *fpol);
 
-#endif /* FOCUS_POLICY_H */
+#endif /* FVWM_FOCUS_POLICY_H */

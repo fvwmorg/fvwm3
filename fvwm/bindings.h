@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef BINDINGS_H
-#define BINDINGS_H
+#ifndef FVWM_BINDINGS_H
+#define FVWM_BINDINGS_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -22,5 +22,4 @@ unsigned int MaskUsedModifiers(unsigned int in_modifiers);
 unsigned int GetUnusedModifiers(void);
 void print_bindings(void);
 
-#endif /* BINDINGS_H */
-
+#endif /* FVWM_BINDINGS_H */

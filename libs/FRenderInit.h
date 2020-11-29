@@ -3,8 +3,8 @@
 
 /* ---------------------------- included header files ---------------------- */
 
-#ifndef F_RENDER_INIT_H
-#define F_RENDER_INIT_H
+#ifndef FVWMLIB_FRENDER_INIT_H
+#define FVWMLIB_FRENDER_INIT_H
 
 #include <X11/Xlib.h>
 

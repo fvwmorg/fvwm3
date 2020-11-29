@@ -1,5 +1,5 @@
-#ifndef LIB_SYSTEM_H
-#define LIB_SYSTEM_H
+#ifndef FVWMLIB_SYSTEM_H
+#define FVWMLIB_SYSTEM_H
 
 #include "config.h"
 
@@ -24,4 +24,4 @@ Bool isFileStampChanged(const FileStamp *stamp, const char *name);
 /* mkstemp */
 int fvwm_mkstemp (char *TEMPLATE);
 
-#endif /* LIB_SYSTEM_H */
+#endif /* FVWMLIB_SYSTEM_H */

@@ -1,9 +1,9 @@
 /* -*-c-*- */
 
-#ifndef MODCONF_H
-#define MODCONF_H
+#ifndef FVWM_MODCONF_H
+#define FVWM_MODCONF_H
 
 
 void ModuleConfig(char *action);
 
-#endif /* MODCONF_H */
+#endif /* FVWM_MODCONF_H */

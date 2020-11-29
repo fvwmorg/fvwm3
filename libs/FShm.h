@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FSHM_H
-#define FSHM_H
+#ifndef FVWMLIB_FSHM_H
+#define FVWMLIB_FSHM_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -69,4 +69,4 @@ typedef struct {
 
 #endif
 
-#endif /* FSHM_H */
+#endif /* FVWMLIB_FSHM_H */

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENUITEM_H
-#define MENUITEM_H
+#ifndef FVWM_MENUITEM_H
+#define FVWM_MENUITEM_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "libs/defaults.h"
@@ -139,4 +139,4 @@ void menuitem_paint(
 	struct MenuItem *mi, struct MenuPaintItemParameters *mpip);
 int menuitem_middle_y_offset(struct MenuItem *mi, struct MenuStyle *ms);
 
-#endif /* MENUITEM_H */
+#endif /* FVWM_MENUITEM_H */

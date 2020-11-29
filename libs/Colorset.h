@@ -5,8 +5,8 @@
    and this notice remains in the source code and all documentation
 */
 
-#ifndef LIBS_COLORSETS_H
-#define LIBS_COLORSETS_H
+#ifndef FVWMLIB_COLORSETS_H
+#define FVWMLIB_COLORSETS_H
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #include "PictureBase.h"

@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2001  Dominik Vogt */
 
-#ifndef FVWMRECT_H
-#define FVWMRECT_H
+#ifndef FVWMLIB_FVWMRECT_H
+#define FVWMLIB_FVWMRECT_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/Xutil.h>
@@ -58,4 +58,4 @@ int fvwmrect_move_into_rectangle(
 int fvwmrect_intersect_xrectangles(
 	XRectangle *r1, XRectangle *r2);
 
-#endif /* FVWMRECT_H */
+#endif /* FVWMLIB_FVWMRECT_H */

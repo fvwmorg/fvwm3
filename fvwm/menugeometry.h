@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENU_GEOMETRY_H
-#define MENU_GEOMETRY_H
+#ifndef FVWM_MENU_GEOMETRY_H
+#define FVWM_MENU_GEOMETRY_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/Xlib.h>
@@ -38,4 +38,4 @@ Bool menu_get_outer_geometry(
 	int *border_width_return, int *depth_return);
 
 
-#endif /* MENU_GEOMETRY_H */
+#endif /* FVWM_MENU_GEOMETRY_H */

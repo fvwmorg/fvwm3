@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FLIST_H
-#define FLIST_H
+#ifndef FVWMLIB_FLIST_H
+#define FVWMLIB_FLIST_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -28,4 +28,4 @@ flist *flist_insert_obj(flist *list, void *object, int position);
 flist *flist_remove_obj(flist *list, void *object);
 flist *flist_free_list(flist *list);
 
-#endif /* FLIST_H */
+#endif /* FVWMLIB_FLIST_H */

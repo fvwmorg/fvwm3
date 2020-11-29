@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FOCUS_H
-#define FOCUS_H
+#ifndef FVWM_FOCUS_H
+#define FVWM_FOCUS_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -78,4 +78,4 @@ void set_focus_model(FvwmWindow *fw);
 void focus_force_refresh_focus(const FvwmWindow *fw);
 void refresh_focus(const FvwmWindow *fw);
 
-#endif /* FOCUS_H */
+#endif /* FVWM_FOCUS_H */

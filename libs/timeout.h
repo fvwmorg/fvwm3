@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef TIMEOUT_H
-#define TIMEOUT_H
+#ifndef FVWMLIB_TIMEOUT_H
+#define FVWMLIB_TIMEOUT_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -36,4 +36,4 @@ timeout_mask_t timeout_tick(
 void timeout_rewind(
 	timeout_t *to, timeout_mask_t mask, timeout_time_t ticks_before_alarm);
 
-#endif /* TIMEOUT_H */
+#endif /* FVWMLIB_TIMEOUT_H */

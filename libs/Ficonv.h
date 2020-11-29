@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef FICONV_H
-#define FICONV_H
+#ifndef FVWMLIB_FICONV_H
+#define FVWMLIB_FICONV_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -50,4 +50,4 @@ char *FiconvCharsetToUtf8(
 char *FiconvCharsetToCharset(
 	Display *dpy, FlocaleCharset *in_fc, FlocaleCharset *out_fc,
 	const char *in, unsigned int in_size);
-#endif /* FICONV_H */
+#endif /* FVWMLIB_FICONV_H */

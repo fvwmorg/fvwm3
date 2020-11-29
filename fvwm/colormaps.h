@@ -12,8 +12,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
-#ifndef COLORMAP_H
-#define COLORMAP_H
+#ifndef FVWM_COLORMAP_H
+#define FVWM_COLORMAP_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -93,4 +93,4 @@ void set_client_controls_colormaps(Bool flag);
 void EnterSubWindowColormap(Window win);
 void LeaveSubWindowColormap(Window win);
 
-#endif /* COLORMAP_H */
+#endif /* FVWM_COLORMAP_H */

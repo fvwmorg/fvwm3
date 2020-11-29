@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef FLOCALE_H
-#define FLOCALE_H
+#ifndef FVWMLIB_FLOCALE_H
+#define FVWMLIB_FLOCALE_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -376,5 +376,4 @@ int FlocaleStringCharToByteOffset(FlocaleFont *flf, const char *str,
 int FlocaleStringCharLength(FlocaleFont *flf, const char *str);
 
 
-#endif /* FLOCALE_H */
-
+#endif /* FVWMLIB_FLOCALE_H */

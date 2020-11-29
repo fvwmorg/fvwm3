@@ -1,6 +1,6 @@
 /* -*-c-*- */
-#ifndef _ANIMATE_H_
-#define _ANIMATE_H_
+#ifndef FVWMANIMATE_ANIMATE_H
+#define FVWMANIMATE_ANIMATE_H
 #include <time.h>
 
 /* Animation granularity. How many iterations use for the animation.  */
@@ -35,4 +35,4 @@ struct ASAnimate {
 
 extern struct ASAnimate Animate;
 
-#endif /* _ANIMATE_H_ */
+#endif /* FVWMANIMATE_ANIMATE_H */

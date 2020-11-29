@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+#ifndef FVWM_TEMPLATE_H
+#define FVWM_TEMPLATE_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -18,4 +18,4 @@
 /* ---------------------------- interface functions ------------------------ */
 
 
-#endif /* TEMPLATE_H */
+#endif /* FVWM_TEMPLATE_H */

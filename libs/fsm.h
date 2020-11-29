@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FSM_H
-#define FSM_H
+#ifndef FVWMLIB_FSM_H
+#define FVWMLIB_FSM_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "FSMlib.h"
@@ -31,4 +31,4 @@ Bool fsm_process(fd_set *in_fdset);
 void fsm_proxy(Display *dpy, Window win, char *sm);
 void fsm_close(void);
 
-#endif /* FSM_H */
+#endif /* FVWMLIB_FSM_H */

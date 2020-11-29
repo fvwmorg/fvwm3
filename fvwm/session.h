@@ -7,8 +7,8 @@
  *       4 April 1999 - Steve Robbins <steve@nyongwa.montreal.qc.ca>
  */
 
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef FVWM_SESSION_H
+#define FVWM_SESSION_H
 #include "fvwm.h"
 
 /*

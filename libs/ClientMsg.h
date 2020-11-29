@@ -12,8 +12,8 @@
  *     data[1]          time stamp
  */
 
-#ifndef CLIENTMSG_H
-#define CLIENTMSG_H
+#ifndef FVWMLIB_CLIENTMSG_H
+#define FVWMLIB_CLIENTMSG_H
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -23,4 +23,4 @@ void send_clientmessage(Display *disp, Window w, Atom a, Time timestamp);
 
 extern Atom _XA_WM_PROTOCOLS;
 
-#endif /* CLIENTMSG_H */
+#endif /* FVWMLIB_CLIENTMSG_H */

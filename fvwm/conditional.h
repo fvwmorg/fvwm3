@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef CONDITIONAL_H
-#define CONDITIONAL_H
+#ifndef FVWM_CONDITIONAL_H
+#define FVWM_CONDITIONAL_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -25,4 +25,4 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask);
 void FreeConditionMask(WindowConditionMask *mask);
 Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask);
 
-#endif /* CONDITIONAL_H */
+#endif /* FVWM_CONDITIONAL_H */

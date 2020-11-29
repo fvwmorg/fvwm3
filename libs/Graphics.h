@@ -1,5 +1,5 @@
-#ifndef LIB_GRAPHICS_H
-#define LIB_GRAPHICS_H
+#ifndef FVWMLIB_GRAPHICS_H
+#define FVWMLIB_GRAPHICS_H
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
@@ -85,4 +85,4 @@ void DrawTrianglePattern(
 	int x, int y, int width, int height, int bw, char orientation,
 	Bool draw_relief, Bool do_fill, Bool is_pressed);
 
-#endif /* LIB_GRAPHICS_H */
+#endif /* FVWMLIB_GRAPHICS_H */

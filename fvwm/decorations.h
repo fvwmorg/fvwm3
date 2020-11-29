@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef DECORATIONS_H
-#define DECORATIONS_H
+#ifndef FVWM_DECORATIONS_H
+#define FVWM_DECORATIONS_H
 
 #include "fvwm.h"
 
@@ -34,4 +34,4 @@ Bool is_function_allowed(
 	int function, char *action_string, const FvwmWindow *t,
 	request_origin_t request_origin, Bool do_allow_override_mwm_hints);
 
-#endif /* DECORATIONS_H */
+#endif /* FVWM_DECORATIONS_H */

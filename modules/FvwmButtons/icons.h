@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
-#ifndef ICONS_H
-#define ICONS_H
+#ifndef FVWMBUTTONS_ICONS_H
+#define FVWMBUTTONS_ICONS_H
 
 
 #include "FvwmButtons.h"
@@ -30,4 +30,4 @@ Bool GetIconPosition(
 	int *r_x, int *r_y, int *r_w, int *r_h);
 void DrawForegroundIcon(button_info *b, XEvent *pev);
 
-#endif /* ICONS_H */
+#endif /* FVWMBUTTONS_ICONS_H */

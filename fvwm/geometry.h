@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
+#ifndef FVWM_GEOMETRY_H
+#define FVWM_GEOMETRY_H
 #include "fvwm.h"
 
 #define CS_ROUND_UP          0x01

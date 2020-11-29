@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef ADD_WINDOW_H
-#define ADD_WINDOW_H
+#ifndef FVWM_ADD_WINDOW_H
+#define FVWM_ADD_WINDOW_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -77,4 +77,4 @@ void RestoreWithdrawnLocation(
 void Reborder(void);
 void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture);
 
-#endif /* ADD_WINDOW_H */
+#endif /* FVWM_ADD_WINDOW_H */

@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef FRENDER_H
-#define FRENDER_H
+#ifndef FVWMLIB_FRENDER_H
+#define FVWMLIB_FRENDER_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -347,4 +347,4 @@ typedef struct _FGlyphInfo
 #define FRenderFillRectangles(a,b,c,d,e,f)
 #endif
 
-#endif /* FRENDER_H */
+#endif /* FVWMLIB_FRENDER_H */

@@ -26,8 +26,8 @@
  *    OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef EXTERNS_H
-#define EXTERNS_H
+#ifndef FVWM_EXTERNS_H
+#define FVWM_EXTERNS_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -87,4 +87,4 @@ extern Atom _XA_ATOM_PAIR;
 extern Atom _XA_WM_COLORMAP_NOTIFY;
 extern Atom _XA_XROOTPMAP_ID;
 extern Atom _XA_XSETROOT_ID;
-#endif /* _EXTERNS_ */
+#endif /* FVWM_EXTERNS_H */

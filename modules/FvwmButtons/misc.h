@@ -21,12 +21,12 @@
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
 
-#ifndef MISC_H
-#define MISC_H
+#ifndef FVWMBUTTONS_MISC_H
+#define FVWMBUTTONS_MISC_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 void ConstrainSize(XSizeHints *hints, int *widthp, int *heightp);
 
-#endif /* MISC_H */
+#endif /* FVWMBUTTONS_MISC_H */

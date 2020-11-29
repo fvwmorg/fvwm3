@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2001  Olivier Chapuis */
 
-#ifndef _EWMH_
-#define _EWMH_
+#ifndef FVWM_EWMH_H
+#define FVWM_EWMH_H
 
 #include "fvwm.h"
 #include "execcontext.h"
@@ -82,4 +82,4 @@ int EWMH_WMIconName(
 void EWMH_SetDesktopNames(struct monitor *);
 void EWMH_fullscreen(FvwmWindow *fw);
 
-#endif /* _EWMH_ */
+#endif /* FVWM_EWMH_H */

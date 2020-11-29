@@ -1,6 +1,6 @@
 /* -*-c-*- */
-#ifndef IN_XMANAGER_H
-#define IN_XMANAGER_H
+#ifndef FVWMICONMAN_XMANAGER_H
+#define FVWMICONMAN_XMANAGER_H
 
 #include <X11/Xlib.h>
 #include "FvwmIconMan.h"
@@ -55,4 +55,4 @@ void tips_on(WinManager *man, Button *b);
 void tips_cancel(WinManager *man);
 void tips_update_label(WinManager *man);
 
-#endif /* IN_XMANAGER_H */
+#endif /* FVWMICONMAN_XMANAGER_H */

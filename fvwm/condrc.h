@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef CONDRC_H
-#define CONDRC_H
+#ifndef FVWM_CONDRC_H
+#define FVWM_CONDRC_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -33,4 +33,4 @@ typedef struct
 
 void condrc_init(cond_rc_t *cond_rc);
 
-#endif /* CONDRC_H */
+#endif /* FVWM_CONDRC_H */

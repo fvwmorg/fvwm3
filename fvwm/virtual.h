@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _VIRTUAL_
-#define _VIRTUAL_
+#ifndef FVWM_VIRTUAL_H
+#define FVWM_VIRTUAL_H
 
 #include <stdbool.h>
 #include "fvwm.h"
@@ -53,4 +53,4 @@ void desk_del_fw(FvwmWindow *);
 
 void apply_desktops_monitor(struct monitor *);
 
-#endif /* _VIRTUAL_ */
+#endif /* FVWM_VIRTUAL_H */

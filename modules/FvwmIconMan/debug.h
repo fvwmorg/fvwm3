@@ -1,6 +1,6 @@
 /* -*-c-*- */
-#ifndef IN_DEBUG_H
-#define IN_DEBUG_H
+#ifndef FVWMICONMAN_DEBUG_H
+#define FVWMICONMAN_DEBUG_H
 
 #if 0
 # define OUTPUT_FILE "/dev/console"
@@ -17,4 +17,4 @@ extern void ConsoleDebug(int flag, const char *fmt, ...)
 
 extern int CORE, FUNCTIONS, X11, FVWM, CONFIG, WINLIST;
 
-#endif /* IN_DEBUG_H */
+#endif /* FVWMICONMAN_DEBUG_H */

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef GRAVITY_H
-#define GRAVITY_H
+#ifndef FVWMLIB_GRAVITY_H
+#define FVWMLIB_GRAVITY_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwmrect.h"
@@ -91,4 +91,4 @@ direction_t gravity_multi_dir_to_dir(multi_direction_t mdir);
 void gravity_rotate_xy(rotation_t rot, int x, int y, int *ret_x, int *ret_y);
 rotation_t gravity_add_rotations(rotation_t rot1, rotation_t rot2);
 
-#endif /* GRAVITY_H */
+#endif /* FVWMLIB_GRAVITY_H */

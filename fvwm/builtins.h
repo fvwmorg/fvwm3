@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef BUILTINS_H
-#define BUILTINS_H
+#ifndef FVWM_BUILTINS_H
+#define FVWM_BUILTINS_H
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__sun__)
 #include <libbson-1.0/bson.h>
@@ -21,4 +21,4 @@ void FreeDecorFace(Display *dpy, DecorFace *df);
 void update_fvwm_colorset(int cset);
 void status_send(void);
 
-#endif /* BUILTINS_H */
+#endif /* FVWM_BUILTINS_H */

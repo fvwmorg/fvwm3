@@ -62,8 +62,8 @@
  *
  **/
 
-#ifndef FBIDI_H
-#define FBIDI_H
+#ifndef FVWMLIB_FBIDI_H
+#define FVWMLIB_FBIDI_H
 
 #include "config.h"
 #include <X11/Xlib.h>
@@ -91,4 +91,4 @@ char *FBidiConvert(
 
 #endif /* HAVE_BIDI */
 
-#endif /* FBIDI_H */
+#endif /* FVWMLIB_FBIDI_H */

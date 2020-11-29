@@ -1,6 +1,6 @@
 /* -*-c-*- */
-#ifndef FVWMSIGNAL_H
-#define FVWMSIGNAL_H
+#ifndef FVWMLIB_FVWMSIGNAL_H
+#define FVWMLIB_FVWMSIGNAL_H
 
 /* This module provides wrappers around system functions that could
  * potentially block, e.g. select(). These wrappers will check that
@@ -66,5 +66,4 @@ extern int fvwmSelect(
 	fd_set *exceptfds, struct timeval *timeout);
 #endif
 
-#endif /* FVWMSIGNAL_H */
-
+#endif /* FVWMLIB_FVWMSIGNAL_H */

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FUNCTIONS_H
-#define FUNCTIONS_H
+#ifndef FVWM_FUNCTIONS_H
+#define FVWM_FUNCTIONS_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -83,4 +83,4 @@ void execute_function_override_window(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags, FvwmWindow *fw);
 
-#endif /* FUNCTIONS_H */
+#endif /* FVWM_FUNCTIONS_H */

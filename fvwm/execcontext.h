@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef EXECCONTEXT_H
-#define EXECCONTEXT_H
+#ifndef FVWM_EXECCONTEXT_H
+#define FVWM_EXECCONTEXT_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -113,4 +113,4 @@ const exec_context_t *exc_clone_context(
  * exc_create_context(). */
 void exc_destroy_context(const exec_context_t *exc);
 
-#endif /* EXECCONTEXT_H */
+#endif /* FVWM_EXECCONTEXT_H */

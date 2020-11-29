@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MISC_H
-#define MISC_H
+#ifndef FVWM_MISC_H
+#define FVWM_MISC_H
 
 #include <X11/Xlib.h>
 #include "fvwm.h"
@@ -72,4 +72,4 @@ void fvwm_msg_report_app_and_workers(void);
 void set_last_added_item(last_added_item_t type, void *item);
 void print_g(char *text, rectangle *g);
 
-#endif /* MISC_H */
+#endif /* FVWM_MISC_H */

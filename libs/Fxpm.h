@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef FXPM_H
-#define FXPM_H
+#ifndef FVWMLIB_FXPM_H
+#define FVWMLIB_FXPM_H
 
 #include "PictureBase.h"
 
@@ -210,4 +210,4 @@ typedef struct {
 
 #endif /* XpmSupport */
 
-#endif /* FXPM_H */
+#endif /* FVWMLIB_FXPM_H */

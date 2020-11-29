@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _ICONS_
-#define _ICONS_
+#ifndef FVWM_ICONS_H
+#define FVWM_ICONS_H
 
 #include "fvwm.h"
 
@@ -30,4 +30,4 @@ void DeIconify(FvwmWindow *);
 void SetMapStateProp(const FvwmWindow *, int);
 
 
-#endif /* _ICONS_ */
+#endif /* FVWM_ICONS_H */
