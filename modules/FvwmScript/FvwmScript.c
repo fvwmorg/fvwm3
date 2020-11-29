@@ -1337,8 +1337,7 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
   else
   {                             /* Son case */
     x11base->TabScriptId[0] = fxcalloc(sizeof(char), strlen(argv[7]));
-    x11base->TabScriptId[0] = strncpy(x11base->TabScriptId[0],argv[7],
-				    strlen(argv[7])-2);
+    x11base->TabScriptId[0] = strncpy(x11base->TabScriptId[0], argv[7], 900);
     x11base->TabScriptId[1] = argv[7];
     myatom=XInternAtom(dpy, x11base->TabScriptId[1], True);
     XSetSelectionOwner(dpy, myatom, x11base->win, CurrentTime);
